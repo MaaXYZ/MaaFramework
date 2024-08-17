@@ -15,7 +15,7 @@ public:
     cv::Rect get_pre_box(const std::string& task_name) const;
     void set_pre_box(std::string task_name, cv::Rect box);
 
-    std::optional<MAA_TASK_NS::RecoResult> get_reco_detail(int64_t uid) const;
+    std::optional<MAA_TASK_NS::RecoResult> get_reco_result(int64_t uid) const;
     void add_reco_detail(int64_t uid, MAA_TASK_NS::RecoResult);
 
     std::optional<MAA_TASK_NS::NodeDetail> get_node_detail(int64_t uid) const;

@@ -194,7 +194,7 @@ extern "C"
         MaaTasker* tasker,
         MaaRecoId reco_id,
         /* out */ MaaStringBuffer* name,
-        /* out */ MaaBool* hit,
+        /* out */ MaaBool* box,
         /* out */ MaaRect* hit_box,
         /* out */ MaaStringBuffer* detail_json,
         /* out */ MaaImageBuffer* raw,

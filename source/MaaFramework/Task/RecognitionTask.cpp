@@ -25,17 +25,18 @@ bool RecognitionTask::run_with_param(const cv::Mat& image)
     LogFunc << VAR(entry_);
 
     PipelineData::NextList next_list = { PipelineData::NextObject { .name = entry_ } };
-    HitDetail hit_detail;
 
-    auto iter = run_recogintion(image, next_list, hit_detail);
-    if (iter == next_list.cend()) {
+    auto reco = run_recogintion(image, next_list);
+    if (!reco.box) {
+        LogTrace << "No reco result";
         return false;
     }
 
-    hit_detail.pipeline_data = {};  // for do nothing
-    run_action(hit_detail);
+    MaaNodeId node_id = generate_node_id();
+    NodeDetail node_detail { .name = reco.name, .reco_uid = reco.uid, .action_completed = false };
 
-    // recognized
+    add_node_detail(node_id, node_detail);
+
     return true;
 }
 

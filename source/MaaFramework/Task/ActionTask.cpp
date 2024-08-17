@@ -26,11 +26,12 @@ bool ActionTask::run_with_param(const cv::Rect& box, const json::value& reco_det
 {
     LogFunc << VAR(entry_);
 
-    HitDetail fake_hit {
-        .reco_hit = box,
-        .reco_detail = reco_detail,
+    RecoResult fake_reco {
+        .name = entry_,
+        .box = box,
+        .detail = reco_detail,
     };
-    return run_action(fake_hit, context_.get_pipeline_data(entry_));
+    return run_action(fake_reco);
 }
 
 MAA_TASK_NS_END

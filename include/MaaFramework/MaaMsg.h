@@ -124,19 +124,25 @@
  *         id: number,
  *         box: [number, number, number, number],
  *         detail: string,
- *         hit: boolean,
  *     },
  *     node_id: number,
- *     completed: boolean,
+ *     reco_id: number,
+ *     action_completed: boolean,
  * }
  */
 #define MaaMsg_Task_Focus_ReadyToRun ("Task.Focus.ReadyToRun")
 #define MaaMsg_Task_Focus_Completed ("Task.Focus.Completed")
 /// @}
 
+#define MaaMsg_Task_Debug_ReadyToRun ("Task.Debug.ReadyToRun")
+#define MaaMsg_Task_Debug_Completed ("Task.Debug.Completed")
+
+#define MaaMsg_Task_Debug_RecognitionResult ("Task.Debug.RecognitionResult")
+#define MaaMsg_Task_Debug_Hit ("Task.Debug.Hit")
+
 /**
  * @{
- * @brief Message for debug.
+ * @brief Message for the task focus.
  *
  * payload: {
  *     task_id: number,
@@ -144,24 +150,11 @@
  *     uuid: string,
  *     hash: string,
  *     pre_hit_task: string,
- *     name: string,
- *     recognition: {
- *         id: number,
- *         box: [number, number, number, number],
- *         detail: string,
- *         hit: boolean,
- *     },
- *     node_id: number,
- *     completed: boolean,
+ *     list: [string],
  * }
  */
-#define MaaMsg_Task_Debug_ReadyToRun ("Task.Debug.ReadyToRun")
-#define MaaMsg_Task_Debug_Completed ("Task.Debug.Completed")
-/// @}
-
 #define MaaMsg_Task_Debug_ListToRecognize ("Task.Debug.ListToRecognize")
-#define MaaMsg_Task_Debug_RecognitionResult ("Task.Debug.RecognitionResult")
-#define MaaMsg_Task_Debug_Hit ("Task.Debug.Hit")
 #define MaaMsg_Task_Debug_MissAll ("Task.Debug.MissAll")
+/// @}
 
 /** @} */

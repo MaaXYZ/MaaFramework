@@ -44,6 +44,7 @@ protected:
     RecoResult run_recogintion(const cv::Mat& image, const PipelineData::NextList& list);
     bool run_action(const RecoResult& reco);
     cv::Mat screencap();
+    MaaTaskId generate_node_id();
     void add_node_detail(int64_t node_id, NodeDetail detail);
 
 private:
@@ -63,6 +64,7 @@ protected:
 
     std::map<std::string, uint64_t> hit_times_map_;
 
+private:
     inline static std::atomic<MaaTaskId> s_global_task_id = 0;
     inline static std::atomic<MaaTaskId> s_global_node_id = 0;
 };

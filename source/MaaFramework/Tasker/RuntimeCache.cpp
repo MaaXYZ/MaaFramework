@@ -16,7 +16,7 @@ void RuntimeCache::set_pre_box(std::string task_name, cv::Rect box)
     pre_boxes_.insert_or_assign(std::move(task_name), std::move(box));
 }
 
-std::optional<MAA_TASK_NS::RecoResult> RuntimeCache::get_reco_detail(int64_t uid) const
+std::optional<MAA_TASK_NS::RecoResult> RuntimeCache::get_reco_result(int64_t uid) const
 {
     auto it = reco_details_.find(uid);
     if (it == reco_details_.end()) {

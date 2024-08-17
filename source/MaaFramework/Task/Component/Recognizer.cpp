@@ -82,19 +82,19 @@ RecoResult Recognizer::recognize(const PipelineData& pipeline_data)
 
     tasker_->runtime_cache().add_reco_detail(result.uid, result);
 
-    if (result.hit) {
-        const auto& hit = *result.hit;
-        show_hit_draw(hit, pipeline_data.name, result.uid);
+    if (result.box) {
+        const auto& box = *result.box;
+        show_hit_draw(box, pipeline_data.name, result.uid);
     }
 
     if (pipeline_data.inverse) {
-        LogDebug << "pipeline_data.inverse is true, reverse the result" << VAR(pipeline_data.name) << VAR(result.hit.has_value());
+        LogDebug << "pipeline_data.inverse is true, reverse the result" << VAR(pipeline_data.name) << VAR(result.box.has_value());
 
-        if (result.hit) {
-            result.hit = std::nullopt;
+        if (result.box) {
+            result.box = std::nullopt;
         }
         else {
-            result.hit = cv::Rect {};
+            result.box = cv::Rect {};
         }
     }
 
@@ -116,7 +116,7 @@ json::value gen_detail(const std::vector<Res>& all, const std::vector<Res>& filt
 RecoResult Recognizer::direct_hit(const std::string& name)
 {
     LogTrace << name;
-    return RecoResult { .hit = cv::Rect {} };
+    return RecoResult { .box = cv::Rect {} };
 }
 
 RecoResult Recognizer::template_match(const MAA_VISION_NS::TemplateMatcherParam& param, const std::string& name)
@@ -140,13 +140,13 @@ RecoResult Recognizer::template_match(const MAA_VISION_NS::TemplateMatcherParam&
 
     TemplateMatcher analyzer(image_, param, templates, name);
 
-    std::optional<cv::Rect> hit = std::nullopt;
+    std::optional<cv::Rect> box = std::nullopt;
     if (analyzer.best_result()) {
-        hit = analyzer.best_result()->box;
+        box = analyzer.best_result()->box;
     }
 
     return RecoResult { .uid = analyzer.uid(),
-                        .hit = std::move(hit),
+                        .box = std::move(box),
                         .detail = gen_detail(analyzer.all_results(), analyzer.filtered_results(), analyzer.best_result()),
                         .draws = std::move(analyzer).draws() };
 }
@@ -172,13 +172,13 @@ RecoResult Recognizer::feature_match(const MAA_VISION_NS::FeatureMatcherParam& p
 
     FeatureMatcher analyzer(image_, param, templates, name);
 
-    std::optional<cv::Rect> hit = std::nullopt;
+    std::optional<cv::Rect> box = std::nullopt;
     if (analyzer.best_result()) {
-        hit = analyzer.best_result()->box;
+        box = analyzer.best_result()->box;
     }
 
     return RecoResult { .uid = analyzer.uid(),
-                        .hit = std::move(hit),
+                        .box = std::move(box),
                         .detail = gen_detail(analyzer.all_results(), analyzer.filtered_results(), analyzer.best_result()),
                         .draws = std::move(analyzer).draws() };
 }
@@ -194,13 +194,13 @@ RecoResult Recognizer::color_match(const MAA_VISION_NS::ColorMatcherParam& param
 
     ColorMatcher analyzer(image_, param, name);
 
-    std::optional<cv::Rect> hit = std::nullopt;
+    std::optional<cv::Rect> box = std::nullopt;
     if (analyzer.best_result()) {
-        hit = analyzer.best_result()->box;
+        box = analyzer.best_result()->box;
     }
 
     return RecoResult { .uid = analyzer.uid(),
-                        .hit = std::move(hit),
+                        .box = std::move(box),
                         .detail = gen_detail(analyzer.all_results(), analyzer.filtered_results(), analyzer.best_result()),
                         .draws = std::move(analyzer).draws() };
 }
@@ -220,13 +220,13 @@ RecoResult Recognizer::ocr(const MAA_VISION_NS::OCRerParam& param, const std::st
 
     OCRer analyzer(image_, param, det_session, rec_session, ocr_session, ocr_cache_, name);
 
-    std::optional<cv::Rect> hit = std::nullopt;
+    std::optional<cv::Rect> box = std::nullopt;
     if (analyzer.best_result()) {
-        hit = analyzer.best_result()->box;
+        box = analyzer.best_result()->box;
     }
 
     return RecoResult { .uid = analyzer.uid(),
-                        .hit = std::move(hit),
+                        .box = std::move(box),
                         .detail = gen_detail(analyzer.all_results(), analyzer.filtered_results(), analyzer.best_result()),
                         .draws = std::move(analyzer).draws() };
 }
@@ -244,13 +244,13 @@ RecoResult Recognizer::nn_classify(const MAA_VISION_NS::NeuralNetworkClassifierP
 
     NeuralNetworkClassifier analyzer(image_, param, session, name);
 
-    std::optional<cv::Rect> hit = std::nullopt;
+    std::optional<cv::Rect> box = std::nullopt;
     if (analyzer.best_result()) {
-        hit = analyzer.best_result()->box;
+        box = analyzer.best_result()->box;
     }
 
     return RecoResult { .uid = analyzer.uid(),
-                        .hit = std::move(hit),
+                        .box = std::move(box),
                         .detail = gen_detail(analyzer.all_results(), analyzer.filtered_results(), analyzer.best_result()),
                         .draws = std::move(analyzer).draws() };
 }
@@ -268,13 +268,13 @@ RecoResult Recognizer::nn_detect(const MAA_VISION_NS::NeuralNetworkDetectorParam
 
     NeuralNetworkDetector analyzer(image_, param, session, name);
 
-    std::optional<cv::Rect> hit = std::nullopt;
+    std::optional<cv::Rect> box = std::nullopt;
     if (analyzer.best_result()) {
-        hit = analyzer.best_result()->box;
+        box = analyzer.best_result()->box;
     }
 
     return RecoResult { .uid = analyzer.uid(),
-                        .hit = std::move(hit),
+                        .box = std::move(box),
                         .detail = gen_detail(analyzer.all_results(), analyzer.filtered_results(), analyzer.best_result()),
                         .draws = std::move(analyzer).draws() };
 }
@@ -295,13 +295,13 @@ RecoResult Recognizer::custom_recognize(const MAA_VISION_NS::CustomRecognizerPar
     auto session = tasker_->resource()->custom_recognizer(param.name);
     CustomRecognizer analyzer(param.name, session, context_, param, image_);
 
-    std::optional<cv::Rect> hit = std::nullopt;
+    std::optional<cv::Rect> box = std::nullopt;
     if (analyzer.best_result()) {
-        hit = analyzer.best_result()->box;
+        box = analyzer.best_result()->box;
     }
 
     return RecoResult { .uid = analyzer.uid(),
-                        .hit = std::move(hit),
+                        .box = std::move(box),
                         .detail = gen_detail(analyzer.all_results(), analyzer.filtered_results(), analyzer.best_result()),
                         .draws = std::move(analyzer).draws() };
 }

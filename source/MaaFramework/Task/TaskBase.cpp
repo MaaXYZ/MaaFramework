@@ -77,7 +77,7 @@ RecoResult TaskBase::run_recogintion(const cv::Mat& image, const PipelineData::N
 
         const auto& pipeline_data = context_.get_pipeline_data(name);
         if (!pipeline_data.enabled || pipeline_data.hit_limit <= hit_times) {
-            LogDebug << "Task disabled or hit over limit" << name << VAR(pipeline_data.enabled) << VAR(hit_times)
+            LogDebug << "Task disabled or box over limit" << name << VAR(pipeline_data.enabled) << VAR(hit_times)
                      << VAR(pipeline_data.hit_limit);
             continue;
         }
@@ -89,7 +89,7 @@ RecoResult TaskBase::run_recogintion(const cv::Mat& image, const PipelineData::N
             notify(MaaMsg_Task_Debug_RecognitionResult, cb_detail);
         }
 
-        if (!result.hit) {
+        if (!result.box) {
             continue;
         }
 
@@ -111,14 +111,14 @@ RecoResult TaskBase::run_recogintion(const cv::Mat& image, const PipelineData::N
 
 bool TaskBase::run_action(const RecoResult& reco)
 {
-    if (!reco.hit) {
-        LogError << "reco hit is nullopt, can NOT run";
+    if (!reco.box) {
+        LogError << "reco box is nullopt, can NOT run";
         return false;
     }
 
     const auto& pipeline_data = context_.get_pipeline_data(reco.name);
 
-    MaaNodeId node_id = ++s_global_node_id;
+    MaaNodeId node_id = generate_node_id();
     NodeDetail node_detail { .name = reco.name, .reco_uid = reco.uid };
 
     if (debug_mode() || pipeline_data.focus) {
@@ -132,7 +132,7 @@ bool TaskBase::run_action(const RecoResult& reco)
     }
 
     Actuator actuator(tasker_, context_);
-    bool ret = actuator.run(*reco.hit, reco.detail, pipeline_data);
+    bool ret = actuator.run(*reco.box, reco.detail, pipeline_data);
 
     node_detail.action_completed = ret;
     add_node_detail(node_id, node_detail);
@@ -157,6 +157,11 @@ cv::Mat TaskBase::screencap()
     }
 
     return controller()->screencap();
+}
+
+MaaTaskId TaskBase::generate_node_id()
+{
+    return ++s_global_node_id;
 }
 
 void TaskBase::add_node_detail(int64_t node_id, NodeDetail detail)
@@ -197,9 +202,8 @@ json::object TaskBase::reco_result_to_json(const std::string& name, const RecoRe
         { "recognition",
           {
               { "id", res.uid },
-              { "box", res.hit ? json::value(*res.hit) : json::value(nullptr) },
+              { "box", res.box ? json::value(*res.box) : json::value(nullptr) },
               { "detail", res.detail },
-              { "hit_task", res.hit.has_value() },
           } },
     };
 }

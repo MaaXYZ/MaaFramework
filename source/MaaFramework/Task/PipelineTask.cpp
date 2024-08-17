@@ -22,37 +22,20 @@ bool PipelineTask::run()
     LogFunc << VAR(entry_);
 
     std::stack<PipelineData::NextList> goto_stack;
-    PipelineData::NextList next_list = { PipelineData::NextObject { .name = entry_ } };
+    PipelineData::NextList next_list = { entry_ };
 
     while (!next_list.empty() && !need_to_stop_) {
-        auto iter = run_reco_and_action(next_list);
+        auto node_result = run_reco_and_action(next_list);
 
-        if (iter == next_list.cend()) {
+        if (!node_result.action_completed) {
             LogError << "Run task failed:" << next_list;
             return false;
         }
-        const PipelineData::NextObject& hit_object = *iter;
-        PipelineData hit_task = context_.get_pipeline_data(hit_object.name);
 
-        switch (hit_object.then_goto) {
-        case PipelineData::NextObject::ThenGotoLabel::None:
-            if (hit_task.is_sub) { // for compatibility with v1.x
-                const auto& ref = goto_stack.emplace(next_list);
-                LogDebug << "push then_goto is_sub:" << hit_object.name << ref;
-            }
-            break;
-        case PipelineData::NextObject::ThenGotoLabel::Head: {
+        PipelineData hit_task = context_.get_pipeline_data(node_result.name);
+        if (hit_task.is_sub) { // for compatibility with v1.x
             const auto& ref = goto_stack.emplace(next_list);
-            LogDebug << "push then_goto head:" << hit_object.name << ref;
-        } break;
-        case PipelineData::NextObject::ThenGotoLabel::Current: {
-            const auto& ref = goto_stack.emplace(iter, next_list.cend());
-            LogDebug << "push then_goto current:" << hit_object.name << ref;
-        } break;
-        case PipelineData::NextObject::ThenGotoLabel::Following: {
-            const auto& ref = goto_stack.emplace(iter + 1, next_list.cend());
-            LogDebug << "push then_goto following:" << hit_object.name << ref;
-        } break;
+            LogDebug << "push then_goto is_sub:" << hit_task.name << ref;
         }
 
         next_list = hit_task.next;
@@ -73,45 +56,50 @@ void PipelineTask::post_stop()
     need_to_stop_ = true;
 }
 
-PipelineTask::NextIter PipelineTask::run_reco_and_action(const PipelineData::NextList& list)
+NodeDetail PipelineTask::run_reco_and_action(const PipelineData::NextList& list)
 {
-    const NextIter NotFound = list.cend();
-
     if (!tasker_) {
         LogError << "tasker is null";
-        return NotFound;
+        return {};
     }
     const auto timeout = GlobalOptionMgr::get_instance().pipeline_timeout();
 
-    auto iter = list.cend();
-    HitDetail hit_detail;
+    RecoResult reco;
 
     auto start_time = std::chrono::steady_clock::now();
     while (true) {
-        iter = run_recogintion(screencap(), list, hit_detail);
-        if (iter != list.cend()) {
-            // found
+        reco = run_recogintion(screencap(), list);
+        if (reco.box) {
+            // hit
             break;
         }
 
         if (need_to_stop_) {
             LogError << "Task interrupted" << VAR(pre_hit_task_);
-            return NotFound;
+            return {};
         }
 
         if (std::chrono::steady_clock::now() - start_time > timeout) {
             LogError << "Task timeout" << VAR(pre_hit_task_) << VAR(timeout);
-            return NotFound;
+            return {};
         }
     }
 
-    LogInfo << "Task hit:" << hit_detail.pipeline_data.name << VAR(hit_detail.reco_uid) << VAR(hit_detail.reco_hit)
-            << VAR(hit_detail.reco_detail.to_string());
+    if (!reco.box) {
+        return {};
+    }
 
-    tasker_->runtime_cache().set_pre_box(hit_detail.pipeline_data.name, hit_detail.reco_hit);
+    LogInfo << "Task hit" << VAR(reco.name) << VAR(reco.box);
 
-    bool run_ret = run_action(hit_detail);
-    return run_ret ? iter : NotFound;
+    tasker_->runtime_cache().set_pre_box(reco.name, *reco.box);
+
+    bool run_ret = run_action(reco);
+    if (!run_ret) {
+        LogError << "Run action failed" << VAR(reco.name);
+        return {};
+    }
+
+    return { reco.name, reco.uid, false };
 }
 
 MAA_TASK_NS_END

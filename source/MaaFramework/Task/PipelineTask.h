@@ -17,7 +17,7 @@ public:
     virtual void post_stop() override;
 
 private:
-    NextIter run_reco_and_action(const PipelineData::NextList& list);
+    NodeDetail run_reco_and_action(const PipelineData::NextList& list);
 
 private:
     bool need_to_stop_ = false;

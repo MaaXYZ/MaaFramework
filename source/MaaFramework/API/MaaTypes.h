@@ -1,12 +1,14 @@
 #pragma once
 
 #include <filesystem>
+#include <optional>
 #include <string>
 #include <vector>
 
 #include <meojson/json.hpp>
 
 #include "MaaFramework/MaaDef.h"
+#include "Task/TaskResultTypes.h"
 #include "Utils/NoWarningCVMat.hpp"
 
 struct MaaResource
@@ -91,7 +93,9 @@ public:
     virtual MaaController* controller() = 0;
 
     virtual bool clear_cache() = 0;
-    virtual bool 
+    virtual std::optional<MAA_TASK_NS::TaskDetail> get_task_detail(MaaTaskId task_id) = 0;
+    virtual std::optional<MAA_TASK_NS::NodeDetail> get_node_detail(MaaNodeId node_id) = 0;
+    virtual std::optional<MAA_TASK_NS::RecoResult> get_reco_result(MaaRecoId reco_id) = 0;
 };
 
 struct MaaContext
@@ -101,7 +105,8 @@ public:
 
     virtual MaaTaskId run_pipeline(const std::string& entry, const json::value& pipeline_override) = 0;
     virtual MaaTaskId run_recognition(const std::string& entry, const json::value& pipeline_override, const cv::Mat& image) = 0;
-    virtual MaaTaskId run_action(const std::string& entry, const json::value& pipeline_override, const cv::Rect& box, const std::string& reco_detail) = 0;
+    virtual MaaTaskId
+        run_action(const std::string& entry, const json::value& pipeline_override, const cv::Rect& box, const std::string& reco_detail) = 0;
     virtual bool override_pipeline(const json::value& pipeline_override) = 0;
 
     virtual MaaTaskId task_id() const = 0;

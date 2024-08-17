@@ -124,23 +124,7 @@ struct WaitFreezesParam
 
 struct PipelineData
 {
-    struct NextObject
-    {
-        enum class ThenGotoLabel
-        {
-            None,
-            Head,
-            Current,
-            Following,
-        };
-
-        std::string name;
-        ThenGotoLabel then_goto = ThenGotoLabel::None;
-
-        MEO_TOJSON(name); // for output
-    };
-
-    using NextList = std::vector<NextObject>;
+    using NextList = std::vector<std::string>;
 
     std::string name;
     bool is_sub = false; // for compatibility
@@ -154,6 +138,7 @@ struct PipelineData
     Action::Type action_type = Action::Type::DoNothing;
     Action::Param action_param;
     NextList next;
+    NextList catch_next;
 
     std::chrono::milliseconds pre_delay;
     std::chrono::milliseconds post_delay;
