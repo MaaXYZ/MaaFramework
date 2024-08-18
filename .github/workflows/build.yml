@@ -207,27 +207,14 @@ jobs:
         run: |
           python3 tools/maadeps-download.py ${{ matrix.arch == 'x86_64' && 'x64' || 'arm64' }}-osx
 
-      - name: Build MAA for x86_64
-        if: ${{ matrix.arch == 'x86_64' }}
-        env:
-          CC: "/usr/local/opt/llvm/bin/clang"
-          CXX: "/usr/local/opt/llvm/bin/clang++"
+      - name: Build MAA
         run: |
+          LLVM_PREFIX=$(brew --prefix llvm)
           cmake --preset 'NinjaMulti' \
             -DMAADEPS_TRIPLET='maa-${{ matrix.arch == 'x86_64' && 'x64' || 'arm64' }}-osx' \
-            -DMAA_HASH_VERSION='${{ needs.meta.outputs.tag }}'
-
-          cmake --build build --preset 'NinjaMulti - Release' -j 16
-
-      - name: Build MAA for aarch64
-        if: ${{ matrix.arch == 'aarch64' }}
-        env:
-          CC: "/opt/homebrew/opt/llvm/bin/clang"
-          CXX: "/opt/homebrew/opt/llvm/bin/clang++"
-        run: |
-          cmake --preset 'NinjaMulti' \
-            -DMAADEPS_TRIPLET='maa-${{ matrix.arch == 'x86_64' && 'x64' || 'arm64' }}-osx' \
-            -DMAA_HASH_VERSION='${{ needs.meta.outputs.tag }}'
+            -DMAA_HASH_VERSION='${{ needs.meta.outputs.tag }}' \
+            -DCMAKE_C_COMPILER=${LLVM_PREFIX}/bin/clang \
+            -DCMAKE_CXX_COMPILER=${LLVM_PREFIX}/bin/clang++
 
           cmake --build build --preset 'NinjaMulti - Release' -j 16
 
