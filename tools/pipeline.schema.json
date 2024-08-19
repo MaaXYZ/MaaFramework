@@ -5,7 +5,7 @@
         "^(?!.*?\\$schema).*$": {
             "type": "object",
             "patternProperties": {
-                ".*_doc$": {
+                ".*_doc$|^doc$": {
                     "type": "string"
                 }
             },
