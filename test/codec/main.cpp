@@ -1,5 +1,6 @@
 #include "Utils/Codec.h"
 
+#include <cstdint>
 #include <iostream>
 
 bool test_to_u16()
