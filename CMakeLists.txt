@@ -22,7 +22,7 @@ option(BUILD_SAMPLE "build a demo" OFF)
 
 option(BUILD_PIPELINE_TESTING "build pipeline testing" OFF)
 option(BUILD_DLOPEN_TESTING "build dlopen testing" OFF)
-option(BUILD_MAAPP_TESTING "build maapp testing" OFF)
+option(BUILD_MISC_TESTING "build misc testing" OFF)
 
 set(MAA_PUBLIC_INC ${CMAKE_SOURCE_DIR}/include)
 set(MAA_PRIVATE_INC ${CMAKE_SOURCE_DIR}/source/include)
@@ -77,6 +77,10 @@ endif()
 
 if(BUILD_DLOPEN_TESTING)
     add_subdirectory(test/dlopen)
+endif()
+
+if(BUILD_MISC_TESTING)
+    add_subdirectory(test/codec)
 endif()
 
 if(USE_MAADEPS)
