@@ -3,6 +3,12 @@
 #include <cstdint>
 #include <iostream>
 
+#ifdef _WIN32
+using wchar_uint = uint16_t;
+#else
+using wchar_uint = uint32_t;
+#endif
+
 bool test_to_u16()
 {
     std::cout << "Test to_u16" << std::endl;
@@ -28,17 +34,24 @@ bool test_to_u16()
     if (utfstr.length() != expectLength) {
         std::cout << "Length not match, expect " << expectLength << ", got " << utfstr.length()
                   << std::endl;
+
+        std::cout << "expect ";
+        for (auto ch : expectValues) {
+            std::cout << std::hex << ch << ' ';
+        }
+        std::cout << std::endl;
+
+        std::cout << "got    ";
+        for (auto ch : utfstr) {
+            std::cout << std::hex << static_cast<wchar_uint>(ch) << ' ';
+        }
+        std::cout << std::endl;
+
         return false;
     }
 
     for (size_t i = 0; i < expectLength; i++) {
-        if (
-#ifdef _WIN32
-            static_cast<uint32_t>(static_cast<uint16_t>(utfstr[i])) != expectValues[i]
-#else
-            static_cast<uint32_t>(utfstr[i]) != expectValues[i]
-#endif
-        ) {
+        if (static_cast<uint32_t>(static_cast<wchar_uint>(utfstr[i])) != expectValues[i]) {
             std::cout << "Character at " << i << " not match, expect " << std::hex
                       << expectValues[i] << ", got " << std::hex << static_cast<uint32_t>(utfstr[i])
                       << std::endl;
@@ -75,6 +88,19 @@ bool test_from_u16()
     if (u8str.length() != expectLength) {
         std::cout << "Length not match, expect " << expectLength << ", got " << u8str.length()
                   << std::endl;
+
+        std::cout << "expect ";
+        for (auto ch : expectValues) {
+            std::cout << std::hex << ch << ' ';
+        }
+        std::cout << std::endl;
+
+        std::cout << "got    ";
+        for (auto ch : u8str) {
+            std::cout << std::hex << static_cast<unsigned>(static_cast<uint8_t>(ch)) << ' ';
+        }
+        std::cout << std::endl;
+
         return false;
     }
 
