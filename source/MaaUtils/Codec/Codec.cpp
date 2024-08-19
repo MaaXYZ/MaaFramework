@@ -1,6 +1,7 @@
 #include "Utils/Codec.h"
 
 #include <cstdint>
+#include <iostream>
 #include <string>
 
 MAA_NS_BEGIN
@@ -87,16 +88,22 @@ static constexpr inline bool
     wchar_to_char32(std::wstring_view::iterator& cur, std::wstring_view::iterator end, char32_t& ch)
 {
     if constexpr (sizeof(wchar_t) == 2) {
-        auto leading = static_cast<uint32_t>(*cur++);
+        auto leading = static_cast<uint32_t>(static_cast<uint16_t>(*cur++));
         if ((leading & 0b1111'1100'0000'0000) == 0xD800) {
             if (cur == end) {
                 return false;
             }
-            wchar_t next = *cur++;
+            auto next = static_cast<uint32_t>(static_cast<uint16_t>(*cur++));
             if ((next & 0b1111'1100'0000'0000) != 0xDC00) {
                 return false;
             }
-            ch = ((leading & 0b0000'0011'1111'1111) << 10) | (next & 0b0000'0011'1111'1111);
+            ch = static_cast<char32_t>(
+                ((leading & 0b0000'0011'1111'1111) << 10) | (next & 0b0000'0011'1111'1111));
+            if (ch <= 0xFFFF) {
+                std::cerr << "??? leading " << leading << " next " << next << " ch "
+                          << static_cast<uint32_t>(ch) << std::endl;
+                return false;
+            }
         }
         else if ((leading & 0b1111'1100'0000'0000) == 0xDC00) {
             return false;
