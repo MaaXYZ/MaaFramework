@@ -98,12 +98,8 @@ static constexpr inline bool
                 return false;
             }
             ch = static_cast<char32_t>(
-                ((leading & 0b0000'0011'1111'1111) << 10) | (next & 0b0000'0011'1111'1111));
-            if (ch <= 0xFFFF) {
-                std::cerr << "??? leading " << leading << " next " << next << " ch "
-                          << static_cast<uint32_t>(ch) << std::endl;
-                return false;
-            }
+                (((leading & 0b0000'0011'1111'1111) << 10) | (next & 0b0000'0011'1111'1111))
+                + 0x10000);
         }
         else if ((leading & 0b1111'1100'0000'0000) == 0xDC00) {
             return false;
