@@ -16,8 +16,6 @@ option(WITH_WIN32_CONTROLLER "build with win32 controller" ON)
 option(WITH_DBG_CONTROLLER "build with debugging controller" ON)
 option(WITH_THRIFT_CONTROLLER "build with thrift controller" OFF)
 
-option(BUILD_HTTP_CLI "build http CLI exec" ON)
-
 option(BUILD_SAMPLE "build a demo" OFF)
 
 option(BUILD_PIPELINE_TESTING "build pipeline testing" OFF)
