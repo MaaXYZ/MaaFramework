@@ -43,7 +43,6 @@ public:
         const PipelineData& default_value);
 
     static bool parse_next(const json::value& input, const std::string& key, PipelineData::NextList& out, const PipelineData::NextList& default_next);
-    static bool parse_next_object(const json::value& input, PipelineData::NextObject& obj);
     static bool parse_recognition(
         const json::value& input,
         Recognition::Type& out_type,

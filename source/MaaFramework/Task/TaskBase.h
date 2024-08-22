@@ -42,7 +42,7 @@ protected:
     void notify(std::string_view msg, json::value detail = json::value());
 
     RecoResult run_recogintion(const cv::Mat& image, const PipelineData::NextList& list);
-    bool run_action(const RecoResult& reco);
+    NodeDetail run_action(const RecoResult& reco);
     cv::Mat screencap();
     MaaTaskId generate_node_id();
     void add_node_detail(int64_t node_id, NodeDetail detail);
@@ -50,8 +50,8 @@ protected:
 private:
     bool debug_mode() const;
     json::object basic_info();
-    static json::object reco_result_to_json(const std::string& name, const RecoResult& res);
-    static json::object node_detail_to_json(MaaNodeId node_id, const NodeDetail& detail);
+    static json::object reco_detail_to_json(const RecoResult& res);
+    static json::object node_detail_to_json(const NodeDetail& detail);
 
 protected:
     Tasker* tasker_ = nullptr;
@@ -60,9 +60,9 @@ protected:
     const MaaTaskId task_id_ = ++s_global_task_id;
 
     const std::string entry_;
-    std::string pre_hit_task_;
+    std::string cur_task_;
 
-    std::map<std::string, uint64_t> hit_times_map_;
+    std::map<std::string, uint64_t> times_map_;
 
 private:
     inline static std::atomic<MaaTaskId> s_global_task_id = 0;

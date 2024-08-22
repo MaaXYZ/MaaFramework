@@ -24,7 +24,7 @@ bool RecognitionTask::run_with_param(const cv::Mat& image)
 {
     LogFunc << VAR(entry_);
 
-    PipelineData::NextList next_list = { PipelineData::NextObject { .name = entry_ } };
+    PipelineData::NextList next_list = { entry_ };
 
     auto reco = run_recogintion(image, next_list);
     if (!reco.box) {
@@ -32,10 +32,12 @@ bool RecognitionTask::run_with_param(const cv::Mat& image)
         return false;
     }
 
-    MaaNodeId node_id = generate_node_id();
-    NodeDetail node_detail { .name = reco.name, .reco_uid = reco.uid, .action_completed = false };
-
-    add_node_detail(node_id, node_detail);
+    NodeDetail result {
+        .node_id = generate_node_id(),
+        .name = reco.name,
+        .reco_id = reco.reco_id,
+    };
+    add_node_detail(result.node_id, result);
 
     return true;
 }

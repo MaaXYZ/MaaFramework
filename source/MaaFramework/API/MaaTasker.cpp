@@ -1,5 +1,7 @@
 #include "MaaFramework/Instance/MaaTasker.h"
 
+#include "Buffer/ImageBuffer.hpp"
+#include "Buffer/StringBuffer.hpp"
 #include "Tasker/Tasker.h"
 #include "Utils/Logger.h"
 
@@ -205,4 +207,135 @@ MaaController* MaaTaskerGetController(MaaTasker* tasker)
         return nullptr;
     }
     return tasker->controller();
+}
+
+MaaBool MaaTaskerClearCache(MaaTasker* tasker)
+{
+    LogFunc << VAR_VOIDP(tasker);
+
+    if (!tasker) {
+        LogError << "handle is null";
+        return false;
+    }
+    
+    tasker->clear_cache();
+    return true;
+}
+
+MaaBool MaaTaskerGetRecognitionDetail(
+    MaaTasker* tasker,
+    MaaRecoId reco_id,
+    MaaStringBuffer* name,
+    MaaBool* hit,
+    MaaRect* box,
+    MaaStringBuffer* detail_json,
+    MaaImageBuffer* raw,
+    MaaImageListBuffer* draws)
+{
+    if (!tasker) {
+        LogError << "handle is null";
+        return false;
+    }
+
+    auto result_opt = tasker->get_reco_result(reco_id);
+    if (!result_opt) {
+        LogError << "failed to get_reco_result" << VAR(reco_id);
+        return false;
+    }
+
+    auto& result = *result_opt;
+
+    if (name) {
+        name->set(result.name);
+    }
+    if (hit) {
+        *hit = result.box.has_value();
+    }
+    if (box && result.box) {
+        box->x = result.box->x;
+        box->y = result.box->y;
+        box->width = result.box->width;
+        box->height = result.box->height;
+    }
+    if (detail_json) {
+        detail_json->set(result.detail.to_string());
+    }
+    if (raw) {
+        raw->set(result.raw);
+    }
+    if (draws) {
+        for (auto& d : result.draws) {
+            draws->append(MAA_NS::ImageBuffer(d));
+        }
+    }
+
+    return true;
+}
+
+MaaBool MaaTaskerGetNodeDetail(MaaTasker* tasker, MaaNodeId node_id, MaaStringBuffer* name, MaaRecoId* reco_id, MaaBool* completed)
+{
+    if (!tasker) {
+        LogError << "handle is null";
+        return false;
+    }
+
+    auto result_opt = tasker->get_node_detail(node_id);
+    if (!result_opt) {
+        LogError << "failed to get_node_detail" << VAR(node_id);
+        return false;
+    }
+
+    auto& result = *result_opt;
+
+    if (name) {
+        name->set(result.name);
+    }
+    if (reco_id) {
+        *reco_id = result.reco_id;
+    }
+    if (completed) {
+        *completed = result.completed;
+    }
+
+    return true;
+}
+
+MaaBool MaaTaskerGetTaskDetail(
+    MaaTasker* tasker,
+    MaaTaskId task_id,
+    MaaStringBuffer* entry,
+    MaaNodeId* node_id_list,
+    MaaSize* node_id_list_size)
+{
+    if (!tasker) {
+        LogError << "handle is null";
+        return false;
+    }
+
+    auto result_opt = tasker->get_task_detail(task_id);
+    if (!result_opt) {
+        LogError << "failed to get_task_detail" << VAR(task_id);
+        return false;
+    }
+
+    auto& result = *result_opt;
+
+    if (entry) {
+        entry->set(result.entry);
+    }
+
+    if (node_id_list_size && *node_id_list_size == 0) {
+        *node_id_list_size = result.node_ids.size();
+    }
+    else if (node_id_list && node_id_list_size) {
+        size_t size = std::min(result.node_ids.size(), static_cast<size_t>(*node_id_list_size));
+        memcpy(node_id_list, result.node_ids.data(), size * sizeof(MaaNodeId));
+        *node_id_list_size = size;
+    }
+    else {
+        LogError << "failed to get task detail" << VAR(task_id) << VAR(node_id_list) << VAR(node_id_list_size);
+        return false;
+    }
+
+    return true;
 }

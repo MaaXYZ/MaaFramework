@@ -22,31 +22,33 @@ bool PipelineTask::run()
     LogFunc << VAR(entry_);
 
     std::stack<PipelineData::NextList> goto_stack;
-    PipelineData::NextList next_list = { entry_ };
+    PipelineData::NextList next = { entry_ };
+    PipelineData::NextList catch_next;
 
-    while (!next_list.empty() && !need_to_stop_) {
-        auto node_result = run_reco_and_action(next_list);
+    while (!next.empty() && !need_to_stop_) {
+        auto [node_result, is_breakpoint] = run_reco_and_action(next, catch_next);
 
-        if (!node_result.action_completed) {
-            LogError << "Run task failed:" << next_list;
+        if (!node_result.completed) {
+            LogError << "Run task failed:" << next;
             return false;
         }
 
         PipelineData hit_task = context_.get_pipeline_data(node_result.name);
-        if (hit_task.is_sub) { // for compatibility with v1.x
-            const auto& ref = goto_stack.emplace(next_list);
-            LogDebug << "push then_goto is_sub:" << hit_task.name << ref;
+        if (is_breakpoint || hit_task.is_sub) { // for compatibility with v1.x
+            const auto& ref = goto_stack.emplace(next);
+            LogDebug << "push then_goto:" << hit_task.name << ref;
         }
 
-        next_list = hit_task.next;
+        next = hit_task.next;
+        catch_next = hit_task.catch_next;
 
-        if (next_list.empty() && !goto_stack.empty()) {
-            next_list = std::move(goto_stack.top());
+        if (next.empty() && !goto_stack.empty()) {
+            next = std::move(goto_stack.top());
             goto_stack.pop();
-            LogDebug << "pop then_goto:" << next_list;
+            LogDebug << "pop then_goto:" << next;
         }
 
-        pre_hit_task_ = hit_task.name;
+        cur_task_ = hit_task.name;
     }
     return true;
 }
@@ -56,7 +58,8 @@ void PipelineTask::post_stop()
     need_to_stop_ = true;
 }
 
-NodeDetail PipelineTask::run_reco_and_action(const PipelineData::NextList& list)
+std::pair<NodeDetail, /* is breakpoint */ bool>
+    PipelineTask::run_reco_and_action(const PipelineData::NextList& next, const PipelineData::NextList& catch_next)
 {
     if (!tasker_) {
         LogError << "tasker is null";
@@ -65,22 +68,30 @@ NodeDetail PipelineTask::run_reco_and_action(const PipelineData::NextList& list)
     const auto timeout = GlobalOptionMgr::get_instance().pipeline_timeout();
 
     RecoResult reco;
+    bool is_breakpoint = false;
 
     auto start_time = std::chrono::steady_clock::now();
     while (true) {
-        reco = run_recogintion(screencap(), list);
-        if (reco.box) {
-            // hit
+        cv::Mat image = screencap();
+        reco = run_recogintion(image, next);
+        if (reco.box) { // hit
+            is_breakpoint = false;
+            break;
+        }
+
+        reco = run_recogintion(image, catch_next);
+        if (reco.box) { // hit
+            is_breakpoint = true;
             break;
         }
 
         if (need_to_stop_) {
-            LogError << "Task interrupted" << VAR(pre_hit_task_);
+            LogError << "Task interrupted" << VAR(cur_task_);
             return {};
         }
 
         if (std::chrono::steady_clock::now() - start_time > timeout) {
-            LogError << "Task timeout" << VAR(pre_hit_task_) << VAR(timeout);
+            LogError << "Task timeout" << VAR(cur_task_) << VAR(timeout);
             return {};
         }
     }
@@ -89,17 +100,9 @@ NodeDetail PipelineTask::run_reco_and_action(const PipelineData::NextList& list)
         return {};
     }
 
-    LogInfo << "Task hit" << VAR(reco.name) << VAR(reco.box);
+    auto node_detail = run_action(reco);
 
-    tasker_->runtime_cache().set_pre_box(reco.name, *reco.box);
-
-    bool run_ret = run_action(reco);
-    if (!run_ret) {
-        LogError << "Run action failed" << VAR(reco.name);
-        return {};
-    }
-
-    return { reco.name, reco.uid, false };
+    return std::make_pair(node_detail, is_breakpoint);
 }
 
 MAA_TASK_NS_END

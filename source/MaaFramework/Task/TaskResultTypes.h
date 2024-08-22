@@ -11,6 +11,7 @@ MAA_TASK_NS_BEGIN
 
 struct RecoResult
 {
+    MaaRecoId reco_id = 0;
     std::string name;
     std::optional<cv::Rect> box = std::nullopt;
     json::value detail;
@@ -20,13 +21,16 @@ struct RecoResult
 
 struct NodeDetail
 {
+    MaaNodeId node_id = 0;
     std::string name;
-    MaaRecoId reco_uid = 0;
-    bool action_completed = false;
+    MaaRecoId reco_id = 0;
+    uint64_t times = 0;
+    bool completed = false;
 };
 
 struct TaskDetail
 {
+    MaaTaskId task_id = 0;
     std::string entry;
     std::vector<MaaNodeId> node_ids;
 };

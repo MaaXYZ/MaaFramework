@@ -17,7 +17,8 @@ public:
     virtual void post_stop() override;
 
 private:
-    NodeDetail run_reco_and_action(const PipelineData::NextList& list);
+    std::pair<NodeDetail, /* is breakpoint */ bool>
+        run_reco_and_action(const PipelineData::NextList& next, const PipelineData::NextList& catch_next);
 
 private:
     bool need_to_stop_ = false;

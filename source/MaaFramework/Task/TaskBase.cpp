@@ -16,6 +16,7 @@ TaskBase::TaskBase(std::string entry, Tasker* tasker, PipelineDataMap pp_overrid
     , entry_(std::move(entry))
     , context_(task_id_, tasker_, std::move(pp_override))
 {
+    cur_task_ = entry_;
 }
 
 bool TaskBase::override_pipeline(const json::value& pipeline_override)
@@ -57,8 +58,15 @@ void TaskBase::notify(std::string_view msg, json::value detail)
 
 RecoResult TaskBase::run_recogintion(const cv::Mat& image, const PipelineData::NextList& list)
 {
-    LogFunc << VAR(pre_hit_task_) << VAR(list);
+    LogFunc << VAR(cur_task_) << VAR(list);
 
+    if (!tasker_) {
+        return {};
+    }
+
+    if (list.empty()) {
+        return {};
+    }
     if (image.empty()) {
         LogError << "Image is empty";
         return {};
@@ -71,21 +79,20 @@ RecoResult TaskBase::run_recogintion(const cv::Mat& image, const PipelineData::N
 
     Recognizer recognizer(tasker_, context_, image);
 
-    for (const auto& next_obj : list) {
-        const std::string& name = next_obj.name;
-        uint64_t& hit_times = hit_times_map_[name];
-
+    for (const auto& name : list) {
         const auto& pipeline_data = context_.get_pipeline_data(name);
-        if (!pipeline_data.enabled || pipeline_data.hit_limit <= hit_times) {
-            LogDebug << "Task disabled or box over limit" << name << VAR(pipeline_data.enabled) << VAR(hit_times)
-                     << VAR(pipeline_data.hit_limit);
+
+        uint64_t times = times_map_[name];
+        if (!pipeline_data.enabled || pipeline_data.available_times <= times) {
+            LogDebug << "Task disabled or times over limit" << name << VAR(pipeline_data.enabled) << VAR(times)
+                     << VAR(pipeline_data.available_times);
             continue;
         }
 
         RecoResult result = recognizer.recognize(pipeline_data);
 
         if (debug_mode()) {
-            json::value cb_detail = basic_info() | reco_result_to_json(name, result);
+            json::value cb_detail = basic_info() | reco_detail_to_json(result);
             notify(MaaMsg_Task_Debug_RecognitionResult, cb_detail);
         }
 
@@ -93,12 +100,16 @@ RecoResult TaskBase::run_recogintion(const cv::Mat& image, const PipelineData::N
             continue;
         }
 
-        ++hit_times;
+        LogInfo << "Task hit" << VAR(result.name) << VAR(result.box);
+
+        tasker_->runtime_cache().set_pre_box(result.name, *result.box);
 
         if (debug_mode()) {
-            json::value cb_detail = basic_info() | reco_result_to_json(name, result);
+            json::value cb_detail = basic_info() | reco_detail_to_json(result);
             notify(MaaMsg_Task_Debug_Hit, cb_detail);
         }
+
+        return result;
     }
 
     if (debug_mode()) {
@@ -109,45 +120,47 @@ RecoResult TaskBase::run_recogintion(const cv::Mat& image, const PipelineData::N
     return {};
 }
 
-bool TaskBase::run_action(const RecoResult& reco)
+NodeDetail TaskBase::run_action(const RecoResult& reco)
 {
     if (!reco.box) {
         LogError << "reco box is nullopt, can NOT run";
-        return false;
+        return {};
     }
+
+    uint64_t& times = times_map_[reco.name];
+    ++times;
+
+    NodeDetail result {
+        .node_id = generate_node_id(),
+        .name = reco.name,
+        .reco_id = reco.reco_id,
+        .times = times,
+    };
 
     const auto& pipeline_data = context_.get_pipeline_data(reco.name);
 
-    MaaNodeId node_id = generate_node_id();
-    NodeDetail node_detail { .name = reco.name, .reco_uid = reco.uid };
-
-    if (debug_mode() || pipeline_data.focus) {
-        json::value cb_detail = basic_info() | node_detail_to_json(node_id, node_detail);
-        if (debug_mode()) {
-            notify(MaaMsg_Task_Debug_ReadyToRun, cb_detail);
-        }
-        if (pipeline_data.focus) {
-            notify(MaaMsg_Task_Focus_ReadyToRun, cb_detail);
-        }
+    json::value cb_detail = basic_info() | node_detail_to_json(result);
+    if (debug_mode()) {
+        notify(MaaMsg_Task_Debug_ReadyToRun, cb_detail);
+    }
+    if (pipeline_data.focus) {
+        notify(MaaMsg_Task_Focus_ReadyToRun, cb_detail);
     }
 
     Actuator actuator(tasker_, context_);
-    bool ret = actuator.run(*reco.box, reco.detail, pipeline_data);
+    result.completed = actuator.run(*reco.box, reco.detail, pipeline_data);
 
-    node_detail.action_completed = ret;
-    add_node_detail(node_id, node_detail);
+    add_node_detail(result.node_id, result);
 
-    if (debug_mode() || pipeline_data.focus) {
-        json::value cb_detail = basic_info() | node_detail_to_json(node_id, node_detail);
-        if (debug_mode()) {
-            notify(MaaMsg_Task_Debug_Completed, cb_detail);
-        }
-        if (pipeline_data.focus) {
-            notify(MaaMsg_Task_Focus_Completed, cb_detail);
-        }
+    cb_detail = basic_info() | node_detail_to_json(result);
+    if (debug_mode()) {
+        notify(MaaMsg_Task_Debug_ReadyToRun, cb_detail);
+    }
+    if (pipeline_data.focus) {
+        notify(MaaMsg_Task_Focus_ReadyToRun, cb_detail);
     }
 
-    return ret;
+    return result;
 }
 
 cv::Mat TaskBase::screencap()
@@ -191,30 +204,31 @@ json::object TaskBase::basic_info()
         { "entry", entry_ },
         { "hash", resource() ? resource()->get_hash() : std::string() },
         { "uuid", controller() ? controller()->get_uuid() : std::string() },
-        { "pre_hit_task", pre_hit_task_ },
+        { "current", cur_task_ },
     };
 }
 
-json::object TaskBase::reco_result_to_json(const std::string& name, const RecoResult& res)
+json::object TaskBase::reco_detail_to_json(const RecoResult& res)
 {
-    return {
-        { "name", name },
-        { "recognition",
-          {
-              { "id", res.uid },
-              { "box", res.box ? json::value(*res.box) : json::value(nullptr) },
-              { "detail", res.detail },
-          } },
-    };
+    return { { "recognition",
+               {
+                   { "reco_id", res.reco_id },
+                   { "name", res.name },
+                   { "box", res.box ? json::value(*res.box) : json::value(nullptr) },
+                   { "detail", res.detail },
+               } } };
 }
 
-json::object TaskBase::node_detail_to_json(MaaNodeId node_id, const NodeDetail& detail)
+json::object TaskBase::node_detail_to_json(const NodeDetail& detail)
 {
-    return {
-        { "node_id", node_id },
-        { "reco_id", detail.reco_uid },
-        { "action_completed", detail.action_completed },
-    };
+    return { { "node",
+               {
+                   { "node_id", detail.node_id },
+                   { "name", detail.name },
+                   { "reco_id", detail.reco_id },
+                   { "times", detail.times },
+                   { "completed", detail.completed },
+               } } };
 }
 
 MAA_TASK_NS_END

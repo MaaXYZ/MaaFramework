@@ -716,7 +716,7 @@ bool ControllerAgent::run_action(typename AsyncRunner<Action>::Id id, Action act
     }
 
     if (notify) {
-        notifier.notify(ret ? MaaMsg_Controller_Action_Completed : MaaMsg_Controller_Action_Failed, details);
+        notifier.notify(ret ? MaaMsg_Controller_completed : MaaMsg_Controller_Action_Failed, details);
     }
 
     return ret;

@@ -44,6 +44,11 @@ public:
     virtual MAA_RES_NS::ResourceMgr* resource() override;
     virtual MAA_CTRL_NS::ControllerAgent* controller() override;
 
+    virtual void clear_cache() override;
+    virtual std::optional<MAA_TASK_NS::TaskDetail> get_task_detail(MaaTaskId task_id) const override;
+    virtual std::optional<MAA_TASK_NS::NodeDetail> get_node_detail(MaaNodeId node_id) const override;
+    virtual std::optional<MAA_TASK_NS::RecoResult> get_reco_result(MaaRecoId reco_id) const override;
+
 public:
     RuntimeCache& runtime_cache();
     const RuntimeCache& runtime_cache() const;

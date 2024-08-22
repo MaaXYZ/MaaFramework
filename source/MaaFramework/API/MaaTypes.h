@@ -92,10 +92,10 @@ public:
     virtual MaaResource* resource() = 0;
     virtual MaaController* controller() = 0;
 
-    virtual bool clear_cache() = 0;
-    virtual std::optional<MAA_TASK_NS::TaskDetail> get_task_detail(MaaTaskId task_id) = 0;
-    virtual std::optional<MAA_TASK_NS::NodeDetail> get_node_detail(MaaNodeId node_id) = 0;
-    virtual std::optional<MAA_TASK_NS::RecoResult> get_reco_result(MaaRecoId reco_id) = 0;
+    virtual void clear_cache() = 0;
+    virtual std::optional<MAA_TASK_NS::TaskDetail> get_task_detail(MaaTaskId task_id) const = 0;
+    virtual std::optional<MAA_TASK_NS::NodeDetail> get_node_detail(MaaNodeId node_id) const = 0;
+    virtual std::optional<MAA_TASK_NS::RecoResult> get_reco_result(MaaRecoId reco_id) const = 0;
 };
 
 struct MaaContext

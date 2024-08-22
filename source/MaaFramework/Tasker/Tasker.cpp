@@ -181,6 +181,28 @@ MAA_CTRL_NS::ControllerAgent* Tasker::controller()
     return controller_;
 }
 
+void Tasker::clear_cache()
+{
+    LogTrace;
+
+    runtime_cache().clear();
+}
+
+std::optional<MAA_TASK_NS::TaskDetail> Tasker::get_task_detail(MaaTaskId task_id) const
+{
+    return runtime_cache().get_task_detail(task_id);
+}
+
+std::optional<MAA_TASK_NS::NodeDetail> Tasker::get_node_detail(MaaNodeId node_id) const
+{
+    return runtime_cache().get_node_detail(node_id);
+}
+
+std::optional<MAA_TASK_NS::RecoResult> Tasker::get_reco_result(MaaRecoId reco_id) const
+{
+    return runtime_cache().get_reco_result(reco_id);
+}
+
 RuntimeCache& Tasker::runtime_cache()
 {
     return runtime_cache_;

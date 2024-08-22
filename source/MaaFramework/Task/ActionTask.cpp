@@ -31,7 +31,7 @@ bool ActionTask::run_with_param(const cv::Rect& box, const json::value& reco_det
         .box = box,
         .detail = reco_detail,
     };
-    return run_action(fake_reco);
+    return run_action(fake_reco).completed;
 }
 
 MAA_TASK_NS_END

@@ -185,7 +185,7 @@ extern "C"
      */
     MAA_FRAMEWORK_API MaaController* MaaTaskerGetController(MaaTasker* tasker);
 
-    MAA_FRAMEWORK_API MaaBool MaaTaskerClearCache();
+    MAA_FRAMEWORK_API MaaBool MaaTaskerClearCache(MaaTasker* tasker);
 
     /**
      * @param[out] hit
@@ -194,8 +194,8 @@ extern "C"
         MaaTasker* tasker,
         MaaRecoId reco_id,
         /* out */ MaaStringBuffer* name,
-        /* out */ MaaBool* box,
-        /* out */ MaaRect* hit_box,
+        /* out */ MaaBool* hit,
+        /* out */ MaaRect* box,
         /* out */ MaaStringBuffer* detail_json,
         /* out */ MaaImageBuffer* raw,
         /* out */ MaaImageListBuffer* draws);
@@ -209,7 +209,7 @@ extern "C"
         MaaNodeId node_id,
         /* out */ MaaStringBuffer* name,
         /* out */ MaaRecoId* reco_id,
-        /* out */ MaaBool* action_completed);
+        /* out */ MaaBool* completed);
 
     /**
      * @param[out] node_id_list

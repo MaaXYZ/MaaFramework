@@ -71,31 +71,22 @@ RecoResult Recognizer::recognize(const PipelineData& pipeline_data)
         return {};
     }
 
-    result.name = pipeline_data.name;
-
     if (debug_mode()) {
         // 图太大了，不能无条件存
         result.raw = image_;
     }
+    if (pipeline_data.inverse) {
+        LogDebug << "pipeline_data.inverse is true, reverse the result" << VAR(pipeline_data.name) << VAR(result.box);
+        result.box = result.box ? std::nullopt : std::make_optional<cv::Rect>();
+    }
+
+    tasker_->runtime_cache().add_reco_detail(result.reco_id, result);
 
     save_draws(pipeline_data.name, result);
 
-    tasker_->runtime_cache().add_reco_detail(result.uid, result);
-
     if (result.box) {
         const auto& box = *result.box;
-        show_hit_draw(box, pipeline_data.name, result.uid);
-    }
-
-    if (pipeline_data.inverse) {
-        LogDebug << "pipeline_data.inverse is true, reverse the result" << VAR(pipeline_data.name) << VAR(result.box.has_value());
-
-        if (result.box) {
-            result.box = std::nullopt;
-        }
-        else {
-            result.box = cv::Rect {};
-        }
+        show_hit_draw(box, pipeline_data.name, result.reco_id);
     }
 
     return result;
@@ -116,7 +107,7 @@ json::value gen_detail(const std::vector<Res>& all, const std::vector<Res>& filt
 RecoResult Recognizer::direct_hit(const std::string& name)
 {
     LogTrace << name;
-    return RecoResult { .box = cv::Rect {} };
+    return RecoResult { .name = name, .box = cv::Rect {} };
 }
 
 RecoResult Recognizer::template_match(const MAA_VISION_NS::TemplateMatcherParam& param, const std::string& name)
@@ -145,7 +136,8 @@ RecoResult Recognizer::template_match(const MAA_VISION_NS::TemplateMatcherParam&
         box = analyzer.best_result()->box;
     }
 
-    return RecoResult { .uid = analyzer.uid(),
+    return RecoResult { .reco_id = analyzer.uid(),
+                        .name = name,
                         .box = std::move(box),
                         .detail = gen_detail(analyzer.all_results(), analyzer.filtered_results(), analyzer.best_result()),
                         .draws = std::move(analyzer).draws() };
@@ -177,7 +169,8 @@ RecoResult Recognizer::feature_match(const MAA_VISION_NS::FeatureMatcherParam& p
         box = analyzer.best_result()->box;
     }
 
-    return RecoResult { .uid = analyzer.uid(),
+    return RecoResult { .reco_id = analyzer.uid(),
+                        .name = name,
                         .box = std::move(box),
                         .detail = gen_detail(analyzer.all_results(), analyzer.filtered_results(), analyzer.best_result()),
                         .draws = std::move(analyzer).draws() };
@@ -199,7 +192,8 @@ RecoResult Recognizer::color_match(const MAA_VISION_NS::ColorMatcherParam& param
         box = analyzer.best_result()->box;
     }
 
-    return RecoResult { .uid = analyzer.uid(),
+    return RecoResult { .reco_id = analyzer.uid(),
+                        .name = name,
                         .box = std::move(box),
                         .detail = gen_detail(analyzer.all_results(), analyzer.filtered_results(), analyzer.best_result()),
                         .draws = std::move(analyzer).draws() };
@@ -225,7 +219,8 @@ RecoResult Recognizer::ocr(const MAA_VISION_NS::OCRerParam& param, const std::st
         box = analyzer.best_result()->box;
     }
 
-    return RecoResult { .uid = analyzer.uid(),
+    return RecoResult { .reco_id = analyzer.uid(),
+                        .name = name,
                         .box = std::move(box),
                         .detail = gen_detail(analyzer.all_results(), analyzer.filtered_results(), analyzer.best_result()),
                         .draws = std::move(analyzer).draws() };
@@ -249,7 +244,8 @@ RecoResult Recognizer::nn_classify(const MAA_VISION_NS::NeuralNetworkClassifierP
         box = analyzer.best_result()->box;
     }
 
-    return RecoResult { .uid = analyzer.uid(),
+    return RecoResult { .reco_id = analyzer.uid(),
+                        .name = name,
                         .box = std::move(box),
                         .detail = gen_detail(analyzer.all_results(), analyzer.filtered_results(), analyzer.best_result()),
                         .draws = std::move(analyzer).draws() };
@@ -273,7 +269,8 @@ RecoResult Recognizer::nn_detect(const MAA_VISION_NS::NeuralNetworkDetectorParam
         box = analyzer.best_result()->box;
     }
 
-    return RecoResult { .uid = analyzer.uid(),
+    return RecoResult { .reco_id = analyzer.uid(),
+                        .name = name,
                         .box = std::move(box),
                         .detail = gen_detail(analyzer.all_results(), analyzer.filtered_results(), analyzer.best_result()),
                         .draws = std::move(analyzer).draws() };
@@ -300,7 +297,8 @@ RecoResult Recognizer::custom_recognize(const MAA_VISION_NS::CustomRecognizerPar
         box = analyzer.best_result()->box;
     }
 
-    return RecoResult { .uid = analyzer.uid(),
+    return RecoResult { .reco_id = analyzer.uid(),
+                        .name = name,
                         .box = std::move(box),
                         .detail = gen_detail(analyzer.all_results(), analyzer.filtered_results(), analyzer.best_result()),
                         .draws = std::move(analyzer).draws() };
@@ -317,7 +315,7 @@ void Recognizer::save_draws(const std::string& task_name, const RecoResult& resu
     auto dir = option.log_dir() / "vision";
 
     for (const auto& draw : result.draws) {
-        std::string filename = std::format("{}_{}_{}.png", task_name, result.uid, format_now_for_filename());
+        std::string filename = std::format("{}_{}_{}.png", task_name, result.reco_id, format_now_for_filename());
         auto filepath = dir / path(filename);
         imwrite(filepath, draw);
         LogDebug << "save draw to" << filepath;
