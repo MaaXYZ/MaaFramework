@@ -202,6 +202,7 @@ extern "C"
 
     /**
      * @param[out] reco_id
+     * @param[out] times
      * @param[out] completed
      */
     MAA_FRAMEWORK_API MaaBool MaaTaskerGetNodeDetail(
@@ -209,6 +210,7 @@ extern "C"
         MaaNodeId node_id,
         /* out */ MaaStringBuffer* name,
         /* out */ MaaRecoId* reco_id,
+        /* out */ MaaSize* times,
         /* out */ MaaBool* completed);
 
     /**

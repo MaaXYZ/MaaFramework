@@ -217,7 +217,7 @@ MaaBool MaaTaskerClearCache(MaaTasker* tasker)
         LogError << "handle is null";
         return false;
     }
-    
+
     tasker->clear_cache();
     return true;
 }
@@ -272,7 +272,13 @@ MaaBool MaaTaskerGetRecognitionDetail(
     return true;
 }
 
-MaaBool MaaTaskerGetNodeDetail(MaaTasker* tasker, MaaNodeId node_id, MaaStringBuffer* name, MaaRecoId* reco_id, MaaBool* completed)
+MaaBool MaaTaskerGetNodeDetail(
+    MaaTasker* tasker,
+    MaaNodeId node_id,
+    MaaStringBuffer* name,
+    MaaRecoId* reco_id,
+    MaaSize* times,
+    MaaBool* completed)
 {
     if (!tasker) {
         LogError << "handle is null";
@@ -292,6 +298,9 @@ MaaBool MaaTaskerGetNodeDetail(MaaTasker* tasker, MaaNodeId node_id, MaaStringBu
     }
     if (reco_id) {
         *reco_id = result.reco_id;
+    }
+    if (times) {
+        *times = result.times;
     }
     if (completed) {
         *completed = result.completed;
