@@ -222,6 +222,12 @@ MaaBool MaaTaskerClearCache(MaaTasker* tasker)
     return true;
 }
 
+#define CheckNullAndWarn(var)                        \
+    if (!var) {                                      \
+        LogWarn << #var << "is null, no assignment"; \
+    }                                                \
+    else
+
 MaaBool MaaTaskerGetRecognitionDetail(
     MaaTasker* tasker,
     MaaRecoId reco_id,
@@ -245,25 +251,31 @@ MaaBool MaaTaskerGetRecognitionDetail(
 
     auto& result = *result_opt;
 
-    if (name) {
+    CheckNullAndWarn(name)
+    {
         name->set(result.name);
     }
-    if (hit) {
+    CheckNullAndWarn(hit)
+    {
         *hit = result.box.has_value();
     }
-    if (box && result.box) {
+    CheckNullAndWarn(box) if (result.box)
+    {
         box->x = result.box->x;
         box->y = result.box->y;
         box->width = result.box->width;
         box->height = result.box->height;
     }
-    if (detail_json) {
+    CheckNullAndWarn(detail_json)
+    {
         detail_json->set(result.detail.to_string());
     }
-    if (raw) {
+    CheckNullAndWarn(raw)
+    {
         raw->set(result.raw);
     }
-    if (draws) {
+    CheckNullAndWarn(draws)
+    {
         for (auto& d : result.draws) {
             draws->append(MAA_NS::ImageBuffer(d));
         }
@@ -286,23 +298,28 @@ MaaBool MaaTaskerGetNodeDetail(
     }
 
     auto result_opt = tasker->get_node_detail(node_id);
-    if (!result_opt) {
+    CheckNullAndWarn(!result_opt)
+    {
         LogError << "failed to get_node_detail" << VAR(node_id);
         return false;
     }
 
     auto& result = *result_opt;
 
-    if (name) {
+    CheckNullAndWarn(name)
+    {
         name->set(result.name);
     }
-    if (reco_id) {
+    CheckNullAndWarn(reco_id)
+    {
         *reco_id = result.reco_id;
     }
-    if (times) {
+    CheckNullAndWarn(times)
+    {
         *times = result.times;
     }
-    if (completed) {
+    CheckNullAndWarn(completed)
+    {
         *completed = result.completed;
     }
 
@@ -329,7 +346,8 @@ MaaBool MaaTaskerGetTaskDetail(
 
     auto& result = *result_opt;
 
-    if (entry) {
+    CheckNullAndWarn(entry)
+    {
         entry->set(result.entry);
     }
 
@@ -344,6 +362,27 @@ MaaBool MaaTaskerGetTaskDetail(
     else {
         LogError << "failed to get task detail" << VAR(task_id) << VAR(node_id_list) << VAR(node_id_list_size);
         return false;
+    }
+
+    return true;
+}
+
+MaaBool MaaTaskerGetLatestNode(MaaTasker* tasker, const char* task_name, MaaNodeId* latest_id)
+{
+    if (!tasker) {
+        LogError << "handle is null";
+        return false;
+    }
+
+    auto result_opt = tasker->get_latest_node(task_name);
+    if (!result_opt) {
+        LogError << "failed to get_latest_node" << VAR(task_name);
+        return false;
+    }
+
+    CheckNullAndWarn(latest_id)
+    {
+        *latest_id = *result_opt;
     }
 
     return true;

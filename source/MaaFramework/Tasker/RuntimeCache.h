@@ -12,8 +12,8 @@ MAA_NS_BEGIN
 class RuntimeCache
 {
 public:
-    cv::Rect get_pre_box(const std::string& task_name) const;
-    void set_pre_box(std::string task_name, cv::Rect box);
+    std::optional<MaaNodeId> get_latest_node(const std::string& name) const;
+    void set_latest_node(const std::string& name, MaaNodeId id);
 
     std::optional<MAA_TASK_NS::RecoResult> get_reco_result(MaaRecoId uid) const;
     void add_reco_detail(MaaRecoId uid, MAA_TASK_NS::RecoResult);
@@ -27,7 +27,7 @@ public:
     void clear();
 
 private:
-    std::map<std::string, cv::Rect> pre_boxes_;
+    std::map<std::string, MaaNodeId> latest_nodes_;
     std::map<MaaRecoId, MAA_TASK_NS::RecoResult> reco_details_;
     std::map<MaaNodeId, MAA_TASK_NS::NodeDetail> node_details_;
     std::map<MaaTaskId, MAA_TASK_NS::TaskDetail> task_details_;

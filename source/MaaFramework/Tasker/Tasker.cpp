@@ -203,6 +203,11 @@ std::optional<MAA_TASK_NS::RecoResult> Tasker::get_reco_result(MaaRecoId reco_id
     return runtime_cache().get_reco_result(reco_id);
 }
 
+std::optional<MaaNodeId> Tasker::get_latest_node(const std::string& task_name) const
+{
+    return runtime_cache().get_latest_node(task_name);
+}
+
 RuntimeCache& Tasker::runtime_cache()
 {
     return runtime_cache_;

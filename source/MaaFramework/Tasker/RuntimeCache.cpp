@@ -2,18 +2,18 @@
 
 MAA_NS_BEGIN
 
-cv::Rect RuntimeCache::get_pre_box(const std::string& task_name) const
+std::optional<MaaNodeId> RuntimeCache::get_latest_node(const std::string& name) const
 {
-    auto it = pre_boxes_.find(task_name);
-    if (it == pre_boxes_.end()) {
-        return {};
+    auto it = latest_nodes_.find(name);
+    if (it == latest_nodes_.end()) {
+        return std::nullopt;
     }
     return it->second;
 }
 
-void RuntimeCache::set_pre_box(std::string task_name, cv::Rect box)
+void RuntimeCache::set_latest_node(const std::string& name, MaaNodeId id)
 {
-    pre_boxes_.insert_or_assign(std::move(task_name), std::move(box));
+    latest_nodes_.insert_or_assign(name, id);
 }
 
 std::optional<MAA_TASK_NS::RecoResult> RuntimeCache::get_reco_result(MaaRecoId uid) const
@@ -60,7 +60,7 @@ void RuntimeCache::add_task_detail(MaaTaskId uid, MAA_TASK_NS::TaskDetail detail
 
 void RuntimeCache::clear()
 {
-    pre_boxes_.clear();
+    latest_nodes_.clear();
     reco_details_.clear();
     node_details_.clear();
     task_details_.clear();

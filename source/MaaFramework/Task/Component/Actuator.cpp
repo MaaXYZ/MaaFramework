@@ -189,10 +189,7 @@ bool Actuator::stop_app(const MAA_RES_NS::Action::AppParam& param)
     return controller()->stop_app(param.package);
 }
 
-bool Actuator::custom_action(
-    const MAA_RES_NS::Action::CustomParam& param,
-    const cv::Rect& box,
-    const json::value& reco_detail)
+bool Actuator::custom_action(const MAA_RES_NS::Action::CustomParam& param, const cv::Rect& box, const json::value& reco_detail)
 {
     if (!tasker_) {
         LogError << "tasker_ is null";
@@ -221,7 +218,13 @@ cv::Rect Actuator::get_target_rect(const MAA_RES_NS::Action::Target target, cons
         raw = box;
         break;
     case Target::Type::PreTask: {
-        raw = tasker_->runtime_cache().get_pre_box(std::get<std::string>(target.param));
+        auto& cache = tasker_->runtime_cache();
+        std::string name = std::get<std::string>(target.param);
+        MaaNodeId node_id = cache.get_latest_node(name).value_or(MaaInvalidId);
+        NodeDetail node_detail = cache.get_node_detail(node_id).value_or(NodeDetail {});
+        RecoResult reco_result = cache.get_reco_result(node_detail.reco_id).value_or(RecoResult {});
+        raw = reco_result.box.value_or(cv::Rect {});
+        LogTrace << "pre task" << VAR(name) << VAR(raw);
     } break;
     case Target::Type::Region:
         raw = std::get<cv::Rect>(target.param);

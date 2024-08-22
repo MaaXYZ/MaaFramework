@@ -60,10 +60,6 @@ RecoResult TaskBase::run_recogintion(const cv::Mat& image, const PipelineData::N
 {
     LogFunc << VAR(cur_task_) << VAR(list);
 
-    if (!tasker_) {
-        return {};
-    }
-
     if (list.empty()) {
         return {};
     }
@@ -101,8 +97,6 @@ RecoResult TaskBase::run_recogintion(const cv::Mat& image, const PipelineData::N
         }
 
         LogInfo << "Task hit" << VAR(result.name) << VAR(result.box);
-
-        tasker_->runtime_cache().set_pre_box(result.name, *result.box);
 
         if (debug_mode()) {
             json::value cb_detail = basic_info() | reco_detail_to_json(result);

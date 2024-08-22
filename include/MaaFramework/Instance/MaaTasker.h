@@ -185,6 +185,12 @@ extern "C"
      */
     MAA_FRAMEWORK_API MaaController* MaaTaskerGetController(MaaTasker* tasker);
 
+    /**
+     * @brief Clear all cache including RecognitionDetail, NodeDetail, TaskDetail, LatestNode and so on.
+     *
+     * @param tasker
+     * @return MaaBool
+     */
     MAA_FRAMEWORK_API MaaBool MaaTaskerClearCache(MaaTasker* tasker);
 
     /**
@@ -223,6 +229,14 @@ extern "C"
         /* out */ MaaStringBuffer* entry,
         /* out */ MaaNodeId* node_id_list /**< array */,
         /* in & out */ MaaSize* node_id_list_size);
+
+    /**
+     * @param[out] latest_id
+     */
+    MAA_FRAMEWORK_API MaaBool MaaTaskerGetLatestNode(
+        MaaTasker* tasker,
+        const char* task_name,
+        /* out */ MaaNodeId* latest_id);
 
 #ifdef __cplusplus
 }
