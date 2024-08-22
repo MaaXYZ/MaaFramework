@@ -202,7 +202,7 @@ extern "C"
 
     /**
      * @param[out] reco_id
-     * @param[out] run_completed
+     * @param[out] completed
      */
     MAA_FRAMEWORK_API MaaBool MaaTaskerGetNodeDetail(
         MaaTasker* tasker,
