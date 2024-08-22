@@ -26,7 +26,8 @@ bool PipelineTask::run()
     PipelineData::NextList catch_next;
 
     while (!next.empty() && !need_to_stop_) {
-        auto [node_result, is_breakpoint] = run_reco_and_action(next, catch_next);
+        PipelineData current = context_.get_pipeline_data(cur_task_);
+        auto [node_result, is_breakpoint] = run_reco_and_action(next, catch_next, current.next_timeout);
 
         if (!node_result.completed) {
             LogError << "Run task failed:" << next;
@@ -58,14 +59,15 @@ void PipelineTask::post_stop()
     need_to_stop_ = true;
 }
 
-std::pair<NodeDetail, /* is breakpoint */ bool>
-    PipelineTask::run_reco_and_action(const PipelineData::NextList& next, const PipelineData::NextList& catch_next)
+std::pair<NodeDetail, /* is breakpoint */ bool> PipelineTask::run_reco_and_action(
+    const PipelineData::NextList& next,
+    const PipelineData::NextList& catch_next,
+    const std::chrono::milliseconds& timeout)
 {
     if (!tasker_) {
         LogError << "tasker is null";
         return {};
     }
-    const auto timeout = GlobalOptionMgr::get_instance().pipeline_timeout();
 
     RecoResult reco;
     bool is_breakpoint = false;

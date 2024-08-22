@@ -137,8 +137,10 @@ struct PipelineData
 
     Action::Type action_type = Action::Type::DoNothing;
     Action::Param action_param;
+
     NextList next;
     NextList catch_next;
+    std::chrono::milliseconds next_timeout;
 
     std::chrono::milliseconds pre_delay;
     std::chrono::milliseconds post_delay;

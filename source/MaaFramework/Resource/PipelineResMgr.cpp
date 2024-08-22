@@ -302,7 +302,12 @@ bool PipelineResMgr::parse_task(const std::string& name, const json::value& inpu
     }
 
     if (!parse_next(input, "next", data.next, default_value.next)) {
-        LogError << "failed to parse_next" << VAR(input);
+        LogError << "failed to parse_next next" << VAR(input);
+        return false;
+    }
+
+    if (!parse_next(input, "catch", data.catch_next, default_value.catch_next)) {
+        LogError << "failed to parse_next catch" << VAR(input);
         return false;
     }
 
@@ -310,6 +315,13 @@ bool PipelineResMgr::parse_task(const std::string& name, const json::value& inpu
         LogError << "failed to get_and_check_value available_times" << VAR(input);
         return false;
     }
+
+    auto timeout = default_value.next_timeout.count();
+    if (!get_and_check_value(input, "timeout", timeout, timeout)) {
+        LogError << "failed to get_and_check_value timeout" << VAR(input);
+        return false;
+    }
+    data.next_timeout = std::chrono::milliseconds(timeout);
 
     auto pre_delay = default_value.pre_delay.count();
     if (!get_and_check_value(input, "pre_delay", pre_delay, pre_delay)) {

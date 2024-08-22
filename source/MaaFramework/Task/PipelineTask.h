@@ -18,7 +18,7 @@ public:
 
 private:
     std::pair<NodeDetail, /* is breakpoint */ bool>
-        run_reco_and_action(const PipelineData::NextList& next, const PipelineData::NextList& catch_next);
+        run_reco_and_action(const PipelineData::NextList& next, const PipelineData::NextList& catch_next, const std::chrono::milliseconds& timeout);
 
 private:
     bool need_to_stop_ = false;
