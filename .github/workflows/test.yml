@@ -165,7 +165,7 @@ jobs:
           cmake --preset 'NinjaMulti' \
             -DMAADEPS_TRIPLET='maa-${{ matrix.arch == 'x86_64' && 'x64' || 'arm64' }}-linux' \
             -DMAA_HASH_VERSION='${{ needs.meta.outputs.tag }}' \
-            -DBUILD_HTTP_CLI=OFF -DBUILD_PIPELINE_TESTING=ON -DBUILD_DLOPEN_TESTING=ON
+            -DBUILD_PIPELINE_TESTING=ON -DBUILD_DLOPEN_TESTING=ON
 
           cmake --build build --preset 'NinjaMulti - Release' -j 16
 
@@ -232,8 +232,7 @@ jobs:
 
       - name: Install compiler
         run: |
-          brew install llvm@17
-        # 17
+          brew install llvm
 
       - name: Bootstrap MaaDeps
         env:
@@ -241,29 +240,15 @@ jobs:
         run: |
           python3 tools/maadeps-download.py ${{ matrix.arch == 'x86_64' && 'x64' || 'arm64' }}-osx
 
-      - name: Build MAA for x86_64
-        if: ${{ matrix.arch == 'x86_64' }}
-        env:
-          CC: "/usr/local/opt/llvm@17/bin/clang"
-          CXX: "/usr/local/opt/llvm@17/bin/clang++"
+      - name: Build MAA
         run: |
+          LLVM_PREFIX=$(brew --prefix llvm)
           cmake --preset 'NinjaMulti' \
             -DMAADEPS_TRIPLET='maa-${{ matrix.arch == 'x86_64' && 'x64' || 'arm64' }}-osx' \
             -DMAA_HASH_VERSION='${{ needs.meta.outputs.tag }}' \
-            -DBUILD_HTTP_CLI=OFF -DBUILD_PIPELINE_TESTING=ON -DBUILD_DLOPEN_TESTING=ON
-
-          cmake --build build --preset 'NinjaMulti - Release' -j 16
-
-      - name: Build MAA for aarch64
-        if: ${{ matrix.arch == 'aarch64' }}
-        env:
-          CC: "/opt/homebrew/opt/llvm@17/bin/clang"
-          CXX: "/opt/homebrew/opt/llvm@17/bin/clang++"
-        run: |
-          cmake --preset 'NinjaMulti' \
-            -DMAADEPS_TRIPLET='maa-${{ matrix.arch == 'x86_64' && 'x64' || 'arm64' }}-osx' \
-            -DMAA_HASH_VERSION='${{ needs.meta.outputs.tag }}' \
-            -DBUILD_HTTP_CLI=OFF -DBUILD_PIPELINE_TESTING=ON -DBUILD_DLOPEN_TESTING=ON
+            -DBUILD_PIPELINE_TESTING=ON -DBUILD_DLOPEN_TESTING=ON \
+            -DCMAKE_C_COMPILER=${LLVM_PREFIX}/bin/clang \
+            -DCMAKE_CXX_COMPILER=${LLVM_PREFIX}/bin/clang++
 
           cmake --build build --preset 'NinjaMulti - Release' -j 16
 
