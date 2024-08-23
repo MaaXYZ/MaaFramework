@@ -5,7 +5,10 @@
         "^(?!.*?\\$schema).*$": {
             "type": "object",
             "patternProperties": {
-                ".*_doc$": {
+                ".*_doc$|^doc$": {
+                    "type": "string"
+                },
+                ".*_code$|^code$": {
                     "type": "string"
                 }
             },
@@ -290,8 +293,17 @@
                                     ]
                                 }
                             },
-                            "required": [
-                                "template"
+                            "anyOf": [
+                                {
+                                    "required": [
+                                        "template"
+                                    ]
+                                },
+                                {
+                                    "required": [
+                                        "template_code"
+                                    ]
+                                }
                             ]
                         },
                         {
@@ -306,8 +318,17 @@
                                     "default": 4
                                 }
                             },
-                            "required": [
-                                "template"
+                            "anyOf": [
+                                {
+                                    "required": [
+                                        "template"
+                                    ]
+                                },
+                                {
+                                    "required": [
+                                        "template_code"
+                                    ]
+                                }
                             ]
                         },
                         {
@@ -327,9 +348,31 @@
                                     "default": 1
                                 }
                             },
-                            "required": [
-                                "lower",
-                                "upper"
+                            "anyOf": [
+                                {
+                                    "required": [
+                                        "lower",
+                                        "upper"
+                                    ]
+                                },
+                                {
+                                    "required": [
+                                        "lower_code",
+                                        "upper_code"
+                                    ]
+                                },
+                                {
+                                    "required": [
+                                        "lower_code",
+                                        "upper"
+                                    ]
+                                },
+                                {
+                                    "required": [
+                                        "lower",
+                                        "upper_code"
+                                    ]
+                                }
                             ]
                         },
                         {
@@ -359,13 +402,17 @@
                                     ]
                                 }
                             },
-                            "not": {
-                                "required": [
-                                    "expected_doc"
-                                ]
-                            },
-                            "required": [
-                                "expected"
+                            "anyOf": [
+                                {
+                                    "required": [
+                                        "expected"
+                                    ]
+                                },
+                                {
+                                    "required": [
+                                        "expected_code"
+                                    ]
+                                }
                             ]
                         },
                         {
@@ -384,9 +431,31 @@
                                     "$ref": "#/definitions/expected_type"
                                 }
                             },
-                            "required": [
-                                "model",
-                                "expected"
+                            "anyOf": [
+                                {
+                                    "required": [
+                                        "model",
+                                        "expected"
+                                    ]
+                                },
+                                {
+                                    "required": [
+                                        "model_code",
+                                        "expected_code"
+                                    ]
+                                },
+                                {
+                                    "required": [
+                                        "model_code",
+                                        "expected"
+                                    ]
+                                },
+                                {
+                                    "required": [
+                                        "model",
+                                        "expected_code"
+                                    ]
+                                }
                             ]
                         },
                         {
@@ -421,9 +490,31 @@
                                     "$ref": "#/definitions/expected_type"
                                 }
                             },
-                            "required": [
-                                "model",
-                                "expected"
+                            "anyOf": [
+                                {
+                                    "required": [
+                                        "model",
+                                        "expected"
+                                    ]
+                                },
+                                {
+                                    "required": [
+                                        "model_code",
+                                        "expected_code"
+                                    ]
+                                },
+                                {
+                                    "required": [
+                                        "model_code",
+                                        "expected"
+                                    ]
+                                },
+                                {
+                                    "required": [
+                                        "model",
+                                        "expected_code"
+                                    ]
+                                }
                             ]
                         },
                         {
@@ -433,8 +524,17 @@
                                     "const": "Custom"
                                 }
                             },
-                            "required": [
-                                "custom_recognition"
+                            "anyOf": [
+                                {
+                                    "required": [
+                                        "custom_recognition"
+                                    ]
+                                },
+                                {
+                                    "required": [
+                                        "custom_recognition_code"
+                                    ]
+                                }
                             ]
                         }
                     ]
@@ -479,8 +579,17 @@
                                     "const": "Swipe"
                                 }
                             },
-                            "required": [
-                                "end"
+                            "anyOf": [
+                                {
+                                    "required": [
+                                        "end"
+                                    ]
+                                },
+                                {
+                                    "required": [
+                                        "end_code"
+                                    ]
+                                }
                             ]
                         },
                         {
@@ -490,8 +599,17 @@
                                     "const": "Key"
                                 }
                             },
-                            "required": [
-                                "key"
+                            "anyOf": [
+                                {
+                                    "required": [
+                                        "key"
+                                    ]
+                                },
+                                {
+                                    "required": [
+                                        "key_code"
+                                    ]
+                                }
                             ]
                         },
                         {
@@ -504,8 +622,17 @@
                                     ]
                                 }
                             },
-                            "required": [
-                                "input_text"
+                            "anyOf": [
+                                {
+                                    "required": [
+                                        "input_text"
+                                    ]
+                                },
+                                {
+                                    "required": [
+                                        "input_text_code"
+                                    ]
+                                }
                             ]
                         },
                         {
@@ -549,8 +676,17 @@
                                     "const": "Custom"
                                 }
                             },
-                            "required": [
-                                "custom_action"
+                            "anyOf": [
+                                {
+                                    "required": [
+                                        "custom_action"
+                                    ]
+                                },
+                                {
+                                    "required": [
+                                        "custom_action_code"
+                                    ]
+                                }
                             ]
                         }
                     ]

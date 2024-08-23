@@ -1,0 +1,4 @@
+    <file src="maa-logo_128x128.png" target="" />
+    <file src="$root_path$\README.md" target="" />
+  </files>
+</package>
