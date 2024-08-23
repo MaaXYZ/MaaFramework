@@ -44,45 +44,35 @@ _✨ 基于图像识别的自动化黑盒测试框架 ✨_
 
 ## 最佳实践
 
-- [M9A](https://github.com/MaaXYZ/M9A) 1999 小助手 ![Pipeline](https://img.shields.io/badge/Pipeline-%23454545?logo=codecademy&logoColor=%23FFFFFF&color=%23454545
-)    
+- [M9A](https://github.com/MaaXYZ/M9A) 1999 小助手 ![Pipeline](https://img.shields.io/badge/Pipeline-%23454545?logo=paddypower&logoColor=%23FFFFFF)
   基于全新架构的 亿韭韭韭 小助手。图像技术 + 模拟控制，解放双手！由 MaaFramework 强力驱动！
-
-- [MAAIP](https://github.com/Arcelibs/MAAIP) 基於 MAA 框架技術的 idolypride 自動化程序  
-  由 Github 上最火熱的 lk99 開源套件 MaaFramework 製作
 
 - [MAABH3](https://github.com/MaaXYZ/MAABH3) 《崩坏3》小助手 | A one-click tool for the daily tasks of Honkai Impact. ![cpp](https://img.shields.io/badge/C%2B%2B-00599C?logo=c%2B%2B&logoColor=white)  
   基于全新架构的 蹦蹦蹦 小助手。图像技术 + 模拟控制，解放双手！由 MaaFramework 强力驱动！
 
-- [MAALimbusCompany](https://github.com/hxdnshx/MAALimbusCompany) 边狱公司 小助手 ![Pipeline](https://img.shields.io/badge/Pipeline-%23454545?logo=codecademy&logoColor=%23FFFFFF&color=%23454545
-)  
+- [MAALimbusCompany](https://github.com/hxdnshx/MAALimbusCompany) 边狱公司 小助手 ![Pipeline](https://img.shields.io/badge/Pipeline-%23454545?logo=paddypower&logoColor=%23FFFFFF)
   基于全新架构的 边狱公司 小助手。图像技术 + 模拟控制，解放双手！由 MaaFramework 强力驱动！
 
 - [MBA](https://github.com/MaaXYZ/MBA) BA 小助手 ![csharp](https://img.shields.io/badge/C%23-239120?logo=csharp&logoColor=white)  
   基于 MAA 全新架构的 BA 小助手。图像技术 + 模拟控制，解放双手，不再点点点！由 MaaFramework 强力驱动！
 
-- [MAS](https://github.com/MaaXYZ/MaaAssistantSkland) 森空岛 小助手 ![Pipeline](https://img.shields.io/badge/Pipeline-%23454545?logo=codecademy&logoColor=%23FFFFFF&color=%23454545
-)      
+- [MAS](https://github.com/MaaXYZ/MaaAssistantSkland) 森空岛 小助手 ![Pipeline](https://img.shields.io/badge/Pipeline-%23454545?logo=paddypower&logoColor=%23FFFFFF)
   基于全新架构的 森空岛 小助手。图像技术 + 模拟控制，解放双手！由 MaaFramework 强力驱动！
 
 - [MRA](https://github.com/MaaXYZ/MaaResonance) 雷索纳斯 列车长 小助手  ![NodeJS](https://camo.githubusercontent.com/ebf7c2fa711fe1e35a62d51214a518b0ff67a89cdf1404dc04c961446fd861b3/68747470733a2f2f696d672e736869656c64732e696f2f62616467652f2d4e6f64656a732d63306562643f7374796c653d666c61742d737175617265266c6f676f3d4e6f64652e6a73
-)    
+)  
   基于全新架构的 列车长 小助手。图像技术 + 模拟控制，解放双手！由 MaaFramework 强力驱动！
 
-- [MaaHatsuboshiTA](https://github.com/Carpenter-MK1/MaaHatsuboshiTA) 学院偶像大师 初星助教  ![Pipeline](https://img.shields.io/badge/Pipeline-%23454545?logo=codecademy&logoColor=%23FFFFFF&color=%23454545
-)    
+- [MaaHatsuboshiTA](https://github.com/Carpenter-MK1/MaaHatsuboshiTA) 学院偶像大师 初星助教  ![Pipeline](https://img.shields.io/badge/Pipeline-%23454545?logo=paddypower&logoColor=%23FFFFFF)
   基于全新架构的制作人代肝工具，养肝护眼 + 节省时间，~~出轨美铃！~~ 由 MaaFramework 强力驱动！
 
-- [MCCA](https://github.com/MaaXYZ/MCCA) 交错战线 小助手 ![Pipeline](https://img.shields.io/badge/Pipeline-%23454545?logo=codecademy&logoColor=%23FFFFFF&color=%23454545
-)  
+- [MCCA](https://github.com/MaaXYZ/MCCA) 交错战线 小助手 ![Pipeline](https://img.shields.io/badge/Pipeline-%23454545?logo=paddypower&logoColor=%23FFFFFF)
   基于全新架构的 交错战线 小助手。图像技术 + 模拟控制，解放双手！由 MaaFramework 强力驱动！
   
-- [MSBA](https://github.com/overflow65537/MAA_SnowBreak) 分析员 小助手  ![Pipeline](https://img.shields.io/badge/Pipeline-%23454545?logo=codecademy&logoColor=%23FFFFFF&color=%23454545
-)     
+- [MSBA](https://github.com/overflow65537/MAA_SnowBreak) 分析员 小助手  ![Pipeline](https://img.shields.io/badge/Pipeline-%23454545?logo=paddypower&logoColor=%23FFFFFF)
   基于全新架构的 尘白禁区 小助手。图像技术 + 模拟控制，解放双手！由 MaaFramework 强力驱动！
 
-- [MaaAeonFantasy](https://github.com/Andl-Liu/MaaAeonFantasy)  星神少女 预言之子 小助手  ![Pipeline](https://img.shields.io/badge/Pipeline-%23454545?logo=codecademy&logoColor=%23FFFFFF&color=%23454545
-)     
+- [MaaAeonFantasy](https://github.com/Andl-Liu/MaaAeonFantasy)  星神少女 预言之子 小助手  ![Pipeline](https://img.shields.io/badge/Pipeline-%23454545?logo=paddypower&logoColor=%23FFFFFF)
   基于全新架构的 星神少女 小助手。图像技术 + 模拟控制，让手去做它该做的事！由 MaaFramework 强力驱动！
 
 - [maa-whmx](https://github.com/MAWHA/maa-whmx) 物华弥新 小助手 ![cpp](https://img.shields.io/badge/C%2B%2B-00599C?logo=c%2B%2B&logoColor=white) ![qt](https://img.shields.io/badge/Qt6-41CD52?logo=Qt&logoColor=white)  
