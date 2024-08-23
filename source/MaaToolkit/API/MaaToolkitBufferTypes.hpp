@@ -11,7 +11,7 @@ public:
     virtual ~MaaToolkitAdbDevice() = default;
 
     virtual const std::string& name() const = 0;
-    virtual const std::string& adb_path() = 0;
+    virtual const std::string& adb_path() const = 0;
     virtual const std::string& address() const = 0;
     virtual MaaAdbScreencapMethod screencap_methods() const = 0;
     virtual MaaAdbInputMethod input_methods() const = 0;

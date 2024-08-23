@@ -29,6 +29,7 @@ MaaControlUnitHandle MaaWin32ControlUnitCreate(
         LogError << "hWnd is nullptr";
         return nullptr;
     }
+
     HWND h_wnd = reinterpret_cast<HWND>(hWnd);
 
     auto screencap_unit = std::make_shared<ScreencapAgent>(screencap_method, h_wnd);

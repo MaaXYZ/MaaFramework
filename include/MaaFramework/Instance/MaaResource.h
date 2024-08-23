@@ -46,11 +46,8 @@ extern "C"
      * @param trans_arg
      * @return MaaBool
      */
-    MAA_FRAMEWORK_API MaaBool MaaResourceRegisterCustomRecognizer(
-        MaaResource* res,
-        const char* name,
-        MaaCustomRecognizerCallback recognizer,
-        void* trans_arg);
+    MAA_FRAMEWORK_API MaaBool
+        MaaResourceRegisterCustomRecognizer(MaaResource* res, const char* name, MaaCustomRecognizerCallback recognizer, void* trans_arg);
 
     /**
      * @brief Unregister a custom recognizer from the instance.
@@ -124,7 +121,7 @@ extern "C"
      * @param id
      * @return MaaStatus
      */
-    MAA_FRAMEWORK_API MaaStatus MaaResourceStatus(MaaResource* res, MaaResId id);
+    MAA_FRAMEWORK_API MaaStatus MaaResourceStatus(const MaaResource* res, MaaResId id);
 
     /**
      * @brief Wait for the resource identified by id to finish loading.
@@ -133,7 +130,7 @@ extern "C"
      * @param id
      * @return MaaStatus
      */
-    MAA_FRAMEWORK_API MaaStatus MaaResourceWait(MaaResource* res, MaaResId id);
+    MAA_FRAMEWORK_API MaaStatus MaaResourceWait(const MaaResource* res, MaaResId id);
 
     /**
      * @brief Check if resources are loaded.
@@ -141,7 +138,7 @@ extern "C"
      * @param res
      * @return MaaBool
      */
-    MAA_FRAMEWORK_API MaaBool MaaResourceLoaded(MaaResource* res);
+    MAA_FRAMEWORK_API MaaBool MaaResourceLoaded(const MaaResource* res);
 
     /**
      * @brief Set options for a given resource.
@@ -165,7 +162,7 @@ extern "C"
      *
      * @return MaaBool
      */
-    MAA_FRAMEWORK_API MaaBool MaaResourceGetHash(MaaResource* res, /* out */ MaaStringBuffer* buffer);
+    MAA_FRAMEWORK_API MaaBool MaaResourceGetHash(const MaaResource* res, /* out */ MaaStringBuffer* buffer);
 
     /**
      * @brief Get the task list of the resource.
@@ -175,7 +172,7 @@ extern "C"
      *
      * @return MaaBool
      */
-    MAA_FRAMEWORK_API MaaBool MaaResourceGetTaskList(MaaResource* res, /* out */ MaaStringBuffer* buffer);
+    MAA_FRAMEWORK_API MaaBool MaaResourceGetTaskList(const MaaResource* res, /* out */ MaaStringBuffer* buffer);
 
 #ifdef __cplusplus
 }

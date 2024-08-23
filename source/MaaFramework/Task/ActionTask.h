@@ -19,7 +19,7 @@ public:
     virtual void post_stop() override {}
 
 public:
-    bool run_with_param(const cv::Rect& box, const json::value& reco_detail);
+    MaaNodeId run_with_param(const cv::Rect& box, const json::value& reco_detail);
 };
 
 MAA_TASK_NS_END

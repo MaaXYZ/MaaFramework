@@ -21,19 +21,23 @@ extern "C"
 
     MAA_FRAMEWORK_API MaaTaskId MaaContextRunPipeline(MaaContext* context, const char* entry, const char* pipeline_override);
 
-    MAA_FRAMEWORK_API MaaTaskId
-        MaaContextRunRecognition(MaaContext* context, const char* entry, const char* pipeline_override, MaaImageBuffer* image);
+    MAA_FRAMEWORK_API MaaRecoId
+        MaaContextRunRecognition(MaaContext* context, const char* entry, const char* pipeline_override, const MaaImageBuffer* image);
 
-    MAA_FRAMEWORK_API MaaTaskId
-        MaaContextRunAction(MaaContext* context, const char* entry, const char* pipeline_override, MaaRect* box, const char* reco_detail);
+    MAA_FRAMEWORK_API MaaNodeId MaaContextRunAction(
+        MaaContext* context,
+        const char* entry,
+        const char* pipeline_override,
+        const MaaRect* box,
+        const char* reco_detail);
 
     MAA_FRAMEWORK_API MaaBool MaaContextOverridePipeline(MaaContext* context, const char* pipeline_override);
 
-    MAA_FRAMEWORK_API MaaTaskId MaaContextGetTaskId(MaaContext* context);
+    MAA_FRAMEWORK_API MaaTaskId MaaContextGetTaskId(const MaaContext* context);
 
-    MAA_FRAMEWORK_API MaaTasker* MaaContextGetTasker(MaaContext* context);
+    MAA_FRAMEWORK_API MaaTasker* MaaContextGetTasker(const MaaContext* context);
 
-    MAA_FRAMEWORK_API MaaContext* MaaContextClone(MaaContext* context);
+    MAA_FRAMEWORK_API MaaContext* MaaContextClone(const MaaContext* context);
 
 #ifdef __cplusplus
 }

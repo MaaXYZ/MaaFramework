@@ -45,7 +45,7 @@ public:
 
     virtual const std::string& name() const override { return name_; }
 
-    virtual const std::string& adb_path() override { return adb_path_; }
+    virtual const std::string& adb_path() const override { return adb_path_; }
 
     virtual const std::string& address() const override { return address_; }
 

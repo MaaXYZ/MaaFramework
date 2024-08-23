@@ -9,17 +9,17 @@ extern "C"
 {
 #endif
 
-    MAA_TOOLKIT_API MaaToolkitDesktopWindowList* MaaToolkitDesktopWindowCreateList();
-    MAA_TOOLKIT_API void MaaToolkitDesktopWindowDestroyList(MaaToolkitDesktopWindowList* handle);
+    MAA_TOOLKIT_API MaaToolkitDesktopWindowList* MaaToolkitDesktopWindowListCreate();
+    MAA_TOOLKIT_API void MaaToolkitDesktopWindowListDestroy(MaaToolkitDesktopWindowList* handle);
 
     MAA_TOOLKIT_API MaaBool MaaToolkitDesktopWindowFindAll(/*out*/ MaaToolkitDesktopWindowList* buffer);
 
-    MAA_TOOLKIT_API MaaSize MaaToolkitDesktopWindowListSize(MaaToolkitDesktopWindowList* list);
-    MAA_TOOLKIT_API MaaToolkitDesktopWindow* MaaToolkitDesktopWindowListAt(MaaToolkitDesktopWindowList* list, MaaSize index);
+    MAA_TOOLKIT_API MaaSize MaaToolkitDesktopWindowListSize(const MaaToolkitDesktopWindowList* list);
+    MAA_TOOLKIT_API const MaaToolkitDesktopWindow* MaaToolkitDesktopWindowListAt(const MaaToolkitDesktopWindowList* list, MaaSize index);
 
-    MAA_TOOLKIT_API void* MaaToolkitDesktopWindowGetHandle(MaaToolkitDesktopWindow* window);
-    MAA_TOOLKIT_API const char* MaaToolkitDesktopWindowGetClassName(MaaToolkitDesktopWindow* window);
-    MAA_TOOLKIT_API const char* MaaToolkitDesktopWindowGetWindowName(MaaToolkitDesktopWindow* window);
+    MAA_TOOLKIT_API void* MaaToolkitDesktopWindowGetHandle(const MaaToolkitDesktopWindow* window);
+    MAA_TOOLKIT_API const char* MaaToolkitDesktopWindowGetClassName(const MaaToolkitDesktopWindow* window);
+    MAA_TOOLKIT_API const char* MaaToolkitDesktopWindowGetWindowName(const MaaToolkitDesktopWindow* window);
 
 #ifdef __cplusplus
 }

@@ -19,12 +19,12 @@ MAA_TOOLKIT_NS::DesktopWindowFinder& finder()
 #endif
 }
 
-MaaToolkitDesktopWindowList* MaaToolkitDesktopWindowCreateList()
+MaaToolkitDesktopWindowList* MaaToolkitDesktopWindowListCreate()
 {
     return new MaaToolkitDesktopWindowList;
 }
 
-void MaaToolkitDesktopWindowDestroyList(MaaToolkitDesktopWindowList* handle)
+void MaaToolkitDesktopWindowListDestroy(MaaToolkitDesktopWindowList* handle)
 {
     if (handle) {
         delete handle;
@@ -46,7 +46,7 @@ MaaBool MaaToolkitDesktopWindowFindAll(MaaToolkitDesktopWindowList* buffer)
     return true;
 }
 
-MaaSize MaaToolkitDesktopWindowListSize(MaaToolkitDesktopWindowList* list)
+MaaSize MaaToolkitDesktopWindowListSize(const MaaToolkitDesktopWindowList* list)
 {
     if (!list) {
         LogError << "list is null";
@@ -56,7 +56,7 @@ MaaSize MaaToolkitDesktopWindowListSize(MaaToolkitDesktopWindowList* list)
     return list->size();
 }
 
-MaaToolkitDesktopWindow* MaaToolkitDesktopWindowListAt(MaaToolkitDesktopWindowList* list, MaaSize index)
+const MaaToolkitDesktopWindow* MaaToolkitDesktopWindowListAt(const MaaToolkitDesktopWindowList* list, MaaSize index)
 {
     if (!list) {
         LogError << "list is null";
@@ -66,7 +66,7 @@ MaaToolkitDesktopWindow* MaaToolkitDesktopWindowListAt(MaaToolkitDesktopWindowLi
     return &list->at(index);
 }
 
-void* MaaToolkitDesktopWindowGetHandle(MaaToolkitDesktopWindow* window)
+void* MaaToolkitDesktopWindowGetHandle(const MaaToolkitDesktopWindow* window)
 {
     if (!window) {
         LogError << "window is null";
@@ -76,7 +76,7 @@ void* MaaToolkitDesktopWindowGetHandle(MaaToolkitDesktopWindow* window)
     return window->handle();
 }
 
-const char* MaaToolkitDesktopWindowGetClassName(MaaToolkitDesktopWindow* window)
+const char* MaaToolkitDesktopWindowGetClassName(const MaaToolkitDesktopWindow* window)
 {
     if (!window) {
         LogError << "window is null";
@@ -86,7 +86,7 @@ const char* MaaToolkitDesktopWindowGetClassName(MaaToolkitDesktopWindow* window)
     return window->class_name().c_str();
 }
 
-const char* MaaToolkitDesktopWindowGetWindowName(MaaToolkitDesktopWindow* window)
+const char* MaaToolkitDesktopWindowGetWindowName(const MaaToolkitDesktopWindow* window)
 {
     if (!window) {
         LogError << "window is null";

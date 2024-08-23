@@ -19,12 +19,12 @@ MAA_TOOLKIT_NS::AdbDeviceFinder& finder()
 #endif
 }
 
-MaaToolkitAdbDeviceList* MaaToolkitAdbDeviceCreateList()
+MaaToolkitAdbDeviceList* MaaToolkitAdbDeviceListCreate()
 {
     return new MaaToolkitAdbDeviceList;
 }
 
-void MaaToolkitAdbDeviceDestroyList(MaaToolkitAdbDeviceList* handle)
+void MaaToolkitAdbDeviceListDestroy(MaaToolkitAdbDeviceList* handle)
 {
     if (handle) {
         delete handle;
@@ -61,7 +61,7 @@ MaaBool MaaToolkitAdbDeviceFindSpecified(const char* adb_path, MaaToolkitAdbDevi
     return true;
 }
 
-MaaSize MaaToolkitAdbDeviceListSize(MaaToolkitAdbDeviceList* list)
+MaaSize MaaToolkitAdbDeviceListSize(const MaaToolkitAdbDeviceList* list)
 {
     if (!list) {
         LogError << "buffer is null";
@@ -71,7 +71,7 @@ MaaSize MaaToolkitAdbDeviceListSize(MaaToolkitAdbDeviceList* list)
     return list->size();
 }
 
-MaaToolkitAdbDevice* MaaToolkitAdbDeviceListAt(MaaToolkitAdbDeviceList* list, MaaSize index)
+const MaaToolkitAdbDevice* MaaToolkitAdbDeviceListAt(const MaaToolkitAdbDeviceList* list, MaaSize index)
 {
     if (!list) {
         LogError << "buffer is null";
@@ -87,7 +87,7 @@ MaaToolkitAdbDevice* MaaToolkitAdbDeviceListAt(MaaToolkitAdbDeviceList* list, Ma
 
 static const char* kEmptyCStr = "";
 
-const char* MaaToolkitAdbDeviceGetName(MaaToolkitAdbDevice* device)
+const char* MaaToolkitAdbDeviceGetName(const MaaToolkitAdbDevice* device)
 {
     if (!device) {
         LogError << "device is null";
@@ -97,7 +97,7 @@ const char* MaaToolkitAdbDeviceGetName(MaaToolkitAdbDevice* device)
     return device->name().c_str();
 }
 
-const char* MaaToolkitAdbDeviceGetAdbPath(MaaToolkitAdbDevice* device)
+const char* MaaToolkitAdbDeviceGetAdbPath(const MaaToolkitAdbDevice* device)
 {
     if (!device) {
         LogError << "device is null";
@@ -107,7 +107,7 @@ const char* MaaToolkitAdbDeviceGetAdbPath(MaaToolkitAdbDevice* device)
     return device->adb_path().c_str();
 }
 
-const char* MaaToolkitAdbDeviceGetAddress(MaaToolkitAdbDevice* device)
+const char* MaaToolkitAdbDeviceGetAddress(const MaaToolkitAdbDevice* device)
 {
     if (!device) {
         LogError << "device is null";
@@ -117,7 +117,7 @@ const char* MaaToolkitAdbDeviceGetAddress(MaaToolkitAdbDevice* device)
     return device->address().c_str();
 }
 
-MaaAdbScreencapMethod MaaToolkitAdbDeviceGetScreencapMethods(MaaToolkitAdbDevice* device)
+MaaAdbScreencapMethod MaaToolkitAdbDeviceGetScreencapMethods(const MaaToolkitAdbDevice* device)
 {
     if (!device) {
         LogError << "device is null";
@@ -127,7 +127,7 @@ MaaAdbScreencapMethod MaaToolkitAdbDeviceGetScreencapMethods(MaaToolkitAdbDevice
     return device->screencap_methods();
 }
 
-MaaAdbInputMethod MaaToolkitAdbDeviceGetInputMethods(MaaToolkitAdbDevice* device)
+MaaAdbInputMethod MaaToolkitAdbDeviceGetInputMethods(const MaaToolkitAdbDevice* device)
 {
     if (!device) {
         LogError << "device is null";
@@ -137,7 +137,7 @@ MaaAdbInputMethod MaaToolkitAdbDeviceGetInputMethods(MaaToolkitAdbDevice* device
     return device->input_methods();
 }
 
-const char* MaaToolkitAdbDeviceGetConfig(MaaToolkitAdbDevice* device)
+const char* MaaToolkitAdbDeviceGetConfig(const MaaToolkitAdbDevice* device)
 {
     if (!device) {
         LogError << "device is null";

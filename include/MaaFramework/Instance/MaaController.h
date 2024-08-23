@@ -146,7 +146,7 @@ extern "C"
      * @param id
      * @return MaaStatus The status of the request.
      */
-    MAA_FRAMEWORK_API MaaStatus MaaControllerStatus(MaaController* ctrl, MaaCtrlId id);
+    MAA_FRAMEWORK_API MaaStatus MaaControllerStatus(const MaaController* ctrl, MaaCtrlId id);
 
     /**
      * @brief Wait for the request identified by the given id to finish.
@@ -155,7 +155,7 @@ extern "C"
      * @param id
      * @return MaaStatus The status of the request.
      */
-    MAA_FRAMEWORK_API MaaStatus MaaControllerWait(MaaController* ctrl, MaaCtrlId id);
+    MAA_FRAMEWORK_API MaaStatus MaaControllerWait(const MaaController* ctrl, MaaCtrlId id);
 
     /**
      * @brief Check if the controller is connected.
@@ -163,7 +163,7 @@ extern "C"
      * @param ctrl
      * @return MaaBool
      */
-    MAA_FRAMEWORK_API MaaBool MaaControllerConnected(MaaController* ctrl);
+    MAA_FRAMEWORK_API MaaBool MaaControllerConnected(const MaaController* ctrl);
 
     /**
      * @brief Get the image buffer of the last screencap request.
@@ -173,7 +173,7 @@ extern "C"
      *
      * @return MaaBool Whether the image buffer is retrieved successfully.
      */
-    MAA_FRAMEWORK_API MaaBool MaaControllerCachedImage(MaaController* ctrl, /* out */ MaaImageBuffer* buffer);
+    MAA_FRAMEWORK_API MaaBool MaaControllerCachedImage(const MaaController* ctrl, /* out */ MaaImageBuffer* buffer);
 
     /**
      * @brief Get the UUID of the controller.

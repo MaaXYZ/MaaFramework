@@ -62,7 +62,7 @@ public:
     virtual MaaBool connected() const = 0;
     virtual MaaBool running() const = 0;
 
-    virtual cv::Mat cached_image() = 0;
+    virtual cv::Mat cached_image() const = 0;
     virtual std::string get_uuid() = 0;
 };
 
@@ -105,12 +105,12 @@ public:
     virtual ~MaaContext() = default;
 
     virtual MaaTaskId run_pipeline(const std::string& entry, const json::value& pipeline_override) = 0;
-    virtual MaaTaskId run_recognition(const std::string& entry, const json::value& pipeline_override, const cv::Mat& image) = 0;
-    virtual MaaTaskId
+    virtual MaaRecoId run_recognition(const std::string& entry, const json::value& pipeline_override, const cv::Mat& image) = 0;
+    virtual MaaNodeId
         run_action(const std::string& entry, const json::value& pipeline_override, const cv::Rect& box, const std::string& reco_detail) = 0;
     virtual bool override_pipeline(const json::value& pipeline_override) = 0;
 
-    virtual MaaContext* clone() = 0;
+    virtual MaaContext* clone() const = 0;
 
     virtual MaaTaskId task_id() const = 0;
     virtual MaaTasker* tasker() const = 0;

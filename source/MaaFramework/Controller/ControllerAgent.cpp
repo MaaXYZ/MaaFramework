@@ -157,7 +157,7 @@ MaaBool ControllerAgent::connected() const
     return connected_;
 }
 
-cv::Mat ControllerAgent::cached_image()
+cv::Mat ControllerAgent::cached_image() const
 {
     return image_;
 }
@@ -316,7 +316,7 @@ MaaCtrlId ControllerAgent::post_input_text_impl(const std::string& text)
 
 MaaCtrlId ControllerAgent::post_start_app_impl(const std::string& intent)
 {
-    AppParam param { .package =intent };
+    AppParam param { .package = intent };
     return post({ .type = Action::Type::start_app, .param = std::move(param) });
 }
 

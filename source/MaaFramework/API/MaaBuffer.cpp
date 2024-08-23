@@ -20,7 +20,7 @@ void MaaStringBufferDestroy(MaaStringBuffer* handle)
     delete handle;
 }
 
-MaaBool MaaStringBufferIsEmpty(MaaStringBuffer* handle)
+MaaBool MaaStringBufferIsEmpty(const MaaStringBuffer* handle)
 {
     if (!handle) {
         LogError << "handle is null";
@@ -41,7 +41,7 @@ MaaBool MaaStringBufferClear(MaaStringBuffer* handle)
     return true;
 }
 
-const char* MaaStringBufferGet(MaaStringBuffer* handle)
+const char* MaaStringBufferGet(const MaaStringBuffer* handle)
 {
     if (!handle) {
         LogError << "handle is null";
@@ -51,7 +51,7 @@ const char* MaaStringBufferGet(MaaStringBuffer* handle)
     return handle->data();
 }
 
-MaaSize MaaStringBufferSize(MaaStringBuffer* handle)
+MaaSize MaaStringBufferSize(const MaaStringBuffer* handle)
 {
     if (!handle) {
         LogError << "handle is null";
@@ -98,7 +98,7 @@ void MaaStringListBufferDestroy(MaaStringListBuffer* handle)
     delete handle;
 }
 
-MaaBool MaaStringListBufferIsEmpty(MaaStringListBuffer* handle)
+MaaBool MaaStringListBufferIsEmpty(const MaaStringListBuffer* handle)
 {
     if (!handle) {
         LogError << "handle is null";
@@ -108,18 +108,7 @@ MaaBool MaaStringListBufferIsEmpty(MaaStringListBuffer* handle)
     return handle->empty();
 }
 
-MaaBool MaaStringListBufferClear(MaaStringListBuffer* handle)
-{
-    if (!handle) {
-        LogError << "handle is null";
-        return false;
-    }
-
-    handle->clear();
-    return true;
-}
-
-MaaSize MaaStringListBufferSize(MaaStringListBuffer* handle)
+MaaSize MaaStringListBufferSize(const MaaStringListBuffer* handle)
 {
     if (!handle) {
         LogError << "handle is null";
@@ -129,7 +118,7 @@ MaaSize MaaStringListBufferSize(MaaStringListBuffer* handle)
     return handle->size();
 }
 
-MaaStringBuffer* MaaStringListBufferAt(MaaStringListBuffer* handle, MaaSize index)
+const MaaStringBuffer* MaaStringListBufferAt(const MaaStringListBuffer* handle, MaaSize index)
 {
     if (!handle) {
         LogError << "handle is null";
@@ -139,7 +128,7 @@ MaaStringBuffer* MaaStringListBufferAt(MaaStringListBuffer* handle, MaaSize inde
     return &(handle->at(index));
 }
 
-MaaBool MaaStringListBufferAppend(MaaStringListBuffer* handle, MaaStringBuffer* value)
+MaaBool MaaStringListBufferAppend(MaaStringListBuffer* handle, const MaaStringBuffer* value)
 {
     if (!handle || !value) {
         LogError << "handle is null";
@@ -161,6 +150,17 @@ MaaBool MaaStringListBufferRemove(MaaStringListBuffer* handle, MaaSize index)
     return true;
 }
 
+MaaBool MaaStringListBufferClear(MaaStringListBuffer* handle)
+{
+    if (!handle) {
+        LogError << "handle is null";
+        return false;
+    }
+
+    handle->clear();
+    return true;
+}
+
 MaaImageBuffer* MaaImageBufferCreate()
 {
     return new MAA_NS::ImageBuffer;
@@ -176,7 +176,7 @@ void MaaImageBufferDestroy(MaaImageBuffer* handle)
     delete handle;
 }
 
-MaaBool MaaImageBufferIsEmpty(MaaImageBuffer* handle)
+MaaBool MaaImageBufferIsEmpty(const MaaImageBuffer* handle)
 {
     if (!handle) {
         LogError << "handle is null";
@@ -197,7 +197,7 @@ MaaBool MaaImageBufferClear(MaaImageBuffer* handle)
     return true;
 }
 
-MaaImageRawData MaaImageBufferGetRawData(MaaImageBuffer* handle)
+MaaImageRawData MaaImageBufferGetRawData(const MaaImageBuffer* handle)
 {
     if (!handle) {
         LogError << "handle is null";
@@ -207,7 +207,7 @@ MaaImageRawData MaaImageBufferGetRawData(MaaImageBuffer* handle)
     return handle->raw_data();
 }
 
-int32_t MaaImageBufferWidth(MaaImageBuffer* handle)
+int32_t MaaImageBufferWidth(const MaaImageBuffer* handle)
 {
     if (!handle) {
         LogError << "handle is null";
@@ -217,7 +217,7 @@ int32_t MaaImageBufferWidth(MaaImageBuffer* handle)
     return handle->width();
 }
 
-int32_t MaaImageBufferHeight(MaaImageBuffer* handle)
+int32_t MaaImageBufferHeight(const MaaImageBuffer* handle)
 {
     if (!handle) {
         LogError << "handle is null";
@@ -227,7 +227,7 @@ int32_t MaaImageBufferHeight(MaaImageBuffer* handle)
     return handle->height();
 }
 
-int32_t MaaImageBufferType(MaaImageBuffer* handle)
+int32_t MaaImageBufferType(const MaaImageBuffer* handle)
 {
     if (!handle) {
         LogError << "handle is null";
@@ -254,7 +254,7 @@ MaaBool MaaImageBufferSetRawData(MaaImageBuffer* handle, MaaImageRawData data, i
     return true;
 }
 
-MaaImageEncodedData MaaImageBufferGetEncoded(MaaImageBuffer* handle)
+MaaImageEncodedData MaaImageBufferGetEncoded(const MaaImageBuffer* handle)
 {
     if (!handle) {
         LogError << "handle is null";
@@ -264,7 +264,7 @@ MaaImageEncodedData MaaImageBufferGetEncoded(MaaImageBuffer* handle)
     return handle->encoded();
 }
 
-MaaSize MaaImageBufferGetEncodedSize(MaaImageBuffer* handle)
+MaaSize MaaImageBufferGetEncodedSize(const MaaImageBuffer* handle)
 {
     if (!handle) {
         LogError << "handle is null";
@@ -306,7 +306,7 @@ void MaaImageListBufferDestroy(MaaImageListBuffer* handle)
     delete handle;
 }
 
-MaaBool MaaImageListBufferIsEmpty(MaaImageListBuffer* handle)
+MaaBool MaaImageListBufferIsEmpty(const MaaImageListBuffer* handle)
 {
     if (!handle) {
         LogError << "handle is null";
@@ -316,18 +316,7 @@ MaaBool MaaImageListBufferIsEmpty(MaaImageListBuffer* handle)
     return handle->empty();
 }
 
-MaaBool MaaImageListBufferClear(MaaImageListBuffer* handle)
-{
-    if (!handle) {
-        LogError << "handle is null";
-        return false;
-    }
-
-    handle->clear();
-    return true;
-}
-
-MaaSize MaaImageListBufferSize(MaaImageListBuffer* handle)
+MaaSize MaaImageListBufferSize(const MaaImageListBuffer* handle)
 {
     if (!handle) {
         LogError << "handle is null";
@@ -337,7 +326,7 @@ MaaSize MaaImageListBufferSize(MaaImageListBuffer* handle)
     return handle->size();
 }
 
-MaaImageBuffer* MaaImageListBufferAt(MaaImageListBuffer* handle, MaaSize index)
+const MaaImageBuffer* MaaImageListBufferAt(const MaaImageListBuffer* handle, MaaSize index)
 {
     if (!handle) {
         LogError << "handle is null";
@@ -369,6 +358,17 @@ MaaBool MaaImageListBufferRemove(MaaImageListBuffer* handle, MaaSize index)
     return true;
 }
 
+MaaBool MaaImageListBufferClear(MaaImageListBuffer* handle)
+{
+    if (!handle) {
+        LogError << "handle is null";
+        return false;
+    }
+
+    handle->clear();
+    return true;
+}
+
 MaaRect* MaaRectCreate()
 {
     return new MaaRect {};
@@ -384,7 +384,7 @@ void MaaRectDestroy(MaaRect* handle)
     delete handle;
 }
 
-int32_t MaaRectGetX(MaaRect* handle)
+int32_t MaaRectGetX(const MaaRect* handle)
 {
     if (!handle) {
         LogError << "handle is null";
@@ -394,7 +394,7 @@ int32_t MaaRectGetX(MaaRect* handle)
     return handle->x;
 }
 
-int32_t MaaRectGetY(MaaRect* handle)
+int32_t MaaRectGetY(const MaaRect* handle)
 {
     if (!handle) {
         LogError << "handle is null";
@@ -404,7 +404,7 @@ int32_t MaaRectGetY(MaaRect* handle)
     return handle->y;
 }
 
-int32_t MaaRectGetW(MaaRect* handle)
+int32_t MaaRectGetW(const MaaRect* handle)
 {
     if (!handle) {
         LogError << "handle is null";
@@ -414,7 +414,7 @@ int32_t MaaRectGetW(MaaRect* handle)
     return handle->width;
 }
 
-int32_t MaaRectGetH(MaaRect* handle)
+int32_t MaaRectGetH(const MaaRect* handle)
 {
     if (!handle) {
         LogError << "handle is null";

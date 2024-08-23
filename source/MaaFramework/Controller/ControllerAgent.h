@@ -107,7 +107,7 @@ public: // MaaController
     virtual MaaBool connected() const override;
     virtual MaaBool running() const override;
 
-    virtual cv::Mat cached_image() override;
+    virtual cv::Mat cached_image() const override;
     virtual std::string get_uuid() override;
 
 public:

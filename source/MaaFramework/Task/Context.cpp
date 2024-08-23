@@ -28,6 +28,21 @@ std::shared_ptr<Context> Context::getptr()
     return shared_from_this();
 }
 
+std::shared_ptr<const Context> Context::getptr() const
+{
+    return shared_from_this();
+}
+
+Context::Context(const Context& other)
+{
+    task_id_ = other.task_id_;
+    tasker_ = other.tasker_;
+    pipeline_override_ = other.pipeline_override_;
+    action_times_map_ = other.action_times_map_;
+
+    // don't copy clone_holder_
+}
+
 MaaTaskId Context::run_pipeline(const std::string& entry, const json::value& pipeline_override)
 {
     LogFunc << VAR(getptr());
@@ -38,17 +53,16 @@ MaaTaskId Context::run_pipeline(const std::string& entry, const json::value& pip
     return task.task_id();
 }
 
-MaaTaskId Context::run_recognition(const std::string& entry, const json::value& pipeline_override, const cv::Mat& image)
+MaaRecoId Context::run_recognition(const std::string& entry, const json::value& pipeline_override, const cv::Mat& image)
 {
     LogFunc << VAR(getptr());
 
     RecognitionTask task(entry, tasker_, getptr());
     task.override_pipeline(pipeline_override);
-    task.run_with_param(image);
-    return task.task_id();
+    return task.run_with_param(image);
 }
 
-MaaTaskId
+MaaNodeId
     Context::run_action(const std::string& entry, const json::value& pipeline_override, const cv::Rect& box, const std::string& reco_detail)
 {
     LogFunc << VAR(getptr());
@@ -56,8 +70,7 @@ MaaTaskId
     ActionTask task(entry, tasker_, getptr());
     task.override_pipeline(pipeline_override);
     json::value j_detail = json::parse(reco_detail).value_or(reco_detail);
-    task.run_with_param(box, j_detail);
-    return task.task_id();
+    return task.run_with_param(box, j_detail);
 }
 
 bool Context::override_pipeline(const json::value& pipeline_override)
@@ -88,7 +101,7 @@ bool Context::override_pipeline(const json::value& pipeline_override)
     return true;
 }
 
-Context* Context::clone()
+Context* Context::clone() const
 {
     LogFunc << VAR(getptr());
 

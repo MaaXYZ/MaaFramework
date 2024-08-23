@@ -73,11 +73,8 @@ MaaController* MaaWin32ControllerCreate(
 #endif
 }
 
-MaaController* MaaCustomControllerCreate(
-    MaaCustomControllerCallbacks* handle,
-    void* handle_arg,
-    MaaNotificationCallback callback,
-    void* callback_arg)
+MaaController*
+    MaaCustomControllerCreate(MaaCustomControllerCallbacks* handle, void* handle_arg, MaaNotificationCallback callback, void* callback_arg)
 {
     LogFunc << VAR(handle) << VAR(handle_arg) << VAR_VOIDP(callback) << VAR_VOIDP(callback_arg);
 
@@ -268,7 +265,7 @@ MaaCtrlId MaaControllerPostScreencap(MaaController* ctrl)
     return ctrl->post_screencap();
 }
 
-MaaStatus MaaControllerStatus(MaaController* ctrl, MaaCtrlId id)
+MaaStatus MaaControllerStatus(const MaaController* ctrl, MaaCtrlId id)
 {
     // LogFunc << VAR_VOIDP(ctrl) << VAR(id);
 
@@ -280,7 +277,7 @@ MaaStatus MaaControllerStatus(MaaController* ctrl, MaaCtrlId id)
     return ctrl->status(id);
 }
 
-MaaStatus MaaControllerWait(MaaController* ctrl, MaaCtrlId id)
+MaaStatus MaaControllerWait(const MaaController* ctrl, MaaCtrlId id)
 {
     // LogFunc << VAR_VOIDP(ctrl) << VAR(id);
 
@@ -292,10 +289,8 @@ MaaStatus MaaControllerWait(MaaController* ctrl, MaaCtrlId id)
     return ctrl->wait(id);
 }
 
-MaaBool MaaControllerConnected(MaaController* ctrl)
+MaaBool MaaControllerConnected(const MaaController* ctrl)
 {
-    LogFunc << VAR_VOIDP(ctrl);
-
     if (!ctrl) {
         LogError << "handle is null";
         return false;
@@ -304,7 +299,7 @@ MaaBool MaaControllerConnected(MaaController* ctrl)
     return ctrl->connected();
 }
 
-MaaBool MaaControllerCachedImage(MaaController* ctrl, MaaImageBuffer* buffer)
+MaaBool MaaControllerCachedImage(const MaaController* ctrl, MaaImageBuffer* buffer)
 {
     if (!ctrl || !buffer) {
         LogError << "handle is null";

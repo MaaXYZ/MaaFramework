@@ -77,7 +77,7 @@ extern "C"
      * @param tasker
      * @return MaaBool
      */
-    MAA_FRAMEWORK_API MaaBool MaaTaskerInited(MaaTasker* tasker);
+    MAA_FRAMEWORK_API MaaBool MaaTaskerInited(const MaaTasker* tasker);
 
     /**
      * @brief Post a task to the tasker.
@@ -140,7 +140,7 @@ extern "C"
      * @param id
      * @return MaaStatus
      */
-    MAA_FRAMEWORK_API MaaStatus MaaTaskerStatus(MaaTasker* tasker, MaaTaskId id);
+    MAA_FRAMEWORK_API MaaStatus MaaTaskerStatus(const MaaTasker* tasker, MaaTaskId id);
 
     /**
      * @brief Wait for a task to complete.
@@ -149,7 +149,7 @@ extern "C"
      * @param id
      * @return MaaStatus
      */
-    MAA_FRAMEWORK_API MaaStatus MaaTaskerWait(MaaTasker* tasker, MaaTaskId id);
+    MAA_FRAMEWORK_API MaaStatus MaaTaskerWait(const MaaTasker* tasker, MaaTaskId id);
 
     /**
      * @brief Is maa running?
@@ -157,7 +157,7 @@ extern "C"
      * @param tasker
      * @return MaaBool
      */
-    MAA_FRAMEWORK_API MaaBool MaaTaskerRunning(MaaTasker* tasker);
+    MAA_FRAMEWORK_API MaaBool MaaTaskerRunning(const MaaTasker* tasker);
 
     /**
      * @brief Post a stop signal to the tasker.
@@ -175,7 +175,7 @@ extern "C"
      * @param tasker
      * @return MaaResource*
      */
-    MAA_FRAMEWORK_API MaaResource* MaaTaskerGetResource(MaaTasker* tasker);
+    MAA_FRAMEWORK_API MaaResource* MaaTaskerGetResource(const MaaTasker* tasker);
 
     /**
      * @brief Get the controller handle of the tasker.
@@ -183,7 +183,7 @@ extern "C"
      * @param tasker
      * @return MaaController*
      */
-    MAA_FRAMEWORK_API MaaController* MaaTaskerGetController(MaaTasker* tasker);
+    MAA_FRAMEWORK_API MaaController* MaaTaskerGetController(const MaaTasker* tasker);
 
     /**
      * @brief Clear all cache including RecognitionDetail, NodeDetail, TaskDetail, LatestNode and so on.
@@ -197,7 +197,7 @@ extern "C"
      * @param[out] hit
      */
     MAA_FRAMEWORK_API MaaBool MaaTaskerGetRecognitionDetail(
-        MaaTasker* tasker,
+        const MaaTasker* tasker,
         MaaRecoId reco_id,
         /* out */ MaaStringBuffer* name,
         /* out */ MaaBool* hit,
@@ -212,7 +212,7 @@ extern "C"
      * @param[out] completed
      */
     MAA_FRAMEWORK_API MaaBool MaaTaskerGetNodeDetail(
-        MaaTasker* tasker,
+        const MaaTasker* tasker,
         MaaNodeId node_id,
         /* out */ MaaStringBuffer* name,
         /* out */ MaaRecoId* reco_id,
@@ -224,7 +224,7 @@ extern "C"
      * @param[in, out] node_id_list_size
      */
     MAA_FRAMEWORK_API MaaBool MaaTaskerGetTaskDetail(
-        MaaTasker* tasker,
+        const MaaTasker* tasker,
         MaaTaskId task_id,
         /* out */ MaaStringBuffer* entry,
         /* out */ MaaNodeId* node_id_list /**< array */,
@@ -234,7 +234,7 @@ extern "C"
      * @param[out] latest_id
      */
     MAA_FRAMEWORK_API MaaBool MaaTaskerGetLatestNode(
-        MaaTasker* tasker,
+        const MaaTasker* tasker,
         const char* task_name,
         /* out */ MaaNodeId* latest_id);
 

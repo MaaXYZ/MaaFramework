@@ -23,9 +23,9 @@ MaaTaskId MaaContextRunPipeline(MaaContext* context, const char* entry, const ch
     return context->run_pipeline(entry, *ov_opt);
 }
 
-MaaTaskId MaaContextRunRecognition(MaaContext* context, const char* entry, const char* pipeline_override, MaaImageBuffer* image)
+MaaRecoId MaaContextRunRecognition(MaaContext* context, const char* entry, const char* pipeline_override, const MaaImageBuffer* image)
 {
-    LogFunc << VAR_VOIDP(context) << VAR_VOIDP(image) << VAR(entry) << VAR(pipeline_override);
+    LogFunc << VAR_VOIDP(context) << VAR(entry) << VAR(pipeline_override);
 
     if (!context || !image) {
         LogError << "handle is null";
@@ -47,7 +47,8 @@ MaaTaskId MaaContextRunRecognition(MaaContext* context, const char* entry, const
     return context->run_recognition(entry, *ov_opt, mat);
 }
 
-MaaTaskId MaaContextRunAction(MaaContext* context, const char* entry, const char* pipeline_override, MaaRect* box, const char* reco_detail)
+MaaNodeId
+    MaaContextRunAction(MaaContext* context, const char* entry, const char* pipeline_override, const MaaRect* box, const char* reco_detail)
 {
     LogFunc << VAR_VOIDP(context) << VAR(entry) << VAR(pipeline_override) << VAR(box) << VAR(reco_detail);
 
@@ -89,7 +90,7 @@ MaaBool MaaContextOverridePipeline(MaaContext* context, const char* pipeline_ove
     return context->override_pipeline(*ov_opt);
 }
 
-MaaTaskId MaaContextGetTaskId(MaaContext* context)
+MaaTaskId MaaContextGetTaskId(const MaaContext* context)
 {
     if (!context) {
         LogError << "handle is null";
@@ -99,7 +100,7 @@ MaaTaskId MaaContextGetTaskId(MaaContext* context)
     return context->task_id();
 }
 
-MaaTasker* MaaContextGetTasker(MaaContext* context)
+MaaTasker* MaaContextGetTasker(const MaaContext* context)
 {
     if (!context) {
         LogError << "handle is null";
@@ -109,7 +110,7 @@ MaaTasker* MaaContextGetTasker(MaaContext* context)
     return context->tasker();
 }
 
-MaaContext* MaaContextClone(MaaContext* context)
+MaaContext* MaaContextClone(const MaaContext* context)
 {
     if (!context) {
         LogError << "handle is null";

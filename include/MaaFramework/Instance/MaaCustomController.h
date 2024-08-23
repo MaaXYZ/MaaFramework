@@ -30,19 +30,19 @@ extern "C"
      */
     struct MaaCustomControllerCallbacks
     {
-        MaaBool (*connect)(void* handle_arg);
+        MaaBool (*connect)(void* trans_arg);
 
         /// Write result to buffer.
         MaaBool (
-            *request_uuid)(void* handle_arg, /* out */ MaaStringBuffer* buffer);
+            *request_uuid)(void* trans_arg, /* out */ MaaStringBuffer* buffer);
 
-        MaaBool (*start_app)(const char* intent, void* handle_arg);
-        MaaBool (*stop_app)(const char* intent, void* handle_arg);
+        MaaBool (*start_app)(const char* intent, void* trans_arg);
+        MaaBool (*stop_app)(const char* intent, void* trans_arg);
 
         /// Write result to buffer.
-        MaaBool (*screencap)(void* handle_arg, /* out */ MaaImageBuffer* buffer);
+        MaaBool (*screencap)(void* trans_arg, /* out */ MaaImageBuffer* buffer);
 
-        MaaBool (*click)(int32_t x, int32_t y, void* handle_arg);
+        MaaBool (*click)(int32_t x, int32_t y, void* trans_arg);
 
         MaaBool (*swipe)(
             int32_t x1,
@@ -50,27 +50,27 @@ extern "C"
             int32_t x2,
             int32_t y2,
             int32_t duration,
-            void* handle_arg);
+            void* trans_arg);
 
         MaaBool (*touch_down)(
             int32_t contact,
             int32_t x,
             int32_t y,
             int32_t pressure,
-            void* handle_arg);
+            void* trans_arg);
 
         MaaBool (*touch_move)(
             int32_t contact,
             int32_t x,
             int32_t y,
             int32_t pressure,
-            void* handle_arg);
+            void* trans_arg);
 
-        MaaBool (*touch_up)(int32_t contact, void* handle_arg);
+        MaaBool (*touch_up)(int32_t contact, void* trans_arg);
 
-        MaaBool (*press_key)(int32_t keycode, void* handle_arg);
+        MaaBool (*press_key)(int32_t keycode, void* trans_arg);
 
-        MaaBool (*input_text)(const char* text, void* handle_arg);
+        MaaBool (*input_text)(const char* text, void* trans_arg);
     };
 
 #ifdef __cplusplus

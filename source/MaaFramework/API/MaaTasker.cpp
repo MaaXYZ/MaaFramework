@@ -60,7 +60,7 @@ MaaBool MaaTaskerBindController(MaaTasker* tasker, MaaController* ctrl)
     return tasker->bind_controller(ctrl);
 }
 
-MaaBool MaaTaskerInited(MaaTasker* tasker)
+MaaBool MaaTaskerInited(const MaaTasker* tasker)
 {
     if (!tasker) {
         LogError << "handle is null";
@@ -142,7 +142,7 @@ MaaBool MaaTaskerOverridePipeline(MaaTasker* tasker, MaaTaskId id, const char* p
     return tasker->override_pipeline(id, *ov_opt);
 }
 
-MaaStatus MaaTaskerStatus(MaaTasker* tasker, MaaTaskId id)
+MaaStatus MaaTaskerStatus(const MaaTasker* tasker, MaaTaskId id)
 {
     // LogFunc << VAR_VOIDP(tasker) << VAR(id);
 
@@ -153,7 +153,7 @@ MaaStatus MaaTaskerStatus(MaaTasker* tasker, MaaTaskId id)
     return tasker->status(id);
 }
 
-MaaStatus MaaTaskerWait(MaaTasker* tasker, MaaTaskId id)
+MaaStatus MaaTaskerWait(const MaaTasker* tasker, MaaTaskId id)
 {
     // LogFunc << VAR_VOIDP(tasker) << VAR(id);
 
@@ -164,7 +164,7 @@ MaaStatus MaaTaskerWait(MaaTasker* tasker, MaaTaskId id)
     return tasker->wait(id);
 }
 
-MaaBool MaaTaskerRunning(MaaTasker* tasker)
+MaaBool MaaTaskerRunning(const MaaTasker* tasker)
 {
     if (!tasker) {
         LogError << "handle is null";
@@ -186,10 +186,8 @@ MaaBool MaaTaskerPostStop(MaaTasker* tasker)
     return true;
 }
 
-MaaResource* MaaTaskerGetResource(MaaTasker* tasker)
+MaaResource* MaaTaskerGetResource(const MaaTasker* tasker)
 {
-    LogFunc << VAR_VOIDP(tasker);
-
     if (!tasker) {
         LogError << "handle is null";
         return nullptr;
@@ -198,10 +196,8 @@ MaaResource* MaaTaskerGetResource(MaaTasker* tasker)
     return tasker->resource();
 }
 
-MaaController* MaaTaskerGetController(MaaTasker* tasker)
+MaaController* MaaTaskerGetController(const MaaTasker* tasker)
 {
-    LogFunc << VAR_VOIDP(tasker);
-
     if (!tasker) {
         LogError << "handle is null";
         return nullptr;
@@ -229,7 +225,7 @@ MaaBool MaaTaskerClearCache(MaaTasker* tasker)
     else
 
 MaaBool MaaTaskerGetRecognitionDetail(
-    MaaTasker* tasker,
+    const MaaTasker* tasker,
     MaaRecoId reco_id,
     MaaStringBuffer* name,
     MaaBool* hit,
@@ -285,7 +281,7 @@ MaaBool MaaTaskerGetRecognitionDetail(
 }
 
 MaaBool MaaTaskerGetNodeDetail(
-    MaaTasker* tasker,
+    const MaaTasker* tasker,
     MaaNodeId node_id,
     MaaStringBuffer* name,
     MaaRecoId* reco_id,
@@ -327,7 +323,7 @@ MaaBool MaaTaskerGetNodeDetail(
 }
 
 MaaBool MaaTaskerGetTaskDetail(
-    MaaTasker* tasker,
+    const MaaTasker* tasker,
     MaaTaskId task_id,
     MaaStringBuffer* entry,
     MaaNodeId* node_id_list,
@@ -367,7 +363,7 @@ MaaBool MaaTaskerGetTaskDetail(
     return true;
 }
 
-MaaBool MaaTaskerGetLatestNode(MaaTasker* tasker, const char* task_name, MaaNodeId* latest_id)
+MaaBool MaaTaskerGetLatestNode(const MaaTasker* tasker, const char* task_name, MaaNodeId* latest_id)
 {
     if (!tasker) {
         LogError << "handle is null";

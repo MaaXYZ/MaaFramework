@@ -11,8 +11,9 @@
 
 #pragma once
 
-#include "MaaPort.h" // IWYU pragma: export
 #include <stdint.h>
+
+#include "MaaPort.h" // IWYU pragma: export
 
 struct MaaStringBuffer;
 struct MaaImageBuffer;
@@ -26,6 +27,7 @@ struct MaaContext;
 
 typedef uint8_t MaaBool;
 typedef uint64_t MaaSize;
+
 #define MaaNullSize ((MaaSize) - 1)
 
 typedef int32_t MaaStatus;

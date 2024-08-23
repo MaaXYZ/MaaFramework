@@ -12,10 +12,10 @@ MAA_TASK_NS_BEGIN
 
 bool RecognitionTask::run()
 {
-    return run_with_param(screencap());
+    return run_with_param(screencap()) != MaaInvalidId;
 }
 
-bool RecognitionTask::run_with_param(const cv::Mat& image)
+MaaRecoId RecognitionTask::run_with_param(const cv::Mat& image)
 {
     LogFunc << VAR(entry_);
 
@@ -24,7 +24,7 @@ bool RecognitionTask::run_with_param(const cv::Mat& image)
     auto reco = run_recogintion(image, next_list);
     if (!reco.box) {
         LogTrace << "No reco result";
-        return false;
+        return MaaInvalidId;
     }
 
     NodeDetail result {
@@ -34,7 +34,7 @@ bool RecognitionTask::run_with_param(const cv::Mat& image)
     };
     add_node_detail(result.node_id, result);
 
-    return true;
+    return reco.reco_id;
 }
 
 MAA_TASK_NS_END

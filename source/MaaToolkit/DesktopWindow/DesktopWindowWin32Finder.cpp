@@ -24,7 +24,7 @@ std::vector<DesktopWindow> DesktopWindowWin32Finder::find_all() const
         GetWindowTextW(hwnd, window_name.data(), static_cast<int>(window_name.size()));
 
         windows.emplace_back(DesktopWindow {
-            .hwnd = reinterpret_cast<void*>(hwnd),
+            .hwnd = hwnd,
             .class_name = class_name,
             .window_name = window_name,
         });

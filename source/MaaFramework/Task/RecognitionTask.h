@@ -19,7 +19,7 @@ public:
     virtual void post_stop() override {}
 
 public:
-    bool run_with_param(const cv::Mat& image);
+    MaaRecoId run_with_param(const cv::Mat& image);
 };
 
 MAA_TASK_NS_END

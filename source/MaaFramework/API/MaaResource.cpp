@@ -26,11 +26,7 @@ void MaaResourceDestroy(MaaResource* res)
     delete res;
 }
 
-MaaBool MaaResourceRegisterCustomRecognizer(
-    MaaResource* res,
-    const char* name,
-    MaaCustomRecognizerCallback recognizer,
-    void* trans_arg)
+MaaBool MaaResourceRegisterCustomRecognizer(MaaResource* res, const char* name, MaaCustomRecognizerCallback recognizer, void* trans_arg)
 {
     LogFunc << VAR_VOIDP(res) << VAR(name) << VAR_VOIDP(recognizer) << VAR_VOIDP(trans_arg);
 
@@ -132,7 +128,7 @@ MaaBool MaaResourceClear(MaaResource* res)
     return res->clear();
 }
 
-MaaStatus MaaResourceStatus(MaaResource* res, MaaResId id)
+MaaStatus MaaResourceStatus(const MaaResource* res, MaaResId id)
 {
     // LogFunc << VAR_VOIDP(res) << VAR(id);
 
@@ -144,7 +140,7 @@ MaaStatus MaaResourceStatus(MaaResource* res, MaaResId id)
     return res->status(id);
 }
 
-MaaStatus MaaResourceWait(MaaResource* res, MaaResId id)
+MaaStatus MaaResourceWait(const MaaResource* res, MaaResId id)
 {
     // LogFunc << VAR_VOIDP(res) << VAR(id);
 
@@ -156,7 +152,7 @@ MaaStatus MaaResourceWait(MaaResource* res, MaaResId id)
     return res->wait(id);
 }
 
-MaaBool MaaResourceLoaded(MaaResource* res)
+MaaBool MaaResourceLoaded(const MaaResource* res)
 {
     // LogFunc << VAR_VOIDP(res);
 
@@ -180,7 +176,7 @@ MaaBool MaaResourceSetOption(MaaResource* res, MaaResOption key, MaaOptionValue 
     return res->set_option(key, value, val_size);
 }
 
-MaaBool MaaResourceGetHash(MaaResource* res, MaaStringBuffer* buffer)
+MaaBool MaaResourceGetHash(const MaaResource* res, MaaStringBuffer* buffer)
 {
     if (!res || !buffer) {
         LogError << "handle is null";
@@ -197,7 +193,7 @@ MaaBool MaaResourceGetHash(MaaResource* res, MaaStringBuffer* buffer)
     return true;
 }
 
-MaaBool MaaResourceGetTaskList(MaaResource* res, /* out */ MaaStringBuffer* buffer)
+MaaBool MaaResourceGetTaskList(const MaaResource* res, /* out */ MaaStringBuffer* buffer)
 {
     if (!res || !buffer) {
         LogError << "handle is null";
