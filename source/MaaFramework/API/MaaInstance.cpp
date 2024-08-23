@@ -1,13 +1,16 @@
 #include "MaaFramework/Instance/MaaInstance.h"
 
 #include "Instance/InstanceMgr.h"
+#include "Plugin/PluginManager.h"
 #include "Utils/Logger.h"
 
 MaaInstanceHandle MaaCreate(MaaInstanceCallback callback, MaaCallbackTransparentArg callback_arg)
 {
     LogFunc << VAR_VOIDP(callback) << VAR_VOIDP(callback_arg);
 
-    return new MAA_NS::InstanceMgr(callback, callback_arg);
+    auto inst = new MAA_NS::InstanceMgr(callback, callback_arg);
+    MAA_NS::PluginManager::get_instance().call_on_instance_created(inst);
+    return inst;
 }
 
 void MaaDestroy(MaaInstanceHandle inst)
@@ -18,6 +21,8 @@ void MaaDestroy(MaaInstanceHandle inst)
         LogError << "handle is null";
         return;
     }
+
+    MAA_NS::PluginManager::get_instance().call_on_instance_destroyed(inst);
 
     delete inst;
 }

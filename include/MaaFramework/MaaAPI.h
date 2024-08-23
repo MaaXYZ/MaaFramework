@@ -14,6 +14,8 @@
 #include "Utility/MaaBuffer.h"
 #include "Utility/MaaUtility.h"
 
+#include "Plugin/PluginHook.h"
+
 /**
  * @mainpage MaaFramework API Reference
  *

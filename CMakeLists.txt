@@ -76,6 +76,8 @@ if(BUILD_DLOPEN_TESTING)
     add_subdirectory(test/dlopen)
 endif()
 
+add_subdirectory(plugins/demo)
+
 if(USE_MAADEPS)
     maadeps_install(bin)
 endif()
