@@ -61,8 +61,6 @@ private:
     std::filesystem::path adb_path_;
     std::string adb_serial_;
 
-    MessageNotifier<MaaNotificationCallback> notifier;
-
     DeviceList device_list_;
     Connection connection_;
     DeviceInfo device_info_;
@@ -70,6 +68,7 @@ private:
 
     std::shared_ptr<InputBase> input_ = nullptr;
     std::shared_ptr<ScreencapBase> screencap_ = nullptr;
+    MessageNotifier<MaaNotificationCallback> notifier;
 
     bool screencap_available_ = false;
     std::pair<int, int> image_resolution_;

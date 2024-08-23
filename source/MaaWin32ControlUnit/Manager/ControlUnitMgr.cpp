@@ -13,8 +13,8 @@ ControlUnitMgr::ControlUnitMgr(
     MaaNotificationCallback callback,
     void* callback_arg)
     : hwnd_(hWnd)
-    , screencap_(std::move(screencap_unit))
     , input_(std::move(input_unit))
+    , screencap_(std::move(screencap_unit))
     , notifier(callback, callback_arg)
 {
 }

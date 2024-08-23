@@ -45,10 +45,9 @@ public: // from ControlUnitAPI
 private:
     HWND hwnd_ = nullptr;
 
-    MessageNotifier<MaaNotificationCallback> notifier;
-
     std::shared_ptr<InputBase> input_ = nullptr;
     std::shared_ptr<ScreencapBase> screencap_ = nullptr;
+    MessageNotifier<MaaNotificationCallback> notifier;
 };
 
 MAA_CTRL_UNIT_NS_END

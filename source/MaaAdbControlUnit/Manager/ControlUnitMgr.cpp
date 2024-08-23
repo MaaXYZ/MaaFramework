@@ -17,8 +17,8 @@ ControlUnitMgr::ControlUnitMgr(
     void* callback_arg)
     : adb_path_(std::move(adb_path))
     , adb_serial_(std::move(adb_serial))
-    , screencap_(std::move(screencap_unit))
     , input_(std::move(touch_unit))
+    , screencap_(std::move(screencap_unit))
     , notifier(callback, callback_arg)
 {
     register_observer(input_); // for on_image_resolution_changed
