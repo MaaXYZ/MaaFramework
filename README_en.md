@@ -59,8 +59,7 @@ It offers low-code simplicity while maintaining high extensibility. The framewor
 - [MAS](https://github.com/MaaXYZ/MaaAssistantSkland) Skland Assistant ![Pipeline](https://img.shields.io/badge/Pipeline-%23454545?logo=paddypower&logoColor=%23FFFFFF)  
   Based on a brand new architecture. Image technology + simulation control, freeing your hands! Powered by MaaFramework.
 
-- [MRA](https://github.com/MaaXYZ/MaaResonance) Maa Resonance  ![NodeJS](https://camo.githubusercontent.com/ebf7c2fa711fe1e35a62d51214a518b0ff67a89cdf1404dc04c961446fd861b3/68747470733a2f2f696d672e736869656c64732e696f2f62616467652f2d4e6f64656a732d63306562643f7374796c653d666c61742d737175617265266c6f676f3d4e6f64652e6a73
-)
+- [MRA](https://github.com/MaaXYZ/MaaResonance) Maa Resonance  ![NodeJS](https://camo.githubusercontent.com/ebf7c2fa711fe1e35a62d51214a518b0ff67a89cdf1404dc04c961446fd861b3/68747470733a2f2f696d672e736869656c64732e696f2f62616467652f2d4e6f64656a732d63306562643f7374796c653d666c61742d737175617265266c6f676f3d4e6f64652e6a73)  
   A Conductor Assistant based on MAA's new architecture. Image technology + simulation control, no more clicking! Powered by MaaFramework.
 
 - [MaaHatsuboshiTA](https://github.com/Carpenter-MK1/MaaHatsuboshiTA) Hatsuboshi Teaching Assistant   ![Pipeline](https://img.shields.io/badge/Pipeline-%23454545?logo=paddypower&logoColor=%23FFFFFF)  
@@ -75,7 +74,7 @@ It offers low-code simplicity while maintaining high extensibility. The framewor
 - [MaaAeonFantasy](https://github.com/Andl-Liu/MaaAeonFantasy) Aeon Fantasy Assistant !  ![Pipeline](https://img.shields.io/badge/Pipeline-%23454545?logo=paddypower&logoColor=%23FFFFFF)  
   The Aeon Fantasy Assistant, based on a brand new architecture. Image technology + simulation control, let your hands do what they should do! Powered by MaaFramework.
 
-- [maa-whmx](https://github.com/MAWHA/maa-whmx) Wuhua Mixin Assistant ![cpp](https://img.shields.io/badge/C%2B%2B-00599C?logo=c%2B%2B&logoColor=white) ![qt](https://img.shields.io/badge/Qt6-41CD52?logo=Qt&logoColor=white)
+- [maa-whmx](https://github.com/MAWHA/maa-whmx) Wuhua Mixin Assistant ![cpp](https://img.shields.io/badge/C%2B%2B-00599C?logo=c%2B%2B&logoColor=white) ![qt](https://img.shields.io/badge/Qt6-41CD52?logo=Qt&logoColor=white)  
   An assistant for Wuhua Mixin based on a brand new architecture. Image technology + simulation control, freeing your hands! Powered by MaaFramework.
 
 ## Eco-Building
