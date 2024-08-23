@@ -53,8 +53,8 @@ public:
     auto& action_times() { return action_times_map_; }
 
 private:
-    Tasker* tasker_ = nullptr;
     MaaTaskId task_id_ = 0;
+    Tasker* tasker_ = nullptr;
 
     PipelineDataMap pipeline_override_;
     std::map<std::string, uint64_t> action_times_map_;

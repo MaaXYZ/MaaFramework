@@ -12,7 +12,10 @@
 MAA_TASK_NS_BEGIN
 
 TaskBase::TaskBase(std::string entry, Tasker* tasker)
-    : TaskBase(std::move(entry), tasker, Context::create(task_id_, tasker))
+    : tasker_(tasker)
+    , entry_(std::move(entry))
+    , cur_task_(entry_)
+    , context_(Context::create(task_id_, tasker))
 {
 }
 

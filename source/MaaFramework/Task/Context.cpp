@@ -34,13 +34,13 @@ std::shared_ptr<const Context> Context::getptr() const
 }
 
 Context::Context(const Context& other)
+    : std::enable_shared_from_this<Context>(other)
+    , task_id_(other.task_id_)
+    , tasker_(other.tasker_)
+    , pipeline_override_(other.pipeline_override_)
+    , action_times_map_(other.action_times_map_)
+// don't copy clone_holder_
 {
-    task_id_ = other.task_id_;
-    tasker_ = other.tasker_;
-    pipeline_override_ = other.pipeline_override_;
-    action_times_map_ = other.action_times_map_;
-
-    // don't copy clone_holder_
 }
 
 MaaTaskId Context::run_pipeline(const std::string& entry, const json::value& pipeline_override)

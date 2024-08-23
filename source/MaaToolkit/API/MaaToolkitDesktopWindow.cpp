@@ -6,7 +6,7 @@
 #include "DesktopWindow/DesktopWindowWin32Finder.h"
 #include "Utils/Logger.h"
 
-MAA_TOOLKIT_NS::DesktopWindowFinder& finder()
+static MAA_TOOLKIT_NS::DesktopWindowFinder& finder()
 {
     using namespace MAA_TOOLKIT_NS;
 

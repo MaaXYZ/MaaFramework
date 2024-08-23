@@ -6,7 +6,7 @@
 #include "AdbDevice/AdbDeviceWin32Finder.h"
 #include "Utils/Logger.h"
 
-MAA_TOOLKIT_NS::AdbDeviceFinder& finder()
+static MAA_TOOLKIT_NS::AdbDeviceFinder& finder()
 {
     using namespace MAA_TOOLKIT_NS;
 

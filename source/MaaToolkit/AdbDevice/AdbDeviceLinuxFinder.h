@@ -2,8 +2,8 @@
 
 #if defined(__linux__)
 
+#include "AdbDeviceFinder.h"
 #include "Conf/Conf.h"
-#include "DeviceMgr.h"
 #include "Utils/SingletonHolder.hpp"
 
 MAA_TOOLKIT_NS_BEGIN

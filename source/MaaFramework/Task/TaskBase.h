@@ -55,14 +55,13 @@ private:
     static json::object node_detail_to_json(const NodeDetail& detail);
 
 protected:
-    // 注意初始化顺序
     const MaaTaskId task_id_ = ++s_global_task_id;
-
     Tasker* tasker_ = nullptr;
-    std::shared_ptr<Context> context_ = nullptr;
 
     const std::string entry_;
     std::string cur_task_;
+
+    std::shared_ptr<Context> context_ = nullptr;
 
 private:
     inline static std::atomic<MaaTaskId> s_global_task_id = 0;
