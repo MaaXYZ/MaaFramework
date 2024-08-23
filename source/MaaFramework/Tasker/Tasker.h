@@ -41,8 +41,8 @@ public:
     virtual MaaBool running() const override;
     virtual void post_stop() override;
 
-    virtual MAA_RES_NS::ResourceMgr* resource() override;
-    virtual MAA_CTRL_NS::ControllerAgent* controller() override;
+    virtual MAA_RES_NS::ResourceMgr* resource() const override;
+    virtual MAA_CTRL_NS::ControllerAgent* controller() const override;
 
     virtual void clear_cache() override;
     virtual std::optional<MAA_TASK_NS::TaskDetail> get_task_detail(MaaTaskId task_id) const override;

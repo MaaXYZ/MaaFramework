@@ -68,7 +68,7 @@ MaaTaskId Tasker::post_pipeline(const std::string& entry, const json::value& pip
 {
     LogInfo << VAR(entry) << VAR(pipeline_override);
 
-    auto task_ptr = std::make_shared<MAA_TASK_NS::PipelineTask>(entry, this, MAA_TASK_NS::TaskBase::PipelineDataMap {});
+    auto task_ptr = std::make_shared<MAA_TASK_NS::PipelineTask>(entry, this);
     return post_task(std::move(task_ptr), pipeline_override);
 }
 
@@ -76,7 +76,7 @@ MaaTaskId Tasker::post_recognition(const std::string& entry, const json::value& 
 {
     LogInfo << VAR(entry) << VAR(pipeline_override);
 
-    auto task_ptr = std::make_shared<MAA_TASK_NS::RecognitionTask>(entry, this, MAA_TASK_NS::TaskBase::PipelineDataMap {});
+    auto task_ptr = std::make_shared<MAA_TASK_NS::RecognitionTask>(entry, this);
     return post_task(std::move(task_ptr), pipeline_override);
 }
 
@@ -84,7 +84,7 @@ MaaTaskId Tasker::post_action(const std::string& entry, const json::value& pipel
 {
     LogInfo << VAR(entry) << VAR(pipeline_override);
 
-    auto task_ptr = std::make_shared<MAA_TASK_NS::ActionTask>(entry, this, MAA_TASK_NS::TaskBase::PipelineDataMap {});
+    auto task_ptr = std::make_shared<MAA_TASK_NS::ActionTask>(entry, this);
     return post_task(std::move(task_ptr), pipeline_override);
 }
 
@@ -171,12 +171,12 @@ void Tasker::post_stop()
     }
 }
 
-MAA_RES_NS::ResourceMgr* Tasker::resource()
+MAA_RES_NS::ResourceMgr* Tasker::resource() const
 {
     return resource_;
 }
 
-MAA_CTRL_NS::ControllerAgent* Tasker::controller()
+MAA_CTRL_NS::ControllerAgent* Tasker::controller() const
 {
     return controller_;
 }

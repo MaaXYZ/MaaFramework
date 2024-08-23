@@ -10,8 +10,9 @@ public:
     using PipelineDataMap = Context::PipelineDataMap;
 
 public:
-    RecognitionTask(std::string entry, Tasker* tasker, PipelineDataMap pp_override);
-    virtual ~RecognitionTask() = default;
+    using TaskBase::TaskBase;
+
+    virtual ~RecognitionTask() override = default;
 
     virtual bool run() override;
 

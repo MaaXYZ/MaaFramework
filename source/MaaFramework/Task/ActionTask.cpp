@@ -10,11 +10,6 @@
 
 MAA_TASK_NS_BEGIN
 
-ActionTask::ActionTask(std::string entry, Tasker* tasker, PipelineDataMap pp_override)
-    : TaskBase(std::move(entry), tasker, std::move(pp_override))
-{
-}
-
 bool ActionTask::run()
 {
     LogFunc << VAR(entry_);

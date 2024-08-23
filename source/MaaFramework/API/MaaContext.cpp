@@ -108,3 +108,13 @@ MaaTasker* MaaContextGetTasker(MaaContext* context)
 
     return context->tasker();
 }
+
+MaaContext* MaaContextClone(MaaContext* context)
+{
+    if (!context) {
+        LogError << "handle is null";
+        return nullptr;
+    }
+
+    return context->clone();
+}

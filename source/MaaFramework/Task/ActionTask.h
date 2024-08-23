@@ -10,8 +10,9 @@ public:
     using PipelineDataMap = Context::PipelineDataMap;
 
 public:
-    ActionTask(std::string entry, Tasker* tasker, PipelineDataMap pp_override);
-    virtual ~ActionTask() = default;
+    using TaskBase::TaskBase;
+
+    virtual ~ActionTask() override = default;
 
     virtual bool run() override;
 

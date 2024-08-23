@@ -22,7 +22,8 @@ public:
     using PipelineDataMap = Context::PipelineDataMap;
 
 public:
-    TaskBase(std::string entry, Tasker* tasker, PipelineDataMap pp_override);
+    TaskBase(std::string entry, Tasker* tasker);
+    TaskBase(std::string entry, Tasker* tasker, std::shared_ptr<Context> context);
     virtual ~TaskBase() = default;
 
     virtual bool run() = 0;
@@ -54,15 +55,14 @@ private:
     static json::object node_detail_to_json(const NodeDetail& detail);
 
 protected:
-    Tasker* tasker_ = nullptr;
-    Context context_;
-
+    // 注意初始化顺序
     const MaaTaskId task_id_ = ++s_global_task_id;
+
+    Tasker* tasker_ = nullptr;
+    std::shared_ptr<Context> context_ = nullptr;
 
     const std::string entry_;
     std::string cur_task_;
-
-    std::map<std::string, uint64_t> times_map_;
 
 private:
     inline static std::atomic<MaaTaskId> s_global_task_id = 0;

@@ -10,11 +10,6 @@
 
 MAA_TASK_NS_BEGIN
 
-RecognitionTask::RecognitionTask(std::string entry, Tasker* tasker, PipelineDataMap pp_override)
-    : TaskBase(std::move(entry), tasker, std::move(pp_override))
-{
-}
-
 bool RecognitionTask::run()
 {
     return run_with_param(screencap());

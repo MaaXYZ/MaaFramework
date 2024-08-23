@@ -33,6 +33,8 @@ extern "C"
 
     MAA_FRAMEWORK_API MaaTasker* MaaContextGetTasker(MaaContext* context);
 
+    MAA_FRAMEWORK_API MaaContext* MaaContextClone(MaaContext* context);
+
 #ifdef __cplusplus
 }
 #endif

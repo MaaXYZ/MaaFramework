@@ -89,8 +89,8 @@ public:
     virtual MaaBool running() const = 0;
     virtual void post_stop() = 0;
 
-    virtual MaaResource* resource() = 0;
-    virtual MaaController* controller() = 0;
+    virtual MaaResource* resource() const = 0;
+    virtual MaaController* controller() const = 0;
 
     virtual void clear_cache() = 0;
     virtual std::optional<MAA_TASK_NS::TaskDetail> get_task_detail(MaaTaskId task_id) const = 0;
@@ -110,7 +110,8 @@ public:
         run_action(const std::string& entry, const json::value& pipeline_override, const cv::Rect& box, const std::string& reco_detail) = 0;
     virtual bool override_pipeline(const json::value& pipeline_override) = 0;
 
-    virtual MaaTaskId task_id() const = 0;
+    virtual MaaContext* clone() = 0;
 
-    virtual MaaTasker* tasker() = 0;
+    virtual MaaTaskId task_id() const = 0;
+    virtual MaaTasker* tasker() const = 0;
 };

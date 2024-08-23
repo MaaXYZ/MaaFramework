@@ -11,17 +11,22 @@
 
 MAA_TASK_NS_BEGIN
 
-TaskBase::TaskBase(std::string entry, Tasker* tasker, PipelineDataMap pp_override)
+TaskBase::TaskBase(std::string entry, Tasker* tasker)
+    : TaskBase(std::move(entry), tasker, Context::create(task_id_, tasker))
+{
+}
+
+TaskBase::TaskBase(std::string entry, Tasker* tasker, std::shared_ptr<Context> context)
     : tasker_(tasker)
     , entry_(std::move(entry))
-    , context_(task_id_, tasker_, std::move(pp_override))
+    , cur_task_(entry_)
+    , context_(std::move(context))
 {
-    cur_task_ = entry_;
 }
 
 bool TaskBase::override_pipeline(const json::value& pipeline_override)
 {
-    return context_.override_pipeline(pipeline_override);
+    return context_ && context_->override_pipeline(pipeline_override);
 }
 
 Tasker* TaskBase::tasker() const
@@ -60,11 +65,17 @@ RecoResult TaskBase::run_recogintion(const cv::Mat& image, const PipelineData::N
 {
     LogFunc << VAR(cur_task_) << VAR(list);
 
-    if (list.empty()) {
+    if (!context_) {
+        LogError << "context is null";
         return {};
     }
+
     if (image.empty()) {
         LogError << "Image is empty";
+        return {};
+    }
+
+    if (list.empty()) {
         return {};
     }
 
@@ -73,15 +84,13 @@ RecoResult TaskBase::run_recogintion(const cv::Mat& image, const PipelineData::N
         notify(MaaMsg_Task_Debug_ListToRecognize, cb_detail);
     }
 
-    Recognizer recognizer(tasker_, context_, image);
+    Recognizer recognizer(tasker_, *context_, image);
 
     for (const auto& name : list) {
-        const auto& pipeline_data = context_.get_pipeline_data(name);
+        const auto& pipeline_data = context_->get_pipeline_data(name);
 
-        uint64_t times = times_map_[name];
-        if (!pipeline_data.enabled || pipeline_data.available_times <= times) {
-            LogDebug << "Task disabled or times over limit" << name << VAR(pipeline_data.enabled) << VAR(times)
-                     << VAR(pipeline_data.available_times);
+        if (!pipeline_data.enabled) {
+            LogDebug << "Task disabled or times over limit" << name << VAR(pipeline_data.enabled);
             continue;
         }
 
@@ -116,12 +125,17 @@ RecoResult TaskBase::run_recogintion(const cv::Mat& image, const PipelineData::N
 
 NodeDetail TaskBase::run_action(const RecoResult& reco)
 {
+    if (!context_) {
+        LogError << "context is null";
+        return {};
+    }
+
     if (!reco.box) {
         LogError << "reco box is nullopt, can NOT run";
         return {};
     }
 
-    uint64_t& times = times_map_[reco.name];
+    uint64_t& times = context_->action_times()[reco.name];
     ++times;
 
     NodeDetail result {
@@ -131,7 +145,7 @@ NodeDetail TaskBase::run_action(const RecoResult& reco)
         .times = times,
     };
 
-    const auto& pipeline_data = context_.get_pipeline_data(reco.name);
+    const auto& pipeline_data = context_->get_pipeline_data(reco.name);
 
     json::value cb_detail = basic_info() | node_detail_to_json(result);
     if (debug_mode()) {
@@ -141,7 +155,7 @@ NodeDetail TaskBase::run_action(const RecoResult& reco)
         notify(MaaMsg_Task_Focus_ReadyToRun, cb_detail);
     }
 
-    Actuator actuator(tasker_, context_);
+    Actuator actuator(tasker_, *context_);
     result.completed = actuator.run(*reco.box, reco.detail, pipeline_data);
 
     add_node_detail(result.node_id, result);

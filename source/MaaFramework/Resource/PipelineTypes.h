@@ -129,7 +129,6 @@ struct PipelineData
     std::string name;
     bool is_sub = false; // for compatibility
     bool enabled = true;
-    uint available_times = UINT_MAX;
 
     Recognition::Type rec_type = Recognition::Type::DirectHit;
     Recognition::Param rec_param = MAA_VISION_NS::DirectHitParam {};

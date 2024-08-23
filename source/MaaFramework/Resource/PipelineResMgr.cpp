@@ -311,11 +311,6 @@ bool PipelineResMgr::parse_task(const std::string& name, const json::value& inpu
         return false;
     }
 
-    if (!get_and_check_value(input, "available_times", data.available_times, default_value.available_times)) {
-        LogError << "failed to get_and_check_value available_times" << VAR(input);
-        return false;
-    }
-
     auto timeout = default_value.next_timeout.count();
     if (!get_and_check_value(input, "timeout", timeout, timeout)) {
         LogError << "failed to get_and_check_value timeout" << VAR(input);
