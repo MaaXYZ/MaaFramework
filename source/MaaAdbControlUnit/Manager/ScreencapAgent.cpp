@@ -83,6 +83,11 @@ ScreencapAgent::ScreencapAgent(MaaAdbScreencapMethod methods, const std::filesys
             break;
         }
 
+        if (!unit) {
+            LogWarn << "failed to create" << method;
+            continue;
+        }
+
         children_.emplace_back(unit);
         units_.emplace(method, unit);
     }

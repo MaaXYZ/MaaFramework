@@ -60,6 +60,10 @@ InputAgent::InputAgent(MaaAdbInputMethod methods, const std::filesystem::path& a
             LogWarn << "Not support:" << method;
             break;
         }
+        if (!unit) {
+            LogWarn << "Create input unit failed:" << method;
+            continue;
+        }
 
         children_.emplace_back(unit);
         units_.emplace_back(method, unit);

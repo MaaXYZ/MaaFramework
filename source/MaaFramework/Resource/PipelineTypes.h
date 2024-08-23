@@ -139,7 +139,7 @@ struct PipelineData
 
     NextList next;
     NextList catch_next;
-    std::chrono::milliseconds next_timeout;
+    std::chrono::milliseconds next_timeout = std::chrono::milliseconds(20 * 1000);
 
     std::chrono::milliseconds pre_delay;
     std::chrono::milliseconds post_delay;
