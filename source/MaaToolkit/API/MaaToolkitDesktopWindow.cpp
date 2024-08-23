@@ -1,78 +1,97 @@
-#include "MaaToolkit/Win32/MaaToolkitWin32Window.h"
+#include "MaaToolkit/DesktopWindow/MaaToolkitDesktopWindow.h"
 
-#include <string_view>
-
-#include "Buffer/StringBuffer.hpp"
+#include "DesktopWindow/DesktopWindowBuffer.hpp"
+#include "DesktopWindow/DesktopWindowLinuxFinder.h"
+#include "DesktopWindow/DesktopWindowMacOSFinder.h"
+#include "DesktopWindow/DesktopWindowWin32Finder.h"
 #include "Utils/Logger.h"
-#include "Win32Window/Win32WindowFinder.h"
 
-auto& win32_mgr = MAA_TOOLKIT_NS::Win32WindowFinder::get_instance();
-
-MaaSize MaaToolkitFindWindow(const char* class_name, const char* window_name)
+MAA_TOOLKIT_NS::DesktopWindowFinder& finder()
 {
-    LogInfo << VAR(class_name) << VAR(window_name);
+    using namespace MAA_TOOLKIT_NS;
 
-    return win32_mgr.find_window(class_name, window_name);
+#if defined(_WIN32)
+    return DesktopWindowWin32Finder::get_instance();
+#elif defined(__APPLE__)
+    return DesktopWindowMacOSFinder::get_instance();
+#elif defined(__linux__)
+    return DesktopWindowLinuxFinder::get_instance();
+#endif
 }
 
-MaaSize MaaToolkitSearchWindow(const char* class_name, const char* window_name)
+MaaToolkitDesktopWindowList* MaaToolkitDesktopWindowCreateList()
 {
-    LogInfo << VAR(class_name) << VAR(window_name);
-
-    return win32_mgr.search_window(class_name, window_name);
+    return new MaaToolkitDesktopWindowList;
 }
 
-MaaSize MaaToolkitListWindows()
+void MaaToolkitDesktopWindowDestroyList(MaaToolkitDesktopWindowList* handle)
 {
-    LogInfo;
-
-    return win32_mgr.list_windows();
+    if (handle) {
+        delete handle;
+    }
 }
 
-void* MaaToolkitGetWindow(MaaSize index)
+MaaBool MaaToolkitDesktopWindowFindAll(MaaToolkitDesktopWindowList* buffer)
 {
-    return win32_mgr.found_windows().at(index).hwnd;
-}
-
-void* MaaToolkitGetCursorWindow()
-{
-    LogInfo;
-
-    return win32_mgr.get_cursor_window();
-}
-
-void* MaaToolkitGetDesktopWindow()
-{
-    LogInfo;
-
-    return win32_mgr.get_desktop_window();
-}
-
-void* MaaToolkitGetForegroundWindow()
-{
-    LogInfo;
-
-    return win32_mgr.get_foreground_window();
-}
-
-MaaBool MaaToolkitGetWindowClassName(void* hwnd, MaaStringBuffer* buffer)
-{
-    auto opt = win32_mgr.get_class_name(hwnd);
-    if (!opt) {
+    if (!buffer) {
+        LogError << "buffer is null";
         return false;
     }
 
-    buffer->set(std::move(*opt));
+    auto windows = finder().find_all();
+    for (const auto& w : windows) {
+        buffer->append(MAA_TOOLKIT_NS::DesktopWindowBuffer(w));
+    }
+
     return true;
 }
 
-MaaBool MaaToolkitGetWindowWindowName(void* hwnd, MaaStringBuffer* buffer)
+MaaSize MaaToolkitDesktopWindowListSize(MaaToolkitDesktopWindowList* list)
 {
-    auto opt = win32_mgr.get_window_name(hwnd);
-    if (!opt) {
-        return false;
+    if (!list) {
+        LogError << "list is null";
+        return 0;
     }
 
-    buffer->set(std::move(*opt));
-    return true;
+    return list->size();
+}
+
+MaaToolkitDesktopWindow* MaaToolkitDesktopWindowListAt(MaaToolkitDesktopWindowList* list, MaaSize index)
+{
+    if (!list) {
+        LogError << "list is null";
+        return nullptr;
+    }
+
+    return &list->at(index);
+}
+
+void* MaaToolkitDesktopWindowGetHandle(MaaToolkitDesktopWindow* window)
+{
+    if (!window) {
+        LogError << "window is null";
+        return nullptr;
+    }
+
+    return window->handle();
+}
+
+const char* MaaToolkitDesktopWindowGetClassName(MaaToolkitDesktopWindow* window)
+{
+    if (!window) {
+        LogError << "window is null";
+        return nullptr;
+    }
+
+    return window->class_name().c_str();
+}
+
+const char* MaaToolkitDesktopWindowGetWindowName(MaaToolkitDesktopWindow* window)
+{
+    if (!window) {
+        LogError << "window is null";
+        return nullptr;
+    }
+
+    return window->window_name().c_str();
 }

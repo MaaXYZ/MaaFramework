@@ -56,10 +56,6 @@ std::vector<AdbDevice> AdbDeviceFinder::find() const
         result.insert(result.end(), std::make_move_iterator(env_adb_devices.begin()), std::make_move_iterator(env_adb_devices.end()));
     }
 
-    // Deduplication
-    std::sort(result.begin(), result.end());
-    result.erase(std::unique(result.begin(), result.end()), result.end());
-
     return result;
 }
 
@@ -220,15 +216,18 @@ std::vector<std::string>
 
 MaaAdbScreencapMethod AdbDeviceFinder::get_screencap_methods(const std::filesystem::path& adb_path, const std::string& serial) const
 {
-    // 有损截图，暂不使用
-    return MaaAdbScreencapMethod_All & (~MaaAdbScreencapMethod_MinicapDirect) & (~MaaAdbScreencapMethod_MinicapStream);
+    std::ignore = adb_path;
+    std::ignore = serial;
+
+    return MaaAdbScreencapMethod_Default;
 }
 
 MaaAdbInputMethod AdbDeviceFinder::get_input_methods(const std::filesystem::path& adb_path, const std::string& serial) const
 {
-    // mumu 的触控在横竖屏切换时有 bug，暂不使用
-    return MaaAdbInputMethod_All & (~MaaAdbInputMethod_EmulatorExtras);
+    std::ignore = adb_path;
+    std::ignore = serial;
+
+    return MaaAdbInputMethod_Default;
 }
 
 MAA_TOOLKIT_NS_END
-

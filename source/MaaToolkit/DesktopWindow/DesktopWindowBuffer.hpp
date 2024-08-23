@@ -1,12 +1,12 @@
 #pragma once
 
-#include <meojson/json.hpp>
+#include <ostream>
 
 #include "API/MaaToolkitBufferTypes.hpp"
 #include "Buffer/ListBuffer.hpp"
 #include "Conf/Conf.h"
 #include "Utils/Codec.h"
-#include "Utils/Platform.h"
+#include "Utils/Logger.h"
 
 MAA_TOOLKIT_NS_BEGIN
 
@@ -16,6 +16,11 @@ struct DesktopWindow
     std::wstring class_name;
     std::wstring window_name;
 };
+
+inline std::ostream& operator<<(std::ostream& os, const DesktopWindow& window)
+{
+    return os << VAR_VOIDP_RAW(window.hwnd) << VAR_RAW(from_u16(window.class_name)) << VAR_RAW(from_u16(window.window_name));
+}
 
 class DesktopWindowBuffer : public MaaToolkitDesktopWindow
 {
@@ -43,7 +48,7 @@ private:
 
 MAA_TOOLKIT_NS_END
 
-struct MaaToolkitAdbDeviceList : public MAA_NS::ListBuffer<MAA_TOOLKIT_NS::DesktopWindowBuffer>
+struct MaaToolkitDesktopWindowList : public MAA_NS::ListBuffer<MAA_TOOLKIT_NS::DesktopWindowBuffer>
 {
-    virtual ~MaaToolkitAdbDeviceList() override = default;
+    virtual ~MaaToolkitDesktopWindowList() override = default;
 };

@@ -1,23 +1,22 @@
 #pragma once
 
-#if defined(_WIN32)
+#if defined(__linux__)
 
 #include "DesktopWindowFinder.h"
-#include "Utils/Platform.h"
 #include "Utils/SingletonHolder.hpp"
 
 MAA_TOOLKIT_NS_BEGIN
 
-class DesktopWindowWin32Finder
+class DesktopWindowLinuxFinder
     : public DesktopWindowFinder
-    , public SingletonHolder<DesktopWindowWin32Finder>
+    , public SingletonHolder<DesktopWindowLinuxFinder>
 {
 public:
-    virtual ~DesktopWindowWin32Finder() override = default;
+    virtual ~DesktopWindowLinuxFinder() override = default;
 
     virtual std::vector<DesktopWindow> find_all() const override;
 };
 
 MAA_TOOLKIT_NS_END
 
-#endif // _WIN32
+#endif // __linux__

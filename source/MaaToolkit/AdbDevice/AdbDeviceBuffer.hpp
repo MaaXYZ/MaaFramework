@@ -1,10 +1,13 @@
 #pragma once
 
+#include <ostream>
+
 #include <meojson/json.hpp>
 
 #include "API/MaaToolkitBufferTypes.hpp"
 #include "Buffer/ListBuffer.hpp"
 #include "Conf/Conf.h"
+#include "Utils/Logger.h"
 #include "Utils/Platform.h"
 
 MAA_TOOLKIT_NS_BEGIN
@@ -18,6 +21,12 @@ struct AdbDevice
     MaaAdbInputMethod input_methods = MaaAdbInputMethod_None;
     json::object config;
 };
+
+inline std::ostream& operator<<(std::ostream& os, const AdbDevice& device)
+{
+    return os << VAR_RAW(device.name) << VAR_RAW(device.adb_path) << VAR_RAW(device.serial) << VAR_RAW(device.screencap_methods)
+              << VAR_RAW(device.input_methods) << VAR_RAW(device.config);
+}
 
 class AdbDeviceBuffer : public MaaToolkitAdbDevice
 {

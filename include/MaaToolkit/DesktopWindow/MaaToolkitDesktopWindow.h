@@ -12,7 +12,7 @@ extern "C"
     MAA_TOOLKIT_API MaaToolkitDesktopWindowList* MaaToolkitDesktopWindowCreateList();
     MAA_TOOLKIT_API void MaaToolkitDesktopWindowDestroyList(MaaToolkitDesktopWindowList* handle);
 
-    MAA_TOOLKIT_API MaaBool MaaToolkitDesktopWindowGetAll(/*out*/ MaaToolkitDesktopWindowList* buffer);
+    MAA_TOOLKIT_API MaaBool MaaToolkitDesktopWindowFindAll(/*out*/ MaaToolkitDesktopWindowList* buffer);
 
     MAA_TOOLKIT_API MaaSize MaaToolkitDesktopWindowListSize(MaaToolkitDesktopWindowList* list);
     MAA_TOOLKIT_API MaaToolkitDesktopWindow* MaaToolkitDesktopWindowListAt(MaaToolkitDesktopWindowList* list, MaaSize index);

@@ -17,13 +17,6 @@ MAA_TOOLKIT_NS_BEGIN
 class AdbDeviceFinder
 {
 public:
-    virtual ~AdbDeviceFinder();
-
-public:
-    std::vector<AdbDevice> find() const;
-    std::vector<AdbDevice> find_specified(const std::filesystem::path& adb_path) const;
-
-protected:
     struct EmulatorConstantData
     {
         std::string keyword;
@@ -37,6 +30,13 @@ protected:
         ProcessInfo process;
         const EmulatorConstantData const_data;
     };
+
+public:
+    virtual ~AdbDeviceFinder() = default;
+
+public:
+    std::vector<AdbDevice> find() const;
+    std::vector<AdbDevice> find_specified(const std::filesystem::path& adb_path) const;
 
 protected:
     virtual json::object get_adb_config(const Emulator& emulator, const std::string& adb_serial) const;
@@ -56,7 +56,6 @@ protected:
 
 private:
     std::optional<std::vector<AdbDevice>> devices_;
-    std::future<std::vector<AdbDevice>> find_device_future_;
     std::unordered_map<std::string, EmulatorConstantData> const_data_;
 };
 
