@@ -1,6 +1,6 @@
 #if defined(__APPLE__)
 
-#include "DeviceMgrMacOS.h"
+#include "AdbDeviceMacOSFinder.h"
 
 #include <unordered_map>
 
@@ -8,7 +8,7 @@ MAA_TOOLKIT_NS_BEGIN
 
 using namespace path_literals;
 
-DeviceMgrMacOS::DeviceMgrMacOS()
+AdbDeviceMacOSFinder::AdbDeviceMacOSFinder()
 {
     std::unordered_map<std::string, EmulatorConstantData> emulators = {
         { "Nox",

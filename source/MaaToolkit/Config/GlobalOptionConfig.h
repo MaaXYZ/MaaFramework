@@ -20,7 +20,6 @@ class GlobalOptionConfig : public SingletonHolder<GlobalOptionConfig>
     friend class SingletonHolder<GlobalOptionConfig>;
 
 public:
-    inline static const std::filesystem::path kConfigPath_Deprecated = "config/maa_toolkit.json";
     inline static const std::filesystem::path kConfigPath = "config/maa_option.json";
     inline static const std::filesystem::path kDebugDir = "debug";
 

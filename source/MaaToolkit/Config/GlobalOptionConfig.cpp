@@ -18,11 +18,6 @@ bool GlobalOptionConfig::init(
 {
     LogFunc << VAR(user_path);
 
-    // FIXME: remove this
-    if (auto old_config = user_path / kConfigPath_Deprecated; std::filesystem::exists(old_config)) {
-        std::filesystem::remove(old_config);
-    }
-
     config_path_ = user_path / kConfigPath;
     debug_dir_ = user_path / kDebugDir;
 

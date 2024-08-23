@@ -7,7 +7,7 @@
 #include "Utils/Platform.h"
 #include "Utils/Runtime.h"
 
-MaaBool MaaToolkitInitOptionConfig(const char* user_path, const char* default_json)
+MaaBool MaaToolkitConfigInitOption(const char* user_path, const char* default_json)
 {
     LogInfo << VAR(user_path) << VAR(default_json);
 

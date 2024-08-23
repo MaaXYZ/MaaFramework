@@ -1,6 +1,6 @@
 #if defined(__linux__)
 
-#include "DeviceMgrLinux.h"
+#include "AdbDeviceLinuxFinder.h"
 
 MAA_TOOLKIT_NS_BEGIN
 

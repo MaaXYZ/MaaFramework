@@ -6,25 +6,25 @@
 #include <ostream>
 
 #include "Conf/Conf.h"
-#include "DeviceMgr.h"
+#include "AdbDeviceFinder.h"
 #include "Utils/SingletonHolder.hpp"
 
 MAA_TOOLKIT_NS_BEGIN
 
-class DeviceMgrWin32
-    : public SingletonHolder<DeviceMgrWin32>
-    , public DeviceMgr
+class AdbDeviceWin32Finder
+    : public SingletonHolder<AdbDeviceWin32Finder>
+    , public AdbDeviceFinder
 {
-    friend class SingletonHolder<DeviceMgrWin32>;
+    friend class SingletonHolder<AdbDeviceWin32Finder>;
 
 public:
-    virtual ~DeviceMgrWin32() override = default;
+    virtual ~AdbDeviceWin32Finder() override = default;
 
 protected:
     virtual json::object get_adb_config(const Emulator& emulator, const std::string& adb_serial) const;
 
 private:
-    DeviceMgrWin32();
+    AdbDeviceWin32Finder();
 
     static int get_mumu_index(const std::string& adb_serial);
 };
