@@ -38,8 +38,7 @@ void NeuralNetworkDetector::analyze()
     cherry_pick();
 
     auto cost = duration_since(start_time);
-    LogTrace << name_ << VAR(uid_) << VAR(all_results_) << VAR(filtered_results_)
-             << VAR(best_result_) << VAR(cost);
+    LogTrace << name_ << VAR(uid_) << VAR(all_results_) << VAR(filtered_results_) << VAR(best_result_) << VAR(cost);
 }
 
 NeuralNetworkDetector::ResultsVec NeuralNetworkDetector::detect_all_rois() const
@@ -81,12 +80,8 @@ NeuralNetworkDetector::ResultsVec NeuralNetworkDetector::detect(const cv::Rect& 
     // TODO: GPU
     auto memory_info = Ort::MemoryInfo::CreateCpu(OrtDeviceAllocator, OrtMemTypeDefault);
 
-    Ort::Value input_tensor = Ort::Value::CreateTensor<float>(
-        memory_info,
-        input.data(),
-        input.size(),
-        input_shape.data(),
-        input_shape.size());
+    Ort::Value input_tensor =
+        Ort::Value::CreateTensor<float>(memory_info, input.data(), input.size(), input_shape.data(), input_shape.size());
 
     Ort::AllocatorWithDefaultOptions allocator;
     const std::string in_0 = session_->GetInputNameAllocated(0, allocator).get();
@@ -95,13 +90,8 @@ NeuralNetworkDetector::ResultsVec NeuralNetworkDetector::detect(const cv::Rect& 
     const std::vector output_names { out_0.c_str() };
 
     Ort::RunOptions run_options;
-    auto output_tensor = session_->Run(
-        run_options,
-        input_names.data(),
-        &input_tensor,
-        input_names.size(),
-        output_names.data(),
-        output_names.size());
+    auto output_tensor =
+        session_->Run(run_options, input_names.data(), &input_tensor, input_names.size(), output_names.data(), output_names.size());
 
     const float* raw_output = output_tensor[0].GetTensorData<float>();
     // output_shape is { 1, 5, 8400 }
@@ -119,9 +109,7 @@ NeuralNetworkDetector::ResultsVec NeuralNetworkDetector::detect(const cv::Rect& 
     // ......
     std::vector<std::vector<float>> output(output_shape[1]);
     for (int64_t i = 0; i < output_shape[1]; i++) {
-        output[i] = std::vector<float>(
-            raw_output + i * output_shape[2],
-            raw_output + (i + 1) * output_shape[2]);
+        output[i] = std::vector<float>(raw_output + i * output_shape[2], raw_output + (i + 1) * output_shape[2]);
     }
 
     ResultsVec raw_results;
@@ -154,9 +142,7 @@ NeuralNetworkDetector::ResultsVec NeuralNetworkDetector::detect(const cv::Rect& 
 
             Result res;
             res.cls_index = j - kConfidenceIndex;
-            res.label = res.cls_index < param_.labels.size()
-                            ? param_.labels[res.cls_index]
-                            : std::format("Unkonwn_{}", res.cls_index);
+            res.label = res.cls_index < param_.labels.size() ? param_.labels[res.cls_index] : std::format("Unkonwn_{}", res.cls_index);
             res.box = box;
             res.score = score;
 
@@ -211,14 +197,7 @@ cv::Mat NeuralNetworkDetector::draw_result(const cv::Rect& roi, const ResultsVec
             my_box.y,
             my_box.width,
             my_box.height);
-        cv::putText(
-            image_draw,
-            flag,
-            cv::Point(my_box.x, my_box.y - 5),
-            cv::FONT_HERSHEY_PLAIN,
-            1.2,
-            color,
-            1);
+        cv::putText(image_draw, flag, cv::Point(my_box.x, my_box.y - 5), cv::FONT_HERSHEY_PLAIN, 1.2, color, 1);
     }
 
     return image_draw;

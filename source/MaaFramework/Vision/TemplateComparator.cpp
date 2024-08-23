@@ -6,11 +6,7 @@
 
 MAA_VISION_NS_BEGIN
 
-TemplateComparator::TemplateComparator(
-    cv::Mat lhs,
-    cv::Mat rhs,
-    TemplateComparatorParam param,
-    std::string name)
+TemplateComparator::TemplateComparator(cv::Mat lhs, cv::Mat rhs, TemplateComparatorParam param, std::string name)
     : VisionBase(std::move(lhs), std::move(name))
     , rhs_image_(std::move(rhs))
     , param_(std::move(param))
@@ -33,8 +29,7 @@ void TemplateComparator::analyze()
     cherry_pick();
     auto cost = duration_since(start_time);
 
-    LogTrace << name_ << VAR(uid_) << VAR(all_results_) << VAR(filtered_results_)
-             << VAR(best_result_) << VAR(cost);
+    LogTrace << name_ << VAR(uid_) << VAR(all_results_) << VAR(filtered_results_) << VAR(best_result_) << VAR(cost);
 }
 
 TemplateComparator::ResultsVec TemplateComparator::compare_all_rois() const
@@ -60,9 +55,7 @@ TemplateComparator::ResultsVec TemplateComparator::compare_all_rois() const
 
 void TemplateComparator::add_results(ResultsVec results, double threshold)
 {
-    std::ranges::copy_if(results, std::back_inserter(filtered_results_), [&](const auto& res) {
-        return res.score > threshold;
-    });
+    std::ranges::copy_if(results, std::back_inserter(filtered_results_), [&](const auto& res) { return res.score > threshold; });
 
     merge_vector_(all_results_, std::move(results));
 }

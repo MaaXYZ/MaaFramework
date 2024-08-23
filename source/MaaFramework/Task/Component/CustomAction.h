@@ -4,8 +4,8 @@
 
 #include "API/MaaTypes.h"
 #include "MaaFramework/MaaDef.h"
-#include "Task/Context.h"
 #include "Resource/ResourceMgr.h"
+#include "Task/Context.h"
 
 MAA_TASK_NS_BEGIN
 

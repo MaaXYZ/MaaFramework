@@ -71,9 +71,8 @@ std::optional<cv::Mat> MumuExternalRendererIpc::screencap()
         display_buffer_.data());
 
     if (ret) {
-        LogError << "Failed to capture display" << VAR(ret) << VAR(mumu_handle_)
-                 << VAR(mumu_display_id_) << VAR(display_buffer_.size()) << VAR(display_width_)
-                 << VAR(display_height_) << VAR(capture_display_func_);
+        LogError << "Failed to capture display" << VAR(ret) << VAR(mumu_handle_) << VAR(mumu_display_id_) << VAR(display_buffer_.size())
+                 << VAR(display_width_) << VAR(display_height_) << VAR(capture_display_func_);
         return std::nullopt;
     }
 
@@ -128,15 +127,9 @@ bool MumuExternalRendererIpc::swipe(int x1, int y1, int x2, int y2, int duration
         x2,
         y2,
         duration,
-        [&](int x, int y) {
-            ret |= input_event_touch_down_func_(mumu_handle_, mumu_display_id_, x, y);
-        },
-        [&](int x, int y) {
-            ret |= input_event_touch_down_func_(mumu_handle_, mumu_display_id_, x, y);
-        },
-        [&]([[maybe_unused]] int x, [[maybe_unused]] int y) {
-            ret |= input_event_touch_up_func_(mumu_handle_, mumu_display_id_);
-        });
+        [&](int x, int y) { ret |= input_event_touch_down_func_(mumu_handle_, mumu_display_id_, x, y); },
+        [&](int x, int y) { ret |= input_event_touch_down_func_(mumu_handle_, mumu_display_id_, x, y); },
+        [&]([[maybe_unused]] int x, [[maybe_unused]] int y) { ret |= input_event_touch_up_func_(mumu_handle_, mumu_display_id_); });
 
     if (ret != 0) {
         LogError << "Failed to swipe" << VAR(ret);
@@ -275,29 +268,25 @@ bool MumuExternalRendererIpc::load_mumu_library()
         return false;
     }
 
-    input_event_touch_down_func_ =
-        get_function<decltype(nemu_input_event_touch_down)>(kInputEventTouchDownFuncName);
+    input_event_touch_down_func_ = get_function<decltype(nemu_input_event_touch_down)>(kInputEventTouchDownFuncName);
     if (!input_event_touch_down_func_) {
         LogError << "Failed to get function" << VAR(kInputEventTouchDownFuncName);
         return false;
     }
 
-    input_event_touch_up_func_ =
-        get_function<decltype(nemu_input_event_touch_up)>(kInputEventTouchUpFuncName);
+    input_event_touch_up_func_ = get_function<decltype(nemu_input_event_touch_up)>(kInputEventTouchUpFuncName);
     if (!input_event_touch_up_func_) {
         LogError << "Failed to get function" << VAR(kInputEventTouchUpFuncName);
         return false;
     }
 
-    input_event_key_down_func_ =
-        get_function<decltype(nemu_input_event_key_down)>(kInputEventKeyDownFuncName);
+    input_event_key_down_func_ = get_function<decltype(nemu_input_event_key_down)>(kInputEventKeyDownFuncName);
     if (!input_event_key_down_func_) {
         LogError << "Failed to get function" << VAR(kInputEventKeyDownFuncName);
         return false;
     }
 
-    input_event_key_up_func_ =
-        get_function<decltype(nemu_input_event_key_up)>(kInputEventKeyUpFuncName);
+    input_event_key_up_func_ = get_function<decltype(nemu_input_event_key_up)>(kInputEventKeyUpFuncName);
     if (!input_event_key_up_func_) {
         LogError << "Failed to get function" << VAR(kInputEventKeyUpFuncName);
         return false;
@@ -316,15 +305,12 @@ bool MumuExternalRendererIpc::connect_mumu()
     }
 
     std::u16string u16path = mumu_path_.u16string();
-    std::wstring wpath(
-        std::make_move_iterator(u16path.begin()),
-        std::make_move_iterator(u16path.end()));
+    std::wstring wpath(std::make_move_iterator(u16path.begin()), std::make_move_iterator(u16path.end()));
 
     mumu_handle_ = connect_func_(wpath.c_str(), mumu_index_);
 
     if (mumu_handle_ == 0) {
-        LogError << "Failed to connect mumu" << VAR(wpath) << VAR(mumu_index_)
-                 << VAR(connect_func_);
+        LogError << "Failed to connect mumu" << VAR(wpath) << VAR(mumu_index_) << VAR(connect_func_);
         return false;
     }
 
@@ -338,18 +324,11 @@ bool MumuExternalRendererIpc::init_screencap()
         return false;
     }
 
-    int ret = capture_display_func_(
-        mumu_handle_,
-        mumu_display_id_,
-        0,
-        &display_width_,
-        &display_height_,
-        nullptr);
+    int ret = capture_display_func_(mumu_handle_, mumu_display_id_, 0, &display_width_, &display_height_, nullptr);
 
     // mumu 的文档给错了，这里 0 才是成功
     if (ret) {
-        LogError << "Failed to capture display" << VAR(ret) << VAR(mumu_handle_)
-                 << VAR(mumu_display_id_) << VAR(capture_display_func_);
+        LogError << "Failed to capture display" << VAR(ret) << VAR(mumu_handle_) << VAR(mumu_display_id_) << VAR(capture_display_func_);
         return false;
     }
 

@@ -13,8 +13,7 @@ extern "C"
 
     MAA_CONTROL_UNIT_API const char* MaaDbgControlUnitGetVersion();
 
-    MAA_CONTROL_UNIT_API MaaControlUnitHandle
-        MaaDbgControlUnitCreate(MaaDbgControllerType type, const char* read_path);
+    MAA_CONTROL_UNIT_API MaaControlUnitHandle MaaDbgControlUnitCreate(MaaDbgControllerType type, const char* read_path);
 
     MAA_CONTROL_UNIT_API void MaaDbgControlUnitDestroy(MaaControlUnitHandle handle);
 

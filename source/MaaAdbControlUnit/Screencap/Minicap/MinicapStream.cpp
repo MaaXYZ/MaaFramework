@@ -18,19 +18,13 @@ MinicapStream::~MinicapStream()
 bool MinicapStream::parse(const json::value& config)
 {
     static const json::array kDefaultForwardArgv = {
-        "{ADB}",
-        "-s",
-        "{ADB_SERIAL}",
-        "forward",
-        "tcp:{FOWARD_PORT}",
-        "localabstract:{LOCAL_SOCKET}",
+        "{ADB}", "-s", "{ADB_SERIAL}", "forward", "tcp:{FOWARD_PORT}", "localabstract:{LOCAL_SOCKET}",
     };
     static constexpr int kDefaultPort = 1313;
 
     port_ = config.get("prebuilt", "minicap", "stream", "port", kDefaultPort);
 
-    return MinicapBase::parse(config)
-           && parse_command("ForwardSocket", config, kDefaultForwardArgv, forward_argv_);
+    return MinicapBase::parse(config) && parse_command("ForwardSocket", config, kDefaultForwardArgv, forward_argv_);
 }
 
 bool MinicapStream::init()
@@ -99,8 +93,7 @@ void MinicapStream::release_thread()
 
 bool MinicapStream::connect_and_check()
 {
-    merge_replacement(
-        { { "{FOWARD_PORT}", std::to_string(port_) }, { "{LOCAL_SOCKET}", "minicap" } });
+    merge_replacement({ { "{FOWARD_PORT}", std::to_string(port_) }, { "{LOCAL_SOCKET}", "minicap" } });
 
     auto argv_opt = forward_argv_.gen(argv_replace_);
     if (!argv_opt) {
@@ -112,13 +105,7 @@ bool MinicapStream::connect_and_check()
         return false;
     }
 
-    pipe_ios_ = binary_->invoke_bin(std::format(
-        "-P {}x{}@{}x{}/{}",
-        display_width_,
-        display_height_,
-        display_width_,
-        display_height_,
-        0));
+    pipe_ios_ = binary_->invoke_bin(std::format("-P {}x{}@{}x{}/{}", display_width_, display_height_, display_width_, display_height_, 0));
 
     if (!pipe_ios_) {
         LogError << "pipe_ios_ is nullptr";
@@ -160,9 +147,8 @@ bool MinicapStream::connect_and_check()
     }
     header = *reinterpret_cast<const MinicapHeader*>(data->data());
 
-    LogInfo << VAR(header.version) << VAR(header.size) << VAR(header.pid) << VAR(header.real_width)
-            << VAR(header.real_height) << VAR(header.virt_width) << VAR(header.virt_height)
-            << VAR(header.orientation) << VAR(header.flags);
+    LogInfo << VAR(header.version) << VAR(header.size) << VAR(header.pid) << VAR(header.real_width) << VAR(header.real_height)
+            << VAR(header.virt_width) << VAR(header.virt_height) << VAR(header.orientation) << VAR(header.flags);
 
     if (header.version != 1 || header.size < sizeof(header)) {
         return false;

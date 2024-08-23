@@ -42,8 +42,7 @@ public: // MaaResource
     virtual MaaBool running() const override;
     virtual MaaBool clear() override;
 
-    virtual void
-        register_custom_recognizer(const std::string& name, MaaCustomRecognizerCallback recognizer, void* trans_arg) override;
+    virtual void register_custom_recognizer(const std::string& name, MaaCustomRecognizerCallback recognizer, void* trans_arg) override;
     virtual void unregister_custom_recognizer(const std::string& name) override;
     virtual void clear_custom_recognizer() override;
     virtual void register_custom_action(const std::string& name, MaaCustomActionCallback action, void* trans_arg) override;

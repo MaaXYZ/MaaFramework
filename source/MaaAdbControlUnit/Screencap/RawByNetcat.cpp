@@ -9,26 +9,14 @@ MAA_CTRL_UNIT_NS_BEGIN
 bool ScreencapRawByNetcat::parse(const json::value& config)
 {
     static const json::array kDefaultScreencapRawByNetcatArgv = {
-        "{ADB}",
-        "-s",
-        "{ADB_SERIAL}",
-        "exec-out",
-        "screencap | nc -w 3 {NETCAT_ADDRESS} {NETCAT_PORT}",
+        "{ADB}", "-s", "{ADB_SERIAL}", "exec-out", "screencap | nc -w 3 {NETCAT_ADDRESS} {NETCAT_PORT}",
     };
     static const json::array kDefaultNetcatAddressArgv = {
         "{ADB}", "-s", "{ADB_SERIAL}", "shell", "cat /proc/net/arp | grep : ",
     };
 
-    return parse_command(
-               "ScreencapRawByNetcat",
-               config,
-               kDefaultScreencapRawByNetcatArgv,
-               screencap_raw_by_netcat_argv_)
-           && parse_command(
-               "NetcatAddress",
-               config,
-               kDefaultNetcatAddressArgv,
-               netcat_address_argv_);
+    return parse_command("ScreencapRawByNetcat", config, kDefaultScreencapRawByNetcatArgv, screencap_raw_by_netcat_argv_)
+           && parse_command("NetcatAddress", config, kDefaultNetcatAddressArgv, netcat_address_argv_);
 }
 
 bool ScreencapRawByNetcat::init()
@@ -67,8 +55,7 @@ std::optional<cv::Mat> ScreencapRawByNetcat::screencap()
     }
 
     auto port = io_factory_->port();
-    merge_replacement(
-        { { "{NETCAT_ADDRESS}", netcat_address_ }, { "{NETCAT_PORT}", std::to_string(port) } });
+    merge_replacement({ { "{NETCAT_ADDRESS}", netcat_address_ }, { "{NETCAT_PORT}", std::to_string(port) } });
 
     auto argv_opt = screencap_raw_by_netcat_argv_.gen(argv_replace_);
     if (!argv_opt) {

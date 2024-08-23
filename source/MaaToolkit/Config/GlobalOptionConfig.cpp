@@ -12,9 +12,7 @@
 
 MAA_TOOLKIT_NS_BEGIN
 
-bool GlobalOptionConfig::init(
-    const std::filesystem::path& user_path,
-    const json::value& default_config)
+bool GlobalOptionConfig::init(const std::filesystem::path& user_path, const json::value& default_config)
 {
     LogFunc << VAR(user_path);
 
@@ -71,28 +69,15 @@ bool GlobalOptionConfig::apply_option()
     MaaBool ret = true;
 
     std::string logging_dir = option_.logging ? path_to_utf8_string(debug_dir_) : "";
-    ret &= MaaSetGlobalOption(
-        MaaGlobalOption_LogDir,
-        static_cast<void*>(logging_dir.data()),
-        logging_dir.size());
+    ret &= MaaSetGlobalOption(MaaGlobalOption_LogDir, static_cast<void*>(logging_dir.data()), logging_dir.size());
 
-    ret &=
-        MaaSetGlobalOption(MaaGlobalOption_SaveDraw, &option_.save_draw, sizeof(option_.save_draw));
+    ret &= MaaSetGlobalOption(MaaGlobalOption_SaveDraw, &option_.save_draw, sizeof(option_.save_draw));
 
-    ret &= MaaSetGlobalOption(
-        MaaGlobalOption_Recording,
-        &option_.recording,
-        sizeof(option_.recording));
+    ret &= MaaSetGlobalOption(MaaGlobalOption_Recording, &option_.recording, sizeof(option_.recording));
 
-    ret &= MaaSetGlobalOption(
-        MaaGlobalOption_StdoutLevel,
-        &option_.stdout_level,
-        sizeof(option_.stdout_level));
+    ret &= MaaSetGlobalOption(MaaGlobalOption_StdoutLevel, &option_.stdout_level, sizeof(option_.stdout_level));
 
-    ret &= MaaSetGlobalOption(
-        MaaGlobalOption_ShowHitDraw,
-        &option_.show_hit_draw,
-        sizeof(option_.show_hit_draw));
+    ret &= MaaSetGlobalOption(MaaGlobalOption_ShowHitDraw, &option_.show_hit_draw, sizeof(option_.show_hit_draw));
 
     LogTrace << VAR(ret);
     return ret;

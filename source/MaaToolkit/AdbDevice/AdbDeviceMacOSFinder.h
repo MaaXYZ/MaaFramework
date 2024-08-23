@@ -2,8 +2,8 @@
 
 #if defined(__APPLE__)
 
-#include "Conf/Conf.h"
 #include "AdbDeviceFinder.h"
+#include "Conf/Conf.h"
 #include "Utils/SingletonHolder.hpp"
 
 MAA_TOOLKIT_NS_BEGIN

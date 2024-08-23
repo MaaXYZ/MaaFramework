@@ -23,10 +23,7 @@ std::optional<cv::Mat> BackBufferScreencap::screencap()
     HRESULT ret = S_OK;
 
     ID3D11Texture2D* back_buffer = nullptr;
-    ret = dxgi_swap_chain_->GetBuffer(
-        0,
-        __uuidof(ID3D11Texture2D),
-        reinterpret_cast<void**>(&back_buffer));
+    ret = dxgi_swap_chain_->GetBuffer(0, __uuidof(ID3D11Texture2D), reinterpret_cast<void**>(&back_buffer));
     if (FAILED(ret)) {
         LogError << "GetBuffer failed" << VAR(ret);
         return std::nullopt;

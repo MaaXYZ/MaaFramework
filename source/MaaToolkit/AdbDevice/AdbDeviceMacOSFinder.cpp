@@ -12,9 +12,7 @@ AdbDeviceMacOSFinder::AdbDeviceMacOSFinder()
 {
     std::unordered_map<std::string, EmulatorConstantData> emulators = {
         { "Nox",
-          { .keyword = "Nox",
-            .adb_candidate_paths = { "adb"_path },
-            .adb_common_serials = { "127.0.0.1:62001", "127.0.0.1:59865" } } },
+          { .keyword = "Nox", .adb_candidate_paths = { "adb"_path }, .adb_common_serials = { "127.0.0.1:62001", "127.0.0.1:59865" } } },
 
         { "MuMuPlayerPro",
           { .keyword = "MuMuEmulator",

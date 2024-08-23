@@ -14,9 +14,8 @@
 
 MAA_CTRL_UNIT_NS_BEGIN
 
-std::optional<cv::Mat> ScreencapHelper::process_data(
-    std::string& buffer,
-    std::function<std::optional<cv::Mat>(const std::string& buffer)> decoder)
+std::optional<cv::Mat>
+    ScreencapHelper::process_data(std::string& buffer, std::function<std::optional<cv::Mat>(const std::string& buffer)> decoder)
 {
     bool tried_clean = false;
 
@@ -150,8 +149,7 @@ std::optional<cv::Mat> ScreencapHelper::decode_jpg(const std::string& buffer)
 
 std::optional<cv::Mat> ScreencapHelper::decode(const std::string& buffer)
 {
-    cv::Mat img =
-        cv::imdecode({ buffer.data(), static_cast<int>(buffer.size()) }, cv::IMREAD_COLOR);
+    cv::Mat img = cv::imdecode({ buffer.data(), static_cast<int>(buffer.size()) }, cv::IMREAD_COLOR);
     return img.empty() ? std::nullopt : std::make_optional(img);
 }
 
@@ -190,18 +188,14 @@ bool ScreencapHelper::clean_cr(std::string& buffer)
     return true;
 }
 
-bool ScreencapHelper::check_head_tail(
-    std::string_view input,
-    std::string_view head,
-    std::string_view tail)
+bool ScreencapHelper::check_head_tail(std::string_view input, std::string_view head, std::string_view tail)
 {
     if (input.size() < head.size() || input.size() < tail.size()) {
         LogError << "input too short" << VAR(input) << VAR(head) << VAR(tail);
         return false;
     }
 
-    if (input.substr(0, head.size()) != head
-        || input.substr(input.size() - tail.size(), tail.size()) != tail) {
+    if (input.substr(0, head.size()) != head || input.substr(input.size() - tail.size(), tail.size()) != tail) {
         LogError << "head or tail mismatch" << VAR(input) << VAR(head) << VAR(tail);
         return false;
     }

@@ -33,8 +33,7 @@ extern "C"
         MaaBool (*connect)(void* trans_arg);
 
         /// Write result to buffer.
-        MaaBool (
-            *request_uuid)(void* trans_arg, /* out */ MaaStringBuffer* buffer);
+        MaaBool (*request_uuid)(void* trans_arg, /* out */ MaaStringBuffer* buffer);
 
         MaaBool (*start_app)(const char* intent, void* trans_arg);
         MaaBool (*stop_app)(const char* intent, void* trans_arg);
@@ -44,27 +43,11 @@ extern "C"
 
         MaaBool (*click)(int32_t x, int32_t y, void* trans_arg);
 
-        MaaBool (*swipe)(
-            int32_t x1,
-            int32_t y1,
-            int32_t x2,
-            int32_t y2,
-            int32_t duration,
-            void* trans_arg);
+        MaaBool (*swipe)(int32_t x1, int32_t y1, int32_t x2, int32_t y2, int32_t duration, void* trans_arg);
 
-        MaaBool (*touch_down)(
-            int32_t contact,
-            int32_t x,
-            int32_t y,
-            int32_t pressure,
-            void* trans_arg);
+        MaaBool (*touch_down)(int32_t contact, int32_t x, int32_t y, int32_t pressure, void* trans_arg);
 
-        MaaBool (*touch_move)(
-            int32_t contact,
-            int32_t x,
-            int32_t y,
-            int32_t pressure,
-            void* trans_arg);
+        MaaBool (*touch_move)(int32_t contact, int32_t x, int32_t y, int32_t pressure, void* trans_arg);
 
         MaaBool (*touch_up)(int32_t contact, void* trans_arg);
 

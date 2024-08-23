@@ -28,27 +28,11 @@ os_string to_osstring(std::string_view utf8_str)
 
 std::string wide_to_multi(os_string_view os_str, UINT code)
 {
-    int len = WideCharToMultiByte(
-        code,
-        0,
-        os_str.data(),
-        (int)os_str.size(),
-        nullptr,
-        0,
-        nullptr,
-        nullptr);
+    int len = WideCharToMultiByte(code, 0, os_str.data(), (int)os_str.size(), nullptr, 0, nullptr, nullptr);
 
     std::string result(len, 0);
 
-    WideCharToMultiByte(
-        code,
-        0,
-        os_str.data(),
-        (int)os_str.size(),
-        result.data(),
-        len,
-        nullptr,
-        nullptr);
+    WideCharToMultiByte(code, 0, os_str.data(), (int)os_str.size(), result.data(), len, nullptr, nullptr);
 
     return result;
 }

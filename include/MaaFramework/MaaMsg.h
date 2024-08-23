@@ -132,7 +132,6 @@
 #define MaaMsg_Task_Debug_Hit ("Task.Debug.Hit")
 /// @}
 
-
 /**
  * @{
  * @brief Message for the recognition.
@@ -159,7 +158,6 @@
 #define MaaMsg_Task_Debug_ReadyToRun ("Task.Debug.ReadyToRun")
 #define MaaMsg_Task_Debug_Completed ("Task.Debug.Completed")
 /// @}
-
 
 /**
  * @{

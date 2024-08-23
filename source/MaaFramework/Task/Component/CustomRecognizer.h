@@ -5,8 +5,8 @@
 #include "API/MaaTypes.h"
 #include "MaaFramework/MaaDef.h"
 #include "Resource/ResourceMgr.h"
-#include "Vision/VisionBase.h"
 #include "Task/Context.h"
+#include "Vision/VisionBase.h"
 
 MAA_TASK_NS_BEGIN
 
@@ -36,7 +36,7 @@ private:
 private:
     std::string name_;
     MAA_RES_NS::CustomRecognizerSession session_;
-    
+
     Context& context_;
     const MAA_VISION_NS::CustomRecognizerParam& param_;
 };

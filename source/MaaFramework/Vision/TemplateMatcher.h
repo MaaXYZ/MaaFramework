@@ -22,11 +22,7 @@ class TemplateMatcher
     , public RecoResultAPI<TemplateMatcherResult>
 {
 public:
-    TemplateMatcher(
-        cv::Mat image,
-        TemplateMatcherParam param,
-        std::vector<std::shared_ptr<cv::Mat>> templates,
-        std::string name = "");
+    TemplateMatcher(cv::Mat image, TemplateMatcherParam param, std::vector<std::shared_ptr<cv::Mat>> templates, std::string name = "");
 
 private:
     void analyze();

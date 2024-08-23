@@ -14,7 +14,9 @@ struct ColorMatcherResult
     MEO_JSONIZATION(box, count);
 };
 
-class ColorMatcher : public VisionBase, public RecoResultAPI<ColorMatcherResult>
+class ColorMatcher
+    : public VisionBase
+    , public RecoResultAPI<ColorMatcherResult>
 {
 public:
     ColorMatcher(cv::Mat image, ColorMatcherParam param, std::string name = "");
@@ -30,11 +32,7 @@ private:
 private:
     ResultsVec count_non_zero(const cv::Mat& bin, const cv::Point& tl) const;
     ResultsVec count_non_zero_with_connected(const cv::Mat& bin, const cv::Point& tl) const;
-    cv::Mat draw_result(
-        const cv::Rect& roi,
-        const cv::Mat& color,
-        const cv::Mat& bin,
-        const ResultsVec& results) const;
+    cv::Mat draw_result(const cv::Rect& roi, const cv::Mat& color, const cv::Mat& bin, const ResultsVec& results) const;
 
     void sort_(ResultsVec& results) const;
 

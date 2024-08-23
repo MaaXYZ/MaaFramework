@@ -29,11 +29,7 @@ class NeuralNetworkDetector
     , public RecoResultAPI<NeuralNetworkDetectorResult>
 {
 public:
-    NeuralNetworkDetector(
-        cv::Mat image,
-        NeuralNetworkDetectorParam param,
-        std::shared_ptr<Ort::Session> session,
-        std::string name = "");
+    NeuralNetworkDetector(cv::Mat image, NeuralNetworkDetectorParam param, std::shared_ptr<Ort::Session> session, std::string name = "");
 
 private:
     void analyze();
