@@ -32,7 +32,7 @@ public:
     {
     }
 
-    virtual ~AdbDeviceBuffer() = default;
+    virtual ~AdbDeviceBuffer() override = default;
 
     virtual const std::string& name() const override { return name_; }
 
@@ -59,4 +59,5 @@ MAA_TOOLKIT_NS_END
 
 struct MaaToolkitAdbDeviceList : public MAA_NS::ListBuffer<MAA_TOOLKIT_NS::AdbDeviceBuffer>
 {
+    virtual ~MaaToolkitAdbDeviceList() override = default;
 };

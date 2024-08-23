@@ -84,4 +84,5 @@ MAA_NS_END
 
 struct MaaImageListBuffer : public MAA_NS::ListBuffer<MAA_NS::ImageBuffer>
 {
+    virtual ~MaaImageListBuffer() override = default;
 };
