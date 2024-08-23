@@ -10,6 +10,7 @@
 #include <iostream>
 #include <mutex>
 #include <ranges>
+#include <source_location>
 #include <sstream>
 #include <thread>
 #include <tuple>
@@ -186,8 +187,22 @@ private:
         }
     }
 
-    template <typename... args_t>
-    void stream_props(args_t&&... args)
+    static constexpr std::string_view pretty_file(std::string_view file)
+    {
+        size_t pos = file.find_last_of(std::filesystem::path::preferred_separator);
+        return file.substr(pos + 1, file.size());
+    }
+
+    void stream_props(const std::source_location& loc)
+    {
+        stream_props(std::format(
+            "[{}][L{}][{}]",
+            LogStream::pretty_file(loc.file_name()),
+            loc.line(),
+            loc.function_name()));
+    }
+
+    void stream_props(std::string_view prefix)
     {
 #ifdef _WIN32
         int pid = _getpid();
@@ -197,10 +212,7 @@ private:
         auto tid = static_cast<uint16_t>(std::hash<std::thread::id> {}(std::this_thread::get_id()));
 
         std::string props =
-            std::format("[{}][{}][Px{}][Tx{}]", format_now(), level_str(), pid, tid);
-        for (auto&& arg : { args... }) {
-            props += std::format("[{}]", arg);
-        }
+            std::format("[{}][{}][Px{}][Tx{}]{}", format_now(), level_str(), pid, tid, prefix);
         stream(props, sep_);
     }
 

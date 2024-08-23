@@ -230,7 +230,7 @@ void Logger::log_proc_info()
 
 LogStream Logger::internal_dbg()
 {
-    return debug("Logger");
+    return stream(level::debug, "Logger");
 }
 
 std::string StringConverter::operator()(const std::filesystem::path& path) const
