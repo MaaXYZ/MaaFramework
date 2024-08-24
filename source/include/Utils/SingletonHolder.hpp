@@ -3,7 +3,7 @@
 #include <type_traits>
 
 #include "Conf/Conf.h"
-#include "NonCopyable.hpp"
+#include "Utils/NonCopyable.hpp"
 
 MAA_NS_BEGIN
 

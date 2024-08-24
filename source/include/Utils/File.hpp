@@ -1,7 +1,10 @@
 #pragma once
 
 #include <filesystem>
+#include <fstream>
 #include <ranges>
+
+#include "Conf/Conf.h"
 
 MAA_NS_BEGIN
 

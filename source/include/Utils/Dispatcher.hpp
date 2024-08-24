@@ -1,9 +1,10 @@
 #pragma once
 
-#include "Conf/Conf.h"
-
 #include <functional>
+#include <memory>
 #include <unordered_set>
+
+#include "Conf/Conf.h"
 
 MAA_NS_BEGIN
 
