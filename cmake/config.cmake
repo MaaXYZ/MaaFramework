@@ -19,6 +19,9 @@ if(MSVC)
     add_compile_options("/wd4127") # conditional expression is constant
     add_compile_options("/wd4251") # export dll with templates
 
+    add_compile_options("/DWINVER=0x0A00")
+    add_compile_options("/D_WIN32_WINNT=0x0A00")
+
     # https://github.com/actions/runner-images/issues/10004 https://github.com/microsoft/STL/releases/tag/vs-2022-17.10
     add_compile_definitions("_DISABLE_CONSTEXPR_MUTEX_CONSTRUCTOR")
 

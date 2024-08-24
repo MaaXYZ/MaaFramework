@@ -1,13 +1,14 @@
 #pragma once
+
 #include <filesystem>
 #include <fstream>
 #include <string>
 #include <vector>
 
-#include "NoWarningCV.hpp"
+#include "Utils/NoWarningCV.hpp"
 
-#include "File.hpp"
-#include "Platform.h"
+#include "Utils/File.hpp"
+#include "Utils/Platform.h"
 
 MAA_NS_BEGIN
 

@@ -12,6 +12,7 @@
 
 namespace json::ext
 {
+
 template <>
 class jsonization<std::filesystem::path>
 {
@@ -57,4 +58,5 @@ public:
         return true;
     }
 };
+
 } // namespace json::ext
