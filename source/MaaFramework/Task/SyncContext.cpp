@@ -126,7 +126,7 @@ bool SyncContext::click(int x, int y)
 
 bool SyncContext::swipe(int x1, int y1, int x2, int y2, int duration)
 {
-    LogFunc << VAR(x1) << VAR(x2) << VAR(y1) << VAR(y2) << VAR(duration);
+    LogFunc << VAR(x1) << VAR(y1) << VAR(x2) << VAR(y2) << VAR(duration);
 
     auto* ctrl = controller();
     if (!ctrl) {
@@ -134,7 +134,7 @@ bool SyncContext::swipe(int x1, int y1, int x2, int y2, int duration)
         return false;
     }
 
-    auto id = ctrl->post_swipe(x1, x2, y1, y2, duration);
+    auto id = ctrl->post_swipe(x1, y1, x2, y2, duration);
     return ctrl->wait(id) == MaaStatus_Success;
 }
 
