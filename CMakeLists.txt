@@ -15,6 +15,7 @@ option(WITH_ADB_CONTROLLER "build with adb controller" ON)
 option(WITH_WIN32_CONTROLLER "build with win32 controller" ON)
 option(WITH_DBG_CONTROLLER "build with debugging controller" ON)
 option(WITH_THRIFT_CONTROLLER "build with thrift controller" OFF)
+option(ENABLE_CCACHE "enable ccache if possible" ON)
 
 option(BUILD_SAMPLE "build a demo" OFF)
 
@@ -57,6 +58,16 @@ find_package(ONNXRuntime)
 
 if(WITH_THRIFT_CONTROLLER)
     find_package(Thrift CONFIG REQUIRED)
+endif()
+
+find_program(CCACHE_PROG ccache)
+
+if(CCACHE_PROG)
+    message("Find ccache at ${CCACHE_PROG}")
+    if(ENABLE_CCACHE)
+        set(CMAKE_C_COMPILER_LAUNCHER ${CCACHE_PROG})
+        set(CMAKE_CXX_COMPILER_LAUNCHER ${CCACHE_PROG})
+    endif()
 endif()
 
 add_subdirectory(3rdparty)
