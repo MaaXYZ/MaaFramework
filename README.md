@@ -44,12 +44,12 @@ _✨ 基于图像识别的自动化黑盒测试框架 ✨_
 
 ## 最佳实践
 
-- [M9A](https://github.com/MaaXYZ/M9A) 1999 小助手 ![Pipeline](https://img.shields.io/badge/Pipeline-%23454545?logo=codecademy&logoColor=%23FFFFFF&color=%23454545
-)    
+- [M9A](https://github.com/MaaXYZ/M9A) 1999 小助手 ![Pipeline](https://img.shields.io/badge/Pipeline-%23454545?logo=codecademy&logoColor=%23FFFFFF&color=%23454545)    
   基于全新架构的 亿韭韭韭 小助手。图像技术 + 模拟控制，解放双手！由 MaaFramework 强力驱动！
 
-- [MAAIP](https://github.com/Arcelibs/MAAIP) 基於 MAA 框架技術的 idolypride 自動化程序  
-  由 Github 上最火熱的 lk99 開源套件 MaaFramework 製作
+- [MES](https://github.com/Arcelibs/MES) 永恆靈魂 自動化程序 ![Pipeline](https://img.shields.io/badge/Pipeline-%23454545?logo=codecademy&logoColor=%23FFFFFF&color=%23454545)
+  
+  基于全新架构的 永恆靈魂 小助手。图像技术 + 模拟控制，让手去做它该做的事！由 MaaFramework 强力驱动！
 
 - [MAABH3](https://github.com/MaaXYZ/MAABH3) 《崩坏3》小助手 | A one-click tool for the daily tasks of Honkai Impact. ![cpp](https://img.shields.io/badge/C%2B%2B-00599C?logo=c%2B%2B&logoColor=white)  
   基于全新架构的 蹦蹦蹦 小助手。图像技术 + 模拟控制，解放双手！由 MaaFramework 强力驱动！
