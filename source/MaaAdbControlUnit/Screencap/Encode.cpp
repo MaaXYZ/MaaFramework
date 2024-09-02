@@ -10,11 +10,7 @@ bool ScreencapEncode::parse(const json::value& config)
         "{ADB}", "-s", "{ADB_SERIAL}", "exec-out", "screencap -p",
     };
 
-    return parse_command(
-        "ScreencapEncode",
-        config,
-        kDefaultScreencapEncodeArgv,
-        screencap_encode_argv_);
+    return parse_command("ScreencapEncode", config, kDefaultScreencapEncodeArgv, screencap_encode_argv_);
 }
 
 std::optional<cv::Mat> ScreencapEncode::screencap()

@@ -8,7 +8,6 @@
 
 #include "API/MaaTypes.h"
 #include "Base/AsyncRunner.hpp"
-#include "Instance/InstanceInternalAPI.hpp"
 #include "Utils/MessageNotifier.hpp"
 #include "Utils/NoWarningCVMat.hpp"
 
@@ -56,14 +55,7 @@ struct AppParam
     std::string package;
 };
 
-using Param = std::variant<
-    std::monostate,
-    ClickParam,
-    SwipeParam,
-    TouchParam,
-    PressKeyParam,
-    InputTextParam,
-    AppParam>;
+using Param = std::variant<std::monostate, ClickParam, SwipeParam, TouchParam, PressKeyParam, InputTextParam, AppParam>;
 
 struct Action
 {
@@ -88,23 +80,22 @@ struct Action
 
 std::ostream& operator<<(std::ostream& os, const Action& action);
 
-class ControllerAgent : public MaaControllerAPI
+class ControllerAgent : public MaaController
 {
 public:
-    ControllerAgent(MaaControllerCallback callback, MaaCallbackTransparentArg callback_arg);
-
+    ControllerAgent(MaaNotificationCallback callback, void* callback_arg);
     virtual ~ControllerAgent() override;
 
-    virtual bool
-        set_option(MaaCtrlOption key, MaaOptionValue value, MaaOptionValueSize val_size) override;
+public: // MaaController
+    virtual bool set_option(MaaCtrlOption key, MaaOptionValue value, MaaOptionValueSize val_size) override;
 
     virtual MaaCtrlId post_connection() override;
     virtual MaaCtrlId post_click(int x, int y) override;
     virtual MaaCtrlId post_swipe(int x1, int y1, int x2, int y2, int duration) override;
     virtual MaaCtrlId post_press_key(int keycode) override;
-    virtual MaaCtrlId post_input_text(std::string_view text) override;
-    virtual MaaCtrlId post_start_app(std::string_view intent) override;
-    virtual MaaCtrlId post_stop_app(std::string_view intent) override;
+    virtual MaaCtrlId post_input_text(const std::string& text) override;
+    virtual MaaCtrlId post_start_app(const std::string& intent) override;
+    virtual MaaCtrlId post_stop_app(const std::string& intent) override;
     virtual MaaCtrlId post_screencap() override;
 
     virtual MaaCtrlId post_touch_down(int contact, int x, int y, int pressure) override;
@@ -116,13 +107,12 @@ public:
     virtual MaaBool connected() const override;
     virtual MaaBool running() const override;
 
-    virtual cv::Mat get_image() override;
+    virtual cv::Mat cached_image() const override;
     virtual std::string get_uuid() override;
 
 public:
-    virtual void post_stop() override;
+    void post_stop();
 
-public:
     bool click(const cv::Rect& r);
     bool click(const cv::Point& p);
     bool swipe(const cv::Rect& r1, const cv::Rect& r2, int duration);
@@ -151,16 +141,16 @@ protected:
     virtual bool _input_text(InputTextParam param) = 0;
 
 protected:
-    MessageNotifier<MaaControllerCallback> notifier;
+    MessageNotifier<MaaNotificationCallback> notifier;
 
 private:
     MaaCtrlId post_connection_impl();
     MaaCtrlId post_click_impl(int x, int y);
     MaaCtrlId post_swipe_impl(int x1, int y1, int x2, int y2, int duration);
     MaaCtrlId post_press_key_impl(int keycode);
-    MaaCtrlId post_input_text_impl(std::string_view text);
-    MaaCtrlId post_start_app_impl(std::string_view text);
-    MaaCtrlId post_stop_app_impl(std::string_view text);
+    MaaCtrlId post_input_text_impl(const std::string& text);
+    MaaCtrlId post_start_app_impl(const std::string& text);
+    MaaCtrlId post_stop_app_impl(const std::string& text);
     MaaCtrlId post_screencap_impl();
 
     MaaCtrlId post_touch_down_impl(int contact, int x, int y, int pressure);
@@ -181,10 +171,7 @@ private:
 
     bool recording() const;
     void init_recording();
-    void append_recording(
-        json::value info,
-        const std::chrono::steady_clock::time_point& start_time,
-        bool success);
+    void append_recording(json::value info, const std::chrono::steady_clock::time_point& start_time, bool success);
 
     MaaCtrlId post(Action action);
     void focus_id(MaaCtrlId id);

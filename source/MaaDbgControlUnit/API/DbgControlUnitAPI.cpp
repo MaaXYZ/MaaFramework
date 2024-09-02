@@ -1,20 +1,18 @@
 #include "ControlUnit/DbgControlUnitAPI.h"
 
-#include <meojson/json.hpp>
-
 #include "CarouselImage/CarouselImage.h"
 #include "ReplayRecording/ReplayRecordingMgr.h"
 #include "Utils/Logger.h"
 #include "Utils/Platform.h"
 
-MaaStringView MaaDbgControlUnitGetVersion()
+const char* MaaDbgControlUnitGetVersion()
 {
 #pragma message("MaaDbgControlUnit MAA_VERSION: " MAA_VERSION)
 
     return MAA_VERSION;
 }
 
-MaaControlUnitHandle MaaDbgControlUnitCreate(MaaDbgControllerType type, MaaStringView read_path)
+MaaControlUnitHandle MaaDbgControlUnitCreate(MaaDbgControllerType type, const char* read_path)
 {
     LogFunc << VAR(type) << VAR(read_path);
 

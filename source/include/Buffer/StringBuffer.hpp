@@ -38,4 +38,5 @@ MAA_NS_END
 
 struct MaaStringListBuffer : public MAA_NS::ListBuffer<MAA_NS::StringBuffer>
 {
+    virtual ~MaaStringListBuffer() override = default;
 };

@@ -27,8 +27,8 @@ void TemplateMatcher::analyze()
     }
 
     if (templates_.size() != param_.thresholds.size()) {
-        LogError << name_ << VAR(uid_) << "templates.size() != thresholds.size()"
-                 << VAR(templates_.size()) << VAR(param_.thresholds.size());
+        LogError << name_ << VAR(uid_) << "templates.size() != thresholds.size()" << VAR(templates_.size())
+                 << VAR(param_.thresholds.size());
         return;
     }
 
@@ -47,15 +47,13 @@ void TemplateMatcher::analyze()
     cherry_pick();
 
     auto cost = duration_since(start_time);
-    LogTrace << name_ << VAR(uid_) << VAR(all_results_) << VAR(filtered_results_)
-             << VAR(best_result_) << VAR(cost);
+    LogTrace << name_ << VAR(uid_) << VAR(all_results_) << VAR(filtered_results_) << VAR(best_result_) << VAR(cost);
 }
 
 TemplateMatcher::ResultsVec TemplateMatcher::match_all_rois(const cv::Mat& templ) const
 {
     if (templ.empty()) {
-        LogWarn << name_ << VAR(uid_) << "template is empty" << VAR(param_.template_paths)
-                << VAR(templ.size());
+        LogWarn << name_ << VAR(uid_) << "template is empty" << VAR(param_.template_paths) << VAR(templ.size());
         return {};
     }
 
@@ -72,8 +70,7 @@ TemplateMatcher::ResultsVec TemplateMatcher::match_all_rois(const cv::Mat& templ
     }
 }
 
-TemplateMatcher::ResultsVec
-    TemplateMatcher::template_match(const cv::Rect& roi, const cv::Mat& templ) const
+TemplateMatcher::ResultsVec TemplateMatcher::template_match(const cv::Rect& roi, const cv::Mat& templ) const
 {
     cv::Mat image = image_with_roi(roi);
 
@@ -124,10 +121,7 @@ TemplateMatcher::ResultsVec
     return nms_results;
 }
 
-cv::Mat TemplateMatcher::draw_result(
-    const cv::Rect& roi,
-    const cv::Mat& templ,
-    const ResultsVec& results) const
+cv::Mat TemplateMatcher::draw_result(const cv::Rect& roi, const cv::Mat& templ, const ResultsVec& results) const
 {
     cv::Mat image_draw = draw_roi(roi);
     const auto color = cv::Scalar(0, 0, 255);
@@ -136,34 +130,12 @@ cv::Mat TemplateMatcher::draw_result(
         const auto& res = results.at(i);
         cv::rectangle(image_draw, res.box, color, 1);
 
-        std::string flag = std::format(
-            "{}: {:.3f}, [{}, {}, {}, {}]",
-            i,
-            res.score,
-            res.box.x,
-            res.box.y,
-            res.box.width,
-            res.box.height);
-        cv::putText(
-            image_draw,
-            flag,
-            cv::Point(res.box.x, res.box.y - 5),
-            cv::FONT_HERSHEY_PLAIN,
-            1.2,
-            color,
-            1);
+        std::string flag = std::format("{}: {:.3f}, [{}, {}, {}, {}]", i, res.score, res.box.x, res.box.y, res.box.width, res.box.height);
+        cv::putText(image_draw, flag, cv::Point(res.box.x, res.box.y - 5), cv::FONT_HERSHEY_PLAIN, 1.2, color, 1);
     }
 
     int raw_width = image_.cols;
-    cv::copyMakeBorder(
-        image_draw,
-        image_draw,
-        0,
-        0,
-        0,
-        templ.cols,
-        cv::BORDER_CONSTANT,
-        cv::Scalar(0, 0, 0));
+    cv::copyMakeBorder(image_draw, image_draw, 0, 0, 0, templ.cols, cv::BORDER_CONSTANT, cv::Scalar(0, 0, 0));
     cv::Mat draw_templ_roi = image_draw(cv::Rect(raw_width, 0, templ.cols, templ.rows));
     templ.copyTo(draw_templ_roi);
 
@@ -176,9 +148,7 @@ cv::Mat TemplateMatcher::draw_result(
 
 void TemplateMatcher::add_results(ResultsVec results, double threshold)
 {
-    std::ranges::copy_if(results, std::back_inserter(filtered_results_), [&](const auto& res) {
-        return res.score > threshold;
-    });
+    std::ranges::copy_if(results, std::back_inserter(filtered_results_), [&](const auto& res) { return res.score > threshold; });
 
     merge_vector_(all_results_, std::move(results));
 }

@@ -14,11 +14,7 @@ MAA_SUPPRESS_CV_WARNINGS_END
 
 MAA_VISION_NS_BEGIN
 
-FeatureMatcher::FeatureMatcher(
-    cv::Mat image,
-    FeatureMatcherParam param,
-    std::vector<std::shared_ptr<cv::Mat>> templates,
-    std::string name)
+FeatureMatcher::FeatureMatcher(cv::Mat image, FeatureMatcherParam param, std::vector<std::shared_ptr<cv::Mat>> templates, std::string name)
     : VisionBase(std::move(image), std::move(name))
     , param_(std::move(param))
     , templates_(std::move(templates))
@@ -47,8 +43,7 @@ void FeatureMatcher::analyze()
     cherry_pick();
 
     auto cost = duration_since(start_time);
-    LogTrace << name_ << VAR(uid_) << VAR(all_results_) << VAR(filtered_results_)
-             << VAR(best_result_) << VAR(cost);
+    LogTrace << name_ << VAR(uid_) << VAR(all_results_) << VAR(filtered_results_) << VAR(best_result_) << VAR(cost);
 }
 
 FeatureMatcher::ResultsVec FeatureMatcher::match_all_rois(const cv::Mat& templ) const
@@ -61,11 +56,7 @@ FeatureMatcher::ResultsVec FeatureMatcher::match_all_rois(const cv::Mat& templ) 
     auto [keypoints_1, descriptors_1] = detect(templ, create_mask(templ, param_.green_mask));
 
     if (param_.roi.empty()) {
-        return feature_match(
-            templ,
-            keypoints_1,
-            descriptors_1,
-            cv::Rect(0, 0, image_.cols, image_.rows));
+        return feature_match(templ, keypoints_1, descriptors_1, cv::Rect(0, 0, image_.cols, image_.rows));
     }
     else {
         ResultsVec results;
@@ -93,13 +84,7 @@ FeatureMatcher::ResultsVec FeatureMatcher::feature_match(
     auto match_points = match(descriptors_1, descriptors_2);
 
     std::vector<cv::DMatch> good_matches;
-    ResultsVec results = feature_postproc(
-        match_points,
-        keypoints_1,
-        keypoints_2,
-        templ.cols,
-        templ.rows,
-        good_matches);
+    ResultsVec results = feature_postproc(match_points, keypoints_1, keypoints_2, templ.cols, templ.rows, good_matches);
 
     if (debug_draw_) {
         auto draw = draw_result(templ, keypoints_1, roi_2, keypoints_2, good_matches, results);
@@ -135,8 +120,7 @@ cv::Ptr<cv::Feature2D> FeatureMatcher::create_detector() const
     return nullptr;
 }
 
-std::pair<std::vector<cv::KeyPoint>, cv::Mat>
-    FeatureMatcher::detect(const cv::Mat& image, const cv::Mat& mask) const
+std::pair<std::vector<cv::KeyPoint>, cv::Mat> FeatureMatcher::detect(const cv::Mat& image, const cv::Mat& mask) const
 {
     auto detector = create_detector();
     if (!detector) {
@@ -169,8 +153,7 @@ cv::Ptr<cv::DescriptorMatcher> FeatureMatcher::create_matcher() const
     return nullptr;
 }
 
-std::vector<std::vector<cv::DMatch>>
-    FeatureMatcher::match(const cv::Mat& descriptors_1, const cv::Mat& descriptors_2) const
+std::vector<std::vector<cv::DMatch>> FeatureMatcher::match(const cv::Mat& descriptors_1, const cv::Mat& descriptors_2) const
 {
     if (descriptors_1.empty() || descriptors_2.empty()) {
         LogWarn << name_ << "descriptors is empty";
@@ -217,8 +200,7 @@ FeatureMatcher::ResultsVec FeatureMatcher::feature_postproc(
         scene.emplace_back(keypoints_2[point[0].queryIdx].pt);
     }
 
-    LogTrace << name_ << VAR(uid_) << "Match:" << VAR(good_matches.size())
-             << VAR(match_points.size()) << VAR(param_.distance_ratio);
+    LogTrace << name_ << VAR(uid_) << "Match:" << VAR(good_matches.size()) << VAR(match_points.size()) << VAR(param_.distance_ratio);
 
     if (good_matches.size() < 4) {
         return {};
@@ -238,23 +220,13 @@ FeatureMatcher::ResultsVec FeatureMatcher::feature_postproc(
     std::array<cv::Point2d, 4> scene_corners;
     cv::perspectiveTransform(obj_corners, scene_corners, homography);
 
-    double x = std::min(
-        { scene_corners[0].x, scene_corners[1].x, scene_corners[2].x, scene_corners[3].x });
-    double y = std::min(
-        { scene_corners[0].y, scene_corners[1].y, scene_corners[2].y, scene_corners[3].y });
-    double w =
-        std::max({ scene_corners[0].x, scene_corners[1].x, scene_corners[2].x, scene_corners[3].x })
-        - x;
-    double h =
-        std::max({ scene_corners[0].y, scene_corners[1].y, scene_corners[2].y, scene_corners[3].y })
-        - y;
-    cv::Rect box { static_cast<int>(x),
-                   static_cast<int>(y),
-                   static_cast<int>(w),
-                   static_cast<int>(h) };
+    double x = std::min({ scene_corners[0].x, scene_corners[1].x, scene_corners[2].x, scene_corners[3].x });
+    double y = std::min({ scene_corners[0].y, scene_corners[1].y, scene_corners[2].y, scene_corners[3].y });
+    double w = std::max({ scene_corners[0].x, scene_corners[1].x, scene_corners[2].x, scene_corners[3].x }) - x;
+    double h = std::max({ scene_corners[0].y, scene_corners[1].y, scene_corners[2].y, scene_corners[3].y }) - y;
+    cv::Rect box { static_cast<int>(x), static_cast<int>(y), static_cast<int>(w), static_cast<int>(h) };
 
-    size_t count =
-        std::ranges::count_if(scene, [&box](const auto& point) { return box.contains(point); });
+    size_t count = std::ranges::count_if(scene, [&box](const auto& point) { return box.contains(point); });
 
     return { Result { .box = box, .count = static_cast<int>(count) } };
 }
@@ -278,21 +250,8 @@ cv::Mat FeatureMatcher::draw_result(
         const auto& res = results.at(i);
         cv::rectangle(image_draw, res.box, color, 1);
 
-        std::string flag = std::format(
-            "Cnt: {}, [{}, {}, {}, {}]",
-            res.count,
-            res.box.x,
-            res.box.y,
-            res.box.width,
-            res.box.height);
-        cv::putText(
-            image_draw,
-            flag,
-            cv::Point(res.box.x, res.box.y - 5),
-            cv::FONT_HERSHEY_PLAIN,
-            1.2,
-            color,
-            1);
+        std::string flag = std::format("Cnt: {}, [{}, {}, {}, {}]", res.count, res.box.x, res.box.y, res.box.width, res.box.height);
+        cv::putText(image_draw, flag, cv::Point(res.box.x, res.box.y - 5), cv::FONT_HERSHEY_PLAIN, 1.2, color, 1);
     }
 
     return image_draw;
@@ -300,9 +259,7 @@ cv::Mat FeatureMatcher::draw_result(
 
 void FeatureMatcher::add_results(ResultsVec results, int count)
 {
-    std::ranges::copy_if(results, std::back_inserter(filtered_results_), [&](const auto& res) {
-        return res.count >= count;
-    });
+    std::ranges::copy_if(results, std::back_inserter(filtered_results_), [&](const auto& res) { return res.count >= count; });
 
     merge_vector_(all_results_, std::move(results));
 }

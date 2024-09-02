@@ -7,15 +7,14 @@
 #include "Utils/Logger.h"
 #include "Utils/Platform.h"
 
-MaaResourceHandle
-    MaaResourceCreate(MaaResourceCallback callback, MaaCallbackTransparentArg callback_arg)
+MaaResource* MaaResourceCreate(MaaNotificationCallback callback, void* callback_arg)
 {
     LogFunc << VAR_VOIDP(callback) << VAR_VOIDP(callback_arg);
 
     return new MAA_RES_NS::ResourceMgr(callback, callback_arg);
 }
 
-void MaaResourceDestroy(MaaResourceHandle res)
+void MaaResourceDestroy(MaaResource* res)
 {
     LogFunc << VAR_VOIDP(res);
 
@@ -27,7 +26,85 @@ void MaaResourceDestroy(MaaResourceHandle res)
     delete res;
 }
 
-MaaResId MaaResourcePostPath(MaaResourceHandle res, MaaStringView path)
+MaaBool MaaResourceRegisterCustomRecognizer(MaaResource* res, const char* name, MaaCustomRecognizerCallback recognizer, void* trans_arg)
+{
+    LogFunc << VAR_VOIDP(res) << VAR(name) << VAR_VOIDP(recognizer) << VAR_VOIDP(trans_arg);
+
+    if (!res || !name || !recognizer) {
+        LogError << "handle is null";
+        return false;
+    }
+
+    res->register_custom_recognizer(name, recognizer, trans_arg);
+    return true;
+}
+
+MaaBool MaaResourceUnregisterCustomRecognizer(MaaResource* res, const char* name)
+{
+    LogFunc << VAR_VOIDP(res) << VAR(name);
+
+    if (!res || !name) {
+        LogError << "handle is null";
+        return false;
+    }
+
+    res->unregister_custom_recognizer(name);
+    return true;
+}
+
+MaaBool MaaResourceClearCustomRecognizer(MaaResource* res)
+{
+    LogFunc << VAR_VOIDP(res);
+
+    if (!res) {
+        LogError << "handle is null";
+        return false;
+    }
+
+    res->clear_custom_recognizer();
+    return true;
+}
+
+MaaBool MaaResourceRegisterCustomAction(MaaResource* res, const char* name, MaaCustomActionCallback action, void* trans_arg)
+{
+    LogFunc << VAR_VOIDP(res) << VAR(name) << VAR_VOIDP(action) << VAR_VOIDP(trans_arg);
+
+    if (!res || !name || !action) {
+        LogError << "handle is null";
+        return false;
+    }
+
+    res->register_custom_action(name, action, trans_arg);
+    return true;
+}
+
+MaaBool MaaResourceUnregisterCustomAction(MaaResource* res, const char* name)
+{
+    LogFunc << VAR_VOIDP(res) << VAR(name);
+
+    if (!res || !name) {
+        LogError << "handle is null";
+        return false;
+    }
+
+    res->unregister_custom_action(name);
+    return true;
+}
+
+MaaBool MaaResourceClearCustomAction(MaaResource* res)
+{
+    LogFunc << VAR_VOIDP(res);
+
+    if (!res) {
+        LogError << "handle is null";
+        return false;
+    }
+
+    res->clear_custom_action();
+    return true;
+}
+
+MaaResId MaaResourcePostPath(MaaResource* res, const char* path)
 {
     LogFunc << VAR_VOIDP(res) << VAR(path);
 
@@ -39,7 +116,7 @@ MaaResId MaaResourcePostPath(MaaResourceHandle res, MaaStringView path)
     return res->post_path(MAA_NS::path(path));
 }
 
-MaaBool MaaResourceClear(MaaResourceHandle res)
+MaaBool MaaResourceClear(MaaResource* res)
 {
     LogFunc << VAR_VOIDP(res);
 
@@ -51,7 +128,7 @@ MaaBool MaaResourceClear(MaaResourceHandle res)
     return res->clear();
 }
 
-MaaStatus MaaResourceStatus(MaaResourceHandle res, MaaResId id)
+MaaStatus MaaResourceStatus(const MaaResource* res, MaaResId id)
 {
     // LogFunc << VAR_VOIDP(res) << VAR(id);
 
@@ -63,7 +140,7 @@ MaaStatus MaaResourceStatus(MaaResourceHandle res, MaaResId id)
     return res->status(id);
 }
 
-MaaStatus MaaResourceWait(MaaResourceHandle res, MaaResId id)
+MaaStatus MaaResourceWait(const MaaResource* res, MaaResId id)
 {
     // LogFunc << VAR_VOIDP(res) << VAR(id);
 
@@ -75,7 +152,7 @@ MaaStatus MaaResourceWait(MaaResourceHandle res, MaaResId id)
     return res->wait(id);
 }
 
-MaaBool MaaResourceLoaded(MaaResourceHandle res)
+MaaBool MaaResourceLoaded(const MaaResource* res)
 {
     // LogFunc << VAR_VOIDP(res);
 
@@ -87,11 +164,7 @@ MaaBool MaaResourceLoaded(MaaResourceHandle res)
     return res->valid();
 }
 
-MaaBool MaaResourceSetOption(
-    MaaResourceHandle res,
-    MaaResOption key,
-    MaaOptionValue value,
-    MaaOptionValueSize val_size)
+MaaBool MaaResourceSetOption(MaaResource* res, MaaResOption key, MaaOptionValue value, MaaOptionValueSize val_size)
 {
     LogFunc << VAR_VOIDP(res) << VAR(key) << VAR_VOIDP(value) << VAR(val_size);
 
@@ -103,7 +176,7 @@ MaaBool MaaResourceSetOption(
     return res->set_option(key, value, val_size);
 }
 
-MaaBool MaaResourceGetHash(MaaResourceHandle res, MaaStringBufferHandle buffer)
+MaaBool MaaResourceGetHash(const MaaResource* res, MaaStringBuffer* buffer)
 {
     if (!res || !buffer) {
         LogError << "handle is null";
@@ -120,7 +193,7 @@ MaaBool MaaResourceGetHash(MaaResourceHandle res, MaaStringBufferHandle buffer)
     return true;
 }
 
-MaaBool MaaResourceGetTaskList(MaaResourceHandle res, /* out */ MaaStringBufferHandle buffer)
+MaaBool MaaResourceGetTaskList(const MaaResource* res, /* out */ MaaStringBuffer* buffer)
 {
     if (!res || !buffer) {
         LogError << "handle is null";

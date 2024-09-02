@@ -12,9 +12,7 @@ MAA_CTRL_UNIT_NS_BEGIN
 class ScreencapHelper
 {
 public:
-    std::optional<cv::Mat> process_data(
-        std::string& buffer,
-        std::function<std::optional<cv::Mat>(const std::string& buffer)> decoder);
+    std::optional<cv::Mat> process_data(std::string& buffer, std::function<std::optional<cv::Mat>(const std::string& buffer)> decoder);
 
     static std::optional<cv::Mat> decode_raw(const std::string& buffer);
     static std::optional<cv::Mat> decode_gzip(const std::string& buffer);

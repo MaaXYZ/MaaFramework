@@ -14,7 +14,6 @@ option(USE_MAADEPS "use third-party libraries built by MaaDeps" ON)
 option(WITH_ADB_CONTROLLER "build with adb controller" ON)
 option(WITH_WIN32_CONTROLLER "build with win32 controller" ON)
 option(WITH_DBG_CONTROLLER "build with debugging controller" ON)
-option(WITH_THRIFT_CONTROLLER "build with thrift controller" OFF)
 option(ENABLE_CCACHE "enable ccache if possible" ON)
 
 option(BUILD_SAMPLE "build a demo" OFF)
@@ -46,22 +45,13 @@ if(WITH_WIN32_CONTROLLER AND NOT WIN32)
     set(WITH_WIN32_CONTROLLER OFF)
 endif()
 
-if(WITH_THRIFT_CONTROLLER)
-    include(${PROJECT_SOURCE_DIR}/cmake/thrift-gen.cmake)
-endif()
-
 find_package(OpenCV REQUIRED COMPONENTS core imgproc imgcodecs)
 find_package(Boost REQUIRED COMPONENTS system)
 find_package(ZLIB REQUIRED)
 find_package(fastdeploy_ppocr REQUIRED)
 find_package(ONNXRuntime)
 
-if(WITH_THRIFT_CONTROLLER)
-    find_package(Thrift CONFIG REQUIRED)
-endif()
-
 find_program(CCACHE_PROG ccache)
-
 if(CCACHE_PROG)
     message("Find ccache at ${CCACHE_PROG}")
     if(ENABLE_CCACHE)

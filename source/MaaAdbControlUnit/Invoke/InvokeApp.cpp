@@ -44,8 +44,7 @@ bool InvokeApp::parse(const json::value& config)
     static const json::array kDefaultRemoveFileArgv = {
         "{ADB}", "-s", "{ADB_SERIAL}", "shell", "rm \"/data/local/tmp/{TO_REMOVED_FILE}\"",
     };
-    return parse_command("Abilist", config, kDefaultAbilistArgv, abilist_argv_)
-           && parse_command("SDK", config, kDefaultSdkArgv, sdk_argv_)
+    return parse_command("Abilist", config, kDefaultAbilistArgv, abilist_argv_) && parse_command("SDK", config, kDefaultSdkArgv, sdk_argv_)
            && parse_command("PushBin", config, kDefaultPushBinArgv, push_bin_argv_)
            && parse_command("ChmodBin", config, kDefaultChmodBinArgv, chmod_bin_argv_)
            && parse_command("InvokeBin", config, kDefaultInvokeBinArgv, invoke_bin_argv_)
@@ -149,6 +148,10 @@ bool InvokeApp::remove()
     if (!pushed_) {
         LogTrace << "Not pushed, skip remove";
         return true;
+    }
+    if (tempname_.empty()) {
+        LogWarn << "tempname_ is empty";
+        return false;
     }
 
     merge_replacement({ { "{TO_REMOVED_FILE}", tempname_ } });

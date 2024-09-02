@@ -26,25 +26,11 @@ cv::Mat VisionBase::draw_roi(const cv::Rect& roi, const cv::Mat& base) const
     cv::Mat image_draw = base.empty() ? image_.clone() : base;
     const cv::Scalar color(0, 255, 0);
 
-    cv::putText(
-        image_draw,
-        name_,
-        cv::Point(5, image_.rows - 5),
-        cv::FONT_HERSHEY_SIMPLEX,
-        1,
-        color,
-        2);
+    cv::putText(image_draw, name_, cv::Point(5, image_.rows - 5), cv::FONT_HERSHEY_SIMPLEX, 1, color, 2);
 
     cv::rectangle(image_draw, roi, color, 1);
     std::string flag = std::format("ROI: [{}, {}, {}, {}]", roi.x, roi.y, roi.width, roi.height);
-    cv::putText(
-        image_draw,
-        flag,
-        cv::Point(roi.x, roi.y - 5),
-        cv::FONT_HERSHEY_PLAIN,
-        1.2,
-        color,
-        1);
+    cv::putText(image_draw, flag, cv::Point(roi.x, roi.y - 5), cv::FONT_HERSHEY_PLAIN, 1.2, color, 1);
 
     return image_draw;
 }

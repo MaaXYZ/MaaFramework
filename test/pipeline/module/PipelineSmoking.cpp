@@ -11,7 +11,7 @@ bool pipeline_smoking(const std::filesystem::path& testset_dir)
         testing_path.string().c_str(),
         result_path.string().c_str(),
         MaaDbgControllerType_ReplayRecording,
-        MaaTaskParam_Empty,
+        "{}",
         nullptr,
         nullptr);
 
@@ -24,23 +24,23 @@ bool pipeline_smoking(const std::filesystem::path& testset_dir)
     MaaControllerWait(controller_handle, ctrl_id);
     MaaResourceWait(resource_handle, res_id);
 
-    auto maa_handle = MaaCreate(nullptr, nullptr);
-    MaaBindResource(maa_handle, resource_handle);
-    MaaBindController(maa_handle, controller_handle);
+    auto tasker_handle = MaaTaskerCreate(nullptr, nullptr);
+    MaaTaskerBindResource(tasker_handle, resource_handle);
+    MaaTaskerBindController(tasker_handle, controller_handle);
 
     auto destroy = [&]() {
-        MaaDestroy(maa_handle);
+        MaaTaskerDestroy(tasker_handle);
         MaaResourceDestroy(resource_handle);
         MaaControllerDestroy(controller_handle);
     };
 
-    if (!MaaInited(maa_handle)) {
+    if (!MaaTaskerInited(tasker_handle)) {
         destroy();
         return false;
     }
 
-    auto task_id = MaaPostTask(maa_handle, "Wilderness", MaaTaskParam_Empty);
-    auto status = MaaWaitTask(maa_handle, task_id);
+    auto task_id = MaaTaskerPostPipeline(tasker_handle, "Wilderness", "{}");
+    auto status = MaaTaskerWait(tasker_handle, task_id);
 
     destroy();
 

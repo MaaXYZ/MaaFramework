@@ -22,11 +22,7 @@ private:
     void select_adb_auto_detect();
     void select_adb_manual_input();
 
-    bool select_win32_hwnd(
-        const MAA_PROJECT_INTERFACE_NS::InterfaceData::Controller::Win32Config& win32_config);
-    MaaWin32Hwnd select_win32_multiple_hwnd(
-        const MAA_PROJECT_INTERFACE_NS::InterfaceData::Controller::Win32Config& win32_config);
-    static std::string get_hwnd_info(MaaWin32Hwnd hwnd);
+    bool select_win32_hwnd(const MAA_PROJECT_INTERFACE_NS::InterfaceData::Controller::Win32Config& win32_config);
 
     void select_resource();
     void add_task();
@@ -40,10 +36,8 @@ private:
 
     void mpause() const;
 
-    static void on_maafw_notify(
-        MaaStringView msg,
-        MaaStringView details_json,
-        MaaTransparentArg callback_arg);
+    static void on_maafw_notify(const char* msg, const char* details_json, void* callback_arg);
+    static std::string format_win32_config(const MAA_PROJECT_INTERFACE_NS::Configuration::Win32Config& win32_config);
 
 private:
     MAA_PROJECT_INTERFACE_NS::Configurator config_;

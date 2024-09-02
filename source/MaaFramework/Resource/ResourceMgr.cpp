@@ -8,7 +8,7 @@
 
 MAA_RES_NS_BEGIN
 
-ResourceMgr::ResourceMgr(MaaResourceCallback callback, MaaCallbackTransparentArg callback_arg)
+ResourceMgr::ResourceMgr(MaaNotificationCallback callback, void* callback_arg)
     : notifier(callback, callback_arg)
 {
     LogFunc << VAR_VOIDP(callback) << VAR_VOIDP(callback_arg);
@@ -35,7 +35,7 @@ bool ResourceMgr::set_option(MaaResOption key, MaaOptionValue value, MaaOptionVa
     return false;
 }
 
-MaaResId ResourceMgr::post_path(std::filesystem::path path)
+MaaResId ResourceMgr::post_path(const std::filesystem::path& path)
 {
     LogInfo << VAR(path);
 
@@ -51,7 +51,7 @@ MaaResId ResourceMgr::post_path(std::filesystem::path path)
         return MaaInvalidId;
     }
 
-    return res_loader_->post(std::move(path));
+    return res_loader_->post(path);
 }
 
 MaaStatus ResourceMgr::status(MaaResId res_id) const
@@ -157,15 +157,93 @@ MaaBool ResourceMgr::clear()
     template_res_.clear();
     paths_.clear();
     hash_cache_.clear();
+    clear_custom_recognizer();
+    clear_custom_action();
 
     valid_ = true;
 
     return true;
 }
 
-bool ResourceMgr::run_load(
-    typename AsyncRunner<std::filesystem::path>::Id id,
-    std::filesystem::path path)
+void ResourceMgr::register_custom_recognizer(const std::string& name, MaaCustomRecognizerCallback recognizer, void* trans_arg)
+{
+    LogTrace << VAR(name) << VAR_VOIDP(recognizer) << VAR_VOIDP(trans_arg);
+
+    if (name.empty() || !recognizer) {
+        LogError << "empty name or handle";
+        return;
+    }
+    custom_recoginzer_sessions_.insert_or_assign(name, CustomRecognizerSession { .recoginzer = recognizer, .trans_arg = trans_arg });
+}
+
+void ResourceMgr::unregister_custom_recognizer(const std::string& name)
+{
+    LogTrace << VAR(name);
+
+    if (name.empty()) {
+        LogError << "empty name or handle";
+        return;
+    }
+    custom_recoginzer_sessions_.erase(name);
+}
+
+void ResourceMgr::clear_custom_recognizer()
+{
+    LogTrace;
+
+    custom_recoginzer_sessions_.clear();
+}
+
+void ResourceMgr::register_custom_action(const std::string& name, MaaCustomActionCallback action, void* trans_arg)
+{
+    LogTrace << VAR(name) << VAR_VOIDP(action) << VAR_VOIDP(trans_arg);
+
+    if (name.empty() || !action) {
+        LogError << "empty name or handle";
+        return;
+    }
+    custom_action_sessions_.insert_or_assign(name, CustomActionSession { .action = action, .trans_arg = trans_arg });
+}
+
+void ResourceMgr::unregister_custom_action(const std::string& name)
+{
+    LogTrace << VAR(name);
+
+    if (name.empty()) {
+        LogError << "empty name or handle";
+        return;
+    }
+    custom_action_sessions_.erase(name);
+}
+
+void ResourceMgr::clear_custom_action()
+{
+    LogTrace;
+
+    custom_action_sessions_.clear();
+}
+
+CustomRecognizerSession ResourceMgr::custom_recognizer(const std::string& name) const
+{
+    auto it = custom_recoginzer_sessions_.find(name);
+    if (it == custom_recoginzer_sessions_.end()) {
+        return {};
+    }
+
+    return it->second;
+}
+
+CustomActionSession ResourceMgr::custom_action(const std::string& name) const
+{
+    auto it = custom_action_sessions_.find(name);
+    if (it == custom_action_sessions_.end()) {
+        return {};
+    }
+
+    return it->second;
+}
+
+bool ResourceMgr::run_load(typename AsyncRunner<std::filesystem::path>::Id id, std::filesystem::path path)
 {
     LogFunc << VAR(id) << VAR(path);
 
@@ -179,9 +257,7 @@ bool ResourceMgr::run_load(
     valid_ = load(path);
 
     details.emplace("hash", get_hash());
-    notifier.notify(
-        valid_ ? MaaMsg_Resource_LoadingCompleted : MaaMsg_Resource_LoadingFailed,
-        details);
+    notifier.notify(valid_ ? MaaMsg_Resource_LoadingCompleted : MaaMsg_Resource_LoadingFailed, details);
 
     return valid_;
 }

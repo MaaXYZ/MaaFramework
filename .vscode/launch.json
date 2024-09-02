@@ -24,18 +24,6 @@
             "args": [],
             "cwd": "${workspaceFolder}",
             "preLaunchTask": "build_picli"
-        },
-        {
-            "name": "MaaHttp - Debug",
-            "type": "cppdbg",
-            "request": "launch",
-            "program": "${workspaceFolder}/build/bin/Debug/MaaHttp",
-            "args": [],
-            "stopAtEntry": false,
-            "cwd": "${fileDirname}",
-            "environment": [],
-            "externalConsole": false,
-            "MIMode": "lldb"
         }
     ]
 }

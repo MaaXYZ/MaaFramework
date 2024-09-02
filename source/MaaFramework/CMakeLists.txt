@@ -25,10 +25,6 @@ if(WITH_WIN32_CONTROLLER)
     add_dependencies(MaaFramework MaaWin32ControlUnit)
 endif()
 
-if(WITH_THRIFT_CONTROLLER)
-    add_dependencies(MaaFramework MaaThriftControlUnit)
-endif()
-
 if(WITH_DBG_CONTROLLER)
     add_dependencies(MaaFramework MaaDbgControlUnit)
 endif()

@@ -16,10 +16,8 @@ concept AppendableBytesContainer = requires(ContainerType a) {
     requires std::ranges::contiguous_range<ContainerType>;
     requires ByteValueType<typename ContainerType::value_type>;
     requires std::is_constructible_v<ContainerType>;
-    requires std::is_constructible_v<
-        ContainerType,
-        size_t,
-        typename ContainerType::value_type>; // std::string(count, ch),
+    requires std::is_constructible_v<ContainerType, size_t,
+                                     typename ContainerType::value_type>; // std::string(count, ch),
     // std::vector(count, value)
     a.insert(a.end(), a.begin(), a.begin() + 1);
     a.resize(a.size());

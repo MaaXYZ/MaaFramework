@@ -109,8 +109,7 @@ struct CustomParam
     json::value custom_param;
 };
 
-using Param = std::
-    variant<std::monostate, ClickParam, SwipeParam, KeyParam, TextParam, AppParam, CustomParam>;
+using Param = std::variant<std::monostate, ClickParam, SwipeParam, KeyParam, TextParam, AppParam, CustomParam>;
 } // namespace Action
 
 struct WaitFreezesParam
@@ -123,30 +122,27 @@ struct WaitFreezesParam
     int method = MAA_VISION_NS::TemplateMatcherParam::kDefaultMethod;
 };
 
-struct TaskData
+struct PipelineData
 {
     using NextList = std::vector<std::string>;
 
     std::string name;
-    bool is_sub = false;
-    bool inverse = false;
+    bool is_sub = false; // for compatibility
     bool enabled = true;
 
     Recognition::Type rec_type = Recognition::Type::DirectHit;
     Recognition::Param rec_param = MAA_VISION_NS::DirectHitParam {};
+    bool inverse = false;
 
     Action::Type action_type = Action::Type::DoNothing;
     Action::Param action_param;
+
     NextList next;
+    NextList catch_next;
+    std::chrono::milliseconds next_timeout = std::chrono::milliseconds(20 * 1000);
 
-    std::chrono::milliseconds timeout = std::chrono::milliseconds(20 * 1000);
-    NextList timeout_next;
-
-    uint times_limit = UINT_MAX;
-    NextList runout_next;
-
-    std::chrono::milliseconds pre_delay = std::chrono::milliseconds(200);
-    std::chrono::milliseconds post_delay = std::chrono::milliseconds(500);
+    std::chrono::milliseconds pre_delay;
+    std::chrono::milliseconds post_delay;
 
     WaitFreezesParam pre_wait_freezes;
     WaitFreezesParam post_wait_freezes;

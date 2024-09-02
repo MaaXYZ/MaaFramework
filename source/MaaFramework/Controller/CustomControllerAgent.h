@@ -1,5 +1,6 @@
 #pragma once
 #include "ControllerAgent.h"
+#include "MaaFramework/Instance/MaaCustomController.h"
 #include "MaaFramework/MaaDef.h"
 
 MAA_CTRL_NS_BEGIN
@@ -7,11 +8,7 @@ MAA_CTRL_NS_BEGIN
 class CustomControllerAgent : public ControllerAgent
 {
 public:
-    CustomControllerAgent(
-        MaaCustomControllerHandle handle,
-        MaaTransparentArg handle_arg,
-        MaaControllerCallback callback,
-        MaaCallbackTransparentArg callback_arg);
+    CustomControllerAgent(MaaCustomControllerCallbacks* handle, void* handle_arg, MaaNotificationCallback callback, void* callback_arg);
     virtual ~CustomControllerAgent() override = default;
 
 protected:
@@ -29,8 +26,8 @@ protected:
     virtual bool _input_text(InputTextParam param) override;
 
 private:
-    MaaCustomControllerHandle handle_ = nullptr;
-    MaaTransparentArg handle_arg_ = nullptr;
+    MaaCustomControllerCallbacks* handle_ = nullptr;
+    void* handle_arg_ = nullptr;
 };
 
 MAA_CTRL_NS_END

@@ -4,6 +4,7 @@
 
 #include <filesystem>
 
+#include "AdbShellInput.h"
 #include "Invoke/InvokeApp.h"
 
 MAA_CTRL_UNIT_NS_BEGIN
@@ -15,6 +16,7 @@ public:
         : agent_path_(std::move(agent_path))
     {
         children_.emplace_back(invoke_app_);
+        children_.emplace_back(adb_shell_input_);
     }
 
     virtual ~MinitouchInput() override;
@@ -22,20 +24,17 @@ public:
 public: // from UnitBase
     virtual bool parse(const json::value& config) override;
 
-public: // from TouchInputAPI
+public: // from InputBase
     virtual bool init() override;
     virtual void deinit() override;
 
-protected: // from MtouchHelper
-    virtual std::pair<int, int> screen_to_touch(int x, int y) override
-    {
-        return _screen_to_touch(x, y);
-    }
+    virtual bool press_key(int key) override;
+    virtual bool input_text(const std::string& text) override;
 
-    virtual std::pair<int, int> screen_to_touch(double x, double y) override
-    {
-        return _screen_to_touch(x, y);
-    }
+protected: // from MtouchHelper
+    virtual std::pair<int, int> screen_to_touch(int x, int y) override { return _screen_to_touch(x, y); }
+
+    virtual std::pair<int, int> screen_to_touch(double x, double y) override { return _screen_to_touch(x, y); }
 
 private:
     template <typename T1, typename T2>
@@ -63,6 +62,7 @@ private:
     std::filesystem::path agent_path_;
     std::vector<std::string> arch_list_;
     std::shared_ptr<InvokeApp> invoke_app_ = std::make_shared<InvokeApp>();
+    std::shared_ptr<AdbShellInput> adb_shell_input_ = std::make_shared<AdbShellInput>();
 };
 
 MAA_CTRL_UNIT_NS_END

@@ -2,14 +2,11 @@
 
 #include "MaaDef.h" // IWYU pragma: export
 
+#include "Instance/MaaContext.h"
 #include "Instance/MaaController.h"
 #include "Instance/MaaCustomController.h"
-#include "Instance/MaaInstance.h"
 #include "Instance/MaaResource.h"
-
-#include "Task/MaaCustomAction.h"
-#include "Task/MaaCustomRecognizer.h"
-#include "Task/MaaSyncContext.h"
+#include "Instance/MaaTasker.h"
 
 #include "Utility/MaaBuffer.h"
 #include "Utility/MaaUtility.h"
@@ -24,9 +21,9 @@
  *
  * For starter, take a look at the following pages:
  *
- * - MaaInstance.h
+ * - MaaTasker.h
  * - MaaController.h
  * - MaaResource.h
- * - MaaToolkitDevice.h
+ * - MaaContext.h
  *
  */

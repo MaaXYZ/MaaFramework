@@ -389,12 +389,3 @@ class MaaCustomControllerAPI(ctypes.Structure):
 
 
 MaaCustomControllerHandle = ctypes.POINTER(MaaCustomControllerAPI)
-
-
-MaaThriftControllerType = ctypes.c_int32
-
-
-class MaaThriftControllerTypeEnum:
-    Invalid: MaaThriftControllerType = 0
-    Socket: MaaThriftControllerType = 1
-    UnixDomainSocket: MaaThriftControllerType = 2

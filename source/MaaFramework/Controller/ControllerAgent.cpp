@@ -10,18 +10,13 @@ MAA_CTRL_NS_BEGIN
 
 std::minstd_rand ControllerAgent::rand_engine_(std::random_device {}());
 
-ControllerAgent::ControllerAgent(
-    MaaControllerCallback callback,
-    MaaCallbackTransparentArg callback_arg)
+ControllerAgent::ControllerAgent(MaaNotificationCallback callback, void* callback_arg)
     : notifier(callback, callback_arg)
 {
     LogFunc << VAR_VOIDP(callback) << VAR_VOIDP(callback_arg);
 
-    action_runner_ = std::make_unique<AsyncRunner<Action>>(std::bind(
-        &ControllerAgent::run_action,
-        this,
-        std::placeholders::_1,
-        std::placeholders::_2));
+    action_runner_ =
+        std::make_unique<AsyncRunner<Action>>(std::bind(&ControllerAgent::run_action, this, std::placeholders::_1, std::placeholders::_2));
 }
 
 ControllerAgent::~ControllerAgent()
@@ -33,10 +28,7 @@ ControllerAgent::~ControllerAgent()
     }
 }
 
-bool ControllerAgent::set_option(
-    MaaCtrlOption key,
-    MaaOptionValue value,
-    MaaOptionValueSize val_size)
+bool ControllerAgent::set_option(MaaCtrlOption key, MaaOptionValue value, MaaOptionValueSize val_size)
 {
     LogInfo << VAR(key) << VAR(value) << VAR(val_size);
 
@@ -88,21 +80,21 @@ MaaCtrlId ControllerAgent::post_press_key(int keycode)
     return id;
 }
 
-MaaCtrlId ControllerAgent::post_input_text(std::string_view text)
+MaaCtrlId ControllerAgent::post_input_text(const std::string& text)
 {
     auto id = post_input_text_impl(text);
     focus_id(id);
     return id;
 }
 
-MaaCtrlId ControllerAgent::post_start_app(std::string_view intent)
+MaaCtrlId ControllerAgent::post_start_app(const std::string& intent)
 {
     auto id = post_start_app_impl(intent);
     focus_id(id);
     return id;
 }
 
-MaaCtrlId ControllerAgent::post_stop_app(std::string_view intent)
+MaaCtrlId ControllerAgent::post_stop_app(const std::string& intent)
 {
     auto id = post_stop_app_impl(intent);
     focus_id(id);
@@ -165,7 +157,7 @@ MaaBool ControllerAgent::connected() const
     return connected_;
 }
 
-cv::Mat ControllerAgent::get_image()
+cv::Mat ControllerAgent::cached_image() const
 {
     return image_;
 }
@@ -316,21 +308,21 @@ MaaCtrlId ControllerAgent::post_press_key_impl(int keycode)
     return post({ .type = Action::Type::press_key, .param = std::move(param) });
 }
 
-MaaCtrlId ControllerAgent::post_input_text_impl(std::string_view text)
+MaaCtrlId ControllerAgent::post_input_text_impl(const std::string& text)
 {
-    InputTextParam param { .text = std::string(text) };
+    InputTextParam param { .text = text };
     return post({ .type = Action::Type::input_text, .param = std::move(param) });
 }
 
-MaaCtrlId ControllerAgent::post_start_app_impl(std::string_view intent)
+MaaCtrlId ControllerAgent::post_start_app_impl(const std::string& intent)
 {
-    AppParam param { .package = std::string(intent) };
+    AppParam param { .package = intent };
     return post({ .type = Action::Type::start_app, .param = std::move(param) });
 }
 
-MaaCtrlId ControllerAgent::post_stop_app_impl(std::string_view intent)
+MaaCtrlId ControllerAgent::post_stop_app_impl(const std::string& intent)
 {
-    AppParam param { .package = std::string(intent) };
+    AppParam param { .package = intent };
     return post({ .type = Action::Type::stop_app, .param = std::move(param) });
 }
 
@@ -437,8 +429,7 @@ bool ControllerAgent::handle_touch_down(const TouchParam& param)
 
     if (recording()) {
         json::value info = {
-            { "type", "touch_down" }, { "contact", param.contact },   { "x", param.x },
-            { "y", param.y },         { "pressure", param.pressure },
+            { "type", "touch_down" }, { "contact", param.contact }, { "x", param.x }, { "y", param.y }, { "pressure", param.pressure },
         };
         append_recording(std::move(info), start_time, ret);
     }
@@ -457,8 +448,7 @@ bool ControllerAgent::handle_touch_move(const TouchParam& param)
 
     if (recording()) {
         json::value info = {
-            { "type", "touch_move" }, { "contact", param.contact },   { "x", param.x },
-            { "y", param.y },         { "pressure", param.pressure },
+            { "type", "touch_move" }, { "contact", param.contact }, { "x", param.x }, { "y", param.y }, { "pressure", param.pressure },
         };
         append_recording(std::move(info), start_time, ret);
     }
@@ -604,14 +594,10 @@ void ControllerAgent::init_recording()
 {
     auto recording_dir = GlobalOptionMgr::get_instance().log_dir() / "recording";
     std::filesystem::create_directories(recording_dir);
-    recording_path_ =
-        recording_dir / std::format("maa_recording_{}.txt", format_now_for_filename());
+    recording_path_ = recording_dir / std::format("maa_recording_{}.txt", format_now_for_filename());
 }
 
-void ControllerAgent::append_recording(
-    json::value info,
-    const std::chrono::steady_clock::time_point& start_time,
-    bool success)
+void ControllerAgent::append_recording(json::value info, const std::chrono::steady_clock::time_point& start_time, bool success)
 {
     if (!recording()) {
         return;
@@ -730,9 +716,7 @@ bool ControllerAgent::run_action(typename AsyncRunner<Action>::Id id, Action act
     }
 
     if (notify) {
-        notifier.notify(
-            ret ? MaaMsg_Controller_Action_Completed : MaaMsg_Controller_Action_Failed,
-            details);
+        notifier.notify(ret ? MaaMsg_Controller_completed : MaaMsg_Controller_Action_Failed, details);
     }
 
     return ret;
@@ -741,8 +725,7 @@ bool ControllerAgent::run_action(typename AsyncRunner<Action>::Id id, Action act
 std::pair<int, int> ControllerAgent::preproc_touch_point(int x, int y)
 {
     if (image_target_width_ == 0 || image_target_height_ == 0) {
-        LogWarn << "Invalid image target size" << VAR(image_target_width_)
-                << VAR(image_target_height_);
+        LogWarn << "Invalid image target size" << VAR(image_target_width_) << VAR(image_target_height_);
 
         if (!init_scale_info()) {
             return {};
@@ -767,8 +750,7 @@ bool ControllerAgent::postproc_screenshot(const cv::Mat& raw)
     }
 
     if (raw.cols != image_raw_width_ || raw.rows != image_raw_height_) {
-        LogInfo << "Resolution changed" << VAR(raw.cols) << VAR(raw.rows) << VAR(image_raw_width_)
-                << VAR(image_raw_height_);
+        LogInfo << "Resolution changed" << VAR(raw.cols) << VAR(raw.rows) << VAR(image_raw_width_) << VAR(image_raw_height_);
 
         image_raw_width_ = raw.cols;
         image_raw_height_ = raw.rows;
@@ -791,8 +773,8 @@ bool ControllerAgent::calc_target_image_size()
         return false;
     }
 
-    LogDebug << "Re-calc image target size:" << VAR(image_target_long_side_)
-             << VAR(image_target_short_side_) << VAR(image_raw_width_) << VAR(image_raw_height_);
+    LogDebug << "Re-calc image target size:" << VAR(image_target_long_side_) << VAR(image_target_short_side_) << VAR(image_raw_width_)
+             << VAR(image_raw_height_);
 
     double scale = static_cast<double>(image_raw_width_) / image_raw_height_;
 
@@ -876,9 +858,7 @@ bool ControllerAgent::set_image_target_short_side(MaaOptionValue value, MaaOptio
     return true;
 }
 
-bool ControllerAgent::set_default_app_package_entry(
-    MaaOptionValue value,
-    MaaOptionValueSize val_size)
+bool ControllerAgent::set_default_app_package_entry(MaaOptionValue value, MaaOptionValueSize val_size)
 {
     std::string_view package(reinterpret_cast<char*>(value), val_size);
     default_app_package_entry_ = package;

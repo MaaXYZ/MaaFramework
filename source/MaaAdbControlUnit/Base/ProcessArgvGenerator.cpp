@@ -22,8 +22,7 @@ std::optional<ProcessArgvGenerator> ProcessArgvGenerator::create(const json::arr
     return ProcessArgvGenerator(std::move(raw));
 }
 
-std::optional<ProcessArgvGenerator::ProcessArgv>
-    ProcessArgvGenerator::gen(const Replacement& replacement) const
+std::optional<ProcessArgvGenerator::ProcessArgv> ProcessArgvGenerator::gen(const Replacement& replacement) const
 {
     if (raw_.empty()) {
         LogError << "raw is empty";
@@ -48,8 +47,7 @@ std::optional<ProcessArgvGenerator::ProcessArgv>
         return std::nullopt;
     }
 
-    auto args =
-        std::vector(std::make_move_iterator(res.begin() + 1), std::make_move_iterator(res.end()));
+    auto args = std::vector(std::make_move_iterator(res.begin() + 1), std::make_move_iterator(res.end()));
 
     return ProcessArgv { .exec = std::move(abs_path), .args = std::move(args) };
 }

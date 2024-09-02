@@ -123,13 +123,7 @@ class MAA_UTILS_API LogStream
 {
 public:
     template <typename... args_t>
-    LogStream(
-        std::mutex& m,
-        std::ofstream& s,
-        level lv,
-        bool std_out,
-        std::filesystem::path dumps_dir,
-        args_t&&... args)
+    LogStream(std::mutex& m, std::ofstream& s, level lv, bool std_out, std::filesystem::path dumps_dir, args_t&&... args)
         : mutex_(m)
         , stream_(s)
         , lv_(lv)
@@ -179,8 +173,7 @@ private:
             buffer_ << string_converter_(std::forward<T>(value)) << sep.str;
         }
         else {
-            buffer_ << json::serialize(std::forward<T>(value), string_converter_).dumps()
-                    << sep.str;
+            buffer_ << json::serialize(std::forward<T>(value), string_converter_).dumps() << sep.str;
         }
     }
 
@@ -194,8 +187,7 @@ private:
 #endif
         auto tid = static_cast<uint16_t>(std::hash<std::thread::id> {}(std::this_thread::get_id()));
 
-        std::string props =
-            std::format("[{}][{}][Px{}][Tx{}]", format_now(), level_str(), pid, tid);
+        std::string props = std::format("[{}][{}][Px{}][Tx{}]", format_now(), level_str(), pid, tid);
         for (auto&& arg : { args... }) {
             props += std::format("[{}]", arg);
         }

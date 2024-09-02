@@ -36,10 +36,8 @@ private:
 
     fastdeploy::RuntimeOption option_;
 
-    mutable std::unordered_map<std::string, std::shared_ptr<fastdeploy::vision::ocr::DBDetector>>
-        deters_;
-    mutable std::unordered_map<std::string, std::shared_ptr<fastdeploy::vision::ocr::Recognizer>>
-        recers_;
+    mutable std::unordered_map<std::string, std::shared_ptr<fastdeploy::vision::ocr::DBDetector>> deters_;
+    mutable std::unordered_map<std::string, std::shared_ptr<fastdeploy::vision::ocr::Recognizer>> recers_;
     mutable std::unordered_map<std::string, std::shared_ptr<fastdeploy::pipeline::PPOCRv3>> ocrers_;
 };
 

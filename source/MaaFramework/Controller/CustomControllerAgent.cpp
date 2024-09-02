@@ -9,10 +9,10 @@
 MAA_CTRL_NS_BEGIN
 
 CustomControllerAgent::CustomControllerAgent(
-    MaaCustomControllerHandle handle,
-    MaaTransparentArg handle_arg,
-    MaaControllerCallback callback,
-    MaaCallbackTransparentArg callback_arg)
+    MaaCustomControllerCallbacks* handle,
+    void* handle_arg,
+    MaaNotificationCallback callback,
+    void* callback_arg)
     : ControllerAgent(callback, callback_arg)
     , handle_(handle)
     , handle_arg_(handle_arg)
@@ -85,7 +85,7 @@ std::optional<cv::Mat> CustomControllerAgent::_screencap()
     ImageBuffer buffer;
     MaaBool ret = handle_->screencap(handle_arg_, &buffer);
     if (!ret) {
-        LogError << "failed to get_image" << VAR(ret);
+        LogError << "failed to cached_image" << VAR(ret);
         return std::nullopt;
     }
 
@@ -106,8 +106,8 @@ bool CustomControllerAgent::_click(ClickParam param)
 
 bool CustomControllerAgent::_swipe(SwipeParam param)
 {
-    LogFunc << VAR_VOIDP(handle_) << VAR_VOIDP(handle_->swipe) << VAR(param.x1) << VAR(param.x2)
-            << VAR(param.y1) << VAR(param.y2) << VAR(param.duration);
+    LogFunc << VAR_VOIDP(handle_) << VAR_VOIDP(handle_->swipe) << VAR(param.x1) << VAR(param.x2) << VAR(param.y1) << VAR(param.y2)
+            << VAR(param.duration);
 
     if (!handle_ || !handle_->swipe) {
         LogError << "handle_ or handle_->swipe is nullptr";
@@ -118,8 +118,8 @@ bool CustomControllerAgent::_swipe(SwipeParam param)
 
 bool CustomControllerAgent::_touch_down(TouchParam param)
 {
-    LogFunc << VAR_VOIDP(handle_) << VAR_VOIDP(handle_->touch_down) << VAR(param.contact)
-            << VAR(param.x) << VAR(param.y) << VAR(param.pressure);
+    LogFunc << VAR_VOIDP(handle_) << VAR_VOIDP(handle_->touch_down) << VAR(param.contact) << VAR(param.x) << VAR(param.y)
+            << VAR(param.pressure);
 
     if (!handle_ || !handle_->touch_down) {
         LogError << "handle_ or handle_->touch_down is nullptr";
@@ -131,8 +131,8 @@ bool CustomControllerAgent::_touch_down(TouchParam param)
 
 bool CustomControllerAgent::_touch_move(TouchParam param)
 {
-    LogFunc << VAR_VOIDP(handle_) << VAR_VOIDP(handle_->touch_move) << VAR(param.contact)
-            << VAR(param.x) << VAR(param.y) << VAR(param.pressure);
+    LogFunc << VAR_VOIDP(handle_) << VAR_VOIDP(handle_->touch_move) << VAR(param.contact) << VAR(param.x) << VAR(param.y)
+            << VAR(param.pressure);
 
     if (!handle_ || !handle_->touch_move) {
         LogError << "handle_ or handle_->touch_move is nullptr";

@@ -10,8 +10,7 @@ MAA_CTRL_UNIT_NS_BEGIN
 class MumuExternalRendererIpc
     : public LibraryHolder<MumuExternalRendererIpc>
     , public ScreencapBase
-    , public TouchInputBase
-    , public KeyInputBase
+    , public InputBase
 {
 public:
     virtual ~MumuExternalRendererIpc() override;
@@ -19,13 +18,13 @@ public:
 public: // from UnitBase
     virtual bool parse(const json::value& config) override;
 
-public: // from ScreencapAPI
+public: // from ScreencapBase
     virtual bool init() override;
     virtual void deinit() override;
 
     virtual std::optional<cv::Mat> screencap() override;
 
-public: // from TouchInputAPI
+public: // from InputBase
     virtual bool click(int x, int y) override;
     virtual bool swipe(int x1, int y1, int x2, int y2, int duration) override;
 
@@ -33,7 +32,6 @@ public: // from TouchInputAPI
     virtual bool touch_move(int contact, int x, int y, int pressure) override;
     virtual bool touch_up(int contact) override;
 
-public: // from KeyInputAPI
     virtual bool press_key(int key) override;
     virtual bool input_text(const std::string& text) override;
 

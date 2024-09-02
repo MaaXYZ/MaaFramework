@@ -21,8 +21,7 @@ inline std::string format_now()
 #ifndef __APPLE__ // Clang lacks of std::chrono::current_zone, 2024/08/24
     return std::format(
         "{}",
-        std::chrono::current_zone()->to_local(
-            std::chrono::floor<std::chrono::milliseconds>(std::chrono::system_clock::now())));
+        std::chrono::current_zone()->to_local(std::chrono::floor<std::chrono::milliseconds>(std::chrono::system_clock::now())));
 #else
     timeval tv = {};
     gettimeofday(&tv, nullptr);
@@ -43,9 +42,7 @@ inline std::string format_now()
 inline std::string format_now_for_filename()
 {
 #ifndef __APPLE__ // Clang lacks of std::chrono::current_zone, 2024/08/24
-    return std::format(
-        "{:%Y.%m.%d-%H.%M.%S}",
-        std::chrono::current_zone()->to_local(std::chrono::system_clock::now()));
+    return std::format("{:%Y.%m.%d-%H.%M.%S}", std::chrono::current_zone()->to_local(std::chrono::system_clock::now()));
 #else
     timeval tv = {};
     gettimeofday(&tv, nullptr);

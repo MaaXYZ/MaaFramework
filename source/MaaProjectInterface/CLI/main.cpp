@@ -11,7 +11,7 @@ int main(int argc, char** argv)
 {
     std::string user_path = MAA_NS::path_to_utf8_string(MAA_NS::library_dir());
 
-    MaaToolkitInitOptionConfig(user_path.c_str(), "{}");
+    MaaToolkitConfigInitOption(user_path.c_str(), "{}");
 
     Interactor interactor;
 

@@ -12,15 +12,9 @@ bool ScreencapEncodeToFileAndPull::parse(const json::value& config)
     static const json::array kDefaultScreencapEncodeToFileArgv = {
         "{ADB}", "-s", "{ADB_SERIAL}", "shell", "screencap -p > \"/data/local/tmp/{TEMP_FILE}\"",
     };
-    static const json::array kDefaultPullFileArgv = {
-        "{ADB}", "-s", "{ADB_SERIAL}", "pull", "/data/local/tmp/{TEMP_FILE}", "{DST_PATH}"
-    };
+    static const json::array kDefaultPullFileArgv = { "{ADB}", "-s", "{ADB_SERIAL}", "pull", "/data/local/tmp/{TEMP_FILE}", "{DST_PATH}" };
 
-    return parse_command(
-               "ScreencapEncodeToFile",
-               config,
-               kDefaultScreencapEncodeToFileArgv,
-               screencap_encode_to_file_argv_)
+    return parse_command("ScreencapEncodeToFile", config, kDefaultScreencapEncodeToFileArgv, screencap_encode_to_file_argv_)
            && parse_command("PullFile", config, kDefaultPullFileArgv, pull_file_argv_);
 }
 
@@ -34,8 +28,7 @@ std::optional<cv::Mat> ScreencapEncodeToFileAndPull::screencap()
 {
     auto dst_path = std::filesystem::temp_directory_path() / format_now_for_filename();
 
-    merge_replacement(
-        { { "{TEMP_FILE}", tempname_ }, { "{DST_PATH}", path_to_utf8_string(dst_path) } });
+    merge_replacement({ { "{TEMP_FILE}", tempname_ }, { "{DST_PATH}", path_to_utf8_string(dst_path) } });
 
     {
         auto argv_opt = screencap_encode_to_file_argv_.gen(argv_replace_);

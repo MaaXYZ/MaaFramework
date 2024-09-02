@@ -39,13 +39,13 @@ public:
 
     virtual int32_t type() const override { return image_.type(); }
 
-    virtual uint8_t* encoded() override
+    virtual uint8_t* encoded() const override
     {
         encode();
         return encoded_.data();
     }
 
-    virtual size_t encoded_size() override
+    virtual size_t encoded_size() const override
     {
         encode();
         return encoded_.size();
@@ -60,7 +60,7 @@ public:
     }
 
 private:
-    void encode()
+    void encode() const
     {
         if (!dirty_) {
             return;
@@ -76,12 +76,13 @@ private:
     }
 
     cv::Mat image_;
-    bool dirty_ = true;
-    std::vector<uint8_t> encoded_;
+    mutable bool dirty_ = true;
+    mutable std::vector<uint8_t> encoded_;
 };
 
 MAA_NS_END
 
 struct MaaImageListBuffer : public MAA_NS::ListBuffer<MAA_NS::ImageBuffer>
 {
+    virtual ~MaaImageListBuffer() override = default;
 };

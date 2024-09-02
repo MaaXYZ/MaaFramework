@@ -17,7 +17,7 @@ public:
     {
     }
 
-    virtual ~ReplayRecording() = default;
+    virtual ~ReplayRecording();
 
 public: // from ControlUnitAPI
     virtual bool find_device(/*out*/ std::vector<std::string>& devices) override;

@@ -28,11 +28,7 @@ class FeatureMatcher
     , public RecoResultAPI<FeatureMatcherResult>
 {
 public:
-    FeatureMatcher(
-        cv::Mat image,
-        FeatureMatcherParam param,
-        std::vector<std::shared_ptr<cv::Mat>> templates,
-        std::string name = "");
+    FeatureMatcher(cv::Mat image, FeatureMatcherParam param, std::vector<std::shared_ptr<cv::Mat>> templates, std::string name = "");
 
 private:
     void analyze();
@@ -48,12 +44,10 @@ private:
 
 private:
     cv::Ptr<cv::Feature2D> create_detector() const;
-    std::pair<std::vector<cv::KeyPoint>, cv::Mat>
-        detect(const cv::Mat& image, const cv::Mat& mask) const;
+    std::pair<std::vector<cv::KeyPoint>, cv::Mat> detect(const cv::Mat& image, const cv::Mat& mask) const;
 
     cv::Ptr<cv::DescriptorMatcher> create_matcher() const;
-    std::vector<std::vector<cv::DMatch>>
-        match(const cv::Mat& descriptors_1, const cv::Mat& descriptors_2) const;
+    std::vector<std::vector<cv::DMatch>> match(const cv::Mat& descriptors_1, const cv::Mat& descriptors_2) const;
 
     ResultsVec feature_postproc(
         const std::vector<std::vector<cv::DMatch>>& match_points,

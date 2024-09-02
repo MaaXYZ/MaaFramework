@@ -28,7 +28,7 @@ bool MinitouchInput::parse(const json::value& config)
 
     arch_list_ = jarch.as_collection<std::string>();
 
-    return invoke_app_->parse(config) && MtouchHelper::parse(config);
+    return invoke_app_->parse(config) && MtouchHelper::parse(config) && adb_shell_input_->parse(config);
 }
 
 bool MinitouchInput::init()
@@ -75,6 +75,26 @@ void MinitouchInput::deinit()
     LogTrace;
 
     remove_binary();
+}
+
+bool MinitouchInput::press_key(int key)
+{
+    if (!adb_shell_input_) {
+        LogError << "adb_shell_input_ is nullptr";
+        return false;
+    }
+
+    return adb_shell_input_->press_key(key);
+}
+
+bool MinitouchInput::input_text(const std::string& text)
+{
+    if (!adb_shell_input_) {
+        LogError << "adb_shell_input_ is nullptr";
+        return false;
+    }
+
+    return adb_shell_input_->input_text(text);
 }
 
 void MinitouchInput::remove_binary()
