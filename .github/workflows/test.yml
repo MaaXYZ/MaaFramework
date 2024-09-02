@@ -159,8 +159,8 @@ jobs:
 
       - name: Build MAA
         env:
-          CC: ${{ matrix.arch == 'x86_64' && 'ccache gcc' || 'ccache aarch64-linux-gnu-gcc' }}
-          CXX: ${{ matrix.arch == 'x86_64' && 'ccache g++' || 'ccache aarch64-linux-gnu-g++' }}
+          CC: ${{ matrix.arch == 'x86_64' && 'gcc' || 'aarch64-linux-gnu-gcc' }}
+          CXX: ${{ matrix.arch == 'x86_64' && 'g++' || 'aarch64-linux-gnu-g++' }}
         run: |
           cmake --preset 'NinjaMulti' \
             -DMAADEPS_TRIPLET='maa-${{ matrix.arch == 'x86_64' && 'x64' || 'arm64' }}-linux' \
@@ -227,12 +227,16 @@ jobs:
 
       - name: Install dep
         run: |
-          brew install cmake ninja
-        # ccache?
+          brew install cmake ninja ccache
 
       - name: Install compiler
         run: |
           brew install llvm
+
+      - name: Setup ccache
+        uses: Chocobo1/setup-ccache-action@v1
+        with:
+          remove_stale_cache: false
 
       - name: Bootstrap MaaDeps
         env:
