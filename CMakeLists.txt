@@ -14,6 +14,7 @@ option(USE_MAADEPS "use third-party libraries built by MaaDeps" ON)
 option(WITH_ADB_CONTROLLER "build with adb controller" ON)
 option(WITH_WIN32_CONTROLLER "build with win32 controller" ON)
 option(WITH_DBG_CONTROLLER "build with debugging controller" ON)
+option(ENABLE_CCACHE "enable ccache if possible" ON)
 
 option(BUILD_SAMPLE "build a demo" OFF)
 
@@ -49,6 +50,15 @@ find_package(Boost REQUIRED COMPONENTS system)
 find_package(ZLIB REQUIRED)
 find_package(fastdeploy_ppocr REQUIRED)
 find_package(ONNXRuntime)
+
+find_program(CCACHE_PROG ccache)
+if(CCACHE_PROG)
+    message("Find ccache at ${CCACHE_PROG}")
+    if(ENABLE_CCACHE)
+        set(CMAKE_C_COMPILER_LAUNCHER ${CCACHE_PROG})
+        set(CMAKE_CXX_COMPILER_LAUNCHER ${CCACHE_PROG})
+    endif()
+endif()
 
 add_subdirectory(3rdparty)
 add_subdirectory(source)
