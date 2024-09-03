@@ -138,7 +138,7 @@ struct PipelineData
     Action::Param action_param;
 
     NextList next;
-    NextList catch_next;
+    NextList interrupt;
     std::chrono::milliseconds next_timeout = std::chrono::milliseconds(20 * 1000);
 
     std::chrono::milliseconds pre_delay;

@@ -306,8 +306,8 @@ bool PipelineResMgr::parse_task(const std::string& name, const json::value& inpu
         return false;
     }
 
-    if (!parse_next(input, "catch", data.catch_next, default_value.catch_next)) {
-        LogError << "failed to parse_next catch" << VAR(input);
+    if (!parse_next(input, "interrupt", data.interrupt, default_value.interrupt)) {
+        LogError << "failed to parse_next interrupt" << VAR(input);
         return false;
     }
 

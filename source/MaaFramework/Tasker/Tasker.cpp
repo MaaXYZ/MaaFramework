@@ -1,5 +1,7 @@
 #include "RuntimeCache.h"
 
+#include <ranges>
+
 #include "Controller/ControllerAgent.h"
 #include "MaaFramework/MaaMsg.h"
 #include "Resource/ResourceMgr.h"
