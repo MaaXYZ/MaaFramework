@@ -227,6 +227,16 @@ int32_t MaaImageBufferHeight(const MaaImageBuffer* handle)
     return handle->height();
 }
 
+int32_t MaaImageBufferChannels(const MaaImageBuffer* handle)
+{
+    if (!handle) {
+        LogError << "handle is null";
+        return 0;
+    }
+
+    return handle->channles();
+}
+
 int32_t MaaImageBufferType(const MaaImageBuffer* handle)
 {
     if (!handle) {

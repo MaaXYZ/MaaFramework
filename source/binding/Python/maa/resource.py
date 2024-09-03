@@ -5,13 +5,14 @@ from typing import Any, Optional, Union
 
 from .callback_agent import Callback, CallbackAgent
 from .define import *
-from .future import Future
+from .job import Job
 from .library import Library
 
 
 class Resource:
     _handle: MaaResourceHandle
     _callback_agent: CallbackAgent
+    _own: bool = False
 
     def __init__(self, callback: Optional[Callback] = None, callback_arg: Any = None):
         """
@@ -53,7 +54,7 @@ class Resource:
 
         return await self.post_path(path).wait()
 
-    def post_path(self, path: Union[pathlib.Path, str]) -> Future:
+    def post_path(self, path: Union[pathlib.Path, str]) -> Job:
         """
         Post a path to the resource. (load in background)
 
@@ -64,7 +65,7 @@ class Resource:
         maaid = Library.framework.MaaResourcePostPath(
             self._handle, str(path).encode("utf-8")
         )
-        return Future(maaid, self._status)
+        return Job(maaid, self._status)
 
     def loaded(self) -> bool:
         """
@@ -110,7 +111,7 @@ class Resource:
         Library.framework.MaaResourcePostPath.restype = MaaResId
         Library.framework.MaaResourcePostPath.argtypes = [
             MaaResourceHandle,
-            MaaStringView,
+            ctypes.c_char_p,
         ]
 
         Library.framework.MaaResourceStatus.restype = MaaStatus

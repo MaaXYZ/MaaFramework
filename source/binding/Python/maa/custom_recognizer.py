@@ -5,7 +5,7 @@ from typing import Tuple
 import numpy
 
 from .buffer import ImageBuffer, RectBuffer, StringBuffer
-from .context import SyncContext
+from .context import Context
 from .define import *
 
 
@@ -18,7 +18,7 @@ class CustomRecognizer(ABC):
     @abstractmethod
     def analyze(
         self,
-        context: SyncContext,
+        context: Context,
         image: numpy.ndarray,
         task_name: str,
         custom_param: str,
@@ -48,8 +48,8 @@ class CustomRecognizer(ABC):
     def _c_analyze_agent(
         c_context: MaaSyncContextHandle,
         c_image: MaaImageBufferHandle,
-        c_task_name: MaaStringView,
-        c_custom_param: MaaStringView,
+        c_task_name: ctypes.c_char_p,
+        c_custom_param: ctypes.c_char_p,
         c_transparent_arg: MaaTransparentArg,
         c_out_box: MaaRectHandle,
         c_out_detail: MaaStringBufferHandle,
@@ -59,7 +59,7 @@ class CustomRecognizer(ABC):
 
         self: CustomRecognizer = ctypes.cast(c_transparent_arg, ctypes.py_object).value
 
-        context = SyncContext(c_context)
+        context = Context(c_context)
         image = ImageBuffer(c_image).get()
         task_name = c_task_name.decode("utf-8")
         custom_param = c_custom_param.decode("utf-8")

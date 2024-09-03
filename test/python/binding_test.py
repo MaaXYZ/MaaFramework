@@ -18,7 +18,7 @@ if binding_dir not in sys.path:
 from maa.library import Library
 from maa.resource import Resource
 from maa.controller import DbgController
-from maa.instance import Instance
+from maa.tasker import Instance
 from maa.toolkit import Toolkit
 from maa.custom_action import CustomAction
 from maa.custom_recognizer import CustomRecognizer

@@ -6,11 +6,30 @@ from typing import List, Tuple, Union
 
 import numpy
 
-MaaApiCallback = ctypes.CFUNCTYPE(
-    None, ctypes.c_char_p, ctypes.c_char_p, ctypes.c_void_p
-)
 MaaBool = ctypes.c_uint8
-MaaId = ctypes.c_uint64
+MaaSize = ctypes.c_size_t
+MaaNullSize = MaaSize(-1)
+
+MaaId = ctypes.c_int64
+MaaCtrlId = MaaId
+MaaResId = MaaId
+MaaTaskId = MaaId
+MaaRecoId = MaaId
+MaaNodeId = MaaId
+MaaInvalidId = MaaId(0)
+
+MaaStringBufferHandle = ctypes.c_void_p
+MaaImageBufferHandle = ctypes.c_void_p
+MaaRectHandle = ctypes.c_void_p
+MaaStringListBufferHandle = ctypes.c_void_p
+MaaImageListBufferHandle = ctypes.c_void_p
+
+MaaResourceHandle = ctypes.c_void_p
+MaaControllerHandle = ctypes.c_void_p
+MaaTaskerHandle = ctypes.c_void_p
+MaaContextHandle = ctypes.c_void_p
+
+MaaStatus = ctypes.c_int32
 
 
 class MaaStatusEnum(Enum):
@@ -104,73 +123,191 @@ class MaaCtrlOptionEnum:
     Recording: MaaCtrlOption = 5
 
 
-MaaControllerHandle = ctypes.c_void_p
-
-MaaStringView = ctypes.c_char_p
-MaaStringBufferHandle = ctypes.c_void_p
-
-MaaStringListBufferHandle = ctypes.c_void_p
-
-MaaSize = ctypes.c_size_t
-
-MaaImageBufferHandle = ctypes.c_void_p
-MaaImageRawData = ctypes.c_void_p
-
-MaaImageListBufferHandle = ctypes.c_void_p
-
-MaaRectHandle = ctypes.c_void_p
-
-MaaSyncContextHandle = ctypes.c_void_p
-
-MaaStatus = ctypes.c_int32
-MaaCtrlId = MaaId
-MaaAdbControllerType = ctypes.c_int32
+# Use bitwise OR to set the method you need, MaaFramework will test their speed and use the fastest one.
+MaaAdbScreencapMethod = ctypes.c_uint64
 
 
-class MaaAdbControllerTypeEnum:
-    Invalid: MaaAdbControllerType = 0
+class MaaAdbScreencapMethodEnum:
+    Null: MaaAdbScreencapMethod = 0
 
-    Touch_Adb: MaaAdbControllerType = 1
-    Touch_MiniTouch: MaaAdbControllerType = 2
-    Touch_MaaTouch: MaaAdbControllerType = 3
-    Touch_AutoDetect: MaaAdbControllerType = 0xFF - 1
+    EncodeToFileAndPull: MaaAdbScreencapMethod = 1
+    Encode: MaaAdbScreencapMethod = 1 << 1
+    RawWithGzip: MaaAdbScreencapMethod = 1 << 2
+    RawByNetcat: MaaAdbScreencapMethod = 1 << 3
+    MinicapDirect: MaaAdbScreencapMethod = 1 << 4
+    MinicapStream: MaaAdbScreencapMethod = 1 << 5
+    EmulatorExtras: MaaAdbScreencapMethod = 1 << 6
 
-    Key_Adb: MaaAdbControllerType = 1 << 8
-    Key_MaaTouch: MaaAdbControllerType = 2 << 8
-    Key_AutoDetect: MaaAdbControllerType = 0xFF00 - (1 << 8)
-
-    Input_Preset_Adb: MaaAdbControllerType = Touch_Adb | Key_Adb
-    Input_Preset_Minitouch: MaaAdbControllerType = Touch_MiniTouch | Key_Adb
-    Input_Preset_Maatouch: MaaAdbControllerType = Touch_MaaTouch | Key_MaaTouch
-    Input_Preset_AutoDetect: MaaAdbControllerType = Touch_AutoDetect | Key_AutoDetect
-
-    Screencap_RawByNetcat: MaaAdbControllerType = 2 << 16
-    Screencap_RawWithGzip: MaaAdbControllerType = 3 << 16
-    Screencap_Encode: MaaAdbControllerType = 4 << 16
-    Screencap_EncodeToFile: MaaAdbControllerType = 5 << 16
-    Screencap_MinicapDirect: MaaAdbControllerType = 6 << 16
-    Screencap_MinicapStream: MaaAdbControllerType = 7 << 16
-    Screencap_FastestLosslessWay: MaaAdbControllerType = 0xFF0000 - (2 << 16)
-    Screencap_FastestWay: MaaAdbControllerType = 0xFF0000 - (1 << 16)
+    All: MaaAdbScreencapMethod = ~Null
+    Default: MaaAdbScreencapMethod = All & (~MinicapDirect) & (~MinicapDirect)
 
 
-MaaControllerCallback = MaaApiCallback
-MaaTransparentArg = ctypes.c_void_p
-MaaCallbackTransparentArg = MaaTransparentArg
+# Use bitwise OR to set the method you need, MaaFramework will select the available ones according to priority.
+# The priority is: EmulatorExtras > Maatouch > MinitouchAndAdbKey > AdbShell
+MaaAdbInputMethod = ctypes.c_uint64
 
-MaaInstanceHandle = ctypes.c_void_p
-MaaInstanceCallback = MaaApiCallback
-MaaResourceHandle = ctypes.c_void_p
 
-MaaTaskId = MaaId
-MaaCustomRecognizerHandle = ctypes.c_void_p
-MaaCustomActionHandle = ctypes.c_void_p
+class MaaAdbInputMethodEnum:
+    Null: MaaAdbInputMethod = 0
 
-MaaResourceCallback = MaaApiCallback
-MaaResId = MaaId
+    AdbShell: MaaAdbInputMethod = 1
+    MinitouchAndAdbKey: MaaAdbInputMethod = 1 << 1
+    Maatouch: MaaAdbInputMethod = 1 << 2
+    EmulatorExtras: MaaAdbInputMethod = 1 << 3
 
-MaaRecoId = MaaId
-MaaNodeId = MaaId
+    All: MaaAdbInputMethod = ~Null
+    Default: MaaAdbInputMethod = All & (~EmulatorExtras)
+
+
+# No bitwise OR, just set it
+MaaWin32ScreencapMethod = ctypes.c_uint64
+
+
+class MaaWin32ScreencapMethodEnum:
+    Null: MaaWin32ScreencapMethod = 0
+
+    GDI: MaaWin32ScreencapMethod = 1
+    FramePool: MaaWin32ScreencapMethod = 1 << 1
+    DXGI_DesktopDup: MaaWin32ScreencapMethod = 1 << 2
+
+
+# No bitwise OR, just set it
+MaaWin32InputMethod = ctypes.c_uint64
+
+
+class MaaWin32InputMethodEnum:
+    Null: MaaWin32InputMethod = 0
+
+    Seize: MaaWin32InputMethod = 1
+    SendMessage: MaaWin32InputMethod = 1 << 1
+
+
+# No bitwise OR, just set it
+MaaDbgControllerType = ctypes.c_uint64
+
+
+class MaaDbgControllerTypeEnum:
+    Null: MaaDbgControllerType = 0
+
+    CarouselImage: MaaDbgControllerType = 1
+    ReplayRecording: MaaDbgControllerType = 1 << 1
+
+
+MaaNotificationCallback = ctypes.CFUNCTYPE(
+    None, ctypes.c_char_p, ctypes.c_char_p, ctypes.c_void_p
+)
+
+MaaCustomRecognizerCallback = ctypes.CFUNCTYPE(
+    MaaBool,  # return value
+    MaaContextHandle,  # context
+    MaaTaskId,  # task_id
+    ctypes.c_char_p,  # recognizer_name
+    ctypes.c_char_p,  # custom_recognition_param
+    MaaImageBufferHandle,  # image
+    ctypes.c_void_p,  # trans_arg
+    MaaRectHandle,  # [out] out_box
+    MaaStringBufferHandle,  # [out] out_detail
+)
+
+MaaCustomActionCallback = ctypes.CFUNCTYPE(
+    MaaBool,  # return value
+    MaaContextHandle,  # context
+    MaaTaskId,  # task_id
+    ctypes.c_char_p,  # action_name
+    ctypes.c_char_p,  # custom_action_param
+    MaaRectHandle,  # box
+    ctypes.c_char_p,  # reco_detail
+    ctypes.c_void_p,  # trans_arg
+)
+
+c_int32_p = ctypes.POINTER(ctypes.c_int32)
+
+
+class MaaCustomControllerCallbacks(ctypes.Structure):
+    ConnectFunc = ctypes.CFUNCTYPE(
+        MaaBool,
+        ctypes.c_void_p,
+    )
+    RequestUuidFunc = ctypes.CFUNCTYPE(
+        MaaBool,
+        ctypes.c_void_p,
+        MaaStringBufferHandle,
+    )
+    StartAppFunc = ctypes.CFUNCTYPE(
+        MaaBool,
+        ctypes.c_char_p,
+        ctypes.c_void_p,
+    )
+    StopAppFunc = ctypes.CFUNCTYPE(
+        MaaBool,
+        ctypes.c_char_p,
+        ctypes.c_void_p,
+    )
+    ScreencapFunc = ctypes.CFUNCTYPE(
+        MaaBool,
+        ctypes.c_void_p,
+        MaaImageBufferHandle,
+    )
+    ClickFunc = ctypes.CFUNCTYPE(
+        MaaBool,
+        ctypes.c_int32,
+        ctypes.c_int32,
+        ctypes.c_void_p,
+    )
+    SwipeFunc = ctypes.CFUNCTYPE(
+        MaaBool,
+        ctypes.c_int32,
+        ctypes.c_int32,
+        ctypes.c_int32,
+        ctypes.c_int32,
+        ctypes.c_int32,
+        ctypes.c_void_p,
+    )
+    TouchDownFunc = ctypes.CFUNCTYPE(
+        MaaBool,
+        ctypes.c_int32,
+        ctypes.c_int32,
+        ctypes.c_int32,
+        ctypes.c_int32,
+        ctypes.c_void_p,
+    )
+    TouchMoveFunc = ctypes.CFUNCTYPE(
+        MaaBool,
+        ctypes.c_int32,
+        ctypes.c_int32,
+        ctypes.c_int32,
+        ctypes.c_int32,
+        ctypes.c_void_p,
+    )
+    TouchUpFunc = ctypes.CFUNCTYPE(
+        MaaBool,
+        ctypes.c_int32,
+        ctypes.c_void_p,
+    )
+    PressKeyFunc = ctypes.CFUNCTYPE(
+        MaaBool,
+        ctypes.c_int32,
+        ctypes.c_void_p,
+    )
+    InputTextFunc = ctypes.CFUNCTYPE(
+        MaaBool,
+        ctypes.c_char_p,
+        ctypes.c_void_p,
+    )
+    _fields_ = [
+        ("connect", ConnectFunc),
+        ("request_uuid", RequestUuidFunc),
+        ("start_app", StartAppFunc),
+        ("stop_app", StopAppFunc),
+        ("screencap", ScreencapFunc),
+        ("click", ClickFunc),
+        ("swipe", SwipeFunc),
+        ("touch_down", TouchDownFunc),
+        ("touch_move", TouchMoveFunc),
+        ("touch_up", TouchUpFunc),
+        ("press_key", PressKeyFunc),
+        ("input_text", InputTextFunc),
+    ]
 
 
 @dataclass
@@ -224,168 +361,3 @@ RectType = Union[
     numpy.ndarray,
     Tuple[int, int, int, int],
 ]
-
-MaaDbgControllerType = ctypes.c_int32
-
-
-class MaaDbgControllerTypeEnum:
-    Invalid: MaaAdbControllerType = 0
-    CarouselImage: MaaAdbControllerType = 1
-    ReplayRecording: MaaAdbControllerType = 2
-
-
-MaaWin32ControllerType = ctypes.c_int32
-
-
-class MaaWin32ControllerTypeEnum:
-    Invalid = 0
-
-    Touch_SendMessage: MaaWin32ControllerType = 1
-    Touch_Seize: MaaWin32ControllerType = 2
-
-    Key_SendMessage: MaaWin32ControllerType = 1 << 8
-    Key_Seize: MaaWin32ControllerType = 2 << 8
-
-    Screencap_GDI: MaaWin32ControllerType = 1 << 16
-    Screencap_DXGI_DesktopDup: MaaWin32ControllerType = 2 << 16
-    # Screencap_DXGI_BackBuffer = 3 << 16
-    Screencap_DXGI_FramePool: MaaWin32ControllerType = 4 << 16
-
-
-MaaWin32Hwnd = ctypes.c_void_p
-
-
-class MaaCustomRecognizer(ctypes.Structure):
-    AnalyzeFunc = ctypes.CFUNCTYPE(
-        MaaBool,
-        MaaSyncContextHandle,
-        MaaImageBufferHandle,
-        MaaStringView,
-        MaaStringView,
-        MaaTransparentArg,
-        MaaRectHandle,
-        MaaStringBufferHandle,
-    )
-    _fields_ = [
-        ("analyze", AnalyzeFunc),
-    ]
-
-
-class MaaCustomAction(ctypes.Structure):
-    RunFunc = ctypes.CFUNCTYPE(
-        MaaBool,
-        MaaSyncContextHandle,
-        MaaStringView,
-        MaaStringView,
-        MaaRectHandle,
-        MaaStringView,
-        MaaTransparentArg,
-    )
-    StopFunc = ctypes.CFUNCTYPE(
-        None,
-        MaaTransparentArg,
-    )
-    _fields_ = [
-        ("action", RunFunc),
-        ("stop", StopFunc),
-    ]
-
-
-c_int32_p = ctypes.POINTER(ctypes.c_int32)
-
-
-class MaaCustomControllerAPI(ctypes.Structure):
-    ConnectFunc = ctypes.CFUNCTYPE(
-        MaaBool,
-        MaaTransparentArg,
-    )
-    RequestUuidFunc = ctypes.CFUNCTYPE(
-        MaaBool,
-        MaaTransparentArg,
-        MaaStringBufferHandle,
-    )
-    RequestResolutionFunc = ctypes.CFUNCTYPE(
-        MaaBool,
-        MaaTransparentArg,
-        c_int32_p,
-        c_int32_p,
-    )
-    StartAppFunc = ctypes.CFUNCTYPE(
-        MaaBool,
-        MaaStringView,
-        MaaTransparentArg,
-    )
-    StopAppFunc = ctypes.CFUNCTYPE(
-        MaaBool,
-        MaaStringView,
-        MaaTransparentArg,
-    )
-    ScreencapFunc = ctypes.CFUNCTYPE(
-        MaaBool,
-        MaaTransparentArg,
-        MaaImageBufferHandle,
-    )
-    ClickFunc = ctypes.CFUNCTYPE(
-        MaaBool,
-        ctypes.c_int32,
-        ctypes.c_int32,
-        MaaTransparentArg,
-    )
-    SwipeFunc = ctypes.CFUNCTYPE(
-        MaaBool,
-        ctypes.c_int32,
-        ctypes.c_int32,
-        ctypes.c_int32,
-        ctypes.c_int32,
-        ctypes.c_int32,
-        MaaTransparentArg,
-    )
-    TouchDownFunc = ctypes.CFUNCTYPE(
-        MaaBool,
-        ctypes.c_int32,
-        ctypes.c_int32,
-        ctypes.c_int32,
-        ctypes.c_int32,
-        MaaTransparentArg,
-    )
-    TouchMoveFunc = ctypes.CFUNCTYPE(
-        MaaBool,
-        ctypes.c_int32,
-        ctypes.c_int32,
-        ctypes.c_int32,
-        ctypes.c_int32,
-        MaaTransparentArg,
-    )
-    TouchUpFunc = ctypes.CFUNCTYPE(
-        MaaBool,
-        ctypes.c_int32,
-        MaaTransparentArg,
-    )
-    PressKeyFunc = ctypes.CFUNCTYPE(
-        MaaBool,
-        ctypes.c_int32,
-        MaaTransparentArg,
-    )
-    InputTextFunc = ctypes.CFUNCTYPE(
-        MaaBool,
-        MaaStringView,
-        MaaTransparentArg,
-    )
-    _fields_ = [
-        ("connect", ConnectFunc),
-        ("request_uuid", RequestUuidFunc),
-        ("request_resolution", RequestResolutionFunc),
-        ("start_app", StartAppFunc),
-        ("stop_app", StopAppFunc),
-        ("screencap", ScreencapFunc),
-        ("click", ClickFunc),
-        ("swipe", SwipeFunc),
-        ("touch_down", TouchDownFunc),
-        ("touch_move", TouchMoveFunc),
-        ("touch_up", TouchUpFunc),
-        ("press_key", PressKeyFunc),
-        ("input_text", InputTextFunc),
-    ]
-
-
-MaaCustomControllerHandle = ctypes.POINTER(MaaCustomControllerAPI)

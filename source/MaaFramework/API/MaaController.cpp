@@ -316,7 +316,7 @@ MaaBool MaaControllerCachedImage(const MaaController* ctrl, MaaImageBuffer* buff
     return true;
 }
 
-MaaBool MaaControllerGetUUID(MaaController* ctrl, MaaStringBuffer* buffer)
+MaaBool MaaControllerGetUuid(MaaController* ctrl, MaaStringBuffer* buffer)
 {
     if (!ctrl || !buffer) {
         LogError << "handle is null";

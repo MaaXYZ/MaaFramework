@@ -15,6 +15,18 @@
 
 #include "MaaPort.h" // IWYU pragma: export
 
+typedef uint8_t MaaBool;
+typedef uint64_t MaaSize;
+#define MaaNullSize ((MaaSize)-1)
+
+typedef int64_t MaaId;
+typedef MaaId MaaCtrlId;
+typedef MaaId MaaResId;
+typedef MaaId MaaTaskId;
+typedef MaaId MaaRecoId;
+typedef MaaId MaaNodeId;
+#define MaaInvalidId ((MaaId)0)
+
 struct MaaStringBuffer;
 struct MaaImageBuffer;
 struct MaaStringListBuffer;
@@ -24,11 +36,6 @@ struct MaaResource;
 struct MaaController;
 struct MaaTasker;
 struct MaaContext;
-
-typedef uint8_t MaaBool;
-typedef uint64_t MaaSize;
-
-#define MaaNullSize ((MaaSize) - 1)
 
 typedef int32_t MaaStatus;
 
@@ -55,14 +62,6 @@ enum MaaLoggingLevelEnum
     MaaLoggingLevel_Trace = 6,
     MaaLoggingLevel_All = 7,
 };
-
-typedef int64_t MaaId;
-typedef MaaId MaaCtrlId;
-typedef MaaId MaaResId;
-typedef MaaId MaaTaskId;
-typedef MaaId MaaRecoId;
-typedef MaaId MaaNodeId;
-#define MaaInvalidId ((MaaId)0)
 
 typedef int32_t MaaOption;
 typedef void* MaaOptionValue;
@@ -209,10 +208,10 @@ const MaaWin32InputMethod MaaWin32InputMethod_SendMessage = 1ULL << 1;
 
 // MaaDbgControllerType:
 // No bitwise OR, just set it
-typedef int32_t MaaDbgControllerType;
-const MaaDbgControllerType MaaDbgControllerType_Invalid = 0;
-const MaaDbgControllerType MaaDbgControllerType_CarouselImage = 1;
-const MaaDbgControllerType MaaDbgControllerType_ReplayRecording = 2;
+typedef uint64_t MaaDbgControllerType;
+const MaaDbgControllerType MaaDbgControllerType_None = 0;
+const MaaDbgControllerType MaaDbgControllerType_CarouselImage = 1ULL;
+const MaaDbgControllerType MaaDbgControllerType_ReplayRecording = 1ULL << 1;
 
 struct MaaRect
 {

@@ -1,6 +1,4 @@
 import abc
-import asyncio
-import ctypes
 from typing import Union
 
 from .define import MaaId, MaaStatus, MaaStatusEnum
@@ -13,63 +11,34 @@ class Status:
         self._status = MaaStatusEnum(status)
 
     def done(self) -> bool:
-        """
-        Check if the status is done.
-
-        :return: True if the status is done, False otherwise.
-        """
-
         return self._status in [MaaStatusEnum.success, MaaStatusEnum.failure]
 
     def success(self) -> bool:
-        """
-        Check if the status is success.
-
-        :return: True if the status is success, False otherwise.
-        """
-
         return self._status == MaaStatusEnum.success
 
     def failure(self) -> bool:
-        """
-        Check if the status is failure.
-
-        :return: True if the status is failure, False otherwise.
-        """
-
         return self._status == MaaStatusEnum.failure
 
     def pending(self) -> bool:
-        """
-        Check if the status is pending.
-
-        :return: True if the status is pending, False otherwise.
-        """
-
         return self._status == MaaStatusEnum.pending
 
     def running(self) -> bool:
-        """
-        Check if the status is running.
-
-        :return: True if the status is running, False otherwise.
-        """
-
         return self._status == MaaStatusEnum.running
 
 
-class Future(abc.ABC):
+class Job(abc.ABC):
     _maaid: MaaId
 
-    def __init__(self, mid: MaaId, status_func):
-        self._maaid = mid
+    def __init__(self, maaid: MaaId, status_func, wait_func):
+        self._maaid = maaid
         self._status_func = status_func
+        self._wait_func = wait_func
+
+    def get_id(self) -> int:
+        return int(self._maaid)
 
     async def wait(self) -> bool:
-        while not self.status().done():
-            await asyncio.sleep(0)
-
-        return self.success()
+        return Status(self._wait_func(self._maaid)).done()
 
     def status(self) -> Status:
         return Status(self._status_func(self._maaid))

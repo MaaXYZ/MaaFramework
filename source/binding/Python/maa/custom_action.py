@@ -2,7 +2,7 @@ import ctypes
 from abc import ABC, abstractmethod
 
 from .buffer import RectBuffer
-from .context import SyncContext
+from .context import Context
 from .define import *
 
 
@@ -15,7 +15,7 @@ class CustomAction(ABC):
     @abstractmethod
     def run(
         self,
-        context: SyncContext,
+        context: Context,
         task_name: str,
         custom_param: str,
         box: Rect,
@@ -58,10 +58,10 @@ class CustomAction(ABC):
     @MaaCustomAction.RunFunc
     def _c_run_agent(
         c_context: MaaSyncContextHandle,
-        c_task_name: MaaStringView,
-        c_custom_param: MaaStringView,
+        c_task_name: ctypes.c_char_p,
+        c_custom_param: ctypes.c_char_p,
         c_box: MaaRectHandle,
-        c_rec_detail: MaaStringView,
+        c_rec_detail: ctypes.c_char_p,
         c_transparent_arg: MaaTransparentArg,
     ) -> MaaBool:
         if not c_transparent_arg:
@@ -72,7 +72,7 @@ class CustomAction(ABC):
             ctypes.py_object,
         ).value
 
-        context = SyncContext(c_context)
+        context = Context(c_context)
         task_name = c_task_name.decode("utf-8")
         custom_param = c_custom_param.decode("utf-8")
 

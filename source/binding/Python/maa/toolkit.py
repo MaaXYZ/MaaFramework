@@ -6,7 +6,7 @@ from pathlib import Path
 from typing import Dict, List, Union
 
 from .define import *
-from .instance import Instance
+from .tasker import Tasker
 from .library import Library
 from .buffer import StringBuffer
 
@@ -68,7 +68,7 @@ class Toolkit:
 
     @classmethod
     def register_recognizer_exec_agent(
-        cls, inst: Instance, name: str, exec_path: Union[str, Path], argv: List[str]
+        cls, inst: Tasker, name: str, exec_path: Union[str, Path], argv: List[str]
     ) -> bool:
         """
         Register a recognizer exec agent.
@@ -79,17 +79,17 @@ class Toolkit:
 
         return bool(
             Library.toolkit.MaaToolkitRegisterCustomRecognizerExecutor(
-                inst.c_handle,
+                inst._handle,
                 name.encode("utf-8"),
                 str(exec_path).encode("utf-8"),
-                (MaaStringView * len(argv_list))(*argv_list),
+                (ctypes.c_char_p * len(argv_list))(*argv_list),
                 len(argv_list),
             )
         )
 
     @classmethod
     def register_action_exec_agent(
-        cls, inst: Instance, name: str, exec_path: Union[str, Path], argv: List[str]
+        cls, inst: Tasker, name: str, exec_path: Union[str, Path], argv: List[str]
     ) -> bool:
         """
         Register a action exec agent.
@@ -100,10 +100,10 @@ class Toolkit:
 
         return bool(
             Library.toolkit.MaaToolkitRegisterCustomActionExecutor(
-                inst.c_handle(),
+                inst._handle(),
                 name.encode("utf-8"),
                 str(exec_path).encode("utf-8"),
-                (MaaStringView * len(argv_list))(*argv_list),
+                (ctypes.c_char_p * len(argv_list))(*argv_list),
             )
         )
 
@@ -172,7 +172,7 @@ class Toolkit:
         cls._set_api_properties()
 
         buffer = StringBuffer()
-        Library.toolkit.MaaToolkitGetWindowClassName(hwnd, buffer.c_handle)
+        Library.toolkit.MaaToolkitGetWindowClassName(hwnd, buffer._handle)
         return buffer.get()
 
     @classmethod
@@ -180,7 +180,7 @@ class Toolkit:
         cls._set_api_properties()
 
         buffer = StringBuffer()
-        Library.toolkit.MaaToolkitGetWindowWindowName(hwnd, buffer.c_handle)
+        Library.toolkit.MaaToolkitGetWindowWindowName(hwnd, buffer._handle)
         return buffer.get()
 
     @staticmethod
@@ -204,8 +204,8 @@ class Toolkit:
 
         Library.toolkit.MaaToolkitInitOptionConfig.restype = MaaBool
         Library.toolkit.MaaToolkitInitOptionConfig.argtypes = [
-            MaaStringView,
-            MaaStringView,
+            ctypes.c_char_p,
+            ctypes.c_char_p,
         ]
 
         Library.toolkit.MaaToolkitPostFindDevice.restype = MaaBool
@@ -217,13 +217,13 @@ class Toolkit:
         Library.toolkit.MaaToolkitGetDeviceCount.restype = MaaSize
         Library.toolkit.MaaToolkitGetDeviceCount.argtypes = None
 
-        Library.toolkit.MaaToolkitGetDeviceName.restype = MaaStringView
+        Library.toolkit.MaaToolkitGetDeviceName.restype = ctypes.c_char_p
         Library.toolkit.MaaToolkitGetDeviceName.argtypes = [MaaSize]
 
-        Library.toolkit.MaaToolkitGetDeviceAdbPath.restype = MaaStringView
+        Library.toolkit.MaaToolkitGetDeviceAdbPath.restype = ctypes.c_char_p
         Library.toolkit.MaaToolkitGetDeviceAdbPath.argtypes = [MaaSize]
 
-        Library.toolkit.MaaToolkitGetDeviceAdbSerial.restype = MaaStringView
+        Library.toolkit.MaaToolkitGetDeviceAdbSerial.restype = ctypes.c_char_p
         Library.toolkit.MaaToolkitGetDeviceAdbSerial.argtypes = [MaaSize]
 
         Library.toolkit.MaaToolkitGetDeviceAdbControllerType.restype = (
@@ -232,37 +232,37 @@ class Toolkit:
 
         Library.toolkit.MaaToolkitGetDeviceAdbControllerType.argtypes = [MaaSize]
 
-        Library.toolkit.MaaToolkitGetDeviceAdbConfig.restype = MaaStringView
+        Library.toolkit.MaaToolkitGetDeviceAdbConfig.restype = ctypes.c_char_p
         Library.toolkit.MaaToolkitGetDeviceAdbConfig.argtypes = [MaaSize]
 
         Library.toolkit.MaaToolkitRegisterCustomRecognizerExecutor.restype = MaaBool
         Library.toolkit.MaaToolkitRegisterCustomRecognizerExecutor.argtypes = [
-            MaaInstanceHandle,
-            MaaStringView,
-            MaaStringView,
-            ctypes.POINTER(MaaStringView),
+            MaaTaskerHandle,
+            ctypes.c_char_p,
+            ctypes.c_char_p,
+            ctypes.POINTER(ctypes.c_char_p),
             MaaSize,
         ]
 
         Library.toolkit.MaaToolkitRegisterCustomActionExecutor.restype = MaaBool
         Library.toolkit.MaaToolkitRegisterCustomActionExecutor.argtypes = [
-            MaaInstanceHandle,
-            MaaStringView,
-            MaaStringView,
-            ctypes.POINTER(MaaStringView),
+            MaaTaskerHandle,
+            ctypes.c_char_p,
+            ctypes.c_char_p,
+            ctypes.POINTER(ctypes.c_char_p),
             MaaSize,
         ]
 
         Library.toolkit.MaaToolkitFindWindow.restype = MaaSize
         Library.toolkit.MaaToolkitFindWindow.argtypes = [
-            MaaStringView,
-            MaaStringView,
+            ctypes.c_char_p,
+            ctypes.c_char_p,
         ]
 
         Library.toolkit.MaaToolkitSearchWindow.restype = MaaSize
         Library.toolkit.MaaToolkitSearchWindow.argtypes = [
-            MaaStringView,
-            MaaStringView,
+            ctypes.c_char_p,
+            ctypes.c_char_p,
         ]
 
         Library.toolkit.MaaToolkitListWindows.restype = MaaSize

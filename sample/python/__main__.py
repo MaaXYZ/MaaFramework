@@ -4,7 +4,7 @@ from typing import Tuple
 from maa.define import RectType
 from maa.resource import Resource
 from maa.controller import AdbController
-from maa.instance import Instance
+from maa.tasker import Instance
 from maa.toolkit import Toolkit
 
 from maa.custom_recognizer import CustomRecognizer

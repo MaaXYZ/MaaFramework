@@ -7,322 +7,155 @@ import numpy
 from .buffer import *
 from .define import MaaBool
 from .library import Library
+from .tasker import *
 
 
-class SyncContext:
-    _handle: MaaSyncContextHandle
+class Context:
+    _handle: MaaContextHandle
+    _tasker: Tasker = None
 
-    def __init__(self, handle: MaaSyncContextHandle):
+    ### public ###
+
+    def __init__(self, handle: MaaContextHandle):
         self._set_api_properties()
 
         self._handle = handle
         if not self._handle:
             raise ValueError("handle is None")
 
-    def run_task(self, task_name: str, task_param: Dict = {}) -> bool:
-        """
-        Sync context run task.
+        self._init_tasker()
 
-        :param task_name: task name
-        :param task_param: task param
+    def __del__(self):
+        pass
 
-        :return: True if success, otherwise False
-        """
-        return bool(
-            Library.framework.MaaSyncContextRunTask(
-                self._handle,
-                task_name.encode("utf-8"),
-                json.dumps(task_param, ensure_ascii=False).encode("utf-8"),
-            )
+    def run_pipeline(
+        self, entry: str, pipeline_override: Dict = {}
+    ) -> Optional[TaskDetail]:
+        task_id = Library.framework.MaaContextRunPipeline(
+            self._handle, *Context._gen_post_param(entry, pipeline_override)
         )
+        if not task_id:
+            return None
 
-    def run_recognition(
-        self,
-        image: numpy.ndarray,
-        task_name: str,
-        task_param: Dict = {},
-    ) -> Tuple[bool, Rect, str]:
-        """
-        Sync context run recognizer.
+        return self.tasker()._get_task_detail(task_id)
 
-        :param image: image
-        :param task_name: task name
-        :param task_param: task param
-
-        :return: rect, detail
-        """
-
-        image_buffer = ImageBuffer()
-        image_buffer.set(image)
-
-        rect_buffer = RectBuffer()
-        detail_buffer = StringBuffer()
-
-        ret = bool(
-            Library.framework.MaaSyncContextRunRecognition(
-                self._handle,
-                image_buffer.c_handle,
-                task_name.encode("utf-8"),
-                json.dumps(task_param, ensure_ascii=False).encode("utf-8"),
-                rect_buffer.c_handle,
-                detail_buffer.c_handle,
-            )
+    def run_recogition(
+        self, entry: str, image: numpy.ndarray, pipeline_override: Dict = {}
+    ) -> Optional[TaskDetail]:
+        image_buffer = ImageBuffer(image)
+        reco_id = Library.framework.MaaContextRunRecognition(
+            self._handle,
+            *Context._gen_post_param(entry, pipeline_override),
+            image_buffer._handle
         )
+        if not reco_id:
+            return None
 
-        return (ret, rect_buffer.get(), detail_buffer.get())
+        return self.tasker()._get_recognition_detail(reco_id)
 
     def run_action(
-        self,
-        task_name: str,
-        task_param: Dict,
-        cur_box: RectType,
-        cur_rec_detail: str,
-    ) -> Optional[str]:
-        """
-        Sync context run action.
+        self, entry: str, box: RectType, reco_detail: str, pipeline_override: Dict = {}
+    ) -> Optional[NodeDetail]:
+        rect = RectBuffer()
+        rect.set(box)
 
-        :param task_name: task name
-        :param task_param: task param
-        :param cur_box: current box
-        :param cur_rec_detail: current recognizer detail
+        node_id = Library.framework.MaaContextRunAction(
+            self._handle,
+            *Context._gen_post_param(entry, pipeline_override),
+            rect._handle,
+            reco_detail.encode()
+        )
 
-        :return: detail
-        """
+        if not node_id:
+            return None
 
-        rect_buffer = RectBuffer()
-        rect_buffer.set(cur_box)
+        return self.tasker()._get_node_detail(node_id)
 
+    def override_pipeline(self, pipeline_override: Dict) -> bool:
         return bool(
-            Library.framework.MaaSyncContextRunAction(
+            Library.framework.MaaContextOverridePipeline(
                 self._handle,
-                task_name.encode("utf-8"),
-                json.dumps(task_param, ensure_ascii=False).encode("utf-8"),
-                rect_buffer.c_handle,
-                cur_rec_detail.encode("utf-8"),
+                json.dumps(pipeline_override, ensure_ascii=False).encode("utf-8"),
             )
         )
 
-    def click(self, x: int, y: int) -> bool:
-        """
-        Sync context click.
+    def tasker(self) -> Tasker:
+        return self._tasker
 
-        :param x: x
-        :param y: y
-
-        :return: True if success, otherwise False
-        """
-        return bool(Library.framework.MaaSyncContextClick(self._handle, x, y))
-
-    def swipe(self, x1: int, y1: int, x2: int, y2: int, duration: int) -> bool:
-        """
-        Sync context swipe.
-
-        :param x1: x1
-        :param y1: y1
-        :param x2: x2
-        :param y2: y2
-        :param duration: duration
-
-        :return: True if success, otherwise False
-        """
-        return bool(
-            Library.framework.MaaSyncContextSwipe(
-                self._handle, x1, y1, x2, y2, duration
-            )
-        )
-
-    def press_key(self, key: int) -> bool:
-        """
-        Sync context press key.
-
-        :param key: key
-
-        :return: True if success, otherwise False
-        """
-        return bool(Library.framework.MaaSyncContextPressKey(self._handle, key))
-
-    def input_text(self, text: str) -> bool:
-        """
-        Sync context input text.
-
-        :param text: text
-
-        :return: True if success, otherwise False
-        """
-        return bool(
-            Library.framework.MaaSyncContextInputText(
-                self._handle, text.encode("utf-8")
-            )
-        )
-
-    def touch_down(self, contact: int, x: int, y: int, pressure: int) -> bool:
-        """
-        Sync context touch down.
-
-        :param contact: contact
-        :param x: x
-        :param y: y
-        :param pressure: pressure
-
-        :return: True if success, otherwise False
-        """
-        return bool(
-            Library.framework.MaaSyncContextTouchDown(
-                self._handle, contact, x, y, pressure
-            )
-        )
-
-    def touch_move(self, contact: int, x: int, y: int, pressure: int) -> bool:
-        """
-        Sync context touch move.
-
-        :param contact: contact
-        :param x: x
-        :param y: y
-        :param pressure: pressure
-
-        :return: True if success, otherwise False
-        """
-        return bool(
-            Library.framework.MaaSyncContextTouchMove(
-                self._handle, contact, x, y, pressure
-            )
-        )
-
-    def touch_up(self, contact: int) -> bool:
-        """
-        Sync context touch up.
-
-        :param contact: contact
-
-        :return: True if success, otherwise False
-        """
-        return bool(Library.framework.MaaSyncContextTouchUp(self._handle, contact))
-
-    def screencap(self) -> Optional[numpy.ndarray]:
-        """
-        Sync context screencap.
-
-        :return: image
-        """
-        image_buffer = ImageBuffer()
-        ret = Library.framework.MaaSyncContextScreencap(
-            self._handle, image_buffer.c_handle
-        )
-        if not ret:
+    def get_task_job(self) -> TaskJob:
+        task_id = Library.framework.MaaContextGetTaskId(self._handle)
+        if not task_id:
             return None
-        return image_buffer.get()
 
-    def cached_image(self) -> Optional[numpy.ndarray]:
-        """
-        Sync context cached image.
+        return self.tasker()._gen_task_job(task_id)
 
-        :return: image
-        """
-        image_buffer = ImageBuffer()
-        ret = Library.framework.MaaSyncContextCachedImage(
-            self._handle, image_buffer.c_handle
-        )
-        if not ret:
+    def clone(self) -> "Context":
+        cloned_handle = Library.framework.MaaContextClone(self._handle)
+        if not cloned_handle:
             return None
-        return image_buffer.get()
 
-    _api_properties_initialized: bool = False
+        return Context(cloned_handle)
+
+    ### private ###
+
+    def _init_tasker(self):
+        self._tasker = Tasker(Library.framework.MaaContextGetTasker(self._handle))
+
+    @staticmethod
+    def _gen_post_param(entry: str, pipeline_override: Dict) -> Tuple[bytes, bytes]:
+        return (
+            entry.encode("utf-8"),
+            json.dumps(pipeline_override, ensure_ascii=False).encode("utf-8"),
+        )
 
     @staticmethod
     def _set_api_properties():
-        if SyncContext._api_properties_initialized:
+        if Context._api_properties_initialized:
             return
 
-        SyncContext._api_properties_initialized = True
+        Context._api_properties_initialized = True
 
-        Library.framework.MaaSyncContextRunTask.restype = MaaBool
-        Library.framework.MaaSyncContextRunTask.argtypes = [
-            MaaSyncContextHandle,
-            MaaStringView,
-            MaaStringView,
+        Library.framework.MaaContextRunPipeline.restype = MaaTaskId
+        Library.framework.MaaContextRunPipeline.argtypes = [
+            MaaContextHandle,
+            ctypes.c_char_p,
+            ctypes.c_char_p,
         ]
 
-        Library.framework.MaaSyncContextRunRecognition.restype = MaaBool
-        Library.framework.MaaSyncContextRunRecognition.argtypes = [
-            MaaSyncContextHandle,
-            MaaStringBufferHandle,
-            MaaStringView,
-            MaaStringView,
+        Library.framework.MaaContextRunRecognition.restype = MaaRecoId
+        Library.framework.MaaContextRunRecognition.argtypes = [
+            MaaContextHandle,
+            ctypes.c_char_p,
+            ctypes.c_char_p,
+            MaaImageBufferHandle,
+        ]
+
+        Library.framework.MaaContextRunAction.restype = MaaNodeId
+        Library.framework.MaaContextRunAction.argtypes = [
+            MaaContextHandle,
+            ctypes.c_char_p,
+            ctypes.c_char_p,
             MaaRectHandle,
             MaaStringBufferHandle,
         ]
 
-        Library.framework.MaaSyncContextRunAction.restype = MaaBool
-        Library.framework.MaaSyncContextRunAction.argtypes = [
-            MaaSyncContextHandle,
-            MaaStringView,
-            MaaStringView,
-            MaaRectHandle,
-            MaaStringBufferHandle,
+        Library.framework.MaaContextOverridePipeline.restype = MaaBool
+        Library.framework.MaaContextOverridePipeline.argtypes = [
+            MaaContextHandle,
+            ctypes.c_char_p,
         ]
 
-        Library.framework.MaaSyncContextClick.restype = MaaBool
-        Library.framework.MaaSyncContextClick.argtypes = [
-            MaaSyncContextHandle,
-            ctypes.c_int32,
-            ctypes.c_int32,
+        Library.framework.MaaContextGetTaskId.restype = MaaTaskId
+        Library.framework.MaaContextGetTaskId.argtypes = [
+            MaaContextHandle,
         ]
 
-        Library.framework.MaaSyncContextSwipe.restype = MaaBool
-        Library.framework.MaaSyncContextSwipe.argtypes = [
-            MaaSyncContextHandle,
-            ctypes.c_int32,
-            ctypes.c_int32,
-            ctypes.c_int32,
-            ctypes.c_int32,
-            ctypes.c_int32,
+        Library.framework.MaaContextGetTasker.restype = MaaTaskerHandle
+        Library.framework.MaaContextGetTasker.argtypes = [
+            MaaContextHandle,
         ]
 
-        Library.framework.MaaSyncContextPressKey.restype = MaaBool
-        Library.framework.MaaSyncContextPressKey.argtypes = [
-            MaaSyncContextHandle,
-            ctypes.c_int32,
-        ]
-
-        Library.framework.MaaSyncContextInputText.restype = MaaBool
-        Library.framework.MaaSyncContextInputText.argtypes = [
-            MaaSyncContextHandle,
-            MaaStringView,
-        ]
-
-        Library.framework.MaaSyncContextTouchDown.restype = MaaBool
-        Library.framework.MaaSyncContextTouchDown.argtypes = [
-            MaaSyncContextHandle,
-            ctypes.c_int32,
-            ctypes.c_int32,
-            ctypes.c_int32,
-            ctypes.c_int32,
-        ]
-
-        Library.framework.MaaSyncContextTouchMove.restype = MaaBool
-        Library.framework.MaaSyncContextTouchMove.argtypes = [
-            MaaSyncContextHandle,
-            ctypes.c_int32,
-            ctypes.c_int32,
-            ctypes.c_int32,
-            ctypes.c_int32,
-        ]
-
-        Library.framework.MaaSyncContextTouchUp.restype = MaaBool
-        Library.framework.MaaSyncContextTouchUp.argtypes = [
-            MaaSyncContextHandle,
-            ctypes.c_int32,
-        ]
-
-        Library.framework.MaaSyncContextScreencap.restype = MaaBool
-        Library.framework.MaaSyncContextScreencap.argtypes = [
-            MaaSyncContextHandle,
-            MaaImageBufferHandle,
-        ]
-
-        Library.framework.MaaSyncContextCachedImage.restype = MaaBool
-        Library.framework.MaaSyncContextCachedImage.argtypes = [
-            MaaSyncContextHandle,
-            MaaImageBufferHandle,
+        Library.framework.MaaContextClone.restype = MaaContextHandle
+        Library.framework.MaaContextClone.argtypes = [
+            MaaContextHandle,
         ]

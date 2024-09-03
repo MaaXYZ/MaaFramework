@@ -21,19 +21,6 @@ extern "C"
 
     struct MaaCustomControllerCallbacks;
 
-    /**
-     * @brief Create a ADB controller instance.
-     *
-     * @param adb_path The path of ADB executable.
-     * @param address The ADB serial of the target device.
-     * @param Use bitwise OR to set the method you need, MaaFramework will test their speed and use the fastest one.
-     * @param input_methods Use bitwise OR to set the method you need, MaaFramework will select the available ones according to priority.
-     * @param config The config of the ADB controller.
-     * @param agent_path The path of the agent executable.
-     * @param callback The callback function. See ::MaaNotificationCallback.
-     * @param callback_arg The callback arg that will be passed to the callback function.
-     * @return MaaController* The handle of the created controller instance.
-     */
     MAA_FRAMEWORK_API MaaController* MaaAdbControllerCreate(
         const char* adb_path,
         const char* address,
@@ -44,17 +31,6 @@ extern "C"
         MaaNotificationCallback callback,
         void* callback_arg);
 
-    /**
-     * @brief Create a win32 controller instance.
-     *
-     * @param hWnd The win32 window handle to control. This can be retrieved by helpers provided in
-     * MaaToolkitWin32Window.h.
-     * @param screencap_method No bitwise OR, just set it
-     * @param input_method Use No bitwise OR, just set it
-     * @param callback The callback function. See ::MaaNotificationCallback.
-     * @param callback_arg The callback arg that will be passed to the callback function.
-     * @return MaaController* The handle of the created controller instance.
-     */
     MAA_FRAMEWORK_API MaaController* MaaWin32ControllerCreate(
         void* hWnd,
         MaaWin32ScreencapMethod screencap_method,
@@ -62,15 +38,6 @@ extern "C"
         MaaNotificationCallback callback,
         void* callback_arg);
 
-    /**
-     * @brief Create a custom controller instance.
-     *
-     * @param handle The handle to your instance of custom controller. See MaaCustomControllerAPI.
-     * @param handle_arg The arg that will be passed to the custom controller API.
-     * @param callback The callback function. See ::MaaNotificationCallback.
-     * @param callback_arg The callback arg that will be passed to the callback function.
-     * @return MaaController* The handle of the created controller instance.
-     */
     MAA_FRAMEWORK_API MaaController* MaaCustomControllerCreate(
         MaaCustomControllerCallbacks* handle,
         void* handle_arg,
@@ -85,35 +52,10 @@ extern "C"
         MaaNotificationCallback callback,
         void* callback_arg);
 
-    /**
-     * @brief Free the controller instance.
-     *
-     * @param ctrl
-     */
     MAA_FRAMEWORK_API void MaaControllerDestroy(MaaController* ctrl);
 
-    /**
-     * @brief Set options for a given controller instance.
-     *
-     * This function requires a given set of option keys and value types, otherwise this will fail.
-     * See #MaaCtrlOptionEnum for details.
-     *
-     * @param ctrl The handle of the controller instance to set options for.
-     * @param key The option key.
-     * @param[in] value The option value.
-     * @param val_size The size of the option value.
-     * @return MaaBool Whether the option is set successfully.
-     */
     MAA_FRAMEWORK_API MaaBool
         MaaControllerSetOption(MaaController* ctrl, MaaCtrlOption key, MaaOptionValue value, MaaOptionValueSize val_size);
-
-    /**
-     * @defgroup MaaControllerPostRequest Controller Requests
-     *
-     * The following functions post their corresponding requests to the controller and return the id
-     * of the request.
-     * @{
-     */
 
     MAA_FRAMEWORK_API MaaCtrlId MaaControllerPostConnection(MaaController* ctrl);
 
@@ -137,53 +79,15 @@ extern "C"
 
     MAA_FRAMEWORK_API MaaCtrlId MaaControllerPostScreencap(MaaController* ctrl);
 
-    /** @} */
-
-    /**
-     * @brief Get the status of a request identified by the given id.
-     *
-     * @param ctrl
-     * @param id
-     * @return MaaStatus The status of the request.
-     */
     MAA_FRAMEWORK_API MaaStatus MaaControllerStatus(const MaaController* ctrl, MaaCtrlId id);
 
-    /**
-     * @brief Wait for the request identified by the given id to finish.
-     *
-     * @param ctrl
-     * @param id
-     * @return MaaStatus The status of the request.
-     */
     MAA_FRAMEWORK_API MaaStatus MaaControllerWait(const MaaController* ctrl, MaaCtrlId id);
 
-    /**
-     * @brief Check if the controller is connected.
-     *
-     * @param ctrl
-     * @return MaaBool
-     */
     MAA_FRAMEWORK_API MaaBool MaaControllerConnected(const MaaController* ctrl);
 
-    /**
-     * @brief Get the image buffer of the last screencap request.
-     *
-     * @param ctrl
-     * @param buffer The buffer that the image data will be stored in.
-     *
-     * @return MaaBool Whether the image buffer is retrieved successfully.
-     */
     MAA_FRAMEWORK_API MaaBool MaaControllerCachedImage(const MaaController* ctrl, /* out */ MaaImageBuffer* buffer);
 
-    /**
-     * @brief Get the UUID of the controller.
-     *
-     * @param ctrl
-     * @param buffer The buffer that the UUID will be stored in.
-     *
-     * @return MaaBool Whether the UUID is retrieved successfully.
-     */
-    MAA_FRAMEWORK_API MaaBool MaaControllerGetUUID(MaaController* ctrl, /* out */ MaaStringBuffer* buffer);
+    MAA_FRAMEWORK_API MaaBool MaaControllerGetUuid(MaaController* ctrl, /* out */ MaaStringBuffer* buffer);
 
 #ifdef __cplusplus
 }

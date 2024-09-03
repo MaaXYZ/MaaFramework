@@ -1,6 +1,5 @@
 import ctypes
 import ctypes.util
-import os
 import pathlib
 import platform
 from typing import Optional, Union
@@ -73,5 +72,5 @@ class Library:
 
     @classmethod
     def _set_api_properties(cls):
-        cls.framework.MaaVersion.restype = MaaStringView
+        cls.framework.MaaVersion.restype = ctypes.c_char_p
         cls.framework.MaaVersion.argtypes = None
