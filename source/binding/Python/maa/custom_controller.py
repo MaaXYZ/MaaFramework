@@ -7,13 +7,12 @@ from .define import *
 
 
 class CustomControllerAgent(ABC):
-    _api: MaaCustomControllerCallbacks
+    _handle: MaaCustomControllerCallbacks
 
     def __init__(self):
-        self._api = MaaCustomControllerCallbacks(
+        self._handle = MaaCustomControllerCallbacks(
             self._c_connect_agent,
             self._c_request_uuid_agent,
-            self._c_request_resolution_agent,
             self._c_start_app_agent,
             self._c_stop_app_agent,
             self._c_screencap_agent,
@@ -27,8 +26,12 @@ class CustomControllerAgent(ABC):
         )
 
     @property
-    def c_arg(self) -> MaaTransparentArg:
-        return MaaTransparentArg.from_buffer(ctypes.py_object(self))
+    def c_handle(self) -> MaaCustomControllerCallbacks:
+        return MaaCustomControllerCallbacks(self._handle)
+
+    @property
+    def c_arg(self) -> ctypes.c_void_p:
+        return ctypes.c_void_p.from_buffer(ctypes.py_object(self))
 
     @abstractmethod
     def connect(self) -> bool:
@@ -40,7 +43,7 @@ class CustomControllerAgent(ABC):
 
     @MaaCustomControllerCallbacks.ConnectFunc
     def _c_connect_agent(
-        trans_arg: MaaTransparentArg,
+        trans_arg: ctypes.c_void_p,
     ) -> MaaBool:
         if not trans_arg:
             return False
@@ -54,7 +57,7 @@ class CustomControllerAgent(ABC):
 
     @MaaCustomControllerCallbacks.RequestUuidFunc
     def _c_request_uuid_agent(
-        trans_arg: MaaTransparentArg,
+        trans_arg: ctypes.c_void_p,
         c_buffer: MaaStringBufferHandle,
     ) -> MaaBool:
         if not trans_arg:
@@ -75,42 +78,13 @@ class CustomControllerAgent(ABC):
         return True
 
     @abstractmethod
-    def request_resolution(self) -> Optional[Tuple[int, int]]:
-        raise NotImplementedError
-
-    @MaaCustomControllerCallbacks.RequestResolutionFunc
-    def _c_request_resolution_agent(
-        trans_arg: MaaTransparentArg,
-        c_width: c_int32_p,
-        c_height: c_int32_p,
-    ) -> MaaBool:
-        if not trans_arg:
-            return False
-
-        self: CustomControllerAgent = ctypes.cast(
-            trans_arg,
-            ctypes.py_object,
-        ).value
-
-        res = self.request_resolution()
-
-        if not res:
-            return False
-
-        w, h = res
-        c_width.contents.value = w
-        c_height.contents.value = h
-
-        return True
-
-    @abstractmethod
     def start_app(self, intent: str) -> bool:
         raise NotImplementedError
 
     @MaaCustomControllerCallbacks.StartAppFunc
     def _c_start_app_agent(
         c_intent: ctypes.c_char_p,
-        trans_arg: MaaTransparentArg,
+        trans_arg: ctypes.c_void_p,
     ) -> MaaBool:
         if not trans_arg:
             return False
@@ -129,7 +103,7 @@ class CustomControllerAgent(ABC):
     @MaaCustomControllerCallbacks.StartAppFunc
     def _c_stop_app_agent(
         c_intent: ctypes.c_char_p,
-        trans_arg: MaaTransparentArg,
+        trans_arg: ctypes.c_void_p,
     ) -> MaaBool:
         if not trans_arg:
             return False
@@ -147,7 +121,7 @@ class CustomControllerAgent(ABC):
 
     @MaaCustomControllerCallbacks.ScreencapFunc
     def _c_screencap_agent(
-        trans_arg: MaaTransparentArg,
+        trans_arg: ctypes.c_void_p,
         c_buffer: MaaStringBufferHandle,
     ) -> MaaBool:
         if not trans_arg:
@@ -176,7 +150,7 @@ class CustomControllerAgent(ABC):
     def _c_click_agent(
         c_x: ctypes.c_int32,
         c_y: ctypes.c_int32,
-        trans_arg: MaaTransparentArg,
+        trans_arg: ctypes.c_void_p,
     ) -> MaaBool:
         if not trans_arg:
             return False
@@ -198,7 +172,7 @@ class CustomControllerAgent(ABC):
         c_y1: ctypes.c_int32,
         c_x2: ctypes.c_int32,
         c_y2: ctypes.c_int32,
-        trans_arg: MaaTransparentArg,
+        trans_arg: ctypes.c_void_p,
     ) -> MaaBool:
         if not trans_arg:
             return False
@@ -226,7 +200,7 @@ class CustomControllerAgent(ABC):
         c_x: ctypes.c_int32,
         c_y: ctypes.c_int32,
         c_pressure: ctypes.c_int32,
-        trans_arg: MaaTransparentArg,
+        trans_arg: ctypes.c_void_p,
     ) -> MaaBool:
         if not trans_arg:
             return False
@@ -254,7 +228,7 @@ class CustomControllerAgent(ABC):
         c_x: ctypes.c_int32,
         c_y: ctypes.c_int32,
         c_pressure: ctypes.c_int32,
-        trans_arg: MaaTransparentArg,
+        trans_arg: ctypes.c_void_p,
     ) -> MaaBool:
         if not trans_arg:
             return False
@@ -273,7 +247,7 @@ class CustomControllerAgent(ABC):
     @MaaCustomControllerCallbacks.TouchUpFunc
     def _c_touch_up_agent(
         c_contact: ctypes.c_int32,
-        trans_arg: MaaTransparentArg,
+        trans_arg: ctypes.c_void_p,
     ) -> MaaBool:
         if not trans_arg:
             return False
@@ -292,7 +266,7 @@ class CustomControllerAgent(ABC):
     @MaaCustomControllerCallbacks.PressKeyFunc
     def _c_press_key_agent(
         c_keycode: ctypes.c_int32,
-        trans_arg: MaaTransparentArg,
+        trans_arg: ctypes.c_void_p,
     ) -> MaaBool:
         if not trans_arg:
             return False
@@ -311,7 +285,7 @@ class CustomControllerAgent(ABC):
     @MaaCustomControllerCallbacks.InputTextFunc
     def _c_input_text_agent(
         c_text: ctypes.c_char_p,
-        trans_arg: MaaTransparentArg,
+        trans_arg: ctypes.c_void_p,
     ) -> MaaBool:
         if not trans_arg:
             return False

@@ -39,7 +39,7 @@ class Context:
 
         return self.tasker()._get_task_detail(task_id)
 
-    def run_recogition(
+    def run_recognition(
         self, entry: str, image: numpy.ndarray, pipeline_override: Dict = {}
     ) -> Optional[TaskDetail]:
         image_buffer = ImageBuffer(image)
@@ -54,7 +54,11 @@ class Context:
         return self.tasker()._get_recognition_detail(reco_id)
 
     def run_action(
-        self, entry: str, box: RectType, reco_detail: str, pipeline_override: Dict = {}
+        self,
+        entry: str,
+        box: RectType,
+        reco_detail: str = "",
+        pipeline_override: Dict = {},
     ) -> Optional[NodeDetail]:
         rect = RectBuffer()
         rect.set(box)

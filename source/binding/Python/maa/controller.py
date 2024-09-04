@@ -20,15 +20,13 @@ __all__ = [
 ]
 
 
-class Controller(ABC):
+class Controller:
     _handle: MaaControllerHandle
     _callback_agent: CallbackAgent
     _own: bool = False
 
     def __init__(
         self,
-        callback: Optional[Callback] = None,
-        callback_arg: Any = None,
         handle: MaaControllerHandle = None,
     ):
         if not Library.initialized:
@@ -37,8 +35,6 @@ class Controller(ABC):
             )
 
         self._set_api_properties()
-
-        self._callback_agent = CallbackAgent(callback, callback_arg)
 
         if handle:
             self._handle = handle
@@ -172,9 +168,6 @@ class Controller(ABC):
 
     @staticmethod
     def _set_api_properties():
-        """
-        Set the API properties for the controller.
-        """
         if Controller._api_properties_initialized:
             return
         Controller._api_properties_initialized = True
@@ -300,9 +293,8 @@ class AdbController(Controller):
         self,
         adb_path: Union[str, Path],
         address: str,
-        touch_type: MaaAdbControllerType = MaaAdbControllerTypeEnum.Touch_AutoDetect,
-        key_type: MaaAdbControllerType = MaaAdbControllerTypeEnum.Key_AutoDetect,
-        screencap_type: MaaAdbControllerType = MaaAdbControllerTypeEnum.Screencap_FastestLosslessWay,
+        screencap_methods: MaaAdbScreencapMethod = MaaAdbScreencapMethodEnum.Default,
+        input_methods: MaaAdbInputMethod = MaaAdbInputMethodEnum.Default,
         config: Dict[str, Any] = {},
         agent_path: Union[str, Path] = AGENT_BINARY_PATH,
         callback: Optional[Callback] = None,
@@ -312,10 +304,11 @@ class AdbController(Controller):
         self._set_adb_api_properties()
 
         self._callback_agent = CallbackAgent(callback, callback_arg)
-        self._handle = Library.framework.MaaAdbControllerCreateV2(
+        self._handle = Library.framework.MaaAdbControllerCreate(
             str(adb_path).encode("utf-8"),
             address.encode("utf-8"),
-            touch_type | key_type | screencap_type,
+            screencap_methods,
+            input_methods,
             json.dumps(config, ensure_ascii=False).encode("utf-8"),
             str(agent_path).encode("utf-8"),
             self._callback_agent.c_callback,
@@ -326,83 +319,37 @@ class AdbController(Controller):
             raise RuntimeError("Failed to create ADB controller.")
 
     def _set_adb_api_properties(self):
-        """
-        Set the API properties for the ADB controller.
-        """
 
-        Library.framework.MaaAdbControllerCreateV2.restype = MaaControllerHandle
-        Library.framework.MaaAdbControllerCreateV2.argtypes = [
+        Library.framework.MaaAdbControllerCreate.restype = MaaControllerHandle
+        Library.framework.MaaAdbControllerCreate.argtypes = [
             ctypes.c_char_p,
             ctypes.c_char_p,
-            MaaAdbControllerType,
+            MaaAdbScreencapMethod,
+            MaaAdbInputMethod,
             ctypes.c_char_p,
             ctypes.c_char_p,
-            MaaControllerCallback,
-            MaaCallbackTransparentArg,
-        ]
-
-
-class DbgController(Controller):
-    def __init__(
-        self,
-        read_path: Union[str, Path],
-        write_path: Union[str, Path] = "",
-        touch_type: MaaDbgControllerType = MaaDbgControllerTypeEnum.Invalid,
-        key_type: MaaDbgControllerType = MaaDbgControllerTypeEnum.Invalid,
-        screencap_type: MaaDbgControllerType = MaaDbgControllerTypeEnum.CarouselImage,
-        config: Dict[str, Any] = {},
-        callback: Optional[Callback] = None,
-        callback_arg: Any = None,
-    ):
-        super().__init__()
-        self._set_dbg_api_properties()
-
-        self._callback_agent = CallbackAgent(callback, callback_arg)
-        self._handle = Library.framework.MaaDbgControllerCreate(
-            str(read_path).encode("utf-8"),
-            str(write_path).encode("utf-8"),
-            touch_type | key_type | screencap_type,
-            json.dumps(config, ensure_ascii=False).encode("utf-8"),
-            self._callback_agent.c_callback,
-            self._callback_agent.c_callback_arg,
-        )
-
-        if not self._handle:
-            raise RuntimeError("Failed to create DBG controller.")
-
-    def _set_dbg_api_properties(self):
-        """
-        Set the API properties for the DBG controller.
-        """
-
-        Library.framework.MaaDbgControllerCreate.restype = MaaControllerHandle
-        Library.framework.MaaDbgControllerCreate.argtypes = [
-            ctypes.c_char_p,
-            ctypes.c_char_p,
-            MaaDbgControllerType,
-            ctypes.c_char_p,
-            MaaControllerCallback,
-            MaaCallbackTransparentArg,
+            MaaNotificationCallback,
+            ctypes.c_void_p,
         ]
 
 
 class Win32Controller(Controller):
     def __init__(
         self,
-        hWnd: MaaWin32Hwnd,
-        touch_type: MaaWin32ControllerType = MaaWin32ControllerTypeEnum.Touch_Seize,
-        key_type: MaaWin32ControllerType = MaaWin32ControllerTypeEnum.Key_Seize,
-        screencap_type: MaaWin32ControllerType = MaaWin32ControllerTypeEnum.Screencap_DXGI_DesktopDup,
+        hWnd: ctypes.c_void_p,
+        screencap_method: MaaWin32ScreencapMethod = MaaWin32ScreencapMethodEnum.DXGI_DesktopDup,
+        input_method: MaaWin32InputMethod = MaaWin32InputMethodEnum.Seize,
         callback: Optional[Callback] = None,
         callback_arg: Any = None,
     ):
         super().__init__()
-        self._set_dbg_api_properties()
+        self._set_win32_api_properties()
 
         self._callback_agent = CallbackAgent(callback, callback_arg)
         self._handle = Library.framework.MaaWin32ControllerCreate(
             hWnd,
-            touch_type | key_type | screencap_type,
+            screencap_method,
+            input_method,
             self._callback_agent.c_callback,
             self._callback_agent.c_callback_arg,
         )
@@ -410,17 +357,14 @@ class Win32Controller(Controller):
         if not self._handle:
             raise RuntimeError("Failed to create Win32 controller.")
 
-    def _set_dbg_api_properties(self):
-        """
-        Set the API properties for the Win32 controller.
-        """
-
+    def _set_win32_api_properties(self):
         Library.framework.MaaWin32ControllerCreate.restype = MaaControllerHandle
         Library.framework.MaaWin32ControllerCreate.argtypes = [
-            MaaWin32Hwnd,
-            MaaWin32ControllerType,
-            MaaControllerCallback,
-            MaaCallbackTransparentArg,
+            ctypes.c_void_p,
+            MaaWin32ScreencapMethod,
+            MaaWin32InputMethod,
+            MaaNotificationCallback,
+            ctypes.c_void_p,
         ]
 
 
@@ -436,24 +380,58 @@ class CustomContorller(Controller):
 
         self._callback_agent = CallbackAgent(callback, callback_arg)
         self._handle = Library.framework.MaaCustomControllerCreate(
-            custom_controller._handle,
+            custom_controller.c_handle,
             custom_controller.c_arg,
-            MaaControllerCallback,
-            MaaCallbackTransparentArg,
+            self._callback_agent.c_callback,
+            self._callback_agent.c_callback_arg,
         )
 
         if not self._handle:
             raise RuntimeError("Failed to create Custom controller.")
 
     def _set_custom_api_properties(self):
-        """
-        Set the API properties for the Custom controller.
-        """
-
         Library.framework.MaaCustomControllerCreate.restype = MaaControllerHandle
         Library.framework.MaaCustomControllerCreate.argtypes = [
-            MaaCustomActionHandle,
-            MaaTransparentArg,
-            MaaControllerCallback,
-            MaaCallbackTransparentArg,
+            MaaCustomControllerCallbacks,
+            ctypes.c_void_p,
+            MaaNotificationCallback,
+            ctypes.c_void_p,
+        ]
+
+
+class DbgController(Controller):
+    def __init__(
+        self,
+        read_path: Union[str, Path],
+        write_path: Union[str, Path],
+        dbg_type: MaaDbgControllerType,
+        config: Dict[str, Any] = {},
+        callback: Optional[Callback] = None,
+        callback_arg: Any = None,
+    ):
+        super().__init__()
+        self._set_dbg_api_properties()
+
+        self._callback_agent = CallbackAgent(callback, callback_arg)
+        self._handle = Library.framework.MaaDbgControllerCreate(
+            str(read_path).encode("utf-8"),
+            str(write_path).encode("utf-8"),
+            dbg_type,
+            json.dumps(config, ensure_ascii=False).encode("utf-8"),
+            self._callback_agent.c_callback,
+            self._callback_agent.c_callback_arg,
+        )
+
+        if not self._handle:
+            raise RuntimeError("Failed to create DBG controller.")
+
+    def _set_dbg_api_properties(self):
+        Library.framework.MaaDbgControllerCreate.restype = MaaControllerHandle
+        Library.framework.MaaDbgControllerCreate.argtypes = [
+            ctypes.c_char_p,
+            ctypes.c_char_p,
+            MaaDbgControllerType,
+            ctypes.c_char_p,
+            MaaNotificationCallback,
+            ctypes.c_void_p,
         ]

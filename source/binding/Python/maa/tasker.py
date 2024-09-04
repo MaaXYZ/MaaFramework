@@ -7,36 +7,10 @@ from typing import Any, Dict, Optional, Union
 from .define import *
 from .library import Library
 from .buffer import ImageListBuffer, RectBuffer, StringBuffer, ImageBuffer
-from .job import Job, MaaStatusEnum
+from .job import Job
 from .callback_agent import Callback, CallbackAgent
 from .controller import Controller
 from .resource import Resource
-
-
-@dataclass
-class RecognitionDetail:
-    reco_id: int
-    name: str
-    box: Optional[Rect]
-    detail: Dict
-    raw: numpy.ndarray  # only valid in debug mode
-    draws: List[numpy.ndarray]  # only valid in debug mode
-
-
-@dataclass
-class NodeDetail:
-    node_id: int
-    name: str
-    recognition: RecognitionDetail
-    times: int
-    completed: bool
-
-
-@dataclass
-class TaskDetail:
-    task_id: int
-    entry: str
-    nodes: List[NodeDetail]
 
 
 class TaskJob(Job):
@@ -69,12 +43,11 @@ class Tasker:
 
         self._set_api_properties()
 
-        self._callback_agent = CallbackAgent(callback, callback_arg)
-
         if handle:
             self._handle = handle
             self._own = False
         else:
+            self._callback_agent = CallbackAgent(callback, callback_arg)
             self._handle = Library.framework.MaaTaskerCreate(
                 self._callback_agent.c_callback, self._callback_agent.c_callback_arg
             )
@@ -89,14 +62,20 @@ class Tasker:
 
     def bind(self, resource: Resource, controller: Controller) -> bool:
         # avoid gc
-        self._resource = resource
-        self._controller = controller
+        self._resource_holder = resource
+        self._controller_holder = controller
 
         return bool(
             Library.framework.MaaTaskerBindResource(self._handle, resource._handle)
         ) and bool(
             Library.framework.MaaTaskerBindController(self._handle, controller._handle)
         )
+    
+    def resource(self) -> Resource:
+        return self._resource_holder
+    
+    def controller(self) -> Controller:
+        return self._controller_holder
 
     @property
     def inited(self) -> bool:
@@ -143,6 +122,9 @@ class Tasker:
             return None
 
         return self._get_node_detail(node_id)
+    
+    def clear_cache(self) ->bool:
+        return bool(Library.framework.MaaTaskerClearCache(self._handle))
 
     @staticmethod
     def set_log_dir(path: Union[Path, str]) -> bool:
@@ -462,4 +444,9 @@ class Tasker:
             MaaTaskerHandle,
             ctypes.c_char_p,
             ctypes.POINTER(MaaRecoId),
+        ]
+
+        Library.framework.MaaTaskerClearCache.restype = MaaBool
+        Library.framework.MaaTaskerGetLatestNode.argtypes = [
+            MaaTaskerHandle,
         ]

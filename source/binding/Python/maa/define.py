@@ -2,7 +2,7 @@
 import ctypes
 from dataclasses import dataclass
 from enum import Enum
-from typing import List, Tuple, Union
+from typing import List, Tuple, Union, Dict, Optional
 
 import numpy
 
@@ -220,8 +220,11 @@ MaaCustomActionCallback = ctypes.CFUNCTYPE(
     ctypes.c_void_p,  # trans_arg
 )
 
-c_int32_p = ctypes.POINTER(ctypes.c_int32)
 
+MaaToolkitAdbDeviceListHandle = ctypes.c_void_p
+MaaToolkitAdbDeviceHandle = ctypes.c_void_p
+MaaToolkitDesktopWindowListHandle = ctypes.c_void_p
+MaaToolkitDesktopWindowHandle = ctypes.c_void_p
 
 class MaaCustomControllerCallbacks(ctypes.Structure):
     ConnectFunc = ctypes.CFUNCTYPE(
@@ -361,3 +364,29 @@ RectType = Union[
     numpy.ndarray,
     Tuple[int, int, int, int],
 ]
+
+
+@dataclass
+class RecognitionDetail:
+    reco_id: int
+    name: str
+    box: Optional[Rect]
+    detail: Dict
+    raw: numpy.ndarray  # only valid in debug mode
+    draws: List[numpy.ndarray]  # only valid in debug mode
+
+
+@dataclass
+class NodeDetail:
+    node_id: int
+    name: str
+    recognition: RecognitionDetail
+    times: int
+    completed: bool
+
+
+@dataclass
+class TaskDetail:
+    task_id: int
+    entry: str
+    nodes: List[NodeDetail]

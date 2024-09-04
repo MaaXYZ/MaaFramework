@@ -37,8 +37,9 @@ class Job(abc.ABC):
     def get_id(self) -> int:
         return int(self._maaid)
 
-    async def wait(self) -> bool:
-        return Status(self._wait_func(self._maaid)).done()
+    async def wait(self) -> "Job":
+        self._wait_func(self._maaid)
+        return self
 
     def status(self) -> Status:
         return Status(self._status_func(self._maaid))

@@ -10,13 +10,6 @@ from .define import *
 class Library:
     @classmethod
     def open(cls, path: Union[pathlib.Path, str]) -> Optional[str]:
-        """
-        Open the library at the given path.
-
-        :param path: The path to the library.
-        :return: True if the library was successfully opened, False otherwise.
-        """
-
         platform_values = {
             "windows": ("MaaFramework.dll", "MaaToolkit.dll"),
             "darwin": ("libMaaFramework.dylib", "libMaaToolkit.dylib"),
@@ -57,12 +50,6 @@ class Library:
 
     @classmethod
     def version(cls) -> str:
-        """
-        Get the version of the library.
-
-        :return: The version of the library.
-        """
-
         if not cls.initialized:
             raise RuntimeError(
                 "Library not initialized, please call `library.open()` first."
