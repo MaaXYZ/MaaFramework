@@ -31,11 +31,11 @@ class MyRecognizer(CustomRecognizer):
         context,
         task_detail,
         action_name,
-        custom_param,
+        custom_action_param,
         image,
     ) -> Tuple[bool, RectType, str]:
         print(
-            f"on MyRecognizer.analyze, image: {image.shape}, task_detail: {task_detail}, action_name: {action_name}, custom_param: {custom_param}"
+            f"on MyRecognizer.analyze, image: {image.shape}, task_detail: {task_detail}, action_name: {action_name}, custom_action_param: {custom_action_param}"
         )
         entry = "ColorMatch"
         ppover = {
@@ -60,12 +60,12 @@ class MyAction(CustomAction):
         context,
         task_detail,
         action_name,
-        custom_param,
+        custom_action_param,
         box,
         reco_detail,
     ) -> bool:
         print(
-            f"on MyAction.run, task_name: {task_detail}, action_name: {action_name}, custom_param: {custom_param}, box: {box}, reco_detail: {reco_detail}"
+            f"on MyAction.run, task_name: {task_detail}, action_name: {action_name}, custom_action_param: {custom_action_param}, box: {box}, reco_detail: {reco_detail}"
         )
         controller = context.tasker().controller()
         controller.screencap().wait()
@@ -116,7 +116,7 @@ def main():
             "custom_recognition": "MyRec",
             "action": "Custom",
             "custom_action": "MyAct",
-            "custom_param": "👋哈哈哈(*´▽｀)ノノ😀",
+            "custom_action_param": "👋哈哈哈(*´▽｀)ノノ😀",
         },
     }
 

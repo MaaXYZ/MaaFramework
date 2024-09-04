@@ -59,8 +59,8 @@ class MyRecognizer(CustomRecognizer):
         self,
         context,
         task_detail,
-        action_name,
-        custom_param,
+        recognizer_name,
+        custom_recognition_param,
         image,
     ) -> Tuple[bool, RectType, str]:
         reco_detail = context.run_recognition(

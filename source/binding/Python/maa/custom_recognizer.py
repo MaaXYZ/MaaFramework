@@ -21,8 +21,8 @@ class CustomRecognizer(ABC):
         self,
         context: Context,
         task_detail: TaskDetail,
-        action_name: str,
-        custom_param: str,
+        recognizer_name: str,
+        custom_recognition_param: str,
         image: numpy.ndarray,
     ) -> Tuple[bool, RectType, str]:
         raise NotImplementedError

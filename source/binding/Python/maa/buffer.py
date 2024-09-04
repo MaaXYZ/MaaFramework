@@ -3,7 +3,6 @@ import ctypes
 from typing import List, Optional, Union
 
 import numpy
-from PIL import Image
 
 from .define import *
 from .library import Library
@@ -239,8 +238,8 @@ class ImageBuffer:
             )
         )
 
-    def set(self, value: Union[numpy.ndarray, Image.Image]) -> bool:
-        if isinstance(value, Image.Image):
+    def set(self, value: Union[numpy.ndarray, "Image.Image"]) -> bool:
+        if isinstance(value, "Image.Image"):
             value = numpy.array(value)
 
         if not isinstance(value, numpy.ndarray):
