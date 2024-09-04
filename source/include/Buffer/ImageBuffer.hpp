@@ -37,6 +37,8 @@ public:
 
     virtual int32_t height() const override { return image_.rows; }
 
+    virtual int32_t channles() const override { return image_.channels(); }
+
     virtual int32_t type() const override { return image_.type(); }
 
     virtual uint8_t* encoded() const override

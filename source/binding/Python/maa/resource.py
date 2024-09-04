@@ -1,25 +1,27 @@
-import asyncio
 import ctypes
 import pathlib
 from typing import Any, Optional, Union
 
 from .callback_agent import Callback, CallbackAgent
 from .define import *
-from .future import Future
+from .job import Job
 from .library import Library
+from .buffer import StringBuffer
 
 
 class Resource:
     _handle: MaaResourceHandle
     _callback_agent: CallbackAgent
+    _own: bool = False
 
-    def __init__(self, callback: Optional[Callback] = None, callback_arg: Any = None):
-        """
-        Create a new resource object.
+    ### public ###
 
-        :param callback: The callback function.
-        :param callback_arg: The callback argument.
-        """
+    def __init__(
+        self,
+        callback: Optional[Callback] = None,
+        callback_arg: Any = None,
+        handle: MaaResourceHandle = None,
+    ):
 
         if not Library.initialized:
             raise RuntimeError(
@@ -28,80 +30,132 @@ class Resource:
 
         self._set_api_properties()
 
-        self._callback_agent = CallbackAgent(callback, callback_arg)
-        self._handle = Library.framework.MaaResourceCreate(
-            self._callback_agent.c_callback, self._callback_agent.c_callback_arg
-        )
+        if handle:
+            self._handle = handle
+            self._own = False
+        else:
+            self._callback_agent = CallbackAgent(callback, callback_arg)
+            self._handle = Library.framework.MaaResourceCreate(
+                self._callback_agent.c_callback, self._callback_agent.c_callback_arg
+            )
+            self._own = True
 
         if not self._handle:
             raise RuntimeError("Failed to create resource.")
 
+        self._custom_action_holder = {}
+        self._custom_recognizer_holder = {}
+
     def __del__(self):
-        """
-        Destroy the resource object.
-        """
-        if self._handle:
+        if self._handle and self._own:
             Library.framework.MaaResourceDestroy(self._handle)
 
-    async def load(self, path: Union[pathlib.Path, str]) -> bool:
-        """
-        Async load the given path to the resource.
-
-        :param path: The path to load.
-        :return: True if the resource was successfully loaded, False otherwise.
-        """
-
-        return await self.post_path(path).wait()
-
-    def post_path(self, path: Union[pathlib.Path, str]) -> Future:
-        """
-        Post a path to the resource. (load in background)
-
-        :param path: The path to post.
-        :return: The id of the posted path.
-        """
-
-        maaid = Library.framework.MaaResourcePostPath(
+    def post_path(self, path: Union[pathlib.Path, str]) -> Job:
+        resid = Library.framework.MaaResourcePostPath(
             self._handle, str(path).encode("utf-8")
         )
-        return Future(maaid, self._status)
+        return Job(resid, self._status, self._wait)
 
     def loaded(self) -> bool:
-        """
-        Check if the resource is loaded.
-
-        :return: True if the resource is loaded, False otherwise.
-        """
-
         return bool(Library.framework.MaaResourceLoaded(self._handle))
 
     def clear(self) -> bool:
-        """
-        Clear the resource.
-
-        :return: True if the resource was successfully cleared, False otherwise.
-        """
-
         return bool(Library.framework.MaaResourceClear(self._handle))
+
+    def register_custom_recognizer(
+        self, name: str, recognizer: "CustomRecognizer"
+    ) -> bool:
+
+        # avoid gc
+        self._custom_recognizer_holder[name] = recognizer
+
+        return bool(
+            Library.framework.MaaResourceRegisterCustomRecognizer(
+                self._handle,
+                name.encode("utf-8"),
+                recognizer.c_handle,
+                recognizer.c_arg,
+            )
+        )
+
+    def unregister_custom_recognizer(self, name: str) -> bool:
+        self._custom_recognizer_holder.pop(name, None)
+
+        return bool(
+            Library.framework.MaaResourceUnregisterCustomRecognizer(
+                self._handle,
+                name.encode("utf-8"),
+            )
+        )
+
+    def clear_custom_recognizer(self) -> bool:
+        self._custom_recognizer_holder.clear()
+
+        return bool(
+            Library.framework.MaaResourceClearCustomRecognizer(
+                self._handle,
+            )
+        )
+
+    def register_custom_action(self, name: str, action: "CustomAction") -> bool:
+        # avoid gc
+        self._custom_action_holder[name] = action
+
+        return bool(
+            Library.framework.MaaResourceRegisterCustomAction(
+                self._handle,
+                name.encode("utf-8"),
+                action.c_handle,
+                action.c_arg,
+            )
+        )
+
+    def unregister_custom_action(self, name: str) -> bool:
+        self._custom_action_holder.pop(name, None)
+
+        return bool(
+            Library.framework.MaaResourceUnregisterCustomAction(
+                self._handle,
+                name.encode("utf-8"),
+            )
+        )
+
+    def clear_custom_action(self) -> bool:
+        self._custom_action_holder.clear()
+
+        return bool(
+            Library.framework.MaaResourceClearCustomAction(
+                self._handle,
+            )
+        )
+
+    @property
+    def hash(self) -> str:
+        buffer = StringBuffer()
+        if not Library.framework.MaaResourceGetHash(self._handle, buffer._handle):
+            return None
+        return buffer.get()
+
+    ### private ###
 
     def _status(self, id: int) -> ctypes.c_int32:
         return Library.framework.MaaResourceStatus(self._handle, id)
+
+    def _wait(self, id: int) -> ctypes.c_int32:
+        return Library.framework.MaaResourceWait(self._handle, id)
 
     _api_properties_initialized: bool = False
 
     @staticmethod
     def _set_api_properties():
-        """
-        Set the API properties for this resource.
-        """
         if Resource._api_properties_initialized:
             return
         Resource._api_properties_initialized = True
 
         Library.framework.MaaResourceCreate.restype = MaaResourceHandle
         Library.framework.MaaResourceCreate.argtypes = [
-            MaaResourceCallback,
-            MaaCallbackTransparentArg,
+            MaaNotificationCallback,
+            ctypes.c_void_p,
         ]
 
         Library.framework.MaaResourceDestroy.restype = None
@@ -110,11 +164,17 @@ class Resource:
         Library.framework.MaaResourcePostPath.restype = MaaResId
         Library.framework.MaaResourcePostPath.argtypes = [
             MaaResourceHandle,
-            MaaStringView,
+            ctypes.c_char_p,
         ]
 
         Library.framework.MaaResourceStatus.restype = MaaStatus
         Library.framework.MaaResourceStatus.argtypes = [
+            MaaResourceHandle,
+            MaaResId,
+        ]
+
+        Library.framework.MaaResourceWait.restype = MaaStatus
+        Library.framework.MaaResourceWait.argtypes = [
             MaaResourceHandle,
             MaaResId,
         ]
@@ -124,3 +184,47 @@ class Resource:
 
         Library.framework.MaaResourceClear.restype = MaaBool
         Library.framework.MaaResourceClear.argtypes = [MaaResourceHandle]
+
+        Library.framework.MaaResourceGetHash.restype = MaaBool
+        Library.framework.MaaResourceGetHash.argtypes = [
+            MaaResourceHandle,
+            MaaStringBufferHandle,
+        ]
+
+        Library.framework.MaaResourceRegisterCustomRecognizer.restype = MaaBool
+        Library.framework.MaaResourceRegisterCustomRecognizer.argtypes = [
+            MaaResourceHandle,
+            ctypes.c_char_p,
+            MaaCustomRecognizerCallback,
+            ctypes.c_void_p,
+        ]
+
+        Library.framework.MaaResourceUnregisterCustomRecognizer.restype = MaaBool
+        Library.framework.MaaResourceUnregisterCustomRecognizer.argtypes = [
+            MaaResourceHandle,
+            ctypes.c_char_p,
+        ]
+
+        Library.framework.MaaResourceClearCustomRecognizer.restype = MaaBool
+        Library.framework.MaaResourceClearCustomRecognizer.argtypes = [
+            MaaResourceHandle,
+        ]
+
+        Library.framework.MaaResourceRegisterCustomAction.restype = MaaBool
+        Library.framework.MaaResourceRegisterCustomAction.argtypes = [
+            MaaResourceHandle,
+            ctypes.c_char_p,
+            MaaCustomActionCallback,
+            ctypes.c_void_p,
+        ]
+
+        Library.framework.MaaResourceUnregisterCustomAction.restype = MaaBool
+        Library.framework.MaaResourceUnregisterCustomAction.argtypes = [
+            MaaResourceHandle,
+            ctypes.c_char_p,
+        ]
+
+        Library.framework.MaaResourceClearCustomAction.restype = MaaBool
+        Library.framework.MaaResourceClearCustomAction.argtypes = [
+            MaaResourceHandle,
+        ]

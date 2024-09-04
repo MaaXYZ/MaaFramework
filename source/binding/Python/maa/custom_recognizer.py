@@ -5,52 +5,43 @@ from typing import Tuple
 import numpy
 
 from .buffer import ImageBuffer, RectBuffer, StringBuffer
-from .context import SyncContext
+from .context import Context
 from .define import *
 
 
 class CustomRecognizer(ABC):
-    _handle: MaaCustomRecognizer
+    _handle: MaaCustomRecognizerCallback
 
     def __init__(self):
-        self._handle = MaaCustomRecognizer(self._c_analyze_agent)
+        self._handle = self._c_analyze_agent
 
     @abstractmethod
     def analyze(
         self,
-        context: SyncContext,
+        context: Context,
+        task_detail: TaskDetail,
+        recognizer_name: str,
+        custom_recognition_param: str,
         image: numpy.ndarray,
-        task_name: str,
-        custom_param: str,
-    ) -> Tuple[bool, RectType, str]:
-        """
-        Analyze the given image.
-
-        :param context: The context.
-        :param image: The image to analyze.
-        :param task_name: The name of the task.
-        :param custom_param: The custom recognition param from pipeline.
-
-        :return: return a tuple (success, box, detail)
-        """
-
+    ) -> Tuple[Optional[RectType], str]:
         raise NotImplementedError
 
     @property
-    def c_handle(self) -> ctypes.POINTER(MaaCustomRecognizer):
-        return ctypes.pointer(self._handle)
+    def c_handle(self) -> MaaCustomRecognizerCallback:
+        return self._handle
 
     @property
     def c_arg(self) -> ctypes.c_void_p:
         return ctypes.c_void_p.from_buffer(ctypes.py_object(self))
 
-    @MaaCustomRecognizer.AnalyzeFunc
+    @MaaCustomRecognizerCallback
     def _c_analyze_agent(
-        c_context: MaaSyncContextHandle,
+        c_context: MaaContextHandle,
+        c_task_id: MaaTaskId,
+        c_reco_name: ctypes.c_char_p,
+        c_custom_param: ctypes.c_char_p,
         c_image: MaaImageBufferHandle,
-        c_task_name: MaaStringView,
-        c_custom_param: MaaStringView,
-        c_transparent_arg: MaaTransparentArg,
+        c_transparent_arg: ctypes.c_void_p,
         c_out_box: MaaRectHandle,
         c_out_detail: MaaStringBufferHandle,
     ) -> MaaBool:
@@ -59,13 +50,22 @@ class CustomRecognizer(ABC):
 
         self: CustomRecognizer = ctypes.cast(c_transparent_arg, ctypes.py_object).value
 
-        context = SyncContext(c_context)
-        image = ImageBuffer(c_image).get()
-        task_name = c_task_name.decode("utf-8")
-        custom_param = c_custom_param.decode("utf-8")
+        context = Context(c_context)
+        task_detail = context.tasker()._get_task_detail(c_task_id)
 
-        success, box, detail = self.analyze(context, image, task_name, custom_param)
-        RectBuffer(c_out_box).set(box)
+        image = ImageBuffer(c_image).get()
+
+        box, detail = self.analyze(
+            context,
+            task_detail,
+            c_reco_name.decode("utf-8"),
+            c_custom_param.decode("utf-8"),
+            image,
+        )
+
+        if box:
+            RectBuffer(c_out_box).set(box)
+
         StringBuffer(c_out_detail).set(detail)
 
-        return success
+        return box is not None

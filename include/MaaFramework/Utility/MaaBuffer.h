@@ -50,6 +50,7 @@ extern "C"
     MAA_FRAMEWORK_API MaaImageRawData MaaImageBufferGetRawData(const MaaImageBuffer* handle);
     MAA_FRAMEWORK_API int32_t MaaImageBufferWidth(const MaaImageBuffer* handle);
     MAA_FRAMEWORK_API int32_t MaaImageBufferHeight(const MaaImageBuffer* handle);
+    MAA_FRAMEWORK_API int32_t MaaImageBufferChannels(const MaaImageBuffer* handle);
     MAA_FRAMEWORK_API int32_t MaaImageBufferType(const MaaImageBuffer* handle);
     MAA_FRAMEWORK_API MaaBool
         MaaImageBufferSetRawData(MaaImageBuffer* handle, MaaImageRawData data, int32_t width, int32_t height, int32_t type);

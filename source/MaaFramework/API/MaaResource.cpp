@@ -193,7 +193,7 @@ MaaBool MaaResourceGetHash(const MaaResource* res, MaaStringBuffer* buffer)
     return true;
 }
 
-MaaBool MaaResourceGetTaskList(const MaaResource* res, /* out */ MaaStringBuffer* buffer)
+MaaBool MaaResourceGetTaskList(const MaaResource* res, /* out */ MaaStringListBuffer* buffer)
 {
     if (!res || !buffer) {
         LogError << "handle is null";
@@ -201,11 +201,12 @@ MaaBool MaaResourceGetTaskList(const MaaResource* res, /* out */ MaaStringBuffer
     }
 
     auto list = res->get_task_list();
-    if (list.empty()) {
-        LogError << "list is empty";
-        return false;
+
+    buffer->clear();
+
+    for (const auto& name : list) {
+        buffer->append(MaaNS::StringBuffer(name));
     }
 
-    buffer->set(json::array(list).to_string());
     return true;
 }
