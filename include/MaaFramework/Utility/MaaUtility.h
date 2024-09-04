@@ -21,7 +21,10 @@ extern "C"
 
     MAA_FRAMEWORK_API const char* MaaVersion();
 
-    MAA_FRAMEWORK_API MaaBool MaaSetGlobalOption(MaaGlobalOption key, MaaOptionValue value, MaaOptionValueSize val_size);
+    /**
+     * @param[in] value
+     */
+    MAA_FRAMEWORK_API MaaBool MaaSetGlobalOption(MaaGlobalOption key, MaaOptionValue value /**< byte array, int*, char*, bool* */, MaaOptionValueSize val_size);
 
 #ifdef __cplusplus
 }

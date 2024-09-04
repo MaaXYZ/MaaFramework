@@ -54,8 +54,11 @@ extern "C"
 
     MAA_FRAMEWORK_API void MaaControllerDestroy(MaaController* ctrl);
 
+    /**
+     * @param[in] value
+     */
     MAA_FRAMEWORK_API MaaBool
-        MaaControllerSetOption(MaaController* ctrl, MaaCtrlOption key, MaaOptionValue value, MaaOptionValueSize val_size);
+        MaaControllerSetOption(MaaController* ctrl, MaaCtrlOption key, MaaOptionValue value /**< byte array, int*, char*, bool* */, MaaOptionValueSize val_size);
 
     MAA_FRAMEWORK_API MaaCtrlId MaaControllerPostConnection(MaaController* ctrl);
 

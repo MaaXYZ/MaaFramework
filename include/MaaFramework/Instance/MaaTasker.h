@@ -23,7 +23,10 @@ extern "C"
 
     MAA_FRAMEWORK_API void MaaTaskerDestroy(MaaTasker* tasker);
 
-    MAA_FRAMEWORK_API MaaBool MaaTaskerSetOption(MaaTasker* tasker, MaaTaskerOption key, MaaOptionValue value, MaaOptionValueSize val_size);
+    /**
+     * @param[in] value
+     */
+    MAA_FRAMEWORK_API MaaBool MaaTaskerSetOption(MaaTasker* tasker, MaaTaskerOption key, MaaOptionValue value /**< byte array, int*, char*, bool* */, MaaOptionValueSize val_size);
 
     MAA_FRAMEWORK_API MaaBool MaaTaskerBindResource(MaaTasker* tasker, MaaResource* res);
 
@@ -53,6 +56,9 @@ extern "C"
 
     MAA_FRAMEWORK_API MaaBool MaaTaskerClearCache(MaaTasker* tasker);
 
+    /**
+     * @param[out] hit
+     */
     MAA_FRAMEWORK_API MaaBool MaaTaskerGetRecognitionDetail(
         const MaaTasker* tasker,
         MaaRecoId reco_id,
@@ -64,6 +70,11 @@ extern "C"
         /* out */ MaaImageListBuffer* draws // only valid in debug mode
     );
 
+    /**
+     * @param[out] reco_id
+     * @param[out] times
+     * @param[out] completed
+     */
     MAA_FRAMEWORK_API MaaBool MaaTaskerGetNodeDetail(
         const MaaTasker* tasker,
         MaaNodeId node_id,
@@ -72,6 +83,10 @@ extern "C"
         /* out */ MaaSize* times,
         /* out */ MaaBool* completed);
 
+    /**
+     * @param[out] node_id_list
+     * @param[in, out] node_id_list_size
+     */
     MAA_FRAMEWORK_API MaaBool MaaTaskerGetTaskDetail(
         const MaaTasker* tasker,
         MaaTaskId task_id,
@@ -79,6 +94,9 @@ extern "C"
         /* out */ MaaNodeId* node_id_list /**< array */,
         /* in & out */ MaaSize* node_id_list_size);
 
+    /**
+     * @param[out] latest_id
+     */
     MAA_FRAMEWORK_API MaaBool MaaTaskerGetLatestNode(
         const MaaTasker* tasker,
         const char* task_name,
