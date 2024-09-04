@@ -84,8 +84,8 @@ class StringBuffer:
             ctypes.c_char_p,
         ]
 
-        Library.framework.MaaSetStringEx.restype = MaaBool
-        Library.framework.MaaSetStringEx.argtypes = [
+        Library.framework.MaaStringBufferSetEx.restype = MaaBool
+        Library.framework.MaaStringBufferSetEx.argtypes = [
             MaaStringBufferHandle,
             ctypes.c_char_p,
             MaaSize,
@@ -238,12 +238,9 @@ class ImageBuffer:
             )
         )
 
-    def set(self, value: Union[numpy.ndarray, "Image.Image"]) -> bool:
-        if isinstance(value, "Image.Image"):
-            value = numpy.array(value)
-
+    def set(self, value: numpy.ndarray) -> bool:
         if not isinstance(value, numpy.ndarray):
-            raise TypeError("value must be a numpy.ndarray or PIL.Image")
+            raise TypeError("value must be a numpy.ndarray")
 
         return bool(
             Library.framework.MaaImageBufferSetRawData(

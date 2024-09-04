@@ -7,7 +7,6 @@ import numpy
 from .buffer import ImageBuffer, RectBuffer, StringBuffer
 from .context import Context
 from .define import *
-from .tasker import TaskDetail
 
 
 class CustomRecognizer(ABC):
@@ -24,7 +23,7 @@ class CustomRecognizer(ABC):
         recognizer_name: str,
         custom_recognition_param: str,
         image: numpy.ndarray,
-    ) -> Tuple[bool, RectType, str]:
+    ) -> Tuple[Optional[RectType], str]:
         raise NotImplementedError
 
     @property
@@ -56,14 +55,17 @@ class CustomRecognizer(ABC):
 
         image = ImageBuffer(c_image).get()
 
-        hit, box, detail = self.analyze(
+        box, detail = self.analyze(
             context,
             task_detail,
             c_reco_name.decode("utf-8"),
             c_custom_param.decode("utf-8"),
             image,
         )
-        RectBuffer(c_out_box).set(box)
+
+        if box:
+            RectBuffer(c_out_box).set(box)
+
         StringBuffer(c_out_detail).set(detail)
 
-        return MaaBool(hit)
+        return box is not None

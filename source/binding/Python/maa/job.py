@@ -1,7 +1,7 @@
 import abc
 from typing import Union
 
-from .define import MaaId, MaaStatus, MaaStatusEnum
+from .define import *
 
 
 class Status:
@@ -37,7 +37,7 @@ class Job(abc.ABC):
     def get_id(self) -> int:
         return int(self._maaid)
 
-    async def wait(self) -> "Job":
+    def wait(self) -> "Job":
         self._wait_func(self._maaid)
         return self
 

@@ -9,8 +9,8 @@ from .library import Library
 from .buffer import ImageListBuffer, RectBuffer, StringBuffer, ImageBuffer
 from .job import Job
 from .callback_agent import Callback, CallbackAgent
-from .controller import Controller
 from .resource import Resource
+from .controller import Controller
 
 
 class TaskJob(Job):
@@ -35,7 +35,12 @@ class Tasker:
 
     ### public ###
 
-    def __init__(self, callback: Optional[Callback] = None, callback_arg: Any = None, handle: MaaTaskerHandle = None):
+    def __init__(
+        self,
+        callback: Optional[Callback] = None,
+        callback_arg: Any = None,
+        handle: MaaTaskerHandle = None,
+    ):
         if not Library.initialized:
             raise RuntimeError(
                 "Library not initialized, please call `library.open()` first."
@@ -70,12 +75,20 @@ class Tasker:
         ) and bool(
             Library.framework.MaaTaskerBindController(self._handle, controller._handle)
         )
-    
+
     def resource(self) -> Resource:
-        return self._resource_holder
-    
+        resource_handle = Library.framework.MaaTaskerGetResource(self._handle)
+        if not resource_handle:
+            return None
+
+        return Resource(handle=resource_handle)
+
     def controller(self) -> Controller:
-        return self._controller_holder
+        controller_handle = Library.framework.MaaTaskerGetController(self._handle)
+        if not controller_handle:
+            return None
+
+        return Controller(handle=controller_handle)
 
     @property
     def inited(self) -> bool:
@@ -89,14 +102,14 @@ class Tasker:
         return self._gen_task_job(taskid)
 
     def post_recognition(self, entry: str, pipeline_override: Dict = {}) -> TaskJob:
-        taskid = Library.framework.MaaPostRecognition(
+        taskid = Library.framework.MaaTaskerPostRecognition(
             self._handle,
             *Tasker._gen_post_param(entry, pipeline_override),
         )
         return self._gen_task_job(taskid)
 
     def post_action(self, entry: str, pipeline_override: Dict = {}) -> TaskJob:
-        taskid = Library.framework.MaaPostAction(
+        taskid = Library.framework.MaaTaskerPostAction(
             self._handle,
             *Tasker._gen_post_param(entry, pipeline_override),
         )
@@ -108,7 +121,7 @@ class Tasker:
     def post_stop(self) -> Job:
         Library.framework.MaaTaskerPostStop(self._handle)
         return Job(0, self._stop_status, self._stop_wait)
-    
+
     def get_latest_node(self, name: str) -> Optional[NodeDetail]:
         node_id = MaaNodeId()
         ret = bool(
@@ -122,8 +135,8 @@ class Tasker:
             return None
 
         return self._get_node_detail(node_id)
-    
-    def clear_cache(self) ->bool:
+
+    def clear_cache(self) -> bool:
         return bool(Library.framework.MaaTaskerClearCache(self._handle))
 
     @staticmethod
@@ -194,9 +207,7 @@ class Tasker:
     ### private ###
 
     @staticmethod
-    def _gen_post_param(
-        entry: str, pipeline_override: Dict
-    ) -> Tuple[bytes, bytes]:
+    def _gen_post_param(entry: str, pipeline_override: Dict) -> Tuple[bytes, bytes]:
         return (
             entry.encode("utf-8"),
             json.dumps(pipeline_override, ensure_ascii=False).encode("utf-8"),
@@ -233,7 +244,9 @@ class Tasker:
             time.sleep(0.1)
         return MaaStatusEnum.success
 
-    def _get_recognition_detail(self, reco_id: MaaRecoId) -> Optional[RecognitionDetail]:
+    def _get_recognition_detail(
+        self, reco_id: MaaRecoId
+    ) -> Optional[RecognitionDetail]:
         name = StringBuffer()
         hit = MaaBool()
         box = RectBuffer()
@@ -271,7 +284,7 @@ class Tasker:
         completed = MaaBool()
 
         ret = bool(
-            Library.framework.MaaQueryNodeDetail(
+            Library.framework.MaaTaskerGetNodeDetail(
                 self._handle,
                 node_id,
                 name._handle,
@@ -284,7 +297,7 @@ class Tasker:
         if not ret:
             return None
 
-        recognition = Tasker._get_recognition_detail(reco_id.value)
+        recognition = self._get_recognition_detail(reco_id)
         if not recognition:
             return None
 
@@ -292,7 +305,7 @@ class Tasker:
             node_id=node_id,
             name=name.get(),
             recognition=recognition,
-            times=int(times)
+            times=int(times.value),
             completed=bool(completed),
         )
 
@@ -318,7 +331,7 @@ class Tasker:
 
         nodes = []
         for i in range(size.value):
-            detail = Tasker._get_node_detail(node_id_list[i])
+            detail = self._get_node_detail(node_id_list[i])
             nodes.append(detail)
 
         return TaskDetail(task_id=task_id, entry=entry.get(), nodes=nodes)
@@ -362,15 +375,15 @@ class Tasker:
             ctypes.c_char_p,
         ]
 
-        Library.framework.MaaPostRecognition.restype = MaaId
-        Library.framework.MaaPostRecognition.argtypes = [
+        Library.framework.MaaTaskerPostRecognition.restype = MaaId
+        Library.framework.MaaTaskerPostRecognition.argtypes = [
             MaaTaskerHandle,
             ctypes.c_char_p,
             ctypes.c_char_p,
         ]
 
-        Library.framework.MaaPostAction.restype = MaaId
-        Library.framework.MaaPostAction.argtypes = [
+        Library.framework.MaaTaskerPostAction.restype = MaaId
+        Library.framework.MaaTaskerPostAction.argtypes = [
             MaaTaskerHandle,
             ctypes.c_char_p,
             ctypes.c_char_p,
@@ -401,12 +414,11 @@ class Tasker:
         Library.framework.MaaTaskerPostStop.restype = MaaBool
         Library.framework.MaaTaskerPostStop.argtypes = [MaaTaskerHandle]
 
-        Library.framework.MaaSetGlobalOption.restype = MaaBool
-        Library.framework.MaaSetGlobalOption.argtypes = [
-            MaaGlobalOption,
-            MaaOptionValue,
-            MaaOptionValueSize,
-        ]
+        Library.framework.MaaTaskerGetResource.restype = MaaResourceHandle
+        Library.framework.MaaTaskerGetResource.argtypes = [MaaTaskerHandle]
+
+        Library.framework.MaaTaskerGetController.restype = MaaControllerHandle
+        Library.framework.MaaTaskerGetController.argtypes = [MaaTaskerHandle]
 
         Library.framework.MaaTaskerGetRecognitionDetail.restype = MaaBool
         Library.framework.MaaTaskerGetRecognitionDetail.argtypes = [
@@ -447,6 +459,13 @@ class Tasker:
         ]
 
         Library.framework.MaaTaskerClearCache.restype = MaaBool
-        Library.framework.MaaTaskerGetLatestNode.argtypes = [
+        Library.framework.MaaTaskerClearCache.argtypes = [
             MaaTaskerHandle,
+        ]
+
+        Library.framework.MaaSetGlobalOption.restype = MaaBool
+        Library.framework.MaaSetGlobalOption.argtypes = [
+            MaaGlobalOption,
+            MaaOptionValue,
+            MaaOptionValueSize,
         ]

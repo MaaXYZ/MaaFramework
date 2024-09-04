@@ -6,7 +6,6 @@ from typing import Dict, List, Union
 
 from .define import *
 from .library import Library
-from .buffer import StringBuffer
 
 
 @dataclass

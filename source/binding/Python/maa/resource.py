@@ -6,9 +6,7 @@ from .callback_agent import Callback, CallbackAgent
 from .define import *
 from .job import Job
 from .library import Library
-from .buffer import *
-from .custom_recognizer import CustomRecognizer
-from .custom_action import CustomAction
+from .buffer import StringBuffer
 
 
 class Resource:
@@ -65,7 +63,7 @@ class Resource:
         return bool(Library.framework.MaaResourceClear(self._handle))
 
     def register_custom_recognizer(
-        self, name: str, recognizer: CustomRecognizer
+        self, name: str, recognizer: "CustomRecognizer"
     ) -> bool:
 
         # avoid gc
@@ -99,7 +97,7 @@ class Resource:
             )
         )
 
-    def register_custom_action(self, name: str, action: CustomAction) -> bool:
+    def register_custom_action(self, name: str, action: "CustomAction") -> bool:
         # avoid gc
         self._custom_action_holder[name] = action
 

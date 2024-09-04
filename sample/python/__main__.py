@@ -1,4 +1,4 @@
-from typing import Tuple
+from typing import Tuple, Optional
 
 # python -m pip install maafw
 from maa.define import RectType
@@ -62,7 +62,7 @@ class MyRecognizer(CustomRecognizer):
         recognizer_name,
         custom_recognition_param,
         image,
-    ) -> Tuple[bool, RectType, str]:
+    ) -> Tuple[Optional[RectType], str]:
         reco_detail = context.run_recognition(
             "MyCustomOCR", image, pipeline_override={"roi": [100, 100, 200, 300]}
         )
@@ -79,7 +79,7 @@ class MyRecognizer(CustomRecognizer):
         click_job = context.tasker().controller().post_click(10, 20)
         click_job.wait()
 
-        return True, (0, 0, 100, 100), "Hello World!"
+        return (0, 0, 100, 100), "Hello World!"
 
 
 if __name__ == "__main__":

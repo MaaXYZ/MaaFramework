@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import Tuple
+from typing import Tuple, Optional
 import sys
 
 if len(sys.argv) < 2:
@@ -21,7 +21,8 @@ from maa.tasker import Tasker
 from maa.toolkit import Toolkit
 from maa.custom_action import CustomAction
 from maa.custom_recognizer import CustomRecognizer
-from maa.define import RectType
+from maa.define import RectType, MaaDbgControllerTypeEnum
+from maa.context import Context
 
 
 class MyRecognizer(CustomRecognizer):
@@ -33,9 +34,9 @@ class MyRecognizer(CustomRecognizer):
         action_name,
         custom_action_param,
         image,
-    ) -> Tuple[bool, RectType, str]:
+    ) -> Tuple[Optional[RectType], str]:
         print(
-            f"on MyRecognizer.analyze, image: {image.shape}, task_detail: {task_detail}, action_name: {action_name}, custom_action_param: {custom_action_param}"
+            f"on MyRecognizer.analyze, context: {context}, image: {image.shape}, task_detail: {task_detail}, action_name: {action_name}, custom_action_param: {custom_action_param}"
         )
         entry = "ColorMatch"
         ppover = {
@@ -46,18 +47,18 @@ class MyRecognizer(CustomRecognizer):
                 "action": "Click",
             }
         }
-        context.run_task(entry, ppover)
-        context.run_action(entry, ppover, [114, 514, 191, 810], "RunAction Detail")
+        context.run_pipeline(entry, ppover)
+        context.run_action(entry, [114, 514, 191, 810], "RunAction Detail", ppover)
         reco_detail = context.run_recognition(entry, image, ppover)
         print(f"reco_detail: {reco_detail}")
-        return True, (11, 4, 5, 14), "Hello World!"
+        return (11, 4, 5, 14), "Hello World!"
 
 
 class MyAction(CustomAction):
 
     def run(
         self,
-        context,
+        context: Context,
         task_detail,
         action_name,
         custom_action_param,
@@ -65,19 +66,19 @@ class MyAction(CustomAction):
         reco_detail,
     ) -> bool:
         print(
-            f"on MyAction.run, task_name: {task_detail}, action_name: {action_name}, custom_action_param: {custom_action_param}, box: {box}, reco_detail: {reco_detail}"
+            f"on MyAction.run, context: {context}, task_detail: {task_detail}, action_name: {action_name}, custom_action_param: {custom_action_param}, box: {box}, reco_detail: {reco_detail}"
         )
         controller = context.tasker().controller()
-        controller.screencap().wait()
+        controller.post_screencap().wait()
         new_image = controller.cached_image()
         print(f"new_image: {new_image.shape}")
-        controller.click(191, 98).wait()
-        controller.swipe(100, 200, 300, 400, 100).wait()
-        controller.input_text("Hello World!").wait()
-        controller.press_key(32).wait()
-        controller.touch_down(1, 100, 100, 0).wait()
-        controller.touch_move(1, 200, 200, 0).wait()
-        controller.touch_up(1).wait()
+        controller.post_click(191, 98).wait()
+        controller.post_swipe(100, 200, 300, 400, 100).wait()
+        controller.post_input_text("Hello World!").wait()
+        controller.post_press_key(32).wait()
+        controller.post_touch_down(1, 100, 100, 0).wait()
+        controller.post_touch_move(1, 200, 200, 0).wait()
+        controller.post_touch_up(1).wait()
         return True
 
 
@@ -91,7 +92,9 @@ def main():
     print(f"resource: {hex(resource._handle)}")
 
     dbg_controller = DbgController(
-        install_dir / "test" / "PipelineSmoking" / "Screenshot"
+        install_dir / "test" / "PipelineSmoking" / "Screenshot",
+        install_dir / "test" / "user",
+        MaaDbgControllerTypeEnum.CarouselImage,
     )
     print(f"controller: {hex(dbg_controller._handle)}")
     dbg_controller.post_connection().wait()
@@ -120,7 +123,7 @@ def main():
         },
     }
 
-    detail = tasker.post_pipeline("Entry", ppover).get()
+    detail = tasker.post_pipeline("Entry", ppover).wait().get()
     if detail:
         print(f"pipeline detail: {detail}")
     else:

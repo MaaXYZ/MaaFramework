@@ -4,7 +4,6 @@ from abc import ABC, abstractmethod
 from .buffer import RectBuffer
 from .context import Context
 from .define import *
-from .tasker import TaskDetail
 
 
 class CustomAction(ABC):

@@ -4,15 +4,15 @@ from typing import Dict, Optional, Tuple
 
 import numpy
 
-from .buffer import *
-from .define import MaaBool
+from .buffer import ImageBuffer, RectBuffer
+from .define import *
 from .library import Library
-from .tasker import *
+from .tasker import Tasker
 
 
 class Context:
     _handle: MaaContextHandle
-    _tasker: Tasker = None
+    _tasker: Tasker
 
     ### public ###
 
@@ -42,7 +42,8 @@ class Context:
     def run_recognition(
         self, entry: str, image: numpy.ndarray, pipeline_override: Dict = {}
     ) -> Optional[TaskDetail]:
-        image_buffer = ImageBuffer(image)
+        image_buffer = ImageBuffer()
+        image_buffer.set(image)
         reco_id = Library.framework.MaaContextRunRecognition(
             self._handle,
             *Context._gen_post_param(entry, pipeline_override),
@@ -86,7 +87,7 @@ class Context:
     def tasker(self) -> Tasker:
         return self._tasker
 
-    def get_task_job(self) -> TaskJob:
+    def get_task_job(self) -> "TaskJob":
         task_id = Library.framework.MaaContextGetTaskId(self._handle)
         if not task_id:
             return None
@@ -103,7 +104,10 @@ class Context:
     ### private ###
 
     def _init_tasker(self):
-        self._tasker = Tasker(Library.framework.MaaContextGetTasker(self._handle))
+        tasker_handle = Library.framework.MaaContextGetTasker(self._handle)
+        if not tasker_handle:
+            raise ValueError("tasker_handle is None")
+        self._tasker = Tasker(tasker_handle)
 
     @staticmethod
     def _gen_post_param(entry: str, pipeline_override: Dict) -> Tuple[bytes, bytes]:
@@ -111,6 +115,8 @@ class Context:
             entry.encode("utf-8"),
             json.dumps(pipeline_override, ensure_ascii=False).encode("utf-8"),
         )
+
+    _api_properties_initialized: bool = False
 
     @staticmethod
     def _set_api_properties():
