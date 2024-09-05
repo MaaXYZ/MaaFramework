@@ -107,7 +107,7 @@ class Context:
         tasker_handle = Library.framework.MaaContextGetTasker(self._handle)
         if not tasker_handle:
             raise ValueError("tasker_handle is None")
-        self._tasker = Tasker(tasker_handle)
+        self._tasker = Tasker(handle=tasker_handle)
 
     @staticmethod
     def _gen_post_param(entry: str, pipeline_override: Dict) -> Tuple[bytes, bytes]:

@@ -46,9 +46,11 @@ protected:
     NodeDetail run_action(const RecoResult& reco);
     cv::Mat screencap();
     MaaTaskId generate_node_id();
-    void add_node_detail(int64_t node_id, NodeDetail detail);
+    void set_node_detail(int64_t node_id, NodeDetail detail);
+    void set_task_detail(TaskDetail detail);
 
 private:
+    void init();
     bool debug_mode() const;
     json::object basic_info();
     static json::object reco_detail_to_json(const RecoResult& res);
@@ -64,8 +66,8 @@ protected:
     std::shared_ptr<Context> context_ = nullptr;
 
 private:
-    inline static std::atomic<MaaTaskId> s_global_task_id = 0;
-    inline static std::atomic<MaaTaskId> s_global_node_id = 0;
+    inline static std::atomic<MaaTaskId> s_global_task_id = 100000000;
+    inline static std::atomic<MaaTaskId> s_global_node_id = 200000000;
 };
 
 MAA_TASK_NS_END

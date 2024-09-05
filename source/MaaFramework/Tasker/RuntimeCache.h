@@ -16,13 +16,13 @@ public:
     void set_latest_node(const std::string& name, MaaNodeId id);
 
     std::optional<MAA_TASK_NS::RecoResult> get_reco_result(MaaRecoId uid) const;
-    void add_reco_detail(MaaRecoId uid, MAA_TASK_NS::RecoResult);
+    void set_reco_detail(MaaRecoId uid, MAA_TASK_NS::RecoResult);
 
     std::optional<MAA_TASK_NS::NodeDetail> get_node_detail(MaaNodeId uid) const;
-    void add_node_detail(MaaNodeId uid, MAA_TASK_NS::NodeDetail detail);
+    void set_node_detail(MaaNodeId uid, MAA_TASK_NS::NodeDetail detail);
 
     std::optional<MAA_TASK_NS::TaskDetail> get_task_detail(MaaTaskId uid) const;
-    void add_task_detail(MaaTaskId uid, MAA_TASK_NS::TaskDetail detail);
+    void set_task_detail(MaaTaskId uid, MAA_TASK_NS::TaskDetail detail);
 
     void clear();
 

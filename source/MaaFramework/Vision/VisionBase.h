@@ -67,7 +67,7 @@ private:
     mutable std::vector<cv::Mat> draws_;
 
 private:
-    inline static std::atomic<MaaRecoId> s_global_uid = 0;
+    inline static std::atomic<MaaRecoId> s_global_uid = 300000000;
 };
 
 MAA_VISION_NS_END

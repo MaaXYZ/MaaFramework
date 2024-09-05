@@ -17,6 +17,7 @@ TaskBase::TaskBase(std::string entry, Tasker* tasker)
     , cur_task_(entry_)
     , context_(Context::create(task_id_, tasker))
 {
+    init();
 }
 
 TaskBase::TaskBase(std::string entry, Tasker* tasker, std::shared_ptr<Context> context)
@@ -25,6 +26,7 @@ TaskBase::TaskBase(std::string entry, Tasker* tasker, std::shared_ptr<Context> c
     , cur_task_(entry_)
     , context_(std::move(context))
 {
+    init();
 }
 
 bool TaskBase::override_pipeline(const json::value& pipeline_override)
@@ -161,7 +163,7 @@ NodeDetail TaskBase::run_action(const RecoResult& reco)
     Actuator actuator(tasker_, *context_);
     result.completed = actuator.run(*reco.box, reco.detail, pipeline_data);
 
-    add_node_detail(result.node_id, result);
+    set_node_detail(result.node_id, result);
 
     cb_detail = basic_info() | node_detail_to_json(result);
     if (debug_mode()) {
@@ -188,7 +190,7 @@ MaaTaskId TaskBase::generate_node_id()
     return ++s_global_node_id;
 }
 
-void TaskBase::add_node_detail(int64_t node_id, NodeDetail detail)
+void TaskBase::set_node_detail(int64_t node_id, NodeDetail detail)
 {
     if (!tasker_) {
         LogError << "tasker is null";
@@ -196,11 +198,28 @@ void TaskBase::add_node_detail(int64_t node_id, NodeDetail detail)
     }
 
     auto& cache = tasker_->runtime_cache();
-    cache.add_node_detail(node_id, detail);
+    cache.set_node_detail(node_id, detail);
 
     TaskDetail task_detail = cache.get_task_detail(task_id_).value_or(TaskDetail { .entry = entry_ });
     task_detail.node_ids.emplace_back(node_id);
-    cache.add_task_detail(task_id_, task_detail);
+
+    set_task_detail(task_detail);
+}
+
+void TaskBase::set_task_detail(TaskDetail detail)
+{    
+    if (!tasker_) {
+        LogError << "tasker is null";
+        return;
+    }
+
+    auto& cache = tasker_->runtime_cache();
+    cache.set_task_detail(task_id_, detail);
+}
+
+void TaskBase::init()
+{
+    set_task_detail(TaskDetail { .entry = entry_ });
 }
 
 bool TaskBase::debug_mode() const

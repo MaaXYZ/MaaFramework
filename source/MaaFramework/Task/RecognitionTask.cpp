@@ -32,7 +32,7 @@ MaaRecoId RecognitionTask::run_with_param(const cv::Mat& image)
         .name = reco.name,
         .reco_id = reco.reco_id,
     };
-    add_node_detail(result.node_id, result);
+    set_node_detail(result.node_id, result);
 
     return reco.reco_id;
 }
