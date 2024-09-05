@@ -311,12 +311,19 @@ bool PipelineResMgr::parse_task(const std::string& name, const json::value& inpu
         return false;
     }
 
-    auto timeout = default_value.next_timeout.count();
+    auto timeout = default_value.reco_timeout.count();
     if (!get_and_check_value(input, "timeout", timeout, timeout)) {
         LogError << "failed to get_and_check_value timeout" << VAR(input);
         return false;
     }
-    data.next_timeout = std::chrono::milliseconds(timeout);
+    data.reco_timeout = std::chrono::milliseconds(timeout);
+
+    auto rate_limit = default_value.rate_limit.count();
+    if (!get_and_check_value(input, "rate_limit", rate_limit, rate_limit)) {
+        LogError << "failed to get_and_check_value rate_limit" << VAR(input);
+        return false;
+    }
+    data.rate_limit = std::chrono::milliseconds(rate_limit);
 
     auto pre_delay = default_value.pre_delay.count();
     if (!get_and_check_value(input, "pre_delay", pre_delay, pre_delay)) {
@@ -1290,6 +1297,14 @@ bool PipelineResMgr::parse_wait_freezes_param(
             LogError << "failed to parse_wait_freezes_param method" << VAR(field);
             return false;
         }
+
+        auto rate_limit = default_value.rate_limit.count();
+        if (!get_and_check_value(field, "rate_limit", rate_limit, rate_limit)) {
+            LogError << "failed to parse_wait_freezes_param rate_limit" << VAR(field);
+            return false;
+        }
+        output.rate_limit = std::chrono::milliseconds(rate_limit);
+
         return true;
     }
     else {

@@ -27,7 +27,7 @@ bool PipelineTask::run()
 
     while (!next.empty() && !need_to_stop_) {
         PipelineData current = context_->get_pipeline_data(cur_task_);
-        auto [node_result, is_interrupt] = run_reco_and_action(next, interrupt, current.next_timeout);
+        auto [node_result, is_interrupt] = run_reco_and_action(next, interrupt, current);
 
         if (!node_result.completed) {
             LogError << "Run task failed:" << next;
@@ -62,7 +62,7 @@ void PipelineTask::post_stop()
 std::pair<NodeDetail, /* is interrupt */ bool> PipelineTask::run_reco_and_action(
     const PipelineData::NextList& next,
     const PipelineData::NextList& interrupt,
-    const std::chrono::milliseconds& timeout)
+    const PipelineData& pp_data)
 {
     if (!tasker_) {
         LogError << "tasker is null";
@@ -72,9 +72,12 @@ std::pair<NodeDetail, /* is interrupt */ bool> PipelineTask::run_reco_and_action
     RecoResult reco;
     bool is_interrupt = false;
 
-    auto start_time = std::chrono::steady_clock::now();
+    const auto start_clock = std::chrono::steady_clock::now();
+    std::chrono::steady_clock::time_point current_clock;
     while (true) {
+        current_clock = std::chrono::steady_clock::now();
         cv::Mat image = screencap();
+
         reco = run_recogintion(image, next);
         if (reco.box) { // hit
             is_interrupt = false;
@@ -92,10 +95,12 @@ std::pair<NodeDetail, /* is interrupt */ bool> PipelineTask::run_reco_and_action
             return {};
         }
 
-        if (std::chrono::steady_clock::now() - start_time > timeout) {
-            LogError << "Task timeout" << VAR(cur_task_) << VAR(timeout);
+        if (std::chrono::steady_clock::now() - start_clock > pp_data.reco_timeout) {
+            LogError << "Task timeout" << VAR(cur_task_) << VAR(pp_data.reco_timeout);
             return {};
         }
+
+        std::this_thread::sleep_until(current_clock + pp_data.rate_limit);
     }
 
     if (!reco.box) {

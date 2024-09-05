@@ -129,6 +129,8 @@ void Actuator::wait_freezes(const MAA_RES_NS::WaitFreezesParam& param, const cv:
     LogFunc << "Wait freezes:" << VAR(param.time) << VAR(param.threshold) << VAR(param.method);
 
     cv::Rect target = get_target_rect(param.target, box);
+
+    auto screencap_clock = std::chrono::steady_clock::now();
     cv::Mat pre_image = controller()->screencap();
 
     TemplateComparatorParam comp_param {
@@ -137,9 +139,12 @@ void Actuator::wait_freezes(const MAA_RES_NS::WaitFreezesParam& param, const cv:
         .method = param.method,
     };
 
-    auto pre_time = std::chrono::steady_clock::now();
+    auto pre_image_clock = std::chrono::steady_clock::now();
 
     while (true) {
+        std::this_thread::sleep_until(screencap_clock + param.rate_limit);
+
+        screencap_clock = std::chrono::steady_clock::now();
         cv::Mat cur_image = controller()->screencap();
 
         if (pre_image.empty() || cur_image.empty()) {
@@ -151,11 +156,11 @@ void Actuator::wait_freezes(const MAA_RES_NS::WaitFreezesParam& param, const cv:
 
         if (!comparator.best_result()) {
             pre_image = cur_image;
-            pre_time = std::chrono::steady_clock::now();
+            pre_image_clock = std::chrono::steady_clock::now();
             continue;
         }
 
-        if (duration_since(pre_time) > param.time) {
+        if (duration_since(pre_image_clock) > param.time) {
             break;
         }
     }

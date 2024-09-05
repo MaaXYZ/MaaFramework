@@ -21,7 +21,7 @@ private:
     std::pair<NodeDetail, /* is interrupt */ bool> run_reco_and_action(
         const PipelineData::NextList& next,
         const PipelineData::NextList& interrupt,
-        const std::chrono::milliseconds& timeout);
+        const PipelineData& pp_data);
 
 private:
     bool need_to_stop_ = false;
