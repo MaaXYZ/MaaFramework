@@ -88,6 +88,9 @@ _✨ 基于图像识别的自动化黑盒测试框架 ✨_
 - [maa-whmx](https://github.com/MAWHA/maa-whmx) 物华弥新 小助手 ![cpp](https://img.shields.io/badge/C%2B%2B-00599C?logo=c%2B%2B&logoColor=white) ![qt](https://img.shields.io/badge/Qt6-41CD52?logo=Qt&logoColor=white)  
   基于全新架构的 物华弥新 小助手。图像技术 + 模拟控制，解放双手！由 MaaFramework 强力驱动！
 
+- [MAA-for-Millennium-Tour](https://github.com/Ostwind23/MAA-for-Millennium-Tour) 千年之旅 小助手 ![Pipeline](https://img.shields.io/badge/Pipeline-%23454545?logo=codecademy&logoColor=%23FFFFFF&color=%23454545) ![Static Badge](https://img.shields.io/badge/Python-FFFF00)
+  基于全新架构的 千年之旅 小助手。图像技术 + 模拟控制，解放侍主的大手！由 MaaFramework 强力驱动！
+
 ## 生态共建
 
 MAA 正计划建设为一类项目，而非舟的单一软件。  
