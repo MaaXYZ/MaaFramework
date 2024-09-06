@@ -289,7 +289,7 @@ jobs:
             -DANDROID_PLATFORM=android-23 \
             -DMAADEPS_TRIPLET='maa-${{ matrix.arch }}' \
             -DMAA_HASH_VERSION='${{ needs.meta.outputs.tag }}' \
-            -DBUILD_PIPELINE_TESTING=ON -DBUILD_DLOPEN_TESTING=ON
+            -BUILD_SAMPLE=ON -DBUILD_DLOPEN_TESTING=ON
 
           cmake --build build --preset 'NinjaMulti - Release' -j 16
 
