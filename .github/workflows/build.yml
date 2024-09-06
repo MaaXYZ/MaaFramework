@@ -288,8 +288,7 @@ jobs:
             -DANDROID_ABI=${{ matrix.abi }} \
             -DANDROID_PLATFORM=android-23 \
             -DMAADEPS_TRIPLET='maa-${{ matrix.arch }}' \
-            -DMAA_HASH_VERSION='${{ needs.meta.outputs.tag }}' \
-            -DBUILD_SAMPLE=ON -DBUILD_DLOPEN_TESTING=ON
+            -DMAA_HASH_VERSION='${{ needs.meta.outputs.tag }}'
 
           cmake --build build --preset 'NinjaMulti - Release' -j 16
 
@@ -309,7 +308,7 @@ jobs:
       - uses: actions/upload-artifact@v3
         if: always()
         with:
-          name: MAA-android-${{ matrix.arch_name }}
+          name: MAA-android-${{ matrix.abi }}
           path: "install"
 
   nuget_pack:
