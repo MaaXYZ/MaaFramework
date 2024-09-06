@@ -68,7 +68,7 @@ extern "C"
     MAA_FRAMEWORK_API const MaaImageBuffer* MaaImageListBufferAt(const MaaImageListBuffer* handle, MaaSize index);
 
     // append a deep copy of value, you still need to destory it.
-    MAA_FRAMEWORK_API MaaBool MaaImageListBufferAppend(MaaImageListBuffer* handle, MaaImageBuffer* value);
+    MAA_FRAMEWORK_API MaaBool MaaImageListBufferAppend(MaaImageListBuffer* handle, const MaaImageBuffer* value);
     MAA_FRAMEWORK_API MaaBool MaaImageListBufferRemove(MaaImageListBuffer* handle, MaaSize index);
     MAA_FRAMEWORK_API MaaBool MaaImageListBufferClear(MaaImageListBuffer* handle);
 

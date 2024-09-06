@@ -346,7 +346,7 @@ const MaaImageBuffer* MaaImageListBufferAt(const MaaImageListBuffer* handle, Maa
     return &(handle->at(index));
 }
 
-MaaBool MaaImageListBufferAppend(MaaImageListBuffer* handle, MaaImageBuffer* value)
+MaaBool MaaImageListBufferAppend(MaaImageListBuffer* handle, const MaaImageBuffer* value)
 {
     if (!handle || !value) {
         LogError << "handle is null";
