@@ -249,8 +249,10 @@ jobs:
         include:
           - os: ubuntu
             arch: arm64-android
+            abi: arm64-v8a
           - os: ubuntu
             arch: x64-android
+            abi: x86_64
       fail-fast: false
 
     steps:
