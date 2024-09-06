@@ -1,14 +1,15 @@
 cmake_minimum_required(VERSION 3.24)
 project(MaaFw)
 
+cmake_policy(SET CMP0167 OLD)
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake/modules")
 
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 set(CMAKE_MAP_IMPORTED_CONFIG_DebWithRelDeps "DebWithRelDeps;Release;")
 
 set(Boost_NO_WARN_NEW_VERSIONS ON)
-# set(CMAKE_EXPORT_COMPILE_COMMANDS ON) see below
 
+# set(CMAKE_EXPORT_COMPILE_COMMANDS ON) see below
 option(USE_MAADEPS "use third-party libraries built by MaaDeps" ON)
 
 option(WITH_ADB_CONTROLLER "build with adb controller" ON)
@@ -52,8 +53,10 @@ find_package(fastdeploy_ppocr REQUIRED)
 find_package(ONNXRuntime)
 
 find_program(CCACHE_PROG ccache)
+
 if(CCACHE_PROG)
     message("Find ccache at ${CCACHE_PROG}")
+
     if(ENABLE_CCACHE)
         set(CMAKE_C_COMPILER_LAUNCHER ${CCACHE_PROG})
         set(CMAKE_CXX_COMPILER_LAUNCHER ${CCACHE_PROG})
@@ -90,22 +93,24 @@ install(
 include(CMakePackageConfigHelpers)
 
 configure_package_config_file(${CMAKE_CURRENT_SOURCE_DIR}/Config.cmake.in "MaaFrameworkConfig.cmake"
-                              INSTALL_DESTINATION share/cmake/MaaFramework)
+    INSTALL_DESTINATION share/cmake/MaaFramework)
 
 install(FILES "${CMAKE_CURRENT_BINARY_DIR}/MaaFrameworkConfig.cmake"
-        # "${CMAKE_CURRENT_BINARY_DIR}/MaaFrameworkConfigVersion.cmake"
-        DESTINATION share/cmake/MaaFramework)
+
+    # "${CMAKE_CURRENT_BINARY_DIR}/MaaFrameworkConfigVersion.cmake"
+    DESTINATION share/cmake/MaaFramework)
 
 if(EXISTS ${CMAKE_CURRENT_LIST_DIR}/export_targets.cmake)
     message("Load export_targets.cmake")
     include(${CMAKE_CURRENT_LIST_DIR}/export_targets.cmake)
+
     # cmake-format: off
-    # 
+    #
     # specify export compile commands for target like this
-    # 
+    #
     # if(TARGET sample_maapp_coro)
-    #   set_target_properties(sample_maapp_coro PROPERTIES EXPORT_COMPILE_COMMANDS ON)
+    # set_target_properties(sample_maapp_coro PROPERTIES EXPORT_COMPILE_COMMANDS ON)
     # endif()
-    # 
+    #
     # cmake-format: on
 endif()
