@@ -248,11 +248,9 @@ jobs:
       matrix:
         include:
           - os: ubuntu
-            arch: arm64-android
-            abi: arm64-v8a
+            arch: x86_64
           - os: ubuntu
-            arch: x64-android
-            abi: x86_64
+            arch: aarch64
       fail-fast: false
 
     steps:
@@ -279,15 +277,15 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          python3 tools/maadeps-download.py ${{ matrix.arch }}
+          python3 tools/maadeps-download.py ${{ matrix.arch }}-android
 
       - name: Build MAA
         run: |
           cmake --preset 'NinjaMulti' \
             -DCMAKE_TOOLCHAIN_FILE=${{ steps.setup-ndk.outputs.ndk-path}}/build/cmake/android.toolchain.cmake \
-            -DANDROID_ABI=${{ matrix.abi }} \
+            -DANDROID_ABI=${{ matrix.arch == 'x86_64' && 'x86_64' || 'arm64-v8a' }} \
             -DANDROID_PLATFORM=android-23 \
-            -DMAADEPS_TRIPLET='maa-${{ matrix.arch }}' \
+            -DMAADEPS_TRIPLET='maa-${{ matrix.arch == 'x86_64' && 'x64' || 'arm64' }}-android' \
             -DMAA_HASH_VERSION='${{ needs.meta.outputs.tag }}'
 
           cmake --build build --preset 'NinjaMulti - Release' -j 16
@@ -308,7 +306,7 @@ jobs:
       - uses: actions/upload-artifact@v3
         if: always()
         with:
-          name: MAA-android-${{ matrix.abi }}
+          name: MAA-android-${{ matrix.arch }}
           path: "install"
 
   nuget_pack:
