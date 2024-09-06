@@ -247,10 +247,8 @@ jobs:
     strategy:
       matrix:
         include:
-          - os: ubuntu
-            arch: x86_64
-          - os: ubuntu
-            arch: aarch64
+          - arch: x86_64
+          - arch: aarch64
       fail-fast: false
 
     steps:
@@ -277,7 +275,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          python3 tools/maadeps-download.py ${{ matrix.arch }}-android
+          python3 tools/maadeps-download.py ${{ matrix.arch == 'x86_64' && 'x64' || 'arm64' }}-android
 
       - name: Build MAA
         run: |
