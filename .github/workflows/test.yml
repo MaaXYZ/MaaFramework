@@ -51,18 +51,18 @@ jobs:
           cd .
 
       - name: Windows runner hack (2)
-        uses: al-cheb/configure-pagefile-action@v1.3
+        uses: al-cheb/configure-pagefile-action@v1.4
         with:
           minimum-size: 16GB
           maximum-size: 16GB
           disk-root: "D:"
 
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           submodules: recursive
 
       - name: Setup Windows 10 SDK
-        uses: GuillaumeFalourd/setup-windows10-sdk-action@v1.12
+        uses: GuillaumeFalourd/setup-windows10-sdk-action@v2.2
         with:
           sdk-version: 22621
 
@@ -103,13 +103,13 @@ jobs:
           python3 -m pip install -r ./install/binding/Python/requirements.txt
           python3 ./test/python/binding_test.py ./install
 
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         if: always()
         with:
           name: MAA-win-${{ matrix.arch }}-text_log
           path: "install/bin/debug/*.log"
 
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         if: always()
         with:
           name: MAA-win-${{ matrix.arch }}-full_log
@@ -136,7 +136,7 @@ jobs:
           pacman -S --noconfirm cmake python python-pip ccache ninja git
 
       # https://github.com/MaaXYZ/MaaFramework/actions/runs/5643408179/job/15285186255
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           submodules: recursive
 
@@ -196,13 +196,13 @@ jobs:
           python3 -m pip install -r ./install/binding/Python/requirements.txt
           python3 ./test/python/binding_test.py ./install
 
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         if: always()
         with:
           name: MAA-linux-${{ matrix.arch }}-text_log
           path: "install/bin/debug/*.log"
 
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         if: always()
         with:
           name: MAA-linux-${{ matrix.arch }}-full_log
@@ -221,7 +221,7 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           submodules: recursive
 
@@ -280,13 +280,13 @@ jobs:
           python3 -m pip install -r ./install/binding/Python/requirements.txt
           python3 ./test/python/binding_test.py ./install
 
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         if: always()
         with:
           name: MAA-macos-${{ matrix.arch }}-text_log
           path: "install/bin/debug/*.log"
 
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         if: always()
         with:
           name: MAA-macos-${{ matrix.arch }}-full_log

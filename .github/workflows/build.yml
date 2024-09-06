@@ -51,18 +51,18 @@ jobs:
           cd .
 
       - name: Windows runner hack (2)
-        uses: al-cheb/configure-pagefile-action@v1.3
+        uses: al-cheb/configure-pagefile-action@v1.4
         with:
           minimum-size: 16GB
           maximum-size: 16GB
           disk-root: "D:"
 
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           submodules: true
 
       - name: Setup Windows 10 SDK
-        uses: GuillaumeFalourd/setup-windows10-sdk-action@v1.12
+        uses: GuillaumeFalourd/setup-windows10-sdk-action@v2.2
         with:
           sdk-version: 22621
 
@@ -92,7 +92,7 @@ jobs:
 
           cp -r LICENSE.md install
 
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         if: always()
         with:
           name: MAA-win-${{ matrix.arch }}
@@ -119,12 +119,12 @@ jobs:
           pacman -S --noconfirm cmake python ccache ninja git
 
       - name: Use Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: 20
 
       # https://github.com/MaaXYZ/MaaFramework/actions/runs/5643408179/job/15285186255
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           submodules: true
 
@@ -169,7 +169,7 @@ jobs:
 
           cp -r LICENSE.md install
 
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         if: always()
         with:
           name: MAA-linux-${{ matrix.arch }}
@@ -188,7 +188,7 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           submodules: true
 
@@ -235,7 +235,7 @@ jobs:
 
           cp -r LICENSE.md install
 
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         if: always()
         with:
           name: MAA-macos-${{ matrix.arch }}
@@ -245,10 +245,10 @@ jobs:
     needs: [meta, windows, ubuntu, macos]
     runs-on: ubuntu-latest
     steps:
-      - uses: nuget/setup-nuget@v1
+      - uses: nuget/setup-nuget@v2
 
-      - uses: actions/checkout@v3
-      - uses: actions/download-artifact@v3
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
         with:
           path: assets
 
@@ -265,7 +265,7 @@ jobs:
               -Properties "version=${version//-post/};year=$(date +%Y);branch=$(git rev-parse --abbrev-ref HEAD);commit=$(git rev-parse HEAD);root_path=../.."
           done
 
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         if: always()
         with:
           name: MAA-nupkgs
@@ -275,8 +275,8 @@ jobs:
     needs: [meta, windows, ubuntu, macos]
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/download-artifact@v3
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
         with:
           path: assets
 
@@ -287,7 +287,7 @@ jobs:
           pip install --upgrade wheel build tomlkit
           python pip_pack.py $tag
 
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         if: always()
         with:
           name: MAA-pip-pkgs
@@ -302,7 +302,7 @@ jobs:
       NUGET_PACKAGE_SOURCE: https://api.nuget.org/v3/index.json # https://apiint.nugettest.org/v3/index.json
 
     steps:
-      - uses: actions/download-artifact@v3
+      - uses: actions/download-artifact@v4
         with:
           path: assets
 
@@ -332,7 +332,7 @@ jobs:
             (cd $f && zip -r ../$f-${{ needs.meta.outputs.tag }}.zip .)
           done
 
-      - uses: softprops/action-gh-release@v1
+      - uses: softprops/action-gh-release@v2
         with:
           files: assets/*.zip
           tag_name: ${{ needs.meta.outputs.tag }}

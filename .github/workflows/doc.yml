@@ -19,24 +19,24 @@ jobs:
     permissions:
       contents: write
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
       - name: Build Doxygen
-        uses: mattnotmitt/doxygen-action@v1.9.5
+        uses: mattnotmitt/doxygen-action@v1.9
         with:
           doxyfile-path: tools/Doxygen/Doxyfile
 
       - name: Build index.json
-        uses: MaaXYZ/MaaApiConverter@v1
+        uses: MaaXYZ/MaaApiConverter@v2
         with:
           version: ${{ env.DOC_VERSION }}
           xml: ./docs-gen/html/xml
           output: ./docs-gen/html
 
       - name: Deploy to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v3
+        uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./docs-gen/html
