@@ -1,7 +1,6 @@
 cmake_minimum_required(VERSION 3.24)
 project(MaaFw)
 
-cmake_policy(SET CMP0167 OLD)
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake/modules")
 
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
