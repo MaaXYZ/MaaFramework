@@ -338,7 +338,7 @@ jobs:
           path: "tools/nupkgs/*.nupkg"
 
   pip_pack:
-    needs: [meta, windows, ubuntu, macos]
+    needs: [meta, windows, ubuntu, macos, android]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -361,7 +361,7 @@ jobs:
 
   release:
     if: ${{ needs.meta.outputs.is_release == 'true' }}
-    needs: [meta, windows, ubuntu, macos, nuget_pack, pip_pack]
+    needs: [meta, windows, ubuntu, macos, android, nuget_pack, pip_pack]
     runs-on: ubuntu-latest
     env:
       OUTPUT_PUBLISH_FAILED: 'echo "failed=true" >> $GITHUB_OUTPUT && echo "::error::Failed to publish packages"'
