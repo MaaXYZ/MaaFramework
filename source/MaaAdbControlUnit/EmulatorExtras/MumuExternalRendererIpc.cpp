@@ -72,7 +72,7 @@ std::optional<cv::Mat> MumuExternalRendererIpc::screencap()
 
     if (ret) {
         LogError << "Failed to capture display" << VAR(ret) << VAR(mumu_handle_) << VAR(mumu_display_id_) << VAR(display_buffer_.size())
-                 << VAR(display_width_) << VAR(display_height_) << VAR(capture_display_func_);
+                 << VAR(display_width_) << VAR(display_height_);
         return std::nullopt;
     }
 
@@ -297,7 +297,7 @@ bool MumuExternalRendererIpc::load_mumu_library()
 
 bool MumuExternalRendererIpc::connect_mumu()
 {
-    LogFunc << VAR(mumu_path_) << VAR(mumu_index_) << VAR(connect_func_);
+    LogFunc << VAR(mumu_path_) << VAR(mumu_index_);
 
     if (!connect_func_) {
         LogError << "connect_func_ is null";
@@ -310,7 +310,7 @@ bool MumuExternalRendererIpc::connect_mumu()
     mumu_handle_ = connect_func_(wpath.c_str(), mumu_index_);
 
     if (mumu_handle_ == 0) {
-        LogError << "Failed to connect mumu" << VAR(wpath) << VAR(mumu_index_) << VAR(connect_func_);
+        LogError << "Failed to connect mumu" << VAR(wpath) << VAR(mumu_index_);
         return false;
     }
 
@@ -328,7 +328,7 @@ bool MumuExternalRendererIpc::init_screencap()
 
     // mumu 的文档给错了，这里 0 才是成功
     if (ret) {
-        LogError << "Failed to capture display" << VAR(ret) << VAR(mumu_handle_) << VAR(mumu_display_id_) << VAR(capture_display_func_);
+        LogError << "Failed to capture display" << VAR(ret) << VAR(mumu_handle_) << VAR(mumu_display_id_);
         return false;
     }
 
