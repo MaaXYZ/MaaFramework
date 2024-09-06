@@ -88,6 +88,10 @@ It offers low-code simplicity while maintaining high extensibility. The framewor
 - [maa-whmx](https://github.com/MAWHA/maa-whmx) Wuhua Mixin Assistant ![cpp](https://img.shields.io/badge/C%2B%2B-00599C?logo=c%2B%2B&logoColor=white) ![qt](https://img.shields.io/badge/Qt6-41CD52?logo=Qt&logoColor=white)   
   An assistant for Wuhua Mixin based on a brand new architecture. Image technology + simulation control, freeing your hands! Powered by MaaFramework.
 
+- [MAA-for-Millennium-Tour](https://github.com/Ostwind23/MAA-for-Millennium-Tour) Millennium Tour Assistant ![Pipeline](https://img.shields.io/badge/Pipeline-%23454545?logo=codecademy&logoColor=%23FFFFFF&color=%23454545) ![python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white)   
+  An assistant for Millennium Tour based on a brand new architecture. Image technology + simulation control, freeing your hands! Powered by MaaFramework.
+
+
 ## Eco-Building
 
 MAA is planned to be a category of projects rather than just a single piece of software.
