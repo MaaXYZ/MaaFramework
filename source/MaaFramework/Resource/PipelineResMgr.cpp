@@ -1159,8 +1159,8 @@ bool PipelineResMgr::parse_action(
 
 bool PipelineResMgr::parse_click(const json::value& input, Action::ClickParam& output, const Action::ClickParam& default_value)
 {
-    if (!parser_action_target(input, "target", output.target, default_value.target)) {
-        LogError << "failed to parser_action_target" << VAR(input);
+    if (!parse_action_target(input, "target", output.target, default_value.target)) {
+        LogError << "failed to parse_action_target" << VAR(input);
         return false;
     }
 
@@ -1169,13 +1169,13 @@ bool PipelineResMgr::parse_click(const json::value& input, Action::ClickParam& o
 
 bool PipelineResMgr::parse_swipe(const json::value& input, Action::SwipeParam& output, const Action::SwipeParam& default_value)
 {
-    if (!parser_action_target(input, "begin", output.begin, default_value.begin)) {
-        LogError << "failed to parser_action_target begin" << VAR(input);
+    if (!parse_action_target(input, "begin", output.begin, default_value.begin)) {
+        LogError << "failed to parse_action_target begin" << VAR(input);
         return false;
     }
 
-    if (!parser_action_target(input, "end", output.end, default_value.end)) {
-        LogError << "failed to parser_action_target end" << VAR(input);
+    if (!parse_action_target(input, "end", output.end, default_value.end)) {
+        LogError << "failed to parse_action_target end" << VAR(input);
         return false;
     }
     // if (output.begin.type == Action::Target::Type::Self
@@ -1269,8 +1269,8 @@ bool PipelineResMgr::parse_wait_freezes_param(
         }
         output.time = std::chrono::milliseconds(time);
 
-        if (!parser_action_target(field, "target", output.target, default_value.target)) {
-            LogError << "failed to parse_wait_freezes_param parser_action_target" << VAR(field);
+        if (!parse_action_target(field, "target", output.target, default_value.target)) {
+            LogError << "failed to parse_wait_freezes_param parse_action_target" << VAR(field);
             return false;
         }
 
@@ -1368,7 +1368,7 @@ bool PipelineResMgr::parse_target_offset(const json::value& input_target, Action
     return true;
 }
 
-bool PipelineResMgr::parser_action_target(
+bool PipelineResMgr::parse_action_target(
     const json::value& input,
     const std::string& key,
     Action::Target& output,

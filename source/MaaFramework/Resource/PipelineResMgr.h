@@ -113,7 +113,7 @@ public:
     static bool parse_target_variant(const json::value& input_target, Action::Target& output);
     static bool parse_target_offset(const json::value& input_target, Action::Target& output);
     static bool
-        parser_action_target(const json::value& input, const std::string& key, Action::Target& output, const Action::Target& default_value);
+        parse_action_target(const json::value& input, const std::string& key, Action::Target& output, const Action::Target& default_value);
 
 private:
     bool load_all_json(const std::filesystem::path& path);
