@@ -1,0 +1,154 @@
+{
+    "controller": [
+        {
+            "name": "安卓端",
+            "type": "Adb"
+        },
+        {
+            "name": "桌面端",
+            "type": "Desktop",
+            "desktop": {
+                "class_regex": ".*",
+                "window_regex": "Visual Studio"
+            }
+        }
+    ],
+    "resource": [
+        {
+            "name": "Official",
+            "paths": ["{PROJECT_DIR}/resource/base"]
+        },
+        {
+            "name": "Bilibili",
+            "paths": ["{PROJECT_DIR}/resource/base", "{PROJECT_DIR}/resource/bilibili"]
+        }
+    ],
+    "task": [
+        {
+            "name": "收取荒原",
+            "entry": "Wilderness"
+        },
+        {
+            "name": "每日心相（意志解析）",
+            "entry": "Psychube"
+        },
+        {
+            "name": "常规作战",
+            "entry": "Combat",
+            "option": ["作战关卡", "复现次数", "刷完全部体力"]
+        },
+        {
+            "name": "活动：绿湖噩梦 17 艰难（活动已结束）",
+            "entry": "ANightmareAtGreenLake",
+            "option": ["复现次数", "刷完全部体力"],
+            "pp_override": {
+                "EnterTheShow": {
+                    "next": "ANightmareAtGreenLake"
+                },
+                "TargetStageName": {
+                    "expected": "17"
+                },
+                "StageDifficulty": {
+                    "next": "ActivityStageDifficulty"
+                }
+            }
+        },
+        {
+            "name": "领取奖励",
+            "entry": "Awards"
+        }
+    ],
+    "option": [
+        {
+            "name": "作战关卡",
+            "cases": [
+                {
+                    "name": "3-9 厄险（百灵百验鸟）",
+                    "pp_override": {
+                        "EnterTheShow": {
+                            "next": "MainChapter_3"
+                        },
+                        "TargetStageName": {
+                            "expected": "09"
+                        },
+                        "StageDifficulty": {
+                            "next": "StageDifficulty_Hard"
+                        }
+                    }
+                },
+                {
+                    "name": "4-20 厄险（双头形骨架）",
+                    "pp_override": {
+                        "EnterTheShow": {
+                            "next": "MainChapter_4"
+                        },
+                        "TargetStageName": {
+                            "expected": "20"
+                        },
+                        "StageDifficulty": {
+                            "next": "StageDifficulty_Hard"
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "name": "复现次数",
+            "cases": [
+                {
+                    "name": "x1",
+                    "pp_override": {
+                        "SetReplaysTimes": {
+                            "expected": "1"
+                        }
+                    }
+                },
+                {
+                    "name": "x2",
+                    "pp_override": {
+                        "SetReplaysTimes": {
+                            "expected": "2"
+                        }
+                    }
+                },
+                {
+                    "name": "x3",
+                    "pp_override": {
+                        "SetReplaysTimes": {
+                            "expected": "3"
+                        }
+                    }
+                },
+                {
+                    "name": "x4",
+                    "pp_override": {
+                        "SetReplaysTimes": {
+                            "expected": "4"
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "name": "刷完全部体力",
+            "cases": [
+                {
+                    "name": "Yes",
+                    "pp_override": {
+                        "AllIn": {
+                            "enabled": true
+                        }
+                    }
+                },
+                {
+                    "name": "No",
+                    "pp_override": {
+                        "AllIn": {
+                            "enabled": false
+                        }
+                    }
+                }
+            ]
+        }
+    ]
+}

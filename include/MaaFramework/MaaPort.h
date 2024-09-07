@@ -46,3 +46,9 @@
 #else
 #define MAA_TOOLKIT_API MAA_DLL_IMPORT
 #endif
+
+#ifdef MAA_PI_EXPORTS
+#define MAA_PI_API MAA_DLL_EXPORT
+#else
+#define MAA_PI_API MAA_DLL_IMPORT
+#endif

@@ -1,3 +1,5 @@
+#include <ranges>
+
 #include "RuntimeCache.h"
 
 #include <ranges>

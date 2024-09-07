@@ -124,3 +124,9 @@
     namespace MAA_PROJECT_INTERFACE_NS \
     {
 #define MAA_PROJECT_INTERFACE_NS_END }
+
+#define MAA_PI_NS MAA_NS::PINS
+#define MAA_PI_NS_BEGIN \
+    namespace MAA_PI_NS \
+    {
+#define MAA_PI_NS_END }
