@@ -207,7 +207,7 @@ void TaskBase::set_node_detail(int64_t node_id, NodeDetail detail)
 }
 
 void TaskBase::set_task_detail(TaskDetail detail)
-{    
+{
     if (!tasker_) {
         LogError << "tasker is null";
         return;

@@ -24,15 +24,16 @@ bool PipelineTask::run()
     std::stack<std::string> task_stack;
 
     // there is no pretask for the entry, so we use the entry itself
-    PipelineData pretask = context_->get_pipeline_data(entry_);
+    PipelineData current = context_->get_pipeline_data(entry_);
     PipelineData::NextList next = { entry_ };
     PipelineData::NextList interrupt;
     bool error_handling = false;
 
     while (!next.empty() && !need_to_stop_) {
-        auto [node_detail, is_interrupt] = run_reco_and_action(next, interrupt, pretask);
+        cur_task_ = current.name;
+        auto [node_detail, is_interrupt] = run_reco_and_action(next, interrupt, current);
         if (need_to_stop_) {
-            LogError << "need_to_stop" << VAR(pretask.name);
+            LogError << "need_to_stop" << VAR(current.name);
             return true;
         }
 
@@ -40,28 +41,29 @@ bool PipelineTask::run()
             error_handling = false;
             PipelineData hit_task = context_->get_pipeline_data(node_detail.name);
             if (is_interrupt || hit_task.is_sub) { // for compatibility with v1.x
-                LogInfo << "push task_stack:" << pretask.name;
-                const auto& ref = task_stack.emplace(pretask.name);
+                LogInfo << "push task_stack:" << current.name;
+                task_stack.emplace(current.name);
             }
 
+            current = hit_task;
             next = hit_task.next;
             interrupt = hit_task.interrupt;
         }
         else if (error_handling) {
-            LogError << "error handling loop detected" << VAR(pretask.name);
+            LogError << "error handling loop detected" << VAR(current.name);
             next.clear();
             interrupt.clear();
         }
         else {
-            LogInfo << "handle error" << VAR(pretask.name);
+            LogInfo << "handle error" << VAR(current.name);
             error_handling = true;
-            next = pretask.on_error;
+            next = current.on_error;
             interrupt.clear();
         }
 
         if (next.empty() && !task_stack.empty()) {
-            LogInfo << "pop task_stack:" << pretask.name;
-            pretask = context_->get_pipeline_data(task_stack.top());
+            LogInfo << "pop task_stack:" << current.name;
+            current = context_->get_pipeline_data(task_stack.top());
             task_stack.pop();
         }
     }
