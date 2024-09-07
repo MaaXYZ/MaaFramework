@@ -27,15 +27,15 @@ typedef MaaId MaaRecoId;
 typedef MaaId MaaNodeId;
 #define MaaInvalidId ((MaaId)0)
 
-struct MaaStringBuffer;
-struct MaaImageBuffer;
-struct MaaStringListBuffer;
-struct MaaImageListBuffer;
+typedef struct MaaStringBuffer MaaStringBuffer;
+typedef struct MaaImageBuffer MaaImageBuffer;
+typedef struct MaaStringListBuffer MaaStringListBuffer;
+typedef struct MaaImageListBuffer MaaImageListBuffer;
 
-struct MaaResource;
-struct MaaController;
-struct MaaTasker;
-struct MaaContext;
+typedef struct MaaResource MaaResource;
+typedef struct MaaController MaaController;
+typedef struct MaaTasker MaaTasker;
+typedef struct MaaContext MaaContext;
 
 typedef int32_t MaaStatus;
 
@@ -213,13 +213,13 @@ const MaaDbgControllerType MaaDbgControllerType_None = 0;
 const MaaDbgControllerType MaaDbgControllerType_CarouselImage = 1ULL;
 const MaaDbgControllerType MaaDbgControllerType_ReplayRecording = 1ULL << 1;
 
-struct MaaRect
+typedef struct MaaRect
 {
     int32_t x;
     int32_t y;
     int32_t width;
     int32_t height;
-};
+} MaaRect;
 
 typedef void (*MaaNotificationCallback)(const char* message, const char* details_json, void* callback_arg);
 

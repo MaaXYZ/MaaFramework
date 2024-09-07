@@ -19,7 +19,7 @@ extern "C"
 {
 #endif
 
-    struct MaaCustomControllerCallbacks;
+    typedef struct MaaCustomControllerCallbacks MaaCustomControllerCallbacks;
 
     MAA_FRAMEWORK_API MaaController* MaaAdbControllerCreate(
         const char* adb_path,

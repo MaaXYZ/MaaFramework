@@ -2,8 +2,8 @@
 
 #include "MaaFramework/MaaDef.h" // IWYU pragma: export
 
-struct MaaToolkitAdbDevice;
-struct MaaToolkitAdbDeviceList;
+typedef struct MaaToolkitAdbDevice MaaToolkitAdbDevice;
+typedef struct MaaToolkitAdbDeviceList MaaToolkitAdbDeviceList;
 
-struct MaaToolkitDesktopWindow;
-struct MaaToolkitDesktopWindowList;
+typedef struct MaaToolkitDesktopWindow MaaToolkitDesktopWindow;
+typedef struct MaaToolkitDesktopWindowList MaaToolkitDesktopWindowList;
