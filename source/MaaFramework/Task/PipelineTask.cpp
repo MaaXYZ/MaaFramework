@@ -62,9 +62,13 @@ bool PipelineTask::run()
         }
 
         if (next.empty() && !task_stack.empty()) {
-            LogInfo << "pop task_stack:" << current.name;
-            current = context_->get_pipeline_data(task_stack.top());
+            auto top = std::move(task_stack.top());
+            LogInfo << "pop task_stack:" << top;
             task_stack.pop();
+
+            current = context_->get_pipeline_data(top);
+            next = current.next;
+            interrupt = current.interrupt;
         }
     }
 

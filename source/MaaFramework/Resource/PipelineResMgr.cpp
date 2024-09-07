@@ -1003,6 +1003,11 @@ bool PipelineResMgr::parse_roi_target(const json::value& input, MAA_VISION_NS::T
         return false;
     }
 
+    if (output.type == Target::Type::Self) {
+        output.type = Target::Type::Region;
+        output.param = cv::Rect();
+    }
+
     if (auto offset_opt = input.find("roi_offset"); !offset_opt) {
         output.offset = default_value.offset;
     }

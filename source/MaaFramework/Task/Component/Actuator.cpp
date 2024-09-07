@@ -74,7 +74,7 @@ bool Actuator::click(const MAA_RES_NS::Action::ClickParam& param, const cv::Rect
         return false;
     }
 
-    cv::Rect rect = get_roi(param.target, box);
+    cv::Rect rect = get_target_rect(param.target, box);
 
     return controller()->click(rect);
 }
@@ -86,8 +86,8 @@ bool Actuator::swipe(const MAA_RES_NS::Action::SwipeParam& param, const cv::Rect
         return false;
     }
 
-    cv::Rect begin = get_roi(param.begin, box);
-    cv::Rect end = get_roi(param.end, box);
+    cv::Rect begin = get_target_rect(param.begin, box);
+    cv::Rect end = get_target_rect(param.end, box);
 
     return controller()->swipe(begin, end, param.duration);
 }
@@ -131,7 +131,7 @@ void Actuator::wait_freezes(const MAA_RES_NS::WaitFreezesParam& param, const cv:
     auto screencap_clock = std::chrono::steady_clock::now();
     cv::Mat pre_image = controller()->screencap();
 
-    cv::Rect roi = get_roi(param.target, box);
+    cv::Rect roi = get_target_rect(param.target, box);
     TemplateComparatorParam comp_param {
         .threshold = param.threshold,
         .method = param.method,
@@ -206,7 +206,7 @@ bool Actuator::custom_action(const MAA_RES_NS::Action::CustomParam& param, const
     return CustomAction(param.name, session).run(context_, param, box, reco_detail);
 }
 
-cv::Rect Actuator::get_roi(const MAA_RES_NS::Action::Target target, const cv::Rect& box)
+cv::Rect Actuator::get_target_rect(const MAA_RES_NS::Action::Target target, const cv::Rect& box)
 {
     if (!tasker_) {
         LogError << "tasker is null";
