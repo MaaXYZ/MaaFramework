@@ -10,10 +10,11 @@ MAA_VISION_NS_BEGIN
 
 NeuralNetworkClassifier::NeuralNetworkClassifier(
     cv::Mat image,
+    cv::Rect roi,
     NeuralNetworkClassifierParam param,
     std::shared_ptr<Ort::Session> session,
     std::string name)
-    : VisionBase(std::move(image), std::move(name))
+    : VisionBase(std::move(image), std::move(roi), std::move(name))
     , param_(std::move(param))
     , session_(std::move(session))
 {
@@ -30,8 +31,8 @@ void NeuralNetworkClassifier::analyze()
     }
     auto start_time = std::chrono::steady_clock::now();
 
-    auto results = classify_all_rois();
-    add_results(std::move(results), param_.expected);
+    auto res = classify();
+    add_results({ std::move(res) }, param_.expected);
 
     cherry_pick();
 
@@ -39,22 +40,7 @@ void NeuralNetworkClassifier::analyze()
     LogTrace << name_ << VAR(uid_) << VAR(all_results_) << VAR(filtered_results_) << VAR(best_result_) << VAR(cost);
 }
 
-NeuralNetworkClassifier::ResultsVec NeuralNetworkClassifier::classify_all_rois() const
-{
-    if (param_.roi.empty()) {
-        return { classify(cv::Rect(0, 0, image_.cols, image_.rows)) };
-    }
-    else {
-        ResultsVec results;
-        for (const cv::Rect& roi : param_.roi) {
-            Result res = classify(roi);
-            results.emplace_back(std::move(res));
-        }
-        return results;
-    }
-}
-
-NeuralNetworkClassifier::Result NeuralNetworkClassifier::classify(const cv::Rect& roi) const
+NeuralNetworkClassifier::Result NeuralNetworkClassifier::classify() const
 {
     if (!session_) {
         LogError << "OrtSession not loaded";
@@ -68,7 +54,7 @@ NeuralNetworkClassifier::Result NeuralNetworkClassifier::classify(const cv::Rect
         return {};
     }
 
-    cv::Mat image = image_with_roi(roi);
+    cv::Mat image = image_with_roi();
     cv::Size raw_roi_size(image.cols, image.rows);
     cv::Size input_image_size(static_cast<int>(input_shape[3]), static_cast<int>(input_shape[2]));
     cv::resize(image, image, input_image_size, 0, 0, cv::INTER_AREA);
@@ -99,7 +85,7 @@ NeuralNetworkClassifier::Result NeuralNetworkClassifier::classify(const cv::Rect
     res.cls_index = std::max_element(res.probs.begin(), res.probs.end()) - res.probs.begin();
     res.score = res.probs[res.cls_index];
     res.label = res.cls_index < param_.labels.size() ? param_.labels[res.cls_index] : std::format("Unkonwn_{}", res.cls_index);
-    res.box = roi;
+    res.box = roi_;
 
     if (debug_draw_) {
         auto draw = draw_result(res);
@@ -130,7 +116,7 @@ void NeuralNetworkClassifier::cherry_pick()
 
 cv::Mat NeuralNetworkClassifier::draw_result(const Result& res) const
 {
-    cv::Mat image_draw = draw_roi(res.box);
+    cv::Mat image_draw = draw_roi();
     cv::Point pt(res.box.x + res.box.width + 5, res.box.y + 20);
 
     for (size_t i = 0; i != res.raw.size(); ++i) {

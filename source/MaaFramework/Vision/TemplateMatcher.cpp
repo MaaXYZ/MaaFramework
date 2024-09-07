@@ -9,10 +9,11 @@ MAA_VISION_NS_BEGIN
 
 TemplateMatcher::TemplateMatcher(
     cv::Mat image,
+    cv::Rect roi,
     TemplateMatcherParam param,
     std::vector<std::shared_ptr<cv::Mat>> templates,
     std::string name)
-    : VisionBase(std::move(image), std::move(name))
+    : VisionBase(std::move(image), std::move(roi), std::move(name))
     , param_(std::move(param))
     , templates_(std::move(templates))
 {
@@ -40,7 +41,7 @@ void TemplateMatcher::analyze()
             continue;
         }
 
-        auto results = match_all_rois(*templ);
+        auto results = template_match(*templ);
         add_results(std::move(results), param_.thresholds.at(i));
     }
 
@@ -50,29 +51,9 @@ void TemplateMatcher::analyze()
     LogTrace << name_ << VAR(uid_) << VAR(all_results_) << VAR(filtered_results_) << VAR(best_result_) << VAR(cost);
 }
 
-TemplateMatcher::ResultsVec TemplateMatcher::match_all_rois(const cv::Mat& templ) const
+TemplateMatcher::ResultsVec TemplateMatcher::template_match(const cv::Mat& templ) const
 {
-    if (templ.empty()) {
-        LogWarn << name_ << VAR(uid_) << "template is empty" << VAR(param_.template_paths) << VAR(templ.size());
-        return {};
-    }
-
-    if (param_.roi.empty()) {
-        return template_match(cv::Rect(0, 0, image_.cols, image_.rows), templ);
-    }
-    else {
-        ResultsVec results;
-        for (const cv::Rect& roi : param_.roi) {
-            auto res = template_match(roi, templ);
-            merge_vector_(results, std::move(res));
-        }
-        return results;
-    }
-}
-
-TemplateMatcher::ResultsVec TemplateMatcher::template_match(const cv::Rect& roi, const cv::Mat& templ) const
-{
-    cv::Mat image = image_with_roi(roi);
+    cv::Mat image = image_with_roi();
 
     if (templ.cols > image.cols || templ.rows > image.rows) {
         LogError << name_ << VAR(uid_) << "templ size is too large" << VAR(image) << VAR(templ);
@@ -93,7 +74,7 @@ TemplateMatcher::ResultsVec TemplateMatcher::template_match(const cv::Rect& roi,
 
             if (max_result.score < score) {
                 max_result.score = score;
-                cv::Rect box(col + roi.x, row + roi.y, templ.cols, templ.rows);
+                cv::Rect box(col + roi_.x, row + roi_.y, templ.cols, templ.rows);
                 max_result.box = box;
             }
 
@@ -101,7 +82,7 @@ TemplateMatcher::ResultsVec TemplateMatcher::template_match(const cv::Rect& roi,
             if (score < kThreshold) {
                 continue;
             }
-            cv::Rect box(col + roi.x, row + roi.y, templ.cols, templ.rows);
+            cv::Rect box(col + roi_.x, row + roi_.y, templ.cols, templ.rows);
             Result result { .box = box, .score = score };
             raw_results.emplace_back(result);
         }
@@ -114,16 +95,16 @@ TemplateMatcher::ResultsVec TemplateMatcher::template_match(const cv::Rect& roi,
     auto nms_results = NMS(std::move(raw_results));
 
     if (debug_draw_) {
-        auto draw = draw_result(roi, templ, nms_results);
+        auto draw = draw_result(templ, nms_results);
         handle_draw(draw);
     }
 
     return nms_results;
 }
 
-cv::Mat TemplateMatcher::draw_result(const cv::Rect& roi, const cv::Mat& templ, const ResultsVec& results) const
+cv::Mat TemplateMatcher::draw_result(const cv::Mat& templ, const ResultsVec& results) const
 {
-    cv::Mat image_draw = draw_roi(roi);
+    cv::Mat image_draw = draw_roi();
     const auto color = cv::Scalar(0, 0, 255);
 
     for (size_t i = 0; i != results.size(); ++i) {

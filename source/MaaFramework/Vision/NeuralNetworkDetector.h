@@ -29,19 +29,23 @@ class NeuralNetworkDetector
     , public RecoResultAPI<NeuralNetworkDetectorResult>
 {
 public:
-    NeuralNetworkDetector(cv::Mat image, NeuralNetworkDetectorParam param, std::shared_ptr<Ort::Session> session, std::string name = "");
+    NeuralNetworkDetector(
+        cv::Mat image,
+        cv::Rect roi,
+        NeuralNetworkDetectorParam param,
+        std::shared_ptr<Ort::Session> session,
+        std::string name = "");
 
 private:
     void analyze();
 
-    ResultsVec detect_all_rois() const;
-    ResultsVec detect(const cv::Rect& roi) const;
+    ResultsVec detect() const;
 
     void add_results(ResultsVec results, const std::vector<size_t>& expected);
     void cherry_pick();
 
 private:
-    cv::Mat draw_result(const cv::Rect& roi, const ResultsVec& results) const;
+    cv::Mat draw_result(const ResultsVec& results) const;
     void sort_(ResultsVec& results) const;
 
 private:

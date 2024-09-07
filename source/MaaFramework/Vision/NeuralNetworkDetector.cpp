@@ -11,10 +11,11 @@ MAA_VISION_NS_BEGIN
 
 NeuralNetworkDetector::NeuralNetworkDetector(
     cv::Mat image,
+    cv::Rect roi,
     NeuralNetworkDetectorParam param,
     std::shared_ptr<Ort::Session> session,
     std::string name)
-    : VisionBase(std::move(image), std::move(name))
+    : VisionBase(std::move(image), std::move(roi), std::move(name))
     , param_(std::move(param))
     , session_(std::move(session))
 {
@@ -32,7 +33,7 @@ void NeuralNetworkDetector::analyze()
 
     auto start_time = std::chrono::steady_clock::now();
 
-    auto results = detect_all_rois();
+    auto results = detect();
     add_results(std::move(results), param_.expected);
 
     cherry_pick();
@@ -41,22 +42,7 @@ void NeuralNetworkDetector::analyze()
     LogTrace << name_ << VAR(uid_) << VAR(all_results_) << VAR(filtered_results_) << VAR(best_result_) << VAR(cost);
 }
 
-NeuralNetworkDetector::ResultsVec NeuralNetworkDetector::detect_all_rois() const
-{
-    if (param_.roi.empty()) {
-        return detect(cv::Rect(0, 0, image_.cols, image_.rows));
-    }
-    else {
-        ResultsVec results;
-        for (const cv::Rect& roi : param_.roi) {
-            auto res = detect(roi);
-            merge_vector_(results, std::move(res));
-        }
-        return results;
-    }
-}
-
-NeuralNetworkDetector::ResultsVec NeuralNetworkDetector::detect(const cv::Rect& roi) const
+NeuralNetworkDetector::ResultsVec NeuralNetworkDetector::detect() const
 {
     if (!session_) {
         LogError << "OrtSession not loaded";
@@ -71,7 +57,7 @@ NeuralNetworkDetector::ResultsVec NeuralNetworkDetector::detect(const cv::Rect& 
         return {};
     }
 
-    cv::Mat image = image_with_roi(roi);
+    cv::Mat image = image_with_roi();
     cv::Size raw_roi_size(image.cols, image.rows);
     cv::Size input_image_size(static_cast<int>(input_shape[3]), static_cast<int>(input_shape[2]));
     cv::resize(image, image, input_image_size, 0, 0, cv::INTER_AREA);
@@ -134,8 +120,8 @@ NeuralNetworkDetector::ResultsVec NeuralNetworkDetector::detect(const cv::Rect& 
             int x = center_x - w / 2;
             int y = center_y - h / 2;
             cv::Rect box {
-                static_cast<int>(x * width_ratio) + roi.x,
-                static_cast<int>(y * height_ratio) + roi.y,
+                static_cast<int>(x * width_ratio) + roi_.x,
+                static_cast<int>(y * height_ratio) + roi_.y,
                 static_cast<int>(w * width_ratio),
                 static_cast<int>(h * height_ratio),
             };
@@ -153,7 +139,7 @@ NeuralNetworkDetector::ResultsVec NeuralNetworkDetector::detect(const cv::Rect& 
     auto nms_results = NMS(std::move(raw_results));
 
     if (debug_draw_) {
-        auto draw = draw_result(roi, nms_results);
+        auto draw = draw_result(nms_results);
         handle_draw(draw);
     }
 
@@ -179,9 +165,9 @@ void NeuralNetworkDetector::cherry_pick()
     }
 }
 
-cv::Mat NeuralNetworkDetector::draw_result(const cv::Rect& roi, const ResultsVec& results) const
+cv::Mat NeuralNetworkDetector::draw_result(const ResultsVec& results) const
 {
-    cv::Mat image_draw = draw_roi(roi);
+    cv::Mat image_draw = draw_roi();
 
     for (const Result& res : results) {
         const cv::Rect& my_box = res.box;

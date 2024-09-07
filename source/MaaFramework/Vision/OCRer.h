@@ -45,6 +45,7 @@ public:
 public:
     OCRer(
         cv::Mat image,
+        cv::Rect roi,
         OCRerParam param,
         std::shared_ptr<fastdeploy::vision::ocr::DBDetector> deter,
         std::shared_ptr<fastdeploy::vision::ocr::Recognizer> recer,
@@ -55,8 +56,7 @@ public:
 private:
     void analyze();
 
-    ResultsVec predict_all_rois() const;
-    ResultsVec predict(const cv::Rect& roi) const;
+    ResultsVec predict() const;
 
     void add_results(ResultsVec results, const std::vector<std::wstring>& expected);
     void cherry_pick();
@@ -65,7 +65,7 @@ private:
     ResultsVec predict_det_and_rec(const cv::Mat& image_roi) const;
     Result predict_only_rec(const cv::Mat& image_roi) const;
 
-    cv::Mat draw_result(const cv::Rect& roi, const ResultsVec& results) const;
+    cv::Mat draw_result(const ResultsVec& results) const;
 
     void postproc_trim_(Result& res) const;
     void postproc_replace_(Result& res) const;

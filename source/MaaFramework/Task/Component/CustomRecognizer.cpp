@@ -15,7 +15,7 @@ CustomRecognizer::CustomRecognizer(
     Context& context,
     const MAA_VISION_NS::CustomRecognizerParam& param,
     const cv::Mat& image)
-    : VisionBase(image, name)
+    : VisionBase(image, cv::Rect {}, name)
     , name_(name)
     , session_(std::move(session))
     , context_(context)

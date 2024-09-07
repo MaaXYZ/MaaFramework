@@ -58,22 +58,7 @@ enum class Type
     StopTask,
 };
 
-struct Target
-{
-    enum class Type
-    {
-        Invalid = 0,
-        Self,
-        PreTask,
-        Region,
-    };
-
-    Type type = Type::Self;
-    std::variant<std::monostate, std::string, cv::Rect> param;
-    cv::Rect offset {};
-};
-
-using TargetParam = std::variant<std::monostate, std::string, cv::Rect>;
+using Target = MAA_VISION_NS::Target;
 
 struct ClickParam
 {

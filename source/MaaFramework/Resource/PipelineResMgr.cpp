@@ -491,7 +491,7 @@ bool PipelineResMgr::parse_recognition(
 // MAA_VISION_NS::DirectHitParam& output,
 //                                             const MAA_VISION_NS::DirectHitParam& default_value)
 //{
-//     // if (!parse_roi(input, output.roi, default_value.roi)) {
+//     // if (!parse_roi(input, output.roi_target, default_value.roi_target)) {
 //     //     LogError << "failed to parse_roi" << VAR(input);
 //     //     return false;
 //     // }
@@ -504,8 +504,8 @@ bool PipelineResMgr::parse_template_matcher_param(
     MAA_VISION_NS::TemplateMatcherParam& output,
     const MAA_VISION_NS::TemplateMatcherParam& default_value)
 {
-    if (!parse_roi(input, output.roi, default_value.roi)) {
-        LogError << "failed to parse_roi" << VAR(input);
+    if (!parse_roi_target(input, output.roi_target, default_value.roi_target)) {
+        LogError << "failed to parse_roi_target" << VAR(input);
         return false;
     }
 
@@ -574,8 +574,8 @@ bool PipelineResMgr::parse_feature_matcher_param(
 {
     using namespace MAA_VISION_NS;
 
-    if (!parse_roi(input, output.roi, default_value.roi)) {
-        LogError << "failed to parse_roi" << VAR(input);
+    if (!parse_roi_target(input, output.roi_target, default_value.roi_target)) {
+        LogError << "failed to parse_roi_target" << VAR(input);
         return false;
     }
 
@@ -663,8 +663,8 @@ bool PipelineResMgr::parse_ocrer_param(
     MAA_VISION_NS::OCRerParam& output,
     const MAA_VISION_NS::OCRerParam& default_value)
 {
-    if (!parse_roi(input, output.roi, default_value.roi)) {
-        LogError << "failed to parse_roi" << VAR(input);
+    if (!parse_roi_target(input, output.roi_target, default_value.roi_target)) {
+        LogError << "failed to parse_roi_target" << VAR(input);
         return false;
     }
 
@@ -770,8 +770,8 @@ bool PipelineResMgr::parse_nn_classifier_param(
     MAA_VISION_NS::NeuralNetworkClassifierParam& output,
     const MAA_VISION_NS::NeuralNetworkClassifierParam& default_value)
 {
-    if (!parse_roi(input, output.roi, default_value.roi)) {
-        LogError << "failed to parse_roi" << VAR(input);
+    if (!parse_roi_target(input, output.roi_target, default_value.roi_target)) {
+        LogError << "failed to parse_roi_target" << VAR(input);
         return false;
     }
 
@@ -813,8 +813,8 @@ bool PipelineResMgr::parse_nn_detector_param(
     MAA_VISION_NS::NeuralNetworkDetectorParam& output,
     const MAA_VISION_NS::NeuralNetworkDetectorParam& default_value)
 {
-    if (!parse_roi(input, output.roi, default_value.roi)) {
-        LogError << "failed to parse_roi" << VAR(input);
+    if (!parse_roi_target(input, output.roi_target, default_value.roi_target)) {
+        LogError << "failed to parse_roi_target" << VAR(input);
         return false;
     }
 
@@ -932,8 +932,8 @@ bool PipelineResMgr::parse_color_matcher_param(
     MAA_VISION_NS::ColorMatcherParam& output,
     const MAA_VISION_NS::ColorMatcherParam& default_value)
 {
-    if (!parse_roi(input, output.roi, default_value.roi)) {
-        LogError << "failed to parse_roi" << VAR(input);
+    if (!parse_roi_target(input, output.roi_target, default_value.roi_target)) {
+        LogError << "failed to parse_roi_target" << VAR(input);
         return false;
     }
 
@@ -991,46 +991,27 @@ bool PipelineResMgr::parse_color_matcher_param(
     return true;
 }
 
-bool PipelineResMgr::parse_roi(const json::value& input, std::vector<cv::Rect>& output, const std::vector<cv::Rect>& default_value)
+bool PipelineResMgr::parse_roi_target(const json::value& input, MAA_VISION_NS::Target& output, const MAA_VISION_NS::Target& default_value)
 {
-    auto roi_opt = input.find("roi");
-    if (!roi_opt) {
+    using namespace MAA_VISION_NS;
+
+    if (auto param_opt = input.find("roi"); !param_opt) {
         output = default_value;
-        return true;
     }
-    if (!roi_opt->is_array()) {
-        LogError << "roi is not array" << VAR(input);
-        return false;
-    }
-    auto& roi_array = roi_opt->as_array();
-    if (roi_array.empty()) {
-        LogError << "roi array is empty" << VAR(input);
+    else if (!parse_target_variant(*param_opt, output)) {
+        LogError << "failed to parse_target_variant" << VAR(*param_opt);
         return false;
     }
 
-    if (roi_array.at(0).is_number()) {
-        cv::Rect single_roi {};
-        if (parse_rect(*roi_opt, single_roi)) {
-            output = { single_roi };
-            return true;
-        }
-        else {
-            LogError << "failed to parse_rect for single_roi" << VAR(roi_array);
-            return false;
-        }
+    if (auto offset_opt = input.find("roi_offset"); !offset_opt) {
+        output.offset = default_value.offset;
+    }
+    else if (!parse_target_offset(*offset_opt, output)) {
+        LogError << "failed to parse_target_offset" << VAR(*offset_opt);
+        return false;
     }
 
-    output.clear();
-    for (const auto& roi_item : roi_array) {
-        cv::Rect roi {};
-        if (!parse_rect(roi_item, roi)) {
-            LogError << "failed to parse_rect for multi_roi" << VAR(roi_item) << VAR(roi_array);
-            return false;
-        }
-        output.emplace_back(roi);
-    }
-
-    return !output.empty();
+    return true;
 }
 
 bool PipelineResMgr::parse_order_of_result(
@@ -1178,8 +1159,8 @@ bool PipelineResMgr::parse_action(
 
 bool PipelineResMgr::parse_click(const json::value& input, Action::ClickParam& output, const Action::ClickParam& default_value)
 {
-    if (!parse_action_target(input, "target", output.target, default_value.target)) {
-        LogError << "failed to parse_action_target" << VAR(input);
+    if (!parser_action_target(input, "target", output.target, default_value.target)) {
+        LogError << "failed to parser_action_target" << VAR(input);
         return false;
     }
 
@@ -1188,13 +1169,13 @@ bool PipelineResMgr::parse_click(const json::value& input, Action::ClickParam& o
 
 bool PipelineResMgr::parse_swipe(const json::value& input, Action::SwipeParam& output, const Action::SwipeParam& default_value)
 {
-    if (!parse_action_target(input, "begin", output.begin, default_value.begin)) {
-        LogError << "failed to parse_action_target begin" << VAR(input);
+    if (!parser_action_target(input, "begin", output.begin, default_value.begin)) {
+        LogError << "failed to parser_action_target begin" << VAR(input);
         return false;
     }
 
-    if (!parse_action_target(input, "end", output.end, default_value.end)) {
-        LogError << "failed to parse_action_target end" << VAR(input);
+    if (!parser_action_target(input, "end", output.end, default_value.end)) {
+        LogError << "failed to parser_action_target end" << VAR(input);
         return false;
     }
     // if (output.begin.type == Action::Target::Type::Self
@@ -1288,8 +1269,8 @@ bool PipelineResMgr::parse_wait_freezes_param(
         }
         output.time = std::chrono::milliseconds(time);
 
-        if (!parse_action_target(field, "target", output.target, default_value.target)) {
-            LogError << "failed to parse_wait_freezes_param parse_action_target" << VAR(field);
+        if (!parser_action_target(field, "target", output.target, default_value.target)) {
+            LogError << "failed to parse_wait_freezes_param parser_action_target" << VAR(field);
             return false;
         }
 
@@ -1343,49 +1324,69 @@ bool PipelineResMgr::parse_rect(const json::value& input_rect, cv::Rect& output)
     return true;
 }
 
-bool PipelineResMgr::parse_action_target(
-    const json::value& input,
-    const std::string& key,
-    Action::Target& output,
-    const Action::Target& default_value)
+bool PipelineResMgr::parse_target_variant(const json::value& input_target, Action::Target& output)
 {
     using namespace Action;
 
-    if (auto param_opt = input.find(key); !param_opt) {
-        output = default_value;
-    }
-    else if (param_opt->is_boolean() && param_opt->as_boolean()) {
+    if (input_target.is_boolean() && input_target.as_boolean()) {
         output.type = Target::Type::Self;
     }
-    else if (param_opt->is_string()) {
+    else if (input_target.is_string()) {
         output.type = Target::Type::PreTask;
-        output.param = param_opt->as_string();
+        output.param = input_target.as_string();
     }
-    else if (param_opt->is_array()) {
+    else if (input_target.is_array()) {
         output.type = Target::Type::Region;
         cv::Rect rect {};
-        if (!parse_rect(*param_opt, rect)) {
-            LogError << "Target::Type::Region failed to parse_rect" << VAR(*param_opt);
+        if (!parse_rect(input_target, rect)) {
+            LogError << "Target::Type::Region failed to parse_rect" << VAR(input_target);
             return false;
         }
         output.param = rect;
     }
     else {
-        LogError << "param type error" << VAR(key) << VAR(*param_opt);
+        LogError << "param type error" << VAR(input_target);
+        return false;
+    }
+
+    return true;
+}
+
+bool PipelineResMgr::parse_target_offset(const json::value& input_target, Action::Target& output)
+{
+    if (input_target.is_array()) {
+        if (!parse_rect(input_target, output.offset)) {
+            LogError << "failed to parse_rect" << VAR(input_target);
+            return false;
+        }
+    }
+    else {
+        LogError << "offset type error" << VAR(input_target);
+        return false;
+    }
+
+    return true;
+}
+
+bool PipelineResMgr::parser_action_target(
+    const json::value& input,
+    const std::string& key,
+    Action::Target& output,
+    const Action::Target& default_value)
+{
+    if (auto param_opt = input.find(key); !param_opt) {
+        output = default_value;
+    }
+    else if (!parse_target_variant(*param_opt, output)) {
+        LogError << "failed to parse_target_variant" << VAR(*param_opt);
         return false;
     }
 
     if (auto offset_opt = input.find(key + "_offset"); !offset_opt) {
         output.offset = default_value.offset;
     }
-    else if (offset_opt->is_array()) {
-        if (!parse_rect(*offset_opt, output.offset)) {
-            LogError << "failed to parse_rect" << key + "_offset" << VAR(*offset_opt);
-            return false;
-        }
-    }
-    else {
-        LogError << "offset type error" << VAR(key + "_offset") << VAR(*offset_opt);
+    else if (!parse_target_offset(*offset_opt, output)) {
+        LogError << "failed to parse_target_offset" << VAR(*offset_opt);
         return false;
     }
 

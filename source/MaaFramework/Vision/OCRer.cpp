@@ -18,13 +18,14 @@ MAA_VISION_NS_BEGIN
 
 OCRer::OCRer(
     cv::Mat image,
+    cv::Rect roi,
     OCRerParam param,
     std::shared_ptr<fastdeploy::vision::ocr::DBDetector> deter,
     std::shared_ptr<fastdeploy::vision::ocr::Recognizer> recer,
     std::shared_ptr<fastdeploy::pipeline::PPOCRv3> ocrer,
     Cache& cache,
     std::string name)
-    : VisionBase(std::move(image), std::move(name))
+    : VisionBase(std::move(image), std::move(roi), std::move(name))
     , param_(std::move(param))
     , deter_(std::move(deter))
     , recer_(std::move(recer))
@@ -38,7 +39,7 @@ void OCRer::analyze()
 {
     auto start_time = std::chrono::steady_clock::now();
 
-    auto results = predict_all_rois();
+    auto results = predict();
     add_results(std::move(results), param_.expected);
 
     cherry_pick();
@@ -47,42 +48,27 @@ void OCRer::analyze()
     LogTrace << name_ << VAR(uid_) << VAR(all_results_) << VAR(filtered_results_) << VAR(best_result_) << VAR(cost);
 }
 
-OCRer::ResultsVec OCRer::predict_all_rois() const
-{
-    if (param_.roi.empty()) {
-        return predict(cv::Rect(0, 0, image_.cols, image_.rows));
-    }
-    else {
-        ResultsVec results;
-        for (const cv::Rect& roi : param_.roi) {
-            auto res = predict(roi);
-            merge_vector_(results, std::move(res));
-        }
-        return results;
-    }
-}
-
-OCRer::ResultsVec OCRer::predict(const cv::Rect& roi) const
+OCRer::ResultsVec OCRer::predict() const
 {
     ResultsVec results;
 
-    if (auto cache_it = cache_.find(roi); cache_it != cache_.end()) {
-        LogTrace << "Hit OCR cache" << VAR(roi);
+    if (auto cache_it = cache_.find(roi_); cache_it != cache_.end()) {
+        LogTrace << "Hit OCR cache" << VAR(roi_);
         results = cache_it->second;
     }
     else {
-        auto image_roi = image_with_roi(roi);
+        auto image_roi = image_with_roi();
         results = param_.only_rec ? ResultsVec { predict_only_rec(image_roi) } : predict_det_and_rec(image_roi);
-        cache_.emplace(roi, results);
+        cache_.emplace(roi_, results);
     }
 
     std::ranges::for_each(results, [&](auto& res) {
-        res.box.x += roi.x;
-        res.box.y += roi.y;
+        res.box.x += roi_.x;
+        res.box.y += roi_.y;
     });
 
     if (debug_draw_) {
-        auto draw = draw_result(roi, results);
+        auto draw = draw_result(results);
         handle_draw(draw);
     }
 
@@ -162,9 +148,9 @@ OCRer::Result OCRer::predict_only_rec(const cv::Mat& image_roi) const
     return result;
 }
 
-cv::Mat OCRer::draw_result(const cv::Rect& roi, const ResultsVec& results) const
+cv::Mat OCRer::draw_result(const ResultsVec& results) const
 {
-    cv::Mat image_draw = draw_roi(roi);
+    cv::Mat image_draw = draw_roi();
 
     for (size_t i = 0; i != results.size(); ++i) {
         const cv::Rect& my_box = results.at(i).box;

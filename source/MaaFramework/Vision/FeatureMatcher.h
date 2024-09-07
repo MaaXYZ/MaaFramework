@@ -28,16 +28,16 @@ class FeatureMatcher
     , public RecoResultAPI<FeatureMatcherResult>
 {
 public:
-    FeatureMatcher(cv::Mat image, FeatureMatcherParam param, std::vector<std::shared_ptr<cv::Mat>> templates, std::string name = "");
+    FeatureMatcher(
+        cv::Mat image,
+        cv::Rect roi,
+        FeatureMatcherParam param,
+        std::vector<std::shared_ptr<cv::Mat>> templates,
+        std::string name = "");
 
 private:
     void analyze();
-    ResultsVec match_all_rois(const cv::Mat& templ) const;
-    ResultsVec feature_match(
-        const cv::Mat& templ,
-        const std::vector<cv::KeyPoint>& keypoints_1,
-        const cv::Mat& descriptors_1,
-        const cv::Rect& roi_2) const;
+    ResultsVec feature_match(const cv::Mat& templ, const std::vector<cv::KeyPoint>& keypoints_1, const cv::Mat& descriptors_1) const;
 
     void add_results(ResultsVec results, int count);
     void cherry_pick();
@@ -60,7 +60,6 @@ private:
     cv::Mat draw_result(
         const cv::Mat& templ,
         const std::vector<cv::KeyPoint>& keypoints_1,
-        const cv::Rect& roi,
         const std::vector<cv::KeyPoint>& keypoints_2,
         const std::vector<cv::DMatch>& good_matches,
         const ResultsVec& results) const;

@@ -34,6 +34,7 @@ class NeuralNetworkClassifier
 public:
     NeuralNetworkClassifier(
         cv::Mat image,
+        cv::Rect roi,
         NeuralNetworkClassifierParam param,
         std::shared_ptr<Ort::Session> session,
         std::string name = "");
@@ -41,8 +42,7 @@ public:
 private:
     void analyze();
 
-    ResultsVec classify_all_rois() const;
-    Result classify(const cv::Rect& roi) const;
+    Result classify() const;
 
     void add_results(ResultsVec results, const std::vector<size_t>& expected);
     void cherry_pick();

@@ -80,7 +80,8 @@ public:
         MAA_VISION_NS::ColorMatcherParam& output,
         const MAA_VISION_NS::ColorMatcherParam& default_value);
 
-    static bool parse_roi(const json::value& input, std::vector<cv::Rect>& output, const std::vector<cv::Rect>& default_value);
+    static bool parse_roi_target(const json::value& input, MAA_VISION_NS::Target& output, const MAA_VISION_NS::Target& default_value);
+
     static bool parse_order_of_result(
         const json::value& input,
         MAA_VISION_NS::ResultOrderBy& output,
@@ -109,8 +110,10 @@ public:
         const WaitFreezesParam& default_value);
 
     static bool parse_rect(const json::value& input_rect, cv::Rect& output);
+    static bool parse_target_variant(const json::value& input_target, Action::Target& output);
+    static bool parse_target_offset(const json::value& input_target, Action::Target& output);
     static bool
-        parse_action_target(const json::value& input, const std::string& key, Action::Target& output, const Action::Target& default_value);
+        parser_action_target(const json::value& input, const std::string& key, Action::Target& output, const Action::Target& default_value);
 
 private:
     bool load_all_json(const std::filesystem::path& path);
