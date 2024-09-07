@@ -311,6 +311,11 @@ bool PipelineResMgr::parse_task(const std::string& name, const json::value& inpu
         return false;
     }
 
+    if (!parse_next(input, "on_error", data.on_error, default_value.on_error)) {
+        LogError << "failed to parse_next on_error" << VAR(input);
+        return false;
+    }
+
     auto timeout = default_value.reco_timeout.count();
     if (!get_and_check_value(input, "timeout", timeout, timeout)) {
         LogError << "failed to get_and_check_value timeout" << VAR(input);

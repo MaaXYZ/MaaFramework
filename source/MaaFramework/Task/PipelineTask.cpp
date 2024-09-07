@@ -27,31 +27,46 @@ bool PipelineTask::run()
     PipelineData pretask = context_->get_pipeline_data(entry_);
     PipelineData::NextList next = { entry_ };
     PipelineData::NextList interrupt;
+    bool error_handling = false;
 
     while (!next.empty() && !need_to_stop_) {
         auto [node_detail, is_interrupt] = run_reco_and_action(next, interrupt, pretask);
-
-        if (!node_detail.completed) {
-            LogError << "Run task failed:" << next;
-            return false;
+        if (need_to_stop_) {
+            LogError << "need_to_stop" << VAR(pretask.name);
+            return true;
         }
 
-        PipelineData hit_task = context_->get_pipeline_data(node_detail.name);
-        if (is_interrupt || hit_task.is_sub) { // for compatibility with v1.x
-            const auto& ref = task_stack.emplace(pretask.name);
-            LogDebug << "push task_stack:" << pretask.name << ref;
-        }
+        if (node_detail.completed) {
+            error_handling = false;
+            PipelineData hit_task = context_->get_pipeline_data(node_detail.name);
+            if (is_interrupt || hit_task.is_sub) { // for compatibility with v1.x
+                LogInfo << "push task_stack:" << pretask.name;
+                const auto& ref = task_stack.emplace(pretask.name);
+            }
 
-        next = hit_task.next;
-        interrupt = hit_task.interrupt;
+            next = hit_task.next;
+            interrupt = hit_task.interrupt;
+        }
+        else if (error_handling) {
+            LogError << "error handling loop detected" << VAR(pretask.name);
+            next.clear();
+            interrupt.clear();
+        }
+        else {
+            LogInfo << "handle error" << VAR(pretask.name);
+            error_handling = true;
+            next = pretask.on_error;
+            interrupt.clear();
+        }
 
         if (next.empty() && !task_stack.empty()) {
+            LogInfo << "pop task_stack:" << pretask.name;
             pretask = context_->get_pipeline_data(task_stack.top());
             task_stack.pop();
-            LogDebug << "pop task_stack:" << pretask.name;
         }
     }
-    return true;
+
+    return !error_handling;
 }
 
 void PipelineTask::post_stop()
@@ -101,10 +116,6 @@ std::pair<NodeDetail, /* is interrupt */ bool> PipelineTask::run_reco_and_action
         }
 
         std::this_thread::sleep_until(current_clock + pretask.rate_limit);
-    }
-
-    if (!reco.box) {
-        return {};
     }
 
     auto node_detail = run_action(reco);
