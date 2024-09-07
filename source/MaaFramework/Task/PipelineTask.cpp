@@ -16,40 +16,40 @@ bool PipelineTask::run()
 {
     if (!context_) {
         LogError << "context is null";
-        return {};
+        return false;
     }
 
     LogFunc << VAR(entry_);
 
-    std::stack<PipelineData::NextList> goto_stack;
+    std::stack<std::string> task_stack;
+
+    // there is no pretask for the entry, so we use the entry itself
+    PipelineData pretask = context_->get_pipeline_data(entry_);
     PipelineData::NextList next = { entry_ };
     PipelineData::NextList interrupt;
 
     while (!next.empty() && !need_to_stop_) {
-        PipelineData current = context_->get_pipeline_data(cur_task_);
-        auto [node_result, is_interrupt] = run_reco_and_action(next, interrupt, current);
+        auto [node_detail, is_interrupt] = run_reco_and_action(next, interrupt, pretask);
 
-        if (!node_result.completed) {
+        if (!node_detail.completed) {
             LogError << "Run task failed:" << next;
             return false;
         }
 
-        PipelineData hit_task = context_->get_pipeline_data(node_result.name);
+        PipelineData hit_task = context_->get_pipeline_data(node_detail.name);
         if (is_interrupt || hit_task.is_sub) { // for compatibility with v1.x
-            const auto& ref = goto_stack.emplace(next);
-            LogDebug << "push goto_stack:" << hit_task.name << ref;
+            const auto& ref = task_stack.emplace(pretask.name);
+            LogDebug << "push task_stack:" << pretask.name << ref;
         }
 
         next = hit_task.next;
         interrupt = hit_task.interrupt;
 
-        if (next.empty() && !goto_stack.empty()) {
-            next = std::move(goto_stack.top());
-            goto_stack.pop();
-            LogDebug << "pop goto_stack:" << next;
+        if (next.empty() && !task_stack.empty()) {
+            pretask = context_->get_pipeline_data(task_stack.top());
+            task_stack.pop();
+            LogDebug << "pop task_stack:" << pretask.name;
         }
-
-        cur_task_ = hit_task.name;
     }
     return true;
 }
@@ -62,7 +62,7 @@ void PipelineTask::post_stop()
 std::pair<NodeDetail, /* is interrupt */ bool> PipelineTask::run_reco_and_action(
     const PipelineData::NextList& next,
     const PipelineData::NextList& interrupt,
-    const PipelineData& pp_data)
+    const PipelineData& pretask)
 {
     if (!tasker_) {
         LogError << "tasker is null";
@@ -91,16 +91,16 @@ std::pair<NodeDetail, /* is interrupt */ bool> PipelineTask::run_reco_and_action
         }
 
         if (need_to_stop_) {
-            LogError << "need_to_stop" << VAR(cur_task_);
+            LogError << "need_to_stop" << VAR(pretask.name);
             return {};
         }
 
-        if (std::chrono::steady_clock::now() - start_clock > pp_data.reco_timeout) {
-            LogError << "Task timeout" << VAR(cur_task_) << VAR(pp_data.reco_timeout);
+        if (std::chrono::steady_clock::now() - start_clock > pretask.reco_timeout) {
+            LogError << "Task timeout" << VAR(pretask.name) << VAR(pretask.reco_timeout);
             return {};
         }
 
-        std::this_thread::sleep_until(current_clock + pp_data.rate_limit);
+        std::this_thread::sleep_until(current_clock + pretask.rate_limit);
     }
 
     if (!reco.box) {

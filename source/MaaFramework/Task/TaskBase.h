@@ -61,13 +61,12 @@ protected:
     Tasker* tasker_ = nullptr;
 
     const std::string entry_;
-    std::string cur_task_;
 
     std::shared_ptr<Context> context_ = nullptr;
 
 private:
-    inline static std::atomic<MaaTaskId> s_global_task_id = 100000000;
-    inline static std::atomic<MaaTaskId> s_global_node_id = 200000000;
+    inline static std::atomic<MaaTaskId> s_global_task_id = 100'000'000;
+    inline static std::atomic<MaaTaskId> s_global_node_id = 200'000'000;
 };
 
 MAA_TASK_NS_END

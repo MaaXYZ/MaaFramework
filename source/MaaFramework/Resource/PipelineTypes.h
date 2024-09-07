@@ -140,6 +140,7 @@ struct PipelineData
 
     NextList next;
     NextList interrupt;
+    NextList on_error;
     std::chrono::milliseconds reco_timeout = std::chrono::milliseconds(20 * 1000);
     std::chrono::milliseconds rate_limit = std::chrono::milliseconds(1000);
 
