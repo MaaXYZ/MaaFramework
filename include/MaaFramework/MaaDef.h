@@ -165,53 +165,53 @@ enum MaaTaskerOptionEnum
 // MaaAdbScreencapMethod:
 // Use bitwise OR to set the method you need, MaaFramework will test their speed and use the fastest one.
 typedef uint64_t MaaAdbScreencapMethod;
-const MaaAdbScreencapMethod MaaAdbScreencapMethod_None = 0ULL;
-const MaaAdbScreencapMethod MaaAdbScreencapMethod_EncodeToFileAndPull = 1ULL;
-const MaaAdbScreencapMethod MaaAdbScreencapMethod_Encode = 1ULL << 1;
-const MaaAdbScreencapMethod MaaAdbScreencapMethod_RawWithGzip = 1ULL << 2;
-const MaaAdbScreencapMethod MaaAdbScreencapMethod_RawByNetcat = 1ULL << 3;
-const MaaAdbScreencapMethod MaaAdbScreencapMethod_MinicapDirect = 1ULL << 4;
-const MaaAdbScreencapMethod MaaAdbScreencapMethod_MinicapStream = 1ULL << 5;
-const MaaAdbScreencapMethod MaaAdbScreencapMethod_EmulatorExtras = 1ULL << 6;
+#define MaaAdbScreencapMethod_None 0ULL
+#define MaaAdbScreencapMethod_EncodeToFileAndPull 1ULL
+#define MaaAdbScreencapMethod_Encode (1ULL << 1)
+#define MaaAdbScreencapMethod_RawWithGzip (1ULL << 2)
+#define MaaAdbScreencapMethod_RawByNetcat (1ULL << 3)
+#define MaaAdbScreencapMethod_MinicapDirect (1ULL << 4)
+#define MaaAdbScreencapMethod_MinicapStream (1ULL << 5)
+#define MaaAdbScreencapMethod_EmulatorExtras (1ULL << 6)
 
-const MaaAdbScreencapMethod MaaAdbScreencapMethod_All = ~MaaAdbScreencapMethod_None;
-const MaaAdbScreencapMethod MaaAdbScreencapMethod_Default =
-    MaaAdbScreencapMethod_All & (~MaaAdbScreencapMethod_MinicapDirect) & (~MaaAdbScreencapMethod_MinicapStream);
+#define MaaAdbScreencapMethod_All (~MaaAdbScreencapMethod_None)
+#define MaaAdbScreencapMethod_Default \
+    (MaaAdbScreencapMethod_All & (~MaaAdbScreencapMethod_MinicapDirect) & (~MaaAdbScreencapMethod_MinicapStream))
 
 // MaaAdbInputMethod:
 // Use bitwise OR to set the method you need, MaaFramework will select the available ones according to priority.
 // The priority is: EmulatorExtras > Maatouch > MinitouchAndAdbKey > AdbShell
 typedef uint64_t MaaAdbInputMethod;
-const MaaAdbInputMethod MaaAdbInputMethod_None = 0ULL;
-const MaaAdbInputMethod MaaAdbInputMethod_AdbShell = 1ULL;
-const MaaAdbInputMethod MaaAdbInputMethod_MinitouchAndAdbKey = 1ULL << 1;
-const MaaAdbInputMethod MaaAdbInputMethod_Maatouch = 1ULL << 2;
-const MaaAdbInputMethod MaaAdbInputMethod_EmulatorExtras = 1ULL << 3;
+#define MaaAdbInputMethod_None 0ULL
+#define MaaAdbInputMethod_AdbShell 1ULL
+#define MaaAdbInputMethod_MinitouchAndAdbKey (1ULL << 1)
+#define MaaAdbInputMethod_Maatouch (1ULL << 2)
+#define MaaAdbInputMethod_EmulatorExtras (1ULL << 3)
 
-const MaaAdbInputMethod MaaAdbInputMethod_All = ~MaaAdbInputMethod_None;
-const MaaAdbInputMethod MaaAdbInputMethod_Default = MaaAdbInputMethod_All & (~MaaAdbInputMethod_EmulatorExtras);
+#define MaaAdbInputMethod_All (~MaaAdbInputMethod_None)
+#define MaaAdbInputMethod_Default (MaaAdbInputMethod_All & (~MaaAdbInputMethod_EmulatorExtras))
 
 // MaaWin32ScreencapMethod:
 // No bitwise OR, just set it
 typedef uint64_t MaaWin32ScreencapMethod;
-const MaaWin32ScreencapMethod MaaWin32ScreencapMethod_None = 0ULL;
-const MaaWin32ScreencapMethod MaaWin32ScreencapMethod_GDI = 1ULL;
-const MaaWin32ScreencapMethod MaaWin32ScreencapMethod_FramePool = 1ULL << 1;
-const MaaWin32ScreencapMethod MaaWin32ScreencapMethod_DXGI_DesktopDup = 1ULL << 2;
+#define MaaWin32ScreencapMethod_None 0ULL
+#define MaaWin32ScreencapMethod_GDI 1ULL
+#define MaaWin32ScreencapMethod_FramePool (1ULL << 1)
+#define MaaWin32ScreencapMethod_DXGI_DesktopDup (1ULL << 2)
 
 // MaaWin32InputMethod:
 // No bitwise OR, just set it
 typedef uint64_t MaaWin32InputMethod;
-const MaaWin32InputMethod MaaWin32InputMethod_None = 0ULL;
-const MaaWin32InputMethod MaaWin32InputMethod_Seize = 1ULL;
-const MaaWin32InputMethod MaaWin32InputMethod_SendMessage = 1ULL << 1;
+#define MaaWin32InputMethod_None 0ULL
+#define MaaWin32InputMethod_Seize 1ULL
+#define MaaWin32InputMethod_SendMessage (1ULL << 1)
 
 // MaaDbgControllerType:
 // No bitwise OR, just set it
 typedef uint64_t MaaDbgControllerType;
-const MaaDbgControllerType MaaDbgControllerType_None = 0;
-const MaaDbgControllerType MaaDbgControllerType_CarouselImage = 1ULL;
-const MaaDbgControllerType MaaDbgControllerType_ReplayRecording = 1ULL << 1;
+#define MaaDbgControllerType_None 0
+#define MaaDbgControllerType_CarouselImage 1ULL
+#define MaaDbgControllerType_ReplayRecording (1ULL << 1)
 
 typedef struct MaaRect
 {
