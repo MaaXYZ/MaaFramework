@@ -26,7 +26,11 @@ extern "C"
     /**
      * @param[in] value
      */
-    MAA_FRAMEWORK_API MaaBool MaaTaskerSetOption(MaaTasker* tasker, MaaTaskerOption key, MaaOptionValue value /**< byte array, int*, char*, bool* */, MaaOptionValueSize val_size);
+    MAA_FRAMEWORK_API MaaBool MaaTaskerSetOption(
+        MaaTasker* tasker,
+        MaaTaskerOption key,
+        MaaOptionValue value /**< byte array, int*, char*, bool* */,
+        MaaOptionValueSize val_size);
 
     MAA_FRAMEWORK_API MaaBool MaaTaskerBindResource(MaaTasker* tasker, MaaResource* res);
 
@@ -39,8 +43,6 @@ extern "C"
     MAA_FRAMEWORK_API MaaTaskId MaaTaskerPostRecognition(MaaTasker* tasker, const char* entry, const char* pipeline_override);
 
     MAA_FRAMEWORK_API MaaTaskId MaaTaskerPostAction(MaaTasker* tasker, const char* entry, const char* pipeline_override);
-
-    MAA_FRAMEWORK_API MaaBool MaaTaskerOverridePipeline(MaaTasker* tasker, MaaTaskId id, const char* pipeline_override);
 
     MAA_FRAMEWORK_API MaaStatus MaaTaskerStatus(const MaaTasker* tasker, MaaTaskId id);
 

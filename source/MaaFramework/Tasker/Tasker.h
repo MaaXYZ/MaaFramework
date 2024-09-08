@@ -33,7 +33,6 @@ public:
     virtual MaaTaskId post_pipeline(const std::string& entry, const json::value& pipeline_override) override;
     virtual MaaTaskId post_recognition(const std::string& entry, const json::value& pipeline_override) override;
     virtual MaaTaskId post_action(const std::string& entry, const json::value& pipeline_override) override;
-    virtual bool override_pipeline(MaaTaskId task_id, const json::value& pipeline_override) override;
 
     virtual MaaStatus status(MaaTaskId task_id) const override;
     virtual MaaStatus wait(MaaTaskId task_id) const override;
@@ -64,7 +63,6 @@ private:
 
     bool check_stop();
     RunnerId task_id_to_runner_id(MaaTaskId task_id) const;
-    MaaTaskId runner_id_to_task_id(RunnerId runner_id) const;
 
 private:
     MAA_RES_NS::ResourceMgr* resource_ = nullptr;
@@ -74,13 +72,12 @@ private:
 
     std::unique_ptr<AsyncRunner<TaskPtr>> task_runner_ = nullptr;
 
-    std::map<MaaTaskId, TaskPtr> task_cache_;
     std::map<MaaTaskId, RunnerId> task_id_mapping_;
-    std::map<RunnerId, MaaTaskId> runner_id_mapping_;
-    mutable std::mutex task_cache_mutex_;
+    mutable std::mutex task_mapping_mutex_;
+
+    TaskPtr running_task_ = nullptr;
 
     RuntimeCache runtime_cache_;
-
     MessageNotifier<MaaNotificationCallback> notifier;
 };
 

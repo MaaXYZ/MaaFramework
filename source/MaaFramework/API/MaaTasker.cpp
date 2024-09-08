@@ -124,24 +124,6 @@ MaaTaskId MaaTaskerPostAction(MaaTasker* tasker, const char* entry, const char* 
     return tasker->post_action(entry, *ov_opt);
 }
 
-MaaBool MaaTaskerOverridePipeline(MaaTasker* tasker, MaaTaskId id, const char* pipeline_override)
-{
-    LogFunc << VAR_VOIDP(tasker) << VAR(id) << VAR(pipeline_override);
-
-    if (!tasker) {
-        LogError << "handle is null";
-        return false;
-    }
-
-    auto ov_opt = json::parse(pipeline_override);
-    if (!ov_opt) {
-        LogError << "failed to parse" << VAR(pipeline_override);
-        return false;
-    }
-
-    return tasker->override_pipeline(id, *ov_opt);
-}
-
 MaaStatus MaaTaskerStatus(const MaaTasker* tasker, MaaTaskId id)
 {
     // LogFunc << VAR_VOIDP(tasker) << VAR(id);
