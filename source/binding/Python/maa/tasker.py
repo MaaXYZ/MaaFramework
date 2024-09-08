@@ -14,15 +14,9 @@ from .controller import Controller
 
 
 class TaskJob(Job):
-    def __init__(
-        self, maaid: MaaId, status_func, wait_func, override_pp_func, get_detail_func
-    ):
+    def __init__(self, maaid: MaaId, status_func, wait_func, get_detail_func):
         super().__init__(maaid, status_func, wait_func)
-        self._pp_override_func = override_pp_func
         self._get_detail_func = get_detail_func
-
-    def override_pipeline(self, pipeline_override: Dict) -> bool:
-        return self._pp_override_func(self._maaid, pipeline_override)
 
     def get(self) -> Optional[TaskDetail]:
         return self._get_detail_func(self._maaid)
@@ -218,7 +212,6 @@ class Tasker:
             taskid,
             self._task_status,
             self._task_wait,
-            self._task_override_pipeline,
             self._get_task_detail,
         )
 
@@ -227,13 +220,6 @@ class Tasker:
 
     def _task_wait(self, id: int) -> ctypes.c_int32:
         return Library.framework.MaaTaskerWait(self._handle, id)
-
-    def _task_override_pipeline(self, id: int, param: Dict) -> bool:
-        return bool(
-            Library.framework.MaaTaskerOverridePipeline(
-                self._handle, id, json.dumps(param, ensure_ascii=False).encode("utf-8")
-            )
-        )
 
     def _stop_status(self, id: int) -> ctypes.c_int32:
         return MaaStatusEnum.success if not self.running() else MaaStatusEnum.running
@@ -386,13 +372,6 @@ class Tasker:
         Library.framework.MaaTaskerPostAction.argtypes = [
             MaaTaskerHandle,
             ctypes.c_char_p,
-            ctypes.c_char_p,
-        ]
-
-        Library.framework.MaaTaskerOverridePipeline.restype = MaaBool
-        Library.framework.MaaTaskerOverridePipeline.argtypes = [
-            MaaTaskerHandle,
-            MaaTaskId,
             ctypes.c_char_p,
         ]
 
