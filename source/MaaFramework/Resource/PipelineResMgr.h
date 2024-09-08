@@ -38,11 +38,6 @@ public:
         const PipelineDataMap& default_value);
     static bool parse_task(const std::string& name, const json::value& input, PipelineData& output, const PipelineData& default_value);
 
-    static bool parse_next(
-        const json::value& input,
-        const std::string& key,
-        PipelineData::NextList& out,
-        const PipelineData::NextList& default_next);
     static bool parse_recognition(
         const json::value& input,
         Recognition::Type& out_type,

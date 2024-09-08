@@ -301,19 +301,26 @@ bool PipelineResMgr::parse_task(const std::string& name, const json::value& inpu
         return false;
     }
 
-    if (!parse_next(input, "next", data.next, default_value.next)) {
-        LogError << "failed to parse_next next" << VAR(input);
+    if (!get_and_check_value_or_array(input, "next", data.next, default_value.next)) {
+        LogError << "failed to get_and_check_value_or_array next" << VAR(input);
         return false;
     }
 
-    if (!parse_next(input, "interrupt", data.interrupt, default_value.interrupt)) {
-        LogError << "failed to parse_next interrupt" << VAR(input);
+    if (!get_and_check_value_or_array(input, "interrupt", data.interrupt, default_value.interrupt)) {
+        LogError << "failed to get_and_check_value_or_array interrupt" << VAR(input);
         return false;
     }
 
-    if (!parse_next(input, "on_error", data.on_error, default_value.on_error)) {
-        LogError << "failed to parse_next on_error" << VAR(input);
+    if (!get_and_check_value_or_array(input, "on_error", data.on_error, default_value.on_error)) {
+        LogError << "failed to get_and_check_value_or_array on_error" << VAR(input);
         return false;
+    }
+    if (data.on_error.empty()) {
+        // for compatibility with v1.x
+        if (!get_and_check_value_or_array(input, "timeout_next", data.on_error, default_value.on_error)) {
+            LogError << "failed to get_and_check_value_or_array timeout_next" << VAR(input);
+            return false;
+        }
     }
 
     auto timeout = default_value.reco_timeout.count();
@@ -360,20 +367,6 @@ bool PipelineResMgr::parse_task(const std::string& name, const json::value& inpu
     }
 
     output = std::move(data);
-
-    return true;
-}
-
-bool PipelineResMgr::parse_next(
-    const json::value& input,
-    const std::string& key,
-    PipelineData::NextList& out,
-    const PipelineData::NextList& default_next)
-{
-    if (!get_and_check_value_or_array(input, key, out, default_next)) {
-        LogError << "failed to get_and_check_value_or_array next" << VAR(key) << VAR(input);
-        return false;
-    }
 
     return true;
 }
