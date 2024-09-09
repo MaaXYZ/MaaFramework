@@ -170,11 +170,6 @@ bool Actuator::start_app(const MAA_RES_NS::Action::AppParam& param)
         LogError << "Controller is null";
         return false;
     }
-    using namespace MAA_VISION_NS;
-
-    if (param.package.empty()) {
-        return controller()->start_app();
-    }
     return controller()->start_app(param.package);
 }
 
@@ -183,11 +178,6 @@ bool Actuator::stop_app(const MAA_RES_NS::Action::AppParam& param)
     if (!controller()) {
         LogError << "Controller is null";
         return false;
-    }
-    using namespace MAA_VISION_NS;
-
-    if (param.package.empty()) {
-        return controller()->stop_app();
     }
     return controller()->stop_app(param.package);
 }
