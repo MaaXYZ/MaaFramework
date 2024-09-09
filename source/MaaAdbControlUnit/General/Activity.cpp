@@ -7,7 +7,7 @@ MAA_CTRL_UNIT_NS_BEGIN
 bool Activity::parse(const json::value& config)
 {
     static const json::array kDefaultStartAppArgv = {
-        "{ADB}", "-s", "{ADB_SERIAL}", "shell", "monkey -p com.shenlan.m.reverse1999 {INTENT} 1",
+        "{ADB}", "-s", "{ADB_SERIAL}", "shell", "monkey -p {INTENT} 1",
     };
     static const json::array kDefaultStartActivityArgv = {
         "{ADB}", "-s", "{ADB_SERIAL}", "shell", "am start -n {INTENT}",
