@@ -126,7 +126,7 @@ void Actuator::wait_freezes(const MAA_RES_NS::WaitFreezesParam& param, const cv:
     }
     using namespace MAA_VISION_NS;
 
-    LogFunc << "Wait freezes:" << VAR(param.time) << VAR(param.threshold) << VAR(param.method);
+    LogFunc << "Wait freezes:" << VAR(param.time) << VAR(param.rate_limit) << VAR(param.threshold) << VAR(param.method);
 
     auto screencap_clock = std::chrono::steady_clock::now();
     cv::Mat pre_image = controller()->screencap();

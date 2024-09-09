@@ -8,6 +8,7 @@
 #include <meojson/json.hpp>
 
 #include "Conf/Conf.h"
+#include "DefaultPipelineMgr.h"
 #include "PipelineTypes.h"
 #include "Utils/NonCopyable.hpp"
 
@@ -19,7 +20,7 @@ public:
     using PipelineDataMap = std::unordered_map<std::string, PipelineData>;
 
 public:
-    bool load(const std::filesystem::path& path, bool is_base);
+    bool load(const std::filesystem::path& path, bool is_base, const DefaultPipelineMgr& default_mgr);
     void clear();
 
     PipelineData get_pipeline_data(const std::string& task_name);
@@ -35,19 +36,24 @@ public:
         const json::value& input,
         PipelineDataMap& output,
         std::set<std::string>& existing_keys,
-        const PipelineDataMap& default_value);
-    static bool parse_task(const std::string& name, const json::value& input, PipelineData& output, const PipelineData& default_value);
+        const PipelineDataMap& default_value,
+        const DefaultPipelineMgr& default_mgr);
+
+    static bool parse_task(
+        const std::string& name,
+        const json::value& input,
+        PipelineData& output,
+        const PipelineData& default_value,
+        const DefaultPipelineMgr& default_mgr);
 
     static bool parse_recognition(
         const json::value& input,
         Recognition::Type& out_type,
         Recognition::Param& out_param,
-        const Recognition::Type& default_type,
-        const Recognition::Param& default_param);
-    // static bool parse_direct_hit_param(
-    //     const json::value& input,
-    //     MAA_VISION_NS::DirectHitParam& output,
-    //     const MAA_VISION_NS::DirectHitParam& default_value);
+        const Recognition::Type& parent_type,
+        const Recognition::Param& parent_param,
+        const DefaultPipelineMgr& default_mgr);
+
     static bool parse_template_matcher_param(
         const json::value& input,
         MAA_VISION_NS::TemplateMatcherParam& output,
@@ -89,8 +95,9 @@ public:
         const json::value& input,
         Action::Type& out_type,
         Action::Param& out_param,
-        const Action::Type& default_type,
-        const Action::Param& default_param);
+        const Action::Type& parent_type,
+        const Action::Param& parent_param,
+        const DefaultPipelineMgr& default_mgr);
     static bool parse_click(const json::value& input, Action::ClickParam& output, const Action::ClickParam& default_value);
     static bool parse_swipe(const json::value& input, Action::SwipeParam& output, const Action::SwipeParam& default_value);
     static bool parse_press_key(const json::value& input, Action::KeyParam& output, const Action::KeyParam& default_value);
@@ -111,8 +118,9 @@ public:
         parse_action_target(const json::value& input, const std::string& key, Action::Target& output, const Action::Target& default_value);
 
 private:
-    bool load_all_json(const std::filesystem::path& path);
-    bool open_and_parse_file(const std::filesystem::path& path, std::set<std::string>& existing_keys);
+    bool load_all_json(const std::filesystem::path& path, const DefaultPipelineMgr& default_mgr);
+    bool
+        open_and_parse_file(const std::filesystem::path& path, std::set<std::string>& existing_keys, const DefaultPipelineMgr& default_mgr);
     bool check_all_next_list() const;
     bool check_next_list(const PipelineData::NextList& next_list) const;
 

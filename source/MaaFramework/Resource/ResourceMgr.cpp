@@ -268,19 +268,13 @@ bool ResourceMgr::load(const std::filesystem::path& path)
 
     using namespace path_literals;
 
-    json::value props = json::open(path / "properties.json"_path).value_or(json::value());
-    LogInfo << VAR(props);
-
-    bool is_base = props.get("is_base", false);
-    if (is_base) {
-        paths_.clear();
-    }
     paths_.emplace_back(path);
 
-    bool ret = pipeline_res_.load(path / "pipeline"_path, is_base);
-    ret &= ocr_res_.lazy_load(path / "model"_path / "ocr"_path, is_base);
-    ret &= onnx_res_.lazy_load(path / "model"_path, is_base);
-    ret &= template_res_.lazy_load(path / "image"_path, is_base);
+    bool ret = default_pipeline_.load(path / "default_pipeline.json"_path);
+    ret &= pipeline_res_.load(path / "pipeline"_path, false, default_pipeline_);
+    ret &= ocr_res_.lazy_load(path / "model"_path / "ocr"_path, false);
+    ret &= onnx_res_.lazy_load(path / "model"_path, false);
+    ret &= template_res_.lazy_load(path / "image"_path, false);
 
     LogInfo << VAR(path) << VAR(ret);
 

@@ -8,7 +8,7 @@
 
 MAA_RES_NS_BEGIN
 
-bool PipelineResMgr::load(const std::filesystem::path& path, bool is_base)
+bool PipelineResMgr::load(const std::filesystem::path& path, bool is_base, const DefaultPipelineMgr& default_mgr)
 {
     LogFunc << VAR(path) << VAR(is_base);
 
@@ -18,7 +18,7 @@ bool PipelineResMgr::load(const std::filesystem::path& path, bool is_base)
 
     paths_.emplace_back(path);
 
-    if (!load_all_json(path)) {
+    if (!load_all_json(path, default_mgr)) {
         LogError << "load_all_json failed" << VAR(path);
         return false;
     }
@@ -50,7 +50,7 @@ PipelineData PipelineResMgr::get_pipeline_data(const std::string& task_name)
     return pp_iter->second;
 }
 
-bool PipelineResMgr::load_all_json(const std::filesystem::path& path)
+bool PipelineResMgr::load_all_json(const std::filesystem::path& path, const DefaultPipelineMgr& default_mgr)
 {
     if (!std::filesystem::exists(path)) {
         LogError << "path not exists";
@@ -90,7 +90,7 @@ bool PipelineResMgr::load_all_json(const std::filesystem::path& path)
             continue;
         }
 
-        bool parsed = open_and_parse_file(entry_path, existing_keys);
+        bool parsed = open_and_parse_file(entry_path, existing_keys, default_mgr);
         if (!parsed) {
             LogError << "open_and_parse_file failed" << VAR(entry_path);
             return false;
@@ -102,7 +102,10 @@ bool PipelineResMgr::load_all_json(const std::filesystem::path& path)
     return valid;
 }
 
-bool PipelineResMgr::open_and_parse_file(const std::filesystem::path& path, std::set<std::string>& existing_keys)
+bool PipelineResMgr::open_and_parse_file(
+    const std::filesystem::path& path,
+    std::set<std::string>& existing_keys,
+    const DefaultPipelineMgr& default_mgr)
 {
     LogFunc << VAR(path);
 
@@ -114,7 +117,7 @@ bool PipelineResMgr::open_and_parse_file(const std::filesystem::path& path, std:
     const auto& json = *json_opt;
 
     PipelineDataMap cur_pp_map;
-    if (!parse_config(json, cur_pp_map, existing_keys, pipeline_data_map_)) {
+    if (!parse_config(json, cur_pp_map, existing_keys, pipeline_data_map_, default_mgr)) {
         LogError << "parse_config failed" << VAR(path) << VAR(json);
         return false;
     }
@@ -167,7 +170,8 @@ bool PipelineResMgr::parse_config(
     const json::value& input,
     PipelineDataMap& output,
     std::set<std::string>& existing_keys,
-    const PipelineDataMap& default_value)
+    const PipelineDataMap& default_value,
+    const DefaultPipelineMgr& default_mgr)
 {
     if (!input.is_object()) {
         LogError << "json is not object";
@@ -195,8 +199,8 @@ bool PipelineResMgr::parse_config(
         }
 
         PipelineData pipeline_data;
-        const auto& default_pipeline_data = default_value.contains(key) ? default_value.at(key) : PipelineData {};
-        bool ret = parse_task(key, value, pipeline_data, default_pipeline_data);
+        const auto& default_pipeline_data = default_value.contains(key) ? default_value.at(key) : default_mgr.get_pipeline();
+        bool ret = parse_task(key, value, pipeline_data, default_pipeline_data, default_mgr);
         if (!ret) {
             LogError << "parse_task failed" << VAR(key) << VAR(value);
             return false;
@@ -283,7 +287,12 @@ bool get_and_check_value_or_array(
     return true;
 }
 
-bool PipelineResMgr::parse_task(const std::string& name, const json::value& input, PipelineData& output, const PipelineData& default_value)
+bool PipelineResMgr::parse_task(
+    const std::string& name,
+    const json::value& input,
+    PipelineData& output,
+    const PipelineData& default_value,
+    const DefaultPipelineMgr& default_mgr)
 {
     LogTrace << VAR(name);
 
@@ -305,12 +314,12 @@ bool PipelineResMgr::parse_task(const std::string& name, const json::value& inpu
         return false;
     }
 
-    if (!parse_recognition(input, data.rec_type, data.rec_param, default_value.rec_type, default_value.rec_param)) {
+    if (!parse_recognition(input, data.rec_type, data.rec_param, default_value.rec_type, default_value.rec_param, default_mgr)) {
         LogError << "failed to parse_recognition" << VAR(input);
         return false;
     }
 
-    if (!parse_action(input, data.action_type, data.action_param, default_value.action_type, default_value.action_param)) {
+    if (!parse_action(input, data.action_type, data.action_param, default_value.action_type, default_value.action_param, default_mgr)) {
         LogError << "failed to parse_action" << VAR(input);
         return false;
     }
@@ -389,8 +398,9 @@ bool PipelineResMgr::parse_recognition(
     const json::value& input,
     Recognition::Type& out_type,
     Recognition::Param& out_param,
-    const Recognition::Type& default_type,
-    const Recognition::Param& default_param)
+    const Recognition::Type& parent_type,
+    const Recognition::Param& parent_param,
+    const DefaultPipelineMgr& default_mgr)
 {
     using namespace Recognition;
     using namespace MAA_VISION_NS;
@@ -403,7 +413,7 @@ bool PipelineResMgr::parse_recognition(
     }
 
     const std::unordered_map<std::string, Type> kRecTypeMap = {
-        { kDefaultRecognitionFlag, default_type },
+        { kDefaultRecognitionFlag, parent_type },
         { "DirectHit", Type::DirectHit },
         { "directhit", Type::DirectHit },
         { "TemplateMatch", Type::TemplateMatch },
@@ -432,60 +442,72 @@ bool PipelineResMgr::parse_recognition(
     }
     out_type = rec_type_iter->second;
 
-    bool same_type = default_type == out_type;
+    bool same_type = parent_type == out_type;
     switch (out_type) {
     case Type::DirectHit:
-        out_param = DirectHitParam {};
+        out_param = default_mgr.get_recognition_param<DirectHitParam>(Type::DirectHit);
         return true;
-        // return parse_direct_hit_param(input, std::get<DirectHitParam>(out_param),
-        //                               same_type ? std::get<DirectHitParam>(default_param) :
-        //                               DirectHitParam {});
 
-    case Type::TemplateMatch:
-        out_param = TemplateMatcherParam {};
+    case Type::TemplateMatch: {
+        auto default_param = default_mgr.get_recognition_param<TemplateMatcherParam>(Type::TemplateMatch);
+        out_param = default_param;
         return parse_template_matcher_param(
             input,
             std::get<TemplateMatcherParam>(out_param),
-            same_type ? std::get<TemplateMatcherParam>(default_param) : TemplateMatcherParam {});
+            same_type ? std::get<TemplateMatcherParam>(parent_param) : default_param);
+    } break;
 
-    case Type::FeatureMatch:
-        out_param = FeatureMatcherParam {};
+    case Type::FeatureMatch: {
+        auto default_param = default_mgr.get_recognition_param<FeatureMatcherParam>(Type::FeatureMatch);
+        out_param = default_param;
         return parse_feature_matcher_param(
             input,
             std::get<FeatureMatcherParam>(out_param),
-            same_type ? std::get<FeatureMatcherParam>(default_param) : FeatureMatcherParam {});
+            same_type ? std::get<FeatureMatcherParam>(parent_param) : default_param);
+    } break;
 
-    case Type::NeuralNetworkClassify:
-        out_param = NeuralNetworkClassifierParam {};
+    case Type::NeuralNetworkClassify: {
+        auto default_param = default_mgr.get_recognition_param<NeuralNetworkClassifierParam>(Type::NeuralNetworkClassify);
+        out_param = default_param;
         return parse_nn_classifier_param(
             input,
             std::get<NeuralNetworkClassifierParam>(out_param),
-            same_type ? std::get<NeuralNetworkClassifierParam>(default_param) : NeuralNetworkClassifierParam {});
+            same_type ? std::get<NeuralNetworkClassifierParam>(parent_param) : default_param);
+    } break;
 
-    case Type::NeuralNetworkDetect:
-        out_param = NeuralNetworkDetectorParam {};
+    case Type::NeuralNetworkDetect: {
+        auto default_param = default_mgr.get_recognition_param<NeuralNetworkDetectorParam>(Type::NeuralNetworkDetect);
+        out_param = default_param;
         return parse_nn_detector_param(
             input,
             std::get<NeuralNetworkDetectorParam>(out_param),
-            same_type ? std::get<NeuralNetworkDetectorParam>(default_param) : NeuralNetworkDetectorParam {});
+            same_type ? std::get<NeuralNetworkDetectorParam>(parent_param) : default_param);
+    } break;
 
-    case Type::OCR:
-        out_param = OCRerParam {};
-        return parse_ocrer_param(input, std::get<OCRerParam>(out_param), same_type ? std::get<OCRerParam>(default_param) : OCRerParam {});
+    case Type::OCR: {
+        auto default_param = default_mgr.get_recognition_param<OCRerParam>(Type::OCR);
+        out_param = default_param;
+        return parse_ocrer_param(input, std::get<OCRerParam>(out_param), same_type ? std::get<OCRerParam>(parent_param) : default_param);
+    } break;
 
-    case Type::ColorMatch:
-        out_param = ColorMatcherParam {};
+    case Type::ColorMatch: {
+        auto default_param = default_mgr.get_recognition_param<ColorMatcherParam>(Type::ColorMatch);
+        out_param = default_param;
         return parse_color_matcher_param(
             input,
             std::get<ColorMatcherParam>(out_param),
-            same_type ? std::get<ColorMatcherParam>(default_param) : ColorMatcherParam {});
+            same_type ? std::get<ColorMatcherParam>(parent_param) : default_param);
+    } break;
 
-    case Type::Custom:
-        out_param = CustomRecognizerParam {};
+    case Type::Custom: {
+        auto default_param = default_mgr.get_recognition_param<CustomRecognizerParam>(Type::Custom);
+        out_param = default_param;
         return parse_custom_recognition_param(
             input,
             std::get<CustomRecognizerParam>(out_param),
-            same_type ? std::get<CustomRecognizerParam>(default_param) : CustomRecognizerParam {});
+            same_type ? std::get<CustomRecognizerParam>(parent_param) : default_param);
+    } break;
+
     default:
         LogError << "Unknown recognition" << VAR(static_cast<int>(out_type));
         return false;
@@ -493,18 +515,6 @@ bool PipelineResMgr::parse_recognition(
 
     return false;
 }
-
-// bool PipelineResMgr::parse_direct_hit_param(const json::value& input,
-// MAA_VISION_NS::DirectHitParam& output,
-//                                             const MAA_VISION_NS::DirectHitParam& default_value)
-//{
-//     // if (!parse_roi(input, output.roi_target, default_value.roi_target)) {
-//     //     LogError << "failed to parse_roi" << VAR(input);
-//     //     return false;
-//     // }
-//
-//     return true;
-// }
 
 bool PipelineResMgr::parse_template_matcher_param(
     const json::value& input,
@@ -1081,8 +1091,9 @@ bool PipelineResMgr::parse_action(
     const json::value& input,
     Action::Type& out_type,
     Action::Param& out_param,
-    const Action::Type& default_type,
-    const Action::Param& default_param)
+    const Action::Type& parent_type,
+    const Action::Param& parent_param,
+    const DefaultPipelineMgr& default_mgr)
 {
     using namespace Action;
 
@@ -1094,7 +1105,7 @@ bool PipelineResMgr::parse_action(
     }
 
     const std::unordered_map<std::string, Type> kActTypeMap = {
-        { kDefaultActionFlag, default_type },
+        { kDefaultActionFlag, parent_type },
         { "DoNothing", Type::DoNothing },
         { "donothing", Type::DoNothing },
         { "Click", Type::Click },
@@ -1127,35 +1138,55 @@ bool PipelineResMgr::parse_action(
     }
     out_type = act_type_iter->second;
 
-    bool same_type = default_type == out_type;
+    bool same_type = parent_type == out_type;
     switch (out_type) {
     case Type::DoNothing:
         return true;
 
-    case Type::Click:
-        out_param = ClickParam {};
-        return parse_click(input, std::get<ClickParam>(out_param), same_type ? std::get<ClickParam>(default_param) : ClickParam {});
-    case Type::Swipe:
-        out_param = SwipeParam {};
-        return parse_swipe(input, std::get<SwipeParam>(out_param), same_type ? std::get<SwipeParam>(default_param) : SwipeParam {});
+    case Type::Click: {
+        auto default_param = default_mgr.get_action_param<ClickParam>(Type::Click);
+        out_param = default_param;
+        return parse_click(input, std::get<ClickParam>(out_param), same_type ? std::get<ClickParam>(parent_param) : default_param);
+    } break;
 
-    case Type::Key:
-        out_param = KeyParam {};
-        return parse_press_key(input, std::get<KeyParam>(out_param), same_type ? std::get<KeyParam>(default_param) : KeyParam {});
-    case Type::Text:
-        out_param = TextParam {};
-        return parse_input_text(input, std::get<TextParam>(out_param), same_type ? std::get<TextParam>(default_param) : TextParam {});
-    case Type::StartApp:
-    case Type::StopApp:
-        out_param = AppParam {};
-        return parse_app_info(input, std::get<AppParam>(out_param), same_type ? std::get<AppParam>(default_param) : AppParam {});
+    case Type::Swipe: {
+        auto default_param = default_mgr.get_action_param<SwipeParam>(Type::Swipe);
+        out_param = default_param;
+        return parse_swipe(input, std::get<SwipeParam>(out_param), same_type ? std::get<SwipeParam>(parent_param) : default_param);
+    } break;
 
-    case Type::Custom:
-        out_param = CustomParam {};
+    case Type::Key: {
+        auto default_param = default_mgr.get_action_param<KeyParam>(Type::Key);
+        out_param = default_param;
+        return parse_press_key(input, std::get<KeyParam>(out_param), same_type ? std::get<KeyParam>(parent_param) : default_param);
+    } break;
+
+    case Type::Text: {
+        auto default_param = default_mgr.get_action_param<TextParam>(Type::Text);
+        out_param = default_param;
+        return parse_input_text(input, std::get<TextParam>(out_param), same_type ? std::get<TextParam>(parent_param) : default_param);
+    } break;
+
+    case Type::StartApp: {
+        auto default_param = default_mgr.get_action_param<AppParam>(Type::StartApp);
+        out_param = default_param;
+        return parse_app_info(input, std::get<AppParam>(out_param), same_type ? std::get<AppParam>(parent_param) : default_param);
+    } break;
+
+    case Type::StopApp: {
+        auto default_param = default_mgr.get_action_param<AppParam>(Type::StopApp);
+        out_param = default_param;
+        return parse_app_info(input, std::get<AppParam>(out_param), same_type ? std::get<AppParam>(parent_param) : default_param);
+    } break;
+
+    case Type::Custom: {
+        auto default_param = default_mgr.get_action_param<CustomParam>(Type::Custom);
+        out_param = default_param;
         return parse_custom_action_param(
             input,
             std::get<CustomParam>(out_param),
-            same_type ? std::get<CustomParam>(default_param) : CustomParam {});
+            same_type ? std::get<CustomParam>(parent_param) : default_param);
+    }
 
     case Type::StopTask:
         out_param = {};
