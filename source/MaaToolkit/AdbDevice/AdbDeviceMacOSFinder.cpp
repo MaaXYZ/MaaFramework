@@ -23,6 +23,11 @@ AdbDeviceMacOSFinder::AdbDeviceMacOSFinder()
           { .keyword = "qemu-system",
             .adb_candidate_paths = { "../../../platform-tools/adb"_path },
             .adb_common_serials = { "emulator-5554", "127.0.0.1:5555" } } },
+
+        { "Genymotion",
+          { .keyword = "genymotion",
+            .adb_candidate_paths = { "player.app/Contents/MacOS/tools/adb"_path },
+            .adb_common_serials = { "127.0.0.1:6555" } } },
     };
 
     set_emulator_const_data(std::move(emulators));
