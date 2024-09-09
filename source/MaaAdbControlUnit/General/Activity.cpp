@@ -7,6 +7,9 @@ MAA_CTRL_UNIT_NS_BEGIN
 bool Activity::parse(const json::value& config)
 {
     static const json::array kDefaultStartAppArgv = {
+        "{ADB}", "-s", "{ADB_SERIAL}", "shell", "monkey -p com.shenlan.m.reverse1999 {INTENT} 1",
+    };
+    static const json::array kDefaultStartActivityArgv = {
         "{ADB}", "-s", "{ADB_SERIAL}", "shell", "am start -n {INTENT}",
     };
     static const json::array kDefaultStopAppArgv = {
@@ -14,16 +17,25 @@ bool Activity::parse(const json::value& config)
     };
 
     return parse_command("StartApp", config, kDefaultStartAppArgv, start_app_argv_)
+           && parse_command("StartActivity", config, kDefaultStartActivityArgv, start_activity_argv_)
            && parse_command("StopApp", config, kDefaultStopAppArgv, stop_app_argv_);
 }
 
 bool Activity::start_app(const std::string& intent)
 {
-    LogFunc;
+    LogFunc << VAR(intent);
 
     merge_replacement({ { "{INTENT}", intent } });
 
-    auto argv_opt = start_app_argv_.gen(argv_replace_);
+    std::optional<ProcessArgvGenerator::ProcessArgv> argv_opt;
+
+    if (intent.find("/") == std::string::npos) {
+        argv_opt = start_app_argv_.gen(argv_replace_);
+    }
+    else {
+        argv_opt = start_activity_argv_.gen(argv_replace_);
+    }
+
     if (!argv_opt) {
         return false;
     }
@@ -33,7 +45,7 @@ bool Activity::start_app(const std::string& intent)
 
 bool Activity::stop_app(const std::string& intent)
 {
-    LogFunc;
+    LogFunc << VAR(intent);
 
     merge_replacement({ { "{INTENT}", intent } });
     auto argv_opt = stop_app_argv_.gen(argv_replace_);
