@@ -17,7 +17,7 @@
 
 typedef uint8_t MaaBool;
 typedef uint64_t MaaSize;
-#define MaaNullSize ((MaaSize)-1)
+#define MaaNullSize UINT64_MAX
 
 typedef int64_t MaaId;
 typedef MaaId MaaCtrlId;
@@ -134,17 +134,6 @@ enum MaaCtrlOptionEnum
     ///
     /// value: int, eg: 1080; val_size: sizeof(int)
     MaaCtrlOption_ScreenshotTargetShortSide = 2,
-
-    /// For StartApp
-    ///
-    /// value: string, eg: "com.hypergryph.arknights/com.u8.sdk.U8UnityContext"; val_size: string
-    /// length
-    MaaCtrlOption_DefaultAppPackageEntry = 3,
-
-    /// For StopApp
-    ///
-    /// value: string, eg: "com.hypergryph.arknights"; val_size: string length
-    MaaCtrlOption_DefaultAppPackage = 4,
 
     /// Dump all screenshots and actions
     ///

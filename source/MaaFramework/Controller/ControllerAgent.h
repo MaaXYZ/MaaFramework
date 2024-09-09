@@ -121,8 +121,6 @@ public:
     bool input_text(const std::string& text);
     cv::Mat screencap();
 
-    bool start_app();
-    bool stop_app();
     bool start_app(const std::string& package);
     bool stop_app(const std::string& package);
 
@@ -191,8 +189,6 @@ private:
 private: // options
     bool set_image_target_long_side(MaaOptionValue value, MaaOptionValueSize val_size);
     bool set_image_target_short_side(MaaOptionValue value, MaaOptionValueSize val_size);
-    bool set_default_app_package_entry(MaaOptionValue value, MaaOptionValueSize val_size);
-    bool set_default_app_package(MaaOptionValue value, MaaOptionValueSize val_size);
     bool set_recording(MaaOptionValue value, MaaOptionValueSize val_size);
 
 private:
@@ -213,9 +209,6 @@ private:
     int image_raw_height_ = 0;
 
     std::string uuid_cache_;
-
-    std::string default_app_package_entry_;
-    std::string default_app_package_;
 
     bool recording_ = false;
     std::filesystem::path recording_path_;

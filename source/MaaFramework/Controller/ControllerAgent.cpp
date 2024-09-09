@@ -37,12 +37,6 @@ bool ControllerAgent::set_option(MaaCtrlOption key, MaaOptionValue value, MaaOpt
         return set_image_target_long_side(value, val_size);
     case MaaCtrlOption_ScreenshotTargetShortSide:
         return set_image_target_short_side(value, val_size);
-
-    case MaaCtrlOption_DefaultAppPackageEntry:
-        return set_default_app_package_entry(value, val_size);
-    case MaaCtrlOption_DefaultAppPackage:
-        return set_default_app_package(value, val_size);
-
     case MaaCtrlOption_Recording:
         return set_recording(value, val_size);
 
@@ -228,24 +222,6 @@ cv::Mat ControllerAgent::screencap()
         return {};
     }
     return image_.clone();
-}
-
-bool ControllerAgent::start_app()
-{
-    if (default_app_package_entry_.empty()) {
-        LogError << "default_app_package_entry_ is empty";
-        return false;
-    }
-    return start_app(default_app_package_entry_);
-}
-
-bool ControllerAgent::stop_app()
-{
-    if (default_app_package_.empty()) {
-        LogError << "default_app_package_ is empty";
-        return false;
-    }
-    return stop_app(default_app_package_);
 }
 
 bool ControllerAgent::start_app(const std::string& package)
@@ -855,20 +831,6 @@ bool ControllerAgent::set_image_target_short_side(MaaOptionValue value, MaaOptio
     clear_target_image_size();
 
     LogInfo << "image_target_height_ = " << image_target_short_side_;
-    return true;
-}
-
-bool ControllerAgent::set_default_app_package_entry(MaaOptionValue value, MaaOptionValueSize val_size)
-{
-    std::string_view package(reinterpret_cast<char*>(value), val_size);
-    default_app_package_entry_ = package;
-    return true;
-}
-
-bool ControllerAgent::set_default_app_package(MaaOptionValue value, MaaOptionValueSize val_size)
-{
-    std::string_view package(reinterpret_cast<char*>(value), val_size);
-    default_app_package_ = package;
     return true;
 }
 
