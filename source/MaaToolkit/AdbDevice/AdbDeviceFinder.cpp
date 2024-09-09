@@ -182,7 +182,7 @@ bool AdbDeviceFinder::request_adb_connect(const std::filesystem::path& adb_path,
         str_serial.c_str(),
         MaaAdbScreencapMethod_None,
         MaaAdbInputMethod_None,
-        "",
+        "{}",
         "",
         nullptr,
         nullptr);
