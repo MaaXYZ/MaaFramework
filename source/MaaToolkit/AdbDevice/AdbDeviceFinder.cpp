@@ -147,7 +147,7 @@ std::vector<std::string> AdbDeviceFinder::request_adb_serials(const std::filesys
         "",
         MaaAdbScreencapMethod_None,
         MaaAdbInputMethod_None,
-        "",
+        "{}",
         "",
         nullptr,
         nullptr);
