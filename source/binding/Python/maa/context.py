@@ -41,7 +41,7 @@ class Context:
 
     def run_recognition(
         self, entry: str, image: numpy.ndarray, pipeline_override: Dict = {}
-    ) -> Optional[TaskDetail]:
+    ) -> Optional[RecognitionDetail]:
         image_buffer = ImageBuffer()
         image_buffer.set(image)
         reco_id = Library.framework.MaaContextRunRecognition(
