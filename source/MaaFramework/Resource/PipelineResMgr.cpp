@@ -407,7 +407,7 @@ bool PipelineResMgr::parse_recognition(
 
     static const std::string kDefaultRecognitionFlag = "Default";
     std::string rec_type_name;
-    if (!get_multi_keys_and_check_value(input, { "recognition", "recognizer" }, rec_type_name, kDefaultRecognitionFlag)) {
+    if (!get_multi_keys_and_check_value(input, { "recognition", "recognizer", "algorithm" }, rec_type_name, kDefaultRecognitionFlag)) {
         LogError << "failed to get_and_check_value recognition" << VAR(input);
         return false;
     }
@@ -546,10 +546,6 @@ bool PipelineResMgr::parse_template_matcher_param(
         LogError << "failed to get_and_check_value_or_array templates" << VAR(input);
         return false;
     }
-    if (output.template_paths.empty()) {
-        LogError << "templates is empty" << VAR(input);
-        return false;
-    }
 
     if (!get_and_check_value_or_array(input, "threshold", output.thresholds, default_value.thresholds)) {
         LogError << "failed to get_and_check_value_or_array threshold" << VAR(input);
@@ -557,9 +553,9 @@ bool PipelineResMgr::parse_template_matcher_param(
     }
 
     if (output.thresholds.empty()) {
-        output.thresholds = std::vector(output.template_paths.size(), MAA_VISION_NS::TemplateMatcherParam::kDefaultThreshold);
+        output.thresholds = default_value.thresholds;
     }
-    else if (output.thresholds.size() != output.template_paths.size()) {
+    if (!output.template_paths.empty() && output.thresholds.size() != output.template_paths.size()) {
         if (output.thresholds.size() == 1) {
             double threshold = output.thresholds.front();
             output.thresholds.resize(output.template_paths.size(), threshold);
@@ -767,7 +763,11 @@ bool PipelineResMgr::parse_custom_recognition_param(
     MAA_VISION_NS::CustomRecognizerParam& output,
     const MAA_VISION_NS::CustomRecognizerParam& default_value)
 {
-    if (!get_multi_keys_and_check_value(input, { "custom_recognition", "custom_recognizer" }, output.name, default_value.name)) {
+    if (!get_multi_keys_and_check_value(
+            input,
+            { "custom_recognition", "custom_recognizer", "custom_algorithm" },
+            output.name,
+            default_value.name)) {
         LogError << "failed to get_and_check_value custom_recognition" << VAR(input);
         return false;
     }
@@ -974,13 +974,13 @@ bool PipelineResMgr::parse_color_matcher_param(
         return false;
     }
 
-    constexpr int kMaxChannel = 4;
-    if (lower.empty() || lower.size() != upper.size()) {
+    if (lower.size() != upper.size()) {
         LogError << "bad size" << VAR(lower.size()) << VAR(upper.size());
         return false;
     }
 
     for (size_t i = 0; i != lower.size(); ++i) {
+        constexpr int kMaxChannel = 4;
         auto& l = lower[i];
         auto& u = upper[i];
         if (l.empty() || l.size() != u.size() || l.size() > kMaxChannel) {
