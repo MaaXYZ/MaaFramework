@@ -40,7 +40,7 @@ class Toolkit:
         )
 
     @classmethod
-    async def find_adb_devices(
+    def find_adb_devices(
         cls, specified_adb: Union[str, Path] = None
     ) -> List[AdbDevice]:
         cls._set_api_properties()

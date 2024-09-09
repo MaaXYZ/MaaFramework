@@ -113,7 +113,7 @@ struct PipelineData
     using NextList = std::vector<std::string>;
 
     std::string name;
-    bool is_sub = false; // for compatibility
+    bool is_sub = false; // for compatibility with 1.x
     bool enabled = true;
 
     Recognition::Type rec_type = Recognition::Type::DirectHit;

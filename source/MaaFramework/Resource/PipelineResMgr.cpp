@@ -75,6 +75,13 @@ bool PipelineResMgr::load_all_json(const std::filesystem::path& path)
             LogWarn << "entry is not regular file, skip" << VAR(entry_path);
             continue;
         }
+        auto relative = std::filesystem::relative(entry_path, path);
+        for (const auto& part : relative) {
+            if (part.string().starts_with('.')) {
+                LogWarn << "entry starts with . skip" << VAR(entry_path) << VAR(part);
+                continue;
+            }
+        }
 
         auto ext = path_to_utf8_string(entry_path.extension());
         tolowers_(ext);
@@ -123,9 +130,16 @@ bool PipelineResMgr::check_all_next_list() const
     LogFunc;
 
     for (const auto& [name, pipeline_data] : pipeline_data_map_) {
-        bool ret = check_next_list(pipeline_data.next);
-        if (!ret) {
-            LogError << "check_next_list failed" << VAR(name);
+        if (!check_next_list(pipeline_data.next)) {
+            LogError << "check_next_list next failed" << VAR(name);
+            return false;
+        }
+        if (!check_next_list(pipeline_data.interrupt)) {
+            LogError << "check_next_list interrupt failed" << VAR(name);
+            return false;
+        }
+        if (!check_next_list(pipeline_data.on_error)) {
+            LogError << "check_next_list on_error failed" << VAR(name);
             return false;
         }
     }
