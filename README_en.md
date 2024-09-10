@@ -83,7 +83,7 @@ MAA is planned to be a category of projects rather than just a single piece of s
 
 If your project depends on MaaFramework, we welcome you to name it as MaaXXX, MXA, MAX, and so on. Of course, this is permission, not limitation. You can freely choose other names unrelated to MAA, depending on your own ideas!
 
-We also welcome adding your project to the best practices list above!
+We also welcome you to submit a PR to add your project to the best practices list above!
 
 ## License
 
