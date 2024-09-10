@@ -13,7 +13,12 @@
 
 MAA_PROJECT_INTERFACE_NS_BEGIN
 
-bool Runner::run(const RuntimeParam& param, MaaNotificationCallback callback, void* callback_arg)
+bool Runner::run(
+    const RuntimeParam& param,
+    MaaNotificationCallback callback,
+    void* callback_arg,
+    const std::map<std::string, CustomRecognizerSession>& custom_recognizers,
+    const std::map<std::string, CustomActionSession>& custom_actions)
 {
     auto tasker_handle = MaaTaskerCreate(callback, callback_arg);
 
@@ -49,6 +54,12 @@ bool Runner::run(const RuntimeParam& param, MaaNotificationCallback callback, vo
     for (const auto& path : param.resource_path) {
         rid = MaaResourcePostPath(resource_handle, path.c_str());
     }
+    for (const auto& [name, reco] : custom_recognizers) {
+        MaaResourceRegisterCustomRecognizer(resource_handle, name.c_str(), reco.recoginzer, reco.trans_arg);
+    }
+    for (const auto& [name, act] : custom_actions) {
+        MaaResourceRegisterCustomAction(resource_handle, name.c_str(), act.action, act.trans_arg);
+    }
 
     MaaTaskerBindResource(tasker_handle, resource_handle);
     MaaTaskerBindController(tasker_handle, controller_handle);
@@ -71,8 +82,8 @@ bool Runner::run(const RuntimeParam& param, MaaNotificationCallback callback, vo
 
     MaaId tid = 0;
     for (const auto& task : param.task) {
-        std::string task_param = task.pp_override.to_string();
-        tid = MaaTaskerPostPipeline(tasker_handle, task.entry.c_str(), task_param.c_str());
+        std::string pp_override = task.pipeline_override.to_string();
+        tid = MaaTaskerPostPipeline(tasker_handle, task.entry.c_str(), pp_override.c_str());
     }
 
     MaaTaskerWait(tasker_handle, tid);

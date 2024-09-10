@@ -1,4 +1,4 @@
-#include "MaaToolkit/MaaToolkitAPI.h"
+#include "MaaToolkit/Config/MaaToolkitConfig.h"
 
 #include <meojson/json.hpp>
 

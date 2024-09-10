@@ -67,10 +67,10 @@ struct InterfaceData
     {
         std::string name;
         std::string entry;
-        json::object pp_override;
+        json::object pipeline_override;
         std::vector<std::string> option;
 
-        MEO_JSONIZATION(name, entry, MEO_OPT pp_override, MEO_OPT option);
+        MEO_JSONIZATION(name, entry, MEO_OPT pipeline_override, MEO_OPT option);
     };
 
     struct Option
@@ -78,9 +78,9 @@ struct InterfaceData
         struct Case
         {
             std::string name;
-            json::object pp_override;
+            json::object pipeline_override;
 
-            MEO_JSONIZATION(name, pp_override);
+            MEO_JSONIZATION(name, pipeline_override);
         };
 
         std::vector<Case> cases;
@@ -177,13 +177,25 @@ struct RuntimeParam
     {
         std::string name;
         std::string entry;
-        json::object pp_override;
+        json::object pipeline_override;
     };
 
     std::variant<std::monostate, AdbParam, Win32Param> controller_param;
     std::vector<std::string> resource_path;
 
     std::vector<Task> task;
+};
+
+struct CustomRecognizerSession
+{
+    MaaCustomRecognizerCallback recoginzer = nullptr;
+    void* trans_arg = nullptr;
+};
+
+struct CustomActionSession
+{
+    MaaCustomActionCallback action = nullptr;
+    void* trans_arg = nullptr;
 };
 
 MAA_PROJECT_INTERFACE_NS_END

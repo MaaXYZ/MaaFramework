@@ -6,7 +6,12 @@
 class Interactor
 {
 public:
-    bool load(const std::filesystem::path& project_dir);
+    bool load(
+        const std::filesystem::path& project_dir,
+        MaaNotificationCallback callback,
+        void* callback_arg,
+        std::map<std::string, MAA_PROJECT_INTERFACE_NS::CustomRecognizerSession> custom_recognizers,
+        std::map<std::string, MAA_PROJECT_INTERFACE_NS::CustomActionSession> custom_actions);
     void print_config() const;
     void interact();
     bool run();
@@ -41,4 +46,8 @@ private:
 
 private:
     MAA_PROJECT_INTERFACE_NS::Configurator config_;
+    MaaNotificationCallback callback_ = nullptr;
+    void* callback_arg_ = nullptr;
+    std::map<std::string, MAA_PROJECT_INTERFACE_NS::CustomRecognizerSession> custom_recognizers_;
+    std::map<std::string, MAA_PROJECT_INTERFACE_NS::CustomActionSession> custom_actions_;
 };

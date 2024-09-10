@@ -2,10 +2,11 @@ import ctypes
 import json
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Dict, List, Union
+from typing import Dict, List, Union, Optional, Any
 
 from .define import *
 from .library import Library
+from .callback_agent import Callback, CallbackAgent
 
 
 @dataclass
@@ -26,6 +27,9 @@ class DesktopWindow:
 
 
 class Toolkit:
+
+    ### public ###
+
     @classmethod
     def init_option(
         cls, user_path: Union[str, Path], default_config: Dict = {}
@@ -117,6 +121,69 @@ class Toolkit:
             windows.append(DesktopWindow(hwnd, class_name, window_name))
 
         return windows
+
+    @classmethod
+    def register_pi_custom_recognition(
+        cls, name: str, recognizer: "CustomRecognizer"
+    ) -> None:
+        cls._set_api_properties()
+
+        if not cls._custom_recognizer_holder:
+            cls._custom_recognizer_holder = {}
+
+        # avoid gc
+        cls._custom_recognizer_holder[name] = recognizer
+
+        return bool(
+            Library.framework.MaaToolkitProjectInterfaceRegisterCustomRecognition(
+                name.encode("utf-8"),
+                recognizer.c_handle,
+                recognizer.c_arg,
+            )
+        )
+
+    @classmethod
+    def register_pi_custom_action(cls, name: str, action: "CustomAction") -> None:
+        cls._set_api_properties()
+
+        if not cls._custom_action_holder:
+            cls._custom_action_holder = {}
+
+        # avoid gc
+        cls._custom_action_holder[name] = action
+
+        return bool(
+            Library.framework.MaaToolkitProjectInterfaceRegisterCustomAction(
+                name.encode("utf-8"),
+                action.c_handle,
+                action.c_arg,
+            )
+        )
+
+    @classmethod
+    def run_pi_cli(
+        cls,
+        resource_path: Union[str, Path],
+        user_path: Union[str, Path],
+        directly: bool = False,
+        callback: Optional[Callback] = None,
+        callback_arg: Any = None,
+    ) -> bool:
+        cls._set_api_properties()
+
+        cls._callback_agent = CallbackAgent(callback, callback_arg)
+
+        return bool(
+            Library.toolkit.MaaToolkitRunCli(
+                str(resource_path).encode("utf-8"),
+                str(user_path).encode("utf-8"),
+                directly,
+                cls._callback_agent.c_callback,
+                cls._callback_agent.c_callback_arg,
+            )
+        )
+
+    ### private ###
 
     _api_properties_initialized: bool = False
 
@@ -242,4 +309,29 @@ class Toolkit:
         Library.toolkit.MaaToolkitDesktopWindowGetWindowName.restype = ctypes.c_char_p
         Library.toolkit.MaaToolkitDesktopWindowGetWindowName.argtypes = [
             MaaToolkitDesktopWindowHandle
+        ]
+
+        Library.toolkit.MaaToolkitProjectInterfaceRegisterCustomRecognition.restype = (
+            None
+        )
+        Library.toolkit.MaaToolkitProjectInterfaceRegisterCustomRecognition.argtypes = [
+            ctypes.c_char_p,
+            MaaCustomRecognizerCallback,
+            ctypes.c_void_p,
+        ]
+
+        Library.toolkit.MaaToolkitProjectInterfaceRegisterCustomAction.restype = None
+        Library.toolkit.MaaToolkitProjectInterfaceRegisterCustomAction.argtypes = [
+            ctypes.c_char_p,
+            MaaCustomActionCallback,
+            ctypes.c_void_p,
+        ]
+
+        Library.toolkit.MaaToolkitProjectInterfaceRunCli.restype = MaaBool
+        Library.toolkit.MaaToolkitProjectInterfaceRunCli.argtypes = [
+            ctypes.c_char_p,
+            ctypes.c_char_p,
+            MaaBool,
+            MaaNotificationCallback,
+            ctypes.c_void_p,
         ]

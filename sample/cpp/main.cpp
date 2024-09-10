@@ -45,7 +45,7 @@ int main([[maybe_unused]] int argc, char** argv)
     auto ctrl_id = MaaControllerPostConnection(controller_handle);
 
     auto resource_handle = MaaResourceCreate(nullptr, nullptr);
-    std::string resource_dir = "my_resource";
+    std::string resource_dir = R"(E:\Code\MaaFramework\sample\resource)";
     auto res_id = MaaResourcePostPath(resource_handle, resource_dir.c_str());
 
     MaaControllerWait(controller_handle, ctrl_id);
