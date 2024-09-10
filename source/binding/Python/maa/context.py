@@ -84,12 +84,12 @@ class Context:
             )
         )
 
-    def set_next(self, name: str, next_list: List[str]) -> bool:
+    def override_next(self, name: str, next_list: List[str]) -> bool:
         list_buffer = StringListBuffer()
         list_buffer.set(next_list)
 
         return bool(
-            Library.framework.MaaContextSetNext(
+            Library.framework.MaaContextOverrideNext(
                 self._handle, name.encode(), list_buffer._handle
             )
         )
@@ -165,8 +165,8 @@ class Context:
             ctypes.c_char_p,
         ]
 
-        Library.framework.MaaContextSetNext.restype = MaaBool
-        Library.framework.MaaContextSetNext.argtypes = [
+        Library.framework.MaaContextOverrideNext.restype = MaaBool
+        Library.framework.MaaContextOverrideNext.argtypes = [
             MaaContextHandle,
             ctypes.c_char_p,
             MaaStringBufferHandle,

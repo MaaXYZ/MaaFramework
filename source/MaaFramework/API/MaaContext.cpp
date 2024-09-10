@@ -90,7 +90,7 @@ MaaBool MaaContextOverridePipeline(MaaContext* context, const char* pipeline_ove
     return context->override_pipeline(*ov_opt);
 }
 
-MaaBool MaaContextSetNext(MaaContext* context, const char* name, const MaaStringListBuffer* next_list)
+MaaBool MaaContextOverrideNext(MaaContext* context, const char* name, const MaaStringListBuffer* next_list)
 {
     LogFunc << VAR_VOIDP(context) << VAR(name);
 
@@ -106,7 +106,7 @@ MaaBool MaaContextSetNext(MaaContext* context, const char* name, const MaaString
         next.emplace_back(next_list->at(i).get());
     }
 
-    context->set_next(name, next);
+    context->override_next(name, next);
     return true;
 }
 

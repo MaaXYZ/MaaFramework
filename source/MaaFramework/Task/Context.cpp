@@ -107,7 +107,7 @@ bool Context::override_pipeline(const json::value& pipeline_override)
     return true;
 }
 
-void Context::set_next(const std::string& name, const std::vector<std::string>& next)
+void Context::override_next(const std::string& name, const std::vector<std::string>& next)
 {
     LogFunc << VAR(getptr());
 
