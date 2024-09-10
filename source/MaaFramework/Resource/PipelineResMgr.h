@@ -30,13 +30,6 @@ public:
     std::vector<std::string> get_task_list() const;
 
 public:
-    static bool parse_config(
-        const json::value& input,
-        PipelineDataMap& output,
-        std::set<std::string>& existing_keys,
-        const PipelineDataMap& parent_values,
-        const DefaultPipelineMgr& default_mgr);
-
     static bool parse_task(
         const std::string& name,
         const json::value& input,
@@ -119,6 +112,8 @@ private:
     bool load_all_json(const std::filesystem::path& path, const DefaultPipelineMgr& default_mgr);
     bool
         open_and_parse_file(const std::filesystem::path& path, std::set<std::string>& existing_keys, const DefaultPipelineMgr& default_mgr);
+    bool parse_config(const json::value& input, std::set<std::string>& existing_keys, const DefaultPipelineMgr& default_mg);
+
     bool check_all_next_list() const;
     bool check_next_list(const PipelineData::NextList& next_list) const;
 
