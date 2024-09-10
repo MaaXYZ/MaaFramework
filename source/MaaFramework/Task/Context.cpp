@@ -14,6 +14,7 @@ Context::Context(MaaTaskId id, Tasker* tasker, PrivateArg)
     : task_id_(id)
     , tasker_(tasker)
 {
+    LogTrace << VAR(id) << VAR_VOIDP(tasker);
 }
 
 std::shared_ptr<Context> Context::create(MaaTaskId id, Tasker* tasker)
@@ -41,11 +42,12 @@ Context::Context(const Context& other)
     , action_times_map_(other.action_times_map_)
 // don't copy clone_holder_
 {
+    LogTrace << VAR(getptr()) << VAR(other.getptr());
 }
 
 MaaTaskId Context::run_pipeline(const std::string& entry, const json::value& pipeline_override)
 {
-    LogFunc << VAR(getptr());
+    LogFunc << VAR(getptr()) << VAR(entry) << VAR(pipeline_override);
 
     PipelineTask task(entry, tasker_, getptr());
     task.override_pipeline(pipeline_override);
@@ -55,7 +57,7 @@ MaaTaskId Context::run_pipeline(const std::string& entry, const json::value& pip
 
 MaaRecoId Context::run_recognition(const std::string& entry, const json::value& pipeline_override, const cv::Mat& image)
 {
-    LogFunc << VAR(getptr());
+    LogFunc << VAR(getptr()) << VAR(entry) << VAR(pipeline_override);
 
     RecognitionTask task(entry, tasker_, getptr());
     task.override_pipeline(pipeline_override);
@@ -65,7 +67,7 @@ MaaRecoId Context::run_recognition(const std::string& entry, const json::value& 
 MaaNodeId
     Context::run_action(const std::string& entry, const json::value& pipeline_override, const cv::Rect& box, const std::string& reco_detail)
 {
-    LogFunc << VAR(getptr());
+    LogFunc << VAR(getptr()) << VAR(entry) << VAR(pipeline_override) << VAR(box) << VAR(reco_detail);
 
     ActionTask task(entry, tasker_, getptr());
     task.override_pipeline(pipeline_override);
@@ -75,7 +77,7 @@ MaaNodeId
 
 bool Context::override_pipeline(const json::value& pipeline_override)
 {
-    LogFunc << VAR(getptr());
+    LogFunc << VAR(getptr()) << VAR(pipeline_override);
 
     if (!pipeline_override.is_object()) {
         LogError << "json is not object";
@@ -109,7 +111,7 @@ bool Context::override_pipeline(const json::value& pipeline_override)
 
 void Context::override_next(const std::string& name, const std::vector<std::string>& next)
 {
-    LogFunc << VAR(getptr());
+    LogFunc << VAR(getptr()) << VAR(name) << VAR(next);
 
     auto data = get_pipeline_data(name);
     data.next = next;
