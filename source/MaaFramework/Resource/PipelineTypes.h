@@ -129,8 +129,8 @@ struct PipelineData
     std::chrono::milliseconds reco_timeout = std::chrono::milliseconds(20 * 1000);
     std::chrono::milliseconds rate_limit = std::chrono::milliseconds(1000);
 
-    std::chrono::milliseconds pre_delay;
-    std::chrono::milliseconds post_delay;
+    std::chrono::milliseconds pre_delay = std::chrono::milliseconds(200);
+    std::chrono::milliseconds post_delay = std::chrono::milliseconds(200);
 
     WaitFreezesParam pre_wait_freezes;
     WaitFreezesParam post_wait_freezes;
