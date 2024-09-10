@@ -50,7 +50,7 @@ struct TemplateMatcherParam
 
     Target roi_target;
     std::vector<std::string> template_paths;
-    std::vector<double> thresholds;
+    std::vector<double> thresholds = { kDefaultThreshold };
     int method = kDefaultMethod;
     bool green_mask = false;
 
@@ -110,7 +110,7 @@ struct NeuralNetworkDetectorParam
 
     Target roi_target;
     std::vector</*result_index*/ size_t> expected;
-    std::vector<double> thresholds;
+    std::vector<double> thresholds = { kDefaultThreshold };
 
     ResultOrderBy order_by = ResultOrderBy::Horizontal;
     int result_index = 0;
