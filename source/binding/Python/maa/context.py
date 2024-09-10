@@ -4,7 +4,7 @@ from typing import Dict, Optional, Tuple
 
 import numpy
 
-from .buffer import ImageBuffer, RectBuffer
+from .buffer import ImageBuffer, RectBuffer, StringListBuffer
 from .define import *
 from .library import Library
 from .tasker import Tasker
@@ -84,6 +84,16 @@ class Context:
             )
         )
 
+    def set_next(self, name: str, next_list: List[str]) -> bool:
+        list_buffer = StringListBuffer()
+        list_buffer.set(next_list)
+
+        return bool(
+            Library.framework.MaaContextSetNext(
+                self._handle, name.encode(), list_buffer._handle
+            )
+        )
+
     def tasker(self) -> Tasker:
         return self._tasker
 
@@ -153,6 +163,13 @@ class Context:
         Library.framework.MaaContextOverridePipeline.argtypes = [
             MaaContextHandle,
             ctypes.c_char_p,
+        ]
+
+        Library.framework.MaaContextSetNext.restype = MaaBool
+        Library.framework.MaaContextSetNext.argtypes = [
+            MaaContextHandle,
+            ctypes.c_char_p,
+            MaaStringBufferHandle,
         ]
 
         Library.framework.MaaContextGetTaskId.restype = MaaTaskId
