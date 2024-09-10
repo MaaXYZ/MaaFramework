@@ -77,30 +77,44 @@ bool Context::override_pipeline(const json::value& pipeline_override)
 {
     LogFunc << VAR(getptr());
 
+    if (!pipeline_override.is_object()) {
+        LogError << "json is not object";
+        return false;
+    }
+
     if (!tasker_) {
         LogError << "tasker is null";
-        return {};
+        return false;
     }
     auto* resource = tasker_->resource();
     if (!resource) {
         LogError << "resource not binded";
-        return {};
-    }
-
-    MAA_RES_NS::PipelineResMgr::PipelineDataMap new_override;
-    auto& raw_data_map = resource->pipeline_res().get_pipeline_data_map();
-    auto& default_mgr = resource->default_pipeline();
-    std::set<std::string> existing_keys;
-    bool parsed = MAA_RES_NS::PipelineResMgr::parse_config(pipeline_override, new_override, existing_keys, raw_data_map, default_mgr);
-    if (!parsed) {
-        LogError << "Parse pipeline failed";
         return false;
     }
+    auto& default_mgr = resource->default_pipeline();
 
-    new_override.merge(std::move(pipeline_override_));
-    pipeline_override_ = std::move(new_override);
+    for (const auto& [key, value] : pipeline_override.as_object()) {
+        PipelineData result;
+        bool ret = MAA_RES_NS::PipelineResMgr::parse_task(key, value, result, get_pipeline_data(key), default_mgr);
+        if (!ret) {
+            LogError << "parse_task failed" << VAR(key) << VAR(value);
+            return false;
+        }
+
+        pipeline_override_.insert_or_assign(key, std::move(result));
+    }
 
     return true;
+}
+
+void Context::set_next(const std::string& name, const std::vector<std::string>& next)
+{
+    LogFunc << VAR(getptr());
+
+    auto data = get_pipeline_data(name);
+    data.next = next;
+
+    pipeline_override_.insert_or_assign(name, std::move(data));
 }
 
 Context* Context::clone() const
@@ -127,21 +141,27 @@ Tasker* Context::tasker() const
 Context::PipelineData Context::get_pipeline_data(const std::string& task_name)
 {
     auto override_it = pipeline_override_.find(task_name);
-    if (override_it == pipeline_override_.end()) {
-        if (!tasker_) {
-            LogError << "tasker is null";
-            return {};
-        }
-        if (!tasker_->resource()) {
-            LogError << "resource not binded";
-            return {};
-        }
-        auto& raw_data_mgr = tasker_->resource()->pipeline_res();
-
-        return raw_data_mgr.get_pipeline_data(task_name);
+    if (override_it != pipeline_override_.end()) {
+        return override_it->second;
     }
 
-    return override_it->second;
+    if (!tasker_) {
+        LogError << "tasker is null";
+        return {};
+    }
+    auto* resource = tasker_->resource();
+    if (!resource) {
+        LogError << "resource not binded";
+        return {};
+    }
+
+    auto& raw_data_map = resource->pipeline_res().get_pipeline_data_map();
+    auto raw_it = raw_data_map.find(task_name);
+    if (raw_it != raw_data_map.end()) {
+        return raw_it->second;
+    }
+
+    return resource->default_pipeline().get_pipeline();
 }
 
 MAA_TASK_NS_END

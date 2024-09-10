@@ -107,6 +107,7 @@ public:
     virtual MaaNodeId
         run_action(const std::string& entry, const json::value& pipeline_override, const cv::Rect& box, const std::string& reco_detail) = 0;
     virtual bool override_pipeline(const json::value& pipeline_override) = 0;
+    virtual void set_next(const std::string& name, const std::vector<std::string>& next) = 0;
 
     virtual MaaContext* clone() const = 0;
 

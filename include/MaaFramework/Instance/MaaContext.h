@@ -33,6 +33,8 @@ extern "C"
 
     MAA_FRAMEWORK_API MaaBool MaaContextOverridePipeline(MaaContext* context, const char* pipeline_override);
 
+    MAA_FRAMEWORK_API MaaBool MaaContextSetNext(MaaContext* context, const char* name, const MaaStringListBuffer* next_list);
+
     MAA_FRAMEWORK_API MaaTaskId MaaContextGetTaskId(const MaaContext* context);
 
     MAA_FRAMEWORK_API MaaTasker* MaaContextGetTasker(const MaaContext* context);

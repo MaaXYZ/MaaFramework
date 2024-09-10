@@ -41,6 +41,7 @@ public: // from MaaContextAPI
         run_action(const std::string& entry, const json::value& pipeline_override, const cv::Rect& box, const std::string& reco_detail)
             override;
     virtual bool override_pipeline(const json::value& pipeline_override) override;
+    virtual void set_next(const std::string& name, const std::vector<std::string>& next) override;
 
     virtual Context* clone() const override;
 

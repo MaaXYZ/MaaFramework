@@ -39,17 +39,6 @@ void PipelineResMgr::clear()
     paths_.clear();
 }
 
-PipelineData PipelineResMgr::get_pipeline_data(const std::string& task_name)
-{
-    auto pp_iter = pipeline_data_map_.find(task_name);
-    if (pp_iter == pipeline_data_map_.end()) {
-        LogError << "Invalid task name" << VAR(task_name);
-        return {};
-    }
-
-    return pp_iter->second;
-}
-
 bool PipelineResMgr::load_all_json(const std::filesystem::path& path, const DefaultPipelineMgr& default_mgr)
 {
     if (!std::filesystem::exists(path)) {
@@ -170,7 +159,7 @@ bool PipelineResMgr::parse_config(
     const json::value& input,
     PipelineDataMap& output,
     std::set<std::string>& existing_keys,
-    const PipelineDataMap& default_value,
+    const PipelineDataMap& parent_values,
     const DefaultPipelineMgr& default_mgr)
 {
     if (!input.is_object()) {
@@ -199,7 +188,7 @@ bool PipelineResMgr::parse_config(
         }
 
         PipelineData pipeline_data;
-        const auto& default_pipeline_data = default_value.contains(key) ? default_value.at(key) : default_mgr.get_pipeline();
+        const auto& default_pipeline_data = parent_values.contains(key) ? parent_values.at(key) : default_mgr.get_pipeline();
         bool ret = parse_task(key, value, pipeline_data, default_pipeline_data, default_mgr);
         if (!ret) {
             LogError << "parse_task failed" << VAR(key) << VAR(value);
@@ -291,7 +280,7 @@ bool PipelineResMgr::parse_task(
     const std::string& name,
     const json::value& input,
     PipelineData& output,
-    const PipelineData& default_value,
+    const PipelineData& parent_values,
     const DefaultPipelineMgr& default_mgr)
 {
     LogTrace << VAR(name);
@@ -299,92 +288,92 @@ bool PipelineResMgr::parse_task(
     PipelineData data;
     data.name = name;
 
-    if (!get_and_check_value(input, "is_sub", data.is_sub, default_value.is_sub)) {
+    if (!get_and_check_value(input, "is_sub", data.is_sub, parent_values.is_sub)) {
         LogError << "failed to get_and_check_value is_sub" << VAR(input);
         return false;
     }
 
-    if (!get_and_check_value(input, "inverse", data.inverse, default_value.inverse)) {
+    if (!get_and_check_value(input, "inverse", data.inverse, parent_values.inverse)) {
         LogError << "failed to get_and_check_value inverse" << VAR(input);
         return false;
     }
 
-    if (!get_and_check_value(input, "enabled", data.enabled, default_value.enabled)) {
+    if (!get_and_check_value(input, "enabled", data.enabled, parent_values.enabled)) {
         LogError << "failed to get_and_check_value enabled" << VAR(input);
         return false;
     }
 
-    if (!parse_recognition(input, data.rec_type, data.rec_param, default_value.rec_type, default_value.rec_param, default_mgr)) {
+    if (!parse_recognition(input, data.rec_type, data.rec_param, parent_values.rec_type, parent_values.rec_param, default_mgr)) {
         LogError << "failed to parse_recognition" << VAR(input);
         return false;
     }
 
-    if (!parse_action(input, data.action_type, data.action_param, default_value.action_type, default_value.action_param, default_mgr)) {
+    if (!parse_action(input, data.action_type, data.action_param, parent_values.action_type, parent_values.action_param, default_mgr)) {
         LogError << "failed to parse_action" << VAR(input);
         return false;
     }
 
-    if (!get_and_check_value_or_array(input, "next", data.next, default_value.next)) {
+    if (!get_and_check_value_or_array(input, "next", data.next, parent_values.next)) {
         LogError << "failed to get_and_check_value_or_array next" << VAR(input);
         return false;
     }
 
-    if (!get_and_check_value_or_array(input, "interrupt", data.interrupt, default_value.interrupt)) {
+    if (!get_and_check_value_or_array(input, "interrupt", data.interrupt, parent_values.interrupt)) {
         LogError << "failed to get_and_check_value_or_array interrupt" << VAR(input);
         return false;
     }
 
-    if (!get_and_check_value_or_array(input, "on_error", data.on_error, default_value.on_error)) {
+    if (!get_and_check_value_or_array(input, "on_error", data.on_error, parent_values.on_error)) {
         LogError << "failed to get_and_check_value_or_array on_error" << VAR(input);
         return false;
     }
     if (data.on_error.empty()) {
         // for compatibility with v1.x
-        if (!get_and_check_value_or_array(input, "timeout_next", data.on_error, default_value.on_error)) {
+        if (!get_and_check_value_or_array(input, "timeout_next", data.on_error, parent_values.on_error)) {
             LogError << "failed to get_and_check_value_or_array timeout_next" << VAR(input);
             return false;
         }
     }
 
-    auto timeout = default_value.reco_timeout.count();
+    auto timeout = parent_values.reco_timeout.count();
     if (!get_and_check_value(input, "timeout", timeout, timeout)) {
         LogError << "failed to get_and_check_value timeout" << VAR(input);
         return false;
     }
     data.reco_timeout = std::chrono::milliseconds(timeout);
 
-    auto rate_limit = default_value.rate_limit.count();
+    auto rate_limit = parent_values.rate_limit.count();
     if (!get_and_check_value(input, "rate_limit", rate_limit, rate_limit)) {
         LogError << "failed to get_and_check_value rate_limit" << VAR(input);
         return false;
     }
     data.rate_limit = std::chrono::milliseconds(rate_limit);
 
-    auto pre_delay = default_value.pre_delay.count();
+    auto pre_delay = parent_values.pre_delay.count();
     if (!get_and_check_value(input, "pre_delay", pre_delay, pre_delay)) {
         LogError << "failed to get_and_check_value pre_delay" << VAR(input);
         return false;
     }
     data.pre_delay = std::chrono::milliseconds(pre_delay);
 
-    auto post_delay = default_value.post_delay.count();
+    auto post_delay = parent_values.post_delay.count();
     if (!get_and_check_value(input, "post_delay", post_delay, post_delay)) {
         LogError << "failed to get_and_check_value post_delay" << VAR(input);
         return false;
     }
     data.post_delay = std::chrono::milliseconds(post_delay);
 
-    if (!parse_wait_freezes_param(input, "pre_wait_freezes", data.pre_wait_freezes, default_value.pre_wait_freezes)) {
+    if (!parse_wait_freezes_param(input, "pre_wait_freezes", data.pre_wait_freezes, parent_values.pre_wait_freezes)) {
         LogError << "failed to pre_wait_freezes" << VAR(input);
         return false;
     }
 
-    if (!parse_wait_freezes_param(input, "post_wait_freezes", data.post_wait_freezes, default_value.post_wait_freezes)) {
+    if (!parse_wait_freezes_param(input, "post_wait_freezes", data.post_wait_freezes, parent_values.post_wait_freezes)) {
         LogError << "failed to post_wait_freezes" << VAR(input);
         return false;
     }
 
-    if (!get_and_check_value(input, "focus", data.focus, default_value.focus)) {
+    if (!get_and_check_value(input, "focus", data.focus, parent_values.focus)) {
         LogError << "failed to get_and_check_value focus" << VAR(input);
         return false;
     }

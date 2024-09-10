@@ -90,6 +90,26 @@ MaaBool MaaContextOverridePipeline(MaaContext* context, const char* pipeline_ove
     return context->override_pipeline(*ov_opt);
 }
 
+MaaBool MaaContextSetNext(MaaContext* context, const char* name, const MaaStringListBuffer* next_list)
+{
+    LogFunc << VAR_VOIDP(context) << VAR(name);
+
+    if (!context || !next_list) {
+        LogError << "handle is null";
+        return false;
+    }
+
+    std::vector<std::string> next;
+
+    size_t size = next_list->size();
+    for (size_t i = 0; i < size; ++i) {
+        next.emplace_back(next_list->at(i).get());
+    }
+
+    context->set_next(name, next);
+    return true;
+}
+
 MaaTaskId MaaContextGetTaskId(const MaaContext* context)
 {
     if (!context) {

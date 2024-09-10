@@ -23,8 +23,6 @@ public:
     bool load(const std::filesystem::path& path, bool is_base, const DefaultPipelineMgr& default_mgr);
     void clear();
 
-    PipelineData get_pipeline_data(const std::string& task_name);
-
     const std::vector<std::filesystem::path>& get_paths() const { return paths_; }
 
     const PipelineDataMap& get_pipeline_data_map() const { return pipeline_data_map_; }
@@ -36,14 +34,14 @@ public:
         const json::value& input,
         PipelineDataMap& output,
         std::set<std::string>& existing_keys,
-        const PipelineDataMap& default_value,
+        const PipelineDataMap& parent_values,
         const DefaultPipelineMgr& default_mgr);
 
     static bool parse_task(
         const std::string& name,
         const json::value& input,
         PipelineData& output,
-        const PipelineData& default_value,
+        const PipelineData& parent_values,
         const DefaultPipelineMgr& default_mgr);
 
     static bool parse_recognition(
