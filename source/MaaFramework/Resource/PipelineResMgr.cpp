@@ -870,10 +870,11 @@ bool PipelineResMgr::parse_nn_detector_param(
         LogError << "failed to get_and_check_value_or_array threshold" << VAR(input);
         return false;
     }
+
     if (output.thresholds.empty()) {
-        output.thresholds = std::vector(output.expected.size(), MAA_VISION_NS::NeuralNetworkDetectorParam::kDefaultThreshold);
+        output.thresholds = default_value.thresholds;
     }
-    else if (output.thresholds.size() != output.expected.size()) {
+    if (!output.expected.empty() && output.thresholds.size() != output.expected.size()) {
         if (output.thresholds.size() == 1) {
             double threshold = output.thresholds.front();
             output.thresholds.resize(output.expected.size(), threshold);
