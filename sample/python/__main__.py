@@ -76,7 +76,7 @@ class MyRecognizer(CustomRecognizer):
         click_job = context.tasker().controller().post_click(10, 20)
         click_job.wait()
 
-        context.override_next(argv.current_task, ["TaskA", "TaskB"])
+        context.override_next(argv.current_task_name, ["TaskA", "TaskB"])
 
         return CustomRecognizer.AnalyzeResult(
             box=(0, 0, 100, 100), detail="Hello World!"

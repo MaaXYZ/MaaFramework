@@ -15,7 +15,7 @@ class CustomAction(ABC):
     @dataclass
     class RunArg:
         task_detail: TaskDetail
-        current_task: str
+        current_task_name: str
         custom_action_name: str
         custom_action_param: str
         reco_detail: RecognitionDetail
@@ -69,7 +69,7 @@ class CustomAction(ABC):
             context,
             CustomAction.RunArg(
                 task_detail=task_detail,
-                current_task=c_current_task.decode(),
+                current_task_name=c_current_task.decode(),
                 custom_action_name=c_custom_action_name.decode(),
                 custom_action_param=c_custom_action_param.decode(),
                 reco_detail=reco_detail,

@@ -28,7 +28,7 @@ MaaController* create_win32_controller();
 MaaBool my_reco(
     MaaContext* context,
     MaaTaskId task_id,
-    const char* current_task,
+    const char* current_task_name,
     const char* custom_recognition_name,
     const char* custom_recognition_param,
     const MaaImageBuffer* image,
@@ -159,7 +159,7 @@ MaaController* create_win32_controller()
 MaaBool my_reco(
     MaaContext* context,
     MaaTaskId task_id,
-    const char* current_task,
+    const char* current_task_name,
     const char* custom_recognition_name,
     const char* custom_recognition_param,
     const MaaImageBuffer* image,

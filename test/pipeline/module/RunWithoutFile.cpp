@@ -18,7 +18,7 @@
 MaaBool my_action(
     MaaContext* context,
     MaaTaskId task_id,
-    const char* current_task,
+    const char* current_task_name,
     const char* custom_action_name,
     const char* custom_action_param,
     MaaRecoId reco_id,
@@ -66,7 +66,7 @@ bool run_without_file(const std::filesystem::path& testset_dir)
 MaaBool my_action(
     MaaContext* context,
     MaaTaskId task_id,
-    const char* current_task,
+    const char* current_task_name,
     const char* custom_action_name,
     const char* custom_action_param,
     MaaRecoId reco_id,
