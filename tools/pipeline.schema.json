@@ -56,7 +56,7 @@
                     "$ref": "#/definitions/tasklist"
                 },
                 "is_sub": {
-                    "description": "已废弃字段！\n是否是子任务。可选，默认否。\n如果是子任务，执行完本任务（及后续 next 等）后，会返回来再次识别本任务 **所在的** next 列表。",
+                    "description": "已废弃字段！\n是否是子任务。可选，默认否。\n若是，该任务在任意列表中行为均与 interrupt 中一致",
                     "type": "boolean",
                     "default": false
                 },
@@ -103,7 +103,17 @@
                 },
                 "roi": {
                     "description": "识别区域坐标。可选，默认 [0, 0, 0, 0]，即全屏。",
-                    "$ref": "#/definitions/rectlist",
+                    "$ref": "#/definitions/roi_type",
+                    "default": [
+                        0,
+                        0,
+                        0,
+                        0
+                    ]
+                },
+                "roi_offset": {
+                    "description": "在 roi_offset 的基础上额外移动再作为目标，四个值分别相加。可选，默认 [0, 0, 0, 0]。",
+                    "$ref": "#/definitions/rect",
                     "default": [
                         0,
                         0,
@@ -201,8 +211,21 @@
                     "description": "识别器参数，任意类型，会在执行时透传。可选，默认空 json，即 {}",
                     "default": {}
                 },
-                "target": {},
-                "target_offset": {},
+                "target": {
+                    "description": "点击位置。可选，默认 true。",
+                    "$ref": "#/definitions/target_type",
+                    "default": true
+                },
+                "target_offset": {
+                    "description": "在 target 的基础上额外移动再作为目标，四个值分别相加。可选，默认 [0, 0, 0, 0]。",
+                    "$ref": "#/definitions/rect",
+                    "default": [
+                        0,
+                        0,
+                        0,
+                        0
+                    ]
+                },
                 "begin": {
                     "description": "滑动起点。可选，默认 true。",
                     "$ref": "#/definitions/target_type",
@@ -717,30 +740,6 @@
             "minItems": 4,
             "maxItems": 4
         },
-        "rectlist": {
-            "anyOf": [
-                {
-                    "type": "array",
-                    "items": {
-                        "type": "number"
-                    },
-                    "minItems": 4,
-                    "maxItems": 4
-                },
-                {
-                    "type": "array",
-                    "items": {
-                        "type": "array",
-                        "items": {
-                            "type": "number"
-                        },
-                        "minItems": 4,
-                        "maxItems": 4
-                    },
-                    "minItems": 1
-                }
-            ]
-        },
         "tasklist": {
             "anyOf": [
                 {
@@ -829,6 +828,16 @@
                         "maximum": 127
                     },
                     "minItems": 1
+                }
+            ]
+        },
+        "roi_type": {
+            "anyOf": [
+                {
+                    "type": "string"
+                },
+                {
+                    "$ref": "#/definitions/rect"
                 }
             ]
         },
