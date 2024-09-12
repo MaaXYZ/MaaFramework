@@ -39,13 +39,14 @@ private:
     bool load_mumu_library();
     bool connect_mumu();
     bool init_screencap();
+    int get_default_display_id();
     void disconnect_mumu();
 
 private:
     std::filesystem::path mumu_path_;
     std::filesystem::path lib_path_;
     int mumu_index_ = 0;
-    unsigned int mumu_display_id_ = 0;
+    int mumu_display_id_ = -1;
     int mumu_handle_ = 0;
 
     int display_width_ = 0;
@@ -61,6 +62,7 @@ private:
     inline static const std::string kInputEventTouchUpFuncName = "nemu_input_event_touch_up";
     inline static const std::string kInputEventKeyDownFuncName = "nemu_input_event_key_down";
     inline static const std::string kInputEventKeyUpFuncName = "nemu_input_event_key_up";
+    inline static const std::string kGetDisplayIdFuncName = "nemu_get_display_id";
 
 private:
     boost::function<decltype(nemu_connect)> connect_func_;
@@ -71,6 +73,7 @@ private:
     boost::function<decltype(nemu_input_event_touch_up)> input_event_touch_up_func_;
     boost::function<decltype(nemu_input_event_key_down)> input_event_key_down_func_;
     boost::function<decltype(nemu_input_event_key_up)> input_event_key_up_func_;
+    boost::function<decltype(nemu_get_display_id)> get_display_id_func_;
 };
 
 MAA_CTRL_UNIT_NS_END
