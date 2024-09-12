@@ -21,8 +21,8 @@ class MyAction(CustomAction):
 
         context.override_next(argv.current_task_name, ["TaskA", "TaskB"])
 
-        image = context.tasker().controller().cached_image()
-        context.tasker().controller().post_click(100, 100).wait()
+        image = context.tasker.controller.cached_image
+        context.tasker.controller.post_click(100, 100).wait()
 
         reco_detail = context.run_recognition(
             "Cat", image, {"Cat": {"recognition": "OCR", "expected": "喵喵喵"}}

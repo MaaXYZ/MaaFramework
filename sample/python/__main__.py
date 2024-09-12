@@ -33,8 +33,7 @@ def main():
         input_methods=device.input_methods,
         config=device.config,
     )
-    ctrl_job = controller.post_connection()
-    ctrl_job.wait()
+    controller.post_connection().wait()
 
     tasker = Tasker()
     tasker.bind(resource, controller)
@@ -73,7 +72,7 @@ class MyRecognizer(CustomRecognizer):
         new_context.override_pipeline({"MyCustomOCR": {"roi": [100, 200, 300, 400]}})
         reco_detail = new_context.run_recognition("MyCustomOCR", argv.image)
 
-        click_job = context.tasker().controller().post_click(10, 20)
+        click_job = context.tasker.controller.post_click(10, 20)
         click_job.wait()
 
         context.override_next(argv.current_task_name, ["TaskA", "TaskB"])

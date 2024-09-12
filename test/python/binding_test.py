@@ -66,7 +66,7 @@ class MyAction(CustomAction):
         print(
             f"on MyAction.run, context: {context}, task_detail: {task_detail}, action_name: {action_name}, custom_action_param: {custom_action_param}, box: {box}, reco_detail: {reco_detail}"
         )
-        controller = context.tasker().controller()
+        controller = context.tasker.controller
         controller.post_screencap().wait()
         new_image = controller.cached_image()
         print(f"new_image: {new_image.shape}")

@@ -56,6 +56,7 @@ class Resource:
         )
         return Job(resid, self._status, self._wait)
 
+    @property
     def loaded(self) -> bool:
         return bool(Library.framework.MaaResourceLoaded(self._handle))
 

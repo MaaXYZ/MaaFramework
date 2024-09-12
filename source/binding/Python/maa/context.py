@@ -8,6 +8,7 @@ from .buffer import ImageBuffer, RectBuffer, StringListBuffer
 from .define import *
 from .library import Library
 from .tasker import Tasker
+from .job import JobWithRet
 
 
 class Context:
@@ -94,10 +95,11 @@ class Context:
             )
         )
 
+    @property
     def tasker(self) -> Tasker:
         return self._tasker
 
-    def get_task_job(self) -> "TaskJob":
+    def get_task_job(self) -> JobWithRet:
         task_id = Library.framework.MaaContextGetTaskId(self._handle)
         if not task_id:
             return None

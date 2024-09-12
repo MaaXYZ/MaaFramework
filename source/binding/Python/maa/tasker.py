@@ -7,19 +7,10 @@ from typing import Any, Dict, Optional, Union
 from .define import *
 from .library import Library
 from .buffer import ImageListBuffer, RectBuffer, StringBuffer, ImageBuffer
-from .job import Job
+from .job import Job, JobWithRet
 from .callback_agent import Callback, CallbackAgent
 from .resource import Resource
 from .controller import Controller
-
-
-class TaskJob(Job):
-    def __init__(self, maaid: MaaId, status_func, wait_func, get_detail_func):
-        super().__init__(maaid, status_func, wait_func)
-        self._get_detail_func = get_detail_func
-
-    def get(self) -> Optional[TaskDetail]:
-        return self._get_detail_func(self._maaid)
 
 
 class Tasker:
@@ -70,6 +61,7 @@ class Tasker:
             Library.framework.MaaTaskerBindController(self._handle, controller._handle)
         )
 
+    @property
     def resource(self) -> Resource:
         resource_handle = Library.framework.MaaTaskerGetResource(self._handle)
         if not resource_handle:
@@ -77,6 +69,7 @@ class Tasker:
 
         return Resource(handle=resource_handle)
 
+    @property
     def controller(self) -> Controller:
         controller_handle = Library.framework.MaaTaskerGetController(self._handle)
         if not controller_handle:
@@ -88,27 +81,28 @@ class Tasker:
     def inited(self) -> bool:
         return bool(Library.framework.MaaTaskerInited(self._handle))
 
-    def post_pipeline(self, entry: str, pipeline_override: Dict = {}) -> TaskJob:
+    def post_pipeline(self, entry: str, pipeline_override: Dict = {}) -> JobWithRet:
         taskid = Library.framework.MaaTaskerPostPipeline(
             self._handle,
             *Tasker._gen_post_param(entry, pipeline_override),
         )
         return self._gen_task_job(taskid)
 
-    def post_recognition(self, entry: str, pipeline_override: Dict = {}) -> TaskJob:
+    def post_recognition(self, entry: str, pipeline_override: Dict = {}) -> JobWithRet:
         taskid = Library.framework.MaaTaskerPostRecognition(
             self._handle,
             *Tasker._gen_post_param(entry, pipeline_override),
         )
         return self._gen_task_job(taskid)
 
-    def post_action(self, entry: str, pipeline_override: Dict = {}) -> TaskJob:
+    def post_action(self, entry: str, pipeline_override: Dict = {}) -> JobWithRet:
         taskid = Library.framework.MaaTaskerPostAction(
             self._handle,
             *Tasker._gen_post_param(entry, pipeline_override),
         )
         return self._gen_task_job(taskid)
 
+    @property
     def running(self) -> bool:
         return bool(Library.framework.MaaTaskerRunning(self._handle))
 
@@ -207,8 +201,8 @@ class Tasker:
             json.dumps(pipeline_override, ensure_ascii=False).encode("utf-8"),
         )
 
-    def _gen_task_job(self, taskid: MaaTaskId) -> TaskJob:
-        return TaskJob(
+    def _gen_task_job(self, taskid: MaaTaskId) -> JobWithRet:
+        return JobWithRet(
             taskid,
             self._task_status,
             self._task_wait,

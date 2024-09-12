@@ -26,7 +26,7 @@ class Status:
         return self._status == MaaStatusEnum.running
 
 
-class Job(abc.ABC):
+class Job:
     _maaid: MaaId
 
     def __init__(self, maaid: MaaId, status_func, wait_func):
@@ -58,3 +58,12 @@ class Job(abc.ABC):
 
     def running(self) -> bool:
         return self.status().running()
+
+
+class JobWithRet(Job):
+    def __init__(self, maaid: MaaId, status_func, wait_func, get_func):
+        super().__init__(maaid, status_func, wait_func)
+        self._get_func = get_func
+
+    def get(self):
+        return self._get_func(self._maaid)

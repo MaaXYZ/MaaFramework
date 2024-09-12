@@ -9,7 +9,7 @@ from .buffer import ImageBuffer, StringBuffer
 from .callback_agent import Callback, CallbackAgent
 from .custom_controller import CustomControllerAgent
 from .define import *
-from .job import Job
+from .job import Job, JobWithRet
 from .library import Library
 
 __all__ = [
@@ -106,8 +106,14 @@ class Controller:
 
     def post_screencap(self) -> Job:
         ctrl_id = Library.framework.MaaControllerPostScreencap(self._handle)
-        return self._gen_ctrl_job(ctrl_id)
+        return JobWithRet(
+            ctrl_id,
+            self._status,
+            self._wait,
+            self.cached_image,
+        )
 
+    @property
     def cached_image(self) -> Optional[numpy.ndarray]:
         image_buffer = ImageBuffer()
         if not Library.framework.MaaControllerCachedImage(
