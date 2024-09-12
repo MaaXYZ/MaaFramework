@@ -754,6 +754,11 @@ bool PipelineResMgr::parse_custom_recognition_param(
         return false;
     }
 
+    if (!parse_roi_target(input, output.roi_target, default_value.roi_target)) {
+        LogError << "failed to parse_roi_target" << VAR(input);
+        return false;
+    }
+
     output.custom_param = input.get("custom_recognition_param", input.get("custom_recognizer_param", json::object()));
 
     return true;
@@ -1251,6 +1256,11 @@ bool PipelineResMgr::parse_custom_action_param(
 {
     if (!get_and_check_value(input, "custom_action", output.name, default_value.name)) {
         LogError << "failed to get_and_check_value custom_action" << VAR(input);
+        return false;
+    }
+
+    if (!parse_action_target(input, "target", output.target, default_value.target)) {
+        LogError << "failed to parse_action_target" << VAR(input);
         return false;
     }
 

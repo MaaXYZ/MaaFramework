@@ -234,6 +234,7 @@ class Tasker:
         self, reco_id: MaaRecoId
     ) -> Optional[RecognitionDetail]:
         name = StringBuffer()
+        algorithm = StringBuffer()
         hit = MaaBool()
         box = RectBuffer()
         detail_json = StringBuffer()
@@ -244,6 +245,7 @@ class Tasker:
                 self._handle,
                 reco_id,
                 name._handle,
+                algorithm._handle,
                 ctypes.pointer(hit),
                 box._handle,
                 detail_json._handle,
@@ -257,6 +259,7 @@ class Tasker:
         return RecognitionDetail(
             reco_id=reco_id,
             name=name.get(),
+            algorithm=algorithm.get(),
             box=bool(hit) and box.get() or None,
             detail=json.loads(detail_json.get()),
             raw=raw.get(),
@@ -403,6 +406,7 @@ class Tasker:
         Library.framework.MaaTaskerGetRecognitionDetail.argtypes = [
             MaaTaskerHandle,
             MaaRecoId,
+            MaaStringBufferHandle,
             MaaStringBufferHandle,
             ctypes.POINTER(MaaBool),
             MaaRectHandle,

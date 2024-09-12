@@ -23,7 +23,7 @@ public:
 public:
     Actuator(Tasker* tasker, Context& context);
 
-    bool run(const cv::Rect& reco_hit, const json::value& reco_detail, const PipelineData& pipeline_data);
+    bool run(const cv::Rect& reco_hit, MaaRecoId reco_id, const PipelineData& pipeline_data);
 
 private:
     bool click(const MAA_RES_NS::Action::ClickParam& param, const cv::Rect& box);
@@ -33,7 +33,7 @@ private:
 
     bool start_app(const MAA_RES_NS::Action::AppParam& param);
     bool stop_app(const MAA_RES_NS::Action::AppParam& param);
-    bool custom_action(const MAA_RES_NS::Action::CustomParam& param, const cv::Rect& box, const json::value& reco_detail);
+    bool custom_action(const MAA_RES_NS::Action::CustomParam& param, const cv::Rect& box, MaaRecoId reco_id, const std::string& name);
 
     void wait_freezes(const MAA_RES_NS::WaitFreezesParam& param, const cv::Rect& box);
 

@@ -15,15 +15,26 @@ class CustomRecognizer(ABC):
     def __init__(self):
         self._handle = self._c_analyze_agent
 
+    @dataclass
+    class AnalyzeArg:
+        task_detail: TaskDetail
+        current_task: str
+        custom_recognition_name: str
+        custom_recognition_param: str
+        image: numpy.ndarray
+        roi: Rect
+
+    @dataclass
+    class AnalyzeResult:
+        box: Optional[RectType]
+        detail: str
+
     @abstractmethod
     def analyze(
         self,
         context: Context,
-        task_detail: TaskDetail,
-        recognizer_name: str,
-        custom_recognition_param: str,
-        image: numpy.ndarray,
-    ) -> Tuple[Optional[RectType], str]:
+        argv: AnalyzeArg,
+    ) -> AnalyzeResult:
         raise NotImplementedError
 
     @property
@@ -38,15 +49,17 @@ class CustomRecognizer(ABC):
     def _c_analyze_agent(
         c_context: MaaContextHandle,
         c_task_id: MaaTaskId,
-        c_reco_name: ctypes.c_char_p,
-        c_custom_param: ctypes.c_char_p,
+        c_task_name: ctypes.c_char_p,
+        c_custom_reco_name: ctypes.c_char_p,
+        c_custom_reco_param: ctypes.c_char_p,
         c_image: MaaImageBufferHandle,
+        c_roi: MaaRectHandle,
         c_transparent_arg: ctypes.c_void_p,
         c_out_box: MaaRectHandle,
         c_out_detail: MaaStringBufferHandle,
     ) -> MaaBool:
         if not c_transparent_arg:
-            return
+            return MaaBool(False)
 
         self: CustomRecognizer = ctypes.cast(c_transparent_arg, ctypes.py_object).value
 
@@ -55,17 +68,21 @@ class CustomRecognizer(ABC):
 
         image = ImageBuffer(c_image).get()
 
-        box, detail = self.analyze(
+        result: CustomRecognizer.AnalyzeResult = self.analyze(
             context,
-            task_detail,
-            c_reco_name.decode("utf-8"),
-            c_custom_param.decode("utf-8"),
-            image,
+            CustomRecognizer.AnalyzeArg(
+                task_detail=task_detail,
+                current_task=c_task_name.decode(),
+                custom_recognition_name=c_custom_reco_name.decode(),
+                custom_recognition_param=c_custom_reco_param.decode(),
+                image=image,
+                roi=RectBuffer(c_roi).get(),
+            ),
         )
 
-        if box:
-            RectBuffer(c_out_box).set(box)
+        if result.box:
+            RectBuffer(c_out_box).set(result.box)
 
-        StringBuffer(c_out_detail).set(detail)
+        StringBuffer(c_out_detail).set(result.detail)
 
-        return box is not None
+        return MaaBool(result.box is not None)

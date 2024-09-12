@@ -13,6 +13,7 @@ struct RecoResult
 {
     MaaRecoId reco_id = 0;
     std::string name;
+    std::string algorithm;
     std::optional<cv::Rect> box = std::nullopt;
     json::value detail;
     cv::Mat raw;

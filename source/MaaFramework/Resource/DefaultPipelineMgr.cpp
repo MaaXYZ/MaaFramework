@@ -61,6 +61,8 @@ bool DefaultPipelineMgr::parse_recognition(const json::value& input)
         { "templatematch", Type::TemplateMatch },
         { "FeatureMatch", Type::FeatureMatch },
         { "featurematch", Type::FeatureMatch },
+        { "ColorMatch", Type::ColorMatch },
+        { "colormatch", Type::ColorMatch },
         { "OCR", Type::OCR },
         { "ocr", Type::OCR },
         { "NeuralNetworkClassify", Type::NeuralNetworkClassify },
@@ -71,8 +73,6 @@ bool DefaultPipelineMgr::parse_recognition(const json::value& input)
         { "neuralnetworkdetect", Type::NeuralNetworkDetect },
         { "NNDetect", Type::NeuralNetworkDetect },
         { "nnDetect", Type::NeuralNetworkDetect },
-        { "ColorMatch", Type::ColorMatch },
-        { "colormatch", Type::ColorMatch },
         { "Custom", Type::Custom },
         { "custom", Type::Custom },
     };

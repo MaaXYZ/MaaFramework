@@ -24,21 +24,20 @@ class CustomRecognizer
 {
 public:
     CustomRecognizer(
-        std::string name,
+        const cv::Mat& image,
+        const cv::Rect& roi,
+        const MAA_VISION_NS::CustomRecognizerParam& param,
         MAA_RES_NS::CustomRecognizerSession session,
         Context& context,
-        const MAA_VISION_NS::CustomRecognizerParam& param,
-        const cv::Mat& image);
+        std::string name);
 
 private:
     void analyze();
 
 private:
-    std::string name_;
-    MAA_RES_NS::CustomRecognizerSession session_;
-
-    Context& context_;
     const MAA_VISION_NS::CustomRecognizerParam& param_;
+    MAA_RES_NS::CustomRecognizerSession session_;
+    Context& context_;
 };
 
 MAA_TASK_NS_END

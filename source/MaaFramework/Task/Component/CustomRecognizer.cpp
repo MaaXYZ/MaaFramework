@@ -10,16 +10,16 @@
 MAA_TASK_NS_BEGIN
 
 CustomRecognizer::CustomRecognizer(
-    std::string name,
+    const cv::Mat& image,
+    const cv::Rect& roi,
+    const MAA_VISION_NS::CustomRecognizerParam& param,
     MAA_RES_NS::CustomRecognizerSession session,
     Context& context,
-    const MAA_VISION_NS::CustomRecognizerParam& param,
-    const cv::Mat& image)
-    : VisionBase(image, cv::Rect {}, name)
-    , name_(name)
+    std::string name)
+    : VisionBase(image, roi, name)
+    , param_(std::move(param))
     , session_(std::move(session))
     , context_(context)
-    , param_(std::move(param))
 {
     analyze();
 }
@@ -30,7 +30,7 @@ void CustomRecognizer::analyze()
             << VAR(param_.custom_param);
 
     if (!session_.recoginzer) {
-        LogError << "recognizer is null" << VAR(name_);
+        LogError << "recognizer is null" << VAR(name_) << VAR(param_.name);
         return;
     }
 
@@ -38,6 +38,7 @@ void CustomRecognizer::analyze()
 
     /*in*/
     ImageBuffer image_buffer(image_);
+    MaaRect rect_buf { .x = roi_.x, .y = roi_.y, .width = roi_.width, .height = roi_.height };
     std::string custom_param_str = param_.custom_param.to_string();
 
     /*out*/
@@ -48,8 +49,10 @@ void CustomRecognizer::analyze()
         &context_,
         context_.task_id(),
         name_.c_str(),
+        param_.name.c_str(),
         custom_param_str.c_str(),
         &image_buffer,
+        &rect_buf,
         session_.trans_arg,
         &cbox,
         &detail_buffer);
@@ -67,7 +70,8 @@ void CustomRecognizer::analyze()
     }
 
     auto cost = duration_since(start_time);
-    LogTrace << name_ << VAR(uid_) << VAR(all_results_) << VAR(filtered_results_) << VAR(best_result_) << VAR(cost);
+    LogTrace << VAR(name_) << VAR(param_.name) << VAR(uid_) << VAR(all_results_) << VAR(filtered_results_) << VAR(best_result_)
+             << VAR(cost);
 }
 
 MAA_TASK_NS_END

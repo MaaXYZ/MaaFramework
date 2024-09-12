@@ -215,9 +215,11 @@ typedef void (*MaaNotificationCallback)(const char* message, const char* details
 typedef MaaBool (*MaaCustomRecognizerCallback)(
     MaaContext* context,
     MaaTaskId task_id,
-    const char* recognizer_name,
+    const char* current_task,
+    const char* custom_recognition_name,
     const char* custom_recognition_param,
     const MaaImageBuffer* image,
+    const MaaRect* roi,
     void* trans_arg,
     /* out */ MaaRect* out_box,
     /* out */ MaaStringBuffer* out_detail);
@@ -225,8 +227,9 @@ typedef MaaBool (*MaaCustomRecognizerCallback)(
 typedef MaaBool (*MaaCustomActionCallback)(
     MaaContext* context,
     MaaTaskId task_id,
-    const char* action_name,
+    const char* current_task,
+    const char* custom_action_name,
     const char* custom_action_param,
+    MaaRecoId reco_id,
     const MaaRect* box,
-    const char* reco_detail,
     void* trans_arg);

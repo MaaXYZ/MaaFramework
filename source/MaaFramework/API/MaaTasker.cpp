@@ -210,6 +210,7 @@ MaaBool MaaTaskerGetRecognitionDetail(
     const MaaTasker* tasker,
     MaaRecoId reco_id,
     MaaStringBuffer* name,
+    MaaStringBuffer* algorithm,
     MaaBool* hit,
     MaaRect* box,
     MaaStringBuffer* detail_json,
@@ -232,6 +233,10 @@ MaaBool MaaTaskerGetRecognitionDetail(
     CheckNullAndWarn(name)
     {
         name->set(result.name);
+    }
+    CheckNullAndWarn(algorithm)
+    {
+        algorithm->set(result.algorithm);
     }
     CheckNullAndWarn(hit)
     {

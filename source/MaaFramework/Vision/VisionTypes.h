@@ -81,6 +81,7 @@ struct CustomRecognizerParam
 {
     std::string name;
     json::value custom_param;
+    Target roi_target;
 };
 
 struct NeuralNetworkClassifierParam

@@ -65,6 +65,7 @@ extern "C"
         const MaaTasker* tasker,
         MaaRecoId reco_id,
         /* out */ MaaStringBuffer* name,
+        /* out */ MaaStringBuffer* algorithm,
         /* out */ MaaBool* hit,
         /* out */ MaaRect* box,
         /* out */ MaaStringBuffer* detail_json,

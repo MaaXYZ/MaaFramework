@@ -12,15 +12,13 @@ MAA_TASK_NS_BEGIN
 class CustomAction
 {
 public:
-    CustomAction(std::string name, MAA_RES_NS::CustomActionSession session);
-    ~CustomAction() = default;
-
-public:
-    bool run(Context& context, const MAA_RES_NS::Action::CustomParam& param, const cv::Rect& box, const json::value& reco_detail);
-
-private:
-    std::string name_;
-    MAA_RES_NS::CustomActionSession session_;
+    static bool
+        run(Context& context,
+            std::string task_name,
+            MAA_RES_NS::CustomActionSession session,
+            const MAA_RES_NS::Action::CustomParam& param,
+            MaaRecoId reco_id,
+            const cv::Rect& rect);
 };
 
 MAA_TASK_NS_END
