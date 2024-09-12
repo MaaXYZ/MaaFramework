@@ -107,7 +107,7 @@ json::value gen_detail(const std::vector<Res>& all, const std::vector<Res>& filt
 RecoResult Recognizer::direct_hit(const std::string& name)
 {
     LogTrace << name;
-    return RecoResult { .name = name, .box = cv::Rect {} };
+    return RecoResult { .name = name, .algorithm = "DirectHit", .box = cv::Rect {} };
 }
 
 RecoResult Recognizer::template_match(const MAA_VISION_NS::TemplateMatcherParam& param, const std::string& name)
@@ -140,6 +140,7 @@ RecoResult Recognizer::template_match(const MAA_VISION_NS::TemplateMatcherParam&
 
     return RecoResult { .reco_id = analyzer.uid(),
                         .name = name,
+                        .algorithm = "TemplateMatch",
                         .box = std::move(box),
                         .detail = gen_detail(analyzer.all_results(), analyzer.filtered_results(), analyzer.best_result()),
                         .draws = std::move(analyzer).draws() };
@@ -175,6 +176,7 @@ RecoResult Recognizer::feature_match(const MAA_VISION_NS::FeatureMatcherParam& p
 
     return RecoResult { .reco_id = analyzer.uid(),
                         .name = name,
+                        .algorithm = "FeatureMatch",
                         .box = std::move(box),
                         .detail = gen_detail(analyzer.all_results(), analyzer.filtered_results(), analyzer.best_result()),
                         .draws = std::move(analyzer).draws() };
@@ -200,6 +202,7 @@ RecoResult Recognizer::color_match(const MAA_VISION_NS::ColorMatcherParam& param
 
     return RecoResult { .reco_id = analyzer.uid(),
                         .name = name,
+                        .algorithm = "ColorMatch",
                         .box = std::move(box),
                         .detail = gen_detail(analyzer.all_results(), analyzer.filtered_results(), analyzer.best_result()),
                         .draws = std::move(analyzer).draws() };
@@ -229,6 +232,7 @@ RecoResult Recognizer::ocr(const MAA_VISION_NS::OCRerParam& param, const std::st
 
     return RecoResult { .reco_id = analyzer.uid(),
                         .name = name,
+                        .algorithm = "OCR",
                         .box = std::move(box),
                         .detail = gen_detail(analyzer.all_results(), analyzer.filtered_results(), analyzer.best_result()),
                         .draws = std::move(analyzer).draws() };
@@ -256,6 +260,7 @@ RecoResult Recognizer::nn_classify(const MAA_VISION_NS::NeuralNetworkClassifierP
 
     return RecoResult { .reco_id = analyzer.uid(),
                         .name = name,
+                        .algorithm = "NeuralNetworkClassify",
                         .box = std::move(box),
                         .detail = gen_detail(analyzer.all_results(), analyzer.filtered_results(), analyzer.best_result()),
                         .draws = std::move(analyzer).draws() };
@@ -283,6 +288,7 @@ RecoResult Recognizer::nn_detect(const MAA_VISION_NS::NeuralNetworkDetectorParam
 
     return RecoResult { .reco_id = analyzer.uid(),
                         .name = name,
+                        .algorithm = "NeuralNetworkDetect",
                         .box = std::move(box),
                         .detail = gen_detail(analyzer.all_results(), analyzer.filtered_results(), analyzer.best_result()),
                         .draws = std::move(analyzer).draws() };
@@ -301,9 +307,10 @@ RecoResult Recognizer::custom_recognize(const MAA_VISION_NS::CustomRecognizerPar
         LogError << "resource is null";
         return {};
     }
+    cv::Rect roi = get_roi(param.roi_target);
 
     auto session = tasker_->resource()->custom_recognizer(param.name);
-    CustomRecognizer analyzer(param.name, session, context_, param, image_);
+    CustomRecognizer analyzer(image_, roi, param, session, context_, name);
 
     std::optional<cv::Rect> box = std::nullopt;
     if (analyzer.best_result()) {
@@ -312,6 +319,7 @@ RecoResult Recognizer::custom_recognize(const MAA_VISION_NS::CustomRecognizerPar
 
     return RecoResult { .reco_id = analyzer.uid(),
                         .name = name,
+                        .algorithm = "Custom",
                         .box = std::move(box),
                         .detail = gen_detail(analyzer.all_results(), analyzer.filtered_results(), analyzer.best_result()),
                         .draws = std::move(analyzer).draws() };

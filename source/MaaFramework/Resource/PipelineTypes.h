@@ -92,6 +92,7 @@ struct CustomParam
 {
     std::string name;
     json::value custom_param;
+    Target target;
 };
 
 using Param = std::variant<std::monostate, ClickParam, SwipeParam, KeyParam, TextParam, AppParam, CustomParam>;

@@ -29,14 +29,11 @@ class MyRecognizer(CustomRecognizer):
 
     def analyze(
         self,
-        context,
-        task_detail,
-        action_name,
-        custom_action_param,
-        image,
-    ) -> Tuple[Optional[RectType], str]:
+        context: Context,
+        argv: CustomRecognizer.AnalyzeArg,
+    ) -> CustomRecognizer.AnalyzeResult:
         print(
-            f"on MyRecognizer.analyze, context: {context}, image: {image.shape}, task_detail: {task_detail}, action_name: {action_name}, custom_action_param: {custom_action_param}"
+            f"on MyRecognizer.analyze, context: {context}, image: {argv.image.shape}, task_detail: {argv.task_detail}, action_name: {action_name}, custom_action_param: {custom_action_param}"
         )
         entry = "ColorMatch"
         ppover = {
@@ -49,9 +46,10 @@ class MyRecognizer(CustomRecognizer):
         }
         context.run_pipeline(entry, ppover)
         context.run_action(entry, [114, 514, 191, 810], "RunAction Detail", ppover)
-        reco_detail = context.run_recognition(entry, image, ppover)
+        reco_detail = context.run_recognition(entry, argv.image, ppover)
         print(f"reco_detail: {reco_detail}")
-        return (11, 4, 5, 14), "Hello World!"
+
+        return CustomRecognizer.AnalyzeResult(box=(11, 4, 5, 14), detail="Hello World!")
 
 
 class MyAction(CustomAction):

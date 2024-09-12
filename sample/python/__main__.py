@@ -58,13 +58,10 @@ class MyRecognizer(CustomRecognizer):
     def analyze(
         self,
         context,
-        task_detail,
-        recognizer_name,
-        custom_recognition_param,
-        image,
-    ) -> Tuple[Optional[RectType], str]:
+        argv: CustomRecognizer.AnalyzeArg,
+    ) -> CustomRecognizer.AnalyzeResult:
         reco_detail = context.run_recognition(
-            "MyCustomOCR", image, pipeline_override={"roi": [100, 100, 200, 300]}
+            "MyCustomOCR", argv.image, pipeline_override={"roi": [100, 100, 200, 300]}
         )
 
         # context is a reference, will override the pipeline for whole task
@@ -74,12 +71,16 @@ class MyRecognizer(CustomRecognizer):
         # make a new context to override the pipeline, only for itself
         new_context = context.clone()
         new_context.override_pipeline({"MyCustomOCR": {"roi": [100, 200, 300, 400]}})
-        reco_detail = new_context.run_recognition("MyCustomOCR", image)
+        reco_detail = new_context.run_recognition("MyCustomOCR", argv.image)
 
         click_job = context.tasker().controller().post_click(10, 20)
         click_job.wait()
 
-        return (0, 0, 100, 100), "Hello World!"
+        context.override_next(argv.current_task, ["TaskA", "TaskB"])
+
+        return CustomRecognizer.AnalyzeResult(
+            box=(0, 0, 100, 100), detail="Hello World!"
+        )
 
 
 if __name__ == "__main__":

@@ -13,7 +13,7 @@ Actuator::Actuator(Tasker* tasker, Context& context)
 {
 }
 
-bool Actuator::run(const cv::Rect& reco_hit, const json::value& reco_detail, const PipelineData& pipeline_data)
+bool Actuator::run(const cv::Rect& reco_hit, MaaRecoId reco_id, const PipelineData& pipeline_data)
 {
     using namespace MAA_RES_NS::Action;
     LogFunc << VAR(pipeline_data.name);
@@ -50,7 +50,7 @@ bool Actuator::run(const cv::Rect& reco_hit, const json::value& reco_detail, con
         ret = stop_app(std::get<AppParam>(pipeline_data.action_param));
         break;
     case Type::Custom:
-        ret = custom_action(std::get<CustomParam>(pipeline_data.action_param), reco_hit, reco_detail);
+        ret = custom_action(std::get<CustomParam>(pipeline_data.action_param), reco_hit, reco_id, pipeline_data.name);
         break;
     case Type::StopTask:
         LogInfo << "Action: StopTask";
@@ -182,7 +182,7 @@ bool Actuator::stop_app(const MAA_RES_NS::Action::AppParam& param)
     return controller()->stop_app(param.package);
 }
 
-bool Actuator::custom_action(const MAA_RES_NS::Action::CustomParam& param, const cv::Rect& box, const json::value& reco_detail)
+bool Actuator::custom_action(const MAA_RES_NS::Action::CustomParam& param, const cv::Rect& box, MaaRecoId reco_id, const std::string& name)
 {
     if (!tasker_) {
         LogError << "tasker_ is null";
@@ -193,7 +193,8 @@ bool Actuator::custom_action(const MAA_RES_NS::Action::CustomParam& param, const
         return false;
     }
     auto session = tasker_->resource()->custom_action(param.name);
-    return CustomAction(param.name, session).run(context_, param, box, reco_detail);
+    cv::Rect rect = get_target_rect(param.target, box);
+    return CustomAction::run(context_, name, session, param, reco_id, rect);
 }
 
 cv::Rect Actuator::get_target_rect(const MAA_RES_NS::Action::Target target, const cv::Rect& box)

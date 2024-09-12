@@ -18,10 +18,11 @@
 MaaBool my_action(
     MaaContext* context,
     MaaTaskId task_id,
-    const char* action_name,
+    const char* current_task,
+    const char* custom_action_name,
     const char* custom_action_param,
+    MaaRecoId reco_id,
     const MaaRect* box,
-    const char* reco_detail,
     void* trans_arg);
 
 bool run_without_file(const std::filesystem::path& testset_dir)
@@ -65,10 +66,11 @@ bool run_without_file(const std::filesystem::path& testset_dir)
 MaaBool my_action(
     MaaContext* context,
     MaaTaskId task_id,
-    const char* action_name,
+    const char* current_task,
+    const char* custom_action_name,
     const char* custom_action_param,
+    MaaRecoId reco_id,
     const MaaRect* box,
-    const char* reco_detail,
     void* trans_arg)
 {
     auto image_buffer = MaaImageBufferCreate();
@@ -87,8 +89,8 @@ MaaBool my_action(
                                 } } };
     std::string pp_override_str = pp_override.to_string();
 
-    MaaRecoId reco_id = MaaContextRunRecognition(context, "MyColorMatching", pp_override_str.c_str(), image_buffer);
-    MaaTaskerGetRecognitionDetail(tasker, reco_id, nullptr, nullptr, out_box, out_detail, nullptr, nullptr);
+    MaaRecoId my_reco_id = MaaContextRunRecognition(context, "MyColorMatching", pp_override_str.c_str(), image_buffer);
+    MaaTaskerGetRecognitionDetail(tasker, my_reco_id, nullptr, nullptr, nullptr, out_box, out_detail, nullptr, nullptr);
 
     auto detail_string = MaaStringBufferGet(out_detail);
     std::ignore = detail_string;

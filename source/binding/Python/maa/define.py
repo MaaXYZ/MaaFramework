@@ -109,14 +109,6 @@ class MaaCtrlOptionEnum:
     # value: int, eg: 1080; val_size: sizeof(int)
     ScreenshotTargetShortSide: MaaCtrlOption = 2
 
-    # For StartApp
-    # value: string, eg: "com.hypergryph.arknights/com.u8.sdk.U8UnityContext"; val_size: string length
-    DefaultAppPackageEntry: MaaCtrlOption = 3
-
-    # For StopApp
-    # value: string, eg: "com.hypergryph.arknights"; val_size: string length
-    DefaultAppPackage: MaaCtrlOption = 4
-
     # Dump all screenshots and actions
     # this option will || with MaaGlobalOptionEnum.Recording
     # value: bool, eg: true; val_size: sizeof(bool)
@@ -201,9 +193,11 @@ MaaCustomRecognizerCallback = ctypes.CFUNCTYPE(
     MaaBool,  # return value
     MaaContextHandle,  # context
     MaaTaskId,  # task_id
-    ctypes.c_char_p,  # recognizer_name
+    ctypes.c_char_p,  # current_task
+    ctypes.c_char_p,  # custom_recognition_name
     ctypes.c_char_p,  # custom_recognition_param
     MaaImageBufferHandle,  # image
+    MaaRectHandle,  # roi
     ctypes.c_void_p,  # trans_arg
     MaaRectHandle,  # [out] out_box
     MaaStringBufferHandle,  # [out] out_detail
@@ -213,10 +207,11 @@ MaaCustomActionCallback = ctypes.CFUNCTYPE(
     MaaBool,  # return value
     MaaContextHandle,  # context
     MaaTaskId,  # task_id
-    ctypes.c_char_p,  # action_name
-    ctypes.c_char_p,  # custom_action_param
+    ctypes.c_char_p,  # current_task
+    ctypes.c_char_p,  # custom_action_name
+    ctypes.c_char_p,  #
+    MaaRecoId,  # reco_id
     MaaRectHandle,  # box
-    ctypes.c_char_p,  # reco_detail
     ctypes.c_void_p,  # trans_arg
 )
 
@@ -370,6 +365,7 @@ RectType = Union[
 class RecognitionDetail:
     reco_id: int
     name: str
+    algorithm: str
     box: Optional[Rect]
     detail: Dict
     raw: numpy.ndarray  # only valid in debug mode
