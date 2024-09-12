@@ -39,8 +39,12 @@ ScreencapAgent::ScreencapAgent(MaaAdbScreencapMethod methods, const std::filesys
         method_set.emplace(ScreencapAgent::Method::MinicapStream);
     }
     if (methods & MaaAdbScreencapMethod_EmulatorExtras) {
+#ifdef _WIN32
         method_set.emplace(ScreencapAgent::Method::MuMuPlayerExtras);
         method_set.emplace(ScreencapAgent::Method::LDPlayerExtras);
+#else
+        LogWarn << "EmulatorExtras is not supported on this platform";
+#endif
     }
 
     LogInfo << VAR(methods) << VAR(method_set) << VAR(agent_path);
@@ -77,11 +81,10 @@ ScreencapAgent::ScreencapAgent(MaaAdbScreencapMethod methods, const std::filesys
             unit = std::make_shared<MinicapStream>(minicap_path);
         } break;
 
+#ifdef _WIN32
         case Method::MuMuPlayerExtras:
             unit = std::make_shared<MuMuPlayerExtras>();
             break;
-
-#ifdef _WIN32
         case Method::LDPlayerExtras:
             unit = std::make_shared<LDPlayerExtras>();
             break;

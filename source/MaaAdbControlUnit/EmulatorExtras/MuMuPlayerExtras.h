@@ -1,5 +1,7 @@
 #pragma once
 
+#ifdef _WIN32
+
 #include "Mumu/external_renderer_ipc/external_renderer_ipc.h"
 
 #include "Base/UnitBase.h"
@@ -80,3 +82,5 @@ private:
 };
 
 MAA_CTRL_UNIT_NS_END
+
+#endif

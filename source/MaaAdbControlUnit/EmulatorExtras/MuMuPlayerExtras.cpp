@@ -1,3 +1,5 @@
+#ifdef _WIN32
+
 #include "MuMuPlayerExtras.h"
 
 #include "ControlUnit/MicroControl.hpp"
@@ -381,3 +383,5 @@ void MuMuPlayerExtras::disconnect_mumu()
 }
 
 MAA_CTRL_UNIT_NS_END
+
+#endif
