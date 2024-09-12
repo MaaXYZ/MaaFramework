@@ -60,7 +60,7 @@ class Job:
         return self.status().running()
 
 
-class JobWithRet(Job):
+class JobWithResult(Job):
     def __init__(self, maaid: MaaId, status_func, wait_func, get_func):
         super().__init__(maaid, status_func, wait_func)
         self._get_func = get_func

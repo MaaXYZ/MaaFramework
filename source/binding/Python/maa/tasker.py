@@ -7,7 +7,7 @@ from typing import Any, Dict, Optional, Union
 from .define import *
 from .library import Library
 from .buffer import ImageListBuffer, RectBuffer, StringBuffer, ImageBuffer
-from .job import Job, JobWithRet
+from .job import Job, JobWithResult
 from .callback_agent import Callback, CallbackAgent
 from .resource import Resource
 from .controller import Controller
@@ -81,21 +81,23 @@ class Tasker:
     def inited(self) -> bool:
         return bool(Library.framework.MaaTaskerInited(self._handle))
 
-    def post_pipeline(self, entry: str, pipeline_override: Dict = {}) -> JobWithRet:
+    def post_pipeline(self, entry: str, pipeline_override: Dict = {}) -> JobWithResult:
         taskid = Library.framework.MaaTaskerPostPipeline(
             self._handle,
             *Tasker._gen_post_param(entry, pipeline_override),
         )
         return self._gen_task_job(taskid)
 
-    def post_recognition(self, entry: str, pipeline_override: Dict = {}) -> JobWithRet:
+    def post_recognition(
+        self, entry: str, pipeline_override: Dict = {}
+    ) -> JobWithResult:
         taskid = Library.framework.MaaTaskerPostRecognition(
             self._handle,
             *Tasker._gen_post_param(entry, pipeline_override),
         )
         return self._gen_task_job(taskid)
 
-    def post_action(self, entry: str, pipeline_override: Dict = {}) -> JobWithRet:
+    def post_action(self, entry: str, pipeline_override: Dict = {}) -> JobWithResult:
         taskid = Library.framework.MaaTaskerPostAction(
             self._handle,
             *Tasker._gen_post_param(entry, pipeline_override),
@@ -201,8 +203,8 @@ class Tasker:
             json.dumps(pipeline_override, ensure_ascii=False).encode("utf-8"),
         )
 
-    def _gen_task_job(self, taskid: MaaTaskId) -> JobWithRet:
-        return JobWithRet(
+    def _gen_task_job(self, taskid: MaaTaskId) -> JobWithResult:
+        return JobWithResult(
             taskid,
             self._task_status,
             self._task_wait,
