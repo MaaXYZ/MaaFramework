@@ -695,6 +695,13 @@ bool PipelineResMgr::parse_ocrer_param(
             return false;
         }
     }
+    // 已废弃字段，兼容一下
+    else if (input.exists("text")) {
+        if (!get_and_check_value_or_array(input, "text", u8_text, u8_default_text)) {
+            LogError << "failed to get_and_check_value_or_array text" << VAR(input);
+            return false;
+        }
+    }
     else {
         u8_text = u8_default_text;
     }
