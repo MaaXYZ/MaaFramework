@@ -16,8 +16,11 @@ InputAgent::InputAgent(MaaAdbInputMethod methods, const std::filesystem::path& a
 {
     std::vector<Method> method_vector;
     if (methods & MaaAdbInputMethod_EmulatorExtras) {
+#ifdef _WIN32
         method_vector.emplace_back(InputAgent::Method::MuMuPlayerExtras);
-        // TODO: add LDPlayer and more...
+#else
+        LogWarn << "EmulatorExtras is not supported on this platform";
+#endif
     }
     if (methods & MaaAdbInputMethod_Maatouch) {
         method_vector.emplace_back(InputAgent::Method::Maatouch);
@@ -37,6 +40,7 @@ InputAgent::InputAgent(MaaAdbInputMethod methods, const std::filesystem::path& a
         case Method::AdbShell:
             unit = std::make_shared<AdbShellInput>();
             break;
+
         case Method::Maatouch: {
             auto maatouch_path = agent_path / "maatouch";
             if (!std::filesystem::exists(maatouch_path)) {
@@ -45,6 +49,7 @@ InputAgent::InputAgent(MaaAdbInputMethod methods, const std::filesystem::path& a
             }
             unit = std::make_shared<MaatouchInput>(maatouch_path);
         } break;
+
         case Method::MinitouchAndAdbKey: {
             auto minitouch_path = agent_path / "minitouch";
             if (!std::filesystem::exists(minitouch_path)) {
@@ -53,13 +58,18 @@ InputAgent::InputAgent(MaaAdbInputMethod methods, const std::filesystem::path& a
             }
             unit = std::make_shared<MinitouchInput>(minitouch_path);
         } break;
+
+#ifdef _WIN32
         case Method::MuMuPlayerExtras:
             unit = std::make_shared<MuMuPlayerExtras>();
             break;
+#endif
+
         default:
             LogWarn << "Not support:" << method;
             break;
         }
+
         if (!unit) {
             LogWarn << "Create input unit failed:" << method;
             continue;
