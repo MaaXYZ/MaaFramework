@@ -1,24 +1,16 @@
 #pragma once
 
+#ifdef _WIN32
+
 #include "Base/UnitBase.h"
 #include "General/DeviceInfo.h"
 #include "LibraryHolder/LibraryHolder.h"
 
-#ifdef _WIN32
-#include "Utils/SafeWindows.hpp"
-#endif
+#include "Utils/SafeWindows.hpp" // for dnopengl
 
 namespace dnopengl
 {
-#ifndef _WIN32
-#define HWND void*
-#endif
-
 #include "LD/dnopengl/dnopengl.h"
-
-#ifndef _WIN32
-#undef HWND
-#endif
 }
 
 MAA_CTRL_UNIT_NS_BEGIN
@@ -64,3 +56,5 @@ private:
 };
 
 MAA_CTRL_UNIT_NS_END
+
+#endif

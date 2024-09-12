@@ -40,7 +40,9 @@ ScreencapAgent::ScreencapAgent(MaaAdbScreencapMethod methods, const std::filesys
     }
     if (methods & MaaAdbScreencapMethod_EmulatorExtras) {
         method_set.emplace(ScreencapAgent::Method::MuMuPlayerExtras);
+#ifdef _WIN32
         method_set.emplace(ScreencapAgent::Method::LDPlayerExtras);
+#endif
     }
 
     LogInfo << VAR(methods) << VAR(method_set) << VAR(agent_path);

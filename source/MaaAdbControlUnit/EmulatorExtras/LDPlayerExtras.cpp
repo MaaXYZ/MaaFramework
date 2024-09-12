@@ -1,3 +1,5 @@
+#ifdef _WIN32
+
 #include "LDPlayerExtras.h"
 
 #include "ControlUnit/MicroControl.hpp"
@@ -123,3 +125,5 @@ void LDPlayerExtras::release_ld_instance()
 }
 
 MAA_CTRL_UNIT_NS_END
+
+#endif
