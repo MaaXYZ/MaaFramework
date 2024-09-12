@@ -18,12 +18,12 @@ struct InterfaceData
     {
         struct AdbConfig
         {
-            MaaAdbScreencapMethod screencap_methods = MaaAdbScreencapMethod_Default;
-            MaaAdbInputMethod input_methods = MaaAdbInputMethod_Default;
+            MaaAdbScreencapMethod screencap = MaaAdbScreencapMethod_Default;
+            MaaAdbInputMethod input = MaaAdbInputMethod_Default;
 
             json::object config;
 
-            MEO_JSONIZATION(MEO_OPT screencap_methods, MEO_OPT input_methods, MEO_OPT config);
+            MEO_JSONIZATION(MEO_OPT screencap, MEO_OPT input, MEO_OPT config);
         };
 
         struct Win32Config
@@ -31,10 +31,10 @@ struct InterfaceData
             std::string class_regex;
             std::string window_regex;
 
-            MaaWin32ScreencapMethod screencap_methods = MaaWin32ScreencapMethod_DXGI_DesktopDup;
-            MaaWin32InputMethod input_methods = MaaWin32InputMethod_Seize;
+            MaaWin32ScreencapMethod screencap = MaaWin32ScreencapMethod_DXGI_DesktopDup;
+            MaaWin32InputMethod input = MaaWin32InputMethod_Seize;
 
-            MEO_JSONIZATION(MEO_OPT class_regex, MEO_OPT window_regex, MEO_OPT screencap_methods, MEO_OPT input_methods);
+            MEO_JSONIZATION(MEO_OPT class_regex, MEO_OPT window_regex, MEO_OPT screencap, MEO_OPT input);
         };
 
         inline static std::string kTypeAdb = "Adb";
@@ -160,8 +160,8 @@ struct RuntimeParam
     {
         std::string adb_path;
         std::string address;
-        MaaAdbScreencapMethod screencap_methods = MaaAdbScreencapMethod_None;
-        MaaAdbInputMethod input_methods = MaaAdbInputMethod_None;
+        MaaAdbScreencapMethod screencap = MaaAdbScreencapMethod_None;
+        MaaAdbInputMethod input = MaaAdbInputMethod_None;
         std::string config;
         std::string agent_path;
     };
@@ -169,8 +169,8 @@ struct RuntimeParam
     struct Win32Param
     {
         void* hwnd = nullptr;
-        MaaWin32ScreencapMethod screencap_methods = MaaWin32ScreencapMethod_None;
-        MaaWin32InputMethod input_methods = MaaWin32InputMethod_None;
+        MaaWin32ScreencapMethod screencap = MaaWin32ScreencapMethod_None;
+        MaaWin32InputMethod input = MaaWin32InputMethod_None;
     };
 
     struct Task

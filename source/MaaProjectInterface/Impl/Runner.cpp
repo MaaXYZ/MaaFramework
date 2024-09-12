@@ -27,8 +27,8 @@ bool Runner::run(
         controller_handle = MaaAdbControllerCreate(
             p_adb_param->adb_path.c_str(),
             p_adb_param->address.c_str(),
-            p_adb_param->screencap_methods,
-            p_adb_param->input_methods,
+            p_adb_param->screencap,
+            p_adb_param->input,
             p_adb_param->config.c_str(),
             p_adb_param->agent_path.c_str(),
             callback,
@@ -37,8 +37,8 @@ bool Runner::run(
     else if (const auto* p_win32_param = std::get_if<RuntimeParam::Win32Param>(&param.controller_param)) {
         controller_handle = MaaWin32ControllerCreate(
             p_win32_param->hwnd,
-            p_win32_param->screencap_methods,
-            p_win32_param->input_methods,
+            p_win32_param->screencap,
+            p_win32_param->input,
             callback,
             callback_arg);
     }

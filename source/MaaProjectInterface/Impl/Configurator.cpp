@@ -96,8 +96,8 @@ std::optional<RuntimeParam> Configurator::generate_runtime() const
 
         adb.adb_path = config_.adb.adb_path;
         adb.address = config_.adb.address;
-        adb.screencap_methods = controller.adb.screencap_methods;
-        adb.input_methods = controller.adb.input_methods;
+        adb.screencap = controller.adb.screencap;
+        adb.input = controller.adb.input;
         adb.config = (controller.adb.config | config_.adb.config).dumps();
         adb.agent_path = MaaNS::path_to_utf8_string(project_dir_ / "MaaAgentBinary");
 
@@ -108,8 +108,8 @@ std::optional<RuntimeParam> Configurator::generate_runtime() const
         RuntimeParam::Win32Param win32;
 
         win32.hwnd = config_.win32.hwnd;
-        win32.screencap_methods = controller.win32.screencap_methods;
-        win32.input_methods = controller.win32.input_methods;
+        win32.screencap = controller.win32.screencap;
+        win32.input = controller.win32.input;
 
         runtime.controller_param = std::move(win32);
     } break;
