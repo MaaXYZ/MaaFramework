@@ -39,13 +39,16 @@ bool MumuExternalRendererIpc::parse(const json::value& config)
     mumu_index_ = config.get("extras", "mumu", "index", 0);
     mumu_display_id_ = config.get("extras", "mumu", "display_id", -1);
 
+    mumu_app_package_ = config.get("extras", "mumu", "app_package", "");
+    mumu_app_cloned_index_ = config.get("extras", "mumu", "app_cloned_index", 0);
+
     LogInfo << VAR(mumu_path_) << VAR(lib_path_) << VAR(mumu_index_) << VAR(mumu_display_id_);
     return true;
 }
 
 bool MumuExternalRendererIpc::init()
 {
-    return load_mumu_library() && connect_mumu() && init_screencap();
+    return load_mumu_library() && connect_mumu() && init_display_id() && init_screencap();
 }
 
 void MumuExternalRendererIpc::deinit()
@@ -330,10 +333,6 @@ bool MumuExternalRendererIpc::init_screencap()
         return false;
     }
 
-    if (mumu_display_id_ < 0) {
-        mumu_display_id_ = get_default_display_id();
-    }
-
     int ret = capture_display_func_(mumu_handle_, mumu_display_id_, 0, &display_width_, &display_height_, nullptr);
 
     // mumu 的文档给错了，这里 0 才是成功
@@ -349,16 +348,27 @@ bool MumuExternalRendererIpc::init_screencap()
     return true;
 }
 
-int MumuExternalRendererIpc::get_default_display_id()
+bool MumuExternalRendererIpc::init_display_id()
 {
+    if (mumu_display_id_ >= 0) {
+        return true;
+    }
+
     if (!get_display_id_func_) {
         LogError << "get_display_id_func_ is null";
         return false;
     }
 
-    int display_id = get_display_id_func_(mumu_handle_, "default", 0);
-    LogInfo << VAR(display_id);
-    return display_id;
+    if (!mumu_app_package_.empty()) {
+        mumu_display_id_ = get_display_id_func_(mumu_handle_, mumu_app_package_.c_str(), mumu_app_cloned_index_);
+    }
+    else {
+        static const std::string kDefaultPkg = "default";
+        mumu_display_id_ = get_display_id_func_(mumu_handle_, kDefaultPkg.c_str(), 0);
+    }
+    LogInfo << VAR(mumu_display_id_);
+
+    return mumu_display_id_ >= 0;
 }
 
 void MumuExternalRendererIpc::disconnect_mumu()

@@ -39,7 +39,7 @@ private:
     bool load_mumu_library();
     bool connect_mumu();
     bool init_screencap();
-    int get_default_display_id();
+    bool init_display_id();
     void disconnect_mumu();
 
 private:
@@ -48,6 +48,9 @@ private:
     int mumu_index_ = 0;
     int mumu_display_id_ = -1;
     int mumu_handle_ = 0;
+
+    std::string mumu_app_package_;
+    int mumu_app_cloned_index_ = 0;
 
     int display_width_ = 0;
     int display_height_ = 0;
