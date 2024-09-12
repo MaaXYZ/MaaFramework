@@ -13,7 +13,7 @@ public:
         AdbShell,
         MinitouchAndAdbKey,
         Maatouch,
-        MumuExternalRendererIpc,
+        MuMuPlayerExtras,
     };
 
 public:

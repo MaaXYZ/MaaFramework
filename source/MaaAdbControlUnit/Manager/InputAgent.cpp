@@ -4,7 +4,7 @@
 #include <ranges>
 #include <unordered_set>
 
-#include "EmulatorExtras/MumuExternalRendererIpc.h"
+#include "EmulatorExtras/MuMuPlayerExtras.h"
 #include "Input/AdbShellInput.h"
 #include "Input/MaatouchInput.h"
 #include "Input/MinitouchInput.h"
@@ -16,7 +16,7 @@ InputAgent::InputAgent(MaaAdbInputMethod methods, const std::filesystem::path& a
 {
     std::vector<Method> method_vector;
     if (methods & MaaAdbInputMethod_EmulatorExtras) {
-        method_vector.emplace_back(InputAgent::Method::MumuExternalRendererIpc);
+        method_vector.emplace_back(InputAgent::Method::MuMuPlayerExtras);
         // TODO: add LDPlayer and more...
     }
     if (methods & MaaAdbInputMethod_Maatouch) {
@@ -53,8 +53,8 @@ InputAgent::InputAgent(MaaAdbInputMethod methods, const std::filesystem::path& a
             }
             unit = std::make_shared<MinitouchInput>(minitouch_path);
         } break;
-        case Method::MumuExternalRendererIpc:
-            unit = std::make_shared<MumuExternalRendererIpc>();
+        case Method::MuMuPlayerExtras:
+            unit = std::make_shared<MuMuPlayerExtras>();
             break;
         default:
             LogWarn << "Not support:" << method;
@@ -186,8 +186,8 @@ std::ostream& operator<<(std::ostream& os, InputAgent::Method m)
     case InputAgent::Method::Maatouch:
         os << "Maatouch";
         break;
-    case InputAgent::Method::MumuExternalRendererIpc:
-        os << "MumuExternalRendererIpc";
+    case InputAgent::Method::MuMuPlayerExtras:
+        os << "MuMuPlayerExtras";
         break;
     default:
         os << "Unknown";

@@ -18,7 +18,8 @@ public:
         RawByNetcat,
         MinicapDirect,
         MinicapStream,
-        MumuExternalRendererIpc,
+        MuMuPlayerExtras,
+        LDPlayerExtras,
     };
 
 public:

@@ -4,7 +4,8 @@
 #include <ranges>
 #include <unordered_set>
 
-#include "EmulatorExtras/MumuExternalRendererIpc.h"
+#include "EmulatorExtras/LDPlayerExtras.h"
+#include "EmulatorExtras/MuMuPlayerExtras.h"
 #include "Screencap/Encode.h"
 #include "Screencap/EncodeToFile.h"
 #include "Screencap/Minicap/MinicapDirect.h"
@@ -38,8 +39,8 @@ ScreencapAgent::ScreencapAgent(MaaAdbScreencapMethod methods, const std::filesys
         method_set.emplace(ScreencapAgent::Method::MinicapStream);
     }
     if (methods & MaaAdbScreencapMethod_EmulatorExtras) {
-        method_set.emplace(ScreencapAgent::Method::MumuExternalRendererIpc);
-        // TODO: add LDPlayer and more...
+        method_set.emplace(ScreencapAgent::Method::MuMuPlayerExtras);
+        method_set.emplace(ScreencapAgent::Method::LDPlayerExtras);
     }
 
     LogInfo << VAR(methods) << VAR(method_set) << VAR(agent_path);
@@ -75,9 +76,14 @@ ScreencapAgent::ScreencapAgent(MaaAdbScreencapMethod methods, const std::filesys
             }
             unit = std::make_shared<MinicapStream>(minicap_path);
         } break;
-        case Method::MumuExternalRendererIpc:
-            unit = std::make_shared<MumuExternalRendererIpc>();
+
+        case Method::MuMuPlayerExtras:
+            unit = std::make_shared<MuMuPlayerExtras>();
             break;
+        case Method::LDPlayerExtras:
+            unit = std::make_shared<LDPlayerExtras>();
+            break;
+
         default:
             LogWarn << "Not support:" << method;
             break;
@@ -150,7 +156,8 @@ std::optional<cv::Mat> ScreencapAgent::screencap()
     case Method::EncodeToFileAndPull:
     case Method::MinicapDirect:
     case Method::MinicapStream:
-    case Method::MumuExternalRendererIpc:
+    case Method::MuMuPlayerExtras:
+    case Method::LDPlayerExtras:
         return units_[method_]->screencap();
     default:
         LogInfo << "Not support:" << method_;
@@ -237,8 +244,11 @@ std::ostream& operator<<(std::ostream& os, ScreencapAgent::Method m)
     case ScreencapAgent::Method::MinicapStream:
         os << "MinicapStream";
         break;
-    case ScreencapAgent::Method::MumuExternalRendererIpc:
-        os << "MumuExternalRendererIpc";
+    case ScreencapAgent::Method::MuMuPlayerExtras:
+        os << "MuMuPlayerExtras";
+        break;
+    case ScreencapAgent::Method::LDPlayerExtras:
+        os << "LDPlayerExtras";
         break;
     }
     return os;

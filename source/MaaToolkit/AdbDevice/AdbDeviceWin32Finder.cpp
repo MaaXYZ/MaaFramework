@@ -68,7 +68,26 @@ json::object AdbDeviceWin32Finder::get_adb_config(const Emulator& emulator, cons
         mumu_cfg["path"] = path_to_utf8_string(dir);
         mumu_cfg["index"] = get_mumu_index(adb_serial);
 
-        LogInfo << "Mumu cfg" << VAR(adb_serial) << cfg;
+        LogInfo << "MuMuPlayer12 cfg" << VAR(adb_serial) << cfg;
+        return cfg;
+    }
+    else if (emulator.name == "LDPlayer") {
+        // E:\Program Files\leidian\LDPlayer9\dnplayer.exe
+        auto path_opt = get_process_path(emulator.process.pid);
+        if (!path_opt) {
+            return {};
+        }
+        auto dir = path_opt->parent_path();
+
+        json::object cfg;
+        auto& ld_cfg = cfg["extras"]["ld"];
+
+        ld_cfg["enable"] = true;
+        ld_cfg["path"] = path_to_utf8_string(dir);
+        ld_cfg["index"] = 0;
+        ld_cfg["pid"] = emulator.process.pid;
+
+        LogInfo << "LDPlayer cfg" << VAR(adb_serial) << cfg;
         return cfg;
     }
 

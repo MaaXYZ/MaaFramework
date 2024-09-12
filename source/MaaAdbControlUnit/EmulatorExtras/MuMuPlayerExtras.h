@@ -7,13 +7,13 @@
 
 MAA_CTRL_UNIT_NS_BEGIN
 
-class MumuExternalRendererIpc
-    : public LibraryHolder<MumuExternalRendererIpc>
+class MuMuPlayerExtras
+    : public LibraryHolder<MuMuPlayerExtras>
     , public ScreencapBase
     , public InputBase
 {
 public:
-    virtual ~MumuExternalRendererIpc() override;
+    virtual ~MuMuPlayerExtras() override;
 
 public: // from UnitBase
     virtual bool parse(const json::value& config) override;

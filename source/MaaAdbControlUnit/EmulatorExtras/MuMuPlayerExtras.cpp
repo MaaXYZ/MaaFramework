@@ -1,4 +1,4 @@
-#include "MumuExternalRendererIpc.h"
+#include "MuMuPlayerExtras.h"
 
 #include "ControlUnit/MicroControl.hpp"
 #include "Utils/Codec.h"
@@ -8,12 +8,12 @@
 
 MAA_CTRL_UNIT_NS_BEGIN
 
-MumuExternalRendererIpc::~MumuExternalRendererIpc()
+MuMuPlayerExtras::~MuMuPlayerExtras()
 {
     disconnect_mumu();
 }
 
-bool MumuExternalRendererIpc::parse(const json::value& config)
+bool MuMuPlayerExtras::parse(const json::value& config)
 {
     bool enable = config.get("extras", "mumu", "enable", false);
     if (!enable) {
@@ -46,17 +46,17 @@ bool MumuExternalRendererIpc::parse(const json::value& config)
     return true;
 }
 
-bool MumuExternalRendererIpc::init()
+bool MuMuPlayerExtras::init()
 {
     return load_mumu_library() && connect_mumu() && init_display_id() && init_screencap();
 }
 
-void MumuExternalRendererIpc::deinit()
+void MuMuPlayerExtras::deinit()
 {
     disconnect_mumu();
 }
 
-std::optional<cv::Mat> MumuExternalRendererIpc::screencap()
+std::optional<cv::Mat> MuMuPlayerExtras::screencap()
 {
     LogDebug;
 
@@ -88,7 +88,7 @@ std::optional<cv::Mat> MumuExternalRendererIpc::screencap()
     return dst;
 }
 
-bool MumuExternalRendererIpc::click(int x, int y)
+bool MuMuPlayerExtras::click(int x, int y)
 {
     if (!input_event_touch_down_func_ || !input_event_touch_up_func_) {
         LogError << "input_event_touch_down_func_ or input_event_touch_up_func_ is null";
@@ -108,7 +108,7 @@ bool MumuExternalRendererIpc::click(int x, int y)
     return true;
 }
 
-bool MumuExternalRendererIpc::swipe(int x1, int y1, int x2, int y2, int duration)
+bool MuMuPlayerExtras::swipe(int x1, int y1, int x2, int y2, int duration)
 {
     if (!input_event_touch_down_func_ || !input_event_touch_up_func_) {
         LogError << "input_event_touch_down_func_ or input_event_touch_up_func_ is null";
@@ -142,7 +142,7 @@ bool MumuExternalRendererIpc::swipe(int x1, int y1, int x2, int y2, int duration
     return true;
 }
 
-bool MumuExternalRendererIpc::touch_down(int contact, int x, int y, int pressure)
+bool MuMuPlayerExtras::touch_down(int contact, int x, int y, int pressure)
 {
     if (!input_event_touch_down_func_) {
         LogError << "input_event_touch_down_func_ is null";
@@ -161,7 +161,7 @@ bool MumuExternalRendererIpc::touch_down(int contact, int x, int y, int pressure
     return true;
 }
 
-bool MumuExternalRendererIpc::touch_move(int contact, int x, int y, int pressure)
+bool MuMuPlayerExtras::touch_move(int contact, int x, int y, int pressure)
 {
     // mumu: touch_down == touch_move
 
@@ -182,7 +182,7 @@ bool MumuExternalRendererIpc::touch_move(int contact, int x, int y, int pressure
     return true;
 }
 
-bool MumuExternalRendererIpc::touch_up(int contact)
+bool MuMuPlayerExtras::touch_up(int contact)
 {
     if (!input_event_touch_up_func_) {
         LogError << "input_event_touch_up_func_ is null";
@@ -201,7 +201,7 @@ bool MumuExternalRendererIpc::touch_up(int contact)
     return true;
 }
 
-bool MumuExternalRendererIpc::press_key(int key)
+bool MuMuPlayerExtras::press_key(int key)
 {
     if (!input_event_key_down_func_ || !input_event_key_up_func_) {
         LogError << "input_event_key_down_func_ or input_event_key_up_func_ is null";
@@ -221,7 +221,7 @@ bool MumuExternalRendererIpc::press_key(int key)
     return true;
 }
 
-bool MumuExternalRendererIpc::input_text(const std::string& text)
+bool MuMuPlayerExtras::input_text(const std::string& text)
 {
     if (!input_text_func_) {
         LogError << "input_text_func_ is null";
@@ -240,7 +240,7 @@ bool MumuExternalRendererIpc::input_text(const std::string& text)
     return true;
 }
 
-bool MumuExternalRendererIpc::load_mumu_library()
+bool MuMuPlayerExtras::load_mumu_library()
 {
     if (!load_library(lib_path_)) {
         LogError << "Failed to load library" << VAR(lib_path_);
@@ -304,7 +304,7 @@ bool MumuExternalRendererIpc::load_mumu_library()
     return true;
 }
 
-bool MumuExternalRendererIpc::connect_mumu()
+bool MuMuPlayerExtras::connect_mumu()
 {
     LogFunc << VAR(mumu_path_) << VAR(mumu_index_);
 
@@ -326,7 +326,7 @@ bool MumuExternalRendererIpc::connect_mumu()
     return true;
 }
 
-bool MumuExternalRendererIpc::init_screencap()
+bool MuMuPlayerExtras::init_screencap()
 {
     if (!capture_display_func_) {
         LogError << "capture_display_func_ is null";
@@ -348,7 +348,7 @@ bool MumuExternalRendererIpc::init_screencap()
     return true;
 }
 
-bool MumuExternalRendererIpc::init_display_id()
+bool MuMuPlayerExtras::init_display_id()
 {
     if (mumu_display_id_ >= 0) {
         return true;
@@ -371,7 +371,7 @@ bool MumuExternalRendererIpc::init_display_id()
     return mumu_display_id_ >= 0;
 }
 
-void MumuExternalRendererIpc::disconnect_mumu()
+void MuMuPlayerExtras::disconnect_mumu()
 {
     LogFunc << VAR(mumu_handle_);
 
