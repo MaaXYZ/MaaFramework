@@ -185,7 +185,7 @@ class Toolkit:
         cls._callback_agent = CallbackAgent(callback, callback_arg)
 
         return bool(
-            Library.toolkit.MaaToolkitRunCli(
+            Library.toolkit.MaaToolkitProjectInterfaceRunCli(
                 ctypes.c_uint64(inst_id),
                 str(resource_path).encode("utf-8"),
                 str(user_path).encode("utf-8"),
