@@ -154,7 +154,7 @@ class Toolkit:
 
         if not cls._custom_action_holder:
             cls._custom_action_holder = {}
-        
+
         if not cls._custom_action_holder[inst_id]:
             cls._custom_action_holder[inst_id] = {}
 
@@ -162,8 +162,8 @@ class Toolkit:
         cls._custom_recognizer_holder[inst_id][name] = action
 
         return bool(
-            ctypes.c_uint64(inst_id),
             Library.framework.MaaToolkitProjectInterfaceRegisterCustomAction(
+                ctypes.c_uint64(inst_id),
                 name.encode("utf-8"),
                 action.c_handle,
                 action.c_arg,
