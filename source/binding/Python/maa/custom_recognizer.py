@@ -18,7 +18,7 @@ class CustomRecognizer(ABC):
     @dataclass
     class AnalyzeArg:
         task_detail: TaskDetail
-        current_task: str
+        current_task_name: str
         custom_recognition_name: str
         custom_recognition_param: str
         image: numpy.ndarray
@@ -49,7 +49,7 @@ class CustomRecognizer(ABC):
     def _c_analyze_agent(
         c_context: MaaContextHandle,
         c_task_id: MaaTaskId,
-        c_task_name: ctypes.c_char_p,
+        c_current_task_name: ctypes.c_char_p,
         c_custom_reco_name: ctypes.c_char_p,
         c_custom_reco_param: ctypes.c_char_p,
         c_image: MaaImageBufferHandle,
@@ -72,7 +72,7 @@ class CustomRecognizer(ABC):
             context,
             CustomRecognizer.AnalyzeArg(
                 task_detail=task_detail,
-                current_task=c_task_name.decode(),
+                current_task_name=c_current_task_name.decode(),
                 custom_recognition_name=c_custom_reco_name.decode(),
                 custom_recognition_param=c_custom_reco_param.decode(),
                 image=image,

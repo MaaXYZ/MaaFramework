@@ -48,8 +48,8 @@ def main():
     task_detail = tasker.post_pipeline("StartUpAndClickButton").wait().get()
     # do something with task_detail
 
-    reco_detail = tasker.post_recognition("MySingleMatch").wait().get()
-    # do something with reco_detail
+    task_detail = tasker.post_recognition("MySingleMatch").wait().get()
+    # do something with task_detail
 
 
 class MyRecognizer(CustomRecognizer):
@@ -60,7 +60,9 @@ class MyRecognizer(CustomRecognizer):
         argv: CustomRecognizer.AnalyzeArg,
     ) -> CustomRecognizer.AnalyzeResult:
         reco_detail = context.run_recognition(
-            "MyCustomOCR", argv.image, pipeline_override={"roi": [100, 100, 200, 300]}
+            "MyCustomOCR",
+            argv.image,
+            pipeline_override={"MyCustomOCR": {"roi": [100, 100, 200, 300]}},
         )
 
         # context is a reference, will override the pipeline for whole task
