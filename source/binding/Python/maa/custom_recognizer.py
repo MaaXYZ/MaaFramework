@@ -18,7 +18,7 @@ class CustomRecognizer(ABC):
     @dataclass
     class AnalyzeArg:
         task_detail: TaskDetail
-        current_task_name: str
+        current_task: str
         custom_recognition_name: str
         custom_recognition_param: str
         image: numpy.ndarray
@@ -72,7 +72,7 @@ class CustomRecognizer(ABC):
             context,
             CustomRecognizer.AnalyzeArg(
                 task_detail=task_detail,
-                current_task_name=c_task_name.decode(),
+                current_task=c_task_name.decode(),
                 custom_recognition_name=c_custom_reco_name.decode(),
                 custom_recognition_param=c_custom_reco_param.decode(),
                 image=image,
