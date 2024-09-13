@@ -252,7 +252,7 @@ jobs:
             fail-fast: false
 
         steps:
-            - uses: actions/checkout@v3
+            - uses: actions/checkout@v4
               with:
                   submodules: true
 
@@ -301,7 +301,7 @@ jobs:
 
                   cp -r LICENSE.md install
 
-            - uses: actions/upload-artifact@v3
+            - uses: actions/upload-artifact@v4
               if: always()
               with:
                   name: MAA-android-${{ matrix.arch }}
