@@ -26,20 +26,13 @@
                         "title": "ADB配置",
                         "type": "object",
                         "properties": {
-                            "touch": {
-                                "title": "点击参数",
-                                "type": "integer",
-                                "default": 254
-                            },
-                            "key": {
-                                "title": "按键参数",
-                                "type": "integer",
-                                "default": 65024
+                            "input": {
+                                "title": "输入参数",
+                                "type": "integer"
                             },
                             "screencap": {
                                 "title": "截图参数",
-                                "type": "integer",
-                                "default": 16646144
+                                "type": "integer"
                             },
                             "config": {
                                 "title": "额外配置参数",
@@ -56,12 +49,6 @@
                             "method": "Find"
                         },
                         "properties": {
-                            "method": {
-                                "title": "搜索方式",
-                                "type": "string",
-                                "default": "Find",
-                                "enum": ["Find", "Search", "Cursor", "Desktop", "Foreground"]
-                            },
                             "class_name": {
                                 "title": "搜索类名参数",
                                 "type": "string",
@@ -72,20 +59,13 @@
                                 "type": "string",
                                 "default": ""
                             },
-                            "touch": {
+                            "input": {
                                 "title": "点击参数",
-                                "type": "integer",
-                                "default": 2
-                            },
-                            "key": {
-                                "title": "按键参数",
-                                "type": "integer",
-                                "default": 512
+                                "type": "integer"
                             },
                             "screencap": {
                                 "title": "截图参数",
-                                "type": "integer",
-                                "default": 131072
+                                "type": "integer"
                             }
                         },
                         "additionalProperties": false,
@@ -141,7 +121,7 @@
                         "title": "任务入口",
                         "type": "string"
                     },
-                    "param": {
+                    "pipeline_override": {
                         "title": "任务参数",
                         "$ref": "./pipeline.schema.json"
                     },
@@ -174,13 +154,16 @@
                                         "title": "选项名",
                                         "type": "string"
                                     },
-                                    "param": {
+                                    "pipeline_override": {
                                         "title": "选项参数",
                                         "$ref": "./pipeline.schema.json"
                                     }
                                 },
                                 "additionalProperties": false,
-                                "required": ["name", "param"]
+                                "required": [
+                                    "name",
+                                    "pipeline_override"
+                                ]
                             }
                         },
                         "default_case": {
@@ -190,51 +173,6 @@
                     },
                     "additionalProperties": false,
                     "required": ["cases"]
-                }
-            }
-        },
-        "recognizer": {
-            "title": "自定义识别器",
-            "type": "object",
-            "patternProperties": {
-                ".*": {
-                    "type": "object",
-                    "properties": {
-                        "exec_path": {
-                            "title": "执行程序",
-                            "type": "string"
-                        },
-                        "exec_param": {
-                            "title": "执行参数",
-                            "type": "array",
-                            "items": {
-                                "type": "string"
-                            }
-                        }
-                    },
-                    "additionalProperties": false,
-                    "required": ["exec_path"]
-                }
-            }
-        },
-        "action": {
-            "title": "自定义动作",
-            "type": "object",
-            "patternProperties": {
-                ".*": {
-                    "type": "object",
-                    "properties": {
-                        "exec_path": {
-                            "title": "执行程序",
-                            "type": "string"
-                        },
-                        "exec_param": {
-                            "title": "执行参数",
-                            "type": "array"
-                        }
-                    },
-                    "additionalProperties": false,
-                    "required": ["exec_path"]
                 }
             }
         },

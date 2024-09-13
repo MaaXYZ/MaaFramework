@@ -24,20 +24,20 @@ class TemplateMatcher
 public:
     TemplateMatcher(
         cv::Mat image,
+        cv::Rect roi,
         TemplateMatcherParam param,
         std::vector<std::shared_ptr<cv::Mat>> templates,
         std::string name = "");
 
 private:
     void analyze();
-    ResultsVec match_all_rois(const cv::Mat& templ) const;
-    ResultsVec template_match(const cv::Rect& roi, const cv::Mat& templ) const;
+    ResultsVec template_match(const cv::Mat& templ) const;
 
     void add_results(ResultsVec results, double threshold);
     void cherry_pick();
 
 private:
-    cv::Mat draw_result(const cv::Rect& roi, const cv::Mat& templ, const ResultsVec& results) const;
+    cv::Mat draw_result(const cv::Mat& templ, const ResultsVec& results) const;
 
     void sort_(ResultsVec& results) const;
 

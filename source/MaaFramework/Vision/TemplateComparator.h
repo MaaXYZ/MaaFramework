@@ -19,15 +19,10 @@ class TemplateComparator
     , public RecoResultAPI<TemplateComparatorResult>
 {
 public:
-    TemplateComparator(
-        cv::Mat lhs,
-        cv::Mat rhs,
-        TemplateComparatorParam param,
-        std::string name = "");
+    TemplateComparator(cv::Mat lhs, cv::Mat rhs, cv::Rect roi, TemplateComparatorParam param, std::string name = "");
 
 private:
     void analyze();
-    ResultsVec compare_all_rois() const;
 
     void add_results(ResultsVec results, double threshold);
     void cherry_pick();

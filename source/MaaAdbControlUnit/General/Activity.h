@@ -18,6 +18,7 @@ public:
 
 private:
     ProcessArgvGenerator start_app_argv_;
+    ProcessArgvGenerator start_activity_argv_;
     ProcessArgvGenerator stop_app_argv_;
 };
 

@@ -15,50 +15,54 @@ MAA_PROJECT_INTERFACE_NS_BEGIN
 
 bool Runner::run(
     const RuntimeParam& param,
-    MaaInstanceCallback callback,
-    MaaCallbackTransparentArg callback_arg,
-    MaaResourceCallback resource_callback,
-    MaaCallbackTransparentArg resource_callback_arg,
-    MaaControllerCallback controller_callback,
-    MaaCallbackTransparentArg controller_callback_arg)
+    MaaNotificationCallback callback,
+    void* callback_arg,
+    const std::map<std::string, CustomRecognizerSession>& custom_recognizers,
+    const std::map<std::string, CustomActionSession>& custom_actions)
 {
-    auto maa_handle = MaaCreate(callback, callback_arg);
+    auto tasker_handle = MaaTaskerCreate(callback, callback_arg);
 
-    MaaControllerHandle controller_handle = nullptr;
+    MaaController* controller_handle = nullptr;
     if (const auto* p_adb_param = std::get_if<RuntimeParam::AdbParam>(&param.controller_param)) {
-        controller_handle = MaaAdbControllerCreateV2(
+        controller_handle = MaaAdbControllerCreate(
             p_adb_param->adb_path.c_str(),
             p_adb_param->address.c_str(),
-            p_adb_param->controller_type,
+            p_adb_param->screencap,
+            p_adb_param->input,
             p_adb_param->config.c_str(),
             p_adb_param->agent_path.c_str(),
-            controller_callback,
-            controller_callback_arg);
+            callback,
+            callback_arg);
     }
-    else if (
-        const auto* p_win32_param =
-            std::get_if<RuntimeParam::Win32Param>(&param.controller_param)) {
+    else if (const auto* p_win32_param = std::get_if<RuntimeParam::Win32Param>(&param.controller_param)) {
         controller_handle = MaaWin32ControllerCreate(
             p_win32_param->hwnd,
-            p_win32_param->controller_type,
-            controller_callback,
-            controller_callback_arg);
+            p_win32_param->screencap,
+            p_win32_param->input,
+            callback,
+            callback_arg);
     }
     else {
         LogError << "Unknown controller type";
         return false;
     }
 
-    auto resource_handle = MaaResourceCreate(resource_callback, resource_callback_arg);
+    auto resource_handle = MaaResourceCreate(callback, callback_arg);
 
-    int64_t cid = MaaControllerPostConnection(controller_handle);
-    int64_t rid = 0;
+    MaaId cid = MaaControllerPostConnection(controller_handle);
+    MaaId rid = 0;
     for (const auto& path : param.resource_path) {
         rid = MaaResourcePostPath(resource_handle, path.c_str());
     }
+    for (const auto& [name, reco] : custom_recognizers) {
+        MaaResourceRegisterCustomRecognizer(resource_handle, name.c_str(), reco.recoginzer, reco.trans_arg);
+    }
+    for (const auto& [name, act] : custom_actions) {
+        MaaResourceRegisterCustomAction(resource_handle, name.c_str(), act.action, act.trans_arg);
+    }
 
-    MaaBindResource(maa_handle, resource_handle);
-    MaaBindController(maa_handle, controller_handle);
+    MaaTaskerBindResource(tasker_handle, resource_handle);
+    MaaTaskerBindController(tasker_handle, controller_handle);
 
     if (MaaStatus_Failed == MaaControllerWait(controller_handle, cid)) {
         LogError << "Failed to connect controller";
@@ -71,43 +75,18 @@ bool Runner::run(
     }
 
     OnScopeLeave([&]() {
-        MaaDestroy(maa_handle);
+        MaaTaskerDestroy(tasker_handle);
         MaaResourceDestroy(resource_handle);
         MaaControllerDestroy(controller_handle);
     });
 
-    for (const auto& [name, executor] : param.recognizer) {
-        std::vector<const char*> exec_params;
-        for (const auto& p : executor.exec_param) {
-            exec_params.push_back(p.c_str());
-        }
-        MaaToolkitRegisterCustomRecognizerExecutor(
-            maa_handle,
-            name.c_str(),
-            executor.exec_path.c_str(),
-            exec_params.data(),
-            exec_params.size());
-    }
-    for (const auto& [name, executor] : param.action) {
-        std::vector<const char*> exec_params;
-        for (const auto& p : executor.exec_param) {
-            exec_params.push_back(p.c_str());
-        }
-        MaaToolkitRegisterCustomActionExecutor(
-            maa_handle,
-            name.c_str(),
-            executor.exec_path.c_str(),
-            exec_params.data(),
-            exec_params.size());
-    }
-
-    int64_t tid = 0;
+    MaaId tid = 0;
     for (const auto& task : param.task) {
-        std::string task_param = task.param.to_string();
-        tid = MaaPostTask(maa_handle, task.entry.c_str(), task_param.c_str());
+        std::string pp_override = task.pipeline_override.to_string();
+        tid = MaaTaskerPostPipeline(tasker_handle, task.entry.c_str(), pp_override.c_str());
     }
 
-    MaaWaitTask(maa_handle, tid);
+    MaaTaskerWait(tasker_handle, tid);
 
     return true;
 }

@@ -15,13 +15,14 @@ class AdbControlUnitLibraryHolder : public LibraryHolder<AdbControlUnitLibraryHo
 {
 public:
     static std::shared_ptr<MAA_CTRL_UNIT_NS::ControlUnitAPI> create_control_unit(
-        MaaStringView adb_path,
-        MaaStringView adb_serial,
-        MaaAdbControllerType type,
-        MaaStringView config,
-        MaaStringView agent_path,
-        MaaControllerCallback callback,
-        MaaCallbackTransparentArg callback_arg);
+        const char* adb_path,
+        const char* adb_serial,
+        MaaAdbScreencapMethod screencap_methods,
+        MaaAdbInputMethod input_methods,
+        const char* config,
+        const char* agent_path,
+        MaaNotificationCallback callback,
+        void* callback_arg);
 
 private:
     inline static const std::filesystem::path libname_ = MAA_NS::path("MaaAdbControlUnit");
@@ -34,10 +35,11 @@ class Win32ControlUnitLibraryHolder : public LibraryHolder<Win32ControlUnitLibra
 {
 public:
     static std::shared_ptr<MAA_CTRL_UNIT_NS::ControlUnitAPI> create_control_unit(
-        MaaWin32Hwnd hWnd,
-        MaaWin32ControllerType type,
-        MaaControllerCallback callback,
-        MaaCallbackTransparentArg callback_arg);
+        void* hWnd,
+        MaaWin32ScreencapMethod screencap_method,
+        MaaWin32InputMethod input_method,
+        MaaNotificationCallback callback,
+        void* callback_arg);
 
 private:
     inline static const std::filesystem::path libname_ = MAA_NS::path("MaaWin32ControlUnit");
@@ -49,30 +51,13 @@ private:
 class DbgControlUnitLibraryHolder : public LibraryHolder<DbgControlUnitLibraryHolder>
 {
 public:
-    static std::shared_ptr<MAA_CTRL_UNIT_NS::ControlUnitAPI>
-        create_control_unit(MaaDbgControllerType type, MaaStringView read_path);
+    static std::shared_ptr<MAA_CTRL_UNIT_NS::ControlUnitAPI> create_control_unit(MaaDbgControllerType type, const char* read_path);
 
 private:
     inline static const std::filesystem::path libname_ = MAA_NS::path("MaaDbgControlUnit");
     inline static const std::string version_func_name_ = "MaaDbgControlUnitGetVersion";
     inline static const std::string create_func_name_ = "MaaDbgControlUnitCreate";
     inline static const std::string destroy_func_name_ = "MaaDbgControlUnitDestroy";
-};
-
-class ThriftControlUnitLibraryHolder : public LibraryHolder<ThriftControlUnitLibraryHolder>
-{
-public:
-    static std::shared_ptr<MAA_CTRL_UNIT_NS::ControlUnitAPI> create_control_unit(
-        MaaThriftControllerType type,
-        MaaStringView host,
-        int32_t port,
-        MaaStringView config);
-
-private:
-    inline static const std::filesystem::path libname_ = MAA_NS::path("MaaThriftControlUnit");
-    inline static const std::string version_func_name_ = "MaaThriftControlUnitGetVersion";
-    inline static const std::string create_func_name_ = "MaaThriftControlUnitCreate";
-    inline static const std::string destroy_func_name_ = "MaaThriftControlUnitDestroy";
 };
 
 MAA_NS_END

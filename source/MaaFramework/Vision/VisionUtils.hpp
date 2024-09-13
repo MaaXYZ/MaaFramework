@@ -44,9 +44,7 @@ inline static void sort_by_count_(ResultsVec& results)
 template <typename ResultsVec>
 inline static void sort_by_area_(ResultsVec& results)
 {
-    std::ranges::sort(results, [](const auto& lhs, const auto& rhs) -> bool {
-        return lhs.box.area() > rhs.box.area();
-    });
+    std::ranges::sort(results, [](const auto& lhs, const auto& rhs) -> bool { return lhs.box.area() > rhs.box.area(); });
 }
 
 template <typename ResultsVec>
@@ -165,10 +163,7 @@ inline static T softmax(const T& input)
 template <typename ResultsVec>
 inline static void merge_vector_(ResultsVec& left, ResultsVec right)
 {
-    left.insert(
-        left.end(),
-        std::make_move_iterator(right.begin()),
-        std::make_move_iterator(right.end()));
+    left.insert(left.end(), std::make_move_iterator(right.begin()), std::make_move_iterator(right.end()));
 }
 
 inline static cv::Mat hwc_to_chw(const cv::Mat& src)

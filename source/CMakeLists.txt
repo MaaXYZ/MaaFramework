@@ -8,10 +8,6 @@ if(WITH_WIN32_CONTROLLER)
     add_subdirectory(MaaWin32ControlUnit)
 endif()
 
-if(WITH_THRIFT_CONTROLLER)
-    add_subdirectory(MaaThriftControlUnit)
-endif()
-
 if(WITH_DBG_CONTROLLER)
     add_subdirectory(MaaDbgControlUnit)
 endif()

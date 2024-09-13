@@ -5,18 +5,6 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "MaaPP",
-            "type": "cppdbg",
-            "request": "launch",
-            "program": "${workspaceFolder}/build/bin/Debug/MaaPPTest",
-            "args": [],
-            "stopAtEntry": false,
-            "cwd": "${workspaceFolder}",
-            "environment": [],
-            "externalConsole": false,
-            "MIMode": "lldb"
-        },
-        {
             "type": "lldb",
             "request": "launch",
             "name": "MaaPiCli - Debug",
@@ -24,18 +12,6 @@
             "args": [],
             "cwd": "${workspaceFolder}",
             "preLaunchTask": "build_picli"
-        },
-        {
-            "name": "MaaHttp - Debug",
-            "type": "cppdbg",
-            "request": "launch",
-            "program": "${workspaceFolder}/build/bin/Debug/MaaHttp",
-            "args": [],
-            "stopAtEntry": false,
-            "cwd": "${fileDirname}",
-            "environment": [],
-            "externalConsole": false,
-            "MIMode": "lldb"
         }
     ]
 }

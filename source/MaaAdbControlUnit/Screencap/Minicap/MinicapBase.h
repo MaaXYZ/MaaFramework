@@ -25,7 +25,7 @@ public:
 public: // from UnitBase
     virtual bool parse(const json::value& config) override;
 
-public: // from ScreencapAPI
+public: // from ScreencapBase
     virtual std::optional<cv::Mat> screencap() override = 0;
 
 protected:

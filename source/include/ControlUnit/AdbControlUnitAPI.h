@@ -11,16 +11,17 @@ extern "C"
 {
 #endif
 
-    MAA_CONTROL_UNIT_API MaaStringView MaaAdbControlUnitGetVersion();
+    MAA_CONTROL_UNIT_API const char* MaaAdbControlUnitGetVersion();
 
     MAA_CONTROL_UNIT_API MaaControlUnitHandle MaaAdbControlUnitCreate(
-        MaaStringView adb_path,
-        MaaStringView adb_serial,
-        MaaAdbControllerType type,
-        MaaStringView config,
-        MaaStringView agent_path,
-        MaaControllerCallback callback,
-        MaaCallbackTransparentArg callback_arg);
+        const char* adb_path,
+        const char* adb_serial,
+        MaaAdbScreencapMethod screencap_methods,
+        MaaAdbInputMethod input_methods,
+        const char* config,
+        const char* agent_path,
+        MaaNotificationCallback callback,
+        void* callback_arg);
 
     MAA_CONTROL_UNIT_API void MaaAdbControlUnitDestroy(MaaControlUnitHandle handle);
 

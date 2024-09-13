@@ -18,13 +18,14 @@ MAA_VISION_NS_BEGIN
 
 OCRer::OCRer(
     cv::Mat image,
+    cv::Rect roi,
     OCRerParam param,
     std::shared_ptr<fastdeploy::vision::ocr::DBDetector> deter,
     std::shared_ptr<fastdeploy::vision::ocr::Recognizer> recer,
     std::shared_ptr<fastdeploy::pipeline::PPOCRv3> ocrer,
     Cache& cache,
     std::string name)
-    : VisionBase(std::move(image), std::move(name))
+    : VisionBase(std::move(image), std::move(roi), std::move(name))
     , param_(std::move(param))
     , deter_(std::move(deter))
     , recer_(std::move(recer))
@@ -38,53 +39,36 @@ void OCRer::analyze()
 {
     auto start_time = std::chrono::steady_clock::now();
 
-    auto results = predict_all_rois();
+    auto results = predict();
     add_results(std::move(results), param_.expected);
 
     cherry_pick();
 
     auto cost = duration_since(start_time);
-    LogTrace << name_ << VAR(uid_) << VAR(all_results_) << VAR(filtered_results_)
-             << VAR(best_result_) << VAR(cost);
+    LogTrace << name_ << VAR(uid_) << VAR(all_results_) << VAR(filtered_results_) << VAR(best_result_) << VAR(cost);
 }
 
-OCRer::ResultsVec OCRer::predict_all_rois() const
-{
-    if (param_.roi.empty()) {
-        return predict(cv::Rect(0, 0, image_.cols, image_.rows));
-    }
-    else {
-        ResultsVec results;
-        for (const cv::Rect& roi : param_.roi) {
-            auto res = predict(roi);
-            merge_vector_(results, std::move(res));
-        }
-        return results;
-    }
-}
-
-OCRer::ResultsVec OCRer::predict(const cv::Rect& roi) const
+OCRer::ResultsVec OCRer::predict() const
 {
     ResultsVec results;
 
-    if (auto cache_it = cache_.find(roi); cache_it != cache_.end()) {
-        LogTrace << "Hit OCR cache" << VAR(roi);
+    if (auto cache_it = cache_.find(roi_); cache_it != cache_.end()) {
+        LogTrace << "Hit OCR cache" << VAR(roi_);
         results = cache_it->second;
     }
     else {
-        auto image_roi = image_with_roi(roi);
-        results = param_.only_rec ? ResultsVec { predict_only_rec(image_roi) }
-                                  : predict_det_and_rec(image_roi);
-        cache_.emplace(roi, results);
+        auto image_roi = image_with_roi();
+        results = param_.only_rec ? ResultsVec { predict_only_rec(image_roi) } : predict_det_and_rec(image_roi);
+        cache_.emplace(roi_, results);
     }
 
     std::ranges::for_each(results, [&](auto& res) {
-        res.box.x += roi.x;
-        res.box.y += roi.y;
+        res.box.x += roi_.x;
+        res.box.y += roi_.y;
     });
 
     if (debug_draw_) {
-        auto draw = draw_result(roi, results);
+        auto draw = draw_result(results);
         handle_draw(draw);
     }
 
@@ -107,20 +91,15 @@ OCRer::ResultsVec OCRer::predict_det_and_rec(const cv::Mat& image_roi) const
 
     ResultsVec results;
 
-    if (ocr_result.boxes.size() != ocr_result.text.size()
-        || ocr_result.text.size() != ocr_result.rec_scores.size()) {
-        LogWarn << "Wrong ocr_result size" << VAR(ocr_result.boxes) << VAR(ocr_result.text)
-                << VAR(ocr_result.rec_scores);
+    if (ocr_result.boxes.size() != ocr_result.text.size() || ocr_result.text.size() != ocr_result.rec_scores.size()) {
+        LogWarn << "Wrong ocr_result size" << VAR(ocr_result.boxes) << VAR(ocr_result.text) << VAR(ocr_result.rec_scores);
 
-        if (ocr_result.boxes.empty() && ocr_result.text.size() == 1
-            && ocr_result.rec_scores.size() == 1) {
+        if (ocr_result.boxes.empty() && ocr_result.text.size() == 1 && ocr_result.rec_scores.size() == 1) {
             if (auto raw_text = ocr_result.text.front(); !raw_text.empty()) {
                 // 这种情况是 det 模型没出结果，整个 ROI 直接被送给了 rec 模型。凑合用吧（
                 auto text = to_u16(raw_text);
                 auto score = ocr_result.rec_scores.front();
-                results.emplace_back(Result { .text = std::move(text),
-                                              .box = { 0, 0, image_roi.cols, image_roi.rows },
-                                              .score = score });
+                results.emplace_back(Result { .text = std::move(text), .box = { 0, 0, image_roi.cols, image_roi.rows }, .score = score });
             }
         }
 
@@ -164,32 +143,22 @@ OCRer::Result OCRer::predict_only_rec(const cv::Mat& image_roi) const
     }
 
     auto text = to_u16(rec_text);
-    Result result { .text = std::move(text),
-                    .box = { 0, 0, image_roi.cols, image_roi.rows },
-                    .score = rec_score };
+    Result result { .text = std::move(text), .box = { 0, 0, image_roi.cols, image_roi.rows }, .score = rec_score };
 
     return result;
 }
 
-cv::Mat OCRer::draw_result(const cv::Rect& roi, const ResultsVec& results) const
+cv::Mat OCRer::draw_result(const ResultsVec& results) const
 {
-    cv::Mat image_draw = draw_roi(roi);
+    cv::Mat image_draw = draw_roi();
 
     for (size_t i = 0; i != results.size(); ++i) {
         const cv::Rect& my_box = results.at(i).box;
 
         const auto color = cv::Scalar(0, 0, 255);
         cv::rectangle(image_draw, my_box, color, 1);
-        std::string flag =
-            std::format("{}: [{}, {}, {}, {}]", i, my_box.x, my_box.y, my_box.width, my_box.height);
-        cv::putText(
-            image_draw,
-            flag,
-            cv::Point(my_box.x, my_box.y - 5),
-            cv::FONT_HERSHEY_PLAIN,
-            1.2,
-            color,
-            1);
+        std::string flag = std::format("{}: [{}, {}, {}, {}]", i, my_box.x, my_box.y, my_box.width, my_box.height);
+        cv::putText(image_draw, flag, cv::Point(my_box.x, my_box.y - 5), cv::FONT_HERSHEY_PLAIN, 1.2, color, 1);
     }
 
     return image_draw;
@@ -268,9 +237,7 @@ void OCRer::sort_(ResultsVec& results) const
         sort_by_random_(results);
         break;
     case ResultOrderBy::Length:
-        std::ranges::sort(results, [](const auto& lhs, const auto& rhs) -> bool {
-            return lhs.text.size() > rhs.text.size();
-        });
+        std::ranges::sort(results, [](const auto& lhs, const auto& rhs) -> bool { return lhs.text.size() > rhs.text.size(); });
         break;
 
     default:

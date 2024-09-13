@@ -24,13 +24,8 @@ void MinicapDirect::deinit()
 
 std::optional<cv::Mat> MinicapDirect::screencap()
 {
-    auto res = binary_->invoke_bin_and_read_pipe(std::format(
-        "-P {}x{}@{}x{}/{} -s",
-        display_width_,
-        display_height_,
-        display_width_,
-        display_height_,
-        0));
+    auto res = binary_->invoke_bin_and_read_pipe(
+        std::format("-P {}x{}@{}x{}/{} -s", display_width_, display_height_, display_width_, display_height_, 0));
 
     if (!res) {
         return std::nullopt;

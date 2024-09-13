@@ -1,69 +1,86 @@
-from typing import Tuple
+from typing import Tuple, Optional
 
 # python -m pip install maafw
 from maa.define import RectType
 from maa.resource import Resource
 from maa.controller import AdbController
-from maa.instance import Instance
+from maa.tasker import Tasker
 from maa.toolkit import Toolkit
 
 from maa.custom_recognizer import CustomRecognizer
 from maa.custom_action import CustomAction
 
-import asyncio
 
-
-async def main():
+def main():
     user_path = "./"
     Toolkit.init_option(user_path)
 
     resource = Resource()
-    await resource.load("sample/resource")
+    res_job = resource.post_path("sample/resource")
+    res_job.wait()
 
-    device_list = await Toolkit.adb_devices()
-    if not device_list:
+    adb_devices = Toolkit.find_adb_devices()
+    if not adb_devices:
         print("No ADB device found.")
         exit()
 
     # for demo, we just use the first device
-    device = device_list[0]
+    device = adb_devices[0]
     controller = AdbController(
         adb_path=device.adb_path,
         address=device.address,
+        screencap_methods=device.screencap_methods,
+        input_methods=device.input_methods,
+        config=device.config,
     )
-    await controller.connect()
+    controller.post_connection().wait()
 
-    maa_inst = Instance()
-    maa_inst.bind(resource, controller)
+    tasker = Tasker()
+    tasker.bind(resource, controller)
 
-    if not maa_inst.inited:
+    if not tasker.inited:
         print("Failed to init MAA.")
         exit()
 
-    maa_inst.register_recognizer("MyRec", my_rec)
-    maa_inst.register_action("MyAct", my_act)
+    my_rec = MyRecognizer()
+    resource.register_custom_recognizer("MyRec", my_rec)
 
-    await maa_inst.run_task("StartUpAndClickButton")
+    task_detail = tasker.post_pipeline("StartUpAndClickButton").wait().get()
+    # do something with task_detail
+
+    reco_detail = tasker.post_recognition("MySingleMatch").wait().get()
+    # do something with reco_detail
 
 
 class MyRecognizer(CustomRecognizer):
+
     def analyze(
-        self, context, image, task_name, custom_param
-    ) -> Tuple[bool, RectType, str]:
-        return True, (0, 0, 100, 100), "Hello World!"
+        self,
+        context,
+        argv: CustomRecognizer.AnalyzeArg,
+    ) -> CustomRecognizer.AnalyzeResult:
+        reco_detail = context.run_recognition(
+            "MyCustomOCR", argv.image, pipeline_override={"roi": [100, 100, 200, 300]}
+        )
 
+        # context is a reference, will override the pipeline for whole task
+        context.override_pipeline({"MyCustomOCR": {"roi": [1, 1, 114, 514]}})
+        # context.run_recognition ...
 
-class MyAction(CustomAction):
-    def run(self, context, task_name, custom_param, box, rec_detail) -> bool:
-        return True
+        # make a new context to override the pipeline, only for itself
+        new_context = context.clone()
+        new_context.override_pipeline({"MyCustomOCR": {"roi": [100, 200, 300, 400]}})
+        reco_detail = new_context.run_recognition("MyCustomOCR", argv.image)
 
-    def stop(self) -> None:
-        pass
+        click_job = context.tasker.controller.post_click(10, 20)
+        click_job.wait()
 
+        context.override_next(argv.current_task_name, ["TaskA", "TaskB"])
 
-my_rec = MyRecognizer()
-my_act = MyAction()
+        return CustomRecognizer.AnalyzeResult(
+            box=(0, 0, 100, 100), detail="Hello World!"
+        )
 
 
 if __name__ == "__main__":
-    asyncio.run(main())
+    main()

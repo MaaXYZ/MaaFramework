@@ -1,5 +1,4 @@
 #pragma once
-#pragma once
 
 #include <filesystem>
 #include <map>
@@ -20,7 +19,6 @@ class GlobalOptionConfig : public SingletonHolder<GlobalOptionConfig>
     friend class SingletonHolder<GlobalOptionConfig>;
 
 public:
-    inline static const std::filesystem::path kConfigPath_Deprecated = "config/maa_toolkit.json";
     inline static const std::filesystem::path kConfigPath = "config/maa_option.json";
     inline static const std::filesystem::path kDebugDir = "debug";
 
@@ -33,12 +31,7 @@ public:
         int32_t stdout_level = MaaLoggingLevel_Error;
         bool show_hit_draw = false;
 
-        MEO_JSONIZATION(
-            MEO_OPT logging,
-            MEO_OPT save_draw,
-            MEO_OPT recording,
-            MEO_OPT stdout_level,
-            MEO_OPT show_hit_draw);
+        MEO_JSONIZATION(MEO_OPT logging, MEO_OPT save_draw, MEO_OPT recording, MEO_OPT stdout_level, MEO_OPT show_hit_draw);
     };
 
 public:

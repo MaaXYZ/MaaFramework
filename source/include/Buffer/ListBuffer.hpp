@@ -21,6 +21,8 @@ public:
 
     virtual const T& at(size_t index) const { return list_.at(index); }
 
+    virtual T& at(size_t index) { return list_.at(index); }
+
     virtual void append(T value) { list_.emplace_back(std::move(value)); }
 
     virtual void remove(size_t index) { list_.erase(list_.begin() + index); }

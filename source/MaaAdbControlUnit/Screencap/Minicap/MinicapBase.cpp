@@ -55,8 +55,7 @@ bool MinicapBase::init_binary()
     }
     const std::string& target_arch = *arch_iter;
 
-    auto sdk_iter =
-        std::ranges::find_if(sdk_list_, [sdk_opt](int s) { return s <= sdk_opt.value(); });
+    auto sdk_iter = std::ranges::find_if(sdk_list_, [sdk_opt](int s) { return s <= sdk_opt.value(); });
     if (sdk_iter == sdk_list_.end()) {
         return false;
     }
@@ -64,8 +63,7 @@ bool MinicapBase::init_binary()
 
     // TODO: 确认低版本是否使用minicap-nopie
     const auto bin_path = agent_path_ / path(target_arch) / path("bin") / path("minicap");
-    const auto lib_path = agent_path_ / path(target_arch) / path("lib")
-                          / path(std::format("android-{}", fit_sdk)) / path("minicap.so");
+    const auto lib_path = agent_path_ / path(target_arch) / path("lib") / path(std::format("android-{}", fit_sdk)) / path("minicap.so");
     if (!binary_->push(bin_path) || !library_->push(lib_path)) {
         return false;
     }

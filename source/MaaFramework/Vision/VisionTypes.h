@@ -13,6 +13,21 @@
 
 MAA_VISION_NS_BEGIN
 
+struct Target
+{
+    enum class Type
+    {
+        Invalid = 0,
+        Self,
+        PreTask,
+        Region,
+    };
+
+    Type type = Type::Self;
+    std::variant<std::monostate, std::string, cv::Rect> param;
+    cv::Rect offset {};
+};
+
 enum class ResultOrderBy
 {
     Horizontal,
@@ -33,9 +48,9 @@ struct TemplateMatcherParam
     inline static constexpr double kDefaultThreshold = 0.7;
     inline static constexpr int kDefaultMethod = 5; // cv::TM_CCOEFF_NORMED
 
-    std::vector<cv::Rect> roi;
+    Target roi_target;
     std::vector<std::string> template_paths;
-    std::vector<double> thresholds;
+    std::vector<double> thresholds = { kDefaultThreshold };
     int method = kDefaultMethod;
     bool green_mask = false;
 
@@ -47,7 +62,7 @@ struct OCRerParam
 {
     std::string model;
     bool only_rec = false;
-    std::vector<cv::Rect> roi;
+    Target roi_target;
     std::vector<std::wstring> expected;
     std::vector<std::pair<std::wstring, std::wstring>> replace;
 
@@ -57,7 +72,7 @@ struct OCRerParam
 
 struct TemplateComparatorParam
 {
-    std::vector<cv::Rect> roi;
+    Target roi_target;
     double threshold = 0.0;
     int method = 0;
 };
@@ -66,6 +81,7 @@ struct CustomRecognizerParam
 {
     std::string name;
     json::value custom_param;
+    Target roi_target;
 };
 
 struct NeuralNetworkClassifierParam
@@ -73,7 +89,7 @@ struct NeuralNetworkClassifierParam
     std::vector<std::string> labels; // only for output and debug
     std::string model;
 
-    std::vector<cv::Rect> roi;
+    Target roi_target;
     std::vector</*result_index*/ size_t> expected;
 
     ResultOrderBy order_by = ResultOrderBy::Horizontal;
@@ -93,9 +109,9 @@ struct NeuralNetworkDetectorParam
     std::string model;
     Net net = kDefaultNet;
 
-    std::vector<cv::Rect> roi;
+    Target roi_target;
     std::vector</*result_index*/ size_t> expected;
-    std::vector<double> thresholds;
+    std::vector<double> thresholds = { kDefaultThreshold };
 
     ResultOrderBy order_by = ResultOrderBy::Horizontal;
     int result_index = 0;
@@ -107,7 +123,7 @@ struct ColorMatcherParam
     inline static constexpr int kDefaultMethod = 4; // cv::COLOR_BGR2RGB
     using Range = std::pair<std::vector<int>, std::vector<int>>;
 
-    std::vector<cv::Rect> roi;
+    Target roi_target;
     std::vector<Range> range;
     int count = kDefaultCount;
     int method = kDefaultMethod;
@@ -140,7 +156,7 @@ struct FeatureMatcherParam
     inline static constexpr double kDefaultDistanceRatio = 0.6;
     inline static constexpr int kDefaultCount = 4;
 
-    std::vector<cv::Rect> roi;
+    Target roi_target;
     std::vector<std::string> template_paths;
     bool green_mask = false;
 

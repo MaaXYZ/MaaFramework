@@ -55,10 +55,8 @@
  */
 #define MaaMsg_Controller_ScreencapInited ("Controller.ScreencapInited")
 #define MaaMsg_Controller_ScreencapInitFailed ("Controller.ScreencapInitFailed")
-#define MaaMsg_Controller_TouchInputInited ("Controller.TouchinputInited")
-#define MaaMsg_Controller_TouchInputInitFailed ("Controller.TouchinputInitFailed")
-#define MaaMsg_Controller_KeyInputInited ("Controller.KeyinputInited")
-#define MaaMsg_Controller_KeyInputInitFailed ("Controller.KeyinputInitFailed")
+#define MaaMsg_Controller_InputInited ("Controller.TouchinputInited")
+#define MaaMsg_Controller_InputInitFailed ("Controller.TouchinputInitFailed")
 
 /**
  * @brief Message for the controller connected.
@@ -104,9 +102,32 @@
  *     hash: string
  * }
  */
-#define MaaMsg_Task_Started ("Task.Started")
-#define MaaMsg_Task_Completed ("Task.Completed")
-#define MaaMsg_Task_Failed ("Task.Failed")
+#define MaaMsg_Tasker_Task_Started ("Tasker.Task.Started")
+#define MaaMsg_Tasker_Task_Completed ("Tasker.Task.Completed")
+#define MaaMsg_Tasker_Task_Failed ("Tasker.Task.Failed")
+/// @}
+
+/**
+ * @{
+ * @brief Message for the recognitions.
+ *
+ * payload: {
+ *     task_id: number,
+ *     entry: string,
+ *     uuid: string,
+ *     hash: string,
+ *     current: string,
+ *     recognition: {
+ *         reco_id: number,
+ *         name: string,
+ *         box: [number, number, number, number], // If not recognized, it is null
+ *         detail: any,
+ *     }
+ * }
+ */
+
+#define MaaMsg_Task_Debug_RecognitionResult ("Task.Debug.RecognitionResult")
+#define MaaMsg_Task_Debug_Hit ("Task.Debug.Hit")
 /// @}
 
 /**
@@ -118,52 +139,39 @@
  *     entry: string,
  *     uuid: string,
  *     hash: string,
- *     pre_hit_task: string,
- *     name: string,
- *     recognition: {
- *         id: number,
- *         box: [number, number, number, number],
- *         detail: string,
- *         hit: boolean,
- *     },
- *     node_id: number,
- *     status: number,
+ *     current: string,
+ *     node: {
+ *         node_id: number,
+ *         name: string,
+ *         reco_id: number,
+ *         times: number,
+ *         completed: boolean,
+ *     }
  * }
  */
+
 #define MaaMsg_Task_Focus_ReadyToRun ("Task.Focus.ReadyToRun")
-#define MaaMsg_Task_Focus_Runout ("Task.Focus.Runout")
 #define MaaMsg_Task_Focus_Completed ("Task.Focus.Completed")
+
+#define MaaMsg_Task_Debug_ReadyToRun ("Task.Debug.ReadyToRun")
+#define MaaMsg_Task_Debug_Completed ("Task.Debug.Completed")
 /// @}
 
 /**
  * @{
- * @brief Message for debug.
+ * @brief Message for the task list.
  *
  * payload: {
  *     task_id: number,
  *     entry: string,
  *     uuid: string,
  *     hash: string,
- *     pre_hit_task: string,
- *     name: string,
- *     recognition: {
- *         id: number,
- *         box: [number, number, number, number],
- *         detail: string,
- *         hit: boolean,
- *     },
- *     node_id: number,
- *     status: number,
+ *     current: string,
+ *     list: [string],
  * }
  */
-#define MaaMsg_Task_Debug_ReadyToRun ("Task.Debug.ReadyToRun")
-#define MaaMsg_Task_Debug_Runout ("Task.Debug.Runout")
-#define MaaMsg_Task_Debug_Completed ("Task.Debug.Completed")
-/// @}
-
 #define MaaMsg_Task_Debug_ListToRecognize ("Task.Debug.ListToRecognize")
-#define MaaMsg_Task_Debug_RecognitionResult ("Task.Debug.RecognitionResult")
-#define MaaMsg_Task_Debug_Hit ("Task.Debug.Hit")
 #define MaaMsg_Task_Debug_MissAll ("Task.Debug.MissAll")
+/// @}
 
 /** @} */

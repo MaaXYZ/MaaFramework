@@ -6,12 +6,8 @@
 
 MAA_VISION_NS_BEGIN
 
-TemplateComparator::TemplateComparator(
-    cv::Mat lhs,
-    cv::Mat rhs,
-    TemplateComparatorParam param,
-    std::string name)
-    : VisionBase(std::move(lhs), std::move(name))
+TemplateComparator::TemplateComparator(cv::Mat lhs, cv::Mat rhs, cv::Rect roi, TemplateComparatorParam param, std::string name)
+    : VisionBase(std::move(lhs), std::move(roi), std::move(name))
     , rhs_image_(std::move(rhs))
     , param_(std::move(param))
 {
@@ -27,42 +23,22 @@ void TemplateComparator::analyze()
 
     auto start_time = std::chrono::steady_clock::now();
 
-    auto results = compare_all_rois();
-    add_results(std::move(results), param_.threshold);
+    cv::Mat lhs_roi = image_(correct_roi(roi_, image_));
+    cv::Mat rhs_roi = rhs_image_(correct_roi(roi_, rhs_image_));
+    double score = comp(lhs_roi, rhs_roi, param_.method);
+    Result res = Result { .box = roi_, .score = score };
+
+    add_results({ std::move(res) }, param_.threshold);
 
     cherry_pick();
     auto cost = duration_since(start_time);
 
-    LogTrace << name_ << VAR(uid_) << VAR(all_results_) << VAR(filtered_results_)
-             << VAR(best_result_) << VAR(cost);
-}
-
-TemplateComparator::ResultsVec TemplateComparator::compare_all_rois() const
-{
-    auto method = param_.method;
-
-    if (param_.roi.empty()) {
-        double score = comp(image_, rhs_image_, method);
-        return { Result { .box = cv::Rect(0, 0, image_.cols, image_.rows), .score = score } };
-    }
-    else {
-        ResultsVec results;
-        for (const cv::Rect& roi : param_.roi) {
-            cv::Mat lhs_roi = image_(correct_roi(roi, image_));
-            cv::Mat rhs_roi = rhs_image_(correct_roi(roi, rhs_image_));
-
-            double score = comp(lhs_roi, rhs_roi, method);
-            results.emplace_back(Result { .box = roi, .score = score });
-        }
-        return results;
-    }
+    LogTrace << name_ << VAR(uid_) << VAR(all_results_) << VAR(filtered_results_) << VAR(best_result_) << VAR(cost);
 }
 
 void TemplateComparator::add_results(ResultsVec results, double threshold)
 {
-    std::ranges::copy_if(results, std::back_inserter(filtered_results_), [&](const auto& res) {
-        return res.score > threshold;
-    });
+    std::ranges::copy_if(results, std::back_inserter(filtered_results_), [&](const auto& res) { return res.score > threshold; });
 
     merge_vector_(all_results_, std::move(results));
 }

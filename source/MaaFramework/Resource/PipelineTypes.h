@@ -58,22 +58,7 @@ enum class Type
     StopTask,
 };
 
-struct Target
-{
-    enum class Type
-    {
-        Invalid = 0,
-        Self,
-        PreTask,
-        Region,
-    };
-
-    Type type = Type::Self;
-    std::variant<std::monostate, std::string, cv::Rect> param;
-    cv::Rect offset {};
-};
-
-using TargetParam = std::variant<std::monostate, std::string, cv::Rect>;
+using Target = MAA_VISION_NS::Target;
 
 struct ClickParam
 {
@@ -107,10 +92,10 @@ struct CustomParam
 {
     std::string name;
     json::value custom_param;
+    Target target;
 };
 
-using Param = std::
-    variant<std::monostate, ClickParam, SwipeParam, KeyParam, TextParam, AppParam, CustomParam>;
+using Param = std::variant<std::monostate, ClickParam, SwipeParam, KeyParam, TextParam, AppParam, CustomParam>;
 } // namespace Action
 
 struct WaitFreezesParam
@@ -121,32 +106,32 @@ struct WaitFreezesParam
 
     double threshold = 0.95;
     int method = MAA_VISION_NS::TemplateMatcherParam::kDefaultMethod;
+    std::chrono::milliseconds rate_limit = std::chrono::milliseconds(100);
 };
 
-struct TaskData
+struct PipelineData
 {
     using NextList = std::vector<std::string>;
 
     std::string name;
-    bool is_sub = false;
-    bool inverse = false;
+    bool is_sub = false; // for compatibility with 1.x
     bool enabled = true;
 
     Recognition::Type rec_type = Recognition::Type::DirectHit;
     Recognition::Param rec_param = MAA_VISION_NS::DirectHitParam {};
+    bool inverse = false;
 
     Action::Type action_type = Action::Type::DoNothing;
     Action::Param action_param;
+
     NextList next;
-
-    std::chrono::milliseconds timeout = std::chrono::milliseconds(20 * 1000);
-    NextList timeout_next;
-
-    uint times_limit = UINT_MAX;
-    NextList runout_next;
+    NextList interrupt;
+    NextList on_error;
+    std::chrono::milliseconds reco_timeout = std::chrono::milliseconds(20 * 1000);
+    std::chrono::milliseconds rate_limit = std::chrono::milliseconds(1000);
 
     std::chrono::milliseconds pre_delay = std::chrono::milliseconds(200);
-    std::chrono::milliseconds post_delay = std::chrono::milliseconds(500);
+    std::chrono::milliseconds post_delay = std::chrono::milliseconds(200);
 
     WaitFreezesParam pre_wait_freezes;
     WaitFreezesParam post_wait_freezes;

@@ -8,14 +8,14 @@
 
 MAA_CTRL_UNIT_NS_BEGIN
 
-class MtouchHelper : public TouchInputBase
+class MtouchHelper : public InputBase
 {
 public:
     MtouchHelper() { children_.emplace_back(device_info_); }
 
     virtual ~MtouchHelper() override = default;
 
-public: // from TouchInputAPI
+public: // from InputBase
     virtual bool click(int x, int y) override;
     virtual bool swipe(int x1, int y1, int x2, int y2, int duration) override;
 
@@ -24,6 +24,9 @@ public: // from TouchInputAPI
     virtual bool touch_up(int contact) override;
 
     virtual bool parse(const json::value& config) override;
+
+    virtual bool press_key(int key) override = 0;
+    virtual bool input_text(const std::string& text) override = 0;
 
 protected:
     bool read_info();

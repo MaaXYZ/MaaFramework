@@ -39,8 +39,7 @@ std::optional<cv::Mat> FramePoolScreencap::screencap()
         LogWarn << "frame is null, continue";
     }
 
-    auto access =
-        frame.Surface().as<Windows::Graphics::DirectX::Direct3D11::IDirect3DDxgiInterfaceAccess>();
+    auto access = frame.Surface().as<Windows::Graphics::DirectX::Direct3D11::IDirect3DDxgiInterfaceAccess>();
 
     winrt::com_ptr<ID3D11Texture2D> texture = nullptr;
     HRESULT ret = access->GetInterface(winrt::guid_of<ID3D11Texture2D>(), texture.put_void());
@@ -114,8 +113,7 @@ bool FramePoolScreencap::init()
         return false;
     }
 
-    auto activation_factory =
-        winrt::get_activation_factory<winrt::Windows::Graphics::Capture::GraphicsCaptureItem>();
+    auto activation_factory = winrt::get_activation_factory<winrt::Windows::Graphics::Capture::GraphicsCaptureItem>();
     auto interop_factory = activation_factory.as<IGraphicsCaptureItemInterop>();
     ret = interop_factory->CreateForWindow(
         hwnd_,

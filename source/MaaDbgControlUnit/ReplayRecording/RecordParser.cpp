@@ -62,8 +62,7 @@ std::optional<Recording> RecordParser::parse(const std::filesystem::path& path)
     return recording;
 }
 
-std::optional<Record>
-    RecordParser::parse_record(const json::value& record_json, const std::filesystem::path& dir)
+std::optional<Record> RecordParser::parse_record(const json::value& record_json, const std::filesystem::path& dir)
 {
     Record record;
     record.raw_data = record_json;
@@ -73,16 +72,11 @@ std::optional<Record>
 
     std::string type_str = record_json.get("type", std::string());
     static const std::unordered_map<std::string, Record::Action::Type> kTypeMap = {
-        { "connect", Record::Action::Type::connect },
-        { "click", Record::Action::Type::click },
-        { "swipe", Record::Action::Type::swipe },
-        { "touch_down", Record::Action::Type::touch_down },
-        { "touch_move", Record::Action::Type::touch_move },
-        { "touch_up", Record::Action::Type::touch_up },
-        { "press_key", Record::Action::Type::press_key },
-        { "input_text", Record::Action::Type::input_text },
-        { "screencap", Record::Action::Type::screencap },
-        { "start_app", Record::Action::Type::start_app },
+        { "connect", Record::Action::Type::connect },       { "click", Record::Action::Type::click },
+        { "swipe", Record::Action::Type::swipe },           { "touch_down", Record::Action::Type::touch_down },
+        { "touch_move", Record::Action::Type::touch_move }, { "touch_up", Record::Action::Type::touch_up },
+        { "press_key", Record::Action::Type::press_key },   { "input_text", Record::Action::Type::input_text },
+        { "screencap", Record::Action::Type::screencap },   { "start_app", Record::Action::Type::start_app },
         { "stop_app", Record::Action::Type::stop_app },
     };
 
@@ -299,8 +293,7 @@ std::optional<Record::Param> RecordParser::parse_input_text(const json::value& r
     return result;
 }
 
-std::optional<Record::Param>
-    RecordParser::parse_screencap(const json::value& record_json, const std::filesystem::path& dir)
+std::optional<Record::Param> RecordParser::parse_screencap(const json::value& record_json, const std::filesystem::path& dir)
 {
     Record::ScreencapParam result;
 

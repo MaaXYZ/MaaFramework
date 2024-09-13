@@ -39,7 +39,7 @@ protected:
 class VisionBase
 {
 public:
-    VisionBase(cv::Mat image, std::string name);
+    VisionBase(cv::Mat image, cv::Rect roi, std::string name);
 
     const std::vector<cv::Mat>& draws() const& { return draws_; }
 
@@ -48,14 +48,15 @@ public:
     MaaRecoId uid() const { return uid_; }
 
 protected:
-    cv::Mat image_with_roi(const cv::Rect& roi) const;
+    cv::Mat image_with_roi() const;
 
 protected:
-    cv::Mat draw_roi(const cv::Rect& roi, const cv::Mat& base = cv::Mat()) const;
+    cv::Mat draw_roi(const cv::Mat& base = cv::Mat()) const;
     void handle_draw(const cv::Mat& draw) const;
 
 protected:
     const cv::Mat image_;
+    const cv::Rect roi_;
     const std::string name_;
 
     bool debug_draw_ = false;
@@ -67,7 +68,7 @@ private:
     mutable std::vector<cv::Mat> draws_;
 
 private:
-    inline static std::atomic<MaaRecoId> s_global_uid = 0;
+    inline static std::atomic<MaaRecoId> s_global_uid = 300'000'000;
 };
 
 MAA_VISION_NS_END

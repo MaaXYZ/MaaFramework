@@ -17,12 +17,12 @@ template <typename Item>
 class AsyncRunner : public NonCopyable
 {
 public:
-    using Id = int64_t;
+    using Id = MaaId;
     using ProcessFunc = std::function<bool(Id id, Item item)>;
     using NotifyFunc = std::function<void(void)>;
 
 public:
-    explicit AsyncRunner(ProcessFunc run_task);
+    explicit AsyncRunner(ProcessFunc proc);
     virtual ~AsyncRunner();
     void release();
 
@@ -33,16 +33,12 @@ public:
     void clear();
     bool running() const;
 
-    template <typename Pred>
-    void for_each(Pred pred);
-
 private:
     void working();
 
     ProcessFunc process_;
 
     std::list<std::pair<Id, Item>> queue_;
-    std::optional<std::pair<Id, Item>> running_item_ = std::nullopt;
     std::mutex mutex_;
     std::condition_variable cond_;
     std::atomic_bool running_ = false;
@@ -55,14 +51,14 @@ private:
     mutable std::condition_variable compl_cond_;
 
     std::atomic_bool exit_ = false;
-    inline static std::atomic<Id> cross_inst_id_ = 0;
+    inline static std::atomic<Id> cross_inst_id_ = 400'000'000;
 
     std::thread thread_;
 };
 
 template <typename Item>
-inline AsyncRunner<Item>::AsyncRunner(ProcessFunc run_task)
-    : process_(run_task)
+inline AsyncRunner<Item>::AsyncRunner(ProcessFunc proc)
+    : process_(proc)
 {
     // LogFunc;
 
@@ -115,8 +111,7 @@ inline void AsyncRunner<Item>::working()
 
         running_ = true;
 
-        running_item_ = std::move(queue_.front());
-        auto [id, item] = *running_item_;
+        auto [id, item] = std::move(queue_.front());
         queue_.pop_front();
         lock.unlock();
 
@@ -125,7 +120,6 @@ inline void AsyncRunner<Item>::working()
         status_lock.unlock();
 
         bool ret = process_(id, std::move(item));
-        running_item_ = std::nullopt;
 
         status_lock.lock();
         status_map_[id] = ret ? MaaStatus_Success : MaaStatus_Failed;
@@ -218,19 +212,6 @@ template <typename Item>
 inline bool AsyncRunner<Item>::running() const
 {
     return running_;
-}
-
-template <typename Item>
-template <typename Pred>
-inline void AsyncRunner<Item>::for_each(Pred pred)
-{
-    if (running_item_) {
-        auto& [id, item] = *running_item_;
-        pred(id, item);
-    }
-    for (auto& [id, item] : queue_) {
-        pred(id, item);
-    }
 }
 
 MAA_NS_END
