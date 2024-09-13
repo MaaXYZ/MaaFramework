@@ -55,10 +55,8 @@
  */
 #define MaaMsg_Controller_ScreencapInited ("Controller.ScreencapInited")
 #define MaaMsg_Controller_ScreencapInitFailed ("Controller.ScreencapInitFailed")
-#define MaaMsg_Controller_TouchInputInited ("Controller.TouchinputInited")
-#define MaaMsg_Controller_TouchInputInitFailed ("Controller.TouchinputInitFailed")
-#define MaaMsg_Controller_KeyInputInited ("Controller.KeyinputInited")
-#define MaaMsg_Controller_KeyInputInitFailed ("Controller.KeyinputInitFailed")
+#define MaaMsg_Controller_InputInited ("Controller.TouchinputInited")
+#define MaaMsg_Controller_InputInitFailed ("Controller.TouchinputInitFailed")
 
 /**
  * @brief Message for the controller connected.
@@ -88,7 +86,7 @@
  * }
  */
 #define MaaMsg_Controller_Action_Started ("Controller.Action.Started")
-#define MaaMsg_Controller_completed ("Controller.Action.Completed")
+#define MaaMsg_Controller_Action_Completed ("Controller.Action.Completed")
 #define MaaMsg_Controller_Action_Failed ("Controller.Action.Failed")
 /// @}
 
@@ -111,7 +109,7 @@
 
 /**
  * @{
- * @brief Message for the recognition.
+ * @brief Message for the recognitions.
  *
  * payload: {
  *     task_id: number,
@@ -134,7 +132,7 @@
 
 /**
  * @{
- * @brief Message for the recognition.
+ * @brief Message for the task focus.
  *
  * payload: {
  *     task_id: number,
@@ -161,7 +159,7 @@
 
 /**
  * @{
- * @brief Message for the task focus.
+ * @brief Message for the task list.
  *
  * payload: {
  *     task_id: number,

@@ -84,27 +84,14 @@ bool ControlUnitMgr::connect()
     if (input_) {
         if (!input_->init()) {
             LogError << "failed to init touch_input";
-            notifier.notify(MaaMsg_Controller_TouchInputInitFailed, details);
+            notifier.notify(MaaMsg_Controller_InputInitFailed, details);
             return false;
         }
-        notifier.notify(MaaMsg_Controller_TouchInputInited, details);
+        notifier.notify(MaaMsg_Controller_InputInited, details);
     }
     else {
         LogWarn << "input_ is null";
-        notifier.notify(MaaMsg_Controller_TouchInputInitFailed, details);
-    }
-
-    if (input_) {
-        if (!input_->init()) {
-            LogError << "failed to init key_input";
-            notifier.notify(MaaMsg_Controller_KeyInputInitFailed, details);
-            return false;
-        }
-        notifier.notify(MaaMsg_Controller_KeyInputInited, details);
-    }
-    else {
-        LogWarn << "input_ is null";
-        notifier.notify(MaaMsg_Controller_KeyInputInitFailed, details);
+        notifier.notify(MaaMsg_Controller_InputInitFailed, details);
     }
 
     return true;
