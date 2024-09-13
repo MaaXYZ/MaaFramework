@@ -30,3 +30,7 @@ class MyAction(CustomAction):
         # if reco_detail xxxx
 
         return CustomAction.RunResult(success=True)
+
+
+if __name__ == "__main__":
+    main()

@@ -3,6 +3,7 @@ import json
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Dict, List, Union, Optional, Any
+from collections import defaultdict
 
 from .define import *
 from .library import Library
@@ -16,7 +17,7 @@ class AdbDevice:
     address: str
     screencap_methods: MaaAdbScreencapMethod
     input_methods: MaaAdbInputMethod
-    config: str
+    config: Dict[str, Any]
 
 
 @dataclass
@@ -30,11 +31,11 @@ class Toolkit:
 
     ### public ###
 
-    @classmethod
+    @staticmethod
     def init_option(
-        cls, user_path: Union[str, Path], default_config: Dict = {}
+        user_path: Union[str, Path], default_config: Dict = {}
     ) -> bool:
-        cls._set_api_properties()
+        Toolkit._set_api_properties()
 
         return bool(
             Library.toolkit.MaaToolkitConfigInitOption(
@@ -43,14 +44,13 @@ class Toolkit:
             )
         )
 
-    @classmethod
+    @staticmethod
     def find_adb_devices(
-        cls, specified_adb: Union[str, Path] = None
+        specified_adb: Union[str, Path] = None
     ) -> List[AdbDevice]:
-        cls._set_api_properties()
+        Toolkit._set_api_properties()
 
         list_handle = Library.toolkit.MaaToolkitAdbDeviceListCreate()
-        Library.toolkit.MaaToolkitAdbDeviceListDestroy(list_handle)
 
         if specified_adb:
             Library.toolkit.MaaToolkitAdbDeviceFindSpecified(
@@ -82,9 +82,9 @@ class Toolkit:
             input_methods = Library.toolkit.MaaToolkitAdbDeviceGetInputMethods(
                 device_handle
             )
-            config = Library.toolkit.MaaToolkitAdbDeviceGetConfig(device_handle).decode(
+            config = json.loads(Library.toolkit.MaaToolkitAdbDeviceGetConfig(device_handle).decode(
                 "utf-8"
-            )
+            ))
 
             devices.append(
                 AdbDevice(
@@ -92,14 +92,15 @@ class Toolkit:
                 )
             )
 
+        Library.toolkit.MaaToolkitAdbDeviceListDestroy(list_handle)
+
         return devices
 
-    @classmethod
-    def find_desktop_windows(cls) -> List[DesktopWindow]:
-        cls._set_api_properties()
+    @staticmethod
+    def find_desktop_windows() -> List[DesktopWindow]:
+        Toolkit._set_api_properties()
 
         list_handle = Library.toolkit.MaaToolkitDesktopWindowListCreate()
-        Library.toolkit.MaaToolkitDesktopWindowListDestroy(list_handle)
 
         Library.toolkit.MaaToolkitDesktopWindowFindAll(list_handle)
 
@@ -120,25 +121,20 @@ class Toolkit:
 
             windows.append(DesktopWindow(hwnd, class_name, window_name))
 
+        Library.toolkit.MaaToolkitDesktopWindowListDestroy(list_handle)
         return windows
 
-    @classmethod
+    @staticmethod
     def register_pi_custom_recognition(
-        cls, name: str, recognizer: "CustomRecognizer", inst_id: int = 0
+        name: str, recognizer: "CustomRecognizer", inst_id: int = 0
     ) -> None:
-        cls._set_api_properties()
-
-        if not cls._custom_recognizer_holder:
-            cls._custom_recognizer_holder = {}
-
-        if not cls._custom_recognizer_holder[inst_id]:
-            cls._custom_recognizer_holder[inst_id] = {}
-
+        Toolkit._set_api_properties()
+        
         # avoid gc
-        cls._custom_recognizer_holder[inst_id][name] = recognizer
+        Toolkit._custom_recognizer_holder[inst_id][name] = recognizer
 
         return bool(
-            Library.framework.MaaToolkitProjectInterfaceRegisterCustomRecognition(
+            Library.toolkit.MaaToolkitProjectInterfaceRegisterCustomRecognition(
                 ctypes.c_uint64(inst_id),
                 name.encode("utf-8"),
                 recognizer.c_handle,
@@ -146,23 +142,17 @@ class Toolkit:
             )
         )
 
-    @classmethod
+    @staticmethod
     def register_pi_custom_action(
-        cls, name: str, action: "CustomAction", inst_id: int = 0
+         name: str, action: "CustomAction", inst_id: int = 0
     ) -> None:
-        cls._set_api_properties()
-
-        if not cls._custom_action_holder:
-            cls._custom_action_holder = {}
-
-        if not cls._custom_action_holder[inst_id]:
-            cls._custom_action_holder[inst_id] = {}
+        Toolkit._set_api_properties()
 
         # avoid gc
-        cls._custom_recognizer_holder[inst_id][name] = action
+        Toolkit._custom_recognizer_holder[inst_id][name] = action
 
         return bool(
-            Library.framework.MaaToolkitProjectInterfaceRegisterCustomAction(
+            Library.toolkit.MaaToolkitProjectInterfaceRegisterCustomAction(
                 ctypes.c_uint64(inst_id),
                 name.encode("utf-8"),
                 action.c_handle,
@@ -170,9 +160,8 @@ class Toolkit:
             ),
         )
 
-    @classmethod
+    @staticmethod
     def run_pi_cli(
-        cls,
         resource_path: Union[str, Path],
         user_path: Union[str, Path],
         directly: bool = False,
@@ -180,9 +169,9 @@ class Toolkit:
         callback_arg: Any = None,
         inst_id: int = 0,
     ) -> bool:
-        cls._set_api_properties()
+        Toolkit._set_api_properties()
 
-        cls._callback_agent = CallbackAgent(callback, callback_arg)
+        Toolkit._callback_agent = CallbackAgent(callback, callback_arg)
 
         return bool(
             Library.toolkit.MaaToolkitProjectInterfaceRunCli(
@@ -190,14 +179,16 @@ class Toolkit:
                 str(resource_path).encode("utf-8"),
                 str(user_path).encode("utf-8"),
                 directly,
-                cls._callback_agent.c_callback,
-                cls._callback_agent.c_callback_arg,
+                Toolkit._callback_agent.c_callback,
+                Toolkit._callback_agent.c_callback_arg,
             )
         )
 
     ### private ###
 
     _api_properties_initialized: bool = False
+    _custom_recognizer_holder = defaultdict(dict)
+    _custom_action_holder = defaultdict(dict)
 
     @staticmethod
     def _set_api_properties():
