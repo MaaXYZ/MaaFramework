@@ -36,11 +36,10 @@ It offers low-code simplicity while maintaining high extensibility. The framewor
 
 ## Get Started
 
+- [Development Approach](docs/en_us/0.1-DevelopmentApproach.md)
 - [Quick Start](docs/en_us/1.1-QuickStarted.md)
 - [Integration](docs/en_us/2.1-Integration.md)
-- [Callback Protocol](docs/en_us/2.2-CallbackProtocol.md)
 - [Pipeline Protocol](docs/en_us/3.1-PipelineProtocol.md)
-- [Custom Task](docs/en_us/2.3-CustomTask.md)
 
 ## Best Practices
 
@@ -79,7 +78,6 @@ It offers low-code simplicity while maintaining high extensibility. The framewor
 
 - [MAA-for-Millennium-Tour](https://github.com/Ostwind23/MAA-for-Millennium-Tour) Millennium Tour Assistant ![Pipeline](https://img.shields.io/badge/Pipeline-%23454545?logo=codecademy&logoColor=%23FFFFFF&color=%23454545) ![python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white)   
   An assistant for Millennium Tour based on a brand new architecture. Image technology + simulation control, freeing your hands! Powered by MaaFramework.
-
 
 ## Eco-Building
 
