@@ -42,8 +42,7 @@ def main():
         print("Failed to init MAA.")
         exit()
 
-    my_rec = MyRecognizer()
-    resource.register_custom_recognizer("MyRec", my_rec)
+    resource.register_custom_recognizer("MyRec", MyRecognizer())
 
     task_detail = tasker.post_pipeline("StartUpAndClickButton").wait().get()
     # do something with task_detail

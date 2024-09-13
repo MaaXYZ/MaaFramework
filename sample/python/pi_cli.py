@@ -6,7 +6,7 @@ from maa.custom_recognizer import CustomRecognizer
 
 def main():
     # 注册自定义动作
-    Toolkit.register_pi_custom_action("MyAction", MyAction())
+    Toolkit.register_pi_custom_action("MyAct", MyAction())
 
     # 启动 MaaPiCli
     Toolkit.run_pi_cli("C:/MaaXXX/resource", "C:/MaaXXX/cache", False)
