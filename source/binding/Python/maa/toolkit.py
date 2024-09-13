@@ -124,18 +124,22 @@ class Toolkit:
 
     @classmethod
     def register_pi_custom_recognition(
-        cls, name: str, recognizer: "CustomRecognizer"
+        cls, name: str, recognizer: "CustomRecognizer", inst_id: int = 0
     ) -> None:
         cls._set_api_properties()
 
         if not cls._custom_recognizer_holder:
             cls._custom_recognizer_holder = {}
 
+        if not cls._custom_recognizer_holder[inst_id]:
+            cls._custom_recognizer_holder[inst_id] = {}
+
         # avoid gc
-        cls._custom_recognizer_holder[name] = recognizer
+        cls._custom_recognizer_holder[inst_id][name] = recognizer
 
         return bool(
             Library.framework.MaaToolkitProjectInterfaceRegisterCustomRecognition(
+                ctypes.c_uint64(inst_id),
                 name.encode("utf-8"),
                 recognizer.c_handle,
                 recognizer.c_arg,
@@ -143,21 +147,27 @@ class Toolkit:
         )
 
     @classmethod
-    def register_pi_custom_action(cls, name: str, action: "CustomAction") -> None:
+    def register_pi_custom_action(
+        cls, name: str, action: "CustomAction", inst_id: int = 0
+    ) -> None:
         cls._set_api_properties()
 
         if not cls._custom_action_holder:
             cls._custom_action_holder = {}
+        
+        if not cls._custom_action_holder[inst_id]:
+            cls._custom_action_holder[inst_id] = {}
 
         # avoid gc
-        cls._custom_action_holder[name] = action
+        cls._custom_recognizer_holder[inst_id][name] = action
 
         return bool(
+            ctypes.c_uint64(inst_id),
             Library.framework.MaaToolkitProjectInterfaceRegisterCustomAction(
                 name.encode("utf-8"),
                 action.c_handle,
                 action.c_arg,
-            )
+            ),
         )
 
     @classmethod
@@ -168,6 +178,7 @@ class Toolkit:
         directly: bool = False,
         callback: Optional[Callback] = None,
         callback_arg: Any = None,
+        inst_id: int = 0,
     ) -> bool:
         cls._set_api_properties()
 
@@ -175,6 +186,7 @@ class Toolkit:
 
         return bool(
             Library.toolkit.MaaToolkitRunCli(
+                ctypes.c_uint64(inst_id),
                 str(resource_path).encode("utf-8"),
                 str(user_path).encode("utf-8"),
                 directly,
@@ -315,6 +327,7 @@ class Toolkit:
             None
         )
         Library.toolkit.MaaToolkitProjectInterfaceRegisterCustomRecognition.argtypes = [
+            ctypes.c_uint64,
             ctypes.c_char_p,
             MaaCustomRecognizerCallback,
             ctypes.c_void_p,
@@ -322,6 +335,7 @@ class Toolkit:
 
         Library.toolkit.MaaToolkitProjectInterfaceRegisterCustomAction.restype = None
         Library.toolkit.MaaToolkitProjectInterfaceRegisterCustomAction.argtypes = [
+            ctypes.c_uint64,
             ctypes.c_char_p,
             MaaCustomActionCallback,
             ctypes.c_void_p,
@@ -329,6 +343,7 @@ class Toolkit:
 
         Library.toolkit.MaaToolkitProjectInterfaceRunCli.restype = MaaBool
         Library.toolkit.MaaToolkitProjectInterfaceRunCli.argtypes = [
+            ctypes.c_uint64,
             ctypes.c_char_p,
             ctypes.c_char_p,
             MaaBool,

@@ -17,6 +17,6 @@ int main(int argc, char** argv)
         break;
     }
 
-    MaaBool ret = MaaToolkitProjectInterfaceRunCli(resource_path.c_str(), user_path.c_str(), directly, nullptr, nullptr);
+    MaaBool ret = MaaToolkitProjectInterfaceRunCli(0, resource_path.c_str(), user_path.c_str(), directly, nullptr, nullptr);
     return ret ? 0 : -1;
 }

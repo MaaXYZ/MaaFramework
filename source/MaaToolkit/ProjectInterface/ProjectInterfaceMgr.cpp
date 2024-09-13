@@ -7,17 +7,24 @@
 
 MAA_TOOLKIT_NS_BEGIN
 
-void ProjectInterfaceMgr::register_custom_recognizer(const std::string& name, MAA_PROJECT_INTERFACE_NS::CustomRecognizerSession recognizer)
+void ProjectInterfaceMgr::register_custom_recognizer(
+    uint64_t inst_id,
+    const std::string& name,
+    MAA_PROJECT_INTERFACE_NS::CustomRecognizerSession recognizer)
 {
-    custom_recognizers_.insert_or_assign(name, recognizer);
+    custom_recognizers_[inst_id].insert_or_assign(name, recognizer);
 }
 
-void ProjectInterfaceMgr::register_custom_action(const std::string& name, MAA_PROJECT_INTERFACE_NS::CustomActionSession action)
+void ProjectInterfaceMgr::register_custom_action(
+    uint64_t inst_id,
+    const std::string& name,
+    MAA_PROJECT_INTERFACE_NS::CustomActionSession action)
 {
-    custom_actions_.insert_or_assign(name, action);
+    custom_actions_[inst_id].insert_or_assign(name, action);
 }
 
 bool ProjectInterfaceMgr::run_cli(
+    uint64_t inst_id,
     const std::filesystem::path& resource_path,
     const std::filesystem::path& user_path,
     bool directly,
@@ -29,7 +36,7 @@ bool ProjectInterfaceMgr::run_cli(
 
     Interactor interactor;
 
-    if (!interactor.load(resource_path, callback, callback_arg, custom_recognizers_, custom_actions_)) {
+    if (!interactor.load(resource_path, callback, callback_arg, custom_recognizers_[inst_id], custom_actions_[inst_id])) {
         return false;
     }
     if (directly) {
