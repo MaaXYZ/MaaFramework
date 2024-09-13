@@ -375,9 +375,9 @@ jobs:
             - name: Publish Nupkgs
               id: nuget
               run: |
-                  nuget push assets/MAA-nupkgs/*.nupkg \
-                    -ApiKey ${{ secrets.NuGetAPIKey }} \
-                    -Source $NUGET_PACKAGE_SOURCE \
+                  dotnet nuget push assets/MAA-nupkgs/*.nupkg \
+                    --api-key ${{ secrets.NuGetAPIKey }} \
+                    --source $NUGET_PACKAGE_SOURCE \
                     || eval $OUTPUT_PUBLISH_FAILED
                   rm -r assets/MAA-nupkgs
 

@@ -1,0 +1,6 @@
+    <id>Maa.Framework.Runtime.android-arm64</id>
+    <title>MAA Framework Runtime for android-arm64</title>
+    <description>Native binaries of MAA Framework Embedded for android-arm64.</description>
+  </metadata>
+  <files>
+    <file src="$root_path$\assets\MAA-android-aarch64\bin\**"  target="runtimes\android-arm64\native" />
