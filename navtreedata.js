@@ -25,11 +25,8 @@
 var NAVTREE =
 [
   [ "Maa Framework", "index.html", [
-    [ "MaaFramework API Reference", "index.html", [
-      [ "Introduction", "index.html#intro_sec", null ]
-    ] ],
-    [ "Deprecated List", "deprecated.html", null ],
-    [ "Modules", "modules.html", "modules" ],
+    [ "MaaFramework API Reference", "index.html", "index" ],
+    [ "Topics", "topics.html", "topics" ],
     [ "Classes", "annotated.html", [
       [ "Class List", "annotated.html", "annotated_dup" ],
       [ "Class Members", "functions.html", [
@@ -54,7 +51,7 @@ var NAVTREE =
 var NAVTREEINDEX =
 [
 "MaaAPI_8h.html",
-"MaaResource_8h.html#adfdabceac47b76b04bdb44228a94b4ce"
+"MaaToolkitAdbDevice_8h.html#ad070aa284e3208b7c1a93aa40fe8e2e9"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';

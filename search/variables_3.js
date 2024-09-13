@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['input_5ftext_0',['input_text',['../structMaaCustomControllerAPI.html#a644d6aacc523eb7a02309b8abe5fd77b',1,'MaaCustomControllerAPI']]]
+  ['press_5fkey_0',['press_key',['../structMaaCustomControllerCallbacks.html#a2585bc805ceb3531821bc9f9c4e35cf5',1,'MaaCustomControllerCallbacks']]]
 ];

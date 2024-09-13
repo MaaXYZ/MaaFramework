@@ -1,0 +1,192 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="MaaToolkitDesktopWindow_8h" kind="file" language="C++">
+    <compoundname>MaaToolkitDesktopWindow.h</compoundname>
+    <includes refid="MaaToolkitDef_8h" local="yes">../MaaToolkitDef.h</includes>
+    <includedby refid="MaaToolkitAPI_8h" local="yes">include/MaaToolkit/MaaToolkitAPI.h</includedby>
+    <incdepgraph>
+      <node id="3">
+        <label>MaaFramework/MaaDef.h</label>
+        <link refid="MaaDef_8h"/>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+      </node>
+      <node id="5">
+        <label>MaaPort.h</label>
+        <link refid="MaaPort_8h"/>
+      </node>
+      <node id="1">
+        <label>include/MaaToolkit/DesktopWindow/MaaToolkitDesktopWindow.h</label>
+        <link refid="MaaToolkitDesktopWindow_8h"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>../MaaToolkitDef.h</label>
+        <link refid="MaaToolkitDef_8h"/>
+        <childnode refid="3" relation="include">
+        </childnode>
+      </node>
+      <node id="4">
+        <label>stdint.h</label>
+      </node>
+    </incdepgraph>
+    <invincdepgraph>
+      <node id="1">
+        <label>include/MaaToolkit/DesktopWindow/MaaToolkitDesktopWindow.h</label>
+        <link refid="MaaToolkitDesktopWindow_8h"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>include/MaaToolkit/MaaToolkitAPI.h</label>
+        <link refid="MaaToolkitAPI_8h"/>
+      </node>
+    </invincdepgraph>
+    <sectiondef kind="func">
+      <memberdef kind="function" id="MaaToolkitDesktopWindow_8h_1aa02e7ddc8a0142b2d2dbaf42d0cd0926" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="MaaPort_8h_1a011c7bbd355fdfe6aa7599af52cc20ac" kindref="member">MAA_TOOLKIT_API</ref> <ref refid="MaaToolkitDef_8h_1aaf164274a2c0089edb67f33e26719ff0" kindref="member">MaaToolkitDesktopWindowList</ref> *</type>
+        <definition>MAA_TOOLKIT_API MaaToolkitDesktopWindowList * MaaToolkitDesktopWindowListCreate</definition>
+        <argsstring>()</argsstring>
+        <name>MaaToolkitDesktopWindowListCreate</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaToolkit/DesktopWindow/MaaToolkitDesktopWindow.h" line="12" column="49" declfile="include/MaaToolkit/DesktopWindow/MaaToolkitDesktopWindow.h" declline="12" declcolumn="49"/>
+      </memberdef>
+      <memberdef kind="function" id="MaaToolkitDesktopWindow_8h_1a9ec7e382179fd165bbc4dd7726c058ee" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="MaaPort_8h_1a011c7bbd355fdfe6aa7599af52cc20ac" kindref="member">MAA_TOOLKIT_API</ref> void</type>
+        <definition>MAA_TOOLKIT_API void MaaToolkitDesktopWindowListDestroy</definition>
+        <argsstring>(MaaToolkitDesktopWindowList *handle)</argsstring>
+        <name>MaaToolkitDesktopWindowListDestroy</name>
+        <param>
+          <type><ref refid="MaaToolkitDef_8h_1aaf164274a2c0089edb67f33e26719ff0" kindref="member">MaaToolkitDesktopWindowList</ref> *</type>
+          <declname>handle</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaToolkit/DesktopWindow/MaaToolkitDesktopWindow.h" line="13" column="26" declfile="include/MaaToolkit/DesktopWindow/MaaToolkitDesktopWindow.h" declline="13" declcolumn="26"/>
+      </memberdef>
+      <memberdef kind="function" id="MaaToolkitDesktopWindow_8h_1a2967397bb0a2cb9bb49ef1b49656bde7" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="MaaPort_8h_1a011c7bbd355fdfe6aa7599af52cc20ac" kindref="member">MAA_TOOLKIT_API</ref> <ref refid="MaaDef_8h_1a2f7289f2a8e07f48c6261b52a120cdf6" kindref="member">MaaBool</ref></type>
+        <definition>MAA_TOOLKIT_API MaaBool MaaToolkitDesktopWindowFindAll</definition>
+        <argsstring>(MaaToolkitDesktopWindowList *buffer)</argsstring>
+        <name>MaaToolkitDesktopWindowFindAll</name>
+        <param>
+          <type><ref refid="MaaToolkitDef_8h_1aaf164274a2c0089edb67f33e26719ff0" kindref="member">MaaToolkitDesktopWindowList</ref> *</type>
+          <declname>buffer</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaToolkit/DesktopWindow/MaaToolkitDesktopWindow.h" line="15" column="29" declfile="include/MaaToolkit/DesktopWindow/MaaToolkitDesktopWindow.h" declline="15" declcolumn="29"/>
+      </memberdef>
+      <memberdef kind="function" id="MaaToolkitDesktopWindow_8h_1a9630496646deb94ccf5976877ce12e92" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="MaaPort_8h_1a011c7bbd355fdfe6aa7599af52cc20ac" kindref="member">MAA_TOOLKIT_API</ref> <ref refid="MaaDef_8h_1a72a89077c419a0fe586d68bde004d856" kindref="member">MaaSize</ref></type>
+        <definition>MAA_TOOLKIT_API MaaSize MaaToolkitDesktopWindowListSize</definition>
+        <argsstring>(const MaaToolkitDesktopWindowList *list)</argsstring>
+        <name>MaaToolkitDesktopWindowListSize</name>
+        <param>
+          <type>const <ref refid="MaaToolkitDef_8h_1aaf164274a2c0089edb67f33e26719ff0" kindref="member">MaaToolkitDesktopWindowList</ref> *</type>
+          <declname>list</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaToolkit/DesktopWindow/MaaToolkitDesktopWindow.h" line="17" column="29" declfile="include/MaaToolkit/DesktopWindow/MaaToolkitDesktopWindow.h" declline="17" declcolumn="29"/>
+      </memberdef>
+      <memberdef kind="function" id="MaaToolkitDesktopWindow_8h_1ade2c61c9f119e803d83ec40307e938d9" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="MaaPort_8h_1a011c7bbd355fdfe6aa7599af52cc20ac" kindref="member">MAA_TOOLKIT_API</ref> const <ref refid="MaaToolkitDef_8h_1a5d8743988770806277c247ba9e84040a" kindref="member">MaaToolkitDesktopWindow</ref> *</type>
+        <definition>MAA_TOOLKIT_API const MaaToolkitDesktopWindow * MaaToolkitDesktopWindowListAt</definition>
+        <argsstring>(const MaaToolkitDesktopWindowList *list, MaaSize index)</argsstring>
+        <name>MaaToolkitDesktopWindowListAt</name>
+        <param>
+          <type>const <ref refid="MaaToolkitDef_8h_1aaf164274a2c0089edb67f33e26719ff0" kindref="member">MaaToolkitDesktopWindowList</ref> *</type>
+          <declname>list</declname>
+        </param>
+        <param>
+          <type><ref refid="MaaDef_8h_1a72a89077c419a0fe586d68bde004d856" kindref="member">MaaSize</ref></type>
+          <declname>index</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaToolkit/DesktopWindow/MaaToolkitDesktopWindow.h" line="18" column="51" declfile="include/MaaToolkit/DesktopWindow/MaaToolkitDesktopWindow.h" declline="18" declcolumn="51"/>
+      </memberdef>
+      <memberdef kind="function" id="MaaToolkitDesktopWindow_8h_1a00a365a2f75f6f572f6ce0c11bd6a92f" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="MaaPort_8h_1a011c7bbd355fdfe6aa7599af52cc20ac" kindref="member">MAA_TOOLKIT_API</ref> void *</type>
+        <definition>MAA_TOOLKIT_API void * MaaToolkitDesktopWindowGetHandle</definition>
+        <argsstring>(const MaaToolkitDesktopWindow *window)</argsstring>
+        <name>MaaToolkitDesktopWindowGetHandle</name>
+        <param>
+          <type>const <ref refid="MaaToolkitDef_8h_1a5d8743988770806277c247ba9e84040a" kindref="member">MaaToolkitDesktopWindow</ref> *</type>
+          <declname>window</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaToolkit/DesktopWindow/MaaToolkitDesktopWindow.h" line="20" column="26" declfile="include/MaaToolkit/DesktopWindow/MaaToolkitDesktopWindow.h" declline="20" declcolumn="26"/>
+      </memberdef>
+      <memberdef kind="function" id="MaaToolkitDesktopWindow_8h_1aaa1d8918fd09a42fdd9fadf562200040" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="MaaPort_8h_1a011c7bbd355fdfe6aa7599af52cc20ac" kindref="member">MAA_TOOLKIT_API</ref> const char *</type>
+        <definition>MAA_TOOLKIT_API const char * MaaToolkitDesktopWindowGetClassName</definition>
+        <argsstring>(const MaaToolkitDesktopWindow *window)</argsstring>
+        <name>MaaToolkitDesktopWindowGetClassName</name>
+        <param>
+          <type>const <ref refid="MaaToolkitDef_8h_1a5d8743988770806277c247ba9e84040a" kindref="member">MaaToolkitDesktopWindow</ref> *</type>
+          <declname>window</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaToolkit/DesktopWindow/MaaToolkitDesktopWindow.h" line="21" column="32" declfile="include/MaaToolkit/DesktopWindow/MaaToolkitDesktopWindow.h" declline="21" declcolumn="32"/>
+      </memberdef>
+      <memberdef kind="function" id="MaaToolkitDesktopWindow_8h_1ad41c0d4f44b0ea74def23a1bdf82811c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="MaaPort_8h_1a011c7bbd355fdfe6aa7599af52cc20ac" kindref="member">MAA_TOOLKIT_API</ref> const char *</type>
+        <definition>MAA_TOOLKIT_API const char * MaaToolkitDesktopWindowGetWindowName</definition>
+        <argsstring>(const MaaToolkitDesktopWindow *window)</argsstring>
+        <name>MaaToolkitDesktopWindowGetWindowName</name>
+        <param>
+          <type>const <ref refid="MaaToolkitDef_8h_1a5d8743988770806277c247ba9e84040a" kindref="member">MaaToolkitDesktopWindow</ref> *</type>
+          <declname>window</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaToolkit/DesktopWindow/MaaToolkitDesktopWindow.h" line="22" column="32" declfile="include/MaaToolkit/DesktopWindow/MaaToolkitDesktopWindow.h" declline="22" declcolumn="32"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="include/MaaToolkit/DesktopWindow/MaaToolkitDesktopWindow.h"/>
+  </compounddef>
+</doxygen>

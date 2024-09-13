@@ -1,33 +1,31 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.5" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="MaaPort_8h" kind="file" language="C++">
     <compoundname>MaaPort.h</compoundname>
+    <includedby refid="MaaContext_8h" local="yes">include/MaaFramework/Instance/MaaContext.h</includedby>
     <includedby refid="MaaController_8h" local="yes">include/MaaFramework/Instance/MaaController.h</includedby>
     <includedby refid="MaaCustomController_8h" local="yes">include/MaaFramework/Instance/MaaCustomController.h</includedby>
-    <includedby refid="MaaInstance_8h" local="yes">include/MaaFramework/Instance/MaaInstance.h</includedby>
     <includedby refid="MaaResource_8h" local="yes">include/MaaFramework/Instance/MaaResource.h</includedby>
+    <includedby refid="MaaTasker_8h" local="yes">include/MaaFramework/Instance/MaaTasker.h</includedby>
     <includedby refid="MaaDef_8h" local="yes">include/MaaFramework/MaaDef.h</includedby>
-    <includedby refid="MaaCustomAction_8h" local="yes">include/MaaFramework/Task/MaaCustomAction.h</includedby>
-    <includedby refid="MaaCustomRecognizer_8h" local="yes">include/MaaFramework/Task/MaaCustomRecognizer.h</includedby>
-    <includedby refid="MaaSyncContext_8h" local="yes">include/MaaFramework/Task/MaaSyncContext.h</includedby>
     <includedby refid="MaaBuffer_8h" local="yes">include/MaaFramework/Utility/MaaBuffer.h</includedby>
     <includedby refid="MaaUtility_8h" local="yes">include/MaaFramework/Utility/MaaUtility.h</includedby>
     <invincdepgraph>
       <node id="2">
+        <label>include/MaaFramework/Instance/MaaContext.h</label>
+        <link refid="MaaContext_8h"/>
+        <childnode refid="3" relation="include">
+        </childnode>
+      </node>
+      <node id="4">
         <label>include/MaaFramework/Instance/MaaController.h</label>
         <link refid="MaaController_8h"/>
         <childnode refid="3" relation="include">
         </childnode>
       </node>
-      <node id="4">
+      <node id="5">
         <label>include/MaaFramework/Instance/MaaCustomController.h</label>
         <link refid="MaaCustomController_8h"/>
-        <childnode refid="3" relation="include">
-        </childnode>
-      </node>
-      <node id="5">
-        <label>include/MaaFramework/Instance/MaaInstance.h</label>
-        <link refid="MaaInstance_8h"/>
         <childnode refid="3" relation="include">
         </childnode>
       </node>
@@ -37,11 +35,17 @@
         <childnode refid="3" relation="include">
         </childnode>
       </node>
+      <node id="7">
+        <label>include/MaaFramework/Instance/MaaTasker.h</label>
+        <link refid="MaaTasker_8h"/>
+        <childnode refid="3" relation="include">
+        </childnode>
+      </node>
       <node id="3">
         <label>include/MaaFramework/MaaAPI.h</label>
         <link refid="MaaAPI_8h"/>
       </node>
-      <node id="7">
+      <node id="8">
         <label>include/MaaFramework/MaaDef.h</label>
         <link refid="MaaDef_8h"/>
         <childnode refid="2" relation="include">
@@ -52,19 +56,15 @@
         </childnode>
         <childnode refid="6" relation="include">
         </childnode>
-        <childnode refid="3" relation="include">
+        <childnode refid="7" relation="include">
         </childnode>
-        <childnode refid="8" relation="include">
+        <childnode refid="3" relation="include">
         </childnode>
         <childnode refid="9" relation="include">
         </childnode>
         <childnode refid="10" relation="include">
         </childnode>
         <childnode refid="11" relation="include">
-        </childnode>
-        <childnode refid="12" relation="include">
-        </childnode>
-        <childnode refid="13" relation="include">
         </childnode>
       </node>
       <node id="1">
@@ -86,85 +86,63 @@
         </childnode>
         <childnode refid="10" relation="include">
         </childnode>
-        <childnode refid="11" relation="include">
-        </childnode>
-        <childnode refid="12" relation="include">
-        </childnode>
-      </node>
-      <node id="8">
-        <label>include/MaaFramework/Task/MaaCustomAction.h</label>
-        <link refid="MaaCustomAction_8h"/>
-        <childnode refid="3" relation="include">
-        </childnode>
       </node>
       <node id="9">
-        <label>include/MaaFramework/Task/MaaCustomRecognizer.h</label>
-        <link refid="MaaCustomRecognizer_8h"/>
-        <childnode refid="3" relation="include">
-        </childnode>
-      </node>
-      <node id="10">
-        <label>include/MaaFramework/Task/MaaSyncContext.h</label>
-        <link refid="MaaSyncContext_8h"/>
-        <childnode refid="3" relation="include">
-        </childnode>
-      </node>
-      <node id="11">
         <label>include/MaaFramework/Utility/MaaBuffer.h</label>
         <link refid="MaaBuffer_8h"/>
         <childnode refid="3" relation="include">
         </childnode>
       </node>
-      <node id="12">
+      <node id="10">
         <label>include/MaaFramework/Utility/MaaUtility.h</label>
         <link refid="MaaUtility_8h"/>
         <childnode refid="3" relation="include">
         </childnode>
       </node>
+      <node id="12">
+        <label>include/MaaToolkit/AdbDevice/MaaToolkitAdbDevice.h</label>
+        <link refid="MaaToolkitAdbDevice_8h"/>
+        <childnode refid="13" relation="include">
+        </childnode>
+      </node>
       <node id="14">
         <label>include/MaaToolkit/Config/MaaToolkitConfig.h</label>
         <link refid="MaaToolkitConfig_8h"/>
-        <childnode refid="15" relation="include">
-        </childnode>
-      </node>
-      <node id="16">
-        <label>include/MaaToolkit/Device/MaaToolkitDevice.h</label>
-        <link refid="MaaToolkitDevice_8h"/>
-        <childnode refid="15" relation="include">
-        </childnode>
-      </node>
-      <node id="17">
-        <label>include/MaaToolkit/ExecAgent/MaaToolkitExecAgent.h</label>
-        <link refid="MaaToolkitExecAgent_8h"/>
-        <childnode refid="15" relation="include">
+        <childnode refid="13" relation="include">
         </childnode>
       </node>
       <node id="15">
+        <label>include/MaaToolkit/DesktopWindow/MaaToolkitDesktopWindow.h</label>
+        <link refid="MaaToolkitDesktopWindow_8h"/>
+        <childnode refid="13" relation="include">
+        </childnode>
+      </node>
+      <node id="13">
         <label>include/MaaToolkit/MaaToolkitAPI.h</label>
         <link refid="MaaToolkitAPI_8h"/>
       </node>
-      <node id="13">
+      <node id="11">
         <label>include/MaaToolkit/MaaToolkitDef.h</label>
         <link refid="MaaToolkitDef_8h"/>
+        <childnode refid="12" relation="include">
+        </childnode>
         <childnode refid="14" relation="include">
+        </childnode>
+        <childnode refid="15" relation="include">
+        </childnode>
+        <childnode refid="13" relation="include">
         </childnode>
         <childnode refid="16" relation="include">
         </childnode>
-        <childnode refid="17" relation="include">
-        </childnode>
-        <childnode refid="15" relation="include">
-        </childnode>
-        <childnode refid="18" relation="include">
-        </childnode>
       </node>
-      <node id="18">
-        <label>include/MaaToolkit/Win32/MaaToolkitWin32Window.h</label>
-        <link refid="MaaToolkitWin32Window_8h"/>
-        <childnode refid="15" relation="include">
+      <node id="16">
+        <label>include/MaaToolkit/ProjectInterface/MaaToolkitProjectInterface.h</label>
+        <link refid="MaaToolkitProjectInterface_8h"/>
+        <childnode refid="13" relation="include">
         </childnode>
       </node>
     </invincdepgraph>
-      <sectiondef kind="define">
+    <sectiondef kind="define">
       <memberdef kind="define" id="MaaPort_8h_1aed0af92192d8a7f6278afec3adfee80c" prot="public" static="no">
         <name>MAA_DLL_IMPORT</name>
         <briefdescription>
@@ -250,7 +228,7 @@
         </inbodydescription>
         <location file="include/MaaFramework/MaaPort.h" line="47" column="10" bodyfile="include/MaaFramework/MaaPort.h" bodystart="47" bodyend="-1"/>
       </memberdef>
-      </sectiondef>
+    </sectiondef>
     <briefdescription>
     </briefdescription>
     <detaileddescription>

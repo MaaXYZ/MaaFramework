@@ -1,4 +1,4 @@
 var MaaCustomController_8h =
 [
-    [ "MaaCustomControllerAPI", "structMaaCustomControllerAPI.html", "structMaaCustomControllerAPI" ]
+    [ "MaaCustomControllerCallbacks", "structMaaCustomControllerCallbacks.html", "structMaaCustomControllerCallbacks" ]
 ];

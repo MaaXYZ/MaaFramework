@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.5" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="MaaCustomController_8h" kind="file" language="C++">
     <compoundname>MaaCustomController.h</compoundname>
     <includes refid="MaaDef_8h" local="yes">../MaaDef.h</includes>
@@ -11,7 +11,7 @@
         <link refid="MaaCustomController_8h"/>
         <childnode refid="2" relation="include">
         </childnode>
-        <childnode refid="3" relation="include">
+        <childnode refid="4" relation="include">
         </childnode>
       </node>
       <node id="2">
@@ -22,11 +22,11 @@
         <childnode refid="4" relation="include">
         </childnode>
       </node>
-      <node id="3">
+      <node id="4">
         <label>MaaPort.h</label>
         <link refid="MaaPort_8h"/>
       </node>
-      <node id="4">
+      <node id="3">
         <label>stdint.h</label>
       </node>
     </incdepgraph>
@@ -42,7 +42,7 @@
         <link refid="MaaAPI_8h"/>
       </node>
     </invincdepgraph>
-    <innerclass refid="structMaaCustomControllerAPI" prot="public">MaaCustomControllerAPI</innerclass>
+    <innerclass refid="structMaaCustomControllerCallbacks" prot="public">MaaCustomControllerCallbacks</innerclass>
     <briefdescription>
 <para>Custom controller API. </para>
     </briefdescription>

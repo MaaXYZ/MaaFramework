@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.5" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="indexpage" kind="page">
     <compoundname>index</compoundname>
     <title>MaaFramework API Reference</title>
@@ -11,10 +11,10 @@
 <para>MaaFramework is a toolset used to create automated tests under various environments such as Windows and Andoroid emulators.</para>
 <para>For starter, take a look at the following pages:</para>
 <para><itemizedlist>
-<listitem><para><ref refid="MaaInstance_8h" kindref="compound">MaaInstance.h</ref></para>
+<listitem><para><ref refid="MaaTasker_8h" kindref="compound">MaaTasker.h</ref></para>
 </listitem><listitem><para><ref refid="MaaController_8h" kindref="compound">MaaController.h</ref></para>
 </listitem><listitem><para><ref refid="MaaResource_8h" kindref="compound">MaaResource.h</ref></para>
-</listitem><listitem><para><ref refid="MaaToolkitDevice_8h" kindref="compound">MaaToolkitDevice.h</ref> </para>
+</listitem><listitem><para><ref refid="MaaContext_8h" kindref="compound">MaaContext.h</ref> </para>
 </listitem></itemizedlist>
 </para>
 </sect1>

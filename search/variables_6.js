@@ -1,8 +1,6 @@
 var searchData=
 [
-  ['screencap_0',['screencap',['../structMaaCustomControllerAPI.html#af0b668a66d18b0a3cf308a31b10bd6c4',1,'MaaCustomControllerAPI']]],
-  ['start_5fapp_1',['start_app',['../structMaaCustomControllerAPI.html#a528ac7b645ad44fdf1ba3fa3cb635403',1,'MaaCustomControllerAPI']]],
-  ['stop_2',['stop',['../structMaaCustomActionAPI.html#a23caa239daf2319a3e67298972b6fc18',1,'MaaCustomActionAPI']]],
-  ['stop_5fapp_3',['stop_app',['../structMaaCustomControllerAPI.html#a92139f1c208e49679a1feb9aa9faa469',1,'MaaCustomControllerAPI']]],
-  ['swipe_4',['swipe',['../structMaaCustomControllerAPI.html#a9dfcd50b89e69a8466beaddf6f8524d1',1,'MaaCustomControllerAPI']]]
+  ['touch_5fdown_0',['touch_down',['../structMaaCustomControllerCallbacks.html#a9cab96282d0a73e1354a4fa48c3712f3',1,'MaaCustomControllerCallbacks']]],
+  ['touch_5fmove_1',['touch_move',['../structMaaCustomControllerCallbacks.html#ad7eb80327cea4f03830d13480ce03eb7',1,'MaaCustomControllerCallbacks']]],
+  ['touch_5fup_2',['touch_up',['../structMaaCustomControllerCallbacks.html#a17ac7005c5d69ace1aec0762b7909064',1,'MaaCustomControllerCallbacks']]]
 ];

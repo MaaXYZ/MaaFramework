@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['controller_20requests_0',['Controller Requests',['../group__MaaControllerPostRequest.html',1,'']]]
+  ['definitions_0',['Message Definitions',['../group__MaaMsg.html',1,'']]]
 ];

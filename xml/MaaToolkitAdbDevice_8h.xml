@@ -1,0 +1,264 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="MaaToolkitAdbDevice_8h" kind="file" language="C++">
+    <compoundname>MaaToolkitAdbDevice.h</compoundname>
+    <includes refid="MaaToolkitDef_8h" local="yes">../MaaToolkitDef.h</includes>
+    <includedby refid="MaaToolkitAPI_8h" local="yes">include/MaaToolkit/MaaToolkitAPI.h</includedby>
+    <incdepgraph>
+      <node id="3">
+        <label>MaaFramework/MaaDef.h</label>
+        <link refid="MaaDef_8h"/>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+      </node>
+      <node id="5">
+        <label>MaaPort.h</label>
+        <link refid="MaaPort_8h"/>
+      </node>
+      <node id="1">
+        <label>include/MaaToolkit/AdbDevice/MaaToolkitAdbDevice.h</label>
+        <link refid="MaaToolkitAdbDevice_8h"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>../MaaToolkitDef.h</label>
+        <link refid="MaaToolkitDef_8h"/>
+        <childnode refid="3" relation="include">
+        </childnode>
+      </node>
+      <node id="4">
+        <label>stdint.h</label>
+      </node>
+    </incdepgraph>
+    <invincdepgraph>
+      <node id="1">
+        <label>include/MaaToolkit/AdbDevice/MaaToolkitAdbDevice.h</label>
+        <link refid="MaaToolkitAdbDevice_8h"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>include/MaaToolkit/MaaToolkitAPI.h</label>
+        <link refid="MaaToolkitAPI_8h"/>
+      </node>
+    </invincdepgraph>
+    <sectiondef kind="func">
+      <memberdef kind="function" id="MaaToolkitAdbDevice_8h_1ab8dc9a69e2a1d91dc9f04e1a0c3b0dc5" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="MaaPort_8h_1a011c7bbd355fdfe6aa7599af52cc20ac" kindref="member">MAA_TOOLKIT_API</ref> <ref refid="MaaToolkitDef_8h_1a61bc7b4be1b04be75314fe7d088b0bc6" kindref="member">MaaToolkitAdbDeviceList</ref> *</type>
+        <definition>MAA_TOOLKIT_API MaaToolkitAdbDeviceList * MaaToolkitAdbDeviceListCreate</definition>
+        <argsstring>()</argsstring>
+        <name>MaaToolkitAdbDeviceListCreate</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaToolkit/AdbDevice/MaaToolkitAdbDevice.h" line="21" column="45" declfile="include/MaaToolkit/AdbDevice/MaaToolkitAdbDevice.h" declline="21" declcolumn="45"/>
+      </memberdef>
+      <memberdef kind="function" id="MaaToolkitAdbDevice_8h_1a856f8504c46e4bda4981b6183f4e6b99" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="MaaPort_8h_1a011c7bbd355fdfe6aa7599af52cc20ac" kindref="member">MAA_TOOLKIT_API</ref> void</type>
+        <definition>MAA_TOOLKIT_API void MaaToolkitAdbDeviceListDestroy</definition>
+        <argsstring>(MaaToolkitAdbDeviceList *handle)</argsstring>
+        <name>MaaToolkitAdbDeviceListDestroy</name>
+        <param>
+          <type><ref refid="MaaToolkitDef_8h_1a61bc7b4be1b04be75314fe7d088b0bc6" kindref="member">MaaToolkitAdbDeviceList</ref> *</type>
+          <declname>handle</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaToolkit/AdbDevice/MaaToolkitAdbDevice.h" line="22" column="26" declfile="include/MaaToolkit/AdbDevice/MaaToolkitAdbDevice.h" declline="22" declcolumn="26"/>
+      </memberdef>
+      <memberdef kind="function" id="MaaToolkitAdbDevice_8h_1ad070aa284e3208b7c1a93aa40fe8e2e9" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="MaaPort_8h_1a011c7bbd355fdfe6aa7599af52cc20ac" kindref="member">MAA_TOOLKIT_API</ref> <ref refid="MaaDef_8h_1a2f7289f2a8e07f48c6261b52a120cdf6" kindref="member">MaaBool</ref></type>
+        <definition>MAA_TOOLKIT_API MaaBool MaaToolkitAdbDeviceFind</definition>
+        <argsstring>(MaaToolkitAdbDeviceList *buffer)</argsstring>
+        <name>MaaToolkitAdbDeviceFind</name>
+        <param>
+          <type><ref refid="MaaToolkitDef_8h_1a61bc7b4be1b04be75314fe7d088b0bc6" kindref="member">MaaToolkitAdbDeviceList</ref> *</type>
+          <declname>buffer</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaToolkit/AdbDevice/MaaToolkitAdbDevice.h" line="24" column="29" declfile="include/MaaToolkit/AdbDevice/MaaToolkitAdbDevice.h" declline="24" declcolumn="29"/>
+      </memberdef>
+      <memberdef kind="function" id="MaaToolkitAdbDevice_8h_1a7d9a2992ee9e663c99550b1320c20e68" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="MaaPort_8h_1a011c7bbd355fdfe6aa7599af52cc20ac" kindref="member">MAA_TOOLKIT_API</ref> <ref refid="MaaDef_8h_1a2f7289f2a8e07f48c6261b52a120cdf6" kindref="member">MaaBool</ref></type>
+        <definition>MAA_TOOLKIT_API MaaBool MaaToolkitAdbDeviceFindSpecified</definition>
+        <argsstring>(const char *adb_path, MaaToolkitAdbDeviceList *buffer)</argsstring>
+        <name>MaaToolkitAdbDeviceFindSpecified</name>
+        <param>
+          <type>const char *</type>
+          <declname>adb_path</declname>
+        </param>
+        <param>
+          <type><ref refid="MaaToolkitDef_8h_1a61bc7b4be1b04be75314fe7d088b0bc6" kindref="member">MaaToolkitAdbDeviceList</ref> *</type>
+          <declname>buffer</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaToolkit/AdbDevice/MaaToolkitAdbDevice.h" line="25" column="29" declfile="include/MaaToolkit/AdbDevice/MaaToolkitAdbDevice.h" declline="25" declcolumn="29"/>
+      </memberdef>
+      <memberdef kind="function" id="MaaToolkitAdbDevice_8h_1a0146ab95341179e2c11ca2b0bfc5436d" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="MaaPort_8h_1a011c7bbd355fdfe6aa7599af52cc20ac" kindref="member">MAA_TOOLKIT_API</ref> <ref refid="MaaDef_8h_1a72a89077c419a0fe586d68bde004d856" kindref="member">MaaSize</ref></type>
+        <definition>MAA_TOOLKIT_API MaaSize MaaToolkitAdbDeviceListSize</definition>
+        <argsstring>(const MaaToolkitAdbDeviceList *list)</argsstring>
+        <name>MaaToolkitAdbDeviceListSize</name>
+        <param>
+          <type>const <ref refid="MaaToolkitDef_8h_1a61bc7b4be1b04be75314fe7d088b0bc6" kindref="member">MaaToolkitAdbDeviceList</ref> *</type>
+          <declname>list</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaToolkit/AdbDevice/MaaToolkitAdbDevice.h" line="27" column="29" declfile="include/MaaToolkit/AdbDevice/MaaToolkitAdbDevice.h" declline="27" declcolumn="29"/>
+      </memberdef>
+      <memberdef kind="function" id="MaaToolkitAdbDevice_8h_1ab564cccebb4128e18de3f561a2058786" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="MaaPort_8h_1a011c7bbd355fdfe6aa7599af52cc20ac" kindref="member">MAA_TOOLKIT_API</ref> const <ref refid="MaaToolkitDef_8h_1a4ed920f548223ae34817b720532407cf" kindref="member">MaaToolkitAdbDevice</ref> *</type>
+        <definition>MAA_TOOLKIT_API const MaaToolkitAdbDevice * MaaToolkitAdbDeviceListAt</definition>
+        <argsstring>(const MaaToolkitAdbDeviceList *list, MaaSize index)</argsstring>
+        <name>MaaToolkitAdbDeviceListAt</name>
+        <param>
+          <type>const <ref refid="MaaToolkitDef_8h_1a61bc7b4be1b04be75314fe7d088b0bc6" kindref="member">MaaToolkitAdbDeviceList</ref> *</type>
+          <declname>list</declname>
+        </param>
+        <param>
+          <type><ref refid="MaaDef_8h_1a72a89077c419a0fe586d68bde004d856" kindref="member">MaaSize</ref></type>
+          <declname>index</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaToolkit/AdbDevice/MaaToolkitAdbDevice.h" line="28" column="47" declfile="include/MaaToolkit/AdbDevice/MaaToolkitAdbDevice.h" declline="28" declcolumn="47"/>
+      </memberdef>
+      <memberdef kind="function" id="MaaToolkitAdbDevice_8h_1a3394abd6663214c5aa8539977a3014d9" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="MaaPort_8h_1a011c7bbd355fdfe6aa7599af52cc20ac" kindref="member">MAA_TOOLKIT_API</ref> const char *</type>
+        <definition>MAA_TOOLKIT_API const char * MaaToolkitAdbDeviceGetName</definition>
+        <argsstring>(const MaaToolkitAdbDevice *device)</argsstring>
+        <name>MaaToolkitAdbDeviceGetName</name>
+        <param>
+          <type>const <ref refid="MaaToolkitDef_8h_1a4ed920f548223ae34817b720532407cf" kindref="member">MaaToolkitAdbDevice</ref> *</type>
+          <declname>device</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaToolkit/AdbDevice/MaaToolkitAdbDevice.h" line="30" column="32" declfile="include/MaaToolkit/AdbDevice/MaaToolkitAdbDevice.h" declline="30" declcolumn="32"/>
+      </memberdef>
+      <memberdef kind="function" id="MaaToolkitAdbDevice_8h_1a855bc06b45b35869ca230a2d45bfcd9d" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="MaaPort_8h_1a011c7bbd355fdfe6aa7599af52cc20ac" kindref="member">MAA_TOOLKIT_API</ref> const char *</type>
+        <definition>MAA_TOOLKIT_API const char * MaaToolkitAdbDeviceGetAdbPath</definition>
+        <argsstring>(const MaaToolkitAdbDevice *device)</argsstring>
+        <name>MaaToolkitAdbDeviceGetAdbPath</name>
+        <param>
+          <type>const <ref refid="MaaToolkitDef_8h_1a4ed920f548223ae34817b720532407cf" kindref="member">MaaToolkitAdbDevice</ref> *</type>
+          <declname>device</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaToolkit/AdbDevice/MaaToolkitAdbDevice.h" line="31" column="32" declfile="include/MaaToolkit/AdbDevice/MaaToolkitAdbDevice.h" declline="31" declcolumn="32"/>
+      </memberdef>
+      <memberdef kind="function" id="MaaToolkitAdbDevice_8h_1a36b30e7e80c696dfbb5d58cba95c5662" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="MaaPort_8h_1a011c7bbd355fdfe6aa7599af52cc20ac" kindref="member">MAA_TOOLKIT_API</ref> const char *</type>
+        <definition>MAA_TOOLKIT_API const char * MaaToolkitAdbDeviceGetAddress</definition>
+        <argsstring>(const MaaToolkitAdbDevice *device)</argsstring>
+        <name>MaaToolkitAdbDeviceGetAddress</name>
+        <param>
+          <type>const <ref refid="MaaToolkitDef_8h_1a4ed920f548223ae34817b720532407cf" kindref="member">MaaToolkitAdbDevice</ref> *</type>
+          <declname>device</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaToolkit/AdbDevice/MaaToolkitAdbDevice.h" line="32" column="32" declfile="include/MaaToolkit/AdbDevice/MaaToolkitAdbDevice.h" declline="32" declcolumn="32"/>
+      </memberdef>
+      <memberdef kind="function" id="MaaToolkitAdbDevice_8h_1a34d5508d018ef311c487bcd7b80d2fec" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="MaaPort_8h_1a011c7bbd355fdfe6aa7599af52cc20ac" kindref="member">MAA_TOOLKIT_API</ref> <ref refid="MaaDef_8h_1a337e4b247a734f5c1c058689f75c1369" kindref="member">MaaAdbScreencapMethod</ref></type>
+        <definition>MAA_TOOLKIT_API MaaAdbScreencapMethod MaaToolkitAdbDeviceGetScreencapMethods</definition>
+        <argsstring>(const MaaToolkitAdbDevice *device)</argsstring>
+        <name>MaaToolkitAdbDeviceGetScreencapMethods</name>
+        <param>
+          <type>const <ref refid="MaaToolkitDef_8h_1a4ed920f548223ae34817b720532407cf" kindref="member">MaaToolkitAdbDevice</ref> *</type>
+          <declname>device</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaToolkit/AdbDevice/MaaToolkitAdbDevice.h" line="33" column="43" declfile="include/MaaToolkit/AdbDevice/MaaToolkitAdbDevice.h" declline="33" declcolumn="43"/>
+      </memberdef>
+      <memberdef kind="function" id="MaaToolkitAdbDevice_8h_1a0ff6995f682f48c6bef9a371058ee23e" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="MaaPort_8h_1a011c7bbd355fdfe6aa7599af52cc20ac" kindref="member">MAA_TOOLKIT_API</ref> <ref refid="MaaDef_8h_1aa02386b09246fa0704ec371f80bb661f" kindref="member">MaaAdbInputMethod</ref></type>
+        <definition>MAA_TOOLKIT_API MaaAdbInputMethod MaaToolkitAdbDeviceGetInputMethods</definition>
+        <argsstring>(const MaaToolkitAdbDevice *device)</argsstring>
+        <name>MaaToolkitAdbDeviceGetInputMethods</name>
+        <param>
+          <type>const <ref refid="MaaToolkitDef_8h_1a4ed920f548223ae34817b720532407cf" kindref="member">MaaToolkitAdbDevice</ref> *</type>
+          <declname>device</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaToolkit/AdbDevice/MaaToolkitAdbDevice.h" line="34" column="39" declfile="include/MaaToolkit/AdbDevice/MaaToolkitAdbDevice.h" declline="34" declcolumn="39"/>
+      </memberdef>
+      <memberdef kind="function" id="MaaToolkitAdbDevice_8h_1aac2fef51776f6d5d726862ad0650987c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="MaaPort_8h_1a011c7bbd355fdfe6aa7599af52cc20ac" kindref="member">MAA_TOOLKIT_API</ref> const char *</type>
+        <definition>MAA_TOOLKIT_API const char * MaaToolkitAdbDeviceGetConfig</definition>
+        <argsstring>(const MaaToolkitAdbDevice *device)</argsstring>
+        <name>MaaToolkitAdbDeviceGetConfig</name>
+        <param>
+          <type>const <ref refid="MaaToolkitDef_8h_1a4ed920f548223ae34817b720532407cf" kindref="member">MaaToolkitAdbDevice</ref> *</type>
+          <declname>device</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaToolkit/AdbDevice/MaaToolkitAdbDevice.h" line="35" column="32" declfile="include/MaaToolkit/AdbDevice/MaaToolkitAdbDevice.h" declline="35" declcolumn="32"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="include/MaaToolkit/AdbDevice/MaaToolkitAdbDevice.h"/>
+  </compounddef>
+</doxygen>

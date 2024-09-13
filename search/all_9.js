@@ -1,6 +1,6 @@
 var searchData=
 [
-  ['touch_5fdown_0',['touch_down',['../structMaaCustomControllerAPI.html#a249f942aa36b63ef2970104757220d94',1,'MaaCustomControllerAPI']]],
-  ['touch_5fmove_1',['touch_move',['../structMaaCustomControllerAPI.html#a23221e4ff176f0cc1f8540d86b3ed21a',1,'MaaCustomControllerAPI']]],
-  ['touch_5fup_2',['touch_up',['../structMaaCustomControllerAPI.html#a34f7b799766106be602d08d3b2d74845',1,'MaaCustomControllerAPI']]]
+  ['touch_5fdown_0',['touch_down',['../structMaaCustomControllerCallbacks.html#a9cab96282d0a73e1354a4fa48c3712f3',1,'MaaCustomControllerCallbacks']]],
+  ['touch_5fmove_1',['touch_move',['../structMaaCustomControllerCallbacks.html#ad7eb80327cea4f03830d13480ce03eb7',1,'MaaCustomControllerCallbacks']]],
+  ['touch_5fup_2',['touch_up',['../structMaaCustomControllerCallbacks.html#a17ac7005c5d69ace1aec0762b7909064',1,'MaaCustomControllerCallbacks']]]
 ];

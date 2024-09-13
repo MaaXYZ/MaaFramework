@@ -1,12 +1,12 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
-<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.5" xml:lang="en-US">
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="MaaToolkitAPI_8h" kind="file" language="C++">
     <compoundname>MaaToolkitAPI.h</compoundname>
     <includes refid="MaaToolkitDef_8h" local="yes">MaaToolkitDef.h</includes>
+    <includes refid="MaaToolkitAdbDevice_8h" local="yes">AdbDevice/MaaToolkitAdbDevice.h</includes>
     <includes refid="MaaToolkitConfig_8h" local="yes">Config/MaaToolkitConfig.h</includes>
-    <includes refid="MaaToolkitDevice_8h" local="yes">Device/MaaToolkitDevice.h</includes>
-    <includes refid="MaaToolkitExecAgent_8h" local="yes">ExecAgent/MaaToolkitExecAgent.h</includes>
-    <includes refid="MaaToolkitWin32Window_8h" local="yes">Win32/MaaToolkitWin32Window.h</includes>
+    <includes refid="MaaToolkitDesktopWindow_8h" local="yes">DesktopWindow/MaaToolkitDesktopWindow.h</includes>
+    <includes refid="MaaToolkitProjectInterface_8h" local="yes">ProjectInterface/MaaToolkitProjectInterface.h</includes>
     <incdepgraph>
       <node id="3">
         <label>MaaFramework/MaaDef.h</label>
@@ -16,25 +16,25 @@
         <childnode refid="5" relation="include">
         </childnode>
       </node>
-      <node id="4">
+      <node id="5">
         <label>MaaPort.h</label>
         <link refid="MaaPort_8h"/>
       </node>
       <node id="6">
+        <label>AdbDevice/MaaToolkitAdbDevice.h</label>
+        <link refid="MaaToolkitAdbDevice_8h"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+      </node>
+      <node id="7">
         <label>Config/MaaToolkitConfig.h</label>
         <link refid="MaaToolkitConfig_8h"/>
         <childnode refid="2" relation="include">
         </childnode>
       </node>
-      <node id="7">
-        <label>Device/MaaToolkitDevice.h</label>
-        <link refid="MaaToolkitDevice_8h"/>
-        <childnode refid="2" relation="include">
-        </childnode>
-      </node>
       <node id="8">
-        <label>ExecAgent/MaaToolkitExecAgent.h</label>
-        <link refid="MaaToolkitExecAgent_8h"/>
+        <label>DesktopWindow/MaaToolkitDesktopWindow.h</label>
+        <link refid="MaaToolkitDesktopWindow_8h"/>
         <childnode refid="2" relation="include">
         </childnode>
       </node>
@@ -59,12 +59,12 @@
         </childnode>
       </node>
       <node id="9">
-        <label>Win32/MaaToolkitWin32Window.h</label>
-        <link refid="MaaToolkitWin32Window_8h"/>
+        <label>ProjectInterface/MaaToolkitProjectInterface.h</label>
+        <link refid="MaaToolkitProjectInterface_8h"/>
         <childnode refid="2" relation="include">
         </childnode>
       </node>
-      <node id="5">
+      <node id="4">
         <label>stdint.h</label>
       </node>
     </incdepgraph>

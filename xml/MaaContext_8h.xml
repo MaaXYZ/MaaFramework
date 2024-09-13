@@ -1,0 +1,243 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="MaaContext_8h" kind="file" language="C++">
+    <compoundname>MaaContext.h</compoundname>
+    <includes refid="MaaDef_8h" local="yes">../MaaDef.h</includes>
+    <includes refid="MaaPort_8h" local="yes">../MaaPort.h</includes>
+    <includedby refid="MaaAPI_8h" local="yes">include/MaaFramework/MaaAPI.h</includedby>
+    <incdepgraph>
+      <node id="1">
+        <label>include/MaaFramework/Instance/MaaContext.h</label>
+        <link refid="MaaContext_8h"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>../MaaDef.h</label>
+        <link refid="MaaDef_8h"/>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+      </node>
+      <node id="4">
+        <label>MaaPort.h</label>
+        <link refid="MaaPort_8h"/>
+      </node>
+      <node id="3">
+        <label>stdint.h</label>
+      </node>
+    </incdepgraph>
+    <invincdepgraph>
+      <node id="1">
+        <label>include/MaaFramework/Instance/MaaContext.h</label>
+        <link refid="MaaContext_8h"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>include/MaaFramework/MaaAPI.h</label>
+        <link refid="MaaAPI_8h"/>
+      </node>
+    </invincdepgraph>
+    <sectiondef kind="func">
+      <memberdef kind="function" id="MaaContext_8h_1ad91ac76119e5ebbf1ed24ba959c14f63" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="MaaPort_8h_1a67006334d91d228121dbba7a8bf8fe05" kindref="member">MAA_FRAMEWORK_API</ref> <ref refid="MaaDef_8h_1a711b3db9be6db60ae4cb09e3629e42f0" kindref="member">MaaTaskId</ref></type>
+        <definition>MAA_FRAMEWORK_API MaaTaskId MaaContextRunPipeline</definition>
+        <argsstring>(MaaContext *context, const char *entry, const char *pipeline_override)</argsstring>
+        <name>MaaContextRunPipeline</name>
+        <param>
+          <type><ref refid="MaaDef_8h_1ad2101e87aad0f5d03b8136943daee40e" kindref="member">MaaContext</ref> *</type>
+          <declname>context</declname>
+        </param>
+        <param>
+          <type>const char *</type>
+          <declname>entry</declname>
+        </param>
+        <param>
+          <type>const char *</type>
+          <declname>pipeline_override</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaFramework/Instance/MaaContext.h" line="22" column="33" declfile="include/MaaFramework/Instance/MaaContext.h" declline="22" declcolumn="33"/>
+      </memberdef>
+      <memberdef kind="function" id="MaaContext_8h_1a0cf90816e1b498a66ade37ff12a4e6eb" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="MaaPort_8h_1a67006334d91d228121dbba7a8bf8fe05" kindref="member">MAA_FRAMEWORK_API</ref> <ref refid="MaaDef_8h_1a7519e6a8329a32c8e3058c20ec74cda8" kindref="member">MaaRecoId</ref></type>
+        <definition>MAA_FRAMEWORK_API MaaRecoId MaaContextRunRecognition</definition>
+        <argsstring>(MaaContext *context, const char *entry, const char *pipeline_override, const MaaImageBuffer *image)</argsstring>
+        <name>MaaContextRunRecognition</name>
+        <param>
+          <type><ref refid="MaaDef_8h_1ad2101e87aad0f5d03b8136943daee40e" kindref="member">MaaContext</ref> *</type>
+          <declname>context</declname>
+        </param>
+        <param>
+          <type>const char *</type>
+          <declname>entry</declname>
+        </param>
+        <param>
+          <type>const char *</type>
+          <declname>pipeline_override</declname>
+        </param>
+        <param>
+          <type>const <ref refid="MaaDef_8h_1a0a52c8503deca448e71a407cdb14d259" kindref="member">MaaImageBuffer</ref> *</type>
+          <declname>image</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaFramework/Instance/MaaContext.h" line="25" column="9" declfile="include/MaaFramework/Instance/MaaContext.h" declline="25" declcolumn="9"/>
+      </memberdef>
+      <memberdef kind="function" id="MaaContext_8h_1a415581acd9270998661ff49a3f362a66" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="MaaPort_8h_1a67006334d91d228121dbba7a8bf8fe05" kindref="member">MAA_FRAMEWORK_API</ref> <ref refid="MaaDef_8h_1aeedbbed1bc17d1ffd80ff719a71cfed5" kindref="member">MaaNodeId</ref></type>
+        <definition>MAA_FRAMEWORK_API MaaNodeId MaaContextRunAction</definition>
+        <argsstring>(MaaContext *context, const char *entry, const char *pipeline_override, const MaaRect *box, const char *reco_detail)</argsstring>
+        <name>MaaContextRunAction</name>
+        <param>
+          <type><ref refid="MaaDef_8h_1ad2101e87aad0f5d03b8136943daee40e" kindref="member">MaaContext</ref> *</type>
+          <declname>context</declname>
+        </param>
+        <param>
+          <type>const char *</type>
+          <declname>entry</declname>
+        </param>
+        <param>
+          <type>const char *</type>
+          <declname>pipeline_override</declname>
+        </param>
+        <param>
+          <type>const <ref refid="structMaaRect" kindref="compound">MaaRect</ref> *</type>
+          <declname>box</declname>
+        </param>
+        <param>
+          <type>const char *</type>
+          <declname>reco_detail</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaFramework/Instance/MaaContext.h" line="27" column="33" declfile="include/MaaFramework/Instance/MaaContext.h" declline="27" declcolumn="33"/>
+      </memberdef>
+      <memberdef kind="function" id="MaaContext_8h_1a581b031a7dceedcf1ff6cec308895cce" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="MaaPort_8h_1a67006334d91d228121dbba7a8bf8fe05" kindref="member">MAA_FRAMEWORK_API</ref> <ref refid="MaaDef_8h_1a2f7289f2a8e07f48c6261b52a120cdf6" kindref="member">MaaBool</ref></type>
+        <definition>MAA_FRAMEWORK_API MaaBool MaaContextOverridePipeline</definition>
+        <argsstring>(MaaContext *context, const char *pipeline_override)</argsstring>
+        <name>MaaContextOverridePipeline</name>
+        <param>
+          <type><ref refid="MaaDef_8h_1ad2101e87aad0f5d03b8136943daee40e" kindref="member">MaaContext</ref> *</type>
+          <declname>context</declname>
+        </param>
+        <param>
+          <type>const char *</type>
+          <declname>pipeline_override</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaFramework/Instance/MaaContext.h" line="34" column="31" declfile="include/MaaFramework/Instance/MaaContext.h" declline="34" declcolumn="31"/>
+      </memberdef>
+      <memberdef kind="function" id="MaaContext_8h_1a8796988bb6a6f862173ece93e54440ab" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="MaaPort_8h_1a67006334d91d228121dbba7a8bf8fe05" kindref="member">MAA_FRAMEWORK_API</ref> <ref refid="MaaDef_8h_1a2f7289f2a8e07f48c6261b52a120cdf6" kindref="member">MaaBool</ref></type>
+        <definition>MAA_FRAMEWORK_API MaaBool MaaContextOverrideNext</definition>
+        <argsstring>(MaaContext *context, const char *name, const MaaStringListBuffer *next_list)</argsstring>
+        <name>MaaContextOverrideNext</name>
+        <param>
+          <type><ref refid="MaaDef_8h_1ad2101e87aad0f5d03b8136943daee40e" kindref="member">MaaContext</ref> *</type>
+          <declname>context</declname>
+        </param>
+        <param>
+          <type>const char *</type>
+          <declname>name</declname>
+        </param>
+        <param>
+          <type>const <ref refid="MaaDef_8h_1a7668a404d5063ffc525180d3e144999f" kindref="member">MaaStringListBuffer</ref> *</type>
+          <declname>next_list</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaFramework/Instance/MaaContext.h" line="36" column="31" declfile="include/MaaFramework/Instance/MaaContext.h" declline="36" declcolumn="31"/>
+      </memberdef>
+      <memberdef kind="function" id="MaaContext_8h_1abecb5883a59f9a8037982bb1cbc3ff43" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="MaaPort_8h_1a67006334d91d228121dbba7a8bf8fe05" kindref="member">MAA_FRAMEWORK_API</ref> <ref refid="MaaDef_8h_1a711b3db9be6db60ae4cb09e3629e42f0" kindref="member">MaaTaskId</ref></type>
+        <definition>MAA_FRAMEWORK_API MaaTaskId MaaContextGetTaskId</definition>
+        <argsstring>(const MaaContext *context)</argsstring>
+        <name>MaaContextGetTaskId</name>
+        <param>
+          <type>const <ref refid="MaaDef_8h_1ad2101e87aad0f5d03b8136943daee40e" kindref="member">MaaContext</ref> *</type>
+          <declname>context</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaFramework/Instance/MaaContext.h" line="38" column="33" declfile="include/MaaFramework/Instance/MaaContext.h" declline="38" declcolumn="33"/>
+      </memberdef>
+      <memberdef kind="function" id="MaaContext_8h_1a646adf1aa6a50e61fd06c173b72fab1f" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="MaaPort_8h_1a67006334d91d228121dbba7a8bf8fe05" kindref="member">MAA_FRAMEWORK_API</ref> <ref refid="MaaDef_8h_1a8c41e8466c5da06f230f729c29bdac8a" kindref="member">MaaTasker</ref> *</type>
+        <definition>MAA_FRAMEWORK_API MaaTasker * MaaContextGetTasker</definition>
+        <argsstring>(const MaaContext *context)</argsstring>
+        <name>MaaContextGetTasker</name>
+        <param>
+          <type>const <ref refid="MaaDef_8h_1ad2101e87aad0f5d03b8136943daee40e" kindref="member">MaaContext</ref> *</type>
+          <declname>context</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaFramework/Instance/MaaContext.h" line="40" column="33" declfile="include/MaaFramework/Instance/MaaContext.h" declline="40" declcolumn="33"/>
+      </memberdef>
+      <memberdef kind="function" id="MaaContext_8h_1a681fba1bb60a679d6e35df345e663d72" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="MaaPort_8h_1a67006334d91d228121dbba7a8bf8fe05" kindref="member">MAA_FRAMEWORK_API</ref> <ref refid="MaaDef_8h_1ad2101e87aad0f5d03b8136943daee40e" kindref="member">MaaContext</ref> *</type>
+        <definition>MAA_FRAMEWORK_API MaaContext * MaaContextClone</definition>
+        <argsstring>(const MaaContext *context)</argsstring>
+        <name>MaaContextClone</name>
+        <param>
+          <type>const <ref refid="MaaDef_8h_1ad2101e87aad0f5d03b8136943daee40e" kindref="member">MaaContext</ref> *</type>
+          <declname>context</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaFramework/Instance/MaaContext.h" line="42" column="34" declfile="include/MaaFramework/Instance/MaaContext.h" declline="42" declcolumn="34"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>Context is a context for running tasks, recognizers, actions, and other operations. </para>
+    </briefdescription>
+    <detaileddescription>
+<para><simplesect kind="author"><para></para>
+</simplesect>
+<simplesect kind="copyright"><para>Copyright (c) 2024 </para>
+</simplesect>
+</para>
+    </detaileddescription>
+    <location file="include/MaaFramework/Instance/MaaContext.h"/>
+  </compounddef>
+</doxygen>
