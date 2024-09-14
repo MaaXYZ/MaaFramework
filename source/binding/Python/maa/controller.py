@@ -347,7 +347,7 @@ class Win32Controller(Controller):
         self,
         hWnd: ctypes.c_void_p,
         screencap_method: MaaWin32ScreencapMethod = MaaWin32ScreencapMethodEnum.DXGI_DesktopDup,
-        input_method: MaaWin32ScreencapMethod = MaaWin32InputMethodEnum.Seize,
+        input_method: MaaWin32InputMethod = MaaWin32InputMethodEnum.Seize,
         callback: Optional[Callback] = None,
         callback_arg: Any = None,
     ):
