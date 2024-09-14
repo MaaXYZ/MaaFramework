@@ -64,9 +64,5 @@ class JobWithResult(Job):
         super().__init__(maaid, status_func, wait_func)
         self._get_func = get_func
 
-    def wait(self) -> "JobWithResult":
-        super().wait()
-        return self
-
     def get(self):
         return self._get_func(self._maaid)
