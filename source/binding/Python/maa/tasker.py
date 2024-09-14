@@ -24,7 +24,7 @@ class Tasker:
         self,
         callback: Optional[Callback] = None,
         callback_arg: Any = None,
-        handle: MaaTaskerHandle = None,
+        handle: Optional[MaaTaskerHandle] = None,
     ):
         if not Library.initialized:
             raise RuntimeError(
@@ -65,7 +65,7 @@ class Tasker:
     def resource(self) -> Resource:
         resource_handle = Library.framework.MaaTaskerGetResource(self._handle)
         if not resource_handle:
-            return None
+            raise RuntimeError("Failed to get resource.")
 
         return Resource(handle=resource_handle)
 
@@ -73,7 +73,7 @@ class Tasker:
     def controller(self) -> Controller:
         controller_handle = Library.framework.MaaTaskerGetController(self._handle)
         if not controller_handle:
-            return None
+            raise RuntimeError("Failed to get controller.")
 
         return Controller(handle=controller_handle)
 
@@ -110,32 +110,33 @@ class Tasker:
 
     def post_stop(self) -> Job:
         Library.framework.MaaTaskerPostStop(self._handle)
-        return Job(0, self._stop_status, self._stop_wait)
+        return Job(MaaId(0), self._stop_status, self._stop_wait)
 
     def get_latest_node(self, name: str) -> Optional[NodeDetail]:
-        node_id = MaaNodeId()
+        c_node_id = MaaNodeId()
         ret = bool(
             Library.framework.MaaTaskerGetLatestNode(
                 self._handle,
-                name.encode("utf-8"),
-                ctypes.pointer(node_id),
+                name.encode(),
+                ctypes.pointer(c_node_id),
             )
         )
         if not ret:
             return None
 
-        return self._get_node_detail(node_id)
+        return self._get_node_detail(int(c_node_id.value))
 
     def clear_cache(self) -> bool:
         return bool(Library.framework.MaaTaskerClearCache(self._handle))
 
     @staticmethod
     def set_log_dir(path: Union[Path, str]) -> bool:
+        strpath = str(path)
         return bool(
             Library.framework.MaaSetGlobalOption(
                 MaaGlobalOptionEnum.LogDir,
-                str(path).encode("utf-8"),
-                len(path),
+                strpath.encode(),
+                len(strpath),
             )
         )
 
@@ -162,12 +163,12 @@ class Tasker:
         )
 
     @staticmethod
-    def set_stdout_level(level: MaaLoggingLevelEunm) -> bool:
-        cbool = ctypes.c_bool(level)
+    def set_stdout_level(level: LoggingLevelEnum) -> bool:
+        clevel = MaaLoggingLevel(level)
         return bool(
             Library.framework.MaaSetGlobalOption(
                 MaaGlobalOptionEnum.StdoutLevel,
-                ctypes.pointer(cbool),
+                ctypes.pointer(clevel),
                 ctypes.sizeof(MaaLoggingLevel),
             )
         )
@@ -199,8 +200,8 @@ class Tasker:
     @staticmethod
     def _gen_post_param(entry: str, pipeline_override: Dict) -> Tuple[bytes, bytes]:
         return (
-            entry.encode("utf-8"),
-            json.dumps(pipeline_override, ensure_ascii=False).encode("utf-8"),
+            entry.encode(),
+            json.dumps(pipeline_override, ensure_ascii=False).encode(),
         )
 
     def _gen_task_job(self, taskid: MaaTaskId) -> JobWithResult:
@@ -217,18 +218,16 @@ class Tasker:
     def _task_wait(self, id: int) -> ctypes.c_int32:
         return Library.framework.MaaTaskerWait(self._handle, id)
 
-    def _stop_status(self, id: int) -> ctypes.c_int32:
-        return MaaStatusEnum.success if not self.running() else MaaStatusEnum.running
+    def _stop_status(self, id: int) -> MaaStatusEnum:
+        return MaaStatusEnum.success if not self.running else MaaStatusEnum.running
 
-    def _stop_wait(self, id: int) -> ctypes.c_int32:
+    def _stop_wait(self, id: int) -> MaaStatusEnum:
         # TODO: 这个应该由 callback 来处理
-        while self.running():
+        while self.running:
             time.sleep(0.1)
         return MaaStatusEnum.success
 
-    def _get_recognition_detail(
-        self, reco_id: MaaRecoId
-    ) -> Optional[RecognitionDetail]:
+    def _get_recognition_detail(self, reco_id: int) -> Optional[RecognitionDetail]:
         name = StringBuffer()
         algorithm = StringBuffer()
         hit = MaaBool()
@@ -239,7 +238,7 @@ class Tasker:
         ret = bool(
             Library.framework.MaaTaskerGetRecognitionDetail(
                 self._handle,
-                reco_id,
+                MaaRecoId(reco_id),
                 name._handle,
                 algorithm._handle,
                 ctypes.pointer(hit),
@@ -262,27 +261,27 @@ class Tasker:
             draws=draws.get(),
         )
 
-    def _get_node_detail(self, node_id: MaaNodeId) -> Optional[NodeDetail]:
+    def _get_node_detail(self, node_id: int) -> Optional[NodeDetail]:
         name = StringBuffer()
-        reco_id = MaaRecoId()
-        times = MaaSize()
-        completed = MaaBool()
+        c_reco_id = MaaRecoId()
+        c_times = MaaSize()
+        c_completed = MaaBool()
 
         ret = bool(
             Library.framework.MaaTaskerGetNodeDetail(
                 self._handle,
-                node_id,
+                MaaNodeId(node_id),
                 name._handle,
-                ctypes.pointer(reco_id),
-                ctypes.pointer(times),
-                ctypes.pointer(completed),
+                ctypes.pointer(c_reco_id),
+                ctypes.pointer(c_times),
+                ctypes.pointer(c_completed),
             )
         )
 
         if not ret:
             return None
 
-        recognition = self._get_recognition_detail(reco_id)
+        recognition = self._get_recognition_detail(int(c_reco_id.value))
         if not recognition:
             return None
 
@@ -290,25 +289,29 @@ class Tasker:
             node_id=node_id,
             name=name.get(),
             recognition=recognition,
-            times=int(times.value),
-            completed=bool(completed),
+            times=int(c_times.value),
+            completed=bool(c_completed),
         )
 
-    def _get_task_detail(self, task_id: MaaTaskId) -> Optional[TaskDetail]:
+    def _get_task_detail(self, task_id: int) -> Optional[TaskDetail]:
         size = MaaSize()
         ret = bool(
             Library.framework.MaaTaskerGetTaskDetail(
-                self._handle, task_id, None, None, ctypes.pointer(size)
+                self._handle, MaaTaskId(task_id), None, None, ctypes.pointer(size)
             )
         )
         if not ret:
             return None
 
         entry = StringBuffer()
-        node_id_list = (MaaNodeId * size.value)()
+        c_node_id_list = (MaaNodeId * size.value)()
         ret = bool(
             Library.framework.MaaTaskerGetTaskDetail(
-                self._handle, task_id, entry._handle, node_id_list, ctypes.pointer(size)
+                self._handle,
+                MaaTaskId(task_id),
+                entry._handle,
+                c_node_id_list,
+                ctypes.pointer(size),
             )
         )
         if not ret:
@@ -316,7 +319,7 @@ class Tasker:
 
         nodes = []
         for i in range(size.value):
-            detail = self._get_node_detail(node_id_list[i])
+            detail = self._get_node_detail(int(c_node_id_list[i]))
             nodes.append(detail)
 
         return TaskDetail(task_id=task_id, entry=entry.get(), nodes=nodes)

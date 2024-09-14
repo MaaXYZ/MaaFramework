@@ -1,5 +1,4 @@
-import abc
-from typing import Union
+from typing import Union, Self
 
 from .define import *
 
@@ -37,7 +36,7 @@ class Job:
     def get_id(self) -> int:
         return int(self._maaid)
 
-    def wait(self) -> "Job":
+    def wait(self) -> Self:
         self._wait_func(self._maaid)
         return self
 

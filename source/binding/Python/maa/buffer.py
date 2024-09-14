@@ -61,7 +61,7 @@ class StringBuffer:
         StringBuffer._api_properties_initialized = True
 
         Library.framework.MaaStringBufferCreate.restype = MaaStringBufferHandle
-        Library.framework.MaaStringBufferCreate.argtypes = None
+        Library.framework.MaaStringBufferCreate.argtypes = []
 
         Library.framework.MaaStringBufferDestroy.restype = None
         Library.framework.MaaStringBufferDestroy.argtypes = [MaaStringBufferHandle]
@@ -159,7 +159,7 @@ class StringListBuffer:
         StringListBuffer._api_properties_initialized = True
 
         Library.framework.MaaStringListBufferCreate.restype = MaaStringListBufferHandle
-        Library.framework.MaaStringListBufferCreate.argtypes = None
+        Library.framework.MaaStringListBufferCreate.argtypes = []
 
         Library.framework.MaaStringListBufferDestroy.restype = None
         Library.framework.MaaStringListBufferDestroy.argtypes = [
@@ -371,7 +371,7 @@ class ImageListBuffer:
         ImageListBuffer._api_properties_initialized = True
 
         Library.framework.MaaImageListBufferCreate.restype = MaaImageListBufferHandle
-        Library.framework.MaaImageListBufferCreate.argtypes = None
+        Library.framework.MaaImageListBufferCreate.argtypes = []
 
         Library.framework.MaaImageListBufferDestroy.restype = None
         Library.framework.MaaImageListBufferDestroy.argtypes = [

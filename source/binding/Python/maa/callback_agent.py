@@ -20,6 +20,7 @@ class CallbackAgent:
     def c_callback_arg(self) -> ctypes.c_void_p:
         return ctypes.c_void_p.from_buffer(ctypes.py_object(self))
 
+    @staticmethod
     @MaaNotificationCallback
     def _c_callback_agent(
         msg: ctypes.c_char_p,
@@ -34,7 +35,7 @@ class CallbackAgent:
             return
 
         self._callback(
-            msg.decode("utf-8"),
-            json.loads(details_json.decode("utf-8")),
+            msg.decode(),
+            json.loads(details_json.decode()),
             self._callback_arg,
         )

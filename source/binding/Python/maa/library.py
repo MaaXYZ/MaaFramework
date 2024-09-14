@@ -55,9 +55,9 @@ class Library:
                 "Library not initialized, please call `library.open()` first."
             )
 
-        return Library.framework.MaaVersion().decode("utf-8")
+        return Library.framework.MaaVersion().decode()
 
     @staticmethod
     def _set_api_properties():
         Library.framework.MaaVersion.restype = ctypes.c_char_p
-        Library.framework.MaaVersion.argtypes = None
+        Library.framework.MaaVersion.argtypes = []

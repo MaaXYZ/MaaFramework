@@ -27,7 +27,7 @@ class Controller:
 
     def __init__(
         self,
-        handle: MaaControllerHandle = None,
+        handle: Optional[MaaControllerHandle] = None,
     ):
         if not Library.initialized:
             raise RuntimeError(
@@ -46,7 +46,6 @@ class Controller:
     def __del__(self):
         if self._handle and self._own:
             Library.framework.MaaControllerDestroy(self._handle)
-            self._handle = None
 
     def post_connection(self) -> Job:
         ctrl_id = Library.framework.MaaControllerPostConnection(self._handle)
@@ -68,19 +67,19 @@ class Controller:
 
     def post_input_text(self, text: str) -> Job:
         ctrl_id = Library.framework.MaaControllerPostInputText(
-            self._handle, text.encode("utf-8")
+            self._handle, text.encode()
         )
         return self._gen_ctrl_job(ctrl_id)
 
     def post_start_app(self, intent: str) -> Job:
         ctrl_id = Library.framework.MaaControllerPostStartApp(
-            self._handle, intent.encode("utf-8")
+            self._handle, intent.encode()
         )
         return self._gen_ctrl_job(ctrl_id)
 
     def post_stop_app(self, package: str) -> Job:
         ctrl_id = Library.framework.MaaControllerPostStopApp(
-            self._handle, package.encode("utf-8")
+            self._handle, package.encode()
         )
         return self._gen_ctrl_job(ctrl_id)
 
@@ -104,22 +103,22 @@ class Controller:
         ctrl_id = Library.framework.MaaControllerPostTouchUp(self._handle, contact)
         return self._gen_ctrl_job(ctrl_id)
 
-    def post_screencap(self) -> Job:
+    def post_screencap(self) -> JobWithResult:
         ctrl_id = Library.framework.MaaControllerPostScreencap(self._handle)
         return JobWithResult(
             ctrl_id,
             self._status,
             self._wait,
-            self.cached_image,
+            self._get_screencap,
         )
 
     @property
-    def cached_image(self) -> Optional[numpy.ndarray]:
+    def cached_image(self) -> numpy.ndarray:
         image_buffer = ImageBuffer()
         if not Library.framework.MaaControllerCachedImage(
             self._handle, image_buffer._handle
         ):
-            return None
+            raise RuntimeError("Failed to get cached image.")
         return image_buffer.get()
 
     @property
@@ -130,7 +129,7 @@ class Controller:
     def uuid(self) -> str:
         buffer = StringBuffer()
         if not Library.framework.MaaControllerGetUuid(self._handle, buffer._handle):
-            return None
+            raise RuntimeError("Failed to get UUID.")
         return buffer.get()
 
     def set_screenshot_target_long_side(self, long_side: int) -> bool:
@@ -162,6 +161,9 @@ class Controller:
 
     def _wait(self, maaid: int) -> MaaStatus:
         return Library.framework.MaaControllerWait(self._handle, maaid)
+
+    def _get_screencap(self, _: int) -> numpy.ndarray:
+        return self.cached_image
 
     def _gen_ctrl_job(self, ctrlid: MaaCtrlId) -> Job:
         return Job(
@@ -300,7 +302,7 @@ class AdbController(Controller):
         adb_path: Union[str, Path],
         address: str,
         screencap_methods: MaaAdbScreencapMethod = MaaAdbScreencapMethodEnum.Default,
-        input_methods: MaaAdbInputMethod = MaaAdbInputMethodEnum.Default,
+        input_methods: MaaAdbScreencapMethod = MaaAdbInputMethodEnum.Default,
         config: Dict[str, Any] = {},
         agent_path: Union[str, Path] = AGENT_BINARY_PATH,
         callback: Optional[Callback] = None,
@@ -311,12 +313,12 @@ class AdbController(Controller):
 
         self._callback_agent = CallbackAgent(callback, callback_arg)
         self._handle = Library.framework.MaaAdbControllerCreate(
-            str(adb_path).encode("utf-8"),
-            address.encode("utf-8"),
+            str(adb_path).encode(),
+            address.encode(),
             screencap_methods,
             input_methods,
-            json.dumps(config, ensure_ascii=False).encode("utf-8"),
-            str(agent_path).encode("utf-8"),
+            json.dumps(config, ensure_ascii=False).encode(),
+            str(agent_path).encode(),
             self._callback_agent.c_callback,
             self._callback_agent.c_callback_arg,
         )
@@ -340,11 +342,12 @@ class AdbController(Controller):
 
 
 class Win32Controller(Controller):
+
     def __init__(
         self,
         hWnd: ctypes.c_void_p,
         screencap_method: MaaWin32ScreencapMethod = MaaWin32ScreencapMethodEnum.DXGI_DesktopDup,
-        input_method: MaaWin32InputMethod = MaaWin32InputMethodEnum.Seize,
+        input_method: MaaWin32ScreencapMethod = MaaWin32InputMethodEnum.Seize,
         callback: Optional[Callback] = None,
         callback_arg: Any = None,
     ):
@@ -374,7 +377,7 @@ class Win32Controller(Controller):
         ]
 
 
-class CustomContorller(Controller):
+class CustomController(Controller):
     def __init__(
         self,
         custom_controller: CustomControllerAgent,
@@ -406,6 +409,7 @@ class CustomContorller(Controller):
 
 
 class DbgController(Controller):
+
     def __init__(
         self,
         read_path: Union[str, Path],
@@ -420,10 +424,10 @@ class DbgController(Controller):
 
         self._callback_agent = CallbackAgent(callback, callback_arg)
         self._handle = Library.framework.MaaDbgControllerCreate(
-            str(read_path).encode("utf-8"),
-            str(write_path).encode("utf-8"),
+            str(read_path).encode(),
+            str(write_path).encode(),
             dbg_type,
-            json.dumps(config, ensure_ascii=False).encode("utf-8"),
+            json.dumps(config, ensure_ascii=False).encode(),
             self._callback_agent.c_callback,
             self._callback_agent.c_callback_arg,
         )

@@ -1,7 +1,8 @@
 # from __future__ import annotations
 import ctypes
+import platform
 from dataclasses import dataclass
-from enum import Enum
+from enum import IntEnum
 from typing import List, Tuple, Union, Dict, Optional
 
 import numpy
@@ -32,7 +33,7 @@ MaaContextHandle = ctypes.c_void_p
 MaaStatus = ctypes.c_int32
 
 
-class MaaStatusEnum(Enum):
+class MaaStatusEnum(IntEnum):
     invalid = 0
     pending = 1000
     running = 2000
@@ -41,17 +42,6 @@ class MaaStatusEnum(Enum):
 
 
 MaaLoggingLevel = ctypes.c_int32
-
-
-class MaaLoggingLevelEunm:
-    Off: MaaLoggingLevel = 0
-    Fatal: MaaLoggingLevel = 1
-    Error: MaaLoggingLevel = 2
-    Warn: MaaLoggingLevel = 3
-    Info: MaaLoggingLevel = 4
-    Debug: MaaLoggingLevel = 5
-    Trace: MaaLoggingLevel = 6
-    All: MaaLoggingLevel = 7
 
 
 MaaOptionValueSize = ctypes.c_uint64
@@ -83,7 +73,7 @@ class MaaGlobalOptionEnum:
 
     # The level of log output to stdout
     #
-    # value: MaaLoggingLevel, val_size: sizeof(MaaLoggingLevel)
+    # value, val_size: sizeof(MaaLoggingLevel)
     # default value is MaaLoggingLevel_Error
     StdoutLevel: MaaGlobalOption = 4
 
@@ -185,11 +175,13 @@ class MaaDbgControllerTypeEnum:
     ReplayRecording: MaaDbgControllerType = 1 << 1
 
 
-MaaNotificationCallback = ctypes.CFUNCTYPE(
+FUNCTYPE = platform.system() == "Windows" and ctypes.WINFUNCTYPE or ctypes.CFUNCTYPE
+
+MaaNotificationCallback = FUNCTYPE(
     None, ctypes.c_char_p, ctypes.c_char_p, ctypes.c_void_p
 )
 
-MaaCustomRecognizerCallback = ctypes.CFUNCTYPE(
+MaaCustomRecognizerCallback = ctypes.WINFUNCTYPE(
     MaaBool,  # return value
     MaaContextHandle,  # context
     MaaTaskId,  # task_id
@@ -203,7 +195,7 @@ MaaCustomRecognizerCallback = ctypes.CFUNCTYPE(
     MaaStringBufferHandle,  # [out] out_detail
 )
 
-MaaCustomActionCallback = ctypes.CFUNCTYPE(
+MaaCustomActionCallback = FUNCTYPE(
     MaaBool,  # return value
     MaaContextHandle,  # context
     MaaTaskId,  # task_id
@@ -223,54 +215,46 @@ MaaToolkitDesktopWindowHandle = ctypes.c_void_p
 
 
 class MaaCustomControllerCallbacks(ctypes.Structure):
-    ConnectFunc = ctypes.CFUNCTYPE(
+    ConnectFunc = FUNCTYPE(
         MaaBool,
         ctypes.c_void_p,
     )
-    RequestUuidFunc = ctypes.CFUNCTYPE(
+    RequestUuidFunc = FUNCTYPE(
         MaaBool,
         ctypes.c_void_p,
         MaaStringBufferHandle,
     )
-    StartAppFunc = ctypes.CFUNCTYPE(
+    StartAppFunc = FUNCTYPE(
         MaaBool,
         ctypes.c_char_p,
         ctypes.c_void_p,
     )
-    StopAppFunc = ctypes.CFUNCTYPE(
+    StopAppFunc = FUNCTYPE(
         MaaBool,
         ctypes.c_char_p,
         ctypes.c_void_p,
     )
-    ScreencapFunc = ctypes.CFUNCTYPE(
+    ScreencapFunc = FUNCTYPE(
         MaaBool,
         ctypes.c_void_p,
         MaaImageBufferHandle,
     )
-    ClickFunc = ctypes.CFUNCTYPE(
+    ClickFunc = FUNCTYPE(
         MaaBool,
         ctypes.c_int32,
         ctypes.c_int32,
         ctypes.c_void_p,
     )
-    SwipeFunc = ctypes.CFUNCTYPE(
+    SwipeFunc = FUNCTYPE(
         MaaBool,
         ctypes.c_int32,
-        ctypes.c_int32,
-        ctypes.c_int32,
-        ctypes.c_int32,
-        ctypes.c_int32,
-        ctypes.c_void_p,
-    )
-    TouchDownFunc = ctypes.CFUNCTYPE(
-        MaaBool,
         ctypes.c_int32,
         ctypes.c_int32,
         ctypes.c_int32,
         ctypes.c_int32,
         ctypes.c_void_p,
     )
-    TouchMoveFunc = ctypes.CFUNCTYPE(
+    TouchDownFunc = FUNCTYPE(
         MaaBool,
         ctypes.c_int32,
         ctypes.c_int32,
@@ -278,17 +262,25 @@ class MaaCustomControllerCallbacks(ctypes.Structure):
         ctypes.c_int32,
         ctypes.c_void_p,
     )
-    TouchUpFunc = ctypes.CFUNCTYPE(
+    TouchMoveFunc = FUNCTYPE(
+        MaaBool,
+        ctypes.c_int32,
+        ctypes.c_int32,
+        ctypes.c_int32,
+        ctypes.c_int32,
+        ctypes.c_void_p,
+    )
+    TouchUpFunc = FUNCTYPE(
         MaaBool,
         ctypes.c_int32,
         ctypes.c_void_p,
     )
-    PressKeyFunc = ctypes.CFUNCTYPE(
+    PressKeyFunc = FUNCTYPE(
         MaaBool,
         ctypes.c_int32,
         ctypes.c_void_p,
     )
-    InputTextFunc = ctypes.CFUNCTYPE(
+    InputTextFunc = FUNCTYPE(
         MaaBool,
         ctypes.c_char_p,
         ctypes.c_void_p,
@@ -387,3 +379,14 @@ class TaskDetail:
     task_id: int
     entry: str
     nodes: List[NodeDetail]
+
+
+class LoggingLevelEnum(IntEnum):
+    Off = 0
+    Fatal = 1
+    Error = 2
+    Warn = 3
+    Info = 4
+    Debug = 5
+    Trace = 6
+    All = 7

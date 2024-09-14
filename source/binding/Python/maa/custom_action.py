@@ -42,6 +42,7 @@ class CustomAction(ABC):
     def c_arg(self) -> ctypes.c_void_p:
         return ctypes.c_void_p.from_buffer(ctypes.py_object(self))
 
+    @staticmethod
     @MaaCustomActionCallback
     def _c_run_agent(
         c_context: MaaContextHandle,
@@ -62,8 +63,11 @@ class CustomAction(ABC):
         ).value
 
         context = Context(c_context)
-        task_detail = context.tasker._get_task_detail(c_task_id)
-        reco_detail = context.tasker._get_recognition_detail(c_reco_id)
+        task_detail = context.tasker._get_task_detail(int(c_task_id))
+        reco_detail = context.tasker._get_recognition_detail(int(c_reco_id))
+        if not task_detail or not reco_detail:
+            return MaaBool(False)
+
         box = RectBuffer(c_box).get()
 
         result: CustomAction.RunResult = self.run(

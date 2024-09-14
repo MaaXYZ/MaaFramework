@@ -39,14 +39,14 @@ class Toolkit:
 
         return bool(
             Library.toolkit.MaaToolkitConfigInitOption(
-                str(user_path).encode("utf-8"),
-                json.dumps(default_config, ensure_ascii=False).encode("utf-8"),
+                str(user_path).encode(),
+                json.dumps(default_config, ensure_ascii=False).encode(),
             )
         )
 
     @staticmethod
     def find_adb_devices(
-        specified_adb: Union[str, Path] = None
+        specified_adb: Optional[Union[str, Path]] = None
     ) -> List[AdbDevice]:
         Toolkit._set_api_properties()
 
@@ -54,7 +54,7 @@ class Toolkit:
 
         if specified_adb:
             Library.toolkit.MaaToolkitAdbDeviceFindSpecified(
-                str(specified_adb).encode("utf-8"), list_handle
+                str(specified_adb).encode(), list_handle
             )
         else:
             Library.toolkit.MaaToolkitAdbDeviceFind(list_handle)
@@ -65,26 +65,22 @@ class Toolkit:
         for i in range(count):
             device_handle = Library.toolkit.MaaToolkitAdbDeviceListAt(list_handle, i)
 
-            name = Library.toolkit.MaaToolkitAdbDeviceGetName(device_handle).decode(
-                "utf-8"
-            )
+            name = Library.toolkit.MaaToolkitAdbDeviceGetName(device_handle).decode()
             adb_path = Path(
-                Library.toolkit.MaaToolkitAdbDeviceGetAdbPath(device_handle).decode(
-                    "utf-8"
-                )
+                Library.toolkit.MaaToolkitAdbDeviceGetAdbPath(device_handle).decode()
             )
             address = Library.toolkit.MaaToolkitAdbDeviceGetAddress(
                 device_handle
-            ).decode("utf-8")
+            ).decode()
             screencap_methods = Library.toolkit.MaaToolkitAdbDeviceGetScreencapMethods(
                 device_handle
             )
             input_methods = Library.toolkit.MaaToolkitAdbDeviceGetInputMethods(
                 device_handle
             )
-            config = json.loads(Library.toolkit.MaaToolkitAdbDeviceGetConfig(device_handle).decode(
-                "utf-8"
-            ))
+            config = json.loads(
+                Library.toolkit.MaaToolkitAdbDeviceGetConfig(device_handle).decode()
+            )
 
             devices.append(
                 AdbDevice(
@@ -114,10 +110,10 @@ class Toolkit:
             hwnd = Library.toolkit.MaaToolkitDesktopWindowGetHandle(window_handle)
             class_name = Library.toolkit.MaaToolkitDesktopWindowGetClassName(
                 window_handle
-            ).decode("utf-8")
+            ).decode()
             window_name = Library.toolkit.MaaToolkitDesktopWindowGetWindowName(
                 window_handle
-            ).decode("utf-8")
+            ).decode()
 
             windows.append(DesktopWindow(hwnd, class_name, window_name))
 
@@ -126,17 +122,17 @@ class Toolkit:
 
     @staticmethod
     def register_pi_custom_recognition(
-        name: str, recognizer: "CustomRecognizer", inst_id: int = 0
-    ) -> None:
+        name: str, recognizer: "CustomRecognizer", inst_id: int = 0 # type: ignore
+    ) -> bool:
         Toolkit._set_api_properties()
-        
+
         # avoid gc
         Toolkit._custom_recognizer_holder[inst_id][name] = recognizer
 
         return bool(
             Library.toolkit.MaaToolkitProjectInterfaceRegisterCustomRecognition(
                 ctypes.c_uint64(inst_id),
-                name.encode("utf-8"),
+                name.encode(),
                 recognizer.c_handle,
                 recognizer.c_arg,
             )
@@ -144,8 +140,8 @@ class Toolkit:
 
     @staticmethod
     def register_pi_custom_action(
-         name: str, action: "CustomAction", inst_id: int = 0
-    ) -> None:
+        name: str, action: "CustomAction", inst_id: int = 0 # type: ignore
+    ) -> bool:
         Toolkit._set_api_properties()
 
         # avoid gc
@@ -154,7 +150,7 @@ class Toolkit:
         return bool(
             Library.toolkit.MaaToolkitProjectInterfaceRegisterCustomAction(
                 ctypes.c_uint64(inst_id),
-                name.encode("utf-8"),
+                name.encode(),
                 action.c_handle,
                 action.c_arg,
             ),
@@ -176,8 +172,8 @@ class Toolkit:
         return bool(
             Library.toolkit.MaaToolkitProjectInterfaceRunCli(
                 ctypes.c_uint64(inst_id),
-                str(resource_path).encode("utf-8"),
-                str(user_path).encode("utf-8"),
+                str(resource_path).encode(),
+                str(user_path).encode(),
                 directly,
                 Toolkit._callback_agent.c_callback,
                 Toolkit._callback_agent.c_callback_arg,

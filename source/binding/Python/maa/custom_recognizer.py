@@ -46,6 +46,7 @@ class CustomRecognizer(ABC):
     def c_arg(self) -> ctypes.c_void_p:
         return ctypes.c_void_p.from_buffer(ctypes.py_object(self))
 
+    @staticmethod
     @MaaCustomRecognizerCallback
     def _c_analyze_agent(
         c_context: MaaContextHandle,
@@ -65,7 +66,9 @@ class CustomRecognizer(ABC):
         self: CustomRecognizer = ctypes.cast(c_transparent_arg, ctypes.py_object).value
 
         context = Context(c_context)
-        task_detail = context.tasker._get_task_detail(c_task_id)
+        task_detail = context.tasker._get_task_detail(int(c_task_id))
+        if not task_detail:
+            return MaaBool(False)
 
         image = ImageBuffer(c_image).get()
 
@@ -86,4 +89,5 @@ class CustomRecognizer(ABC):
 
         StringBuffer(c_out_detail).set(result.detail)
 
-        return MaaBool(result.box is not None)
+        ret = result.box is not None
+        return MaaBool(ret)

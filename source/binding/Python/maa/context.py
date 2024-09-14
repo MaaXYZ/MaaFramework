@@ -32,8 +32,10 @@ class Context:
     def run_pipeline(
         self, entry: str, pipeline_override: Dict = {}
     ) -> Optional[TaskDetail]:
-        task_id = Library.framework.MaaContextRunPipeline(
-            self._handle, *Context._gen_post_param(entry, pipeline_override)
+        task_id = int(
+            Library.framework.MaaContextRunPipeline(
+                self._handle, *Context._gen_post_param(entry, pipeline_override)
+            )
         )
         if not task_id:
             return None
@@ -45,10 +47,12 @@ class Context:
     ) -> Optional[RecognitionDetail]:
         image_buffer = ImageBuffer()
         image_buffer.set(image)
-        reco_id = Library.framework.MaaContextRunRecognition(
-            self._handle,
-            *Context._gen_post_param(entry, pipeline_override),
-            image_buffer._handle
+        reco_id = int(
+            Library.framework.MaaContextRunRecognition(
+                self._handle,
+                *Context._gen_post_param(entry, pipeline_override),
+                image_buffer._handle
+            )
         )
         if not reco_id:
             return None
@@ -65,12 +69,12 @@ class Context:
         rect = RectBuffer()
         rect.set(box)
 
-        node_id = Library.framework.MaaContextRunAction(
+        node_id = int(Library.framework.MaaContextRunAction(
             self._handle,
             *Context._gen_post_param(entry, pipeline_override),
             rect._handle,
             reco_detail.encode()
-        )
+        ))
 
         if not node_id:
             return None
@@ -81,7 +85,7 @@ class Context:
         return bool(
             Library.framework.MaaContextOverridePipeline(
                 self._handle,
-                json.dumps(pipeline_override, ensure_ascii=False).encode("utf-8"),
+                json.dumps(pipeline_override, ensure_ascii=False).encode(),
             )
         )
 
@@ -102,14 +106,14 @@ class Context:
     def get_task_job(self) -> JobWithResult:
         task_id = Library.framework.MaaContextGetTaskId(self._handle)
         if not task_id:
-            return None
+            raise ValueError("task_id is None")
 
         return self.tasker._gen_task_job(task_id)
 
     def clone(self) -> "Context":
         cloned_handle = Library.framework.MaaContextClone(self._handle)
         if not cloned_handle:
-            return None
+            raise ValueError("cloned_handle is None")
 
         return Context(cloned_handle)
 
@@ -124,8 +128,8 @@ class Context:
     @staticmethod
     def _gen_post_param(entry: str, pipeline_override: Dict) -> Tuple[bytes, bytes]:
         return (
-            entry.encode("utf-8"),
-            json.dumps(pipeline_override, ensure_ascii=False).encode("utf-8"),
+            entry.encode(),
+            json.dumps(pipeline_override, ensure_ascii=False).encode(),
         )
 
     _api_properties_initialized: bool = False

@@ -23,7 +23,7 @@ bool CustomAction::run(
     std::string custom_param_string = param.custom_param.to_string();
     MaaRect crect { .x = rect.x, .y = rect.y, .width = rect.width, .height = rect.height };
 
-    MaaBool ret = session.action(
+    bool ret = session.action(
         &context,
         context.task_id(),
         task_name.c_str(),

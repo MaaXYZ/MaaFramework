@@ -42,7 +42,7 @@ Context::Context(const Context& other)
     , action_times_map_(other.action_times_map_)
 // don't copy clone_holder_
 {
-    LogTrace << VAR(getptr()) << VAR(other.getptr());
+    LogTrace << VAR(other.getptr());
 }
 
 MaaTaskId Context::run_pipeline(const std::string& entry, const json::value& pipeline_override)

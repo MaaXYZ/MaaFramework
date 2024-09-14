@@ -20,7 +20,7 @@ class Resource:
         self,
         callback: Optional[Callback] = None,
         callback_arg: Any = None,
-        handle: MaaResourceHandle = None,
+        handle: Optional[MaaResourceHandle] = None,
     ):
 
         if not Library.initialized:
@@ -51,9 +51,7 @@ class Resource:
             Library.framework.MaaResourceDestroy(self._handle)
 
     def post_path(self, path: Union[pathlib.Path, str]) -> Job:
-        resid = Library.framework.MaaResourcePostPath(
-            self._handle, str(path).encode("utf-8")
-        )
+        resid = Library.framework.MaaResourcePostPath(self._handle, str(path).encode())
         return Job(resid, self._status, self._wait)
 
     @property
@@ -64,7 +62,7 @@ class Resource:
         return bool(Library.framework.MaaResourceClear(self._handle))
 
     def register_custom_recognizer(
-        self, name: str, recognizer: "CustomRecognizer"
+        self, name: str, recognizer: "CustomRecognizer"  # type: ignore
     ) -> bool:
 
         # avoid gc
@@ -73,7 +71,7 @@ class Resource:
         return bool(
             Library.framework.MaaResourceRegisterCustomRecognizer(
                 self._handle,
-                name.encode("utf-8"),
+                name.encode(),
                 recognizer.c_handle,
                 recognizer.c_arg,
             )
@@ -85,7 +83,7 @@ class Resource:
         return bool(
             Library.framework.MaaResourceUnregisterCustomRecognizer(
                 self._handle,
-                name.encode("utf-8"),
+                name.encode(),
             )
         )
 
@@ -98,14 +96,14 @@ class Resource:
             )
         )
 
-    def register_custom_action(self, name: str, action: "CustomAction") -> bool:
+    def register_custom_action(self, name: str, action: "CustomAction") -> bool:  # type: ignore
         # avoid gc
         self._custom_action_holder[name] = action
 
         return bool(
             Library.framework.MaaResourceRegisterCustomAction(
                 self._handle,
-                name.encode("utf-8"),
+                name.encode(),
                 action.c_handle,
                 action.c_arg,
             )
@@ -117,7 +115,7 @@ class Resource:
         return bool(
             Library.framework.MaaResourceUnregisterCustomAction(
                 self._handle,
-                name.encode("utf-8"),
+                name.encode(),
             )
         )
 
@@ -134,7 +132,7 @@ class Resource:
     def hash(self) -> str:
         buffer = StringBuffer()
         if not Library.framework.MaaResourceGetHash(self._handle, buffer._handle):
-            return None
+            raise RuntimeError("Failed to get hash.")
         return buffer.get()
 
     ### private ###

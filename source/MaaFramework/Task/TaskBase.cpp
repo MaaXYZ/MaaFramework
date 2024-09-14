@@ -199,6 +199,7 @@ void TaskBase::set_node_detail(int64_t node_id, NodeDetail detail)
 
     auto& cache = tasker_->runtime_cache();
     cache.set_node_detail(node_id, detail);
+    cache.set_latest_node(detail.name, node_id);
 
     TaskDetail task_detail = cache.get_task_detail(task_id_).value_or(TaskDetail { .entry = entry_ });
     task_detail.node_ids.emplace_back(node_id);

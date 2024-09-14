@@ -725,7 +725,7 @@ bool ControllerAgent::postproc_screenshot(const cv::Mat& raw)
         return false;
     }
 
-    if (raw.cols != image_raw_width_ || raw.rows != image_raw_height_) {
+    if (raw.cols != image_raw_width_ || raw.rows != image_raw_height_ || image_target_width_ == 0 || image_target_height_ == 0) {
         LogInfo << "Resolution changed" << VAR(raw.cols) << VAR(raw.rows) << VAR(image_raw_width_) << VAR(image_raw_height_);
 
         image_raw_width_ = raw.cols;
