@@ -65,7 +65,7 @@ class CustomRecognizer(ABC):
         self: CustomRecognizer = ctypes.cast(c_transparent_arg, ctypes.py_object).value
 
         context = Context(c_context)
-        task_detail = context.tasker()._get_task_detail(c_task_id)
+        task_detail = context.tasker._get_task_detail(c_task_id)
 
         image = ImageBuffer(c_image).get()
 

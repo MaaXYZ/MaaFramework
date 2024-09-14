@@ -62,8 +62,8 @@ class CustomAction(ABC):
         ).value
 
         context = Context(c_context)
-        task_detail = context.tasker()._get_task_detail(c_task_id)
-        reco_detail = context.tasker()._get_recognition_detail(c_reco_id)
+        task_detail = context.tasker._get_task_detail(c_task_id)
+        reco_detail = context.tasker._get_recognition_detail(c_reco_id)
         box = RectBuffer(c_box).get()
 
         result: CustomAction.RunResult = self.run(
