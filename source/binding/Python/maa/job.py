@@ -1,4 +1,4 @@
-from typing import Union, Self
+from typing import Union
 
 from .define import *
 
@@ -36,7 +36,7 @@ class Job:
     def get_id(self) -> int:
         return int(self._maaid)
 
-    def wait(self) -> Self:
+    def wait(self) -> "Job":
         self._wait_func(self._maaid)
         return self
 
@@ -63,6 +63,10 @@ class JobWithResult(Job):
     def __init__(self, maaid: MaaId, status_func, wait_func, get_func):
         super().__init__(maaid, status_func, wait_func)
         self._get_func = get_func
+
+    def wait(self) -> "JobWithResult":
+        super().wait()
+        return self
 
     def get(self):
         return self._get_func(self._maaid)

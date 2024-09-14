@@ -53,115 +53,121 @@ MaaCtrlOption = MaaOption
 
 
 class MaaGlobalOptionEnum:
-    Invalid: MaaGlobalOption = 0
+    Invalid = 0
 
     # Log dir
     #
     # value: string, eg: "C:\\Users\\Administrator\\Desktop\\log"; val_size: string length
-    LogDir: MaaGlobalOption = 1
+    LogDir = 1
 
     # Whether to save draw
     #
     # value: bool, eg: true; val_size: sizeof(bool)
-    SaveDraw: MaaGlobalOption = 2
+    SaveDraw = 2
 
     # Dump all screenshots and actions
     #
     # Recording will evaluate to true if any of this or MaaCtrlOptionEnum::MaaCtrlOption_Recording
     # is true. value: bool, eg: true; val_size: sizeof(bool)
-    Recording: MaaGlobalOption = 3
+    Recording = 3
 
     # The level of log output to stdout
     #
     # value, val_size: sizeof(MaaLoggingLevel)
     # default value is MaaLoggingLevel_Error
-    StdoutLevel: MaaGlobalOption = 4
+    StdoutLevel = 4
 
     # Whether to show hit draw
     #
     # value: bool, eg: true; val_size: sizeof(bool)
-    ShowHitDraw: MaaGlobalOption = 5
+    ShowHitDraw = 5
 
     # Whether to callback debug message
     #
     # value: bool, eg: true; val_size: sizeof(bool)
-    DebugMessage: MaaGlobalOption = 6
+    DebugMessage = 6
 
 
 class MaaCtrlOptionEnum:
-    Invalid: MaaCtrlOption = 0
+    Invalid = 0
 
     # Only one of long and short side can be set, and the other is automatically scaled according to the aspect ratio.
     # value: int, eg: 1920; val_size: sizeof(int)
-    ScreenshotTargetLongSide: MaaCtrlOption = 1
+    ScreenshotTargetLongSide = 1
 
     # Only one of long and short side can be set, and the other is automatically scaled according to the aspect ratio.
     # value: int, eg: 1080; val_size: sizeof(int)
-    ScreenshotTargetShortSide: MaaCtrlOption = 2
+    ScreenshotTargetShortSide = 2
 
     # Dump all screenshots and actions
     # this option will || with MaaGlobalOptionEnum.Recording
     # value: bool, eg: true; val_size: sizeof(bool)
-    Recording: MaaCtrlOption = 5
+    Recording = 5
 
 
-# Use bitwise OR to set the method you need, MaaFramework will test their speed and use the fastest one.
 MaaAdbScreencapMethod = ctypes.c_uint64
 
 
 class MaaAdbScreencapMethodEnum:
-    Null: MaaAdbScreencapMethod = 0
+    """
+    Use bitwise OR to set the method you need
+    MaaFramework will test their speed and use the fastest one.
+    """
+    Null = 0
 
-    EncodeToFileAndPull: MaaAdbScreencapMethod = 1
-    Encode: MaaAdbScreencapMethod = 1 << 1
-    RawWithGzip: MaaAdbScreencapMethod = 1 << 2
-    RawByNetcat: MaaAdbScreencapMethod = 1 << 3
-    MinicapDirect: MaaAdbScreencapMethod = 1 << 4
-    MinicapStream: MaaAdbScreencapMethod = 1 << 5
-    EmulatorExtras: MaaAdbScreencapMethod = 1 << 6
+    EncodeToFileAndPull = 1
+    Encode = 1 << 1
+    RawWithGzip = 1 << 2
+    RawByNetcat = 1 << 3
+    MinicapDirect = 1 << 4
+    MinicapStream = 1 << 5
+    EmulatorExtras = 1 << 6
 
-    All: MaaAdbScreencapMethod = ~Null
-    Default: MaaAdbScreencapMethod = All & (~MinicapDirect) & (~MinicapDirect)
+    All = ~Null
+    Default = All & (~MinicapDirect) & (~MinicapDirect)
 
 
-# Use bitwise OR to set the method you need, MaaFramework will select the available ones according to priority.
-# The priority is: EmulatorExtras > Maatouch > MinitouchAndAdbKey > AdbShell
 MaaAdbInputMethod = ctypes.c_uint64
 
 
 class MaaAdbInputMethodEnum:
-    Null: MaaAdbInputMethod = 0
+    """
+    Use bitwise OR to set the method you need
+    MaaFramework will select the available ones according to priority.
+    The priority is: EmulatorExtras > Maatouch > MinitouchAndAdbKey > AdbShell
+    """
+    Null = 0
 
-    AdbShell: MaaAdbInputMethod = 1
-    MinitouchAndAdbKey: MaaAdbInputMethod = 1 << 1
-    Maatouch: MaaAdbInputMethod = 1 << 2
-    EmulatorExtras: MaaAdbInputMethod = 1 << 3
+    AdbShell = 1
+    MinitouchAndAdbKey = 1 << 1
+    Maatouch = 1 << 2
+    EmulatorExtras = 1 << 3
 
-    All: MaaAdbInputMethod = ~Null
-    Default: MaaAdbInputMethod = All & (~EmulatorExtras)
+    All = ~Null
+    Default = All & (~EmulatorExtras)
 
 
-# No bitwise OR, just set it
 MaaWin32ScreencapMethod = ctypes.c_uint64
 
 
-class MaaWin32ScreencapMethodEnum:
-    Null: MaaWin32ScreencapMethod = 0
-
-    GDI: MaaWin32ScreencapMethod = 1
-    FramePool: MaaWin32ScreencapMethod = 1 << 1
-    DXGI_DesktopDup: MaaWin32ScreencapMethod = 1 << 2
-
-
 # No bitwise OR, just set it
+class MaaWin32ScreencapMethodEnum:
+    Null = 0
+
+    GDI = 1
+    FramePool = 1 << 1
+    DXGI_DesktopDup = 1 << 2
+
+
 MaaWin32InputMethod = ctypes.c_uint64
 
 
+# No bitwise OR, just set it
 class MaaWin32InputMethodEnum:
-    Null: MaaWin32InputMethod = 0
+    Null = 0
 
-    Seize: MaaWin32InputMethod = 1
-    SendMessage: MaaWin32InputMethod = 1 << 1
+    Seize = 1
+    SendMessage = 1 << 1
 
 
 # No bitwise OR, just set it
@@ -169,13 +175,13 @@ MaaDbgControllerType = ctypes.c_uint64
 
 
 class MaaDbgControllerTypeEnum:
-    Null: MaaDbgControllerType = 0
+    Null = 0
 
-    CarouselImage: MaaDbgControllerType = 1
-    ReplayRecording: MaaDbgControllerType = 1 << 1
+    CarouselImage = 1
+    ReplayRecording = 1 << 1
 
 
-FUNCTYPE = platform.system() == "Windows" and ctypes.WINFUNCTYPE or ctypes.CFUNCTYPE
+FUNCTYPE = ctypes.WINFUNCTYPE if (platform.system() == "Windows") else ctypes.CFUNCTYPE
 
 MaaNotificationCallback = FUNCTYPE(
     None, ctypes.c_char_p, ctypes.c_char_p, ctypes.c_void_p

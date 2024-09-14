@@ -137,7 +137,7 @@ class Controller:
         return bool(
             Library.framework.MaaControllerSetOption(
                 self._handle,
-                MaaCtrlOptionEnum.ScreenshotTargetLongSide,
+                MaaOption(MaaCtrlOptionEnum.ScreenshotTargetLongSide),
                 ctypes.pointer(cint),
                 ctypes.sizeof(ctypes.c_int32),
             )
@@ -148,7 +148,7 @@ class Controller:
         return bool(
             Library.framework.MaaControllerSetOption(
                 self._handle,
-                MaaCtrlOptionEnum.ScreenshotTargetShortSide,
+                MaaOption(MaaCtrlOptionEnum.ScreenshotTargetShortSide),
                 ctypes.pointer(cint),
                 ctypes.sizeof(ctypes.c_int32),
             )
@@ -301,8 +301,8 @@ class AdbController(Controller):
         self,
         adb_path: Union[str, Path],
         address: str,
-        screencap_methods: MaaAdbScreencapMethod = MaaAdbScreencapMethodEnum.Default,
-        input_methods: MaaAdbScreencapMethod = MaaAdbInputMethodEnum.Default,
+        screencap_methods: int = MaaAdbScreencapMethodEnum.Default,
+        input_methods: int = MaaAdbInputMethodEnum.Default,
         config: Dict[str, Any] = {},
         agent_path: Union[str, Path] = AGENT_BINARY_PATH,
         callback: Optional[Callback] = None,
@@ -315,8 +315,8 @@ class AdbController(Controller):
         self._handle = Library.framework.MaaAdbControllerCreate(
             str(adb_path).encode(),
             address.encode(),
-            screencap_methods,
-            input_methods,
+            MaaAdbScreencapMethod(screencap_methods),
+            MaaAdbInputMethod(input_methods),
             json.dumps(config, ensure_ascii=False).encode(),
             str(agent_path).encode(),
             self._callback_agent.c_callback,
@@ -346,8 +346,8 @@ class Win32Controller(Controller):
     def __init__(
         self,
         hWnd: ctypes.c_void_p,
-        screencap_method: MaaWin32ScreencapMethod = MaaWin32ScreencapMethodEnum.DXGI_DesktopDup,
-        input_method: MaaWin32InputMethod = MaaWin32InputMethodEnum.Seize,
+        screencap_method: int = MaaWin32ScreencapMethodEnum.DXGI_DesktopDup,
+        input_method: int = MaaWin32InputMethodEnum.Seize,
         callback: Optional[Callback] = None,
         callback_arg: Any = None,
     ):
@@ -357,8 +357,8 @@ class Win32Controller(Controller):
         self._callback_agent = CallbackAgent(callback, callback_arg)
         self._handle = Library.framework.MaaWin32ControllerCreate(
             hWnd,
-            screencap_method,
-            input_method,
+            MaaWin32ScreencapMethod(screencap_method),
+            MaaWin32InputMethod(input_method),
             self._callback_agent.c_callback,
             self._callback_agent.c_callback_arg,
         )
@@ -414,7 +414,7 @@ class DbgController(Controller):
         self,
         read_path: Union[str, Path],
         write_path: Union[str, Path],
-        dbg_type: MaaDbgControllerType,
+        dbg_type: int,
         config: Dict[str, Any] = {},
         callback: Optional[Callback] = None,
         callback_arg: Any = None,
@@ -426,7 +426,7 @@ class DbgController(Controller):
         self._handle = Library.framework.MaaDbgControllerCreate(
             str(read_path).encode(),
             str(write_path).encode(),
-            dbg_type,
+            MaaDbgControllerType(dbg_type),
             json.dumps(config, ensure_ascii=False).encode(),
             self._callback_agent.c_callback,
             self._callback_agent.c_callback_arg,

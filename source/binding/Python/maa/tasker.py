@@ -134,7 +134,7 @@ class Tasker:
         strpath = str(path)
         return bool(
             Library.framework.MaaSetGlobalOption(
-                MaaGlobalOptionEnum.LogDir,
+                MaaOption(MaaGlobalOptionEnum.LogDir),
                 strpath.encode(),
                 len(strpath),
             )
@@ -145,7 +145,7 @@ class Tasker:
         cbool = ctypes.c_bool(save_draw)
         return bool(
             Library.framework.MaaSetGlobalOption(
-                MaaGlobalOptionEnum.SaveDraw,
+                MaaOption(MaaGlobalOptionEnum.SaveDraw),
                 ctypes.pointer(cbool),
                 ctypes.sizeof(ctypes.c_bool),
             )
@@ -156,7 +156,7 @@ class Tasker:
         cbool = ctypes.c_bool(recording)
         return bool(
             Library.framework.MaaSetGlobalOption(
-                MaaGlobalOptionEnum.Recording,
+                MaaOption(MaaGlobalOptionEnum.Recording),
                 ctypes.pointer(cbool),
                 ctypes.sizeof(ctypes.c_bool),
             )
@@ -167,7 +167,7 @@ class Tasker:
         clevel = MaaLoggingLevel(level)
         return bool(
             Library.framework.MaaSetGlobalOption(
-                MaaGlobalOptionEnum.StdoutLevel,
+                MaaOption(MaaGlobalOptionEnum.StdoutLevel),
                 ctypes.pointer(clevel),
                 ctypes.sizeof(MaaLoggingLevel),
             )
@@ -178,7 +178,7 @@ class Tasker:
         cbool = ctypes.c_bool(show_hit_draw)
         return bool(
             Library.framework.MaaSetGlobalOption(
-                MaaGlobalOptionEnum.ShowHitDraw,
+                MaaOption(MaaGlobalOptionEnum.ShowHitDraw),
                 ctypes.pointer(cbool),
                 ctypes.sizeof(ctypes.c_bool),
             )
@@ -189,7 +189,7 @@ class Tasker:
         cbool = ctypes.c_bool(debug_message)
         return bool(
             Library.framework.MaaSetGlobalOption(
-                MaaGlobalOptionEnum.DebugMessage,
+                MaaOption(MaaGlobalOptionEnum.DebugMessage),
                 ctypes.pointer(cbool),
                 ctypes.sizeof(ctypes.c_bool),
             )

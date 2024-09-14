@@ -68,7 +68,6 @@ class MyRecognizer(CustomRecognizer):
 
 
 class MyAction(CustomAction):
-
     def run(
         self,
         context: Context,
