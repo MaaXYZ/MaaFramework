@@ -187,7 +187,7 @@ MaaNotificationCallback = FUNCTYPE(
     None, ctypes.c_char_p, ctypes.c_char_p, ctypes.c_void_p
 )
 
-MaaCustomRecognizerCallback = ctypes.WINFUNCTYPE(
+MaaCustomRecognizerCallback = FUNCTYPE(
     MaaBool,  # return value
     MaaContextHandle,  # context
     MaaTaskId,  # task_id
