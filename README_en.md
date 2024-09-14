@@ -58,7 +58,7 @@ It offers low-code simplicity while maintaining high extensibility. The framewor
 - [MAS](https://github.com/MaaXYZ/MaaAssistantSkland) Skland Assistant ![Pipeline](https://img.shields.io/badge/Pipeline-%23454545?logo=paddypower&logoColor=%23FFFFFF)  
   Based on a brand new architecture. Image technology + simulation control, freeing your hands! Powered by MaaFramework.
 
-- [MRA](https://github.com/MaaXYZ/MaaResonance) Maa Resonance  ![NodeJS](https://img.shields.io/badge/NodeJS-5FA04E?logo=nodedotjs&logoColor=white)  
+- [MRA](https://github.com/MaaXYZ/MaaResonance) Maa Resonance  ![Rust](https://img.shields.io/badge/Rust-000000?logo=rust&logoColor=white)  ![Tauri](https://img.shields.io/badge/Tauri-24C8D8?logo=tauri&logoColor=white)  
   A Conductor Assistant based on MAA's new architecture. Image technology + simulation control, no more clicking! Powered by MaaFramework.
 
 - [MaaHatsuboshiTA](https://github.com/Carpenter-MK1/MaaHatsuboshiTA) Hatsuboshi Teaching Assistant   ![Pipeline](https://img.shields.io/badge/Pipeline-%23454545?logo=paddypower&logoColor=%23FFFFFF)  

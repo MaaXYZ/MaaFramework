@@ -58,7 +58,7 @@ _✨ 基于图像识别的自动化黑盒测试框架 ✨_
 - [MAS](https://github.com/MaaXYZ/MaaAssistantSkland) 森空岛 小助手 ![Pipeline](https://img.shields.io/badge/Pipeline-%23454545?logo=paddypower&logoColor=%23FFFFFF)  
   基于全新架构的 森空岛 小助手。图像技术 + 模拟控制，解放双手！由 MaaFramework 强力驱动！
 
-- [MRA](https://github.com/MaaXYZ/MaaResonance) 雷索纳斯 列车长 小助手  ![NodeJS](https://img.shields.io/badge/NodeJS-5FA04E?logo=nodedotjs&logoColor=white)  
+- [MRA](https://github.com/MaaXYZ/MaaResonance) 雷索纳斯 列车长 小助手  ![Rust](https://img.shields.io/badge/Rust-333333?logo=rust&logoColor=white) ![Tauri](https://img.shields.io/badge/Tauri-24C8D8?logo=tauri&logoColor=white)  
   基于全新架构的 列车长 小助手。图像技术 + 模拟控制，解放双手！由 MaaFramework 强力驱动！
 
 - [MaaHatsuboshiTA](https://github.com/Carpenter-MK1/MaaHatsuboshiTA) 学院偶像大师 初星助教  ![Pipeline](https://img.shields.io/badge/Pipeline-%23454545?logo=paddypower&logoColor=%23FFFFFF)  
