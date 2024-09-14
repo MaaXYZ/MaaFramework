@@ -1,4 +1,5 @@
 from pathlib import Path
+import numpy
 import sys
 
 if len(sys.argv) < 2:
@@ -15,7 +16,7 @@ if binding_dir not in sys.path:
 
 from maa.library import Library
 from maa.resource import Resource
-from maa.controller import DbgController
+from maa.controller import DbgController, CustomController, CustomControllerAgent
 from maa.tasker import Tasker
 from maa.toolkit import Toolkit
 from maa.custom_action import CustomAction
@@ -160,7 +161,7 @@ def main():
     else:
         print("action failed")
         raise RuntimeError("action failed")
-    
+
     tasker.resource.post_path("C:/_maafw_testing_/aaabbbccc")
     tasker.clear_cache()
     inited = tasker.inited
@@ -186,5 +187,92 @@ def main():
         raise RuntimeError("failed to run custom recognizer or action")
 
 
+def test_custom_controller():
+    print("test_custom_controller")
+
+    controller = CustomController(MyController())
+    controller.post_connection().wait()
+    uuid = controller.uuid
+    controller.post_start_app("aaa").wait()
+    controller.post_stop_app("bbb").wait()
+    image = controller.post_screencap().wait().get()
+    print(f"image: {image.shape}")
+    controller.post_click(100, 200).wait()
+    controller.post_swipe(100, 200, 300, 400, 200).wait()
+    controller.post_touch_down(1, 100, 100, 0).wait()
+    controller.post_touch_move(1, 200, 200, 0).wait()
+    controller.post_touch_up(1).wait()
+    controller.post_press_key(32).wait()
+    controller.post_input_text("Hello World!").wait()
+
+
+class MyController(CustomControllerAgent):
+
+    def connect(self) -> bool:
+        print("on MyController.connect")
+        return True
+
+    def request_uuid(self) -> str:
+        print("on MyController.request_uuid")
+        return "12345678"
+
+    def start_app(self, intent: str) -> bool:
+        print(f"on MyController.start_app, intent: {intent}")
+        return True
+
+    def stop_app(self, intent: str) -> bool:
+        print(f"on MyController.stop_app, intent: {intent}")
+        return True
+
+    def screencap(self) -> numpy.ndarray:
+        print("on MyController.screencap")
+        return numpy.zeros((1080, 1920, 3), dtype=numpy.uint8)
+
+    def click(self, x: int, y: int) -> bool:
+        print(f"on MyController.click, x: {x}, y: {y}")
+        return True
+
+    def swipe(self, x1: int, y1: int, x2: int, y2: int) -> bool:
+        print(f"on MyController.swipe, x1: {x1}, y1: {y1}, x2: {x2}, y2: {y2}")
+        return True
+
+    def touch_down(
+        self,
+        contact: int,
+        x: int,
+        y: int,
+        pressure: int,
+    ) -> bool:
+        print(
+            f"on MyController.touch_down, contact: {contact}, x: {x}, y: {y}, pressure: {pressure}"
+        )
+        return True
+
+    def touch_move(
+        self,
+        contact: int,
+        x: int,
+        y: int,
+        pressure: int,
+    ) -> bool:
+        print(
+            f"on MyController.touch_move, contact: {contact}, x: {x}, y: {y}, pressure: {pressure}"
+        )
+        return True
+
+    def touch_up(self, contact: int) -> bool:
+        print(f"on MyController.touch_up, contact: {contact}")
+        return True
+
+    def press_key(self, keycode: int) -> bool:
+        print(f"on MyController.press_key, keycode: {keycode}")
+        return True
+
+    def input_text(self, text: str) -> bool:
+        print(f"on MyController.input_text, text: {text}")
+        return True
+
+
 if __name__ == "__main__":
     main()
+    test_custom_controller()

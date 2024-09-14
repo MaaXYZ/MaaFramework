@@ -1,5 +1,12 @@
 #pragma once
 
+// The way how the function is called
+#if defined(_WIN32)
+#define MAA_CALL __stdcall
+#else
+#define MAA_CALL
+#endif
+
 // The function exported symbols
 #if defined _WIN32 || defined __CYGWIN__
 #define MAA_DLL_IMPORT __declspec(dllimport)

@@ -25,14 +25,6 @@ class CustomControllerAgent(ABC):
             self._c_input_text_agent,
         )
 
-    @property
-    def c_handle(self) -> MaaCustomControllerCallbacks:
-        return MaaCustomControllerCallbacks(self._handle)
-
-    @property
-    def c_arg(self) -> ctypes.c_void_p:
-        return ctypes.c_void_p.from_buffer(ctypes.py_object(self))
-
     @abstractmethod
     def connect(self) -> bool:
         raise NotImplementedError
@@ -40,6 +32,66 @@ class CustomControllerAgent(ABC):
     @abstractmethod
     def request_uuid(self) -> str:
         raise NotImplementedError
+
+    @abstractmethod
+    def start_app(self, intent: str) -> bool:
+        raise NotImplementedError
+
+    @abstractmethod
+    def stop_app(self, intent: str) -> bool:
+        raise NotImplementedError
+
+    @abstractmethod
+    def screencap(self) -> numpy.ndarray:
+        raise NotImplementedError
+
+    @abstractmethod
+    def click(self, x: int, y: int) -> bool:
+        raise NotImplementedError
+
+    @abstractmethod
+    def swipe(self, x1: int, y1: int, x2: int, y2: int) -> bool:
+        raise NotImplementedError
+
+    @abstractmethod
+    def touch_down(
+        self,
+        contact: int,
+        x: int,
+        y: int,
+        pressure: int,
+    ) -> bool:
+        raise NotImplementedError
+
+    @abstractmethod
+    def touch_move(
+        self,
+        contact: int,
+        x: int,
+        y: int,
+        pressure: int,
+    ) -> bool:
+        raise NotImplementedError
+
+    @abstractmethod
+    def touch_up(self, contact: int) -> bool:
+        raise NotImplementedError
+
+    @abstractmethod
+    def press_key(self, keycode: int) -> bool:
+        raise NotImplementedError
+
+    @abstractmethod
+    def input_text(self, text: str) -> bool:
+        raise NotImplementedError
+
+    @property
+    def c_handle(self) -> MaaCustomControllerCallbacks:
+        return MaaCustomControllerCallbacks(self._handle)
+
+    @property
+    def c_arg(self) -> ctypes.c_void_p:
+        return ctypes.c_void_p.from_buffer(ctypes.py_object(self))
 
     @staticmethod
     @MaaCustomControllerCallbacks.ConnectFunc
@@ -79,10 +131,6 @@ class CustomControllerAgent(ABC):
         uuid_buffer.set(uuid)
         return MaaBool(True)
 
-    @abstractmethod
-    def start_app(self, intent: str) -> bool:
-        raise NotImplementedError
-
     @staticmethod
     @MaaCustomControllerCallbacks.StartAppFunc
     def _c_start_app_agent(
@@ -99,10 +147,6 @@ class CustomControllerAgent(ABC):
 
         return MaaBool(self.start_app(c_intent.decode()))
 
-    @abstractmethod
-    def stop_app(self, intent: str) -> bool:
-        raise NotImplementedError
-
     @staticmethod
     @MaaCustomControllerCallbacks.StartAppFunc
     def _c_stop_app_agent(
@@ -118,10 +162,6 @@ class CustomControllerAgent(ABC):
         ).value
 
         return MaaBool(self.stop_app(c_intent.decode()))
-
-    @abstractmethod
-    def screencap(self) -> numpy.ndarray:
-        raise NotImplementedError
 
     @staticmethod
     @MaaCustomControllerCallbacks.ScreencapFunc
@@ -147,10 +187,6 @@ class CustomControllerAgent(ABC):
 
         return MaaBool(True)
 
-    @abstractmethod
-    def click(self, x: int, y: int) -> bool:
-        raise NotImplementedError
-
     @staticmethod
     @MaaCustomControllerCallbacks.ClickFunc
     def _c_click_agent(
@@ -167,10 +203,6 @@ class CustomControllerAgent(ABC):
         ).value
 
         return MaaBool(self.click(int(c_x), int(c_y)))
-
-    @abstractmethod
-    def swipe(self, x1: int, y1: int, x2: int, y2: int) -> bool:
-        raise NotImplementedError
 
     @staticmethod
     @MaaCustomControllerCallbacks.SwipeFunc
@@ -190,16 +222,6 @@ class CustomControllerAgent(ABC):
         ).value
 
         return MaaBool(self.swipe(int(c_x1), int(c_y1), int(c_x2), int(c_y2)))
-
-    @abstractmethod
-    def touch_down(
-        self,
-        contact: int,
-        x: int,
-        y: int,
-        pressure: int,
-    ) -> bool:
-        raise NotImplementedError
 
     @staticmethod
     @MaaCustomControllerCallbacks.TouchDownFunc
@@ -222,16 +244,6 @@ class CustomControllerAgent(ABC):
             self.touch_down(int(c_contact), int(c_x), int(c_y), int(c_pressure))
         )
 
-    @abstractmethod
-    def touch_move(
-        self,
-        contact: int,
-        x: int,
-        y: int,
-        pressure: int,
-    ) -> bool:
-        raise NotImplementedError
-
     @staticmethod
     @MaaCustomControllerCallbacks.TouchMoveFunc
     def _c_touch_move_agent(
@@ -253,10 +265,6 @@ class CustomControllerAgent(ABC):
             self.touch_move(int(c_contact), int(c_x), int(c_y), int(c_pressure))
         )
 
-    @abstractmethod
-    def touch_up(self, contact: int) -> bool:
-        raise NotImplementedError
-
     @staticmethod
     @MaaCustomControllerCallbacks.TouchUpFunc
     def _c_touch_up_agent(
@@ -273,10 +281,6 @@ class CustomControllerAgent(ABC):
 
         return MaaBool(self.touch_up(int(c_contact)))
 
-    @abstractmethod
-    def press_key(self, keycode: int) -> bool:
-        raise NotImplementedError
-
     @staticmethod
     @MaaCustomControllerCallbacks.PressKeyFunc
     def _c_press_key_agent(
@@ -292,10 +296,6 @@ class CustomControllerAgent(ABC):
         ).value
 
         return MaaBool(self.press_key(int(c_keycode)))
-
-    @abstractmethod
-    def input_text(self, text: str) -> bool:
-        raise NotImplementedError
 
     @staticmethod
     @MaaCustomControllerCallbacks.InputTextFunc
