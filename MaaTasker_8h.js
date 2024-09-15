@@ -7,8 +7,6 @@ var MaaTasker_8h =
     [ "MaaTaskerBindController", "MaaTasker_8h.html#a9979e64533deaf3d002cbd08338bb426", null ],
     [ "MaaTaskerInited", "MaaTasker_8h.html#a9bfec9b2b1f8dfd473f0cb1d0c725c65", null ],
     [ "MaaTaskerPostPipeline", "MaaTasker_8h.html#a12c6bc412c501eaed90e7dec40bf6cc7", null ],
-    [ "MaaTaskerPostRecognition", "MaaTasker_8h.html#aba563ab739f2bd37df7d265704e42f1d", null ],
-    [ "MaaTaskerPostAction", "MaaTasker_8h.html#a45a250531ca28f5c4a381b5c62d14d90", null ],
     [ "MaaTaskerStatus", "MaaTasker_8h.html#af4d3fd63071f1ba922bd90f226d1001d", null ],
     [ "MaaTaskerWait", "MaaTasker_8h.html#a43e82561559f1307b50f2cc08565f69b", null ],
     [ "MaaTaskerRunning", "MaaTasker_8h.html#a8946c572b50a0e298a31092496b89475", null ],

@@ -1,5 +1,6 @@
 var MaaPort_8h =
 [
+    [ "MAA_CALL", "MaaPort_8h.html#afaf570464c85866c04fabe324fe35c18", null ],
     [ "MAA_DLL_IMPORT", "MaaPort_8h.html#aed0af92192d8a7f6278afec3adfee80c", null ],
     [ "MAA_DLL_EXPORT", "MaaPort_8h.html#a20cf214e76a3bf5d041786154513c892", null ],
     [ "MAA_DLL_LOCAL", "MaaPort_8h.html#a4be2819e9ef99d9befeefb94fa2afada", null ],

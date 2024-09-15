@@ -143,6 +143,16 @@
       </node>
     </invincdepgraph>
     <sectiondef kind="define">
+      <memberdef kind="define" id="MaaPort_8h_1afaf570464c85866c04fabe324fe35c18" prot="public" static="no">
+        <name>MAA_CALL</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaFramework/MaaPort.h" line="7" column="10" bodyfile="include/MaaFramework/MaaPort.h" bodystart="7" bodyend="-1"/>
+      </memberdef>
       <memberdef kind="define" id="MaaPort_8h_1aed0af92192d8a7f6278afec3adfee80c" prot="public" static="no">
         <name>MAA_DLL_IMPORT</name>
         <briefdescription>
@@ -151,7 +161,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="include/MaaFramework/MaaPort.h" line="14" column="11" bodyfile="include/MaaFramework/MaaPort.h" bodystart="14" bodyend="-1"/>
+        <location file="include/MaaFramework/MaaPort.h" line="21" column="11" bodyfile="include/MaaFramework/MaaPort.h" bodystart="21" bodyend="-1"/>
       </memberdef>
       <memberdef kind="define" id="MaaPort_8h_1a20cf214e76a3bf5d041786154513c892" prot="public" static="no">
         <name>MAA_DLL_EXPORT</name>
@@ -161,7 +171,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="include/MaaFramework/MaaPort.h" line="15" column="9" bodyfile="include/MaaFramework/MaaPort.h" bodystart="15" bodyend="-1"/>
+        <location file="include/MaaFramework/MaaPort.h" line="22" column="9" bodyfile="include/MaaFramework/MaaPort.h" bodystart="22" bodyend="-1"/>
       </memberdef>
       <memberdef kind="define" id="MaaPort_8h_1a4be2819e9ef99d9befeefb94fa2afada" prot="public" static="no">
         <name>MAA_DLL_LOCAL</name>
@@ -171,7 +181,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="include/MaaFramework/MaaPort.h" line="16" column="9" bodyfile="include/MaaFramework/MaaPort.h" bodystart="16" bodyend="-1"/>
+        <location file="include/MaaFramework/MaaPort.h" line="23" column="9" bodyfile="include/MaaFramework/MaaPort.h" bodystart="23" bodyend="-1"/>
       </memberdef>
       <memberdef kind="define" id="MaaPort_8h_1aea94eb63afa29e65c59844ec3f57d691" prot="public" static="no">
         <name>MAA_DEPRECATED</name>
@@ -182,7 +192,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="include/MaaFramework/MaaPort.h" line="23" column="10" bodyfile="include/MaaFramework/MaaPort.h" bodystart="23" bodyend="-1"/>
+        <location file="include/MaaFramework/MaaPort.h" line="30" column="10" bodyfile="include/MaaFramework/MaaPort.h" bodystart="30" bodyend="-1"/>
       </memberdef>
       <memberdef kind="define" id="MaaPort_8h_1a67006334d91d228121dbba7a8bf8fe05" prot="public" static="no">
         <name>MAA_FRAMEWORK_API</name>
@@ -193,7 +203,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="include/MaaFramework/MaaPort.h" line="29" column="10" bodyfile="include/MaaFramework/MaaPort.h" bodystart="29" bodyend="-1"/>
+        <location file="include/MaaFramework/MaaPort.h" line="36" column="10" bodyfile="include/MaaFramework/MaaPort.h" bodystart="36" bodyend="-1"/>
       </memberdef>
       <memberdef kind="define" id="MaaPort_8h_1a826aa33333d0528e8a238f2717265249" prot="public" static="no">
         <name>MAA_CONTROL_UNIT_API</name>
@@ -204,7 +214,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="include/MaaFramework/MaaPort.h" line="35" column="10" bodyfile="include/MaaFramework/MaaPort.h" bodystart="35" bodyend="-1"/>
+        <location file="include/MaaFramework/MaaPort.h" line="42" column="10" bodyfile="include/MaaFramework/MaaPort.h" bodystart="42" bodyend="-1"/>
       </memberdef>
       <memberdef kind="define" id="MaaPort_8h_1aabeb9919a6a22899b3e2e224c83e90db" prot="public" static="no">
         <name>MAA_UTILS_API</name>
@@ -215,7 +225,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="include/MaaFramework/MaaPort.h" line="41" column="10" bodyfile="include/MaaFramework/MaaPort.h" bodystart="41" bodyend="-1"/>
+        <location file="include/MaaFramework/MaaPort.h" line="48" column="10" bodyfile="include/MaaFramework/MaaPort.h" bodystart="48" bodyend="-1"/>
       </memberdef>
       <memberdef kind="define" id="MaaPort_8h_1a011c7bbd355fdfe6aa7599af52cc20ac" prot="public" static="no">
         <name>MAA_TOOLKIT_API</name>
@@ -226,7 +236,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="include/MaaFramework/MaaPort.h" line="47" column="10" bodyfile="include/MaaFramework/MaaPort.h" bodystart="47" bodyend="-1"/>
+        <location file="include/MaaFramework/MaaPort.h" line="54" column="10" bodyfile="include/MaaFramework/MaaPort.h" bodystart="54" bodyend="-1"/>
       </memberdef>
     </sectiondef>
     <briefdescription>

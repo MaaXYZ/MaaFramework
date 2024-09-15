@@ -85,8 +85,6 @@
     <member refid="MaaTasker_8h_1a9979e64533deaf3d002cbd08338bb426" kind="function"><name>MaaTaskerBindController</name></member>
     <member refid="MaaTasker_8h_1a9bfec9b2b1f8dfd473f0cb1d0c725c65" kind="function"><name>MaaTaskerInited</name></member>
     <member refid="MaaTasker_8h_1a12c6bc412c501eaed90e7dec40bf6cc7" kind="function"><name>MaaTaskerPostPipeline</name></member>
-    <member refid="MaaTasker_8h_1aba563ab739f2bd37df7d265704e42f1d" kind="function"><name>MaaTaskerPostRecognition</name></member>
-    <member refid="MaaTasker_8h_1a45a250531ca28f5c4a381b5c62d14d90" kind="function"><name>MaaTaskerPostAction</name></member>
     <member refid="MaaTasker_8h_1af4d3fd63071f1ba922bd90f226d1001d" kind="function"><name>MaaTaskerStatus</name></member>
     <member refid="MaaTasker_8h_1a43e82561559f1307b50f2cc08565f69b" kind="function"><name>MaaTaskerWait</name></member>
     <member refid="MaaTasker_8h_1a8946c572b50a0e298a31092496b89475" kind="function"><name>MaaTaskerRunning</name></member>
@@ -195,8 +193,8 @@
     <member refid="MaaDef_8h_1a7a7491d55c50840ccb1891ba9b7740c4" kind="typedef"><name>MaaDbgControllerType</name></member>
     <member refid="MaaDef_8h_1a90ae9b4896224481bd0967903dafdfa1" kind="typedef"><name>MaaRect</name></member>
     <member refid="MaaDef_8h_1aa8191105b665bc8c02f0a78cebac71cd" kind="typedef"><name>MaaNotificationCallback</name></member>
-    <member refid="MaaDef_8h_1a7353ae543eb1357324143a8f8d46c242" kind="typedef"><name>MaaCustomRecognizerCallback</name></member>
-    <member refid="MaaDef_8h_1a900bb36dca59433a1b7cb8dedcee643b" kind="typedef"><name>MaaCustomActionCallback</name></member>
+    <member refid="MaaDef_8h_1ac89f1cfb384be414659f79f14061e4ad" kind="typedef"><name>MaaCustomRecognizerCallback</name></member>
+    <member refid="MaaDef_8h_1a585ec65a9f845b2922eda1d2fffa36b7" kind="typedef"><name>MaaCustomActionCallback</name></member>
   </compound>
   <compound refid="MaaMsg_8h" kind="file"><name>MaaMsg.h</name>
     <member refid="group__MaaMsg_1gaa3024bb9d66c5a503e159d2643c5c239" kind="define"><name>MaaMsg_Resource_StartLoading</name></member>
@@ -227,6 +225,7 @@
     <member refid="group__MaaMsg_1gafb3e44dd89a9d772083767296f9039ae" kind="define"><name>MaaMsg_Controller_ConnectFailed</name></member>
   </compound>
   <compound refid="MaaPort_8h" kind="file"><name>MaaPort.h</name>
+    <member refid="MaaPort_8h_1afaf570464c85866c04fabe324fe35c18" kind="define"><name>MAA_CALL</name></member>
     <member refid="MaaPort_8h_1aed0af92192d8a7f6278afec3adfee80c" kind="define"><name>MAA_DLL_IMPORT</name></member>
     <member refid="MaaPort_8h_1a20cf214e76a3bf5d041786154513c892" kind="define"><name>MAA_DLL_EXPORT</name></member>
     <member refid="MaaPort_8h_1a4be2819e9ef99d9befeefb94fa2afada" kind="define"><name>MAA_DLL_LOCAL</name></member>
