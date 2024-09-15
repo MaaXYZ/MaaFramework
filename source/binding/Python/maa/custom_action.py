@@ -55,7 +55,7 @@ class CustomAction(ABC):
         c_transparent_arg: ctypes.c_void_p,
     ) -> MaaBool:
         if not c_transparent_arg:
-            return MaaBool(False)
+            return MaaBool(False).value
 
         self: CustomAction = ctypes.cast(
             c_transparent_arg,
@@ -66,7 +66,7 @@ class CustomAction(ABC):
         task_detail = context.tasker._get_task_detail(int(c_task_id))
         reco_detail = context.tasker._get_recognition_detail(int(c_reco_id))
         if not task_detail or not reco_detail:
-            return MaaBool(False)
+            return MaaBool(False).value
 
         box = RectBuffer(c_box).get()
 
@@ -82,4 +82,4 @@ class CustomAction(ABC):
             ),
         )
 
-        return MaaBool(result.success)
+        return MaaBool(result.success).value

@@ -528,14 +528,14 @@ class CustomController(Controller):
         trans_arg: ctypes.c_void_p,
     ) -> MaaBool:
         if not trans_arg:
-            return MaaBool(False)
+            return MaaBool(False).value
 
         self: CustomController = ctypes.cast(
             trans_arg,
             ctypes.py_object,
         ).value
 
-        return MaaBool(self.connect())
+        return MaaBool(self.connect()).value
 
     @staticmethod
     @MaaCustomControllerCallbacks.RequestUuidFunc
@@ -544,7 +544,7 @@ class CustomController(Controller):
         c_buffer: MaaStringBufferHandle,
     ) -> MaaBool:
         if not trans_arg:
-            return MaaBool(False)
+            return MaaBool(False).value
 
         self: CustomController = ctypes.cast(
             trans_arg,
@@ -555,7 +555,7 @@ class CustomController(Controller):
 
         uuid_buffer = StringBuffer(c_buffer)
         uuid_buffer.set(uuid)
-        return MaaBool(True)
+        return MaaBool(True).value
 
     @staticmethod
     @MaaCustomControllerCallbacks.StartAppFunc
@@ -564,14 +564,14 @@ class CustomController(Controller):
         trans_arg: ctypes.c_void_p,
     ) -> MaaBool:
         if not trans_arg:
-            return MaaBool(False)
+            return MaaBool(False).value
 
         self: CustomController = ctypes.cast(
             trans_arg,
             ctypes.py_object,
         ).value
 
-        return MaaBool(self.start_app(c_intent.decode()))
+        return MaaBool(self.start_app(c_intent.decode())).value
 
     @staticmethod
     @MaaCustomControllerCallbacks.StopAppFunc
@@ -580,14 +580,14 @@ class CustomController(Controller):
         trans_arg: ctypes.c_void_p,
     ) -> MaaBool:
         if not trans_arg:
-            return MaaBool(False)
+            return MaaBool(False).value
 
         self: CustomController = ctypes.cast(
             trans_arg,
             ctypes.py_object,
         ).value
 
-        return MaaBool(self.stop_app(c_intent.decode()))
+        return MaaBool(self.stop_app(c_intent.decode())).value
 
     @staticmethod
     @MaaCustomControllerCallbacks.ScreencapFunc
@@ -596,7 +596,7 @@ class CustomController(Controller):
         c_buffer: MaaStringBufferHandle,
     ) -> MaaBool:
         if not trans_arg:
-            return MaaBool(False)
+            return MaaBool(False).value
 
         self: CustomController = ctypes.cast(
             trans_arg,
@@ -608,7 +608,7 @@ class CustomController(Controller):
         buffer = ImageBuffer(c_buffer)
         buffer.set(image)
 
-        return MaaBool(True)
+        return MaaBool(True).value
 
     @staticmethod
     @MaaCustomControllerCallbacks.ClickFunc
@@ -618,14 +618,14 @@ class CustomController(Controller):
         trans_arg: ctypes.c_void_p,
     ) -> MaaBool:
         if not trans_arg:
-            return MaaBool(False)
+            return MaaBool(False).value
 
         self: CustomController = ctypes.cast(
             trans_arg,
             ctypes.py_object,
         ).value
 
-        return MaaBool(self.click(int(c_x), int(c_y)))
+        return MaaBool(self.click(int(c_x), int(c_y))).value
 
     @staticmethod
     @MaaCustomControllerCallbacks.SwipeFunc
@@ -637,14 +637,14 @@ class CustomController(Controller):
         trans_arg: ctypes.c_void_p,
     ) -> MaaBool:
         if not trans_arg:
-            return MaaBool(False)
+            return MaaBool(False).value
 
         self: CustomController = ctypes.cast(
             trans_arg,
             ctypes.py_object,
         ).value
 
-        return MaaBool(self.swipe(int(c_x1), int(c_y1), int(c_x2), int(c_y2)))
+        return MaaBool(self.swipe(int(c_x1), int(c_y1), int(c_x2), int(c_y2))).value
 
     @staticmethod
     @MaaCustomControllerCallbacks.TouchDownFunc
@@ -656,7 +656,7 @@ class CustomController(Controller):
         trans_arg: ctypes.c_void_p,
     ) -> MaaBool:
         if not trans_arg:
-            return MaaBool(False)
+            return MaaBool(False).value
 
         self: CustomController = ctypes.cast(
             trans_arg,
@@ -665,7 +665,7 @@ class CustomController(Controller):
 
         return MaaBool(
             self.touch_down(int(c_contact), int(c_x), int(c_y), int(c_pressure))
-        )
+        ).value
 
     @staticmethod
     @MaaCustomControllerCallbacks.TouchMoveFunc
@@ -677,7 +677,7 @@ class CustomController(Controller):
         trans_arg: ctypes.c_void_p,
     ) -> MaaBool:
         if not trans_arg:
-            return MaaBool(False)
+            return MaaBool(False).value
 
         self: CustomController = ctypes.cast(
             trans_arg,
@@ -686,7 +686,7 @@ class CustomController(Controller):
 
         return MaaBool(
             self.touch_move(int(c_contact), int(c_x), int(c_y), int(c_pressure))
-        )
+        ).value
 
     @staticmethod
     @MaaCustomControllerCallbacks.TouchUpFunc
@@ -695,14 +695,14 @@ class CustomController(Controller):
         trans_arg: ctypes.c_void_p,
     ) -> MaaBool:
         if not trans_arg:
-            return MaaBool(False)
+            return MaaBool(False).value
 
         self: CustomController = ctypes.cast(
             trans_arg,
             ctypes.py_object,
         ).value
 
-        return MaaBool(self.touch_up(int(c_contact)))
+        return MaaBool(self.touch_up(int(c_contact))).value
 
     @staticmethod
     @MaaCustomControllerCallbacks.PressKeyFunc
@@ -711,14 +711,14 @@ class CustomController(Controller):
         trans_arg: ctypes.c_void_p,
     ) -> MaaBool:
         if not trans_arg:
-            return MaaBool(False)
+            return MaaBool(False).value
 
         self: CustomController = ctypes.cast(
             trans_arg,
             ctypes.py_object,
         ).value
 
-        return MaaBool(self.press_key(int(c_keycode)))
+        return MaaBool(self.press_key(int(c_keycode))).value
 
     @staticmethod
     @MaaCustomControllerCallbacks.InputTextFunc
@@ -727,14 +727,14 @@ class CustomController(Controller):
         trans_arg: ctypes.c_void_p,
     ) -> MaaBool:
         if not trans_arg:
-            return MaaBool(False)
+            return MaaBool(False).value
 
         self: CustomController = ctypes.cast(
             trans_arg,
             ctypes.py_object,
         ).value
 
-        return MaaBool(self.input_text(c_text.decode()))
+        return MaaBool(self.input_text(c_text.decode())).value
 
     def _set_custom_api_properties(self):
         Library.framework.MaaCustomControllerCreate.restype = MaaControllerHandle
