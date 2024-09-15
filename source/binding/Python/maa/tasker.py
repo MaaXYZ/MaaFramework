@@ -88,22 +88,6 @@ class Tasker:
         )
         return self._gen_task_job(taskid)
 
-    def post_recognition(
-        self, entry: str, pipeline_override: Dict = {}
-    ) -> JobWithResult:
-        taskid = Library.framework.MaaTaskerPostRecognition(
-            self._handle,
-            *Tasker._gen_post_param(entry, pipeline_override),
-        )
-        return self._gen_task_job(taskid)
-
-    def post_action(self, entry: str, pipeline_override: Dict = {}) -> JobWithResult:
-        taskid = Library.framework.MaaTaskerPostAction(
-            self._handle,
-            *Tasker._gen_post_param(entry, pipeline_override),
-        )
-        return self._gen_task_job(taskid)
-
     @property
     def running(self) -> bool:
         return bool(Library.framework.MaaTaskerRunning(self._handle))
@@ -358,20 +342,6 @@ class Tasker:
 
         Library.framework.MaaTaskerPostPipeline.restype = MaaId
         Library.framework.MaaTaskerPostPipeline.argtypes = [
-            MaaTaskerHandle,
-            ctypes.c_char_p,
-            ctypes.c_char_p,
-        ]
-
-        Library.framework.MaaTaskerPostRecognition.restype = MaaId
-        Library.framework.MaaTaskerPostRecognition.argtypes = [
-            MaaTaskerHandle,
-            ctypes.c_char_p,
-            ctypes.c_char_p,
-        ]
-
-        Library.framework.MaaTaskerPostAction.restype = MaaId
-        Library.framework.MaaTaskerPostAction.argtypes = [
             MaaTaskerHandle,
             ctypes.c_char_p,
             ctypes.c_char_p,

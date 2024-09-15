@@ -40,10 +40,6 @@ extern "C"
 
     MAA_FRAMEWORK_API MaaTaskId MaaTaskerPostPipeline(MaaTasker* tasker, const char* entry, const char* pipeline_override);
 
-    MAA_FRAMEWORK_API MaaTaskId MaaTaskerPostRecognition(MaaTasker* tasker, const char* entry, const char* pipeline_override);
-
-    MAA_FRAMEWORK_API MaaTaskId MaaTaskerPostAction(MaaTasker* tasker, const char* entry, const char* pipeline_override);
-
     MAA_FRAMEWORK_API MaaStatus MaaTaskerStatus(const MaaTasker* tasker, MaaTaskId id);
 
     MAA_FRAMEWORK_API MaaStatus MaaTaskerWait(const MaaTasker* tasker, MaaTaskId id);

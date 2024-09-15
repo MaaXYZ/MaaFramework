@@ -47,8 +47,6 @@ def main():
     task_detail = tasker.post_pipeline("StartUpAndClickButton").wait().get()
     # do something with task_detail
 
-    task_detail = tasker.post_recognition("MySingleMatch").wait().get()
-    # do something with task_detail
 
 
 class MyRecognizer(CustomRecognizer):
