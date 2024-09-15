@@ -781,6 +781,8 @@ bool ControllerAgent::calc_target_image_size()
 
 void ControllerAgent::clear_target_image_size()
 {
+    LogDebug;
+
     image_target_width_ = 0;
     image_target_height_ = 0;
 }
@@ -806,6 +808,8 @@ bool ControllerAgent::init_scale_info()
 
 bool ControllerAgent::set_image_target_long_side(MaaOptionValue value, MaaOptionValueSize val_size)
 {
+    LogDebug;
+
     if (val_size != sizeof(image_target_long_side_)) {
         LogError << "invalid value size: " << val_size;
         return false;
@@ -821,6 +825,8 @@ bool ControllerAgent::set_image_target_long_side(MaaOptionValue value, MaaOption
 
 bool ControllerAgent::set_image_target_short_side(MaaOptionValue value, MaaOptionValueSize val_size)
 {
+    LogDebug;
+
     if (val_size != sizeof(image_target_short_side_)) {
         LogError << "invalid value size: " << val_size;
         return false;
