@@ -387,6 +387,8 @@ class CustomController(Controller):
         super().__init__()
         self._set_custom_api_properties()
 
+        # avoid gc
+        self._agent_holder = custom_controller
         self._callback_agent = CallbackAgent(callback, callback_arg)
         self._handle = Library.framework.MaaCustomControllerCreate(
             custom_controller.c_handle,
@@ -401,7 +403,7 @@ class CustomController(Controller):
     def _set_custom_api_properties(self):
         Library.framework.MaaCustomControllerCreate.restype = MaaControllerHandle
         Library.framework.MaaCustomControllerCreate.argtypes = [
-            MaaCustomControllerCallbacks,
+            ctypes.POINTER(MaaCustomControllerCallbacks),
             ctypes.c_void_p,
             MaaNotificationCallback,
             ctypes.c_void_p,

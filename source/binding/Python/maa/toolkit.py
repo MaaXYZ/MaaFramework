@@ -32,9 +32,7 @@ class Toolkit:
     ### public ###
 
     @staticmethod
-    def init_option(
-        user_path: Union[str, Path], default_config: Dict = {}
-    ) -> bool:
+    def init_option(user_path: Union[str, Path], default_config: Dict = {}) -> bool:
         Toolkit._set_api_properties()
 
         return bool(
@@ -72,11 +70,11 @@ class Toolkit:
             address = Library.toolkit.MaaToolkitAdbDeviceGetAddress(
                 device_handle
             ).decode()
-            screencap_methods = Library.toolkit.MaaToolkitAdbDeviceGetScreencapMethods(
-                device_handle
+            screencap_methods = int(
+                Library.toolkit.MaaToolkitAdbDeviceGetScreencapMethods(device_handle)
             )
-            input_methods = Library.toolkit.MaaToolkitAdbDeviceGetInputMethods(
-                device_handle
+            input_methods = int(
+                Library.toolkit.MaaToolkitAdbDeviceGetInputMethods(device_handle)
             )
             config = json.loads(
                 Library.toolkit.MaaToolkitAdbDeviceGetConfig(device_handle).decode()
@@ -122,7 +120,7 @@ class Toolkit:
 
     @staticmethod
     def register_pi_custom_recognition(
-        name: str, recognizer: "CustomRecognizer", inst_id: int = 0 # type: ignore
+        name: str, recognizer: "CustomRecognizer", inst_id: int = 0  # type: ignore
     ) -> bool:
         Toolkit._set_api_properties()
 
@@ -140,7 +138,7 @@ class Toolkit:
 
     @staticmethod
     def register_pi_custom_action(
-        name: str, action: "CustomAction", inst_id: int = 0 # type: ignore
+        name: str, action: "CustomAction", inst_id: int = 0  # type: ignore
     ) -> bool:
         Toolkit._set_api_properties()
 

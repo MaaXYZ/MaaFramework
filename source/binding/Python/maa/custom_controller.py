@@ -7,23 +7,31 @@ from .define import *
 
 
 class CustomControllerAgent(ABC):
-    _handle: MaaCustomControllerCallbacks
+    _callbacks: MaaCustomControllerCallbacks
 
     def __init__(self):
-        self._handle = MaaCustomControllerCallbacks(
-            self._c_connect_agent,
-            self._c_request_uuid_agent,
-            self._c_start_app_agent,
-            self._c_stop_app_agent,
-            self._c_screencap_agent,
-            self._c_click_agent,
-            self._c_swipe_agent,
-            self._c_touch_down_agent,
-            self._c_touch_move_agent,
-            self._c_touch_up_agent,
-            self._c_press_key_agent,
-            self._c_input_text_agent,
+        self._callbacks = MaaCustomControllerCallbacks(
+            CustomControllerAgent._c_connect_agent,
+            CustomControllerAgent._c_request_uuid_agent,
+            CustomControllerAgent._c_start_app_agent,
+            CustomControllerAgent._c_stop_app_agent,
+            CustomControllerAgent._c_screencap_agent,
+            CustomControllerAgent._c_click_agent,
+            CustomControllerAgent._c_swipe_agent,
+            CustomControllerAgent._c_touch_down_agent,
+            CustomControllerAgent._c_touch_move_agent,
+            CustomControllerAgent._c_touch_up_agent,
+            CustomControllerAgent._c_press_key_agent,
+            CustomControllerAgent._c_input_text_agent,
         )
+
+    @property
+    def c_handle(self) -> ctypes.POINTER(MaaCustomControllerCallbacks):
+        return ctypes.pointer(self._callbacks)
+
+    @property
+    def c_arg(self) -> ctypes.c_void_p:
+        return ctypes.c_void_p.from_buffer(ctypes.py_object(self))
 
     @abstractmethod
     def connect(self) -> bool:
@@ -85,14 +93,6 @@ class CustomControllerAgent(ABC):
     def input_text(self, text: str) -> bool:
         raise NotImplementedError
 
-    @property
-    def c_handle(self) -> MaaCustomControllerCallbacks:
-        return MaaCustomControllerCallbacks(self._handle)
-
-    @property
-    def c_arg(self) -> ctypes.c_void_p:
-        return ctypes.c_void_p.from_buffer(ctypes.py_object(self))
-
     @staticmethod
     @MaaCustomControllerCallbacks.ConnectFunc
     def _c_connect_agent(
@@ -122,12 +122,9 @@ class CustomControllerAgent(ABC):
             ctypes.py_object,
         ).value
 
-        uuid_buffer = StringBuffer(c_buffer)
         uuid = self.request_uuid()
 
-        if not uuid:
-            return MaaBool(False)
-
+        uuid_buffer = StringBuffer(c_buffer)
         uuid_buffer.set(uuid)
         return MaaBool(True)
 
@@ -148,7 +145,7 @@ class CustomControllerAgent(ABC):
         return MaaBool(self.start_app(c_intent.decode()))
 
     @staticmethod
-    @MaaCustomControllerCallbacks.StartAppFunc
+    @MaaCustomControllerCallbacks.StopAppFunc
     def _c_stop_app_agent(
         c_intent: ctypes.c_char_p,
         trans_arg: ctypes.c_void_p,
@@ -177,13 +174,10 @@ class CustomControllerAgent(ABC):
             ctypes.py_object,
         ).value
 
-        ret = self.screencap()
-
-        if not ret:
-            return MaaBool(False)
+        image = self.screencap()
 
         buffer = ImageBuffer(c_buffer)
-        buffer.set(ret)
+        buffer.set(image)
 
         return MaaBool(True)
 

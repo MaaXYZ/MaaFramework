@@ -103,12 +103,7 @@ class MyAction(CustomAction):
         return CustomAction.RunResult(success=True)
 
 
-def main():
-    version = Library.open(install_dir / "bin")
-    print(f"MaaFw Version: {version}")
-
-    Toolkit.init_option(install_dir / "bin")
-
+def api_test():
     resource = Resource()
     print(f"resource: {resource}")
 
@@ -174,14 +169,14 @@ def main():
         raise RuntimeError("failed to run custom recognizer or action")
 
 
-def test_custom_controller():
+def custom_ctrl_test():
     print("test_custom_controller")
 
     controller = CustomController(MyController())
     controller.post_connection().wait()
     uuid = controller.uuid
-    controller.post_start_app("aaa").wait()
-    controller.post_stop_app("bbb").wait()
+    controller.post_start_app("你好").wait()
+    controller.post_stop_app("哈哈").wait()
     image = controller.post_screencap().wait().get()
     print(f"image: {image.shape}")
     controller.post_click(100, 200).wait()
@@ -261,5 +256,10 @@ class MyController(CustomControllerAgent):
 
 
 if __name__ == "__main__":
-    main()
-    test_custom_controller()
+    version = Library.open(install_dir / "bin")
+    print(f"MaaFw Version: {version}")
+
+    Toolkit.init_option(install_dir / "bin")
+
+    api_test()
+    custom_ctrl_test()

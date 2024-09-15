@@ -17,6 +17,10 @@ CustomControllerAgent::CustomControllerAgent(
     , handle_(handle)
     , handle_arg_(handle_arg)
 {
+    LogDebug << VAR_VOIDP(handle_) << VAR_VOIDP(handle_arg_) << VAR_VOIDP(handle->connect) << VAR_VOIDP(handle->request_uuid)
+             << VAR_VOIDP(handle->start_app) << VAR_VOIDP(handle->stop_app) << VAR_VOIDP(handle->screencap) << VAR_VOIDP(handle->click)
+             << VAR_VOIDP(handle->swipe) << VAR_VOIDP(handle->touch_down) << VAR_VOIDP(handle->touch_move) << VAR_VOIDP(handle->touch_up)
+             << VAR_VOIDP(handle->press_key) << VAR_VOIDP(handle->input_text);
 }
 
 bool CustomControllerAgent::_connect()
@@ -41,7 +45,7 @@ std::optional<std::string> CustomControllerAgent::_request_uuid()
     }
 
     StringBuffer buffer;
-    MaaBool ret = handle_->request_uuid(handle_arg_, &buffer);
+    bool ret = handle_->request_uuid(handle_arg_, &buffer);
     if (!ret) {
         LogError << "failed to request_uuid" << VAR(ret);
         return std::nullopt;
@@ -83,7 +87,7 @@ std::optional<cv::Mat> CustomControllerAgent::_screencap()
     }
 
     ImageBuffer buffer;
-    MaaBool ret = handle_->screencap(handle_arg_, &buffer);
+    bool ret = handle_->screencap(handle_arg_, &buffer);
     if (!ret) {
         LogError << "failed to cached_image" << VAR(ret);
         return std::nullopt;
