@@ -16,7 +16,7 @@ if binding_dir not in sys.path:
 
 from maa.library import Library
 from maa.resource import Resource
-from maa.controller import DbgController, CustomController, CustomControllerAgent
+from maa.controller import DbgController, CustomController
 from maa.tasker import Tasker
 from maa.toolkit import Toolkit
 from maa.custom_action import CustomAction
@@ -172,7 +172,7 @@ def api_test():
 def custom_ctrl_test():
     print("test_custom_controller")
 
-    controller = CustomController(MyController())
+    controller = MyController()
     controller.post_connection().wait()
     uuid = controller.uuid
     controller.post_start_app("你好").wait()
@@ -188,7 +188,7 @@ def custom_ctrl_test():
     controller.post_input_text("Hello World!").wait()
 
 
-class MyController(CustomControllerAgent):
+class MyController(CustomController):
 
     def connect(self) -> bool:
         print("on MyController.connect")
