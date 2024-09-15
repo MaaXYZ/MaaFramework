@@ -79,8 +79,9 @@ bool GlobalOptionConfig::apply_option()
 
     ret &= MaaSetGlobalOption(MaaGlobalOption_ShowHitDraw, &option_.show_hit_draw, sizeof(option_.show_hit_draw));
 
-    LogTrace << VAR(ret);
-    return ret;
+    bool bret = ret;
+    LogTrace << VAR(bret);
+    return bret;
 }
 
 bool GlobalOptionConfig::save() const

@@ -8,6 +8,9 @@ from .define import *
 
 
 class Library:
+
+    initialized = False
+
     @staticmethod
     def open(path: Union[pathlib.Path, str]) -> Optional[str]:
         platform_values = {
@@ -33,7 +36,9 @@ class Library:
             Library.framework = lib_import(str(Library.framework_libpath))
 
         try:
-            Library.toolkit_libpath = pathlib.Path(path) / platform_values[platform_type][1]
+            Library.toolkit_libpath = (
+                pathlib.Path(path) / platform_values[platform_type][1]
+            )
             Library.toolkit = lib_import(str(Library.toolkit_libpath))
         except OSError:
             Library.toolkit_libpath = ctypes.util.find_library("MaaToolkit")

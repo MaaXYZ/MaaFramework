@@ -61,14 +61,14 @@ class CustomRecognizer(ABC):
         c_out_detail: MaaStringBufferHandle,
     ) -> MaaBool:
         if not c_transparent_arg:
-            return MaaBool(False)
+            return MaaBool(False).value
 
         self: CustomRecognizer = ctypes.cast(c_transparent_arg, ctypes.py_object).value
 
         context = Context(c_context)
         task_detail = context.tasker._get_task_detail(int(c_task_id))
         if not task_detail:
-            return MaaBool(False)
+            return MaaBool(False).value
 
         image = ImageBuffer(c_image).get()
 
@@ -90,4 +90,4 @@ class CustomRecognizer(ABC):
         StringBuffer(c_out_detail).set(result.detail)
 
         ret = result.box is not None
-        return MaaBool(ret)
+        return MaaBool(ret).value
