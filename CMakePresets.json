@@ -70,14 +70,6 @@
             "jobs": 16
         },
         {
-            "name": "NinjaMulti - DebWithRelDeps",
-            "displayName": "Ninja MultiConfig DebWithRelDeps",
-            "description": "Ninja MultiConfig DebWithRelDeps",
-            "configurePreset": "NinjaMulti",
-            "configuration": "RelWithDebInfo",
-            "jobs": 16
-        },
-        {
             "name": "NinjaMulti - Release",
             "displayName": "Ninja MultiConfig Release",
             "description": "Ninja MultiConfig Release",
@@ -94,14 +86,6 @@
             "jobs": 16
         },
         {
-            "name": "NinjaMulti Win32 - DebWithRelDeps",
-            "displayName": "Ninja NinjaMulti Win32 DebWithRelDeps",
-            "description": "Ninja NinjaMulti Win32 DebWithRelDeps",
-            "configurePreset": "NinjaMulti Win32",
-            "configuration": "RelWithDebInfo",
-            "jobs": 16
-        },
-        {
             "name": "NinjaMulti Win32 - Release",
             "displayName": "Ninja NinjaMulti Win32 Release",
             "description": "Ninja NinjaMulti Win32 Release",
@@ -115,14 +99,6 @@
             "description": "MSVC 2022 Debug",
             "configurePreset": "MSVC 2022",
             "configuration": "Debug",
-            "jobs": 16
-        },
-        {
-            "name": "MSVC 2022 - DebWithRelDeps",
-            "displayName": "MSVC 2022 DebWithRelDeps",
-            "description": "MSVC 2022 DebWithRelDeps",
-            "configurePreset": "MSVC 2022",
-            "configuration": "DebWithRelDeps",
             "jobs": 16
         },
         {
