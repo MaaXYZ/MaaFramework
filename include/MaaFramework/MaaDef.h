@@ -152,7 +152,9 @@ enum MaaTaskerOptionEnum
 };
 
 // MaaAdbScreencapMethod:
-// Use bitwise OR to set the method you need, MaaFramework will test their speed and use the fastest one.
+/**
+ * Use bitwise OR to set the method you need, MaaFramework will test their speed and use the fastest one.
+ */
 typedef uint64_t MaaAdbScreencapMethod;
 #define MaaAdbScreencapMethod_None 0ULL
 #define MaaAdbScreencapMethod_EncodeToFileAndPull 1ULL
@@ -168,8 +170,10 @@ typedef uint64_t MaaAdbScreencapMethod;
     (MaaAdbScreencapMethod_All & (~MaaAdbScreencapMethod_MinicapDirect) & (~MaaAdbScreencapMethod_MinicapStream))
 
 // MaaAdbInputMethod:
-// Use bitwise OR to set the method you need, MaaFramework will select the available ones according to priority.
-// The priority is: EmulatorExtras > Maatouch > MinitouchAndAdbKey > AdbShell
+/**
+ * Use bitwise OR to set the method you need, MaaFramework will select the available ones according to priority.
+ * The priority is: EmulatorExtras > Maatouch > MinitouchAndAdbKey > AdbShell
+ */
 typedef uint64_t MaaAdbInputMethod;
 #define MaaAdbInputMethod_None 0ULL
 #define MaaAdbInputMethod_AdbShell 1ULL
@@ -181,7 +185,9 @@ typedef uint64_t MaaAdbInputMethod;
 #define MaaAdbInputMethod_Default (MaaAdbInputMethod_All & (~MaaAdbInputMethod_EmulatorExtras))
 
 // MaaWin32ScreencapMethod:
-// No bitwise OR, just set it
+/**
+ * No bitwise OR, just set it
+ */
 typedef uint64_t MaaWin32ScreencapMethod;
 #define MaaWin32ScreencapMethod_None 0ULL
 #define MaaWin32ScreencapMethod_GDI 1ULL
@@ -189,14 +195,18 @@ typedef uint64_t MaaWin32ScreencapMethod;
 #define MaaWin32ScreencapMethod_DXGI_DesktopDup (1ULL << 2)
 
 // MaaWin32InputMethod:
-// No bitwise OR, just set it
+/**
+ * No bitwise OR, just set it
+ */
 typedef uint64_t MaaWin32InputMethod;
 #define MaaWin32InputMethod_None 0ULL
 #define MaaWin32InputMethod_Seize 1ULL
 #define MaaWin32InputMethod_SendMessage (1ULL << 1)
 
 // MaaDbgControllerType:
-// No bitwise OR, just set it
+/**
+ * No bitwise OR, just set it
+ */
 typedef uint64_t MaaDbgControllerType;
 #define MaaDbgControllerType_None 0
 #define MaaDbgControllerType_CarouselImage 1ULL
