@@ -121,6 +121,7 @@ std::pair<NodeDetail, /* is interrupt */ bool> PipelineTask::run_reco_and_action
             return {};
         }
 
+        LogDebug << "sleep_until" << VAR(pretask.rate_limit);
         std::this_thread::sleep_until(current_clock + pretask.rate_limit);
     }
 

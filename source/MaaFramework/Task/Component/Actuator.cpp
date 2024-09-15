@@ -140,6 +140,7 @@ void Actuator::wait_freezes(const MAA_RES_NS::WaitFreezesParam& param, const cv:
     auto pre_image_clock = std::chrono::steady_clock::now();
 
     while (true) {
+        LogDebug << "sleep_until" << VAR(param.rate_limit);
         std::this_thread::sleep_until(screencap_clock + param.rate_limit);
 
         screencap_clock = std::chrono::steady_clock::now();
