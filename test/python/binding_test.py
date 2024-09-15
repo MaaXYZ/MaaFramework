@@ -26,6 +26,7 @@ from maa.context import Context
 analyzed: bool = False
 runned: bool = False
 
+
 class MyRecognizer(CustomRecognizer):
 
     def analyze(
@@ -147,20 +148,6 @@ def main():
         print("pipeline failed")
         raise RuntimeError("pipeline failed")
 
-    detail = tasker.post_recognition("Rec", ppover).wait().get()
-    if detail:
-        print(f"reco detail: {detail}")
-    else:
-        print("reco failed")
-        raise RuntimeError("reco failed")
-
-    detail = tasker.post_action("Rec", ppover).wait().get()
-    if detail:
-        print(f"action detail: {detail}")
-    else:
-        print("action failed")
-        raise RuntimeError("action failed")
-    
     tasker.resource.post_path("C:/_maafw_testing_/aaabbbccc")
     tasker.clear_cache()
     inited = tasker.inited

@@ -5,9 +5,7 @@
 #include "Controller/ControllerAgent.h"
 #include "MaaFramework/MaaMsg.h"
 #include "Resource/ResourceMgr.h"
-#include "Task/ActionTask.h"
 #include "Task/PipelineTask.h"
-#include "Task/RecognitionTask.h"
 #include "Utils/Logger.h"
 
 MAA_NS_BEGIN
@@ -71,22 +69,6 @@ MaaTaskId Tasker::post_pipeline(const std::string& entry, const json::value& pip
     LogInfo << VAR(entry) << VAR(pipeline_override);
 
     auto task_ptr = std::make_shared<MAA_TASK_NS::PipelineTask>(entry, this);
-    return post_task(std::move(task_ptr), pipeline_override);
-}
-
-MaaTaskId Tasker::post_recognition(const std::string& entry, const json::value& pipeline_override)
-{
-    LogInfo << VAR(entry) << VAR(pipeline_override);
-
-    auto task_ptr = std::make_shared<MAA_TASK_NS::RecognitionTask>(entry, this);
-    return post_task(std::move(task_ptr), pipeline_override);
-}
-
-MaaTaskId Tasker::post_action(const std::string& entry, const json::value& pipeline_override)
-{
-    LogInfo << VAR(entry) << VAR(pipeline_override);
-
-    auto task_ptr = std::make_shared<MAA_TASK_NS::ActionTask>(entry, this);
     return post_task(std::move(task_ptr), pipeline_override);
 }
 
