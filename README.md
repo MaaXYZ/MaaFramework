@@ -17,7 +17,7 @@ _✨ 基于图像识别的自动化黑盒测试框架 ✨_
 <p align="center">
   <img alt="license" src="https://img.shields.io/github/license/MaaXYZ/MaaFramework">
   <img alt="C++" src="https://img.shields.io/badge/C++-20-%2300599C?logo=cplusplus">
-  <img alt="platform" src="https://img.shields.io/badge/platform-Windows%20%7C%20Linux%20%7C%20macOS-blueviolet">
+  <img alt="platform" src="https://img.shields.io/badge/platform-Windows%20%7C%20Linux%20%7C%20macOS%20%7C%20Android-blueviolet">
   <img alt="commit" src="https://img.shields.io/github/commit-activity/m/MaaXYZ/MaaFramework?color=%23ff69b4">
   <img alt="stars" src="https://img.shields.io/github/stars/MaaXYZ/MaaFramework?style=social">
 </p>
