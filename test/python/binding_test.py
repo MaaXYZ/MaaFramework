@@ -175,8 +175,8 @@ def custom_ctrl_test():
     controller = MyController()
     controller.post_connection().wait()
     uuid = controller.uuid
-    controller.post_start_app("你好").wait()
-    controller.post_stop_app("哈哈").wait()
+    controller.post_start_app("custom_aaa").wait()
+    controller.post_stop_app("custom_bbb").wait()
     image = controller.post_screencap().wait().get()
     print(f"image: {image.shape}")
     controller.post_click(100, 200).wait()
