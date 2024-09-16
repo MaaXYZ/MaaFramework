@@ -8,9 +8,8 @@
             "name": "桌面端",
             "type": "Win32",
             "win32": {
-                "method": "Search",
-                "class_name": ".*",
-                "window_name": "Visual Studio"
+                "class_regex": ".*",
+                "window_regex": "Visual Studio"
             }
         }
     ],
