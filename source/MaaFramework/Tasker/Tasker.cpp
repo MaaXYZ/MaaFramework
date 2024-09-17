@@ -213,9 +213,8 @@ bool Tasker::run_task(RunnerId runner_id, TaskPtr task_ptr)
     }
 
     const json::value details = {
-        { "id", task_ptr->task_id() },
+        { "task_id", task_ptr->task_id() },
         { "entry", task_ptr->entry() },
-        { "name", task_ptr->entry() },
         { "hash", resource_ ? resource_->get_hash() : std::string() },
         { "uuid", controller_ ? controller_->get_uuid() : std::string() },
     };

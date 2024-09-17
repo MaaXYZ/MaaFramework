@@ -167,10 +167,10 @@ NodeDetail TaskBase::run_action(const RecoResult& reco)
 
     cb_detail = basic_info() | node_detail_to_json(result);
     if (debug_mode()) {
-        notify(MaaMsg_Task_Debug_ReadyToRun, cb_detail);
+        notify(MaaMsg_Task_Debug_Completed, cb_detail);
     }
     if (pipeline_data.focus) {
-        notify(MaaMsg_Task_Focus_ReadyToRun, cb_detail);
+        notify(MaaMsg_Task_Focus_Completed, cb_detail);
     }
 
     return result;

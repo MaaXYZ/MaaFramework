@@ -639,7 +639,7 @@ bool ControllerAgent::run_action(typename AsyncRunner<Action>::Id id, Action act
     }
 
     const json::value details = {
-        { "id", id },
+        { "ctrl_id", id },
         { "uuid", get_uuid() },
     };
     if (notify) {

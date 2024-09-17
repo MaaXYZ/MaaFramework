@@ -248,7 +248,7 @@ bool ResourceMgr::run_load(typename AsyncRunner<std::filesystem::path>::Id id, s
     LogFunc << VAR(id) << VAR(path);
 
     json::value details = {
-        { "id", id },
+        { "res_id", id },
         { "path", path_to_utf8_string(path) },
     };
 

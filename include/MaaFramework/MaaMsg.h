@@ -28,11 +28,22 @@
  * @brief The message for the resource loading.
  *
  * payload: {
- *      id: number,
+ *      res_id: number,
  *      path: string
  * }
  */
 #define MaaMsg_Resource_StartLoading ("Resource.StartLoading")
+
+///
+/**
+ * @brief The message for the resource loading.
+ *
+ * payload: {
+ *      res_id: number,
+ *      path: string
+ *      hash: string
+ * }
+ */
 #define MaaMsg_Resource_LoadingCompleted ("Resource.LoadingCompleted")
 #define MaaMsg_Resource_LoadingFailed ("Resource.LoadingFailed")
 /// @}
@@ -82,7 +93,7 @@
  * @brief Message for the controller actions.
  *
  * payload: {
- *     id: number
+ *     ctrl_id: number
  * }
  */
 #define MaaMsg_Controller_Action_Started ("Controller.Action.Started")
@@ -95,9 +106,8 @@
  * @brief Message for the tasks.
  *
  * payload: {
- *     id: number,
+ *     task_id: number,
  *     entry: string,
- *     name: string,
  *     uuid: string,
  *     hash: string
  * }
