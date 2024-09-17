@@ -18,6 +18,8 @@ std::ostream& operator<<(std::ostream& os, const AdbDeviceFinder::Emulator& emul
 
 std::vector<AdbDevice> AdbDeviceFinder::find() const
 {
+    LogFunc;
+
     std::vector<AdbDevice> result;
 
     auto all_emulators = find_emulators();
@@ -56,11 +58,14 @@ std::vector<AdbDevice> AdbDeviceFinder::find() const
         result.insert(result.end(), std::make_move_iterator(env_adb_devices.begin()), std::make_move_iterator(env_adb_devices.end()));
     }
 
+    LogInfo << VAR(result);
     return result;
 }
 
 std::vector<AdbDevice> AdbDeviceFinder::find_specified(const std::filesystem::path& adb_path) const
 {
+    LogFunc << VAR(adb_path);
+
     std::vector<AdbDevice> result;
 
     auto serials = request_adb_serials(adb_path);
@@ -76,6 +81,8 @@ std::vector<AdbDevice> AdbDeviceFinder::find_specified(const std::filesystem::pa
 
         result.emplace_back(std::move(device));
     }
+
+    LogInfo << VAR(result);
     return result;
 }
 

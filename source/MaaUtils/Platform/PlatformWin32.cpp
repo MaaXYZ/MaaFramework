@@ -188,7 +188,7 @@ std::set<ProcessInfo> list_processes()
 
         if (process == nullptr) {
             auto error = GetLastError();
-            LogWarn << "Failed to OpenProcess" << VAR(error) << VAR(pid);
+            LogDebug << "Failed to OpenProcess" << VAR(error) << VAR(pid);
             continue;
         }
 
@@ -221,7 +221,7 @@ std::optional<std::filesystem::path> get_process_path(os_pid pid)
 
     if (process == nullptr) {
         auto error = GetLastError();
-        LogError << "Failed to OpenProcess" << VAR(error) << VAR(pid);
+        LogDebug << "Failed to OpenProcess" << VAR(error) << VAR(pid);
         return std::nullopt;
     }
 

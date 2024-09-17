@@ -10,6 +10,8 @@ MAA_TOOLKIT_NS_BEGIN
 
 std::vector<DesktopWindow> DesktopWindowWin32Finder::find_all() const
 {
+    LogFunc;
+
     std::vector<DesktopWindow> windows;
 
     for (HWND hwnd = GetTopWindow(NULL); hwnd != NULL; hwnd = GetNextWindow(hwnd, GW_HWNDNEXT)) {
