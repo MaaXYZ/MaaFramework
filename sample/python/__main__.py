@@ -1,7 +1,4 @@
-from typing import Tuple, Optional
-
 # python -m pip install maafw
-from maa.define import RectType
 from maa.resource import Resource
 from maa.controller import AdbController
 from maa.tasker import Tasker

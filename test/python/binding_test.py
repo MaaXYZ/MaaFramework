@@ -214,8 +214,8 @@ class MyController(CustomController):
         print(f"on MyController.click, x: {x}, y: {y}")
         return True
 
-    def swipe(self, x1: int, y1: int, x2: int, y2: int) -> bool:
-        print(f"on MyController.swipe, x1: {x1}, y1: {y1}, x2: {x2}, y2: {y2}")
+    def swipe(self, x1: int, y1: int, x2: int, y2: int, duration: int) -> bool:
+        print(f"on MyController.swipe, x1: {x1}, y1: {y1}, x2: {x2}, y2: {y2}, duration: {duration}")
         return True
 
     def touch_down(
@@ -261,5 +261,5 @@ if __name__ == "__main__":
 
     Toolkit.init_option(install_dir / "bin")
 
-    api_test()
+    # api_test()
     custom_ctrl_test()

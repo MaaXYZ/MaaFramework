@@ -15,8 +15,8 @@ class AdbDevice:
     name: str
     adb_path: Path
     address: str
-    screencap_methods: MaaAdbScreencapMethod
-    input_methods: MaaAdbInputMethod
+    screencap_methods: int
+    input_methods: int
     config: Dict[str, Any]
 
 

@@ -487,7 +487,7 @@ class CustomController(Controller):
         raise NotImplementedError
 
     @abstractmethod
-    def swipe(self, x1: int, y1: int, x2: int, y2: int) -> bool:
+    def swipe(self, x1: int, y1: int, x2: int, y2: int, duration: int) -> bool:
         raise NotImplementedError
 
     @abstractmethod
@@ -526,25 +526,25 @@ class CustomController(Controller):
     @MaaCustomControllerCallbacks.ConnectFunc
     def _c_connect_agent(
         trans_arg: ctypes.c_void_p,
-    ) -> MaaBool:
+    ) -> int:
         if not trans_arg:
-            return MaaBool(False).value
+            return int(False)
 
         self: CustomController = ctypes.cast(
             trans_arg,
             ctypes.py_object,
         ).value
 
-        return MaaBool(self.connect()).value
+        return int(self.connect())
 
     @staticmethod
     @MaaCustomControllerCallbacks.RequestUuidFunc
     def _c_request_uuid_agent(
         trans_arg: ctypes.c_void_p,
         c_buffer: MaaStringBufferHandle,
-    ) -> MaaBool:
+    ) -> int:
         if not trans_arg:
-            return MaaBool(False).value
+            return int(False)
 
         self: CustomController = ctypes.cast(
             trans_arg,
@@ -555,48 +555,48 @@ class CustomController(Controller):
 
         uuid_buffer = StringBuffer(c_buffer)
         uuid_buffer.set(uuid)
-        return MaaBool(True).value
+        return int(True)
 
     @staticmethod
     @MaaCustomControllerCallbacks.StartAppFunc
     def _c_start_app_agent(
         c_intent: ctypes.c_char_p,
         trans_arg: ctypes.c_void_p,
-    ) -> MaaBool:
+    ) -> int:
         if not trans_arg:
-            return MaaBool(False).value
+            return int(False)
 
         self: CustomController = ctypes.cast(
             trans_arg,
             ctypes.py_object,
         ).value
 
-        return MaaBool(self.start_app(c_intent.decode())).value
+        return int(self.start_app(c_intent.decode()))
 
     @staticmethod
     @MaaCustomControllerCallbacks.StopAppFunc
     def _c_stop_app_agent(
         c_intent: ctypes.c_char_p,
         trans_arg: ctypes.c_void_p,
-    ) -> MaaBool:
+    ) -> int:
         if not trans_arg:
-            return MaaBool(False).value
+            return int(False)
 
         self: CustomController = ctypes.cast(
             trans_arg,
             ctypes.py_object,
         ).value
 
-        return MaaBool(self.stop_app(c_intent.decode())).value
+        return int(self.stop_app(c_intent.decode()))
 
     @staticmethod
     @MaaCustomControllerCallbacks.ScreencapFunc
     def _c_screencap_agent(
         trans_arg: ctypes.c_void_p,
         c_buffer: MaaStringBufferHandle,
-    ) -> MaaBool:
+    ) -> int:
         if not trans_arg:
-            return MaaBool(False).value
+            return int(False)
 
         self: CustomController = ctypes.cast(
             trans_arg,
@@ -608,7 +608,7 @@ class CustomController(Controller):
         buffer = ImageBuffer(c_buffer)
         buffer.set(image)
 
-        return MaaBool(True).value
+        return int(True)
 
     @staticmethod
     @MaaCustomControllerCallbacks.ClickFunc
@@ -616,16 +616,16 @@ class CustomController(Controller):
         c_x: ctypes.c_int32,
         c_y: ctypes.c_int32,
         trans_arg: ctypes.c_void_p,
-    ) -> MaaBool:
+    ) -> int:
         if not trans_arg:
-            return MaaBool(False).value
+            return int(False)
 
         self: CustomController = ctypes.cast(
             trans_arg,
             ctypes.py_object,
         ).value
 
-        return MaaBool(self.click(int(c_x), int(c_y))).value
+        return int(self.click(int(c_x), int(c_y)))
 
     @staticmethod
     @MaaCustomControllerCallbacks.SwipeFunc
@@ -634,17 +634,18 @@ class CustomController(Controller):
         c_y1: ctypes.c_int32,
         c_x2: ctypes.c_int32,
         c_y2: ctypes.c_int32,
+        c_duration: ctypes.c_int32,
         trans_arg: ctypes.c_void_p,
-    ) -> MaaBool:
+    ) -> int:
         if not trans_arg:
-            return MaaBool(False).value
+            return int(False)
 
         self: CustomController = ctypes.cast(
             trans_arg,
             ctypes.py_object,
         ).value
 
-        return MaaBool(self.swipe(int(c_x1), int(c_y1), int(c_x2), int(c_y2))).value
+        return int(self.swipe(int(c_x1), int(c_y1), int(c_x2), int(c_y2), int(c_duration)))
 
     @staticmethod
     @MaaCustomControllerCallbacks.TouchDownFunc
@@ -654,18 +655,16 @@ class CustomController(Controller):
         c_y: ctypes.c_int32,
         c_pressure: ctypes.c_int32,
         trans_arg: ctypes.c_void_p,
-    ) -> MaaBool:
+    ) -> int:
         if not trans_arg:
-            return MaaBool(False).value
+            return int(False)
 
         self: CustomController = ctypes.cast(
             trans_arg,
             ctypes.py_object,
         ).value
 
-        return MaaBool(
-            self.touch_down(int(c_contact), int(c_x), int(c_y), int(c_pressure))
-        ).value
+        return int(self.touch_down(int(c_contact), int(c_x), int(c_y), int(c_pressure)))
 
     @staticmethod
     @MaaCustomControllerCallbacks.TouchMoveFunc
@@ -675,66 +674,64 @@ class CustomController(Controller):
         c_y: ctypes.c_int32,
         c_pressure: ctypes.c_int32,
         trans_arg: ctypes.c_void_p,
-    ) -> MaaBool:
+    ) -> int:
         if not trans_arg:
-            return MaaBool(False).value
+            return int(False)
 
         self: CustomController = ctypes.cast(
             trans_arg,
             ctypes.py_object,
         ).value
 
-        return MaaBool(
-            self.touch_move(int(c_contact), int(c_x), int(c_y), int(c_pressure))
-        ).value
+        return int(self.touch_move(int(c_contact), int(c_x), int(c_y), int(c_pressure)))
 
     @staticmethod
     @MaaCustomControllerCallbacks.TouchUpFunc
     def _c_touch_up_agent(
         c_contact: ctypes.c_int32,
         trans_arg: ctypes.c_void_p,
-    ) -> MaaBool:
+    ) -> int:
         if not trans_arg:
-            return MaaBool(False).value
+            return int(False)
 
         self: CustomController = ctypes.cast(
             trans_arg,
             ctypes.py_object,
         ).value
 
-        return MaaBool(self.touch_up(int(c_contact))).value
+        return int(self.touch_up(int(c_contact)))
 
     @staticmethod
     @MaaCustomControllerCallbacks.PressKeyFunc
     def _c_press_key_agent(
         c_keycode: ctypes.c_int32,
         trans_arg: ctypes.c_void_p,
-    ) -> MaaBool:
+    ) -> int:
         if not trans_arg:
-            return MaaBool(False).value
+            return int(False)
 
         self: CustomController = ctypes.cast(
             trans_arg,
             ctypes.py_object,
         ).value
 
-        return MaaBool(self.press_key(int(c_keycode))).value
+        return int(self.press_key(int(c_keycode)))
 
     @staticmethod
     @MaaCustomControllerCallbacks.InputTextFunc
     def _c_input_text_agent(
         c_text: ctypes.c_char_p,
         trans_arg: ctypes.c_void_p,
-    ) -> MaaBool:
+    ) -> int:
         if not trans_arg:
-            return MaaBool(False).value
+            return int(False)
 
         self: CustomController = ctypes.cast(
             trans_arg,
             ctypes.py_object,
         ).value
 
-        return MaaBool(self.input_text(c_text.decode())).value
+        return int(self.input_text(c_text.decode()))
 
     def _set_custom_api_properties(self):
         Library.framework.MaaCustomControllerCreate.restype = MaaControllerHandle
