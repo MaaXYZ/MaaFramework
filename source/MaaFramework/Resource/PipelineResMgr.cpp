@@ -384,7 +384,7 @@ bool PipelineResMgr::parse_recognition(
 
     static const std::string kDefaultRecognitionFlag = "Default";
     std::string rec_type_name;
-    if (!get_multi_keys_and_check_value(input, { "recognition", "recognizer", "algorithm" }, rec_type_name, kDefaultRecognitionFlag)) {
+    if (!get_multi_keys_and_check_value(input, { "recognition", "algorithm" }, rec_type_name, kDefaultRecognitionFlag)) {
         LogError << "failed to get_and_check_value recognition" << VAR(input);
         return false;
     }
@@ -477,12 +477,12 @@ bool PipelineResMgr::parse_recognition(
     } break;
 
     case Type::Custom: {
-        auto default_param = default_mgr.get_recognition_param<CustomRecognizerParam>(Type::Custom);
+        auto default_param = default_mgr.get_recognition_param<CustomRecognitionParam>(Type::Custom);
         out_param = default_param;
         return parse_custom_recognition_param(
             input,
-            std::get<CustomRecognizerParam>(out_param),
-            same_type ? std::get<CustomRecognizerParam>(parent_param) : default_param);
+            std::get<CustomRecognitionParam>(out_param),
+            same_type ? std::get<CustomRecognitionParam>(parent_param) : default_param);
     } break;
 
     default:
@@ -737,14 +737,10 @@ bool PipelineResMgr::parse_ocrer_param(
 
 bool PipelineResMgr::parse_custom_recognition_param(
     const json::value& input,
-    MAA_VISION_NS::CustomRecognizerParam& output,
-    const MAA_VISION_NS::CustomRecognizerParam& default_value)
+    MAA_VISION_NS::CustomRecognitionParam& output,
+    const MAA_VISION_NS::CustomRecognitionParam& default_value)
 {
-    if (!get_multi_keys_and_check_value(
-            input,
-            { "custom_recognition", "custom_recognizer", "custom_algorithm" },
-            output.name,
-            default_value.name)) {
+    if (!get_and_check_value(input, "custom_recognition", output.name, default_value.name)) {
         LogError << "failed to get_and_check_value custom_recognition" << VAR(input);
         return false;
     }
@@ -759,7 +755,7 @@ bool PipelineResMgr::parse_custom_recognition_param(
         return false;
     }
 
-    output.custom_param = input.get("custom_recognition_param", input.get("custom_recognizer_param", json::object()));
+    output.custom_param = input.get("custom_recognition_param", json::object());
 
     return true;
 }

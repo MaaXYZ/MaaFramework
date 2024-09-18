@@ -1,4 +1,4 @@
-#include "CustomRecognizer.h"
+#include "CustomRecognition.h"
 
 #include "Utils/NoWarningCV.hpp"
 
@@ -9,11 +9,11 @@
 
 MAA_TASK_NS_BEGIN
 
-CustomRecognizer::CustomRecognizer(
+CustomRecognition::CustomRecognition(
     const cv::Mat& image,
     const cv::Rect& roi,
-    const MAA_VISION_NS::CustomRecognizerParam& param,
-    MAA_RES_NS::CustomRecognizerSession session,
+    const MAA_VISION_NS::CustomRecognitionParam& param,
+    MAA_RES_NS::CustomRecognitionSession session,
     Context& context,
     std::string name)
     : VisionBase(image, roi, name)
@@ -24,13 +24,13 @@ CustomRecognizer::CustomRecognizer(
     analyze();
 }
 
-void CustomRecognizer::analyze()
+void CustomRecognition::analyze()
 {
-    LogFunc << VAR(context_.task_id()) << VAR(name_) << VAR_VOIDP(session_.recoginzer) << VAR_VOIDP(session_.trans_arg)
+    LogFunc << VAR(context_.task_id()) << VAR(name_) << VAR_VOIDP(session_.recognition) << VAR_VOIDP(session_.trans_arg)
             << VAR(param_.custom_param);
 
-    if (!session_.recoginzer) {
-        LogError << "recognizer is null" << VAR(name_) << VAR(param_.name);
+    if (!session_.recognition) {
+        LogError << "recognition is null" << VAR(name_) << VAR(param_.name);
         return;
     }
 
@@ -45,7 +45,7 @@ void CustomRecognizer::analyze()
     MaaRect cbox { 0 };
     StringBuffer detail_buffer;
 
-    bool ret = session_.recoginzer(
+    bool ret = session_.recognition(
         &context_,
         context_.task_id(),
         name_.c_str(),

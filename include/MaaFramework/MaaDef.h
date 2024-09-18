@@ -222,7 +222,7 @@ typedef struct MaaRect
 
 typedef void (*MaaNotificationCallback)(const char* message, const char* details_json, void* callback_arg);
 
-typedef MaaBool (MAA_CALL *MaaCustomRecognizerCallback)(
+typedef MaaBool (MAA_CALL *MaaCustomRecognitionCallback)(
     MaaContext* context,
     MaaTaskId task_id,
     const char* current_task_name,

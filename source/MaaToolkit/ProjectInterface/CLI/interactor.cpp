@@ -108,14 +108,14 @@ bool Interactor::load(
     const std::filesystem::path& project_dir,
     MaaNotificationCallback callback,
     void* callback_arg,
-    std::map<std::string, MAA_PROJECT_INTERFACE_NS::CustomRecognizerSession> custom_recognizers,
+    std::map<std::string, MAA_PROJECT_INTERFACE_NS::CustomRecognitionSession> custom_recognitions,
     std::map<std::string, MAA_PROJECT_INTERFACE_NS::CustomActionSession> custom_actions)
 {
     LogFunc << VAR(project_dir);
 
     callback_ = callback;
     callback_arg_ = callback_arg;
-    custom_recognizers_ = std::move(custom_recognizers);
+    custom_recognitions_ = std::move(custom_recognitions);
     custom_actions_ = std::move(custom_actions);
 
     if (!config_.load(project_dir)) {
@@ -161,7 +161,7 @@ bool Interactor::run()
         return false;
     }
 
-    bool ret = MAA_PROJECT_INTERFACE_NS::Runner::run(runtime.value(), on_maafw_notify, this, custom_recognizers_, custom_actions_);
+    bool ret = MAA_PROJECT_INTERFACE_NS::Runner::run(runtime.value(), on_maafw_notify, this, custom_recognitions_, custom_actions_);
 
     if (!ret) {
         std::cout << "### Failed to run tasks ###\n\n";

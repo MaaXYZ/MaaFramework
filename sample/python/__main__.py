@@ -4,7 +4,7 @@ from maa.controller import AdbController
 from maa.tasker import Tasker
 from maa.toolkit import Toolkit
 
-from maa.custom_recognizer import CustomRecognizer
+from maa.custom_recognition import CustomRecognition
 from maa.custom_action import CustomAction
 
 
@@ -39,20 +39,19 @@ def main():
         print("Failed to init MAA.")
         exit()
 
-    resource.register_custom_recognizer("MyRec", MyRecognizer())
+    resource.register_custom_recognition("MyRec", MyRecongition())
 
     task_detail = tasker.post_pipeline("StartUpAndClickButton").wait().get()
     # do something with task_detail
 
 
-
-class MyRecognizer(CustomRecognizer):
+class MyRecongition(CustomRecognition):
 
     def analyze(
         self,
         context,
-        argv: CustomRecognizer.AnalyzeArg,
-    ) -> CustomRecognizer.AnalyzeResult:
+        argv: CustomRecognition.AnalyzeArg,
+    ) -> CustomRecognition.AnalyzeResult:
         reco_detail = context.run_recognition(
             "MyCustomOCR",
             argv.image,
@@ -73,7 +72,7 @@ class MyRecognizer(CustomRecognizer):
 
         context.override_next(argv.current_task_name, ["TaskA", "TaskB"])
 
-        return CustomRecognizer.AnalyzeResult(
+        return CustomRecognition.AnalyzeResult(
             box=(0, 0, 100, 100), detail="Hello World!"
         )
 

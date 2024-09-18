@@ -21,7 +21,7 @@ MaaRecoId RecognitionTask::run_with_param(const cv::Mat& image)
 
     PipelineData::NextList next_list = { entry_ };
 
-    auto reco = run_recogintion(image, next_list);
+    auto reco = run_recognition(image, next_list);
     if (!reco.box) {
         LogTrace << "No reco result";
         return MaaInvalidId;

@@ -1,7 +1,7 @@
 from maa.toolkit import Toolkit
 from maa.context import Context
 from maa.custom_action import CustomAction
-from maa.custom_recognizer import CustomRecognizer
+from maa.custom_recognition import CustomRecognition
 
 
 def main():

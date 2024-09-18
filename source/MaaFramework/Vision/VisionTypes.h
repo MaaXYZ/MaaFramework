@@ -77,7 +77,7 @@ struct TemplateComparatorParam
     int method = 0;
 };
 
-struct CustomRecognizerParam
+struct CustomRecognitionParam
 {
     std::string name;
     json::value custom_param;

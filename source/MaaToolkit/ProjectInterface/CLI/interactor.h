@@ -10,7 +10,7 @@ public:
         const std::filesystem::path& project_dir,
         MaaNotificationCallback callback,
         void* callback_arg,
-        std::map<std::string, MAA_PROJECT_INTERFACE_NS::CustomRecognizerSession> custom_recognizers,
+        std::map<std::string, MAA_PROJECT_INTERFACE_NS::CustomRecognitionSession> custom_recognitions,
         std::map<std::string, MAA_PROJECT_INTERFACE_NS::CustomActionSession> custom_actions);
     void print_config() const;
     void interact();
@@ -48,6 +48,6 @@ private:
     MAA_PROJECT_INTERFACE_NS::Configurator config_;
     MaaNotificationCallback callback_ = nullptr;
     void* callback_arg_ = nullptr;
-    std::map<std::string, MAA_PROJECT_INTERFACE_NS::CustomRecognizerSession> custom_recognizers_;
+    std::map<std::string, MAA_PROJECT_INTERFACE_NS::CustomRecognitionSession> custom_recognitions_;
     std::map<std::string, MAA_PROJECT_INTERFACE_NS::CustomActionSession> custom_actions_;
 };

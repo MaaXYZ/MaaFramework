@@ -66,7 +66,7 @@ void TaskBase::notify(std::string_view msg, json::value detail)
     }
 }
 
-RecoResult TaskBase::run_recogintion(const cv::Mat& image, const PipelineData::NextList& list)
+RecoResult TaskBase::run_recognition(const cv::Mat& image, const PipelineData::NextList& list)
 {
     LogFunc << VAR(cur_task_) << VAR(list);
 

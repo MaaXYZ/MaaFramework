@@ -44,7 +44,7 @@ class Resource:
             raise RuntimeError("Failed to create resource.")
 
         self._custom_action_holder = {}
-        self._custom_recognizer_holder = {}
+        self._custom_recognition_holder = {}
 
     def __del__(self):
         if self._handle and self._own:
@@ -61,37 +61,37 @@ class Resource:
     def clear(self) -> bool:
         return bool(Library.framework.MaaResourceClear(self._handle))
 
-    def register_custom_recognizer(
-        self, name: str, recognizer: "CustomRecognizer"  # type: ignore
+    def register_custom_recognition(
+        self, name: str, recognition: "CustomRecognition"  # type: ignore
     ) -> bool:
 
         # avoid gc
-        self._custom_recognizer_holder[name] = recognizer
+        self._custom_recognition_holder[name] = recognition
 
         return bool(
-            Library.framework.MaaResourceRegisterCustomRecognizer(
+            Library.framework.MaaResourceRegisterCustomRecognition(
                 self._handle,
                 name.encode(),
-                recognizer.c_handle,
-                recognizer.c_arg,
+                recognition.c_handle,
+                recognition.c_arg,
             )
         )
 
-    def unregister_custom_recognizer(self, name: str) -> bool:
-        self._custom_recognizer_holder.pop(name, None)
+    def unregister_custom_recognition(self, name: str) -> bool:
+        self._custom_recognition_holder.pop(name, None)
 
         return bool(
-            Library.framework.MaaResourceUnregisterCustomRecognizer(
+            Library.framework.MaaResourceUnregisterCustomRecognition(
                 self._handle,
                 name.encode(),
             )
         )
 
-    def clear_custom_recognizer(self) -> bool:
-        self._custom_recognizer_holder.clear()
+    def clear_custom_recognition(self) -> bool:
+        self._custom_recognition_holder.clear()
 
         return bool(
-            Library.framework.MaaResourceClearCustomRecognizer(
+            Library.framework.MaaResourceClearCustomRecognition(
                 self._handle,
             )
         )
@@ -190,22 +190,22 @@ class Resource:
             MaaStringBufferHandle,
         ]
 
-        Library.framework.MaaResourceRegisterCustomRecognizer.restype = MaaBool
-        Library.framework.MaaResourceRegisterCustomRecognizer.argtypes = [
+        Library.framework.MaaResourceRegisterCustomRecognition.restype = MaaBool
+        Library.framework.MaaResourceRegisterCustomRecognition.argtypes = [
             MaaResourceHandle,
             ctypes.c_char_p,
-            MaaCustomRecognizerCallback,
+            MaaCustomRecognitionCallback,
             ctypes.c_void_p,
         ]
 
-        Library.framework.MaaResourceUnregisterCustomRecognizer.restype = MaaBool
-        Library.framework.MaaResourceUnregisterCustomRecognizer.argtypes = [
+        Library.framework.MaaResourceUnregisterCustomRecognition.restype = MaaBool
+        Library.framework.MaaResourceUnregisterCustomRecognition.argtypes = [
             MaaResourceHandle,
             ctypes.c_char_p,
         ]
 
-        Library.framework.MaaResourceClearCustomRecognizer.restype = MaaBool
-        Library.framework.MaaResourceClearCustomRecognizer.argtypes = [
+        Library.framework.MaaResourceClearCustomRecognition.restype = MaaBool
+        Library.framework.MaaResourceClearCustomRecognition.argtypes = [
             MaaResourceHandle,
         ]
 

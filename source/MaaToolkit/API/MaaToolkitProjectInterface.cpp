@@ -7,13 +7,13 @@
 void MaaToolkitProjectInterfaceRegisterCustomRecognition(
     uint64_t inst_id,
     const char* name,
-    MaaCustomRecognizerCallback recognizer,
+    MaaCustomRecognitionCallback recognition,
     void* trans_arg)
 {
-    MAA_TOOLKIT_NS::ProjectInterfaceMgr::get_instance().register_custom_recognizer(
+    MAA_TOOLKIT_NS::ProjectInterfaceMgr::get_instance().register_custom_recognition(
         inst_id,
         name,
-        { .recoginzer = recognizer, .trans_arg = trans_arg });
+        { .recognition = recognition, .trans_arg = trans_arg });
 }
 
 void MaaToolkitProjectInterfaceRegisterCustomAction(uint64_t inst_id, const char* name, MaaCustomActionCallback action, void* trans_arg)

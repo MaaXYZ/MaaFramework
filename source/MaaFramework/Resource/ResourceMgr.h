@@ -14,9 +14,9 @@
 
 MAA_RES_NS_BEGIN
 
-struct CustomRecognizerSession
+struct CustomRecognitionSession
 {
-    MaaCustomRecognizerCallback recoginzer = nullptr;
+    MaaCustomRecognitionCallback recognition = nullptr;
     void* trans_arg = nullptr;
 };
 
@@ -43,9 +43,9 @@ public: // MaaResource
     virtual MaaBool running() const override;
     virtual MaaBool clear() override;
 
-    virtual void register_custom_recognizer(const std::string& name, MaaCustomRecognizerCallback recognizer, void* trans_arg) override;
-    virtual void unregister_custom_recognizer(const std::string& name) override;
-    virtual void clear_custom_recognizer() override;
+    virtual void register_custom_recognition(const std::string& name, MaaCustomRecognitionCallback recognition, void* trans_arg) override;
+    virtual void unregister_custom_recognition(const std::string& name) override;
+    virtual void clear_custom_recognition() override;
     virtual void register_custom_action(const std::string& name, MaaCustomActionCallback action, void* trans_arg) override;
     virtual void unregister_custom_action(const std::string& name) override;
     virtual void clear_custom_action() override;
@@ -74,7 +74,7 @@ public:
 
     const auto& default_pipeline() const { return default_pipeline_; }
 
-    CustomRecognizerSession custom_recognizer(const std::string& name) const;
+    CustomRecognitionSession custom_recognition(const std::string& name) const;
     CustomActionSession custom_action(const std::string& name) const;
 
 private:
@@ -92,7 +92,7 @@ private:
     ONNXResMgr onnx_res_;
     TemplateResMgr template_res_;
 
-    std::unordered_map<std::string, CustomRecognizerSession> custom_recoginzer_sessions_;
+    std::unordered_map<std::string, CustomRecognitionSession> custom_recognition_sessions_;
     std::unordered_map<std::string, CustomActionSession> custom_action_sessions_;
 
 private:

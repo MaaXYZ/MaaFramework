@@ -186,9 +186,9 @@ struct RuntimeParam
     std::vector<Task> task;
 };
 
-struct CustomRecognizerSession
+struct CustomRecognitionSession
 {
-    MaaCustomRecognizerCallback recoginzer = nullptr;
+    MaaCustomRecognitionCallback recognition = nullptr;
     void* trans_arg = nullptr;
 };
 

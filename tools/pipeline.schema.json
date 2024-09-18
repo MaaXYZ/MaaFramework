@@ -203,7 +203,7 @@
                     "maximum": 1
                 },
                 "custom_recognition": {
-                    "description": "识别器名，同 MaaRegisterCustomRecognizer 接口传入的识别器名。必选。",
+                    "description": "识别器名，同 MaaResourceRegisterCustomRecognition 接口传入的识别器名。必选。",
                     "type": "string",
                     "default": ""
                 },
@@ -273,7 +273,7 @@
                 },
                 "package": {},
                 "custom_action": {
-                    "description": "动作名，同 MaaRegisterCustomAction 接口传入的动作名。必选。",
+                    "description": "动作名，同 MaaResourceRegisterCustomAction 接口传入的动作名。必选。",
                     "type": "string",
                     "default": ""
                 },

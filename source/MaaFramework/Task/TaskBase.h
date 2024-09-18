@@ -42,7 +42,7 @@ protected:
     MAA_CTRL_NS::ControllerAgent* controller();
     void notify(std::string_view msg, json::value detail = json::value());
 
-    RecoResult run_recogintion(const cv::Mat& image, const PipelineData::NextList& list);
+    RecoResult run_recognition(const cv::Mat& image, const PipelineData::NextList& list);
     NodeDetail run_action(const RecoResult& reco);
     cv::Mat screencap();
     MaaTaskId generate_node_id();

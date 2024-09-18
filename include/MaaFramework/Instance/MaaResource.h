@@ -24,11 +24,11 @@ extern "C"
     MAA_FRAMEWORK_API void MaaResourceDestroy(MaaResource* res);
 
     MAA_FRAMEWORK_API MaaBool
-        MaaResourceRegisterCustomRecognizer(MaaResource* res, const char* name, MaaCustomRecognizerCallback recognizer, void* trans_arg);
+        MaaResourceRegisterCustomRecognition(MaaResource* res, const char* name, MaaCustomRecognitionCallback recognition, void* trans_arg);
 
-    MAA_FRAMEWORK_API MaaBool MaaResourceUnregisterCustomRecognizer(MaaResource* res, const char* name);
+    MAA_FRAMEWORK_API MaaBool MaaResourceUnregisterCustomRecognition(MaaResource* res, const char* name);
 
-    MAA_FRAMEWORK_API MaaBool MaaResourceClearCustomRecognizer(MaaResource* res);
+    MAA_FRAMEWORK_API MaaBool MaaResourceClearCustomRecognition(MaaResource* res);
 
     MAA_FRAMEWORK_API MaaBool
         MaaResourceRegisterCustomAction(MaaResource* res, const char* name, MaaCustomActionCallback action, void* trans_arg);

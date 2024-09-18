@@ -20,7 +20,7 @@ from maa.controller import DbgController, CustomController
 from maa.tasker import Tasker
 from maa.toolkit import Toolkit
 from maa.custom_action import CustomAction
-from maa.custom_recognizer import CustomRecognizer
+from maa.custom_recognition import CustomRecognition
 from maa.define import RectType, MaaDbgControllerTypeEnum, LoggingLevelEnum
 from maa.context import Context
 
@@ -28,15 +28,15 @@ analyzed: bool = False
 runned: bool = False
 
 
-class MyRecognizer(CustomRecognizer):
+class MyRecognition(CustomRecognition):
 
     def analyze(
         self,
         context: Context,
-        argv: CustomRecognizer.AnalyzeArg,
-    ) -> CustomRecognizer.AnalyzeResult:
+        argv: CustomRecognition.AnalyzeArg,
+    ) -> CustomRecognition.AnalyzeResult:
         print(
-            f"on MyRecognizer.analyze, context: {context}, image: {argv.image.shape}, task_detail: {argv.task_detail}, reco_name: {argv.custom_recognition_name}, reco_param: {argv.custom_recognition_param}"
+            f"on MyRecognition.analyze, context: {context}, image: {argv.image.shape}, task_detail: {argv.task_detail}, reco_name: {argv.custom_recognition_name}, reco_param: {argv.custom_recognition_param}"
         )
         entry = "ColorMatch"
         ppover = {
@@ -66,7 +66,9 @@ class MyRecognizer(CustomRecognizer):
         global analyzed
         analyzed = True
 
-        return CustomRecognizer.AnalyzeResult(box=(11, 4, 5, 14), detail="Hello World!")
+        return CustomRecognition.AnalyzeResult(
+            box=(11, 4, 5, 14), detail="Hello World!"
+        )
 
 
 class MyAction(CustomAction):
@@ -124,7 +126,7 @@ def api_test():
         exit(1)
 
     resource.register_custom_action("MyAct", MyAction())
-    resource.register_custom_recognizer("MyRec", MyRecognizer())
+    resource.register_custom_recognition("MyRec", MyRecognition())
 
     ppover = {
         "Entry": {"next": "Rec"},
@@ -160,13 +162,13 @@ def api_test():
     desktop = Toolkit.find_desktop_windows()
     print(f"desktop: {desktop}")
     Toolkit.register_pi_custom_action("MyAct", MyAction())
-    Toolkit.register_pi_custom_recognition("MyRec", MyRecognizer())
+    Toolkit.register_pi_custom_recognition("MyRec", MyRecognition())
     # Toolkit.run_pi_cli("C:/_maafw_testing_/aaabbbccc", ".", True)
 
     global analyzed, runned
     if not analyzed or not runned:
-        print("failed to run custom recognizer or action")
-        raise RuntimeError("failed to run custom recognizer or action")
+        print("failed to run custom recognition or action")
+        raise RuntimeError("failed to run custom recognition or action")
 
 
 def custom_ctrl_test():

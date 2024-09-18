@@ -10,7 +10,7 @@
 
 MAA_TASK_NS_BEGIN
 
-struct CustomRecognizerResult
+struct CustomRecognitionResult
 {
     cv::Rect box {};
     json::value detail;
@@ -18,16 +18,16 @@ struct CustomRecognizerResult
     MEO_JSONIZATION(box, detail);
 };
 
-class CustomRecognizer
+class CustomRecognition
     : public MAA_VISION_NS::VisionBase
-    , public MAA_VISION_NS::RecoResultAPI<CustomRecognizerResult>
+    , public MAA_VISION_NS::RecoResultAPI<CustomRecognitionResult>
 {
 public:
-    CustomRecognizer(
+    CustomRecognition(
         const cv::Mat& image,
         const cv::Rect& roi,
-        const MAA_VISION_NS::CustomRecognizerParam& param,
-        MAA_RES_NS::CustomRecognizerSession session,
+        const MAA_VISION_NS::CustomRecognitionParam& param,
+        MAA_RES_NS::CustomRecognitionSession session,
         Context& context,
         std::string name);
 
@@ -35,8 +35,8 @@ private:
     void analyze();
 
 private:
-    const MAA_VISION_NS::CustomRecognizerParam& param_;
-    MAA_RES_NS::CustomRecognizerSession session_;
+    const MAA_VISION_NS::CustomRecognitionParam& param_;
+    MAA_RES_NS::CustomRecognitionSession session_;
     Context& context_;
 };
 

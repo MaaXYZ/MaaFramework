@@ -39,7 +39,7 @@ using Param = std::variant<
     MAA_VISION_NS::NeuralNetworkClassifierParam,
     MAA_VISION_NS::NeuralNetworkDetectorParam,
     MAA_VISION_NS::ColorMatcherParam,
-    MAA_VISION_NS::CustomRecognizerParam>;
+    MAA_VISION_NS::CustomRecognitionParam>;
 } // namespace Recognition
 
 namespace Action

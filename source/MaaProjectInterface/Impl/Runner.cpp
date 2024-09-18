@@ -17,7 +17,7 @@ bool Runner::run(
     const RuntimeParam& param,
     MaaNotificationCallback callback,
     void* callback_arg,
-    const std::map<std::string, CustomRecognizerSession>& custom_recognizers,
+    const std::map<std::string, CustomRecognitionSession>& custom_recognitions,
     const std::map<std::string, CustomActionSession>& custom_actions)
 {
     auto tasker_handle = MaaTaskerCreate(callback, callback_arg);
@@ -35,12 +35,8 @@ bool Runner::run(
             callback_arg);
     }
     else if (const auto* p_win32_param = std::get_if<RuntimeParam::Win32Param>(&param.controller_param)) {
-        controller_handle = MaaWin32ControllerCreate(
-            p_win32_param->hwnd,
-            p_win32_param->screencap,
-            p_win32_param->input,
-            callback,
-            callback_arg);
+        controller_handle =
+            MaaWin32ControllerCreate(p_win32_param->hwnd, p_win32_param->screencap, p_win32_param->input, callback, callback_arg);
     }
     else {
         LogError << "Unknown controller type";
@@ -54,8 +50,8 @@ bool Runner::run(
     for (const auto& path : param.resource_path) {
         rid = MaaResourcePostPath(resource_handle, path.c_str());
     }
-    for (const auto& [name, reco] : custom_recognizers) {
-        MaaResourceRegisterCustomRecognizer(resource_handle, name.c_str(), reco.recoginzer, reco.trans_arg);
+    for (const auto& [name, reco] : custom_recognitions) {
+        MaaResourceRegisterCustomRecognition(resource_handle, name.c_str(), reco.recognition, reco.trans_arg);
     }
     for (const auto& [name, act] : custom_actions) {
         MaaResourceRegisterCustomAction(resource_handle, name.c_str(), act.action, act.trans_arg);

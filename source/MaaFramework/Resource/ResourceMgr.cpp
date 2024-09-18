@@ -157,7 +157,7 @@ MaaBool ResourceMgr::clear()
     template_res_.clear();
     paths_.clear();
     hash_cache_.clear();
-    clear_custom_recognizer();
+    clear_custom_recognition();
     clear_custom_action();
 
     valid_ = true;
@@ -165,18 +165,18 @@ MaaBool ResourceMgr::clear()
     return true;
 }
 
-void ResourceMgr::register_custom_recognizer(const std::string& name, MaaCustomRecognizerCallback recognizer, void* trans_arg)
+void ResourceMgr::register_custom_recognition(const std::string& name, MaaCustomRecognitionCallback recognition, void* trans_arg)
 {
-    LogTrace << VAR(name) << VAR_VOIDP(recognizer) << VAR_VOIDP(trans_arg);
+    LogTrace << VAR(name) << VAR_VOIDP(recognition) << VAR_VOIDP(trans_arg);
 
-    if (name.empty() || !recognizer) {
+    if (name.empty() || !recognition) {
         LogError << "empty name or handle";
         return;
     }
-    custom_recoginzer_sessions_.insert_or_assign(name, CustomRecognizerSession { .recoginzer = recognizer, .trans_arg = trans_arg });
+    custom_recognition_sessions_.insert_or_assign(name, CustomRecognitionSession { .recognition = recognition, .trans_arg = trans_arg });
 }
 
-void ResourceMgr::unregister_custom_recognizer(const std::string& name)
+void ResourceMgr::unregister_custom_recognition(const std::string& name)
 {
     LogTrace << VAR(name);
 
@@ -184,14 +184,14 @@ void ResourceMgr::unregister_custom_recognizer(const std::string& name)
         LogError << "empty name or handle";
         return;
     }
-    custom_recoginzer_sessions_.erase(name);
+    custom_recognition_sessions_.erase(name);
 }
 
-void ResourceMgr::clear_custom_recognizer()
+void ResourceMgr::clear_custom_recognition()
 {
     LogTrace;
 
-    custom_recoginzer_sessions_.clear();
+    custom_recognition_sessions_.clear();
 }
 
 void ResourceMgr::register_custom_action(const std::string& name, MaaCustomActionCallback action, void* trans_arg)
@@ -223,10 +223,10 @@ void ResourceMgr::clear_custom_action()
     custom_action_sessions_.clear();
 }
 
-CustomRecognizerSession ResourceMgr::custom_recognizer(const std::string& name) const
+CustomRecognitionSession ResourceMgr::custom_recognition(const std::string& name) const
 {
-    auto it = custom_recoginzer_sessions_.find(name);
-    if (it == custom_recoginzer_sessions_.end()) {
+    auto it = custom_recognition_sessions_.find(name);
+    if (it == custom_recognition_sessions_.end()) {
         return {};
     }
 

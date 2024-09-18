@@ -1,6 +1,6 @@
 #include "Recognizer.h"
 
-#include "CustomRecognizer.h"
+#include "CustomRecognition.h"
 #include "Global/GlobalOptionMgr.h"
 #include "Resource/ResourceMgr.h"
 #include "Utils/ImageIo.h"
@@ -63,7 +63,7 @@ RecoResult Recognizer::recognize(const PipelineData& pipeline_data)
         break;
 
     case Type::Custom:
-        result = custom_recognize(std::get<CustomRecognizerParam>(pipeline_data.rec_param), pipeline_data.name);
+        result = custom_recognize(std::get<CustomRecognitionParam>(pipeline_data.rec_param), pipeline_data.name);
         break;
 
     default:
@@ -294,7 +294,7 @@ RecoResult Recognizer::nn_detect(const MAA_VISION_NS::NeuralNetworkDetectorParam
                         .draws = std::move(analyzer).draws() };
 }
 
-RecoResult Recognizer::custom_recognize(const MAA_VISION_NS::CustomRecognizerParam& param, const std::string& name)
+RecoResult Recognizer::custom_recognize(const MAA_VISION_NS::CustomRecognitionParam& param, const std::string& name)
 {
     using namespace MAA_VISION_NS;
     std::ignore = name; // task name
@@ -309,8 +309,8 @@ RecoResult Recognizer::custom_recognize(const MAA_VISION_NS::CustomRecognizerPar
     }
     cv::Rect roi = get_roi(param.roi_target);
 
-    auto session = tasker_->resource()->custom_recognizer(param.name);
-    CustomRecognizer analyzer(image_, roi, param, session, context_, name);
+    auto session = tasker_->resource()->custom_recognition(param.name);
+    CustomRecognition analyzer(image_, roi, param, session, context_, name);
 
     std::optional<cv::Rect> box = std::nullopt;
     if (analyzer.best_result()) {

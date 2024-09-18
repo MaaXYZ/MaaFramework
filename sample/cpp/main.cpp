@@ -70,7 +70,7 @@ int main([[maybe_unused]] int argc, char** argv)
         return -1;
     }
 
-    MaaResourceRegisterCustomRecognizer(resource_handle, "MyReco", my_reco, nullptr);
+    MaaResourceRegisterCustomRecognition(resource_handle, "MyReco", my_reco, nullptr);
 
     auto task_id = MaaTaskerPostPipeline(tasker_handle, "MyTask", "{}");
     MaaTaskerWait(tasker_handle, task_id);
@@ -155,7 +155,7 @@ MaaController* create_win32_controller()
     return controller_handle;
 }
 
-// @ MaaCustomRecognizerCallback
+// @ MaaCustomRecognitionCallback
 MaaBool my_reco(
     MaaContext* context,
     MaaTaskId task_id,

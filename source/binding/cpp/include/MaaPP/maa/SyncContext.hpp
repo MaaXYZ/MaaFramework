@@ -22,7 +22,7 @@ namespace maa
 
 class SyncContext
 {
-    friend class CustomRecognizer;
+    friend class CustomRecognition;
     friend class CustomAction;
 
 public:

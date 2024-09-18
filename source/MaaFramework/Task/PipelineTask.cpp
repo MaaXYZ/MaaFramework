@@ -99,13 +99,13 @@ std::pair<NodeDetail, /* is interrupt */ bool> PipelineTask::run_reco_and_action
         current_clock = std::chrono::steady_clock::now();
         cv::Mat image = screencap();
 
-        reco = run_recogintion(image, next);
+        reco = run_recognition(image, next);
         if (reco.box) { // hit
             is_interrupt = false;
             break;
         }
 
-        reco = run_recogintion(image, interrupt);
+        reco = run_recognition(image, interrupt);
         if (reco.box) { // hit
             is_interrupt = true;
             break;

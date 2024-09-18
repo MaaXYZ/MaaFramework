@@ -113,6 +113,7 @@ class MaaAdbScreencapMethodEnum:
     Use bitwise OR to set the method you need
     MaaFramework will test their speed and use the fastest one.
     """
+
     Null = 0
 
     EncodeToFileAndPull = 1
@@ -136,6 +137,7 @@ class MaaAdbInputMethodEnum:
     MaaFramework will select the available ones according to priority.
     The priority is: EmulatorExtras > Maatouch > MinitouchAndAdbKey > AdbShell
     """
+
     Null = 0
 
     AdbShell = 1
@@ -187,7 +189,7 @@ MaaNotificationCallback = FUNCTYPE(
     None, ctypes.c_char_p, ctypes.c_char_p, ctypes.c_void_p
 )
 
-MaaCustomRecognizerCallback = FUNCTYPE(
+MaaCustomRecognitionCallback = FUNCTYPE(
     MaaBool,  # return value
     MaaContextHandle,  # context
     MaaTaskId,  # task_id

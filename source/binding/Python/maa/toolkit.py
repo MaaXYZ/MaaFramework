@@ -120,19 +120,19 @@ class Toolkit:
 
     @staticmethod
     def register_pi_custom_recognition(
-        name: str, recognizer: "CustomRecognizer", inst_id: int = 0  # type: ignore
+        name: str, recognition: "CustomRecognition", inst_id: int = 0  # type: ignore
     ) -> bool:
         Toolkit._set_api_properties()
 
         # avoid gc
-        Toolkit._custom_recognizer_holder[inst_id][name] = recognizer
+        Toolkit._custom_recognition_holder[inst_id][name] = recognition
 
         return bool(
             Library.toolkit.MaaToolkitProjectInterfaceRegisterCustomRecognition(
                 ctypes.c_uint64(inst_id),
                 name.encode(),
-                recognizer.c_handle,
-                recognizer.c_arg,
+                recognition.c_handle,
+                recognition.c_arg,
             )
         )
 
@@ -143,7 +143,7 @@ class Toolkit:
         Toolkit._set_api_properties()
 
         # avoid gc
-        Toolkit._custom_recognizer_holder[inst_id][name] = action
+        Toolkit._custom_recognition_holder[inst_id][name] = action
 
         return bool(
             Library.toolkit.MaaToolkitProjectInterfaceRegisterCustomAction(
@@ -181,7 +181,7 @@ class Toolkit:
     ### private ###
 
     _api_properties_initialized: bool = False
-    _custom_recognizer_holder = defaultdict(dict)
+    _custom_recognition_holder = defaultdict(dict)
     _custom_action_holder = defaultdict(dict)
 
     @staticmethod
@@ -314,7 +314,7 @@ class Toolkit:
         Library.toolkit.MaaToolkitProjectInterfaceRegisterCustomRecognition.argtypes = [
             ctypes.c_uint64,
             ctypes.c_char_p,
-            MaaCustomRecognizerCallback,
+            MaaCustomRecognitionCallback,
             ctypes.c_void_p,
         ]
 

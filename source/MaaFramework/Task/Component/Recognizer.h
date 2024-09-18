@@ -31,7 +31,7 @@ private:
     RecoResult ocr(const MAA_VISION_NS::OCRerParam& param, const std::string& name);
     RecoResult nn_classify(const MAA_VISION_NS::NeuralNetworkClassifierParam& param, const std::string& name);
     RecoResult nn_detect(const MAA_VISION_NS::NeuralNetworkDetectorParam& param, const std::string& name);
-    RecoResult custom_recognize(const MAA_VISION_NS::CustomRecognizerParam& param, const std::string& name);
+    RecoResult custom_recognize(const MAA_VISION_NS::CustomRecognitionParam& param, const std::string& name);
 
     cv::Rect get_roi(const MAA_VISION_NS::Target roi);
     void save_draws(const std::string& task_name, const RecoResult& result) const;

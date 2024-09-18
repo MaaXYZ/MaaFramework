@@ -26,9 +26,9 @@ public:
     virtual MaaBool running() const = 0;
     virtual MaaBool clear() = 0;
 
-    virtual void register_custom_recognizer(const std::string& name, MaaCustomRecognizerCallback recognizer, void* trans_arg) = 0;
-    virtual void unregister_custom_recognizer(const std::string& name) = 0;
-    virtual void clear_custom_recognizer() = 0;
+    virtual void register_custom_recognition(const std::string& name, MaaCustomRecognitionCallback recognition, void* trans_arg) = 0;
+    virtual void unregister_custom_recognition(const std::string& name) = 0;
+    virtual void clear_custom_recognition() = 0;
     virtual void register_custom_action(const std::string& name, MaaCustomActionCallback action, void* trans_arg) = 0;
     virtual void unregister_custom_action(const std::string& name) = 0;
     virtual void clear_custom_action() = 0;

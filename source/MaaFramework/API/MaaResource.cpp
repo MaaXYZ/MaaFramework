@@ -26,20 +26,20 @@ void MaaResourceDestroy(MaaResource* res)
     delete res;
 }
 
-MaaBool MaaResourceRegisterCustomRecognizer(MaaResource* res, const char* name, MaaCustomRecognizerCallback recognizer, void* trans_arg)
+MaaBool MaaResourceRegisterCustomRecognition(MaaResource* res, const char* name, MaaCustomRecognitionCallback recognition, void* trans_arg)
 {
-    LogFunc << VAR_VOIDP(res) << VAR(name) << VAR_VOIDP(recognizer) << VAR_VOIDP(trans_arg);
+    LogFunc << VAR_VOIDP(res) << VAR(name) << VAR_VOIDP(recognition) << VAR_VOIDP(trans_arg);
 
-    if (!res || !name || !recognizer) {
+    if (!res || !name || !recognition) {
         LogError << "handle is null";
         return false;
     }
 
-    res->register_custom_recognizer(name, recognizer, trans_arg);
+    res->register_custom_recognition(name, recognition, trans_arg);
     return true;
 }
 
-MaaBool MaaResourceUnregisterCustomRecognizer(MaaResource* res, const char* name)
+MaaBool MaaResourceUnregisterCustomRecognition(MaaResource* res, const char* name)
 {
     LogFunc << VAR_VOIDP(res) << VAR(name);
 
@@ -48,11 +48,11 @@ MaaBool MaaResourceUnregisterCustomRecognizer(MaaResource* res, const char* name
         return false;
     }
 
-    res->unregister_custom_recognizer(name);
+    res->unregister_custom_recognition(name);
     return true;
 }
 
-MaaBool MaaResourceClearCustomRecognizer(MaaResource* res)
+MaaBool MaaResourceClearCustomRecognition(MaaResource* res)
 {
     LogFunc << VAR_VOIDP(res);
 
@@ -61,7 +61,7 @@ MaaBool MaaResourceClearCustomRecognizer(MaaResource* res)
         return false;
     }
 
-    res->clear_custom_recognizer();
+    res->clear_custom_recognition();
     return true;
 }
 

@@ -13,7 +13,7 @@ public:
         run(const RuntimeParam& param,
             MaaNotificationCallback callback,
             void* callback_arg,
-            const std::map<std::string, CustomRecognizerSession>& custom_recognizers,
+            const std::map<std::string, CustomRecognitionSession>& custom_recognitions,
             const std::map<std::string, CustomActionSession>& custom_actions);
 };
 

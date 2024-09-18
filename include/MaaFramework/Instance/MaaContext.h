@@ -1,7 +1,7 @@
 /**
  * @file MaaContext.h
  * @author
- * @brief Context is a context for running tasks, recognizers, actions, and other operations.
+ * @brief Context is a context for running tasks, recognitions, actions, and other operations.
  *
  * @copyright Copyright (c) 2024
  *

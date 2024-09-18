@@ -7,12 +7,12 @@
 
 MAA_TOOLKIT_NS_BEGIN
 
-void ProjectInterfaceMgr::register_custom_recognizer(
+void ProjectInterfaceMgr::register_custom_recognition(
     uint64_t inst_id,
     const std::string& name,
-    MAA_PROJECT_INTERFACE_NS::CustomRecognizerSession recognizer)
+    MAA_PROJECT_INTERFACE_NS::CustomRecognitionSession recognition)
 {
-    custom_recognizers_[inst_id].insert_or_assign(name, recognizer);
+    custom_recognitions_[inst_id].insert_or_assign(name, recognition);
 }
 
 void ProjectInterfaceMgr::register_custom_action(
@@ -36,7 +36,7 @@ bool ProjectInterfaceMgr::run_cli(
 
     Interactor interactor;
 
-    if (!interactor.load(resource_path, callback, callback_arg, custom_recognizers_[inst_id], custom_actions_[inst_id])) {
+    if (!interactor.load(resource_path, callback, callback_arg, custom_recognitions_[inst_id], custom_actions_[inst_id])) {
         return false;
     }
     if (directly) {

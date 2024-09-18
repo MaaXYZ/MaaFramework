@@ -10,8 +10,8 @@ from .context import Context
 from .define import *
 
 
-class CustomRecognizer(ABC):
-    _handle: MaaCustomRecognizerCallback
+class CustomRecognition(ABC):
+    _handle: MaaCustomRecognitionCallback
 
     def __init__(self):
         self._handle = self._c_analyze_agent
@@ -39,7 +39,7 @@ class CustomRecognizer(ABC):
         raise NotImplementedError
 
     @property
-    def c_handle(self) -> MaaCustomRecognizerCallback:
+    def c_handle(self) -> MaaCustomRecognitionCallback:
         return self._handle
 
     @property
@@ -47,7 +47,7 @@ class CustomRecognizer(ABC):
         return ctypes.c_void_p.from_buffer(ctypes.py_object(self))
 
     @staticmethod
-    @MaaCustomRecognizerCallback
+    @MaaCustomRecognitionCallback
     def _c_analyze_agent(
         c_context: MaaContextHandle,
         c_task_id: MaaTaskId,
@@ -63,7 +63,7 @@ class CustomRecognizer(ABC):
         if not c_transparent_arg:
             return int(False)
 
-        self: CustomRecognizer = ctypes.cast(c_transparent_arg, ctypes.py_object).value
+        self: CustomRecognition = ctypes.cast(c_transparent_arg, ctypes.py_object).value
 
         context = Context(c_context)
         task_detail = context.tasker._get_task_detail(int(c_task_id))
@@ -72,9 +72,9 @@ class CustomRecognizer(ABC):
 
         image = ImageBuffer(c_image).get()
 
-        result: CustomRecognizer.AnalyzeResult = self.analyze(
+        result: CustomRecognition.AnalyzeResult = self.analyze(
             context,
-            CustomRecognizer.AnalyzeArg(
+            CustomRecognition.AnalyzeArg(
                 task_detail=task_detail,
                 current_task_name=c_current_task_name.decode(),
                 custom_recognition_name=c_custom_reco_name.decode(),
