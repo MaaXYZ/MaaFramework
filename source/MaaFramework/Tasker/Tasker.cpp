@@ -165,11 +165,6 @@ const RuntimeCache& Tasker::runtime_cache() const
     return runtime_cache_;
 }
 
-void Tasker::notify(std::string_view msg, json::value detail)
-{
-    notifier.notify(msg, detail);
-}
-
 MaaTaskId Tasker::post_task(TaskPtr task_ptr, const json::value& pipeline_override)
 {
 #ifndef MAA_DEBUG
@@ -212,22 +207,22 @@ bool Tasker::run_task(RunnerId runner_id, TaskPtr task_ptr)
         return false;
     }
 
-    const json::value details = {
+    const json::value cb_detail = {
         { "task_id", task_ptr->task_id() },
         { "entry", task_ptr->entry() },
         { "hash", resource_ ? resource_->get_hash() : std::string() },
         { "uuid", controller_ ? controller_->get_uuid() : std::string() },
     };
 
-    notifier.notify(MaaMsg_Tasker_Task_Started, details);
+    notifier.notify(MaaMsg_Tasker_Task_Started, cb_detail);
 
-    LogInfo << "task start:" << VAR(details);
+    LogInfo << "task start:" << VAR(cb_detail);
 
     bool ret = task_ptr->run();
 
-    LogInfo << "task end:" << VAR(details) << VAR(ret);
+    LogInfo << "task end:" << VAR(cb_detail) << VAR(ret);
 
-    notifier.notify(ret ? MaaMsg_Tasker_Task_Completed : MaaMsg_Tasker_Task_Failed, details);
+    notifier.notify(ret ? MaaMsg_Tasker_Task_Completed : MaaMsg_Tasker_Task_Failed, cb_detail);
 
     {
         std::unique_lock lock(task_mapping_mutex_);

@@ -638,12 +638,15 @@ bool ControllerAgent::run_action(typename AsyncRunner<Action>::Id id, Action act
         notify = focus_ids_.erase(id) > 0;
     }
 
-    const json::value details = {
+    std::stringstream ss;
+    ss << action;
+    const json::value cb_detail = {
         { "ctrl_id", id },
         { "uuid", get_uuid() },
+        { "action", std::move(ss).str() },
     };
     if (notify) {
-        notifier.notify(MaaMsg_Controller_Action_Started, details);
+        notifier.notify(MaaMsg_Controller_Action_Started, cb_detail);
     }
 
     switch (action.type) {
@@ -692,7 +695,7 @@ bool ControllerAgent::run_action(typename AsyncRunner<Action>::Id id, Action act
     }
 
     if (notify) {
-        notifier.notify(ret ? MaaMsg_Controller_Action_Completed : MaaMsg_Controller_Action_Failed, details);
+        notifier.notify(ret ? MaaMsg_Controller_Action_Completed : MaaMsg_Controller_Action_Failed, cb_detail);
     }
 
     return ret;
@@ -863,6 +866,21 @@ std::ostream& operator<<(std::ostream& os, const Action& action)
     case Action::Type::swipe:
         os << "swipe";
         break;
+    case Action::Type::touch_down:
+        os << "touch_down";
+        break;
+    case Action::Type::touch_move:
+        os << "touch_move";
+        break;
+    case Action::Type::touch_up:
+        os << "touch_up";
+        break;
+    case Action::Type::press_key:
+        os << "press_key";
+        break;
+    case Action::Type::input_text:
+        os << "input_text";
+        break;
     case Action::Type::screencap:
         os << "screencap";
         break;
@@ -872,6 +890,7 @@ std::ostream& operator<<(std::ostream& os, const Action& action)
     case Action::Type::stop_app:
         os << "stop_app";
         break;
+
     default:
         os << "unknown action";
         break;

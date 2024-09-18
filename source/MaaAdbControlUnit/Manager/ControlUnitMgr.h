@@ -9,7 +9,6 @@
 #include "General/DeviceInfo.h"
 #include "General/DeviceList.h"
 #include "Utils/Dispatcher.hpp"
-#include "Utils/MessageNotifier.hpp"
 
 MAA_CTRL_UNIT_NS_BEGIN
 
@@ -22,9 +21,7 @@ public:
         std::filesystem::path adb_path,
         std::string adb_serial,
         std::shared_ptr<ScreencapBase> screencap_unit,
-        std::shared_ptr<InputBase> touch_unit,
-        MaaNotificationCallback callback,
-        void* callback_arg);
+        std::shared_ptr<InputBase> touch_unit);
     virtual ~ControlUnitMgr() override = default;
 
 public: // from ControlUnitAPI
@@ -68,7 +65,6 @@ private:
 
     std::shared_ptr<InputBase> input_ = nullptr;
     std::shared_ptr<ScreencapBase> screencap_ = nullptr;
-    MessageNotifier<MaaNotificationCallback> notifier;
 
     bool screencap_available_ = false;
     std::pair<int, int> image_resolution_;

@@ -19,9 +19,7 @@ extern "C"
         MaaAdbScreencapMethod screencap_methods,
         MaaAdbInputMethod input_methods,
         const char* config,
-        const char* agent_path,
-        MaaNotificationCallback callback,
-        void* callback_arg);
+        const char* agent_path);
 
     MAA_CONTROL_UNIT_API void MaaAdbControlUnitDestroy(MaaControlUnitHandle handle);
 

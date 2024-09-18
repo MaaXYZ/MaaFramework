@@ -14,16 +14,11 @@ const char* MaaWin32ControlUnitGetVersion()
     return MAA_VERSION;
 }
 
-MaaControlUnitHandle MaaWin32ControlUnitCreate(
-    void* hWnd,
-    MaaWin32ScreencapMethod screencap_method,
-    MaaWin32InputMethod input_method,
-    MaaNotificationCallback callback,
-    void* callback_arg)
+MaaControlUnitHandle MaaWin32ControlUnitCreate(void* hWnd, MaaWin32ScreencapMethod screencap_method, MaaWin32InputMethod input_method)
 {
     using namespace MAA_CTRL_UNIT_NS;
 
-    LogFunc << VAR_VOIDP(hWnd) << VAR(screencap_method) << VAR(input_method) << VAR_VOIDP(callback) << VAR_VOIDP(callback_arg);
+    LogFunc << VAR_VOIDP(hWnd) << VAR(screencap_method) << VAR(input_method);
 
     if (!hWnd) {
         LogError << "hWnd is nullptr";
@@ -35,7 +30,7 @@ MaaControlUnitHandle MaaWin32ControlUnitCreate(
     auto screencap_unit = std::make_shared<ScreencapAgent>(screencap_method, h_wnd);
     auto input_unit = std::make_shared<InputAgent>(input_method, h_wnd);
 
-    auto unit_mgr = std::make_unique<ControlUnitMgr>(h_wnd, std::move(screencap_unit), std::move(input_unit), callback, callback_arg);
+    auto unit_mgr = std::make_unique<ControlUnitMgr>(h_wnd, std::move(screencap_unit), std::move(input_unit));
     return unit_mgr.release();
 }
 

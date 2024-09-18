@@ -21,15 +21,8 @@ MaaController* MaaAdbControllerCreate(
     LogFunc << VAR(adb_path) << VAR(address) << VAR(screencap_methods) << VAR(input_methods) << VAR(config) << VAR(agent_path)
             << VAR_VOIDP(callback) << VAR_VOIDP(callback_arg);
 
-    auto control_unit = MAA_NS::AdbControlUnitLibraryHolder::create_control_unit(
-        adb_path,
-        address,
-        screencap_methods,
-        input_methods,
-        config,
-        agent_path,
-        callback,
-        callback_arg);
+    auto control_unit =
+        MAA_NS::AdbControlUnitLibraryHolder::create_control_unit(adb_path, address, screencap_methods, input_methods, config, agent_path);
 
     if (!control_unit) {
         LogError << "Failed to create control unit";
@@ -60,8 +53,7 @@ MaaController* MaaWin32ControllerCreate(
         return nullptr;
     }
 
-    auto control_unit =
-        MAA_NS::Win32ControlUnitLibraryHolder::create_control_unit(hWnd, screencap_method, input_method, callback, callback_arg);
+    auto control_unit = MAA_NS::Win32ControlUnitLibraryHolder::create_control_unit(hWnd, screencap_method, input_method);
 
     if (!control_unit) {
         LogError << "Failed to create control unit";

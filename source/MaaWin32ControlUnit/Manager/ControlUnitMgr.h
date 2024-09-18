@@ -4,7 +4,6 @@
 
 #include "Base/UnitBase.h"
 #include "ControlUnit/ControlUnitAPI.h"
-#include "Utils/MessageNotifier.hpp"
 #include "Utils/SafeWindows.hpp"
 
 MAA_CTRL_UNIT_NS_BEGIN
@@ -12,12 +11,7 @@ MAA_CTRL_UNIT_NS_BEGIN
 class ControlUnitMgr : public ControlUnitAPI
 {
 public:
-    ControlUnitMgr(
-        HWND hWnd,
-        std::shared_ptr<ScreencapBase> screencap_unit,
-        std::shared_ptr<InputBase> input_unit,
-        MaaNotificationCallback callback,
-        void* callback_arg);
+    ControlUnitMgr(HWND hWnd, std::shared_ptr<ScreencapBase> screencap_unit, std::shared_ptr<InputBase> input_unit);
     virtual ~ControlUnitMgr() override = default;
 
 public: // from ControlUnitAPI
@@ -47,7 +41,6 @@ private:
 
     std::shared_ptr<InputBase> input_ = nullptr;
     std::shared_ptr<ScreencapBase> screencap_ = nullptr;
-    MessageNotifier<MaaNotificationCallback> notifier;
 };
 
 MAA_CTRL_UNIT_NS_END

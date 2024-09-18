@@ -13,9 +13,7 @@ int main()
         MaaAdbScreencapMethod_Default,
         MaaAdbInputMethod_Default,
         "{}",
-        "./",
-        nullptr,
-        nullptr);
+        "./");
     if (!adb_handle) {
         std::cerr << "Failed to create adb control unit" << std::endl;
         return -1;
@@ -29,9 +27,7 @@ int main()
     auto win32_handle = MAA_NS::Win32ControlUnitLibraryHolder::create_control_unit(
         FindWindowA(nullptr, nullptr),
         MaaWin32ScreencapMethod_DXGI_DesktopDup,
-        MaaWin32InputMethod_Seize,
-        nullptr,
-        nullptr);
+        MaaWin32InputMethod_Seize);
     if (!win32_handle) {
         std::cerr << "Failed to create win32 control unit" << std::endl;
         return -1;

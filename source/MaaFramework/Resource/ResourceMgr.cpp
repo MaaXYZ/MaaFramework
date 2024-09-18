@@ -247,17 +247,19 @@ bool ResourceMgr::run_load(typename AsyncRunner<std::filesystem::path>::Id id, s
 {
     LogFunc << VAR(id) << VAR(path);
 
-    json::value details = {
+    json::value cb_detail = {
         { "res_id", id },
         { "path", path_to_utf8_string(path) },
+        { "hash", get_hash() },
     };
 
-    notifier.notify(MaaMsg_Resource_StartLoading, details);
+    notifier.notify(MaaMsg_Resource_Loading_Started, cb_detail);
 
     valid_ = load(path);
 
-    details.emplace("hash", get_hash());
-    notifier.notify(valid_ ? MaaMsg_Resource_LoadingCompleted : MaaMsg_Resource_LoadingFailed, details);
+    cb_detail["hash"] = get_hash();
+
+    notifier.notify(valid_ ? MaaMsg_Resource_Loading_Completed : MaaMsg_Resource_Loading_Failed, cb_detail);
 
     return valid_;
 }

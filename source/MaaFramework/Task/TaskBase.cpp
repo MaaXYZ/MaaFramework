@@ -59,13 +59,6 @@ MAA_CTRL_NS::ControllerAgent* TaskBase::controller()
     return tasker_ ? tasker_->controller() : nullptr;
 }
 
-void TaskBase::notify(std::string_view msg, json::value detail)
-{
-    if (tasker_) {
-        tasker_->notify(msg, detail);
-    }
-}
-
 RecoResult TaskBase::run_recognition(const cv::Mat& image, const PipelineData::NextList& list)
 {
     LogFunc << VAR(cur_task_) << VAR(list);
@@ -84,10 +77,10 @@ RecoResult TaskBase::run_recognition(const cv::Mat& image, const PipelineData::N
         return {};
     }
 
-    if (debug_mode()) {
-        json::value cb_detail = basic_info() | json::object { { "list", json::array(list) } };
-        notify(MaaMsg_Task_Debug_ListToRecognize, cb_detail);
-    }
+    // if (debug_mode()) {
+    //     json::value cb_detail = basic_info() | json::object { { "list", json::array(list) } };
+    //     notify(MaaMsg_Task_Debug_ListToRecognize, cb_detail);
+    // }
 
     Recognizer recognizer(tasker_, *context_, image);
 
@@ -101,10 +94,10 @@ RecoResult TaskBase::run_recognition(const cv::Mat& image, const PipelineData::N
 
         RecoResult result = recognizer.recognize(pipeline_data);
 
-        if (debug_mode()) {
-            json::value cb_detail = basic_info() | reco_detail_to_json(result);
-            notify(MaaMsg_Task_Debug_RecognitionResult, cb_detail);
-        }
+        // if (debug_mode()) {
+        //     json::value cb_detail = basic_info() | reco_detail_to_json(result);
+        //     notify(MaaMsg_Task_Debug_RecognitionResult, cb_detail);
+        // }
 
         if (!result.box) {
             continue;
@@ -112,18 +105,18 @@ RecoResult TaskBase::run_recognition(const cv::Mat& image, const PipelineData::N
 
         LogInfo << "Task hit" << VAR(result.name) << VAR(result.box);
 
-        if (debug_mode()) {
-            json::value cb_detail = basic_info() | reco_detail_to_json(result);
-            notify(MaaMsg_Task_Debug_Hit, cb_detail);
-        }
+        // if (debug_mode()) {
+        //     json::value cb_detail = basic_info() | reco_detail_to_json(result);
+        //     notify(MaaMsg_Task_Debug_Hit, cb_detail);
+        // }
 
         return result;
     }
 
-    if (debug_mode()) {
-        json::value cb_detail = basic_info() | json::object { { "list", json::array(list) } };
-        notify(MaaMsg_Task_Debug_MissAll, cb_detail);
-    }
+    // if (debug_mode()) {
+    //     json::value cb_detail = basic_info() | json::object { { "list", json::array(list) } };
+    //     notify(MaaMsg_Task_Debug_MissAll, cb_detail);
+    // }
 
     return {};
 }
@@ -152,26 +145,26 @@ NodeDetail TaskBase::run_action(const RecoResult& reco)
 
     const auto& pipeline_data = context_->get_pipeline_data(reco.name);
 
-    json::value cb_detail = basic_info() | node_detail_to_json(result);
-    if (debug_mode()) {
-        notify(MaaMsg_Task_Debug_ReadyToRun, cb_detail);
-    }
-    if (pipeline_data.focus) {
-        notify(MaaMsg_Task_Focus_ReadyToRun, cb_detail);
-    }
+    // json::value cb_detail = basic_info() | node_detail_to_json(result);
+    // if (debug_mode()) {
+    //     notify(MaaMsg_Task_Debug_ReadyToRun, cb_detail);
+    // }
+    // if (pipeline_data.focus) {
+    //     notify(MaaMsg_Task_Focus_ReadyToRun, cb_detail);
+    // }
 
     Actuator actuator(tasker_, *context_);
     result.completed = actuator.run(*reco.box, reco.reco_id, pipeline_data);
 
     set_node_detail(result.node_id, result);
 
-    cb_detail = basic_info() | node_detail_to_json(result);
-    if (debug_mode()) {
-        notify(MaaMsg_Task_Debug_Completed, cb_detail);
-    }
-    if (pipeline_data.focus) {
-        notify(MaaMsg_Task_Focus_Completed, cb_detail);
-    }
+    // cb_detail = basic_info() | node_detail_to_json(result);
+    // if (debug_mode()) {
+    //     notify(MaaMsg_Task_Debug_Completed, cb_detail);
+    // }
+    // if (pipeline_data.focus) {
+    //     notify(MaaMsg_Task_Focus_Completed, cb_detail);
+    // }
 
     return result;
 }
@@ -226,40 +219,6 @@ void TaskBase::init()
 bool TaskBase::debug_mode() const
 {
     return GlobalOptionMgr::get_instance().debug_mode();
-}
-
-json::object TaskBase::basic_info()
-{
-    return {
-        { "task_id", task_id_ },
-        { "entry", entry_ },
-        { "hash", resource() ? resource()->get_hash() : std::string() },
-        { "uuid", controller() ? controller()->get_uuid() : std::string() },
-        { "current", cur_task_ },
-    };
-}
-
-json::object TaskBase::reco_detail_to_json(const RecoResult& res)
-{
-    return { { "recognition",
-               {
-                   { "reco_id", res.reco_id },
-                   { "name", res.name },
-                   { "box", res.box ? json::value(*res.box) : json::value(nullptr) },
-                   { "detail", res.detail },
-               } } };
-}
-
-json::object TaskBase::node_detail_to_json(const NodeDetail& detail)
-{
-    return { { "node",
-               {
-                   { "node_id", detail.node_id },
-                   { "name", detail.name },
-                   { "reco_id", detail.reco_id },
-                   { "times", detail.times },
-                   { "completed", detail.completed },
-               } } };
 }
 
 MAA_TASK_NS_END

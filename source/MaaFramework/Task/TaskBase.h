@@ -40,7 +40,6 @@ public:
 protected:
     MAA_RES_NS::ResourceMgr* resource();
     MAA_CTRL_NS::ControllerAgent* controller();
-    void notify(std::string_view msg, json::value detail = json::value());
 
     RecoResult run_recognition(const cv::Mat& image, const PipelineData::NextList& list);
     NodeDetail run_action(const RecoResult& reco);
@@ -52,9 +51,6 @@ protected:
 private:
     void init();
     bool debug_mode() const;
-    json::object basic_info();
-    static json::object reco_detail_to_json(const RecoResult& res);
-    static json::object node_detail_to_json(const NodeDetail& detail);
 
 protected:
     const MaaTaskId task_id_ = ++s_global_task_id;
