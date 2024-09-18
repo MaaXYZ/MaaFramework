@@ -173,49 +173,66 @@ def custom_ctrl_test():
     print("test_custom_controller")
 
     controller = MyController()
-    controller.post_connection().wait()
+    ret = controller.post_connection().wait().success()
     uuid = controller.uuid
-    controller.post_start_app("custom_aaa").wait()
-    controller.post_stop_app("custom_bbb").wait()
-    image = controller.post_screencap().wait().get()
-    print(f"image: {image.shape}")
-    controller.post_click(100, 200).wait()
-    controller.post_swipe(100, 200, 300, 400, 200).wait()
-    controller.post_touch_down(1, 100, 100, 0).wait()
-    controller.post_touch_move(1, 200, 200, 0).wait()
-    controller.post_touch_up(1).wait()
-    controller.post_press_key(32).wait()
-    controller.post_input_text("Hello World!").wait()
+    ret &= controller.post_start_app("custom_aaa").wait().success()
+    ret &= controller.post_stop_app("custom_bbb").wait().success()
+    image_job = controller.post_screencap().wait()
+    ret &= image_job.success()
+    print(f"image: {image_job.get().shape}")
+    ret &= controller.post_click(100, 200).wait().success()
+    ret &= controller.post_swipe(100, 200, 300, 400, 200).wait().success()
+    ret &= controller.post_touch_down(1, 100, 100, 0).wait().success()
+    ret &= controller.post_touch_move(1, 200, 200, 0).wait().success()
+    ret &= controller.post_touch_up(1).wait().success()
+    ret &= controller.post_press_key(32).wait().success()
+    ret &= controller.post_input_text("Hello World!").wait().success()
+
+    print(f"controller.count: {controller.count}, ret: {ret}")
+    if controller.count != 11 or not ret:
+        print("failed to run custom controller")
+        raise RuntimeError("failed to run custom controller")
 
 
 class MyController(CustomController):
 
+    def __init__(self):
+        super().__init__()
+        self.count = 0
+
     def connect(self) -> bool:
         print("on MyController.connect")
+        self.count += 1
         return True
 
     def request_uuid(self) -> str:
         print("on MyController.request_uuid")
+        # self.count += 1
         return "12345678"
 
     def start_app(self, intent: str) -> bool:
         print(f"on MyController.start_app, intent: {intent}")
+        self.count += 1
         return True
 
     def stop_app(self, intent: str) -> bool:
         print(f"on MyController.stop_app, intent: {intent}")
+        self.count += 1
         return True
 
     def screencap(self) -> numpy.ndarray:
         print("on MyController.screencap")
+        self.count += 1
         return numpy.zeros((1080, 1920, 3), dtype=numpy.uint8)
 
     def click(self, x: int, y: int) -> bool:
         print(f"on MyController.click, x: {x}, y: {y}")
+        self.count += 1
         return True
 
     def swipe(self, x1: int, y1: int, x2: int, y2: int, duration: int) -> bool:
         print(f"on MyController.swipe, x1: {x1}, y1: {y1}, x2: {x2}, y2: {y2}, duration: {duration}")
+        self.count += 1
         return True
 
     def touch_down(
@@ -228,6 +245,7 @@ class MyController(CustomController):
         print(
             f"on MyController.touch_down, contact: {contact}, x: {x}, y: {y}, pressure: {pressure}"
         )
+        self.count += 1
         return True
 
     def touch_move(
@@ -240,18 +258,22 @@ class MyController(CustomController):
         print(
             f"on MyController.touch_move, contact: {contact}, x: {x}, y: {y}, pressure: {pressure}"
         )
+        self.count += 1
         return True
 
     def touch_up(self, contact: int) -> bool:
         print(f"on MyController.touch_up, contact: {contact}")
+        self.count += 1
         return True
 
     def press_key(self, keycode: int) -> bool:
         print(f"on MyController.press_key, keycode: {keycode}")
+        self.count += 1
         return True
 
     def input_text(self, text: str) -> bool:
         print(f"on MyController.input_text, text: {text}")
+        self.count += 1
         return True
 
 
@@ -261,5 +283,5 @@ if __name__ == "__main__":
 
     Toolkit.init_option(install_dir / "bin")
 
-    # api_test()
+    api_test()
     custom_ctrl_test()
