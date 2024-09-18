@@ -100,10 +100,10 @@ enum MaaGlobalOptionEnum
     /// value: bool, eg: true; val_size: sizeof(bool)
     MaaGlobalOption_ShowHitDraw = 5,
 
-    /// Whether to callback debug message
+    /// Whether to debug
     ///
     /// value: bool, eg: true; val_size: sizeof(bool)
-    MaaGlobalOption_DebugMessage = 6,
+    MaaGlobalOption_DebugMode = 6,
 };
 
 typedef MaaOption MaaResOption;

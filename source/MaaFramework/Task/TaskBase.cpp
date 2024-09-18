@@ -225,7 +225,7 @@ void TaskBase::init()
 
 bool TaskBase::debug_mode() const
 {
-    return GlobalOptionMgr::get_instance().debug_message();
+    return GlobalOptionMgr::get_instance().debug_mode();
 }
 
 json::object TaskBase::basic_info()

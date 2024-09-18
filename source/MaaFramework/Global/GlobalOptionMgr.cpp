@@ -20,8 +20,8 @@ bool GlobalOptionMgr::set_option(MaaGlobalOption key, MaaOptionValue value, MaaO
         return set_stdout_level(value, val_size);
     case MaaGlobalOption_ShowHitDraw:
         return set_show_hit_draw(value, val_size);
-    case MaaGlobalOption_DebugMessage:
-        return set_debug_message(value, val_size);
+    case MaaGlobalOption_DebugMode:
+        return set_debug_mode(value, val_size);
     default:
         LogError << "Unknown key" << VAR(key) << VAR(value);
         return false;
@@ -108,7 +108,7 @@ bool GlobalOptionMgr::set_stdout_level(MaaOptionValue value, MaaOptionValueSize 
     return true;
 }
 
-bool GlobalOptionMgr::set_debug_message(MaaOptionValue value, MaaOptionValueSize val_size)
+bool GlobalOptionMgr::set_debug_mode(MaaOptionValue value, MaaOptionValueSize val_size)
 {
     LogFunc;
 
@@ -117,9 +117,9 @@ bool GlobalOptionMgr::set_debug_message(MaaOptionValue value, MaaOptionValueSize
         return false;
     }
 
-    debug_message_ = *reinterpret_cast<const bool*>(value);
+    debug_mode_ = *reinterpret_cast<const bool*>(value);
 
-    LogInfo << "Set debug message" << VAR(debug_message_);
+    LogInfo << "Set debug message" << VAR(debug_mode_);
 
     return true;
 }

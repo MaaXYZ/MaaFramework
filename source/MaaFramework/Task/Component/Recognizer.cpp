@@ -400,7 +400,7 @@ void Recognizer::show_hit_draw(const cv::Rect& box, const std::string& task_name
 
 bool Recognizer::debug_mode() const
 {
-    return GlobalOptionMgr::get_instance().debug_message();
+    return GlobalOptionMgr::get_instance().debug_mode();
 }
 
 MAA_RES_NS::ResourceMgr* Recognizer::resource()

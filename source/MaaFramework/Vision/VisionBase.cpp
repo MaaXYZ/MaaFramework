@@ -46,7 +46,7 @@ void VisionBase::init_draw()
     debug_draw_ = true;
 #else
     const auto& option = GlobalOptionMgr::get_instance();
-    debug_draw_ = option.save_draw() || option.debug_message();
+    debug_draw_ = option.save_draw() || option.debug_mode();
 #endif
 }
 

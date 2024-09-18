@@ -169,11 +169,11 @@ class Tasker:
         )
 
     @staticmethod
-    def set_debug_message(debug_message: bool) -> bool:
-        cbool = ctypes.c_bool(debug_message)
+    def set_debug_mode(debug_mode: bool) -> bool:
+        cbool = ctypes.c_bool(debug_mode)
         return bool(
             Library.framework.MaaSetGlobalOption(
-                MaaOption(MaaGlobalOptionEnum.DebugMessage),
+                MaaOption(MaaGlobalOptionEnum.DebugMode),
                 ctypes.pointer(cbool),
                 ctypes.sizeof(ctypes.c_bool),
             )

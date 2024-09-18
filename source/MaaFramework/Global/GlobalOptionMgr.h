@@ -28,7 +28,7 @@ public:
 
     bool recording() const { return recording_; }
 
-    bool debug_message() const { return debug_message_; }
+    bool debug_mode() const { return debug_mode_; }
 
 private:
     GlobalOptionMgr() = default;
@@ -39,14 +39,14 @@ private:
     bool set_show_hit_draw(MaaOptionValue value, MaaOptionValueSize val_size);
     bool set_recording(MaaOptionValue value, MaaOptionValueSize val_size);
     bool set_stdout_level(MaaOptionValue value, MaaOptionValueSize val_size);
-    bool set_debug_message(MaaOptionValue value, MaaOptionValueSize val_size);
+    bool set_debug_mode(MaaOptionValue value, MaaOptionValueSize val_size);
 
 private:
     std::filesystem::path log_dir_;
     bool save_draw_ = false;
     bool show_hit_draw_ = false;
     bool recording_ = false;
-    bool debug_message_ = false;
+    bool debug_mode_ = false;
 };
 
 MAA_NS_END
