@@ -54,8 +54,8 @@ class MyRecognition(CustomRecognition):
         print(f"reco_detail: {reco_detail}")
 
         new_ctx = context.clone()
-        new_ctx.override_next(argv.current_task_name, ["TaskA", "TaskB"])
         new_ctx.override_pipeline({"TaskA": {}, "TaskB": {}})
+        new_ctx.override_next(argv.current_task_name, ["TaskA", "TaskB"])
 
         node_detail = new_ctx.tasker.get_latest_node("ColorMatch")
         print(node_detail)

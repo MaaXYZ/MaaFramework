@@ -46,7 +46,10 @@ bool PipelineTask::run()
         if (node_detail.completed) {
             error_handling = false;
 
-            bool is_interrupt = (std::ranges::find(list, node_detail.name) - list.begin()) >= next_size;
+            // 如果 list 里有同名任务，返回值也一定是第一个。同名任务第一个匹配上了后面肯定也会匹配上（除非 Custom 写了一些什么逻辑）
+            // 且 PipelineResMgr::check_all_next_list 保证了 next + interrupt 中没有同名任务
+            auto pos = std::ranges::find(list, node_detail.name) - list.begin();
+            bool is_interrupt = static_cast<size_t>(pos) >= next_size;
             PipelineData hit_task = context_->get_pipeline_data(node_detail.name);
 
             if (is_interrupt || hit_task.is_sub) { // for compatibility with v1.x
