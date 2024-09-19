@@ -132,6 +132,7 @@ void Tasker::clear_cache()
 {
     LogTrace;
 
+    task_id_mapping_.clear();
     runtime_cache().clear();
 }
 
@@ -186,12 +187,8 @@ MaaTaskId Tasker::post_task(TaskPtr task_ptr, const json::value& pipeline_overri
     task_ptr->override_pipeline(pipeline_override);
     MaaTaskId task_id = task_ptr->task_id();
 
-    {
-        std::unique_lock lock(task_mapping_mutex_);
-
-        RunnerId runner_id = task_runner_->post(task_ptr);
-        task_id_mapping_.emplace(task_id, runner_id);
-    }
+    RunnerId runner_id = task_runner_->post(task_ptr);
+    task_id_mapping_.emplace(task_id, runner_id);
 
     return task_id;
 }
@@ -200,15 +197,17 @@ bool Tasker::run_task(RunnerId runner_id, TaskPtr task_ptr)
 {
     LogFunc << VAR(runner_id) << VAR(task_ptr);
 
-    if (!check_stop()) {
-        LogError << "stopping, ignore new task";
+    if (!task_ptr) {
+        LogError << "task_ptr is nullptr";
         return false;
     }
 
     running_task_ = task_ptr;
+    OnScopeLeave([&] { running_task_ = nullptr; });
 
-    if (!task_ptr) {
-        LogError << "task_ptr is nullptr";
+    // 考虑 post_stop 的时序问题，这里需要先给 running_task_ 赋值，再检查 need_to_stop_
+    if (!check_stop()) {
+        LogError << "stopping, ignore new task";
         return false;
     }
 
@@ -228,11 +227,6 @@ bool Tasker::run_task(RunnerId runner_id, TaskPtr task_ptr)
     LogInfo << "task end:" << VAR(cb_detail) << VAR(ret);
 
     notifier.notify(ret ? MaaMsg_Tasker_Task_Succeeded : MaaMsg_Tasker_Task_Failed, cb_detail);
-
-    {
-        std::unique_lock lock(task_mapping_mutex_);
-        task_id_mapping_.erase(task_ptr->task_id());
-    }
 
     running_task_ = nullptr;
 
@@ -258,8 +252,6 @@ bool Tasker::check_stop()
 
 Tasker::RunnerId Tasker::task_id_to_runner_id(MaaTaskId task_id) const
 {
-    std::unique_lock lock(task_mapping_mutex_);
-
     auto iter = task_id_mapping_.find(task_id);
     if (iter == task_id_mapping_.end()) {
         LogError << "runner id not found" << VAR(task_id);

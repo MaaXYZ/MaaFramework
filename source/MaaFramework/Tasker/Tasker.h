@@ -70,8 +70,8 @@ private:
 
     std::unique_ptr<AsyncRunner<TaskPtr>> task_runner_ = nullptr;
 
+    // 这个 map 的操作理论上是要加锁的，但目前所有调用都在主线程（依赖调用方），所以暂时不加锁
     std::map<MaaTaskId, RunnerId> task_id_mapping_;
-    mutable std::mutex task_mapping_mutex_;
 
     TaskPtr running_task_ = nullptr;
 
