@@ -243,14 +243,21 @@ class Tasker:
         if not ret:
             return None
 
+        raw_detail = json.loads(detail_json.get())
+        algorithm: AlgorithmEnum = AlgorithmEnum(algorithm.get())
+        parsed_detail = Tasker._parse_recognition_raw_detail(algorithm, raw_detail)
+
         return RecognitionDetail(
             reco_id=reco_id,
             name=name.get(),
-            algorithm=algorithm.get(),
+            algorithm=algorithm,
             box=bool(hit) and box.get() or None,
-            detail=json.loads(detail_json.get()),
-            raw=raw.get(),
-            draws=draws.get(),
+            all_results=parsed_detail[0],
+            filterd_results=parsed_detail[1],
+            best_result=parsed_detail[2],
+            raw_detail=raw_detail,
+            raw_image=raw.get(),
+            draw_images=draws.get(),
         )
 
     def get_node_detail(self, node_id: int) -> Optional[NodeDetail]:
@@ -284,15 +291,19 @@ class Tasker:
 
     def get_task_detail(self, task_id: int) -> Optional[TaskDetail]:
         size = MaaSize()
+        entry = StringBuffer()
         ret = bool(
             Library.framework.MaaTaskerGetTaskDetail(
-                self._handle, MaaTaskId(task_id), None, None, ctypes.pointer(size)
+                self._handle,
+                MaaTaskId(task_id),
+                entry._handle,
+                None,
+                ctypes.pointer(size),
             )
         )
         if not ret:
             return None
 
-        entry = StringBuffer()
         c_node_id_list = (MaaNodeId * size.value)()
         ret = bool(
             Library.framework.MaaTaskerGetTaskDetail(
@@ -314,6 +325,32 @@ class Tasker:
         return TaskDetail(task_id=task_id, entry=entry.get(), nodes=nodes)
 
     _api_properties_initialized: bool = False
+
+    @staticmethod
+    def _parse_recognition_raw_detail(algorithm: AlgorithmEnum, raw_detail: Dict):
+        if not raw_detail:
+            return [], [], None
+
+        ResultType = AlgorithmResultDict[algorithm]
+        if not ResultType:
+            return [], [], None
+
+        all_results: List[RecognitionResult] = []
+        filterd_results: List[RecognitionResult] = []
+        best_result: Optional[RecognitionResult] = None
+
+        j_all_results = raw_detail.get("all", [])
+        j_filterd_results = raw_detail.get("filtered", [])
+        j_best_result = raw_detail.get("best", None)
+
+        for j_result in j_all_results:
+            all_results.append(ResultType(**j_result))
+        for j_result in j_filterd_results:
+            filterd_results.append(ResultType(**j_result))
+        if j_best_result:
+            best_result = ResultType(**j_best_result)
+
+        return all_results, filterd_results, best_result
 
     @staticmethod
     def _set_api_properties():

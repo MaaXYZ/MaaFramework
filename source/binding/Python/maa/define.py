@@ -1,7 +1,7 @@
 import ctypes
 import platform
 from dataclasses import dataclass
-from enum import IntEnum
+from enum import IntEnum, StrEnum
 from typing import List, Tuple, Union, Dict, Optional
 
 import numpy
@@ -361,15 +361,95 @@ RectType = Union[
 ]
 
 
+class AlgorithmEnum(StrEnum):
+    DirectHit = "DirectHit"
+    TemplateMatch = "TemplateMatch"
+    FeatureMatch = "FeatureMatch"
+    ColorMatch = "ColorMatch"
+    OCR = "OCR"
+    NeuralNetworkClassify = "NeuralNetworkClassify"
+    NeuralNetworkDetect = "NeuralNetworkDetect"
+    Custom = "Custom"
+
+
+@dataclass
+class BoxAndScoreResult:
+    box: Rect
+    score: float
+
+
+TemplateMatchResult = BoxAndScoreResult
+
+
+@dataclass
+class BoxAndCountResult:
+    box: Rect
+    count: int
+
+
+FeatureMatchResult = BoxAndCountResult
+ColorMatchResult = BoxAndCountResult
+
+
+@dataclass
+class OCRResult(BoxAndScoreResult):
+    text: str
+
+
+@dataclass
+class NeuralNetworkResult(BoxAndScoreResult):
+    cls_index: int
+    label: str
+    box: Rect
+    score: float
+
+
+NeuralNetworkClassifyResult = NeuralNetworkResult
+NeuralNetworkDetectResult = NeuralNetworkResult
+
+
+@dataclass
+class CustomRecognitionResult:
+    box: Rect
+    detail: Union[str, Dict]
+
+
+RecognitionResult = Union[
+    TemplateMatchResult,
+    FeatureMatchResult,
+    ColorMatchResult,
+    OCRResult,
+    NeuralNetworkClassifyResult,
+    NeuralNetworkDetectResult,
+    CustomRecognitionResult,
+]
+
+AlgorithmResultDict = {
+    AlgorithmEnum.DirectHit: None,
+    AlgorithmEnum.TemplateMatch: TemplateMatchResult,
+    AlgorithmEnum.FeatureMatch: FeatureMatchResult,
+    AlgorithmEnum.ColorMatch: ColorMatchResult,
+    AlgorithmEnum.OCR: OCRResult,
+    AlgorithmEnum.NeuralNetworkClassify: NeuralNetworkClassifyResult,
+    AlgorithmEnum.NeuralNetworkDetect: NeuralNetworkDetectResult,
+    AlgorithmEnum.Custom: CustomRecognitionResult,
+}
+
+
 @dataclass
 class RecognitionDetail:
     reco_id: int
     name: str
-    algorithm: str
+    algorithm: AlgorithmEnum
     box: Optional[Rect]
-    detail: Dict
-    raw: numpy.ndarray  # only valid in debug mode
-    draws: List[numpy.ndarray]  # only valid in debug mode
+
+    all_results: List[RecognitionResult]
+    filterd_results: List[RecognitionResult]
+    best_result: Optional[RecognitionResult]
+
+    raw_detail: Dict
+    raw_image: numpy.ndarray  # only valid in debug mode
+    draw_images: List[numpy.ndarray]  # only valid in debug mode
 
 
 @dataclass
