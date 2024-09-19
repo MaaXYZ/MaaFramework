@@ -79,9 +79,12 @@ _✨ 基于图像识别的自动化黑盒测试框架 ✨_
 - [MAA-for-Millennium-Tour](https://github.com/Ostwind23/MAA-for-Millennium-Tour) 千年之旅 小助手 ![Pipeline](https://img.shields.io/badge/Pipeline-%23454545?logo=codecademy&logoColor=%23FFFFFF&color=%23454545) ![python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white)   
   基于全新架构的 千年之旅 小助手。图像技术 + 模拟控制，解放侍主的大手！由 MaaFramework 强力驱动！
 
+- [MET](https://github.com/shanchuan001/MET) 悠久之树 小助手 ![Pipeline](https://img.shields.io/badge/Pipeline-%23454545?logo=paddypower&logoColor=%23FFFFFF)  
+   基于全新架构的 悠久之树 小助手。图像技术 + 模拟控制，解放双手！由 MaaFramework 强力驱动！
+
 - [MFAWPF](https://github.com/SweetSmellFox/MFAWPF) MFA 任务管理器 ![csharp](https://img.shields.io/badge/C%23-239120?logo=csharp&logoColor=white)  
   基于 MAA 全新架构的 通用 GUI。由 MaaFramework 强力驱动！
-
+  
 ## 生态共建
 
 MAA 正计划建设为一类项目，而非舟的单一软件。  
