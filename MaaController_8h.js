@@ -1,10 +1,10 @@
 var MaaController_8h =
 [
     [ "MaaCustomControllerCallbacks", "MaaController_8h.html#a22203468df2e11d45892a524d48404a4", null ],
-    [ "MaaAdbControllerCreate", "MaaController_8h.html#a7e54ebbb5215362bcdfbcc74748aaa0f", null ],
-    [ "MaaWin32ControllerCreate", "MaaController_8h.html#a3dcbf450b265456d81fdef206f6c661a", null ],
-    [ "MaaCustomControllerCreate", "MaaController_8h.html#a42b27ad97c7038a84fdade74627815ba", null ],
-    [ "MaaDbgControllerCreate", "MaaController_8h.html#a75a64cece9c63356a2214e40d7c324fc", null ],
+    [ "MaaAdbControllerCreate", "MaaController_8h.html#a75bf05e524a4f086053e17554eb58d9e", null ],
+    [ "MaaWin32ControllerCreate", "MaaController_8h.html#a9a76a72f540f0bec888228dca7b88a12", null ],
+    [ "MaaCustomControllerCreate", "MaaController_8h.html#ae9506f63397ad53296fb8dfd3f0dbef4", null ],
+    [ "MaaDbgControllerCreate", "MaaController_8h.html#a4089d1020a79a680c013b3be0eb88450", null ],
     [ "MaaControllerDestroy", "MaaController_8h.html#a497982481bf79e89bc457d8a6e5e7bed", null ],
     [ "MaaControllerSetOption", "MaaController_8h.html#ac0247a25f33dfbc7bd3a0183a669aad3", null ],
     [ "MaaControllerPostConnection", "MaaController_8h.html#a08f41be1ab0845f494ad7357adac0336", null ],

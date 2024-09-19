@@ -492,8 +492,8 @@
           <detaileddescription>
           </detaileddescription>
         </enumvalue>
-        <enumvalue id="MaaDef_8h_1a92a321c9e89a79ab64dc5176057d76a6a26dc49974c883868a557aa9d7a5d23ee" prot="public">
-          <name>MaaStatus_Success</name>
+        <enumvalue id="MaaDef_8h_1a92a321c9e89a79ab64dc5176057d76a6a48d0596abd16c119daeb236a735515d8" prot="public">
+          <name>MaaStatus_Succeeded</name>
           <initializer>= 3000</initializer>
           <briefdescription>
           </briefdescription>
@@ -654,13 +654,13 @@ default value is MaaLoggingLevel_Error
 </verbatim> </para>
           </detaileddescription>
         </enumvalue>
-        <enumvalue id="MaaDef_8h_1ad09e62ec1fd03dadaf5fb009026c38eeabaaef37576e263fdd0c1148de4d338dc" prot="public">
-          <name>MaaGlobalOption_DebugMessage</name>
+        <enumvalue id="MaaDef_8h_1ad09e62ec1fd03dadaf5fb009026c38eea85acfc5fc6cdca745d0eb2a090c05c5f" prot="public">
+          <name>MaaGlobalOption_DebugMode</name>
           <initializer>= 6</initializer>
           <briefdescription>
           </briefdescription>
           <detaileddescription>
-<para>Whether to callback debug message <verbatim>value: bool, eg: true; val_size: sizeof(bool) 
+<para>Whether to debug <verbatim>value: bool, eg: true; val_size: sizeof(bool) 
 </verbatim> </para>
           </detaileddescription>
         </enumvalue>
@@ -1173,10 +1173,10 @@ value: bool, eg: true; val_size: sizeof(bool)
         </inbodydescription>
         <location file="include/MaaFramework/MaaDef.h" line="221" column="9"/>
       </memberdef>
-      <memberdef kind="typedef" id="MaaDef_8h_1aa8191105b665bc8c02f0a78cebac71cd" prot="public" static="no">
-        <type>void(*</type>
-        <definition>typedef void(* MaaNotificationCallback) (const char *message, const char *details_json, void *callback_arg)</definition>
-        <argsstring>)(const char *message, const char *details_json, void *callback_arg)</argsstring>
+      <memberdef kind="typedef" id="MaaDef_8h_1a83fe073ae3fefc09c17fd9eb6b6b3e50" prot="public" static="no">
+        <type>void(<ref refid="MaaPort_8h_1afaf570464c85866c04fabe324fe35c18" kindref="member">MAA_CALL</ref> *</type>
+        <definition>typedef void(MAA_CALL * MaaNotificationCallback) (const char *message, const char *details_json, void *notify_trans_arg)</definition>
+        <argsstring>)(const char *message, const char *details_json, void *notify_trans_arg)</argsstring>
         <name>MaaNotificationCallback</name>
         <briefdescription>
         </briefdescription>
@@ -1184,20 +1184,20 @@ value: bool, eg: true; val_size: sizeof(bool)
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="include/MaaFramework/MaaDef.h" line="223" column="9" bodyfile="include/MaaFramework/MaaDef.h" bodystart="223" bodyend="-1"/>
+        <location file="include/MaaFramework/MaaDef.h" line="226" column="9" bodyfile="include/MaaFramework/MaaDef.h" bodystart="226" bodyend="-1"/>
       </memberdef>
-      <memberdef kind="typedef" id="MaaDef_8h_1ac89f1cfb384be414659f79f14061e4ad" prot="public" static="no">
+      <memberdef kind="typedef" id="MaaDef_8h_1a4c72d5184d2333b6deaabd76f2e4db13" prot="public" static="no">
         <type><ref refid="MaaDef_8h_1a2f7289f2a8e07f48c6261b52a120cdf6" kindref="member">MaaBool</ref>(<ref refid="MaaPort_8h_1afaf570464c85866c04fabe324fe35c18" kindref="member">MAA_CALL</ref> *</type>
-        <definition>typedef MaaBool(MAA_CALL * MaaCustomRecognizerCallback) (MaaContext *context, MaaTaskId task_id, const char *current_task_name, const char *custom_recognition_name, const char *custom_recognition_param, const MaaImageBuffer *image, const MaaRect *roi, void *trans_arg, MaaRect *out_box, MaaStringBuffer *out_detail)</definition>
+        <definition>typedef MaaBool(MAA_CALL * MaaCustomRecognitionCallback) (MaaContext *context, MaaTaskId task_id, const char *current_task_name, const char *custom_recognition_name, const char *custom_recognition_param, const MaaImageBuffer *image, const MaaRect *roi, void *trans_arg, MaaRect *out_box, MaaStringBuffer *out_detail)</definition>
         <argsstring>)(MaaContext *context, MaaTaskId task_id, const char *current_task_name, const char *custom_recognition_name, const char *custom_recognition_param, const MaaImageBuffer *image, const MaaRect *roi, void *trans_arg, MaaRect *out_box, MaaStringBuffer *out_detail)</argsstring>
-        <name>MaaCustomRecognizerCallback</name>
+        <name>MaaCustomRecognitionCallback</name>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="include/MaaFramework/MaaDef.h" line="225" column="9" bodyfile="include/MaaFramework/MaaDef.h" bodystart="225" bodyend="-1"/>
+        <location file="include/MaaFramework/MaaDef.h" line="228" column="9" bodyfile="include/MaaFramework/MaaDef.h" bodystart="228" bodyend="-1"/>
       </memberdef>
       <memberdef kind="typedef" id="MaaDef_8h_1a585ec65a9f845b2922eda1d2fffa36b7" prot="public" static="no">
         <type><ref refid="MaaDef_8h_1a2f7289f2a8e07f48c6261b52a120cdf6" kindref="member">MaaBool</ref>(<ref refid="MaaPort_8h_1afaf570464c85866c04fabe324fe35c18" kindref="member">MAA_CALL</ref> *</type>
@@ -1210,7 +1210,7 @@ value: bool, eg: true; val_size: sizeof(bool)
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="include/MaaFramework/MaaDef.h" line="237" column="9" bodyfile="include/MaaFramework/MaaDef.h" bodystart="237" bodyend="-1"/>
+        <location file="include/MaaFramework/MaaDef.h" line="240" column="9" bodyfile="include/MaaFramework/MaaDef.h" bodystart="240" bodyend="-1"/>
       </memberdef>
     </sectiondef>
     <briefdescription>

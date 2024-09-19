@@ -229,7 +229,7 @@
       </memberdef>
     </sectiondef>
     <briefdescription>
-<para>Context is a context for running tasks, recognizers, actions, and other operations. </para>
+<para>Context is a context for running tasks, recognitions, actions, and other operations. </para>
     </briefdescription>
     <detaileddescription>
 <para><simplesect kind="author"><para></para>

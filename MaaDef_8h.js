@@ -61,14 +61,14 @@ var MaaDef_8h =
     [ "MaaWin32InputMethod", "MaaDef_8h.html#a29af4457ff72b57b157a1d58d6d28878", null ],
     [ "MaaDbgControllerType", "MaaDef_8h.html#a7a7491d55c50840ccb1891ba9b7740c4", null ],
     [ "MaaRect", "MaaDef_8h.html#a90ae9b4896224481bd0967903dafdfa1", null ],
-    [ "MaaNotificationCallback", "MaaDef_8h.html#aa8191105b665bc8c02f0a78cebac71cd", null ],
-    [ "MaaCustomRecognizerCallback", "MaaDef_8h.html#ac89f1cfb384be414659f79f14061e4ad", null ],
+    [ "MaaNotificationCallback", "MaaDef_8h.html#a83fe073ae3fefc09c17fd9eb6b6b3e50", null ],
+    [ "MaaCustomRecognitionCallback", "MaaDef_8h.html#a4c72d5184d2333b6deaabd76f2e4db13", null ],
     [ "MaaCustomActionCallback", "MaaDef_8h.html#a585ec65a9f845b2922eda1d2fffa36b7", null ],
     [ "MaaStatusEnum", "MaaDef_8h.html#a92a321c9e89a79ab64dc5176057d76a6", [
       [ "MaaStatus_Invalid", "MaaDef_8h.html#a92a321c9e89a79ab64dc5176057d76a6a062c9b1508f38dba096aa2587ba08d40", null ],
       [ "MaaStatus_Pending", "MaaDef_8h.html#a92a321c9e89a79ab64dc5176057d76a6ad675ca7fe058998743ec8d99c72a914e", null ],
       [ "MaaStatus_Running", "MaaDef_8h.html#a92a321c9e89a79ab64dc5176057d76a6a05c689d4235e1214eab9abaf7cd6809b", null ],
-      [ "MaaStatus_Success", "MaaDef_8h.html#a92a321c9e89a79ab64dc5176057d76a6a26dc49974c883868a557aa9d7a5d23ee", null ],
+      [ "MaaStatus_Succeeded", "MaaDef_8h.html#a92a321c9e89a79ab64dc5176057d76a6a48d0596abd16c119daeb236a735515d8", null ],
       [ "MaaStatus_Failed", "MaaDef_8h.html#a92a321c9e89a79ab64dc5176057d76a6a341c204f14050eb7dc068032ee9eaf63", null ]
     ] ],
     [ "MaaLoggingLevelEnum", "MaaDef_8h.html#a81060ab7b5fa44bfe6861f3882dec9a9", [
@@ -88,7 +88,7 @@ var MaaDef_8h =
       [ "MaaGlobalOption_Recording", "MaaDef_8h.html#ad09e62ec1fd03dadaf5fb009026c38eeaf316c8e11fd054dfe965b904e3ce93b4", null ],
       [ "MaaGlobalOption_StdoutLevel", "MaaDef_8h.html#ad09e62ec1fd03dadaf5fb009026c38eea58ba5999f483b497af3eac6d327d53e6", null ],
       [ "MaaGlobalOption_ShowHitDraw", "MaaDef_8h.html#ad09e62ec1fd03dadaf5fb009026c38eea1a175dc6811ec0aedb23b87b98d68b40", null ],
-      [ "MaaGlobalOption_DebugMessage", "MaaDef_8h.html#ad09e62ec1fd03dadaf5fb009026c38eeabaaef37576e263fdd0c1148de4d338dc", null ]
+      [ "MaaGlobalOption_DebugMode", "MaaDef_8h.html#ad09e62ec1fd03dadaf5fb009026c38eea85acfc5fc6cdca745d0eb2a090c05c5f", null ]
     ] ],
     [ "MaaResOptionEnum", "MaaDef_8h.html#a9aa211dbcabe90cacd0c94ea6a03d116", [
       [ "MaaResOption_Invalid", "MaaDef_8h.html#a9aa211dbcabe90cacd0c94ea6a03d116afdc31dbaaa6b035f11b40cd574165f8e", null ]

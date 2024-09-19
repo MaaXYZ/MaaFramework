@@ -34,10 +34,10 @@
   </compound>
   <compound refid="MaaController_8h" kind="file"><name>MaaController.h</name>
     <member refid="MaaController_8h_1a22203468df2e11d45892a524d48404a4" kind="typedef"><name>MaaCustomControllerCallbacks</name></member>
-    <member refid="MaaController_8h_1a7e54ebbb5215362bcdfbcc74748aaa0f" kind="function"><name>MaaAdbControllerCreate</name></member>
-    <member refid="MaaController_8h_1a3dcbf450b265456d81fdef206f6c661a" kind="function"><name>MaaWin32ControllerCreate</name></member>
-    <member refid="MaaController_8h_1a42b27ad97c7038a84fdade74627815ba" kind="function"><name>MaaCustomControllerCreate</name></member>
-    <member refid="MaaController_8h_1a75a64cece9c63356a2214e40d7c324fc" kind="function"><name>MaaDbgControllerCreate</name></member>
+    <member refid="MaaController_8h_1a75bf05e524a4f086053e17554eb58d9e" kind="function"><name>MaaAdbControllerCreate</name></member>
+    <member refid="MaaController_8h_1a9a76a72f540f0bec888228dca7b88a12" kind="function"><name>MaaWin32ControllerCreate</name></member>
+    <member refid="MaaController_8h_1ae9506f63397ad53296fb8dfd3f0dbef4" kind="function"><name>MaaCustomControllerCreate</name></member>
+    <member refid="MaaController_8h_1a4089d1020a79a680c013b3be0eb88450" kind="function"><name>MaaDbgControllerCreate</name></member>
     <member refid="MaaController_8h_1a497982481bf79e89bc457d8a6e5e7bed" kind="function"><name>MaaControllerDestroy</name></member>
     <member refid="MaaController_8h_1ac0247a25f33dfbc7bd3a0183a669aad3" kind="function"><name>MaaControllerSetOption</name></member>
     <member refid="MaaController_8h_1a08f41be1ab0845f494ad7357adac0336" kind="function"><name>MaaControllerPostConnection</name></member>
@@ -60,11 +60,11 @@
   <compound refid="MaaCustomController_8h" kind="file"><name>MaaCustomController.h</name>
   </compound>
   <compound refid="MaaResource_8h" kind="file"><name>MaaResource.h</name>
-    <member refid="MaaResource_8h_1ad631e81a932a93a8776c5100ca3bf16b" kind="function"><name>MaaResourceCreate</name></member>
+    <member refid="MaaResource_8h_1ab4ceccc16012049fe2ea822ff543fedb" kind="function"><name>MaaResourceCreate</name></member>
     <member refid="MaaResource_8h_1a2c9731b5a32da11f25ae57ea8ce5373e" kind="function"><name>MaaResourceDestroy</name></member>
-    <member refid="MaaResource_8h_1ac0f76bfaf2b0e398b7a90bd743c80d8b" kind="function"><name>MaaResourceRegisterCustomRecognizer</name></member>
-    <member refid="MaaResource_8h_1ab4ee4ca2d2f379312a8cbacf98ee72a3" kind="function"><name>MaaResourceUnregisterCustomRecognizer</name></member>
-    <member refid="MaaResource_8h_1aac3c7d4cd5f48d9849dcf64cf260746b" kind="function"><name>MaaResourceClearCustomRecognizer</name></member>
+    <member refid="MaaResource_8h_1ae38c53cb841ae50276792ac1abe3f810" kind="function"><name>MaaResourceRegisterCustomRecognition</name></member>
+    <member refid="MaaResource_8h_1a686b581740db7d280be58316abe59267" kind="function"><name>MaaResourceUnregisterCustomRecognition</name></member>
+    <member refid="MaaResource_8h_1a29d01b1290d07ef263e29b80c3b6d843" kind="function"><name>MaaResourceClearCustomRecognition</name></member>
     <member refid="MaaResource_8h_1acafee77689486849e4c9bd501aa361bc" kind="function"><name>MaaResourceRegisterCustomAction</name></member>
     <member refid="MaaResource_8h_1acc69c217aaf4e775e5be1ff436a5e6da" kind="function"><name>MaaResourceUnregisterCustomAction</name></member>
     <member refid="MaaResource_8h_1ad3c7ba0220c6da7172032b74af86e89c" kind="function"><name>MaaResourceClearCustomAction</name></member>
@@ -78,7 +78,7 @@
     <member refid="MaaResource_8h_1a232fccdcc6984a4859a9e98089b8b067" kind="function"><name>MaaResourceGetTaskList</name></member>
   </compound>
   <compound refid="MaaTasker_8h" kind="file"><name>MaaTasker.h</name>
-    <member refid="MaaTasker_8h_1a2da048f8cfca1722b06d5708f2c895b9" kind="function"><name>MaaTaskerCreate</name></member>
+    <member refid="MaaTasker_8h_1a1be38fb8f5e4b9e8240d5847c1f558ac" kind="function"><name>MaaTaskerCreate</name></member>
     <member refid="MaaTasker_8h_1abefa8dae5713c3393833d8644f2435a8" kind="function"><name>MaaTaskerDestroy</name></member>
     <member refid="MaaTasker_8h_1a08e81fb30421633ca6300d7c98056f03" kind="function"><name>MaaTaskerSetOption</name></member>
     <member refid="MaaTasker_8h_1ac4e288dec1904fba61b65655c4317e79" kind="function"><name>MaaTaskerBindResource</name></member>
@@ -93,7 +93,7 @@
     <member refid="MaaTasker_8h_1a077181e4d90b12a219ff49d092700a86" kind="function"><name>MaaTaskerGetController</name></member>
     <member refid="MaaTasker_8h_1aea0f684a6987fc963254f68870537925" kind="function"><name>MaaTaskerClearCache</name></member>
     <member refid="MaaTasker_8h_1a89a9b121c2fd4a9f6b745f206de4adbb" kind="function"><name>MaaTaskerGetRecognitionDetail</name></member>
-    <member refid="MaaTasker_8h_1aea6957df7f59c2f3a4e11669e86ded12" kind="function"><name>MaaTaskerGetNodeDetail</name></member>
+    <member refid="MaaTasker_8h_1a767801d2f0bcbd5400c911745b01ae98" kind="function"><name>MaaTaskerGetNodeDetail</name></member>
     <member refid="MaaTasker_8h_1a1b9f9689efa4a72ddf4d327df11dd5de" kind="function"><name>MaaTaskerGetTaskDetail</name></member>
     <member refid="MaaTasker_8h_1aa9167993f8c024be00615a23db3d78ec" kind="function"><name>MaaTaskerGetLatestNode</name></member>
   </compound>
@@ -133,7 +133,7 @@
     <member refid="MaaDef_8h_1a92a321c9e89a79ab64dc5176057d76a6a062c9b1508f38dba096aa2587ba08d40" kind="enumvalue"><name>MaaStatus_Invalid</name></member>
     <member refid="MaaDef_8h_1a92a321c9e89a79ab64dc5176057d76a6ad675ca7fe058998743ec8d99c72a914e" kind="enumvalue"><name>MaaStatus_Pending</name></member>
     <member refid="MaaDef_8h_1a92a321c9e89a79ab64dc5176057d76a6a05c689d4235e1214eab9abaf7cd6809b" kind="enumvalue"><name>MaaStatus_Running</name></member>
-    <member refid="MaaDef_8h_1a92a321c9e89a79ab64dc5176057d76a6a26dc49974c883868a557aa9d7a5d23ee" kind="enumvalue"><name>MaaStatus_Success</name></member>
+    <member refid="MaaDef_8h_1a92a321c9e89a79ab64dc5176057d76a6a48d0596abd16c119daeb236a735515d8" kind="enumvalue"><name>MaaStatus_Succeeded</name></member>
     <member refid="MaaDef_8h_1a92a321c9e89a79ab64dc5176057d76a6a341c204f14050eb7dc068032ee9eaf63" kind="enumvalue"><name>MaaStatus_Failed</name></member>
     <member refid="MaaDef_8h_1a81060ab7b5fa44bfe6861f3882dec9a9" kind="enum"><name>MaaLoggingLevelEnum</name></member>
     <member refid="MaaDef_8h_1a81060ab7b5fa44bfe6861f3882dec9a9a886d0c4c0b743640330ce103ef377f96" kind="enumvalue"><name>MaaLoggingLevel_Off</name></member>
@@ -151,7 +151,7 @@
     <member refid="MaaDef_8h_1ad09e62ec1fd03dadaf5fb009026c38eeaf316c8e11fd054dfe965b904e3ce93b4" kind="enumvalue"><name>MaaGlobalOption_Recording</name></member>
     <member refid="MaaDef_8h_1ad09e62ec1fd03dadaf5fb009026c38eea58ba5999f483b497af3eac6d327d53e6" kind="enumvalue"><name>MaaGlobalOption_StdoutLevel</name></member>
     <member refid="MaaDef_8h_1ad09e62ec1fd03dadaf5fb009026c38eea1a175dc6811ec0aedb23b87b98d68b40" kind="enumvalue"><name>MaaGlobalOption_ShowHitDraw</name></member>
-    <member refid="MaaDef_8h_1ad09e62ec1fd03dadaf5fb009026c38eeabaaef37576e263fdd0c1148de4d338dc" kind="enumvalue"><name>MaaGlobalOption_DebugMessage</name></member>
+    <member refid="MaaDef_8h_1ad09e62ec1fd03dadaf5fb009026c38eea85acfc5fc6cdca745d0eb2a090c05c5f" kind="enumvalue"><name>MaaGlobalOption_DebugMode</name></member>
     <member refid="MaaDef_8h_1a9aa211dbcabe90cacd0c94ea6a03d116" kind="enum"><name>MaaResOptionEnum</name></member>
     <member refid="MaaDef_8h_1a9aa211dbcabe90cacd0c94ea6a03d116afdc31dbaaa6b035f11b40cd574165f8e" kind="enumvalue"><name>MaaResOption_Invalid</name></member>
     <member refid="MaaDef_8h_1ac9daa36008267a26662244d2f5570003" kind="enum"><name>MaaCtrlOptionEnum</name></member>
@@ -192,37 +192,29 @@
     <member refid="MaaDef_8h_1a29af4457ff72b57b157a1d58d6d28878" kind="typedef"><name>MaaWin32InputMethod</name></member>
     <member refid="MaaDef_8h_1a7a7491d55c50840ccb1891ba9b7740c4" kind="typedef"><name>MaaDbgControllerType</name></member>
     <member refid="MaaDef_8h_1a90ae9b4896224481bd0967903dafdfa1" kind="typedef"><name>MaaRect</name></member>
-    <member refid="MaaDef_8h_1aa8191105b665bc8c02f0a78cebac71cd" kind="typedef"><name>MaaNotificationCallback</name></member>
-    <member refid="MaaDef_8h_1ac89f1cfb384be414659f79f14061e4ad" kind="typedef"><name>MaaCustomRecognizerCallback</name></member>
+    <member refid="MaaDef_8h_1a83fe073ae3fefc09c17fd9eb6b6b3e50" kind="typedef"><name>MaaNotificationCallback</name></member>
+    <member refid="MaaDef_8h_1a4c72d5184d2333b6deaabd76f2e4db13" kind="typedef"><name>MaaCustomRecognitionCallback</name></member>
     <member refid="MaaDef_8h_1a585ec65a9f845b2922eda1d2fffa36b7" kind="typedef"><name>MaaCustomActionCallback</name></member>
   </compound>
   <compound refid="MaaMsg_8h" kind="file"><name>MaaMsg.h</name>
-    <member refid="group__MaaMsg_1gaa3024bb9d66c5a503e159d2643c5c239" kind="define"><name>MaaMsg_Resource_StartLoading</name></member>
-    <member refid="group__MaaMsg_1gac6b2c3f9dd644935fc4aa38acc60ea77" kind="define"><name>MaaMsg_Resource_LoadingCompleted</name></member>
-    <member refid="group__MaaMsg_1ga1140626bc678a6a5fc91f3b6ba706579" kind="define"><name>MaaMsg_Resource_LoadingFailed</name></member>
-    <member refid="group__MaaMsg_1ga0c514e87109f97a5e3419340788d2176" kind="define"><name>MaaMsg_Controller_Action_Started</name></member>
-    <member refid="group__MaaMsg_1ga2c85f0e2bf5a165fa70b830a84dbd841" kind="define"><name>MaaMsg_Controller_Action_Completed</name></member>
-    <member refid="group__MaaMsg_1gad2393417af43fa2fcbed8e6683f78c02" kind="define"><name>MaaMsg_Controller_Action_Failed</name></member>
-    <member refid="group__MaaMsg_1gab762c1e9250346d64325da9396064ee1" kind="define"><name>MaaMsg_Tasker_Task_Started</name></member>
-    <member refid="group__MaaMsg_1gadfd24dc575e1e4fda1ef28229b1eb930" kind="define"><name>MaaMsg_Tasker_Task_Completed</name></member>
-    <member refid="group__MaaMsg_1ga68a45b9c98c9dc65e38bd7834819ae1b" kind="define"><name>MaaMsg_Tasker_Task_Failed</name></member>
-    <member refid="group__MaaMsg_1gaf15fc35715ddc0b94fe62ece5b1d8094" kind="define"><name>MaaMsg_Task_Debug_RecognitionResult</name></member>
-    <member refid="group__MaaMsg_1ga6524978f0790bfb73c7d8ed4490f8c87" kind="define"><name>MaaMsg_Task_Debug_Hit</name></member>
-    <member refid="group__MaaMsg_1ga5fae13764cd64d02e50e2ea21c08db05" kind="define"><name>MaaMsg_Task_Focus_ReadyToRun</name></member>
-    <member refid="group__MaaMsg_1ga23a6ec2e8b32bff7931851e99d43a5d1" kind="define"><name>MaaMsg_Task_Focus_Completed</name></member>
-    <member refid="group__MaaMsg_1gaa0762d87ae7d2c3a96b618554e0f71ad" kind="define"><name>MaaMsg_Task_Debug_ReadyToRun</name></member>
-    <member refid="group__MaaMsg_1ga8ac3f166c3470926524cd491a1986e4d" kind="define"><name>MaaMsg_Task_Debug_Completed</name></member>
-    <member refid="group__MaaMsg_1ga03f726d7fbc29adee70c1e201d203767" kind="define"><name>MaaMsg_Task_Debug_ListToRecognize</name></member>
-    <member refid="group__MaaMsg_1gab62f9c5f30afac3f1092db934ab1d67b" kind="define"><name>MaaMsg_Task_Debug_MissAll</name></member>
-    <member refid="group__MaaMsg_1gaed3d012e9cc31b8d7f450f8175cdad43" kind="define"><name>MaaMsg_Invalid</name></member>
-    <member refid="group__MaaMsg_1ga816b5be7864e915f14d52e5730ce3901" kind="define"><name>MaaMsg_Controller_UUIDGot</name></member>
-    <member refid="group__MaaMsg_1gaa6e6c84ca8a10f010b3bc00685b9f65a" kind="define"><name>MaaMsg_Controller_UUIDGetFailed</name></member>
-    <member refid="group__MaaMsg_1ga13f35537edab8c7cdfbd30f89100fd72" kind="define"><name>MaaMsg_Controller_ScreencapInited</name></member>
-    <member refid="group__MaaMsg_1gaff77df77108f9288a3613cd9bc27df80" kind="define"><name>MaaMsg_Controller_ScreencapInitFailed</name></member>
-    <member refid="group__MaaMsg_1gabad09efa85edf10f06e018fa9c1cbe69" kind="define"><name>MaaMsg_Controller_InputInited</name></member>
-    <member refid="group__MaaMsg_1gae3f5f9936b0a35af1294bf7d637b796f" kind="define"><name>MaaMsg_Controller_InputInitFailed</name></member>
-    <member refid="group__MaaMsg_1ga3775d535b7a962c9d3d62c6cbd2bc28e" kind="define"><name>MaaMsg_Controller_ConnectSuccess</name></member>
-    <member refid="group__MaaMsg_1gafb3e44dd89a9d772083767296f9039ae" kind="define"><name>MaaMsg_Controller_ConnectFailed</name></member>
+    <member refid="MaaMsg_8h_1a2e10e3626dabfd30e7314574fdc1340d" kind="define"><name>MaaMsg_Controller_Action_Starting</name></member>
+    <member refid="MaaMsg_8h_1a334d8ef8636bbf2a5ea1f20e851b603d" kind="define"><name>MaaMsg_Controller_Action_Succeeded</name></member>
+    <member refid="MaaMsg_8h_1ad2393417af43fa2fcbed8e6683f78c02" kind="define"><name>MaaMsg_Controller_Action_Failed</name></member>
+    <member refid="MaaMsg_8h_1a8f34fcba37dddf0f26c3fa22b2c70ab4" kind="define"><name>MaaMsg_Tasker_Task_Starting</name></member>
+    <member refid="MaaMsg_8h_1ae3c9293ecd4737cd86ce9be28e376f3b" kind="define"><name>MaaMsg_Tasker_Task_Succeeded</name></member>
+    <member refid="MaaMsg_8h_1a68a45b9c98c9dc65e38bd7834819ae1b" kind="define"><name>MaaMsg_Tasker_Task_Failed</name></member>
+    <member refid="MaaMsg_8h_1a19fe82e4dbd21c0846a6c90785af25ff" kind="define"><name>MaaMsg_Task_NextList_Starting</name></member>
+    <member refid="MaaMsg_8h_1a201e906f003ee9a3d72734b595016aad" kind="define"><name>MaaMsg_Task_NextList_Succeeded</name></member>
+    <member refid="MaaMsg_8h_1ac19deb0e3a000de2e314aa4fd93a21d1" kind="define"><name>MaaMsg_Task_NextList_Failed</name></member>
+    <member refid="MaaMsg_8h_1a56a635367db79f9a1db9c4f76d445622" kind="define"><name>MaaMsg_Task_Recognition_Starting</name></member>
+    <member refid="MaaMsg_8h_1a4aabe1da138d5dc69467e061ac3ae598" kind="define"><name>MaaMsg_Task_Recognition_Succeeded</name></member>
+    <member refid="MaaMsg_8h_1a74fba3b5d954a2e7c278dbbe3e0bdd5d" kind="define"><name>MaaMsg_Task_Recognition_Failed</name></member>
+    <member refid="MaaMsg_8h_1a8a54a5f2ed62f82ca4413003616e7a75" kind="define"><name>MaaMsg_Task_Action_Starting</name></member>
+    <member refid="MaaMsg_8h_1a7e02595cd9348b57da605cde3b7ab465" kind="define"><name>MaaMsg_Task_Action_Succeeded</name></member>
+    <member refid="MaaMsg_8h_1adb35730576c41a05d2f94c88f54fb6e2" kind="define"><name>MaaMsg_Task_Action_Failed</name></member>
+    <member refid="MaaMsg_8h_1a7297c67f0f81b33f8811e1405a24a437" kind="define"><name>MaaMsg_Resource_Loading_Starting</name></member>
+    <member refid="MaaMsg_8h_1a46e053d230031807feaed18e628782da" kind="define"><name>MaaMsg_Resource_Loading_Succeeded</name></member>
+    <member refid="MaaMsg_8h_1a8bc7eb7f0da6c492bb9fc494d94cb11f" kind="define"><name>MaaMsg_Resource_Loading_Failed</name></member>
   </compound>
   <compound refid="MaaPort_8h" kind="file"><name>MaaPort.h</name>
     <member refid="MaaPort_8h_1afaf570464c85866c04fabe324fe35c18" kind="define"><name>MAA_CALL</name></member>
@@ -323,37 +315,9 @@
     <member refid="MaaToolkitDef_8h_1aaf164274a2c0089edb67f33e26719ff0" kind="typedef"><name>MaaToolkitDesktopWindowList</name></member>
   </compound>
   <compound refid="MaaToolkitProjectInterface_8h" kind="file"><name>MaaToolkitProjectInterface.h</name>
-    <member refid="MaaToolkitProjectInterface_8h_1a8dcb2e3c7af4a4c1a999a90488be6a9f" kind="function"><name>MaaToolkitProjectInterfaceRegisterCustomRecognition</name></member>
+    <member refid="MaaToolkitProjectInterface_8h_1a15874efc8d0792307bef96f846b22063" kind="function"><name>MaaToolkitProjectInterfaceRegisterCustomRecognition</name></member>
     <member refid="MaaToolkitProjectInterface_8h_1ae82e9ab49b3d6fa22c3d10bf074c1180" kind="function"><name>MaaToolkitProjectInterfaceRegisterCustomAction</name></member>
-    <member refid="MaaToolkitProjectInterface_8h_1a5e8a8dccce6e6fee33439e0220f9b691" kind="function"><name>MaaToolkitProjectInterfaceRunCli</name></member>
-  </compound>
-  <compound refid="group__MaaMsg" kind="group"><name>MaaMsg</name>
-    <member refid="group__MaaMsg_1gaa3024bb9d66c5a503e159d2643c5c239" kind="define"><name>MaaMsg_Resource_StartLoading</name></member>
-    <member refid="group__MaaMsg_1gac6b2c3f9dd644935fc4aa38acc60ea77" kind="define"><name>MaaMsg_Resource_LoadingCompleted</name></member>
-    <member refid="group__MaaMsg_1ga1140626bc678a6a5fc91f3b6ba706579" kind="define"><name>MaaMsg_Resource_LoadingFailed</name></member>
-    <member refid="group__MaaMsg_1ga0c514e87109f97a5e3419340788d2176" kind="define"><name>MaaMsg_Controller_Action_Started</name></member>
-    <member refid="group__MaaMsg_1ga2c85f0e2bf5a165fa70b830a84dbd841" kind="define"><name>MaaMsg_Controller_Action_Completed</name></member>
-    <member refid="group__MaaMsg_1gad2393417af43fa2fcbed8e6683f78c02" kind="define"><name>MaaMsg_Controller_Action_Failed</name></member>
-    <member refid="group__MaaMsg_1gab762c1e9250346d64325da9396064ee1" kind="define"><name>MaaMsg_Tasker_Task_Started</name></member>
-    <member refid="group__MaaMsg_1gadfd24dc575e1e4fda1ef28229b1eb930" kind="define"><name>MaaMsg_Tasker_Task_Completed</name></member>
-    <member refid="group__MaaMsg_1ga68a45b9c98c9dc65e38bd7834819ae1b" kind="define"><name>MaaMsg_Tasker_Task_Failed</name></member>
-    <member refid="group__MaaMsg_1gaf15fc35715ddc0b94fe62ece5b1d8094" kind="define"><name>MaaMsg_Task_Debug_RecognitionResult</name></member>
-    <member refid="group__MaaMsg_1ga6524978f0790bfb73c7d8ed4490f8c87" kind="define"><name>MaaMsg_Task_Debug_Hit</name></member>
-    <member refid="group__MaaMsg_1ga5fae13764cd64d02e50e2ea21c08db05" kind="define"><name>MaaMsg_Task_Focus_ReadyToRun</name></member>
-    <member refid="group__MaaMsg_1ga23a6ec2e8b32bff7931851e99d43a5d1" kind="define"><name>MaaMsg_Task_Focus_Completed</name></member>
-    <member refid="group__MaaMsg_1gaa0762d87ae7d2c3a96b618554e0f71ad" kind="define"><name>MaaMsg_Task_Debug_ReadyToRun</name></member>
-    <member refid="group__MaaMsg_1ga8ac3f166c3470926524cd491a1986e4d" kind="define"><name>MaaMsg_Task_Debug_Completed</name></member>
-    <member refid="group__MaaMsg_1ga03f726d7fbc29adee70c1e201d203767" kind="define"><name>MaaMsg_Task_Debug_ListToRecognize</name></member>
-    <member refid="group__MaaMsg_1gab62f9c5f30afac3f1092db934ab1d67b" kind="define"><name>MaaMsg_Task_Debug_MissAll</name></member>
-    <member refid="group__MaaMsg_1gaed3d012e9cc31b8d7f450f8175cdad43" kind="define"><name>MaaMsg_Invalid</name></member>
-    <member refid="group__MaaMsg_1ga816b5be7864e915f14d52e5730ce3901" kind="define"><name>MaaMsg_Controller_UUIDGot</name></member>
-    <member refid="group__MaaMsg_1gaa6e6c84ca8a10f010b3bc00685b9f65a" kind="define"><name>MaaMsg_Controller_UUIDGetFailed</name></member>
-    <member refid="group__MaaMsg_1ga13f35537edab8c7cdfbd30f89100fd72" kind="define"><name>MaaMsg_Controller_ScreencapInited</name></member>
-    <member refid="group__MaaMsg_1gaff77df77108f9288a3613cd9bc27df80" kind="define"><name>MaaMsg_Controller_ScreencapInitFailed</name></member>
-    <member refid="group__MaaMsg_1gabad09efa85edf10f06e018fa9c1cbe69" kind="define"><name>MaaMsg_Controller_InputInited</name></member>
-    <member refid="group__MaaMsg_1gae3f5f9936b0a35af1294bf7d637b796f" kind="define"><name>MaaMsg_Controller_InputInitFailed</name></member>
-    <member refid="group__MaaMsg_1ga3775d535b7a962c9d3d62c6cbd2bc28e" kind="define"><name>MaaMsg_Controller_ConnectSuccess</name></member>
-    <member refid="group__MaaMsg_1gafb3e44dd89a9d772083767296f9039ae" kind="define"><name>MaaMsg_Controller_ConnectFailed</name></member>
+    <member refid="MaaToolkitProjectInterface_8h_1a5c739cd4c579c77cbc50ae54e6364619" kind="function"><name>MaaToolkitProjectInterfaceRunCli</name></member>
   </compound>
   <compound refid="dir_3f6e8cd112d1e824096c35d6249bbf1f" kind="dir"><name>include/MaaToolkit/AdbDevice</name>
   </compound>

@@ -1,4 +1,5 @@
 var searchData=
 [
-  ['press_5fkey_0',['press_key',['../structMaaCustomControllerCallbacks.html#a2585bc805ceb3531821bc9f9c4e35cf5',1,'MaaCustomControllerCallbacks']]]
+  ['reference_0',['MaaFramework API Reference',['../index.html',1,'']]],
+  ['request_5fuuid_1',['request_uuid',['../structMaaCustomControllerCallbacks.html#af0a00cdd379be8608bf360acfdfde4ea',1,'MaaCustomControllerCallbacks']]]
 ];

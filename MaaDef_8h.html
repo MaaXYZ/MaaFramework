@@ -26,7 +26,7 @@
  <tbody>
  <tr id="projectrow">
   <td id="projectalign">
-   <div id="projectname">Maa Framework<span id="projectnumber">&#160;(main) v2.0.0-beta.1</span>
+   <div id="projectname">Maa Framework<span id="projectnumber">&#160;(main) v2.0.0-beta.2</span>
    </div>
    <div id="projectbrief">A automation black-box testing framework based on image recognition.</div>
   </td>
@@ -237,10 +237,10 @@ Typedefs</h2></td></tr>
 <tr class="separator:a7a7491d55c50840ccb1891ba9b7740c4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a90ae9b4896224481bd0967903dafdfa1" id="r_a90ae9b4896224481bd0967903dafdfa1"><td class="memItemLeft" align="right" valign="top">typedef struct <a class="el" href="structMaaRect.html">MaaRect</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="MaaDef_8h.html#a90ae9b4896224481bd0967903dafdfa1">MaaRect</a></td></tr>
 <tr class="separator:a90ae9b4896224481bd0967903dafdfa1"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa8191105b665bc8c02f0a78cebac71cd" id="r_aa8191105b665bc8c02f0a78cebac71cd"><td class="memItemLeft" align="right" valign="top">typedef void(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="MaaDef_8h.html#aa8191105b665bc8c02f0a78cebac71cd">MaaNotificationCallback</a>) (const char *message, const char *details_json, void *callback_arg)</td></tr>
-<tr class="separator:aa8191105b665bc8c02f0a78cebac71cd"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac89f1cfb384be414659f79f14061e4ad" id="r_ac89f1cfb384be414659f79f14061e4ad"><td class="memItemLeft" align="right" valign="top">typedef <a class="el" href="MaaDef_8h.html#a2f7289f2a8e07f48c6261b52a120cdf6">MaaBool</a>(<a class="el" href="MaaPort_8h.html#afaf570464c85866c04fabe324fe35c18">MAA_CALL</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="MaaDef_8h.html#ac89f1cfb384be414659f79f14061e4ad">MaaCustomRecognizerCallback</a>) (<a class="el" href="MaaDef_8h.html#ad2101e87aad0f5d03b8136943daee40e">MaaContext</a> *context, <a class="el" href="MaaDef_8h.html#a711b3db9be6db60ae4cb09e3629e42f0">MaaTaskId</a> task_id, const char *current_task_name, const char *custom_recognition_name, const char *custom_recognition_param, const <a class="el" href="MaaDef_8h.html#a0a52c8503deca448e71a407cdb14d259">MaaImageBuffer</a> *image, const <a class="el" href="structMaaRect.html">MaaRect</a> *roi, void *trans_arg, <a class="el" href="structMaaRect.html">MaaRect</a> *out_box, <a class="el" href="MaaDef_8h.html#a4010bb63df489fc09efb6ba9a1fc1c98">MaaStringBuffer</a> *out_detail)</td></tr>
-<tr class="separator:ac89f1cfb384be414659f79f14061e4ad"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a83fe073ae3fefc09c17fd9eb6b6b3e50" id="r_a83fe073ae3fefc09c17fd9eb6b6b3e50"><td class="memItemLeft" align="right" valign="top">typedef void(<a class="el" href="MaaPort_8h.html#afaf570464c85866c04fabe324fe35c18">MAA_CALL</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="MaaDef_8h.html#a83fe073ae3fefc09c17fd9eb6b6b3e50">MaaNotificationCallback</a>) (const char *message, const char *details_json, void *notify_trans_arg)</td></tr>
+<tr class="separator:a83fe073ae3fefc09c17fd9eb6b6b3e50"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4c72d5184d2333b6deaabd76f2e4db13" id="r_a4c72d5184d2333b6deaabd76f2e4db13"><td class="memItemLeft" align="right" valign="top">typedef <a class="el" href="MaaDef_8h.html#a2f7289f2a8e07f48c6261b52a120cdf6">MaaBool</a>(<a class="el" href="MaaPort_8h.html#afaf570464c85866c04fabe324fe35c18">MAA_CALL</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="MaaDef_8h.html#a4c72d5184d2333b6deaabd76f2e4db13">MaaCustomRecognitionCallback</a>) (<a class="el" href="MaaDef_8h.html#ad2101e87aad0f5d03b8136943daee40e">MaaContext</a> *context, <a class="el" href="MaaDef_8h.html#a711b3db9be6db60ae4cb09e3629e42f0">MaaTaskId</a> task_id, const char *current_task_name, const char *custom_recognition_name, const char *custom_recognition_param, const <a class="el" href="MaaDef_8h.html#a0a52c8503deca448e71a407cdb14d259">MaaImageBuffer</a> *image, const <a class="el" href="structMaaRect.html">MaaRect</a> *roi, void *trans_arg, <a class="el" href="structMaaRect.html">MaaRect</a> *out_box, <a class="el" href="MaaDef_8h.html#a4010bb63df489fc09efb6ba9a1fc1c98">MaaStringBuffer</a> *out_detail)</td></tr>
+<tr class="separator:a4c72d5184d2333b6deaabd76f2e4db13"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a585ec65a9f845b2922eda1d2fffa36b7" id="r_a585ec65a9f845b2922eda1d2fffa36b7"><td class="memItemLeft" align="right" valign="top">typedef <a class="el" href="MaaDef_8h.html#a2f7289f2a8e07f48c6261b52a120cdf6">MaaBool</a>(<a class="el" href="MaaPort_8h.html#afaf570464c85866c04fabe324fe35c18">MAA_CALL</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="MaaDef_8h.html#a585ec65a9f845b2922eda1d2fffa36b7">MaaCustomActionCallback</a>) (<a class="el" href="MaaDef_8h.html#ad2101e87aad0f5d03b8136943daee40e">MaaContext</a> *context, <a class="el" href="MaaDef_8h.html#a711b3db9be6db60ae4cb09e3629e42f0">MaaTaskId</a> task_id, const char *current_task_name, const char *custom_action_name, const char *custom_action_param, <a class="el" href="MaaDef_8h.html#a7519e6a8329a32c8e3058c20ec74cda8">MaaRecoId</a> reco_id, const <a class="el" href="structMaaRect.html">MaaRect</a> *box, void *trans_arg)</td></tr>
 <tr class="separator:a585ec65a9f845b2922eda1d2fffa36b7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
@@ -253,7 +253,7 @@ Enumerations</h2></td></tr>
 , <br />
 &#160;&#160;<a class="el" href="MaaDef_8h.html#a92a321c9e89a79ab64dc5176057d76a6a05c689d4235e1214eab9abaf7cd6809b">MaaStatus_Running</a> = 2000
 , <br />
-&#160;&#160;<a class="el" href="MaaDef_8h.html#a92a321c9e89a79ab64dc5176057d76a6a26dc49974c883868a557aa9d7a5d23ee">MaaStatus_Success</a> = 3000
+&#160;&#160;<a class="el" href="MaaDef_8h.html#a92a321c9e89a79ab64dc5176057d76a6a48d0596abd16c119daeb236a735515d8">MaaStatus_Succeeded</a> = 3000
 , <br />
 &#160;&#160;<a class="el" href="MaaDef_8h.html#a92a321c9e89a79ab64dc5176057d76a6a341c204f14050eb7dc068032ee9eaf63">MaaStatus_Failed</a> = 4000
 <br />
@@ -291,7 +291,7 @@ Enumerations</h2></td></tr>
 , <br />
 &#160;&#160;<a class="el" href="MaaDef_8h.html#ad09e62ec1fd03dadaf5fb009026c38eea1a175dc6811ec0aedb23b87b98d68b40">MaaGlobalOption_ShowHitDraw</a> = 5
 , <br />
-&#160;&#160;<a class="el" href="MaaDef_8h.html#ad09e62ec1fd03dadaf5fb009026c38eeabaaef37576e263fdd0c1148de4d338dc">MaaGlobalOption_DebugMessage</a> = 6
+&#160;&#160;<a class="el" href="MaaDef_8h.html#ad09e62ec1fd03dadaf5fb009026c38eea85acfc5fc6cdca745d0eb2a090c05c5f">MaaGlobalOption_DebugMode</a> = 6
 <br />
  }</td></tr>
 <tr class="separator:ad09e62ec1fd03dadaf5fb009026c38ee"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -1165,28 +1165,28 @@ Enumerations</h2></td></tr>
 
 </div>
 </div>
-<a id="aa8191105b665bc8c02f0a78cebac71cd" name="aa8191105b665bc8c02f0a78cebac71cd"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aa8191105b665bc8c02f0a78cebac71cd">&#9670;&#160;</a></span>MaaNotificationCallback</h2>
+<a id="a83fe073ae3fefc09c17fd9eb6b6b3e50" name="a83fe073ae3fefc09c17fd9eb6b6b3e50"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a83fe073ae3fefc09c17fd9eb6b6b3e50">&#9670;&#160;</a></span>MaaNotificationCallback</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">typedef void(* MaaNotificationCallback) (const char *message, const char *details_json, void *callback_arg)</td>
+          <td class="memname">typedef void(<a class="el" href="MaaPort_8h.html#afaf570464c85866c04fabe324fe35c18">MAA_CALL</a> * MaaNotificationCallback) (const char *message, const char *details_json, void *notify_trans_arg)</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
 </div>
 </div>
-<a id="ac89f1cfb384be414659f79f14061e4ad" name="ac89f1cfb384be414659f79f14061e4ad"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ac89f1cfb384be414659f79f14061e4ad">&#9670;&#160;</a></span>MaaCustomRecognizerCallback</h2>
+<a id="a4c72d5184d2333b6deaabd76f2e4db13" name="a4c72d5184d2333b6deaabd76f2e4db13"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4c72d5184d2333b6deaabd76f2e4db13">&#9670;&#160;</a></span>MaaCustomRecognitionCallback</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">typedef <a class="el" href="MaaDef_8h.html#a2f7289f2a8e07f48c6261b52a120cdf6">MaaBool</a>(<a class="el" href="MaaPort_8h.html#afaf570464c85866c04fabe324fe35c18">MAA_CALL</a> * MaaCustomRecognizerCallback) (<a class="el" href="MaaDef_8h.html#ad2101e87aad0f5d03b8136943daee40e">MaaContext</a> *context, <a class="el" href="MaaDef_8h.html#a711b3db9be6db60ae4cb09e3629e42f0">MaaTaskId</a> task_id, const char *current_task_name, const char *custom_recognition_name, const char *custom_recognition_param, const <a class="el" href="MaaDef_8h.html#a0a52c8503deca448e71a407cdb14d259">MaaImageBuffer</a> *image, const <a class="el" href="structMaaRect.html">MaaRect</a> *roi, void *trans_arg, <a class="el" href="structMaaRect.html">MaaRect</a> *out_box, <a class="el" href="MaaDef_8h.html#a4010bb63df489fc09efb6ba9a1fc1c98">MaaStringBuffer</a> *out_detail)</td>
+          <td class="memname">typedef <a class="el" href="MaaDef_8h.html#a2f7289f2a8e07f48c6261b52a120cdf6">MaaBool</a>(<a class="el" href="MaaPort_8h.html#afaf570464c85866c04fabe324fe35c18">MAA_CALL</a> * MaaCustomRecognitionCallback) (<a class="el" href="MaaDef_8h.html#ad2101e87aad0f5d03b8136943daee40e">MaaContext</a> *context, <a class="el" href="MaaDef_8h.html#a711b3db9be6db60ae4cb09e3629e42f0">MaaTaskId</a> task_id, const char *current_task_name, const char *custom_recognition_name, const char *custom_recognition_param, const <a class="el" href="MaaDef_8h.html#a0a52c8503deca448e71a407cdb14d259">MaaImageBuffer</a> *image, const <a class="el" href="structMaaRect.html">MaaRect</a> *roi, void *trans_arg, <a class="el" href="structMaaRect.html">MaaRect</a> *out_box, <a class="el" href="MaaDef_8h.html#a4010bb63df489fc09efb6ba9a1fc1c98">MaaStringBuffer</a> *out_detail)</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -1223,7 +1223,7 @@ Enumerations</h2></td></tr>
 <tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="a92a321c9e89a79ab64dc5176057d76a6a062c9b1508f38dba096aa2587ba08d40" name="a92a321c9e89a79ab64dc5176057d76a6a062c9b1508f38dba096aa2587ba08d40"></a>MaaStatus_Invalid&#160;</td><td class="fielddoc"></td></tr>
 <tr><td class="fieldname"><a id="a92a321c9e89a79ab64dc5176057d76a6ad675ca7fe058998743ec8d99c72a914e" name="a92a321c9e89a79ab64dc5176057d76a6ad675ca7fe058998743ec8d99c72a914e"></a>MaaStatus_Pending&#160;</td><td class="fielddoc"></td></tr>
 <tr><td class="fieldname"><a id="a92a321c9e89a79ab64dc5176057d76a6a05c689d4235e1214eab9abaf7cd6809b" name="a92a321c9e89a79ab64dc5176057d76a6a05c689d4235e1214eab9abaf7cd6809b"></a>MaaStatus_Running&#160;</td><td class="fielddoc"></td></tr>
-<tr><td class="fieldname"><a id="a92a321c9e89a79ab64dc5176057d76a6a26dc49974c883868a557aa9d7a5d23ee" name="a92a321c9e89a79ab64dc5176057d76a6a26dc49974c883868a557aa9d7a5d23ee"></a>MaaStatus_Success&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a92a321c9e89a79ab64dc5176057d76a6a48d0596abd16c119daeb236a735515d8" name="a92a321c9e89a79ab64dc5176057d76a6a48d0596abd16c119daeb236a735515d8"></a>MaaStatus_Succeeded&#160;</td><td class="fielddoc"></td></tr>
 <tr><td class="fieldname"><a id="a92a321c9e89a79ab64dc5176057d76a6a341c204f14050eb7dc068032ee9eaf63" name="a92a321c9e89a79ab64dc5176057d76a6a341c204f14050eb7dc068032ee9eaf63"></a>MaaStatus_Failed&#160;</td><td class="fielddoc"></td></tr>
 </table>
 
@@ -1278,7 +1278,7 @@ default value is MaaLoggingLevel_Error
 </pre> </td></tr>
 <tr><td class="fieldname"><a id="ad09e62ec1fd03dadaf5fb009026c38eea1a175dc6811ec0aedb23b87b98d68b40" name="ad09e62ec1fd03dadaf5fb009026c38eea1a175dc6811ec0aedb23b87b98d68b40"></a>MaaGlobalOption_ShowHitDraw&#160;</td><td class="fielddoc"><p>Whether to show hit draw </p><pre class="fragment">value: bool, eg: true; val_size: sizeof(bool) 
 </pre> </td></tr>
-<tr><td class="fieldname"><a id="ad09e62ec1fd03dadaf5fb009026c38eeabaaef37576e263fdd0c1148de4d338dc" name="ad09e62ec1fd03dadaf5fb009026c38eeabaaef37576e263fdd0c1148de4d338dc"></a>MaaGlobalOption_DebugMessage&#160;</td><td class="fielddoc"><p>Whether to callback debug message </p><pre class="fragment">value: bool, eg: true; val_size: sizeof(bool) 
+<tr><td class="fieldname"><a id="ad09e62ec1fd03dadaf5fb009026c38eea85acfc5fc6cdca745d0eb2a090c05c5f" name="ad09e62ec1fd03dadaf5fb009026c38eea85acfc5fc6cdca745d0eb2a090c05c5f"></a>MaaGlobalOption_DebugMode&#160;</td><td class="fielddoc"><p>Whether to debug </p><pre class="fragment">value: bool, eg: true; val_size: sizeof(bool) 
 </pre> </td></tr>
 </table>
 
@@ -1354,7 +1354,7 @@ value: bool, eg: true; val_size: sizeof(bool)
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="dir_d44c64559bbebec7f509842c48db8b23.html">include</a></li><li class="navelem"><a class="el" href="dir_370cd1367c21b1a87c5c9c6803b8d0b9.html">MaaFramework</a></li><li class="navelem"><a class="el" href="MaaDef_8h.html">MaaDef.h</a></li>
-    <li class="footer">Generated on Mon Sep 16 2024 for Maa Framework by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.8 </li>
+    <li class="footer">Generated on Thu Sep 19 2024 for Maa Framework by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.8 </li>
   </ul>
 </div>
 </body>

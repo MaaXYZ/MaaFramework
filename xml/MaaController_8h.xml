@@ -58,10 +58,10 @@
       </memberdef>
     </sectiondef>
     <sectiondef kind="func">
-      <memberdef kind="function" id="MaaController_8h_1a7e54ebbb5215362bcdfbcc74748aaa0f" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+      <memberdef kind="function" id="MaaController_8h_1a75bf05e524a4f086053e17554eb58d9e" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="MaaPort_8h_1a67006334d91d228121dbba7a8bf8fe05" kindref="member">MAA_FRAMEWORK_API</ref> <ref refid="MaaDef_8h_1aa6c9c6967753196880a2a7f778fbb706" kindref="member">MaaController</ref> *</type>
         <definition>MAA_FRAMEWORK_API MaaController * MaaAdbControllerCreate</definition>
-        <argsstring>(const char *adb_path, const char *address, MaaAdbScreencapMethod screencap_methods, MaaAdbInputMethod input_methods, const char *config, const char *agent_path, MaaNotificationCallback callback, void *callback_arg)</argsstring>
+        <argsstring>(const char *adb_path, const char *address, MaaAdbScreencapMethod screencap_methods, MaaAdbInputMethod input_methods, const char *config, const char *agent_path, MaaNotificationCallback notify, void *notify_trans_arg)</argsstring>
         <name>MaaAdbControllerCreate</name>
         <param>
           <type>const char *</type>
@@ -88,12 +88,12 @@
           <declname>agent_path</declname>
         </param>
         <param>
-          <type><ref refid="MaaDef_8h_1aa8191105b665bc8c02f0a78cebac71cd" kindref="member">MaaNotificationCallback</ref></type>
-          <declname>callback</declname>
+          <type><ref refid="MaaDef_8h_1a83fe073ae3fefc09c17fd9eb6b6b3e50" kindref="member">MaaNotificationCallback</ref></type>
+          <declname>notify</declname>
         </param>
         <param>
           <type>void *</type>
-          <declname>callback_arg</declname>
+          <declname>notify_trans_arg</declname>
         </param>
         <briefdescription>
         </briefdescription>
@@ -103,10 +103,10 @@
         </inbodydescription>
         <location file="include/MaaFramework/Instance/MaaController.h" line="24" column="37" declfile="include/MaaFramework/Instance/MaaController.h" declline="24" declcolumn="37"/>
       </memberdef>
-      <memberdef kind="function" id="MaaController_8h_1a3dcbf450b265456d81fdef206f6c661a" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+      <memberdef kind="function" id="MaaController_8h_1a9a76a72f540f0bec888228dca7b88a12" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="MaaPort_8h_1a67006334d91d228121dbba7a8bf8fe05" kindref="member">MAA_FRAMEWORK_API</ref> <ref refid="MaaDef_8h_1aa6c9c6967753196880a2a7f778fbb706" kindref="member">MaaController</ref> *</type>
         <definition>MAA_FRAMEWORK_API MaaController * MaaWin32ControllerCreate</definition>
-        <argsstring>(void *hWnd, MaaWin32ScreencapMethod screencap_method, MaaWin32InputMethod input_method, MaaNotificationCallback callback, void *callback_arg)</argsstring>
+        <argsstring>(void *hWnd, MaaWin32ScreencapMethod screencap_method, MaaWin32InputMethod input_method, MaaNotificationCallback notify, void *notify_trans_arg)</argsstring>
         <name>MaaWin32ControllerCreate</name>
         <param>
           <type>void *</type>
@@ -121,12 +121,12 @@
           <declname>input_method</declname>
         </param>
         <param>
-          <type><ref refid="MaaDef_8h_1aa8191105b665bc8c02f0a78cebac71cd" kindref="member">MaaNotificationCallback</ref></type>
-          <declname>callback</declname>
+          <type><ref refid="MaaDef_8h_1a83fe073ae3fefc09c17fd9eb6b6b3e50" kindref="member">MaaNotificationCallback</ref></type>
+          <declname>notify</declname>
         </param>
         <param>
           <type>void *</type>
-          <declname>callback_arg</declname>
+          <declname>notify_trans_arg</declname>
         </param>
         <briefdescription>
         </briefdescription>
@@ -136,26 +136,26 @@
         </inbodydescription>
         <location file="include/MaaFramework/Instance/MaaController.h" line="34" column="37" declfile="include/MaaFramework/Instance/MaaController.h" declline="34" declcolumn="37"/>
       </memberdef>
-      <memberdef kind="function" id="MaaController_8h_1a42b27ad97c7038a84fdade74627815ba" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+      <memberdef kind="function" id="MaaController_8h_1ae9506f63397ad53296fb8dfd3f0dbef4" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="MaaPort_8h_1a67006334d91d228121dbba7a8bf8fe05" kindref="member">MAA_FRAMEWORK_API</ref> <ref refid="MaaDef_8h_1aa6c9c6967753196880a2a7f778fbb706" kindref="member">MaaController</ref> *</type>
         <definition>MAA_FRAMEWORK_API MaaController * MaaCustomControllerCreate</definition>
-        <argsstring>(MaaCustomControllerCallbacks *handle, void *handle_arg, MaaNotificationCallback callback, void *callback_arg)</argsstring>
+        <argsstring>(MaaCustomControllerCallbacks *controller, void *controller_arg, MaaNotificationCallback notify, void *notify_trans_arg)</argsstring>
         <name>MaaCustomControllerCreate</name>
         <param>
           <type><ref refid="structMaaCustomControllerCallbacks" kindref="compound">MaaCustomControllerCallbacks</ref> *</type>
-          <declname>handle</declname>
+          <declname>controller</declname>
         </param>
         <param>
           <type>void *</type>
-          <declname>handle_arg</declname>
+          <declname>controller_arg</declname>
         </param>
         <param>
-          <type><ref refid="MaaDef_8h_1aa8191105b665bc8c02f0a78cebac71cd" kindref="member">MaaNotificationCallback</ref></type>
-          <declname>callback</declname>
+          <type><ref refid="MaaDef_8h_1a83fe073ae3fefc09c17fd9eb6b6b3e50" kindref="member">MaaNotificationCallback</ref></type>
+          <declname>notify</declname>
         </param>
         <param>
           <type>void *</type>
-          <declname>callback_arg</declname>
+          <declname>notify_trans_arg</declname>
         </param>
         <briefdescription>
         </briefdescription>
@@ -165,10 +165,10 @@
         </inbodydescription>
         <location file="include/MaaFramework/Instance/MaaController.h" line="41" column="37" declfile="include/MaaFramework/Instance/MaaController.h" declline="41" declcolumn="37"/>
       </memberdef>
-      <memberdef kind="function" id="MaaController_8h_1a75a64cece9c63356a2214e40d7c324fc" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+      <memberdef kind="function" id="MaaController_8h_1a4089d1020a79a680c013b3be0eb88450" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="MaaPort_8h_1a67006334d91d228121dbba7a8bf8fe05" kindref="member">MAA_FRAMEWORK_API</ref> <ref refid="MaaDef_8h_1aa6c9c6967753196880a2a7f778fbb706" kindref="member">MaaController</ref> *</type>
         <definition>MAA_FRAMEWORK_API MaaController * MaaDbgControllerCreate</definition>
-        <argsstring>(const char *read_path, const char *write_path, MaaDbgControllerType type, const char *config, MaaNotificationCallback callback, void *callback_arg)</argsstring>
+        <argsstring>(const char *read_path, const char *write_path, MaaDbgControllerType type, const char *config, MaaNotificationCallback notify, void *notify_trans_arg)</argsstring>
         <name>MaaDbgControllerCreate</name>
         <param>
           <type>const char *</type>
@@ -187,12 +187,12 @@
           <declname>config</declname>
         </param>
         <param>
-          <type><ref refid="MaaDef_8h_1aa8191105b665bc8c02f0a78cebac71cd" kindref="member">MaaNotificationCallback</ref></type>
-          <declname>callback</declname>
+          <type><ref refid="MaaDef_8h_1a83fe073ae3fefc09c17fd9eb6b6b3e50" kindref="member">MaaNotificationCallback</ref></type>
+          <declname>notify</declname>
         </param>
         <param>
           <type>void *</type>
-          <declname>callback_arg</declname>
+          <declname>notify_trans_arg</declname>
         </param>
         <briefdescription>
         </briefdescription>

@@ -1,6 +1,6 @@
 var MaaTasker_8h =
 [
-    [ "MaaTaskerCreate", "MaaTasker_8h.html#a2da048f8cfca1722b06d5708f2c895b9", null ],
+    [ "MaaTaskerCreate", "MaaTasker_8h.html#a1be38fb8f5e4b9e8240d5847c1f558ac", null ],
     [ "MaaTaskerDestroy", "MaaTasker_8h.html#abefa8dae5713c3393833d8644f2435a8", null ],
     [ "MaaTaskerSetOption", "MaaTasker_8h.html#a08e81fb30421633ca6300d7c98056f03", null ],
     [ "MaaTaskerBindResource", "MaaTasker_8h.html#ac4e288dec1904fba61b65655c4317e79", null ],
@@ -15,7 +15,7 @@ var MaaTasker_8h =
     [ "MaaTaskerGetController", "MaaTasker_8h.html#a077181e4d90b12a219ff49d092700a86", null ],
     [ "MaaTaskerClearCache", "MaaTasker_8h.html#aea0f684a6987fc963254f68870537925", null ],
     [ "MaaTaskerGetRecognitionDetail", "MaaTasker_8h.html#a89a9b121c2fd4a9f6b745f206de4adbb", null ],
-    [ "MaaTaskerGetNodeDetail", "MaaTasker_8h.html#aea6957df7f59c2f3a4e11669e86ded12", null ],
+    [ "MaaTaskerGetNodeDetail", "MaaTasker_8h.html#a767801d2f0bcbd5400c911745b01ae98", null ],
     [ "MaaTaskerGetTaskDetail", "MaaTasker_8h.html#a1b9f9689efa4a72ddf4d327df11dd5de", null ],
     [ "MaaTaskerGetLatestNode", "MaaTasker_8h.html#aa9167993f8c024be00615a23db3d78ec", null ]
 ];

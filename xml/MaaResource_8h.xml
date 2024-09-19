@@ -43,18 +43,18 @@
       </node>
     </invincdepgraph>
     <sectiondef kind="func">
-      <memberdef kind="function" id="MaaResource_8h_1ad631e81a932a93a8776c5100ca3bf16b" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+      <memberdef kind="function" id="MaaResource_8h_1ab4ceccc16012049fe2ea822ff543fedb" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="MaaPort_8h_1a67006334d91d228121dbba7a8bf8fe05" kindref="member">MAA_FRAMEWORK_API</ref> <ref refid="MaaDef_8h_1ab42b9ae54996623815428a30a8c9250d" kindref="member">MaaResource</ref> *</type>
         <definition>MAA_FRAMEWORK_API MaaResource * MaaResourceCreate</definition>
-        <argsstring>(MaaNotificationCallback callback, void *callback_arg)</argsstring>
+        <argsstring>(MaaNotificationCallback notify, void *notify_trans_arg)</argsstring>
         <name>MaaResourceCreate</name>
         <param>
-          <type><ref refid="MaaDef_8h_1aa8191105b665bc8c02f0a78cebac71cd" kindref="member">MaaNotificationCallback</ref></type>
-          <declname>callback</declname>
+          <type><ref refid="MaaDef_8h_1a83fe073ae3fefc09c17fd9eb6b6b3e50" kindref="member">MaaNotificationCallback</ref></type>
+          <declname>notify</declname>
         </param>
         <param>
           <type>void *</type>
-          <declname>callback_arg</declname>
+          <declname>notify_trans_arg</declname>
         </param>
         <briefdescription>
         </briefdescription>
@@ -81,11 +81,11 @@
         </inbodydescription>
         <location file="include/MaaFramework/Instance/MaaResource.h" line="24" column="28" declfile="include/MaaFramework/Instance/MaaResource.h" declline="24" declcolumn="28"/>
       </memberdef>
-      <memberdef kind="function" id="MaaResource_8h_1ac0f76bfaf2b0e398b7a90bd743c80d8b" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+      <memberdef kind="function" id="MaaResource_8h_1ae38c53cb841ae50276792ac1abe3f810" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="MaaPort_8h_1a67006334d91d228121dbba7a8bf8fe05" kindref="member">MAA_FRAMEWORK_API</ref> <ref refid="MaaDef_8h_1a2f7289f2a8e07f48c6261b52a120cdf6" kindref="member">MaaBool</ref></type>
-        <definition>MAA_FRAMEWORK_API MaaBool MaaResourceRegisterCustomRecognizer</definition>
-        <argsstring>(MaaResource *res, const char *name, MaaCustomRecognizerCallback recognizer, void *trans_arg)</argsstring>
-        <name>MaaResourceRegisterCustomRecognizer</name>
+        <definition>MAA_FRAMEWORK_API MaaBool MaaResourceRegisterCustomRecognition</definition>
+        <argsstring>(MaaResource *res, const char *name, MaaCustomRecognitionCallback recognition, void *trans_arg)</argsstring>
+        <name>MaaResourceRegisterCustomRecognition</name>
         <param>
           <type><ref refid="MaaDef_8h_1ab42b9ae54996623815428a30a8c9250d" kindref="member">MaaResource</ref> *</type>
           <declname>res</declname>
@@ -95,8 +95,8 @@
           <declname>name</declname>
         </param>
         <param>
-          <type><ref refid="MaaDef_8h_1ac89f1cfb384be414659f79f14061e4ad" kindref="member">MaaCustomRecognizerCallback</ref></type>
-          <declname>recognizer</declname>
+          <type><ref refid="MaaDef_8h_1a4c72d5184d2333b6deaabd76f2e4db13" kindref="member">MaaCustomRecognitionCallback</ref></type>
+          <declname>recognition</declname>
         </param>
         <param>
           <type>void *</type>
@@ -110,11 +110,11 @@
         </inbodydescription>
         <location file="include/MaaFramework/Instance/MaaResource.h" line="27" column="9" declfile="include/MaaFramework/Instance/MaaResource.h" declline="27" declcolumn="9"/>
       </memberdef>
-      <memberdef kind="function" id="MaaResource_8h_1ab4ee4ca2d2f379312a8cbacf98ee72a3" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+      <memberdef kind="function" id="MaaResource_8h_1a686b581740db7d280be58316abe59267" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="MaaPort_8h_1a67006334d91d228121dbba7a8bf8fe05" kindref="member">MAA_FRAMEWORK_API</ref> <ref refid="MaaDef_8h_1a2f7289f2a8e07f48c6261b52a120cdf6" kindref="member">MaaBool</ref></type>
-        <definition>MAA_FRAMEWORK_API MaaBool MaaResourceUnregisterCustomRecognizer</definition>
+        <definition>MAA_FRAMEWORK_API MaaBool MaaResourceUnregisterCustomRecognition</definition>
         <argsstring>(MaaResource *res, const char *name)</argsstring>
-        <name>MaaResourceUnregisterCustomRecognizer</name>
+        <name>MaaResourceUnregisterCustomRecognition</name>
         <param>
           <type><ref refid="MaaDef_8h_1ab42b9ae54996623815428a30a8c9250d" kindref="member">MaaResource</ref> *</type>
           <declname>res</declname>
@@ -131,11 +131,11 @@
         </inbodydescription>
         <location file="include/MaaFramework/Instance/MaaResource.h" line="29" column="31" declfile="include/MaaFramework/Instance/MaaResource.h" declline="29" declcolumn="31"/>
       </memberdef>
-      <memberdef kind="function" id="MaaResource_8h_1aac3c7d4cd5f48d9849dcf64cf260746b" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+      <memberdef kind="function" id="MaaResource_8h_1a29d01b1290d07ef263e29b80c3b6d843" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="MaaPort_8h_1a67006334d91d228121dbba7a8bf8fe05" kindref="member">MAA_FRAMEWORK_API</ref> <ref refid="MaaDef_8h_1a2f7289f2a8e07f48c6261b52a120cdf6" kindref="member">MaaBool</ref></type>
-        <definition>MAA_FRAMEWORK_API MaaBool MaaResourceClearCustomRecognizer</definition>
+        <definition>MAA_FRAMEWORK_API MaaBool MaaResourceClearCustomRecognition</definition>
         <argsstring>(MaaResource *res)</argsstring>
-        <name>MaaResourceClearCustomRecognizer</name>
+        <name>MaaResourceClearCustomRecognition</name>
         <param>
           <type><ref refid="MaaDef_8h_1ab42b9ae54996623815428a30a8c9250d" kindref="member">MaaResource</ref> *</type>
           <declname>res</declname>

@@ -4,7 +4,7 @@ var searchData=
   ['maactrloption_5frecording_1',['MaaCtrlOption_Recording',['../MaaDef_8h.html#ac9daa36008267a26662244d2f5570003afa8741fa6ccca208c0f65c0b8880832a',1,'MaaDef.h']]],
   ['maactrloption_5fscreenshottargetlongside_2',['MaaCtrlOption_ScreenshotTargetLongSide',['../MaaDef_8h.html#ac9daa36008267a26662244d2f5570003a83157be6a22a5e62d4929c7bcd095f75',1,'MaaDef.h']]],
   ['maactrloption_5fscreenshottargetshortside_3',['MaaCtrlOption_ScreenshotTargetShortSide',['../MaaDef_8h.html#ac9daa36008267a26662244d2f5570003a8184b8456cf2148033e494be5d8220d3',1,'MaaDef.h']]],
-  ['maaglobaloption_5fdebugmessage_4',['MaaGlobalOption_DebugMessage',['../MaaDef_8h.html#ad09e62ec1fd03dadaf5fb009026c38eeabaaef37576e263fdd0c1148de4d338dc',1,'MaaDef.h']]],
+  ['maaglobaloption_5fdebugmode_4',['MaaGlobalOption_DebugMode',['../MaaDef_8h.html#ad09e62ec1fd03dadaf5fb009026c38eea85acfc5fc6cdca745d0eb2a090c05c5f',1,'MaaDef.h']]],
   ['maaglobaloption_5finvalid_5',['MaaGlobalOption_Invalid',['../MaaDef_8h.html#ad09e62ec1fd03dadaf5fb009026c38eeaf81992513d077ca4fe38f7ae787695cd',1,'MaaDef.h']]],
   ['maaglobaloption_5flogdir_6',['MaaGlobalOption_LogDir',['../MaaDef_8h.html#ad09e62ec1fd03dadaf5fb009026c38eea8669cc4382b1f28ea428aff511029b5c',1,'MaaDef.h']]],
   ['maaglobaloption_5frecording_7',['MaaGlobalOption_Recording',['../MaaDef_8h.html#ad09e62ec1fd03dadaf5fb009026c38eeaf316c8e11fd054dfe965b904e3ce93b4',1,'MaaDef.h']]],
@@ -24,6 +24,6 @@ var searchData=
   ['maastatus_5finvalid_21',['MaaStatus_Invalid',['../MaaDef_8h.html#a92a321c9e89a79ab64dc5176057d76a6a062c9b1508f38dba096aa2587ba08d40',1,'MaaDef.h']]],
   ['maastatus_5fpending_22',['MaaStatus_Pending',['../MaaDef_8h.html#a92a321c9e89a79ab64dc5176057d76a6ad675ca7fe058998743ec8d99c72a914e',1,'MaaDef.h']]],
   ['maastatus_5frunning_23',['MaaStatus_Running',['../MaaDef_8h.html#a92a321c9e89a79ab64dc5176057d76a6a05c689d4235e1214eab9abaf7cd6809b',1,'MaaDef.h']]],
-  ['maastatus_5fsuccess_24',['MaaStatus_Success',['../MaaDef_8h.html#a92a321c9e89a79ab64dc5176057d76a6a26dc49974c883868a557aa9d7a5d23ee',1,'MaaDef.h']]],
+  ['maastatus_5fsucceeded_24',['MaaStatus_Succeeded',['../MaaDef_8h.html#a92a321c9e89a79ab64dc5176057d76a6a48d0596abd16c119daeb236a735515d8',1,'MaaDef.h']]],
   ['maataskeroption_5finvalid_25',['MaaTaskerOption_Invalid',['../MaaDef_8h.html#a7ce6a82a2484734da58c3c422d19a9b1a44343c1c73aabeacff9a9f91805a16aa',1,'MaaDef.h']]]
 ];
