@@ -1,4 +1,3 @@
-# from __future__ import annotations
 import ctypes
 import platform
 from dataclasses import dataclass
@@ -378,7 +377,6 @@ class NodeDetail:
     node_id: int
     name: str
     recognition: RecognitionDetail
-    times: int
     completed: bool
 
 

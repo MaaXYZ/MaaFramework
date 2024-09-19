@@ -39,7 +39,6 @@ Context::Context(const Context& other)
     , task_id_(other.task_id_)
     , tasker_(other.tasker_)
     , pipeline_override_(other.pipeline_override_)
-    , action_times_map_(other.action_times_map_)
 // don't copy clone_holder_
 {
     LogTrace << VAR(other.getptr());
@@ -164,11 +163,6 @@ Context::PipelineData Context::get_pipeline_data(const std::string& task_name)
     }
 
     return resource->default_pipeline().get_pipeline();
-}
-
-uint64_t Context::add_action_times(const std::string& name)
-{
-    return ++action_times_map_[name];
 }
 
 MAA_TASK_NS_END

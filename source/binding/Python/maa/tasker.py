@@ -256,7 +256,6 @@ class Tasker:
     def get_node_detail(self, node_id: int) -> Optional[NodeDetail]:
         name = StringBuffer()
         c_reco_id = MaaRecoId()
-        c_times = MaaSize()
         c_completed = MaaBool()
 
         ret = bool(
@@ -265,7 +264,6 @@ class Tasker:
                 MaaNodeId(node_id),
                 name._handle,
                 ctypes.pointer(c_reco_id),
-                ctypes.pointer(c_times),
                 ctypes.pointer(c_completed),
             )
         )
@@ -281,7 +279,6 @@ class Tasker:
             node_id=node_id,
             name=name.get(),
             recognition=recognition,
-            times=int(c_times.value),
             completed=bool(c_completed),
         )
 
@@ -398,7 +395,6 @@ class Tasker:
             MaaNodeId,
             MaaStringBufferHandle,
             ctypes.POINTER(MaaRecoId),
-            ctypes.POINTER(MaaSize),
             ctypes.POINTER(MaaBool),
         ]
 

@@ -51,14 +51,11 @@ public: // from MaaContextAPI
 public:
     PipelineData get_pipeline_data(const std::string& task_name);
 
-    uint64_t add_action_times(const std::string& name);
-
 private:
     MaaTaskId task_id_ = 0;
     Tasker* tasker_ = nullptr;
 
     PipelineDataMap pipeline_override_;
-    std::map<std::string, uint64_t> action_times_map_;
 
 private:
     mutable std::vector<std::shared_ptr<Context>> clone_holder_;
