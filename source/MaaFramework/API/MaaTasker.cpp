@@ -231,12 +231,7 @@ MaaBool MaaTaskerGetRecognitionDetail(
     return true;
 }
 
-MaaBool MaaTaskerGetNodeDetail(
-    const MaaTasker* tasker,
-    MaaNodeId node_id,
-    MaaStringBuffer* name,
-    MaaRecoId* reco_id,
-    MaaBool* completed)
+MaaBool MaaTaskerGetNodeDetail(const MaaTasker* tasker, MaaNodeId node_id, MaaStringBuffer* name, MaaRecoId* reco_id, MaaBool* completed)
 {
     if (!tasker) {
         LogError << "handle is null";
@@ -244,8 +239,7 @@ MaaBool MaaTaskerGetNodeDetail(
     }
 
     auto result_opt = tasker->get_node_detail(node_id);
-    CheckNullAndWarn(!result_opt)
-    {
+    if (!result_opt) {
         LogError << "failed to get_node_detail" << VAR(node_id);
         return false;
     }

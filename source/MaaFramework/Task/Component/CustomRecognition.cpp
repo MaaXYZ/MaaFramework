@@ -17,7 +17,7 @@ CustomRecognition::CustomRecognition(
     Context& context,
     std::string name)
     : VisionBase(image, roi, name)
-    , param_(std::move(param))
+    , param_(param)
     , session_(std::move(session))
     , context_(context)
 {
@@ -58,7 +58,7 @@ void CustomRecognition::analyze()
         &detail_buffer);
 
     cv::Rect box { cbox.x, cbox.y, cbox.width, cbox.height };
-    std::string detail(detail_buffer.data(), detail_buffer.size());
+    const std::string& detail = detail_buffer.get();
 
     auto jdetail = json::parse(detail).value_or(detail);
     Result res { .box = box, .detail = std::move(jdetail) };

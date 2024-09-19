@@ -24,7 +24,7 @@ struct NeuralNetworkClassifierResult
     std::vector<float> raw;
     std::vector<float> probs;
 
-    MEO_JSONIZATION(cls_index, label, box, score, raw, probs);
+    MEO_JSONIZATION(cls_index, label, box, score);
 };
 
 class NeuralNetworkClassifier
