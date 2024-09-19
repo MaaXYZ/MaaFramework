@@ -6,7 +6,7 @@ from pathlib import Path
 from typing import Any, Dict, Optional, Union
 
 from .buffer import ImageBuffer, StringBuffer
-from .callback_agent import Callback, CallbackAgent
+from .notification_handler import NotificationHandler
 from .define import *
 from .job import Job, JobWithResult
 from .library import Library
@@ -20,8 +20,8 @@ __all__ = [
 
 
 class Controller:
+    _notification_handler: Optional[NotificationHandler]
     _handle: MaaControllerHandle
-    _callback_agent: CallbackAgent
     _own: bool = False
 
     def __init__(
@@ -304,13 +304,13 @@ class AdbController(Controller):
         input_methods: int = MaaAdbInputMethodEnum.Default,
         config: Dict[str, Any] = {},
         agent_path: Union[str, Path] = AGENT_BINARY_PATH,
-        callback: Optional[Callback] = None,
-        callback_arg: Any = None,
+        notification_handler: Optional[NotificationHandler] = None,
     ):
         super().__init__()
         self._set_adb_api_properties()
 
-        self._callback_agent = CallbackAgent(callback, callback_arg)
+        self._notification_handler = notification_handler
+
         self._handle = Library.framework.MaaAdbControllerCreate(
             str(adb_path).encode(),
             address.encode(),
@@ -318,8 +318,16 @@ class AdbController(Controller):
             MaaAdbInputMethod(input_methods),
             json.dumps(config, ensure_ascii=False).encode(),
             str(agent_path).encode(),
-            self._callback_agent.c_callback,
-            self._callback_agent.c_callback_arg,
+            (
+                self._notification_handler.c_callback
+                if self._notification_handler
+                else None
+            ),
+            (
+                self._notification_handler.c_callback_arg
+                if self._notification_handler
+                else None
+            ),
         )
 
         if not self._handle:
@@ -347,19 +355,26 @@ class Win32Controller(Controller):
         hWnd: ctypes.c_void_p,
         screencap_method: int = MaaWin32ScreencapMethodEnum.DXGI_DesktopDup,
         input_method: int = MaaWin32InputMethodEnum.Seize,
-        callback: Optional[Callback] = None,
-        callback_arg: Any = None,
+        notification_handler: Optional[NotificationHandler] = None,
     ):
         super().__init__()
         self._set_win32_api_properties()
 
-        self._callback_agent = CallbackAgent(callback, callback_arg)
+        self._notification_handler = notification_handler
         self._handle = Library.framework.MaaWin32ControllerCreate(
             hWnd,
             MaaWin32ScreencapMethod(screencap_method),
             MaaWin32InputMethod(input_method),
-            self._callback_agent.c_callback,
-            self._callback_agent.c_callback_arg,
+            (
+                self._notification_handler.c_callback
+                if self._notification_handler
+                else None
+            ),
+            (
+                self._notification_handler.c_callback_arg
+                if self._notification_handler
+                else None
+            ),
         )
 
         if not self._handle:
@@ -384,20 +399,27 @@ class DbgController(Controller):
         write_path: Union[str, Path],
         dbg_type: int,
         config: Dict[str, Any] = {},
-        callback: Optional[Callback] = None,
-        callback_arg: Any = None,
+        notification_handler: Optional[NotificationHandler] = None,
     ):
         super().__init__()
         self._set_dbg_api_properties()
 
-        self._callback_agent = CallbackAgent(callback, callback_arg)
+        self._notification_handler = notification_handler
         self._handle = Library.framework.MaaDbgControllerCreate(
             str(read_path).encode(),
             str(write_path).encode(),
             MaaDbgControllerType(dbg_type),
             json.dumps(config, ensure_ascii=False).encode(),
-            self._callback_agent.c_callback,
-            self._callback_agent.c_callback_arg,
+            (
+                self._notification_handler.c_callback
+                if self._notification_handler
+                else None
+            ),
+            (
+                self._notification_handler.c_callback_arg
+                if self._notification_handler
+                else None
+            ),
         )
 
         if not self._handle:
@@ -421,13 +443,12 @@ class CustomController(Controller):
 
     def __init__(
         self,
-        callback: Optional[Callback] = None,
-        callback_arg: Any = None,
+        notification_handler: Optional[NotificationHandler] = None,
     ):
         super().__init__()
         self._set_custom_api_properties()
 
-        self._callback_agent = CallbackAgent(callback, callback_arg)
+        self._notification_handler = notification_handler
 
         self._callbacks = MaaCustomControllerCallbacks(
             CustomController._c_connect_agent,
@@ -447,8 +468,16 @@ class CustomController(Controller):
         self._handle = Library.framework.MaaCustomControllerCreate(
             self.c_handle,
             self.c_arg,
-            self._callback_agent.c_callback,
-            self._callback_agent.c_callback_arg,
+            (
+                self._notification_handler.c_callback
+                if self._notification_handler
+                else None
+            ),
+            (
+                self._notification_handler.c_callback_arg
+                if self._notification_handler
+                else None
+            ),
         )
 
         if not self._handle:

@@ -81,11 +81,11 @@ RecoResult TaskBase::run_recognition(const cv::Mat& image, const PipelineData::N
 
     const json::value reco_list_cb_detail {
         { "task_id", task_id() },
-        { "current", cur_task_ },
+        { "name", cur_task_ },
         { "list", json::array(list) },
     };
     if (debug_mode() || current_focus) {
-        notify(MaaMsg_Task_RecognitionList_Starting, reco_list_cb_detail);
+        notify(MaaMsg_Task_NextList_Starting, reco_list_cb_detail);
     }
 
     Recognizer recognizer(tasker_, *context_, image);
@@ -125,14 +125,14 @@ RecoResult TaskBase::run_recognition(const cv::Mat& image, const PipelineData::N
         LogInfo << "Task hit" << VAR(result.name) << VAR(result.box);
 
         if (debug_mode() || current_focus) {
-            notify(MaaMsg_Task_RecognitionList_Succeeded, reco_list_cb_detail);
+            notify(MaaMsg_Task_NextList_Succeeded, reco_list_cb_detail);
         }
 
         return result;
     }
 
     if (debug_mode() || current_focus) {
-        notify(MaaMsg_Task_RecognitionList_Failed, reco_list_cb_detail);
+        notify(MaaMsg_Task_NextList_Failed, reco_list_cb_detail);
     }
 
     return {};

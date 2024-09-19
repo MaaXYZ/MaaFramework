@@ -64,13 +64,13 @@
  *
  * payload: {
  *     task_id: number,
- *     current: string,
- *     list: [string],
+ *     name: string,
+ *     list: string[],
  * }
  */
-#define MaaMsg_Task_RecognitionList_Starting ("Task.RecognitionList.Starting")
-#define MaaMsg_Task_RecognitionList_Succeeded ("Task.RecognitionList.Succeeded")
-#define MaaMsg_Task_RecognitionList_Failed ("Task.RecognitionList.Failed")
+#define MaaMsg_Task_NextList_Starting ("Task.NextList.Starting")
+#define MaaMsg_Task_NextList_Succeeded ("Task.NextList.Succeeded")
+#define MaaMsg_Task_NextList_Failed ("Task.NextList.Failed")
 /// @}
 
 /**

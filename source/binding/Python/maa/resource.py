@@ -2,7 +2,7 @@ import ctypes
 import pathlib
 from typing import Any, Optional, Union
 
-from .callback_agent import Callback, CallbackAgent
+from .notification_handler import NotificationHandler
 from .define import *
 from .job import Job
 from .library import Library
@@ -10,16 +10,15 @@ from .buffer import StringBuffer
 
 
 class Resource:
+    _notification_handler: Optional[NotificationHandler]
     _handle: MaaResourceHandle
-    _callback_agent: CallbackAgent
     _own: bool = False
 
     ### public ###
 
     def __init__(
         self,
-        callback: Optional[Callback] = None,
-        callback_arg: Any = None,
+        notification_handler: Optional[NotificationHandler] = None,
         handle: Optional[MaaResourceHandle] = None,
     ):
 
@@ -34,9 +33,18 @@ class Resource:
             self._handle = handle
             self._own = False
         else:
-            self._callback_agent = CallbackAgent(callback, callback_arg)
+            self._notification_handler = notification_handler
             self._handle = Library.framework.MaaResourceCreate(
-                self._callback_agent.c_callback, self._callback_agent.c_callback_arg
+                (
+                    self._notification_handler.c_callback
+                    if self._notification_handler
+                    else None
+                ),
+                (
+                    self._notification_handler.c_callback_arg
+                    if self._notification_handler
+                    else None
+                ),
             )
             self._own = True
 
