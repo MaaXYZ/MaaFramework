@@ -10,10 +10,10 @@
 
 MAA_NS_BEGIN
 
-Tasker::Tasker(MaaNotificationCallback callback, void* callback_arg)
-    : notifier(callback, callback_arg)
+Tasker::Tasker(MaaNotificationCallback notify, void* notify_trans_arg)
+    : notifier(notify, notify_trans_arg)
 {
-    LogFunc << VAR_VOIDP(callback) << VAR_VOIDP(callback_arg);
+    LogFunc << VAR_VOIDP(notify) << VAR_VOIDP(notify_trans_arg);
 
     task_runner_ = std::make_unique<AsyncRunner<TaskPtr>>(std::bind(&Tasker::run_task, this, std::placeholders::_1, std::placeholders::_2));
 }
@@ -165,7 +165,7 @@ const RuntimeCache& Tasker::runtime_cache() const
     return runtime_cache_;
 }
 
-void Tasker::notify(std::string_view msg, json::value detail)
+void Tasker::notify(std::string_view msg, const json::value& detail)
 {
     notifier.notify(msg, detail);
 }
@@ -212,22 +212,22 @@ bool Tasker::run_task(RunnerId runner_id, TaskPtr task_ptr)
         return false;
     }
 
-    const json::value details = {
+    const json::value cb_detail = {
         { "task_id", task_ptr->task_id() },
         { "entry", task_ptr->entry() },
         { "hash", resource_ ? resource_->get_hash() : std::string() },
         { "uuid", controller_ ? controller_->get_uuid() : std::string() },
     };
 
-    notifier.notify(MaaMsg_Tasker_Task_Started, details);
+    notifier.notify(MaaMsg_Tasker_Task_Starting, cb_detail);
 
-    LogInfo << "task start:" << VAR(details);
+    LogInfo << "task start:" << VAR(cb_detail);
 
     bool ret = task_ptr->run();
 
-    LogInfo << "task end:" << VAR(details) << VAR(ret);
+    LogInfo << "task end:" << VAR(cb_detail) << VAR(ret);
 
-    notifier.notify(ret ? MaaMsg_Tasker_Task_Completed : MaaMsg_Tasker_Task_Failed, details);
+    notifier.notify(ret ? MaaMsg_Tasker_Task_Succeeded : MaaMsg_Tasker_Task_Failed, cb_detail);
 
     {
         std::unique_lock lock(task_mapping_mutex_);

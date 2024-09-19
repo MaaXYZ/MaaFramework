@@ -10,10 +10,10 @@ MAA_CTRL_NS_BEGIN
 
 std::minstd_rand ControllerAgent::rand_engine_(std::random_device {}());
 
-ControllerAgent::ControllerAgent(MaaNotificationCallback callback, void* callback_arg)
-    : notifier(callback, callback_arg)
+ControllerAgent::ControllerAgent(MaaNotificationCallback notify, void* notify_trans_arg)
+    : notifier(notify, notify_trans_arg)
 {
-    LogFunc << VAR_VOIDP(callback) << VAR_VOIDP(callback_arg);
+    LogFunc << VAR_VOIDP(notify) << VAR_VOIDP(notify_trans_arg);
 
     action_runner_ =
         std::make_unique<AsyncRunner<Action>>(std::bind(&ControllerAgent::run_action, this, std::placeholders::_1, std::placeholders::_2));
@@ -188,7 +188,7 @@ bool ControllerAgent::click(const cv::Rect& r)
 bool ControllerAgent::click(const cv::Point& p)
 {
     auto id = post_click_impl(p.x, p.y);
-    return wait(id) == MaaStatus_Success;
+    return wait(id) == MaaStatus_Succeeded;
 }
 
 bool ControllerAgent::swipe(const cv::Rect& r1, const cv::Rect& r2, int duration)
@@ -199,26 +199,26 @@ bool ControllerAgent::swipe(const cv::Rect& r1, const cv::Rect& r2, int duration
 bool ControllerAgent::swipe(const cv::Point& p1, const cv::Point& p2, int duration)
 {
     auto id = post_swipe_impl(p1.x, p1.y, p2.x, p2.y, duration);
-    return wait(id) == MaaStatus_Success;
+    return wait(id) == MaaStatus_Succeeded;
 }
 
 bool ControllerAgent::press_key(int keycode)
 {
     auto id = post_press_key_impl(keycode);
-    return wait(id) == MaaStatus_Success;
+    return wait(id) == MaaStatus_Succeeded;
 }
 
 bool ControllerAgent::input_text(const std::string& text)
 {
     auto id = post_input_text_impl(text);
-    return wait(id) == MaaStatus_Success;
+    return wait(id) == MaaStatus_Succeeded;
 }
 
 cv::Mat ControllerAgent::screencap()
 {
     std::unique_lock<std::mutex> lock(image_mutex_);
     auto id = post_screencap_impl();
-    if (wait(id) != MaaStatus_Success) {
+    if (wait(id) != MaaStatus_Succeeded) {
         return {};
     }
     return image_.clone();
@@ -227,13 +227,13 @@ cv::Mat ControllerAgent::screencap()
 bool ControllerAgent::start_app(const std::string& package)
 {
     auto id = post({ .type = Action::Type::start_app, .param = AppParam { .package = package } });
-    return wait(id) == MaaStatus_Success;
+    return wait(id) == MaaStatus_Succeeded;
 }
 
 bool ControllerAgent::stop_app(const std::string& package)
 {
     auto id = post({ .type = Action::Type::stop_app, .param = AppParam { .package = package } });
-    return wait(id) == MaaStatus_Success;
+    return wait(id) == MaaStatus_Succeeded;
 }
 
 MaaCtrlId ControllerAgent::post(Action action)
@@ -343,7 +343,6 @@ bool ControllerAgent::handle_connect()
     if (recording()) {
         json::value info {
             { "type", "connect" },
-            { "success", connected_ },
             { "uuid", get_uuid() },
             { "version", MAA_VERSION },
         };
@@ -638,12 +637,15 @@ bool ControllerAgent::run_action(typename AsyncRunner<Action>::Id id, Action act
         notify = focus_ids_.erase(id) > 0;
     }
 
-    const json::value details = {
+    std::stringstream ss;
+    ss << action;
+    const json::value cb_detail = {
         { "ctrl_id", id },
         { "uuid", get_uuid() },
+        { "action", std::move(ss).str() },
     };
     if (notify) {
-        notifier.notify(MaaMsg_Controller_Action_Started, details);
+        notifier.notify(MaaMsg_Controller_Action_Starting, cb_detail);
     }
 
     switch (action.type) {
@@ -692,7 +694,7 @@ bool ControllerAgent::run_action(typename AsyncRunner<Action>::Id id, Action act
     }
 
     if (notify) {
-        notifier.notify(ret ? MaaMsg_Controller_Action_Completed : MaaMsg_Controller_Action_Failed, details);
+        notifier.notify(ret ? MaaMsg_Controller_Action_Succeeded : MaaMsg_Controller_Action_Failed, cb_detail);
     }
 
     return ret;
@@ -863,6 +865,21 @@ std::ostream& operator<<(std::ostream& os, const Action& action)
     case Action::Type::swipe:
         os << "swipe";
         break;
+    case Action::Type::touch_down:
+        os << "touch_down";
+        break;
+    case Action::Type::touch_move:
+        os << "touch_move";
+        break;
+    case Action::Type::touch_up:
+        os << "touch_up";
+        break;
+    case Action::Type::press_key:
+        os << "press_key";
+        break;
+    case Action::Type::input_text:
+        os << "input_text";
+        break;
     case Action::Type::screencap:
         os << "screencap";
         break;
@@ -872,6 +889,7 @@ std::ostream& operator<<(std::ostream& os, const Action& action)
     case Action::Type::stop_app:
         os << "stop_app";
         break;
+
     default:
         os << "unknown action";
         break;

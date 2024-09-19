@@ -23,20 +23,17 @@ MaaControlUnitHandle MaaAdbControlUnitCreate(
     MaaAdbScreencapMethod screencap_methods,
     MaaAdbInputMethod input_methods,
     const char* config,
-    const char* agent_path,
-    MaaNotificationCallback callback,
-    void* callback_arg)
+    const char* agent_path)
 {
     using namespace MAA_CTRL_UNIT_NS;
 
-    LogFunc << VAR(adb_path) << VAR(adb_serial) << VAR(screencap_methods) << VAR(input_methods) << VAR(config) << VAR(agent_path)
-            << VAR_VOIDP(callback) << VAR_VOIDP(callback_arg);
+    LogFunc << VAR(adb_path) << VAR(adb_serial) << VAR(screencap_methods) << VAR(input_methods) << VAR(config) << VAR(agent_path);
 
     auto screencap_unit =
         screencap_methods != MaaAdbScreencapMethod_None ? std::make_shared<ScreencapAgent>(screencap_methods, agent_path) : nullptr;
     auto input_unit = input_methods != MaaAdbInputMethod_None ? std::make_shared<InputAgent>(input_methods, agent_path) : nullptr;
 
-    auto unit_mgr = std::make_unique<ControlUnitMgr>(path(adb_path), adb_serial, screencap_unit, input_unit, callback, callback_arg);
+    auto unit_mgr = std::make_unique<ControlUnitMgr>(path(adb_path), adb_serial, screencap_unit, input_unit);
 
     auto json_opt = json::parse(config);
     if (!json_opt) {

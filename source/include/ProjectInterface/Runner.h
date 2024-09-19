@@ -11,8 +11,8 @@ class Runner
 public:
     static bool
         run(const RuntimeParam& param,
-            MaaNotificationCallback callback,
-            void* callback_arg,
+            MaaNotificationCallback notify,
+            void* notify_trans_arg,
             const std::map<std::string, CustomRecognitionSession>& custom_recognitions,
             const std::map<std::string, CustomActionSession>& custom_actions);
 };

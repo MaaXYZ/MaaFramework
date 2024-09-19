@@ -23,7 +23,7 @@ bool PipelineResMgr::load(const std::filesystem::path& path, bool is_base, const
         return false;
     }
 
-    if (!check_all_next_list()) {
+    if (!check_all_next_list(pipeline_data_map_)) {
         LogError << "check_all_next_list failed" << VAR(path);
         return false;
     }
@@ -113,31 +113,42 @@ bool PipelineResMgr::open_and_parse_file(
     return true;
 }
 
-bool PipelineResMgr::check_all_next_list() const
+bool PipelineResMgr::check_all_next_list(const PipelineDataMap& data_map)
 {
     LogFunc;
 
-    for (const auto& [name, pipeline_data] : pipeline_data_map_) {
-        if (!check_next_list(pipeline_data.next)) {
-            LogError << "check_next_list next failed" << VAR(name);
+    for (const auto& [name, pipeline_data] : data_map) {
+        if (!check_next_list(pipeline_data.next, data_map)) {
+            LogError << "check_next_list next failed" << VAR(name) << VAR(pipeline_data.next);
             return false;
         }
-        if (!check_next_list(pipeline_data.interrupt)) {
-            LogError << "check_next_list interrupt failed" << VAR(name);
+        if (!check_next_list(pipeline_data.interrupt, data_map)) {
+            LogError << "check_next_list interrupt failed" << VAR(name) << VAR(pipeline_data.interrupt);
             return false;
         }
-        if (!check_next_list(pipeline_data.on_error)) {
-            LogError << "check_next_list on_error failed" << VAR(name);
+        if (!check_next_list(pipeline_data.on_error, data_map)) {
+            LogError << "check_next_list on_error failed" << VAR(name) << VAR(pipeline_data.on_error);
+            return false;
+        }
+
+        // 这里是由业务逻辑决定了这三个列表不应有重复元素，不代表以后有其他列表也要直接加进来
+        std::set<std::string> all_next(pipeline_data.next.begin(), pipeline_data.next.end());
+        all_next.insert(pipeline_data.interrupt.begin(), pipeline_data.interrupt.end());
+        all_next.insert(pipeline_data.on_error.begin(), pipeline_data.on_error.end());
+
+        if (all_next.size() != pipeline_data.next.size() + pipeline_data.interrupt.size() + pipeline_data.on_error.size()) {
+            LogError << "there are duplicate elements in the next, interrupt and on_error" << VAR(name) << VAR(pipeline_data.next)
+                     << VAR(pipeline_data.interrupt) << VAR(pipeline_data.on_error);
             return false;
         }
     }
     return true;
 }
 
-bool PipelineResMgr::check_next_list(const PipelineData::NextList& next_list) const
+bool PipelineResMgr::check_next_list(const PipelineData::NextList& next_list, const PipelineDataMap& data_map)
 {
     for (const auto& next : next_list) {
-        if (!pipeline_data_map_.contains(next)) {
+        if (!data_map.contains(next)) {
             LogError << "Invalid next task name" << VAR(next);
             return false;
         }

@@ -8,10 +8,10 @@
 
 MAA_RES_NS_BEGIN
 
-ResourceMgr::ResourceMgr(MaaNotificationCallback callback, void* callback_arg)
-    : notifier(callback, callback_arg)
+ResourceMgr::ResourceMgr(MaaNotificationCallback notify, void* notify_trans_arg)
+    : notifier(notify, notify_trans_arg)
 {
-    LogFunc << VAR_VOIDP(callback) << VAR_VOIDP(callback_arg);
+    LogFunc << VAR_VOIDP(notify) << VAR_VOIDP(notify_trans_arg);
 
     res_loader_ = std::make_unique<AsyncRunner<std::filesystem::path>>(
         std::bind(&ResourceMgr::run_load, this, std::placeholders::_1, std::placeholders::_2));
@@ -247,17 +247,19 @@ bool ResourceMgr::run_load(typename AsyncRunner<std::filesystem::path>::Id id, s
 {
     LogFunc << VAR(id) << VAR(path);
 
-    json::value details = {
+    json::value cb_detail = {
         { "res_id", id },
         { "path", path_to_utf8_string(path) },
+        { "hash", get_hash() },
     };
 
-    notifier.notify(MaaMsg_Resource_StartLoading, details);
+    notifier.notify(MaaMsg_Resource_Loading_Starting, cb_detail);
 
     valid_ = load(path);
 
-    details.emplace("hash", get_hash());
-    notifier.notify(valid_ ? MaaMsg_Resource_LoadingCompleted : MaaMsg_Resource_LoadingFailed, details);
+    cb_detail["hash"] = get_hash();
+
+    notifier.notify(valid_ ? MaaMsg_Resource_Loading_Succeeded : MaaMsg_Resource_Loading_Failed, cb_detail);
 
     return valid_;
 }

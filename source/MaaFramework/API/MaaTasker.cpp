@@ -5,11 +5,11 @@
 #include "Tasker/Tasker.h"
 #include "Utils/Logger.h"
 
-MaaTasker* MaaTaskerCreate(MaaNotificationCallback callback, void* callback_arg)
+MaaTasker* MaaTaskerCreate(MaaNotificationCallback notify, void* notify_trans_arg)
 {
-    LogFunc << VAR_VOIDP(callback) << VAR_VOIDP(callback_arg);
+    LogFunc << VAR_VOIDP(notify) << VAR_VOIDP(notify_trans_arg);
 
-    return new MAA_NS::Tasker(callback, callback_arg);
+    return new MAA_NS::Tasker(notify, notify_trans_arg);
 }
 
 void MaaTaskerDestroy(MaaTasker* tasker)
@@ -236,7 +236,6 @@ MaaBool MaaTaskerGetNodeDetail(
     MaaNodeId node_id,
     MaaStringBuffer* name,
     MaaRecoId* reco_id,
-    MaaSize* times,
     MaaBool* completed)
 {
     if (!tasker) {
@@ -260,10 +259,6 @@ MaaBool MaaTaskerGetNodeDetail(
     CheckNullAndWarn(reco_id)
     {
         *reco_id = result.reco_id;
-    }
-    CheckNullAndWarn(times)
-    {
-        *times = result.times;
     }
     CheckNullAndWarn(completed)
     {

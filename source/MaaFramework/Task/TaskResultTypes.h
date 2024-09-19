@@ -25,7 +25,6 @@ struct NodeDetail
     MaaNodeId node_id = 0;
     std::string name;
     MaaRecoId reco_id = 0;
-    uint64_t times = 0;
     bool completed = false;
 };
 

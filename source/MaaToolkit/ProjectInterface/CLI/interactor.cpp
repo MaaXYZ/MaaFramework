@@ -106,15 +106,15 @@ void Interactor::interact_for_first_time_use()
 
 bool Interactor::load(
     const std::filesystem::path& project_dir,
-    MaaNotificationCallback callback,
-    void* callback_arg,
+    MaaNotificationCallback notify,
+    void* notify_trans_arg,
     std::map<std::string, MAA_PROJECT_INTERFACE_NS::CustomRecognitionSession> custom_recognitions,
     std::map<std::string, MAA_PROJECT_INTERFACE_NS::CustomActionSession> custom_actions)
 {
     LogFunc << VAR(project_dir);
 
-    callback_ = callback;
-    callback_arg_ = callback_arg;
+    notify_ = notify;
+    notify_trans_arg_ = notify_trans_arg;
     custom_recognitions_ = std::move(custom_recognitions);
     custom_actions_ = std::move(custom_actions);
 
@@ -620,15 +620,15 @@ void Interactor::mpause() const
     std::cin.get();
 }
 
-void Interactor::on_maafw_notify(const char* msg, const char* details_json, void* callback_arg)
+void Interactor::on_maafw_notify(const char* msg, const char* details_json, void* notify_trans_arg)
 {
     if (std::string(msg).starts_with("Tasker.Task")) {
         std::string entry = json::parse(details_json).value_or(json::value())["entry"].as_string();
         std::cout << MAA_NS::utf8_to_crt(std::format("on_maafw_notify: {} {}", msg, entry)) << std::endl;
     }
 
-    Interactor* pthis = static_cast<Interactor*>(callback_arg);
-    if (pthis && pthis->callback_) {
-        pthis->callback_(msg, details_json, pthis->callback_arg_);
+    Interactor* pthis = static_cast<Interactor*>(notify_trans_arg);
+    if (pthis && pthis->notify_) {
+        pthis->notify_(msg, details_json, pthis->notify_trans_arg_);
     }
 }

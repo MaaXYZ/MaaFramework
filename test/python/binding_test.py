@@ -23,6 +23,7 @@ from maa.custom_action import CustomAction
 from maa.custom_recognition import CustomRecognition
 from maa.define import RectType, MaaDbgControllerTypeEnum, LoggingLevelEnum
 from maa.context import Context
+from maa.notification_handler import NotificationHandler
 
 analyzed: bool = False
 runned: bool = False
@@ -53,8 +54,8 @@ class MyRecognition(CustomRecognition):
         print(f"reco_detail: {reco_detail}")
 
         new_ctx = context.clone()
-        new_ctx.override_next(argv.current_task_name, ["TaskA", "TaskB"])
         new_ctx.override_pipeline({"TaskA": {}, "TaskB": {}})
+        new_ctx.override_next(argv.current_task_name, ["TaskA", "TaskB"])
 
         node_detail = new_ctx.tasker.get_latest_node("ColorMatch")
         print(node_detail)
@@ -106,18 +107,19 @@ class MyAction(CustomAction):
 
 
 def api_test():
-    resource = Resource()
+    resource = Resource(MyNotificationHandler())
     print(f"resource: {resource}")
 
     dbg_controller = DbgController(
         install_dir / "test" / "PipelineSmoking" / "Screenshot",
         install_dir / "test" / "user",
         MaaDbgControllerTypeEnum.CarouselImage,
+        notification_handler=MyNotificationHandler(),
     )
     print(f"controller: {dbg_controller}")
     dbg_controller.post_connection().wait()
 
-    tasker = Tasker()
+    tasker = Tasker(notification_handler=MyNotificationHandler())
     tasker.bind(resource, dbg_controller)
     print(f"tasker: {tasker}")
 
@@ -161,8 +163,8 @@ def api_test():
     print(f"devices: {devices}")
     desktop = Toolkit.find_desktop_windows()
     print(f"desktop: {desktop}")
-    Toolkit.register_pi_custom_action("MyAct", MyAction())
-    Toolkit.register_pi_custom_recognition("MyRec", MyRecognition())
+    Toolkit.pi_register_custom_action("MyAct", MyAction())
+    Toolkit.pi_register_custom_recognition("MyRec", MyRecognition())
     # Toolkit.run_pi_cli("C:/_maafw_testing_/aaabbbccc", ".", True)
 
     global analyzed, runned
@@ -174,21 +176,21 @@ def api_test():
 def custom_ctrl_test():
     print("test_custom_controller")
 
-    controller = MyController()
-    ret = controller.post_connection().wait().success()
+    controller = MyController(MyNotificationHandler())
+    ret = controller.post_connection().wait().succeeded()
     uuid = controller.uuid
-    ret &= controller.post_start_app("custom_aaa").wait().success()
-    ret &= controller.post_stop_app("custom_bbb").wait().success()
+    ret &= controller.post_start_app("custom_aaa").wait().succeeded()
+    ret &= controller.post_stop_app("custom_bbb").wait().succeeded()
     image_job = controller.post_screencap().wait()
-    ret &= image_job.success()
+    ret &= image_job.succeeded()
     print(f"image: {image_job.get().shape}")
-    ret &= controller.post_click(100, 200).wait().success()
-    ret &= controller.post_swipe(100, 200, 300, 400, 200).wait().success()
-    ret &= controller.post_touch_down(1, 100, 100, 0).wait().success()
-    ret &= controller.post_touch_move(1, 200, 200, 0).wait().success()
-    ret &= controller.post_touch_up(1).wait().success()
-    ret &= controller.post_press_key(32).wait().success()
-    ret &= controller.post_input_text("Hello World!").wait().success()
+    ret &= controller.post_click(100, 200).wait().succeeded()
+    ret &= controller.post_swipe(100, 200, 300, 400, 200).wait().succeeded()
+    ret &= controller.post_touch_down(1, 100, 100, 0).wait().succeeded()
+    ret &= controller.post_touch_move(1, 200, 200, 0).wait().succeeded()
+    ret &= controller.post_touch_up(1).wait().succeeded()
+    ret &= controller.post_press_key(32).wait().succeeded()
+    ret &= controller.post_input_text("Hello World!").wait().succeeded()
 
     print(f"controller.count: {controller.count}, ret: {ret}")
     if controller.count != 11 or not ret:
@@ -196,10 +198,19 @@ def custom_ctrl_test():
         raise RuntimeError("failed to run custom controller")
 
 
+class MyNotificationHandler(NotificationHandler):
+    def on_raw_notification(self, msg: str, details: dict):
+        print(
+            f"on MyNotificationHandler.on_raw_notification, msg: {msg}, details: {details}"
+        )
+
+        super().on_raw_notification(msg, details)
+
+
 class MyController(CustomController):
 
-    def __init__(self):
-        super().__init__()
+    def __init__(self, notification_handler: NotificationHandler):
+        super().__init__(notification_handler=notification_handler)
         self.count = 0
 
     def connect(self) -> bool:

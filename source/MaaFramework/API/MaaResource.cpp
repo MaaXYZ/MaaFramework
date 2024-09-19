@@ -7,11 +7,11 @@
 #include "Utils/Logger.h"
 #include "Utils/Platform.h"
 
-MaaResource* MaaResourceCreate(MaaNotificationCallback callback, void* callback_arg)
+MaaResource* MaaResourceCreate(MaaNotificationCallback notify, void* notify_trans_arg)
 {
-    LogFunc << VAR_VOIDP(callback) << VAR_VOIDP(callback_arg);
+    LogFunc << VAR_VOIDP(notify) << VAR_VOIDP(notify_trans_arg);
 
-    return new MAA_RES_NS::ResourceMgr(callback, callback_arg);
+    return new MAA_RES_NS::ResourceMgr(notify, notify_trans_arg);
 }
 
 void MaaResourceDestroy(MaaResource* res)

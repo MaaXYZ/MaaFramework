@@ -12,14 +12,11 @@ ControlUnitMgr::ControlUnitMgr(
     std::filesystem::path adb_path,
     std::string adb_serial,
     std::shared_ptr<ScreencapBase> screencap_unit,
-    std::shared_ptr<InputBase> touch_unit,
-    MaaNotificationCallback callback,
-    void* callback_arg)
+    std::shared_ptr<InputBase> touch_unit)
     : adb_path_(std::move(adb_path))
     , adb_serial_(std::move(adb_serial))
     , input_(std::move(touch_unit))
     , screencap_(std::move(screencap_unit))
-    , notifier(callback, callback_arg)
 {
     register_observer(input_); // for on_image_resolution_changed
 
@@ -43,55 +40,37 @@ bool ControlUnitMgr::find_device(std::vector<std::string>& devices)
 
 bool ControlUnitMgr::connect()
 {
-    json::value details = {
-        { "adb", path_to_utf8_string(adb_path_) },
-        { "address", adb_serial_ },
-    };
-
-    bool connected = connection_.connect();
     bool is_remote = adb_serial_.find(':') != std::string::npos;
-    if (!connected && is_remote) {
-        notifier.notify(MaaMsg_Controller_ConnectFailed, details | json::object { { "why", "ConnectFailed" } });
-        return false;
+    if (is_remote) {
+        if (!connection_.connect()) {
+            LogError << "failed to connect" << VAR(adb_path_) << VAR(adb_serial_);
+            return false;
+        }
     }
 
     auto uuid_opt = device_info_.request_uuid();
     if (!uuid_opt) {
-        notifier.notify(MaaMsg_Controller_UUIDGetFailed, details);
-        notifier.notify(MaaMsg_Controller_ConnectFailed, details | json::object { { "why", "UUIDGetFailed" } });
+        LogError << "failed to request_uuid";
         return false;
     }
-    const auto& uuid = uuid_opt.value();
-    details |= { { "uuid", uuid } };
-
-    notifier.notify(MaaMsg_Controller_UUIDGot, details | json::object { { "uuid", uuid } });
-
-    notifier.notify(MaaMsg_Controller_ConnectSuccess, details);
-
     if (screencap_) {
         if (!screencap_->init()) {
             LogError << "failed to init screencap";
-            notifier.notify(MaaMsg_Controller_ScreencapInitFailed, details);
             return false;
         }
-        notifier.notify(MaaMsg_Controller_ScreencapInited, details);
     }
     else {
         LogWarn << "screencap_ is null";
-        notifier.notify(MaaMsg_Controller_ScreencapInitFailed, details);
     }
 
     if (input_) {
         if (!input_->init()) {
             LogError << "failed to init touch_input";
-            notifier.notify(MaaMsg_Controller_InputInitFailed, details);
             return false;
         }
-        notifier.notify(MaaMsg_Controller_InputInited, details);
     }
     else {
         LogWarn << "input_ is null";
-        notifier.notify(MaaMsg_Controller_InputInitFailed, details);
     }
 
     return true;

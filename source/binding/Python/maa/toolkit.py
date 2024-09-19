@@ -7,7 +7,7 @@ from collections import defaultdict
 
 from .define import *
 from .library import Library
-from .callback_agent import Callback, CallbackAgent
+from .notification_handler import NotificationHandler
 
 
 @dataclass
@@ -119,13 +119,13 @@ class Toolkit:
         return windows
 
     @staticmethod
-    def register_pi_custom_recognition(
+    def pi_register_custom_recognition(
         name: str, recognition: "CustomRecognition", inst_id: int = 0  # type: ignore
     ) -> bool:
         Toolkit._set_api_properties()
 
         # avoid gc
-        Toolkit._custom_recognition_holder[inst_id][name] = recognition
+        Toolkit._pi_custom_recognition_holder[inst_id][name] = recognition
 
         return bool(
             Library.toolkit.MaaToolkitProjectInterfaceRegisterCustomRecognition(
@@ -137,13 +137,13 @@ class Toolkit:
         )
 
     @staticmethod
-    def register_pi_custom_action(
+    def pi_register_custom_action(
         name: str, action: "CustomAction", inst_id: int = 0  # type: ignore
     ) -> bool:
         Toolkit._set_api_properties()
 
         # avoid gc
-        Toolkit._custom_recognition_holder[inst_id][name] = action
+        Toolkit._pi_custom_recognition_holder[inst_id][name] = action
 
         return bool(
             Library.toolkit.MaaToolkitProjectInterfaceRegisterCustomAction(
@@ -155,17 +155,16 @@ class Toolkit:
         )
 
     @staticmethod
-    def run_pi_cli(
+    def pi_run_cli(
         resource_path: Union[str, Path],
         user_path: Union[str, Path],
         directly: bool = False,
-        callback: Optional[Callback] = None,
-        callback_arg: Any = None,
+        notification_handler: Optional[NotificationHandler] = None,
         inst_id: int = 0,
     ) -> bool:
         Toolkit._set_api_properties()
 
-        Toolkit._callback_agent = CallbackAgent(callback, callback_arg)
+        Toolkit._pi_notification_handler = notification_handler
 
         return bool(
             Library.toolkit.MaaToolkitProjectInterfaceRunCli(
@@ -173,16 +172,25 @@ class Toolkit:
                 str(resource_path).encode(),
                 str(user_path).encode(),
                 directly,
-                Toolkit._callback_agent.c_callback,
-                Toolkit._callback_agent.c_callback_arg,
+                (
+                    Toolkit._pi_notification_handler.c_callback
+                    if Toolkit._pi_notification_handler
+                    else None
+                ),
+                (
+                    Toolkit._pi_notification_handler.c_callback_arg
+                    if Toolkit._pi_notification_handler
+                    else None
+                ),
             )
         )
 
     ### private ###
 
     _api_properties_initialized: bool = False
-    _custom_recognition_holder = defaultdict(dict)
-    _custom_action_holder = defaultdict(dict)
+    _pi_custom_recognition_holder = defaultdict(dict)
+    _pi_custom_action_holder = defaultdict(dict)
+    _pi_notification_handler: Optional[NotificationHandler] = None
 
     @staticmethod
     def _set_api_properties():

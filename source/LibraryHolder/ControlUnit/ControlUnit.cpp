@@ -33,9 +33,7 @@ std::shared_ptr<MAA_CTRL_UNIT_NS::ControlUnitAPI> AdbControlUnitLibraryHolder::c
     MaaAdbScreencapMethod screencap_methods,
     MaaAdbInputMethod input_methods,
     const char* config,
-    const char* agent_path,
-    MaaNotificationCallback callback,
-    void* callback_arg)
+    const char* agent_path)
 {
     if (!load_library(library_dir() / libname_)) {
         LogError << "Failed to load library" << VAR(library_dir()) << VAR(libname_);
@@ -56,8 +54,7 @@ std::shared_ptr<MAA_CTRL_UNIT_NS::ControlUnitAPI> AdbControlUnitLibraryHolder::c
         return nullptr;
     }
 
-    auto control_unit_handle =
-        create_control_unit_func(adb_path, adb_serial, screencap_methods, input_methods, config, agent_path, callback, callback_arg);
+    auto control_unit_handle = create_control_unit_func(adb_path, adb_serial, screencap_methods, input_methods, config, agent_path);
 
     if (!control_unit_handle) {
         LogError << "Failed to create control unit";
@@ -70,9 +67,7 @@ std::shared_ptr<MAA_CTRL_UNIT_NS::ControlUnitAPI> AdbControlUnitLibraryHolder::c
 std::shared_ptr<MAA_CTRL_UNIT_NS::ControlUnitAPI> Win32ControlUnitLibraryHolder::create_control_unit(
     void* hWnd,
     MaaWin32ScreencapMethod screencap_method,
-    MaaWin32InputMethod input_method,
-    MaaNotificationCallback callback,
-    void* callback_arg)
+    MaaWin32InputMethod input_method)
 {
     if (!load_library(library_dir() / libname_)) {
         LogError << "Failed to load library" << VAR(library_dir()) << VAR(libname_);
@@ -93,7 +88,7 @@ std::shared_ptr<MAA_CTRL_UNIT_NS::ControlUnitAPI> Win32ControlUnitLibraryHolder:
         return nullptr;
     }
 
-    auto control_unit_handle = create_control_unit_func(hWnd, screencap_method, input_method, callback, callback_arg);
+    auto control_unit_handle = create_control_unit_func(hWnd, screencap_method, input_method);
 
     if (!control_unit_handle) {
         LogError << "Failed to create control unit";

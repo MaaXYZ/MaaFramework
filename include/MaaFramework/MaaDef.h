@@ -44,7 +44,7 @@ enum MaaStatusEnum
     MaaStatus_Invalid = 0,
     MaaStatus_Pending = 1000,
     MaaStatus_Running = 2000,
-    MaaStatus_Success = 3000,
+    MaaStatus_Succeeded = 3000,
     MaaStatus_Failed = 4000,
     // MaaStatus_Timeout = 5000,
 };
@@ -223,7 +223,7 @@ typedef struct MaaRect
 /*
  * See MaaMsg.h
  */
-typedef void (MAA_CALL *MaaNotificationCallback)(const char* message, const char* details_json, void* callback_arg);
+typedef void (MAA_CALL *MaaNotificationCallback)(const char* message, const char* details_json, void* notify_trans_arg);
 
 typedef MaaBool (MAA_CALL *MaaCustomRecognitionCallback)(
     MaaContext* context,

@@ -1,4 +1,3 @@
-# from __future__ import annotations
 import ctypes
 import platform
 from dataclasses import dataclass
@@ -37,8 +36,8 @@ class MaaStatusEnum(IntEnum):
     invalid = 0
     pending = 1000
     running = 2000
-    success = 3000
-    failure = 4000
+    succeeded = 3000
+    failed = 4000
 
 
 MaaLoggingLevel = ctypes.c_int32
@@ -82,10 +81,10 @@ class MaaGlobalOptionEnum:
     # value: bool, eg: true; val_size: sizeof(bool)
     ShowHitDraw = 5
 
-    # Whether to callback debug message
+    # Whether to debug
     #
     # value: bool, eg: true; val_size: sizeof(bool)
-    DebugMessage = 6
+    DebugMode = 6
 
 
 class MaaCtrlOptionEnum:
@@ -378,7 +377,6 @@ class NodeDetail:
     node_id: int
     name: str
     recognition: RecognitionDetail
-    times: int
     completed: bool
 
 

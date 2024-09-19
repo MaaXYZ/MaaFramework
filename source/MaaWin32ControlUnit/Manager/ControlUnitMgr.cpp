@@ -6,16 +6,10 @@
 
 MAA_CTRL_UNIT_NS_BEGIN
 
-ControlUnitMgr::ControlUnitMgr(
-    HWND hWnd,
-    std::shared_ptr<ScreencapBase> screencap_unit,
-    std::shared_ptr<InputBase> input_unit,
-    MaaNotificationCallback callback,
-    void* callback_arg)
+ControlUnitMgr::ControlUnitMgr(HWND hWnd, std::shared_ptr<ScreencapBase> screencap_unit, std::shared_ptr<InputBase> input_unit)
     : hwnd_(hWnd)
     , input_(std::move(input_unit))
     , screencap_(std::move(screencap_unit))
-    , notifier(callback, callback_arg)
 {
 }
 

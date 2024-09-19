@@ -83,7 +83,7 @@ std::ostream& operator<<(std::ostream& os, const Action& action);
 class ControllerAgent : public MaaController
 {
 public:
-    ControllerAgent(MaaNotificationCallback callback, void* callback_arg);
+    ControllerAgent(MaaNotificationCallback notify, void* notify_trans_arg);
     virtual ~ControllerAgent() override;
 
 public: // MaaController
@@ -139,7 +139,7 @@ protected:
     virtual bool _input_text(InputTextParam param) = 0;
 
 protected:
-    MessageNotifier<MaaNotificationCallback> notifier;
+    MessageNotifier notifier;
 
 private:
     MaaCtrlId post_connection_impl();

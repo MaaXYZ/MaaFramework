@@ -44,5 +44,5 @@ bool pipeline_smoking(const std::filesystem::path& testset_dir)
 
     destroy();
 
-    return status == MaaStatus_Success;
+    return status == MaaStatus_Succeeded;
 }

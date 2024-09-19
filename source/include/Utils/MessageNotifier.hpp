@@ -5,32 +5,30 @@
 
 MAA_NS_BEGIN
 
-template <typename Callback, typename CallbackArg = void*>
-requires std::is_constructible_v<MaaNotificationCallback, Callback>
 class MessageNotifier : public NonCopyable
 {
 public:
-    MessageNotifier(Callback callback, CallbackArg callback_arg)
-        : callback_(callback)
-        , callback_arg_(callback_arg)
+    MessageNotifier(MaaNotificationCallback notify, void* notify_trans_arg)
+        : notify_(notify)
+        , notify_trans_arg_(notify_trans_arg)
     {
     }
 
-    void notify(std::string_view msg, const json::value& details = json::value())
+    void notify(std::string_view msg, const json::value& details)
     {
-        LogFunc << VAR_VOIDP(callback_) << VAR_VOIDP(callback_arg_) << VAR(msg) << VAR(details);
+        LogFunc << VAR_VOIDP(notify_) << VAR_VOIDP(notify_trans_arg_) << VAR(msg) << VAR(details);
 
-        if (!callback_) {
+        if (!notify_) {
             return;
         }
 
         const std::string str_detail = details.to_string();
-        callback_(msg.data(), str_detail.c_str(), callback_arg_);
+        notify_(msg.data(), str_detail.c_str(), notify_trans_arg_);
     }
 
 private:
-    Callback callback_ = nullptr;
-    CallbackArg callback_arg_ = nullptr;
+    MaaNotificationCallback notify_ = nullptr;
+    void* notify_trans_arg_ = nullptr;
 };
 
 MAA_NS_END

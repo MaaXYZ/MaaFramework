@@ -9,43 +9,43 @@
 MAA_CTRL_NS_BEGIN
 
 CustomControllerAgent::CustomControllerAgent(
-    MaaCustomControllerCallbacks* handle,
-    void* handle_arg,
-    MaaNotificationCallback callback,
-    void* callback_arg)
-    : ControllerAgent(callback, callback_arg)
-    , handle_(handle)
-    , handle_arg_(handle_arg)
+    MaaCustomControllerCallbacks* controller,
+    void* controller_arg,
+    MaaNotificationCallback notify,
+    void* notify_trans_arg)
+    : ControllerAgent(notify, notify_trans_arg)
+    , controller_(controller)
+    , controller_arg_(controller_arg)
 {
-    LogDebug << VAR_VOIDP(handle_) << VAR_VOIDP(handle_arg_) << VAR_VOIDP(handle->connect) << VAR_VOIDP(handle->request_uuid)
-             << VAR_VOIDP(handle->start_app) << VAR_VOIDP(handle->stop_app) << VAR_VOIDP(handle->screencap) << VAR_VOIDP(handle->click)
-             << VAR_VOIDP(handle->swipe) << VAR_VOIDP(handle->touch_down) << VAR_VOIDP(handle->touch_move) << VAR_VOIDP(handle->touch_up)
-             << VAR_VOIDP(handle->press_key) << VAR_VOIDP(handle->input_text);
+    LogDebug << VAR_VOIDP(controller_) << VAR_VOIDP(controller_arg_) << VAR_VOIDP(controller->connect) << VAR_VOIDP(controller->request_uuid)
+             << VAR_VOIDP(controller->start_app) << VAR_VOIDP(controller->stop_app) << VAR_VOIDP(controller->screencap) << VAR_VOIDP(controller->click)
+             << VAR_VOIDP(controller->swipe) << VAR_VOIDP(controller->touch_down) << VAR_VOIDP(controller->touch_move) << VAR_VOIDP(controller->touch_up)
+             << VAR_VOIDP(controller->press_key) << VAR_VOIDP(controller->input_text);
 }
 
 bool CustomControllerAgent::_connect()
 {
-    LogFunc << VAR_VOIDP(handle_) << VAR_VOIDP(handle_->connect);
+    LogFunc << VAR_VOIDP(controller_) << VAR_VOIDP(controller_->connect);
 
-    if (!handle_ || !handle_->connect) {
-        LogError << "handle_ or handle_->connect is nullptr";
+    if (!controller_ || !controller_->connect) {
+        LogError << "controller_ or controller_->connect is nullptr";
         return false;
     }
 
-    return handle_->connect(handle_arg_);
+    return controller_->connect(controller_arg_);
 }
 
 std::optional<std::string> CustomControllerAgent::_request_uuid()
 {
-    LogFunc << VAR_VOIDP(handle_) << VAR_VOIDP(handle_->request_uuid);
+    LogFunc << VAR_VOIDP(controller_) << VAR_VOIDP(controller_->request_uuid);
 
-    if (!handle_ || !handle_->request_uuid) {
-        LogError << "handle_ or handle_->request_uuid is nullptr";
+    if (!controller_ || !controller_->request_uuid) {
+        LogError << "controller_ or controller_->request_uuid is nullptr";
         return std::nullopt;
     }
 
     StringBuffer buffer;
-    bool ret = handle_->request_uuid(handle_arg_, &buffer);
+    bool ret = controller_->request_uuid(controller_arg_, &buffer);
     if (!ret) {
         LogError << "failed to request_uuid" << VAR(ret);
         return std::nullopt;
@@ -55,39 +55,39 @@ std::optional<std::string> CustomControllerAgent::_request_uuid()
 
 bool CustomControllerAgent::_start_app(AppParam param)
 {
-    LogFunc << VAR_VOIDP(handle_) << VAR_VOIDP(handle_->start_app) << VAR(param.package);
+    LogFunc << VAR_VOIDP(controller_) << VAR_VOIDP(controller_->start_app) << VAR(param.package);
 
-    if (!handle_ || !handle_->start_app) {
-        LogError << "handle_ or handle_->start_app is nullptr";
+    if (!controller_ || !controller_->start_app) {
+        LogError << "controller_ or controller_->start_app is nullptr";
         return false;
     }
 
-    return handle_->start_app(param.package.c_str(), handle_arg_);
+    return controller_->start_app(param.package.c_str(), controller_arg_);
 }
 
 bool CustomControllerAgent::_stop_app(AppParam param)
 {
-    LogFunc << VAR_VOIDP(handle_) << VAR_VOIDP(handle_->stop_app) << VAR(param.package);
+    LogFunc << VAR_VOIDP(controller_) << VAR_VOIDP(controller_->stop_app) << VAR(param.package);
 
-    if (!handle_ || !handle_->stop_app) {
-        LogError << "handle_ or handle_->stop_app is nullptr";
+    if (!controller_ || !controller_->stop_app) {
+        LogError << "controller_ or controller_->stop_app is nullptr";
         return false;
     }
 
-    return handle_->stop_app(param.package.c_str(), handle_arg_);
+    return controller_->stop_app(param.package.c_str(), controller_arg_);
 }
 
 std::optional<cv::Mat> CustomControllerAgent::_screencap()
 {
-    LogFunc << VAR_VOIDP(handle_) << VAR_VOIDP(handle_->screencap);
+    LogFunc << VAR_VOIDP(controller_) << VAR_VOIDP(controller_->screencap);
 
-    if (!handle_ || !handle_->screencap) {
-        LogError << "handle_ or handle_->screencap is nullptr";
+    if (!controller_ || !controller_->screencap) {
+        LogError << "controller_ or controller_->screencap is nullptr";
         return std::nullopt;
     }
 
     ImageBuffer buffer;
-    bool ret = handle_->screencap(handle_arg_, &buffer);
+    bool ret = controller_->screencap(controller_arg_, &buffer);
     if (!ret) {
         LogError << "failed to cached_image" << VAR(ret);
         return std::nullopt;
@@ -98,88 +98,88 @@ std::optional<cv::Mat> CustomControllerAgent::_screencap()
 
 bool CustomControllerAgent::_click(ClickParam param)
 {
-    LogFunc << VAR_VOIDP(handle_) << VAR_VOIDP(handle_->click) << VAR(param.x) << VAR(param.y);
+    LogFunc << VAR_VOIDP(controller_) << VAR_VOIDP(controller_->click) << VAR(param.x) << VAR(param.y);
 
-    if (!handle_ || !handle_->click) {
-        LogError << "handle_ or handle_->click is nullptr";
+    if (!controller_ || !controller_->click) {
+        LogError << "controller_ or controller_->click is nullptr";
         return false;
     }
 
-    return handle_->click(param.x, param.y, handle_arg_);
+    return controller_->click(param.x, param.y, controller_arg_);
 }
 
 bool CustomControllerAgent::_swipe(SwipeParam param)
 {
-    LogFunc << VAR_VOIDP(handle_) << VAR_VOIDP(handle_->swipe) << VAR(param.x1) << VAR(param.x2) << VAR(param.y1) << VAR(param.y2)
+    LogFunc << VAR_VOIDP(controller_) << VAR_VOIDP(controller_->swipe) << VAR(param.x1) << VAR(param.x2) << VAR(param.y1) << VAR(param.y2)
             << VAR(param.duration);
 
-    if (!handle_ || !handle_->swipe) {
-        LogError << "handle_ or handle_->swipe is nullptr";
+    if (!controller_ || !controller_->swipe) {
+        LogError << "controller_ or controller_->swipe is nullptr";
         return false;
     }
-    return handle_->swipe(param.x1, param.y1, param.x2, param.y2, param.duration, handle_arg_);
+    return controller_->swipe(param.x1, param.y1, param.x2, param.y2, param.duration, controller_arg_);
 }
 
 bool CustomControllerAgent::_touch_down(TouchParam param)
 {
-    LogFunc << VAR_VOIDP(handle_) << VAR_VOIDP(handle_->touch_down) << VAR(param.contact) << VAR(param.x) << VAR(param.y)
+    LogFunc << VAR_VOIDP(controller_) << VAR_VOIDP(controller_->touch_down) << VAR(param.contact) << VAR(param.x) << VAR(param.y)
             << VAR(param.pressure);
 
-    if (!handle_ || !handle_->touch_down) {
-        LogError << "handle_ or handle_->touch_down is nullptr";
+    if (!controller_ || !controller_->touch_down) {
+        LogError << "controller_ or controller_->touch_down is nullptr";
         return false;
     }
 
-    return handle_->touch_down(param.contact, param.x, param.y, param.pressure, handle_arg_);
+    return controller_->touch_down(param.contact, param.x, param.y, param.pressure, controller_arg_);
 }
 
 bool CustomControllerAgent::_touch_move(TouchParam param)
 {
-    LogFunc << VAR_VOIDP(handle_) << VAR_VOIDP(handle_->touch_move) << VAR(param.contact) << VAR(param.x) << VAR(param.y)
+    LogFunc << VAR_VOIDP(controller_) << VAR_VOIDP(controller_->touch_move) << VAR(param.contact) << VAR(param.x) << VAR(param.y)
             << VAR(param.pressure);
 
-    if (!handle_ || !handle_->touch_move) {
-        LogError << "handle_ or handle_->touch_move is nullptr";
+    if (!controller_ || !controller_->touch_move) {
+        LogError << "controller_ or controller_->touch_move is nullptr";
         return false;
     }
 
-    return handle_->touch_move(param.contact, param.x, param.y, param.pressure, handle_arg_);
+    return controller_->touch_move(param.contact, param.x, param.y, param.pressure, controller_arg_);
 }
 
 bool CustomControllerAgent::_touch_up(TouchParam param)
 {
-    LogFunc << VAR_VOIDP(handle_) << VAR_VOIDP(handle_->touch_up) << VAR(param.contact);
+    LogFunc << VAR_VOIDP(controller_) << VAR_VOIDP(controller_->touch_up) << VAR(param.contact);
 
-    if (!handle_ || !handle_->touch_up) {
-        LogError << "handle_ or handle_->touch_up is nullptr";
+    if (!controller_ || !controller_->touch_up) {
+        LogError << "controller_ or controller_->touch_up is nullptr";
         return false;
     }
 
-    return handle_->touch_up(param.contact, handle_arg_);
+    return controller_->touch_up(param.contact, controller_arg_);
 }
 
 bool CustomControllerAgent::_press_key(PressKeyParam param)
 {
-    LogFunc << VAR_VOIDP(handle_) << VAR_VOIDP(handle_->press_key) << VAR(param.keycode);
+    LogFunc << VAR_VOIDP(controller_) << VAR_VOIDP(controller_->press_key) << VAR(param.keycode);
 
-    if (!handle_ || !handle_->press_key) {
-        LogError << "handle_ or handle_->press_key is nullptr";
+    if (!controller_ || !controller_->press_key) {
+        LogError << "controller_ or controller_->press_key is nullptr";
         return false;
     }
 
-    return handle_->press_key(param.keycode, handle_arg_);
+    return controller_->press_key(param.keycode, controller_arg_);
 }
 
 bool CustomControllerAgent::_input_text(InputTextParam param)
 {
-    LogFunc << VAR_VOIDP(handle_) << VAR_VOIDP(handle_->input_text) << VAR(param.text);
+    LogFunc << VAR_VOIDP(controller_) << VAR_VOIDP(controller_->input_text) << VAR(param.text);
 
-    if (!handle_ || !handle_->input_text) {
-        LogError << "handle_ or handle_->input_text is nullptr";
+    if (!controller_ || !controller_->input_text) {
+        LogError << "controller_ or controller_->input_text is nullptr";
         return false;
     }
 
-    return handle_->input_text(param.text.c_str(), handle_arg_);
+    return controller_->input_text(param.text.c_str(), controller_arg_);
 }
 
 MAA_CTRL_NS_END

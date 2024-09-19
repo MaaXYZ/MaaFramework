@@ -39,7 +39,6 @@ Context::Context(const Context& other)
     , task_id_(other.task_id_)
     , tasker_(other.tasker_)
     , pipeline_override_(other.pipeline_override_)
-    , action_times_map_(other.action_times_map_)
 // don't copy clone_holder_
 {
     LogTrace << VAR(other.getptr());
@@ -106,10 +105,10 @@ bool Context::override_pipeline(const json::value& pipeline_override)
         pipeline_override_.insert_or_assign(key, std::move(result));
     }
 
-    return true;
+    return check_pipeline();
 }
 
-void Context::override_next(const std::string& name, const std::vector<std::string>& next)
+bool Context::override_next(const std::string& name, const std::vector<std::string>& next)
 {
     LogFunc << VAR(getptr()) << VAR(name) << VAR(next);
 
@@ -117,6 +116,8 @@ void Context::override_next(const std::string& name, const std::vector<std::stri
     data.next = next;
 
     pipeline_override_.insert_or_assign(name, std::move(data));
+
+    return check_pipeline();
 }
 
 Context* Context::clone() const
@@ -164,6 +165,25 @@ Context::PipelineData Context::get_pipeline_data(const std::string& task_name)
     }
 
     return resource->default_pipeline().get_pipeline();
+}
+
+bool Context::check_pipeline() const
+{
+    if (!tasker_) {
+        LogError << "tasker is null";
+        return false;
+    }
+    auto* resource = tasker_->resource();
+    if (!resource) {
+        LogError << "resource not binded";
+        return false;
+    }
+
+    auto raw = resource->pipeline_res().get_pipeline_data_map();
+    auto all = pipeline_override_;
+    all.merge(raw);
+
+    return MAA_RES_NS::PipelineResMgr::check_all_next_list(all);
 }
 
 MAA_TASK_NS_END

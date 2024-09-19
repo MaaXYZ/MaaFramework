@@ -28,29 +28,29 @@ extern "C"
         MaaAdbInputMethod input_methods,
         const char* config,
         const char* agent_path,
-        MaaNotificationCallback callback,
-        void* callback_arg);
+        MaaNotificationCallback notify,
+        void* notify_trans_arg);
 
     MAA_FRAMEWORK_API MaaController* MaaWin32ControllerCreate(
         void* hWnd,
         MaaWin32ScreencapMethod screencap_method,
         MaaWin32InputMethod input_method,
-        MaaNotificationCallback callback,
-        void* callback_arg);
+        MaaNotificationCallback notify,
+        void* notify_trans_arg);
 
     MAA_FRAMEWORK_API MaaController* MaaCustomControllerCreate(
-        MaaCustomControllerCallbacks* handle,
-        void* handle_arg,
-        MaaNotificationCallback callback,
-        void* callback_arg);
+        MaaCustomControllerCallbacks* controller,
+        void* controller_arg,
+        MaaNotificationCallback notify,
+        void* notify_trans_arg);
 
     MAA_FRAMEWORK_API MaaController* MaaDbgControllerCreate(
         const char* read_path,
         const char* write_path,
         MaaDbgControllerType type,
         const char* config,
-        MaaNotificationCallback callback,
-        void* callback_arg);
+        MaaNotificationCallback notify,
+        void* notify_trans_arg);
 
     MAA_FRAMEWORK_API void MaaControllerDestroy(MaaController* ctrl);
 

@@ -25,8 +25,8 @@ public:
         const std::filesystem::path& resource_path,
         const std::filesystem::path& user_path,
         bool directly,
-        MaaNotificationCallback callback,
-        void* callback_arg);
+        MaaNotificationCallback notify,
+        void* notify_trans_arg);
 
 private:
     std::map<uint64_t, std::map<std::string, MAA_PROJECT_INTERFACE_NS::CustomRecognitionSession>> custom_recognitions_;

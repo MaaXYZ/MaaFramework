@@ -10,13 +10,13 @@ class Status:
         self._status = MaaStatusEnum(status)
 
     def done(self) -> bool:
-        return self._status in [MaaStatusEnum.success, MaaStatusEnum.failure]
+        return self._status in [MaaStatusEnum.succeeded, MaaStatusEnum.failed]
 
-    def success(self) -> bool:
-        return self._status == MaaStatusEnum.success
+    def succeeded(self) -> bool:
+        return self._status == MaaStatusEnum.succeeded
 
-    def failure(self) -> bool:
-        return self._status == MaaStatusEnum.failure
+    def failed(self) -> bool:
+        return self._status == MaaStatusEnum.failed
 
     def pending(self) -> bool:
         return self._status == MaaStatusEnum.pending
@@ -46,11 +46,11 @@ class Job:
     def done(self) -> bool:
         return self.status().done()
 
-    def success(self) -> bool:
-        return self.status().success()
+    def succeeded(self) -> bool:
+        return self.status().succeeded()
 
-    def failure(self) -> bool:
-        return self.status().failure()
+    def failed(self) -> bool:
+        return self.status().failed()
 
     def pending(self) -> bool:
         return self.status().pending()

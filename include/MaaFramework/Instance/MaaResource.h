@@ -19,7 +19,7 @@ extern "C"
 {
 #endif
 
-    MAA_FRAMEWORK_API MaaResource* MaaResourceCreate(MaaNotificationCallback callback, void* callback_arg);
+    MAA_FRAMEWORK_API MaaResource* MaaResourceCreate(MaaNotificationCallback notify, void* notify_trans_arg);
 
     MAA_FRAMEWORK_API void MaaResourceDestroy(MaaResource* res);
 

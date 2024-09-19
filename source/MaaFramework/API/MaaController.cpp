@@ -15,38 +15,31 @@ MaaController* MaaAdbControllerCreate(
     MaaAdbInputMethod input_methods,
     const char* config,
     const char* agent_path,
-    MaaNotificationCallback callback,
-    void* callback_arg)
+    MaaNotificationCallback notify,
+    void* notify_trans_arg)
 {
     LogFunc << VAR(adb_path) << VAR(address) << VAR(screencap_methods) << VAR(input_methods) << VAR(config) << VAR(agent_path)
-            << VAR_VOIDP(callback) << VAR_VOIDP(callback_arg);
+            << VAR_VOIDP(notify) << VAR_VOIDP(notify_trans_arg);
 
-    auto control_unit = MAA_NS::AdbControlUnitLibraryHolder::create_control_unit(
-        adb_path,
-        address,
-        screencap_methods,
-        input_methods,
-        config,
-        agent_path,
-        callback,
-        callback_arg);
+    auto control_unit =
+        MAA_NS::AdbControlUnitLibraryHolder::create_control_unit(adb_path, address, screencap_methods, input_methods, config, agent_path);
 
     if (!control_unit) {
         LogError << "Failed to create control unit";
         return nullptr;
     }
 
-    return new MAA_CTRL_NS::GeneralControllerAgent(std::move(control_unit), callback, callback_arg);
+    return new MAA_CTRL_NS::GeneralControllerAgent(std::move(control_unit), notify, notify_trans_arg);
 }
 
 MaaController* MaaWin32ControllerCreate(
     void* hWnd,
     MaaWin32ScreencapMethod screencap_method,
     MaaWin32InputMethod input_method,
-    MaaNotificationCallback callback,
-    void* callback_arg)
+    MaaNotificationCallback notify,
+    void* notify_trans_arg)
 {
-    LogFunc << VAR_VOIDP(hWnd) << VAR(screencap_method) << VAR(input_method) << VAR_VOIDP(callback) << VAR_VOIDP(callback_arg);
+    LogFunc << VAR_VOIDP(hWnd) << VAR(screencap_method) << VAR(input_method) << VAR_VOIDP(notify) << VAR_VOIDP(notify_trans_arg);
 
 #ifndef _WIN32
 
@@ -60,30 +53,29 @@ MaaController* MaaWin32ControllerCreate(
         return nullptr;
     }
 
-    auto control_unit =
-        MAA_NS::Win32ControlUnitLibraryHolder::create_control_unit(hWnd, screencap_method, input_method, callback, callback_arg);
+    auto control_unit = MAA_NS::Win32ControlUnitLibraryHolder::create_control_unit(hWnd, screencap_method, input_method);
 
     if (!control_unit) {
         LogError << "Failed to create control unit";
         return nullptr;
     }
 
-    return new MAA_CTRL_NS::GeneralControllerAgent(std::move(control_unit), callback, callback_arg);
+    return new MAA_CTRL_NS::GeneralControllerAgent(std::move(control_unit), notify, notify_trans_arg);
 
 #endif
 }
 
 MaaController*
-    MaaCustomControllerCreate(MaaCustomControllerCallbacks* handle, void* handle_arg, MaaNotificationCallback callback, void* callback_arg)
+    MaaCustomControllerCreate(MaaCustomControllerCallbacks* controller, void* controller_arg, MaaNotificationCallback notify, void* notify_trans_arg)
 {
-    LogFunc << VAR(handle) << VAR(handle_arg) << VAR_VOIDP(callback) << VAR_VOIDP(callback_arg);
+    LogFunc << VAR(controller) << VAR(controller_arg) << VAR_VOIDP(notify) << VAR_VOIDP(notify_trans_arg);
 
-    if (!handle) {
-        LogError << "handle is null";
+    if (!controller) {
+        LogError << "controller is null";
         return nullptr;
     }
 
-    return new MAA_CTRL_NS::CustomControllerAgent(handle, handle_arg, callback, callback_arg);
+    return new MAA_CTRL_NS::CustomControllerAgent(controller, controller_arg, notify, notify_trans_arg);
 }
 
 MaaController* MaaDbgControllerCreate(
@@ -91,10 +83,10 @@ MaaController* MaaDbgControllerCreate(
     const char* write_path,
     MaaDbgControllerType type,
     const char* config,
-    MaaNotificationCallback callback,
-    void* callback_arg)
+    MaaNotificationCallback notify,
+    void* notify_trans_arg)
 {
-    LogFunc << VAR(read_path) << VAR(write_path) << VAR(type) << VAR_VOIDP(callback) << VAR_VOIDP(callback_arg);
+    LogFunc << VAR(read_path) << VAR(write_path) << VAR(type) << VAR_VOIDP(notify) << VAR_VOIDP(notify_trans_arg);
 
     std::ignore = write_path;
     std::ignore = config;
@@ -106,7 +98,7 @@ MaaController* MaaDbgControllerCreate(
         return nullptr;
     }
 
-    return new MAA_CTRL_NS::GeneralControllerAgent(std::move(control_unit), callback, callback_arg);
+    return new MAA_CTRL_NS::GeneralControllerAgent(std::move(control_unit), notify, notify_trans_arg);
 }
 
 void MaaControllerDestroy(MaaController* ctrl)

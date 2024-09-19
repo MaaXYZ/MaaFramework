@@ -6,10 +6,10 @@ from maa.custom_recognition import CustomRecognition
 
 def main():
     # 注册自定义动作
-    Toolkit.register_pi_custom_action("MyAct", MyAction())
+    Toolkit.pi_register_custom_action("MyAct", MyAction())
 
     # 启动 MaaPiCli
-    Toolkit.run_pi_cli("C:/MaaXXX/resource", "C:/MaaXXX/cache", False)
+    Toolkit.pi_run_cli("C:/MaaXXX/resource", "C:/MaaXXX/cache", False)
 
 
 class MyAction(CustomAction):

@@ -31,7 +31,7 @@ class CustomAction(ABC):
         self,
         context: Context,
         argv: RunArg,
-    ) -> RunResult:
+    ) -> Union[RunResult, bool]:
         raise NotImplementedError
 
     @property
@@ -63,14 +63,14 @@ class CustomAction(ABC):
         ).value
 
         context = Context(c_context)
-        task_detail = context.tasker._get_task_detail(int(c_task_id))
-        reco_detail = context.tasker._get_recognition_detail(int(c_reco_id))
+        task_detail = context.tasker.get_task_detail(int(c_task_id))
+        reco_detail = context.tasker.get_recognition_detail(int(c_reco_id))
         if not task_detail or not reco_detail:
             return int(False)
 
         box = RectBuffer(c_box).get()
 
-        result: CustomAction.RunResult = self.run(
+        result: Union[CustomAction.RunResult, bool] = self.run(
             context,
             CustomAction.RunArg(
                 task_detail=task_detail,
@@ -82,4 +82,11 @@ class CustomAction(ABC):
             ),
         )
 
-        return int(result.success)
+        if isinstance(result, CustomAction.RunResult):
+            return int(result.success)
+
+        elif isinstance(result, bool):
+            return int(result)
+
+        else:
+            raise TypeError(f"Invalid return type: {result!r}")

@@ -106,8 +106,7 @@ MaaBool MaaContextOverrideNext(MaaContext* context, const char* name, const MaaS
         next.emplace_back(next_list->at(i).get());
     }
 
-    context->override_next(name, next);
-    return true;
+    return context->override_next(name, next);
 }
 
 MaaTaskId MaaContextGetTaskId(const MaaContext* context)

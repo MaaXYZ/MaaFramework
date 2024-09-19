@@ -149,15 +149,8 @@ std::vector<std::string> AdbDeviceFinder::request_adb_serials(const std::filesys
 
     std::string str_adb = path_to_utf8_string(adb_path);
 
-    auto control_unit = AdbControlUnitLibraryHolder::create_control_unit(
-        str_adb.c_str(),
-        "",
-        MaaAdbScreencapMethod_None,
-        MaaAdbInputMethod_None,
-        "{}",
-        "",
-        nullptr,
-        nullptr);
+    auto control_unit =
+        AdbControlUnitLibraryHolder::create_control_unit(str_adb.c_str(), "", MaaAdbScreencapMethod_None, MaaAdbInputMethod_None, "{}", "");
 
     if (!control_unit) {
         LogError << "Failed to create control unit";
@@ -190,9 +183,7 @@ bool AdbDeviceFinder::request_adb_connect(const std::filesystem::path& adb_path,
         MaaAdbScreencapMethod_None,
         MaaAdbInputMethod_None,
         "{}",
-        "",
-        nullptr,
-        nullptr);
+        "");
 
     if (!control_unit) {
         LogError << "Failed to create control unit";

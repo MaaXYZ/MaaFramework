@@ -18,8 +18,8 @@ extern "C"
         const char* resource_path,
         const char* user_path,
         MaaBool directly,
-        MaaNotificationCallback callback,
-        void* callback_arg);
+        MaaNotificationCallback notify,
+        void* notify_trans_arg);
 
 #ifdef __cplusplus
 }

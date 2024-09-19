@@ -8,7 +8,7 @@ MAA_CTRL_NS_BEGIN
 class CustomControllerAgent : public ControllerAgent
 {
 public:
-    CustomControllerAgent(MaaCustomControllerCallbacks* handle, void* handle_arg, MaaNotificationCallback callback, void* callback_arg);
+    CustomControllerAgent(MaaCustomControllerCallbacks* controller, void* controller_arg, MaaNotificationCallback notify, void* notify_trans_arg);
     virtual ~CustomControllerAgent() override = default;
 
 protected:
@@ -26,8 +26,8 @@ protected:
     virtual bool _input_text(InputTextParam param) override;
 
 private:
-    MaaCustomControllerCallbacks* handle_ = nullptr;
-    void* handle_arg_ = nullptr;
+    MaaCustomControllerCallbacks* controller_ = nullptr;
+    void* controller_arg_ = nullptr;
 };
 
 MAA_CTRL_NS_END

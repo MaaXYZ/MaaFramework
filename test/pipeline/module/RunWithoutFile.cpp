@@ -60,7 +60,7 @@ bool run_without_file(const std::filesystem::path& testset_dir)
     MaaResourceDestroy(resource_handle);
     MaaControllerDestroy(controller_handle);
 
-    return status == MaaStatus_Success;
+    return status == MaaStatus_Succeeded;
 }
 
 MaaBool my_action(

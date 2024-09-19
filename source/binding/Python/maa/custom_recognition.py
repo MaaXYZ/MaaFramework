@@ -35,7 +35,7 @@ class CustomRecognition(ABC):
         self,
         context: Context,
         argv: AnalyzeArg,
-    ) -> AnalyzeResult:
+    ) -> Union[AnalyzeResult, Optional[RectType]]:
         raise NotImplementedError
 
     @property
@@ -66,28 +66,41 @@ class CustomRecognition(ABC):
         self: CustomRecognition = ctypes.cast(c_transparent_arg, ctypes.py_object).value
 
         context = Context(c_context)
-        task_detail = context.tasker._get_task_detail(int(c_task_id))
+        task_detail = context.tasker.get_task_detail(int(c_task_id))
         if not task_detail:
             return int(False)
 
         image = ImageBuffer(c_image).get()
 
-        result: CustomRecognition.AnalyzeResult = self.analyze(
-            context,
-            CustomRecognition.AnalyzeArg(
-                task_detail=task_detail,
-                current_task_name=c_current_task_name.decode(),
-                custom_recognition_name=c_custom_reco_name.decode(),
-                custom_recognition_param=c_custom_reco_param.decode(),
-                image=image,
-                roi=RectBuffer(c_roi).get(),
-            ),
+        result: Union[CustomRecognition.AnalyzeResult, Optional[RectType]] = (
+            self.analyze(
+                context,
+                CustomRecognition.AnalyzeArg(
+                    task_detail=task_detail,
+                    current_task_name=c_current_task_name.decode(),
+                    custom_recognition_name=c_custom_reco_name.decode(),
+                    custom_recognition_param=c_custom_reco_param.decode(),
+                    image=image,
+                    roi=RectBuffer(c_roi).get(),
+                ),
+            )
         )
 
-        if result.box:
-            RectBuffer(c_out_box).set(result.box)
+        rect_buffer = RectBuffer(c_out_box)
+        detail_buffer = StringBuffer(c_out_detail)
 
-        StringBuffer(c_out_detail).set(result.detail)
+        if isinstance(result, CustomRecognition.AnalyzeResult):
+            if result.box:
+                rect_buffer.set(result.box)
+            detail_buffer.set(result.detail)
+            return int(result.box is not None)
 
-        ret = result.box is not None
-        return int(ret)
+        elif result is None:
+            return int(False)
+
+        elif isinstance(result, RectType.__args__):
+            rect_buffer.set(result)
+            return int(True)
+
+        else:
+            raise ValueError("Invalid return type")

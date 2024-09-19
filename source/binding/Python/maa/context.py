@@ -40,7 +40,7 @@ class Context:
         if not task_id:
             return None
 
-        return self.tasker._get_task_detail(task_id)
+        return self.tasker.get_task_detail(task_id)
 
     def run_recognition(
         self, entry: str, image: numpy.ndarray, pipeline_override: Dict = {}
@@ -57,7 +57,7 @@ class Context:
         if not reco_id:
             return None
 
-        return self.tasker._get_recognition_detail(reco_id)
+        return self.tasker.get_recognition_detail(reco_id)
 
     def run_action(
         self,
@@ -79,7 +79,7 @@ class Context:
         if not node_id:
             return None
 
-        return self.tasker._get_node_detail(node_id)
+        return self.tasker.get_node_detail(node_id)
 
     def override_pipeline(self, pipeline_override: Dict) -> bool:
         return bool(

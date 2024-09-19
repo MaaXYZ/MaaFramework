@@ -12,8 +12,8 @@ class GeneralControllerAgent : public ControllerAgent
 public:
     GeneralControllerAgent(
         std::shared_ptr<MAA_CTRL_UNIT_NS::ControlUnitAPI> control_unit,
-        MaaNotificationCallback callback,
-        void* callback_arg);
+        MaaNotificationCallback notify,
+        void* notify_trans_arg);
     virtual ~GeneralControllerAgent() override = default;
 
 protected:
