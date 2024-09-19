@@ -109,8 +109,8 @@ def pack(pack_dir: str, info_path: str):
         "macos-aarch64": "macosx_13_0_arm64",
         "linux-x86_64": "manylinux2014_x86_64",
         "linux-aarch64": "manylinux2014_aarch64",
-        "android-x86_64": "android_x86_64",
-        "android-aarch64": "android_arm64_v8a",
+        # "android-x86_64": "android_x86_64",
+        # "android-aarch64": "android_arm64_v8a",
     }
 
     os.mkdir(WHL_DIR)
