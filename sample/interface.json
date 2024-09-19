@@ -1,4 +1,6 @@
 {
+    "version": "1.0",
+    "message": "Welecome to MaaFramework!",
     "controller": [
         {
             "name": "安卓端",

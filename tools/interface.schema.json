@@ -45,16 +45,13 @@
                     "win32": {
                         "title": "Win32配置",
                         "type": "object",
-                        "default": {
-                            "method": "Find"
-                        },
                         "properties": {
-                            "class_name": {
+                            "class_regex": {
                                 "title": "搜索类名参数",
                                 "type": "string",
                                 "default": ""
                             },
-                            "window_name": {
+                            "window_regex": {
                                 "title": "搜索窗口名参数",
                                 "type": "string",
                                 "default": ""
@@ -68,12 +65,14 @@
                                 "type": "integer"
                             }
                         },
-                        "additionalProperties": false,
-                        "required": ["method"]
+                        "additionalProperties": false
                     }
                 },
                 "additionalProperties": false,
-                "required": ["name", "type"]
+                "required": [
+                    "name",
+                    "type"
+                ]
             }
         },
         "resource": {
@@ -83,7 +82,9 @@
                 "type": "object",
                 "default": {
                     "name": "Official",
-                    "path": ["{PROJECT_DIR}/resource/base"]
+                    "path": [
+                        "{PROJECT_DIR}/resource/base"
+                    ]
                 },
                 "properties": {
                     "name": {
@@ -100,7 +101,10 @@
                     }
                 },
                 "additionalProperties": false,
-                "required": ["name", "path"]
+                "required": [
+                    "name",
+                    "path"
+                ]
             }
         },
         "task": {
@@ -134,7 +138,10 @@
                     }
                 },
                 "additionalProperties": false,
-                "required": ["name", "entry"]
+                "required": [
+                    "name",
+                    "entry"
+                ]
             }
         },
         "option": {
@@ -172,7 +179,9 @@
                         }
                     },
                     "additionalProperties": false,
-                    "required": ["cases"]
+                    "required": [
+                        "cases"
+                    ]
                 }
             }
         },
@@ -186,5 +195,9 @@
         }
     },
     "additionalProperties": false,
-    "required": ["controller", "resource", "task"]
+    "required": [
+        "controller",
+        "resource",
+        "task"
+    ]
 }
