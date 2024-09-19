@@ -73,10 +73,6 @@ RecoResult TaskBase::run_recognition(const cv::Mat& image, const PipelineData::N
         return {};
     }
 
-    if (list.empty()) {
-        return {};
-    }
-
     bool current_focus = context_->get_pipeline_data(cur_task_).focus;
 
     const json::value reco_list_cb_detail {

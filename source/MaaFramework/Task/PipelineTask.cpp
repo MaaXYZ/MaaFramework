@@ -31,7 +31,13 @@ bool PipelineTask::run()
 
     while (!next.empty() && !need_to_stop_) {
         cur_task_ = current.name;
-        auto [node_detail, is_interrupt] = run_reco_and_action(next, interrupt, current);
+
+        size_t next_size = next.size();
+        PipelineData::NextList list = std::move(next);
+        list.insert(list.end(), std::make_move_iterator(interrupt.begin()), std::make_move_iterator(interrupt.end()));
+
+        auto node_detail = run_reco_and_action(list, current);
+
         if (need_to_stop_) {
             LogError << "need_to_stop" << VAR(current.name);
             return true;
@@ -39,7 +45,10 @@ bool PipelineTask::run()
 
         if (node_detail.completed) {
             error_handling = false;
+
+            bool is_interrupt = (std::ranges::find(list, node_detail.name) - list.begin()) >= next_size;
             PipelineData hit_task = context_->get_pipeline_data(node_detail.name);
+
             if (is_interrupt || hit_task.is_sub) { // for compatibility with v1.x
                 LogInfo << "push task_stack:" << current.name;
                 task_stack.emplace(current.name);
@@ -80,10 +89,7 @@ void PipelineTask::post_stop()
     need_to_stop_ = true;
 }
 
-std::pair<NodeDetail, /* is interrupt */ bool> PipelineTask::run_reco_and_action(
-    const PipelineData::NextList& next,
-    const PipelineData::NextList& interrupt,
-    const PipelineData& pretask)
+NodeDetail PipelineTask::run_reco_and_action(const PipelineData::NextList& list, const PipelineData& pretask)
 {
     if (!tasker_) {
         LogError << "tasker is null";
@@ -91,7 +97,6 @@ std::pair<NodeDetail, /* is interrupt */ bool> PipelineTask::run_reco_and_action
     }
 
     RecoResult reco;
-    bool is_interrupt = false;
 
     const auto start_clock = std::chrono::steady_clock::now();
     std::chrono::steady_clock::time_point current_clock;
@@ -99,15 +104,8 @@ std::pair<NodeDetail, /* is interrupt */ bool> PipelineTask::run_reco_and_action
         current_clock = std::chrono::steady_clock::now();
         cv::Mat image = screencap();
 
-        reco = run_recognition(image, next);
+        reco = run_recognition(image, list);
         if (reco.box) { // hit
-            is_interrupt = false;
-            break;
-        }
-
-        reco = run_recognition(image, interrupt);
-        if (reco.box) { // hit
-            is_interrupt = true;
             break;
         }
 
@@ -126,8 +124,7 @@ std::pair<NodeDetail, /* is interrupt */ bool> PipelineTask::run_reco_and_action
     }
 
     auto node_detail = run_action(reco);
-
-    return std::make_pair(node_detail, is_interrupt);
+    return node_detail;
 }
 
 MAA_TASK_NS_END

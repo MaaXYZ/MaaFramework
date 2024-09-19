@@ -18,8 +18,7 @@ public:
     virtual void post_stop() override;
 
 private:
-    std::pair<NodeDetail, /* is interrupt */ bool>
-        run_reco_and_action(const PipelineData::NextList& next, const PipelineData::NextList& interrupt, const PipelineData& pretask);
+    NodeDetail run_reco_and_action(const PipelineData::NextList& list, const PipelineData& pretask);
 
 private:
     bool need_to_stop_ = false;
