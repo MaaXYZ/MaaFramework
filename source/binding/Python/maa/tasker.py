@@ -203,13 +203,13 @@ class Tasker:
         return Library.framework.MaaTaskerWait(self._handle, id)
 
     def _stop_status(self, id: int) -> MaaStatusEnum:
-        return MaaStatusEnum.success if not self.running else MaaStatusEnum.running
+        return MaaStatusEnum.succeeded if not self.running else MaaStatusEnum.running
 
     def _stop_wait(self, id: int) -> MaaStatusEnum:
         # TODO: 这个应该由 callback 来处理
         while self.running:
             time.sleep(0.1)
-        return MaaStatusEnum.success
+        return MaaStatusEnum.succeeded
 
     def _get_recognition_detail(self, reco_id: int) -> Optional[RecognitionDetail]:
         name = StringBuffer()
