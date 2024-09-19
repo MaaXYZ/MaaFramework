@@ -339,16 +339,16 @@ class Tasker:
         filterd_results: List[RecognitionResult] = []
         best_result: Optional[RecognitionResult] = None
 
-        j_all_results = raw_detail.get("all", [])
-        j_filterd_results = raw_detail.get("filtered", [])
-        j_best_result = raw_detail.get("best", None)
+        raw_all_results = raw_detail.get("all", [])
+        raw_filterd_results = raw_detail.get("filtered", [])
+        raw_best_result = raw_detail.get("best", None)
 
-        for j_result in j_all_results:
-            all_results.append(ResultType(**j_result))
-        for j_result in j_filterd_results:
-            filterd_results.append(ResultType(**j_result))
-        if j_best_result:
-            best_result = ResultType(**j_best_result)
+        for raw_result in raw_all_results:
+            all_results.append(ResultType(**raw_result))
+        for raw_result in raw_filterd_results:
+            filterd_results.append(ResultType(**raw_result))
+        if raw_best_result:
+            best_result = ResultType(**raw_best_result)
 
         return all_results, filterd_results, best_result
 
