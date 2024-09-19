@@ -51,7 +51,7 @@ public: // from MaaContextAPI
 public:
     PipelineData get_pipeline_data(const std::string& task_name);
 
-    auto& action_times() { return action_times_map_; }
+    uint64_t add_action_times(const std::string& name);
 
 private:
     MaaTaskId task_id_ = 0;

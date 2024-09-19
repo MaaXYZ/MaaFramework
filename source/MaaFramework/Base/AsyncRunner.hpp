@@ -122,7 +122,7 @@ inline void AsyncRunner<Item>::working()
         bool ret = process_(id, std::move(item));
 
         status_lock.lock();
-        status_map_[id] = ret ? MaaStatus_Success : MaaStatus_Failed;
+        status_map_[id] = ret ? MaaStatus_Succeeded : MaaStatus_Failed;
         status_lock.unlock();
 
         std::unique_lock<std::mutex> compl_lock(compl_mutex_);

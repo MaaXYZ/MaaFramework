@@ -48,10 +48,6 @@ protected:
     void set_node_detail(int64_t node_id, NodeDetail detail);
     void set_task_detail(TaskDetail detail);
 
-private:
-    void init();
-    bool debug_mode() const;
-
 protected:
     const MaaTaskId task_id_ = ++s_global_task_id;
     Tasker* tasker_ = nullptr;
@@ -60,6 +56,11 @@ protected:
     std::string cur_task_;
 
     std::shared_ptr<Context> context_ = nullptr;
+    
+private:
+    void init();
+    bool debug_mode() const;
+    void notify(std::string_view msg, const json::value detail);
 
 private:
     inline static std::atomic<MaaTaskId> s_global_task_id = 100'000'000;

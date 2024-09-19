@@ -188,7 +188,7 @@ bool ControllerAgent::click(const cv::Rect& r)
 bool ControllerAgent::click(const cv::Point& p)
 {
     auto id = post_click_impl(p.x, p.y);
-    return wait(id) == MaaStatus_Success;
+    return wait(id) == MaaStatus_Succeeded;
 }
 
 bool ControllerAgent::swipe(const cv::Rect& r1, const cv::Rect& r2, int duration)
@@ -199,26 +199,26 @@ bool ControllerAgent::swipe(const cv::Rect& r1, const cv::Rect& r2, int duration
 bool ControllerAgent::swipe(const cv::Point& p1, const cv::Point& p2, int duration)
 {
     auto id = post_swipe_impl(p1.x, p1.y, p2.x, p2.y, duration);
-    return wait(id) == MaaStatus_Success;
+    return wait(id) == MaaStatus_Succeeded;
 }
 
 bool ControllerAgent::press_key(int keycode)
 {
     auto id = post_press_key_impl(keycode);
-    return wait(id) == MaaStatus_Success;
+    return wait(id) == MaaStatus_Succeeded;
 }
 
 bool ControllerAgent::input_text(const std::string& text)
 {
     auto id = post_input_text_impl(text);
-    return wait(id) == MaaStatus_Success;
+    return wait(id) == MaaStatus_Succeeded;
 }
 
 cv::Mat ControllerAgent::screencap()
 {
     std::unique_lock<std::mutex> lock(image_mutex_);
     auto id = post_screencap_impl();
-    if (wait(id) != MaaStatus_Success) {
+    if (wait(id) != MaaStatus_Succeeded) {
         return {};
     }
     return image_.clone();
@@ -227,13 +227,13 @@ cv::Mat ControllerAgent::screencap()
 bool ControllerAgent::start_app(const std::string& package)
 {
     auto id = post({ .type = Action::Type::start_app, .param = AppParam { .package = package } });
-    return wait(id) == MaaStatus_Success;
+    return wait(id) == MaaStatus_Succeeded;
 }
 
 bool ControllerAgent::stop_app(const std::string& package)
 {
     auto id = post({ .type = Action::Type::stop_app, .param = AppParam { .package = package } });
-    return wait(id) == MaaStatus_Success;
+    return wait(id) == MaaStatus_Succeeded;
 }
 
 MaaCtrlId ControllerAgent::post(Action action)
@@ -343,7 +343,6 @@ bool ControllerAgent::handle_connect()
     if (recording()) {
         json::value info {
             { "type", "connect" },
-            { "success", connected_ },
             { "uuid", get_uuid() },
             { "version", MAA_VERSION },
         };
@@ -646,7 +645,7 @@ bool ControllerAgent::run_action(typename AsyncRunner<Action>::Id id, Action act
         { "action", std::move(ss).str() },
     };
     if (notify) {
-        notifier.notify(MaaMsg_Controller_Action_Started, cb_detail);
+        notifier.notify(MaaMsg_Controller_Action_Starting, cb_detail);
     }
 
     switch (action.type) {
@@ -695,7 +694,7 @@ bool ControllerAgent::run_action(typename AsyncRunner<Action>::Id id, Action act
     }
 
     if (notify) {
-        notifier.notify(ret ? MaaMsg_Controller_Action_Completed : MaaMsg_Controller_Action_Failed, cb_detail);
+        notifier.notify(ret ? MaaMsg_Controller_Action_Succeeded : MaaMsg_Controller_Action_Failed, cb_detail);
     }
 
     return ret;

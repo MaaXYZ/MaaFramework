@@ -166,4 +166,9 @@ Context::PipelineData Context::get_pipeline_data(const std::string& task_name)
     return resource->default_pipeline().get_pipeline();
 }
 
+uint64_t Context::add_action_times(const std::string& name)
+{
+    return ++action_times_map_[name];
+}
+
 MAA_TASK_NS_END

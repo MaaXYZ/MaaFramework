@@ -77,10 +77,16 @@ RecoResult TaskBase::run_recognition(const cv::Mat& image, const PipelineData::N
         return {};
     }
 
-    // if (debug_mode()) {
-    //     json::value cb_detail = basic_info() | json::object { { "list", json::array(list) } };
-    //     notify(MaaMsg_Task_Debug_ListToRecognize, cb_detail);
-    // }
+    bool current_focus = context_->get_pipeline_data(cur_task_).focus;
+
+    const json::value reco_list_cb_detail {
+        { "task_id", task_id() },
+        { "current", cur_task_ },
+        { "list", json::array(list) },
+    };
+    if (debug_mode() || current_focus) {
+        notify(MaaMsg_Task_RecognitionList_Starting, reco_list_cb_detail);
+    }
 
     Recognizer recognizer(tasker_, *context_, image);
 
@@ -88,16 +94,29 @@ RecoResult TaskBase::run_recognition(const cv::Mat& image, const PipelineData::N
         const auto& pipeline_data = context_->get_pipeline_data(name);
 
         if (!pipeline_data.enabled) {
-            LogDebug << "Task disabled or times over limit" << name << VAR(pipeline_data.enabled);
+            LogDebug << "Task disabled" << name << VAR(pipeline_data.enabled);
             continue;
+        }
+
+        if (debug_mode() || pipeline_data.focus) {
+            const json::value reco_cb_detail {
+                { "task_id", task_id() },
+                { "reco_id", 0 },
+                { "name", name },
+            };
+            notify(MaaMsg_Task_Recognition_Starting, reco_cb_detail);
         }
 
         RecoResult result = recognizer.recognize(pipeline_data);
 
-        // if (debug_mode()) {
-        //     json::value cb_detail = basic_info() | reco_detail_to_json(result);
-        //     notify(MaaMsg_Task_Debug_RecognitionResult, cb_detail);
-        // }
+        if (debug_mode() || pipeline_data.focus) {
+            const json::value reco_cb_detail {
+                { "task_id", task_id() },
+                { "reco_id", result.reco_id },
+                { "name", name },
+            };
+            notify(result.box ? MaaMsg_Task_Recognition_Succeeded : MaaMsg_Task_Recognition_Failed, reco_cb_detail);
+        }
 
         if (!result.box) {
             continue;
@@ -105,18 +124,16 @@ RecoResult TaskBase::run_recognition(const cv::Mat& image, const PipelineData::N
 
         LogInfo << "Task hit" << VAR(result.name) << VAR(result.box);
 
-        // if (debug_mode()) {
-        //     json::value cb_detail = basic_info() | reco_detail_to_json(result);
-        //     notify(MaaMsg_Task_Debug_Hit, cb_detail);
-        // }
+        if (debug_mode() || current_focus) {
+            notify(MaaMsg_Task_RecognitionList_Succeeded, reco_list_cb_detail);
+        }
 
         return result;
     }
 
-    // if (debug_mode()) {
-    //     json::value cb_detail = basic_info() | json::object { { "list", json::array(list) } };
-    //     notify(MaaMsg_Task_Debug_MissAll, cb_detail);
-    // }
+    if (debug_mode() || current_focus) {
+        notify(MaaMsg_Task_RecognitionList_Failed, reco_list_cb_detail);
+    }
 
     return {};
 }
@@ -133,38 +150,40 @@ NodeDetail TaskBase::run_action(const RecoResult& reco)
         return {};
     }
 
-    uint64_t& times = context_->action_times()[reco.name];
-    ++times;
+    const auto& pipeline_data = context_->get_pipeline_data(reco.name);
+
+    if (debug_mode() || pipeline_data.focus) {
+        const json::value cb_detail {
+            { "task_id", task_id() },
+            { "node_id", 0 },
+            { "name", reco.name },
+        };
+        notify(MaaMsg_Task_Action_Starting, cb_detail);
+    }
+    
+
+    Actuator actuator(tasker_, *context_);
+    bool ret = actuator.run(*reco.box, reco.reco_id, pipeline_data);
+    uint64_t times = context_->add_action_times(reco.name);
 
     NodeDetail result {
         .node_id = generate_node_id(),
         .name = reco.name,
         .reco_id = reco.reco_id,
         .times = times,
+        .completed = ret,
     };
-
-    const auto& pipeline_data = context_->get_pipeline_data(reco.name);
-
-    // json::value cb_detail = basic_info() | node_detail_to_json(result);
-    // if (debug_mode()) {
-    //     notify(MaaMsg_Task_Debug_ReadyToRun, cb_detail);
-    // }
-    // if (pipeline_data.focus) {
-    //     notify(MaaMsg_Task_Focus_ReadyToRun, cb_detail);
-    // }
-
-    Actuator actuator(tasker_, *context_);
-    result.completed = actuator.run(*reco.box, reco.reco_id, pipeline_data);
 
     set_node_detail(result.node_id, result);
 
-    // cb_detail = basic_info() | node_detail_to_json(result);
-    // if (debug_mode()) {
-    //     notify(MaaMsg_Task_Debug_Completed, cb_detail);
-    // }
-    // if (pipeline_data.focus) {
-    //     notify(MaaMsg_Task_Focus_Completed, cb_detail);
-    // }
+    if (debug_mode() || pipeline_data.focus) {
+        const json::value cb_detail {
+            { "task_id", task_id() },
+            { "node_id", result.node_id },
+            { "name", reco.name },
+        };
+        notify(result.completed ? MaaMsg_Task_Action_Succeeded : MaaMsg_Task_Action_Failed, cb_detail);
+    }
 
     return result;
 }
@@ -219,6 +238,15 @@ void TaskBase::init()
 bool TaskBase::debug_mode() const
 {
     return GlobalOptionMgr::get_instance().debug_mode();
+}
+
+void TaskBase::notify(std::string_view msg, const json::value detail)
+{
+    if (!tasker_) {
+        return;
+    }
+
+    tasker_->notify(msg, detail);
 }
 
 MAA_TASK_NS_END

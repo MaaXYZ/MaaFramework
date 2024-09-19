@@ -14,7 +14,7 @@ public:
     {
     }
 
-    void notify(std::string_view msg, const json::value& details = json::value())
+    void notify(std::string_view msg, const json::value& details)
     {
         LogFunc << VAR_VOIDP(notify_) << VAR_VOIDP(notify_trans_arg_) << VAR(msg) << VAR(details);
 

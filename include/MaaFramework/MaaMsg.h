@@ -22,8 +22,8 @@
  *      path: string,
  * }
  */
-#define MaaMsg_Resource_Loading_Started ("Resource.Loading.Started")
-#define MaaMsg_Resource_Loading_Completed ("Resource.Loading.Completed")
+#define MaaMsg_Resource_Loading_Starting ("Resource.Loading.Starting")
+#define MaaMsg_Resource_Loading_Succeeded ("Resource.Loading.Succeeded")
 #define MaaMsg_Resource_Loading_Failed ("Resource.Loading.Failed")
 /// @}
 
@@ -37,8 +37,8 @@
  *     action: string,
  * }
  */
-#define MaaMsg_Controller_Action_Started ("Controller.Action.Started")
-#define MaaMsg_Controller_Action_Completed ("Controller.Action.Completed")
+#define MaaMsg_Controller_Action_Starting ("Controller.Action.Starting")
+#define MaaMsg_Controller_Action_Succeeded ("Controller.Action.Succeeded")
 #define MaaMsg_Controller_Action_Failed ("Controller.Action.Failed")
 /// @}
 
@@ -53,9 +53,54 @@
  *     hash: string
  * }
  */
-#define MaaMsg_Tasker_Task_Started ("Tasker.Task.Started")
-#define MaaMsg_Tasker_Task_Completed ("Tasker.Task.Completed")
+#define MaaMsg_Tasker_Task_Starting ("Tasker.Task.Starting")
+#define MaaMsg_Tasker_Task_Succeeded ("Tasker.Task.Succeeded")
 #define MaaMsg_Tasker_Task_Failed ("Tasker.Task.Failed")
 /// @}
 
+/**
+ * @{
+ * @brief Message for the Recognition List.
+ *
+ * payload: {
+ *     task_id: number,
+ *     current: string,
+ *     list: [string],
+ * }
+ */
+#define MaaMsg_Task_RecognitionList_Starting ("Task.RecognitionList.Starting")
+#define MaaMsg_Task_RecognitionList_Succeeded ("Task.RecognitionList.Succeeded")
+#define MaaMsg_Task_RecognitionList_Failed ("Task.RecognitionList.Failed")
+/// @}
+
+/**
+ * @{
+ * @brief Message for the recognition list.
+ *
+ * payload: {
+ *     task_id: number,
+ *     reco_id: number,
+ *     name: string,
+ * }
+ */
+#define MaaMsg_Task_Recognition_Starting ("Task.Recognition.Starting")
+#define MaaMsg_Task_Recognition_Succeeded ("Task.Recognition.Succeeded")
+#define MaaMsg_Task_Recognition_Failed ("Task.Recognition.Failed")
+/// @}
+
+
+/**
+ * @{
+ * @brief Message for the task action.
+ *
+ * payload: {
+ *     task_id: number,
+ *     node_id: number,
+ *     name: string,
+ * }
+ */
+#define MaaMsg_Task_Action_Starting ("Task.Action.Starting")
+#define MaaMsg_Task_Action_Succeeded ("Task.Action.Succeeded")
+#define MaaMsg_Task_Action_Failed ("Task.Action.Failed")
+/// @}
 /** @} */

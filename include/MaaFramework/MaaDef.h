@@ -44,7 +44,7 @@ enum MaaStatusEnum
     MaaStatus_Invalid = 0,
     MaaStatus_Pending = 1000,
     MaaStatus_Running = 2000,
-    MaaStatus_Success = 3000,
+    MaaStatus_Succeeded = 3000,
     MaaStatus_Failed = 4000,
     // MaaStatus_Timeout = 5000,
 };

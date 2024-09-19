@@ -50,6 +50,7 @@ public:
 public:
     RuntimeCache& runtime_cache();
     const RuntimeCache& runtime_cache() const;
+    void notify(std::string_view msg, const json::value& detail);
 
 private:
     using TaskPtr = std::shared_ptr<MAA_TASK_NS::TaskBase>;
