@@ -15,12 +15,12 @@ MAA_PROJECT_INTERFACE_NS_BEGIN
 
 bool Runner::run(
     const RuntimeParam& param,
-    MaaNotificationCallback callback,
-    void* callback_arg,
+    MaaNotificationCallback notify,
+    void* notify_trans_arg,
     const std::map<std::string, CustomRecognitionSession>& custom_recognitions,
     const std::map<std::string, CustomActionSession>& custom_actions)
 {
-    auto tasker_handle = MaaTaskerCreate(callback, callback_arg);
+    auto tasker_handle = MaaTaskerCreate(notify, notify_trans_arg);
 
     MaaController* controller_handle = nullptr;
     if (const auto* p_adb_param = std::get_if<RuntimeParam::AdbParam>(&param.controller_param)) {
@@ -31,19 +31,19 @@ bool Runner::run(
             p_adb_param->input,
             p_adb_param->config.c_str(),
             p_adb_param->agent_path.c_str(),
-            callback,
-            callback_arg);
+            notify,
+            notify_trans_arg);
     }
     else if (const auto* p_win32_param = std::get_if<RuntimeParam::Win32Param>(&param.controller_param)) {
         controller_handle =
-            MaaWin32ControllerCreate(p_win32_param->hwnd, p_win32_param->screencap, p_win32_param->input, callback, callback_arg);
+            MaaWin32ControllerCreate(p_win32_param->hwnd, p_win32_param->screencap, p_win32_param->input, notify, notify_trans_arg);
     }
     else {
         LogError << "Unknown controller type";
         return false;
     }
 
-    auto resource_handle = MaaResourceCreate(callback, callback_arg);
+    auto resource_handle = MaaResourceCreate(notify, notify_trans_arg);
 
     MaaId cid = MaaControllerPostConnection(controller_handle);
     MaaId rid = 0;

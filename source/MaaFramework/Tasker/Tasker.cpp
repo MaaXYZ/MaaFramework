@@ -10,10 +10,10 @@
 
 MAA_NS_BEGIN
 
-Tasker::Tasker(MaaNotificationCallback callback, void* callback_arg)
-    : notifier(callback, callback_arg)
+Tasker::Tasker(MaaNotificationCallback notify, void* notify_trans_arg)
+    : notifier(notify, notify_trans_arg)
 {
-    LogFunc << VAR_VOIDP(callback) << VAR_VOIDP(callback_arg);
+    LogFunc << VAR_VOIDP(notify) << VAR_VOIDP(notify_trans_arg);
 
     task_runner_ = std::make_unique<AsyncRunner<TaskPtr>>(std::bind(&Tasker::run_task, this, std::placeholders::_1, std::placeholders::_2));
 }

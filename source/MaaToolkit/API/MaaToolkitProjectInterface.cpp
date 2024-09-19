@@ -26,9 +26,9 @@ MaaBool MaaToolkitProjectInterfaceRunCli(
     const char* resource_path,
     const char* user_path,
     MaaBool directly,
-    MaaNotificationCallback callback,
-    void* callback_arg)
+    MaaNotificationCallback notify,
+    void* notify_trans_arg)
 {
     return MAA_TOOLKIT_NS::ProjectInterfaceMgr::get_instance()
-        .run_cli(inst_id, MAA_NS::path(resource_path), MAA_NS::path(user_path), directly, callback, callback_arg);
+        .run_cli(inst_id, MAA_NS::path(resource_path), MAA_NS::path(user_path), directly, notify, notify_trans_arg);
 }

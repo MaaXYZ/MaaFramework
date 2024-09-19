@@ -10,10 +10,10 @@ MAA_CTRL_NS_BEGIN
 
 std::minstd_rand ControllerAgent::rand_engine_(std::random_device {}());
 
-ControllerAgent::ControllerAgent(MaaNotificationCallback callback, void* callback_arg)
-    : notifier(callback, callback_arg)
+ControllerAgent::ControllerAgent(MaaNotificationCallback notify, void* notify_trans_arg)
+    : notifier(notify, notify_trans_arg)
 {
-    LogFunc << VAR_VOIDP(callback) << VAR_VOIDP(callback_arg);
+    LogFunc << VAR_VOIDP(notify) << VAR_VOIDP(notify_trans_arg);
 
     action_runner_ =
         std::make_unique<AsyncRunner<Action>>(std::bind(&ControllerAgent::run_action, this, std::placeholders::_1, std::placeholders::_2));

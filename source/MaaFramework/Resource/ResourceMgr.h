@@ -29,7 +29,7 @@ struct CustomActionSession
 class ResourceMgr : public MaaResource
 {
 public:
-    ResourceMgr(MaaNotificationCallback callback, void* callback_arg);
+    ResourceMgr(MaaNotificationCallback notify, void* notify_trans_arg);
     virtual ~ResourceMgr() override;
 
 public: // MaaResource
@@ -101,7 +101,7 @@ private:
     std::atomic_bool valid_ = true;
 
     std::unique_ptr<AsyncRunner<std::filesystem::path>> res_loader_ = nullptr;
-    MessageNotifier<MaaNotificationCallback> notifier;
+    MessageNotifier notifier;
 };
 
 MAA_RES_NS_END

@@ -10,9 +10,9 @@ MAA_CTRL_NS_BEGIN
 
 GeneralControllerAgent::GeneralControllerAgent(
     std::shared_ptr<MAA_CTRL_UNIT_NS::ControlUnitAPI> control_unit,
-    MaaNotificationCallback callback,
-    void* callback_arg)
-    : ControllerAgent(callback, callback_arg)
+    MaaNotificationCallback notify,
+    void* notify_trans_arg)
+    : ControllerAgent(notify, notify_trans_arg)
     , control_unit_(std::move(control_unit))
 {
 }

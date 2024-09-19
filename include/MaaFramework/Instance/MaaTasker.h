@@ -19,7 +19,7 @@ extern "C"
 {
 #endif
 
-    MAA_FRAMEWORK_API MaaTasker* MaaTaskerCreate(MaaNotificationCallback callback, void* callback_arg);
+    MAA_FRAMEWORK_API MaaTasker* MaaTaskerCreate(MaaNotificationCallback notify, void* notify_trans_arg);
 
     MAA_FRAMEWORK_API void MaaTaskerDestroy(MaaTasker* tasker);
 

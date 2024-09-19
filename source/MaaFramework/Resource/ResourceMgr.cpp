@@ -8,10 +8,10 @@
 
 MAA_RES_NS_BEGIN
 
-ResourceMgr::ResourceMgr(MaaNotificationCallback callback, void* callback_arg)
-    : notifier(callback, callback_arg)
+ResourceMgr::ResourceMgr(MaaNotificationCallback notify, void* notify_trans_arg)
+    : notifier(notify, notify_trans_arg)
 {
-    LogFunc << VAR_VOIDP(callback) << VAR_VOIDP(callback_arg);
+    LogFunc << VAR_VOIDP(notify) << VAR_VOIDP(notify_trans_arg);
 
     res_loader_ = std::make_unique<AsyncRunner<std::filesystem::path>>(
         std::bind(&ResourceMgr::run_load, this, std::placeholders::_1, std::placeholders::_2));

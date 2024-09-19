@@ -21,7 +21,7 @@ MAA_NS_BEGIN
 class Tasker : public MaaTasker
 {
 public:
-    Tasker(MaaNotificationCallback callback, void* callback_arg);
+    Tasker(MaaNotificationCallback notify, void* notify_trans_arg);
     virtual ~Tasker() override;
 
     virtual bool bind_resource(MaaResource* resource) override;
@@ -75,7 +75,7 @@ private:
     TaskPtr running_task_ = nullptr;
 
     RuntimeCache runtime_cache_;
-    MessageNotifier<MaaNotificationCallback> notifier;
+    MessageNotifier notifier;
 };
 
 MAA_NS_END
