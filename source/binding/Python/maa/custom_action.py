@@ -31,7 +31,7 @@ class CustomAction(ABC):
         self,
         context: Context,
         argv: RunArg,
-    ) -> RunResult:
+    ) -> Union[RunResult, bool]:
         raise NotImplementedError
 
     @property
@@ -70,7 +70,7 @@ class CustomAction(ABC):
 
         box = RectBuffer(c_box).get()
 
-        result: CustomAction.RunResult = self.run(
+        result: Union[CustomAction.RunResult, bool] = self.run(
             context,
             CustomAction.RunArg(
                 task_detail=task_detail,
@@ -82,4 +82,11 @@ class CustomAction(ABC):
             ),
         )
 
-        return int(result.success)
+        if isinstance(result, CustomAction.RunResult):
+            return int(result.success)
+
+        elif isinstance(result, bool):
+            return int(result)
+
+        else:
+            raise TypeError(f"Invalid return type: {result!r}")

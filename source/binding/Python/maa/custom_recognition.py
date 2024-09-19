@@ -35,7 +35,7 @@ class CustomRecognition(ABC):
         self,
         context: Context,
         argv: AnalyzeArg,
-    ) -> AnalyzeResult:
+    ) -> Union[AnalyzeResult, RectType]:
         raise NotImplementedError
 
     @property
@@ -72,7 +72,7 @@ class CustomRecognition(ABC):
 
         image = ImageBuffer(c_image).get()
 
-        result: CustomRecognition.AnalyzeResult = self.analyze(
+        result: Union[CustomRecognition.AnalyzeResult, RectType] = self.analyze(
             context,
             CustomRecognition.AnalyzeArg(
                 task_detail=task_detail,
@@ -84,10 +84,18 @@ class CustomRecognition(ABC):
             ),
         )
 
-        if result.box:
-            RectBuffer(c_out_box).set(result.box)
+        rect_buffer = RectBuffer(c_out_box)
+        detail_buffer = StringBuffer(c_out_detail)
 
-        StringBuffer(c_out_detail).set(result.detail)
+        if isinstance(result, CustomRecognition.AnalyzeResult):
+            if result.box:
+                rect_buffer.set(result.box)
+            detail_buffer.set(result.detail)
+            return int(result.box is not None)
 
-        ret = result.box is not None
-        return int(ret)
+        elif isinstance(result, RectType.__args__):
+            rect_buffer.set(result)
+            return int(True)
+
+        else:
+            raise ValueError("Invalid return type")
