@@ -35,16 +35,7 @@ class Resource:
         else:
             self._notification_handler = notification_handler
             self._handle = Library.framework.MaaResourceCreate(
-                (
-                    self._notification_handler.c_callback
-                    if self._notification_handler
-                    else None
-                ),
-                (
-                    self._notification_handler.c_callback_arg
-                    if self._notification_handler
-                    else None
-                ),
+                *NotificationHandler._gen_c_param(self._notification_handler)
             )
             self._own = True
 

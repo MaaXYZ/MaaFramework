@@ -1,6 +1,7 @@
 import ctypes
 import json
-from abc import ABC, abstractmethod
+from abc import ABC
+from typing import Optional, Tuple
 from enum import Enum
 from dataclasses import dataclass
 
@@ -152,6 +153,15 @@ class NotificationHandler(ABC):
     @property
     def c_callback_arg(self) -> ctypes.c_void_p:
         return ctypes.c_void_p.from_buffer(ctypes.py_object(self))
+
+    @staticmethod
+    def _gen_c_param(
+        handler: Optional["NotificationHandler"],
+    ) -> Tuple[MaaNotificationCallback, ctypes.c_void_p]:
+        if handler:
+            return handler.c_callback, handler.c_callback_arg
+        else:
+            return NotificationHandler._c_notification_agent, ctypes.c_void_p()
 
     @staticmethod
     def _notification_type(message: str) -> NotificationType:

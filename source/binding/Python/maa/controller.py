@@ -318,16 +318,7 @@ class AdbController(Controller):
             MaaAdbInputMethod(input_methods),
             json.dumps(config, ensure_ascii=False).encode(),
             str(agent_path).encode(),
-            (
-                self._notification_handler.c_callback
-                if self._notification_handler
-                else None
-            ),
-            (
-                self._notification_handler.c_callback_arg
-                if self._notification_handler
-                else None
-            ),
+            *NotificationHandler._gen_c_param(self._notification_handler)
         )
 
         if not self._handle:
@@ -365,16 +356,7 @@ class Win32Controller(Controller):
             hWnd,
             MaaWin32ScreencapMethod(screencap_method),
             MaaWin32InputMethod(input_method),
-            (
-                self._notification_handler.c_callback
-                if self._notification_handler
-                else None
-            ),
-            (
-                self._notification_handler.c_callback_arg
-                if self._notification_handler
-                else None
-            ),
+            *NotificationHandler._gen_c_param(self._notification_handler)
         )
 
         if not self._handle:
@@ -410,16 +392,7 @@ class DbgController(Controller):
             str(write_path).encode(),
             MaaDbgControllerType(dbg_type),
             json.dumps(config, ensure_ascii=False).encode(),
-            (
-                self._notification_handler.c_callback
-                if self._notification_handler
-                else None
-            ),
-            (
-                self._notification_handler.c_callback_arg
-                if self._notification_handler
-                else None
-            ),
+            *NotificationHandler._gen_c_param(self._notification_handler)
         )
 
         if not self._handle:
@@ -468,16 +441,7 @@ class CustomController(Controller):
         self._handle = Library.framework.MaaCustomControllerCreate(
             self.c_handle,
             self.c_arg,
-            (
-                self._notification_handler.c_callback
-                if self._notification_handler
-                else None
-            ),
-            (
-                self._notification_handler.c_callback_arg
-                if self._notification_handler
-                else None
-            ),
+            *NotificationHandler._gen_c_param(self._notification_handler)
         )
 
         if not self._handle:
@@ -674,7 +638,9 @@ class CustomController(Controller):
             ctypes.py_object,
         ).value
 
-        return int(self.swipe(int(c_x1), int(c_y1), int(c_x2), int(c_y2), int(c_duration)))
+        return int(
+            self.swipe(int(c_x1), int(c_y1), int(c_x2), int(c_y2), int(c_duration))
+        )
 
     @staticmethod
     @MaaCustomControllerCallbacks.TouchDownFunc

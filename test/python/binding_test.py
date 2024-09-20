@@ -107,6 +107,11 @@ class MyAction(CustomAction):
 
 
 def api_test():
+    r1 = Resource()
+    r2 = Resource()
+    t1 = Tasker()
+    t2 = Tasker()
+
     resource = Resource(MyNotificationHandler())
     print(f"resource: {resource}")
 

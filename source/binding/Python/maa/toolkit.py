@@ -172,16 +172,7 @@ class Toolkit:
                 str(resource_path).encode(),
                 str(user_path).encode(),
                 directly,
-                (
-                    Toolkit._pi_notification_handler.c_callback
-                    if Toolkit._pi_notification_handler
-                    else None
-                ),
-                (
-                    Toolkit._pi_notification_handler.c_callback_arg
-                    if Toolkit._pi_notification_handler
-                    else None
-                ),
+                *NotificationHandler._gen_c_param(Toolkit._pi_notification_handler),
             )
         )
 
