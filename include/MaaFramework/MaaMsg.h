@@ -12,8 +12,14 @@
 
 #pragma once
 
-///
 /**
+ * @defgroup MaaMsg Message Definitions
+ *
+ * @{
+ */
+
+/**
+ * @{
  * @brief The message for the resource loading.
  *
  * payload: {
@@ -103,4 +109,5 @@
 #define MaaMsg_Task_Action_Succeeded ("Task.Action.Succeeded")
 #define MaaMsg_Task_Action_Failed ("Task.Action.Failed")
 /// @}
+
 /** @} */
