@@ -76,6 +76,12 @@
                     "minimum": 0,
                     "default": 1000
                 },
+                "timeout": {
+                    "description": "`next` + `interrupt` 识别超时时间，毫秒。默认 20 * 1000 。\n具体逻辑为 `while(!timeout) { foreach(next + interrupt); sleep_until(rate_limit); }` 。",
+                    "type": "integer",
+                    "minimum": 0,
+                    "default": 20000
+                },
                 "pre_delay": {
                     "description": "识别到 到 执行动作前 的延迟，毫秒。可选，默认 200。\n推荐尽可能增加中间过程任务，少用延迟，不然既慢还不稳定。",
                     "type": "integer",
@@ -901,6 +907,18 @@
                                 5
                             ],
                             "default": 5
+                        },
+                        "rate_limit": {
+                            "description": "识别速率限制，单位毫秒。\n每次识别最低消耗 `rate_limit` 毫秒，不足的时间将会 sleep 等待。",
+                            "type": "integer",
+                            "minimum": 0,
+                            "default": 1000
+                        },
+                        "timeout": {
+                            "description": "识别超时时间，毫秒。默认 20 * 1000 。",
+                            "type": "integer",
+                            "minimum": 0,
+                            "default": 20000
                         }
                     }
                 }

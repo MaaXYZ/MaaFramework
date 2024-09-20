@@ -106,7 +106,8 @@ struct WaitFreezesParam
 
     double threshold = 0.95;
     int method = MAA_VISION_NS::TemplateMatcherParam::kDefaultMethod;
-    std::chrono::milliseconds rate_limit = std::chrono::milliseconds(100);
+    std::chrono::milliseconds rate_limit = std::chrono::milliseconds(1000);
+    std::chrono::milliseconds timeout = std::chrono::milliseconds(20 * 1000);
 };
 
 struct PipelineData
@@ -127,8 +128,8 @@ struct PipelineData
     NextList next;
     NextList interrupt;
     NextList on_error;
-    std::chrono::milliseconds reco_timeout = std::chrono::milliseconds(20 * 1000);
     std::chrono::milliseconds rate_limit = std::chrono::milliseconds(1000);
+    std::chrono::milliseconds reco_timeout = std::chrono::milliseconds(20 * 1000);
 
     std::chrono::milliseconds pre_delay = std::chrono::milliseconds(200);
     std::chrono::milliseconds post_delay = std::chrono::milliseconds(200);

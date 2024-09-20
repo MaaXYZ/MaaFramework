@@ -137,7 +137,8 @@ void Actuator::wait_freezes(const MAA_RES_NS::WaitFreezesParam& param, const cv:
         .method = param.method,
     };
 
-    auto pre_image_clock = std::chrono::steady_clock::now();
+    auto start_clock = std::chrono::steady_clock::now();
+    auto pre_image_clock = start_clock;
 
     while (true) {
         LogDebug << "sleep_until" << VAR(param.rate_limit);
@@ -160,6 +161,11 @@ void Actuator::wait_freezes(const MAA_RES_NS::WaitFreezesParam& param, const cv:
         }
 
         if (duration_since(pre_image_clock) > param.time) {
+            break;
+        }
+
+        if (duration_since(start_clock) > param.timeout) {
+            LogError << "Wait freezes timeout" << VAR(duration_since(start_clock)) << VAR(param.timeout);
             break;
         }
     }
