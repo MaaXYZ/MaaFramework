@@ -1,6 +1,6 @@
 var indexSectionsWithContent =
 {
-  0: "achimprstwxy",
+  0: "acdhimprstwxy",
   1: "m",
   2: "m",
   3: "m",
@@ -9,7 +9,8 @@ var indexSectionsWithContent =
   6: "m",
   7: "m",
   8: "m",
-  9: "amr"
+  9: "dm",
+  10: "amr"
 };
 
 var indexSectionNames =
@@ -23,7 +24,8 @@ var indexSectionNames =
   6: "enums",
   7: "enumvalues",
   8: "defines",
-  9: "pages"
+  9: "groups",
+  10: "pages"
 };
 
 var indexSectionLabels =
@@ -37,6 +39,7 @@ var indexSectionLabels =
   6: "Enumerations",
   7: "Enumerator",
   8: "Macros",
-  9: "Pages"
+  9: "Modules",
+  10: "Pages"
 };
 

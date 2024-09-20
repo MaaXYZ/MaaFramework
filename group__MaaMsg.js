@@ -1,4 +1,4 @@
-var MaaMsg_8h =
+var group__MaaMsg =
 [
     [ "MaaMsg_Resource_Loading_Starting", "group__MaaMsg.html#ga7297c67f0f81b33f8811e1405a24a437", null ],
     [ "MaaMsg_Resource_Loading_Succeeded", "group__MaaMsg.html#ga46e053d230031807feaed18e628782da", null ],
