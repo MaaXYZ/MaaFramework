@@ -109,8 +109,10 @@ class MyAction(CustomAction):
 def api_test():
     r1 = Resource()
     r2 = Resource()
+    r2.post_path("C:/_maafw_testing_/aaabbbccc").wait()
     t1 = Tasker()
     t2 = Tasker()
+    t2.post_pipeline("Entry", {}).wait()
 
     resource = Resource(MyNotificationHandler())
     print(f"resource: {resource}")
