@@ -91,7 +91,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="include/MaaFramework/Utility/MaaUtility.h" line="27" column="31" declfile="include/MaaFramework/Utility/MaaUtility.h" declline="27" declcolumn="31"/>
+        <location file="include/MaaFramework/Utility/MaaUtility.h" line="28" column="9" declfile="include/MaaFramework/Utility/MaaUtility.h" declline="28" declcolumn="9"/>
       </memberdef>
     </sectiondef>
     <briefdescription>

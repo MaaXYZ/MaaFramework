@@ -73,7 +73,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="include/MaaToolkit/ProjectInterface/MaaToolkitProjectInterface.h" line="13" column="9" declfile="include/MaaToolkit/ProjectInterface/MaaToolkitProjectInterface.h" declline="13" declcolumn="9"/>
+        <location file="include/MaaToolkit/ProjectInterface/MaaToolkitProjectInterface.h" line="12" column="26" declfile="include/MaaToolkit/ProjectInterface/MaaToolkitProjectInterface.h" declline="12" declcolumn="26"/>
       </memberdef>
       <memberdef kind="function" id="MaaToolkitProjectInterface_8h_1ae82e9ab49b3d6fa22c3d10bf074c1180" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="MaaPort_8h_1a011c7bbd355fdfe6aa7599af52cc20ac" kindref="member">MAA_TOOLKIT_API</ref> void</type>
@@ -102,7 +102,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="include/MaaToolkit/ProjectInterface/MaaToolkitProjectInterface.h" line="14" column="26" declfile="include/MaaToolkit/ProjectInterface/MaaToolkitProjectInterface.h" declline="14" declcolumn="26"/>
+        <location file="include/MaaToolkit/ProjectInterface/MaaToolkitProjectInterface.h" line="18" column="9" declfile="include/MaaToolkit/ProjectInterface/MaaToolkitProjectInterface.h" declline="18" declcolumn="9"/>
       </memberdef>
       <memberdef kind="function" id="MaaToolkitProjectInterface_8h_1a5c739cd4c579c77cbc50ae54e6364619" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="MaaPort_8h_1a011c7bbd355fdfe6aa7599af52cc20ac" kindref="member">MAA_TOOLKIT_API</ref> <ref refid="MaaDef_8h_1a2f7289f2a8e07f48c6261b52a120cdf6" kindref="member">MaaBool</ref></type>
@@ -139,7 +139,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="include/MaaToolkit/ProjectInterface/MaaToolkitProjectInterface.h" line="16" column="29" declfile="include/MaaToolkit/ProjectInterface/MaaToolkitProjectInterface.h" declline="16" declcolumn="29"/>
+        <location file="include/MaaToolkit/ProjectInterface/MaaToolkitProjectInterface.h" line="20" column="29" declfile="include/MaaToolkit/ProjectInterface/MaaToolkitProjectInterface.h" declline="20" declcolumn="29"/>
       </memberdef>
     </sectiondef>
     <briefdescription>

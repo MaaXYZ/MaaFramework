@@ -26,7 +26,7 @@
  <tbody>
  <tr id="projectrow">
   <td id="projectalign">
-   <div id="projectname">Maa Framework<span id="projectnumber">&#160;(main) v2.0.0-beta.4-post.2-ci.10955639000</span>
+   <div id="projectname">Maa Framework<span id="projectnumber">&#160;(main) v2.0.0-beta.5</span>
    </div>
    <div id="projectbrief">A automation black-box testing framework based on image recognition.</div>
   </td>
@@ -278,9 +278,9 @@ $(document).ready(function(){initNavTree('MaaDef_8h_source.html',''); initResiza
 <div class="line"><a id="l00223" name="l00223"></a><span class="lineno">  223</span><span class="comment">/*</span></div>
 <div class="line"><a id="l00224" name="l00224"></a><span class="lineno">  224</span><span class="comment"> * See MaaMsg.h</span></div>
 <div class="line"><a id="l00225" name="l00225"></a><span class="lineno">  225</span><span class="comment"> */</span></div>
-<div class="line"><a id="l00226" name="l00226"></a><span class="lineno"><a class="line" href="MaaDef_8h.html#a83fe073ae3fefc09c17fd9eb6b6b3e50">  226</a></span><span class="keyword">typedef</span> void (<a class="code hl_define" href="MaaPort_8h.html#afaf570464c85866c04fabe324fe35c18">MAA_CALL</a> *<a class="code hl_typedef" href="MaaDef_8h.html#a83fe073ae3fefc09c17fd9eb6b6b3e50">MaaNotificationCallback</a>)(<span class="keyword">const</span> <span class="keywordtype">char</span>* message, <span class="keyword">const</span> <span class="keywordtype">char</span>* details_json, <span class="keywordtype">void</span>* notify_trans_arg);</div>
+<div class="line"><a id="l00226" name="l00226"></a><span class="lineno"><a class="line" href="MaaDef_8h.html#a83fe073ae3fefc09c17fd9eb6b6b3e50">  226</a></span><span class="keyword">typedef</span> void(<a class="code hl_define" href="MaaPort_8h.html#afaf570464c85866c04fabe324fe35c18">MAA_CALL</a>* <a class="code hl_typedef" href="MaaDef_8h.html#a83fe073ae3fefc09c17fd9eb6b6b3e50">MaaNotificationCallback</a>)(<span class="keyword">const</span> <span class="keywordtype">char</span>* message, <span class="keyword">const</span> <span class="keywordtype">char</span>* details_json, <span class="keywordtype">void</span>* notify_trans_arg);</div>
 <div class="line"><a id="l00227" name="l00227"></a><span class="lineno">  227</span> </div>
-<div class="line"><a id="l00228" name="l00228"></a><span class="lineno"><a class="line" href="MaaDef_8h.html#a4c72d5184d2333b6deaabd76f2e4db13">  228</a></span><span class="keyword">typedef</span> <a class="code hl_typedef" href="MaaDef_8h.html#a2f7289f2a8e07f48c6261b52a120cdf6">MaaBool</a> (<a class="code hl_define" href="MaaPort_8h.html#afaf570464c85866c04fabe324fe35c18">MAA_CALL</a> *<a class="code hl_typedef" href="MaaDef_8h.html#a4c72d5184d2333b6deaabd76f2e4db13">MaaCustomRecognitionCallback</a>)(</div>
+<div class="line"><a id="l00228" name="l00228"></a><span class="lineno"><a class="line" href="MaaDef_8h.html#a4c72d5184d2333b6deaabd76f2e4db13">  228</a></span><span class="keyword">typedef</span> <a class="code hl_typedef" href="MaaDef_8h.html#a2f7289f2a8e07f48c6261b52a120cdf6">MaaBool</a>(<a class="code hl_define" href="MaaPort_8h.html#afaf570464c85866c04fabe324fe35c18">MAA_CALL</a>* <a class="code hl_typedef" href="MaaDef_8h.html#a4c72d5184d2333b6deaabd76f2e4db13">MaaCustomRecognitionCallback</a>)(</div>
 <div class="line"><a id="l00229" name="l00229"></a><span class="lineno">  229</span>    <a class="code hl_typedef" href="MaaDef_8h.html#ad2101e87aad0f5d03b8136943daee40e">MaaContext</a>* context,</div>
 <div class="line"><a id="l00230" name="l00230"></a><span class="lineno">  230</span>    <a class="code hl_typedef" href="MaaDef_8h.html#a711b3db9be6db60ae4cb09e3629e42f0">MaaTaskId</a> task_id,</div>
 <div class="line"><a id="l00231" name="l00231"></a><span class="lineno">  231</span>    <span class="keyword">const</span> <span class="keywordtype">char</span>* current_task_name,</div>
@@ -292,7 +292,7 @@ $(document).ready(function(){initNavTree('MaaDef_8h_source.html',''); initResiza
 <div class="line"><a id="l00237" name="l00237"></a><span class="lineno">  237</span>    <span class="comment">/* out */</span> <a class="code hl_struct" href="structMaaRect.html">MaaRect</a>* out_box,</div>
 <div class="line"><a id="l00238" name="l00238"></a><span class="lineno">  238</span>    <span class="comment">/* out */</span> <a class="code hl_typedef" href="MaaDef_8h.html#a4010bb63df489fc09efb6ba9a1fc1c98">MaaStringBuffer</a>* out_detail);</div>
 <div class="line"><a id="l00239" name="l00239"></a><span class="lineno">  239</span> </div>
-<div class="line"><a id="l00240" name="l00240"></a><span class="lineno"><a class="line" href="MaaDef_8h.html#a585ec65a9f845b2922eda1d2fffa36b7">  240</a></span><span class="keyword">typedef</span> <a class="code hl_typedef" href="MaaDef_8h.html#a2f7289f2a8e07f48c6261b52a120cdf6">MaaBool</a> (<a class="code hl_define" href="MaaPort_8h.html#afaf570464c85866c04fabe324fe35c18">MAA_CALL</a> *<a class="code hl_typedef" href="MaaDef_8h.html#a585ec65a9f845b2922eda1d2fffa36b7">MaaCustomActionCallback</a>)(</div>
+<div class="line"><a id="l00240" name="l00240"></a><span class="lineno"><a class="line" href="MaaDef_8h.html#a585ec65a9f845b2922eda1d2fffa36b7">  240</a></span><span class="keyword">typedef</span> <a class="code hl_typedef" href="MaaDef_8h.html#a2f7289f2a8e07f48c6261b52a120cdf6">MaaBool</a>(<a class="code hl_define" href="MaaPort_8h.html#afaf570464c85866c04fabe324fe35c18">MAA_CALL</a>* <a class="code hl_typedef" href="MaaDef_8h.html#a585ec65a9f845b2922eda1d2fffa36b7">MaaCustomActionCallback</a>)(</div>
 <div class="line"><a id="l00241" name="l00241"></a><span class="lineno">  241</span>    <a class="code hl_typedef" href="MaaDef_8h.html#ad2101e87aad0f5d03b8136943daee40e">MaaContext</a>* context,</div>
 <div class="line"><a id="l00242" name="l00242"></a><span class="lineno">  242</span>    <a class="code hl_typedef" href="MaaDef_8h.html#a711b3db9be6db60ae4cb09e3629e42f0">MaaTaskId</a> task_id,</div>
 <div class="line"><a id="l00243" name="l00243"></a><span class="lineno">  243</span>    <span class="keyword">const</span> <span class="keywordtype">char</span>* current_task_name,</div>
@@ -379,7 +379,7 @@ $(document).ready(function(){initNavTree('MaaDef_8h_source.html',''); initResiza
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="dir_d44c64559bbebec7f509842c48db8b23.html">include</a></li><li class="navelem"><a class="el" href="dir_370cd1367c21b1a87c5c9c6803b8d0b9.html">MaaFramework</a></li><li class="navelem"><a class="el" href="MaaDef_8h.html">MaaDef.h</a></li>
-    <li class="footer">Generated on Fri Sep 20 2024 for Maa Framework by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.8 </li>
+    <li class="footer">Generated on Sat Sep 21 2024 for Maa Framework by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.8 </li>
   </ul>
 </div>
 </body>

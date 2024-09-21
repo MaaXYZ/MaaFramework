@@ -220,7 +220,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="include/MaaFramework/MaaMsg.h" line="108" column="9" bodyfile="include/MaaFramework/MaaMsg.h" bodystart="108" bodyend="-1"/>
+        <location file="include/MaaFramework/MaaMsg.h" line="107" column="9" bodyfile="include/MaaFramework/MaaMsg.h" bodystart="107" bodyend="-1"/>
       </memberdef>
       <memberdef kind="define" id="group__MaaMsg_1ga7e02595cd9348b57da605cde3b7ab465" prot="public" static="no">
         <name>MaaMsg_Task_Action_Succeeded</name>
@@ -233,7 +233,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="include/MaaFramework/MaaMsg.h" line="109" column="9" bodyfile="include/MaaFramework/MaaMsg.h" bodystart="109" bodyend="-1"/>
+        <location file="include/MaaFramework/MaaMsg.h" line="108" column="9" bodyfile="include/MaaFramework/MaaMsg.h" bodystart="108" bodyend="-1"/>
       </memberdef>
       <memberdef kind="define" id="group__MaaMsg_1gadb35730576c41a05d2f94c88f54fb6e2" prot="public" static="no">
         <name>MaaMsg_Task_Action_Failed</name>
@@ -246,7 +246,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="include/MaaFramework/MaaMsg.h" line="110" column="9" bodyfile="include/MaaFramework/MaaMsg.h" bodystart="110" bodyend="-1"/>
+        <location file="include/MaaFramework/MaaMsg.h" line="109" column="9" bodyfile="include/MaaFramework/MaaMsg.h" bodystart="109" bodyend="-1"/>
       </memberdef>
     </sectiondef>
     <briefdescription>

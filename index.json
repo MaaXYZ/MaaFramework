@@ -1,5 +1,5 @@
 {
-	"Version": "(main) v2.0.0-beta.4-post.2-ci.10955639000",
+	"Version": "(main) v2.0.0-beta.5",
 	"Compounds": {
 		"MaaContext.h": {
 			"Location": "include/MaaFramework/Instance/MaaContext.h",
