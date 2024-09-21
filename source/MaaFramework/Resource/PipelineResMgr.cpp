@@ -1328,7 +1328,7 @@ bool PipelineResMgr::parse_wait_freezes_param(
             return false;
         }
         output.rate_limit = std::chrono::milliseconds(rate_limit);
-        
+
         auto timeout = default_value.timeout.count();
         if (!get_and_check_value(field, "timeout", timeout, timeout)) {
             LogError << "failed to parse_wait_freezes_param timeout" << VAR(field);

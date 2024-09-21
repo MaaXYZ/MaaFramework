@@ -156,7 +156,6 @@ NodeDetail TaskBase::run_action(const RecoResult& reco)
         };
         notify(MaaMsg_Task_Action_Starting, cb_detail);
     }
-    
 
     Actuator actuator(tasker_, *context_);
     bool ret = actuator.run(*reco.box, reco.reco_id, pipeline_data);

@@ -8,7 +8,11 @@ MAA_CTRL_NS_BEGIN
 class CustomControllerAgent : public ControllerAgent
 {
 public:
-    CustomControllerAgent(MaaCustomControllerCallbacks* controller, void* controller_arg, MaaNotificationCallback notify, void* notify_trans_arg);
+    CustomControllerAgent(
+        MaaCustomControllerCallbacks* controller,
+        void* controller_arg,
+        MaaNotificationCallback notify,
+        void* notify_trans_arg);
     virtual ~CustomControllerAgent() override = default;
 
 protected:

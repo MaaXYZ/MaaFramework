@@ -94,7 +94,6 @@
 #define MaaMsg_Task_Recognition_Failed ("Task.Recognition.Failed")
 /// @}
 
-
 /**
  * @{
  * @brief Message for the task action.

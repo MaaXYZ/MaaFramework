@@ -65,8 +65,11 @@ MaaController* MaaWin32ControllerCreate(
 #endif
 }
 
-MaaController*
-    MaaCustomControllerCreate(MaaCustomControllerCallbacks* controller, void* controller_arg, MaaNotificationCallback notify, void* notify_trans_arg)
+MaaController* MaaCustomControllerCreate(
+    MaaCustomControllerCallbacks* controller,
+    void* controller_arg,
+    MaaNotificationCallback notify,
+    void* notify_trans_arg)
 {
     LogFunc << VAR(controller) << VAR(controller_arg) << VAR_VOIDP(notify) << VAR_VOIDP(notify_trans_arg);
 

@@ -9,11 +9,11 @@ bool CustomAction::run(
     std::string task_name,
     MAA_RES_NS::CustomActionSession session,
     const MAA_RES_NS::Action::CustomParam& param,
-            MaaRecoId reco_id,
+    MaaRecoId reco_id,
     const cv::Rect& rect)
 {
     LogFunc << VAR(context.task_id()) << VAR(task_name) << VAR_VOIDP(session.action) << VAR_VOIDP(session.trans_arg)
-            << VAR(param.custom_param)<< VAR(reco_id) << VAR(rect) ;
+            << VAR(param.custom_param) << VAR(reco_id) << VAR(rect);
 
     if (!session.action) {
         LogError << "Action is null" << VAR(task_name) << VAR(param.name);

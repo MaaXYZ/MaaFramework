@@ -56,7 +56,7 @@ protected:
     std::string cur_task_;
 
     std::shared_ptr<Context> context_ = nullptr;
-    
+
 private:
     void init();
     bool debug_mode() const;

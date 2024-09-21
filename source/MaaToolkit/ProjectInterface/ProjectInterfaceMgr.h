@@ -16,8 +16,10 @@ class ProjectInterfaceMgr : public SingletonHolder<ProjectInterfaceMgr>
     friend class SingletonHolder<ProjectInterfaceMgr>;
 
 public:
-    void
-        register_custom_recognition(uint64_t inst_id, const std::string& name, MAA_PROJECT_INTERFACE_NS::CustomRecognitionSession recognition);
+    void register_custom_recognition(
+        uint64_t inst_id,
+        const std::string& name,
+        MAA_PROJECT_INTERFACE_NS::CustomRecognitionSession recognition);
     void register_custom_action(uint64_t inst_id, const std::string& name, MAA_PROJECT_INTERFACE_NS::CustomActionSession action);
 
     bool run_cli(

@@ -107,7 +107,7 @@ public:
     static bool parse_target_offset(const json::value& input_target, Action::Target& output);
     static bool
         parse_action_target(const json::value& input, const std::string& key, Action::Target& output, const Action::Target& default_value);
-    
+
     static bool check_all_next_list(const PipelineDataMap& data_map);
 
 private:
@@ -117,6 +117,7 @@ private:
     bool parse_config(const json::value& input, std::set<std::string>& existing_keys, const DefaultPipelineMgr& default_mg);
 
     static bool check_next_list(const PipelineData::NextList& next_list, const PipelineDataMap& data_map);
+
 private:
     std::vector<std::filesystem::path> paths_;
     PipelineDataMap pipeline_data_map_;

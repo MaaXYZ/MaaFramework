@@ -17,9 +17,10 @@ CustomControllerAgent::CustomControllerAgent(
     , controller_(controller)
     , controller_arg_(controller_arg)
 {
-    LogDebug << VAR_VOIDP(controller_) << VAR_VOIDP(controller_arg_) << VAR_VOIDP(controller->connect) << VAR_VOIDP(controller->request_uuid)
-             << VAR_VOIDP(controller->start_app) << VAR_VOIDP(controller->stop_app) << VAR_VOIDP(controller->screencap) << VAR_VOIDP(controller->click)
-             << VAR_VOIDP(controller->swipe) << VAR_VOIDP(controller->touch_down) << VAR_VOIDP(controller->touch_move) << VAR_VOIDP(controller->touch_up)
+    LogDebug << VAR_VOIDP(controller_) << VAR_VOIDP(controller_arg_) << VAR_VOIDP(controller->connect)
+             << VAR_VOIDP(controller->request_uuid) << VAR_VOIDP(controller->start_app) << VAR_VOIDP(controller->stop_app)
+             << VAR_VOIDP(controller->screencap) << VAR_VOIDP(controller->click) << VAR_VOIDP(controller->swipe)
+             << VAR_VOIDP(controller->touch_down) << VAR_VOIDP(controller->touch_move) << VAR_VOIDP(controller->touch_up)
              << VAR_VOIDP(controller->press_key) << VAR_VOIDP(controller->input_text);
 }
 
