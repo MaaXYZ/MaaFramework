@@ -385,11 +385,11 @@ void Interactor::select_adb_manual_input()
 
 std::string Interactor::format_win32_config(const MAA_PROJECT_INTERFACE_NS::Configuration::Win32Config& win32_config)
 {
-    return MAA_NS::utf8_to_crt(std::format(
+    return std::format(
         "{}\n\t\t{}\n\t\t{}",
         win32_config.hwnd,
         MAA_NS::from_u16(win32_config.class_name),
-        MAA_NS::from_u16(win32_config.window_name)));
+        MAA_NS::from_u16(win32_config.window_name));
 }
 
 bool Interactor::select_win32_hwnd(const MAA_PROJECT_INTERFACE_NS::InterfaceData::Controller::Win32Config& win32_config)
