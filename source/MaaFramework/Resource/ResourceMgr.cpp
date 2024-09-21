@@ -256,6 +256,7 @@ bool ResourceMgr::run_load(typename AsyncRunner<std::filesystem::path>::Id id, s
     notifier.notify(MaaMsg_Resource_Loading_Starting, cb_detail);
 
     valid_ = load(path);
+    hash_cache_.clear();
 
     cb_detail["hash"] = get_hash();
 
