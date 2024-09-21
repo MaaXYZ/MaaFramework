@@ -57,8 +57,11 @@ extern "C"
     /**
      * @param[in] value
      */
-    MAA_FRAMEWORK_API MaaBool
-        MaaControllerSetOption(MaaController* ctrl, MaaCtrlOption key, MaaOptionValue value /**< byte array, int*, char*, bool* */, MaaOptionValueSize val_size);
+    MAA_FRAMEWORK_API MaaBool MaaControllerSetOption(
+        MaaController* ctrl,
+        MaaCtrlOption key,
+        MaaOptionValue value /**< byte array, int*, char*, bool* */,
+        MaaOptionValueSize val_size);
 
     MAA_FRAMEWORK_API MaaCtrlId MaaControllerPostConnection(MaaController* ctrl);
 
@@ -75,10 +78,14 @@ extern "C"
 
     MAA_FRAMEWORK_API MaaCtrlId MaaControllerPostStopApp(MaaController* ctrl, const char* intent);
 
+    // for adb controller, contact means finger id (0 for first finger, 1 for second finger, etc)
+    // for win32 controller, contact means mouse button id (0 for left, 1 for right, 2 for middle)
     MAA_FRAMEWORK_API MaaCtrlId MaaControllerPostTouchDown(MaaController* ctrl, int32_t contact, int32_t x, int32_t y, int32_t pressure);
-    
+
     MAA_FRAMEWORK_API MaaCtrlId MaaControllerPostTouchMove(MaaController* ctrl, int32_t contact, int32_t x, int32_t y, int32_t pressure);
 
+    // for adb controller, contact means finger id (0 for first finger, 1 for second finger, etc)
+    // for win32 controller, contact means mouse button id (0 for left, 1 for right, 2 for middle)
     MAA_FRAMEWORK_API MaaCtrlId MaaControllerPostTouchUp(MaaController* ctrl, int32_t contact);
 
     MAA_FRAMEWORK_API MaaCtrlId MaaControllerPostScreencap(MaaController* ctrl);
