@@ -423,7 +423,7 @@ bool Interactor::select_win32_hwnd(const MAA_PROJECT_INTERFACE_NS::InterfaceData
         }
     }
 
-    if (!matched_config.empty()) {
+    if (matched_config.empty()) {
         LogError << "Window Not Found" << VAR(win32_config.class_regex) << VAR(win32_config.window_regex);
         mpause();
         return false;
