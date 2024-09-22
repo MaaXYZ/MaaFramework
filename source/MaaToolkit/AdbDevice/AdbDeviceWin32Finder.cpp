@@ -20,7 +20,7 @@ AdbDeviceWin32Finder::AdbDeviceWin32Finder()
         { "LDPlayer",
           { .keyword = "dnplayer",
             .adb_candidate_paths = { "adb.exe"_path },
-            .adb_common_serials = { "emulator-5554", "emulator-5556", "127.0.0.1:5555", "127.0.0.1:5556" } } },
+            .adb_common_serials = { /*"emulator-5554", "emulator-5556", "127.0.0.1:5555", "127.0.0.1:5556"*/ } } },
         { "Nox",
           { .keyword = "Nox",
             .adb_candidate_paths = { "nox_adb.exe"_path },
