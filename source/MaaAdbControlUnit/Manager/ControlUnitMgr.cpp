@@ -110,6 +110,7 @@ bool ControlUnitMgr::screencap(cv::Mat& image)
         }
 
         LogWarn << "re-connect";
+        connection_.kill_server();
         connect();
     }
 
