@@ -2,6 +2,8 @@
 
 #include <meojson/json.hpp>
 
+#include <iostream>
+
 #include "MaaFramework/MaaAPI.h"
 
 #ifdef _MSC_VER
@@ -45,6 +47,15 @@ bool run_without_file(const std::filesystem::path& testset_dir)
     auto tasker_handle = MaaTaskerCreate(nullptr, nullptr);
     MaaTaskerBindResource(tasker_handle, resource_handle);
     MaaTaskerBindController(tasker_handle, controller_handle);
+
+    {
+        auto failed_id = MaaTaskerPostPipeline(tasker_handle, "_NotExists_", "{}");
+        auto failed_status = MaaTaskerWait(tasker_handle, failed_id);
+        if (failed_id == MaaInvalidId || failed_status != MaaStatus_Failed) {
+            std::cout << "Failed to detect invalid task" << std::endl;
+            return false;
+        }
+    }
 
     MaaResourceRegisterCustomAction(resource_handle, "MyAct", &my_action, nullptr);
 
