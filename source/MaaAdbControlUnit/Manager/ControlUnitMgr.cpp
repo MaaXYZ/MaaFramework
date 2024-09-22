@@ -15,6 +15,7 @@ ControlUnitMgr::ControlUnitMgr(
     std::shared_ptr<InputBase> touch_unit)
     : adb_path_(std::move(adb_path))
     , adb_serial_(std::move(adb_serial))
+    , connection_(adb_path_, adb_serial_)
     , input_(std::move(touch_unit))
     , screencap_(std::move(screencap_unit))
 {
@@ -40,12 +41,9 @@ bool ControlUnitMgr::find_device(std::vector<std::string>& devices)
 
 bool ControlUnitMgr::connect()
 {
-    bool is_remote = adb_serial_.find(':') != std::string::npos;
-    if (is_remote) {
-        if (!connection_.connect()) {
-            LogError << "failed to connect" << VAR(adb_path_) << VAR(adb_serial_);
-            return false;
-        }
+    if (!connection_.connect()) {
+        LogError << "failed to connect" << VAR(adb_path_) << VAR(adb_serial_);
+        return false;
     }
 
     if (screencap_) {
