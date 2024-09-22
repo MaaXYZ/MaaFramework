@@ -48,11 +48,6 @@ bool ControlUnitMgr::connect()
         }
     }
 
-    auto uuid_opt = device_info_.request_uuid();
-    if (!uuid_opt) {
-        LogError << "failed to request_uuid";
-        return false;
-    }
     if (screencap_) {
         if (!screencap_->init()) {
             LogError << "failed to init screencap";
