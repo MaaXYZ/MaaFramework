@@ -75,7 +75,7 @@ RecoResult TaskBase::run_recognition(const cv::Mat& image, const PipelineData::N
 
     auto cur_opt = context_->get_pipeline_data(cur_task_);
     if (!cur_opt) {
-        LogError << "get_pipeline_data failed" << VAR(cur_task_);
+        LogError << "get_pipeline_data failed, task not exist" << VAR(cur_task_);
         return {};
     }
     bool current_focus = cur_opt->focus;
@@ -94,7 +94,7 @@ RecoResult TaskBase::run_recognition(const cv::Mat& image, const PipelineData::N
     for (const auto& name : list) {
         auto data_opt = context_->get_pipeline_data(name);
         if (!data_opt) {
-            LogError << "get_pipeline_data failed" << VAR(name);
+            LogError << "get_pipeline_data failed, task not exist" << VAR(name);
             continue;
         }
         const auto& pipeline_data = *data_opt;
@@ -158,7 +158,7 @@ NodeDetail TaskBase::run_action(const RecoResult& reco)
 
     auto cur_opt = context_->get_pipeline_data(reco.name);
     if (!cur_opt) {
-        LogError << "get_pipeline_data failed" << VAR(reco.name);
+        LogError << "get_pipeline_data failed, task not exist" << VAR(reco.name);
         return {};
     }
     const auto& pipeline_data = *cur_opt;

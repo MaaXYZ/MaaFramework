@@ -26,7 +26,7 @@ bool PipelineTask::run()
     // there is no pretask for the entry, so we use the entry itself
     auto begin_opt = context_->get_pipeline_data(entry_);
     if (!begin_opt) {
-        LogError << "get_pipeline_data failed" << VAR(entry_);
+        LogError << "get_pipeline_data failed, task not exist" << VAR(entry_);
         return false;
     }
 
@@ -58,7 +58,7 @@ bool PipelineTask::run()
             bool is_interrupt = static_cast<size_t>(pos) >= next_size;
             auto hit_opt = context_->get_pipeline_data(node_detail.name);
             if (!hit_opt) {
-                LogError << "get_pipeline_data failed" << VAR(node_detail.name);
+                LogError << "get_pipeline_data failed, task not exist" << VAR(node_detail.name);
                 return false;
             }
             PipelineData hit_task = std::move(*hit_opt);
@@ -91,7 +91,7 @@ bool PipelineTask::run()
 
             auto top_opt = context_->get_pipeline_data(top);
             if (!top_opt) {
-                LogError << "get_pipeline_data failed" << VAR(top);
+                LogError << "get_pipeline_data failed, task not exist" << VAR(top);
                 return false;
             }
             current = std::move(*top_opt);

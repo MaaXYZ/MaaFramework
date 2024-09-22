@@ -115,7 +115,7 @@ bool Context::override_next(const std::string& name, const std::vector<std::stri
 
     auto data_opt = get_pipeline_data(name);
     if (!data_opt) {
-        LogError << "get_pipeline_data failed" << VAR(name);
+        LogError << "get_pipeline_data failed, task not exist" << VAR(name);
         return false;
     }
 
@@ -151,6 +151,7 @@ std::optional<Context::PipelineData> Context::get_pipeline_data(const std::strin
 {
     auto override_it = pipeline_override_.find(task_name);
     if (override_it != pipeline_override_.end()) {
+        LogTrace << "found in override" << VAR(task_name);
         return override_it->second;
     }
 
@@ -170,7 +171,7 @@ std::optional<Context::PipelineData> Context::get_pipeline_data(const std::strin
         return raw_it->second;
     }
 
-    LogError << "task not found" << VAR(task_name);
+    LogWarn << "task not found" << VAR(task_name);
     return std::nullopt;
 }
 
