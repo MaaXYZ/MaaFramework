@@ -30,7 +30,11 @@ ScreencapAgent::ScreencapAgent(MaaAdbScreencapMethod methods, const std::filesys
         method_set.emplace(ScreencapAgent::Method::RawWithGzip);
     }
     if (methods & MaaAdbScreencapMethod_RawByNetcat) {
+#ifdef _WIN32
         method_set.emplace(ScreencapAgent::Method::RawByNetcat);
+#else
+        LogWarn << "RawByNetcat is not supported on this platform";
+#endif
     }
     if (methods & MaaAdbScreencapMethod_MinicapDirect) {
         method_set.emplace(ScreencapAgent::Method::MinicapDirect);
