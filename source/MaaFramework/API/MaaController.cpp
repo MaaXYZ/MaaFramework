@@ -1,10 +1,10 @@
 #include "MaaFramework/Instance/MaaController.h"
 
-#include "Buffer/ImageBuffer.hpp"
-#include "Buffer/StringBuffer.hpp"
 #include "Controller/CustomControllerAgent.h"
 #include "Controller/GeneralControllerAgent.h"
 #include "LibraryHolder/ControlUnit.h"
+#include "Utils/Buffer/ImageBuffer.hpp"
+#include "Utils/Buffer/StringBuffer.hpp"
 #include "Utils/Logger.h"
 #include "Utils/Platform.h"
 

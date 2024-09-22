@@ -1,8 +1,8 @@
 #include "MaaFramework/Instance/MaaContext.h"
 
 #include "API/MaaTypes.h"
-#include "Buffer/ImageBuffer.hpp"
-#include "Buffer/StringBuffer.hpp"
+#include "Utils/Buffer/ImageBuffer.hpp"
+#include "Utils/Buffer/StringBuffer.hpp"
 #include "Utils/Logger.h"
 
 MaaTaskId MaaContextRunPipeline(MaaContext* context, const char* entry, const char* pipeline_override)

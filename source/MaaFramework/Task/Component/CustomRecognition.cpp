@@ -2,9 +2,9 @@
 
 #include "Utils/NoWarningCV.hpp"
 
-#include "Buffer/ImageBuffer.hpp"
-#include "Buffer/StringBuffer.hpp"
 #include "Task/Context.h"
+#include "Utils/Buffer/ImageBuffer.hpp"
+#include "Utils/Buffer/StringBuffer.hpp"
 #include "Utils/Logger.h"
 
 MAA_TASK_NS_BEGIN

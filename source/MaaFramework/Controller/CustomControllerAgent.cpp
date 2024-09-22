@@ -1,8 +1,8 @@
 #include "CustomControllerAgent.h"
 
-#include "Buffer/ImageBuffer.hpp"
-#include "Buffer/StringBuffer.hpp"
 #include "MaaFramework/Instance/MaaCustomController.h"
+#include "Utils/Buffer/ImageBuffer.hpp"
+#include "Utils/Buffer/StringBuffer.hpp"
 #include "Utils/Logger.h"
 #include "Utils/NoWarningCV.hpp"
 

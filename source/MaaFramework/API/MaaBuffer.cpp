@@ -1,8 +1,8 @@
 #include "MaaFramework/Utility/MaaBuffer.h"
 
-#include "Buffer/ImageBuffer.hpp"
-#include "Buffer/ListBuffer.hpp"
-#include "Buffer/StringBuffer.hpp"
+#include "Utils/Buffer/ImageBuffer.hpp"
+#include "Utils/Buffer/ListBuffer.hpp"
+#include "Utils/Buffer/StringBuffer.hpp"
 #include "Utils/Logger.h"
 
 MaaStringBuffer* MaaStringBufferCreate()

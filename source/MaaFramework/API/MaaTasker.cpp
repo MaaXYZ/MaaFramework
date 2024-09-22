@@ -1,8 +1,8 @@
 #include "MaaFramework/Instance/MaaTasker.h"
 
-#include "Buffer/ImageBuffer.hpp"
-#include "Buffer/StringBuffer.hpp"
 #include "Tasker/Tasker.h"
+#include "Utils/Buffer/ImageBuffer.hpp"
+#include "Utils/Buffer/StringBuffer.hpp"
 #include "Utils/Logger.h"
 
 MaaTasker* MaaTaskerCreate(MaaNotificationCallback notify, void* notify_trans_arg)

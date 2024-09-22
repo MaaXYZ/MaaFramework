@@ -1,7 +1,7 @@
 #include "SeizeInput.h"
 
-#include "ControlUnit/MicroControl.hpp"
 #include "Utils/Logger.h"
+#include "Utils/MicroControl.hpp"
 #include "Utils/Platform.h"
 #include "Utils/SafeWindows.hpp"
 

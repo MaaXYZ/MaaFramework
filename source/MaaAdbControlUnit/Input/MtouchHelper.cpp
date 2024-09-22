@@ -5,8 +5,8 @@
 #include <format>
 #include <ranges>
 
-#include "ControlUnit/MicroControl.hpp"
 #include "Utils/Logger.h"
+#include "Utils/MicroControl.hpp"
 
 MAA_CTRL_UNIT_NS_BEGIN
 
