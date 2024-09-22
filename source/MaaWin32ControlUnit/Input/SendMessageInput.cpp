@@ -53,7 +53,6 @@ bool SendMessageInput::touch_down(int contact, int x, int y, int pressure)
 {
     LogInfo << VAR(contact) << VAR(x) << VAR(y) << VAR(pressure);
 
-    std::ignore = contact;
     std::ignore = pressure;
 
     if (!hwnd_) {
@@ -61,7 +60,36 @@ bool SendMessageInput::touch_down(int contact, int x, int y, int pressure)
         return false;
     }
 
-    SendMessage(hwnd_, WM_LBUTTONDOWN, MK_LBUTTON, MAKELPARAM(x, y));
+    UINT message = WM_LBUTTONDOWN;
+    WPARAM w_param = MK_LBUTTON;
+
+    switch (contact) {
+    case 0:
+        message = WM_LBUTTONDOWN;
+        w_param = MK_LBUTTON;
+        break;
+    case 1:
+        message = WM_RBUTTONDOWN;
+        w_param = MK_RBUTTON;
+        break;
+    case 2:
+        message = WM_MBUTTONDOWN;
+        w_param = MK_MBUTTON;
+        break;
+    case 3:
+        message = WM_XBUTTONUP;
+        w_param = MK_XBUTTON1;
+        break;
+    case 4:
+        message = WM_XBUTTONUP;
+        w_param = MK_XBUTTON2;
+        break;
+    default:
+        LogError << "contact out of range" << VAR(contact);
+        return false;
+    }
+
+    SendMessage(hwnd_, message, w_param, MAKELPARAM(x, y));
 
     return true;
 }
@@ -70,7 +98,6 @@ bool SendMessageInput::touch_move(int contact, int x, int y, int pressure)
 {
     LogInfo << VAR(contact) << VAR(x) << VAR(y) << VAR(pressure);
 
-    std::ignore = contact;
     std::ignore = pressure;
 
     if (!hwnd_) {
@@ -78,7 +105,36 @@ bool SendMessageInput::touch_move(int contact, int x, int y, int pressure)
         return false;
     }
 
-    SendMessage(hwnd_, WM_MOUSEMOVE, MK_LBUTTON, MAKELPARAM(x, y));
+    UINT message = WM_MOUSEMOVE;
+    WPARAM w_param = MK_LBUTTON;
+
+    switch (contact) {
+    case 0:
+        message = WM_MOUSEMOVE;
+        w_param = MK_LBUTTON;
+        break;
+    case 1:
+        message = WM_MOUSEMOVE;
+        w_param = MK_RBUTTON;
+        break;
+    case 2:
+        message = WM_MOUSEMOVE;
+        w_param = MK_MBUTTON;
+        break;
+    case 3:
+        message = WM_MOUSEMOVE;
+        w_param = MK_XBUTTON1;
+        break;
+    case 4:
+        message = WM_MOUSEMOVE;
+        w_param = MK_XBUTTON2;
+        break;
+    default:
+        LogError << "contact out of range" << VAR(contact);
+        return false;
+    }
+
+    SendMessage(hwnd_, message, w_param, MAKELPARAM(x, y));
 
     return true;
 }
@@ -94,7 +150,36 @@ bool SendMessageInput::touch_up(int contact)
         return false;
     }
 
-    SendMessage(hwnd_, WM_LBUTTONUP, MK_LBUTTON, 0);
+    UINT message = WM_LBUTTONUP;
+    WPARAM w_param = MK_LBUTTON;
+
+    switch (contact) {
+    case 0:
+        message = WM_LBUTTONUP;
+        w_param = MK_LBUTTON;
+        break;
+    case 1:
+        message = WM_RBUTTONUP;
+        w_param = MK_RBUTTON;
+        break;
+    case 2:
+        message = WM_MBUTTONUP;
+        w_param = MK_MBUTTON;
+        break;
+    case 3:
+        message = WM_XBUTTONUP;
+        w_param = MK_XBUTTON1;
+        break;
+    case 4:
+        message = WM_XBUTTONUP;
+        w_param = MK_XBUTTON2;
+        break;
+    default:
+        LogError << "contact out of range" << VAR(contact);
+        return false;
+    }
+
+    SendMessage(hwnd_, WM_LBUTTONUP, w_param, 0);
 
     return true;
 }

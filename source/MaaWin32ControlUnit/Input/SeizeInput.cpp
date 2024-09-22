@@ -127,6 +127,14 @@ bool SeizeInput::touch_down(int contact, int x, int y, int pressure)
     case 2:
         input.mi.dwFlags = MOUSEEVENTF_MIDDLEDOWN;
         break;
+    case 3:
+        input.mi.dwFlags = MOUSEEVENTF_XDOWN;
+        input.mi.mouseData = XBUTTON1;
+        break;
+    case 4:
+        input.mi.dwFlags = MOUSEEVENTF_XDOWN;
+        input.mi.mouseData = XBUTTON2;
+        break;
     default:
         LogError << "contact out of range" << VAR(contact);
         return false;
@@ -182,6 +190,14 @@ bool SeizeInput::touch_up(int contact)
         break;
     case 2:
         input.mi.dwFlags = MOUSEEVENTF_MIDDLEUP;
+        break;
+    case 3:
+        input.mi.dwFlags = MOUSEEVENTF_XUP;
+        input.mi.mouseData = XBUTTON1;
+        break;
+    case 4:
+        input.mi.dwFlags = MOUSEEVENTF_XUP;
+        input.mi.mouseData = XBUTTON2;
         break;
     default:
         LogError << "contact out of range" << VAR(contact);
