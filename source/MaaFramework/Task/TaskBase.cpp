@@ -73,7 +73,12 @@ RecoResult TaskBase::run_recognition(const cv::Mat& image, const PipelineData::N
         return {};
     }
 
-    bool current_focus = context_->get_pipeline_data(cur_task_).focus;
+    auto cur_opt = context_->get_pipeline_data(cur_task_);
+    if (!cur_opt) {
+        LogError << "get_pipeline_data failed" << VAR(cur_task_);
+        return {};
+    }
+    bool current_focus = cur_opt->focus;
 
     const json::value reco_list_cb_detail {
         { "task_id", task_id() },
@@ -87,7 +92,12 @@ RecoResult TaskBase::run_recognition(const cv::Mat& image, const PipelineData::N
     Recognizer recognizer(tasker_, *context_, image);
 
     for (const auto& name : list) {
-        const auto& pipeline_data = context_->get_pipeline_data(name);
+        auto data_opt = context_->get_pipeline_data(name);
+        if (!data_opt) {
+            LogError << "get_pipeline_data failed" << VAR(name);
+            continue;
+        }
+        const auto& pipeline_data = *data_opt;
 
         if (!pipeline_data.enabled) {
             LogDebug << "Task disabled" << name << VAR(pipeline_data.enabled);
@@ -146,7 +156,12 @@ NodeDetail TaskBase::run_action(const RecoResult& reco)
         return {};
     }
 
-    const auto& pipeline_data = context_->get_pipeline_data(reco.name);
+    auto cur_opt = context_->get_pipeline_data(reco.name);
+    if (!cur_opt) {
+        LogError << "get_pipeline_data failed" << VAR(reco.name);
+        return {};
+    }
+    const auto& pipeline_data = *cur_opt;
 
     if (debug_mode() || pipeline_data.focus) {
         const json::value cb_detail {

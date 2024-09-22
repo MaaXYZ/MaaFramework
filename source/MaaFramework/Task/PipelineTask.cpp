@@ -24,7 +24,13 @@ bool PipelineTask::run()
     std::stack<std::string> task_stack;
 
     // there is no pretask for the entry, so we use the entry itself
-    PipelineData current = context_->get_pipeline_data(entry_);
+    auto begin_opt = context_->get_pipeline_data(entry_);
+    if (!begin_opt) {
+        LogError << "get_pipeline_data failed" << VAR(entry_);
+        return false;
+    }
+
+    PipelineData current = std::move(*begin_opt);
     PipelineData::NextList next = { entry_ };
     PipelineData::NextList interrupt;
     bool error_handling = false;
@@ -50,7 +56,12 @@ bool PipelineTask::run()
             // 且 PipelineResMgr::check_all_next_list 保证了 next + interrupt 中没有同名任务
             auto pos = std::ranges::find(list, node_detail.name) - list.begin();
             bool is_interrupt = static_cast<size_t>(pos) >= next_size;
-            PipelineData hit_task = context_->get_pipeline_data(node_detail.name);
+            auto hit_opt = context_->get_pipeline_data(node_detail.name);
+            if (!hit_opt) {
+                LogError << "get_pipeline_data failed" << VAR(node_detail.name);
+                return false;
+            }
+            PipelineData hit_task = std::move(*hit_opt);
 
             if (is_interrupt || hit_task.is_sub) { // for compatibility with v1.x
                 LogInfo << "push task_stack:" << current.name;
@@ -78,7 +89,12 @@ bool PipelineTask::run()
             LogInfo << "pop task_stack:" << top;
             task_stack.pop();
 
-            current = context_->get_pipeline_data(top);
+            auto top_opt = context_->get_pipeline_data(top);
+            if (!top_opt) {
+                LogError << "get_pipeline_data failed" << VAR(top);
+                return false;
+            }
+            current = std::move(*top_opt);
             next = current.next;
             interrupt = current.interrupt;
         }

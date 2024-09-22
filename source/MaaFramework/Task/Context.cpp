@@ -96,7 +96,8 @@ bool Context::override_pipeline(const json::value& pipeline_override)
 
     for (const auto& [key, value] : pipeline_override.as_object()) {
         PipelineData result;
-        bool ret = MAA_RES_NS::PipelineResMgr::parse_task(key, value, result, get_pipeline_data(key), default_mgr);
+        auto default_result = get_pipeline_data(key).value_or(default_mgr.get_pipeline());
+        bool ret = MAA_RES_NS::PipelineResMgr::parse_task(key, value, result, default_result, default_mgr);
         if (!ret) {
             LogError << "parse_task failed" << VAR(key) << VAR(value);
             return false;
@@ -112,10 +113,15 @@ bool Context::override_next(const std::string& name, const std::vector<std::stri
 {
     LogFunc << VAR(getptr()) << VAR(name) << VAR(next);
 
-    auto data = get_pipeline_data(name);
-    data.next = next;
+    auto data_opt = get_pipeline_data(name);
+    if (!data_opt) {
+        LogError << "get_pipeline_data failed" << VAR(name);
+        return false;
+    }
 
-    pipeline_override_.insert_or_assign(name, std::move(data));
+    data_opt->next = next;
+
+    pipeline_override_.insert_or_assign(name, std::move(*data_opt));
 
     return check_pipeline();
 }
@@ -141,7 +147,7 @@ Tasker* Context::tasker() const
     return tasker_;
 }
 
-Context::PipelineData Context::get_pipeline_data(const std::string& task_name)
+std::optional<Context::PipelineData> Context::get_pipeline_data(const std::string& task_name)
 {
     auto override_it = pipeline_override_.find(task_name);
     if (override_it != pipeline_override_.end()) {
@@ -150,12 +156,12 @@ Context::PipelineData Context::get_pipeline_data(const std::string& task_name)
 
     if (!tasker_) {
         LogError << "tasker is null";
-        return {};
+        return std::nullopt;
     }
     auto* resource = tasker_->resource();
     if (!resource) {
         LogError << "resource not binded";
-        return {};
+        return std::nullopt;
     }
 
     auto& raw_data_map = resource->pipeline_res().get_pipeline_data_map();
@@ -164,7 +170,8 @@ Context::PipelineData Context::get_pipeline_data(const std::string& task_name)
         return raw_it->second;
     }
 
-    return resource->default_pipeline().get_pipeline();
+    LogError << "task not found" << VAR(task_name);
+    return std::nullopt;
 }
 
 bool Context::check_pipeline() const
