@@ -334,19 +334,19 @@ bool PipelineResMgr::parse_task(
         }
     }
 
-    auto timeout = default_value.reco_timeout.count();
-    if (!get_and_check_value(input, "timeout", timeout, timeout)) {
-        LogError << "failed to get_and_check_value timeout" << VAR(input);
-        return false;
-    }
-    data.reco_timeout = std::chrono::milliseconds(timeout);
-
     auto rate_limit = default_value.rate_limit.count();
     if (!get_and_check_value(input, "rate_limit", rate_limit, rate_limit)) {
         LogError << "failed to get_and_check_value rate_limit" << VAR(input);
         return false;
     }
     data.rate_limit = std::chrono::milliseconds(rate_limit);
+
+    auto timeout = default_value.reco_timeout.count();
+    if (!get_and_check_value(input, "timeout", timeout, timeout)) {
+        LogError << "failed to get_and_check_value timeout" << VAR(input);
+        return false;
+    }
+    data.reco_timeout = std::chrono::milliseconds(timeout);
 
     auto pre_delay = default_value.pre_delay.count();
     if (!get_and_check_value(input, "pre_delay", pre_delay, pre_delay)) {
@@ -1296,6 +1296,7 @@ bool PipelineResMgr::parse_wait_freezes_param(
     const auto& field = *opt;
 
     if (field.is_number()) {
+        output = default_value;
         output.time = std::chrono::milliseconds(field.as_unsigned());
         return true;
     }

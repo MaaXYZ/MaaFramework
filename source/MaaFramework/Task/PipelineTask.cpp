@@ -119,6 +119,7 @@ NodeDetail PipelineTask::run_reco_and_action(const PipelineData::NextList& list,
 
     const auto start_clock = std::chrono::steady_clock::now();
     std::chrono::steady_clock::time_point current_clock;
+
     while (true) {
         current_clock = std::chrono::steady_clock::now();
         cv::Mat image = screencap();
@@ -133,8 +134,8 @@ NodeDetail PipelineTask::run_reco_and_action(const PipelineData::NextList& list,
             return {};
         }
 
-        if (std::chrono::steady_clock::now() - start_clock > pretask.reco_timeout) {
-            LogError << "Task timeout" << VAR(pretask.name) << VAR(pretask.reco_timeout);
+        if (duration_since(start_clock) > pretask.reco_timeout) {
+            LogError << "Task timeout" << VAR(pretask.name) << VAR(duration_since(start_clock)) << VAR(pretask.reco_timeout) << VAR(list);
             return {};
         }
 
