@@ -62,19 +62,21 @@ class Context:
     def run_action(
         self,
         entry: str,
-        box: RectType,
+        box: RectType = (0, 0, 0, 0),
         reco_detail: str = "",
         pipeline_override: Dict = {},
     ) -> Optional[NodeDetail]:
         rect = RectBuffer()
         rect.set(box)
 
-        node_id = int(Library.framework.MaaContextRunAction(
-            self._handle,
-            *Context._gen_post_param(entry, pipeline_override),
-            rect._handle,
-            reco_detail.encode()
-        ))
+        node_id = int(
+            Library.framework.MaaContextRunAction(
+                self._handle,
+                *Context._gen_post_param(entry, pipeline_override),
+                rect._handle,
+                reco_detail.encode()
+            )
+        )
 
         if not node_id:
             return None
