@@ -187,10 +187,8 @@ void Interactor::print_config() const
 
     switch (config_.configuration().controller.type_enum) {
     case InterfaceData::Controller::Type::Adb:
-        std::cout << MAA_NS::utf8_to_crt(std::format(
-            "\t\t{}\n\t\t{}\n",
-            MaaNS::path_to_utf8_string(config_.configuration().adb.adb_path),
-            config_.configuration().adb.address));
+        std::cout << MAA_NS::utf8_to_crt(
+            std::format("\t\t{}\n\t\t{}\n", config_.configuration().adb.adb_path, config_.configuration().adb.address));
         break;
     case InterfaceData::Controller::Type::Win32:
         if (config_.configuration().win32.hwnd) {
