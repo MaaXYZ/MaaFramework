@@ -129,6 +129,8 @@ void Actuator::wait_freezes(const MAA_RES_NS::WaitFreezesParam& param, const cv:
     LogFunc << "Wait freezes:" << VAR(param.time) << VAR(param.rate_limit) << VAR(param.timeout) << VAR(param.threshold)
             << VAR(param.method);
 
+    auto rate_limit = std::min(param.rate_limit, param.time);
+
     auto screencap_clock = std::chrono::steady_clock::now();
     cv::Mat pre_image = controller()->screencap();
 
@@ -142,8 +144,8 @@ void Actuator::wait_freezes(const MAA_RES_NS::WaitFreezesParam& param, const cv:
     auto pre_image_clock = start_clock;
 
     while (true) {
-        LogDebug << "sleep_until" << VAR(param.rate_limit);
-        std::this_thread::sleep_until(screencap_clock + param.rate_limit);
+        LogDebug << "sleep_until" << VAR(rate_limit);
+        std::this_thread::sleep_until(screencap_clock + rate_limit);
 
         screencap_clock = std::chrono::steady_clock::now();
         cv::Mat cur_image = controller()->screencap();
