@@ -166,8 +166,9 @@ typedef uint64_t MaaAdbScreencapMethod;
 #define MaaAdbScreencapMethod_EmulatorExtras (1ULL << 6)
 
 #define MaaAdbScreencapMethod_All (~MaaAdbScreencapMethod_None)
-#define MaaAdbScreencapMethod_Default \
-    (MaaAdbScreencapMethod_All & (~MaaAdbScreencapMethod_MinicapDirect) & (~MaaAdbScreencapMethod_MinicapStream))
+#define MaaAdbScreencapMethod_Default                                                                          \
+    (MaaAdbScreencapMethod_All & (~MaaAdbScreencapMethod_RawByNetcat) & (~MaaAdbScreencapMethod_MinicapDirect) \
+     & (~MaaAdbScreencapMethod_MinicapStream))
 
 // MaaAdbInputMethod:
 /**

@@ -124,7 +124,7 @@ class MaaAdbScreencapMethodEnum:
     EmulatorExtras = 1 << 6
 
     All = ~Null
-    Default = All & (~MinicapDirect) & (~MinicapDirect)
+    Default = All & (~RawByNetcat) & (~MinicapDirect) & (~MinicapDirect)
 
 
 MaaAdbInputMethod = ctypes.c_uint64
