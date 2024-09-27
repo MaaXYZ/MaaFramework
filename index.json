@@ -1,5 +1,5 @@
 {
-	"Version": "(main) v2.0.2",
+	"Version": "(main) v2.0.3",
 	"Compounds": {
 		"MaaContext.h": {
 			"Location": "include/MaaFramework/Instance/MaaContext.h",
@@ -2920,7 +2920,7 @@
 								"Details": [],
 								"Deprecated": null
 							},
-							"Value": "(MaaAdbScreencapMethod_All \u0026 (~MaaAdbScreencapMethod_MinicapDirect) \u0026 (~MaaAdbScreencapMethod_MinicapStream))"
+							"Value": "(MaaAdbScreencapMethod_All \u0026 (~MaaAdbScreencapMethod_RawByNetcat) \u0026 (~MaaAdbScreencapMethod_MinicapDirect) \\\n     \u0026 (~MaaAdbScreencapMethod_MinicapStream))"
 						}
 					},
 					"IsFlags": true,

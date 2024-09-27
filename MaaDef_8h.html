@@ -26,7 +26,7 @@
  <tbody>
  <tr id="projectrow">
   <td id="projectalign">
-   <div id="projectname">Maa Framework<span id="projectnumber">&#160;(main) v2.0.2</span>
+   <div id="projectname">Maa Framework<span id="projectnumber">&#160;(main) v2.0.3</span>
    </div>
    <div id="projectbrief">A automation black-box testing framework based on image recognition.</div>
   </td>
@@ -136,7 +136,7 @@ Macros</h2></td></tr>
 <tr class="separator:a55c4f433547d52de1c93c3d01d58aed7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a004b0d855740e5d3894fd14d9e47d080" id="r_a004b0d855740e5d3894fd14d9e47d080"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="MaaDef_8h.html#a004b0d855740e5d3894fd14d9e47d080">MaaAdbScreencapMethod_All</a>&#160;&#160;&#160;(~<a class="el" href="MaaDef_8h.html#ad3df932dcfe5f836a7e98f0ebef2cf83">MaaAdbScreencapMethod_None</a>)</td></tr>
 <tr class="separator:a004b0d855740e5d3894fd14d9e47d080"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab558d3ce8a6a402fb562715c452f04f5" id="r_ab558d3ce8a6a402fb562715c452f04f5"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="MaaDef_8h.html#ab558d3ce8a6a402fb562715c452f04f5">MaaAdbScreencapMethod_Default</a>&#160;&#160;&#160;    (<a class="el" href="MaaDef_8h.html#a004b0d855740e5d3894fd14d9e47d080">MaaAdbScreencapMethod_All</a> &amp; (~<a class="el" href="MaaDef_8h.html#a594d59b13a02d41b6a335e0f6575fca2">MaaAdbScreencapMethod_MinicapDirect</a>) &amp; (~<a class="el" href="MaaDef_8h.html#a81656785989eff6004704d5cc908552e">MaaAdbScreencapMethod_MinicapStream</a>))</td></tr>
+<tr class="memitem:ab558d3ce8a6a402fb562715c452f04f5" id="r_ab558d3ce8a6a402fb562715c452f04f5"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="MaaDef_8h.html#ab558d3ce8a6a402fb562715c452f04f5">MaaAdbScreencapMethod_Default</a></td></tr>
 <tr class="separator:ab558d3ce8a6a402fb562715c452f04f5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5d201ca1f58e33b38be2fd7b9f977975" id="r_a5d201ca1f58e33b38be2fd7b9f977975"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="MaaDef_8h.html#a5d201ca1f58e33b38be2fd7b9f977975">MaaAdbInputMethod_None</a>&#160;&#160;&#160;0ULL</td></tr>
 <tr class="separator:a5d201ca1f58e33b38be2fd7b9f977975"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -480,11 +480,15 @@ Enumerations</h2></td></tr>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">#define MaaAdbScreencapMethod_Default&#160;&#160;&#160;    (<a class="el" href="MaaDef_8h.html#a004b0d855740e5d3894fd14d9e47d080">MaaAdbScreencapMethod_All</a> &amp; (~<a class="el" href="MaaDef_8h.html#a594d59b13a02d41b6a335e0f6575fca2">MaaAdbScreencapMethod_MinicapDirect</a>) &amp; (~<a class="el" href="MaaDef_8h.html#a81656785989eff6004704d5cc908552e">MaaAdbScreencapMethod_MinicapStream</a>))</td>
+          <td class="memname">#define MaaAdbScreencapMethod_Default</td>
         </tr>
       </table>
 </div><div class="memdoc">
-
+<b>Value:</b><div class="fragment"><div class="line">    (<a class="code hl_define" href="MaaDef_8h.html#a004b0d855740e5d3894fd14d9e47d080">MaaAdbScreencapMethod_All</a> &amp; (~MaaAdbScreencapMethod_RawByNetcat) &amp; (~<a class="code hl_define" href="MaaDef_8h.html#a594d59b13a02d41b6a335e0f6575fca2">MaaAdbScreencapMethod_MinicapDirect</a>) \</div>
+<div class="line">     &amp; (~MaaAdbScreencapMethod_MinicapStream))</div>
+<div class="ttc" id="aMaaDef_8h_html_a004b0d855740e5d3894fd14d9e47d080"><div class="ttname"><a href="MaaDef_8h.html#a004b0d855740e5d3894fd14d9e47d080">MaaAdbScreencapMethod_All</a></div><div class="ttdeci">#define MaaAdbScreencapMethod_All</div><div class="ttdef"><b>Definition</b> MaaDef.h:168</div></div>
+<div class="ttc" id="aMaaDef_8h_html_a594d59b13a02d41b6a335e0f6575fca2"><div class="ttname"><a href="MaaDef_8h.html#a594d59b13a02d41b6a335e0f6575fca2">MaaAdbScreencapMethod_MinicapDirect</a></div><div class="ttdeci">#define MaaAdbScreencapMethod_MinicapDirect</div><div class="ttdef"><b>Definition</b> MaaDef.h:164</div></div>
+</div><!-- fragment -->
 </div>
 </div>
 <a id="a5d201ca1f58e33b38be2fd7b9f977975" name="a5d201ca1f58e33b38be2fd7b9f977975"></a>
@@ -1354,7 +1358,7 @@ value: bool, eg: true; val_size: sizeof(bool)
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="dir_d44c64559bbebec7f509842c48db8b23.html">include</a></li><li class="navelem"><a class="el" href="dir_370cd1367c21b1a87c5c9c6803b8d0b9.html">MaaFramework</a></li><li class="navelem"><a class="el" href="MaaDef_8h.html">MaaDef.h</a></li>
-    <li class="footer">Generated on Mon Sep 23 2024 for Maa Framework by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.8 </li>
+    <li class="footer">Generated on Fri Sep 27 2024 for Maa Framework by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.8 </li>
   </ul>
 </div>
 </body>
