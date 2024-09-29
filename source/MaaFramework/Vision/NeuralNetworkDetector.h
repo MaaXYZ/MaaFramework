@@ -41,7 +41,7 @@ private:
 
     ResultsVec detect() const;
 
-    void add_results(ResultsVec results, const std::vector<size_t>& expected);
+    void add_results(ResultsVec results, const std::vector<size_t>& expected, const std::vector<double>& thresholds);
     void cherry_pick();
 
 private:
