@@ -3,7 +3,9 @@
 #include <filesystem>
 #include <ranges>
 
+#ifdef _WIN32
 #include "Utils/SafeWindows.hpp"
+#endif
 
 #if __has_include(<onnxruntime/dml_provider_factory.h>)
 #define MAA_WITH_DML
