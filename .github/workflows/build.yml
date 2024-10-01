@@ -402,6 +402,7 @@ jobs:
               with:
                   files: assets/*.zip
                   tag_name: ${{ needs.meta.outputs.tag }}
+                  prerelease: ${{ needs.meta.outputs.is_pre_release }}
 
             - name: Create issue if failed to publish packages
               if: steps.nuget.outputs.failed || steps.pip.outputs.failed
