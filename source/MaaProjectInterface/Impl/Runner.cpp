@@ -44,6 +44,7 @@ bool Runner::run(
     }
 
     auto resource_handle = MaaResourceCreate(notify, notify_trans_arg);
+    MaaResourceSetOption(resource_handle, MaaResOption_GpuId, const_cast<int32_t*>(&param.gpu), sizeof(int32_t));
 
     MaaId cid = MaaControllerPostConnection(controller_handle);
     MaaId rid = 0;

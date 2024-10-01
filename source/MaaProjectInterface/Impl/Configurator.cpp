@@ -120,6 +120,8 @@ std::optional<RuntimeParam> Configurator::generate_runtime() const
     }
     }
 
+    runtime.gpu = config_.gpu;
+
     return runtime;
 }
 

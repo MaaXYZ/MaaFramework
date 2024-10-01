@@ -2,6 +2,7 @@
 
 #include <filesystem>
 #include <memory>
+#include <optional>
 
 #include <onnxruntime/onnxruntime_cxx_api.h>
 
@@ -17,7 +18,12 @@ public:
     inline static const std::filesystem::path kClassifierDir = "classify";
     inline static const std::filesystem::path kDetectorDir = "detect";
 
+    ~ONNXResMgr();
+
 public:
+    bool use_cpu();
+    bool use_gpu(int device_id);
+
     bool lazy_load(const std::filesystem::path& path, bool is_base);
     void clear();
 
@@ -31,8 +37,9 @@ private:
     std::vector<std::filesystem::path> classifier_roots_;
     std::vector<std::filesystem::path> detector_roots_;
 
-    Ort::Env m_env;
-    Ort::SessionOptions m_options;
+    Ort::Env env_;
+    Ort::SessionOptions options_;
+    std::optional<int> gpu_device_id_;
 
     mutable std::unordered_map<std::string, std::shared_ptr<Ort::Session>> classifiers_;
     mutable std::unordered_map<std::string, std::shared_ptr<Ort::Session>> detectors_;

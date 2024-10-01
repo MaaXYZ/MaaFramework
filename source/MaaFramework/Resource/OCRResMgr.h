@@ -19,6 +19,9 @@ class OCRResMgr : public NonCopyable
 {
 public:
     OCRResMgr();
+
+    bool use_cpu();
+    bool use_gpu(int device_id);
     bool lazy_load(const std::filesystem::path& path, bool is_base);
     void clear();
 

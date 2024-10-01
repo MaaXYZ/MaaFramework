@@ -49,6 +49,7 @@ MaaOptionValue = ctypes.c_void_p
 MaaOption = ctypes.c_int32
 MaaGlobalOption = MaaOption
 MaaCtrlOption = MaaOption
+MaaResOption = MaaOption
 
 
 class MaaGlobalOptionEnum:
@@ -102,6 +103,15 @@ class MaaCtrlOptionEnum:
     # this option will || with MaaGlobalOptionEnum.Recording
     # value: bool, eg: true; val_size: sizeof(bool)
     Recording = 5
+
+
+class MaaResOptionEnum:
+    Invalid = 0
+
+    # Use the specified inference device, the default is INT32_MAX, which means CPU.
+    # Please set this option before loading the model.
+    # value: int32_t, eg: 0; val_size: sizeof(int32_t)
+    GpuId = 1
 
 
 MaaAdbScreencapMethod = ctypes.c_uint64

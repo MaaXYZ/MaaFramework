@@ -28,11 +28,16 @@ ResourceMgr::~ResourceMgr()
 
 bool ResourceMgr::set_option(MaaResOption key, MaaOptionValue value, MaaOptionValueSize val_size)
 {
-    std::ignore = key;
-    std::ignore = value;
-    std::ignore = val_size;
+    LogFunc << VAR(key) << VAR_VOIDP(value) << VAR(val_size);
 
-    return false;
+    switch (key) {
+    case MaaResOption_GpuId:
+        return set_gpu_id(value, val_size);
+
+    default:
+        LogError << "Unknown key" << VAR(key) << VAR(value);
+        return false;
+    }
 }
 
 MaaResId ResourceMgr::post_path(const std::filesystem::path& path)
@@ -241,6 +246,30 @@ CustomActionSession ResourceMgr::custom_action(const std::string& name) const
     }
 
     return it->second;
+}
+
+bool ResourceMgr::set_gpu_id(MaaOptionValue value, MaaOptionValueSize val_size)
+{
+    LogFunc << VAR_VOIDP(value) << VAR(val_size);
+
+    if (val_size != sizeof(int32_t)) {
+        LogError << "invalid size" << VAR(val_size);
+        return false;
+    }
+
+    int32_t gpu_id = *reinterpret_cast<int*>(value);
+    LogInfo << VAR(gpu_id);
+
+    if (gpu_id == INT32_MAX) {
+        onnx_res_.use_cpu();
+        ocr_res_.use_cpu();
+    }
+    else {
+        onnx_res_.use_gpu(gpu_id);
+        ocr_res_.use_gpu(gpu_id);
+    }
+
+    return true;
 }
 
 bool ResourceMgr::run_load(typename AsyncRunner<std::filesystem::path>::Id id, std::filesystem::path path)

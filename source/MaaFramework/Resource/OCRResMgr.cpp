@@ -15,6 +15,22 @@ OCRResMgr::OCRResMgr()
     option_.UseOrtBackend();
 }
 
+bool OCRResMgr::use_cpu()
+{
+    LogInfo;
+
+    option_.UseCpu();
+    return true;
+}
+
+bool OCRResMgr::use_gpu(int device_id)
+{
+    LogInfo << VAR(device_id);
+
+    option_.UseGpu(device_id);
+    return true;
+}
+
 bool OCRResMgr::lazy_load(const std::filesystem::path& path, bool is_base)
 {
     LogFunc << VAR(path) << VAR(is_base);
