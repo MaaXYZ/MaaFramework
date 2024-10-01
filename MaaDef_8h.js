@@ -91,7 +91,8 @@ var MaaDef_8h =
       [ "MaaGlobalOption_DebugMode", "MaaDef_8h.html#ad09e62ec1fd03dadaf5fb009026c38eea85acfc5fc6cdca745d0eb2a090c05c5f", null ]
     ] ],
     [ "MaaResOptionEnum", "MaaDef_8h.html#a9aa211dbcabe90cacd0c94ea6a03d116", [
-      [ "MaaResOption_Invalid", "MaaDef_8h.html#a9aa211dbcabe90cacd0c94ea6a03d116afdc31dbaaa6b035f11b40cd574165f8e", null ]
+      [ "MaaResOption_Invalid", "MaaDef_8h.html#a9aa211dbcabe90cacd0c94ea6a03d116afdc31dbaaa6b035f11b40cd574165f8e", null ],
+      [ "MaaResOption_GpuId", "MaaDef_8h.html#a9aa211dbcabe90cacd0c94ea6a03d116a74884d3a3c2330e0e1c2da92b70ea89e", null ]
     ] ],
     [ "MaaCtrlOptionEnum", "MaaDef_8h.html#ac9daa36008267a26662244d2f5570003", [
       [ "MaaCtrlOption_Invalid", "MaaDef_8h.html#ac9daa36008267a26662244d2f5570003a4afeb097dfa70801c8fa43d83bb5c51f", null ],

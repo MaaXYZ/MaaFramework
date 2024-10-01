@@ -26,7 +26,7 @@
  <tbody>
  <tr id="projectrow">
   <td id="projectalign">
-   <div id="projectname">Maa Framework<span id="projectnumber">&#160;(main) v2.0.3</span>
+   <div id="projectname">Maa Framework<span id="projectnumber">&#160;(main) v2.1.0-alpha.1</span>
    </div>
    <div id="projectbrief">A automation black-box testing framework based on image recognition.</div>
   </td>
@@ -295,7 +295,11 @@ Enumerations</h2></td></tr>
 <br />
  }</td></tr>
 <tr class="separator:ad09e62ec1fd03dadaf5fb009026c38ee"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9aa211dbcabe90cacd0c94ea6a03d116" id="r_a9aa211dbcabe90cacd0c94ea6a03d116"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="MaaDef_8h.html#a9aa211dbcabe90cacd0c94ea6a03d116">MaaResOptionEnum</a> { <a class="el" href="MaaDef_8h.html#a9aa211dbcabe90cacd0c94ea6a03d116afdc31dbaaa6b035f11b40cd574165f8e">MaaResOption_Invalid</a> = 0
+<tr class="memitem:a9aa211dbcabe90cacd0c94ea6a03d116" id="r_a9aa211dbcabe90cacd0c94ea6a03d116"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="MaaDef_8h.html#a9aa211dbcabe90cacd0c94ea6a03d116">MaaResOptionEnum</a> { <br />
+&#160;&#160;<a class="el" href="MaaDef_8h.html#a9aa211dbcabe90cacd0c94ea6a03d116afdc31dbaaa6b035f11b40cd574165f8e">MaaResOption_Invalid</a> = 0
+, <br />
+&#160;&#160;<a class="el" href="MaaDef_8h.html#a9aa211dbcabe90cacd0c94ea6a03d116a74884d3a3c2330e0e1c2da92b70ea89e">MaaResOption_GpuId</a> = 1
+<br />
  }</td></tr>
 <tr class="separator:a9aa211dbcabe90cacd0c94ea6a03d116"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac9daa36008267a26662244d2f5570003" id="r_ac9daa36008267a26662244d2f5570003"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="MaaDef_8h.html#ac9daa36008267a26662244d2f5570003">MaaCtrlOptionEnum</a> { <br />
@@ -486,8 +490,8 @@ Enumerations</h2></td></tr>
 </div><div class="memdoc">
 <b>Value:</b><div class="fragment"><div class="line">    (<a class="code hl_define" href="MaaDef_8h.html#a004b0d855740e5d3894fd14d9e47d080">MaaAdbScreencapMethod_All</a> &amp; (~MaaAdbScreencapMethod_RawByNetcat) &amp; (~<a class="code hl_define" href="MaaDef_8h.html#a594d59b13a02d41b6a335e0f6575fca2">MaaAdbScreencapMethod_MinicapDirect</a>) \</div>
 <div class="line">     &amp; (~MaaAdbScreencapMethod_MinicapStream))</div>
-<div class="ttc" id="aMaaDef_8h_html_a004b0d855740e5d3894fd14d9e47d080"><div class="ttname"><a href="MaaDef_8h.html#a004b0d855740e5d3894fd14d9e47d080">MaaAdbScreencapMethod_All</a></div><div class="ttdeci">#define MaaAdbScreencapMethod_All</div><div class="ttdef"><b>Definition</b> MaaDef.h:168</div></div>
-<div class="ttc" id="aMaaDef_8h_html_a594d59b13a02d41b6a335e0f6575fca2"><div class="ttname"><a href="MaaDef_8h.html#a594d59b13a02d41b6a335e0f6575fca2">MaaAdbScreencapMethod_MinicapDirect</a></div><div class="ttdeci">#define MaaAdbScreencapMethod_MinicapDirect</div><div class="ttdef"><b>Definition</b> MaaDef.h:164</div></div>
+<div class="ttc" id="aMaaDef_8h_html_a004b0d855740e5d3894fd14d9e47d080"><div class="ttname"><a href="MaaDef_8h.html#a004b0d855740e5d3894fd14d9e47d080">MaaAdbScreencapMethod_All</a></div><div class="ttdeci">#define MaaAdbScreencapMethod_All</div><div class="ttdef"><b>Definition</b> MaaDef.h:174</div></div>
+<div class="ttc" id="aMaaDef_8h_html_a594d59b13a02d41b6a335e0f6575fca2"><div class="ttname"><a href="MaaDef_8h.html#a594d59b13a02d41b6a335e0f6575fca2">MaaAdbScreencapMethod_MinicapDirect</a></div><div class="ttdeci">#define MaaAdbScreencapMethod_MinicapDirect</div><div class="ttdef"><b>Definition</b> MaaDef.h:170</div></div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -1301,6 +1305,9 @@ default value is MaaLoggingLevel_Error
 </div><div class="memdoc">
 <table class="fieldtable">
 <tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="a9aa211dbcabe90cacd0c94ea6a03d116afdc31dbaaa6b035f11b40cd574165f8e" name="a9aa211dbcabe90cacd0c94ea6a03d116afdc31dbaaa6b035f11b40cd574165f8e"></a>MaaResOption_Invalid&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a9aa211dbcabe90cacd0c94ea6a03d116a74884d3a3c2330e0e1c2da92b70ea89e" name="a9aa211dbcabe90cacd0c94ea6a03d116a74884d3a3c2330e0e1c2da92b70ea89e"></a>MaaResOption_GpuId&#160;</td><td class="fielddoc"><p>Use the specified inference device, the default is INT32_MAX, which means CPU. Please set this option before loading the model.</p>
+<p>value: int32_t, eg: 0; val_size: sizeof(int32_t) </p>
+</td></tr>
 </table>
 
 </div>
@@ -1358,7 +1365,7 @@ value: bool, eg: true; val_size: sizeof(bool)
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="dir_d44c64559bbebec7f509842c48db8b23.html">include</a></li><li class="navelem"><a class="el" href="dir_370cd1367c21b1a87c5c9c6803b8d0b9.html">MaaFramework</a></li><li class="navelem"><a class="el" href="MaaDef_8h.html">MaaDef.h</a></li>
-    <li class="footer">Generated on Fri Sep 27 2024 for Maa Framework by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.8 </li>
+    <li class="footer">Generated on Tue Oct 1 2024 for Maa Framework by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.8 </li>
   </ul>
 </div>
 </body>

@@ -1,5 +1,5 @@
 {
-	"Version": "(main) v2.0.3",
+	"Version": "(main) v2.1.0-alpha.1",
 	"Compounds": {
 		"MaaContext.h": {
 			"Location": "include/MaaFramework/Instance/MaaContext.h",
@@ -3335,6 +3335,16 @@
 								"Deprecated": null
 							},
 							"Value": "0"
+						},
+						"MaaResOption_GpuId": {
+							"Description": {
+								"Brief": "Use the specified inference device, the default is INT32_MAX, which means CPU. Please set this option before loading the model.",
+								"Details": [
+									"value: int32_t, eg: 0; val_size: sizeof(int32_t)"
+								],
+								"Deprecated": null
+							},
+							"Value": "1"
 						}
 					},
 					"IsFlags": false,

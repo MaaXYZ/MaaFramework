@@ -19,11 +19,12 @@ var searchData=
   ['maalogginglevel_5foff_16',['MaaLoggingLevel_Off',['../MaaDef_8h.html#a81060ab7b5fa44bfe6861f3882dec9a9a886d0c4c0b743640330ce103ef377f96',1,'MaaDef.h']]],
   ['maalogginglevel_5ftrace_17',['MaaLoggingLevel_Trace',['../MaaDef_8h.html#a81060ab7b5fa44bfe6861f3882dec9a9a3d13be5b9e5135ffff14f59cc3d7a827',1,'MaaDef.h']]],
   ['maalogginglevel_5fwarn_18',['MaaLoggingLevel_Warn',['../MaaDef_8h.html#a81060ab7b5fa44bfe6861f3882dec9a9ab8ab1b9f82635c2f5ff28c7a9a1978cb',1,'MaaDef.h']]],
-  ['maaresoption_5finvalid_19',['MaaResOption_Invalid',['../MaaDef_8h.html#a9aa211dbcabe90cacd0c94ea6a03d116afdc31dbaaa6b035f11b40cd574165f8e',1,'MaaDef.h']]],
-  ['maastatus_5ffailed_20',['MaaStatus_Failed',['../MaaDef_8h.html#a92a321c9e89a79ab64dc5176057d76a6a341c204f14050eb7dc068032ee9eaf63',1,'MaaDef.h']]],
-  ['maastatus_5finvalid_21',['MaaStatus_Invalid',['../MaaDef_8h.html#a92a321c9e89a79ab64dc5176057d76a6a062c9b1508f38dba096aa2587ba08d40',1,'MaaDef.h']]],
-  ['maastatus_5fpending_22',['MaaStatus_Pending',['../MaaDef_8h.html#a92a321c9e89a79ab64dc5176057d76a6ad675ca7fe058998743ec8d99c72a914e',1,'MaaDef.h']]],
-  ['maastatus_5frunning_23',['MaaStatus_Running',['../MaaDef_8h.html#a92a321c9e89a79ab64dc5176057d76a6a05c689d4235e1214eab9abaf7cd6809b',1,'MaaDef.h']]],
-  ['maastatus_5fsucceeded_24',['MaaStatus_Succeeded',['../MaaDef_8h.html#a92a321c9e89a79ab64dc5176057d76a6a48d0596abd16c119daeb236a735515d8',1,'MaaDef.h']]],
-  ['maataskeroption_5finvalid_25',['MaaTaskerOption_Invalid',['../MaaDef_8h.html#a7ce6a82a2484734da58c3c422d19a9b1a44343c1c73aabeacff9a9f91805a16aa',1,'MaaDef.h']]]
+  ['maaresoption_5fgpuid_19',['MaaResOption_GpuId',['../MaaDef_8h.html#a9aa211dbcabe90cacd0c94ea6a03d116a74884d3a3c2330e0e1c2da92b70ea89e',1,'MaaDef.h']]],
+  ['maaresoption_5finvalid_20',['MaaResOption_Invalid',['../MaaDef_8h.html#a9aa211dbcabe90cacd0c94ea6a03d116afdc31dbaaa6b035f11b40cd574165f8e',1,'MaaDef.h']]],
+  ['maastatus_5ffailed_21',['MaaStatus_Failed',['../MaaDef_8h.html#a92a321c9e89a79ab64dc5176057d76a6a341c204f14050eb7dc068032ee9eaf63',1,'MaaDef.h']]],
+  ['maastatus_5finvalid_22',['MaaStatus_Invalid',['../MaaDef_8h.html#a92a321c9e89a79ab64dc5176057d76a6a062c9b1508f38dba096aa2587ba08d40',1,'MaaDef.h']]],
+  ['maastatus_5fpending_23',['MaaStatus_Pending',['../MaaDef_8h.html#a92a321c9e89a79ab64dc5176057d76a6ad675ca7fe058998743ec8d99c72a914e',1,'MaaDef.h']]],
+  ['maastatus_5frunning_24',['MaaStatus_Running',['../MaaDef_8h.html#a92a321c9e89a79ab64dc5176057d76a6a05c689d4235e1214eab9abaf7cd6809b',1,'MaaDef.h']]],
+  ['maastatus_5fsucceeded_25',['MaaStatus_Succeeded',['../MaaDef_8h.html#a92a321c9e89a79ab64dc5176057d76a6a48d0596abd16c119daeb236a735515d8',1,'MaaDef.h']]],
+  ['maataskeroption_5finvalid_26',['MaaTaskerOption_Invalid',['../MaaDef_8h.html#a7ce6a82a2484734da58c3c422d19a9b1a44343c1c73aabeacff9a9f91805a16aa',1,'MaaDef.h']]]
 ];
