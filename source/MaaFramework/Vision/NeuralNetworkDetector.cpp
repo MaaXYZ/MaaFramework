@@ -62,8 +62,6 @@ NeuralNetworkDetector::ResultsVec NeuralNetworkDetector::detect() const
     cv::Size input_image_size(static_cast<int>(input_shape[3]), static_cast<int>(input_shape[2]));
     cv::resize(image, image, input_image_size, 0, 0, cv::INTER_AREA);
     std::vector<float> input = image_to_tensor(image);
-
-    // TODO: GPU
     auto memory_info = Ort::MemoryInfo::CreateCpu(OrtDeviceAllocator, OrtMemTypeDefault);
 
     Ort::Value input_tensor =

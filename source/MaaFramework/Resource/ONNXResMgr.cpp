@@ -80,7 +80,7 @@ bool ONNXResMgr::use_gpu(int device_id)
     else if (all_providers.contains("DmlExecutionProvider")) {
         auto status = OrtSessionOptionsAppendExecutionProvider_DML(options_, device_id);
         if (!Ort::Status(status).IsOK()) {
-            LogError << "Failed to append DML execution provider";
+            LogError << "Failed to append DML execution provider with device_id " << device_id;
             return false;
         }
         LogInfo << "Using DML execution provider with device_id " << device_id;
