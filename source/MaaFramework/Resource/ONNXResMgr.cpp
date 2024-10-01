@@ -63,6 +63,9 @@ bool ONNXResMgr::use_gpu(int device_id)
     options_ = {};
 
     auto all_providers = Ort::GetAvailableProviders();
+
+    LogInfo << VAR(all_providers);
+
     bool support_cuda = false;
     bool support_dml = false;
     bool support_coreml = false;
@@ -78,31 +81,35 @@ bool ONNXResMgr::use_gpu(int device_id)
         }
     }
 
-    bool any_gpu = support_cuda || support_dml || support_coreml;
-
     if (support_cuda) {
-        OrtCUDAProviderOptions cuda_options;
+        OrtCUDAProviderOptions cuda_options {};
         cuda_options.device_id = device_id;
         options_.AppendExecutionProvider_CUDA(cuda_options);
+
+        LogInfo << "Using CUDA execution provider with device_id " << device_id;
     }
 #ifdef MAA_WITH_DML
     else if (support_dml) {
-        if (!Ort::Status(OrtSessionOptionsAppendExecutionProvider_DML(options_, device_id)).IsOK()) {
+        auto status = OrtSessionOptionsAppendExecutionProvider_DML(options_, device_id);
+        if (!Ort::Status(status).IsOK()) {
             LogError << "Failed to append DML execution provider";
             return false;
         }
+        LogInfo << "Using DML execution provider with device_id " << device_id;
     }
 #endif
 #ifdef MAA_WITH_COREML
     else if (support_coreml) {
-        if (!Ort::Status(OrtSessionOptionsAppendExecutionProvider_CoreML((OrtSessionOptions*)options_, 0)).IsOK()) {
+        auto status = OrtSessionOptionsAppendExecutionProvider_CoreML((OrtSessionOptions*)options_, 0);
+        if (!Ort::Status(status).IsOK()) {
             LogError << "Failed to append CoreML execution provider";
             return false;
         }
+        LogInfo << "Using CoreML execution provider";
     }
 #endif
-    if (!any_gpu) {
-        LogError << "No GPU provider found";
+    else {
+        LogError << "No supported execution provider found";
         return false;
     }
 
