@@ -3,10 +3,110 @@
 #include <filesystem>
 #include <ranges>
 
+#include "Utils/SafeWindows.hpp"
+
+#if __has_include(<onnxruntime/dml_provider_factory.h>)
+#define MAA_WITH_DML
+#include <onnxruntime/dml_provider_factory.h>
+#endif
+
+#if __has_include(<onnxruntime/coreml_provider_factory.h>)
+#define MAA_WITH_COREML
+#include <onnxruntime/coreml_provider_factory.h>
+#endif
+
 #include "Utils/Logger.h"
 #include "Utils/Platform.h"
 
 MAA_RES_NS_BEGIN
+
+ONNXResMgr::~ONNXResMgr()
+{
+    if (gpu_device_id_) {
+        LogWarn << "GPU is enabled, leaking resources";
+
+        // FIXME: intentionally leak ort objects to avoid crash (double free?)
+        // https://github.com/microsoft/onnxruntime/issues/15174
+        for (auto& session : classifiers_ | std::views::values) {
+            auto leak_session = new Ort::Session(nullptr);
+            *leak_session = std::move(*session);
+        }
+        for (auto& session : detectors_ | std::views::values) {
+            auto leak_session = new Ort::Session(nullptr);
+            *leak_session = std::move(*session);
+        }
+
+        auto leak_options = new Ort::SessionOptions(nullptr);
+        *leak_options = std::move(options_);
+    }
+}
+
+bool ONNXResMgr::use_cpu()
+{
+    LogInfo;
+
+    options_ = {};
+    gpu_device_id_ = std::nullopt;
+    return true;
+}
+
+bool ONNXResMgr::use_gpu(int device_id)
+{
+    LogInfo << VAR(device_id);
+
+    if (gpu_device_id_ && *gpu_device_id_ == device_id) {
+        LogWarn << "GPU is already enabled";
+        return true;
+    }
+    options_ = {};
+
+    auto all_providers = Ort::GetAvailableProviders();
+    bool support_cuda = false;
+    bool support_dml = false;
+    bool support_coreml = false;
+    for (const auto& provider : all_providers) {
+        if (provider == "CUDAExecutionProvider") {
+            support_cuda = true;
+        }
+        if (provider == "DmlExecutionProvider") {
+            support_dml = true;
+        }
+        if (provider == "CoreMLExecutionProvider") {
+            support_coreml = true;
+        }
+    }
+
+    bool any_gpu = support_cuda || support_dml || support_coreml;
+
+    if (support_cuda) {
+        OrtCUDAProviderOptions cuda_options;
+        cuda_options.device_id = device_id;
+        options_.AppendExecutionProvider_CUDA(cuda_options);
+    }
+#ifdef MAA_WITH_DML
+    else if (support_dml) {
+        if (!Ort::Status(OrtSessionOptionsAppendExecutionProvider_DML(options_, device_id)).IsOK()) {
+            LogError << "Failed to append DML execution provider";
+            return false;
+        }
+    }
+#endif
+#ifdef MAA_WITH_COREML
+    else if (support_coreml) {
+        if (!Ort::Status(OrtSessionOptionsAppendExecutionProvider_CoreML((OrtSessionOptions*)options_, 0)).IsOK()) {
+            LogError << "Failed to append CoreML execution provider";
+            return false;
+        }
+    }
+#endif
+    if (!any_gpu) {
+        LogError << "No GPU provider found";
+        return false;
+    }
+
+    gpu_device_id_ = device_id;
+    return true;
+}
 
 bool ONNXResMgr::lazy_load(const std::filesystem::path& path, bool is_base)
 {
@@ -71,7 +171,7 @@ std::shared_ptr<Ort::Session> ONNXResMgr::load(const std::string& name, const st
         }
 
         LogTrace << VAR(path);
-        Ort::Session session(m_env, path.c_str(), m_options);
+        Ort::Session session(env_, path.c_str(), options_);
         return std::make_shared<Ort::Session>(std::move(session));
     }
 

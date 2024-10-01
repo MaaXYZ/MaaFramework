@@ -85,7 +85,7 @@ OCRer::ResultsVec OCRer::predict_det_and_rec(const cv::Mat& image_roi) const
     fastdeploy::vision::OCRResult ocr_result;
     bool ret = ocrer_->Predict(image_roi, &ocr_result);
     if (!ret) {
-        LogWarn << "inferencer return false" << VAR(ocrer_) << VAR(image_) << VAR(image_roi);
+        LogWarn << "predict return false" << VAR(ocrer_) << VAR(image_) << VAR(image_roi);
         return {};
     }
 

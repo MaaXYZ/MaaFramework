@@ -60,6 +60,17 @@ class Resource:
     def clear(self) -> bool:
         return bool(Library.framework.MaaResourceClear(self._handle))
 
+    def set_gpu(self, device_id: int) -> bool:
+        cint = ctypes.c_int32(device_id)
+        return bool(
+            Library.framework.MaaResourceSetOption(
+                self._handle,
+                MaaResOptionEnum.GpuId,
+                ctypes.pointer(cint),
+                ctypes.sizeof(ctypes.c_int32),
+            )
+        )
+
     def register_custom_recognition(
         self, name: str, recognition: "CustomRecognition"  # type: ignore
     ) -> bool:
@@ -187,6 +198,14 @@ class Resource:
         Library.framework.MaaResourceGetHash.argtypes = [
             MaaResourceHandle,
             MaaStringBufferHandle,
+        ]
+
+        Library.framework.MaaResourceSetOption.restype = MaaBool
+        Library.framework.MaaResourceSetOption.argtypes = [
+            MaaResourceHandle,
+            MaaResOption,
+            MaaOptionValue,
+            MaaOptionValueSize,
         ]
 
         Library.framework.MaaResourceRegisterCustomRecognition.restype = MaaBool
