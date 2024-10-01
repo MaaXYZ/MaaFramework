@@ -71,8 +71,8 @@ class Resource:
             )
         )
 
-    def set_cpu(self, device_id: int) -> bool:
-        INT32_MAX = 2**31 - 1  # means CPU
+    def set_cpu(self) -> bool:
+        INT32_MAX = 2147483647  # means CPU
         return self.set_gpu(INT32_MAX)
 
     def register_custom_recognition(
