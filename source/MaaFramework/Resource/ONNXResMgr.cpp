@@ -23,26 +23,26 @@
 
 MAA_RES_NS_BEGIN
 
-ONNXResMgr::~ONNXResMgr()
-{
-    if (gpu_device_id_) {
-        LogWarn << "GPU is enabled, leaking resources";
-
-        // FIXME: intentionally leak ort objects to avoid crash (double free?)
-        // https://github.com/microsoft/onnxruntime/issues/15174
-        for (auto& session : classifiers_ | std::views::values) {
-            auto leak_session = new Ort::Session(nullptr);
-            *leak_session = std::move(*session);
-        }
-        for (auto& session : detectors_ | std::views::values) {
-            auto leak_session = new Ort::Session(nullptr);
-            *leak_session = std::move(*session);
-        }
-
-        auto leak_options = new Ort::SessionOptions(nullptr);
-        *leak_options = std::move(options_);
-    }
-}
+// ONNXResMgr::~ONNXResMgr()
+//{
+//      if (gpu_device_id_) {
+//          LogWarn << "GPU is enabled, leaking resources";
+//
+//         // FIXME: intentionally leak ort objects to avoid crash (double free?)
+//         // https://github.com/microsoft/onnxruntime/issues/15174
+//         for (auto& session : classifiers_ | std::views::values) {
+//             auto leak_session = new Ort::Session(nullptr);
+//             *leak_session = std::move(*session);
+//         }
+//         for (auto& session : detectors_ | std::views::values) {
+//             auto leak_session = new Ort::Session(nullptr);
+//             *leak_session = std::move(*session);
+//         }
+//
+//         auto leak_options = new Ort::SessionOptions(nullptr);
+//         *leak_options = std::move(options_);
+//     }
+// }
 
 bool ONNXResMgr::use_cpu()
 {
@@ -62,6 +62,7 @@ bool ONNXResMgr::use_gpu(int device_id)
         return true;
     }
     options_ = {};
+    gpu_device_id_ = std::nullopt;
 
     auto all_providers_vec = Ort::GetAvailableProviders();
     std::unordered_set<std::string> all_providers(

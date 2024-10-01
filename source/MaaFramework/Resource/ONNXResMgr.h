@@ -18,7 +18,7 @@ public:
     inline static const std::filesystem::path kClassifierDir = "classify";
     inline static const std::filesystem::path kDetectorDir = "detect";
 
-    ~ONNXResMgr();
+    //~ONNXResMgr();
 
 public:
     bool use_cpu();
