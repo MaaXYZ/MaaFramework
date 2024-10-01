@@ -50,7 +50,8 @@ jobs:
 
                   echo "tag=$tag
                   version=$version
-                  is_release=$is_release" | tee -a "$GITHUB_OUTPUT"
+                  is_release=$is_release
+                  is_pre_release=$is_pre_release" | tee -a "$GITHUB_OUTPUT"
         outputs:
             is_release: ${{ steps.set.outputs.is_release }}
             is_pre_release: ${{ steps.set.outputs.is_pre_release }}
