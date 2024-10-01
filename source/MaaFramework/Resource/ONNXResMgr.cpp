@@ -67,8 +67,8 @@ bool ONNXResMgr::use_gpu(int device_id)
     LogInfo << VAR(all_providers);
 
     bool support_cuda = false;
-    bool support_dml = false;
-    bool support_coreml = false;
+    [[maybe_unused]] bool support_dml = false;
+    [[maybe_unused]] bool support_coreml = false;
     for (const auto& provider : all_providers) {
         if (provider == "CUDAExecutionProvider") {
             support_cuda = true;
