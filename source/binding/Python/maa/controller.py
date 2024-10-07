@@ -98,7 +98,7 @@ class Controller:
         )
         return self._gen_ctrl_job(ctrl_id)
 
-    def post_touch_up(self, int, contact: int = 0) -> Job:
+    def post_touch_up(self, contact: int = 0) -> Job:
         ctrl_id = Library.framework.MaaControllerPostTouchUp(self._handle, contact)
         return self._gen_ctrl_job(ctrl_id)
 
