@@ -27,7 +27,8 @@ void ColorMatcher::analyze()
     cherry_pick();
 
     auto cost = duration_since(start_time);
-    LogTrace << name_ << VAR(uid_) << VAR(all_results_) << VAR(filtered_results_) << VAR(best_result_) << VAR(cost);
+    LogTrace << name_ << VAR(uid_) << VAR(all_results_) << VAR(filtered_results_) << VAR(best_result_) << VAR(cost) << VAR(param_.count)
+             << VAR(param_.method) << VAR(param_.connected);
 }
 
 ColorMatcher::ResultsVec ColorMatcher::color_match(const ColorMatcherParam::Range& range) const

@@ -37,7 +37,8 @@ void NeuralNetworkClassifier::analyze()
     cherry_pick();
 
     auto cost = duration_since(start_time);
-    LogTrace << name_ << VAR(uid_) << VAR(all_results_) << VAR(filtered_results_) << VAR(best_result_) << VAR(cost);
+    LogTrace << name_ << VAR(uid_) << VAR(all_results_) << VAR(filtered_results_) << VAR(best_result_) << VAR(cost) << VAR(param_.model)
+             << VAR(param_.labels) << VAR(param_.expected);
 }
 
 NeuralNetworkClassifier::Result NeuralNetworkClassifier::classify() const

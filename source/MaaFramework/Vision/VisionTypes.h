@@ -86,10 +86,10 @@ struct CustomRecognitionParam
 
 struct NeuralNetworkClassifierParam
 {
-    std::vector<std::string> labels; // only for output and debug
     std::string model;
 
     Target roi_target;
+    std::vector<std::string> labels; // only for output and debug
     std::vector</*result_index*/ size_t> expected;
 
     ResultOrderBy order_by = ResultOrderBy::Horizontal;
@@ -105,11 +105,11 @@ struct NeuralNetworkDetectorParam
     inline static constexpr Net kDefaultNet = Net::YoloV8;
     inline static constexpr double kDefaultThreshold = 0.3;
 
-    std::vector<std::string> labels; // only for output and debug
     std::string model;
     Net net = kDefaultNet;
 
     Target roi_target;
+    std::vector<std::string> labels; // only for output and debug
     std::vector</*result_index*/ size_t> expected;
     std::vector<double> thresholds = { kDefaultThreshold };
 

@@ -796,16 +796,14 @@ bool PipelineResMgr::parse_nn_classifier_param(
         LogError << "failed to parse_order_of_result" << VAR(input);
         return false;
     }
-
-    if (!get_and_check_value_or_array(input, "labels", output.labels, default_value.labels)) {
-        LogError << "failed to get_and_check_value_or_array labels" << VAR(input);
-        return false;
-    }
     if (!get_and_check_value(input, "model", output.model, default_value.model)) {
         LogError << "failed to get_and_check_value model" << VAR(input);
         return false;
     }
-
+    if (!get_and_check_value_or_array(input, "labels", output.labels, default_value.labels)) {
+        LogError << "failed to get_and_check_value_or_array labels" << VAR(input);
+        return false;
+    }
     if (!get_and_check_value_or_array(input, "expected", output.expected, default_value.expected)) {
         LogError << "failed to get_and_check_value_or_array expected" << VAR(input);
         return false;
@@ -841,15 +839,14 @@ bool PipelineResMgr::parse_nn_detector_param(
         return false;
     }
 
-    if (!get_and_check_value_or_array(input, "labels", output.labels, default_value.labels)) {
-        LogError << "failed to get_and_check_value_or_array labels" << VAR(input);
-        return false;
-    }
     if (!get_and_check_value(input, "model", output.model, default_value.model)) {
         LogError << "failed to get_and_check_value model" << VAR(input);
         return false;
     }
-
+    if (!get_and_check_value_or_array(input, "labels", output.labels, default_value.labels)) {
+        LogError << "failed to get_and_check_value_or_array labels" << VAR(input);
+        return false;
+    }
     if (!get_and_check_value_or_array(input, "expected", output.expected, default_value.expected)) {
         LogError << "failed to get_and_check_value_or_array expected" << VAR(input);
         return false;

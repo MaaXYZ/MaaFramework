@@ -45,7 +45,8 @@ void OCRer::analyze()
     cherry_pick();
 
     auto cost = duration_since(start_time);
-    LogTrace << name_ << VAR(uid_) << VAR(all_results_) << VAR(filtered_results_) << VAR(best_result_) << VAR(cost);
+    LogTrace << name_ << VAR(uid_) << VAR(all_results_) << VAR(filtered_results_) << VAR(best_result_) << VAR(cost) << VAR(param_.model)
+             << VAR(param_.only_rec) << VAR(param_.expected);
 }
 
 OCRer::ResultsVec OCRer::predict() const
@@ -199,7 +200,9 @@ void OCRer::postproc_trim_(Result& res) const
 void OCRer::postproc_replace_(Result& res) const
 {
     for (const auto& [regex, format] : param_.replace) {
-        res.text = std::regex_replace(res.text, std::wregex(regex), format);
+        auto replaced_text = std::regex_replace(res.text, std::wregex(regex), format);
+        LogTrace << VAR(res.text) << VAR(regex) << VAR(format) << VAR(replaced_text);
+        res.text = std::move(replaced_text);
     }
 }
 

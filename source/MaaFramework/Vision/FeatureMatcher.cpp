@@ -51,7 +51,8 @@ void FeatureMatcher::analyze()
     cherry_pick();
 
     auto cost = duration_since(start_time);
-    LogTrace << name_ << VAR(uid_) << VAR(all_results_) << VAR(filtered_results_) << VAR(best_result_) << VAR(cost);
+    LogTrace << name_ << VAR(uid_) << VAR(all_results_) << VAR(filtered_results_) << VAR(best_result_) << VAR(cost)
+             << VAR(param_.template_paths) << VAR(param_.green_mask) << VAR(param_.distance_ratio) << VAR(param_.count);
 }
 
 FeatureMatcher::ResultsVec
