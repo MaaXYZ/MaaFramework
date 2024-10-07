@@ -76,9 +76,9 @@ class Controller:
         )
         return self._gen_ctrl_job(ctrl_id)
 
-    def post_stop_app(self, package: str) -> Job:
+    def post_stop_app(self, intent: str) -> Job:
         ctrl_id = Library.framework.MaaControllerPostStopApp(
-            self._handle, package.encode()
+            self._handle, intent.encode()
         )
         return self._gen_ctrl_job(ctrl_id)
 
