@@ -44,6 +44,13 @@ MAA_RES_NS_BEGIN
 //     }
 // }
 
+ONNXResMgr::ONNXResMgr()
+{
+    LogFunc;
+
+    use_gpu(0);
+}
+
 bool ONNXResMgr::use_cpu()
 {
     LogInfo;
@@ -98,7 +105,7 @@ bool ONNXResMgr::use_gpu(int device_id)
     }
 #endif
     else {
-        LogError << "No supported execution provider found";
+        LogError << "No supported execution provider found, fallback to CPU";
         return false;
     }
 

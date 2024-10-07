@@ -13,6 +13,8 @@ MAA_RES_NS_BEGIN
 OCRResMgr::OCRResMgr()
 {
     option_.UseOrtBackend();
+
+    use_gpu(0);
 }
 
 bool OCRResMgr::use_cpu()
