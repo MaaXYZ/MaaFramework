@@ -28,7 +28,7 @@ python -m pip install -r requirements.txt
 3. 在弹窗中左键选择目标区域，滚轮缩放图片，右键移动图片
 4. 使用快捷键操作：
     - 按 <kbd>S</kbd> <kbd>ENTER</kbd> 保存目标区域
-    - 按 <kbd>A</kbd> 保存标准化截图
+    - 按 <kbd>F</kbd> 保存全屏标准化截图
     - 按 <kbd>R</kbd> 不保存，只输出 ROI 范围
     - 按 <kbd>C</kbd> 不保存，输出 ROI 范围和 ColorMatch 的所需字段，大写将使用 connected 字段
     - 按 <kbd>Z</kbd> <kbd>DELETE</kbd> <kbd>BACKSPACE</kbd> 撤销

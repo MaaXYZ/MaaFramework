@@ -7,15 +7,15 @@ import colormatcher
 from datetime import datetime
 from roimage import Roimage
 
-from maa.define import MaaAdbControllerTypeEnum, MaaWin32ControllerTypeEnum
+from maa.define import MaaAdbScreencapMethodEnum, MaaWin32ScreencapMethodEnum
 from maa.controller import AdbController, Win32Controller, Controller
 from maa.toolkit import Toolkit
 
 # 初始化设备参数
 # device_serial = "127.0.0.1:16384"
 device_serial = None
-adb_screencap_type = MaaAdbControllerTypeEnum.Screencap_Encode
-win32_screencap_type = MaaWin32ControllerTypeEnum.Screencap_DXGI_FramePool
+adb_screencap_method = MaaAdbScreencapMethodEnum.Encode
+win32_screencap_method = MaaWin32ScreencapMethodEnum.DXGI_DesktopDup
 
 # 初始窗口大小 (width, height)
 # window_size = (720, 1280) # 竖屏
@@ -82,7 +82,7 @@ def parse_args() -> Controller:
     print("MaaToolkit search in progress...")
 
     if t == 1:
-        device_list = asyncio.run(Toolkit.adb_devices())
+        device_list = Toolkit.find_adb_devices()
         if len(device_list):
             for i, d in enumerate(device_list):
                 print(f"{i:>3} | {d.address:>21} | {d.name}")
@@ -91,9 +91,9 @@ def parse_args() -> Controller:
             device_serial = device_list[i].address
             return AdbController(adb_path=device_list[i].adb_path,
                                  address=device_serial,
-                                 screencap_type=adb_screencap_type)
+                                 screencap_methods=adb_screencap_method)
     elif t == 2:
-        window_list = Toolkit.list_windows()
+        window_list = Toolkit.find_desktop_windows()
         if len(window_list):
             win32_names = [Toolkit.get_window_name(w) for w in window_list]
             win32_class = [Toolkit.get_class_name(w) for w in window_list]
@@ -105,13 +105,13 @@ def parse_args() -> Controller:
         if 0 <= i < len(window_list):
             device_serial = Toolkit.get_window_name(window_list[i])
             return Win32Controller(hWnd=window_list[i],
-                                   screencap_type=win32_screencap_type)
+                                   screencap_methods=win32_screencap_method)
 
 
 controller = parse_args()
 if controller:
     set_screenshot_target_side(controller)
-    if controller.post_connection().failure():
+    if controller.post_connection().failed():
         print(f"Failed to connect device({device_serial}).")
 
 # 初始化 Roi
@@ -273,7 +273,8 @@ def screenshot() -> np.ndarray:
     if not controller:
         return None
     print("Screenshot in progress...")
-    image = asyncio.run(controller.screencap())
+    controller.post_screencap().wait()
+    image = controller.cached_image
     print("Screenshot completed.")
     return image
 
