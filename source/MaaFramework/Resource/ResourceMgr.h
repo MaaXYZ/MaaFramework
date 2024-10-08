@@ -78,7 +78,7 @@ public:
     CustomActionSession custom_action(const std::string& name) const;
 
 private:
-    bool set_gpu_id(MaaOptionValue value, MaaOptionValueSize val_size);
+    bool set_inference_device(MaaOptionValue value, MaaOptionValueSize val_size);
 
     bool run_load(typename AsyncRunner<std::filesystem::path>::Id id, std::filesystem::path path);
     bool load(const std::filesystem::path& path);

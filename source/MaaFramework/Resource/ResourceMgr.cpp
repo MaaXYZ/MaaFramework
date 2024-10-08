@@ -31,8 +31,8 @@ bool ResourceMgr::set_option(MaaResOption key, MaaOptionValue value, MaaOptionVa
     LogFunc << VAR(key) << VAR_VOIDP(value) << VAR(val_size);
 
     switch (key) {
-    case MaaResOption_GpuId:
-        return set_gpu_id(value, val_size);
+    case MaaResOption_InferenceDevice:
+        return set_inference_device(value, val_size);
 
     default:
         LogError << "Unknown key" << VAR(key) << VAR(value);
@@ -248,25 +248,33 @@ CustomActionSession ResourceMgr::custom_action(const std::string& name) const
     return it->second;
 }
 
-bool ResourceMgr::set_gpu_id(MaaOptionValue value, MaaOptionValueSize val_size)
+bool ResourceMgr::set_inference_device(MaaOptionValue value, MaaOptionValueSize val_size)
 {
     LogFunc << VAR_VOIDP(value) << VAR(val_size);
 
-    if (val_size != sizeof(int32_t)) {
+    if (val_size != sizeof(MaaInferenceDevice)) {
         LogError << "invalid size" << VAR(val_size);
         return false;
     }
 
-    int32_t gpu_id = *reinterpret_cast<int*>(value);
-    LogInfo << VAR(gpu_id);
+    int32_t device_id = *reinterpret_cast<int*>(value);
+    LogInfo << VAR(device_id);
 
-    if (gpu_id == INT32_MAX) {
-        onnx_res_.use_cpu();
-        ocr_res_.use_cpu();
+    if (device_id == MaaInferenceDevice_CPU) {
+        onnx_res_.set_cpu();
+        ocr_res_.set_cpu();
     }
-    else {
-        onnx_res_.use_gpu(gpu_id);
-        ocr_res_.use_gpu(gpu_id);
+    else if (device_id == MaaInferenceDevice_Auto) {
+        onnx_res_.set_auto_device();
+        ocr_res_.set_auto_device();
+    }
+    else if (device_id >= 0) {
+        onnx_res_.set_gpu(device_id);
+        ocr_res_.set_gpu(device_id);
+    }
+    else { // device_id < -2
+        LogError << "invalid inference device" << VAR(device_id);
+        return false;
     }
 
     return true;

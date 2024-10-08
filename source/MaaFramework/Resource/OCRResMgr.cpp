@@ -12,25 +12,32 @@ MAA_RES_NS_BEGIN
 
 OCRResMgr::OCRResMgr()
 {
+    LogFunc;
+
     option_.UseOrtBackend();
 
-    use_gpu(0);
+    set_auto_device();
 }
 
-bool OCRResMgr::use_cpu()
+void OCRResMgr::set_cpu()
 {
     LogInfo;
 
     option_.UseCpu();
-    return true;
 }
 
-bool OCRResMgr::use_gpu(int device_id)
+bool OCRResMgr::set_gpu(int device_id)
 {
     LogInfo << VAR(device_id);
 
     option_.UseGpu(device_id);
     return true;
+}
+
+void OCRResMgr::set_auto_device()
+{
+    // TODO: 检查 GPU 列表，并过滤一些老旧设备
+    set_gpu(0);
 }
 
 bool OCRResMgr::lazy_load(const std::filesystem::path& path, bool is_base)

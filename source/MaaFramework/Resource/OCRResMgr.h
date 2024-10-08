@@ -20,8 +20,10 @@ class OCRResMgr : public NonCopyable
 public:
     OCRResMgr();
 
-    bool use_cpu();
-    bool use_gpu(int device_id);
+    void set_cpu();
+    bool set_gpu(int device_id);
+    void set_auto_device();
+
     bool lazy_load(const std::filesystem::path& path, bool is_base);
     void clear();
 

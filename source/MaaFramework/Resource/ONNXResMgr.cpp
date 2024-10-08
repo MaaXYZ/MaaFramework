@@ -50,19 +50,18 @@ ONNXResMgr::ONNXResMgr()
 {
     LogFunc;
 
-    use_gpu(0);
+    set_auto_device();
 }
 
-bool ONNXResMgr::use_cpu()
+void ONNXResMgr::set_cpu()
 {
     LogInfo;
 
     options_ = {};
     gpu_device_id_ = std::nullopt;
-    return true;
 }
 
-bool ONNXResMgr::use_gpu(int device_id)
+bool ONNXResMgr::set_gpu(int device_id)
 {
     LogInfo << VAR(device_id);
 
@@ -113,6 +112,12 @@ bool ONNXResMgr::use_gpu(int device_id)
 
     gpu_device_id_ = device_id;
     return true;
+}
+
+void ONNXResMgr::set_auto_device()
+{
+    // TODO: 检查 GPU 列表，并过滤一些老旧设备
+    set_gpu(0);
 }
 
 bool ONNXResMgr::lazy_load(const std::filesystem::path& path, bool is_base)
