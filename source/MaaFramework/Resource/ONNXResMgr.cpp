@@ -9,11 +9,13 @@
 #endif
 
 #if __has_include(<onnxruntime/dml_provider_factory.h>)
+#pragma message("MAA_WITH_DML")
 #define MAA_WITH_DML
 #include <onnxruntime/dml_provider_factory.h>
 #endif
 
 #if __has_include(<onnxruntime/coreml_provider_factory.h>)
+#pragma message("MAA_WITH_COREML")
 #define MAA_WITH_COREML
 #include <onnxruntime/coreml_provider_factory.h>
 #endif
@@ -82,16 +84,16 @@ bool ONNXResMgr::use_gpu(int device_id)
         cuda_options.device_id = device_id;
         options_.AppendExecutionProvider_CUDA(cuda_options);
 
-        LogInfo << "Using CUDA execution provider with device_id " << device_id;
+        LogInfo << "Using CUDA execution provider with device_id" << device_id;
     }
 #ifdef MAA_WITH_DML
     else if (all_providers.contains("DmlExecutionProvider")) {
         auto status = OrtSessionOptionsAppendExecutionProvider_DML(options_, device_id);
         if (!Ort::Status(status).IsOK()) {
-            LogError << "Failed to append DML execution provider with device_id " << device_id;
+            LogError << "Failed to append DML execution provider with device_id" << device_id;
             return false;
         }
-        LogInfo << "Using DML execution provider with device_id " << device_id;
+        LogInfo << "Using DML execution provider with device_id" << device_id;
     }
 #endif
 #ifdef MAA_WITH_COREML
