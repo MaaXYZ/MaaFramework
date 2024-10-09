@@ -53,6 +53,8 @@ public:
 private:
     bool _screencap(/*out*/ cv::Mat& image);
     void on_image_resolution_changed(const std::pair<int, int>& pre, const std::pair<int, int>& cur);
+    void on_app_started(const std::string& intent);
+    void on_app_stopped(const std::string& intent);
 
 private:
     std::filesystem::path adb_path_;

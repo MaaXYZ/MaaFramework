@@ -60,14 +60,7 @@ bool MinitouchInput::init()
         return false;
     }
 
-    // https://github.com/openstf/minitouch#running
-    static const std::string kMinitouchUseStdin = "-i";
-    pipe_ios_ = invoke_app_->invoke_bin(kMinitouchUseStdin);
-    if (!pipe_ios_) {
-        return false;
-    }
-
-    return read_info();
+    return invoke_and_read_info();
 }
 
 void MinitouchInput::deinit()
@@ -95,6 +88,26 @@ bool MinitouchInput::input_text(const std::string& text)
     }
 
     return adb_shell_input_->input_text(text);
+}
+
+void MinitouchInput::on_image_resolution_changed(const std::pair<int, int>& pre, const std::pair<int, int>& cur)
+{
+    std::ignore = pre;
+    std::ignore = cur;
+
+    invoke_and_read_info();
+}
+
+bool MinitouchInput::invoke_and_read_info()
+{
+    // https://github.com/openstf/minitouch#running
+    static const std::string kMinitouchUseStdin = "-i";
+    pipe_ios_ = invoke_app_->invoke_bin(kMinitouchUseStdin);
+    if (!pipe_ios_) {
+        return false;
+    }
+
+    return read_info();
 }
 
 void MinitouchInput::remove_binary()

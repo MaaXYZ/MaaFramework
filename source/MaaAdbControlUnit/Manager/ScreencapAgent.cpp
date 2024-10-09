@@ -147,42 +147,62 @@ void ScreencapAgent::deinit()
         unit->deinit();
     }
 
-    method_ = Method::UnknownYet;
+    active_unit_ = nullptr;
 }
 
 std::optional<cv::Mat> ScreencapAgent::screencap()
 {
-    switch (method_) {
-    case Method::UnknownYet:
-        LogError << "Unknown screencap method";
+    if (!active_unit_) {
+        LogError << "active_unit_ is null";
         return std::nullopt;
-    case Method::RawByNetcat:
-    case Method::RawWithGzip:
-    case Method::Encode:
-    case Method::EncodeToFileAndPull:
-    case Method::MinicapDirect:
-    case Method::MinicapStream:
-    case Method::MuMuPlayerExtras:
-    case Method::LDPlayerExtras:
-        return units_[method_]->screencap();
-    default:
-        LogInfo << "Not support:" << method_;
-        break;
     }
-    return std::nullopt;
+
+    return active_unit_->screencap();
+}
+
+void ScreencapAgent::on_image_resolution_changed(const std::pair<int, int>& pre, const std::pair<int, int>& cur)
+{
+    if (!active_unit_) {
+        LogError << "active_unit_ is null";
+        return;
+    }
+
+    active_unit_->on_image_resolution_changed(pre, cur);
+}
+
+void ScreencapAgent::on_app_started(const std::string& intent)
+{
+    if (!active_unit_) {
+        LogError << "active_unit_ is null";
+        return;
+    }
+
+    active_unit_->on_app_started(intent);
+}
+
+void ScreencapAgent::on_app_stopped(const std::string& intent)
+{
+    if (!active_unit_) {
+        LogError << "active_unit_ is null";
+        return;
+    }
+
+    active_unit_->on_app_stopped(intent);
 }
 
 bool ScreencapAgent::speed_test()
 {
     LogFunc;
 
-    method_ = Method::UnknownYet;
+    active_unit_ = nullptr;
+
+    Method fastest = Method::UnknownYet;
     std::chrono::milliseconds cost(INT64_MAX);
 
-    auto check = [this, &cost](Method method, std::chrono::steady_clock::time_point start) {
+    auto check = [&fastest, &cost](Method method, std::chrono::steady_clock::time_point start) {
         auto duration = duration_since(start);
         if (duration < cost) {
-            method_ = method;
+            fastest = method;
             cost = duration;
         }
         LogInfo << VAR(method) << VAR(duration);
@@ -210,14 +230,16 @@ bool ScreencapAgent::speed_test()
         check(method, now);
     }
 
-    if (method_ == Method::UnknownYet) {
+    if (fastest == Method::UnknownYet) {
         LogError << "cannot find any method to screencap!";
         return false;
     }
 
-    LogInfo << "The fastest method is" << method_ << VAR(cost);
+    LogInfo << "The fastest method is" << fastest << VAR(cost);
+    active_unit_ = units_[fastest];
+
     for (auto& [method, unit] : units_) {
-        if (method == method_) {
+        if (method == fastest) {
             continue;
         }
         unit->deinit();

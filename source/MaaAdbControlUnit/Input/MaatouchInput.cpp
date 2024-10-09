@@ -40,12 +40,7 @@ bool MaatouchInput::init()
         return false;
     }
 
-    pipe_ios_ = invoke_app_->invoke_app(package_name_);
-    if (!pipe_ios_) {
-        return false;
-    }
-
-    return read_info();
+    return invoke_and_read_info();
 }
 
 void MaatouchInput::deinit()
@@ -98,6 +93,24 @@ bool MaatouchInput::input_text(const std::string& text)
     }
 
     return true;
+}
+
+void MaatouchInput::on_image_resolution_changed(const std::pair<int, int>& pre, const std::pair<int, int>& cur)
+{
+    std::ignore = pre;
+    std::ignore = cur;
+
+    invoke_and_read_info();
+}
+
+bool MaatouchInput::invoke_and_read_info()
+{
+    pipe_ios_ = invoke_app_->invoke_app(package_name_);
+    if (!pipe_ios_) {
+        return false;
+    }
+
+    return read_info();
 }
 
 void MaatouchInput::remove_binary()
