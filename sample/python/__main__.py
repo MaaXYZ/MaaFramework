@@ -6,6 +6,7 @@ from maa.toolkit import Toolkit
 
 from maa.custom_recognition import CustomRecognition
 from maa.custom_action import CustomAction
+from maa.notification_handler import NotificationHandler, NotificationType
 
 
 def main():
@@ -33,6 +34,7 @@ def main():
     controller.post_connection().wait()
 
     tasker = Tasker()
+    # tasker = Tasker(notification_handler=MyNotificationHandler())
     tasker.bind(resource, controller)
 
     if not tasker.inited:
@@ -75,6 +77,38 @@ class MyRecongition(CustomRecognition):
         return CustomRecognition.AnalyzeResult(
             box=(0, 0, 100, 100), detail="Hello World!"
         )
+
+
+class MyNotificationHandler(NotificationHandler):
+    def on_resource_loading(
+        self, type: NotificationType, detail: NotificationHandler.ResourceLoadingDetail
+    ):
+        print(f"on_resource_loading: {type}, {detail}")
+
+    def on_controller_action(
+        self, type: NotificationType, detail: NotificationHandler.ControllerActionDetail
+    ):
+        print(f"on_controller_action: {type}, {detail}")
+
+    def on_tasker_task(
+        self, type: NotificationType, detail: NotificationHandler.TaskerTaskDetail
+    ):
+        print(f"on_tasker_task: {type}, {detail}")
+
+    def on_task_next_list(
+        self, type: NotificationType, detail: NotificationHandler.TaskNextListDetail
+    ):
+        print(f"on_task_next_list: {type}, {detail}")
+
+    def on_task_recognition(
+        self, type: NotificationType, detail: NotificationHandler.TaskRecognitionDetail
+    ):
+        print(f"on_task_recognition: {type}, {detail}")
+
+    def on_task_action(
+        self, type: NotificationType, detail: NotificationHandler.TaskActionDetail
+    ):
+        print(f"on_task_action: {type}, {detail}")
 
 
 if __name__ == "__main__":
