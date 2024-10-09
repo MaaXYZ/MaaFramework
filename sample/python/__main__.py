@@ -81,34 +81,42 @@ class MyRecongition(CustomRecognition):
 
 class MyNotificationHandler(NotificationHandler):
     def on_resource_loading(
-        self, type: NotificationType, detail: NotificationHandler.ResourceLoadingDetail
+        self,
+        noti_type: NotificationType,
+        detail: NotificationHandler.ResourceLoadingDetail,
     ):
-        print(f"on_resource_loading: {type}, {detail}")
+        print(f"on_resource_loading: {noti_type}, {detail}")
 
     def on_controller_action(
-        self, type: NotificationType, detail: NotificationHandler.ControllerActionDetail
+        self,
+        noti_type: NotificationType,
+        detail: NotificationHandler.ControllerActionDetail,
     ):
-        print(f"on_controller_action: {type}, {detail}")
+        print(f"on_controller_action: {noti_type}, {detail}")
 
     def on_tasker_task(
-        self, type: NotificationType, detail: NotificationHandler.TaskerTaskDetail
+        self, noti_type: NotificationType, detail: NotificationHandler.TaskerTaskDetail
     ):
-        print(f"on_tasker_task: {type}, {detail}")
+        print(f"on_tasker_task: {noti_type}, {detail}")
 
     def on_task_next_list(
-        self, type: NotificationType, detail: NotificationHandler.TaskNextListDetail
+        self,
+        noti_type: NotificationType,
+        detail: NotificationHandler.TaskNextListDetail,
     ):
-        print(f"on_task_next_list: {type}, {detail}")
+        print(f"on_task_next_list: {noti_type}, {detail}")
 
     def on_task_recognition(
-        self, type: NotificationType, detail: NotificationHandler.TaskRecognitionDetail
+        self,
+        noti_type: NotificationType,
+        detail: NotificationHandler.TaskRecognitionDetail,
     ):
-        print(f"on_task_recognition: {type}, {detail}")
+        print(f"on_task_recognition: {noti_type}, {detail}")
 
     def on_task_action(
-        self, type: NotificationType, detail: NotificationHandler.TaskActionDetail
+        self, noti_type: NotificationType, detail: NotificationHandler.TaskActionDetail
     ):
-        print(f"on_task_action: {type}, {detail}")
+        print(f"on_task_action: {noti_type}, {detail}")
 
 
 if __name__ == "__main__":

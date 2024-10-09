@@ -33,7 +33,7 @@ class NotificationHandler(ABC):
         path: str
 
     def on_resource_loading(
-        self, type: NotificationType, detail: ResourceLoadingDetail
+        self, noti_type: NotificationType, detail: ResourceLoadingDetail
     ):
         pass
 
@@ -44,7 +44,7 @@ class NotificationHandler(ABC):
         action: str
 
     def on_controller_action(
-        self, type: NotificationType, detail: ControllerActionDetail
+        self, noti_type: NotificationType, detail: ControllerActionDetail
     ):
         pass
 
@@ -55,7 +55,7 @@ class NotificationHandler(ABC):
         uuid: str
         hash: str
 
-    def on_tasker_task(self, type: NotificationType, detail: TaskerTaskDetail):
+    def on_tasker_task(self, noti_type: NotificationType, detail: TaskerTaskDetail):
         pass
 
     @dataclass
@@ -64,7 +64,9 @@ class NotificationHandler(ABC):
         name: str
         next_list: list[str]
 
-    def on_task_next_list(self, type: NotificationType, detail: TaskNextListDetail):
+    def on_task_next_list(
+        self, noti_type: NotificationType, detail: TaskNextListDetail
+    ):
         pass
 
     @dataclass
@@ -74,7 +76,7 @@ class NotificationHandler(ABC):
         name: str
 
     def on_task_recognition(
-        self, type: NotificationType, detail: TaskRecognitionDetail
+        self, noti_type: NotificationType, detail: TaskRecognitionDetail
     ):
         pass
 
@@ -84,7 +86,7 @@ class NotificationHandler(ABC):
         node_id: int
         name: str
 
-    def on_task_action(self, type: NotificationType, detail: TaskActionDetail):
+    def on_task_action(self, noti_type: NotificationType, detail: TaskActionDetail):
         pass
 
     def on_unknown_notification(self, msg: str, details: dict):
@@ -92,7 +94,7 @@ class NotificationHandler(ABC):
 
     def on_raw_notification(self, msg: str, details: dict):
 
-        type = NotificationHandler._notification_type(msg)
+        noti_type = NotificationHandler._notification_type(msg)
 
         if msg.startswith("Resource.Loading"):
             detail = self.ResourceLoadingDetail(
@@ -100,7 +102,7 @@ class NotificationHandler(ABC):
                 hash=details["hash"],
                 path=details["path"],
             )
-            self.on_resource_loading(type, detail)
+            self.on_resource_loading(noti_type, detail)
 
         elif msg.startswith("Controller.Action"):
             detail = self.ControllerActionDetail(
@@ -108,7 +110,7 @@ class NotificationHandler(ABC):
                 uuid=details["uuid"],
                 action=details["action"],
             )
-            self.on_controller_action(type, detail)
+            self.on_controller_action(noti_type, detail)
 
         elif msg.startswith("Tasker.Task"):
             detail = self.TaskerTaskDetail(
@@ -117,7 +119,7 @@ class NotificationHandler(ABC):
                 uuid=details["uuid"],
                 hash=details["hash"],
             )
-            self.on_tasker_task(type, detail)
+            self.on_tasker_task(noti_type, detail)
 
         elif msg.startswith("Task.NextList"):
             detail = self.TaskNextListDetail(
@@ -125,7 +127,7 @@ class NotificationHandler(ABC):
                 name=details["name"],
                 next_list=details["list"],
             )
-            self.on_task_next_list(type, detail)
+            self.on_task_next_list(noti_type, detail)
 
         elif msg.startswith("Task.Recognition"):
             detail = self.TaskRecognitionDetail(
@@ -133,7 +135,7 @@ class NotificationHandler(ABC):
                 reco_id=details["reco_id"],
                 name=details["name"],
             )
-            self.on_task_recognition(type, detail)
+            self.on_task_recognition(noti_type, detail)
 
         elif msg.startswith("Task.Action"):
             detail = self.TaskActionDetail(
@@ -141,7 +143,7 @@ class NotificationHandler(ABC):
                 node_id=details["node_id"],
                 name=details["name"],
             )
-            self.on_task_action(type, detail)
+            self.on_task_action(noti_type, detail)
 
         else:
             self.on_unknown_notification(msg, details)
