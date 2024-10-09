@@ -48,8 +48,8 @@ private:
     bool connect_mumu();
     bool init_screencap();
     void disconnect_mumu();
-    int get_display_id();
     void set_app_package(const std::string& package, int cloned_index);
+    int get_display_id();
 
 private:
     std::filesystem::path mumu_path_;

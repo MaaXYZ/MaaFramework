@@ -251,17 +251,9 @@ void MuMuPlayerExtras::on_app_started(const std::string& intent)
 
 void MuMuPlayerExtras::on_app_stopped(const std::string& intent)
 {
-    // do nothing
     std::ignore = intent;
-}
 
-void MuMuPlayerExtras::set_app_package(const std::string& package, int cloned_index)
-{
-    LogTrace << VAR(package) << VAR(cloned_index);
-
-    mumu_app_package_ = package;
-    mumu_app_cloned_index_ = cloned_index;
-    mumu_display_id_cache_ = std::nullopt;
+    set_app_package("", 0);
 }
 
 bool MuMuPlayerExtras::load_mumu_library()
@@ -379,6 +371,16 @@ void MuMuPlayerExtras::disconnect_mumu()
     if (mumu_handle_ != 0) {
         disconnect_func_(mumu_handle_);
     }
+}
+
+void MuMuPlayerExtras::set_app_package(const std::string& package, int cloned_index)
+{
+    LogTrace << VAR(package) << VAR(cloned_index);
+
+    mumu_display_id_cache_ = std::nullopt;
+
+    mumu_app_package_ = package;
+    mumu_app_cloned_index_ = cloned_index;
 }
 
 int MuMuPlayerExtras::get_display_id()
