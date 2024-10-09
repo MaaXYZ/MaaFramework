@@ -9,11 +9,13 @@
 #endif
 
 #if __has_include(<onnxruntime/dml_provider_factory.h>)
+#pragma message("MAA_WITH_DML")
 #define MAA_WITH_DML
 #include <onnxruntime/dml_provider_factory.h>
 #endif
 
 #if __has_include(<onnxruntime/coreml_provider_factory.h>)
+#pragma message("MAA_WITH_COREML")
 #define MAA_WITH_COREML
 #include <onnxruntime/coreml_provider_factory.h>
 #endif
@@ -44,16 +46,22 @@ MAA_RES_NS_BEGIN
 //     }
 // }
 
-bool ONNXResMgr::use_cpu()
+ONNXResMgr::ONNXResMgr()
+{
+    LogFunc;
+
+    set_auto_device();
+}
+
+void ONNXResMgr::set_cpu()
 {
     LogInfo;
 
     options_ = {};
     gpu_device_id_ = std::nullopt;
-    return true;
 }
 
-bool ONNXResMgr::use_gpu(int device_id)
+bool ONNXResMgr::set_gpu(int device_id)
 {
     LogInfo << VAR(device_id);
 
@@ -75,16 +83,16 @@ bool ONNXResMgr::use_gpu(int device_id)
         cuda_options.device_id = device_id;
         options_.AppendExecutionProvider_CUDA(cuda_options);
 
-        LogInfo << "Using CUDA execution provider with device_id " << device_id;
+        LogInfo << "Using CUDA execution provider with device_id" << device_id;
     }
 #ifdef MAA_WITH_DML
     else if (all_providers.contains("DmlExecutionProvider")) {
         auto status = OrtSessionOptionsAppendExecutionProvider_DML(options_, device_id);
         if (!Ort::Status(status).IsOK()) {
-            LogError << "Failed to append DML execution provider with device_id " << device_id;
+            LogError << "Failed to append DML execution provider with device_id" << device_id;
             return false;
         }
-        LogInfo << "Using DML execution provider with device_id " << device_id;
+        LogInfo << "Using DML execution provider with device_id" << device_id;
     }
 #endif
 #ifdef MAA_WITH_COREML
@@ -98,12 +106,18 @@ bool ONNXResMgr::use_gpu(int device_id)
     }
 #endif
     else {
-        LogError << "No supported execution provider found";
+        LogError << "No supported execution provider found, fallback to CPU";
         return false;
     }
 
     gpu_device_id_ = device_id;
     return true;
+}
+
+void ONNXResMgr::set_auto_device()
+{
+    // TODO: 检查 GPU 列表，并过滤一些老旧设备
+    set_gpu(0);
 }
 
 bool ONNXResMgr::lazy_load(const std::filesystem::path& path, bool is_base)

@@ -85,8 +85,8 @@ enum MaaGlobalOptionEnum
 
     /// Dump all screenshots and actions
     ///
-    /// Recording will evaluate to true if any of this or MaaCtrlOptionEnum::MaaCtrlOption_Recording
-    /// is true. value: bool, eg: true; val_size: sizeof(bool)
+    /// Recording will evaluate to true if any of this or MaaCtrlOptionEnum::MaaCtrlOption_Recording is true.
+    /// value: bool, eg: true; val_size: sizeof(bool)
     MaaGlobalOption_Recording = 3,
 
     /// The level of log output to stdout
@@ -108,15 +108,27 @@ enum MaaGlobalOptionEnum
 
 typedef MaaOption MaaResOption;
 
+typedef int32_t MaaInferenceDevice;
+
+enum MaaInferenceDeviceEnum
+{
+    MaaInferenceDevice_CPU = -2,
+    MaaInferenceDevice_Auto = -1,
+    MaaInferenceDevice_GPU0 = 0,
+    MaaInferenceDevice_GPU1 = 1,
+    // and more gpu id...
+};
+
 enum MaaResOptionEnum
 {
     MaaResOption_Invalid = 0,
 
-    /// Use the specified inference device, the default is INT32_MAX, which means CPU.
+    /// Use the specified inference device.
     /// Please set this option before loading the model.
     ///
-    /// value: int32_t, eg: 0; val_size: sizeof(int32_t)
-    MaaResOption_GpuId = 1,
+    /// value: MaaInferenceDevice, eg: 0; val_size: sizeof(MaaInferenceDevice)
+    /// default value is MaaInferenceDevice_Auto
+    MaaResOption_InferenceDevice = 1,
 };
 
 typedef MaaOption MaaCtrlOption;

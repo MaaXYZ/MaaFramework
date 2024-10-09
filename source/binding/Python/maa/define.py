@@ -105,13 +105,25 @@ class MaaCtrlOptionEnum:
     Recording = 5
 
 
+# enum MaaInferenceDeviceEnum
+# {
+#     MaaInferenceDevice_CPU = -2,
+#     MaaInferenceDevice_Auto = -1,
+#     MaaInferenceDevice_GPU0 = 0,
+#     MaaInferenceDevice_GPU1 = 1,
+#     // and more gpu id...
+# };
+MaaInferenceDevice = ctypes.c_int32
+
 class MaaResOptionEnum:
     Invalid = 0
 
-    # Use the specified inference device, the default is INT32_MAX, which means CPU.
+    # Use the specified inference device.
     # Please set this option before loading the model.
-    # value: int32_t, eg: 0; val_size: sizeof(int32_t)
-    GpuId = 1
+    #
+    # value: MaaInferenceDevice, eg: 0; val_size: sizeof(MaaInferenceDevice)
+    # default value is MaaInferenceDevice_Auto
+    InferenceDevice = 1
 
 
 MaaAdbScreencapMethod = ctypes.c_uint64

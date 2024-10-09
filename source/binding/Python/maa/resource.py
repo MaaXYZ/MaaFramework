@@ -60,20 +60,18 @@ class Resource:
     def clear(self) -> bool:
         return bool(Library.framework.MaaResourceClear(self._handle))
 
-    def set_gpu(self, device_id: int) -> bool:
-        cint = ctypes.c_int32(device_id)
-        return bool(
-            Library.framework.MaaResourceSetOption(
-                self._handle,
-                MaaResOptionEnum.GpuId,
-                ctypes.pointer(cint),
-                ctypes.sizeof(ctypes.c_int32),
-            )
-        )
+    def set_gpu(self, gpu_id: int) -> bool:
+        if gpu_id < 0:
+            return False
+        return self.set_inference_device(gpu_id)
 
     def set_cpu(self) -> bool:
-        INT32_MAX = 2147483647  # means CPU
-        return self.set_gpu(INT32_MAX)
+        MaaInferenceDevice_CPU = -2
+        return self.set_inference_device(MaaInferenceDevice_CPU)
+    
+    def set_auto_device(self) -> bool:
+        MaaInferenceDevice_Auto = -1
+        return self.set_inference_device(MaaInferenceDevice_Auto)
 
     def register_custom_recognition(
         self, name: str, recognition: "CustomRecognition"  # type: ignore
@@ -150,6 +148,17 @@ class Resource:
         return buffer.get()
 
     ### private ###
+
+    def set_inference_device(self, device_id: int) -> bool:
+        cint = ctypes.c_int32(device_id)
+        return bool(
+            Library.framework.MaaResourceSetOption(
+                self._handle,
+                MaaResOptionEnum.InferenceDevice,
+                ctypes.pointer(cint),
+                ctypes.sizeof(ctypes.c_int32),
+            )
+        )
 
     def _status(self, id: int) -> ctypes.c_int32:
         return Library.framework.MaaResourceStatus(self._handle, id)
