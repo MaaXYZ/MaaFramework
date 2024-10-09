@@ -244,7 +244,7 @@ bool MuMuPlayerExtras::input_text(const std::string& text)
 
 void MuMuPlayerExtras::on_app_started(const std::string& intent)
 {
-    std::string package = string_split(intent, "/").at(0);
+    std::string package = string_split(intent, '/').front();
 
     set_app_package(package, 0);
 }
