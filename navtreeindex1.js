@@ -1,5 +1,11 @@
 var NAVTREEINDEX1 =
 {
+"MaaToolkitAdbDevice_8h.html#a7d9a2992ee9e663c99550b1320c20e68":[3,0,0,1,0,0,3],
+"MaaToolkitAdbDevice_8h.html#a855bc06b45b35869ca230a2d45bfcd9d":[3,0,0,1,0,0,7],
+"MaaToolkitAdbDevice_8h.html#a856f8504c46e4bda4981b6183f4e6b99":[3,0,0,1,0,0,1],
+"MaaToolkitAdbDevice_8h.html#aac2fef51776f6d5d726862ad0650987c":[3,0,0,1,0,0,11],
+"MaaToolkitAdbDevice_8h.html#ab564cccebb4128e18de3f561a2058786":[3,0,0,1,0,0,5],
+"MaaToolkitAdbDevice_8h.html#ab8dc9a69e2a1d91dc9f04e1a0c3b0dc5":[3,0,0,1,0,0,0],
 "MaaToolkitAdbDevice_8h.html#ad070aa284e3208b7c1a93aa40fe8e2e9":[3,0,0,1,0,0,2],
 "MaaToolkitAdbDevice_8h_source.html":[3,0,0,1,0,0],
 "MaaToolkitConfig_8h.html":[3,0,0,1,1,0],
