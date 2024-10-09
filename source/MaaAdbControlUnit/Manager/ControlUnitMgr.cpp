@@ -19,7 +19,8 @@ ControlUnitMgr::ControlUnitMgr(
     , input_(std::move(touch_unit))
     , screencap_(std::move(screencap_unit))
 {
-    register_observer(input_); // for on_image_resolution_changed
+    register_observer(input_);     // for on_image_resolution_changed
+    register_observer(screencap_); // for on_app_started, on_app_stopped
 
     set_replacement({
         { "{ADB}", path_to_utf8_string(adb_path_) },
@@ -82,12 +83,20 @@ bool ControlUnitMgr::request_uuid(std::string& uuid)
 
 bool ControlUnitMgr::start_app(const std::string& intent)
 {
-    return activity_.start_app(intent);
+    bool ret = activity_.start_app(intent);
+    if (ret) {
+        on_app_started(intent);
+    }
+    return ret;
 }
 
 bool ControlUnitMgr::stop_app(const std::string& intent)
 {
-    return activity_.stop_app(intent);
+    bool ret = activity_.stop_app(intent);
+    if (ret) {
+        on_app_stopped(intent);
+    }
+    return ret;
 }
 
 bool ControlUnitMgr::screencap(cv::Mat& image)
@@ -266,6 +275,30 @@ void ControlUnitMgr::on_image_resolution_changed(const std::pair<int, int>& pre,
             return;
         }
         sink->on_image_resolution_changed(pre, cur);
+    });
+}
+
+void ControlUnitMgr::on_app_started(const std::string& intent)
+{
+    LogFunc;
+
+    Dispatcher<ControlUnitSink>::dispatch([&](const std::shared_ptr<ControlUnitSink>& sink) {
+        if (!sink) {
+            return;
+        }
+        sink->on_app_started(intent);
+    });
+}
+
+void ControlUnitMgr::on_app_stopped(const std::string& intent)
+{
+    LogFunc;
+
+    Dispatcher<ControlUnitSink>::dispatch([&](const std::shared_ptr<ControlUnitSink>& sink) {
+        if (!sink) {
+            return;
+        }
+        sink->on_app_stopped(intent);
     });
 }
 

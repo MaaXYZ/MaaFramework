@@ -29,6 +29,9 @@ public: // from InputBase
     virtual bool press_key(int key) override;
     virtual bool input_text(const std::string& text) override;
 
+public: // from ControlUnitSink
+    virtual void on_image_resolution_changed(const std::pair<int, int>& pre, const std::pair<int, int>& cur) override;
+
 protected: // from MtouchHelper
     virtual std::pair<int, int> screen_to_touch(int x, int y) override { return _screen_to_touch(x, y); }
 
@@ -41,6 +44,7 @@ private:
         return std::make_pair(static_cast<int>(round(x * xscale_)), static_cast<int>(round(y * yscale_)));
     }
 
+    bool invoke_and_read_info();
     void remove_binary();
 
     std::filesystem::path agent_path_;

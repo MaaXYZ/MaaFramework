@@ -39,18 +39,18 @@ bool MuMuPlayerExtras::parse(const json::value& config)
     }
 
     mumu_index_ = config.get("extras", "mumu", "index", 0);
-    mumu_display_id_ = config.get("extras", "mumu", "display_id", -1);
 
-    mumu_app_package_ = config.get("extras", "mumu", "app_package", "");
-    mumu_app_cloned_index_ = config.get("extras", "mumu", "app_cloned_index", 0);
+    std::string package = config.get("extras", "mumu", "app_package", "");
+    int cloned_index = config.get("extras", "mumu", "app_cloned_index", 0);
+    set_app_package(package, cloned_index);
 
-    LogInfo << VAR(mumu_path_) << VAR(lib_path_) << VAR(mumu_index_) << VAR(mumu_display_id_);
+    LogInfo << VAR(mumu_path_) << VAR(lib_path_) << VAR(mumu_index_);
     return true;
 }
 
 bool MuMuPlayerExtras::init()
 {
-    return load_mumu_library() && connect_mumu() && init_display_id() && init_screencap();
+    return load_mumu_library() && connect_mumu() && init_screencap();
 }
 
 void MuMuPlayerExtras::deinit()
@@ -69,14 +69,14 @@ std::optional<cv::Mat> MuMuPlayerExtras::screencap()
 
     int ret = capture_display_func_(
         mumu_handle_,
-        mumu_display_id_,
+        get_display_id(),
         static_cast<int>(display_buffer_.size()),
         &display_width_,
         &display_height_,
         display_buffer_.data());
 
     if (ret) {
-        LogError << "Failed to capture display" << VAR(ret) << VAR(mumu_handle_) << VAR(mumu_display_id_) << VAR(display_buffer_.size())
+        LogError << "Failed to capture display" << VAR(ret) << VAR(mumu_handle_) << VAR(get_display_id()) << VAR(display_buffer_.size())
                  << VAR(display_width_) << VAR(display_height_);
         return std::nullopt;
     }
@@ -99,8 +99,8 @@ bool MuMuPlayerExtras::click(int x, int y)
 
     LogInfo << VAR(x) << VAR(y);
 
-    int down_ret = input_event_touch_down_func_(mumu_handle_, mumu_display_id_, x, y);
-    int up_ret = input_event_touch_up_func_(mumu_handle_, mumu_display_id_);
+    int down_ret = input_event_touch_down_func_(mumu_handle_, get_display_id(), x, y);
+    int up_ret = input_event_touch_up_func_(mumu_handle_, get_display_id());
 
     if (down_ret != 0 || up_ret != 0) {
         LogError << "Failed to click" << VAR(down_ret) << VAR(up_ret);
@@ -132,9 +132,9 @@ bool MuMuPlayerExtras::swipe(int x1, int y1, int x2, int y2, int duration)
         x2,
         y2,
         duration,
-        [&](int x, int y) { ret |= input_event_touch_down_func_(mumu_handle_, mumu_display_id_, x, y); },
-        [&](int x, int y) { ret |= input_event_touch_down_func_(mumu_handle_, mumu_display_id_, x, y); },
-        [&]([[maybe_unused]] int x, [[maybe_unused]] int y) { ret |= input_event_touch_up_func_(mumu_handle_, mumu_display_id_); });
+        [&](int x, int y) { ret |= input_event_touch_down_func_(mumu_handle_, get_display_id(), x, y); },
+        [&](int x, int y) { ret |= input_event_touch_down_func_(mumu_handle_, get_display_id(), x, y); },
+        [&]([[maybe_unused]] int x, [[maybe_unused]] int y) { ret |= input_event_touch_up_func_(mumu_handle_, get_display_id()); });
 
     if (ret != 0) {
         LogError << "Failed to swipe" << VAR(ret);
@@ -153,7 +153,7 @@ bool MuMuPlayerExtras::touch_down(int contact, int x, int y, int pressure)
 
     LogInfo << VAR(contact) << VAR(x) << VAR(y) << VAR(pressure);
 
-    int ret = input_event_touch_down_func_(mumu_handle_, mumu_display_id_, x, y);
+    int ret = input_event_touch_down_func_(mumu_handle_, get_display_id(), x, y);
 
     if (ret != 0) {
         LogError << "Failed to touch_down" << VAR(ret);
@@ -174,7 +174,7 @@ bool MuMuPlayerExtras::touch_move(int contact, int x, int y, int pressure)
 
     LogInfo << VAR(contact) << VAR(x) << VAR(y) << VAR(pressure);
 
-    int ret = input_event_touch_down_func_(mumu_handle_, mumu_display_id_, x, y);
+    int ret = input_event_touch_down_func_(mumu_handle_, get_display_id(), x, y);
 
     if (ret != 0) {
         LogError << "Failed to touch_down" << VAR(ret);
@@ -193,7 +193,7 @@ bool MuMuPlayerExtras::touch_up(int contact)
 
     LogInfo << VAR(contact);
 
-    int ret = input_event_touch_up_func_(mumu_handle_, mumu_display_id_);
+    int ret = input_event_touch_up_func_(mumu_handle_, get_display_id());
 
     if (ret != 0) {
         LogError << "Failed to touch_up" << VAR(ret);
@@ -212,8 +212,8 @@ bool MuMuPlayerExtras::press_key(int key)
 
     LogInfo << VAR(key);
 
-    int down_ret = input_event_key_down_func_(mumu_handle_, mumu_display_id_, key);
-    int up_ret = input_event_key_up_func_(mumu_handle_, mumu_display_id_, key);
+    int down_ret = input_event_key_down_func_(mumu_handle_, get_display_id(), key);
+    int up_ret = input_event_key_up_func_(mumu_handle_, get_display_id(), key);
 
     if (down_ret != 0 || up_ret != 0) {
         LogError << "Failed to press_key" << VAR(down_ret) << VAR(up_ret);
@@ -232,7 +232,7 @@ bool MuMuPlayerExtras::input_text(const std::string& text)
 
     LogInfo << VAR(text);
 
-    int ret = input_text_func_(mumu_handle_, mumu_display_id_, text.c_str());
+    int ret = input_text_func_(mumu_handle_, get_display_id(), text.c_str());
 
     if (ret != 0) {
         LogError << "Failed to input_text" << VAR(ret);
@@ -240,6 +240,28 @@ bool MuMuPlayerExtras::input_text(const std::string& text)
     }
 
     return true;
+}
+
+void MuMuPlayerExtras::on_app_started(const std::string& intent)
+{
+    std::string package = string_split(intent, "/").at(0);
+
+    set_app_package(package, 0);
+}
+
+void MuMuPlayerExtras::on_app_stopped(const std::string& intent)
+{
+    // do nothing
+    std::ignore = intent;
+}
+
+void MuMuPlayerExtras::set_app_package(const std::string& package, int cloned_index)
+{
+    LogTrace << VAR(package) << VAR(cloned_index);
+
+    mumu_app_package_ = package;
+    mumu_app_cloned_index_ = cloned_index;
+    mumu_display_id_cache_ = std::nullopt;
 }
 
 bool MuMuPlayerExtras::load_mumu_library()
@@ -335,11 +357,11 @@ bool MuMuPlayerExtras::init_screencap()
         return false;
     }
 
-    int ret = capture_display_func_(mumu_handle_, mumu_display_id_, 0, &display_width_, &display_height_, nullptr);
+    int ret = capture_display_func_(mumu_handle_, get_display_id(), 0, &display_width_, &display_height_, nullptr);
 
     // mumu 的文档给错了，这里 0 才是成功
     if (ret) {
-        LogError << "Failed to capture display" << VAR(ret) << VAR(mumu_handle_) << VAR(mumu_display_id_);
+        LogError << "Failed to capture display" << VAR(ret) << VAR(mumu_handle_) << VAR(get_display_id());
         return false;
     }
 
@@ -350,29 +372,6 @@ bool MuMuPlayerExtras::init_screencap()
     return true;
 }
 
-bool MuMuPlayerExtras::init_display_id()
-{
-    if (mumu_display_id_ >= 0) {
-        return true;
-    }
-
-    if (!get_display_id_func_) {
-        LogError << "get_display_id_func_ is null";
-        return false;
-    }
-
-    if (!mumu_app_package_.empty()) {
-        mumu_display_id_ = get_display_id_func_(mumu_handle_, mumu_app_package_.c_str(), mumu_app_cloned_index_);
-    }
-    else {
-        static const std::string kDefaultPkg = "default";
-        mumu_display_id_ = get_display_id_func_(mumu_handle_, kDefaultPkg.c_str(), 0);
-    }
-    LogInfo << VAR(mumu_display_id_);
-
-    return mumu_display_id_ >= 0;
-}
-
 void MuMuPlayerExtras::disconnect_mumu()
 {
     LogFunc << VAR(mumu_handle_);
@@ -380,6 +379,29 @@ void MuMuPlayerExtras::disconnect_mumu()
     if (mumu_handle_ != 0) {
         disconnect_func_(mumu_handle_);
     }
+}
+
+int MuMuPlayerExtras::get_display_id()
+{
+    if (mumu_display_id_cache_) {
+        return *mumu_display_id_cache_;
+    }
+
+    if (!get_display_id_func_) {
+        LogError << "get_display_id_func_ is null";
+        return 0;
+    }
+
+    if (!mumu_app_package_.empty()) {
+        mumu_display_id_cache_ = get_display_id_func_(mumu_handle_, mumu_app_package_.c_str(), mumu_app_cloned_index_);
+    }
+    else {
+        static const std::string kDefaultPkg = "default";
+        mumu_display_id_cache_ = get_display_id_func_(mumu_handle_, kDefaultPkg.c_str(), 0);
+    }
+    LogInfo << VAR(*mumu_display_id_cache_);
+
+    return *mumu_display_id_cache_;
 }
 
 MAA_CTRL_UNIT_NS_END

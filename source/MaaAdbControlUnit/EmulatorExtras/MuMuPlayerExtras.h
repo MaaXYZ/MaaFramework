@@ -2,6 +2,8 @@
 
 #ifdef _WIN32
 
+#include <optional>
+
 #include "Mumu/external_renderer_ipc/external_renderer_ipc.h"
 
 #include "Base/UnitBase.h"
@@ -37,22 +39,27 @@ public: // from InputBase
     virtual bool press_key(int key) override;
     virtual bool input_text(const std::string& text) override;
 
+public: // from ControlUnitSink
+    virtual void on_app_started(const std::string& intent);
+    virtual void on_app_stopped(const std::string& intent);
+
 private:
     bool load_mumu_library();
     bool connect_mumu();
     bool init_screencap();
-    bool init_display_id();
     void disconnect_mumu();
+    int get_display_id();
+    void set_app_package(const std::string& package, int cloned_index);
 
 private:
     std::filesystem::path mumu_path_;
     std::filesystem::path lib_path_;
     int mumu_index_ = 0;
-    int mumu_display_id_ = -1;
     int mumu_handle_ = 0;
 
     std::string mumu_app_package_;
     int mumu_app_cloned_index_ = 0;
+    std::optional<int> mumu_display_id_cache_;
 
     int display_width_ = 0;
     int display_height_ = 0;

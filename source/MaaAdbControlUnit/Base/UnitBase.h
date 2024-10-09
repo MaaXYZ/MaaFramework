@@ -44,13 +44,20 @@ public:
     virtual ~ControlUnitSink() = default;
 
 public:
-    virtual void
-        on_image_resolution_changed([[maybe_unused]] const std::pair<int, int>& pre, [[maybe_unused]] const std::pair<int, int>& cur)
+    virtual void on_image_resolution_changed(const std::pair<int, int>& pre, const std::pair<int, int>& cur)
     {
+        std::ignore = pre;
+        std::ignore = cur;
     }
+
+    virtual void on_app_started(const std::string& intent) { std::ignore = intent; }
+
+    virtual void on_app_stopped(const std::string& intent) { std::ignore = intent; }
 };
 
-class ScreencapBase : virtual public UnitBase
+class ScreencapBase
+    : virtual public UnitBase
+    , public ControlUnitSink
 {
 public:
     virtual ~ScreencapBase() override = default;
@@ -85,14 +92,6 @@ public:
 
     virtual bool press_key(int key) = 0;
     virtual bool input_text(const std::string& text) = 0;
-
-public:
-    virtual void on_image_resolution_changed(
-        [[maybe_unused]] const std::pair<int, int>& pre,
-        [[maybe_unused]] const std::pair<int, int>& cur) override
-    {
-        init();
-    }
 };
 
 MAA_CTRL_UNIT_NS_END
