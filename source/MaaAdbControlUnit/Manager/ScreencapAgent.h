@@ -42,10 +42,9 @@ public: // from ControlUnitSink
 
 private:
     bool speed_test();
-    std::shared_ptr<ScreencapBase> active_unit();
 
     std::unordered_map<Method, std::shared_ptr<ScreencapBase>> units_;
-    Method method_ = Method::UnknownYet;
+    std::shared_ptr<ScreencapBase> active_unit_;
 };
 
 std::ostream& operator<<(std::ostream& os, ScreencapAgent::Method m);
