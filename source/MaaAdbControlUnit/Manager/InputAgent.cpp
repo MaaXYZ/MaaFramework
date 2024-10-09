@@ -229,9 +229,6 @@ std::ostream& operator<<(std::ostream& os, InputAgent::Method m)
     case InputAgent::Method::MuMuPlayerExtras:
         os << "MuMuPlayerExtras";
         break;
-    default:
-        os << "Unknown";
-        break;
     }
     return os;
 }
