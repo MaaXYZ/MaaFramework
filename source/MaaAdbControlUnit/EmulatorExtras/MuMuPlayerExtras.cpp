@@ -67,16 +67,17 @@ std::optional<cv::Mat> MuMuPlayerExtras::screencap()
         return std::nullopt;
     }
 
+    int display_id = get_display_id();
     int ret = capture_display_func_(
         mumu_handle_,
-        get_display_id(),
+        display_id,
         static_cast<int>(display_buffer_.size()),
         &display_width_,
         &display_height_,
         display_buffer_.data());
 
     if (ret) {
-        LogError << "Failed to capture display" << VAR(ret) << VAR(mumu_handle_) << VAR(get_display_id()) << VAR(display_buffer_.size())
+        LogError << "Failed to capture display" << VAR(ret) << VAR(mumu_handle_) << VAR(display_id) << VAR(display_buffer_.size())
                  << VAR(display_width_) << VAR(display_height_);
         return std::nullopt;
     }
@@ -97,10 +98,11 @@ bool MuMuPlayerExtras::click(int x, int y)
         return false;
     }
 
-    LogInfo << VAR(x) << VAR(y);
+    int display_id = get_display_id();
+    LogInfo << VAR(x) << VAR(y) << VAR(display_id);
 
-    int down_ret = input_event_touch_down_func_(mumu_handle_, get_display_id(), x, y);
-    int up_ret = input_event_touch_up_func_(mumu_handle_, get_display_id());
+    int down_ret = input_event_touch_down_func_(mumu_handle_, display_id, x, y);
+    int up_ret = input_event_touch_up_func_(mumu_handle_, display_id);
 
     if (down_ret != 0 || up_ret != 0) {
         LogError << "Failed to click" << VAR(down_ret) << VAR(up_ret);
@@ -122,7 +124,8 @@ bool MuMuPlayerExtras::swipe(int x1, int y1, int x2, int y2, int duration)
         duration = 500;
     }
 
-    LogInfo << VAR(x1) << VAR(y1) << VAR(x2) << VAR(y2) << VAR(duration);
+    int display_id = get_display_id();
+    LogInfo << VAR(x1) << VAR(y1) << VAR(x2) << VAR(y2) << VAR(duration) << VAR(display_id);
 
     int ret = 0;
 
@@ -132,9 +135,9 @@ bool MuMuPlayerExtras::swipe(int x1, int y1, int x2, int y2, int duration)
         x2,
         y2,
         duration,
-        [&](int x, int y) { ret |= input_event_touch_down_func_(mumu_handle_, get_display_id(), x, y); },
-        [&](int x, int y) { ret |= input_event_touch_down_func_(mumu_handle_, get_display_id(), x, y); },
-        [&]([[maybe_unused]] int x, [[maybe_unused]] int y) { ret |= input_event_touch_up_func_(mumu_handle_, get_display_id()); });
+        [&](int x, int y) { ret |= input_event_touch_down_func_(mumu_handle_, display_id, x, y); },
+        [&](int x, int y) { ret |= input_event_touch_down_func_(mumu_handle_, display_id, x, y); },
+        [&](int, int) { ret |= input_event_touch_up_func_(mumu_handle_, display_id); });
 
     if (ret != 0) {
         LogError << "Failed to swipe" << VAR(ret);
@@ -151,9 +154,10 @@ bool MuMuPlayerExtras::touch_down(int contact, int x, int y, int pressure)
         return false;
     }
 
-    LogInfo << VAR(contact) << VAR(x) << VAR(y) << VAR(pressure);
+    int display_id = get_display_id();
+    LogInfo << VAR(contact) << VAR(x) << VAR(y) << VAR(pressure) << VAR(display_id);
 
-    int ret = input_event_touch_down_func_(mumu_handle_, get_display_id(), x, y);
+    int ret = input_event_touch_down_func_(mumu_handle_, display_id, x, y);
 
     if (ret != 0) {
         LogError << "Failed to touch_down" << VAR(ret);
@@ -172,9 +176,10 @@ bool MuMuPlayerExtras::touch_move(int contact, int x, int y, int pressure)
         return false;
     }
 
-    LogInfo << VAR(contact) << VAR(x) << VAR(y) << VAR(pressure);
+    int display_id = get_display_id();
+    LogInfo << VAR(contact) << VAR(x) << VAR(y) << VAR(pressure) << VAR(display_id);
 
-    int ret = input_event_touch_down_func_(mumu_handle_, get_display_id(), x, y);
+    int ret = input_event_touch_down_func_(mumu_handle_, display_id, x, y);
 
     if (ret != 0) {
         LogError << "Failed to touch_down" << VAR(ret);
@@ -191,9 +196,10 @@ bool MuMuPlayerExtras::touch_up(int contact)
         return false;
     }
 
-    LogInfo << VAR(contact);
+    int display_id = get_display_id();
+    LogInfo << VAR(contact) << VAR(display_id);
 
-    int ret = input_event_touch_up_func_(mumu_handle_, get_display_id());
+    int ret = input_event_touch_up_func_(mumu_handle_, display_id);
 
     if (ret != 0) {
         LogError << "Failed to touch_up" << VAR(ret);
@@ -210,10 +216,11 @@ bool MuMuPlayerExtras::press_key(int key)
         return false;
     }
 
-    LogInfo << VAR(key);
+    int display_id = get_display_id();
+    LogInfo << VAR(key) << VAR(display_id);
 
-    int down_ret = input_event_key_down_func_(mumu_handle_, get_display_id(), key);
-    int up_ret = input_event_key_up_func_(mumu_handle_, get_display_id(), key);
+    int down_ret = input_event_key_down_func_(mumu_handle_, display_id, key);
+    int up_ret = input_event_key_up_func_(mumu_handle_, display_id, key);
 
     if (down_ret != 0 || up_ret != 0) {
         LogError << "Failed to press_key" << VAR(down_ret) << VAR(up_ret);
@@ -230,9 +237,10 @@ bool MuMuPlayerExtras::input_text(const std::string& text)
         return false;
     }
 
-    LogInfo << VAR(text);
+    int display_id = get_display_id();
+    LogInfo << VAR(text) << VAR(display_id);
 
-    int ret = input_text_func_(mumu_handle_, get_display_id(), text.c_str());
+    int ret = input_text_func_(mumu_handle_, display_id, text.c_str());
 
     if (ret != 0) {
         LogError << "Failed to input_text" << VAR(ret);
@@ -349,11 +357,12 @@ bool MuMuPlayerExtras::init_screencap()
         return false;
     }
 
-    int ret = capture_display_func_(mumu_handle_, get_display_id(), 0, &display_width_, &display_height_, nullptr);
+    int display_id = get_display_id();
+    int ret = capture_display_func_(mumu_handle_, display_id, 0, &display_width_, &display_height_, nullptr);
 
     // mumu 的文档给错了，这里 0 才是成功
     if (ret) {
-        LogError << "Failed to capture display" << VAR(ret) << VAR(mumu_handle_) << VAR(get_display_id());
+        LogError << "Failed to capture display" << VAR(ret) << VAR(mumu_handle_) << VAR(display_id);
         return false;
     }
 
