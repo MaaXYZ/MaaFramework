@@ -37,6 +37,11 @@ public: // from InputBase
     virtual bool press_key(int key) override;
     virtual bool input_text(const std::string& text) override;
 
+public: // from ControlUnitSink
+    virtual void on_image_resolution_changed(const std::pair<int, int>& pre, const std::pair<int, int>& cur) override;
+    virtual void on_app_started(const std::string& intent) override;
+    virtual void on_app_stopped(const std::string& intent) override;
+
 private:
     std::vector<std::pair<Method, std::shared_ptr<InputBase>>> units_;
     std::shared_ptr<InputBase> active_unit_;

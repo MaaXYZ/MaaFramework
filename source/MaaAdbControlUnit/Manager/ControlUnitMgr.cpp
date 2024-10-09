@@ -270,7 +270,7 @@ void ControlUnitMgr::on_image_resolution_changed(const std::pair<int, int>& pre,
 {
     LogFunc;
 
-    Dispatcher<ControlUnitSink>::dispatch([&](const std::shared_ptr<ControlUnitSink>& sink) {
+    dispatch([&](const std::shared_ptr<ControlUnitSink>& sink) {
         if (!sink) {
             return;
         }
@@ -282,7 +282,7 @@ void ControlUnitMgr::on_app_started(const std::string& intent)
 {
     LogFunc;
 
-    Dispatcher<ControlUnitSink>::dispatch([&](const std::shared_ptr<ControlUnitSink>& sink) {
+    dispatch([&](const std::shared_ptr<ControlUnitSink>& sink) {
         if (!sink) {
             return;
         }
@@ -294,7 +294,7 @@ void ControlUnitMgr::on_app_stopped(const std::string& intent)
 {
     LogFunc;
 
-    Dispatcher<ControlUnitSink>::dispatch([&](const std::shared_ptr<ControlUnitSink>& sink) {
+    dispatch([&](const std::shared_ptr<ControlUnitSink>& sink) {
         if (!sink) {
             return;
         }

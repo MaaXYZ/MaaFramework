@@ -152,24 +152,46 @@ void ScreencapAgent::deinit()
 
 std::optional<cv::Mat> ScreencapAgent::screencap()
 {
-    switch (method_) {
-    case Method::UnknownYet:
-        LogError << "Unknown screencap method";
+    auto active = active_unit();
+    if (!active) {
+        LogError << "No available screencap method" << VAR(method_);
         return std::nullopt;
-    case Method::RawByNetcat:
-    case Method::RawWithGzip:
-    case Method::Encode:
-    case Method::EncodeToFileAndPull:
-    case Method::MinicapDirect:
-    case Method::MinicapStream:
-    case Method::MuMuPlayerExtras:
-    case Method::LDPlayerExtras:
-        return units_[method_]->screencap();
-    default:
-        LogInfo << "Not support:" << method_;
-        break;
     }
-    return std::nullopt;
+
+    return active->screencap();
+}
+
+void ScreencapAgent::on_image_resolution_changed(const std::pair<int, int>& pre, const std::pair<int, int>& cur)
+{
+    auto active = active_unit();
+    if (!active) {
+        LogError << "No available screencap method" << VAR(method_);
+        return;
+    }
+
+    active->on_image_resolution_changed(pre, cur);
+}
+
+void ScreencapAgent::on_app_started(const std::string& intent)
+{
+    auto active = active_unit();
+    if (!active) {
+        LogError << "No available screencap method" << VAR(method_);
+        return;
+    }
+
+    active->on_app_started(intent);
+}
+
+void ScreencapAgent::on_app_stopped(const std::string& intent)
+{
+    auto active = active_unit();
+    if (!active) {
+        LogError << "No available screencap method" << VAR(method_);
+        return;
+    }
+
+    active->on_app_stopped(intent);
 }
 
 bool ScreencapAgent::speed_test()
@@ -224,6 +246,16 @@ bool ScreencapAgent::speed_test()
     }
 
     return true;
+}
+
+std::shared_ptr<ScreencapBase> ScreencapAgent::active_unit()
+{
+    if (method_ == Method::UnknownYet) {
+        LogError << "Unknown screencap method";
+        return nullptr;
+    }
+
+    return units_[method_];
 }
 
 std::ostream& operator<<(std::ostream& os, ScreencapAgent::Method m)

@@ -181,6 +181,36 @@ bool InputAgent::input_text(const std::string& text)
     return active_unit_->input_text(text);
 }
 
+void InputAgent::on_image_resolution_changed(const std::pair<int, int>& pre, const std::pair<int, int>& cur)
+{
+    if (!active_unit_) {
+        LogError << "No available input method" << VAR(active_unit_);
+        return;
+    }
+
+    active_unit_->on_image_resolution_changed(pre, cur);
+}
+
+void InputAgent::on_app_started(const std::string& intent)
+{
+    if (!active_unit_) {
+        LogError << "No available input method" << VAR(active_unit_);
+        return;
+    }
+
+    active_unit_->on_app_started(intent);
+}
+
+void InputAgent::on_app_stopped(const std::string& intent)
+{
+    if (!active_unit_) {
+        LogError << "No available input method" << VAR(active_unit_);
+        return;
+    }
+
+    active_unit_->on_app_stopped(intent);
+}
+
 std::ostream& operator<<(std::ostream& os, InputAgent::Method m)
 {
     switch (m) {

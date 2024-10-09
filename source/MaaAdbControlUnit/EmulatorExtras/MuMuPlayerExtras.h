@@ -40,8 +40,8 @@ public: // from InputBase
     virtual bool input_text(const std::string& text) override;
 
 public: // from ControlUnitSink
-    virtual void on_app_started(const std::string& intent);
-    virtual void on_app_stopped(const std::string& intent);
+    virtual void on_app_started(const std::string& intent) override;
+    virtual void on_app_stopped(const std::string& intent) override;
 
 private:
     bool load_mumu_library();
