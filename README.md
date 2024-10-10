@@ -83,11 +83,11 @@ _✨ 基于图像识别的自动化黑盒测试框架 ✨_
   基于 MAA 全新架构的 通用 GUI。由 MaaFramework 强力驱动！
 
 - [MET](https://github.com/shanchuan001/MET) 悠久之树 小助手 ![Pipeline](https://img.shields.io/badge/Pipeline-%23454545?logo=paddypower&logoColor=%23FFFFFF)  
-基于全新架构的 悠久之树 小助手。图像技术 + 模拟控制，解放双手！由 MaaFramework 强力驱动！
+基于全新架构的 悠久之树 小助手。图像技术 + 模拟控制，解放双手！由 MaaFramework 强力驱动！  
 
 - [MaaYYs](https://github.com/TanyaShue/MaaYYs) 阴阳师小助手 ![python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white)  ![qt](https://img.shields.io/badge/Qt6-41CD52?logo=Qt&logoColor=white)
-  基于全新架构的 阴阳师小助手。图像技术 + 模拟控制，当赛博屯屯鼠,自动日常,解放你的双手！由 MaaFramework 强力驱动！
-  
+  基于全新架构的 阴阳师小助手。图像技术 + 模拟控制，当赛博屯屯鼠,自动日常,解放你的双手！由 MaaFramework 强力驱动！  
+   
 ## 生态共建
 
 MAA 正计划建设为一类项目，而非舟的单一软件。  
