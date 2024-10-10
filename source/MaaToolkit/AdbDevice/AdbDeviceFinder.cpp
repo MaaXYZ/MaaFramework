@@ -138,7 +138,7 @@ std::filesystem::path AdbDeviceFinder::get_adb_path(const EmulatorConstantData& 
         if (!std::filesystem::exists(adb_path)) {
             continue;
         }
-        return adb_path;
+        return std::filesystem::canonical(adb_path);
     }
     return {};
 }
