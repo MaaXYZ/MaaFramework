@@ -53,7 +53,6 @@ var MaaDef_8h =
     [ "MaaOptionValueSize", "MaaDef_8h.html#a56ff604006917171af8e4b4974db28ef", null ],
     [ "MaaGlobalOption", "MaaDef_8h.html#a78a454cf5bf3e18aab3aef29cfc7b91c", null ],
     [ "MaaResOption", "MaaDef_8h.html#a96a661c5a0739f3238d192949635b7f7", null ],
-    [ "MaaInferenceDevice", "MaaDef_8h.html#a76a304a8a9693667c34e81f9158be04c", null ],
     [ "MaaCtrlOption", "MaaDef_8h.html#af8335ffd5a7df65830402c82a396c94e", null ],
     [ "MaaTaskerOption", "MaaDef_8h.html#ade3bcba89b5092219c2af3b0faffa934", null ],
     [ "MaaAdbScreencapMethod", "MaaDef_8h.html#a337e4b247a734f5c1c058689f75c1369", null ],
@@ -91,15 +90,8 @@ var MaaDef_8h =
       [ "MaaGlobalOption_ShowHitDraw", "MaaDef_8h.html#ad09e62ec1fd03dadaf5fb009026c38eea1a175dc6811ec0aedb23b87b98d68b40", null ],
       [ "MaaGlobalOption_DebugMode", "MaaDef_8h.html#ad09e62ec1fd03dadaf5fb009026c38eea85acfc5fc6cdca745d0eb2a090c05c5f", null ]
     ] ],
-    [ "MaaInferenceDeviceEnum", "MaaDef_8h.html#a70d2d23982bb9114d93ce5e811288679", [
-      [ "MaaInferenceDevice_CPU", "MaaDef_8h.html#a70d2d23982bb9114d93ce5e811288679ae4eb278e6b02b9b25afa7261d0b5c70e", null ],
-      [ "MaaInferenceDevice_Auto", "MaaDef_8h.html#a70d2d23982bb9114d93ce5e811288679a335e0821f21a444ed2bbb45f61df4e1b", null ],
-      [ "MaaInferenceDevice_GPU0", "MaaDef_8h.html#a70d2d23982bb9114d93ce5e811288679a88852ec0a69ab15f9366e82befbbfaa7", null ],
-      [ "MaaInferenceDevice_GPU1", "MaaDef_8h.html#a70d2d23982bb9114d93ce5e811288679a6417a9ae86c81cfa6d2da6f7903a8e1f", null ]
-    ] ],
     [ "MaaResOptionEnum", "MaaDef_8h.html#a9aa211dbcabe90cacd0c94ea6a03d116", [
-      [ "MaaResOption_Invalid", "MaaDef_8h.html#a9aa211dbcabe90cacd0c94ea6a03d116afdc31dbaaa6b035f11b40cd574165f8e", null ],
-      [ "MaaResOption_InferenceDevice", "MaaDef_8h.html#a9aa211dbcabe90cacd0c94ea6a03d116a3ff6bf91b8715ced2a6c20ac9c1b4109", null ]
+      [ "MaaResOption_Invalid", "MaaDef_8h.html#a9aa211dbcabe90cacd0c94ea6a03d116afdc31dbaaa6b035f11b40cd574165f8e", null ]
     ] ],
     [ "MaaCtrlOptionEnum", "MaaDef_8h.html#ac9daa36008267a26662244d2f5570003", [
       [ "MaaCtrlOption_Invalid", "MaaDef_8h.html#ac9daa36008267a26662244d2f5570003a4afeb097dfa70801c8fa43d83bb5c51f", null ],
