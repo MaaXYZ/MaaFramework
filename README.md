@@ -86,7 +86,7 @@ _✨ 基于图像识别的自动化黑盒测试框架 ✨_
 基于全新架构的 悠久之树 小助手。图像技术 + 模拟控制，解放双手！由 MaaFramework 强力驱动！
 
 - [MaaYYs](https://github.com/TanyaShue/MaaYYs) 阴阳师小助手 ![python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white)  ![qt](https://img.shields.io/badge/Qt6-41CD52?logo=Qt&logoColor=white)
-  基于全新架构的 阴阳师小助手。图像技术 + 模拟控制，全自动当仓鼠,自动日常,解放你的双手！由 MaaFramework 强力驱动！
+  基于全新架构的 阴阳师小助手。图像技术 + 模拟控制，当赛博屯屯鼠,自动日常,解放你的双手！由 MaaFramework 强力驱动！
   
 ## 生态共建
 
