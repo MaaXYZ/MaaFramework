@@ -19,14 +19,14 @@
         {
             "name": "Official",
             "path": [
-                "{PROJECT_DIR}/resource/base"
+                "{PROJECT_DIR}/resource"
             ]
         },
         {
             "name": "Bilibili",
             "path": [
-                "{PROJECT_DIR}/resource/base",
-                "{PROJECT_DIR}/resource/bilibili"
+                "{PROJECT_DIR}/resource",
+                "{PROJECT_DIR}/resource_bilibili"
             ]
         }
     ],

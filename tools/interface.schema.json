@@ -83,7 +83,7 @@
                 "default": {
                     "name": "Official",
                     "path": [
-                        "{PROJECT_DIR}/resource/base"
+                        "{PROJECT_DIR}/resource"
                     ]
                 },
                 "properties": {
@@ -96,7 +96,7 @@
                         "type": "array",
                         "items": {
                             "type": "string",
-                            "default": "{PROJECT_DIR}/resource/"
+                            "default": "{PROJECT_DIR}/resource"
                         }
                     }
                 },
