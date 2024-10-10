@@ -152,8 +152,14 @@
     <member refid="MaaDef_8h_1ad09e62ec1fd03dadaf5fb009026c38eea58ba5999f483b497af3eac6d327d53e6" kind="enumvalue"><name>MaaGlobalOption_StdoutLevel</name></member>
     <member refid="MaaDef_8h_1ad09e62ec1fd03dadaf5fb009026c38eea1a175dc6811ec0aedb23b87b98d68b40" kind="enumvalue"><name>MaaGlobalOption_ShowHitDraw</name></member>
     <member refid="MaaDef_8h_1ad09e62ec1fd03dadaf5fb009026c38eea85acfc5fc6cdca745d0eb2a090c05c5f" kind="enumvalue"><name>MaaGlobalOption_DebugMode</name></member>
+    <member refid="MaaDef_8h_1a70d2d23982bb9114d93ce5e811288679" kind="enum"><name>MaaInferenceDeviceEnum</name></member>
+    <member refid="MaaDef_8h_1a70d2d23982bb9114d93ce5e811288679ae4eb278e6b02b9b25afa7261d0b5c70e" kind="enumvalue"><name>MaaInferenceDevice_CPU</name></member>
+    <member refid="MaaDef_8h_1a70d2d23982bb9114d93ce5e811288679a335e0821f21a444ed2bbb45f61df4e1b" kind="enumvalue"><name>MaaInferenceDevice_Auto</name></member>
+    <member refid="MaaDef_8h_1a70d2d23982bb9114d93ce5e811288679a88852ec0a69ab15f9366e82befbbfaa7" kind="enumvalue"><name>MaaInferenceDevice_GPU0</name></member>
+    <member refid="MaaDef_8h_1a70d2d23982bb9114d93ce5e811288679a6417a9ae86c81cfa6d2da6f7903a8e1f" kind="enumvalue"><name>MaaInferenceDevice_GPU1</name></member>
     <member refid="MaaDef_8h_1a9aa211dbcabe90cacd0c94ea6a03d116" kind="enum"><name>MaaResOptionEnum</name></member>
     <member refid="MaaDef_8h_1a9aa211dbcabe90cacd0c94ea6a03d116afdc31dbaaa6b035f11b40cd574165f8e" kind="enumvalue"><name>MaaResOption_Invalid</name></member>
+    <member refid="MaaDef_8h_1a9aa211dbcabe90cacd0c94ea6a03d116a3ff6bf91b8715ced2a6c20ac9c1b4109" kind="enumvalue"><name>MaaResOption_InferenceDevice</name></member>
     <member refid="MaaDef_8h_1ac9daa36008267a26662244d2f5570003" kind="enum"><name>MaaCtrlOptionEnum</name></member>
     <member refid="MaaDef_8h_1ac9daa36008267a26662244d2f5570003a4afeb097dfa70801c8fa43d83bb5c51f" kind="enumvalue"><name>MaaCtrlOption_Invalid</name></member>
     <member refid="MaaDef_8h_1ac9daa36008267a26662244d2f5570003a83157be6a22a5e62d4929c7bcd095f75" kind="enumvalue"><name>MaaCtrlOption_ScreenshotTargetLongSide</name></member>
@@ -184,6 +190,7 @@
     <member refid="MaaDef_8h_1a56ff604006917171af8e4b4974db28ef" kind="typedef"><name>MaaOptionValueSize</name></member>
     <member refid="MaaDef_8h_1a78a454cf5bf3e18aab3aef29cfc7b91c" kind="typedef"><name>MaaGlobalOption</name></member>
     <member refid="MaaDef_8h_1a96a661c5a0739f3238d192949635b7f7" kind="typedef"><name>MaaResOption</name></member>
+    <member refid="MaaDef_8h_1a76a304a8a9693667c34e81f9158be04c" kind="typedef"><name>MaaInferenceDevice</name></member>
     <member refid="MaaDef_8h_1af8335ffd5a7df65830402c82a396c94e" kind="typedef"><name>MaaCtrlOption</name></member>
     <member refid="MaaDef_8h_1ade3bcba89b5092219c2af3b0faffa934" kind="typedef"><name>MaaTaskerOption</name></member>
     <member refid="MaaDef_8h_1a337e4b247a734f5c1c058689f75c1369" kind="typedef"><name>MaaAdbScreencapMethod</name></member>

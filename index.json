@@ -1,5 +1,5 @@
 {
-	"Version": "(main) v2.0.3",
+	"Version": "(main) v2.1.0",
 	"Compounds": {
 		"MaaContext.h": {
 			"Location": "include/MaaFramework/Instance/MaaContext.h",
@@ -2540,6 +2540,17 @@
 					},
 					"FunctionPointer": null
 				},
+				"MaaInferenceDevice": {
+					"Type": {
+						"Description": {
+							"Brief": "",
+							"Details": [],
+							"Deprecated": null
+						},
+						"Define": "int32_t"
+					},
+					"FunctionPointer": null
+				},
 				"MaaCtrlOption": {
 					"Type": {
 						"Description": {
@@ -3279,8 +3290,8 @@
 							"Description": {
 								"Brief": "Dump all screenshots and actions",
 								"Details": [
-									"Recording will evaluate to true if any of this or MaaCtrlOptionEnum::MaaCtrlOption_Recording",
-									"is true. value: bool, eg: true; val_size: sizeof(bool)"
+									"Recording will evaluate to true if any of this or MaaCtrlOptionEnum::MaaCtrlOption_Recording is true.",
+									"value: bool, eg: true; val_size: sizeof(bool)"
 								],
 								"Deprecated": null
 							},
@@ -3321,6 +3332,49 @@
 					"IsFlags": false,
 					"UnderlyingType": "int32_t"
 				},
+				"MaaInferenceDeviceEnum": {
+					"Description": {
+						"Brief": "",
+						"Details": [],
+						"Deprecated": null
+					},
+					"EnumValues": {
+						"MaaInferenceDevice_CPU": {
+							"Description": {
+								"Brief": "",
+								"Details": [],
+								"Deprecated": null
+							},
+							"Value": "-2"
+						},
+						"MaaInferenceDevice_Auto": {
+							"Description": {
+								"Brief": "",
+								"Details": [],
+								"Deprecated": null
+							},
+							"Value": "-1"
+						},
+						"MaaInferenceDevice_GPU0": {
+							"Description": {
+								"Brief": "",
+								"Details": [],
+								"Deprecated": null
+							},
+							"Value": "0"
+						},
+						"MaaInferenceDevice_GPU1": {
+							"Description": {
+								"Brief": "",
+								"Details": [],
+								"Deprecated": null
+							},
+							"Value": "1"
+						}
+					},
+					"IsFlags": false,
+					"UnderlyingType": "int32_t"
+				},
 				"MaaResOptionEnum": {
 					"Description": {
 						"Brief": "",
@@ -3335,6 +3389,16 @@
 								"Deprecated": null
 							},
 							"Value": "0"
+						},
+						"MaaResOption_InferenceDevice": {
+							"Description": {
+								"Brief": "Use the specified inference device. Please set this option before loading the model.",
+								"Details": [
+									"value: MaaInferenceDevice, eg: 0; val_size: sizeof(MaaInferenceDevice) default value is MaaInferenceDevice_Auto"
+								],
+								"Deprecated": null
+							},
+							"Value": "1"
 						}
 					},
 					"IsFlags": false,
