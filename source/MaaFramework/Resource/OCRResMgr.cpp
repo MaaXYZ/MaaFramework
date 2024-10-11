@@ -15,8 +15,6 @@ OCRResMgr::OCRResMgr()
     LogFunc;
 
     option_.UseOrtBackend();
-
-    set_auto_device();
 }
 
 void OCRResMgr::set_cpu()
@@ -32,12 +30,6 @@ bool OCRResMgr::set_gpu(int device_id)
 
     option_.UseGpu(device_id);
     return true;
-}
-
-void OCRResMgr::set_auto_device()
-{
-    // TODO: 检查 GPU 列表，并过滤一些老旧设备
-    set_gpu(0);
 }
 
 bool OCRResMgr::lazy_load(const std::filesystem::path& path, bool is_base)

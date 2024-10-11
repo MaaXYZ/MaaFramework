@@ -3,6 +3,7 @@
 #include <tuple>
 
 #include "MaaFramework/MaaMsg.h"
+#include "Utils/GpuOption.h"
 #include "Utils/Logger.h"
 #include "Utils/Platform.h"
 
@@ -15,6 +16,8 @@ ResourceMgr::ResourceMgr(MaaNotificationCallback notify, void* notify_trans_arg)
 
     res_loader_ = std::make_unique<AsyncRunner<std::filesystem::path>>(
         std::bind(&ResourceMgr::run_load, this, std::placeholders::_1, std::placeholders::_2));
+
+    check_and_set_gpu();
 }
 
 ResourceMgr::~ResourceMgr()
@@ -257,27 +260,40 @@ bool ResourceMgr::set_inference_device(MaaOptionValue value, MaaOptionValueSize 
         return false;
     }
 
-    int32_t device_id = *reinterpret_cast<int*>(value);
-    LogInfo << VAR(device_id);
+    int32_t device = *reinterpret_cast<int*>(value);
+    LogInfo << VAR(device);
 
-    if (device_id == MaaInferenceDevice_CPU) {
+    if (device == MaaInferenceDevice_Auto) {
+        check_and_set_gpu();
+    }
+    else if (device == MaaInferenceDevice_CPU) {
         onnx_res_.set_cpu();
         ocr_res_.set_cpu();
     }
-    else if (device_id == MaaInferenceDevice_Auto) {
-        onnx_res_.set_auto_device();
-        ocr_res_.set_auto_device();
+    else if (device >= 0) {
+        onnx_res_.set_gpu(device);
+        ocr_res_.set_gpu(device);
     }
-    else if (device_id >= 0) {
-        onnx_res_.set_gpu(device_id);
-        ocr_res_.set_gpu(device_id);
-    }
-    else { // device_id < -2
-        LogError << "invalid inference device" << VAR(device_id);
+    else {
+        LogError << "invalid inference device" << VAR(device);
         return false;
     }
 
     return true;
+}
+
+void ResourceMgr::check_and_set_gpu()
+{
+    auto gpu = perfer_gpu();
+    if (gpu) {
+        int32_t gpu_id = *gpu;
+        onnx_res_.set_gpu(gpu_id);
+        ocr_res_.set_gpu(gpu_id);
+    }
+    else {
+        onnx_res_.set_cpu();
+        ocr_res_.set_cpu();
+    }
 }
 
 bool ResourceMgr::run_load(typename AsyncRunner<std::filesystem::path>::Id id, std::filesystem::path path)
