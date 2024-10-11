@@ -30,8 +30,8 @@ MaaControlUnitHandle MaaAdbControlUnitCreate(
     LogFunc << VAR(adb_path) << VAR(adb_serial) << VAR(screencap_methods) << VAR(input_methods) << VAR(config) << VAR(agent_path);
 
     auto screencap_unit =
-        screencap_methods != MaaAdbScreencapMethod_None ? std::make_shared<ScreencapAgent>(screencap_methods, path(agent_path)) : nullptr;
-    auto input_unit = input_methods != MaaAdbInputMethod_None ? std::make_shared<InputAgent>(input_methods, path(agent_path)) : nullptr;
+        screencap_methods == MaaAdbScreencapMethod_None ? nullptr : std::make_shared<ScreencapAgent>(screencap_methods, path(agent_path));
+    auto input_unit = input_methods == MaaAdbInputMethod_None ? nullptr : std::make_shared<InputAgent>(input_methods, path(agent_path));
 
     auto unit_mgr = std::make_unique<ControlUnitMgr>(path(adb_path), adb_serial, screencap_unit, input_unit);
 
