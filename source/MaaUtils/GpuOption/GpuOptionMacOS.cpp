@@ -4,7 +4,7 @@
 
 MAA_NS_BEGIN
 
-std::optional<int32_t> perfer_gpu()
+std::optional<int> perfer_gpu()
 {
     // TODO
     return std::nullopt;

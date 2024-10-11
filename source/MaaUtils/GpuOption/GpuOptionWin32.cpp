@@ -47,7 +47,7 @@ std::optional<std::wstring> adapter_instance_path(LUID luid)
     return result;
 }
 
-std::optional<int32_t> perfer_gpu()
+std::optional<int> perfer_gpu()
 {
     IDXGIFactory4* dxgi_factory = nullptr;
     OnScopeLeave([&]() {
