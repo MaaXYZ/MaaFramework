@@ -357,6 +357,7 @@ bool MuMuPlayerExtras::init_screencap()
         return false;
     }
 
+    clear_display_id();
     int display_id = get_display_id();
     int ret = capture_display_func_(mumu_handle_, display_id, 0, &display_width_, &display_height_, nullptr);
 
@@ -377,6 +378,8 @@ void MuMuPlayerExtras::disconnect_mumu()
 {
     LogFunc << VAR(mumu_handle_);
 
+    clear_display_id();
+
     if (mumu_handle_ != 0) {
         disconnect_func_(mumu_handle_);
     }
@@ -386,10 +389,15 @@ void MuMuPlayerExtras::set_app_package(const std::string& package, int cloned_in
 {
     LogTrace << VAR(package) << VAR(cloned_index);
 
-    mumu_display_id_cache_ = std::nullopt;
+    clear_display_id();
 
     mumu_app_package_ = package;
     mumu_app_cloned_index_ = cloned_index;
+}
+
+void MuMuPlayerExtras::clear_display_id()
+{
+    mumu_display_id_cache_ = std::nullopt;
 }
 
 int MuMuPlayerExtras::get_display_id()
@@ -403,16 +411,22 @@ int MuMuPlayerExtras::get_display_id()
         return 0;
     }
 
+    int display_id = 0;
     if (!mumu_app_package_.empty()) {
-        mumu_display_id_cache_ = get_display_id_func_(mumu_handle_, mumu_app_package_.c_str(), mumu_app_cloned_index_);
+        display_id = get_display_id_func_(mumu_handle_, mumu_app_package_.c_str(), mumu_app_cloned_index_);
     }
     else {
         static const std::string kDefaultPkg = "default";
-        mumu_display_id_cache_ = get_display_id_func_(mumu_handle_, kDefaultPkg.c_str(), 0);
+        display_id = get_display_id_func_(mumu_handle_, kDefaultPkg.c_str(), 0);
     }
-    LogInfo << VAR(*mumu_display_id_cache_);
+    LogInfo << VAR(display_id);
+    if (display_id < 0) {
+        LogError << "Failed to get display id" << VAR(display_id);
+        return 0;
+    }
 
-    return *mumu_display_id_cache_;
+    mumu_display_id_cache_ = display_id;
+    return display_id;
 }
 
 MAA_CTRL_UNIT_NS_END

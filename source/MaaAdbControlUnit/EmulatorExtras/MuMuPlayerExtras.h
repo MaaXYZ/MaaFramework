@@ -49,6 +49,7 @@ private:
     bool init_screencap();
     void disconnect_mumu();
     void set_app_package(const std::string& package, int cloned_index);
+    void clear_display_id();
     int get_display_id();
 
 private:
