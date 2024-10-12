@@ -1,15 +1,17 @@
 #include "ControlUnitMgr.h"
 
 #include "MaaFramework/MaaMsg.h"
+#include "Manager/InputAgent.h"
+#include "Manager/ScreencapAgent.h"
 #include "Screencap/HwndUtils.hpp"
 #include "Utils/Logger.h"
 
 MAA_CTRL_UNIT_NS_BEGIN
 
-ControlUnitMgr::ControlUnitMgr(HWND hWnd, std::shared_ptr<ScreencapBase> screencap_unit, std::shared_ptr<InputBase> input_unit)
+ControlUnitMgr::ControlUnitMgr(HWND hWnd, MaaWin32ScreencapMethod screencap_method, MaaWin32InputMethod input_method)
     : hwnd_(hWnd)
-    , input_(std::move(input_unit))
-    , screencap_(std::move(screencap_unit))
+    , screencap_method_(screencap_method)
+    , input_method_(input_method)
 {
 }
 
@@ -36,6 +38,20 @@ bool ControlUnitMgr::connect()
     if (IsIconic(hwnd_)) {
         LogError << "hwnd_ is minimized";
         return false;
+    }
+
+    if (screencap_method_ != MaaWin32ScreencapMethod_None) {
+        screencap_ = std::make_shared<ScreencapAgent>(screencap_method_, hwnd_);
+    }
+    else {
+        LogWarn << "screencap_method_ is None";
+    }
+
+    if (input_method_ != MaaWin32InputMethod_None) {
+        input_ = std::make_shared<InputAgent>(input_method_, hwnd_);
+    }
+    else {
+        LogWarn << "input_method_ is None";
     }
 
     return true;

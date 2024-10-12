@@ -157,6 +157,7 @@ bool FramePoolScreencap::init()
 
 void FramePoolScreencap::uninit()
 {
+    texture_desc_ = { 0 };
 }
 
 bool FramePoolScreencap::init_texture(winrt::com_ptr<ID3D11Texture2D> raw_texture)

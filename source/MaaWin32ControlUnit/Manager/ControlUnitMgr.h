@@ -4,6 +4,7 @@
 
 #include "Base/UnitBase.h"
 #include "ControlUnit/ControlUnitAPI.h"
+#include "MaaFramework/MaaDef.h"
 #include "Utils/SafeWindows.hpp"
 
 MAA_CTRL_UNIT_NS_BEGIN
@@ -11,7 +12,7 @@ MAA_CTRL_UNIT_NS_BEGIN
 class ControlUnitMgr : public ControlUnitAPI
 {
 public:
-    ControlUnitMgr(HWND hWnd, std::shared_ptr<ScreencapBase> screencap_unit, std::shared_ptr<InputBase> input_unit);
+    ControlUnitMgr(HWND hWnd, MaaWin32ScreencapMethod screencap_method, MaaWin32InputMethod input_method);
     virtual ~ControlUnitMgr() override = default;
 
 public: // from ControlUnitAPI
@@ -38,6 +39,8 @@ public: // from ControlUnitAPI
 
 private:
     HWND hwnd_ = nullptr;
+    MaaWin32ScreencapMethod screencap_method_ = MaaWin32ScreencapMethod_None;
+    MaaWin32InputMethod input_method_ = MaaWin32InputMethod_None;
 
     std::shared_ptr<InputBase> input_ = nullptr;
     std::shared_ptr<ScreencapBase> screencap_ = nullptr;

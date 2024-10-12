@@ -2,8 +2,6 @@
 
 #include "Base/UnitBase.h"
 #include "Manager/ControlUnitMgr.h"
-#include "Manager/InputAgent.h"
-#include "Manager/ScreencapAgent.h"
 #include "Utils/Logger.h"
 #include "Utils/SafeWindows.hpp"
 
@@ -27,10 +25,7 @@ MaaControlUnitHandle MaaWin32ControlUnitCreate(void* hWnd, MaaWin32ScreencapMeth
 
     HWND h_wnd = reinterpret_cast<HWND>(hWnd);
 
-    auto screencap_unit = std::make_shared<ScreencapAgent>(screencap_method, h_wnd);
-    auto input_unit = std::make_shared<InputAgent>(input_method, h_wnd);
-
-    auto unit_mgr = std::make_unique<ControlUnitMgr>(h_wnd, std::move(screencap_unit), std::move(input_unit));
+    auto unit_mgr = std::make_unique<ControlUnitMgr>(h_wnd, screencap_method, input_method);
     return unit_mgr.release();
 }
 
