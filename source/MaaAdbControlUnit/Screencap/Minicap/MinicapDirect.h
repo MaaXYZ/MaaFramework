@@ -13,7 +13,6 @@ public:
 
 public: // from ScreencapBase
     virtual bool init() override;
-    virtual void deinit() override;
 
     virtual std::optional<cv::Mat> screencap() override;
 };

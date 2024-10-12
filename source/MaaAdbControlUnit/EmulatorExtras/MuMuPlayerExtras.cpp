@@ -53,11 +53,6 @@ bool MuMuPlayerExtras::init()
     return load_mumu_library() && connect_mumu() && init_screencap();
 }
 
-void MuMuPlayerExtras::deinit()
-{
-    disconnect_mumu();
-}
-
 std::optional<cv::Mat> MuMuPlayerExtras::screencap()
 {
     LogDebug;
@@ -377,8 +372,6 @@ bool MuMuPlayerExtras::init_screencap()
 void MuMuPlayerExtras::disconnect_mumu()
 {
     LogFunc << VAR(mumu_handle_);
-
-    clear_display_id();
 
     if (mumu_handle_ != 0) {
         disconnect_func_(mumu_handle_);

@@ -20,8 +20,11 @@ public:
     ControlUnitMgr(
         std::filesystem::path adb_path,
         std::string adb_serial,
-        std::shared_ptr<ScreencapBase> screencap_unit,
-        std::shared_ptr<InputBase> touch_unit);
+        MaaAdbScreencapMethod screencap_methods,
+        MaaAdbInputMethod input_methods,
+        json::object config,
+        std::filesystem::path agent_path);
+
     virtual ~ControlUnitMgr() override = default;
 
 public: // from ControlUnitAPI
@@ -46,10 +49,6 @@ public: // from ControlUnitAPI
     virtual bool press_key(int key) override;
     virtual bool input_text(const std::string& text) override;
 
-public:
-    bool parse(const json::value& config);
-    void set_replacement(const UnitBase::Replacement& replacement);
-
 private:
     bool _screencap(/*out*/ cv::Mat& image);
     void on_image_resolution_changed(const std::pair<int, int>& pre, const std::pair<int, int>& cur);
@@ -57,8 +56,13 @@ private:
     void on_app_stopped(const std::string& intent);
 
 private:
-    std::filesystem::path adb_path_;
-    std::string adb_serial_;
+    const std::filesystem::path adb_path_;
+    const std::string adb_serial_;
+    const json::value config_;
+    const MaaAdbScreencapMethod screencap_methods_ = MaaAdbScreencapMethod_None;
+    const MaaAdbInputMethod input_methods_ = MaaAdbInputMethod_None;
+    const std::filesystem::path agent_path_;
+    const UnitBase::Replacement unit_replacement_;
 
     DeviceList device_list_;
     Connection connection_;

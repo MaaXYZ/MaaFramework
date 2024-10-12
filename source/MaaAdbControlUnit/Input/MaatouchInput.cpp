@@ -43,13 +43,6 @@ bool MaatouchInput::init()
     return invoke_and_read_info();
 }
 
-void MaatouchInput::deinit()
-{
-    LogTrace;
-
-    remove_binary();
-}
-
 bool MaatouchInput::press_key(int key)
 {
     LogInfo << VAR(key);

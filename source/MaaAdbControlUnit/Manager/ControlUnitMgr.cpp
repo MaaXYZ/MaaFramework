@@ -3,6 +3,8 @@
 #include <meojson/json.hpp>
 
 #include "MaaFramework/MaaMsg.h"
+#include "Manager/InputAgent.h"
+#include "Manager/ScreencapAgent.h"
 #include "Utils/Logger.h"
 #include "Utils/Platform.h"
 
@@ -11,21 +13,28 @@ MAA_CTRL_UNIT_NS_BEGIN
 ControlUnitMgr::ControlUnitMgr(
     std::filesystem::path adb_path,
     std::string adb_serial,
-    std::shared_ptr<ScreencapBase> screencap_unit,
-    std::shared_ptr<InputBase> touch_unit)
+    MaaAdbScreencapMethod screencap_methods,
+    MaaAdbInputMethod input_methods,
+    json::object config,
+    std::filesystem::path agent_path)
     : adb_path_(std::move(adb_path))
     , adb_serial_(std::move(adb_serial))
+    , config_(std::move(config))
+    , screencap_methods_(screencap_methods)
+    , input_methods_(input_methods)
+    , agent_path_(std::move(agent_path))
+    , unit_replacement_({ { "{ADB}", path_to_utf8_string(adb_path_) }, { "{ADB_SERIAL}", adb_serial_ } })
     , connection_(adb_path_, adb_serial_)
-    , input_(std::move(touch_unit))
-    , screencap_(std::move(screencap_unit))
 {
-    register_observer(input_);     // for on_image_resolution_changed
-    register_observer(screencap_); // for on_app_started, on_app_stopped
+    device_list_.parse(config_);
+    connection_.parse(config_);
+    device_info_.parse(config_);
+    activity_.parse(config_);
 
-    set_replacement({
-        { "{ADB}", path_to_utf8_string(adb_path_) },
-        { "{ADB_SERIAL}", adb_serial_ },
-    });
+    device_list_.set_replacement(unit_replacement_);
+    connection_.set_replacement(unit_replacement_);
+    device_info_.set_replacement(unit_replacement_);
+    activity_.set_replacement(unit_replacement_);
 }
 
 bool ControlUnitMgr::find_device(std::vector<std::string>& devices)
@@ -47,24 +56,36 @@ bool ControlUnitMgr::connect()
         return false;
     }
 
-    if (screencap_) {
+    if (screencap_methods_ != MaaAdbScreencapMethod_None) {
+        screencap_ = std::make_shared<ScreencapAgent>(screencap_methods_, agent_path_);
+        screencap_->parse(config_);
+        screencap_->set_replacement(unit_replacement_);
+
         if (!screencap_->init()) {
             LogError << "failed to init screencap";
             return false;
         }
+
+        register_observer(screencap_);
     }
     else {
-        LogWarn << "screencap_ is null";
+        LogWarn << "screencap_methods_ is MaaAdbScreencapMethod_None";
     }
 
-    if (input_) {
+    if (input_methods_ != MaaAdbInputMethod_None) {
+        input_ = std::make_shared<InputAgent>(input_methods_, agent_path_);
+        input_->parse(config_);
+        input_->set_replacement(unit_replacement_);
+
         if (!input_->init()) {
-            LogError << "failed to init touch_input";
+            LogError << "failed to init input";
             return false;
         }
+
+        register_observer(input_);
     }
     else {
-        LogWarn << "input_ is null";
+        LogWarn << "input_methods_ is MaaAdbInputMethod_None";
     }
 
     return true;
@@ -194,41 +215,6 @@ bool ControlUnitMgr::input_text(const std::string& text)
     }
 
     return input_->input_text(text);
-}
-
-bool ControlUnitMgr::parse(const json::value& config)
-{
-    bool ret = true;
-
-    ret &= connection_.parse(config);
-    ret &= device_info_.parse(config);
-    ret &= activity_.parse(config);
-    ret &= device_list_.parse(config);
-
-    if (screencap_) {
-        ret &= screencap_->parse(config);
-    }
-
-    if (input_) {
-        ret &= input_->parse(config);
-    }
-
-    return ret;
-}
-
-void ControlUnitMgr::set_replacement(const UnitBase::Replacement& replacement)
-{
-    device_list_.set_replacement(replacement);
-    connection_.set_replacement(replacement);
-    device_info_.set_replacement(replacement);
-    activity_.set_replacement(replacement);
-
-    if (input_) {
-        input_->set_replacement(replacement);
-    }
-    if (screencap_) {
-        screencap_->set_replacement(replacement);
-    }
 }
 
 bool ControlUnitMgr::_screencap(cv::Mat& image)

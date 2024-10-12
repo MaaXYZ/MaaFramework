@@ -45,11 +45,6 @@ bool LDPlayerExtras::init()
     return load_ld_library() && create_ld_instance();
 }
 
-void LDPlayerExtras::deinit()
-{
-    release_ld_instance();
-}
-
 std::optional<cv::Mat> LDPlayerExtras::screencap()
 {
     LogDebug;

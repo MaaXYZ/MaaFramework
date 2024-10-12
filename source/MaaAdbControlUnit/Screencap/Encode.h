@@ -17,8 +17,6 @@ public: // from UnitBase
 public: // from ScreencapBase
     virtual bool init() override { return true; }
 
-    virtual void deinit() override {}
-
     virtual std::optional<cv::Mat> screencap() override;
 
 private:

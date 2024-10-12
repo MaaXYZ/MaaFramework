@@ -17,11 +17,6 @@ bool MinicapDirect::init()
     return init_binary();
 }
 
-void MinicapDirect::deinit()
-{
-    deinit_binary();
-}
-
 std::optional<cv::Mat> MinicapDirect::screencap()
 {
     auto res = binary_->invoke_bin_and_read_pipe(

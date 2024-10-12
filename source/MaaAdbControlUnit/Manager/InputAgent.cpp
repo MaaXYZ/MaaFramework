@@ -93,22 +93,26 @@ bool InputAgent::init()
 {
     LogFunc;
 
+    if (active_unit_) {
+        LogError << "already initialized" << VAR(active_unit_);
+        return false;
+    }
+
     for (auto& unit : units_ | std::views::values) {
         if (!unit->init()) {
             continue;
         }
-        active_unit_ = unit;
+        active_unit_ = std::move(unit);
         break;
     }
 
-    return active_unit_ != nullptr;
-}
-
-void InputAgent::deinit()
-{
-    for (auto& unit : units_ | std::views::values) {
-        unit->deinit();
+    if (!active_unit_) {
+        LogError << "No available input method";
+        return false;
     }
+
+    units_.clear();
+    return true;
 }
 
 bool InputAgent::click(int x, int y)

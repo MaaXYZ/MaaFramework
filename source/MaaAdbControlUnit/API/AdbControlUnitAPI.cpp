@@ -3,8 +3,6 @@
 #include <meojson/json.hpp>
 
 #include "Manager/ControlUnitMgr.h"
-#include "Manager/InputAgent.h"
-#include "Manager/ScreencapAgent.h"
 #include "Utils/Logger.h"
 #include "Utils/Platform.h"
 
@@ -29,22 +27,19 @@ MaaControlUnitHandle MaaAdbControlUnitCreate(
 
     LogFunc << VAR(adb_path) << VAR(adb_serial) << VAR(screencap_methods) << VAR(input_methods) << VAR(config) << VAR(agent_path);
 
-    auto screencap_unit =
-        screencap_methods == MaaAdbScreencapMethod_None ? nullptr : std::make_shared<ScreencapAgent>(screencap_methods, path(agent_path));
-    auto input_unit = input_methods == MaaAdbInputMethod_None ? nullptr : std::make_shared<InputAgent>(input_methods, path(agent_path));
-
-    auto unit_mgr = std::make_unique<ControlUnitMgr>(path(adb_path), adb_serial, screencap_unit, input_unit);
-
     auto json_opt = json::parse(config);
-    if (!json_opt) {
-        LogError << "Parse config failed, invalid config:" << config;
+    if (!json_opt || !json_opt->is_object()) {
+        LogError << "Parse config failed, or not object, invalid config:" << config;
         return nullptr;
     }
-    bool parsed = unit_mgr->parse(*json_opt);
-    if (!parsed) {
-        LogError << "unit_mgr->parse failed, invalid json:" << *json_opt;
-        return nullptr;
-    }
+
+    auto unit_mgr = std::make_unique<ControlUnitMgr>(
+        path(adb_path),
+        adb_serial,
+        screencap_methods,
+        input_methods,
+        json_opt->as_object(),
+        path(agent_path));
 
     return unit_mgr.release();
 }

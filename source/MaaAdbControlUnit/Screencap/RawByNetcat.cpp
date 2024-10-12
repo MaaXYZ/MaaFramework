@@ -41,13 +41,6 @@ bool ScreencapRawByNetcat::init()
     return true;
 }
 
-void ScreencapRawByNetcat::deinit()
-{
-    sock_io_ = nullptr;
-    io_factory_ = nullptr;
-    netcat_address_.clear();
-}
-
 std::optional<cv::Mat> ScreencapRawByNetcat::screencap()
 {
     if (!io_factory_) {

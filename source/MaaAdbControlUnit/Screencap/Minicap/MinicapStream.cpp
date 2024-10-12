@@ -12,6 +12,9 @@ MinicapStream::~MinicapStream()
 {
     release_thread();
 
+    sock_ios_ = nullptr;
+    pipe_ios_ = nullptr;
+
     deinit_binary();
 }
 
@@ -42,16 +45,6 @@ bool MinicapStream::init()
     create_thread();
 
     return true;
-}
-
-void MinicapStream::deinit()
-{
-    release_thread();
-
-    sock_ios_ = nullptr;
-    pipe_ios_ = nullptr;
-
-    deinit_binary();
 }
 
 std::optional<cv::Mat> MinicapStream::screencap()

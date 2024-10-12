@@ -127,6 +127,11 @@ bool ScreencapAgent::init()
 {
     LogFunc;
 
+    if (active_unit_) {
+        LogError << "already initialized" << VAR(active_unit_);
+        return false;
+    }
+
     for (auto it = units_.begin(); it != units_.end();) {
         if (it->second->init()) {
             ++it;
@@ -136,18 +141,14 @@ bool ScreencapAgent::init()
         }
     }
 
-    return speed_test();
-}
-
-void ScreencapAgent::deinit()
-{
-    LogFunc;
-
-    for (auto& unit : units_ | std::views::values) {
-        unit->deinit();
+    active_unit_ = speed_test();
+    if (!active_unit_) {
+        LogError << "No available screencap method";
+        return false;
     }
 
-    active_unit_ = nullptr;
+    units_.clear();
+    return true;
 }
 
 std::optional<cv::Mat> ScreencapAgent::screencap()
@@ -190,11 +191,9 @@ void ScreencapAgent::on_app_stopped(const std::string& intent)
     active_unit_->on_app_stopped(intent);
 }
 
-bool ScreencapAgent::speed_test()
+std::shared_ptr<ScreencapBase> ScreencapAgent::speed_test()
 {
     LogFunc;
-
-    active_unit_ = nullptr;
 
     Method fastest = Method::UnknownYet;
     std::chrono::milliseconds cost(INT64_MAX);
@@ -232,20 +231,11 @@ bool ScreencapAgent::speed_test()
 
     if (fastest == Method::UnknownYet) {
         LogError << "cannot find any method to screencap!";
-        return false;
+        return nullptr;
     }
 
     LogInfo << "The fastest method is" << fastest << VAR(cost);
-    active_unit_ = units_[fastest];
-
-    for (auto& [method, unit] : units_) {
-        if (method == fastest) {
-            continue;
-        }
-        unit->deinit();
-    }
-
-    return true;
+    return units_[fastest];
 }
 
 std::ostream& operator<<(std::ostream& os, ScreencapAgent::Method m)

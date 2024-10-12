@@ -24,7 +24,6 @@ public: // from UnitBase
 
 public: // from InputBase
     virtual bool init() override;
-    virtual void deinit() override;
 
     virtual bool press_key(int key) override;
     virtual bool input_text(const std::string& text) override;

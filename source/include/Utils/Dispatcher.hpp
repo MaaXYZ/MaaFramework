@@ -31,7 +31,7 @@ public:
         return observers_.erase(observer) > 0;
     }
 
-    bool empty() const { return observers_.empty(); }
+    void clear_observer() { observers_.clear(); }
 
     void dispatch(const std::function<void(const std::shared_ptr<T>&)>& pred)
     {

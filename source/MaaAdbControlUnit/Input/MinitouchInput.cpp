@@ -63,13 +63,6 @@ bool MinitouchInput::init()
     return invoke_and_read_info();
 }
 
-void MinitouchInput::deinit()
-{
-    LogTrace;
-
-    remove_binary();
-}
-
 bool MinitouchInput::press_key(int key)
 {
     if (!adb_shell_input_) {

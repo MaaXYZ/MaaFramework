@@ -63,7 +63,6 @@ public:
     virtual ~ScreencapBase() override = default;
 
     virtual bool init() = 0;
-    virtual void deinit() = 0;
 
 public:
     virtual std::optional<cv::Mat> screencap() = 0;
@@ -80,7 +79,6 @@ public:
     virtual ~InputBase() override = default;
 
     virtual bool init() = 0;
-    virtual void deinit() = 0;
 
 public:
     virtual bool click(int x, int y) = 0;
