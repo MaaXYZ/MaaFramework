@@ -72,6 +72,10 @@ std::optional<RuntimeParam> Configurator::generate_runtime() const
         auto dst = MaaNS::string_replace_all(path_string, kProjectDir, MaaNS::path_to_utf8_string(project_dir_));
         runtime.resource_path.emplace_back(dst);
     }
+    if (runtime.resource_path.empty()) {
+        LogWarn << "No resource to load";
+        return std::nullopt;
+    }
 
     for (const auto& config_task : config_.task) {
         auto task_opt = generate_runtime_task(config_task);
@@ -80,6 +84,10 @@ std::optional<RuntimeParam> Configurator::generate_runtime() const
             continue;
         }
         runtime.task.emplace_back(*std::move(task_opt));
+    }
+    if (runtime.task.empty()) {
+        LogWarn << "No task to run";
+        return std::nullopt;
     }
 
     auto controller_iter =
