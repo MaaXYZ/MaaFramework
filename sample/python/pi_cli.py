@@ -9,7 +9,7 @@ def main():
     Toolkit.pi_register_custom_action("MyAct", MyAction())
 
     # 启动 MaaPiCli
-    Toolkit.pi_run_cli("C:/MaaXXX/resource", "C:/MaaXXX/cache", False)
+    Toolkit.pi_run_cli("C:/MaaXXX/resource", "C:/MaaXXX/debug", False)
 
 
 class MyAction(CustomAction):
