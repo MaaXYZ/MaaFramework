@@ -11,7 +11,7 @@ MAA_PROJECT_INTERFACE_NS_BEGIN
 
 bool Configurator::load(const std::filesystem::path& resource_dir, const std::filesystem::path& user_dir)
 {
-    LogFunc << VAR(resource_dir);
+    LogFunc << VAR(resource_dir) << VAR(user_dir);
 
     auto data_opt = Parser::parse_interface(resource_dir / kInterfaceFilename);
     if (!data_opt) {
@@ -49,6 +49,8 @@ bool Configurator::check_configuration()
 
 void Configurator::save(const std::filesystem::path& user_dir)
 {
+    LogInfo << VAR(user_dir);
+
     std::filesystem::create_directories((user_dir / kConfigFilename).parent_path());
 
     std::ofstream ofs(user_dir / kConfigFilename);
