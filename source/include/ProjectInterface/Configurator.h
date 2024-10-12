@@ -13,9 +13,9 @@ class Configurator
     static constexpr std::string_view kConfigFilename = "config/maa_pi_config.json";
 
 public:
-    bool load(const std::filesystem::path& project_dir);
+    bool load(const std::filesystem::path& project_dir, const std::filesystem::path& user_dir);
     bool check_configuration();
-    void save();
+    void save(const std::filesystem::path& user_dir);
 
     std::optional<RuntimeParam> generate_runtime() const;
 
@@ -30,7 +30,7 @@ public:
 private:
     std::optional<RuntimeParam::Task> generate_runtime_task(const Configuration::Task& config_task) const;
 
-    std::filesystem::path project_dir_;
+    std::filesystem::path resource_dir_;
 
     InterfaceData data_;
     bool first_time_use_ = false;

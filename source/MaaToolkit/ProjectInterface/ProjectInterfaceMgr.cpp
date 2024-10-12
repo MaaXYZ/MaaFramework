@@ -34,9 +34,9 @@ bool ProjectInterfaceMgr::run_cli(
     auto& config = MAA_TOOLKIT_NS::GlobalOptionConfig::get_instance();
     config.init(user_path, {});
 
-    Interactor interactor;
+    Interactor interactor(user_path, notify, notify_trans_arg, custom_recognitions_[inst_id], custom_actions_[inst_id]);
 
-    if (!interactor.load(resource_path, notify, notify_trans_arg, custom_recognitions_[inst_id], custom_actions_[inst_id])) {
+    if (!interactor.load(resource_path)) {
         return false;
     }
     if (directly) {

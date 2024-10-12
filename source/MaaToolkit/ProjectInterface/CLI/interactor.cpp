@@ -96,29 +96,26 @@ void clear_screen()
 #endif
 }
 
-void Interactor::interact_for_first_time_use()
-{
-    welcome();
-    select_controller();
-    select_resource();
-    add_task();
-}
-
-bool Interactor::load(
-    const std::filesystem::path& project_dir,
+Interactor::Interactor(
+    std::filesystem::path user_path,
     MaaNotificationCallback notify,
     void* notify_trans_arg,
     std::map<std::string, MAA_PROJECT_INTERFACE_NS::CustomRecognitionSession> custom_recognitions,
     std::map<std::string, MAA_PROJECT_INTERFACE_NS::CustomActionSession> custom_actions)
+    : user_path_(std::move(user_path))
+    , notify_(notify)
+    , notify_trans_arg_(notify_trans_arg)
+    , custom_recognitions_(std::move(custom_recognitions))
+    , custom_actions_(std::move(custom_actions))
 {
-    LogFunc << VAR(project_dir);
+    LogTrace << VAR(user_path_);
+}
 
-    notify_ = notify;
-    notify_trans_arg_ = notify_trans_arg;
-    custom_recognitions_ = std::move(custom_recognitions);
-    custom_actions_ = std::move(custom_actions);
+bool Interactor::load(const std::filesystem::path& resource_path)
+{
+    LogFunc << VAR(resource_path);
 
-    if (!config_.load(project_dir)) {
+    if (!config_.load(resource_path, user_path_)) {
         mpause();
         return false;
     }
@@ -136,7 +133,7 @@ void Interactor::interact()
 {
     if (config_.is_first_time_use()) {
         interact_for_first_time_use();
-        config_.save();
+        config_.save(user_path_);
     }
 
     while (true) {
@@ -144,7 +141,7 @@ void Interactor::interact()
         if (!interact_once()) {
             break;
         }
-        config_.save();
+        config_.save(user_path_);
     }
 }
 
@@ -207,6 +204,14 @@ void Interactor::print_config() const
 
     std::cout << "Tasks:\n\n";
     print_config_tasks(false);
+}
+
+void Interactor::interact_for_first_time_use()
+{
+    welcome();
+    select_controller();
+    select_resource();
+    add_task();
 }
 
 void Interactor::welcome() const

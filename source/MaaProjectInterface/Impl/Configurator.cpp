@@ -9,11 +9,11 @@
 
 MAA_PROJECT_INTERFACE_NS_BEGIN
 
-bool Configurator::load(const std::filesystem::path& project_dir)
+bool Configurator::load(const std::filesystem::path& resource_dir, const std::filesystem::path& user_dir)
 {
-    LogFunc << VAR(project_dir);
+    LogFunc << VAR(resource_dir);
 
-    auto data_opt = Parser::parse_interface(project_dir / kInterfaceFilename);
+    auto data_opt = Parser::parse_interface(resource_dir / kInterfaceFilename);
     if (!data_opt) {
         LogError << "Failed to parse interface.json";
         return false;
@@ -24,7 +24,7 @@ bool Configurator::load(const std::filesystem::path& project_dir)
         return false;
     }
 
-    if (auto cfg_opt = Parser::parse_config(project_dir / kConfigFilename)) {
+    if (auto cfg_opt = Parser::parse_config(user_dir / kConfigFilename)) {
         config_ = *std::move(cfg_opt);
         first_time_use_ = false;
     }
@@ -32,7 +32,7 @@ bool Configurator::load(const std::filesystem::path& project_dir)
         first_time_use_ = true;
     }
 
-    project_dir_ = project_dir;
+    resource_dir_ = resource_dir;
     return true;
 }
 
@@ -47,11 +47,11 @@ bool Configurator::check_configuration()
     return Parser::check_configuration(data_, config_);
 }
 
-void Configurator::save()
+void Configurator::save(const std::filesystem::path& user_dir)
 {
-    std::filesystem::create_directories((project_dir_ / kConfigFilename).parent_path());
+    std::filesystem::create_directories((user_dir / kConfigFilename).parent_path());
 
-    std::ofstream ofs(project_dir_ / kConfigFilename);
+    std::ofstream ofs(user_dir / kConfigFilename);
     ofs << config_.to_json();
 }
 
@@ -69,7 +69,7 @@ std::optional<RuntimeParam> Configurator::generate_runtime() const
     }
 
     for (const auto& path_string : resource_iter->path) {
-        auto dst = MaaNS::string_replace_all(path_string, kProjectDir, MaaNS::path_to_utf8_string(project_dir_));
+        auto dst = MaaNS::string_replace_all(path_string, kProjectDir, MaaNS::path_to_utf8_string(resource_dir_));
         runtime.resource_path.emplace_back(dst);
     }
     if (runtime.resource_path.empty()) {
@@ -107,7 +107,7 @@ std::optional<RuntimeParam> Configurator::generate_runtime() const
         adb.screencap = controller.adb.screencap;
         adb.input = controller.adb.input;
         adb.config = (controller.adb.config | config_.adb.config).dumps();
-        adb.agent_path = MaaNS::path_to_utf8_string(project_dir_ / "MaaAgentBinary");
+        adb.agent_path = MaaNS::path_to_utf8_string(resource_dir_ / "MaaAgentBinary");
 
         runtime.controller_param = std::move(adb);
     } break;
