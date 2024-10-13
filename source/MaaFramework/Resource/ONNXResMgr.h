@@ -17,12 +17,9 @@ public:
     inline static const std::filesystem::path kClassifierDir = "classify";
     inline static const std::filesystem::path kDetectorDir = "detect";
 
-    ONNXResMgr();
-
 public:
     void set_cpu();
     bool set_gpu(int device_id);
-    void set_auto_device();
 
     bool lazy_load(const std::filesystem::path& path, bool is_base);
     void clear();

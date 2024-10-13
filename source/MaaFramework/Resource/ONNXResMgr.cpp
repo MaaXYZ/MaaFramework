@@ -46,13 +46,6 @@ MAA_RES_NS_BEGIN
 //     }
 // }
 
-ONNXResMgr::ONNXResMgr()
-{
-    LogFunc;
-
-    set_auto_device();
-}
-
 void ONNXResMgr::set_cpu()
 {
     LogInfo;
@@ -112,12 +105,6 @@ bool ONNXResMgr::set_gpu(int device_id)
 
     gpu_device_id_ = device_id;
     return true;
-}
-
-void ONNXResMgr::set_auto_device()
-{
-    // TODO: 检查 GPU 列表，并过滤一些老旧设备
-    set_gpu(0);
 }
 
 bool ONNXResMgr::lazy_load(const std::filesystem::path& path, bool is_base)
