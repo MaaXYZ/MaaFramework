@@ -63,7 +63,7 @@ std::optional<int> perfer_gpu()
         return false;
     }
 
-    for (UINT i = 0;; ++i) {
+    for (UINT adapter_index = 0;; ++adapter_index) {
         IDXGIAdapter1* dxgi_adapter = nullptr;
         OnScopeLeave([&]() {
             if (dxgi_adapter) {
@@ -72,7 +72,7 @@ std::optional<int> perfer_gpu()
             }
         });
 
-        HRESULT hr = dxgi_factory->EnumAdapters1(i, &dxgi_adapter);
+        HRESULT hr = dxgi_factory->EnumAdapters1(adapter_index, &dxgi_adapter);
         if (hr == DXGI_ERROR_NOT_FOUND) {
             break;
         }
@@ -88,7 +88,15 @@ std::optional<int> perfer_gpu()
             continue;
         }
 
-        auto instance_path = adapter_instance_path(desc.AdapterLuid);
+        std::wstring gpu_desc(desc.Description);
+        LogTrace << VAR(adapter_index) << VAR(gpu_desc);
+
+        if (gpu_desc.find(L"NVIDIA") == std::wstring::npos) {
+            continue;
+        }
+        return adapter_index;
+
+        // auto instance_path = adapter_instance_path(desc.AdapterLuid);
     }
 
     return std::nullopt;
