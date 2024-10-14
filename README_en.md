@@ -87,6 +87,9 @@ It offers low-code simplicity while maintaining high extensibility. The framewor
 - [MaaYYs](https://github.com/TanyaShue/MaaYYs) Onmyoji Assistant ![python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white) ![qt](https://img.shields.io/badge/Qt6-41CD52?logo=Qt&logoColor=white)  
   A brand new Onmyoji assistant powered by advanced architecture. Combining image recognition and simulated control, it automates daily tasks and frees your hands like a cyber-helper! Powered by MaaFramework!   
 
+- [MaaJR](https://github.com/Saratoga-Official/MaaJR) Warship Girls R Assistant ![Pipeline](https://img.shields.io/badge/Pipeline-%23454545?logo=paddypower&logoColor=%23FFFFFF)  
+An assistant for Warship Girls R based on a brand new architecture. Image technology + simulation control, freeing your hands! Powered by MaaFramework. 
+
 ## Eco-Building
 
 MAA is planned to be a category of projects rather than just a single piece of software.
