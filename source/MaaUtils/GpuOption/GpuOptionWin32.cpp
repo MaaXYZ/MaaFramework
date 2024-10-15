@@ -79,6 +79,8 @@ SYSTEMTIME gpu_driver_date(std::wstring_view instance_path)
         LogError << "FileTimeToSystemTime failed" << GetLastError();
         return {};
     }
+
+    LogTrace << VAR(system_time.wYear) << VAR(system_time.wMonth) << VAR(system_time.wDay);
     return system_time;
 }
 
