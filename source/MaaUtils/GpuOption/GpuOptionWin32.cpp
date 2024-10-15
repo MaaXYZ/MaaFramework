@@ -12,19 +12,21 @@
 #include <dxgi1_6.h>
 
 #include "Utils/Logger.h"
+#include "Utils/StringMisc.hpp"
 
 MAA_NS_BEGIN
 
 std::optional<std::wstring> adapter_instance_path(LUID luid)
 {
+    LogTrace;
+
     DISPLAYCONFIG_ADAPTER_NAME req {};
     req.header.size = sizeof(DISPLAYCONFIG_ADAPTER_NAME);
     req.header.adapterId = luid;
     req.header.id = 0;
     req.header.type = DISPLAYCONFIG_DEVICE_INFO_GET_ADAPTER_NAME;
 
-    LONG adpname = DisplayConfigGetDeviceInfo(&req.header);
-    std::ignore = adpname;
+    DisplayConfigGetDeviceInfo(&req.header);
 
     ULONG size = 0;
     DEVPROPTYPE type {};
@@ -45,6 +47,86 @@ std::optional<std::wstring> adapter_instance_path(LUID luid)
     std::wstring result(reinterpret_cast<const wchar_t*>(buf.data()), size / 2 - 1);
     LogTrace << VAR(result);
     return result;
+}
+
+SYSTEMTIME gpu_driver_date(std::wstring_view instance_path)
+{
+    LogTrace;
+
+    DEVINST devinst = 0;
+    CONFIGRET err = CM_Locate_DevNodeW(&devinst, const_cast<DEVINSTID_W>(instance_path.data()), CM_LOCATE_DEVNODE_NORMAL);
+    if (err != CR_SUCCESS) {
+        LogError << "CM_Locate_DevNodeW failed" << VAR(err);
+        return {};
+    }
+
+    DEVPROPTYPE prop_type = DEVPROP_TYPE_FILETIME;
+    std::vector<BYTE> date_buffer(sizeof(FILETIME));
+    ULONG size = sizeof(FILETIME);
+    err = CM_Get_DevNode_PropertyW(devinst, &DEVPKEY_Device_DriverDate, &prop_type, date_buffer.data(), &size, 0);
+    if (err != CR_SUCCESS) {
+        LogError << "CM_Get_DevNode_PropertyW failed" << VAR(err);
+        return {};
+    }
+    if (prop_type != DEVPROP_TYPE_FILETIME) {
+        LogError << "CM_Get_DevNode_PropertyW failed" << VAR(prop_type);
+        return {};
+    }
+
+    FILETIME file_time = *reinterpret_cast<FILETIME*>(date_buffer.data());
+    SYSTEMTIME system_time = {};
+    if (!FileTimeToSystemTime(&file_time, &system_time)) {
+        LogError << "FileTimeToSystemTime failed" << GetLastError();
+        return {};
+    }
+    return system_time;
+}
+
+bool is_indirect_display_adapter(std::wstring_view instance_path)
+{
+    LogTrace;
+
+    HKEY key = nullptr;
+    auto close_key = [&]() {
+        if (key) {
+            RegCloseKey(key);
+            key = nullptr;
+        }
+    };
+    OnScopeLeave(close_key);
+
+    std::wstring sub_key = L"SYSTEM\\CurrentControlSet\\Enum\\" + std::wstring(instance_path);
+
+    LONG ret = RegOpenKeyExW(HKEY_LOCAL_MACHINE, sub_key.c_str(), 0, KEY_READ, &key);
+    if (ret != ERROR_SUCCESS) {
+        LogError << "RegOpenKeyExW failed" << VAR(ret);
+        return false;
+    }
+
+    std::vector<BYTE> data(1024);
+    DWORD size = 1024;
+    DWORD type = REG_SZ;
+    ret = RegQueryValueExW(key, L"UpperFilters", nullptr, &type, data.data(), &size);
+
+    close_key();
+
+    if (ret != ERROR_SUCCESS || type != REG_SZ || size == 0) {
+        // if no UpperFilters value, it's a direct display adapter
+        LogTrace << "RegQueryValueExW failed" << VAR(ret) << VAR(type) << VAR(size);
+        return false;
+    }
+
+    std::wstring value(reinterpret_cast<wchar_t*>(data.data()), size / 2 - 1);
+    LogTrace << VAR(value) << VAR(sub_key);
+
+    auto filters = string_split(value, L';');
+    for (std::wstring& filter : filters) {
+        tolowers_(filter);
+        if (filter == L"indirectkmd") {
+            return true;
+        }
+    }
+    return false;
 }
 
 std::optional<int> perfer_gpu()
@@ -87,16 +169,44 @@ std::optional<int> perfer_gpu()
             LogError << "GetDesc1 failed" << VAR(hr);
             continue;
         }
+        std::wstring adapter_desc(desc.Description);
+        LogInfo << VAR(adapter_index) << VAR(adapter_desc);
 
-        std::wstring gpu_desc(desc.Description);
-        LogTrace << VAR(adapter_index) << VAR(gpu_desc);
-
-        if (gpu_desc.find(L"NVIDIA") == std::wstring::npos) {
+        if (desc.Flags & DXGI_ADAPTER_FLAG_SOFTWARE) {
+            LogWarn << "software adapter, skip" << VAR(adapter_index) << VAR(adapter_desc);
             continue;
         }
-        return adapter_index;
 
-        // auto instance_path = adapter_instance_path(desc.AdapterLuid);
+        hr = D3D12CreateDevice(dxgi_adapter, D3D_FEATURE_LEVEL_12_0, __uuidof(ID3D12Device), nullptr);
+        if (FAILED(hr)) {
+            LogWarn << "adapter not support D3D12 with D3D_FEATURE_LEVEL_12_0, skip" << VAR(adapter_index) << VAR(adapter_desc);
+            continue;
+        }
+
+        auto instance_path = adapter_instance_path(desc.AdapterLuid);
+        if (!instance_path) {
+            LogError << "adapter_instance_path failed";
+            continue;
+        }
+
+        auto driver_date = gpu_driver_date(*instance_path);
+        // reject drivers that predates DirectML (released alongside with Windows 10 1903, i.e. 2019-05-21)
+        if (driver_date.wYear < 2019 || (driver_date.wYear == 2019 && driver_date.wMonth < 5)
+            || (driver_date.wYear == 2019 && driver_date.wMonth == 5 && driver_date.wDay < 21)) {
+            LogWarn << "driver date is too old, skip" << VAR(adapter_desc) << VAR(driver_date.wYear) << VAR(driver_date.wMonth)
+                    << VAR(driver_date.wDay);
+            continue;
+        }
+
+        if (is_indirect_display_adapter(*instance_path)) {
+            LogWarn << "virtual adapters (streaming/RDP), skip" << VAR(adapter_index) << VAR(adapter_desc);
+            continue;
+        }
+
+        LogInfo << "prefer adapter found" << VAR(adapter_index) << VAR(adapter_desc) << VAR(*instance_path) << VAR(driver_date.wYear)
+                << VAR(driver_date.wMonth) << VAR(driver_date.wDay);
+
+        return adapter_index;
     }
 
     return std::nullopt;
