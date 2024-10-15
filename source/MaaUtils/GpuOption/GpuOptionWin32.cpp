@@ -134,6 +134,8 @@ bool is_indirect_display_adapter(std::wstring_view instance_path)
 
 std::optional<int> perfer_gpu()
 {
+    LogTrace;
+
     IDXGIFactory4* dxgi_factory = nullptr;
     OnScopeLeave([&]() {
         if (dxgi_factory) {
@@ -159,6 +161,7 @@ std::optional<int> perfer_gpu()
 
         HRESULT hr = dxgi_factory->EnumAdapters1(adapter_index, &dxgi_adapter);
         if (hr == DXGI_ERROR_NOT_FOUND) {
+            LogTrace << "EnumAdapters1 DXGI_ERROR_NOT_FOUND" << VAR(adapter_index);
             break;
         }
         else if (FAILED(hr)) {
@@ -217,6 +220,7 @@ std::optional<int> perfer_gpu()
         return adapter_index;
     }
 
+    LogInfo << "no prefer adapter found";
     return std::nullopt;
 }
 
