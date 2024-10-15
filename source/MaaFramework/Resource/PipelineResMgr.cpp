@@ -302,7 +302,7 @@ bool PipelineResMgr::parse_task(
         return false;
     }
 
-    if (!parse_recognition(input, data.rec_type, data.rec_param, default_value.rec_type, default_value.rec_param, default_mgr)) {
+    if (!parse_recognition(input, data.reco_type, data.reco_param, default_value.reco_type, default_value.reco_param, default_mgr)) {
         LogError << "failed to parse_recognition" << VAR(input);
         return false;
     }
@@ -394,8 +394,8 @@ bool PipelineResMgr::parse_recognition(
     using namespace MAA_VISION_NS;
 
     static const std::string kDefaultRecognitionFlag = "Default";
-    std::string rec_type_name;
-    if (!get_multi_keys_and_check_value(input, { "recognition", "algorithm" }, rec_type_name, kDefaultRecognitionFlag)) {
+    std::string reco_type_name;
+    if (!get_multi_keys_and_check_value(input, { "recognition", "algorithm" }, reco_type_name, kDefaultRecognitionFlag)) {
         LogError << "failed to get_and_check_value recognition" << VAR(input);
         return false;
     }
@@ -423,12 +423,12 @@ bool PipelineResMgr::parse_recognition(
         { "Custom", Type::Custom },
         { "custom", Type::Custom },
     };
-    auto rec_type_iter = kRecTypeMap.find(rec_type_name);
-    if (rec_type_iter == kRecTypeMap.end()) {
-        LogError << "rec type not found" << VAR(rec_type_name);
+    auto reco_type_iter = kRecTypeMap.find(reco_type_name);
+    if (reco_type_iter == kRecTypeMap.end()) {
+        LogError << "rec type not found" << VAR(reco_type_name);
         return false;
     }
-    out_type = rec_type_iter->second;
+    out_type = reco_type_iter->second;
 
     bool same_type = parent_type == out_type;
     switch (out_type) {

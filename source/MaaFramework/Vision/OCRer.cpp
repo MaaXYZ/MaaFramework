@@ -134,17 +134,17 @@ OCRer::Result OCRer::predict_only_rec(const cv::Mat& image_roi) const
         return {};
     }
 
-    std::string rec_text;
-    float rec_score = 0;
+    std::string reco_text;
+    float reco_score = 0;
 
-    bool ret = recer_->Predict(image_roi, &rec_text, &rec_score);
+    bool ret = recer_->Predict(image_roi, &reco_text, &reco_score);
     if (!ret) {
         LogWarn << "recer_ return false" << VAR(recer_) << VAR(image_) << VAR(image_roi);
         return {};
     }
 
-    auto text = to_u16(rec_text);
-    Result result { .text = std::move(text), .box = { 0, 0, image_roi.cols, image_roi.rows }, .score = rec_score };
+    auto text = to_u16(reco_text);
+    Result result { .text = std::move(text), .box = { 0, 0, image_roi.cols, image_roi.rows }, .score = reco_score };
 
     return result;
 }

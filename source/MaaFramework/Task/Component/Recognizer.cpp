@@ -33,41 +33,41 @@ RecoResult Recognizer::recognize(const PipelineData& pipeline_data)
     using namespace MAA_VISION_NS;
 
     RecoResult result;
-    switch (pipeline_data.rec_type) {
+    switch (pipeline_data.reco_type) {
     case Type::DirectHit:
         result = direct_hit(pipeline_data.name);
         break;
 
     case Type::TemplateMatch:
-        result = template_match(std::get<TemplateMatcherParam>(pipeline_data.rec_param), pipeline_data.name);
+        result = template_match(std::get<TemplateMatcherParam>(pipeline_data.reco_param), pipeline_data.name);
         break;
 
     case Type::FeatureMatch:
-        result = feature_match(std::get<FeatureMatcherParam>(pipeline_data.rec_param), pipeline_data.name);
+        result = feature_match(std::get<FeatureMatcherParam>(pipeline_data.reco_param), pipeline_data.name);
         break;
 
     case Type::ColorMatch:
-        result = color_match(std::get<ColorMatcherParam>(pipeline_data.rec_param), pipeline_data.name);
+        result = color_match(std::get<ColorMatcherParam>(pipeline_data.reco_param), pipeline_data.name);
         break;
 
     case Type::OCR:
-        result = ocr(std::get<OCRerParam>(pipeline_data.rec_param), pipeline_data.name);
+        result = ocr(std::get<OCRerParam>(pipeline_data.reco_param), pipeline_data.name);
         break;
 
     case Type::NeuralNetworkClassify:
-        result = nn_classify(std::get<NeuralNetworkClassifierParam>(pipeline_data.rec_param), pipeline_data.name);
+        result = nn_classify(std::get<NeuralNetworkClassifierParam>(pipeline_data.reco_param), pipeline_data.name);
         break;
 
     case Type::NeuralNetworkDetect:
-        result = nn_detect(std::get<NeuralNetworkDetectorParam>(pipeline_data.rec_param), pipeline_data.name);
+        result = nn_detect(std::get<NeuralNetworkDetectorParam>(pipeline_data.reco_param), pipeline_data.name);
         break;
 
     case Type::Custom:
-        result = custom_recognize(std::get<CustomRecognitionParam>(pipeline_data.rec_param), pipeline_data.name);
+        result = custom_recognize(std::get<CustomRecognitionParam>(pipeline_data.reco_param), pipeline_data.name);
         break;
 
     default:
-        LogError << "Unknown type" << VAR(static_cast<int>(pipeline_data.rec_type)) << VAR(pipeline_data.name);
+        LogError << "Unknown type" << VAR(static_cast<int>(pipeline_data.reco_type)) << VAR(pipeline_data.name);
         return {};
     }
 
@@ -220,10 +220,10 @@ RecoResult Recognizer::ocr(const MAA_VISION_NS::OCRerParam& param, const std::st
     cv::Rect roi = get_roi(param.roi_target);
 
     auto det_session = resource()->ocr_res().deter(param.model);
-    auto rec_session = resource()->ocr_res().recer(param.model);
+    auto reco_session = resource()->ocr_res().recer(param.model);
     auto ocr_session = resource()->ocr_res().ocrer(param.model);
 
-    OCRer analyzer(image_, roi, param, det_session, rec_session, ocr_session, ocr_cache_, name);
+    OCRer analyzer(image_, roi, param, det_session, reco_session, ocr_session, ocr_cache_, name);
 
     std::optional<cv::Rect> box = std::nullopt;
     if (analyzer.best_result()) {

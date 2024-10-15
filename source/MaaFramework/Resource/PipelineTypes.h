@@ -118,8 +118,8 @@ struct PipelineData
     bool is_sub = false; // for compatibility with 1.x
     bool enabled = true;
 
-    Recognition::Type rec_type = Recognition::Type::DirectHit;
-    Recognition::Param rec_param = MAA_VISION_NS::DirectHitParam {};
+    Recognition::Type reco_type = Recognition::Type::DirectHit;
+    Recognition::Param reco_param = MAA_VISION_NS::DirectHitParam {};
     bool inverse = false;
 
     Action::Type action_type = Action::Type::DoNothing;
