@@ -93,7 +93,6 @@ It offers low-code simplicity while maintaining high extensibility. The framewor
 - [MPA](https://github.com/overflow65537/MAA_Punish) Punishing Assistant   ![Pipeline](https://img.shields.io/badge/Pipeline-%23454545?logo=paddypower&logoColor=%23FFFFFF)  
   The Punishing Gray Raven Assistant, based on a brand new architecture. Image technology + simulation control, freeing your hands! Powered by MistEO's Black Coffee 2.0.
 
-
 ## Eco-Building
 
 MAA is planned to be a category of projects rather than just a single piece of software.
