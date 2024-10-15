@@ -90,7 +90,7 @@ It offers low-code simplicity while maintaining high extensibility. The framewor
 - [MaaJR](https://github.com/Saratoga-Official/MaaJR) Warship Girls R Assistant ![Pipeline](https://img.shields.io/badge/Pipeline-%23454545?logo=paddypower&logoColor=%23FFFFFF)  
   An assistant for Warship Girls R based on a brand new architecture. Image technology + simulation control, freeing your hands! Powered by MaaFramework.
 
-- [MPA](https://github.com/overflow65537/MAA_Punish) Punishing Assistant !  ![Pipeline](https://img.shields.io/badge/Pipeline-%23454545?logo=paddypower&logoColor=%23FFFFFF)  
+-[MPA](https://github.com/overflow65537/MAA_Punish) Punishing Assistant   ![Pipeline](https://img.shields.io/badge/Pipeline-%23454545?logo=paddypower&logoColor=%23FFFFFF)  
   The Punishing Gray Raven Assistant, based on a brand new architecture. Image technology + simulation control, freeing your hands! Powered by MistEO's Black Coffee 2.0.
 
 
