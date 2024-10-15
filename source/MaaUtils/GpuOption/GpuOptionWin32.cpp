@@ -105,30 +105,31 @@ bool is_indirect_display_adapter(std::wstring_view instance_path)
         return false;
     }
 
-    std::vector<BYTE> data(1024);
-    DWORD size = 1024;
-    DWORD type = REG_SZ;
-    ret = RegQueryValueExW(key, L"UpperFilters", nullptr, &type, data.data(), &size);
+    DWORD size = 0;
+    DWORD type = 0;
+    ret = RegQueryValueExW(key, L"UpperFilters", nullptr, &type, nullptr, &size);
 
-    close_key();
-
-    if (ret != ERROR_SUCCESS || type != REG_SZ || size == 0) {
+    if (ret != ERROR_SUCCESS || size == 0) {
         // if no UpperFilters value, it's a direct display adapter
-        LogTrace << "RegQueryValueExW failed" << VAR(ret) << VAR(type) << VAR(size);
+        LogTrace << "RegQueryValueExW 1 failed" << VAR(ret) << VAR(type) << VAR(size);
         return false;
     }
 
-    std::wstring value(reinterpret_cast<wchar_t*>(data.data()), size / 2 - 1);
-    LogTrace << VAR(value) << VAR(sub_key);
-
-    auto filters = string_split(value, L';');
-    for (std::wstring& filter : filters) {
-        tolowers_(filter);
-        if (filter == L"indirectkmd") {
-            return true;
-        }
+    std::vector<BYTE> data(size);
+    ret = RegQueryValueExW(key, L"UpperFilters", nullptr, &type, data.data(), &size);
+    if (ret != ERROR_SUCCESS || size == 0) {
+        // if no UpperFilters value, it's a direct display adapter
+        LogTrace << "RegQueryValueExW 2 failed" << VAR(ret) << VAR(type) << VAR(size);
+        return false;
     }
-    return false;
+
+    close_key();
+
+    std::wstring value(reinterpret_cast<wchar_t*>(data.data()), size / 2 - 1);
+
+    bool indirect = value.find(L"IndirectKmd") != std::wstring::npos;
+    LogTrace << VAR(value) << VAR(sub_key) << VAR(indirect);
+    return indirect;
 }
 
 std::optional<int> perfer_gpu()
@@ -178,35 +179,40 @@ std::optional<int> perfer_gpu()
             LogWarn << "software adapter, skip" << VAR(adapter_index) << VAR(adapter_desc);
             continue;
         }
-
-        hr = D3D12CreateDevice(dxgi_adapter, D3D_FEATURE_LEVEL_12_0, __uuidof(ID3D12Device), nullptr);
-        if (FAILED(hr)) {
-            LogWarn << "adapter not support D3D12 with D3D_FEATURE_LEVEL_12_0, skip" << VAR(adapter_index) << VAR(adapter_desc);
+        if (desc.DedicatedVideoMemory < 1024 * 1024 * 1024) {
+            LogWarn << "adapter has less than 1GB video memory, skip" << VAR(adapter_index) << VAR(adapter_desc)
+                    << VAR(desc.DedicatedVideoMemory);
             continue;
         }
 
-        auto instance_path = adapter_instance_path(desc.AdapterLuid);
-        if (!instance_path) {
+        hr = D3D12CreateDevice(dxgi_adapter, D3D_FEATURE_LEVEL_11_0, __uuidof(ID3D12Device), nullptr);
+        if (FAILED(hr)) {
+            LogWarn << "adapter not support D3D12 with D3D_FEATURE_LEVEL_11_0, skip" << VAR(adapter_index) << VAR(adapter_desc);
+            continue;
+        }
+
+        auto instance_path_opt = adapter_instance_path(desc.AdapterLuid);
+        if (!instance_path_opt) {
             LogError << "adapter_instance_path failed";
             continue;
         }
+        const std::wstring& instance_path = *instance_path_opt;
 
-        auto driver_date = gpu_driver_date(*instance_path);
+        auto driver_date = gpu_driver_date(instance_path);
         // reject drivers that predates DirectML (released alongside with Windows 10 1903, i.e. 2019-05-21)
         if (driver_date.wYear < 2019 || (driver_date.wYear == 2019 && driver_date.wMonth < 5)
             || (driver_date.wYear == 2019 && driver_date.wMonth == 5 && driver_date.wDay < 21)) {
-            LogWarn << "driver date is too old, skip" << VAR(adapter_desc) << VAR(driver_date.wYear) << VAR(driver_date.wMonth)
-                    << VAR(driver_date.wDay);
+            LogWarn << "driver date is too old, skip" << VAR(adapter_index) << VAR(adapter_desc) << VAR(instance_path)
+                    << VAR(driver_date.wYear) << VAR(driver_date.wMonth) << VAR(driver_date.wDay);
             continue;
         }
 
-        if (is_indirect_display_adapter(*instance_path)) {
-            LogWarn << "virtual adapters (streaming/RDP), skip" << VAR(adapter_index) << VAR(adapter_desc);
+        if (is_indirect_display_adapter(instance_path)) {
+            LogWarn << "virtual adapters (streaming/RDP), skip" << VAR(adapter_index) << VAR(adapter_desc) << VAR(instance_path);
             continue;
         }
 
-        LogInfo << "prefer adapter found" << VAR(adapter_index) << VAR(adapter_desc) << VAR(*instance_path) << VAR(driver_date.wYear)
-                << VAR(driver_date.wMonth) << VAR(driver_date.wDay);
+        LogInfo << "prefer adapter found" << VAR(adapter_index) << VAR(adapter_desc) << VAR(instance_path);
 
         return adapter_index;
     }
