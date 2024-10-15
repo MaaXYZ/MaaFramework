@@ -2,7 +2,10 @@
 
 #include <cstdint>
 #include <iostream>
+#include <regex>
 #include <string>
+
+#include "Utils/Logger.h"
 
 MAA_NS_BEGIN
 
@@ -136,6 +139,18 @@ std::string from_u16(std::wstring_view u16str)
         char32_to_utf8(output, ch);
     }
     return output;
+}
+
+bool regex_valid(const std::wstring& regex)
+{
+    try {
+        std::wregex _(regex);
+    }
+    catch (const std::regex_error& e) {
+        LogError << e.what() << VAR(regex);
+        return false;
+    }
+    return true;
 }
 
 MAA_NS_END

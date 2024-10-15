@@ -406,8 +406,14 @@ bool Interactor::select_win32_hwnd(const MAA_PROJECT_INTERFACE_NS::InterfaceData
 
     size_t list_size = MaaToolkitDesktopWindowListSize(list_handle);
 
-    std::wregex class_regex(MAA_NS::to_u16(win32_config.class_regex));
-    std::wregex window_regex(MAA_NS::to_u16(win32_config.window_regex));
+    auto class_u16 = MAA_NS::to_u16(win32_config.class_regex);
+    auto window_u16 = MAA_NS::to_u16(win32_config.window_regex);
+    if (!MAA_NS::regex_valid(class_u16) || !MAA_NS::regex_valid(window_u16)) {
+        LogError << "regex is invalid" << VAR(class_u16) << VAR(window_u16);
+        return false;
+    }
+    std::wregex class_regex(class_u16);
+    std::wregex window_regex(window_u16);
 
     std::vector<Configuration::Win32Config> matched_config;
     for (size_t i = 0; i < list_size; ++i) {

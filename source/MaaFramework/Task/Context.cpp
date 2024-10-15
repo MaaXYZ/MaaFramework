@@ -191,7 +191,7 @@ bool Context::check_pipeline() const
     auto all = pipeline_override_;
     all.merge(raw);
 
-    return MAA_RES_NS::PipelineResMgr::check_all_next_list(all);
+    return MAA_RES_NS::PipelineResMgr::check_all_validity(all);
 }
 
 MAA_TASK_NS_END

@@ -108,7 +108,9 @@ public:
     static bool
         parse_action_target(const json::value& input, const std::string& key, Action::Target& output, const Action::Target& default_value);
 
+    static bool check_all_validity(const PipelineDataMap& data_map);
     static bool check_all_next_list(const PipelineDataMap& data_map);
+    static bool check_all_regex(const PipelineDataMap& data_map);
 
 private:
     bool load_all_json(const std::filesystem::path& path, const DefaultPipelineMgr& default_mgr);
