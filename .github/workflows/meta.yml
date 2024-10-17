@@ -26,7 +26,7 @@ jobs:
                   commit_hash=$(git rev-parse --short HEAD)
 
                   if $is_release; then
-                    tag=$(git describe --tags || true)
+                    tag=${{ github.ref_name }}
                   else
                     tag=$(git describe --tags --match "v*" --exclude "*-post*" || true)
                   fi
