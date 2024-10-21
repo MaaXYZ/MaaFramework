@@ -50,11 +50,19 @@ else()
             if(IS_DIRECTORY ${DIR})
                 add_link_options("-L${DIR}")
                 set(CMAKE_BUILD_RPATH "${CMAKE_BUILD_RPATH};${DIR};${DIR}/..")
+
+                cmake_path(GET DIR PARENT_PATH UNWIND_DIR)
+                file(GLOB libcxx_dylibs ${DIR}/libc++*.dylib)
+                file(GLOB libunwind_dylibs ${UNWIND_DIR}/libunwind*.dylib ${UNWIND_DIR}/unwind/libunwind*.dylib)
+                install(FILES ${libcxx_dylibs} ${libunwind_dylibs} DESTINATION bin)
+                install(
+                    CODE "
+                    execute_process(
+                        COMMAND \${CMAKE_SOURCE_DIR}/tools/fix_mac_rpath.sh \${CMAKE_INSTALL_PREFIX}
+                    )
+                ")
             endif()
-            cmake_path(GET DIR PARENT_PATH UNWIND_DIR)
-            file(GLOB libcxx_dylibs ${DIR}/libc++*.dylib)
-            file(GLOB libunwind_dylibs ${UNWIND_DIR}/libunwind*.dylib)
-            install(FILES ${libcxx_dylibs} ${libunwind_dylibs} DESTINATION bin)
+
         endforeach()
     endif()
 
