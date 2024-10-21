@@ -55,12 +55,6 @@ else()
                 file(GLOB libcxx_dylibs ${DIR}/libc++*.dylib)
                 file(GLOB libunwind_dylibs ${UNWIND_DIR}/libunwind*.dylib ${UNWIND_DIR}/unwind/libunwind*.dylib)
                 install(FILES ${libcxx_dylibs} ${libunwind_dylibs} DESTINATION bin)
-                install(
-                    CODE "
-                    execute_process(
-                        COMMAND \${CMAKE_SOURCE_DIR}/tools/fix_mac_rpath.sh \${CMAKE_INSTALL_PREFIX}
-                    )
-                ")
             endif()
 
         endforeach()
