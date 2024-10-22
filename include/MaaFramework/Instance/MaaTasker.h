@@ -83,6 +83,7 @@ extern "C"
     /**
      * @param[out] node_id_list
      * @param[in, out] node_id_list_size
+     * @param[out] status
      */
     MAA_FRAMEWORK_API MaaBool MaaTaskerGetTaskDetail(
         const MaaTasker* tasker,
