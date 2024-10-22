@@ -333,8 +333,13 @@ class MaaCustomControllerCallbacks(ctypes.Structure):
 class Status:
     _status: MaaStatusEnum
 
-    def __init__(self, status: Union[MaaStatus, MaaStatusEnum]):
-        self._status = MaaStatusEnum(int(status))
+    def __init__(self, status: Union[MaaStatus, MaaStatusEnum, int]):
+        if isinstance(status, MaaStatus):
+            self._status = MaaStatusEnum(status.value)
+        elif isinstance(status, MaaStatusEnum):
+            self._status = status
+        else:
+            self._status = MaaStatusEnum(status)
 
     @property
     def done(self) -> bool:
