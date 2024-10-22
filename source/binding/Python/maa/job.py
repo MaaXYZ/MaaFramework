@@ -2,37 +2,44 @@ from .define import *
 
 
 class Job:
-    job_id: MaaId
+    _job_id: MaaId
 
     def __init__(self, job_id: MaaId, status_func, wait_func):
-        self.job_id = job_id
+        self._job_id = job_id
         self._status_func = status_func
         self._wait_func = wait_func
 
-    def get_id(self) -> int:
-        return int(self.job_id)
+    @property
+    def job_id(self) -> int:
+        return int(self._job_id)
 
     def wait(self) -> "Job":
-        self._wait_func(self.job_id)
+        self._wait_func(self._job_id)
         return self
 
+    @property
     def status(self) -> Status:
-        return Status(self._status_func(self.job_id))
+        return Status(self._status_func(self._job_id))
 
+    @property
     def done(self) -> bool:
-        return self.status().done()
+        return self.status.done
 
+    @property
     def succeeded(self) -> bool:
-        return self.status().succeeded()
+        return self.status.succeeded
 
+    @property
     def failed(self) -> bool:
-        return self.status().failed()
+        return self.status.failed
 
+    @property
     def pending(self) -> bool:
-        return self.status().pending()
+        return self.status.pending
 
+    @property
     def running(self) -> bool:
-        return self.status().running()
+        return self.status.running
 
 
 class JobWithResult(Job):
@@ -45,4 +52,4 @@ class JobWithResult(Job):
         return self
 
     def get(self):
-        return self._get_func(self.job_id)
+        return self._get_func(self._job_id)

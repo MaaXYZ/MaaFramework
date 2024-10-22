@@ -187,20 +187,20 @@ def custom_ctrl_test():
     print("test_custom_controller")
 
     controller = MyController(MyNotificationHandler())
-    ret = controller.post_connection().wait().succeeded()
+    ret = controller.post_connection().wait().succeeded
     uuid = controller.uuid
-    ret &= controller.post_start_app("custom_aaa").wait().succeeded()
-    ret &= controller.post_stop_app("custom_bbb").wait().succeeded()
+    ret &= controller.post_start_app("custom_aaa").wait().succeeded
+    ret &= controller.post_stop_app("custom_bbb").wait().succeeded
     image_job = controller.post_screencap().wait()
-    ret &= image_job.succeeded()
+    ret &= image_job.succeeded
     print(f"image: {image_job.get().shape}")
-    ret &= controller.post_click(100, 200).wait().succeeded()
-    ret &= controller.post_swipe(100, 200, 300, 400, 200).wait().succeeded()
-    ret &= controller.post_touch_down(1, 100, 100, 0).wait().succeeded()
-    ret &= controller.post_touch_move(1, 200, 200, 0).wait().succeeded()
-    ret &= controller.post_touch_up(1).wait().succeeded()
-    ret &= controller.post_press_key(32).wait().succeeded()
-    ret &= controller.post_input_text("Hello World!").wait().succeeded()
+    ret &= controller.post_click(100, 200).wait().succeeded
+    ret &= controller.post_swipe(100, 200, 300, 400, 200).wait().succeeded
+    ret &= controller.post_touch_down(1, 100, 100, 0).wait().succeeded
+    ret &= controller.post_touch_move(1, 200, 200, 0).wait().succeeded
+    ret &= controller.post_touch_up(1).wait().succeeded
+    ret &= controller.post_press_key(32).wait().succeeded
+    ret &= controller.post_input_text("Hello World!").wait().succeeded
 
     print(f"controller.count: {controller.count}, ret: {ret}")
     if controller.count != 11 or not ret:
