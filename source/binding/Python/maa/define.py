@@ -334,7 +334,7 @@ class Status:
     _status: MaaStatusEnum
 
     def __init__(self, status: Union[MaaStatus, MaaStatusEnum]):
-        self._status = MaaStatusEnum(status)
+        self._status = MaaStatusEnum(int(status))
 
     @property
     def done(self) -> bool:
