@@ -283,6 +283,7 @@ class Tasker:
     def get_task_detail(self, task_id: int) -> Optional[TaskDetail]:
         size = MaaSize()
         entry = StringBuffer()
+        status = MaaStatus()
         ret = bool(
             Library.framework.MaaTaskerGetTaskDetail(
                 self._handle,
@@ -290,6 +291,7 @@ class Tasker:
                 entry._handle,
                 None,
                 ctypes.pointer(size),
+                ctypes.pointer(status),
             )
         )
         if not ret:
@@ -303,6 +305,7 @@ class Tasker:
                 entry._handle,
                 c_node_id_list,
                 ctypes.pointer(size),
+                ctypes.pointer(status),
             )
         )
         if not ret:
@@ -313,7 +316,7 @@ class Tasker:
             detail = self.get_node_detail(int(c_node_id_list[i]))
             nodes.append(detail)
 
-        return TaskDetail(task_id=task_id, entry=entry.get(), nodes=nodes)
+        return TaskDetail(task_id=task_id, entry=entry.get(), nodes=nodes, status=Status(status))
 
     _api_properties_initialized: bool = False
 
@@ -433,6 +436,7 @@ class Tasker:
             MaaStringBufferHandle,
             ctypes.POINTER(MaaRecoId),
             ctypes.POINTER(MaaSize),
+            ctypes.POINTER(MaaStatus),
         ]
 
         Library.framework.MaaTaskerGetLatestNode.restype = MaaBool

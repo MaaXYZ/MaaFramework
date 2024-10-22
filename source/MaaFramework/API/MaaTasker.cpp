@@ -267,7 +267,8 @@ MaaBool MaaTaskerGetTaskDetail(
     MaaTaskId task_id,
     MaaStringBuffer* entry,
     MaaNodeId* node_id_list,
-    MaaSize* node_id_list_size)
+    MaaSize* node_id_list_size,
+    MaaStatus* status)
 {
     if (!tasker) {
         LogError << "handle is null";
@@ -298,6 +299,11 @@ MaaBool MaaTaskerGetTaskDetail(
     else {
         LogError << "failed to get task detail" << VAR(task_id) << VAR(node_id_list) << VAR(node_id_list_size);
         return false;
+    }
+
+    CheckNullAndWarn(status)
+    {
+        *status = tasker->status(task_id);
     }
 
     return true;

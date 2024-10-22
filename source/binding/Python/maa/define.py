@@ -330,6 +330,28 @@ class MaaCustomControllerCallbacks(ctypes.Structure):
     ]
 
 
+class Status:
+    _status: MaaStatusEnum
+
+    def __init__(self, status: Union[MaaStatus, MaaStatusEnum]):
+        self._status = MaaStatusEnum(status)
+
+    def done(self) -> bool:
+        return self._status in [MaaStatusEnum.succeeded, MaaStatusEnum.failed]
+
+    def succeeded(self) -> bool:
+        return self._status == MaaStatusEnum.succeeded
+
+    def failed(self) -> bool:
+        return self._status == MaaStatusEnum.failed
+
+    def pending(self) -> bool:
+        return self._status == MaaStatusEnum.pending
+
+    def running(self) -> bool:
+        return self._status == MaaStatusEnum.running
+
+
 @dataclass
 class Rect:
     x: int = 0
@@ -487,6 +509,7 @@ class TaskDetail:
     task_id: int
     entry: str
     nodes: List[NodeDetail]
+    status: Status
 
 
 class LoggingLevelEnum(IntEnum):

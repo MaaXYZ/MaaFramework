@@ -89,7 +89,8 @@ extern "C"
         MaaTaskId task_id,
         /* out */ MaaStringBuffer* entry,
         /* out */ MaaNodeId* node_id_list /**< array */,
-        /* in & out */ MaaSize* node_id_list_size);
+        /* in & out */ MaaSize* node_id_list_size,
+        /* out */ MaaStatus* status);
 
     /**
      * @param[out] latest_id
