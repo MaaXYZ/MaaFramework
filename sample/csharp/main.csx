@@ -10,7 +10,7 @@ var userPath = Environment.CurrentDirectory;
 var toolkit = new MaaToolkit(init: true, userPath: userPath);
 // Equivalent to `toolkit.Config.InitOption(userPath);`
 var adbDevices = toolkit.AdbDevice.Find();
-if (!adbDevices.IsEmpty)
+if (adbDevices.MaaSizeCount < 1)
     throw new InvalidOperationException("No ADB device found.");
 
 // Remember to dispose tasker, controller and resource.
