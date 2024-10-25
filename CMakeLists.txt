@@ -114,4 +114,4 @@ if(EXISTS ${CMAKE_CURRENT_LIST_DIR}/export_targets.cmake)
 endif()
 
 # using subdirectory at the end of file to make sure the script is called after everything is installed.
-add_subdirectory(post_install)
+add_subdirectory(cmake/post_install)
