@@ -42,8 +42,8 @@ void PipelineResMgr::clear()
 bool PipelineResMgr::load_all_json(const std::filesystem::path& path, const DefaultPipelineMgr& default_mgr)
 {
     if (!std::filesystem::exists(path)) {
-        LogError << "path not exists";
-        return false;
+        LogWarn << "path not exists" << VAR(path);
+        return true;
     }
 
     if (!std::filesystem::is_directory(path)) {
