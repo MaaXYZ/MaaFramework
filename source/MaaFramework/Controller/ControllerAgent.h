@@ -189,6 +189,7 @@ private:
 private: // options
     bool set_image_target_long_side(MaaOptionValue value, MaaOptionValueSize val_size);
     bool set_image_target_short_side(MaaOptionValue value, MaaOptionValueSize val_size);
+    bool set_image_use_raw_size(MaaOptionValue value, MaaOptionValueSize val_size);
     bool set_recording(MaaOptionValue value, MaaOptionValueSize val_size);
 
 private:
@@ -201,6 +202,7 @@ private:
     std::mutex image_mutex_;
     cv::Mat image_;
 
+    bool image_use_raw_size_ = false;
     int image_target_long_side_ = 0;
     int image_target_short_side_ = 720;
     int image_target_width_ = 0;

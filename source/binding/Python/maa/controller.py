@@ -152,6 +152,17 @@ class Controller:
                 ctypes.sizeof(ctypes.c_int32),
             )
         )
+    
+    def set_screenshot_use_raw_size(self, enable: bool) -> bool:
+        cbool = MaaBool(enable)
+        return bool(
+            Library.framework.MaaControllerSetOption(
+                self._handle,
+                MaaOption(MaaCtrlOptionEnum.ScreenshotUseRawSize),
+                ctypes.pointer(cbool),
+                ctypes.sizeof(MaaBool),
+            )
+        )
 
     ### private ###
 

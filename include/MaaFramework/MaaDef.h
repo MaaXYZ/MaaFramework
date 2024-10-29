@@ -141,17 +141,21 @@ enum MaaCtrlOptionEnum
 {
     MaaCtrlOption_Invalid = 0,
 
-    /// Only one of long and short side can be set, and the other is automatically scaled according
-    /// to the aspect ratio.
+    /// Only one of long and short side can be set, and the other is automatically scaled according to the aspect ratio.
     ///
-    /// value: int, eg: 1920; val_size: sizeof(int)
+    /// value: int, eg: 1280; val_size: sizeof(int)
     MaaCtrlOption_ScreenshotTargetLongSide = 1,
 
-    /// Only one of long and short side can be set, and the other is automatically scaled according
-    /// to the aspect ratio.
+    /// Only one of long and short side can be set, and the other is automatically scaled according to the aspect ratio.
     ///
-    /// value: int, eg: 1080; val_size: sizeof(int)
+    /// value: int, eg: 720; val_size: sizeof(int)
     MaaCtrlOption_ScreenshotTargetShortSide = 2,
+
+    /// Screenshot use raw size without scaling. 
+    /// Please note that this option may cause incorrect coordinates on user devices with different resolutions if scaling is not performed.
+    /// 
+    /// value: bool, eg: true; val_size: sizeof(bool)
+    MaaCtrlOption_ScreenshotUseRawSize = 3,
 
     /// Dump all screenshots and actions
     ///

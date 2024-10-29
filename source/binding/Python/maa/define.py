@@ -99,6 +99,11 @@ class MaaCtrlOptionEnum:
     # value: int, eg: 1080; val_size: sizeof(int)
     ScreenshotTargetShortSide = 2
 
+    # Screenshot use raw size without scaling. 
+    # Please note that this option may cause incorrect coordinates on user devices with different resolutions if scaling is not performed.
+    # value: bool, eg: true; val_size: sizeof(bool)
+    ScreenshotUseRawSize = 3
+
     # Dump all screenshots and actions
     # this option will || with MaaGlobalOptionEnum.Recording
     # value: bool, eg: true; val_size: sizeof(bool)
@@ -328,7 +333,7 @@ class MaaCustomControllerCallbacks(ctypes.Structure):
         ("press_key", PressKeyFunc),
         ("input_text", InputTextFunc),
     ]
-
+    
 
 class Status:
     _status: MaaStatusEnum
