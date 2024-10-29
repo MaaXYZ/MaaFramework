@@ -25,19 +25,19 @@ bool ControlUnitMgr::find_device(std::vector<std::string>& devices)
 
 bool ControlUnitMgr::connect()
 {
-    if (!hwnd_) {
-        LogError << "hwnd_ is nullptr";
-        return false;
-    }
+    if (hwnd_) {
+        if (!IsWindow(hwnd_)) {
+            LogError << "hwnd_ is invalid";
+            return false;
+        }
 
-    if (!IsWindow(hwnd_)) {
-        LogError << "hwnd_ is invalid";
-        return false;
+        if (IsIconic(hwnd_)) {
+            LogError << "hwnd_ is minimized";
+            return false;
+        }
     }
-
-    if (IsIconic(hwnd_)) {
-        LogError << "hwnd_ is minimized";
-        return false;
+    else {
+        LogWarn << "hwnd_ is nullptr";
     }
 
     if (screencap_method_ != MaaWin32ScreencapMethod_None) {
@@ -60,8 +60,7 @@ bool ControlUnitMgr::connect()
 bool ControlUnitMgr::request_uuid(std::string& uuid)
 {
     if (!hwnd_) {
-        LogError << "hwnd_ is nullptr";
-        return false;
+        LogWarn << "hwnd_ is nullptr";
     }
 
     std::stringstream ss;

@@ -343,7 +343,7 @@ class Win32Controller(Controller):
 
     def __init__(
         self,
-        hWnd: ctypes.c_void_p,
+        hWnd: Optional[ctypes.c_void_p],
         screencap_method: int = MaaWin32ScreencapMethodEnum.DXGI_DesktopDup,
         input_method: int = MaaWin32InputMethodEnum.Seize,
         notification_handler: Optional[NotificationHandler] = None,
