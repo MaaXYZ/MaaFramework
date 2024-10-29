@@ -18,11 +18,6 @@ MaaControlUnitHandle MaaWin32ControlUnitCreate(void* hWnd, MaaWin32ScreencapMeth
 
     LogFunc << VAR_VOIDP(hWnd) << VAR(screencap_method) << VAR(input_method);
 
-    if (!hWnd) {
-        LogError << "hWnd is nullptr";
-        return nullptr;
-    }
-
     HWND h_wnd = reinterpret_cast<HWND>(hWnd);
 
     auto unit_mgr = std::make_unique<ControlUnitMgr>(h_wnd, screencap_method, input_method);

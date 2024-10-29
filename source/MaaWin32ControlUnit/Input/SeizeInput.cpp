@@ -19,19 +19,13 @@ void SeizeInput::ensure_foreground()
 
 bool SeizeInput::click(int x, int y)
 {
-    LogInfo << VAR(x) << VAR(y);
-
-    if (!hwnd_) {
-        LogError << "hwnd_ is nullptr";
-        return false;
-    }
-
-    ensure_foreground();
-
     POINT point = { x, y };
-    ClientToScreen(hwnd_, &point);
 
-    LogInfo << VAR(point.x) << VAR(point.y);
+    if (hwnd_) {
+        ensure_foreground();
+        ClientToScreen(hwnd_, &point);
+    }
+    LogInfo << VAR(x) << VAR(y) << VAR(point.x) << VAR(point.y) << VAR_VOIDP(hwnd_);
 
     SetCursorPos(point.x, point.y);
 
@@ -50,41 +44,37 @@ bool SeizeInput::click(int x, int y)
 
 bool SeizeInput::swipe(int x1, int y1, int x2, int y2, int duration)
 {
-    LogInfo << VAR(x1) << VAR(y1) << VAR(x2) << VAR(y2) << VAR(duration);
+    POINT point1 = { x1, y1 };
+    POINT point2 = { x2, y2 };
 
-    if (!hwnd_) {
-        LogError << "hwnd_ is nullptr";
-        return false;
+    if (hwnd_) {
+        ensure_foreground();
+        ClientToScreen(hwnd_, &point1);
+        ClientToScreen(hwnd_, &point2);
     }
-
-    ensure_foreground();
-
     if (duration <= 0) {
         LogWarn << "duration out of range" << VAR(duration);
         duration = 500;
     }
 
+    LogInfo << VAR(x1) << VAR(y1) << VAR(x2) << VAR(y2) << VAR(duration) << VAR(point1.x) << VAR(point1.y) << VAR(point2.x) << VAR(point2.y)
+            << VAR_VOIDP(hwnd_);
+
     micro_swipe(
-        x1,
-        y2,
-        x2,
-        y2,
+        point1.x,
+        point1.y,
+        point2.x,
+        point2.y,
         duration,
         [&](int x, int y) {
-            POINT point = { x, y };
-            ClientToScreen(hwnd_, &point);
-            SetCursorPos(point.x, point.y);
+            SetCursorPos(x, y);
 
             INPUT input = {};
             input.type = INPUT_MOUSE;
             input.mi.dwFlags = MOUSEEVENTF_LEFTDOWN;
             SendInput(1, &input, sizeof(INPUT));
         },
-        [&](int x, int y) {
-            POINT point = { x, y };
-            ClientToScreen(hwnd_, &point);
-            SetCursorPos(point.x, point.y);
-        },
+        [&](int x, int y) { SetCursorPos(x, y); },
         [&]([[maybe_unused]] int x, [[maybe_unused]] int y) {
             INPUT input = {};
             input.type = INPUT_MOUSE;
@@ -97,17 +87,13 @@ bool SeizeInput::swipe(int x1, int y1, int x2, int y2, int duration)
 
 bool SeizeInput::touch_down(int contact, int x, int y, int pressure)
 {
-    LogInfo << VAR(contact) << VAR(x) << VAR(y) << VAR(pressure);
+    POINT point = { x, y };
 
-    std::ignore = contact;
-    std::ignore = pressure;
-
-    if (!hwnd_) {
-        LogError << "hwnd_ is nullptr";
-        return false;
+    if (hwnd_) {
+        ensure_foreground();
+        ClientToScreen(hwnd_, &point);
     }
-
-    ensure_foreground();
+    LogInfo << VAR(contact) << VAR(x) << VAR(y) << VAR(pressure) << VAR(point.x) << VAR(point.y) << VAR_VOIDP(hwnd_);
 
     POINT point = { x, y };
     ClientToScreen(hwnd_, &point);
@@ -147,20 +133,13 @@ bool SeizeInput::touch_down(int contact, int x, int y, int pressure)
 
 bool SeizeInput::touch_move(int contact, int x, int y, int pressure)
 {
-    LogInfo << VAR(contact) << VAR(x) << VAR(y) << VAR(pressure);
-
-    std::ignore = contact;
-    std::ignore = pressure;
-
-    if (!hwnd_) {
-        LogError << "hwnd_ is nullptr";
-        return false;
-    }
-
-    ensure_foreground();
-
     POINT point = { x, y };
-    ClientToScreen(hwnd_, &point);
+
+    if (hwnd_) {
+        ensure_foreground();
+        ClientToScreen(hwnd_, &point);
+    }
+    LogInfo << VAR(contact) << VAR(x) << VAR(y) << VAR(pressure) << VAR(point.x) << VAR(point.y) << VAR_VOIDP(hwnd_);
 
     SetCursorPos(point.x, point.y);
 
@@ -169,14 +148,10 @@ bool SeizeInput::touch_move(int contact, int x, int y, int pressure)
 
 bool SeizeInput::touch_up(int contact)
 {
-    LogInfo << VAR(contact);
-
-    if (!hwnd_) {
-        LogError << "hwnd_ is nullptr";
-        return false;
+    if (hwnd_) {
+        ensure_foreground();
     }
-
-    ensure_foreground();
+    LogInfo << VAR(contact) << VAR(hwnd_);
 
     INPUT input = {};
 
@@ -211,14 +186,10 @@ bool SeizeInput::touch_up(int contact)
 
 bool SeizeInput::press_key(int key)
 {
-    LogInfo << VAR(key);
-
-    if (!hwnd_) {
-        LogError << "hwnd_ is nullptr";
-        return false;
+    if (hwnd_) {
+        ensure_foreground();
     }
-
-    ensure_foreground();
+    LogInfo << VAR(key) << VAR(hwnd_);
 
     INPUT inputs[2] = {};
 
@@ -236,14 +207,10 @@ bool SeizeInput::press_key(int key)
 
 bool SeizeInput::input_text(const std::string& text)
 {
-    LogInfo << VAR(text);
-
-    if (!hwnd_) {
-        LogError << "hwnd_ is nullptr";
-        return false;
+    if (hwnd_) {
+        ensure_foreground();
     }
-
-    ensure_foreground();
+    LogInfo << VAR(text) << VAR(hwnd_);
 
     if (std::ranges::any_of(text, [](const char& c) { //
             return static_cast<unsigned>(c) > 127;

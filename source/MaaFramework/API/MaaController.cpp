@@ -49,8 +49,7 @@ MaaController* MaaWin32ControllerCreate(
 #else
 
     if (!hWnd) {
-        LogError << "hWnd is nullptr";
-        return nullptr;
+        LogWarn << "hWnd is nullptr";
     }
 
     auto control_unit = MAA_NS::Win32ControlUnitLibraryHolder::create_control_unit(hWnd, screencap_method, input_method);
