@@ -95,8 +95,6 @@ bool SeizeInput::touch_down(int contact, int x, int y, int pressure)
     }
     LogInfo << VAR(contact) << VAR(x) << VAR(y) << VAR(pressure) << VAR(point.x) << VAR(point.y) << VAR_VOIDP(hwnd_);
 
-    POINT point = { x, y };
-    ClientToScreen(hwnd_, &point);
     SetCursorPos(point.x, point.y);
 
     INPUT input = {};
