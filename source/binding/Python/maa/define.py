@@ -99,7 +99,7 @@ class MaaCtrlOptionEnum:
     # value: int, eg: 1080; val_size: sizeof(int)
     ScreenshotTargetShortSide = 2
 
-    # Screenshot use raw size without scaling. 
+    # Screenshot use raw size without scaling.
     # Please note that this option may cause incorrect coordinates on user devices with different resolutions if scaling is not performed.
     # value: bool, eg: true; val_size: sizeof(bool)
     ScreenshotUseRawSize = 3
@@ -119,6 +119,7 @@ class MaaCtrlOptionEnum:
 #     // and more gpu id...
 # };
 MaaInferenceDevice = ctypes.c_int32
+
 
 class MaaResOptionEnum:
     Invalid = 0
@@ -333,7 +334,7 @@ class MaaCustomControllerCallbacks(ctypes.Structure):
         ("press_key", PressKeyFunc),
         ("input_text", InputTextFunc),
     ]
-    
+
 
 class Status:
     _status: MaaStatusEnum
