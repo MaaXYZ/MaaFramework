@@ -347,23 +347,18 @@ class Status:
         else:
             self._status = MaaStatusEnum(status)
 
-    @property
     def done(self) -> bool:
         return self._status in [MaaStatusEnum.succeeded, MaaStatusEnum.failed]
 
-    @property
     def succeeded(self) -> bool:
         return self._status == MaaStatusEnum.succeeded
 
-    @property
     def failed(self) -> bool:
         return self._status == MaaStatusEnum.failed
 
-    @property
     def pending(self) -> bool:
         return self._status == MaaStatusEnum.pending
 
-    @property
     def running(self) -> bool:
         return self._status == MaaStatusEnum.running
 

@@ -111,7 +111,7 @@ def parse_args() -> Controller:
 controller = parse_args()
 if controller:
     set_screenshot_target_side(controller)
-    if controller.post_connection().failed:
+    if controller.post_connection().failed():
         print(f"Failed to connect device({device_serial}).")
 
 # 初始化 Roi
