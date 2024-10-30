@@ -167,10 +167,11 @@ var NAVTREEINDEX0 =
 "MaaDef_8h.html#ac1f7514a514f2b5af32cabc02eedca85":[3,0,0,0,3,34],
 "MaaDef_8h.html#ac28f7c7af8541a08033bd77772ebd082":[3,0,0,0,3,22],
 "MaaDef_8h.html#ac9daa36008267a26662244d2f5570003":[3,0,0,0,3,70],
+"MaaDef_8h.html#ac9daa36008267a26662244d2f5570003a3fd0252e4db060bc453d7b8902260105":[3,0,0,0,3,70,3],
 "MaaDef_8h.html#ac9daa36008267a26662244d2f5570003a4afeb097dfa70801c8fa43d83bb5c51f":[3,0,0,0,3,70,0],
 "MaaDef_8h.html#ac9daa36008267a26662244d2f5570003a8184b8456cf2148033e494be5d8220d3":[3,0,0,0,3,70,2],
 "MaaDef_8h.html#ac9daa36008267a26662244d2f5570003a83157be6a22a5e62d4929c7bcd095f75":[3,0,0,0,3,70,1],
-"MaaDef_8h.html#ac9daa36008267a26662244d2f5570003afa8741fa6ccca208c0f65c0b8880832a":[3,0,0,0,3,70,3],
+"MaaDef_8h.html#ac9daa36008267a26662244d2f5570003afa8741fa6ccca208c0f65c0b8880832a":[3,0,0,0,3,70,4],
 "MaaDef_8h.html#ad09e62ec1fd03dadaf5fb009026c38ee":[3,0,0,0,3,67],
 "MaaDef_8h.html#ad09e62ec1fd03dadaf5fb009026c38eea1a175dc6811ec0aedb23b87b98d68b40":[3,0,0,0,3,67,5],
 "MaaDef_8h.html#ad09e62ec1fd03dadaf5fb009026c38eea58ba5999f483b497af3eac6d327d53e6":[3,0,0,0,3,67,4],
@@ -226,7 +227,6 @@ var NAVTREEINDEX0 =
 "MaaTasker_8h.html#a077181e4d90b12a219ff49d092700a86":[3,0,0,0,0,4,12],
 "MaaTasker_8h.html#a08e81fb30421633ca6300d7c98056f03":[3,0,0,0,0,4,2],
 "MaaTasker_8h.html#a12c6bc412c501eaed90e7dec40bf6cc7":[3,0,0,0,0,4,6],
-"MaaTasker_8h.html#a1b9f9689efa4a72ddf4d327df11dd5de":[3,0,0,0,0,4,16],
 "MaaTasker_8h.html#a1be38fb8f5e4b9e8240d5847c1f558ac":[3,0,0,0,0,4,0],
 "MaaTasker_8h.html#a43e82561559f1307b50f2cc08565f69b":[3,0,0,0,0,4,8],
 "MaaTasker_8h.html#a66bcb6d294dd92c294555c826ef2d749":[3,0,0,0,0,4,11],
@@ -239,6 +239,7 @@ var NAVTREEINDEX0 =
 "MaaTasker_8h.html#aa9167993f8c024be00615a23db3d78ec":[3,0,0,0,0,4,17],
 "MaaTasker_8h.html#abefa8dae5713c3393833d8644f2435a8":[3,0,0,0,0,4,1],
 "MaaTasker_8h.html#ac4e288dec1904fba61b65655c4317e79":[3,0,0,0,0,4,3],
+"MaaTasker_8h.html#ae4b85b9172caa12b04648a98e923390d":[3,0,0,0,0,4,16],
 "MaaTasker_8h.html#aea0f684a6987fc963254f68870537925":[3,0,0,0,0,4,13],
 "MaaTasker_8h.html#af4d3fd63071f1ba922bd90f226d1001d":[3,0,0,0,0,4,7],
 "MaaTasker_8h_source.html":[3,0,0,0,0,4],
@@ -248,6 +249,5 @@ var NAVTREEINDEX0 =
 "MaaToolkitAdbDevice_8h.html#a0146ab95341179e2c11ca2b0bfc5436d":[3,0,0,1,0,0,4],
 "MaaToolkitAdbDevice_8h.html#a0ff6995f682f48c6bef9a371058ee23e":[3,0,0,1,0,0,10],
 "MaaToolkitAdbDevice_8h.html#a3394abd6663214c5aa8539977a3014d9":[3,0,0,1,0,0,6],
-"MaaToolkitAdbDevice_8h.html#a34d5508d018ef311c487bcd7b80d2fec":[3,0,0,1,0,0,9],
-"MaaToolkitAdbDevice_8h.html#a36b30e7e80c696dfbb5d58cba95c5662":[3,0,0,1,0,0,8]
+"MaaToolkitAdbDevice_8h.html#a34d5508d018ef311c487bcd7b80d2fec":[3,0,0,1,0,0,9]
 };

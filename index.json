@@ -1,5 +1,5 @@
 {
-	"Version": "(main) v2.1.3",
+	"Version": "(main) v2.2.0-beta.2",
 	"Compounds": {
 		"MaaContext.h": {
 			"Location": "include/MaaFramework/Instance/MaaContext.h",
@@ -2238,6 +2238,12 @@
 							"Description": "",
 							"Direction": 3,
 							"IsPointerToArray": false
+						},
+						"status": {
+							"Type": "MaaStatus*",
+							"Description": "",
+							"Direction": 2,
+							"IsPointerToArray": false
 						}
 					}
 				},
@@ -3423,7 +3429,7 @@
 							"Description": {
 								"Brief": "Only one of long and short side can be set, and the other is automatically scaled according to the aspect ratio.",
 								"Details": [
-									"value: int, eg: 1920; val_size: sizeof(int)"
+									"value: int, eg: 1280; val_size: sizeof(int)"
 								],
 								"Deprecated": null
 							},
@@ -3433,11 +3439,21 @@
 							"Description": {
 								"Brief": "Only one of long and short side can be set, and the other is automatically scaled according to the aspect ratio.",
 								"Details": [
-									"value: int, eg: 1080; val_size: sizeof(int)"
+									"value: int, eg: 720; val_size: sizeof(int)"
 								],
 								"Deprecated": null
 							},
 							"Value": "2"
+						},
+						"MaaCtrlOption_ScreenshotUseRawSize": {
+							"Description": {
+								"Brief": "Screenshot use raw size without scaling. Please note that this option may cause incorrect coordinates on user devices with different resolutions if scaling is not performed.",
+								"Details": [
+									"value: bool, eg: true; val_size: sizeof(bool)"
+								],
+								"Deprecated": null
+							},
+							"Value": "3"
 						},
 						"MaaCtrlOption_Recording": {
 							"Description": {

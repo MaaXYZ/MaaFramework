@@ -94,7 +94,7 @@
     <member refid="MaaTasker_8h_1aea0f684a6987fc963254f68870537925" kind="function"><name>MaaTaskerClearCache</name></member>
     <member refid="MaaTasker_8h_1a89a9b121c2fd4a9f6b745f206de4adbb" kind="function"><name>MaaTaskerGetRecognitionDetail</name></member>
     <member refid="MaaTasker_8h_1a767801d2f0bcbd5400c911745b01ae98" kind="function"><name>MaaTaskerGetNodeDetail</name></member>
-    <member refid="MaaTasker_8h_1a1b9f9689efa4a72ddf4d327df11dd5de" kind="function"><name>MaaTaskerGetTaskDetail</name></member>
+    <member refid="MaaTasker_8h_1ae4b85b9172caa12b04648a98e923390d" kind="function"><name>MaaTaskerGetTaskDetail</name></member>
     <member refid="MaaTasker_8h_1aa9167993f8c024be00615a23db3d78ec" kind="function"><name>MaaTaskerGetLatestNode</name></member>
   </compound>
   <compound refid="MaaAPI_8h" kind="file"><name>MaaAPI.h</name>
@@ -164,6 +164,7 @@
     <member refid="MaaDef_8h_1ac9daa36008267a26662244d2f5570003a4afeb097dfa70801c8fa43d83bb5c51f" kind="enumvalue"><name>MaaCtrlOption_Invalid</name></member>
     <member refid="MaaDef_8h_1ac9daa36008267a26662244d2f5570003a83157be6a22a5e62d4929c7bcd095f75" kind="enumvalue"><name>MaaCtrlOption_ScreenshotTargetLongSide</name></member>
     <member refid="MaaDef_8h_1ac9daa36008267a26662244d2f5570003a8184b8456cf2148033e494be5d8220d3" kind="enumvalue"><name>MaaCtrlOption_ScreenshotTargetShortSide</name></member>
+    <member refid="MaaDef_8h_1ac9daa36008267a26662244d2f5570003a3fd0252e4db060bc453d7b8902260105" kind="enumvalue"><name>MaaCtrlOption_ScreenshotUseRawSize</name></member>
     <member refid="MaaDef_8h_1ac9daa36008267a26662244d2f5570003afa8741fa6ccca208c0f65c0b8880832a" kind="enumvalue"><name>MaaCtrlOption_Recording</name></member>
     <member refid="MaaDef_8h_1a7ce6a82a2484734da58c3c422d19a9b1" kind="enum"><name>MaaTaskerOptionEnum</name></member>
     <member refid="MaaDef_8h_1a7ce6a82a2484734da58c3c422d19a9b1a44343c1c73aabeacff9a9f91805a16aa" kind="enumvalue"><name>MaaTaskerOption_Invalid</name></member>

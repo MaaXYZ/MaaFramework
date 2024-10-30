@@ -16,6 +16,6 @@ var MaaTasker_8h =
     [ "MaaTaskerClearCache", "MaaTasker_8h.html#aea0f684a6987fc963254f68870537925", null ],
     [ "MaaTaskerGetRecognitionDetail", "MaaTasker_8h.html#a89a9b121c2fd4a9f6b745f206de4adbb", null ],
     [ "MaaTaskerGetNodeDetail", "MaaTasker_8h.html#a767801d2f0bcbd5400c911745b01ae98", null ],
-    [ "MaaTaskerGetTaskDetail", "MaaTasker_8h.html#a1b9f9689efa4a72ddf4d327df11dd5de", null ],
+    [ "MaaTaskerGetTaskDetail", "MaaTasker_8h.html#ae4b85b9172caa12b04648a98e923390d", null ],
     [ "MaaTaskerGetLatestNode", "MaaTasker_8h.html#aa9167993f8c024be00615a23db3d78ec", null ]
 ];

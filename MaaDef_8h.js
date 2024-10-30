@@ -105,6 +105,7 @@ var MaaDef_8h =
       [ "MaaCtrlOption_Invalid", "MaaDef_8h.html#ac9daa36008267a26662244d2f5570003a4afeb097dfa70801c8fa43d83bb5c51f", null ],
       [ "MaaCtrlOption_ScreenshotTargetLongSide", "MaaDef_8h.html#ac9daa36008267a26662244d2f5570003a83157be6a22a5e62d4929c7bcd095f75", null ],
       [ "MaaCtrlOption_ScreenshotTargetShortSide", "MaaDef_8h.html#ac9daa36008267a26662244d2f5570003a8184b8456cf2148033e494be5d8220d3", null ],
+      [ "MaaCtrlOption_ScreenshotUseRawSize", "MaaDef_8h.html#ac9daa36008267a26662244d2f5570003a3fd0252e4db060bc453d7b8902260105", null ],
       [ "MaaCtrlOption_Recording", "MaaDef_8h.html#ac9daa36008267a26662244d2f5570003afa8741fa6ccca208c0f65c0b8880832a", null ]
     ] ],
     [ "MaaTaskerOptionEnum", "MaaDef_8h.html#a7ce6a82a2484734da58c3c422d19a9b1", [

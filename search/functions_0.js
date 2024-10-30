@@ -100,7 +100,7 @@ var searchData=
   ['maataskergetnodedetail_97',['MaaTaskerGetNodeDetail',['../MaaTasker_8h.html#a767801d2f0bcbd5400c911745b01ae98',1,'MaaTasker.h']]],
   ['maataskergetrecognitiondetail_98',['MaaTaskerGetRecognitionDetail',['../MaaTasker_8h.html#a89a9b121c2fd4a9f6b745f206de4adbb',1,'MaaTasker.h']]],
   ['maataskergetresource_99',['MaaTaskerGetResource',['../MaaTasker_8h.html#a66bcb6d294dd92c294555c826ef2d749',1,'MaaTasker.h']]],
-  ['maataskergettaskdetail_100',['MaaTaskerGetTaskDetail',['../MaaTasker_8h.html#a1b9f9689efa4a72ddf4d327df11dd5de',1,'MaaTasker.h']]],
+  ['maataskergettaskdetail_100',['MaaTaskerGetTaskDetail',['../MaaTasker_8h.html#ae4b85b9172caa12b04648a98e923390d',1,'MaaTasker.h']]],
   ['maataskerinited_101',['MaaTaskerInited',['../MaaTasker_8h.html#a9bfec9b2b1f8dfd473f0cb1d0c725c65',1,'MaaTasker.h']]],
   ['maataskerpostpipeline_102',['MaaTaskerPostPipeline',['../MaaTasker_8h.html#a12c6bc412c501eaed90e7dec40bf6cc7',1,'MaaTasker.h']]],
   ['maataskerpoststop_103',['MaaTaskerPostStop',['../MaaTasker_8h.html#a706466f8b5bc274e43c1fa3a176b28e9',1,'MaaTasker.h']]],

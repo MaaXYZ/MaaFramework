@@ -26,7 +26,7 @@
  <tbody>
  <tr id="projectrow">
   <td id="projectalign">
-   <div id="projectname">Maa Framework<span id="projectnumber">&#160;(main) v2.1.3</span>
+   <div id="projectname">Maa Framework<span id="projectnumber">&#160;(main) v2.2.0-beta.2</span>
    </div>
    <div id="projectbrief">A automation black-box testing framework based on image recognition.</div>
   </td>
@@ -322,6 +322,8 @@ Enumerations</h2></td></tr>
 , <br />
 &#160;&#160;<a class="el" href="MaaDef_8h.html#ac9daa36008267a26662244d2f5570003a8184b8456cf2148033e494be5d8220d3">MaaCtrlOption_ScreenshotTargetShortSide</a> = 2
 , <br />
+&#160;&#160;<a class="el" href="MaaDef_8h.html#ac9daa36008267a26662244d2f5570003a3fd0252e4db060bc453d7b8902260105">MaaCtrlOption_ScreenshotUseRawSize</a> = 3
+, <br />
 &#160;&#160;<a class="el" href="MaaDef_8h.html#ac9daa36008267a26662244d2f5570003afa8741fa6ccca208c0f65c0b8880832a">MaaCtrlOption_Recording</a> = 5
 <br />
  }</td></tr>
@@ -503,8 +505,8 @@ Enumerations</h2></td></tr>
 </div><div class="memdoc">
 <b>Value:</b><div class="fragment"><div class="line">    (<a class="code hl_define" href="MaaDef_8h.html#a004b0d855740e5d3894fd14d9e47d080">MaaAdbScreencapMethod_All</a> &amp; (~MaaAdbScreencapMethod_RawByNetcat) &amp; (~<a class="code hl_define" href="MaaDef_8h.html#a594d59b13a02d41b6a335e0f6575fca2">MaaAdbScreencapMethod_MinicapDirect</a>) \</div>
 <div class="line">     &amp; (~MaaAdbScreencapMethod_MinicapStream))</div>
-<div class="ttc" id="aMaaDef_8h_html_a004b0d855740e5d3894fd14d9e47d080"><div class="ttname"><a href="MaaDef_8h.html#a004b0d855740e5d3894fd14d9e47d080">MaaAdbScreencapMethod_All</a></div><div class="ttdeci">#define MaaAdbScreencapMethod_All</div><div class="ttdef"><b>Definition</b> MaaDef.h:186</div></div>
-<div class="ttc" id="aMaaDef_8h_html_a594d59b13a02d41b6a335e0f6575fca2"><div class="ttname"><a href="MaaDef_8h.html#a594d59b13a02d41b6a335e0f6575fca2">MaaAdbScreencapMethod_MinicapDirect</a></div><div class="ttdeci">#define MaaAdbScreencapMethod_MinicapDirect</div><div class="ttdef"><b>Definition</b> MaaDef.h:182</div></div>
+<div class="ttc" id="aMaaDef_8h_html_a004b0d855740e5d3894fd14d9e47d080"><div class="ttname"><a href="MaaDef_8h.html#a004b0d855740e5d3894fd14d9e47d080">MaaAdbScreencapMethod_All</a></div><div class="ttdeci">#define MaaAdbScreencapMethod_All</div><div class="ttdef"><b>Definition</b> MaaDef.h:190</div></div>
+<div class="ttc" id="aMaaDef_8h_html_a594d59b13a02d41b6a335e0f6575fca2"><div class="ttname"><a href="MaaDef_8h.html#a594d59b13a02d41b6a335e0f6575fca2">MaaAdbScreencapMethod_MinicapDirect</a></div><div class="ttdeci">#define MaaAdbScreencapMethod_MinicapDirect</div><div class="ttdef"><b>Definition</b> MaaDef.h:186</div></div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -1374,11 +1376,12 @@ default value is MaaLoggingLevel_Error
 <p>Option keys for controller instance options. See <a class="el" href="MaaController_8h.html#ac0247a25f33dfbc7bd3a0183a669aad3">MaaControllerSetOption()</a>. </p>
 <table class="fieldtable">
 <tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="ac9daa36008267a26662244d2f5570003a4afeb097dfa70801c8fa43d83bb5c51f" name="ac9daa36008267a26662244d2f5570003a4afeb097dfa70801c8fa43d83bb5c51f"></a>MaaCtrlOption_Invalid&#160;</td><td class="fielddoc"></td></tr>
-<tr><td class="fieldname"><a id="ac9daa36008267a26662244d2f5570003a83157be6a22a5e62d4929c7bcd095f75" name="ac9daa36008267a26662244d2f5570003a83157be6a22a5e62d4929c7bcd095f75"></a>MaaCtrlOption_ScreenshotTargetLongSide&#160;</td><td class="fielddoc"><p>Only one of long and short side can be set, and the other is automatically scaled according to the aspect ratio.</p>
-<p>value: int, eg: 1920; val_size: sizeof(int) </p>
-</td></tr>
-<tr><td class="fieldname"><a id="ac9daa36008267a26662244d2f5570003a8184b8456cf2148033e494be5d8220d3" name="ac9daa36008267a26662244d2f5570003a8184b8456cf2148033e494be5d8220d3"></a>MaaCtrlOption_ScreenshotTargetShortSide&#160;</td><td class="fielddoc"><p>Only one of long and short side can be set, and the other is automatically scaled according to the aspect ratio.</p>
-<p>value: int, eg: 1080; val_size: sizeof(int) </p>
+<tr><td class="fieldname"><a id="ac9daa36008267a26662244d2f5570003a83157be6a22a5e62d4929c7bcd095f75" name="ac9daa36008267a26662244d2f5570003a83157be6a22a5e62d4929c7bcd095f75"></a>MaaCtrlOption_ScreenshotTargetLongSide&#160;</td><td class="fielddoc"><p>Only one of long and short side can be set, and the other is automatically scaled according to the aspect ratio. </p><pre class="fragment">value: int, eg: 1280; val_size: sizeof(int) 
+</pre> </td></tr>
+<tr><td class="fieldname"><a id="ac9daa36008267a26662244d2f5570003a8184b8456cf2148033e494be5d8220d3" name="ac9daa36008267a26662244d2f5570003a8184b8456cf2148033e494be5d8220d3"></a>MaaCtrlOption_ScreenshotTargetShortSide&#160;</td><td class="fielddoc"><p>Only one of long and short side can be set, and the other is automatically scaled according to the aspect ratio. </p><pre class="fragment">value: int, eg: 720; val_size: sizeof(int) 
+</pre> </td></tr>
+<tr><td class="fieldname"><a id="ac9daa36008267a26662244d2f5570003a3fd0252e4db060bc453d7b8902260105" name="ac9daa36008267a26662244d2f5570003a3fd0252e4db060bc453d7b8902260105"></a>MaaCtrlOption_ScreenshotUseRawSize&#160;</td><td class="fielddoc"><p>Screenshot use raw size without scaling. Please note that this option may cause incorrect coordinates on user devices with different resolutions if scaling is not performed.</p>
+<p>value: bool, eg: true; val_size: sizeof(bool) </p>
 </td></tr>
 <tr><td class="fieldname"><a id="ac9daa36008267a26662244d2f5570003afa8741fa6ccca208c0f65c0b8880832a" name="ac9daa36008267a26662244d2f5570003afa8741fa6ccca208c0f65c0b8880832a"></a>MaaCtrlOption_Recording&#160;</td><td class="fielddoc"><p>Dump all screenshots and actions </p><pre class="fragment">Recording will evaluate to true if any of this or
 MaaGlobalOptionEnum::MaaGlobalOption_Recording is true.
@@ -1412,7 +1415,7 @@ value: bool, eg: true; val_size: sizeof(bool)
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="dir_d44c64559bbebec7f509842c48db8b23.html">include</a></li><li class="navelem"><a class="el" href="dir_370cd1367c21b1a87c5c9c6803b8d0b9.html">MaaFramework</a></li><li class="navelem"><a class="el" href="MaaDef_8h.html">MaaDef.h</a></li>
-    <li class="footer">Generated on Thu Oct 17 2024 for Maa Framework by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.8 </li>
+    <li class="footer">Generated on Wed Oct 30 2024 for Maa Framework by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.8 </li>
   </ul>
 </div>
 </body>

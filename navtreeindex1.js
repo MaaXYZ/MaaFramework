@@ -1,5 +1,6 @@
 var NAVTREEINDEX1 =
 {
+"MaaToolkitAdbDevice_8h.html#a36b30e7e80c696dfbb5d58cba95c5662":[3,0,0,1,0,0,8],
 "MaaToolkitAdbDevice_8h.html#a7d9a2992ee9e663c99550b1320c20e68":[3,0,0,1,0,0,3],
 "MaaToolkitAdbDevice_8h.html#a855bc06b45b35869ca230a2d45bfcd9d":[3,0,0,1,0,0,7],
 "MaaToolkitAdbDevice_8h.html#a856f8504c46e4bda4981b6183f4e6b99":[3,0,0,1,0,0,1],
