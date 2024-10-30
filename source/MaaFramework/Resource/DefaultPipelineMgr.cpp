@@ -15,7 +15,7 @@ bool DefaultPipelineMgr::load(const std::filesystem::path& path)
 
     if (!std::filesystem::exists(path)) {
         // allow empty default
-        LogTrace << "path not exists" << VAR(path);
+        LogDebug << "path not exists" << VAR(path);
         return true;
     }
 
@@ -43,7 +43,7 @@ bool DefaultPipelineMgr::parse_pipeline(const json::value& input)
     static const std::string kDefaultKey = "Default";
     auto opt = input.find(kDefaultKey);
     if (!opt) {
-        LogTrace << "no default key found in pipeline" << VAR(input);
+        LogDebug << "no default key found in pipeline" << VAR(input);
         return true;
     }
 

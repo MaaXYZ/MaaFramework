@@ -55,9 +55,9 @@ std::optional<std::string> UnitBase::startup_and_read_pipe(const ProcessArgv& ar
 
     auto duration = duration_since(start_time);
 
-    LogTrace << VAR(output.size()) << VAR(duration);
+    LogDebug << VAR(output.size()) << VAR(duration);
     if (!output.empty() && output.size() < 4096) {
-        LogTrace << MAA_LOG_NS::separator::newline << "output:" << output;
+        LogDebug << MAA_LOG_NS::separator::newline << "output:" << output;
     }
 
     if (!ret) {

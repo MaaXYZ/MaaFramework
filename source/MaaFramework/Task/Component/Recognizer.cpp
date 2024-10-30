@@ -106,7 +106,7 @@ json::value gen_detail(const std::vector<Res>& all, const std::vector<Res>& filt
 
 RecoResult Recognizer::direct_hit(const std::string& name)
 {
-    LogTrace << name;
+    LogDebug << name;
     return RecoResult { .name = name, .algorithm = "DirectHit", .box = cv::Rect {} };
 }
 
@@ -347,7 +347,7 @@ cv::Rect Recognizer::get_roi(const MAA_VISION_NS::Target roi)
         NodeDetail node_detail = cache.get_node_detail(node_id).value_or(NodeDetail {});
         RecoResult reco_result = cache.get_reco_result(node_detail.reco_id).value_or(RecoResult {});
         raw = reco_result.box.value_or(cv::Rect {});
-        LogTrace << "pre task" << VAR(name) << VAR(raw);
+        LogDebug << "pre task" << VAR(name) << VAR(raw);
     } break;
 
     case Target::Type::Region:

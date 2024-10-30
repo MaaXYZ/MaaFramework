@@ -56,7 +56,7 @@ bool InvokeApp::init(const std::string& force_temp)
 {
     tempname_ = force_temp.empty() ? format_now_for_filename() : force_temp;
 
-    LogTrace << VAR(tempname_);
+    LogDebug << VAR(tempname_);
 
     return true;
 }
@@ -146,7 +146,7 @@ bool InvokeApp::remove()
     LogFunc;
 
     if (!pushed_) {
-        LogTrace << "Not pushed, skip remove";
+        LogDebug << "Not pushed, skip remove";
         return true;
     }
     if (tempname_.empty()) {

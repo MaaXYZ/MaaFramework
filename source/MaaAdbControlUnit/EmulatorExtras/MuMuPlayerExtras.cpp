@@ -380,7 +380,7 @@ void MuMuPlayerExtras::disconnect_mumu()
 
 void MuMuPlayerExtras::set_app_package(const std::string& package, int cloned_index)
 {
-    LogTrace << VAR(package) << VAR(cloned_index);
+    LogDebug << VAR(package) << VAR(cloned_index);
 
     clear_display_id();
 

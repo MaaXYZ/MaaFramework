@@ -45,7 +45,7 @@ std::optional<std::wstring> adapter_instance_path(LUID luid)
     }
 
     std::wstring result(reinterpret_cast<const wchar_t*>(buf.data()), size / 2 - 1);
-    LogTrace << VAR(result);
+    LogDebug << VAR(result);
     return result;
 }
 
@@ -80,7 +80,7 @@ SYSTEMTIME gpu_driver_date(std::wstring_view instance_path)
         return {};
     }
 
-    LogTrace << VAR(system_time.wYear) << VAR(system_time.wMonth) << VAR(system_time.wDay);
+    LogDebug << VAR(system_time.wYear) << VAR(system_time.wMonth) << VAR(system_time.wDay);
     return system_time;
 }
 
@@ -111,7 +111,7 @@ bool is_indirect_display_adapter(std::wstring_view instance_path)
 
     if (ret != ERROR_SUCCESS || size == 0) {
         // if no UpperFilters value, it's a direct display adapter
-        LogTrace << "RegQueryValueExW 1 failed" << VAR(ret) << VAR(type) << VAR(size);
+        LogDebug << "RegQueryValueExW 1 failed" << VAR(ret) << VAR(type) << VAR(size);
         return false;
     }
 
@@ -119,7 +119,7 @@ bool is_indirect_display_adapter(std::wstring_view instance_path)
     ret = RegQueryValueExW(key, L"UpperFilters", nullptr, &type, data.data(), &size);
     if (ret != ERROR_SUCCESS || size == 0) {
         // if no UpperFilters value, it's a direct display adapter
-        LogTrace << "RegQueryValueExW 2 failed" << VAR(ret) << VAR(type) << VAR(size);
+        LogDebug << "RegQueryValueExW 2 failed" << VAR(ret) << VAR(type) << VAR(size);
         return false;
     }
 
@@ -128,7 +128,7 @@ bool is_indirect_display_adapter(std::wstring_view instance_path)
     std::wstring value(reinterpret_cast<wchar_t*>(data.data()), size / 2 - 1);
 
     bool indirect = value.find(L"IndirectKmd") != std::wstring::npos;
-    LogTrace << VAR(value) << VAR(sub_key) << VAR(indirect);
+    LogDebug << VAR(value) << VAR(sub_key) << VAR(indirect);
     return indirect;
 }
 
@@ -161,7 +161,7 @@ std::optional<int> perfer_gpu()
 
         HRESULT hr = dxgi_factory->EnumAdapters1(adapter_index, &dxgi_adapter);
         if (hr == DXGI_ERROR_NOT_FOUND) {
-            LogTrace << "EnumAdapters1 DXGI_ERROR_NOT_FOUND" << VAR(adapter_index);
+            LogDebug << "EnumAdapters1 DXGI_ERROR_NOT_FOUND" << VAR(adapter_index);
             break;
         }
         else if (FAILED(hr)) {

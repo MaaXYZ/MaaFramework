@@ -48,7 +48,7 @@ void TemplateMatcher::analyze()
     cherry_pick();
 
     auto cost = duration_since(start_time);
-    LogTrace << name_ << VAR(uid_) << VAR(all_results_) << VAR(filtered_results_) << VAR(best_result_) << VAR(cost)
+    LogDebug << name_ << VAR(uid_) << VAR(all_results_) << VAR(filtered_results_) << VAR(best_result_) << VAR(cost)
              << VAR(param_.template_paths) << VAR(param_.thresholds) << VAR(param_.method) << VAR(param_.green_mask);
 }
 

@@ -19,7 +19,7 @@ bool Actuator::run(const cv::Rect& reco_hit, MaaRecoId reco_id, const PipelineDa
     LogFunc << VAR(pipeline_data.name);
 
     if (pipeline_data.action_type == Type::Invalid) {
-        LogTrace << "invalid action";
+        LogDebug << "invalid action";
         return false;
     }
 
@@ -228,7 +228,7 @@ cv::Rect Actuator::get_target_rect(const MAA_RES_NS::Action::Target target, cons
         NodeDetail node_detail = cache.get_node_detail(node_id).value_or(NodeDetail {});
         RecoResult reco_result = cache.get_reco_result(node_detail.reco_id).value_or(RecoResult {});
         raw = reco_result.box.value_or(cv::Rect {});
-        LogTrace << "pre task" << VAR(name) << VAR(raw);
+        LogDebug << "pre task" << VAR(name) << VAR(raw);
     } break;
     case Target::Type::Region:
         raw = std::get<cv::Rect>(target.param);

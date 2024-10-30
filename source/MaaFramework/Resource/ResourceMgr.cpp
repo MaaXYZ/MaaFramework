@@ -175,7 +175,7 @@ MaaBool ResourceMgr::clear()
 
 void ResourceMgr::register_custom_recognition(const std::string& name, MaaCustomRecognitionCallback recognition, void* trans_arg)
 {
-    LogTrace << VAR(name) << VAR_VOIDP(recognition) << VAR_VOIDP(trans_arg);
+    LogDebug << VAR(name) << VAR_VOIDP(recognition) << VAR_VOIDP(trans_arg);
 
     if (name.empty() || !recognition) {
         LogError << "empty name or handle";
@@ -186,7 +186,7 @@ void ResourceMgr::register_custom_recognition(const std::string& name, MaaCustom
 
 void ResourceMgr::unregister_custom_recognition(const std::string& name)
 {
-    LogTrace << VAR(name);
+    LogDebug << VAR(name);
 
     if (name.empty()) {
         LogError << "empty name or handle";
@@ -204,7 +204,7 @@ void ResourceMgr::clear_custom_recognition()
 
 void ResourceMgr::register_custom_action(const std::string& name, MaaCustomActionCallback action, void* trans_arg)
 {
-    LogTrace << VAR(name) << VAR_VOIDP(action) << VAR_VOIDP(trans_arg);
+    LogDebug << VAR(name) << VAR_VOIDP(action) << VAR_VOIDP(trans_arg);
 
     if (name.empty() || !action) {
         LogError << "empty name or handle";
@@ -215,7 +215,7 @@ void ResourceMgr::register_custom_action(const std::string& name, MaaCustomActio
 
 void ResourceMgr::unregister_custom_action(const std::string& name)
 {
-    LogTrace << VAR(name);
+    LogDebug << VAR(name);
 
     if (name.empty()) {
         LogError << "empty name or handle";

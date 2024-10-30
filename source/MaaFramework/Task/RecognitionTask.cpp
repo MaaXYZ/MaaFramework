@@ -23,7 +23,7 @@ MaaRecoId RecognitionTask::run_with_param(const cv::Mat& image)
 
     auto reco = run_recognition(image, next_list);
     if (!reco.box) {
-        LogTrace << "No reco result";
+        LogDebug << "No reco result";
         return MaaInvalidId;
     }
 

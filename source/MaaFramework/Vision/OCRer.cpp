@@ -45,7 +45,7 @@ void OCRer::analyze()
     cherry_pick();
 
     auto cost = duration_since(start_time);
-    LogTrace << name_ << VAR(uid_) << VAR(all_results_) << VAR(filtered_results_) << VAR(best_result_) << VAR(cost) << VAR(param_.model)
+    LogDebug << name_ << VAR(uid_) << VAR(all_results_) << VAR(filtered_results_) << VAR(best_result_) << VAR(cost) << VAR(param_.model)
              << VAR(param_.only_rec) << VAR(param_.expected);
 }
 
@@ -54,7 +54,7 @@ OCRer::ResultsVec OCRer::predict() const
     ResultsVec results;
 
     if (auto cache_it = cache_.find(roi_); cache_it != cache_.end()) {
-        LogTrace << "Hit OCR cache" << VAR(roi_);
+        LogDebug << "Hit OCR cache" << VAR(roi_);
         results = cache_it->second;
     }
     else {
@@ -201,7 +201,7 @@ void OCRer::postproc_replace_(Result& res) const
 {
     for (const auto& [regex, format] : param_.replace) {
         auto replaced_text = std::regex_replace(res.text, std::wregex(regex), format);
-        LogTrace << VAR(res.text) << VAR(regex) << VAR(format) << VAR(replaced_text);
+        LogDebug << VAR(res.text) << VAR(regex) << VAR(format) << VAR(replaced_text);
         res.text = std::move(replaced_text);
     }
 }

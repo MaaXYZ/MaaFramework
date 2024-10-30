@@ -70,7 +70,7 @@ void CustomRecognition::analyze()
     }
 
     auto cost = duration_since(start_time);
-    LogTrace << VAR(name_) << VAR(param_.name) << VAR(uid_) << VAR(all_results_) << VAR(filtered_results_) << VAR(best_result_) << VAR(cost)
+    LogDebug << VAR(name_) << VAR(param_.name) << VAR(uid_) << VAR(all_results_) << VAR(filtered_results_) << VAR(best_result_) << VAR(cost)
              << VAR(ret);
 }
 

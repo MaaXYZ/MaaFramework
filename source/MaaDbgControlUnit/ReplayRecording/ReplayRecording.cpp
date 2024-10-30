@@ -330,7 +330,7 @@ bool ReplayRecording::input_text(const std::string& text)
 
 void ReplayRecording::sleep(int ms)
 {
-    LogTrace << VAR(ms);
+    LogDebug << VAR(ms);
     std::this_thread::sleep_for(std::chrono::milliseconds(ms));
 }
 

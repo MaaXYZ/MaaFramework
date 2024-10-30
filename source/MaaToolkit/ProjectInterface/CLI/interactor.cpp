@@ -108,7 +108,7 @@ Interactor::Interactor(
     , custom_recognitions_(std::move(custom_recognitions))
     , custom_actions_(std::move(custom_actions))
 {
-    LogTrace << VAR(user_path_);
+    LogDebug << VAR(user_path_);
 }
 
 bool Interactor::load(const std::filesystem::path& resource_path)

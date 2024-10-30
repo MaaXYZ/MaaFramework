@@ -14,12 +14,12 @@ Context::Context(MaaTaskId id, Tasker* tasker, PrivateArg)
     : task_id_(id)
     , tasker_(tasker)
 {
-    LogTrace << VAR(id) << VAR_VOIDP(tasker);
+    LogDebug << VAR(id) << VAR_VOIDP(tasker);
 }
 
 std::shared_ptr<Context> Context::create(MaaTaskId id, Tasker* tasker)
 {
-    LogTrace << VAR(id) << VAR_VOIDP(tasker);
+    LogDebug << VAR(id) << VAR_VOIDP(tasker);
 
     return std::make_shared<Context>(id, tasker, PrivateArg {});
 }
@@ -41,7 +41,7 @@ Context::Context(const Context& other)
     , pipeline_override_(other.pipeline_override_)
 // don't copy clone_holder_
 {
-    LogTrace << VAR(other.getptr());
+    LogDebug << VAR(other.getptr());
 }
 
 MaaTaskId Context::run_pipeline(const std::string& entry, const json::value& pipeline_override)
@@ -132,7 +132,7 @@ Context* Context::clone() const
 
     auto cloned = std::make_shared<Context>(*this);
     auto& ref = clone_holder_.emplace_back(std::move(cloned));
-    LogTrace << VAR(getptr()) << VAR(ref);
+    LogDebug << VAR(getptr()) << VAR(ref);
 
     return ref.get();
 }
@@ -151,7 +151,7 @@ std::optional<Context::PipelineData> Context::get_pipeline_data(const std::strin
 {
     auto override_it = pipeline_override_.find(task_name);
     if (override_it != pipeline_override_.end()) {
-        LogTrace << "found in override" << VAR(task_name);
+        LogDebug << "found in override" << VAR(task_name);
         return override_it->second;
     }
 

@@ -80,7 +80,7 @@ ChildPipeIOStream::ChildPipeIOStream(const std::filesystem::path& exec, const st
 #endif
       )
 {
-    LogTrace << VAR(exec_) << VAR(args_) << VAR(child_.id());
+    LogDebug << VAR(exec_) << VAR(args_) << VAR(child_.id());
 }
 
 ChildPipeIOStream::~ChildPipeIOStream()

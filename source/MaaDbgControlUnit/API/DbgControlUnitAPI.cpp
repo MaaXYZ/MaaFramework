@@ -30,7 +30,7 @@ MaaControlUnitHandle MaaDbgControlUnitCreate(MaaDbgControllerType type, const ch
         break;
     }
 
-    LogTrace << VAR_VOIDP(handle);
+    LogDebug << VAR_VOIDP(handle);
 
     return handle;
 }

@@ -311,7 +311,7 @@ bool PipelineResMgr::parse_task(
     const PipelineData& default_value,
     const DefaultPipelineMgr& default_mgr)
 {
-    LogTrace << VAR(name);
+    LogDebug << VAR(name);
 
     PipelineData data;
     data.name = name;

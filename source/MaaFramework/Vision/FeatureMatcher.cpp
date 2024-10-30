@@ -51,7 +51,7 @@ void FeatureMatcher::analyze()
     cherry_pick();
 
     auto cost = duration_since(start_time);
-    LogTrace << name_ << VAR(uid_) << VAR(all_results_) << VAR(filtered_results_) << VAR(best_result_) << VAR(cost)
+    LogDebug << name_ << VAR(uid_) << VAR(all_results_) << VAR(filtered_results_) << VAR(best_result_) << VAR(cost)
              << VAR(param_.template_paths) << VAR(param_.green_mask) << VAR(param_.distance_ratio) << VAR(param_.count);
 }
 
@@ -179,7 +179,7 @@ FeatureMatcher::ResultsVec FeatureMatcher::feature_postproc(
         scene.emplace_back(keypoints_2[point[0].queryIdx].pt);
     }
 
-    LogTrace << name_ << VAR(uid_) << "Match:" << VAR(good_matches.size()) << VAR(match_points.size()) << VAR(param_.distance_ratio);
+    LogDebug << name_ << VAR(uid_) << "Match:" << VAR(good_matches.size()) << VAR(match_points.size()) << VAR(param_.distance_ratio);
 
     if (good_matches.size() < 4) {
         return {};
@@ -188,7 +188,7 @@ FeatureMatcher::ResultsVec FeatureMatcher::feature_postproc(
     cv::Mat homography = cv::findHomography(obj, scene, cv::RHO);
 
     if (homography.empty()) {
-        LogTrace << name_ << VAR(uid_) << "Homography is empty";
+        LogDebug << name_ << VAR(uid_) << "Homography is empty";
         return {};
     }
 

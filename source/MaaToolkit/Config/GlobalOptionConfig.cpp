@@ -80,7 +80,7 @@ bool GlobalOptionConfig::apply_option()
     ret &= MaaSetGlobalOption(MaaGlobalOption_ShowHitDraw, &option_.show_hit_draw, sizeof(option_.show_hit_draw));
 
     bool bret = ret;
-    LogTrace << VAR(bret);
+    LogDebug << VAR(bret);
     return bret;
 }
 

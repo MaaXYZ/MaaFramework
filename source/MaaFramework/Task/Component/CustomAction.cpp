@@ -33,7 +33,7 @@ bool CustomAction::run(
         &crect,
         session.trans_arg);
 
-    LogTrace << VAR(task_name) << VAR_VOIDP(session.action) << VAR(session.trans_arg) << VAR(ret);
+    LogDebug << VAR(task_name) << VAR_VOIDP(session.action) << VAR(session.trans_arg) << VAR(ret);
 
     return ret;
 }
