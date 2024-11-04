@@ -9,7 +9,6 @@
 MAA_NS_BEGIN
 
 static std::filesystem::path s_library_dir_cache;
-static std::unique_ptr<std::remove_pointer_t<HMODULE>, BOOL (*)(HMODULE)> s_dml_holder;
 
 const std::filesystem::path& library_dir()
 {
@@ -22,8 +21,9 @@ void init_library_dir(HINSTANCE hinstDLL)
     GetModuleFileNameW(hinstDLL, buffer, MAX_PATH);
     s_library_dir_cache = std::filesystem::path(buffer).parent_path();
 
+    // fix https://github.com/MaaXYZ/MaaFramework/issues/394
     const auto dml_path = s_library_dir_cache / "DirectML.dll";
-    s_dml_holder = decltype(s_dml_holder)(LoadLibraryW(dml_path.c_str()), &FreeLibrary);
+    static std::unique_ptr<std::remove_pointer_t<HMODULE>, BOOL (*)(HMODULE)> s_dml_holder(LoadLibraryW(dml_path.c_str()), &FreeLibrary);
 }
 
 MAA_NS_END
