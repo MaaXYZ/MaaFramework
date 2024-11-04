@@ -1,6 +1,8 @@
 #ifdef _WIN32
 #include "Utils/Runtime.h"
 
+#include <memory>
+
 #include "Utils/Platform.h"
 #include "Utils/SafeWindows.hpp"
 
@@ -18,6 +20,9 @@ void init_library_dir(HINSTANCE hinstDLL)
     WCHAR buffer[MAX_PATH] = { 0 };
     GetModuleFileNameW(hinstDLL, buffer, MAX_PATH);
     s_library_dir_cache = std::filesystem::path(buffer).parent_path();
+
+    const auto dml_path = s_library_dir_cache / "DirectML.dll";
+    static std::unique_ptr<std::remove_pointer_t<HMODULE>, BOOL (*)(HMODULE)> s_dml_holder(LoadLibraryW(dml_path.c_str()), &FreeLibrary);
 }
 
 MAA_NS_END
