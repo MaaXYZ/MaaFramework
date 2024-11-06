@@ -207,10 +207,18 @@ bool SendMessageInput::input_text(const std::string& text)
         LogError << "hwnd_ is nullptr";
         return false;
     }
+    if (std::ranges::any_of(text, [](const char& c) { //
+            return static_cast<unsigned>(c) > 127;
+        })) {
+        LogError << "text contains non-ascii characters" << VAR(text);
+        return false;
+    }
 
-    auto osstr = to_osstring(text);
-    SendMessage(hwnd_, WM_SETTEXT, NULL, (LPARAM)(osstr.c_str()));
-
+    for (const char ch : text) {
+        SendMessage(hwnd_, WM_KEYDOWN, ch, 0);
+        SendMessage(hwnd_, WM_CHAR, ch, 0);
+        SendMessage(hwnd_, WM_KEYUP, ch, 0);
+    }
     return true;
 }
 

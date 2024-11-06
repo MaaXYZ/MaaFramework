@@ -217,19 +217,21 @@ bool SeizeInput::input_text(const std::string& text)
         return false;
     }
 
-    INPUT inputs[2] = {};
+    std::vector<INPUT> input_vec;
 
-    inputs[0].type = INPUT_KEYBOARD;
-    inputs[1].type = INPUT_KEYBOARD;
-    inputs[1].ki.dwFlags = KEYEVENTF_KEYUP;
+    for (const char ch : text) {
+        INPUT input = {};
+        input.type = INPUT_KEYBOARD;
+        input.ki.dwFlags = KEYEVENTF_UNICODE;
+        input.ki.wScan = ch;
 
-    for (auto& c : text) {
-        inputs[0].ki.wVk = static_cast<WORD>(c);
-        inputs[1].ki.wVk = static_cast<WORD>(c);
+        input_vec.emplace_back(input);
 
-        SendInput(ARRAYSIZE(inputs), inputs, sizeof(INPUT));
+        input.ki.dwFlags |= KEYEVENTF_KEYUP;
+        
+        input_vec.emplace_back(input);
     }
-
+    SendInput(static_cast<UINT>(input_vec.size()), input_vec.data(), sizeof(INPUT));
     return true;
 }
 
