@@ -4,6 +4,7 @@
 #include "Utils/MicroControl.hpp"
 #include "Utils/Platform.h"
 #include "Utils/SafeWindows.hpp"
+#include "Utils/Codec.h"
 
 MAA_CTRL_UNIT_NS_BEGIN
 
@@ -193,8 +194,8 @@ bool SendMessageInput::press_key(int key)
         return false;
     }
 
-    SendMessage(hwnd_, WM_KEYDOWN, key, 0);
-    SendMessage(hwnd_, WM_KEYUP, key, 0);
+    SendMessageW(hwnd_, WM_KEYDOWN, key, 0);
+    SendMessageW(hwnd_, WM_KEYUP, key, 0);
 
     return true;
 }
@@ -207,17 +208,11 @@ bool SendMessageInput::input_text(const std::string& text)
         LogError << "hwnd_ is nullptr";
         return false;
     }
-    if (std::ranges::any_of(text, [](const char& c) { //
-            return static_cast<unsigned>(c) > 127;
-        })) {
-        LogError << "text contains non-ascii characters" << VAR(text);
-        return false;
-    }
 
-    for (const char ch : text) {
-        SendMessage(hwnd_, WM_KEYDOWN, ch, 0);
-        SendMessage(hwnd_, WM_CHAR, ch, 0);
-        SendMessage(hwnd_, WM_KEYUP, ch, 0);
+    for (const auto ch : to_u16(text)) {
+        SendMessageW(hwnd_, WM_KEYDOWN, ch, 0);
+        SendMessageW(hwnd_, WM_CHAR, ch, 0);
+        SendMessageW(hwnd_, WM_KEYUP, ch, 0);
     }
     return true;
 }

@@ -4,6 +4,7 @@
 #include "Utils/MicroControl.hpp"
 #include "Utils/Platform.h"
 #include "Utils/SafeWindows.hpp"
+#include "Utils/Codec.h"
 
 MAA_CTRL_UNIT_NS_BEGIN
 
@@ -208,18 +209,13 @@ bool SeizeInput::input_text(const std::string& text)
     if (hwnd_) {
         ensure_foreground();
     }
-    LogInfo << VAR(text) << VAR(hwnd_);
 
-    if (std::ranges::any_of(text, [](const char& c) { //
-            return static_cast<unsigned>(c) > 127;
-        })) {
-        LogError << "text contains non-ascii characters" << VAR(text);
-        return false;
-    }
+    auto u16_text = to_u16(text);
+    LogInfo << VAR(text) << VAR(u16_text) << VAR(hwnd_);
 
     std::vector<INPUT> input_vec;
 
-    for (const char ch : text) {
+    for (const auto ch : u16_text) {
         INPUT input = {};
         input.type = INPUT_KEYBOARD;
         input.ki.dwFlags = KEYEVENTF_UNICODE;
@@ -231,7 +227,13 @@ bool SeizeInput::input_text(const std::string& text)
         
         input_vec.emplace_back(input);
     }
-    SendInput(static_cast<UINT>(input_vec.size()), input_vec.data(), sizeof(INPUT));
+
+    UINT written = SendInput(static_cast<UINT>(input_vec.size()), input_vec.data(), sizeof(INPUT));
+
+    if (written == u16_text.size()) {
+        LogError << VAR(written) << VAR(u16_text.size()) << VAR(input_vec.size());
+        return false;
+    }
     return true;
 }
 
