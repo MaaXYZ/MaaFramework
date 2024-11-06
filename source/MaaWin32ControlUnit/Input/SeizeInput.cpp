@@ -230,8 +230,8 @@ bool SeizeInput::input_text(const std::string& text)
 
     UINT written = SendInput(static_cast<UINT>(input_vec.size()), input_vec.data(), sizeof(INPUT));
 
-    if (written == u16_text.size()) {
-        LogError << VAR(written) << VAR(u16_text.size()) << VAR(input_vec.size());
+    if (written != input_vec.size()) {
+        LogError << VAR(written) << VAR(input_vec.size()) << VAR(u16_text.size()) ;
         return false;
     }
     return true;
