@@ -27,6 +27,7 @@ private:
     AdbDeviceWin32Finder();
 
     static int get_mumu_index(const std::string& adb_serial);
+    static int get_ld_index(const std::string& adb_serial);
 };
 
 MAA_TOOLKIT_NS_END

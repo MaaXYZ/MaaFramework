@@ -84,7 +84,7 @@ json::object AdbDeviceWin32Finder::get_adb_config(const Emulator& emulator, cons
 
         ld_cfg["enable"] = true;
         ld_cfg["path"] = path_to_utf8_string(dir);
-        ld_cfg["index"] = 0;
+        ld_cfg["index"] = get_ld_index(adb_serial);
         ld_cfg["pid"] = emulator.process.pid;
 
         LogInfo << "LDPlayer cfg" << VAR(adb_serial) << cfg;
@@ -108,6 +108,24 @@ int AdbDeviceWin32Finder::get_mumu_index(const std::string& adb_serial)
 
     int port = std::stoi(str_port);
     int index = (port - 16384) / 32;
+
+    return index;
+}
+
+int AdbDeviceWin32Finder::get_ld_index(const std::string& adb_serial)
+{
+    auto sp = string_split(adb_serial, '-');
+    if (sp.size() != 2) {
+        return 0;
+    }
+
+    auto& str_port = sp.at(1);
+    if (str_port.empty() || !std::ranges::all_of(str_port, [](auto c) { return std::isdigit(c); })) {
+        return 0;
+    }
+
+    int port = std::stoi(str_port);
+    int index = (port - 5554) / 2;
 
     return index;
 }
