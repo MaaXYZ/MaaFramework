@@ -28,7 +28,7 @@ jobs:
                   if $is_release; then
                     tag=${{ github.ref_name }}
                   else
-                    tag=$(git describe --tags --match "v*" --exclude "*-post*" || true)
+                    tag=$(git describe --tags --match "v*" --exclude "*-post*" --long || true)
                   fi
                   if [[ $tag != v* ]]; then
                     if $is_release; then echo "::error::Failed to get tag on releasing" && exit 1; fi
@@ -39,6 +39,7 @@ jobs:
                     fi
                   fi
 
+                  echo "raw_tag=$tag"
                   if $is_release; then
                     version=${tag#v}
                   else

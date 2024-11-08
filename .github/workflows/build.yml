@@ -360,7 +360,7 @@ jobs:
                   path: "tools/pip_pack/wheel/*.whl"
 
     release:
-        if: ${{ needs.meta.outputs.is_release == 'true' }}
+        if: ${{ needs.meta.outputs.is_release == 'true' && github.repository_id == '632024122' }}
         needs: [meta, windows, ubuntu, macos, android, nuget_pack, pip_pack]
         runs-on: ubuntu-latest
         env:
