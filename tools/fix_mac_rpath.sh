@@ -1,5 +1,12 @@
 #!/bin/bash
 
+function remove_and_sign_adhoc {
+    if codesign -dv $1 2>&1 | grep "CodeDirectory" > /dev/null; then
+        codesign --remove-signature $1
+    fi
+    codesign -s - $1
+}
+
 install_dir=$1
 
 if ! [[ -d "$install_dir" ]]; then
@@ -44,9 +51,13 @@ for lib in libc++ libc++abi libunwind; do
     if otool -L $bin | grep @rpath/libunwind.1 > /dev/null; then
         install_name_tool -change @rpath/libunwind.1.dylib @loader_path/libunwind.1.dylib $bin
     fi
+
+    remove_and_sign_adhoc $bin
 done
 
 for bin in $install_dir/bin/*; do
     echo "processing $bin"
     install_name_tool -change $libcxx_path "@loader_path/libc++.1.dylib" $bin
+
+    remove_and_sign_adhoc $bin
 done
