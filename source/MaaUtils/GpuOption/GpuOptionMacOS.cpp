@@ -13,4 +13,3 @@ std::optional<int> perfer_gpu()
 MAA_NS_END
 
 #endif // __APPLE__
-

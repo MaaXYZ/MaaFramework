@@ -1,10 +1,10 @@
 #include "SendMessageInput.h"
 
+#include "Utils/Codec.h"
 #include "Utils/Logger.h"
 #include "Utils/MicroControl.hpp"
 #include "Utils/Platform.h"
 #include "Utils/SafeWindows.hpp"
-#include "Utils/Codec.h"
 
 MAA_CTRL_UNIT_NS_BEGIN
 

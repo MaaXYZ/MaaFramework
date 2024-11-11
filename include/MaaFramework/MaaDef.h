@@ -151,9 +151,9 @@ enum MaaCtrlOptionEnum
     /// value: int, eg: 720; val_size: sizeof(int)
     MaaCtrlOption_ScreenshotTargetShortSide = 2,
 
-    /// Screenshot use raw size without scaling. 
+    /// Screenshot use raw size without scaling.
     /// Please note that this option may cause incorrect coordinates on user devices with different resolutions if scaling is not performed.
-    /// 
+    ///
     /// value: bool, eg: true; val_size: sizeof(bool)
     MaaCtrlOption_ScreenshotUseRawSize = 3,
 

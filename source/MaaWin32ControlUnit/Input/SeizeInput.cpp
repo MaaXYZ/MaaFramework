@@ -1,10 +1,10 @@
 #include "SeizeInput.h"
 
+#include "Utils/Codec.h"
 #include "Utils/Logger.h"
 #include "Utils/MicroControl.hpp"
 #include "Utils/Platform.h"
 #include "Utils/SafeWindows.hpp"
-#include "Utils/Codec.h"
 
 MAA_CTRL_UNIT_NS_BEGIN
 
@@ -224,14 +224,14 @@ bool SeizeInput::input_text(const std::string& text)
         input_vec.emplace_back(input);
 
         input.ki.dwFlags |= KEYEVENTF_KEYUP;
-        
+
         input_vec.emplace_back(input);
     }
 
     UINT written = SendInput(static_cast<UINT>(input_vec.size()), input_vec.data(), sizeof(INPUT));
 
     if (written != input_vec.size()) {
-        LogError << VAR(written) << VAR(input_vec.size()) << VAR(u16_text.size()) ;
+        LogError << VAR(written) << VAR(input_vec.size()) << VAR(u16_text.size());
         return false;
     }
     return true;
