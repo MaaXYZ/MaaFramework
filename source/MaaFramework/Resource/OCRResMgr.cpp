@@ -55,7 +55,7 @@ void OCRResMgr::clear()
     ocrers_.clear();
 }
 
-std::shared_ptr<fastdeploy::vision::ocr::DBDetector> OCRResMgr::deter(const std::string& name) const
+std::shared_ptr<fastdeploy::vision::ocr::DBDetector> OCRResMgr::deter(const std::string& name)
 {
     if (auto iter = deters_.find(name); iter != deters_.end()) {
         return iter->second;
@@ -69,7 +69,7 @@ std::shared_ptr<fastdeploy::vision::ocr::DBDetector> OCRResMgr::deter(const std:
     return deter;
 }
 
-std::shared_ptr<fastdeploy::vision::ocr::Recognizer> OCRResMgr::recer(const std::string& name) const
+std::shared_ptr<fastdeploy::vision::ocr::Recognizer> OCRResMgr::recer(const std::string& name)
 {
     if (auto iter = recers_.find(name); iter != recers_.end()) {
         return iter->second;
@@ -83,7 +83,7 @@ std::shared_ptr<fastdeploy::vision::ocr::Recognizer> OCRResMgr::recer(const std:
     return recer;
 }
 
-std::shared_ptr<fastdeploy::pipeline::PPOCRv3> OCRResMgr::ocrer(const std::string& name) const
+std::shared_ptr<fastdeploy::pipeline::PPOCRv3> OCRResMgr::ocrer(const std::string& name)
 {
     if (auto iter = ocrers_.find(name); iter != ocrers_.end()) {
         return iter->second;
@@ -97,7 +97,7 @@ std::shared_ptr<fastdeploy::pipeline::PPOCRv3> OCRResMgr::ocrer(const std::strin
     return ocrer;
 }
 
-std::shared_ptr<fastdeploy::vision::ocr::DBDetector> OCRResMgr::load_deter(const std::string& name) const
+std::shared_ptr<fastdeploy::vision::ocr::DBDetector> OCRResMgr::load_deter(const std::string& name)
 {
     using namespace path_literals;
 
@@ -129,7 +129,7 @@ std::shared_ptr<fastdeploy::vision::ocr::DBDetector> OCRResMgr::load_deter(const
     return nullptr;
 }
 
-std::shared_ptr<fastdeploy::vision::ocr::Recognizer> OCRResMgr::load_recer(const std::string& name) const
+std::shared_ptr<fastdeploy::vision::ocr::Recognizer> OCRResMgr::load_recer(const std::string& name)
 {
     using namespace path_literals;
 
@@ -167,7 +167,7 @@ std::shared_ptr<fastdeploy::vision::ocr::Recognizer> OCRResMgr::load_recer(const
     return nullptr;
 }
 
-std::shared_ptr<fastdeploy::pipeline::PPOCRv3> OCRResMgr::load_ocrer(const std::string& name) const
+std::shared_ptr<fastdeploy::pipeline::PPOCRv3> OCRResMgr::load_ocrer(const std::string& name)
 {
     using namespace path_literals;
 

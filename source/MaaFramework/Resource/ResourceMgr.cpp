@@ -101,10 +101,27 @@ size_t vec_hash(const std::vector<size_t>& vec)
 
 std::string ResourceMgr::get_hash() const
 {
-    if (!hash_cache_.empty()) {
-        return hash_cache_;
-    }
+    return hash_cache_;
+}
 
+std::vector<std::string> ResourceMgr::get_task_list() const
+{
+    return pipeline_res_.get_task_list();
+}
+
+void ResourceMgr::post_stop()
+{
+    LogFunc;
+
+    need_to_stop_ = true;
+
+    if (res_loader_ && res_loader_->running()) {
+        res_loader_->clear();
+    }
+}
+
+std::string ResourceMgr::calc_hash()
+{
     std::vector<size_t> filesizes;
     for (const auto& p : paths_) {
         if (!std::filesystem::exists(p) || !std::filesystem::is_directory(p)) {
@@ -127,22 +144,6 @@ std::string ResourceMgr::get_hash() const
 
     LogInfo << VAR(hash_cache_);
     return hash_cache_;
-}
-
-std::vector<std::string> ResourceMgr::get_task_list() const
-{
-    return pipeline_res_.get_task_list();
-}
-
-void ResourceMgr::post_stop()
-{
-    LogFunc;
-
-    need_to_stop_ = true;
-
-    if (res_loader_ && res_loader_->running()) {
-        res_loader_->clear();
-    }
 }
 
 MaaBool ResourceMgr::running() const
@@ -309,9 +310,8 @@ bool ResourceMgr::run_load(typename AsyncRunner<std::filesystem::path>::Id id, s
     notifier.notify(MaaMsg_Resource_Loading_Starting, cb_detail);
 
     valid_ = load(path);
-    hash_cache_.clear();
 
-    cb_detail["hash"] = get_hash();
+    cb_detail["hash"] = calc_hash();
 
     notifier.notify(valid_ ? MaaMsg_Resource_Loading_Succeeded : MaaMsg_Resource_Loading_Failed, cb_detail);
 

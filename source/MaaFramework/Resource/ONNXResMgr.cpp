@@ -131,7 +131,7 @@ void ONNXResMgr::clear()
     detectors_.clear();
 }
 
-std::shared_ptr<Ort::Session> ONNXResMgr::classifier(const std::string& name) const
+std::shared_ptr<Ort::Session> ONNXResMgr::classifier(const std::string& name)
 {
     if (auto iter = classifiers_.find(name); iter != classifiers_.end()) {
         return iter->second;
@@ -145,7 +145,7 @@ std::shared_ptr<Ort::Session> ONNXResMgr::classifier(const std::string& name) co
     return session;
 }
 
-std::shared_ptr<Ort::Session> ONNXResMgr::detector(const std::string& name) const
+std::shared_ptr<Ort::Session> ONNXResMgr::detector(const std::string& name)
 {
     if (auto iter = detectors_.find(name); iter != detectors_.end()) {
         return iter->second;
@@ -159,7 +159,7 @@ std::shared_ptr<Ort::Session> ONNXResMgr::detector(const std::string& name) cons
     return session;
 }
 
-std::shared_ptr<Ort::Session> ONNXResMgr::load(const std::string& name, const std::vector<std::filesystem::path>& roots) const
+std::shared_ptr<Ort::Session> ONNXResMgr::load(const std::string& name, const std::vector<std::filesystem::path>& roots)
 {
     LogFunc << VAR(name) << VAR(roots);
 

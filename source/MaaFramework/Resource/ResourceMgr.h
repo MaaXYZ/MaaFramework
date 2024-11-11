@@ -55,6 +55,7 @@ public: // MaaResource
 
 public:
     void post_stop();
+    std::string calc_hash();
 
     const auto& pipeline_res() const { return pipeline_res_; }
 

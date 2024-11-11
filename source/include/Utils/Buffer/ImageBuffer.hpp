@@ -28,7 +28,7 @@ public:
     virtual void clear() override
     {
         image_.release();
-        encoded_.clear();
+        encoded_cache_.clear();
     }
 
     virtual void* raw_data() const override { return image_.data; }
@@ -44,13 +44,13 @@ public:
     virtual uint8_t* encoded() const override
     {
         encode();
-        return encoded_.data();
+        return encoded_cache_.data();
     }
 
     virtual size_t encoded_size() const override
     {
         encode();
-        return encoded_.size();
+        return encoded_cache_.size();
     }
 
     virtual const cv::Mat& get() const override { return image_; }
@@ -69,17 +69,17 @@ private:
         }
 
         if (image_.empty()) {
-            encoded_.clear();
+            encoded_cache_.clear();
         }
         else {
-            cv::imencode(".png", image_, encoded_);
+            cv::imencode(".png", image_, encoded_cache_);
         }
         dirty_ = false;
     }
 
     cv::Mat image_;
     mutable bool dirty_ = true;
-    mutable std::vector<uint8_t> encoded_;
+    mutable std::vector<uint8_t> encoded_cache_;
 };
 
 MAA_NS_END

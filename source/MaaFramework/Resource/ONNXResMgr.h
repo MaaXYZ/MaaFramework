@@ -25,11 +25,11 @@ public:
     void clear();
 
 public:
-    std::shared_ptr<Ort::Session> classifier(const std::string& name) const;
-    std::shared_ptr<Ort::Session> detector(const std::string& name) const;
+    std::shared_ptr<Ort::Session> classifier(const std::string& name);
+    std::shared_ptr<Ort::Session> detector(const std::string& name);
 
 private:
-    std::shared_ptr<Ort::Session> load(const std::string& name, const std::vector<std::filesystem::path>& roots) const;
+    std::shared_ptr<Ort::Session> load(const std::string& name, const std::vector<std::filesystem::path>& roots);
 
     std::vector<std::filesystem::path> classifier_roots_;
     std::vector<std::filesystem::path> detector_roots_;
@@ -38,8 +38,8 @@ private:
     Ort::SessionOptions options_;
     std::optional<int> gpu_device_id_;
 
-    mutable std::unordered_map<std::string, std::shared_ptr<Ort::Session>> classifiers_;
-    mutable std::unordered_map<std::string, std::shared_ptr<Ort::Session>> detectors_;
+    std::unordered_map<std::string, std::shared_ptr<Ort::Session>> classifiers_;
+    std::unordered_map<std::string, std::shared_ptr<Ort::Session>> detectors_;
 };
 
 MAA_RES_NS_END

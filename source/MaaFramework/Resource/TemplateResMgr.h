@@ -19,14 +19,14 @@ public:
     void clear();
 
 public:
-    std::shared_ptr<Image> image(const std::string& name) const;
+    std::shared_ptr<Image> image(const std::string& name);
 
 private:
-    std::shared_ptr<Image> load(const std::string& name) const;
+    std::shared_ptr<Image> load(const std::string& name);
 
     std::vector<std::filesystem::path> roots_;
 
-    mutable std::map<std::string, std::shared_ptr<Image>> images_;
+    std::map<std::string, std::shared_ptr<Image>> images_;
 };
 
 MAA_RES_NS_END

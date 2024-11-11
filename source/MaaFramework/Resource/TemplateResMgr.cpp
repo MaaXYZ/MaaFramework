@@ -25,7 +25,7 @@ void TemplateResMgr::clear()
     images_.clear();
 }
 
-std::shared_ptr<TemplateResMgr::Image> TemplateResMgr::image(const std::string& name) const
+std::shared_ptr<TemplateResMgr::Image> TemplateResMgr::image(const std::string& name)
 {
     if (auto iter = images_.find(name); iter != images_.end()) {
         return iter->second;
@@ -39,7 +39,7 @@ std::shared_ptr<TemplateResMgr::Image> TemplateResMgr::image(const std::string& 
     return img;
 }
 
-std::shared_ptr<TemplateResMgr::Image> TemplateResMgr::load(const std::string& name) const
+std::shared_ptr<TemplateResMgr::Image> TemplateResMgr::load(const std::string& name)
 {
     LogFunc << VAR(name) << VAR(roots_);
 

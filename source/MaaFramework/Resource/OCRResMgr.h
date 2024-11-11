@@ -27,22 +27,22 @@ public:
     void clear();
 
 public:
-    std::shared_ptr<fastdeploy::vision::ocr::DBDetector> deter(const std::string& name) const;
-    std::shared_ptr<fastdeploy::vision::ocr::Recognizer> recer(const std::string& name) const;
-    std::shared_ptr<fastdeploy::pipeline::PPOCRv3> ocrer(const std::string& name) const;
+    std::shared_ptr<fastdeploy::vision::ocr::DBDetector> deter(const std::string& name);
+    std::shared_ptr<fastdeploy::vision::ocr::Recognizer> recer(const std::string& name);
+    std::shared_ptr<fastdeploy::pipeline::PPOCRv3> ocrer(const std::string& name);
 
 private:
-    std::shared_ptr<fastdeploy::vision::ocr::DBDetector> load_deter(const std::string& name) const;
-    std::shared_ptr<fastdeploy::vision::ocr::Recognizer> load_recer(const std::string& name) const;
-    std::shared_ptr<fastdeploy::pipeline::PPOCRv3> load_ocrer(const std::string& name) const;
+    std::shared_ptr<fastdeploy::vision::ocr::DBDetector> load_deter(const std::string& name);
+    std::shared_ptr<fastdeploy::vision::ocr::Recognizer> load_recer(const std::string& name);
+    std::shared_ptr<fastdeploy::pipeline::PPOCRv3> load_ocrer(const std::string& name);
 
     std::vector<std::filesystem::path> roots_;
 
     fastdeploy::RuntimeOption option_;
 
-    mutable std::unordered_map<std::string, std::shared_ptr<fastdeploy::vision::ocr::DBDetector>> deters_;
-    mutable std::unordered_map<std::string, std::shared_ptr<fastdeploy::vision::ocr::Recognizer>> recers_;
-    mutable std::unordered_map<std::string, std::shared_ptr<fastdeploy::pipeline::PPOCRv3>> ocrers_;
+    std::unordered_map<std::string, std::shared_ptr<fastdeploy::vision::ocr::DBDetector>> deters_;
+    std::unordered_map<std::string, std::shared_ptr<fastdeploy::vision::ocr::Recognizer>> recers_;
+    std::unordered_map<std::string, std::shared_ptr<fastdeploy::pipeline::PPOCRv3>> ocrers_;
 };
 
 MAA_RES_NS_END
