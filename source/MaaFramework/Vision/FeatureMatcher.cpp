@@ -204,6 +204,7 @@ FeatureMatcher::ResultsVec FeatureMatcher::feature_postproc(
     double w = std::max({ scene_corners[0].x, scene_corners[1].x, scene_corners[2].x, scene_corners[3].x }) - x;
     double h = std::max({ scene_corners[0].y, scene_corners[1].y, scene_corners[2].y, scene_corners[3].y }) - y;
     cv::Rect box { static_cast<int>(x), static_cast<int>(y), static_cast<int>(w), static_cast<int>(h) };
+    box &= roi_;
 
     size_t count = std::ranges::count_if(scene, [&box](const auto& point) { return box.contains(point); });
 
