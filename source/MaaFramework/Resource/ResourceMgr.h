@@ -81,7 +81,7 @@ public:
 private:
     bool set_inference_device(MaaOptionValue value, MaaOptionValueSize val_size);
 
-    void check_and_set_gpu();
+    void check_and_set_gpu(const std::optional<int>& specified_device = std::nullopt);
 
     bool run_load(typename AsyncRunner<std::filesystem::path>::Id id, std::filesystem::path path);
     bool load(const std::filesystem::path& path);

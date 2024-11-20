@@ -4,6 +4,8 @@
 
 #include "Conf/Conf.h"
 
+#include "Utils/SafeWindows.hpp"
+
 MAA_SUPPRESS_CV_WARNINGS_BEGIN
 #include "fastdeploy/vision/ocr/ppocr/dbdetector.h"
 #include "fastdeploy/vision/ocr/ppocr/ppocr_v3.h"
@@ -21,7 +23,9 @@ public:
     OCRResMgr();
 
     void set_cpu();
-    bool set_gpu(int device_id);
+    void set_cuda(int device_id);
+    void set_dml(int device_id);
+    void set_coreml(uint32_t coreml_flag);
 
     bool lazy_load(const std::filesystem::path& path, bool is_base);
     void clear();

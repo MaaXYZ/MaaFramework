@@ -13,10 +13,12 @@ NeuralNetworkClassifier::NeuralNetworkClassifier(
     cv::Rect roi,
     NeuralNetworkClassifierParam param,
     std::shared_ptr<Ort::Session> session,
+    const Ort::MemoryInfo& memory_info,
     std::string name)
     : VisionBase(std::move(image), std::move(roi), std::move(name))
     , param_(std::move(param))
     , session_(std::move(session))
+    , memory_info_(memory_info)
 {
     analyze();
 }
@@ -60,10 +62,9 @@ NeuralNetworkClassifier::Result NeuralNetworkClassifier::classify() const
     cv::Size input_image_size(static_cast<int>(input_shape[3]), static_cast<int>(input_shape[2]));
     cv::resize(image, image, input_image_size, 0, 0, cv::INTER_AREA);
     std::vector<float> input = image_to_tensor(image);
-    auto memory_info = Ort::MemoryInfo::CreateCpu(OrtDeviceAllocator, OrtMemTypeCPU);
 
     Ort::Value input_tensor =
-        Ort::Value::CreateTensor<float>(memory_info, input.data(), input.size(), input_shape.data(), input_shape.size());
+        Ort::Value::CreateTensor<float>(memory_info_, input.data(), input.size(), input_shape.data(), input_shape.size());
 
     Ort::AllocatorWithDefaultOptions allocator;
     const std::string in_0 = session_->GetInputNameAllocated(0, allocator).get();

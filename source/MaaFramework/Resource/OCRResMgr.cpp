@@ -24,12 +24,25 @@ void OCRResMgr::set_cpu()
     option_.UseCpu();
 }
 
-bool OCRResMgr::set_gpu(int device_id)
+void OCRResMgr::set_cuda(int device_id)
 {
     LogInfo << VAR(device_id);
 
-    option_.UseGpu(device_id);
-    return true;
+    option_.UseCuda(device_id);
+}
+
+void OCRResMgr::set_dml(int device_id)
+{
+    LogInfo << VAR(device_id);
+    option_.UseDirectML(device_id);
+}
+
+void OCRResMgr::set_coreml(uint32_t coreml_flag)
+{
+    LogInfo << VAR(coreml_flag);
+
+    // TODO
+    set_cpu();
 }
 
 bool OCRResMgr::lazy_load(const std::filesystem::path& path, bool is_base)
@@ -109,16 +122,10 @@ std::shared_ptr<fastdeploy::vision::ocr::DBDetector> OCRResMgr::load_deter(const
         if (!std::filesystem::exists(model_path)) {
             continue;
         }
-
         LogDebug << VAR(model_path);
 
-        auto model = read_file<std::string>(model_path);
-
-        auto option = option_;
-        option.SetModelBuffer(model.data(), model.size(), nullptr, 0, fastdeploy::ModelFormat::ONNX);
-
         auto det =
-            std::make_shared<fastdeploy::vision::ocr::DBDetector>("dummy.onnx", std::string(), option, fastdeploy::ModelFormat::ONNX);
+            std::make_shared<fastdeploy::vision::ocr::DBDetector>(path_to_utf8_string(model_path), std::string(), option_, fastdeploy::ModelFormat::ONNX);
         if (!det || !det->Initialized()) {
             LogError << "Failed to load DBDetector:" << VAR(name) << VAR(det) << VAR(det->Initialized());
             return nullptr;
@@ -142,20 +149,13 @@ std::shared_ptr<fastdeploy::vision::ocr::Recognizer> OCRResMgr::load_recer(const
         if (!std::filesystem::exists(model_path) || !std::filesystem::exists(label_path)) {
             continue;
         }
-
         LogDebug << VAR(model_path);
 
-        auto model = read_file<std::string>(model_path);
-        auto label = read_file<std::string>(label_path);
-
-        auto option = option_;
-        option.SetModelBuffer(model.data(), model.size(), nullptr, 0, fastdeploy::ModelFormat::ONNX);
-
         auto rec = std::make_shared<fastdeploy::vision::ocr::Recognizer>(
-            "dummy.onnx",
+            path_to_utf8_string(model_path),
             std::string(),
-            label,
-            option,
+            path_to_utf8_string(label_path),
+            option_,
             fastdeploy::ModelFormat::ONNX);
         if (!rec || !rec->Initialized()) {
             LogError << "Failed to load Recognizer:" << VAR(name) << VAR(rec) << VAR(rec->Initialized());

@@ -17,9 +17,13 @@ public:
     inline static const std::filesystem::path kClassifierDir = "classify";
     inline static const std::filesystem::path kDetectorDir = "detect";
 
+    ONNXResMgr();
+
 public:
     void set_cpu();
-    bool set_gpu(int device_id);
+    void set_cuda(int device_id);
+    void set_dml(int device_id);
+    void set_coreml(uint32_t coreml_flag);
 
     bool lazy_load(const std::filesystem::path& path, bool is_base);
     void clear();
@@ -27,6 +31,7 @@ public:
 public:
     std::shared_ptr<Ort::Session> classifier(const std::string& name);
     std::shared_ptr<Ort::Session> detector(const std::string& name);
+    const Ort::MemoryInfo& memory_info() const;
 
 private:
     std::shared_ptr<Ort::Session> load(const std::string& name, const std::vector<std::filesystem::path>& roots);
@@ -36,7 +41,7 @@ private:
 
     Ort::Env env_;
     Ort::SessionOptions options_;
-    std::optional<int> gpu_device_id_;
+    Ort::MemoryInfo memory_info_;
 
     std::unordered_map<std::string, std::shared_ptr<Ort::Session>> classifiers_;
     std::unordered_map<std::string, std::shared_ptr<Ort::Session>> detectors_;

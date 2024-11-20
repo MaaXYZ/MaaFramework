@@ -7,10 +7,7 @@
 #include "VisionBase.h"
 #include "VisionTypes.h"
 
-namespace Ort
-{
-struct Session;
-}
+#include <onnxruntime/onnxruntime_cxx_api.h>
 
 MAA_VISION_NS_BEGIN
 
@@ -34,6 +31,7 @@ public:
         cv::Rect roi,
         NeuralNetworkDetectorParam param,
         std::shared_ptr<Ort::Session> session,
+        const Ort::MemoryInfo& memory_info,
         std::string name = "");
 
 private:
@@ -51,6 +49,7 @@ private:
 private:
     const NeuralNetworkDetectorParam param_;
     std::shared_ptr<Ort::Session> session_ = nullptr;
+    const Ort::MemoryInfo& memory_info_;
 };
 
 MAA_VISION_NS_END
