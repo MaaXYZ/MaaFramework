@@ -112,8 +112,8 @@ struct ResourceInfo : InfoBase<MaaResource*, ResourceInfo>
 
     CallbackContext* callback = nullptr;
     bool disposed = false;
-    std::map<std::string, CallbackContext*> custom_recognizers;
-    std::map<std::string, CallbackContext*> custom_actions;
+    std::map<std::string, CallbackContext*> custom_recognizers = {};
+    std::map<std::string, CallbackContext*> custom_actions = {};
 
     void dispose()
     {
@@ -153,8 +153,8 @@ struct TaskerInfo : InfoBase<MaaTasker*, TaskerInfo>
     constexpr static std::string_view name = "Tasker";
 
     CallbackContext* callback = nullptr;
-    Napi::Reference<Napi::External<ResourceInfo>> resource;
-    Napi::Reference<Napi::External<ControllerInfo>> controller;
+    Napi::Reference<Napi::External<ResourceInfo>> resource = {};
+    Napi::Reference<Napi::External<ControllerInfo>> controller = {};
     bool disposed = false;
 
     void dispose()
