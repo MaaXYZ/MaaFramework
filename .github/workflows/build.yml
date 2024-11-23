@@ -84,7 +84,7 @@ jobs:
             - name: Prepare node_modules
               run: |
                   cd source/binding/NodeJS
-                  pnpm ci
+                  pnpm i
                   cd -
 
             - name: Build MAA
@@ -167,7 +167,7 @@ jobs:
             - name: Prepare node_modules
               run: |
                   cd source/binding/NodeJS
-                  pnpm ci
+                  pnpm i
                   cd -
 
             - name: Build MAA
@@ -248,7 +248,7 @@ jobs:
             - name: Prepare node_modules
               run: |
                   cd source/binding/NodeJS
-                  pnpm ci
+                  pnpm i
                   cd -
 
             - name: Build MAA
@@ -420,7 +420,7 @@ jobs:
             - name: Build wrapper
               run: |
                   cd source/binding/NodeJS/release/maa-node
-                  pnpm ci
+                  pnpm i
                   npm run build
 
             - name: Dump assets
