@@ -423,9 +423,19 @@ jobs:
                   pnpm i
                   npm run build
 
-            - name: Dump assets
+            - name: Package wrapper
               run: |
-                  find assets
+                  ASSETS=`pwd`/assets
+
+                  cd source/binding/NodeJS
+                  pnpm i
+                  npx tsx scripts/pack.ts $ASSETS ${{ needs.meta.outputs.tag }}
+                  tar
+
+            - uses: actions/upload-artifact@v4
+              with:
+                  name: MAA-nodejs-package
+                  path: "source/binding/NodeJS/release"
 
     release:
         if: ${{ needs.meta.outputs.is_release == 'true' && github.repository_id == '632024122' }}
