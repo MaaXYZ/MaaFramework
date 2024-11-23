@@ -430,7 +430,6 @@ jobs:
                   cd source/binding/NodeJS
                   pnpm i
                   npx tsx scripts/pack.ts $ASSETS ${{ needs.meta.outputs.tag }}
-                  tar
 
             - uses: actions/upload-artifact@v4
               with:
