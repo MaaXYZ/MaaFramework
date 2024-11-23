@@ -42,6 +42,9 @@ _✨ 基于图像识别的自动化黑盒测试框架 ✨_
 
 ## 最佳实践
 
+<details>
+<summary>最佳实践</summary>
+
 - [M9A](https://github.com/MaaXYZ/M9A) 1999 小助手 ![Pipeline](https://img.shields.io/badge/Pipeline-%23454545?logo=paddypower&logoColor=%23FFFFFF)  
   基于全新架构的 亿韭韭韭 小助手。图像技术 + 模拟控制，解放双手！由 MaaFramework 强力驱动！
 
@@ -75,7 +78,7 @@ _✨ 基于图像识别的自动化黑盒测试框架 ✨_
 - [maa-whmx](https://github.com/MAWHA/maa-whmx) 物华弥新 小助手 ![cpp](https://img.shields.io/badge/C%2B%2B-00599C?logo=c%2B%2B&logoColor=white) ![qt](https://img.shields.io/badge/Qt6-41CD52?logo=Qt&logoColor=white)  
   基于全新架构的 物华弥新 小助手。图像技术 + 模拟控制，解放双手！由 MaaFramework 强力驱动！
 
-- [MAA-for-Millennium-Tour](https://github.com/Ostwind23/MAA-for-Millennium-Tour) 千年之旅 小助手 ![Pipeline](https://img.shields.io/badge/Pipeline-%23454545?logo=codecademy&logoColor=%23FFFFFF&color=%23454545) ![python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white)   
+- [MAA-for-Millennium-Tour](https://github.com/Ostwind23/MAA-for-Millennium-Tour) 千年之旅 小助手 ![Pipeline](https://img.shields.io/badge/Pipeline-%23454545?logo=codecademy&logoColor=%23FFFFFF&color=%23454545) ![python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white)
   基于全新架构的 千年之旅 小助手。图像技术 + 模拟控制，解放侍主的大手！由 MaaFramework 强力驱动！
 
 - [MFAWPF](https://github.com/SweetSmellFox/MFAWPF) MFA 任务管理器 ![csharp](https://img.shields.io/badge/C%23-239120?logo=csharp&logoColor=white)  
@@ -95,7 +98,9 @@ _✨ 基于图像识别的自动化黑盒测试框架 ✨_
 
 - [MaaYuan](https://github.com/syoius/MaaYuan) 代号鸢/如鸢 一键长草小助手  ![Pipeline](https://img.shields.io/badge/Pipeline-%23454545?logo=paddypower&logoColor=%23FFFFFF)  
   基于全新架构的 代号鸢/如鸢 小助手。图像技术 + 模拟控制，解放双手！由 MaaFramework 强力驱动！
-   
+
+</details>
+
 ## 生态共建
 
 MAA 正计划建设为一类项目，而非舟的单一软件。  
