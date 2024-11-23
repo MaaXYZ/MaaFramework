@@ -24,9 +24,11 @@ const archs: [maa: string, node: string][] = [
 async function main() {
     const corePackPath = path.join(releasePath, 'maa-node')
     cp.execSync(`npm --prefix ${corePackPath} pkg set version=${version}`)
-    await fs.rm(path.join(corePackPath, 'node_modules'))
+    await fs.rm(path.join(corePackPath, 'node_modules'), { recursive: true })
     for (const dir of ['minitouch', 'maatouch', 'minicap']) {
-        await fs.cp(path.join(agentBinaryPath, dir), path.join(corePackPath, 'agent'))
+        await fs.cp(path.join(agentBinaryPath, dir), path.join(corePackPath, 'agent'), {
+            recursive: true
+        })
     }
 
     for (const [mplat, nplat] of platforms) {
