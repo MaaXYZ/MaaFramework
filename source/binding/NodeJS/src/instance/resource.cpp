@@ -6,8 +6,7 @@
 
 #include <MaaFramework/MaaAPI.h>
 
-std::optional<Napi::External<ResourceInfo>>
-    resource_create(Napi::Env env, std::optional<Napi::Function> callback)
+std::optional<Napi::External<ResourceInfo>> resource_create(Napi::Env env, std::optional<Napi::Function> callback)
 {
     MaaNotificationCallback cb = nullptr;
     CallbackContext* ctx = nullptr;
@@ -21,10 +20,7 @@ std::optional<Napi::External<ResourceInfo>>
     handle = MaaResourceCreate(cb, ctx);
 
     if (handle) {
-        return Napi::External<ResourceInfo>::New(
-            env,
-            new ResourceInfo { handle, ctx },
-            &DeleteFinalizer<ResourceInfo*>);
+        return Napi::External<ResourceInfo>::New(env, new ResourceInfo { { handle }, ctx }, &DeleteFinalizer<ResourceInfo*>);
     }
     else {
         delete ctx;
@@ -39,25 +35,13 @@ void resource_destroy(Napi::External<ResourceInfo> info)
 
 bool resource_set_option_inference_device(Napi::External<ResourceInfo> info, int32_t size)
 {
-    return MaaResourceSetOption(
-        info.Data()->handle,
-        MaaResOption_InferenceDevice,
-        &size,
-        sizeof(size));
+    return MaaResourceSetOption(info.Data()->handle, MaaResOption_InferenceDevice, &size, sizeof(size));
 }
 
-bool resource_register_custom_recognition(
-    Napi::Env env,
-    Napi::External<ResourceInfo> info,
-    std::string name,
-    Napi::Function callback)
+bool resource_register_custom_recognition(Napi::Env env, Napi::External<ResourceInfo> info, std::string name, Napi::Function callback)
 {
     auto ctx = new CallbackContext(env, callback, "CustomRecognizerCallback");
-    if (MaaResourceRegisterCustomRecognition(
-            info.Data()->handle,
-            name.c_str(),
-            CustomRecognizerCallback,
-            ctx)) {
+    if (MaaResourceRegisterCustomRecognition(info.Data()->handle, name.c_str(), CustomRecognizerCallback, ctx)) {
         auto old = info.Data()->custom_recognizers[name];
         info.Data()->custom_recognizers[name] = ctx;
         if (old) {
@@ -94,18 +78,10 @@ bool resource_clear_custom_recognition(Napi::External<ResourceInfo> info)
     }
 }
 
-bool resource_register_custom_action(
-    Napi::Env env,
-    Napi::External<ResourceInfo> info,
-    std::string name,
-    Napi::Function callback)
+bool resource_register_custom_action(Napi::Env env, Napi::External<ResourceInfo> info, std::string name, Napi::Function callback)
 {
     auto ctx = new CallbackContext(env, callback, "CustomActionCallback");
-    if (MaaResourceRegisterCustomAction(
-            info.Data()->handle,
-            name.c_str(),
-            CustomActionCallback,
-            ctx)) {
+    if (MaaResourceRegisterCustomAction(info.Data()->handle, name.c_str(), CustomActionCallback, ctx)) {
         auto old = info.Data()->custom_actions[name];
         info.Data()->custom_actions[name] = ctx;
         if (old) {
@@ -160,9 +136,7 @@ MaaStatus resource_status(Napi::External<ResourceInfo> info, MaaResId id)
 Napi::Promise resource_wait(Napi::Env env, Napi::External<ResourceInfo> info, MaaResId id)
 {
     auto handle = info.Data()->handle;
-    auto worker = new SimpleAsyncWork<MaaStatus, "resource_wait">(env, [handle, id]() {
-        return MaaResourceWait(handle, id);
-    });
+    auto worker = new SimpleAsyncWork<MaaStatus, "resource_wait">(env, [handle, id]() { return MaaResourceWait(handle, id); });
     worker->Queue();
     return worker->Promise();
 }
@@ -196,10 +170,7 @@ std::optional<std::vector<std::string>> resource_get_task_list(Napi::External<Re
     }
 }
 
-void load_instance_resource(
-    Napi::Env env,
-    Napi::Object& exports,
-    Napi::External<ExtContextInfo> context)
+void load_instance_resource(Napi::Env env, Napi::Object& exports, Napi::External<ExtContextInfo> context)
 {
     BIND(resource_create);
     BIND(resource_destroy);

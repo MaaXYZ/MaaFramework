@@ -40,10 +40,7 @@ std::optional<Napi::External<ControllerInfo>> adb_controller_create(
         ctx);
 
     if (handle) {
-        return Napi::External<ControllerInfo>::New(
-            env,
-            new ControllerInfo { handle, ctx },
-            &DeleteFinalizer<ControllerInfo*>);
+        return Napi::External<ControllerInfo>::New(env, new ControllerInfo { { handle }, ctx }, &DeleteFinalizer<ControllerInfo*>);
     }
     else {
         delete ctx;
@@ -77,10 +74,7 @@ std::optional<Napi::External<ControllerInfo>> win32_controller_create(
     handle = MaaWin32ControllerCreate(hwnd, screencap_methods, input_methods, cb, ctx);
 
     if (handle) {
-        return Napi::External<ControllerInfo>::New(
-            env,
-            new ControllerInfo { handle, ctx },
-            &DeleteFinalizer<ControllerInfo*>);
+        return Napi::External<ControllerInfo>::New(env, new ControllerInfo { { handle }, ctx }, &DeleteFinalizer<ControllerInfo*>);
     }
     else {
         delete ctx;
@@ -124,16 +118,13 @@ Napi::Value custom_controller_create(const Napi::CallbackInfo& info)
 }
 */
 
-std::optional<Napi::External<ControllerInfo>> custom_controller_create(
-    Napi::Env env,
-    std::optional<Napi::Function> ctrl,
-    std::optional<Napi::Function> callback)
+std::optional<Napi::External<ControllerInfo>>
+    custom_controller_create(Napi::Env env, std::optional<Napi::Function> ctrl, std::optional<Napi::Function> callback)
 {
     static MaaCustomControllerCallbacks custom_controller_api = {
-        CustomControllerConnect, CustomControllerRequestUUID, CustomControllerStartApp,
-        CustomControllerStopApp, CustomControllerScreencap,   CustomControllerClick,
-        CustomControllerSwipe,   CustomControllerTouchDown,   CustomControllerTouchMove,
-        CustomControllerTouchUp, CustomControllerPressKey,    CustomControllerInputText
+        CustomControllerConnect,   CustomControllerRequestUUID, CustomControllerStartApp, CustomControllerStopApp,
+        CustomControllerScreencap, CustomControllerClick,       CustomControllerSwipe,    CustomControllerTouchDown,
+        CustomControllerTouchMove, CustomControllerTouchUp,     CustomControllerPressKey, CustomControllerInputText
     };
 
     MaaNotificationCallback cb = nullptr;
@@ -154,7 +145,7 @@ std::optional<Napi::External<ControllerInfo>> custom_controller_create(
     if (handle) {
         return Napi::External<ControllerInfo>::New(
             env,
-            new ControllerInfo { handle, ctx, custom_ctx },
+            new ControllerInfo { { handle }, ctx, custom_ctx },
             &DeleteFinalizer<ControllerInfo*>);
     }
     else {
@@ -180,19 +171,10 @@ std::optional<Napi::External<ControllerInfo>> dbg_controller_create(
         ctx = new CallbackContext { env, callback.value(), "NotificationCallback" };
     }
 
-    handle = MaaDbgControllerCreate(
-        read_path.c_str(),
-        write_path.c_str(),
-        type,
-        config.c_str(),
-        cb,
-        ctx);
+    handle = MaaDbgControllerCreate(read_path.c_str(), write_path.c_str(), type, config.c_str(), cb, ctx);
 
     if (handle) {
-        return Napi::External<ControllerInfo>::New(
-            env,
-            new ControllerInfo { handle, ctx },
-            &DeleteFinalizer<ControllerInfo*>);
+        return Napi::External<ControllerInfo>::New(env, new ControllerInfo { { handle }, ctx }, &DeleteFinalizer<ControllerInfo*>);
     }
     else {
         delete ctx;
@@ -205,44 +187,24 @@ void controller_destroy(Napi::External<ControllerInfo> info)
     info.Data()->dispose();
 }
 
-bool controller_set_option_screenshot_target_long_side(
-    Napi::External<ControllerInfo> info,
-    int32_t size)
+bool controller_set_option_screenshot_target_long_side(Napi::External<ControllerInfo> info, int32_t size)
 {
-    return MaaControllerSetOption(
-        info.Data()->handle,
-        MaaCtrlOption_ScreenshotTargetLongSide,
-        &size,
-        sizeof(size));
+    return MaaControllerSetOption(info.Data()->handle, MaaCtrlOption_ScreenshotTargetLongSide, &size, sizeof(size));
 }
 
-bool controller_set_option_screenshot_target_short_side(
-    Napi::External<ControllerInfo> info,
-    int32_t size)
+bool controller_set_option_screenshot_target_short_side(Napi::External<ControllerInfo> info, int32_t size)
 {
-    return MaaControllerSetOption(
-        info.Data()->handle,
-        MaaCtrlOption_ScreenshotTargetShortSide,
-        &size,
-        sizeof(size));
+    return MaaControllerSetOption(info.Data()->handle, MaaCtrlOption_ScreenshotTargetShortSide, &size, sizeof(size));
 }
 
 bool controller_set_option_screenshot_use_raw_size(Napi::External<ControllerInfo> info, bool flag)
 {
-    return MaaControllerSetOption(
-        info.Data()->handle,
-        MaaCtrlOption_ScreenshotUseRawSize,
-        &flag,
-        sizeof(flag));
+    return MaaControllerSetOption(info.Data()->handle, MaaCtrlOption_ScreenshotUseRawSize, &flag, sizeof(flag));
 }
 
 bool controller_set_option_recording(Napi::External<ControllerInfo> info, bool flag)
 {
-    return MaaControllerSetOption(
-        info.Data()->handle,
-        MaaCtrlOption_Recording,
-        &flag,
-        sizeof(flag));
+    return MaaControllerSetOption(info.Data()->handle, MaaCtrlOption_Recording, &flag, sizeof(flag));
 }
 
 MaaCtrlId controller_post_connection(Napi::External<ControllerInfo> info)
@@ -255,13 +217,7 @@ MaaCtrlId controller_post_click(Napi::External<ControllerInfo> info, int32_t x, 
     return MaaControllerPostClick(info.Data()->handle, x, y);
 }
 
-MaaCtrlId controller_post_swipe(
-    Napi::External<ControllerInfo> info,
-    int32_t x1,
-    int32_t y1,
-    int32_t x2,
-    int32_t y2,
-    int32_t duration)
+MaaCtrlId controller_post_swipe(Napi::External<ControllerInfo> info, int32_t x1, int32_t y1, int32_t x2, int32_t y2, int32_t duration)
 {
     return MaaControllerPostSwipe(info.Data()->handle, x1, y1, x2, y2, duration);
 }
@@ -286,22 +242,12 @@ MaaCtrlId controller_post_stop_app(Napi::External<ControllerInfo> info, std::str
     return MaaControllerPostStopApp(info.Data()->handle, intent.c_str());
 }
 
-MaaCtrlId controller_post_touch_down(
-    Napi::External<ControllerInfo> info,
-    int32_t contact,
-    int32_t x,
-    int32_t y,
-    int32_t pressure)
+MaaCtrlId controller_post_touch_down(Napi::External<ControllerInfo> info, int32_t contact, int32_t x, int32_t y, int32_t pressure)
 {
     return MaaControllerPostTouchDown(info.Data()->handle, contact, x, y, pressure);
 }
 
-MaaCtrlId controller_post_touch_move(
-    Napi::External<ControllerInfo> info,
-    int32_t contact,
-    int32_t x,
-    int32_t y,
-    int32_t pressure)
+MaaCtrlId controller_post_touch_move(Napi::External<ControllerInfo> info, int32_t contact, int32_t x, int32_t y, int32_t pressure)
 {
     return MaaControllerPostTouchMove(info.Data()->handle, contact, x, y, pressure);
 }
@@ -324,9 +270,7 @@ MaaStatus controller_status(Napi::External<ControllerInfo> info, MaaCtrlId id)
 Napi::Promise controller_wait(Napi::Env env, Napi::External<ControllerInfo> info, MaaCtrlId id)
 {
     auto handle = info.Data()->handle;
-    auto worker = new SimpleAsyncWork<MaaStatus, "controller_wait">(env, [handle, id]() {
-        return MaaControllerWait(handle, id);
-    });
+    auto worker = new SimpleAsyncWork<MaaStatus, "controller_wait">(env, [handle, id]() { return MaaControllerWait(handle, id); });
     worker->Queue();
     return worker->Promise();
 }
@@ -336,8 +280,7 @@ bool controller_connected(Napi::External<ControllerInfo> info)
     return MaaControllerConnected(info.Data()->handle);
 }
 
-std::optional<Napi::ArrayBuffer>
-    controller_cached_image(Napi::Env env, Napi::External<ControllerInfo> info)
+std::optional<Napi::ArrayBuffer> controller_cached_image(Napi::Env env, Napi::External<ControllerInfo> info)
 {
     ImageBuffer buffer;
     auto ret = MaaControllerCachedImage(info.Data()->handle, buffer);
@@ -361,10 +304,7 @@ std::optional<std::string> controller_get_uuid(Napi::External<ControllerInfo> in
     }
 }
 
-void load_instance_controller(
-    Napi::Env env,
-    Napi::Object& exports,
-    Napi::External<ExtContextInfo> context)
+void load_instance_controller(Napi::Env env, Napi::Object& exports, Napi::External<ExtContextInfo> context)
 {
     BIND(adb_controller_create);
     BIND(win32_controller_create);

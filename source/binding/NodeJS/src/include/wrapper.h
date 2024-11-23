@@ -303,7 +303,7 @@ struct JSConvert<uint64_t>
     static Napi::Value to_value(Napi::Env env, const uint64_t& val)
     {
         constexpr uint64_t upper = (1ull << 53) - 1;
-        if (0 <= val && val <= upper) {
+        if (val <= upper) {
             return Napi::Number::New(env, static_cast<double>(val));
         }
         else {
@@ -572,7 +572,7 @@ struct JSWrapFunction
 
                 return ret;
             }
-            catch (MaaNodeException exc) {
+            catch (const MaaNodeException& exc) {
                 Napi::TypeError::New(info.Env(), fmt::format("maa.{}: {}", name.data, exc.what())).ThrowAsJavaScriptException();
                 return info.Env().Null();
             }

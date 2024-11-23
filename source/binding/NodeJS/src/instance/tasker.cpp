@@ -20,7 +20,7 @@ std::optional<Napi::External<TaskerInfo>> tasker_create(Napi::Env env, ExtContex
     handle = MaaTaskerCreate(cb, ctx);
 
     if (handle) {
-        auto info = Napi::External<TaskerInfo>::New(env, new TaskerInfo { handle, ctx }, &DeleteFinalizer<TaskerInfo*>);
+        auto info = Napi::External<TaskerInfo>::New(env, new TaskerInfo { { handle }, ctx }, &DeleteFinalizer<TaskerInfo*>);
         context->taskers[handle] = Napi::Weak(info);
         return info;
     }
