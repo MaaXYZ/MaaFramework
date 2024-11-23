@@ -546,14 +546,17 @@ struct JSWrapFunction
                             return std::tuple_cat(std::make_tuple(info.Env(), ctx.Data()), std::move(p));
                         }
                         else {
+                            std::ignore = ctx;
                             return std::tuple_cat(std::make_tuple(info.Env()), std::move(p));
                         }
                     }
                     else {
+                        std::ignore = info;
                         if constexpr (FuncTraits<Func>::want_ctx) {
                             return std::tuple_cat(std::make_tuple(ctx.Data()), std::move(p));
                         }
                         else {
+                            std::ignore = ctx;
                             return p;
                         }
                     }
