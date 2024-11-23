@@ -1,0 +1,11 @@
+{
+    "name": "@nekosu/maa-node-win32-x64",
+    "main": "./maa.node",
+    "scripts": {},
+    "os": [
+        "win32"
+    ],
+    "cpu": [
+        "x64"
+    ]
+}

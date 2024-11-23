@@ -1,0 +1,24 @@
+{
+    "name": "@nekosu/maa-node",
+    "author": "nekosu",
+    "main": "./dist/index.js",
+    "types": "./dist/index.d.ts",
+    "scripts": {
+        "build": "node scripts/build.mjs && tsc"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git://github.com/MaaXYZ/MaaFramework.git"
+    },
+    "engines": {
+        "node": ">= 20.0.0"
+    },
+    "devDependencies": {
+        "@trivago/prettier-plugin-sort-imports": "^4.3.0",
+        "@tsconfig/node20": "^20.1.4",
+        "@types/node": "^20",
+        "esbuild": "^0.21.5",
+        "prettier": "^3.3.2",
+        "typescript": "^5.4.5"
+    }
+}

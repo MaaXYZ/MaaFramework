@@ -1,0 +1,11 @@
+{
+    "name": "@nekosu/maa-node-linux-arm64",
+    "main": "./maa.node",
+    "scripts": {},
+    "os": [
+        "linux"
+    ],
+    "cpu": [
+        "arm64"
+    ]
+}
