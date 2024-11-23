@@ -84,7 +84,7 @@ jobs:
             - name: Prepare node_modules
               run: |
                   cd source/binding/NodeJS
-                  pnpm i
+                  pnpm ci
                   cd -
 
             - name: Build MAA
@@ -167,7 +167,7 @@ jobs:
             - name: Prepare node_modules
               run: |
                   cd source/binding/NodeJS
-                  pnpm i
+                  pnpm ci
                   cd -
 
             - name: Build MAA
@@ -248,7 +248,7 @@ jobs:
             - name: Prepare node_modules
               run: |
                   cd source/binding/NodeJS
-                  pnpm i
+                  pnpm ci
                   cd -
 
             - name: Build MAA
@@ -398,6 +398,34 @@ jobs:
               with:
                   name: MAA-pip-pkgs
                   path: "tools/pip_pack/wheel/*.whl"
+
+    nodejs_pack:
+        needs: [meta, windows, ubuntu, macos, android]
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v4
+            - uses: actions/download-artifact@v4
+              with:
+                  path: assets
+
+            - uses: pnpm/action-setup@v4
+              with:
+                  version: latest
+
+            - name: Use Node
+              uses: actions/setup-node@v4
+              with:
+                  node-version: 20
+
+            - name: Build wrapper
+              run: |
+                  cd source/binding/NodeJS/release/maa-node
+                  pnpm ci
+                  npm run build
+
+            - name: Dump assets
+              run: |
+                  find assets
 
     release:
         if: ${{ needs.meta.outputs.is_release == 'true' && github.repository_id == '632024122' }}
