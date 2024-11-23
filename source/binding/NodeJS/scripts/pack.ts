@@ -7,8 +7,7 @@ const version = process.argv[3].replace(/^v/, '')
 
 const bindingPath = path.resolve(process.cwd(), path.dirname(process.argv[1]), '..')
 const releasePath = path.join(bindingPath, 'release')
-const rootPath = path.resolve(bindingPath, '..', '..', '..')
-const agentBinaryPath = path.join(rootPath, '3rdparty', 'MaaAgentBinary')
+// const rootPath = path.resolve(bindingPath, '..', '..', '..')
 
 const platforms: [maa: string, node: string][] = [
     ['win', 'win32'],
@@ -26,9 +25,13 @@ async function main() {
     cp.execSync(`npm --prefix ${corePackPath} pkg set version=${version}`)
     await fs.rm(path.join(corePackPath, 'node_modules'), { recursive: true })
     for (const dir of ['minitouch', 'maatouch', 'minicap']) {
-        await fs.cp(path.join(agentBinaryPath, dir), path.join(corePackPath, 'agent'), {
-            recursive: true
-        })
+        await fs.cp(
+            path.join(assetsPath, 'MAA-win-x86_64', 'share', 'MaaAgentBinary', dir),
+            path.join(corePackPath, 'agent'),
+            {
+                recursive: true
+            }
+        )
     }
 
     for (const [mplat, nplat] of platforms) {
