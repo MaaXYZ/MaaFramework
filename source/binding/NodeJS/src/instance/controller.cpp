@@ -61,6 +61,7 @@ std::optional<Napi::External<ControllerInfo>> win32_controller_create(
         return std::nullopt;
     }
 #endif
+    std::ignore = h;
 
     MaaNotificationCallback cb = nullptr;
     CallbackContext* ctx = nullptr;

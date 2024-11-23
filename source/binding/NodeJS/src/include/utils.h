@@ -32,7 +32,7 @@ public:
         try {
             deferred.Resolve(ok(Env(), result));
         }
-        catch (MaaNodeException exc) {
+        catch (const MaaNodeException& exc) {
             deferred.Reject(Napi::TypeError::New(Env(), fmt::format("maa.{}: {}", name.data, exc.what())).Value());
         }
     }

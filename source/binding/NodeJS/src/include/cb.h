@@ -11,10 +11,7 @@ inline void NotificationCallback(const char* message, const char* details_json, 
 {
     auto ctx = reinterpret_cast<CallbackContext*>(callback_arg);
     ctx->Call<void>(
-        [=](auto env, auto fn) {
-            return fn.Call(
-                { Napi::String::New(env, message), Napi::String::New(env, details_json) });
-        },
+        [=](auto env, auto fn) { return fn.Call({ Napi::String::New(env, message), Napi::String::New(env, details_json) }); },
         [](auto res) { std::ignore = res; });
 }
 
@@ -48,7 +45,7 @@ inline MaaBool CustomRecognizerCallback(
             try {
                 return JSConvert<Result>::from_value(res);
             }
-            catch (MaaNodeException exc) {
+            catch (const MaaNodeException& exc) {
                 std::cerr << exc.what() << std::endl;
                 return std::nullopt;
             }
@@ -92,7 +89,7 @@ inline MaaBool CustomActionCallback(
             try {
                 return JSConvert<bool>::from_value(res);
             }
-            catch (MaaNodeException exc) {
+            catch (const MaaNodeException& exc) {
                 std::cerr << exc.what() << std::endl;
                 return false;
             }
@@ -111,7 +108,7 @@ inline MaaBool CustomControllerConnect(void* trans_arg)
             try {
                 return JSConvert<bool>::from_value(res);
             }
-            catch (MaaNodeException exc) {
+            catch (const MaaNodeException& exc) {
                 std::cerr << exc.what() << std::endl;
                 return false;
             }
@@ -151,14 +148,12 @@ inline MaaBool CustomControllerStartApp(const char* intent, void* trans_arg)
     auto ctx = reinterpret_cast<CallbackContext*>(trans_arg);
 
     auto res = ctx->Call<bool>(
-        [=](auto env, auto fn) {
-            return fn.Call({ Napi::String::New(env, "start_app"), Napi::String::New(env, intent) });
-        },
+        [=](auto env, auto fn) { return fn.Call({ Napi::String::New(env, "start_app"), Napi::String::New(env, intent) }); },
         [](Napi::Value res) {
             try {
                 return JSConvert<bool>::from_value(res);
             }
-            catch (MaaNodeException exc) {
+            catch (const MaaNodeException& exc) {
                 std::cerr << exc.what() << std::endl;
                 return false;
             }
@@ -172,14 +167,12 @@ inline MaaBool CustomControllerStopApp(const char* intent, void* trans_arg)
     auto ctx = reinterpret_cast<CallbackContext*>(trans_arg);
 
     auto res = ctx->Call<bool>(
-        [=](auto env, auto fn) {
-            return fn.Call({ Napi::String::New(env, "stop_app"), Napi::String::New(env, intent) });
-        },
+        [=](auto env, auto fn) { return fn.Call({ Napi::String::New(env, "stop_app"), Napi::String::New(env, intent) }); },
         [](Napi::Value res) {
             try {
                 return JSConvert<bool>::from_value(res);
             }
-            catch (MaaNodeException exc) {
+            catch (const MaaNodeException& exc) {
                 std::cerr << exc.what() << std::endl;
                 return false;
             }
@@ -198,17 +191,14 @@ inline MaaBool CustomControllerScreencap(void* trans_arg, MaaImageBuffer* buffer
             try {
                 return JSConvert<std::optional<Napi::ArrayBuffer>>::from_value(res);
             }
-            catch (MaaNodeException exc) {
+            catch (const MaaNodeException& exc) {
                 std::cerr << exc.what() << std::endl;
                 return std::nullopt;
             }
         });
 
     if (res) {
-        return MaaImageBufferSetEncoded(
-            buffer,
-            static_cast<uint8_t*>(res->Data()),
-            res->ByteLength());
+        return MaaImageBufferSetEncoded(buffer, static_cast<uint8_t*>(res->Data()), res->ByteLength());
     }
     else {
         return false;
@@ -221,15 +211,13 @@ inline MaaBool CustomControllerClick(int32_t x, int32_t y, void* trans_arg)
 
     auto res = ctx->Call<bool>(
         [=](auto env, auto fn) {
-            return fn.Call({ Napi::String::New(env, "click"),
-                             Napi::Number::New(env, x),
-                             Napi::Number::New(env, y) });
+            return fn.Call({ Napi::String::New(env, "click"), Napi::Number::New(env, x), Napi::Number::New(env, y) });
         },
         [](Napi::Value res) {
             try {
                 return JSConvert<bool>::from_value(res);
             }
-            catch (MaaNodeException exc) {
+            catch (const MaaNodeException& exc) {
                 std::cerr << exc.what() << std::endl;
                 return false;
             }
@@ -238,13 +226,7 @@ inline MaaBool CustomControllerClick(int32_t x, int32_t y, void* trans_arg)
     return res;
 }
 
-inline MaaBool CustomControllerSwipe(
-    int32_t x1,
-    int32_t y1,
-    int32_t x2,
-    int32_t y2,
-    int32_t duration,
-    void* trans_arg)
+inline MaaBool CustomControllerSwipe(int32_t x1, int32_t y1, int32_t x2, int32_t y2, int32_t duration, void* trans_arg)
 {
     auto ctx = reinterpret_cast<CallbackContext*>(trans_arg);
 
@@ -261,7 +243,7 @@ inline MaaBool CustomControllerSwipe(
             try {
                 return JSConvert<bool>::from_value(res);
             }
-            catch (MaaNodeException exc) {
+            catch (const MaaNodeException& exc) {
                 std::cerr << exc.what() << std::endl;
                 return false;
             }
@@ -270,12 +252,7 @@ inline MaaBool CustomControllerSwipe(
     return res;
 }
 
-inline MaaBool CustomControllerTouchDown(
-    int32_t contact,
-    int32_t x,
-    int32_t y,
-    int32_t pressure,
-    void* trans_arg)
+inline MaaBool CustomControllerTouchDown(int32_t contact, int32_t x, int32_t y, int32_t pressure, void* trans_arg)
 {
     auto ctx = reinterpret_cast<CallbackContext*>(trans_arg);
 
@@ -291,7 +268,7 @@ inline MaaBool CustomControllerTouchDown(
             try {
                 return JSConvert<bool>::from_value(res);
             }
-            catch (MaaNodeException exc) {
+            catch (const MaaNodeException& exc) {
                 std::cerr << exc.what() << std::endl;
                 return false;
             }
@@ -300,12 +277,7 @@ inline MaaBool CustomControllerTouchDown(
     return res;
 }
 
-inline MaaBool CustomControllerTouchMove(
-    int32_t contact,
-    int32_t x,
-    int32_t y,
-    int32_t pressure,
-    void* trans_arg)
+inline MaaBool CustomControllerTouchMove(int32_t contact, int32_t x, int32_t y, int32_t pressure, void* trans_arg)
 {
     auto ctx = reinterpret_cast<CallbackContext*>(trans_arg);
 
@@ -321,7 +293,7 @@ inline MaaBool CustomControllerTouchMove(
             try {
                 return JSConvert<bool>::from_value(res);
             }
-            catch (MaaNodeException exc) {
+            catch (const MaaNodeException& exc) {
                 std::cerr << exc.what() << std::endl;
                 return false;
             }
@@ -335,14 +307,12 @@ inline MaaBool CustomControllerTouchUp(int32_t contact, void* trans_arg)
     auto ctx = reinterpret_cast<CallbackContext*>(trans_arg);
 
     auto res = ctx->Call<bool>(
-        [=](auto env, auto fn) {
-            return fn.Call({ Napi::String::New(env, "touch_up"), Napi::Number::New(env, contact) });
-        },
+        [=](auto env, auto fn) { return fn.Call({ Napi::String::New(env, "touch_up"), Napi::Number::New(env, contact) }); },
         [](Napi::Value res) {
             try {
                 return JSConvert<bool>::from_value(res);
             }
-            catch (MaaNodeException exc) {
+            catch (const MaaNodeException& exc) {
                 std::cerr << exc.what() << std::endl;
                 return false;
             }
@@ -356,15 +326,12 @@ inline MaaBool CustomControllerPressKey(int32_t keycode, void* trans_arg)
     auto ctx = reinterpret_cast<CallbackContext*>(trans_arg);
 
     auto res = ctx->Call<bool>(
-        [=](auto env, auto fn) {
-            return fn.Call(
-                { Napi::String::New(env, "press_key"), Napi::Number::New(env, keycode) });
-        },
+        [=](auto env, auto fn) { return fn.Call({ Napi::String::New(env, "press_key"), Napi::Number::New(env, keycode) }); },
         [](Napi::Value res) {
             try {
                 return JSConvert<bool>::from_value(res);
             }
-            catch (MaaNodeException exc) {
+            catch (const MaaNodeException& exc) {
                 std::cerr << exc.what() << std::endl;
                 return false;
             }
@@ -378,14 +345,12 @@ inline MaaBool CustomControllerInputText(const char* text, void* trans_arg)
     auto ctx = reinterpret_cast<CallbackContext*>(trans_arg);
 
     auto res = ctx->Call<bool>(
-        [=](auto env, auto fn) {
-            return fn.Call({ Napi::String::New(env, "input_text"), Napi::String::New(env, text) });
-        },
+        [=](auto env, auto fn) { return fn.Call({ Napi::String::New(env, "input_text"), Napi::String::New(env, text) }); },
         [](Napi::Value res) {
             try {
                 return JSConvert<bool>::from_value(res);
             }
-            catch (MaaNodeException exc) {
+            catch (const MaaNodeException& exc) {
                 std::cerr << exc.what() << std::endl;
                 return false;
             }
