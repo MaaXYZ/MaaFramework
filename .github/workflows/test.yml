@@ -72,6 +72,24 @@ jobs:
               run: |
                   python3 tools/maadeps-download.py ${{ matrix.arch == 'x86_64' && 'x64' || 'arm64' }}-windows
 
+            - uses: pnpm/action-setup@v4
+              with:
+                  version: latest
+
+            - name: Use Node
+              uses: actions/setup-node@v4
+              with:
+                  node-version: 20
+
+            - name: Prepare Node Binding
+              shell: bash
+              run: |
+                  cd source/binding/NodeJS
+                  pnpm i
+                  cd release/maa-node
+                  pnpm i
+                  npm run build
+
             - name: Build MAA
               run: |
                   cmake --preset "${{ matrix.arch == 'x86_64' && 'MSVC 2022' || 'MSVC 2022 ARM' }}" -DMAADEPS_TRIPLET="maa-${{ matrix.arch == 'x86_64' && 'x64' || 'arm64' }}-windows" -DCMAKE_SYSTEM_VERSION="10.0.22621.0" -DMAA_HASH_VERSION='${{ needs.meta.outputs.tag }}' -DBUILD_PIPELINE_TESTING=ON -DBUILD_DLOPEN_TESTING=ON
@@ -102,6 +120,13 @@ jobs:
               run: |
                   python3 -m pip install -r ./install/binding/Python/requirements.txt
                   python3 ./test/python/binding_test.py ./install
+
+            - name: Run NodeJS testing
+              shell: bash
+              run: |
+                  cd test/nodejs
+                  pnpm i
+                  npx tsx binding.ts
 
             - uses: actions/upload-artifact@v4
               if: always()
@@ -157,6 +182,24 @@ jobs:
               run: |
                   python3 tools/maadeps-download.py ${{ matrix.arch == 'x86_64' && 'x64' || 'arm64' }}-linux
 
+            - uses: pnpm/action-setup@v4
+              with:
+                  version: latest
+
+            - name: Use Node
+              uses: actions/setup-node@v4
+              with:
+                  node-version: 20
+
+            - name: Prepare Node Binding
+              shell: bash
+              run: |
+                  cd source/binding/NodeJS
+                  pnpm i
+                  cd release/maa-node
+                  pnpm i
+                  npm run build
+
             - name: Build MAA
               env:
                   CC: ${{ matrix.arch == 'x86_64' && 'gcc' || 'aarch64-linux-gnu-gcc' }}
@@ -195,6 +238,13 @@ jobs:
                   source .venv/bin/activate
                   python3 -m pip install -r ./install/binding/Python/requirements.txt
                   python3 ./test/python/binding_test.py ./install
+
+            - name: Run NodeJS testing
+              shell: bash
+              run: |
+                  cd test/nodejs
+                  pnpm i
+                  npx tsx binding.ts
 
             - uses: actions/upload-artifact@v4
               if: always()
@@ -244,6 +294,24 @@ jobs:
               run: |
                   python3 tools/maadeps-download.py ${{ matrix.arch == 'x86_64' && 'x64' || 'arm64' }}-osx
 
+            - uses: pnpm/action-setup@v4
+              with:
+                  version: latest
+
+            - name: Use Node
+              uses: actions/setup-node@v4
+              with:
+                  node-version: 20
+
+            - name: Prepare Node Binding
+              shell: bash
+              run: |
+                  cd source/binding/NodeJS
+                  pnpm i
+                  cd release/maa-node
+                  pnpm i
+                  npm run build
+
             - name: Build MAA
               run: |
                   LLVM_PREFIX=$(brew --prefix llvm)
@@ -279,6 +347,13 @@ jobs:
                   source .venv/bin/activate
                   python3 -m pip install -r ./install/binding/Python/requirements.txt
                   python3 ./test/python/binding_test.py ./install
+
+            - name: Run NodeJS testing
+              shell: bash
+              run: |
+                  cd test/nodejs
+                  pnpm i
+                  npx tsx binding.ts
 
             - uses: actions/upload-artifact@v4
               if: always()
