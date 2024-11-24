@@ -155,10 +155,15 @@ _Please note that you only need to read this chapter if you are ready to develop
 
 Thanks to the following developers for their contributions to MaaFramework:
 
-<a href="https://github.com/MaaXYZ/MaaFramework/graphs/contributors">
-  <img src="https://contrib.rocks/image?repo=MaaXYZ/MaaFramework&max=1000" />
-</a>
+[![Contributors](https://contrib.rocks/image?repo=MaaXYZ/MaaFramework&max=1000)](https://github.com/MaaXYZ/MaaFramework/graphs/contributors)
 
 ## Discussion
 
 - QQ Group: 595990173
+
+## Sponsor
+
+<!-- markdownlint-disable MD045 -->
+<a href="https://afdian.com/a/misteo">
+  <img width="200" src="https://pic1.afdiancdn.com/static/img/welcome/button-sponsorme.png">
+</a>

@@ -155,9 +155,7 @@ _请留意，仅当您准备开发 MaaFramework 本身时，才需要阅读本�
 
 感谢以下开发者对 MaaFramework 作出的贡献：
 
-<a href="https://github.com/MaaXYZ/MaaFramework/graphs/contributors">
-  <img src="https://contrib.rocks/image?repo=MaaXYZ/MaaFramework&max=1000" />
-</a>
+[![Contributors](https://contrib.rocks/image?repo=MaaXYZ/MaaFramework&max=1000)](https://github.com/MaaXYZ/MaaFramework/graphs/contributors)
 
 ## 讨论
 
@@ -165,6 +163,7 @@ _请留意，仅当您准备开发 MaaFramework 本身时，才需要阅读本�
 
 ## 赞助
 
+<!-- markdownlint-disable MD045 -->
 <a href="https://afdian.com/a/misteo">
   <img width="200" src="https://pic1.afdiancdn.com/static/img/welcome/button-sponsorme.png">
 </a>
