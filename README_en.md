@@ -42,9 +42,6 @@ It offers low-code simplicity while maintaining high extensibility. The framewor
 
 ## Best Practices
 
-<details>
-<summary>Expand</summary>
-
 - [M9A](https://github.com/MaaXYZ/M9A) 1999 Assistant ![Pipeline](https://img.shields.io/badge/Pipeline-%23454545?logo=paddypower&logoColor=%23FFFFFF)  
   The 1999 Assistant, based on a brand new architecture. Image technology + simulation control, freeing your hands! Powered by MaaFramework.
 
@@ -98,8 +95,6 @@ It offers low-code simplicity while maintaining high extensibility. The framewor
 
 - [MaaYuan](https://github.com/syoius/MaaYuan) Ashes of the kingdom Assistant ![Pipeline](https://img.shields.io/badge/Pipeline-%23454545?logo=paddypower&logoColor=%23FFFFFF)  
   The Ashes of the kingdom Assistant, based on a brand new architecture. Image technology + simulation control, freeing your hands! Powered by MaaFramework.
-
-</details>
 
 ## Eco-Building
 
