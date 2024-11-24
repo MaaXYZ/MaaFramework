@@ -43,7 +43,7 @@ _✨ 基于图像识别的自动化黑盒测试框架 ✨_
 ## 最佳实践
 
 <details>
-<summary>最佳实践</summary>
+<summary>展开</summary>
 
 - [M9A](https://github.com/MaaXYZ/M9A) 1999 小助手 ![Pipeline](https://img.shields.io/badge/Pipeline-%23454545?logo=paddypower&logoColor=%23FFFFFF)  
   基于全新架构的 亿韭韭韭 小助手。图像技术 + 模拟控制，解放双手！由 MaaFramework 强力驱动！
