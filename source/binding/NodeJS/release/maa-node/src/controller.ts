@@ -3,6 +3,39 @@ import path from 'path'
 import { Job, JobSource } from './job'
 import maa, { ImageData } from './maa'
 
+class ImageJob extends Job<maa.CtrlId, JobSource<maa.CtrlId>> {
+    #ctrl: ControllerBase
+
+    constructor(ctrl: ControllerBase, source: JobSource<maa.CtrlId>, id: maa.CtrlId) {
+        super(source, id)
+
+        this.#ctrl = ctrl
+    }
+
+    get() {
+        if (this.done) {
+            return this.#ctrl.cached_image
+        } else {
+            return null
+        }
+    }
+
+    wait() {
+        const superPro = super.wait()
+        const pro = superPro as typeof superPro & {
+            get: () => Promise<ArrayBuffer | null>
+        }
+        pro.get = () => {
+            return new Promise(resolve => {
+                pro.then(self => {
+                    resolve(self.get())
+                })
+            })
+        }
+        return pro
+    }
+}
+
 export type ControllerNotify =
     | ({
           adb: string
@@ -137,7 +170,7 @@ export class ControllerBase {
     }
 
     post_screencap() {
-        return new Job(this.#source, maa.controller_post_screencap(this.handle))
+        return new ImageJob(this, this.#source, maa.controller_post_screencap(this.handle))
     }
 
     get connected() {

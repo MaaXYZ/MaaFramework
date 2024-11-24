@@ -20,9 +20,30 @@ export class Job<Id, Source extends JobSource<Id>> {
         return this.#status ?? this.source.status(this.id)
     }
 
-    async wait(): Promise<this> {
-        this.#status = await this.source.wait(this.id)
-        return this
+    wait() {
+        const realWait = async () => {
+            this.#status = await this.source.wait(this.id)
+            return this
+        }
+
+        const pro = realWait() as Promise<this> & {
+            status: Promise<maa.Status>
+            done: Promise<boolean>
+            succeeded: Promise<boolean>
+            failed: Promise<boolean>
+        }
+        for (const key of ['status', 'done', 'succeeded', 'failed']) {
+            Object.defineProperty(pro, key, {
+                get: () => {
+                    return new Promise(resolve => {
+                        pro.then(self => {
+                            resolve((self as any)[key])
+                        })
+                    })
+                }
+            })
+        }
+        return pro
     }
 
     get done() {

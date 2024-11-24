@@ -83,42 +83,6 @@ std::optional<Napi::External<ControllerInfo>> win32_controller_create(
     }
 }
 
-/*
-Napi::Value custom_controller_create(const Napi::CallbackInfo& info)
-{
-    CheckCount(info, 2);
-
-    auto custom_callback = CheckAsFunction(info[0]);
-    CallbackContext* custom_ctx =
-        new CallbackContext(info.Env(), custom_callback, "CustomControllerCallback");
-
-    MaaControllerCallback cb = nullptr;
-    CallbackContext* ctx = nullptr;
-    MaaControllerHandle handle = nullptr;
-
-    if (!info[1].IsNull()) {
-        auto callback = CheckAsFunction(info[1]);
-
-        cb = TrivialCallback;
-        ctx = new CallbackContext { info.Env(), callback, "TrivialCallback" };
-    }
-
-    handle = MaaCustomControllerCreate(&custom_controller_api, custom_ctx, cb, ctx);
-
-    if (handle) {
-        return Napi::External<ControllerInfo>::New(
-            info.Env(),
-            new ControllerInfo { handle, ctx, custom_ctx },
-            &DeleteFinalizer<ControllerInfo*>);
-    }
-    else {
-        delete custom_ctx;
-        delete ctx;
-        return info.Env().Null();
-    }
-}
-*/
-
 std::optional<Napi::External<ControllerInfo>>
     custom_controller_create(Napi::Env env, std::optional<Napi::Function> ctrl, std::optional<Napi::Function> callback)
 {

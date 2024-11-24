@@ -23,29 +23,15 @@ class TaskJob extends Job<maa.TaskId, JobSource<maa.TaskId>> {
     }
 
     wait() {
-        const pro = super.wait() as Promise<this> & {
+        const superPro = super.wait()
+        const pro = superPro as typeof superPro & {
             get: () => Promise<TaskDetail>
-            status: Promise<maa.Status>
-            done: Promise<boolean>
-            success: Promise<boolean>
-            failed: Promise<boolean>
         }
         pro.get = () => {
             return new Promise(resolve => {
                 pro.then(self => {
                     resolve(self.get())
                 })
-            })
-        }
-        for (const key of ['status', 'done', 'success', 'failed']) {
-            Object.defineProperty(pro, key, {
-                get: () => {
-                    return new Promise(resolve => {
-                        pro.then(self => {
-                            resolve((self as any)[key])
-                        })
-                    })
-                }
             })
         }
         return pro
@@ -221,6 +207,10 @@ export class TaskerBase {
         } else {
             return null
         }
+    }
+
+    latest_node(task: string) {
+        return maa.tasker_get_latest_node(this.handle, task)
     }
 }
 

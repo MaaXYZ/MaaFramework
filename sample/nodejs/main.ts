@@ -1,4 +1,5 @@
-import maa from '@nekosu/maa-node'
+import maa from '../../source/binding/NodeJS/release/maa-node'
+// import maa from '@nekosu/maa-node'
 
 console.log(maa.Global.version)
 
@@ -76,8 +77,6 @@ async function main() {
     res.register_custom_recognizer('MyRec', my_reco)
 
     let task_detail = await tskr.post_pipeline('StartUpAndClickButton').wait().get()
-
-    let reco_task_detail = await tskr.post_recognition('MySingleMatch').wait().get()
 
     tskr.destroy()
     ctrl.destroy()

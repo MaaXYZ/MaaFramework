@@ -6,6 +6,7 @@
 
 #include <MaaFramework/MaaAPI.h>
 #include <iostream>
+#include <vector>
 
 inline void NotificationCallback(const char* message, const char* details_json, void* callback_arg)
 {
@@ -185,11 +186,18 @@ inline MaaBool CustomControllerScreencap(void* trans_arg, MaaImageBuffer* buffer
 {
     auto ctx = reinterpret_cast<CallbackContext*>(trans_arg);
 
-    auto res = ctx->Call<std::optional<Napi::ArrayBuffer>>(
+    auto res = ctx->Call<std::optional<std::vector<uint8_t>>>(
         [=](auto env, auto fn) { return fn.Call({ Napi::String::New(env, "screencap") }); },
-        [](Napi::Value res) -> std::optional<Napi::ArrayBuffer> {
+        [](Napi::Value res) -> std::optional<std::vector<uint8_t>> {
             try {
-                return JSConvert<std::optional<Napi::ArrayBuffer>>::from_value(res);
+                auto arrayBuffer = JSConvert<std::optional<Napi::ArrayBuffer>>::from_value(res);
+                if (arrayBuffer) {
+                    auto ptr = static_cast<uint8_t*>(arrayBuffer->Data());
+                    return std::vector<uint8_t>(ptr, ptr + arrayBuffer->ByteLength());
+                }
+                else {
+                    return std::nullopt;
+                }
             }
             catch (const MaaNodeException& exc) {
                 std::cerr << exc.what() << std::endl;
@@ -198,7 +206,7 @@ inline MaaBool CustomControllerScreencap(void* trans_arg, MaaImageBuffer* buffer
         });
 
     if (res) {
-        return MaaImageBufferSetEncoded(buffer, static_cast<uint8_t*>(res->Data()), res->ByteLength());
+        return MaaImageBufferSetEncoded(buffer, res->data(), res->size());
     }
     else {
         return false;
