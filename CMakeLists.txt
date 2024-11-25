@@ -15,7 +15,7 @@ option(WITH_ADB_CONTROLLER "build with adb controller" ON)
 option(WITH_WIN32_CONTROLLER "build with win32 controller" ON)
 option(WITH_DBG_CONTROLLER "build with debugging controller" ON)
 option(ENABLE_CCACHE "enable ccache if possible" ON)
-option(BUILD_NODEJS_BINDING "build nodejs binding" ON)
+option(BUILD_NODEJS_BINDING "build nodejs binding" OFF)
 
 option(BUILD_SAMPLE "build a demo" OFF)
 

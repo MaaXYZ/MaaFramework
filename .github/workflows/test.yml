@@ -3,27 +3,27 @@ name: test
 on:
     push:
         branches:
-            - "**"
+            - '**'
         paths:
-            - ".github/workflows/test.yml"
-            - "3rdparty/**"
-            - "cmake/**"
-            - "include/**"
-            - "source/**"
-            - "CMakeLists.txt"
-            - "test/**"
+            - '.github/workflows/test.yml'
+            - '3rdparty/**'
+            - 'cmake/**'
+            - 'include/**'
+            - 'source/**'
+            - 'CMakeLists.txt'
+            - 'test/**'
 
     pull_request:
         branches:
-            - "**"
+            - '**'
         paths:
-            - ".github/workflows/test.yml"
-            - "3rdparty/**"
-            - "cmake/**"
-            - "include/**"
-            - "source/**"
-            - "CMakeLists.txt"
-            - "test/**"
+            - '.github/workflows/test.yml'
+            - '3rdparty/**'
+            - 'cmake/**'
+            - 'include/**'
+            - 'source/**'
+            - 'CMakeLists.txt'
+            - 'test/**'
     workflow_dispatch:
 
 jobs:
@@ -55,7 +55,7 @@ jobs:
               with:
                   minimum-size: 16GB
                   maximum-size: 16GB
-                  disk-root: "D:"
+                  disk-root: 'D:'
 
             - uses: actions/checkout@v4
               with:
@@ -92,7 +92,7 @@ jobs:
 
             - name: Build MAA
               run: |
-                  cmake --preset "${{ matrix.arch == 'x86_64' && 'MSVC 2022' || 'MSVC 2022 ARM' }}" -DMAADEPS_TRIPLET="maa-${{ matrix.arch == 'x86_64' && 'x64' || 'arm64' }}-windows" -DCMAKE_SYSTEM_VERSION="10.0.22621.0" -DMAA_HASH_VERSION='${{ needs.meta.outputs.tag }}' -DBUILD_PIPELINE_TESTING=ON -DBUILD_DLOPEN_TESTING=ON
+                  cmake --preset "${{ matrix.arch == 'x86_64' && 'MSVC 2022' || 'MSVC 2022 ARM' }}" -DMAADEPS_TRIPLET="maa-${{ matrix.arch == 'x86_64' && 'x64' || 'arm64' }}-windows" -DCMAKE_SYSTEM_VERSION="10.0.22621.0" -DMAA_HASH_VERSION='${{ needs.meta.outputs.tag }}' -DBUILD_NODEJS_BINDING=ON -DBUILD_PIPELINE_TESTING=ON -DBUILD_DLOPEN_TESTING=ON
 
                   cmake --build build --preset "${{ matrix.arch == 'x86_64' && 'MSVC 2022' || 'MSVC 2022 ARM' }} - Release" -j 16
 
@@ -132,13 +132,13 @@ jobs:
               if: always()
               with:
                   name: MAA-win-${{ matrix.arch }}-text_log
-                  path: "install/bin/debug/*.log"
+                  path: 'install/bin/debug/*.log'
 
             - uses: actions/upload-artifact@v4
               if: always()
               with:
                   name: MAA-win-${{ matrix.arch }}-full_log
-                  path: "install/bin/debug"
+                  path: 'install/bin/debug'
 
     ubuntu:
         needs: meta
@@ -208,6 +208,7 @@ jobs:
                   cmake --preset 'NinjaMulti' \
                     -DMAADEPS_TRIPLET='maa-${{ matrix.arch == 'x86_64' && 'x64' || 'arm64' }}-linux' \
                     -DMAA_HASH_VERSION='${{ needs.meta.outputs.tag }}' \
+                    -DBUILD_NODEJS_BINDING=ON \
                     -DBUILD_PIPELINE_TESTING=ON -DBUILD_DLOPEN_TESTING=ON
 
                   cmake --build build --preset 'NinjaMulti - Release' -j 16
@@ -250,13 +251,13 @@ jobs:
               if: always()
               with:
                   name: MAA-linux-${{ matrix.arch }}-text_log
-                  path: "install/bin/debug/*.log"
+                  path: 'install/bin/debug/*.log'
 
             - uses: actions/upload-artifact@v4
               if: always()
               with:
                   name: MAA-linux-${{ matrix.arch }}-full_log
-                  path: "install/bin/debug"
+                  path: 'install/bin/debug'
 
     macos:
         needs: meta
@@ -318,9 +319,10 @@ jobs:
                   cmake --preset 'NinjaMulti' \
                     -DMAADEPS_TRIPLET='maa-${{ matrix.arch == 'x86_64' && 'x64' || 'arm64' }}-osx' \
                     -DMAA_HASH_VERSION='${{ needs.meta.outputs.tag }}' \
-                    -DBUILD_PIPELINE_TESTING=ON -DBUILD_DLOPEN_TESTING=ON \
                     -DCMAKE_C_COMPILER=${LLVM_PREFIX}/bin/clang \
-                    -DCMAKE_CXX_COMPILER=${LLVM_PREFIX}/bin/clang++
+                    -DCMAKE_CXX_COMPILER=${LLVM_PREFIX}/bin/clang++ \
+                     -DBUILD_NODEJS_BINDING=ON \
+                    -DBUILD_PIPELINE_TESTING=ON -DBUILD_DLOPEN_TESTING=ON
 
                   cmake --build build --preset 'NinjaMulti - Release' -j 16
 
@@ -359,10 +361,10 @@ jobs:
               if: always()
               with:
                   name: MAA-macos-${{ matrix.arch }}-text_log
-                  path: "install/bin/debug/*.log"
+                  path: 'install/bin/debug/*.log'
 
             - uses: actions/upload-artifact@v4
               if: always()
               with:
                   name: MAA-macos-${{ matrix.arch }}-full_log
-                  path: "install/bin/debug"
+                  path: 'install/bin/debug'

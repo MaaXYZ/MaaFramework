@@ -3,27 +3,27 @@ name: build
 on:
     push:
         tags:
-            - "v*"
+            - 'v*'
         branches:
-            - "**"
+            - '**'
         paths:
-            - ".github/workflows/build.yml"
-            - "3rdparty/**"
-            - "cmake/**"
-            - "include/**"
-            - "source/**"
-            - "CMakeLists.txt"
+            - '.github/workflows/build.yml'
+            - '3rdparty/**'
+            - 'cmake/**'
+            - 'include/**'
+            - 'source/**'
+            - 'CMakeLists.txt'
 
     pull_request:
         branches:
-            - "**"
+            - '**'
         paths:
-            - ".github/workflows/build.yml"
-            - "3rdparty/**"
-            - "cmake/**"
-            - "include/**"
-            - "source/**"
-            - "CMakeLists.txt"
+            - '.github/workflows/build.yml'
+            - '3rdparty/**'
+            - 'cmake/**'
+            - 'include/**'
+            - 'source/**'
+            - 'CMakeLists.txt'
     workflow_dispatch:
 
 jobs:
@@ -55,7 +55,7 @@ jobs:
               with:
                   minimum-size: 16GB
                   maximum-size: 16GB
-                  disk-root: "D:"
+                  disk-root: 'D:'
 
             - uses: actions/checkout@v4
               with:
@@ -89,7 +89,7 @@ jobs:
 
             - name: Build MAA
               run: |
-                  cmake --preset "${{ matrix.arch == 'x86_64' && 'MSVC 2022' || 'MSVC 2022 ARM' }}" -DCMAKE_SYSTEM_VERSION="10.0.22621.0" -DMAADEPS_TRIPLET="maa-${{ matrix.arch == 'x86_64' && 'x64' || 'arm64' }}-windows" -DMAA_HASH_VERSION='${{ needs.meta.outputs.tag }}'
+                  cmake --preset "${{ matrix.arch == 'x86_64' && 'MSVC 2022' || 'MSVC 2022 ARM' }}" -DCMAKE_SYSTEM_VERSION="10.0.22621.0" -DMAADEPS_TRIPLET="maa-${{ matrix.arch == 'x86_64' && 'x64' || 'arm64' }}-windows" -DMAA_HASH_VERSION='${{ needs.meta.outputs.tag }}' -DBUILD_NODEJS_BINDING=ON
 
                   cmake --build build --preset "${{ matrix.arch == 'x86_64' && 'MSVC 2022' || 'MSVC 2022 ARM' }} - Release" -j 16
 
@@ -111,7 +111,7 @@ jobs:
               if: always()
               with:
                   name: MAA-win-${{ matrix.arch }}
-                  path: "install"
+                  path: 'install'
 
     ubuntu:
         needs: meta
@@ -177,7 +177,8 @@ jobs:
               run: |
                   cmake --preset 'NinjaMulti' \
                     -DMAADEPS_TRIPLET='maa-${{ matrix.arch == 'x86_64' && 'x64' || 'arm64' }}-linux' \
-                    -DMAA_HASH_VERSION='${{ needs.meta.outputs.tag }}'
+                    -DMAA_HASH_VERSION='${{ needs.meta.outputs.tag }}' \
+                    -DBUILD_NODEJS_BINDING=ON
 
                   cmake --build build --preset 'NinjaMulti - Release' -j 16
 
@@ -198,7 +199,7 @@ jobs:
               if: always()
               with:
                   name: MAA-linux-${{ matrix.arch }}
-                  path: "install"
+                  path: 'install'
 
     macos:
         needs: meta
@@ -258,7 +259,8 @@ jobs:
                     -DMAADEPS_TRIPLET='maa-${{ matrix.arch == 'x86_64' && 'x64' || 'arm64' }}-osx' \
                     -DMAA_HASH_VERSION='${{ needs.meta.outputs.tag }}' \
                     -DCMAKE_C_COMPILER=${LLVM_PREFIX}/bin/clang \
-                    -DCMAKE_CXX_COMPILER=${LLVM_PREFIX}/bin/clang++
+                    -DCMAKE_CXX_COMPILER=${LLVM_PREFIX}/bin/clang++ \
+                    -DBUILD_NODEJS_BINDING=ON
 
                   cmake --build build --preset 'NinjaMulti - Release' -j 16
 
@@ -279,7 +281,7 @@ jobs:
               if: always()
               with:
                   name: MAA-macos-${{ matrix.arch }}
-                  path: "install"
+                  path: 'install'
 
     android:
         needs: meta
@@ -345,7 +347,7 @@ jobs:
               if: always()
               with:
                   name: MAA-android-${{ matrix.arch }}
-                  path: "install"
+                  path: 'install'
 
     nuget_pack:
         needs: [meta, windows, ubuntu, macos, android]
@@ -375,7 +377,7 @@ jobs:
               if: always()
               with:
                   name: MAA-nupkgs
-                  path: "tools/nupkgs/*.nupkg"
+                  path: 'tools/nupkgs/*.nupkg'
 
     pip_pack:
         needs: [meta, windows, ubuntu, macos, android]
@@ -397,7 +399,7 @@ jobs:
               if: always()
               with:
                   name: MAA-pip-pkgs
-                  path: "tools/pip_pack/wheel/*.whl"
+                  path: 'tools/pip_pack/wheel/*.whl'
 
     nodejs_pack:
         needs: [meta, windows, ubuntu, macos, android]
@@ -434,21 +436,11 @@ jobs:
             - uses: actions/upload-artifact@v4
               with:
                   name: MAA-nodejs-package
-                  path: "source/binding/NodeJS/release"
+                  path: 'source/binding/NodeJS/release'
 
     release:
         if: ${{ needs.meta.outputs.is_release == 'true' && github.repository_id == '632024122' }}
-        needs:
-            [
-                meta,
-                windows,
-                ubuntu,
-                macos,
-                android,
-                nuget_pack,
-                pip_pack,
-                nodejs_pack,
-            ]
+        needs: [meta, windows, ubuntu, macos, android, nuget_pack, pip_pack, nodejs_pack]
         runs-on: ubuntu-latest
         env:
             OUTPUT_PUBLISH_FAILED: 'echo "failed=true" >> $GITHUB_OUTPUT && echo "::error::Failed to publish packages"'
@@ -537,8 +529,8 @@ jobs:
               if: steps.nuget.outputs.failed || steps.pip.outputs.failed
               uses: actions-cool/issues-helper@v3
               with:
-                  actions: "create-issue"
-                  title: "${{ needs.meta.outputs.tag }} failed to publish packages"
+                  actions: 'create-issue'
+                  title: '${{ needs.meta.outputs.tag }} failed to publish packages'
                   body: |
                       Please manually publish the following packages:
                       ${{ steps.nuget.outputs.failed && '- nuget @moomiji' || '' }}
