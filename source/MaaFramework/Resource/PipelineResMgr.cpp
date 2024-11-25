@@ -630,10 +630,6 @@ bool PipelineResMgr::parse_feature_matcher_param(
         LogError << "failed to get_and_check_value_or_array templates" << VAR(input);
         return false;
     }
-    if (output.template_paths.empty()) {
-        LogError << "templates is empty" << VAR(input);
-        return false;
-    }
 
     if (!get_and_check_value(input, "green_mask", output.green_mask, default_value.green_mask)) {
         LogError << "failed to get_and_check_value green_mask" << VAR(input);
