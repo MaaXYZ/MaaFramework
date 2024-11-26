@@ -1,5 +1,5 @@
 {
-    "name": "@nekosu/maa-node",
+    "name": "@maaxyz/maa-node",
     "author": "nekosu",
     "main": "./dist/index.js",
     "types": "./dist/index.d.ts",

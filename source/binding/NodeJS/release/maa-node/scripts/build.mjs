@@ -6,12 +6,12 @@ build({
     outdir: 'dist',
     platform: 'node',
     external: [
-        '@nekosu/maa-node-win32-x64',
-        '@nekosu/maa-node-win32-arm64',
-        '@nekosu/maa-node-linux-x64',
-        '@nekosu/maa-node-linux-arm64',
-        '@nekosu/maa-node-darwin-x64',
-        '@nekosu/maa-node-darwin-arm64'
+        '@maaxyz/maa-node-win32-x64',
+        '@maaxyz/maa-node-win32-arm64',
+        '@maaxyz/maa-node-linux-x64',
+        '@maaxyz/maa-node-linux-arm64',
+        '@maaxyz/maa-node-darwin-x64',
+        '@maaxyz/maa-node-darwin-arm64'
     ],
     bundle: true
 })

@@ -1,5 +1,5 @@
 {
-    "name": "@nekosu/maa-node-linux-arm64",
+    "name": "@maaxyz/maa-node-linux-arm64",
     "main": "./MaaNode.node",
     "scripts": {},
     "os": [

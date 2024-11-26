@@ -1,5 +1,5 @@
 {
-    "name": "@nekosu/maa-node-win32-arm64",
+    "name": "@maaxyz/maa-node-win32-arm64",
     "main": "./MaaNode.node",
     "scripts": {},
     "os": [

@@ -1,5 +1,5 @@
 import maa from '../../source/binding/NodeJS/release/maa-node'
-// import maa from '@nekosu/maa-node'
+// import maa from '@maaxyz/maa-node'
 
 console.log(maa.Global.version)
 
