@@ -1,0 +1,11 @@
+{
+    "name": "@maaxyz/maa-node-linux-arm64",
+    "main": "./MaaNode.node",
+    "scripts": {},
+    "os": [
+        "linux"
+    ],
+    "cpu": [
+        "arm64"
+    ]
+}

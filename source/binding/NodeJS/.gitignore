@@ -1,0 +1,12 @@
+.cache
+build
+/install
+/maa
+node_modules
+/dist/binary
+.DS_Store
+*.png
+dist
+debug
+maa_option.json
+!release

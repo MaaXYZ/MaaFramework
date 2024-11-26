@@ -1,0 +1,11 @@
+{
+    "name": "@maaxyz/maa-node-darwin-x64",
+    "main": "./MaaNode.node",
+    "scripts": {},
+    "os": [
+        "darwin"
+    ],
+    "cpu": [
+        "x64"
+    ]
+}

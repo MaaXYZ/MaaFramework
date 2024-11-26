@@ -1,0 +1,8 @@
+/node_modules
+*.md
+LICENSE
+.gitkeep
+/src
+/scripts
+/tsconfig.json
+/pnpm-lock.yaml
