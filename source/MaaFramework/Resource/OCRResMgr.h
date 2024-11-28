@@ -4,7 +4,9 @@
 
 #include "Conf/Conf.h"
 
+#ifdef _WIN32
 #include "Utils/SafeWindows.hpp"
+#endif
 
 MAA_SUPPRESS_CV_WARNINGS_BEGIN
 #include "fastdeploy/vision/ocr/ppocr/dbdetector.h"

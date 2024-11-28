@@ -306,7 +306,7 @@ void ResourceMgr::check_and_set_gpu(const std::optional<int>& specified_device)
 #endif
 #ifdef MAA_WITH_COREML
     else if (all_providers.contains("CoreMLExecutionProvider")) {
-        uint32_t coreml_flag = static_cast<uint32_t>(gpu_id.value_or(CoreMLFlags.COREML_FLAG_ONLY_ENABLE_DEVICE_WITH_ANE));
+        uint32_t coreml_flag = static_cast<uint32_t>(gpu_id.value_or(COREMLFlags::COREML_FLAG_ONLY_ENABLE_DEVICE_WITH_ANE));
         onnx_res_.set_coreml(coreml_flag);
         ocr_res_.set_coreml(coreml_flag);
     }
