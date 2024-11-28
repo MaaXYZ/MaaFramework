@@ -38,9 +38,21 @@ install(DIRECTORY "${MAA_PUBLIC_INC}/MaaFramework" DESTINATION "include")
 source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES ${maa_framework_src})
 
 if(WIN32)
-    add_custom_command(
-        TARGET MaaFramework
-        POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_RUNTIME_DLLS:MaaFramework> $<TARGET_FILE_DIR:MaaFramework>
-        COMMAND_EXPAND_LISTS)
+    if(USE_MAADEPS)
+        add_custom_command(
+            TARGET MaaFramework
+            POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy_directory_if_different
+            "${MAADEPS_DIR}/runtime/${MAADEPS_TRIPLET}/$<$<CONFIG:Debug>:msvc-debug/>"
+            $<TARGET_FILE_DIR:MaaFramework>
+            COMMAND_EXPAND_LISTS)
+    else()
+        add_custom_command(
+            TARGET MaaFramework
+            POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy_directory_if_different
+            $<TARGET_RUNTIME_DLLS:MaaFramework>
+            $<TARGET_FILE_DIR:MaaFramework>
+            COMMAND_EXPAND_LISTS)
+    endif()
 endif()
