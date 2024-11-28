@@ -46,6 +46,9 @@ async function main() {
                 await fs.copyFile(path.join(maaBinPath, file), path.join(sepPackPath, file))
             }
 
+            cp.execSync(
+                `npm --prefix ${corePackPath} pkg set optionalDependencies.@maaxyz/maa-node-${nplat}-${narch}=${version}`
+            )
             cp.execSync(`npm --prefix ${sepPackPath} pkg set version=${version}`)
         }
     }
