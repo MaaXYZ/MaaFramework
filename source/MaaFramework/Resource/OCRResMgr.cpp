@@ -40,9 +40,7 @@ void OCRResMgr::set_dml(int device_id)
 void OCRResMgr::set_coreml(uint32_t coreml_flag)
 {
     LogInfo << VAR(coreml_flag);
-
-    // TODO
-    set_cpu();
+    option_.UseCoreML(coreml_flag);
 }
 
 bool OCRResMgr::lazy_load(const std::filesystem::path& path, bool is_base)
