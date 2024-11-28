@@ -306,7 +306,7 @@ jobs:
             - uses: nttld/setup-ndk@v1
               id: setup-ndk
               with:
-                  ndk-version: r27
+                  ndk-version: r27c
 
             - name: Setup ccache
               uses: Chocobo1/setup-ccache-action@v1

@@ -8,22 +8,16 @@
 #include "Utils/SafeWindows.hpp"
 #endif
 
-#if __has_include(<onnxruntime/dml_provider_factory.h>)
-#pragma message("MAA_WITH_DML")
-#define MAA_WITH_DML
-#include <onnxruntime/dml_provider_factory.h>
-#endif
-
-#if __has_include(<onnxruntime/coreml_provider_factory.h>)
-#pragma message("MAA_WITH_COREML")
-#define MAA_WITH_COREML
-#include <onnxruntime/coreml_provider_factory.h>
-#endif
-
+#include "MLProvider.h"
 #include "Utils/Logger.h"
 #include "Utils/Platform.h"
 
 MAA_RES_NS_BEGIN
+
+ONNXResMgr::ONNXResMgr()
+    : memory_info_(Ort::MemoryInfo::CreateCpu(OrtDeviceAllocator, OrtMemTypeDefault))
+{
+}
 
 // ONNXResMgr::~ONNXResMgr()
 //{
@@ -51,60 +45,72 @@ void ONNXResMgr::set_cpu()
     LogInfo;
 
     options_ = {};
-    gpu_device_id_ = std::nullopt;
+    memory_info_ = Ort::MemoryInfo::CreateCpu(OrtDeviceAllocator, OrtMemTypeDefault);
 }
 
-bool ONNXResMgr::set_gpu(int device_id)
+void ONNXResMgr::set_cuda(int device_id)
 {
     LogInfo << VAR(device_id);
 
-    if (gpu_device_id_ && *gpu_device_id_ == device_id) {
-        LogWarn << "GPU is already enabled";
-        return true;
-    }
     options_ = {};
-    gpu_device_id_ = std::nullopt;
+    OrtCUDAProviderOptions cuda_options {};
+    cuda_options.device_id = device_id;
+    options_.AppendExecutionProvider_CUDA(cuda_options);
 
-    auto all_providers_vec = Ort::GetAvailableProviders();
-    std::unordered_set<std::string> all_providers(
-        std::make_move_iterator(all_providers_vec.begin()),
-        std::make_move_iterator(all_providers_vec.end()));
-    LogInfo << VAR(all_providers);
+    memory_info_ = Ort::MemoryInfo("Cuda", OrtDeviceAllocator, device_id, OrtMemTypeDefault);
 
-    if (all_providers.contains("CUDAExecutionProvider")) {
-        OrtCUDAProviderOptions cuda_options {};
-        cuda_options.device_id = device_id;
-        options_.AppendExecutionProvider_CUDA(cuda_options);
+    LogInfo << "Using CUDA execution provider with device_id" << device_id;
+}
 
-        LogInfo << "Using CUDA execution provider with device_id" << device_id;
-    }
+void ONNXResMgr::set_dml(int device_id)
+{
+    LogInfo << VAR(device_id);
+
 #ifdef MAA_WITH_DML
-    else if (all_providers.contains("DmlExecutionProvider")) {
-        auto status = OrtSessionOptionsAppendExecutionProvider_DML(options_, device_id);
-        if (!Ort::Status(status).IsOK()) {
-            LogError << "Failed to append DML execution provider with device_id" << device_id;
-            return false;
-        }
-        LogInfo << "Using DML execution provider with device_id" << device_id;
-    }
-#endif
-#ifdef MAA_WITH_COREML
-    else if (all_providers.contains("CoreMLExecutionProvider")) {
-        auto status = OrtSessionOptionsAppendExecutionProvider_CoreML((OrtSessionOptions*)options_, 0);
-        if (!Ort::Status(status).IsOK()) {
-            LogError << "Failed to append CoreML execution provider";
-            return false;
-        }
-        LogInfo << "Using CoreML execution provider";
-    }
-#endif
-    else {
-        LogError << "No supported execution provider found, fallback to CPU";
-        return false;
+
+    options_ = {};
+    auto status = OrtSessionOptionsAppendExecutionProvider_DML(options_, device_id);
+    if (!Ort::Status(status).IsOK()) {
+        LogError << "Failed to append DML execution provider with device_id" << device_id;
+        return;
     }
 
-    gpu_device_id_ = device_id;
-    return true;
+    // 不知道为什么 DML 会 crash，感觉是 onnxruntime 的 bug，之后 onnxruntime 更新了可以再试试
+    // 当前版本 onnxruntime v1.19.2 from MaaDeps. 设备 AMD RX 640
+    //memory_info_ = Ort::MemoryInfo("DML", OrtDeviceAllocator, device_id, OrtMemTypeDefault);
+    memory_info_ = Ort::MemoryInfo::CreateCpu(OrtDeviceAllocator, OrtMemTypeDefault);
+
+    LogInfo << "Using DML execution provider with device_id" << device_id;
+
+#else
+
+    LogError << "MaaFW built without DML";
+
+#endif
+}
+
+void ONNXResMgr::set_coreml(uint32_t coreml_flag)
+{
+    LogInfo << VAR(coreml_flag);
+
+#ifdef MAA_WITH_COREML
+
+    options_ = {};
+    auto status = OrtSessionOptionsAppendExecutionProvider_CoreML((OrtSessionOptions*)options_, coreml_flag);
+    if (!Ort::Status(status).IsOK()) {
+        LogError << "Failed to append CoreML execution provider";
+    }
+
+    // 不知道 name 是啥，先糊一个
+    memory_info_ = Ort::MemoryInfo("Cpu", OrtDeviceAllocator, 0, OrtMemTypeDefault);
+
+    LogInfo << "Using CoreML execution provider";
+
+#else
+
+    LogError << "MaaFW built without CoreML";
+
+#endif
 }
 
 bool ONNXResMgr::lazy_load(const std::filesystem::path& path, bool is_base)
@@ -157,6 +163,11 @@ std::shared_ptr<Ort::Session> ONNXResMgr::detector(const std::string& name)
     }
 
     return session;
+}
+
+const Ort::MemoryInfo& ONNXResMgr::memory_info() const
+{
+    return memory_info_;
 }
 
 std::shared_ptr<Ort::Session> ONNXResMgr::load(const std::string& name, const std::vector<std::filesystem::path>& roots)

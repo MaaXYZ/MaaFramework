@@ -4,14 +4,11 @@
 #include <ostream>
 #include <vector>
 
+#include <onnxruntime/onnxruntime_cxx_api.h>
+
 #include "Utils/JsonExt.hpp"
 #include "VisionBase.h"
 #include "VisionTypes.h"
-
-namespace Ort
-{
-struct Session;
-}
 
 MAA_VISION_NS_BEGIN
 
@@ -37,6 +34,7 @@ public:
         cv::Rect roi,
         NeuralNetworkClassifierParam param,
         std::shared_ptr<Ort::Session> session,
+        const Ort::MemoryInfo& memory_info,
         std::string name = "");
 
 private:
@@ -54,6 +52,7 @@ private:
 private:
     const NeuralNetworkClassifierParam param_;
     std::shared_ptr<Ort::Session> session_ = nullptr;
+    const Ort::MemoryInfo& memory_info_;
 };
 
 MAA_VISION_NS_END

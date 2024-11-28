@@ -2,6 +2,7 @@
 
 #include <tuple>
 
+#include "MLProvider.h"
 #include "MaaFramework/MaaMsg.h"
 #include "Utils/GpuOption.h"
 #include "Utils/Logger.h"
@@ -272,8 +273,7 @@ bool ResourceMgr::set_inference_device(MaaOptionValue value, MaaOptionValueSize 
         ocr_res_.set_cpu();
     }
     else if (device >= 0) {
-        onnx_res_.set_gpu(device);
-        ocr_res_.set_gpu(device);
+        check_and_set_gpu(device);
     }
     else {
         LogError << "invalid inference device" << VAR(device);
@@ -283,14 +283,34 @@ bool ResourceMgr::set_inference_device(MaaOptionValue value, MaaOptionValueSize 
     return true;
 }
 
-void ResourceMgr::check_and_set_gpu()
+void ResourceMgr::check_and_set_gpu(const std::optional<int>& specified_device)
 {
-    auto gpu = perfer_gpu();
-    if (gpu) {
-        int32_t gpu_id = *gpu;
-        onnx_res_.set_gpu(gpu_id);
-        ocr_res_.set_gpu(gpu_id);
+    auto all_providers_vec = Ort::GetAvailableProviders();
+    std::unordered_set<std::string> all_providers(
+        std::make_move_iterator(all_providers_vec.begin()),
+        std::make_move_iterator(all_providers_vec.end()));
+    LogInfo << VAR(all_providers);
+
+    auto gpu_id = specified_device ? specified_device : perfer_gpu();
+
+    if (gpu_id && all_providers.contains("CUDAExecutionProvider")) {
+        // TODO: preferred nvidia gpu id
+        onnx_res_.set_cuda(*gpu_id);
+        ocr_res_.set_cuda(*gpu_id);
     }
+#ifdef MAA_WITH_DML
+    else if (gpu_id && all_providers.contains("DmlExecutionProvider")) {
+        onnx_res_.set_dml(*gpu_id);
+        ocr_res_.set_dml(*gpu_id);
+    }
+#endif
+#ifdef MAA_WITH_COREML
+    else if (all_providers.contains("CoreMLExecutionProvider")) {
+        uint32_t coreml_flag = static_cast<uint32_t>(gpu_id.value_or(COREMLFlags::COREML_FLAG_ONLY_ENABLE_DEVICE_WITH_ANE));
+        onnx_res_.set_coreml(coreml_flag);
+        ocr_res_.set_coreml(coreml_flag);
+    }
+#endif
     else {
         onnx_res_.set_cpu();
         ocr_res_.set_cpu();

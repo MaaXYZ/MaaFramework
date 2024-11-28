@@ -249,9 +249,11 @@ RecoResult Recognizer::nn_classify(const MAA_VISION_NS::NeuralNetworkClassifierP
 
     cv::Rect roi = get_roi(param.roi_target);
 
-    auto session = resource()->onnx_res().classifier(param.model);
+    auto& onnx_res = resource()->onnx_res();
+    const auto& session = onnx_res.classifier(param.model);
+    const auto& mem_info = onnx_res.memory_info();
 
-    NeuralNetworkClassifier analyzer(image_, roi, param, session, name);
+    NeuralNetworkClassifier analyzer(image_, roi, param, session, mem_info, name);
 
     std::optional<cv::Rect> box = std::nullopt;
     if (analyzer.best_result()) {
@@ -277,9 +279,11 @@ RecoResult Recognizer::nn_detect(const MAA_VISION_NS::NeuralNetworkDetectorParam
 
     cv::Rect roi = get_roi(param.roi_target);
 
-    auto session = resource()->onnx_res().detector(param.model);
+    auto& onnx_res = resource()->onnx_res();
+    const auto& session = onnx_res.detector(param.model);
+    const auto& mem_info = onnx_res.memory_info();
 
-    NeuralNetworkDetector analyzer(image_, roi, param, session, name);
+    NeuralNetworkDetector analyzer(image_, roi, param, session, mem_info, name);
 
     std::optional<cv::Rect> box = std::nullopt;
     if (analyzer.best_result()) {
