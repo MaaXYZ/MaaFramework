@@ -83,12 +83,16 @@ const myAct: maa.CustomActionCallback = async self => {
 
 async function api_test() {
     const r1 = new maa.Resource()
-    r1.inference_device = 0
-    r1.inference_device = 1
+    r1.inference_execution_provider = 'DirectML'
+    r1.inference_execution_provider = 'CoreML'
+    r1.inference_execution_provider = 'Auto'
     r1.destroy()
 
     const r2 = new maa.Resource()
-    r2.inference_device = 'cpu'
+    r2.inference_execution_provider = 'CPU'
+    r2.inference_execution_provider = 'DirectML'
+    r2.inference_device = 114514
+    r2.inference_execution_provider = 'CPU'
     await r2.post_path('/path/to/resource').wait()
     r2.destroy()
 

@@ -45,17 +45,23 @@ export class ResourceBase {
         maa.resource_destroy(this.handle)
     }
 
-    set inference_device(id: 'cpu' | 'auto' | number) {
-        switch (id) {
-            case 'cpu':
-                id = -2
-                break
-            case 'auto':
-                id = -1
-                break
+    set inference_device(id: keyof typeof maa.InferenceDevice | number) {
+        if (typeof id === 'string') {
+            id = maa.InferenceDevice[id]
         }
         if (!maa.resource_set_option_inference_device(this.handle, id)) {
             throw 'Resource set inference_device failed'
+        }
+    }
+
+    set inference_execution_provider(provider: keyof typeof maa.InferenceExecutionProvider) {
+        if (
+            !maa.resource_set_option_inference_execution_provider(
+                this.handle,
+                maa.InferenceExecutionProvider[provider]
+            )
+        ) {
+            throw 'Resource set inference_execution_provider failed'
         }
     }
 

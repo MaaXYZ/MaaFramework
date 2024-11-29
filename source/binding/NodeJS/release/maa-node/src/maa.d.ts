@@ -16,6 +16,8 @@ export type NodeId = Id & { __brand: 'NodeId' }
 
 export type Status = number & { __brand: 'Status' }
 export type LoggingLevel = number & { __brand: 'LoggingLevel' }
+export type InferenceDevice = number & { __brand: 'InferenceDevice' }
+export type InferenceExecutionProvider = number & { __brand: 'InferenceExecutionProvider' }
 
 export type ImageData = ArrayBuffer
 
@@ -195,7 +197,11 @@ export declare function resource_create(
 export declare function resource_destroy(handle: ResourceHandle): void
 export declare function resource_set_option_inference_device(
     handle: ResourceHandle,
-    id: number
+    id: InferenceDevice | number
+): boolean
+export declare function resource_set_option_inference_execution_provider(
+    handle: ResourceHandle,
+    provider: InferenceExecutionProvider
 ): boolean
 export declare function resource_register_custom_recognition(
     handle: ResourceHandle,
@@ -363,3 +369,8 @@ export declare const Win32ScreencapMethod: Record<
 >
 export declare const Win32InputMethod: Record<'Seize' | 'SendMessage', ScreencapOrInputMethods>
 export declare const DbgControllerType: Record<'CarouselImage' | 'ReplayRecording', Uint64>
+export declare const InferenceDevice: Record<'CPU' | 'Auto', InferenceDevice>
+export declare const InferenceExecutionProvider: Record<
+    'Auto' | 'CPU' | 'DirectML' | 'CoreML' | 'CUDA',
+    InferenceExecutionProvider
+>

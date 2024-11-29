@@ -7,10 +7,7 @@
 
 Napi::Object Init(Napi::Env env, Napi::Object exports)
 {
-    auto extCtx = Napi::External<ExtContextInfo>::New(
-        env,
-        new ExtContextInfo,
-        &DeleteFinalizer<ExtContextInfo*>);
+    auto extCtx = Napi::External<ExtContextInfo>::New(env, new ExtContextInfo, &DeleteFinalizer<ExtContextInfo*>);
     exports["__context"] = extCtx;
 
     load_instance_context(env, exports, extCtx);
@@ -80,6 +77,19 @@ Napi::Object Init(Napi::Env env, Napi::Object exports)
     DE(MaaDbgControllerType, CarouselImage);
     DE(MaaDbgControllerType, ReplayRecording);
     exports["DbgControllerType"] = MaaDbgControllerType_obj;
+
+    auto MaaInferenceDevice_obj = Napi::Object::New(env);
+    DE(MaaInferenceDevice, CPU);
+    DE(MaaInferenceDevice, Auto);
+    exports["InferenceDevice"] = MaaInferenceDevice_obj;
+
+    auto MaaInferenceExecutionProvider_obj = Napi::Object::New(env);
+    DE(MaaInferenceExecutionProvider, Auto);
+    DE(MaaInferenceExecutionProvider, CPU);
+    DE(MaaInferenceExecutionProvider, DirectML);
+    DE(MaaInferenceExecutionProvider, CoreML);
+    DE(MaaInferenceExecutionProvider, CUDA);
+    exports["InferenceExecutionProvider"] = MaaInferenceExecutionProvider_obj;
 
     return exports;
 }

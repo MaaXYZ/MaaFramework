@@ -33,9 +33,14 @@ void resource_destroy(Napi::External<ResourceInfo> info)
     info.Data()->dispose();
 }
 
-bool resource_set_option_inference_device(Napi::External<ResourceInfo> info, int32_t size)
+bool resource_set_option_inference_device(Napi::External<ResourceInfo> info, int32_t id)
 {
-    return MaaResourceSetOption(info.Data()->handle, MaaResOption_InferenceDevice, &size, sizeof(size));
+    return MaaResourceSetOption(info.Data()->handle, MaaResOption_InferenceDevice, &id, sizeof(id));
+}
+
+bool resource_set_option_inference_execution_provider(Napi::External<ResourceInfo> info, int32_t provider)
+{
+    return MaaResourceSetOption(info.Data()->handle, MaaResOption_InferenceExecutionProvider, &provider, sizeof(provider));
 }
 
 bool resource_register_custom_recognition(Napi::Env env, Napi::External<ResourceInfo> info, std::string name, Napi::Function callback)
@@ -175,6 +180,7 @@ void load_instance_resource(Napi::Env env, Napi::Object& exports, Napi::External
     BIND(resource_create);
     BIND(resource_destroy);
     BIND(resource_set_option_inference_device);
+    BIND(resource_set_option_inference_execution_provider);
     BIND(resource_register_custom_recognition);
     BIND(resource_unregister_custom_recognition);
     BIND(resource_clear_custom_recognition);
