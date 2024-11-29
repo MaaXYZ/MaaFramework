@@ -110,15 +110,33 @@ class MaaCtrlOptionEnum:
     Recording = 5
 
 
-# enum MaaInferenceDeviceEnum
-# {
-#     MaaInferenceDevice_CPU = -2,
-#     MaaInferenceDevice_Auto = -1,
-#     MaaInferenceDevice_GPU0 = 0,
-#     MaaInferenceDevice_GPU1 = 1,
-#     // and more gpu id...
-# };
-MaaInferenceDevice = ctypes.c_int32
+class MaaInferenceDeviceEnum:
+    CPU = -2
+    Auto = -1
+    # and more gpu id or flag...
+
+
+class MaaInferenceExecutionProviderEnum:
+    # I don't recommend setting up MaaResOption_InferenceDevice in this case,
+    # because you don't know which EP will be used on different user devices.
+    Auto = 0
+
+    # MaaResOption_InferenceDevice will not work.
+    CPU = 1
+
+    # MaaResOption_InferenceDevice will be used to set adapter id,
+    # It's from Win32 API `EnumAdapters1`.
+    DirectML = 2
+
+    # MaaResOption_InferenceDevice will be used to set coreml_flag,
+    # Reference to
+    # https://github.com/microsoft/onnxruntime/blob/main/include/onnxruntime/core/providers/coreml/coreml_provider_factory.h
+    # But you need to pay attention to the onnxruntime version we use, the latest flag may not be supported.
+    CoreML = 3
+
+    # MaaResOption_InferenceDevice will be used to set NVIDIA GPU ID
+    # TODO!
+    CUDA = 4
 
 
 class MaaResOptionEnum:
@@ -130,6 +148,13 @@ class MaaResOptionEnum:
     # value: MaaInferenceDevice, eg: 0; val_size: sizeof(MaaInferenceDevice)
     # default value is MaaInferenceDevice_Auto
     InferenceDevice = 1
+
+    # Use the specified inference execution provider
+    # Please set this option before loading the model.
+    #
+    # value: MaaInferenceExecutionProvider, eg: 0; val_size: sizeof(MaaInferenceExecutionProvider)
+    # default value is MaaInferenceExecutionProvider_Auto
+    InferenceExecutionProvider = 2
 
 
 MaaAdbScreencapMethod = ctypes.c_uint64

@@ -17,27 +17,27 @@ OCRResMgr::OCRResMgr()
     option_.UseOrtBackend();
 }
 
-void OCRResMgr::set_cpu()
+void OCRResMgr::use_cpu()
 {
     LogInfo;
 
     option_.UseCpu();
 }
 
-void OCRResMgr::set_cuda(int device_id)
+void OCRResMgr::use_cuda(int device_id)
 {
     LogInfo << VAR(device_id);
 
     option_.UseCuda(device_id);
 }
 
-void OCRResMgr::set_dml(int device_id)
+void OCRResMgr::use_directml(int device_id)
 {
     LogInfo << VAR(device_id);
     option_.UseDirectML(device_id);
 }
 
-void OCRResMgr::set_coreml(uint32_t coreml_flag)
+void OCRResMgr::use_coreml(uint32_t coreml_flag)
 {
     LogInfo << VAR(coreml_flag);
     option_.UseCoreML(coreml_flag);

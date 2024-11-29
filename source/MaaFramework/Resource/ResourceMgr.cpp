@@ -17,8 +17,6 @@ ResourceMgr::ResourceMgr(MaaNotificationCallback notify, void* notify_trans_arg)
 
     res_loader_ = std::make_unique<AsyncRunner<std::filesystem::path>>(
         std::bind(&ResourceMgr::run_load, this, std::placeholders::_1, std::placeholders::_2));
-
-    check_and_set_gpu();
 }
 
 ResourceMgr::~ResourceMgr()
@@ -37,6 +35,9 @@ bool ResourceMgr::set_option(MaaResOption key, MaaOptionValue value, MaaOptionVa
     switch (key) {
     case MaaResOption_InferenceDevice:
         return set_inference_device(value, val_size);
+
+    case MaaResOption_InferenceExecutionProvider:
+        return set_inference_execution_provider(value, val_size);
 
     default:
         LogError << "Unknown key" << VAR(key) << VAR(value);
@@ -253,6 +254,46 @@ CustomActionSession ResourceMgr::custom_action(const std::string& name) const
     return it->second;
 }
 
+const std::unordered_set<MaaInferenceExecutionProvider>& ResourceMgr::available_ep()
+{
+    static std::unordered_set<MaaInferenceExecutionProvider> s_provider_cache;
+    if (!s_provider_cache.empty()) {
+        return s_provider_cache;
+    }
+
+    auto all_providers_vec = Ort::GetAvailableProviders();
+    LogInfo << VAR(all_providers_vec);
+
+    for (const auto& name : all_providers_vec) {
+        if (name == "CPUExecutionProvider") {
+            s_provider_cache.emplace(MaaInferenceExecutionProvider_CPU);
+        }
+        else if (name == "DmlExecutionProvider") {
+#ifdef MAA_WITH_DML
+            s_provider_cache.emplace(MaaInferenceExecutionProvider_DirectML);
+#else
+            LogDebug << "MaaFW built without DirectML";
+#endif
+        }
+        else if (name == "CoreMLExecutionProvider") {
+#ifdef MAA_WITH_COREML
+            s_provider_cache.emplace(MaaInferenceExecutionProvider_CoreML);
+#else
+            LogDebug << "MaaFW built without CoreML";
+#endif
+        }
+        else if (name == "CUDAExecutionProvider") {
+            s_provider_cache.emplace(MaaInferenceExecutionProvider_CUDA);
+        }
+        else {
+            LogDebug << "unsupported provider" << VAR(name);
+        }
+    }
+
+    LogInfo << VAR(s_provider_cache);
+    return s_provider_cache;
+}
+
 bool ResourceMgr::set_inference_device(MaaOptionValue value, MaaOptionValueSize val_size)
 {
     LogFunc << VAR_VOIDP(value) << VAR(val_size);
@@ -262,59 +303,184 @@ bool ResourceMgr::set_inference_device(MaaOptionValue value, MaaOptionValueSize 
         return false;
     }
 
-    int32_t device = *reinterpret_cast<int*>(value);
-    LogInfo << VAR(device);
-
-    if (device == MaaInferenceDevice_Auto) {
-        check_and_set_gpu();
-    }
-    else if (device == MaaInferenceDevice_CPU) {
-        onnx_res_.set_cpu();
-        ocr_res_.set_cpu();
-    }
-    else if (device >= 0) {
-        check_and_set_gpu(device);
-    }
-    else {
-        LogError << "invalid inference device" << VAR(device);
-        return false;
-    }
+    inference_device_setted_ = false;
+    inference_device_ = *reinterpret_cast<MaaInferenceDevice*>(value);
+    LogInfo << VAR(inference_device_);
 
     return true;
 }
 
-void ResourceMgr::check_and_set_gpu(const std::optional<int>& specified_device)
+bool ResourceMgr::set_inference_execution_provider(MaaOptionValue value, MaaOptionValueSize val_size)
 {
-    auto all_providers_vec = Ort::GetAvailableProviders();
-    std::unordered_set<std::string> all_providers(
-        std::make_move_iterator(all_providers_vec.begin()),
-        std::make_move_iterator(all_providers_vec.end()));
-    LogInfo << VAR(all_providers);
+    LogFunc << VAR_VOIDP(value) << VAR(val_size);
 
-    auto gpu_id = specified_device ? specified_device : perfer_gpu();
+    if (val_size != sizeof(MaaInferenceExecutionProvider)) {
+        LogError << "invalid size" << VAR(val_size);
+        return false;
+    }
 
-    if (gpu_id && all_providers.contains("CUDAExecutionProvider")) {
-        // TODO: preferred nvidia gpu id
-        onnx_res_.set_cuda(*gpu_id);
-        ocr_res_.set_cuda(*gpu_id);
+    inference_device_setted_ = false;
+    inference_ep_ = *reinterpret_cast<MaaInferenceExecutionProvider*>(value);
+    LogInfo << VAR(inference_ep_);
+
+    return true;
+}
+
+bool ResourceMgr::check_and_set_inference_device()
+{
+    if (inference_device_setted_) {
+        return true;
     }
-#ifdef MAA_WITH_DML
-    else if (gpu_id && all_providers.contains("DmlExecutionProvider")) {
-        onnx_res_.set_dml(*gpu_id);
-        ocr_res_.set_dml(*gpu_id);
+
+    if (inference_device_ == MaaInferenceDevice_CPU) {
+        return use_cpu();
     }
-#endif
-#ifdef MAA_WITH_COREML
-    else if (all_providers.contains("CoreMLExecutionProvider")) {
-        uint32_t coreml_flag = static_cast<uint32_t>(gpu_id.value_or(COREMLFlags::COREML_FLAG_ONLY_ENABLE_DEVICE_WITH_ANE));
-        onnx_res_.set_coreml(coreml_flag);
-        ocr_res_.set_coreml(coreml_flag);
+
+    bool ret = false;
+    switch (inference_ep_) {
+    case MaaInferenceExecutionProvider_Auto:
+        ret = use_auto_inference();
+        break;
+    case MaaInferenceExecutionProvider_CPU:
+        ret = use_cpu();
+        break;
+    case MaaInferenceExecutionProvider_DirectML:
+        ret = use_directml();
+        break;
+    case MaaInferenceExecutionProvider_CoreML:
+        ret = use_coreml();
+        break;
+    default:
+        LogError << "invalid inference execution provider" << VAR(inference_ep_);
+        ret = false;
+        break;
     }
-#endif
+
+    inference_device_setted_ = ret;
+
+    if (!ret) {
+        use_cpu();
+    }
+    return ret;
+}
+
+bool ResourceMgr::use_auto_inference()
+{
+    const auto& providers = available_ep();
+    if (providers.contains(MaaInferenceExecutionProvider_CUDA)) {
+        return use_cuda();
+    }
+    else if (providers.contains(MaaInferenceExecutionProvider_DirectML)) {
+        return use_directml();
+    }
+    else if (providers.contains(MaaInferenceExecutionProvider_CoreML)) {
+        return use_coreml();
+    }
     else {
-        onnx_res_.set_cpu();
-        ocr_res_.set_cpu();
+        return use_cpu();
     }
+}
+
+bool ResourceMgr::use_cpu()
+{
+    onnx_res_.use_cpu();
+    ocr_res_.use_cpu();
+    return true;
+}
+
+bool ResourceMgr::use_directml()
+{
+    const auto& providers = available_ep();
+    if (!providers.contains(MaaInferenceExecutionProvider_DirectML)) {
+        LogError << "DirectML is not available";
+        return false;
+    }
+
+    int device_id = 0;
+    if (inference_device_ == MaaInferenceDevice_CPU) {
+        LogError << "Invalid device: MaaInferenceDevice_CPU for DirectML";
+        return false;
+    }
+    else if (inference_device_ == MaaInferenceDevice_Auto) {
+        auto gpu_id = perfer_gpu();
+        if (!gpu_id) {
+            LogError << "No suitable inference GPU for DirectML";
+            return false;
+        }
+        device_id = *gpu_id;
+    }
+    else if (inference_device_ >= MaaInferenceDevice_0) {
+        device_id = inference_device_;
+    }
+    else {
+        LogError << "invalid inference device" << VAR(inference_device_);
+        return false;
+    }
+
+    onnx_res_.use_directml(device_id);
+    ocr_res_.use_directml(device_id);
+    return true;
+}
+
+bool ResourceMgr::use_coreml()
+{
+    const auto& providers = available_ep();
+    if (!providers.contains(MaaInferenceExecutionProvider_CoreML)) {
+        LogError << "CoreML is not available";
+        return false;
+    }
+
+    uint32_t coreml_flag = 0;
+    if (inference_device_ == MaaInferenceDevice_CPU) {
+        LogError << "Invalid device: MaaInferenceDevice_CPU for CoreML";
+        return false;
+    }
+    else if (inference_device_ == MaaInferenceDevice_Auto) {
+#ifdef MAA_WITH_COREML
+        coreml_flag = COREMLFlags::COREML_FLAG_ONLY_ENABLE_DEVICE_WITH_ANE;
+#endif
+    }
+    else if (inference_device_ >= MaaInferenceDevice_0) {
+        coreml_flag = static_cast<uint32_t>(inference_device_);
+    }
+    else {
+        LogError << "invalid inference device" << VAR(inference_device_);
+        return false;
+    }
+
+    onnx_res_.use_coreml(coreml_flag);
+    ocr_res_.use_coreml(coreml_flag);
+    return true;
+}
+
+bool ResourceMgr::use_cuda()
+{
+    const auto& providers = available_ep();
+    if (!providers.contains(MaaInferenceExecutionProvider_CUDA)) {
+        LogError << "CUDA is not available";
+        return false;
+    }
+
+    int device_id = 0;
+    if (inference_device_ == MaaInferenceDevice_CPU) {
+        LogError << "Invalid device: MaaInferenceDevice_CPU for CUDA";
+        return false;
+    }
+    else if (inference_device_ == MaaInferenceDevice_Auto) {
+        // TODO
+        device_id = 0;
+    }
+    else if (inference_device_ >= MaaInferenceDevice_0) {
+        device_id = inference_device_;
+    }
+    else {
+        LogError << "invalid inference device" << VAR(inference_device_);
+        return false;
+    }
+
+    onnx_res_.use_cuda(device_id);
+    ocr_res_.use_cuda(device_id);
+    return true;
 }
 
 bool ResourceMgr::run_load(typename AsyncRunner<std::filesystem::path>::Id id, std::filesystem::path path)
@@ -343,6 +509,8 @@ bool ResourceMgr::load(const std::filesystem::path& path)
     LogFunc << VAR(path);
 
     using namespace path_literals;
+
+    check_and_set_inference_device();
 
     paths_.emplace_back(path);
 

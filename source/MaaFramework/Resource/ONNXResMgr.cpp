@@ -40,7 +40,7 @@ ONNXResMgr::ONNXResMgr()
 //     }
 // }
 
-void ONNXResMgr::set_cpu()
+void ONNXResMgr::use_cpu()
 {
     LogInfo;
 
@@ -48,7 +48,7 @@ void ONNXResMgr::set_cpu()
     memory_info_ = Ort::MemoryInfo::CreateCpu(OrtDeviceAllocator, OrtMemTypeDefault);
 }
 
-void ONNXResMgr::set_cuda(int device_id)
+void ONNXResMgr::use_cuda(int device_id)
 {
     LogInfo << VAR(device_id);
 
@@ -62,7 +62,7 @@ void ONNXResMgr::set_cuda(int device_id)
     LogInfo << "Using CUDA execution provider with device_id" << device_id;
 }
 
-void ONNXResMgr::set_dml(int device_id)
+void ONNXResMgr::use_directml(int device_id)
 {
     LogInfo << VAR(device_id);
 
@@ -89,7 +89,7 @@ void ONNXResMgr::set_dml(int device_id)
 #endif
 }
 
-void ONNXResMgr::set_coreml(uint32_t coreml_flag)
+void ONNXResMgr::use_coreml(uint32_t coreml_flag)
 {
     LogInfo << VAR(coreml_flag);
 

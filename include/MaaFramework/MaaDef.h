@@ -109,14 +109,39 @@ enum MaaGlobalOptionEnum
 typedef MaaOption MaaResOption;
 
 typedef int32_t MaaInferenceDevice;
+typedef int32_t MaaInferenceExecutionProvider;
 
 enum MaaInferenceDeviceEnum
 {
     MaaInferenceDevice_CPU = -2,
     MaaInferenceDevice_Auto = -1,
-    MaaInferenceDevice_GPU0 = 0,
-    MaaInferenceDevice_GPU1 = 1,
-    // and more gpu id...
+    MaaInferenceDevice_0 = 0,
+    MaaInferenceDevice_1 = 1,
+    // and more gpu id or flag...
+};
+
+enum MaaInferenceExecutionProviderEnum
+{
+    // I don't recommend setting up MaaResOption_InferenceDevice in this case,
+    // because you don't know which EP will be used on different user devices.
+    MaaInferenceExecutionProvider_Auto = 0,
+
+    // MaaResOption_InferenceDevice will not work.
+    MaaInferenceExecutionProvider_CPU = 1,
+
+    // MaaResOption_InferenceDevice will be used to set adapter id,
+    // It's from Win32 API `EnumAdapters1`.
+    MaaInferenceExecutionProvider_DirectML = 2,
+
+    // MaaResOption_InferenceDevice will be used to set coreml_flag,
+    // Reference to
+    // https://github.com/microsoft/onnxruntime/blob/main/include/onnxruntime/core/providers/coreml/coreml_provider_factory.h
+    // But you need to pay attention to the onnxruntime version we use, the latest flag may not be supported.
+    MaaInferenceExecutionProvider_CoreML = 3,
+
+    // MaaResOption_InferenceDevice will be used to set NVIDIA GPU ID
+    // TODO!
+    MaaInferenceExecutionProvider_CUDA = 4,
 };
 
 enum MaaResOptionEnum
@@ -129,6 +154,13 @@ enum MaaResOptionEnum
     /// value: MaaInferenceDevice, eg: 0; val_size: sizeof(MaaInferenceDevice)
     /// default value is MaaInferenceDevice_Auto
     MaaResOption_InferenceDevice = 1,
+
+    /// Use the specified inference execution provider
+    /// Please set this option before loading the model.
+    ///
+    /// value: MaaInferenceExecutionProvider, eg: 0; val_size: sizeof(MaaInferenceExecutionProvider)
+    /// default value is MaaInferenceExecutionProvider_Auto
+    MaaResOption_InferenceExecutionProvider = 2,
 };
 
 typedef MaaOption MaaCtrlOption;

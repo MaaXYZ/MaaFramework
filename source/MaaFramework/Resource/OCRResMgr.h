@@ -24,10 +24,10 @@ class OCRResMgr : public NonCopyable
 public:
     OCRResMgr();
 
-    void set_cpu();
-    void set_cuda(int device_id);
-    void set_dml(int device_id);
-    void set_coreml(uint32_t coreml_flag);
+    void use_cpu();
+    void use_cuda(int device_id);
+    void use_directml(int device_id);
+    void use_coreml(uint32_t coreml_flag);
 
     bool lazy_load(const std::filesystem::path& path, bool is_base);
     void clear();

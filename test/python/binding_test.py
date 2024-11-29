@@ -108,10 +108,13 @@ class MyAction(CustomAction):
 
 def api_test():
     r1 = Resource()
-    r1.set_gpu(0)
-    r1.set_gpu(1)
+    r1.use_directml()
+    r1.use_coreml()
+    r1.use_auto_ep()
     r2 = Resource()
-    r2.set_cpu()
+    r2.use_cpu()
+    r2.use_directml(114514)
+    r2.use_cpu()
     r2.post_path("C:/_maafw_testing_/aaabbbccc").wait()
     t1 = Tasker()
     t2 = Tasker()
