@@ -44,7 +44,8 @@ private:
 
     std::vector<std::filesystem::path> roots_;
 
-    fastdeploy::RuntimeOption option_;
+    fastdeploy::RuntimeOption det_option_;
+    fastdeploy::RuntimeOption rec_option_;
 
     std::unordered_map<std::string, std::shared_ptr<fastdeploy::vision::ocr::DBDetector>> deters_;
     std::unordered_map<std::string, std::shared_ptr<fastdeploy::vision::ocr::Recognizer>> recers_;

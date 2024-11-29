@@ -14,33 +14,43 @@ OCRResMgr::OCRResMgr()
 {
     LogFunc;
 
-    option_.UseOrtBackend();
+    det_option_.UseOrtBackend();
+    rec_option_.UseOrtBackend();
 }
 
 void OCRResMgr::use_cpu()
 {
     LogInfo;
 
-    option_.UseCpu();
+    det_option_.UseCpu();
+    rec_option_.UseCpu();
 }
 
 void OCRResMgr::use_cuda(int device_id)
 {
     LogInfo << VAR(device_id);
 
-    option_.UseCuda(device_id);
+    det_option_.UseCuda(device_id);
+    rec_option_.UseCuda(device_id);
 }
 
 void OCRResMgr::use_directml(int device_id)
 {
     LogInfo << VAR(device_id);
-    option_.UseDirectML(device_id);
+
+    det_option_.UseDirectML(device_id);
+    rec_option_.UseDirectML(device_id);
 }
 
 void OCRResMgr::use_coreml(uint32_t coreml_flag)
 {
     LogInfo << VAR(coreml_flag);
-    option_.UseCoreML(coreml_flag);
+
+    det_option_.UseCoreML(coreml_flag);
+
+    LogWarn << "OCR REC with CoreML is very poor. I don’t know the reason yet. Roll back to using CPU for REC. (DET still uses CoreML)";
+    //rec_option_.UseCoreML(coreml_flag);
+    rec_option_.UseCpu();
 }
 
 bool OCRResMgr::lazy_load(const std::filesystem::path& path, bool is_base)
@@ -123,7 +133,7 @@ std::shared_ptr<fastdeploy::vision::ocr::DBDetector> OCRResMgr::load_deter(const
         LogDebug << VAR(model_path);
 
         auto det =
-            std::make_shared<fastdeploy::vision::ocr::DBDetector>(path_to_utf8_string(model_path), std::string(), option_, fastdeploy::ModelFormat::ONNX);
+            std::make_shared<fastdeploy::vision::ocr::DBDetector>(path_to_utf8_string(model_path), std::string(), det_option_, fastdeploy::ModelFormat::ONNX);
         if (!det || !det->Initialized()) {
             LogError << "Failed to load DBDetector:" << VAR(name) << VAR(det) << VAR(det->Initialized());
             return nullptr;
@@ -153,7 +163,7 @@ std::shared_ptr<fastdeploy::vision::ocr::Recognizer> OCRResMgr::load_recer(const
             path_to_utf8_string(model_path),
             std::string(),
             path_to_utf8_string(label_path),
-            option_,
+            rec_option_,
             fastdeploy::ModelFormat::ONNX);
         if (!rec || !rec->Initialized()) {
             LogError << "Failed to load Recognizer:" << VAR(name) << VAR(rec) << VAR(rec->Initialized());
