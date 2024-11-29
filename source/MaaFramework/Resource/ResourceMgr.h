@@ -79,9 +79,17 @@ public:
     CustomActionSession custom_action(const std::string& name) const;
 
 private:
-    bool set_inference_device(MaaOptionValue value, MaaOptionValueSize val_size);
+    static const std::unordered_set<MaaInferenceExecutionProvider>& available_providers();
 
-    void check_and_set_gpu(const std::optional<int>& specified_device = std::nullopt);
+    bool set_inference_device(MaaOptionValue value, MaaOptionValueSize val_size);
+    bool set_inference_execution_provider(MaaOptionValue value, MaaOptionValueSize val_size);
+
+    bool check_and_set_inference_device();
+    bool use_auto_ep();
+    bool use_cpu();
+    bool use_directml();
+    bool use_coreml();
+    bool use_cuda();
 
     bool run_load(typename AsyncRunner<std::filesystem::path>::Id id, std::filesystem::path path);
     bool load(const std::filesystem::path& path);
@@ -107,6 +115,10 @@ private:
 
     std::unique_ptr<AsyncRunner<std::filesystem::path>> res_loader_ = nullptr;
     MessageNotifier notifier;
+
+    MaaInferenceDevice inference_device_ = MaaInferenceDevice_Auto;
+    MaaInferenceExecutionProvider inference_ep_ = MaaInferenceExecutionProvider_Auto;
+    bool inference_device_setted_ = false;
 };
 
 MAA_RES_NS_END

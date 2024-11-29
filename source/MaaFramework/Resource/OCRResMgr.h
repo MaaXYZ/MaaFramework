@@ -24,10 +24,10 @@ class OCRResMgr : public NonCopyable
 public:
     OCRResMgr();
 
-    void set_cpu();
-    void set_cuda(int device_id);
-    void set_dml(int device_id);
-    void set_coreml(uint32_t coreml_flag);
+    void use_cpu();
+    void use_cuda(int device_id);
+    void use_directml(int device_id);
+    void use_coreml(uint32_t coreml_flag);
 
     bool lazy_load(const std::filesystem::path& path, bool is_base);
     void clear();
@@ -44,7 +44,8 @@ private:
 
     std::vector<std::filesystem::path> roots_;
 
-    fastdeploy::RuntimeOption option_;
+    fastdeploy::RuntimeOption det_option_;
+    fastdeploy::RuntimeOption rec_option_;
 
     std::unordered_map<std::string, std::shared_ptr<fastdeploy::vision::ocr::DBDetector>> deters_;
     std::unordered_map<std::string, std::shared_ptr<fastdeploy::vision::ocr::Recognizer>> recers_;

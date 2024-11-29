@@ -60,18 +60,45 @@ class Resource:
     def clear(self) -> bool:
         return bool(Library.framework.MaaResourceClear(self._handle))
 
+    def use_cpu(self) -> bool:
+        return self.set_inference(
+            MaaInferenceExecutionProviderEnum.CPU, MaaInferenceDeviceEnum.CPU
+        )
+
+    def use_directml(self, device_id: int = MaaInferenceDeviceEnum.Auto) -> bool:
+        return self.set_inference(MaaInferenceExecutionProviderEnum.DirectML, device_id)
+
+    def use_coreml(self, coreml_flag: int = MaaInferenceDeviceEnum.Auto) -> bool:
+        return self.set_inference(MaaInferenceExecutionProviderEnum.CoreML, coreml_flag)
+
+    def use_auto_ep(self) -> bool:
+        return self.set_inference(
+            MaaInferenceExecutionProviderEnum.Auto, MaaInferenceDeviceEnum.Auto
+        )
+
+    # not implemented
+    # def use_cuda(self, nvidia_gpu_id: int) -> bool:
+    #     return self.set_inference(MaaInferenceExecutionProviderEnum.CUDA, nvidia_gpu_id)
+
     def set_gpu(self, gpu_id: int) -> bool:
+        """
+        Deprecated, please use `use_directml`, `use_coreml` or `use_cuda` instead.
+        """
         if gpu_id < 0:
             return False
-        return self.set_inference_device(gpu_id)
+        return self.use_directml(gpu_id)
 
     def set_cpu(self) -> bool:
-        MaaInferenceDevice_CPU = -2
-        return self.set_inference_device(MaaInferenceDevice_CPU)
-    
+        """
+        Deprecated, please use `use_cpu` instead.
+        """
+        return self.use_cpu()
+
     def set_auto_device(self) -> bool:
-        MaaInferenceDevice_Auto = -1
-        return self.set_inference_device(MaaInferenceDevice_Auto)
+        """
+        Deprecated, please use `use_auto_ep` instead.
+        """
+        return self.use_auto_ep()
 
     def register_custom_recognition(
         self, name: str, recognition: "CustomRecognition"  # type: ignore
@@ -149,13 +176,21 @@ class Resource:
 
     ### private ###
 
-    def set_inference_device(self, device_id: int) -> bool:
-        cint = ctypes.c_int32(device_id)
+    def set_inference(self, execution_provider: int, device_id: int) -> bool:
+        cep = ctypes.c_int32(execution_provider)
+        cdevice = ctypes.c_int32(device_id)
         return bool(
             Library.framework.MaaResourceSetOption(
                 self._handle,
+                MaaResOptionEnum.InferenceExecutionProvider,
+                ctypes.pointer(cep),
+                ctypes.sizeof(ctypes.c_int32),
+            )
+        ) and bool(
+            Library.framework.MaaResourceSetOption(
+                self._handle,
                 MaaResOptionEnum.InferenceDevice,
-                ctypes.pointer(cint),
+                ctypes.pointer(cdevice),
                 ctypes.sizeof(ctypes.c_int32),
             )
         )
