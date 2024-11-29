@@ -254,7 +254,7 @@ CustomActionSession ResourceMgr::custom_action(const std::string& name) const
     return it->second;
 }
 
-const std::unordered_set<MaaInferenceExecutionProvider>& ResourceMgr::available_ep()
+const std::unordered_set<MaaInferenceExecutionProvider>& ResourceMgr::available_providers()
 {
     static std::unordered_set<MaaInferenceExecutionProvider> s_provider_cache;
     if (!s_provider_cache.empty()) {
@@ -339,7 +339,7 @@ bool ResourceMgr::check_and_set_inference_device()
     bool ret = false;
     switch (inference_ep_) {
     case MaaInferenceExecutionProvider_Auto:
-        ret = use_auto_inference();
+        ret = use_auto_ep();
         break;
     case MaaInferenceExecutionProvider_CPU:
         ret = use_cpu();
@@ -364,9 +364,9 @@ bool ResourceMgr::check_and_set_inference_device()
     return ret;
 }
 
-bool ResourceMgr::use_auto_inference()
+bool ResourceMgr::use_auto_ep()
 {
-    const auto& providers = available_ep();
+    const auto& providers = available_providers();
     if (providers.contains(MaaInferenceExecutionProvider_CUDA)) {
         return use_cuda();
     }
@@ -390,7 +390,7 @@ bool ResourceMgr::use_cpu()
 
 bool ResourceMgr::use_directml()
 {
-    const auto& providers = available_ep();
+    const auto& providers = available_providers();
     if (!providers.contains(MaaInferenceExecutionProvider_DirectML)) {
         LogError << "DirectML is not available";
         return false;
@@ -424,7 +424,7 @@ bool ResourceMgr::use_directml()
 
 bool ResourceMgr::use_coreml()
 {
-    const auto& providers = available_ep();
+    const auto& providers = available_providers();
     if (!providers.contains(MaaInferenceExecutionProvider_CoreML)) {
         LogError << "CoreML is not available";
         return false;
@@ -455,7 +455,7 @@ bool ResourceMgr::use_coreml()
 
 bool ResourceMgr::use_cuda()
 {
-    const auto& providers = available_ep();
+    const auto& providers = available_providers();
     if (!providers.contains(MaaInferenceExecutionProvider_CUDA)) {
         LogError << "CUDA is not available";
         return false;

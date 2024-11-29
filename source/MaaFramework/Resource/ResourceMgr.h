@@ -79,13 +79,13 @@ public:
     CustomActionSession custom_action(const std::string& name) const;
 
 private:
-    static const std::unordered_set<MaaInferenceExecutionProvider>& available_ep();
+    static const std::unordered_set<MaaInferenceExecutionProvider>& available_providers();
 
     bool set_inference_device(MaaOptionValue value, MaaOptionValueSize val_size);
     bool set_inference_execution_provider(MaaOptionValue value, MaaOptionValueSize val_size);
 
     bool check_and_set_inference_device();
-    bool use_auto_inference();
+    bool use_auto_ep();
     bool use_cpu();
     bool use_directml();
     bool use_coreml();
