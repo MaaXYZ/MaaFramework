@@ -42,12 +42,12 @@ int main([[maybe_unused]] int argc, char** argv)
     std::string user_path = "./";
     MaaToolkitConfigInitOption(user_path.c_str(), "{}");
 
-    //auto controller_handle = create_adb_controller();
-     auto controller_handle = create_win32_controller();
+    auto controller_handle = create_adb_controller();
+    // auto controller_handle = create_win32_controller();
     auto ctrl_id = MaaControllerPostConnection(controller_handle);
 
     auto resource_handle = MaaResourceCreate(nullptr, nullptr);
-    std::string resource_dir = R"(D:\Personal Files\M9A\assets\resource\②③中文哈   哈(´▽｀)ノノ②2222)";
+    std::string resource_dir = R"(E:\Code\MaaFramework\sample\resource)";
     auto res_id = MaaResourcePostPath(resource_handle, resource_dir.c_str());
 
     MaaControllerWait(controller_handle, ctrl_id);
@@ -72,8 +72,7 @@ int main([[maybe_unused]] int argc, char** argv)
 
     MaaResourceRegisterCustomRecognition(resource_handle, "MyReco", my_reco, nullptr);
 
-    auto task_id = MaaTaskerPostPipeline(tasker_handle, "LimboStageLightest_1", "{}");
-    //auto task_id = MaaTaskerPostPipeline(tasker_handle, "AllIn", "{}");
+    auto task_id = MaaTaskerPostPipeline(tasker_handle, "MyTask", "{}");
     MaaTaskerWait(tasker_handle, task_id);
 
     destroy();
@@ -121,38 +120,38 @@ MaaController* create_win32_controller()
 {
     void* hwnd = nullptr; // It's a HWND, you can find it by yourself without MaaToolkit API
 
-    //auto list_handle = MaaToolkitDesktopWindowListCreate();
-    //auto destroy = [&]() {
-    //    MaaToolkitDesktopWindowListDestroy(list_handle);
-    //};
+    auto list_handle = MaaToolkitDesktopWindowListCreate();
+    auto destroy = [&]() {
+        MaaToolkitDesktopWindowListDestroy(list_handle);
+    };
 
-    //MaaToolkitDesktopWindowFindAll(list_handle);
+    MaaToolkitDesktopWindowFindAll(list_handle);
 
-    //size_t size = MaaToolkitDesktopWindowListSize(list_handle);
+    size_t size = MaaToolkitDesktopWindowListSize(list_handle);
 
-    //if (size == 0) {
-    //    std::cout << "No window found" << std::endl;
+    if (size == 0) {
+        std::cout << "No window found" << std::endl;
 
-    //    destroy();
-    //    return nullptr;
-    //}
+        destroy();
+        return nullptr;
+    }
 
-    //for (size_t i = 0; i < size; ++i) {
-    //    auto window_handle = MaaToolkitDesktopWindowListAt(list_handle, i);
-    //    std::string class_name = MaaToolkitDesktopWindowGetClassName(window_handle);
-    //    std::string window_name = MaaToolkitDesktopWindowGetWindowName(window_handle);
+    for (size_t i = 0; i < size; ++i) {
+        auto window_handle = MaaToolkitDesktopWindowListAt(list_handle, i);
+        std::string class_name = MaaToolkitDesktopWindowGetClassName(window_handle);
+        std::string window_name = MaaToolkitDesktopWindowGetWindowName(window_handle);
 
-    //    if (window_name == "原神") {
-    //        hwnd = MaaToolkitDesktopWindowGetHandle(window_handle);
-    //        break;
-    //    }
-    //}
+        if (window_name == "原神") {
+            hwnd = MaaToolkitDesktopWindowGetHandle(window_handle);
+            break;
+        }
+    }
 
     // create controller by hwnd
     auto controller_handle =
         MaaWin32ControllerCreate(hwnd, MaaWin32ScreencapMethod_DXGI_DesktopDup, MaaWin32InputMethod_Seize, nullptr, nullptr);
 
-    //destroy();
+    destroy();
     return controller_handle;
 }
 
