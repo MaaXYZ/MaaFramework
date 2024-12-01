@@ -210,7 +210,6 @@ enum MaaTaskerOptionEnum
  * Use bitwise OR to set the method you need, MaaFramework will test their speed and use the fastest one.
  */
 typedef uint64_t MaaAdbScreencapMethod;
-#define MaaAdbScreencapMethod_None 0ULL
 #define MaaAdbScreencapMethod_EncodeToFileAndPull 1ULL
 #define MaaAdbScreencapMethod_Encode (1ULL << 1)
 #define MaaAdbScreencapMethod_RawWithGzip (1ULL << 2)
@@ -219,6 +218,7 @@ typedef uint64_t MaaAdbScreencapMethod;
 #define MaaAdbScreencapMethod_MinicapStream (1ULL << 5)
 #define MaaAdbScreencapMethod_EmulatorExtras (1ULL << 6)
 
+#define MaaAdbScreencapMethod_None 0ULL
 #define MaaAdbScreencapMethod_All (~MaaAdbScreencapMethod_None)
 #define MaaAdbScreencapMethod_Default                                                                          \
     (MaaAdbScreencapMethod_All & (~MaaAdbScreencapMethod_RawByNetcat) & (~MaaAdbScreencapMethod_MinicapDirect) \
@@ -230,12 +230,12 @@ typedef uint64_t MaaAdbScreencapMethod;
  * The priority is: EmulatorExtras > Maatouch > MinitouchAndAdbKey > AdbShell
  */
 typedef uint64_t MaaAdbInputMethod;
-#define MaaAdbInputMethod_None 0ULL
 #define MaaAdbInputMethod_AdbShell 1ULL
 #define MaaAdbInputMethod_MinitouchAndAdbKey (1ULL << 1)
 #define MaaAdbInputMethod_Maatouch (1ULL << 2)
 #define MaaAdbInputMethod_EmulatorExtras (1ULL << 3)
 
+#define MaaAdbInputMethod_None 0ULL
 #define MaaAdbInputMethod_All (~MaaAdbInputMethod_None)
 #define MaaAdbInputMethod_Default (MaaAdbInputMethod_All & (~MaaAdbInputMethod_EmulatorExtras))
 
