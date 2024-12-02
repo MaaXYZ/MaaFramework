@@ -96,6 +96,9 @@ It offers low-code simplicity while maintaining high extensibility. The framewor
 - [MaaYuan](https://github.com/syoius/MaaYuan) Ashes of the kingdom Assistant ![Pipeline](https://img.shields.io/badge/Pipeline-%23454545?logo=paddypower&logoColor=%23FFFFFF)  
   The Ashes of the kingdom Assistant, based on a brand new architecture. Image technology + simulation control, freeing your hands! Powered by MaaFramework.
 
+- [MAAGUI](https://github.com/Night-stars-1/maa-gui) MAAGUI ![Typescript](https://img.shields.io/badge/Typescript-8A2BE2?logo=typescript)  ![Electron](https://img.shields.io/badge/Electron-3776AB?logo=electron&logoColor=black)  
+  MAA GUI, based on a brand new architecture. Powered by MaaFramework.
+
 ## Eco-Building
 
 MAA is planned to be a category of projects rather than just a single piece of software.
