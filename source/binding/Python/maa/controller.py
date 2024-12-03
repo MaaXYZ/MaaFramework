@@ -28,11 +28,6 @@ class Controller:
         self,
         handle: Optional[MaaControllerHandle] = None,
     ):
-        if not Library.initialized:
-            raise RuntimeError(
-                "Library not initialized, please call `library.open()` first."
-            )
-
         self._set_api_properties()
 
         if handle:
@@ -152,7 +147,7 @@ class Controller:
                 ctypes.sizeof(ctypes.c_int32),
             )
         )
-    
+
     def set_screenshot_use_raw_size(self, enable: bool) -> bool:
         cbool = MaaBool(enable)
         return bool(

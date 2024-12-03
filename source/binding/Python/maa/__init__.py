@@ -1,10 +1,17 @@
-import os
+from pathlib import Path
 
 from .library import Library
 
-__PATH = os.path.join(os.path.dirname(__file__), "bin")
+__PATH = Path(Path(__file__).parent, "bin")
 
-if os.path.exists(__PATH):
+# If you want to print maafw version,please use `from maa import ver`
+ver = None
+
+if __PATH.exists():
     ver = Library.open(__PATH)
-    if ver:
-        print(f"MaaFw version: {ver}")
+    if not ver:
+        raise RuntimeError(
+            "Library not initialized, please call `library.open()` first."
+        )
+else:
+    raise FileNotFoundError(__PATH, " ", "is not exists.")

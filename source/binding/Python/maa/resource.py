@@ -21,12 +21,6 @@ class Resource:
         notification_handler: Optional[NotificationHandler] = None,
         handle: Optional[MaaResourceHandle] = None,
     ):
-
-        if not Library.initialized:
-            raise RuntimeError(
-                "Library not initialized, please call `library.open()` first."
-            )
-
         self._set_api_properties()
 
         if handle:
