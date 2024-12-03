@@ -48,13 +48,34 @@ MaaTaskId Context::run_pipeline(const std::string& entry, const json::value& pip
 {
     LogFunc << VAR(getptr()) << VAR(entry) << VAR(pipeline_override);
 
+    if (!tasker_) {
+        LogError << "tasker is null";
+        return MaaInvalidId;
+    }
+
     PipelineTask task(entry, tasker_, getptr());
     bool ov = task.override_pipeline(pipeline_override);
     if (!ov) {
         LogError << "failed to override_pipeline" << VAR(entry) << VAR(pipeline_override);
         return MaaInvalidId;
     }
-    task.run();
+
+    auto& runtime_cache = tasker_->runtime_cache();
+
+    // context 的子任务没有 Pending 状态，直接就是 Running
+    runtime_cache.set_task_detail(
+        task.task_id(),
+        MAA_TASK_NS::TaskDetail { .task_id = task.task_id(), .entry = task.entry(), .status = MaaStatus_Running });
+
+    bool ret = task.run();
+
+    {
+        auto task_detail =
+            runtime_cache.get_task_detail(task.task_id()).value_or(MAA_TASK_NS::TaskDetail { .task_id = task.task_id(), .entry = entry });
+        task_detail.status = ret ? MaaStatus_Succeeded : MaaStatus_Failed;
+        runtime_cache.set_task_detail(task.task_id(), std::move(task_detail));
+    }
+
     return task.task_id();
 }
 

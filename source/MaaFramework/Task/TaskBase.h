@@ -58,7 +58,6 @@ protected:
     std::shared_ptr<Context> context_ = nullptr;
 
 private:
-    void init();
     bool debug_mode() const;
     void notify(std::string_view msg, const json::value detail);
 

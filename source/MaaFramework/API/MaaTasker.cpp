@@ -303,7 +303,7 @@ MaaBool MaaTaskerGetTaskDetail(
 
     CheckNullAndWarn(status)
     {
-        *status = tasker->status(task_id);
+        *status = result.status;
     }
 
     return true;

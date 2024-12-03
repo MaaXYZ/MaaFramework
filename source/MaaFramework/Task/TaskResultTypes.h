@@ -33,6 +33,7 @@ struct TaskDetail
     MaaTaskId task_id = 0;
     std::string entry;
     std::vector<MaaNodeId> node_ids;
+    MaaStatus status = MaaStatus_Invalid;
 };
 
 MAA_TASK_NS_END

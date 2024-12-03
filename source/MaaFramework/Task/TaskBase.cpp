@@ -17,7 +17,6 @@ TaskBase::TaskBase(std::string entry, Tasker* tasker)
     , cur_task_(entry_)
     , context_(Context::create(task_id_, tasker))
 {
-    init();
 }
 
 TaskBase::TaskBase(std::string entry, Tasker* tasker, std::shared_ptr<Context> context)
@@ -26,7 +25,6 @@ TaskBase::TaskBase(std::string entry, Tasker* tasker, std::shared_ptr<Context> c
     , cur_task_(entry_)
     , context_(std::move(context))
 {
-    init();
 }
 
 bool TaskBase::override_pipeline(const json::value& pipeline_override)
@@ -221,7 +219,9 @@ void TaskBase::set_node_detail(int64_t node_id, NodeDetail detail)
     cache.set_node_detail(node_id, detail);
     cache.set_latest_node(detail.name, node_id);
 
-    TaskDetail task_detail = cache.get_task_detail(task_id_).value_or(TaskDetail { .entry = entry_ });
+    // value_or 的默认值用于 run 到一半调用方手动 clear cache 了的情况
+    TaskDetail task_detail =
+        cache.get_task_detail(task_id_).value_or(TaskDetail { .task_id = task_id_, .entry = entry_, .status = MaaStatus_Running });
     task_detail.node_ids.emplace_back(node_id);
 
     set_task_detail(task_detail);
@@ -236,11 +236,6 @@ void TaskBase::set_task_detail(TaskDetail detail)
 
     auto& cache = tasker_->runtime_cache();
     cache.set_task_detail(task_id_, detail);
-}
-
-void TaskBase::init()
-{
-    set_task_detail(TaskDetail { .entry = entry_ });
 }
 
 bool TaskBase::debug_mode() const
