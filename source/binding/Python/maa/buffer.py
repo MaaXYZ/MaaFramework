@@ -13,10 +13,6 @@ class StringBuffer:
     _own: bool
 
     def __init__(self, handle: Optional[MaaStringBufferHandle] = None):
-        if not Library.initialized:
-            raise RuntimeError(
-                "Library not initialized, please call `library.open()` first."
-            )
         self._set_api_properties()
 
         if handle:
@@ -97,10 +93,6 @@ class StringListBuffer:
     _own: bool
 
     def __init__(self, handle: Optional[MaaStringListBufferHandle] = None):
-        if not Library.initialized:
-            raise RuntimeError(
-                "Library not initialized, please call `library.open()` first."
-            )
         self._set_api_properties()
 
         if handle:
@@ -203,11 +195,6 @@ class ImageBuffer:
     _own: bool
 
     def __init__(self, c_handle: Optional[MaaImageBufferHandle] = None):
-        if not Library.initialized:
-            raise RuntimeError(
-                "Library not initialized, please call `library.open()` first."
-            )
-
         self._set_api_properties()
 
         if c_handle:
@@ -309,10 +296,6 @@ class ImageListBuffer:
     _own: bool
 
     def __init__(self, c_handle: Optional[MaaImageListBufferHandle] = None):
-        if not Library.initialized:
-            raise RuntimeError(
-                "Library not initialized, please call `library.open()` first."
-            )
         self._set_api_properties()
 
         if c_handle:
@@ -413,11 +396,6 @@ class RectBuffer:
     _own: bool
 
     def __init__(self, c_handle: Optional[MaaRectHandle] = None):
-        if not Library.initialized:
-            raise RuntimeError(
-                "Library not initialized, please call `library.open()` first."
-            )
-
         self._set_api_properties()
 
         if c_handle:

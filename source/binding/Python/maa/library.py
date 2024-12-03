@@ -9,10 +9,11 @@ from .define import *
 
 class Library:
 
-    initialized = False
-
     @staticmethod
     def open(path: Union[pathlib.Path, str]) -> Optional[str]:
+        if not path.exists():
+            raise FileNotFoundError(f"`{path}` is not existed.")
+
         platform_values = {
             "windows": ("MaaFramework.dll", "MaaToolkit.dll"),
             "darwin": ("libMaaFramework.dylib", "libMaaToolkit.dylib"),
@@ -45,21 +46,14 @@ class Library:
             Library.toolkit = lib_import(str(Library.toolkit_libpath))
 
         if not Library.framework or not Library.toolkit:
-            Library.initialized = False
-            return None
+            raise RuntimeError("Fail to open the library.")
 
         Library._set_api_properties()
-        Library.initialized = True
 
         return Library.version()
 
     @staticmethod
     def version() -> str:
-        if not Library.initialized:
-            raise RuntimeError(
-                "Library not initialized, please call `library.open()` first."
-            )
-
         return Library.framework.MaaVersion().decode()
 
     @staticmethod

@@ -3,16 +3,16 @@ import numpy
 import sys
 
 if len(sys.argv) < 2:
-    print("Usage: python binding_test.py <install_dir>")
+    print("Usage: python binding_test.py <install_dir>/binding/Python")
     sys.exit(1)
 
-install_dir = Path(sys.argv[1]).resolve()
+install_dir = Path(sys.argv[1]).resolve().parent
+binding_dir = Path(install_dir, "binding", "Python")
 print(f"install_dir: {install_dir}")
+print(f"binding_dir: {binding_dir}")
 
-binding_dir = str(install_dir / "binding" / "Python")
-if binding_dir not in sys.path:
-    sys.path.insert(0, binding_dir)
-
+if str(binding_dir) not in sys.path:
+    sys.path.insert(0, str(binding_dir))
 
 from maa.library import Library
 from maa.resource import Resource
@@ -257,7 +257,9 @@ class MyController(CustomController):
         return True
 
     def swipe(self, x1: int, y1: int, x2: int, y2: int, duration: int) -> bool:
-        print(f"on MyController.swipe, x1: {x1}, y1: {y1}, x2: {x2}, y2: {y2}, duration: {duration}")
+        print(
+            f"on MyController.swipe, x1: {x1}, y1: {y1}, x2: {x2}, y2: {y2}, duration: {duration}"
+        )
         self.count += 1
         return True
 
@@ -304,8 +306,7 @@ class MyController(CustomController):
 
 
 if __name__ == "__main__":
-    version = Library.open(install_dir / "bin")
-    print(f"MaaFw Version: {version}")
+    print(f"MaaFw Version: {Library.version()}")
 
     Toolkit.init_option(install_dir / "bin")
 

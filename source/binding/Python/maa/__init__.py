@@ -1,10 +1,11 @@
-import os
+from pathlib import Path
+import sys
 
 from .library import Library
 
-__PATH = os.path.join(os.path.dirname(__file__), "bin")
+if len(sys.argv) >= 2:
+    __PATH = Path(Path(sys.argv[1]).resolve())
+else:
+    __PATH = Path(Path(__file__).parent, "bin")
 
-if os.path.exists(__PATH):
-    ver = Library.open(__PATH)
-    if ver:
-        print(f"MaaFw version: {ver}")
+Library.open(__PATH)
