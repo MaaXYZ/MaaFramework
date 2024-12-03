@@ -40,8 +40,8 @@ private:
     ProcessFunc process_;
 
     std::list<std::pair<Id, Item>> queue_;
-    std::mutex mutex_;
-    std::condition_variable cond_;
+    std::mutex queue_mutex_;
+    std::condition_variable queue_cond_;
     std::atomic_bool running_ = false;
 
     mutable std::shared_mutex status_mutex_;
@@ -82,12 +82,12 @@ inline void AsyncRunner<Item>::release()
     exit_ = true;
 
     {
-        std::unique_lock<std::mutex> lock(mutex_);
-        cond_.notify_all();
+        std::unique_lock<std::mutex> queue_lock(queue_mutex_);
+        queue_cond_.notify_all();
     }
 
     {
-        std::unique_lock<std::mutex> lock(compl_mutex_);
+        std::unique_lock<std::mutex> compl_lock(compl_mutex_);
         compl_cond_.notify_all();
     }
 
@@ -102,11 +102,12 @@ inline void AsyncRunner<Item>::working()
     // LogFunc;
 
     while (!exit_) {
-        std::unique_lock<std::mutex> lock(mutex_);
+        std::unique_lock<std::mutex> queue_lock(queue_mutex_);
 
         if (queue_.empty()) {
             running_ = false;
-            cond_.wait(lock);
+            compl_cond_.notify_all();
+            queue_cond_.wait(queue_lock);
             continue;
         }
 
@@ -114,7 +115,7 @@ inline void AsyncRunner<Item>::working()
 
         auto [id, item] = std::move(queue_.front());
         queue_.pop_front();
-        lock.unlock();
+        queue_lock.unlock();
 
         std::unique_lock<std::shared_mutex> status_lock(status_mutex_);
         status_map_[id] = MaaStatus_Running;
@@ -139,7 +140,7 @@ inline typename AsyncRunner<Item>::Id AsyncRunner<Item>::post(Item item, bool bl
 
     Id id = MaaInvalidId;
     {
-        std::unique_lock<std::mutex> lock(mutex_);
+        std::unique_lock<std::mutex> queue_lock(queue_mutex_);
         id = ++cross_inst_id_;
         queue_.emplace_back(id, std::move(item));
 
@@ -149,7 +150,7 @@ inline typename AsyncRunner<Item>::Id AsyncRunner<Item>::post(Item item, bool bl
         }
 
         running_ = true;
-        cond_.notify_one();
+        queue_cond_.notify_one();
     }
 
     if (block) {
@@ -165,12 +166,12 @@ inline void AsyncRunner<Item>::wait(Id id) const
     // LogFunc << VAR(id);
 
     while (!exit_) {
-        std::unique_lock<std::mutex> lock(compl_mutex_);
+        std::unique_lock<std::mutex> compl_lock(compl_mutex_);
         if (id <= compl_id_) {
             return;
         }
 
-        compl_cond_.wait(lock);
+        compl_cond_.wait(compl_lock);
     }
 }
 
@@ -180,19 +181,19 @@ inline void AsyncRunner<Item>::wait_all() const
     LogFunc;
 
     while (!exit_) {
-        std::unique_lock<std::mutex> lock(compl_mutex_);
+        std::unique_lock<std::mutex> compl_lock(compl_mutex_);
         if (!running_) {
             return;
         }
 
-        compl_cond_.wait(lock);
+        compl_cond_.wait(compl_lock);
     }
 }
 
 template <typename Item>
 inline MaaStatus AsyncRunner<Item>::status(Id id) const
 {
-    std::shared_lock<std::shared_mutex> lock(status_mutex_);
+    std::shared_lock<std::shared_mutex> status_lock(status_mutex_);
 
     auto iter = status_map_.find(id);
     if (iter == status_map_.end()) {
@@ -207,19 +208,19 @@ inline void AsyncRunner<Item>::clear()
     // LogFunc;
 
     {
-        std::unique_lock<std::mutex> lock(mutex_);
+        std::unique_lock<std::mutex> queue_lock(queue_mutex_);
         queue_ = {};
-        cond_.notify_all();
+        queue_cond_.notify_all();
     }
 
     {
-        std::unique_lock<std::mutex> lock(compl_mutex_);
+        std::unique_lock<std::mutex> compl_lock(compl_mutex_);
         compl_id_ = cross_inst_id_;
         compl_cond_.notify_all();
     }
 
     {
-        std::unique_lock<std::shared_mutex> lock(status_mutex_);
+        std::unique_lock<std::shared_mutex> status_lock(status_mutex_);
         status_map_.clear();
     }
 }
