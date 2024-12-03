@@ -95,7 +95,8 @@ MaaStatus Tasker::wait(MaaTaskId task_id) const
 
 MaaBool Tasker::running() const
 {
-    return resource_ && resource_->running() && controller_ && controller_->running() && task_runner_ && task_runner_->running();
+    return resource_ && resource_->running() && controller_ && controller_->running() && task_runner_ && task_runner_->running()
+        && !running_task_;
 }
 
 void Tasker::post_stop()
