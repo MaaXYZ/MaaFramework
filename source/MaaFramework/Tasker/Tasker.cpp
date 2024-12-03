@@ -127,7 +127,7 @@ MaaTaskId Tasker::post_stop()
         controller_->post_stop();
     }
 
-    auto task_ptr = std::make_shared<MAA_TASK_NS::EmptyTask>(MAA_FUNCTION, this);
+    auto task_ptr = std::make_shared<MAA_TASK_NS::EmptyTask>(std::string(MAA_FUNCTION), this);
     return post_task(std::move(task_ptr), {});
 }
 
