@@ -472,6 +472,7 @@ jobs:
                   rm -r assets/MAA-pip-pkgs
 
             - uses: JS-DevTools/npm-publish@v3
+              id: nodejs
               with:
                   package: assets/MAA-nodejs-package/maa-node
                   access: public
@@ -530,7 +531,7 @@ jobs:
                   prerelease: ${{ needs.meta.outputs.is_pre_release == 'true' }}
 
             - name: Create issue if failed to publish packages
-              if: steps.nuget.outputs.failed || steps.pip.outputs.failed
+              if: steps.nuget.outputs.failed || steps.pip.outputs.failed || steps.nodejs.outputs.failed
               uses: actions-cool/issues-helper@v3
               with:
                   actions: 'create-issue'
@@ -538,4 +539,5 @@ jobs:
                   body: |
                       Please manually publish the following packages:
                       ${{ steps.nuget.outputs.failed && '- nuget @moomiji' || '' }}
-                      ${{ steps.pip.outputs.failed && '- pip @QiE2035' || '' }}
+                      ${{ steps.pip.outputs.failed && '- pip @MistEO' || '' }}
+                      ${{ steps.nodejs.outputs.failed && '- nodejs @neko-para' || '' }}
