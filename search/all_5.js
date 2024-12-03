@@ -245,7 +245,7 @@ var searchData=
   ['maataskeroption_5finvalid_242',['MaaTaskerOption_Invalid',['../MaaDef_8h.html#a7ce6a82a2484734da58c3c422d19a9b1a44343c1c73aabeacff9a9f91805a16aa',1,'MaaDef.h']]],
   ['maataskeroptionenum_243',['MaaTaskerOptionEnum',['../MaaDef_8h.html#a7ce6a82a2484734da58c3c422d19a9b1',1,'MaaDef.h']]],
   ['maataskerpostpipeline_244',['MaaTaskerPostPipeline',['../MaaTasker_8h.html#a12c6bc412c501eaed90e7dec40bf6cc7',1,'MaaTasker.h']]],
-  ['maataskerpoststop_245',['MaaTaskerPostStop',['../MaaTasker_8h.html#a706466f8b5bc274e43c1fa3a176b28e9',1,'MaaTasker.h']]],
+  ['maataskerpoststop_245',['MaaTaskerPostStop',['../MaaTasker_8h.html#a7211fa8675cadb5b95c3394f0bbbc8f2',1,'MaaTasker.h']]],
   ['maataskerrunning_246',['MaaTaskerRunning',['../MaaTasker_8h.html#a8946c572b50a0e298a31092496b89475',1,'MaaTasker.h']]],
   ['maataskersetoption_247',['MaaTaskerSetOption',['../MaaTasker_8h.html#a08e81fb30421633ca6300d7c98056f03',1,'MaaTasker.h']]],
   ['maataskerstatus_248',['MaaTaskerStatus',['../MaaTasker_8h.html#af4d3fd63071f1ba922bd90f226d1001d',1,'MaaTasker.h']]],

@@ -1,5 +1,5 @@
 {
-	"Version": "(main) v2.3.0-alpha.1",
+	"Version": "(main) v2.3.0-alpha.2",
 	"Compounds": {
 		"MaaContext.h": {
 			"Location": "include/MaaFramework/Instance/MaaContext.h",
@@ -2020,7 +2020,7 @@
 					},
 					"Types": {
 						"MAA_FRAMEWORK_API": "",
-						"MaaBool": ""
+						"MaaTaskId": ""
 					},
 					"Parameters": {
 						"tasker": {

@@ -265,9 +265,9 @@
         </inbodydescription>
         <location file="include/MaaFramework/Instance/MaaTasker.h" line="47" column="31" declfile="include/MaaFramework/Instance/MaaTasker.h" declline="47" declcolumn="31"/>
       </memberdef>
-      <memberdef kind="function" id="MaaTasker_8h_1a706466f8b5bc274e43c1fa3a176b28e9" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
-        <type><ref refid="MaaPort_8h_1a67006334d91d228121dbba7a8bf8fe05" kindref="member">MAA_FRAMEWORK_API</ref> <ref refid="MaaDef_8h_1a2f7289f2a8e07f48c6261b52a120cdf6" kindref="member">MaaBool</ref></type>
-        <definition>MAA_FRAMEWORK_API MaaBool MaaTaskerPostStop</definition>
+      <memberdef kind="function" id="MaaTasker_8h_1a7211fa8675cadb5b95c3394f0bbbc8f2" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="MaaPort_8h_1a67006334d91d228121dbba7a8bf8fe05" kindref="member">MAA_FRAMEWORK_API</ref> <ref refid="MaaDef_8h_1a711b3db9be6db60ae4cb09e3629e42f0" kindref="member">MaaTaskId</ref></type>
+        <definition>MAA_FRAMEWORK_API MaaTaskId MaaTaskerPostStop</definition>
         <argsstring>(MaaTasker *tasker)</argsstring>
         <name>MaaTaskerPostStop</name>
         <param>
@@ -280,7 +280,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="include/MaaFramework/Instance/MaaTasker.h" line="49" column="31" declfile="include/MaaFramework/Instance/MaaTasker.h" declline="49" declcolumn="31"/>
+        <location file="include/MaaFramework/Instance/MaaTasker.h" line="49" column="33" declfile="include/MaaFramework/Instance/MaaTasker.h" declline="49" declcolumn="33"/>
       </memberdef>
       <memberdef kind="function" id="MaaTasker_8h_1a66bcb6d294dd92c294555c826ef2d749" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="MaaPort_8h_1a67006334d91d228121dbba7a8bf8fe05" kindref="member">MAA_FRAMEWORK_API</ref> <ref refid="MaaDef_8h_1ab42b9ae54996623815428a30a8c9250d" kindref="member">MaaResource</ref> *</type>

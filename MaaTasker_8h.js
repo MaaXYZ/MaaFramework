@@ -10,7 +10,7 @@ var MaaTasker_8h =
     [ "MaaTaskerStatus", "MaaTasker_8h.html#af4d3fd63071f1ba922bd90f226d1001d", null ],
     [ "MaaTaskerWait", "MaaTasker_8h.html#a43e82561559f1307b50f2cc08565f69b", null ],
     [ "MaaTaskerRunning", "MaaTasker_8h.html#a8946c572b50a0e298a31092496b89475", null ],
-    [ "MaaTaskerPostStop", "MaaTasker_8h.html#a706466f8b5bc274e43c1fa3a176b28e9", null ],
+    [ "MaaTaskerPostStop", "MaaTasker_8h.html#a7211fa8675cadb5b95c3394f0bbbc8f2", null ],
     [ "MaaTaskerGetResource", "MaaTasker_8h.html#a66bcb6d294dd92c294555c826ef2d749", null ],
     [ "MaaTaskerGetController", "MaaTasker_8h.html#a077181e4d90b12a219ff49d092700a86", null ],
     [ "MaaTaskerClearCache", "MaaTasker_8h.html#aea0f684a6987fc963254f68870537925", null ],
