@@ -49,7 +49,11 @@ MaaTaskId Context::run_pipeline(const std::string& entry, const json::value& pip
     LogFunc << VAR(getptr()) << VAR(entry) << VAR(pipeline_override);
 
     PipelineTask task(entry, tasker_, getptr());
-    task.override_pipeline(pipeline_override);
+    bool ov = task.override_pipeline(pipeline_override);
+    if (!ov) {
+        LogError << "failed to override_pipeline" << VAR(entry) << VAR(pipeline_override);
+        return MaaInvalidId;
+    }
     task.run();
     return task.task_id();
 }
@@ -59,7 +63,11 @@ MaaRecoId Context::run_recognition(const std::string& entry, const json::value& 
     LogFunc << VAR(getptr()) << VAR(entry) << VAR(pipeline_override);
 
     RecognitionTask task(entry, tasker_, getptr());
-    task.override_pipeline(pipeline_override);
+    bool ov = task.override_pipeline(pipeline_override);
+    if (!ov) {
+        LogError << "failed to override_pipeline" << VAR(entry) << VAR(pipeline_override);
+        return MaaInvalidId;
+    }
     return task.run_with_param(image);
 }
 
@@ -69,7 +77,11 @@ MaaNodeId
     LogFunc << VAR(getptr()) << VAR(entry) << VAR(pipeline_override) << VAR(box) << VAR(reco_detail);
 
     ActionTask task(entry, tasker_, getptr());
-    task.override_pipeline(pipeline_override);
+    bool ov = task.override_pipeline(pipeline_override);
+    if (!ov) {
+        LogError << "failed to override_pipeline" << VAR(entry) << VAR(pipeline_override);
+        return MaaInvalidId;
+    }
     json::value j_detail = json::parse(reco_detail).value_or(reco_detail);
     return task.run_with_param(box, j_detail);
 }
