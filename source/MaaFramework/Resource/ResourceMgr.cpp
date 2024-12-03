@@ -24,7 +24,7 @@ ResourceMgr::~ResourceMgr()
     LogFunc;
 
     if (res_loader_) {
-        res_loader_->release();
+        res_loader_->wait_all();
     }
 }
 

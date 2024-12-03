@@ -24,7 +24,7 @@ ControllerAgent::~ControllerAgent()
     LogFunc;
 
     if (action_runner_) {
-        action_runner_->release();
+        action_runner_->wait_all();
     }
 }
 

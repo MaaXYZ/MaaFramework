@@ -28,6 +28,7 @@ public:
 
     Id post(Item item, bool block = false);
     void wait(Id id) const;
+    void wait_all() const;
     MaaStatus status(Id id) const;
 
     void clear();
@@ -166,6 +167,21 @@ inline void AsyncRunner<Item>::wait(Id id) const
     while (!exit_) {
         std::unique_lock<std::mutex> lock(compl_mutex_);
         if (id <= compl_id_) {
+            return;
+        }
+
+        compl_cond_.wait(lock);
+    }
+}
+
+template <typename Item>
+inline void AsyncRunner<Item>::wait_all() const
+{
+    LogFunc;
+
+    while (!exit_) {
+        std::unique_lock<std::mutex> lock(compl_mutex_);
+        if (!running_) {
             return;
         }
 
