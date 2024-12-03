@@ -104,8 +104,8 @@ public: // MaaController
 
     virtual MaaStatus status(MaaCtrlId ctrl_id) const override;
     virtual MaaStatus wait(MaaCtrlId ctrl_id) const override;
-    virtual MaaBool connected() const override;
-    virtual MaaBool running() const override;
+    virtual bool connected() const override;
+    virtual bool running() const override;
 
     virtual cv::Mat cached_image() const override;
     virtual std::string get_uuid() override;

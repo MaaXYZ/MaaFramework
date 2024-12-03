@@ -22,9 +22,9 @@ public:
 
     virtual MaaStatus status(MaaResId res_id) const = 0;
     virtual MaaStatus wait(MaaResId res_id) const = 0;
-    virtual MaaBool valid() const = 0;
-    virtual MaaBool running() const = 0;
-    virtual MaaBool clear() = 0;
+    virtual bool valid() const = 0;
+    virtual bool running() const = 0;
+    virtual bool clear() = 0;
 
     virtual void register_custom_recognition(const std::string& name, MaaCustomRecognitionCallback recognition, void* trans_arg) = 0;
     virtual void unregister_custom_recognition(const std::string& name) = 0;
@@ -59,8 +59,8 @@ public:
 
     virtual MaaStatus status(MaaCtrlId ctrl_id) const = 0;
     virtual MaaStatus wait(MaaCtrlId ctrl_id) const = 0;
-    virtual MaaBool connected() const = 0;
-    virtual MaaBool running() const = 0;
+    virtual bool connected() const = 0;
+    virtual bool running() const = 0;
 
     virtual cv::Mat cached_image() const = 0;
     virtual std::string get_uuid() = 0;
@@ -82,7 +82,7 @@ public:
     virtual MaaStatus status(MaaTaskId task_id) const = 0;
     virtual MaaStatus wait(MaaTaskId task_id) const = 0;
 
-    virtual MaaBool running() const = 0;
+    virtual bool running() const = 0;
     virtual void post_stop() = 0;
 
     virtual MaaResource* resource() const = 0;

@@ -93,7 +93,7 @@ MaaStatus Tasker::wait(MaaTaskId task_id) const
     return task_runner_->status(runner_id);
 }
 
-MaaBool Tasker::running() const
+bool Tasker::running() const
 {
     return resource_ && resource_->running() && controller_ && controller_->running() && task_runner_ && task_runner_->running()
         && !running_task_;

@@ -83,7 +83,7 @@ MaaStatus ResourceMgr::wait(MaaResId res_id) const
     return res_loader_->status(res_id);
 }
 
-MaaBool ResourceMgr::valid() const
+bool ResourceMgr::valid() const
 {
     return valid_;
 }
@@ -148,12 +148,12 @@ std::string ResourceMgr::calc_hash()
     return hash_cache_;
 }
 
-MaaBool ResourceMgr::running() const
+bool ResourceMgr::running() const
 {
     return res_loader_ && res_loader_->running();
 }
 
-MaaBool ResourceMgr::clear()
+bool ResourceMgr::clear()
 {
     LogFunc;
 

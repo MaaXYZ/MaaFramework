@@ -39,9 +39,9 @@ public: // MaaResource
 
     virtual MaaStatus status(MaaResId res_id) const override;
     virtual MaaStatus wait(MaaResId res_id) const override;
-    virtual MaaBool valid() const override;
-    virtual MaaBool running() const override;
-    virtual MaaBool clear() override;
+    virtual bool valid() const override;
+    virtual bool running() const override;
+    virtual bool clear() override;
 
     virtual void register_custom_recognition(const std::string& name, MaaCustomRecognitionCallback recognition, void* trans_arg) override;
     virtual void unregister_custom_recognition(const std::string& name) override;

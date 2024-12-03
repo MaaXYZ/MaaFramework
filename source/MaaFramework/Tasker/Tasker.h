@@ -35,7 +35,7 @@ public:
     virtual MaaStatus status(MaaTaskId task_id) const override;
     virtual MaaStatus wait(MaaTaskId task_id) const override;
 
-    virtual MaaBool running() const override;
+    virtual bool running() const override;
     virtual void post_stop() override;
 
     virtual MAA_RES_NS::ResourceMgr* resource() const override;
