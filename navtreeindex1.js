@@ -1,5 +1,13 @@
 var NAVTREEINDEX1 =
 {
+"MaaTasker_8h_source.html":[3,0,0,0,0,4],
+"MaaToolkitAPI_8h.html":[3,0,0,1,4],
+"MaaToolkitAPI_8h_source.html":[3,0,0,1,4],
+"MaaToolkitAdbDevice_8h.html":[3,0,0,1,0,0],
+"MaaToolkitAdbDevice_8h.html#a0146ab95341179e2c11ca2b0bfc5436d":[3,0,0,1,0,0,4],
+"MaaToolkitAdbDevice_8h.html#a0ff6995f682f48c6bef9a371058ee23e":[3,0,0,1,0,0,10],
+"MaaToolkitAdbDevice_8h.html#a3394abd6663214c5aa8539977a3014d9":[3,0,0,1,0,0,6],
+"MaaToolkitAdbDevice_8h.html#a34d5508d018ef311c487bcd7b80d2fec":[3,0,0,1,0,0,9],
 "MaaToolkitAdbDevice_8h.html#a36b30e7e80c696dfbb5d58cba95c5662":[3,0,0,1,0,0,8],
 "MaaToolkitAdbDevice_8h.html#a7d9a2992ee9e663c99550b1320c20e68":[3,0,0,1,0,0,3],
 "MaaToolkitAdbDevice_8h.html#a855bc06b45b35869ca230a2d45bfcd9d":[3,0,0,1,0,0,7],

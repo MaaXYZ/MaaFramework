@@ -3,7 +3,6 @@ var MaaDef_8h =
     [ "MaaRect", "structMaaRect.html", "structMaaRect" ],
     [ "MaaNullSize", "MaaDef_8h.html#a9eddd2fb954b055dd2ea4d9cdd267188", null ],
     [ "MaaInvalidId", "MaaDef_8h.html#a1b93c853d770a6723301f135d9e9e3bc", null ],
-    [ "MaaAdbScreencapMethod_None", "MaaDef_8h.html#ad3df932dcfe5f836a7e98f0ebef2cf83", null ],
     [ "MaaAdbScreencapMethod_EncodeToFileAndPull", "MaaDef_8h.html#aba5cc89306598105a8cee7580867bc35", null ],
     [ "MaaAdbScreencapMethod_Encode", "MaaDef_8h.html#a64dc561558d3344586b97b208ca466eb", null ],
     [ "MaaAdbScreencapMethod_RawWithGzip", "MaaDef_8h.html#a1a291483b888ab3e944818b33aeb98c9", null ],
@@ -11,13 +10,14 @@ var MaaDef_8h =
     [ "MaaAdbScreencapMethod_MinicapDirect", "MaaDef_8h.html#a594d59b13a02d41b6a335e0f6575fca2", null ],
     [ "MaaAdbScreencapMethod_MinicapStream", "MaaDef_8h.html#a81656785989eff6004704d5cc908552e", null ],
     [ "MaaAdbScreencapMethod_EmulatorExtras", "MaaDef_8h.html#a55c4f433547d52de1c93c3d01d58aed7", null ],
+    [ "MaaAdbScreencapMethod_None", "MaaDef_8h.html#ad3df932dcfe5f836a7e98f0ebef2cf83", null ],
     [ "MaaAdbScreencapMethod_All", "MaaDef_8h.html#a004b0d855740e5d3894fd14d9e47d080", null ],
     [ "MaaAdbScreencapMethod_Default", "MaaDef_8h.html#ab558d3ce8a6a402fb562715c452f04f5", null ],
-    [ "MaaAdbInputMethod_None", "MaaDef_8h.html#a5d201ca1f58e33b38be2fd7b9f977975", null ],
     [ "MaaAdbInputMethod_AdbShell", "MaaDef_8h.html#a1b721a64c9bee9b40343caff66f9f64e", null ],
     [ "MaaAdbInputMethod_MinitouchAndAdbKey", "MaaDef_8h.html#a21229ecc6df1fd87bd9877e7f80504a2", null ],
     [ "MaaAdbInputMethod_Maatouch", "MaaDef_8h.html#abeedfd44c6fa8caaa1b9c371b90c82eb", null ],
     [ "MaaAdbInputMethod_EmulatorExtras", "MaaDef_8h.html#ad45ca7f8c290dfe4c4c5652e0bdfa39f", null ],
+    [ "MaaAdbInputMethod_None", "MaaDef_8h.html#a5d201ca1f58e33b38be2fd7b9f977975", null ],
     [ "MaaAdbInputMethod_All", "MaaDef_8h.html#a409e67845229acd9d8332a482f9a7cb8", null ],
     [ "MaaAdbInputMethod_Default", "MaaDef_8h.html#ad89de988d2c725fd34d1596843551870", null ],
     [ "MaaWin32ScreencapMethod_None", "MaaDef_8h.html#a614ef2e0ce06147b8077158da914292f", null ],
@@ -54,6 +54,7 @@ var MaaDef_8h =
     [ "MaaGlobalOption", "MaaDef_8h.html#a78a454cf5bf3e18aab3aef29cfc7b91c", null ],
     [ "MaaResOption", "MaaDef_8h.html#a96a661c5a0739f3238d192949635b7f7", null ],
     [ "MaaInferenceDevice", "MaaDef_8h.html#a76a304a8a9693667c34e81f9158be04c", null ],
+    [ "MaaInferenceExecutionProvider", "MaaDef_8h.html#a1e9ad5d0eda27465f19c56680d49c2aa", null ],
     [ "MaaCtrlOption", "MaaDef_8h.html#af8335ffd5a7df65830402c82a396c94e", null ],
     [ "MaaTaskerOption", "MaaDef_8h.html#ade3bcba89b5092219c2af3b0faffa934", null ],
     [ "MaaAdbScreencapMethod", "MaaDef_8h.html#a337e4b247a734f5c1c058689f75c1369", null ],
@@ -94,12 +95,20 @@ var MaaDef_8h =
     [ "MaaInferenceDeviceEnum", "MaaDef_8h.html#a70d2d23982bb9114d93ce5e811288679", [
       [ "MaaInferenceDevice_CPU", "MaaDef_8h.html#a70d2d23982bb9114d93ce5e811288679ae4eb278e6b02b9b25afa7261d0b5c70e", null ],
       [ "MaaInferenceDevice_Auto", "MaaDef_8h.html#a70d2d23982bb9114d93ce5e811288679a335e0821f21a444ed2bbb45f61df4e1b", null ],
-      [ "MaaInferenceDevice_GPU0", "MaaDef_8h.html#a70d2d23982bb9114d93ce5e811288679a88852ec0a69ab15f9366e82befbbfaa7", null ],
-      [ "MaaInferenceDevice_GPU1", "MaaDef_8h.html#a70d2d23982bb9114d93ce5e811288679a6417a9ae86c81cfa6d2da6f7903a8e1f", null ]
+      [ "MaaInferenceDevice_0", "MaaDef_8h.html#a70d2d23982bb9114d93ce5e811288679aca97cfe49416f43e87c0baf4f424c3a9", null ],
+      [ "MaaInferenceDevice_1", "MaaDef_8h.html#a70d2d23982bb9114d93ce5e811288679ac1b2a2430eebf70ac1dc6c2a64410d03", null ]
+    ] ],
+    [ "MaaInferenceExecutionProviderEnum", "MaaDef_8h.html#a07c99fb673242274e529810067429535", [
+      [ "MaaInferenceExecutionProvider_Auto", "MaaDef_8h.html#a07c99fb673242274e529810067429535af9af6ca1f146dc2fc2e414e10aad2da7", null ],
+      [ "MaaInferenceExecutionProvider_CPU", "MaaDef_8h.html#a07c99fb673242274e529810067429535aa7f96492e1e243a6f4a08c587d727fad", null ],
+      [ "MaaInferenceExecutionProvider_DirectML", "MaaDef_8h.html#a07c99fb673242274e529810067429535afc6b391b560f1e7d421ca2c6e26c693b", null ],
+      [ "MaaInferenceExecutionProvider_CoreML", "MaaDef_8h.html#a07c99fb673242274e529810067429535ae25a91ba56fd4ace8c4f5034e87320d0", null ],
+      [ "MaaInferenceExecutionProvider_CUDA", "MaaDef_8h.html#a07c99fb673242274e529810067429535aada9d3c290c0a54170963a8885e1550c", null ]
     ] ],
     [ "MaaResOptionEnum", "MaaDef_8h.html#a9aa211dbcabe90cacd0c94ea6a03d116", [
       [ "MaaResOption_Invalid", "MaaDef_8h.html#a9aa211dbcabe90cacd0c94ea6a03d116afdc31dbaaa6b035f11b40cd574165f8e", null ],
-      [ "MaaResOption_InferenceDevice", "MaaDef_8h.html#a9aa211dbcabe90cacd0c94ea6a03d116a3ff6bf91b8715ced2a6c20ac9c1b4109", null ]
+      [ "MaaResOption_InferenceDevice", "MaaDef_8h.html#a9aa211dbcabe90cacd0c94ea6a03d116a3ff6bf91b8715ced2a6c20ac9c1b4109", null ],
+      [ "MaaResOption_InferenceExecutionProvider", "MaaDef_8h.html#a9aa211dbcabe90cacd0c94ea6a03d116ace3b2838a2190168d82cf04fd4d05cf9", null ]
     ] ],
     [ "MaaCtrlOptionEnum", "MaaDef_8h.html#ac9daa36008267a26662244d2f5570003", [
       [ "MaaCtrlOption_Invalid", "MaaDef_8h.html#ac9daa36008267a26662244d2f5570003a4afeb097dfa70801c8fa43d83bb5c51f", null ],

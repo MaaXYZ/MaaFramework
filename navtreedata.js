@@ -51,7 +51,7 @@ var NAVTREE =
 var NAVTREEINDEX =
 [
 "MaaAPI_8h.html",
-"MaaToolkitAdbDevice_8h.html#a36b30e7e80c696dfbb5d58cba95c5662"
+"MaaTasker_8h_source.html"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';

@@ -2,7 +2,7 @@
 <doxyfile xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="doxyfile.xsd" version="1.9.8" xml:lang="en-US">
   <option  id='DOXYFILE_ENCODING' default='yes' type='string'><value><![CDATA[UTF-8]]></value></option>
   <option  id='PROJECT_NAME' default='no' type='string'><value><![CDATA["Maa Framework"]]></value></option>
-  <option  id='PROJECT_NUMBER' default='no' type='string'><value><![CDATA["(main) v2.2.2"]]></value></option>
+  <option  id='PROJECT_NUMBER' default='no' type='string'><value><![CDATA["(main) v2.3.0-alpha.1"]]></value></option>
   <option  id='PROJECT_BRIEF' default='no' type='string'><value><![CDATA["A automation black-box testing framework based on image recognition."]]></value></option>
   <option  id='PROJECT_LOGO' default='yes' type='string'><value><![CDATA[]]></value></option>
   <option  id='OUTPUT_DIRECTORY' default='no' type='string'><value><![CDATA[./docs-gen]]></value></option>

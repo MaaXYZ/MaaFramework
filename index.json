@@ -1,5 +1,5 @@
 {
-	"Version": "(main) v2.2.2",
+	"Version": "(main) v2.3.0-alpha.1",
 	"Compounds": {
 		"MaaContext.h": {
 			"Location": "include/MaaFramework/Instance/MaaContext.h",
@@ -2557,6 +2557,17 @@
 					},
 					"FunctionPointer": null
 				},
+				"MaaInferenceExecutionProvider": {
+					"Type": {
+						"Description": {
+							"Brief": "",
+							"Details": [],
+							"Deprecated": null
+						},
+						"Define": "int32_t"
+					},
+					"FunctionPointer": null
+				},
 				"MaaCtrlOption": {
 					"Type": {
 						"Description": {
@@ -2859,14 +2870,6 @@
 						"Deprecated": null
 					},
 					"EnumValues": {
-						"None": {
-							"Description": {
-								"Brief": "",
-								"Details": [],
-								"Deprecated": null
-							},
-							"Value": "0ULL"
-						},
 						"EncodeToFileAndPull": {
 							"Description": {
 								"Brief": "",
@@ -2923,6 +2926,14 @@
 							},
 							"Value": "(1ULL \u003C\u003C 6)"
 						},
+						"None": {
+							"Description": {
+								"Brief": "",
+								"Details": [],
+								"Deprecated": null
+							},
+							"Value": "0ULL"
+						},
 						"All": {
 							"Description": {
 								"Brief": "",
@@ -2952,14 +2963,6 @@
 						"Deprecated": null
 					},
 					"EnumValues": {
-						"None": {
-							"Description": {
-								"Brief": "",
-								"Details": [],
-								"Deprecated": null
-							},
-							"Value": "0ULL"
-						},
 						"AdbShell": {
 							"Description": {
 								"Brief": "",
@@ -2991,6 +2994,14 @@
 								"Deprecated": null
 							},
 							"Value": "(1ULL \u003C\u003C 3)"
+						},
+						"None": {
+							"Description": {
+								"Brief": "",
+								"Details": [],
+								"Deprecated": null
+							},
+							"Value": "0ULL"
 						},
 						"All": {
 							"Description": {
@@ -3361,7 +3372,7 @@
 							},
 							"Value": "-1"
 						},
-						"MaaInferenceDevice_GPU0": {
+						"MaaInferenceDevice_0": {
 							"Description": {
 								"Brief": "",
 								"Details": [],
@@ -3369,13 +3380,64 @@
 							},
 							"Value": "0"
 						},
-						"MaaInferenceDevice_GPU1": {
+						"MaaInferenceDevice_1": {
 							"Description": {
 								"Brief": "",
 								"Details": [],
 								"Deprecated": null
 							},
 							"Value": "1"
+						}
+					},
+					"IsFlags": false,
+					"UnderlyingType": "int32_t"
+				},
+				"MaaInferenceExecutionProviderEnum": {
+					"Description": {
+						"Brief": "",
+						"Details": [],
+						"Deprecated": null
+					},
+					"EnumValues": {
+						"MaaInferenceExecutionProvider_Auto": {
+							"Description": {
+								"Brief": "",
+								"Details": [],
+								"Deprecated": null
+							},
+							"Value": "0"
+						},
+						"MaaInferenceExecutionProvider_CPU": {
+							"Description": {
+								"Brief": "",
+								"Details": [],
+								"Deprecated": null
+							},
+							"Value": "1"
+						},
+						"MaaInferenceExecutionProvider_DirectML": {
+							"Description": {
+								"Brief": "",
+								"Details": [],
+								"Deprecated": null
+							},
+							"Value": "2"
+						},
+						"MaaInferenceExecutionProvider_CoreML": {
+							"Description": {
+								"Brief": "",
+								"Details": [],
+								"Deprecated": null
+							},
+							"Value": "3"
+						},
+						"MaaInferenceExecutionProvider_CUDA": {
+							"Description": {
+								"Brief": "",
+								"Details": [],
+								"Deprecated": null
+							},
+							"Value": "4"
 						}
 					},
 					"IsFlags": false,
@@ -3405,6 +3467,16 @@
 								"Deprecated": null
 							},
 							"Value": "1"
+						},
+						"MaaResOption_InferenceExecutionProvider": {
+							"Description": {
+								"Brief": "Use the specified inference execution provider Please set this option before loading the model.",
+								"Details": [
+									"value: MaaInferenceExecutionProvider, eg: 0; val_size: sizeof(MaaInferenceExecutionProvider) default value is MaaInferenceExecutionProvider_Auto"
+								],
+								"Deprecated": null
+							},
+							"Value": "2"
 						}
 					},
 					"IsFlags": false,
