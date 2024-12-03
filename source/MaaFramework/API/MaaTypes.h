@@ -83,7 +83,7 @@ public:
     virtual MaaStatus wait(MaaTaskId task_id) const = 0;
 
     virtual bool running() const = 0;
-    virtual void post_stop() = 0;
+    virtual MaaTaskId post_stop() = 0;
 
     virtual MaaResource* resource() const = 0;
     virtual MaaController* controller() const = 0;

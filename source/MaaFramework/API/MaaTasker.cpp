@@ -119,7 +119,7 @@ MaaBool MaaTaskerRunning(const MaaTasker* tasker)
     return tasker->running();
 }
 
-MaaBool MaaTaskerPostStop(MaaTasker* tasker)
+MaaTaskId MaaTaskerPostStop(MaaTasker* tasker)
 {
     LogFunc << VAR_VOIDP(tasker);
 
@@ -128,8 +128,7 @@ MaaBool MaaTaskerPostStop(MaaTasker* tasker)
         return false;
     }
 
-    tasker->post_stop();
-    return true;
+    return tasker->post_stop();
 }
 
 MaaResource* MaaTaskerGetResource(const MaaTasker* tasker)
