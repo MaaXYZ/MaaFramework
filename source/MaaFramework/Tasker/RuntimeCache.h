@@ -3,6 +3,7 @@
 #include <map>
 #include <optional>
 #include <string>
+#include <shared_mutex>
 
 #include "Task/TaskResultTypes.h"
 #include "Utils/NoWarningCVMat.hpp"
@@ -28,9 +29,16 @@ public:
 
 private:
     std::map<std::string, MaaNodeId> latest_nodes_;
+    mutable std::shared_mutex latest_nodes_mutex_;
+
     std::map<MaaRecoId, MAA_TASK_NS::RecoResult> reco_details_;
+    mutable std::shared_mutex reco_details_mutex_;
+
     std::map<MaaNodeId, MAA_TASK_NS::NodeDetail> node_details_;
+    mutable std::shared_mutex node_details_mutex_;
+
     std::map<MaaTaskId, MAA_TASK_NS::TaskDetail> task_details_;
+    mutable std::shared_mutex task_details_mutex_;
 };
 
 MAA_NS_END

@@ -137,7 +137,11 @@ void Tasker::clear_cache()
 {
     LogTrace;
 
-    task_id_mapping_.clear();
+    {
+        std::unique_lock lock(task_id_mapping_mutex_);
+        task_id_mapping_.clear();
+    }
+
     runtime_cache().clear();
 }
 
@@ -191,6 +195,8 @@ MaaTaskId Tasker::post_task(TaskPtr task_ptr, const json::value& pipeline_overri
 
     task_ptr->override_pipeline(pipeline_override);
     MaaTaskId task_id = task_ptr->task_id();
+
+    std::unique_lock lock(task_id_mapping_mutex_);
 
     RunnerId runner_id = task_runner_->post(task_ptr);
     task_id_mapping_.emplace(task_id, runner_id);
@@ -257,6 +263,8 @@ bool Tasker::check_stop()
 
 Tasker::RunnerId Tasker::task_id_to_runner_id(MaaTaskId task_id) const
 {
+    std::shared_lock lock(task_id_mapping_mutex_);
+
     auto iter = task_id_mapping_.find(task_id);
     if (iter == task_id_mapping_.end()) {
         LogError << "runner id not found" << VAR(task_id);
