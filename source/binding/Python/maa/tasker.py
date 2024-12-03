@@ -92,8 +92,8 @@ class Tasker:
         return bool(Library.framework.MaaTaskerRunning(self._handle))
 
     def post_stop(self) -> Job:
-        Library.framework.MaaTaskerPostStop(self._handle)
-        return Job(MaaId(0), self._stop_status, self._stop_wait)
+        taskid = Library.framework.MaaTaskerPostStop(self._handle)
+        return self._gen_task_job(taskid)
 
     def get_latest_node(self, name: str) -> Optional[NodeDetail]:
         c_node_id = MaaNodeId()
@@ -201,15 +201,6 @@ class Tasker:
     def _task_wait(self, id: int) -> ctypes.c_int32:
         return Library.framework.MaaTaskerWait(self._handle, id)
 
-    def _stop_status(self, id: int) -> MaaStatusEnum:
-        return MaaStatusEnum.succeeded if not self.running else MaaStatusEnum.running
-
-    def _stop_wait(self, id: int) -> MaaStatusEnum:
-        # TODO: 这个应该由 callback 来处理
-        while self.running:
-            time.sleep(0.1)
-        return MaaStatusEnum.succeeded
-
     def get_recognition_detail(self, reco_id: int) -> Optional[RecognitionDetail]:
         name = StringBuffer()
         algorithm = StringBuffer()
@@ -316,7 +307,9 @@ class Tasker:
             detail = self.get_node_detail(int(c_node_id_list[i]))
             nodes.append(detail)
 
-        return TaskDetail(task_id=task_id, entry=entry.get(), nodes=nodes, status=Status(status))
+        return TaskDetail(
+            task_id=task_id, entry=entry.get(), nodes=nodes, status=Status(status)
+        )
 
     _api_properties_initialized: bool = False
 
@@ -398,7 +391,7 @@ class Tasker:
         Library.framework.MaaTaskerRunning.restype = MaaBool
         Library.framework.MaaTaskerRunning.argtypes = [MaaTaskerHandle]
 
-        Library.framework.MaaTaskerPostStop.restype = MaaBool
+        Library.framework.MaaTaskerPostStop.restype = MaaTaskId
         Library.framework.MaaTaskerPostStop.argtypes = [MaaTaskerHandle]
 
         Library.framework.MaaTaskerGetResource.restype = MaaResourceHandle

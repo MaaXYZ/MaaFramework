@@ -46,7 +46,7 @@ extern "C"
 
     MAA_FRAMEWORK_API MaaBool MaaTaskerRunning(const MaaTasker* tasker);
 
-    MAA_FRAMEWORK_API MaaBool MaaTaskerPostStop(MaaTasker* tasker);
+    MAA_FRAMEWORK_API MaaTaskId MaaTaskerPostStop(MaaTasker* tasker);
 
     MAA_FRAMEWORK_API MaaResource* MaaTaskerGetResource(const MaaTasker* tasker);
 

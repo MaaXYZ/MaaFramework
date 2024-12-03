@@ -5,6 +5,7 @@
 #include "Controller/ControllerAgent.h"
 #include "MaaFramework/MaaMsg.h"
 #include "Resource/ResourceMgr.h"
+#include "Task/EmptyTask.h"
 #include "Task/PipelineTask.h"
 #include "Utils/Logger.h"
 
@@ -72,6 +73,10 @@ MaaTaskId Tasker::post_pipeline(const std::string& entry, const json::value& pip
 {
     LogInfo << VAR(entry) << VAR(pipeline_override);
 
+    if (!check_stop()) {
+        return MaaInvalidId;
+    }
+
     auto task_ptr = std::make_shared<MAA_TASK_NS::PipelineTask>(entry, this);
     return post_task(std::move(task_ptr), pipeline_override);
 }
@@ -103,7 +108,7 @@ bool Tasker::running() const
            && !running_task_;
 }
 
-void Tasker::post_stop()
+MaaTaskId Tasker::post_stop()
 {
     LogFunc;
 
@@ -121,6 +126,9 @@ void Tasker::post_stop()
     if (controller_) {
         controller_->post_stop();
     }
+
+    auto task_ptr = std::make_shared<MAA_TASK_NS::EmptyTask>(std::string(MAA_FUNCTION), this);
+    return post_task(std::move(task_ptr), {});
 }
 
 MAA_RES_NS::ResourceMgr* Tasker::resource() const
@@ -189,10 +197,6 @@ MaaTaskId Tasker::post_task(TaskPtr task_ptr, const json::value& pipeline_overri
     }
 #endif
 
-    if (!check_stop()) {
-        return MaaInvalidId;
-    }
-
     MaaTaskId task_id = task_ptr->task_id();
     bool ov = task_ptr->override_pipeline(pipeline_override);
     if (!ov) {
@@ -224,10 +228,8 @@ bool Tasker::run_task(RunnerId runner_id, TaskPtr task_ptr)
     running_task_ = task_ptr;
     OnScopeLeave([&] { running_task_ = nullptr; });
 
-    // 考虑 post_stop 的时序问题，这里需要先给 running_task_ 赋值，再检查 need_to_stop_
-    if (!check_stop()) {
-        LogError << "stopping, ignore new task";
-        return false;
+    if (need_to_stop_) {
+        running_task_->post_stop();
     }
 
     MaaTaskId task_id = task_ptr->task_id();
