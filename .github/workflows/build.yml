@@ -513,6 +513,10 @@ jobs:
                   access: public
                   token: ${{ secrets.NPM_TOKEN }}
 
+            - name: Remove NodeJS Release
+              run: |
+                  rm -r assets/MAA-nodejs-package
+
             - run: |
                   cd assets
                   for f in *; do
