@@ -14,4 +14,4 @@ if __PATH.exists():
             "Library not initialized, please call `library.open()` first."
         )
 else:
-    raise FileNotFoundError(__PATH, " ", "is not exists.")
+    raise FileNotFoundError(f"{__PATH} is not exists.")
