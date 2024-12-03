@@ -97,7 +97,7 @@ _✨ 基于图像识别的自动化黑盒测试框架 ✨_
   基于全新架构的 代号鸢/如鸢 小助手。图像技术 + 模拟控制，解放双手！由 MaaFramework 强力驱动！
 
 - [MAAGUI](https://github.com/Night-stars-1/maa-gui) MAAGUI ![Typescript](https://img.shields.io/badge/Typescript-8A2BE2?logo=typescript)  ![Electron](https://img.shields.io/badge/Electron-3776AB?logo=electron&logoColor=black)  
-  基于全新架构的MAA GUI。由 MaaFramework 强力驱动！
+  基于全新架构的 MAA GUI。由 MaaFramework 强力驱动！
 
 ## 生态共建
 
