@@ -2,7 +2,6 @@ import ctypes
 import ctypes.util
 import pathlib
 import platform
-from typing import Optional, Union
 
 from .define import *
 
@@ -10,7 +9,7 @@ from .define import *
 class Library:
 
     @staticmethod
-    def open(path: Union[pathlib.Path, str]):
+    def open(path: pathlib.Path):
         if not pathlib.Path(path).exists():
             raise FileNotFoundError(f"`{path}` does not exist.")
 
@@ -32,9 +31,7 @@ class Library:
         )
         Library.framework = lib_import(str(Library.framework_libpath))
 
-        Library.toolkit_libpath = (
-            pathlib.Path(path) / platform_values[platform_type][1]
-        )
+        Library.toolkit_libpath = pathlib.Path(path) / platform_values[platform_type][1]
         Library.toolkit = lib_import(str(Library.toolkit_libpath))
 
         Library._set_api_properties()
