@@ -119,7 +119,7 @@ jobs:
               shell: bash
               run: |
                   python3 -m pip install -r ./install/binding/Python/requirements.txt
-                  python3 ./test/python/binding_test.py ./install
+                  python3 ./test/python/binding_test.py ./install/binding/Python
 
             - name: Run NodeJS testing
               shell: bash
@@ -238,7 +238,7 @@ jobs:
                   python3 -m venv .venv
                   source .venv/bin/activate
                   python3 -m pip install -r ./install/binding/Python/requirements.txt
-                  python3 ./test/python/binding_test.py ./install
+                  python3 ./test/python/binding_test.py ./install/binding/Python
 
             - name: Run NodeJS testing
               shell: bash
@@ -348,7 +348,7 @@ jobs:
                   python3 -m venv .venv
                   source .venv/bin/activate
                   python3 -m pip install -r ./install/binding/Python/requirements.txt
-                  python3 ./test/python/binding_test.py ./install
+                  python3 ./test/python/binding_test.py ./install/binding/Python
 
             - name: Run NodeJS testing
               shell: bash
