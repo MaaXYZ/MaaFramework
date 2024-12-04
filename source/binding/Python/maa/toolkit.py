@@ -189,11 +189,6 @@ class Toolkit:
             return
         Toolkit._api_properties_initialized = True
 
-        if not Library.initialized:
-            raise RuntimeError(
-                "Library not initialized, please call `library.open()` first."
-            )
-
         Library.toolkit.MaaToolkitConfigInitOption.restype = MaaBool
         Library.toolkit.MaaToolkitConfigInitOption.argtypes = [
             ctypes.c_char_p,

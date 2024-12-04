@@ -1,10 +1,12 @@
 import os
+from pathlib import Path
 
 from .library import Library
 
-__PATH = os.path.join(os.path.dirname(__file__), "bin")
+env_path = Path(os.environ.get("MAAFW_BINARY_PATH"))
+if env_path:
+    __PATH = env_path
+else:
+    __PATH = Path(Path(__file__).parent, "bin")
 
-if os.path.exists(__PATH):
-    ver = Library.open(__PATH)
-    if ver:
-        print(f"MaaFw version: {ver}")
+Library.open(__PATH)
