@@ -1,13 +1,17 @@
+import os
 from pathlib import Path
-import numpy
 import sys
 
+import numpy
+
 if len(sys.argv) < 2:
-    print("Usage: python binding_test.py <install_dir>/bin")
+    print("Usage: python binding_test.py <install_dir>")
     sys.exit(1)
 
-install_dir = Path(sys.argv[1]).resolve().parent
+install_dir = Path(sys.argv[1]).resolve()
 binding_dir = Path(install_dir, "binding", "Python")
+
+os.environ["MAAFW_BINARY_PATH"] = str(f"{binding_dir}/bin")
 print(f"install_dir: {install_dir}")
 print(f"binding_dir: {binding_dir}")
 
