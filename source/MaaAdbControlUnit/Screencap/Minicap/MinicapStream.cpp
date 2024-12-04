@@ -51,7 +51,7 @@ std::optional<cv::Mat> MinicapStream::screencap()
 {
     LogDebug;
 
-    std::unique_lock<std::mutex> locker(mutex_);
+    std::unique_lock locker(mutex_);
 
     using namespace std::chrono_literals;
     cond_.wait_for(locker, 2s); // 等下一帧
@@ -163,7 +163,7 @@ void MinicapStream::pulling()
         auto size_opt = read(4);
         if (!size_opt) {
             LogError << "read size failed";
-            std::unique_lock<std::mutex> locker(mutex_);
+            std::unique_lock locker(mutex_);
             image_ = cv::Mat();
             continue;
         }
@@ -172,7 +172,7 @@ void MinicapStream::pulling()
         auto data_opt = read(size);
         if (!data_opt) {
             LogError << "read data failed";
-            std::unique_lock<std::mutex> locker(mutex_);
+            std::unique_lock locker(mutex_);
             image_ = cv::Mat();
             continue;
         }
@@ -181,12 +181,12 @@ void MinicapStream::pulling()
 
         if (!img_opt || img_opt->empty()) {
             LogError << "decode jpg failed";
-            std::unique_lock<std::mutex> locker(mutex_);
+            std::unique_lock locker(mutex_);
             image_ = cv::Mat();
             continue;
         }
 
-        std::unique_lock<std::mutex> locker(mutex_);
+        std::unique_lock locker(mutex_);
         image_ = std::move(*img_opt);
         cond_.notify_all();
     }

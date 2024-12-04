@@ -138,7 +138,7 @@ public:
 
     ~LogStream()
     {
-        std::unique_lock<std::mutex> lock(mutex_);
+        std::unique_lock lock(mutex_);
 
         if (stdout_) {
             std::cout << stdout_string() << std::endl;

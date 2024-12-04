@@ -48,7 +48,7 @@ inline bool LibraryHolder<T>::load_library(const std::filesystem::path& libname)
 {
     LogFunc << VAR(libname);
 
-    std::unique_lock<std::mutex> lock(mutex_);
+    std::unique_lock lock(mutex_);
 
     if (module_.is_loaded()) {
         if (libname_ != libname) {
@@ -87,7 +87,7 @@ inline void LibraryHolder<T>::unload_library()
 {
     LogFunc << VAR(libname_);
 
-    std::unique_lock<std::mutex> lock(mutex_);
+    std::unique_lock lock(mutex_);
 
     if (!module_.is_loaded()) {
         LogDebug << "LibraryHolder already unloaded";
@@ -114,7 +114,7 @@ inline boost::function<FuncT> LibraryHolder<T>::get_function(const std::string& 
 {
     LogFunc << VAR(func_name);
 
-    std::unique_lock<std::mutex> lock(mutex_);
+    std::unique_lock lock(mutex_);
 
     if (!module_.is_loaded()) {
         LogError << "LibraryHolder not loaded";

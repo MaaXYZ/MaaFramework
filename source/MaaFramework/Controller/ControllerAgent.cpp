@@ -218,7 +218,7 @@ bool ControllerAgent::input_text(const std::string& text)
 
 cv::Mat ControllerAgent::screencap()
 {
-    std::unique_lock<std::mutex> lock(image_mutex_);
+    std::unique_lock lock(image_mutex_);
     auto id = post_screencap_impl();
     if (wait(id) != MaaStatus_Succeeded) {
         return {};
