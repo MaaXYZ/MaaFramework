@@ -122,7 +122,7 @@ bool Logger::rotate()
         return false;
     }
 
-    std::unique_lock<std::mutex> trace_lock(trace_mutex_);
+    std::unique_lock trace_lock(trace_mutex_);
     if (ofs_.is_open()) {
         ofs_.close();
     }
@@ -157,7 +157,7 @@ void Logger::open()
 
     std::filesystem::create_directories(log_dir_);
 
-    std::unique_lock<std::mutex> trace_lock(trace_mutex_);
+    std::unique_lock trace_lock(trace_mutex_);
     if (ofs_.is_open()) {
         ofs_.close();
     }
@@ -183,7 +183,7 @@ void Logger::close()
     internal_dbg() << "Close log";
     internal_dbg() << kSplitLine;
 
-    std::unique_lock<std::mutex> trace_lock(trace_mutex_);
+    std::unique_lock trace_lock(trace_mutex_);
     if (ofs_.is_open()) {
         ofs_.close();
     }
