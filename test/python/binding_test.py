@@ -11,7 +11,7 @@ if len(sys.argv) < 2:
 install_dir = Path(sys.argv[1]).resolve()
 binding_dir = Path(install_dir, "binding", "Python")
 
-os.environ["MAAFW_BINARY_PATH"] = str(f"{binding_dir}/bin")
+os.environ["MAAFW_BINARY_PATH"] = str(f"{install_dir}/bin")
 print(f"install_dir: {install_dir}")
 print(f"binding_dir: {binding_dir}")
 
