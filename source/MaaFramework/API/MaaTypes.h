@@ -77,7 +77,7 @@ public:
 
     virtual bool set_option(MaaTaskerOption key, MaaOptionValue value, MaaOptionValueSize val_size) = 0;
 
-    virtual MaaTaskId post_pipeline(const std::string& entry, const json::value& pipeline_override) = 0;
+    virtual MaaTaskId post_pipeline(const std::string& entry, const json::object& pipeline_override) = 0;
 
     virtual MaaStatus status(MaaTaskId task_id) const = 0;
     virtual MaaStatus wait(MaaTaskId task_id) const = 0;
@@ -100,11 +100,11 @@ struct MaaContext
 public:
     virtual ~MaaContext() = default;
 
-    virtual MaaTaskId run_pipeline(const std::string& entry, const json::value& pipeline_override) = 0;
-    virtual MaaRecoId run_recognition(const std::string& entry, const json::value& pipeline_override, const cv::Mat& image) = 0;
+    virtual MaaTaskId run_pipeline(const std::string& entry, const json::object& pipeline_override) = 0;
+    virtual MaaRecoId run_recognition(const std::string& entry, const json::object& pipeline_override, const cv::Mat& image) = 0;
     virtual MaaNodeId
-        run_action(const std::string& entry, const json::value& pipeline_override, const cv::Rect& box, const std::string& reco_detail) = 0;
-    virtual bool override_pipeline(const json::value& pipeline_override) = 0;
+        run_action(const std::string& entry, const json::object& pipeline_override, const cv::Rect& box, const std::string& reco_detail) = 0;
+    virtual bool override_pipeline(const json::object& pipeline_override) = 0;
     virtual bool override_next(const std::string& name, const std::vector<std::string>& next) = 0;
 
     virtual MaaContext* clone() const = 0;

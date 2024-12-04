@@ -69,7 +69,7 @@ bool Tasker::set_option(MaaTaskerOption key, MaaOptionValue value, MaaOptionValu
     return false;
 }
 
-MaaTaskId Tasker::post_pipeline(const std::string& entry, const json::value& pipeline_override)
+MaaTaskId Tasker::post_pipeline(const std::string& entry, const json::object& pipeline_override)
 {
     LogInfo << VAR(entry) << VAR(pipeline_override);
 
@@ -188,7 +188,7 @@ void Tasker::notify(std::string_view msg, const json::value& detail)
     notifier.notify(msg, detail);
 }
 
-MaaTaskId Tasker::post_task(TaskPtr task_ptr, const json::value& pipeline_override)
+MaaTaskId Tasker::post_task(TaskPtr task_ptr, const json::object& pipeline_override)
 {
 #ifndef MAA_DEBUG
     if (!inited()) {

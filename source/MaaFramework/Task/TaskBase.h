@@ -30,7 +30,7 @@ public:
     virtual void post_stop() = 0;
 
 public:
-    bool override_pipeline(const json::value& pipeline_override);
+    bool override_pipeline(const json::object& pipeline_override);
 
 public:
     Tasker* tasker() const;

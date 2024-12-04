@@ -19,8 +19,12 @@ MaaTaskId MaaContextRunPipeline(MaaContext* context, const char* entry, const ch
         LogError << "failed to parse" << VAR(pipeline_override);
         return MaaInvalidId;
     }
+    if (!ov_opt->is_object()) {
+        LogError << "json is not object" << VAR(pipeline_override);
+        return MaaInvalidId;
+    }
 
-    return context->run_pipeline(entry, *ov_opt);
+    return context->run_pipeline(entry, ov_opt->as_object());
 }
 
 MaaRecoId MaaContextRunRecognition(MaaContext* context, const char* entry, const char* pipeline_override, const MaaImageBuffer* image)
@@ -37,6 +41,10 @@ MaaRecoId MaaContextRunRecognition(MaaContext* context, const char* entry, const
         LogError << "failed to parse" << VAR(pipeline_override);
         return MaaInvalidId;
     }
+    if (!ov_opt->is_object()) {
+        LogError << "json is not object" << VAR(pipeline_override);
+        return MaaInvalidId;
+    }
 
     const auto& mat = image->get();
     if (mat.empty()) {
@@ -44,7 +52,7 @@ MaaRecoId MaaContextRunRecognition(MaaContext* context, const char* entry, const
         return MaaInvalidId;
     }
 
-    return context->run_recognition(entry, *ov_opt, mat);
+    return context->run_recognition(entry, ov_opt->as_object(), mat);
 }
 
 MaaNodeId
@@ -62,6 +70,10 @@ MaaNodeId
         LogError << "failed to parse" << VAR(pipeline_override);
         return MaaInvalidId;
     }
+    if (!ov_opt->is_object()) {
+        LogError << "json is not object" << VAR(pipeline_override);
+        return MaaInvalidId;
+    }
 
     cv::Rect cvbox {};
     if (box) {
@@ -70,7 +82,7 @@ MaaNodeId
         cvbox.width = box->width;
         cvbox.height = box->height;
     }
-    return context->run_action(entry, *ov_opt, cvbox, reco_detail);
+    return context->run_action(entry, ov_opt->as_object(), cvbox, reco_detail);
 }
 
 MaaBool MaaContextOverridePipeline(MaaContext* context, const char* pipeline_override)
@@ -86,8 +98,12 @@ MaaBool MaaContextOverridePipeline(MaaContext* context, const char* pipeline_ove
         LogError << "failed to parse" << VAR(pipeline_override);
         return false;
     }
+    if (!ov_opt->is_object()) {
+        LogError << "json is not object" << VAR(pipeline_override);
+        return MaaInvalidId;
+    }
 
-    return context->override_pipeline(*ov_opt);
+    return context->override_pipeline(ov_opt->as_object());
 }
 
 MaaBool MaaContextOverrideNext(MaaContext* context, const char* name, const MaaStringListBuffer* next_list)

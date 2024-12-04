@@ -27,7 +27,7 @@ TaskBase::TaskBase(std::string entry, Tasker* tasker, std::shared_ptr<Context> c
 {
 }
 
-bool TaskBase::override_pipeline(const json::value& pipeline_override)
+bool TaskBase::override_pipeline(const json::object& pipeline_override)
 {
     return context_ && context_->override_pipeline(pipeline_override);
 }

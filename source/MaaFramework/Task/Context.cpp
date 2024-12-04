@@ -44,7 +44,7 @@ Context::Context(const Context& other)
     LogDebug << VAR(other.getptr());
 }
 
-MaaTaskId Context::run_pipeline(const std::string& entry, const json::value& pipeline_override)
+MaaTaskId Context::run_pipeline(const std::string& entry, const json::object& pipeline_override)
 {
     LogFunc << VAR(getptr()) << VAR(entry) << VAR(pipeline_override);
 
@@ -79,7 +79,7 @@ MaaTaskId Context::run_pipeline(const std::string& entry, const json::value& pip
     return subtask.task_id();
 }
 
-MaaRecoId Context::run_recognition(const std::string& entry, const json::value& pipeline_override, const cv::Mat& image)
+MaaRecoId Context::run_recognition(const std::string& entry, const json::object& pipeline_override, const cv::Mat& image)
 {
     LogFunc << VAR(getptr()) << VAR(entry) << VAR(pipeline_override);
 
@@ -93,7 +93,7 @@ MaaRecoId Context::run_recognition(const std::string& entry, const json::value& 
 }
 
 MaaNodeId
-    Context::run_action(const std::string& entry, const json::value& pipeline_override, const cv::Rect& box, const std::string& reco_detail)
+    Context::run_action(const std::string& entry, const json::object& pipeline_override, const cv::Rect& box, const std::string& reco_detail)
 {
     LogFunc << VAR(getptr()) << VAR(entry) << VAR(pipeline_override) << VAR(box) << VAR(reco_detail);
 
@@ -107,14 +107,9 @@ MaaNodeId
     return subtask.run_with_param(box, j_detail);
 }
 
-bool Context::override_pipeline(const json::value& pipeline_override)
+bool Context::override_pipeline(const json::object& pipeline_override)
 {
     LogFunc << VAR(getptr()) << VAR(pipeline_override);
-
-    if (!pipeline_override.is_object()) {
-        LogError << "json is not object";
-        return false;
-    }
 
     if (!tasker_) {
         LogError << "tasker is null";
@@ -127,7 +122,7 @@ bool Context::override_pipeline(const json::value& pipeline_override)
     }
     auto& default_mgr = resource->default_pipeline();
 
-    for (const auto& [key, value] : pipeline_override.as_object()) {
+    for (const auto& [key, value] : pipeline_override) {
         PipelineData result;
         auto default_result = get_pipeline_data(key).value_or(default_mgr.get_pipeline());
         bool ret = MAA_RES_NS::PipelineResMgr::parse_task(key, value, result, default_result, default_mgr);
