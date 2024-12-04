@@ -161,6 +161,11 @@ def api_test():
         print("pipeline failed")
         raise RuntimeError("pipeline failed")
 
+    tasker.post_pipeline("Entry", ppover)
+    stopped = tasker.post_stop().wait().succeeded()
+    if not stopped:
+        raise RuntimeError("post_stop failed")
+
     tasker.resource.post_path("C:/_maafw_testing_/aaabbbccc")
     tasker.clear_cache()
     inited = tasker.inited
