@@ -10,7 +10,7 @@ class Library:
 
     @staticmethod
     def open(path: pathlib.Path):
-        if not pathlib.Path(path).exists():
+        if not path.exists():
             raise FileNotFoundError(f"`{path}` does not exist.")
 
         platform_values = {
@@ -26,12 +26,10 @@ class Library:
         else:
             lib_import = ctypes.CDLL
 
-        Library.framework_libpath = (
-            pathlib.Path(path) / platform_values[platform_type][0]
-        )
+        Library.framework_libpath = path / platform_values[platform_type][0]
         Library.framework = lib_import(str(Library.framework_libpath))
 
-        Library.toolkit_libpath = pathlib.Path(path) / platform_values[platform_type][1]
+        Library.toolkit_libpath = path / platform_values[platform_type][1]
         Library.toolkit = lib_import(str(Library.toolkit_libpath))
 
         Library._set_api_properties()
