@@ -3,7 +3,7 @@ import numpy
 import sys
 
 if len(sys.argv) < 2:
-    print("Usage: python binding_test.py <install_dir>/binding/Python")
+    print("Usage: python binding_test.py <install_dir>/bin")
     sys.exit(1)
 
 install_dir = Path(sys.argv[1]).resolve().parent
