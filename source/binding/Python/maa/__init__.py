@@ -3,7 +3,7 @@ from pathlib import Path
 
 from .library import Library
 
-env_path: str | None = os.environ.get("MAAFW_BINARY_PATH")
+env_path = os.environ.get("MAAFW_BINARY_PATH")
 if env_path:
     __PATH = Path(env_path)
 else:
