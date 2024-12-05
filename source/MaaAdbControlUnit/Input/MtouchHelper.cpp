@@ -118,7 +118,7 @@ bool MtouchHelper::swipe(int x1, int y1, int x2, int y2, int duration)
     }
     if (duration <= 0) {
         LogWarn << "duration out of range" << VAR(duration);
-        duration = 500;
+        duration = 200;
     }
 
     auto [touch_x1, touch_y1] = screen_to_touch(x1, y1);

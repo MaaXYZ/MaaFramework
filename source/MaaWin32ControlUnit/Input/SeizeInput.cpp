@@ -55,7 +55,7 @@ bool SeizeInput::swipe(int x1, int y1, int x2, int y2, int duration)
     }
     if (duration <= 0) {
         LogWarn << "duration out of range" << VAR(duration);
-        duration = 500;
+        duration = 200;
     }
 
     LogInfo << VAR(x1) << VAR(y1) << VAR(x2) << VAR(y2) << VAR(duration) << VAR(point1.x) << VAR(point1.y) << VAR(point2.x) << VAR(point2.y)
