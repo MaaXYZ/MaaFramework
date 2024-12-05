@@ -204,6 +204,26 @@ bool ControllerAgent::swipe(const cv::Point& p1, const cv::Point& p2, int durati
     return wait(id) == MaaStatus_Succeeded;
 }
 
+bool ControllerAgent::multi_swipe(const std::vector<SwipeParamWithRect>& swipes)
+{
+    std::vector<SwipeParam> dst_vec;
+    for (const auto& src : swipes) {
+        auto p1 = rand_point(src.r1);
+        auto p2 = rand_point(src.r2);
+        dst_vec.emplace_back(SwipeParam {
+            .x1 = p1.x,
+            .y1 = p1.y,
+            .x2 = p2.x,
+            .y2 = p2.y,
+            .duration = static_cast<int>(src.duration),
+            .starting = static_cast<int>(src.starting),
+        });
+    }
+
+    auto id = post_multi_swipe_impl(dst_vec);
+    return wait(id) == MaaStatus_Succeeded;
+}
+
 bool ControllerAgent::press_key(int keycode)
 {
     auto id = post_press_key_impl(keycode);
@@ -278,6 +298,17 @@ MaaCtrlId ControllerAgent::post_swipe_impl(int x1, int y1, int x2, int y2, int d
     auto [xx2, yy2] = preproc_touch_point(x2, y2);
     SwipeParam param { .x1 = xx1, .y1 = yy1, .x2 = xx2, .y2 = yy2, .duration = duration };
     return post({ .type = Action::Type::swipe, .param = std::move(param) });
+}
+
+MaaCtrlId ControllerAgent::post_multi_swipe_impl(const std::vector<SwipeParam>& swipes)
+{
+    std::vector<SwipeParam> dst = swipes;
+    for (SwipeParam& d : dst) {
+        std::tie(d.x1, d.y1) = preproc_touch_point(d.x1, d.y1);
+        std::tie(d.x2, d.y2) = preproc_touch_point(d.x2, d.y2);
+    }
+
+    return post({ .type = Action::Type::multi_swipe, .param = std::move(dst) });
 }
 
 MaaCtrlId ControllerAgent::post_press_key_impl(int keycode)
@@ -364,11 +395,8 @@ bool ControllerAgent::handle_click(const ClickParam& param)
     bool ret = _click(param);
 
     if (recording()) {
-        json::value info = {
-            { "type", "click" },
-            { "x", param.x },
-            { "y", param.y },
-        };
+        json::value info = param;
+        info |= { { "type", "click" } };
         append_recording(std::move(info), start_time, ret);
     }
 
@@ -385,10 +413,25 @@ bool ControllerAgent::handle_swipe(const SwipeParam& param)
     bool ret = _swipe(param);
 
     if (recording()) {
-        json::value info = {
-            { "type", "swipe" }, { "x1", param.x1 }, { "y1", param.y1 },
-            { "x2", param.x2 },  { "y2", param.y2 }, { "duration", param.duration },
-        };
+        json::value info = param;
+        info |= { { "type", "swipe" } };
+        append_recording(std::move(info), start_time, ret);
+    }
+
+    return ret;
+}
+
+bool ControllerAgent::handle_multi_swipe(const std::vector<SwipeParam>& param)
+{
+    std::chrono::steady_clock::time_point start_time;
+    if (recording()) {
+        start_time = std::chrono::steady_clock::now();
+    }
+
+    bool ret = _multi_swipe(param);
+
+    if (recording()) {
+        json::value info = { { "type", "multi_swipe" }, { "swipes", json::array(param) } };
         append_recording(std::move(info), start_time, ret);
     }
 
@@ -405,9 +448,8 @@ bool ControllerAgent::handle_touch_down(const TouchParam& param)
     bool ret = _touch_down(param);
 
     if (recording()) {
-        json::value info = {
-            { "type", "touch_down" }, { "contact", param.contact }, { "x", param.x }, { "y", param.y }, { "pressure", param.pressure },
-        };
+        json::value info = param;
+        info |= { { "type", "touch_down" } };
         append_recording(std::move(info), start_time, ret);
     }
 
@@ -424,9 +466,8 @@ bool ControllerAgent::handle_touch_move(const TouchParam& param)
     bool ret = _touch_move(param);
 
     if (recording()) {
-        json::value info = {
-            { "type", "touch_move" }, { "contact", param.contact }, { "x", param.x }, { "y", param.y }, { "pressure", param.pressure },
-        };
+        json::value info = param;
+        info |= { { "type", "touch_move" } };
         append_recording(std::move(info), start_time, ret);
     }
 
@@ -443,10 +484,8 @@ bool ControllerAgent::handle_touch_up(const TouchParam& param)
     bool ret = _touch_up(param);
 
     if (recording()) {
-        json::value info = {
-            { "type", "touch_up" },
-            { "contact", param.contact },
-        };
+        json::value info = param;
+        info |= { { "type", "touch_up" } };
         append_recording(std::move(info), start_time, ret);
     }
 
@@ -463,10 +502,8 @@ bool ControllerAgent::handle_press_key(const PressKeyParam& param)
     bool ret = _press_key(param);
 
     if (recording()) {
-        json::value info = {
-            { "type", "press_key" },
-            { "keycode", param.keycode },
-        };
+        json::value info = param;
+        info |= { { "type", "press_key" } };
         append_recording(std::move(info), start_time, ret);
     }
 
@@ -483,10 +520,8 @@ bool ControllerAgent::handle_input_text(const InputTextParam& param)
     bool ret = _input_text(param);
 
     if (recording()) {
-        json::value info = {
-            { "type", "input_text" },
-            { "input_text", param.text },
-        };
+        json::value info = param;
+        info |= { { "type", "input_text" } };
         append_recording(std::move(info), start_time, ret);
     }
 
@@ -534,10 +569,8 @@ bool ControllerAgent::handle_start_app(const AppParam& param)
     bool ret = _start_app(param);
 
     if (recording()) {
-        json::value info = {
-            { "type", "start_app" },
-            { "package", param.package },
-        };
+        json::value info = param;
+        info |= { { "type", "start_app" } };
         append_recording(std::move(info), start_time, ret);
     }
     return ret;
@@ -553,10 +586,8 @@ bool ControllerAgent::handle_stop_app(const AppParam& param)
     bool ret = _stop_app(param);
 
     if (recording()) {
-        json::value info = {
-            { "type", "stop_app" },
-            { "package", param.package },
-        };
+        json::value info = param;
+        info |= { { "type", "stop_app" } };
         append_recording(std::move(info), start_time, ret);
     }
     return ret;
@@ -660,6 +691,9 @@ bool ControllerAgent::run_action(typename AsyncRunner<Action>::Id id, Action act
         break;
     case Action::Type::swipe:
         ret = handle_swipe(std::get<SwipeParam>(action.param));
+        break;
+    case Action::Type::multi_swipe:
+        ret = handle_multi_swipe(std::get<std::vector<SwipeParam>>(action.param));
         break;
 
     case Action::Type::touch_down:

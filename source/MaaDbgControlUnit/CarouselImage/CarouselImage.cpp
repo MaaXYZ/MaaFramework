@@ -109,6 +109,13 @@ bool CarouselImage::swipe(int x1, int y1, int x2, int y2, int duration)
     return true;
 }
 
+bool CarouselImage::multi_swipe(const std::vector<SwipeParam>& swipes)
+{
+    std::ignore = swipes;
+
+    return true;
+}
+
 bool CarouselImage::touch_down(int contact, int x, int y, int pressure)
 {
     std::ignore = contact;

@@ -50,6 +50,7 @@ enum class Type
     DoNothing,
     Click,
     Swipe,
+    MultiSwipe,
     Key,
     Text,
     StartApp,
@@ -71,6 +72,12 @@ struct SwipeParam
     Target end;
 
     uint duration = 200;
+    uint starting = 0;  // only for MultiSwipe
+};
+
+struct MultiSwipeParam
+{
+    std::vector<SwipeParam> swipes;
 };
 
 struct KeyParam
@@ -95,7 +102,7 @@ struct CustomParam
     Target target;
 };
 
-using Param = std::variant<std::monostate, ClickParam, SwipeParam, KeyParam, TextParam, AppParam, CustomParam>;
+using Param = std::variant<std::monostate, ClickParam, SwipeParam, MultiSwipeParam, KeyParam, TextParam, AppParam, CustomParam>;
 } // namespace Action
 
 struct WaitFreezesParam

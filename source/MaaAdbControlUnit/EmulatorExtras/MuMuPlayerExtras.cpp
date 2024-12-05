@@ -142,6 +142,15 @@ bool MuMuPlayerExtras::swipe(int x1, int y1, int x2, int y2, int duration)
     return true;
 }
 
+bool MuMuPlayerExtras::multi_swipe(const std::vector<SwipeParam>& swipes)
+{
+    LogInfo << VAR(swipes.size());
+
+    // TODO
+
+    return false;
+}
+
 bool MuMuPlayerExtras::touch_down(int contact, int x, int y, int pressure)
 {
     if (!input_event_touch_down_func_) {

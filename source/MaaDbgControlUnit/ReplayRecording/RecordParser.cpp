@@ -73,11 +73,11 @@ std::optional<Record> RecordParser::parse_record(const json::value& record_json,
     std::string type_str = record_json.get("type", std::string());
     static const std::unordered_map<std::string, Record::Action::Type> kTypeMap = {
         { "connect", Record::Action::Type::connect },       { "click", Record::Action::Type::click },
-        { "swipe", Record::Action::Type::swipe },           { "touch_down", Record::Action::Type::touch_down },
-        { "touch_move", Record::Action::Type::touch_move }, { "touch_up", Record::Action::Type::touch_up },
-        { "press_key", Record::Action::Type::press_key },   { "input_text", Record::Action::Type::input_text },
-        { "screencap", Record::Action::Type::screencap },   { "start_app", Record::Action::Type::start_app },
-        { "stop_app", Record::Action::Type::stop_app },
+        { "swipe", Record::Action::Type::swipe },           { "multi_swipe", Record::Action::Type::multi_swipe },
+        { "touch_down", Record::Action::Type::touch_down }, { "touch_move", Record::Action::Type::touch_move },
+        { "touch_up", Record::Action::Type::touch_up },     { "press_key", Record::Action::Type::press_key },
+        { "input_text", Record::Action::Type::input_text }, { "screencap", Record::Action::Type::screencap },
+        { "start_app", Record::Action::Type::start_app },   { "stop_app", Record::Action::Type::stop_app },
     };
 
     auto it = kTypeMap.find(type_str);
@@ -98,6 +98,9 @@ std::optional<Record> RecordParser::parse_record(const json::value& record_json,
         break;
     case Record::Action::Type::swipe:
         action_opt = parse_swipe(record_json);
+        break;
+    case Record::Action::Type::multi_swipe:
+        action_opt = parse_multi_swipe(record_json);
         break;
     case Record::Action::Type::touch_down:
     case Record::Action::Type::touch_move:
@@ -221,6 +224,26 @@ std::optional<Record::Param> RecordParser::parse_swipe(const json::value& record
         return std::nullopt;
     }
 
+    return result;
+}
+
+std::optional<Record::Param> RecordParser::parse_multi_swipe(const json::value& record_json)
+{
+    auto swipes_opt = record_json.find<json::array>("swipes");
+    if (!swipes_opt) {
+        LogError << "Failed to find swipes:" << VAR(record_json);
+        return std::nullopt;
+    }
+
+    std::vector<Record::SwipeParam> result;
+    for (const json::value& swipe : *swipes_opt) {
+        auto s_opt = parse_swipe(swipe);
+        if (!s_opt) {
+            return std::nullopt;
+        }
+        auto s = std::get<Record::SwipeParam>(*std::move(s_opt));
+        result.emplace_back(std::move(s));
+    }
     return result;
 }
 

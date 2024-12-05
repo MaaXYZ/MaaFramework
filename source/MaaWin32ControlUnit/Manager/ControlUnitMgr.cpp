@@ -124,6 +124,15 @@ bool ControlUnitMgr::swipe(int x1, int y1, int x2, int y2, int duration)
     return input_->swipe(x1, y1, x2, y2, duration);
 }
 
+bool ControlUnitMgr::multi_swipe(const std::vector<SwipeParam>& swipes)
+{
+    std::ignore = swipes;
+
+    LogError << "Win32 not support MultiSwipe. If you need it, please raise an issue with us!" << VAR(swipes.size());
+
+    return false;
+}
+
 bool ControlUnitMgr::touch_down(int contact, int x, int y, int pressure)
 {
     if (!input_) {

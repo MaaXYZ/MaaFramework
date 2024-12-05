@@ -91,6 +91,11 @@ public:
         const DefaultPipelineMgr& default_mgr);
     static bool parse_click(const json::value& input, Action::ClickParam& output, const Action::ClickParam& default_value);
     static bool parse_swipe(const json::value& input, Action::SwipeParam& output, const Action::SwipeParam& default_value);
+    static bool parse_multi_swipe(
+        const json::value& input,
+        Action::MultiSwipeParam& output,
+        const Action::MultiSwipeParam& default_mluti,
+        const Action::SwipeParam& default_single);
     static bool parse_press_key(const json::value& input, Action::KeyParam& output, const Action::KeyParam& default_value);
     static bool parse_input_text(const json::value& input, Action::TextParam& output, const Action::TextParam& default_value);
     static bool parse_app_info(const json::value& input, Action::AppParam& output, const Action::AppParam& default_value);

@@ -111,6 +111,8 @@ bool DefaultPipelineMgr::parse_action(const json::value& input)
         { "click", Type::Click },
         { "Swipe", Type::Swipe },
         { "swipe", Type::Swipe },
+        { "MultiSwipe", Type::MultiSwipe },
+        { "multiswipe", Type::MultiSwipe },
         { "PressKey", Type::Key },
         { "presskey", Type::Key },
         { "Key", Type::Key },

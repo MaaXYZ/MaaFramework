@@ -37,6 +37,9 @@ bool Actuator::run(const cv::Rect& reco_hit, MaaRecoId reco_id, const PipelineDa
     case Type::Swipe:
         ret = swipe(std::get<SwipeParam>(pipeline_data.action_param), reco_hit);
         break;
+    case Type::MultiSwipe:
+        ret = multi_swipe(std::get<MultiSwipeParam>(pipeline_data.action_param), reco_hit);
+        break;
     case Type::Key:
         ret = press_key(std::get<KeyParam>(pipeline_data.action_param));
         break;
@@ -90,6 +93,28 @@ bool Actuator::swipe(const MAA_RES_NS::Action::SwipeParam& param, const cv::Rect
     cv::Rect end = get_target_rect(param.end, box);
 
     return controller()->swipe(begin, end, param.duration);
+}
+
+bool Actuator::multi_swipe(const MAA_RES_NS::Action::MultiSwipeParam& param, const cv::Rect& box)
+{
+    if (!controller()) {
+        LogError << "Controller is null";
+        return false;
+    }
+
+    using CtrlParam = MAA_CTRL_NS::ControllerAgent::SwipeParamWithRect;
+
+    std::vector<CtrlParam> dst;
+
+    for (const auto& swipe : param.swipes) {
+        CtrlParam ctrl_param { .r1 = get_target_rect(swipe.begin, box),
+                               .r2 = get_target_rect(swipe.end, box),
+                               .duration = swipe.duration,
+                               .starting = swipe.starting };
+        dst.emplace_back(std::move(ctrl_param));
+    }
+
+    return controller()->multi_swipe(dst);
 }
 
 bool Actuator::press_key(const MAA_RES_NS::Action::KeyParam& param)

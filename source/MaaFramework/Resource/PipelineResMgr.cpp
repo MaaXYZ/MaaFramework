@@ -1124,6 +1124,8 @@ bool PipelineResMgr::parse_action(
         { "click", Type::Click },
         { "Swipe", Type::Swipe },
         { "swipe", Type::Swipe },
+        { "MultiSwipe", Type::MultiSwipe },
+        { "multiswipe", Type::MultiSwipe },
         { "PressKey", Type::Key },
         { "presskey", Type::Key },
         { "Key", Type::Key },
@@ -1165,6 +1167,16 @@ bool PipelineResMgr::parse_action(
         auto default_param = default_mgr.get_action_param<SwipeParam>(Type::Swipe);
         out_param = default_param;
         return parse_swipe(input, std::get<SwipeParam>(out_param), same_type ? std::get<SwipeParam>(parent_param) : default_param);
+    } break;
+
+    case Type::MultiSwipe: {
+        auto default_multi = default_mgr.get_action_param<MultiSwipeParam>(Type::MultiSwipe);
+        auto default_single = default_mgr.get_action_param<SwipeParam>(Type::Swipe);
+        out_param = default_multi;
+        return parse_multi_swipe(
+            input,
+            std::get<MultiSwipeParam>(out_param),
+            same_type ? std::get<MultiSwipeParam>(parent_param) : default_multi, default_single);
     } break;
 
     case Type::Key: {
@@ -1242,6 +1254,42 @@ bool PipelineResMgr::parse_swipe(const json::value& input, Action::SwipeParam& o
     if (!get_and_check_value(input, "duration", output.duration, default_value.duration)) {
         LogError << "failed to get_and_check_value duration" << VAR(input);
         return false;
+    }
+
+    // only for multi swipe
+    if (!get_and_check_value(input, "starting", output.starting, default_value.starting)) {
+        LogError << "failed to get_and_check_value starting" << VAR(input);
+        return false;
+    }
+
+    return true;
+}
+
+bool PipelineResMgr::parse_multi_swipe(
+    const json::value& input,
+    Action::MultiSwipeParam& output,
+    const Action::MultiSwipeParam& default_multi,
+    const Action::SwipeParam& default_single)
+{
+    auto swipes_opt = input.find("swipes");
+    if (!swipes_opt) {
+        output = default_multi;
+        return true;
+    }
+
+    if (!swipes_opt->is_array()) {
+        LogError << "failed to parse swipes, is not array" << VAR(input);
+        return false;
+    }
+
+    output.swipes.clear();
+    for (const json::value& swipe : swipes_opt->as_array()) {
+        Action::SwipeParam res;
+        if (!parse_swipe(swipe, res, default_single)) {
+            return false;
+        }
+
+        output.swipes.emplace_back(std::move(res));
     }
 
     return true;

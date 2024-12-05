@@ -135,6 +135,16 @@ bool InputAgent::swipe(int x1, int y1, int x2, int y2, int duration)
     return active_unit_->swipe(x1, y1, x2, y2, duration);
 }
 
+bool InputAgent::multi_swipe(const std::vector<SwipeParam>& swipes)
+{
+    if (!active_unit_) {
+        LogError << "No available input method" << VAR(active_unit_);
+        return false;
+    }
+
+    return active_unit_->multi_swipe(swipes);
+}
+
 bool InputAgent::touch_down(int contact, int x, int y, int pressure)
 {
     if (!active_unit_) {
