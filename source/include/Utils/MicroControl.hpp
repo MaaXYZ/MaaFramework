@@ -88,7 +88,7 @@ inline void micro_multi_swipe(
 
         for (size_t i = 0; i < swipes.size(); ++i) {
             const ControlUnitAPI::SwipeParam& s = swipes.at(i);
-            if (s.starting > now_point) {
+            if (now_point < s.starting) {
                 continue;
             }
 
