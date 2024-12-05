@@ -144,10 +144,7 @@ bool MuMuPlayerExtras::swipe(int x1, int y1, int x2, int y2, int duration)
 
 bool MuMuPlayerExtras::multi_swipe(const std::vector<SwipeParam>& swipes)
 {
-    LogInfo << VAR(swipes.size());
-
-    // TODO
-
+    LogError << "MuMuPlayerExtras not supports" << VAR(swipes.size());
     return false;
 }
 

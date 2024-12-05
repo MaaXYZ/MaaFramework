@@ -144,11 +144,48 @@ bool MtouchHelper::swipe(int x1, int y1, int x2, int y2, int duration)
 
 bool MtouchHelper::multi_swipe(const std::vector<SwipeParam>& swipes)
 {
-    LogInfo << VAR(swipes.size());
+    if (!pipe_ios_) {
+        LogError << "pipe_ios_ is nullptr";
+        return false;
+    }
 
-    // TODO
+    std::vector<SwipeParam> correction = swipes;
 
-    return false;
+    for (SwipeParam& s : correction) {
+        if (s.x1 < 0 || s.x1 >= display_width_ || s.y1 < 0 || s.y1 >= display_height_ || s.x2 < 0 || s.x2 >= display_width_ || s.y2 < 0
+            || s.y2 >= display_height_) {
+            LogWarn << "swipe point out of range" << VAR(s.x1) << VAR(s.y1) << VAR(s.x2) << VAR(s.y2);
+            s.x1 = std::clamp(s.x1, 0, display_width_ - 1);
+            s.y1 = std::clamp(s.y1, 0, display_height_ - 1);
+            s.x2 = std::clamp(s.x2, 0, display_width_ - 1);
+            s.y2 = std::clamp(s.y2, 0, display_height_ - 1);
+        }
+        if (s.duration <= 0) {
+            LogWarn << "duration out of range" << VAR(s.duration);
+            s.duration = 200;
+        }
+
+        auto [touch_x1, touch_y1] = screen_to_touch(s.x1, s.y1);
+        auto [touch_x2, touch_y2] = screen_to_touch(s.x2, s.y2);
+
+        LogInfo << VAR(s.x1) << VAR(s.y1) << VAR(touch_x1) << VAR(touch_y1) << VAR(s.x2) << VAR(s.y2) << VAR(touch_x2) << VAR(touch_y2)
+                << VAR(s.duration);
+
+        s.x1 = touch_x1;
+        s.y1 = touch_y1;
+        s.x2 = touch_x2;
+        s.y2 = touch_y2;
+    }
+
+    bool ret = true;
+
+    micro_multi_swipe(
+        correction,
+        [&](int contact, int x, int y) { ret &= pipe_ios_->write(std::format(kDownFormat, contact, x, y, press_)); },
+        [&](int contact, int x, int y) { ret &= pipe_ios_->write(std::format(kMoveFormat, contact, x, y, press_)); },
+        [&](int contact, [[maybe_unused]] int x, [[maybe_unused]] int y) { ret &= pipe_ios_->write(std::format(kUpFormat, contact)); });
+
+    return ret;
 }
 
 bool MtouchHelper::touch_down(int contact, int x, int y, int pressure)
