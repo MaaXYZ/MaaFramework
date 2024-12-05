@@ -53,7 +53,7 @@ inline void micro_swipe(
 }
 
 inline void micro_multi_swipe(
-    std::vector<ControlUnitAPI::SwipeParam> swipes,
+    const std::vector<ControlUnitAPI::SwipeParam>& swipes,
     std::function<void(int, int, int)> touch_down,
     std::function<void(int, int, int)> touch_move,
     std::function<void(int, int, int)> touch_up)
