@@ -82,7 +82,7 @@ inline void micro_multi_swipe(
 
     size_t over_count = 0;
     while (over_count < swipes.size()) {
-        size_t now_point = std::chrono::duration_cast<std::chrono::milliseconds>(now - starting).count();
+        int now_point = static_cast<int>(std::chrono::duration_cast<std::chrono::milliseconds>(now - starting).count());
 
         for (size_t i = 0; i < swipes.size(); ++i) {
             const ControlUnitAPI::SwipeParam& s = swipes.at(i);
