@@ -108,7 +108,7 @@ bool tasker_running(Napi::External<TaskerInfo> info)
     return MaaTaskerRunning(info.Data()->handle);
 }
 
-bool tasker_post_stop(Napi::External<TaskerInfo> info)
+MaaTaskId tasker_post_stop(Napi::External<TaskerInfo> info)
 {
     return MaaTaskerPostStop(info.Data()->handle);
 }

@@ -252,7 +252,7 @@ export declare function tasker_post_pipeline(
 export declare function tasker_status(handle: TaskerHandle, task_id: TaskId): Status
 export declare function tasker_wait(handle: TaskerHandle, task_id: TaskId): Promise<Status>
 export declare function tasker_running(handle: TaskerHandle): boolean
-export declare function tasker_post_stop(handle: TaskerHandle): boolean
+export declare function tasker_post_stop(handle: TaskerHandle): TaskId
 export declare function tasker_get_resource(handle: TaskerHandle): ResourceHandle | null
 export declare function tasker_get_controller(handle: TaskerHandle): ControllerHandle | null
 export declare function tasker_clear_cache(handle: TaskerHandle): boolean

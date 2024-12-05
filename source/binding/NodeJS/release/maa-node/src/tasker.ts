@@ -134,9 +134,11 @@ export class TaskerBase {
     }
 
     post_stop() {
-        if (!maa.tasker_post_stop(this.handle)) {
-            throw 'Tasker post_stop failed'
-        }
+        return new TaskJob(
+            this,
+            this.#source,
+            maa.tasker_post_stop(this.handle)
+        )
     }
 
     get resource() {
