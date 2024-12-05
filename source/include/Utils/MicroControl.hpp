@@ -61,12 +61,14 @@ inline void micro_multi_swipe(
     constexpr double kInterval = 10; // ms
     const std::chrono::milliseconds delay(static_cast<int>(kInterval));
 
-    struct Operating {
+    struct Operating
+    {
         double total_step = 0;
         double x_step_len = 0;
         double y_step_len = 0;
         int step = 0;
     };
+
     std::vector<Operating> operating(swipes.size());
 
     for (size_t i = 0; i < swipes.size(); ++i) {
@@ -99,7 +101,7 @@ inline void micro_multi_swipe(
             }
             else if (o.step < o.total_step) {
                 int mx = static_cast<int>(s.x1 + o.step * o.x_step_len);
-                int my = static_cast<int>(s.y1 + o.step *o.y_step_len);
+                int my = static_cast<int>(s.y1 + o.step * o.y_step_len);
                 touch_move(contact, mx, my);
                 ++o.step;
             }
@@ -108,7 +110,7 @@ inline void micro_multi_swipe(
                 ++o.step;
                 ++over_count;
             }
-            else {  // step > total
+            else { // step > total
                 continue;
             }
         }
