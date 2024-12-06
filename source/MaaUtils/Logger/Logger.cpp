@@ -154,8 +154,8 @@ void Logger::open()
     if (log_path_.empty()) {
         return;
     }
-    
-    if (std::error_code ec; log_dir_.has_parent_path() && !std::filesystem::create_directories(log_dir_.parent_path(), ec)) {
+
+    if (std::error_code ec; !std::filesystem::create_directories(log_dir_, ec)) {
         return;
     }
 
