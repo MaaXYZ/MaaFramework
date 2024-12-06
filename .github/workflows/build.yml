@@ -3,27 +3,27 @@ name: build
 on:
     push:
         tags:
-            - 'v*'
+            - "v*"
         branches:
-            - '**'
+            - "**"
         paths:
-            - '.github/workflows/build.yml'
-            - '3rdparty/**'
-            - 'cmake/**'
-            - 'include/**'
-            - 'source/**'
-            - 'CMakeLists.txt'
+            - ".github/workflows/build.yml"
+            - "3rdparty/**"
+            - "cmake/**"
+            - "include/**"
+            - "source/**"
+            - "CMakeLists.txt"
 
     pull_request:
         branches:
-            - '**'
+            - "**"
         paths:
-            - '.github/workflows/build.yml'
-            - '3rdparty/**'
-            - 'cmake/**'
-            - 'include/**'
-            - 'source/**'
-            - 'CMakeLists.txt'
+            - ".github/workflows/build.yml"
+            - "3rdparty/**"
+            - "cmake/**"
+            - "include/**"
+            - "source/**"
+            - "CMakeLists.txt"
     workflow_dispatch:
 
 jobs:
@@ -55,7 +55,7 @@ jobs:
               with:
                   minimum-size: 16GB
                   maximum-size: 16GB
-                  disk-root: 'D:'
+                  disk-root: "D:"
 
             - uses: actions/checkout@v4
               with:
@@ -111,7 +111,74 @@ jobs:
               if: always()
               with:
                   name: MAA-win-${{ matrix.arch }}
-                  path: 'install'
+                  path: "install"
+
+    windows_debug:
+        needs: meta
+        runs-on: windows-latest
+        strategy:
+            matrix:
+                arch: [x86_64]
+            fail-fast: false
+
+        steps:
+            - name: Windows runner hack
+              shell: cmd
+              run: |
+                  dir d:\a
+                  cd ..
+                  mkdir C:\MaaFramework
+                  rmdir MaaFramework
+                  mklink /j MaaFramework C:\MaaFramework
+                  dism /Online /Disable-Feature /FeatureName:Windows-Defender /Remove /NoRestart /Quiet
+                  cd .
+
+            - name: Windows runner hack (2)
+              uses: al-cheb/configure-pagefile-action@v1.4
+              with:
+                  minimum-size: 16GB
+                  maximum-size: 16GB
+                  disk-root: "D:"
+
+            - uses: actions/checkout@v4
+              with:
+                  submodules: true
+
+            - name: Setup Windows 10 SDK
+              uses: GuillaumeFalourd/setup-windows10-sdk-action@v2.2
+              with:
+                  sdk-version: 22621
+
+            - name: Bootstrap MaaDeps
+              env:
+                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+              run: |
+                  python3 tools/maadeps-download.py x64-windows
+
+            - name: Build MAA
+              run: |
+                  cmake --preset 'MSVC 2022 - Debug' -DCMAKE_SYSTEM_VERSION="10.0.22621.0" -DMAADEPS_TRIPLET="maa-x64-windows" -DMAA_HASH_VERSION='${{ needs.meta.outputs.tag }}-dbg'
+
+                  cmake --build build --preset 'MSVC 2022 - Debug' -j 16
+
+            - name: Install
+              shell: bash
+              if: always()
+              run: |
+                  cmake --install build --prefix install --config Debug
+
+                  cp -r docs install
+                  cp README*.md install
+
+                  cp -r sample install
+
+                  cp -r LICENSE.md install
+
+            - uses: actions/upload-artifact@v4
+              if: always()
+              with:
+                  name: MAA-win-dbg-${{ matrix.arch }}
+                  path: "install"
 
     ubuntu:
         needs: meta
@@ -199,7 +266,7 @@ jobs:
               if: always()
               with:
                   name: MAA-linux-${{ matrix.arch }}
-                  path: 'install'
+                  path: "install"
 
     macos:
         needs: meta
@@ -281,7 +348,7 @@ jobs:
               if: always()
               with:
                   name: MAA-macos-${{ matrix.arch }}
-                  path: 'install'
+                  path: "install"
 
     android:
         needs: meta
@@ -347,7 +414,7 @@ jobs:
               if: always()
               with:
                   name: MAA-android-${{ matrix.arch }}
-                  path: 'install'
+                  path: "install"
 
     nuget_pack:
         needs: [meta, windows, ubuntu, macos, android]
@@ -377,7 +444,7 @@ jobs:
               if: always()
               with:
                   name: MAA-nupkgs
-                  path: 'tools/nupkgs/*.nupkg'
+                  path: "tools/nupkgs/*.nupkg"
 
     pip_pack:
         needs: [meta, windows, ubuntu, macos, android]
@@ -399,7 +466,7 @@ jobs:
               if: always()
               with:
                   name: MAA-pip-pkgs
-                  path: 'tools/pip_pack/wheel/*.whl'
+                  path: "tools/pip_pack/wheel/*.whl"
 
     nodejs_pack:
         needs: [meta, windows, ubuntu, macos, android]
@@ -436,11 +503,21 @@ jobs:
             - uses: actions/upload-artifact@v4
               with:
                   name: MAA-nodejs-package
-                  path: 'source/binding/NodeJS/release'
+                  path: "source/binding/NodeJS/release"
 
     release:
         if: ${{ needs.meta.outputs.is_release == 'true' && github.repository_id == '632024122' }}
-        needs: [meta, windows, ubuntu, macos, android, nuget_pack, pip_pack, nodejs_pack]
+        needs:
+            [
+                meta,
+                windows,
+                ubuntu,
+                macos,
+                android,
+                nuget_pack,
+                pip_pack,
+                nodejs_pack,
+            ]
         runs-on: ubuntu-latest
         env:
             OUTPUT_PUBLISH_FAILED: 'echo "failed=true" >> $GITHUB_OUTPUT && echo "::error::Failed to publish packages"'
@@ -518,6 +595,10 @@ jobs:
               run: |
                   rm -r assets/MAA-nodejs-package
 
+            - name: Remove win-dbg package
+              run: |
+                  rm -r assets/MAA-win-dbg*
+
             - run: |
                   cd assets
                   for f in *; do
@@ -531,13 +612,12 @@ jobs:
                   prerelease: ${{ needs.meta.outputs.is_pre_release == 'true' }}
 
             - name: Create issue if failed to publish packages
-              if: steps.nuget.outputs.failed || steps.pip.outputs.failed || steps.nodejs.outputs.failed
+              if: steps.nuget.outputs.failed || steps.pip.outputs.failed 
               uses: actions-cool/issues-helper@v3
               with:
-                  actions: 'create-issue'
-                  title: '${{ needs.meta.outputs.tag }} failed to publish packages'
+                  actions: "create-issue"
+                  title: "${{ needs.meta.outputs.tag }} failed to publish packages"
                   body: |
                       Please manually publish the following packages:
                       ${{ steps.nuget.outputs.failed && '- nuget @moomiji' || '' }}
                       ${{ steps.pip.outputs.failed && '- pip @MistEO' || '' }}
-                      ${{ steps.nodejs.outputs.failed && '- nodejs @neko-para' || '' }}
