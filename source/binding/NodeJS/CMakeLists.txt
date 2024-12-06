@@ -63,9 +63,9 @@ endif()
 
 install(
     TARGETS MaaNode
-    RUNTIME DESTINATION bin
-    LIBRARY DESTINATION bin
-    ARCHIVE DESTINATION lib)
+    RUNTIME DESTINATION binding/NodeJS/bin
+    LIBRARY DESTINATION binding/NodeJS/bin
+    ARCHIVE DESTINATION binding/NodeJS/lib)
 
 # if(WIN32) add_custom_command( TARGET MaaNode POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy ${MaaDlls}
 # $<TARGET_FILE_DIR:MaaNode> COMMAND_EXPAND_LISTS) endif()
