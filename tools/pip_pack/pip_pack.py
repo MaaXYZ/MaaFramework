@@ -5,7 +5,7 @@ import sys
 
 import tomlkit
 
-IGNORES = ["MaaPiCli*"]
+IGNORES = ["MaaPiCli*", "MaaNode*"]
 
 
 def set_toml_ver():
