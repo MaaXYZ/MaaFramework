@@ -59,6 +59,12 @@ bool AdbShellInput::swipe(int x1, int y1, int x2, int y2, int duration)
     return output_opt && output_opt->empty();
 }
 
+bool AdbShellInput::multi_swipe(const std::vector<SwipeParam>& swipes)
+{
+    LogError << "AdbShellInput not supports" << VAR(swipes.size());
+    return false;
+}
+
 bool AdbShellInput::touch_down(int contact, int x, int y, int pressure)
 {
     LogError << "AdbShellInput not supports" << VAR(contact) << VAR(x) << VAR(y) << VAR(pressure);

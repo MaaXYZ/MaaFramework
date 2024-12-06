@@ -186,6 +186,28 @@ bool ReplayRecording::swipe(int x1, int y1, int x2, int y2, int duration)
     return record.success;
 }
 
+bool ReplayRecording::multi_swipe(const std::vector<SwipeParam>& swipes)
+{    
+    LogInfo << VAR(swipes.size());
+
+    if (record_index_ >= recording_.records.size()) {
+        LogError << "record index out of range" << VAR(record_index_) << VAR(recording_.records.size());
+        return false;
+    }
+
+    const Record& record = recording_.records.at(record_index_);
+    if (record.action.type != Record::Action::Type::multi_swipe) {
+        LogError << "record type is not swipe" << VAR(record.action.type) << VAR(record.raw_data);
+        return false;
+    }
+
+    // TODO: 现在点击的点是随机区域，没法直接检查
+
+    sleep(record.cost);
+    ++record_index_;
+    return record.success;
+}
+
 bool ReplayRecording::touch_down(int contact, int x, int y, int pressure)
 {
     LogInfo << VAR(contact) << VAR(x) << VAR(y) << VAR(pressure);

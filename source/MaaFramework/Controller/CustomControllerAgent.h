@@ -23,6 +23,7 @@ protected:
     virtual std::optional<cv::Mat> _screencap() override;
     virtual bool _click(ClickParam param) override;
     virtual bool _swipe(SwipeParam param) override;
+    virtual bool _multi_swipe(std::vector<SwipeParam> param) override;
     virtual bool _touch_down(TouchParam param) override;
     virtual bool _touch_move(TouchParam param) override;
     virtual bool _touch_up(TouchParam param) override;

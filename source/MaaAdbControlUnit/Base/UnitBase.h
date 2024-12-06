@@ -76,6 +76,8 @@ class InputBase
     , public ControlUnitSink
 {
 public:
+    using SwipeParam = ControlUnitAPI::SwipeParam;
+
     virtual ~InputBase() override = default;
 
     virtual bool init() = 0;
@@ -83,6 +85,7 @@ public:
 public:
     virtual bool click(int x, int y) = 0;
     virtual bool swipe(int x1, int y1, int x2, int y2, int duration) = 0;
+    virtual bool multi_swipe(const std::vector<SwipeParam>& swipes) = 0;
 
     virtual bool touch_down(int contact, int x, int y, int pressure) = 0;
     virtual bool touch_move(int contact, int x, int y, int pressure) = 0;

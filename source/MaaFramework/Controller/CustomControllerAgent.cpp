@@ -121,6 +121,15 @@ bool CustomControllerAgent::_swipe(SwipeParam param)
     return controller_->swipe(param.x1, param.y1, param.x2, param.y2, param.duration, controller_arg_);
 }
 
+bool CustomControllerAgent::_multi_swipe(std::vector<SwipeParam> param)
+{
+    std::ignore = param;
+
+    LogError << "CustomController not support MulitSwipe now, We welcome your PR to implement it!" << VAR(param);
+
+    return false;
+}
+
 bool CustomControllerAgent::_touch_down(TouchParam param)
 {
     LogFunc << VAR_VOIDP(controller_) << VAR_VOIDP(controller_->touch_down) << VAR(param.contact) << VAR(param.x) << VAR(param.y)

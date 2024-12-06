@@ -263,9 +263,16 @@
                     ]
                 },
                 "duration": {
-                    "description": "滑动持续时间，单位毫秒。可选，默认 200",
+                    "description": "滑动持续时间，单位毫秒。可选，默认 200。",
                     "type": "integer",
                     "default": 200
+                },
+                "swipes": {
+                    "description": "多个滑动的数组。必选。数组元素顺序没有影响，只基于 `starting` 确定顺序。",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/swipe_type"
+                    }
                 },
                 "key": {
                     "description": "要按的键，仅支持 ascii。",
@@ -621,16 +628,24 @@
                                 "action": {
                                     "const": "Swipe"
                                 }
+                            }
+                        },
+                        {
+                            "$comment": "MultiSwipe",
+                            "properties": {
+                                "action": {
+                                    "const": "MultiSwipe"
+                                }
                             },
                             "anyOf": [
                                 {
                                     "required": [
-                                        "end"
+                                        "swipes"
                                     ]
                                 },
                                 {
                                     "required": [
-                                        "end_code"
+                                        "swipes_code"
                                     ]
                                 }
                             ]
@@ -923,6 +938,51 @@
                     }
                 }
             ]
+        },
+        "swipe_type": {
+            "type": "object",
+            "properties": {
+                "begin": {
+                    "description": "滑动起点。可选，默认 true。",
+                    "$ref": "#/definitions/target_type",
+                    "default": true
+                },
+                "begin_offset": {
+                    "description": "在 begin 的基础上额外移动再作为起点，四个值分别相加。可选，默认 [0, 0, 0, 0]。",
+                    "$ref": "#/definitions/rect",
+                    "default": [
+                        0,
+                        0,
+                        0,
+                        0
+                    ]
+                },
+                "end": {
+                    "description": "滑动终点。必选，默认 true。",
+                    "$ref": "#/definitions/target_type",
+                    "default": true
+                },
+                "end_offset": {
+                    "description": "在 end 的基础上额外移动再作为终点，四个值分别相加。可选，默认 [0, 0, 0, 0]。",
+                    "$ref": "#/definitions/rect",
+                    "default": [
+                        0,
+                        0,
+                        0,
+                        0
+                    ]
+                },
+                "duration": {
+                    "description": "滑动持续时间，单位毫秒。可选，默认 200",
+                    "type": "integer",
+                    "default": 200
+                },
+                "starting": {
+                    "description": "滑动起始时间，单位毫秒。可选，默认 0 。该滑动会在本 action 中第 `starting` 毫秒才开始。",
+                    "type": "integer",
+                    "default": 0
+                }
+            }
         }
     }
 }

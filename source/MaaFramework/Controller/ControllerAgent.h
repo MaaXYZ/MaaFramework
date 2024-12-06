@@ -6,6 +6,8 @@
 #include <set>
 #include <variant>
 
+#include <meojson/json.hpp>
+
 #include "API/MaaTypes.h"
 #include "Base/AsyncRunner.hpp"
 #include "Utils/MessageNotifier.hpp"
@@ -21,6 +23,8 @@ struct ClickParam
 {
     int x = 0;
     int y = 0;
+
+    MEO_JSONIZATION(x, y);
 };
 
 struct SwipeParam
@@ -30,6 +34,9 @@ struct SwipeParam
     int x2 = 0;
     int y2 = 0;
     int duration = 0;
+    int starting = 0;
+
+    MEO_JSONIZATION(x1, y1, x2, y2, duration, starting);
 };
 
 struct TouchParam
@@ -38,24 +45,33 @@ struct TouchParam
     int x = 0;
     int y = 0;
     int pressure = 0;
+
+    MEO_JSONIZATION(contact, x, y, pressure);
 };
 
 struct PressKeyParam
 {
     int keycode = 0;
+
+    MEO_JSONIZATION(keycode);
 };
 
 struct InputTextParam
 {
     std::string text;
+
+    MEO_JSONIZATION(text);
 };
 
 struct AppParam
 {
     std::string package;
+
+    MEO_JSONIZATION(package);
 };
 
-using Param = std::variant<std::monostate, ClickParam, SwipeParam, TouchParam, PressKeyParam, InputTextParam, AppParam>;
+using Param =
+    std::variant<std::monostate, ClickParam, SwipeParam, std::vector<SwipeParam>, TouchParam, PressKeyParam, InputTextParam, AppParam>;
 
 struct Action
 {
@@ -65,6 +81,7 @@ struct Action
         connect,
         click,
         swipe,
+        multi_swipe,
         touch_down,
         touch_move,
         touch_up,
@@ -117,6 +134,17 @@ public:
     bool click(const cv::Point& p);
     bool swipe(const cv::Rect& r1, const cv::Rect& r2, int duration);
     bool swipe(const cv::Point& p1, const cv::Point& p2, int duration);
+
+    struct SwipeParamWithRect
+    {
+        cv::Rect r1 {};
+        cv::Rect r2 {};
+        uint duration = 0;
+        uint starting = 0;
+    };
+
+    bool multi_swipe(const std::vector<SwipeParamWithRect>& swipes);
+
     bool press_key(int keycode);
     bool input_text(const std::string& text);
     cv::Mat screencap();
@@ -132,6 +160,7 @@ protected:
     virtual std::optional<cv::Mat> _screencap() = 0;
     virtual bool _click(ClickParam param) = 0;
     virtual bool _swipe(SwipeParam param) = 0;
+    virtual bool _multi_swipe(std::vector<SwipeParam> param) = 0;
     virtual bool _touch_down(TouchParam param) = 0;
     virtual bool _touch_move(TouchParam param) = 0;
     virtual bool _touch_up(TouchParam param) = 0;
@@ -145,6 +174,7 @@ private:
     MaaCtrlId post_connection_impl();
     MaaCtrlId post_click_impl(int x, int y);
     MaaCtrlId post_swipe_impl(int x1, int y1, int x2, int y2, int duration);
+    MaaCtrlId post_multi_swipe_impl(const std::vector<SwipeParam>& swipes);
     MaaCtrlId post_press_key_impl(int keycode);
     MaaCtrlId post_input_text_impl(const std::string& text);
     MaaCtrlId post_start_app_impl(const std::string& text);
@@ -158,6 +188,7 @@ private:
     bool handle_connect();
     bool handle_click(const ClickParam& param);
     bool handle_swipe(const SwipeParam& param);
+    bool handle_multi_swipe(const std::vector<SwipeParam>& param);
     bool handle_touch_down(const TouchParam& param);
     bool handle_touch_move(const TouchParam& param);
     bool handle_touch_up(const TouchParam& param);

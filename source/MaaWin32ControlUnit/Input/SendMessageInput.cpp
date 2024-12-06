@@ -34,7 +34,7 @@ bool SendMessageInput::swipe(int x1, int y1, int x2, int y2, int duration)
 
     if (duration <= 0) {
         LogWarn << "duration out of range" << VAR(duration);
-        duration = 500;
+        duration = 200;
     }
 
     micro_swipe(

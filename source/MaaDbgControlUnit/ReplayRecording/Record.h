@@ -40,6 +40,7 @@ struct Record
         int x2 = 0;
         int y2 = 0;
         int duration = 0;
+        int starting = 0;
     };
 
     struct TouchParam
@@ -72,7 +73,7 @@ struct Record
     };
 
     using Param = std::
-        variant<std::monostate, ConnectParam, ClickParam, SwipeParam, TouchParam, PressKeyParam, InputTextParam, AppParam, ScreencapParam>;
+        variant<std::monostate, ConnectParam, ClickParam, SwipeParam, std::vector<SwipeParam>, TouchParam, PressKeyParam, InputTextParam, AppParam, ScreencapParam>;
 
     struct Action
     {
@@ -82,6 +83,7 @@ struct Record
             connect,
             click,
             swipe,
+            multi_swipe,
             touch_down,
             touch_move,
             touch_up,
@@ -123,6 +125,9 @@ inline std::ostream& operator<<(std::ostream& os, Record::Action::Type type)
         break;
     case Record::Action::Type::swipe:
         os << "swipe";
+        break;
+    case Record::Action::Type::multi_swipe:
+        os << "multi_swipe";
         break;
     case Record::Action::Type::touch_down:
         os << "touch_down";
