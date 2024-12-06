@@ -157,9 +157,9 @@ jobs:
 
             - name: Build MAA
               run: |
-                  cmake --preset 'MSVC 2022 - Debug' -DCMAKE_SYSTEM_VERSION="10.0.22621.0" -DMAADEPS_TRIPLET="maa-x64-windows" -DMAA_HASH_VERSION='${{ needs.meta.outputs.tag }}-dbg'
+                  cmake --preset 'MSVC 2022' -DCMAKE_SYSTEM_VERSION="10.0.22621.0" -DMAADEPS_TRIPLET="maa-x64-windows" -DMAA_HASH_VERSION='${{ needs.meta.outputs.tag }}-dbg'
 
-                  cmake --build build --preset 'MSVC 2022 - Debug' -j 16
+                  cmake --build build --preset 'MSVC 2022' -j 16 --config Debug
 
             - name: Install
               shell: bash
