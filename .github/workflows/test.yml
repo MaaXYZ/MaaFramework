@@ -64,7 +64,7 @@ jobs:
             - name: Setup Windows 10 SDK
               uses: GuillaumeFalourd/setup-windows10-sdk-action@v2.2
               with:
-                  sdk-version: 20348
+                  sdk-version: 26100
 
             - name: Bootstrap MaaDeps
               env:
@@ -92,7 +92,7 @@ jobs:
 
             - name: Build MAA
               run: |
-                  cmake --preset "${{ matrix.arch == 'x86_64' && 'MSVC 2022' || 'MSVC 2022 ARM' }}" -DMAADEPS_TRIPLET="maa-${{ matrix.arch == 'x86_64' && 'x64' || 'arm64' }}-windows" -DCMAKE_SYSTEM_VERSION="10.0.20348.0" -DMAA_HASH_VERSION='${{ needs.meta.outputs.tag }}' -DBUILD_NODEJS_BINDING=ON -DBUILD_PIPELINE_TESTING=ON -DBUILD_DLOPEN_TESTING=ON
+                  cmake --preset "${{ matrix.arch == 'x86_64' && 'MSVC 2022' || 'MSVC 2022 ARM' }}" -DMAADEPS_TRIPLET="maa-${{ matrix.arch == 'x86_64' && 'x64' || 'arm64' }}-windows" -DCMAKE_SYSTEM_VERSION="10.0.26100.0" -DMAA_HASH_VERSION='${{ needs.meta.outputs.tag }}' -DBUILD_NODEJS_BINDING=ON -DBUILD_PIPELINE_TESTING=ON -DBUILD_DLOPEN_TESTING=ON
 
                   cmake --build build --preset "${{ matrix.arch == 'x86_64' && 'MSVC 2022' || 'MSVC 2022 ARM' }} - Release" -j 16
 
