@@ -66,6 +66,11 @@ jobs:
               with:
                   sdk-version: 22621
 
+            - name: Setup Python
+              uses: actions/setup-python@v5.2.0
+              with:
+                python-version: '3.9'
+
             - name: Bootstrap MaaDeps
               env:
                   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -175,6 +180,11 @@ jobs:
               uses: Chocobo1/setup-ccache-action@v1
               with:
                   remove_stale_cache: false
+
+            - name: Setup Python
+              uses: actions/setup-python@v5.2.0
+              with:
+                python-version: '3.9'
 
             - name: Bootstrap MaaDeps
               env:
@@ -288,6 +298,11 @@ jobs:
               uses: Chocobo1/setup-ccache-action@v1
               with:
                   remove_stale_cache: false
+
+            - name: Setup Python
+              uses: actions/setup-python@v5.2.0
+              with:
+                python-version: '3.9'
 
             - name: Bootstrap MaaDeps
               env:
