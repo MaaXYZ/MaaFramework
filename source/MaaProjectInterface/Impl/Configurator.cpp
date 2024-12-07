@@ -51,9 +51,18 @@ void Configurator::save(const std::filesystem::path& user_dir)
 {
     LogInfo << VAR(user_dir);
 
-    std::filesystem::create_directories((user_dir / kConfigFilename).parent_path());
+    const auto config_path = user_dir / kConfigFilename;
+    if (std::error_code ec; config_path.has_parent_path() && !std::filesystem::create_directories(config_path.parent_path(), ec)) {
+        LogError << "failed to create_directories" << VAR(config_path.parent_path()) << VAR(ec.message());
+        return;
+    }
 
-    std::ofstream ofs(user_dir / kConfigFilename);
+    std::ofstream ofs(config_path);
+    if (!ofs.is_open()) {
+        LogError << "failed to open" << VAR(config_path);
+        return;
+    }
+
     ofs << config_.to_json();
 }
 

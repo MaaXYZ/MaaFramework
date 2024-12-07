@@ -155,7 +155,9 @@ void Logger::open()
         return;
     }
 
-    std::filesystem::create_directories(log_dir_);
+    if (std::error_code ec; !std::filesystem::create_directories(log_dir_, ec)) {
+        return;
+    }
 
     std::unique_lock trace_lock(trace_mutex_);
     if (ofs_.is_open()) {
