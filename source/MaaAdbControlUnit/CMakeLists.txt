@@ -24,4 +24,8 @@ install(
     # ARCHIVE DESTINATION lib
 )
 
+if(WIN32)
+    install(FILES $<TARGET_PDB_FILE:MaaAdbControlUnit> DESTINATION symbol OPTIONAL)
+endif()
+
 source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES ${maa_adb_control_unit_src})
