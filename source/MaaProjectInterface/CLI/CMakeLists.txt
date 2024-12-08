@@ -16,3 +16,7 @@ install(TARGETS MaaPiCli
     RUNTIME DESTINATION bin
     LIBRARY DESTINATION bin
 )
+
+if(WIN32)
+    install(FILES $<TARGET_PDB_FILE:MaaPiCli> DESTINATION symbol)
+endif()

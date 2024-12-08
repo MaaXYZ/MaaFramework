@@ -13,3 +13,7 @@ add_dependencies(PipelineTesting MaaFramework PipelineSmokingResource)
 set_target_properties(PipelineTesting PROPERTIES FOLDER Testing)
 
 install(TARGETS PipelineTesting RUNTIME DESTINATION bin)
+
+if(WIN32)
+    install(FILES $<TARGET_PDB_FILE:PipelineTesting> DESTINATION symbol)
+endif()

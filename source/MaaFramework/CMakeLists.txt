@@ -33,6 +33,11 @@ install(
     RUNTIME DESTINATION bin
     LIBRARY DESTINATION bin
     ARCHIVE DESTINATION lib)
+
+if(WIN32)
+    install(FILES $<TARGET_PDB_FILE:MaaFramework> DESTINATION symbol)
+endif()
+
 install(DIRECTORY "${MAA_PUBLIC_INC}/MaaFramework" DESTINATION "include")
 
 source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES ${maa_framework_src})
