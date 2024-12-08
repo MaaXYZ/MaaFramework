@@ -33,6 +33,7 @@
                         "DoNothing",
                         "Click",
                         "Swipe",
+                        "MultiSwipe",
                         "Key",
                         "InputText",
                         "Text",
