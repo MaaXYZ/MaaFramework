@@ -31,5 +31,5 @@ set_target_properties(DlopenTesting PROPERTIES FOLDER Testing)
 install(TARGETS DlopenTesting RUNTIME DESTINATION bin)
 
 if(WIN32)
-    install(FILES $<TARGET_PDB_FILE:DlopenTesting> DESTINATION symbol)
+    install(FILES $<TARGET_PDB_FILE:DlopenTesting> DESTINATION symbol OPTIONAL)
 endif()

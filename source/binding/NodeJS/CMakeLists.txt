@@ -68,7 +68,7 @@ install(
     ARCHIVE DESTINATION lib)
 
 if(WIN32)
-    install(FILES $<TARGET_PDB_FILE:MaaNode> DESTINATION symbol)
+    install(FILES $<TARGET_PDB_FILE:MaaNode> DESTINATION symbol OPTIONAL)
 endif()
 
 # if(WIN32) add_custom_command( TARGET MaaNode POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy ${MaaDlls}

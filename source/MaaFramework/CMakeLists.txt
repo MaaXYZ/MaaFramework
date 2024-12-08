@@ -35,7 +35,7 @@ install(
     ARCHIVE DESTINATION lib)
 
 if(WIN32)
-    install(FILES $<TARGET_PDB_FILE:MaaFramework> DESTINATION symbol)
+    install(FILES $<TARGET_PDB_FILE:MaaFramework> DESTINATION symbol OPTIONAL)
 endif()
 
 install(DIRECTORY "${MAA_PUBLIC_INC}/MaaFramework" DESTINATION "include")

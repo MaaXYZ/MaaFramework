@@ -22,7 +22,7 @@ install(
 )
 
 if(WIN32)
-    install(FILES $<TARGET_PDB_FILE:MaaWin32ControlUnit> DESTINATION symbol)
+    install(FILES $<TARGET_PDB_FILE:MaaWin32ControlUnit> DESTINATION symbol OPTIONAL)
 endif()
 
 source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES ${maa_win32_control_unit_src})

@@ -18,5 +18,5 @@ install(TARGETS MaaPiCli
 )
 
 if(WIN32)
-    install(FILES $<TARGET_PDB_FILE:MaaPiCli> DESTINATION symbol)
+    install(FILES $<TARGET_PDB_FILE:MaaPiCli> DESTINATION symbol OPTIONAL)
 endif()

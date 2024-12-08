@@ -20,7 +20,7 @@ install(
 )
 
 if(WIN32)
-    install(FILES $<TARGET_PDB_FILE:MaaUtils> DESTINATION symbol)
+    install(FILES $<TARGET_PDB_FILE:MaaUtils> DESTINATION symbol OPTIONAL)
 endif()
 
 source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES ${maa_utils_src})

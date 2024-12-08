@@ -25,7 +25,7 @@ install(
     ARCHIVE DESTINATION lib)
 
 if(WIN32)
-    install(FILES $<TARGET_PDB_FILE:MaaToolkit> DESTINATION symbol)
+    install(FILES $<TARGET_PDB_FILE:MaaToolkit> DESTINATION symbol OPTIONAL)
 endif()
 
 install(DIRECTORY "${MAA_PUBLIC_INC}/MaaToolkit" DESTINATION "include")
