@@ -1,9 +1,6 @@
 set(debug_comp_defs "_DEBUG;MAA_DEBUG")
 add_compile_definitions("$<$<CONFIG:Debug>:${debug_comp_defs}>")
 
-set(rel_debug_comp_defs "MAA_DEBUG")
-add_compile_definitions("$<$<CONFIG:DebWithRelDeps>:${rel_debug_comp_defs}>")
-
 if(APPLE)
     set(CMAKE_INSTALL_RPATH "@loader_path;@executable_path")
     set(CMAKE_BUILD_RPATH "@loader_path;@executable_path")
@@ -24,9 +21,6 @@ if(MSVC)
 
     # https://github.com/actions/runner-images/issues/10004 https://github.com/microsoft/STL/releases/tag/vs-2022-17.10
     add_compile_definitions("_DISABLE_CONSTEXPR_MUTEX_CONSTRUCTOR")
-
-    set(rel_debug_comp_options "/Od")
-    add_compile_options("$<$<CONFIG:DebWithRelDeps>:${rel_debug_comp_options}>")
 
     set(release_link_options "/OPT:REF;/OPT:ICF")
     add_link_options("$<$<CONFIG:Release>:${release_link_options}>")
@@ -59,9 +53,6 @@ else()
 
         endforeach()
     endif()
-
-    set(rel_debug_comp_options "-O0")
-    add_compile_options("$<$<CONFIG:DebWithRelDeps>:${rel_debug_comp_options}>")
 endif()
 
 set(CMAKE_CXX_STANDARD 20)
