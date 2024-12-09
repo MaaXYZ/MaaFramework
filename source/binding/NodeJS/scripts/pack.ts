@@ -43,6 +43,9 @@ async function main() {
                 if (/MaaPiCli/.test(file)) {
                     continue
                 }
+                if (/dSYM/.test(file)) {
+                    continue
+                }
                 await fs.copyFile(path.join(maaBinPath, file), path.join(sepPackPath, file))
             }
 

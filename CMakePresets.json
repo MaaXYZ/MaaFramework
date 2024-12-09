@@ -78,6 +78,14 @@
             "jobs": 16
         },
         {
+            "name": "NinjaMulti - RelWithDebInfo",
+            "displayName": "Ninja MultiConfig RelWithDebInfo",
+            "description": "Ninja MultiConfig RelWithDebInfo",
+            "configurePreset": "NinjaMulti",
+            "configuration": "RelWithDebInfo",
+            "jobs": 16
+        },
+        {
             "name": "NinjaMulti Win32 - Debug",
             "displayName": "Ninja MultiConfig Win32 Debug",
             "description": "Ninja MultiConfig Win32 Debug",

@@ -329,13 +329,13 @@ jobs:
                     -DCMAKE_CXX_COMPILER=${LLVM_PREFIX}/bin/clang++ \
                     -DBUILD_NODEJS_BINDING=ON
 
-                  cmake --build build --preset 'NinjaMulti - Release' -j 16
+                  cmake --build build --preset 'NinjaMulti - RelWithDebInfo' -j 16
 
             - name: Install
               shell: bash
               if: always()
               run: |
-                  cmake --install build --prefix install
+                  cmake --install build --prefix install --config RelWithDebInfo
 
                   cp -r docs install
                   cp README*.md install
