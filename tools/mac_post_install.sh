@@ -1,13 +1,7 @@
 #!/bin/bash
 
-function remove_and_sign_adhoc {
-    if codesign -dv $1 2>&1 | grep "CodeDirectory" > /dev/null; then
-        codesign --remove-signature $1
-    fi
-    codesign -s - $1
-}
-
 install_dir=$1
+shift
 
 if ! [[ -d "$install_dir" ]]; then
     echo "usage: $0 [maa framework install directory]"
@@ -18,6 +12,13 @@ if ! [[ -e $install_dir/bin/libMaaFramework.dylib ]]; then
     echo "directory $install_dir doesn't have maa framework"
     exit 1
 fi
+
+function remove_and_sign_adhoc {
+    if codesign -dv $1 2>&1 | grep "CodeDirectory" > /dev/null; then
+        codesign --remove-signature $1
+    fi
+    codesign -s - $1
+}
 
 function fix_rpath() {
     if ! otool -L $install_dir/bin/libMaaFramework.dylib | grep libc++ > /dev/null; then
@@ -73,7 +74,26 @@ function collect_symbols() {
             dsymutil $lib
         fi
     done
+    rm -r $install_dir/symbol
+    mkdir -p $install_dir/symbol
+    mv $install_dir/bin/*.dSYM $install_dir/symbol/
 }
 
-fix_rpath
-collect_symbols
+while getopts "rd" opt; do
+    case $opt in
+        r)
+            do_fix_rpath=true
+            ;;
+        d)
+            do_collect_symbols=true
+            ;;
+    esac
+done
+
+if [[ "$do_fix_rpath" == "true" ]]; then
+    fix_rpath
+fi
+
+if [[ "$do_collect_symbols" == "true" ]]; then
+    collect_symbols
+fi
