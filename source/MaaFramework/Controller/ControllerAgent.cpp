@@ -601,10 +601,7 @@ bool ControllerAgent::recording() const
 void ControllerAgent::init_recording()
 {
     auto recording_dir = GlobalOptionMgr::get_instance().log_dir() / "recording";
-    if (std::error_code ec; !std::filesystem::create_directories(recording_dir, ec)) {
-        LogError << "failed to create_directories" << VAR(recording_dir) << VAR(ec.message());
-        return;
-    }
+    std::filesystem::create_directories(recording_dir);
     recording_path_ = recording_dir / std::format("maa_recording_{}.txt", format_now_for_filename());
 }
 

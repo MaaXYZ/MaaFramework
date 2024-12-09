@@ -88,9 +88,8 @@ bool GlobalOptionConfig::save() const
 {
     LogInfo;
 
-    if (std::error_code ec; config_path_.has_parent_path() && !std::filesystem::create_directories(config_path_.parent_path(), ec)) {
-        LogError << "failed to create_directories" << VAR(config_path_.parent_path()) << VAR(ec.message());
-        return false;
+    if (config_path_.has_parent_path()) {
+        std::filesystem::create_directories(config_path_.parent_path());
     }
 
     std::ofstream ofs(config_path_, std::ios::out);

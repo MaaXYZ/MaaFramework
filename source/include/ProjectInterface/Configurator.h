@@ -10,7 +10,7 @@ MAA_PROJECT_INTERFACE_NS_BEGIN
 class Configurator
 {
     static constexpr std::string_view kInterfaceFilename = "interface.json";
-    static constexpr std::string_view kConfigFilename = "config/maa_pi_config.json";
+    static constexpr std::string_view kConfigPath = "config/maa_pi_config.json";
 
 public:
     bool load(const std::filesystem::path& project_dir, const std::filesystem::path& user_dir);

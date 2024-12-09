@@ -24,7 +24,7 @@ bool Configurator::load(const std::filesystem::path& resource_dir, const std::fi
         return false;
     }
 
-    if (auto cfg_opt = Parser::parse_config(user_dir / kConfigFilename)) {
+    if (auto cfg_opt = Parser::parse_config(user_dir / kConfigPath)) {
         config_ = *std::move(cfg_opt);
         first_time_use_ = false;
     }
@@ -51,10 +51,9 @@ void Configurator::save(const std::filesystem::path& user_dir)
 {
     LogInfo << VAR(user_dir);
 
-    const auto config_path = user_dir / kConfigFilename;
-    if (std::error_code ec; config_path.has_parent_path() && !std::filesystem::create_directories(config_path.parent_path(), ec)) {
-        LogError << "failed to create_directories" << VAR(config_path.parent_path()) << VAR(ec.message());
-        return;
+    const auto config_path = user_dir / kConfigPath;
+    if (config_path.has_parent_path()) {
+        std::filesystem::create_directories(config_path.parent_path());
     }
 
     std::ofstream ofs(config_path);

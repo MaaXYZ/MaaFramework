@@ -28,8 +28,8 @@ inline cv::Mat imread(const std::string& utf8_path, int flags = cv::IMREAD_COLOR
 
 inline bool imwrite(const std::filesystem::path& path, cv::InputArray img)
 {
-    if (std::error_code ec; path.has_parent_path() && !std::filesystem::create_directories(path.parent_path(), ec)) {
-        return false;
+    if (path.has_parent_path()) {
+        std::filesystem::create_directories(path.parent_path());
     }
 
     auto ext = path_to_utf8_string(path.extension());
