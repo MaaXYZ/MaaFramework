@@ -78,19 +78,11 @@
             "jobs": 16
         },
         {
-            "name": "NinjaMulti Win32 - Debug",
-            "displayName": "Ninja MultiConfig Win32 Debug",
-            "description": "Ninja MultiConfig Win32 Debug",
-            "configurePreset": "NinjaMulti Win32",
-            "configuration": "Debug",
-            "jobs": 16
-        },
-        {
-            "name": "NinjaMulti Win32 - Release",
-            "displayName": "Ninja NinjaMulti Win32 Release",
-            "description": "Ninja NinjaMulti Win32 Release",
-            "configurePreset": "NinjaMulti Win32",
-            "configuration": "Release",
+            "name": "NinjaMulti - RelWithDebInfo",
+            "displayName": "Ninja MultiConfig RelWithDebInfo",
+            "description": "Ninja MultiConfig RelWithDebInfo",
+            "configurePreset": "NinjaMulti",
+            "configuration": "RelWithDebInfo",
             "jobs": 16
         },
         {
@@ -110,11 +102,35 @@
             "jobs": 16
         },
         {
+            "name": "MSVC 2022 - RelWithDebInfo",
+            "displayName": "MSVC 2022 RelWithDebInfo",
+            "description": "MSVC 2022 RelWithDebInfo",
+            "configurePreset": "MSVC 2022",
+            "configuration": "RelWithDebInfo",
+            "jobs": 16
+        },
+        {
+            "name": "MSVC 2022 ARM - Debug",
+            "displayName": "MSVC 2022 ARM Debug",
+            "description": "MSVC 2022 ARM Debug",
+            "configurePreset": "MSVC 2022 ARM",
+            "configuration": "Debug",
+            "jobs": 16
+        },
+        {
             "name": "MSVC 2022 ARM - Release",
             "displayName": "MSVC 2022 ARM Release",
             "description": "MSVC 2022 ARM Release",
             "configurePreset": "MSVC 2022 ARM",
             "configuration": "Release",
+            "jobs": 16
+        },
+        {
+            "name": "MSVC 2022 ARM - RelWithDebInfo",
+            "displayName": "MSVC 2022 ARM RelWithDebInfo",
+            "description": "MSVC 2022 ARM RelWithDebInfo",
+            "configurePreset": "MSVC 2022 ARM",
+            "configuration": "RelWithDebInfo",
             "jobs": 16
         }
     ]
