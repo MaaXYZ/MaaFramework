@@ -99,6 +99,9 @@ It offers low-code simplicity while maintaining high extensibility. The framewor
 - [MFW-ELE-GUI](https://github.com/Night-stars-1/maa-gui) MFW-ELE-GUI ![Typescript](https://img.shields.io/badge/Typescript-8A2BE2?logo=typescript)  ![Electron](https://img.shields.io/badge/Electron-3776AB?logo=electron&logoColor=black)  
   MFW-ELE-GUI, based on a brand new architecture. Powered by MaaFramework.
 
+- [Maa-HBR](https://github.com/KarylDAZE/Maa-HBR) Heaven Burns Red/HBR Assistant  ![Pipeline](https://img.shields.io/badge/Pipeline-%23454545?logo=paddypower&logoColor=%23FFFFFF)  
+  An assistant for Heaven Burns Red/HBR based on a brand new architecture. Image technology + simulation control, freeing your hands! Powered by MaaFramework.
+
 ## Eco-Building
 
 MAA is planned to be a category of projects rather than just a single piece of software.
