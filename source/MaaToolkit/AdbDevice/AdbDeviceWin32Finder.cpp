@@ -3,6 +3,7 @@
 
 #include <unordered_map>
 
+#include "Utils/IOStream/ChildPipeIOStream.h"
 #include "Utils/Logger.h"
 #include "Utils/StringMisc.hpp"
 
@@ -18,9 +19,10 @@ AdbDeviceWin32Finder::AdbDeviceWin32Finder()
             .adb_candidate_paths = { "HD-Adb.exe"_path, "Engine\\ProgramFiles\\HD-Adb.exe"_path },
             .adb_common_serials = { "127.0.0.1:5555", "127.0.0.1:5556", "127.0.0.1:5565", "127.0.0.1:5575" } } },
         { "LDPlayer",
-          { .keyword = "dnplayer",
-            .adb_candidate_paths = { "adb.exe"_path },
-            .adb_common_serials = { /*"emulator-5554", "emulator-5556", "127.0.0.1:5555", "127.0.0.1:5556"*/ } } },
+          {
+              .keyword = "dnplayer",
+              .adb_candidate_paths = { "adb.exe"_path },
+          } },
         { "Nox",
           { .keyword = "Nox",
             .adb_candidate_paths = { "nox_adb.exe"_path },
@@ -34,11 +36,12 @@ AdbDeviceWin32Finder::AdbDeviceWin32Finder()
             .adb_common_serials = { "127.0.0.1:7555" } } },
 
         { "MuMuPlayer12",
-          { .keyword = "MuMuPlayer",
-            .adb_candidate_paths = { "vmonitor\\bin\\adb_server.exe"_path,
-                                     "MuMu\\emulator\\nemu\\vmonitor\\bin\\adb_server.exe"_path,
-                                     "adb.exe"_path },
-            .adb_common_serials = { "127.0.0.1:16384", "127.0.0.1:16416", "127.0.0.1:16448" } } },
+          {
+              .keyword = "MuMuPlayer.exe",
+              .adb_candidate_paths = { "vmonitor\\bin\\adb_server.exe"_path,
+                                       "MuMu\\emulator\\nemu\\vmonitor\\bin\\adb_server.exe"_path,
+                                       "adb.exe"_path },
+          } },
 
         { "MEmuPlayer", { .keyword = "MEmu", .adb_candidate_paths = { "adb.exe"_path }, .adb_common_serials = { "127.0.0.1:21503" } } },
 
@@ -49,6 +52,19 @@ AdbDeviceWin32Finder::AdbDeviceWin32Finder()
     };
 
     set_emulator_const_data(std::move(emulators));
+}
+
+std::vector<std::string> AdbDeviceWin32Finder::find_adb_serials(const std::filesystem::path& adb_path, const Emulator& emulator) const
+{
+    if (emulator.name == "LDPlayer") {
+        return find_serials_by_adb_command(adb_path);
+    }
+    else if (emulator.name == "MuMuPlayer12") {
+        return find_mumu_serials(adb_path, emulator);
+    }
+    else {
+        return AdbDeviceFinder::find_adb_serials(adb_path, emulator);
+    }
 }
 
 json::object AdbDeviceWin32Finder::get_adb_config(const Emulator& emulator, const std::string& adb_serial) const
@@ -92,6 +108,39 @@ json::object AdbDeviceWin32Finder::get_adb_config(const Emulator& emulator, cons
     }
 
     return {};
+}
+
+std::vector<std::string> AdbDeviceWin32Finder::find_mumu_serials(const std::filesystem::path& adb_path, const Emulator& emulator) const
+{
+    std::ignore = emulator;
+
+    std::filesystem::path mumu_mgr_path = adb_path.parent_path() / "MuMuManager.exe";
+    if (!std::filesystem::exists(mumu_mgr_path)) {
+        LogWarn << "MuMuManager not found" << VAR(mumu_mgr_path);
+        return find_serials_by_adb_command(adb_path);
+    }
+
+    static const std::vector<std::string> mumu_mgr_args = { "info", "--vmindex", "all" };
+    ChildPipeIOStream ios(mumu_mgr_path, mumu_mgr_args);
+    std::string output = ios.read();
+    LogDebug << VAR(mumu_mgr_path) << VAR(mumu_mgr_args) << VAR(output);
+
+    auto jopt = json::parse(output);
+    if (!jopt) {
+        LogError << "Parse MuMuManager info failed" << VAR(output);
+        return {};
+    }
+
+    std::vector<std::string> serials;
+    for (const auto& [key, obj] : jopt->as_object()) {
+        auto ip_opt = obj.find<std::string>("adb_host_ip");
+        auto port_opt = obj.find<int>("adb_port");
+        if (!ip_opt || !port_opt) {
+            continue;
+        }
+        serials.emplace_back(std::format("{}:{}", *ip_opt, *port_opt));
+    }
+    return serials;
 }
 
 int AdbDeviceWin32Finder::get_mumu_index(const std::string& adb_serial)
