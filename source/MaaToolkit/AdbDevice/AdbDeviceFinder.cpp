@@ -25,18 +25,7 @@ std::vector<AdbDevice> AdbDeviceFinder::find() const
     auto all_emulators = find_emulators();
     for (const Emulator& e : all_emulators) {
         std::filesystem::path adb_path = get_adb_path(e.const_data, e.process.pid);
-
-        std::vector<std::string> serials = e.const_data.adb_common_serials;
-
-        auto requested = request_adb_serials(adb_path);
-
-        serials.insert(serials.end(), std::make_move_iterator(requested.begin()), std::make_move_iterator(requested.end()));
-
-        // Deduplication
-        std::sort(serials.begin(), serials.end());
-        serials.erase(std::unique(serials.begin(), serials.end()), serials.end());
-
-        serials = check_available_adb_serials(adb_path, serials);
+        std::vector<std::string> serials = find_adb_serials(adb_path, e);
 
         for (const std::string& ser : serials) {
             AdbDevice device;
@@ -68,7 +57,7 @@ std::vector<AdbDevice> AdbDeviceFinder::find_specified(const std::filesystem::pa
 
     std::vector<AdbDevice> result;
 
-    auto serials = request_adb_serials(adb_path);
+    auto serials = find_serials_by_adb_command(adb_path);
 
     for (const std::string& ser : serials) {
         AdbDevice device;
@@ -84,6 +73,23 @@ std::vector<AdbDevice> AdbDeviceFinder::find_specified(const std::filesystem::pa
 
     LogInfo << VAR(result);
     return result;
+}
+
+std::vector<std::string> AdbDeviceFinder::find_adb_serials(const std::filesystem::path& adb_path, const Emulator& emulator) const
+{
+    auto serials = emulator.const_data.adb_common_serials;
+
+    auto requested = find_serials_by_adb_command(adb_path);
+
+    serials.insert(serials.end(), std::make_move_iterator(requested.begin()), std::make_move_iterator(requested.end()));
+
+    // Deduplication
+    std::sort(serials.begin(), serials.end());
+    serials.erase(std::unique(serials.begin(), serials.end()), serials.end());
+
+    serials = check_available_adb_serials(adb_path, serials);
+
+    return serials;
 }
 
 json::object AdbDeviceFinder::get_adb_config(const Emulator& emulator, const std::string& adb_serial) const
@@ -143,7 +149,7 @@ std::filesystem::path AdbDeviceFinder::get_adb_path(const EmulatorConstantData& 
     return {};
 }
 
-std::vector<std::string> AdbDeviceFinder::request_adb_serials(const std::filesystem::path& adb_path) const
+std::vector<std::string> AdbDeviceFinder::find_serials_by_adb_command(const std::filesystem::path& adb_path) const
 {
     LogFunc << VAR(adb_path);
 
@@ -202,6 +208,8 @@ bool AdbDeviceFinder::request_adb_connect(const std::filesystem::path& adb_path,
 std::vector<std::string>
     AdbDeviceFinder::check_available_adb_serials(const std::filesystem::path& adb_path, const std::vector<std::string>& serials) const
 {
+    LogFunc;
+
     std::vector<std::string> available;
     for (const std::string& ser : serials) {
         if (!request_adb_connect(adb_path, ser)) {
