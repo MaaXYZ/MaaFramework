@@ -70,14 +70,15 @@ export class ResourceBase {
             !maa.resource_register_custom_recognition(
                 this.handle,
                 name,
-                (context, id, task, name, param, image) => {
+                (context, id, task, name, param, image, roi) => {
                     const self: CustomRecognizerSelf = {
                         context: new Context(context),
                         id,
                         task,
                         name,
                         param: JSON.parse(param),
-                        image
+                        image,
+                        roi
                     }
                     return func.apply(self, [self])
                 }

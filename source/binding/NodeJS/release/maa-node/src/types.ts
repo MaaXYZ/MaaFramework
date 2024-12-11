@@ -8,6 +8,7 @@ export interface CustomRecognizerSelf {
     name: string
     param: unknown
     image: maa.ImageData
+    roi: maa.Rect
 }
 
 export interface CustomActionSelf {
