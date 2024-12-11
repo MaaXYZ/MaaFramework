@@ -12,7 +12,48 @@ jobs:
               with:
                   workflow: build.yml
                   branch: main
+                  name: MAA-nodejs-package
+                  path: assets
 
-            - name: Dump dir
-              run: |
-                  find .
+            - uses: JS-DevTools/npm-publish@v3
+              id: nodejs
+              with:
+                  package: assets/MAA-nodejs-package/maa-node
+                  access: public
+                  token: ${{ secrets.NPM_TOKEN }}
+
+            - uses: JS-DevTools/npm-publish@v3
+              with:
+                  package: assets/MAA-nodejs-package/maa-node-win32-x64
+                  access: public
+                  token: ${{ secrets.NPM_TOKEN }}
+
+            - uses: JS-DevTools/npm-publish@v3
+              with:
+                  package: assets/MAA-nodejs-package/maa-node-win32-arm64
+                  access: public
+                  token: ${{ secrets.NPM_TOKEN }}
+
+            - uses: JS-DevTools/npm-publish@v3
+              with:
+                  package: assets/MAA-nodejs-package/maa-node-linux-x64
+                  access: public
+                  token: ${{ secrets.NPM_TOKEN }}
+
+            - uses: JS-DevTools/npm-publish@v3
+              with:
+                  package: assets/MAA-nodejs-package/maa-node-linux-arm64
+                  access: public
+                  token: ${{ secrets.NPM_TOKEN }}
+
+            - uses: JS-DevTools/npm-publish@v3
+              with:
+                  package: assets/MAA-nodejs-package/maa-node-darwin-x64
+                  access: public
+                  token: ${{ secrets.NPM_TOKEN }}
+
+            - uses: JS-DevTools/npm-publish@v3
+              with:
+                  package: assets/MAA-nodejs-package/maa-node-darwin-arm64
+                  access: public
+                  token: ${{ secrets.NPM_TOKEN }}
