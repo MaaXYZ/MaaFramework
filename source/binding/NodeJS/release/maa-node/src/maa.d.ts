@@ -4,7 +4,7 @@ export type TaskerHandle = { __brand: 'TaskerHandle' }
 export type ContextHandle = { __brand: 'ContextHandle' }
 export type DesktopHandle = string & { __brand: 'DesktopHandle' }
 
-type Uint64 = number | bigint
+type Uint64 = number | string
 type Id = Uint64
 type ScreencapOrInputMethods = Uint64
 

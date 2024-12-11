@@ -1,16 +1,17 @@
 #pragma once
 
-#include <algorithm>
-#include <iterator>
 #include <napi.h>   // IWYU pragma: export
 
 #include <cstdint>  // IWYU pragma: export
 #include <optional> // IWYU pragma: export
-#include <sstream>
+#include <string>   // IWYU pragma: export
 #include <vector>   // IWYU pragma: export
 
+#include <algorithm>
 #include <exception>
 #include <format>
+#include <iterator>
+#include <sstream>
 #include <tuple>
 
 #include <MaaFramework/MaaDef.h>
@@ -244,19 +245,18 @@ struct JSConvert<uint32_t>
 template <>
 struct JSConvert<int64_t>
 {
-    static std::string name() { return "Number<int64> or BigInt<int64>"; }
+    static std::string name() { return "Number<int64> or String<int64>"; }
 
     static int64_t from_value(Napi::Value val)
     {
-        if (!val.IsNumber() && !val.IsBigInt()) {
+        if (!val.IsNumber() && !val.IsString()) {
             throw MaaNodeException { std::format("expect {}, got {}", name(), DumpValue(val)) };
         }
         if (val.IsNumber()) {
             return val.As<Napi::Number>().Int64Value();
         }
-        else if (val.IsBigInt()) {
-            bool loss;
-            return val.As<Napi::BigInt>().Int64Value(&loss);
+        else if (val.IsString()) {
+            return std::stoll(val.As<Napi::String>().Utf8Value());
         }
         else {
             return 0;
@@ -271,7 +271,7 @@ struct JSConvert<int64_t>
             return Napi::Number::New(env, static_cast<double>(val));
         }
         else {
-            return Napi::BigInt::New(env, val);
+            return Napi::String::New(env, std::to_string(val));
         }
     }
 };
@@ -279,11 +279,11 @@ struct JSConvert<int64_t>
 template <>
 struct JSConvert<uint64_t>
 {
-    static std::string name() { return "Number<uint64> or BigInt<uint64>"; }
+    static std::string name() { return "Number<uint64> or String<uint64>"; }
 
     static uint64_t from_value(Napi::Value val)
     {
-        if (!val.IsNumber() && !val.IsBigInt()) {
+        if (!val.IsNumber() && !val.IsString()) {
             throw MaaNodeException { std::format("expect {}, got {}", name(), DumpValue(val)) };
         }
         if (val.IsNumber()) {
@@ -291,9 +291,8 @@ struct JSConvert<uint64_t>
             int64_t iv = val.As<Napi::Number>().Int64Value();
             return iv >= 0 ? static_cast<uint64_t>(iv) : 0;
         }
-        else if (val.IsBigInt()) {
-            bool loss;
-            return val.As<Napi::BigInt>().Uint64Value(&loss);
+        else if (val.IsString()) {
+            return std::stoull(val.As<Napi::String>().Utf8Value());
         }
         else {
             return 0;
@@ -307,7 +306,7 @@ struct JSConvert<uint64_t>
             return Napi::Number::New(env, static_cast<double>(val));
         }
         else {
-            return Napi::BigInt::New(env, val);
+            return Napi::String::New(env, std::to_string(val));
         }
     }
 };
