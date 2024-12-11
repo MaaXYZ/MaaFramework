@@ -13,7 +13,7 @@ jobs:
                   workflow: build.yml
                   branch: main
                   name: MAA-nodejs-package
-                  path: assets
+                  path: assets/MAA-nodejs-package
 
             - uses: JS-DevTools/npm-publish@v3
               id: nodejs
