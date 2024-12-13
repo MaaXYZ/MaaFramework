@@ -131,14 +131,28 @@ std::vector<std::string> AdbDeviceWin32Finder::find_mumu_serials(const std::file
         return {};
     }
 
-    std::vector<std::string> serials;
-    for (const auto& [key, obj] : jopt->as_object()) {
+    auto get_serial = [](const json::value& obj) -> std::optional<std::string> {
         auto ip_opt = obj.find<std::string>("adb_host_ip");
         auto port_opt = obj.find<int>("adb_port");
         if (!ip_opt || !port_opt) {
+            return std::nullopt;
+        }
+        return std::format("{}:{}", *ip_opt, *port_opt);
+    };
+
+    std::vector<std::string> serials;
+    auto unique_serial_opt = get_serial(*jopt);
+    if (unique_serial_opt) {
+        serials.emplace_back(*std::move(unique_serial_opt));
+        return serials;
+    }
+
+    for (const auto& [key, obj] : jopt->as_object()) {
+        auto serial_opt = get_serial(obj);
+        if (!serial_opt) {
             continue;
         }
-        serials.emplace_back(std::format("{}:{}", *ip_opt, *port_opt));
+        serials.emplace_back(*std::move(serial_opt));
     }
     return serials;
 }
