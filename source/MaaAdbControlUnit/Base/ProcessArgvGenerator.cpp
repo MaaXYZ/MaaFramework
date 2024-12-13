@@ -34,16 +34,9 @@ std::optional<ProcessArgvGenerator::ProcessArgv> ProcessArgvGenerator::gen(const
         string_replace_all_(s, replacement);
     }
 
-    std::filesystem::path abs_path;
-    if (auto raw_path = MAA_NS::path(res.front()); raw_path.is_absolute()) {
-        abs_path = raw_path;
-    }
-    else {
-        abs_path = boost::process::search_path(raw_path);
-    }
-
+    std::filesystem::path abs_path = boost::process::search_path(path(res.front()));
     if (!std::filesystem::exists(abs_path)) {
-        LogError << "exec path not exists" << VAR(abs_path);
+        LogError << "exec path not exists" << VAR(res.front()) << VAR(abs_path);
         return std::nullopt;
     }
 

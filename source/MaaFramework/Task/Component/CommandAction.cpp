@@ -4,14 +4,16 @@
 
 #include "Utils/Codec.h"
 #include "Utils/IOStream/BoostIO.hpp"
+#include "Utils/ImageIo.h"
 #include "Utils/Logger.h"
 #include "Utils/Platform.h"
-#include "Utils/ImageIo.h"
 
 MAA_TASK_NS_BEGIN
 
 CommandAction::~CommandAction()
 {
+    LogFunc;
+
     for (const auto& p : cached_images_) {
         if (!std::filesystem::exists(p)) {
             continue;
@@ -32,7 +34,11 @@ bool CommandAction::run(const MAA_RES_NS::Action::CommandParam& command, const R
         { "{Box}", std::bind(&CommandAction::gen_box, this, std::placeholders::_1) },
     };
 
-    std::filesystem::path exec = path(command.exec);
+    std::filesystem::path exec = boost::process::search_path(path(command.exec));
+    if (!std::filesystem::exists(exec)) {
+        LogError << "exec not exists" << VAR(command.exec) << VAR(exec);
+        return false;
+    }
 
     std::vector<os_string> args;
     for (const std::string& arg : command.args) {
