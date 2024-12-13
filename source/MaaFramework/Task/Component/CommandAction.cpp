@@ -26,10 +26,10 @@ bool CommandAction::run(const MAA_RES_NS::Action::CommandParam& command, const R
     LogFunc << VAR(command.exec) << VAR(command.args) << VAR(command.detach);
 
     static std::unordered_map<std::string, std::function<std::string(const Runtime&)>> kArgvReplacement = {
-        { "Entry", std::bind(&CommandAction::gen_entry_name, this, std::placeholders::_1) },
-        { "Node", std::bind(&CommandAction::gen_node_name, this, std::placeholders::_1) },
-        { "Image", std::bind(&CommandAction::gen_image_path, this, std::placeholders::_1) },
-        { "Box", std::bind(&CommandAction::gen_box, this, std::placeholders::_1) },
+        { "{Entry}", std::bind(&CommandAction::gen_entry_name, this, std::placeholders::_1) },
+        { "{Node}", std::bind(&CommandAction::gen_node_name, this, std::placeholders::_1) },
+        { "{Image}", std::bind(&CommandAction::gen_image_path, this, std::placeholders::_1) },
+        { "{Box}", std::bind(&CommandAction::gen_box, this, std::placeholders::_1) },
     };
 
     std::filesystem::path exec = path(command.exec);
