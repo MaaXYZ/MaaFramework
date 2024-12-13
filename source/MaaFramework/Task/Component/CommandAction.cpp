@@ -7,6 +7,8 @@
 #include "Utils/ImageIo.h"
 #include "Utils/Logger.h"
 #include "Utils/Platform.h"
+#include "Utils/Runtime.h"
+#include "Utils/StringMisc.hpp"
 
 MAA_TASK_NS_BEGIN
 
@@ -27,18 +29,23 @@ bool CommandAction::run(const MAA_RES_NS::Action::CommandParam& command, const R
 {
     LogFunc << VAR(command.exec) << VAR(command.args) << VAR(command.detach);
 
-    static std::unordered_map<std::string, std::function<std::string(const Runtime&)>> kArgvReplacement = {
-        { "{Entry}", std::bind(&CommandAction::gen_entry_name, this, std::placeholders::_1) },
-        { "{Node}", std::bind(&CommandAction::gen_node_name, this, std::placeholders::_1) },
-        { "{Image}", std::bind(&CommandAction::gen_image_path, this, std::placeholders::_1) },
-        { "{Box}", std::bind(&CommandAction::gen_box, this, std::placeholders::_1) },
+    static std::unordered_map<std::string, std::string> kExecReplacement = {
+        { "{LIBRARY_DIR}", path_to_utf8_string(library_dir()) },
     };
+    std::string conv_exec = string_replace_all(command.exec, kExecReplacement);
 
-    std::filesystem::path exec = boost::process::search_path(path(command.exec));
+    std::filesystem::path exec = boost::process::search_path(path(conv_exec));
     if (!std::filesystem::exists(exec)) {
-        LogError << "exec not exists" << VAR(command.exec) << VAR(exec);
+        LogError << "exec not exists" << VAR(command.exec) << VAR(conv_exec) << VAR(exec);
         return false;
     }
+
+    static std::unordered_map<std::string, std::function<std::string(const Runtime&)>> kArgvReplacement = {
+        { "{ENTRY}", std::bind(&CommandAction::gen_entry_name, this, std::placeholders::_1) },
+        { "{NODE}", std::bind(&CommandAction::gen_node_name, this, std::placeholders::_1) },
+        { "{IMAGE}", std::bind(&CommandAction::gen_image_path, this, std::placeholders::_1) },
+        { "{BOX}", std::bind(&CommandAction::gen_box, this, std::placeholders::_1) },
+    };
 
     std::vector<os_string> args;
     for (const std::string& arg : command.args) {
