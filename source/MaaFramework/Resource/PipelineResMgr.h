@@ -99,6 +99,7 @@ public:
     static bool parse_press_key(const json::value& input, Action::KeyParam& output, const Action::KeyParam& default_value);
     static bool parse_input_text(const json::value& input, Action::TextParam& output, const Action::TextParam& default_value);
     static bool parse_app_info(const json::value& input, Action::AppParam& output, const Action::AppParam& default_value);
+    static bool parse_command_param(const json::value& input, Action::CommandParam& output, const Action::CommandParam& default_value);
     static bool parse_custom_action_param(const json::value& input, Action::CustomParam& output, const Action::CustomParam& default_value);
 
     static bool parse_wait_freezes_param(

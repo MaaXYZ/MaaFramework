@@ -1,5 +1,6 @@
 #include "Actuator.h"
 
+#include "CommandAction.h"
 #include "Controller/ControllerAgent.h"
 #include "CustomAction.h"
 #include "Utils/Logger.h"
@@ -13,7 +14,7 @@ Actuator::Actuator(Tasker* tasker, Context& context)
 {
 }
 
-bool Actuator::run(const cv::Rect& reco_hit, MaaRecoId reco_id, const PipelineData& pipeline_data)
+bool Actuator::run(const cv::Rect& reco_hit, MaaRecoId reco_id, const PipelineData& pipeline_data, const std::string& entry)
 {
     using namespace MAA_RES_NS::Action;
     LogFunc << VAR(pipeline_data.name);
@@ -51,6 +52,9 @@ bool Actuator::run(const cv::Rect& reco_hit, MaaRecoId reco_id, const PipelineDa
         break;
     case Type::StopApp:
         ret = stop_app(std::get<AppParam>(pipeline_data.action_param));
+        break;
+    case Type::Command:
+        ret = command(std::get<CommandParam>(pipeline_data.action_param), reco_hit, pipeline_data.name, entry);
         break;
     case Type::Custom:
         ret = custom_action(std::get<CustomParam>(pipeline_data.action_param), reco_hit, reco_id, pipeline_data.name);
@@ -215,6 +219,21 @@ bool Actuator::stop_app(const MAA_RES_NS::Action::AppParam& param)
         return false;
     }
     return controller()->stop_app(param.package);
+}
+
+bool Actuator::command(const MAA_RES_NS::Action::CommandParam& param, const cv::Rect& box, const std::string& name, const std::string& entry)
+{
+    if (!controller()) {
+        LogError << "Controller is null";
+        return false;
+    }
+    CommandAction::Runtime rt {
+        .entry = entry,
+        .node = name,
+        .image = controller()->cached_image(),
+        .box = box,
+    };
+    return CommandAction::get_instance().run(param, rt);
 }
 
 bool Actuator::custom_action(const MAA_RES_NS::Action::CustomParam& param, const cv::Rect& box, MaaRecoId reco_id, const std::string& name)
