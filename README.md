@@ -51,14 +51,8 @@ _✨ 基于图像识别的自动化黑盒测试框架 ✨_
 - [MAALimbusCompany](https://github.com/hxdnshx/MAALimbusCompany) 边狱公司 小助手 ![Pipeline](https://img.shields.io/badge/Pipeline-%23454545?logo=paddypower&logoColor=%23FFFFFF)  
   基于全新架构的 边狱公司 小助手。图像技术 + 模拟控制，解放双手！由 MaaFramework 强力驱动！
 
-- [MBA](https://github.com/MaaXYZ/MBA) BA 小助手 ![csharp](https://img.shields.io/badge/C%23-239120?logo=csharp&logoColor=white)  
-  基于 MAA 全新架构的 BA 小助手。图像技术 + 模拟控制，解放双手，不再点点点！由 MaaFramework 强力驱动！
-
 - [MAS](https://github.com/MaaXYZ/MaaAssistantSkland) 森空岛 小助手 ![Pipeline](https://img.shields.io/badge/Pipeline-%23454545?logo=paddypower&logoColor=%23FFFFFF)  
   基于全新架构的 森空岛 小助手。图像技术 + 模拟控制，解放双手！由 MaaFramework 强力驱动！
-
-- [MRA](https://github.com/MaaXYZ/MaaResonance) 雷索纳斯 列车长 小助手  ![Rust](https://img.shields.io/badge/Rust-333333?logo=rust&logoColor=white) ![Tauri](https://img.shields.io/badge/Tauri-24C8D8?logo=tauri&logoColor=white)  
-  基于全新架构的 列车长 小助手。图像技术 + 模拟控制，解放双手！由 MaaFramework 强力驱动！
 
 - [MaaHatsuboshiTA](https://github.com/Carpenter-MK1/MaaHatsuboshiTA) 学院偶像大师 初星助教  ![Pipeline](https://img.shields.io/badge/Pipeline-%23454545?logo=paddypower&logoColor=%23FFFFFF)  
   基于全新架构的制作人代肝工具，养肝护眼 + 节省时间，~~出轨美铃！~~ 由 MaaFramework 强力驱动！
