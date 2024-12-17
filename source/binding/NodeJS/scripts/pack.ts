@@ -27,7 +27,7 @@ async function main() {
     for (const dir of ['minitouch', 'maatouch', 'minicap']) {
         await fs.cp(
             path.join(assetsPath, 'MAA-win-x86_64', 'share', 'MaaAgentBinary', dir),
-            path.join(corePackPath, 'agent'),
+            path.join(corePackPath, 'agent', dir),
             {
                 recursive: true
             }
