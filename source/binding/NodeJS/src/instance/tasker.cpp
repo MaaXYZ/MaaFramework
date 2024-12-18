@@ -85,7 +85,7 @@ bool tasker_inited(Napi::External<TaskerInfo> info)
     return MaaTaskerInited(info.Data()->handle);
 }
 
-MaaTaskId tasker_post_pipeline(Napi::External<TaskerInfo> info, std::string entry, std::string overr)
+MaaTaskId tasker_post_task(Napi::External<TaskerInfo> info, std::string entry, std::string overr)
 {
     return MaaTaskerPostTask(info.Data()->handle, entry.c_str(), overr.c_str());
 }
@@ -208,7 +208,7 @@ void load_instance_tasker(Napi::Env env, Napi::Object& exports, Napi::External<E
     BIND(tasker_bind_resource);
     BIND(tasker_bind_controller);
     BIND(tasker_inited);
-    BIND(tasker_post_pipeline);
+    BIND(tasker_post_task);
     BIND(tasker_status);
     BIND(tasker_wait);
     BIND(tasker_running);

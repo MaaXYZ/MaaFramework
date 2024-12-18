@@ -43,7 +43,7 @@ def main():
 
     resource.register_custom_recognition("MyRec", MyRecongition())
 
-    task_detail = tasker.post_pipeline("StartUpAndClickButton").wait().get()
+    task_detail = tasker.post_task("StartUpAndClickButton").wait().get()
     # do something with task_detail
 
 

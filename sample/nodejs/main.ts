@@ -76,7 +76,7 @@ async function main() {
 
     res.register_custom_recognizer('MyRec', my_reco)
 
-    let task_detail = await tskr.post_pipeline('StartUpAndClickButton').wait().get()
+    let task_detail = await tskr.post_task('StartUpAndClickButton').wait().get()
 
     tskr.destroy()
     ctrl.destroy()

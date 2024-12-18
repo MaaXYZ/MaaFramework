@@ -141,7 +141,7 @@ async function api_test() {
         }
     }
 
-    let detail = await tasker.post_pipeline('Entry', ppover).wait().get()
+    let detail = await tasker.post_task('Entry', ppover).wait().get()
     if (!detail) {
         console.log('pipeline failed')
         process.exit(1)

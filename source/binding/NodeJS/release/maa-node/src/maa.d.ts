@@ -244,7 +244,7 @@ export declare function tasker_bind_controller(
     controller: ControllerHandle | null
 ): boolean
 export declare function tasker_inited(handle: TaskerHandle): boolean
-export declare function tasker_post_pipeline(
+export declare function tasker_post_task(
     handle: TaskerHandle,
     entry: string,
     pipeline_override: string

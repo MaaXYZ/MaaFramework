@@ -69,7 +69,7 @@ bool Tasker::set_option(MaaTaskerOption key, MaaOptionValue value, MaaOptionValu
     return false;
 }
 
-MaaTaskId Tasker::post_pipeline(const std::string& entry, const json::object& pipeline_override)
+MaaTaskId Tasker::post_task(const std::string& entry, const json::object& pipeline_override)
 {
     LogInfo << VAR(entry) << VAR(pipeline_override);
 

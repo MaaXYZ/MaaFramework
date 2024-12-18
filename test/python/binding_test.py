@@ -122,7 +122,7 @@ def api_test():
     r2.post_bundle("C:/_maafw_testing_/aaabbbccc").wait()
     t1 = Tasker()
     t2 = Tasker()
-    t2.post_pipeline("Entry", {}).wait()
+    t2.post_task("Entry", {}).wait()
 
     resource = Resource(MyNotificationHandler())
     print(f"resource: {resource}")
@@ -158,14 +158,14 @@ def api_test():
         },
     }
 
-    detail = tasker.post_pipeline("Entry", ppover).wait().get()
+    detail = tasker.post_task("Entry", ppover).wait().get()
     if detail:
         print(f"pipeline detail: {detail}")
     else:
         print("pipeline failed")
         raise RuntimeError("pipeline failed")
 
-    tasker.post_pipeline("Entry", ppover)
+    tasker.post_task("Entry", ppover)
     stopped = tasker.post_stop().wait().succeeded
     if not stopped:
         raise RuntimeError("post_stop failed")
