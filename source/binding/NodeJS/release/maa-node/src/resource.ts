@@ -135,8 +135,8 @@ export class ResourceBase {
         }
     }
 
-    post_path(path: string) {
-        return new Job(this.#source, maa.resource_post_path(this.handle, path))
+    post_bundle(path: string) {
+        return new Job(this.#source, maa.resource_post_bundle(this.handle, path))
     }
 
     clear() {

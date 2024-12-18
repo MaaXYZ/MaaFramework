@@ -123,9 +123,9 @@ bool resource_clear_custom_action(Napi::External<ResourceInfo> info)
     }
 }
 
-MaaResId resource_post_path(Napi::External<ResourceInfo> info, std::string path)
+MaaResId resource_post_bundle(Napi::External<ResourceInfo> info, std::string path)
 {
-    return MaaResourcePostPath(info.Data()->handle, path.c_str());
+    return MaaResourcePostBundle(info.Data()->handle, path.c_str());
 }
 
 bool resource_clear(Napi::External<ResourceInfo> info)
@@ -187,7 +187,7 @@ void load_instance_resource(Napi::Env env, Napi::Object& exports, Napi::External
     BIND(resource_register_custom_action);
     BIND(resource_unregister_custom_action);
     BIND(resource_clear_custom_action);
-    BIND(resource_post_path);
+    BIND(resource_post_bundle);
     BIND(resource_clear);
     BIND(resource_status);
     BIND(resource_wait);

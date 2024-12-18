@@ -87,7 +87,7 @@ bool tasker_inited(Napi::External<TaskerInfo> info)
 
 MaaTaskId tasker_post_pipeline(Napi::External<TaskerInfo> info, std::string entry, std::string overr)
 {
-    return MaaTaskerPostPipeline(info.Data()->handle, entry.c_str(), overr.c_str());
+    return MaaTaskerPostTask(info.Data()->handle, entry.c_str(), overr.c_str());
 }
 
 MaaStatus tasker_status(Napi::External<TaskerInfo> info, MaaTaskId id)

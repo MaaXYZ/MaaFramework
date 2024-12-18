@@ -48,7 +48,7 @@ async function main() {
     res.notify = (msg, detail) => {
         console.log(msg, detail)
     }
-    await res.post_path('sample/resource').wait()
+    await res.post_bundle('sample/resource').wait()
 
     const devices = await maa.AdbController.find()
     if (!devices || devices.length === 0) {

@@ -19,7 +19,7 @@ class MyAction(CustomAction):
 
         print(f"on MyAction.run, context: {context}, argv: {argv}")
 
-        context.override_next(argv.current_task_name, ["TaskA", "TaskB"])
+        context.override_next(argv.node_name, ["TaskA", "TaskB"])
 
         image = context.tasker.controller.cached_image
         context.tasker.controller.post_click(100, 100).wait()

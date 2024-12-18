@@ -14,7 +14,7 @@ def main():
     Toolkit.init_option(user_path)
 
     resource = Resource()
-    res_job = resource.post_path("sample/resource")
+    res_job = resource.post_bundle("sample/resource")
     res_job.wait()
 
     adb_devices = Toolkit.find_adb_devices()
@@ -72,7 +72,7 @@ class MyRecongition(CustomRecognition):
         click_job = context.tasker.controller.post_click(10, 20)
         click_job.wait()
 
-        context.override_next(argv.current_task_name, ["TaskA", "TaskB"])
+        context.override_next(argv.node_name, ["TaskA", "TaskB"])
 
         return CustomRecognition.AnalyzeResult(
             box=(0, 0, 100, 100), detail="Hello World!"

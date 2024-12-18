@@ -44,7 +44,7 @@ Context::Context(const Context& other)
     LogDebug << VAR(other.getptr());
 }
 
-MaaTaskId Context::run_pipeline(const std::string& entry, const json::object& pipeline_override)
+MaaTaskId Context::run_task(const std::string& entry, const json::object& pipeline_override)
 {
     LogFunc << VAR(getptr()) << VAR(entry) << VAR(pipeline_override);
 
