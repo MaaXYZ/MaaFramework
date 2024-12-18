@@ -6,6 +6,4 @@ if(BUILD_NODEJS_BINDING)
     endif()
 endif()
 
-install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/Python" DESTINATION binding)
-
-# install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/cpp" DESTINATION binding)
+# install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/Python" DESTINATION binding)
