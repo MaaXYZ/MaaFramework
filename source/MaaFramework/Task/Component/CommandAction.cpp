@@ -29,35 +29,37 @@ bool CommandAction::run(const MAA_RES_NS::Action::CommandParam& command, const R
 {
     LogFunc << VAR(command.exec) << VAR(command.args) << VAR(command.detach);
 
-    static std::unordered_map<std::string, std::string> kExecReplacement = {
-        { "{LIBRARY_DIR}", path_to_utf8_string(library_dir()) },
-    };
-    std::string conv_exec = string_replace_all(command.exec, kExecReplacement);
+    auto gen_runtime = [&](const std::string& src) -> std::string {
+        static std::unordered_map<std::string, std::function<std::string(const Runtime&)>> kArgvReplacement = {
+            { "{ENTRY}", std::bind(&CommandAction::get_entry_name, this, std::placeholders::_1) },
+            { "{NODE}", std::bind(&CommandAction::get_node_name, this, std::placeholders::_1) },
+            { "{IMAGE}", std::bind(&CommandAction::get_image_path, this, std::placeholders::_1) },
+            { "{BOX}", std::bind(&CommandAction::get_box, this, std::placeholders::_1) },
+            { "{LIBRARY_DIR}", std::bind(&CommandAction::get_library_dir, this, std::placeholders::_1) },
+            { "{RESOURCE_DIR}", std::bind(&CommandAction::get_resource_dir, this, std::placeholders::_1) },
+        };
 
+        std::string dst = src;
+        for (const auto& [key, func] : kArgvReplacement) {
+            if (src.find(key) == std::string::npos) {
+                continue;
+            }
+            string_replace_all(dst, key, func(runtime));
+        }
+        return dst;
+    };
+
+    std::string conv_exec = gen_runtime(command.exec);
     std::filesystem::path exec = boost::process::search_path(path(conv_exec));
     if (!std::filesystem::exists(exec)) {
         LogError << "exec not exists" << VAR(command.exec) << VAR(conv_exec) << VAR(exec);
         return false;
     }
 
-    static std::unordered_map<std::string, std::function<std::string(const Runtime&)>> kArgvReplacement = {
-        { "{ENTRY}", std::bind(&CommandAction::gen_entry_name, this, std::placeholders::_1) },
-        { "{NODE}", std::bind(&CommandAction::gen_node_name, this, std::placeholders::_1) },
-        { "{IMAGE}", std::bind(&CommandAction::gen_image_path, this, std::placeholders::_1) },
-        { "{BOX}", std::bind(&CommandAction::gen_box, this, std::placeholders::_1) },
-    };
-
     std::vector<os_string> args;
     for (const std::string& arg : command.args) {
-        auto iter = kArgvReplacement.find(arg);
+        std::string dst = gen_runtime(arg);
 
-        std::string dst;
-        if (iter == kArgvReplacement.end()) {
-            dst = arg;
-        }
-        else {
-            dst = iter->second(runtime);
-        }
 #ifdef _WIN32
         args.emplace_back(to_u16(dst));
 #else
@@ -82,27 +84,49 @@ bool CommandAction::run(const MAA_RES_NS::Action::CommandParam& command, const R
     return true;
 }
 
-std::string CommandAction::gen_entry_name(const Runtime& runtime)
+std::string CommandAction::get_entry_name(const Runtime& runtime)
 {
     return runtime.entry;
 }
 
-std::string CommandAction::gen_node_name(const Runtime& runtime)
+std::string CommandAction::get_node_name(const Runtime& runtime)
 {
     return runtime.node;
 }
 
-std::string CommandAction::gen_image_path(const Runtime& runtime)
+std::string CommandAction::get_image_path(const Runtime& runtime)
 {
+    if (!image_path_.empty()) {
+        return image_path_;
+    }
+
     auto dst_path = std::filesystem::temp_directory_path() / (format_now_for_filename() + ".png");
     cached_images_.emplace_back(dst_path);
     imwrite(dst_path, runtime.image);
-    return path_to_utf8_string(dst_path);
+    image_path_ = path_to_utf8_string(dst_path);
+    return image_path_;
 }
 
-std::string CommandAction::gen_box(const Runtime& runtime)
+std::string CommandAction::get_box(const Runtime& runtime)
 {
     return std::format("[{},{},{},{}]", runtime.box.x, runtime.box.y, runtime.box.width, runtime.box.height);
+}
+
+std::string CommandAction::get_library_dir(const Runtime& runtime)
+{
+    std::ignore = runtime;
+
+    return path_to_utf8_string(library_dir());
+}
+
+std::string CommandAction::get_resource_dir(const Runtime& runtime)
+{
+    if (runtime.resource_paths.empty()) {
+        LogWarn << "no resource";
+        return {};
+    }
+
+    return path_to_utf8_string(runtime.resource_paths.back());
 }
 
 MAA_TASK_NS_END

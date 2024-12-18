@@ -221,13 +221,24 @@ bool Actuator::stop_app(const MAA_RES_NS::Action::AppParam& param)
     return controller()->stop_app(param.package);
 }
 
-bool Actuator::command(const MAA_RES_NS::Action::CommandParam& param, const cv::Rect& box, const std::string& name, const std::string& entry)
+bool Actuator::command(
+    const MAA_RES_NS::Action::CommandParam& param,
+    const cv::Rect& box,
+    const std::string& name,
+    const std::string& entry)
 {
     if (!controller()) {
         LogError << "Controller is null";
         return false;
     }
+    auto* resource = tasker_ ? tasker_->resource() : nullptr;
+    if (!resource) {
+        LogError << "Resource is null";
+        return false;
+    }
+
     CommandAction::Runtime rt {
+        .resource_paths = resource->paths(),
         .entry = entry,
         .node = name,
         .image = controller()->cached_image(),

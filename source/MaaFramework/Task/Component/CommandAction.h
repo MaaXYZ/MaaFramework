@@ -1,20 +1,22 @@
 #pragma once
 
+#include <filesystem>
 #include <string>
 #include <vector>
 
 #include "Conf/Conf.h"
 #include "Resource/PipelineTypes.h"
-#include "Utils/SingletonHolder.hpp"
 #include "Utils/Platform.h"
 
 MAA_TASK_NS_BEGIN
 
-class CommandAction : public SingletonHolder<CommandAction>
+class CommandAction
 {
 public:
     struct Runtime
     {
+        std::vector<std::filesystem::path> resource_paths;
+
         std::string entry;
         std::string node;
         cv::Mat image;
@@ -27,13 +29,17 @@ public:
     bool run(const MAA_RES_NS::Action::CommandParam& command, const Runtime& runtime);
 
 private:
-    std::string gen_entry_name(const Runtime& runtime);
-    std::string gen_node_name(const Runtime& runtime);
-    std::string gen_image_path(const Runtime& runtime);
-    std::string gen_box(const Runtime& runtime);
+    std::string get_entry_name(const Runtime& runtime);
+    std::string get_node_name(const Runtime& runtime);
+    std::string get_image_path(const Runtime& runtime);
+    std::string get_box(const Runtime& runtime);
+    std::string get_library_dir(const Runtime& runtime);
+    std::string get_resource_dir(const Runtime& runtime);
 
 private:
-    std::vector<std::filesystem::path> cached_images_;
+    static std::vector<std::filesystem::path> cached_images_;
+
+    std::string image_path_;
 };
 
 MAA_TASK_NS_END
