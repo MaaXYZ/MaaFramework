@@ -12,17 +12,23 @@
 
 MAA_TASK_NS_BEGIN
 
-CommandAction::~CommandAction()
+TempFileHolder::~TempFileHolder()
 {
     LogFunc;
 
-    for (const auto& p : cached_images_) {
+    for (const auto& p : files_) {
         if (!std::filesystem::exists(p)) {
             continue;
         }
         LogTrace << "remove" << VAR(p);
         std::filesystem::remove(p);
     }
+}
+
+void TempFileHolder::emplace(const std::filesystem::path& p)
+{
+    LogTrace << p;
+    files_.emplace_back(p);
 }
 
 bool CommandAction::run(const MAA_RES_NS::Action::CommandParam& command, const Runtime& runtime)
@@ -44,7 +50,7 @@ bool CommandAction::run(const MAA_RES_NS::Action::CommandParam& command, const R
             if (src.find(key) == std::string::npos) {
                 continue;
             }
-            string_replace_all(dst, key, func(runtime));
+            dst = string_replace_all(dst, key, func(runtime));
         }
         return dst;
     };
@@ -101,7 +107,7 @@ std::string CommandAction::get_image_path(const Runtime& runtime)
     }
 
     auto dst_path = std::filesystem::temp_directory_path() / (format_now_for_filename() + ".png");
-    cached_images_.emplace_back(dst_path);
+    TempFileHolder::get_instance().emplace(dst_path);
     imwrite(dst_path, runtime.image);
     image_path_ = path_to_utf8_string(dst_path);
     return image_path_;

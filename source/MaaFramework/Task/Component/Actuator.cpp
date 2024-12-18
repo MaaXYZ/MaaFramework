@@ -244,7 +244,7 @@ bool Actuator::command(
         .image = controller()->cached_image(),
         .box = box,
     };
-    return CommandAction::get_instance().run(param, rt);
+    return CommandAction().run(param, rt);
 }
 
 bool Actuator::custom_action(const MAA_RES_NS::Action::CustomParam& param, const cv::Rect& box, MaaRecoId reco_id, const std::string& name)

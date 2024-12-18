@@ -7,8 +7,20 @@
 #include "Conf/Conf.h"
 #include "Resource/PipelineTypes.h"
 #include "Utils/Platform.h"
+#include "Utils/SingletonHolder.hpp"
 
 MAA_TASK_NS_BEGIN
+
+class TempFileHolder : public SingletonHolder<TempFileHolder>
+{
+public:
+    virtual ~TempFileHolder() override;
+
+    void emplace(const std::filesystem::path& p);
+
+private:
+    std::vector<std::filesystem::path> files_;
+};
 
 class CommandAction
 {
@@ -24,8 +36,6 @@ public:
     };
 
 public:
-    ~CommandAction();
-
     bool run(const MAA_RES_NS::Action::CommandParam& command, const Runtime& runtime);
 
 private:
@@ -37,8 +47,6 @@ private:
     std::string get_resource_dir(const Runtime& runtime);
 
 private:
-    static std::vector<std::filesystem::path> cached_images_;
-
     std::string image_path_;
 };
 
