@@ -49,7 +49,7 @@ public: // from MaaContextAPI
     virtual Tasker* tasker() const override;
 
 public:
-    std::optional<PipelineData> get_pipeline_data(const std::string& task_name);
+    std::optional<PipelineData> get_pipeline_data(const std::string& node_name);
 
 private:
     bool check_pipeline() const;

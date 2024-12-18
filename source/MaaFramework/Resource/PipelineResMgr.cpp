@@ -178,7 +178,7 @@ bool PipelineResMgr::check_next_list(const PipelineData::NextList& next_list, co
 {
     for (const auto& next : next_list) {
         if (!data_map.contains(next)) {
-            LogError << "Invalid next task name" << VAR(next);
+            LogError << "Invalid next node name" << VAR(next);
             return false;
         }
     }

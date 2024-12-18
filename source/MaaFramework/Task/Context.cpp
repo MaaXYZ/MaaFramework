@@ -175,11 +175,11 @@ Tasker* Context::tasker() const
     return tasker_;
 }
 
-std::optional<Context::PipelineData> Context::get_pipeline_data(const std::string& task_name)
+std::optional<Context::PipelineData> Context::get_pipeline_data(const std::string& node_name)
 {
-    auto override_it = pipeline_override_.find(task_name);
+    auto override_it = pipeline_override_.find(node_name);
     if (override_it != pipeline_override_.end()) {
-        LogDebug << "found in override" << VAR(task_name);
+        LogDebug << "found in override" << VAR(node_name);
         return override_it->second;
     }
 
@@ -194,12 +194,12 @@ std::optional<Context::PipelineData> Context::get_pipeline_data(const std::strin
     }
 
     auto& raw_data_map = resource->pipeline_res().get_pipeline_data_map();
-    auto raw_it = raw_data_map.find(task_name);
+    auto raw_it = raw_data_map.find(node_name);
     if (raw_it != raw_data_map.end()) {
         return raw_it->second;
     }
 
-    LogWarn << "task not found" << VAR(task_name);
+    LogWarn << "task not found" << VAR(node_name);
     return std::nullopt;
 }
 

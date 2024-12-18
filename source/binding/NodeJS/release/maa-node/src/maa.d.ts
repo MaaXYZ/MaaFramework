@@ -280,7 +280,7 @@ export declare function tasker_get_task_detail(
 ): [entry: string, node_ids: NodeId[], status: Status] | null
 export declare function tasker_get_latest_node(
     handle: TaskerHandle,
-    task_name: string
+    node_name: string
 ): NodeId | null
 
 // config.cpp
