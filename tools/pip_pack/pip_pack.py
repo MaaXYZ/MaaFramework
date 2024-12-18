@@ -174,7 +174,7 @@ def pack(pack_dir: str, info_path: str):
 def copy_base():
     print("Copying base...", end="")
 
-    PROJECT_PATH = os.path.join(__file__, os.pardir, os.pardir, os.pardir)
+    PROJECT_PATH = os.path.join(os.path.dirname(__file__), os.pardir, os.pardir)
 
     src_path = os.path.join(PROJECT_PATH, "source", "binding", "Python")
     shutil.copytree(src_path, SRC_DIR)
