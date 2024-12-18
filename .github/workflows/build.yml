@@ -540,13 +540,16 @@ jobs:
                   tag_name: ${{ needs.meta.outputs.tag }}
                   prerelease: ${{ needs.meta.outputs.is_pre_release == 'true' }}
 
-            - name: Create issue if failed to publish packages
-              if: steps.nuget.outputs.failed || steps.pip.outputs.failed 
+            - name: Create issue if failed to release
+              if: failure() || steps.nuget.outputs.failed || steps.pip.outputs.failed || ${{ steps.nodejs.outputs.id == 'undefined' }}
               uses: actions-cool/issues-helper@v3
               with:
                   actions: "create-issue"
-                  title: "${{ needs.meta.outputs.tag }} failed to publish packages"
+                  title: "${{ needs.meta.outputs.tag }} failed to release"
                   body: |
                       Please manually publish the following packages:
                       ${{ steps.nuget.outputs.failed && '- nuget @moomiji' || '' }}
                       ${{ steps.pip.outputs.failed && '- pip @MistEO' || '' }}
+                      ${{ steps.nodejs.outputs.id == 'undefined' && '- nodejs @neko-para' || '' }}
+
+                      cc @MistEO
