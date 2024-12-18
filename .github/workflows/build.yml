@@ -528,10 +528,6 @@ jobs:
               run: |
                   rm -r assets/MAA-nodejs-package
 
-            - name: Remove win-dbg package
-              run: |
-                  rm -r assets/MAA-win-dbg*
-
             - run: |
                   cd assets
                   for f in *; do
