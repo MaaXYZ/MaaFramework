@@ -166,7 +166,7 @@ def api_test():
         raise RuntimeError("pipeline failed")
 
     tasker.post_pipeline("Entry", ppover)
-    stopped = tasker.post_stop().wait().succeeded()
+    stopped = tasker.post_stop().wait().succeeded
     if not stopped:
         raise RuntimeError("post_stop failed")
 
