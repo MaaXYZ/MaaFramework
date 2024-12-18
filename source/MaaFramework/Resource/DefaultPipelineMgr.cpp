@@ -125,6 +125,8 @@ bool DefaultPipelineMgr::parse_action(const json::value& input)
         { "startapp", Type::StartApp },
         { "StopApp", Type::StopApp },
         { "stopapp", Type::StopApp },
+        { "Command", Type::Command },
+        { "command", Type::Command },
         { "Custom", Type::Custom },
         { "custom", Type::Custom },
         { "StopTask", Type::StopTask },
