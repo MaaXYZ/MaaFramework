@@ -5,15 +5,15 @@ import sys
 import numpy
 
 if len(sys.argv) < 3:
-    print("Usage: python binding_test.py <binding_dir> <bin_dir>")
+    print("Usage: python binding_test.py <binding_dir> <install_dir>")
     sys.exit(1)
 
 binding_dir = Path(sys.argv[1]).resolve()
-bin_dir = Path(sys.argv[2]).resolve()
+install_dir = Path(sys.argv[2]).resolve()
 
-os.environ["MAAFW_BINARY_PATH"] = str(f"{bin_dir}")
+os.environ["MAAFW_BINARY_PATH"] = str(f"{install_dir}/bin")
 print(f"binding_dir: {binding_dir}")
-print(f"bin_dir: {bin_dir}")
+print(f"install_dir: {install_dir}")
 
 if str(binding_dir) not in sys.path:
     sys.path.insert(0, str(binding_dir))
