@@ -104,7 +104,7 @@ MaaBool MaaResourceClearCustomAction(MaaResource* res)
     return true;
 }
 
-MaaResId MaaResourcePostPath(MaaResource* res, const char* path)
+MaaResId MaaResourcePostBundle(MaaResource* res, const char* path)
 {
     LogFunc << VAR_VOIDP(res) << VAR(path);
 
@@ -113,7 +113,7 @@ MaaResId MaaResourcePostPath(MaaResource* res, const char* path)
         return MaaInvalidId;
     }
 
-    return res->post_path(MAA_NS::path(path));
+    return res->post_bundle(MAA_NS::path(path));
 }
 
 MaaBool MaaResourceClear(MaaResource* res)

@@ -38,7 +38,7 @@ extern "C"
 
     MAA_FRAMEWORK_API MaaBool MaaTaskerInited(const MaaTasker* tasker);
 
-    MAA_FRAMEWORK_API MaaTaskId MaaTaskerPostPipeline(MaaTasker* tasker, const char* entry, const char* pipeline_override);
+    MAA_FRAMEWORK_API MaaTaskId MaaTaskerPostTask(MaaTasker* tasker, const char* entry, const char* pipeline_override);
 
     MAA_FRAMEWORK_API MaaStatus MaaTaskerStatus(const MaaTasker* tasker, MaaTaskId id);
 
@@ -60,7 +60,7 @@ extern "C"
     MAA_FRAMEWORK_API MaaBool MaaTaskerGetRecognitionDetail(
         const MaaTasker* tasker,
         MaaRecoId reco_id,
-        /* out */ MaaStringBuffer* name,
+        /* out */ MaaStringBuffer* node_name,
         /* out */ MaaStringBuffer* algorithm,
         /* out */ MaaBool* hit,
         /* out */ MaaRect* box,
@@ -76,7 +76,7 @@ extern "C"
     MAA_FRAMEWORK_API MaaBool MaaTaskerGetNodeDetail(
         const MaaTasker* tasker,
         MaaNodeId node_id,
-        /* out */ MaaStringBuffer* name,
+        /* out */ MaaStringBuffer* node_name,
         /* out */ MaaRecoId* reco_id,
         /* out */ MaaBool* completed);
 
@@ -98,7 +98,7 @@ extern "C"
      */
     MAA_FRAMEWORK_API MaaBool MaaTaskerGetLatestNode(
         const MaaTasker* tasker,
-        const char* task_name,
+        const char* node_name,
         /* out */ MaaNodeId* latest_id);
 
 #ifdef __cplusplus

@@ -19,7 +19,7 @@ extern "C"
 {
 #endif
 
-    MAA_FRAMEWORK_API MaaTaskId MaaContextRunPipeline(MaaContext* context, const char* entry, const char* pipeline_override);
+    MAA_FRAMEWORK_API MaaTaskId MaaContextRunTask(MaaContext* context, const char* entry, const char* pipeline_override);
 
     MAA_FRAMEWORK_API MaaRecoId
         MaaContextRunRecognition(MaaContext* context, const char* entry, const char* pipeline_override, const MaaImageBuffer* image);
@@ -33,7 +33,7 @@ extern "C"
 
     MAA_FRAMEWORK_API MaaBool MaaContextOverridePipeline(MaaContext* context, const char* pipeline_override);
 
-    MAA_FRAMEWORK_API MaaBool MaaContextOverrideNext(MaaContext* context, const char* name, const MaaStringListBuffer* next_list);
+    MAA_FRAMEWORK_API MaaBool MaaContextOverrideNext(MaaContext* context, const char* node_name, const MaaStringListBuffer* next_list);
 
     MAA_FRAMEWORK_API MaaTaskId MaaContextGetTaskId(const MaaContext* context);
 

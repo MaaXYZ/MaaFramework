@@ -117,11 +117,11 @@ export class TaskerBase {
         }
     }
 
-    post_pipeline(entry: string, param: Record<string, unknown> = {}) {
+    post_task(entry: string, param: Record<string, unknown> = {}) {
         return new TaskJob(
             this,
             this.#source,
-            maa.tasker_post_pipeline(this.handle, entry, JSON.stringify(param))
+            maa.tasker_post_task(this.handle, entry, JSON.stringify(param))
         )
     }
 

@@ -52,14 +52,14 @@ class MyRecognition(CustomRecognition):
                 "action": "Click",
             }
         }
-        context.run_pipeline(entry, ppover)
+        context.run_task(entry, ppover)
         context.run_action(entry, [114, 514, 191, 810], "RunAction Detail", ppover)
         reco_detail = context.run_recognition(entry, argv.image, ppover)
         print(f"reco_detail: {reco_detail}")
 
         new_ctx = context.clone()
         new_ctx.override_pipeline({"TaskA": {}, "TaskB": {}})
-        new_ctx.override_next(argv.current_task_name, ["TaskA", "TaskB"])
+        new_ctx.override_next(argv.node_name, ["TaskA", "TaskB"])
 
         node_detail = new_ctx.tasker.get_latest_node("ColorMatch")
         print(node_detail)
@@ -119,10 +119,10 @@ def api_test():
     r2.use_cpu()
     r2.use_directml(114514)
     r2.use_cpu()
-    r2.post_path("C:/_maafw_testing_/aaabbbccc").wait()
+    r2.post_bundle("C:/_maafw_testing_/aaabbbccc").wait()
     t1 = Tasker()
     t2 = Tasker()
-    t2.post_pipeline("Entry", {}).wait()
+    t2.post_task("Entry", {}).wait()
 
     resource = Resource(MyNotificationHandler())
     print(f"resource: {resource}")
@@ -158,19 +158,19 @@ def api_test():
         },
     }
 
-    detail = tasker.post_pipeline("Entry", ppover).wait().get()
+    detail = tasker.post_task("Entry", ppover).wait().get()
     if detail:
         print(f"pipeline detail: {detail}")
     else:
         print("pipeline failed")
         raise RuntimeError("pipeline failed")
 
-    tasker.post_pipeline("Entry", ppover)
-    stopped = tasker.post_stop().wait().succeeded()
+    tasker.post_task("Entry", ppover)
+    stopped = tasker.post_stop().wait().succeeded
     if not stopped:
         raise RuntimeError("post_stop failed")
 
-    tasker.resource.post_path("C:/_maafw_testing_/aaabbbccc")
+    tasker.resource.post_bundle("C:/_maafw_testing_/aaabbbccc")
     tasker.clear_cache()
     inited = tasker.inited
     running = tasker.running
@@ -199,20 +199,20 @@ def custom_ctrl_test():
     print("test_custom_controller")
 
     controller = MyController(MyNotificationHandler())
-    ret = controller.post_connection().wait().succeeded()
+    ret = controller.post_connection().wait().succeeded
     uuid = controller.uuid
-    ret &= controller.post_start_app("custom_aaa").wait().succeeded()
-    ret &= controller.post_stop_app("custom_bbb").wait().succeeded()
+    ret &= controller.post_start_app("custom_aaa").wait().succeeded
+    ret &= controller.post_stop_app("custom_bbb").wait().succeeded
     image_job = controller.post_screencap().wait()
-    ret &= image_job.succeeded()
+    ret &= image_job.succeeded
     print(f"image: {image_job.get().shape}")
-    ret &= controller.post_click(100, 200).wait().succeeded()
-    ret &= controller.post_swipe(100, 200, 300, 400, 200).wait().succeeded()
-    ret &= controller.post_touch_down(1, 100, 100, 0).wait().succeeded()
-    ret &= controller.post_touch_move(1, 200, 200, 0).wait().succeeded()
-    ret &= controller.post_touch_up(1).wait().succeeded()
-    ret &= controller.post_press_key(32).wait().succeeded()
-    ret &= controller.post_input_text("Hello World!").wait().succeeded()
+    ret &= controller.post_click(100, 200).wait().succeeded
+    ret &= controller.post_swipe(100, 200, 300, 400, 200).wait().succeeded
+    ret &= controller.post_touch_down(1, 100, 100, 0).wait().succeeded
+    ret &= controller.post_touch_move(1, 200, 200, 0).wait().succeeded
+    ret &= controller.post_touch_up(1).wait().succeeded
+    ret &= controller.post_press_key(32).wait().succeeded
+    ret &= controller.post_input_text("Hello World!").wait().succeeded
 
     print(f"controller.count: {controller.count}, ret: {ret}")
     if controller.count != 11 or not ret:

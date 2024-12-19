@@ -29,11 +29,11 @@ class Context:
     def __del__(self):
         pass
 
-    def run_pipeline(
+    def run_task(
         self, entry: str, pipeline_override: Dict = {}
     ) -> Optional[TaskDetail]:
         task_id = int(
-            Library.framework.MaaContextRunPipeline(
+            Library.framework.MaaContextRunTask(
                 self._handle, *Context._gen_post_param(entry, pipeline_override)
             )
         )
@@ -143,8 +143,8 @@ class Context:
 
         Context._api_properties_initialized = True
 
-        Library.framework.MaaContextRunPipeline.restype = MaaTaskId
-        Library.framework.MaaContextRunPipeline.argtypes = [
+        Library.framework.MaaContextRunTask.restype = MaaTaskId
+        Library.framework.MaaContextRunTask.argtypes = [
             MaaContextHandle,
             ctypes.c_char_p,
             ctypes.c_char_p,

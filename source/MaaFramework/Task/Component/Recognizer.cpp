@@ -301,7 +301,7 @@ RecoResult Recognizer::nn_detect(const MAA_VISION_NS::NeuralNetworkDetectorParam
 RecoResult Recognizer::custom_recognize(const MAA_VISION_NS::CustomRecognitionParam& param, const std::string& name)
 {
     using namespace MAA_VISION_NS;
-    std::ignore = name; // task name
+    std::ignore = name; // node name
 
     if (!tasker_) {
         LogError << "tasker_ is null";
@@ -366,7 +366,7 @@ cv::Rect Recognizer::get_roi(const MAA_VISION_NS::Target roi)
     return cv::Rect { raw.x + roi.offset.x, raw.y + roi.offset.y, raw.width + roi.offset.width, raw.height + roi.offset.height };
 }
 
-void Recognizer::save_draws(const std::string& task_name, const RecoResult& result) const
+void Recognizer::save_draws(const std::string& node_name, const RecoResult& result) const
 {
     const auto& option = GlobalOptionMgr::get_instance();
 
@@ -377,20 +377,20 @@ void Recognizer::save_draws(const std::string& task_name, const RecoResult& resu
     auto dir = option.log_dir() / "vision";
 
     for (const auto& draw : result.draws) {
-        std::string filename = std::format("{}_{}_{}.png", task_name, result.reco_id, format_now_for_filename());
+        std::string filename = std::format("{}_{}_{}.png", node_name, result.reco_id, format_now_for_filename());
         auto filepath = dir / path(filename);
         imwrite(filepath, draw);
         LogDebug << "save draw to" << filepath;
     }
 }
 
-void Recognizer::show_hit_draw(const cv::Rect& box, const std::string& task_name, MaaRecoId uid) const
+void Recognizer::show_hit_draw(const cv::Rect& box, const std::string& node_name, MaaRecoId uid) const
 {
     if (!GlobalOptionMgr::get_instance().show_hit_draw()) {
         return;
     }
 
-    const std::string kWinName = std::format("Hit: {} {}", task_name, uid);
+    const std::string kWinName = std::format("Hit: {} {}", node_name, uid);
 
     cv::Mat draw = image_.clone();
 
