@@ -11,7 +11,7 @@ if len(sys.argv) < 3:
 binding_dir = Path(sys.argv[1]).resolve()
 bin_dir = Path(sys.argv[2]).resolve()
 
-os.environ["MAAFW_BINARY_PATH"] = str(f"bin_dir")
+os.environ["MAAFW_BINARY_PATH"] = str(f"{bin_dir}")
 print(f"binding_dir: {binding_dir}")
 print(f"bin_dir: {bin_dir}")
 
