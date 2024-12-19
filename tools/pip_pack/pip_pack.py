@@ -174,15 +174,18 @@ def pack(pack_dir: str, info_path: str):
 def copy_base():
     print("Copying base...", end="")
 
-    asset_dir = os.listdir(ASSETS_PATH)[0]
-    asset_path = os.path.join(ASSETS_PATH, asset_dir)
-    src_path = os.path.join(asset_path, "binding", "Python")
+    PROJECT_PATH = os.path.join(os.path.dirname(__file__), os.pardir, os.pardir)
+
+    src_path = os.path.join(PROJECT_PATH, "source", "binding", "Python")
     shutil.copytree(src_path, SRC_DIR)
 
-    readme_path = os.path.join(asset_path, "README.md")
+    readme_path = os.path.join(PROJECT_PATH, "README.md")
     shutil.copy(readme_path, "README.md")
 
-    license_path = os.path.join(asset_path, "LICENSE.md")
+    readme_path = os.path.join(PROJECT_PATH, "README_en.md")
+    shutil.copy(readme_path, "README_en.md")
+
+    license_path = os.path.join(PROJECT_PATH, "LICENSE.md")
     shutil.copy(license_path, "LICENSE.md")
 
     print("done")
