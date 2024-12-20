@@ -25,6 +25,15 @@ on:
             - "source/**"
             - "CMakeLists.txt"
     workflow_dispatch:
+        inputs:
+          build_config:
+            required: true
+            default: 'Debug'
+            type: choice
+            options:
+            - Debug
+            - RelWithDebInfo
+            - Release
 
 jobs:
     meta:
@@ -91,13 +100,13 @@ jobs:
               run: |
                   cmake --preset "${{ matrix.arch == 'x86_64' && 'MSVC 2022' || 'MSVC 2022 ARM' }}" -DCMAKE_SYSTEM_VERSION="10.0.26100.0" -DMAADEPS_TRIPLET="maa-${{ matrix.arch == 'x86_64' && 'x64' || 'arm64' }}-windows" -DMAA_HASH_VERSION='${{ needs.meta.outputs.tag }}' -DBUILD_NODEJS_BINDING=ON
 
-                  cmake --build build --preset "${{ matrix.arch == 'x86_64' && 'MSVC 2022' || 'MSVC 2022 ARM' }} - RelWithDebInfo" -j 16
+                  cmake --build build --preset "${{ matrix.arch == 'x86_64' && 'MSVC 2022' || 'MSVC 2022 ARM' }} - ${{ inputs.build_config || needs.meta.outputs.build_config }}" -j 16
 
             - name: Install
               shell: bash
               if: always()
               run: |
-                  cmake --install build --prefix install --config RelWithDebInfo
+                  cmake --install build --prefix install --config ${{ inputs.build_config || needs.meta.outputs.build_config }}
                   rm -rf install/bin/msvc-debug
 
                   cp -r docs install
@@ -180,13 +189,13 @@ jobs:
                     -DMAA_HASH_VERSION='${{ needs.meta.outputs.tag }}' \
                     -DBUILD_NODEJS_BINDING=ON
 
-                  cmake --build build --preset 'NinjaMulti - RelWithDebInfo' -j 16
+                  cmake --build build --preset 'NinjaMulti - ${{ inputs.build_config || needs.meta.outputs.build_config }}' -j 16
 
             - name: Install
               shell: bash
               if: always()
               run: |
-                  cmake --install build --prefix install --config RelWithDebInfo
+                  cmake --install build --prefix install --config ${{ inputs.build_config || needs.meta.outputs.build_config }}
 
                   cp -r docs install
                   cp README*.md install
@@ -262,13 +271,13 @@ jobs:
                     -DCMAKE_CXX_COMPILER=${LLVM_PREFIX}/bin/clang++ \
                     -DBUILD_NODEJS_BINDING=ON
 
-                  cmake --build build --preset 'NinjaMulti - RelWithDebInfo' -j 16
+                  cmake --build build --preset 'NinjaMulti - ${{ inputs.build_config || needs.meta.outputs.build_config }}' -j 16
 
             - name: Install
               shell: bash
               if: always()
               run: |
-                  cmake --install build --prefix install --config RelWithDebInfo
+                  cmake --install build --prefix install --config ${{ inputs.build_config || needs.meta.outputs.build_config }}
 
                   cp -r docs install
                   cp README*.md install
@@ -328,13 +337,13 @@ jobs:
                     -DMAADEPS_TRIPLET='maa-${{ matrix.arch == 'x86_64' && 'x64' || 'arm64' }}-android' \
                     -DMAA_HASH_VERSION='${{ needs.meta.outputs.tag }}'
 
-                  cmake --build build --preset 'NinjaMulti - RelWithDebInfo' -j 16
+                  cmake --build build --preset 'NinjaMulti - ${{ inputs.build_config || needs.meta.outputs.build_config }}' -j 16
 
             - name: Install
               shell: bash
               if: always()
               run: |
-                  cmake --install build --prefix install --config RelWithDebInfo
+                  cmake --install build --prefix install --config ${{ inputs.build_config || needs.meta.outputs.build_config }}
 
                   cp -r docs install
                   cp README*.md install

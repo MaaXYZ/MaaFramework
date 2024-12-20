@@ -336,7 +336,7 @@ jobs:
                     -DMAA_HASH_VERSION='${{ needs.meta.outputs.tag }}' \
                     -DCMAKE_C_COMPILER=${LLVM_PREFIX}/bin/clang \
                     -DCMAKE_CXX_COMPILER=${LLVM_PREFIX}/bin/clang++ \
-                     -DBUILD_NODEJS_BINDING=ON \
+                    -DBUILD_NODEJS_BINDING=ON \
                     -DBUILD_PIPELINE_TESTING=ON -DBUILD_DLOPEN_TESTING=ON
 
                   cmake --build build --preset 'NinjaMulti - Debug' -j 16
