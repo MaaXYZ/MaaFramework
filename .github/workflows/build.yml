@@ -491,52 +491,14 @@ jobs:
                     || eval $OUTPUT_PUBLISH_FAILED
                   rm -r assets/MAA-pip-pkgs
 
-            - uses: JS-DevTools/npm-publish@v3
+            - uses: MaaXYZ/MaaFramework/.github/actions/publish_nodejs@main
               id: nodejs
               with:
-                  package: assets/MAA-nodejs-package/maa-node
-                  access: public
-                  token: ${{ secrets.NPM_TOKEN }}
-
-            - uses: JS-DevTools/npm-publish@v3
-              with:
-                  package: assets/MAA-nodejs-package/maa-node-win32-x64
-                  access: public
-                  token: ${{ secrets.NPM_TOKEN }}
-
-            - uses: JS-DevTools/npm-publish@v3
-              with:
-                  package: assets/MAA-nodejs-package/maa-node-win32-arm64
-                  access: public
-                  token: ${{ secrets.NPM_TOKEN }}
-
-            - uses: JS-DevTools/npm-publish@v3
-              with:
-                  package: assets/MAA-nodejs-package/maa-node-linux-x64
-                  access: public
-                  token: ${{ secrets.NPM_TOKEN }}
-
-            - uses: JS-DevTools/npm-publish@v3
-              with:
-                  package: assets/MAA-nodejs-package/maa-node-linux-arm64
-                  access: public
-                  token: ${{ secrets.NPM_TOKEN }}
-
-            - uses: JS-DevTools/npm-publish@v3
-              with:
-                  package: assets/MAA-nodejs-package/maa-node-darwin-x64
-                  access: public
-                  token: ${{ secrets.NPM_TOKEN }}
-
-            - uses: JS-DevTools/npm-publish@v3
-              with:
-                  package: assets/MAA-nodejs-package/maa-node-darwin-arm64
-                  access: public
-                  token: ${{ secrets.NPM_TOKEN }}
-
-            - name: Remove NodeJS Release
-              run: |
-                  rm -r assets/MAA-nodejs-package
+                access: public
+                token: ${{ secrets.NPM_TOKEN }}
+                on_finished: rm -r assets/MAA-nodejs-package
+                on_publish_failed: ${{ env.OUTPUT_PUBLISH_FAILED }}
+              continue-on-error: true
 
             - run: |
                   cd assets
@@ -551,7 +513,7 @@ jobs:
                   prerelease: ${{ needs.meta.outputs.is_pre_release == 'true' }}
 
             - name: Create issue if failed to release
-              if: failure() || steps.nuget.outputs.failed || steps.pip.outputs.failed || steps.nodejs.outputs.id == 'undefined'
+              if: failure() || steps.nuget.outputs.failed || steps.pip.outputs.failed || steps.nodejs.outputs.failed
               uses: actions-cool/issues-helper@v3
               with:
                   actions: "create-issue"
