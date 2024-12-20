@@ -34,7 +34,6 @@ on:
             - Debug
             - RelWithDebInfo
             - Release
-            - MinSizeRel
 
 jobs:
     meta:

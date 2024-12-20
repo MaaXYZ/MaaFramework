@@ -86,14 +86,6 @@
             "jobs": 16
         },
         {
-            "name": "NinjaMulti - MinSizeRel",
-            "displayName": "Ninja MultiConfig MinSizeRel",
-            "description": "Ninja MultiConfig MinSizeRel",
-            "configurePreset": "NinjaMulti",
-            "configuration": "MinSizeRel",
-            "jobs": 16
-        },
-        {
             "name": "MSVC 2022 - Debug",
             "displayName": "MSVC 2022 Debug",
             "description": "MSVC 2022 Debug",
@@ -118,14 +110,6 @@
             "jobs": 16
         },
         {
-            "name": "MSVC 2022 - MinSizeRel",
-            "displayName": "MSVC 2022 MinSizeRel",
-            "description": "MSVC 2022 MinSizeRel",
-            "configurePreset": "MSVC 2022",
-            "configuration": "MinSizeRel",
-            "jobs": 16
-        },
-        {
             "name": "MSVC 2022 ARM - Debug",
             "displayName": "MSVC 2022 ARM Debug",
             "description": "MSVC 2022 ARM Debug",
@@ -147,14 +131,6 @@
             "description": "MSVC 2022 ARM Release",
             "configurePreset": "MSVC 2022 ARM",
             "configuration": "Release",
-            "jobs": 16
-        },
-        {
-            "name": "MSVC 2022 ARM - MinSizeRel",
-            "displayName": "MSVC 2022 ARM MinSizeRel",
-            "description": "MSVC 2022 ARM MinSizeRel",
-            "configurePreset": "MSVC 2022 ARM",
-            "configuration": "MinSizeRel",
             "jobs": 16
         }
     ]
