@@ -351,7 +351,7 @@ jobs:
 
     nuget_pack:
         needs: [meta, windows, ubuntu, macos, android]
-        runs-on: ubuntu-latest
+        runs-on: windows-latest
         steps:
             - uses: nuget/setup-nuget@v2
 
@@ -362,8 +362,9 @@ jobs:
 
             - name: Nuget Pack
               working-directory: tools/nupkgs
+              shell: bash
               run: |
-                  wget https://raw.githubusercontent.com/MaaAssistantArknights/design/main/logo/maa-logo_128x128.png
+                  curl -sSOL https://raw.githubusercontent.com/MaaAssistantArknights/design/main/logo/maa-logo_128x128.png
                   version=${{ needs.meta.outputs.version }}
                   for NUSPEC in Maa.Framework.Runtime*.nuspec; do
                     cat Head.nuspec $NUSPEC Tail.nuspec > temp && mv temp $NUSPEC
