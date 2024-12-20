@@ -19,7 +19,7 @@ bool pipeline_smoking(const std::filesystem::path& testset_dir)
 
     auto resource_handle = MaaResourceCreate(nullptr, nullptr);
     auto resource_dir = testset_dir / "PipelineSmoking" / "resource";
-    auto res_id = MaaResourcePostPath(resource_handle, resource_dir.string().c_str());
+    auto res_id = MaaResourcePostBundle(resource_handle, resource_dir.string().c_str());
 
     MaaControllerWait(controller_handle, ctrl_id);
     MaaResourceWait(resource_handle, res_id);
@@ -39,7 +39,7 @@ bool pipeline_smoking(const std::filesystem::path& testset_dir)
         return false;
     }
 
-    auto task_id = MaaTaskerPostPipeline(tasker_handle, "Wilderness", "{}");
+    auto task_id = MaaTaskerPostTask(tasker_handle, "Wilderness", "{}");
     auto status = MaaTaskerWait(tasker_handle, task_id);
 
     destroy();

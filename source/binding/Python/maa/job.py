@@ -9,6 +9,7 @@ class Job:
         self._status_func = status_func
         self._wait_func = wait_func
 
+    @property
     def job_id(self) -> int:
         return int(self._job_id)
 
@@ -16,23 +17,29 @@ class Job:
         self._wait_func(self._job_id)
         return self
 
+    @property
     def status(self) -> Status:
         return Status(self._status_func(self._job_id))
 
+    @property
     def done(self) -> bool:
-        return self.status().done()
+        return self.status.done
 
+    @property
     def succeeded(self) -> bool:
-        return self.status().succeeded()
+        return self.status.succeeded
 
+    @property
     def failed(self) -> bool:
-        return self.status().failed()
+        return self.status.failed
 
+    @property
     def pending(self) -> bool:
-        return self.status().pending()
+        return self.status.pending
 
+    @property
     def running(self) -> bool:
-        return self.status().running()
+        return self.status.running
 
 
 class JobWithResult(Job):

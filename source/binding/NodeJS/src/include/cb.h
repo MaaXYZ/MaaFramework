@@ -19,7 +19,7 @@ inline void NotificationCallback(const char* message, const char* details_json, 
 inline MaaBool CustomRecognizerCallback(
     MaaContext* context,
     MaaTaskId task_id,
-    const char* current_task_name,
+    const char* node_name,
     const char* custom_recognition_name,
     const char* custom_recognition_param,
     const MaaImageBuffer* image,
@@ -35,7 +35,7 @@ inline MaaBool CustomRecognizerCallback(
             return fn.Call({
                 Napi::External<MaaContext>::New(env, context),
                 JSConvert<MaaTaskId>::to_value(env, task_id),
-                Napi::String::New(env, current_task_name),
+                Napi::String::New(env, node_name),
                 Napi::String::New(env, custom_recognition_name),
                 Napi::String::New(env, custom_recognition_param),
                 ImageBufferRefer(image).data(env),
@@ -65,7 +65,7 @@ inline MaaBool CustomRecognizerCallback(
 inline MaaBool CustomActionCallback(
     MaaContext* context,
     MaaTaskId task_id,
-    const char* current_task_name,
+    const char* node_name,
     const char* custom_action_name,
     const char* custom_action_param,
     MaaRecoId reco_id,
@@ -79,7 +79,7 @@ inline MaaBool CustomActionCallback(
             return fn.Call({
                 Napi::External<MaaContext>::New(env, context),
                 JSConvert<MaaTaskId>::to_value(env, task_id),
-                Napi::String::New(env, current_task_name),
+                Napi::String::New(env, node_name),
                 Napi::String::New(env, custom_action_name),
                 Napi::String::New(env, custom_action_param),
                 JSConvert<MaaRecoId>::to_value(env, reco_id),

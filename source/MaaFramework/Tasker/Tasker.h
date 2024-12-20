@@ -30,7 +30,7 @@ public:
 
     virtual bool set_option(MaaTaskerOption key, MaaOptionValue value, MaaOptionValueSize val_size) override;
 
-    virtual MaaTaskId post_pipeline(const std::string& entry, const json::object& pipeline_override) override;
+    virtual MaaTaskId post_task(const std::string& entry, const json::object& pipeline_override) override;
 
     virtual MaaStatus status(MaaTaskId task_id) const override;
     virtual MaaStatus wait(MaaTaskId task_id) const override;
@@ -45,7 +45,7 @@ public:
     virtual std::optional<MAA_TASK_NS::TaskDetail> get_task_detail(MaaTaskId task_id) const override;
     virtual std::optional<MAA_TASK_NS::NodeDetail> get_node_detail(MaaNodeId node_id) const override;
     virtual std::optional<MAA_TASK_NS::RecoResult> get_reco_result(MaaRecoId reco_id) const override;
-    virtual std::optional<MaaNodeId> get_latest_node(const std::string& task_name) const override;
+    virtual std::optional<MaaNodeId> get_latest_node(const std::string& node_name) const override;
 
 public:
     RuntimeCache& runtime_cache();
