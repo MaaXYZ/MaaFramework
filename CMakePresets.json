@@ -70,6 +70,14 @@
             "jobs": 16
         },
         {
+            "name": "NinjaMulti - RelWithDebInfo",
+            "displayName": "Ninja MultiConfig RelWithDebInfo",
+            "description": "Ninja MultiConfig RelWithDebInfo",
+            "configurePreset": "NinjaMulti",
+            "configuration": "RelWithDebInfo",
+            "jobs": 16
+        },
+        {
             "name": "NinjaMulti - Release",
             "displayName": "Ninja MultiConfig Release",
             "description": "Ninja MultiConfig Release",
@@ -78,11 +86,11 @@
             "jobs": 16
         },
         {
-            "name": "NinjaMulti - RelWithDebInfo",
-            "displayName": "Ninja MultiConfig RelWithDebInfo",
-            "description": "Ninja MultiConfig RelWithDebInfo",
+            "name": "NinjaMulti - MinSizeRel",
+            "displayName": "Ninja MultiConfig MinSizeRel",
+            "description": "Ninja MultiConfig MinSizeRel",
             "configurePreset": "NinjaMulti",
-            "configuration": "RelWithDebInfo",
+            "configuration": "MinSizeRel",
             "jobs": 16
         },
         {
@@ -94,6 +102,14 @@
             "jobs": 16
         },
         {
+            "name": "MSVC 2022 - RelWithDebInfo",
+            "displayName": "MSVC 2022 RelWithDebInfo",
+            "description": "MSVC 2022 RelWithDebInfo",
+            "configurePreset": "MSVC 2022",
+            "configuration": "RelWithDebInfo",
+            "jobs": 16
+        },
+        {
             "name": "MSVC 2022 - Release",
             "displayName": "MSVC 2022 Release",
             "description": "MSVC 2022 Release",
@@ -102,11 +118,11 @@
             "jobs": 16
         },
         {
-            "name": "MSVC 2022 - RelWithDebInfo",
-            "displayName": "MSVC 2022 RelWithDebInfo",
-            "description": "MSVC 2022 RelWithDebInfo",
+            "name": "MSVC 2022 - MinSizeRel",
+            "displayName": "MSVC 2022 MinSizeRel",
+            "description": "MSVC 2022 MinSizeRel",
             "configurePreset": "MSVC 2022",
-            "configuration": "RelWithDebInfo",
+            "configuration": "MinSizeRel",
             "jobs": 16
         },
         {
@@ -118,6 +134,14 @@
             "jobs": 16
         },
         {
+            "name": "MSVC 2022 ARM - RelWithDebInfo",
+            "displayName": "MSVC 2022 ARM RelWithDebInfo",
+            "description": "MSVC 2022 ARM RelWithDebInfo",
+            "configurePreset": "MSVC 2022 ARM",
+            "configuration": "RelWithDebInfo",
+            "jobs": 16
+        },
+        {
             "name": "MSVC 2022 ARM - Release",
             "displayName": "MSVC 2022 ARM Release",
             "description": "MSVC 2022 ARM Release",
@@ -126,11 +150,11 @@
             "jobs": 16
         },
         {
-            "name": "MSVC 2022 ARM - RelWithDebInfo",
-            "displayName": "MSVC 2022 ARM RelWithDebInfo",
-            "description": "MSVC 2022 ARM RelWithDebInfo",
+            "name": "MSVC 2022 ARM - MinSizeRel",
+            "displayName": "MSVC 2022 ARM MinSizeRel",
+            "description": "MSVC 2022 ARM MinSizeRel",
             "configurePreset": "MSVC 2022 ARM",
-            "configuration": "RelWithDebInfo",
+            "configuration": "MinSizeRel",
             "jobs": 16
         }
     ]
