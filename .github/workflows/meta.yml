@@ -50,11 +50,6 @@ jobs:
                     version=${tag#v}+${commit_hash}.$(date +%Y%m%d)
                   fi
 
-                  echo "tag=$tag
-                  version=$version
-                  is_release=$is_release
-                  is_pre_release=$is_pre_release" | tee -a "$GITHUB_OUTPUT"
-
                   if $is_release; then
                     if $is_pre_release; then
                       build_config="RelWithDebInfo"
@@ -64,7 +59,13 @@ jobs:
                   else
                     build_config="Debug"
                   fi
+
+                  echo "tag=$tag
+                  version=$version
+                  is_release=$is_release
+                  is_pre_release=$is_pre_release
                   build_config=$build_config" | tee -a "$GITHUB_OUTPUT"
+
         outputs:
             is_release: ${{ steps.set.outputs.is_release }}
             is_pre_release: ${{ steps.set.outputs.is_pre_release }}
