@@ -188,9 +188,9 @@ std::optional<int> perfer_gpu()
             continue;
         }
 
-        hr = D3D12CreateDevice(dxgi_adapter, D3D_FEATURE_LEVEL_11_0, __uuidof(ID3D12Device), nullptr);
+        hr = D3D12CreateDevice(dxgi_adapter, D3D_FEATURE_LEVEL_12_0, __uuidof(ID3D12Device), nullptr);
         if (FAILED(hr)) {
-            LogWarn << "adapter not support D3D12 with D3D_FEATURE_LEVEL_11_0, skip" << VAR(adapter_index) << VAR(adapter_desc);
+            LogWarn << "adapter not support D3D12 with D3D_FEATURE_LEVEL_12_0, skip" << VAR(adapter_index) << VAR(adapter_desc);
             continue;
         }
 
