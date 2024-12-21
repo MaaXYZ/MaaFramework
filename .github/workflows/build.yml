@@ -522,6 +522,6 @@ jobs:
                       Please manually publish the following packages:
                       ${{ steps.nuget.outputs.failed && '- nuget @moomiji' || '' }}
                       ${{ steps.pip.outputs.failed && '- pip @MistEO' || '' }}
-                      ${{ steps.nodejs.outputs.id == 'undefined' && '- nodejs @neko-para' || '' }}
+                      ${{ steps.nodejs.outputs.failed && '- nodejs @neko-para' || '' }}
 
                       cc @MistEO
