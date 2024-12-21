@@ -491,7 +491,7 @@ jobs:
                     || eval $OUTPUT_PUBLISH_FAILED
                   rm -r assets/MAA-pip-pkgs
 
-            - uses: MaaXYZ/MaaFramework/.github/actions/publish_nodejs@main
+            - uses: MaaXYZ/MaaFramework/.github/actions/publish_nodejs@ci/refactor-nodejs-publish
               id: nodejs
               with:
                 access: public
