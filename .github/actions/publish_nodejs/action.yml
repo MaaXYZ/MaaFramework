@@ -21,7 +21,7 @@ inputs:
 outputs:
     failed:
         description: "Random number"
-        value: ${{ steps.nodejs.outputs.id == 'undefined' || steps.publish_failed.outputs.failed == 'true' }}
+        value: ${{ steps.nodejs.outputs.id == '' || steps.publish_failed.outputs.failed == 'true' }}
 
 runs:
     using: 'composite'
@@ -87,7 +87,7 @@ runs:
       -
         name: Publish Failed
         id: publish_failed
-        if: failure() || steps.nodejs.outputs.id == 'undefined'
+        if: failure() || steps.nodejs.outputs.id == ''
         shell: bash
         run: |
             eval $ON_PUBLISH_FAILED || echo "::warning::Failed to eval $ON_PUBLISH_FAILED"
