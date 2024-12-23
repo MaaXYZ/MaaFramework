@@ -26,14 +26,14 @@ on:
             - "CMakeLists.txt"
     workflow_dispatch:
         inputs:
-          build_config:
-            required: true
-            default: 'Debug'
-            type: choice
-            options:
-            - Debug
-            - RelWithDebInfo
-            - Release
+            build_config:
+                required: true
+                default: "Debug"
+                type: choice
+                options:
+                    - Debug
+                    - RelWithDebInfo
+                    - Release
 
 jobs:
     meta:
@@ -494,10 +494,10 @@ jobs:
             - uses: MaaXYZ/MaaFramework/.github/actions/publish_nodejs@main
               id: nodejs
               with:
-                access: public
-                token: ${{ secrets.NPM_TOKEN }}
-                on_finished: rm -r assets/MAA-nodejs-package
-                on_publish_failed: ${{ env.OUTPUT_PUBLISH_FAILED }}
+                  access: public
+                  token: ${{ secrets.NPM_TOKEN }}
+                  on_finished: rm -r assets/MAA-nodejs-package
+                  on_publish_failed: ${{ env.OUTPUT_PUBLISH_FAILED }}
               continue-on-error: true
 
             - run: |

@@ -24,73 +24,64 @@ outputs:
         value: ${{ (steps.nodejs.outputs.id == '' || steps.publish_failed.outputs.failed == 'true') && 'true' || '' }}
 
 runs:
-    using: 'composite'
+    using: "composite"
     steps:
-      -
-        uses: JS-DevTools/npm-publish@v3
-        id: nodejs
-        with:
-            package: assets/MAA-nodejs-package/maa-node
-            token: ${{ inputs.token }}
-            access: ${{ inputs.access }}
-            dry-run: ${{ inputs.dry-run }}
-      -
-        uses: JS-DevTools/npm-publish@v3
-        with:
-            package: assets/MAA-nodejs-package/maa-node-win32-x64
-            token: ${{ inputs.token }}
-            access: ${{ inputs.access }}
-            dry-run: ${{ inputs.dry-run }}
-      -
-        uses: JS-DevTools/npm-publish@v3
-        with:
-            package: assets/MAA-nodejs-package/maa-node-win32-arm64
-            token: ${{ inputs.token }}
-            access: ${{ inputs.access }}
-            dry-run: ${{ inputs.dry-run }}
-      -
-        uses: JS-DevTools/npm-publish@v3
-        with:
-            package: assets/MAA-nodejs-package/maa-node-linux-x64
-            token: ${{ inputs.token }}
-            access: ${{ inputs.access }}
-            dry-run: ${{ inputs.dry-run }}
-      -
-        uses: JS-DevTools/npm-publish@v3
-        with:
-            package: assets/MAA-nodejs-package/maa-node-linux-arm64
-            token: ${{ inputs.token }}
-            access: ${{ inputs.access }}
-            dry-run: ${{ inputs.dry-run }}
-      -
-        uses: JS-DevTools/npm-publish@v3
-        with:
-            package: assets/MAA-nodejs-package/maa-node-darwin-x64
-            token: ${{ inputs.token }}
-            access: ${{ inputs.access }}
-            dry-run: ${{ inputs.dry-run }}
-      -
-        uses: JS-DevTools/npm-publish@v3
-        with:
-            package: assets/MAA-nodejs-package/maa-node-darwin-arm64
-            token: ${{ inputs.token }}
-            access: ${{ inputs.access }}
-            dry-run: ${{ inputs.dry-run }}
-      -
-        name: Finished
-        if: always()
-        shell: bash
-        run: |
-            eval $ON_FINISHED || echo "::warning::Failed to eval $ON_FINISHED"
-        env:
-            ON_FINISHED: ${{ inputs.on_finished }}
-      -
-        name: Publish Failed
-        id: publish_failed
-        if: failure() || steps.nodejs.outputs.id == ''
-        shell: bash
-        run: |
-            eval $ON_PUBLISH_FAILED || echo "::warning::Failed to eval $ON_PUBLISH_FAILED"
-            echo "failed=true" >> $GITHUB_OUTPUT
-        env:
-            ON_PUBLISH_FAILED: ${{ inputs.on_publish_failed }}
+        - uses: JS-DevTools/npm-publish@v3
+          id: nodejs
+          with:
+              package: assets/MAA-nodejs-package/maa-node
+              token: ${{ inputs.token }}
+              access: ${{ inputs.access }}
+              dry-run: ${{ inputs.dry-run }}
+        - uses: JS-DevTools/npm-publish@v3
+          with:
+              package: assets/MAA-nodejs-package/maa-node-win32-x64
+              token: ${{ inputs.token }}
+              access: ${{ inputs.access }}
+              dry-run: ${{ inputs.dry-run }}
+        - uses: JS-DevTools/npm-publish@v3
+          with:
+              package: assets/MAA-nodejs-package/maa-node-win32-arm64
+              token: ${{ inputs.token }}
+              access: ${{ inputs.access }}
+              dry-run: ${{ inputs.dry-run }}
+        - uses: JS-DevTools/npm-publish@v3
+          with:
+              package: assets/MAA-nodejs-package/maa-node-linux-x64
+              token: ${{ inputs.token }}
+              access: ${{ inputs.access }}
+              dry-run: ${{ inputs.dry-run }}
+        - uses: JS-DevTools/npm-publish@v3
+          with:
+              package: assets/MAA-nodejs-package/maa-node-linux-arm64
+              token: ${{ inputs.token }}
+              access: ${{ inputs.access }}
+              dry-run: ${{ inputs.dry-run }}
+        - uses: JS-DevTools/npm-publish@v3
+          with:
+              package: assets/MAA-nodejs-package/maa-node-darwin-x64
+              token: ${{ inputs.token }}
+              access: ${{ inputs.access }}
+              dry-run: ${{ inputs.dry-run }}
+        - uses: JS-DevTools/npm-publish@v3
+          with:
+              package: assets/MAA-nodejs-package/maa-node-darwin-arm64
+              token: ${{ inputs.token }}
+              access: ${{ inputs.access }}
+              dry-run: ${{ inputs.dry-run }}
+        - name: Finished
+          if: always()
+          shell: bash
+          run: |
+              eval $ON_FINISHED || echo "::warning::Failed to eval $ON_FINISHED"
+          env:
+              ON_FINISHED: ${{ inputs.on_finished }}
+        - name: Publish Failed
+          id: publish_failed
+          if: failure() || steps.nodejs.outputs.id == ''
+          shell: bash
+          run: |
+              eval $ON_PUBLISH_FAILED || echo "::warning::Failed to eval $ON_PUBLISH_FAILED"
+              echo "failed=true" >> $GITHUB_OUTPUT
+          env:
+              ON_PUBLISH_FAILED: ${{ inputs.on_publish_failed }}

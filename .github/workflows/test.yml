@@ -3,27 +3,27 @@ name: test
 on:
     push:
         branches:
-            - '**'
+            - "**"
         paths:
-            - '.github/workflows/test.yml'
-            - '3rdparty/**'
-            - 'cmake/**'
-            - 'include/**'
-            - 'source/**'
-            - 'CMakeLists.txt'
-            - 'test/**'
+            - ".github/workflows/test.yml"
+            - "3rdparty/**"
+            - "cmake/**"
+            - "include/**"
+            - "source/**"
+            - "CMakeLists.txt"
+            - "test/**"
 
     pull_request:
         branches:
-            - '**'
+            - "**"
         paths:
-            - '.github/workflows/test.yml'
-            - '3rdparty/**'
-            - 'cmake/**'
-            - 'include/**'
-            - 'source/**'
-            - 'CMakeLists.txt'
-            - 'test/**'
+            - ".github/workflows/test.yml"
+            - "3rdparty/**"
+            - "cmake/**"
+            - "include/**"
+            - "source/**"
+            - "CMakeLists.txt"
+            - "test/**"
     workflow_dispatch:
 
 jobs:
@@ -55,7 +55,7 @@ jobs:
               with:
                   minimum-size: 16GB
                   maximum-size: 16GB
-                  disk-root: 'D:'
+                  disk-root: "D:"
 
             - uses: actions/checkout@v4
               with:
@@ -69,7 +69,7 @@ jobs:
             - name: Setup Python
               uses: actions/setup-python@v5.2.0
               with:
-                python-version: '3.9'
+                  python-version: "3.9"
 
             - name: Bootstrap MaaDeps
               env:
@@ -137,13 +137,13 @@ jobs:
               if: always()
               with:
                   name: MAA-win-${{ matrix.arch }}-text_log
-                  path: 'install/bin/debug/*.log'
+                  path: "install/bin/debug/*.log"
 
             - uses: actions/upload-artifact@v4
               if: always()
               with:
                   name: MAA-win-${{ matrix.arch }}-full_log
-                  path: 'install/bin/debug'
+                  path: "install/bin/debug"
 
     ubuntu:
         needs: meta
@@ -184,7 +184,7 @@ jobs:
             - name: Setup Python
               uses: actions/setup-python@v5.2.0
               with:
-                python-version: '3.9'
+                  python-version: "3.9"
 
             - name: Bootstrap MaaDeps
               env:
@@ -261,13 +261,13 @@ jobs:
               if: always()
               with:
                   name: MAA-linux-${{ matrix.arch }}-text_log
-                  path: 'install/bin/debug/*.log'
+                  path: "install/bin/debug/*.log"
 
             - uses: actions/upload-artifact@v4
               if: always()
               with:
                   name: MAA-linux-${{ matrix.arch }}-full_log
-                  path: 'install/bin/debug'
+                  path: "install/bin/debug"
 
     macos:
         needs: meta
@@ -302,7 +302,7 @@ jobs:
             - name: Setup Python
               uses: actions/setup-python@v5.2.0
               with:
-                python-version: '3.9'
+                  python-version: "3.9"
 
             - name: Bootstrap MaaDeps
               env:
@@ -376,10 +376,10 @@ jobs:
               if: always()
               with:
                   name: MAA-macos-${{ matrix.arch }}-text_log
-                  path: 'install/bin/debug/*.log'
+                  path: "install/bin/debug/*.log"
 
             - uses: actions/upload-artifact@v4
               if: always()
               with:
                   name: MAA-macos-${{ matrix.arch }}-full_log
-                  path: 'install/bin/debug'
+                  path: "install/bin/debug"

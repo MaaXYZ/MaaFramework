@@ -17,5 +17,5 @@ jobs:
 
             - uses: MaaXYZ/MaaFramework/.github/actions/publish_nodejs@main
               with:
-                access: public
-                token: ${{ secrets.NPM_TOKEN }}
+                  access: public
+                  token: ${{ secrets.NPM_TOKEN }}
