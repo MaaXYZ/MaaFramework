@@ -5,7 +5,7 @@
 #include "Utils/Buffer/StringBuffer.hpp"
 #include "Utils/Logger.h"
 
-MaaTaskId MaaContextRunPipeline(MaaContext* context, const char* entry, const char* pipeline_override)
+MaaTaskId MaaContextRunTask(MaaContext* context, const char* entry, const char* pipeline_override)
 {
     LogFunc << VAR_VOIDP(context) << VAR(entry) << VAR(pipeline_override);
 
@@ -24,7 +24,7 @@ MaaTaskId MaaContextRunPipeline(MaaContext* context, const char* entry, const ch
         return MaaInvalidId;
     }
 
-    return context->run_pipeline(entry, ov_opt->as_object());
+    return context->run_task(entry, ov_opt->as_object());
 }
 
 MaaRecoId MaaContextRunRecognition(MaaContext* context, const char* entry, const char* pipeline_override, const MaaImageBuffer* image)
