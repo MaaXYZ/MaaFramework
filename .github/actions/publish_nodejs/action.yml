@@ -21,7 +21,7 @@ inputs:
 outputs:
     failed:
         description: "Random number"
-        value: ${{ steps.nodejs.outputs.id == '' || steps.publish_failed.outputs.failed == 'true' }}
+        value: ${{ (steps.nodejs.outputs.id == '' || steps.publish_failed.outputs.failed == 'true') && 'true' || '' }}
 
 runs:
     using: 'composite'
