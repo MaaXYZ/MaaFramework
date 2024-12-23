@@ -96,6 +96,9 @@ It offers low-code simplicity while maintaining high extensibility. The framewor
 - [Maa-HBR](https://github.com/KarylDAZE/Maa-HBR) Heaven Burns Red/HBR Assistant  ![Pipeline](https://img.shields.io/badge/Pipeline-%23454545?logo=paddypower&logoColor=%23FFFFFF)  
   An assistant for Heaven Burns Red/HBR based on a brand new architecture. Image technology + simulation control, freeing your hands! Powered by MaaFramework.
 
+- [MFW-PyQt6](https://github.com/overflow65537/MFW-PyQt6) MFW-PyQt6 ![python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white)  
+  A generic GUI based on PyQt6. Powered by MaaFramework!
+
 ## Eco-Building
 
 MAA is planned to be a category of projects rather than just a single piece of software.
