@@ -3,4 +3,4 @@
     <description>Native binaries of MAA Framework Embedded for linux-x64.</description>
   </metadata>
   <files>
-    <file src="$root_path$\assets\MAA-linux-x86_64\bin\**" target="runtimes\linux-x64\native" />
+    <file src="$root_path$\assets\MAA-linux-x86_64\bin\**\*.so*" target="runtimes\linux-x64\native" />
