@@ -61,7 +61,8 @@ bool Actuator::run(const cv::Rect& reco_hit, MaaRecoId reco_id, const PipelineDa
         break;
     case Type::StopTask:
         LogInfo << "Action: StopTask";
-        return false;
+        context_.need_to_stop() = true;
+        break;
     default:
         ret = false;
         LogError << "Unknown action" << VAR(static_cast<int>(pipeline_data.action_type));

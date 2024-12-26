@@ -203,6 +203,11 @@ std::optional<Context::PipelineData> Context::get_pipeline_data(const std::strin
     return std::nullopt;
 }
 
+bool& Context::need_to_stop()
+{
+    return need_to_stop_;
+}
+
 bool Context::check_pipeline() const
 {
     if (!tasker_) {
