@@ -35,7 +35,7 @@ bool PipelineTask::run()
     PipelineData::NextList interrupt;
     bool error_handling = false;
 
-    while (!next.empty() && !need_to_stop_) {
+    while (!next.empty() && !context_->need_to_stop()) {
         cur_task_ = current.name;
 
         size_t next_size = next.size();
@@ -44,7 +44,7 @@ bool PipelineTask::run()
 
         auto node_detail = run_reco_and_action(list, current);
 
-        if (need_to_stop_) {
+        if (context_->need_to_stop()) {
             LogWarn << "need_to_stop" << VAR(current.name);
             return true;
         }
