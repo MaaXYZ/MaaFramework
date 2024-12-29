@@ -99,6 +99,10 @@ It offers low-code simplicity while maintaining high extensibility. The framewor
 - [MFW-PyQt6](https://github.com/overflow65537/MFW-PyQt6) MFW-PyQt6 ![python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white)  
   A generic GUI based on PyQt6. Powered by MaaFramework!
 
+- [MaaGF2Exilium](https://github.com/DarkLingYun/MaaGF2Exilium) Automation Assistant for Girls' Frontline 2: Exilium ![Pipeline](https://img.shields.io/badge/Pipeline-%23454545?logo=paddypower&logoColor=%23FFFFFF) 
+![GitHub last commit](https://img.shields.io/github/last-commit/DarkLingYun/MaaGF2Exilium?display_timestamp=committer&style=flat&logoColor=%23F26C1C&color=%23F26C1C&link=https%3A%2F%2Fgithub.com%2FDarkLingYun%2FMaaGF2Exilium)  
+An automation assistant for Girls' Frontline 2: Exilium, built on a brand-new architecture. Featuring image recognition technology and simulation control to free up your hands! Powered by MaaFramework!
+
 ## Eco-Building
 
 MAA is planned to be a category of projects rather than just a single piece of software.
