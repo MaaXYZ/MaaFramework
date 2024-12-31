@@ -35,7 +35,7 @@ public:
 public: // MaaResource
     virtual bool set_option(MaaResOption key, MaaOptionValue value, MaaOptionValueSize val_size) override;
 
-    virtual MaaResId post_path(const std::filesystem::path& path) override;
+    virtual MaaResId post_bundle(const std::filesystem::path& path) override;
 
     virtual MaaStatus status(MaaResId res_id) const override;
     virtual MaaStatus wait(MaaResId res_id) const override;

@@ -20,7 +20,7 @@
 MaaBool my_action(
     MaaContext* context,
     MaaTaskId task_id,
-    const char* current_task_name,
+    const char* node_name,
     const char* custom_action_name,
     const char* custom_action_param,
     MaaRecoId reco_id,
@@ -49,7 +49,7 @@ bool run_without_file(const std::filesystem::path& testset_dir)
     MaaTaskerBindController(tasker_handle, controller_handle);
 
     {
-        auto failed_id = MaaTaskerPostPipeline(tasker_handle, "_NotExists_", "{}");
+        auto failed_id = MaaTaskerPostTask(tasker_handle, "_NotExists_", "{}");
         auto failed_status = MaaTaskerWait(tasker_handle, failed_id);
         if (failed_id == MaaInvalidId || failed_status != MaaStatus_Failed) {
             std::cout << "Failed to detect invalid task" << std::endl;
@@ -64,7 +64,7 @@ bool run_without_file(const std::filesystem::path& testset_dir)
     };
     std::string task_param_str = task_param.to_string();
 
-    auto task_id = MaaTaskerPostPipeline(tasker_handle, "MyTask", task_param_str.c_str());
+    auto task_id = MaaTaskerPostTask(tasker_handle, "MyTask", task_param_str.c_str());
     auto status = MaaTaskerWait(tasker_handle, task_id);
 
     MaaTaskerDestroy(tasker_handle);
@@ -77,7 +77,7 @@ bool run_without_file(const std::filesystem::path& testset_dir)
 MaaBool my_action(
     MaaContext* context,
     MaaTaskId task_id,
-    const char* current_task_name,
+    const char* node_name,
     const char* custom_action_name,
     const char* custom_action_param,
     MaaRecoId reco_id,

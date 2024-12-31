@@ -245,7 +245,7 @@ MaaCustomRecognitionCallback = FUNCTYPE(
     MaaBool,  # return value
     MaaContextHandle,  # context
     MaaTaskId,  # task_id
-    ctypes.c_char_p,  # current_task_name
+    ctypes.c_char_p,  # node_name
     ctypes.c_char_p,  # custom_recognition_name
     ctypes.c_char_p,  # custom_recognition_param
     MaaImageBufferHandle,  # image
@@ -259,7 +259,7 @@ MaaCustomActionCallback = FUNCTYPE(
     MaaBool,  # return value
     MaaContextHandle,  # context
     MaaTaskId,  # task_id
-    ctypes.c_char_p,  # current_task_name
+    ctypes.c_char_p,  # node_name
     ctypes.c_char_p,  # custom_action_name
     ctypes.c_char_p,  #
     MaaRecoId,  # reco_id
@@ -372,18 +372,23 @@ class Status:
         else:
             self._status = MaaStatusEnum(status)
 
+    @property
     def done(self) -> bool:
         return self._status in [MaaStatusEnum.succeeded, MaaStatusEnum.failed]
 
+    @property
     def succeeded(self) -> bool:
         return self._status == MaaStatusEnum.succeeded
 
+    @property
     def failed(self) -> bool:
         return self._status == MaaStatusEnum.failed
 
+    @property
     def pending(self) -> bool:
         return self._status == MaaStatusEnum.pending
 
+    @property
     def running(self) -> bool:
         return self._status == MaaStatusEnum.running
 

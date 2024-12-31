@@ -37,7 +37,7 @@ extern "C"
 
     MAA_FRAMEWORK_API MaaBool MaaResourceClearCustomAction(MaaResource* res);
 
-    MAA_FRAMEWORK_API MaaResId MaaResourcePostPath(MaaResource* res, const char* path);
+    MAA_FRAMEWORK_API MaaResId MaaResourcePostBundle(MaaResource* res, const char* path);
 
     MAA_FRAMEWORK_API MaaBool MaaResourceClear(MaaResource* res);
 
