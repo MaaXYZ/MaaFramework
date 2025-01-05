@@ -102,6 +102,9 @@ It offers low-code simplicity while maintaining high extensibility. The framewor
 - [MaaGF2Exilium](https://github.com/DarkLingYun/MaaGF2Exilium) Automation Assistant for Girls' Frontline 2: Exilium ![Pipeline](https://img.shields.io/badge/Pipeline-%23454545?logo=paddypower&logoColor=%23FFFFFF)   
 An automation assistant for Girls' Frontline 2: Exilium, built on a brand-new architecture. Featuring image recognition technology and simulation control to free up your hands! Powered by MaaFramework!
 
+- [MaaAshEchoes](https://github.com/moulai/MaaAshEchoes) Ash Echoes Assistant ![Pipeline](https://img.shields.io/badge/Pipeline-%23454545?logo=paddypower&logoColor=%23FFFFFF)  
+  An assistant for Ash Echoes based on a brand new architecture. Image technology + simulation control, freeing your hands! Powered by MaaFramework.
+
 ## Eco-Building
 
 MAA is planned to be a category of projects rather than just a single piece of software.
