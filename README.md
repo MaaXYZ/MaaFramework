@@ -101,6 +101,9 @@ _✨ 基于图像识别的自动化黑盒测试框架 ✨_
 
 - [MaaGF2Exilium](https://github.com/DarkLingYun/MaaGF2Exilium) 少女前线2: 追放自动化助手 ![Pipeline](https://img.shields.io/badge/Pipeline-%23454545?logo=paddypower&logoColor=%23FFFFFF)  
   基于全新架构的 少女前线2: 追放自动化助手。图像技术 + 模拟控制，解放双手！由 MaaFramework 强力驱动！
+
+- [MaaAshEchoes](https://github.com/moulai/MaaAshEchoes) 白荆回廊 小助手 ![Pipeline](https://img.shields.io/badge/Pipeline-%23454545?logo=paddypower&logoColor=%23FFFFFF)  
+  基于全新架构的 白荆回廊 小助手。图像技术 + 模拟控制，解放双手！由 MaaFramework 强力驱动！
   
 ## 生态共建
 
