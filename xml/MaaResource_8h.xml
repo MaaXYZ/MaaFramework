@@ -95,7 +95,7 @@
           <declname>name</declname>
         </param>
         <param>
-          <type><ref refid="MaaDef_8h_1a4c72d5184d2333b6deaabd76f2e4db13" kindref="member">MaaCustomRecognitionCallback</ref></type>
+          <type><ref refid="MaaDef_8h_1a5ea5d33341ce8007c366ebd04f08ee51" kindref="member">MaaCustomRecognitionCallback</ref></type>
           <declname>recognition</declname>
         </param>
         <param>
@@ -162,7 +162,7 @@
           <declname>name</declname>
         </param>
         <param>
-          <type><ref refid="MaaDef_8h_1a585ec65a9f845b2922eda1d2fffa36b7" kindref="member">MaaCustomActionCallback</ref></type>
+          <type><ref refid="MaaDef_8h_1a5d8d307550fff35a2df364eeac7f5191" kindref="member">MaaCustomActionCallback</ref></type>
           <declname>action</declname>
         </param>
         <param>
@@ -215,11 +215,11 @@
         </inbodydescription>
         <location file="include/MaaFramework/Instance/MaaResource.h" line="38" column="31" declfile="include/MaaFramework/Instance/MaaResource.h" declline="38" declcolumn="31"/>
       </memberdef>
-      <memberdef kind="function" id="MaaResource_8h_1a325a396edc91794fec15ed215a44bc68" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+      <memberdef kind="function" id="MaaResource_8h_1a08043e4ee98ab14cc8c731cd5d98c064" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="MaaPort_8h_1a67006334d91d228121dbba7a8bf8fe05" kindref="member">MAA_FRAMEWORK_API</ref> <ref refid="MaaDef_8h_1ac1f7514a514f2b5af32cabc02eedca85" kindref="member">MaaResId</ref></type>
-        <definition>MAA_FRAMEWORK_API MaaResId MaaResourcePostPath</definition>
+        <definition>MAA_FRAMEWORK_API MaaResId MaaResourcePostBundle</definition>
         <argsstring>(MaaResource *res, const char *path)</argsstring>
-        <name>MaaResourcePostPath</name>
+        <name>MaaResourcePostBundle</name>
         <param>
           <type><ref refid="MaaDef_8h_1ab42b9ae54996623815428a30a8c9250d" kindref="member">MaaResource</ref> *</type>
           <declname>res</declname>

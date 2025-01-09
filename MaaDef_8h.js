@@ -64,8 +64,8 @@ var MaaDef_8h =
     [ "MaaDbgControllerType", "MaaDef_8h.html#a7a7491d55c50840ccb1891ba9b7740c4", null ],
     [ "MaaRect", "MaaDef_8h.html#a90ae9b4896224481bd0967903dafdfa1", null ],
     [ "MaaNotificationCallback", "MaaDef_8h.html#a83fe073ae3fefc09c17fd9eb6b6b3e50", null ],
-    [ "MaaCustomRecognitionCallback", "MaaDef_8h.html#a4c72d5184d2333b6deaabd76f2e4db13", null ],
-    [ "MaaCustomActionCallback", "MaaDef_8h.html#a585ec65a9f845b2922eda1d2fffa36b7", null ],
+    [ "MaaCustomRecognitionCallback", "MaaDef_8h.html#a5ea5d33341ce8007c366ebd04f08ee51", null ],
+    [ "MaaCustomActionCallback", "MaaDef_8h.html#a5d8d307550fff35a2df364eeac7f5191", null ],
     [ "MaaStatusEnum", "MaaDef_8h.html#a92a321c9e89a79ab64dc5176057d76a6", [
       [ "MaaStatus_Invalid", "MaaDef_8h.html#a92a321c9e89a79ab64dc5176057d76a6a062c9b1508f38dba096aa2587ba08d40", null ],
       [ "MaaStatus_Pending", "MaaDef_8h.html#a92a321c9e89a79ab64dc5176057d76a6ad675ca7fe058998743ec8d99c72a914e", null ],

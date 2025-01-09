@@ -18,19 +18,19 @@
       <member refid="group__MaaMsg_1ga68a45b9c98c9dc65e38bd7834819ae1b" kind="define"><name>MaaMsg_Tasker_Task_Failed</name></member>
     </sectiondef>
     <sectiondef kind="user-defined">
-      <member refid="group__MaaMsg_1ga19fe82e4dbd21c0846a6c90785af25ff" kind="define"><name>MaaMsg_Task_NextList_Starting</name></member>
-      <member refid="group__MaaMsg_1ga201e906f003ee9a3d72734b595016aad" kind="define"><name>MaaMsg_Task_NextList_Succeeded</name></member>
-      <member refid="group__MaaMsg_1gac19deb0e3a000de2e314aa4fd93a21d1" kind="define"><name>MaaMsg_Task_NextList_Failed</name></member>
+      <member refid="group__MaaMsg_1gaf95f803bb6d35641ef4a6d6002523e2f" kind="define"><name>MaaMsg_Node_NextList_Starting</name></member>
+      <member refid="group__MaaMsg_1ga6094d3a6ed79e17fdd55ca61b9a09ae3" kind="define"><name>MaaMsg_Node_NextList_Succeeded</name></member>
+      <member refid="group__MaaMsg_1gad5d54760f4862350701ad402631d3a12" kind="define"><name>MaaMsg_Node_NextList_Failed</name></member>
     </sectiondef>
     <sectiondef kind="user-defined">
-      <member refid="group__MaaMsg_1ga56a635367db79f9a1db9c4f76d445622" kind="define"><name>MaaMsg_Task_Recognition_Starting</name></member>
-      <member refid="group__MaaMsg_1ga4aabe1da138d5dc69467e061ac3ae598" kind="define"><name>MaaMsg_Task_Recognition_Succeeded</name></member>
-      <member refid="group__MaaMsg_1ga74fba3b5d954a2e7c278dbbe3e0bdd5d" kind="define"><name>MaaMsg_Task_Recognition_Failed</name></member>
+      <member refid="group__MaaMsg_1ga0397f9d6defd4c3825775e57400b6175" kind="define"><name>MaaMsg_Node_Recognition_Starting</name></member>
+      <member refid="group__MaaMsg_1gaacf32fea61ca2750f2966834d8374cb7" kind="define"><name>MaaMsg_Node_Recognition_Succeeded</name></member>
+      <member refid="group__MaaMsg_1ga633065c435e4278004bfc867cdb28e16" kind="define"><name>MaaMsg_Node_Recognition_Failed</name></member>
     </sectiondef>
     <sectiondef kind="user-defined">
-      <member refid="group__MaaMsg_1ga8a54a5f2ed62f82ca4413003616e7a75" kind="define"><name>MaaMsg_Task_Action_Starting</name></member>
-      <member refid="group__MaaMsg_1ga7e02595cd9348b57da605cde3b7ab465" kind="define"><name>MaaMsg_Task_Action_Succeeded</name></member>
-      <member refid="group__MaaMsg_1gadb35730576c41a05d2f94c88f54fb6e2" kind="define"><name>MaaMsg_Task_Action_Failed</name></member>
+      <member refid="group__MaaMsg_1ga5b217e43e0ce9f0a6f80fbb964204e9a" kind="define"><name>MaaMsg_Node_Action_Starting</name></member>
+      <member refid="group__MaaMsg_1ga464fd50ef2c65727300fa98b8f3fdc01" kind="define"><name>MaaMsg_Node_Action_Succeeded</name></member>
+      <member refid="group__MaaMsg_1gac2e7283ec9099d4826efa131aff46a8e" kind="define"><name>MaaMsg_Node_Action_Failed</name></member>
     </sectiondef>
     <briefdescription>
 <para>Contains the callback message definitions. </para>

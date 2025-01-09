@@ -8,7 +8,7 @@ var MaaResource_8h =
     [ "MaaResourceRegisterCustomAction", "MaaResource_8h.html#acafee77689486849e4c9bd501aa361bc", null ],
     [ "MaaResourceUnregisterCustomAction", "MaaResource_8h.html#acc69c217aaf4e775e5be1ff436a5e6da", null ],
     [ "MaaResourceClearCustomAction", "MaaResource_8h.html#ad3c7ba0220c6da7172032b74af86e89c", null ],
-    [ "MaaResourcePostPath", "MaaResource_8h.html#a325a396edc91794fec15ed215a44bc68", null ],
+    [ "MaaResourcePostBundle", "MaaResource_8h.html#a08043e4ee98ab14cc8c731cd5d98c064", null ],
     [ "MaaResourceClear", "MaaResource_8h.html#a245abf490b3967003e4645f7bb2f2a32", null ],
     [ "MaaResourceStatus", "MaaResource_8h.html#ac6bd925883ee8e117dc224aabf279e5a", null ],
     [ "MaaResourceWait", "MaaResource_8h.html#a86fe7b46bb25296adac4afc40c1c0374", null ],

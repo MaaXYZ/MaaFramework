@@ -9,13 +9,13 @@ var group__MaaMsg =
     [ "MaaMsg_Tasker_Task_Starting", "group__MaaMsg.html#ga8f34fcba37dddf0f26c3fa22b2c70ab4", null ],
     [ "MaaMsg_Tasker_Task_Succeeded", "group__MaaMsg.html#gae3c9293ecd4737cd86ce9be28e376f3b", null ],
     [ "MaaMsg_Tasker_Task_Failed", "group__MaaMsg.html#ga68a45b9c98c9dc65e38bd7834819ae1b", null ],
-    [ "MaaMsg_Task_NextList_Starting", "group__MaaMsg.html#ga19fe82e4dbd21c0846a6c90785af25ff", null ],
-    [ "MaaMsg_Task_NextList_Succeeded", "group__MaaMsg.html#ga201e906f003ee9a3d72734b595016aad", null ],
-    [ "MaaMsg_Task_NextList_Failed", "group__MaaMsg.html#gac19deb0e3a000de2e314aa4fd93a21d1", null ],
-    [ "MaaMsg_Task_Recognition_Starting", "group__MaaMsg.html#ga56a635367db79f9a1db9c4f76d445622", null ],
-    [ "MaaMsg_Task_Recognition_Succeeded", "group__MaaMsg.html#ga4aabe1da138d5dc69467e061ac3ae598", null ],
-    [ "MaaMsg_Task_Recognition_Failed", "group__MaaMsg.html#ga74fba3b5d954a2e7c278dbbe3e0bdd5d", null ],
-    [ "MaaMsg_Task_Action_Starting", "group__MaaMsg.html#ga8a54a5f2ed62f82ca4413003616e7a75", null ],
-    [ "MaaMsg_Task_Action_Succeeded", "group__MaaMsg.html#ga7e02595cd9348b57da605cde3b7ab465", null ],
-    [ "MaaMsg_Task_Action_Failed", "group__MaaMsg.html#gadb35730576c41a05d2f94c88f54fb6e2", null ]
+    [ "MaaMsg_Node_NextList_Starting", "group__MaaMsg.html#gaf95f803bb6d35641ef4a6d6002523e2f", null ],
+    [ "MaaMsg_Node_NextList_Succeeded", "group__MaaMsg.html#ga6094d3a6ed79e17fdd55ca61b9a09ae3", null ],
+    [ "MaaMsg_Node_NextList_Failed", "group__MaaMsg.html#gad5d54760f4862350701ad402631d3a12", null ],
+    [ "MaaMsg_Node_Recognition_Starting", "group__MaaMsg.html#ga0397f9d6defd4c3825775e57400b6175", null ],
+    [ "MaaMsg_Node_Recognition_Succeeded", "group__MaaMsg.html#gaacf32fea61ca2750f2966834d8374cb7", null ],
+    [ "MaaMsg_Node_Recognition_Failed", "group__MaaMsg.html#ga633065c435e4278004bfc867cdb28e16", null ],
+    [ "MaaMsg_Node_Action_Starting", "group__MaaMsg.html#ga5b217e43e0ce9f0a6f80fbb964204e9a", null ],
+    [ "MaaMsg_Node_Action_Succeeded", "group__MaaMsg.html#ga464fd50ef2c65727300fa98b8f3fdc01", null ],
+    [ "MaaMsg_Node_Action_Failed", "group__MaaMsg.html#gac2e7283ec9099d4826efa131aff46a8e", null ]
 ];

@@ -1337,10 +1337,10 @@ value: bool, eg: true; val_size: sizeof(bool)
         </inbodydescription>
         <location file="include/MaaFramework/MaaDef.h" line="281" column="9" bodyfile="include/MaaFramework/MaaDef.h" bodystart="281" bodyend="-1"/>
       </memberdef>
-      <memberdef kind="typedef" id="MaaDef_8h_1a4c72d5184d2333b6deaabd76f2e4db13" prot="public" static="no">
+      <memberdef kind="typedef" id="MaaDef_8h_1a5ea5d33341ce8007c366ebd04f08ee51" prot="public" static="no">
         <type><ref refid="MaaDef_8h_1a2f7289f2a8e07f48c6261b52a120cdf6" kindref="member">MaaBool</ref>(<ref refid="MaaPort_8h_1afaf570464c85866c04fabe324fe35c18" kindref="member">MAA_CALL</ref> *</type>
-        <definition>typedef MaaBool(MAA_CALL * MaaCustomRecognitionCallback) (MaaContext *context, MaaTaskId task_id, const char *current_task_name, const char *custom_recognition_name, const char *custom_recognition_param, const MaaImageBuffer *image, const MaaRect *roi, void *trans_arg, MaaRect *out_box, MaaStringBuffer *out_detail)</definition>
-        <argsstring>)(MaaContext *context, MaaTaskId task_id, const char *current_task_name, const char *custom_recognition_name, const char *custom_recognition_param, const MaaImageBuffer *image, const MaaRect *roi, void *trans_arg, MaaRect *out_box, MaaStringBuffer *out_detail)</argsstring>
+        <definition>typedef MaaBool(MAA_CALL * MaaCustomRecognitionCallback) (MaaContext *context, MaaTaskId task_id, const char *node_name, const char *custom_recognition_name, const char *custom_recognition_param, const MaaImageBuffer *image, const MaaRect *roi, void *trans_arg, MaaRect *out_box, MaaStringBuffer *out_detail)</definition>
+        <argsstring>)(MaaContext *context, MaaTaskId task_id, const char *node_name, const char *custom_recognition_name, const char *custom_recognition_param, const MaaImageBuffer *image, const MaaRect *roi, void *trans_arg, MaaRect *out_box, MaaStringBuffer *out_detail)</argsstring>
         <name>MaaCustomRecognitionCallback</name>
         <briefdescription>
         </briefdescription>
@@ -1350,10 +1350,10 @@ value: bool, eg: true; val_size: sizeof(bool)
         </inbodydescription>
         <location file="include/MaaFramework/MaaDef.h" line="283" column="9" bodyfile="include/MaaFramework/MaaDef.h" bodystart="283" bodyend="-1"/>
       </memberdef>
-      <memberdef kind="typedef" id="MaaDef_8h_1a585ec65a9f845b2922eda1d2fffa36b7" prot="public" static="no">
+      <memberdef kind="typedef" id="MaaDef_8h_1a5d8d307550fff35a2df364eeac7f5191" prot="public" static="no">
         <type><ref refid="MaaDef_8h_1a2f7289f2a8e07f48c6261b52a120cdf6" kindref="member">MaaBool</ref>(<ref refid="MaaPort_8h_1afaf570464c85866c04fabe324fe35c18" kindref="member">MAA_CALL</ref> *</type>
-        <definition>typedef MaaBool(MAA_CALL * MaaCustomActionCallback) (MaaContext *context, MaaTaskId task_id, const char *current_task_name, const char *custom_action_name, const char *custom_action_param, MaaRecoId reco_id, const MaaRect *box, void *trans_arg)</definition>
-        <argsstring>)(MaaContext *context, MaaTaskId task_id, const char *current_task_name, const char *custom_action_name, const char *custom_action_param, MaaRecoId reco_id, const MaaRect *box, void *trans_arg)</argsstring>
+        <definition>typedef MaaBool(MAA_CALL * MaaCustomActionCallback) (MaaContext *context, MaaTaskId task_id, const char *node_name, const char *custom_action_name, const char *custom_action_param, MaaRecoId reco_id, const MaaRect *box, void *trans_arg)</definition>
+        <argsstring>)(MaaContext *context, MaaTaskId task_id, const char *node_name, const char *custom_action_name, const char *custom_action_param, MaaRecoId reco_id, const MaaRect *box, void *trans_arg)</argsstring>
         <name>MaaCustomActionCallback</name>
         <briefdescription>
         </briefdescription>

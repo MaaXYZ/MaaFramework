@@ -60,7 +60,7 @@
           <declname>name</declname>
         </param>
         <param>
-          <type><ref refid="MaaDef_8h_1a4c72d5184d2333b6deaabd76f2e4db13" kindref="member">MaaCustomRecognitionCallback</ref></type>
+          <type><ref refid="MaaDef_8h_1a5ea5d33341ce8007c366ebd04f08ee51" kindref="member">MaaCustomRecognitionCallback</ref></type>
           <declname>recognition</declname>
         </param>
         <param>
@@ -89,7 +89,7 @@
           <declname>name</declname>
         </param>
         <param>
-          <type><ref refid="MaaDef_8h_1a585ec65a9f845b2922eda1d2fffa36b7" kindref="member">MaaCustomActionCallback</ref></type>
+          <type><ref refid="MaaDef_8h_1a5d8d307550fff35a2df364eeac7f5191" kindref="member">MaaCustomActionCallback</ref></type>
           <declname>action</declname>
         </param>
         <param>
