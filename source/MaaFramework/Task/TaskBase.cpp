@@ -80,7 +80,7 @@ RecoResult TaskBase::run_recognition(const cv::Mat& image, const PipelineData::N
 
     const json::value reco_list_cb_detail {
         { "task_id", task_id() },
-        { "node", cur_node_ },
+        { "name", cur_node_ },
         { "list", json::array(list) },
     };
     if (debug_mode() || focus) {
@@ -106,7 +106,7 @@ RecoResult TaskBase::run_recognition(const cv::Mat& image, const PipelineData::N
             const json::value reco_cb_detail {
                 { "task_id", task_id() },
                 { "reco_id", 0 },
-                { "node", node },
+                { "name", node },
             };
             notify(MaaMsg_Node_Recognition_Starting, reco_cb_detail);
         }
@@ -117,7 +117,7 @@ RecoResult TaskBase::run_recognition(const cv::Mat& image, const PipelineData::N
             const json::value reco_cb_detail {
                 { "task_id", task_id() },
                 { "reco_id", result.reco_id },
-                { "node", node },
+                { "name", node },
             };
             notify(result.box ? MaaMsg_Node_Recognition_Succeeded : MaaMsg_Node_Recognition_Failed, reco_cb_detail);
         }
@@ -165,7 +165,7 @@ NodeDetail TaskBase::run_action(const RecoResult& reco)
         const json::value cb_detail {
             { "task_id", task_id() },
             { "node_id", 0 },
-            { "node", reco.name },
+            { "name", reco.name },
         };
         notify(MaaMsg_Node_Action_Starting, cb_detail);
     }
@@ -186,7 +186,7 @@ NodeDetail TaskBase::run_action(const RecoResult& reco)
         const json::value cb_detail {
             { "task_id", task_id() },
             { "node_id", result.node_id },
-            { "node", reco.name },
+            { "name", reco.name },
         };
         notify(result.completed ? MaaMsg_Node_Action_Succeeded : MaaMsg_Node_Action_Failed, cb_detail);
     }

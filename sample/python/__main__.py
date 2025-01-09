@@ -99,24 +99,24 @@ class MyNotificationHandler(NotificationHandler):
     ):
         print(f"on_tasker_task: {noti_type}, {detail}")
 
-    def on_task_next_list(
+    def on_node_next_list(
         self,
         noti_type: NotificationType,
-        detail: NotificationHandler.TaskNextListDetail,
+        detail: NotificationHandler.NodeNextListDetail,
     ):
-        print(f"on_task_next_list: {noti_type}, {detail}")
+        print(f"on_node_next_list: {noti_type}, {detail}")
 
-    def on_task_recognition(
+    def on_node_recognition(
         self,
         noti_type: NotificationType,
-        detail: NotificationHandler.TaskRecognitionDetail,
+        detail: NotificationHandler.NodeRecognitionDetail,
     ):
-        print(f"on_task_recognition: {noti_type}, {detail}")
+        print(f"on_node_recognition: {noti_type}, {detail}")
 
-    def on_task_action(
-        self, noti_type: NotificationType, detail: NotificationHandler.TaskActionDetail
+    def on_node_action(
+        self, noti_type: NotificationType, detail: NotificationHandler.NodeActionDetail
     ):
-        print(f"on_task_action: {noti_type}, {detail}")
+        print(f"on_node_action: {noti_type}, {detail}")
 
 
 if __name__ == "__main__":

@@ -50,7 +50,7 @@
 
 /**
  * @{
- * @brief Message for the tasks.
+ * @brief Message for the task.
  *
  * payload: {
  *     task_id: number,
@@ -66,11 +66,11 @@
 
 /**
  * @{
- * @brief Message for the next List.
+ * @brief Message for the next list of node.
  *
  * payload: {
  *     task_id: number,
- *     node: string,
+ *     name: string,
  *     list: string[],
  * }
  */
@@ -81,12 +81,12 @@
 
 /**
  * @{
- * @brief Message for the recognition list.
+ * @brief Message for the recognition list of node.
  *
  * payload: {
  *     task_id: number,
  *     reco_id: number,
- *     node: string,
+ *     name: string,
  * }
  */
 #define MaaMsg_Node_Recognition_Starting ("Node.Recognition.Starting")
@@ -96,12 +96,12 @@
 
 /**
  * @{
- * @brief Message for the node action.
+ * @brief Message for the action of node.
  *
  * payload: {
  *     task_id: number,
  *     node_id: number,
- *     node: string,
+ *     name: string,
  * }
  */
 #define MaaMsg_Node_Action_Starting ("Node.Action.Starting")
