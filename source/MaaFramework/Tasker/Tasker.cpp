@@ -69,7 +69,7 @@ bool Tasker::set_option(MaaTaskerOption key, MaaOptionValue value, MaaOptionValu
     return false;
 }
 
-MaaTaskId Tasker::post_pipeline(const std::string& entry, const json::object& pipeline_override)
+MaaTaskId Tasker::post_task(const std::string& entry, const json::object& pipeline_override)
 {
     LogInfo << VAR(entry) << VAR(pipeline_override);
 
@@ -168,9 +168,9 @@ std::optional<MAA_TASK_NS::RecoResult> Tasker::get_reco_result(MaaRecoId reco_id
     return runtime_cache().get_reco_result(reco_id);
 }
 
-std::optional<MaaNodeId> Tasker::get_latest_node(const std::string& task_name) const
+std::optional<MaaNodeId> Tasker::get_latest_node(const std::string& node_name) const
 {
-    return runtime_cache().get_latest_node(task_name);
+    return runtime_cache().get_latest_node(node_name);
 }
 
 RuntimeCache& Tasker::runtime_cache()

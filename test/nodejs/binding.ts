@@ -18,7 +18,7 @@ const myReco: maa.CustomRecognizerCallback = async self => {
         }
     }
 
-    await self.context.run_pipeline(entry, ppover)
+    await self.context.run_task(entry, ppover)
     await self.context.run_action(
         entry,
         {
@@ -93,7 +93,7 @@ async function api_test() {
     r2.inference_execution_provider = 'DirectML'
     r2.inference_device = 114514
     r2.inference_execution_provider = 'CPU'
-    await r2.post_path('/path/to/resource').wait()
+    await r2.post_bundle('/path/to/resource').wait()
     r2.destroy()
 
     const resource = new maa.Resource()
@@ -141,14 +141,14 @@ async function api_test() {
         }
     }
 
-    let detail = await tasker.post_pipeline('Entry', ppover).wait().get()
+    let detail = await tasker.post_task('Entry', ppover).wait().get()
     if (!detail) {
         console.log('pipeline failed')
         process.exit(1)
     }
     console.log('pipeline detail:', detail)
 
-    tasker.resource?.post_path('/path/to/resource')
+    tasker.resource?.post_bundle('/path/to/resource')
     tasker.clear_cache()
     const inited = tasker.inited
     const running = tasker.running

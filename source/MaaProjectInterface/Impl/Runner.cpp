@@ -49,7 +49,7 @@ bool Runner::run(
     MaaId cid = MaaControllerPostConnection(controller_handle);
     MaaId rid = 0;
     for (const auto& path : param.resource_path) {
-        rid = MaaResourcePostPath(resource_handle, path.c_str());
+        rid = MaaResourcePostBundle(resource_handle, path.c_str());
     }
     for (const auto& [name, reco] : custom_recognitions) {
         MaaResourceRegisterCustomRecognition(resource_handle, name.c_str(), reco.recognition, reco.trans_arg);
@@ -80,7 +80,7 @@ bool Runner::run(
     MaaId tid = 0;
     for (const auto& task : param.task) {
         std::string pp_override = task.pipeline_override.to_string();
-        tid = MaaTaskerPostPipeline(tasker_handle, task.entry.c_str(), pp_override.c_str());
+        tid = MaaTaskerPostTask(tasker_handle, task.entry.c_str(), pp_override.c_str());
     }
 
     MaaTaskerWait(tasker_handle, tid);

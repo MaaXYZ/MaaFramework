@@ -74,8 +74,8 @@ class Tasker:
     def inited(self) -> bool:
         return bool(Library.framework.MaaTaskerInited(self._handle))
 
-    def post_pipeline(self, entry: str, pipeline_override: Dict = {}) -> JobWithResult:
-        taskid = Library.framework.MaaTaskerPostPipeline(
+    def post_task(self, entry: str, pipeline_override: Dict = {}) -> JobWithResult:
+        taskid = Library.framework.MaaTaskerPostTask(
             self._handle,
             *Tasker._gen_post_param(entry, pipeline_override),
         )
@@ -363,8 +363,8 @@ class Tasker:
         Library.framework.MaaTaskerInited.restype = MaaBool
         Library.framework.MaaTaskerInited.argtypes = [MaaTaskerHandle]
 
-        Library.framework.MaaTaskerPostPipeline.restype = MaaId
-        Library.framework.MaaTaskerPostPipeline.argtypes = [
+        Library.framework.MaaTaskerPostTask.restype = MaaId
+        Library.framework.MaaTaskerPostTask.argtypes = [
             MaaTaskerHandle,
             ctypes.c_char_p,
             ctypes.c_char_p,

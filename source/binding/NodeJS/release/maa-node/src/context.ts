@@ -10,8 +10,8 @@ export class Context {
         this.#tasker = new TaskerBase(maa.context_get_tasker(this.handle))
     }
 
-    async run_pipeline(entry: string, pipeline_override: Record<string, unknown> = {}) {
-        const id = await maa.context_run_pipeline(
+    async run_task(entry: string, pipeline_override: Record<string, unknown> = {}) {
+        const id = await maa.context_run_task(
             this.handle,
             entry,
             JSON.stringify(pipeline_override)

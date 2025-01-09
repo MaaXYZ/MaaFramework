@@ -28,7 +28,7 @@ MaaController* create_win32_controller();
 MaaBool my_reco(
     MaaContext* context,
     MaaTaskId task_id,
-    const char* current_task_name,
+    const char* node_name,
     const char* custom_recognition_name,
     const char* custom_recognition_param,
     const MaaImageBuffer* image,
@@ -48,7 +48,7 @@ int main([[maybe_unused]] int argc, char** argv)
 
     auto resource_handle = MaaResourceCreate(nullptr, nullptr);
     std::string resource_dir = R"(E:\Code\MaaFramework\sample\resource)";
-    auto res_id = MaaResourcePostPath(resource_handle, resource_dir.c_str());
+    auto res_id = MaaResourcePostBundle(resource_handle, resource_dir.c_str());
 
     MaaControllerWait(controller_handle, ctrl_id);
     MaaResourceWait(resource_handle, res_id);
@@ -72,7 +72,7 @@ int main([[maybe_unused]] int argc, char** argv)
 
     MaaResourceRegisterCustomRecognition(resource_handle, "MyReco", my_reco, nullptr);
 
-    auto task_id = MaaTaskerPostPipeline(tasker_handle, "MyTask", "{}");
+    auto task_id = MaaTaskerPostTask(tasker_handle, "MyTask", "{}");
     MaaTaskerWait(tasker_handle, task_id);
 
     destroy();
@@ -159,7 +159,7 @@ MaaController* create_win32_controller()
 MaaBool my_reco(
     MaaContext* context,
     MaaTaskId task_id,
-    const char* current_task_name,
+    const char* node_name,
     const char* custom_recognition_name,
     const char* custom_recognition_param,
     const MaaImageBuffer* image,

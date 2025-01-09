@@ -14,7 +14,7 @@ MAA_TASK_NS_BEGIN
 TaskBase::TaskBase(std::string entry, Tasker* tasker)
     : tasker_(tasker)
     , entry_(std::move(entry))
-    , cur_task_(entry_)
+    , cur_node_(entry_)
     , context_(Context::create(task_id_, tasker))
 {
 }
@@ -22,7 +22,7 @@ TaskBase::TaskBase(std::string entry, Tasker* tasker)
 TaskBase::TaskBase(std::string entry, Tasker* tasker, std::shared_ptr<Context> context)
     : tasker_(tasker)
     , entry_(std::move(entry))
-    , cur_task_(entry_)
+    , cur_node_(entry_)
     , context_(std::move(context))
 {
 }
@@ -59,7 +59,7 @@ MAA_CTRL_NS::ControllerAgent* TaskBase::controller()
 
 RecoResult TaskBase::run_recognition(const cv::Mat& image, const PipelineData::NextList& list)
 {
-    LogFunc << VAR(cur_task_) << VAR(list);
+    LogFunc << VAR(cur_node_) << VAR(list);
 
     if (!context_) {
         LogError << "context is null";
@@ -71,34 +71,34 @@ RecoResult TaskBase::run_recognition(const cv::Mat& image, const PipelineData::N
         return {};
     }
 
-    auto cur_opt = context_->get_pipeline_data(cur_task_);
-    if (!cur_opt) {
-        LogError << "get_pipeline_data failed, task not exist" << VAR(cur_task_);
+    auto node_opt = context_->get_pipeline_data(cur_node_);
+    if (!node_opt) {
+        LogError << "get_pipeline_data failed, node not exist" << VAR(cur_node_);
         return {};
     }
-    bool current_focus = cur_opt->focus;
+    bool focus = node_opt->focus;
 
     const json::value reco_list_cb_detail {
         { "task_id", task_id() },
-        { "name", cur_task_ },
+        { "name", cur_node_ },
         { "list", json::array(list) },
     };
-    if (debug_mode() || current_focus) {
-        notify(MaaMsg_Task_NextList_Starting, reco_list_cb_detail);
+    if (debug_mode() || focus) {
+        notify(MaaMsg_Node_NextList_Starting, reco_list_cb_detail);
     }
 
     Recognizer recognizer(tasker_, *context_, image);
 
-    for (const auto& name : list) {
-        auto data_opt = context_->get_pipeline_data(name);
+    for (const auto& node : list) {
+        auto data_opt = context_->get_pipeline_data(node);
         if (!data_opt) {
-            LogError << "get_pipeline_data failed, task not exist" << VAR(name);
+            LogError << "get_pipeline_data failed, node not exist" << VAR(node);
             continue;
         }
         const auto& pipeline_data = *data_opt;
 
         if (!pipeline_data.enabled) {
-            LogDebug << "Task disabled" << name << VAR(pipeline_data.enabled);
+            LogDebug << "node disabled" << node << VAR(pipeline_data.enabled);
             continue;
         }
 
@@ -106,9 +106,9 @@ RecoResult TaskBase::run_recognition(const cv::Mat& image, const PipelineData::N
             const json::value reco_cb_detail {
                 { "task_id", task_id() },
                 { "reco_id", 0 },
-                { "name", name },
+                { "name", node },
             };
-            notify(MaaMsg_Task_Recognition_Starting, reco_cb_detail);
+            notify(MaaMsg_Node_Recognition_Starting, reco_cb_detail);
         }
 
         RecoResult result = recognizer.recognize(pipeline_data);
@@ -117,26 +117,26 @@ RecoResult TaskBase::run_recognition(const cv::Mat& image, const PipelineData::N
             const json::value reco_cb_detail {
                 { "task_id", task_id() },
                 { "reco_id", result.reco_id },
-                { "name", name },
+                { "name", node },
             };
-            notify(result.box ? MaaMsg_Task_Recognition_Succeeded : MaaMsg_Task_Recognition_Failed, reco_cb_detail);
+            notify(result.box ? MaaMsg_Node_Recognition_Succeeded : MaaMsg_Node_Recognition_Failed, reco_cb_detail);
         }
 
         if (!result.box) {
             continue;
         }
 
-        LogInfo << "Task hit" << VAR(result.name) << VAR(result.box);
+        LogInfo << "node hit" << VAR(result.name) << VAR(result.box);
 
-        if (debug_mode() || current_focus) {
-            notify(MaaMsg_Task_NextList_Succeeded, reco_list_cb_detail);
+        if (debug_mode() || focus) {
+            notify(MaaMsg_Node_NextList_Succeeded, reco_list_cb_detail);
         }
 
         return result;
     }
 
-    if (debug_mode() || current_focus) {
-        notify(MaaMsg_Task_NextList_Failed, reco_list_cb_detail);
+    if (debug_mode() || focus) {
+        notify(MaaMsg_Node_NextList_Failed, reco_list_cb_detail);
     }
 
     return {};
@@ -154,12 +154,12 @@ NodeDetail TaskBase::run_action(const RecoResult& reco)
         return {};
     }
 
-    auto cur_opt = context_->get_pipeline_data(reco.name);
-    if (!cur_opt) {
-        LogError << "get_pipeline_data failed, task not exist" << VAR(reco.name);
+    auto node_opt = context_->get_pipeline_data(reco.name);
+    if (!node_opt) {
+        LogError << "get_pipeline_data failed, node not exist" << VAR(reco.name);
         return {};
     }
-    const auto& pipeline_data = *cur_opt;
+    const auto& pipeline_data = *node_opt;
 
     if (debug_mode() || pipeline_data.focus) {
         const json::value cb_detail {
@@ -167,7 +167,7 @@ NodeDetail TaskBase::run_action(const RecoResult& reco)
             { "node_id", 0 },
             { "name", reco.name },
         };
-        notify(MaaMsg_Task_Action_Starting, cb_detail);
+        notify(MaaMsg_Node_Action_Starting, cb_detail);
     }
 
     Actuator actuator(tasker_, *context_);
@@ -188,7 +188,7 @@ NodeDetail TaskBase::run_action(const RecoResult& reco)
             { "node_id", result.node_id },
             { "name", reco.name },
         };
-        notify(result.completed ? MaaMsg_Task_Action_Succeeded : MaaMsg_Task_Action_Failed, cb_detail);
+        notify(result.completed ? MaaMsg_Node_Action_Succeeded : MaaMsg_Node_Action_Failed, cb_detail);
     }
 
     return result;

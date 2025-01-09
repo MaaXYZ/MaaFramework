@@ -36,7 +36,7 @@ export type NotificationCallback = (message: string, details_json: string) => Ma
 export type CustomRecognitionCallback = (
     context: ContextHandle,
     task_id: TaskId,
-    current_task_name: string,
+    node_name: string,
     custom_recognition_name: string,
     custom_recognition_param: string,
     image: ImageData,
@@ -45,7 +45,7 @@ export type CustomRecognitionCallback = (
 export type CustomActionCallback = (
     context: ContextHandle,
     task_id: TaskId,
-    current_task_name: string,
+    node_name: string,
     custom_action_name: string,
     custom_action_param: string,
     reco_id: RecoId,
@@ -73,7 +73,7 @@ export type CustomControllerCallback = (
 
 // context.cpp
 
-export declare function context_run_pipeline(
+export declare function context_run_task(
     context: ContextHandle,
     entry: string,
     pipeline_override: string
@@ -223,7 +223,7 @@ export declare function resource_unregister_custom_action(
     name: string
 ): boolean
 export declare function resource_clear_custom_action(handle: ResourceHandle): boolean
-export declare function resource_post_path(handle: ResourceHandle, path: string): ResId
+export declare function resource_post_bundle(handle: ResourceHandle, path: string): ResId
 export declare function resource_clear(handle: ResourceHandle): boolean
 export declare function resource_status(handle: ResourceHandle, res_id: ResId): Status
 export declare function resource_wait(handle: ResourceHandle, res_id: ResId): Promise<Status>
@@ -244,7 +244,7 @@ export declare function tasker_bind_controller(
     controller: ControllerHandle | null
 ): boolean
 export declare function tasker_inited(handle: TaskerHandle): boolean
-export declare function tasker_post_pipeline(
+export declare function tasker_post_task(
     handle: TaskerHandle,
     entry: string,
     pipeline_override: string
@@ -280,7 +280,7 @@ export declare function tasker_get_task_detail(
 ): [entry: string, node_ids: NodeId[], status: Status] | null
 export declare function tasker_get_latest_node(
     handle: TaskerHandle,
-    task_name: string
+    node_name: string
 ): NodeId | null
 
 // config.cpp

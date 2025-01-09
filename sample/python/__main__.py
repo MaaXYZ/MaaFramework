@@ -14,7 +14,7 @@ def main():
     Toolkit.init_option(user_path)
 
     resource = Resource()
-    res_job = resource.post_path("sample/resource")
+    res_job = resource.post_bundle("sample/resource")
     res_job.wait()
 
     adb_devices = Toolkit.find_adb_devices()
@@ -43,7 +43,7 @@ def main():
 
     resource.register_custom_recognition("MyRec", MyRecongition())
 
-    task_detail = tasker.post_pipeline("StartUpAndClickButton").wait().get()
+    task_detail = tasker.post_task("StartUpAndClickButton").wait().get()
     # do something with task_detail
 
 
@@ -72,7 +72,7 @@ class MyRecongition(CustomRecognition):
         click_job = context.tasker.controller.post_click(10, 20)
         click_job.wait()
 
-        context.override_next(argv.current_task_name, ["TaskA", "TaskB"])
+        context.override_next(argv.node_name, ["TaskA", "TaskB"])
 
         return CustomRecognition.AnalyzeResult(
             box=(0, 0, 100, 100), detail="Hello World!"
@@ -99,24 +99,24 @@ class MyNotificationHandler(NotificationHandler):
     ):
         print(f"on_tasker_task: {noti_type}, {detail}")
 
-    def on_task_next_list(
+    def on_node_next_list(
         self,
         noti_type: NotificationType,
-        detail: NotificationHandler.TaskNextListDetail,
+        detail: NotificationHandler.NodeNextListDetail,
     ):
-        print(f"on_task_next_list: {noti_type}, {detail}")
+        print(f"on_node_next_list: {noti_type}, {detail}")
 
-    def on_task_recognition(
+    def on_node_recognition(
         self,
         noti_type: NotificationType,
-        detail: NotificationHandler.TaskRecognitionDetail,
+        detail: NotificationHandler.NodeRecognitionDetail,
     ):
-        print(f"on_task_recognition: {noti_type}, {detail}")
+        print(f"on_node_recognition: {noti_type}, {detail}")
 
-    def on_task_action(
-        self, noti_type: NotificationType, detail: NotificationHandler.TaskActionDetail
+    def on_node_action(
+        self, noti_type: NotificationType, detail: NotificationHandler.NodeActionDetail
     ):
-        print(f"on_task_action: {noti_type}, {detail}")
+        print(f"on_node_action: {noti_type}, {detail}")
 
 
 if __name__ == "__main__":

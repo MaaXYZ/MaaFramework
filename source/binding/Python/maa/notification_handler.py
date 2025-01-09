@@ -59,34 +59,34 @@ class NotificationHandler(ABC):
         pass
 
     @dataclass
-    class TaskNextListDetail:
+    class NodeNextListDetail:
         task_id: int
         name: str
         next_list: list[str]
 
-    def on_task_next_list(
-        self, noti_type: NotificationType, detail: TaskNextListDetail
+    def on_node_next_list(
+        self, noti_type: NotificationType, detail: NodeNextListDetail
     ):
         pass
 
     @dataclass
-    class TaskRecognitionDetail:
+    class NodeRecognitionDetail:
         task_id: int
         reco_id: int
         name: str
 
-    def on_task_recognition(
-        self, noti_type: NotificationType, detail: TaskRecognitionDetail
+    def on_node_recognition(
+        self, noti_type: NotificationType, detail: NodeRecognitionDetail
     ):
         pass
 
     @dataclass
-    class TaskActionDetail:
+    class NodeActionDetail:
         task_id: int
         node_id: int
         name: str
 
-    def on_task_action(self, noti_type: NotificationType, detail: TaskActionDetail):
+    def on_node_action(self, noti_type: NotificationType, detail: NodeActionDetail):
         pass
 
     def on_unknown_notification(self, msg: str, details: dict):
@@ -121,29 +121,29 @@ class NotificationHandler(ABC):
             )
             self.on_tasker_task(noti_type, detail)
 
-        elif msg.startswith("Task.NextList"):
-            detail = self.TaskNextListDetail(
+        elif msg.startswith("Node.NextList"):
+            detail = self.NodeNextListDetail(
                 task_id=details["task_id"],
                 name=details["name"],
                 next_list=details["list"],
             )
-            self.on_task_next_list(noti_type, detail)
+            self.on_node_next_list(noti_type, detail)
 
-        elif msg.startswith("Task.Recognition"):
-            detail = self.TaskRecognitionDetail(
+        elif msg.startswith("Node.Recognition"):
+            detail = self.NodeRecognitionDetail(
                 task_id=details["task_id"],
                 reco_id=details["reco_id"],
                 name=details["name"],
             )
-            self.on_task_recognition(noti_type, detail)
+            self.on_node_recognition(noti_type, detail)
 
-        elif msg.startswith("Task.Action"):
-            detail = self.TaskActionDetail(
+        elif msg.startswith("Node.Action"):
+            detail = self.NodeActionDetail(
                 task_id=details["task_id"],
                 node_id=details["node_id"],
                 name=details["name"],
             )
-            self.on_task_action(noti_type, detail)
+            self.on_node_action(noti_type, detail)
 
         else:
             self.on_unknown_notification(msg, details)

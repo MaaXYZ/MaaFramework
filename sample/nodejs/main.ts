@@ -48,7 +48,7 @@ async function main() {
     res.notify = (msg, detail) => {
         console.log(msg, detail)
     }
-    await res.post_path('sample/resource').wait()
+    await res.post_bundle('sample/resource').wait()
 
     const devices = await maa.AdbController.find()
     if (!devices || devices.length === 0) {
@@ -76,7 +76,7 @@ async function main() {
 
     res.register_custom_recognizer('MyRec', my_reco)
 
-    let task_detail = await tskr.post_pipeline('StartUpAndClickButton').wait().get()
+    let task_detail = await tskr.post_task('StartUpAndClickButton').wait().get()
 
     tskr.destroy()
     ctrl.destroy()

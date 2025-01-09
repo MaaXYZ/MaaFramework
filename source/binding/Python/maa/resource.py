@@ -43,8 +43,10 @@ class Resource:
         if self._handle and self._own:
             Library.framework.MaaResourceDestroy(self._handle)
 
-    def post_path(self, path: Union[pathlib.Path, str]) -> Job:
-        resid = Library.framework.MaaResourcePostPath(self._handle, str(path).encode())
+    def post_bundle(self, path: Union[pathlib.Path, str]) -> Job:
+        resid = Library.framework.MaaResourcePostBundle(
+            self._handle, str(path).encode()
+        )
         return Job(resid, self._status, self._wait)
 
     @property
@@ -212,8 +214,8 @@ class Resource:
         Library.framework.MaaResourceDestroy.restype = None
         Library.framework.MaaResourceDestroy.argtypes = [MaaResourceHandle]
 
-        Library.framework.MaaResourcePostPath.restype = MaaResId
-        Library.framework.MaaResourcePostPath.argtypes = [
+        Library.framework.MaaResourcePostBundle.restype = MaaResId
+        Library.framework.MaaResourcePostBundle.argtypes = [
             MaaResourceHandle,
             ctypes.c_char_p,
         ]

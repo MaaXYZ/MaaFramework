@@ -70,7 +70,7 @@ MaaBool MaaTaskerInited(const MaaTasker* tasker)
     return tasker->inited();
 }
 
-MaaTaskId MaaTaskerPostPipeline(MaaTasker* tasker, const char* entry, const char* pipeline_override)
+MaaTaskId MaaTaskerPostTask(MaaTasker* tasker, const char* entry, const char* pipeline_override)
 {
     LogFunc << VAR_VOIDP(tasker) << VAR(entry) << VAR(pipeline_override);
 
@@ -89,7 +89,7 @@ MaaTaskId MaaTaskerPostPipeline(MaaTasker* tasker, const char* entry, const char
         return MaaInvalidId;
     }
 
-    return tasker->post_pipeline(entry, ov_opt->as_object());
+    return tasker->post_task(entry, ov_opt->as_object());
 }
 
 MaaStatus MaaTaskerStatus(const MaaTasker* tasker, MaaTaskId id)
@@ -312,16 +312,16 @@ MaaBool MaaTaskerGetTaskDetail(
     return true;
 }
 
-MaaBool MaaTaskerGetLatestNode(const MaaTasker* tasker, const char* task_name, MaaNodeId* latest_id)
+MaaBool MaaTaskerGetLatestNode(const MaaTasker* tasker, const char* node_name, MaaNodeId* latest_id)
 {
     if (!tasker) {
         LogError << "handle is null";
         return false;
     }
 
-    auto result_opt = tasker->get_latest_node(task_name);
+    auto result_opt = tasker->get_latest_node(node_name);
     if (!result_opt) {
-        LogError << "failed to get_latest_node" << VAR(task_name);
+        LogError << "failed to get_latest_node" << VAR(node_name);
         return false;
     }
 

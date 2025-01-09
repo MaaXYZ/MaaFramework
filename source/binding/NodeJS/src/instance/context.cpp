@@ -6,17 +6,12 @@
 #include <MaaFramework/MaaAPI.h>
 #include <string>
 
-Napi::Promise context_run_pipeline(
-    Napi::Env env,
-    Napi::External<MaaContext> info,
-    std::string entry,
-    std::string overr)
+Napi::Promise context_run_task(Napi::Env env, Napi::External<MaaContext> info, std::string entry, std::string overr)
 {
     auto handle = info.Data();
-    auto worker =
-        new SimpleAsyncWork<MaaTaskId, "context_run_pipeline">(env, [handle, entry, overr]() {
-            return MaaContextRunPipeline(handle, entry.c_str(), overr.c_str());
-        });
+    auto worker = new SimpleAsyncWork<MaaTaskId, "context_run_task">(env, [handle, entry, overr]() {
+        return MaaContextRunTask(handle, entry.c_str(), overr.c_str());
+    });
     worker->Queue();
     return worker->Promise();
 }
@@ -107,7 +102,7 @@ void load_instance_context(
     Napi::Object& exports,
     Napi::External<ExtContextInfo> context)
 {
-    BIND(context_run_pipeline);
+    BIND(context_run_task);
     BIND(context_run_recognition);
     BIND(context_run_action);
     BIND(context_override_pipeline);
