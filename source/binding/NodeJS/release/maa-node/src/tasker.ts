@@ -48,33 +48,22 @@ export type TaskerNotify = {
           msg: 'Task.Started' | 'Task.Completed' | 'Task.Failed'
       }
     | {
-          msg: 'Debug.RecognitionResult' | 'Debug.Hit'
-          current: string
-          recognition: {
-              reco_id: maa.RecoId
-              name: string
-              /**
-               * Won't be `null` for msg `Debug.Hit`
-               */
-              box: maa.FlatRect | null
-              detail: string
-          }
-      }
-    | {
-          msg: 'Focus.ReadyToRun' | 'Focus.Completed' | 'Debug.ReadyToRun' | 'Debug.Completed'
-          current: string
-          node: {
-              node_id: maa.NodeId
-              name: string
-              reco_id: maa.RecoId
-              times: number
-              completed: boolean
-          }
-      }
-    | {
-          msg: 'Debug.ListToRecognize' | 'Debug.MissAll'
-          current: string
+          msg: 'NextList.Starting' | 'NextList.Succeeded' | 'NextList.Failed'
+          task_id: number
+          name: string
           list: string[]
+      }
+    | {
+          msg: 'Recognition.Starting' | 'Recognition.Succeeded' | 'Recognition.Failed'
+          task_id: number
+          reco_id: number
+          name: string
+      }
+    | {
+          msg: 'Action.Starting' | 'Action.Succeeded' | 'Action.Failed'
+          task_id: number
+          node_id: number
+          name: string
       }
 )
 
@@ -87,7 +76,7 @@ export class TaskerBase {
     set parsed_notify(cb: (msg: TaskerNotify) => maa.MaybePromise<void>) {
         this.notify = (msg, details) => {
             return cb({
-                msg: msg.replace(/^Task(?:er)?\./, '') as any,
+                msg: msg.replace(/^(?:Tasker|Node)?\./, '') as any,
                 ...JSON.parse(details)
             })
         }
@@ -134,11 +123,7 @@ export class TaskerBase {
     }
 
     post_stop() {
-        return new TaskJob(
-            this,
-            this.#source,
-            maa.tasker_post_stop(this.handle)
-        )
+        return new TaskJob(this, this.#source, maa.tasker_post_stop(this.handle))
     }
 
     get resource() {
