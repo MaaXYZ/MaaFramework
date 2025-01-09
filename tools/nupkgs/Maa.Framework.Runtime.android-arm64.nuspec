@@ -3,4 +3,4 @@
     <description>Native binaries of MAA Framework Embedded for android-arm64.</description>
   </metadata>
   <files>
-    <file src="$root_path$\assets\MAA-android-aarch64\bin\**"  target="runtimes\android-arm64\native" />
+    <file src="$root_path$\assets\MAA-android-aarch64\bin\**\*.so*"  target="runtimes\android-arm64\native" />

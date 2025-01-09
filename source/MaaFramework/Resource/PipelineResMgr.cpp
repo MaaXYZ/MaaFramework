@@ -1138,6 +1138,8 @@ bool PipelineResMgr::parse_action(
         { "startapp", Type::StartApp },
         { "StopApp", Type::StopApp },
         { "stopapp", Type::StopApp },
+        { "Command", Type::Command },
+        { "command", Type::Command },
         { "Custom", Type::Custom },
         { "custom", Type::Custom },
         { "StopTask", Type::StopTask },
@@ -1176,7 +1178,8 @@ bool PipelineResMgr::parse_action(
         return parse_multi_swipe(
             input,
             std::get<MultiSwipeParam>(out_param),
-            same_type ? std::get<MultiSwipeParam>(parent_param) : default_multi, default_single);
+            same_type ? std::get<MultiSwipeParam>(parent_param) : default_multi,
+            default_single);
     } break;
 
     case Type::Key: {
@@ -1203,6 +1206,15 @@ bool PipelineResMgr::parse_action(
         return parse_app_info(input, std::get<AppParam>(out_param), same_type ? std::get<AppParam>(parent_param) : default_param);
     } break;
 
+    case Type::Command: {
+        auto default_param = default_mgr.get_action_param<CommandParam>(Type::Command);
+        out_param = default_param;
+        return parse_command_param(
+            input,
+            std::get<CommandParam>(out_param),
+            same_type ? std::get<CommandParam>(parent_param) : default_param);
+    } break;
+
     case Type::Custom: {
         auto default_param = default_mgr.get_action_param<CustomParam>(Type::Custom);
         out_param = default_param;
@@ -1210,7 +1222,7 @@ bool PipelineResMgr::parse_action(
             input,
             std::get<CustomParam>(out_param),
             same_type ? std::get<CustomParam>(parent_param) : default_param);
-    }
+    } break;
 
     case Type::StopTask:
         out_param = {};
@@ -1320,6 +1332,26 @@ bool PipelineResMgr::parse_app_info(const json::value& input, Action::AppParam& 
 {
     if (!get_and_check_value(input, "package", output.package, default_value.package)) {
         LogError << "failed to get_and_check_value activity" << VAR(input);
+        return false;
+    }
+
+    return true;
+}
+
+bool PipelineResMgr::parse_command_param(const json::value& input, Action::CommandParam& output, const Action::CommandParam& default_value)
+{
+    if (!get_and_check_value(input, "exec", output.exec, default_value.exec)) {
+        LogError << "failed to get_and_check_value exec" << VAR(input);
+        return false;
+    }
+
+    if (!get_and_check_value_or_array(input, "args", output.args, default_value.args)) {
+        LogError << "failed to get_and_check_value args" << VAR(input);
+        return false;
+    }
+
+    if (!get_and_check_value(input, "detach", output.detach, default_value.detach)) {
+        LogError << "failed to get_and_check_value detach" << VAR(input);
         return false;
     }
 

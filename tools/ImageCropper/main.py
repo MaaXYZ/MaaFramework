@@ -87,11 +87,11 @@ def parse_args() -> Controller:
             for i, d in enumerate(device_list):
                 print(f"{i:>3} | {d.address:>21} | {d.name}")
             i = int(input("Please select the device (ENTER to pass): "))
-        if 0 <= i < len(device_list):
-            device_serial = device_list[i].address
-            return AdbController(adb_path=device_list[i].adb_path,
-                                 address=device_serial,
-                                 screencap_methods=adb_screencap_method)
+            if 0 <= i < len(device_list):
+                device_serial = device_list[i].address
+                return AdbController(adb_path=device_list[i].adb_path,
+                                    address=device_serial,
+                                    screencap_methods=adb_screencap_method)
     elif t == 2:
         window_list = Toolkit.find_desktop_windows()
         if len(window_list):

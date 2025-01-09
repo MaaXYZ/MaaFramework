@@ -11,7 +11,8 @@ on:
                 value: ${{ jobs.set.outputs.tag }}
             version:
                 value: ${{ jobs.set.outputs.version }}
-
+            build_config:
+                value: ${{ jobs.set.outputs.build_config }}
 jobs:
     set:
         runs-on: ubuntu-latest
@@ -49,15 +50,28 @@ jobs:
                     version=${tag#v}+${commit_hash}.$(date +%Y%m%d)
                   fi
 
+                  if $is_release; then
+                    if $is_pre_release; then
+                      build_config="RelWithDebInfo"
+                    else
+                      build_config="Release"
+                    fi
+                  else
+                    build_config="Debug"
+                  fi
+
                   echo "tag=$tag
                   version=$version
                   is_release=$is_release
-                  is_pre_release=$is_pre_release" | tee -a "$GITHUB_OUTPUT"
+                  is_pre_release=$is_pre_release
+                  build_config=$build_config" | tee -a "$GITHUB_OUTPUT"
+
         outputs:
             is_release: ${{ steps.set.outputs.is_release }}
             is_pre_release: ${{ steps.set.outputs.is_pre_release }}
             tag: ${{ steps.set.outputs.tag }} # v<release version> | v<ci version>
             version: ${{ steps.set.outputs.version }} # <release version> | <ci version>+<build> e.g ↓
+            build_config: ${{ steps.set.outputs.build_config }} # Release | RelWithDebInfo | Debug
 
 
             # 主版本号.次版本号.修订号[-(alpha|beta|rc).预发布号]

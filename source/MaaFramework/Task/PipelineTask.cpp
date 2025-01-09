@@ -35,7 +35,7 @@ bool PipelineTask::run()
     PipelineData::NextList interrupt;
     bool error_handling = false;
 
-    while (!next.empty() && !need_to_stop_) {
+    while (!next.empty() && !context_->need_to_stop()) {
         cur_task_ = current.name;
 
         size_t next_size = next.size();
@@ -44,8 +44,8 @@ bool PipelineTask::run()
 
         auto node_detail = run_reco_and_action(list, current);
 
-        if (need_to_stop_) {
-            LogError << "need_to_stop" << VAR(current.name);
+        if (context_->need_to_stop()) {
+            LogWarn << "need_to_stop" << VAR(current.name);
             return true;
         }
 
@@ -105,13 +105,21 @@ bool PipelineTask::run()
 
 void PipelineTask::post_stop()
 {
-    need_to_stop_ = true;
+    if (!context_) {
+        LogError << "context is null";
+        return;
+    }
+    context_->need_to_stop() = true;
 }
 
 NodeDetail PipelineTask::run_reco_and_action(const PipelineData::NextList& list, const PipelineData& pretask)
 {
     if (!tasker_) {
         LogError << "tasker is null";
+        return {};
+    }    
+    if (!context_) {
+        LogError << "context is null";
         return {};
     }
 
@@ -129,8 +137,8 @@ NodeDetail PipelineTask::run_reco_and_action(const PipelineData::NextList& list,
             break;
         }
 
-        if (need_to_stop_) {
-            LogError << "need_to_stop" << VAR(pretask.name);
+        if (context_->need_to_stop()) {
+            LogWarn << "need_to_stop" << VAR(pretask.name);
             return {};
         }
 

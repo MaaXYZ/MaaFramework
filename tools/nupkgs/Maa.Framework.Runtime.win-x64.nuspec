@@ -3,4 +3,4 @@
     <description>Native binaries of MAA Framework Embedded for win-x64.</description>
   </metadata>
   <files>
-    <file src="$root_path$\assets\MAA-win-x86_64\bin\**" target="runtimes\win-x64\native" />
+    <file src="$root_path$\assets\MAA-win-x86_64\bin\**\*.dll*" target="runtimes\win-x64\native" />

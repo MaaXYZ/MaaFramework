@@ -34,22 +34,15 @@ std::optional<ProcessArgvGenerator::ProcessArgv> ProcessArgvGenerator::gen(const
         string_replace_all_(s, replacement);
     }
 
-    std::filesystem::path abs_path;
-    if (auto raw_path = MAA_NS::path(res.front()); raw_path.is_absolute()) {
-        abs_path = raw_path;
-    }
-    else {
-        abs_path = boost::process::search_path(raw_path);
-    }
-
-    if (!std::filesystem::exists(abs_path)) {
-        LogError << "exec path not exists" << VAR(abs_path);
+    std::filesystem::path exec = boost::process::search_path(path(res.front()));
+    if (!std::filesystem::exists(exec)) {
+        LogError << "exec path not exists" << VAR(res.front()) << VAR(exec);
         return std::nullopt;
     }
 
     auto args = std::vector(std::make_move_iterator(res.begin() + 1), std::make_move_iterator(res.end()));
 
-    return ProcessArgv { .exec = std::move(abs_path), .args = std::move(args) };
+    return ProcessArgv { .exec = std::move(exec), .args = std::move(args) };
 }
 
 MAA_CTRL_UNIT_NS_END

@@ -50,6 +50,7 @@ public: // from MaaContextAPI
 
 public:
     std::optional<PipelineData> get_pipeline_data(const std::string& node_name);
+    bool& need_to_stop();
 
 private:
     bool check_pipeline() const;
@@ -60,6 +61,8 @@ private:
     PipelineDataMap pipeline_override_;
 
 private:
+    bool need_to_stop_ = false;
+
     mutable std::vector<std::shared_ptr<Context>> clone_holder_;
 };
 

@@ -75,6 +75,8 @@ public:
 
     const auto& default_pipeline() const { return default_pipeline_; }
 
+    const std::vector<std::filesystem::path>& paths() const { return paths_; }
+
     CustomRecognitionSession custom_recognition(const std::string& name) const;
     CustomActionSession custom_action(const std::string& name) const;
 

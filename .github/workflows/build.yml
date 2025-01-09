@@ -25,6 +25,15 @@ on:
             - "source/**"
             - "CMakeLists.txt"
     workflow_dispatch:
+        inputs:
+            build_config:
+                required: true
+                default: "Debug"
+                type: choice
+                options:
+                    - Debug
+                    - RelWithDebInfo
+                    - Release
 
 jobs:
     meta:
@@ -91,13 +100,13 @@ jobs:
               run: |
                   cmake --preset "${{ matrix.arch == 'x86_64' && 'MSVC 2022' || 'MSVC 2022 ARM' }}" -DCMAKE_SYSTEM_VERSION="10.0.26100.0" -DMAADEPS_TRIPLET="maa-${{ matrix.arch == 'x86_64' && 'x64' || 'arm64' }}-windows" -DMAA_HASH_VERSION='${{ needs.meta.outputs.tag }}' -DBUILD_NODEJS_BINDING=ON
 
-                  cmake --build build --preset "${{ matrix.arch == 'x86_64' && 'MSVC 2022' || 'MSVC 2022 ARM' }} - RelWithDebInfo" -j 16
+                  cmake --build build --preset "${{ matrix.arch == 'x86_64' && 'MSVC 2022' || 'MSVC 2022 ARM' }} - ${{ inputs.build_config || needs.meta.outputs.build_config }}" -j 16
 
             - name: Install
               shell: bash
               if: always()
               run: |
-                  cmake --install build --prefix install --config RelWithDebInfo
+                  cmake --install build --prefix install --config ${{ inputs.build_config || needs.meta.outputs.build_config }}
                   rm -rf install/bin/msvc-debug
 
                   cp -r docs install
@@ -180,13 +189,13 @@ jobs:
                     -DMAA_HASH_VERSION='${{ needs.meta.outputs.tag }}' \
                     -DBUILD_NODEJS_BINDING=ON
 
-                  cmake --build build --preset 'NinjaMulti - RelWithDebInfo' -j 16
+                  cmake --build build --preset 'NinjaMulti - ${{ inputs.build_config || needs.meta.outputs.build_config }}' -j 16
 
             - name: Install
               shell: bash
               if: always()
               run: |
-                  cmake --install build --prefix install --config RelWithDebInfo
+                  cmake --install build --prefix install --config ${{ inputs.build_config || needs.meta.outputs.build_config }}
 
                   cp -r docs install
                   cp README*.md install
@@ -262,13 +271,13 @@ jobs:
                     -DCMAKE_CXX_COMPILER=${LLVM_PREFIX}/bin/clang++ \
                     -DBUILD_NODEJS_BINDING=ON
 
-                  cmake --build build --preset 'NinjaMulti - RelWithDebInfo' -j 16
+                  cmake --build build --preset 'NinjaMulti - ${{ inputs.build_config || needs.meta.outputs.build_config }}' -j 16
 
             - name: Install
               shell: bash
               if: always()
               run: |
-                  cmake --install build --prefix install --config RelWithDebInfo
+                  cmake --install build --prefix install --config ${{ inputs.build_config || needs.meta.outputs.build_config }}
 
                   cp -r docs install
                   cp README*.md install
@@ -328,13 +337,13 @@ jobs:
                     -DMAADEPS_TRIPLET='maa-${{ matrix.arch == 'x86_64' && 'x64' || 'arm64' }}-android' \
                     -DMAA_HASH_VERSION='${{ needs.meta.outputs.tag }}'
 
-                  cmake --build build --preset 'NinjaMulti - RelWithDebInfo' -j 16
+                  cmake --build build --preset 'NinjaMulti - ${{ inputs.build_config || needs.meta.outputs.build_config }}' -j 16
 
             - name: Install
               shell: bash
               if: always()
               run: |
-                  cmake --install build --prefix install --config RelWithDebInfo
+                  cmake --install build --prefix install --config ${{ inputs.build_config || needs.meta.outputs.build_config }}
 
                   cp -r docs install
                   cp README*.md install
@@ -351,7 +360,7 @@ jobs:
 
     nuget_pack:
         needs: [meta, windows, ubuntu, macos, android]
-        runs-on: ubuntu-latest
+        runs-on: windows-latest
         steps:
             - uses: nuget/setup-nuget@v2
 
@@ -362,15 +371,16 @@ jobs:
 
             - name: Nuget Pack
               working-directory: tools/nupkgs
+              shell: bash
               run: |
-                  wget https://raw.githubusercontent.com/MaaAssistantArknights/design/main/logo/maa-logo_128x128.png
+                  curl -sSOL https://raw.githubusercontent.com/MaaAssistantArknights/design/main/logo/maa-logo_128x128.png
                   version=${{ needs.meta.outputs.version }}
                   for NUSPEC in Maa.Framework.Runtime*.nuspec; do
                     cat Head.nuspec $NUSPEC Tail.nuspec > temp && mv temp $NUSPEC
 
                     nuget pack $NUSPEC \
                       -Verbosity detailed \
-                      -Properties "version=${version//-post/};year=$(date +%Y);branch=$(git rev-parse --abbrev-ref HEAD);commit=$(git rev-parse HEAD);root_path=../.."
+                      -Properties "version=${version//-post/};year=$(date +%Y);branch=$(git rev-parse --abbrev-ref HEAD);commit=$(git rev-parse HEAD);root_path=..\.."
                   done
 
             - uses: actions/upload-artifact@v4
@@ -481,56 +491,14 @@ jobs:
                     || eval $OUTPUT_PUBLISH_FAILED
                   rm -r assets/MAA-pip-pkgs
 
-            - uses: JS-DevTools/npm-publish@v3
+            - uses: MaaXYZ/MaaFramework/.github/actions/publish_nodejs@main
               id: nodejs
               with:
-                  package: assets/MAA-nodejs-package/maa-node
                   access: public
                   token: ${{ secrets.NPM_TOKEN }}
-
-            - uses: JS-DevTools/npm-publish@v3
-              with:
-                  package: assets/MAA-nodejs-package/maa-node-win32-x64
-                  access: public
-                  token: ${{ secrets.NPM_TOKEN }}
-
-            - uses: JS-DevTools/npm-publish@v3
-              with:
-                  package: assets/MAA-nodejs-package/maa-node-win32-arm64
-                  access: public
-                  token: ${{ secrets.NPM_TOKEN }}
-
-            - uses: JS-DevTools/npm-publish@v3
-              with:
-                  package: assets/MAA-nodejs-package/maa-node-linux-x64
-                  access: public
-                  token: ${{ secrets.NPM_TOKEN }}
-
-            - uses: JS-DevTools/npm-publish@v3
-              with:
-                  package: assets/MAA-nodejs-package/maa-node-linux-arm64
-                  access: public
-                  token: ${{ secrets.NPM_TOKEN }}
-
-            - uses: JS-DevTools/npm-publish@v3
-              with:
-                  package: assets/MAA-nodejs-package/maa-node-darwin-x64
-                  access: public
-                  token: ${{ secrets.NPM_TOKEN }}
-
-            - uses: JS-DevTools/npm-publish@v3
-              with:
-                  package: assets/MAA-nodejs-package/maa-node-darwin-arm64
-                  access: public
-                  token: ${{ secrets.NPM_TOKEN }}
-
-            - name: Remove NodeJS Release
-              run: |
-                  rm -r assets/MAA-nodejs-package
-
-            - name: Remove win-dbg package
-              run: |
-                  rm -r assets/MAA-win-dbg*
+                  on_finished: rm -r assets/MAA-nodejs-package
+                  on_publish_failed: ${{ env.OUTPUT_PUBLISH_FAILED }}
+              continue-on-error: true
 
             - run: |
                   cd assets
@@ -544,13 +512,16 @@ jobs:
                   tag_name: ${{ needs.meta.outputs.tag }}
                   prerelease: ${{ needs.meta.outputs.is_pre_release == 'true' }}
 
-            - name: Create issue if failed to publish packages
-              if: steps.nuget.outputs.failed || steps.pip.outputs.failed 
+            - name: Create issue if failed to release
+              if: failure() || steps.nuget.outputs.failed || steps.pip.outputs.failed || steps.nodejs.outputs.failed
               uses: actions-cool/issues-helper@v3
               with:
                   actions: "create-issue"
-                  title: "${{ needs.meta.outputs.tag }} failed to publish packages"
+                  title: "${{ needs.meta.outputs.tag }} failed to release"
                   body: |
                       Please manually publish the following packages:
                       ${{ steps.nuget.outputs.failed && '- nuget @moomiji' || '' }}
                       ${{ steps.pip.outputs.failed && '- pip @MistEO' || '' }}
+                      ${{ steps.nodejs.outputs.failed && '- nodejs @neko-para' || '' }}
+
+                      cc @MistEO

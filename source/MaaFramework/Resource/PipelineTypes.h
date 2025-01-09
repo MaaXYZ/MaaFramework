@@ -55,6 +55,7 @@ enum class Type
     Text,
     StartApp,
     StopApp,
+    Command,
     Custom,
     StopTask,
 };
@@ -95,6 +96,13 @@ struct AppParam
     std::string package;
 };
 
+struct CommandParam
+{
+    std::string exec;
+    std::vector<std::string> args;
+    bool detach = false;
+};
+
 struct CustomParam
 {
     std::string name;
@@ -102,7 +110,7 @@ struct CustomParam
     Target target;
 };
 
-using Param = std::variant<std::monostate, ClickParam, SwipeParam, MultiSwipeParam, KeyParam, TextParam, AppParam, CustomParam>;
+using Param = std::variant<std::monostate, ClickParam, SwipeParam, MultiSwipeParam, KeyParam, TextParam, AppParam, CommandParam, CustomParam>;
 } // namespace Action
 
 struct WaitFreezesParam

@@ -38,7 +38,10 @@ bool MtouchHelper::read_info()
         return false;
     }
 
-    request_display_info();
+    if (!request_display_info()) {
+        LogWarn << "failed to request display info";
+        return false;
+    }
 
     bool landscape = display_width_ > display_height_;
     touch_width_ = landscape ? std::max(x, y) : std::min(x, y);
