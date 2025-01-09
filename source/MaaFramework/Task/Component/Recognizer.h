@@ -33,7 +33,7 @@ private:
     RecoResult nn_detect(const MAA_VISION_NS::NeuralNetworkDetectorParam& param, const std::string& name);
     RecoResult custom_recognize(const MAA_VISION_NS::CustomRecognitionParam& param, const std::string& name);
 
-    cv::Rect get_roi(const MAA_VISION_NS::Target roi);
+    cv::Rect get_roi(const MAA_VISION_NS::Target& roi);
     void save_draws(const std::string& node_name, const RecoResult& result) const;
     void show_hit_draw(const cv::Rect& box, const std::string& node_name, MaaRecoId uid) const;
 

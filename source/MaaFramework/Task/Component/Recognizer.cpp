@@ -329,7 +329,7 @@ RecoResult Recognizer::custom_recognize(const MAA_VISION_NS::CustomRecognitionPa
                         .draws = std::move(analyzer).draws() };
 }
 
-cv::Rect Recognizer::get_roi(const MAA_VISION_NS::Target roi)
+cv::Rect Recognizer::get_roi(const MAA_VISION_NS::Target& roi)
 {
     if (!tasker_) {
         LogError << "tasker is null";
