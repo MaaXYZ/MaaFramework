@@ -66,17 +66,17 @@
 
 /**
  * @{
- * @brief Message for the Recognition List.
+ * @brief Message for the next List.
  *
  * payload: {
  *     task_id: number,
- *     name: string,
+ *     node: string,
  *     list: string[],
  * }
  */
-#define MaaMsg_Task_NextList_Starting ("Task.NextList.Starting")
-#define MaaMsg_Task_NextList_Succeeded ("Task.NextList.Succeeded")
-#define MaaMsg_Task_NextList_Failed ("Task.NextList.Failed")
+#define MaaMsg_Node_NextList_Starting ("Node.NextList.Starting")
+#define MaaMsg_Node_NextList_Succeeded ("Node.NextList.Succeeded")
+#define MaaMsg_Node_NextList_Failed ("Node.NextList.Failed")
 /// @}
 
 /**
@@ -86,27 +86,27 @@
  * payload: {
  *     task_id: number,
  *     reco_id: number,
- *     name: string,
+ *     node: string,
  * }
  */
-#define MaaMsg_Task_Recognition_Starting ("Task.Recognition.Starting")
-#define MaaMsg_Task_Recognition_Succeeded ("Task.Recognition.Succeeded")
-#define MaaMsg_Task_Recognition_Failed ("Task.Recognition.Failed")
+#define MaaMsg_Node_Recognition_Starting ("Node.Recognition.Starting")
+#define MaaMsg_Node_Recognition_Succeeded ("Node.Recognition.Succeeded")
+#define MaaMsg_Node_Recognition_Failed ("Node.Recognition.Failed")
 /// @}
 
 /**
  * @{
- * @brief Message for the task action.
+ * @brief Message for the node action.
  *
  * payload: {
  *     task_id: number,
  *     node_id: number,
- *     name: string,
+ *     node: string,
  * }
  */
-#define MaaMsg_Task_Action_Starting ("Task.Action.Starting")
-#define MaaMsg_Task_Action_Succeeded ("Task.Action.Succeeded")
-#define MaaMsg_Task_Action_Failed ("Task.Action.Failed")
+#define MaaMsg_Node_Action_Starting ("Node.Action.Starting")
+#define MaaMsg_Node_Action_Succeeded ("Node.Action.Succeeded")
+#define MaaMsg_Node_Action_Failed ("Node.Action.Failed")
 /// @}
 
 /** @} */

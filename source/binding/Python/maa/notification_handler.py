@@ -61,7 +61,7 @@ class NotificationHandler(ABC):
     @dataclass
     class TaskNextListDetail:
         task_id: int
-        name: str
+        node: str
         next_list: list[str]
 
     def on_task_next_list(
@@ -73,7 +73,7 @@ class NotificationHandler(ABC):
     class TaskRecognitionDetail:
         task_id: int
         reco_id: int
-        name: str
+        node: str
 
     def on_task_recognition(
         self, noti_type: NotificationType, detail: TaskRecognitionDetail
@@ -84,7 +84,7 @@ class NotificationHandler(ABC):
     class TaskActionDetail:
         task_id: int
         node_id: int
-        name: str
+        node: str
 
     def on_task_action(self, noti_type: NotificationType, detail: TaskActionDetail):
         pass
@@ -121,29 +121,29 @@ class NotificationHandler(ABC):
             )
             self.on_tasker_task(noti_type, detail)
 
-        elif msg.startswith("Task.NextList"):
+        elif msg.startswith("Node.NextList"):
             detail = self.TaskNextListDetail(
                 task_id=details["task_id"],
-                name=details["name"],
+                node=details["node"],
                 next_list=details["list"],
             )
-            self.on_task_next_list(noti_type, detail)
+            self.on_node_next_list(noti_type, detail)
 
-        elif msg.startswith("Task.Recognition"):
+        elif msg.startswith("Node.Recognition"):
             detail = self.TaskRecognitionDetail(
                 task_id=details["task_id"],
                 reco_id=details["reco_id"],
-                name=details["name"],
+                node=details["node"],
             )
-            self.on_task_recognition(noti_type, detail)
+            self.on_node_recognition(noti_type, detail)
 
-        elif msg.startswith("Task.Action"):
+        elif msg.startswith("Node.Action"):
             detail = self.TaskActionDetail(
                 task_id=details["task_id"],
                 node_id=details["node_id"],
-                name=details["name"],
+                node=details["node"],
             )
-            self.on_task_action(noti_type, detail)
+            self.on_node_action(noti_type, detail)
 
         else:
             self.on_unknown_notification(msg, details)

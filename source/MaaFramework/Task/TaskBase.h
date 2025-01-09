@@ -53,7 +53,7 @@ protected:
     Tasker* tasker_ = nullptr;
 
     const std::string entry_;
-    std::string cur_task_;
+    std::string cur_node_;
 
     std::shared_ptr<Context> context_ = nullptr;
 

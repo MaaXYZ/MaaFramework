@@ -30,22 +30,22 @@ bool PipelineTask::run()
         return false;
     }
 
-    PipelineData current = std::move(*begin_opt);
+    PipelineData node = std::move(*begin_opt);
     PipelineData::NextList next = { entry_ };
     PipelineData::NextList interrupt;
     bool error_handling = false;
 
     while (!next.empty() && !context_->need_to_stop()) {
-        cur_task_ = current.name;
+        cur_node_ = node.name;
 
         size_t next_size = next.size();
         PipelineData::NextList list = std::move(next);
         list.insert(list.end(), std::make_move_iterator(interrupt.begin()), std::make_move_iterator(interrupt.end()));
 
-        auto node_detail = run_reco_and_action(list, current);
+        auto node_detail = run_reco_and_action(list, node);
 
         if (context_->need_to_stop()) {
-            LogWarn << "need_to_stop" << VAR(current.name);
+            LogWarn << "need_to_stop" << VAR(node.name);
             return true;
         }
 
@@ -61,26 +61,26 @@ bool PipelineTask::run()
                 LogError << "get_pipeline_data failed, task not exist" << VAR(node_detail.name);
                 return false;
             }
-            PipelineData hit_task = std::move(*hit_opt);
+            PipelineData hit_node = std::move(*hit_opt);
 
-            if (is_interrupt || hit_task.is_sub) { // for compatibility with v1.x
-                LogInfo << "push task_stack:" << current.name;
-                task_stack.emplace(current.name);
+            if (is_interrupt || hit_node.is_sub) { // for compatibility with v1.x
+                LogInfo << "push task_stack:" << node.name;
+                task_stack.emplace(node.name);
             }
 
-            current = hit_task;
-            next = hit_task.next;
-            interrupt = hit_task.interrupt;
+            node = hit_node;
+            next = hit_node.next;
+            interrupt = hit_node.interrupt;
         }
         else if (error_handling) {
-            LogError << "error handling loop detected" << VAR(current.name);
+            LogError << "error handling loop detected" << VAR(node.name);
             next.clear();
             interrupt.clear();
         }
         else {
-            LogInfo << "handle error" << VAR(current.name);
+            LogInfo << "handle error" << VAR(node.name);
             error_handling = true;
-            next = current.on_error;
+            next = node.on_error;
             interrupt.clear();
         }
 
@@ -94,9 +94,9 @@ bool PipelineTask::run()
                 LogError << "get_pipeline_data failed, task not exist" << VAR(top);
                 return false;
             }
-            current = std::move(*top_opt);
-            next = current.next;
-            interrupt = current.interrupt;
+            node = std::move(*top_opt);
+            next = node.next;
+            interrupt = node.interrupt;
         }
     }
 
@@ -117,7 +117,7 @@ NodeDetail PipelineTask::run_reco_and_action(const PipelineData::NextList& list,
     if (!tasker_) {
         LogError << "tasker is null";
         return {};
-    }    
+    }
     if (!context_) {
         LogError << "context is null";
         return {};
