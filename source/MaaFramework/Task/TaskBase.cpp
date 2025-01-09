@@ -175,7 +175,7 @@ NodeDetail TaskBase::run_action(const RecoResult& reco)
 
     NodeDetail result {
         .node_id = generate_node_id(),
-        .node = reco.name,
+        .name = reco.name,
         .reco_id = reco.reco_id,
         .completed = ret,
     };
@@ -186,7 +186,7 @@ NodeDetail TaskBase::run_action(const RecoResult& reco)
         const json::value cb_detail {
             { "task_id", task_id() },
             { "node_id", result.node_id },
-            { "name", reco.name },
+            { "node", reco.name },
         };
         notify(result.completed ? MaaMsg_Node_Action_Succeeded : MaaMsg_Node_Action_Failed, cb_detail);
     }
