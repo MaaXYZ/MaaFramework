@@ -508,12 +508,16 @@ bool ResourceMgr::load(const std::filesystem::path& path)
 {
     LogFunc << VAR(path);
 
-    using namespace path_literals;
+    if (!std::filesystem::exists(path) || !std::filesystem::is_directory(path)) {
+        LogError << "path not exists or not a directory" << VAR(path);
+        return false;
+    }
 
     check_and_set_inference_device();
 
     paths_.emplace_back(path);
 
+    using namespace path_literals;
     bool ret = default_pipeline_.load(path / "default_pipeline.json"_path);
     ret &= pipeline_res_.load(path / "pipeline"_path, false, default_pipeline_);
     ret &= ocr_res_.lazy_load(path / "model"_path / "ocr"_path, false);
