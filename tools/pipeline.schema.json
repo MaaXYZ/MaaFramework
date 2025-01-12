@@ -40,6 +40,7 @@
                         "StartApp",
                         "StopApp",
                         "StopTask",
+                        "Command",
                         "Custom"
                     ],
                     "default": "DoNothing"
@@ -286,6 +287,23 @@
                     "default": ""
                 },
                 "package": {},
+                "exec": {
+                    "description": "执行的程序路径。必选。",
+                    "type": "string"
+                },
+                "args": {
+                    "description": "执行的参数。可选。支持部分运行期参数替换：{ENTRY}, {NODE}, {IMAGE}, {BOX}, {RESOURCE_DIR}, {LIBRARY_DIR}。",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    },
+                    "default": []
+                },
+                "detach": {
+                    "description": "分离子进程，即不等待子进程执行完成，直接继续之后后面的节点。可选，默认 false。",
+                    "type": "boolean",
+                    "default": false
+                },
                 "custom_action": {
                     "description": "动作名，同 MaaResourceRegisterCustomAction 接口传入的动作名。必选。",
                     "type": "string",
@@ -725,6 +743,14 @@
                             "properties": {
                                 "action": {
                                     "const": "StopTask"
+                                }
+                            }
+                        },
+                        {
+                            "$comment": "Command",
+                            "properties": {
+                                "action": {
+                                    "const": "Command"
                                 }
                             }
                         },
