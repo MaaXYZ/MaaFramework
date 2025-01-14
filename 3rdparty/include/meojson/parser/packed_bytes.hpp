@@ -1,3 +1,5 @@
+// IWYU pragma: private, include <meojson/json.hpp>
+
 #pragma once
 
 #include <cstdint>
@@ -28,10 +30,12 @@ struct packed_bytes
 };
 }
 
+#ifndef MEOJSON_DISABLE_PACKED_BYTES
 #if defined(__SSE2__) || defined(_M_X64) || (defined(_M_IX86_FP) && _M_IX86_FP)
 #include "packed_bytes_x86.hpp"
 #elif defined(__ARM_NEON) || defined(_M_ARM) || defined(_M_ARM64)
 #include "packed_bytes_arm.hpp"
+#endif
 #endif
 
 namespace json::_packed_bytes

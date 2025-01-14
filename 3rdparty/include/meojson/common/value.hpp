@@ -1,3 +1,5 @@
+// IWYU pragma: private, include <meojson/json.hpp>
+
 #pragma once
 
 #include <cstddef>
@@ -98,6 +100,12 @@ public:
     {
     }
 
+    template <typename enum_t, std::enable_if_t<std::is_enum_v<enum_t>, bool> = true>
+    basic_value(enum_t e)
+        : basic_value(static_cast<std::underlying_type_t<enum_t>>(e))
+    {
+    }
+
     template <
         typename jsonization_t,
         std::enable_if_t<_utils::has_to_json_in_member<jsonization_t>::value, bool> = true>
@@ -111,6 +119,18 @@ public:
         std::enable_if_t<_utils::has_to_json_in_templ_spec<jsonization_t>::value, bool> = true>
     basic_value(const jsonization_t& value)
         : basic_value(ext::jsonization<jsonization_t>().to_json(value))
+    {
+    }
+
+    template <typename... elem_ts>
+    basic_value(std::tuple<elem_ts...>&& tup)
+        : basic_value(basic_array<string_t>(std::forward<std::tuple<elem_ts...>>(tup)))
+    {
+    }
+
+    template <typename elem1_t, typename elem2_t>
+    basic_value(std::pair<elem1_t, elem2_t>&& pair)
+        : basic_value(basic_array<string_t>(std::pair<elem1_t, elem2_t>(pair)))
     {
     }
 
@@ -335,6 +355,24 @@ public:
         return dst;
     }
 
+    template <typename enum_t, std::enable_if_t<std::is_enum_v<enum_t>, bool> = true>
+    explicit operator enum_t() const
+    {
+        return static_cast<enum_t>(static_cast<std::underlying_type_t<enum_t>>(*this));
+    }
+
+    template <typename... elem_ts>
+    explicit operator std::tuple<elem_ts...>() const
+    {
+        return as_array().template as_tuple<elem_ts...>();
+    }
+    
+    template <typename elem1_t, typename elem2_t>
+    explicit operator std::pair<elem1_t, elem2_t>() const
+    {
+        return as_array().template as_pair<elem1_t, elem2_t>();
+    }
+
 private:
     friend class basic_array<string_t>;
     friend class basic_object<string_t>;
@@ -505,7 +543,7 @@ inline bool basic_value<string_t>::is() const noexcept
     else if constexpr (std::is_same_v<bool, value_t>) {
         return is_boolean();
     }
-    else if constexpr (std::is_arithmetic_v<value_t>) {
+    else if constexpr (std::is_arithmetic_v<value_t> || std::is_enum_v<value_t>) {
         return is_number();
     }
     else if constexpr (std::is_constructible_v<string_t, value_t>) {

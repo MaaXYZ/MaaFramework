@@ -1,3 +1,5 @@
+// IWYU pragma: private, include <meojson/json.hpp>
+
 #pragma once
 
 #include <type_traits>
@@ -13,8 +15,8 @@ template <typename in_t, typename serializer_t>
 class is_serializable
 {
     template <typename U>
-    static auto
-        test(int) -> decltype(std::declval<serializer_t>()(std::declval<U>()), std::true_type());
+    static auto test(int)
+        -> decltype(std::declval<serializer_t>()(std::declval<U>()), std::true_type());
 
     template <typename U>
     static std::false_type test(...);

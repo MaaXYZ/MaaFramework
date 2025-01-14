@@ -1,5 +1,10 @@
+// IWYU pragma: private, include <meojson/json.hpp>
+
 #pragma once
 
+#include <iomanip>
+#include <limits>
+#include <sstream>
 #include <string>
 #include <type_traits>
 
@@ -163,7 +168,7 @@ public:
 };
 
 template <typename string_t>
-static constexpr string_t unescape_string(const string_t& str)
+inline constexpr string_t unescape_string(const string_t& str)
 {
     using char_t = typename string_t::value_type;
 
@@ -211,26 +216,41 @@ static constexpr string_t unescape_string(const string_t& str)
 }
 
 template <typename string_t>
-static constexpr string_t true_string()
+inline constexpr string_t true_string()
 {
     return { 't', 'r', 'u', 'e' };
 }
 
 template <typename string_t>
-static constexpr string_t false_string()
+inline constexpr string_t false_string()
 {
     return { 'f', 'a', 'l', 's', 'e' };
 }
 
 template <typename string_t>
-static constexpr string_t null_string()
+inline constexpr string_t null_string()
 {
     return { 'n', 'u', 'l', 'l' };
 }
 
 template <typename string_t, typename any_t>
-string_t to_basic_string(any_t&& arg)
+inline string_t to_basic_string(any_t&& arg)
 {
+#ifdef MEOJSON_KEEP_FLOATING_PRECISION
+    using real_type = std::remove_reference_t<any_t>;
+    if constexpr (std::is_floating_point_v<real_type>) {
+        if constexpr (std::is_same_v<string_t, std::string>) {
+            std::ostringstream oss;
+            oss << std::setprecision(std::numeric_limits<real_type>::max_digits10) << arg;
+            return oss.str();
+        }
+        else if constexpr (std::is_same_v<string_t, std::wstring>) {
+            std::wostringstream oss;
+            oss << std::setprecision(std::numeric_limits<real_type>::max_digits10) << arg;
+            return oss.str();
+        }
+    }
+#endif
     if constexpr (std::is_same_v<string_t, std::string>) {
         return std::to_string(std::forward<any_t>(arg));
     }

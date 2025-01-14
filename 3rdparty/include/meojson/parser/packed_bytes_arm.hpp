@@ -1,3 +1,5 @@
+// IWYU pragma: private, include <meojson/json.hpp>
+
 #pragma once
 
 // current NEON implementation doesn't outperform 64-bit scalar implementation

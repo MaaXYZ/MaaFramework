@@ -1,4 +1,7 @@
+// IWYU pragma: private, include <meojson/json.hpp>
+
 #pragma once
+
 #include "packed_bytes.hpp"
 
 #include <emmintrin.h>
