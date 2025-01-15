@@ -15,5 +15,5 @@ var MaaResource_8h =
     [ "MaaResourceLoaded", "MaaResource_8h.html#a11fd94300f47dd638d5bc8cee8dbc63b", null ],
     [ "MaaResourceSetOption", "MaaResource_8h.html#a85923050e7b1f1b2106fe40e86f01171", null ],
     [ "MaaResourceGetHash", "MaaResource_8h.html#a5b6ebae54e1ebf87ce57ea6ef4333281", null ],
-    [ "MaaResourceGetTaskList", "MaaResource_8h.html#a232fccdcc6984a4859a9e98089b8b067", null ]
+    [ "MaaResourceGetNodeList", "MaaResource_8h.html#a93292991dbd360311465e875e9053055", null ]
 ];

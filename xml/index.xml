@@ -75,7 +75,7 @@
     <member refid="MaaResource_8h_1a11fd94300f47dd638d5bc8cee8dbc63b" kind="function"><name>MaaResourceLoaded</name></member>
     <member refid="MaaResource_8h_1a85923050e7b1f1b2106fe40e86f01171" kind="function"><name>MaaResourceSetOption</name></member>
     <member refid="MaaResource_8h_1a5b6ebae54e1ebf87ce57ea6ef4333281" kind="function"><name>MaaResourceGetHash</name></member>
-    <member refid="MaaResource_8h_1a232fccdcc6984a4859a9e98089b8b067" kind="function"><name>MaaResourceGetTaskList</name></member>
+    <member refid="MaaResource_8h_1a93292991dbd360311465e875e9053055" kind="function"><name>MaaResourceGetNodeList</name></member>
   </compound>
   <compound refid="MaaTasker_8h" kind="file"><name>MaaTasker.h</name>
     <member refid="MaaTasker_8h_1a1be38fb8f5e4b9e8240d5847c1f558ac" kind="function"><name>MaaTaskerCreate</name></member>

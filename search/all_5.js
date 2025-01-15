@@ -190,7 +190,7 @@ var searchData=
   ['maaresourcecreate_187',['MaaResourceCreate',['../MaaResource_8h.html#ab4ceccc16012049fe2ea822ff543fedb',1,'MaaResource.h']]],
   ['maaresourcedestroy_188',['MaaResourceDestroy',['../MaaResource_8h.html#a2c9731b5a32da11f25ae57ea8ce5373e',1,'MaaResource.h']]],
   ['maaresourcegethash_189',['MaaResourceGetHash',['../MaaResource_8h.html#a5b6ebae54e1ebf87ce57ea6ef4333281',1,'MaaResource.h']]],
-  ['maaresourcegettasklist_190',['MaaResourceGetTaskList',['../MaaResource_8h.html#a232fccdcc6984a4859a9e98089b8b067',1,'MaaResource.h']]],
+  ['maaresourcegetnodelist_190',['MaaResourceGetNodeList',['../MaaResource_8h.html#a93292991dbd360311465e875e9053055',1,'MaaResource.h']]],
   ['maaresourceloaded_191',['MaaResourceLoaded',['../MaaResource_8h.html#a11fd94300f47dd638d5bc8cee8dbc63b',1,'MaaResource.h']]],
   ['maaresourcepostbundle_192',['MaaResourcePostBundle',['../MaaResource_8h.html#a08043e4ee98ab14cc8c731cd5d98c064',1,'MaaResource.h']]],
   ['maaresourceregistercustomaction_193',['MaaResourceRegisterCustomAction',['../MaaResource_8h.html#acafee77689486849e4c9bd501aa361bc',1,'MaaResource.h']]],
