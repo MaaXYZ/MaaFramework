@@ -185,7 +185,7 @@ bool PipelineResMgr::check_next_list(const PipelineData::NextList& next_list, co
     return true;
 }
 
-std::vector<std::string> PipelineResMgr::get_task_list() const
+std::vector<std::string> PipelineResMgr::get_node_list() const
 {
     auto k = pipeline_data_map_ | std::views::keys;
     return std::vector(k.begin(), k.end());

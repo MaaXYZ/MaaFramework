@@ -34,7 +34,7 @@ public:
     virtual void clear_custom_action() = 0;
 
     virtual std::string get_hash() const = 0;
-    virtual std::vector<std::string> get_task_list() const = 0;
+    virtual std::vector<std::string> get_node_list() const = 0;
 };
 
 struct MaaController
@@ -102,8 +102,11 @@ public:
 
     virtual MaaTaskId run_task(const std::string& entry, const json::object& pipeline_override) = 0;
     virtual MaaRecoId run_recognition(const std::string& entry, const json::object& pipeline_override, const cv::Mat& image) = 0;
-    virtual MaaNodeId
-        run_action(const std::string& entry, const json::object& pipeline_override, const cv::Rect& box, const std::string& reco_detail) = 0;
+    virtual MaaNodeId run_action(
+        const std::string& entry,
+        const json::object& pipeline_override,
+        const cv::Rect& box,
+        const std::string& reco_detail) = 0;
     virtual bool override_pipeline(const json::object& pipeline_override) = 0;
     virtual bool override_next(const std::string& node_name, const std::vector<std::string>& next) = 0;
 

@@ -166,7 +166,7 @@ std::optional<std::string> resource_get_hash(Napi::External<ResourceInfo> info)
 std::optional<std::vector<std::string>> resource_get_task_list(Napi::External<ResourceInfo> info)
 {
     StringListBuffer buffer;
-    auto ret = MaaResourceGetTaskList(info.Data()->handle, buffer);
+    auto ret = MaaResourceGetNodeList(info.Data()->handle, buffer);
     if (ret) {
         return buffer.as_vector([](StringBufferRefer buf) { return buf.str(); });
     }

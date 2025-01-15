@@ -193,14 +193,14 @@ MaaBool MaaResourceGetHash(const MaaResource* res, MaaStringBuffer* buffer)
     return true;
 }
 
-MaaBool MaaResourceGetTaskList(const MaaResource* res, /* out */ MaaStringListBuffer* buffer)
+MaaBool MaaResourceGetNodeList(const MaaResource* res, /* out */ MaaStringListBuffer* buffer)
 {
     if (!res || !buffer) {
         LogError << "handle is null";
         return false;
     }
 
-    auto list = res->get_task_list();
+    auto list = res->get_node_list();
 
     buffer->clear();
 

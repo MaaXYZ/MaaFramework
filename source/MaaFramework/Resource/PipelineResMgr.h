@@ -27,7 +27,7 @@ public:
 
     const PipelineDataMap& get_pipeline_data_map() const { return pipeline_data_map_; }
 
-    std::vector<std::string> get_task_list() const;
+    std::vector<std::string> get_node_list() const;
 
 public:
     static bool parse_task(

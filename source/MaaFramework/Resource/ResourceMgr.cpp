@@ -106,9 +106,9 @@ std::string ResourceMgr::get_hash() const
     return hash_cache_;
 }
 
-std::vector<std::string> ResourceMgr::get_task_list() const
+std::vector<std::string> ResourceMgr::get_node_list() const
 {
-    return pipeline_res_.get_task_list();
+    return pipeline_res_.get_node_list();
 }
 
 void ResourceMgr::post_stop()

@@ -51,7 +51,7 @@ extern "C"
 
     MAA_FRAMEWORK_API MaaBool MaaResourceGetHash(const MaaResource* res, /* out */ MaaStringBuffer* buffer);
 
-    MAA_FRAMEWORK_API MaaBool MaaResourceGetTaskList(const MaaResource* res, /* out */ MaaStringListBuffer* buffer);
+    MAA_FRAMEWORK_API MaaBool MaaResourceGetNodeList(const MaaResource* res, /* out */ MaaStringListBuffer* buffer);
 
 #ifdef __cplusplus
 }

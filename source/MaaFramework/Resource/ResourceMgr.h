@@ -51,7 +51,7 @@ public: // MaaResource
     virtual void clear_custom_action() override;
 
     virtual std::string get_hash() const override;
-    virtual std::vector<std::string> get_task_list() const override;
+    virtual std::vector<std::string> get_node_list() const override;
 
 public:
     void post_stop();
