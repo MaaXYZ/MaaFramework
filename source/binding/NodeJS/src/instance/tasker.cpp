@@ -144,7 +144,7 @@ std::optional<std::tuple<std::string, std::string, bool, MaaRect, std::string, N
 {
     StringBuffer name;
     StringBuffer algorithm;
-    MaaBool hit {};
+    MaaBool hit = false;
     MaaRect box {};
     StringBuffer detail;
     ImageBuffer raw;
@@ -162,8 +162,8 @@ std::optional<std::tuple<std::string, std::string, bool, MaaRect, std::string, N
 std::optional<std::tuple<std::string, MaaRecoId, bool>> tasker_get_node_detail(Napi::External<TaskerInfo> info, MaaNodeId id)
 {
     StringBuffer name;
-    MaaRecoId reco_id;
-    MaaBool completed;
+    MaaRecoId reco_id = MaaInvalidId;
+    MaaBool completed = false;
     if (MaaTaskerGetNodeDetail(info.Data()->handle, id, name, &reco_id, &completed)) {
         return std::make_tuple(name.str(), reco_id, completed);
     }
@@ -181,7 +181,7 @@ std::optional<std::tuple<std::string, std::vector<MaaNodeId>, MaaStatus>>
     }
     StringBuffer entry;
     std::vector<MaaNodeId> nodes(node_size);
-    MaaStatus status;
+    MaaStatus status = MaaStatus_Invalid;
     if (MaaTaskerGetTaskDetail(info.Data()->handle, id, entry, nodes.data(), &node_size, &status)) {
         return std::make_tuple(entry.str(), nodes, status);
     }
@@ -192,7 +192,7 @@ std::optional<std::tuple<std::string, std::vector<MaaNodeId>, MaaStatus>>
 
 std::optional<MaaNodeId> tasker_get_latest_node(Napi::External<TaskerInfo> info, std::string name)
 {
-    MaaNodeId latest_id;
+    MaaNodeId latest_id = MaaInvalidId;
     if (MaaTaskerGetLatestNode(info.Data()->handle, name.c_str(), &latest_id)) {
         return latest_id;
     }

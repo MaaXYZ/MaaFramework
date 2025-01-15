@@ -196,8 +196,8 @@ export class TaskerBase {
         }
     }
 
-    latest_node(task: string) {
-        return maa.tasker_get_latest_node(this.handle, task)
+    latest_node(node: string) {
+        return maa.tasker_get_latest_node(this.handle, node)
     }
 }
 
