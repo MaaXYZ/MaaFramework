@@ -144,8 +144,8 @@ std::optional<std::tuple<std::string, std::string, bool, MaaRect, std::string, N
 {
     StringBuffer name;
     StringBuffer algorithm;
-    MaaBool hit;
-    MaaRect box;
+    MaaBool hit {};
+    MaaRect box {};
     StringBuffer detail;
     ImageBuffer raw;
     ImageListBuffer draws;
