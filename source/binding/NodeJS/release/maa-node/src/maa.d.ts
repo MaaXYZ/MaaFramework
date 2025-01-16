@@ -229,7 +229,7 @@ export declare function resource_status(handle: ResourceHandle, res_id: ResId): 
 export declare function resource_wait(handle: ResourceHandle, res_id: ResId): Promise<Status>
 export declare function resource_loaded(handle: ResourceHandle): boolean
 export declare function resource_get_hash(handle: ResourceHandle): string | null
-export declare function resource_get_task_list(handle: ResourceHandle): string[] | null
+export declare function resource_get_node_list(handle: ResourceHandle): string[] | null
 
 // tasker.cpp
 

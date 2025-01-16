@@ -154,7 +154,7 @@ export class ResourceBase {
     }
 
     get task_list() {
-        return maa.resource_get_task_list(this.handle)
+        return maa.resource_get_node_list(this.handle)
     }
 }
 

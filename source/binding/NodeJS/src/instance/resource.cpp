@@ -163,7 +163,7 @@ std::optional<std::string> resource_get_hash(Napi::External<ResourceInfo> info)
     }
 }
 
-std::optional<std::vector<std::string>> resource_get_task_list(Napi::External<ResourceInfo> info)
+std::optional<std::vector<std::string>> resource_get_node_list(Napi::External<ResourceInfo> info)
 {
     StringListBuffer buffer;
     auto ret = MaaResourceGetNodeList(info.Data()->handle, buffer);
@@ -193,5 +193,5 @@ void load_instance_resource(Napi::Env env, Napi::Object& exports, Napi::External
     BIND(resource_wait);
     BIND(resource_loaded);
     BIND(resource_get_hash);
-    BIND(resource_get_task_list);
+    BIND(resource_get_node_list);
 }
