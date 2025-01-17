@@ -270,6 +270,10 @@ cv::Rect Actuator::get_target_rect(const MAA_RES_NS::Action::Target target, cons
         LogError << "tasker is null";
         return {};
     }
+    if (!tasker_->controller()) {
+        LogError << "controller is null";
+        return {};
+    }
 
     using namespace MAA_RES_NS::Action;
 
@@ -295,10 +299,13 @@ cv::Rect Actuator::get_target_rect(const MAA_RES_NS::Action::Target target, cons
         return {};
     }
 
-    return cv::Rect { raw.x + target.offset.x,
-                      raw.y + target.offset.y,
-                      raw.width + target.offset.width,
-                      raw.height + target.offset.height };
+    auto image = controller()->cached_image();
+    int x = std::clamp(raw.x, 0, image.cols);
+    int y = std::clamp(raw.y, 0, image.rows);
+    int width = std::clamp(raw.width, 0, image.cols - x);
+    int height = std::clamp(raw.height, 0, image.rows - y);
+
+    return cv::Rect(x, y, width, height);
 }
 
 MAA_CTRL_NS::ControllerAgent* Actuator::controller()
