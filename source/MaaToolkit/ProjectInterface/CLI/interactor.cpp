@@ -1,7 +1,6 @@
 #include "interactor.h"
 
 #include <algorithm>
-#include <exception>
 #include <format>
 #include <functional>
 #include <ranges>

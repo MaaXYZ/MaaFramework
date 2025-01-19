@@ -1,5 +1,7 @@
 #pragma once
 
+#include <exception>
+
 #include "MaaFramework/MaaDef.h"
 #include "ProjectInterface/Configurator.h"
 
