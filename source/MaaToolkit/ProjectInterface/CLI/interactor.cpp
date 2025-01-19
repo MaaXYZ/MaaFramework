@@ -1,6 +1,7 @@
 #include "interactor.h"
 
 #include <algorithm>
+#include <exception>
 #include <format>
 #include <functional>
 #include <ranges>
@@ -29,6 +30,10 @@ std::vector<int> input_multi_impl(size_t size, std::string_view prompt)
         std::cin.sync();
         std::string buffer;
         std::getline(std::cin, buffer);
+
+        if (std::cin.eof()) {
+            throw InputEOF();
+        }
 
         if (buffer.empty()) {
             fail();
