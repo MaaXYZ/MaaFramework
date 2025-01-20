@@ -115,7 +115,13 @@ We also welcome you to submit a PR to add your project to the best practices lis
 
 ## License
 
-`MaaFramework` is open-sourced under the [`LGPL-3.0`](./LICENSE.md) license.
+### MaaFramework
+
+This project is open-sourced under the [`LGPL-3.0`](./LICENSE.md) license.
+
+### DirectML
+
+This project supports GPU acceleration, which relies on [DirectML](https://learn.microsoft.com/en-us/windows/ai/directml/dml) on the Windows platform. DirectML is an independent component provided by Microsoft; it is not part of this project's open-source portion and is not subject to the LGPL-3.0 license. For user convenience, we have included an unmodified DirectML.dll file in the installation package. If you do not require GPU acceleration, you can safely delete this DLL file, and the core functionality of the software will remain unaffected.
 
 ## Development
 
