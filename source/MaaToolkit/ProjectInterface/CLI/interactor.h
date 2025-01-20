@@ -1,7 +1,5 @@
 #pragma once
 
-#include <exception>
-
 #include "MaaFramework/MaaDef.h"
 #include "ProjectInterface/Configurator.h"
 
@@ -55,9 +53,4 @@ private:
     void* notify_trans_arg_ = nullptr;
     std::map<std::string, MAA_PROJECT_INTERFACE_NS::CustomRecognitionSession> custom_recognitions_;
     std::map<std::string, MAA_PROJECT_INTERFACE_NS::CustomActionSession> custom_actions_;
-};
-
-struct InputEOF : public std::exception
-{
-    virtual const char* what() const override { return "EOF detected during input"; }
 };

@@ -15,6 +15,8 @@
 #include "Utils/Logger.h"
 #include "Utils/Platform.h"
 
+static bool s_eof = false;
+
 // return [1, size]
 std::vector<int> input_multi_impl(size_t size, std::string_view prompt)
 {
@@ -31,7 +33,8 @@ std::vector<int> input_multi_impl(size_t size, std::string_view prompt)
         std::getline(std::cin, buffer);
 
         if (std::cin.eof()) {
-            throw InputEOF();
+            s_eof = true;
+            return {};
         }
 
         if (buffer.empty()) {
@@ -71,6 +74,9 @@ int input(size_t size, std::string_view prompt = "Please input")
     int val = 0;
     while (true) {
         auto values = input_multi_impl(size, prompt);
+        if (s_eof) {
+            return {};
+        }
         if (values.size() != 1) {
             fail();
             continue;
@@ -244,6 +250,9 @@ bool Interactor::interact_once()
     std::cout << "\n";
 
     int action = input(7);
+    if (s_eof) {
+        return false;
+    }
 
     switch (action) {
     case 1:

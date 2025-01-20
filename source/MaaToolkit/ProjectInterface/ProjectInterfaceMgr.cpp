@@ -44,12 +44,7 @@ bool ProjectInterfaceMgr::run_cli(
         return interactor.run();
     }
 
-    try {
-        interactor.interact();
-    }
-    catch ([[maybe_unused]] const InputEOF& exc) {
-        std::cerr << "EOF detected, abort cli!";
-    }
+    interactor.interact();
     return true;
 }
 
