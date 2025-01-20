@@ -115,7 +115,13 @@ MAA 正计划建设为一类项目，而非舟的单一软件。
 
 ## 许可证
 
-`MaaFramework` 采用 [`LGPL-3.0`](./LICENSE.md) 许可证进行开源。
+### MaaFramework
+
+本项目采用 [`LGPL-3.0`](./LICENSE.md) 许可证进行开源。
+
+### DirectML
+
+本项目支持 GPU 加速功能，其在 Windows 平台上依赖于 Microsoft 提供的独立组件 [DirectML](https://learn.microsoft.com/en-us/windows/ai/directml/)。DirectML 并非本项目的开源部分，也不受 LGPL-3.0 的约束。为方便用户，我们随安装包附带了一个未经修改的 DirectML.dll 文件。如果您无需 GPU 加速功能，可安全删除该 DLL 文件，软件的核心功能仍可正常运行。
 
 ## 开发
 
