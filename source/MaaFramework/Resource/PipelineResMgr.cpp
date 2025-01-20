@@ -966,6 +966,23 @@ bool PipelineResMgr::parse_color_matcher_param(
         return false;
     }
 
+    if (!parse_order_of_result(
+            input,
+            output.order_by,
+            output.result_index,
+            default_value.order_by,
+            default_value.result_index,
+            {
+                MAA_VISION_NS::ResultOrderBy::Horizontal,
+                MAA_VISION_NS::ResultOrderBy::Vertical,
+                MAA_VISION_NS::ResultOrderBy::Score,
+                MAA_VISION_NS::ResultOrderBy::Area,
+                MAA_VISION_NS::ResultOrderBy::Random,
+            })) {
+        LogError << "failed to parse_order_of_result" << VAR(input);
+        return false;
+    }
+
     std::vector<std::vector<int>> default_lower;
     std::vector<std::vector<int>> default_upper;
 
