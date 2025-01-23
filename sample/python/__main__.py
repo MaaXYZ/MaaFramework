@@ -1,23 +1,28 @@
 # python -m pip install maafw
-from maa.resource import Resource
-from maa.controller import AdbController
 from maa.tasker import Tasker
 from maa.toolkit import Toolkit
-
-from maa.custom_recognition import CustomRecognition
+from maa.context import Context
+from maa.resource import Resource
+from maa.controller import AdbController
 from maa.custom_action import CustomAction
+from maa.custom_recognition import CustomRecognition
 from maa.notification_handler import NotificationHandler, NotificationType
+
+
+resource = Resource()
 
 
 def main():
     user_path = "./"
     Toolkit.init_option(user_path)
 
-    resource = Resource()
     res_job = resource.post_bundle("sample/resource")
     res_job.wait()
 
-    adb_devices = Toolkit.find_adb_devices()
+    # input your adb path like "./adb/adb.exe"
+
+    your_adb_path = None
+    adb_devices = Toolkit.find_adb_devices(your_adb_path)
     if not adb_devices:
         print("No ADB device found.")
         exit()
@@ -41,12 +46,16 @@ def main():
         print("Failed to init MAA.")
         exit()
 
+    pipeline_override = {
+        "MyCustomEntry": {"action": "custom", "custom_action": "MyCustomAction"},
+    }
     resource.register_custom_recognition("MyRec", MyRecongition())
-
-    task_detail = tasker.post_task("StartUpAndClickButton").wait().get()
+    resource.register_custom_action("MyCustomAction-register", MyCustomAction())
+    task_detail = tasker.post_task("MyCustomEntry", pipeline_override).wait().get()
     # do something with task_detail
 
 
+@resource.custom_recognition("MyRecongition")
 class MyRecongition(CustomRecognition):
 
     def analyze(
@@ -117,6 +126,23 @@ class MyNotificationHandler(NotificationHandler):
         self, noti_type: NotificationType, detail: NotificationHandler.NodeActionDetail
     ):
         print(f"on_node_action: {noti_type}, {detail}")
+
+
+@resource.custom_action("MyCustomAction")
+class MyCustomAction(CustomAction):
+
+    def run(
+        self,
+        context: Context,
+        argv: CustomAction.RunArg,
+    ) -> bool:
+        """
+        :param argv:
+        :param context: 运行上下文
+        :return: 是否执行成功。-参考流水线协议 `on_error`
+        """
+        print("MyCustomAction is running!")
+        return True
 
 
 if __name__ == "__main__":
