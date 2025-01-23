@@ -1,4 +1,5 @@
 # python -m pip install maafw
+import os
 from maa.tasker import Tasker
 from maa.toolkit import Toolkit
 from maa.context import Context
@@ -14,15 +15,14 @@ resource = Resource()
 
 def main():
     user_path = "./"
+    resource_path = "sample/resource"
     Toolkit.init_option(user_path)
-
-    res_job = resource.post_bundle("sample/resource")
+    if not os.path.exists(resource_path):
+        os.makedirs(resource_path)
+    res_job = resource.post_bundle(resource_path)
     res_job.wait()
-
-    # input your adb path like "./adb/adb.exe"
-
-    your_adb_path = None
-    adb_devices = Toolkit.find_adb_devices(your_adb_path)
+    # if your adb_devices is emty in windows ,may you need administrator privileges
+    adb_devices = Toolkit.find_adb_devices()
     if not adb_devices:
         print("No ADB device found.")
         exit()
@@ -45,16 +45,19 @@ def main():
     if not tasker.inited:
         print("Failed to init MAA.")
         exit()
-
+    # just an example, use it in json
     pipeline_override = {
         "MyCustomEntry": {"action": "custom", "custom_action": "MyCustomAction"},
     }
-    resource.register_custom_recognition("MyRec", MyRecongition())
-    resource.register_custom_action("MyCustomAction-register", MyCustomAction())
+    # traditional way to register
+    # resource.register_custom_recognition("My_Recongition", MyRecongition())
+    # resource.register_custom_action("My_CustomAction", MyCustomAction())
+
     task_detail = tasker.post_task("MyCustomEntry", pipeline_override).wait().get()
     # do something with task_detail
 
 
+# auto register by decorator
 @resource.custom_recognition("MyRecongition")
 class MyRecongition(CustomRecognition):
 
@@ -128,6 +131,7 @@ class MyNotificationHandler(NotificationHandler):
         print(f"on_node_action: {noti_type}, {detail}")
 
 
+# auto register by decorator
 @resource.custom_action("MyCustomAction")
 class MyCustomAction(CustomAction):
 
