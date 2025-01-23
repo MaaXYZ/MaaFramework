@@ -1,22 +1,29 @@
 # python -m pip install maafw
-from maa.resource import Resource
-from maa.controller import AdbController
+import os
 from maa.tasker import Tasker
 from maa.toolkit import Toolkit
-
-from maa.custom_recognition import CustomRecognition
+from maa.context import Context
+from maa.resource import Resource
+from maa.controller import AdbController
 from maa.custom_action import CustomAction
+from maa.custom_recognition import CustomRecognition
 from maa.notification_handler import NotificationHandler, NotificationType
+
+
+# for register decorator
+resource = Resource()
 
 
 def main():
     user_path = "./"
+    resource_path = "sample/resource"
+
     Toolkit.init_option(user_path)
 
-    resource = Resource()
-    res_job = resource.post_bundle("sample/resource")
+    res_job = resource.post_bundle(resource_path)
     res_job.wait()
-
+    
+    # If not found on Windows, try running as administrator
     adb_devices = Toolkit.find_adb_devices()
     if not adb_devices:
         print("No ADB device found.")
@@ -41,12 +48,21 @@ def main():
         print("Failed to init MAA.")
         exit()
 
-    resource.register_custom_recognition("MyRec", MyRecongition())
+    # just an example, use it in json
+    pipeline_override = {
+        "MyCustomEntry": {"action": "custom", "custom_action": "MyCustomAction"},
+    }
 
-    task_detail = tasker.post_task("StartUpAndClickButton").wait().get()
+    # another way to register
+    # resource.register_custom_recognition("My_Recongition", MyRecongition())
+    # resource.register_custom_action("My_CustomAction", MyCustomAction())
+
+    task_detail = tasker.post_task("MyCustomEntry", pipeline_override).wait().get()
     # do something with task_detail
 
 
+# auto register by decorator, can also call `resource.register_custom_recognition` manually
+@resource.custom_recognition("MyRecongition")
 class MyRecongition(CustomRecognition):
 
     def analyze(
@@ -117,6 +133,24 @@ class MyNotificationHandler(NotificationHandler):
         self, noti_type: NotificationType, detail: NotificationHandler.NodeActionDetail
     ):
         print(f"on_node_action: {noti_type}, {detail}")
+
+
+# auto register by decorator, can also call `resource.register_custom_action` manually
+@resource.custom_action("MyCustomAction")
+class MyCustomAction(CustomAction):
+
+    def run(
+        self,
+        context: Context,
+        argv: CustomAction.RunArg,
+    ) -> bool:
+        """
+        :param argv:
+        :param context: 运行上下文
+        :return: 是否执行成功。-参考流水线协议 `on_error`
+        """
+        print("MyCustomAction is running!")
+        return True
 
 
 if __name__ == "__main__":
