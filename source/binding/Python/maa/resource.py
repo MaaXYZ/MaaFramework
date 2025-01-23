@@ -96,6 +96,14 @@ class Resource:
         """
         return self.use_auto_ep()
 
+    def custom_recognition(self, name: str):
+
+        def wrapper_recognition(recognition):
+            self.register_custom_recognition(name=name, recognition=recognition())
+            return recognition
+
+        return wrapper_recognition
+
     def register_custom_recognition(
         self, name: str, recognition: "CustomRecognition"  # type: ignore
     ) -> bool:
@@ -130,6 +138,14 @@ class Resource:
                 self._handle,
             )
         )
+
+    def custom_action(self, name: str):
+
+        def wrapper_action(action):
+            self.register_custom_action(name=name, action=action())
+            return action
+
+        return wrapper_action
 
     def register_custom_action(self, name: str, action: "CustomAction") -> bool:  # type: ignore
         # avoid gc
