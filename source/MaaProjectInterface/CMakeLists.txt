@@ -1,2 +1,5 @@
 add_subdirectory(Impl)
-add_subdirectory(CLI)
+
+if (BUILD_PICLI)
+    add_subdirectory(CLI)
+endif()

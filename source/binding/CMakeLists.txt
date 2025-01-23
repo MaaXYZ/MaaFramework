@@ -1,4 +1,4 @@
-if(BUILD_NODEJS_BINDING)
+if(WITH_NODEJS_BINDING)
     if(EXISTS ${CMAKE_CURRENT_LIST_DIR}/NodeJS/node_modules)
         add_subdirectory(NodeJS)
     else()
