@@ -10,18 +10,20 @@ from maa.custom_recognition import CustomRecognition
 from maa.notification_handler import NotificationHandler, NotificationType
 
 
+# for register decorator
 resource = Resource()
 
 
 def main():
     user_path = "./"
     resource_path = "sample/resource"
+
     Toolkit.init_option(user_path)
-    if not os.path.exists(resource_path):
-        os.makedirs(resource_path)
+
     res_job = resource.post_bundle(resource_path)
     res_job.wait()
-    # if your adb_devices is emty in windows ,may you need administrator privileges
+    
+    # If not found on Windows, try running as administrator
     adb_devices = Toolkit.find_adb_devices()
     if not adb_devices:
         print("No ADB device found.")
@@ -45,11 +47,13 @@ def main():
     if not tasker.inited:
         print("Failed to init MAA.")
         exit()
+
     # just an example, use it in json
     pipeline_override = {
         "MyCustomEntry": {"action": "custom", "custom_action": "MyCustomAction"},
     }
-    # traditional way to register
+
+    # another way to register
     # resource.register_custom_recognition("My_Recongition", MyRecongition())
     # resource.register_custom_action("My_CustomAction", MyCustomAction())
 
@@ -57,7 +61,7 @@ def main():
     # do something with task_detail
 
 
-# auto register by decorator
+# auto register by decorator, can also call `resource.register_custom_recognition` manually
 @resource.custom_recognition("MyRecongition")
 class MyRecongition(CustomRecognition):
 
@@ -131,7 +135,7 @@ class MyNotificationHandler(NotificationHandler):
         print(f"on_node_action: {noti_type}, {detail}")
 
 
-# auto register by decorator
+# auto register by decorator, can also call `resource.register_custom_action` manually
 @resource.custom_action("MyCustomAction")
 class MyCustomAction(CustomAction):
 
