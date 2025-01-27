@@ -483,7 +483,7 @@ jobs:
             - name: Publish Pip Packages
               id: pip
               run: |
-                  pip install --upgrade twine
+                  pip install --upgrade twine packaging
                   python -m twine upload \
                     assets/MAA-pip-pkgs/*.whl \
                     --username __token__\
