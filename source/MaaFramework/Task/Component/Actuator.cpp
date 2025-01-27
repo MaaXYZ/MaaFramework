@@ -300,10 +300,11 @@ cv::Rect Actuator::get_target_rect(const MAA_RES_NS::Action::Target target, cons
     }
 
     auto image = controller()->cached_image();
-    int x = std::clamp(raw.x, 0, image.cols);
-    int y = std::clamp(raw.y, 0, image.rows);
-    int width = std::clamp(raw.width, 0, image.cols - x);
-    int height = std::clamp(raw.height, 0, image.rows - y);
+
+    int x = std::clamp(raw.x + target.offset.x, 0, image.cols);
+    int y = std::clamp(raw.y + target.offset.y, 0, image.rows);
+    int width = std::clamp(raw.width + target.offset.width, 0, image.cols - x);
+    int height = std::clamp(raw.height + target.offset.height, 0, image.rows - y);
 
     return cv::Rect(x, y, width, height);
 }
