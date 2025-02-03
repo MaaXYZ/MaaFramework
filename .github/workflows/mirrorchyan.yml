@@ -1,0 +1,57 @@
+name: MirrorChyan Uploading
+
+on:
+  workflow_dispatch:
+  release:
+    types: [published]
+
+jobs:
+  mirrorchyan:
+    runs-on: macos-latest
+    strategy:
+      matrix:
+        os: [win, macos, linux]
+        arch: [aarch64, x86_64]
+
+    steps:
+      - id: version
+        uses: pozetroninc/github-action-get-latest-release@master
+        with:
+          owner: MaaXYZ
+          repo: MaaFramework
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Download Release
+        uses: robinraju/release-downloader@v1
+        id: download
+        with:
+          repository: MaaXYZ/MaaFramework
+          fileName: "*MAA-${{ matrix.os }}-${{ matrix.arch }}-*.zip"
+          tag: ${{ steps.version.outputs.release }}
+          out-file-path: "downloads"
+          extract: false
+
+      - name: Get Channel
+        id: get_channel
+        run: |
+          if [[ ${{steps.download.outputs.tag_name}} == *"alpha"* ]]; then
+            channel="alpha"
+          elif [[ ${{steps.download.outputs.tag_name}} == *"beta"* ]]; then
+            channel="beta"
+          elif [[ ${{steps.download.outputs.tag_name}} == *"rc"* ]]; then
+            channel="beta"
+          else
+            channel="stable"
+          fi
+
+          echo "channel=$channel" | tee -a "$GITHUB_OUTPUT"
+
+      - name: Upload to MirrorChyan
+        run: |
+          curl --location --request POST 'https://mirrorc.top/api/resources/MaaFramework/versions' \
+            --header 'Authorization:${{ secrets.MirrorChyanUploadToken }}' \
+            --form 'name="${{steps.download.outputs.tag_name}}"' \
+            --form 'os="${{ matrix.os }}"' \
+            --form 'arch="${{ matrix.arch }}"' \
+            --form 'channel="${{ steps.get_channel.outputs.channel }}"' \
+            --form 'file=@"${{ fromJson(steps.download.outputs.downloaded_files)[0] }}"'
