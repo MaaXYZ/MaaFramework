@@ -20,11 +20,11 @@ jobs:
         with:
           filetype: latest-release
           filename: "MAA-${{ matrix.os }}-${{ matrix.arch }}-*.zip"
+
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          owner: MaaXYZ
-          repo: MaaFramework
-          mirrorchyan_rid: MaaFramework
+          owner: ${{ github.repository_owner }}
+          repo: ${{ github.event.repository.name }}
+          mirrorchyan_rid: ${{ github.event.repository.name }}
           upload_token: ${{ secrets.MirrorChyanUploadToken }}
           os: ${{ matrix.os }}
           arch: ${{ matrix.arch }}
-          auto_channel: true
