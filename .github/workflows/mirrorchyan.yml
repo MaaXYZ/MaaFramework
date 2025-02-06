@@ -9,6 +9,7 @@ jobs:
   mirrorchyan:
     runs-on: macos-latest
     strategy:
+      fail-fast: false
       matrix:
         os: [win, macos, linux]
         arch: [aarch64, x86_64]
