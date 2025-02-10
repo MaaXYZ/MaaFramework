@@ -55,6 +55,10 @@ inline bool is_fullscreen(HWND hwnd)
 
 inline cv::Mat bgra_to_bgr(const cv::Mat& src)
 {
+    if (src.empty()) {
+        return {};
+    }
+
     cv::Mat dst;
     cv::cvtColor(src, dst, cv::COLOR_BGRA2BGR);
     return dst;
