@@ -2,7 +2,7 @@
 
 #include <atomic>
 
-#include "API/MaaTypes.h"
+#include "Common/MaaTypes.h"
 #include "Base/AsyncRunner.hpp"
 #include "DefaultPipelineMgr.h"
 #include "MaaFramework/Instance/MaaResource.h"

@@ -24,6 +24,18 @@ void MaaAgentClientDestroy(MaaAgentClient* client)
     delete client;
 }
 
+MaaBool MaaAgentClientBindResource(MaaAgentClient* client, MaaResource* res)
+{
+    LogFunc << VAR_VOIDP(client) << VAR_VOIDP(res);
+
+    if (!client || !res) {
+        LogError << "handle is null";
+        return false;
+    }
+
+    return client->bind_resource(res);
+}
+
 MaaBool MaaAgentClientStartChild(MaaAgentClient* client, const char* child_exec, const MaaStringListBuffer* child_args)
 {
     LogFunc << VAR_VOIDP(client) << VAR(child_exec) << VAR(child_args);
@@ -43,16 +55,4 @@ MaaBool MaaAgentClientStartChild(MaaAgentClient* client, const char* child_exec,
     }
 
     return client->start_clild(MAA_NS::path(child_exec), args);
-}
-
-MaaBool MaaAgentClientBindResource(MaaAgentClient* client, MaaResource* res)
-{
-    LogFunc << VAR_VOIDP(client) << VAR_VOIDP(res);
-
-    if (!client || !res) {
-        LogError << "handle is null";
-        return false;
-    }
-
-    return client->bind_resource(res);
 }

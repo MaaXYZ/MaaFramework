@@ -11,10 +11,9 @@ extern "C"
 
     MAA_AGENT_CLIENT_API void MaaAgentClientDestroy(MaaAgentClient* client);
 
+    MAA_AGENT_CLIENT_API MaaBool MaaAgentClientBindResource(MaaAgentClient* client, MaaResource* res);
     MAA_AGENT_CLIENT_API MaaBool
         MaaAgentClientStartChild(MaaAgentClient* client, const char* child_exec, const MaaStringListBuffer* child_args);
-
-    MAA_AGENT_CLIENT_API MaaBool MaaAgentClientBindResource(MaaAgentClient* client, MaaResource* res);
 
 #ifdef __cplusplus
 }

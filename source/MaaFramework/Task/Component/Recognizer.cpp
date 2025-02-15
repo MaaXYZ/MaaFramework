@@ -115,7 +115,7 @@ RecoResult Recognizer::template_match(const MAA_VISION_NS::TemplateMatcherParam&
     using namespace MAA_VISION_NS;
 
     if (!resource()) {
-        LogError << "Resource not binded";
+        LogError << "Resource not bound";
         return {};
     }
 
@@ -151,7 +151,7 @@ RecoResult Recognizer::feature_match(const MAA_VISION_NS::FeatureMatcherParam& p
     using namespace MAA_VISION_NS;
 
     if (!resource()) {
-        LogError << "Resource not binded";
+        LogError << "Resource not bound";
         return {};
     }
 
@@ -187,7 +187,7 @@ RecoResult Recognizer::color_match(const MAA_VISION_NS::ColorMatcherParam& param
     using namespace MAA_VISION_NS;
 
     if (!resource()) {
-        LogError << "Resource not binded";
+        LogError << "Resource not bound";
         return {};
     }
 
@@ -213,7 +213,7 @@ RecoResult Recognizer::ocr(const MAA_VISION_NS::OCRerParam& param, const std::st
     using namespace MAA_VISION_NS;
 
     if (!resource()) {
-        LogError << "Resource not binded or status is null" << VAR(resource());
+        LogError << "Resource not bound or status is null" << VAR(resource());
         return {};
     }
 
@@ -243,7 +243,7 @@ RecoResult Recognizer::nn_classify(const MAA_VISION_NS::NeuralNetworkClassifierP
     using namespace MAA_VISION_NS;
 
     if (!resource()) {
-        LogError << "Resource not binded";
+        LogError << "Resource not bound";
         return {};
     }
 
@@ -273,7 +273,7 @@ RecoResult Recognizer::nn_detect(const MAA_VISION_NS::NeuralNetworkDetectorParam
     using namespace MAA_VISION_NS;
 
     if (!resource()) {
-        LogError << "Resource not binded";
+        LogError << "Resource not bound";
         return {};
     }
 

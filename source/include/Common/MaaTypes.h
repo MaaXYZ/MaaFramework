@@ -7,8 +7,8 @@
 
 #include <meojson/json.hpp>
 
+#include "Common/TaskResultTypes.h"
 #include "MaaFramework/MaaDef.h"
-#include "Task/TaskResultTypes.h"
 #include "Utils/NoWarningCVMat.hpp"
 
 struct MaaResource

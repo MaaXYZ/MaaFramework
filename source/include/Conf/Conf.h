@@ -125,7 +125,13 @@
     {
 #define MAA_PROJECT_INTERFACE_NS_END }
 
-#define MAA_AGENT_CLIENT_NS MAA_NS::AgentClientNS
+#define MAA_AGENT_NS MAA_NS::AgentNS
+#define MAA_AGENT_NS_BEGIN \
+    namespace MAA_AGENT_NS \
+    {
+#define MAA_AGENT_NS_END }
+
+#define MAA_AGENT_CLIENT_NS MAA_AGENT_NS::ClientNS
 
 #define MAA_AGENT_CLIENT_NS_BEGIN \
     namespace MAA_AGENT_CLIENT_NS \

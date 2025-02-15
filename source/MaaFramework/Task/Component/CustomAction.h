@@ -2,7 +2,7 @@
 
 #include "Conf/Conf.h"
 
-#include "API/MaaTypes.h"
+#include "Common/MaaTypes.h"
 #include "MaaFramework/MaaDef.h"
 #include "Resource/ResourceMgr.h"
 #include "Task/Context.h"
