@@ -76,7 +76,7 @@ private:
     TaskPtr running_task_ = nullptr;
 
     RuntimeCache runtime_cache_;
-    MessageNotifier notifier;
+    MessageNotifier notifier_;
 };
 
 MAA_NS_END

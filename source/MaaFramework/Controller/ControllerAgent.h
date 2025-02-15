@@ -168,7 +168,7 @@ protected:
     virtual bool _input_text(InputTextParam param) = 0;
 
 protected:
-    MessageNotifier notifier;
+    MessageNotifier notifier_;
 
 private:
     MaaCtrlId post_connection_impl();

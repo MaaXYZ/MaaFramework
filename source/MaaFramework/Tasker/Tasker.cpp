@@ -12,7 +12,7 @@
 MAA_NS_BEGIN
 
 Tasker::Tasker(MaaNotificationCallback notify, void* notify_trans_arg)
-    : notifier(notify, notify_trans_arg)
+    : notifier_(notify, notify_trans_arg)
 {
     LogFunc << VAR_VOIDP(notify) << VAR_VOIDP(notify_trans_arg);
 
@@ -30,28 +30,31 @@ Tasker::~Tasker()
 
 bool Tasker::bind_resource(MaaResource* resource)
 {
-    LogInfo << VAR_VOIDP(this) << VAR_VOIDP(resource);
+    auto* derived = dynamic_cast<MAA_RES_NS::ResourceMgr*>(resource);
 
-    resource_ = dynamic_cast<MAA_RES_NS::ResourceMgr*>(resource);
+    LogInfo << VAR_VOIDP(this) << VAR_VOIDP(resource) << VAR_VOIDP(derived) << VAR_VOIDP(resource_);
 
-    if (!resource) {
+    if (resource && !derived) {
         LogError << "Invalid resource";
         return false;
     }
 
+    resource_ = derived;
     return true;
 }
 
 bool Tasker::bind_controller(MaaController* controller)
 {
-    LogInfo << VAR_VOIDP(this) << VAR_VOIDP(controller);
+    auto* derived = dynamic_cast<MAA_CTRL_NS::ControllerAgent*>(controller);
 
-    controller_ = dynamic_cast<MAA_CTRL_NS::ControllerAgent*>(controller);
+    LogInfo << VAR_VOIDP(this) << VAR_VOIDP(controller) << VAR_VOIDP(derived) << VAR_VOIDP(controller_);
 
-    if (!controller) {
+    if (controller && !derived) {
         LogError << "Invalid controller";
         return false;
     }
+
+    controller_ = derived;
     return true;
 }
 
@@ -185,7 +188,7 @@ const RuntimeCache& Tasker::runtime_cache() const
 
 void Tasker::notify(std::string_view msg, const json::value& detail)
 {
-    notifier.notify(msg, detail);
+    notifier_.notify(msg, detail);
 }
 
 MaaTaskId Tasker::post_task(TaskPtr task_ptr, const json::object& pipeline_override)
@@ -249,7 +252,7 @@ bool Tasker::run_task(RunnerId runner_id, TaskPtr task_ptr)
         task_detail.status = MaaStatus_Running;
         runtime_cache_.set_task_detail(task_id, std::move(task_detail));
     }
-    notifier.notify(MaaMsg_Tasker_Task_Starting, cb_detail);
+    notifier_.notify(MaaMsg_Tasker_Task_Starting, cb_detail);
 
     bool ret = task_ptr->run();
 
@@ -260,7 +263,7 @@ bool Tasker::run_task(RunnerId runner_id, TaskPtr task_ptr)
         task_detail.status = ret ? MaaStatus_Succeeded : MaaStatus_Failed;
         runtime_cache_.set_task_detail(task_id, std::move(task_detail));
     }
-    notifier.notify(ret ? MaaMsg_Tasker_Task_Succeeded : MaaMsg_Tasker_Task_Failed, cb_detail);
+    notifier_.notify(ret ? MaaMsg_Tasker_Task_Succeeded : MaaMsg_Tasker_Task_Failed, cb_detail);
 
     running_task_ = nullptr;
 

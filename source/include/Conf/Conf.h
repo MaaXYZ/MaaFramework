@@ -124,3 +124,10 @@
     namespace MAA_PROJECT_INTERFACE_NS \
     {
 #define MAA_PROJECT_INTERFACE_NS_END }
+
+#define MAA_AGENT_CLIENT_NS MAA_NS::AgentClientNS
+
+#define MAA_AGENT_CLIENT_NS_BEGIN \
+    namespace MAA_AGENT_CLIENT_NS \
+    {
+#define MAA_AGENT_CLIENT_NS_END }
