@@ -143,7 +143,7 @@ _请留意，仅当您准备开发 MaaFramework 本身时，才需要阅读本�
 - [boost](https://www.boost.org/)  
   Boost provides free peer-reviewed portable C++ source libraries.
 - [meojson](https://github.com/MistEO/meojson)  
-  A modern all-platform Json/Json5 parser/serializer, which is header-only and used magic!
+  ✨ Next-gen C++ JSON/JSON5 Serialization Engine | Zero Dependency | Header-Only | Unleash JSON Potential
 - [minitouch](https://github.com/DeviceFarmer/minitouch)  
   Minimal multitouch event producer for Android.
 - [maatouch](https://github.com/MaaAssistantArknights/MaaTouch)  
