@@ -39,6 +39,9 @@ public:
 
     bool recv_and_handle_init_msg();
 
+    void msg_loop();
+    bool handle_context_run_task(const json::value& j);
+
 public:
     static MaaBool reco_agent(
         MaaContext* context,
@@ -69,6 +72,9 @@ private:
 
     zmq::context_t child_ctx_;
     zmq::socket_t child_sock_;
+
+    bool msg_loop_running_ = false;
+    std::thread msg_thread_;
 };
 
 MAA_AGENT_CLIENT_NS_END

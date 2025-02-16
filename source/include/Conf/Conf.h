@@ -137,3 +137,9 @@
     namespace MAA_AGENT_CLIENT_NS \
     {
 #define MAA_AGENT_CLIENT_NS_END }
+
+#define MAA_AGENT_SERVER_NS MAA_AGENT_NS::ServerNS
+#define MAA_AGENT_SERVER_NS_BEGIN \
+    namespace MAA_AGENT_SERVER_NS \
+    {
+#define MAA_AGENT_SERVER_NS_END }

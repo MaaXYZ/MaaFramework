@@ -41,6 +41,11 @@ AgentClient::~AgentClient()
     if (child_ && child_.joinable()) {
         child_.join();
     }
+
+    msg_loop_running_ = false;
+    if (msg_thread_.joinable()) {
+        msg_thread_.join();
+    }
 }
 
 bool AgentClient::bind_resource(MaaResource* resource)
@@ -83,7 +88,20 @@ bool AgentClient::start_clild(const std::filesystem::path& child_exec, const std
         return false;
     }
 
-    return recv_and_handle_init_msg();
+    bool inited = recv_and_handle_init_msg();
+    if (!inited) {
+        LogError << "failed to recv_and_handle_init_msg";
+        return false;
+    }
+
+    msg_loop_running_ = true;
+    msg_thread_ = std::thread(std::bind(&AgentClient::msg_loop, this));
+    if (!msg_thread_.joinable()) {
+        LogError << "failed to start child_recv_thread";
+        return false;
+    }
+
+    return true;
 }
 
 std::string AgentClient::create_socket()
@@ -111,7 +129,7 @@ std::optional<json::value> AgentClient::recv()
         return std::nullopt;
     }
 
-    const std::string& init_str = init_msg.to_string();
+    std::string_view init_str = init_msg.to_string_view();
     LogInfo << VAR(init_str);
 
     auto jopt = json::parse(init_str);
@@ -149,6 +167,37 @@ bool AgentClient::recv_and_handle_init_msg()
         LogTrace << VAR(act);
         resource_->register_custom_action(act, action_agent, this);
     }
+
+    return true;
+}
+
+void AgentClient::msg_loop()
+{
+    LogFunc;
+
+    while (msg_loop_running_) {
+        auto msg_opt = recv();
+        if (!msg_opt) {
+            LogError << "failed to recv msg";
+            continue;
+        }
+        const json::value& j = *msg_opt;
+        LogInfo << VAR(j);
+
+        if (handle_context_run_task(j)) {
+        }
+        else {
+            LogError << "unknown msg" << VAR(j);
+        }
+    }
+}
+
+bool AgentClient::handle_context_run_task(const json::value& j)
+{
+    if (!j.is<ContextRunTaskMsg>()) {
+        return false;
+    }
+    LogInfo << VAR(j);
 
     return true;
 }

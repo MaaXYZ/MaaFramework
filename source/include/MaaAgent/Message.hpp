@@ -15,4 +15,8 @@ struct InitMsg
     MEO_JSONIZATION(version, actions, recognitions);
 };
 
+struct ContextRunTaskMsg
+{
+};
+
 MAA_AGENT_NS_END
