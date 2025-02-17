@@ -115,9 +115,9 @@ struct HandlerReferHolder
     {
     }
 
-    HandlerReferHolder(const HandlerReferHolder& holder) = delete;
+    HandlerReferHolder(const HandlerReferHolder& holder) = default;
 
-    HandlerReferHolder& operator=(const HandlerReferHolder& holder) = delete;
+    HandlerReferHolder& operator=(const HandlerReferHolder& holder) = default;
 };
 
 struct StringBuffer : public HandlerHolder<MaaStringBuffer, &MaaStringBufferCreate, &MaaStringBufferDestroy>
