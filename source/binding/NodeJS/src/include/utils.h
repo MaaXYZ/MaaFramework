@@ -115,7 +115,7 @@ struct HandlerReferHolder
     {
     }
 
-    HandlerReferHolder(const HandlerReferHolder& holder) = default;
+    HandlerReferHolder(const HandlerReferHolder& holder) = delete;
 
     HandlerReferHolder& operator=(const HandlerReferHolder& holder) = delete;
 };
