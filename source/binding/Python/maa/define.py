@@ -1,10 +1,11 @@
 import ctypes
 import platform
 from dataclasses import dataclass
-from enum import IntEnum, Enum
+from enum import IntEnum
 from typing import List, Tuple, Union, Dict, Optional
 
 import numpy
+from strenum import StrEnum  # For Python 3.9/3.10
 
 MaaBool = ctypes.c_uint8
 MaaSize = ctypes.c_size_t
@@ -446,7 +447,7 @@ RectType = Union[
 ]
 
 
-class AlgorithmEnum(str, Enum):
+class AlgorithmEnum(StrEnum):
     DirectHit = "DirectHit"
     TemplateMatch = "TemplateMatch"
     FeatureMatch = "FeatureMatch"
