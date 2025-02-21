@@ -1,7 +1,7 @@
 import ctypes
 import platform
 from dataclasses import dataclass
-from enum import IntEnum, Enum
+from enum import IntEnum, StrEnum
 from typing import List, Tuple, Union, Dict, Optional
 
 import numpy
@@ -446,7 +446,7 @@ RectType = Union[
 ]
 
 
-class AlgorithmEnum(str, Enum):
+class AlgorithmEnum(StrEnum):
     DirectHit = "DirectHit"
     TemplateMatch = "TemplateMatch"
     FeatureMatch = "FeatureMatch"
