@@ -10,7 +10,7 @@ target_include_directories(
 
 target_compile_definitions(MaaAgentClient PRIVATE MAA_AGENT_CLIENT_EXPORTS)
 
-target_link_libraries(MaaAgentClient PRIVATE ${ZeroMQ_LIBRARIES} MaaUtils MaaFramework LibraryHolder HeaderOnlyLibraries)
+target_link_libraries(MaaAgentClient PRIVATE cppzmq-static MaaUtils MaaFramework LibraryHolder HeaderOnlyLibraries)
 
 add_dependencies(MaaAgentClient MaaUtils MaaFramework)
 

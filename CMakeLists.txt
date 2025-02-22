@@ -50,22 +50,8 @@ find_package(OpenCV REQUIRED COMPONENTS core imgproc imgcodecs)
 find_package(Boost REQUIRED COMPONENTS system)
 find_package(ZLIB REQUIRED)
 find_package(fastdeploy_ppocr REQUIRED)
-find_package(ONNXRuntime)
-
-find_package(cppzmq CONFIG REQUIRED)
-message(STATUS "cppzmq Found: ${cppzmq_FOUND}")
-message(STATUS "cppzmq Version: ${cppzmq_VERSION}")
-message(STATUS "cppzmq Include Dirs: ${cppzmq_INCLUDE_DIRS}")
-message(STATUS "cppzmq Libraries: ${cppzmq_LIBRARIES}")
-if(TARGET cppzmq)
-    message(STATUS "cppzmq target exists.")
-    # 输出目标的包含目录和链接库
-    get_target_property(cppzmq_inc cppzmq INTERFACE_INCLUDE_DIRECTORIES)
-    get_target_property(cppzmq_libs cppzmq INTERFACE_LINK_LIBRARIES)
-    message(STATUS "cppzmq include dirs: ${cppzmq_inc}")
-    message(STATUS "cppzmq libraries: ${cppzmq_libs}")
-endif()
-
+find_package(ONNXRuntime REQUIRED)
+find_package(cppzmq REQUIRED)
 
 find_program(CCACHE_PROG ccache)
 
