@@ -1,7 +1,8 @@
-file(GLOB_RECURSE maa_framework_src *.h *.hpp *.cpp ../Common/*.h ../Common/*.hpp ../Common/*.cpp)
+file(GLOB_RECURSE maa_framework_src *.h *.hpp *.cpp)
+file(GLOB_RECURSE maa_common_src ../Common/*.h ../Common/*.hpp ../Common/*.cpp)
 file(GLOB_RECURSE maa_framework_header ${MAA_PUBLIC_INC}/MaaFramework/*)
 
-add_library(MaaFramework SHARED ${maa_framework_src} ${maa_framework_header})
+add_library(MaaFramework SHARED ${maa_common_src} ${maa_framework_src} ${maa_framework_header})
 
 target_include_directories(
     MaaFramework
@@ -41,6 +42,7 @@ endif()
 install(DIRECTORY "${MAA_PUBLIC_INC}/MaaFramework" DESTINATION "include")
 
 source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES ${maa_framework_src})
+source_group(PREFIX "Common" TREE ${CMAKE_CURRENT_SOURCE_DIR}/../Common FILES ${maa_common_src})
 
 if(WIN32)
     if(USE_MAADEPS)
