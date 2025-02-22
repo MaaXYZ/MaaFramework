@@ -105,6 +105,9 @@ An automation assistant for Girls' Frontline 2: Exilium, built on a brand-new ar
 - [MaaAshEchoes](https://github.com/moulai/MaaAshEchoes) Ash Echoes Assistant ![Pipeline](https://img.shields.io/badge/Pipeline-%23454545?logo=paddypower&logoColor=%23FFFFFF)  
   An assistant for Ash Echoes based on a brand new architecture. Image technology + simulation control, freeing your hands! Powered by MaaFramework.
 
+- [MaaXuexi](https://github.com/ravizhan/MaaXuexi) Xuexi automation assistant ![python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white)  ![Pipeline](https://img.shields.io/badge/Pipeline-%23454545?logo=paddypower&logoColor=%23FFFFFF)  
+  The Xuexi automation assistant based on a new architecture.Image technology + analogue control to free your hands!Powered by MaaFramework!
+
 ## Eco-Building
 
 MAA is planned to be a category of projects rather than just a single piece of software.
