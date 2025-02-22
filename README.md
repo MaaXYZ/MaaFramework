@@ -104,7 +104,10 @@ _✨ 基于图像识别的自动化黑盒测试框架 ✨_
 
 - [MaaAshEchoes](https://github.com/moulai/MaaAshEchoes) 白荆回廊 小助手 ![Pipeline](https://img.shields.io/badge/Pipeline-%23454545?logo=paddypower&logoColor=%23FFFFFF)  
   基于全新架构的 白荆回廊 小助手。图像技术 + 模拟控制，解放双手！由 MaaFramework 强力驱动！
-  
+
+- [MaaXuexi](https://github.com/ravizhan/MaaXuexi) 学习强国 自动化助手 ![python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white)  ![Pipeline](https://img.shields.io/badge/Pipeline-%23454545?logo=paddypower&logoColor=%23FFFFFF)  
+  基于全新架构的 学习强国 自动化助手。图像技术 + 模拟控制，解放双手！由 MaaFramework 强力驱动！
+
 ## 生态共建
 
 MAA 正计划建设为一类项目，而非舟的单一软件。  
