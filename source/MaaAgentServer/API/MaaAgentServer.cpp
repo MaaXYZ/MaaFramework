@@ -30,6 +30,20 @@ void MaaAgentServerShutDown()
     MAA_AGENT_SERVER_NS::AgentServer::get_instance().shut_down();
 }
 
+void MaaAgentServerJoin()
+{
+    LogFunc;
+
+    MAA_AGENT_SERVER_NS::AgentServer::get_instance().join();
+}
+
+void MaaAgentServerDetach()
+{
+    LogFunc;
+
+    MAA_AGENT_SERVER_NS::AgentServer::get_instance().detach();
+}
+
 MaaBool MaaAgentServerRegisterCustomRecognition(const char* name, MaaCustomRecognitionCallback recognition, void* trans_arg)
 {
     LogFunc << VAR(name) << VAR_VOIDP(recognition) << VAR_VOIDP(trans_arg);
