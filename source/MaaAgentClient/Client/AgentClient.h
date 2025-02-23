@@ -23,21 +23,8 @@ public:
 
 private:
     std::string create_socket();
-
     bool send(const json::value& j);
-
     std::optional<json::value> recv();
-
-    template <typename T>
-    std::optional<T> recv()
-    {
-        auto jopt = recv();
-        if (!jopt) {
-            return std::nullopt;
-        }
-        const json::value& j = *jopt;
-        return j.is<T>() ? std::make_optional(j.as<T>()) : std::nullopt;
-    }
 
     template <typename ResponseT, typename RequestT>
     std::optional<ResponseT> send_and_recv(const RequestT& req, std::function<bool(const json::value&)> reverse_request_handler = nullptr)

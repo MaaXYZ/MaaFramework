@@ -1,0 +1,5 @@
+#include "RemoteObject.h"
+
+MAA_AGENT_SERVER_NS_BEGIN
+
+MAA_AGENT_SERVER_NS_END

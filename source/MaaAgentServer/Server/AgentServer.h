@@ -41,28 +41,17 @@ public:
 
 private:
     bool create_socket(const std::string& ipc_addr);
-
     bool send(const json::value& j);
-    bool send_start_up_response();
-
     std::optional<json::value> recv();
 
-    template <typename T>
-    std::optional<T> recv()
-    {
-        auto jopt = recv();
-        if (!jopt) {
-            return std::nullopt;
-        }
-        const json::value& j = *jopt;
-        return j.is<T>() ? std::make_optional(j.as<T>()) : std::nullopt;
-    }
+    bool send_start_up_response();
 
-    bool recv_and_handle_recognition_request(const json::value& j);
-    bool recv_and_handle_action_request(const json::value& j);
-    bool recv_and_handle_shut_down_request(const json::value& j);
+    bool handle_recognition_request(const json::value& j);
+    bool handle_action_request(const json::value& j);
+    bool handle_shut_down_request(const json::value& j);
 
     void request_msg_loop();
+    void handle_request(const json::value& j);
 
 private:
     std::unordered_map<std::string, CustomRecognitionSession> custom_recognitions_;

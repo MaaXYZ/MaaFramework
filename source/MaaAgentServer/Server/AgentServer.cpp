@@ -173,7 +173,7 @@ std::optional<json::value> AgentServer::recv()
     return *jopt;
 }
 
-bool AgentServer::recv_and_handle_recognition_request(const json::value& j)
+bool AgentServer::handle_recognition_request(const json::value& j)
 {
     if (!j.is<CustomRecognitionRequest>()) {
         return false;
@@ -226,7 +226,7 @@ bool AgentServer::recv_and_handle_recognition_request(const json::value& j)
     return true;
 }
 
-bool AgentServer::recv_and_handle_action_request(const json::value& j)
+bool AgentServer::handle_action_request(const json::value& j)
 {
     if (!j.is<CustomActionRequest>()) {
         return false;
@@ -270,7 +270,7 @@ bool AgentServer::recv_and_handle_action_request(const json::value& j)
     return true;
 }
 
-bool AgentServer::recv_and_handle_shut_down_request(const json::value& j)
+bool AgentServer::handle_shut_down_request(const json::value& j)
 {
     if (!j.is<ShutDownRequest>()) {
         return false;
@@ -293,20 +293,25 @@ void AgentServer::request_msg_loop()
         auto msg_opt = recv();
         if (!msg_opt) {
             LogError << "failed to recv msg" << VAR(ipc_addr_);
-            continue;
+            return;
         }
         const json::value& j = *msg_opt;
-        LogInfo << VAR(j) << VAR(ipc_addr_);
+        handle_request(j);
+    }
+}
 
-        if (recv_and_handle_recognition_request(j)) {
-        }
-        else if (recv_and_handle_action_request(j)) {
-        }
-        else if (recv_and_handle_shut_down_request(j)) {
-        }
-        else {
-            LogError << "unknown msg" << VAR(j);
-        }
+void AgentServer::handle_request(const json::value& j)
+{
+    LogInfo << VAR(j) << VAR(ipc_addr_);
+
+    if (handle_recognition_request(j)) {
+    }
+    else if (handle_action_request(j)) {
+    }
+    else if (handle_shut_down_request(j)) {
+    }
+    else {
+        LogError << "unknown msg" << VAR(j);
     }
 }
 

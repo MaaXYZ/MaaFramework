@@ -1,5 +1,7 @@
 #include "RemoteContext.h"
 
+#include "MaaAgent/Message.hpp"
+
 MAA_AGENT_SERVER_NS_BEGIN
 
 RemoteContext::RemoteContext(const std::string& context_id)

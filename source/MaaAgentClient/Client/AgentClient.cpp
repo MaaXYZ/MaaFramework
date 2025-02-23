@@ -138,7 +138,7 @@ std::optional<json::value> AgentClient::recv()
     zmq::message_t msg;
     auto size_opt = child_sock_.recv(msg);
     if (!size_opt || *size_opt == 0) {
-        LogError << "failed to recv msg";
+        LogError << "failed to recv msg" << VAR(ipc_addr_);
         return std::nullopt;
     }
 
@@ -147,7 +147,7 @@ std::optional<json::value> AgentClient::recv()
 
     auto jopt = json::parse(str);
     if (!jopt) {
-        LogError << "failed to parse msg";
+        LogError << "failed to parse msg" << VAR(ipc_addr_);
         return std::nullopt;
     }
 
@@ -163,20 +163,25 @@ bool AgentClient::recv_and_handle_start_up_response()
         return false;
     }
 
-    auto msg_opt = recv<StartUpResponse>();
-    if (!msg_opt) {
-        LogError << "failed to recv StartUpResponse";
+    auto jopt = recv();
+    if (!jopt) {
+        LogError << "failed to recv msg" << VAR(ipc_addr_);
+        return false;
+    }
+    const json::value& j = *jopt;
+    if (!j.is<StartUpResponse>()) {
+        LogError << "unexpected msg" << VAR(j) << VAR(ipc_addr_);
         return false;
     }
 
-    const StartUpResponse& msg = *msg_opt;
-    LogInfo << VAR(msg);
+    auto resp = j.as<StartUpResponse>();
+    LogInfo << VAR(resp);
 
-    for (const auto& reco : msg.recognitions) {
+    for (const auto& reco : resp.recognitions) {
         LogTrace << VAR(reco);
         resource_->register_custom_recognition(reco, reco_agent, this);
     }
-    for (const auto& act : msg.actions) {
+    for (const auto& act : resp.actions) {
         LogTrace << VAR(act);
         resource_->register_custom_action(act, action_agent, this);
     }
