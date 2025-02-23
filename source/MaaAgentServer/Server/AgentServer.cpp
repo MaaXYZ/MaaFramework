@@ -3,6 +3,10 @@
 #include <ranges>
 
 #include "MaaAgent/Message.hpp"
+#include "RemoteInstance/RemoteContext.h"
+#include "Utils/Buffer/ImageBuffer.hpp"
+#include "Utils/Buffer/StringBuffer.hpp"
+#include "Utils/Codec.h"
 #include "Utils/Logger.h"
 
 MAA_AGENT_SERVER_NS_BEGIN
@@ -51,13 +55,6 @@ void AgentServer::shut_down()
     LogFunc << VAR(ipc_addr_);
 
     msg_loop_running_ = false;
-
-    if (parent_sock_) {
-        parent_sock_.close();
-    }
-    if (parent_ctx_) {
-        parent_ctx_.close();
-    }
 
     if (msg_thread_.joinable()) {
         msg_thread_.join();
@@ -128,7 +125,7 @@ bool AgentServer::send(const json::value& j)
     std::string jstr = j.dumps();
     zmq::message_t msg(jstr.size());
     std::memcpy(msg.data(), jstr.data(), jstr.size());
-    bool sent = parent_sock_.send(msg);
+    bool sent = parent_sock_.send(msg, zmq::send_flags::none).has_value();
     if (!sent) {
         LogError << "failed to send msg" << VAR(j) << VAR(ipc_addr_);
         return false;
@@ -178,12 +175,99 @@ std::optional<json::value> AgentServer::recv()
 
 bool AgentServer::recv_and_handle_recognition_request(const json::value& j)
 {
-    return false;
+    if (!j.is<CustomRecognitionRequest>()) {
+        return false;
+    }
+
+    const CustomRecognitionRequest& req = j.as<CustomRecognitionRequest>();
+    LogInfo << VAR(req) << VAR(ipc_addr_);
+
+    auto it = custom_recognitions_.find(req.custom_recognition_name);
+    if (it == custom_recognitions_.end()) {
+        LogError << "custom_recognition not found" << VAR(req);
+        return true;
+    }
+
+    const CustomRecognitionSession& session = it->second;
+    if (!session.recognition) {
+        LogError << "recognition is null" << VAR(req);
+        return true;
+    }
+
+    RemoteContext context(req.context_id);
+    cv::Mat mat = decode_image(req.image);
+    ImageBuffer mat_buffer(mat);
+    MaaRect rect { req.roi[0], req.roi[1], req.roi[2], req.roi[3] };
+
+    MaaRect out_box {};
+    StringBuffer out_detail;
+
+    MaaBool ret = session.recognition(
+        &context,
+        req.task_id,
+        req.node_name.c_str(),
+        req.custom_recognition_name.c_str(),
+        req.custom_recognition_param.c_str(),
+        &mat_buffer,
+        &rect,
+        session.trans_arg,
+        &out_box,
+        &out_detail);
+
+    CustomRecognitionResponse resp {
+        .ret = static_cast<bool>(ret),
+        .out_box = { out_box.x, out_box.y, out_box.width, out_box.height },
+        .out_detail = out_detail.get(),
+    };
+    LogInfo << VAR(resp) << VAR(ipc_addr_);
+
+    send(resp);
+
+    return true;
 }
 
 bool AgentServer::recv_and_handle_action_request(const json::value& j)
 {
-    return false;
+    if (!j.is<CustomActionRequest>()) {
+        return false;
+    }
+
+    const CustomActionRequest& req = j.as<CustomActionRequest>();
+    LogInfo << VAR(req) << VAR(ipc_addr_);
+
+    auto it = custom_actions_.find(req.custom_action_name);
+    if (it == custom_actions_.end()) {
+        LogError << "custom_action not found" << VAR(req);
+        return true;
+    }
+
+    const CustomActionSession& session = it->second;
+    if (!session.action) {
+        LogError << "action is null" << VAR(req);
+        return true;
+    }
+
+    RemoteContext context(req.context_id);
+    MaaRect rect { req.box[0], req.box[1], req.box[2], req.box[3] };
+
+    MaaBool ret = session.action(
+        &context,
+        req.task_id,
+        req.node_name.c_str(),
+        req.custom_action_name.c_str(),
+        req.custom_action_param.c_str(),
+        req.reco_id,
+        &rect,
+        session.trans_arg);
+
+    CustomActionResponse resp {
+        .ret = static_cast<bool>(ret),
+    };
+    LogInfo << VAR(resp) << VAR(ipc_addr_);
+
+    send(resp);
+
+    return true;
 }
 
 bool AgentServer::recv_and_handle_shut_down_request(const json::value& j)

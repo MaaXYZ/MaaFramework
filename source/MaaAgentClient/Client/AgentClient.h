@@ -100,7 +100,6 @@ public:
 
     std::string context_id(MaaContext* context);
     MaaContext* query_context(const std::string& context_id);
-    static std::string encode_image(const MaaImageBuffer* image);
 
 private:
     MaaResource* resource_ = nullptr;

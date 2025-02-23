@@ -5,7 +5,10 @@
 #include <regex>
 #include <string>
 
+#include <cpp-base64/base64.hpp>
+
 #include "Utils/Logger.h"
+#include "Utils/NoWarningCV.hpp"
 
 MAA_NS_BEGIN
 
@@ -151,6 +154,20 @@ bool regex_valid(const std::wstring& regex)
         return false;
     }
     return true;
+}
+
+cv::Mat decode_image(const std::string& data)
+{
+    std::string base64 = base64::base64_decode(data);
+    std::vector<uchar> buffer(std::make_move_iterator(base64.begin()), std::make_move_iterator(base64.end()));
+    return cv::imdecode(buffer, cv::IMREAD_COLOR);
+}
+
+std::string encode_image(const cv::Mat& image)
+{
+    std::vector<uchar> buffer;
+    cv::imencode(".png", image, buffer);
+    return base64::base64_encode(buffer.data(), buffer.size());
 }
 
 MAA_NS_END

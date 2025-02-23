@@ -2,7 +2,6 @@
 
 #include <sstream>
 
-#include <cpp-base64/base64.hpp>
 #include <meojson/json.hpp>
 
 #include "Common/MaaTypes.h"
@@ -244,13 +243,20 @@ MaaBool AgentClient::reco_agent(
         return false;
     }
 
+    if (!image) {
+        LogError << "image is null";
+        return false;
+    }
+
+    const cv::Mat& mat = image->get();
+
     CustomRecognitionRequest req {
         .context_id = pthis->context_id(context),
         .task_id = task_id,
         .node_name = node_name,
         .custom_recognition_name = custom_recognition_name,
         .custom_recognition_param = custom_recognition_param,
-        .image = encode_image(image),
+        .image = encode_image(mat),
         .roi = roi ? std::array<int32_t, 4> { roi->x, roi->y, roi->width, roi->height } : std::array<int32_t, 4> {},
     };
 
@@ -343,20 +349,6 @@ MaaContext* AgentClient::query_context(const std::string& context_id)
         return nullptr;
     }
     return it->second;
-}
-
-std::string AgentClient::encode_image(const MaaImageBuffer* image)
-{
-    if (!image) {
-        LogError << "image is null";
-        return {};
-    }
-
-    cv::Mat mat = image->get();
-    std::vector<uint8_t> buf;
-    cv::imencode(".png", mat, buf);
-
-    return base64::base64_encode(buf.data(), buf.size());
 }
 
 MAA_AGENT_CLIENT_NS_END
