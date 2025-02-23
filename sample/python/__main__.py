@@ -73,7 +73,7 @@ class MyRecongition(CustomRecognition):
         reco_detail = context.run_recognition(
             "MyCustomOCR",
             argv.image,
-            pipeline_override={"MyCustomOCR": {"roi": [100, 100, 200, 300]}},
+            pipeline_override={"MyCustomOCR": {"recognition": "OCR", "roi": [100, 100, 200, 300]}},
         )
 
         # context is a reference, will override the pipeline for whole task
