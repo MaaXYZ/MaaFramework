@@ -69,7 +69,7 @@ struct Resource : public std::enable_shared_from_this<Resource>
 
     Resource(const Resource&) = delete;
 
-    ~Resource()
+    virtual ~Resource()
     {
         resource_map_.erase(resource_);
         MaaResourceDestroy(resource_);

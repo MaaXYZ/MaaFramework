@@ -6,14 +6,13 @@
 
 #include <MaaFramework/MaaAPI.h>
 
+#include "./Controller.h"
 #include "./Exception.h"
 #include "./Resource.h"
+#include "Task.h"
 
 namespace maapp
 {
-
-struct Resource;
-struct Controller;
 
 struct Tasker : public std::enable_shared_from_this<Tasker>
 {
@@ -31,7 +30,7 @@ struct Tasker : public std::enable_shared_from_this<Tasker>
         tasker_map_[tasker_] = weak_from_this();
     }
 
-    ~Tasker()
+    virtual ~Tasker()
     {
         tasker_map_.erase(tasker_);
         MaaTaskerDestroy(tasker_);
@@ -43,6 +42,45 @@ struct Tasker : public std::enable_shared_from_this<Tasker>
             throw FunctionFailed("MaaTaskerBindResource");
         }
         resource_ = resource;
+    }
+
+    void bind(std::shared_ptr<Controller> controller)
+    {
+        if (!MaaTaskerBindController(tasker_, controller->controller_)) {
+            throw FunctionFailed("MaaTaskerBindController");
+        }
+        controller_ = controller;
+    }
+
+    bool inited() const { return MaaTaskerInited(tasker_); }
+
+    Task post_task(const std::string& entry, const std::string& pipeline_override)
+    {
+        return {
+            tasker_,
+            MaaTaskerPostTask(tasker_, entry.c_str(), pipeline_override.c_str()),
+        };
+    }
+
+    bool running() const { return MaaTaskerRunning(tasker_); }
+
+    Task post_stop()
+    {
+        return {
+            tasker_,
+            MaaTaskerPostStop(tasker_),
+        };
+    }
+
+    std::shared_ptr<Resource> resource() const { return resource_; }
+
+    std::shared_ptr<Controller> controller() const { return controller_; }
+
+    void clear_cache() const
+    {
+        if (!MaaTaskerClearCache(tasker_)) {
+            throw FunctionFailed("MaaTaskerClearCache");
+        }
     }
 
     MaaTasker* tasker_ {};

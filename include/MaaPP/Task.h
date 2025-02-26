@@ -68,4 +68,14 @@ struct ResTask
     MaaResId res_id_ {};
 };
 
+struct CtrlTask
+{
+    MaaStatus status() const { return MaaControllerStatus(controller_, ctrl_id_); }
+
+    MaaStatus wait() const { return MaaControllerWait(controller_, ctrl_id_); }
+
+    MaaController* controller_ {};
+    MaaResId ctrl_id_ {};
+};
+
 }
