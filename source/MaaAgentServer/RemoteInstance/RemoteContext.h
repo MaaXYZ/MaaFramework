@@ -1,7 +1,11 @@
 #pragma once
 
+#include <memory>
+#include <vector>
+
 #include "Common/MaaTypes.h"
 #include "MaaAgent/Transceiver.h"
+#include "RemoteTasker.h"
 
 MAA_AGENT_SERVER_NS_BEGIN
 
@@ -26,7 +30,10 @@ public:
 
 private:
     Transceiver& server_;
-    std::string context_id_ = 0;
+    std::string context_id_;
+
+    mutable std::vector<std::unique_ptr<RemoteContext>> clone_holder_;
+    mutable std::unique_ptr<RemoteTasker> tasker_ = nullptr;
 };
 
 MAA_AGENT_SERVER_NS_END
