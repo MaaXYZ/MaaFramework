@@ -82,7 +82,7 @@ struct ContextRunTaskReverseRequest
 {
     std::string context_id;
     std::string entry;
-    std::string pipeline_override;
+    json::object pipeline_override;
 
     MEO_JSONIZATION(context_id, entry, pipeline_override);
 };

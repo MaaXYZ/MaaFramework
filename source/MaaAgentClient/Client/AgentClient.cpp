@@ -154,6 +154,19 @@ std::optional<json::value> AgentClient::recv()
     return *jopt;
 }
 
+bool AgentClient::handle_inserted_request(const json::value& j)
+{    
+    LogFunc << VAR(j) << VAR(ipc_addr_);
+
+    if (handle_context_run_task(j)) {
+        return true;
+    }
+    else {
+        LogError << "unexpected msg" << VAR(j) << VAR(ipc_addr_);
+        return false;
+    }
+}
+
 bool AgentClient::recv_and_handle_start_up_response()
 {
     LogFunc << VAR(ipc_addr_);
@@ -189,19 +202,6 @@ bool AgentClient::recv_and_handle_start_up_response()
     return true;
 }
 
-bool AgentClient::handle_reverse_request(const json::value& j)
-{
-    LogFunc << VAR(j) << VAR(ipc_addr_);
-
-    if (handle_context_run_task(j)) {
-        return true;
-    }
-    else {
-        LogError << "unexpected msg" << VAR(j) << VAR(ipc_addr_);
-        return false;
-    }
-}
-
 bool AgentClient::handle_context_run_task(const json::value& j)
 {
     if (!j.is<ContextRunTaskReverseRequest>()) {
@@ -212,8 +212,9 @@ bool AgentClient::handle_context_run_task(const json::value& j)
     LogFunc << VAR(req) << VAR(ipc_addr_);
 
     MaaContext* context = query_context(req.context_id);
+    std::string pp_str = req.pipeline_override.dumps();
 
-    auto task_id = MaaContextRunTask(context, req.entry.c_str(), req.pipeline_override.c_str());
+    auto task_id = MaaContextRunTask(context, req.entry.c_str(), pp_str.c_str());
 
     ContextRunTaskReverseResponse resp {
         .task_id = task_id,
@@ -265,11 +266,7 @@ MaaBool AgentClient::reco_agent(
         .roi = roi ? std::array<int32_t, 4> { roi->x, roi->y, roi->width, roi->height } : std::array<int32_t, 4> {},
     };
 
-    auto reverse_request_handler = [pthis](const json::value& j) {
-        return pthis->handle_reverse_request(j);
-    };
-
-    auto resp_opt = pthis->send_and_recv<CustomRecognitionResponse>(req, reverse_request_handler);
+    auto resp_opt = pthis->send_and_recv<CustomRecognitionResponse>(req);
 
     if (!resp_opt) {
         LogError << "failed to send_and_recv" << VAR(req);
@@ -320,11 +317,7 @@ MaaBool AgentClient::action_agent(
         .box = box ? std::array<int32_t, 4> { box->x, box->y, box->width, box->height } : std::array<int32_t, 4> {},
     };
 
-    auto reverse_request_handler = [pthis](const json::value& j) {
-        return pthis->handle_reverse_request(j);
-    };
-
-    auto resp_opt = pthis->send_and_recv<CustomActionResponse>(req, reverse_request_handler);
+    auto resp_opt = pthis->send_and_recv<CustomActionResponse>(req);
     if (!resp_opt) {
         LogError << "failed to send_and_recv" << VAR(req);
         return false;

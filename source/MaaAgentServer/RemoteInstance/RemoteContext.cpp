@@ -4,14 +4,25 @@
 
 MAA_AGENT_SERVER_NS_BEGIN
 
-RemoteContext::RemoteContext(const std::string& context_id)
-    : context_id_(context_id)
+RemoteContext::RemoteContext(Transceiver& server, const std::string& context_id)
+    : server_(server)
+    , context_id_(context_id)
 {
 }
 
 MaaTaskId RemoteContext::run_task(const std::string& entry, const json::object& pipeline_override)
 {
-    return MaaTaskId();
+    ContextRunTaskReverseRequest req {
+        .context_id = context_id_,
+        .entry = entry,
+        .pipeline_override = pipeline_override,
+    };
+
+    auto resp_opt = server_.send_and_recv<ContextRunTaskReverseResponse>(req);
+    if (!resp_opt) {
+        return MaaInvalidId;
+    }
+    return resp_opt->task_id;
 }
 
 MaaRecoId RemoteContext::run_recognition(const std::string& entry, const json::object& pipeline_override, const cv::Mat& image)

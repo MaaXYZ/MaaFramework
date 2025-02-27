@@ -9,57 +9,29 @@
 #include "Conf/Conf.h"
 #include "Utils/IOStream/BoostIO.hpp"
 #include "Utils/MessageNotifier.hpp"
+#include "MaaAgent/Transceiver.h"
 
 MAA_AGENT_CLIENT_NS_BEGIN
 
-class AgentClient : public MaaAgentClient
+class AgentClient : public MaaAgentClient, public Transceiver
 {
 public:
     AgentClient(MaaNotificationCallback notify, void* notify_trans_arg);
     virtual ~AgentClient() override;
 
+public: // MaaAgentClient
     virtual bool bind_resource(MaaResource* resource) override;
     virtual bool start_clild(const std::filesystem::path& child_exec, const std::vector<std::string>& child_args) override;
 
+private: // Transceiver
+    virtual bool send(const json::value& j) override;
+    virtual std::optional<json::value> recv() override;
+    virtual bool handle_inserted_request(const json::value& j) override;
+
 private:
     std::string create_socket();
-    bool send(const json::value& j);
-    std::optional<json::value> recv();
-
-    template <typename ResponseT, typename RequestT>
-    std::optional<ResponseT> send_and_recv(const RequestT& req, std::function<bool(const json::value&)> reverse_request_handler = nullptr)
-    {
-        LogTrace << VAR(req) << VAR(ipc_addr_);
-        bool sent = send(req);
-        if (!sent) {
-            LogError << "failed to send req" << VAR(req);
-            return std::nullopt;
-        }
-
-        while (true) {
-            auto msg_opt = recv();
-            if (!msg_opt) {
-                LogError << "failed to recv resp" << VAR(req);
-                return std::nullopt;
-            }
-            const json::value& msg = *msg_opt;
-            if (msg.is<ResponseT>()) {
-                return msg.as<ResponseT>();
-            }
-            else if (reverse_request_handler) {
-                reverse_request_handler(msg);
-            }
-            else {
-                LogError << "unexpected msg" << VAR(msg);
-                return std::nullopt;
-            }
-        }
-
-        return std::nullopt;
-    }
 
     bool recv_and_handle_start_up_response();
-    bool handle_reverse_request(const json::value& j);
     bool handle_context_run_task(const json::value& j);
 
 public:

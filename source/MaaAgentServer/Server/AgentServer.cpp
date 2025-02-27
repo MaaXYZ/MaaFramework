@@ -173,6 +173,25 @@ std::optional<json::value> AgentServer::recv()
     return *jopt;
 }
 
+bool AgentServer::handle_inserted_request(const json::value& j)
+{    
+    LogInfo << VAR(j) << VAR(ipc_addr_);
+
+    if (handle_recognition_request(j)) {
+        return true;
+    }
+    else if (handle_action_request(j)) {
+        return true;
+    }
+    else if (handle_shut_down_request(j)) {
+        return true;
+    }
+    else {
+        LogError << "unexpected msg" << VAR(j);
+        return false;
+    }
+}
+
 bool AgentServer::handle_recognition_request(const json::value& j)
 {
     if (!j.is<CustomRecognitionRequest>()) {
@@ -194,7 +213,7 @@ bool AgentServer::handle_recognition_request(const json::value& j)
         return true;
     }
 
-    RemoteContext context(req.context_id);
+    RemoteContext context(*this, req.context_id);
     cv::Mat mat = decode_image(req.image);
     ImageBuffer mat_buffer(mat);
     MaaRect rect { req.roi[0], req.roi[1], req.roi[2], req.roi[3] };
@@ -247,7 +266,7 @@ bool AgentServer::handle_action_request(const json::value& j)
         return true;
     }
 
-    RemoteContext context(req.context_id);
+    RemoteContext context(*this, req.context_id);
     MaaRect rect { req.box[0], req.box[1], req.box[2], req.box[3] };
 
     MaaBool ret = session.action(
@@ -296,22 +315,7 @@ void AgentServer::request_msg_loop()
             return;
         }
         const json::value& j = *msg_opt;
-        handle_request(j);
-    }
-}
-
-void AgentServer::handle_request(const json::value& j)
-{
-    LogInfo << VAR(j) << VAR(ipc_addr_);
-
-    if (handle_recognition_request(j)) {
-    }
-    else if (handle_action_request(j)) {
-    }
-    else if (handle_shut_down_request(j)) {
-    }
-    else {
-        LogError << "unknown msg" << VAR(j);
+        handle_inserted_request(j);
     }
 }
 

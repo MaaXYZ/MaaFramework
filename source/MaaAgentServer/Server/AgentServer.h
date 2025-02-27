@@ -10,11 +10,14 @@
 
 #include "Conf/Conf.h"
 #include "MaaAgentServer/MaaAgentServerDef.h"
+#include "MaaAgent/Transceiver.h"
 #include "Utils/SingletonHolder.hpp"
 
 MAA_AGENT_SERVER_NS_BEGIN
 
-class AgentServer : public SingletonHolder<AgentServer>
+class AgentServer
+    : public SingletonHolder<AgentServer>
+    , public Transceiver
 {
     struct CustomRecognitionSession
     {
@@ -39,10 +42,13 @@ public:
     bool register_custom_recognition(const std::string& name, MaaCustomRecognitionCallback recognition, void* trans_arg);
     bool register_custom_action(const std::string& name, MaaCustomActionCallback action, void* trans_arg);
 
+public:
+    virtual bool send(const json::value& j) override;
+    virtual std::optional<json::value> recv() override;
+    virtual bool handle_inserted_request(const json::value& j) override;
+
 private:
     bool create_socket(const std::string& ipc_addr);
-    bool send(const json::value& j);
-    std::optional<json::value> recv();
 
     bool send_start_up_response();
 
@@ -51,7 +57,6 @@ private:
     bool handle_shut_down_request(const json::value& j);
 
     void request_msg_loop();
-    void handle_request(const json::value& j);
 
 private:
     std::unordered_map<std::string, CustomRecognitionSession> custom_recognitions_;

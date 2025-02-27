@@ -1,13 +1,14 @@
 #pragma once
 
 #include "Common/MaaTypes.h"
+#include "MaaAgent/Transceiver.h"
 
 MAA_AGENT_SERVER_NS_BEGIN
 
 class RemoteContext : public MaaContext
 {
 public:
-    RemoteContext(const std::string& context_id);
+    RemoteContext(Transceiver& server, const std::string& context_id);
     virtual ~RemoteContext() = default;
 
     virtual MaaTaskId run_task(const std::string& entry, const json::object& pipeline_override) override;
@@ -24,6 +25,7 @@ public:
     virtual MaaTasker* tasker() const override;
 
 private:
+    Transceiver& server_;
     std::string context_id_ = 0;
 };
 
