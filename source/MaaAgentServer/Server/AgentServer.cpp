@@ -114,7 +114,7 @@ bool AgentServer::create_socket(const std::string& ipc_addr)
     LogFunc << VAR(ipc_addr);
 
     parent_sock_ = zmq::socket_t(parent_ctx_, zmq::socket_type::pair);
-    parent_sock_.bind(ipc_addr);
+    parent_sock_.connect(ipc_addr);
     return true;
 }
 
@@ -125,7 +125,7 @@ bool AgentServer::send(const json::value& j)
     std::string jstr = j.dumps();
     zmq::message_t msg(jstr.size());
     std::memcpy(msg.data(), jstr.data(), jstr.size());
-    bool sent = parent_sock_.send(msg, zmq::send_flags::none).has_value();
+    bool sent = parent_sock_.send(msg, zmq::send_flags::dontwait).has_value();
     if (!sent) {
         LogError << "failed to send msg" << VAR(j) << VAR(ipc_addr_);
         return false;
@@ -174,7 +174,7 @@ std::optional<json::value> AgentServer::recv()
 }
 
 bool AgentServer::handle_inserted_request(const json::value& j)
-{    
+{
     LogInfo << VAR(j) << VAR(ipc_addr_);
 
     if (handle_recognition_request(j)) {

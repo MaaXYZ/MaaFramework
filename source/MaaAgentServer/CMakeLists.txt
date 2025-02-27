@@ -10,10 +10,11 @@ target_include_directories(
     PRIVATE ${CMAKE_CURRENT_SOURCE_DIR} ${MAA_PRIVATE_INC} ${MAA_PUBLIC_INC})
 
 target_compile_definitions(MaaAgentServer PRIVATE MAA_AGENT_SERVER_EXPORTS)
+
 # 复用 MaaFramework 导出接口
 target_compile_definitions(MaaAgentServer PRIVATE MAA_FRAMEWORK_EXPORTS)
 
-target_link_libraries(MaaAgentServer PRIVATE cppzmq-static MaaUtils HeaderOnlyLibraries)
+target_link_libraries(MaaAgentServer PRIVATE cppzmq-static ${OpenCV_LIBS} MaaUtils HeaderOnlyLibraries)
 
 add_dependencies(MaaAgentServer MaaUtils)
 
