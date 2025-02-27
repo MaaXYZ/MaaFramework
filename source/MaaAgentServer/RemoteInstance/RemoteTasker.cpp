@@ -168,8 +168,8 @@ std::optional<MAA_TASK_NS::TaskDetail> RemoteTasker::get_task_detail(MaaTaskId t
 
     MAA_TASK_NS::TaskDetail result;
     result.task_id = resp_opt->task_id;
-    result.entry = resp_opt->entry;
-    result.node_ids = resp_opt->node_ids;
+    result.entry = std::move(resp_opt->entry);
+    result.node_ids = std::move(resp_opt->node_ids);
     result.status = static_cast<MaaStatus>(resp_opt->status);
 
     return result;
@@ -193,7 +193,7 @@ std::optional<MAA_TASK_NS::NodeDetail> RemoteTasker::get_node_detail(MaaNodeId n
 
     MAA_TASK_NS::NodeDetail result;
     result.node_id = resp_opt->node_id;
-    result.name = resp_opt->name;
+    result.name = std::move(resp_opt->name);
     result.reco_id = resp_opt->reco_id;
     result.completed = resp_opt->completed;
 
@@ -218,14 +218,14 @@ std::optional<MAA_TASK_NS::RecoResult> RemoteTasker::get_reco_result(MaaRecoId r
 
     MAA_TASK_NS::RecoResult result;
     result.reco_id = resp_opt->reco_id;
-    result.name = resp_opt->name;
-    result.algorithm = resp_opt->algorithm;
+    result.name = std::move(resp_opt->name);
+    result.algorithm = std::move(resp_opt->algorithm);
 
     result.box = cv::Rect(resp_opt->box[0], resp_opt->box[1], resp_opt->box[2], resp_opt->box[3]);
-    result.detail = resp_opt->detail;
+    result.detail = std::move(resp_opt->detail);
     result.raw = decode_image(resp_opt->raw);
     for (const auto& draw : resp_opt->draws) {
-        result.draws.push_back(decode_image(draw));
+        result.draws.emplace_back(decode_image(draw));
     }
     return result;
 }

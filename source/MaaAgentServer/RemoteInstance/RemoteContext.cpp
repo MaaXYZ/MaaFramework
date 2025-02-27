@@ -29,10 +29,12 @@ MaaTaskId RemoteContext::run_task(const std::string& entry, const json::object& 
 
 MaaRecoId RemoteContext::run_recognition(const std::string& entry, const json::object& pipeline_override, const cv::Mat& image)
 {
-    ContextRunRecognitionReverseRequest req { .context_id = context_id_,
-                                              .entry = entry,
-                                              .pipeline_override = pipeline_override,
-                                              .image = encode_image(image) };
+    ContextRunRecognitionReverseRequest req {
+        .context_id = context_id_,
+        .entry = entry,
+        .pipeline_override = pipeline_override,
+        .image = encode_image(image),
+    };
 
     auto resp_opt = server_.send_and_recv<ContextRunRecognitionReverseResponse>(req);
     if (!resp_opt) {
@@ -47,11 +49,13 @@ MaaNodeId RemoteContext::run_action(
     const cv::Rect& box,
     const std::string& reco_detail)
 {
-    ContextRunActionReverseRequest req { .context_id = context_id_,
-                                         .entry = entry,
-                                         .pipeline_override = pipeline_override,
-                                         .box = { box.x, box.y, box.width, box.height },
-                                         .reco_detail = reco_detail };
+    ContextRunActionReverseRequest req {
+        .context_id = context_id_,
+        .entry = entry,
+        .pipeline_override = pipeline_override,
+        .box = { box.x, box.y, box.width, box.height },
+        .reco_detail = reco_detail,
+    };
 
     auto resp_opt = server_.send_and_recv<ContextRunActionReverseResponse>(req);
     if (!resp_opt) {
