@@ -20,10 +20,10 @@ public:
     {
         auto req_id = ++s_req_id_;
 
-        LogFunc << VAR(req) << VAR(req_id);
+        LogFunc << VAR(req_id);
         bool sent = send(req);
         if (!sent) {
-            LogError << "failed to send req" << VAR(req) << VAR(req_id);
+            LogError << "failed to send req" << VAR(req_id);
             return std::nullopt;
         }
 
@@ -32,7 +32,7 @@ public:
 
             auto msg_opt = recv();
             if (!msg_opt) {
-                LogError << "failed to recv resp" << VAR(req) << VAR(req_id) << VAR(loop_count);
+                LogError << "failed to recv resp" << VAR(req_id) << VAR(loop_count);
                 return std::nullopt;
             }
             const json::value& msg = *msg_opt;
@@ -46,7 +46,7 @@ public:
             }
         }
         // unreachable code
-        //return std::nullopt;
+        // return std::nullopt;
     }
 
 protected:

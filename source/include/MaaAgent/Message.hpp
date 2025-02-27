@@ -48,7 +48,15 @@ struct CustomRecognitionRequest
     std::array<int32_t, 4> roi {};
 
     MessageTypePlaceholder _CustomRecognitionRequest = 1;
-    MEO_JSONIZATION(context_id, task_id, node_name, custom_recognition_name, custom_recognition_param, image, roi, _CustomRecognitionRequest);
+    MEO_JSONIZATION(
+        context_id,
+        task_id,
+        node_name,
+        custom_recognition_name,
+        custom_recognition_param,
+        image,
+        roi,
+        _CustomRecognitionRequest);
 };
 
 struct CustomRecognitionResponse
@@ -97,7 +105,6 @@ struct ContextRunTaskReverseResponse
 {
     int64_t task_id = 0;
 
-
     MessageTypePlaceholder _ContextRunTaskReverseResponse = 1;
     MEO_JSONIZATION(task_id, _ContextRunTaskReverseResponse);
 };
@@ -128,7 +135,7 @@ struct ContextRunActionReverseRequest
     json::object pipeline_override;
     std::array<int, 4> box {};
     std::string reco_detail;
-    
+
     MessageTypePlaceholder _ContextRunActionReverseRequest = 1;
     MEO_JSONIZATION(context_id, entry, pipeline_override, box, reco_detail, _ContextRunActionReverseRequest);
 };
@@ -145,7 +152,7 @@ struct ContextOverridePipelineReverseRequest
 {
     std::string context_id;
     json::object pipeline_override;
-    
+
     MessageTypePlaceholder _ContextOverridePipelineReverseRequest = 1;
     MEO_JSONIZATION(context_id, pipeline_override, _ContextOverridePipelineReverseRequest);
 };
@@ -163,7 +170,7 @@ struct ContextOverrideNextReverseRequest
     std::string context_id;
     std::string node_name;
     std::vector<std::string> next;
-    
+
     MessageTypePlaceholder _ContextOverrideNextReverseRequest = 1;
     MEO_JSONIZATION(context_id, node_name, next, _ContextOverrideNextReverseRequest);
 };
@@ -223,5 +230,22 @@ struct ContextTaskerReverseResponse
     MessageTypePlaceholder _ContextTaskerReverseResponse = 1;
     MEO_JSONIZATION(tasker_id, _ContextTaskerReverseResponse);
 };
+
+inline json::value message_without_image(const json::value& j)
+{
+    json::value j_copy = j;
+    if (j.exists("image")) {
+        j_copy["image"] = "size:" + std::to_string(j.at("image").as_string().size());
+    }
+    return j_copy;
+}
+
+template <typename T>
+inline T message_without_image(const T& msg)
+{
+    T copy = msg;
+    copy.image = "size:" + std::to_string(msg.image.size());
+    return copy;
+}
 
 MAA_AGENT_NS_END

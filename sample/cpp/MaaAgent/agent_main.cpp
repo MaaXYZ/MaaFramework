@@ -49,9 +49,9 @@ int main()
     MaaAgentClientStartChild(client, "E:/Code/MaaFramework/build/bin/Debug/agent_child", nullptr);
 
     // ChildCustomTask is defined in agent_child.cpp
-    auto task_id = MaaTaskerPostTask(tasker_handle, "MyTask", R"(
+    auto task_id = MaaTaskerPostTask(tasker_handle, "MyChildTask", R"(
 {
-    "MyTask": {
+    "MyChildTask": {
         "recognition": "Custom",
         "custom_recognition": "ChildCustomRecognition",
         "action": "Custom",

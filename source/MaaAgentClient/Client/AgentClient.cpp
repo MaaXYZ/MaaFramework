@@ -118,12 +118,12 @@ std::string AgentClient::create_socket()
 
 bool AgentClient::send(const json::value& j)
 {
-    LogTrace << VAR(j) << VAR(ipc_addr_);
+    LogTrace << VAR(message_without_image(j)) << VAR(ipc_addr_);
 
     std::string jstr = j.dumps();
     zmq::message_t msg(jstr.size());
     std::memcpy(msg.data(), jstr.data(), jstr.size());
-    bool sent = child_sock_.send(msg, zmq::send_flags::dontwait).has_value();
+    bool sent = child_sock_.send(msg, zmq::send_flags::none).has_value();
     if (!sent) {
         LogError << "failed to send msg" << VAR(j);
         return false;
@@ -156,7 +156,7 @@ std::optional<json::value> AgentClient::recv()
 
 bool AgentClient::handle_inserted_request(const json::value& j)
 {
-    LogFunc << VAR(j) << VAR(ipc_addr_);
+    LogFunc << VAR(message_without_image(j)) << VAR(ipc_addr_);
 
     if (handle_context_run_task(j)) {
         return true;

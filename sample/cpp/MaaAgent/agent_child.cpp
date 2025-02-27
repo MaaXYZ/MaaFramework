@@ -1,19 +1,10 @@
 #include <iostream>
 
 #include "MaaAgentServer/MaaAgentServerAPI.h"
+#include "MaaFramework/MaaAPI.h"
 #include "MaaFramework/Utility/MaaBuffer.h"
 
 #include "../conf.h"
-
-MaaBool ChildCustomActionCallback(
-    MaaContext* context,
-    MaaTaskId task_id,
-    const char* node_name,
-    const char* custom_action_name,
-    const char* custom_action_param,
-    MaaRecoId reco_id,
-    const MaaRect* box,
-    void* trans_arg);
 
 MaaBool ChildCustomRecognitionCallback(
     MaaContext* context,
@@ -27,12 +18,33 @@ MaaBool ChildCustomRecognitionCallback(
     /* out */ MaaRect* out_box,
     /* out */ MaaStringBuffer* out_detail);
 
+MaaBool ChildCustomActionCallback(
+    MaaContext* context,
+    MaaTaskId task_id,
+    const char* node_name,
+    const char* custom_action_name,
+    const char* custom_action_param,
+    MaaRecoId reco_id,
+    const MaaRect* box,
+    void* trans_arg);
+
+MaaBool ChildCustomActionInnerCallback(
+    MaaContext* context,
+    MaaTaskId task_id,
+    const char* node_name,
+    const char* custom_action_name,
+    const char* custom_action_param,
+    MaaRecoId reco_id,
+    const MaaRect* box,
+    void* trans_arg);
+
 MaaStringListBuffer* create_args(int argc, char** argv);
 
 int main(int argc, char** argv)
 {
-    MaaAgentServerRegisterCustomAction("ChildCustomAction", ChildCustomActionCallback, nullptr);
     MaaAgentServerRegisterCustomRecognition("ChildCustomRecognition", ChildCustomRecognitionCallback, nullptr);
+    MaaAgentServerRegisterCustomAction("ChildCustomAction", ChildCustomActionCallback, nullptr);
+    MaaAgentServerRegisterCustomAction("ChildCustomActionInner", ChildCustomActionInnerCallback, nullptr);
 
     MaaStringListBuffer* args = create_args(argc, argv);
 
@@ -57,6 +69,31 @@ MaaBool ChildCustomActionCallback(
     void* trans_arg)
 {
     std::cout << "at ChildCustomActionCallback" << std::endl;
+
+    MaaContextRunTask(
+        context,
+        "ChildCustomActionInner",
+        R"({
+            "ChildCustomActionInner": {
+                "action": "Custom",
+                "custom_action": "ChildCustomActionInner"
+            }
+        })");
+
+    return true;
+}
+
+MaaBool ChildCustomActionInnerCallback(
+    MaaContext* context,
+    MaaTaskId task_id,
+    const char* node_name,
+    const char* custom_action_name,
+    const char* custom_action_param,
+    MaaRecoId reco_id,
+    const MaaRect* box,
+    void* trans_arg)
+{
+    std::cout << "at ChildCustomActionInnerCallback" << std::endl;
 
     return true;
 }
