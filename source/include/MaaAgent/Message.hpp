@@ -231,20 +231,29 @@ struct ContextTaskerReverseResponse
     MEO_JSONIZATION(tasker_id, _ContextTaskerReverseResponse);
 };
 
-inline json::value message_without_image(const json::value& j)
+inline std::string short_str(const std::string& str)
+{
+    if (str.size() <= 64) {
+        return str;
+    }
+
+    return str.substr(0, 16) + "..." + str.substr(str.size() - 16, 16) + ",size:" + std::to_string(str.size());
+}
+
+inline json::value log_msg(const json::value& j)
 {
     json::value j_copy = j;
     if (j.exists("image")) {
-        j_copy["image"] = "size:" + std::to_string(j.at("image").as_string().size());
+        j_copy["image"] = short_str(j.at("image").as_string());
     }
     return j_copy;
 }
 
 template <typename T>
-inline T message_without_image(const T& msg)
+inline T log_msg(const T& msg)
 {
     T copy = msg;
-    copy.image = "size:" + std::to_string(msg.image.size());
+    copy.image = short_str(msg.image);
     return copy;
 }
 

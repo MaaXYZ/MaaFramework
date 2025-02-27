@@ -120,7 +120,7 @@ bool AgentServer::create_socket(const std::string& ipc_addr)
 
 bool AgentServer::send(const json::value& j)
 {
-    LogTrace << VAR(message_without_image(j)) << VAR(ipc_addr_);
+    LogTrace << VAR(log_msg(j)) << VAR(ipc_addr_);
 
     std::string jstr = j.dumps();
     zmq::message_t msg(jstr.size());
@@ -175,7 +175,7 @@ std::optional<json::value> AgentServer::recv()
 
 bool AgentServer::handle_inserted_request(const json::value& j)
 {
-    LogInfo << VAR(message_without_image(j)) << VAR(ipc_addr_);
+    LogInfo << VAR(log_msg(j)) << VAR(ipc_addr_);
 
     if (handle_recognition_request(j)) {
         return true;
@@ -199,7 +199,7 @@ bool AgentServer::handle_recognition_request(const json::value& j)
     }
 
     const CustomRecognitionRequest& req = j.as<CustomRecognitionRequest>();
-    LogInfo << VAR(message_without_image(req)) << VAR(ipc_addr_);
+    LogInfo << VAR(log_msg(req)) << VAR(ipc_addr_);
 
     auto it = custom_recognitions_.find(req.custom_recognition_name);
     if (it == custom_recognitions_.end()) {
