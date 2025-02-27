@@ -1,5 +1,6 @@
 #pragma once
 
+#include <MaaToolkit/MaaToolkitAPI.h>
 #include <map>
 #include <memory>
 #include <vector>
@@ -111,17 +112,21 @@ struct AdbController : public Controller
         MaaAdbScreencapMethod screencap_methods;
         MaaAdbInputMethod input_methods;
         std::string config;
-        std::string agent_path;
     };
 
-    AdbController(const Config& config)
+    struct Device : public Config
+    {
+        std::string name;
+    };
+
+    AdbController(const Config& config, const std::string& agent_path)
         : Controller(MaaAdbControllerCreate(
               config.adb_path.c_str(),
               config.address.c_str(),
               config.screencap_methods,
               config.input_methods,
               config.config.c_str(),
-              config.agent_path.c_str(),
+              agent_path.c_str(),
               +[](const char* message, const char* details_json, void* notify_trans_arg) {
                   auto self = static_cast<Controller*>(notify_trans_arg)->shared_from_this();
 
@@ -130,6 +135,46 @@ struct AdbController : public Controller
               },
               this))
     {
+    }
+
+    static std::vector<Device> unwrap_(MaaToolkitAdbDeviceList* list)
+    {
+        auto count = MaaToolkitAdbDeviceListSize(list);
+        std::vector<Device> result;
+        result.reserve(count);
+        for (size_t i = 0; i < count; i++) {
+            auto dev = MaaToolkitAdbDeviceListAt(list, i);
+            result.push_back({
+                {
+                    MaaToolkitAdbDeviceGetAdbPath(dev),
+                    MaaToolkitAdbDeviceGetAddress(dev),
+                    MaaToolkitAdbDeviceGetScreencapMethods(dev),
+                    MaaToolkitAdbDeviceGetInputMethods(dev),
+                    MaaToolkitAdbDeviceGetConfig(dev),
+                },
+                MaaToolkitAdbDeviceGetName(dev),
+            });
+        }
+        MaaToolkitAdbDeviceListDestroy(list);
+        return result;
+    }
+
+    static std::vector<Device> find()
+    {
+        auto list = MaaToolkitAdbDeviceListCreate();
+        if (!MaaToolkitAdbDeviceFind(list)) {
+            throw FunctionFailed("MaaToolkitAdbDeviceFind");
+        }
+        return unwrap_(list);
+    }
+
+    static std::vector<Device> find_specific(const std::string& adb_path)
+    {
+        auto list = MaaToolkitAdbDeviceListCreate();
+        if (!MaaToolkitAdbDeviceFindSpecified(adb_path.c_str(), list)) {
+            throw FunctionFailed("MaaToolkitAdbDeviceFindSpecified");
+        }
+        return unwrap_(list);
     }
 };
 

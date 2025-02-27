@@ -1,5 +1,7 @@
 #include <iostream>
+#include <memory>
 
+#include "MaaPP/Controller.h"
 #include "MaaPP/MaaPP.h"
 
 std::shared_ptr<maapp::Controller> create_adb_controller();
@@ -53,6 +55,12 @@ int main()
 
 std::shared_ptr<maapp::Controller> create_adb_controller()
 {
-    // TODO
-    return nullptr;
+    auto devices = maapp::AdbController::find();
+    if (devices.empty()) {
+        std::cout << "No device found" << std::endl;
+        return nullptr;
+    }
+
+    std::string agent_path = "share/MaaAgentBinary";
+    return std::make_shared<maapp::AdbController>(devices[0], agent_path);
 }
