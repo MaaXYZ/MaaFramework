@@ -10,14 +10,12 @@ const releasePath = path.join(bindingPath, 'release')
 // const rootPath = path.resolve(bindingPath, '..', '..', '..')
 
 const platforms: [maa: string, node: string][] = [
-    ['win', 'win32'],
-    ['linux', 'linux'],
-    ['macos', 'darwin']
-]
-
-const archs: [maa: string, node: string][] = [
-    ['x86_64', 'x64'],
-    ['aarch64', 'arm64']
+    ['win-x86_64', 'win32-x64'],
+    ['linux-x86_64', 'linux-x64'],
+    ['macos-x86_64', 'darwin-x64'],
+    // ['win-aarch64', 'win32-arm64'],
+    ['linux-aarch64', 'linux-arm64'],
+    ['macos-aarch64', 'darwin-arm64'],
 ]
 
 async function main() {
@@ -35,22 +33,20 @@ async function main() {
     }
 
     for (const [mplat, nplat] of platforms) {
-        for (const [march, narch] of archs) {
-            const maaBinPath = path.join(assetsPath, `MAA-${mplat}-${march}`, 'bin')
-            const sepPackPath = path.join(releasePath, `maa-node-${nplat}-${narch}`)
+        const maaBinPath = path.join(assetsPath, `MAA-${mplat}`, 'bin')
+        const sepPackPath = path.join(releasePath, `maa-node-${nplat}`)
 
-            for (const file of await fs.readdir(maaBinPath)) {
-                if (/MaaPiCli/.test(file)) {
-                    continue
-                }
-                await fs.copyFile(path.join(maaBinPath, file), path.join(sepPackPath, file))
+        for (const file of await fs.readdir(maaBinPath)) {
+            if (/MaaPiCli/.test(file)) {
+                continue
             }
-
-            cp.execSync(
-                `npm --prefix ${corePackPath} pkg set optionalDependencies.@maaxyz/maa-node-${nplat}-${narch}=${version}`
-            )
-            cp.execSync(`npm --prefix ${sepPackPath} pkg set version=${version}`)
+            await fs.copyFile(path.join(maaBinPath, file), path.join(sepPackPath, file))
         }
+
+        cp.execSync(
+            `npm --prefix ${corePackPath} pkg set optionalDependencies.@maaxyz/maa-node-${nplat}-${narch}=${version}`
+        )
+        cp.execSync(`npm --prefix ${sepPackPath} pkg set version=${version}`)
     }
 }
 
