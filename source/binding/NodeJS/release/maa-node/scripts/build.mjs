@@ -7,7 +7,7 @@ build({
     platform: 'node',
     external: [
         '@maaxyz/maa-node-win32-x64',
-        '@maaxyz/maa-node-win32-arm64',
+        // '@maaxyz/maa-node-win32-arm64',
         '@maaxyz/maa-node-linux-x64',
         '@maaxyz/maa-node-linux-arm64',
         '@maaxyz/maa-node-darwin-x64',
