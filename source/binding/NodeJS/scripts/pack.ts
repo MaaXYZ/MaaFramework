@@ -44,7 +44,7 @@ async function main() {
         }
 
         cp.execSync(
-            `npm --prefix ${corePackPath} pkg set optionalDependencies.@maaxyz/maa-node-${nplat}-${narch}=${version}`
+            `npm --prefix ${corePackPath} pkg set optionalDependencies.@maaxyz/maa-node-${nplat}=${version}`
         )
         cp.execSync(`npm --prefix ${sepPackPath} pkg set version=${version}`)
     }
