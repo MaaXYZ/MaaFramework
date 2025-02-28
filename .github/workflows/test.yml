@@ -330,6 +330,7 @@ jobs:
               run: |
                   LLVM_PREFIX=$(brew --prefix llvm)
                   cmake --preset 'NinjaMulti' \
+                    -DCMAKE_OSX_ARCHITECTURES=${{ matrix.arch == 'x86_64' && 'x86_64' || 'arm64' }} \
                     -DMAADEPS_TRIPLET='maa-${{ matrix.arch == 'x86_64' && 'x64' || 'arm64' }}-osx' \
                     -DMAA_HASH_VERSION='${{ needs.meta.outputs.tag }}' \
                     -DCMAKE_C_COMPILER=${LLVM_PREFIX}/bin/clang \
