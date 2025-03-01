@@ -22,7 +22,7 @@ __all__ = [
 class Controller:
     _notification_handler: Optional[NotificationHandler]
     _handle: MaaControllerHandle
-    _own: bool = False
+    _own: bool
 
     def __init__(
         self,

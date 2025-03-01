@@ -274,6 +274,8 @@ MaaToolkitAdbDeviceHandle = ctypes.c_void_p
 MaaToolkitDesktopWindowListHandle = ctypes.c_void_p
 MaaToolkitDesktopWindowHandle = ctypes.c_void_p
 
+MaaAgentClientHandle = ctypes.c_void_p
+
 
 class MaaCustomControllerCallbacks(ctypes.Structure):
     ConnectFunc = FUNCTYPE(

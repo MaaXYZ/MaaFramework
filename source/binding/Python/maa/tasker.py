@@ -15,7 +15,7 @@ from .controller import Controller
 class Tasker:
     _notification_handler: Optional[NotificationHandler]
     _handle: MaaTaskerHandle
-    _own: bool = False
+    _own: bool
 
     ### public ###
 

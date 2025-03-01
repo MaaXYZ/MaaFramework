@@ -12,7 +12,7 @@ from .buffer import StringBuffer
 class Resource:
     _notification_handler: Optional[NotificationHandler]
     _handle: MaaResourceHandle
-    _own: bool = False
+    _own: bool
 
     ### public ###
 
