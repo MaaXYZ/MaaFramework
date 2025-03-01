@@ -1,4 +1,4 @@
-![image](https://github.com/user-attachments/assets/f8f45967-a08e-40cf-84e1-b0242ea74fa8)<!-- markdownlint-disable MD033 MD041 -->
+<!-- markdownlint-disable MD033 MD041 -->
 <p align="center">
   <img alt="LOGO" src="https://cdn.jsdelivr.net/gh/MaaAssistantArknights/design@main/logo/maa-logo_512x512.png" width="256" height="256" />
 </p>
