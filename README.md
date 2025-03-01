@@ -1,4 +1,4 @@
-<!-- markdownlint-disable MD033 MD041 -->
+![image](https://github.com/user-attachments/assets/f8f45967-a08e-40cf-84e1-b0242ea74fa8)<!-- markdownlint-disable MD033 MD041 -->
 <p align="center">
   <img alt="LOGO" src="https://cdn.jsdelivr.net/gh/MaaAssistantArknights/design@main/logo/maa-logo_512x512.png" width="256" height="256" />
 </p>
@@ -107,6 +107,9 @@ _✨ 基于图像识别的自动化黑盒测试框架 ✨_
 
 - [MaaXuexi](https://github.com/ravizhan/MaaXuexi) 学习强国 自动化助手 ![python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white)  ![Pipeline](https://img.shields.io/badge/Pipeline-%23454545?logo=paddypower&logoColor=%23FFFFFF)  
   基于全新架构的 学习强国 自动化助手。图像技术 + 模拟控制，解放双手！由 MaaFramework 强力驱动！
+- [MACC](https://github.com/mxia9416/MACC) 无期迷途 小助手 ![Pipeline](https://img.shields.io/badge/Pipeline-%23454545?logo=paddypower&logoColor=%23FFFFFF)  
+  基于全新架构的 无期迷途 小助手。图像技术 + 模拟控制，解放双手！由 MaaFramework 强力驱动！
+
 
 ## 生态共建
 
