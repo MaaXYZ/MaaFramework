@@ -5,11 +5,11 @@
 #include "Utils/Logger.h"
 #include "Utils/Platform.h"
 
-MaaAgentClient* MaaAgentClientCreate(MaaNotificationCallback notify, void* notify_trans_arg)
+MaaAgentClient* MaaAgentClientCreate()
 {
-    LogFunc << VAR_VOIDP(notify) << VAR_VOIDP(notify_trans_arg);
+    LogFunc;
 
-    return new MAA_AGENT_CLIENT_NS::AgentClient(notify, notify_trans_arg);
+    return new MAA_AGENT_CLIENT_NS::AgentClient;
 }
 
 void MaaAgentClientDestroy(MaaAgentClient* client)

@@ -7,7 +7,7 @@ extern "C"
 {
 #endif
 
-    MAA_AGENT_CLIENT_API MaaAgentClient* MaaAgentClientCreate(MaaNotificationCallback notify, void* notify_trans_arg);
+    MAA_AGENT_CLIENT_API MaaAgentClient* MaaAgentClientCreate();
 
     MAA_AGENT_CLIENT_API void MaaAgentClientDestroy(MaaAgentClient* client);
 

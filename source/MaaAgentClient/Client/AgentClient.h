@@ -9,7 +9,6 @@
 #include "Conf/Conf.h"
 #include "MaaAgent/Transceiver.h"
 #include "Utils/IOStream/BoostIO.hpp"
-#include "Utils/MessageNotifier.hpp"
 
 MAA_AGENT_CLIENT_NS_BEGIN
 
@@ -18,7 +17,6 @@ class AgentClient
     , public Transceiver
 {
 public:
-    AgentClient(MaaNotificationCallback notify, void* notify_trans_arg);
     virtual ~AgentClient() override;
 
 public: // MaaAgentClient
@@ -122,7 +120,6 @@ public:
 
 private:
     MaaResource* resource_ = nullptr;
-    MessageNotifier notifier_;
     boost::process::child child_;
     std::string ipc_addr_;
 

@@ -32,12 +32,6 @@ std::vector<std::string> conv_args(const std::vector<std::string>& args)
 }
 #endif
 
-AgentClient::AgentClient(MaaNotificationCallback notify, void* notify_trans_arg)
-    : notifier_(notify, notify_trans_arg)
-{
-    LogFunc << VAR_VOIDP(notify) << VAR_VOIDP(notify_trans_arg);
-}
-
 AgentClient::~AgentClient()
 {
     LogFunc;
