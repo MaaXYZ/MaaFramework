@@ -1,5 +1,4 @@
 # python -m pip install maafw
-import os
 from maa.tasker import Tasker
 from maa.toolkit import Toolkit
 from maa.context import Context
