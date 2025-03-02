@@ -110,6 +110,10 @@ _✨ 基于图像识别的自动化黑盒测试框架 ✨_
 - [MACC](https://github.com/mxia9416/MACC) 无期迷途 小助手 ![Pipeline](https://img.shields.io/badge/Pipeline-%23454545?logo=paddypower&logoColor=%23FFFFFF)  
   基于全新架构的 无期迷途 小助手。图像技术 + 模拟控制，解放双手！由 MaaFramework 强力驱动！
 
+- [MAAIP](https://github.com/Arcelibs/MAAIP) IdolyPride 自動化助手 ![Pipeline](https://img.shields.io/badge/Pipeline-%23454545?logo=paddypower&logoColor=%23FFFFFF)  
+  基於全新架構的 IdolyPride 小助手。影像技術 + 模擬控制，解放雙手！由 MaaFramework 強力驅動！
+
+
 
 ## 生态共建
 
