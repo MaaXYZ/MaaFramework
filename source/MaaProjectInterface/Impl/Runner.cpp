@@ -92,7 +92,7 @@ bool Runner::run(
         tid = tasker_handle->post_task(task.entry, task.pipeline_override);
     }
 
-    tasker_handle->wait(rid);
+    tasker_handle->wait(tid);
 
     return true;
 }
