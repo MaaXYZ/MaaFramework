@@ -2,6 +2,8 @@
 <doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
   <compounddef id="dir_d44c64559bbebec7f509842c48db8b23" kind="dir">
     <compoundname>include</compoundname>
+    <innerdir refid="dir_a5fd325a74c1f9193b470b47e297ce9b">include/MaaAgentClient</innerdir>
+    <innerdir refid="dir_6373d74a239aad5eeb934988eedbd366">include/MaaAgentServer</innerdir>
     <innerdir refid="dir_370cd1367c21b1a87c5c9c6803b8d0b9">include/MaaFramework</innerdir>
     <innerdir refid="dir_229d1428d76e394aeaec36b75a5d5699">include/MaaToolkit</innerdir>
     <briefdescription>

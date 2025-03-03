@@ -1,0 +1,63 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="MaaAgentClientDef_8h" kind="file" language="C++">
+    <compoundname>MaaAgentClientDef.h</compoundname>
+    <includes refid="MaaDef_8h" local="yes">MaaFramework/MaaDef.h</includes>
+    <includedby refid="MaaAgentClientAPI_8h" local="yes">include/MaaAgentClient/MaaAgentClientAPI.h</includedby>
+    <incdepgraph>
+      <node id="1">
+        <label>include/MaaAgentClient/MaaAgentClientDef.h</label>
+        <link refid="MaaAgentClientDef_8h"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>MaaFramework/MaaDef.h</label>
+        <link refid="MaaDef_8h"/>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+      </node>
+      <node id="4">
+        <label>MaaPort.h</label>
+        <link refid="MaaPort_8h"/>
+      </node>
+      <node id="3">
+        <label>stdint.h</label>
+      </node>
+    </incdepgraph>
+    <invincdepgraph>
+      <node id="2">
+        <label>include/MaaAgentClient/MaaAgentClientAPI.h</label>
+        <link refid="MaaAgentClientAPI_8h"/>
+      </node>
+      <node id="1">
+        <label>include/MaaAgentClient/MaaAgentClientDef.h</label>
+        <link refid="MaaAgentClientDef_8h"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+      </node>
+    </invincdepgraph>
+    <sectiondef kind="typedef">
+      <memberdef kind="typedef" id="MaaAgentClientDef_8h_1afa360933632739d3de64403ea9add40c" prot="public" static="no">
+        <type>struct <ref refid="MaaAgentClientDef_8h_1afa360933632739d3de64403ea9add40c" kindref="member">MaaAgentClient</ref></type>
+        <definition>typedef struct MaaAgentClient MaaAgentClient</definition>
+        <argsstring></argsstring>
+        <name>MaaAgentClient</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaAgentClient/MaaAgentClientDef.h" line="5" column="29" bodyfile="include/MaaAgentClient/MaaAgentClientDef.h" bodystart="5" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="include/MaaAgentClient/MaaAgentClientDef.h"/>
+  </compounddef>
+</doxygen>

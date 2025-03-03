@@ -11,6 +11,26 @@
     <includedby refid="MaaBuffer_8h" local="yes">include/MaaFramework/Utility/MaaBuffer.h</includedby>
     <includedby refid="MaaUtility_8h" local="yes">include/MaaFramework/Utility/MaaUtility.h</includedby>
     <invincdepgraph>
+      <node id="10">
+        <label>include/MaaAgentClient/MaaAgentClientAPI.h</label>
+        <link refid="MaaAgentClientAPI_8h"/>
+      </node>
+      <node id="9">
+        <label>include/MaaAgentClient/MaaAgentClientDef.h</label>
+        <link refid="MaaAgentClientDef_8h"/>
+        <childnode refid="10" relation="include">
+        </childnode>
+      </node>
+      <node id="12">
+        <label>include/MaaAgentServer/MaaAgentServerAPI.h</label>
+        <link refid="MaaAgentServerAPI_8h"/>
+      </node>
+      <node id="11">
+        <label>include/MaaAgentServer/MaaAgentServerDef.h</label>
+        <link refid="MaaAgentServerDef_8h"/>
+        <childnode refid="12" relation="include">
+        </childnode>
+      </node>
       <node id="2">
         <label>include/MaaFramework/Instance/MaaContext.h</label>
         <link refid="MaaContext_8h"/>
@@ -48,6 +68,10 @@
       <node id="8">
         <label>include/MaaFramework/MaaDef.h</label>
         <link refid="MaaDef_8h"/>
+        <childnode refid="9" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
         <childnode refid="2" relation="include">
         </childnode>
         <childnode refid="4" relation="include">
@@ -60,11 +84,11 @@
         </childnode>
         <childnode refid="3" relation="include">
         </childnode>
-        <childnode refid="9" relation="include">
+        <childnode refid="13" relation="include">
         </childnode>
-        <childnode refid="10" relation="include">
+        <childnode refid="14" relation="include">
         </childnode>
-        <childnode refid="11" relation="include">
+        <childnode refid="15" relation="include">
         </childnode>
       </node>
       <node id="1">
@@ -82,63 +106,63 @@
         </childnode>
         <childnode refid="8" relation="include">
         </childnode>
-        <childnode refid="9" relation="include">
+        <childnode refid="13" relation="include">
         </childnode>
-        <childnode refid="10" relation="include">
+        <childnode refid="14" relation="include">
         </childnode>
       </node>
-      <node id="9">
+      <node id="13">
         <label>include/MaaFramework/Utility/MaaBuffer.h</label>
         <link refid="MaaBuffer_8h"/>
         <childnode refid="3" relation="include">
         </childnode>
       </node>
-      <node id="10">
+      <node id="14">
         <label>include/MaaFramework/Utility/MaaUtility.h</label>
         <link refid="MaaUtility_8h"/>
         <childnode refid="3" relation="include">
         </childnode>
       </node>
-      <node id="12">
+      <node id="16">
         <label>include/MaaToolkit/AdbDevice/MaaToolkitAdbDevice.h</label>
         <link refid="MaaToolkitAdbDevice_8h"/>
-        <childnode refid="13" relation="include">
+        <childnode refid="17" relation="include">
         </childnode>
       </node>
-      <node id="14">
+      <node id="18">
         <label>include/MaaToolkit/Config/MaaToolkitConfig.h</label>
         <link refid="MaaToolkitConfig_8h"/>
-        <childnode refid="13" relation="include">
+        <childnode refid="17" relation="include">
         </childnode>
       </node>
-      <node id="15">
+      <node id="19">
         <label>include/MaaToolkit/DesktopWindow/MaaToolkitDesktopWindow.h</label>
         <link refid="MaaToolkitDesktopWindow_8h"/>
-        <childnode refid="13" relation="include">
+        <childnode refid="17" relation="include">
         </childnode>
       </node>
-      <node id="13">
+      <node id="17">
         <label>include/MaaToolkit/MaaToolkitAPI.h</label>
         <link refid="MaaToolkitAPI_8h"/>
       </node>
-      <node id="11">
+      <node id="15">
         <label>include/MaaToolkit/MaaToolkitDef.h</label>
         <link refid="MaaToolkitDef_8h"/>
-        <childnode refid="12" relation="include">
-        </childnode>
-        <childnode refid="14" relation="include">
-        </childnode>
-        <childnode refid="15" relation="include">
-        </childnode>
-        <childnode refid="13" relation="include">
-        </childnode>
         <childnode refid="16" relation="include">
         </childnode>
+        <childnode refid="18" relation="include">
+        </childnode>
+        <childnode refid="19" relation="include">
+        </childnode>
+        <childnode refid="17" relation="include">
+        </childnode>
+        <childnode refid="20" relation="include">
+        </childnode>
       </node>
-      <node id="16">
+      <node id="20">
         <label>include/MaaToolkit/ProjectInterface/MaaToolkitProjectInterface.h</label>
         <link refid="MaaToolkitProjectInterface_8h"/>
-        <childnode refid="13" relation="include">
+        <childnode refid="17" relation="include">
         </childnode>
       </node>
     </invincdepgraph>
@@ -237,6 +261,28 @@
         <inbodydescription>
         </inbodydescription>
         <location file="include/MaaFramework/MaaPort.h" line="54" column="10" bodyfile="include/MaaFramework/MaaPort.h" bodystart="54" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="define" id="MaaPort_8h_1a8531b324af2e8db59debbd708e028c3c" prot="public" static="no">
+        <name>MAA_AGENT_CLIENT_API</name>
+        <initializer><ref refid="MaaPort_8h_1aed0af92192d8a7f6278afec3adfee80c" kindref="member">MAA_DLL_IMPORT</ref></initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaFramework/MaaPort.h" line="60" column="10" bodyfile="include/MaaFramework/MaaPort.h" bodystart="60" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="define" id="MaaPort_8h_1a9ed6fc02e7a36536960b7e117c31087f" prot="public" static="no">
+        <name>MAA_AGENT_SERVER_API</name>
+        <initializer><ref refid="MaaPort_8h_1aed0af92192d8a7f6278afec3adfee80c" kindref="member">MAA_DLL_IMPORT</ref></initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaFramework/MaaPort.h" line="66" column="10" bodyfile="include/MaaFramework/MaaPort.h" bodystart="66" bodyend="-1"/>
       </memberdef>
     </sectiondef>
     <briefdescription>

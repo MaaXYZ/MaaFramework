@@ -1,6 +1,256 @@
 {
-	"Version": "(main) v3.0.4",
+	"Version": "(main) v4.0.0-alpha.1",
 	"Compounds": {
+		"MaaAgentClientAPI.h": {
+			"Location": "include/MaaAgentClient/MaaAgentClientAPI.h",
+			"Typedefs": {},
+			"Defines": {},
+			"Functions": {
+				"MaaAgentClientCreate": {
+					"Description": {
+						"Brief": "",
+						"Details": [],
+						"Deprecated": null
+					},
+					"Types": {
+						"MAA_AGENT_CLIENT_API": "",
+						"MaaAgentClient*": ""
+					},
+					"Parameters": {}
+				},
+				"MaaAgentClientDestroy": {
+					"Description": {
+						"Brief": "",
+						"Details": [],
+						"Deprecated": null
+					},
+					"Types": {
+						"MAA_AGENT_CLIENT_API": "",
+						"void": ""
+					},
+					"Parameters": {
+						"client": {
+							"Type": "MaaAgentClient*",
+							"Description": "",
+							"Direction": 0,
+							"IsPointerToArray": null
+						}
+					}
+				},
+				"MaaAgentClientBindResource": {
+					"Description": {
+						"Brief": "",
+						"Details": [],
+						"Deprecated": null
+					},
+					"Types": {
+						"MAA_AGENT_CLIENT_API": "",
+						"MaaBool": ""
+					},
+					"Parameters": {
+						"client": {
+							"Type": "MaaAgentClient*",
+							"Description": "",
+							"Direction": 0,
+							"IsPointerToArray": null
+						},
+						"res": {
+							"Type": "MaaResource*",
+							"Description": "",
+							"Direction": 0,
+							"IsPointerToArray": null
+						}
+					}
+				},
+				"MaaAgentClientStartChild": {
+					"Description": {
+						"Brief": "",
+						"Details": [],
+						"Deprecated": null
+					},
+					"Types": {
+						"MAA_AGENT_CLIENT_API": "",
+						"MaaBool": ""
+					},
+					"Parameters": {
+						"client": {
+							"Type": "MaaAgentClient*",
+							"Description": "",
+							"Direction": 0,
+							"IsPointerToArray": null
+						},
+						"child_exec": {
+							"Type": "const char*",
+							"Description": "",
+							"Direction": 0,
+							"IsPointerToArray": null
+						},
+						"child_args": {
+							"Type": "const MaaStringListBuffer*",
+							"Description": "",
+							"Direction": 0,
+							"IsPointerToArray": null
+						}
+					}
+				}
+			},
+			"Enums": {},
+			"Structs": {}
+		},
+		"MaaAgentClientDef.h": {
+			"Location": "include/MaaAgentClient/MaaAgentClientDef.h",
+			"Typedefs": {
+				"MaaAgentClient": {
+					"Type": {
+						"Description": {
+							"Brief": "",
+							"Details": [],
+							"Deprecated": null
+						},
+						"Define": "struct MaaAgentClient"
+					},
+					"FunctionPointer": null
+				}
+			},
+			"Defines": {},
+			"Functions": {},
+			"Enums": {},
+			"Structs": {}
+		},
+		"MaaAgentServerAPI.h": {
+			"Location": "include/MaaAgentServer/MaaAgentServerAPI.h",
+			"Typedefs": {},
+			"Defines": {},
+			"Functions": {
+				"MaaAgentServerRegisterCustomRecognition": {
+					"Description": {
+						"Brief": "",
+						"Details": [],
+						"Deprecated": null
+					},
+					"Types": {
+						"MAA_AGENT_SERVER_API": "",
+						"MaaBool": ""
+					},
+					"Parameters": {
+						"name": {
+							"Type": "const char*",
+							"Description": "",
+							"Direction": 0,
+							"IsPointerToArray": null
+						},
+						"recognition": {
+							"Type": "MaaCustomRecognitionCallback",
+							"Description": "",
+							"Direction": 0,
+							"IsPointerToArray": null
+						},
+						"trans_arg": {
+							"Type": "void*",
+							"Description": "",
+							"Direction": 0,
+							"IsPointerToArray": null
+						}
+					}
+				},
+				"MaaAgentServerRegisterCustomAction": {
+					"Description": {
+						"Brief": "",
+						"Details": [],
+						"Deprecated": null
+					},
+					"Types": {
+						"MAA_AGENT_SERVER_API": "",
+						"MaaBool": ""
+					},
+					"Parameters": {
+						"name": {
+							"Type": "const char*",
+							"Description": "",
+							"Direction": 0,
+							"IsPointerToArray": null
+						},
+						"action": {
+							"Type": "MaaCustomActionCallback",
+							"Description": "",
+							"Direction": 0,
+							"IsPointerToArray": null
+						},
+						"trans_arg": {
+							"Type": "void*",
+							"Description": "",
+							"Direction": 0,
+							"IsPointerToArray": null
+						}
+					}
+				},
+				"MaaAgentServerStartUp": {
+					"Description": {
+						"Brief": "",
+						"Details": [],
+						"Deprecated": null
+					},
+					"Types": {
+						"MAA_AGENT_SERVER_API": "",
+						"MaaBool": ""
+					},
+					"Parameters": {
+						"args": {
+							"Type": "const MaaStringListBuffer*",
+							"Description": "",
+							"Direction": 0,
+							"IsPointerToArray": null
+						}
+					}
+				},
+				"MaaAgentServerShutDown": {
+					"Description": {
+						"Brief": "",
+						"Details": [],
+						"Deprecated": null
+					},
+					"Types": {
+						"MAA_AGENT_SERVER_API": "",
+						"void": ""
+					},
+					"Parameters": {}
+				},
+				"MaaAgentServerJoin": {
+					"Description": {
+						"Brief": "",
+						"Details": [],
+						"Deprecated": null
+					},
+					"Types": {
+						"MAA_AGENT_SERVER_API": "",
+						"void": ""
+					},
+					"Parameters": {}
+				},
+				"MaaAgentServerDetach": {
+					"Description": {
+						"Brief": "",
+						"Details": [],
+						"Deprecated": null
+					},
+					"Types": {
+						"MAA_AGENT_SERVER_API": "",
+						"void": ""
+					},
+					"Parameters": {}
+				}
+			},
+			"Enums": {},
+			"Structs": {}
+		},
+		"MaaAgentServerDef.h": {
+			"Location": "include/MaaAgentServer/MaaAgentServerDef.h",
+			"Typedefs": {},
+			"Defines": {},
+			"Functions": {},
+			"Enums": {},
+			"Structs": {}
+		},
 		"MaaContext.h": {
 			"Location": "include/MaaFramework/Instance/MaaContext.h",
 			"Typedefs": {},

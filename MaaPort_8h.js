@@ -8,5 +8,7 @@ var MaaPort_8h =
     [ "MAA_FRAMEWORK_API", "MaaPort_8h.html#a67006334d91d228121dbba7a8bf8fe05", null ],
     [ "MAA_CONTROL_UNIT_API", "MaaPort_8h.html#a826aa33333d0528e8a238f2717265249", null ],
     [ "MAA_UTILS_API", "MaaPort_8h.html#aabeb9919a6a22899b3e2e224c83e90db", null ],
-    [ "MAA_TOOLKIT_API", "MaaPort_8h.html#a011c7bbd355fdfe6aa7599af52cc20ac", null ]
+    [ "MAA_TOOLKIT_API", "MaaPort_8h.html#a011c7bbd355fdfe6aa7599af52cc20ac", null ],
+    [ "MAA_AGENT_CLIENT_API", "MaaPort_8h.html#a8531b324af2e8db59debbd708e028c3c", null ],
+    [ "MAA_AGENT_SERVER_API", "MaaPort_8h.html#a9ed6fc02e7a36536960b7e117c31087f", null ]
 ];

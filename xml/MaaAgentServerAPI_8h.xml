@@ -1,0 +1,149 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="MaaAgentServerAPI_8h" kind="file" language="C++">
+    <compoundname>MaaAgentServerAPI.h</compoundname>
+    <includes refid="MaaAgentServerDef_8h" local="yes">MaaAgentServerDef.h</includes>
+    <incdepgraph>
+      <node id="1">
+        <label>include/MaaAgentServer/MaaAgentServerAPI.h</label>
+        <link refid="MaaAgentServerAPI_8h"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>MaaAgentServerDef.h</label>
+        <link refid="MaaAgentServerDef_8h"/>
+        <childnode refid="3" relation="include">
+        </childnode>
+      </node>
+      <node id="3">
+        <label>MaaFramework/MaaDef.h</label>
+        <link refid="MaaDef_8h"/>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+      </node>
+      <node id="5">
+        <label>MaaPort.h</label>
+        <link refid="MaaPort_8h"/>
+      </node>
+      <node id="4">
+        <label>stdint.h</label>
+      </node>
+    </incdepgraph>
+    <sectiondef kind="func">
+      <memberdef kind="function" id="MaaAgentServerAPI_8h_1a0d1797cec219b8c2e53d3415e27932cb" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="MaaPort_8h_1a9ed6fc02e7a36536960b7e117c31087f" kindref="member">MAA_AGENT_SERVER_API</ref> <ref refid="MaaDef_8h_1a2f7289f2a8e07f48c6261b52a120cdf6" kindref="member">MaaBool</ref></type>
+        <definition>MAA_AGENT_SERVER_API MaaBool MaaAgentServerRegisterCustomRecognition</definition>
+        <argsstring>(const char *name, MaaCustomRecognitionCallback recognition, void *trans_arg)</argsstring>
+        <name>MaaAgentServerRegisterCustomRecognition</name>
+        <param>
+          <type>const char *</type>
+          <declname>name</declname>
+        </param>
+        <param>
+          <type><ref refid="MaaDef_8h_1a5ea5d33341ce8007c366ebd04f08ee51" kindref="member">MaaCustomRecognitionCallback</ref></type>
+          <declname>recognition</declname>
+        </param>
+        <param>
+          <type>void *</type>
+          <declname>trans_arg</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaAgentServer/MaaAgentServerAPI.h" line="11" column="9" declfile="include/MaaAgentServer/MaaAgentServerAPI.h" declline="11" declcolumn="9"/>
+      </memberdef>
+      <memberdef kind="function" id="MaaAgentServerAPI_8h_1a7d02bde2c0a8eeaf0f2186626a4569cf" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="MaaPort_8h_1a9ed6fc02e7a36536960b7e117c31087f" kindref="member">MAA_AGENT_SERVER_API</ref> <ref refid="MaaDef_8h_1a2f7289f2a8e07f48c6261b52a120cdf6" kindref="member">MaaBool</ref></type>
+        <definition>MAA_AGENT_SERVER_API MaaBool MaaAgentServerRegisterCustomAction</definition>
+        <argsstring>(const char *name, MaaCustomActionCallback action, void *trans_arg)</argsstring>
+        <name>MaaAgentServerRegisterCustomAction</name>
+        <param>
+          <type>const char *</type>
+          <declname>name</declname>
+        </param>
+        <param>
+          <type><ref refid="MaaDef_8h_1a5d8d307550fff35a2df364eeac7f5191" kindref="member">MaaCustomActionCallback</ref></type>
+          <declname>action</declname>
+        </param>
+        <param>
+          <type>void *</type>
+          <declname>trans_arg</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaAgentServer/MaaAgentServerAPI.h" line="13" column="34" declfile="include/MaaAgentServer/MaaAgentServerAPI.h" declline="13" declcolumn="34"/>
+      </memberdef>
+      <memberdef kind="function" id="MaaAgentServerAPI_8h_1a38e28d7cd5a29dfa2ef6a04093ea648c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="MaaPort_8h_1a9ed6fc02e7a36536960b7e117c31087f" kindref="member">MAA_AGENT_SERVER_API</ref> <ref refid="MaaDef_8h_1a2f7289f2a8e07f48c6261b52a120cdf6" kindref="member">MaaBool</ref></type>
+        <definition>MAA_AGENT_SERVER_API MaaBool MaaAgentServerStartUp</definition>
+        <argsstring>(const MaaStringListBuffer *args)</argsstring>
+        <name>MaaAgentServerStartUp</name>
+        <param>
+          <type>const <ref refid="MaaDef_8h_1a7668a404d5063ffc525180d3e144999f" kindref="member">MaaStringListBuffer</ref> *</type>
+          <declname>args</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaAgentServer/MaaAgentServerAPI.h" line="15" column="34" declfile="include/MaaAgentServer/MaaAgentServerAPI.h" declline="15" declcolumn="34"/>
+      </memberdef>
+      <memberdef kind="function" id="MaaAgentServerAPI_8h_1abaa102ff4a1d7665a50effc26db19146" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="MaaPort_8h_1a9ed6fc02e7a36536960b7e117c31087f" kindref="member">MAA_AGENT_SERVER_API</ref> void</type>
+        <definition>MAA_AGENT_SERVER_API void MaaAgentServerShutDown</definition>
+        <argsstring>()</argsstring>
+        <name>MaaAgentServerShutDown</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaAgentServer/MaaAgentServerAPI.h" line="16" column="31" declfile="include/MaaAgentServer/MaaAgentServerAPI.h" declline="16" declcolumn="31"/>
+      </memberdef>
+      <memberdef kind="function" id="MaaAgentServerAPI_8h_1ab696af31846dc5d0b164d56319a0c0a1" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="MaaPort_8h_1a9ed6fc02e7a36536960b7e117c31087f" kindref="member">MAA_AGENT_SERVER_API</ref> void</type>
+        <definition>MAA_AGENT_SERVER_API void MaaAgentServerJoin</definition>
+        <argsstring>()</argsstring>
+        <name>MaaAgentServerJoin</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaAgentServer/MaaAgentServerAPI.h" line="17" column="31" declfile="include/MaaAgentServer/MaaAgentServerAPI.h" declline="17" declcolumn="31"/>
+      </memberdef>
+      <memberdef kind="function" id="MaaAgentServerAPI_8h_1ad807d652979672cef09037e3f558dd25" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="MaaPort_8h_1a9ed6fc02e7a36536960b7e117c31087f" kindref="member">MAA_AGENT_SERVER_API</ref> void</type>
+        <definition>MAA_AGENT_SERVER_API void MaaAgentServerDetach</definition>
+        <argsstring>()</argsstring>
+        <name>MaaAgentServerDetach</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaAgentServer/MaaAgentServerAPI.h" line="18" column="31" declfile="include/MaaAgentServer/MaaAgentServerAPI.h" declline="18" declcolumn="31"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="include/MaaAgentServer/MaaAgentServerAPI.h"/>
+  </compounddef>
+</doxygen>

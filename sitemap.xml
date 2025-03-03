@@ -5,6 +5,18 @@
   xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9
       http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
   <url>
+    <loc>https://maaxyz.github.io/MaaFramework/MaaAgentClientAPI_8h_source.html</loc>
+  </url>
+  <url>
+    <loc>https://maaxyz.github.io/MaaFramework/MaaAgentClientDef_8h_source.html</loc>
+  </url>
+  <url>
+    <loc>https://maaxyz.github.io/MaaFramework/MaaAgentServerAPI_8h_source.html</loc>
+  </url>
+  <url>
+    <loc>https://maaxyz.github.io/MaaFramework/MaaAgentServerDef_8h_source.html</loc>
+  </url>
+  <url>
     <loc>https://maaxyz.github.io/MaaFramework/MaaContext_8h_source.html</loc>
   </url>
   <url>
@@ -54,6 +66,18 @@
   </url>
   <url>
     <loc>https://maaxyz.github.io/MaaFramework/MaaToolkitProjectInterface_8h_source.html</loc>
+  </url>
+  <url>
+    <loc>https://maaxyz.github.io/MaaFramework/MaaAgentClientAPI_8h.html</loc>
+  </url>
+  <url>
+    <loc>https://maaxyz.github.io/MaaFramework/MaaAgentClientDef_8h.html</loc>
+  </url>
+  <url>
+    <loc>https://maaxyz.github.io/MaaFramework/MaaAgentServerAPI_8h.html</loc>
+  </url>
+  <url>
+    <loc>https://maaxyz.github.io/MaaFramework/MaaAgentServerDef_8h.html</loc>
   </url>
   <url>
     <loc>https://maaxyz.github.io/MaaFramework/MaaContext_8h.html</loc>
@@ -135,6 +159,12 @@
   </url>
   <url>
     <loc>https://maaxyz.github.io/MaaFramework/dir_0debf1eee29073ebb629a4e1dfd2a5f6.html</loc>
+  </url>
+  <url>
+    <loc>https://maaxyz.github.io/MaaFramework/dir_a5fd325a74c1f9193b470b47e297ce9b.html</loc>
+  </url>
+  <url>
+    <loc>https://maaxyz.github.io/MaaFramework/dir_6373d74a239aad5eeb934988eedbd366.html</loc>
   </url>
   <url>
     <loc>https://maaxyz.github.io/MaaFramework/dir_370cd1367c21b1a87c5c9c6803b8d0b9.html</loc>
