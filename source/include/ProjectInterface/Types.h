@@ -197,7 +197,7 @@ struct RuntimeParam
     };
 
     std::variant<std::monostate, AdbParam, Win32Param> controller_param;
-    std::vector<std::string> resource_path;
+    std::vector<std::filesystem::path> resource_path;
 
     std::vector<Task> task;
     int32_t gpu = MaaInferenceDevice_Auto;

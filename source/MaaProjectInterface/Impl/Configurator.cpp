@@ -81,7 +81,7 @@ std::optional<RuntimeParam> Configurator::generate_runtime() const
     std::string resource_dir = MaaNS::path_to_utf8_string(resource_dir_);
     for (const auto& path_string : resource_iter->path) {
         auto dst = MaaNS::string_replace_all(path_string, kProjectDir, resource_dir);
-        runtime.resource_path.emplace_back(std::move(dst));
+        runtime.resource_path.emplace_back(MaaNS::path(dst));
     }
     if (runtime.resource_path.empty()) {
         LogWarn << "No resource to load";
