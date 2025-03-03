@@ -7,7 +7,6 @@
 
 #include "MaaAgentClient/MaaAgentClientAPI.h"
 #include "MaaFramework/MaaAPI.h"
-#include "MaaToolkit/MaaToolkitAPI.h"
 
 #include "Common/MaaTypes.h"
 #include "Utils/Logger.h"
@@ -49,6 +48,20 @@ bool Runner::run(
     MaaResource* resource_handle = MaaResourceCreate(notify, notify_trans_arg);
     resource_handle->set_option(MaaResOption_InferenceDevice, const_cast<int32_t*>(&param.gpu), sizeof(int32_t));
 
+    MaaAgentClient* agent_handle = nullptr;
+    if (param.agent) {
+        agent_handle = MaaAgentClientCreate();
+        agent_handle->bind_resource(resource_handle);
+        agent_handle->start_clild(param.agent->child_exec, param.agent->child_args);
+    }
+
+    OnScopeLeave([&]() {
+        MaaAgentClientDestroy(agent_handle);
+        MaaTaskerDestroy(tasker_handle);
+        MaaResourceDestroy(resource_handle);
+        MaaControllerDestroy(controller_handle);
+    });
+
     MaaId cid = controller_handle->post_connection();
     MaaId rid = 0;
     for (const auto& path : param.resource_path) {
@@ -73,12 +86,6 @@ bool Runner::run(
         LogError << "Failed to load resource";
         return false;
     }
-
-    OnScopeLeave([&]() {
-        MaaTaskerDestroy(tasker_handle);
-        MaaResourceDestroy(resource_handle);
-        MaaControllerDestroy(controller_handle);
-    });
 
     MaaId tid = 0;
     for (const auto& task : param.task) {

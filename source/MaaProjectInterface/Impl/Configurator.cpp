@@ -144,7 +144,7 @@ std::optional<RuntimeParam> Configurator::generate_runtime() const
     if (!data_.agent.child_exec.empty()) {
         RuntimeParam::Agent agent;
 
-        agent.child_exec = MaaNS::string_replace_all(data_.agent.child_exec, kProjectDir, resource_dir);
+        agent.child_exec = MaaNS::path(MaaNS::string_replace_all(data_.agent.child_exec, kProjectDir, resource_dir));
 
         for (const auto& arg : data_.agent.child_args) {
             auto dst = MaaNS::string_replace_all(arg, kProjectDir, resource_dir);

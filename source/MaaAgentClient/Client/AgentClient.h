@@ -5,7 +5,7 @@
 #include <meojson/json.hpp>
 #include <zmq.hpp>
 
-#include "API/MaaAgentClientTypes.h"
+#include "Common/MaaTypes.h"
 #include "Conf/Conf.h"
 #include "MaaAgent/Transceiver.h"
 #include "Utils/IOStream/BoostIO.hpp"

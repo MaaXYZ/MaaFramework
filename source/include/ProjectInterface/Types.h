@@ -1,5 +1,6 @@
 #pragma once
 
+#include <filesystem>
 #include <string>
 #include <unordered_map>
 #include <variant>
@@ -192,7 +193,7 @@ struct RuntimeParam
 
     struct Agent
     {
-        std::string child_exec;
+        std::filesystem::path child_exec;
         std::vector<std::string> child_args;
     };
 
