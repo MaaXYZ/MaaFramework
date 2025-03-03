@@ -93,6 +93,8 @@ struct InterfaceData
     {
         std::string child_exec;
         std::vector<std::string> child_args;
+
+        MEO_JSONIZATION(child_exec, child_args);
     };
 
     std::vector<Controller> controller;
