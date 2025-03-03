@@ -54,10 +54,10 @@ class Library:
         else:
             lib_import = ctypes.CDLL
 
-        Library.framework_libpath = path / framework_library[platform_type][0]
+        Library.framework_libpath = path / framework_library[platform_type]
         Library.framework = lib_import(str(Library.framework_libpath))
 
-        Library.toolkit_libpath = path / toolkit_library[platform_type][1]
+        Library.toolkit_libpath = path / toolkit_library[platform_type]
         Library.toolkit = lib_import(str(Library.toolkit_libpath))
 
         if not agent_server:
