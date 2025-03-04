@@ -19,6 +19,8 @@ class AgentServer:
 
         return wrapper_recognition
 
+    _custom_recognition_holder = {}
+
     @staticmethod
     def register_custom_recognition(
         name: str, recognition: "CustomRecognition"  # type: ignore
@@ -43,6 +45,8 @@ class AgentServer:
             return action
 
         return wrapper_action
+
+    _custom_action_holder = {}
 
     @staticmethod
     def register_custom_action(name: str, action: "CustomAction") -> bool:  # type: ignore

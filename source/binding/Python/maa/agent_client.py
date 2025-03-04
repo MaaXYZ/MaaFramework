@@ -24,7 +24,11 @@ class AgentClient:
         # avoid gc
         self._resource = resource
 
-        return bool(Library.agent_client.MaaAgentClientBind(self._handle, resource._handle))
+        return bool(
+            Library.agent_client.MaaAgentClientBindResource(
+                self._handle, resource._handle
+            )
+        )
 
     def start_child(self, child_exec: str, child_args: list[str]) -> bool:
         args_buffer = StringListBuffer()
@@ -43,7 +47,7 @@ class AgentClient:
         if AgentClient._api_properties_initialized:
             return
 
-        if Library.is_agent_server:
+        if Library.is_agent_server():
             raise RuntimeError("AgentClient is not available in AgentServer.")
 
         AgentClient._api_properties_initialized = True
@@ -54,7 +58,10 @@ class AgentClient:
         Library.agent_client.MaaAgentClientDestroy.argtypes = [MaaAgentClientHandle]
         Library.agent_client.MaaAgentClientDestroy.restype = None
 
-        Library.agent_client.MaaAgentClientBindResource.argtypes = [MaaAgentClientHandle, MaaResourceHandle]
+        Library.agent_client.MaaAgentClientBindResource.argtypes = [
+            MaaAgentClientHandle,
+            MaaResourceHandle,
+        ]
         Library.agent_client.MaaAgentClientBindResource.restype = MaaBool
 
         Library.agent_client.MaaAgentClientStartChild.argtypes = [

@@ -11,9 +11,6 @@ class Library:
 
     @staticmethod
     def open(path: pathlib.Path, agent_server: bool = False):
-        if Library._api_properties_initialized:
-            return
-
         if not path.exists():
             raise FileNotFoundError(f"`{path}` does not exist.")
 
@@ -70,7 +67,6 @@ class Library:
         Library._set_api_properties()
 
     @staticmethod
-    @property
     def is_agent_server() -> bool:
         return Library._is_agent_server
 
@@ -78,13 +74,7 @@ class Library:
     def version() -> str:
         return Library.framework.MaaVersion().decode()
 
-    _api_properties_initialized: bool = False
-
     @staticmethod
     def _set_api_properties():
-        if Library._api_properties_initialized:
-            return
-        Library._api_properties_initialized = True
-
         Library.framework.MaaVersion.restype = ctypes.c_char_p
         Library.framework.MaaVersion.argtypes = []
