@@ -16,6 +16,7 @@ add_dependencies(MaaAgentClient MaaUtils MaaFramework)
 
 install(
     TARGETS MaaAgentClient
+    EXPORT MaaFrameworkTargets
     RUNTIME DESTINATION bin
     LIBRARY DESTINATION bin
     ARCHIVE DESTINATION lib)

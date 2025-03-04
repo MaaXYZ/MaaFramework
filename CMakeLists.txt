@@ -91,14 +91,24 @@ install(
     NAMESPACE MaaFramework::
     DESTINATION "share/cmake/MaaFramework")
 
+install(
+    EXPORT MaaAgentServerTargets
+    FILE MaaAgentServer.cmake
+    NAMESPACE MaaAgentServer::
+    DESTINATION "share/cmake/MaaAgentServer")
+
+
 include(CMakePackageConfigHelpers)
 
 configure_package_config_file(${CMAKE_CURRENT_SOURCE_DIR}/Config.cmake.in "MaaFrameworkConfig.cmake"
                               INSTALL_DESTINATION share/cmake/MaaFramework)
+configure_package_config_file(${CMAKE_CURRENT_SOURCE_DIR}/Config.cmake.in "MaaAgentServerConfig.cmake"
+                              INSTALL_DESTINATION share/cmake/MaaAgentServer)
 
 install(FILES "${CMAKE_CURRENT_BINARY_DIR}/MaaFrameworkConfig.cmake"
-        # "${CMAKE_CURRENT_BINARY_DIR}/MaaFrameworkConfigVersion.cmake"
         DESTINATION share/cmake/MaaFramework)
+install(FILES "${CMAKE_CURRENT_BINARY_DIR}/MaaAgentServerConfig.cmake"
+        DESTINATION share/cmake/MaaAgentServer)
 
 if(EXISTS ${CMAKE_CURRENT_LIST_DIR}/export_targets.cmake)
     message("Load export_targets.cmake")

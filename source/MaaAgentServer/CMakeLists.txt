@@ -20,6 +20,7 @@ add_dependencies(MaaAgentServer MaaUtils)
 
 install(
     TARGETS MaaAgentServer
+    EXPORT MaaAgentServerTargets
     RUNTIME DESTINATION bin
     LIBRARY DESTINATION bin
     ARCHIVE DESTINATION lib)
