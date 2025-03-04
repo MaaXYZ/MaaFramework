@@ -12,20 +12,20 @@ class AgentClient:
     def __init__(self):
         self._set_api_properties()
 
-        self._handle = Library.agent_client.MaaAgentClientCreate()
+        self._handle = Library.agent_client().MaaAgentClientCreate()
         if not self._handle:
             raise RuntimeError("Failed to create agent client.")
 
     def __del__(self):
         if self._handle:
-            Library.agent_client.MaaAgentClientDestroy(self._handle)
+            Library.agent_client().MaaAgentClientDestroy(self._handle)
 
     def bind(self, resource: Resource) -> bool:
         # avoid gc
         self._resource = resource
 
         return bool(
-            Library.agent_client.MaaAgentClientBindResource(
+            Library.agent_client().MaaAgentClientBindResource(
                 self._handle, resource._handle
             )
         )
@@ -35,7 +35,7 @@ class AgentClient:
         args_buffer.set(child_args)
 
         return bool(
-            Library.agent_client.MaaAgentClientStartChild(
+            Library.agent_client().MaaAgentClientStartChild(
                 self._handle, child_exec.encode(), args_buffer._handle
             )
         )
@@ -52,21 +52,21 @@ class AgentClient:
 
         AgentClient._api_properties_initialized = True
 
-        Library.agent_client.MaaAgentClientCreate.argtypes = []
-        Library.agent_client.MaaAgentClientCreate.restype = MaaAgentClientHandle
+        Library.agent_client().MaaAgentClientCreate.argtypes = []
+        Library.agent_client().MaaAgentClientCreate.restype = MaaAgentClientHandle
 
-        Library.agent_client.MaaAgentClientDestroy.argtypes = [MaaAgentClientHandle]
-        Library.agent_client.MaaAgentClientDestroy.restype = None
+        Library.agent_client().MaaAgentClientDestroy.argtypes = [MaaAgentClientHandle]
+        Library.agent_client().MaaAgentClientDestroy.restype = None
 
-        Library.agent_client.MaaAgentClientBindResource.argtypes = [
+        Library.agent_client().MaaAgentClientBindResource.argtypes = [
             MaaAgentClientHandle,
             MaaResourceHandle,
         ]
-        Library.agent_client.MaaAgentClientBindResource.restype = MaaBool
+        Library.agent_client().MaaAgentClientBindResource.restype = MaaBool
 
-        Library.agent_client.MaaAgentClientStartChild.argtypes = [
+        Library.agent_client().MaaAgentClientStartChild.argtypes = [
             MaaAgentClientHandle,
             ctypes.c_char_p,
             ctypes.c_void_p,
         ]
-        Library.agent_client.MaaAgentClientStartChild.restype = MaaBool
+        Library.agent_client().MaaAgentClientStartChild.restype = MaaBool

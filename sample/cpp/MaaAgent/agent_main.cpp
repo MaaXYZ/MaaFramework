@@ -42,7 +42,7 @@ int main()
         return -1;
     }
 
-    MaaAgentClient* client = MaaAgentClientCreate(nullptr, nullptr);
+    MaaAgentClient* client = MaaAgentClientCreate();
     MaaAgentClientBindResource(client, resource_handle);
 
     // MaaAgentClientStartChild(client, "python", R"(E:/Code/MaaFramework/sample/python/MaaAgent/agent_child.py)");

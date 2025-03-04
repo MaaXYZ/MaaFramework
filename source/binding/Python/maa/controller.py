@@ -39,40 +39,40 @@ class Controller:
 
     def __del__(self):
         if self._handle and self._own:
-            Library.framework.MaaControllerDestroy(self._handle)
+            Library.framework().MaaControllerDestroy(self._handle)
 
     def post_connection(self) -> Job:
-        ctrl_id = Library.framework.MaaControllerPostConnection(self._handle)
+        ctrl_id = Library.framework().MaaControllerPostConnection(self._handle)
         return self._gen_ctrl_job(ctrl_id)
 
     def post_click(self, x: int, y: int) -> Job:
-        ctrl_id = Library.framework.MaaControllerPostClick(self._handle, x, y)
+        ctrl_id = Library.framework().MaaControllerPostClick(self._handle, x, y)
         return self._gen_ctrl_job(ctrl_id)
 
     def post_swipe(self, x1: int, y1: int, x2: int, y2: int, duration: int) -> Job:
-        ctrl_id = Library.framework.MaaControllerPostSwipe(
+        ctrl_id = Library.framework().MaaControllerPostSwipe(
             self._handle, x1, y1, x2, y2, duration
         )
         return self._gen_ctrl_job(ctrl_id)
 
     def post_press_key(self, key: int) -> Job:
-        ctrl_id = Library.framework.MaaControllerPostPressKey(self._handle, key)
+        ctrl_id = Library.framework().MaaControllerPostPressKey(self._handle, key)
         return self._gen_ctrl_job(ctrl_id)
 
     def post_input_text(self, text: str) -> Job:
-        ctrl_id = Library.framework.MaaControllerPostInputText(
+        ctrl_id = Library.framework().MaaControllerPostInputText(
             self._handle, text.encode()
         )
         return self._gen_ctrl_job(ctrl_id)
 
     def post_start_app(self, intent: str) -> Job:
-        ctrl_id = Library.framework.MaaControllerPostStartApp(
+        ctrl_id = Library.framework().MaaControllerPostStartApp(
             self._handle, intent.encode()
         )
         return self._gen_ctrl_job(ctrl_id)
 
     def post_stop_app(self, intent: str) -> Job:
-        ctrl_id = Library.framework.MaaControllerPostStopApp(
+        ctrl_id = Library.framework().MaaControllerPostStopApp(
             self._handle, intent.encode()
         )
         return self._gen_ctrl_job(ctrl_id)
@@ -80,7 +80,7 @@ class Controller:
     def post_touch_down(
         self, x: int, y: int, contact: int = 0, pressure: int = 1
     ) -> Job:
-        ctrl_id = Library.framework.MaaControllerPostTouchDown(
+        ctrl_id = Library.framework().MaaControllerPostTouchDown(
             self._handle, contact, x, y, pressure
         )
         return self._gen_ctrl_job(ctrl_id)
@@ -88,17 +88,17 @@ class Controller:
     def post_touch_move(
         self, x: int, y: int, contact: int = 0, pressure: int = 1
     ) -> Job:
-        ctrl_id = Library.framework.MaaControllerPostTouchMove(
+        ctrl_id = Library.framework().MaaControllerPostTouchMove(
             self._handle, contact, x, y, pressure
         )
         return self._gen_ctrl_job(ctrl_id)
 
     def post_touch_up(self, contact: int = 0) -> Job:
-        ctrl_id = Library.framework.MaaControllerPostTouchUp(self._handle, contact)
+        ctrl_id = Library.framework().MaaControllerPostTouchUp(self._handle, contact)
         return self._gen_ctrl_job(ctrl_id)
 
     def post_screencap(self) -> JobWithResult:
-        ctrl_id = Library.framework.MaaControllerPostScreencap(self._handle)
+        ctrl_id = Library.framework().MaaControllerPostScreencap(self._handle)
         return JobWithResult(
             ctrl_id,
             self._status,
@@ -109,7 +109,7 @@ class Controller:
     @property
     def cached_image(self) -> numpy.ndarray:
         image_buffer = ImageBuffer()
-        if not Library.framework.MaaControllerCachedImage(
+        if not Library.framework().MaaControllerCachedImage(
             self._handle, image_buffer._handle
         ):
             raise RuntimeError("Failed to get cached image.")
@@ -117,19 +117,19 @@ class Controller:
 
     @property
     def connected(self) -> bool:
-        return bool(Library.framework.MaaControllerConnected(self._handle))
+        return bool(Library.framework().MaaControllerConnected(self._handle))
 
     @property
     def uuid(self) -> str:
         buffer = StringBuffer()
-        if not Library.framework.MaaControllerGetUuid(self._handle, buffer._handle):
+        if not Library.framework().MaaControllerGetUuid(self._handle, buffer._handle):
             raise RuntimeError("Failed to get UUID.")
         return buffer.get()
 
     def set_screenshot_target_long_side(self, long_side: int) -> bool:
         cint = ctypes.c_int32(long_side)
         return bool(
-            Library.framework.MaaControllerSetOption(
+            Library.framework().MaaControllerSetOption(
                 self._handle,
                 MaaOption(MaaCtrlOptionEnum.ScreenshotTargetLongSide),
                 ctypes.pointer(cint),
@@ -140,7 +140,7 @@ class Controller:
     def set_screenshot_target_short_side(self, short_side: int) -> bool:
         cint = ctypes.c_int32(short_side)
         return bool(
-            Library.framework.MaaControllerSetOption(
+            Library.framework().MaaControllerSetOption(
                 self._handle,
                 MaaOption(MaaCtrlOptionEnum.ScreenshotTargetShortSide),
                 ctypes.pointer(cint),
@@ -151,7 +151,7 @@ class Controller:
     def set_screenshot_use_raw_size(self, enable: bool) -> bool:
         cbool = MaaBool(enable)
         return bool(
-            Library.framework.MaaControllerSetOption(
+            Library.framework().MaaControllerSetOption(
                 self._handle,
                 MaaOption(MaaCtrlOptionEnum.ScreenshotUseRawSize),
                 ctypes.pointer(cbool),
@@ -162,10 +162,10 @@ class Controller:
     ### private ###
 
     def _status(self, maaid: int) -> MaaStatus:
-        return Library.framework.MaaControllerStatus(self._handle, maaid)
+        return Library.framework().MaaControllerStatus(self._handle, maaid)
 
     def _wait(self, maaid: int) -> MaaStatus:
-        return Library.framework.MaaControllerWait(self._handle, maaid)
+        return Library.framework().MaaControllerWait(self._handle, maaid)
 
     def _get_screencap(self, _: int) -> numpy.ndarray:
         return self.cached_image
@@ -185,29 +185,29 @@ class Controller:
             return
         Controller._api_properties_initialized = True
 
-        Library.framework.MaaControllerDestroy.restype = None
-        Library.framework.MaaControllerDestroy.argtypes = [MaaControllerHandle]
+        Library.framework().MaaControllerDestroy.restype = None
+        Library.framework().MaaControllerDestroy.argtypes = [MaaControllerHandle]
 
-        Library.framework.MaaControllerSetOption.restype = MaaBool
-        Library.framework.MaaControllerSetOption.argtypes = [
+        Library.framework().MaaControllerSetOption.restype = MaaBool
+        Library.framework().MaaControllerSetOption.argtypes = [
             MaaControllerHandle,
             MaaCtrlOption,
             MaaOptionValue,
             MaaOptionValueSize,
         ]
 
-        Library.framework.MaaControllerPostConnection.restype = MaaCtrlId
-        Library.framework.MaaControllerPostConnection.argtypes = [MaaControllerHandle]
+        Library.framework().MaaControllerPostConnection.restype = MaaCtrlId
+        Library.framework().MaaControllerPostConnection.argtypes = [MaaControllerHandle]
 
-        Library.framework.MaaControllerPostClick.restype = MaaCtrlId
-        Library.framework.MaaControllerPostClick.argtypes = [
+        Library.framework().MaaControllerPostClick.restype = MaaCtrlId
+        Library.framework().MaaControllerPostClick.argtypes = [
             MaaControllerHandle,
             c_int32,
             c_int32,
         ]
 
-        Library.framework.MaaControllerPostSwipe.restype = MaaCtrlId
-        Library.framework.MaaControllerPostSwipe.argtypes = [
+        Library.framework().MaaControllerPostSwipe.restype = MaaCtrlId
+        Library.framework().MaaControllerPostSwipe.argtypes = [
             MaaControllerHandle,
             c_int32,
             c_int32,
@@ -216,37 +216,37 @@ class Controller:
             c_int32,
         ]
 
-        Library.framework.MaaControllerPostPressKey.restype = MaaCtrlId
-        Library.framework.MaaControllerPostPressKey.argtypes = [
+        Library.framework().MaaControllerPostPressKey.restype = MaaCtrlId
+        Library.framework().MaaControllerPostPressKey.argtypes = [
             MaaControllerHandle,
             c_int32,
         ]
 
-        Library.framework.MaaControllerPostInputText.restype = MaaCtrlId
-        Library.framework.MaaControllerPostInputText.argtypes = [
-            MaaControllerHandle,
-            ctypes.c_char_p,
-        ]
-
-        Library.framework.MaaControllerPostScreencap.restype = MaaCtrlId
-        Library.framework.MaaControllerPostScreencap.argtypes = [
-            MaaControllerHandle,
-        ]
-
-        Library.framework.MaaControllerPostStartApp.restype = MaaCtrlId
-        Library.framework.MaaControllerPostStartApp.argtypes = [
+        Library.framework().MaaControllerPostInputText.restype = MaaCtrlId
+        Library.framework().MaaControllerPostInputText.argtypes = [
             MaaControllerHandle,
             ctypes.c_char_p,
         ]
 
-        Library.framework.MaaControllerPostStopApp.restype = MaaCtrlId
-        Library.framework.MaaControllerPostStopApp.argtypes = [
+        Library.framework().MaaControllerPostScreencap.restype = MaaCtrlId
+        Library.framework().MaaControllerPostScreencap.argtypes = [
+            MaaControllerHandle,
+        ]
+
+        Library.framework().MaaControllerPostStartApp.restype = MaaCtrlId
+        Library.framework().MaaControllerPostStartApp.argtypes = [
             MaaControllerHandle,
             ctypes.c_char_p,
         ]
 
-        Library.framework.MaaControllerPostTouchDown.restype = MaaCtrlId
-        Library.framework.MaaControllerPostTouchDown.argtypes = [
+        Library.framework().MaaControllerPostStopApp.restype = MaaCtrlId
+        Library.framework().MaaControllerPostStopApp.argtypes = [
+            MaaControllerHandle,
+            ctypes.c_char_p,
+        ]
+
+        Library.framework().MaaControllerPostTouchDown.restype = MaaCtrlId
+        Library.framework().MaaControllerPostTouchDown.argtypes = [
             MaaControllerHandle,
             c_int32,
             c_int32,
@@ -254,8 +254,8 @@ class Controller:
             c_int32,
         ]
 
-        Library.framework.MaaControllerPostTouchMove.restype = MaaCtrlId
-        Library.framework.MaaControllerPostTouchMove.argtypes = [
+        Library.framework().MaaControllerPostTouchMove.restype = MaaCtrlId
+        Library.framework().MaaControllerPostTouchMove.argtypes = [
             MaaControllerHandle,
             c_int32,
             c_int32,
@@ -263,34 +263,34 @@ class Controller:
             c_int32,
         ]
 
-        Library.framework.MaaControllerPostTouchUp.restype = MaaCtrlId
-        Library.framework.MaaControllerPostTouchUp.argtypes = [
+        Library.framework().MaaControllerPostTouchUp.restype = MaaCtrlId
+        Library.framework().MaaControllerPostTouchUp.argtypes = [
             MaaControllerHandle,
             c_int32,
         ]
-        Library.framework.MaaControllerStatus.restype = MaaStatus
-        Library.framework.MaaControllerStatus.argtypes = [
+        Library.framework().MaaControllerStatus.restype = MaaStatus
+        Library.framework().MaaControllerStatus.argtypes = [
             MaaControllerHandle,
             MaaCtrlId,
         ]
 
-        Library.framework.MaaControllerWait.restype = MaaStatus
-        Library.framework.MaaControllerWait.argtypes = [
+        Library.framework().MaaControllerWait.restype = MaaStatus
+        Library.framework().MaaControllerWait.argtypes = [
             MaaControllerHandle,
             MaaCtrlId,
         ]
 
-        Library.framework.MaaControllerConnected.restype = MaaBool
-        Library.framework.MaaControllerConnected.argtypes = [MaaControllerHandle]
+        Library.framework().MaaControllerConnected.restype = MaaBool
+        Library.framework().MaaControllerConnected.argtypes = [MaaControllerHandle]
 
-        Library.framework.MaaControllerCachedImage.restype = MaaBool
-        Library.framework.MaaControllerCachedImage.argtypes = [
+        Library.framework().MaaControllerCachedImage.restype = MaaBool
+        Library.framework().MaaControllerCachedImage.argtypes = [
             MaaControllerHandle,
             MaaImageBufferHandle,
         ]
 
-        Library.framework.MaaControllerGetUuid.restype = MaaBool
-        Library.framework.MaaControllerGetUuid.argtypes = [
+        Library.framework().MaaControllerGetUuid.restype = MaaBool
+        Library.framework().MaaControllerGetUuid.argtypes = [
             MaaControllerHandle,
             MaaStringBufferHandle,
         ]
@@ -317,7 +317,7 @@ class AdbController(Controller):
 
         self._notification_handler = notification_handler
 
-        self._handle = Library.framework.MaaAdbControllerCreate(
+        self._handle = Library.framework().MaaAdbControllerCreate(
             str(adb_path).encode(),
             address.encode(),
             MaaAdbScreencapMethod(screencap_methods),
@@ -332,8 +332,8 @@ class AdbController(Controller):
 
     def _set_adb_api_properties(self):
 
-        Library.framework.MaaAdbControllerCreate.restype = MaaControllerHandle
-        Library.framework.MaaAdbControllerCreate.argtypes = [
+        Library.framework().MaaAdbControllerCreate.restype = MaaControllerHandle
+        Library.framework().MaaAdbControllerCreate.argtypes = [
             ctypes.c_char_p,
             ctypes.c_char_p,
             MaaAdbScreencapMethod,
@@ -358,7 +358,7 @@ class Win32Controller(Controller):
         self._set_win32_api_properties()
 
         self._notification_handler = notification_handler
-        self._handle = Library.framework.MaaWin32ControllerCreate(
+        self._handle = Library.framework().MaaWin32ControllerCreate(
             hWnd,
             MaaWin32ScreencapMethod(screencap_method),
             MaaWin32InputMethod(input_method),
@@ -369,8 +369,8 @@ class Win32Controller(Controller):
             raise RuntimeError("Failed to create Win32 controller.")
 
     def _set_win32_api_properties(self):
-        Library.framework.MaaWin32ControllerCreate.restype = MaaControllerHandle
-        Library.framework.MaaWin32ControllerCreate.argtypes = [
+        Library.framework().MaaWin32ControllerCreate.restype = MaaControllerHandle
+        Library.framework().MaaWin32ControllerCreate.argtypes = [
             ctypes.c_void_p,
             MaaWin32ScreencapMethod,
             MaaWin32InputMethod,
@@ -393,7 +393,7 @@ class DbgController(Controller):
         self._set_dbg_api_properties()
 
         self._notification_handler = notification_handler
-        self._handle = Library.framework.MaaDbgControllerCreate(
+        self._handle = Library.framework().MaaDbgControllerCreate(
             str(read_path).encode(),
             str(write_path).encode(),
             MaaDbgControllerType(dbg_type),
@@ -405,8 +405,8 @@ class DbgController(Controller):
             raise RuntimeError("Failed to create DBG controller.")
 
     def _set_dbg_api_properties(self):
-        Library.framework.MaaDbgControllerCreate.restype = MaaControllerHandle
-        Library.framework.MaaDbgControllerCreate.argtypes = [
+        Library.framework().MaaDbgControllerCreate.restype = MaaControllerHandle
+        Library.framework().MaaDbgControllerCreate.argtypes = [
             ctypes.c_char_p,
             ctypes.c_char_p,
             MaaDbgControllerType,
@@ -444,7 +444,7 @@ class CustomController(Controller):
             CustomController._c_input_text_agent,
         )
 
-        self._handle = Library.framework.MaaCustomControllerCreate(
+        self._handle = Library.framework().MaaCustomControllerCreate(
             self.c_handle,
             self.c_arg,
             *NotificationHandler._gen_c_param(self._notification_handler)
@@ -735,8 +735,8 @@ class CustomController(Controller):
         return int(self.input_text(c_text.decode()))
 
     def _set_custom_api_properties(self):
-        Library.framework.MaaCustomControllerCreate.restype = MaaControllerHandle
-        Library.framework.MaaCustomControllerCreate.argtypes = [
+        Library.framework().MaaCustomControllerCreate.restype = MaaControllerHandle
+        Library.framework().MaaCustomControllerCreate.argtypes = [
             ctypes.POINTER(MaaCustomControllerCallbacks),
             ctypes.c_void_p,
             MaaNotificationCallback,

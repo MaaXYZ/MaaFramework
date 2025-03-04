@@ -30,7 +30,7 @@ class AgentServer:
         AgentServer._custom_recognition_holder[name] = recognition
 
         return bool(
-            Library.agent_server.MaaAgentServerRegisterCustomRecognition(
+            Library.agent_server().MaaAgentServerRegisterCustomRecognition(
                 name.encode(),
                 recognition.c_handle,
                 recognition.c_arg,
@@ -54,7 +54,7 @@ class AgentServer:
         AgentServer._custom_action_holder[name] = action
 
         return bool(
-            Library.agent_server.MaaAgentServerRegisterCustomAction(
+            Library.agent_server().MaaAgentServerRegisterCustomAction(
                 name.encode(),
                 action.c_handle,
                 action.c_arg,
@@ -67,19 +67,19 @@ class AgentServer:
         args_buffer = StringListBuffer()
         args_buffer.set(args)
 
-        return bool(Library.agent_server.MaaAgentServerStartUp(args_buffer._handle))
+        return bool(Library.agent_server().MaaAgentServerStartUp(args_buffer._handle))
 
     @staticmethod
     def shut_down() -> None:
-        Library.agent_server.MaaAgentServerShutDown()
+        Library.agent_server().MaaAgentServerShutDown()
 
     @staticmethod
     def join() -> None:
-        Library.agent_server.MaaAgentServerJoin()
+        Library.agent_server().MaaAgentServerJoin()
 
     @staticmethod
     def detach(self) -> None:
-        Library.agent_server.MaaAgentServerDetach()
+        Library.agent_server().MaaAgentServerDetach()
 
     _api_properties_initialized: bool = False
 
@@ -90,28 +90,30 @@ class AgentServer:
 
         AgentServer._api_properties_initialized = True
 
-        Library.agent_server.MaaAgentServerRegisterCustomRecognition.argtypes = [
+        Library.agent_server().MaaAgentServerRegisterCustomRecognition.argtypes = [
             ctypes.c_char_p,
             MaaCustomRecognitionCallback,
             ctypes.c_void_p,
         ]
-        Library.agent_server.MaaAgentServerRegisterCustomRecognition.restype = MaaBool
+        Library.agent_server().MaaAgentServerRegisterCustomRecognition.restype = MaaBool
 
-        Library.agent_server.MaaAgentServerRegisterCustomAction.argtypes = [
+        Library.agent_server().MaaAgentServerRegisterCustomAction.argtypes = [
             ctypes.c_char_p,
             MaaCustomActionCallback,
             ctypes.c_void_p,
         ]
-        Library.agent_server.MaaAgentServerRegisterCustomAction.restype = MaaBool
+        Library.agent_server().MaaAgentServerRegisterCustomAction.restype = MaaBool
 
-        Library.agent_server.MaaAgentServerStartUp.argtypes = MaaStringListBufferHandle
-        Library.agent_server.MaaAgentServerStartUp.restype = MaaBool
+        Library.agent_server().MaaAgentServerStartUp.argtypes = (
+            MaaStringListBufferHandle
+        )
+        Library.agent_server().MaaAgentServerStartUp.restype = MaaBool
 
-        Library.agent_server.MaaAgentServerShutDown.argtypes = []
-        Library.agent_server.MaaAgentServerShutDown.restype = None
+        Library.agent_server().MaaAgentServerShutDown.argtypes = []
+        Library.agent_server().MaaAgentServerShutDown.restype = None
 
-        Library.agent_server.MaaAgentServerJoin.argtypes = []
-        Library.agent_server.MaaAgentServerJoin.restype = None
+        Library.agent_server().MaaAgentServerJoin.argtypes = []
+        Library.agent_server().MaaAgentServerJoin.restype = None
 
-        Library.agent_server.MaaAgentServerDetach.argtypes = []
-        Library.agent_server.MaaAgentServerDetach.restype = None
+        Library.agent_server().MaaAgentServerDetach.argtypes = []
+        Library.agent_server().MaaAgentServerDetach.restype = None

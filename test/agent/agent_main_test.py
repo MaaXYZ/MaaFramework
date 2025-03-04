@@ -68,7 +68,7 @@ def api_test():
             "custom_action_param": "👋哈哈哈(*´▽｀)ノノ😀",
         },
     }
-    detail = tasker.post_task("Entry").wait().get()
+    detail = tasker.post_task("Entry", ppover).wait().get()
     if detail:
         print(f"pipeline detail: {detail}")
     else:

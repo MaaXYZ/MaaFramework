@@ -9,8 +9,17 @@ from .define import *
 class Library:
     _is_agent_server: bool = False
 
+    _framework: ctypes.CDLL = None
+    _toolkit: ctypes.CDLL = None
+    _agent_client: ctypes.CDLL = None
+    _agent_server: ctypes.CDLL = None
+    _lib_import = None
+
     @staticmethod
     def open(path: pathlib.Path, agent_server: bool = False):
+        if Library._api_properties_initialized:
+            return
+
         if not path.exists():
             raise FileNotFoundError(f"`{path}` does not exist.")
 
@@ -20,7 +29,7 @@ class Library:
 
         Library._is_agent_server = agent_server
 
-        if not agent_server:
+        if not Library.is_agent_server():
             framework_library = {
                 WINDOWS: "MaaFramework.dll",
                 MACOS: "libMaaFramework.dylib",
@@ -32,7 +41,7 @@ class Library:
                 LINUX: "libMaaAgentClient.so",
             }
         else:
-            framework_library = {
+            agent_server_library = {
                 WINDOWS: "MaaAgentServer.dll",
                 MACOS: "libMaaAgentServer.dylib",
                 LINUX: "libMaaAgentServer.so",
@@ -47,24 +56,58 @@ class Library:
         platform_type = platform.system().lower()
 
         if platform_type == "windows":
-            lib_import = ctypes.WinDLL
+            Library._lib_import = ctypes.WinDLL
         else:
-            lib_import = ctypes.CDLL
+            Library.lib_import = ctypes.CDLL
 
-        Library.framework_libpath = path / framework_library[platform_type]
-        Library.framework = lib_import(str(Library.framework_libpath))
+        if not Library.is_agent_server():
+            Library.framework_libpath = path / framework_library[platform_type]
+            Library.agent_client_libpath = path / agent_client_library[platform_type]
+        else:
+            Library.agent_server_libpath = path / agent_server_library[platform_type]
 
         Library.toolkit_libpath = path / toolkit_library[platform_type]
-        Library.toolkit = lib_import(str(Library.toolkit_libpath))
 
-        if not agent_server:
-            Library.agent_client_libpath = path / agent_client_library[platform_type]
-            Library.agent_client = lib_import(str(Library.agent_client_libpath))
+    @staticmethod
+    def framework() -> ctypes.CDLL | ctypes.WinDLL:
+        if not Library.is_agent_server():
+            if not Library._framework:
+                Library._framework = Library._lib_import(str(Library.framework_libpath))
+
+            return Library._framework
         else:
-            Library.agent_server_libpath = Library.framework_libpath
-            Library.agent_server = Library.framework
+            return Library.agent_server()
 
-        Library._set_api_properties()
+    @staticmethod
+    def toolkit() -> ctypes.CDLL | ctypes.WinDLL:
+        if not Library._toolkit:
+            Library._toolkit = Library._lib_import(str(Library.toolkit_libpath))
+
+        return Library._toolkit
+
+    @staticmethod
+    def agent_client() -> ctypes.CDLL | ctypes.WinDLL:
+        if Library.is_agent_server():
+            raise ValueError("Agent server is not available in the current context.")
+
+        if not Library._agent_client:
+            Library._agent_client = Library._lib_import(
+                str(Library.agent_client_libpath)
+            )
+
+        return Library._agent_client
+
+    @staticmethod
+    def agent_server() -> ctypes.CDLL | ctypes.WinDLL:
+        if not Library.is_agent_server():
+            raise ValueError("Agent client is not available in the current context.")
+
+        if not Library._agent_server:
+            Library._agent_server = Library._lib_import(
+                str(Library.agent_server_libpath)
+            )
+
+        return Library._agent_server
 
     @staticmethod
     def is_agent_server() -> bool:
@@ -72,9 +115,18 @@ class Library:
 
     @staticmethod
     def version() -> str:
-        return Library.framework.MaaVersion().decode()
+        Library._set_api_properties()
+
+        return Library.framework().MaaVersion().decode()
+
+    _api_properties_initialized: bool = False
 
     @staticmethod
     def _set_api_properties():
-        Library.framework.MaaVersion.restype = ctypes.c_char_p
-        Library.framework.MaaVersion.argtypes = []
+        if Library._api_properties_initialized:
+            return
+
+        Library._api_properties_initialized = True
+
+        Library.framework().MaaVersion.restype = ctypes.c_char_p
+        Library.framework().MaaVersion.argtypes = []
