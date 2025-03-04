@@ -52,21 +52,21 @@ class AgentClient:
 
         AgentClient._api_properties_initialized = True
 
-        Library.agent_client().MaaAgentClientCreate.argtypes = []
         Library.agent_client().MaaAgentClientCreate.restype = MaaAgentClientHandle
+        Library.agent_client().MaaAgentClientCreate.argtypes = []
 
-        Library.agent_client().MaaAgentClientDestroy.argtypes = [MaaAgentClientHandle]
         Library.agent_client().MaaAgentClientDestroy.restype = None
+        Library.agent_client().MaaAgentClientDestroy.argtypes = [MaaAgentClientHandle]
 
+        Library.agent_client().MaaAgentClientBindResource.restype = MaaBool
         Library.agent_client().MaaAgentClientBindResource.argtypes = [
             MaaAgentClientHandle,
             MaaResourceHandle,
         ]
-        Library.agent_client().MaaAgentClientBindResource.restype = MaaBool
 
+        Library.agent_client().MaaAgentClientStartChild.restype = MaaBool
         Library.agent_client().MaaAgentClientStartChild.argtypes = [
             MaaAgentClientHandle,
             ctypes.c_char_p,
             ctypes.c_void_p,
         ]
-        Library.agent_client().MaaAgentClientStartChild.restype = MaaBool

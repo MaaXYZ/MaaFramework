@@ -46,7 +46,7 @@ def api_test():
     agent.bind(resource)
 
     agent.start_child(
-        "python3",
+        "python",
         [
             str(Path(__file__).parent / "agent_child_test.py"),
             str(binding_dir),

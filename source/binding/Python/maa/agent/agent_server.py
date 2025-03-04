@@ -63,10 +63,8 @@ class AgentServer:
 
     @staticmethod
     def start_up() -> bool:
-        args = sys.argv
         args_buffer = StringListBuffer()
-        args_buffer.set(args)
-
+        args_buffer.set(sys.argv)
         return bool(Library.agent_server().MaaAgentServerStartUp(args_buffer._handle))
 
     @staticmethod
@@ -90,30 +88,30 @@ class AgentServer:
 
         AgentServer._api_properties_initialized = True
 
+        Library.agent_server().MaaAgentServerRegisterCustomRecognition.restype = MaaBool
         Library.agent_server().MaaAgentServerRegisterCustomRecognition.argtypes = [
             ctypes.c_char_p,
             MaaCustomRecognitionCallback,
             ctypes.c_void_p,
         ]
-        Library.agent_server().MaaAgentServerRegisterCustomRecognition.restype = MaaBool
 
+        Library.agent_server().MaaAgentServerRegisterCustomAction.restype = MaaBool
         Library.agent_server().MaaAgentServerRegisterCustomAction.argtypes = [
             ctypes.c_char_p,
             MaaCustomActionCallback,
             ctypes.c_void_p,
         ]
-        Library.agent_server().MaaAgentServerRegisterCustomAction.restype = MaaBool
 
-        Library.agent_server().MaaAgentServerStartUp.argtypes = (
-            MaaStringListBufferHandle
-        )
         Library.agent_server().MaaAgentServerStartUp.restype = MaaBool
+        Library.agent_server().MaaAgentServerStartUp.argtypes = [
+            MaaStringListBufferHandle
+        ]
 
-        Library.agent_server().MaaAgentServerShutDown.argtypes = []
         Library.agent_server().MaaAgentServerShutDown.restype = None
+        Library.agent_server().MaaAgentServerShutDown.argtypes = []
 
-        Library.agent_server().MaaAgentServerJoin.argtypes = []
         Library.agent_server().MaaAgentServerJoin.restype = None
+        Library.agent_server().MaaAgentServerJoin.argtypes = []
 
-        Library.agent_server().MaaAgentServerDetach.argtypes = []
         Library.agent_server().MaaAgentServerDetach.restype = None
+        Library.agent_server().MaaAgentServerDetach.argtypes = []
