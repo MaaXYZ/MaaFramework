@@ -53,7 +53,7 @@ MaaCtrlOption = MaaOption
 MaaResOption = MaaOption
 
 
-class MaaGlobalOptionEnum:
+class MaaGlobalOptionEnum(IntEnum):
     Invalid = 0
 
     # Log dir
@@ -89,7 +89,7 @@ class MaaGlobalOptionEnum:
     DebugMode = 6
 
 
-class MaaCtrlOptionEnum:
+class MaaCtrlOptionEnum(IntEnum):
     Invalid = 0
 
     # Only one of long and short side can be set, and the other is automatically scaled according to the aspect ratio.
@@ -111,13 +111,13 @@ class MaaCtrlOptionEnum:
     Recording = 5
 
 
-class MaaInferenceDeviceEnum:
+class MaaInferenceDeviceEnum(IntEnum):
     CPU = -2
     Auto = -1
     # and more gpu id or flag...
 
 
-class MaaInferenceExecutionProviderEnum:
+class MaaInferenceExecutionProviderEnum(IntEnum):
     # I don't recommend setting up MaaResOption_InferenceDevice in this case,
     # because you don't know which EP will be used on different user devices.
     Auto = 0
@@ -140,7 +140,7 @@ class MaaInferenceExecutionProviderEnum:
     CUDA = 4
 
 
-class MaaResOptionEnum:
+class MaaResOptionEnum(IntEnum):
     Invalid = 0
 
     # Use the specified inference device.
@@ -161,7 +161,7 @@ class MaaResOptionEnum:
 MaaAdbScreencapMethod = ctypes.c_uint64
 
 
-class MaaAdbScreencapMethodEnum:
+class MaaAdbScreencapMethodEnum(IntEnum):
     """
     Use bitwise OR to set the method you need
     MaaFramework will test their speed and use the fastest one.
@@ -184,7 +184,7 @@ class MaaAdbScreencapMethodEnum:
 MaaAdbInputMethod = ctypes.c_uint64
 
 
-class MaaAdbInputMethodEnum:
+class MaaAdbInputMethodEnum(IntEnum):
     """
     Use bitwise OR to set the method you need
     MaaFramework will select the available ones according to priority.
@@ -206,7 +206,7 @@ MaaWin32ScreencapMethod = ctypes.c_uint64
 
 
 # No bitwise OR, just set it
-class MaaWin32ScreencapMethodEnum:
+class MaaWin32ScreencapMethodEnum(IntEnum):
     Null = 0
 
     GDI = 1
@@ -218,7 +218,7 @@ MaaWin32InputMethod = ctypes.c_uint64
 
 
 # No bitwise OR, just set it
-class MaaWin32InputMethodEnum:
+class MaaWin32InputMethodEnum(IntEnum):
     Null = 0
 
     Seize = 1
@@ -229,7 +229,7 @@ class MaaWin32InputMethodEnum:
 MaaDbgControllerType = ctypes.c_uint64
 
 
-class MaaDbgControllerTypeEnum:
+class MaaDbgControllerTypeEnum(IntEnum):
     Null = 0
 
     CarouselImage = 1
