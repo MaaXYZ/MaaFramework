@@ -103,8 +103,6 @@ class MyAction(CustomAction):
         cached_image = controller.cached_image
         connected = controller.connected
         uuid = controller.uuid
-        controller.set_screenshot_target_long_side(1080)
-        controller.set_screenshot_target_short_side(720)
 
         global runned
         runned = True
