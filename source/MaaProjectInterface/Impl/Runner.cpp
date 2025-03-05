@@ -9,12 +9,29 @@
 #include "MaaFramework/MaaAPI.h"
 
 #include "Common/MaaTypes.h"
+#include "Utils/Codec.h"
 #include "Utils/IOStream/BoostIO.hpp"
 #include "Utils/Logger.h"
 #include "Utils/Platform.h"
 #include "Utils/ScopeLeave.hpp"
 
 MAA_PROJECT_INTERFACE_NS_BEGIN
+
+#ifdef _WIN32
+std::vector<std::wstring> conv_args(const std::vector<std::string>& args)
+{
+    std::vector<std::wstring> wargs;
+    for (const auto& arg : args) {
+        wargs.emplace_back(to_u16(arg));
+    }
+    return wargs;
+}
+#else
+std::vector<std::string> conv_args(const std::vector<std::string>& args)
+{
+    return args;
+}
+#endif
 
 bool Runner::run(
     const RuntimeParam& param,
@@ -62,7 +79,13 @@ bool Runner::run(
 
         std::vector<std::string> args = param.agent->child_args;
         args.emplace_back(*bound);
-        agent_child = boost::process::child(param.agent->child_exec, args);
+        std::filesystem::path exec = boost::process::search_path(param.agent->child_exec);
+        if (exec.empty()) {
+            LogError << "Failed to find agent executable" << VAR(param.agent->child_exec);
+            return false;
+        }
+
+        agent_child = boost::process::child(exec, conv_args(args));
 
         bool connected = agent_handle->connect();
         if (!connected) {

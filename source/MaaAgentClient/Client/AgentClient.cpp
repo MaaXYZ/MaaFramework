@@ -17,22 +17,6 @@
 
 MAA_AGENT_CLIENT_NS_BEGIN
 
-#ifdef _WIN32
-std::vector<std::wstring> conv_args(const std::vector<std::string>& args)
-{
-    std::vector<std::wstring> wargs;
-    for (const auto& arg : args) {
-        wargs.emplace_back(to_u16(arg));
-    }
-    return wargs;
-}
-#else
-std::vector<std::string> conv_args(const std::vector<std::string>& args)
-{
-    return args;
-}
-#endif
-
 AgentClient::~AgentClient()
 {
     LogFunc;
