@@ -2,13 +2,13 @@ import ctypes
 import json
 from abc import ABC
 from typing import Optional, Tuple
-from enum import Enum
+from enum import IntEnum
 from dataclasses import dataclass
 
 from .define import MaaNotificationCallback
 
 
-# class NotificationEvent(Enum):
+# class NotificationEvent(IntEnum):
 #     ResourceLoading = 1
 #     ControllerAction = 2
 #     TaskerTask = 3
@@ -17,7 +17,7 @@ from .define import MaaNotificationCallback
 #     TaskAction = 6
 
 
-class NotificationType(Enum):
+class NotificationType(IntEnum):
     Unknown = 0
     Starting = 1
     Succeeded = 2
