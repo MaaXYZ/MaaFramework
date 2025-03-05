@@ -67,7 +67,7 @@ class AgentServer:
         )
 
     @staticmethod
-    def start_up(identifier: str = sys.argv[-1]) -> bool:
+    def start_up(identifier: str) -> bool:
 
         AgentServer._set_api_properties()
 

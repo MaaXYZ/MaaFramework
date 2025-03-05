@@ -27,8 +27,10 @@ from maa.library import Library
 
 
 def main():
-    AgentServer.start_up(sys.argv[-1])
+    socket_id = sys.argv[-1]
+    AgentServer.start_up(socket_id)
     AgentServer.join()
+    AgentServer.shut_down()
 
 
 @AgentServer.custom_recognition("MyRec")
