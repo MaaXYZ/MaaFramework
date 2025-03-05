@@ -66,10 +66,6 @@ std::optional<std::string> AgentClient::create_socket(const std::string& identif
         return std::nullopt;
     }
 
-    static auto kTempDir = std::filesystem::temp_directory_path();
-
-    constexpr std::string_view kAddrFormat = "ipc://{}/maafw-agent-{}.sock";
-
     const std::string& id = identifier.empty() ? generate_identifier() : identifier;
     ipc_addr_ = generate_socket_address(id);
     LogInfo << VAR(ipc_addr_);
