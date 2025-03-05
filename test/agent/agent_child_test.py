@@ -2,8 +2,6 @@ import os
 from pathlib import Path
 import sys
 
-import numpy
-
 if len(sys.argv) < 4:
     print("Call agent_main_test.py instead of this file.")
     sys.exit(1)
@@ -29,7 +27,7 @@ from maa.library import Library
 
 
 def main():
-    AgentServer.start_up()
+    AgentServer.start_up(sys.argv[-1])
     AgentServer.join()
 
 

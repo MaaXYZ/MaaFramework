@@ -3,7 +3,7 @@ import sys
 
 from ..define import *
 from ..library import Library
-from ..buffer import StringListBuffer
+from ..buffer import StringBuffer
 
 
 class AgentServer:
@@ -67,16 +67,11 @@ class AgentServer:
         )
 
     @staticmethod
-    def start_up() -> bool:
+    def start_up(identifier: str = sys.argv[-1]) -> bool:
 
         AgentServer._set_api_properties()
 
-        args_buffer = StringListBuffer()
-        args_buffer.set(sys.argv)
-
-        print(hex(args_buffer._handle))
-
-        return bool(Library.agent_server().MaaAgentServerStartUp(args_buffer._handle))
+        return bool(Library.agent_server().MaaAgentServerStartUp(identifier.encode()))
 
     @staticmethod
     def shut_down() -> None:
@@ -96,7 +91,7 @@ class AgentServer:
     def detach(self) -> None:
 
         AgentServer._set_api_properties()
-        
+
         Library.agent_server().MaaAgentServerDetach()
 
     _api_properties_initialized: bool = False
@@ -124,7 +119,7 @@ class AgentServer:
 
         Library.agent_server().MaaAgentServerStartUp.restype = MaaBool
         Library.agent_server().MaaAgentServerStartUp.argtypes = [
-            MaaStringListBufferHandle
+            ctypes.c_char_p,
         ]
 
         Library.agent_server().MaaAgentServerShutDown.restype = None

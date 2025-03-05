@@ -3,7 +3,7 @@ import ctypes
 from .define import *
 from .library import Library
 from .resource import Resource
-from .buffer import StringListBuffer
+from .buffer import StringBuffer
 
 
 class AgentClient:
@@ -30,15 +30,22 @@ class AgentClient:
             )
         )
 
-    def start_child(self, child_exec: str, child_args: list[str]) -> bool:
-        args_buffer = StringListBuffer()
-        args_buffer.set(child_args)
+    def create_socket(self, identifier: str = "") -> Optional[str]:
+        id_buffer = StringBuffer()
+        id_buffer.set(identifier)
 
-        return bool(
-            Library.agent_client().MaaAgentClientStartChild(
-                self._handle, child_exec.encode(), args_buffer._handle
+        ret = bool(
+            Library.agent_client().MaaAgentClientCreateSocket(
+                self._handle, id_buffer._handle
             )
         )
+        if not ret:
+            return None
+
+        return id_buffer.get()
+
+    def connect(self) -> bool:
+        return bool(Library.agent_client().MaaAgentClientConnect(self._handle))
 
     _api_properties_initialized: bool = False
 
@@ -64,9 +71,13 @@ class AgentClient:
             MaaResourceHandle,
         ]
 
-        Library.agent_client().MaaAgentClientStartChild.restype = MaaBool
-        Library.agent_client().MaaAgentClientStartChild.argtypes = [
+        Library.agent_client().MaaAgentClientCreateSocket.restype = MaaBool
+        Library.agent_client().MaaAgentClientCreateSocket.argtypes = [
             MaaAgentClientHandle,
-            ctypes.c_char_p,
-            ctypes.c_void_p,
+            MaaStringBufferHandle,
+        ]
+
+        Library.agent_client().MaaAgentClientConnect.restype = MaaBool
+        Library.agent_client().MaaAgentClientConnect.argtypes = [
+            MaaAgentClientHandle,
         ]

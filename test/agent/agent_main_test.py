@@ -1,8 +1,7 @@
 import os
 from pathlib import Path
 import sys
-
-import numpy
+import subprocess
 
 if len(sys.argv) < 3:
     print("Usage: python agent_main_test.py <binding_dir> <install_dir>")
@@ -42,20 +41,30 @@ def api_test():
     tasker.bind(resource, dbg_controller)
     print(f"tasker: {tasker}")
 
+    if not tasker.inited:
+        print("failed to init tasker")
+        exit(1)
+
     agent = AgentClient()
     agent.bind(resource)
+    socket_id = agent.create_socket()
 
-    agent.start_child(
-        "python",
+    if not socket_id:
+        print("failed to create socket")
+        exit(1)
+
+    subprocess.Popen(
         [
+            "python",
             str(Path(__file__).parent / "agent_child_test.py"),
             str(binding_dir),
             str(install_dir),
+            socket_id,
         ],
     )
 
-    if not tasker.inited:
-        print("failed to init tasker")
+    if not agent.connect():
+        print("failed to connect")
         exit(1)
 
     ppover = {
