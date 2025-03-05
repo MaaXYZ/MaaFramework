@@ -24,7 +24,8 @@ if(MSVC)
 
     set(release_link_options "/OPT:REF;/OPT:ICF")
     add_link_options("$<$<CONFIG:Release>:${release_link_options}>")
-
+    SET(CMAKE_MAP_IMPORTED_CONFIG_RELWITHDEBINFO "RelWithDebInfo;Release;")
+    SET(CMAKE_MAP_IMPORTED_CONFIG_MINSIZEREL "MinSizeRel;Release;")
     set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>DLL")
 else()
     add_compile_options("-Wall;-Werror;-Wextra;-Wpedantic;-Wno-missing-field-initializers")
