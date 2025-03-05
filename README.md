@@ -112,7 +112,7 @@ _✨ 基于图像识别的自动化黑盒测试框架 ✨_
   基于全新架构的 无期迷途 小助手。图像技术 + 模拟控制，解放双手！由 MaaFramework 强力驱动！
 
 - [MAA_MHXY_MG](https://github.com/gitlihang/Maa_MHXY_MG) 梦幻西游手游 小助手 ![Pipeline](https://img.shields.io/badge/Pipeline-%23454545?logo=paddypower&logoColor=%23FFFFFF)  
-基于全新架构的 梦幻西游手游 小助手。图像技术 + 模拟控制，解放双手！由 MaaFramework 强力驱动！
+  基于全新架构的 梦幻西游手游 小助手。图像技术 + 模拟控制，解放双手！由 MaaFramework 强力驱动！
 
 
 ## 生态共建
