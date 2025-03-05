@@ -26,6 +26,8 @@ class AgentServer:
         name: str, recognition: "CustomRecognition"  # type: ignore
     ) -> bool:
 
+        AgentServer._set_api_properties()
+
         # avoid gc
         AgentServer._custom_recognition_holder[name] = recognition
 
@@ -50,6 +52,9 @@ class AgentServer:
 
     @staticmethod
     def register_custom_action(name: str, action: "CustomAction") -> bool:  # type: ignore
+
+        AgentServer._set_api_properties()
+
         # avoid gc
         AgentServer._custom_action_holder[name] = action
 
@@ -63,20 +68,35 @@ class AgentServer:
 
     @staticmethod
     def start_up() -> bool:
+
+        AgentServer._set_api_properties()
+
         args_buffer = StringListBuffer()
         args_buffer.set(sys.argv)
+
+        print(hex(args_buffer._handle))
+
         return bool(Library.agent_server().MaaAgentServerStartUp(args_buffer._handle))
 
     @staticmethod
     def shut_down() -> None:
+
+        AgentServer._set_api_properties()
+
         Library.agent_server().MaaAgentServerShutDown()
 
     @staticmethod
     def join() -> None:
+
+        AgentServer._set_api_properties()
+
         Library.agent_server().MaaAgentServerJoin()
 
     @staticmethod
     def detach(self) -> None:
+
+        AgentServer._set_api_properties()
+        
         Library.agent_server().MaaAgentServerDetach()
 
     _api_properties_initialized: bool = False

@@ -13,7 +13,7 @@ class Library:
     _toolkit: ctypes.CDLL = None
     _agent_client: ctypes.CDLL = None
     _agent_server: ctypes.CDLL = None
-    _lib_import = None
+    _lib_type = None
 
     @staticmethod
     def open(path: pathlib.Path, agent_server: bool = False):
@@ -56,9 +56,9 @@ class Library:
         platform_type = platform.system().lower()
 
         if platform_type == "windows":
-            Library._lib_import = ctypes.WinDLL
+            Library._lib_type = ctypes.WinDLL
         else:
-            Library.lib_import = ctypes.CDLL
+            Library._lib_type = ctypes.CDLL
 
         if not Library.is_agent_server():
             Library.framework_libpath = path / framework_library[platform_type]
@@ -69,45 +69,45 @@ class Library:
         Library.toolkit_libpath = path / toolkit_library[platform_type]
 
     @staticmethod
-    def framework() -> ctypes.CDLL | ctypes.WinDLL:
+    def framework() -> ctypes.CDLL:
         if not Library.is_agent_server():
             if not Library._framework:
                 print(f"Opening framework library: {Library.framework_libpath}")
-                Library._framework = Library._lib_import(str(Library.framework_libpath))
+                Library._framework = Library._lib_type(str(Library.framework_libpath))
 
             return Library._framework
         else:
             return Library.agent_server()
 
     @staticmethod
-    def toolkit() -> ctypes.CDLL | ctypes.WinDLL:
+    def toolkit() -> ctypes.CDLL:
         if not Library._toolkit:
             print(f"Opening toolkit library: {Library.toolkit_libpath}")
-            Library._toolkit = Library._lib_import(str(Library.toolkit_libpath))
+            Library._toolkit = Library._lib_type(str(Library.toolkit_libpath))
 
         return Library._toolkit
 
     @staticmethod
-    def agent_client() -> ctypes.CDLL | ctypes.WinDLL:
+    def agent_client() -> ctypes.CDLL:
         if Library.is_agent_server():
             raise ValueError("Agent server is not available in the current context.")
 
         if not Library._agent_client:
             print(f"Opening agent client library: {Library.agent_client_libpath}")
-            Library._agent_client = Library._lib_import(
+            Library._agent_client = Library._lib_type(
                 str(Library.agent_client_libpath)
             )
 
         return Library._agent_client
 
     @staticmethod
-    def agent_server() -> ctypes.CDLL | ctypes.WinDLL:
+    def agent_server() -> ctypes.CDLL:
         if not Library.is_agent_server():
             raise ValueError("Agent client is not available in the current context.")
 
         if not Library._agent_server:
             print(f"Opening agent server library: {Library.agent_server_libpath}")
-            Library._agent_server = Library._lib_import(
+            Library._agent_server = Library._lib_type(
                 str(Library.agent_server_libpath)
             )
 

@@ -119,13 +119,9 @@ class StringListBuffer:
         return result
 
     def set(self, value: List[str]) -> bool:
-        Library.framework().MaaStringListBufferClear(self._handle)
+        self.clear()
         for s in value:
-            buff = StringBuffer()
-            buff.set(s)
-            if not Library.framework().MaaStringListBufferAppend(
-                self._handle, buff._handle
-            ):
+            if not self.append(s):
                 return False
         return True
 
@@ -175,8 +171,8 @@ class StringListBuffer:
             MaaStringListBufferHandle
         ]
 
-        Library.framework().MaaStringListBufferSize.restype = MaaStringBufferHandle
-        Library.framework().MaaStringListBufferSize.argtypes = [
+        Library.framework().MaaStringListBufferAt.restype = MaaStringBufferHandle
+        Library.framework().MaaStringListBufferAt.argtypes = [
             MaaStringListBufferHandle,
             MaaSize,
         ]
@@ -326,13 +322,9 @@ class ImageListBuffer:
         return result
 
     def set(self, value: List[numpy.ndarray]) -> bool:
-        Library.framework().MaaImageListBufferClear(self._handle)
+        self.clear()
         for img in value:
-            buff = ImageBuffer()
-            buff.set(img)
-            if not Library.framework().MaaImageListBufferAppend(
-                self._handle, buff._handle
-            ):
+            if not self.append(img):
                 return False
         return True
 
