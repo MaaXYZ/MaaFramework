@@ -1,6 +1,12 @@
 {
     "version": "1.0",
     "message": "Welecome to MaaFramework!",
+    "agent": {
+        "child_exec": "python",
+        "child_args": [
+            "sample/python/demo3_agent.py"
+        ]
+    },
     "controller": [
         {
             "name": "安卓端",

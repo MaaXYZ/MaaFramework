@@ -192,6 +192,28 @@
         "version": {
             "title": "版本",
             "type": "string"
+        },
+        "agent": {
+            "title": "代理",
+            "type": "object",
+            "properties": {
+                "child_exec": {
+                    "title": "子进程路径",
+                    "type": "string"
+                },
+                "child_args": {
+                    "title": "子进程参数",
+                    "type": "array"
+                },
+                "identifier": {
+                    "title": "连接标识符",
+                    "type": "string"
+                }
+            },
+            "additionalProperties": false,
+            "required": [
+                "child_exec"
+            ]
         }
     },
     "additionalProperties": false,
