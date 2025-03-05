@@ -11,7 +11,7 @@ MAA_CTRL_NS_BEGIN
 std::minstd_rand ControllerAgent::rand_engine_(std::random_device {}());
 
 ControllerAgent::ControllerAgent(MaaNotificationCallback notify, void* notify_trans_arg)
-    : notifier(notify, notify_trans_arg)
+    : notifier_(notify, notify_trans_arg)
 {
     LogFunc << VAR_VOIDP(notify) << VAR_VOIDP(notify_trans_arg);
 
@@ -678,7 +678,7 @@ bool ControllerAgent::run_action(typename AsyncRunner<Action>::Id id, Action act
         { "action", std::move(ss).str() },
     };
     if (notify) {
-        notifier.notify(MaaMsg_Controller_Action_Starting, cb_detail);
+        notifier_.notify(MaaMsg_Controller_Action_Starting, cb_detail);
     }
 
     switch (action.type) {
@@ -730,7 +730,7 @@ bool ControllerAgent::run_action(typename AsyncRunner<Action>::Id id, Action act
     }
 
     if (notify) {
-        notifier.notify(ret ? MaaMsg_Controller_Action_Succeeded : MaaMsg_Controller_Action_Failed, cb_detail);
+        notifier_.notify(ret ? MaaMsg_Controller_Action_Succeeded : MaaMsg_Controller_Action_Failed, cb_detail);
     }
 
     return ret;

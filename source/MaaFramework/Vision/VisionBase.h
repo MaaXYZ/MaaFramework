@@ -47,6 +47,7 @@ public:
 
     MaaRecoId uid() const { return uid_; }
 
+    static MaaRecoId generate_uid() { return ++s_global_uid; }
 protected:
     cv::Mat image_with_roi() const;
 

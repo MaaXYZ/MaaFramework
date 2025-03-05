@@ -3,9 +3,9 @@ if (!globalThis.MaaAPI) {
         case 'win32-x64':
             globalThis.MaaAPI = require('@maaxyz/maa-node-win32-x64')
             break
-        case 'win32-arm64':
-            globalThis.MaaAPI = require('@maaxyz/maa-node-win32-arm64')
-            break
+        // case 'win32-arm64':
+        //     globalThis.MaaAPI = require('@maaxyz/maa-node-win32-arm64')
+        //     break
         case 'linux-x64':
             globalThis.MaaAPI = require('@maaxyz/maa-node-linux-x64')
             break

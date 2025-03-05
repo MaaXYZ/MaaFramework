@@ -15,7 +15,7 @@ from .controller import Controller
 class Tasker:
     _notification_handler: Optional[NotificationHandler]
     _handle: MaaTaskerHandle
-    _own: bool = False
+    _own: bool
 
     ### public ###
 
@@ -31,7 +31,7 @@ class Tasker:
             self._own = False
         else:
             self._notification_handler = notification_handler
-            self._handle = Library.framework.MaaTaskerCreate(
+            self._handle = Library.framework().MaaTaskerCreate(
                 *NotificationHandler._gen_c_param(self._notification_handler)
             )
             self._own = True
@@ -41,7 +41,7 @@ class Tasker:
 
     def __del__(self):
         if self._handle and self._own:
-            Library.framework.MaaTaskerDestroy(self._handle)
+            Library.framework().MaaTaskerDestroy(self._handle)
 
     def bind(self, resource: Resource, controller: Controller) -> bool:
         # avoid gc
@@ -49,14 +49,16 @@ class Tasker:
         self._controller_holder = controller
 
         return bool(
-            Library.framework.MaaTaskerBindResource(self._handle, resource._handle)
+            Library.framework().MaaTaskerBindResource(self._handle, resource._handle)
         ) and bool(
-            Library.framework.MaaTaskerBindController(self._handle, controller._handle)
+            Library.framework().MaaTaskerBindController(
+                self._handle, controller._handle
+            )
         )
 
     @property
     def resource(self) -> Resource:
-        resource_handle = Library.framework.MaaTaskerGetResource(self._handle)
+        resource_handle = Library.framework().MaaTaskerGetResource(self._handle)
         if not resource_handle:
             raise RuntimeError("Failed to get resource.")
 
@@ -64,7 +66,7 @@ class Tasker:
 
     @property
     def controller(self) -> Controller:
-        controller_handle = Library.framework.MaaTaskerGetController(self._handle)
+        controller_handle = Library.framework().MaaTaskerGetController(self._handle)
         if not controller_handle:
             raise RuntimeError("Failed to get controller.")
 
@@ -72,10 +74,10 @@ class Tasker:
 
     @property
     def inited(self) -> bool:
-        return bool(Library.framework.MaaTaskerInited(self._handle))
+        return bool(Library.framework().MaaTaskerInited(self._handle))
 
     def post_task(self, entry: str, pipeline_override: Dict = {}) -> JobWithResult:
-        taskid = Library.framework.MaaTaskerPostTask(
+        taskid = Library.framework().MaaTaskerPostTask(
             self._handle,
             *Tasker._gen_post_param(entry, pipeline_override),
         )
@@ -83,16 +85,16 @@ class Tasker:
 
     @property
     def running(self) -> bool:
-        return bool(Library.framework.MaaTaskerRunning(self._handle))
+        return bool(Library.framework().MaaTaskerRunning(self._handle))
 
     def post_stop(self) -> Job:
-        taskid = Library.framework.MaaTaskerPostStop(self._handle)
+        taskid = Library.framework().MaaTaskerPostStop(self._handle)
         return self._gen_task_job(taskid)
 
     def get_latest_node(self, name: str) -> Optional[NodeDetail]:
         c_node_id = MaaNodeId()
         ret = bool(
-            Library.framework.MaaTaskerGetLatestNode(
+            Library.framework().MaaTaskerGetLatestNode(
                 self._handle,
                 name.encode(),
                 ctypes.pointer(c_node_id),
@@ -104,13 +106,13 @@ class Tasker:
         return self.get_node_detail(int(c_node_id.value))
 
     def clear_cache(self) -> bool:
-        return bool(Library.framework.MaaTaskerClearCache(self._handle))
+        return bool(Library.framework().MaaTaskerClearCache(self._handle))
 
     @staticmethod
     def set_log_dir(path: Union[Path, str]) -> bool:
         strpath = str(path)
         return bool(
-            Library.framework.MaaSetGlobalOption(
+            Library.framework().MaaSetGlobalOption(
                 MaaOption(MaaGlobalOptionEnum.LogDir),
                 strpath.encode(),
                 len(strpath),
@@ -121,7 +123,7 @@ class Tasker:
     def set_save_draw(save_draw: bool) -> bool:
         cbool = ctypes.c_bool(save_draw)
         return bool(
-            Library.framework.MaaSetGlobalOption(
+            Library.framework().MaaSetGlobalOption(
                 MaaOption(MaaGlobalOptionEnum.SaveDraw),
                 ctypes.pointer(cbool),
                 ctypes.sizeof(ctypes.c_bool),
@@ -132,7 +134,7 @@ class Tasker:
     def set_recording(recording: bool) -> bool:
         cbool = ctypes.c_bool(recording)
         return bool(
-            Library.framework.MaaSetGlobalOption(
+            Library.framework().MaaSetGlobalOption(
                 MaaOption(MaaGlobalOptionEnum.Recording),
                 ctypes.pointer(cbool),
                 ctypes.sizeof(ctypes.c_bool),
@@ -143,7 +145,7 @@ class Tasker:
     def set_stdout_level(level: LoggingLevelEnum) -> bool:
         clevel = MaaLoggingLevel(level)
         return bool(
-            Library.framework.MaaSetGlobalOption(
+            Library.framework().MaaSetGlobalOption(
                 MaaOption(MaaGlobalOptionEnum.StdoutLevel),
                 ctypes.pointer(clevel),
                 ctypes.sizeof(MaaLoggingLevel),
@@ -154,7 +156,7 @@ class Tasker:
     def set_show_hit_draw(show_hit_draw: bool) -> bool:
         cbool = ctypes.c_bool(show_hit_draw)
         return bool(
-            Library.framework.MaaSetGlobalOption(
+            Library.framework().MaaSetGlobalOption(
                 MaaOption(MaaGlobalOptionEnum.ShowHitDraw),
                 ctypes.pointer(cbool),
                 ctypes.sizeof(ctypes.c_bool),
@@ -165,7 +167,7 @@ class Tasker:
     def set_debug_mode(debug_mode: bool) -> bool:
         cbool = ctypes.c_bool(debug_mode)
         return bool(
-            Library.framework.MaaSetGlobalOption(
+            Library.framework().MaaSetGlobalOption(
                 MaaOption(MaaGlobalOptionEnum.DebugMode),
                 ctypes.pointer(cbool),
                 ctypes.sizeof(ctypes.c_bool),
@@ -190,10 +192,10 @@ class Tasker:
         )
 
     def _task_status(self, id: int) -> ctypes.c_int32:
-        return Library.framework.MaaTaskerStatus(self._handle, id)
+        return Library.framework().MaaTaskerStatus(self._handle, id)
 
     def _task_wait(self, id: int) -> ctypes.c_int32:
-        return Library.framework.MaaTaskerWait(self._handle, id)
+        return Library.framework().MaaTaskerWait(self._handle, id)
 
     def get_recognition_detail(self, reco_id: int) -> Optional[RecognitionDetail]:
         name = StringBuffer()
@@ -204,7 +206,7 @@ class Tasker:
         raw = ImageBuffer()
         draws = ImageListBuffer()
         ret = bool(
-            Library.framework.MaaTaskerGetRecognitionDetail(
+            Library.framework().MaaTaskerGetRecognitionDetail(
                 self._handle,
                 MaaRecoId(reco_id),
                 name._handle,
@@ -242,7 +244,7 @@ class Tasker:
         c_completed = MaaBool()
 
         ret = bool(
-            Library.framework.MaaTaskerGetNodeDetail(
+            Library.framework().MaaTaskerGetNodeDetail(
                 self._handle,
                 MaaNodeId(node_id),
                 name._handle,
@@ -270,7 +272,7 @@ class Tasker:
         entry = StringBuffer()
         status = MaaStatus()
         ret = bool(
-            Library.framework.MaaTaskerGetTaskDetail(
+            Library.framework().MaaTaskerGetTaskDetail(
                 self._handle,
                 MaaTaskId(task_id),
                 entry._handle,
@@ -284,7 +286,7 @@ class Tasker:
 
         c_node_id_list = (MaaNodeId * size.value)()
         ret = bool(
-            Library.framework.MaaTaskerGetTaskDetail(
+            Library.framework().MaaTaskerGetTaskDetail(
                 self._handle,
                 MaaTaskId(task_id),
                 entry._handle,
@@ -339,63 +341,63 @@ class Tasker:
             return
         Tasker._api_properties_initialized = True
 
-        Library.framework.MaaTaskerCreate.restype = MaaTaskerHandle
-        Library.framework.MaaTaskerCreate.argtypes = [
+        Library.framework().MaaTaskerCreate.restype = MaaTaskerHandle
+        Library.framework().MaaTaskerCreate.argtypes = [
             MaaNotificationCallback,
             ctypes.c_void_p,
         ]
 
-        Library.framework.MaaTaskerDestroy.restype = None
-        Library.framework.MaaTaskerDestroy.argtypes = [MaaTaskerHandle]
+        Library.framework().MaaTaskerDestroy.restype = None
+        Library.framework().MaaTaskerDestroy.argtypes = [MaaTaskerHandle]
 
-        Library.framework.MaaTaskerBindResource.restype = MaaBool
-        Library.framework.MaaTaskerBindResource.argtypes = [
+        Library.framework().MaaTaskerBindResource.restype = MaaBool
+        Library.framework().MaaTaskerBindResource.argtypes = [
             MaaTaskerHandle,
             MaaResourceHandle,
         ]
 
-        Library.framework.MaaTaskerBindController.restype = MaaBool
-        Library.framework.MaaTaskerBindController.argtypes = [
+        Library.framework().MaaTaskerBindController.restype = MaaBool
+        Library.framework().MaaTaskerBindController.argtypes = [
             MaaTaskerHandle,
             MaaControllerHandle,
         ]
 
-        Library.framework.MaaTaskerInited.restype = MaaBool
-        Library.framework.MaaTaskerInited.argtypes = [MaaTaskerHandle]
+        Library.framework().MaaTaskerInited.restype = MaaBool
+        Library.framework().MaaTaskerInited.argtypes = [MaaTaskerHandle]
 
-        Library.framework.MaaTaskerPostTask.restype = MaaId
-        Library.framework.MaaTaskerPostTask.argtypes = [
+        Library.framework().MaaTaskerPostTask.restype = MaaId
+        Library.framework().MaaTaskerPostTask.argtypes = [
             MaaTaskerHandle,
             ctypes.c_char_p,
             ctypes.c_char_p,
         ]
 
-        Library.framework.MaaTaskerStatus.restype = MaaStatus
-        Library.framework.MaaTaskerStatus.argtypes = [
+        Library.framework().MaaTaskerStatus.restype = MaaStatus
+        Library.framework().MaaTaskerStatus.argtypes = [
             MaaTaskerHandle,
             MaaTaskId,
         ]
 
-        Library.framework.MaaTaskerWait.restype = MaaStatus
-        Library.framework.MaaTaskerWait.argtypes = [
+        Library.framework().MaaTaskerWait.restype = MaaStatus
+        Library.framework().MaaTaskerWait.argtypes = [
             MaaTaskerHandle,
             MaaTaskId,
         ]
 
-        Library.framework.MaaTaskerRunning.restype = MaaBool
-        Library.framework.MaaTaskerRunning.argtypes = [MaaTaskerHandle]
+        Library.framework().MaaTaskerRunning.restype = MaaBool
+        Library.framework().MaaTaskerRunning.argtypes = [MaaTaskerHandle]
 
-        Library.framework.MaaTaskerPostStop.restype = MaaTaskId
-        Library.framework.MaaTaskerPostStop.argtypes = [MaaTaskerHandle]
+        Library.framework().MaaTaskerPostStop.restype = MaaTaskId
+        Library.framework().MaaTaskerPostStop.argtypes = [MaaTaskerHandle]
 
-        Library.framework.MaaTaskerGetResource.restype = MaaResourceHandle
-        Library.framework.MaaTaskerGetResource.argtypes = [MaaTaskerHandle]
+        Library.framework().MaaTaskerGetResource.restype = MaaResourceHandle
+        Library.framework().MaaTaskerGetResource.argtypes = [MaaTaskerHandle]
 
-        Library.framework.MaaTaskerGetController.restype = MaaControllerHandle
-        Library.framework.MaaTaskerGetController.argtypes = [MaaTaskerHandle]
+        Library.framework().MaaTaskerGetController.restype = MaaControllerHandle
+        Library.framework().MaaTaskerGetController.argtypes = [MaaTaskerHandle]
 
-        Library.framework.MaaTaskerGetRecognitionDetail.restype = MaaBool
-        Library.framework.MaaTaskerGetRecognitionDetail.argtypes = [
+        Library.framework().MaaTaskerGetRecognitionDetail.restype = MaaBool
+        Library.framework().MaaTaskerGetRecognitionDetail.argtypes = [
             MaaTaskerHandle,
             MaaRecoId,
             MaaStringBufferHandle,
@@ -407,8 +409,8 @@ class Tasker:
             MaaImageListBufferHandle,
         ]
 
-        Library.framework.MaaTaskerGetNodeDetail.restype = MaaBool
-        Library.framework.MaaTaskerGetNodeDetail.argtypes = [
+        Library.framework().MaaTaskerGetNodeDetail.restype = MaaBool
+        Library.framework().MaaTaskerGetNodeDetail.argtypes = [
             MaaTaskerHandle,
             MaaNodeId,
             MaaStringBufferHandle,
@@ -416,8 +418,8 @@ class Tasker:
             ctypes.POINTER(MaaBool),
         ]
 
-        Library.framework.MaaTaskerGetTaskDetail.restype = MaaBool
-        Library.framework.MaaTaskerGetTaskDetail.argtypes = [
+        Library.framework().MaaTaskerGetTaskDetail.restype = MaaBool
+        Library.framework().MaaTaskerGetTaskDetail.argtypes = [
             MaaTaskerHandle,
             MaaTaskId,
             MaaStringBufferHandle,
@@ -426,20 +428,20 @@ class Tasker:
             ctypes.POINTER(MaaStatus),
         ]
 
-        Library.framework.MaaTaskerGetLatestNode.restype = MaaBool
-        Library.framework.MaaTaskerGetLatestNode.argtypes = [
+        Library.framework().MaaTaskerGetLatestNode.restype = MaaBool
+        Library.framework().MaaTaskerGetLatestNode.argtypes = [
             MaaTaskerHandle,
             ctypes.c_char_p,
             ctypes.POINTER(MaaRecoId),
         ]
 
-        Library.framework.MaaTaskerClearCache.restype = MaaBool
-        Library.framework.MaaTaskerClearCache.argtypes = [
+        Library.framework().MaaTaskerClearCache.restype = MaaBool
+        Library.framework().MaaTaskerClearCache.argtypes = [
             MaaTaskerHandle,
         ]
 
-        Library.framework.MaaSetGlobalOption.restype = MaaBool
-        Library.framework.MaaSetGlobalOption.argtypes = [
+        Library.framework().MaaSetGlobalOption.restype = MaaBool
+        Library.framework().MaaSetGlobalOption.argtypes = [
             MaaGlobalOption,
             MaaOptionValue,
             MaaOptionValueSize,

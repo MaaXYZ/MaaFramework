@@ -11,6 +11,13 @@ template <typename T>
 struct ListBuffer
 {
 public:
+    ListBuffer() = default;
+
+    ListBuffer(std::vector<T> list)
+        : list_(std::move(list))
+    {
+    }
+
     virtual ~ListBuffer() = default;
 
     virtual bool empty() const { return list_.empty(); }

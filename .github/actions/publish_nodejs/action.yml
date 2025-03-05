@@ -39,12 +39,12 @@ runs:
               token: ${{ inputs.token }}
               access: ${{ inputs.access }}
               dry-run: ${{ inputs.dry-run }}
-        - uses: JS-DevTools/npm-publish@v3
-          with:
-              package: assets/MAA-nodejs-package/maa-node-win32-arm64
-              token: ${{ inputs.token }}
-              access: ${{ inputs.access }}
-              dry-run: ${{ inputs.dry-run }}
+        # - uses: JS-DevTools/npm-publish@v3
+        #   with:
+        #       package: assets/MAA-nodejs-package/maa-node-win32-arm64
+        #       token: ${{ inputs.token }}
+        #       access: ${{ inputs.access }}
+        #       dry-run: ${{ inputs.dry-run }}
         - uses: JS-DevTools/npm-publish@v3
           with:
               package: assets/MAA-nodejs-package/maa-node-linux-x64

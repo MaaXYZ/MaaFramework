@@ -7,8 +7,8 @@ set_property(TARGET ProjectInterface PROPERTY POSITION_INDEPENDENT_CODE ON) # -f
 target_include_directories(ProjectInterface
     PRIVATE ${CMAKE_CURRENT_SOURCE_DIR} ${MAA_PRIVATE_INC} ${MAA_PUBLIC_INC})
 
-target_link_libraries(ProjectInterface MaaUtils HeaderOnlyLibraries Boost::system)
+target_link_libraries(ProjectInterface MaaUtils MaaAgentClient MaaFramework HeaderOnlyLibraries Boost::system)
 
-add_dependencies(ProjectInterface MaaUtils)
+add_dependencies(ProjectInterface MaaUtils MaaAgentClient MaaFramework)
 
 source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES ${project_interface_src})

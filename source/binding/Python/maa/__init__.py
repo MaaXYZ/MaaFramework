@@ -9,4 +9,4 @@ if env_path:
 else:
     __PATH = Path(Path(__file__).parent, "bin")
 
-Library.open(__PATH)
+Library.open(__PATH, agent_server=False)

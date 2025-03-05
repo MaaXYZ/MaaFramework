@@ -8,7 +8,7 @@
 
 #include <meojson/json.hpp>
 
-#include "API/MaaTypes.h"
+#include "Common/MaaTypes.h"
 #include "Base/AsyncRunner.hpp"
 #include "Utils/MessageNotifier.hpp"
 #include "Utils/NoWarningCVMat.hpp"
@@ -168,7 +168,7 @@ protected:
     virtual bool _input_text(InputTextParam param) = 0;
 
 protected:
-    MessageNotifier notifier;
+    MessageNotifier notifier_;
 
 private:
     MaaCtrlId post_connection_impl();

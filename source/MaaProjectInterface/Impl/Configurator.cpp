@@ -78,9 +78,10 @@ std::optional<RuntimeParam> Configurator::generate_runtime() const
         return std::nullopt;
     }
 
+    std::string resource_dir = MaaNS::path_to_utf8_string(resource_dir_);
     for (const auto& path_string : resource_iter->path) {
-        auto dst = MaaNS::string_replace_all(path_string, kProjectDir, MaaNS::path_to_utf8_string(resource_dir_));
-        runtime.resource_path.emplace_back(dst);
+        auto dst = MaaNS::string_replace_all(path_string, kProjectDir, resource_dir);
+        runtime.resource_path.emplace_back(MaaNS::path(dst));
     }
     if (runtime.resource_path.empty()) {
         LogWarn << "No resource to load";
@@ -139,6 +140,20 @@ std::optional<RuntimeParam> Configurator::generate_runtime() const
     }
 
     runtime.gpu = config_.gpu;
+
+    if (!data_.agent.child_exec.empty()) {
+        RuntimeParam::Agent agent;
+
+        agent.child_exec = MaaNS::path(MaaNS::string_replace_all(data_.agent.child_exec, kProjectDir, resource_dir));
+        agent.identifier = data_.agent.identifier;
+
+        for (const auto& arg : data_.agent.child_args) {
+            auto dst = MaaNS::string_replace_all(arg, kProjectDir, resource_dir);
+            agent.child_args.emplace_back(std::move(dst));
+        }
+
+        runtime.agent = std::move(agent);
+    }
 
     return runtime;
 }

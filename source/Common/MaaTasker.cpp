@@ -1,28 +1,9 @@
 #include "MaaFramework/Instance/MaaTasker.h"
 
-#include "Tasker/Tasker.h"
+#include "Common/MaaTypes.h"
 #include "Utils/Buffer/ImageBuffer.hpp"
 #include "Utils/Buffer/StringBuffer.hpp"
 #include "Utils/Logger.h"
-
-MaaTasker* MaaTaskerCreate(MaaNotificationCallback notify, void* notify_trans_arg)
-{
-    LogFunc << VAR_VOIDP(notify) << VAR_VOIDP(notify_trans_arg);
-
-    return new MAA_NS::Tasker(notify, notify_trans_arg);
-}
-
-void MaaTaskerDestroy(MaaTasker* tasker)
-{
-    LogFunc << VAR_VOIDP(tasker);
-
-    if (tasker == nullptr) {
-        LogError << "handle is null";
-        return;
-    }
-
-    delete tasker;
-}
 
 MaaBool MaaTaskerSetOption(MaaTasker* tasker, MaaTaskerOption key, MaaOptionValue value, MaaOptionValueSize val_size)
 {

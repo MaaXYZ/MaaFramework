@@ -1,6 +1,6 @@
 #include "MaaFramework/Instance/MaaContext.h"
 
-#include "API/MaaTypes.h"
+#include "Common/MaaTypes.h"
 #include "Utils/Buffer/ImageBuffer.hpp"
 #include "Utils/Buffer/StringBuffer.hpp"
 #include "Utils/Logger.h"

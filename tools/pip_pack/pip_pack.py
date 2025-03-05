@@ -104,7 +104,7 @@ ASSETS_PATH = os.path.join("..", "..", "assets")
 def pack(pack_dir: str, info_path: str):
     WHL_TAGS = {
         "win-x86_64": "win_amd64",
-        "win-aarch64": "win_arm64",
+        # "win-aarch64": "win_arm64",
         "macos-x86_64": "macosx_13_0_x86_64",
         "macos-aarch64": "macosx_13_0_arm64",
         "linux-x86_64": "manylinux2014_x86_64",

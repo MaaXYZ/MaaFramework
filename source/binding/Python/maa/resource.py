@@ -12,7 +12,7 @@ from .buffer import StringBuffer
 class Resource:
     _notification_handler: Optional[NotificationHandler]
     _handle: MaaResourceHandle
-    _own: bool = False
+    _own: bool
 
     ### public ###
 
@@ -28,7 +28,7 @@ class Resource:
             self._own = False
         else:
             self._notification_handler = notification_handler
-            self._handle = Library.framework.MaaResourceCreate(
+            self._handle = Library.framework().MaaResourceCreate(
                 *NotificationHandler._gen_c_param(self._notification_handler)
             )
             self._own = True
@@ -41,20 +41,20 @@ class Resource:
 
     def __del__(self):
         if self._handle and self._own:
-            Library.framework.MaaResourceDestroy(self._handle)
+            Library.framework().MaaResourceDestroy(self._handle)
 
     def post_bundle(self, path: Union[pathlib.Path, str]) -> Job:
-        resid = Library.framework.MaaResourcePostBundle(
+        resid = Library.framework().MaaResourcePostBundle(
             self._handle, str(path).encode()
         )
         return Job(resid, self._status, self._wait)
 
     @property
     def loaded(self) -> bool:
-        return bool(Library.framework.MaaResourceLoaded(self._handle))
+        return bool(Library.framework().MaaResourceLoaded(self._handle))
 
     def clear(self) -> bool:
-        return bool(Library.framework.MaaResourceClear(self._handle))
+        return bool(Library.framework().MaaResourceClear(self._handle))
 
     def use_cpu(self) -> bool:
         return self.set_inference(
@@ -112,7 +112,7 @@ class Resource:
         self._custom_recognition_holder[name] = recognition
 
         return bool(
-            Library.framework.MaaResourceRegisterCustomRecognition(
+            Library.framework().MaaResourceRegisterCustomRecognition(
                 self._handle,
                 name.encode(),
                 recognition.c_handle,
@@ -124,7 +124,7 @@ class Resource:
         self._custom_recognition_holder.pop(name, None)
 
         return bool(
-            Library.framework.MaaResourceUnregisterCustomRecognition(
+            Library.framework().MaaResourceUnregisterCustomRecognition(
                 self._handle,
                 name.encode(),
             )
@@ -134,7 +134,7 @@ class Resource:
         self._custom_recognition_holder.clear()
 
         return bool(
-            Library.framework.MaaResourceClearCustomRecognition(
+            Library.framework().MaaResourceClearCustomRecognition(
                 self._handle,
             )
         )
@@ -152,7 +152,7 @@ class Resource:
         self._custom_action_holder[name] = action
 
         return bool(
-            Library.framework.MaaResourceRegisterCustomAction(
+            Library.framework().MaaResourceRegisterCustomAction(
                 self._handle,
                 name.encode(),
                 action.c_handle,
@@ -164,7 +164,7 @@ class Resource:
         self._custom_action_holder.pop(name, None)
 
         return bool(
-            Library.framework.MaaResourceUnregisterCustomAction(
+            Library.framework().MaaResourceUnregisterCustomAction(
                 self._handle,
                 name.encode(),
             )
@@ -174,7 +174,7 @@ class Resource:
         self._custom_action_holder.clear()
 
         return bool(
-            Library.framework.MaaResourceClearCustomAction(
+            Library.framework().MaaResourceClearCustomAction(
                 self._handle,
             )
         )
@@ -182,7 +182,7 @@ class Resource:
     @property
     def hash(self) -> str:
         buffer = StringBuffer()
-        if not Library.framework.MaaResourceGetHash(self._handle, buffer._handle):
+        if not Library.framework().MaaResourceGetHash(self._handle, buffer._handle):
             raise RuntimeError("Failed to get hash.")
         return buffer.get()
 
@@ -192,14 +192,14 @@ class Resource:
         cep = ctypes.c_int32(execution_provider)
         cdevice = ctypes.c_int32(device_id)
         return bool(
-            Library.framework.MaaResourceSetOption(
+            Library.framework().MaaResourceSetOption(
                 self._handle,
                 MaaResOptionEnum.InferenceExecutionProvider,
                 ctypes.pointer(cep),
                 ctypes.sizeof(ctypes.c_int32),
             )
         ) and bool(
-            Library.framework.MaaResourceSetOption(
+            Library.framework().MaaResourceSetOption(
                 self._handle,
                 MaaResOptionEnum.InferenceDevice,
                 ctypes.pointer(cdevice),
@@ -208,10 +208,10 @@ class Resource:
         )
 
     def _status(self, id: int) -> ctypes.c_int32:
-        return Library.framework.MaaResourceStatus(self._handle, id)
+        return Library.framework().MaaResourceStatus(self._handle, id)
 
     def _wait(self, id: int) -> ctypes.c_int32:
-        return Library.framework.MaaResourceWait(self._handle, id)
+        return Library.framework().MaaResourceWait(self._handle, id)
 
     _api_properties_initialized: bool = False
 
@@ -221,87 +221,87 @@ class Resource:
             return
         Resource._api_properties_initialized = True
 
-        Library.framework.MaaResourceCreate.restype = MaaResourceHandle
-        Library.framework.MaaResourceCreate.argtypes = [
+        Library.framework().MaaResourceCreate.restype = MaaResourceHandle
+        Library.framework().MaaResourceCreate.argtypes = [
             MaaNotificationCallback,
             ctypes.c_void_p,
         ]
 
-        Library.framework.MaaResourceDestroy.restype = None
-        Library.framework.MaaResourceDestroy.argtypes = [MaaResourceHandle]
+        Library.framework().MaaResourceDestroy.restype = None
+        Library.framework().MaaResourceDestroy.argtypes = [MaaResourceHandle]
 
-        Library.framework.MaaResourcePostBundle.restype = MaaResId
-        Library.framework.MaaResourcePostBundle.argtypes = [
+        Library.framework().MaaResourcePostBundle.restype = MaaResId
+        Library.framework().MaaResourcePostBundle.argtypes = [
             MaaResourceHandle,
             ctypes.c_char_p,
         ]
 
-        Library.framework.MaaResourceStatus.restype = MaaStatus
-        Library.framework.MaaResourceStatus.argtypes = [
+        Library.framework().MaaResourceStatus.restype = MaaStatus
+        Library.framework().MaaResourceStatus.argtypes = [
             MaaResourceHandle,
             MaaResId,
         ]
 
-        Library.framework.MaaResourceWait.restype = MaaStatus
-        Library.framework.MaaResourceWait.argtypes = [
+        Library.framework().MaaResourceWait.restype = MaaStatus
+        Library.framework().MaaResourceWait.argtypes = [
             MaaResourceHandle,
             MaaResId,
         ]
 
-        Library.framework.MaaResourceLoaded.restype = MaaBool
-        Library.framework.MaaResourceLoaded.argtypes = [MaaResourceHandle]
+        Library.framework().MaaResourceLoaded.restype = MaaBool
+        Library.framework().MaaResourceLoaded.argtypes = [MaaResourceHandle]
 
-        Library.framework.MaaResourceClear.restype = MaaBool
-        Library.framework.MaaResourceClear.argtypes = [MaaResourceHandle]
+        Library.framework().MaaResourceClear.restype = MaaBool
+        Library.framework().MaaResourceClear.argtypes = [MaaResourceHandle]
 
-        Library.framework.MaaResourceGetHash.restype = MaaBool
-        Library.framework.MaaResourceGetHash.argtypes = [
+        Library.framework().MaaResourceGetHash.restype = MaaBool
+        Library.framework().MaaResourceGetHash.argtypes = [
             MaaResourceHandle,
             MaaStringBufferHandle,
         ]
 
-        Library.framework.MaaResourceSetOption.restype = MaaBool
-        Library.framework.MaaResourceSetOption.argtypes = [
+        Library.framework().MaaResourceSetOption.restype = MaaBool
+        Library.framework().MaaResourceSetOption.argtypes = [
             MaaResourceHandle,
             MaaResOption,
             MaaOptionValue,
             MaaOptionValueSize,
         ]
 
-        Library.framework.MaaResourceRegisterCustomRecognition.restype = MaaBool
-        Library.framework.MaaResourceRegisterCustomRecognition.argtypes = [
+        Library.framework().MaaResourceRegisterCustomRecognition.restype = MaaBool
+        Library.framework().MaaResourceRegisterCustomRecognition.argtypes = [
             MaaResourceHandle,
             ctypes.c_char_p,
             MaaCustomRecognitionCallback,
             ctypes.c_void_p,
         ]
 
-        Library.framework.MaaResourceUnregisterCustomRecognition.restype = MaaBool
-        Library.framework.MaaResourceUnregisterCustomRecognition.argtypes = [
+        Library.framework().MaaResourceUnregisterCustomRecognition.restype = MaaBool
+        Library.framework().MaaResourceUnregisterCustomRecognition.argtypes = [
             MaaResourceHandle,
             ctypes.c_char_p,
         ]
 
-        Library.framework.MaaResourceClearCustomRecognition.restype = MaaBool
-        Library.framework.MaaResourceClearCustomRecognition.argtypes = [
+        Library.framework().MaaResourceClearCustomRecognition.restype = MaaBool
+        Library.framework().MaaResourceClearCustomRecognition.argtypes = [
             MaaResourceHandle,
         ]
 
-        Library.framework.MaaResourceRegisterCustomAction.restype = MaaBool
-        Library.framework.MaaResourceRegisterCustomAction.argtypes = [
+        Library.framework().MaaResourceRegisterCustomAction.restype = MaaBool
+        Library.framework().MaaResourceRegisterCustomAction.argtypes = [
             MaaResourceHandle,
             ctypes.c_char_p,
             MaaCustomActionCallback,
             ctypes.c_void_p,
         ]
 
-        Library.framework.MaaResourceUnregisterCustomAction.restype = MaaBool
-        Library.framework.MaaResourceUnregisterCustomAction.argtypes = [
+        Library.framework().MaaResourceUnregisterCustomAction.restype = MaaBool
+        Library.framework().MaaResourceUnregisterCustomAction.argtypes = [
             MaaResourceHandle,
             ctypes.c_char_p,
         ]
 
-        Library.framework.MaaResourceClearCustomAction.restype = MaaBool
-        Library.framework.MaaResourceClearCustomAction.argtypes = [
+        Library.framework().MaaResourceClearCustomAction.restype = MaaBool
+        Library.framework().MaaResourceClearCustomAction.argtypes = [
             MaaResourceHandle,
         ]

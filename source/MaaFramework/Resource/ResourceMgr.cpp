@@ -11,7 +11,7 @@
 MAA_RES_NS_BEGIN
 
 ResourceMgr::ResourceMgr(MaaNotificationCallback notify, void* notify_trans_arg)
-    : notifier(notify, notify_trans_arg)
+    : notifier_(notify, notify_trans_arg)
 {
     LogFunc << VAR_VOIDP(notify) << VAR_VOIDP(notify_trans_arg);
 
@@ -493,13 +493,13 @@ bool ResourceMgr::run_load(typename AsyncRunner<std::filesystem::path>::Id id, s
         { "hash", get_hash() },
     };
 
-    notifier.notify(MaaMsg_Resource_Loading_Starting, cb_detail);
+    notifier_.notify(MaaMsg_Resource_Loading_Starting, cb_detail);
 
     valid_ = load(path);
 
     cb_detail["hash"] = calc_hash();
 
-    notifier.notify(valid_ ? MaaMsg_Resource_Loading_Succeeded : MaaMsg_Resource_Loading_Failed, cb_detail);
+    notifier_.notify(valid_ ? MaaMsg_Resource_Loading_Succeeded : MaaMsg_Resource_Loading_Failed, cb_detail);
 
     return valid_;
 }

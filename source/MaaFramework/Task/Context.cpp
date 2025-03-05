@@ -117,7 +117,7 @@ bool Context::override_pipeline(const json::object& pipeline_override)
     }
     auto* resource = tasker_->resource();
     if (!resource) {
-        LogError << "resource not binded";
+        LogError << "resource not bound";
         return false;
     }
     auto& default_mgr = resource->default_pipeline();
@@ -189,7 +189,7 @@ std::optional<Context::PipelineData> Context::get_pipeline_data(const std::strin
     }
     auto* resource = tasker_->resource();
     if (!resource) {
-        LogError << "resource not binded";
+        LogError << "resource not bound";
         return std::nullopt;
     }
 
@@ -216,7 +216,7 @@ bool Context::check_pipeline() const
     }
     auto* resource = tasker_->resource();
     if (!resource) {
-        LogError << "resource not binded";
+        LogError << "resource not bound";
         return false;
     }
 

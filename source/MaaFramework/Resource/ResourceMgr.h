@@ -2,7 +2,7 @@
 
 #include <atomic>
 
-#include "API/MaaTypes.h"
+#include "Common/MaaTypes.h"
 #include "Base/AsyncRunner.hpp"
 #include "DefaultPipelineMgr.h"
 #include "MaaFramework/Instance/MaaResource.h"
@@ -116,7 +116,7 @@ private:
     std::atomic_bool valid_ = true;
 
     std::unique_ptr<AsyncRunner<std::filesystem::path>> res_loader_ = nullptr;
-    MessageNotifier notifier;
+    MessageNotifier notifier_;
 
     MaaInferenceDevice inference_device_ = MaaInferenceDevice_Auto;
     MaaInferenceExecutionProvider inference_ep_ = MaaInferenceExecutionProvider_Auto;

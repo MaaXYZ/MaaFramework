@@ -1,5 +1,6 @@
 #pragma once
 
+#include <chrono>
 #include <filesystem>
 #include <optional>
 #include <string>
@@ -7,8 +8,8 @@
 
 #include <meojson/json.hpp>
 
+#include "Common/TaskResultTypes.h"
 #include "MaaFramework/MaaDef.h"
-#include "Task/TaskResultTypes.h"
 #include "Utils/NoWarningCVMat.hpp"
 
 struct MaaResource
@@ -114,4 +115,14 @@ public:
 
     virtual MaaTaskId task_id() const = 0;
     virtual MaaTasker* tasker() const = 0;
+};
+
+struct MaaAgentClient
+{
+public:
+    virtual ~MaaAgentClient() = default;
+
+    virtual bool bind_resource(MaaResource* resource) = 0;
+    virtual std::optional<std::string> create_socket(const std::string& identifier) = 0;
+    virtual bool connect() = 0;
 };

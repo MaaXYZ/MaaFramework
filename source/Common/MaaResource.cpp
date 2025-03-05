@@ -1,30 +1,9 @@
 #include "MaaFramework/MaaAPI.h"
 
-#include <meojson/json.hpp>
-
-#include "Resource/ResourceMgr.h"
+#include "Common/MaaTypes.h"
 #include "Utils/Buffer/StringBuffer.hpp"
 #include "Utils/Logger.h"
 #include "Utils/Platform.h"
-
-MaaResource* MaaResourceCreate(MaaNotificationCallback notify, void* notify_trans_arg)
-{
-    LogFunc << VAR_VOIDP(notify) << VAR_VOIDP(notify_trans_arg);
-
-    return new MAA_RES_NS::ResourceMgr(notify, notify_trans_arg);
-}
-
-void MaaResourceDestroy(MaaResource* res)
-{
-    LogFunc << VAR_VOIDP(res);
-
-    if (res == nullptr) {
-        LogError << "handle is null";
-        return;
-    }
-
-    delete res;
-}
 
 MaaBool MaaResourceRegisterCustomRecognition(MaaResource* res, const char* name, MaaCustomRecognitionCallback recognition, void* trans_arg)
 {

@@ -1,5 +1,6 @@
 #pragma once
 
+#include <filesystem>
 #include <string>
 #include <unordered_map>
 #include <variant>
@@ -89,14 +90,24 @@ struct InterfaceData
         MEO_JSONIZATION(cases, MEO_OPT default_case);
     };
 
+    struct Agent
+    {
+        std::string child_exec;
+        std::vector<std::string> child_args;
+        std::string identifier;
+
+        MEO_JSONIZATION(child_exec, MEO_OPT child_args, MEO_OPT identifier);
+    };
+
     std::vector<Controller> controller;
     std::vector<Resource> resource;
     std::vector<Task> task;
     std::unordered_map<std::string, Option> option;
     std::string version;
     std::string message;
+    Agent agent;
 
-    MEO_JSONIZATION(controller, resource, task, MEO_OPT option, MEO_OPT version, MEO_OPT message);
+    MEO_JSONIZATION(controller, resource, task, MEO_OPT option, MEO_OPT version, MEO_OPT message, MEO_OPT agent);
 };
 
 struct Configuration
@@ -181,11 +192,20 @@ struct RuntimeParam
         json::object pipeline_override;
     };
 
+    struct Agent
+    {
+        std::filesystem::path child_exec;
+        std::vector<std::string> child_args;
+        std::string identifier;
+    };
+
     std::variant<std::monostate, AdbParam, Win32Param> controller_param;
-    std::vector<std::string> resource_path;
+    std::vector<std::filesystem::path> resource_path;
 
     std::vector<Task> task;
     int32_t gpu = MaaInferenceDevice_Auto;
+
+    std::optional<Agent> agent;
 };
 
 struct CustomRecognitionSession

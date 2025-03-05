@@ -16,5 +16,7 @@ add_subdirectory(LibraryHolder)
 add_subdirectory(MaaFramework)
 add_subdirectory(MaaToolkit)
 add_subdirectory(MaaProjectInterface)
+add_subdirectory(MaaAgentClient)
+add_subdirectory(MaaAgentServer)
 
 add_subdirectory(binding)

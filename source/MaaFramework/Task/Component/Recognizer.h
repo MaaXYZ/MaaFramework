@@ -2,7 +2,7 @@
 
 #include <meojson/json.hpp>
 
-#include "API/MaaTypes.h"
+#include "Common/MaaTypes.h"
 #include "Conf/Conf.h"
 #include "Resource/PipelineTypes.h"
 #include "Task/Context.h"

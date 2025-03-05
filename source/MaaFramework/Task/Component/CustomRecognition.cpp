@@ -27,7 +27,7 @@ CustomRecognition::CustomRecognition(
 void CustomRecognition::analyze()
 {
     LogFunc << VAR(context_.task_id()) << VAR(name_) << VAR_VOIDP(session_.recognition) << VAR_VOIDP(session_.trans_arg)
-            << VAR(param_.custom_param);
+            << VAR(param_.name) << VAR(param_.custom_param);
 
     if (!session_.recognition) {
         LogError << "recognition is null" << VAR(name_) << VAR(param_.name);

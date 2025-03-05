@@ -19,7 +19,7 @@ class StringBuffer:
             self._handle = handle
             self._own = False
         else:
-            self._handle = Library.framework.MaaStringBufferCreate()
+            self._handle = Library.framework().MaaStringBufferCreate()
             self._own = True
 
         if not self._handle:
@@ -27,26 +27,26 @@ class StringBuffer:
 
     def __del__(self):
         if self._handle and self._own:
-            Library.framework.MaaStringBufferDestroy(self._handle)
+            Library.framework().MaaStringBufferDestroy(self._handle)
 
     def get(self) -> str:
-        buff = Library.framework.MaaStringBufferGet(self._handle)
-        sz = Library.framework.MaaStringBufferSize(self._handle)
+        buff = Library.framework().MaaStringBufferGet(self._handle)
+        sz = Library.framework().MaaStringBufferSize(self._handle)
         return ctypes.string_at(buff, sz).decode()
 
     def set(self, value: Union[str, bytes]) -> bool:
         if isinstance(value, str):
             value = value.encode()
         return bool(
-            Library.framework.MaaStringBufferSetEx(self._handle, value, len(value))
+            Library.framework().MaaStringBufferSetEx(self._handle, value, len(value))
         )
 
     @property
     def empty(self) -> bool:
-        return bool(Library.framework.MaaStringBufferIsEmpty(self._handle))
+        return bool(Library.framework().MaaStringBufferIsEmpty(self._handle))
 
     def clear(self) -> bool:
-        return bool(Library.framework.MaaStringBufferClear(self._handle))
+        return bool(Library.framework().MaaStringBufferClear(self._handle))
 
     _api_properties_initialized: bool = False
 
@@ -56,32 +56,32 @@ class StringBuffer:
             return
         StringBuffer._api_properties_initialized = True
 
-        Library.framework.MaaStringBufferCreate.restype = MaaStringBufferHandle
-        Library.framework.MaaStringBufferCreate.argtypes = []
+        Library.framework().MaaStringBufferCreate.restype = MaaStringBufferHandle
+        Library.framework().MaaStringBufferCreate.argtypes = []
 
-        Library.framework.MaaStringBufferDestroy.restype = None
-        Library.framework.MaaStringBufferDestroy.argtypes = [MaaStringBufferHandle]
+        Library.framework().MaaStringBufferDestroy.restype = None
+        Library.framework().MaaStringBufferDestroy.argtypes = [MaaStringBufferHandle]
 
-        Library.framework.MaaStringBufferIsEmpty.restype = MaaBool
-        Library.framework.MaaStringBufferIsEmpty.argtypes = [MaaStringBufferHandle]
+        Library.framework().MaaStringBufferIsEmpty.restype = MaaBool
+        Library.framework().MaaStringBufferIsEmpty.argtypes = [MaaStringBufferHandle]
 
-        Library.framework.MaaStringBufferClear.restype = MaaBool
-        Library.framework.MaaStringBufferClear.argtypes = [MaaStringBufferHandle]
+        Library.framework().MaaStringBufferClear.restype = MaaBool
+        Library.framework().MaaStringBufferClear.argtypes = [MaaStringBufferHandle]
 
-        Library.framework.MaaStringBufferGet.restype = ctypes.c_char_p
-        Library.framework.MaaStringBufferGet.argtypes = [MaaStringBufferHandle]
+        Library.framework().MaaStringBufferGet.restype = ctypes.c_char_p
+        Library.framework().MaaStringBufferGet.argtypes = [MaaStringBufferHandle]
 
-        Library.framework.MaaStringBufferSize.restype = MaaSize
-        Library.framework.MaaStringBufferSize.argtypes = [MaaStringBufferHandle]
+        Library.framework().MaaStringBufferSize.restype = MaaSize
+        Library.framework().MaaStringBufferSize.argtypes = [MaaStringBufferHandle]
 
-        Library.framework.MaaStringBufferSet.restype = MaaBool
-        Library.framework.MaaStringBufferSet.argtypes = [
+        Library.framework().MaaStringBufferSet.restype = MaaBool
+        Library.framework().MaaStringBufferSet.argtypes = [
             MaaStringBufferHandle,
             ctypes.c_char_p,
         ]
 
-        Library.framework.MaaStringBufferSetEx.restype = MaaBool
-        Library.framework.MaaStringBufferSetEx.argtypes = [
+        Library.framework().MaaStringBufferSetEx.restype = MaaBool
+        Library.framework().MaaStringBufferSetEx.argtypes = [
             MaaStringBufferHandle,
             ctypes.c_char_p,
             MaaSize,
@@ -99,7 +99,7 @@ class StringListBuffer:
             self._handle = handle
             self._own = False
         else:
-            self._handle = Library.framework.MaaStringListBufferCreate()
+            self._handle = Library.framework().MaaStringListBufferCreate()
             self._own = True
 
         if not self._handle:
@@ -107,25 +107,21 @@ class StringListBuffer:
 
     def __del__(self):
         if self._handle and self._own:
-            Library.framework.MaaStringListBufferDestroy(self._handle)
+            Library.framework().MaaStringListBufferDestroy(self._handle)
 
     def get(self) -> List[str]:
-        count = Library.framework.MaaStringListBufferSize(self._handle)
+        count = Library.framework().MaaStringListBufferSize(self._handle)
         result = []
         for i in range(count):
-            buff = Library.framework.MaaStringListBufferAt(self._handle, i)
+            buff = Library.framework().MaaStringListBufferAt(self._handle, i)
             s = StringBuffer(buff).get()
             result.append(s)
         return result
 
     def set(self, value: List[str]) -> bool:
-        Library.framework.MaaStringListBufferClear(self._handle)
+        self.clear()
         for s in value:
-            buff = StringBuffer()
-            buff.set(s)
-            if not Library.framework.MaaStringListBufferAppend(
-                self._handle, buff._handle
-            ):
+            if not self.append(s):
                 return False
         return True
 
@@ -133,14 +129,14 @@ class StringListBuffer:
         buff = StringBuffer()
         buff.set(value)
         return bool(
-            Library.framework.MaaStringListBufferAppend(self._handle, buff._handle)
+            Library.framework().MaaStringListBufferAppend(self._handle, buff._handle)
         )
 
     def remove(self, index: int) -> bool:
-        return bool(Library.framework.MaaStringListBufferRemove(self._handle, index))
+        return bool(Library.framework().MaaStringListBufferRemove(self._handle, index))
 
     def clear(self) -> bool:
-        return bool(Library.framework.MaaStringListBufferClear(self._handle))
+        return bool(Library.framework().MaaStringListBufferClear(self._handle))
 
     _api_properties_initialized: bool = False
 
@@ -150,41 +146,45 @@ class StringListBuffer:
             return
         StringListBuffer._api_properties_initialized = True
 
-        Library.framework.MaaStringListBufferCreate.restype = MaaStringListBufferHandle
-        Library.framework.MaaStringListBufferCreate.argtypes = []
+        Library.framework().MaaStringListBufferCreate.restype = (
+            MaaStringListBufferHandle
+        )
+        Library.framework().MaaStringListBufferCreate.argtypes = []
 
-        Library.framework.MaaStringListBufferDestroy.restype = None
-        Library.framework.MaaStringListBufferDestroy.argtypes = [
+        Library.framework().MaaStringListBufferDestroy.restype = None
+        Library.framework().MaaStringListBufferDestroy.argtypes = [
             MaaStringListBufferHandle
         ]
 
-        Library.framework.MaaStringListBufferIsEmpty.restype = MaaBool
-        Library.framework.MaaStringListBufferIsEmpty.argtypes = [
+        Library.framework().MaaStringListBufferIsEmpty.restype = MaaBool
+        Library.framework().MaaStringListBufferIsEmpty.argtypes = [
             MaaStringListBufferHandle
         ]
 
-        Library.framework.MaaStringListBufferClear.restype = MaaBool
-        Library.framework.MaaStringListBufferClear.argtypes = [
+        Library.framework().MaaStringListBufferClear.restype = MaaBool
+        Library.framework().MaaStringListBufferClear.argtypes = [
             MaaStringListBufferHandle
         ]
 
-        Library.framework.MaaStringListBufferSize.restype = MaaSize
-        Library.framework.MaaStringListBufferSize.argtypes = [MaaStringListBufferHandle]
+        Library.framework().MaaStringListBufferSize.restype = MaaSize
+        Library.framework().MaaStringListBufferSize.argtypes = [
+            MaaStringListBufferHandle
+        ]
 
-        Library.framework.MaaStringListBufferSize.restype = MaaStringBufferHandle
-        Library.framework.MaaStringListBufferSize.argtypes = [
+        Library.framework().MaaStringListBufferAt.restype = MaaStringBufferHandle
+        Library.framework().MaaStringListBufferAt.argtypes = [
             MaaStringListBufferHandle,
             MaaSize,
         ]
 
-        Library.framework.MaaStringListBufferAppend.restype = MaaBool
-        Library.framework.MaaStringListBufferAppend.argtypes = [
+        Library.framework().MaaStringListBufferAppend.restype = MaaBool
+        Library.framework().MaaStringListBufferAppend.argtypes = [
             MaaStringListBufferHandle,
             MaaStringBufferHandle,
         ]
 
-        Library.framework.MaaStringListBufferRemove.restype = MaaBool
-        Library.framework.MaaStringListBufferRemove.argtypes = [
+        Library.framework().MaaStringListBufferRemove.restype = MaaBool
+        Library.framework().MaaStringListBufferRemove.argtypes = [
             MaaStringListBufferHandle,
             MaaSize,
         ]
@@ -201,7 +201,7 @@ class ImageBuffer:
             self._handle = c_handle
             self._own = False
         else:
-            self._handle = Library.framework.MaaImageBufferCreate()
+            self._handle = Library.framework().MaaImageBufferCreate()
             self._own = True
 
         if not self._handle:
@@ -209,16 +209,16 @@ class ImageBuffer:
 
     def __del__(self):
         if self._handle and self._own:
-            Library.framework.MaaImageBufferDestroy(self._handle)
+            Library.framework().MaaImageBufferDestroy(self._handle)
 
     def get(self) -> numpy.ndarray:
-        buff = Library.framework.MaaImageBufferGetRawData(self._handle)
+        buff = Library.framework().MaaImageBufferGetRawData(self._handle)
         if not buff:
             return numpy.ndarray((0, 0, 3), dtype=numpy.uint8)
 
-        w = Library.framework.MaaImageBufferWidth(self._handle)
-        h = Library.framework.MaaImageBufferHeight(self._handle)
-        c = Library.framework.MaaImageBufferChannels(self._handle)
+        w = Library.framework().MaaImageBufferWidth(self._handle)
+        h = Library.framework().MaaImageBufferHeight(self._handle)
+        c = Library.framework().MaaImageBufferChannels(self._handle)
         return copy.deepcopy(
             numpy.ctypeslib.as_array(
                 ctypes.cast(buff, ctypes.POINTER(ctypes.c_uint8)), shape=(h, w, c)
@@ -230,7 +230,7 @@ class ImageBuffer:
             raise TypeError("value must be a numpy.ndarray")
 
         return bool(
-            Library.framework.MaaImageBufferSetRawData(
+            Library.framework().MaaImageBufferSetRawData(
                 self._handle,
                 value.ctypes.data,
                 value.shape[1],
@@ -241,10 +241,10 @@ class ImageBuffer:
 
     @property
     def empty(self) -> bool:
-        return bool(Library.framework.MaaImageBufferIsEmpty(self._handle))
+        return bool(Library.framework().MaaImageBufferIsEmpty(self._handle))
 
     def clear(self) -> bool:
-        return bool(Library.framework.MaaImageBufferClear(self._handle))
+        return bool(Library.framework().MaaImageBufferClear(self._handle))
 
     _api_properties_initialized: bool = False
 
@@ -254,29 +254,29 @@ class ImageBuffer:
             return
         ImageBuffer._api_properties_initialized = True
 
-        Library.framework.MaaImageBufferCreate.restype = MaaImageBufferHandle
-        Library.framework.MaaImageBufferCreate.argtypes = []
+        Library.framework().MaaImageBufferCreate.restype = MaaImageBufferHandle
+        Library.framework().MaaImageBufferCreate.argtypes = []
 
-        Library.framework.MaaImageBufferDestroy.restype = None
-        Library.framework.MaaImageBufferDestroy.argtypes = [MaaImageBufferHandle]
+        Library.framework().MaaImageBufferDestroy.restype = None
+        Library.framework().MaaImageBufferDestroy.argtypes = [MaaImageBufferHandle]
 
-        Library.framework.MaaImageBufferGetRawData.restype = ctypes.c_void_p
-        Library.framework.MaaImageBufferGetRawData.argtypes = [MaaImageBufferHandle]
+        Library.framework().MaaImageBufferGetRawData.restype = ctypes.c_void_p
+        Library.framework().MaaImageBufferGetRawData.argtypes = [MaaImageBufferHandle]
 
-        Library.framework.MaaImageBufferWidth.restype = ctypes.c_int32
-        Library.framework.MaaImageBufferWidth.argtypes = [MaaImageBufferHandle]
+        Library.framework().MaaImageBufferWidth.restype = ctypes.c_int32
+        Library.framework().MaaImageBufferWidth.argtypes = [MaaImageBufferHandle]
 
-        Library.framework.MaaImageBufferHeight.restype = ctypes.c_int32
-        Library.framework.MaaImageBufferHeight.argtypes = [MaaImageBufferHandle]
+        Library.framework().MaaImageBufferHeight.restype = ctypes.c_int32
+        Library.framework().MaaImageBufferHeight.argtypes = [MaaImageBufferHandle]
 
-        Library.framework.MaaImageBufferChannels.restype = ctypes.c_int32
-        Library.framework.MaaImageBufferChannels.argtypes = [MaaImageBufferHandle]
+        Library.framework().MaaImageBufferChannels.restype = ctypes.c_int32
+        Library.framework().MaaImageBufferChannels.argtypes = [MaaImageBufferHandle]
 
-        Library.framework.MaaImageBufferType.restype = ctypes.c_int32
-        Library.framework.MaaImageBufferType.argtypes = [MaaImageBufferHandle]
+        Library.framework().MaaImageBufferType.restype = ctypes.c_int32
+        Library.framework().MaaImageBufferType.argtypes = [MaaImageBufferHandle]
 
-        Library.framework.MaaImageBufferSetRawData.restype = MaaBool
-        Library.framework.MaaImageBufferSetRawData.argtypes = [
+        Library.framework().MaaImageBufferSetRawData.restype = MaaBool
+        Library.framework().MaaImageBufferSetRawData.argtypes = [
             MaaImageBufferHandle,
             ctypes.c_void_p,
             ctypes.c_int32,
@@ -284,11 +284,11 @@ class ImageBuffer:
             ctypes.c_int32,
         ]
 
-        Library.framework.MaaImageBufferIsEmpty.restype = MaaBool
-        Library.framework.MaaImageBufferIsEmpty.argtypes = [MaaImageBufferHandle]
+        Library.framework().MaaImageBufferIsEmpty.restype = MaaBool
+        Library.framework().MaaImageBufferIsEmpty.argtypes = [MaaImageBufferHandle]
 
-        Library.framework.MaaImageBufferClear.restype = MaaBool
-        Library.framework.MaaImageBufferClear.argtypes = [MaaImageBufferHandle]
+        Library.framework().MaaImageBufferClear.restype = MaaBool
+        Library.framework().MaaImageBufferClear.argtypes = [MaaImageBufferHandle]
 
 
 class ImageListBuffer:
@@ -302,7 +302,7 @@ class ImageListBuffer:
             self._handle = c_handle
             self._own = False
         else:
-            self._handle = Library.framework.MaaImageListBufferCreate()
+            self._handle = Library.framework().MaaImageListBufferCreate()
             self._own = True
 
         if not self._handle:
@@ -310,25 +310,21 @@ class ImageListBuffer:
 
     def __del__(self):
         if self._handle and self._own:
-            Library.framework.MaaImageListBufferDestroy(self._handle)
+            Library.framework().MaaImageListBufferDestroy(self._handle)
 
     def get(self) -> List[numpy.ndarray]:
-        count = Library.framework.MaaImageListBufferSize(self._handle)
+        count = Library.framework().MaaImageListBufferSize(self._handle)
         result = []
         for i in range(count):
-            buff = Library.framework.MaaImageListBufferAt(self._handle, i)
+            buff = Library.framework().MaaImageListBufferAt(self._handle, i)
             img = ImageBuffer(buff).get()
             result.append(img)
         return result
 
     def set(self, value: List[numpy.ndarray]) -> bool:
-        Library.framework.MaaImageListBufferClear(self._handle)
+        self.clear()
         for img in value:
-            buff = ImageBuffer()
-            buff.set(img)
-            if not Library.framework.MaaImageListBufferAppend(
-                self._handle, buff._handle
-            ):
+            if not self.append(img):
                 return False
         return True
 
@@ -336,14 +332,14 @@ class ImageListBuffer:
         buff = ImageBuffer()
         buff.set(value)
         return bool(
-            Library.framework.MaaImageListBufferAppend(self._handle, buff._handle)
+            Library.framework().MaaImageListBufferAppend(self._handle, buff._handle)
         )
 
     def remove(self, index: int) -> bool:
-        return bool(Library.framework.MaaImageListBufferRemove(self._handle, index))
+        return bool(Library.framework().MaaImageListBufferRemove(self._handle, index))
 
     def clear(self) -> bool:
-        return bool(Library.framework.MaaImageListBufferClear(self._handle))
+        return bool(Library.framework().MaaImageListBufferClear(self._handle))
 
     _api_properties_initialized: bool = False
 
@@ -353,39 +349,41 @@ class ImageListBuffer:
             return
         ImageListBuffer._api_properties_initialized = True
 
-        Library.framework.MaaImageListBufferCreate.restype = MaaImageListBufferHandle
-        Library.framework.MaaImageListBufferCreate.argtypes = []
+        Library.framework().MaaImageListBufferCreate.restype = MaaImageListBufferHandle
+        Library.framework().MaaImageListBufferCreate.argtypes = []
 
-        Library.framework.MaaImageListBufferDestroy.restype = None
-        Library.framework.MaaImageListBufferDestroy.argtypes = [
+        Library.framework().MaaImageListBufferDestroy.restype = None
+        Library.framework().MaaImageListBufferDestroy.argtypes = [
             MaaImageListBufferHandle
         ]
 
-        Library.framework.MaaImageListBufferIsEmpty.restype = MaaBool
-        Library.framework.MaaImageListBufferIsEmpty.argtypes = [
+        Library.framework().MaaImageListBufferIsEmpty.restype = MaaBool
+        Library.framework().MaaImageListBufferIsEmpty.argtypes = [
             MaaImageListBufferHandle
         ]
 
-        Library.framework.MaaImageListBufferClear.restype = MaaBool
-        Library.framework.MaaImageListBufferClear.argtypes = [MaaImageListBufferHandle]
+        Library.framework().MaaImageListBufferClear.restype = MaaBool
+        Library.framework().MaaImageListBufferClear.argtypes = [
+            MaaImageListBufferHandle
+        ]
 
-        Library.framework.MaaImageListBufferSize.restype = MaaSize
-        Library.framework.MaaImageListBufferSize.argtypes = [MaaImageListBufferHandle]
+        Library.framework().MaaImageListBufferSize.restype = MaaSize
+        Library.framework().MaaImageListBufferSize.argtypes = [MaaImageListBufferHandle]
 
-        Library.framework.MaaImageListBufferAt.restype = MaaImageBufferHandle
-        Library.framework.MaaImageListBufferAt.argtypes = [
+        Library.framework().MaaImageListBufferAt.restype = MaaImageBufferHandle
+        Library.framework().MaaImageListBufferAt.argtypes = [
             MaaImageListBufferHandle,
             MaaSize,
         ]
 
-        Library.framework.MaaImageListBufferAppend.restype = MaaBool
-        Library.framework.MaaImageListBufferAppend.argtypes = [
+        Library.framework().MaaImageListBufferAppend.restype = MaaBool
+        Library.framework().MaaImageListBufferAppend.argtypes = [
             MaaImageListBufferHandle,
             MaaImageBufferHandle,
         ]
 
-        Library.framework.MaaImageListBufferRemove.restype = MaaBool
-        Library.framework.MaaImageListBufferRemove.argtypes = [
+        Library.framework().MaaImageListBufferRemove.restype = MaaBool
+        Library.framework().MaaImageListBufferRemove.argtypes = [
             MaaImageListBufferHandle,
             MaaSize,
         ]
@@ -402,7 +400,7 @@ class RectBuffer:
             self._handle = c_handle
             self._own = False
         else:
-            self._handle = Library.framework.MaaRectCreate()
+            self._handle = Library.framework().MaaRectCreate()
             self._own = True
 
         if not self._handle:
@@ -410,13 +408,13 @@ class RectBuffer:
 
     def __del__(self):
         if self._handle and self._own:
-            Library.framework.MaaRectDestroy(self._handle)
+            Library.framework().MaaRectDestroy(self._handle)
 
     def get(self) -> Rect:
-        x = Library.framework.MaaRectGetX(self._handle)
-        y = Library.framework.MaaRectGetY(self._handle)
-        w = Library.framework.MaaRectGetW(self._handle)
-        h = Library.framework.MaaRectGetH(self._handle)
+        x = Library.framework().MaaRectGetX(self._handle)
+        y = Library.framework().MaaRectGetY(self._handle)
+        w = Library.framework().MaaRectGetW(self._handle)
+        h = Library.framework().MaaRectGetH(self._handle)
 
         return Rect(x, y, w, h)
 
@@ -438,7 +436,7 @@ class RectBuffer:
             raise TypeError("value must be a Rect, numpy.ndarray, tuple or list")
 
         return bool(
-            Library.framework.MaaRectSet(
+            Library.framework().MaaRectSet(
                 self._handle, value[0], value[1], value[2], value[3]
             )
         )
@@ -451,26 +449,26 @@ class RectBuffer:
             return
         RectBuffer._api_properties_initialized = True
 
-        Library.framework.MaaRectCreate.restype = MaaRectHandle
-        Library.framework.MaaRectCreate.argtypes = []
+        Library.framework().MaaRectCreate.restype = MaaRectHandle
+        Library.framework().MaaRectCreate.argtypes = []
 
-        Library.framework.MaaRectDestroy.restype = None
-        Library.framework.MaaRectDestroy.argtypes = [MaaRectHandle]
+        Library.framework().MaaRectDestroy.restype = None
+        Library.framework().MaaRectDestroy.argtypes = [MaaRectHandle]
 
-        Library.framework.MaaRectGetX.restype = ctypes.c_int32
-        Library.framework.MaaRectGetX.argtypes = [MaaRectHandle]
+        Library.framework().MaaRectGetX.restype = ctypes.c_int32
+        Library.framework().MaaRectGetX.argtypes = [MaaRectHandle]
 
-        Library.framework.MaaRectGetY.restype = ctypes.c_int32
-        Library.framework.MaaRectGetY.argtypes = [MaaRectHandle]
+        Library.framework().MaaRectGetY.restype = ctypes.c_int32
+        Library.framework().MaaRectGetY.argtypes = [MaaRectHandle]
 
-        Library.framework.MaaRectGetW.restype = ctypes.c_int32
-        Library.framework.MaaRectGetW.argtypes = [MaaRectHandle]
+        Library.framework().MaaRectGetW.restype = ctypes.c_int32
+        Library.framework().MaaRectGetW.argtypes = [MaaRectHandle]
 
-        Library.framework.MaaRectGetH.restype = ctypes.c_int32
-        Library.framework.MaaRectGetH.argtypes = [MaaRectHandle]
+        Library.framework().MaaRectGetH.restype = ctypes.c_int32
+        Library.framework().MaaRectGetH.argtypes = [MaaRectHandle]
 
-        Library.framework.MaaRectSet.restype = MaaBool
-        Library.framework.MaaRectSet.argtypes = [
+        Library.framework().MaaRectSet.restype = MaaBool
+        Library.framework().MaaRectSet.argtypes = [
             MaaRectHandle,
             ctypes.c_int32,
             ctypes.c_int32,

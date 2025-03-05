@@ -33,7 +33,7 @@ class Context:
         self, entry: str, pipeline_override: Dict = {}
     ) -> Optional[TaskDetail]:
         task_id = int(
-            Library.framework.MaaContextRunTask(
+            Library.framework().MaaContextRunTask(
                 self._handle, *Context._gen_post_param(entry, pipeline_override)
             )
         )
@@ -48,7 +48,7 @@ class Context:
         image_buffer = ImageBuffer()
         image_buffer.set(image)
         reco_id = int(
-            Library.framework.MaaContextRunRecognition(
+            Library.framework().MaaContextRunRecognition(
                 self._handle,
                 *Context._gen_post_param(entry, pipeline_override),
                 image_buffer._handle
@@ -70,7 +70,7 @@ class Context:
         rect.set(box)
 
         node_id = int(
-            Library.framework.MaaContextRunAction(
+            Library.framework().MaaContextRunAction(
                 self._handle,
                 *Context._gen_post_param(entry, pipeline_override),
                 rect._handle,
@@ -85,7 +85,7 @@ class Context:
 
     def override_pipeline(self, pipeline_override: Dict) -> bool:
         return bool(
-            Library.framework.MaaContextOverridePipeline(
+            Library.framework().MaaContextOverridePipeline(
                 self._handle,
                 json.dumps(pipeline_override, ensure_ascii=False).encode(),
             )
@@ -96,7 +96,7 @@ class Context:
         list_buffer.set(next_list)
 
         return bool(
-            Library.framework.MaaContextOverrideNext(
+            Library.framework().MaaContextOverrideNext(
                 self._handle, name.encode(), list_buffer._handle
             )
         )
@@ -106,14 +106,14 @@ class Context:
         return self._tasker
 
     def get_task_job(self) -> JobWithResult:
-        task_id = Library.framework.MaaContextGetTaskId(self._handle)
+        task_id = Library.framework().MaaContextGetTaskId(self._handle)
         if not task_id:
             raise ValueError("task_id is None")
 
         return self.tasker._gen_task_job(task_id)
 
     def clone(self) -> "Context":
-        cloned_handle = Library.framework.MaaContextClone(self._handle)
+        cloned_handle = Library.framework().MaaContextClone(self._handle)
         if not cloned_handle:
             raise ValueError("cloned_handle is None")
 
@@ -122,7 +122,7 @@ class Context:
     ### private ###
 
     def _init_tasker(self):
-        tasker_handle = Library.framework.MaaContextGetTasker(self._handle)
+        tasker_handle = Library.framework().MaaContextGetTasker(self._handle)
         if not tasker_handle:
             raise ValueError("tasker_handle is None")
         self._tasker = Tasker(handle=tasker_handle)
@@ -143,23 +143,23 @@ class Context:
 
         Context._api_properties_initialized = True
 
-        Library.framework.MaaContextRunTask.restype = MaaTaskId
-        Library.framework.MaaContextRunTask.argtypes = [
+        Library.framework().MaaContextRunTask.restype = MaaTaskId
+        Library.framework().MaaContextRunTask.argtypes = [
             MaaContextHandle,
             ctypes.c_char_p,
             ctypes.c_char_p,
         ]
 
-        Library.framework.MaaContextRunRecognition.restype = MaaRecoId
-        Library.framework.MaaContextRunRecognition.argtypes = [
+        Library.framework().MaaContextRunRecognition.restype = MaaRecoId
+        Library.framework().MaaContextRunRecognition.argtypes = [
             MaaContextHandle,
             ctypes.c_char_p,
             ctypes.c_char_p,
             MaaImageBufferHandle,
         ]
 
-        Library.framework.MaaContextRunAction.restype = MaaNodeId
-        Library.framework.MaaContextRunAction.argtypes = [
+        Library.framework().MaaContextRunAction.restype = MaaNodeId
+        Library.framework().MaaContextRunAction.argtypes = [
             MaaContextHandle,
             ctypes.c_char_p,
             ctypes.c_char_p,
@@ -167,30 +167,30 @@ class Context:
             MaaStringBufferHandle,
         ]
 
-        Library.framework.MaaContextOverridePipeline.restype = MaaBool
-        Library.framework.MaaContextOverridePipeline.argtypes = [
+        Library.framework().MaaContextOverridePipeline.restype = MaaBool
+        Library.framework().MaaContextOverridePipeline.argtypes = [
             MaaContextHandle,
             ctypes.c_char_p,
         ]
 
-        Library.framework.MaaContextOverrideNext.restype = MaaBool
-        Library.framework.MaaContextOverrideNext.argtypes = [
+        Library.framework().MaaContextOverrideNext.restype = MaaBool
+        Library.framework().MaaContextOverrideNext.argtypes = [
             MaaContextHandle,
             ctypes.c_char_p,
             MaaStringBufferHandle,
         ]
 
-        Library.framework.MaaContextGetTaskId.restype = MaaTaskId
-        Library.framework.MaaContextGetTaskId.argtypes = [
+        Library.framework().MaaContextGetTaskId.restype = MaaTaskId
+        Library.framework().MaaContextGetTaskId.argtypes = [
             MaaContextHandle,
         ]
 
-        Library.framework.MaaContextGetTasker.restype = MaaTaskerHandle
-        Library.framework.MaaContextGetTasker.argtypes = [
+        Library.framework().MaaContextGetTasker.restype = MaaTaskerHandle
+        Library.framework().MaaContextGetTasker.argtypes = [
             MaaContextHandle,
         ]
 
-        Library.framework.MaaContextClone.restype = MaaContextHandle
-        Library.framework.MaaContextClone.argtypes = [
+        Library.framework().MaaContextClone.restype = MaaContextHandle
+        Library.framework().MaaContextClone.argtypes = [
             MaaContextHandle,
         ]

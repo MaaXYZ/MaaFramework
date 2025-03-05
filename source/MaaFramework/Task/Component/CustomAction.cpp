@@ -13,7 +13,7 @@ bool CustomAction::run(
     const cv::Rect& rect)
 {
     LogFunc << VAR(context.task_id()) << VAR(node_name) << VAR_VOIDP(session.action) << VAR_VOIDP(session.trans_arg)
-            << VAR(param.custom_param) << VAR(reco_id) << VAR(rect);
+            << VAR(param.name) << VAR(param.custom_param) << VAR(reco_id) << VAR(rect);
 
     if (!session.action) {
         LogError << "Action is null" << VAR(node_name) << VAR(param.name);
@@ -33,7 +33,7 @@ bool CustomAction::run(
         &crect,
         session.trans_arg);
 
-    LogDebug << VAR(node_name) << VAR_VOIDP(session.action) << VAR(session.trans_arg) << VAR(ret);
+    LogDebug << VAR(node_name) << VAR(param.name) << VAR_VOIDP(session.action) << VAR(session.trans_arg) << VAR(ret);
 
     return ret;
 }

@@ -5,7 +5,7 @@
 #include <shared_mutex>
 #include <vector>
 
-#include "API/MaaTypes.h"
+#include "Common/MaaTypes.h"
 #include "Base/AsyncRunner.hpp"
 #include "Controller/ControllerAgent.h"
 #include "Resource/ResourceMgr.h"
@@ -76,7 +76,7 @@ private:
     TaskPtr running_task_ = nullptr;
 
     RuntimeCache runtime_cache_;
-    MessageNotifier notifier;
+    MessageNotifier notifier_;
 };
 
 MAA_NS_END

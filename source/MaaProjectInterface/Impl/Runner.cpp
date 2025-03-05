@@ -5,10 +5,13 @@
 
 #include <meojson/json.hpp>
 
+#include "MaaAgentClient/MaaAgentClientAPI.h"
 #include "MaaFramework/MaaAPI.h"
-#include "MaaToolkit/MaaToolkitAPI.h"
 
+#include "Common/MaaTypes.h"
+#include "Utils/IOStream/BoostIO.hpp"
 #include "Utils/Logger.h"
+#include "Utils/Platform.h"
 #include "Utils/ScopeLeave.hpp"
 
 MAA_PROJECT_INTERFACE_NS_BEGIN
@@ -20,7 +23,7 @@ bool Runner::run(
     const std::map<std::string, CustomRecognitionSession>& custom_recognitions,
     const std::map<std::string, CustomActionSession>& custom_actions)
 {
-    auto tasker_handle = MaaTaskerCreate(notify, notify_trans_arg);
+    MaaTasker* tasker_handle = MaaTaskerCreate(notify, notify_trans_arg);
 
     MaaController* controller_handle = nullptr;
     if (const auto* p_adb_param = std::get_if<RuntimeParam::AdbParam>(&param.controller_param)) {
@@ -43,47 +46,69 @@ bool Runner::run(
         return false;
     }
 
-    auto resource_handle = MaaResourceCreate(notify, notify_trans_arg);
-    MaaResourceSetOption(resource_handle, MaaResOption_InferenceDevice, const_cast<int32_t*>(&param.gpu), sizeof(int32_t));
+    MaaResource* resource_handle = MaaResourceCreate(notify, notify_trans_arg);
+    resource_handle->set_option(MaaResOption_InferenceDevice, const_cast<int32_t*>(&param.gpu), sizeof(int32_t));
 
-    MaaId cid = MaaControllerPostConnection(controller_handle);
-    MaaId rid = 0;
-    for (const auto& path : param.resource_path) {
-        rid = MaaResourcePostBundle(resource_handle, path.c_str());
-    }
-    for (const auto& [name, reco] : custom_recognitions) {
-        MaaResourceRegisterCustomRecognition(resource_handle, name.c_str(), reco.recognition, reco.trans_arg);
-    }
-    for (const auto& [name, act] : custom_actions) {
-        MaaResourceRegisterCustomAction(resource_handle, name.c_str(), act.action, act.trans_arg);
-    }
+    boost::process::child agent_child;
+    MaaAgentClient* agent_handle = nullptr;
+    if (param.agent) {
+        agent_handle = MaaAgentClientCreate();
+        agent_handle->bind_resource(resource_handle);
+        auto bound = agent_handle->create_socket(param.agent->identifier);
+        if (!bound) {
+            LogError << "Failed to bind socket";
+            return false;
+        }
 
-    MaaTaskerBindResource(tasker_handle, resource_handle);
-    MaaTaskerBindController(tasker_handle, controller_handle);
+        std::vector<std::string> args = param.agent->child_args;
+        args.emplace_back(*bound);
+        agent_child = boost::process::child(param.agent->child_exec, args);
 
-    if (MaaStatus_Failed == MaaControllerWait(controller_handle, cid)) {
-        LogError << "Failed to connect controller";
-        return false;
-    }
-
-    if (MaaStatus_Failed == MaaResourceWait(resource_handle, rid)) {
-        LogError << "Failed to load resource";
-        return false;
+        bool connected = agent_handle->connect();
+        if (!connected) {
+            LogError << "Failed to connect agent" << VAR(param.agent->child_exec) << VAR(args);
+            return false;
+        }
     }
 
     OnScopeLeave([&]() {
+        MaaAgentClientDestroy(agent_handle);
         MaaTaskerDestroy(tasker_handle);
         MaaResourceDestroy(resource_handle);
         MaaControllerDestroy(controller_handle);
     });
 
-    MaaId tid = 0;
-    for (const auto& task : param.task) {
-        std::string pp_override = task.pipeline_override.to_string();
-        tid = MaaTaskerPostTask(tasker_handle, task.entry.c_str(), pp_override.c_str());
+    MaaId cid = controller_handle->post_connection();
+    MaaId rid = 0;
+    for (const auto& path : param.resource_path) {
+        rid = resource_handle->post_bundle(path);
+    }
+    for (const auto& [name, reco] : custom_recognitions) {
+        resource_handle->register_custom_recognition(name, reco.recognition, reco.trans_arg);
+    }
+    for (const auto& [name, act] : custom_actions) {
+        resource_handle->register_custom_action(name, act.action, act.trans_arg);
     }
 
-    MaaTaskerWait(tasker_handle, tid);
+    tasker_handle->bind_controller(controller_handle);
+    tasker_handle->bind_resource(resource_handle);
+
+    if (MaaStatus_Failed == controller_handle->wait(cid)) {
+        LogError << "Failed to connect controller";
+        return false;
+    }
+
+    if (MaaStatus_Failed == resource_handle->wait(rid)) {
+        LogError << "Failed to load resource";
+        return false;
+    }
+
+    MaaId tid = 0;
+    for (const auto& task : param.task) {
+        tid = tasker_handle->post_task(task.entry, task.pipeline_override);
+    }
+
+    tasker_handle->wait(tid);
 
     return true;
 }
