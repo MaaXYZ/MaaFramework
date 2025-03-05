@@ -7,6 +7,7 @@
 #include "Tasker/Tasker.h"
 #include "Utils/JsonExt.hpp"
 #include "Utils/Logger.h"
+#include "Vision/VisionBase.h"
 
 MAA_TASK_NS_BEGIN
 
@@ -22,7 +23,9 @@ MaaNodeId ActionTask::run_with_param(const cv::Rect& box, const json::value& rec
     LogFunc << VAR(entry_);
 
     RecoResult fake_reco {
+        .reco_id = VisionBase::generate_uid(),
         .name = entry_,
+        .algorithm = "DirectHit",
         .box = box,
         .detail = reco_detail,
     };
