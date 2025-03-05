@@ -907,8 +907,16 @@ inline std::string short_str(const std::string& str)
 inline json::value log_msg(const json::value& j)
 {
     json::value j_copy = j;
-    if (j.exists("image")) {
+    if (j_copy.exists("image")) {
         j_copy["image"] = short_str(j.at("image").as_string());
+    }
+    if (j_copy.exists("raw")) {
+        j_copy["raw"] = short_str(j.at("raw").as_string());
+    }
+    if (j_copy.exists("draws")) {
+        for (auto& d : j_copy["draws"].as_array()) {
+            d = short_str(d.as_string());
+        }
     }
     return j_copy;
 }

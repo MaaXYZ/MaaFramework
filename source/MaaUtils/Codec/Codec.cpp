@@ -158,6 +158,10 @@ bool regex_valid(const std::wstring& regex)
 
 cv::Mat decode_image(const std::string& data)
 {
+    if (data.empty()) {
+        return {};
+    }
+
     std::string base64 = base64::base64_decode(data);
     std::vector<uchar> buffer(std::make_move_iterator(base64.begin()), std::make_move_iterator(base64.end()));
     return cv::imdecode(buffer, cv::IMREAD_COLOR);
@@ -165,6 +169,10 @@ cv::Mat decode_image(const std::string& data)
 
 std::string encode_image(const cv::Mat& image)
 {
+    if (image.empty()) {
+        return {};
+    }
+
     std::vector<uchar> buffer;
     cv::imencode(".png", image, buffer);
     return base64::base64_encode(buffer.data(), buffer.size());
