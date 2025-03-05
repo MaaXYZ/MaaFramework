@@ -23,7 +23,7 @@ MaaNodeId ActionTask::run_with_param(const cv::Rect& box, const json::value& rec
     LogFunc << VAR(entry_);
 
     RecoResult fake_reco {
-        .reco_id = VisionBase::generate_uid(),
+        .reco_id = MAA_VISION_NS::VisionBase::generate_uid(),
         .name = entry_,
         .algorithm = "DirectHit",
         .box = box,
