@@ -8,7 +8,6 @@
 #include "Common/MaaTypes.h"
 #include "Conf/Conf.h"
 #include "MaaAgent/Transceiver.h"
-#include "Utils/IOStream/BoostIO.hpp"
 
 MAA_AGENT_CLIENT_NS_BEGIN
 
@@ -21,7 +20,8 @@ public:
 
 public: // MaaAgentClient
     virtual bool bind_resource(MaaResource* resource) override;
-    virtual bool start_clild(const std::filesystem::path& child_exec, const std::vector<std::string>& child_args) override;
+    virtual std::optional<std::string> create_socket(const std::string& identifier) override;
+    virtual bool connect() override;
 
 private: // Transceiver
     virtual bool send(const json::value& j) override;
@@ -29,7 +29,7 @@ private: // Transceiver
     virtual bool handle_inserted_request(const json::value& j) override;
 
 private:
-    std::string create_socket();
+    std::string generate_identifier() const;
 
     bool recv_and_handle_start_up_response();
 
@@ -120,11 +120,10 @@ public:
 
 private:
     MaaResource* resource_ = nullptr;
-    boost::process::child child_;
     std::string ipc_addr_;
 
-    zmq::context_t child_ctx_;
-    zmq::socket_t child_sock_;
+    zmq::socket_t zmq_sock_;
+    zmq::context_t zmq_ctx_;
 
     std::map<std::string, MaaContext*> context_map_;
     std::map<std::string, MaaTasker*> tasker_map_;

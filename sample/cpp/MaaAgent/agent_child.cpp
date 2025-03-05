@@ -38,21 +38,18 @@ MaaBool ChildCustomActionInnerCallback(
     const MaaRect* box,
     void* trans_arg);
 
-MaaStringListBuffer* create_args(int argc, char** argv);
-
 int main(int argc, char** argv)
 {
     MaaAgentServerRegisterCustomRecognition("ChildCustomRecognition", ChildCustomRecognitionCallback, nullptr);
     MaaAgentServerRegisterCustomAction("ChildCustomAction", ChildCustomActionCallback, nullptr);
     MaaAgentServerRegisterCustomAction("ChildCustomActionInner", ChildCustomActionInnerCallback, nullptr);
 
-    MaaStringListBuffer* args = create_args(argc, argv);
-
-    MaaAgentServerStartUp(args);
-
-    MaaStringListBufferDestroy(args);
+    // from agent_main.cpp
+    const char* identifier = argv[1];
+    MaaAgentServerStartUp(identifier);
 
     MaaAgentServerJoin();
+
     MaaAgentServerShutDown();
 
     return 0;
@@ -113,16 +110,4 @@ MaaBool ChildCustomRecognitionCallback(
     std::cout << "at ChildCustomRecognitionCallback" << std::endl;
 
     return true;
-}
-
-MaaStringListBuffer* create_args(int argc, char** argv)
-{
-    MaaStringListBuffer* args = MaaStringListBufferCreate();
-    for (int i = 1; i < argc; ++i) {
-        MaaStringBuffer* arg = MaaStringBufferCreate();
-        MaaStringBufferSet(arg, argv[i]);
-        MaaStringListBufferAppend(args, arg);
-        MaaStringBufferDestroy(arg);
-    }
-    return args;
 }

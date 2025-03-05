@@ -12,8 +12,11 @@ extern "C"
     MAA_AGENT_CLIENT_API void MaaAgentClientDestroy(MaaAgentClient* client);
 
     MAA_AGENT_CLIENT_API MaaBool MaaAgentClientBindResource(MaaAgentClient* client, MaaResource* res);
-    MAA_AGENT_CLIENT_API MaaBool
-        MaaAgentClientStartChild(MaaAgentClient* client, const char* child_exec, const MaaStringListBuffer* child_args);
+
+    // if identifier is empty, bind to default address, and output the identifier. otherwise bind to the specified identifier
+    MAA_AGENT_CLIENT_API MaaBool MaaAgentClientCreateSocket(MaaAgentClient* client, MaaStringBuffer* identifier);
+
+    MAA_AGENT_CLIENT_API MaaBool MaaAgentClientConnect(MaaAgentClient* client);
 
 #ifdef __cplusplus
 }

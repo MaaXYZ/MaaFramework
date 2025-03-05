@@ -45,8 +45,19 @@ int main()
     MaaAgentClient* client = MaaAgentClientCreate();
     MaaAgentClientBindResource(client, resource_handle);
 
-    // MaaAgentClientStartChild(client, "python", R"(E:/Code/MaaFramework/sample/python/MaaAgent/agent_child.py)");
-    MaaAgentClientStartChild(client, "E:/Code/MaaFramework/build/bin/Debug/agent_child", nullptr);
+    MaaStringBuffer* identifier = MaaStringBufferCreate();
+    MaaAgentClientCreateSocket(client, identifier);
+
+    // std::string() + "python E:/Code/MaaFramework/sample/python/MaaAgent/agent_child.py " + MaaStringBufferGet(identifier);
+    std::string child_command = std::string() + "E:/Code/MaaFramework/build/bin/Debug/agent_child " + MaaStringBufferGet(identifier);
+#ifdef _WIN32
+    child_command = "start /b " + child_command;
+#else
+    child_command = child_command + " &";
+#endif
+    std::system(child_command.c_str());
+
+    MaaAgentClientConnect(client);
 
     // ChildCustomTask is defined in agent_child.cpp
     auto task_id = MaaTaskerPostTask(tasker_handle, "MyChildTask", R"(
@@ -60,6 +71,7 @@ int main()
 })");
     MaaTaskerWait(tasker_handle, task_id);
 
+    MaaStringBufferDestroy(identifier);
     MaaAgentClientDestroy(client);
     destroy();
 

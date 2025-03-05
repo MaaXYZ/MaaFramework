@@ -4,23 +4,11 @@
 #include "Utils/Buffer/StringBuffer.hpp"
 #include "Utils/Logger.h"
 
-MaaBool MaaAgentServerStartUp(const MaaStringListBuffer* args)
+MaaBool MaaAgentServerStartUp(const char* identifier)
 {
-    LogFunc << VAR(args);
+    LogFunc << VAR(identifier);
 
-    if (!args) {
-        LogError << "args is null";
-        return false;
-    }
-
-    std::vector<std::string> args_vec;
-
-    size_t size = args->size();
-    for (size_t i = 0; i < size; ++i) {
-        args_vec.emplace_back(args->at(i).get());
-    }
-
-    return MAA_AGENT_SERVER_NS::AgentServer::get_instance().start_up(args_vec);
+    return MAA_AGENT_SERVER_NS::AgentServer::get_instance().start_up(identifier);
 }
 
 void MaaAgentServerShutDown()

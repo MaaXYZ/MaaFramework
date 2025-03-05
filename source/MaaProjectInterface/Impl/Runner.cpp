@@ -9,6 +9,7 @@
 #include "MaaFramework/MaaAPI.h"
 
 #include "Common/MaaTypes.h"
+#include "Utils/IOStream/BoostIO.hpp"
 #include "Utils/Logger.h"
 #include "Utils/Platform.h"
 #include "Utils/ScopeLeave.hpp"
@@ -48,11 +49,26 @@ bool Runner::run(
     MaaResource* resource_handle = MaaResourceCreate(notify, notify_trans_arg);
     resource_handle->set_option(MaaResOption_InferenceDevice, const_cast<int32_t*>(&param.gpu), sizeof(int32_t));
 
+    boost::process::child agent_child;
     MaaAgentClient* agent_handle = nullptr;
     if (param.agent) {
         agent_handle = MaaAgentClientCreate();
         agent_handle->bind_resource(resource_handle);
-        agent_handle->start_clild(param.agent->child_exec, param.agent->child_args);
+        auto bound = agent_handle->create_socket(param.agent->identifier);
+        if (!bound) {
+            LogError << "Failed to bind socket";
+            return false;
+        }
+
+        std::vector<std::string> args = param.agent->child_args;
+        args.emplace_back(*bound);
+        agent_child = boost::process::child(param.agent->child_exec, args);
+
+        bool connected = agent_handle->connect();
+        if (!connected) {
+            LogError << "Failed to connect agent" << VAR(param.agent->child_exec) << VAR(args);
+            return false;
+        }
     }
 
     OnScopeLeave([&]() {

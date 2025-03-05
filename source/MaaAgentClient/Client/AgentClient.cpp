@@ -6,6 +6,7 @@
 
 #include "Common/MaaTypes.h"
 #include "MaaAgent/Message.hpp"
+#include "MaaAgent/Utils.hpp"
 #include "MaaFramework/MaaAPI.h"
 #include "Utils/Buffer/ImageBuffer.hpp"
 #include "Utils/Buffer/ListBuffer.hpp"
@@ -38,9 +39,8 @@ AgentClient::~AgentClient()
 
     send_and_recv<ShutDownResponse>(ShutDownRequest {});
 
-    if (child_ && child_.joinable()) {
-        child_.join();
-    }
+    zmq_sock_.close();
+    zmq_ctx_.close();
 }
 
 bool AgentClient::bind_resource(MaaResource* resource)
@@ -57,60 +57,41 @@ bool AgentClient::bind_resource(MaaResource* resource)
     return true;
 }
 
-bool AgentClient::start_clild(const std::filesystem::path& child_exec, const std::vector<std::string>& child_args)
+std::optional<std::string> AgentClient::create_socket(const std::string& identifier)
 {
-    LogFunc << VAR(child_exec) << VAR(child_args);
+    LogFunc << VAR(identifier);
 
     if (!resource_) {
         LogError << "resource is not bound, please bind resource first";
-        return false;
+        return std::nullopt;
     }
 
-    if (child_) {
-        LogError << "child is already running, if you want to restart, please re-create MaaAgent";
-        return false;
-    }
-
-    std::filesystem::path exec = boost::process::search_path(child_exec);
-    if (!std::filesystem::exists(exec)) {
-        LogError << "exec not found" << VAR(child_exec);
-        return false;
-    }
-
-    std::string addr = create_socket();
-
-    std::vector<std::string> args = child_args;
-    args.emplace_back(addr);
-
-    child_ = boost::process::child(exec, conv_args(args));
-    if (!child_) {
-        LogError << "failed to start child" << VAR(exec) << VAR(child_args);
-        return false;
-    }
-
-    bool connected = recv_and_handle_start_up_response();
-    if (!connected) {
-        LogError << "failed to recv_and_handle_start_up_response";
-        return false;
-    }
-
-    return true;
-}
-
-std::string AgentClient::create_socket()
-{
     static auto kTempDir = std::filesystem::temp_directory_path();
 
     constexpr std::string_view kAddrFormat = "ipc://{}/maafw-agent-{}.sock";
-    std::stringstream ss;
-    ss << resource_;
-    ipc_addr_ = std::format(kAddrFormat, path_to_utf8_string(kTempDir), std::move(ss).str());
+
+    const std::string& id = identifier.empty() ? generate_identifier() : identifier;
+    ipc_addr_ = generate_socket_address(id);
     LogInfo << VAR(ipc_addr_);
 
-    child_sock_ = zmq::socket_t(child_ctx_, zmq::socket_type::pair);
-    child_sock_.bind(ipc_addr_);
+    zmq_sock_ = zmq::socket_t(zmq_ctx_, zmq::socket_type::pair);
+    zmq_sock_.bind(ipc_addr_);
 
-    return ipc_addr_;
+    return id;
+}
+
+bool AgentClient::connect()
+{
+    LogFunc << VAR(ipc_addr_);
+
+    return recv_and_handle_start_up_response();
+}
+
+std::string AgentClient::generate_identifier() const
+{
+    std::stringstream ss;
+    ss << resource_;
+    return std::move(ss).str();
 }
 
 bool AgentClient::send(const json::value& j)
@@ -120,7 +101,7 @@ bool AgentClient::send(const json::value& j)
     std::string jstr = j.dumps();
     zmq::message_t msg(jstr.size());
     std::memcpy(msg.data(), jstr.data(), jstr.size());
-    bool sent = child_sock_.send(msg, zmq::send_flags::none).has_value();
+    bool sent = zmq_sock_.send(msg, zmq::send_flags::none).has_value();
     if (!sent) {
         LogError << "failed to send msg" << VAR(j);
         return false;
@@ -133,7 +114,7 @@ std::optional<json::value> AgentClient::recv()
     LogFunc << VAR(ipc_addr_);
 
     zmq::message_t msg;
-    auto size_opt = child_sock_.recv(msg);
+    auto size_opt = zmq_sock_.recv(msg);
     if (!size_opt || *size_opt == 0) {
         LogError << "failed to recv msg" << VAR(ipc_addr_);
         return std::nullopt;

@@ -9,8 +9,8 @@
 #include <zmq.hpp>
 
 #include "Conf/Conf.h"
-#include "MaaAgentServer/MaaAgentServerDef.h"
 #include "MaaAgent/Transceiver.h"
+#include "MaaAgentServer/MaaAgentServerDef.h"
 #include "Utils/SingletonHolder.hpp"
 
 MAA_AGENT_SERVER_NS_BEGIN
@@ -34,7 +34,7 @@ class AgentServer
 public:
     ~AgentServer() = default;
 
-    bool start_up(const std::vector<std::string>& args);
+    bool start_up(const std::string& identifier);
     void shut_down();
     void join();
     void detach();
@@ -63,8 +63,8 @@ private:
     std::unordered_map<std::string, CustomActionSession> custom_actions_;
 
     std::string ipc_addr_;
-    zmq::context_t parent_ctx_;
-    zmq::socket_t parent_sock_;
+    zmq::socket_t zmq_sock_;
+    zmq::context_t zmq_ctx_;
 
     bool msg_loop_running_ = false;
     std::thread msg_thread_;

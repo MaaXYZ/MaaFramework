@@ -36,23 +36,34 @@ MaaBool MaaAgentClientBindResource(MaaAgentClient* client, MaaResource* res)
     return client->bind_resource(res);
 }
 
-MaaBool MaaAgentClientStartChild(MaaAgentClient* client, const char* child_exec, const MaaStringListBuffer* child_args)
+MaaBool MaaAgentClientCreateSocket(MaaAgentClient* client, MaaStringBuffer* identifier)
 {
-    LogFunc << VAR_VOIDP(client) << VAR(child_exec) << VAR(child_args);
+    LogFunc << VAR_VOIDP(client) << VAR_VOIDP(identifier);
+
+    if (!client || !identifier) {
+        LogError << "handle is null";
+        return false;
+    }
+
+    auto ret = client->create_socket(identifier->get());
+    if (!ret) {
+        LogError << "failed to bind socket";
+        return false;
+    }
+
+    identifier->set(*ret);
+
+    return true;
+}
+
+MaaBool MaaAgentClientConnect(MaaAgentClient* client)
+{
+    LogFunc << VAR_VOIDP(client);
 
     if (!client) {
         LogError << "handle is null";
         return false;
     }
 
-    std::vector<std::string> args;
-
-    if (child_args) {
-        size_t size = child_args->size();
-        for (size_t i = 0; i < size; ++i) {
-            args.emplace_back(child_args->at(i).get());
-        }
-    }
-
-    return client->start_clild(MAA_NS::path(child_exec), args);
+    return client->connect();
 }

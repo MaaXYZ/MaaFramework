@@ -94,8 +94,9 @@ struct InterfaceData
     {
         std::string child_exec;
         std::vector<std::string> child_args;
+        std::string identifier;
 
-        MEO_JSONIZATION(child_exec, child_args);
+        MEO_JSONIZATION(child_exec, MEO_OPT child_args, MEO_OPT identifier);
     };
 
     std::vector<Controller> controller;
@@ -195,6 +196,7 @@ struct RuntimeParam
     {
         std::filesystem::path child_exec;
         std::vector<std::string> child_args;
+        std::string identifier;
     };
 
     std::variant<std::monostate, AdbParam, Win32Param> controller_param;

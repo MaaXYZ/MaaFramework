@@ -3,6 +3,7 @@
 #include <ranges>
 
 #include "MaaAgent/Message.hpp"
+#include "MaaAgent/Utils.hpp"
 #include "RemoteInstance/RemoteContext.h"
 #include "Utils/Buffer/ImageBuffer.hpp"
 #include "Utils/Buffer/StringBuffer.hpp"
@@ -11,22 +12,17 @@
 
 MAA_AGENT_SERVER_NS_BEGIN
 
-bool AgentServer::start_up(const std::vector<std::string>& args)
+bool AgentServer::start_up(const std::string& identifier)
 {
-    LogFunc << VAR(args);
+    LogFunc << VAR(identifier);
 
-    if (args.empty()) {
-        LogError << "args is empty";
+    if (identifier.empty()) {
+        LogError << "identifier is empty";
         return false;
     }
 
-    ipc_addr_ = args.back();
+    ipc_addr_ = generate_socket_address(identifier);
     LogInfo << VAR(ipc_addr_);
-
-    if (ipc_addr_.empty()) {
-        LogError << "ipc_addr is empty";
-        return false;
-    }
 
     bool socket_created = create_socket(ipc_addr_);
     if (!socket_created) {
@@ -59,6 +55,9 @@ void AgentServer::shut_down()
     if (msg_thread_.joinable()) {
         msg_thread_.join();
     }
+
+    zmq_sock_.close();
+    zmq_ctx_.close();
 }
 
 void AgentServer::join()
@@ -113,8 +112,8 @@ bool AgentServer::create_socket(const std::string& ipc_addr)
 {
     LogFunc << VAR(ipc_addr);
 
-    parent_sock_ = zmq::socket_t(parent_ctx_, zmq::socket_type::pair);
-    parent_sock_.connect(ipc_addr);
+    zmq_sock_ = zmq::socket_t(zmq_ctx_, zmq::socket_type::pair);
+    zmq_sock_.connect(ipc_addr);
     return true;
 }
 
@@ -125,7 +124,7 @@ bool AgentServer::send(const json::value& j)
     std::string jstr = j.dumps();
     zmq::message_t msg(jstr.size());
     std::memcpy(msg.data(), jstr.data(), jstr.size());
-    bool sent = parent_sock_.send(msg, zmq::send_flags::none).has_value();
+    bool sent = zmq_sock_.send(msg, zmq::send_flags::none).has_value();
     if (!sent) {
         LogError << "failed to send msg" << VAR(j) << VAR(ipc_addr_);
         return false;
@@ -155,7 +154,7 @@ std::optional<json::value> AgentServer::recv()
     LogFunc << VAR(ipc_addr_);
 
     zmq::message_t msg;
-    auto size_opt = parent_sock_.recv(msg);
+    auto size_opt = zmq_sock_.recv(msg);
     if (!size_opt || *size_opt == 0) {
         LogError << "failed to recv msg" << VAR(ipc_addr_);
         return std::nullopt;
