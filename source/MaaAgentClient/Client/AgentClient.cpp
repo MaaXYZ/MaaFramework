@@ -101,10 +101,10 @@ std::string AgentClient::create_socket()
 {
     static auto kTempDir = std::filesystem::temp_directory_path();
 
-    constexpr std::string_view kAddrFormat = "ipc://{}/maafw-agent-{}-{}.sock";
+    constexpr std::string_view kAddrFormat = "ipc://{}/maafw-agent-{}.sock";
     std::stringstream ss;
     ss << resource_;
-    ipc_addr_ = std::format(kAddrFormat, path_to_utf8_string(kTempDir), std::move(ss).str(), format_now_for_filename());
+    ipc_addr_ = std::format(kAddrFormat, path_to_utf8_string(kTempDir), std::move(ss).str());
     LogInfo << VAR(ipc_addr_);
 
     child_sock_ = zmq::socket_t(child_ctx_, zmq::socket_type::pair);

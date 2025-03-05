@@ -908,10 +908,10 @@ inline json::value log_msg(const json::value& j)
 {
     json::value j_copy = j;
     if (j_copy.exists("image")) {
-        j_copy["image"] = short_str(j.at("image").as_string());
+        j_copy["image"] = short_str(j_copy.at("image").as_string());
     }
     if (j_copy.exists("raw")) {
-        j_copy["raw"] = short_str(j.at("raw").as_string());
+        j_copy["raw"] = short_str(j_copy.at("raw").as_string());
     }
     if (j_copy.exists("draws")) {
         for (auto& d : j_copy["draws"].as_array()) {
