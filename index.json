@@ -62,7 +62,7 @@
 						}
 					}
 				},
-				"MaaAgentClientStartChild": {
+				"MaaAgentClientCreateSocket": {
 					"Description": {
 						"Brief": "",
 						"Details": [],
@@ -79,14 +79,27 @@
 							"Direction": 0,
 							"IsPointerToArray": null
 						},
-						"child_exec": {
-							"Type": "const char*",
+						"identifier": {
+							"Type": "MaaStringBuffer*",
 							"Description": "",
 							"Direction": 0,
 							"IsPointerToArray": null
-						},
-						"child_args": {
-							"Type": "const MaaStringListBuffer*",
+						}
+					}
+				},
+				"MaaAgentClientConnect": {
+					"Description": {
+						"Brief": "",
+						"Details": [],
+						"Deprecated": null
+					},
+					"Types": {
+						"MAA_AGENT_CLIENT_API": "",
+						"MaaBool": ""
+					},
+					"Parameters": {
+						"client": {
+							"Type": "MaaAgentClient*",
 							"Description": "",
 							"Direction": 0,
 							"IsPointerToArray": null
@@ -195,8 +208,8 @@
 						"MaaBool": ""
 					},
 					"Parameters": {
-						"args": {
-							"Type": "const MaaStringListBuffer*",
+						"identifier": {
+							"Type": "const char*",
 							"Description": "",
 							"Direction": 0,
 							"IsPointerToArray": null
