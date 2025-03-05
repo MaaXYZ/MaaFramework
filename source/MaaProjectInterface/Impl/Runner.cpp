@@ -66,33 +66,7 @@ bool Runner::run(
     MaaResource* resource_handle = MaaResourceCreate(notify, notify_trans_arg);
     resource_handle->set_option(MaaResOption_InferenceDevice, const_cast<int32_t*>(&param.gpu), sizeof(int32_t));
 
-    boost::process::child agent_child;
     MaaAgentClient* agent_handle = nullptr;
-    if (param.agent) {
-        agent_handle = MaaAgentClientCreate();
-        agent_handle->bind_resource(resource_handle);
-        auto bound = agent_handle->create_socket(param.agent->identifier);
-        if (!bound) {
-            LogError << "Failed to bind socket";
-            return false;
-        }
-
-        std::vector<std::string> args = param.agent->child_args;
-        args.emplace_back(*bound);
-        std::filesystem::path exec = boost::process::search_path(param.agent->child_exec);
-        if (exec.empty()) {
-            LogError << "Failed to find agent executable" << VAR(param.agent->child_exec);
-            return false;
-        }
-
-        agent_child = boost::process::child(exec, conv_args(args));
-
-        bool connected = agent_handle->connect();
-        if (!connected) {
-            LogError << "Failed to connect agent" << VAR(param.agent->child_exec) << VAR(args);
-            return false;
-        }
-    }
 
     OnScopeLeave([&]() {
         MaaAgentClientDestroy(agent_handle);
@@ -124,6 +98,35 @@ bool Runner::run(
     if (MaaStatus_Failed == resource_handle->wait(rid)) {
         LogError << "Failed to load resource";
         return false;
+    }
+
+    boost::process::child agent_child;
+    if (param.agent) {
+        agent_handle = MaaAgentClientCreate();
+        agent_handle->bind_resource(resource_handle);
+        auto bound = agent_handle->create_socket(param.agent->identifier);
+        if (!bound) {
+            LogError << "Failed to bind socket";
+            return false;
+        }
+
+        std::vector<std::string> args = param.agent->child_args;
+        args.emplace_back(*bound);
+        std::filesystem::path exec = boost::process::search_path(param.agent->child_exec);
+        if (exec.empty()) {
+            LogError << "Failed to find agent executable" << VAR(param.agent->child_exec);
+            return false;
+        }
+        auto os_args = conv_args(args);
+
+        LogInfo << "Start Agent" << VAR(exec) << VAR(os_args);
+        agent_child = boost::process::child(exec, os_args);
+
+        bool connected = agent_handle->connect();
+        if (!connected) {
+            LogError << "Failed to connect agent" << VAR(param.agent->child_exec) << VAR(args);
+            return false;
+        }
     }
 
     MaaId tid = 0;
