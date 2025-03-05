@@ -60,10 +60,13 @@ struct TemplateMatcherParam
 
 struct OCRerParam
 {
+    inline static constexpr double kDefaultThreshold = 0.3;
+
     std::string model;
     bool only_rec = false;
     Target roi_target;
     std::vector<std::wstring> expected;
+    double threshold = kDefaultThreshold;
     std::vector<std::pair<std::wstring, std::wstring>> replace;
 
     ResultOrderBy order_by = ResultOrderBy::Horizontal;

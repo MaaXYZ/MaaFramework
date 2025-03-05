@@ -169,6 +169,10 @@ void OCRer::add_results(ResultsVec results, const std::vector<std::wstring>& exp
 {
     auto copied = results;
     for (auto& res : copied) {
+        if (res.score < param_.threshold) {
+            continue;
+        }
+
         postproc_trim_(res);
         postproc_replace_(res);
 

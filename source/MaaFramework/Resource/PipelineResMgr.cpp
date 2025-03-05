@@ -743,6 +743,11 @@ bool PipelineResMgr::parse_ocrer_param(
     }
     std::ranges::transform(u8_text, std::back_inserter(output.expected), to_u16);
 
+    if (!get_and_check_value(input, "threshold", output.threshold, default_value.threshold)) {
+        LogError << "failed to get_and_check_value threshold" << VAR(input);
+        return false;
+    }
+
     if (auto replace_opt = input.find("replace")) {
         auto append_repalce = [&](const json::value& in) {
             auto pair = in.as<std::array<std::string, 2>>();
