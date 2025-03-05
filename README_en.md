@@ -111,6 +111,9 @@ An automation assistant for Girls' Frontline 2: Exilium, built on a brand-new ar
 - [MACC](https://github.com/mxia9416/MACC) Path to Nowhere Assistant ![Pipeline](https://img.shields.io/badge/Pipeline-%23454545?logo=paddypower&logoColor=%23FFFFFF)  
   MACC:Minos Assistant of Crisis Control is an assistant based on a new architecture.Image technology + analogue control to free your hands!Powered by MaaFramework!
 
+- [MAA_MHXY_MG](https://github.com/gitlihang/Maa_MHXY_MG) Fantasy Westward Journey Mobile ![Pipeline](https://img.shields.io/badge/Pipeline-%23454545?logo=paddypower&logoColor=%23FFFFFF)  
+  Fantasy Westward Journey Mobile Assistant Based on New Architecture.Image technology + analogue control to free your hands!Powered by MaaFramework!
+
 ## Eco-Building
 
 MAA is planned to be a category of projects rather than just a single piece of software.
