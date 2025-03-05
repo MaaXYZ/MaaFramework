@@ -138,15 +138,15 @@ std::optional<json::value> AgentClient::recv()
     }
 
     std::string_view str = msg.to_string_view();
-    LogTrace << VAR(str);
-
     auto jopt = json::parse(str);
     if (!jopt) {
         LogError << "failed to parse msg" << VAR(ipc_addr_);
         return std::nullopt;
     }
+    auto j = *std::move(jopt);
+    LogTrace << VAR(log_msg(j));
 
-    return *jopt;
+    return j;
 }
 
 bool AgentClient::handle_inserted_request(const json::value& j)

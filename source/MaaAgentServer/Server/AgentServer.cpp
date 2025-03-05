@@ -154,23 +154,23 @@ std::optional<json::value> AgentServer::recv()
 {
     LogFunc << VAR(ipc_addr_);
 
-    zmq::message_t connected_msg;
-    auto size_opt = parent_sock_.recv(connected_msg);
+    zmq::message_t msg;
+    auto size_opt = parent_sock_.recv(msg);
     if (!size_opt || *size_opt == 0) {
-        LogError << "failed to recv connected_msg" << VAR(ipc_addr_);
+        LogError << "failed to recv msg" << VAR(ipc_addr_);
         return std::nullopt;
     }
 
-    std::string_view init_str = connected_msg.to_string_view();
-    LogTrace << VAR(init_str);
-
+    std::string_view init_str = msg.to_string_view();
     auto jopt = json::parse(init_str);
     if (!jopt) {
-        LogError << "failed to parse connected_msg" << VAR(ipc_addr_);
+        LogError << "failed to parse msg" << VAR(ipc_addr_);
         return std::nullopt;
     }
+    auto j = *std::move(jopt);
+    LogTrace << VAR(log_msg(j));
 
-    return *jopt;
+    return j;
 }
 
 bool AgentServer::handle_inserted_request(const json::value& j)
