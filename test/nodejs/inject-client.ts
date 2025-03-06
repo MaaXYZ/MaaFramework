@@ -1,5 +1,5 @@
-declare module globalThis {
-    let MaaAPI: any
+declare global {
+    var MaaAPI: any
 }
 
 globalThis.MaaAPI = require('../../install/bin/MaaNode.node')

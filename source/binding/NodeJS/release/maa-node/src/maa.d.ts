@@ -1,3 +1,4 @@
+export type AgentClientHandle = { __brand: 'AgentClientHandle' }
 export type ResourceHandle = { __brand: 'ResourceHandle' }
 export type ControllerHandle = { __brand: 'ControllerHandle' }
 export type TaskerHandle = { __brand: 'TaskerHandle' }
@@ -336,9 +337,6 @@ export declare function pi_run_cli(
     callback: NotificationCallback | null
 ): Promise<boolean>
 
-// export declare function unwrap_window_hwnd(hwnd: Win32Hwnd): string
-// export declare function wrap_window_hwnd(hwnd: string): Win32Hwnd | null
-
 export declare const Status: Record<
     'Invalid' | 'Pending' | 'Running' | 'Succeeded' | 'Failed',
     Status
@@ -374,3 +372,34 @@ export declare const InferenceExecutionProvider: Record<
     'Auto' | 'CPU' | 'DirectML' | 'CoreML' | 'CUDA',
     InferenceExecutionProvider
 >
+
+export declare const AgentRole: 'client' | 'server'
+
+// agent.cpp - client
+
+export declare function agent_client_create(): AgentClientHandle | null
+export declare function agent_client_destroy(handle: AgentClientHandle): void
+export declare function agent_client_bind_resource(
+    handle: AgentClientHandle,
+    resource: ResourceHandle
+): boolean
+export declare function agent_client_start_child(
+    handle: AgentClientHandle,
+    child_exec: string,
+    child_args: string[]
+): boolean
+
+// agent.cpp - server
+
+export declare function agent_server_register_custom_recognition(
+    name: string,
+    recognizer: CustomRecognitionCallback
+): boolean
+export declare function agent_server_register_custom_action(
+    name: string,
+    action: CustomActionCallback
+): boolean
+export declare function agent_server_start_up(args: string[]): boolean
+export declare function agent_server_shut_down(): void
+// export declare function agent_server_join(): void
+// export declare function agent_server_detach(): void

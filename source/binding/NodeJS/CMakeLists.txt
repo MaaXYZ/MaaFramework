@@ -41,25 +41,28 @@ set(maa_node_src
     src/instance/tasker.cpp
     src/toolkit/config.cpp
     src/toolkit/find.cpp
-    src/toolkit/pi.cpp)
-
-add_library(MaaNode SHARED ${maa_node_src} ${CMAKE_JS_SRC})
-set_target_properties(MaaNode PROPERTIES PREFIX "" SUFFIX ".node")
-target_link_libraries(MaaNode ${CMAKE_JS_LIB} MaaFramework MaaToolkit)
-target_compile_definitions(MaaNode PRIVATE NODE_ADDON_API_ENABLE_TYPE_CHECK_ON_AS)
+    src/toolkit/pi.cpp
+    src/agent.cpp)
 
 if(WIN32
-    AND CMAKE_JS_NODELIB_DEF
-    AND CMAKE_JS_NODELIB_TARGET)
+   AND CMAKE_JS_NODELIB_DEF
+   AND CMAKE_JS_NODELIB_TARGET)
     # Generate node.lib
     if(MSVC)
         execute_process(COMMAND ${CMAKE_AR} /def:${CMAKE_JS_NODELIB_DEF} /out:${CMAKE_JS_NODELIB_TARGET}
-            ${CMAKE_STATIC_LINKER_FLAGS})
+                                ${CMAKE_STATIC_LINKER_FLAGS})
     else()
         execute_process(COMMAND ${CMAKE_LINKER} /def:${CMAKE_JS_NODELIB_DEF} /out:${CMAKE_JS_NODELIB_TARGET}
-            ${CMAKE_STATIC_LINKER_FLAGS})
+                                ${CMAKE_STATIC_LINKER_FLAGS})
     endif()
 endif()
+
+# Master
+
+add_library(MaaNode SHARED ${maa_node_src} ${CMAKE_JS_SRC})
+set_target_properties(MaaNode PROPERTIES PREFIX "" SUFFIX ".node")
+target_link_libraries(MaaNode ${CMAKE_JS_LIB} MaaFramework MaaToolkit MaaAgentClient)
+target_compile_definitions(MaaNode PRIVATE NODE_ADDON_API_ENABLE_TYPE_CHECK_ON_AS)
 
 install(
     TARGETS MaaNode
@@ -68,8 +71,28 @@ install(
     ARCHIVE DESTINATION lib)
 
 if(WIN32)
-    install(FILES $<TARGET_PDB_FILE:MaaNode> DESTINATION symbol OPTIONAL)
+    install(
+        FILES $<TARGET_PDB_FILE:MaaNode>
+        DESTINATION symbol
+        OPTIONAL)
 endif()
 
-# if(WIN32) add_custom_command( TARGET MaaNode POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy ${MaaDlls}
-# $<TARGET_FILE_DIR:MaaNode> COMMAND_EXPAND_LISTS) endif()
+# Slave
+
+add_library(MaaNodeServer SHARED ${maa_node_src} ${CMAKE_JS_SRC})
+set_target_properties(MaaNodeServer PROPERTIES PREFIX "" SUFFIX ".node")
+target_link_libraries(MaaNodeServer ${CMAKE_JS_LIB} MaaToolkit MaaAgentServer)
+target_compile_definitions(MaaNodeServer PRIVATE NODE_ADDON_API_ENABLE_TYPE_CHECK_ON_AS MAA_NODE_SERVER)
+
+install(
+    TARGETS MaaNodeServer
+    RUNTIME DESTINATION bin
+    LIBRARY DESTINATION bin
+    ARCHIVE DESTINATION lib)
+
+if(WIN32)
+    install(
+        FILES $<TARGET_PDB_FILE:MaaNodeServer>
+        DESTINATION symbol
+        OPTIONAL)
+endif()

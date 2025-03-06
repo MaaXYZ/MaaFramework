@@ -6,6 +6,10 @@
 #include <future>
 #include <map>
 
+#if !defined(MAA_NODE_SERVER)
+#include <MaaAgentClient/MaaAgentClientAPI.h>
+#endif
+
 struct CallbackContext
 {
     Napi::Function fn;
@@ -80,6 +84,26 @@ struct InfoBase
     Type handle = nullptr;
 };
 
+#if !defined(MAA_NODE_SERVER)
+struct AgentClientInfo : InfoBase<MaaAgentClient*, AgentClientInfo>
+{
+    constexpr static std::string_view name = "AgentClient";
+
+    bool disposed = false;
+
+    void dispose()
+    {
+        if (disposed) {
+            return;
+        }
+        disposed = true;
+        MaaAgentClientDestroy(handle);
+    }
+
+    ~AgentClientInfo() { dispose(); }
+};
+#endif
+
 struct ControllerInfo : InfoBase<MaaController*, ControllerInfo>
 {
     constexpr static std::string_view name = "Controller";
@@ -114,6 +138,9 @@ struct ResourceInfo : InfoBase<MaaResource*, ResourceInfo>
     bool disposed = false;
     std::map<std::string, CallbackContext*> custom_recognizers = {};
     std::map<std::string, CallbackContext*> custom_actions = {};
+#if !defined(MAA_NODE_SERVER)
+    std::vector<Napi::Reference<Napi::External<AgentClientInfo>>> clients {};
+#endif
 
     void dispose()
     {
@@ -178,4 +205,7 @@ struct ExtContextInfo
 
     std::map<MaaTasker*, Napi::Reference<Napi::External<TaskerInfo>>> taskers;
     std::vector<std::unique_ptr<CallbackContext>> picli;
+#if defined(MAA_NODE_SERVER)
+    std::vector<std::unique_ptr<CallbackContext>> server;
+#endif
 };

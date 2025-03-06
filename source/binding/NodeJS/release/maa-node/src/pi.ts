@@ -13,18 +13,22 @@ export const Pi = {
     notify(message: string, details_json: string): maa.MaybePromise<void> {},
 
     register_custom_recognizer(id: maa.Id, name: string, func: CustomRecognizerCallback) {
-        maa.pi_register_custom_recognizer(id, name, (context, id, task, name, param, image, roi) => {
-            const self: CustomRecognizerSelf = {
-                context: new Context(context),
-                id,
-                task,
-                name,
-                param: JSON.parse(param),
-                image,
-                roi
+        maa.pi_register_custom_recognizer(
+            id,
+            name,
+            (context, id, task, name, param, image, roi) => {
+                const self: CustomRecognizerSelf = {
+                    context: new Context(context),
+                    id,
+                    task,
+                    name,
+                    param: JSON.parse(param),
+                    image,
+                    roi
+                }
+                return func.apply(self, [self])
             }
-            return func.apply(self, [self])
-        })
+        )
     },
 
     register_custom_action(id: maa.Id, name: string, func: CustomActionCallback) {

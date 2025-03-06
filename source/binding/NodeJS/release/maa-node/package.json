@@ -1,8 +1,12 @@
 {
     "name": "@maaxyz/maa-node",
     "author": "nekosu",
-    "main": "./dist/index.js",
-    "types": "./dist/index.d.ts",
+    "main": "./dist/index-client.js",
+    "types": "./dist/index-client.d.ts",
+    "exports": {
+        ".": "./dist/index-client.js",
+        "./server": "./dist/index-server.js"
+    },
     "scripts": {
         "build": "node scripts/build.mjs && tsc"
     },
@@ -16,9 +20,9 @@
     "devDependencies": {
         "@trivago/prettier-plugin-sort-imports": "^4.3.0",
         "@tsconfig/node20": "^20.1.4",
-        "@types/node": "^20",
-        "esbuild": "^0.21.5",
-        "prettier": "^3.3.2",
-        "typescript": "^5.4.5"
+        "@types/node": "^20.17.22",
+        "esbuild": "^0.25.0",
+        "prettier": "^3.5.2",
+        "typescript": "^5.8.2"
     }
 }

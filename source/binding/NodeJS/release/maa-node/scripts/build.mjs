@@ -2,7 +2,7 @@ import { build } from 'esbuild'
 import { copyFileSync, mkdirSync } from 'fs'
 
 build({
-    entryPoints: ['src/index.ts'],
+    entryPoints: ['src/index-client.ts', 'src/index-server.ts'],
     outdir: 'dist',
     platform: 'node',
     external: [

@@ -1,5 +1,5 @@
 import { join } from 'path'
-import * as maa from './maa'
+import * as maa from './maa-client'
 
 import fs from 'fs/promises'
 
@@ -321,6 +321,7 @@ class MyController extends maa.CustomControllerActorDefaultImpl {
 
 async function main() {
     console.log('MaaFw Version:', maa.Global.version)
+    console.log('MaaFw Role', maa.api.AgentRole)
 
     maa.Global.config_init_option('../../install/bin')
 

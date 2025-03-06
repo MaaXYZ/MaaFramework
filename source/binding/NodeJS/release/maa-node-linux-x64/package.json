@@ -1,6 +1,10 @@
 {
     "name": "@maaxyz/maa-node-linux-x64",
     "main": "./MaaNode.node",
+    "exports": {
+        ".": "./MaaNode.node",
+        "./server": "./MaaNodeServer.node"
+    },
     "scripts": {},
     "os": [
         "linux"
