@@ -84,6 +84,7 @@ def api_test():
         print("pipeline failed")
         raise RuntimeError("pipeline failed")
 
+    agent.disconnect()
 
 if __name__ == "__main__":
     print(f"AgentClient MaaFw Version: {Library.version()}")

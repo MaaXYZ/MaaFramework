@@ -47,6 +47,9 @@ class AgentClient:
     def connect(self) -> bool:
         return bool(Library.agent_client().MaaAgentClientConnect(self._handle))
 
+    def disconnect(self) -> bool:
+        return bool(Library.agent_client().MaaAgentClientDisconnect(self._handle))
+
     _api_properties_initialized: bool = False
 
     @staticmethod
@@ -79,5 +82,10 @@ class AgentClient:
 
         Library.agent_client().MaaAgentClientConnect.restype = MaaBool
         Library.agent_client().MaaAgentClientConnect.argtypes = [
+            MaaAgentClientHandle,
+        ]
+
+        Library.agent_client().MaaAgentClientDisconnect.restype = MaaBool
+        Library.agent_client().MaaAgentClientDisconnect.argtypes = [
             MaaAgentClientHandle,
         ]

@@ -136,6 +136,10 @@ bool Runner::run(
 
     tasker_handle->wait(tid);
 
+    if (agent_handle) {
+        agent_handle->disconnect();
+    }
+
     return true;
 }
 
