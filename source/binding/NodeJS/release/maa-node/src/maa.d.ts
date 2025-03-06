@@ -383,7 +383,7 @@ export declare function agent_client_bind_resource(
     handle: AgentClientHandle,
     resource: ResourceHandle
 ): boolean
-export declare function agent_client_start_child(
+export declare function agent_client_create_socket(
     handle: AgentClientHandle,
     identifier: string | null
 ): string | null

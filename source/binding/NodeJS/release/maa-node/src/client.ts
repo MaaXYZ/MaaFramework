@@ -22,10 +22,10 @@ export class AgentClient {
         }
     }
 
-    start_child(identifier: string | null) {
-        const rid = maa.agent_client_start_child(this.handle, identifier)
+    create_socket(identifier: string | null) {
+        const rid = maa.agent_client_create_socket(this.handle, identifier)
         if (rid === null) {
-            throw 'AgentClient start child failed'
+            throw 'AgentClient create socket failed'
         }
         return rid
     }
