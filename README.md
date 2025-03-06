@@ -152,6 +152,10 @@ _请留意，仅当您准备开发 MaaFramework 本身时，才需要阅读本�
   ONNX Runtime: cross-platform, high performance ML inferencing and training accelerator
 - [boost](https://www.boost.org/)  
   Boost provides free peer-reviewed portable C++ source libraries.
+- [libzmq](https://github.com/zeromq/libzmq)  
+  ZeroMQ core engine in C++, implements ZMTP/3.1
+- [cppzmq](https://github.com/zeromq/cppzmq)  
+  Header-only C++ binding for libzmq
 - [meojson](https://github.com/MistEO/meojson)  
   ✨ Next-gen C++ JSON/JSON5 Serialization Engine | Zero Dependency | Header-Only | Unleash JSON Potential
 - [minitouch](https://github.com/DeviceFarmer/minitouch)  
@@ -164,6 +168,8 @@ _请留意，仅当您准备开发 MaaFramework 本身时，才需要阅读本�
   A massively spiffy yet delicately unobtrusive compression library.
 - [gzip-hpp](https://github.com/mapbox/gzip-hpp)  
   Gzip header-only C++ library
+- [cpp-base64](https://github.com/ReneNyffenegger/cpp-base64)  
+  base64 encoding and decoding with c++
 - ~~[protobuf](https://github.com/protocolbuffers/protobuf)~~  
   ~~Protocol Buffers - Google's data interchange format~~
 - ~~[grpc](https://github.com/grpc/grpc)~~  
