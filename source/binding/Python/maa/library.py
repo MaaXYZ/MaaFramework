@@ -72,7 +72,6 @@ class Library:
     def framework() -> ctypes.CDLL:
         if not Library.is_agent_server():
             if not Library._framework:
-                print(f"Opening framework library: {Library.framework_libpath}")
                 Library._framework = Library._lib_type(str(Library.framework_libpath))
 
             return Library._framework
@@ -82,7 +81,6 @@ class Library:
     @staticmethod
     def toolkit() -> ctypes.CDLL:
         if not Library._toolkit:
-            print(f"Opening toolkit library: {Library.toolkit_libpath}")
             Library._toolkit = Library._lib_type(str(Library.toolkit_libpath))
 
         return Library._toolkit
@@ -93,7 +91,6 @@ class Library:
             raise ValueError("Agent server is not available in the current context.")
 
         if not Library._agent_client:
-            print(f"Opening agent client library: {Library.agent_client_libpath}")
             Library._agent_client = Library._lib_type(
                 str(Library.agent_client_libpath)
             )
@@ -106,7 +103,6 @@ class Library:
             raise ValueError("Agent client is not available in the current context.")
 
         if not Library._agent_server:
-            print(f"Opening agent server library: {Library.agent_server_libpath}")
             Library._agent_server = Library._lib_type(
                 str(Library.agent_server_libpath)
             )
