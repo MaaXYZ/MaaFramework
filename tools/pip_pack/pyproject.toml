@@ -10,4 +10,4 @@ authors = [{ name = "MaaXYZ" }]
 description = "An automation black-box testing framework based on image recognition"
 readme = "README.md"
 urls = { Homepage = "https://github.com/MaaXYZ/MaaFramework" }
-dependencies = ["numpy", "MaaAgentBinary"]
+dependencies = ["numpy", "strenum", "MaaAgentBinary"]
