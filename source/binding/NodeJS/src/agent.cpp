@@ -34,15 +34,9 @@ bool agent_server_register_custom_action(Napi::Env env, ExtContextInfo* context,
     }
 }
 
-bool agent_server_start_up(std::vector<std::string> args)
+bool agent_server_start_up(std::string identifier)
 {
-    StringListBuffer buffer;
-    buffer.set_vector(args, [](auto str) {
-        StringBuffer buf;
-        buf.set(str);
-        return buf;
-    });
-    return MaaAgentServerStartUp(buffer);
+    return MaaAgentServerStartUp(identifier.c_str());
 }
 
 void agent_server_shut_down()
@@ -93,16 +87,25 @@ bool agent_client_bind_resource(Napi::External<AgentClientInfo> info, Napi::Exte
     }
 }
 
-bool agent_client_start_child(Napi::External<AgentClientInfo> info, std::string child_exec, std::vector<std::string> child_args)
+std::optional<std::string> agent_client_create_socket(Napi::External<AgentClientInfo> info, std::optional<std::string> identifier)
 {
-    StringListBuffer buffer;
-    buffer.set_vector(child_args, [](auto str) {
-        StringBuffer buf;
-        buf.set(str);
-        return buf;
-    });
-    return MaaAgentClientStartChild(info.Data()->handle, child_exec.c_str(), buffer);
+    StringBuffer buf;
+    if (identifier) {
+        buf.set(identifier.value());
+    }
+    if (MaaAgentClientCreateSocket(info.Data()->handle, buf.buffer)) {
+        return buf.str();
+    }
+    else {
+        return std::nullopt;
+    }
 }
+
+bool agent_client_connect(Napi::External<AgentClientInfo> info)
+{
+    return MaaAgentClientConnect(info.Data()->handle);
+}
+
 #endif
 
 void load_agent(Napi::Env env, Napi::Object& exports, Napi::External<ExtContextInfo> context)
@@ -120,7 +123,8 @@ void load_agent(Napi::Env env, Napi::Object& exports, Napi::External<ExtContextI
     BIND(agent_client_create);
     BIND(agent_client_destroy);
     BIND(agent_client_bind_resource);
-    BIND(agent_client_start_child);
+    BIND(agent_client_create_socket);
+    BIND(agent_client_connect);
 
     exports["AgentRole"] = "client";
 #endif

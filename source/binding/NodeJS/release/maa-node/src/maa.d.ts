@@ -385,9 +385,9 @@ export declare function agent_client_bind_resource(
 ): boolean
 export declare function agent_client_start_child(
     handle: AgentClientHandle,
-    child_exec: string,
-    child_args: string[]
-): boolean
+    identifier: string | null
+): string | null
+export declare function agent_client_connect(handle: AgentClientHandle): boolean
 
 // agent.cpp - server
 
@@ -399,7 +399,7 @@ export declare function agent_server_register_custom_action(
     name: string,
     action: CustomActionCallback
 ): boolean
-export declare function agent_server_start_up(args: string[]): boolean
+export declare function agent_server_start_up(identifier: string): boolean
 export declare function agent_server_shut_down(): void
 // export declare function agent_server_join(): void
 // export declare function agent_server_detach(): void

@@ -22,9 +22,17 @@ export class AgentClient {
         }
     }
 
-    start_child(exec: string, args: string[]) {
-        if (!maa.agent_client_start_child(this.handle, exec, args)) {
+    start_child(identifier: string | null) {
+        const rid = maa.agent_client_start_child(this.handle, identifier)
+        if (rid === null) {
             throw 'AgentClient start child failed'
+        }
+        return rid
+    }
+
+    connect() {
+        if (!maa.agent_client_connect(this.handle)) {
+            throw 'AgentClient connect failed'
         }
     }
 }

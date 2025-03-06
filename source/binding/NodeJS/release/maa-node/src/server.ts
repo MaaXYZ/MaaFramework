@@ -44,8 +44,8 @@ export const AgentServer = {
         )
     },
 
-    start_up(args: string[]) {
-        if (!maa.agent_server_start_up(args)) {
+    start_up(identifier: string) {
+        if (!maa.agent_server_start_up(identifier)) {
             throw 'AgentServer start up failed'
         }
     },
