@@ -275,13 +275,18 @@ bool AgentServer::handle_start_up_request(const json::value& j)
         return false;
     }
 
-    LogFunc << VAR(ipc_addr_);
+    const StartUpRequest& req = j.as<StartUpRequest>();
+    LogInfo << VAR(req) << VAR(ipc_addr_);
+
+    if (req.protocol != kProtocolVersion) {
+        LogError << "protocol version mismatch" << "client:" << VAR(req.version) << VAR(req.protocol) << "server:" << VAR(MAA_VERSION)
+                 << VAR(kProtocolVersion) << VAR(ipc_addr_);
+    }
 
     auto action_names = custom_actions_ | std::views::keys;
     auto reco_names = custom_recognitions_ | std::views::keys;
 
     StartUpResponse msg {
-        .version = MAA_VERSION,
         .actions = { action_names.begin(), action_names.end() },
         .recognitions = { reco_names.begin(), reco_names.end() },
     };

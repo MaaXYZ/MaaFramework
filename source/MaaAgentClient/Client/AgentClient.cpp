@@ -71,9 +71,7 @@ bool AgentClient::connect()
         return false;
     }
 
-    auto resp_opt = send_and_recv<StartUpResponse>(StartUpRequest {
-        .version = MAA_VERSION,
-    });
+    auto resp_opt = send_and_recv<StartUpResponse>(StartUpRequest {});
 
     if (!resp_opt) {
         LogError << "failed to send_and_recv";
@@ -81,6 +79,12 @@ bool AgentClient::connect()
     }
     const auto& resp = *resp_opt;
     LogInfo << VAR(resp);
+
+    if (resp.protocol != kProtocolVersion) {
+        LogError << "protocol version mismatch" << "client:" << VAR(MAA_VERSION) << VAR(kProtocolVersion) << "server:" << VAR(resp.version)
+                 << VAR(resp.protocol) << VAR(ipc_addr_);
+        return false;
+    }
 
     for (const auto& reco : registered_recognitions_) {
         LogInfo << "unregister pre recognition" << VAR(reco);
@@ -297,41 +301,6 @@ bool AgentClient::handle_inserted_request(const json::value& j)
         LogError << "unexpected msg" << VAR(j) << VAR(ipc_addr_);
         return false;
     }
-}
-
-bool AgentClient::recv_and_handle_start_up_response()
-{
-    LogFunc << VAR(ipc_addr_);
-
-    if (!resource_) {
-        LogError << "resource is not bound";
-        return false;
-    }
-
-    auto jopt = recv();
-    if (!jopt) {
-        LogError << "failed to recv msg" << VAR(ipc_addr_);
-        return false;
-    }
-    const json::value& j = *jopt;
-    if (!j.is<StartUpResponse>()) {
-        LogError << "unexpected msg" << VAR(j) << VAR(ipc_addr_);
-        return false;
-    }
-
-    auto resp = j.as<StartUpResponse>();
-    LogInfo << VAR(resp);
-
-    for (const auto& reco : resp.recognitions) {
-        LogTrace << VAR(reco);
-        resource_->register_custom_recognition(reco, reco_agent, this);
-    }
-    for (const auto& act : resp.actions) {
-        LogTrace << VAR(act);
-        resource_->register_custom_action(act, action_agent, this);
-    }
-
-    return true;
 }
 
 bool AgentClient::handle_context_run_task(const json::value& j)

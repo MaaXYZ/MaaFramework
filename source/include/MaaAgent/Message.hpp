@@ -14,23 +14,26 @@ MAA_AGENT_NS_BEGIN
 // ReverseRequest: server -> client
 
 using MessageTypePlaceholder = int;
+inline static constexpr int kProtocolVersion = 1;
 
 struct StartUpRequest
 {
-    std::string version;
+    std::string version = MAA_VERSION;
+    int protocol = kProtocolVersion;
 
     MessageTypePlaceholder _StartUpRequest = 1;
-    MEO_JSONIZATION(version, _StartUpRequest);
+    MEO_JSONIZATION(version, protocol, _StartUpRequest);
 };
 
 struct StartUpResponse
 {
-    std::string version;
+    std::string version = MAA_VERSION;
+    int protocol = kProtocolVersion;
     std::vector<std::string> actions;
     std::vector<std::string> recognitions;
 
     MessageTypePlaceholder _StartUpResponse = 1;
-    MEO_JSONIZATION(version, actions, recognitions, _StartUpResponse);
+    MEO_JSONIZATION(version, protocol, actions, recognitions, _StartUpResponse);
 };
 
 struct ShutDownRequest

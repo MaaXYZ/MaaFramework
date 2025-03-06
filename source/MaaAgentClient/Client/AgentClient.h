@@ -30,8 +30,6 @@ private: // Transceiver
     virtual bool handle_inserted_request(const json::value& j) override;
 
 private:
-    bool recv_and_handle_start_up_response();
-
     bool handle_context_run_task(const json::value& j);
     bool handle_context_run_recognition(const json::value& j);
     bool handle_context_run_action(const json::value& j);
