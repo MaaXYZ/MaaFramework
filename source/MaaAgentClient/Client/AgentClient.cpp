@@ -21,8 +21,6 @@ AgentClient::~AgentClient()
 {
     LogFunc;
 
-    send_and_recv<ShutDownResponse>(ShutDownRequest {});
-
     zmq_sock_.close();
     zmq_ctx_.close();
 }
@@ -65,6 +63,13 @@ bool AgentClient::connect()
     LogFunc << VAR(ipc_addr_);
 
     return recv_and_handle_start_up_response();
+}
+
+bool AgentClient::disconnect()
+{
+    LogFunc << VAR(ipc_addr_);
+
+    return send_and_recv<ShutDownResponse>(ShutDownRequest {}).has_value();
 }
 
 std::string AgentClient::generate_identifier() const

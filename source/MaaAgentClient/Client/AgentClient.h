@@ -22,6 +22,7 @@ public: // MaaAgentClient
     virtual bool bind_resource(MaaResource* resource) override;
     virtual std::optional<std::string> create_socket(const std::string& identifier) override;
     virtual bool connect() override;
+    virtual bool disconnect() override;
 
 private: // Transceiver
     virtual bool send(const json::value& j) override;

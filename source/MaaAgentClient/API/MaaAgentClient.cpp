@@ -67,3 +67,15 @@ MaaBool MaaAgentClientConnect(MaaAgentClient* client)
 
     return client->connect();
 }
+
+MaaBool MaaAgentClientDisconnect(MaaAgentClient* client)
+{
+    LogFunc << VAR_VOIDP(client);
+
+    if (!client) {
+        LogError << "handle is null";
+        return false;
+    }
+
+    return client->disconnect();
+}
