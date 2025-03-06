@@ -1,0 +1,15 @@
+{
+    "name": "@maaxyz/maa-node-win32-arm64",
+    "main": "./MaaNode.node",
+    "exports": {
+        ".": "./MaaNode.node",
+        "./server": "./MaaNodeServer.node"
+    },
+    "scripts": {},
+    "os": [
+        "win32"
+    ],
+    "cpu": [
+        "arm64"
+    ]
+}
