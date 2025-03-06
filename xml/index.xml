@@ -28,6 +28,7 @@
     <member refid="MaaAgentClientAPI_8h_1ae92e9c2dd74218aa0617a8630456ef64" kind="function"><name>MaaAgentClientBindResource</name></member>
     <member refid="MaaAgentClientAPI_8h_1ae48a36582106c8e7e0133387ae992016" kind="function"><name>MaaAgentClientCreateSocket</name></member>
     <member refid="MaaAgentClientAPI_8h_1ad0cddf9217464eb1ab89eadbaf43a97f" kind="function"><name>MaaAgentClientConnect</name></member>
+    <member refid="MaaAgentClientAPI_8h_1aa4e4ccf8021abbf557bfb9efc32667da" kind="function"><name>MaaAgentClientDisconnect</name></member>
   </compound>
   <compound refid="MaaAgentClientDef_8h" kind="file"><name>MaaAgentClientDef.h</name>
     <member refid="MaaAgentClientDef_8h_1afa360933632739d3de64403ea9add40c" kind="typedef"><name>MaaAgentClient</name></member>

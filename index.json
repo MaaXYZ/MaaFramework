@@ -1,5 +1,5 @@
 {
-	"Version": "(main) v4.0.0-alpha.2",
+	"Version": "(main) v4.0.0-beta.1",
 	"Compounds": {
 		"MaaAgentClientAPI.h": {
 			"Location": "include/MaaAgentClient/MaaAgentClientAPI.h",
@@ -88,6 +88,25 @@
 					}
 				},
 				"MaaAgentClientConnect": {
+					"Description": {
+						"Brief": "",
+						"Details": [],
+						"Deprecated": null
+					},
+					"Types": {
+						"MAA_AGENT_CLIENT_API": "",
+						"MaaBool": ""
+					},
+					"Parameters": {
+						"client": {
+							"Type": "MaaAgentClient*",
+							"Description": "",
+							"Direction": 0,
+							"IsPointerToArray": null
+						}
+					}
+				},
+				"MaaAgentClientDisconnect": {
 					"Description": {
 						"Brief": "",
 						"Details": [],
