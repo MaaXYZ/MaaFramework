@@ -168,8 +168,6 @@ bool ResourceMgr::clear()
     template_res_.clear();
     paths_.clear();
     hash_cache_.clear();
-    clear_custom_recognition();
-    clear_custom_action();
 
     valid_ = true;
 
