@@ -106,6 +106,11 @@ bool agent_client_connect(Napi::External<AgentClientInfo> info)
     return MaaAgentClientConnect(info.Data()->handle);
 }
 
+bool agent_client_disconnect(Napi::External<AgentClientInfo> info)
+{
+    return MaaAgentClientDisconnect(info.Data()->handle);
+}
+
 #endif
 
 void load_agent(Napi::Env env, Napi::Object& exports, Napi::External<ExtContextInfo> context)
@@ -125,6 +130,7 @@ void load_agent(Napi::Env env, Napi::Object& exports, Napi::External<ExtContextI
     BIND(agent_client_bind_resource);
     BIND(agent_client_create_socket);
     BIND(agent_client_connect);
+    BIND(agent_client_disconnect);
 
     exports["AgentRole"] = "client";
 #endif

@@ -35,4 +35,10 @@ export class AgentClient {
             throw 'AgentClient connect failed'
         }
     }
+
+    disconnect() {
+        if (!maa.agent_client_disconnect(this.handle)) {
+            throw 'AgentClient disconnect failed'
+        }
+    }
 }

@@ -388,6 +388,7 @@ export declare function agent_client_create_socket(
     identifier: string | null
 ): string | null
 export declare function agent_client_connect(handle: AgentClientHandle): boolean
+export declare function agent_client_disconnect(handle: AgentClientHandle): boolean
 
 // agent.cpp - server
 
