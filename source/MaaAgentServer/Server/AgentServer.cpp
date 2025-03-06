@@ -30,12 +30,6 @@ bool AgentServer::start_up(const std::string& identifier)
         return false;
     }
 
-    bool response_sent = send_start_up_response();
-    if (!response_sent) {
-        LogError << "failed to send_start_up_response";
-        return false;
-    }
-
     msg_loop_running_ = true;
     msg_thread_ = std::thread(&AgentServer::request_msg_loop, this);
     if (!msg_thread_.joinable()) {
@@ -133,22 +127,6 @@ bool AgentServer::send(const json::value& j)
     return true;
 }
 
-bool AgentServer::send_start_up_response()
-{
-    LogFunc << VAR(ipc_addr_);
-
-    auto action_names = custom_actions_ | std::views::keys;
-    auto reco_names = custom_recognitions_ | std::views::keys;
-
-    StartUpResponse msg {
-        .version = MAA_VERSION,
-        .actions = { action_names.begin(), action_names.end() },
-        .recognitions = { reco_names.begin(), reco_names.end() },
-    };
-
-    return send(msg);
-}
-
 std::optional<json::value> AgentServer::recv()
 {
     LogFunc << VAR(ipc_addr_);
@@ -180,6 +158,9 @@ bool AgentServer::handle_inserted_request(const json::value& j)
         return true;
     }
     else if (handle_action_request(j)) {
+        return true;
+    }
+    else if (handle_start_up_request(j)) {
         return true;
     }
     else if (handle_shut_down_request(j)) {
@@ -286,6 +267,26 @@ bool AgentServer::handle_action_request(const json::value& j)
     send(resp);
 
     return true;
+}
+
+bool AgentServer::handle_start_up_request(const json::value& j)
+{
+    if (!j.is<StartUpRequest>()) {
+        return false;
+    }
+
+    LogFunc << VAR(ipc_addr_);
+
+    auto action_names = custom_actions_ | std::views::keys;
+    auto reco_names = custom_recognitions_ | std::views::keys;
+
+    StartUpResponse msg {
+        .version = MAA_VERSION,
+        .actions = { action_names.begin(), action_names.end() },
+        .recognitions = { reco_names.begin(), reco_names.end() },
+    };
+
+    return send(msg);
 }
 
 bool AgentServer::handle_shut_down_request(const json::value& j)

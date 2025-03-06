@@ -71,8 +71,8 @@ int main()
 })");
     MaaTaskerWait(tasker_handle, task_id);
 
-    MaaAgentClientDisConnect(client);
-    
+    MaaAgentClientDisconnect(client);
+
     MaaStringBufferDestroy(identifier);
     MaaAgentClientDestroy(client);
     destroy();

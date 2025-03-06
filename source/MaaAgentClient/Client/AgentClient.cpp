@@ -62,7 +62,27 @@ bool AgentClient::connect()
 {
     LogFunc << VAR(ipc_addr_);
 
-    return recv_and_handle_start_up_response();
+    auto resp_opt = send_and_recv<StartUpResponse>(StartUpRequest {
+        .version = MAA_VERSION,
+    });
+
+    if (!resp_opt) {
+        LogError << "failed to send_and_recv";
+        return false;
+    }
+    const auto& resp = *resp_opt;
+    LogInfo << VAR(resp);
+
+    for (const auto& reco : resp.recognitions) {
+        LogInfo << VAR(reco);
+        resource_->register_custom_recognition(reco, reco_agent, this);
+    }
+    for (const auto& act : resp.actions) {
+        LogInfo << VAR(act);
+        resource_->register_custom_action(act, action_agent, this);
+    }
+
+    return true;
 }
 
 bool AgentClient::disconnect()

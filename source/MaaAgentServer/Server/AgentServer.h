@@ -50,10 +50,9 @@ public:
 private:
     bool create_socket(const std::string& ipc_addr);
 
-    bool send_start_up_response();
-
     bool handle_recognition_request(const json::value& j);
     bool handle_action_request(const json::value& j);
+    bool handle_start_up_request(const json::value& j);
     bool handle_shut_down_request(const json::value& j);
 
     void request_msg_loop();

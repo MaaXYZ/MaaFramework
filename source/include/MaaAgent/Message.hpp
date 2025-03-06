@@ -15,6 +15,14 @@ MAA_AGENT_NS_BEGIN
 
 using MessageTypePlaceholder = int;
 
+struct StartUpRequest
+{
+    std::string version;
+
+    MessageTypePlaceholder _StartUpRequest = 1;
+    MEO_JSONIZATION(version, _StartUpRequest);
+};
+
 struct StartUpResponse
 {
     std::string version;
