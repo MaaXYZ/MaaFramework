@@ -13,7 +13,7 @@ const platforms: [maa: string, node: string][] = [
     ['win-x86_64', 'win32-x64'],
     ['linux-x86_64', 'linux-x64'],
     ['macos-x86_64', 'darwin-x64'],
-    // ['win-aarch64', 'win32-arm64'],
+    ['win-aarch64', 'win32-arm64'],
     ['linux-aarch64', 'linux-arm64'],
     ['macos-aarch64', 'darwin-arm64'],
 ]
