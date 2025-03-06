@@ -1,7 +1,5 @@
 #include "AgentClient.h"
 
-#include <sstream>
-
 #include <meojson/json.hpp>
 
 #include "Common/MaaTypes.h"
@@ -14,6 +12,7 @@
 #include "Utils/Codec.h"
 #include "Utils/Logger.h"
 #include "Utils/Platform.h"
+#include "Utils/Uuid.h"
 
 MAA_AGENT_CLIENT_NS_BEGIN
 
@@ -29,9 +28,19 @@ bool AgentClient::bind_resource(MaaResource* resource)
 {
     LogInfo << VAR_VOIDP(this) << VAR_VOIDP(resource);
 
-    if (resource_) {
-        LogError << "resource is already bound, if you want to rebind, please re-create MaaAgent";
-        return false;
+    if (resource_ && resource_ != resource) {
+        LogWarn << "resource is already bound" << VAR_VOIDP(resource_);
+        for (const auto& reco : registered_recognitions_) {
+            LogInfo << "unregister pre recognition" << VAR(reco);
+            resource_->unregister_custom_recognition(reco);
+        }
+        for (const auto& act : registered_actions_) {
+            LogInfo << "unregister pre action" << VAR(act);
+            resource_->unregister_custom_action(act);
+        }
+
+        registered_recognitions_.clear();
+        registered_actions_.clear();
     }
 
     resource_ = resource;
@@ -43,12 +52,7 @@ std::optional<std::string> AgentClient::create_socket(const std::string& identif
 {
     LogFunc << VAR(identifier);
 
-    if (!resource_) {
-        LogError << "resource is not bound, please bind resource first";
-        return std::nullopt;
-    }
-
-    const std::string& id = identifier.empty() ? generate_identifier() : identifier;
+    const std::string& id = identifier.empty() ? make_uuid() : identifier;
     ipc_addr_ = generate_socket_address(id);
     LogInfo << VAR(ipc_addr_);
 
@@ -62,6 +66,11 @@ bool AgentClient::connect()
 {
     LogFunc << VAR(ipc_addr_);
 
+    if (!resource_) {
+        LogError << "resource is not bound";
+        return false;
+    }
+
     auto resp_opt = send_and_recv<StartUpResponse>(StartUpRequest {
         .version = MAA_VERSION,
     });
@@ -73,14 +82,26 @@ bool AgentClient::connect()
     const auto& resp = *resp_opt;
     LogInfo << VAR(resp);
 
+    for (const auto& reco : registered_recognitions_) {
+        LogInfo << "unregister pre recognition" << VAR(reco);
+        resource_->unregister_custom_recognition(reco);
+    }
+    for (const auto& act : registered_actions_) {
+        LogInfo << "unregister pre action" << VAR(act);
+        resource_->unregister_custom_action(act);
+    }
+
     for (const auto& reco : resp.recognitions) {
-        LogInfo << VAR(reco);
+        LogInfo << "register recognition" << VAR(reco);
         resource_->register_custom_recognition(reco, reco_agent, this);
     }
     for (const auto& act : resp.actions) {
-        LogInfo << VAR(act);
+        LogInfo << "register action" << VAR(act);
         resource_->register_custom_action(act, action_agent, this);
     }
+
+    registered_recognitions_ = resp.recognitions;
+    registered_actions_ = resp.actions;
 
     return true;
 }
@@ -90,13 +111,6 @@ bool AgentClient::disconnect()
     LogFunc << VAR(ipc_addr_);
 
     return send_and_recv<ShutDownResponse>(ShutDownRequest {}).has_value();
-}
-
-std::string AgentClient::generate_identifier() const
-{
-    std::stringstream ss;
-    ss << resource_;
-    return std::move(ss).str();
 }
 
 bool AgentClient::send(const json::value& j)

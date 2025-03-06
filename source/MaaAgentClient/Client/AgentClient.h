@@ -30,8 +30,6 @@ private: // Transceiver
     virtual bool handle_inserted_request(const json::value& j) override;
 
 private:
-    std::string generate_identifier() const;
-
     bool recv_and_handle_start_up_response();
 
     bool handle_context_run_task(const json::value& j);
@@ -130,6 +128,9 @@ private:
     std::map<std::string, MaaTasker*> tasker_map_;
     std::map<std::string, MaaController*> controller_map_;
     std::map<std::string, MaaResource*> resource_map_;
+
+    std::vector<std::string> registered_actions_;
+    std::vector<std::string> registered_recognitions_;
 };
 
 MAA_AGENT_CLIENT_NS_END
