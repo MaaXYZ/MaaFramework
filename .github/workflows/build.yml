@@ -44,7 +44,7 @@ jobs:
         runs-on: windows-latest
         strategy:
             matrix:
-                arch: [aarch64, x86_64]
+                arch: [x86_64]
             fail-fast: false
 
         steps:
@@ -120,6 +120,12 @@ jobs:
               if: always()
               with:
                   name: MAA-win-${{ matrix.arch }}
+                  path: "install"
+
+            - uses: actions/upload-artifact@v4
+              if: always()
+              with:
+                  name: MAA-win-aarch64
                   path: "install"
 
     ubuntu:
