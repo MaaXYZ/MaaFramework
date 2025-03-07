@@ -3,8 +3,10 @@
 #include <optional>
 
 #include <meojson/json.hpp>
+#include <zmq.hpp>
 
 #include "Common/MaaTypes.h"
+#include "Message.hpp"
 #include "Utils/Logger.h"
 
 MAA_AGENT_NS_BEGIN
@@ -12,7 +14,7 @@ MAA_AGENT_NS_BEGIN
 class Transceiver
 {
 public:
-    virtual ~Transceiver() = default;
+    virtual ~Transceiver();
 
 public:
     template <typename ResponseT, typename RequestT>
@@ -40,6 +42,9 @@ public:
                 LogTrace << "response" << VAR(req_id) << VAR(loop_count);
                 return msg.as<ResponseT>();
             }
+            else if (msg.is<ImageHeader>()) {
+                handle_image(msg.as<ImageHeader>());
+            }
             else {
                 LogTrace << "inserted request" << VAR(req_id) << VAR(loop_count);
                 handle_inserted_request(msg);
@@ -49,10 +54,27 @@ public:
         // return std::nullopt;
     }
 
+    std::string send_image(const cv::Mat& mat);
+    cv::Mat get_image_cache(const std::string& uuid);
+
 protected:
-    virtual bool send(const json::value& j) = 0;
-    virtual std::optional<json::value> recv() = 0;
     virtual bool handle_inserted_request(const json::value& j) = 0;
+    bool handle_image_header(const json::value& j);
+
+    void init_socket(const std::string& identifier, bool bind);
+    bool send(const json::value& j);
+    std::optional<json::value> recv();
+
+private:
+    void handle_image(const ImageHeader& header);
+
+protected:
+    zmq::socket_t zmq_sock_;
+    zmq::context_t zmq_ctx_;
+
+    std::string ipc_addr_;
+
+    std::map<std::string /* uuid */, cv::Mat> recved_images_;
 
 private:
     inline static int64_t s_req_id_ = 0;

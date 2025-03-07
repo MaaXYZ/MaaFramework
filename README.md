@@ -168,8 +168,6 @@ _请留意，仅当您准备开发 MaaFramework 本身时，才需要阅读本�
   A massively spiffy yet delicately unobtrusive compression library.
 - [gzip-hpp](https://github.com/mapbox/gzip-hpp)  
   Gzip header-only C++ library
-- [cpp-base64](https://github.com/ReneNyffenegger/cpp-base64)  
-  base64 encoding and decoding with c++
 - ~~[protobuf](https://github.com/protocolbuffers/protobuf)~~  
   ~~Protocol Buffers - Google's data interchange format~~
 - ~~[grpc](https://github.com/grpc/grpc)~~  

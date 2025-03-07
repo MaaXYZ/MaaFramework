@@ -43,13 +43,9 @@ public:
     bool register_custom_action(const std::string& name, MaaCustomActionCallback action, void* trans_arg);
 
 public:
-    virtual bool send(const json::value& j) override;
-    virtual std::optional<json::value> recv() override;
     virtual bool handle_inserted_request(const json::value& j) override;
 
 private:
-    bool create_socket(const std::string& ipc_addr);
-
     bool handle_recognition_request(const json::value& j);
     bool handle_action_request(const json::value& j);
     bool handle_start_up_request(const json::value& j);
@@ -60,10 +56,6 @@ private:
 private:
     std::unordered_map<std::string, CustomRecognitionSession> custom_recognitions_;
     std::unordered_map<std::string, CustomActionSession> custom_actions_;
-
-    std::string ipc_addr_;
-    zmq::socket_t zmq_sock_;
-    zmq::context_t zmq_ctx_;
 
     bool msg_loop_running_ = false;
     std::thread msg_thread_;
