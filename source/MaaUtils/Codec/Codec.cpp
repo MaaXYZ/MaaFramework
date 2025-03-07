@@ -174,7 +174,7 @@ std::string encode_image(const cv::Mat& image)
     }
 
     std::vector<uchar> buffer;
-    cv::imencode(".png", image, buffer);
+    cv::imencode(".bmp", image, buffer);
     return base64::base64_encode(buffer.data(), buffer.size());
 }
 
