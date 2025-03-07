@@ -108,9 +108,8 @@ bool AgentClient::send(const json::value& j)
     LogTrace << VAR(log_msg(j)) << VAR(ipc_addr_);
 
     std::string jstr = j.dumps();
-    zmq::message_t msg(jstr.size());
-    std::memcpy(msg.data(), jstr.data(), jstr.size());
-    bool sent = zmq_sock_.send(msg, zmq::send_flags::none).has_value();
+    zmq::message_t msg(jstr.data(), jstr.size());
+    bool sent = zmq_sock_.send(std::move(msg), zmq::send_flags::none).has_value();
     if (!sent) {
         LogError << "failed to send msg" << VAR(j);
         return false;
