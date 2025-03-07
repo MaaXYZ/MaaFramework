@@ -163,8 +163,7 @@ cv::Mat decode_image(const std::string& data)
     }
 
     std::string base64 = base64::base64_decode(data);
-    std::vector<uchar> buffer(std::make_move_iterator(base64.begin()), std::make_move_iterator(base64.end()));
-    return cv::imdecode(buffer, cv::IMREAD_COLOR);
+    return cv::imdecode({ base64.data(), static_cast<int>(base64.size()) }, cv::IMREAD_COLOR);
 }
 
 std::string encode_image(const cv::Mat& image)
