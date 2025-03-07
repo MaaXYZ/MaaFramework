@@ -229,7 +229,7 @@ cv::Mat RemoteController::cached_image() const
     if (!resp_opt) {
         return {};
     }
-    return decode_image(resp_opt->image);
+    return server_.get_image_cache(resp_opt->image);
 }
 
 std::string RemoteController::get_uuid()

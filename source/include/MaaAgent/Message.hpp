@@ -14,7 +14,7 @@ MAA_AGENT_NS_BEGIN
 // ReverseRequest: server -> client
 
 using MessageTypePlaceholder = int;
-inline static constexpr int kProtocolVersion = 1;
+inline static constexpr int kProtocolVersion = 2;
 
 struct StartUpRequest
 {
@@ -906,38 +906,18 @@ struct ControllerGetUuidReverseResponse
     MEO_JSONIZATION(uuid, _ControllerGetUuidReverseResponse);
 };
 
-inline std::string short_str(const std::string& str)
+struct ImageHeader
 {
-    if (str.size() <= 32) {
-        return str;
-    }
+    std::string uuid;
 
-    return str.substr(0, 16) + "..." + str.substr(str.size() - 16, 16) + ",size:" + std::to_string(str.size());
-}
+    int rows = 0;
+    int cols = 0;
+    int type = 0;
+    size_t size = 0;
 
-inline json::value log_msg(const json::value& j)
-{
-    json::value j_copy = j;
-    if (j_copy.exists("image")) {
-        j_copy["image"] = short_str(j_copy.at("image").as_string());
-    }
-    if (j_copy.exists("raw")) {
-        j_copy["raw"] = short_str(j_copy.at("raw").as_string());
-    }
-    if (j_copy.exists("draws")) {
-        for (auto& d : j_copy["draws"].as_array()) {
-            d = short_str(d.as_string());
-        }
-    }
-    return j_copy;
-}
+    MessageTypePlaceholder _ImageHeader = 1;
 
-template <typename T>
-inline T log_msg(const T& msg)
-{
-    T copy = msg;
-    copy.image = short_str(msg.image);
-    return copy;
-}
+    MEO_JSONIZATION(uuid, rows, cols, type, size, _ImageHeader);
+};
 
 MAA_AGENT_NS_END

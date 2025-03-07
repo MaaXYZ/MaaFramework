@@ -3,7 +3,6 @@
 #include <filesystem>
 
 #include <meojson/json.hpp>
-#include <zmq.hpp>
 
 #include "Common/MaaTypes.h"
 #include "Conf/Conf.h"
@@ -16,17 +15,15 @@ class AgentClient
     , public Transceiver
 {
 public:
-    virtual ~AgentClient() override;
+    virtual ~AgentClient() override = default;
 
 public: // MaaAgentClient
     virtual bool bind_resource(MaaResource* resource) override;
-    virtual std::optional<std::string> create_socket(const std::string& identifier) override;
+    virtual std::string create_socket(const std::string& identifier) override;
     virtual bool connect() override;
     virtual bool disconnect() override;
 
 private: // Transceiver
-    virtual bool send(const json::value& j) override;
-    virtual std::optional<json::value> recv() override;
     virtual bool handle_inserted_request(const json::value& j) override;
 
 private:
@@ -119,10 +116,6 @@ public:
 
 private:
     MaaResource* resource_ = nullptr;
-    std::string ipc_addr_;
-
-    zmq::socket_t zmq_sock_;
-    zmq::context_t zmq_ctx_;
 
     std::map<std::string, MaaContext*> context_map_;
     std::map<std::string, MaaTasker*> tasker_map_;

@@ -167,8 +167,6 @@ _Please note that you only need to read this chapter if you are ready to develop
   A massively spiffy yet delicately unobtrusive compression library.
 - [gzip-hpp](https://github.com/mapbox/gzip-hpp)  
   Gzip header-only C++ library
-- [cpp-base64](https://github.com/ReneNyffenegger/cpp-base64)  
-  base64 encoding and decoding with c++
 - ~~[protobuf](https://github.com/protocolbuffers/protobuf)~~  
   ~~Protocol Buffers - Google's data interchange format~~
 - ~~[grpc](https://github.com/grpc/grpc)~~  

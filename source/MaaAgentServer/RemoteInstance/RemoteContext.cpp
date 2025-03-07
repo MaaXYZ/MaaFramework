@@ -33,7 +33,7 @@ MaaRecoId RemoteContext::run_recognition(const std::string& entry, const json::o
         .context_id = context_id_,
         .entry = entry,
         .pipeline_override = pipeline_override,
-        .image = encode_image(image),
+        .image = server_.send_image(image),
     };
 
     auto resp_opt = server_.send_and_recv<ContextRunRecognitionReverseResponse>(req);

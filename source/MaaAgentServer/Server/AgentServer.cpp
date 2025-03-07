@@ -3,7 +3,6 @@
 #include <ranges>
 
 #include "MaaAgent/Message.hpp"
-#include "MaaAgent/Utils.hpp"
 #include "RemoteInstance/RemoteContext.h"
 #include "Utils/Buffer/ImageBuffer.hpp"
 #include "Utils/Buffer/StringBuffer.hpp"
@@ -21,14 +20,7 @@ bool AgentServer::start_up(const std::string& identifier)
         return false;
     }
 
-    ipc_addr_ = generate_socket_address(identifier);
-    LogInfo << VAR(ipc_addr_);
-
-    bool socket_created = create_socket(ipc_addr_);
-    if (!socket_created) {
-        LogError << "failed to create_socket" << VAR(ipc_addr_);
-        return false;
-    }
+    init_socket(identifier, false);
 
     msg_loop_running_ = true;
     msg_thread_ = std::thread(&AgentServer::request_msg_loop, this);
@@ -102,58 +94,14 @@ bool AgentServer::register_custom_action(const std::string& name, MaaCustomActio
     return custom_actions_.insert_or_assign(name, CustomActionSession { action, trans_arg }).second;
 }
 
-bool AgentServer::create_socket(const std::string& ipc_addr)
-{
-    LogFunc << VAR(ipc_addr);
-
-    zmq_sock_ = zmq::socket_t(zmq_ctx_, zmq::socket_type::pair);
-    zmq_sock_.connect(ipc_addr);
-    return true;
-}
-
-bool AgentServer::send(const json::value& j)
-{
-    LogTrace << VAR(log_msg(j)) << VAR(ipc_addr_);
-
-    std::string jstr = j.dumps();
-    zmq::message_t msg(jstr.data(), jstr.size());
-    bool sent = zmq_sock_.send(std::move(msg), zmq::send_flags::none).has_value();
-    if (!sent) {
-        LogError << "failed to send msg" << VAR(j) << VAR(ipc_addr_);
-        return false;
-    }
-
-    return true;
-}
-
-std::optional<json::value> AgentServer::recv()
-{
-    LogFunc << VAR(ipc_addr_);
-
-    zmq::message_t msg;
-    auto size_opt = zmq_sock_.recv(msg);
-    if (!size_opt || *size_opt == 0) {
-        LogError << "failed to recv msg" << VAR(ipc_addr_);
-        return std::nullopt;
-    }
-
-    std::string_view init_str = msg.to_string_view();
-    auto jopt = json::parse(init_str);
-    if (!jopt) {
-        LogError << "failed to parse msg" << VAR(ipc_addr_);
-        return std::nullopt;
-    }
-    auto j = *std::move(jopt);
-    LogTrace << VAR(log_msg(j));
-
-    return j;
-}
-
 bool AgentServer::handle_inserted_request(const json::value& j)
 {
-    LogInfo << VAR(log_msg(j)) << VAR(ipc_addr_);
+    LogInfo << VAR(j) << VAR(ipc_addr_);
 
-    if (handle_recognition_request(j)) {
+    if (handle_image_header(j)) {
+        return true;
+    }
+    else if (handle_recognition_request(j)) {
         return true;
     }
     else if (handle_action_request(j)) {
@@ -178,7 +126,7 @@ bool AgentServer::handle_recognition_request(const json::value& j)
     }
 
     const CustomRecognitionRequest& req = j.as<CustomRecognitionRequest>();
-    LogInfo << VAR(log_msg(req)) << VAR(ipc_addr_);
+    LogInfo << VAR(req) << VAR(ipc_addr_);
 
     auto it = custom_recognitions_.find(req.custom_recognition_name);
     if (it == custom_recognitions_.end()) {
@@ -193,7 +141,7 @@ bool AgentServer::handle_recognition_request(const json::value& j)
     }
 
     RemoteContext context(*this, req.context_id);
-    cv::Mat mat = decode_image(req.image);
+    cv::Mat mat = get_image_cache(req.image);
     ImageBuffer mat_buffer(mat);
     MaaRect rect { req.roi[0], req.roi[1], req.roi[2], req.roi[3] };
 
@@ -278,8 +226,9 @@ bool AgentServer::handle_start_up_request(const json::value& j)
     LogInfo << VAR(req) << VAR(ipc_addr_);
 
     if (req.protocol != kProtocolVersion) {
-        LogError << "protocol version mismatch" << "client:" << VAR(req.version) << VAR(req.protocol) << "server:" << VAR(MAA_VERSION)
+        LogError << "Protocol version mismatch" << "client:" << VAR(req.version) << VAR(req.protocol) << "server:" << VAR(MAA_VERSION)
                  << VAR(kProtocolVersion) << VAR(ipc_addr_);
+        LogError << "Please update" << (req.protocol < kProtocolVersion ? "AgentClient" : "AgentServer");
     }
 
     auto action_names = custom_actions_ | std::views::keys;

@@ -123,7 +123,7 @@ public:
     virtual ~MaaAgentClient() = default;
 
     virtual bool bind_resource(MaaResource* resource) = 0;
-    virtual std::optional<std::string> create_socket(const std::string& identifier) = 0;
+    virtual std::string create_socket(const std::string& identifier) = 0;
     virtual bool connect() = 0;
     virtual bool disconnect() = 0;
 };

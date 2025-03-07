@@ -45,13 +45,9 @@ MaaBool MaaAgentClientCreateSocket(MaaAgentClient* client, MaaStringBuffer* iden
         return false;
     }
 
-    auto ret = client->create_socket(identifier->get());
-    if (!ret) {
-        LogError << "failed to bind socket";
-        return false;
-    }
+    std::string id = client->create_socket(identifier->get());
 
-    identifier->set(*ret);
+    identifier->set(std::move(id));
 
     return true;
 }

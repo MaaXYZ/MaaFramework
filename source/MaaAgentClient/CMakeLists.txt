@@ -1,7 +1,8 @@
 file(GLOB_RECURSE maa_agent_client_src *.h *.hpp *.cpp)
+file(GLOB_RECURSE maa_agent_common_src ../AgentCommon/*.h ../AgentCommon/*.hpp ../AgentCommon/*.cpp)
 file(GLOB_RECURSE maa_agent_client_header ${MAA_PUBLIC_INC}/MaaAgentClient/*)
 
-add_library(MaaAgentClient SHARED ${maa_agent_client_src} ${maa_agent_client_header})
+add_library(MaaAgentClient SHARED ${maa_agent_common_src} ${maa_agent_client_src} ${maa_agent_client_header})
 
 target_include_directories(
     MaaAgentClient
@@ -28,3 +29,4 @@ endif()
 install(DIRECTORY "${MAA_PUBLIC_INC}/MaaAgentClient" DESTINATION "include")
 
 source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES ${maa_agent_client_src})
+source_group(PREFIX "AgentCommon" TREE ${CMAKE_CURRENT_SOURCE_DIR}/../AgentCommon FILES ${maa_agent_common_src})

@@ -104,14 +104,10 @@ bool Runner::run(
     if (param.agent) {
         agent_handle = MaaAgentClientCreate();
         agent_handle->bind_resource(resource_handle);
-        auto bound = agent_handle->create_socket(param.agent->identifier);
-        if (!bound) {
-            LogError << "Failed to bind socket";
-            return false;
-        }
+        std::string socket_id = agent_handle->create_socket(param.agent->identifier);
 
         std::vector<std::string> args = param.agent->child_args;
-        args.emplace_back(*bound);
+        args.emplace_back(socket_id);
         std::filesystem::path exec = boost::process::search_path(param.agent->child_exec);
         if (exec.empty()) {
             LogError << "Failed to find agent executable" << VAR(param.agent->child_exec);

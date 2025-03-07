@@ -4,7 +4,6 @@
 
 #include "Common/MaaTypes.h"
 #include "MaaAgent/Message.hpp"
-#include "MaaAgent/Utils.hpp"
 #include "MaaFramework/MaaAPI.h"
 #include "Utils/Buffer/ImageBuffer.hpp"
 #include "Utils/Buffer/ListBuffer.hpp"
@@ -15,14 +14,6 @@
 #include "Utils/Uuid.h"
 
 MAA_AGENT_CLIENT_NS_BEGIN
-
-AgentClient::~AgentClient()
-{
-    LogFunc;
-
-    zmq_sock_.close();
-    zmq_ctx_.close();
-}
 
 bool AgentClient::bind_resource(MaaResource* resource)
 {
@@ -38,16 +29,11 @@ bool AgentClient::bind_resource(MaaResource* resource)
     return true;
 }
 
-std::optional<std::string> AgentClient::create_socket(const std::string& identifier)
+std::string AgentClient::create_socket(const std::string& identifier)
 {
-    LogFunc << VAR(identifier);
-
     const std::string& id = identifier.empty() ? make_uuid() : identifier;
-    ipc_addr_ = generate_socket_address(id);
-    LogInfo << VAR(ipc_addr_);
 
-    zmq_sock_ = zmq::socket_t(zmq_ctx_, zmq::socket_type::pair);
-    zmq_sock_.bind(ipc_addr_);
+    init_socket(id, true);
 
     return id;
 }
@@ -60,7 +46,7 @@ bool AgentClient::connect()
         LogError << "resource is not bound";
         return false;
     }
-    
+
     clear_registration();
 
     auto resp_opt = send_and_recv<StartUpResponse>(StartUpRequest {});
@@ -73,11 +59,11 @@ bool AgentClient::connect()
     LogInfo << VAR(resp);
 
     if (resp.protocol != kProtocolVersion) {
-        LogError << "protocol version mismatch" << "client:" << VAR(MAA_VERSION) << VAR(kProtocolVersion) << "server:" << VAR(resp.version)
+        LogError << "Protocol version mismatch" << "client:" << VAR(MAA_VERSION) << VAR(kProtocolVersion) << "server:" << VAR(resp.version)
                  << VAR(resp.protocol) << VAR(ipc_addr_);
+        LogError << "Please update" << (kProtocolVersion < resp.protocol ? "AgentClient" : "AgentServer");
         return false;
     }
-
 
     for (const auto& reco : resp.recognitions) {
         LogInfo << "register recognition" << VAR(reco);
@@ -103,48 +89,14 @@ bool AgentClient::disconnect()
     return send_and_recv<ShutDownResponse>(ShutDownRequest {}).has_value();
 }
 
-bool AgentClient::send(const json::value& j)
-{
-    LogTrace << VAR(log_msg(j)) << VAR(ipc_addr_);
-
-    std::string jstr = j.dumps();
-    zmq::message_t msg(jstr.data(), jstr.size());
-    bool sent = zmq_sock_.send(std::move(msg), zmq::send_flags::none).has_value();
-    if (!sent) {
-        LogError << "failed to send msg" << VAR(j);
-        return false;
-    }
-    return true;
-}
-
-std::optional<json::value> AgentClient::recv()
-{
-    LogFunc << VAR(ipc_addr_);
-
-    zmq::message_t msg;
-    auto size_opt = zmq_sock_.recv(msg);
-    if (!size_opt || *size_opt == 0) {
-        LogError << "failed to recv msg" << VAR(ipc_addr_);
-        return std::nullopt;
-    }
-
-    std::string_view str = msg.to_string_view();
-    auto jopt = json::parse(str);
-    if (!jopt) {
-        LogError << "failed to parse msg" << VAR(ipc_addr_);
-        return std::nullopt;
-    }
-    auto j = *std::move(jopt);
-    LogTrace << VAR(log_msg(j));
-
-    return j;
-}
-
 bool AgentClient::handle_inserted_request(const json::value& j)
 {
-    LogFunc << VAR(log_msg(j)) << VAR(ipc_addr_);
+    LogFunc << VAR(j) << VAR(ipc_addr_);
 
-    if (handle_context_run_task(j)) {
+    if (handle_image_header(j)) {
+        return true;
+    }
+    else if (handle_context_run_task(j)) {
         return true;
     }
     else if (handle_context_run_recognition(j)) {
@@ -320,7 +272,7 @@ bool AgentClient::handle_context_run_recognition(const json::value& j)
     }
 
     const ContextRunRecognitionReverseRequest& req = j.as<ContextRunRecognitionReverseRequest>();
-    LogFunc << VAR(log_msg(req)) << VAR(ipc_addr_);
+    LogFunc << VAR(req) << VAR(ipc_addr_);
 
     MaaContext* context = query_context(req.context_id);
     if (!context) {
@@ -328,7 +280,7 @@ bool AgentClient::handle_context_run_recognition(const json::value& j)
         return false;
     }
 
-    MaaRecoId reco_id = context->run_recognition(req.entry, req.pipeline_override, decode_image(req.image));
+    MaaRecoId reco_id = context->run_recognition(req.entry, req.pipeline_override, get_image_cache(req.image));
 
     ContextRunRecognitionReverseResponse resp {
         .reco_id = reco_id,
@@ -746,7 +698,7 @@ bool AgentClient::handle_tasker_get_reco_result(const json::value& j)
 
     std::vector<std::string> draws;
     for (const auto& draw : detail.draws) {
-        draws.emplace_back(encode_image(draw));
+        draws.emplace_back(send_image(draw));
     }
 
     TaskerGetRecoResultReverseResponse resp {
@@ -757,7 +709,7 @@ bool AgentClient::handle_tasker_get_reco_result(const json::value& j)
         .box = detail.box ? std::array<int32_t, 4> { detail.box->x, detail.box->y, detail.box->width, detail.box->height }
                           : std::array<int32_t, 4> {},
         .detail = detail.detail,
-        .raw = encode_image(detail.raw),
+        .raw = send_image(detail.raw),
         .draws = std::move(draws),
     };
     send(resp);
@@ -1288,7 +1240,7 @@ bool AgentClient::handle_controller_cached_image(const json::value& j)
     }
     auto image = controller->cached_image();
     ControllerCachedImageReverseResponse resp {
-        .image = encode_image(image),
+        .image = send_image(image),
     };
     send(resp);
     return true;
@@ -1352,7 +1304,7 @@ MaaBool AgentClient::reco_agent(
         .node_name = node_name,
         .custom_recognition_name = custom_recognition_name,
         .custom_recognition_param = custom_recognition_param,
-        .image = encode_image(mat),
+        .image = pthis->send_image(mat),
         .roi = roi ? std::array<int32_t, 4> { roi->x, roi->y, roi->width, roi->height } : std::array<int32_t, 4> {},
     };
 
