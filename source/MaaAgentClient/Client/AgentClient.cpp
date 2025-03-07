@@ -59,8 +59,9 @@ bool AgentClient::connect()
     LogInfo << VAR(resp);
 
     if (resp.protocol != kProtocolVersion) {
-        LogError << "protocol version mismatch" << "client:" << VAR(MAA_VERSION) << VAR(kProtocolVersion) << "server:" << VAR(resp.version)
+        LogError << "Protocol version mismatch" << "client:" << VAR(MAA_VERSION) << VAR(kProtocolVersion) << "server:" << VAR(resp.version)
                  << VAR(resp.protocol) << VAR(ipc_addr_);
+        LogError << "Please update" << (kProtocolVersion < resp.protocol ? "AgentClient" : "AgentServer");
         return false;
     }
 

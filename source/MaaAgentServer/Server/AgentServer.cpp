@@ -226,8 +226,9 @@ bool AgentServer::handle_start_up_request(const json::value& j)
     LogInfo << VAR(req) << VAR(ipc_addr_);
 
     if (req.protocol != kProtocolVersion) {
-        LogError << "protocol version mismatch" << "client:" << VAR(req.version) << VAR(req.protocol) << "server:" << VAR(MAA_VERSION)
+        LogError << "Protocol version mismatch" << "client:" << VAR(req.version) << VAR(req.protocol) << "server:" << VAR(MAA_VERSION)
                  << VAR(kProtocolVersion) << VAR(ipc_addr_);
+        LogError << "Please update" << (req.protocol < kProtocolVersion ? "AgentClient" : "AgentServer");
     }
 
     auto action_names = custom_actions_ | std::views::keys;
