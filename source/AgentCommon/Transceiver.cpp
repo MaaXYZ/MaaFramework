@@ -88,6 +88,11 @@ std::optional<json::value> Transceiver::recv()
 
 std::string Transceiver::send_image(const cv::Mat& mat)
 {
+    if (mat.empty()) {
+        LogWarn << "empty image" << VAR(ipc_addr_);
+        return {};
+    }
+
     ImageHeader header {
         .uuid = make_uuid(),
         .rows = mat.rows,
@@ -113,6 +118,11 @@ std::string Transceiver::send_image(const cv::Mat& mat)
 
 cv::Mat Transceiver::get_image_cache(const std::string& uuid)
 {
+    if (uuid.empty()) {
+        LogWarn << "empty uuid" << VAR(ipc_addr_);
+        return {};
+    }
+
     auto it = recved_images_.find(uuid);
     if (it == recved_images_.end()) {
         LogError << "image not found" << VAR(uuid) << VAR(ipc_addr_);
