@@ -33,6 +33,8 @@ def set_toml_ver():
     if "ci" in git_tag:
         base_ver, ci_ver = git_tag.split("ci")
         version = base_ver + "dev" + ci_ver.split("-")[0]
+    else:
+        version = git_tag
 
     print(f"Setting version to: {version}")
 
