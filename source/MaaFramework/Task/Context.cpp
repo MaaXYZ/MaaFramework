@@ -70,8 +70,8 @@ MaaTaskId Context::run_task(const std::string& entry, const json::object& pipeli
     bool ret = subtask.run();
 
     {
-        auto task_detail =
-            runtime_cache.get_task_detail(subtask.task_id()).value_or(MAA_TASK_NS::TaskDetail { .task_id = subtask.task_id(), .entry = entry });
+        auto task_detail = runtime_cache.get_task_detail(subtask.task_id())
+                               .value_or(MAA_TASK_NS::TaskDetail { .task_id = subtask.task_id(), .entry = entry });
         task_detail.status = ret ? MaaStatus_Succeeded : MaaStatus_Failed;
         runtime_cache.set_task_detail(subtask.task_id(), std::move(task_detail));
     }
@@ -92,8 +92,11 @@ MaaRecoId Context::run_recognition(const std::string& entry, const json::object&
     return subtask.run_with_param(image);
 }
 
-MaaNodeId
-    Context::run_action(const std::string& entry, const json::object& pipeline_override, const cv::Rect& box, const std::string& reco_detail)
+MaaNodeId Context::run_action(
+    const std::string& entry,
+    const json::object& pipeline_override,
+    const cv::Rect& box,
+    const std::string& reco_detail)
 {
     LogFunc << VAR(getptr()) << VAR(entry) << VAR(pipeline_override) << VAR(box) << VAR(reco_detail);
 

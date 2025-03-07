@@ -73,7 +73,7 @@ struct SwipeParam
     Target end;
 
     uint duration = 200;
-    uint starting = 0;  // only for MultiSwipe
+    uint starting = 0; // only for MultiSwipe
 };
 
 struct MultiSwipeParam
@@ -110,7 +110,8 @@ struct CustomParam
     Target target;
 };
 
-using Param = std::variant<std::monostate, ClickParam, SwipeParam, MultiSwipeParam, KeyParam, TextParam, AppParam, CommandParam, CustomParam>;
+using Param =
+    std::variant<std::monostate, ClickParam, SwipeParam, MultiSwipeParam, KeyParam, TextParam, AppParam, CommandParam, CustomParam>;
 } // namespace Action
 
 struct WaitFreezesParam

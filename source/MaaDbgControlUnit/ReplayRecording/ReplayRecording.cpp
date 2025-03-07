@@ -187,7 +187,7 @@ bool ReplayRecording::swipe(int x1, int y1, int x2, int y2, int duration)
 }
 
 bool ReplayRecording::multi_swipe(const std::vector<SwipeParam>& swipes)
-{    
+{
     LogInfo << VAR(swipes.size());
 
     if (record_index_ >= recording_.records.size()) {

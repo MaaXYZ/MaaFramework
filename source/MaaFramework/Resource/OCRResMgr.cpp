@@ -49,7 +49,7 @@ void OCRResMgr::use_coreml(uint32_t coreml_flag)
     det_option_.UseCoreML(coreml_flag);
 
     LogWarn << "OCR REC with CoreML is very poor. I don’t know the reason yet. Roll back to using CPU for REC. (DET still uses CoreML)";
-    //rec_option_.UseCoreML(coreml_flag);
+    // rec_option_.UseCoreML(coreml_flag);
     rec_option_.UseCpu();
 }
 
@@ -132,8 +132,11 @@ std::shared_ptr<fastdeploy::vision::ocr::DBDetector> OCRResMgr::load_deter(const
         }
         LogDebug << VAR(model_path);
 
-        auto det =
-            std::make_shared<fastdeploy::vision::ocr::DBDetector>(path_to_utf8_string(model_path), std::string(), det_option_, fastdeploy::ModelFormat::ONNX);
+        auto det = std::make_shared<fastdeploy::vision::ocr::DBDetector>(
+            path_to_utf8_string(model_path),
+            std::string(),
+            det_option_,
+            fastdeploy::ModelFormat::ONNX);
         if (!det || !det->Initialized()) {
             LogError << "Failed to load DBDetector:" << VAR(name) << VAR(det) << VAR(det->Initialized());
             return nullptr;

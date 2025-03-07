@@ -12,8 +12,8 @@ bool CustomAction::run(
     MaaRecoId reco_id,
     const cv::Rect& rect)
 {
-    LogFunc << VAR(context.task_id()) << VAR(node_name) << VAR_VOIDP(session.action) << VAR_VOIDP(session.trans_arg)
-            << VAR(param.name) << VAR(param.custom_param) << VAR(reco_id) << VAR(rect);
+    LogFunc << VAR(context.task_id()) << VAR(node_name) << VAR_VOIDP(session.action) << VAR_VOIDP(session.trans_arg) << VAR(param.name)
+            << VAR(param.custom_param) << VAR(reco_id) << VAR(rect);
 
     if (!session.action) {
         LogError << "Action is null" << VAR(node_name) << VAR(param.name);

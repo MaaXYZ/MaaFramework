@@ -72,8 +72,17 @@ struct Record
         cv::Mat image;
     };
 
-    using Param = std::
-        variant<std::monostate, ConnectParam, ClickParam, SwipeParam, std::vector<SwipeParam>, TouchParam, PressKeyParam, InputTextParam, AppParam, ScreencapParam>;
+    using Param = std::variant<
+        std::monostate,
+        ConnectParam,
+        ClickParam,
+        SwipeParam,
+        std::vector<SwipeParam>,
+        TouchParam,
+        PressKeyParam,
+        InputTextParam,
+        AppParam,
+        ScreencapParam>;
 
     struct Action
     {

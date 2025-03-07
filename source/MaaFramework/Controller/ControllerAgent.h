@@ -8,8 +8,8 @@
 
 #include <meojson/json.hpp>
 
-#include "Common/MaaTypes.h"
 #include "Base/AsyncRunner.hpp"
+#include "Common/MaaTypes.h"
 #include "Utils/MessageNotifier.hpp"
 #include "Utils/NoWarningCVMat.hpp"
 

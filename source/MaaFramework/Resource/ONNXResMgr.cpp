@@ -77,7 +77,7 @@ void ONNXResMgr::use_directml(int device_id)
 
     // 不知道为什么 DML 会 crash，感觉是 onnxruntime 的 bug，之后 onnxruntime 更新了可以再试试
     // 当前版本 onnxruntime v1.19.2 from MaaDeps. 设备 AMD RX 640
-    //memory_info_ = Ort::MemoryInfo("DML", OrtDeviceAllocator, device_id, OrtMemTypeDefault);
+    // memory_info_ = Ort::MemoryInfo("DML", OrtDeviceAllocator, device_id, OrtMemTypeDefault);
     memory_info_ = Ort::MemoryInfo::CreateCpu(OrtDeviceAllocator, OrtMemTypeDefault);
 
     LogInfo << "Using DML execution provider with device_id" << device_id;

@@ -5,8 +5,8 @@
 #include <shared_mutex>
 #include <vector>
 
-#include "Common/MaaTypes.h"
 #include "Base/AsyncRunner.hpp"
+#include "Common/MaaTypes.h"
 #include "Controller/ControllerAgent.h"
 #include "Resource/ResourceMgr.h"
 #include "RuntimeCache.h"

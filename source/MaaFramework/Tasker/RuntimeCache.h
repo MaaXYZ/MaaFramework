@@ -5,7 +5,6 @@
 #include <shared_mutex>
 #include <string>
 
-
 #include "Common/TaskResultTypes.h"
 #include "Utils/NoWarningCVMat.hpp"
 

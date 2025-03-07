@@ -2,8 +2,8 @@
 
 #include <atomic>
 
-#include "Common/MaaTypes.h"
 #include "Base/AsyncRunner.hpp"
+#include "Common/MaaTypes.h"
 #include "DefaultPipelineMgr.h"
 #include "MaaFramework/Instance/MaaResource.h"
 #include "OCRResMgr.h"
