@@ -401,17 +401,16 @@ jobs:
                   path: assets
 
             - name: Pip Pack
-              working-directory: tools/pip_pack
               run: |
                   tag=${{ needs.meta.outputs.tag }}
-                  pip install --upgrade wheel build tomlkit
-                  python pip_pack.py $tag
+                  pip install --upgrade -r tools/pip_pack/requirements.txt
+                  python tools/pip_pack/pip_pack.py $tag
 
             - uses: actions/upload-artifact@v4
               if: always()
               with:
                   name: MAA-pip-pkgs
-                  path: "tools/pip_pack/wheel/*.whl"
+                  path: "pip_pack/wheel/*.whl"
 
     nodejs_pack:
         needs: [meta, windows, ubuntu, macos, android]

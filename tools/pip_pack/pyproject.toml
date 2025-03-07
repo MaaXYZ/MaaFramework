@@ -1,13 +1,14 @@
-[build-system]
-requires = ["setuptools"]
-build-backend = "setuptools.build_meta"
-
 [project]
-name = "MaaFw"
+name = "MaaPipPack"
 version = "0"
 requires-python = ">=3.9"
 authors = [{ name = "MaaXYZ" }]
-description = "An automation black-box testing framework based on image recognition"
-readme = "README.md"
-urls = { Homepage = "https://github.com/MaaXYZ/MaaFramework" }
-dependencies = ["numpy", "strenum", "MaaAgentBinary"]
+dependencies = ["tomlkit", "build", "wheel"]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.uv]
+managed = true
+package = false
