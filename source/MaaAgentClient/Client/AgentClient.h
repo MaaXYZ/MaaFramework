@@ -115,6 +115,8 @@ public:
     std::string resource_id(MaaResource* resource);
     MaaResource* query_resource(const std::string& resource_id);
 
+    void clear_registration();
+
 private:
     MaaResource* resource_ = nullptr;
     std::string ipc_addr_;

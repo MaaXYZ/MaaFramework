@@ -30,17 +30,7 @@ bool AgentClient::bind_resource(MaaResource* resource)
 
     if (resource_ && resource_ != resource) {
         LogWarn << "resource is already bound" << VAR_VOIDP(resource_);
-        for (const auto& reco : registered_recognitions_) {
-            LogInfo << "unregister pre recognition" << VAR(reco);
-            resource_->unregister_custom_recognition(reco);
-        }
-        for (const auto& act : registered_actions_) {
-            LogInfo << "unregister pre action" << VAR(act);
-            resource_->unregister_custom_action(act);
-        }
-
-        registered_recognitions_.clear();
-        registered_actions_.clear();
+        clear_registration();
     }
 
     resource_ = resource;
@@ -70,6 +60,8 @@ bool AgentClient::connect()
         LogError << "resource is not bound";
         return false;
     }
+    
+    clear_registration();
 
     auto resp_opt = send_and_recv<StartUpResponse>(StartUpRequest {});
 
@@ -86,14 +78,6 @@ bool AgentClient::connect()
         return false;
     }
 
-    for (const auto& reco : registered_recognitions_) {
-        LogInfo << "unregister pre recognition" << VAR(reco);
-        resource_->unregister_custom_recognition(reco);
-    }
-    for (const auto& act : registered_actions_) {
-        LogInfo << "unregister pre action" << VAR(act);
-        resource_->unregister_custom_action(act);
-    }
 
     for (const auto& reco : resp.recognitions) {
         LogInfo << "register recognition" << VAR(reco);
@@ -113,6 +97,8 @@ bool AgentClient::connect()
 bool AgentClient::disconnect()
 {
     LogFunc << VAR(ipc_addr_);
+
+    clear_registration();
 
     return send_and_recv<ShutDownResponse>(ShutDownRequest {}).has_value();
 }
@@ -826,6 +812,23 @@ bool AgentClient::handle_resource_post_bundle(const json::value& j)
     send(resp);
 
     return true;
+}
+
+void AgentClient::clear_registration()
+{
+    LogTrace;
+
+    for (const auto& reco : registered_recognitions_) {
+        LogInfo << "unregister pre recognition" << VAR(reco);
+        resource_->unregister_custom_recognition(reco);
+    }
+    for (const auto& act : registered_actions_) {
+        LogInfo << "unregister pre action" << VAR(act);
+        resource_->unregister_custom_action(act);
+    }
+
+    registered_recognitions_.clear();
+    registered_actions_.clear();
 }
 
 bool AgentClient::handle_resource_status(const json::value& j)
