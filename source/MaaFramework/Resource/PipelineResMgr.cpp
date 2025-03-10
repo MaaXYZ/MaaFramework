@@ -326,8 +326,8 @@ bool PipelineResMgr::parse_task(
         return false;
     }
 
-    if (!get_and_check_value(input, "enabled", data.enabled, default_value.enabled)) {
-        LogError << "failed to get_and_check_value enabled" << VAR(input);
+    if (!get_multi_keys_and_check_value(input, { "enable", "enabled" }, data.enable, default_value.enable)) {
+        LogError << "failed to get_and_check_value enable" << VAR(input);
         return false;
     }
 

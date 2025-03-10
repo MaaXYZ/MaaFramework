@@ -132,7 +132,7 @@ struct PipelineData
 
     std::string name;
     bool is_sub = false; // for compatibility with 1.x
-    bool enabled = true;
+    bool enable = true;
 
     Recognition::Type reco_type = Recognition::Type::DirectHit;
     Recognition::Param reco_param = MAA_VISION_NS::DirectHitParam {};
