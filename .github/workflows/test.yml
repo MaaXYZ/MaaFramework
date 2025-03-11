@@ -143,8 +143,8 @@ jobs:
             - uses: actions/upload-artifact@v4
               if: always()
               with:
-                  name: MAA-win-${{ matrix.arch }}-full_log
-                  path: "install/bin/debug"
+                  name: MAA-win-${{ matrix.arch }}-full
+                  path: "install"
 
     ubuntu:
         needs: meta
@@ -270,8 +270,8 @@ jobs:
             - uses: actions/upload-artifact@v4
               if: always()
               with:
-                  name: MAA-linux-${{ matrix.arch }}-full_log
-                  path: "install/bin/debug"
+                  name: MAA-linux-${{ matrix.arch }}-full
+                  path: "install"
 
     macos:
         needs: meta
@@ -384,5 +384,5 @@ jobs:
             - uses: actions/upload-artifact@v4
               if: always()
               with:
-                  name: MAA-macos-${{ matrix.arch }}-full_log
-                  path: "install/bin/debug"
+                  name: MAA-macos-${{ matrix.arch }}-full
+                  path: "install"
