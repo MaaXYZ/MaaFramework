@@ -30,8 +30,8 @@ export class AgentClient {
         return rid
     }
 
-    connect() {
-        if (!maa.agent_client_connect(this.handle)) {
+    async connect() {
+        if (!(await maa.agent_client_connect(this.handle))) {
             throw 'AgentClient connect failed'
         }
     }

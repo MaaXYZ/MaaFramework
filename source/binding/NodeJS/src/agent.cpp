@@ -101,9 +101,12 @@ std::optional<std::string> agent_client_create_socket(Napi::External<AgentClient
     }
 }
 
-bool agent_client_connect(Napi::External<AgentClientInfo> info)
+Napi::Promise agent_client_connect(Napi::Env env, Napi::External<AgentClientInfo> info)
 {
-    return MaaAgentClientConnect(info.Data()->handle);
+    auto handle = info.Data()->handle;
+    auto worker = new SimpleAsyncWork<bool, "agent_client_connect">(env, [handle]() { return MaaAgentClientConnect(handle); });
+    worker->Queue();
+    return worker->Promise();
 }
 
 bool agent_client_disconnect(Napi::External<AgentClientInfo> info)
