@@ -3,10 +3,17 @@ module;
 #include <MaaAgentClient/MaaAgentClientAPI.h>
 #include <MaaFramework/MaaAPI.h>
 
+#include <functional>
+#include <future>
+#include <map>
+#include <memory>
+#include <string_view>
+#include <type_traits>
+#include <vector>
+
 export module maa.nodejs.info;
 
 import napi;
-import stdmock;
 
 export struct CallbackContext
 {

@@ -3,12 +3,15 @@ module;
 #include <MaaFramework/MaaAPI.h>
 #include <MaaToolkit/MaaToolkitAPI.h>
 
+#include <memory>
+#include <optional>
+#include <string>
+
 #include "../include/macro.h"
 
 export module maa.nodejs.instance.context;
 
 import napi;
-import stdmock;
 
 import maa.nodejs.info;
 import maa.nodejs.utils;

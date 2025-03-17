@@ -2,11 +2,16 @@ module;
 
 #include <MaaFramework/MaaDef.h>
 
+#include <exception>
+#include <format>
+#include <string>
+#include <string_view>
+#include <tuple>
+#include <utility>
+
 export module maa.nodejs.wrapper;
 
 import napi;
-import stdmock;
-import stdmock.get;
 
 import maa.nodejs.info;
 

@@ -47,8 +47,6 @@ endif()
 
 set(maa_node_cppm
     src/napi.cppm
-    src/std.cppm
-    src/stdget.cppm
 
     # src/agent/client.cppm
     # src/agent/server.cppm

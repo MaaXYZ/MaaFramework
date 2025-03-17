@@ -3,12 +3,16 @@ module;
 #include <MaaFramework/MaaAPI.h>
 #include <MaaToolkit/MaaToolkitAPI.h>
 
+#include <optional>
+#include <string>
+#include <tuple>
+#include <vector>
+
 #include "../include/macro.h"
 
 export module maa.nodejs.toolkit.find;
 
 import napi;
-import stdmock;
 
 import maa.nodejs.info;
 import maa.nodejs.utils;

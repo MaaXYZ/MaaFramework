@@ -2,7 +2,6 @@
 #include <napi.h>
 
 import napi;
-import stdmock;
 
 import maa.nodejs.info;
 import maa.nodejs.utils;

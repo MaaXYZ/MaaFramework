@@ -7,12 +7,14 @@ module;
 #include <Windows.h>
 #endif
 
+#include <optional>
+#include <string>
+
 #include "../include/macro.h"
 
 export module maa.nodejs.instance.controller;
 
 import napi;
-import stdmock;
 
 import maa.nodejs.cb;
 import maa.nodejs.info;

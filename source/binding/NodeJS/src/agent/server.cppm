@@ -2,12 +2,14 @@ module;
 
 #include <MaaAgentServer/MaaAgentServerAPI.h>
 
+#include <optional>
+#include <string>
+
 #include "../include/macro.h"
 
 export module maa.nodejs.agent.server;
 
 import napi;
-import stdmock;
 
 import maa.nodejs.cb;
 import maa.nodejs.info;

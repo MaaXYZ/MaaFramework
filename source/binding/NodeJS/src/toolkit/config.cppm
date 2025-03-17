@@ -3,12 +3,13 @@ module;
 #include <MaaFramework/MaaAPI.h>
 #include <MaaToolkit/MaaToolkitAPI.h>
 
+#include <string>
+
 #include "../include/macro.h"
 
 export module maa.nodejs.toolkit.config;
 
 import napi;
-import stdmock;
 
 import maa.nodejs.info;
 import maa.nodejs.wrapper;
