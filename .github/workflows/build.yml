@@ -193,8 +193,8 @@ jobs:
               env:
                   CC: clang
                   CXX: clang++
-                  CFLAGS: ${{ matrix.arch == 'x86_64' && '' || '-arch arm64' }}
-                  CXXFLAGS: ${{ matrix.arch == 'x86_64' && '' || '-arch arm64' }}
+                  CFLAGS: ${{ matrix.arch == 'x86_64' && ' ' || '---target=aarch64-linux-gnu' }}
+                  CXXFLAGS: ${{ matrix.arch == 'x86_64' && ' ' || '---target=aarch64-linux-gnu' }}
               run: |
                   cmake --preset 'NinjaMulti' \
                     -DMAADEPS_TRIPLET='maa-${{ matrix.arch == 'x86_64' && 'x64' || 'arm64' }}-linux' \
