@@ -67,7 +67,7 @@ set(maa_node_cppm
 
 add_library(MaaNodeCommon STATIC ${CMAKE_JS_SRC})
 target_sources(MaaNodeCommon PUBLIC FILE_SET cppms TYPE CXX_MODULES FILES ${maa_node_cppm})
-target_link_libraries(MaaNodeCommon ${CMAKE_JS_LIB} MaaFramework MaaToolkit)
+target_include_directories(MaaNodeCommon PRIVATE ${CMAKE_CURRENT_LIST_DIR}/../../../include)
 target_compile_definitions(MaaNodeCommon PRIVATE NODE_ADDON_API_ENABLE_TYPE_CHECK_ON_AS)
 
 # Master
@@ -75,7 +75,7 @@ target_compile_definitions(MaaNodeCommon PRIVATE NODE_ADDON_API_ENABLE_TYPE_CHEC
 add_library(MaaNode SHARED src/agent/main-client.cpp)
 target_sources(MaaNode PUBLIC FILE_SET cppms TYPE CXX_MODULES FILES src/agent/client.cppm)
 set_target_properties(MaaNode PROPERTIES PREFIX "" SUFFIX ".node")
-target_link_libraries(MaaNode MaaNodeCommon MaaAgentClient)
+target_link_libraries(MaaNode MaaNodeCommon ${CMAKE_JS_LIB} MaaFramework MaaToolkit MaaAgentClient)
 target_compile_definitions(MaaNode PRIVATE NODE_ADDON_API_ENABLE_TYPE_CHECK_ON_AS)
 
 install(
@@ -96,7 +96,7 @@ endif()
 add_library(MaaNodeServer SHARED src/agent/main-server.cpp)
 target_sources(MaaNodeServer PUBLIC FILE_SET cppms TYPE CXX_MODULES FILES src/agent/server.cppm)
 set_target_properties(MaaNodeServer PROPERTIES PREFIX "" SUFFIX ".node")
-target_link_libraries(MaaNodeServer MaaNodeCommon MaaAgentClient)
+target_link_libraries(MaaNodeServer MaaNodeCommon ${CMAKE_JS_LIB} MaaAgentServer)
 target_compile_definitions(MaaNodeServer PRIVATE NODE_ADDON_API_ENABLE_TYPE_CHECK_ON_AS)
 
 install(
