@@ -164,13 +164,14 @@ jobs:
             - name: Install dep
               run: |
                   pacman -Sy
-                  pacman -S --noconfirm cmake python python-pip ccache ninja git
+                  pacman -S --noconfirm cmake python python-pip ccache ninja git clang
 
             # https://github.com/MaaXYZ/MaaFramework/actions/runs/5643408179/job/15285186255
             - uses: actions/checkout@v4
               with:
                   submodules: recursive
 
+            # 虽然换成了clang，但是需要gcc提供sysroot
             - name: Install cross compile toolchains
               if: ${{ matrix.arch != 'x86_64' }}
               run: |
@@ -213,8 +214,10 @@ jobs:
 
             - name: Build MAA
               env:
-                  CC: ${{ matrix.arch == 'x86_64' && 'gcc' || 'aarch64-linux-gnu-gcc' }}
-                  CXX: ${{ matrix.arch == 'x86_64' && 'g++' || 'aarch64-linux-gnu-g++' }}
+                  CC: clang
+                  CXX: clang++
+                  CFLAGS: ${{ matrix.arch == 'x86_64' && ' ' || '--target=aarch64-linux-gnu --sysroot=/usr/aarch64-linux-gnu' }}
+                  CXXFLAGS: ${{ matrix.arch == 'x86_64' && ' ' || '--target=aarch64-linux-gnu --sysroot=/usr/aarch64-linux-gnu' }}
               run: |
                   cmake --preset 'NinjaMulti' \
                     -DMAADEPS_TRIPLET='maa-${{ matrix.arch == 'x86_64' && 'x64' || 'arm64' }}-linux' \

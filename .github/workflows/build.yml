@@ -146,7 +146,7 @@ jobs:
             - name: Install dep
               run: |
                   pacman -Sy
-                  pacman -S --noconfirm cmake python ccache ninja git
+                  pacman -S --noconfirm cmake python ccache ninja git clang
 
             - uses: pnpm/action-setup@v4
               with:
@@ -162,14 +162,11 @@ jobs:
               with:
                   submodules: true
 
-            - name: Install clang
-              run: |
-                  pacman -Sy
-                  pacman -S --noconfirm clang
-
+            # 虽然换成了clang，但是需要gcc提供sysroot
             - name: Install cross compile toolchains
               if: ${{ matrix.arch != 'x86_64' }}
               run: |
+                  pacman -Sy
                   pacman -S --noconfirm aarch64-linux-gnu-gcc
 
             - name: Setup ccache
