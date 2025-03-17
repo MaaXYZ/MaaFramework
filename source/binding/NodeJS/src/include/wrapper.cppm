@@ -18,7 +18,7 @@ import maa.nodejs.info;
 
 std::string PtrAsKey(void* ptr)
 {
-    return std::format("{:#018x}", reinterpret_cast<uintptr_t>(ptr));
+    return fmt::format("{:#018x}", reinterpret_cast<uintptr_t>(ptr));
 }
 
 export struct MaaNodeException : public std::exception
@@ -36,7 +36,7 @@ export struct MaaNodeException : public std::exception
 void CheckCount(const Napi::CallbackInfo& info, size_t count)
 {
     if (info.Length() != count) {
-        throw MaaNodeException { std::format("expect {} arguments, got {}", count, info.Length()) };
+        throw MaaNodeException { fmt::format("expect {} arguments, got {}", count, info.Length()) };
     }
 }
 
@@ -73,7 +73,7 @@ std::string DumpValue(const Napi::Value& val)
         return "[external]";
     }
     else {
-        return std::format("{} [{}]", val.ToString().Utf8Value(), TypeOf(val));
+        return fmt::format("{} [{}]", val.ToString().Utf8Value(), TypeOf(val));
     }
 }
 
@@ -115,12 +115,12 @@ struct JSConvert<void>
 export template <typename Type>
 struct JSConvert<Napi::External<Type>>
 {
-    static std::string name() { return std::format("External<{}>", ExternalName<Type>::name); }
+    static std::string name() { return fmt::format("External<{}>", ExternalName<Type>::name); }
 
     static Napi::External<Type> from_value(Napi::Value val)
     {
         if (!val.IsExternal()) {
-            throw MaaNodeException { std::format("expect {}, got {}", name(), DumpValue(val)) };
+            throw MaaNodeException { fmt::format("expect {}, got {}", name(), DumpValue(val)) };
         }
         return val.As<Napi::External<Type>>();
     }
@@ -136,7 +136,7 @@ struct JSConvert<Napi::Function>
     static Napi::Function from_value(Napi::Value val)
     {
         if (!val.IsFunction()) {
-            throw MaaNodeException { std::format("expect {}, got {}", name(), DumpValue(val)) };
+            throw MaaNodeException { fmt::format("expect {}, got {}", name(), DumpValue(val)) };
         }
         return val.As<Napi::Function>();
     }
@@ -152,7 +152,7 @@ struct JSConvert<Napi::Promise>
     static Napi::Promise from_value(Napi::Value val)
     {
         if (!val.IsPromise()) {
-            throw MaaNodeException { std::format("expect {}, got {}", name(), DumpValue(val)) };
+            throw MaaNodeException { fmt::format("expect {}, got {}", name(), DumpValue(val)) };
         }
         return val.As<Napi::Promise>();
     }
@@ -168,7 +168,7 @@ struct JSConvert<Napi::ArrayBuffer>
     static Napi::ArrayBuffer from_value(Napi::Value val)
     {
         if (!val.IsArrayBuffer()) {
-            throw MaaNodeException { std::format("expect {}, got {}", name(), DumpValue(val)) };
+            throw MaaNodeException { fmt::format("expect {}, got {}", name(), DumpValue(val)) };
         }
         return val.As<Napi::ArrayBuffer>();
     }
@@ -184,7 +184,7 @@ struct JSConvert<std::string>
     static std::string from_value(Napi::Value val)
     {
         if (!val.IsString()) {
-            throw MaaNodeException { std::format("expect {}, got {}", name(), DumpValue(val)) };
+            throw MaaNodeException { fmt::format("expect {}, got {}", name(), DumpValue(val)) };
         }
         return val.As<Napi::String>().Utf8Value();
     }
@@ -200,7 +200,7 @@ struct JSConvert<bool>
     static bool from_value(Napi::Value val)
     {
         if (!val.IsBoolean()) {
-            throw MaaNodeException { std::format("expect {}, got {}", name(), DumpValue(val)) };
+            throw MaaNodeException { fmt::format("expect {}, got {}", name(), DumpValue(val)) };
         }
         return val.As<Napi::Boolean>().Value();
     }
@@ -216,7 +216,7 @@ struct JSConvert<int32_t>
     static int32_t from_value(Napi::Value val)
     {
         if (!val.IsNumber()) {
-            throw MaaNodeException { std::format("expect {}, got {}", name(), DumpValue(val)) };
+            throw MaaNodeException { fmt::format("expect {}, got {}", name(), DumpValue(val)) };
         }
         return val.As<Napi::Number>().Int32Value();
     }
@@ -232,7 +232,7 @@ struct JSConvert<uint32_t>
     static uint32_t from_value(Napi::Value val)
     {
         if (!val.IsNumber()) {
-            throw MaaNodeException { std::format("expect {}, got {}", name(), DumpValue(val)) };
+            throw MaaNodeException { fmt::format("expect {}, got {}", name(), DumpValue(val)) };
         }
         return val.As<Napi::Number>().Uint32Value();
     }
@@ -248,7 +248,7 @@ struct JSConvert<int64_t>
     static int64_t from_value(Napi::Value val)
     {
         if (!val.IsNumber() && !val.IsString()) {
-            throw MaaNodeException { std::format("expect {}, got {}", name(), DumpValue(val)) };
+            throw MaaNodeException { fmt::format("expect {}, got {}", name(), DumpValue(val)) };
         }
         if (val.IsNumber()) {
             return val.As<Napi::Number>().Int64Value();
@@ -282,7 +282,7 @@ struct JSConvert<uint64_t>
     static uint64_t from_value(Napi::Value val)
     {
         if (!val.IsNumber() && !val.IsString()) {
-            throw MaaNodeException { std::format("expect {}, got {}", name(), DumpValue(val)) };
+            throw MaaNodeException { fmt::format("expect {}, got {}", name(), DumpValue(val)) };
         }
         if (val.IsNumber()) {
             // Because of the restriction of safe integer, using int64_t is enough
@@ -312,7 +312,7 @@ struct JSConvert<uint64_t>
 export template <typename T>
 struct JSConvert<std::optional<T>>
 {
-    static std::string name() { return std::format("{} or null", JSConvert<T>::name()); }
+    static std::string name() { return fmt::format("{} or null", JSConvert<T>::name()); }
 
     static std::optional<T> from_value(Napi::Value val)
     {
@@ -338,12 +338,12 @@ struct JSConvert<std::optional<T>>
 export template <typename T>
 struct JSConvert<std::vector<T>>
 {
-    static std::string name() { return std::format("Array of ({})", JSConvert<T>::name()); }
+    static std::string name() { return fmt::format("Array of ({})", JSConvert<T>::name()); }
 
     static std::vector<T> from_value(Napi::Value val)
     {
         if (!val.IsArray()) {
-            throw MaaNodeException { std::format("expect {}, got {}", name(), DumpValue(val)) };
+            throw MaaNodeException { fmt::format("expect {}, got {}", name(), DumpValue(val)) };
         }
         auto arr = val.As<Napi::Array>();
         std::vector<T> res;
@@ -382,17 +382,17 @@ struct JSConvert<std::tuple<Args...>>
         for (const auto& name : parts) {
             type += first ? name : ", " + name;
         }
-        return std::format("Tuple of ({})", type);
+        return fmt::format("Tuple of ({})", type);
     }
 
     static T from_value(Napi::Value val)
     {
         if (!val.IsArray()) {
-            throw MaaNodeException { std::format("expect {}, got {}", name(), DumpValue(val)) };
+            throw MaaNodeException { fmt::format("expect {}, got {}", name(), DumpValue(val)) };
         }
         auto arr = val.As<Napi::Array>();
         if (arr.Length() != std::tuple_size_v<T>) {
-            throw MaaNodeException { std::format("expect {}, got {}", name(), DumpValue(val)) };
+            throw MaaNodeException { fmt::format("expect {}, got {}", name(), DumpValue(val)) };
         }
         T result;
         [&]<size_t... I>(std::index_sequence<I...>) {
@@ -419,7 +419,7 @@ struct JSConvert<MaaRect>
     static MaaRect from_value(Napi::Value val)
     {
         if (!val.IsObject()) {
-            throw MaaNodeException { std::format("expect {}, got {}", name(), DumpValue(val)) };
+            throw MaaNodeException { fmt::format("expect {}, got {}", name(), DumpValue(val)) };
         }
         auto obj = val.As<Napi::Object>();
         return MaaRect {
@@ -451,7 +451,7 @@ struct JSConvert<__DesktopHandle*>
     static __DesktopHandle* from_value(Napi::Value val)
     {
         if (!val.IsString()) {
-            throw MaaNodeException { std::format("expect {}, got {}", name(), DumpValue(val)) };
+            throw MaaNodeException { fmt::format("expect {}, got {}", name(), DumpValue(val)) };
         }
         auto xval = std::strtoull(val.As<Napi::String>().Utf8Value().c_str(), nullptr, 16);
         return reinterpret_cast<__DesktopHandle*>(static_cast<size_t>(xval));
@@ -459,7 +459,7 @@ struct JSConvert<__DesktopHandle*>
 
     static Napi::Value to_value(Napi::Env env, __DesktopHandle* val)
     {
-        return Napi::String::New(env, std::format("{:p}", static_cast<void*>(val)));
+        return Napi::String::New(env, fmt::format("{:p}", static_cast<void*>(val)));
     }
 };
 
@@ -575,7 +575,7 @@ struct JSWrapFunction
                 return ret;
             }
             catch (const MaaNodeException& exc) {
-                Napi::TypeError::New(info.Env(), std::format("maa.{}: {}", (const char*)name.data, exc.what()))
+                Napi::TypeError::New(info.Env(), fmt::format("maa.{}: {}", (const char*)name.data, exc.what()))
                     .ThrowAsJavaScriptException();
                 return info.Env().Null();
             }
