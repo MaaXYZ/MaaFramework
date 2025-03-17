@@ -125,7 +125,7 @@ struct JSConvert<Napi::External<Type>>
         return val.As<Napi::External<Type>>();
     }
 
-    static Napi::Value to_value([[maybe_unused]] Napi::Env env, const Napi::External<Type>& val) { return val; }
+    static Napi::Value to_value(Napi::Env, const Napi::External<Type>& val) { return val; }
 };
 
 export template <>
@@ -141,7 +141,7 @@ struct JSConvert<Napi::Function>
         return val.As<Napi::Function>();
     }
 
-    static Napi::Value to_value([[maybe_unused]] Napi::Env env, const Napi::Function& val) { return val; }
+    static Napi::Value to_value(Napi::Env, const Napi::Function& val) { return val; }
 };
 
 export template <>
@@ -157,7 +157,7 @@ struct JSConvert<Napi::Promise>
         return val.As<Napi::Promise>();
     }
 
-    static Napi::Value to_value([[maybe_unused]] Napi::Env env, const Napi::Promise& val) { return val; }
+    static Napi::Value to_value(Napi::Env, const Napi::Promise& val) { return val; }
 };
 
 export template <>
@@ -173,7 +173,7 @@ struct JSConvert<Napi::ArrayBuffer>
         return val.As<Napi::ArrayBuffer>();
     }
 
-    static Napi::Value to_value([[maybe_unused]] Napi::Env env, const Napi::ArrayBuffer& val) { return val; }
+    static Napi::Value to_value(Napi::Env, const Napi::ArrayBuffer& val) { return val; }
 };
 
 export template <>

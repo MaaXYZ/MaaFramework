@@ -53,7 +53,7 @@ private:
 };
 
 export template <typename Type>
-void DeleteFinalizer([[maybe_unused]] Napi::Env env, Type data)
+void DeleteFinalizer(Napi::Env, Type data)
 {
     delete data;
 }
