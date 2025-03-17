@@ -4,6 +4,8 @@ module;
 
 export module napi;
 
+export using ::napi_valuetype;
+
 export namespace Napi
 {
 

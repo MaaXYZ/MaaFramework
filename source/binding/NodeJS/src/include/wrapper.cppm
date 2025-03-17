@@ -4,10 +4,13 @@ module;
 
 #include <exception>
 #include <format>
+#include <iterator>
+#include <optional>
 #include <string>
 #include <string_view>
 #include <tuple>
 #include <utility>
+#include <vector>
 
 export module maa.nodejs.wrapper;
 
