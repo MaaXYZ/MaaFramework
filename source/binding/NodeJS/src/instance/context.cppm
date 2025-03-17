@@ -6,6 +6,7 @@ module;
 #include <memory>
 #include <optional>
 #include <string>
+#include <vector>
 
 #include "../include/macro.h"
 

@@ -1,5 +1,7 @@
 module;
 
+#include <format>
+
 #include <napi.h>
 
 export module napi;
@@ -30,5 +32,12 @@ using Napi::Value;
 
 using Napi::Persistent;
 using Napi::Weak;
+
+}
+
+export namespace std
+{
+
+using std::format;
 
 }

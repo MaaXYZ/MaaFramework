@@ -5,6 +5,7 @@ module;
 #include <iostream>
 #include <optional>
 #include <tuple>
+#include <vector>
 
 export module maa.nodejs.cb;
 

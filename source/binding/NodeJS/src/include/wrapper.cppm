@@ -3,7 +3,6 @@ module;
 #include <MaaFramework/MaaDef.h>
 
 #include <exception>
-#include <format>
 #include <optional>
 #include <string>
 #include <string_view>
@@ -576,9 +575,8 @@ struct JSWrapFunction
                 return ret;
             }
             catch (const MaaNodeException& exc) {
-                // workaround for g++
-                auto msg = std::string("maa.") + name.data + ": " + exc.what();
-                Napi::TypeError::New(info.Env(), msg).ThrowAsJavaScriptException();
+                Napi::TypeError::New(info.Env(), std::format("maa.{}: {}", (const char*)name.data, exc.what()))
+                    .ThrowAsJavaScriptException();
                 return info.Env().Null();
             }
         };
