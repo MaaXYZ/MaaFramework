@@ -2,10 +2,12 @@ module;
 
 #include <MaaFramework/MaaDef.h>
 
+#include <algorithm>
 #include <exception>
 #include <format>
 #include <iterator>
 #include <optional>
+#include <sstream>
 #include <string>
 #include <string_view>
 #include <tuple>
