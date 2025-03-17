@@ -1,5 +1,7 @@
 module;
 
+#include <format>
+
 #include <napi.h>
 
 export module napi;
@@ -30,13 +32,5 @@ using Napi::Value;
 
 using Napi::Persistent;
 using Napi::Weak;
-
-}
-
-export namespace fmt
-{
-
-template <typename... Args>
-std::string format(std::string_view fmt, Args&&... args);
 
 }

@@ -3,6 +3,7 @@ module;
 #include <MaaFramework/MaaAPI.h>
 
 #include <cstring>
+#include <format>
 #include <functional>
 #include <string>
 #include <vector>
@@ -37,7 +38,7 @@ public:
             deferred.Resolve(ok(Env(), result));
         }
         catch (const MaaNodeException& exc) {
-            deferred.Reject(Napi::TypeError::New(Env(), fmt::format("maa.{}: {}", name.data, exc.what())).Value());
+            deferred.Reject(Napi::TypeError::New(Env(), std::format("maa.{}: {}", name.data, exc.what())).Value());
         }
     }
 
@@ -53,7 +54,7 @@ private:
 };
 
 export template <typename Type>
-void DeleteFinalizer(Napi::Env, Type data)
+void DeleteFinalizer([[maybe_unused]] Napi::Env env, Type data)
 {
     delete data;
 }
