@@ -6,6 +6,7 @@ export module maa.nodejs.wrapper;
 
 import napi;
 import stdmock;
+import stdmock.get;
 
 import maa.nodejs.info;
 
