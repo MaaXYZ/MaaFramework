@@ -1,6 +1,8 @@
 #include <MaaAgentClient/MaaAgentClientAPI.h>
 #include <napi.h>
 
+#include "../include/forward.h"
+
 import napi;
 
 import maa.nodejs.info;

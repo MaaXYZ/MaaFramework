@@ -1,6 +1,8 @@
 #include <MaaFramework/MaaDef.h>
 #include <napi.h>
 
+#include "../include/forward.h"
+
 import napi;
 
 import maa.nodejs.info;
@@ -15,8 +17,6 @@ import maa.nodejs.toolkit.config;
 import maa.nodejs.toolkit.find;
 import maa.nodejs.toolkit.pi;
 import maa.nodejs.agent.server;
-
-struct MaaAgentClient;
 
 void AgentClientDestroy(MaaAgentClient*)
 {

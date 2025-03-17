@@ -10,7 +10,7 @@ module;
 #include <type_traits>
 #include <vector>
 
-struct MaaAgentClient;
+#include "./forward.h"
 
 export module maa.nodejs.info;
 
@@ -89,8 +89,6 @@ struct InfoBase
 {
     Type handle = nullptr;
 };
-
-void AgentClientDestroy(MaaAgentClient*);
 
 export struct AgentClientInfo : InfoBase<MaaAgentClient*, AgentClientInfo>
 {
