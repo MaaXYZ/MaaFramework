@@ -368,7 +368,7 @@ struct JSConvert<std::tuple<Args...>>
 
         [&]<size_t... I>(std::index_sequence<I...>) {
             ((parts.push_back(JSConvert<std::tuple_element_t<I, T>>::name())), ...);
-        }(std::make_index_sequence<std::tuple_size_v<T>> {});
+        }(typename std::make_index_sequence<std::tuple_size_v<T>> {});
 
         std::ostringstream oss;
         std::copy(parts.begin(), parts.end(), std::ostream_iterator<std::string>(oss, ", "));
@@ -388,7 +388,7 @@ struct JSConvert<std::tuple<Args...>>
         T result;
         [&]<size_t... I>(std::index_sequence<I...>) {
             ((std::get<I>(result) = JSConvert<std::tuple_element_t<I, T>>::from_value(arr[I])), ...);
-        }(std::make_index_sequence<std::tuple_size_v<T>> {});
+        }(typename std::make_index_sequence<std::tuple_size_v<T>> {});
         return result;
     }
 
@@ -397,7 +397,7 @@ struct JSConvert<std::tuple<Args...>>
         auto arr = Napi::Array::New(env, std::tuple_size_v<T>);
         [&]<size_t... I>(std::index_sequence<I...>) {
             ((arr.Set(static_cast<uint32_t>(I), JSConvert<std::tuple_element_t<I, T>>::to_value(env, std::get<I>(val)))), ...);
-        }(std::make_index_sequence<std::tuple_size_v<T>> {});
+        }(typename std::make_index_sequence<std::tuple_size_v<T>> {});
         return arr;
     }
 };
@@ -528,7 +528,7 @@ struct JSWrapFunction
                 if constexpr (count > 0) {
                     [&]<size_t... I>(std::index_sequence<I...>) {
                         ((std::get<I>(params) = JSConvert<std::tuple_element_t<I, Args>>::from_value(info[I])), ...);
-                    }(std::make_index_sequence<count> {});
+                    }(typename std::make_index_sequence<count> {});
                 }
 
                 Napi::Value ret;
