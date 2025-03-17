@@ -1,7 +1,5 @@
 module;
 
-#include <format>
-
 #include <napi.h>
 
 export module napi;

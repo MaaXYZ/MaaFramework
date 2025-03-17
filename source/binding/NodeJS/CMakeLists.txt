@@ -64,11 +64,11 @@ set(maa_node_cppm
     src/utility/utility.cppm
 )
 
-
 add_library(MaaNodeCommon STATIC ${CMAKE_JS_SRC})
 target_sources(MaaNodeCommon PUBLIC FILE_SET cppms TYPE CXX_MODULES FILES ${maa_node_cppm})
 target_include_directories(MaaNodeCommon PRIVATE ${CMAKE_CURRENT_LIST_DIR}/../../../include)
 target_compile_definitions(MaaNodeCommon PRIVATE NODE_ADDON_API_ENABLE_TYPE_CHECK_ON_AS)
+set_target_properties(MaaNodeCommon PROPERTIES POSITION_INDEPENDENT_CODE ON)
 
 # Master
 
