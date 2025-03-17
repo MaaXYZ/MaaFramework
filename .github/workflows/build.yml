@@ -163,10 +163,10 @@ jobs:
                   submodules: true
 
             - name: Install cross compile toolchains
-              if: ${{ matrix.arch != 'x86_64' }}
+              # if: ${{ matrix.arch != 'x86_64' }}
               run: |
                   pacman -Sy
-                  pacman -S --noconfirm aarch64-linux-gnu-gcc
+                  pacman -S --noconfirm clang
 
             - name: Setup ccache
               uses: Chocobo1/setup-ccache-action@v1
@@ -187,8 +187,8 @@ jobs:
 
             - name: Build MAA
               env:
-                  CC: ${{ matrix.arch == 'x86_64' && 'gcc' || 'aarch64-linux-gnu-gcc' }}
-                  CXX: ${{ matrix.arch == 'x86_64' && 'g++' || 'aarch64-linux-gnu-g++' }}
+                  CC: ${{ matrix.arch == 'x86_64' && 'clang' || 'clang -arch arm64' }}
+                  CXX: ${{ matrix.arch == 'x86_64' && 'clang++' || 'clang++ -arch arm64' }}
               run: |
                   cmake --preset 'NinjaMulti' \
                     -DMAADEPS_TRIPLET='maa-${{ matrix.arch == 'x86_64' && 'x64' || 'arm64' }}-linux' \
