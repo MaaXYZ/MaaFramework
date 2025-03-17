@@ -1,14 +1,17 @@
-#pragma once
-
-#include "info.h"
-#include "utils.h"
-#include "wrapper.h"
+module;
 
 #include <MaaFramework/MaaAPI.h>
-#include <iostream>
-#include <vector>
 
-inline void NotificationCallback(const char* message, const char* details_json, void* callback_arg)
+export module maa.nodejs.cb;
+
+import napi;
+import stdmock;
+
+import maa.nodejs.info;
+import maa.nodejs.utils;
+import maa.nodejs.wrapper;
+
+export void NotificationCallback(const char* message, const char* details_json, void* callback_arg)
 {
     auto ctx = reinterpret_cast<CallbackContext*>(callback_arg);
     ctx->Call<void>(
@@ -16,7 +19,7 @@ inline void NotificationCallback(const char* message, const char* details_json, 
         [](auto res) { std::ignore = res; });
 }
 
-inline MaaBool CustomRecognizerCallback(
+export MaaBool CustomRecognizerCallback(
     MaaContext* context,
     MaaTaskId task_id,
     const char* node_name,
@@ -62,7 +65,7 @@ inline MaaBool CustomRecognizerCallback(
     }
 }
 
-inline MaaBool CustomActionCallback(
+export MaaBool CustomActionCallback(
     MaaContext* context,
     MaaTaskId task_id,
     const char* node_name,
@@ -99,7 +102,7 @@ inline MaaBool CustomActionCallback(
     return res;
 }
 
-inline MaaBool CustomControllerConnect(void* trans_arg)
+export MaaBool CustomControllerConnect(void* trans_arg)
 {
     auto ctx = reinterpret_cast<CallbackContext*>(trans_arg);
 
@@ -118,7 +121,7 @@ inline MaaBool CustomControllerConnect(void* trans_arg)
     return res;
 }
 
-inline MaaBool CustomControllerRequestUUID(void* trans_arg, MaaStringBuffer* buffer)
+export MaaBool CustomControllerRequestUUID(void* trans_arg, MaaStringBuffer* buffer)
 {
     auto ctx = reinterpret_cast<CallbackContext*>(trans_arg);
     using R = std::optional<std::string>;
@@ -144,7 +147,7 @@ inline MaaBool CustomControllerRequestUUID(void* trans_arg, MaaStringBuffer* buf
     }
 }
 
-inline MaaBool CustomControllerStartApp(const char* intent, void* trans_arg)
+export MaaBool CustomControllerStartApp(const char* intent, void* trans_arg)
 {
     auto ctx = reinterpret_cast<CallbackContext*>(trans_arg);
 
@@ -163,7 +166,7 @@ inline MaaBool CustomControllerStartApp(const char* intent, void* trans_arg)
     return res;
 }
 
-inline MaaBool CustomControllerStopApp(const char* intent, void* trans_arg)
+export MaaBool CustomControllerStopApp(const char* intent, void* trans_arg)
 {
     auto ctx = reinterpret_cast<CallbackContext*>(trans_arg);
 
@@ -182,7 +185,7 @@ inline MaaBool CustomControllerStopApp(const char* intent, void* trans_arg)
     return res;
 }
 
-inline MaaBool CustomControllerScreencap(void* trans_arg, MaaImageBuffer* buffer)
+export MaaBool CustomControllerScreencap(void* trans_arg, MaaImageBuffer* buffer)
 {
     auto ctx = reinterpret_cast<CallbackContext*>(trans_arg);
 
@@ -213,7 +216,7 @@ inline MaaBool CustomControllerScreencap(void* trans_arg, MaaImageBuffer* buffer
     }
 }
 
-inline MaaBool CustomControllerClick(int32_t x, int32_t y, void* trans_arg)
+export MaaBool CustomControllerClick(int32_t x, int32_t y, void* trans_arg)
 {
     auto ctx = reinterpret_cast<CallbackContext*>(trans_arg);
 
@@ -234,7 +237,7 @@ inline MaaBool CustomControllerClick(int32_t x, int32_t y, void* trans_arg)
     return res;
 }
 
-inline MaaBool CustomControllerSwipe(int32_t x1, int32_t y1, int32_t x2, int32_t y2, int32_t duration, void* trans_arg)
+export MaaBool CustomControllerSwipe(int32_t x1, int32_t y1, int32_t x2, int32_t y2, int32_t duration, void* trans_arg)
 {
     auto ctx = reinterpret_cast<CallbackContext*>(trans_arg);
 
@@ -260,7 +263,7 @@ inline MaaBool CustomControllerSwipe(int32_t x1, int32_t y1, int32_t x2, int32_t
     return res;
 }
 
-inline MaaBool CustomControllerTouchDown(int32_t contact, int32_t x, int32_t y, int32_t pressure, void* trans_arg)
+export MaaBool CustomControllerTouchDown(int32_t contact, int32_t x, int32_t y, int32_t pressure, void* trans_arg)
 {
     auto ctx = reinterpret_cast<CallbackContext*>(trans_arg);
 
@@ -285,7 +288,7 @@ inline MaaBool CustomControllerTouchDown(int32_t contact, int32_t x, int32_t y, 
     return res;
 }
 
-inline MaaBool CustomControllerTouchMove(int32_t contact, int32_t x, int32_t y, int32_t pressure, void* trans_arg)
+export MaaBool CustomControllerTouchMove(int32_t contact, int32_t x, int32_t y, int32_t pressure, void* trans_arg)
 {
     auto ctx = reinterpret_cast<CallbackContext*>(trans_arg);
 
@@ -310,7 +313,7 @@ inline MaaBool CustomControllerTouchMove(int32_t contact, int32_t x, int32_t y, 
     return res;
 }
 
-inline MaaBool CustomControllerTouchUp(int32_t contact, void* trans_arg)
+export MaaBool CustomControllerTouchUp(int32_t contact, void* trans_arg)
 {
     auto ctx = reinterpret_cast<CallbackContext*>(trans_arg);
 
@@ -329,7 +332,7 @@ inline MaaBool CustomControllerTouchUp(int32_t contact, void* trans_arg)
     return res;
 }
 
-inline MaaBool CustomControllerPressKey(int32_t keycode, void* trans_arg)
+export MaaBool CustomControllerPressKey(int32_t keycode, void* trans_arg)
 {
     auto ctx = reinterpret_cast<CallbackContext*>(trans_arg);
 
@@ -348,7 +351,7 @@ inline MaaBool CustomControllerPressKey(int32_t keycode, void* trans_arg)
     return res;
 }
 
-inline MaaBool CustomControllerInputText(const char* text, void* trans_arg)
+export MaaBool CustomControllerInputText(const char* text, void* trans_arg)
 {
     auto ctx = reinterpret_cast<CallbackContext*>(trans_arg);
 

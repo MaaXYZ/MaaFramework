@@ -1,10 +1,19 @@
-#include "../include/cb.h"
-#include "../include/info.h"
-#include "../include/loader.h"
-#include "../include/utils.h"
-#include "../include/wrapper.h"
+module;
 
 #include <MaaFramework/MaaAPI.h>
+#include <MaaToolkit/MaaToolkitAPI.h>
+
+#include "../include/macro.h"
+
+export module maa.nodejs.instance.resource;
+
+import napi;
+import stdmock;
+
+import maa.nodejs.cb;
+import maa.nodejs.info;
+import maa.nodejs.utils;
+import maa.nodejs.wrapper;
 
 std::optional<Napi::External<ResourceInfo>> resource_create(Napi::Env env, std::optional<Napi::Function> callback)
 {
@@ -175,7 +184,7 @@ std::optional<std::vector<std::string>> resource_get_node_list(Napi::External<Re
     }
 }
 
-void load_instance_resource(Napi::Env env, Napi::Object& exports, Napi::External<ExtContextInfo> context)
+export void load_instance_resource(Napi::Env env, Napi::Object& exports, Napi::External<ExtContextInfo> context)
 {
     BIND(resource_create);
     BIND(resource_destroy);

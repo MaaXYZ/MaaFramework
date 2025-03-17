@@ -1,14 +1,23 @@
-#include "../include/cb.h"
-#include "../include/info.h"
-#include "../include/loader.h"
-#include "../include/utils.h"
-#include "../include/wrapper.h"
+module;
 
 #include <MaaFramework/MaaAPI.h>
+#include <MaaToolkit/MaaToolkitAPI.h>
 
 #if defined(_WIN32)
 #include <Windows.h>
 #endif
+
+#include "../include/macro.h"
+
+export module maa.nodejs.instance.controller;
+
+import napi;
+import stdmock;
+
+import maa.nodejs.cb;
+import maa.nodejs.info;
+import maa.nodejs.utils;
+import maa.nodejs.wrapper;
 
 std::optional<Napi::External<ControllerInfo>> adb_controller_create(
     Napi::Env env,
@@ -269,7 +278,7 @@ std::optional<std::string> controller_get_uuid(Napi::External<ControllerInfo> in
     }
 }
 
-void load_instance_controller(Napi::Env env, Napi::Object& exports, Napi::External<ExtContextInfo> context)
+export void load_instance_controller(Napi::Env env, Napi::Object& exports, Napi::External<ExtContextInfo> context)
 {
     BIND(adb_controller_create);
     BIND(win32_controller_create);

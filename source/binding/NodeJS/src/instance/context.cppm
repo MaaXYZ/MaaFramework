@@ -1,10 +1,18 @@
-#include "../include/info.h"
-#include "../include/loader.h"
-#include "../include/utils.h"
-#include "../include/wrapper.h"
+module;
 
 #include <MaaFramework/MaaAPI.h>
-#include <string>
+#include <MaaToolkit/MaaToolkitAPI.h>
+
+#include "../include/macro.h"
+
+export module maa.nodejs.instance.context;
+
+import napi;
+import stdmock;
+
+import maa.nodejs.info;
+import maa.nodejs.utils;
+import maa.nodejs.wrapper;
 
 Napi::Promise context_run_task(Napi::Env env, Napi::External<MaaContext> info, std::string entry, std::string overr)
 {
@@ -26,11 +34,9 @@ Napi::Promise context_run_recognition(
     auto image = std::make_shared<ImageBuffer>();
     image->set(image_buf);
     auto handle = info.Data();
-    auto worker = new SimpleAsyncWork<MaaRecoId, "context_run_recognition">(
-        env,
-        [handle, entry, overr, image]() mutable {
-            return MaaContextRunRecognition(handle, entry.c_str(), overr.c_str(), *image);
-        });
+    auto worker = new SimpleAsyncWork<MaaRecoId, "context_run_recognition">(env, [handle, entry, overr, image]() mutable {
+        return MaaContextRunRecognition(handle, entry.c_str(), overr.c_str(), *image);
+    });
     worker->Queue();
     return worker->Promise();
 }
@@ -44,11 +50,9 @@ Napi::Promise context_run_action(
     std::string detail)
 {
     auto handle = info.Data();
-    auto worker = new SimpleAsyncWork<MaaNodeId, "context_run_action">(
-        env,
-        [handle, entry, overr, box, detail]() {
-            return MaaContextRunAction(handle, entry.c_str(), overr.c_str(), &box, detail.c_str());
-        });
+    auto worker = new SimpleAsyncWork<MaaNodeId, "context_run_action">(env, [handle, entry, overr, box, detail]() {
+        return MaaContextRunAction(handle, entry.c_str(), overr.c_str(), &box, detail.c_str());
+    });
     worker->Queue();
     return worker->Promise();
 }
@@ -58,10 +62,7 @@ bool context_override_pipeline(Napi::External<MaaContext> info, std::string over
     return MaaContextOverridePipeline(info.Data(), overr.c_str());
 }
 
-bool context_override_next(
-    Napi::External<MaaContext> info,
-    std::string name,
-    std::vector<std::string> next)
+bool context_override_next(Napi::External<MaaContext> info, std::string name, std::vector<std::string> next)
 {
     StringListBuffer buffer;
     buffer.set_vector(next, [](auto str) {
@@ -77,8 +78,7 @@ MaaTaskId context_get_task_id(Napi::External<MaaContext> info)
     return MaaContextGetTaskId(info.Data());
 }
 
-std::optional<Napi::External<TaskerInfo>>
-    context_get_tasker(ExtContextInfo* context, Napi::External<MaaContext> info)
+std::optional<Napi::External<TaskerInfo>> context_get_tasker(ExtContextInfo* context, Napi::External<MaaContext> info)
 {
     auto tasker = MaaContextGetTasker(info.Data());
     if (!tasker) {
@@ -97,10 +97,7 @@ Napi::External<MaaContext> context_clone(Napi::External<MaaContext> info)
     return Napi::External<MaaContext>::New(info.Env(), MaaContextClone(info.Data()));
 }
 
-void load_instance_context(
-    Napi::Env env,
-    Napi::Object& exports,
-    Napi::External<ExtContextInfo> context)
+export void load_instance_context(Napi::Env env, Napi::Object& exports, Napi::External<ExtContextInfo> context)
 {
     BIND(context_run_task);
     BIND(context_run_recognition);

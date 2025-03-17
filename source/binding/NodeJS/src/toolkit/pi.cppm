@@ -1,32 +1,28 @@
-#include "../include/cb.h"
-#include "../include/loader.h"
-#include "../include/wrapper.h"
+module;
 
 #include <MaaFramework/MaaAPI.h>
 #include <MaaToolkit/MaaToolkitAPI.h>
 
-void pi_register_custom_recognizer(
-    Napi::Env env,
-    ExtContextInfo* context,
-    uint64_t id,
-    std::string name,
-    Napi::Function callback)
+#include "../include/macro.h"
+
+export module maa.nodejs.toolkit.pi;
+
+import napi;
+import stdmock;
+
+import maa.nodejs.cb;
+import maa.nodejs.info;
+import maa.nodejs.utils;
+import maa.nodejs.wrapper;
+
+void pi_register_custom_recognizer(Napi::Env env, ExtContextInfo* context, uint64_t id, std::string name, Napi::Function callback)
 {
     auto ctx = new CallbackContext(env, callback, "CustomRecognizerCallback");
-    MaaToolkitProjectInterfaceRegisterCustomRecognition(
-        id,
-        name.c_str(),
-        CustomRecognizerCallback,
-        ctx);
+    MaaToolkitProjectInterfaceRegisterCustomRecognition(id, name.c_str(), CustomRecognizerCallback, ctx);
     context->picli.emplace_back(ctx);
 }
 
-void pi_register_custom_action(
-    Napi::Env env,
-    ExtContextInfo* context,
-    uint64_t id,
-    std::string name,
-    Napi::Function callback)
+void pi_register_custom_action(Napi::Env env, ExtContextInfo* context, uint64_t id, std::string name, Napi::Function callback)
 {
     auto ctx = new CallbackContext(env, callback, "CustomActionCallback");
     MaaToolkitProjectInterfaceRegisterCustomAction(id, name.c_str(), CustomActionCallback, ctx);
@@ -52,13 +48,7 @@ Napi::Promise pi_run_cli(
     auto worker = new SimpleAsyncWork<bool, "pi_run_cli">(
         env,
         [id, resource_path, user_path, directly, cb, ctx]() {
-            return MaaToolkitProjectInterfaceRunCli(
-                id,
-                resource_path.c_str(),
-                user_path.c_str(),
-                directly,
-                cb,
-                ctx);
+            return MaaToolkitProjectInterfaceRunCli(id, resource_path.c_str(), user_path.c_str(), directly, cb, ctx);
         },
         [ctx](auto env, auto res) {
             delete ctx;
@@ -68,7 +58,7 @@ Napi::Promise pi_run_cli(
     return worker->Promise();
 }
 
-void load_toolkit_pi(Napi::Env env, Napi::Object& exports, Napi::External<ExtContextInfo> context)
+export void load_toolkit_pi(Napi::Env env, Napi::Object& exports, Napi::External<ExtContextInfo> context)
 {
     BIND(pi_register_custom_recognizer);
     BIND(pi_register_custom_action);
