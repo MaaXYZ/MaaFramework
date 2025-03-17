@@ -2,12 +2,9 @@ module;
 
 #include <MaaFramework/MaaDef.h>
 
-#include <algorithm>
 #include <exception>
 #include <format>
-#include <iterator>
 #include <optional>
-#include <sstream>
 #include <string>
 #include <string_view>
 #include <tuple>
@@ -381,10 +378,12 @@ struct JSConvert<std::tuple<Args...>>
             ((parts.push_back(JSConvert<std::tuple_element_t<I, T>>::name())), ...);
         }(std::make_index_sequence<std::tuple_size_v<T>>());
 
-        std::ostringstream oss;
-        std::copy(parts.begin(), parts.end(), std::ostream_iterator<std::string>(oss, ", "));
-
-        return std::format("Tuple of ({})", oss.str());
+        std::string type = "";
+        bool first = true;
+        for (const auto& name : parts) {
+            type += first ? name : ", " + name;
+        }
+        return std::format("Tuple of ({})", type);
     }
 
     static T from_value(Napi::Value val)
@@ -577,7 +576,8 @@ struct JSWrapFunction
                 return ret;
             }
             catch (const MaaNodeException& exc) {
-                Napi::TypeError::New(info.Env(), std::format("maa.{}: {}", name.data, exc.what())).ThrowAsJavaScriptException();
+                Napi::TypeError::New(info.Env(), std::format("maa.{}: {}", (const char*)name.data, exc.what()))
+                    .ThrowAsJavaScriptException();
                 return info.Env().Null();
             }
         };
