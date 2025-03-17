@@ -576,8 +576,9 @@ struct JSWrapFunction
                 return ret;
             }
             catch (const MaaNodeException& exc) {
-                Napi::TypeError::New(info.Env(), std::format("maa.{}: {}", (const char*)name.data, exc.what()))
-                    .ThrowAsJavaScriptException();
+                // workaround for g++
+                auto msg = std::string("maa.") + name.data + ": " + exc.what();
+                Napi::TypeError::New(info.Env(), msg).ThrowAsJavaScriptException();
                 return info.Env().Null();
             }
         };
