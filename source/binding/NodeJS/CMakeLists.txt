@@ -96,7 +96,7 @@ endif()
 add_library(MaaNodeServer SHARED src/agent/main-server.cpp)
 target_sources(MaaNodeServer PUBLIC FILE_SET cppms TYPE CXX_MODULES FILES src/agent/server.cppm)
 set_target_properties(MaaNodeServer PROPERTIES PREFIX "" SUFFIX ".node")
-target_link_libraries(MaaNodeServer MaaNodeCommon ${CMAKE_JS_LIB} MaaAgentServer)
+target_link_libraries(MaaNodeServer MaaNodeCommon ${CMAKE_JS_LIB} MaaToolkit MaaAgentServer)
 target_compile_definitions(MaaNodeServer PRIVATE NODE_ADDON_API_ENABLE_TYPE_CHECK_ON_AS)
 
 install(

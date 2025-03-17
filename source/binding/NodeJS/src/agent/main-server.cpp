@@ -16,6 +16,12 @@ import maa.nodejs.toolkit.find;
 import maa.nodejs.toolkit.pi;
 import maa.nodejs.agent.server;
 
+struct MaaAgentClient;
+
+void AgentClientDestroy(MaaAgentClient*)
+{
+}
+
 Napi::Object Init(Napi::Env env, Napi::Object exports)
 {
     auto extCtx = Napi::External<ExtContextInfo>::New(env, new ExtContextInfo, &DeleteFinalizer<ExtContextInfo*>);

@@ -1,4 +1,4 @@
-#include <MaaFramework/MaaDef.h>
+#include <MaaAgentClient/MaaAgentClientAPI.h>
 #include <napi.h>
 
 import napi;
@@ -15,6 +15,11 @@ import maa.nodejs.toolkit.config;
 import maa.nodejs.toolkit.find;
 import maa.nodejs.toolkit.pi;
 import maa.nodejs.agent.client;
+
+void AgentClientDestroy(MaaAgentClient* client)
+{
+    MaaAgentClientDestroy(client);
+}
 
 Napi::Object Init(Napi::Env env, Napi::Object exports)
 {

@@ -1,6 +1,5 @@
 module;
 
-#include <MaaAgentClient/MaaAgentClientAPI.h>
 #include <MaaFramework/MaaAPI.h>
 
 #include <functional>
@@ -10,6 +9,8 @@ module;
 #include <string_view>
 #include <type_traits>
 #include <vector>
+
+struct MaaAgentClient;
 
 export module maa.nodejs.info;
 
@@ -89,6 +90,8 @@ struct InfoBase
     Type handle = nullptr;
 };
 
+void AgentClientDestroy(MaaAgentClient*);
+
 export struct AgentClientInfo : InfoBase<MaaAgentClient*, AgentClientInfo>
 {
     constexpr static std::string_view name = "AgentClient";
@@ -101,7 +104,7 @@ export struct AgentClientInfo : InfoBase<MaaAgentClient*, AgentClientInfo>
             return;
         }
         disposed = true;
-        MaaAgentClientDestroy(handle);
+        AgentClientDestroy(handle);
     }
 
     ~AgentClientInfo() { dispose(); }
