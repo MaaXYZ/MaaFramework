@@ -91,8 +91,8 @@ using __gnu_cxx::operator-;
 } // namespace __gnu_cxx
 #endif
 
-template <size_t N>
-constexpr auto dummy_make_index_sequence()
+export template <size_t N>
+constexpr auto __dummy_make_index_sequence()
 {
     return std::make_index_sequence<N>();
 }
