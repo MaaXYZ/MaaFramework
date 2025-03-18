@@ -1,7 +1,5 @@
 #include <MaaFramework/MaaDef.h>
 
-#include <napi.h>
-
 #include "./include/forward.h"
 
 import napi;
@@ -110,5 +108,3 @@ Napi::Object Init(Napi::Env env, Napi::Object exports)
 
     return exports;
 }
-
-NODE_API_MODULE(maa, Init);
