@@ -1,15 +1,20 @@
-#pragma once
-
-#include "wrapper.h"
+module;
 
 #include <MaaFramework/MaaAPI.h>
+
 #include <cstring>
-#include <iostream>
-#include <napi.h>
-
+#include <format>
 #include <functional>
+#include <string>
+#include <vector>
 
-template <typename Result, StringHolder name>
+export module maa.nodejs.utils;
+
+import napi;
+
+import maa.nodejs.wrapper;
+
+export template <typename Result, StringHolder name>
 class SimpleAsyncWork : public Napi::AsyncWorker
 {
 public:
@@ -48,13 +53,13 @@ private:
     Napi::Promise::Deferred deferred;
 };
 
-template <typename Type>
-inline void DeleteFinalizer([[maybe_unused]] Napi::Env env, Type data)
+export template <typename Type>
+void DeleteFinalizer([[maybe_unused]] Napi::Env env, Type data)
 {
     delete data;
 }
 
-template <typename Handle, Handle* (*Create)(), void (*Destroy)(Handle*)>
+export template <typename Handle, Handle* (*Create)(), void (*Destroy)(Handle*)>
 struct HandlerHolder
 {
     Handle* buffer;
@@ -105,7 +110,7 @@ struct HandlerHolder
     }
 };
 
-template <typename Handle>
+export template <typename Handle>
 struct HandlerReferHolder
 {
     Handle* buffer;
@@ -120,7 +125,7 @@ struct HandlerReferHolder
     HandlerReferHolder& operator=(const HandlerReferHolder& holder) = default;
 };
 
-struct StringBuffer : public HandlerHolder<MaaStringBuffer, &MaaStringBufferCreate, &MaaStringBufferDestroy>
+export struct StringBuffer : public HandlerHolder<MaaStringBuffer, &MaaStringBufferCreate, &MaaStringBufferDestroy>
 {
     using HandlerHolder::HandlerHolder;
 
@@ -131,7 +136,7 @@ struct StringBuffer : public HandlerHolder<MaaStringBuffer, &MaaStringBufferCrea
     void set(std::string_view data) const { MaaStringBufferSetEx(buffer, data.data(), data.size()); }
 };
 
-struct StringBufferRefer : public HandlerReferHolder<const MaaStringBuffer>
+export struct StringBufferRefer : public HandlerReferHolder<const MaaStringBuffer>
 {
     using HandlerReferHolder::HandlerReferHolder;
 
@@ -145,8 +150,7 @@ struct StringBufferRefer : public HandlerReferHolder<const MaaStringBuffer>
     std::string str() const { return std::string(MaaStringBufferGet(buffer), MaaStringBufferSize(buffer)); }
 };
 
-struct ImageBuffer : public HandlerHolder<MaaImageBuffer, &MaaImageBufferCreate, &MaaImageBufferDestroy>
-
+export struct ImageBuffer : public HandlerHolder<MaaImageBuffer, &MaaImageBufferCreate, &MaaImageBufferDestroy>
 {
     using HandlerHolder::HandlerHolder;
 
@@ -156,14 +160,14 @@ struct ImageBuffer : public HandlerHolder<MaaImageBuffer, &MaaImageBufferCreate,
     {
         auto len = MaaImageBufferGetEncodedSize(buffer);
         auto buf = Napi::ArrayBuffer::New(env, len);
-        memcpy(buf.Data(), MaaImageBufferGetEncoded(buffer), len);
+        std::memcpy(buf.Data(), MaaImageBufferGetEncoded(buffer), len);
         return buf;
     }
 
     void set(Napi::ArrayBuffer data) const { MaaImageBufferSetEncoded(buffer, reinterpret_cast<uint8_t*>(data.Data()), data.ByteLength()); }
 };
 
-struct ImageBufferRefer : public HandlerReferHolder<const MaaImageBuffer>
+export struct ImageBufferRefer : public HandlerReferHolder<const MaaImageBuffer>
 {
     using HandlerReferHolder::HandlerReferHolder;
 
@@ -178,7 +182,7 @@ struct ImageBufferRefer : public HandlerReferHolder<const MaaImageBuffer>
     {
         auto len = MaaImageBufferGetEncodedSize(buffer);
         auto buf = Napi::ArrayBuffer::New(env, len);
-        memcpy(buf.Data(), MaaImageBufferGetEncoded(buffer), len);
+        std::memcpy(buf.Data(), MaaImageBufferGetEncoded(buffer), len);
         return buf;
     }
 };
@@ -253,7 +257,7 @@ struct ListBuffer
     }
 };
 
-using StringListBuffer = ListBuffer<
+export using StringListBuffer = ListBuffer<
     MaaStringListBuffer,
     MaaStringBuffer,
     StringBufferRefer,
@@ -266,7 +270,7 @@ using StringListBuffer = ListBuffer<
     &MaaStringListBufferRemove,
     &MaaStringListBufferClear>;
 
-using ImageListBuffer = ListBuffer<
+export using ImageListBuffer = ListBuffer<
     MaaImageListBuffer,
     MaaImageBuffer,
     ImageBufferRefer,

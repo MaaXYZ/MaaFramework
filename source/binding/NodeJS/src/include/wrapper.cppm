@@ -1,29 +1,28 @@
-#pragma once
-
-#include <napi.h>   // IWYU pragma: export
-
-#include <cstdint>  // IWYU pragma: export
-#include <optional> // IWYU pragma: export
-#include <string>   // IWYU pragma: export
-#include <vector>   // IWYU pragma: export
-
-#include <algorithm>
-#include <exception>
-#include <format>
-#include <iterator>
-#include <sstream>
-#include <tuple>
+module;
 
 #include <MaaFramework/MaaDef.h>
 
-#include "info.h"
+#include <exception>
+#include <format>
+#include <optional>
+#include <string>
+#include <string_view>
+#include <tuple>
+#include <utility>
+#include <vector>
 
-inline std::string PtrAsKey(void* ptr)
+export module maa.nodejs.wrapper;
+
+import napi;
+
+import maa.nodejs.info;
+
+std::string PtrAsKey(void* ptr)
 {
     return std::format("{:#018x}", reinterpret_cast<uintptr_t>(ptr));
 }
 
-struct MaaNodeException : public std::exception
+export struct MaaNodeException : public std::exception
 {
     std::string error;
 
@@ -35,14 +34,14 @@ struct MaaNodeException : public std::exception
     virtual const char* what() const noexcept override { return error.c_str(); }
 };
 
-inline void CheckCount(const Napi::CallbackInfo& info, size_t count)
+void CheckCount(const Napi::CallbackInfo& info, size_t count)
 {
     if (info.Length() != count) {
         throw MaaNodeException { std::format("expect {} arguments, got {}", count, info.Length()) };
     }
 }
 
-inline std::string_view TypeOf(const Napi::Value& val)
+std::string_view TypeOf(const Napi::Value& val)
 {
     switch (val.Type()) {
     case napi_undefined:
@@ -69,7 +68,7 @@ inline std::string_view TypeOf(const Napi::Value& val)
     return "unknown";
 }
 
-inline std::string DumpValue(const Napi::Value& val)
+std::string DumpValue(const Napi::Value& val)
 {
     if (val.IsExternal()) {
         return "[external]";
@@ -97,7 +96,7 @@ struct ExternalName<MaaContext>
     constexpr static auto name = "Context";
 };
 
-template <typename Type>
+export template <typename Type>
 struct JSConvert
 {
     static std::string name() = delete;
@@ -106,7 +105,7 @@ struct JSConvert
 };
 
 // msvc want this
-template <>
+export template <>
 struct JSConvert<void>
 {
     static std::string name() { return "void"; }
@@ -114,7 +113,7 @@ struct JSConvert<void>
     static Napi::Value to_value(Napi::Env env) { return env.Undefined(); }
 };
 
-template <typename Type>
+export template <typename Type>
 struct JSConvert<Napi::External<Type>>
 {
     static std::string name() { return std::format("External<{}>", ExternalName<Type>::name); }
@@ -130,7 +129,7 @@ struct JSConvert<Napi::External<Type>>
     static Napi::Value to_value([[maybe_unused]] Napi::Env env, const Napi::External<Type>& val) { return val; }
 };
 
-template <>
+export template <>
 struct JSConvert<Napi::Function>
 {
     static std::string name() { return "Function"; }
@@ -146,7 +145,7 @@ struct JSConvert<Napi::Function>
     static Napi::Value to_value([[maybe_unused]] Napi::Env env, const Napi::Function& val) { return val; }
 };
 
-template <>
+export template <>
 struct JSConvert<Napi::Promise>
 {
     static std::string name() { return "Promise"; }
@@ -162,7 +161,7 @@ struct JSConvert<Napi::Promise>
     static Napi::Value to_value([[maybe_unused]] Napi::Env env, const Napi::Promise& val) { return val; }
 };
 
-template <>
+export template <>
 struct JSConvert<Napi::ArrayBuffer>
 {
     static std::string name() { return "ArrayBuffer"; }
@@ -178,7 +177,7 @@ struct JSConvert<Napi::ArrayBuffer>
     static Napi::Value to_value([[maybe_unused]] Napi::Env env, const Napi::ArrayBuffer& val) { return val; }
 };
 
-template <>
+export template <>
 struct JSConvert<std::string>
 {
     static std::string name() { return "String"; }
@@ -194,7 +193,7 @@ struct JSConvert<std::string>
     static Napi::Value to_value(Napi::Env env, const std::string& val) { return Napi::String::New(env, val); }
 };
 
-template <>
+export template <>
 struct JSConvert<bool>
 {
     static std::string name() { return "Boolean"; }
@@ -210,7 +209,7 @@ struct JSConvert<bool>
     static Napi::Value to_value(Napi::Env env, const bool& val) { return Napi::Boolean::New(env, val); }
 };
 
-template <>
+export template <>
 struct JSConvert<int32_t>
 {
     static std::string name() { return "Number<int32>"; }
@@ -226,7 +225,7 @@ struct JSConvert<int32_t>
     static Napi::Value to_value(Napi::Env env, const int32_t& val) { return Napi::Number::New(env, val); }
 };
 
-template <>
+export template <>
 struct JSConvert<uint32_t>
 {
     static std::string name() { return "Number<uint32>"; }
@@ -242,7 +241,7 @@ struct JSConvert<uint32_t>
     static Napi::Value to_value(Napi::Env env, const uint32_t& val) { return Napi::Number::New(env, val); }
 };
 
-template <>
+export template <>
 struct JSConvert<int64_t>
 {
     static std::string name() { return "Number<int64> or String<int64>"; }
@@ -276,7 +275,7 @@ struct JSConvert<int64_t>
     }
 };
 
-template <>
+export template <>
 struct JSConvert<uint64_t>
 {
     static std::string name() { return "Number<uint64> or String<uint64>"; }
@@ -311,7 +310,7 @@ struct JSConvert<uint64_t>
     }
 };
 
-template <typename T>
+export template <typename T>
 struct JSConvert<std::optional<T>>
 {
     static std::string name() { return std::format("{} or null", JSConvert<T>::name()); }
@@ -337,7 +336,7 @@ struct JSConvert<std::optional<T>>
     }
 };
 
-template <typename T>
+export template <typename T>
 struct JSConvert<std::vector<T>>
 {
     static std::string name() { return std::format("Array of ({})", JSConvert<T>::name()); }
@@ -366,7 +365,7 @@ struct JSConvert<std::vector<T>>
     }
 };
 
-template <typename... Args>
+export template <typename... Args>
 struct JSConvert<std::tuple<Args...>>
 {
     using T = std::tuple<Args...>;
@@ -375,14 +374,16 @@ struct JSConvert<std::tuple<Args...>>
     {
         std::vector<std::string> parts;
 
-        [&]<std::size_t... I>(std::index_sequence<I...>) {
+        [&]<size_t... I>(std::index_sequence<I...>) {
             ((parts.push_back(JSConvert<std::tuple_element_t<I, T>>::name())), ...);
-        }(std::make_index_sequence<std::tuple_size_v<T>> {});
+        }(std::make_index_sequence<std::tuple_size_v<T>>());
 
-        std::ostringstream oss;
-        std::copy(parts.begin(), parts.end(), std::ostream_iterator<std::string>(oss, ", "));
-
-        return std::format("Tuple of ({})", oss.str());
+        std::string type = "";
+        bool first = true;
+        for (const auto& name : parts) {
+            type += first ? name : ", " + name;
+        }
+        return std::format("Tuple of ({})", type);
     }
 
     static T from_value(Napi::Value val)
@@ -395,23 +396,23 @@ struct JSConvert<std::tuple<Args...>>
             throw MaaNodeException { std::format("expect {}, got {}", name(), DumpValue(val)) };
         }
         T result;
-        [&]<std::size_t... I>(std::index_sequence<I...>) {
+        [&]<size_t... I>(std::index_sequence<I...>) {
             ((std::get<I>(result) = JSConvert<std::tuple_element_t<I, T>>::from_value(arr[I])), ...);
-        }(std::make_index_sequence<std::tuple_size_v<T>> {});
+        }(std::make_index_sequence<std::tuple_size_v<T>>());
         return result;
     }
 
     static Napi::Value to_value(Napi::Env env, const T& val)
     {
         auto arr = Napi::Array::New(env, std::tuple_size_v<T>);
-        [&]<std::size_t... I>(std::index_sequence<I...>) {
+        [&]<size_t... I>(std::index_sequence<I...>) {
             ((arr.Set(static_cast<uint32_t>(I), JSConvert<std::tuple_element_t<I, T>>::to_value(env, std::get<I>(val)))), ...);
-        }(std::make_index_sequence<std::tuple_size_v<T>> {});
+        }(std::make_index_sequence<std::tuple_size_v<T>>());
         return arr;
     }
 };
 
-template <>
+export template <>
 struct JSConvert<MaaRect>
 {
     static std::string name() { return "Object<MaaRect>"; }
@@ -441,9 +442,9 @@ struct JSConvert<MaaRect>
     }
 };
 
-struct __DesktopHandle;
+export struct __DesktopHandle;
 
-template <>
+export template <>
 struct JSConvert<__DesktopHandle*>
 {
     static std::string name() { return "String<DesktopHandle>"; }
@@ -463,12 +464,12 @@ struct JSConvert<__DesktopHandle*>
     }
 };
 
-template <typename F>
+export template <typename F>
 struct FuncTraits
 {
 };
 
-template <typename R, typename... Args>
+export template <typename R, typename... Args>
 struct FuncTraits<R (*)(Args...)>
 {
     using ret = R;
@@ -478,7 +479,7 @@ struct FuncTraits<R (*)(Args...)>
     static constexpr bool want_ctx = false;
 };
 
-template <typename R, typename... Args>
+export template <typename R, typename... Args>
 struct FuncTraits<R (*)(Napi::Env, Args...)>
 {
     using ret = R;
@@ -488,7 +489,7 @@ struct FuncTraits<R (*)(Napi::Env, Args...)>
     static constexpr bool want_ctx = false;
 };
 
-template <typename R, typename... Args>
+export template <typename R, typename... Args>
 struct FuncTraits<R (*)(ExtContextInfo*, Args...)>
 {
     using ret = R;
@@ -498,7 +499,7 @@ struct FuncTraits<R (*)(ExtContextInfo*, Args...)>
     static constexpr bool want_ctx = true;
 };
 
-template <typename R, typename... Args>
+export template <typename R, typename... Args>
 struct FuncTraits<R (*)(Napi::Env, ExtContextInfo*, Args...)>
 {
     using ret = R;
@@ -508,7 +509,7 @@ struct FuncTraits<R (*)(Napi::Env, ExtContextInfo*, Args...)>
     static constexpr bool want_ctx = true;
 };
 
-template <size_t N>
+export template <size_t N>
 struct StringHolder
 {
     char data[N];
@@ -516,7 +517,7 @@ struct StringHolder
     constexpr StringHolder(const char (&str)[N]) { std::copy(str, str + N, data); }
 };
 
-template <typename Func, Func func, StringHolder name>
+export template <typename Func, Func func, StringHolder name>
 struct JSWrapFunction
 {
     static auto make(Napi::External<ExtContextInfo> context)
@@ -535,9 +536,9 @@ struct JSWrapFunction
                 Args params;
 
                 if constexpr (count > 0) {
-                    [&]<std::size_t... I>(std::index_sequence<I...>) {
+                    [&]<size_t... I>(std::index_sequence<I...>) {
                         ((std::get<I>(params) = JSConvert<std::tuple_element_t<I, Args>>::from_value(info[I])), ...);
-                    }(std::make_index_sequence<count> {});
+                    }(std::make_index_sequence<count>());
                 }
 
                 Napi::Value ret;
@@ -575,11 +576,10 @@ struct JSWrapFunction
                 return ret;
             }
             catch (const MaaNodeException& exc) {
-                Napi::TypeError::New(info.Env(), std::format("maa.{}: {}", name.data, exc.what())).ThrowAsJavaScriptException();
+                Napi::TypeError::New(info.Env(), std::format("maa.{}: {}", (const char*)name.data, exc.what()))
+                    .ThrowAsJavaScriptException();
                 return info.Env().Null();
             }
         };
     }
 };
-
-#define BIND(name) exports[#name] = Napi::Function::New(env, JSWrapFunction<decltype(&name), &name, #name>::make(context), #name)

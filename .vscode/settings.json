@@ -54,5 +54,8 @@
     "python.analysis.extraPaths": [
         "./source/binding/Python"
     ],
-    "editor.formatOnSave": true
+    "editor.formatOnSave": true,
+    "clangd.arguments": [
+        "--experimental-modules-support"
+    ]
 }

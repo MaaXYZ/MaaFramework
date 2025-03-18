@@ -1,7 +1,17 @@
-#include "../include/loader.h"
-#include "../include/wrapper.h"
+module;
 
 #include <MaaFramework/MaaAPI.h>
+
+#include <string>
+
+#include "../include/macro.h"
+
+export module maa.nodejs.utility.utility;
+
+import napi;
+
+import maa.nodejs.info;
+import maa.nodejs.wrapper;
 
 std::string version()
 {
@@ -38,10 +48,7 @@ bool set_global_option_debug_mode(bool flag)
     return MaaSetGlobalOption(MaaGlobalOption_DebugMode, &flag, sizeof(flag));
 }
 
-void load_utility_utility(
-    Napi::Env env,
-    Napi::Object& exports,
-    Napi::External<ExtContextInfo> context)
+export void load_utility_utility(Napi::Env env, Napi::Object& exports, Napi::External<ExtContextInfo> context)
 {
     BIND(version);
     BIND(set_global_option_log_dir);

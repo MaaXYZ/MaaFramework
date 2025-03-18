@@ -1,62 +1,20 @@
-#include "include/cb.h"
-#include "include/info.h"
-#include "include/loader.h"
-#include "include/utils.h"
-#include "include/wrapper.h"
-
-#if defined(MAA_NODE_SERVER)
-
-#include <MaaAgentServer/MaaAgentServerAPI.h>
-
-bool agent_server_register_custom_recognition(Napi::Env env, ExtContextInfo* context, std::string name, Napi::Function callback)
-{
-    auto ctx = new CallbackContext(env, callback, "CustomRecognizerCallback");
-    if (MaaAgentServerRegisterCustomRecognition(name.c_str(), CustomRecognizerCallback, ctx)) {
-        context->server.emplace_back(ctx);
-        return true;
-    }
-    else {
-        delete ctx;
-        return false;
-    }
-}
-
-bool agent_server_register_custom_action(Napi::Env env, ExtContextInfo* context, std::string name, Napi::Function callback)
-{
-    auto ctx = new CallbackContext(env, callback, "CustomActionCallback");
-    if (MaaAgentServerRegisterCustomAction(name.c_str(), CustomActionCallback, ctx)) {
-        context->server.emplace_back(ctx);
-        return true;
-    }
-    else {
-        delete ctx;
-        return false;
-    }
-}
-
-bool agent_server_start_up(std::string identifier)
-{
-    return MaaAgentServerStartUp(identifier.c_str());
-}
-
-void agent_server_shut_down()
-{
-    MaaAgentServerShutDown();
-}
-
-void agent_server_join()
-{
-    MaaAgentServerJoin();
-}
-
-void agent_server_detach()
-{
-    MaaAgentServerDetach();
-}
-
-#else
+module;
 
 #include <MaaAgentClient/MaaAgentClientAPI.h>
+
+#include <optional>
+#include <string>
+
+#include "../include/macro.h"
+
+export module maa.nodejs.agent.client;
+
+import napi;
+
+import maa.nodejs.cb;
+import maa.nodejs.info;
+import maa.nodejs.utils;
+import maa.nodejs.wrapper;
 
 std::optional<Napi::External<AgentClientInfo>> agent_client_create(Napi::Env env)
 {
@@ -114,20 +72,8 @@ bool agent_client_disconnect(Napi::External<AgentClientInfo> info)
     return MaaAgentClientDisconnect(info.Data()->handle);
 }
 
-#endif
-
-void load_agent(Napi::Env env, Napi::Object& exports, Napi::External<ExtContextInfo> context)
+export void load_agent(Napi::Env env, Napi::Object& exports, Napi::External<ExtContextInfo> context)
 {
-#if defined(MAA_NODE_SERVER)
-    BIND(agent_server_register_custom_recognition);
-    BIND(agent_server_register_custom_action);
-    BIND(agent_server_start_up);
-    BIND(agent_server_shut_down);
-    BIND(agent_server_join);
-    BIND(agent_server_detach);
-
-    exports["AgentRole"] = "server";
-#else
     BIND(agent_client_create);
     BIND(agent_client_destroy);
     BIND(agent_client_bind_resource);
@@ -136,5 +82,4 @@ void load_agent(Napi::Env env, Napi::Object& exports, Napi::External<ExtContextI
     BIND(agent_client_disconnect);
 
     exports["AgentRole"] = "client";
-#endif
 }

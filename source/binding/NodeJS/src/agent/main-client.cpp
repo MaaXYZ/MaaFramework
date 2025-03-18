@@ -1,9 +1,27 @@
-#include "include/info.h"
-#include "include/loader.h"
-#include "include/utils.h"
-
-#include <MaaFramework/MaaAPI.h>
+#include <MaaAgentClient/MaaAgentClientAPI.h>
 #include <napi.h>
+
+#include "../include/forward.h"
+
+import napi;
+
+import maa.nodejs.info;
+import maa.nodejs.utils;
+import maa.nodejs.wrapper;
+import maa.nodejs.instance.context;
+import maa.nodejs.instance.controller;
+import maa.nodejs.instance.resource;
+import maa.nodejs.instance.tasker;
+import maa.nodejs.utility.utility;
+import maa.nodejs.toolkit.config;
+import maa.nodejs.toolkit.find;
+import maa.nodejs.toolkit.pi;
+import maa.nodejs.agent.client;
+
+void AgentClientDestroy(MaaAgentClient* client)
+{
+    MaaAgentClientDestroy(client);
+}
 
 Napi::Object Init(Napi::Env env, Napi::Object exports)
 {
@@ -96,4 +114,4 @@ Napi::Object Init(Napi::Env env, Napi::Object exports)
     return exports;
 }
 
-NODE_API_MODULE(maa, Init)
+NODE_API_MODULE(maa, Init);
