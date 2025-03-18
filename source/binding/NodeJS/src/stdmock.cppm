@@ -81,6 +81,7 @@ using std::operator+;
 
 }
 
+// libstdc++的迭代器 operator== 在命名空间里面
 // https://github.com/alibaba/async_simple/blob/main/async_simple/std.mock.cppm
 // https://github.com/MaaXYZ/MaaFramework/actions/runs/13918756240/job/38946866471
 #if defined(__GLIBCXX__) || defined(__GLIBCPP__)
@@ -91,6 +92,9 @@ using __gnu_cxx::operator-;
 } // namespace __gnu_cxx
 #endif
 
+// 不知道为啥, 但是这里导出的函数名字必须也是 make_index_sequence, 否则 msvc 下有语法错误, 虽然根本没用这个函数
+// https://github.com/MaaXYZ/MaaFramework/actions/runs/13922021657/job/38957311261
+// https://github.com/MaaXYZ/MaaFramework/actions/runs/13922189281/job/38957838620
 export template <size_t N>
 constexpr auto make_index_sequence()
 {
