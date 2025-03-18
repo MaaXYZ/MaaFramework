@@ -92,7 +92,7 @@ using __gnu_cxx::operator-;
 #endif
 
 export template <size_t N>
-constexpr auto __dummy_make_index_sequence()
+constexpr auto make_index_sequence()
 {
     return std::make_index_sequence<N>();
 }
