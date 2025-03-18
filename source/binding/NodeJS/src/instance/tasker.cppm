@@ -3,16 +3,12 @@ module;
 #include <MaaFramework/MaaAPI.h>
 #include <MaaToolkit/MaaToolkitAPI.h>
 
-#include <optional>
-#include <string>
-#include <tuple>
-#include <vector>
-
 #include "../include/macro.h"
 
 export module maa.nodejs.instance.tasker;
 
 import napi;
+import stdmock;
 
 import maa.nodejs.cb;
 import maa.nodejs.info;

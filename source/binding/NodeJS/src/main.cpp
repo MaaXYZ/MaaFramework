@@ -1,9 +1,11 @@
-#include <MaaAgentClient/MaaAgentClientAPI.h>
+#include <MaaFramework/MaaDef.h>
+
 #include <napi.h>
 
-#include "../include/forward.h"
+#include "./include/forward.h"
 
 import napi;
+import stdmock;
 
 import maa.nodejs.info;
 import maa.nodejs.utils;
@@ -16,12 +18,7 @@ import maa.nodejs.utility.utility;
 import maa.nodejs.toolkit.config;
 import maa.nodejs.toolkit.find;
 import maa.nodejs.toolkit.pi;
-import maa.nodejs.agent.client;
-
-void AgentClientDestroy(MaaAgentClient* client)
-{
-    MaaAgentClientDestroy(client);
-}
+import maa.nodejs.agent;
 
 Napi::Object Init(Napi::Env env, Napi::Object exports)
 {

@@ -2,4 +2,4 @@
 
 struct MaaAgentClient;
 
-void AgentClientDestroy(MaaAgentClient*);
+extern "C++" void AgentClientDestroy(MaaAgentClient*);

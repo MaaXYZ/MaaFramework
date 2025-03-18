@@ -2,13 +2,12 @@ module;
 
 #include <MaaFramework/MaaAPI.h>
 
-#include <string>
-
 #include "../include/macro.h"
 
 export module maa.nodejs.utility.utility;
 
 import napi;
+import stdmock;
 
 import maa.nodejs.info;
 import maa.nodejs.wrapper;

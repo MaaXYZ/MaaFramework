@@ -2,14 +2,10 @@ module;
 
 #include <MaaFramework/MaaAPI.h>
 
-#include <iostream>
-#include <optional>
-#include <tuple>
-#include <vector>
-
 export module maa.nodejs.cb;
 
 import napi;
+import stdmock;
 
 import maa.nodejs.info;
 import maa.nodejs.utils;

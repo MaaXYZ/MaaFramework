@@ -2,15 +2,10 @@ module;
 
 #include <MaaFramework/MaaAPI.h>
 
-#include <cstring>
-#include <format>
-#include <functional>
-#include <string>
-#include <vector>
-
 export module maa.nodejs.utils;
 
 import napi;
+import stdmock;
 
 import maa.nodejs.wrapper;
 

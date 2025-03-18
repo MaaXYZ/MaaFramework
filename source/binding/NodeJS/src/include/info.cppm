@@ -2,19 +2,12 @@ module;
 
 #include <MaaFramework/MaaAPI.h>
 
-#include <functional>
-#include <future>
-#include <map>
-#include <memory>
-#include <string_view>
-#include <type_traits>
-#include <vector>
-
 #include "./forward.h"
 
 export module maa.nodejs.info;
 
 import napi;
+import stdmock;
 
 export struct CallbackContext
 {

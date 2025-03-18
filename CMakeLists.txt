@@ -1,6 +1,7 @@
 cmake_minimum_required(VERSION 3.28)
 project(MaaFw)
 
+set(CMAKE_CXX_SCAN_FOR_MODULES OFF)
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake/modules")
 
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)

@@ -2,19 +2,23 @@ module;
 
 #include <MaaAgentClient/MaaAgentClientAPI.h>
 
-#include <optional>
-#include <string>
-
+#include "../include/forward.h"
 #include "../include/macro.h"
 
-export module maa.nodejs.agent.client;
+module maa.nodejs.agent;
 
 import napi;
+import stdmock;
 
 import maa.nodejs.cb;
 import maa.nodejs.info;
 import maa.nodejs.utils;
 import maa.nodejs.wrapper;
+
+extern "C++" void AgentClientDestroy(MaaAgentClient* client)
+{
+    MaaAgentClientDestroy(client);
+}
 
 std::optional<Napi::External<AgentClientInfo>> agent_client_create(Napi::Env env)
 {
@@ -72,7 +76,7 @@ bool agent_client_disconnect(Napi::External<AgentClientInfo> info)
     return MaaAgentClientDisconnect(info.Data()->handle);
 }
 
-export void load_agent(Napi::Env env, Napi::Object& exports, Napi::External<ExtContextInfo> context)
+void load_agent(Napi::Env env, Napi::Object& exports, Napi::External<ExtContextInfo> context)
 {
     BIND(agent_client_create);
     BIND(agent_client_destroy);
