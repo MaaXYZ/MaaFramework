@@ -1,12 +1,11 @@
 module;
 
-#include <MaaAgentServer/MaaAgentServerAPI.h>
-
 #include "../include/forward.h"
 #include "../include/macro.h"
 
 module maa.nodejs.agent;
 
+import maa.agent.server;
 import napi;
 import stdmock;
 

@@ -48,6 +48,9 @@ if(WIN32
 endif()
 
 set(maa_node_cppm
+    module/MaaFramework.cppm
+    module/MaaToolkit.cppm
+
     src/napi.cppm
     src/stdmock.cppm
 
@@ -75,6 +78,7 @@ set_target_properties(MaaNodeCommon PROPERTIES POSITION_INDEPENDENT_CODE ON)
 # Master
 
 add_library(MaaNode SHARED src/agent/client.cpp src/reg.cpp)
+target_sources(MaaNode PUBLIC FILE_SET cppms TYPE CXX_MODULES FILES module/MaaAgentClient.cppm)
 set_target_properties(MaaNode PROPERTIES PREFIX "" SUFFIX ".node")
 target_link_libraries(MaaNode MaaNodeCommon ${CMAKE_JS_LIB} MaaFramework MaaToolkit MaaAgentClient)
 target_compile_definitions(MaaNode PRIVATE NODE_ADDON_API_ENABLE_TYPE_CHECK_ON_AS)
@@ -95,6 +99,7 @@ endif()
 # Slave
 
 add_library(MaaNodeServer SHARED src/agent/server.cpp src/reg.cpp)
+target_sources(MaaNodeServer PUBLIC FILE_SET cppms TYPE CXX_MODULES FILES module/MaaAgentServer.cppm)
 set_target_properties(MaaNodeServer PROPERTIES PREFIX "" SUFFIX ".node")
 target_link_libraries(MaaNodeServer MaaNodeCommon ${CMAKE_JS_LIB} MaaToolkit MaaAgentServer)
 target_compile_definitions(MaaNodeServer PRIVATE NODE_ADDON_API_ENABLE_TYPE_CHECK_ON_AS)

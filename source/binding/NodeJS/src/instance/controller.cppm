@@ -1,8 +1,5 @@
 module;
 
-#include <MaaFramework/MaaAPI.h>
-#include <MaaToolkit/MaaToolkitAPI.h>
-
 #if defined(_WIN32)
 #include <Windows.h>
 #endif
@@ -11,6 +8,7 @@ module;
 
 export module maa.nodejs.instance.controller;
 
+import maa.core;
 import napi;
 import stdmock;
 

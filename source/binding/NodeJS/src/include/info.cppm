@@ -1,11 +1,10 @@
 module;
 
-#include <MaaFramework/MaaAPI.h>
-
 #include "./forward.h"
 
 export module maa.nodejs.info;
 
+import maa.core;
 import napi;
 import stdmock;
 
