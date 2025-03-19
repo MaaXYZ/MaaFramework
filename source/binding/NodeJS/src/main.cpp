@@ -34,7 +34,7 @@ Napi::Object Init(Napi::Env env, Napi::Object exports)
 
     load_agent(env, exports, extCtx);
 
-#define DE(prefix, key) prefix##_obj[#key] = JSConvert<prefix>::to_value(env, prefix##_##key)
+#define DE(prefix, key) prefix##_obj[#key] = JSConvert<prefix>::to_value(env, prefix##Enum::prefix##_##key)
 #define DEM(prefix, key) prefix##_obj[#key] = JSConvert<prefix>::to_value(env, _##prefix##_##key)
 
     auto MaaStatus_obj = Napi::Object::New(env);
