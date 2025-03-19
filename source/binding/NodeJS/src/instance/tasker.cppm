@@ -188,7 +188,7 @@ std::optional<std::tuple<std::string, std::vector<MaaNodeId>, MaaStatus>>
     }
     StringBuffer entry;
     std::vector<MaaNodeId> nodes(node_size);
-    MaaStatus status = MaaStatus_Invalid;
+    MaaStatus status = MaaStatusEnum::MaaStatus_Invalid;
     if (MaaTaskerGetTaskDetail(info.Data()->handle, id, entry, nodes.data(), &node_size, &status)) {
         return std::make_tuple(entry.str(), nodes, status);
     }
