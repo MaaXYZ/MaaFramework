@@ -5,6 +5,17 @@ import { ResourceBase } from './resource'
 
 type TaskDetail = ReturnType<TaskerBase['task_detail']>
 
+type RecoDetailEntry = {
+    box: maa.Rect
+    detail: string
+}
+
+export type RecoDetail = {
+    all_results: RecoDetailEntry[]
+    filtered_results_: RecoDetailEntry[]
+    best_result_: RecoDetailEntry | null
+}
+
 class TaskJob extends Job<maa.TaskId, JobSource<maa.TaskId>> {
     #tasker: TaskerBase
 
@@ -159,7 +170,7 @@ export class TaskerBase {
                 algorithm,
                 hit,
                 box,
-                detail,
+                detail: JSON.parse(detail) as RecoDetail,
                 raw,
                 draws
             }
