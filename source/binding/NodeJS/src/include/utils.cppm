@@ -1,9 +1,8 @@
 module;
 
-#include <MaaFramework/MaaAPI.h>
-
 export module maa.nodejs.utils;
 
+import maa.core;
 import napi;
 import stdmock;
 

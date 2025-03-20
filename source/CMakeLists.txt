@@ -20,3 +20,4 @@ add_subdirectory(MaaAgentClient)
 add_subdirectory(MaaAgentServer)
 
 add_subdirectory(binding)
+add_subdirectory(modules)

@@ -1,9 +1,8 @@
 module;
 
-#include <MaaFramework/MaaDef.h>
-
 export module maa.nodejs.wrapper;
 
+import maa.core;
 import napi;
 import stdmock;
 

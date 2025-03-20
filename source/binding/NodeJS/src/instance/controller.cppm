@@ -1,8 +1,5 @@
 module;
 
-#include <MaaFramework/MaaAPI.h>
-#include <MaaToolkit/MaaToolkitAPI.h>
-
 #if defined(_WIN32)
 #include <Windows.h>
 #endif
@@ -11,6 +8,7 @@ module;
 
 export module maa.nodejs.instance.controller;
 
+import maa.core;
 import napi;
 import stdmock;
 
@@ -163,22 +161,22 @@ void controller_destroy(Napi::External<ControllerInfo> info)
 
 bool controller_set_option_screenshot_target_long_side(Napi::External<ControllerInfo> info, int32_t size)
 {
-    return MaaControllerSetOption(info.Data()->handle, MaaCtrlOption_ScreenshotTargetLongSide, &size, sizeof(size));
+    return MaaControllerSetOption(info.Data()->handle, MaaCtrlOptionEnum::MaaCtrlOption_ScreenshotTargetLongSide, &size, sizeof(size));
 }
 
 bool controller_set_option_screenshot_target_short_side(Napi::External<ControllerInfo> info, int32_t size)
 {
-    return MaaControllerSetOption(info.Data()->handle, MaaCtrlOption_ScreenshotTargetShortSide, &size, sizeof(size));
+    return MaaControllerSetOption(info.Data()->handle, MaaCtrlOptionEnum::MaaCtrlOption_ScreenshotTargetShortSide, &size, sizeof(size));
 }
 
 bool controller_set_option_screenshot_use_raw_size(Napi::External<ControllerInfo> info, bool flag)
 {
-    return MaaControllerSetOption(info.Data()->handle, MaaCtrlOption_ScreenshotUseRawSize, &flag, sizeof(flag));
+    return MaaControllerSetOption(info.Data()->handle, MaaCtrlOptionEnum::MaaCtrlOption_ScreenshotUseRawSize, &flag, sizeof(flag));
 }
 
 bool controller_set_option_recording(Napi::External<ControllerInfo> info, bool flag)
 {
-    return MaaControllerSetOption(info.Data()->handle, MaaCtrlOption_Recording, &flag, sizeof(flag));
+    return MaaControllerSetOption(info.Data()->handle, MaaCtrlOptionEnum::MaaCtrlOption_Recording, &flag, sizeof(flag));
 }
 
 MaaCtrlId controller_post_connection(Napi::External<ControllerInfo> info)

@@ -1,12 +1,10 @@
 module;
 
-#include <MaaFramework/MaaAPI.h>
-#include <MaaToolkit/MaaToolkitAPI.h>
-
 #include "../include/macro.h"
 
 export module maa.nodejs.instance.resource;
 
+import maa.core;
 import napi;
 import stdmock;
 
@@ -44,12 +42,16 @@ void resource_destroy(Napi::External<ResourceInfo> info)
 
 bool resource_set_option_inference_device(Napi::External<ResourceInfo> info, int32_t id)
 {
-    return MaaResourceSetOption(info.Data()->handle, MaaResOption_InferenceDevice, &id, sizeof(id));
+    return MaaResourceSetOption(info.Data()->handle, MaaResOptionEnum::MaaResOption_InferenceDevice, &id, sizeof(id));
 }
 
 bool resource_set_option_inference_execution_provider(Napi::External<ResourceInfo> info, int32_t provider)
 {
-    return MaaResourceSetOption(info.Data()->handle, MaaResOption_InferenceExecutionProvider, &provider, sizeof(provider));
+    return MaaResourceSetOption(
+        info.Data()->handle,
+        MaaResOptionEnum::MaaResOption_InferenceExecutionProvider,
+        &provider,
+        sizeof(provider));
 }
 
 bool resource_register_custom_recognition(Napi::Env env, Napi::External<ResourceInfo> info, std::string name, Napi::Function callback)

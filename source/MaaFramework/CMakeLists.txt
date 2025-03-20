@@ -28,8 +28,12 @@ if(WITH_DBG_CONTROLLER)
     add_dependencies(MaaFramework MaaDbgControlUnit)
 endif()
 
+# 提供一个仅包含include而不链接的target, 方便处理client/server通用代码
+add_library(MaaInterface INTERFACE)
+target_include_directories(MaaInterface INTERFACE $<BUILD_INTERFACE:${MAA_PUBLIC_INC}> $<INSTALL_INTERFACE:include>)
+
 install(
-    TARGETS MaaFramework
+    TARGETS MaaFramework MaaInterface
     EXPORT MaaFrameworkTargets
     RUNTIME DESTINATION bin
     LIBRARY DESTINATION bin

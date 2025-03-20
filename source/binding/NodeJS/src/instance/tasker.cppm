@@ -1,12 +1,10 @@
 module;
 
-#include <MaaFramework/MaaAPI.h>
-#include <MaaToolkit/MaaToolkitAPI.h>
-
 #include "../include/macro.h"
 
 export module maa.nodejs.instance.tasker;
 
+import maa.core;
 import napi;
 import stdmock;
 
@@ -171,7 +169,7 @@ std::optional<std::tuple<std::string, std::string, bool, MaaRect, std::string, N
 std::optional<std::tuple<std::string, MaaRecoId, bool>> tasker_get_node_detail(Napi::External<TaskerInfo> info, MaaNodeId id)
 {
     StringBuffer name;
-    MaaRecoId reco_id = MaaInvalidId;
+    MaaRecoId reco_id = _MaaInvalidId;
     MaaBool completed = false;
     if (MaaTaskerGetNodeDetail(info.Data()->handle, id, name, &reco_id, &completed)) {
         return std::make_tuple(name.str(), reco_id, completed);
@@ -190,7 +188,7 @@ std::optional<std::tuple<std::string, std::vector<MaaNodeId>, MaaStatus>>
     }
     StringBuffer entry;
     std::vector<MaaNodeId> nodes(node_size);
-    MaaStatus status = MaaStatus_Invalid;
+    MaaStatus status = MaaStatusEnum::MaaStatus_Invalid;
     if (MaaTaskerGetTaskDetail(info.Data()->handle, id, entry, nodes.data(), &node_size, &status)) {
         return std::make_tuple(entry.str(), nodes, status);
     }
@@ -201,7 +199,7 @@ std::optional<std::tuple<std::string, std::vector<MaaNodeId>, MaaStatus>>
 
 std::optional<MaaNodeId> tasker_get_latest_node(Napi::External<TaskerInfo> info, std::string name)
 {
-    MaaNodeId latest_id = MaaInvalidId;
+    MaaNodeId latest_id = _MaaInvalidId;
     if (MaaTaskerGetLatestNode(info.Data()->handle, name.c_str(), &latest_id)) {
         return latest_id;
     }

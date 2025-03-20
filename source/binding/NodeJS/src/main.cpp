@@ -1,7 +1,6 @@
-#include <MaaFramework/MaaDef.h>
-
 #include "./include/forward.h"
 
+import maa.core;
 import napi;
 import stdmock;
 
@@ -35,7 +34,8 @@ Napi::Object Init(Napi::Env env, Napi::Object exports)
 
     load_agent(env, exports, extCtx);
 
-#define DE(prefix, key) prefix##_obj[#key] = JSConvert<prefix>::to_value(env, prefix##_##key)
+#define DE(prefix, key) prefix##_obj[#key] = JSConvert<prefix>::to_value(env, prefix##Enum::prefix##_##key)
+#define DEM(prefix, key) prefix##_obj[#key] = JSConvert<prefix>::to_value(env, _##prefix##_##key)
 
     auto MaaStatus_obj = Napi::Object::New(env);
     DE(MaaStatus, Invalid);
@@ -57,40 +57,40 @@ Napi::Object Init(Napi::Env env, Napi::Object exports)
     exports["LoggingLevel"] = MaaLoggingLevel_obj;
 
     auto MaaAdbScreencapMethod_obj = Napi::Object::New(env);
-    DE(MaaAdbScreencapMethod, EncodeToFileAndPull);
-    DE(MaaAdbScreencapMethod, Encode);
-    DE(MaaAdbScreencapMethod, RawWithGzip);
-    DE(MaaAdbScreencapMethod, RawByNetcat);
-    DE(MaaAdbScreencapMethod, MinicapDirect);
-    DE(MaaAdbScreencapMethod, MinicapStream);
-    DE(MaaAdbScreencapMethod, EmulatorExtras);
-    DE(MaaAdbScreencapMethod, All);
-    DE(MaaAdbScreencapMethod, Default);
+    DEM(MaaAdbScreencapMethod, EncodeToFileAndPull);
+    DEM(MaaAdbScreencapMethod, Encode);
+    DEM(MaaAdbScreencapMethod, RawWithGzip);
+    DEM(MaaAdbScreencapMethod, RawByNetcat);
+    DEM(MaaAdbScreencapMethod, MinicapDirect);
+    DEM(MaaAdbScreencapMethod, MinicapStream);
+    DEM(MaaAdbScreencapMethod, EmulatorExtras);
+    DEM(MaaAdbScreencapMethod, All);
+    DEM(MaaAdbScreencapMethod, Default);
     exports["AdbScreencapMethod"] = MaaAdbScreencapMethod_obj;
 
     auto MaaAdbInputMethod_obj = Napi::Object::New(env);
-    DE(MaaAdbInputMethod, AdbShell);
-    DE(MaaAdbInputMethod, MinitouchAndAdbKey);
-    DE(MaaAdbInputMethod, Maatouch);
-    DE(MaaAdbInputMethod, EmulatorExtras);
-    DE(MaaAdbInputMethod, All);
-    DE(MaaAdbInputMethod, Default);
+    DEM(MaaAdbInputMethod, AdbShell);
+    DEM(MaaAdbInputMethod, MinitouchAndAdbKey);
+    DEM(MaaAdbInputMethod, Maatouch);
+    DEM(MaaAdbInputMethod, EmulatorExtras);
+    DEM(MaaAdbInputMethod, All);
+    DEM(MaaAdbInputMethod, Default);
     exports["AdbInputMethod"] = MaaAdbInputMethod_obj;
 
     auto MaaWin32ScreencapMethod_obj = Napi::Object::New(env);
-    DE(MaaWin32ScreencapMethod, GDI);
-    DE(MaaWin32ScreencapMethod, FramePool);
-    DE(MaaWin32ScreencapMethod, DXGI_DesktopDup);
+    DEM(MaaWin32ScreencapMethod, GDI);
+    DEM(MaaWin32ScreencapMethod, FramePool);
+    DEM(MaaWin32ScreencapMethod, DXGI_DesktopDup);
     exports["Win32ScreencapMethod"] = MaaWin32ScreencapMethod_obj;
 
     auto MaaWin32InputMethod_obj = Napi::Object::New(env);
-    DE(MaaWin32InputMethod, Seize);
-    DE(MaaWin32InputMethod, SendMessage);
+    DEM(MaaWin32InputMethod, Seize);
+    DEM(MaaWin32InputMethod, SendMessage);
     exports["Win32InputMethod"] = MaaWin32InputMethod_obj;
 
     auto MaaDbgControllerType_obj = Napi::Object::New(env);
-    DE(MaaDbgControllerType, CarouselImage);
-    DE(MaaDbgControllerType, ReplayRecording);
+    DEM(MaaDbgControllerType, CarouselImage);
+    DEM(MaaDbgControllerType, ReplayRecording);
     exports["DbgControllerType"] = MaaDbgControllerType_obj;
 
     auto MaaInferenceDevice_obj = Napi::Object::New(env);
