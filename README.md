@@ -147,7 +147,7 @@ _请留意，仅当您准备开发 MaaFramework 本身时，才需要阅读本�
 - [opencv](https://github.com/opencv/opencv)  
   Open Source Computer Vision Library
 - [fastdeploy](https://github.com/PaddlePaddle/FastDeploy)  
-  ⚡️An Easy-to-use and Fast Deep Learning Model Deployment Toolkit for ☁️Cloud 📱Mobile and 📹Edge. Including Image, Video, Text and Audio 20+ main stream scenarios and 150+ SOTA models with end-to-end optimization, multi-platform and multi-framework support.
+  ⚡️An Easy-to-use and Fast Deep Learning Model Deployment Toolkit for ☁️Cloud 📱Mobile and 📹Edge.
 - [onnxruntime](https://github.com/microsoft/onnxruntime)  
   ONNX Runtime: cross-platform, high performance ML inferencing and training accelerator
 - [boost](https://www.boost.org/)  
