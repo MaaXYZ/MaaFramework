@@ -102,6 +102,11 @@ bool Runner::run(
     boost::process::child agent_child;
     if (param.agent) {
         agent = AgentClientLibraryHolder::create_agent_client();
+        if (!agent) {
+            LogError << "Failed to create AgentClient";
+            return false;
+        }
+
         agent->bind_resource(resource_handle);
         std::string socket_id = agent->create_socket(param.agent->identifier);
 
