@@ -1,7 +1,7 @@
 import ctypes
 import json
 from abc import ABC
-from typing import Optional, Tuple
+from typing import Optional, Tuple, Any
 from enum import IntEnum
 from dataclasses import dataclass
 
@@ -63,6 +63,7 @@ class NotificationHandler(ABC):
         task_id: int
         name: str
         next_list: list[str]
+        focus: Any
 
     def on_node_next_list(
         self, noti_type: NotificationType, detail: NodeNextListDetail
@@ -74,6 +75,7 @@ class NotificationHandler(ABC):
         task_id: int
         reco_id: int
         name: str
+        focus: Any
 
     def on_node_recognition(
         self, noti_type: NotificationType, detail: NodeRecognitionDetail
@@ -85,6 +87,7 @@ class NotificationHandler(ABC):
         task_id: int
         node_id: int
         name: str
+        focus: Any
 
     def on_node_action(self, noti_type: NotificationType, detail: NodeActionDetail):
         pass
@@ -126,6 +129,7 @@ class NotificationHandler(ABC):
                 task_id=details["task_id"],
                 name=details["name"],
                 next_list=details["list"],
+                focus=details["focus"],
             )
             self.on_node_next_list(noti_type, detail)
 
@@ -134,6 +138,7 @@ class NotificationHandler(ABC):
                 task_id=details["task_id"],
                 reco_id=details["reco_id"],
                 name=details["name"],
+                focus=details["focus"],
             )
             self.on_node_recognition(noti_type, detail)
 
@@ -142,6 +147,7 @@ class NotificationHandler(ABC):
                 task_id=details["task_id"],
                 node_id=details["node_id"],
                 name=details["name"],
+                focus=details["focus"],
             )
             self.on_node_action(noti_type, detail)
 
