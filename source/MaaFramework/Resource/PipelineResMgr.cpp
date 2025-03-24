@@ -796,7 +796,7 @@ bool PipelineResMgr::parse_custom_recognition_param(
         return false;
     }
 
-    output.custom_param = input.get("custom_recognition_param", json::object());
+    output.custom_param = input.get("custom_recognition_param", json::value());
 
     return true;
 }
@@ -1400,7 +1400,7 @@ bool PipelineResMgr::parse_custom_action_param(
         return false;
     }
 
-    output.custom_param = input.get("custom_action_param", json::object());
+    output.custom_param = input.get("custom_action_param", json::value());
 
     return true;
 }
