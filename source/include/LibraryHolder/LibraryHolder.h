@@ -23,6 +23,8 @@ public:
     static bool load_library(const std::filesystem::path& libname);
     static void unload_library();
 
+    static bool loaded();
+
     template <typename FuncT>
     static boost::function<FuncT> get_function(const std::string& func_name);
 
@@ -106,6 +108,13 @@ inline void LibraryHolder<T>::unload_library()
 
     libname_.clear();
     ref_count_ = 0;
+}
+
+template <typename T>
+inline bool LibraryHolder<T>::loaded()
+{
+    std::unique_lock lock(mutex_);
+    return module_.is_loaded();
 }
 
 template <typename T>

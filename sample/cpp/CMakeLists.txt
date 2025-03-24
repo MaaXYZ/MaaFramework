@@ -1,4 +1,6 @@
 add_executable(sample main.cpp)
 target_link_libraries(sample MaaFramework MaaToolkit)
 
-add_subdirectory(MaaAgent)
+if(WITH_MAA_AGENT)
+    add_subdirectory(MaaAgent)
+endif()

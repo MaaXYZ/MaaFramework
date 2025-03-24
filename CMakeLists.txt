@@ -15,6 +15,7 @@ option(WITH_ADB_CONTROLLER "build with adb controller" ON)
 option(WITH_WIN32_CONTROLLER "build with win32 controller" ON)
 option(WITH_DBG_CONTROLLER "build with debugging controller" ON)
 option(WITH_NODEJS_BINDING "build with nodejs binding" OFF)
+option(WITH_MAA_AGENT "build with MaaAgent" ON)
 
 option(BUILD_PICLI "build maa picli" ON)
 option(BUILD_SAMPLE "build a demo" OFF)
@@ -22,6 +23,7 @@ option(BUILD_PIPELINE_TESTING "build pipeline testing" OFF)
 option(BUILD_DLOPEN_TESTING "build dlopen testing" OFF)
 
 option(ENABLE_CCACHE "enable ccache if possible" ON)
+option(ENABLE_CPP20_MODULES "enable C++20 modules" ON)
 
 set(MAA_PUBLIC_INC ${CMAKE_SOURCE_DIR}/include)
 set(MAA_PRIVATE_INC ${CMAKE_SOURCE_DIR}/source/include)
@@ -92,12 +94,13 @@ install(
     NAMESPACE MaaFramework::
     DESTINATION "share/cmake/MaaFramework")
 
-install(
-    EXPORT MaaAgentServerTargets
-    FILE MaaAgentServer.cmake
-    NAMESPACE MaaAgentServer::
-    DESTINATION "share/cmake/MaaAgentServer")
-
+if (WITH_MAA_AGENT)
+    install(
+        EXPORT MaaAgentServerTargets
+        FILE MaaAgentServer.cmake
+        NAMESPACE MaaAgentServer::
+        DESTINATION "share/cmake/MaaAgentServer")
+endif()
 
 include(CMakePackageConfigHelpers)
 
