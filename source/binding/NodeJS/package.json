@@ -5,11 +5,14 @@
     ]
   },
   "devDependencies": {
-    "@tsconfig/node20": "^20.1.4",
-    "@types/node": "^20.17.22",
+    "@tsconfig/node20": "^20.1.5",
+    "@types/node": "^20.17.27",
     "cmake-js": "^7.3.0",
     "node-addon-api": "^8.3.1",
     "node-api-headers": "^1.5.0",
     "tsx": "^4.19.3"
+  },
+  "dependencies": {
+    "axios": "^1.8.4"
   }
 }
