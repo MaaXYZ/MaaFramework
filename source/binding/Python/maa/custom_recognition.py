@@ -98,11 +98,11 @@ class CustomRecognition(ABC):
         elif result is None:
             return int(False)
 
-        elif (
-            isinstance(result, tuple)
-            and len(result) == 4
-            and all(isinstance(x, (int, float)) for x in result)
-        ):
+        # RectType
+        elif (isinstance(result, Rect) or 
+                (isinstance(result, list) and len(result) >= 4) or
+                (isinstance(result, numpy.ndarray) and result.size >= 4) or
+                (isinstance(result, tuple) and len(result) == 4 and all(isinstance(x, (int, float)) for x in result))):
             rect_buffer.set(result)
             return int(True)
 
