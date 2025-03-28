@@ -105,9 +105,8 @@
                     "$ref": "#/definitions/wait_freezes_type"
                 },
                 "focus": {
-                    "description": "产生同步回调消息。可选，默认空，即不产生。",
-                    "type": "boolean",
-                    "default": false
+                    "description": "同步回调消息。可选，默认 null，不产生。",
+                    "default": null
                 },
                 "roi": {
                     "description": "识别区域坐标。可选，默认 [0, 0, 0, 0]，即全屏。",

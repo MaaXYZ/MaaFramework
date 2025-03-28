@@ -76,14 +76,14 @@ RecoResult TaskBase::run_recognition(const cv::Mat& image, const PipelineData::N
         LogError << "get_pipeline_data failed, node not exist" << VAR(cur_node_);
         return {};
     }
-    bool focus = node_opt->focus;
 
     const json::value reco_list_cb_detail {
         { "task_id", task_id() },
         { "name", cur_node_ },
         { "list", json::array(list) },
+        { "focus", node_opt->focus },
     };
-    if (debug_mode() || focus) {
+    if (debug_mode() || !node_opt->focus.is_null()) {
         notify(MaaMsg_Node_NextList_Starting, reco_list_cb_detail);
     }
 
@@ -102,22 +102,24 @@ RecoResult TaskBase::run_recognition(const cv::Mat& image, const PipelineData::N
             continue;
         }
 
-        if (debug_mode() || pipeline_data.focus) {
+        if (debug_mode() || !pipeline_data.focus.is_null()) {
             const json::value reco_cb_detail {
                 { "task_id", task_id() },
                 { "reco_id", 0 },
                 { "name", node },
+                { "focus", pipeline_data.focus },
             };
             notify(MaaMsg_Node_Recognition_Starting, reco_cb_detail);
         }
 
         RecoResult result = recognizer.recognize(pipeline_data);
 
-        if (debug_mode() || pipeline_data.focus) {
+        if (debug_mode() || !pipeline_data.focus.is_null()) {
             const json::value reco_cb_detail {
                 { "task_id", task_id() },
                 { "reco_id", result.reco_id },
                 { "name", node },
+                { "focus", pipeline_data.focus },
             };
             notify(result.box ? MaaMsg_Node_Recognition_Succeeded : MaaMsg_Node_Recognition_Failed, reco_cb_detail);
         }
@@ -128,14 +130,14 @@ RecoResult TaskBase::run_recognition(const cv::Mat& image, const PipelineData::N
 
         LogInfo << "node hit" << VAR(result.name) << VAR(result.box);
 
-        if (debug_mode() || focus) {
+        if (debug_mode() || !node_opt->focus.is_null()) {
             notify(MaaMsg_Node_NextList_Succeeded, reco_list_cb_detail);
         }
 
         return result;
     }
 
-    if (debug_mode() || focus) {
+    if (debug_mode() || !node_opt->focus.is_null()) {
         notify(MaaMsg_Node_NextList_Failed, reco_list_cb_detail);
     }
 
@@ -161,11 +163,12 @@ NodeDetail TaskBase::run_action(const RecoResult& reco)
     }
     const auto& pipeline_data = *node_opt;
 
-    if (debug_mode() || pipeline_data.focus) {
+    if (debug_mode() || !pipeline_data.focus.is_null()) {
         const json::value cb_detail {
             { "task_id", task_id() },
             { "node_id", 0 },
             { "name", reco.name },
+            { "focus", pipeline_data.focus },
         };
         notify(MaaMsg_Node_Action_Starting, cb_detail);
     }
@@ -182,11 +185,12 @@ NodeDetail TaskBase::run_action(const RecoResult& reco)
 
     set_node_detail(result.node_id, result);
 
-    if (debug_mode() || pipeline_data.focus) {
+    if (debug_mode() || !pipeline_data.focus.is_null()) {
         const json::value cb_detail {
             { "task_id", task_id() },
             { "node_id", result.node_id },
             { "name", reco.name },
+            { "focus", pipeline_data.focus },
         };
         notify(result.completed ? MaaMsg_Node_Action_Succeeded : MaaMsg_Node_Action_Failed, cb_detail);
     }

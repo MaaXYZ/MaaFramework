@@ -63,18 +63,21 @@ export type TaskerNotify = {
           task_id: number
           name: string
           list: string[]
+          focus: unknown
       }
     | {
           msg: 'Recognition.Starting' | 'Recognition.Succeeded' | 'Recognition.Failed'
           task_id: number
           reco_id: number
           name: string
+          focus: unknown
       }
     | {
           msg: 'Action.Starting' | 'Action.Succeeded' | 'Action.Failed'
           task_id: number
           node_id: number
           name: string
+          focus: unknown
       }
 )
 

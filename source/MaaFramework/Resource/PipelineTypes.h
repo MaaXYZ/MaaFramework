@@ -153,7 +153,7 @@ struct PipelineData
     WaitFreezesParam pre_wait_freezes;
     WaitFreezesParam post_wait_freezes;
 
-    bool focus = false;
+    json::value focus;
 };
 
 MAA_RES_NS_END

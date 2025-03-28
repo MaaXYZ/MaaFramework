@@ -72,6 +72,7 @@
  *     task_id: number,
  *     name: string,
  *     list: string[],
+ *     focus: any,
  * }
  */
 #define MaaMsg_Node_NextList_Starting ("Node.NextList.Starting")
@@ -87,6 +88,7 @@
  *     task_id: number,
  *     reco_id: number,
  *     name: string,
+ *     focus: any,
  * }
  */
 #define MaaMsg_Node_Recognition_Starting ("Node.Recognition.Starting")
@@ -102,6 +104,7 @@
  *     task_id: number,
  *     node_id: number,
  *     name: string,
+ *     focus: any,
  * }
  */
 #define MaaMsg_Node_Action_Starting ("Node.Action.Starting")

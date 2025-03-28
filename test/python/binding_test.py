@@ -154,7 +154,7 @@ def api_test():
             "custom_recognition": "MyRec",
             "action": "Custom",
             "custom_action": "MyAct",
-            "custom_action_param": "👋哈哈哈(*´▽｀)ノノ😀",
+            "custom_action_param": "哈哈哈(*´▽｀)ノノ",
         },
     }
 
