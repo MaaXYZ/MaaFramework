@@ -134,6 +134,11 @@ MaaTaskId Tasker::post_stop()
     return post_task(std::move(task_ptr), {});
 }
 
+bool Tasker::stopping() const
+{
+    return need_to_stop_ && task_runner_->running();
+}
+
 MAA_RES_NS::ResourceMgr* Tasker::resource() const
 {
     return resource_;

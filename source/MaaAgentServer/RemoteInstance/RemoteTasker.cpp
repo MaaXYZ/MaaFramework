@@ -116,6 +116,20 @@ MaaTaskId RemoteTasker::post_stop()
     return resp_opt->task_id;
 }
 
+bool RemoteTasker::stopping() const
+{
+    TaskerStoppingReverseRequest req {
+        .tasker_id = tasker_id_,
+    };
+
+    auto resp_opt = server_.send_and_recv<TaskerStoppingReverseResponse>(req);
+    if (!resp_opt) {
+        return false;
+    }
+
+    return resp_opt->ret;
+}
+
 MaaResource* RemoteTasker::resource() const
 {
     TaskerResourceReverseRequest req {

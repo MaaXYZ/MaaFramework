@@ -37,6 +37,7 @@ public:
 
     virtual bool running() const override;
     virtual MaaTaskId post_stop() override;
+    virtual bool stopping() const override;
 
     virtual MAA_RES_NS::ResourceMgr* resource() const override;
     virtual MAA_CTRL_NS::ControllerAgent* controller() const override;
