@@ -64,26 +64,11 @@ It offers low-code simplicity while maintaining high extensibility. The framewor
 - [MAABH3](https://github.com/MaaXYZ/MAABH3) Honkai Impact 3 Assistant ![cpp](https://img.shields.io/badge/C%2B%2B-00599C?logo=c%2B%2B&logoColor=white)  
   A one-click tool for the daily tasks of Honkai Impact, based on a brand new architecture. Image technology + simulation control, freeing your hands! Powered by MaaFramework.
 
-- [MAALimbusCompany](https://github.com/hxdnshx/MAALimbusCompany) Limbus Company Assistant ![Pipeline](https://img.shields.io/badge/Pipeline-%23454545?logo=paddypower&logoColor=%23FFFFFF)  
-  Based on a brand new architecture. Image technology + simulation control, freeing your hands! Powered by MaaFramework.
-
 - [MAS](https://github.com/MaaXYZ/MaaAssistantSkland) Skland Assistant ![Pipeline](https://img.shields.io/badge/Pipeline-%23454545?logo=paddypower&logoColor=%23FFFFFF)  
   Based on a brand new architecture. Image technology + simulation control, freeing your hands! Powered by MaaFramework.
 
-- [MaaHatsuboshiTA](https://github.com/Carpenter-MK1/MaaHatsuboshiTA) Hatsuboshi Teaching Assistant   ![Pipeline](https://img.shields.io/badge/Pipeline-%23454545?logo=paddypower&logoColor=%23FFFFFF)  
-  A Tool For Producers PLaying Gakuen-Idolmaster. Powered by MaaFramework.
-
-- [MCCA](https://github.com/MaaXYZ/MCCA) CrossCore Assistant ![Pipeline](https://img.shields.io/badge/Pipeline-%23454545?logo=paddypower&logoColor=%23FFFFFF)  
-  The CrossCore Assistant, based on a brand new architecture. Image technology + simulation control, freeing your hands! Powered by MaaFramework.
-
 - [MSBA](https://github.com/overflow65537/MAA_SnowBreak) Snow break Assistant !  ![Pipeline](https://img.shields.io/badge/Pipeline-%23454545?logo=paddypower&logoColor=%23FFFFFF)  
   The Snow break Assistant, based on a brand new architecture. Image technology + simulation control, freeing your hands! Powered by MaaFramework.
-
-- [MaaAeonFantasy](https://github.com/Andl-Liu/MaaAeonFantasy) Aeon Fantasy Assistant !  ![Pipeline](https://img.shields.io/badge/Pipeline-%23454545?logo=paddypower&logoColor=%23FFFFFF)  
-  The Aeon Fantasy Assistant, based on a brand new architecture. Image technology + simulation control, let your hands do what they should do! Powered by MaaFramework.
-
-- [maa-whmx](https://github.com/MAWHA/maa-whmx) Wuhua Mixin Assistant ![cpp](https://img.shields.io/badge/C%2B%2B-00599C?logo=c%2B%2B&logoColor=white) ![qt](https://img.shields.io/badge/Qt6-41CD52?logo=Qt&logoColor=white)  
-  An assistant for Wuhua Mixin based on a brand new architecture. Image technology + simulation control, freeing your hands! Powered by MaaFramework.
 
 - [MAA-for-Millennium-Tour](https://github.com/Ostwind23/MAA-for-Millennium-Tour) Millennium Tour Assistant ![Pipeline](https://img.shields.io/badge/Pipeline-%23454545?logo=paddypower&logoColor=%23FFFFFF) ![python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white)  
   An assistant for Millennium Tour based on a brand new architecture. Image technology + simulation control, freeing your hands! Powered by MaaFramework.
