@@ -42,6 +42,22 @@ It offers low-code simplicity while maintaining high extensibility. The framewor
 
 ## Best Practices
 
+### Generic UI
+
+- [MFAWPF](https://github.com/SweetSmellFox/MFAWPF) MFA Task Manager ![csharp](https://img.shields.io/badge/C%23-239120?logo=csharp&logoColor=white)  
+  A Universal GUI based on MAA's new architecture. Powered by MaaFramework.
+
+- [MFW-ELE-GUI](https://github.com/Night-stars-1/maa-gui) MFW-ELE-GUI ![Typescript](https://img.shields.io/badge/Typescript-8A2BE2?logo=typescript)  ![Electron](https://img.shields.io/badge/Electron-3776AB?logo=electron&logoColor=black)  
+  MFW-ELE-GUI, based on a brand new architecture. Powered by MaaFramework.
+
+- [MFW-PyQt6](https://github.com/overflow65537/MFW-PyQt6) MFW-PyQt6 ![python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white)  
+  A generic GUI based on PyQt6. Powered by MaaFramework!
+
+- [MFAAvalonia](https://github.com/SweetSmellFox/MFAAvalonia) MFAAvalonia ![csharp](https://img.shields.io/badge/C%23-239120?logo=csharp&logoColor=white)  
+  A generic GUI based on Avalonia. Powered by MaaFramework!
+
+### Application
+
 - [M9A](https://github.com/MaaXYZ/M9A) 1999 Assistant ![Pipeline](https://img.shields.io/badge/Pipeline-%23454545?logo=paddypower&logoColor=%23FFFFFF)  
   The 1999 Assistant, based on a brand new architecture. Image technology + simulation control, freeing your hands! Powered by MaaFramework.
 
@@ -72,9 +88,6 @@ It offers low-code simplicity while maintaining high extensibility. The framewor
 - [MAA-for-Millennium-Tour](https://github.com/Ostwind23/MAA-for-Millennium-Tour) Millennium Tour Assistant ![Pipeline](https://img.shields.io/badge/Pipeline-%23454545?logo=paddypower&logoColor=%23FFFFFF) ![python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white)  
   An assistant for Millennium Tour based on a brand new architecture. Image technology + simulation control, freeing your hands! Powered by MaaFramework.
 
-- [MFAWPF](https://github.com/SweetSmellFox/MFAWPF) MFA Task Manager ![csharp](https://img.shields.io/badge/C%23-239120?logo=csharp&logoColor=white)  
-  A Universal GUI based on MAA's new architecture. Powered by MaaFramework.
-
 - [MET](https://github.com/shanchuan001/MET) Eternal Tree Assistant ![Pipeline](https://img.shields.io/badge/Pipeline-%23454545?logo=paddypower&logoColor=%23FFFFFF)  
   An assistant for Eternal Tree based on a brand new architecture. Image technology + simulation control, freeing your hands! Powered by MaaFramework.
 
@@ -90,14 +103,8 @@ It offers low-code simplicity while maintaining high extensibility. The framewor
 - [MaaYuan](https://github.com/syoius/MaaYuan) Ashes of the kingdom Assistant ![Pipeline](https://img.shields.io/badge/Pipeline-%23454545?logo=paddypower&logoColor=%23FFFFFF)  
   The Ashes of the kingdom Assistant, based on a brand new architecture. Image technology + simulation control, freeing your hands! Powered by MaaFramework.
 
-- [MFW-ELE-GUI](https://github.com/Night-stars-1/maa-gui) MFW-ELE-GUI ![Typescript](https://img.shields.io/badge/Typescript-8A2BE2?logo=typescript)  ![Electron](https://img.shields.io/badge/Electron-3776AB?logo=electron&logoColor=black)  
-  MFW-ELE-GUI, based on a brand new architecture. Powered by MaaFramework.
-
 - [Maa-HBR](https://github.com/KarylDAZE/Maa-HBR) Heaven Burns Red/HBR Assistant  ![Pipeline](https://img.shields.io/badge/Pipeline-%23454545?logo=paddypower&logoColor=%23FFFFFF)  
   An assistant for Heaven Burns Red/HBR based on a brand new architecture. Image technology + simulation control, freeing your hands! Powered by MaaFramework.
-
-- [MFW-PyQt6](https://github.com/overflow65537/MFW-PyQt6) MFW-PyQt6 ![python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white)  
-  A generic GUI based on PyQt6. Powered by MaaFramework!
 
 - [MaaGF2Exilium](https://github.com/DarkLingYun/MaaGF2Exilium) Automation Assistant for Girls' Frontline 2: Exilium ![Pipeline](https://img.shields.io/badge/Pipeline-%23454545?logo=paddypower&logoColor=%23FFFFFF)   
 An automation assistant for Girls' Frontline 2: Exilium, built on a brand-new architecture. Featuring image recognition technology and simulation control to free up your hands! Powered by MaaFramework!
@@ -113,9 +120,6 @@ An automation assistant for Girls' Frontline 2: Exilium, built on a brand-new ar
 
 - [MAA_MHXY_MG](https://github.com/gitlihang/Maa_MHXY_MG) Fantasy Westward Journey Mobile ![Pipeline](https://img.shields.io/badge/Pipeline-%23454545?logo=paddypower&logoColor=%23FFFFFF)  
   Fantasy Westward Journey Mobile Assistant Based on New Architecture.Image technology + analogue control to free your hands!Powered by MaaFramework!
-
-- [MFAAvalonia](https://github.com/SweetSmellFox/MFAAvalonia) MFAAvalonia ![csharp](https://img.shields.io/badge/C%23-239120?logo=csharp&logoColor=white)  
-  A generic GUI based on Avalonia. Powered by MaaFramework!
 
 ## Eco-Building
 

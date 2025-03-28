@@ -42,6 +42,22 @@ _✨ 基于图像识别的自动化黑盒测试框架 ✨_
 
 ## 最佳实践
 
+### 通用 UI
+
+- [MFAWPF](https://github.com/SweetSmellFox/MFAWPF) MFA 任务管理器 ![csharp](https://img.shields.io/badge/C%23-239120?logo=csharp&logoColor=white)  
+  基于 MAA 全新架构的 通用 GUI。由 MaaFramework 强力驱动！
+
+- [MFW-ELE-GUI](https://github.com/Night-stars-1/maa-gui) MFW-ELE-GUI ![Typescript](https://img.shields.io/badge/Typescript-8A2BE2?logo=typescript)  ![Electron](https://img.shields.io/badge/Electron-3776AB?logo=electron&logoColor=black)  
+  基于全新架构的 MFW-ELE-GUI。由 MaaFramework 强力驱动！
+
+- [MFW-PyQt6](https://github.com/overflow65537/MFW-PyQt6) MFW-PyQt6 ![python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white)  
+  基于PyQt6的通用GUI。由 MaaFramework 强力驱动！
+
+- [MFAAvalonia](https://github.com/SweetSmellFox/MFAAvalonia) MFAAvalonia ![csharp](https://img.shields.io/badge/C%23-239120?logo=csharp&logoColor=white)  
+  基于 Avalonia 的 通用 GUI。由 MaaFramework 强力驱动！
+
+### 应用程序
+
 - [M9A](https://github.com/MaaXYZ/M9A) 1999 小助手 ![Pipeline](https://img.shields.io/badge/Pipeline-%23454545?logo=paddypower&logoColor=%23FFFFFF)  
   基于全新架构的 亿韭韭韭 小助手。图像技术 + 模拟控制，解放双手！由 MaaFramework 强力驱动！
 
@@ -72,9 +88,6 @@ _✨ 基于图像识别的自动化黑盒测试框架 ✨_
 - [MAA-for-Millennium-Tour](https://github.com/Ostwind23/MAA-for-Millennium-Tour) 千年之旅 小助手 ![Pipeline](https://img.shields.io/badge/Pipeline-%23454545?logo=paddypower&logoColor=%23FFFFFF) ![python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white)  
   基于全新架构的 千年之旅 小助手。图像技术 + 模拟控制，解放侍主的大手！由 MaaFramework 强力驱动！
 
-- [MFAWPF](https://github.com/SweetSmellFox/MFAWPF) MFA 任务管理器 ![csharp](https://img.shields.io/badge/C%23-239120?logo=csharp&logoColor=white)  
-  基于 MAA 全新架构的 通用 GUI。由 MaaFramework 强力驱动！
-
 - [MET](https://github.com/shanchuan001/MET) 悠久之树 小助手 ![Pipeline](https://img.shields.io/badge/Pipeline-%23454545?logo=paddypower&logoColor=%23FFFFFF)  
   基于全新架构的 悠久之树 小助手。图像技术 + 模拟控制，解放双手！由 MaaFramework 强力驱动！
 
@@ -90,14 +103,8 @@ _✨ 基于图像识别的自动化黑盒测试框架 ✨_
 - [MaaYuan](https://github.com/syoius/MaaYuan) 代号鸢/如鸢 一键长草小助手  ![Pipeline](https://img.shields.io/badge/Pipeline-%23454545?logo=paddypower&logoColor=%23FFFFFF)  
   基于全新架构的 代号鸢/如鸢 小助手。图像技术 + 模拟控制，解放双手！由 MaaFramework 强力驱动！
 
-- [MFW-ELE-GUI](https://github.com/Night-stars-1/maa-gui) MFW-ELE-GUI ![Typescript](https://img.shields.io/badge/Typescript-8A2BE2?logo=typescript)  ![Electron](https://img.shields.io/badge/Electron-3776AB?logo=electron&logoColor=black)  
-  基于全新架构的 MFW-ELE-GUI。由 MaaFramework 强力驱动！
-
 - [Maa-HBR](https://github.com/KarylDAZE/Maa-HBR) 炽焰天穹/HBR 小助手  ![Pipeline](https://img.shields.io/badge/Pipeline-%23454545?logo=paddypower&logoColor=%23FFFFFF)  
   基于全新架构的 炽焰天穹/HBR 小助手。图像技术 + 模拟控制，解放双手！由 MaaFramework 强力驱动！
-
-- [MFW-PyQt6](https://github.com/overflow65537/MFW-PyQt6) MFW-PyQt6 ![python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white)  
-  基于PyQt6的通用GUI。由 MaaFramework 强力驱动！
 
 - [MaaGF2Exilium](https://github.com/DarkLingYun/MaaGF2Exilium) 少女前线2: 追放自动化助手 ![Pipeline](https://img.shields.io/badge/Pipeline-%23454545?logo=paddypower&logoColor=%23FFFFFF)  
   基于全新架构的 少女前线2: 追放自动化助手。图像技术 + 模拟控制，解放双手！由 MaaFramework 强力驱动！
@@ -113,9 +120,6 @@ _✨ 基于图像识别的自动化黑盒测试框架 ✨_
 
 - [MAA_MHXY_MG](https://github.com/gitlihang/Maa_MHXY_MG) 梦幻西游手游 小助手 ![Pipeline](https://img.shields.io/badge/Pipeline-%23454545?logo=paddypower&logoColor=%23FFFFFF)  
   基于全新架构的 梦幻西游手游 小助手。图像技术 + 模拟控制，解放双手！由 MaaFramework 强力驱动！
-
-- [MFAAvalonia](https://github.com/SweetSmellFox/MFAAvalonia) MFAAvalonia ![csharp](https://img.shields.io/badge/C%23-239120?logo=csharp&logoColor=white)  
-  基于 Avalonia 的 通用 GUI。由 MaaFramework 强力驱动！
 
 ## 生态共建
 
