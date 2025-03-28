@@ -107,8 +107,7 @@ MaaStatus Tasker::wait(MaaTaskId task_id) const
 
 bool Tasker::running() const
 {
-    return resource_ && resource_->running() && controller_ && controller_->running() && task_runner_ && task_runner_->running()
-           && !running_task_;
+    return task_runner_ && task_runner_->running();
 }
 
 MaaTaskId Tasker::post_stop()
@@ -132,6 +131,11 @@ MaaTaskId Tasker::post_stop()
 
     auto task_ptr = std::make_shared<MAA_TASK_NS::EmptyTask>(std::string(MAA_FUNCTION), this);
     return post_task(std::move(task_ptr), {});
+}
+
+bool Tasker::stopping() const
+{
+    return need_to_stop_ && running();
 }
 
 MAA_RES_NS::ResourceMgr* Tasker::resource() const

@@ -28,6 +28,7 @@ public:
 
     virtual bool running() const override;
     virtual MaaTaskId post_stop() override;
+    virtual bool stopping() const override;
 
     virtual MaaResource* resource() const override;
     virtual MaaController* controller() const override;

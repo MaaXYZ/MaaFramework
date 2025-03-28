@@ -42,6 +42,7 @@ private:
     bool handle_tasker_wait(const json::value& j);
     bool handle_tasker_running(const json::value& j);
     bool handle_tasker_post_stop(const json::value& j);
+    bool handle_tasker_stopping(const json::value& j);
     bool handle_tasker_resource(const json::value& j);
     bool handle_tasker_controller(const json::value& j);
     bool handle_tasker_clear_cache(const json::value& j);

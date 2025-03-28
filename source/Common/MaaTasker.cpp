@@ -116,6 +116,16 @@ MaaTaskId MaaTaskerPostStop(MaaTasker* tasker)
     return tasker->post_stop();
 }
 
+MaaBool MaaTaskerStopping(const MaaTasker* tasker)
+{
+    if (!tasker) {
+        LogError << "handle is null";
+        return false;
+    }
+
+    return tasker->stopping();
+}
+
 MaaResource* MaaTaskerGetResource(const MaaTasker* tasker)
 {
     if (!tasker) {

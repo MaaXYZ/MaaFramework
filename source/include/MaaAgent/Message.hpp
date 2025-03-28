@@ -342,6 +342,22 @@ struct TaskerPostStopReverseResponse
     MEO_JSONIZATION(task_id, _TaskerPostStopReverseResponse);
 };
 
+struct TaskerStoppingReverseRequest
+{
+    std::string tasker_id;
+
+    MessageTypePlaceholder _TaskerStoppingReverseRequest = 1;
+    MEO_JSONIZATION(tasker_id, _TaskerStoppingReverseRequest);
+};
+
+struct TaskerStoppingReverseResponse
+{
+    bool ret = false;
+
+    MessageTypePlaceholder _TaskerStoppingReverseResponse = 1;
+    MEO_JSONIZATION(ret, _TaskerStoppingReverseResponse);
+};
+
 struct TaskerResourceReverseRequest
 {
     std::string tasker_id;
