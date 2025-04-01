@@ -58,7 +58,7 @@ It offers low-code simplicity while maintaining high extensibility. The framewor
 
 ### Application
 
-- [M9A](https://github.com/MaaXYZ/M9A) 1999 Assistant ![Pipeline](https://img.shields.io/badge/Pipeline-%23454545?logo=paddypower&logoColor=%23FFFFFF)  
+- [M9A](https://github.com/MaaXYZ/M9A) 1999 Assistant ![Pipeline](https://img.shields.io/badge/Pipeline-%23454545?logo=paddypower&logoColor=%23FFFFFF) ![python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white)  
   The 1999 Assistant, based on a brand new architecture. Image technology + simulation control, freeing your hands! Powered by MaaFramework.
 
 - [MAABH3](https://github.com/MaaXYZ/MAABH3) Honkai Impact 3 Assistant ![cpp](https://img.shields.io/badge/C%2B%2B-00599C?logo=c%2B%2B&logoColor=white)  
