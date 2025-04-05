@@ -1,5 +1,5 @@
     <id>Maa.Framework.Runtimes</id>
-    <title>MAA Framework Runtimes</title>
+    <title>MaaFramework Runtimes</title>
     <description>An automation black-box testing framework based on image recognition.</description>
     <dependencies>
       <dependency id="Maa.Framework.Runtime.linux-arm64" version="$version$"/>
