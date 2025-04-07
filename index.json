@@ -1,5 +1,5 @@
 {
-	"Version": "(main) v4.0.0",
+	"Version": "(main) v4.1.0-alpha.1",
 	"Compounds": {
 		"MaaAgentClientAPI.h": {
 			"Location": "include/MaaAgentClient/MaaAgentClientAPI.h",
@@ -5647,7 +5647,7 @@
 					"Description": {
 						"Brief": "Message for the next list of node.",
 						"Details": [
-							"payload: { task_id: number, name: string, list: string[], }"
+							"payload: { task_id: number, name: string, list: string[], focus: any, }"
 						],
 						"Deprecated": null
 					},
@@ -5657,7 +5657,7 @@
 					"Description": {
 						"Brief": "Message for the next list of node.",
 						"Details": [
-							"payload: { task_id: number, name: string, list: string[], }"
+							"payload: { task_id: number, name: string, list: string[], focus: any, }"
 						],
 						"Deprecated": null
 					},
@@ -5667,7 +5667,7 @@
 					"Description": {
 						"Brief": "Message for the next list of node.",
 						"Details": [
-							"payload: { task_id: number, name: string, list: string[], }"
+							"payload: { task_id: number, name: string, list: string[], focus: any, }"
 						],
 						"Deprecated": null
 					},
@@ -5677,7 +5677,7 @@
 					"Description": {
 						"Brief": "Message for the recognition list of node.",
 						"Details": [
-							"payload: { task_id: number, reco_id: number, name: string, }"
+							"payload: { task_id: number, reco_id: number, name: string, focus: any, }"
 						],
 						"Deprecated": null
 					},
@@ -5687,7 +5687,7 @@
 					"Description": {
 						"Brief": "Message for the recognition list of node.",
 						"Details": [
-							"payload: { task_id: number, reco_id: number, name: string, }"
+							"payload: { task_id: number, reco_id: number, name: string, focus: any, }"
 						],
 						"Deprecated": null
 					},
@@ -5697,7 +5697,7 @@
 					"Description": {
 						"Brief": "Message for the recognition list of node.",
 						"Details": [
-							"payload: { task_id: number, reco_id: number, name: string, }"
+							"payload: { task_id: number, reco_id: number, name: string, focus: any, }"
 						],
 						"Deprecated": null
 					},
@@ -5707,7 +5707,7 @@
 					"Description": {
 						"Brief": "Message for the action of node.",
 						"Details": [
-							"payload: { task_id: number, node_id: number, name: string, }"
+							"payload: { task_id: number, node_id: number, name: string, focus: any, }"
 						],
 						"Deprecated": null
 					},
@@ -5717,7 +5717,7 @@
 					"Description": {
 						"Brief": "Message for the action of node.",
 						"Details": [
-							"payload: { task_id: number, node_id: number, name: string, }"
+							"payload: { task_id: number, node_id: number, name: string, focus: any, }"
 						],
 						"Deprecated": null
 					},
@@ -5727,7 +5727,7 @@
 					"Description": {
 						"Brief": "Message for the action of node.",
 						"Details": [
-							"payload: { task_id: number, node_id: number, name: string, }"
+							"payload: { task_id: number, node_id: number, name: string, focus: any, }"
 						],
 						"Deprecated": null
 					},
