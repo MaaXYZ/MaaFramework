@@ -37,7 +37,7 @@ MAA_UTILS_API std::string path_to_utf8_string(const std::filesystem::path& path)
 
 namespace path_literals
 {
-inline std::filesystem::path operator"" _path(const char* utf8_str, size_t len)
+inline std::filesystem::path operator""_path(const char* utf8_str, size_t len)
 {
     return path(std::string_view(utf8_str, len));
 }
