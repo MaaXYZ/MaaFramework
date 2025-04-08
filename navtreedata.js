@@ -24,7 +24,7 @@
 */
 var NAVTREE =
 [
-  [ "Maa Framework", "index.html", [
+  [ "MaaFramework", "index.html", [
     [ "MaaFramework API Reference", "index.html", "index" ],
     [ "Topics", "topics.html", "topics" ],
     [ "Classes", "annotated.html", [

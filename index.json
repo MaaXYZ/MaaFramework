@@ -1,5 +1,5 @@
 {
-	"Version": "(main) v4.1.0-alpha.1",
+	"Version": "(main) v4.1.0-alpha.2",
 	"Compounds": {
 		"MaaAgentClientAPI.h": {
 			"Location": "include/MaaAgentClient/MaaAgentClientAPI.h",
@@ -2307,6 +2307,25 @@
 					"Parameters": {
 						"tasker": {
 							"Type": "MaaTasker*",
+							"Description": "",
+							"Direction": 0,
+							"IsPointerToArray": null
+						}
+					}
+				},
+				"MaaTaskerStopping": {
+					"Description": {
+						"Brief": "",
+						"Details": [],
+						"Deprecated": null
+					},
+					"Types": {
+						"MAA_FRAMEWORK_API": "",
+						"MaaBool": ""
+					},
+					"Parameters": {
+						"tasker": {
+							"Type": "const MaaTasker*",
 							"Description": "",
 							"Direction": 0,
 							"IsPointerToArray": null
