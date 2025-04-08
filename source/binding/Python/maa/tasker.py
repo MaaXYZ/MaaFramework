@@ -91,6 +91,10 @@ class Tasker:
         taskid = Library.framework().MaaTaskerPostStop(self._handle)
         return self._gen_task_job(taskid)
 
+    @property
+    def stopping(self) -> bool:
+        return bool(Library.framework().MaaTaskerStopping(self._handle))
+
     def get_latest_node(self, name: str) -> Optional[NodeDetail]:
         c_node_id = MaaNodeId()
         ret = bool(
@@ -389,6 +393,9 @@ class Tasker:
 
         Library.framework().MaaTaskerPostStop.restype = MaaTaskId
         Library.framework().MaaTaskerPostStop.argtypes = [MaaTaskerHandle]
+
+        Library.framework().MaaTaskerStopping.restype = MaaBool
+        Library.framework().MaaTaskerStopping.argtypes = [MaaTaskerHandle]
 
         Library.framework().MaaTaskerGetResource.restype = MaaResourceHandle
         Library.framework().MaaTaskerGetResource.argtypes = [MaaTaskerHandle]

@@ -165,10 +165,20 @@ def api_test():
         print("pipeline failed")
         raise RuntimeError("pipeline failed")
 
+    stopping = tasker.stopping
+    print(f"stopping0: {stopping}")
+
     tasker.post_task("Entry", ppover)
-    stopped = tasker.post_stop().wait().succeeded
-    if not stopped:
+
+    stop_job = tasker.post_stop()
+    stopping = tasker.stopping
+    
+    print(f"stopping1: {stopping}")
+    if not stop_job.wait().succeeded:
         raise RuntimeError("post_stop failed")
+
+    stopping = tasker.stopping
+    print(f"stopping2: {stopping}")
 
     tasker.resource.post_bundle("C:/_maafw_testing_/aaabbbccc")
     tasker.clear_cache()

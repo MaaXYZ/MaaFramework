@@ -569,6 +569,26 @@ bool AgentClient::handle_tasker_post_stop(const json::value& j)
     return true;
 }
 
+bool AgentClient::handle_tasker_stopping(const json::value& j)
+{    
+    if (!j.is<TaskerStoppingReverseRequest>()) {
+        return false;
+    }
+    const TaskerStoppingReverseRequest& req = j.as<TaskerStoppingReverseRequest>();
+    LogFunc << VAR(req) << VAR(ipc_addr_);
+    MaaTasker* tasker = query_tasker(req.tasker_id);
+    if (!tasker) {
+        LogError << "tasker not found" << VAR(req.tasker_id);
+        return false;
+    }
+    bool running = tasker->stopping();
+    TaskerStoppingReverseResponse resp {
+        .ret = running,
+    };
+    send(resp);
+    return true;
+}
+
 bool AgentClient::handle_tasker_resource(const json::value& j)
 {
     if (!j.is<TaskerResourceReverseRequest>()) {
