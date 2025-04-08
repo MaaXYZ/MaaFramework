@@ -581,9 +581,9 @@ bool AgentClient::handle_tasker_stopping(const json::value& j)
         LogError << "tasker not found" << VAR(req.tasker_id);
         return false;
     }
-    bool running = tasker->stopping();
+    bool stopping = tasker->stopping();
     TaskerStoppingReverseResponse resp {
-        .ret = running,
+        .ret = stopping,
     };
     send(resp);
     return true;
