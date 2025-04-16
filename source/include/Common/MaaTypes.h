@@ -111,6 +111,7 @@ public:
         const std::string& reco_detail) = 0;
     virtual bool override_pipeline(const json::object& pipeline_override) = 0;
     virtual bool override_next(const std::string& node_name, const std::vector<std::string>& next) = 0;
+    virtual std::optional<json::object> get_node_data(const std::string& node_name) const = 0;
 
     virtual MaaContext* clone() const = 0;
 
