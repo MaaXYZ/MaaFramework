@@ -66,11 +66,11 @@ struct JCustomRecognition;
 
 struct JRecognition
 {
-    std::string name;
+    std::string algorithm;
     std::variant<JTemplateMatch, JFeatureMatch, JColorMatch, JOCR, JNeuralNetworkClassify, JNeuralNetworkDetect, JCustomRecognition> data;
 
-    MEO_TOJSON(name, data);
-    MEO_CHECKJSON(name, MEO_OPT data);
+    MEO_TOJSON(algorithm, data);
+    MEO_CHECKJSON(algorithm, MEO_OPT data);
 
     bool from_json(const json::value& in)
     {
@@ -91,12 +91,12 @@ struct JCustomAction;
 
 struct JAction
 {
-    std::string name;
+    std::string algorithm;
     std::variant<JDoNothing, JClick, JSwipe, JMultiSwipe, JKey, JMultiSwipe, JKey, JInputText, JStartApp, JStopApp, JCommand, JCustomAction>
         data;
 
-    MEO_TOJSON(name, data);
-    MEO_CHECKJSON(name, MEO_OPT data);
+    MEO_TOJSON(algorithm, data);
+    MEO_CHECKJSON(algorithm, MEO_OPT data);
 
     bool from_json(const json::value& in)
     {
