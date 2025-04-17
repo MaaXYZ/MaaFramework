@@ -3,32 +3,32 @@ name: build
 on:
     push:
         tags:
-            - "v*"
+            - 'v*'
         branches:
-            - "**"
+            - '**'
         paths:
-            - ".github/workflows/build.yml"
-            - "3rdparty/**"
-            - "cmake/**"
-            - "include/**"
-            - "source/**"
-            - "CMakeLists.txt"
+            - '.github/workflows/build.yml'
+            - '3rdparty/**'
+            - 'cmake/**'
+            - 'include/**'
+            - 'source/**'
+            - 'CMakeLists.txt'
 
     pull_request:
         branches:
-            - "**"
+            - '**'
         paths:
-            - ".github/workflows/build.yml"
-            - "3rdparty/**"
-            - "cmake/**"
-            - "include/**"
-            - "source/**"
-            - "CMakeLists.txt"
+            - '.github/workflows/build.yml'
+            - '3rdparty/**'
+            - 'cmake/**'
+            - 'include/**'
+            - 'source/**'
+            - 'CMakeLists.txt'
     workflow_dispatch:
         inputs:
             build_config:
                 required: true
-                default: "Debug"
+                default: 'Debug'
                 type: choice
                 options:
                     - Debug
@@ -64,7 +64,7 @@ jobs:
               with:
                   minimum-size: 16GB
                   maximum-size: 16GB
-                  disk-root: "D:"
+                  disk-root: 'D:'
 
             - uses: actions/checkout@v4
               with:
@@ -120,13 +120,13 @@ jobs:
               if: always()
               with:
                   name: MAA-win-${{ matrix.arch }}
-                  path: "install"
+                  path: 'install'
 
             - uses: actions/upload-artifact@v4
               if: always()
               with:
                   name: MAA-win-aarch64
-                  path: "install"
+                  path: 'install'
 
     ubuntu:
         needs: meta
@@ -217,7 +217,7 @@ jobs:
               if: always()
               with:
                   name: MAA-linux-${{ matrix.arch }}
-                  path: "install"
+                  path: 'install'
 
     macos:
         needs: meta
@@ -266,6 +266,12 @@ jobs:
                   pnpm i
                   cd -
 
+            - name: Dump xcode info
+              run: |
+                  xcrun --show-sdk-path
+                  ls $(xcrun --show-sdk-path)/usr/include
+                  ls $(xcrun --show-sdk-path)/usr/include/pthread
+
             - name: Build MAA
               run: |
                   LLVM_PREFIX=$(brew --prefix llvm)
@@ -295,7 +301,7 @@ jobs:
               if: always()
               with:
                   name: MAA-macos-${{ matrix.arch }}
-                  path: "install"
+                  path: 'install'
 
     android:
         needs: meta
@@ -361,7 +367,7 @@ jobs:
               if: always()
               with:
                   name: MAA-android-${{ matrix.arch }}
-                  path: "install"
+                  path: 'install'
 
     nuget_pack:
         needs: [meta, windows, ubuntu, macos, android]
@@ -392,7 +398,7 @@ jobs:
               if: always()
               with:
                   name: MAA-nupkgs
-                  path: "tools/nupkgs/*.nupkg"
+                  path: 'tools/nupkgs/*.nupkg'
 
     pip_pack:
         needs: [meta, windows, ubuntu, macos, android]
@@ -413,7 +419,7 @@ jobs:
               if: always()
               with:
                   name: MAA-pip-pkgs
-                  path: "pip_pack/wheel/*.whl"
+                  path: 'pip_pack/wheel/*.whl'
 
     nodejs_pack:
         needs: [meta, windows, ubuntu, macos, android]
@@ -450,21 +456,11 @@ jobs:
             - uses: actions/upload-artifact@v4
               with:
                   name: MAA-nodejs-package
-                  path: "source/binding/NodeJS/release"
+                  path: 'source/binding/NodeJS/release'
 
     release:
         if: ${{ needs.meta.outputs.is_release == 'true' && github.repository_id == '632024122' }}
-        needs:
-            [
-                meta,
-                windows,
-                ubuntu,
-                macos,
-                android,
-                nuget_pack,
-                pip_pack,
-                nodejs_pack,
-            ]
+        needs: [meta, windows, ubuntu, macos, android, nuget_pack, pip_pack, nodejs_pack]
         runs-on: ubuntu-latest
         env:
             OUTPUT_PUBLISH_FAILED: 'echo "failed=true" >> $GITHUB_OUTPUT && echo "::error::Failed to publish packages"'
@@ -528,8 +524,8 @@ jobs:
               if: failure() || steps.nuget.outputs.failed || steps.pip.outputs.failed || steps.nodejs.outputs.failed
               uses: actions-cool/issues-helper@v3
               with:
-                  actions: "create-issue"
-                  title: "${{ needs.meta.outputs.tag }} failed to release"
+                  actions: 'create-issue'
+                  title: '${{ needs.meta.outputs.tag }} failed to release'
                   body: |
                       Please manually publish the following packages:
                       ${{ steps.nuget.outputs.failed && '- nuget @moomiji' || '' }}
