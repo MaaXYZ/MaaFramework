@@ -6,7 +6,7 @@ from .notification_handler import NotificationHandler
 from .define import *
 from .job import Job
 from .library import Library
-from .buffer import StringBuffer
+from .buffer import StringBuffer, StringListBuffer
 
 
 class Resource:
@@ -180,6 +180,16 @@ class Resource:
         )
 
     @property
+    def node_list(self) -> list[str]:
+        """
+        Returns a list of node names.
+        """
+        buffer = StringListBuffer()
+        if not Library.framework().MaaResourceGetNodeList(self._handle, buffer._handle):
+            raise RuntimeError("Failed to get node list.")
+        return buffer.get()
+
+    @property
     def hash(self) -> str:
         buffer = StringBuffer()
         if not Library.framework().MaaResourceGetHash(self._handle, buffer._handle):
@@ -304,4 +314,10 @@ class Resource:
         Library.framework().MaaResourceClearCustomAction.restype = MaaBool
         Library.framework().MaaResourceClearCustomAction.argtypes = [
             MaaResourceHandle,
+        ]
+
+        Library.framework().MaaResourceGetNodeList.restype = MaaBool
+        Library.framework().MaaResourceGetNodeList.argtypes = [
+            MaaResourceHandle,
+            MaaStringListBufferHandle,
         ]
