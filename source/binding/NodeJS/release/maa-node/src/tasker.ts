@@ -140,6 +140,10 @@ export class TaskerBase {
         return new TaskJob(this, this.#source, maa.tasker_post_stop(this.handle))
     }
 
+    get stopping() {
+        return maa.tasker_stopping(this.handle)
+    }
+
     get resource() {
         const res = maa.tasker_get_resource(this.handle)
         if (res) {

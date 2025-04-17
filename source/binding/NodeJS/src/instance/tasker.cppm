@@ -120,6 +120,11 @@ MaaTaskId tasker_post_stop(Napi::External<TaskerInfo> info)
     return MaaTaskerPostStop(info.Data()->handle);
 }
 
+bool tasker_stopping(Napi::External<TaskerInfo> info)
+{
+    return MaaTaskerStopping(info.Data()->handle);
+}
+
 // TODO: 考虑下要不要下面两个也做成全局记录的, 而非基于ref的
 std::optional<Napi::External<ResourceInfo>> tasker_get_resource(Napi::External<TaskerInfo> info)
 {
@@ -220,6 +225,7 @@ export void load_instance_tasker(Napi::Env env, Napi::Object& exports, Napi::Ext
     BIND(tasker_wait);
     BIND(tasker_running);
     BIND(tasker_post_stop);
+    BIND(tasker_stopping);
     BIND(tasker_get_resource);
     BIND(tasker_get_controller);
     BIND(tasker_clear_cache);
