@@ -106,6 +106,9 @@ An automation assistant for Girls' Frontline 2: Exilium, built on a brand-new ar
 - [MAA_MHXY_MG](https://github.com/gitlihang/Maa_MHXY_MG) Fantasy Westward Journey Mobile ![Pipeline](https://img.shields.io/badge/Pipeline-%23454545?logo=paddypower&logoColor=%23FFFFFF)  
   Fantasy Westward Journey Mobile Assistant Based on New Architecture.Image technology + analogue control to free your hands!Powered by MaaFramework!
 
+- [MNMA](https://github.com/kqcoxn/MaaNewMoonAccompanying) New Moon Accompanying Assistant ![Pipeline](https://img.shields.io/badge/Pipeline-%23454545?logo=paddypower&logoColor=%23FFFFFF) ![python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white)  
+  The New Moon Accompanying Assistant, based on a brand new architecture. Image technology + simulation control, freeing your hands! Powered by MaaFramework.
+
 ## Eco-Building
 
 MAA is planned to be a category of projects rather than just a single piece of software.
