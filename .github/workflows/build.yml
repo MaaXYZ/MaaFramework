@@ -280,6 +280,7 @@ jobs:
                     -DMAA_HASH_VERSION='${{ needs.meta.outputs.tag }}' \
                     -DCMAKE_C_COMPILER=${LLVM_PREFIX}/bin/clang \
                     -DCMAKE_CXX_COMPILER=${LLVM_PREFIX}/bin/clang++ \
+                    -DCMAKE_OSX_SYSROOT=macosx \
                     -DWITH_NODEJS_BINDING=ON
 
                   cmake --build build --preset 'NinjaMulti - ${{ inputs.build_config || needs.meta.outputs.build_config }}' -j 16
