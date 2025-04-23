@@ -170,6 +170,7 @@ export using ::MaaTaskerStatus;
 export using ::MaaTaskerWait;
 export using ::MaaTaskerRunning;
 export using ::MaaTaskerPostStop;
+export using ::MaaTaskerStopping;
 export using ::MaaTaskerGetResource;
 export using ::MaaTaskerGetController;
 export using ::MaaTaskerClearCache;
