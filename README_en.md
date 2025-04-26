@@ -56,6 +56,9 @@ It offers low-code simplicity while maintaining high extensibility. The framewor
 - [MFAAvalonia](https://github.com/SweetSmellFox/MFAAvalonia) MFAAvalonia ![csharp](https://img.shields.io/badge/C%23-239120?logo=csharp&logoColor=white)  
   A generic GUI based on Avalonia. Powered by MaaFramework!
 
+- [YAMaaPE](https://github.com/SweetSmellFox/MFAAvalonia) YAMaaPE ![csharp](https://img.shields.io/badge/Javascript-yellow?logo=Javascript) ![vue](https://img.shields.io/badge/vue-268923?logo=vue.js)  
+  A Pipeline Editor based on vue-flow. Powerfully driven by MaaFramework!
+
 ### Application
 
 - [M9A](https://github.com/MaaXYZ/M9A) 1999 Assistant ![Pipeline](https://img.shields.io/badge/Pipeline-%23454545?logo=paddypower&logoColor=%23FFFFFF) ![python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white)  
