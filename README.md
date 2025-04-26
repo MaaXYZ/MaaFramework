@@ -45,7 +45,7 @@ _✨ 基于图像识别的自动化黑盒测试框架 ✨_
 
 ### 通用 UI
 
-- [MFAWPF](https://github.com/SweetSmellFox/MFAWPF) MFA 任务管理器 ![csharp](https://img.shields.io/badge/C%23-239120?logo=csharp&logoColor=white) ![mirrorc](https://img.shields.io/badge/Mirror%E9%85%B1-%239af3f6?logo=countingworkspro&logoColor=4f46e5)  
+- [MFAWPF](https://github.com/SweetSmellFox/MFAWPF) MFA 任务管理器 ![csharp](https://img.shields.io/badge/C%23-239120?logo=csharp&logoColor=white) [![mirrorc](https://img.shields.io/badge/Mirror%E9%85%B1-%239af3f6?logo=countingworkspro&logoColor=4f46e5)]](https://mirrorchyan.com/zh/projects?rid=MFAWPF)  
   基于 MAA 全新架构的 通用 GUI。由 MaaFramework 强力驱动！
 
 - [MFW-ELE-GUI](https://github.com/Night-stars-1/maa-gui) MFW-ELE-GUI ![Typescript](https://img.shields.io/badge/Typescript-8A2BE2?logo=typescript) ![Electron](https://img.shields.io/badge/Electron-3776AB?logo=electron&logoColor=black)  
