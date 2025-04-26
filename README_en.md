@@ -47,7 +47,7 @@ It offers low-code simplicity while maintaining high extensibility. The framewor
 - [MFAWPF](https://github.com/SweetSmellFox/MFAWPF) MFA Task Manager ![csharp](https://img.shields.io/badge/C%23-239120?logo=csharp&logoColor=white)  
   A Universal GUI based on MAA's new architecture. Powered by MaaFramework.
 
-- [MFW-ELE-GUI](https://github.com/Night-stars-1/maa-gui) MFW-ELE-GUI ![Typescript](https://img.shields.io/badge/Typescript-8A2BE2?logo=typescript)  ![Electron](https://img.shields.io/badge/Electron-3776AB?logo=electron&logoColor=black)  
+- [MFW-ELE-GUI](https://github.com/Night-stars-1/maa-gui) MFW-ELE-GUI ![Typescript](https://img.shields.io/badge/Typescript-8A2BE2?logo=typescript) ![Electron](https://img.shields.io/badge/Electron-3776AB?logo=electron&logoColor=black)  
   MFW-ELE-GUI, based on a brand new architecture. Powered by MaaFramework.
 
 - [MFW-PyQt6](https://github.com/overflow65537/MFW-PyQt6) MFW-PyQt6 ![python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white)  
@@ -70,7 +70,7 @@ It offers low-code simplicity while maintaining high extensibility. The framewor
 - [MAS](https://github.com/MaaXYZ/MaaAssistantSkland) Skland Assistant ![Pipeline](https://img.shields.io/badge/Pipeline-%23454545?logo=paddypower&logoColor=%23FFFFFF)  
   Based on a brand new architecture. Image technology + simulation control, freeing your hands! Powered by MaaFramework.
 
-- [MSBA](https://github.com/overflow65537/MAA_SnowBreak) Snow break Assistant !  ![Pipeline](https://img.shields.io/badge/Pipeline-%23454545?logo=paddypower&logoColor=%23FFFFFF)  
+- [MSBA](https://github.com/overflow65537/MAA_SnowBreak) Snow break Assistant! ![Pipeline](https://img.shields.io/badge/Pipeline-%23454545?logo=paddypower&logoColor=%23FFFFFF)  
   The Snow break Assistant, based on a brand new architecture. Image technology + simulation control, freeing your hands! Powered by MaaFramework.
 
 - [MAA-for-Millennium-Tour](https://github.com/Ostwind23/MAA-for-Millennium-Tour) Millennium Tour Assistant ![Pipeline](https://img.shields.io/badge/Pipeline-%23454545?logo=paddypower&logoColor=%23FFFFFF) ![python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white)  
@@ -85,13 +85,13 @@ It offers low-code simplicity while maintaining high extensibility. The framewor
 - [MaaJR](https://github.com/Saratoga-Official/MaaJR) Warship Girls R Assistant ![Pipeline](https://img.shields.io/badge/Pipeline-%23454545?logo=paddypower&logoColor=%23FFFFFF)  
   An assistant for Warship Girls R based on a brand new architecture. Image technology + simulation control, freeing your hands! Powered by MaaFramework.
 
-- [MPA](https://github.com/overflow65537/MAA_Punish) Punishing Assistant   ![Pipeline](https://img.shields.io/badge/Pipeline-%23454545?logo=paddypower&logoColor=%23FFFFFF)  
+- [MPA](https://github.com/overflow65537/MAA_Punish) Punishing Assistant ![Pipeline](https://img.shields.io/badge/Pipeline-%23454545?logo=paddypower&logoColor=%23FFFFFF)  
   The Punishing Gray Raven Assistant, based on a brand new architecture. Image technology + simulation control, freeing your hands! Powered by MistEO's Black Coffee 2.0.
 
 - [MaaYuan](https://github.com/syoius/MaaYuan) Ashes of the kingdom Assistant ![Pipeline](https://img.shields.io/badge/Pipeline-%23454545?logo=paddypower&logoColor=%23FFFFFF)  
   The Ashes of the kingdom Assistant, based on a brand new architecture. Image technology + simulation control, freeing your hands! Powered by MaaFramework.
 
-- [Maa-HBR](https://github.com/KarylDAZE/Maa-HBR) Heaven Burns Red/HBR Assistant  ![Pipeline](https://img.shields.io/badge/Pipeline-%23454545?logo=paddypower&logoColor=%23FFFFFF)  
+- [Maa-HBR](https://github.com/KarylDAZE/Maa-HBR) Heaven Burns Red/HBR Assistant ![Pipeline](https://img.shields.io/badge/Pipeline-%23454545?logo=paddypower&logoColor=%23FFFFFF)  
   An assistant for Heaven Burns Red/HBR based on a brand new architecture. Image technology + simulation control, freeing your hands! Powered by MaaFramework.
 
 - [MaaGF2Exilium](https://github.com/DarkLingYun/MaaGF2Exilium) Automation Assistant for Girls' Frontline 2: Exilium ![Pipeline](https://img.shields.io/badge/Pipeline-%23454545?logo=paddypower&logoColor=%23FFFFFF)   
@@ -100,7 +100,7 @@ An automation assistant for Girls' Frontline 2: Exilium, built on a brand-new ar
 - [MaaAshEchoes](https://github.com/moulai/MaaAshEchoes) Ash Echoes Assistant ![Pipeline](https://img.shields.io/badge/Pipeline-%23454545?logo=paddypower&logoColor=%23FFFFFF)  
   An assistant for Ash Echoes based on a brand new architecture. Image technology + simulation control, freeing your hands! Powered by MaaFramework.
 
-- [MaaXuexi](https://github.com/ravizhan/MaaXuexi) Xuexi automation assistant ![python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white)  ![Pipeline](https://img.shields.io/badge/Pipeline-%23454545?logo=paddypower&logoColor=%23FFFFFF)  
+- [MaaXuexi](https://github.com/ravizhan/MaaXuexi) Xuexi automation assistant ![python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white) ![Pipeline](https://img.shields.io/badge/Pipeline-%23454545?logo=paddypower&logoColor=%23FFFFFF)  
   The Xuexi automation assistant based on a new architecture.Image technology + analogue control to free your hands!Powered by MaaFramework!
 
 - [MACC](https://github.com/mxia9416/MACC) Path to Nowhere Assistant ![Pipeline](https://img.shields.io/badge/Pipeline-%23454545?logo=paddypower&logoColor=%23FFFFFF)  
