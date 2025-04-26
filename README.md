@@ -101,7 +101,7 @@ _✨ 基于图像识别的自动化黑盒测试框架 ✨_
 - [MaaAshEchoes](https://github.com/moulai/MaaAshEchoes) 白荆回廊 小助手 ![Pipeline](https://img.shields.io/badge/Pipeline-%23454545?logo=paddypower&logoColor=%23FFFFFF) [![mirrorc](https://img.shields.io/badge/Mirror%E9%85%B1-%239af3f6?logo=countingworkspro&logoColor=4f46e5)](https://mirrorchyan.com/zh/projects?rid=MaaAshEchoes)  
   基于全新架构的 白荆回廊 小助手。图像技术 + 模拟控制，解放双手！由 MaaFramework 强力驱动！
 
-- [MaaXuexi](https://github.com/ravizhan/MaaXuexi) 学习强国 自动化助手 ![python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white)![Pipeline](https://img.shields.io/badge/Pipeline-%23454545?logo=paddypower&logoColor=%23FFFFFF)  
+- [MaaXuexi](https://github.com/ravizhan/MaaXuexi) 学习强国 自动化助手 ![python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white) ![Pipeline](https://img.shields.io/badge/Pipeline-%23454545?logo=paddypower&logoColor=%23FFFFFF)  
   基于全新架构的 学习强国 自动化助手。图像技术 + 模拟控制，解放双手！由 MaaFramework 强力驱动！
 
 - [MACC](https://github.com/mxia9416/MACC) 无期迷途 小助手 ![Pipeline](https://img.shields.io/badge/Pipeline-%23454545?logo=paddypower&logoColor=%23FFFFFF)  
@@ -110,7 +110,7 @@ _✨ 基于图像识别的自动化黑盒测试框架 ✨_
 - [MAA_MHXY_MG](https://github.com/gitlihang/Maa_MHXY_MG) 梦幻西游手游 小助手 ![Pipeline](https://img.shields.io/badge/Pipeline-%23454545?logo=paddypower&logoColor=%23FFFFFF)  
   基于全新架构的 梦幻西游手游 小助手。图像技术 + 模拟控制，解放双手！由 MaaFramework 强力驱动！
 
-- [MNMA](https://github.com/kqcoxn/MaaNewMoonAccompanying) 新月同行 小助手 ![Pipeline](https://img.shields.io/badge/Pipeline-%23454545?logo=paddypower&logoColor=%23FFFFFF)![python] [![mirrorc](https://img.shields.io/badge/Mirror%E9%85%B1-%239af3f6?logo=countingworkspro&logoColor=4f46e5)](https://mirrorchyan.com/zh/projects?rid=MNMA)  
+- [MNMA](https://github.com/kqcoxn/MaaNewMoonAccompanying) 新月同行 小助手 ![Pipeline](https://img.shields.io/badge/Pipeline-%23454545?logo=paddypower&logoColor=%23FFFFFF) ![python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white) [![mirrorc](https://img.shields.io/badge/Mirror%E9%85%B1-%239af3f6?logo=countingworkspro&logoColor=4f46e5)](https://mirrorchyan.com/zh/projects?rid=MNMA)  
   基于全新架构的 新月同行 小助手。图像技术 + 模拟控制，解放双手！由 MaaFramework 强力驱动！
 
 - [MaaTOT](https://github.com/Coxwtwo/MaaTOT) 未定事件簿 小助手 ![Pipeline](https://img.shields.io/badge/Pipeline-%23454545?logo=paddypower&logoColor=%23FFFFFF)  
