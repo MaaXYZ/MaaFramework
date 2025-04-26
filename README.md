@@ -56,6 +56,9 @@ _✨ 基于图像识别的自动化黑盒测试框架 ✨_
 - [MFAAvalonia](https://github.com/SweetSmellFox/MFAAvalonia) MFAAvalonia ![csharp](https://img.shields.io/badge/C%23-239120?logo=csharp&logoColor=white)  
   基于 Avalonia 的 通用 GUI。由 MaaFramework 强力驱动！
 
+- [YAMaaPE](https://github.com/kqcoxn/YAMaaPE) YAMaaPE ![csharp](https://img.shields.io/badge/Javascript-yellow?logo=Javascript) ![vue](https://img.shields.io/badge/vue-268923?logo=vue.js)  
+  基于 vue-flow 的 Pipeline 编辑器。由 MaaFramework 强力驱动！
+
 ### 应用程序
 
 - [M9A](https://github.com/MaaXYZ/M9A) 1999 小助手 ![Pipeline](https://img.shields.io/badge/Pipeline-%23454545?logo=paddypower&logoColor=%23FFFFFF) ![python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white)  
