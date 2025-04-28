@@ -20,6 +20,11 @@ _✨ An automation black-box testing framework based on image recognition ✨_
   <img alt="platform" src="https://img.shields.io/badge/platform-Windows%20%7C%20Linux%20%7C%20macOS%20%7C%20Android-blueviolet">
   <img alt="commit" src="https://img.shields.io/github/commit-activity/m/MaaXYZ/MaaFramework?color=%23ff69b4">
   <img alt="stars" src="https://img.shields.io/github/stars/MaaXYZ/MaaFramework?style=social">
+  <br>
+  <a href="https://pypi.org/project/MaaFw/" target="_blank"><img alt="pypi" src="https://img.shields.io/badge/PyPI-3775A9?logo=pypi&logoColor=white"></a>
+  <a href="https://www.nuget.org/packages/Maa.Framework.Runtimes" target="_blank"><img alt="nuget" src="https://img.shields.io/badge/NuGet-004880?logo=nuget"></a>
+  <a href="https://www.npmjs.com/package/@maaxyz/maa-node" target="_blank"><img alt="npm" src="https://img.shields.io/badge/npm-CB3837?logo=npm"></a>
+  <a href="https://mirrorchyan.com/zh/projects" target="_blank"><img alt="mirrorc" src="https://img.shields.io/badge/MirrorChyan-%239af3f6?logo=countingworkspro&logoColor=4f46e5"></a>
 </p>
 
 <div align="center">
@@ -44,84 +49,106 @@ It offers low-code simplicity while maintaining high extensibility. The framewor
 
 ### Generic UI
 
-- [MFAWPF](https://github.com/SweetSmellFox/MFAWPF) MFA Task Manager ![csharp](https://img.shields.io/badge/C%23-239120?logo=csharp&logoColor=white)  
+- [MFAWPF](https://github.com/SweetSmellFox/MFAWPF) MFA Task Manager  
+  ![license](https://img.shields.io/github/license/SweetSmellFox/MFAWPF) ![csharp](https://img.shields.io/badge/C%23-239120?logo=csharp&logoColor=white) ![activity](https://img.shields.io/github/commit-activity/m/SweetSmellFox/MFAWPF?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/SweetSmellFox/MFAWPF?style=social) [![mirrorc](https://img.shields.io/badge/MirrorChyan-%239af3f6?logo=countingworkspro&logoColor=4f46e5)](https://mirrorchyan.com/zh/projects)  
   A Universal GUI based on MAA's new architecture. Powered by MaaFramework.
 
-- [MFW-ELE-GUI](https://github.com/Night-stars-1/maa-gui) MFW-ELE-GUI ![Typescript](https://img.shields.io/badge/Typescript-8A2BE2?logo=typescript) ![Electron](https://img.shields.io/badge/Electron-3776AB?logo=electron&logoColor=black)  
-  MFW-ELE-GUI, based on a brand new architecture. Powered by MaaFramework.
-
-- [MFW-PyQt6](https://github.com/overflow65537/MFW-PyQt6) MFW-PyQt6 ![python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white)  
+- [MFW-PyQt6](https://github.com/overflow65537/MFW-PyQt6) MFW-PyQt6  
+  ![license](https://img.shields.io/github/license/overflow65537/MFW-PyQt6) ![python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white) ![activity](https://img.shields.io/github/commit-activity/m/overflow65537/MFW-PyQt6?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/overflow65537/MFW-PyQt6?style=social) [![mirrorc](https://img.shields.io/badge/MirrorChyan-%239af3f6?logo=countingworkspro&logoColor=4f46e5)](https://mirrorchyan.com/zh/projects)  
   A generic GUI based on PyQt6. Powered by MaaFramework!
 
-- [MFAAvalonia](https://github.com/SweetSmellFox/MFAAvalonia) MFAAvalonia ![csharp](https://img.shields.io/badge/C%23-239120?logo=csharp&logoColor=white)  
+- [MFAAvalonia](https://github.com/SweetSmellFox/MFAAvalonia) MFAAvalonia  
+  ![license](https://img.shields.io/github/license/SweetSmellFox/MFAAvalonia) ![csharp](https://img.shields.io/badge/C%23-239120?logo=csharp&logoColor=white) ![activity](https://img.shields.io/github/commit-activity/m/SweetSmellFox/MFAAvalonia?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/SweetSmellFox/MFAAvalonia?style=social) [![mirrorc](https://img.shields.io/badge/MirrorChyan-%239af3f6?logo=countingworkspro&logoColor=4f46e5)](https://mirrorchyan.com/zh/projects)  
   A generic GUI based on Avalonia. Powered by MaaFramework!
 
 ### Development Tools
 
-- [MaaDebugger](https://github.com/MaaXYZ/MaaDebugger) MaaDebugger ![python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white)
+- [MaaDebugger](https://github.com/MaaXYZ/MaaDebugger) MaaDebugger  
+  ![license](https://img.shields.io/github/license/MaaXYZ/MaaDebugger) ![python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white) ![activity](https://img.shields.io/github/commit-activity/m/MaaXYZ/MaaDebugger?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/MaaXYZ/MaaDebugger?style=social) [![pypi](https://img.shields.io/badge/PyPI-3776AB?logo=pypi&logoColor=white)](https://pypi.org/project/MaaDebugger/)
 
-- [maa-support-extension](https://github.com/neko-para/maa-support-extension) Maa Support ![Typescript](https://img.shields.io/badge/Typescript-8A2BE2?logo=typescript)
+- [maa-support-extension](https://github.com/neko-para/maa-support-extension) Maa Support  
+  ![Typescript](https://img.shields.io/badge/Typescript-8A2BE2?logo=typescript) ![activity](https://img.shields.io/github/commit-activity/m/neko-para/maa-support-extension?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/neko-para/maa-support-extension?style=social) [![marketplace](https://img.shields.io/badge/Visual%20Studio%20Marketplace-black?logo=vscodium&logoColor=#2F80ED)](https://marketplace.visualstudio.com/items?itemName=nekosu.maa-support)
 
-- [MFATools](https://github.com/SweetSmellFox/MFATools) MFATools ![csharp](https://img.shields.io/badge/C%23-239120?logo=csharp&logoColor=white)  
+- [MFATools](https://github.com/SweetSmellFox/MFATools) MFATools  
+  ![license](https://img.shields.io/github/license/SweetSmellFox/MFATools) ![csharp](https://img.shields.io/badge/C%23-239120?logo=csharp&logoColor=white) ![activity](https://img.shields.io/github/commit-activity/m/SweetSmellFox/MFATools?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/SweetSmellFox/MFATools?style=social)  
   The tool interface is developed based on the WPF framework, aiming to provide functions similar to the screenshot tool.
 
-- [YAMaaPE](https://github.com/kqcoxn/YAMaaPE) YAMaaPE ![csharp](https://img.shields.io/badge/Javascript-yellow?logo=Javascript) ![vue](https://img.shields.io/badge/vue-268923?logo=vue.js)  
+- [YAMaaPE](https://github.com/kqcoxn/YAMaaPE) YAMaaPE  
+  ![js](https://img.shields.io/badge/Javascript-yellow?logo=Javascript) ![vue](https://img.shields.io/badge/vue-268923?logo=vue.js) ![activity](https://img.shields.io/github/commit-activity/m/kqcoxn/YAMaaPE?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/kqcoxn/YAMaaPE?style=social)  
   A Pipeline Editor based on vue-flow. Powerfully driven by MaaFramework!
 
 ### Application
 
-- [M9A](https://github.com/MaaXYZ/M9A) 1999 Assistant ![Pipeline](https://img.shields.io/badge/Pipeline-%23454545?logo=paddypower&logoColor=%23FFFFFF) ![python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white)  
+- [M9A](https://github.com/MaaXYZ/M9A) 1999 Assistant  
+  ![license](https://img.shields.io/github/license/MaaXYZ/M9A) ![Pipeline](https://img.shields.io/badge/Pipeline-%23876f69?logo=paddypower&logoColor=%23FFFFFF) ![python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white) ![activity](https://img.shields.io/github/commit-activity/m/MaaXYZ/M9A?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/MaaXYZ/M9A?style=social) [![mirrorc](https://img.shields.io/badge/MirrorChyan-%239af3f6?logo=countingworkspro&logoColor=4f46e5)](https://mirrorchyan.com/zh/projects) [![website](https://img.shields.io/badge/https://1999.fan-%234285F4)](https://1999.fan)  
   The 1999 Assistant, based on a brand new architecture. Image technology + simulation control, freeing your hands! Powered by MaaFramework.
 
-- [MAABH3](https://github.com/MaaXYZ/MAABH3) Honkai Impact 3 Assistant ![cpp](https://img.shields.io/badge/C%2B%2B-00599C?logo=c%2B%2B&logoColor=white)  
+- [MAABH3](https://github.com/MaaXYZ/MAABH3) Honkai Impact 3 Assistant  
+  ![license](https://img.shields.io/github/license/MaaXYZ/MAABH3) ![cpp](https://img.shields.io/badge/C%2B%2B-00599C?logo=c%2B%2B&logoColor=white) ![activity](https://img.shields.io/github/commit-activity/m/MaaXYZ/MAABH3?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/MaaXYZ/MAABH3?style=social)  
   A one-click tool for the daily tasks of Honkai Impact, based on a brand new architecture. Image technology + simulation control, freeing your hands! Powered by MaaFramework.
 
-- [MAS](https://github.com/MaaXYZ/MaaAssistantSkland) Skland Assistant ![Pipeline](https://img.shields.io/badge/Pipeline-%23454545?logo=paddypower&logoColor=%23FFFFFF)  
+- [MAS](https://github.com/MaaXYZ/MaaAssistantSkland) Skland Assistant  
+  ![license](https://img.shields.io/github/license/MaaXYZ/MaaAssistantSkland) ![Pipeline](https://img.shields.io/badge/Pipeline-%23876f69?logo=paddypower&logoColor=%23FFFFFF) ![activity](https://img.shields.io/github/commit-activity/m/MaaXYZ/MaaAssistantSkland?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/MaaXYZ/MaaAssistantSkland?style=social)  
   Based on a brand new architecture. Image technology + simulation control, freeing your hands! Powered by MaaFramework.
 
-- [MSBA](https://github.com/overflow65537/MAA_SnowBreak) Snow break Assistant! ![Pipeline](https://img.shields.io/badge/Pipeline-%23454545?logo=paddypower&logoColor=%23FFFFFF)  
+- [MSBA](https://github.com/overflow65537/MAA_SnowBreak) Snow break Assistant!  
+  ![license](https://img.shields.io/github/license/overflow65537/MAA_SnowBreak) ![Pipeline](https://img.shields.io/badge/Pipeline-%23876f69?logo=paddypower&logoColor=%23FFFFFF) ![activity](https://img.shields.io/github/commit-activity/m/overflow65537/MAA_SnowBreak?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/overflow65537/MAA_SnowBreak?style=social) [![mirrorc](https://img.shields.io/badge/MirrorChyan-%239af3f6?logo=countingworkspro&logoColor=4f46e5)](https://mirrorchyan.com/zh/projects)  
   The Snow break Assistant, based on a brand new architecture. Image technology + simulation control, freeing your hands! Powered by MaaFramework.
 
-- [MAA-for-Millennium-Tour](https://github.com/Ostwind23/MAA-for-Millennium-Tour) Millennium Tour Assistant ![Pipeline](https://img.shields.io/badge/Pipeline-%23454545?logo=paddypower&logoColor=%23FFFFFF) ![python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white)  
+- [MAA-for-Millennium-Tour](https://github.com/Ostwind23/MAA-for-Millennium-Tour) Millennium Tour Assistant  
+  ![license](https://img.shields.io/github/license/Ostwind23/MAA-for-Millennium-Tour) ![Pipeline](https://img.shields.io/badge/Pipeline-%23876f69?logo=paddypower&logoColor=%23FFFFFF) ![activity](https://img.shields.io/github/commit-activity/m/Ostwind23/MAA-for-Millennium-Tour?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/Ostwind23/MAA-for-Millennium-Tour?style=social)  
   An assistant for Millennium Tour based on a brand new architecture. Image technology + simulation control, freeing your hands! Powered by MaaFramework.
 
-- [MET](https://github.com/shanchuan001/MET) Eternal Tree Assistant ![Pipeline](https://img.shields.io/badge/Pipeline-%23454545?logo=paddypower&logoColor=%23FFFFFF)  
+- [MET](https://github.com/shanchuan001/MET) Eternal Tree Assistant  
+  ![license](https://img.shields.io/github/license/shanchuan001/MET) ![Pipeline](https://img.shields.io/badge/Pipeline-%23876f69?logo=paddypower&logoColor=%23FFFFFF) ![activity](https://img.shields.io/github/commit-activity/m/shanchuan001/MET?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/shanchuan001/MET?style=social)  
   An assistant for Eternal Tree based on a brand new architecture. Image technology + simulation control, freeing your hands! Powered by MaaFramework.
 
-- [MaaYYs](https://github.com/TanyaShue/MaaYYs) Onmyoji Assistant ![python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white) ![qt](https://img.shields.io/badge/Qt6-41CD52?logo=Qt&logoColor=white)  
+- [MaaYYs](https://github.com/TanyaShue/MaaYYs) Onmyoji Assistant  
+  ![license](https://img.shields.io/github/license/TanyaShue/MaaYYs) ![python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white) ![qt](https://img.shields.io/badge/Qt6-41CD52?logo=Qt&logoColor=white) ![activity](https://img.shields.io/github/commit-activity/m/TanyaShue/MaaYYs?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/TanyaShue/MaaYYs?style=social) [![mirrorc](https://img.shields.io/badge/MirrorChyan-%239af3f6?logo=countingworkspro&logoColor=4f46e5)](https://mirrorchyan.com/zh/projects)  
   A brand new Onmyoji assistant powered by advanced architecture. Combining image recognition and simulated control, it automates daily tasks and frees your hands like a cyber-helper! Powered by MaaFramework!
 
-- [MaaJR](https://github.com/Saratoga-Official/MaaJR) Warship Girls R Assistant ![Pipeline](https://img.shields.io/badge/Pipeline-%23454545?logo=paddypower&logoColor=%23FFFFFF)  
+- [MaaJR](https://github.com/Saratoga-Official/MaaJR) Warship Girls R Assistant  
+  ![license](https://img.shields.io/github/license/Saratoga-Official/MaaJR) ![Pipeline](https://img.shields.io/badge/Pipeline-%23876f69?logo=paddypower&logoColor=%23FFFFFF) ![activity](https://img.shields.io/github/commit-activity/m/Saratoga-Official/MaaJR?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/Saratoga-Official/MaaJR?style=social) [![mirrorc](https://img.shields.io/badge/MirrorChyan-%239af3f6?logo=countingworkspro&logoColor=4f46e5)](https://mirrorchyan.com/zh/projects)  
   An assistant for Warship Girls R based on a brand new architecture. Image technology + simulation control, freeing your hands! Powered by MaaFramework.
 
-- [MPA](https://github.com/overflow65537/MAA_Punish) Punishing Assistant ![Pipeline](https://img.shields.io/badge/Pipeline-%23454545?logo=paddypower&logoColor=%23FFFFFF)  
+- [MPA](https://github.com/overflow65537/MAA_Punish) Punishing Assistant  
+  ![license](https://img.shields.io/github/license/overflow65537/MAA_Punish) ![Pipeline](https://img.shields.io/badge/Pipeline-%23876f69?logo=paddypower&logoColor=%23FFFFFF) ![python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white) ![activity](https://img.shields.io/github/commit-activity/m/overflow65537/MAA_Punish?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/overflow65537/MAA_Punish?style=social) [![mirrorc](https://img.shields.io/badge/MirrorChyan-%239af3f6?logo=countingworkspro&logoColor=4f46e5)](https://mirrorchyan.com/zh/projects)  
   The Punishing Gray Raven Assistant, based on a brand new architecture. Image technology + simulation control, freeing your hands! Powered by MistEO's Black Coffee 2.0.
 
-- [MaaYuan](https://github.com/syoius/MaaYuan) Ashes of the kingdom Assistant ![Pipeline](https://img.shields.io/badge/Pipeline-%23454545?logo=paddypower&logoColor=%23FFFFFF)  
+- [MaaYuan](https://github.com/syoius/MaaYuan) Ashes of the kingdom Assistant  
+  ![license](https://img.shields.io/github/license/syoius/MaaYuan) ![Pipeline](https://img.shields.io/badge/Pipeline-%23876f69?logo=paddypower&logoColor=%23FFFFFF) ![activity](https://img.shields.io/github/commit-activity/m/syoius/MaaYuan?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/syoius/MaaYuan?style=social) [![mirrorc](https://img.shields.io/badge/MirrorChyan-%239af3f6?logo=countingworkspro&logoColor=4f46e5)](https://mirrorchyan.com/zh/projects) [![website](https://img.shields.io/badge/https://maayuan.top-%234285F4)](https://maayuan.top)  
   The Ashes of the kingdom Assistant, based on a brand new architecture. Image technology + simulation control, freeing your hands! Powered by MaaFramework.
 
-- [Maa-HBR](https://github.com/KarylDAZE/Maa-HBR) Heaven Burns Red/HBR Assistant ![Pipeline](https://img.shields.io/badge/Pipeline-%23454545?logo=paddypower&logoColor=%23FFFFFF)  
+- [Maa-HBR](https://github.com/KarylDAZE/Maa-HBR) Heaven Burns Red/HBR Assistant  
+  ![license](https://img.shields.io/github/license/KarylDAZE/Maa-HBR) ![Pipeline](https://img.shields.io/badge/Pipeline-%23876f69?logo=paddypower&logoColor=%23FFFFFF) ![activity](https://img.shields.io/github/commit-activity/m/KarylDAZE/Maa-HBR?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/KarylDAZE/Maa-HBR?style=social) [![mirrorc](https://img.shields.io/badge/MirrorChyan-%239af3f6?logo=countingworkspro&logoColor=4f46e5)](https://mirrorchyan.com/zh/projects)  
   An assistant for Heaven Burns Red/HBR based on a brand new architecture. Image technology + simulation control, freeing your hands! Powered by MaaFramework.
 
-- [MaaGF2Exilium](https://github.com/DarkLingYun/MaaGF2Exilium) Automation Assistant for Girls' Frontline 2: Exilium ![Pipeline](https://img.shields.io/badge/Pipeline-%23454545?logo=paddypower&logoColor=%23FFFFFF)   
-An automation assistant for Girls' Frontline 2: Exilium, built on a brand-new architecture. Featuring image recognition technology and simulation control to free up your hands! Powered by MaaFramework!
+- [MaaGF2Exilium](https://github.com/DarkLingYun/MaaGF2Exilium) Automation Assistant for Girls' Frontline 2: Exilium  
+  ![license](https://img.shields.io/github/license/DarkLingYun/MaaGF2Exilium) ![Pipeline](https://img.shields.io/badge/Pipeline-%23876f69?logo=paddypower&logoColor=%23FFFFFF) ![activity](https://img.shields.io/github/commit-activity/m/DarkLingYun/MaaGF2Exilium?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/DarkLingYun/MaaGF2Exilium?style=social) [![mirrorc](https://img.shields.io/badge/MirrorChyan-%239af3f6?logo=countingworkspro&logoColor=4f46e5)](https://mirrorchyan.com/zh/projects)  
+  An automation assistant for Girls' Frontline 2: Exilium, built on a brand-new architecture. Featuring image recognition technology and simulation control to free up your hands! Powered by MaaFramework!
 
-- [MaaAshEchoes](https://github.com/moulai/MaaAshEchoes) Ash Echoes Assistant ![Pipeline](https://img.shields.io/badge/Pipeline-%23454545?logo=paddypower&logoColor=%23FFFFFF)  
+- [MaaAshEchoes](https://github.com/moulai/MaaAshEchoes) Ash Echoes Assistant  
+  ![license](https://img.shields.io/github/license/moulai/MaaAshEchoes) ![Pipeline](https://img.shields.io/badge/Pipeline-%23876f69?logo=paddypower&logoColor=%23FFFFFF) ![activity](https://img.shields.io/github/commit-activity/m/moulai/MaaAshEchoes?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/moulai/MaaAshEchoes?style=social) [![mirrorc](https://img.shields.io/badge/MirrorChyan-%239af3f6?logo=countingworkspro&logoColor=4f46e5)](https://mirrorchyan.com/zh/projects)  
   An assistant for Ash Echoes based on a brand new architecture. Image technology + simulation control, freeing your hands! Powered by MaaFramework.
 
-- [MaaXuexi](https://github.com/ravizhan/MaaXuexi) Xuexi automation assistant ![python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white) ![Pipeline](https://img.shields.io/badge/Pipeline-%23454545?logo=paddypower&logoColor=%23FFFFFF)  
+- [MaaXuexi](https://github.com/ravizhan/MaaXuexi) Xuexi automation assistant  
+  ![license](https://img.shields.io/github/license/ravizhan/MaaXuexi) ![python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white) ![Pipeline](https://img.shields.io/badge/Pipeline-%23876f69?logo=paddypower&logoColor=%23FFFFFF) ![activity](https://img.shields.io/github/commit-activity/m/ravizhan/MaaXuexi?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/ravizhan/MaaXuexi?style=social)  
   The Xuexi automation assistant based on a new architecture.Image technology + analogue control to free your hands!Powered by MaaFramework!
 
-- [MACC](https://github.com/mxia9416/MACC) Path to Nowhere Assistant ![Pipeline](https://img.shields.io/badge/Pipeline-%23454545?logo=paddypower&logoColor=%23FFFFFF)  
+- [MACC](https://github.com/mxia9416/MACC) Path to Nowhere Assistant  
+  ![license](https://img.shields.io/github/license/mxia9416/MACC) ![Pipeline](https://img.shields.io/badge/Pipeline-%23876f69?logo=paddypower&logoColor=%23FFFFFF) ![activity](https://img.shields.io/github/commit-activity/m/mxia9416/MACC?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/mxia9416/MACC?style=social)  
   MACC:Minos Assistant of Crisis Control is an assistant based on a new architecture.Image technology + analogue control to free your hands!Powered by MaaFramework!
 
-- [MAA_MHXY_MG](https://github.com/gitlihang/Maa_MHXY_MG) Fantasy Westward Journey Mobile ![Pipeline](https://img.shields.io/badge/Pipeline-%23454545?logo=paddypower&logoColor=%23FFFFFF)  
+- [MAA_MHXY_MG](https://github.com/gitlihang/Maa_MHXY_MG) Fantasy Westward Journey Mobile  
+  ![license](https://img.shields.io/github/license/gitlihang/Maa_MHXY_MG) ![Pipeline](https://img.shields.io/badge/Pipeline-%23876f69?logo=paddypower&logoColor=%23FFFFFF) ![activity](https://img.shields.io/github/commit-activity/m/gitlihang/Maa_MHXY_MG?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/gitlihang/Maa_MHXY_MG?style=social)  
   Fantasy Westward Journey Mobile Assistant Based on New Architecture.Image technology + analogue control to free your hands!Powered by MaaFramework!
 
-- [MNMA](https://github.com/kqcoxn/MaaNewMoonAccompanying) New Moon Accompanying Assistant ![Pipeline](https://img.shields.io/badge/Pipeline-%23454545?logo=paddypower&logoColor=%23FFFFFF) ![python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white)  
+- [MNMA](https://github.com/kqcoxn/MaaNewMoonAccompanying) New Moon Accompanying Assistant ![Pipeline](https://img.shields.io/badge/Pipeline-%23454545?logo=paddypower&logoColor=%23FFFFFF)  
+  ![license](https://img.shields.io/github/license/kqcoxn/MaaNewMoonAccompanying) ![Pipeline](https://img.shields.io/badge/Pipeline-%23876f69?logo=paddypower&logoColor=%23FFFFFF) ![python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white) ![activity](https://img.shields.io/github/commit-activity/m/kqcoxn/MaaNewMoonAccompanying?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/kqcoxn/MaaNewMoonAccompanying?style=social) [![mirrorc](https://img.shields.io/badge/MirrorChyan-%239af3f6?logo=countingworkspro&logoColor=4f46e5)](https://mirrorchyan.com/zh/projects)  
   The New Moon Accompanying Assistant, based on a brand new architecture. Image technology + simulation control, freeing your hands! Powered by MaaFramework.
 
-- [MaaTOT](https://github.com/Coxwtwo/MaaTOT) Tears of Themis Assistant ![Pipeline](https://img.shields.io/badge/Pipeline-%23454545?logo=paddypower&logoColor=%23FFFFFF)  
+- [MaaTOT](https://github.com/Coxwtwo/MaaTOT) Tears of Themis Assistant 
+  ![license](https://img.shields.io/github/license/Coxwtwo/MaaTOT) ![Pipeline](https://img.shields.io/badge/Pipeline-%23876f69?logo=paddypower&logoColor=%23FFFFFF) ![activity](https://img.shields.io/github/commit-activity/m/Coxwtwo/MaaTOT?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/Coxwtwo/MaaTOT?style=social)  
   The Tears of Themis Assistant, based on a brand new architecture. Image technology + simulation control, freeing your hands! Powered by MaaFramework.
 
 ## Eco-Building
