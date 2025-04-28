@@ -40,7 +40,7 @@ It offers low-code simplicity while maintaining high extensibility. The framewor
 - [Integration](docs/en_us/2.1-Integration.md)
 - [Pipeline Protocol](docs/en_us/3.1-PipelineProtocol.md)
 
-## Best Practices
+## Community Projects
 
 ### Generic UI
 
@@ -55,6 +55,15 @@ It offers low-code simplicity while maintaining high extensibility. The framewor
 
 - [MFAAvalonia](https://github.com/SweetSmellFox/MFAAvalonia) MFAAvalonia ![csharp](https://img.shields.io/badge/C%23-239120?logo=csharp&logoColor=white)  
   A generic GUI based on Avalonia. Powered by MaaFramework!
+
+### Development Tools
+
+- [MaaDebugger](https://github.com/MaaXYZ/MaaDebugger) MaaDebugger ![python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white)
+
+- [maa-support-extension](https://github.com/neko-para/maa-support-extension) Maa Support ![Typescript](https://img.shields.io/badge/Typescript-8A2BE2?logo=typescript)
+
+- [MFATools](https://github.com/SweetSmellFox/MFATools) MFATools ![csharp](https://img.shields.io/badge/C%23-239120?logo=csharp&logoColor=white)  
+  The tool interface is developed based on the WPF framework, aiming to provide functions similar to the screenshot tool.
 
 - [YAMaaPE](https://github.com/kqcoxn/YAMaaPE) YAMaaPE ![csharp](https://img.shields.io/badge/Javascript-yellow?logo=Javascript) ![vue](https://img.shields.io/badge/vue-268923?logo=vue.js)  
   A Pipeline Editor based on vue-flow. Powerfully driven by MaaFramework!
@@ -121,7 +130,7 @@ MAA is planned to be a category of projects rather than just a single piece of s
 
 If your project depends on MaaFramework, we welcome you to name it as MaaXXX, MXA, MAX, and so on. Of course, this is permission, not limitation. You can freely choose other names unrelated to MAA, depending on your own ideas!
 
-We also welcome you to submit a PR to add your project to the best practices list above!
+We also welcome you to submit a PR to add your project to the community projects list above!
 
 ## License
 

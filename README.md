@@ -41,21 +41,27 @@ _✨ 基于图像识别的自动化黑盒测试框架 ✨_
 - [集成文档](docs/zh_cn/2.1-集成文档.md)
 - [Pipeline 协议](docs/zh_cn/3.1-任务流水线协议.md)
 
-## 最佳实践
+## 社区项目
 
 ### 通用 UI
 
 - [MFAWPF](https://github.com/SweetSmellFox/MFAWPF) MFA 任务管理器 ![csharp](https://img.shields.io/badge/C%23-239120?logo=csharp&logoColor=white) [![mirrorc](https://img.shields.io/badge/Mirror%E9%85%B1-%239af3f6?logo=countingworkspro&logoColor=4f46e5)](https://mirrorchyan.com/zh/projects)  
   基于 MAA 全新架构的 通用 GUI。由 MaaFramework 强力驱动！
 
-- [MFW-ELE-GUI](https://github.com/Night-stars-1/maa-gui) MFW-ELE-GUI ![Typescript](https://img.shields.io/badge/Typescript-8A2BE2?logo=typescript) ![Electron](https://img.shields.io/badge/Electron-3776AB?logo=electron&logoColor=black)  
-  基于全新架构的 MFW-ELE-GUI。由 MaaFramework 强力驱动！
-
 - [MFW-PyQt6](https://github.com/overflow65537/MFW-PyQt6) MFW-PyQt6 ![python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white) [![mirrorc](https://img.shields.io/badge/Mirror%E9%85%B1-%239af3f6?logo=countingworkspro&logoColor=4f46e5)](https://mirrorchyan.com/zh/projects)  
   基于PyQt6的通用GUI。由 MaaFramework 强力驱动！
 
 - [MFAAvalonia](https://github.com/SweetSmellFox/MFAAvalonia) MFAAvalonia ![csharp](https://img.shields.io/badge/C%23-239120?logo=csharp&logoColor=white) [![mirrorc](https://img.shields.io/badge/Mirror%E9%85%B1-%239af3f6?logo=countingworkspro&logoColor=4f46e5)](https://mirrorchyan.com/zh/projects)  
   基于 Avalonia 的 通用 GUI。由 MaaFramework 强力驱动！
+
+### 开发工具
+
+- [MaaDebugger](https://github.com/MaaXYZ/MaaDebugger) MaaDebugger ![python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white)
+
+- [maa-support-extension](https://github.com/neko-para/maa-support-extension) Maa Support ![Typescript](https://img.shields.io/badge/Typescript-8A2BE2?logo=typescript)
+
+- [MFATools](https://github.com/SweetSmellFox/MFATools) MFATools ![csharp](https://img.shields.io/badge/C%23-239120?logo=csharp&logoColor=white)  
+  基于WPF框架开发的工具界面，旨在提供类似于截图工具的功能
 
 - [YAMaaPE](https://github.com/kqcoxn/YAMaaPE) YAMaaPE ![csharp](https://img.shields.io/badge/Javascript-yellow?logo=Javascript) ![vue](https://img.shields.io/badge/vue-268923?logo=vue.js)  
   基于 vue-flow 的 Pipeline 编辑器。由 MaaFramework 强力驱动！
@@ -122,7 +128,7 @@ MAA 正计划建设为一类项目，而非舟的单一软件。
 
 若您的项目依赖于 MaaFramework ，我们欢迎您将它命名为 MaaXXX, MXA, MAX 等等。当然，这是许可而不是限制，您也可以自由选择其他与 MAA 无关的名字，完全取决于您自己的想法！  
 
-同时，我们也非常欢迎您提出 PR ，在上方的最佳实践列表中添加上您的项目！
+同时，我们也非常欢迎您提出 PR ，在上方的社区项目列表中添加上您的项目！
 
 ## 许可证
 
