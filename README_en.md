@@ -143,11 +143,11 @@ It offers low-code simplicity while maintaining high extensibility. The framewor
   ![license](https://img.shields.io/github/license/gitlihang/Maa_MHXY_MG) ![Pipeline](https://img.shields.io/badge/Pipeline-%23876f69?logo=paddypower&logoColor=%23FFFFFF) ![activity](https://img.shields.io/github/commit-activity/m/gitlihang/Maa_MHXY_MG?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/gitlihang/Maa_MHXY_MG?style=social)  
   Fantasy Westward Journey Mobile Assistant Based on New Architecture.Image technology + analogue control to free your hands!Powered by MaaFramework!
 
-- [MNMA](https://github.com/kqcoxn/MaaNewMoonAccompanying) New Moon Accompanying Assistant ![Pipeline](https://img.shields.io/badge/Pipeline-%23454545?logo=paddypower&logoColor=%23FFFFFF)  
+- [MNMA](https://github.com/kqcoxn/MaaNewMoonAccompanying) New Moon Accompanying Assistant  
   ![license](https://img.shields.io/github/license/kqcoxn/MaaNewMoonAccompanying) ![Pipeline](https://img.shields.io/badge/Pipeline-%23876f69?logo=paddypower&logoColor=%23FFFFFF) ![python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white) ![activity](https://img.shields.io/github/commit-activity/m/kqcoxn/MaaNewMoonAccompanying?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/kqcoxn/MaaNewMoonAccompanying?style=social) [![mirrorc](https://img.shields.io/badge/MirrorChyan-%239af3f6?logo=countingworkspro&logoColor=4f46e5)](https://mirrorchyan.com/zh/projects)  
   The New Moon Accompanying Assistant, based on a brand new architecture. Image technology + simulation control, freeing your hands! Powered by MaaFramework.
 
-- [MaaTOT](https://github.com/Coxwtwo/MaaTOT) Tears of Themis Assistant 
+- [MaaTOT](https://github.com/Coxwtwo/MaaTOT) Tears of Themis Assistant  
   ![license](https://img.shields.io/github/license/Coxwtwo/MaaTOT) ![Pipeline](https://img.shields.io/badge/Pipeline-%23876f69?logo=paddypower&logoColor=%23FFFFFF) ![activity](https://img.shields.io/github/commit-activity/m/Coxwtwo/MaaTOT?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/Coxwtwo/MaaTOT?style=social)  
   The Tears of Themis Assistant, based on a brand new architecture. Image technology + simulation control, freeing your hands! Powered by MaaFramework.
 
