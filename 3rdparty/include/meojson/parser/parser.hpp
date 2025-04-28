@@ -366,7 +366,10 @@ inline basic_value<string_t> parser<string_t, parsing_t, accel_traits>::parse_ob
             return invalid_value<string_t>();
         }
 
-        result.emplace(std::move(*key_opt), std::move(val));
+        auto emplaced = result.emplace(std::move(*key_opt), std::move(val)).second;
+        if (!emplaced) {
+            return invalid_value<string_t>();
+        }
 
         if (*_cur == ',') {
             ++_cur;
