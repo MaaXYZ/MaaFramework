@@ -1,5 +1,5 @@
 {
-	"Version": "(main) v4.1.1",
+	"Version": "(main) v4.1.2",
 	"Compounds": {
 		"MaaAgentClientAPI.h": {
 			"Location": "include/MaaAgentClient/MaaAgentClientAPI.h",
