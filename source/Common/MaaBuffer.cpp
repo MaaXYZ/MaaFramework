@@ -45,7 +45,7 @@ const char* MaaStringBufferGet(const MaaStringBuffer* handle)
 {
     if (!handle) {
         LogError << "handle is null";
-        return nullptr;
+        return "";
     }
 
     return handle->data();
@@ -122,6 +122,10 @@ const MaaStringBuffer* MaaStringListBufferAt(const MaaStringListBuffer* handle, 
 {
     if (!handle) {
         LogError << "handle is null";
+        return nullptr;
+    }
+    if (index >= handle->size()) {
+        LogError << "out of range" << VAR(index) << VAR(handle->size());
         return nullptr;
     }
 
@@ -345,6 +349,10 @@ const MaaImageBuffer* MaaImageListBufferAt(const MaaImageListBuffer* handle, Maa
 {
     if (!handle) {
         LogError << "handle is null";
+        return nullptr;
+    }
+    if (index >= handle->size()) {
+        LogError << "out of range" << VAR(index) << VAR(handle->size());
         return nullptr;
     }
 

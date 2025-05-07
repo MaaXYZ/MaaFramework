@@ -62,6 +62,10 @@ const MaaToolkitDesktopWindow* MaaToolkitDesktopWindowListAt(const MaaToolkitDes
         LogError << "list is null";
         return nullptr;
     }
+    if (index >= list->size()) {
+        LogError << "out of range" << VAR(index) << VAR(list->size());
+        return nullptr;
+    }
 
     return &list->at(index);
 }
@@ -80,7 +84,7 @@ const char* MaaToolkitDesktopWindowGetClassName(const MaaToolkitDesktopWindow* w
 {
     if (!window) {
         LogError << "window is null";
-        return nullptr;
+        return "";
     }
 
     return window->class_name().c_str();
@@ -90,7 +94,7 @@ const char* MaaToolkitDesktopWindowGetWindowName(const MaaToolkitDesktopWindow* 
 {
     if (!window) {
         LogError << "window is null";
-        return nullptr;
+        return "";
     }
 
     return window->window_name().c_str();
