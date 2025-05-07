@@ -29,7 +29,7 @@ struct JPipelineData
     bool is_sub = false;
     uint32_t rate_limit = 0;
     uint32_t timeout = 0;
-    std::variant<std::string, std::vector<std::string>> on_error;
+    std::variant<std::vector<std::string>, std::string> on_error;
     bool inverse = false;
     bool enabled = false;
     uint32_t pre_delay = 0;
