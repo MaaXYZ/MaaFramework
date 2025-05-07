@@ -30,7 +30,7 @@ public:
     std::vector<std::string> get_node_list() const;
 
 public:
-    static bool parse_task(
+    static bool parse_node(
         const std::string& name,
         const json::value& input,
         PipelineData& output,

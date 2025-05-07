@@ -47,7 +47,7 @@ bool DefaultPipelineMgr::parse_pipeline(const json::value& input)
         return true;
     }
 
-    return PipelineResMgr::parse_task(std::string(), *opt, pipeline_param_, {}, {});
+    return PipelineResMgr::parse_node(std::string(), *opt, pipeline_param_, {}, {});
 }
 
 bool DefaultPipelineMgr::parse_recognition(const json::value& input)

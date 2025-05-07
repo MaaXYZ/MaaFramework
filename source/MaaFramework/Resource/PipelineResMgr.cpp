@@ -218,7 +218,7 @@ bool PipelineResMgr::parse_config(const json::value& input, std::set<std::string
 
         PipelineData result;
         const auto& default_result = pipeline_data_map_.contains(key) ? pipeline_data_map_.at(key) : default_mgr.get_pipeline();
-        bool ret = parse_task(key, value, result, default_result, default_mgr);
+        bool ret = parse_node(key, value, result, default_result, default_mgr);
         if (!ret) {
             LogError << "parse_task failed" << VAR(key) << VAR(value);
             return false;
@@ -304,7 +304,7 @@ bool get_and_check_value_or_array(
     return true;
 }
 
-bool PipelineResMgr::parse_task(
+bool PipelineResMgr::parse_node(
     const std::string& name,
     const json::value& input,
     PipelineData& output,
