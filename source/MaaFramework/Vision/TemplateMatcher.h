@@ -41,8 +41,11 @@ private:
 
     void sort_(ResultsVec& results) const;
 
+    bool comp_score(double s1, double s2) const;
+
 private:
     const TemplateMatcherParam param_;
+    const bool use_min_score_ = false;
     const std::vector<std::shared_ptr<cv::Mat>> templates_;
 };
 

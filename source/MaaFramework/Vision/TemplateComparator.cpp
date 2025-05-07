@@ -10,6 +10,7 @@ TemplateComparator::TemplateComparator(cv::Mat lhs, cv::Mat rhs, cv::Rect roi, T
     : VisionBase(std::move(lhs), std::move(roi), std::move(name))
     , rhs_image_(std::move(rhs))
     , param_(std::move(param))
+    , use_min_score_(param_.method == cv::TemplateMatchModes::TM_SQDIFF || param_.method == cv::TemplateMatchModes::TM_SQDIFF_NORMED)
 {
     analyze();
 }
@@ -39,7 +40,7 @@ void TemplateComparator::analyze()
 
 void TemplateComparator::add_results(ResultsVec results, double threshold)
 {
-    std::ranges::copy_if(results, std::back_inserter(filtered_results_), [&](const auto& res) { return res.score > threshold; });
+    std::ranges::copy_if(results, std::back_inserter(filtered_results_), [&](const auto& res) { return comp_score(threshold, res.score); });
 
     merge_vector_(all_results_, std::move(results));
 }
@@ -63,11 +64,19 @@ double TemplateComparator::comp(const cv::Mat& lhs, const cv::Mat& rhs, int meth
     cv::Point min_loc {}, max_loc {};
     cv::minMaxLoc(matched, &min_val, &max_val, &min_loc, &max_loc);
 
-    if (std::isnan(max_val) || std::isinf(max_val)) {
-        max_val = 0;
+    double val = use_min_score_ ? min_val : max_val;
+
+    if (std::isnan(val) || std::isinf(val)) {
+        val = 0;
     }
 
-    return max_val;
+    return val;
 }
+
+bool TemplateComparator::comp_score(double s1, double s2) const
+{
+    return use_min_score_ ? s1 > s2 : s1 < s2;
+}
+
 
 MAA_VISION_NS_END
