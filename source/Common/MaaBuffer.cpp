@@ -149,6 +149,10 @@ MaaBool MaaStringListBufferRemove(MaaStringListBuffer* handle, MaaSize index)
         LogError << "handle is null";
         return false;
     }
+    if (index >= handle->size()) {
+        LogError << "out of range" << VAR(index) << VAR(handle->size());
+        return false;
+    }
 
     handle->remove(index);
     return true;
@@ -374,6 +378,10 @@ MaaBool MaaImageListBufferRemove(MaaImageListBuffer* handle, MaaSize index)
 {
     if (!handle) {
         LogError << "handle is null";
+        return false;
+    }
+    if (index >= handle->size()) {
+        LogError << "out of range" << VAR(index) << VAR(handle->size());
         return false;
     }
 
