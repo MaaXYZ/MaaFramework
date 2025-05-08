@@ -57,6 +57,8 @@ private:
     bool handle_resource_valid(const json::value& j);
     bool handle_resource_running(const json::value& j);
     bool handle_resource_clear(const json::value& j);
+    bool handle_resource_override_pipeline(const json::value& j);
+    bool handle_resource_override_next(const json::value& j);
     bool handle_resource_get_hash(const json::value& j);
     bool handle_resource_get_node_list(const json::value& j);
 

@@ -177,6 +177,12 @@ bool AgentClient::handle_inserted_request(const json::value& j)
     else if (handle_resource_clear(j)) {
         return true;
     }
+    else if (handle_resource_override_pipeline(j)) {
+        return true;
+    }
+    else if (handle_resource_override_next(j)) {
+        return true;
+    }
     else if (handle_resource_get_hash(j)) {
         return true;
     }
@@ -899,6 +905,56 @@ bool AgentClient::handle_resource_clear(const json::value& j)
         .ret = ret,
     };
     send(resp);
+    return true;
+}
+
+bool AgentClient::handle_resource_override_pipeline(const json::value& j)
+{
+    if (!j.is<ResourceOverridePipelineReverseRequest>()) {
+        return false;
+    }
+
+    const ResourceOverridePipelineReverseRequest& req = j.as<ResourceOverridePipelineReverseRequest>();
+    LogFunc << VAR(req) << VAR(ipc_addr_);
+
+    MaaResource* resource = query_resource(req.resource_id);
+    if (!resource) {
+        LogError << "resource not found" << VAR(req.resource_id);
+        return false;
+    }
+
+    bool ret = resource->override_pipeline(req.pipeline_override);
+
+    ResourceOverridePipelineReverseResponse resp {
+        .ret = ret,
+    };
+    send(resp);
+
+    return true;
+}
+
+bool AgentClient::handle_resource_override_next(const json::value& j)
+{
+    if (!j.is<ResourceOverrideNextReverseRequest>()) {
+        return false;
+    }
+
+    const ResourceOverrideNextReverseRequest& req = j.as<ResourceOverrideNextReverseRequest>();
+    LogFunc << VAR(req) << VAR(ipc_addr_);
+
+    MaaResource* resource = query_resource(req.resource_id);
+    if (!resource) {
+        LogError << "resource not found" << VAR(req.resource_id);
+        return false;
+    }
+
+    bool ret = resource->override_next(req.node_name, req.next);
+
+    ResourceOverrideNextReverseResponse resp {
+        .ret = ret,
+    };
+    send(resp);
+
     return true;
 }
 
