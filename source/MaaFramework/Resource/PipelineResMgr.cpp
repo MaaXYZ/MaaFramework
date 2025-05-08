@@ -96,7 +96,12 @@ bool PipelineResMgr::open_and_parse_file(
     }
     const auto& json = *json_opt;
 
-    if (!parse_config(json, existing_keys, default_mgr)) {
+    if (!json.is_object()) {
+        LogError << "json is not object";
+        return false;
+    }
+
+    if (!parse_and_override(json.as_object(), existing_keys, default_mgr)) {
         LogError << "parse_config failed" << VAR(path) << VAR(json);
         return false;
     }
@@ -182,14 +187,9 @@ std::vector<std::string> PipelineResMgr::get_node_list() const
     return std::vector(k.begin(), k.end());
 }
 
-bool PipelineResMgr::parse_config(const json::value& input, std::set<std::string>& existing_keys, const DefaultPipelineMgr& default_mgr)
+bool PipelineResMgr::parse_and_override(const json::object& input, std::set<std::string>& existing_keys, const DefaultPipelineMgr& default_mgr)
 {
-    if (!input.is_object()) {
-        LogError << "json is not object";
-        return false;
-    }
-
-    for (const auto& [key, value] : input.as_object()) {
+    for (const auto& [key, value] : input) {
         if (key.empty()) {
             LogError << "key is empty" << VAR(key);
             return false;
