@@ -225,6 +225,8 @@ export declare function resource_unregister_custom_action(
 ): boolean
 export declare function resource_clear_custom_action(handle: ResourceHandle): boolean
 export declare function resource_post_bundle(handle: ResourceHandle, path: string): ResId
+export declare function resource_override_pipeline(handle: ResourceHandle, pipeline_override: string): bool
+export declare function resource_override_next(handle: ResourceHandle, node_name: string, next_list: string[]): bool
 export declare function resource_clear(handle: ResourceHandle): boolean
 export declare function resource_status(handle: ResourceHandle, res_id: ResId): Status
 export declare function resource_wait(handle: ResourceHandle, res_id: ResId): Promise<Status>

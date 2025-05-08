@@ -1,3 +1,4 @@
+#include <MaaFramework/MaaAPI.h>
 module;
 
 #include "../include/macro.h"
@@ -139,6 +140,22 @@ MaaResId resource_post_bundle(Napi::External<ResourceInfo> info, std::string pat
     return MaaResourcePostBundle(info.Data()->handle, path.c_str());
 }
 
+bool resource_override_pipeline(Napi::External<ResourceInfo> info, std::string pipeline_override)
+{
+    return MaaResourceOverridePipeline(info.Data()->handle, pipeline_override.c_str());
+}
+
+bool resource_override_next(Napi::External<ResourceInfo> info, std::string node_name, std::vector<std::string> next_list)
+{
+    StringListBuffer buffer;
+    buffer.set_vector(next_list, [](auto str) {
+        StringBuffer buf;
+        buf.set(str);
+        return buf;
+    });
+    return MaaResourceOverrideNext(info.Data()->handle, node_name.c_str(), buffer);
+}
+
 bool resource_clear(Napi::External<ResourceInfo> info)
 {
     return MaaResourceClear(info.Data()->handle);
@@ -199,6 +216,8 @@ export void load_instance_resource(Napi::Env env, Napi::Object& exports, Napi::E
     BIND(resource_unregister_custom_action);
     BIND(resource_clear_custom_action);
     BIND(resource_post_bundle);
+    BIND(resource_override_pipeline);
+    BIND(resource_override_next);
     BIND(resource_clear);
     BIND(resource_status);
     BIND(resource_wait);

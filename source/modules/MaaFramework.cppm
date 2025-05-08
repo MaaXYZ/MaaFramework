@@ -149,6 +149,8 @@ export using ::MaaResourceRegisterCustomAction;
 export using ::MaaResourceUnregisterCustomAction;
 export using ::MaaResourceClearCustomAction;
 export using ::MaaResourcePostBundle;
+export using ::MaaResourceOverridePipeline;
+export using ::MaaResourceOverrideNext;
 export using ::MaaResourceClear;
 export using ::MaaResourceStatus;
 export using ::MaaResourceWait;
