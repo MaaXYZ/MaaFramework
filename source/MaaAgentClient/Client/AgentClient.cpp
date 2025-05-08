@@ -15,6 +15,21 @@
 
 MAA_AGENT_CLIENT_NS_BEGIN
 
+AgentClient::AgentClient(const std::string& identifier)
+{
+    LogFunc;
+
+    identifier_ = identifier.empty() ? make_uuid() : identifier;
+    init_socket(identifier_, true);
+
+    LogInfo << VAR(identifier) << VAR(identifier_);
+}
+
+std::string AgentClient::identifier() const
+{
+    return identifier_;
+}
+
 bool AgentClient::bind_resource(MaaResource* resource)
 {
     LogInfo << VAR_VOIDP(this) << VAR_VOIDP(resource);
@@ -31,11 +46,16 @@ bool AgentClient::bind_resource(MaaResource* resource)
 
 std::string AgentClient::create_socket(const std::string& identifier)
 {
-    const std::string& id = identifier.empty() ? make_uuid() : identifier;
+    if (!identifier_.empty()) {
+        LogError << "socket already created" << VAR(identifier_);
+        return identifier_;
+    }
 
-    init_socket(id, true);
+    identifier_ = identifier.empty() ? make_uuid() : identifier;
 
-    return id;
+    init_socket(identifier_, true);
+
+    return identifier_;
 }
 
 bool AgentClient::connect()
@@ -86,7 +106,17 @@ bool AgentClient::disconnect()
 
     clear_registration();
 
+    if (!connected()) {
+        LogError << "not connected" << VAR(ipc_addr_);
+        return true;
+    }
+
     return send_and_recv<ShutDownResponse>(ShutDownRequest {}).has_value();
+}
+
+bool AgentClient::connected()
+{
+    return Transceiver::connected();
 }
 
 bool AgentClient::handle_inserted_request(const json::value& j)
@@ -576,7 +606,7 @@ bool AgentClient::handle_tasker_post_stop(const json::value& j)
 }
 
 bool AgentClient::handle_tasker_stopping(const json::value& j)
-{    
+{
     if (!j.is<TaskerStoppingReverseRequest>()) {
         return false;
     }

@@ -11,8 +11,7 @@ Transceiver::~Transceiver()
 {
     LogFunc;
 
-    zmq_sock_.close();
-    zmq_ctx_.close();
+    uninit_socket();
 }
 
 bool Transceiver::handle_image_header(const json::value& j)
@@ -41,12 +40,36 @@ void Transceiver::init_socket(const std::string& identifier, bool bind)
 
     zmq_sock_ = zmq::socket_t(zmq_ctx_, zmq::socket_type::pair);
 
-    if (bind) {
+    is_bound_ = bind;
+
+    if (is_bound_) {
         zmq_sock_.bind(ipc_addr_);
     }
     else {
         zmq_sock_.connect(ipc_addr_);
     }
+}
+
+void Transceiver::uninit_socket()
+{
+    LogFunc << VAR(ipc_addr_);
+
+    // if (connected()) {
+    //     if (is_bound_) {
+    //         zmq_sock_.unbind(ipc_addr_);
+    //     }
+    //     else {
+    //         zmq_sock_.disconnect(ipc_addr_);
+    //     }
+    // }
+
+    zmq_sock_.close();
+    zmq_ctx_.close();
+}
+
+bool Transceiver::connected()
+{
+    return zmq_sock_;
 }
 
 bool Transceiver::send(const json::value& j)

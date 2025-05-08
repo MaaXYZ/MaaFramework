@@ -42,11 +42,11 @@ int main()
         return -1;
     }
 
-    MaaAgentClient* client = MaaAgentClientCreate();
+    MaaAgentClient* client = MaaAgentClientCreateV2(nullptr);
     MaaAgentClientBindResource(client, resource_handle);
 
     MaaStringBuffer* identifier = MaaStringBufferCreate();
-    MaaAgentClientCreateSocket(client, identifier);
+    MaaAgentClientIdentifier(client, identifier);
 
     // std::string() + "python E:/Code/MaaFramework/sample/python/MaaAgent/agent_child.py " + MaaStringBufferGet(identifier);
     std::string child_command = std::string() + "E:/Code/MaaFramework/build/bin/Debug/agent_child " + MaaStringBufferGet(identifier);

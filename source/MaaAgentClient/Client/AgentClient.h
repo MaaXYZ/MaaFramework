@@ -15,13 +15,17 @@ class AgentClient
     , public Transceiver
 {
 public:
+    AgentClient() = default;
+    AgentClient(const std::string& identifier);
     virtual ~AgentClient() override = default;
 
 public: // MaaAgentClient
+    virtual std::string identifier() const override;
     virtual bool bind_resource(MaaResource* resource) override;
     virtual std::string create_socket(const std::string& identifier) override;
     virtual bool connect() override;
     virtual bool disconnect() override;
+    virtual bool connected() override;
 
 private: // Transceiver
     virtual bool handle_inserted_request(const json::value& j) override;
@@ -119,6 +123,7 @@ public:
 
 private:
     MaaResource* resource_ = nullptr;
+    std::string identifier_;
 
     std::map<std::string, MaaContext*> context_map_;
     std::map<std::string, MaaTasker*> tasker_map_;

@@ -47,7 +47,7 @@ def api_test():
 
     agent = AgentClient()
     agent.bind(resource)
-    socket_id = agent.create_socket()
+    socket_id = agent.identifier()
 
     if not socket_id:
         print("failed to create socket")

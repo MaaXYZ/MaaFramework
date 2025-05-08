@@ -16,7 +16,7 @@ public:
 
 private:
     inline static const std::filesystem::path libname_ = MAA_NS::path("MaaAgentClient");
-    inline static const std::string create_func_name_ = "MaaAgentClientCreate";
+    inline static const std::string create_func_name_ = "MaaAgentClientCreateV2";
     inline static const std::string destroy_func_name_ = "MaaAgentClientDestroy";
 };
 
