@@ -110,7 +110,7 @@ MaaBool MaaResourceOverridePipeline(MaaResource* res, const char* pipeline_overr
     }
     if (!ov_opt->is_object()) {
         LogError << "json is not object" << VAR(pipeline_override);
-        return MaaInvalidId;
+        return false;
     }
 
     return res->override_pipeline(ov_opt->as_object());
