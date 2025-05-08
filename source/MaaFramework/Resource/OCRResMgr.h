@@ -29,7 +29,7 @@ public:
     void use_directml(int device_id);
     void use_coreml(uint32_t coreml_flag);
 
-    bool lazy_load(const std::filesystem::path& path, bool is_base);
+    bool lazy_load(const std::filesystem::path& path);
     void clear();
 
 public:

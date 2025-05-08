@@ -20,7 +20,7 @@ public:
     using PipelineDataMap = std::unordered_map<std::string, PipelineData>;
 
 public:
-    bool load(const std::filesystem::path& path, bool is_base, const DefaultPipelineMgr& default_mgr);
+    bool load(const std::filesystem::path& path, const DefaultPipelineMgr& default_mgr);
     void clear();
 
     const std::vector<std::filesystem::path>& get_paths() const { return paths_; }

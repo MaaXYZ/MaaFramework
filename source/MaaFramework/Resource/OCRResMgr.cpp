@@ -53,13 +53,9 @@ void OCRResMgr::use_coreml(uint32_t coreml_flag)
     rec_option_.UseCpu();
 }
 
-bool OCRResMgr::lazy_load(const std::filesystem::path& path, bool is_base)
+bool OCRResMgr::lazy_load(const std::filesystem::path& path)
 {
-    LogFunc << VAR(path) << VAR(is_base);
-
-    if (is_base) {
-        clear();
-    }
+    LogFunc << VAR(path);
 
     roots_.emplace_back(path);
 

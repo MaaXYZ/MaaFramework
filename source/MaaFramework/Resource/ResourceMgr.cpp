@@ -517,10 +517,10 @@ bool ResourceMgr::load(const std::filesystem::path& path)
 
     using namespace path_literals;
     bool ret = default_pipeline_.load(path / "default_pipeline.json"_path);
-    ret &= pipeline_res_.load(path / "pipeline"_path, false, default_pipeline_);
-    ret &= ocr_res_.lazy_load(path / "model"_path / "ocr"_path, false);
-    ret &= onnx_res_.lazy_load(path / "model"_path, false);
-    ret &= template_res_.lazy_load(path / "image"_path, false);
+    ret &= pipeline_res_.load(path / "pipeline"_path, default_pipeline_);
+    ret &= ocr_res_.lazy_load(path / "model"_path / "ocr"_path);
+    ret &= onnx_res_.lazy_load(path / "model"_path);
+    ret &= template_res_.lazy_load(path / "image"_path);
 
     LogInfo << VAR(path) << VAR(ret);
 

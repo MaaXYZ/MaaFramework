@@ -14,7 +14,7 @@ class TemplateResMgr : public NonCopyable
 public:
     using Image = cv::Mat;
 
-    bool lazy_load(const std::filesystem::path& path, bool is_base);
+    bool lazy_load(const std::filesystem::path& path);
 
     void clear();
 

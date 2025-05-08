@@ -8,13 +8,9 @@
 
 MAA_RES_NS_BEGIN
 
-bool PipelineResMgr::load(const std::filesystem::path& path, bool is_base, const DefaultPipelineMgr& default_mgr)
+bool PipelineResMgr::load(const std::filesystem::path& path, const DefaultPipelineMgr& default_mgr)
 {
-    LogFunc << VAR(path) << VAR(is_base);
-
-    if (is_base) {
-        clear();
-    }
+    LogFunc << VAR(path);
 
     paths_.emplace_back(path);
 

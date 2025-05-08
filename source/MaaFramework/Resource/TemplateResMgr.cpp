@@ -5,13 +5,9 @@
 
 MAA_RES_NS_BEGIN
 
-bool TemplateResMgr::lazy_load(const std::filesystem::path& path, bool is_base)
+bool TemplateResMgr::lazy_load(const std::filesystem::path& path)
 {
-    LogFunc << VAR(path) << VAR(is_base);
-
-    if (is_base) {
-        clear();
-    }
+    LogFunc << VAR(path);
 
     roots_.emplace_back(path);
     return true;
