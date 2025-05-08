@@ -24,12 +24,6 @@
 #endif
 #endif
 
-#if defined _WIN32 || defined __CYGWIN__
-#define MAA_DEPRECATED __declspec(deprecated)
-#else
-#define MAA_DEPRECATED __attribute__((deprecated))
-#endif
-
 #ifdef MAA_FRAMEWORK_EXPORTS // defined if we are building the DLL (instead of using it)
 #define MAA_FRAMEWORK_API MAA_DLL_EXPORT
 #else

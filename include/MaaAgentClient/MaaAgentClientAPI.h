@@ -19,8 +19,9 @@ extern "C"
     MAA_AGENT_CLIENT_API MaaBool MaaAgentClientDisconnect(MaaAgentClient* client);
     MAA_AGENT_CLIENT_API MaaBool MaaAgentClientConnected(MaaAgentClient* client);
 
-    MAA_DEPRECATED MAA_AGENT_CLIENT_API MaaAgentClient* MaaAgentClientCreate();
-    MAA_DEPRECATED MAA_AGENT_CLIENT_API MaaBool MaaAgentClientCreateSocket(MaaAgentClient* client, MaaStringBuffer* identifier);
+    [[deprecated("Use MaaAgentClientCreateV2 instead")]] MAA_AGENT_CLIENT_API MaaAgentClient* MaaAgentClientCreate();
+    [[deprecated("Use MaaAgentClientCreateV2 instead")]] MAA_AGENT_CLIENT_API MaaBool
+        MaaAgentClientCreateSocket(MaaAgentClient* client, MaaStringBuffer* identifier);
 
 #ifdef __cplusplus
 }
