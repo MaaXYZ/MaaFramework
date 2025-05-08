@@ -57,6 +57,30 @@ bool OCRResMgr::lazy_load(const std::filesystem::path& path)
 {
     LogFunc << VAR(path);
 
+    if (!std::filesystem::is_directory(path)) {
+        LogError << "path is not directory" << VAR(path);
+        return false;
+    }
+
+    bool has_file = false;
+    for (auto& entry : std::filesystem::recursive_directory_iterator(path)) {
+        auto& entry_path = entry.path();
+        if (entry.is_directory()) {
+            continue;
+        }
+
+        auto filename = entry_path.filename();
+        if (filename == kDetModelFilename || filename == kRecModelFilename || filename == kKeysFilename) {
+            has_file = true;
+            break;
+        }
+    }
+
+    if (!has_file) {
+        LogError << "model file not found" << VAR(path) << VAR(kDetModelFilename) << VAR(kRecModelFilename) << VAR(kKeysFilename);
+        return false;
+    }
+
     roots_.emplace_back(path);
 
     return true;
@@ -122,7 +146,7 @@ std::shared_ptr<fastdeploy::vision::ocr::DBDetector> OCRResMgr::load_deter(const
 
     for (const auto& root : roots_ | std::views::reverse) {
         const auto dir = root / MAA_NS::path(name);
-        const auto model_path = dir / "det.onnx"_path;
+        const auto model_path = dir / kDetModelFilename;
         if (!std::filesystem::exists(model_path)) {
             continue;
         }
@@ -151,8 +175,8 @@ std::shared_ptr<fastdeploy::vision::ocr::Recognizer> OCRResMgr::load_recer(const
 
     for (const auto& root : roots_ | std::views::reverse) {
         const auto dir = root / MAA_NS::path(name);
-        const auto model_path = dir / "rec.onnx"_path;
-        const auto label_path = dir / "keys.txt"_path;
+        const auto model_path = dir / kRecModelFilename;
+        const auto label_path = dir / kKeysFilename;
         if (!std::filesystem::exists(model_path) || !std::filesystem::exists(label_path)) {
             continue;
         }

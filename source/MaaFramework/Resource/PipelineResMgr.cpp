@@ -12,8 +12,6 @@ bool PipelineResMgr::load(const std::filesystem::path& path, const DefaultPipeli
 {
     LogFunc << VAR(path);
 
-    paths_.emplace_back(path);
-
     if (!load_all_json(path, default_mgr)) {
         LogError << "load_all_json failed" << VAR(path);
         return false;
@@ -23,6 +21,8 @@ bool PipelineResMgr::load(const std::filesystem::path& path, const DefaultPipeli
         LogError << "check_all_validity failed" << VAR(path);
         return false;
     }
+
+    paths_.emplace_back(path);
 
     return true;
 }

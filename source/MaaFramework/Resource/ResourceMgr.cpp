@@ -531,9 +531,13 @@ bool ResourceMgr::load(const std::filesystem::path& path)
         to_load = true;
         ret &= ocr_res_.lazy_load(p);
     }
-    if (auto p = path / "model"_path; std::filesystem::exists(p)) {
+    if (auto p = path / "model"_path / "classify"_path; std::filesystem::exists(p)) {
         to_load = true;
-        ret &= onnx_res_.lazy_load(path / "model"_path);
+        ret &= onnx_res_.lazy_load_classifier(p);
+    }
+    if (auto p = path / "model"_path / "detect"_path; std::filesystem::exists(p)) {
+        to_load = true;
+        ret &= onnx_res_.lazy_load_detector(p);
     }
     if (auto p = path / "image"_path; std::filesystem::exists(p)) {
         to_load = true;

@@ -113,12 +113,20 @@ void ONNXResMgr::use_coreml(uint32_t coreml_flag)
 #endif
 }
 
-bool ONNXResMgr::lazy_load(const std::filesystem::path& path)
+bool ONNXResMgr::lazy_load_classifier(const std::filesystem::path& path)
 {
     LogFunc << VAR(path);
 
-    classifier_roots_.emplace_back(path / kClassifierDir);
-    detector_roots_.emplace_back(path / kDetectorDir);
+    classifier_roots_.emplace_back(path);
+
+    return true;
+}
+
+bool ONNXResMgr::lazy_load_detector(const std::filesystem::path& path)
+{
+    LogFunc << VAR(path);
+
+    detector_roots_.emplace_back(path);
 
     return true;
 }
