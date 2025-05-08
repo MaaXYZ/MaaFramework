@@ -1,4 +1,3 @@
-#include <MaaFramework/MaaAPI.h>
 module;
 
 #include "../include/macro.h"
