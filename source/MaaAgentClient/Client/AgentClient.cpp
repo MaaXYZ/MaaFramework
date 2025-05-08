@@ -46,11 +46,15 @@ bool AgentClient::bind_resource(MaaResource* resource)
 
 std::string AgentClient::create_socket(const std::string& identifier)
 {
+    // Check if a socket has already been created.
+    // If a socket exists, log an error and return the existing identifier.
+    // Multiple socket creations are not allowed by design.
     if (!identifier_.empty()) {
-        LogError << "socket already created" << VAR(identifier_);
+        LogError << "Attempted to create a new socket, but one already exists. Returning the existing socket identifier." << VAR(identifier_);
         return identifier_;
     }
 
+    // Create a new socket with the provided identifier or generate a new one if empty.
     identifier_ = identifier.empty() ? make_uuid() : identifier;
 
     init_socket(identifier_, true);
@@ -107,7 +111,6 @@ bool AgentClient::disconnect()
     clear_registration();
 
     if (!connected()) {
-        LogError << "not connected" << VAR(ipc_addr_);
         return true;
     }
 

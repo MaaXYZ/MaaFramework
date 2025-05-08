@@ -69,7 +69,7 @@ void Transceiver::uninit_socket()
 
 bool Transceiver::connected()
 {
-    return zmq_sock_;
+    return zmq_sock_.handle() != nullptr;
 }
 
 bool Transceiver::send(const json::value& j)
