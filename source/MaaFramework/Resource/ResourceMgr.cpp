@@ -516,15 +516,33 @@ bool ResourceMgr::load(const std::filesystem::path& path)
     paths_.emplace_back(path);
 
     using namespace path_literals;
-    bool ret = default_pipeline_.load(path / "default_pipeline.json"_path);
-    ret &= pipeline_res_.load(path / "pipeline"_path, default_pipeline_);
-    ret &= ocr_res_.lazy_load(path / "model"_path / "ocr"_path);
-    ret &= onnx_res_.lazy_load(path / "model"_path);
-    ret &= template_res_.lazy_load(path / "image"_path);
 
-    LogInfo << VAR(path) << VAR(ret);
+    bool to_load = false;
+    bool ret = true;
+    if (auto p = path / "default_pipeline.json"_path; std::filesystem::exists(p)) {
+        to_load = true;
+        ret &= default_pipeline_.load(p);
+    }
+    if (auto p = path / "pipeline"_path; std::filesystem::exists(p)) {
+        to_load = true;
+        ret &= pipeline_res_.load(p, default_pipeline_);
+    }
+    if (auto p = path / "model"_path / "ocr"_path; std::filesystem::exists(p)) {
+        to_load = true;
+        ret &= ocr_res_.lazy_load(p);
+    }
+    if (auto p = path / "model"_path; std::filesystem::exists(p)) {
+        to_load = true;
+        ret &= onnx_res_.lazy_load(path / "model"_path);
+    }
+    if (auto p = path / "image"_path; std::filesystem::exists(p)) {
+        to_load = true;
+        ret &= template_res_.lazy_load(p);
+    }
 
-    return ret;
+    LogInfo << VAR(path) << VAR(ret) << VAR(to_load);
+
+    return to_load && ret;
 }
 
 bool ResourceMgr::check_stop()

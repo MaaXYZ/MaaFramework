@@ -13,12 +13,6 @@ bool DefaultPipelineMgr::load(const std::filesystem::path& path)
 {
     LogFunc << VAR(path);
 
-    if (!std::filesystem::exists(path)) {
-        // allow empty default
-        LogDebug << "path not exists" << VAR(path);
-        return true;
-    }
-
     auto json_opt = json::open(path);
     if (!json_opt) {
         LogError << "json::open failed" << VAR(path);
