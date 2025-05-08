@@ -39,6 +39,10 @@ extern "C"
 
     MAA_FRAMEWORK_API MaaResId MaaResourcePostBundle(MaaResource* res, const char* path);
 
+    MAA_FRAMEWORK_API MaaBool MaaResourceOverridePipeline(MaaResource* res, const char* pipeline_override);
+
+    MAA_FRAMEWORK_API MaaBool MaaResourceOverrideNext(MaaResource* res, const char* node_name, const MaaStringListBuffer* next_list);
+
     MAA_FRAMEWORK_API MaaBool MaaResourceClear(MaaResource* res);
 
     MAA_FRAMEWORK_API MaaStatus MaaResourceStatus(const MaaResource* res, MaaResId id);

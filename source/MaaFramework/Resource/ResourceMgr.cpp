@@ -174,6 +174,21 @@ bool ResourceMgr::clear()
     return true;
 }
 
+bool ResourceMgr::override_pipeline(const json::object& pipeline_override)
+{
+    LogFunc << VAR(pipeline_override);
+
+    std::set<std::string> existing_keys;
+    return pipeline_res_.parse_and_override(pipeline_override, existing_keys, default_pipeline_);
+}
+
+bool ResourceMgr::override_next(const std::string& node_name, const std::vector<std::string>& next)
+{
+    LogFunc << VAR(node_name) << VAR(next);
+    pipeline_res_.get_pipeline_data_map()[node_name].next = next;
+    return true;
+}
+
 void ResourceMgr::register_custom_recognition(const std::string& name, MaaCustomRecognitionCallback recognition, void* trans_arg)
 {
     LogDebug << VAR(name) << VAR_VOIDP(recognition) << VAR_VOIDP(trans_arg);

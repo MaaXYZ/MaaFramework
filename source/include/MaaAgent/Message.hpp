@@ -596,6 +596,42 @@ struct ResourceClearReverseResponse
     MEO_JSONIZATION(ret, _ResourceClearReverseResponse);
 };
 
+struct ResourceOverridePipelineReverseRequest
+{
+    std::string resource_id;
+    json::object pipeline_override;
+
+    MessageTypePlaceholder _ResourceOverridePipelineReverseRequest = 1;
+    MEO_JSONIZATION(resource_id, pipeline_override, _ResourceOverridePipelineReverseRequest);
+};
+
+struct ResourceOverridePipelineReverseResponse
+{
+    bool ret = false;
+
+    MessageTypePlaceholder _ResourceOverridePipelineReverseResponse = 1;
+    MEO_JSONIZATION(ret, _ResourceOverridePipelineReverseResponse);
+};
+
+struct ResourceOverrideNextReverseRequest
+{
+    std::string resource_id;
+    std::string node_name;
+    std::vector<std::string> next;
+
+    MessageTypePlaceholder _ResourceOverrideNextReverseRequest = 1;
+    MEO_JSONIZATION(resource_id, node_name, next, _ResourceOverrideNextReverseRequest);
+};
+
+struct ResourceOverrideNextReverseResponse
+{
+    bool ret = false;
+
+    MessageTypePlaceholder _ResourceOverrideNextReverseResponse = 1;
+    MEO_JSONIZATION(ret, _ResourceOverrideNextReverseResponse);
+};
+
+
 struct ResourceGetHashReverseRequest
 {
     std::string resource_id;

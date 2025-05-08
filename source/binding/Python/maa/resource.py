@@ -1,5 +1,6 @@
 import ctypes
 import pathlib
+import json
 from typing import Any, Optional, Union
 
 from .notification_handler import NotificationHandler
@@ -48,6 +49,24 @@ class Resource:
             self._handle, str(path).encode()
         )
         return Job(resid, self._status, self._wait)
+
+    def override_pipeline(self, pipeline_override: Dict) -> bool:
+        return bool(
+            Library.framework().MaaResourceOverridePipeline(
+                self._handle,
+                json.dumps(pipeline_override, ensure_ascii=False).encode(),
+            )
+        )
+
+    def override_next(self, name: str, next_list: List[str]) -> bool:
+        list_buffer = StringListBuffer()
+        list_buffer.set(next_list)
+
+        return bool(
+            Library.framework().MaaResourceOverrideNext(
+                self._handle, name.encode(), list_buffer._handle
+            )
+        )
 
     @property
     def loaded(self) -> bool:
@@ -263,6 +282,19 @@ class Resource:
 
         Library.framework().MaaResourceClear.restype = MaaBool
         Library.framework().MaaResourceClear.argtypes = [MaaResourceHandle]
+
+        Library.framework().MaaResourceOverridePipeline.restype = MaaBool
+        Library.framework().MaaResourceOverridePipeline.argtypes = [
+            MaaResourceHandle,
+            ctypes.c_char_p,
+        ]
+
+        Library.framework().MaaResourceOverrideNext.restype = MaaBool
+        Library.framework().MaaResourceOverrideNext.argtypes = [
+            MaaResourceHandle,
+            ctypes.c_char_p,
+            MaaStringBufferHandle,
+        ]
 
         Library.framework().MaaResourceGetHash.restype = MaaBool
         Library.framework().MaaResourceGetHash.argtypes = [

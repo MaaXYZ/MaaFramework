@@ -27,6 +27,9 @@ public:
     virtual bool running() const = 0;
     virtual bool clear() = 0;
 
+    virtual bool override_pipeline(const json::object& pipeline_override) = 0;
+    virtual bool override_next(const std::string& node_name, const std::vector<std::string>& next) = 0;
+
     virtual void register_custom_recognition(const std::string& name, MaaCustomRecognitionCallback recognition, void* trans_arg) = 0;
     virtual void unregister_custom_recognition(const std::string& name) = 0;
     virtual void clear_custom_recognition() = 0;
