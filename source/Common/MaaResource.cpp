@@ -95,6 +95,46 @@ MaaResId MaaResourcePostBundle(MaaResource* res, const char* path)
     return res->post_bundle(MAA_NS::path(path));
 }
 
+MaaBool MaaResourceOverridePipeline(MaaResource* res, const char* pipeline_override)
+{
+    LogFunc << VAR_VOIDP(res) << VAR(pipeline_override);
+
+    if (!res) {
+        LogError << "handle is null";
+        return false;
+    }
+    auto ov_opt = json::parse(pipeline_override);
+    if (!ov_opt) {
+        LogError << "failed to parse" << VAR(pipeline_override);
+        return false;
+    }
+    if (!ov_opt->is_object()) {
+        LogError << "json is not object" << VAR(pipeline_override);
+        return MaaInvalidId;
+    }
+
+    return res->override_pipeline(ov_opt->as_object());
+}
+
+MaaBool MaaResourceOverrideNext(MaaResource* res, const char* name, const MaaStringListBuffer* next_list)
+{
+    LogFunc << VAR_VOIDP(res) << VAR(name);
+
+    if (!res || !next_list) {
+        LogError << "handle is null";
+        return false;
+    }
+
+    std::vector<std::string> next;
+
+    size_t size = next_list->size();
+    for (size_t i = 0; i < size; ++i) {
+        next.emplace_back(next_list->at(i).get());
+    }
+
+    return res->override_next(name, next);
+}
+
 MaaBool MaaResourceClear(MaaResource* res)
 {
     LogFunc << VAR_VOIDP(res);
