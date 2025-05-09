@@ -16,7 +16,7 @@ std::shared_ptr<MaaAgentClient> AgentClientLibraryHolder::create_agent_client()
         return nullptr;
     }
 
-    auto create_func = get_function<decltype(MaaAgentClientCreate)>(create_func_name_);
+    auto create_func = get_function<decltype(MaaAgentClientCreateV2)>(create_func_name_);
     if (!create_func) {
         LogError << "Failed to get function create_func" << VAR(create_func_name_);
         return nullptr;
@@ -28,7 +28,7 @@ std::shared_ptr<MaaAgentClient> AgentClientLibraryHolder::create_agent_client()
         return nullptr;
     }
 
-    auto handle = create_func();
+    auto handle = create_func(nullptr);
     if (!handle) {
         LogError << "Failed to create handle";
         return nullptr;

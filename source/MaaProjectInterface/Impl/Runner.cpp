@@ -108,7 +108,7 @@ bool Runner::run(
         }
 
         agent->bind_resource(resource_handle);
-        std::string socket_id = agent->create_socket(param.agent->identifier);
+        std::string socket_id = agent->identifier();
 
         std::vector<std::string> args = param.agent->child_args;
         args.emplace_back(socket_id);

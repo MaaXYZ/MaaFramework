@@ -126,8 +126,10 @@ struct MaaAgentClient
 public:
     virtual ~MaaAgentClient() = default;
 
+    virtual std::string identifier() const = 0;
     virtual bool bind_resource(MaaResource* resource) = 0;
     virtual std::string create_socket(const std::string& identifier) = 0;
     virtual bool connect() = 0;
     virtual bool disconnect() = 0;
+    virtual bool connected() = 0;
 };
