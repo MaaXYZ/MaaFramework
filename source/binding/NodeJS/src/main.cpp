@@ -2,6 +2,8 @@
 
 #include "include/forward.h"
 #include "include/info.h"
+#include "include/utils.h"
+#include "include/wrapper.h"
 
 Napi::Object Init(Napi::Env env, Napi::Object exports)
 {
@@ -21,7 +23,7 @@ Napi::Object Init(Napi::Env env, Napi::Object exports)
     load_agent(env, exports, extCtx);
 
 #define DE(prefix, key) prefix##_obj[#key] = JSConvert<prefix>::to_value(env, prefix##Enum::prefix##_##key)
-#define DEM(prefix, key) prefix##_obj[#key] = JSConvert<prefix>::to_value(env, _##prefix##_##key)
+#define DEM(prefix, key) prefix##_obj[#key] = JSConvert<prefix>::to_value(env, prefix##_##key)
 
     auto MaaStatus_obj = Napi::Object::New(env);
     DE(MaaStatus, Invalid);
