@@ -52,5 +52,13 @@ export const AgentServer = {
 
     shut_down() {
         maa.agent_server_shut_down()
+    },
+
+    async join() {
+        await maa.agent_server_join()
+    },
+
+    detach() {
+        maa.agent_server_detach()
     }
 }

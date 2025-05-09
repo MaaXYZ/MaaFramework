@@ -410,5 +410,5 @@ export declare function agent_server_register_custom_action(
 ): boolean
 export declare function agent_server_start_up(identifier: string): boolean
 export declare function agent_server_shut_down(): void
-// export declare function agent_server_join(): void
-// export declare function agent_server_detach(): void
+export declare function agent_server_join(): Promise<true>
+export declare function agent_server_detach(): void

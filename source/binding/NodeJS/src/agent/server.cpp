@@ -42,9 +42,14 @@ void agent_server_shut_down()
     MaaAgentServerShutDown();
 }
 
-void agent_server_join()
+Napi::Promise agent_server_join(Napi::Env env)
 {
-    MaaAgentServerJoin();
+    auto worker = new SimpleAsyncWork<bool, "agent_server_join">(env, []() {
+        MaaAgentServerJoin();
+        return true;
+    });
+    worker->Queue();
+    return worker->Promise();
 }
 
 void agent_server_detach()
