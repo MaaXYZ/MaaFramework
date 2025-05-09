@@ -54,6 +54,7 @@ set(maa_common_src
     src/toolkit/find.cpp
     src/toolkit/pi.cpp
     src/utility/utility.cpp
+    src/main.cpp
 )
 
 # Master

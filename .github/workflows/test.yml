@@ -280,7 +280,7 @@ jobs:
         needs: meta
         strategy:
             matrix:
-                arch: [aarch64, x86_64]
+                arch: [aarch64]
             fail-fast: false
         runs-on: macos-15
 
