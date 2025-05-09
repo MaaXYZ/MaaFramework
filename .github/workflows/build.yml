@@ -225,20 +225,20 @@ jobs:
             matrix:
                 arch: [aarch64, x86_64]
             fail-fast: false
-        runs-on: macos-${{ matrix.arch == 'x86_64' && '13' || 'latest' }}
+        runs-on: macos-15
 
         steps:
             - uses: actions/checkout@v4
               with:
                   submodules: true
 
+            - uses: maxim-lobanov/setup-xcode@v1
+              with:
+                  xcode-version: 16.2
+
             - name: Install dep
               run: |
                   brew install cmake ninja ccache
-
-            - name: Install compiler
-              run: |
-                  brew install llvm
 
             - name: Setup ccache
               uses: Chocobo1/setup-ccache-action@v1
@@ -266,22 +266,14 @@ jobs:
                   pnpm i
                   cd -
 
-            - name: Dump xcode info
-              run: |
-                  xcrun --show-sdk-path
-                  ls $(xcrun --show-sdk-path)/usr/include
-                  ls $(xcrun --show-sdk-path)/usr/include/pthread
-
             - name: Build MAA
               run: |
-                  LLVM_PREFIX=$(brew --prefix llvm)
                   cmake --preset 'NinjaMulti' \
                     -DMAADEPS_TRIPLET='maa-${{ matrix.arch == 'x86_64' && 'x64' || 'arm64' }}-osx' \
                     -DMAA_HASH_VERSION='${{ needs.meta.outputs.tag }}' \
-                    -DCMAKE_C_COMPILER=${LLVM_PREFIX}/bin/clang \
-                    -DCMAKE_CXX_COMPILER=${LLVM_PREFIX}/bin/clang++ \
                     -DCMAKE_OSX_SYSROOT=macosx \
-                    -DWITH_NODEJS_BINDING=ON
+                    -DWITH_NODEJS_BINDING=ON \
+                    -DCMAKE_OSX_ARCHITECTURES='${{ matrix.arch == 'x86_64' && 'x86_64' || 'arm64' }}'
 
                   cmake --build build --preset 'NinjaMulti - ${{ inputs.build_config || needs.meta.outputs.build_config }}' -j 16
 

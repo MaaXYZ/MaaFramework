@@ -1,15 +1,9 @@
-module;
+#include "../include/forward.h"
 
+#include "../include/info.h"
 #include "../include/macro.h"
-
-export module maa.nodejs.utility.utility;
-
-import maa.core;
-import napi;
-import stdmock;
-
-import maa.nodejs.info;
-import maa.nodejs.wrapper;
+#include "../include/utils.h"
+#include "../include/wrapper.h"
 
 std::string version()
 {
@@ -46,7 +40,7 @@ bool set_global_option_debug_mode(bool flag)
     return MaaSetGlobalOption(MaaGlobalOptionEnum::MaaGlobalOption_DebugMode, &flag, sizeof(flag));
 }
 
-export void load_utility_utility(Napi::Env env, Napi::Object& exports, Napi::External<ExtContextInfo> context)
+void load_utility_utility(Napi::Env env, Napi::Object& exports, Napi::External<ExtContextInfo> context)
 {
     BIND(version);
     BIND(set_global_option_log_dir);

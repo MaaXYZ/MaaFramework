@@ -1,16 +1,13 @@
-module;
+#pragma once
 
-export module maa.nodejs.cb;
+#include <MaaFramework/MaaAPI.h>
+#include <iostream>
+#include <napi.h>
 
-import maa.core;
-import napi;
-import stdmock;
+#include "utils.h"
+#include "wrapper.h"
 
-import maa.nodejs.info;
-import maa.nodejs.utils;
-import maa.nodejs.wrapper;
-
-export void NotificationCallback(const char* message, const char* details_json, void* callback_arg)
+inline void NotificationCallback(const char* message, const char* details_json, void* callback_arg)
 {
     auto ctx = reinterpret_cast<CallbackContext*>(callback_arg);
     ctx->Call<void>(
@@ -18,7 +15,7 @@ export void NotificationCallback(const char* message, const char* details_json, 
         [](auto res) { std::ignore = res; });
 }
 
-export MaaBool CustomRecognizerCallback(
+inline MaaBool CustomRecognizerCallback(
     MaaContext* context,
     MaaTaskId task_id,
     const char* node_name,
@@ -34,15 +31,16 @@ export MaaBool CustomRecognizerCallback(
     using Result = std::optional<std::tuple<MaaRect, std::string>>;
     auto res = ctx->Call<Result>(
         [=](auto env, auto fn) {
-            return fn.Call({
-                Napi::External<MaaContext>::New(env, context),
-                JSConvert<MaaTaskId>::to_value(env, task_id),
-                Napi::String::New(env, node_name),
-                Napi::String::New(env, custom_recognition_name),
-                Napi::String::New(env, custom_recognition_param),
-                ImageBufferRefer(image).data(env),
-                JSConvert<MaaRect>::to_value(env, *roi),
-            });
+            return fn.Call(
+                {
+                    Napi::External<MaaContext>::New(env, context),
+                    JSConvert<MaaTaskId>::to_value(env, task_id),
+                    Napi::String::New(env, node_name),
+                    Napi::String::New(env, custom_recognition_name),
+                    Napi::String::New(env, custom_recognition_param),
+                    ImageBufferRefer(image).data(env),
+                    JSConvert<MaaRect>::to_value(env, *roi),
+                });
         },
         [](Napi::Value res) -> Result {
             try {
@@ -64,7 +62,7 @@ export MaaBool CustomRecognizerCallback(
     }
 }
 
-export MaaBool CustomActionCallback(
+inline MaaBool CustomActionCallback(
     MaaContext* context,
     MaaTaskId task_id,
     const char* node_name,
@@ -78,15 +76,16 @@ export MaaBool CustomActionCallback(
 
     auto res = ctx->Call<bool>(
         [=](auto env, auto fn) {
-            return fn.Call({
-                Napi::External<MaaContext>::New(env, context),
-                JSConvert<MaaTaskId>::to_value(env, task_id),
-                Napi::String::New(env, node_name),
-                Napi::String::New(env, custom_action_name),
-                Napi::String::New(env, custom_action_param),
-                JSConvert<MaaRecoId>::to_value(env, reco_id),
-                JSConvert<MaaRect>::to_value(env, *box),
-            });
+            return fn.Call(
+                {
+                    Napi::External<MaaContext>::New(env, context),
+                    JSConvert<MaaTaskId>::to_value(env, task_id),
+                    Napi::String::New(env, node_name),
+                    Napi::String::New(env, custom_action_name),
+                    Napi::String::New(env, custom_action_param),
+                    JSConvert<MaaRecoId>::to_value(env, reco_id),
+                    JSConvert<MaaRect>::to_value(env, *box),
+                });
         },
         [](Napi::Value res) -> bool {
             try {
@@ -101,7 +100,7 @@ export MaaBool CustomActionCallback(
     return res;
 }
 
-export MaaBool CustomControllerConnect(void* trans_arg)
+inline MaaBool CustomControllerConnect(void* trans_arg)
 {
     auto ctx = reinterpret_cast<CallbackContext*>(trans_arg);
 
@@ -120,7 +119,7 @@ export MaaBool CustomControllerConnect(void* trans_arg)
     return res;
 }
 
-export MaaBool CustomControllerRequestUUID(void* trans_arg, MaaStringBuffer* buffer)
+inline MaaBool CustomControllerRequestUUID(void* trans_arg, MaaStringBuffer* buffer)
 {
     auto ctx = reinterpret_cast<CallbackContext*>(trans_arg);
     using R = std::optional<std::string>;
@@ -146,7 +145,7 @@ export MaaBool CustomControllerRequestUUID(void* trans_arg, MaaStringBuffer* buf
     }
 }
 
-export MaaBool CustomControllerStartApp(const char* intent, void* trans_arg)
+inline MaaBool CustomControllerStartApp(const char* intent, void* trans_arg)
 {
     auto ctx = reinterpret_cast<CallbackContext*>(trans_arg);
 
@@ -165,7 +164,7 @@ export MaaBool CustomControllerStartApp(const char* intent, void* trans_arg)
     return res;
 }
 
-export MaaBool CustomControllerStopApp(const char* intent, void* trans_arg)
+inline MaaBool CustomControllerStopApp(const char* intent, void* trans_arg)
 {
     auto ctx = reinterpret_cast<CallbackContext*>(trans_arg);
 
@@ -184,7 +183,7 @@ export MaaBool CustomControllerStopApp(const char* intent, void* trans_arg)
     return res;
 }
 
-export MaaBool CustomControllerScreencap(void* trans_arg, MaaImageBuffer* buffer)
+inline MaaBool CustomControllerScreencap(void* trans_arg, MaaImageBuffer* buffer)
 {
     auto ctx = reinterpret_cast<CallbackContext*>(trans_arg);
 
@@ -215,7 +214,7 @@ export MaaBool CustomControllerScreencap(void* trans_arg, MaaImageBuffer* buffer
     }
 }
 
-export MaaBool CustomControllerClick(int32_t x, int32_t y, void* trans_arg)
+inline MaaBool CustomControllerClick(int32_t x, int32_t y, void* trans_arg)
 {
     auto ctx = reinterpret_cast<CallbackContext*>(trans_arg);
 
@@ -236,18 +235,19 @@ export MaaBool CustomControllerClick(int32_t x, int32_t y, void* trans_arg)
     return res;
 }
 
-export MaaBool CustomControllerSwipe(int32_t x1, int32_t y1, int32_t x2, int32_t y2, int32_t duration, void* trans_arg)
+inline MaaBool CustomControllerSwipe(int32_t x1, int32_t y1, int32_t x2, int32_t y2, int32_t duration, void* trans_arg)
 {
     auto ctx = reinterpret_cast<CallbackContext*>(trans_arg);
 
     auto res = ctx->Call<bool>(
         [=](auto env, auto fn) {
-            return fn.Call({ Napi::String::New(env, "swipe"),
-                             Napi::Number::New(env, x1),
-                             Napi::Number::New(env, y1),
-                             Napi::Number::New(env, x2),
-                             Napi::Number::New(env, y2),
-                             Napi::Number::New(env, duration) });
+            return fn.Call(
+                { Napi::String::New(env, "swipe"),
+                  Napi::Number::New(env, x1),
+                  Napi::Number::New(env, y1),
+                  Napi::Number::New(env, x2),
+                  Napi::Number::New(env, y2),
+                  Napi::Number::New(env, duration) });
         },
         [](Napi::Value res) {
             try {
@@ -262,17 +262,18 @@ export MaaBool CustomControllerSwipe(int32_t x1, int32_t y1, int32_t x2, int32_t
     return res;
 }
 
-export MaaBool CustomControllerTouchDown(int32_t contact, int32_t x, int32_t y, int32_t pressure, void* trans_arg)
+inline MaaBool CustomControllerTouchDown(int32_t contact, int32_t x, int32_t y, int32_t pressure, void* trans_arg)
 {
     auto ctx = reinterpret_cast<CallbackContext*>(trans_arg);
 
     auto res = ctx->Call<bool>(
         [=](auto env, auto fn) {
-            return fn.Call({ Napi::String::New(env, "touch_down"),
-                             Napi::Number::New(env, contact),
-                             Napi::Number::New(env, y),
-                             Napi::Number::New(env, x),
-                             Napi::Number::New(env, pressure) });
+            return fn.Call(
+                { Napi::String::New(env, "touch_down"),
+                  Napi::Number::New(env, contact),
+                  Napi::Number::New(env, y),
+                  Napi::Number::New(env, x),
+                  Napi::Number::New(env, pressure) });
         },
         [](Napi::Value res) {
             try {
@@ -287,17 +288,18 @@ export MaaBool CustomControllerTouchDown(int32_t contact, int32_t x, int32_t y, 
     return res;
 }
 
-export MaaBool CustomControllerTouchMove(int32_t contact, int32_t x, int32_t y, int32_t pressure, void* trans_arg)
+inline MaaBool CustomControllerTouchMove(int32_t contact, int32_t x, int32_t y, int32_t pressure, void* trans_arg)
 {
     auto ctx = reinterpret_cast<CallbackContext*>(trans_arg);
 
     auto res = ctx->Call<bool>(
         [=](auto env, auto fn) {
-            return fn.Call({ Napi::String::New(env, "touch_move"),
-                             Napi::Number::New(env, contact),
-                             Napi::Number::New(env, y),
-                             Napi::Number::New(env, x),
-                             Napi::Number::New(env, pressure) });
+            return fn.Call(
+                { Napi::String::New(env, "touch_move"),
+                  Napi::Number::New(env, contact),
+                  Napi::Number::New(env, y),
+                  Napi::Number::New(env, x),
+                  Napi::Number::New(env, pressure) });
         },
         [](Napi::Value res) {
             try {
@@ -312,7 +314,7 @@ export MaaBool CustomControllerTouchMove(int32_t contact, int32_t x, int32_t y, 
     return res;
 }
 
-export MaaBool CustomControllerTouchUp(int32_t contact, void* trans_arg)
+inline MaaBool CustomControllerTouchUp(int32_t contact, void* trans_arg)
 {
     auto ctx = reinterpret_cast<CallbackContext*>(trans_arg);
 
@@ -331,7 +333,7 @@ export MaaBool CustomControllerTouchUp(int32_t contact, void* trans_arg)
     return res;
 }
 
-export MaaBool CustomControllerPressKey(int32_t keycode, void* trans_arg)
+inline MaaBool CustomControllerPressKey(int32_t keycode, void* trans_arg)
 {
     auto ctx = reinterpret_cast<CallbackContext*>(trans_arg);
 
@@ -350,7 +352,7 @@ export MaaBool CustomControllerPressKey(int32_t keycode, void* trans_arg)
     return res;
 }
 
-export MaaBool CustomControllerInputText(const char* text, void* trans_arg)
+inline MaaBool CustomControllerInputText(const char* text, void* trans_arg)
 {
     auto ctx = reinterpret_cast<CallbackContext*>(trans_arg);
 
