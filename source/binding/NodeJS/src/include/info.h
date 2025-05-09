@@ -1,14 +1,21 @@
-module;
+#pragma once
 
-#include "./forward.h"
+#include <functional>
+#include <future>
+#include <map>
 
-export module maa.nodejs.info;
+#include <MaaFramework/MaaAPI.h>
+#include <napi.h>
 
-import maa.core;
-import napi;
-import stdmock;
+#if MAA_NODE_BUILD_CLIENT
+#include <MaaAgentClient/MaaAgentClientAPI.h>
+#endif
 
-export struct CallbackContext
+#if MAA_NODE_BUILD_SERVER
+#include <MaaAgentServer/MaaAgentServerAPI.h>
+#endif
+
+struct CallbackContext
 {
     Napi::Function fn;
     Napi::ThreadSafeFunction tsfn;
@@ -76,13 +83,14 @@ export struct CallbackContext
     }
 };
 
-export template <typename Type, typename Impl>
+template <typename Type, typename Impl>
 struct InfoBase
 {
     Type handle = nullptr;
 };
 
-export struct AgentClientInfo : InfoBase<MaaAgentClient*, AgentClientInfo>
+#if MAA_NODE_BUILD_CLIENT
+struct AgentClientInfo : InfoBase<MaaAgentClient*, AgentClientInfo>
 {
     constexpr static std::string_view name = "AgentClient";
 
@@ -94,13 +102,14 @@ export struct AgentClientInfo : InfoBase<MaaAgentClient*, AgentClientInfo>
             return;
         }
         disposed = true;
-        AgentClientDestroy(handle);
+        MaaAgentClientDestroy(handle);
     }
 
     ~AgentClientInfo() { dispose(); }
 };
+#endif
 
-export struct ControllerInfo : InfoBase<MaaController*, ControllerInfo>
+struct ControllerInfo : InfoBase<MaaController*, ControllerInfo>
 {
     constexpr static std::string_view name = "Controller";
 
@@ -126,7 +135,7 @@ export struct ControllerInfo : InfoBase<MaaController*, ControllerInfo>
     ~ControllerInfo() { dispose(); }
 };
 
-export struct ResourceInfo : InfoBase<MaaResource*, ResourceInfo>
+struct ResourceInfo : InfoBase<MaaResource*, ResourceInfo>
 {
     constexpr static std::string_view name = "Resource";
 
@@ -134,7 +143,9 @@ export struct ResourceInfo : InfoBase<MaaResource*, ResourceInfo>
     bool disposed = false;
     std::map<std::string, CallbackContext*> custom_recognizers = {};
     std::map<std::string, CallbackContext*> custom_actions = {};
+#if MAA_NODE_BUILD_CLIENT
     std::vector<Napi::Reference<Napi::External<AgentClientInfo>>> clients {};
+#endif
 
     void dispose()
     {
@@ -169,7 +180,7 @@ export struct ResourceInfo : InfoBase<MaaResource*, ResourceInfo>
     }
 };
 
-export struct TaskerInfo : InfoBase<MaaTasker*, TaskerInfo>
+struct TaskerInfo : InfoBase<MaaTasker*, TaskerInfo>
 {
     constexpr static std::string_view name = "Tasker";
 
@@ -193,7 +204,7 @@ export struct TaskerInfo : InfoBase<MaaTasker*, TaskerInfo>
     ~TaskerInfo() { dispose(); }
 };
 
-export struct ExtContextInfo
+struct ExtContextInfo
 {
     constexpr static std::string_view name = "ExtContextInfo";
 

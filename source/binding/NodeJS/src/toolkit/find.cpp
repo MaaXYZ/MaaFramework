@@ -1,17 +1,11 @@
-module;
+#include "../include/forward.h"
 
+#include <MaaToolkit/MaaToolkitAPI.h>
+
+#include "../include/info.h"
 #include "../include/macro.h"
-
-export module maa.nodejs.toolkit.find;
-
-import maa.core;
-import maa.toolkit;
-import napi;
-import stdmock;
-
-import maa.nodejs.info;
-import maa.nodejs.utils;
-import maa.nodejs.wrapper;
+#include "../include/utils.h"
+#include "../include/wrapper.h"
 
 Napi::Promise find_adb(Napi::Env env, std::optional<std::string> adb)
 {
@@ -76,7 +70,7 @@ Napi::Promise find_desktop(Napi::Env env)
     return worker->Promise();
 }
 
-export void load_toolkit_find(Napi::Env env, Napi::Object& exports, Napi::External<ExtContextInfo> context)
+void load_toolkit_find(Napi::Env env, Napi::Object& exports, Napi::External<ExtContextInfo> context)
 {
     BIND(find_adb);
     BIND(find_desktop);

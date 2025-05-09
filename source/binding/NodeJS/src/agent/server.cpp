@@ -1,22 +1,10 @@
-module;
-
 #include "../include/forward.h"
+
+#include "../include/cb.h"
+#include "../include/info.h"
 #include "../include/macro.h"
-
-module maa.nodejs.agent;
-
-import maa.agent.server;
-import napi;
-import stdmock;
-
-import maa.nodejs.cb;
-import maa.nodejs.info;
-import maa.nodejs.utils;
-import maa.nodejs.wrapper;
-
-extern "C++" void AgentClientDestroy(MaaAgentClient*)
-{
-}
+#include "../include/utils.h"
+#include "../include/wrapper.h"
 
 bool agent_server_register_custom_recognition(Napi::Env env, ExtContextInfo* context, std::string name, Napi::Function callback)
 {

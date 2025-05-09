@@ -1,23 +1,9 @@
-module;
-
 #include "../include/forward.h"
+
+#include "../include/info.h"
 #include "../include/macro.h"
-
-module maa.nodejs.agent;
-
-import maa.agent.client;
-import napi;
-import stdmock;
-
-import maa.nodejs.cb;
-import maa.nodejs.info;
-import maa.nodejs.utils;
-import maa.nodejs.wrapper;
-
-extern "C++" void AgentClientDestroy(MaaAgentClient* client)
-{
-    MaaAgentClientDestroy(client);
-}
+#include "../include/utils.h"
+#include "../include/wrapper.h"
 
 std::optional<Napi::External<AgentClientInfo>> agent_client_create(Napi::Env env)
 {

@@ -33,27 +33,6 @@ else()
     if(CMAKE_CXX_COMPILER_ID MATCHES "GNU" AND CMAKE_CXX_COMPILER_VERSION VERSION_LESS 13)
         add_compile_options("-Wno-restrict")
     endif()
-
-    if(CMAKE_CXX_COMPILER_ID MATCHES "Clang" AND CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 18)
-        set(MAC_CLANG_FIX_LINK
-            "/opt/local/libexec/llvm-18/lib/libc++" # mac port
-            "/usr/local/opt/llvm/lib/c++" # brew mac 13.*
-            "/opt/homebrew/opt/llvm/lib/c++" # brew mac 14.*
-        )
-
-        foreach(DIR ${MAC_CLANG_FIX_LINK})
-            if(IS_DIRECTORY ${DIR})
-                add_link_options("-L${DIR}")
-                set(CMAKE_BUILD_RPATH "${CMAKE_BUILD_RPATH};${DIR};${DIR}/..")
-
-                cmake_path(GET DIR PARENT_PATH UNWIND_DIR)
-                file(GLOB libcxx_dylibs ${DIR}/libc++*.dylib)
-                file(GLOB libunwind_dylibs ${UNWIND_DIR}/libunwind*.dylib ${UNWIND_DIR}/unwind/libunwind*.dylib)
-                install(FILES ${libcxx_dylibs} ${libunwind_dylibs} DESTINATION bin)
-            endif()
-
-        endforeach()
-    endif()
 endif()
 
 set(CMAKE_CXX_STANDARD 20)

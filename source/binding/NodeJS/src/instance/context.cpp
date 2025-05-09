@@ -1,16 +1,9 @@
-module;
+#include "../include/forward.h"
 
+#include "../include/info.h"
 #include "../include/macro.h"
-
-export module maa.nodejs.instance.context;
-
-import maa.core;
-import napi;
-import stdmock;
-
-import maa.nodejs.info;
-import maa.nodejs.utils;
-import maa.nodejs.wrapper;
+#include "../include/utils.h"
+#include "../include/wrapper.h"
 
 Napi::Promise context_run_task(Napi::Env env, Napi::External<MaaContext> info, std::string entry, std::string overr)
 {
@@ -95,7 +88,7 @@ Napi::External<MaaContext> context_clone(Napi::External<MaaContext> info)
     return Napi::External<MaaContext>::New(info.Env(), MaaContextClone(info.Data()));
 }
 
-export void load_instance_context(Napi::Env env, Napi::Object& exports, Napi::External<ExtContextInfo> context)
+void load_instance_context(Napi::Env env, Napi::Object& exports, Napi::External<ExtContextInfo> context)
 {
     BIND(context_run_task);
     BIND(context_run_recognition);

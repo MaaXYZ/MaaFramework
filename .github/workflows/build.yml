@@ -236,10 +236,6 @@ jobs:
               run: |
                   brew install cmake ninja ccache
 
-            - name: Install compiler
-              run: |
-                  brew install llvm
-
             - name: Setup ccache
               uses: Chocobo1/setup-ccache-action@v1
               with:
@@ -266,20 +262,11 @@ jobs:
                   pnpm i
                   cd -
 
-            - name: Dump xcode info
-              run: |
-                  xcrun --show-sdk-path
-                  ls $(xcrun --show-sdk-path)/usr/include
-                  ls $(xcrun --show-sdk-path)/usr/include/pthread
-
             - name: Build MAA
               run: |
-                  LLVM_PREFIX=$(brew --prefix llvm)
                   cmake --preset 'NinjaMulti' \
                     -DMAADEPS_TRIPLET='maa-${{ matrix.arch == 'x86_64' && 'x64' || 'arm64' }}-osx' \
                     -DMAA_HASH_VERSION='${{ needs.meta.outputs.tag }}' \
-                    -DCMAKE_C_COMPILER=${LLVM_PREFIX}/bin/clang \
-                    -DCMAKE_CXX_COMPILER=${LLVM_PREFIX}/bin/clang++ \
                     -DCMAKE_OSX_SYSROOT=macosx \
                     -DWITH_NODEJS_BINDING=ON
 

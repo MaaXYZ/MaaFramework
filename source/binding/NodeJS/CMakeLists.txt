@@ -1,8 +1,6 @@
 cmake_policy(SET CMP0091 NEW)
 cmake_policy(SET CMP0042 NEW)
 
-set(CMAKE_CXX_SCAN_FOR_MODULES ON)
-
 set(CMAKE_JS_VERSION "7.3.0")
 set(CMAKE_JS_INC
     "${CMAKE_CURRENT_LIST_DIR}/node_modules/node-api-headers/include;${CMAKE_CURRENT_LIST_DIR}/node_modules/node-addon-api"
@@ -47,38 +45,24 @@ if(WIN32
     endif()
 endif()
 
-set(maa_node_cppm
-    src/napi.cppm
-    src/stdmock.cppm
-
-    src/agent/agent.cppm
-    src/include/cb.cppm
-    src/include/info.cppm
-    src/include/utils.cppm
-    src/include/wrapper.cppm
-    src/instance/context.cppm
-    src/instance/controller.cppm
-    src/instance/resource.cppm
-    src/instance/tasker.cppm
-    src/toolkit/config.cppm
-    src/toolkit/find.cppm
-    src/toolkit/pi.cppm
-    src/utility/utility.cppm
+set(maa_common_src
+    src/instance/context.cpp
+    src/instance/controller.cpp
+    src/instance/resource.cpp
+    src/instance/tasker.cpp
+    src/toolkit/config.cpp
+    src/toolkit/find.cpp
+    src/toolkit/pi.cpp
+    src/utility/utility.cpp
 )
-
-add_library(MaaNodeCommon STATIC ${CMAKE_JS_SRC} src/main.cpp)
-target_sources(MaaNodeCommon PUBLIC FILE_SET cppms TYPE CXX_MODULES FILES ${maa_node_cppm})
-target_include_directories(MaaNodeCommon PRIVATE ${CMAKE_CURRENT_LIST_DIR}/../../../include)
-target_compile_definitions(MaaNodeCommon PRIVATE NODE_ADDON_API_ENABLE_TYPE_CHECK_ON_AS)
-target_link_libraries(MaaNodeCommon MaaFrameworkModule)
-set_target_properties(MaaNodeCommon PROPERTIES POSITION_INDEPENDENT_CODE ON)
 
 # Master
 
-add_library(MaaNode SHARED src/agent/client.cpp src/reg.cpp)
+add_library(MaaNode SHARED ${maa_common_src} src/agent/client.cpp)
 set_target_properties(MaaNode PROPERTIES PREFIX "" SUFFIX ".node")
-target_link_libraries(MaaNode MaaNodeCommon ${CMAKE_JS_LIB} MaaFramework MaaToolkit MaaAgentClient)
-target_compile_definitions(MaaNode PRIVATE NODE_ADDON_API_ENABLE_TYPE_CHECK_ON_AS)
+target_link_libraries(MaaNode ${CMAKE_JS_LIB} MaaFramework MaaToolkit MaaAgentClient)
+target_compile_definitions(MaaNode PRIVATE NODE_ADDON_API_ENABLE_TYPE_CHECK_ON_AS MAA_NODE_BUILD_CLIENT)
+set_target_properties(MaaNode PROPERTIES POSITION_INDEPENDENT_CODE ON)
 
 install(
     TARGETS MaaNode
@@ -95,10 +79,11 @@ endif()
 
 # Slave
 
-add_library(MaaNodeServer SHARED src/agent/server.cpp src/reg.cpp)
+add_library(MaaNodeServer SHARED ${maa_common_src} src/agent/server.cpp)
 set_target_properties(MaaNodeServer PROPERTIES PREFIX "" SUFFIX ".node")
-target_link_libraries(MaaNodeServer MaaNodeCommon ${CMAKE_JS_LIB} MaaToolkit MaaAgentServer)
-target_compile_definitions(MaaNodeServer PRIVATE NODE_ADDON_API_ENABLE_TYPE_CHECK_ON_AS)
+target_link_libraries(MaaNodeServer ${CMAKE_JS_LIB} MaaToolkit MaaAgentServer)
+target_compile_definitions(MaaNodeServer PRIVATE NODE_ADDON_API_ENABLE_TYPE_CHECK_ON_AS MAA_NODE_BUILD_SERVER)
+set_target_properties(MaaNodeServer PROPERTIES POSITION_INDEPENDENT_CODE ON)
 
 install(
     TARGETS MaaNodeServer
