@@ -282,12 +282,16 @@ jobs:
             matrix:
                 arch: [aarch64, x86_64]
             fail-fast: false
-        runs-on: macos-${{ matrix.arch == 'x86_64' && '13' || 'latest' }}
+        runs-on: macos-15
 
         steps:
             - uses: actions/checkout@v4
               with:
                   submodules: recursive
+
+            - uses: maxim-lobanov/setup-xcode@v1
+              with:
+                  xcode-version: 16.2
 
             - name: Install dep
               run: |
@@ -336,7 +340,8 @@ jobs:
                     -DWITH_NODEJS_BINDING=ON \
                     -DBUILD_PICLI=OFF \
                     -DBUILD_PIPELINE_TESTING=ON \
-                    -DBUILD_DLOPEN_TESTING=ON
+                    -DBUILD_DLOPEN_TESTING=ON \
+                    -DCMAKE_OSX_ARCHITECTURES='${{ matrix.arch == 'x86_64' && 'x86_64' || 'arm64' }}'
 
                   cmake --build build --preset 'NinjaMulti - Debug' -j 16
 
