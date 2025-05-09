@@ -1,7 +1,9 @@
 #pragma once
 
 #include <MaaFramework/MaaAPI.h>
+#include <format>
 #include <napi.h>
+#include <optional>
 
 inline std::string PtrAsKey(void* ptr)
 {
