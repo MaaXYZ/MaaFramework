@@ -55,6 +55,8 @@ set(maa_common_src
     src/toolkit/pi.cpp
     src/utility/utility.cpp
     src/main.cpp
+
+    ${CMAKE_JS_SRC}
 )
 
 # Master
