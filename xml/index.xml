@@ -23,12 +23,15 @@
   <compound refid="namespacestd" kind="namespace"><name>std</name>
   </compound>
   <compound refid="MaaAgentClientAPI_8h" kind="file"><name>MaaAgentClientAPI.h</name>
-    <member refid="MaaAgentClientAPI_8h_1ad8096afd60abec647ce452e4ce6d5ea9" kind="function"><name>MaaAgentClientCreate</name></member>
+    <member refid="MaaAgentClientAPI_8h_1aabf857baa187865204e5c0e2e455f71a" kind="function"><name>MaaAgentClientCreateV2</name></member>
     <member refid="MaaAgentClientAPI_8h_1a330835a995399c4cd083671a72c42331" kind="function"><name>MaaAgentClientDestroy</name></member>
+    <member refid="MaaAgentClientAPI_8h_1aa8883d8757c32c9cc0c3308b6f91e786" kind="function"><name>MaaAgentClientIdentifier</name></member>
     <member refid="MaaAgentClientAPI_8h_1ae92e9c2dd74218aa0617a8630456ef64" kind="function"><name>MaaAgentClientBindResource</name></member>
-    <member refid="MaaAgentClientAPI_8h_1ae48a36582106c8e7e0133387ae992016" kind="function"><name>MaaAgentClientCreateSocket</name></member>
     <member refid="MaaAgentClientAPI_8h_1ad0cddf9217464eb1ab89eadbaf43a97f" kind="function"><name>MaaAgentClientConnect</name></member>
     <member refid="MaaAgentClientAPI_8h_1aa4e4ccf8021abbf557bfb9efc32667da" kind="function"><name>MaaAgentClientDisconnect</name></member>
+    <member refid="MaaAgentClientAPI_8h_1afd0af277e6592e0608af78dd9b64dd68" kind="function"><name>MaaAgentClientConnected</name></member>
+    <member refid="MaaAgentClientAPI_8h_1a884adbc9d05ac3a4bb38adbe79453396" kind="function"><name>MaaAgentClientCreate</name></member>
+    <member refid="MaaAgentClientAPI_8h_1aadaf068b2df061deeec5aa2ad02577b9" kind="function"><name>MaaAgentClientCreateSocket</name></member>
   </compound>
   <compound refid="MaaAgentClientDef_8h" kind="file"><name>MaaAgentClientDef.h</name>
     <member refid="MaaAgentClientDef_8h_1afa360933632739d3de64403ea9add40c" kind="typedef"><name>MaaAgentClient</name></member>

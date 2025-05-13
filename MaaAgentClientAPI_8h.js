@@ -1,9 +1,12 @@
 var MaaAgentClientAPI_8h =
 [
-    [ "MaaAgentClientCreate", "MaaAgentClientAPI_8h.html#ad8096afd60abec647ce452e4ce6d5ea9", null ],
+    [ "MaaAgentClientCreateV2", "MaaAgentClientAPI_8h.html#aabf857baa187865204e5c0e2e455f71a", null ],
     [ "MaaAgentClientDestroy", "MaaAgentClientAPI_8h.html#a330835a995399c4cd083671a72c42331", null ],
+    [ "MaaAgentClientIdentifier", "MaaAgentClientAPI_8h.html#aa8883d8757c32c9cc0c3308b6f91e786", null ],
     [ "MaaAgentClientBindResource", "MaaAgentClientAPI_8h.html#ae92e9c2dd74218aa0617a8630456ef64", null ],
-    [ "MaaAgentClientCreateSocket", "MaaAgentClientAPI_8h.html#ae48a36582106c8e7e0133387ae992016", null ],
     [ "MaaAgentClientConnect", "MaaAgentClientAPI_8h.html#ad0cddf9217464eb1ab89eadbaf43a97f", null ],
-    [ "MaaAgentClientDisconnect", "MaaAgentClientAPI_8h.html#aa4e4ccf8021abbf557bfb9efc32667da", null ]
+    [ "MaaAgentClientDisconnect", "MaaAgentClientAPI_8h.html#aa4e4ccf8021abbf557bfb9efc32667da", null ],
+    [ "MaaAgentClientConnected", "MaaAgentClientAPI_8h.html#afd0af277e6592e0608af78dd9b64dd68", null ],
+    [ "MaaAgentClientCreate", "MaaAgentClientAPI_8h.html#a884adbc9d05ac3a4bb38adbe79453396", null ],
+    [ "MaaAgentClientCreateSocket", "MaaAgentClientAPI_8h.html#aadaf068b2df061deeec5aa2ad02577b9", null ]
 ];

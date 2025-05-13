@@ -1,12 +1,12 @@
 {
-	"Version": "(main) v4.2.0-beta.1",
+	"Version": "(main) v4.2.0",
 	"Compounds": {
 		"MaaAgentClientAPI.h": {
 			"Location": "include/MaaAgentClient/MaaAgentClientAPI.h",
 			"Typedefs": {},
 			"Defines": {},
 			"Functions": {
-				"MaaAgentClientCreate": {
+				"MaaAgentClientCreateV2": {
 					"Description": {
 						"Brief": "",
 						"Details": [],
@@ -16,7 +16,14 @@
 						"MAA_AGENT_CLIENT_API": "",
 						"MaaAgentClient*": ""
 					},
-					"Parameters": {}
+					"Parameters": {
+						"identifier": {
+							"Type": "const MaaStringBuffer*",
+							"Description": "",
+							"Direction": 0,
+							"IsPointerToArray": null
+						}
+					}
 				},
 				"MaaAgentClientDestroy": {
 					"Description": {
@@ -31,6 +38,31 @@
 					"Parameters": {
 						"client": {
 							"Type": "MaaAgentClient*",
+							"Description": "",
+							"Direction": 0,
+							"IsPointerToArray": null
+						}
+					}
+				},
+				"MaaAgentClientIdentifier": {
+					"Description": {
+						"Brief": "",
+						"Details": [],
+						"Deprecated": null
+					},
+					"Types": {
+						"MAA_AGENT_CLIENT_API": "",
+						"MaaBool": ""
+					},
+					"Parameters": {
+						"client": {
+							"Type": "MaaAgentClient*",
+							"Description": "",
+							"Direction": 0,
+							"IsPointerToArray": null
+						},
+						"identifier": {
+							"Type": "MaaStringBuffer*",
 							"Description": "",
 							"Direction": 0,
 							"IsPointerToArray": null
@@ -56,31 +88,6 @@
 						},
 						"res": {
 							"Type": "MaaResource*",
-							"Description": "",
-							"Direction": 0,
-							"IsPointerToArray": null
-						}
-					}
-				},
-				"MaaAgentClientCreateSocket": {
-					"Description": {
-						"Brief": "",
-						"Details": [],
-						"Deprecated": null
-					},
-					"Types": {
-						"MAA_AGENT_CLIENT_API": "",
-						"MaaBool": ""
-					},
-					"Parameters": {
-						"client": {
-							"Type": "MaaAgentClient*",
-							"Description": "",
-							"Direction": 0,
-							"IsPointerToArray": null
-						},
-						"identifier": {
-							"Type": "MaaStringBuffer*",
 							"Description": "",
 							"Direction": 0,
 							"IsPointerToArray": null
@@ -119,6 +126,64 @@
 					"Parameters": {
 						"client": {
 							"Type": "MaaAgentClient*",
+							"Description": "",
+							"Direction": 0,
+							"IsPointerToArray": null
+						}
+					}
+				},
+				"MaaAgentClientConnected": {
+					"Description": {
+						"Brief": "",
+						"Details": [],
+						"Deprecated": null
+					},
+					"Types": {
+						"MAA_AGENT_CLIENT_API": "",
+						"MaaBool": ""
+					},
+					"Parameters": {
+						"client": {
+							"Type": "MaaAgentClient*",
+							"Description": "",
+							"Direction": 0,
+							"IsPointerToArray": null
+						}
+					}
+				},
+				"MaaAgentClientCreate": {
+					"Description": {
+						"Brief": "",
+						"Details": [],
+						"Deprecated": ""
+					},
+					"Types": {
+						"MAA_DEPRECATED": "",
+						"MAA_AGENT_CLIENT_API": "",
+						"MaaAgentClient*": ""
+					},
+					"Parameters": {}
+				},
+				"MaaAgentClientCreateSocket": {
+					"Description": {
+						"Brief": "",
+						"Details": [],
+						"Deprecated": ""
+					},
+					"Types": {
+						"MAA_DEPRECATED": "",
+						"MAA_AGENT_CLIENT_API": "",
+						"MaaBool": ""
+					},
+					"Parameters": {
+						"client": {
+							"Type": "MaaAgentClient*",
+							"Description": "",
+							"Direction": 0,
+							"IsPointerToArray": null
+						},
+						"identifier": {
+							"Type": "MaaStringBuffer*",
 							"Description": "",
 							"Direction": 0,
 							"IsPointerToArray": null
