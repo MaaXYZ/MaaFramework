@@ -387,7 +387,7 @@ export declare const AgentRole: 'client' | 'server'
 
 // agent.cpp - client
 
-export declare function agent_client_create(identifier?: string): AgentClientHandle | null
+export declare function agent_client_create(identifier: string | null): AgentClientHandle | null
 export declare function agent_client_destroy(handle: AgentClientHandle): void
 export declare function agent_client_identifier(handle: AgentClientHandle): string | null
 export declare function agent_client_bind_resource(

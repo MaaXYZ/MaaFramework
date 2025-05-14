@@ -5,7 +5,7 @@ export class AgentClient {
     handle: maa.AgentClientHandle
 
     constructor(identifier?: string) {
-        const h = maa.agent_client_create(identifier)
+        const h = maa.agent_client_create(identifier ?? null)
         if (!h) {
             throw 'AgentClient create failed'
         }
