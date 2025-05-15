@@ -27,6 +27,7 @@ class AgentClient:
         if self._handle:
             Library.agent_client().MaaAgentClientDestroy(self._handle)
 
+    @property
     def identifier(self) -> Optional[str]:
         id_buffer = StringBuffer()
         if not Library.agent_client().MaaAgentClientIdentifier(
@@ -52,6 +53,7 @@ class AgentClient:
     def disconnect(self) -> bool:
         return bool(Library.agent_client().MaaAgentClientDisconnect(self._handle))
 
+    @property
     def connected(self) -> bool:
         return bool(Library.agent_client().MaaAgentClientConnected(self._handle))
 
