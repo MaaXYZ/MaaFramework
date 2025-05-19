@@ -50,7 +50,8 @@ std::string AgentClient::create_socket(const std::string& identifier)
     // If a socket exists, log an error and return the existing identifier.
     // Multiple socket creations are not allowed by design.
     if (!identifier_.empty()) {
-        LogError << "Attempted to create a new socket, but one already exists. Returning the existing socket identifier." << VAR(identifier_);
+        LogError << "Attempted to create a new socket, but one already exists. Returning the existing socket identifier."
+                 << VAR(identifier_);
         return identifier_;
     }
 
@@ -169,6 +170,9 @@ bool AgentClient::handle_inserted_request(const json::value& j)
         return true;
     }
     else if (handle_tasker_post_stop(j)) {
+        return true;
+    }
+    else if (handle_tasker_stopping(j)) {
         return true;
     }
     else if (handle_tasker_resource(j)) {
