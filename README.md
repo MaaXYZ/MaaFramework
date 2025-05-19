@@ -129,7 +129,7 @@ _✨ 基于图像识别的自动化黑盒测试框架 ✨_
 - [MaaTOT](https://github.com/Coxwtwo/MaaTOT) ![Pipeline](https://img.shields.io/badge/Pipeline-%23876f69?logo=paddypower&logoColor=%23FFFFFF) ![license](https://img.shields.io/github/license/Coxwtwo/MaaTOT) ![activity](https://img.shields.io/github/commit-activity/m/Coxwtwo/MaaTOT?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/Coxwtwo/MaaTOT?style=social)  
   未定事件簿 小助手。图像技术 + 模拟控制，解放双手！由 MaaFramework 强力驱动！
 
-- [MaaGumballs](https://github.com/KhazixW2/MaaGumballs) ![Pipeline](https://img.shields.io/badge/Pipeline-%23876f69?logo=paddypower&logoColor=%23FFFFFF) ![Python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white) ![license](https://img.shields.io/github/license/KhazixW2/MaaGumballs) ![activity](https://img.shields.io/github/commit-activity/m/KhazixW2/MaaGumballs?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/KhazixW2/MaaGumballs?style=social)
+- [MaaGumballs](https://github.com/KhazixW2/MaaGumballs) ![Pipeline](https://img.shields.io/badge/Pipeline-%23876f69?logo=paddypower&logoColor=%23FFFFFF) ![Python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white) ![license](https://img.shields.io/github/license/KhazixW2/MaaGumballs) ![activity](https://img.shields.io/github/commit-activity/m/KhazixW2/MaaGumballs?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/KhazixW2/MaaGumballs?style=social)  
   不思议迷宫小助手是一款由图像识别与模拟控制技术驱动的辅助工具。它能够帮助大家解放双手，一键开启敲砖大冒险，由 MaaFramework 强力支持。
 
 ## 生态共建
