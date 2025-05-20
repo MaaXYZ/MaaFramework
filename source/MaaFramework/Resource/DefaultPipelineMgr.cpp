@@ -13,7 +13,7 @@ bool DefaultPipelineMgr::load(const std::filesystem::path& path)
 {
     LogFunc << VAR(path);
 
-    auto json_opt = json::open(path);
+    auto json_opt = json::open(path, true, true);
     if (!json_opt) {
         LogError << "json::open failed" << VAR(path);
         return false;
