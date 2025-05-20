@@ -247,7 +247,7 @@ inline decltype(auto) basic_object<string_t>::emplace(args_t&&... args)
     static_assert(
         std::is_constructible_v<value_type, args_t...>,
         "Parameter can't be used to construct a raw_object::value_type");
-    return _object_data.emplace(std::forward<args_t>(args)...);
+    return _object_data.insert_or_assign(std::forward<args_t>(args)...);
 }
 
 template <typename string_t>

@@ -9,6 +9,8 @@
 #include <ostream>
 #include <string>
 #include <tuple>
+#include <type_traits>
+#include <utility>
 #include <variant>
 
 #include "exception.hpp"
@@ -131,6 +133,16 @@ public:
     template <typename elem1_t, typename elem2_t>
     basic_value(std::pair<elem1_t, elem2_t>&& pair)
         : basic_value(basic_array<string_t>(std::pair<elem1_t, elem2_t>(pair)))
+    {
+    }
+
+    template <
+        typename variant_t,
+        std::enable_if_t<_utils::is_variant<std::decay_t<variant_t>>, bool> = true>
+    basic_value(variant_t&& var)
+        : basic_value(_utils::serialize_variant<string_t>(
+              std::forward<variant_t>(var),
+              std::make_index_sequence<std::variant_size_v<std::decay_t<variant_t>>>()))
     {
     }
 
@@ -366,11 +378,19 @@ public:
     {
         return as_array().template as_tuple<elem_ts...>();
     }
-    
+
     template <typename elem1_t, typename elem2_t>
     explicit operator std::pair<elem1_t, elem2_t>() const
     {
         return as_array().template as_pair<elem1_t, elem2_t>();
+    }
+
+    template <typename... args_t>
+    explicit operator std::variant<args_t...>() const
+    {
+        return _utils::deserialize_variant<string_t, std::variant<args_t...>>(
+            *this,
+            std::make_index_sequence<std::variant_size_v<std::variant<args_t...>>>());
     }
 
 private:
@@ -566,6 +586,21 @@ inline bool basic_value<string_t>::is() const noexcept
         return is_object() && std::is_constructible_v<string_t, typename value_t::key_type>
                && all<typename value_t::mapped_type>();
     }
+    else if constexpr (_utils::is_variant<value_t>) {
+        return _utils::detect_variant<string_t, value_t>(
+            *this,
+            std::make_index_sequence<std::variant_size_v<value_t>>());
+    }
+    else if constexpr (_utils::is_pair<value_t>) {
+        return is_array() && as_array().size() == 2
+               && at(0).template is<typename value_t::first_type>()
+               && at(1).template is<typename value_t::second_type>();
+    }
+    else if constexpr (_utils::is_tuple<value_t>) {
+        return _utils::detect_tuple<string_t, value_t>(
+            *this,
+            std::make_index_sequence<std::tuple_size_v<value_t>>());
+    }
     else {
         static_assert(!sizeof(value_t), "Unsupported type");
     }
@@ -637,16 +672,16 @@ inline auto basic_value<string_t>::get_helper(
 {
     if constexpr (std::is_constructible_v<string_t, first_key_t>) {
         return is_object() ? as_object().get_helper(
-                   default_value,
-                   std::forward<first_key_t>(first),
-                   std::forward<rest_keys_t>(rest)...)
+                                 default_value,
+                                 std::forward<first_key_t>(first),
+                                 std::forward<rest_keys_t>(rest)...)
                            : default_value;
     }
     else if constexpr (std::is_integral_v<std::decay_t<first_key_t>>) {
         return is_array() ? as_array().get_helper(
-                   default_value,
-                   std::forward<first_key_t>(first),
-                   std::forward<rest_keys_t>(rest)...)
+                                default_value,
+                                std::forward<first_key_t>(first),
+                                std::forward<rest_keys_t>(rest)...)
                           : default_value;
     }
     else {

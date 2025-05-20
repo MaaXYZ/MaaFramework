@@ -7,6 +7,8 @@
 #include <sstream>
 #include <string>
 #include <type_traits>
+#include <utility>
+#include <variant>
 
 namespace json
 {
@@ -83,6 +85,21 @@ template <typename T, typename = void>
 constexpr bool is_collection = false;
 template <typename T>
 constexpr bool is_collection<T> = is_container<T> && !is_map<T> && !is_fixed_array<T>;
+
+template <typename T>
+constexpr bool is_variant = false;
+template <typename... args_t>
+constexpr bool is_variant<std::variant<args_t...>> = true;
+
+template <typename T>
+constexpr bool is_tuple = false;
+template <typename... args_t>
+constexpr bool is_tuple<std::tuple<args_t...>> = true;
+
+template <typename T>
+constexpr bool is_pair = false;
+template <typename... args_t>
+constexpr bool is_pair<std::pair<args_t...>> = true;
 
 template <typename T>
 class has_to_json_in_member
@@ -260,5 +277,55 @@ inline string_t to_basic_string(any_t&& arg)
     else {
         static_assert(!sizeof(any_t), "Unsupported type");
     }
+}
+
+template <std::size_t id, typename string_t, typename variant_t>
+inline bool _serialize_variant_impl(basic_value<string_t>& val, variant_t&& var)
+{
+    if (var.index() != id) {
+        return false;
+    }
+    val = basic_value<string_t>(std::get<id>(std::forward<variant_t>(var)));
+    return true;
+}
+
+template <typename string_t, typename variant_t, std::size_t... ids>
+inline basic_value<string_t> serialize_variant(variant_t&& var, std::index_sequence<ids...>)
+{
+    basic_value<string_t> val;
+    (_serialize_variant_impl<ids>(val, std::forward<variant_t>(var)) || ...);
+    return val;
+}
+
+template <std::size_t id, typename string_t, typename variant_t>
+inline bool _deserialize_variant_impl(const basic_value<string_t>& val, variant_t& var)
+{
+    using alt_t = std::variant_alternative_t<id, variant_t>;
+    if (!val.template is<alt_t>()) {
+        return false;
+    }
+    var = val.template as<alt_t>();
+    return true;
+}
+
+template <typename string_t, typename variant_t, std::size_t... ids>
+inline variant_t deserialize_variant(const basic_value<string_t>& val, std::index_sequence<ids...>)
+{
+    variant_t var;
+    (_deserialize_variant_impl<ids>(val, var) || ...);
+    return var;
+}
+
+template <typename string_t, typename variant_t, std::size_t... ids>
+inline bool detect_variant(const basic_value<string_t>& val, std::index_sequence<ids...>)
+{
+    return (val.template is<std::variant_alternative_t<ids, variant_t>>() || ...);
+}
+
+template <typename string_t, typename tuple_t, std::size_t... ids>
+inline bool detect_tuple(const basic_value<string_t>& val, std::index_sequence<ids...>)
+{
+    return val.is_array() && val.as_array().size() == std::tuple_size_v<tuple_t>
+           && (val.at(ids).template is<std::tuple_element_t<ids, tuple_t>>() || ...);
 }
 } // namespace json::_utils
