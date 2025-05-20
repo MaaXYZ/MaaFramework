@@ -86,10 +86,10 @@ template <
     typename istream_t,
     typename = std::enable_if_t<
         std::is_base_of_v<std::basic_istream<typename istream_t::char_type>, istream_t>>>
-auto parse(istream_t& istream, bool check_bom = false, bool with_c = false);
+auto parse(istream_t& istream, bool check_bom = false, bool with_commets = false);
 
 template <typename ifstream_t = std::ifstream, typename path_t = void>
-auto open(const path_t& path, bool check_bom = false, bool with_c = false);
+auto open(const path_t& path, bool check_bom = false, bool with_commets = false);
 
 namespace literals
 {
@@ -749,7 +749,7 @@ auto parse(char_t* content)
 }
 
 template <typename istream_t, typename _>
-auto parse(istream_t& ifs, bool check_bom, bool with_c)
+auto parse(istream_t& ifs, bool check_bom, bool with_commets)
 {
     using string_t = std::basic_string<typename istream_t::char_type>;
 
@@ -772,11 +772,11 @@ auto parse(istream_t& ifs, bool check_bom, bool with_c)
             str.assign(str.begin() + 3, str.end());
         }
     }
-    return with_c ? parsec(str) : parse(str);
+    return with_commets ? parsec(str) : parse(str);
 }
 
 template <typename ifstream_t, typename path_t>
-auto open(const path_t& filepath, bool check_bom, bool with_c)
+auto open(const path_t& filepath, bool check_bom, bool with_commets)
 {
     using char_t = typename ifstream_t::char_type;
     using string_t = std::basic_string<char_t>;
@@ -787,7 +787,7 @@ auto open(const path_t& filepath, bool check_bom, bool with_c)
     if (!ifs.is_open()) {
         return return_t(std::nullopt);
     }
-    auto opt = with_c ? parsec(ifs, check_bom) : parse(ifs, check_bom);
+    auto opt = parse(ifs, check_bom, with_commets);
     ifs.close();
     return opt;
 }
