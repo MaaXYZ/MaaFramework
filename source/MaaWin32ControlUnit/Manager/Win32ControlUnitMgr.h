@@ -9,15 +9,13 @@
 
 MAA_CTRL_UNIT_NS_BEGIN
 
-class ControlUnitMgr : public ControlUnitAPI
+class Win32ControlUnitMgr : public Win32ControlUnitAPI
 {
 public:
-    ControlUnitMgr(HWND hWnd, MaaWin32ScreencapMethod screencap_method, MaaWin32InputMethod input_method);
-    virtual ~ControlUnitMgr() override = default;
+    Win32ControlUnitMgr(HWND hWnd, MaaWin32ScreencapMethod screencap_method, MaaWin32InputMethod input_method);
+    virtual ~Win32ControlUnitMgr() override = default;
 
 public: // from ControlUnitAPI
-    virtual bool find_device(/*out*/ std::vector<std::string>& devices) override;
-
     virtual bool connect() override;
 
     virtual bool request_uuid(/*out*/ std::string& uuid) override;
