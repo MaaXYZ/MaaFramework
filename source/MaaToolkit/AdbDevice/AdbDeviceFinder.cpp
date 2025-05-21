@@ -32,9 +32,11 @@ std::vector<AdbDevice> AdbDeviceFinder::find() const
             device.name = e.name;
             device.adb_path = adb_path;
             device.serial = ser;
-            device.screencap_methods = get_screencap_methods(device.adb_path, device.serial);
-            device.input_methods = get_input_methods(device.adb_path, device.serial);
-            device.config = get_adb_config(e, device.serial);
+            device.screencap_methods = MaaAdbScreencapMethod_Default;
+            device.input_methods = MaaAdbInputMethod_Default;
+            device.config = {};
+
+            request_device_config(e, device);
 
             result.emplace_back(std::move(device));
         }
@@ -64,9 +66,11 @@ std::vector<AdbDevice> AdbDeviceFinder::find_specified(const std::filesystem::pa
         device.name = path_to_utf8_string(adb_path);
         device.adb_path = adb_path;
         device.serial = ser;
-        device.screencap_methods = get_screencap_methods(device.adb_path, device.serial);
-        device.input_methods = get_input_methods(device.adb_path, device.serial);
+        device.screencap_methods = MaaAdbScreencapMethod_Default;
+        device.input_methods = MaaAdbInputMethod_Default;
         device.config = {};
+
+        request_device_config({}, device);
 
         result.emplace_back(std::move(device));
     }
@@ -90,14 +94,6 @@ std::vector<std::string> AdbDeviceFinder::find_adb_serials(const std::filesystem
     serials = check_available_adb_serials(adb_path, serials);
 
     return serials;
-}
-
-json::object AdbDeviceFinder::get_adb_config(const Emulator& emulator, const std::string& adb_serial) const
-{
-    std::ignore = emulator;
-    std::ignore = adb_serial;
-
-    return {};
 }
 
 void AdbDeviceFinder::set_emulator_const_data(std::unordered_map<std::string, EmulatorConstantData> data)
@@ -220,20 +216,10 @@ std::vector<std::string>
     return available;
 }
 
-MaaAdbScreencapMethod AdbDeviceFinder::get_screencap_methods(const std::filesystem::path& adb_path, const std::string& serial) const
+void AdbDeviceFinder::request_device_config(const Emulator& emulator, AdbDevice& device) const
 {
-    std::ignore = adb_path;
-    std::ignore = serial;
-
-    return MaaAdbScreencapMethod_Default;
-}
-
-MaaAdbInputMethod AdbDeviceFinder::get_input_methods(const std::filesystem::path& adb_path, const std::string& serial) const
-{
-    std::ignore = adb_path;
-    std::ignore = serial;
-
-    return MaaAdbInputMethod_Default;
+    std::ignore = emulator;
+    std::ignore = device;
 }
 
 MAA_TOOLKIT_NS_END
