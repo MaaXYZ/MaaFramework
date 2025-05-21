@@ -223,7 +223,7 @@ bool request_waydroid_config(std::shared_ptr<MAA_CTRL_UNIT_NS::AdbControlUnitAPI
     }
 
     std::string output;
-    bool ret = control_unit->shell("getprop | grep ro.product.product.brand", output);
+    bool ret = control_unit->shell("getprop | grep ro.product.brand", output);
     if (!ret) {
         return false;
     }
