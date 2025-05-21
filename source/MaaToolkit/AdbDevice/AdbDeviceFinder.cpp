@@ -216,10 +216,63 @@ std::vector<std::string>
     return available;
 }
 
+bool request_waydroid_config(std::shared_ptr<MAA_CTRL_UNIT_NS::AdbControlUnitAPI> control_unit, AdbDevice& device)
+{
+    if (!control_unit) {
+        return false;
+    }
+
+    std::string output;
+    bool ret = control_unit->shell("getprop | grep ro.product.product.brand", output);
+    if (!ret) {
+        return false;
+    }
+    if (output.find("waydroid") == std::string::npos) {
+        return false;
+    }
+
+    auto& command = device.config["command"];
+
+    command["StartApp"] = json::array {
+        "{ADB}", "-s", "{ADB_SERIAL}", "shell", "monkey -p {INTENT} --pct-syskeys 0 1",
+    };
+    command["StartActivity"] = json::array {
+        "{ADB}", "-s", "{ADB_SERIAL}", "shell", "am start -n {INTENT} --windowingMode 4",
+    };
+
+    LogInfo << "waydroid" << VAR(device.adb_path) << VAR(device.serial) << VAR(device.config);
+    return true;
+}
+
 void AdbDeviceFinder::request_device_config(const Emulator& emulator, AdbDevice& device) const
 {
     std::ignore = emulator;
-    std::ignore = device;
+
+    LogFunc << VAR(device.adb_path) << VAR(device.serial);
+
+    std::string str_adb = path_to_utf8_string(device.adb_path);
+    std::string str_serial = device.serial;
+
+    auto control_unit = AdbControlUnitLibraryHolder::create_control_unit(
+        str_adb.c_str(),
+        str_serial.c_str(),
+        MaaAdbScreencapMethod_None,
+        MaaAdbInputMethod_None,
+        "{}",
+        "");
+
+    if (!control_unit) {
+        LogError << "Failed to create control unit";
+        return;
+    }
+    if (!control_unit->connect()) {
+        LogError << "Failed to connect";
+        return;
+    }
+
+    if (request_waydroid_config(control_unit, device)) {
+        return;
+    }
 }
 
 MAA_TOOLKIT_NS_END
