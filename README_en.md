@@ -140,7 +140,7 @@ If your project depends on MaaFramework, we welcome you to name it as MaaXXX, MX
 
 We also welcome you to submit a PR to add your project to the community projects list above!
 
-## Declarations and Licenses
+## Statement and License
 
 ### Open Source License
 
@@ -148,37 +148,37 @@ This project is open-sourced under the [`LGPL-3.0`](./LICENSE.md) license.
 
 ### Distribution Notice
 
-This project supports GPU acceleration, which relies on [DirectML](https://learn.microsoft.com/en-us/windows/ai/directml/dml) on the Windows platform. DirectML is an independent component provided by Microsoft; it is **not** part of this project's open-source portion and is **not** subject to the LGPL-3.0 license. For user convenience, we have included an unmodified DirectML.dll file in the installation package. If you do not require GPU acceleration, you can safely delete this DLL file, and the core functionality of the software will remain unaffected.
+This project supports GPU acceleration, which relies on an independent component provided by Microsoft: [DirectML](https://learn.microsoft.com/en-us/windows/ai/directml/) for the Windows platform. DirectML is not part of this project's open-source codebase and is not governed by the LGPL-3.0 license. For user convenience, an unmodified copy of the DirectML.dll file is included in the installation package. If GPU acceleration is not required, you may safely delete this DLL file without affecting the core functionality of the software.
 
 ### Disclaimer
 
 #### Intended Use
 
-This project is designed to provide **automated black-box testing tools** for software development, including lawful technical scenarios such as image recognition and UI interaction simulation. Developers must ensure compliance with all applicable laws, regulations, and the terms of service of target software.
+This project is intended to provide **automated black-box testing tools** for software development, including image recognition, UI operation simulation, and other legitimate technical scenarios. Developers must ensure that their use of the project complies with all applicable laws, regulations, and the terms of service of the target software.
 
 #### Prohibited Misuse
 
-You are expressly forbidden from using this project for the following purposes (including but not limited to):
+The use of this project for the following purposes is strictly prohibited (including but not limited to):
 
-- Disrupting, bypassing, or interfering with the normal operation of any software, game, or service (e.g., anti-cheat mechanisms, license verification systems).
-- Developing or distributing tools that violate third-party service terms (e.g., game cheats, hacks, automated scripts).
-- Any activity infringing upon others' legal rights or violating laws (e.g., data theft, cyberattacks).
+- Disrupting, circumventing, or interfering with the normal functioning of any software, game, or service (such as anti-cheat mechanisms or authorization systems).
+- Developing or distributing tools that violate third-party terms of service (such as game cheats, hacking tools, or automation scripts).
+- Engaging in any illegal activity or actions that infringe upon the legitimate rights of others (such as data theft or cyberattacks).
 
-#### Liability Waiver
+#### Liability Disclaimer
 
-This project is provided "as-is," and the author **disclaims all liability** for:
+This project is provided "as is". The author **assumes no responsibility** for any direct, indirect, or consequential damages resulting from:
 
-- Actions by users violating this disclaimer or applicable laws.
+- User actions that violate this statement or applicable laws and regulations.
 - Damages caused by third-party tools developed using this project (e.g., account bans, legal disputes).
-- Any technical or financial losses arising from the use of this project.
+- Any technical or financial losses incurred from the use of this project.
 
-#### User Obligations
+#### User Responsibilities
 
 By using this project, you agree to:
 
 - Assume all risks associated with its use.
-- Ensure your use case is lawful and authorized (e.g., obtain permission from target software vendors).
-- Solely bear responsibility for legal disputes caused by your actions and fully indemnify the author of this project.
+- Ensure that your use case is legal and properly authorized (e.g., with permission from the target software vendor).
+- Take full responsibility for any legal issues arising from your actions and hold the project author harmless from any liability.
 
 ## Development
 
