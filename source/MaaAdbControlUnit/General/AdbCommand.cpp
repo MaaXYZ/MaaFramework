@@ -14,8 +14,6 @@ bool AdbCommand::parse(const json::value& config)
     };
 
     return parse_command("Shell", config, kDefaultShellArgv, shell_argv);
-
-    return true;
 }
 
 std::optional<std::string> AdbCommand::shell(const std::string& cmd)
