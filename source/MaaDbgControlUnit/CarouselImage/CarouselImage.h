@@ -19,8 +19,6 @@ public:
     virtual ~CarouselImage() = default;
 
 public: // from ControlUnitAPI
-    virtual bool find_device(/*out*/ std::vector<std::string>& devices) override;
-
     virtual bool connect() override;
 
     virtual bool request_uuid(/*out*/ std::string& uuid) override;

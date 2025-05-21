@@ -12,12 +12,6 @@ ReplayRecording::~ReplayRecording()
     }
 }
 
-bool ReplayRecording::find_device(std::vector<std::string>& devices)
-{
-    std::ignore = devices;
-    return true;
-}
-
 bool ReplayRecording::connect()
 {
     LogInfo;

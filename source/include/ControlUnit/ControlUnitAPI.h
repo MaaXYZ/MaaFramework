@@ -13,8 +13,6 @@ class ControlUnitAPI
 public:
     virtual ~ControlUnitAPI() = default;
 
-    virtual bool find_device(/*out*/ std::vector<std::string>& devices) = 0;
-
     virtual bool connect() = 0;
 
     virtual bool request_uuid(/*out*/ std::string& uuid) = 0;
@@ -47,6 +45,23 @@ public:
     virtual bool input_text(const std::string& text) = 0;
 };
 
+class AdbControlUnitAPI : public ControlUnitAPI
+{
+public:
+    virtual ~AdbControlUnitAPI() = default;
+
+    virtual bool find_device(/*out*/ std::vector<std::string>& devices) = 0;
+    virtual bool shell(const std::string& cmd, std::string& output) = 0;
+};
+
+class Win32ControlUnitAPI : public ControlUnitAPI
+{
+public:
+    virtual ~Win32ControlUnitAPI() = default;
+};
+
 MAA_CTRL_UNIT_NS_END
 
 using MaaControlUnitHandle = MAA_CTRL_UNIT_NS::ControlUnitAPI*;
+using MaaAdbControlUnitHandle = MAA_CTRL_UNIT_NS::AdbControlUnitAPI*;
+using MaaWin32ControlUnitHandle = MAA_CTRL_UNIT_NS::Win32ControlUnitAPI*;

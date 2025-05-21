@@ -8,16 +8,17 @@
 #include "General/Connection.h"
 #include "General/DeviceInfo.h"
 #include "General/DeviceList.h"
+#include "General/AdbCommand.h"
 #include "Utils/Dispatcher.hpp"
 
 MAA_CTRL_UNIT_NS_BEGIN
 
-class ControlUnitMgr
-    : public ControlUnitAPI
+class AdbControlUnitMgr
+    : public AdbControlUnitAPI
     , public Dispatcher<ControlUnitSink>
 {
 public:
-    ControlUnitMgr(
+    AdbControlUnitMgr(
         std::filesystem::path adb_path,
         std::string adb_serial,
         MaaAdbScreencapMethod screencap_methods,
@@ -25,11 +26,9 @@ public:
         json::object config,
         std::filesystem::path agent_path);
 
-    virtual ~ControlUnitMgr() override = default;
+    virtual ~AdbControlUnitMgr() override = default;
 
 public: // from ControlUnitAPI
-    virtual bool find_device(/*out*/ std::vector<std::string>& devices) override;
-
     virtual bool connect() override;
 
     virtual bool request_uuid(/*out*/ std::string& uuid) override;
@@ -50,6 +49,10 @@ public: // from ControlUnitAPI
     virtual bool press_key(int key) override;
     virtual bool input_text(const std::string& text) override;
 
+public:
+    virtual bool find_device(/*out*/ std::vector<std::string>& devices) override;
+    virtual bool shell(const std::string& cmd, std::string& output) override;
+
 private:
     bool _screencap(/*out*/ cv::Mat& image);
     void on_image_resolution_changed(const std::pair<int, int>& pre, const std::pair<int, int>& cur);
@@ -69,6 +72,7 @@ private:
     Connection connection_;
     DeviceInfo device_info_;
     Activity activity_;
+    AdbCommand adb_command_;
 
     std::shared_ptr<InputBase> input_ = nullptr;
     std::shared_ptr<ScreencapBase> screencap_ = nullptr;

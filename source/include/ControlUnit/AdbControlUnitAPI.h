@@ -13,7 +13,7 @@ extern "C"
 
     MAA_CONTROL_UNIT_API const char* MaaAdbControlUnitGetVersion();
 
-    MAA_CONTROL_UNIT_API MaaControlUnitHandle MaaAdbControlUnitCreate(
+    MAA_CONTROL_UNIT_API MaaAdbControlUnitHandle MaaAdbControlUnitCreate(
         const char* adb_path,
         const char* adb_serial,
         MaaAdbScreencapMethod screencap_methods,
@@ -21,7 +21,7 @@ extern "C"
         const char* config,
         const char* agent_path);
 
-    MAA_CONTROL_UNIT_API void MaaAdbControlUnitDestroy(MaaControlUnitHandle handle);
+    MAA_CONTROL_UNIT_API void MaaAdbControlUnitDestroy(MaaAdbControlUnitHandle handle);
 
 #ifdef __cplusplus
 }
