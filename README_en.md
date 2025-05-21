@@ -34,6 +34,8 @@ _✨ An automation black-box testing framework based on image recognition ✨_
 
 </div>
 
+> This document is a machine-translated version of the original Chinese text. In case of any discrepancies, omissions, or ambiguities, [the Chinese version](./README.md) shall prevail.
+
 ## Introduction
 
 **MaaFramework** is a next-generation automation black-box testing framework, completely rewritten and refined based on image recognition technology and the development experience of [MAA](https://github.com/MaaAssistantArknights/MaaAssistantArknights).
