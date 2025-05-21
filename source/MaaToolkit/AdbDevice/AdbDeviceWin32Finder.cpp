@@ -107,7 +107,7 @@ json::object AdbDeviceWin32Finder::get_adb_config(const Emulator& emulator, cons
         return cfg;
     }
 
-    return {};
+    return AdbDeviceFinder::get_adb_config(emulator, adb_serial);
 }
 
 std::vector<std::string> AdbDeviceWin32Finder::find_mumu_serials(const std::filesystem::path& adb_path, const Emulator& emulator) const
