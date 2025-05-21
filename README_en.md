@@ -140,15 +140,45 @@ If your project depends on MaaFramework, we welcome you to name it as MaaXXX, MX
 
 We also welcome you to submit a PR to add your project to the community projects list above!
 
-## License
+## Declarations and Licenses
 
-### MaaFramework
+### Open Source License
 
 This project is open-sourced under the [`LGPL-3.0`](./LICENSE.md) license.
 
-### DirectML
+### Distribution Notice
 
-This project supports GPU acceleration, which relies on [DirectML](https://learn.microsoft.com/en-us/windows/ai/directml/dml) on the Windows platform. DirectML is an independent component provided by Microsoft; it is not part of this project's open-source portion and is not subject to the LGPL-3.0 license. For user convenience, we have included an unmodified DirectML.dll file in the installation package. If you do not require GPU acceleration, you can safely delete this DLL file, and the core functionality of the software will remain unaffected.
+This project supports GPU acceleration, which relies on [DirectML](https://learn.microsoft.com/en-us/windows/ai/directml/dml) on the Windows platform. DirectML is an independent component provided by Microsoft; it is **not** part of this project's open-source portion and is **not** subject to the LGPL-3.0 license. For user convenience, we have included an unmodified DirectML.dll file in the installation package. If you do not require GPU acceleration, you can safely delete this DLL file, and the core functionality of the software will remain unaffected.
+
+### Disclaimer
+
+#### Intended Use
+
+This project is designed to provide **automated black-box testing tools** for software development, including lawful technical scenarios such as image recognition and UI interaction simulation. Developers must ensure compliance with all applicable laws, regulations, and the terms of service of target software.
+
+#### Prohibited Misuse
+
+You are expressly forbidden from using this project for the following purposes (including but not limited to):
+
+- Disrupting, bypassing, or interfering with the normal operation of any software, game, or service (e.g., anti-cheat mechanisms, license verification systems).
+- Developing or distributing tools that violate third-party service terms (e.g., game cheats, hacks, automated scripts).
+- Any activity infringing upon others' legal rights or violating laws (e.g., data theft, cyberattacks).
+
+#### Liability Waiver
+
+This project is provided "as-is," and the author **disclaims all liability** for:
+
+- Actions by users violating this disclaimer or applicable laws.
+- Damages caused by third-party tools developed using this project (e.g., account bans, legal disputes).
+- Any technical or financial losses arising from the use of this project.
+
+#### User Obligations
+
+By using this project, you agree to:
+
+- Assume all risks associated with its use.
+- Ensure your use case is lawful and authorized (e.g., obtain permission from target software vendors).
+- Solely bear responsibility for legal disputes caused by your actions and fully indemnify the author of this project.
 
 ## Development
 
