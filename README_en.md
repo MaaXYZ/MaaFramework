@@ -133,7 +133,10 @@ It offers low-code simplicity while maintaining high extensibility. The framewor
 
 - [MaaGumballs](https://github.com/KhazixW2/MaaGumballs) ![Pipeline](https://img.shields.io/badge/Pipeline-%23876f69?logo=paddypower&logoColor=%23FFFFFF) ![Python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white) ![license](https://img.shields.io/github/license/KhazixW2/MaaGumballs) ![activity](https://img.shields.io/github/commit-activity/m/KhazixW2/MaaGumballs?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/KhazixW2/MaaGumballs?style=social)  
   MaaGumballs is an assistant tool driven by image recognition and simulated control. It can help everyone free their hands and start an adventure of brick-breaking with one click, powered by the MaaFramework.
-  
+
+
+- [MMleo](https://github.com/fictionalflaw/MMleo) ![Pipeline](https://img.shields.io/badge/Pipeline-%23876f69?logo=paddypower&logoColor=%23FFFFFF) ![Python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white) ![license](https://img.shields.io/github/license/fictionalflaw/MMleo) ![activity](https://img.shields.io/github/commit-activity/m/fictionalflaw/MMleo?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/fictionalflaw/MMleo?style=social)  
+  Little Assistant for EnsembleStars Music. Free your hands with image recognition and simulated control technology! Boost the producer career of hamsters! Powered by MaaFramework!  
 ## Eco-Building
 
 MAA is planned to be a category of projects rather than just a single piece of software.
