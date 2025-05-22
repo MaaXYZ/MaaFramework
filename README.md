@@ -78,17 +78,11 @@ _✨ 基于图像识别的自动化黑盒测试框架 ✨_
 - [M9A](https://github.com/MaaXYZ/M9A) ![Pipeline](https://img.shields.io/badge/Pipeline-%23876f69?logo=paddypower&logoColor=%23FFFFFF) ![python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white) ![license](https://img.shields.io/github/license/MaaXYZ/M9A) ![activity](https://img.shields.io/github/commit-activity/m/MaaXYZ/M9A?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/MaaXYZ/M9A?style=social) [![mirrorc](https://img.shields.io/badge/Mirror%E9%85%B1-%239af3f6?logo=countingworkspro&logoColor=4f46e5)](https://mirrorchyan.com/zh/projects) [![website](https://img.shields.io/badge/https://1999.fan-%234285F4)](https://1999.fan)  
   亿韭韭韭 小助手。图像技术 + 模拟控制，解放双手！由 MaaFramework 强力驱动！
 
-- [MAABH3](https://github.com/MaaXYZ/MAABH3) ![cpp](https://img.shields.io/badge/C%2B%2B-00599C?logo=c%2B%2B&logoColor=white) ![license](https://img.shields.io/github/license/MaaXYZ/MAABH3) ![activity](https://img.shields.io/github/commit-activity/m/MaaXYZ/MAABH3?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/MaaXYZ/MAABH3?style=social)  
-  蹦蹦蹦 小助手。图像技术 + 模拟控制，解放双手！由 MaaFramework 强力驱动！
-
 - [MAS](https://github.com/MaaXYZ/MaaAssistantSkland) ![Pipeline](https://img.shields.io/badge/Pipeline-%23876f69?logo=paddypower&logoColor=%23FFFFFF) ![license](https://img.shields.io/github/license/MaaXYZ/MaaAssistantSkland) ![activity](https://img.shields.io/github/commit-activity/m/MaaXYZ/MaaAssistantSkland?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/MaaXYZ/MaaAssistantSkland?style=social)  
   森空岛 小助手。图像技术 + 模拟控制，解放双手！由 MaaFramework 强力驱动！
 
 - [MSBA](https://github.com/overflow65537/MAA_SnowBreak) ![Pipeline](https://img.shields.io/badge/Pipeline-%23876f69?logo=paddypower&logoColor=%23FFFFFF) ![license](https://img.shields.io/github/license/overflow65537/MAA_SnowBreak) ![activity](https://img.shields.io/github/commit-activity/m/overflow65537/MAA_SnowBreak?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/overflow65537/MAA_SnowBreak?style=social) [![mirrorc](https://img.shields.io/badge/Mirror%E9%85%B1-%239af3f6?logo=countingworkspro&logoColor=4f46e5)](https://mirrorchyan.com/zh/projects)  
   尘白禁区 小助手。图像技术 + 模拟控制，解放双手！由 MaaFramework 强力驱动！
-
-- [MAA-for-Millennium-Tour](https://github.com/Ostwind23/MAA-for-Millennium-Tour) ![Pipeline](https://img.shields.io/badge/Pipeline-%23876f69?logo=paddypower&logoColor=%23FFFFFF) ![license](https://img.shields.io/github/license/Ostwind23/MAA-for-Millennium-Tour) ![activity](https://img.shields.io/github/commit-activity/m/Ostwind23/MAA-for-Millennium-Tour?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/Ostwind23/MAA-for-Millennium-Tour?style=social)  
-  千年之旅 小助手。图像技术 + 模拟控制，解放侍主的大手！由 MaaFramework 强力驱动！
 
 - [MaaYYs](https://github.com/TanyaShue/MaaYYs) ![python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white) ![qt](https://img.shields.io/badge/Qt6-41CD52?logo=Qt&logoColor=white) ![license](https://img.shields.io/github/license/TanyaShue/MaaYYs) ![activity](https://img.shields.io/github/commit-activity/m/TanyaShue/MaaYYs?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/TanyaShue/MaaYYs?style=social) [![mirrorc](https://img.shields.io/badge/Mirror%E9%85%B1-%239af3f6?logo=countingworkspro&logoColor=4f46e5)](https://mirrorchyan.com/zh/projects)  
   阴阳师小助手。图像技术 + 模拟控制，当赛博屯屯鼠，自动日常，解放你的双手！由 MaaFramework 强力驱动！
