@@ -92,9 +92,6 @@ It offers low-code simplicity while maintaining high extensibility. The framewor
 - [MAA-for-Millennium-Tour](https://github.com/Ostwind23/MAA-for-Millennium-Tour) ![Pipeline](https://img.shields.io/badge/Pipeline-%23876f69?logo=paddypower&logoColor=%23FFFFFF) ![license](https://img.shields.io/github/license/Ostwind23/MAA-for-Millennium-Tour) ![activity](https://img.shields.io/github/commit-activity/m/Ostwind23/MAA-for-Millennium-Tour?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/Ostwind23/MAA-for-Millennium-Tour?style=social)  
   An assistant for Millennium Tour. Image technology + simulation control, freeing your hands! Powered by MaaFramework.
 
-- [MET](https://github.com/shanchuan001/MET) ![Pipeline](https://img.shields.io/badge/Pipeline-%23876f69?logo=paddypower&logoColor=%23FFFFFF) ![license](https://img.shields.io/github/license/shanchuan001/MET) ![activity](https://img.shields.io/github/commit-activity/m/shanchuan001/MET?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/shanchuan001/MET?style=social)  
-  An assistant for Eternal Tree. Image technology + simulation control, freeing your hands! Powered by MaaFramework.
-
 - [MaaYYs](https://github.com/TanyaShue/MaaYYs) ![python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white) ![qt](https://img.shields.io/badge/Qt6-41CD52?logo=Qt&logoColor=white) ![license](https://img.shields.io/github/license/TanyaShue/MaaYYs) ![activity](https://img.shields.io/github/commit-activity/m/TanyaShue/MaaYYs?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/TanyaShue/MaaYYs?style=social) [![mirrorc](https://img.shields.io/badge/MirrorChyan-%239af3f6?logo=countingworkspro&logoColor=4f46e5)](https://mirrorchyan.com/zh/projects)  
   A brand new Onmyoji assistant powered by advanced architecture. Combining image recognition and simulated control, it automates daily tasks and frees your hands like a cyber-helper! Powered by MaaFramework!
 
