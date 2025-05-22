@@ -123,6 +123,10 @@ _✨ 基于图像识别的自动化黑盒测试框架 ✨_
 - [MaaGumballs](https://github.com/KhazixW2/MaaGumballs) ![Pipeline](https://img.shields.io/badge/Pipeline-%23876f69?logo=paddypower&logoColor=%23FFFFFF) ![Python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white) ![license](https://img.shields.io/github/license/KhazixW2/MaaGumballs) ![activity](https://img.shields.io/github/commit-activity/m/KhazixW2/MaaGumballs?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/KhazixW2/MaaGumballs?style=social)  
   不思议迷宫小助手是一款由图像识别与模拟控制技术驱动的辅助工具。它能够帮助大家解放双手，一键开启敲砖大冒险，由 MaaFramework 强力支持。
 
+  
+- [MMleo](https://github.com/fictionalflaw/MMleo) ![Pipeline](https://img.shields.io/badge/Pipeline-%23876f69?logo=paddypower&logoColor=%23FFFFFF) ![Python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white) ![license](https://img.shields.io/github/license/fictionalflaw/MMleo) ![activity](https://img.shields.io/github/commit-activity/m/fictionalflaw/MMleo?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/fictionalflaw/MMleo?style=social)  
+  偶像梦幻祭2小助手。使用图像识别+模拟控制技术，解放双手！助力屯屯鼠的制作人生涯！由 MaaFramework 强力驱动！
+
 ## 生态共建
 
 MAA 正计划建设为一类项目，而非舟的单一软件。  
