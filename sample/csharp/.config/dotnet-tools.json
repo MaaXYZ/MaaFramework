@@ -1,0 +1,13 @@
+{
+  "version": 1,
+  "isRoot": true,
+  "tools": {
+    "dotnet-script": {
+      "version": "1.6.0",
+      "commands": [
+        "dotnet-script"
+      ],
+      "rollForward": false
+    }
+  }
+}
