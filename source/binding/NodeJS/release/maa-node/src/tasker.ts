@@ -6,14 +6,19 @@ import { ResourceBase } from './resource'
 type TaskDetail = ReturnType<TaskerBase['task_detail']>
 
 type RecoDetailEntry = {
-    box: maa.Rect
-    detail: string
+    box: maa.FlatRect
+    score?: number // TemplateMatch
+    count?: number // FeatureMatch | ColorMatch
+    text?: string // OCR
+    cls_index?: number // NeuralNetworkClassify | NeuralNetworkDetect
+    label?: string // NeuralNetworkClassify | NeuralNetworkDetect
+    detail?: string | Record<string, unknown> // Custom
 }
 
 export type RecoDetail = {
-    all_results: RecoDetailEntry[]
-    filtered_results_: RecoDetailEntry[]
-    best_result_: RecoDetailEntry | null
+    all: RecoDetailEntry[]
+    filtered: RecoDetailEntry[]
+    best: RecoDetailEntry | null
 }
 
 class TaskJob extends Job<maa.TaskId, JobSource<maa.TaskId>> {
