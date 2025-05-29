@@ -209,16 +209,23 @@ FeatureMatcher::ResultsVec FeatureMatcher::feature_postproc(
         size_t count = std::ranges::count_if(scene, [&box](const auto& point) { return box.contains(point); });
         results.emplace_back(Result { .box = box, .count = static_cast<int>(count) });
 
-        for (size_t i = 0; i < scene.size();) {
-            if (scene.at(i).inside(scene_box)) {
-                scene.erase(scene.begin() + i);
-                obj.erase(obj.begin() + i);
-                matches.erase(matches.begin() + i);
+        // remove inside points
+        size_t compact_idx = 0;
+        for (size_t i = 0; i < scene.size(); ++i) {
+            if (scene_box.contains(scene.at(i))) {
+                continue;
             }
-            else {
-                ++i;
+
+            if (i != compact_idx) {
+                std::swap(scene[compact_idx], scene[i]);
+                std::swap(obj[compact_idx], obj[i]);
+                std::swap(matches[compact_idx], matches[i]);
             }
+            ++compact_idx;
         }
+        scene.resize(compact_idx);
+        obj.resize(compact_idx);
+        matches.resize(compact_idx);
     }
 
     return results;
