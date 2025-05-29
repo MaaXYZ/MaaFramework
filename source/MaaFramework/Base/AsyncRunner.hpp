@@ -103,6 +103,10 @@ inline void AsyncRunner<Item>::working()
 
     while (!exit_) {
         std::unique_lock queue_lock(queue_mutex_);
+        if (exit_) {
+            running_ = false;
+            return;
+        }
 
         if (queue_.empty()) {
             running_ = false;
@@ -167,6 +171,10 @@ inline void AsyncRunner<Item>::wait(Id id) const
 
     while (!exit_) {
         std::unique_lock compl_lock(compl_mutex_);
+        if (exit_) {
+            return;
+        }
+
         if (id <= compl_id_) {
             return;
         }
@@ -182,7 +190,7 @@ inline void AsyncRunner<Item>::wait_all() const
 
     while (!exit_) {
         std::unique_lock compl_lock(compl_mutex_);
-        if (!running_) {
+        if (!running_ || exit_) {
             return;
         }
 
