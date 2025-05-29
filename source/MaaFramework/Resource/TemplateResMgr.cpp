@@ -54,6 +54,7 @@ std::shared_ptr<TemplateResMgr::Image> TemplateResMgr::load(const std::string& n
         return std::make_shared<Image>(std::move(image));
     }
 
+    LogError << "template not found" << VAR(name) << VAR(roots_);
     return nullptr;
 }
 

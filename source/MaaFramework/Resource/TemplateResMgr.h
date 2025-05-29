@@ -24,7 +24,7 @@ public:
 private:
     std::shared_ptr<Image> load(const std::string& name);
 
-    std::vector<std::filesystem::path> roots_;
+    std::vector<std::filesystem::path> roots_ = { "" }; // for filepath without prefix
 
     std::map<std::string, std::shared_ptr<Image>> images_;
 };
