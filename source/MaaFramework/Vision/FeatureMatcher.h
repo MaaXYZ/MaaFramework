@@ -28,12 +28,7 @@ class FeatureMatcher
     , public RecoResultAPI<FeatureMatcherResult>
 {
 public:
-    FeatureMatcher(
-        cv::Mat image,
-        cv::Rect roi,
-        FeatureMatcherParam param,
-        std::vector<std::shared_ptr<cv::Mat>> templates,
-        std::string name = "");
+    FeatureMatcher(cv::Mat image, cv::Rect roi, FeatureMatcherParam param, std::vector<cv::Mat> templates, std::string name = "");
 
 private:
     void analyze();
@@ -68,7 +63,7 @@ private:
 
 private:
     const FeatureMatcherParam param_;
-    const std::vector<std::shared_ptr<cv::Mat>> templates_;
+    const std::vector<cv::Mat> templates_;
 };
 
 MAA_VISION_NS_END

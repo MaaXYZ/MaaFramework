@@ -14,12 +14,7 @@ MAA_SUPPRESS_CV_WARNINGS_END
 
 MAA_VISION_NS_BEGIN
 
-FeatureMatcher::FeatureMatcher(
-    cv::Mat image,
-    cv::Rect roi,
-    FeatureMatcherParam param,
-    std::vector<std::shared_ptr<cv::Mat>> templates,
-    std::string name)
+FeatureMatcher::FeatureMatcher(cv::Mat image, cv::Rect roi, FeatureMatcherParam param, std::vector<cv::Mat> templates, std::string name)
     : VisionBase(std::move(image), std::move(roi), std::move(name))
     , param_(std::move(param))
     , templates_(std::move(templates))
@@ -36,12 +31,7 @@ void FeatureMatcher::analyze()
 
     auto start_time = std::chrono::steady_clock::now();
 
-    for (const auto& templ_ptr : templates_) {
-        if (!templ_ptr) {
-            continue;
-        }
-        const auto& templ = *templ_ptr;
-
+    for (const auto& templ : templates_) {
         auto [keypoints_1, descriptors_1] = detect(templ, create_mask(templ, param_.green_mask));
 
         auto results = feature_match(templ, keypoints_1, descriptors_1);

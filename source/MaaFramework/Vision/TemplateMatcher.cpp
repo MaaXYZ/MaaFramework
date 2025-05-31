@@ -7,12 +7,7 @@
 
 MAA_VISION_NS_BEGIN
 
-TemplateMatcher::TemplateMatcher(
-    cv::Mat image,
-    cv::Rect roi,
-    TemplateMatcherParam param,
-    std::vector<std::shared_ptr<cv::Mat>> templates,
-    std::string name)
+TemplateMatcher::TemplateMatcher(cv::Mat image, cv::Rect roi, TemplateMatcherParam param, std::vector<cv::Mat> templates, std::string name)
     : VisionBase(std::move(image), std::move(roi), std::move(name))
     , param_(std::move(param))
     , use_min_score_(param_.method == cv::TemplateMatchModes::TM_SQDIFF || param_.method == cv::TemplateMatchModes::TM_SQDIFF_NORMED)
@@ -37,12 +32,7 @@ void TemplateMatcher::analyze()
     auto start_time = std::chrono::steady_clock::now();
 
     for (size_t i = 0; i != templates_.size(); ++i) {
-        const auto& templ = templates_.at(i);
-        if (!templ) {
-            continue;
-        }
-
-        auto results = template_match(*templ);
+        auto results = template_match(templates_.at(i));
         add_results(std::move(results), param_.thresholds.at(i));
     }
 
