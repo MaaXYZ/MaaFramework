@@ -132,6 +132,9 @@ public:
 
     bool click(const cv::Rect& r);
     bool click(const cv::Point& p);
+
+    bool long_press(const cv::Rect& r, int duration);
+
     bool swipe(const cv::Rect& r1, const cv::Rect& r2, int duration);
     bool swipe(const cv::Point& p1, const cv::Point& p2, int duration);
 

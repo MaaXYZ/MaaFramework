@@ -88,6 +88,18 @@ bool Actuator::click(const MAA_RES_NS::Action::ClickParam& param, const cv::Rect
     return controller()->click(rect);
 }
 
+bool Actuator::long_press(const MAA_RES_NS::Action::LongPressParam& param, const cv::Rect& box)
+{
+    if (!controller()) {
+        LogError << "Controller is null";
+        return false;
+    }
+
+    cv::Rect rect = get_target_rect(param.target, box);
+
+    return controller()->long_press(rect, param.duration);
+}
+
 bool Actuator::swipe(const MAA_RES_NS::Action::SwipeParam& param, const cv::Rect& box)
 {
     if (!controller()) {
