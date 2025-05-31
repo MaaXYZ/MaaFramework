@@ -181,7 +181,7 @@ FeatureMatcher::ResultsVec FeatureMatcher::feature_postproc(
     };
 
     ResultsVec results;
-    while (matches.size() >= static_cast<size_t>(param_.count)) {
+    while (matches.size() >= 4) {
         cv::Mat homography = cv::findHomography(obj, scene, cv::RANSAC);
         if (homography.empty()) {
             break;
