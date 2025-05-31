@@ -155,7 +155,6 @@ FeatureMatcher::ResultsVec FeatureMatcher::feature_postproc(
 {
     std::vector<cv::Point2d> obj;
     std::vector<cv::Point2d> scene;
-    std::vector<cv::DMatch> matches;
 
     for (const auto& point : match_points) {
         if (point.size() != 2) {
@@ -166,11 +165,10 @@ FeatureMatcher::ResultsVec FeatureMatcher::feature_postproc(
         if (point[0].distance > threshold) {
             continue;
         }
-        matches.emplace_back(point[0]);
+        good_matches.emplace_back(point[0]);
         obj.emplace_back(keypoints_1[point[0].trainIdx].pt);
         scene.emplace_back(keypoints_2[point[0].queryIdx].pt);
     }
-    good_matches = matches;
     LogDebug << name_ << VAR(uid_) << "Match:" << VAR(good_matches.size()) << VAR(match_points.size()) << VAR(param_.distance_ratio);
 
     const std::array<cv::Point2d, 4> obj_corners = {
@@ -181,7 +179,7 @@ FeatureMatcher::ResultsVec FeatureMatcher::feature_postproc(
     };
 
     ResultsVec results;
-    while (matches.size() >= 4) {
+    while (scene.size() >= 4) {
         cv::Mat homography = cv::findHomography(obj, scene, cv::RANSAC);
         if (homography.empty()) {
             break;
@@ -210,13 +208,11 @@ FeatureMatcher::ResultsVec FeatureMatcher::feature_postproc(
             if (i != compact_idx) {
                 std::swap(scene[compact_idx], scene[i]);
                 std::swap(obj[compact_idx], obj[i]);
-                std::swap(matches[compact_idx], matches[i]);
             }
             ++compact_idx;
         }
         scene.resize(compact_idx);
         obj.resize(compact_idx);
-        matches.resize(compact_idx);
     }
 
     return results;
