@@ -65,8 +65,8 @@ bool PipelineResMgr::load_all_json(const std::filesystem::path& path, const Defa
 
         auto ext = path_to_utf8_string(entry_path.extension());
         tolowers_(ext);
-        if (ext != ".json") {
-            LogWarn << "entry is not *.json, skip" << VAR(entry_path) << VAR(ext);
+        if (ext != ".json" && ext != ".jsonc") {
+            LogWarn << "entry is not *.json or *.jsonc, skip" << VAR(entry_path) << VAR(ext);
             continue;
         }
 
@@ -187,7 +187,10 @@ std::vector<std::string> PipelineResMgr::get_node_list() const
     return std::vector(k.begin(), k.end());
 }
 
-bool PipelineResMgr::parse_and_override(const json::object& input, std::set<std::string>& existing_keys, const DefaultPipelineMgr& default_mgr)
+bool PipelineResMgr::parse_and_override(
+    const json::object& input,
+    std::set<std::string>& existing_keys,
+    const DefaultPipelineMgr& default_mgr)
 {
     for (const auto& [key, value] : input) {
         if (key.empty()) {
