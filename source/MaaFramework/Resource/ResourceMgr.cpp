@@ -174,6 +174,21 @@ bool ResourceMgr::clear()
     return true;
 }
 
+bool ResourceMgr::override_pipeline(const json::object& pipeline_override)
+{
+    LogFunc << VAR(pipeline_override);
+
+    std::set<std::string> existing_keys;
+    return pipeline_res_.parse_and_override(pipeline_override, existing_keys, default_pipeline_);
+}
+
+bool ResourceMgr::override_next(const std::string& node_name, const std::vector<std::string>& next)
+{
+    LogFunc << VAR(node_name) << VAR(next);
+    pipeline_res_.get_pipeline_data_map()[node_name].next = next;
+    return true;
+}
+
 void ResourceMgr::register_custom_recognition(const std::string& name, MaaCustomRecognitionCallback recognition, void* trans_arg)
 {
     LogDebug << VAR(name) << VAR_VOIDP(recognition) << VAR_VOIDP(trans_arg);
@@ -516,15 +531,37 @@ bool ResourceMgr::load(const std::filesystem::path& path)
     paths_.emplace_back(path);
 
     using namespace path_literals;
-    bool ret = default_pipeline_.load(path / "default_pipeline.json"_path);
-    ret &= pipeline_res_.load(path / "pipeline"_path, false, default_pipeline_);
-    ret &= ocr_res_.lazy_load(path / "model"_path / "ocr"_path, false);
-    ret &= onnx_res_.lazy_load(path / "model"_path, false);
-    ret &= template_res_.lazy_load(path / "image"_path, false);
 
-    LogInfo << VAR(path) << VAR(ret);
+    bool to_load = false;
+    bool ret = true;
+    if (auto p = path / "default_pipeline.json"_path; std::filesystem::exists(p)) {
+        to_load = true;
+        ret &= default_pipeline_.load(p);
+    }
+    if (auto p = path / "pipeline"_path; std::filesystem::exists(p)) {
+        to_load = true;
+        ret &= pipeline_res_.load(p, default_pipeline_);
+    }
+    if (auto p = path / "model"_path / "ocr"_path; std::filesystem::exists(p)) {
+        to_load = true;
+        ret &= ocr_res_.lazy_load(p);
+    }
+    if (auto p = path / "model"_path / "classify"_path; std::filesystem::exists(p)) {
+        to_load = true;
+        ret &= onnx_res_.lazy_load_classifier(p);
+    }
+    if (auto p = path / "model"_path / "detect"_path; std::filesystem::exists(p)) {
+        to_load = true;
+        ret &= onnx_res_.lazy_load_detector(p);
+    }
+    if (auto p = path / "image"_path; std::filesystem::exists(p)) {
+        to_load = true;
+        ret &= template_res_.lazy_load(p);
+    }
 
-    return ret;
+    LogInfo << VAR(path) << VAR(ret) << VAR(to_load);
+
+    return to_load && ret;
 }
 
 bool ResourceMgr::check_stop()

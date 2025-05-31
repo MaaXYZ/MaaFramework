@@ -32,9 +32,11 @@ std::vector<AdbDevice> AdbDeviceFinder::find() const
             device.name = e.name;
             device.adb_path = adb_path;
             device.serial = ser;
-            device.screencap_methods = get_screencap_methods(device.adb_path, device.serial);
-            device.input_methods = get_input_methods(device.adb_path, device.serial);
-            device.config = get_adb_config(e, device.serial);
+            device.screencap_methods = MaaAdbScreencapMethod_Default;
+            device.input_methods = MaaAdbInputMethod_Default;
+            device.config = {};
+
+            request_device_config(e, device);
 
             result.emplace_back(std::move(device));
         }
@@ -64,9 +66,11 @@ std::vector<AdbDevice> AdbDeviceFinder::find_specified(const std::filesystem::pa
         device.name = path_to_utf8_string(adb_path);
         device.adb_path = adb_path;
         device.serial = ser;
-        device.screencap_methods = get_screencap_methods(device.adb_path, device.serial);
-        device.input_methods = get_input_methods(device.adb_path, device.serial);
+        device.screencap_methods = MaaAdbScreencapMethod_Default;
+        device.input_methods = MaaAdbInputMethod_Default;
         device.config = {};
+
+        request_device_config({}, device);
 
         result.emplace_back(std::move(device));
     }
@@ -90,14 +94,6 @@ std::vector<std::string> AdbDeviceFinder::find_adb_serials(const std::filesystem
     serials = check_available_adb_serials(adb_path, serials);
 
     return serials;
-}
-
-json::object AdbDeviceFinder::get_adb_config(const Emulator& emulator, const std::string& adb_serial) const
-{
-    std::ignore = emulator;
-    std::ignore = adb_serial;
-
-    return {};
 }
 
 void AdbDeviceFinder::set_emulator_const_data(std::unordered_map<std::string, EmulatorConstantData> data)
@@ -220,20 +216,63 @@ std::vector<std::string>
     return available;
 }
 
-MaaAdbScreencapMethod AdbDeviceFinder::get_screencap_methods(const std::filesystem::path& adb_path, const std::string& serial) const
+bool request_waydroid_config(std::shared_ptr<MAA_CTRL_UNIT_NS::AdbControlUnitAPI> control_unit, AdbDevice& device)
 {
-    std::ignore = adb_path;
-    std::ignore = serial;
+    if (!control_unit) {
+        return false;
+    }
 
-    return MaaAdbScreencapMethod_Default;
+    std::string output;
+    bool ret = control_unit->shell("getprop | grep ro.product.brand", output);
+    if (!ret) {
+        return false;
+    }
+    if (output.find("waydroid") == std::string::npos) {
+        return false;
+    }
+
+    auto& command = device.config["command"];
+
+    command["StartApp"] = json::array {
+        "{ADB}", "-s", "{ADB_SERIAL}", "shell", "monkey -p {INTENT} --pct-syskeys 0 1",
+    };
+    command["StartActivity"] = json::array {
+        "{ADB}", "-s", "{ADB_SERIAL}", "shell", "am start -n {INTENT} --windowingMode 4",
+    };
+
+    LogInfo << "waydroid" << VAR(device.adb_path) << VAR(device.serial) << VAR(device.config);
+    return true;
 }
 
-MaaAdbInputMethod AdbDeviceFinder::get_input_methods(const std::filesystem::path& adb_path, const std::string& serial) const
+void AdbDeviceFinder::request_device_config(const Emulator& emulator, AdbDevice& device) const
 {
-    std::ignore = adb_path;
-    std::ignore = serial;
+    std::ignore = emulator;
 
-    return MaaAdbInputMethod_Default;
+    LogFunc << VAR(device.adb_path) << VAR(device.serial);
+
+    std::string str_adb = path_to_utf8_string(device.adb_path);
+    std::string str_serial = device.serial;
+
+    auto control_unit = AdbControlUnitLibraryHolder::create_control_unit(
+        str_adb.c_str(),
+        str_serial.c_str(),
+        MaaAdbScreencapMethod_None,
+        MaaAdbInputMethod_None,
+        "{}",
+        "");
+
+    if (!control_unit) {
+        LogError << "Failed to create control unit";
+        return;
+    }
+    if (!control_unit->connect()) {
+        LogError << "Failed to connect";
+        return;
+    }
+
+    if (request_waydroid_config(control_unit, device)) {
+        return;
+    }
 }
 
 MAA_TOOLKIT_NS_END

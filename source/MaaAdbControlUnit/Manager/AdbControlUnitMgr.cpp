@@ -1,4 +1,4 @@
-#include "ControlUnitMgr.h"
+#include "AdbControlUnitMgr.h"
 
 #include <meojson/json.hpp>
 
@@ -10,7 +10,7 @@
 
 MAA_CTRL_UNIT_NS_BEGIN
 
-ControlUnitMgr::ControlUnitMgr(
+AdbControlUnitMgr::AdbControlUnitMgr(
     std::filesystem::path adb_path,
     std::string adb_serial,
     MaaAdbScreencapMethod screencap_methods,
@@ -30,26 +30,16 @@ ControlUnitMgr::ControlUnitMgr(
     connection_.parse(config_);
     device_info_.parse(config_);
     activity_.parse(config_);
+    adb_command_.parse(config_);
 
     device_list_.set_replacement(unit_replacement_);
     connection_.set_replacement(unit_replacement_);
     device_info_.set_replacement(unit_replacement_);
     activity_.set_replacement(unit_replacement_);
+    adb_command_.set_replacement(unit_replacement_);
 }
 
-bool ControlUnitMgr::find_device(std::vector<std::string>& devices)
-{
-    auto opt = device_list_.request_devices();
-    if (!opt) {
-        LogError << "failed to find_device";
-        return false;
-    }
-
-    devices = std::move(opt).value();
-    return true;
-}
-
-bool ControlUnitMgr::connect()
+bool AdbControlUnitMgr::connect()
 {
     if (!connection_.connect()) {
         LogError << "failed to connect" << VAR(adb_path_) << VAR(adb_serial_);
@@ -91,18 +81,18 @@ bool ControlUnitMgr::connect()
     return true;
 }
 
-bool ControlUnitMgr::request_uuid(std::string& uuid)
+bool AdbControlUnitMgr::request_uuid(std::string& uuid)
 {
     auto opt = device_info_.request_uuid();
     if (!opt) {
-        LogError << "failed to request_uuid";
+        LogError << "failed to get_uuid";
         return false;
     }
     uuid = std::move(opt).value();
     return true;
 }
 
-bool ControlUnitMgr::start_app(const std::string& intent)
+bool AdbControlUnitMgr::start_app(const std::string& intent)
 {
     bool ret = activity_.start_app(intent);
     if (ret) {
@@ -111,7 +101,7 @@ bool ControlUnitMgr::start_app(const std::string& intent)
     return ret;
 }
 
-bool ControlUnitMgr::stop_app(const std::string& intent)
+bool AdbControlUnitMgr::stop_app(const std::string& intent)
 {
     bool ret = activity_.stop_app(intent);
     if (ret) {
@@ -120,7 +110,7 @@ bool ControlUnitMgr::stop_app(const std::string& intent)
     return ret;
 }
 
-bool ControlUnitMgr::screencap(cv::Mat& image)
+bool AdbControlUnitMgr::screencap(cv::Mat& image)
 {
     constexpr int kMaxReconnectTimes = 3;
     constexpr int kMaxRescreencapTimes = 10;
@@ -147,7 +137,7 @@ bool ControlUnitMgr::screencap(cv::Mat& image)
     return false;
 }
 
-bool ControlUnitMgr::click(int x, int y)
+bool AdbControlUnitMgr::click(int x, int y)
 {
     if (!input_) {
         LogError << "input_ is null";
@@ -157,7 +147,7 @@ bool ControlUnitMgr::click(int x, int y)
     return input_->click(x, y);
 }
 
-bool ControlUnitMgr::swipe(int x1, int y1, int x2, int y2, int duration)
+bool AdbControlUnitMgr::swipe(int x1, int y1, int x2, int y2, int duration)
 {
     if (!input_) {
         LogError << "input_ is null";
@@ -167,7 +157,7 @@ bool ControlUnitMgr::swipe(int x1, int y1, int x2, int y2, int duration)
     return input_->swipe(x1, y1, x2, y2, duration);
 }
 
-bool ControlUnitMgr::multi_swipe(const std::vector<SwipeParam>& swipes)
+bool AdbControlUnitMgr::multi_swipe(const std::vector<SwipeParam>& swipes)
 {
     if (!input_) {
         LogError << "input_ is null";
@@ -177,7 +167,7 @@ bool ControlUnitMgr::multi_swipe(const std::vector<SwipeParam>& swipes)
     return input_->multi_swipe(swipes);
 }
 
-bool ControlUnitMgr::touch_down(int contact, int x, int y, int pressure)
+bool AdbControlUnitMgr::touch_down(int contact, int x, int y, int pressure)
 {
     if (!input_) {
         LogError << "input_ is null";
@@ -187,7 +177,7 @@ bool ControlUnitMgr::touch_down(int contact, int x, int y, int pressure)
     return input_->touch_down(contact, x, y, pressure);
 }
 
-bool ControlUnitMgr::touch_move(int contact, int x, int y, int pressure)
+bool AdbControlUnitMgr::touch_move(int contact, int x, int y, int pressure)
 {
     if (!input_) {
         LogError << "input_ is null";
@@ -197,7 +187,7 @@ bool ControlUnitMgr::touch_move(int contact, int x, int y, int pressure)
     return input_->touch_move(contact, x, y, pressure);
 }
 
-bool ControlUnitMgr::touch_up(int contact)
+bool AdbControlUnitMgr::touch_up(int contact)
 {
     if (!input_) {
         LogError << "input_ is null";
@@ -207,7 +197,7 @@ bool ControlUnitMgr::touch_up(int contact)
     return input_->touch_up(contact);
 }
 
-bool ControlUnitMgr::press_key(int key)
+bool AdbControlUnitMgr::press_key(int key)
 {
     if (!input_) {
         LogError << "input_ is null";
@@ -217,7 +207,7 @@ bool ControlUnitMgr::press_key(int key)
     return input_->press_key(key);
 }
 
-bool ControlUnitMgr::input_text(const std::string& text)
+bool AdbControlUnitMgr::input_text(const std::string& text)
 {
     if (!input_) {
         LogError << "input_ is null";
@@ -227,7 +217,32 @@ bool ControlUnitMgr::input_text(const std::string& text)
     return input_->input_text(text);
 }
 
-bool ControlUnitMgr::_screencap(cv::Mat& image)
+bool AdbControlUnitMgr::find_device(std::vector<std::string>& devices)
+{
+    auto opt = device_list_.request_devices();
+    if (!opt) {
+        LogError << "failed to find_device";
+        return false;
+    }
+
+    devices = std::move(opt).value();
+    return true;
+}
+
+bool AdbControlUnitMgr::shell(const std::string& cmd, std::string& output)
+{
+    auto opt = adb_command_.shell(cmd);
+    if (!opt) {
+        LogError << "failed to adb shell" << VAR(cmd);
+        return false;
+    }
+
+    output = std::move(opt).value();
+    return true;
+}
+
+
+bool AdbControlUnitMgr::_screencap(cv::Mat& image)
 {
     if (!screencap_) {
         LogError << "screencap_ is null";
@@ -262,7 +277,7 @@ bool ControlUnitMgr::_screencap(cv::Mat& image)
     return true;
 }
 
-void ControlUnitMgr::on_image_resolution_changed(const std::pair<int, int>& pre, const std::pair<int, int>& cur)
+void AdbControlUnitMgr::on_image_resolution_changed(const std::pair<int, int>& pre, const std::pair<int, int>& cur)
 {
     LogFunc;
 
@@ -274,7 +289,7 @@ void ControlUnitMgr::on_image_resolution_changed(const std::pair<int, int>& pre,
     });
 }
 
-void ControlUnitMgr::on_app_started(const std::string& intent)
+void AdbControlUnitMgr::on_app_started(const std::string& intent)
 {
     LogFunc;
 
@@ -286,7 +301,7 @@ void ControlUnitMgr::on_app_started(const std::string& intent)
     });
 }
 
-void ControlUnitMgr::on_app_stopped(const std::string& intent)
+void AdbControlUnitMgr::on_app_stopped(const std::string& intent)
 {
     LogFunc;
 

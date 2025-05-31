@@ -1,4 +1,4 @@
-#include "ControlUnitMgr.h"
+#include "Win32ControlUnitMgr.h"
 
 #include "MaaFramework/MaaMsg.h"
 #include "Manager/InputAgent.h"
@@ -8,22 +8,14 @@
 
 MAA_CTRL_UNIT_NS_BEGIN
 
-ControlUnitMgr::ControlUnitMgr(HWND hWnd, MaaWin32ScreencapMethod screencap_method, MaaWin32InputMethod input_method)
+Win32ControlUnitMgr::Win32ControlUnitMgr(HWND hWnd, MaaWin32ScreencapMethod screencap_method, MaaWin32InputMethod input_method)
     : hwnd_(hWnd)
     , screencap_method_(screencap_method)
     , input_method_(input_method)
 {
 }
 
-bool ControlUnitMgr::find_device(std::vector<std::string>& devices)
-{
-    std::ignore = devices;
-
-    // TODO
-    return true;
-}
-
-bool ControlUnitMgr::connect()
+bool Win32ControlUnitMgr::connect()
 {
     if (hwnd_) {
         if (!IsWindow(hwnd_)) {
@@ -57,7 +49,7 @@ bool ControlUnitMgr::connect()
     return true;
 }
 
-bool ControlUnitMgr::request_uuid(std::string& uuid)
+bool Win32ControlUnitMgr::request_uuid(std::string& uuid)
 {
     if (!hwnd_) {
         LogWarn << "hwnd_ is nullptr";
@@ -70,7 +62,7 @@ bool ControlUnitMgr::request_uuid(std::string& uuid)
     return true;
 }
 
-bool ControlUnitMgr::start_app(const std::string& intent)
+bool Win32ControlUnitMgr::start_app(const std::string& intent)
 {
     // TODO
     std::ignore = intent;
@@ -78,7 +70,7 @@ bool ControlUnitMgr::start_app(const std::string& intent)
     return false;
 }
 
-bool ControlUnitMgr::stop_app(const std::string& intent)
+bool Win32ControlUnitMgr::stop_app(const std::string& intent)
 {
     // TODO
     std::ignore = intent;
@@ -86,7 +78,7 @@ bool ControlUnitMgr::stop_app(const std::string& intent)
     return false;
 }
 
-bool ControlUnitMgr::screencap(cv::Mat& image)
+bool Win32ControlUnitMgr::screencap(cv::Mat& image)
 {
     if (!screencap_) {
         LogError << "screencap_ is null";
@@ -104,7 +96,7 @@ bool ControlUnitMgr::screencap(cv::Mat& image)
     return true;
 }
 
-bool ControlUnitMgr::click(int x, int y)
+bool Win32ControlUnitMgr::click(int x, int y)
 {
     if (!input_) {
         LogError << "input_ is null";
@@ -114,7 +106,7 @@ bool ControlUnitMgr::click(int x, int y)
     return input_->click(x, y);
 }
 
-bool ControlUnitMgr::swipe(int x1, int y1, int x2, int y2, int duration)
+bool Win32ControlUnitMgr::swipe(int x1, int y1, int x2, int y2, int duration)
 {
     if (!input_) {
         LogError << "input_ is null";
@@ -124,7 +116,7 @@ bool ControlUnitMgr::swipe(int x1, int y1, int x2, int y2, int duration)
     return input_->swipe(x1, y1, x2, y2, duration);
 }
 
-bool ControlUnitMgr::multi_swipe(const std::vector<SwipeParam>& swipes)
+bool Win32ControlUnitMgr::multi_swipe(const std::vector<SwipeParam>& swipes)
 {
     std::ignore = swipes;
 
@@ -133,7 +125,7 @@ bool ControlUnitMgr::multi_swipe(const std::vector<SwipeParam>& swipes)
     return false;
 }
 
-bool ControlUnitMgr::touch_down(int contact, int x, int y, int pressure)
+bool Win32ControlUnitMgr::touch_down(int contact, int x, int y, int pressure)
 {
     if (!input_) {
         LogError << "input_ is null";
@@ -143,7 +135,7 @@ bool ControlUnitMgr::touch_down(int contact, int x, int y, int pressure)
     return input_->touch_down(contact, x, y, pressure);
 }
 
-bool ControlUnitMgr::touch_move(int contact, int x, int y, int pressure)
+bool Win32ControlUnitMgr::touch_move(int contact, int x, int y, int pressure)
 {
     if (!input_) {
         LogError << "input_ is null";
@@ -153,7 +145,7 @@ bool ControlUnitMgr::touch_move(int contact, int x, int y, int pressure)
     return input_->touch_move(contact, x, y, pressure);
 }
 
-bool ControlUnitMgr::touch_up(int contact)
+bool Win32ControlUnitMgr::touch_up(int contact)
 {
     if (!input_) {
         LogError << "input_ is null";
@@ -163,7 +155,7 @@ bool ControlUnitMgr::touch_up(int contact)
     return input_->touch_up(contact);
 }
 
-bool ControlUnitMgr::press_key(int key)
+bool Win32ControlUnitMgr::press_key(int key)
 {
     if (!input_) {
         LogError << "input_ is null";
@@ -173,7 +165,7 @@ bool ControlUnitMgr::press_key(int key)
     return input_->press_key(key);
 }
 
-bool ControlUnitMgr::input_text(const std::string& text)
+bool Win32ControlUnitMgr::input_text(const std::string& text)
 {
     if (!input_) {
         LogError << "input_ is null";

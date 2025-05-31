@@ -181,6 +181,7 @@ def api_test():
     print(f"stopping2: {stopping}")
 
     tasker.resource.post_bundle("C:/_maafw_testing_/aaabbbccc")
+    print(f"node_list: {tasker.resource.node_list}")
     tasker.clear_cache()
     inited = tasker.inited
     running = tasker.running

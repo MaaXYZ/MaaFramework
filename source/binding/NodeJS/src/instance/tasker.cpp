@@ -1,17 +1,10 @@
-module;
+#include "../include/forward.h"
 
+#include "../include/cb.h"
+#include "../include/info.h"
 #include "../include/macro.h"
-
-export module maa.nodejs.instance.tasker;
-
-import maa.core;
-import napi;
-import stdmock;
-
-import maa.nodejs.cb;
-import maa.nodejs.info;
-import maa.nodejs.utils;
-import maa.nodejs.wrapper;
+#include "../include/utils.h"
+#include "../include/wrapper.h"
 
 std::optional<Napi::External<TaskerInfo>> tasker_create(Napi::Env env, ExtContextInfo* context, std::optional<Napi::Function> callback)
 {
@@ -120,6 +113,11 @@ MaaTaskId tasker_post_stop(Napi::External<TaskerInfo> info)
     return MaaTaskerPostStop(info.Data()->handle);
 }
 
+bool tasker_stopping(Napi::External<TaskerInfo> info)
+{
+    return MaaTaskerStopping(info.Data()->handle);
+}
+
 // TODO: 考虑下要不要下面两个也做成全局记录的, 而非基于ref的
 std::optional<Napi::External<ResourceInfo>> tasker_get_resource(Napi::External<TaskerInfo> info)
 {
@@ -169,7 +167,7 @@ std::optional<std::tuple<std::string, std::string, bool, MaaRect, std::string, N
 std::optional<std::tuple<std::string, MaaRecoId, bool>> tasker_get_node_detail(Napi::External<TaskerInfo> info, MaaNodeId id)
 {
     StringBuffer name;
-    MaaRecoId reco_id = _MaaInvalidId;
+    MaaRecoId reco_id = MaaInvalidId;
     MaaBool completed = false;
     if (MaaTaskerGetNodeDetail(info.Data()->handle, id, name, &reco_id, &completed)) {
         return std::make_tuple(name.str(), reco_id, completed);
@@ -199,7 +197,7 @@ std::optional<std::tuple<std::string, std::vector<MaaNodeId>, MaaStatus>>
 
 std::optional<MaaNodeId> tasker_get_latest_node(Napi::External<TaskerInfo> info, std::string name)
 {
-    MaaNodeId latest_id = _MaaInvalidId;
+    MaaNodeId latest_id = MaaInvalidId;
     if (MaaTaskerGetLatestNode(info.Data()->handle, name.c_str(), &latest_id)) {
         return latest_id;
     }
@@ -208,7 +206,7 @@ std::optional<MaaNodeId> tasker_get_latest_node(Napi::External<TaskerInfo> info,
     }
 }
 
-export void load_instance_tasker(Napi::Env env, Napi::Object& exports, Napi::External<ExtContextInfo> context)
+void load_instance_tasker(Napi::Env env, Napi::Object& exports, Napi::External<ExtContextInfo> context)
 {
     BIND(tasker_create);
     BIND(tasker_destroy);
@@ -220,6 +218,7 @@ export void load_instance_tasker(Napi::Env env, Napi::Object& exports, Napi::Ext
     BIND(tasker_wait);
     BIND(tasker_running);
     BIND(tasker_post_stop);
+    BIND(tasker_stopping);
     BIND(tasker_get_resource);
     BIND(tasker_get_controller);
     BIND(tasker_clear_cache);

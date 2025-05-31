@@ -29,7 +29,7 @@ public:
     void use_directml(int device_id);
     void use_coreml(uint32_t coreml_flag);
 
-    bool lazy_load(const std::filesystem::path& path, bool is_base);
+    bool lazy_load(const std::filesystem::path& path);
     void clear();
 
 public:
@@ -38,6 +38,10 @@ public:
     std::shared_ptr<fastdeploy::pipeline::PPOCRv3> ocrer(const std::string& name);
 
 private:
+    inline static const std::filesystem::path kDetModelFilename = "det.onnx";
+    inline static const std::filesystem::path kRecModelFilename = "rec.onnx";
+    inline static const std::filesystem::path kKeysFilename = "keys.txt";
+
     std::shared_ptr<fastdeploy::vision::ocr::DBDetector> load_deter(const std::string& name);
     std::shared_ptr<fastdeploy::vision::ocr::Recognizer> load_recer(const std::string& name);
     std::shared_ptr<fastdeploy::pipeline::PPOCRv3> load_ocrer(const std::string& name);

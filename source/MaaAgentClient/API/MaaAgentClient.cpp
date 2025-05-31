@@ -7,9 +7,16 @@
 
 MaaAgentClient* MaaAgentClientCreate()
 {
-    LogFunc;
+    LogError << "Deprecated API, use MaaAgentClientCreateV2 instead";
 
     return new MAA_AGENT_CLIENT_NS::AgentClient;
+}
+
+MaaAgentClient* MaaAgentClientCreateV2(const MaaStringBuffer* identifier)
+{
+    LogFunc << VAR(identifier);
+
+    return new MAA_AGENT_CLIENT_NS::AgentClient(identifier ? identifier->get() : "");
 }
 
 void MaaAgentClientDestroy(MaaAgentClient* client)
@@ -22,6 +29,19 @@ void MaaAgentClientDestroy(MaaAgentClient* client)
     }
 
     delete client;
+}
+
+MaaBool MaaAgentClientIdentifier(MaaAgentClient* client, MaaStringBuffer* identifier)
+{
+    LogFunc << VAR_VOIDP(client) << VAR_VOIDP(identifier);
+
+    if (!client || !identifier) {
+        LogError << "handle is null";
+        return false;
+    }
+
+    identifier->set(client->identifier());
+    return true;
 }
 
 MaaBool MaaAgentClientBindResource(MaaAgentClient* client, MaaResource* res)
@@ -38,6 +58,8 @@ MaaBool MaaAgentClientBindResource(MaaAgentClient* client, MaaResource* res)
 
 MaaBool MaaAgentClientCreateSocket(MaaAgentClient* client, MaaStringBuffer* identifier)
 {
+    LogError << "Deprecated API, use MaaAgentClientCreateV2 instead";
+
     LogFunc << VAR_VOIDP(client) << VAR_VOIDP(identifier);
 
     if (!client || !identifier) {
@@ -74,4 +96,14 @@ MaaBool MaaAgentClientDisconnect(MaaAgentClient* client)
     }
 
     return client->disconnect();
+}
+
+MaaBool MaaAgentClientConnected(MaaAgentClient* client)
+{
+    if (!client) {
+        LogError << "handle is null";
+        return false;
+    }
+
+    return client->connected();
 }

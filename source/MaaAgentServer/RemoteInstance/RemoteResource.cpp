@@ -95,6 +95,33 @@ bool RemoteResource::clear()
     return resp_opt->ret;
 }
 
+bool RemoteResource::override_pipeline(const json::object& pipeline_override)
+{
+    ResourceOverridePipelineReverseRequest req {
+        .resource_id = resource_id_,
+        .pipeline_override = pipeline_override,
+    };
+    auto resp_opt = server_.send_and_recv<ResourceOverridePipelineReverseResponse>(req);
+    if (!resp_opt) {
+        return false;
+    }
+    return resp_opt->ret;
+}
+
+bool RemoteResource::override_next(const std::string& node_name, const std::vector<std::string>& next)
+{
+    ResourceOverrideNextReverseRequest req {
+        .resource_id = resource_id_,
+        .node_name = node_name,
+        .next = next,
+    };
+    auto resp_opt = server_.send_and_recv<ResourceOverrideNextReverseResponse>(req);
+    if (!resp_opt) {
+        return false;
+    }
+    return resp_opt->ret;
+}
+
 void RemoteResource::register_custom_recognition(const std::string& name, MaaCustomRecognitionCallback recognition, void* trans_arg)
 {
     LogError << "Can NOT register custom recognition at remote resource" << VAR(name) << VAR_VOIDP(recognition) << VAR_VOIDP(trans_arg);

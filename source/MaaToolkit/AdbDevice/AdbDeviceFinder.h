@@ -40,7 +40,7 @@ public:
 
 protected:
     virtual std::vector<std::string> find_adb_serials(const std::filesystem::path& adb_path, const Emulator& emulator) const;
-    virtual json::object get_adb_config(const Emulator& emulator, const std::string& adb_serial) const;
+    virtual void request_device_config(const Emulator& emulator, AdbDevice& device) const;
 
 protected:
     void set_emulator_const_data(std::unordered_map<std::string, EmulatorConstantData> data);
@@ -52,8 +52,6 @@ protected:
     bool request_adb_connect(const std::filesystem::path& adb_path, const std::string& serial) const;
     std::vector<std::string>
         check_available_adb_serials(const std::filesystem::path& adb_path, const std::vector<std::string>& serials) const;
-    MaaAdbScreencapMethod get_screencap_methods(const std::filesystem::path& adb_path, const std::string& serial) const;
-    MaaAdbInputMethod get_input_methods(const std::filesystem::path& adb_path, const std::string& serial) const;
 
 private:
     std::optional<std::vector<AdbDevice>> devices_;

@@ -1,18 +1,12 @@
-module;
+#include "../include/forward.h"
 
+#include <MaaToolkit/MaaToolkitAPI.h>
+
+#include "../include/cb.h"
+#include "../include/info.h"
 #include "../include/macro.h"
-
-export module maa.nodejs.toolkit.pi;
-
-import maa.core;
-import maa.toolkit;
-import napi;
-import stdmock;
-
-import maa.nodejs.cb;
-import maa.nodejs.info;
-import maa.nodejs.utils;
-import maa.nodejs.wrapper;
+#include "../include/utils.h"
+#include "../include/wrapper.h"
 
 void pi_register_custom_recognizer(Napi::Env env, ExtContextInfo* context, uint64_t id, std::string name, Napi::Function callback)
 {
@@ -57,7 +51,7 @@ Napi::Promise pi_run_cli(
     return worker->Promise();
 }
 
-export void load_toolkit_pi(Napi::Env env, Napi::Object& exports, Napi::External<ExtContextInfo> context)
+void load_toolkit_pi(Napi::Env env, Napi::Object& exports, Napi::External<ExtContextInfo> context)
 {
     BIND(pi_register_custom_recognizer);
     BIND(pi_register_custom_action);

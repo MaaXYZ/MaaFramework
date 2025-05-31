@@ -6,12 +6,6 @@
 
 MAA_CTRL_UNIT_NS_BEGIN
 
-bool CarouselImage::find_device(std::vector<std::string>& devices)
-{
-    std::ignore = devices;
-    return true;
-}
-
 bool CarouselImage::connect()
 {
     LogInfo << VAR(path_);

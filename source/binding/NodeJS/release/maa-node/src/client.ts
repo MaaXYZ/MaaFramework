@@ -4,8 +4,8 @@ import { Resource } from './resource'
 export class AgentClient {
     handle: maa.AgentClientHandle
 
-    constructor() {
-        const h = maa.agent_client_create()
+    constructor(identifier?: string) {
+        const h = maa.agent_client_create(identifier ?? null)
         if (!h) {
             throw 'AgentClient create failed'
         }
@@ -16,18 +16,14 @@ export class AgentClient {
         maa.agent_client_destroy(this.handle)
     }
 
+    get identifier() {
+        return maa.agent_client_identifier(this.handle)
+    }
+
     bind_resource(resource: Resource) {
         if (!maa.agent_client_bind_resource(this.handle, resource.handle)) {
             throw 'AgentClient bind resource failed'
         }
-    }
-
-    create_socket(identifier: string | null) {
-        const rid = maa.agent_client_create_socket(this.handle, identifier)
-        if (rid === null) {
-            throw 'AgentClient create socket failed'
-        }
-        return rid
     }
 
     async connect() {
@@ -40,5 +36,9 @@ export class AgentClient {
         if (!maa.agent_client_disconnect(this.handle)) {
             throw 'AgentClient disconnect failed'
         }
+    }
+
+    get connected() {
+        return maa.agent_client_connected(this.handle)
     }
 }

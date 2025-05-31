@@ -13,13 +13,7 @@ bool DefaultPipelineMgr::load(const std::filesystem::path& path)
 {
     LogFunc << VAR(path);
 
-    if (!std::filesystem::exists(path)) {
-        // allow empty default
-        LogDebug << "path not exists" << VAR(path);
-        return true;
-    }
-
-    auto json_opt = json::open(path);
+    auto json_opt = json::open(path, true, true);
     if (!json_opt) {
         LogError << "json::open failed" << VAR(path);
         return false;
@@ -47,7 +41,7 @@ bool DefaultPipelineMgr::parse_pipeline(const json::value& input)
         return true;
     }
 
-    return PipelineResMgr::parse_task(std::string(), *opt, pipeline_param_, {}, {});
+    return PipelineResMgr::parse_node(std::string(), *opt, pipeline_param_, {}, {});
 }
 
 bool DefaultPipelineMgr::parse_recognition(const json::value& input)

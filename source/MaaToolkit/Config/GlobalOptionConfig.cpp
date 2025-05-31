@@ -45,7 +45,7 @@ bool GlobalOptionConfig::load()
 {
     LogFunc << VAR(config_path_);
 
-    auto json_opt = json::open(config_path_);
+    auto json_opt = json::open(config_path_, true, true);
     if (!json_opt) {
         LogError << "Failed to open json file" << config_path_;
         return false;

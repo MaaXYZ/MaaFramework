@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.28)
+
 project(MaaFw)
 
-set(CMAKE_CXX_SCAN_FOR_MODULES OFF)
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake/modules")
 
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
@@ -23,7 +23,7 @@ option(BUILD_PIPELINE_TESTING "build pipeline testing" OFF)
 option(BUILD_DLOPEN_TESTING "build dlopen testing" OFF)
 
 option(ENABLE_CCACHE "enable ccache if possible" ON)
-option(ENABLE_CPP20_MODULES "enable C++20 modules" ON)
+# option(ENABLE_CPP20_MODULES "enable C++20 modules" ON)
 
 set(MAA_PUBLIC_INC ${CMAKE_SOURCE_DIR}/include)
 set(MAA_PRIVATE_INC ${CMAKE_SOURCE_DIR}/source/include)
@@ -128,6 +128,3 @@ if(EXISTS ${CMAKE_CURRENT_LIST_DIR}/export_targets.cmake)
     #
     # cmake-format: on
 endif()
-
-# using subdirectory at the end of file to make sure the script is called after everything is installed.
-add_subdirectory(cmake/post_install)

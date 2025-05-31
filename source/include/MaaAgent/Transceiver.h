@@ -62,6 +62,9 @@ protected:
     bool handle_image_header(const json::value& j);
 
     void init_socket(const std::string& identifier, bool bind);
+    void uninit_socket();
+    bool connected();
+
     bool send(const json::value& j);
     std::optional<json::value> recv();
 
@@ -78,6 +81,7 @@ protected:
 
 private:
     inline static int64_t s_req_id_ = 0;
+    bool is_bound_ = false;
 };
 
 MAA_AGENT_NS_END

@@ -7,14 +7,10 @@
 
 MAA_VISION_NS_BEGIN
 
-TemplateMatcher::TemplateMatcher(
-    cv::Mat image,
-    cv::Rect roi,
-    TemplateMatcherParam param,
-    std::vector<std::shared_ptr<cv::Mat>> templates,
-    std::string name)
+TemplateMatcher::TemplateMatcher(cv::Mat image, cv::Rect roi, TemplateMatcherParam param, std::vector<cv::Mat> templates, std::string name)
     : VisionBase(std::move(image), std::move(roi), std::move(name))
     , param_(std::move(param))
+    , use_min_score_(param_.method == cv::TemplateMatchModes::TM_SQDIFF || param_.method == cv::TemplateMatchModes::TM_SQDIFF_NORMED)
     , templates_(std::move(templates))
 {
     analyze();
@@ -22,34 +18,25 @@ TemplateMatcher::TemplateMatcher(
 
 void TemplateMatcher::analyze()
 {
-    if (templates_.empty()) {
-        LogError << name_ << VAR(uid_) << "templates is empty" << VAR(param_.template_paths);
-        return;
-    }
-
-    if (templates_.size() != param_.thresholds.size()) {
-        LogError << name_ << VAR(uid_) << "templates.size() != thresholds.size()" << VAR(templates_.size())
-                 << VAR(param_.thresholds.size());
+    if (templates_.empty() || param_.thresholds.empty()) {
+        LogError << name_ << VAR(uid_) << "templates or threshold is empty" << VAR(param_.template_paths) << VAR(param_.thresholds);
         return;
     }
 
     auto start_time = std::chrono::steady_clock::now();
 
     for (size_t i = 0; i != templates_.size(); ++i) {
-        const auto& templ = templates_.at(i);
-        if (!templ) {
-            continue;
-        }
-
-        auto results = template_match(*templ);
-        add_results(std::move(results), param_.thresholds.at(i));
+        auto results = template_match(templates_.at(i));
+        double threshold = i < param_.thresholds.size() ? param_.thresholds.at(i) : param_.thresholds.back();
+        add_results(std::move(results), threshold);
     }
 
     cherry_pick();
 
     auto cost = duration_since(start_time);
     LogDebug << name_ << VAR(uid_) << VAR(all_results_) << VAR(filtered_results_) << VAR(best_result_) << VAR(cost)
-             << VAR(param_.template_paths) << VAR(param_.thresholds) << VAR(param_.method) << VAR(param_.green_mask);
+             << VAR(param_.template_paths) << VAR(templates_.size()) << VAR(param_.thresholds) << VAR(param_.method)
+             << VAR(param_.green_mask);
 }
 
 TemplateMatcher::ResultsVec TemplateMatcher::template_match(const cv::Mat& templ) const
@@ -65,7 +52,7 @@ TemplateMatcher::ResultsVec TemplateMatcher::template_match(const cv::Mat& templ
     cv::matchTemplate(image, templ, matched, param_.method, create_mask(templ, param_.green_mask));
 
     ResultsVec raw_results;
-    Result max_result;
+    Result closest_result;
     for (int col = 0; col < matched.cols; ++col) {
         for (int row = 0; row < matched.rows; ++row) {
             float score = matched.at<float>(row, col);
@@ -73,16 +60,17 @@ TemplateMatcher::ResultsVec TemplateMatcher::template_match(const cv::Mat& templ
                 continue;
             }
 
-            if (max_result.score < score) {
-                max_result.score = score;
+            if (comp_score(closest_result.score, score)) {
+                closest_result.score = score;
                 cv::Rect box(col + roi_.x, row + roi_.y, templ.cols, templ.rows);
-                max_result.box = box;
+                closest_result.box = box;
             }
 
             constexpr float kThreshold = 0.5f;
-            if (score < kThreshold) {
+            if (comp_score(score, kThreshold)) {
                 continue;
             }
+
             cv::Rect box(col + roi_.x, row + roi_.y, templ.cols, templ.rows);
             Result result { .box = box, .score = score };
             raw_results.emplace_back(result);
@@ -90,7 +78,7 @@ TemplateMatcher::ResultsVec TemplateMatcher::template_match(const cv::Mat& templ
     }
     // At least there is a result
     if (raw_results.empty()) {
-        raw_results.emplace_back(max_result);
+        raw_results.emplace_back(closest_result);
     }
 
     auto nms_results = NMS(std::move(raw_results));
@@ -130,7 +118,7 @@ cv::Mat TemplateMatcher::draw_result(const cv::Mat& templ, const ResultsVec& res
 
 void TemplateMatcher::add_results(ResultsVec results, double threshold)
 {
-    std::ranges::copy_if(results, std::back_inserter(filtered_results_), [&](const auto& res) { return res.score > threshold; });
+    std::ranges::copy_if(results, std::back_inserter(filtered_results_), [&](const auto& res) { return comp_score(threshold, res.score); });
 
     merge_vector_(all_results_, std::move(results));
 }
@@ -167,6 +155,11 @@ void TemplateMatcher::sort_(ResultsVec& results) const
         LogError << "Not supported order by" << VAR(param_.order_by);
         break;
     }
+}
+
+bool TemplateMatcher::comp_score(double s1, double s2) const
+{
+    return use_min_score_ ? s1 > s2 : s1 < s2;
 }
 
 MAA_VISION_NS_END

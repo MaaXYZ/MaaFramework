@@ -14,12 +14,7 @@ MAA_SUPPRESS_CV_WARNINGS_END
 
 MAA_VISION_NS_BEGIN
 
-FeatureMatcher::FeatureMatcher(
-    cv::Mat image,
-    cv::Rect roi,
-    FeatureMatcherParam param,
-    std::vector<std::shared_ptr<cv::Mat>> templates,
-    std::string name)
+FeatureMatcher::FeatureMatcher(cv::Mat image, cv::Rect roi, FeatureMatcherParam param, std::vector<cv::Mat> templates, std::string name)
     : VisionBase(std::move(image), std::move(roi), std::move(name))
     , param_(std::move(param))
     , templates_(std::move(templates))
@@ -36,12 +31,7 @@ void FeatureMatcher::analyze()
 
     auto start_time = std::chrono::steady_clock::now();
 
-    for (const auto& templ_ptr : templates_) {
-        if (!templ_ptr) {
-            continue;
-        }
-        const auto& templ = *templ_ptr;
-
+    for (const auto& templ : templates_) {
         auto [keypoints_1, descriptors_1] = detect(templ, create_mask(templ, param_.green_mask));
 
         auto results = feature_match(templ, keypoints_1, descriptors_1);
@@ -52,7 +42,8 @@ void FeatureMatcher::analyze()
 
     auto cost = duration_since(start_time);
     LogDebug << name_ << VAR(uid_) << VAR(all_results_) << VAR(filtered_results_) << VAR(best_result_) << VAR(cost)
-             << VAR(param_.template_paths) << VAR(param_.green_mask) << VAR(param_.distance_ratio) << VAR(param_.count);
+             << VAR(param_.template_paths) << VAR(templates_.size()) << VAR(param_.green_mask) << VAR(param_.distance_ratio)
+             << VAR(param_.count);
 }
 
 FeatureMatcher::ResultsVec
@@ -164,6 +155,7 @@ FeatureMatcher::ResultsVec FeatureMatcher::feature_postproc(
 {
     std::vector<cv::Point2d> obj;
     std::vector<cv::Point2d> scene;
+    std::vector<cv::DMatch> matches;
 
     for (const auto& point : match_points) {
         if (point.size() != 2) {
@@ -174,41 +166,60 @@ FeatureMatcher::ResultsVec FeatureMatcher::feature_postproc(
         if (point[0].distance > threshold) {
             continue;
         }
-        good_matches.emplace_back(point[0]);
+        matches.emplace_back(point[0]);
         obj.emplace_back(keypoints_1[point[0].trainIdx].pt);
         scene.emplace_back(keypoints_2[point[0].queryIdx].pt);
     }
-
+    good_matches = matches;
     LogDebug << name_ << VAR(uid_) << "Match:" << VAR(good_matches.size()) << VAR(match_points.size()) << VAR(param_.distance_ratio);
 
-    if (good_matches.size() < 4) {
-        return {};
+    const std::array<cv::Point2d, 4> obj_corners = {
+        cv::Point2d(0, 0),
+        cv::Point2d(templ_cols, 0),
+        cv::Point2d(templ_cols, templ_rows),
+        cv::Point2d(0, templ_rows),
+    };
+
+    ResultsVec results;
+    while (matches.size() >= static_cast<size_t>(param_.count)) {
+        cv::Mat homography = cv::findHomography(obj, scene, cv::RANSAC);
+        if (homography.empty()) {
+            break;
+        }
+
+        std::array<cv::Point2d, 4> scene_corners;
+        cv::perspectiveTransform(obj_corners, scene_corners, homography);
+
+        double x = std::min({ scene_corners[0].x, scene_corners[1].x, scene_corners[2].x, scene_corners[3].x });
+        double y = std::min({ scene_corners[0].y, scene_corners[1].y, scene_corners[2].y, scene_corners[3].y });
+        double w = std::max({ scene_corners[0].x, scene_corners[1].x, scene_corners[2].x, scene_corners[3].x }) - x;
+        double h = std::max({ scene_corners[0].y, scene_corners[1].y, scene_corners[2].y, scene_corners[3].y }) - y;
+        cv::Rect scene_box { static_cast<int>(x), static_cast<int>(y), static_cast<int>(w), static_cast<int>(h) };
+
+        cv::Rect box = scene_box & roi_;
+        size_t count = std::ranges::count_if(scene, [&box](const auto& point) { return box.contains(point); });
+        results.emplace_back(Result { .box = box, .count = static_cast<int>(count) });
+
+        // remove inside points
+        size_t compact_idx = 0;
+        for (size_t i = 0; i < scene.size(); ++i) {
+            if (scene_box.contains(scene.at(i))) {
+                continue;
+            }
+
+            if (i != compact_idx) {
+                std::swap(scene[compact_idx], scene[i]);
+                std::swap(obj[compact_idx], obj[i]);
+                std::swap(matches[compact_idx], matches[i]);
+            }
+            ++compact_idx;
+        }
+        scene.resize(compact_idx);
+        obj.resize(compact_idx);
+        matches.resize(compact_idx);
     }
 
-    cv::Mat homography = cv::findHomography(obj, scene, cv::RHO);
-
-    if (homography.empty()) {
-        LogDebug << name_ << VAR(uid_) << "Homography is empty";
-        return {};
-    }
-
-    std::array<cv::Point2d, 4> obj_corners = { cv::Point2d(0, 0),
-                                               cv::Point2d(templ_cols, 0),
-                                               cv::Point2d(templ_cols, templ_rows),
-                                               cv::Point2d(0, templ_rows) };
-    std::array<cv::Point2d, 4> scene_corners;
-    cv::perspectiveTransform(obj_corners, scene_corners, homography);
-
-    double x = std::min({ scene_corners[0].x, scene_corners[1].x, scene_corners[2].x, scene_corners[3].x });
-    double y = std::min({ scene_corners[0].y, scene_corners[1].y, scene_corners[2].y, scene_corners[3].y });
-    double w = std::max({ scene_corners[0].x, scene_corners[1].x, scene_corners[2].x, scene_corners[3].x }) - x;
-    double h = std::max({ scene_corners[0].y, scene_corners[1].y, scene_corners[2].y, scene_corners[3].y }) - y;
-    cv::Rect box { static_cast<int>(x), static_cast<int>(y), static_cast<int>(w), static_cast<int>(h) };
-    box &= roi_;
-
-    size_t count = std::ranges::count_if(scene, [&box](const auto& point) { return box.contains(point); });
-
-    return { Result { .box = box, .count = static_cast<int>(count) } };
+    return results;
 }
 
 cv::Mat FeatureMatcher::draw_result(

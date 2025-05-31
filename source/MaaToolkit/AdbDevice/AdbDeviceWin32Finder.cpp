@@ -67,47 +67,48 @@ std::vector<std::string> AdbDeviceWin32Finder::find_adb_serials(const std::files
     }
 }
 
-json::object AdbDeviceWin32Finder::get_adb_config(const Emulator& emulator, const std::string& adb_serial) const
+void AdbDeviceWin32Finder::request_device_config(const Emulator& emulator, AdbDevice& device) const
 {
     if (emulator.name == "MuMuPlayer12") {
         // C:\Program Files\Netease\MuMuPlayer-12.0\shell\MuMuPlayer.exe
         auto path_opt = get_process_path(emulator.process.pid);
         if (!path_opt) {
-            return {};
+            return;
         }
         auto dir = path_opt->parent_path().parent_path();
 
-        json::object cfg;
-        auto& mumu_cfg = cfg["extras"]["mumu"];
+        auto& mumu_cfg = device.config["extras"]["mumu"];
 
         mumu_cfg["enable"] = true;
         mumu_cfg["path"] = path_to_utf8_string(dir);
-        mumu_cfg["index"] = get_mumu_index(adb_serial);
+        mumu_cfg["index"] = get_mumu_index(device.serial);
 
-        LogInfo << "MuMuPlayer12 cfg" << VAR(adb_serial) << cfg;
-        return cfg;
+        device.screencap_methods = MaaAdbScreencapMethod_EmulatorExtras;
+
+        LogInfo << "MuMuPlayer12 cfg" << VAR(device.serial) << device.config;
     }
     else if (emulator.name == "LDPlayer") {
         // E:\Program Files\leidian\LDPlayer9\dnplayer.exe
         auto path_opt = get_process_path(emulator.process.pid);
         if (!path_opt) {
-            return {};
+            return;
         }
         auto dir = path_opt->parent_path();
 
-        json::object cfg;
-        auto& ld_cfg = cfg["extras"]["ld"];
+        auto& ld_cfg = device.config["extras"]["ld"];
 
         ld_cfg["enable"] = true;
         ld_cfg["path"] = path_to_utf8_string(dir);
-        ld_cfg["index"] = get_ld_index(adb_serial);
+        ld_cfg["index"] = get_ld_index(device.serial);
         ld_cfg["pid"] = emulator.process.pid;
 
-        LogInfo << "LDPlayer cfg" << VAR(adb_serial) << cfg;
-        return cfg;
-    }
+        device.screencap_methods = MaaAdbScreencapMethod_EmulatorExtras;
 
-    return {};
+        LogInfo << "LDPlayer cfg" << VAR(device.serial) << device.config;
+    }
+    else {
+        AdbDeviceFinder::request_device_config(emulator, device);
+    }
 }
 
 std::vector<std::string> AdbDeviceWin32Finder::find_mumu_serials(const std::filesystem::path& adb_path, const Emulator& emulator) const

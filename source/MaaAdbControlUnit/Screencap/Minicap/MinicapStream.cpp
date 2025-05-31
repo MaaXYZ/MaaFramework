@@ -52,6 +52,9 @@ std::optional<cv::Mat> MinicapStream::screencap()
     LogDebug;
 
     std::unique_lock locker(mutex_);
+    if (quit_) {
+        return std::nullopt;
+    }
 
     using namespace std::chrono_literals;
     cond_.wait_for(locker, 2s); // 等下一帧

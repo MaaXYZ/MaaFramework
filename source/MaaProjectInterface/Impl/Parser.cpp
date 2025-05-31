@@ -11,7 +11,7 @@ std::optional<InterfaceData> Parser::parse_interface(const std::filesystem::path
 {
     LogFunc << VAR(path);
 
-    auto json_opt = json::open(path);
+    auto json_opt = json::open(path, true, true);
     if (!json_opt) {
         LogError << "failed to parse" << path;
         return std::nullopt;
@@ -61,7 +61,7 @@ std::optional<Configuration> Parser::parse_config(const std::filesystem::path& p
 {
     LogFunc << VAR(path);
 
-    auto json_opt = json::open(path);
+    auto json_opt = json::open(path, true, true);
     if (!json_opt) {
         LogWarn << "failed to parse" << path;
         return std::nullopt;

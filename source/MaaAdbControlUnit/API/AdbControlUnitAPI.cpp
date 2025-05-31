@@ -2,7 +2,7 @@
 
 #include <meojson/json.hpp>
 
-#include "Manager/ControlUnitMgr.h"
+#include "Manager/AdbControlUnitMgr.h"
 #include "Utils/Logger.h"
 #include "Utils/Platform.h"
 
@@ -15,7 +15,7 @@ const char* MaaAdbControlUnitGetVersion()
     return MAA_VERSION;
 }
 
-MaaControlUnitHandle MaaAdbControlUnitCreate(
+MaaAdbControlUnitHandle MaaAdbControlUnitCreate(
     const char* adb_path,
     const char* adb_serial,
     MaaAdbScreencapMethod screencap_methods,
@@ -33,7 +33,7 @@ MaaControlUnitHandle MaaAdbControlUnitCreate(
         return nullptr;
     }
 
-    auto unit_mgr = std::make_unique<ControlUnitMgr>(
+    auto unit_mgr = std::make_unique<AdbControlUnitMgr>(
         path(adb_path),
         adb_serial,
         screencap_methods,
@@ -44,7 +44,7 @@ MaaControlUnitHandle MaaAdbControlUnitCreate(
     return unit_mgr.release();
 }
 
-void MaaAdbControlUnitDestroy(MaaControlUnitHandle handle)
+void MaaAdbControlUnitDestroy(MaaAdbControlUnitHandle handle)
 {
     LogFunc << VAR_VOIDP(handle);
 

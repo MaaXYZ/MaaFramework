@@ -24,6 +24,6 @@ endif()
 
 add_subdirectory(binding)
 
-if(ENABLE_CPP20_MODULES)
-    add_subdirectory(modules)
-endif()
+# if(ENABLE_CPP20_MODULES)
+    # add_subdirectory(modules)
+# endif()

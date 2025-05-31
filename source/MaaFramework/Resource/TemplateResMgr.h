@@ -12,21 +12,19 @@ MAA_RES_NS_BEGIN
 class TemplateResMgr : public NonCopyable
 {
 public:
-    using Image = cv::Mat;
-
-    bool lazy_load(const std::filesystem::path& path, bool is_base);
+    bool lazy_load(const std::filesystem::path& path);
 
     void clear();
 
 public:
-    std::shared_ptr<Image> image(const std::string& name);
+    std::vector<cv::Mat> images(const std::vector<std::string>& names);
 
 private:
-    std::shared_ptr<Image> load(const std::string& name);
+    std::vector<cv::Mat> load(const std::string& name);
 
-    std::vector<std::filesystem::path> roots_;
+    std::vector<std::filesystem::path> roots_ = { "" }; // for filepath without prefix
 
-    std::map<std::string, std::shared_ptr<Image>> images_;
+    std::map<std::string, std::vector<cv::Mat>> image_cahce_;
 };
 
 MAA_RES_NS_END

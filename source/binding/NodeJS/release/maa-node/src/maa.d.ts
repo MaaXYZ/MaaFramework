@@ -225,6 +225,15 @@ export declare function resource_unregister_custom_action(
 ): boolean
 export declare function resource_clear_custom_action(handle: ResourceHandle): boolean
 export declare function resource_post_bundle(handle: ResourceHandle, path: string): ResId
+export declare function resource_override_pipeline(
+    handle: ResourceHandle,
+    pipeline_override: string
+): bool
+export declare function resource_override_next(
+    handle: ResourceHandle,
+    node_name: string,
+    next_list: string[]
+): bool
 export declare function resource_clear(handle: ResourceHandle): boolean
 export declare function resource_status(handle: ResourceHandle, res_id: ResId): Status
 export declare function resource_wait(handle: ResourceHandle, res_id: ResId): Promise<Status>
@@ -254,6 +263,7 @@ export declare function tasker_status(handle: TaskerHandle, task_id: TaskId): St
 export declare function tasker_wait(handle: TaskerHandle, task_id: TaskId): Promise<Status>
 export declare function tasker_running(handle: TaskerHandle): boolean
 export declare function tasker_post_stop(handle: TaskerHandle): TaskId
+export declare function tasker_stopping(handle: TaskerHandle): boolean
 export declare function tasker_get_resource(handle: TaskerHandle): ResourceHandle | null
 export declare function tasker_get_controller(handle: TaskerHandle): ControllerHandle | null
 export declare function tasker_clear_cache(handle: TaskerHandle): boolean
@@ -377,18 +387,16 @@ export declare const AgentRole: 'client' | 'server'
 
 // agent.cpp - client
 
-export declare function agent_client_create(): AgentClientHandle | null
+export declare function agent_client_create(identifier: string | null): AgentClientHandle | null
 export declare function agent_client_destroy(handle: AgentClientHandle): void
+export declare function agent_client_identifier(handle: AgentClientHandle): string | null
 export declare function agent_client_bind_resource(
     handle: AgentClientHandle,
     resource: ResourceHandle
 ): boolean
-export declare function agent_client_create_socket(
-    handle: AgentClientHandle,
-    identifier: string | null
-): string | null
 export declare function agent_client_connect(handle: AgentClientHandle): Promise<boolean>
 export declare function agent_client_disconnect(handle: AgentClientHandle): boolean
+export declare function agent_client_connected(handle: AgentClientHandle): boolean
 
 // agent.cpp - server
 
@@ -402,5 +410,5 @@ export declare function agent_server_register_custom_action(
 ): boolean
 export declare function agent_server_start_up(identifier: string): boolean
 export declare function agent_server_shut_down(): void
-// export declare function agent_server_join(): void
-// export declare function agent_server_detach(): void
+export declare function agent_server_join(): Promise<true>
+export declare function agent_server_detach(): void

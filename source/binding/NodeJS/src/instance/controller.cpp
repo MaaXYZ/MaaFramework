@@ -1,21 +1,14 @@
-module;
+#include "../include/forward.h"
 
 #if defined(_WIN32)
 #include <Windows.h>
 #endif
 
+#include "../include/cb.h"
+#include "../include/info.h"
 #include "../include/macro.h"
-
-export module maa.nodejs.instance.controller;
-
-import maa.core;
-import napi;
-import stdmock;
-
-import maa.nodejs.cb;
-import maa.nodejs.info;
-import maa.nodejs.utils;
-import maa.nodejs.wrapper;
+#include "../include/utils.h"
+#include "../include/wrapper.h"
 
 std::optional<Napi::External<ControllerInfo>> adb_controller_create(
     Napi::Env env,
@@ -276,7 +269,7 @@ std::optional<std::string> controller_get_uuid(Napi::External<ControllerInfo> in
     }
 }
 
-export void load_instance_controller(Napi::Env env, Napi::Object& exports, Napi::External<ExtContextInfo> context)
+void load_instance_controller(Napi::Env env, Napi::Object& exports, Napi::External<ExtContextInfo> context)
 {
     BIND(adb_controller_create);
     BIND(win32_controller_create);

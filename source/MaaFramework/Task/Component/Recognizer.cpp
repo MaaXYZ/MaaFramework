@@ -121,17 +121,8 @@ RecoResult Recognizer::template_match(const MAA_VISION_NS::TemplateMatcherParam&
 
     cv::Rect roi = get_roi(param.roi_target);
 
-    std::vector<std::shared_ptr<cv::Mat>> templates;
-    for (const auto& path : param.template_paths) {
-        auto templ = resource()->template_res().image(path);
-        if (!templ) {
-            LogWarn << "Template not found:" << path;
-            continue;
-        }
-        templates.emplace_back(std::move(templ));
-    }
-
-    TemplateMatcher analyzer(image_, roi, param, templates, name);
+    auto templs = resource()->template_res().images(param.template_paths);
+    TemplateMatcher analyzer(image_, roi, param, templs, name);
 
     std::optional<cv::Rect> box = std::nullopt;
     if (analyzer.best_result()) {
@@ -157,17 +148,8 @@ RecoResult Recognizer::feature_match(const MAA_VISION_NS::FeatureMatcherParam& p
 
     cv::Rect roi = get_roi(param.roi_target);
 
-    std::vector<std::shared_ptr<cv::Mat>> templates;
-    for (const auto& path : param.template_paths) {
-        auto templ = resource()->template_res().image(path);
-        if (!templ) {
-            LogWarn << "Template not found:" << path;
-            continue;
-        }
-        templates.emplace_back(std::move(templ));
-    }
-
-    FeatureMatcher analyzer(image_, roi, param, templates, name);
+    auto templs = resource()->template_res().images(param.template_paths);
+    FeatureMatcher analyzer(image_, roi, param, templs, name);
 
     std::optional<cv::Rect> box = std::nullopt;
     if (analyzer.best_result()) {

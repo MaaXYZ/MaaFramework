@@ -22,7 +22,7 @@ public:
 
 protected:
     virtual std::vector<std::string> find_adb_serials(const std::filesystem::path& adb_path, const Emulator& emulator) const override;
-    virtual json::object get_adb_config(const Emulator& emulator, const std::string& adb_serial) const override;
+    virtual void request_device_config(const Emulator& emulator, AdbDevice& device) const override;
 
 private:
     AdbDeviceWin32Finder();

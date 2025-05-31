@@ -9,16 +9,33 @@ from .buffer import StringBuffer
 class AgentClient:
     _handle: MaaAgentClientHandle
 
-    def __init__(self):
+    def __init__(self, identifier: Optional[str] = None):
         self._set_api_properties()
 
-        self._handle = Library.agent_client().MaaAgentClientCreate()
+        if identifier:
+            id_buffer = StringBuffer()
+            id_buffer.set(identifier)
+            id_buffer_handle = id_buffer._handle
+        else:
+            id_buffer_handle = None
+
+        self._handle = Library.agent_client().MaaAgentClientCreateV2(id_buffer_handle)
         if not self._handle:
             raise RuntimeError("Failed to create agent client.")
 
     def __del__(self):
         if self._handle:
             Library.agent_client().MaaAgentClientDestroy(self._handle)
+
+    @property
+    def identifier(self) -> Optional[str]:
+        id_buffer = StringBuffer()
+        if not Library.agent_client().MaaAgentClientIdentifier(
+            self._handle, id_buffer._handle
+        ):
+            return None
+
+        return id_buffer.get()
 
     def bind(self, resource: Resource) -> bool:
         # avoid gc
@@ -30,25 +47,15 @@ class AgentClient:
             )
         )
 
-    def create_socket(self, identifier: str = "") -> Optional[str]:
-        id_buffer = StringBuffer()
-        id_buffer.set(identifier)
-
-        ret = bool(
-            Library.agent_client().MaaAgentClientCreateSocket(
-                self._handle, id_buffer._handle
-            )
-        )
-        if not ret:
-            return None
-
-        return id_buffer.get()
-
     def connect(self) -> bool:
         return bool(Library.agent_client().MaaAgentClientConnect(self._handle))
 
     def disconnect(self) -> bool:
         return bool(Library.agent_client().MaaAgentClientDisconnect(self._handle))
+
+    @property
+    def connected(self) -> bool:
+        return bool(Library.agent_client().MaaAgentClientConnected(self._handle))
 
     _api_properties_initialized: bool = False
 
@@ -62,8 +69,16 @@ class AgentClient:
 
         AgentClient._api_properties_initialized = True
 
-        Library.agent_client().MaaAgentClientCreate.restype = MaaAgentClientHandle
-        Library.agent_client().MaaAgentClientCreate.argtypes = []
+        Library.agent_client().MaaAgentClientCreateV2.restype = MaaAgentClientHandle
+        Library.agent_client().MaaAgentClientCreateV2.argtypes = [
+            MaaStringBufferHandle,
+        ]
+
+        Library.agent_client().MaaAgentClientIdentifier.restype = MaaBool
+        Library.agent_client().MaaAgentClientIdentifier.argtypes = [
+            MaaAgentClientHandle,
+            MaaStringBufferHandle,
+        ]
 
         Library.agent_client().MaaAgentClientDestroy.restype = None
         Library.agent_client().MaaAgentClientDestroy.argtypes = [MaaAgentClientHandle]
@@ -74,12 +89,6 @@ class AgentClient:
             MaaResourceHandle,
         ]
 
-        Library.agent_client().MaaAgentClientCreateSocket.restype = MaaBool
-        Library.agent_client().MaaAgentClientCreateSocket.argtypes = [
-            MaaAgentClientHandle,
-            MaaStringBufferHandle,
-        ]
-
         Library.agent_client().MaaAgentClientConnect.restype = MaaBool
         Library.agent_client().MaaAgentClientConnect.argtypes = [
             MaaAgentClientHandle,
@@ -87,5 +96,10 @@ class AgentClient:
 
         Library.agent_client().MaaAgentClientDisconnect.restype = MaaBool
         Library.agent_client().MaaAgentClientDisconnect.argtypes = [
+            MaaAgentClientHandle,
+        ]
+
+        Library.agent_client().MaaAgentClientConnected.restype = MaaBool
+        Library.agent_client().MaaAgentClientConnected.argtypes = [
             MaaAgentClientHandle,
         ]

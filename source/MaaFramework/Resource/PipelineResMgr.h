@@ -20,17 +20,22 @@ public:
     using PipelineDataMap = std::unordered_map<std::string, PipelineData>;
 
 public:
-    bool load(const std::filesystem::path& path, bool is_base, const DefaultPipelineMgr& default_mgr);
+    bool load(const std::filesystem::path& path, const DefaultPipelineMgr& default_mgr);
     void clear();
 
     const std::vector<std::filesystem::path>& get_paths() const { return paths_; }
 
     const PipelineDataMap& get_pipeline_data_map() const { return pipeline_data_map_; }
 
+    PipelineDataMap& get_pipeline_data_map() { return pipeline_data_map_; }
+
     std::vector<std::string> get_node_list() const;
 
 public:
-    static bool parse_task(
+    bool parse_and_override(const json::object& input, std::set<std::string>& existing_keys, const DefaultPipelineMgr& default_mg);
+
+public:
+    static bool parse_node(
         const std::string& name,
         const json::value& input,
         PipelineData& output,
@@ -122,7 +127,6 @@ private:
     bool load_all_json(const std::filesystem::path& path, const DefaultPipelineMgr& default_mgr);
     bool
         open_and_parse_file(const std::filesystem::path& path, std::set<std::string>& existing_keys, const DefaultPipelineMgr& default_mgr);
-    bool parse_config(const json::value& input, std::set<std::string>& existing_keys, const DefaultPipelineMgr& default_mg);
 
     static bool check_next_list(const PipelineData::NextList& next_list, const PipelineDataMap& data_map);
 

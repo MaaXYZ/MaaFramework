@@ -22,12 +22,7 @@ class TemplateMatcher
     , public RecoResultAPI<TemplateMatcherResult>
 {
 public:
-    TemplateMatcher(
-        cv::Mat image,
-        cv::Rect roi,
-        TemplateMatcherParam param,
-        std::vector<std::shared_ptr<cv::Mat>> templates,
-        std::string name = "");
+    TemplateMatcher(cv::Mat image, cv::Rect roi, TemplateMatcherParam param, std::vector<cv::Mat> templates, std::string name = "");
 
 private:
     void analyze();
@@ -41,9 +36,12 @@ private:
 
     void sort_(ResultsVec& results) const;
 
+    bool comp_score(double s1, double s2) const;
+
 private:
     const TemplateMatcherParam param_;
-    const std::vector<std::shared_ptr<cv::Mat>> templates_;
+    const bool use_min_score_ = false;
+    const std::vector<cv::Mat> templates_;
 };
 
 MAA_VISION_NS_END

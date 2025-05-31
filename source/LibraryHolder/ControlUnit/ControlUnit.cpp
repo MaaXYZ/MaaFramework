@@ -27,7 +27,7 @@ bool check_version(const std::string& func_name)
     return true;
 }
 
-std::shared_ptr<MAA_CTRL_UNIT_NS::ControlUnitAPI> AdbControlUnitLibraryHolder::create_control_unit(
+std::shared_ptr<MAA_CTRL_UNIT_NS::AdbControlUnitAPI> AdbControlUnitLibraryHolder::create_control_unit(
     const char* adb_path,
     const char* adb_serial,
     MaaAdbScreencapMethod screencap_methods,
@@ -61,10 +61,10 @@ std::shared_ptr<MAA_CTRL_UNIT_NS::ControlUnitAPI> AdbControlUnitLibraryHolder::c
         return nullptr;
     }
 
-    return std::shared_ptr<MAA_CTRL_UNIT_NS::ControlUnitAPI>(control_unit_handle, destroy_control_unit_func);
+    return std::shared_ptr<MAA_CTRL_UNIT_NS::AdbControlUnitAPI>(control_unit_handle, destroy_control_unit_func);
 }
 
-std::shared_ptr<MAA_CTRL_UNIT_NS::ControlUnitAPI> Win32ControlUnitLibraryHolder::create_control_unit(
+std::shared_ptr<MAA_CTRL_UNIT_NS::Win32ControlUnitAPI> Win32ControlUnitLibraryHolder::create_control_unit(
     void* hWnd,
     MaaWin32ScreencapMethod screencap_method,
     MaaWin32InputMethod input_method)
@@ -95,7 +95,7 @@ std::shared_ptr<MAA_CTRL_UNIT_NS::ControlUnitAPI> Win32ControlUnitLibraryHolder:
         return nullptr;
     }
 
-    return std::shared_ptr<MAA_CTRL_UNIT_NS::ControlUnitAPI>(control_unit_handle, destroy_control_unit_func);
+    return std::shared_ptr<MAA_CTRL_UNIT_NS::Win32ControlUnitAPI>(control_unit_handle, destroy_control_unit_func);
 }
 
 std::shared_ptr<MAA_CTRL_UNIT_NS::ControlUnitAPI>

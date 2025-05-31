@@ -27,11 +27,13 @@ private:
     void add_results(ResultsVec results, double threshold);
     void cherry_pick();
 
-    static double comp(const cv::Mat& lhs, const cv::Mat& rhs, int method);
+    double comp(const cv::Mat& lhs, const cv::Mat& rhs, int method);
+    bool comp_score(double s1, double s2) const;
 
 private:
     const cv::Mat rhs_image_ = {};
     const TemplateComparatorParam param_;
+    const bool use_min_score_ = false;
 };
 
 MAA_VISION_NS_END

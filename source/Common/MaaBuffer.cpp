@@ -45,7 +45,7 @@ const char* MaaStringBufferGet(const MaaStringBuffer* handle)
 {
     if (!handle) {
         LogError << "handle is null";
-        return nullptr;
+        return "";
     }
 
     return handle->data();
@@ -124,6 +124,10 @@ const MaaStringBuffer* MaaStringListBufferAt(const MaaStringListBuffer* handle, 
         LogError << "handle is null";
         return nullptr;
     }
+    if (index >= handle->size()) {
+        LogError << "out of range" << VAR(index) << VAR(handle->size());
+        return nullptr;
+    }
 
     return &(handle->at(index));
 }
@@ -143,6 +147,10 @@ MaaBool MaaStringListBufferRemove(MaaStringListBuffer* handle, MaaSize index)
 {
     if (!handle) {
         LogError << "handle is null";
+        return false;
+    }
+    if (index >= handle->size()) {
+        LogError << "out of range" << VAR(index) << VAR(handle->size());
         return false;
     }
 
@@ -347,6 +355,10 @@ const MaaImageBuffer* MaaImageListBufferAt(const MaaImageListBuffer* handle, Maa
         LogError << "handle is null";
         return nullptr;
     }
+    if (index >= handle->size()) {
+        LogError << "out of range" << VAR(index) << VAR(handle->size());
+        return nullptr;
+    }
 
     return &(handle->at(index));
 }
@@ -366,6 +378,10 @@ MaaBool MaaImageListBufferRemove(MaaImageListBuffer* handle, MaaSize index)
 {
     if (!handle) {
         LogError << "handle is null";
+        return false;
+    }
+    if (index >= handle->size()) {
+        LogError << "out of range" << VAR(index) << VAR(handle->size());
         return false;
     }
 

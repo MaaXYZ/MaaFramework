@@ -128,7 +128,7 @@ bool Context::override_pipeline(const json::object& pipeline_override)
     for (const auto& [key, value] : pipeline_override) {
         PipelineData result;
         auto default_result = get_pipeline_data(key).value_or(default_mgr.get_pipeline());
-        bool ret = MAA_RES_NS::PipelineResMgr::parse_task(key, value, result, default_result, default_mgr);
+        bool ret = MAA_RES_NS::PipelineResMgr::parse_node(key, value, result, default_result, default_mgr);
         if (!ret) {
             LogError << "parse_task failed" << VAR(key) << VAR(value);
             return false;

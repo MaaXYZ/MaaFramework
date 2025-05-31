@@ -7,6 +7,8 @@
 
 MAA_CTRL_UNIT_NS_BEGIN
 class ControlUnitAPI;
+class AdbControlUnitAPI;
+class Win32ControlUnitAPI;
 MAA_CTRL_UNIT_NS_END
 
 MAA_NS_BEGIN
@@ -14,7 +16,7 @@ MAA_NS_BEGIN
 class AdbControlUnitLibraryHolder : public LibraryHolder<AdbControlUnitLibraryHolder>
 {
 public:
-    static std::shared_ptr<MAA_CTRL_UNIT_NS::ControlUnitAPI> create_control_unit(
+    static std::shared_ptr<MAA_CTRL_UNIT_NS::AdbControlUnitAPI> create_control_unit(
         const char* adb_path,
         const char* adb_serial,
         MaaAdbScreencapMethod screencap_methods,
@@ -32,7 +34,7 @@ private:
 class Win32ControlUnitLibraryHolder : public LibraryHolder<Win32ControlUnitLibraryHolder>
 {
 public:
-    static std::shared_ptr<MAA_CTRL_UNIT_NS::ControlUnitAPI>
+    static std::shared_ptr<MAA_CTRL_UNIT_NS::Win32ControlUnitAPI>
         create_control_unit(void* hWnd, MaaWin32ScreencapMethod screencap_method, MaaWin32InputMethod input_method);
 
 private:

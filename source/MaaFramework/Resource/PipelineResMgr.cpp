@@ -8,15 +8,9 @@
 
 MAA_RES_NS_BEGIN
 
-bool PipelineResMgr::load(const std::filesystem::path& path, bool is_base, const DefaultPipelineMgr& default_mgr)
+bool PipelineResMgr::load(const std::filesystem::path& path, const DefaultPipelineMgr& default_mgr)
 {
-    LogFunc << VAR(path) << VAR(is_base);
-
-    if (is_base) {
-        clear();
-    }
-
-    paths_.emplace_back(path);
+    LogFunc << VAR(path);
 
     if (!load_all_json(path, default_mgr)) {
         LogError << "load_all_json failed" << VAR(path);
@@ -27,6 +21,8 @@ bool PipelineResMgr::load(const std::filesystem::path& path, bool is_base, const
         LogError << "check_all_validity failed" << VAR(path);
         return false;
     }
+
+    paths_.emplace_back(path);
 
     return true;
 }
@@ -41,11 +37,6 @@ void PipelineResMgr::clear()
 
 bool PipelineResMgr::load_all_json(const std::filesystem::path& path, const DefaultPipelineMgr& default_mgr)
 {
-    if (!std::filesystem::exists(path)) {
-        LogWarn << "path not exists" << VAR(path);
-        return true;
-    }
-
     if (!std::filesystem::is_directory(path)) {
         LogError << "path is not directory" << VAR(path);
         return false;
@@ -98,14 +89,19 @@ bool PipelineResMgr::open_and_parse_file(
 {
     LogFunc << VAR(path);
 
-    auto json_opt = json::open(path);
+    auto json_opt = json::open(path, true, true);
     if (!json_opt) {
         LogError << "json::open failed" << VAR(path);
         return false;
     }
     const auto& json = *json_opt;
 
-    if (!parse_config(json, existing_keys, default_mgr)) {
+    if (!json.is_object()) {
+        LogError << "json is not object";
+        return false;
+    }
+
+    if (!parse_and_override(json.as_object(), existing_keys, default_mgr)) {
         LogError << "parse_config failed" << VAR(path) << VAR(json);
         return false;
     }
@@ -191,14 +187,9 @@ std::vector<std::string> PipelineResMgr::get_node_list() const
     return std::vector(k.begin(), k.end());
 }
 
-bool PipelineResMgr::parse_config(const json::value& input, std::set<std::string>& existing_keys, const DefaultPipelineMgr& default_mgr)
+bool PipelineResMgr::parse_and_override(const json::object& input, std::set<std::string>& existing_keys, const DefaultPipelineMgr& default_mgr)
 {
-    if (!input.is_object()) {
-        LogError << "json is not object";
-        return false;
-    }
-
-    for (const auto& [key, value] : input.as_object()) {
+    for (const auto& [key, value] : input) {
         if (key.empty()) {
             LogError << "key is empty" << VAR(key);
             return false;
@@ -218,7 +209,7 @@ bool PipelineResMgr::parse_config(const json::value& input, std::set<std::string
 
         PipelineData result;
         const auto& default_result = pipeline_data_map_.contains(key) ? pipeline_data_map_.at(key) : default_mgr.get_pipeline();
-        bool ret = parse_task(key, value, result, default_result, default_mgr);
+        bool ret = parse_node(key, value, result, default_result, default_mgr);
         if (!ret) {
             LogError << "parse_task failed" << VAR(key) << VAR(value);
             return false;
@@ -304,7 +295,7 @@ bool get_and_check_value_or_array(
     return true;
 }
 
-bool PipelineResMgr::parse_task(
+bool PipelineResMgr::parse_node(
     const std::string& name,
     const json::value& input,
     PipelineData& output,
@@ -569,21 +560,6 @@ bool PipelineResMgr::parse_template_matcher_param(
         return false;
     }
 
-    if (output.thresholds.empty()) {
-        output.thresholds = default_value.thresholds;
-    }
-    if (!output.template_paths.empty() && output.thresholds.size() != output.template_paths.size()) {
-        if (output.thresholds.size() == 1) {
-            double threshold = output.thresholds.front();
-            output.thresholds.resize(output.template_paths.size(), threshold);
-            LogDebug << "thresholds.size() != template_paths.size(), auto fill" << threshold << VAR(output.template_paths.size());
-        }
-        else {
-            LogError << "thresholds.size() != templates.size()" << VAR(output.thresholds.size()) << VAR(output.template_paths.size());
-            return false;
-        }
-    }
-
     if (!get_and_check_value(input, "method", output.method, default_value.method)) {
         LogError << "failed to get_and_check_value method" << VAR(input);
         return false;
@@ -796,7 +772,7 @@ bool PipelineResMgr::parse_custom_recognition_param(
         return false;
     }
 
-    output.custom_param = input.get("custom_recognition_param", json::value());
+    output.custom_param = input.get("custom_recognition_param", default_value.custom_param);
 
     return true;
 }
@@ -1400,7 +1376,7 @@ bool PipelineResMgr::parse_custom_action_param(
         return false;
     }
 
-    output.custom_param = input.get("custom_action_param", json::value());
+    output.custom_param = input.get("custom_action_param", default_value.custom_param);
 
     return true;
 }

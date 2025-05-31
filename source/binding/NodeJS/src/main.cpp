@@ -1,21 +1,9 @@
-#include "./include/forward.h"
+#include <napi.h>
 
-import maa.core;
-import napi;
-import stdmock;
-
-import maa.nodejs.info;
-import maa.nodejs.utils;
-import maa.nodejs.wrapper;
-import maa.nodejs.instance.context;
-import maa.nodejs.instance.controller;
-import maa.nodejs.instance.resource;
-import maa.nodejs.instance.tasker;
-import maa.nodejs.utility.utility;
-import maa.nodejs.toolkit.config;
-import maa.nodejs.toolkit.find;
-import maa.nodejs.toolkit.pi;
-import maa.nodejs.agent;
+#include "include/forward.h"
+#include "include/info.h"
+#include "include/utils.h"
+#include "include/wrapper.h"
 
 Napi::Object Init(Napi::Env env, Napi::Object exports)
 {
@@ -35,7 +23,7 @@ Napi::Object Init(Napi::Env env, Napi::Object exports)
     load_agent(env, exports, extCtx);
 
 #define DE(prefix, key) prefix##_obj[#key] = JSConvert<prefix>::to_value(env, prefix##Enum::prefix##_##key)
-#define DEM(prefix, key) prefix##_obj[#key] = JSConvert<prefix>::to_value(env, _##prefix##_##key)
+#define DEM(prefix, key) prefix##_obj[#key] = JSConvert<prefix>::to_value(env, prefix##_##key)
 
     auto MaaStatus_obj = Napi::Object::New(env);
     DE(MaaStatus, Invalid);
@@ -108,3 +96,5 @@ Napi::Object Init(Napi::Env env, Napi::Object exports)
 
     return exports;
 }
+
+NODE_API_MODULE(maa, Init);
