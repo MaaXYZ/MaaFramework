@@ -18,14 +18,8 @@ TemplateMatcher::TemplateMatcher(cv::Mat image, cv::Rect roi, TemplateMatcherPar
 
 void TemplateMatcher::analyze()
 {
-    if (templates_.empty()) {
-        LogError << name_ << VAR(uid_) << "templates is empty" << VAR(param_.template_paths);
-        return;
-    }
-
-    if (templates_.size() != param_.thresholds.size()) {
-        LogError << name_ << VAR(uid_) << "templates.size() != thresholds.size()" << VAR(templates_.size())
-                 << VAR(param_.thresholds.size());
+    if (templates_.empty() || param_.thresholds.empty()) {
+        LogError << name_ << VAR(uid_) << "templates or threshold is empty" << VAR(param_.template_paths) << VAR(param_.thresholds);
         return;
     }
 
@@ -33,14 +27,16 @@ void TemplateMatcher::analyze()
 
     for (size_t i = 0; i != templates_.size(); ++i) {
         auto results = template_match(templates_.at(i));
-        add_results(std::move(results), param_.thresholds.at(i));
+        double threshold = i < param_.thresholds.size() ? param_.thresholds.at(i) : param_.thresholds.back();
+        add_results(std::move(results), threshold);
     }
 
     cherry_pick();
 
     auto cost = duration_since(start_time);
     LogDebug << name_ << VAR(uid_) << VAR(all_results_) << VAR(filtered_results_) << VAR(best_result_) << VAR(cost)
-             << VAR(param_.template_paths) << VAR(param_.thresholds) << VAR(param_.method) << VAR(param_.green_mask);
+             << VAR(param_.template_paths) << VAR(templates_.size()) << VAR(param_.thresholds) << VAR(param_.method)
+             << VAR(param_.green_mask);
 }
 
 TemplateMatcher::ResultsVec TemplateMatcher::template_match(const cv::Mat& templ) const

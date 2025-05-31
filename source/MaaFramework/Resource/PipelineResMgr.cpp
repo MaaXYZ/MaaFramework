@@ -560,21 +560,6 @@ bool PipelineResMgr::parse_template_matcher_param(
         return false;
     }
 
-    if (output.thresholds.empty()) {
-        output.thresholds = default_value.thresholds;
-    }
-    if (!output.template_paths.empty() && output.thresholds.size() != output.template_paths.size()) {
-        if (output.thresholds.size() == 1) {
-            double threshold = output.thresholds.front();
-            output.thresholds.resize(output.template_paths.size(), threshold);
-            LogDebug << "thresholds.size() != template_paths.size(), auto fill" << threshold << VAR(output.template_paths.size());
-        }
-        else {
-            LogError << "thresholds.size() != templates.size()" << VAR(output.thresholds.size()) << VAR(output.template_paths.size());
-            return false;
-        }
-    }
-
     if (!get_and_check_value(input, "method", output.method, default_value.method)) {
         LogError << "failed to get_and_check_value method" << VAR(input);
         return false;
