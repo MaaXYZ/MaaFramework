@@ -127,6 +127,10 @@ _✨ 基于图像识别的自动化黑盒测试框架 ✨_
 - [MMleo](https://github.com/fictionalflaw/MMleo) ![Pipeline](https://img.shields.io/badge/Pipeline-%23876f69?logo=paddypower&logoColor=%23FFFFFF) ![Python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white) ![license](https://img.shields.io/github/license/fictionalflaw/MMleo) ![activity](https://img.shields.io/github/commit-activity/m/fictionalflaw/MMleo?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/fictionalflaw/MMleo?style=social)  
   偶像梦幻祭2小助手。使用图像识别+模拟控制技术，解放双手！助力屯屯鼠的制作人生涯！由 MaaFramework 强力驱动！
 
+  
+- [autodori](https://github.com/EvATive7/autodori) ![Pipeline](https://img.shields.io/badge/Pipeline-%23876f69?logo=paddypower&logoColor=%23FFFFFF) ![Python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white) ![license](https://img.shields.io/github/license/EvATive7/autodori) ![activity](https://img.shields.io/github/commit-activity/m/EvATive7/autodori?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/EvATive7/autodori?style=social)  
+  BanG Dream邦多利小助手。图像识别+模拟控制，解放双手！由 MaaFramework、弦卷财団、TGW Group 强力驱动！
+
 ## 生态共建
 
 MAA 正计划建设为一类项目，而非舟的单一软件。  
