@@ -128,6 +128,9 @@ It offers low-code simplicity while maintaining high extensibility. The framewor
 - [MMleo](https://github.com/fictionalflaw/MMleo) ![Pipeline](https://img.shields.io/badge/Pipeline-%23876f69?logo=paddypower&logoColor=%23FFFFFF) ![Python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white) ![license](https://img.shields.io/github/license/fictionalflaw/MMleo) ![activity](https://img.shields.io/github/commit-activity/m/fictionalflaw/MMleo?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/fictionalflaw/MMleo?style=social)  
   Little Assistant for EnsembleStars Music. Free your hands with image recognition and simulated control technology! Boost the producer career of hamsters! Powered by MaaFramework!
 
+- [autodori](https://github.com/EvATive7/autodori) ![Pipeline](https://img.shields.io/badge/Pipeline-%23876f69?logo=paddypower&logoColor=%23FFFFFF) ![Python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white) ![license](https://img.shields.io/github/license/EvATive7/autodori) ![activity](https://img.shields.io/github/commit-activity/m/EvATive7/autodori?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/EvATive7/autodori?style=social)  
+  Assistant for BanG Dream! Image recognition + simulation control, freeing your hands! Powered by MaaFramework, Tsurumaki Foundation, TGW Group.  
+
 ## Eco-Building
 
 MAA is planned to be a category of projects rather than just a single piece of software.
