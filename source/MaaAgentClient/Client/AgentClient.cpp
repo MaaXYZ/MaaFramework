@@ -102,7 +102,7 @@ bool AgentClient::connect()
     registered_recognitions_ = resp.recognitions;
     registered_actions_ = resp.actions;
 
-    is_connected_ = true;
+    connected_ = true;
     return true;
 }
 
@@ -116,12 +116,14 @@ bool AgentClient::disconnect()
         return true;
     }
 
-    return !(is_connected_ = !send_and_recv<ShutDownResponse>(ShutDownRequest{}).has_value());
+    send_and_recv<ShutDownResponse>(ShutDownRequest {});
+    connected_ = false;
+    return true;
 }
 
 bool AgentClient::connected()
 {
-    return is_connected_ && Transceiver::alive();
+    return connected_ && Transceiver::alive();
 }
 
 bool AgentClient::handle_inserted_request(const json::value& j)
