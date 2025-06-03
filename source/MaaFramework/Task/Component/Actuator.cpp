@@ -35,6 +35,9 @@ bool Actuator::run(const cv::Rect& reco_hit, MaaRecoId reco_id, const PipelineDa
     case Type::Click:
         ret = click(std::get<ClickParam>(pipeline_data.action_param), reco_hit);
         break;
+    case Type::LongPress:
+        ret = long_press(std::get<LongPressParam>(pipeline_data.action_param), reco_hit);
+        break;
     case Type::Swipe:
         ret = swipe(std::get<SwipeParam>(pipeline_data.action_param), reco_hit);
         break;
