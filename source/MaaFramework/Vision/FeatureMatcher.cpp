@@ -196,6 +196,11 @@ FeatureMatcher::ResultsVec FeatureMatcher::feature_postproc(
 
         cv::Rect box = scene_box & roi_;
         size_t count = std::ranges::count_if(scene, [&box](const auto& point) { return box.contains(point); });
+        if (count == 0) {
+            LogWarn << name_ << VAR(uid_) << "No points in box" << VAR(box) << VAR(scene_box) << VAR(roi_);
+            break;
+        }
+
         results.emplace_back(Result { .box = box, .count = static_cast<int>(count) });
 
         // remove inside points
