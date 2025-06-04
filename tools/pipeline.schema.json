@@ -32,6 +32,7 @@
                     "enum": [
                         "DoNothing",
                         "Click",
+                        "LongPress",
                         "Swipe",
                         "MultiSwipe",
                         "Key",
@@ -637,6 +638,34 @@
                                         0,
                                         0
                                     ]
+                                }
+                            }
+                        },
+                        {
+                            "$comment": "LongPress",
+                            "properties": {
+                                "action": {
+                                    "const": "LongPress"
+                                },
+                                "target": {
+                                    "description": "点击的位置。可选，默认 true。",
+                                    "$ref": "#/definitions/target_type",
+                                    "default": true
+                                },
+                                "target_offset": {
+                                    "description": "在 target 的基础上额外移动再点击，四个值分别相加。可选，默认 [0, 0, 0, 0]。",
+                                    "$ref": "#/definitions/rect",
+                                    "default": [
+                                        0,
+                                        0,
+                                        0,
+                                        0
+                                    ]
+                                },
+                                "duration": {
+                                    "description": "动作持续的时间",
+                                    "type": "integer",
+                                    "default": 1000
                                 }
                             }
                         },
