@@ -9,6 +9,8 @@
 #include "Message.hpp"
 #include "Utils/Logger.h"
 
+#include "timers.hpp"
+
 MAA_AGENT_NS_BEGIN
 
 class Transceiver
@@ -63,13 +65,31 @@ protected:
 
     void init_socket(const std::string& identifier, bool bind);
     void uninit_socket();
-    bool alive();
 
     bool send(const json::value& j);
     std::optional<json::value> recv();
 
+    bool alive();
+    void set_timeout(std::chrono::milliseconds timeout);
+
 private:
     void handle_image(const ImageHeader& header);
+    bool poll(zmq::pollitem_t* pollitem);
+
+    static void timeout_callback(int timer_id, void* trans_arg)
+    {
+        if (timer_id == 1) { // This is a poll timer, we can ignore it
+#ifdef MAA_DEBUG
+            auto* pthis = reinterpret_cast<Transceiver*>(trans_arg);
+            LogWarn << VAR(timer_id) << "server is not alive" << VAR(pthis->ipc_addr_);
+#endif
+            return;
+        }
+
+        auto* pthis = reinterpret_cast<Transceiver*>(trans_arg);
+        LogWarn << VAR(timer_id) << "server is not alive" << VAR(pthis->ipc_addr_);
+        pthis->need_to_cancel_ = true;
+    }
 
 protected:
     zmq::socket_t zmq_sock_;
@@ -82,6 +102,10 @@ protected:
 private:
     inline static int64_t s_req_id_ = 0;
     bool is_bound_ = false;
+
+    bool need_to_cancel_ = false;
+    zmq::pollitem_t zmq_pollitems_[2];
+    zmq::timers zmq_timers_ = zmq::timers();
 };
 
 MAA_AGENT_NS_END

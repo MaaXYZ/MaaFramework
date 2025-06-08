@@ -132,4 +132,6 @@ public:
     virtual bool connect() = 0;
     virtual bool disconnect() = 0;
     virtual bool connected() = 0;
+    virtual bool alive() = 0;
+    virtual void set_timeout(std::chrono::milliseconds milliseconds) = 0;
 };

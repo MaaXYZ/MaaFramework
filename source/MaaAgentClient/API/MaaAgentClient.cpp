@@ -107,3 +107,25 @@ MaaBool MaaAgentClientConnected(MaaAgentClient* client)
 
     return client->connected();
 }
+
+MaaBool MaaAgentClientAlive(MaaAgentClient* client)
+{
+    if (!client) {
+        LogError << "handle is null";
+        return false;
+    }
+
+    return client->alive();
+}
+
+MaaBool MaaAgentClientSetTimeout(MaaAgentClient* client, int64_t milliseconds)
+{
+    if (!client) {
+        LogError << "handle is null";
+        return false;
+    }
+
+    auto timeout = milliseconds < 0 ? std::chrono::milliseconds::max() : std::chrono::milliseconds(milliseconds);
+    client->set_timeout(timeout);
+    return true;
+}

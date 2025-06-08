@@ -126,6 +126,16 @@ bool AgentClient::connected()
     return connected_ && Transceiver::alive();
 }
 
+bool AgentClient::alive()
+{
+    return Transceiver::alive();
+}
+
+void AgentClient::set_timeout(std::chrono::milliseconds timeout)
+{
+    Transceiver::set_timeout(timeout);
+}
+
 bool AgentClient::handle_inserted_request(const json::value& j)
 {
     LogFunc << VAR(j) << VAR(ipc_addr_);
