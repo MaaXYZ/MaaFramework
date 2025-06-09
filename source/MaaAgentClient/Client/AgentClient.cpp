@@ -123,7 +123,7 @@ bool AgentClient::disconnect()
 
 bool AgentClient::connected()
 {
-    return connected_ && Transceiver::alive();
+    return connected_;
 }
 
 bool AgentClient::alive()
