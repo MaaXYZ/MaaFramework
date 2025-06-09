@@ -125,7 +125,17 @@ MaaBool MaaAgentClientSetTimeout(MaaAgentClient* client, int64_t milliseconds)
         return false;
     }
 
-    auto timeout = milliseconds < 0 ? std::chrono::milliseconds::max() : std::chrono::milliseconds(milliseconds);
+    std::chrono::milliseconds timeout;
+    if (milliseconds < 0) {
+        timeout = std::chrono::milliseconds::max();
+    }
+    else if (milliseconds < 4) {
+        timeout = std::chrono::milliseconds(4);
+    }
+    else {
+        timeout = std::chrono::milliseconds(milliseconds);
+    }
+
     client->set_timeout(timeout);
     return true;
 }
