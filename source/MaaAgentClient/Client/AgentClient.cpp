@@ -116,7 +116,10 @@ bool AgentClient::disconnect()
         return true;
     }
 
-    send_and_recv<ShutDownResponse>(ShutDownRequest {});
+    if (alive()) {
+        send_and_recv<ShutDownResponse>(ShutDownRequest {});
+    }
+
     connected_ = false;
     return true;
 }
@@ -1419,6 +1422,11 @@ MaaBool AgentClient::reco_agent(
 
     if (!image) {
         LogError << "image is null";
+        return false;
+    }
+
+    if (!pthis->alive()) {
+        LogError << "server is not alive" << VAR(pthis->ipc_addr_);
         return false;
     }
 
