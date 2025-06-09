@@ -78,14 +78,6 @@ private:
 
     static void timeout_callback(int timer_id, void* trans_arg)
     {
-        if (timer_id == 1) { // This is a poll timer, we can ignore it
-#ifdef MAA_DEBUG
-            auto* pthis = reinterpret_cast<Transceiver*>(trans_arg);
-            LogWarn << VAR(timer_id) << "server is not alive" << VAR(pthis->ipc_addr_);
-#endif
-            return;
-        }
-
         auto* pthis = reinterpret_cast<Transceiver*>(trans_arg);
         LogWarn << VAR(timer_id) << "server is not alive" << VAR(pthis->ipc_addr_);
         pthis->need_to_cancel_ = true;

@@ -43,7 +43,6 @@ void Transceiver::init_socket(const std::string& identifier, bool bind)
     zmq_pollitems_[0] = { zmq_sock_.handle(), 0, ZMQ_POLLOUT, 0 };
     zmq_pollitems_[1] = { zmq_sock_.handle(), 0, ZMQ_POLLIN, 0 };
 
-    zmq_timers_.add(std::chrono::milliseconds(1000), &Transceiver::timeout_callback, this);
     zmq_timers_.add(std::chrono::milliseconds::max(), &Transceiver::timeout_callback, this);
 
     is_bound_ = bind;
@@ -81,14 +80,13 @@ bool Transceiver::alive()
 void Transceiver::set_timeout(std::chrono::milliseconds timeout)
 {
     LogFunc << VAR(timeout) << VAR(ipc_addr_);
-    zmq_timers_.set_interval(2, timeout);
+    zmq_timers_.set_interval(1, timeout);
 }
 
 bool Transceiver::poll(zmq::pollitem_t* pollitem)
 {
-    zmq_timers_.reset(2);
+    zmq_timers_.reset(1);
     while (true) {
-        zmq_timers_.reset(1);
         auto timeout = zmq_timers_.timeout().value_or(std::chrono::milliseconds(1000));
         if (zmq::poll(pollitem, 1, timeout)) {
             return true;
