@@ -53,6 +53,10 @@ def api_test():
         print("failed to create socket")
         exit(1)
 
+    if not (agent.set_timeout(0) and not agent.connect() and agent.set_timeout(-1)):
+        print("failed to set timeout")
+        exit(1)
+
     subprocess.Popen(
         [
             "python",
@@ -63,7 +67,7 @@ def api_test():
         ],
     )
 
-    if not agent.connect():
+    if not (agent.connect() and agent.connected and agent.alive):
         print("failed to connect")
         exit(1)
 
