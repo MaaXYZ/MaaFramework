@@ -129,6 +129,10 @@ _✨ 基于图像识别的自动化黑盒测试框架 ✨_
 - [autodori](https://github.com/EvATive7/autodori) ![Pipeline](https://img.shields.io/badge/Pipeline-%23876f69?logo=paddypower&logoColor=%23FFFFFF) ![Python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white) ![license](https://img.shields.io/github/license/EvATive7/autodori) ![activity](https://img.shields.io/github/commit-activity/m/EvATive7/autodori?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/EvATive7/autodori?style=social)  
   BanG Dream邦多利小助手。图像识别+模拟控制，解放双手！由 MaaFramework、弦卷财団、TGW Group 强力驱动！
 
+- [SLIMEIM_Maa](https://github.com/miaojiuqing/SLIMEIM_Maa) ![Pipeline](https://img.shields.io/badge/Pipeline-%23876f69?logo=paddypower&logoColor=%23FFFFFF) ![Python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white) ![license](https://img.shields.io/github/license/miaojiuqing/SLIMEIM_Maa) ![activity](https://img.shields.io/github/commit-activity/m/miaojiuqing/SLIMEIM_Maa?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/miaojiuqing/SLIMEIM_Maa?style=social) [![mirrorc](https://img.shields.io/badge/Mirror%E9%85%B1-%239af3f6?logo=countingworkspro&logoColor=4f46e5)](https://mirrorchyan.com/zh/projects?source=maafw-badge&rid=SLIMEIM_Maa)  
+  魔王与龙的建国谭小助手。使用图像识别+模拟控制技术，解放双手！由 MaaFramework 强力驱动！
+
+
 ## 生态共建
 
 MAA 正计划建设为一类项目，而非舟的单一软件。  
@@ -223,7 +227,7 @@ _请留意，仅当您准备开发 MaaFramework 本身时，才需要阅读本�
 
 感谢以下开发者对 MaaFramework 作出的贡献：
 
-[![Contributors](https://contrib.rocks/image?repo=MaaXYZ/MaaFramework&max=1000)](https://github.com/MaaXYZ/MaaFramework/graphs/contributors)
+[![贡献者](https://contrib.rocks/image?repo=MaaXYZ/MaaFramework&max=1000)](https://github.com/MaaXYZ/MaaFramework/graphs/contributors)
 
 ## 讨论
 

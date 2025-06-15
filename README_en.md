@@ -131,6 +131,9 @@ It offers low-code simplicity while maintaining high extensibility. The framewor
 - [autodori](https://github.com/EvATive7/autodori) ![Pipeline](https://img.shields.io/badge/Pipeline-%23876f69?logo=paddypower&logoColor=%23FFFFFF) ![Python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white) ![license](https://img.shields.io/github/license/EvATive7/autodori) ![activity](https://img.shields.io/github/commit-activity/m/EvATive7/autodori?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/EvATive7/autodori?style=social)  
   Assistant for BanG Dream! Image recognition + simulation control, freeing your hands! Powered by MaaFramework, Tsurumaki Foundation, TGW Group.  
 
+- [SLIMEIM_Maa](https://github.com/miaojiuqing/SLIMEIM_Maa) ![Pipeline](https://img.shields.io/badge/Pipeline-%23876f69?logo=paddypower&logoColor=%23FFFFFF) ![Python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white) ![license](https://img.shields.io/github/license/miaojiuqing/SLIMEIM_Maa) ![activity](https://img.shields.io/github/commit-activity/m/miaojiuqing/SLIMEIM_Maa?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/miaojiuqing/SLIMEIM_Maa?style=social) [![mirrorc](https://img.shields.io/badge/Mirror%E9%85%B1-%239af3f6?logo=countingworkspro&logoColor=4f46e5)](https://mirrorchyan.com/en/projects?source=maafw-badge&rid=SLIMEIM_Maa)  
+  Assistant for the Founding Chronicles of the Demon King and Dragon.Free your hands with image recognition and simulated control technology! Powered by MaaFramework!
+  
 ## Eco-Building
 
 MAA is planned to be a category of projects rather than just a single piece of software.
