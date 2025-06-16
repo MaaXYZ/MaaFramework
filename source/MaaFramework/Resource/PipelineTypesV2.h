@@ -24,21 +24,21 @@ struct JTemplateMatch
 {
     JTarget roi;
     JRect roi_offset;
-    std::variant<std::vector<std::string>, std::string> templates;
+    std::variant<std::vector<std::string>, std::string> template_;
     std::variant<std::vector<double>, double> threshold;
     std::string order_by;
     int index = 0;
     int method = 0;
     bool green_mask = false;
 
-    MEO_TOJSON(roi, roi_offset, templates, threshold, order_by, index, method, green_mask);
+    MEO_TOJSON(roi, roi_offset, template_, threshold, order_by, index, method, green_mask);
 };
 
 struct JFeatureMatch
 {
     JTarget roi;
     JRect roi_offset;
-    std::variant<std::vector<std::string>, std::string> templates;
+    std::variant<std::vector<std::string>, std::string> template_;
     int count = 0;
     std::string order_by;
     int index = 0;
@@ -46,7 +46,7 @@ struct JFeatureMatch
     std::string detector;
     double ratio = 0;
 
-    MEO_TOJSON(roi, roi_offset, templates, count, order_by, index, green_mask, detector, ratio);
+    MEO_TOJSON(roi, roi_offset, template_, count, order_by, index, green_mask, detector, ratio);
 };
 
 struct JColorMatch
@@ -70,7 +70,7 @@ struct JOCR
     JRect roi_offset;
     std::variant<std::vector<std::string>, std::string> expected;
     double threshold = 0;
-    std::variant<std::vector<std::pair<int, int>>, std::pair<int, int>> replace;
+    std::variant<std::vector<std::pair<std::string, std::string>>, std::pair<std::string, std::string>> replace;
     std::string order_by;
     int index = 0;
     bool only_rec = false;
@@ -116,15 +116,15 @@ struct JCustomRecognition
     MEO_TOJSON(roi, roi_offset, custom_recognition, custom_recognition_param);
 };
 
-using JRecognitionData = std::
+using JRecognitionParam = std::
     variant<JDirectHit, JTemplateMatch, JFeatureMatch, JColorMatch, JOCR, JNeuralNetworkClassify, JNeuralNetworkDetect, JCustomRecognition>;
 
 struct JRecognition
 {
-    std::string algorithm;
-    JRecognitionData data;
+    std::string type;
+    JRecognitionParam param;
 
-    MEO_TOJSON(algorithm, data);
+    MEO_TOJSON(type, param);
 };
 
 struct JDoNothing
@@ -144,18 +144,18 @@ struct JLongPress
 {
     JTarget target;
     JRect target_offset {};
-    int duration = 0;
+    int64_t duration = 0;
     MEO_TOJSON(target, target_offset, duration);
 };
 
 struct JSwipe
 {
-    int starting = 0;
+    int64_t starting = 0;
     JTarget begin;
     JRect begin_offset {};
     JTarget end;
     JRect end_offset {};
-    int duration = 0;
+    int64_t duration = 0;
     MEO_TOJSON(starting, begin, begin_offset, end, end_offset, duration);
 };
 
@@ -218,25 +218,26 @@ struct JCustomAction
     MEO_TOJSON(custom_action, custom_action_param);
 };
 
-using JActionData = std::variant<JDoNothing, JClick, JSwipe, JMultiSwipe, JKey, JInputText, JStartApp, JStopApp, JCommand, JCustomAction>;
+using JActionParam =
+    std::variant<JDoNothing, JClick, JLongPress, JSwipe, JMultiSwipe, JKey, JInputText, JStartApp, JStopApp, JCommand, JCustomAction>;
 
 struct JAction
 {
     std::string type;
-    JActionData data;
+    JActionParam param;
 
-    MEO_TOJSON(type, data);
+    MEO_TOJSON(type, param);
 };
 
 struct JWaitFreezes
 {
-    int time = 0;
+    int64_t time = 0;
     JTarget target;
     JRect target_offset {};
     double threshold = 0;
     int method = 0;
-    int rate_limit = 0;
-    int timeout = 0;
+    int64_t rate_limit = 0;
+    int64_t timeout = 0;
 
     MEO_TOJSON(time, target, target_offset, threshold, method, rate_limit, timeout);
 };
@@ -248,13 +249,13 @@ struct JPipelineData
     std::variant<std::vector<std::string>, std::string> next;
     std::variant<std::vector<std::string>, std::string> interrupt;
     bool is_sub = false;
-    int rate_limit = 0;
-    int timeout = 0;
+    int64_t rate_limit = 0;
+    int64_t timeout = 0;
     std::variant<std::vector<std::string>, std::string> on_error;
     bool inverse = false;
     bool enabled = false;
-    int pre_delay = 0;
-    int post_delay = 0;
+    int64_t pre_delay = 0;
+    int64_t post_delay = 0;
     std::variant<JWaitFreezes, int> pre_wait_freezes;
     std::variant<JWaitFreezes, int> post_wait_freezes;
     json::value focus;

@@ -63,6 +63,17 @@ inline static const std::unordered_map<std::string, Type> kTypeMap = {
     { "Custom", Type::Custom },
     { "custom", Type::Custom },
 };
+
+inline static const std::unordered_map<Type, std::string> kTypeNameMap = {
+    { Type::DirectHit, "DirectHit" },
+    { Type::TemplateMatch, "TemplateMatch" },
+    { Type::FeatureMatch, "FeatureMatch" },
+    { Type::OCR, "OCR" },
+    { Type::NeuralNetworkClassify, "NeuralNetworkClassify" },
+    { Type::NeuralNetworkDetect, "NeuralNetworkDetect" },
+    { Type::ColorMatch, "ColorMatch" },
+    { Type::Custom, "Custom" },
+};
 } // namespace Recognition
 
 namespace Action
@@ -184,6 +195,12 @@ inline static const std::unordered_map<std::string, Type> kTypeMap = {
     { "Stop", Type::StopTask },
     { "stop", Type::StopTask },
 };
+
+inline static const std::unordered_map<Type, std::string> kTypeNameMap = {
+    { Type::DoNothing, "DoNothing" },   { Type::Click, "Click" },     { Type::LongPress, "LongPress" }, { Type::Swipe, "Swipe" },
+    { Type::MultiSwipe, "MultiSwipe" }, { Type::Key, "Key" },         { Type::Text, "Text" },           { Type::StartApp, "StartApp" },
+    { Type::StopApp, "StopApp" },       { Type::Command, "Command" }, { Type::Custom, "Custom" },       { Type::StopTask, "StopTask" },
+};
 } // namespace Action
 
 struct WaitFreezesParam
@@ -204,7 +221,7 @@ struct PipelineData
 
     std::string name;
     bool is_sub = false; // for compatibility with 1.x
-    bool enable = true;
+    bool enabled = true;
 
     Recognition::Type reco_type = Recognition::Type::DirectHit;
     Recognition::Param reco_param = MAA_VISION_NS::DirectHitParam {};
@@ -226,8 +243,6 @@ struct PipelineData
     WaitFreezesParam post_wait_freezes;
 
     json::value focus;
-
-    json::object raw;
 };
 
 MAA_RES_NS_END

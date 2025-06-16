@@ -95,7 +95,7 @@ NeuralNetworkClassifier::Result NeuralNetworkClassifier::classify() const
     return res;
 }
 
-void NeuralNetworkClassifier::add_results(ResultsVec results, const std::vector<size_t>& expected)
+void NeuralNetworkClassifier::add_results(ResultsVec results, const std::vector<int>& expected)
 {
     std::ranges::copy_if(results, std::back_inserter(filtered_results_), [&](const auto& res) {
         return std::ranges::find(expected, res.cls_index) != expected.end();

@@ -97,8 +97,8 @@ RecoResult TaskBase::run_recognition(const cv::Mat& image, const PipelineData::N
         }
         const auto& pipeline_data = *data_opt;
 
-        if (!pipeline_data.enable) {
-            LogDebug << "node disabled" << node << VAR(pipeline_data.enable);
+        if (!pipeline_data.enabled) {
+            LogDebug << "node disabled" << node << VAR(pipeline_data.enabled);
             continue;
         }
 

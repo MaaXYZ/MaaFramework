@@ -42,7 +42,7 @@ private:
 
     Result classify() const;
 
-    void add_results(ResultsVec results, const std::vector<size_t>& expected);
+    void add_results(ResultsVec results, const std::vector<int>& expected);
     void cherry_pick();
 
 private:
