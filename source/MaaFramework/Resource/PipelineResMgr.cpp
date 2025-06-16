@@ -448,6 +448,10 @@ json::object PipelineResMgr::dump(const PipelineData& pp)
             .custom_action_param = param.custom_param,
         };
     } break;
+
+    default:
+        LogError << "Invalid action type" << VAR(pp.action_type);
+        return {};
     }
 
     auto dump_wait_freezes = [&](const WaitFreezesParam& param) -> PipelineV2::JWaitFreezes {
