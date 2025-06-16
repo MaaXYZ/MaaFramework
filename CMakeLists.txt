@@ -21,6 +21,7 @@ option(BUILD_PICLI "build maa picli" ON)
 option(BUILD_SAMPLE "build a demo" OFF)
 option(BUILD_PIPELINE_TESTING "build pipeline testing" OFF)
 option(BUILD_DLOPEN_TESTING "build dlopen testing" OFF)
+option(BUILD_NODE_TEST "build node test" OFF)
 
 option(ENABLE_CCACHE "enable ccache if possible" ON)
 # option(ENABLE_CPP20_MODULES "enable C++20 modules" ON)
@@ -82,6 +83,10 @@ endif()
 
 if(BUILD_DLOPEN_TESTING)
     add_subdirectory(test/dlopen)
+endif()
+
+if (BUILD_NODE_TEST)
+    add_subdirectory(tools/NodeTest)
 endif()
 
 if(USE_MAADEPS)

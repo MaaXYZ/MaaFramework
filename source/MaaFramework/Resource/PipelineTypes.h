@@ -49,6 +49,7 @@ enum class Type
     Invalid = 0,
     DoNothing,
     Click,
+    LongPress,
     Swipe,
     MultiSwipe,
     Key,
@@ -65,6 +66,12 @@ using Target = MAA_VISION_NS::Target;
 struct ClickParam
 {
     Target target;
+};
+
+struct LongPressParam
+{
+    Target target;
+    uint duration = 500;
 };
 
 struct SwipeParam
@@ -110,8 +117,17 @@ struct CustomParam
     Target target;
 };
 
-using Param =
-    std::variant<std::monostate, ClickParam, SwipeParam, MultiSwipeParam, KeyParam, TextParam, AppParam, CommandParam, CustomParam>;
+using Param = std::variant<
+    std::monostate,
+    ClickParam,
+    LongPressParam,
+    SwipeParam,
+    MultiSwipeParam,
+    KeyParam,
+    TextParam,
+    AppParam,
+    CommandParam,
+    CustomParam>;
 } // namespace Action
 
 struct WaitFreezesParam

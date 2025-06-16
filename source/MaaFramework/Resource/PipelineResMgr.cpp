@@ -65,8 +65,8 @@ bool PipelineResMgr::load_all_json(const std::filesystem::path& path, const Defa
 
         auto ext = path_to_utf8_string(entry_path.extension());
         tolowers_(ext);
-        if (ext != ".json") {
-            LogWarn << "entry is not *.json, skip" << VAR(entry_path) << VAR(ext);
+        if (ext != ".json" && ext != ".jsonc") {
+            LogWarn << "entry is not *.json or *.jsonc, skip" << VAR(entry_path) << VAR(ext);
             continue;
         }
 
@@ -187,7 +187,10 @@ std::vector<std::string> PipelineResMgr::get_node_list() const
     return std::vector(k.begin(), k.end());
 }
 
-bool PipelineResMgr::parse_and_override(const json::object& input, std::set<std::string>& existing_keys, const DefaultPipelineMgr& default_mgr)
+bool PipelineResMgr::parse_and_override(
+    const json::object& input,
+    std::set<std::string>& existing_keys,
+    const DefaultPipelineMgr& default_mgr)
 {
     for (const auto& [key, value] : input) {
         if (key.empty()) {
@@ -1122,6 +1125,8 @@ bool PipelineResMgr::parse_action(
         { "click", Type::Click },
         { "Swipe", Type::Swipe },
         { "swipe", Type::Swipe },
+        { "LongPress", Type::LongPress },
+        { "longpress", Type::LongPress },
         { "MultiSwipe", Type::MultiSwipe },
         { "multiswipe", Type::MultiSwipe },
         { "PressKey", Type::Key },
@@ -1161,6 +1166,15 @@ bool PipelineResMgr::parse_action(
         auto default_param = default_mgr.get_action_param<ClickParam>(Type::Click);
         out_param = default_param;
         return parse_click(input, std::get<ClickParam>(out_param), same_type ? std::get<ClickParam>(parent_param) : default_param);
+    } break;
+
+    case Type::LongPress: {
+        auto default_param = default_mgr.get_action_param<LongPressParam>(Type::LongPress);
+        out_param = default_param;
+        return parse_long_press(
+            input,
+            std::get<LongPressParam>(out_param),
+            same_type ? std::get<LongPressParam>(parent_param) : default_param);
     } break;
 
     case Type::Swipe: {
@@ -1238,6 +1252,21 @@ bool PipelineResMgr::parse_click(const json::value& input, Action::ClickParam& o
 {
     if (!parse_action_target(input, "target", output.target, default_value.target)) {
         LogError << "failed to parse_action_target" << VAR(input);
+        return false;
+    }
+
+    return true;
+}
+
+bool PipelineResMgr::parse_long_press(const json::value& input, Action::LongPressParam& output, const Action::LongPressParam& default_value)
+{
+    if (!parse_action_target(input, "target", output.target, default_value.target)) {
+        LogError << "failed to parse_action_target" << VAR(input);
+        return false;
+    }
+
+    if (!get_and_check_value(input, "duration", output.duration, default_value.duration)) {
+        LogError << "failed to get_and_check_value duration" << VAR(input);
         return false;
     }
 

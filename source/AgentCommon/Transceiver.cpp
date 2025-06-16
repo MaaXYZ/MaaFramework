@@ -67,9 +67,14 @@ void Transceiver::uninit_socket()
     zmq_ctx_.close();
 }
 
-bool Transceiver::connected()
+bool Transceiver::alive()
 {
-    return zmq_sock_.handle() != nullptr;
+    if (zmq_sock_.handle() == nullptr) {
+        return false;
+    }
+
+    zmq::pollitem_t item = { zmq_sock_.handle(), 0, ZMQ_POLLIN | ZMQ_POLLOUT, 0 };
+    return zmq::detail::poll(&item, 1, 0);
 }
 
 bool Transceiver::send(const json::value& j)

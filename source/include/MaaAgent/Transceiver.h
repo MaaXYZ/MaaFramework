@@ -63,7 +63,7 @@ protected:
 
     void init_socket(const std::string& identifier, bool bind);
     void uninit_socket();
-    bool connected();
+    bool alive();
 
     bool send(const json::value& j);
     std::optional<json::value> recv();

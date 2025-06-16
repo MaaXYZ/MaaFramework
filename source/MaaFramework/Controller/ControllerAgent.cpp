@@ -193,6 +193,12 @@ bool ControllerAgent::click(const cv::Point& p)
     return wait(id) == MaaStatus_Succeeded;
 }
 
+bool ControllerAgent::long_press(const cv::Rect& r, int duration)
+{
+    cv::Point p = rand_point(r);
+    return swipe(p, p, duration);
+}
+
 bool ControllerAgent::swipe(const cv::Rect& r1, const cv::Rect& r2, int duration)
 {
     return swipe(rand_point(r1), rand_point(r2), duration);

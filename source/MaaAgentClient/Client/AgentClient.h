@@ -123,6 +123,7 @@ public:
 
 private:
     MaaResource* resource_ = nullptr;
+    bool connected_ = false;
     std::string identifier_;
 
     std::map<std::string, MaaContext*> context_map_;
