@@ -175,7 +175,7 @@ std::optional<json::object> Context::get_node_data(const std::string& node_name)
         return std::nullopt;
     }
 
-    return pp_opt->dumpj();
+    return MAA_RES_NS::PipelineResMgr::dump(*pp_opt);
 }
 
 MaaTaskId Context::task_id() const

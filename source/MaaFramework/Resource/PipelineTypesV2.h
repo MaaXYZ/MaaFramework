@@ -12,13 +12,234 @@ MAA_RES_NS_BEGIN
 
 namespace PipelineV2
 {
-
 using JRect = std::array<int, 4>;
 using JTarget = std::variant<bool, std::string, JRect>;
 
-struct JRecognition;
-struct JAction;
-struct JWaitFreezes;
+struct JDirectHit
+{
+    json::value to_json() const { return {}; }
+};
+
+struct JTemplateMatch
+{
+    JTarget roi;
+    JRect roi_offset;
+    std::variant<std::vector<std::string>, std::string> templates;
+    std::variant<std::vector<double>, double> threshold;
+    std::string order_by;
+    int index = 0;
+    int method = 0;
+    bool green_mask = false;
+
+    MEO_TOJSON(roi, roi_offset, templates, threshold, order_by, index, method, green_mask);
+};
+
+struct JFeatureMatch
+{
+    JTarget roi;
+    JRect roi_offset;
+    std::variant<std::vector<std::string>, std::string> templates;
+    int count = 0;
+    std::string order_by;
+    int index = 0;
+    bool green_mask = false;
+    std::string detector;
+    double ratio = 0;
+
+    MEO_TOJSON(roi, roi_offset, templates, count, order_by, index, green_mask, detector, ratio);
+};
+
+struct JColorMatch
+{
+    JTarget roi;
+    JRect roi_offset;
+    int method = 0;
+    std::variant<std::vector<std::vector<int>>, std::vector<int>> lower;
+    std::variant<std::vector<std::vector<int>>, std::vector<int>> upper;
+    int count = 0;
+    std::string order_by;
+    int index = 0;
+    bool connected = false;
+
+    MEO_TOJSON(roi, roi_offset, method, lower, upper, count, order_by, index, connected);
+};
+
+struct JOCR
+{
+    JTarget roi;
+    JRect roi_offset;
+    std::variant<std::vector<std::string>, std::string> expected;
+    double threshold = 0;
+    std::variant<std::vector<std::pair<int, int>>, std::pair<int, int>> replace;
+    std::string order_by;
+    int index = 0;
+    bool only_rec = false;
+    std::string model;
+
+    MEO_TOJSON(roi, roi_offset, expected, threshold, replace, order_by, index, only_rec, model);
+};
+
+struct JNeuralNetworkClassify
+{
+    JTarget roi;
+    JRect roi_offset;
+    std::vector<std::string> labels;
+    std::string model;
+    std::variant<std::vector<int>, int> expected;
+    std::string order_by;
+    int index = 0;
+
+    MEO_TOJSON(roi, roi_offset, labels, model, expected, order_by, index);
+};
+
+struct JNeuralNetworkDetect
+{
+    JTarget roi;
+    JRect roi_offset;
+    std::vector<std::string> labels;
+    std::string model;
+    std::variant<std::vector<int>, int> expected;
+    std::variant<std::vector<double>, double> threshold;
+    std::string order_by;
+    int index = 0;
+
+    MEO_TOJSON(roi, roi_offset, labels, model, expected, threshold, order_by, index);
+};
+
+struct JCustomRecognition
+{
+    JTarget roi;
+    JRect roi_offset;
+    std::string custom_recognition;
+    json::value custom_recognition_param;
+
+    MEO_TOJSON(roi, roi_offset, custom_recognition, custom_recognition_param);
+};
+
+using JRecognitionData = std::
+    variant<JDirectHit, JTemplateMatch, JFeatureMatch, JColorMatch, JOCR, JNeuralNetworkClassify, JNeuralNetworkDetect, JCustomRecognition>;
+
+struct JRecognition
+{
+    std::string algorithm;
+    JRecognitionData data;
+
+    MEO_TOJSON(algorithm, data);
+};
+
+struct JDoNothing
+{
+    json::value to_json() const { return {}; }
+};
+
+struct JClick
+{
+    JTarget target;
+    JRect target_offset {};
+
+    MEO_TOJSON(target, target_offset);
+};
+
+struct JLongPress
+{
+    JTarget target;
+    JRect target_offset {};
+    int duration = 0;
+    MEO_TOJSON(target, target_offset, duration);
+};
+
+struct JSwipe
+{
+    int starting = 0;
+    JTarget begin;
+    JRect begin_offset {};
+    JTarget end;
+    JRect end_offset {};
+    int duration = 0;
+    MEO_TOJSON(starting, begin, begin_offset, end, end_offset, duration);
+};
+
+struct JMultiSwipe
+{
+    std::vector<JSwipe> swipes;
+
+    MEO_TOJSON(swipes);
+};
+
+struct JKey
+{
+    std::variant<std::vector<int>, int> key;
+
+    MEO_TOJSON(key);
+};
+
+struct JInputText
+{
+    std::string input_text;
+
+    MEO_TOJSON(input_text);
+};
+
+struct JStartApp
+{
+    std::string package;
+
+    MEO_TOJSON(package);
+};
+
+struct JStopApp
+{
+    std::string package;
+
+    MEO_TOJSON(package);
+};
+
+struct JStopTask
+{
+    json::value to_json() const { return {}; }
+};
+
+struct JCommand
+{
+    std::string exec;
+    std::vector<std::string> args;
+    bool detach = false;
+
+    MEO_TOJSON(exec, args, detach);
+};
+
+struct JCustomAction
+{
+    JTarget target;
+    JRect target_offset {};
+    std::string custom_action;
+    json::value custom_action_param;
+
+    MEO_TOJSON(custom_action, custom_action_param);
+};
+
+using JActionData = std::variant<JDoNothing, JClick, JSwipe, JMultiSwipe, JKey, JInputText, JStartApp, JStopApp, JCommand, JCustomAction>;
+
+struct JAction
+{
+    std::string type;
+    JActionData data;
+
+    MEO_TOJSON(type, data);
+};
+
+struct JWaitFreezes
+{
+    int time = 0;
+    JTarget target;
+    JRect target_offset {};
+    double threshold = 0;
+    int method = 0;
+    int rate_limit = 0;
+    int timeout = 0;
+
+    MEO_TOJSON(time, target, target_offset, threshold, method, rate_limit, timeout);
+};
 
 struct JPipelineData
 {
@@ -27,125 +248,34 @@ struct JPipelineData
     std::variant<std::vector<std::string>, std::string> next;
     std::variant<std::vector<std::string>, std::string> interrupt;
     bool is_sub = false;
-    uint32_t rate_limit = 0;
-    uint32_t timeout = 0;
+    int rate_limit = 0;
+    int timeout = 0;
     std::variant<std::vector<std::string>, std::string> on_error;
     bool inverse = false;
     bool enabled = false;
-    uint32_t pre_delay = 0;
-    uint32_t post_delay = 0;
-    std::variant<JWaitFreezes, uint32_t> pre_wait_freezes;
-    std::variant<JWaitFreezes, uint32_t> post_wait_freezes;
+    int pre_delay = 0;
+    int post_delay = 0;
+    std::variant<JWaitFreezes, int> pre_wait_freezes;
+    std::variant<JWaitFreezes, int> post_wait_freezes;
     json::value focus;
 
-    MEO_JSONIZATION(
-        MEO_OPT recognition,
-        MEO_OPT action,
-        MEO_OPT next,
-        MEO_OPT interrupt,
-        MEO_OPT is_sub,
-        MEO_OPT rate_limit,
-        MEO_OPT timeout,
-        MEO_OPT on_error,
-        MEO_OPT inverse,
-        MEO_OPT enabled,
-        MEO_OPT pre_delay,
-        MEO_OPT post_delay,
-        MEO_OPT pre_wait_freezes,
-        MEO_OPT post_wait_freezes,
-        MEO_OPT focus);
+    MEO_TOJSON(
+        recognition,
+        action,
+        next,
+        interrupt,
+        is_sub,
+        rate_limit,
+        timeout,
+        on_error,
+        inverse,
+        enabled,
+        pre_delay,
+        post_delay,
+        pre_wait_freezes,
+        post_wait_freezes,
+        focus);
 };
-
-struct JTemplateMatch;
-struct JFeatureMatch;
-struct JColorMatch;
-struct JOCR;
-struct JNeuralNetworkClassify;
-struct JNeuralNetworkDetect;
-struct JCustomRecognition;
-
-struct JRecognition
-{
-    std::string algorithm;
-    std::variant<JTemplateMatch, JFeatureMatch, JColorMatch, JOCR, JNeuralNetworkClassify, JNeuralNetworkDetect, JCustomRecognition> data;
-
-    MEO_TOJSON(algorithm, data);
-    MEO_CHECKJSON(algorithm, MEO_OPT data);
-
-    bool from_json(const json::value& in)
-    {
-        // TODO
-    }
-};
-
-struct JDoNothing;
-struct JClick;
-struct JSwipe;
-struct JMultiSwipe;
-struct JKey;
-struct JInputText;
-struct JStartApp;
-struct JStopApp;
-struct JCommand;
-struct JCustomAction;
-
-struct JAction
-{
-    std::string algorithm;
-    std::variant<JDoNothing, JClick, JSwipe, JMultiSwipe, JKey, JMultiSwipe, JKey, JInputText, JStartApp, JStopApp, JCommand, JCustomAction>
-        data;
-
-    MEO_TOJSON(algorithm, data);
-    MEO_CHECKJSON(algorithm, MEO_OPT data);
-
-    bool from_json(const json::value& in)
-    {
-        // TODO
-    }
-};
-
-struct JTemplateMatch
-{
-    JTarget roi;
-    JRect roi_offset;
-    std::variant<std::vector<std::string>, std::string> template_path;
-    std::variant<std::vector<double>, double> threshold;
-    std::string order_by;
-    int index = 0;
-    int method = 0;
-    bool green_mask = false;
-
-    MEO_JSONIZATION(
-        MEO_OPT roi,
-        MEO_OPT roi_offset,
-        MEO_OPT template_path,
-        MEO_OPT threshold,
-        MEO_OPT order_by,
-        MEO_OPT index,
-        MEO_OPT method,
-        MEO_OPT green_mask);
-};
-
-struct JWaitFreezes
-{
-    uint32_t time = 0;
-    JTarget target;
-    JRect target_offset {};
-    double threshold = 0;
-    int method = 0;
-    uint32_t rate_limit = 0;
-    uint32_t timeout = 0;
-
-    MEO_JSONIZATION(
-        MEO_OPT time,
-        MEO_OPT target,
-        MEO_OPT target_offset,
-        MEO_OPT threshold,
-        MEO_OPT method,
-        MEO_OPT rate_limit,
-        MEO_OPT timeout);
-};
-
-}
+} // namespace PipelineV2
 
 MAA_RES_NS_END

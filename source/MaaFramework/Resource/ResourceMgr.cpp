@@ -197,7 +197,7 @@ std::optional<json::object> ResourceMgr::get_node_data(const std::string& node_n
         return std::nullopt;
     }
 
-    return it->second.dumpj();
+    return PipelineResMgr::dump(it->second);
 }
 
 void ResourceMgr::register_custom_recognition(const std::string& name, MaaCustomRecognitionCallback recognition, void* trans_arg)

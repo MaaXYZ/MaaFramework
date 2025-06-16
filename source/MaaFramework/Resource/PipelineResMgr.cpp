@@ -1,5 +1,6 @@
 #include "PipelineResMgr.h"
 
+#include "PipelineTypesV2.h"
 #include "Utils/Codec.h"
 #include "Utils/Logger.h"
 #include "Utils/Platform.h"
@@ -168,6 +169,15 @@ bool PipelineResMgr::check_all_regex(const PipelineDataMap& data_map)
         }
     }
     return true;
+}
+
+json::object PipelineResMgr::dump(const PipelineData& pp)
+{
+    PipelineV2::JPipelineData data;
+
+    std::ignore = pp;
+
+    return data.to_json().as_object();
 }
 
 bool PipelineResMgr::check_next_list(const PipelineData::NextList& next_list, const PipelineDataMap& data_map)
@@ -533,7 +543,7 @@ bool PipelineResMgr::parse_template_matcher_param(
         return false;
     }
 
-    if (!get_and_check_value_or_array(input, "template", output.template_paths, default_value.template_paths)) {
+    if (!get_multi_keys_and_check_value(input, { "template", "templates" }, output.template_paths, default_value.template_paths)) {
         LogError << "failed to get_and_check_value_or_array templates" << VAR(input);
         return false;
     }
@@ -585,7 +595,7 @@ bool PipelineResMgr::parse_feature_matcher_param(
         return false;
     }
 
-    if (!get_and_check_value_or_array(input, "template", output.template_paths, default_value.template_paths)) {
+    if (!get_multi_keys_and_check_value(input, { "template", "templates" }, output.template_paths, default_value.template_paths)) {
         LogError << "failed to get_and_check_value_or_array templates" << VAR(input);
         return false;
     }

@@ -124,6 +124,8 @@ public:
     static bool check_all_next_list(const PipelineDataMap& data_map);
     static bool check_all_regex(const PipelineDataMap& data_map);
 
+    static json::object dump(const PipelineData& pp);
+
 private:
     bool load_all_json(const std::filesystem::path& path, const DefaultPipelineMgr& default_mgr);
     bool

@@ -184,7 +184,6 @@ inline static const std::unordered_map<std::string, Type> kTypeMap = {
     { "Stop", Type::StopTask },
     { "stop", Type::StopTask },
 };
-
 } // namespace Action
 
 struct WaitFreezesParam
@@ -228,16 +227,7 @@ struct PipelineData
 
     json::value focus;
 
-    json::object dumpj() const
-    {
-        json::value j = to_json();
-
-        // TODO: add all fields
-        return j.as_object();
-    }
-
-private:
-    MEO_TOJSON(name, is_sub, enable, inverse, next, interrupt, on_error, focus);
+    json::object raw;
 };
 
 MAA_RES_NS_END
