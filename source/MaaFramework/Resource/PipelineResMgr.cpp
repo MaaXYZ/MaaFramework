@@ -611,10 +611,6 @@ bool get_multi_keys_and_check_value_or_array(
     for (const auto& k : keys) {
         auto opt = input.find(k);
         if (!opt) {
-            if (input.exists(k)) {
-                LogError << "type error" << VAR(k) << VAR(input);
-                return false;
-            }
             continue;
         }
         else if (opt->is_array()) {
@@ -626,9 +622,11 @@ bool get_multi_keys_and_check_value_or_array(
                 }
                 output.emplace_back(item.as<OutT>());
             }
+            return true;
         }
         else if (opt->is<OutT>()) {
             output = { opt->as<OutT>() };
+            return true;
         }
         else {
             LogError << "type error" << VAR(keys) << VAR(input);
