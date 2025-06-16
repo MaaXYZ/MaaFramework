@@ -40,6 +40,29 @@ using Param = std::variant<
     MAA_VISION_NS::NeuralNetworkDetectorParam,
     MAA_VISION_NS::ColorMatcherParam,
     MAA_VISION_NS::CustomRecognitionParam>;
+
+inline static const std::unordered_map<std::string, Type> kTypeMap = {
+    { "DirectHit", Type::DirectHit },
+    { "directhit", Type::DirectHit },
+    { "TemplateMatch", Type::TemplateMatch },
+    { "templatematch", Type::TemplateMatch },
+    { "FeatureMatch", Type::FeatureMatch },
+    { "featurematch", Type::FeatureMatch },
+    { "ColorMatch", Type::ColorMatch },
+    { "colormatch", Type::ColorMatch },
+    { "OCR", Type::OCR },
+    { "ocr", Type::OCR },
+    { "NeuralNetworkClassify", Type::NeuralNetworkClassify },
+    { "neuralnetworkclassify", Type::NeuralNetworkClassify },
+    { "nnclassify", Type::NeuralNetworkClassify },
+    { "NNClassify", Type::NeuralNetworkClassify },
+    { "NeuralNetworkDetect", Type::NeuralNetworkDetect },
+    { "neuralnetworkdetect", Type::NeuralNetworkDetect },
+    { "NNDetect", Type::NeuralNetworkDetect },
+    { "nnDetect", Type::NeuralNetworkDetect },
+    { "Custom", Type::Custom },
+    { "custom", Type::Custom },
+};
 } // namespace Recognition
 
 namespace Action
@@ -128,6 +151,40 @@ using Param = std::variant<
     AppParam,
     CommandParam,
     CustomParam>;
+
+inline static const std::unordered_map<std::string, Type> kTypeMap = {
+    { "DoNothing", Type::DoNothing },
+    { "donothing", Type::DoNothing },
+    { "Click", Type::Click },
+    { "click", Type::Click },
+    { "Swipe", Type::Swipe },
+    { "swipe", Type::Swipe },
+    { "LongPress", Type::LongPress },
+    { "longpress", Type::LongPress },
+    { "MultiSwipe", Type::MultiSwipe },
+    { "multiswipe", Type::MultiSwipe },
+    { "PressKey", Type::Key },
+    { "presskey", Type::Key },
+    { "Key", Type::Key },
+    { "key", Type::Key },
+    { "InputText", Type::Text },
+    { "inputtext", Type::Text },
+    { "Text", Type::Text },
+    { "text", Type::Text },
+    { "StartApp", Type::StartApp },
+    { "startapp", Type::StartApp },
+    { "StopApp", Type::StopApp },
+    { "stopapp", Type::StopApp },
+    { "Command", Type::Command },
+    { "command", Type::Command },
+    { "Custom", Type::Custom },
+    { "custom", Type::Custom },
+    { "StopTask", Type::StopTask },
+    { "stoptask", Type::StopTask },
+    { "Stop", Type::StopTask },
+    { "stop", Type::StopTask },
+};
+
 } // namespace Action
 
 struct WaitFreezesParam
@@ -170,6 +227,17 @@ struct PipelineData
     WaitFreezesParam post_wait_freezes;
 
     json::value focus;
+
+    json::object dumpj() const
+    {
+        json::value j = to_json();
+
+        // TODO: add all fields
+        return j.as_object();
+    }
+
+private:
+    MEO_TOJSON(name, is_sub, enable, inverse, next, interrupt, on_error, focus);
 };
 
 MAA_RES_NS_END

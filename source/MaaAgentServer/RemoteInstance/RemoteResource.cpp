@@ -122,6 +122,20 @@ bool RemoteResource::override_next(const std::string& node_name, const std::vect
     return resp_opt->ret;
 }
 
+std::optional<json::object> RemoteResource::get_node_data(const std::string& node_name) const
+{
+    ResourceGetNodeDataReverseRequest req {
+        .resource_id = resource_id_,
+        .node_name = node_name,
+    };
+
+    auto resp_opt = server_.send_and_recv<ResourceGetNodeDataReverseResponse>(req);
+    if (!resp_opt) {
+        return std::nullopt;
+    }
+    return resp_opt->node_data;
+}
+
 void RemoteResource::register_custom_recognition(const std::string& name, MaaCustomRecognitionCallback recognition, void* trans_arg)
 {
     LogError << "Can NOT register custom recognition at remote resource" << VAR(name) << VAR_VOIDP(recognition) << VAR_VOIDP(trans_arg);

@@ -423,31 +423,11 @@ bool PipelineResMgr::parse_recognition(
         return false;
     }
 
-    const std::unordered_map<std::string, Type> kRecTypeMap = {
-        { kDefaultRecognitionFlag, parent_type },
-        { "DirectHit", Type::DirectHit },
-        { "directhit", Type::DirectHit },
-        { "TemplateMatch", Type::TemplateMatch },
-        { "templatematch", Type::TemplateMatch },
-        { "FeatureMatch", Type::FeatureMatch },
-        { "featurematch", Type::FeatureMatch },
-        { "OCR", Type::OCR },
-        { "ocr", Type::OCR },
-        { "NeuralNetworkClassify", Type::NeuralNetworkClassify },
-        { "neuralnetworkclassify", Type::NeuralNetworkClassify },
-        { "nnclassify", Type::NeuralNetworkClassify },
-        { "NNClassify", Type::NeuralNetworkClassify },
-        { "NeuralNetworkDetect", Type::NeuralNetworkDetect },
-        { "neuralnetworkdetect", Type::NeuralNetworkDetect },
-        { "NNDetect", Type::NeuralNetworkDetect },
-        { "nnDetect", Type::NeuralNetworkDetect },
-        { "ColorMatch", Type::ColorMatch },
-        { "colormatch", Type::ColorMatch },
-        { "Custom", Type::Custom },
-        { "custom", Type::Custom },
-    };
-    auto reco_type_iter = kRecTypeMap.find(reco_type_name);
-    if (reco_type_iter == kRecTypeMap.end()) {
+    auto rec_type_map = kTypeMap;
+    rec_type_map.insert_or_assign(kDefaultRecognitionFlag, parent_type);
+
+    auto reco_type_iter = rec_type_map.find(reco_type_name);
+    if (reco_type_iter == rec_type_map.end()) {
         LogError << "rec type not found" << VAR(reco_type_name);
         return false;
     }
@@ -1117,41 +1097,11 @@ bool PipelineResMgr::parse_action(
         return false;
     }
 
-    const std::unordered_map<std::string, Type> kActTypeMap = {
-        { kDefaultActionFlag, parent_type },
-        { "DoNothing", Type::DoNothing },
-        { "donothing", Type::DoNothing },
-        { "Click", Type::Click },
-        { "click", Type::Click },
-        { "Swipe", Type::Swipe },
-        { "swipe", Type::Swipe },
-        { "LongPress", Type::LongPress },
-        { "longpress", Type::LongPress },
-        { "MultiSwipe", Type::MultiSwipe },
-        { "multiswipe", Type::MultiSwipe },
-        { "PressKey", Type::Key },
-        { "presskey", Type::Key },
-        { "Key", Type::Key },
-        { "key", Type::Key },
-        { "InputText", Type::Text },
-        { "inputtext", Type::Text },
-        { "Text", Type::Text },
-        { "text", Type::Text },
-        { "StartApp", Type::StartApp },
-        { "startapp", Type::StartApp },
-        { "StopApp", Type::StopApp },
-        { "stopapp", Type::StopApp },
-        { "Command", Type::Command },
-        { "command", Type::Command },
-        { "Custom", Type::Custom },
-        { "custom", Type::Custom },
-        { "StopTask", Type::StopTask },
-        { "stoptask", Type::StopTask },
-        { "Stop", Type::StopTask },
-        { "stop", Type::StopTask },
-    };
-    auto act_type_iter = kActTypeMap.find(act_type_name);
-    if (act_type_iter == kActTypeMap.cend()) {
+    auto act_type_map = kTypeMap;
+    act_type_map.insert_or_assign(kDefaultActionFlag, parent_type);
+
+    auto act_type_iter = act_type_map.find(act_type_name);
+    if (act_type_iter == act_type_map.cend()) {
         LogError << "act type not found" << VAR(act_type_name);
         return false;
     }
