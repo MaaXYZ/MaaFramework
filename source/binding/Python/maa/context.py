@@ -4,7 +4,7 @@ from typing import Dict, Optional, Tuple
 
 import numpy
 
-from .buffer import ImageBuffer, RectBuffer, StringListBuffer
+from .buffer import ImageBuffer, RectBuffer, StringBuffer, StringListBuffer
 from .define import *
 from .library import Library
 from .tasker import Tasker
@@ -101,6 +101,22 @@ class Context:
             )
         )
 
+    def get_node_data(self, name: str) -> Optional[dict]:
+        string_buffer = StringBuffer()
+        if not Library.framework().MaaContextGetNodeData(
+            self._handle, name.encode(), string_buffer._handle
+        ):
+            return None
+
+        data = string_buffer.get()
+        if not data:
+            return None
+
+        try:
+            return json.loads(data)
+        except json.JSONDecodeError:
+            return None
+
     @property
     def tasker(self) -> Tasker:
         return self._tasker
@@ -175,6 +191,13 @@ class Context:
 
         Library.framework().MaaContextOverrideNext.restype = MaaBool
         Library.framework().MaaContextOverrideNext.argtypes = [
+            MaaContextHandle,
+            ctypes.c_char_p,
+            MaaStringListBufferHandle,
+        ]
+
+        Library.framework().MaaContextGetNodeData.restype = MaaBool
+        Library.framework().MaaContextGetNodeData.argtypes = [
             MaaContextHandle,
             ctypes.c_char_p,
             MaaStringBufferHandle,

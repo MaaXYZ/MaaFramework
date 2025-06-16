@@ -67,6 +67,22 @@ class Resource:
                 self._handle, name.encode(), list_buffer._handle
             )
         )
+    
+    def get_node_data(self, name: str) -> Optional[dict]:
+        string_buffer = StringBuffer()
+        if not Library.framework().MaaResourceGetNodeData(
+            self._handle, name.encode(), string_buffer._handle
+        ):
+            return None
+
+        data = string_buffer.get()
+        if not data:
+            return None
+
+        try:
+            return json.loads(data)
+        except json.JSONDecodeError:
+            return None
 
     @property
     def loaded(self) -> bool:
@@ -292,6 +308,13 @@ class Resource:
         Library.framework().MaaResourceOverrideNext.restype = MaaBool
         Library.framework().MaaResourceOverrideNext.argtypes = [
             MaaResourceHandle,
+            ctypes.c_char_p,
+            MaaStringListBufferHandle,
+        ]
+
+        Library.framework().MaaResourceGetNodeData.restype = MaaBool
+        Library.framework().MaaResourceGetNodeData.argtypes = [
+            MaaContextHandle,
             ctypes.c_char_p,
             MaaStringBufferHandle,
         ]
