@@ -43,6 +43,8 @@ extern "C"
 
     MAA_FRAMEWORK_API MaaBool MaaResourceOverrideNext(MaaResource* res, const char* node_name, const MaaStringListBuffer* next_list);
 
+    MAA_FRAMEWORK_API MaaBool MaaResourceGetNodeData(MaaResource* res, const char* node_name, /* out */ MaaStringBuffer* buffer);
+
     MAA_FRAMEWORK_API MaaBool MaaResourceClear(MaaResource* res);
 
     MAA_FRAMEWORK_API MaaStatus MaaResourceStatus(const MaaResource* res, MaaResId id);

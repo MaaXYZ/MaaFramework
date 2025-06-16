@@ -200,7 +200,7 @@ struct ContextGetNodeDataReverseRequest
     std::string node_name;
 
     MessageTypePlaceholder _ContextGetNodeDataReverseRequest = 1;
-    MEO_JSONIZATION(context_id, node_name, next, _ContextGetNodeDataReverseRequest);
+    MEO_JSONIZATION(context_id, node_name, _ContextGetNodeDataReverseRequest);
 };
 
 struct ContextGetNodeDataReverseResponse
@@ -655,7 +655,7 @@ struct ResourceGetNodeDataReverseRequest
     std::string node_name;
 
     MessageTypePlaceholder _ResourceGetNodeDataReverseRequest = 1;
-    MEO_JSONIZATION(resource_id, node_name, next, _ResourceGetNodeDataReverseRequest);
+    MEO_JSONIZATION(resource_id, node_name, _ResourceGetNodeDataReverseRequest);
 };
 
 struct ResourceGetNodeDataReverseResponse

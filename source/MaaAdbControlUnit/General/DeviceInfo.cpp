@@ -1,6 +1,7 @@
 #include "DeviceInfo.h"
 
 #include "Utils/Logger.h"
+#include "Utils/Uuid.h"
 
 MAA_CTRL_UNIT_NS_BEGIN
 
@@ -32,7 +33,7 @@ std::optional<std::string> DeviceInfo::request_uuid()
 
     auto output_opt = startup_and_read_pipe(*argv_opt);
     if (!output_opt) {
-        return std::nullopt;
+        return make_uuid();
     }
 
     auto& uuid_str = output_opt.value();

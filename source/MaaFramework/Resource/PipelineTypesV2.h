@@ -17,7 +17,7 @@ using JTarget = std::variant<bool, std::string, JRect>;
 
 struct JDirectHit
 {
-    json::value to_json() const { return {}; }
+    json::value to_json() const { return json::object(); }
 };
 
 struct JTemplateMatch
@@ -129,7 +129,7 @@ struct JRecognition
 
 struct JDoNothing
 {
-    json::value to_json() const { return {}; }
+    json::value to_json() const { return json::object(); }
 };
 
 struct JClick
@@ -196,7 +196,7 @@ struct JStopApp
 
 struct JStopTask
 {
-    json::value to_json() const { return {}; }
+    json::value to_json() const { return json::object(); }
 };
 
 struct JCommand

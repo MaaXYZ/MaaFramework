@@ -125,6 +125,25 @@ MaaBool MaaContextOverrideNext(MaaContext* context, const char* name, const MaaS
     return context->override_next(name, next);
 }
 
+MaaBool MaaContextGetNodeData(MaaContext* context, const char* node_name, MaaStringBuffer* buffer)
+{
+    LogFunc << VAR_VOIDP(context) << VAR(node_name);
+
+    if (!context || !buffer) {
+        LogError << "handle is null";
+        return false;
+    }
+
+    auto data_opt = context->get_node_data(node_name);
+    if (!data_opt) {
+        LogError << "failed to get node data" << VAR(node_name);
+        return false;
+    }
+
+    buffer->set(data_opt->dumps());
+    return true;
+}
+
 MaaTaskId MaaContextGetTaskId(const MaaContext* context)
 {
     if (!context) {
