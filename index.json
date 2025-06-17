@@ -1,5 +1,5 @@
 {
-	"Version": "(main) v4.3.2",
+	"Version": "(main) v4.4.0-alpha.1",
 	"Compounds": {
 		"MaaAgentClientAPI.h": {
 			"Location": "include/MaaAgentClient/MaaAgentClientAPI.h",
@@ -514,6 +514,37 @@
 						},
 						"next_list": {
 							"Type": "const MaaStringListBuffer*",
+							"Description": "",
+							"Direction": 0,
+							"IsPointerToArray": null
+						}
+					}
+				},
+				"MaaContextGetNodeData": {
+					"Description": {
+						"Brief": "",
+						"Details": [],
+						"Deprecated": null
+					},
+					"Types": {
+						"MAA_FRAMEWORK_API": "",
+						"MaaBool": ""
+					},
+					"Parameters": {
+						"context": {
+							"Type": "MaaContext*",
+							"Description": "",
+							"Direction": 0,
+							"IsPointerToArray": null
+						},
+						"node_name": {
+							"Type": "const char*",
+							"Description": "",
+							"Direction": 0,
+							"IsPointerToArray": null
+						},
+						"buffer": {
+							"Type": "MaaStringBuffer*",
 							"Description": "",
 							"Direction": 0,
 							"IsPointerToArray": null
@@ -1975,6 +2006,37 @@
 						},
 						"next_list": {
 							"Type": "const MaaStringListBuffer*",
+							"Description": "",
+							"Direction": 0,
+							"IsPointerToArray": null
+						}
+					}
+				},
+				"MaaResourceGetNodeData": {
+					"Description": {
+						"Brief": "",
+						"Details": [],
+						"Deprecated": null
+					},
+					"Types": {
+						"MAA_FRAMEWORK_API": "",
+						"MaaBool": ""
+					},
+					"Parameters": {
+						"res": {
+							"Type": "MaaResource*",
+							"Description": "",
+							"Direction": 0,
+							"IsPointerToArray": null
+						},
+						"node_name": {
+							"Type": "const char*",
+							"Description": "",
+							"Direction": 0,
+							"IsPointerToArray": null
+						},
+						"buffer": {
+							"Type": "MaaStringBuffer*",
 							"Description": "",
 							"Direction": 0,
 							"IsPointerToArray": null

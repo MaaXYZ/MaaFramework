@@ -52,6 +52,7 @@
     <member refid="MaaContext_8h_1a415581acd9270998661ff49a3f362a66" kind="function"><name>MaaContextRunAction</name></member>
     <member refid="MaaContext_8h_1a581b031a7dceedcf1ff6cec308895cce" kind="function"><name>MaaContextOverridePipeline</name></member>
     <member refid="MaaContext_8h_1a1ece7f4198230c43f226ab8f7923728d" kind="function"><name>MaaContextOverrideNext</name></member>
+    <member refid="MaaContext_8h_1a2b0cbab881d3ade5dc8b7a1e8571be3d" kind="function"><name>MaaContextGetNodeData</name></member>
     <member refid="MaaContext_8h_1abecb5883a59f9a8037982bb1cbc3ff43" kind="function"><name>MaaContextGetTaskId</name></member>
     <member refid="MaaContext_8h_1a646adf1aa6a50e61fd06c173b72fab1f" kind="function"><name>MaaContextGetTasker</name></member>
     <member refid="MaaContext_8h_1a681fba1bb60a679d6e35df345e663d72" kind="function"><name>MaaContextClone</name></member>
@@ -95,6 +96,7 @@
     <member refid="MaaResource_8h_1a08043e4ee98ab14cc8c731cd5d98c064" kind="function"><name>MaaResourcePostBundle</name></member>
     <member refid="MaaResource_8h_1a8585514c308fa0e9004e26ccd9ec240a" kind="function"><name>MaaResourceOverridePipeline</name></member>
     <member refid="MaaResource_8h_1af54353480b6dcd1e22723a560545c9b9" kind="function"><name>MaaResourceOverrideNext</name></member>
+    <member refid="MaaResource_8h_1ad583785acf9660578fbf229a52dff018" kind="function"><name>MaaResourceGetNodeData</name></member>
     <member refid="MaaResource_8h_1a245abf490b3967003e4645f7bb2f2a32" kind="function"><name>MaaResourceClear</name></member>
     <member refid="MaaResource_8h_1ac6bd925883ee8e117dc224aabf279e5a" kind="function"><name>MaaResourceStatus</name></member>
     <member refid="MaaResource_8h_1a86fe7b46bb25296adac4afc40c1c0374" kind="function"><name>MaaResourceWait</name></member>
