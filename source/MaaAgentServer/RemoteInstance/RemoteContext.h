@@ -22,6 +22,7 @@ public:
             override;
     virtual bool override_pipeline(const json::object& pipeline_override) override;
     virtual bool override_next(const std::string& node_name, const std::vector<std::string>& next) override;
+    virtual std::optional<json::object> get_node_data(const std::string& node_name) const override;
 
     virtual MaaContext* clone() const override;
 

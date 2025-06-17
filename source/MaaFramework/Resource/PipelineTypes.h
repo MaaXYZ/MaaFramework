@@ -40,6 +40,40 @@ using Param = std::variant<
     MAA_VISION_NS::NeuralNetworkDetectorParam,
     MAA_VISION_NS::ColorMatcherParam,
     MAA_VISION_NS::CustomRecognitionParam>;
+
+inline static const std::unordered_map<std::string, Type> kTypeMap = {
+    { "DirectHit", Type::DirectHit },
+    { "directhit", Type::DirectHit },
+    { "TemplateMatch", Type::TemplateMatch },
+    { "templatematch", Type::TemplateMatch },
+    { "FeatureMatch", Type::FeatureMatch },
+    { "featurematch", Type::FeatureMatch },
+    { "ColorMatch", Type::ColorMatch },
+    { "colormatch", Type::ColorMatch },
+    { "OCR", Type::OCR },
+    { "ocr", Type::OCR },
+    { "NeuralNetworkClassify", Type::NeuralNetworkClassify },
+    { "neuralnetworkclassify", Type::NeuralNetworkClassify },
+    { "nnclassify", Type::NeuralNetworkClassify },
+    { "NNClassify", Type::NeuralNetworkClassify },
+    { "NeuralNetworkDetect", Type::NeuralNetworkDetect },
+    { "neuralnetworkdetect", Type::NeuralNetworkDetect },
+    { "NNDetect", Type::NeuralNetworkDetect },
+    { "nnDetect", Type::NeuralNetworkDetect },
+    { "Custom", Type::Custom },
+    { "custom", Type::Custom },
+};
+
+inline static const std::unordered_map<Type, std::string> kTypeNameMap = {
+    { Type::DirectHit, "DirectHit" },
+    { Type::TemplateMatch, "TemplateMatch" },
+    { Type::FeatureMatch, "FeatureMatch" },
+    { Type::OCR, "OCR" },
+    { Type::NeuralNetworkClassify, "NeuralNetworkClassify" },
+    { Type::NeuralNetworkDetect, "NeuralNetworkDetect" },
+    { Type::ColorMatch, "ColorMatch" },
+    { Type::Custom, "Custom" },
+};
 } // namespace Recognition
 
 namespace Action
@@ -128,6 +162,45 @@ using Param = std::variant<
     AppParam,
     CommandParam,
     CustomParam>;
+
+inline static const std::unordered_map<std::string, Type> kTypeMap = {
+    { "DoNothing", Type::DoNothing },
+    { "donothing", Type::DoNothing },
+    { "Click", Type::Click },
+    { "click", Type::Click },
+    { "Swipe", Type::Swipe },
+    { "swipe", Type::Swipe },
+    { "LongPress", Type::LongPress },
+    { "longpress", Type::LongPress },
+    { "MultiSwipe", Type::MultiSwipe },
+    { "multiswipe", Type::MultiSwipe },
+    { "PressKey", Type::Key },
+    { "presskey", Type::Key },
+    { "Key", Type::Key },
+    { "key", Type::Key },
+    { "InputText", Type::Text },
+    { "inputtext", Type::Text },
+    { "Text", Type::Text },
+    { "text", Type::Text },
+    { "StartApp", Type::StartApp },
+    { "startapp", Type::StartApp },
+    { "StopApp", Type::StopApp },
+    { "stopapp", Type::StopApp },
+    { "Command", Type::Command },
+    { "command", Type::Command },
+    { "Custom", Type::Custom },
+    { "custom", Type::Custom },
+    { "StopTask", Type::StopTask },
+    { "stoptask", Type::StopTask },
+    { "Stop", Type::StopTask },
+    { "stop", Type::StopTask },
+};
+
+inline static const std::unordered_map<Type, std::string> kTypeNameMap = {
+    { Type::DoNothing, "DoNothing" },   { Type::Click, "Click" },     { Type::LongPress, "LongPress" }, { Type::Swipe, "Swipe" },
+    { Type::MultiSwipe, "MultiSwipe" }, { Type::Key, "Key" },         { Type::Text, "Text" },           { Type::StartApp, "StartApp" },
+    { Type::StopApp, "StopApp" },       { Type::Command, "Command" }, { Type::Custom, "Custom" },       { Type::StopTask, "StopTask" },
+};
 } // namespace Action
 
 struct WaitFreezesParam
@@ -148,7 +221,7 @@ struct PipelineData
 
     std::string name;
     bool is_sub = false; // for compatibility with 1.x
-    bool enable = true;
+    bool enabled = true;
 
     Recognition::Type reco_type = Recognition::Type::DirectHit;
     Recognition::Param reco_param = MAA_VISION_NS::DirectHitParam {};

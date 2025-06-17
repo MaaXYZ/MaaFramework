@@ -168,6 +168,16 @@ Context* Context::clone() const
     return ref.get();
 }
 
+std::optional<json::object> Context::get_node_data(const std::string& node_name) const
+{
+    auto pp_opt = get_pipeline_data(node_name);
+    if (!pp_opt) {
+        return std::nullopt;
+    }
+
+    return MAA_RES_NS::PipelineResMgr::dump(*pp_opt);
+}
+
 MaaTaskId Context::task_id() const
 {
     return task_id_;
@@ -178,7 +188,7 @@ Tasker* Context::tasker() const
     return tasker_;
 }
 
-std::optional<Context::PipelineData> Context::get_pipeline_data(const std::string& node_name)
+std::optional<Context::PipelineData> Context::get_pipeline_data(const std::string& node_name) const
 {
     auto override_it = pipeline_override_.find(node_name);
     if (override_it != pipeline_override_.end()) {
@@ -196,9 +206,9 @@ std::optional<Context::PipelineData> Context::get_pipeline_data(const std::strin
         return std::nullopt;
     }
 
-    auto& raw_data_map = resource->pipeline_res().get_pipeline_data_map();
-    auto raw_it = raw_data_map.find(node_name);
-    if (raw_it != raw_data_map.end()) {
+    const auto& raw_pp_map = resource->pipeline_res().get_pipeline_data_map();
+    auto raw_it = raw_pp_map.find(node_name);
+    if (raw_it != raw_pp_map.end()) {
         return raw_it->second;
     }
 

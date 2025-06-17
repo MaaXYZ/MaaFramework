@@ -146,7 +146,7 @@ NeuralNetworkDetector::ResultsVec NeuralNetworkDetector::detect() const
     return nms_results;
 }
 
-void NeuralNetworkDetector::add_results(ResultsVec results, const std::vector<size_t>& expected, const std::vector<double>& thresholds)
+void NeuralNetworkDetector::add_results(ResultsVec results, const std::vector<int>& expected, const std::vector<double>& thresholds)
 {
     if (expected.size() != thresholds.size()) {
         LogError << name_ << VAR(uid_) << "expected.size() != thresholds.size()" << VAR(expected) << VAR(thresholds);
@@ -154,7 +154,7 @@ void NeuralNetworkDetector::add_results(ResultsVec results, const std::vector<si
     }
 
     for (size_t i = 0; i != expected.size(); ++i) {
-        size_t exp = expected.at(i);
+        int exp = expected.at(i);
         auto it = std::ranges::find(results, exp, std::mem_fn(&Result::cls_index));
         if (it == results.end()) {
             continue;

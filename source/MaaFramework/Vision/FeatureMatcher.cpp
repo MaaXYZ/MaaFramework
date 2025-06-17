@@ -25,7 +25,7 @@ FeatureMatcher::FeatureMatcher(cv::Mat image, cv::Rect roi, FeatureMatcherParam 
 void FeatureMatcher::analyze()
 {
     if (templates_.empty()) {
-        LogError << name_ << VAR(uid_) << "templates is empty" << VAR(param_.template_paths);
+        LogError << name_ << VAR(uid_) << "templates is empty" << VAR(param_.template_);
         return;
     }
 
@@ -41,9 +41,8 @@ void FeatureMatcher::analyze()
     cherry_pick();
 
     auto cost = duration_since(start_time);
-    LogDebug << name_ << VAR(uid_) << VAR(all_results_) << VAR(filtered_results_) << VAR(best_result_) << VAR(cost)
-             << VAR(param_.template_paths) << VAR(templates_.size()) << VAR(param_.green_mask) << VAR(param_.distance_ratio)
-             << VAR(param_.count);
+    LogDebug << name_ << VAR(uid_) << VAR(all_results_) << VAR(filtered_results_) << VAR(best_result_) << VAR(cost) << VAR(param_.template_)
+             << VAR(templates_.size()) << VAR(param_.green_mask) << VAR(param_.distance_ratio) << VAR(param_.count);
 }
 
 FeatureMatcher::ResultsVec

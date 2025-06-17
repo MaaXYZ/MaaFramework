@@ -48,30 +48,7 @@ bool DefaultPipelineMgr::parse_recognition(const json::value& input)
 {
     using namespace MAA_RES_NS::Recognition;
 
-    static const std::unordered_map<std::string, Type> kRecTypeMap = {
-        { "DirectHit", Type::DirectHit },
-        { "directhit", Type::DirectHit },
-        { "TemplateMatch", Type::TemplateMatch },
-        { "templatematch", Type::TemplateMatch },
-        { "FeatureMatch", Type::FeatureMatch },
-        { "featurematch", Type::FeatureMatch },
-        { "ColorMatch", Type::ColorMatch },
-        { "colormatch", Type::ColorMatch },
-        { "OCR", Type::OCR },
-        { "ocr", Type::OCR },
-        { "NeuralNetworkClassify", Type::NeuralNetworkClassify },
-        { "neuralnetworkclassify", Type::NeuralNetworkClassify },
-        { "nnclassify", Type::NeuralNetworkClassify },
-        { "NNClassify", Type::NeuralNetworkClassify },
-        { "NeuralNetworkDetect", Type::NeuralNetworkDetect },
-        { "neuralnetworkdetect", Type::NeuralNetworkDetect },
-        { "NNDetect", Type::NeuralNetworkDetect },
-        { "nnDetect", Type::NeuralNetworkDetect },
-        { "Custom", Type::Custom },
-        { "custom", Type::Custom },
-    };
-
-    for (const auto& [name, type] : kRecTypeMap) {
+    for (const auto& [name, type] : kTypeMap) {
         auto opt = input.find(name);
         if (!opt) {
             continue;
@@ -98,38 +75,7 @@ bool DefaultPipelineMgr::parse_action(const json::value& input)
 {
     using namespace MAA_RES_NS::Action;
 
-    const std::unordered_map<std::string, Type> kActTypeMap = {
-        { "DoNothing", Type::DoNothing },
-        { "donothing", Type::DoNothing },
-        { "Click", Type::Click },
-        { "click", Type::Click },
-        { "Swipe", Type::Swipe },
-        { "swipe", Type::Swipe },
-        { "MultiSwipe", Type::MultiSwipe },
-        { "multiswipe", Type::MultiSwipe },
-        { "PressKey", Type::Key },
-        { "presskey", Type::Key },
-        { "Key", Type::Key },
-        { "key", Type::Key },
-        { "InputText", Type::Text },
-        { "inputtext", Type::Text },
-        { "Text", Type::Text },
-        { "text", Type::Text },
-        { "StartApp", Type::StartApp },
-        { "startapp", Type::StartApp },
-        { "StopApp", Type::StopApp },
-        { "stopapp", Type::StopApp },
-        { "Command", Type::Command },
-        { "command", Type::Command },
-        { "Custom", Type::Custom },
-        { "custom", Type::Custom },
-        { "StopTask", Type::StopTask },
-        { "stoptask", Type::StopTask },
-        { "Stop", Type::StopTask },
-        { "stop", Type::StopTask },
-    };
-
-    for (const auto& [name, type] : kActTypeMap) {
+    for (const auto& [name, type] : kTypeMap) {
         auto opt = input.find(name);
         if (!opt) {
             continue;

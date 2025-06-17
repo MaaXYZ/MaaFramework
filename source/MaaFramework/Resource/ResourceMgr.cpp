@@ -189,6 +189,17 @@ bool ResourceMgr::override_next(const std::string& node_name, const std::vector<
     return true;
 }
 
+std::optional<json::object> ResourceMgr::get_node_data(const std::string& node_name) const
+{
+    const auto& pp_map = pipeline_res_.get_pipeline_data_map();
+    auto it = pp_map.find(node_name);
+    if (it == pp_map.end()) {
+        return std::nullopt;
+    }
+
+    return PipelineResMgr::dump(it->second);
+}
+
 void ResourceMgr::register_custom_recognition(const std::string& name, MaaCustomRecognitionCallback recognition, void* trans_arg)
 {
     LogDebug << VAR(name) << VAR_VOIDP(recognition) << VAR_VOIDP(trans_arg);

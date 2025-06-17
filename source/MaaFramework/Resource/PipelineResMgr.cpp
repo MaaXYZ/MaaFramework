@@ -1,5 +1,6 @@
 #include "PipelineResMgr.h"
 
+#include "PipelineTypesV2.h"
 #include "Utils/Codec.h"
 #include "Utils/Logger.h"
 #include "Utils/Platform.h"
@@ -170,6 +171,307 @@ bool PipelineResMgr::check_all_regex(const PipelineDataMap& data_map)
     return true;
 }
 
+json::object PipelineResMgr::dump(const PipelineData& pp)
+{
+    PipelineV2::JPipelineData data;
+
+    data.next = pp.next;
+    data.interrupt = pp.interrupt;
+    data.is_sub = pp.is_sub;
+    data.rate_limit = pp.rate_limit.count();
+    data.timeout = pp.reco_timeout.count();
+    data.on_error = pp.on_error;
+    data.inverse = pp.inverse;
+    data.enabled = pp.enabled;
+    data.pre_delay = pp.pre_delay.count();
+    data.post_delay = pp.post_delay.count();
+    data.focus = pp.focus;
+
+    auto dump_rect = [](const cv::Rect& rect) -> PipelineV2::JRect {
+        return { rect.x, rect.y, rect.width, rect.height };
+    };
+
+    auto dump_target = [&](const Action::Target& target) -> PipelineV2::JTarget {
+        switch (target.type) {
+        case Action::Target::Type::Self:
+            return true;
+
+        case Action::Target::Type::PreTask:
+            return std::get<std::string>(target.param);
+
+        case Action::Target::Type::Region:
+            return dump_rect(std::get<cv::Rect>(target.param));
+
+        case Action::Target::Type::Invalid:
+        default:
+            LogError << "Invalid target type" << VAR(target.type);
+            return {};
+        }
+    };
+
+    auto dump_order_by = [](MAA_VISION_NS::ResultOrderBy order_by) -> std::string {
+        static const std::unordered_map<MAA_VISION_NS::ResultOrderBy, std::string> order_by_map = {
+            { MAA_VISION_NS::ResultOrderBy::Horizontal, "Horizontal" }, { MAA_VISION_NS::ResultOrderBy::Vertical, "Vertical" },
+            { MAA_VISION_NS::ResultOrderBy::Score, "Score" },           { MAA_VISION_NS::ResultOrderBy::Area, "Area" },
+            { MAA_VISION_NS::ResultOrderBy::Length, "Length" },         { MAA_VISION_NS::ResultOrderBy::Random, "Random" },
+            { MAA_VISION_NS::ResultOrderBy::Expected, "Expected" },
+        };
+        return order_by_map.at(order_by);
+    };
+
+    data.recognition.type = Recognition::kTypeNameMap.at(pp.reco_type);
+
+    switch (pp.reco_type) {
+    case Recognition::Type::DirectHit:
+        data.recognition.param = PipelineV2::JDirectHit {};
+        break;
+
+    case Recognition::Type::TemplateMatch: {
+        const auto& param = std::get<MAA_VISION_NS::TemplateMatcherParam>(pp.reco_param);
+        data.recognition.param = PipelineV2::JTemplateMatch {
+            .roi = dump_target(param.roi_target),
+            .roi_offset = dump_rect(param.roi_target.offset),
+            .template_ = param.template_,
+            .threshold = param.thresholds,
+            .order_by = dump_order_by(param.order_by),
+            .index = param.result_index,
+            .method = param.method,
+            .green_mask = param.green_mask,
+        };
+    } break;
+
+    case Recognition::Type::FeatureMatch: {
+        static const std::unordered_map<MAA_VISION_NS::FeatureMatcherParam::Detector, std::string> kDetectorNameMap = {
+            { MAA_VISION_NS::FeatureMatcherParam::Detector::SIFT, "SIFT" },
+            { MAA_VISION_NS::FeatureMatcherParam::Detector::SURF, "SURF" },
+            { MAA_VISION_NS::FeatureMatcherParam::Detector::ORB, "ORB" },
+            { MAA_VISION_NS::FeatureMatcherParam::Detector::BRISK, "BRISK" },
+            { MAA_VISION_NS::FeatureMatcherParam::Detector::KAZE, "KAZE" },
+            { MAA_VISION_NS::FeatureMatcherParam::Detector::AKAZE, "AKAZE" },
+        };
+
+        const auto& param = std::get<MAA_VISION_NS::FeatureMatcherParam>(pp.reco_param);
+        data.recognition.param = PipelineV2::JFeatureMatch {
+            .roi = dump_target(param.roi_target),
+            .roi_offset = dump_rect(param.roi_target.offset),
+            .template_ = param.template_,
+            .count = param.count,
+            .order_by = dump_order_by(param.order_by),
+            .index = param.result_index,
+            .green_mask = param.green_mask,
+            .detector = kDetectorNameMap.at(param.detector),
+            .ratio = param.distance_ratio,
+        };
+    } break;
+
+    case Recognition::Type::ColorMatch: {
+        const auto& param = std::get<MAA_VISION_NS::ColorMatcherParam>(pp.reco_param);
+        std::vector<std::vector<int>> lower;
+        std::vector<std::vector<int>> upper;
+        for (const auto& r : param.range) {
+            lower.emplace_back(r.first);
+            lower.emplace_back(r.second);
+        }
+        data.recognition.param = PipelineV2::JColorMatch {
+            .roi = dump_target(param.roi_target),
+            .roi_offset = dump_rect(param.roi_target.offset),
+            .method = param.method,
+            .lower = std::move(lower),
+            .upper = std::move(upper),
+            .count = param.count,
+            .order_by = dump_order_by(param.order_by),
+            .index = param.result_index,
+            .connected = param.connected,
+        };
+    } break;
+
+    case Recognition::Type::OCR: {
+        const auto& param = std::get<MAA_VISION_NS::OCRerParam>(pp.reco_param);
+        std::vector<std::string> expected;
+        for (const auto& w : param.expected) {
+            expected.emplace_back(from_u16(w));
+        }
+        std::vector<std::pair<std::string, std::string>> replace;
+        for (const auto& [old_str, new_str] : param.replace) {
+            replace.emplace_back(std::make_pair(from_u16(old_str), from_u16(new_str)));
+        }
+
+        data.recognition.param = PipelineV2::JOCR {
+            .roi = dump_target(param.roi_target),
+            .roi_offset = dump_rect(param.roi_target.offset),
+            .expected = std::move(expected),
+            .threshold = param.threshold,
+            .replace = std::move(replace),
+            .order_by = dump_order_by(param.order_by),
+            .index = param.result_index,
+            .only_rec = param.only_rec,
+            .model = param.model,
+        };
+    } break;
+
+    case Recognition::Type::NeuralNetworkClassify: {
+        const auto& param = std::get<MAA_VISION_NS::NeuralNetworkClassifierParam>(pp.reco_param);
+        data.recognition.param = PipelineV2::JNeuralNetworkClassify {
+            .roi = dump_target(param.roi_target),
+            .roi_offset = dump_rect(param.roi_target.offset),
+            .labels = param.labels,
+            .model = param.model,
+            .expected = param.expected,
+            .order_by = dump_order_by(param.order_by),
+            .index = param.result_index,
+        };
+    } break;
+
+    case Recognition::Type::NeuralNetworkDetect: {
+        const auto& param = std::get<MAA_VISION_NS::NeuralNetworkDetectorParam>(pp.reco_param);
+        data.recognition.param = PipelineV2::JNeuralNetworkDetect {
+            .roi = dump_target(param.roi_target),
+            .roi_offset = dump_rect(param.roi_target.offset),
+            .labels = param.labels,
+            .model = param.model,
+            .expected = param.expected,
+            .threshold = param.thresholds,
+            .order_by = dump_order_by(param.order_by),
+            .index = param.result_index,
+        };
+    } break;
+    case Recognition::Type::Custom: {
+        const auto& param = std::get<MAA_VISION_NS::CustomRecognitionParam>(pp.reco_param);
+        data.recognition.param = PipelineV2::JCustomRecognition {
+            .roi = dump_target(param.roi_target),
+            .roi_offset = dump_rect(param.roi_target.offset),
+            .custom_recognition = param.name,
+            .custom_recognition_param = param.custom_param,
+        };
+    } break;
+
+    default:
+        LogError << "Invalid recognition type" << VAR(pp.reco_type);
+        return {};
+    }
+
+    data.action.type = Action::kTypeNameMap.at(pp.action_type);
+
+    switch (pp.action_type) {
+    case Action::Type::DoNothing:
+        data.action.param = PipelineV2::JDoNothing {};
+        break;
+
+    case Action::Type::Click: {
+        const auto& param = std::get<Action::ClickParam>(pp.action_param);
+        data.action.param = PipelineV2::JClick {
+            .target = dump_target(param.target),
+            .target_offset = dump_rect(param.target.offset),
+        };
+    } break;
+
+    case Action::Type::LongPress: {
+        const auto& param = std::get<Action::LongPressParam>(pp.action_param);
+        data.action.param = PipelineV2::JLongPress {
+            .target = dump_target(param.target),
+            .target_offset = dump_rect(param.target.offset),
+            .duration = param.duration,
+        };
+    } break;
+
+    case Action::Type::Swipe: {
+        const auto& param = std::get<Action::SwipeParam>(pp.action_param);
+        data.action.param = PipelineV2::JSwipe {
+            .starting = 0,
+            .begin = dump_target(param.begin),
+            .begin_offset = dump_rect(param.begin.offset),
+            .end = dump_target(param.end),
+            .end_offset = dump_rect(param.end.offset),
+            .duration = param.duration,
+        };
+    } break;
+
+    case Action::Type::MultiSwipe: {
+        const auto& param = std::get<Action::MultiSwipeParam>(pp.action_param);
+        PipelineV2::JMultiSwipe jswipes;
+        for (const auto& s : param.swipes) {
+            jswipes.swipes.emplace_back(PipelineV2::JSwipe {
+                .starting = s.starting,
+                .begin = dump_target(s.begin),
+                .begin_offset = dump_rect(s.begin.offset),
+                .end = dump_target(s.end),
+                .end_offset = dump_rect(s.end.offset),
+                .duration = s.duration,
+            });
+        }
+        data.action.param = std::move(jswipes);
+    } break;
+
+    case Action::Type::Key: {
+        const auto& param = std::get<Action::KeyParam>(pp.action_param);
+        data.action.param = PipelineV2::JKey {
+            .key = param.keys,
+        };
+    } break;
+
+    case Action::Type::Text: {
+        const auto& param = std::get<Action::TextParam>(pp.action_param);
+        data.action.param = PipelineV2::JInputText {
+            .input_text = param.text,
+        };
+    } break;
+
+    case Action::Type::StartApp: {
+        const auto& param = std::get<Action::AppParam>(pp.action_param);
+        data.action.param = PipelineV2::JStartApp {
+            .package = param.package,
+        };
+    } break;
+
+    case Action::Type::StopApp: {
+        const auto& param = std::get<Action::AppParam>(pp.action_param);
+        data.action.param = PipelineV2::JStopApp {
+            .package = param.package,
+        };
+    } break;
+
+    case Action::Type::Command: {
+        const auto& param = std::get<Action::CommandParam>(pp.action_param);
+        data.action.param = PipelineV2::JCommand {
+            .exec = param.exec,
+            .args = param.args,
+            .detach = param.detach,
+        };
+    } break;
+
+    case Action::Type::Custom: {
+        const auto& param = std::get<Action::CustomParam>(pp.action_param);
+        data.action.param = PipelineV2::JCustomAction {
+            .target = dump_target(param.target),
+            .target_offset = dump_rect(param.target.offset),
+            .custom_action = param.name,
+            .custom_action_param = param.custom_param,
+        };
+    } break;
+
+    default:
+        LogError << "Invalid action type" << VAR(pp.action_type);
+        return {};
+    }
+
+    auto dump_wait_freezes = [&](const WaitFreezesParam& param) -> PipelineV2::JWaitFreezes {
+        return PipelineV2::JWaitFreezes {
+            .time = param.time.count(),
+            .target = dump_target(param.target),
+            .target_offset = dump_rect(param.target.offset),
+            .threshold = param.threshold,
+            .method = param.method,
+            .rate_limit = param.rate_limit.count(),
+            .timeout = param.timeout.count(),
+        };
+    };
+
+    data.pre_wait_freezes = dump_wait_freezes(pp.pre_wait_freezes);
+    data.post_wait_freezes = dump_wait_freezes(pp.post_wait_freezes);
+
+    return data.to_json().as_object();
+}
+
 bool PipelineResMgr::check_next_list(const PipelineData::NextList& next_list, const PipelineDataMap& data_map)
 {
     for (const auto& next : next_list) {
@@ -253,6 +555,7 @@ bool get_multi_keys_and_check_value(const json::value& input, const std::vector<
                 LogError << "type error" << VAR(k) << VAR(input);
                 return false;
             }
+            continue;
         }
         else {
             output = *opt;
@@ -298,6 +601,43 @@ bool get_and_check_value_or_array(
     return true;
 }
 
+template <typename OutT>
+bool get_multi_keys_and_check_value_or_array(
+    const json::value& input,
+    const std::vector<std::string>& keys,
+    std::vector<OutT>& output,
+    const std::vector<OutT>& default_value)
+{
+    for (const auto& k : keys) {
+        auto opt = input.find(k);
+        if (!opt) {
+            continue;
+        }
+        else if (opt->is_array()) {
+            output.clear();
+            for (const auto& item : opt->as_array()) {
+                if (!item.is<OutT>()) {
+                    LogError << "type error" << VAR(keys) << VAR(input);
+                    return false;
+                }
+                output.emplace_back(item.as<OutT>());
+            }
+            return true;
+        }
+        else if (opt->is<OutT>()) {
+            output = { opt->as<OutT>() };
+            return true;
+        }
+        else {
+            LogError << "type error" << VAR(keys) << VAR(input);
+            return false;
+        }
+    }
+
+    output = default_value;
+    return true;
+}
+
 bool PipelineResMgr::parse_node(
     const std::string& name,
     const json::value& input,
@@ -320,7 +660,7 @@ bool PipelineResMgr::parse_node(
         return false;
     }
 
-    if (!get_multi_keys_and_check_value(input, { "enable", "enabled" }, data.enable, default_value.enable)) {
+    if (!get_multi_keys_and_check_value(input, { "enable", "enabled" }, data.enabled, default_value.enabled)) {
         LogError << "failed to get_and_check_value enable" << VAR(input);
         return false;
     }
@@ -418,36 +758,23 @@ bool PipelineResMgr::parse_recognition(
 
     static const std::string kDefaultRecognitionFlag = "Default";
     std::string reco_type_name;
-    if (!get_multi_keys_and_check_value(input, { "recognition", "algorithm" }, reco_type_name, kDefaultRecognitionFlag)) {
+
+    json::value param_input = input;
+
+    if (auto reco_opt = input.find("recognition"); reco_opt && reco_opt->is_object()) {
+        param_input = input.get("recognition", "param", json::object());
+        reco_type_name = input.get("recognition", "type", kDefaultRecognitionFlag);
+    }
+    else if (!get_and_check_value(input, "recognition", reco_type_name, kDefaultRecognitionFlag)) {
         LogError << "failed to get_and_check_value recognition" << VAR(input);
         return false;
     }
 
-    const std::unordered_map<std::string, Type> kRecTypeMap = {
-        { kDefaultRecognitionFlag, parent_type },
-        { "DirectHit", Type::DirectHit },
-        { "directhit", Type::DirectHit },
-        { "TemplateMatch", Type::TemplateMatch },
-        { "templatematch", Type::TemplateMatch },
-        { "FeatureMatch", Type::FeatureMatch },
-        { "featurematch", Type::FeatureMatch },
-        { "OCR", Type::OCR },
-        { "ocr", Type::OCR },
-        { "NeuralNetworkClassify", Type::NeuralNetworkClassify },
-        { "neuralnetworkclassify", Type::NeuralNetworkClassify },
-        { "nnclassify", Type::NeuralNetworkClassify },
-        { "NNClassify", Type::NeuralNetworkClassify },
-        { "NeuralNetworkDetect", Type::NeuralNetworkDetect },
-        { "neuralnetworkdetect", Type::NeuralNetworkDetect },
-        { "NNDetect", Type::NeuralNetworkDetect },
-        { "nnDetect", Type::NeuralNetworkDetect },
-        { "ColorMatch", Type::ColorMatch },
-        { "colormatch", Type::ColorMatch },
-        { "Custom", Type::Custom },
-        { "custom", Type::Custom },
-    };
-    auto reco_type_iter = kRecTypeMap.find(reco_type_name);
-    if (reco_type_iter == kRecTypeMap.end()) {
+    auto rec_type_map = kTypeMap;
+    rec_type_map.insert_or_assign(kDefaultRecognitionFlag, parent_type);
+
+    auto reco_type_iter = rec_type_map.find(reco_type_name);
+    if (reco_type_iter == rec_type_map.end()) {
         LogError << "rec type not found" << VAR(reco_type_name);
         return false;
     }
@@ -463,7 +790,7 @@ bool PipelineResMgr::parse_recognition(
         auto default_param = default_mgr.get_recognition_param<TemplateMatcherParam>(Type::TemplateMatch);
         out_param = default_param;
         return parse_template_matcher_param(
-            input,
+            param_input,
             std::get<TemplateMatcherParam>(out_param),
             same_type ? std::get<TemplateMatcherParam>(parent_param) : default_param);
     } break;
@@ -472,7 +799,7 @@ bool PipelineResMgr::parse_recognition(
         auto default_param = default_mgr.get_recognition_param<FeatureMatcherParam>(Type::FeatureMatch);
         out_param = default_param;
         return parse_feature_matcher_param(
-            input,
+            param_input,
             std::get<FeatureMatcherParam>(out_param),
             same_type ? std::get<FeatureMatcherParam>(parent_param) : default_param);
     } break;
@@ -481,7 +808,7 @@ bool PipelineResMgr::parse_recognition(
         auto default_param = default_mgr.get_recognition_param<NeuralNetworkClassifierParam>(Type::NeuralNetworkClassify);
         out_param = default_param;
         return parse_nn_classifier_param(
-            input,
+            param_input,
             std::get<NeuralNetworkClassifierParam>(out_param),
             same_type ? std::get<NeuralNetworkClassifierParam>(parent_param) : default_param);
     } break;
@@ -490,7 +817,7 @@ bool PipelineResMgr::parse_recognition(
         auto default_param = default_mgr.get_recognition_param<NeuralNetworkDetectorParam>(Type::NeuralNetworkDetect);
         out_param = default_param;
         return parse_nn_detector_param(
-            input,
+            param_input,
             std::get<NeuralNetworkDetectorParam>(out_param),
             same_type ? std::get<NeuralNetworkDetectorParam>(parent_param) : default_param);
     } break;
@@ -498,14 +825,17 @@ bool PipelineResMgr::parse_recognition(
     case Type::OCR: {
         auto default_param = default_mgr.get_recognition_param<OCRerParam>(Type::OCR);
         out_param = default_param;
-        return parse_ocrer_param(input, std::get<OCRerParam>(out_param), same_type ? std::get<OCRerParam>(parent_param) : default_param);
+        return parse_ocrer_param(
+            param_input,
+            std::get<OCRerParam>(out_param),
+            same_type ? std::get<OCRerParam>(parent_param) : default_param);
     } break;
 
     case Type::ColorMatch: {
         auto default_param = default_mgr.get_recognition_param<ColorMatcherParam>(Type::ColorMatch);
         out_param = default_param;
         return parse_color_matcher_param(
-            input,
+            param_input,
             std::get<ColorMatcherParam>(out_param),
             same_type ? std::get<ColorMatcherParam>(parent_param) : default_param);
     } break;
@@ -514,7 +844,7 @@ bool PipelineResMgr::parse_recognition(
         auto default_param = default_mgr.get_recognition_param<CustomRecognitionParam>(Type::Custom);
         out_param = default_param;
         return parse_custom_recognition_param(
-            input,
+            param_input,
             std::get<CustomRecognitionParam>(out_param),
             same_type ? std::get<CustomRecognitionParam>(parent_param) : default_param);
     } break;
@@ -553,7 +883,7 @@ bool PipelineResMgr::parse_template_matcher_param(
         return false;
     }
 
-    if (!get_and_check_value_or_array(input, "template", output.template_paths, default_value.template_paths)) {
+    if (!get_multi_keys_and_check_value_or_array(input, { "template", "template_" }, output.template_, default_value.template_)) {
         LogError << "failed to get_and_check_value_or_array templates" << VAR(input);
         return false;
     }
@@ -605,7 +935,7 @@ bool PipelineResMgr::parse_feature_matcher_param(
         return false;
     }
 
-    if (!get_and_check_value_or_array(input, "template", output.template_paths, default_value.template_paths)) {
+    if (!get_multi_keys_and_check_value_or_array(input, { "template", "template_" }, output.template_, default_value.template_)) {
         LogError << "failed to get_and_check_value_or_array templates" << VAR(input);
         return false;
     }
@@ -1112,46 +1442,23 @@ bool PipelineResMgr::parse_action(
 
     static const std::string kDefaultActionFlag = "Default";
     std::string act_type_name;
-    if (!get_and_check_value(input, "action", act_type_name, kDefaultActionFlag)) {
+
+    json::value param_input = input;
+
+    if (auto reco_opt = input.find("action"); reco_opt && reco_opt->is_object()) {
+        param_input = input.get("action", "param", json::object());
+        act_type_name = input.get("action", "type", kDefaultActionFlag);
+    }
+    else if (!get_and_check_value(param_input, "action", act_type_name, kDefaultActionFlag)) {
         LogError << "failed to get_and_check_value action" << VAR(input);
         return false;
     }
 
-    const std::unordered_map<std::string, Type> kActTypeMap = {
-        { kDefaultActionFlag, parent_type },
-        { "DoNothing", Type::DoNothing },
-        { "donothing", Type::DoNothing },
-        { "Click", Type::Click },
-        { "click", Type::Click },
-        { "Swipe", Type::Swipe },
-        { "swipe", Type::Swipe },
-        { "LongPress", Type::LongPress },
-        { "longpress", Type::LongPress },
-        { "MultiSwipe", Type::MultiSwipe },
-        { "multiswipe", Type::MultiSwipe },
-        { "PressKey", Type::Key },
-        { "presskey", Type::Key },
-        { "Key", Type::Key },
-        { "key", Type::Key },
-        { "InputText", Type::Text },
-        { "inputtext", Type::Text },
-        { "Text", Type::Text },
-        { "text", Type::Text },
-        { "StartApp", Type::StartApp },
-        { "startapp", Type::StartApp },
-        { "StopApp", Type::StopApp },
-        { "stopapp", Type::StopApp },
-        { "Command", Type::Command },
-        { "command", Type::Command },
-        { "Custom", Type::Custom },
-        { "custom", Type::Custom },
-        { "StopTask", Type::StopTask },
-        { "stoptask", Type::StopTask },
-        { "Stop", Type::StopTask },
-        { "stop", Type::StopTask },
-    };
-    auto act_type_iter = kActTypeMap.find(act_type_name);
-    if (act_type_iter == kActTypeMap.cend()) {
+    auto act_type_map = kTypeMap;
+    act_type_map.insert_or_assign(kDefaultActionFlag, parent_type);
+
+    auto act_type_iter = act_type_map.find(act_type_name);
+    if (act_type_iter == act_type_map.cend()) {
         LogError << "act type not found" << VAR(act_type_name);
         return false;
     }
@@ -1165,14 +1472,14 @@ bool PipelineResMgr::parse_action(
     case Type::Click: {
         auto default_param = default_mgr.get_action_param<ClickParam>(Type::Click);
         out_param = default_param;
-        return parse_click(input, std::get<ClickParam>(out_param), same_type ? std::get<ClickParam>(parent_param) : default_param);
+        return parse_click(param_input, std::get<ClickParam>(out_param), same_type ? std::get<ClickParam>(parent_param) : default_param);
     } break;
 
     case Type::LongPress: {
         auto default_param = default_mgr.get_action_param<LongPressParam>(Type::LongPress);
         out_param = default_param;
         return parse_long_press(
-            input,
+            param_input,
             std::get<LongPressParam>(out_param),
             same_type ? std::get<LongPressParam>(parent_param) : default_param);
     } break;
@@ -1180,7 +1487,7 @@ bool PipelineResMgr::parse_action(
     case Type::Swipe: {
         auto default_param = default_mgr.get_action_param<SwipeParam>(Type::Swipe);
         out_param = default_param;
-        return parse_swipe(input, std::get<SwipeParam>(out_param), same_type ? std::get<SwipeParam>(parent_param) : default_param);
+        return parse_swipe(param_input, std::get<SwipeParam>(out_param), same_type ? std::get<SwipeParam>(parent_param) : default_param);
     } break;
 
     case Type::MultiSwipe: {
@@ -1188,7 +1495,7 @@ bool PipelineResMgr::parse_action(
         auto default_single = default_mgr.get_action_param<SwipeParam>(Type::Swipe);
         out_param = default_multi;
         return parse_multi_swipe(
-            input,
+            param_input,
             std::get<MultiSwipeParam>(out_param),
             same_type ? std::get<MultiSwipeParam>(parent_param) : default_multi,
             default_single);
@@ -1197,32 +1504,32 @@ bool PipelineResMgr::parse_action(
     case Type::Key: {
         auto default_param = default_mgr.get_action_param<KeyParam>(Type::Key);
         out_param = default_param;
-        return parse_press_key(input, std::get<KeyParam>(out_param), same_type ? std::get<KeyParam>(parent_param) : default_param);
+        return parse_press_key(param_input, std::get<KeyParam>(out_param), same_type ? std::get<KeyParam>(parent_param) : default_param);
     } break;
 
     case Type::Text: {
         auto default_param = default_mgr.get_action_param<TextParam>(Type::Text);
         out_param = default_param;
-        return parse_input_text(input, std::get<TextParam>(out_param), same_type ? std::get<TextParam>(parent_param) : default_param);
+        return parse_input_text(param_input, std::get<TextParam>(out_param), same_type ? std::get<TextParam>(parent_param) : default_param);
     } break;
 
     case Type::StartApp: {
         auto default_param = default_mgr.get_action_param<AppParam>(Type::StartApp);
         out_param = default_param;
-        return parse_app_info(input, std::get<AppParam>(out_param), same_type ? std::get<AppParam>(parent_param) : default_param);
+        return parse_app_info(param_input, std::get<AppParam>(out_param), same_type ? std::get<AppParam>(parent_param) : default_param);
     } break;
 
     case Type::StopApp: {
         auto default_param = default_mgr.get_action_param<AppParam>(Type::StopApp);
         out_param = default_param;
-        return parse_app_info(input, std::get<AppParam>(out_param), same_type ? std::get<AppParam>(parent_param) : default_param);
+        return parse_app_info(param_input, std::get<AppParam>(out_param), same_type ? std::get<AppParam>(parent_param) : default_param);
     } break;
 
     case Type::Command: {
         auto default_param = default_mgr.get_action_param<CommandParam>(Type::Command);
         out_param = default_param;
         return parse_command_param(
-            input,
+            param_input,
             std::get<CommandParam>(out_param),
             same_type ? std::get<CommandParam>(parent_param) : default_param);
     } break;
@@ -1231,7 +1538,7 @@ bool PipelineResMgr::parse_action(
         auto default_param = default_mgr.get_action_param<CustomParam>(Type::Custom);
         out_param = default_param;
         return parse_custom_action_param(
-            input,
+            param_input,
             std::get<CustomParam>(out_param),
             same_type ? std::get<CustomParam>(parent_param) : default_param);
     } break;

@@ -116,9 +116,9 @@ MaaBool MaaResourceOverridePipeline(MaaResource* res, const char* pipeline_overr
     return res->override_pipeline(ov_opt->as_object());
 }
 
-MaaBool MaaResourceOverrideNext(MaaResource* res, const char* name, const MaaStringListBuffer* next_list)
+MaaBool MaaResourceOverrideNext(MaaResource* res, const char* node_name, const MaaStringListBuffer* next_list)
 {
-    LogFunc << VAR_VOIDP(res) << VAR(name);
+    LogFunc << VAR_VOIDP(res) << VAR(node_name);
 
     if (!res || !next_list) {
         LogError << "handle is null";
@@ -132,7 +132,26 @@ MaaBool MaaResourceOverrideNext(MaaResource* res, const char* name, const MaaStr
         next.emplace_back(next_list->at(i).get());
     }
 
-    return res->override_next(name, next);
+    return res->override_next(node_name, next);
+}
+
+MaaBool MaaResourceGetNodeData(MaaResource* res, const char* node_name, MaaStringBuffer* buffer)
+{
+    LogFunc << VAR_VOIDP(res) << VAR(node_name);
+
+    if (!res || !buffer) {
+        LogError << "handle is null";
+        return false;
+    }
+
+    auto data_opt = res->get_node_data(node_name);
+    if (!data_opt) {
+        LogError << "failed to get node data" << VAR(node_name);
+        return false;
+    }
+
+    buffer->set(data_opt->dumps());
+    return true;
 }
 
 MaaBool MaaResourceClear(MaaResource* res)

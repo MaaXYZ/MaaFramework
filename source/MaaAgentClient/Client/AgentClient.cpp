@@ -148,6 +148,9 @@ bool AgentClient::handle_inserted_request(const json::value& j)
     else if (handle_context_override_next(j)) {
         return true;
     }
+    else if (handle_context_get_node_data(j)) {
+        return true;
+    }
     else if (handle_context_clone(j)) {
         return true;
     }
@@ -221,6 +224,9 @@ bool AgentClient::handle_inserted_request(const json::value& j)
         return true;
     }
     else if (handle_resource_override_next(j)) {
+        return true;
+    }
+    else if (handle_resource_get_node_data(j)) {
         return true;
     }
     else if (handle_resource_get_hash(j)) {
@@ -406,6 +412,32 @@ bool AgentClient::handle_context_override_next(const json::value& j)
 
     ContextOverrideNextReverseResponse resp {
         .ret = ret,
+    };
+    send(resp);
+
+    return true;
+}
+
+bool AgentClient::handle_context_get_node_data(const json::value& j)
+{
+    if (!j.is<ContextGetNodeDataReverseRequest>()) {
+        return false;
+    }
+
+    const ContextGetNodeDataReverseRequest& req = j.as<ContextGetNodeDataReverseRequest>();
+    LogFunc << VAR(req) << VAR(ipc_addr_);
+
+    MaaContext* context = query_context(req.context_id);
+    if (!context) {
+        LogError << "context not found" << VAR(req.context_id);
+        return false;
+    }
+
+    auto opt = context->get_node_data(req.node_name);
+
+    ContextGetNodeDataReverseResponse resp {
+        .has_value = opt.has_value(),
+        .node_data = opt ? *opt : json::object(),
     };
     send(resp);
 
@@ -992,6 +1024,32 @@ bool AgentClient::handle_resource_override_next(const json::value& j)
 
     ResourceOverrideNextReverseResponse resp {
         .ret = ret,
+    };
+    send(resp);
+
+    return true;
+}
+
+bool AgentClient::handle_resource_get_node_data(const json::value& j)
+{
+    if (!j.is<ResourceGetNodeDataReverseRequest>()) {
+        return false;
+    }
+
+    const ResourceGetNodeDataReverseRequest& req = j.as<ResourceGetNodeDataReverseRequest>();
+    LogFunc << VAR(req) << VAR(ipc_addr_);
+
+    MaaResource* resource = query_resource(req.resource_id);
+    if (!resource) {
+        LogError << "Resource not found" << VAR(req.resource_id);
+        return false;
+    }
+
+    auto opt = resource->get_node_data(req.node_name);
+
+    ResourceGetNodeDataReverseResponse resp {
+        .has_value = opt.has_value(),
+        .node_data = opt ? *opt : json::object(),
     };
     send(resp);
 

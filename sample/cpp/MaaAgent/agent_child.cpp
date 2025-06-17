@@ -92,6 +92,11 @@ MaaBool ChildCustomActionInnerCallback(
 {
     std::cout << "at ChildCustomActionInnerCallback" << std::endl;
 
+    auto buffer = MaaStringBufferCreate();
+    MaaContextGetNodeData(context, node_name, buffer);
+    const char* detail = MaaStringBufferGet(buffer);
+    bool b = MaaContextOverridePipeline(context, detail);
+    MaaStringBufferDestroy(buffer);
     return true;
 }
 

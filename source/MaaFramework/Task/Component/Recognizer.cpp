@@ -121,7 +121,7 @@ RecoResult Recognizer::template_match(const MAA_VISION_NS::TemplateMatcherParam&
 
     cv::Rect roi = get_roi(param.roi_target);
 
-    auto templs = resource()->template_res().images(param.template_paths);
+    auto templs = resource()->template_res().images(param.template_);
     TemplateMatcher analyzer(image_, roi, param, templs, name);
 
     std::optional<cv::Rect> box = std::nullopt;
@@ -148,7 +148,7 @@ RecoResult Recognizer::feature_match(const MAA_VISION_NS::FeatureMatcherParam& p
 
     cv::Rect roi = get_roi(param.roi_target);
 
-    auto templs = resource()->template_res().images(param.template_paths);
+    auto templs = resource()->template_res().images(param.template_);
     FeatureMatcher analyzer(image_, roi, param, templs, name);
 
     std::optional<cv::Rect> box = std::nullopt;

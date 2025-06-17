@@ -194,6 +194,24 @@ struct ContextOverrideNextReverseResponse
     MEO_JSONIZATION(ret, _ContextOverrideNextReverseResponse);
 };
 
+struct ContextGetNodeDataReverseRequest
+{
+    std::string context_id;
+    std::string node_name;
+
+    MessageTypePlaceholder _ContextGetNodeDataReverseRequest = 1;
+    MEO_JSONIZATION(context_id, node_name, _ContextGetNodeDataReverseRequest);
+};
+
+struct ContextGetNodeDataReverseResponse
+{
+    bool has_value = false;
+    json::object node_data;
+
+    MessageTypePlaceholder _ContextOverrideNextReverseResponse = 1;
+    MEO_JSONIZATION(has_value, MEO_OPT node_data, _ContextOverrideNextReverseResponse);
+};
+
 struct ContextCloneReverseRequest
 {
     std::string context_id;
@@ -631,6 +649,23 @@ struct ResourceOverrideNextReverseResponse
     MEO_JSONIZATION(ret, _ResourceOverrideNextReverseResponse);
 };
 
+struct ResourceGetNodeDataReverseRequest
+{
+    std::string resource_id;
+    std::string node_name;
+
+    MessageTypePlaceholder _ResourceGetNodeDataReverseRequest = 1;
+    MEO_JSONIZATION(resource_id, node_name, _ResourceGetNodeDataReverseRequest);
+};
+
+struct ResourceGetNodeDataReverseResponse
+{
+    bool has_value = false;
+    json::object node_data;
+
+    MessageTypePlaceholder _ResourceOverrideNextReverseResponse = 1;
+    MEO_JSONIZATION(has_value, MEO_OPT node_data, _ResourceOverrideNextReverseResponse);
+};
 
 struct ResourceGetHashReverseRequest
 {

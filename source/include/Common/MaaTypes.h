@@ -12,7 +12,17 @@
 #include "MaaFramework/MaaDef.h"
 #include "Utils/NoWarningCVMat.hpp"
 
-struct MaaResource
+struct IMaaPipeline
+{
+public:
+    virtual ~IMaaPipeline() = default;
+
+    virtual bool override_pipeline(const json::object& pipeline_override) = 0;
+    virtual bool override_next(const std::string& node_name, const std::vector<std::string>& next) = 0;
+    virtual std::optional<json::object> get_node_data(const std::string& node_name) const = 0;
+};
+
+struct MaaResource : public IMaaPipeline
 {
 public:
     virtual ~MaaResource() = default;
@@ -26,9 +36,6 @@ public:
     virtual bool valid() const = 0;
     virtual bool running() const = 0;
     virtual bool clear() = 0;
-
-    virtual bool override_pipeline(const json::object& pipeline_override) = 0;
-    virtual bool override_next(const std::string& node_name, const std::vector<std::string>& next) = 0;
 
     virtual void register_custom_recognition(const std::string& name, MaaCustomRecognitionCallback recognition, void* trans_arg) = 0;
     virtual void unregister_custom_recognition(const std::string& name) = 0;
@@ -100,7 +107,7 @@ public:
     virtual std::optional<MaaNodeId> get_latest_node(const std::string& node_name) const = 0;
 };
 
-struct MaaContext
+struct MaaContext: public IMaaPipeline
 {
 public:
     virtual ~MaaContext() = default;
@@ -112,8 +119,6 @@ public:
         const json::object& pipeline_override,
         const cv::Rect& box,
         const std::string& reco_detail) = 0;
-    virtual bool override_pipeline(const json::object& pipeline_override) = 0;
-    virtual bool override_next(const std::string& node_name, const std::vector<std::string>& next) = 0;
 
     virtual MaaContext* clone() const = 0;
 

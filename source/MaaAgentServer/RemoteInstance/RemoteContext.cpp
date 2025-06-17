@@ -93,6 +93,20 @@ bool RemoteContext::override_next(const std::string& node_name, const std::vecto
     return resp_opt->ret;
 }
 
+std::optional<json::object> RemoteContext::get_node_data(const std::string& node_name) const
+{
+    ContextGetNodeDataReverseRequest req {
+        .context_id = context_id_,
+        .node_name = node_name,
+    };
+
+    auto resp_opt = server_.send_and_recv<ContextGetNodeDataReverseResponse>(req);
+    if (!resp_opt) {
+        return std::nullopt;
+    }
+    return resp_opt->node_data;
+}
+
 MaaContext* RemoteContext::clone() const
 {
     ContextCloneReverseRequest req {
