@@ -9,8 +9,6 @@
 #include "Message.hpp"
 #include "Utils/Logger.h"
 
-#include "timers.hpp"
-
 MAA_AGENT_NS_BEGIN
 
 class Transceiver
@@ -74,14 +72,7 @@ protected:
 
 private:
     void handle_image(const ImageHeader& header);
-    bool poll(zmq::pollitem_t* pollitem);
-
-    static void timeout_callback(int timer_id, void* trans_arg)
-    {
-        auto* pthis = reinterpret_cast<Transceiver*>(trans_arg);
-        LogWarn << VAR(timer_id) << "server is not alive" << VAR(pthis->ipc_addr_);
-        pthis->need_to_cancel_ = true;
-    }
+    bool poll(short event);
 
 protected:
     zmq::socket_t zmq_sock_;
@@ -95,9 +86,8 @@ private:
     inline static int64_t s_req_id_ = 0;
     bool is_bound_ = false;
 
-    bool need_to_cancel_ = false;
-    zmq::pollitem_t zmq_pollitems_[2];
-    zmq::timers zmq_timers_ = zmq::timers();
+    std::unique_ptr<zmq::pollitem_t[]> zmq_pollitems_ = nullptr;
+    std::chrono::milliseconds timeout_ = std::chrono::milliseconds::max();
 };
 
 MAA_AGENT_NS_END
