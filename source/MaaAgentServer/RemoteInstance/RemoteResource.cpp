@@ -130,9 +130,10 @@ std::optional<json::object> RemoteResource::get_node_data(const std::string& nod
     };
 
     auto resp_opt = server_.send_and_recv<ResourceGetNodeDataReverseResponse>(req);
-    if (!resp_opt) {
+    if (!resp_opt || !resp_opt->has_value) {
         return std::nullopt;
     }
+
     return resp_opt->node_data;
 }
 

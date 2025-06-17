@@ -101,7 +101,7 @@ std::optional<json::object> RemoteContext::get_node_data(const std::string& node
     };
 
     auto resp_opt = server_.send_and_recv<ContextGetNodeDataReverseResponse>(req);
-    if (!resp_opt) {
+    if (!resp_opt || !resp_opt->has_value) {
         return std::nullopt;
     }
     return resp_opt->node_data;
