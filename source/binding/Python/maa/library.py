@@ -56,7 +56,7 @@ class Library:
 
         platform_type = platform.system().lower()
 
-        if platform_type == "windows":
+        if platform_type == WINDOWS:
             Library._lib_type = ctypes.WinDLL
         else:
             Library._lib_type = ctypes.CDLL
