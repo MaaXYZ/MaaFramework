@@ -107,7 +107,7 @@ public:
     virtual std::optional<MaaNodeId> get_latest_node(const std::string& node_name) const = 0;
 };
 
-struct MaaContext: public IMaaPipeline
+struct MaaContext : public IMaaPipeline
 {
 public:
     virtual ~MaaContext() = default;
@@ -138,5 +138,5 @@ public:
     virtual bool disconnect() = 0;
     virtual bool connected() = 0;
     virtual bool alive() = 0;
-    virtual void set_timeout(const std::chrono::milliseconds timeout) = 0;
+    virtual void set_timeout(const std::chrono::milliseconds& timeout) = 0;
 };

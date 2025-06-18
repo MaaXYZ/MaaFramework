@@ -27,7 +27,7 @@ public: // MaaAgentClient
     virtual bool disconnect() override;
     virtual bool connected() override;
     virtual bool alive() override;
-    virtual void set_timeout(const std::chrono::milliseconds timeout) override;
+    virtual void set_timeout(const std::chrono::milliseconds& timeout) override;
 
 private: // Transceiver
     virtual bool handle_inserted_request(const json::value& j) override;
