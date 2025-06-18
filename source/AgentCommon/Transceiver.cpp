@@ -7,16 +7,6 @@
 
 MAA_AGENT_NS_BEGIN
 
-Transceiver::Transceiver()
-{
-    LogFunc;
-
-    zmq_sock_ = zmq::socket_t(zmq_ctx_, zmq::socket_type::pair);
-
-    zmq_pollitem_send_ = zmq::pollitem_t(zmq_sock_.handle(), 0, ZMQ_POLLOUT, 0);
-    zmq_pollitem_recv_ = zmq::pollitem_t(zmq_sock_.handle(), 0, ZMQ_POLLIN, 0);
-}
-
 Transceiver::~Transceiver()
 {
     LogFunc;
@@ -47,6 +37,11 @@ void Transceiver::init_socket(const std::string& identifier, bool bind)
     ipc_addr_ = std::format(kAddrFormat, path_to_utf8_string(kTempDir), identifier);
 
     LogInfo << VAR(ipc_addr_) << VAR(identifier);
+    
+    zmq_sock_ = zmq::socket_t(zmq_ctx_, zmq::socket_type::pair);
+
+    zmq_pollitem_send_ = zmq::pollitem_t(zmq_sock_.handle(), 0, ZMQ_POLLOUT, 0);
+    zmq_pollitem_recv_ = zmq::pollitem_t(zmq_sock_.handle(), 0, ZMQ_POLLIN, 0);
 
     if (is_bound_) {
         zmq_sock_.bind(ipc_addr_);

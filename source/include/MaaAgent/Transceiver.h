@@ -14,7 +14,6 @@ MAA_AGENT_NS_BEGIN
 class Transceiver
 {
 public:
-    Transceiver();
     virtual ~Transceiver();
 
 public:
@@ -76,8 +75,8 @@ private:
     bool poll(const zmq::pollitem_t& pollitem);
 
 protected:
-    zmq::socket_t zmq_sock_;
     zmq::context_t zmq_ctx_;
+    zmq::socket_t zmq_sock_;
 
     std::string ipc_addr_;
 
