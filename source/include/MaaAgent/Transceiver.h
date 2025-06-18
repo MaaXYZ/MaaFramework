@@ -72,7 +72,7 @@ protected:
 
 private:
     void handle_image(const ImageHeader& header);
-    bool poll(const zmq::pollitem_t& pollitem);
+    bool poll(zmq::pollitem_t& pollitem);
 
 protected:
     zmq::context_t zmq_ctx_;

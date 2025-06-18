@@ -81,7 +81,7 @@ void Transceiver::set_timeout(const std::chrono::milliseconds& timeout)
     timeout_ = timeout;
 }
 
-bool Transceiver::poll(const zmq::pollitem_t& pollitem)
+bool Transceiver::poll(zmq::pollitem_t& pollitem)
 {
     const auto start_clock = std::chrono::steady_clock::now();
 
@@ -89,6 +89,7 @@ bool Transceiver::poll(const zmq::pollitem_t& pollitem)
         auto elapsed = duration_since(start_clock);
         auto remaining_time = timeout_ > elapsed ? timeout_ - elapsed : std::chrono::milliseconds(0);
         auto interval = std::min(remaining_time, std::chrono::milliseconds(1000));
+
         if (zmq::poll(&pollitem, 1, interval)) {
             return true;
         }
