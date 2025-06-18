@@ -63,17 +63,20 @@ protected:
 
     void init_socket(const std::string& identifier, bool bind);
     void uninit_socket();
-    bool alive();
 
     bool send(const json::value& j);
     std::optional<json::value> recv();
 
+    bool alive();
+    void set_timeout(const std::chrono::milliseconds& timeout);
+
 private:
     void handle_image(const ImageHeader& header);
+    bool poll(zmq::pollitem_t& pollitem);
 
 protected:
-    zmq::socket_t zmq_sock_;
     zmq::context_t zmq_ctx_;
+    zmq::socket_t zmq_sock_;
 
     std::string ipc_addr_;
 
@@ -82,6 +85,10 @@ protected:
 private:
     inline static int64_t s_req_id_ = 0;
     bool is_bound_ = false;
+
+    zmq::pollitem_t zmq_pollitem_send_ {};
+    zmq::pollitem_t zmq_pollitem_recv_ {};
+    std::chrono::milliseconds timeout_ = std::chrono::milliseconds::max();
 };
 
 MAA_AGENT_NS_END

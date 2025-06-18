@@ -116,14 +116,27 @@ bool AgentClient::disconnect()
         return true;
     }
 
-    send_and_recv<ShutDownResponse>(ShutDownRequest {});
+    if (alive()) {
+        send_and_recv<ShutDownResponse>(ShutDownRequest {});
+    }
+
     connected_ = false;
     return true;
 }
 
 bool AgentClient::connected()
 {
-    return connected_ && Transceiver::alive();
+    return connected_;
+}
+
+bool AgentClient::alive()
+{
+    return Transceiver::alive();
+}
+
+void AgentClient::set_timeout(std::chrono::milliseconds timeout)
+{
+    Transceiver::set_timeout(timeout);
 }
 
 bool AgentClient::handle_inserted_request(const json::value& j)
@@ -1467,6 +1480,11 @@ MaaBool AgentClient::reco_agent(
 
     if (!image) {
         LogError << "image is null";
+        return false;
+    }
+
+    if (!pthis->alive()) {
+        LogError << "server is not alive" << VAR(pthis->ipc_addr_);
         return false;
     }
 

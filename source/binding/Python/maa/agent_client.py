@@ -57,6 +57,13 @@ class AgentClient:
     def connected(self) -> bool:
         return bool(Library.agent_client().MaaAgentClientConnected(self._handle))
 
+    @property
+    def alive(self) -> bool:
+        return bool(Library.agent_client().MaaAgentClientAlive(self._handle))
+
+    def set_timeout(self, milliseconds: int) -> bool:
+        return bool(Library.agent_client().MaaAgentClientSetTimeout(self._handle, ctypes.c_int64(milliseconds)))
+
     _api_properties_initialized: bool = False
 
     @staticmethod
@@ -102,4 +109,15 @@ class AgentClient:
         Library.agent_client().MaaAgentClientConnected.restype = MaaBool
         Library.agent_client().MaaAgentClientConnected.argtypes = [
             MaaAgentClientHandle,
+        ]
+
+        Library.agent_client().MaaAgentClientAlive.restype = MaaBool
+        Library.agent_client().MaaAgentClientAlive.argtypes = [
+            MaaAgentClientHandle,
+        ]
+
+        Library.agent_client().MaaAgentClientSetTimeout.restype = MaaBool
+        Library.agent_client().MaaAgentClientSetTimeout.argtypes = [
+            MaaAgentClientHandle,
+            ctypes.c_int64,
         ]

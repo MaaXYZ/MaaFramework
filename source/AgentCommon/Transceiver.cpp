@@ -37,10 +37,11 @@ void Transceiver::init_socket(const std::string& identifier, bool bind)
     ipc_addr_ = std::format(kAddrFormat, path_to_utf8_string(kTempDir), identifier);
 
     LogInfo << VAR(ipc_addr_) << VAR(identifier);
-
+    
     zmq_sock_ = zmq::socket_t(zmq_ctx_, zmq::socket_type::pair);
 
-    is_bound_ = bind;
+    zmq_pollitem_send_ = zmq::pollitem_t(zmq_sock_.handle(), 0, ZMQ_POLLOUT, 0);
+    zmq_pollitem_recv_ = zmq::pollitem_t(zmq_sock_.handle(), 0, ZMQ_POLLIN, 0);
 
     if (is_bound_) {
         zmq_sock_.bind(ipc_addr_);
@@ -48,6 +49,8 @@ void Transceiver::init_socket(const std::string& identifier, bool bind)
     else {
         zmq_sock_.connect(ipc_addr_);
     }
+
+    is_bound_ = bind;
 }
 
 void Transceiver::uninit_socket()
@@ -69,12 +72,34 @@ void Transceiver::uninit_socket()
 
 bool Transceiver::alive()
 {
-    if (zmq_sock_.handle() == nullptr) {
-        return false;
-    }
+    return zmq_sock_.handle() != nullptr && zmq::detail::poll(&zmq_pollitem_send_, 1, 0);
+}
 
-    zmq::pollitem_t item = { zmq_sock_.handle(), 0, ZMQ_POLLIN | ZMQ_POLLOUT, 0 };
-    return zmq::detail::poll(&item, 1, 0);
+void Transceiver::set_timeout(const std::chrono::milliseconds& timeout)
+{
+    LogFunc << VAR(timeout) << VAR(ipc_addr_);
+    timeout_ = timeout;
+}
+
+bool Transceiver::poll(zmq::pollitem_t& pollitem)
+{
+    const auto start_clock = std::chrono::steady_clock::now();
+
+    while (true) {
+        auto elapsed = duration_since(start_clock);
+        auto remaining_time = timeout_ > elapsed ? timeout_ - elapsed : std::chrono::milliseconds(0);
+        auto interval = std::min(remaining_time, std::chrono::milliseconds(1000));
+
+        if (zmq::poll(&pollitem, 1, interval)) {
+            return true;
+        }
+        if (elapsed > timeout_) {
+            LogWarn << "socket is not alive" << VAR(elapsed) << VAR(timeout_) << VAR(ipc_addr_);
+            return false;
+        }
+    }
+    // unreachable code
+    // return false;
 }
 
 bool Transceiver::send(const json::value& j)
@@ -83,7 +108,13 @@ bool Transceiver::send(const json::value& j)
 
     std::string jstr = j.dumps();
     zmq::message_t msg(jstr.data(), jstr.size());
-    bool sent = zmq_sock_.send(std::move(msg), zmq::send_flags::none).has_value();
+
+    if (!poll(zmq_pollitem_send_)) {
+        LogError << "send canceled";
+        return false;
+    }
+
+    bool sent = zmq_sock_.send(std::move(msg), zmq::send_flags::dontwait).has_value();
     if (!sent) {
         LogError << "failed to send msg" << VAR(j);
         return false;
@@ -96,7 +127,13 @@ std::optional<json::value> Transceiver::recv()
     LogFunc << VAR(ipc_addr_);
 
     zmq::message_t msg;
-    auto size_opt = zmq_sock_.recv(msg);
+
+    if (!poll(zmq_pollitem_recv_)) {
+        LogError << "recv canceled";
+        return std::nullopt;
+    }
+
+    auto size_opt = zmq_sock_.recv(msg, zmq::recv_flags::dontwait);
     if (!size_opt || *size_opt == 0) {
         LogError << "failed to recv msg" << VAR(ipc_addr_);
         return std::nullopt;
