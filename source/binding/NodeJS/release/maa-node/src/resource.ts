@@ -1,7 +1,7 @@
 import { Context } from './context'
 import { Job, JobSource } from './job'
 import maa from './maa'
-import { Task } from './pipeline'
+import { DumpTask } from './pipeline'
 import {
     CustomActionCallback,
     CustomActionSelf,
@@ -159,7 +159,7 @@ export class ResourceBase {
     get_node_data_parsed(node_name: string) {
         const content = this.get_node_data(node_name)
         if (content) {
-            return JSON.parse(content) as Task
+            return JSON.parse(content) as DumpTask
         } else {
             return null
         }

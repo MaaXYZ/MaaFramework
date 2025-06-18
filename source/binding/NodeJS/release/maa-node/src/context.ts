@@ -1,5 +1,5 @@
 import * as maa from './maa'
-import { Task } from './pipeline'
+import { DumpTask } from './pipeline'
 import { TaskerBase } from './tasker'
 
 export class Context {
@@ -68,7 +68,7 @@ export class Context {
     get_node_data_parsed(node_name: string) {
         const content = this.get_node_data(node_name)
         if (content) {
-            return JSON.parse(content) as Task
+            return JSON.parse(content) as DumpTask
         } else {
             return null
         }
