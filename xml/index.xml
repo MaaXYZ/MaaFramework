@@ -30,6 +30,8 @@
     <member refid="MaaAgentClientAPI_8h_1ad0cddf9217464eb1ab89eadbaf43a97f" kind="function"><name>MaaAgentClientConnect</name></member>
     <member refid="MaaAgentClientAPI_8h_1aa4e4ccf8021abbf557bfb9efc32667da" kind="function"><name>MaaAgentClientDisconnect</name></member>
     <member refid="MaaAgentClientAPI_8h_1afd0af277e6592e0608af78dd9b64dd68" kind="function"><name>MaaAgentClientConnected</name></member>
+    <member refid="MaaAgentClientAPI_8h_1ac01c5ed446b67598f52652605462f888" kind="function"><name>MaaAgentClientAlive</name></member>
+    <member refid="MaaAgentClientAPI_8h_1a866d66d4d0305998662d93c6086068df" kind="function"><name>MaaAgentClientSetTimeout</name></member>
     <member refid="MaaAgentClientAPI_8h_1a884adbc9d05ac3a4bb38adbe79453396" kind="function"><name>MaaAgentClientCreate</name></member>
     <member refid="MaaAgentClientAPI_8h_1aadaf068b2df061deeec5aa2ad02577b9" kind="function"><name>MaaAgentClientCreateSocket</name></member>
   </compound>
