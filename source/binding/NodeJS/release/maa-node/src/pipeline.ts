@@ -236,7 +236,6 @@ export type General = {
     rate_limit?: number
     timeout?: number
     on_error?: MaybeArray<string>
-    timeout_next?: MaybeArray<string>
     inverse?: boolean
     enabled?: boolean
     pre_delay?: boolean
