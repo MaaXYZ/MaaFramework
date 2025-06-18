@@ -54,14 +54,14 @@ export class Context {
         }
     }
 
-    override_next(name: string, next: string[]) {
-        if (!maa.context_override_next(this.handle, name, next)) {
+    override_next(node_name: string, next: string[]) {
+        if (!maa.context_override_next(this.handle, node_name, next)) {
             throw 'Context override_next failed'
         }
     }
 
-    get_node_data(name: string) {
-        return maa.context_get_node_data(this.handle, name)
+    get_node_data(node_name: string) {
+        return maa.context_get_node_data(this.handle, node_name)
     }
 
     get task_id() {

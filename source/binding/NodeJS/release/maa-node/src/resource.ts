@@ -151,6 +151,10 @@ export class ResourceBase {
         }
     }
 
+    get_node_data(node_name: string) {
+        return maa.resource_get_node_data(this.handle, node_name)
+    }
+
     clear() {
         if (!maa.resource_clear(this.handle)) {
             throw 'Resource clear failed'

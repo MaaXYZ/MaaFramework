@@ -53,7 +53,7 @@ bool context_override_pipeline(Napi::External<MaaContext> info, std::string over
     return MaaContextOverridePipeline(info.Data(), overr.c_str());
 }
 
-bool context_override_next(Napi::External<MaaContext> info, std::string name, std::vector<std::string> next)
+bool context_override_next(Napi::External<MaaContext> info, std::string node_name, std::vector<std::string> next)
 {
     StringListBuffer buffer;
     buffer.set_vector(next, [](auto str) {
@@ -61,13 +61,13 @@ bool context_override_next(Napi::External<MaaContext> info, std::string name, st
         buf.set(str);
         return buf;
     });
-    return MaaContextOverrideNext(info.Data(), name.c_str(), buffer);
+    return MaaContextOverrideNext(info.Data(), node_name.c_str(), buffer);
 }
 
-std::optional<std::string> context_get_node_data(Napi::External<MaaContext> info, std::string name)
+std::optional<std::string> context_get_node_data(Napi::External<MaaContext> info, std::string node_name)
 {
     StringBuffer buffer;
-    if (MaaContextGetNodeData(info.Data(), name.c_str(), buffer)) {
+    if (MaaContextGetNodeData(info.Data(), node_name.c_str(), buffer)) {
         return buffer.str();
     }
     else {

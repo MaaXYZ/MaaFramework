@@ -98,10 +98,13 @@ export declare function context_override_pipeline(
 ): boolean
 export declare function context_override_next(
     context: ContextHandle,
-    name: string,
+    node_name: string,
     next: string[]
 ): boolean
-export declare function context_get_node_data(context: ContextHandle, name: string): string | null
+export declare function context_get_node_data(
+    context: ContextHandle,
+    node_name: string
+): string | null
 export declare function context_get_task_id(context: ContextHandle): TaskId
 export declare function context_get_tasker(context: ContextHandle): TaskerHandle
 export declare function context_clone(context: ContextHandle): ContextHandle
@@ -235,6 +238,10 @@ export declare function resource_override_next(
     node_name: string,
     next_list: string[]
 ): bool
+export declare function resource_get_node_data(
+    handle: ResourceHandle,
+    node_name: string
+): string | null
 export declare function resource_clear(handle: ResourceHandle): boolean
 export declare function resource_status(handle: ResourceHandle, res_id: ResId): Status
 export declare function resource_wait(handle: ResourceHandle, res_id: ResId): Promise<Status>

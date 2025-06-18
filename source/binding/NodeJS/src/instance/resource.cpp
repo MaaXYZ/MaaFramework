@@ -148,6 +148,17 @@ bool resource_override_next(Napi::External<ResourceInfo> info, std::string node_
     return MaaResourceOverrideNext(info.Data()->handle, node_name.c_str(), buffer);
 }
 
+std::optional<std::string> resource_get_node_data(Napi::External<ResourceInfo> info, std::string node_name)
+{
+    StringBuffer buffer;
+    if (MaaResourceGetNodeData(info.Data()->handle, node_name.c_str(), buffer)) {
+        return buffer.str();
+    }
+    else {
+        return std::nullopt;
+    }
+}
+
 bool resource_clear(Napi::External<ResourceInfo> info)
 {
     return MaaResourceClear(info.Data()->handle);
@@ -210,6 +221,7 @@ void load_instance_resource(Napi::Env env, Napi::Object& exports, Napi::External
     BIND(resource_post_bundle);
     BIND(resource_override_pipeline);
     BIND(resource_override_next);
+    BIND(resource_get_node_data);
     BIND(resource_clear);
     BIND(resource_status);
     BIND(resource_wait);
