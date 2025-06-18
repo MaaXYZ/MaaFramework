@@ -755,8 +755,8 @@ bool PipelineResMgr::parse_recognition(
     json::value param_input = input;
 
     if (auto reco_opt = input.find("recognition"); reco_opt && reco_opt->is_object()) {
-        param_input = input.get("recognition", "param", json::object());
-        reco_type_name = input.get("recognition", "type", kDefaultRecognitionFlag);
+        param_input = reco_opt->get("param", json::object());
+        reco_type_name = reco_opt->get("type", kDefaultRecognitionFlag);
     }
     else if (!get_and_check_value(input, "recognition", reco_type_name, kDefaultRecognitionFlag)) {
         LogError << "failed to get_and_check_value recognition" << VAR(input);
@@ -1439,8 +1439,8 @@ bool PipelineResMgr::parse_action(
     json::value param_input = input;
 
     if (auto reco_opt = input.find("action"); reco_opt && reco_opt->is_object()) {
-        param_input = input.get("action", "param", json::object());
-        act_type_name = input.get("action", "type", kDefaultActionFlag);
+        param_input = reco_opt->get("param", json::object());
+        act_type_name = reco_opt->get("type", kDefaultActionFlag);
     }
     else if (!get_and_check_value(param_input, "action", act_type_name, kDefaultActionFlag)) {
         LogError << "failed to get_and_check_value action" << VAR(input);
