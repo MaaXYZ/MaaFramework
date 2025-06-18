@@ -689,13 +689,6 @@ bool PipelineResMgr::parse_node(
         LogError << "failed to get_and_check_value_or_array on_error" << VAR(input);
         return false;
     }
-    if (data.on_error.empty()) {
-        // for compatibility with v1.x
-        if (!get_and_check_value_or_array(input, "timeout_next", data.on_error, default_value.on_error)) {
-            LogError << "failed to get_and_check_value_or_array timeout_next" << VAR(input);
-            return false;
-        }
-    }
 
     auto rate_limit = default_value.rate_limit.count();
     if (!get_and_check_value(input, "rate_limit", rate_limit, rate_limit)) {
