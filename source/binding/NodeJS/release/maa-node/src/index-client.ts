@@ -8,5 +8,6 @@ export * from './context'
 export * from './global'
 export * from './pi'
 export * from './types'
+export * from './pipeline'
 
 export * from './client'
