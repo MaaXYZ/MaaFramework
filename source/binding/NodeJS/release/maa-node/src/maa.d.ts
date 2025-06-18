@@ -397,6 +397,8 @@ export declare function agent_client_bind_resource(
 export declare function agent_client_connect(handle: AgentClientHandle): Promise<boolean>
 export declare function agent_client_disconnect(handle: AgentClientHandle): boolean
 export declare function agent_client_connected(handle: AgentClientHandle): boolean
+export declare function agent_client_alive(handle: AgentClientHandle): boolean
+export declare function agent_client_set_timeout(handle: AgentClientHandle, ms: Uint64): boolean
 
 // agent.cpp - server
 
