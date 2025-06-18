@@ -70,7 +70,7 @@ bool agent_client_connected(Napi::External<AgentClientInfo> info)
 
 bool agent_client_alive(Napi::External<AgentClientInfo> info)
 {
-    return MaaAgentClientAlive(info.Data()->handle)
+    return MaaAgentClientAlive(info.Data()->handle);
 }
 
 bool agent_client_set_timeout(Napi::External<AgentClientInfo> info, uint64_t ms)
