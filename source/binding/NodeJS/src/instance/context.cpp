@@ -64,6 +64,17 @@ bool context_override_next(Napi::External<MaaContext> info, std::string name, st
     return MaaContextOverrideNext(info.Data(), name.c_str(), buffer);
 }
 
+std::optional<std::string> context_get_node_data(Napi::External<MaaContext> info, std::string name)
+{
+    StringBuffer buffer;
+    if (MaaContextGetNodeData(info.Data(), name.c_str(), buffer)) {
+        return buffer.str();
+    }
+    else {
+        return std::nullopt;
+    }
+}
+
 MaaTaskId context_get_task_id(Napi::External<MaaContext> info)
 {
     return MaaContextGetTaskId(info.Data());
@@ -95,6 +106,7 @@ void load_instance_context(Napi::Env env, Napi::Object& exports, Napi::External<
     BIND(context_run_action);
     BIND(context_override_pipeline);
     BIND(context_override_next);
+    BIND(context_get_node_data);
     BIND(context_get_task_id);
     BIND(context_get_tasker);
     BIND(context_clone);

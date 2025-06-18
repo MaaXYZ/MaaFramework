@@ -60,6 +60,10 @@ export class Context {
         }
     }
 
+    get_node_data(name: string) {
+        return maa.context_get_node_data(this.handle, name)
+    }
+
     get task_id() {
         return maa.context_get_task_id(this.handle)
     }

@@ -101,6 +101,7 @@ export declare function context_override_next(
     name: string,
     next: string[]
 ): boolean
+export declare function context_get_node_data(context: ContextHandle, name: string): string | null
 export declare function context_get_task_id(context: ContextHandle): TaskId
 export declare function context_get_tasker(context: ContextHandle): TaskerHandle
 export declare function context_clone(context: ContextHandle): ContextHandle

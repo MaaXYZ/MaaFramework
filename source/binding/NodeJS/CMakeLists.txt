@@ -30,8 +30,6 @@ endif()
 add_definitions(-DNAPI_VERSION=8)
 add_definitions(-DNODE_API_NO_EXTERNAL_BUFFERS_ALLOWED)
 
-include_directories(${CMAKE_JS_INC})
-
 if(WIN32
    AND CMAKE_JS_NODELIB_DEF
    AND CMAKE_JS_NODELIB_TARGET)
@@ -63,6 +61,7 @@ set(maa_common_src
 
 add_library(MaaNode SHARED ${maa_common_src} src/agent/client.cpp)
 set_target_properties(MaaNode PROPERTIES PREFIX "" SUFFIX ".node")
+target_include_directories(MaaNode PRIVATE ${CMAKE_JS_INC})
 target_link_libraries(MaaNode ${CMAKE_JS_LIB} MaaFramework MaaToolkit MaaAgentClient)
 target_compile_definitions(MaaNode PRIVATE NODE_ADDON_API_ENABLE_TYPE_CHECK_ON_AS MAA_NODE_BUILD_CLIENT)
 set_target_properties(MaaNode PROPERTIES POSITION_INDEPENDENT_CODE ON)
@@ -84,6 +83,7 @@ endif()
 
 add_library(MaaNodeServer SHARED ${maa_common_src} src/agent/server.cpp)
 set_target_properties(MaaNodeServer PROPERTIES PREFIX "" SUFFIX ".node")
+target_include_directories(MaaNodeServer PRIVATE ${CMAKE_JS_INC})
 target_link_libraries(MaaNodeServer ${CMAKE_JS_LIB} MaaToolkit MaaAgentServer)
 target_compile_definitions(MaaNodeServer PRIVATE NODE_ADDON_API_ENABLE_TYPE_CHECK_ON_AS MAA_NODE_BUILD_SERVER)
 set_target_properties(MaaNodeServer PROPERTIES POSITION_INDEPENDENT_CODE ON)
