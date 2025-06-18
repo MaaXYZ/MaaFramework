@@ -14,6 +14,7 @@ MAA_AGENT_NS_BEGIN
 class Transceiver
 {
 public:
+    Transceiver();
     virtual ~Transceiver();
 
 public:
@@ -68,11 +69,11 @@ protected:
     std::optional<json::value> recv();
 
     bool alive();
-    void set_timeout(std::chrono::milliseconds timeout);
+    void set_timeout(const std::chrono::milliseconds& timeout);
 
 private:
     void handle_image(const ImageHeader& header);
-    bool poll(const std::unique_ptr<zmq::pollitem_t>& item);
+    bool poll(const zmq::pollitem_t& pollitem);
 
 protected:
     zmq::socket_t zmq_sock_;
@@ -86,8 +87,8 @@ private:
     inline static int64_t s_req_id_ = 0;
     bool is_bound_ = false;
 
-    std::unique_ptr<zmq::pollitem_t> zmq_pollitem_send_ = nullptr;
-    std::unique_ptr<zmq::pollitem_t> zmq_pollitem_recv_ = nullptr;
+    zmq::pollitem_t zmq_pollitem_send_ {};
+    zmq::pollitem_t zmq_pollitem_recv_ {};
     std::chrono::milliseconds timeout_ = std::chrono::milliseconds::max();
 };
 

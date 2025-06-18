@@ -7,6 +7,16 @@
 
 MAA_AGENT_NS_BEGIN
 
+Transceiver::Transceiver()
+{
+    LogFunc;
+
+    zmq_sock_ = zmq::socket_t(zmq_ctx_, zmq::socket_type::pair);
+
+    zmq_pollitem_send_ = zmq::pollitem_t(zmq_sock_.handle(), 0, ZMQ_POLLOUT, 0);
+    zmq_pollitem_recv_ = zmq::pollitem_t(zmq_sock_.handle(), 0, ZMQ_POLLIN, 0);
+}
+
 Transceiver::~Transceiver()
 {
     LogFunc;
@@ -38,19 +48,14 @@ void Transceiver::init_socket(const std::string& identifier, bool bind)
 
     LogInfo << VAR(ipc_addr_) << VAR(identifier);
 
-    zmq_sock_ = zmq::socket_t(zmq_ctx_, zmq::socket_type::pair);
-
-    zmq_pollitem_send_ = std::make_unique<zmq::pollitem_t>(zmq::pollitem_t { zmq_sock_.handle(), 0, ZMQ_POLLOUT, 0 });
-    zmq_pollitem_recv_ = std::make_unique<zmq::pollitem_t>(zmq::pollitem_t { zmq_sock_.handle(), 0, ZMQ_POLLIN, 0 });
-
-    is_bound_ = bind;
-
     if (is_bound_) {
         zmq_sock_.bind(ipc_addr_);
     }
     else {
         zmq_sock_.connect(ipc_addr_);
     }
+
+    is_bound_ = bind;
 }
 
 void Transceiver::uninit_socket()
@@ -68,39 +73,32 @@ void Transceiver::uninit_socket()
 
     zmq_sock_.close();
     zmq_ctx_.close();
-    zmq_pollitem_send_.reset();
-    zmq_pollitem_recv_.reset();
 }
 
 bool Transceiver::alive()
 {
-    return zmq_sock_.handle() != nullptr && zmq_pollitem_send_ && zmq::detail::poll(zmq_pollitem_send_.get(), 1, 0);
+    return zmq_sock_.handle() != nullptr && zmq::detail::poll(&zmq_pollitem_send_, 1, 0);
 }
 
-void Transceiver::set_timeout(std::chrono::milliseconds timeout)
+void Transceiver::set_timeout(const std::chrono::milliseconds& timeout)
 {
     LogFunc << VAR(timeout) << VAR(ipc_addr_);
     timeout_ = timeout;
 }
 
-bool Transceiver::poll(const std::unique_ptr<zmq::pollitem_t>& item)
+bool Transceiver::poll(const zmq::pollitem_t& pollitem)
 {
-    if (!item) {
-        LogError << "item is nullptr";
-        return false;
-    }
-
-    auto pollitem = item.get();
-    auto interval = timeout_ < std::chrono::seconds(1) ? timeout_ : std::chrono::seconds(1);
     const auto start_clock = std::chrono::steady_clock::now();
 
     while (true) {
-        if (zmq::poll(pollitem, 1, interval)) {
+        auto elapsed = duration_since(start_clock);
+        auto remaining_time = timeout_ > elapsed ? timeout_ - elapsed : std::chrono::milliseconds(0);
+        auto interval = std::min(remaining_time, std::chrono::milliseconds(1000));
+        if (zmq::poll(&pollitem, 1, interval)) {
             return true;
         }
-
-        if (duration_since(start_clock) > timeout_) {
-            LogWarn << "socket is not alive" << VAR(duration_since(start_clock)) << VAR(timeout_) << VAR(ipc_addr_);
+        if (elapsed > timeout_) {
+            LogWarn << "socket is not alive" << VAR(elapsed) << VAR(timeout_) << VAR(ipc_addr_);
             return false;
         }
     }
