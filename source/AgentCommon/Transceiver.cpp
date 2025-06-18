@@ -77,7 +77,7 @@ bool Transceiver::alive()
 
 void Transceiver::set_timeout(const std::chrono::milliseconds& timeout)
 {
-    LogFunc << VAR(timeout) << VAR(ipc_addr_);
+    LogInfo << VAR(timeout) << VAR(ipc_addr_);
     timeout_ = timeout;
 }
 
@@ -107,13 +107,13 @@ bool Transceiver::send(const json::value& j)
 {
     LogTrace << VAR(j) << VAR(ipc_addr_);
 
-    std::string jstr = j.dumps();
-    zmq::message_t msg(jstr.data(), jstr.size());
-
     if (!poll(zmq_pollitem_send_)) {
         LogError << "send canceled";
         return false;
     }
+
+    std::string jstr = j.dumps();
+    zmq::message_t msg(jstr.data(), jstr.size());
 
     bool sent = zmq_sock_.send(std::move(msg), zmq::send_flags::dontwait).has_value();
     if (!sent) {
@@ -127,12 +127,12 @@ std::optional<json::value> Transceiver::recv()
 {
     LogFunc << VAR(ipc_addr_);
 
-    zmq::message_t msg;
-
     if (!poll(zmq_pollitem_recv_)) {
         LogError << "recv canceled";
         return std::nullopt;
     }
+
+    zmq::message_t msg;
 
     auto size_opt = zmq_sock_.recv(msg, zmq::recv_flags::dontwait);
     if (!size_opt || *size_opt == 0) {
