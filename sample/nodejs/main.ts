@@ -1,4 +1,4 @@
-import maa from "../../source/binding/NodeJS/release/maa-node/dist/index-client";
+import * as maa from '../../test/nodejs/maa-client'
 // import maa from '@maaxyz/maa-node'
 
 console.log(maa.Global.version);
