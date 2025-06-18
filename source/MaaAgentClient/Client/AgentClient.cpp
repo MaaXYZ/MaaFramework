@@ -134,7 +134,7 @@ bool AgentClient::alive()
     return Transceiver::alive();
 }
 
-void AgentClient::set_timeout(std::chrono::milliseconds timeout)
+void AgentClient::set_timeout(const std::chrono::milliseconds timeout)
 {
     Transceiver::set_timeout(timeout);
 }

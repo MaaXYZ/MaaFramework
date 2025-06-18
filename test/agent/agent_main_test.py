@@ -72,7 +72,7 @@ def api_test():
             socket_id,
         ],
     )
-    
+
     if not agent.connect():
         print("failed to connect")
         exit(1)
