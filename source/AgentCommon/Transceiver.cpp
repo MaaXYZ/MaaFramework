@@ -40,9 +40,8 @@ void Transceiver::init_socket(const std::string& identifier, bool bind)
 
     zmq_sock_ = zmq::socket_t(zmq_ctx_, zmq::socket_type::pair);
 
-    zmq_pollitems_ = std::make_unique<zmq::pollitem_t[]>(2);
-    zmq_pollitems_[0] = { zmq_sock_.handle(), 0, ZMQ_POLLOUT, 0 };
-    zmq_pollitems_[1] = { zmq_sock_.handle(), 0, ZMQ_POLLIN, 0 };
+    zmq_pollitem_send_ = std::make_unique<zmq::pollitem_t>(zmq::pollitem_t { zmq_sock_.handle(), 0, ZMQ_POLLOUT, 0 });
+    zmq_pollitem_recv_ = std::make_unique<zmq::pollitem_t>(zmq::pollitem_t { zmq_sock_.handle(), 0, ZMQ_POLLIN, 0 });
 
     is_bound_ = bind;
 
@@ -69,12 +68,13 @@ void Transceiver::uninit_socket()
 
     zmq_sock_.close();
     zmq_ctx_.close();
-    zmq_pollitems_.reset();
+    zmq_pollitem_send_.reset();
+    zmq_pollitem_recv_.reset();
 }
 
 bool Transceiver::alive()
 {
-    return zmq_sock_.handle() != nullptr && zmq_pollitems_ && zmq::detail::poll(&zmq_pollitems_[0], 2, 0);
+    return zmq_sock_.handle() != nullptr && zmq_pollitem_send_ && zmq::detail::poll(zmq_pollitem_send_.get(), 1, 0);
 }
 
 void Transceiver::set_timeout(std::chrono::milliseconds timeout)
@@ -83,14 +83,14 @@ void Transceiver::set_timeout(std::chrono::milliseconds timeout)
     timeout_ = timeout;
 }
 
-bool Transceiver::poll(short event)
+bool Transceiver::poll(const std::unique_ptr<zmq::pollitem_t>& item)
 {
-    if (!zmq_pollitems_) {
-        LogError << "zmq_pollitems_ is nullptr";
+    if (!item) {
+        LogError << "item is nullptr";
         return false;
     }
 
-    auto pollitem = &zmq_pollitems_[event & ZMQ_POLLIN]; // event is ZMQ_POLLOUT 0b_10 or ZMQ_POLLIN 0b_01
+    auto pollitem = item.get();
     auto interval = timeout_ < std::chrono::seconds(1) ? timeout_ : std::chrono::seconds(1);
     const auto start_clock = std::chrono::steady_clock::now();
 
@@ -115,7 +115,7 @@ bool Transceiver::send(const json::value& j)
     std::string jstr = j.dumps();
     zmq::message_t msg(jstr.data(), jstr.size());
 
-    if (!poll(ZMQ_POLLOUT)) {
+    if (!poll(zmq_pollitem_send_)) {
         LogError << "send canceled";
         return false;
     }
@@ -134,7 +134,7 @@ std::optional<json::value> Transceiver::recv()
 
     zmq::message_t msg;
 
-    if (!poll(ZMQ_POLLIN)) {
+    if (!poll(zmq_pollitem_recv_)) {
         LogError << "recv canceled";
         return std::nullopt;
     }

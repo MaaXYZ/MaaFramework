@@ -61,7 +61,7 @@ class AgentClient:
     def alive(self) -> bool:
         return bool(Library.agent_client().MaaAgentClientAlive(self._handle))
 
-    def set_timeout(self, milliseconds: int = 0) -> bool:
+    def set_timeout(self, milliseconds: int) -> bool:
         return bool(Library.agent_client().MaaAgentClientSetTimeout(self._handle, ctypes.c_int64(milliseconds)))
 
     _api_properties_initialized: bool = False

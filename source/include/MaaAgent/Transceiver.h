@@ -72,7 +72,7 @@ protected:
 
 private:
     void handle_image(const ImageHeader& header);
-    bool poll(short event);
+    bool poll(const std::unique_ptr<zmq::pollitem_t>& item);
 
 protected:
     zmq::socket_t zmq_sock_;
@@ -86,7 +86,8 @@ private:
     inline static int64_t s_req_id_ = 0;
     bool is_bound_ = false;
 
-    std::unique_ptr<zmq::pollitem_t[]> zmq_pollitems_ = nullptr;
+    std::unique_ptr<zmq::pollitem_t> zmq_pollitem_send_ = nullptr;
+    std::unique_ptr<zmq::pollitem_t> zmq_pollitem_recv_ = nullptr;
     std::chrono::milliseconds timeout_ = std::chrono::milliseconds::max();
 };
 
