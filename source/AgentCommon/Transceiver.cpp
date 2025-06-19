@@ -105,7 +105,7 @@ bool Transceiver::poll(zmq::pollitem_t& pollitem)
 
 bool Transceiver::send(const json::value& j)
 {
-    LogTrace << VAR(j) << VAR(ipc_addr_);
+    LogTrace << VAR(j.to_string()) << VAR(ipc_addr_);
 
     if (!poll(zmq_pollitem_send_)) {
         LogError << "send canceled";
@@ -125,8 +125,6 @@ bool Transceiver::send(const json::value& j)
 
 std::optional<json::value> Transceiver::recv()
 {
-    LogFunc << VAR(ipc_addr_);
-
     if (!poll(zmq_pollitem_recv_)) {
         LogError << "recv canceled";
         return std::nullopt;
@@ -147,7 +145,7 @@ std::optional<json::value> Transceiver::recv()
         return std::nullopt;
     }
     auto j = *std::move(jopt);
-    LogTrace << VAR(j);
+    LogTrace << VAR(j.to_string()) << VAR(ipc_addr_);
 
     return j;
 }
