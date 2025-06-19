@@ -180,11 +180,6 @@ MaaBool MaaTaskerGetRecognitionDetail(
         return false;
     }
 
-    if (reco_id == MaaInvalidId) {
-        LogWarn << "reco_id is invalid";
-        return false;
-    }
-
     auto result_opt = tasker->get_reco_result(reco_id);
     if (!result_opt) {
         LogError << "failed to get_reco_result" << VAR(reco_id);
@@ -237,11 +232,6 @@ MaaBool MaaTaskerGetNodeDetail(const MaaTasker* tasker, MaaNodeId node_id, MaaSt
         return false;
     }
 
-    if (node_id == MaaInvalidId) {
-        LogWarn << "node_id is invalid";
-        return false;
-    }
-
     auto result_opt = tasker->get_node_detail(node_id);
     if (!result_opt) {
         LogError << "failed to get_node_detail" << VAR(node_id);
@@ -276,11 +266,6 @@ MaaBool MaaTaskerGetTaskDetail(
 {
     if (!tasker) {
         LogError << "handle is null";
-        return false;
-    }
-
-    if (task_id == MaaInvalidId) {
-        LogWarn << "task_id is invalid";
         return false;
     }
 
