@@ -24,8 +24,8 @@ struct JTemplateMatch
 {
     JTarget roi;
     JRect roi_offset;
-    std::variant<std::vector<std::string>, std::string> template_;
-    std::variant<std::vector<double>, double> threshold;
+    std::vector<std::string> template_;
+    std::vector<double> threshold;
     std::string order_by;
     int index = 0;
     int method = 0;
@@ -38,7 +38,7 @@ struct JFeatureMatch
 {
     JTarget roi;
     JRect roi_offset;
-    std::variant<std::vector<std::string>, std::string> template_;
+    std::vector<std::string> template_;
     int count = 0;
     std::string order_by;
     int index = 0;
@@ -54,8 +54,8 @@ struct JColorMatch
     JTarget roi;
     JRect roi_offset;
     int method = 0;
-    std::variant<std::vector<std::vector<int>>, std::vector<int>> lower;
-    std::variant<std::vector<std::vector<int>>, std::vector<int>> upper;
+    std::vector<std::vector<int>> lower;
+    std::vector<std::vector<int>> upper;
     int count = 0;
     std::string order_by;
     int index = 0;
@@ -68,9 +68,9 @@ struct JOCR
 {
     JTarget roi;
     JRect roi_offset;
-    std::variant<std::vector<std::string>, std::string> expected;
+    std::vector<std::string> expected;
     double threshold = 0;
-    std::variant<std::vector<std::pair<std::string, std::string>>, std::pair<std::string, std::string>> replace;
+    std::vector<std::pair<std::string, std::string>> replace;
     std::string order_by;
     int index = 0;
     bool only_rec = false;
@@ -85,7 +85,7 @@ struct JNeuralNetworkClassify
     JRect roi_offset;
     std::vector<std::string> labels;
     std::string model;
-    std::variant<std::vector<int>, int> expected;
+    std::vector<int> expected;
     std::string order_by;
     int index = 0;
 
@@ -98,8 +98,8 @@ struct JNeuralNetworkDetect
     JRect roi_offset;
     std::vector<std::string> labels;
     std::string model;
-    std::variant<std::vector<int>, int> expected;
-    std::variant<std::vector<double>, double> threshold;
+    std::vector<int> expected;
+    std::vector<double> threshold;
     std::string order_by;
     int index = 0;
 
@@ -168,7 +168,7 @@ struct JMultiSwipe
 
 struct JKey
 {
-    std::variant<std::vector<int>, int> key;
+    std::vector<int> key;
 
     MEO_TOJSON(key);
 };
@@ -246,18 +246,18 @@ struct JPipelineData
 {
     JRecognition recognition;
     JAction action;
-    std::variant<std::vector<std::string>, std::string> next;
-    std::variant<std::vector<std::string>, std::string> interrupt;
+    std::vector<std::string> next;
+    std::vector<std::string> interrupt;
     bool is_sub = false;
     int64_t rate_limit = 0;
     int64_t timeout = 0;
-    std::variant<std::vector<std::string>, std::string> on_error;
+    std::vector<std::string> on_error;
     bool inverse = false;
     bool enabled = false;
     int64_t pre_delay = 0;
     int64_t post_delay = 0;
-    std::variant<JWaitFreezes, int> pre_wait_freezes;
-    std::variant<JWaitFreezes, int> post_wait_freezes;
+    JWaitFreezes pre_wait_freezes;
+    JWaitFreezes post_wait_freezes;
     json::value focus;
 
     MEO_TOJSON(
