@@ -240,7 +240,7 @@ HTML_EXTRA_STYLESHEET  = tools/Doxygen/doxygen-awesome.css
 # files will be copied as-is; there are no commands or markers available.
 # This tag requires that the tag GENERATE_HTML is set to YES.
 
-HTML_EXTRA_FILES       =
+HTML_EXTRA_FILES       = tools/Doxygen/CNAME
 
 HTML_DYNAMIC_MENUS     = YES
 
@@ -300,7 +300,7 @@ DOCSET_PUBLISHER_ID    = org.doxygen.Publisher
 
 DOCSET_PUBLISHER_NAME  = Publisher
 
-SITEMAP_URL            = "https://maaxyz.github.io/MaaFramework/"
+SITEMAP_URL            = "https://maafw.xyz"
 
 GENERATE_TREEVIEW      = YES
 
