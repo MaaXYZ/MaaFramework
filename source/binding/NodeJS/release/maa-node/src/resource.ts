@@ -188,7 +188,7 @@ export class Resource extends ResourceBase {
     constructor() {
         let ws: WeakRef<this>
         const h = maa.resource_create((message, details_json) => {
-            ws.deref()?.notify(message, details_json)
+            return ws.deref()?.notify(message, details_json)
         })
         if (!h) {
             throw 'Resource create failed'

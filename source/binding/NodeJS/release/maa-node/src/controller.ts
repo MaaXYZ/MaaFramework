@@ -204,7 +204,7 @@ export class AdbController extends ControllerBase {
             config,
             agent ?? AdbController.agent_path(),
             (message, details_json) => {
-                ws.deref()?.notify(message, details_json)
+                return ws.deref()?.notify(message, details_json)
             }
         )
         if (!h) {
@@ -235,7 +235,7 @@ export class Win32Controller extends ControllerBase {
             screencap_methods,
             input_methods,
             (message, details_json) => {
-                ws.deref()?.notify(message, details_json)
+                return ws.deref()?.notify(message, details_json)
             }
         )
         if (!h) {
@@ -259,7 +259,7 @@ export class DbgController extends ControllerBase {
             type,
             config,
             (message, details_json) => {
-                ws.deref()?.notify(message, details_json)
+                return ws.deref()?.notify(message, details_json)
             }
         )
         if (!h) {
@@ -354,7 +354,7 @@ export class CustomController extends ControllerBase {
                 return (actor[action] as any)(...param)
             },
             (message, details_json) => {
-                ws.deref()?.notify(message, details_json)
+                return ws.deref()?.notify(message, details_json)
             }
         )
         if (!h) {

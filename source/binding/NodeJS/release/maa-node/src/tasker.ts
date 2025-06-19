@@ -228,7 +228,7 @@ export class Tasker extends TaskerBase {
     constructor() {
         let ws: WeakRef<this>
         const h = maa.tasker_create((message, details_json) => {
-            ws.deref()?.notify(message, details_json)
+            return ws.deref()?.notify(message, details_json)
         })
         if (!h) {
             throw 'Tasker create failed'
