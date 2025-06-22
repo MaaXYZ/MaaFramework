@@ -270,7 +270,7 @@ json::object PipelineResMgr::dump(const PipelineData& pp)
         std::vector<std::vector<int>> upper;
         for (const auto& r : param.range) {
             lower.emplace_back(r.first);
-            lower.emplace_back(r.second);
+            upper.emplace_back(r.second);
         }
         data.recognition.param = PipelineV2::JColorMatch {
             .roi = dump_target(param.roi_target),
