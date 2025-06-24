@@ -107,7 +107,12 @@ json::value gen_detail(const std::vector<Res>& all, const std::vector<Res>& filt
 RecoResult Recognizer::direct_hit(const std::string& name)
 {
     LogDebug << name;
-    return RecoResult { .name = name, .algorithm = "DirectHit", .box = cv::Rect {} };
+    return RecoResult {
+        .reco_id = MAA_VISION_NS::VisionBase::generate_uid(),
+        .name = name,
+        .algorithm = "DirectHit",
+        .box = cv::Rect {},
+    };
 }
 
 RecoResult Recognizer::template_match(const MAA_VISION_NS::TemplateMatcherParam& param, const std::string& name)
