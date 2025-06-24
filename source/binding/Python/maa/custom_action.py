@@ -65,8 +65,6 @@ class CustomAction(ABC):
         context = Context(c_context)
         task_detail = context.tasker.get_task_detail(int(c_task_id))
         reco_detail = context.tasker.get_recognition_detail(int(c_reco_id))
-        if not task_detail or not reco_detail:
-            return int(False)
 
         box = RectBuffer(c_box).get()
 

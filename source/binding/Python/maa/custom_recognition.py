@@ -67,8 +67,6 @@ class CustomRecognition(ABC):
 
         context = Context(c_context)
         task_detail = context.tasker.get_task_detail(int(c_task_id))
-        if not task_detail:
-            return int(False)
 
         image = ImageBuffer(c_image).get()
 
