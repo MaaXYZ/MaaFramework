@@ -37,10 +37,12 @@ AdbDeviceWin32Finder::AdbDeviceWin32Finder()
 
         { "MuMuPlayer12",
           {
-              .keyword = "MuMuPlayer.exe",
+              .keyword = "(MuMuPlayer\\.exe|MuMuNxDevice\\.exe)",
               .adb_candidate_paths = { "vmonitor\\bin\\adb_server.exe"_path,
                                        "MuMu\\emulator\\nemu\\vmonitor\\bin\\adb_server.exe"_path,
-                                       "adb.exe"_path },
+                                       "adb.exe"_path,
+                                       "shell\\adb.exe"_path,
+                                       "nx_device\\12.0\\shell\\adb.exe"_path },
           } },
 
         { "MEmuPlayer", { .keyword = "MEmu", .adb_candidate_paths = { "adb.exe"_path }, .adb_common_serials = { "127.0.0.1:21503" } } },
