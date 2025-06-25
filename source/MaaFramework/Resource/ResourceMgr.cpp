@@ -4,6 +4,7 @@
 
 #include "MLProvider.h"
 #include "MaaFramework/MaaMsg.h"
+#include "PipelineDumper.h"
 #include "Utils/GpuOption.h"
 #include "Utils/Logger.h"
 #include "Utils/Platform.h"
@@ -197,7 +198,7 @@ std::optional<json::object> ResourceMgr::get_node_data(const std::string& node_n
         return std::nullopt;
     }
 
-    return PipelineResMgr::dump(it->second);
+    return PipelineDumper::dump(it->second);
 }
 
 void ResourceMgr::register_custom_recognition(const std::string& name, MaaCustomRecognitionCallback recognition, void* trans_arg)

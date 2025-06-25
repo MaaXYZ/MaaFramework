@@ -246,3 +246,10 @@ struct PipelineData
 };
 
 MAA_RES_NS_END
+
+MAA_NS_BEGIN
+
+using PipelineData = MAA_RES_NS::PipelineData;
+using PipelineDataMap = std::unordered_map<std::string, PipelineData>;
+
+MAA_NS_END

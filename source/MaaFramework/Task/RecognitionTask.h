@@ -7,9 +7,6 @@ MAA_TASK_NS_BEGIN
 class RecognitionTask : public TaskBase
 {
 public:
-    using PipelineDataMap = Context::PipelineDataMap;
-
-public:
     using TaskBase::TaskBase;
 
     virtual ~RecognitionTask() override = default;

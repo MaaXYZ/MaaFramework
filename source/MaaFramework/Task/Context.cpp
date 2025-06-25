@@ -5,6 +5,9 @@
 #include "ActionTask.h"
 #include "PipelineTask.h"
 #include "RecognitionTask.h"
+#include "Resource/PipelineChecker.h"
+#include "Resource/PipelineDumper.h"
+#include "Resource/PipelineParser.h"
 #include "Tasker/Tasker.h"
 #include "Utils/Logger.h"
 
@@ -128,7 +131,7 @@ bool Context::override_pipeline(const json::object& pipeline_override)
     for (const auto& [key, value] : pipeline_override) {
         PipelineData result;
         auto default_result = get_pipeline_data(key).value_or(default_mgr.get_pipeline());
-        bool ret = MAA_RES_NS::PipelineResMgr::parse_node(key, value, result, default_result, default_mgr);
+        bool ret = MAA_RES_NS::PipelineParser::parse_node(key, value, result, default_result, default_mgr);
         if (!ret) {
             LogError << "parse_task failed" << VAR(key) << VAR(value);
             return false;
@@ -175,7 +178,7 @@ std::optional<json::object> Context::get_node_data(const std::string& node_name)
         return std::nullopt;
     }
 
-    return MAA_RES_NS::PipelineResMgr::dump(*pp_opt);
+    return MAA_RES_NS::PipelineDumper::dump(*pp_opt);
 }
 
 MaaTaskId Context::task_id() const
@@ -188,7 +191,7 @@ Tasker* Context::tasker() const
     return tasker_;
 }
 
-std::optional<Context::PipelineData> Context::get_pipeline_data(const std::string& node_name) const
+std::optional<PipelineData> Context::get_pipeline_data(const std::string& node_name) const
 {
     auto override_it = pipeline_override_.find(node_name);
     if (override_it != pipeline_override_.end()) {
@@ -237,7 +240,7 @@ bool Context::check_pipeline() const
     auto all = pipeline_override_;
     all.merge(raw);
 
-    return MAA_RES_NS::PipelineResMgr::check_all_validity(all);
+    return MAA_RES_NS::PipelineChecker::check_all_validity(all);
 }
 
 MAA_TASK_NS_END

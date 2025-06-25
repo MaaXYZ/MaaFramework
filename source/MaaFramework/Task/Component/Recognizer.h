@@ -14,7 +14,6 @@ MAA_TASK_NS_BEGIN
 class Recognizer
 {
 public:
-    using PipelineData = MAA_RES_NS::PipelineData;
     using OcrCache = MAA_VISION_NS::OCRer::Cache;
 
 public:

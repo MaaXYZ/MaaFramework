@@ -18,10 +18,6 @@ MAA_TASK_NS_BEGIN
 class TaskBase
 {
 public:
-    using PipelineData = Context::PipelineData;
-    using PipelineDataMap = Context::PipelineDataMap;
-
-public:
     TaskBase(std::string entry, Tasker* tasker);
     TaskBase(std::string entry, Tasker* tasker, std::shared_ptr<Context> context);
     virtual ~TaskBase() = default;

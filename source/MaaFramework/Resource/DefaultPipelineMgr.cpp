@@ -1,6 +1,6 @@
 #include "DefaultPipelineMgr.h"
 
-#include "PipelineResMgr.h"
+#include "PipelineParser.h"
 #include "Utils/Codec.h"
 #include "Utils/Logger.h"
 #include "Utils/Platform.h"
@@ -41,7 +41,7 @@ bool DefaultPipelineMgr::parse_pipeline(const json::value& input)
         return true;
     }
 
-    return PipelineResMgr::parse_node(std::string(), *opt, pipeline_param_, {}, {});
+    return PipelineParser::parse_node(std::string(), *opt, pipeline_param_, {}, {});
 }
 
 bool DefaultPipelineMgr::parse_recognition(const json::value& input)
@@ -56,7 +56,7 @@ bool DefaultPipelineMgr::parse_recognition(const json::value& input)
 
         Type parsed_type = Type::Invalid;
         Param parsed_param;
-        bool ret = PipelineResMgr::parse_recognition(*opt, parsed_type, parsed_param, Type::Invalid, {}, {});
+        bool ret = PipelineParser::parse_recognition(*opt, parsed_type, parsed_param, Type::Invalid, {}, {});
         if (!ret) {
             LogError << "parse_recognition failed" << VAR(name);
             return false;
@@ -83,7 +83,7 @@ bool DefaultPipelineMgr::parse_action(const json::value& input)
 
         Type parsed_type = Type::Invalid;
         Param parsed_param;
-        bool ret = PipelineResMgr::parse_action(*opt, parsed_type, parsed_param, Type::Invalid, {}, {});
+        bool ret = PipelineParser::parse_action(*opt, parsed_type, parsed_param, Type::Invalid, {}, {});
         if (!ret) {
             LogError << "parse_action failed" << VAR(name);
             return false;

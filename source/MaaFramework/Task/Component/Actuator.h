@@ -14,7 +14,6 @@ MAA_TASK_NS_BEGIN
 class Actuator
 {
 public:
-    using PipelineData = MAA_RES_NS::PipelineData;
     using PreTaskBoxes = std::map<std::string, cv::Rect>;
 
 public:

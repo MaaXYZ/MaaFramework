@@ -20,10 +20,6 @@ private:
     };
 
 public:
-    using PipelineData = MAA_RES_NS::PipelineData;
-    using PipelineDataMap = MAA_RES_NS::PipelineResMgr::PipelineDataMap;
-
-public:
     static std::shared_ptr<Context> create(MaaTaskId id, Tasker* tasker);
     std::shared_ptr<Context> getptr();
     std::shared_ptr<const Context> getptr() const;
