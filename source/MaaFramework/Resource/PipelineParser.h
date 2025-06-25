@@ -33,6 +33,15 @@ public:
         const Recognition::Param& parent_param,
         const DefaultPipelineMgr& default_mgr);
 
+    static bool parse_action(
+        const json::value& input,
+        Action::Type& out_type,
+        Action::Param& out_param,
+        const Action::Type& parent_type,
+        const Action::Param& parent_param,
+        const DefaultPipelineMgr& default_mgr);
+
+private:
     static bool parse_template_matcher_param(
         const json::value& input,
         MAA_VISION_NS::TemplateMatcherParam& output,
@@ -70,13 +79,6 @@ public:
         int default_index,
         const std::unordered_set<MAA_VISION_NS::ResultOrderBy>& valid_values);
 
-    static bool parse_action(
-        const json::value& input,
-        Action::Type& out_type,
-        Action::Param& out_param,
-        const Action::Type& parent_type,
-        const Action::Param& parent_param,
-        const DefaultPipelineMgr& default_mgr);
     static bool parse_click(const json::value& input, Action::ClickParam& output, const Action::ClickParam& default_value);
     static bool parse_long_press(const json::value& input, Action::LongPressParam& output, const Action::LongPressParam& default_value);
     static bool parse_swipe(const json::value& input, Action::SwipeParam& output, const Action::SwipeParam& default_value);
