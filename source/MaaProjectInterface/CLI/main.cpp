@@ -23,7 +23,7 @@ void request_windows_emulate_vt100()
     const int enable_virtual_terminal_processing = 0x0004;
     const int disable_newline_auto_return = 0x0008;
     out_mode |= enable_virtual_terminal_processing;
-    Add commentMore actions out_mode |= disable_newline_auto_return;
+    out_mode |= disable_newline_auto_return;
 
     SetConsoleMode(stdout_handle, out_mode);
 }
