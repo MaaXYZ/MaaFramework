@@ -525,18 +525,21 @@ void Interactor::add_task()
 
             const auto& opt = config_.interface_data().option.at(option_name);
 
-            if (!opt.default_case.empty()) {
-                config_options.emplace_back(Configuration::Option { option_name, opt.default_case });
-                continue;
-            }
-            std::cout << MAA_NS::utf8_to_crt(std::format("\n\n## Input option of \"{}\" for \"{}\" ##\n\n", option_name, data_task.name));
-            for (size_t i = 0; i < opt.cases.size(); ++i) {
-                std::cout << MAA_NS::utf8_to_crt(std::format("\t{}. {}\n", i + 1, opt.cases[i].name));
-            }
-            std::cout << "\n";
+            if (auto select_option = std::get_if<InterfaceData::SelectOption>(&opt)) {
+                if (!select_option->default_case.empty()) {
+                    config_options.emplace_back(Configuration::Option { option_name, select_option->default_case });
+                    continue;
+                }
+                std::cout << MAA_NS::utf8_to_crt(
+                    std::format("\n\n## Input option of \"{}\" for \"{}\" ##\n\n", option_name, data_task.name));
+                for (size_t i = 0; i < select_option->cases.size(); ++i) {
+                    std::cout << MAA_NS::utf8_to_crt(std::format("\t{}. {}\n", i + 1, select_option->cases[i].name));
+                }
+                std::cout << "\n";
 
-            int case_index = input(opt.cases.size()) - 1;
-            config_options.emplace_back(Configuration::Option { option_name, opt.cases[case_index].name });
+                int case_index = input(select_option->cases.size()) - 1;
+                config_options.emplace_back(Configuration::Option { option_name, select_option->cases[case_index].name });
+            }
         }
 
         config_.configuration().task.emplace_back(Configuration::Task { .name = data_task.name, .option = std::move(config_options) });

@@ -178,16 +178,24 @@ std::optional<RuntimeParam::Task> Configurator::generate_runtime_task(const Conf
         }
         const auto& data_option = data_option_iter->second;
 
-        auto data_case_iter =
-            std::ranges::find_if(data_option.cases, [&](const auto& data_case) { return data_case.name == config_option_value; });
-        if (data_case_iter == data_option.cases.end()) {
-            LogWarn << "case not found" << VAR(config_option_value);
-            continue;
-        }
-        const auto& data_case = *data_case_iter;
+        if (auto select_option = std::get_if<InterfaceData::SelectOption>(&data_option)) {
+            auto data_case_iter =
+                std::ranges::find_if(select_option->cases, [&](const auto& data_case) { return data_case.name == config_option_value; });
+            if (data_case_iter == select_option->cases.end()) {
+                LogWarn << "case not found" << VAR(config_option_value);
+                continue;
+            }
+            const auto& data_case = *data_case_iter;
 
-        // data_case first, duplicate keys will be overwritten by data_case.param
-        runtime_task.pipeline_override = data_case.pipeline_override | std::move(runtime_task.pipeline_override);
+            // data_case first, duplicate keys will be overwritten by data_case.param
+            runtime_task.pipeline_override = data_case.pipeline_override | std::move(runtime_task.pipeline_override);
+        }
+        else if (auto switch_option = std::get_if<InterfaceData::SwitchOption>(&data_option)) {
+
+        }
+        else if (auto input_text_option = std::get_if<InterfaceData::InputTextOption>(&data_option)) {
+
+        }
     }
 
     return runtime_task;
