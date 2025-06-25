@@ -10,6 +10,7 @@
 
 #include "Conf/Conf.h"
 #include "MaaFramework/MaaDef.h"
+#include "ProjectInterface/VariantTagHelper.h"
 
 MAA_PROJECT_INTERFACE_NS_BEGIN
 
@@ -74,7 +75,7 @@ struct InterfaceData
         MEO_JSONIZATION(name, entry, MEO_OPT pipeline_override, MEO_OPT option);
     };
 
-    struct Option
+    struct SelectOption
     {
         struct Case
         {
@@ -84,11 +85,52 @@ struct InterfaceData
             MEO_JSONIZATION(name, pipeline_override);
         };
 
+        Tag<"select"> type;
         std::vector<Case> cases;
         std::string default_case; // case.name
 
-        MEO_JSONIZATION(cases, MEO_OPT default_case);
+        MEO_JSONIZATION(MEO_OPT type, cases, MEO_OPT default_case);
     };
+
+    struct SwitchOption
+    {
+        Tag<"switch"> type;
+        bool default_value;
+        json::object positive;
+        json::object negative;
+
+        MEO_JSONIZATION(type, MEO_OPT default_value, MEO_OPT positive, MEO_OPT negative);
+    };
+
+    struct RegexValidator
+    {
+        Tag<"regex"> type;
+        std::string regex;
+        std::string error;
+
+        MEO_JSONIZATION(type, regex, error);
+    };
+
+    // struct NumericalValidator
+    // {
+    //     Tag<"numerical"> type;
+    //     std::string regex;
+    //     std::string error;
+
+    //     MEO_JSONIZATION(type, regex, error);
+    // };
+
+    struct InputTextOption
+    {
+        Tag<"input-text"> type;
+        std::string default_value;
+        std::string pipeline_inject;
+        std::vector<RegexValidator> validators;
+
+        MEO_JSONIZATION(type, MEO_OPT default_value, pipeline_inject, MEO_OPT validators);
+    };
+
+    using Option = std::variant<SelectOption, SwitchOption, InputTextOption>;
 
     struct Agent
     {
