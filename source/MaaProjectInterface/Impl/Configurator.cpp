@@ -9,6 +9,25 @@
 
 MAA_PROJECT_INTERFACE_NS_BEGIN
 
+static void replace_override(json::value& target, const std::string& stub, const json::value& value)
+{
+    if (target.is_object()) {
+        for (auto& [key, val] : target.as_object()) {
+            std::ignore = key;
+
+            replace_override(val, stub, value);
+        }
+    }
+    else if (target.is_array()) {
+        for (auto& val : target.as_array()) {
+            replace_override(val, stub, value);
+        }
+    }
+    else if (target.is_string() && target.as_string() == stub) {
+        target = value;
+    }
+};
+
 bool Configurator::load(const std::filesystem::path& resource_dir, const std::filesystem::path& user_dir)
 {
     LogFunc << VAR(resource_dir) << VAR(user_dir);
@@ -169,6 +188,17 @@ std::optional<RuntimeParam::Task> Configurator::generate_runtime_task(const Conf
 
     RuntimeParam::Task runtime_task { .name = data_task.name, .entry = data_task.entry, .pipeline_override = data_task.pipeline_override };
 
+    // override first, duplicate keys will be overwritten
+    auto add_override = [&runtime_task](const json::object& po) {
+        runtime_task.pipeline_override = po | std::move(runtime_task.pipeline_override);
+    };
+
+    auto add_replace_override = [&add_override](const json::object& po, const std::string& stub, json::value value) {
+        json::value holder = po;
+        replace_override(holder, stub, value);
+        add_override(holder.as_object());
+    };
+
     for (const auto& [config_option, config_option_value] : config_task.option) {
         auto data_option_iter =
             std::ranges::find_if(data_.option, [&](const auto& data_option_pair) { return data_option_pair.first == config_option; });
@@ -187,14 +217,26 @@ std::optional<RuntimeParam::Task> Configurator::generate_runtime_task(const Conf
             }
             const auto& data_case = *data_case_iter;
 
-            // data_case first, duplicate keys will be overwritten by data_case.param
-            runtime_task.pipeline_override = data_case.pipeline_override | std::move(runtime_task.pipeline_override);
+            add_override(data_case.pipeline_override);
         }
         else if (auto switch_option = std::get_if<InterfaceData::SwitchOption>(&data_option)) {
-
+            if (config_option_value == "true") {
+                add_override(switch_option->positive);
+            }
+            else {
+                add_override(switch_option->negative);
+            }
         }
         else if (auto input_text_option = std::get_if<InterfaceData::InputTextOption>(&data_option)) {
+            // TODO: run validator
+            // mabye interface updated, with outdated config.
 
+            std::string stub = input_text_option->replace_value;
+            if (stub.empty()) {
+                stub = "{value}";
+            }
+
+            add_replace_override(input_text_option->pipeline_override, stub, config_option_value);
         }
     }
 

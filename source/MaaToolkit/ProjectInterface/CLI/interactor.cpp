@@ -540,6 +540,12 @@ void Interactor::add_task()
                 int case_index = input(select_option->cases.size()) - 1;
                 config_options.emplace_back(Configuration::Option { option_name, select_option->cases[case_index].name });
             }
+            else if (auto switch_option = std::get_if<InterfaceData::SwitchOption>(&opt)) {
+                std::ignore = switch_option;
+            }
+            else if (auto input_text_option = std::get_if<InterfaceData::InputTextOption>(&opt)) {
+                std::ignore = input_text_option;
+            }
         }
 
         config_.configuration().task.emplace_back(Configuration::Task { .name = data_task.name, .option = std::move(config_options) });

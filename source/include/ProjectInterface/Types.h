@@ -124,10 +124,11 @@ struct InterfaceData
     {
         Tag<"input-text"> type;
         std::string default_value;
-        std::string pipeline_inject;
+        std::string replace_value;
+        json::object pipeline_override;
         std::vector<RegexValidator> validators;
 
-        MEO_JSONIZATION(type, MEO_OPT default_value, pipeline_inject, MEO_OPT validators);
+        MEO_JSONIZATION(type, MEO_OPT default_value, MEO_OPT replace_value, MEO_OPT pipeline_override, MEO_OPT validators);
     };
 
     using Option = std::variant<SelectOption, SwitchOption, InputTextOption>;
