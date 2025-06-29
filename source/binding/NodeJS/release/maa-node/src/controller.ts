@@ -2,6 +2,8 @@ import path from 'path'
 
 import { Job, JobSource } from './job'
 import maa, { ImageData } from './maa'
+import { ChainNotifyType } from './types'
+import { chain_notify_impl } from './utils'
 
 class ImageJob extends Job<maa.CtrlId, JobSource<maa.CtrlId>> {
     #ctrl: ControllerBase
@@ -36,38 +38,23 @@ class ImageJob extends Job<maa.CtrlId, JobSource<maa.CtrlId>> {
     }
 }
 
-export type ControllerNotify =
-    | ({
-          adb: string
-          address: string
-      } & (
-          | {
-                msg: 'UUIDGot'
-                uuid: string
-            }
-          | {
-                msg: 'UUIDGetFailed'
-            }
-          | {
-                msg: 'ConnectSuccess'
-            }
-          | {
-                msg: 'ConnectFailed'
-                why: 'ConnectFailed' | 'UUIDGetFailed'
-            }
-          | {
-                msg:
-                    | 'ScreencapInited'
-                    | 'ScreencapInitFailed'
-                    | 'TouchinputInited'
-                    | 'TouchinputInitFailed'
-            }
-      ))
-    | {
-          msg: 'Action.Started' | 'Action.Completed' | 'Action.Failed'
-          ctrl_id: maa.CtrlId
-          uuid: string
-      }
+export type ControllerNotify = {
+    msg: 'Action.Starting' | 'Action.Succeeded' | 'Action.Failed'
+    action:
+        | 'connect'
+        | 'click'
+        | 'swipe'
+        | 'touch_down'
+        | 'touch_move'
+        | 'touch_up'
+        | 'press_key'
+        | 'input_text'
+        | 'screencap'
+        | 'start_app'
+        | 'stop_app'
+    ctrl_id: maa.CtrlId
+    uuid: string
+}
 
 export class ControllerBase {
     handle: maa.ControllerHandle
@@ -75,13 +62,18 @@ export class ControllerBase {
 
     notify(message: string, details_json: string): maa.MaybePromise<void> {}
 
-    set parsed_notify(cb: (msg: ControllerNotify) => maa.MaybePromise<void>) {
-        this.notify = (msg, details) => {
+    chain_notify = chain_notify_impl
+
+    chain_parsed_notify(
+        cb: (msg: ControllerNotify) => maa.MaybePromise<void>,
+        order: ChainNotifyType = 'after'
+    ) {
+        this.chain_notify((msg: string, details: string) => {
             return cb({
                 msg: msg.replace(/^Controller\./, '') as any,
                 ...JSON.parse(details)
             })
-        }
+        }, order)
     }
 
     constructor(handle: maa.ControllerHandle) {

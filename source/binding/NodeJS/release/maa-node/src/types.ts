@@ -29,3 +29,5 @@ export type CustomRecognizerCallback = CustomCallback<
 >
 
 export type CustomActionCallback = CustomCallback<CustomActionSelf, boolean>
+
+export type ChainNotifyType = 'before' | 'after' | 'before-no-wait' | 'after-no-wait' | 'replace'

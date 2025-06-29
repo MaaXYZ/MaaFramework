@@ -3,21 +3,20 @@ import { Job, JobSource } from './job'
 import maa from './maa'
 import { DumpTask } from './pipeline'
 import {
+    ChainNotifyType,
     CustomActionCallback,
     CustomActionSelf,
     CustomRecognizerCallback,
     CustomRecognizerSelf
 } from './types'
+import { chain_notify_impl } from './utils'
 
-export type ResourceNotify = { res_id: maa.ResId; path: string } & (
-    | {
-          msg: 'StartLoading'
-      }
-    | {
-          msg: 'LoadingCompleted' | 'LoadingFailed'
-          hash: string
-      }
-)
+export type ResourceNotify = {
+    msg: 'Loading.Starting' | 'Loading.Succeeded' | 'Loading.Failed'
+    res_id: maa.ResId
+    path: string
+    hash: string
+}
 
 export class ResourceBase {
     handle: maa.ResourceHandle
@@ -25,13 +24,18 @@ export class ResourceBase {
 
     notify(message: string, details_json: string): maa.MaybePromise<void> {}
 
-    set parsed_notify(cb: (msg: ResourceNotify) => maa.MaybePromise<void>) {
-        this.notify = (msg, details) => {
+    chain_notify = chain_notify_impl
+
+    chain_parsed_notify(
+        cb: (msg: ResourceNotify) => maa.MaybePromise<void>,
+        order: ChainNotifyType = 'after'
+    ) {
+        this.chain_notify((msg: string, details: string) => {
             return cb({
                 msg: msg.replace(/^Resource\./, '') as any,
                 ...JSON.parse(details)
             })
-        }
+        }, order)
     }
 
     constructor(handle: maa.ResourceHandle) {

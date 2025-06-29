@@ -2,6 +2,8 @@ import { ControllerBase } from './controller'
 import { Job, JobSource } from './job'
 import maa from './maa'
 import { ResourceBase } from './resource'
+import { ChainNotifyType } from './types'
+import { chain_notify_impl } from './utils'
 
 type TaskDetail = ReturnType<TaskerBase['task_detail']>
 
@@ -54,37 +56,35 @@ class TaskJob extends Job<maa.TaskId, JobSource<maa.TaskId>> {
     }
 }
 
-export type TaskerNotify = {
-    task_id: maa.TaskId
-    entry: string
-    hash: string
-    uuid: string
-} & (
+export type TaskerNotify =
     | {
           msg: 'Task.Started' | 'Task.Completed' | 'Task.Failed'
+          task_id: maa.TaskId
+          entry: string
+          uuid: string
+          hash: string
       }
     | {
           msg: 'NextList.Starting' | 'NextList.Succeeded' | 'NextList.Failed'
-          task_id: number
+          task_id: maa.TaskId
           name: string
           list: string[]
           focus: unknown
       }
     | {
           msg: 'Recognition.Starting' | 'Recognition.Succeeded' | 'Recognition.Failed'
-          task_id: number
-          reco_id: number
+          task_id: maa.TaskId
+          reco_id: maa.RecoId
           name: string
           focus: unknown
       }
     | {
           msg: 'Action.Starting' | 'Action.Succeeded' | 'Action.Failed'
-          task_id: number
-          node_id: number
+          task_id: maa.TaskId
+          node_id: maa.NodeId
           name: string
           focus: unknown
       }
-)
 
 export class TaskerBase {
     handle: maa.TaskerHandle
@@ -92,13 +92,18 @@ export class TaskerBase {
 
     notify(message: string, details_json: string): maa.MaybePromise<void> {}
 
-    set parsed_notify(cb: (msg: TaskerNotify) => maa.MaybePromise<void>) {
-        this.notify = (msg, details) => {
+    chain_notify = chain_notify_impl
+
+    chain_parsed_notify(
+        cb: (msg: TaskerNotify) => maa.MaybePromise<void>,
+        order: ChainNotifyType = 'after'
+    ) {
+        this.chain_notify((msg: string, details: string) => {
             return cb({
                 msg: msg.replace(/^(?:Tasker|Node)?\./, '') as any,
                 ...JSON.parse(details)
             })
-        }
+        }, order)
     }
 
     constructor(handle: maa.TaskerHandle) {
