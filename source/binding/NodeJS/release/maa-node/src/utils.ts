@@ -29,8 +29,8 @@ export function chain_notify_impl(
             break
         case 'after-no-wait':
             this.notify = async (msg, details) => {
-                old.call(this, msg, details)
-                await cb(msg, details)
+                await old.call(this, msg, details)
+                cb(msg, details)
             }
             break
         case 'replace':
