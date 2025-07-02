@@ -42,6 +42,11 @@ AdbDeviceWin32Finder::AdbDeviceWin32Finder()
                                        "MuMu\\emulator\\nemu\\vmonitor\\bin\\adb_server.exe"_path,
                                        "adb.exe"_path },
           } },
+        { "MuMuPlayer12 v5",
+          {
+              .keyword = "MuMuNxDevice.exe",
+              .adb_candidate_paths = { "..\\..\\..\\nx_main\\adb.exe"_path, "adb.exe"_path },
+          } },
 
         { "MEmuPlayer", { .keyword = "MEmu", .adb_candidate_paths = { "adb.exe"_path }, .adb_common_serials = { "127.0.0.1:21503" } } },
 
@@ -59,7 +64,7 @@ std::vector<std::string> AdbDeviceWin32Finder::find_adb_serials(const std::files
     if (emulator.name == "LDPlayer") {
         return find_serials_by_adb_command(adb_path);
     }
-    else if (emulator.name == "MuMuPlayer12") {
+    else if (emulator.name == "MuMuPlayer12" || emulator.name == "MuMuPlayer12 v5") {
         return find_mumu_serials(adb_path, emulator);
     }
     else {
@@ -76,6 +81,24 @@ void AdbDeviceWin32Finder::request_device_config(const Emulator& emulator, AdbDe
             return;
         }
         auto dir = path_opt->parent_path().parent_path();
+
+        auto& mumu_cfg = device.config["extras"]["mumu"];
+
+        mumu_cfg["enable"] = true;
+        mumu_cfg["path"] = path_to_utf8_string(dir);
+        mumu_cfg["index"] = get_mumu_index(device.serial);
+
+        device.screencap_methods = MaaAdbScreencapMethod_EmulatorExtras;
+
+        LogInfo << "MuMuPlayer12 cfg" << VAR(device.serial) << device.config;
+    }
+    else if (emulator.name == "MuMuPlayer12 v5") {
+        // C:\Program Files\Netease\MuMuPlayer-12.0\nx_device\12.0\shell\MuMuNxDevice.exe
+        auto path_opt = get_process_path(emulator.process.pid);
+        if (!path_opt) {
+            return;
+        }
+        auto dir = path_opt->parent_path().parent_path().parent_path().parent_path();
 
         auto& mumu_cfg = device.config["extras"]["mumu"];
 

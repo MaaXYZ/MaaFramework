@@ -32,7 +32,14 @@ bool MuMuPlayerExtras::parse(const json::value& config)
 
     std::string lib = config.get("extras", "mumu", "lib", "");
     if (lib.empty()) {
-        lib_path_ = mumu_path_ / MAA_NS::path("shell/sdk/external_renderer_ipc");
+        lib_path_ = mumu_path_ / MAA_NS::path("nx_main/sdk/external_renderer_ipc.dll");
+        if (!std::filesystem::exists(lib_path_)) {
+            lib_path_ = mumu_path_ / MAA_NS::path("shell/sdk/external_renderer_ipc.dll");
+            if (!std::filesystem::exists(lib_path_)) {
+                LogError << "Failed to find mumu library path, please check extras.mumu.lib or extras.mumu.path";
+                return false;
+            }
+        }
     }
     else {
         lib_path_ = MAA_NS::path(lib);
