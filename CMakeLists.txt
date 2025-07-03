@@ -53,7 +53,7 @@ if(WITH_WIN32_CONTROLLER AND NOT WIN32)
 endif()
 
 find_package(OpenCV REQUIRED COMPONENTS core imgproc imgcodecs)
-find_package(Boost REQUIRED COMPONENTS system)
+find_package(Boost REQUIRED CONFIG COMPONENTS system)
 find_package(ZLIB REQUIRED)
 find_package(fastdeploy_ppocr REQUIRED)
 find_package(ONNXRuntime REQUIRED)
