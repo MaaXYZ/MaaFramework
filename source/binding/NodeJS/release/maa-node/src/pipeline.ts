@@ -2,11 +2,26 @@ import type { FlatRect } from './maa'
 
 type NodeName = string
 
-type OutputRemove<T, Output> = Output extends true ? never : T
-type MaybeArray<T, Output> = T[] | OutputRemove<T, Output>
+export type ModeFragment = 0
+export type ModeStrict = 1
+export type ModeDump = 2
+
+type RemoveIfDump<T, Mode> = Mode extends ModeDump ? never : T
+type MaybeArray<T, Mode> = T[] | RemoveIfDump<T, Mode>
 type FixedArray<T, K extends number, A extends T[] = []> = A['length'] extends K
     ? A
     : FixedArray<T, K, [...A, T]>
+type RequiredIfStrict<T, Keys, Mode> = Mode extends ModeStrict ? RequiredKeys<T, Keys> : T
+type RequiredKeys<T, Keys> = {
+    [key in keyof T & Keys]: NonNullable<T[key]>
+} & {
+    [key in Exclude<keyof T, Keys>]: T[key]
+}
+type RemoveKeysIfDump<T, Keys, Mode> = Mode extends ModeDump
+    ? {
+          [key in Exclude<keyof T, Keys>]: T[key]
+      }
+    : T
 
 type OrderByMap = {
     TemplateMatch: 'Horizontal' | 'Vertical' | 'Score' | 'Random'
@@ -19,124 +34,158 @@ type OrderByMap = {
 
 export type RecognitionDirectHit = {}
 
-export type RecognitionTemplateMatch<Output> = {
-    roi?: FlatRect | NodeName
-    roi_offset?: FlatRect
-    template?: MaybeArray<string, Output>
-    template_?: MaybeArray<string, Output> // 玛丽玛不想写, 所以多了个键
-    threshold?: MaybeArray<number, Output>
-    order_by?: OrderByMap['TemplateMatch']
-    index?: number
-    method?: 1 | 3 | 5
-    green_mask?: boolean
-}
+export type RecognitionTemplateMatch<Mode> = RequiredIfStrict<
+    RemoveKeysIfDump<
+        {
+            roi?: FlatRect | NodeName
+            roi_offset?: FlatRect
+            template?: MaybeArray<string, Mode>
+            template_?: MaybeArray<string, Mode> // 玛丽玛不想写, 所以多了个键
+            threshold?: MaybeArray<number, Mode>
+            order_by?: OrderByMap['TemplateMatch']
+            index?: number
+            method?: 1 | 3 | 5
+            green_mask?: boolean
+        },
+        'template',
+        Mode
+    >,
+    'template',
+    Mode
+>
 
-export type RecognitionFeatureMatch<Output> = {
-    roi?: FlatRect | NodeName
-    roi_offset?: FlatRect
-    template?: MaybeArray<string, Output>
-    template_?: MaybeArray<string, Output>
-    count?: number
-    order_by?: OrderByMap['FeatureMatch']
-    index?: number
-    green_mask?: boolean
-    detector?: 'SIFT' | 'KAZE' | 'AKAZE' | 'BRISK' | 'ORB'
-    ratio?: number
-}
+export type RecognitionFeatureMatch<Mode> = RequiredIfStrict<
+    RemoveKeysIfDump<
+        {
+            roi?: FlatRect | NodeName
+            roi_offset?: FlatRect
+            template?: MaybeArray<string, Mode>
+            template_?: MaybeArray<string, Mode>
+            count?: number
+            order_by?: OrderByMap['FeatureMatch']
+            index?: number
+            green_mask?: boolean
+            detector?: 'SIFT' | 'KAZE' | 'AKAZE' | 'BRISK' | 'ORB'
+            ratio?: number
+        },
+        'template',
+        Mode
+    >,
+    'template',
+    Mode
+>
 
-export type RecognitionColorMatch<Output> = {
+export type RecognitionColorMatch<Mode> = {
     roi?: FlatRect | NodeName
     roi_offset?: FlatRect
-} & (
+} & RequiredIfStrict<
     | {
           method?: 4 | 40
-          lower?: MaybeArray<FixedArray<number, 3>, Output>
-          upper?: MaybeArray<FixedArray<number, 3>, Output>
+          lower?: MaybeArray<FixedArray<number, 3>, Mode>
+          upper?: MaybeArray<FixedArray<number, 3>, Mode>
       }
     | {
           method: 6
-          lower?: MaybeArray<FixedArray<number, 1>, Output>
-          upper?: MaybeArray<FixedArray<number, 1>, Output>
-      }
-) & {
+          lower?: MaybeArray<FixedArray<number, 1>, Mode>
+          upper?: MaybeArray<FixedArray<number, 1>, Mode>
+      },
+    'lower' | 'upper',
+    Mode
+> & {
         count?: number
         order_by?: OrderByMap['ColorMatch']
         index?: number
         connected?: boolean
     }
 
-export type RecognitionOCR<Output> = {
-    roi?: FlatRect | NodeName
-    roi_offset?: FlatRect
-    expected?: MaybeArray<string, Output>
-    threshold?: MaybeArray<number, Output>
-    replace?: MaybeArray<FixedArray<string, 2>, Output>
-    order_by?: OrderByMap['OCR']
-    index?: number
-    only_rec?: boolean
-    model?: string
-}
+export type RecognitionOCR<Mode> = RequiredIfStrict<
+    {
+        roi?: FlatRect | NodeName
+        roi_offset?: FlatRect
+        expected?: MaybeArray<string, Mode>
+        threshold?: MaybeArray<number, Mode>
+        replace?: MaybeArray<FixedArray<string, 2>, Mode>
+        order_by?: OrderByMap['OCR']
+        index?: number
+        only_rec?: boolean
+        model?: string
+    },
+    'expected',
+    Mode
+>
 
-export type RecognitionNeuralNetworkClassify<Output> = {
-    roi?: FlatRect | NodeName
-    roi_offset?: FlatRect
-    labels?: string[]
-    model?: string
-    expected?: MaybeArray<number, Output>
-    order_by?: OrderByMap['NeuralNetworkClassify']
-    index?: number
-}
+export type RecognitionNeuralNetworkClassify<Mode> = RequiredIfStrict<
+    {
+        roi?: FlatRect | NodeName
+        roi_offset?: FlatRect
+        labels?: string[]
+        model?: string
+        expected?: MaybeArray<number, Mode>
+        order_by?: OrderByMap['NeuralNetworkClassify']
+        index?: number
+    },
+    'model',
+    Mode
+>
 
-export type RecognitionNeuralNetworkDetect<Output> = {
-    roi?: FlatRect | NodeName
-    roi_offset?: FlatRect
-    labels?: string[]
-    model?: string
-    expected?: MaybeArray<number, Output>
-    threshold?: number
-    order_by?: OrderByMap['NeuralNetworkDetect']
-    index?: number
-}
+export type RecognitionNeuralNetworkDetect<Mode> = RequiredIfStrict<
+    {
+        roi?: FlatRect | NodeName
+        roi_offset?: FlatRect
+        labels?: string[]
+        model?: string
+        expected?: MaybeArray<number, Mode>
+        threshold?: number
+        order_by?: OrderByMap['NeuralNetworkDetect']
+        index?: number
+    },
+    'model',
+    Mode
+>
 
-export type RecognitionCustom = {
-    roi?: FlatRect | NodeName
-    roi_offset?: FlatRect
-    custom_recognition?: string
-    custom_recognition_param?: unknown
-}
+export type RecognitionCustom<Mode> = RequiredIfStrict<
+    {
+        roi?: FlatRect | NodeName
+        roi_offset?: FlatRect
+        custom_recognition?: string
+        custom_recognition_param?: unknown
+    },
+    'custom_recognition',
+    Mode
+>
 
-type MixReco<Type extends string, Param, Output> =
+type MixReco<Type extends string, Param, Mode> =
     | {
           recognition: {
               type: Type
               param?: Param
           }
       }
-    | OutputRemove<
+    | RemoveIfDump<
           {
               recognition: Type
           } & Param,
-          Output
+          Mode
       >
 
-export type Recognition<Output> =
-    | OutputRemove<
+export type Recognition<Mode> =
+    | RemoveIfDump<
           {
               recognition?: {
                   type?: never
                   param?: never
               }
           },
-          Output
+          Mode
       >
-    | MixReco<'DirectHit', RecognitionDirectHit, Output>
-    | MixReco<'TemplateMatch', RecognitionTemplateMatch<Output>, Output>
-    | MixReco<'FeatureMatch', RecognitionFeatureMatch<Output>, Output>
-    | MixReco<'ColorMatch', RecognitionColorMatch<Output>, Output>
-    | MixReco<'OCR', RecognitionOCR<Output>, Output>
-    | MixReco<'NeuralNetworkClassify', RecognitionNeuralNetworkClassify<Output>, Output>
-    | MixReco<'NeuralNetworkDetect', RecognitionNeuralNetworkDetect<Output>, Output>
-    | MixReco<'Custom', RecognitionCustom, Output>
+    | MixReco<'DirectHit', RecognitionDirectHit, Mode>
+    | MixReco<'TemplateMatch', RecognitionTemplateMatch<Mode>, Mode>
+    | MixReco<'FeatureMatch', RecognitionFeatureMatch<Mode>, Mode>
+    | MixReco<'ColorMatch', RecognitionColorMatch<Mode>, Mode>
+    | MixReco<'OCR', RecognitionOCR<Mode>, Mode>
+    | MixReco<'NeuralNetworkClassify', RecognitionNeuralNetworkClassify<Mode>, Mode>
+    | MixReco<'NeuralNetworkDetect', RecognitionNeuralNetworkDetect<Mode>, Mode>
+    | MixReco<'Custom', RecognitionCustom<Mode>, Mode>
 
 export type ActionDoNothing = {}
 
@@ -159,54 +208,82 @@ export type ActionSwipe = {
     duration?: number
 }
 
-export type ActionMultiSwipe = {
-    swipes?: {
-        starting?: number
-        begin?: true | NodeName | FlatRect
-        begin_offset?: FlatRect
-        end?: true | NodeName | FlatRect
-        end_offset?: FlatRect
-        duration?: number
-    }[]
-}
+export type ActionMultiSwipe<Mode> = RequiredIfStrict<
+    {
+        swipes?: {
+            starting?: number
+            begin?: true | NodeName | FlatRect
+            begin_offset?: FlatRect
+            end?: true | NodeName | FlatRect
+            end_offset?: FlatRect
+            duration?: number
+        }[]
+    },
+    'swipes',
+    Mode
+>
 
-export type ActionKey<Output> = {
-    key?: MaybeArray<number, Output>
-}
+export type ActionKey<Mode> = RequiredIfStrict<
+    {
+        key?: MaybeArray<number, Mode>
+    },
+    'key',
+    Mode
+>
 
-export type ActionInputText = {
-    input_text?: string
-}
+export type ActionInputText<Mode> = RequiredIfStrict<
+    {
+        input_text?: string
+    },
+    'input_text',
+    Mode
+>
 
-export type ActionStartApp = {
-    package?: string
-}
+export type ActionStartApp<Mode> = RequiredIfStrict<
+    {
+        package?: string
+    },
+    'package',
+    Mode
+>
 
-export type ActionStopApp = {
-    package?: string
-}
+export type ActionStopApp<Mode> = RequiredIfStrict<
+    {
+        package?: string
+    },
+    'package',
+    Mode
+>
 
 export type ActionStopTask = {}
 
-export type ActionCommand = {
-    exec?: string
-    args?: string[]
-    detach?: boolean
-}
+export type ActionCommand<Mode> = RequiredIfStrict<
+    {
+        exec?: string
+        args?: string[]
+        detach?: boolean
+    },
+    'exec',
+    Mode
+>
 
-export type ActionCustom = {
-    target?: true | NodeName | FlatRect
-    target_offset?: FlatRect
-    custom_action?: string
-    custom_action_param?: unknown
-}
+export type ActionCustom<Mode> = RequiredIfStrict<
+    {
+        target?: true | NodeName | FlatRect
+        target_offset?: FlatRect
+        custom_action?: string
+        custom_action_param?: unknown
+    },
+    'custom_action',
+    Mode
+>
 
-type MixAct<Type extends string, Param, Output> =
-    | OutputRemove<
+type MixAct<Type extends string, Param, Mode> =
+    | RemoveIfDump<
           {
               action: Type
           } & Param,
-          Output
+          Mode
       >
     | {
           action: {
@@ -215,28 +292,28 @@ type MixAct<Type extends string, Param, Output> =
           }
       }
 
-export type Action<Output> =
-    | OutputRemove<
+export type Action<Mode> =
+    | RemoveIfDump<
           {
               action?: {
                   type?: never
                   param?: never
               }
           },
-          Output
+          Mode
       >
-    | MixAct<'DoNothing', ActionDoNothing, Output>
-    | MixAct<'Click', ActionClick, Output>
-    | MixAct<'LongPress', ActionLongPress, Output>
-    | MixAct<'Swipe', ActionSwipe, Output>
-    | MixAct<'MultiSwipe', ActionMultiSwipe, Output>
-    | MixAct<'Key', ActionKey<Output>, Output>
-    | MixAct<'InputText', ActionInputText, Output>
-    | MixAct<'StartApp', ActionStartApp, Output>
-    | MixAct<'StopApp', ActionStopApp, Output>
-    | MixAct<'StopTask', ActionStopTask, Output>
-    | MixAct<'Command', ActionCommand, Output>
-    | MixAct<'Custom', ActionCustom, Output>
+    | MixAct<'DoNothing', ActionDoNothing, Mode>
+    | MixAct<'Click', ActionClick, Mode>
+    | MixAct<'LongPress', ActionLongPress, Mode>
+    | MixAct<'Swipe', ActionSwipe, Mode>
+    | MixAct<'MultiSwipe', ActionMultiSwipe<Mode>, Mode>
+    | MixAct<'Key', ActionKey<Mode>, Mode>
+    | MixAct<'InputText', ActionInputText<Mode>, Mode>
+    | MixAct<'StartApp', ActionStartApp<Mode>, Mode>
+    | MixAct<'StopApp', ActionStopApp<Mode>, Mode>
+    | MixAct<'StopTask', ActionStopTask, Mode>
+    | MixAct<'Command', ActionCommand<Mode>, Mode>
+    | MixAct<'Custom', ActionCustom<Mode>, Mode>
 
 export type WaitFreeze = {
     time?: number
@@ -248,29 +325,32 @@ export type WaitFreeze = {
     timeout?: number
 }
 
-export type General<Output> = {
-    next?: MaybeArray<NodeName, Output>
-    interrupt?: MaybeArray<NodeName, Output>
+export type General<Mode> = {
+    next?: MaybeArray<NodeName, Mode>
+    interrupt?: MaybeArray<NodeName, Mode>
     is_sub?: boolean
     rate_limit?: number
     timeout?: number
-    on_error?: MaybeArray<string, Output>
+    on_error?: MaybeArray<string, Mode>
     inverse?: boolean
     enabled?: boolean
     pre_delay?: boolean
     post_delay?: boolean
-    pre_wait_freezes?: OutputRemove<number, Output> | WaitFreeze
-    post_wait_freezes?: OutputRemove<number, Output> | WaitFreeze
+    pre_wait_freezes?: RemoveIfDump<number, Mode> | WaitFreeze
+    post_wait_freezes?: RemoveIfDump<number, Mode> | WaitFreeze
     focus?: unknown
 }
 
-export type Task = Recognition<false> & Action<false> & General<false>
+export type Task = Recognition<ModeFragment> & Action<ModeFragment> & General<ModeFragment>
+export type StrictTask = Recognition<ModeStrict> & Action<ModeStrict> & General<ModeStrict>
 
 type RecursiveRequired<T> =
     T extends Record<string, unknown>
         ? {
-              [key in keyof T]-?: RecursiveRequired<T[key]>
+              [key in keyof T]: NonNullable<RecursiveRequired<T[key]>>
           }
         : T
 
-export type DumpTask = RecursiveRequired<Recognition<true> & Action<true> & General<true>>
+export type DumpTask = RecursiveRequired<
+    Recognition<ModeDump> & Action<ModeDump> & General<ModeDump>
+>
