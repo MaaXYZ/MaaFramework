@@ -123,6 +123,15 @@ NodeDetail PipelineTask::run_reco_and_action(const PipelineData::NextList& list,
         return {};
     }
 
+    bool valid = std::ranges::any_of(list, [&](const std::string& name) {
+        auto data_opt = context_->get_pipeline_data(name);
+        return data_opt && data_opt->enabled;
+    });
+    if (!valid) {
+        LogInfo << "no valid/enabled node in list" << VAR(list);
+        return {};
+    }
+
     RecoResult reco;
 
     const auto start_clock = std::chrono::steady_clock::now();
