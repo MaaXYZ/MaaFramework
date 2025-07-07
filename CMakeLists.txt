@@ -11,7 +11,6 @@ cmake_policy(SET CMP0155 OLD)
 set(Boost_NO_WARN_NEW_VERSIONS ON)
 
 # set(CMAKE_EXPORT_COMPILE_COMMANDS ON) see below
-option(USE_MAADEPS "use third-party libraries built by MaaDeps" ON)
 
 option(WITH_ADB_CONTROLLER "build with adb controller" ON)
 option(WITH_WIN32_CONTROLLER "build with win32 controller" ON)
@@ -31,10 +30,8 @@ option(ENABLE_CCACHE "enable ccache if possible" ON)
 set(MAA_PUBLIC_INC ${CMAKE_SOURCE_DIR}/include)
 set(MAA_PRIVATE_INC ${CMAKE_SOURCE_DIR}/source/include)
 
-if(USE_MAADEPS)
-    set(MAADEPS_DIR ${PROJECT_SOURCE_DIR}/3rdparty/MaaDeps)
-    include(${MAADEPS_DIR}/maadeps.cmake)
-endif()
+set(MAADEPS_DIR ${PROJECT_SOURCE_DIR}/3rdparty/MaaDeps)
+include(${MAADEPS_DIR}/maadeps.cmake)
 
 # Basic compile and link configuration
 include(${PROJECT_SOURCE_DIR}/cmake/config.cmake)
@@ -91,9 +88,7 @@ if (BUILD_NODE_TEST)
     add_subdirectory(tools/NodeTest)
 endif()
 
-if(USE_MAADEPS)
-    maadeps_install(bin)
-endif()
+maadeps_install(bin)
 
 install(
     EXPORT MaaFrameworkTargets

@@ -44,15 +44,3 @@ endif(APPLE)
 if(NOT DEFINED MAADEPS_TRIPLET)
     detect_maadeps_triplet(MAADEPS_TRIPLET)
 endif()
-
-set(MAADEPS_TARGET_TOOLS ${MAADEPS_DIR}/vcpkg/installed/${MAADEPS_TRIPLET}/tools)
-
-if(WIN32)
-    set(MAADEPS_HOST_TRIPLET "x64-windows")
-elseif(APPLE)
-    set(MAADEPS_HOST_TRIPLET "x64-osx")
-else()
-    set(MAADEPS_HOST_TRIPLET "x64-linux")
-endif()
-
-set(MAADEPS_HOST_TOOLS ${MAADEPS_DIR}/vcpkg/installed/${MAADEPS_HOST_TRIPLET}/tools)
