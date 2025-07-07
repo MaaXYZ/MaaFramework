@@ -17,11 +17,6 @@ type RequiredKeys<T, Keys> = {
 } & {
     [key in Exclude<keyof T, Keys>]: T[key]
 }
-type RemoveKeysIfDump<T, Keys, Mode> = Mode extends ModeDump
-    ? {
-          [key in Exclude<keyof T, Keys>]: T[key]
-      }
-    : T
 
 type OrderByMap = {
     TemplateMatch: 'Horizontal' | 'Vertical' | 'Score' | 'Random'
@@ -35,42 +30,32 @@ type OrderByMap = {
 export type RecognitionDirectHit = {}
 
 export type RecognitionTemplateMatch<Mode> = RequiredIfStrict<
-    RemoveKeysIfDump<
-        {
-            roi?: FlatRect | NodeName
-            roi_offset?: FlatRect
-            template?: MaybeArray<string, Mode>
-            template_?: MaybeArray<string, Mode> // 玛丽玛不想写, 所以多了个键
-            threshold?: MaybeArray<number, Mode>
-            order_by?: OrderByMap['TemplateMatch']
-            index?: number
-            method?: 1 | 3 | 5
-            green_mask?: boolean
-        },
-        'template',
-        Mode
-    >,
+    {
+        roi?: FlatRect | NodeName
+        roi_offset?: FlatRect
+        template?: MaybeArray<string, Mode>
+        threshold?: MaybeArray<number, Mode>
+        order_by?: OrderByMap['TemplateMatch']
+        index?: number
+        method?: 1 | 3 | 5
+        green_mask?: boolean
+    },
     'template',
     Mode
 >
 
 export type RecognitionFeatureMatch<Mode> = RequiredIfStrict<
-    RemoveKeysIfDump<
-        {
-            roi?: FlatRect | NodeName
-            roi_offset?: FlatRect
-            template?: MaybeArray<string, Mode>
-            template_?: MaybeArray<string, Mode>
-            count?: number
-            order_by?: OrderByMap['FeatureMatch']
-            index?: number
-            green_mask?: boolean
-            detector?: 'SIFT' | 'KAZE' | 'AKAZE' | 'BRISK' | 'ORB'
-            ratio?: number
-        },
-        'template',
-        Mode
-    >,
+    {
+        roi?: FlatRect | NodeName
+        roi_offset?: FlatRect
+        template?: MaybeArray<string, Mode>
+        count?: number
+        order_by?: OrderByMap['FeatureMatch']
+        index?: number
+        green_mask?: boolean
+        detector?: 'SIFT' | 'KAZE' | 'AKAZE' | 'BRISK' | 'ORB'
+        ratio?: number
+    },
     'template',
     Mode
 >
