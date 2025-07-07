@@ -59,7 +59,7 @@ bool PipelineResMgr::load_all_json(const std::filesystem::path& path, const Defa
         }
         auto relative = std::filesystem::relative(entry_path, path);
         for (const auto& part : relative) {
-            if (part.u8string().starts_with(u8'.')) {
+            if (path_to_utf8_string(part).starts_with('.')) {
                 LogWarn << "entry starts with . skip" << VAR(entry_path) << VAR(part);
                 continue;
             }

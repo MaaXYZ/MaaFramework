@@ -1,6 +1,7 @@
 #include "RemoteResource.h"
 
 #include "MaaAgent/Message.hpp"
+#include "Utils/Platform.h"
 
 MAA_AGENT_SERVER_NS_BEGIN
 
@@ -20,7 +21,7 @@ MaaResId RemoteResource::post_bundle(const std::filesystem::path& path)
 {
     ResourcePostBundleReverseRequest req {
         .resource_id = resource_id_,
-        .path = path.string(),
+        .path = path_to_utf8_string(path),
     };
     auto resp_opt = server_.send_and_recv<ResourcePostBundleReverseResponse>(req);
     if (!resp_opt) {
