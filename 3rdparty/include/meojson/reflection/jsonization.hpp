@@ -4,6 +4,7 @@
 
 #include <string>
 #include <type_traits>
+#include <utility>
 
 #include "../common/types.hpp"
 
@@ -13,83 +14,189 @@ struct next_is_optional_t
 {
 };
 
+struct next_override_key_t
+{
+    const char* key;
+};
+
+struct next_state_t
+{
+    bool is_optional = false;
+    const char* override_key = nullptr;
+};
+
 struct va_arg_end
+{
+};
+
+template <typename tag_t>
+struct is_tag_t : public std::false_type
+{
+};
+
+template <>
+struct is_tag_t<next_is_optional_t> : public std::true_type
+{
+};
+
+template <>
+struct is_tag_t<next_override_key_t> : public std::true_type
 {
 };
 
 struct dumper
 {
-    template <typename var_t, typename... rest_t>
-    json::value _to_json(const char* key, const var_t& var, rest_t&&... rest) const
+    void _to_json(json::object&, va_arg_end) const {}
+
+    template <typename... rest_t>
+    void _to_json(json::object& result, const char* key, rest_t&&... rest) const
     {
-        json::value result = _to_json(std::forward<rest_t>(rest)...);
+        _to_json(result, next_state_t {}, key, std::forward<rest_t>(rest)...);
+    }
+
+    template <
+        typename var_t,
+        typename... rest_t,
+        typename _ = std::enable_if_t<!is_tag_t<var_t>::value, void>>
+    void _to_json(
+        json::object& result,
+        next_state_t state,
+        const char* key,
+        const var_t& var,
+        rest_t&&... rest) const
+    {
+        if (state.override_key) {
+            key = state.override_key;
+        }
         result.emplace(key, var);
-        return result;
+        _to_json(result, std::forward<rest_t>(rest)...);
     }
 
     template <typename... rest_t>
-    json::value _to_json(const char*, next_is_optional_t, rest_t&&... rest) const
+    void _to_json(
+        json::object& result,
+        next_state_t state,
+        const char*,
+        next_is_optional_t,
+        rest_t&&... rest) const
     {
-        return _to_json(std::forward<rest_t>(rest)...);
+        state.is_optional = true;
+        _to_json(result, state, std::forward<rest_t>(rest)...);
     }
 
-    json::value _to_json(va_arg_end) const { return {}; }
+    template <typename... rest_t>
+    void _to_json(
+        json::object& result,
+        next_state_t state,
+        const char*,
+        next_override_key_t override_key,
+        rest_t&&... rest) const
+    {
+        state.override_key = override_key.key;
+        _to_json(result, state, std::forward<rest_t>(rest)...);
+    }
 };
 
 struct checker
 {
-    template <typename var_t, typename... rest_t>
+    bool _check_json(const json::value&, std::string&, va_arg_end) const { return true; }
+
+    template <typename... rest_t>
     bool _check_json(
         const json::value& in,
         std::string& error_key,
         const char* key,
+        rest_t&&... rest) const
+    {
+        return _check_json(in, error_key, next_state_t {}, key, std::forward<rest_t>(rest)...);
+    }
+
+    template <
+        typename var_t,
+        typename... rest_t,
+        typename _ = std::enable_if_t<!is_tag_t<var_t>::value, void>>
+    bool _check_json(
+        const json::value& in,
+        std::string& error_key,
+        next_state_t state,
+        const char* key,
         const var_t&,
         rest_t&&... rest) const
     {
+        if (state.override_key) {
+            key = state.override_key;
+        }
         auto opt = in.find(key);
-        if (!opt || !opt->is<var_t>()) {
+        if (!opt && !state.is_optional) {
+            error_key = key;
+            return false;
+        }
+        if (!opt->is<var_t>()) {
             error_key = key;
             return false;
         }
         return _check_json(in, error_key, std::forward<rest_t>(rest)...);
     }
 
-    template <typename var_t, typename... rest_t>
+    template <typename... rest_t>
     bool _check_json(
         const json::value& in,
         std::string& error_key,
+        next_state_t state,
         const char*,
         next_is_optional_t,
-        const char* key,
-        const var_t&,
         rest_t&&... rest) const
     {
-        auto opt = in.find(key);
-        if (opt) {
-            if (!opt->is<var_t>()) {
-                error_key = key;
-                return false;
-            }
-        } // next_is_optional_t, ignore key not found
-
-        return _check_json(in, error_key, std::forward<rest_t>(rest)...);
+        state.is_optional = true;
+        return _check_json(in, error_key, state, std::forward<rest_t>(rest)...);
     }
 
-    bool _check_json(const json::value&, std::string&, va_arg_end) const { return true; }
+    template <typename... rest_t>
+    bool _check_json(
+        const json::value& in,
+        std::string& error_key,
+        next_state_t state,
+        const char*,
+        next_override_key_t override_key,
+        rest_t&&... rest) const
+    {
+        state.override_key = override_key.key;
+        return _check_json(in, error_key, state, std::forward<rest_t>(rest)...);
+    }
 };
 
 struct loader
 {
-    template <typename var_t, typename... rest_t>
+    bool _from_json(const json::value&, std::string&, va_arg_end) const { return true; }
+
+    template <typename... rest_t>
+    bool
+        _from_json(const json::value& in, std::string& error_key, const char* key, rest_t&&... rest)
+    {
+        return _from_json(in, error_key, next_state_t {}, key, std::forward<rest_t>(rest)...);
+    }
+
+    template <
+        typename var_t,
+        typename... rest_t,
+        typename _ = std::enable_if_t<!is_tag_t<var_t>::value, void>>
     bool _from_json(
         const json::value& in,
         std::string& error_key,
+        next_state_t state,
         const char* key,
         var_t& var,
-        rest_t&&... rest) const
+        rest_t&&... rest)
     {
+        if (state.override_key) {
+            key = state.override_key;
+        }
         auto opt = in.find(key);
-        if (!opt || !opt->is<var_t>()) {
+        if (!opt && !state.is_optional) {
+            error_key = key;
+            return false;
+        }
+        if (!opt->is<var_t>()) {
             error_key = key;
             return false;
         }
@@ -98,29 +205,31 @@ struct loader
         return _from_json(in, error_key, std::forward<rest_t>(rest)...);
     }
 
-    template <typename var_t, typename... rest_t>
+    template <typename... rest_t>
     bool _from_json(
         const json::value& in,
         std::string& error_key,
+        next_state_t state,
         const char*,
         next_is_optional_t,
-        const char* key,
-        var_t& var,
-        rest_t&&... rest) const
+        rest_t&&... rest)
     {
-        auto opt = in.find(key);
-        if (opt) {
-            if (!opt->is<var_t>()) {
-                error_key = key;
-                return false;
-            }
-            var = std::move(opt)->as<var_t>();
-        } // next_is_optional_t, ignore key not found
-
-        return _from_json(in, error_key, std::forward<rest_t>(rest)...);
+        state.is_optional = true;
+        return _from_json(in, error_key, state, std::forward<rest_t>(rest)...);
     }
 
-    bool _from_json(const json::value&, std::string&, va_arg_end) const { return true; }
+    template <typename... rest_t>
+    bool _from_json(
+        const json::value& in,
+        std::string& error_key,
+        next_state_t state,
+        const char*,
+        next_override_key_t override_key,
+        rest_t&&... rest)
+    {
+        state.override_key = override_key.key;
+        return _from_json(in, error_key, state, std::forward<rest_t>(rest)...);
+    }
 };
 } // namespace json::_jsonization_helper
 
@@ -422,9 +531,12 @@ namespace json::_private_macro
 #define MEO_TOJSON(...)                                                         \
     json::value to_json() const                                                 \
     {                                                                           \
-        return json::_jsonization_helper::dumper()._to_json(                    \
+        json::object result;                                                    \
+        json::_jsonization_helper::dumper()._to_json(                           \
+            result,                                                             \
             _MEOJSON_EXPAND(_MEOJSON_FOR_EACH(_MEOJSON_KEY_VALUE, __VA_ARGS__)) \
                 json::_jsonization_helper::va_arg_end {});                      \
+        return result;                                                          \
     }
 
 #define MEO_CHECKJSON(...)                                                      \
@@ -467,6 +579,7 @@ namespace json::_private_macro
     _MEOJSON_EXPAND(MEO_FROMJSON(__VA_ARGS__))
 
 #define MEO_OPT json::_jsonization_helper::next_is_optional_t {},
+#define MEO_KEY(key) json::_jsonization_helper::next_override_key_t { key },
 
 #if defined(__clang__)
 #pragma clang diagnostic pop // -Wgnu-zero-variadic-macro-arguments

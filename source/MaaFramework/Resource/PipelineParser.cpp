@@ -414,7 +414,7 @@ bool PipelineParser::parse_template_matcher_param(
         return false;
     }
 
-    if (!get_multi_keys_and_check_value_or_array(input, { "template", "template_" }, output.template_, default_value.template_)) {
+    if (!get_and_check_value_or_array(input, "template", output.template_, default_value.template_)) {
         LogError << "failed to get_and_check_value_or_array templates" << VAR(input);
         return false;
     }
@@ -466,7 +466,7 @@ bool PipelineParser::parse_feature_matcher_param(
         return false;
     }
 
-    if (!get_multi_keys_and_check_value_or_array(input, { "template", "template_" }, output.template_, default_value.template_)) {
+    if (!get_and_check_value_or_array(input, "template", output.template_, default_value.template_)) {
         LogError << "failed to get_and_check_value_or_array templates" << VAR(input);
         return false;
     }

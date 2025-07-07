@@ -31,7 +31,7 @@ struct JTemplateMatch
     int method = 0;
     bool green_mask = false;
 
-    MEO_TOJSON(roi, roi_offset, template_, threshold, order_by, index, method, green_mask);
+    MEO_TOJSON(roi, roi_offset, MEO_KEY("template") template_, threshold, order_by, index, method, green_mask);
 };
 
 struct JFeatureMatch
@@ -46,7 +46,7 @@ struct JFeatureMatch
     std::string detector;
     double ratio = 0;
 
-    MEO_TOJSON(roi, roi_offset, template_, count, order_by, index, green_mask, detector, ratio);
+    MEO_TOJSON(roi, roi_offset, MEO_KEY("template") template_, count, order_by, index, green_mask, detector, ratio);
 };
 
 struct JColorMatch
