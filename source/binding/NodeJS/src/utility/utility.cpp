@@ -30,11 +30,6 @@ bool set_global_option_stdout_level(MaaLoggingLevel level)
     return MaaSetGlobalOption(MaaGlobalOptionEnum::MaaGlobalOption_StdoutLevel, &level, sizeof(level));
 }
 
-bool set_global_option_show_hit_draw(bool flag)
-{
-    return MaaSetGlobalOption(MaaGlobalOptionEnum::MaaGlobalOption_ShowHitDraw, &flag, sizeof(flag));
-}
-
 bool set_global_option_debug_mode(bool flag)
 {
     return MaaSetGlobalOption(MaaGlobalOptionEnum::MaaGlobalOption_DebugMode, &flag, sizeof(flag));
@@ -47,6 +42,5 @@ void load_utility_utility(Napi::Env env, Napi::Object& exports, Napi::External<E
     BIND(set_global_option_save_draw);
     BIND(set_global_option_recording);
     BIND(set_global_option_stdout_level);
-    BIND(set_global_option_show_hit_draw);
     BIND(set_global_option_debug_mode);
 }

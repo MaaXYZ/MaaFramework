@@ -29,12 +29,6 @@ export const Global = {
         }
     },
 
-    set show_hit_draw(value: boolean) {
-        if (!maa.set_global_option_show_hit_draw(value)) {
-            throw 'Global set show_hit_draw failed'
-        }
-    },
-
     set debug_mode(value: boolean) {
         if (!maa.set_global_option_debug_mode(value)) {
             throw 'Global set debug_mode failed'
