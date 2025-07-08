@@ -189,7 +189,6 @@ def api_test():
     Tasker.set_save_draw(True)
     Tasker.set_recording(True)
     Tasker.set_stdout_level(LoggingLevelEnum.All)
-    Tasker.set_show_hit_draw(True)
     Tasker.set_log_dir(".")
 
     devices = Toolkit.find_adb_devices()

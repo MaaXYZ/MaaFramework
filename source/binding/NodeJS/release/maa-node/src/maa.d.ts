@@ -332,7 +332,6 @@ export declare function set_global_option_log_dir(value: string): boolean
 export declare function set_global_option_save_draw(value: boolean): boolean
 export declare function set_global_option_recording(value: boolean): boolean
 export declare function set_global_option_stdout_level(value: LoggingLevel): boolean
-export declare function set_global_option_show_hit_draw(value: boolean): boolean
 export declare function set_global_option_debug_mode(value: boolean): boolean
 
 // pi.cpp

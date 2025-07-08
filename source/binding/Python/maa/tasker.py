@@ -157,17 +157,6 @@ class Tasker:
         )
 
     @staticmethod
-    def set_show_hit_draw(show_hit_draw: bool) -> bool:
-        cbool = ctypes.c_bool(show_hit_draw)
-        return bool(
-            Library.framework().MaaSetGlobalOption(
-                MaaOption(MaaGlobalOptionEnum.ShowHitDraw),
-                ctypes.pointer(cbool),
-                ctypes.sizeof(ctypes.c_bool),
-            )
-        )
-
-    @staticmethod
     def set_debug_mode(debug_mode: bool) -> bool:
         cbool = ctypes.c_bool(debug_mode)
         return bool(

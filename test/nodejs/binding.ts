@@ -156,7 +156,6 @@ async function api_test() {
     maa.Global.save_draw = true
     maa.Global.recording = true
     maa.Global.stdout_level = 'All'
-    maa.Global.show_hit_draw = true
     maa.Global.log_dir = '.'
 
     const devices = await maa.AdbController.find()

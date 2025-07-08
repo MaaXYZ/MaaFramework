@@ -34,7 +34,6 @@ private:
 
     cv::Rect get_roi(const MAA_VISION_NS::Target& roi);
     void save_draws(const std::string& node_name, const RecoResult& result) const;
-    void show_hit_draw(const cv::Rect& box, const std::string& node_name, MaaRecoId uid) const;
 
 private:
     bool debug_mode() const;

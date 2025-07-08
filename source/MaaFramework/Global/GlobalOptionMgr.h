@@ -24,8 +24,6 @@ public:
 
     bool save_draw() const { return save_draw_; }
 
-    bool show_hit_draw() const { return show_hit_draw_; }
-
     bool recording() const { return recording_; }
 
     bool debug_mode() const { return debug_mode_; }
@@ -36,7 +34,6 @@ private:
 private:
     bool set_log_dir(MaaOptionValue value, MaaOptionValueSize val_size);
     bool set_save_draw(MaaOptionValue value, MaaOptionValueSize val_size);
-    bool set_show_hit_draw(MaaOptionValue value, MaaOptionValueSize val_size);
     bool set_recording(MaaOptionValue value, MaaOptionValueSize val_size);
     bool set_stdout_level(MaaOptionValue value, MaaOptionValueSize val_size);
     bool set_debug_mode(MaaOptionValue value, MaaOptionValueSize val_size);
@@ -44,7 +41,6 @@ private:
 private:
     std::filesystem::path log_dir_;
     bool save_draw_ = false;
-    bool show_hit_draw_ = false;
     bool recording_ = false;
     bool debug_mode_ = false;
 };

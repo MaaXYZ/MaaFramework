@@ -18,8 +18,6 @@ bool GlobalOptionMgr::set_option(MaaGlobalOption key, MaaOptionValue value, MaaO
         return set_recording(value, val_size);
     case MaaGlobalOption_StdoutLevel:
         return set_stdout_level(value, val_size);
-    case MaaGlobalOption_ShowHitDraw:
-        return set_show_hit_draw(value, val_size);
     case MaaGlobalOption_DebugMode:
         return set_debug_mode(value, val_size);
     default:
@@ -54,22 +52,6 @@ bool GlobalOptionMgr::set_save_draw(MaaOptionValue value, MaaOptionValueSize val
     save_draw_ = *reinterpret_cast<const bool*>(value);
 
     LogInfo << "Set save draw" << VAR(save_draw_);
-
-    return true;
-}
-
-bool GlobalOptionMgr::set_show_hit_draw(MaaOptionValue value, MaaOptionValueSize val_size)
-{
-    LogFunc;
-
-    if (val_size != sizeof(bool)) {
-        LogError << "Invalid value size" << VAR(val_size);
-        return false;
-    }
-
-    show_hit_draw_ = *reinterpret_cast<const bool*>(value);
-
-    LogInfo << "Set show_hit_draw" << VAR(show_hit_draw_);
 
     return true;
 }

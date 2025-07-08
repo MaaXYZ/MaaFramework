@@ -84,11 +84,6 @@ RecoResult Recognizer::recognize(const PipelineData& pipeline_data)
 
     save_draws(pipeline_data.name, result);
 
-    if (result.box) {
-        const auto& box = *result.box;
-        show_hit_draw(box, pipeline_data.name, result.reco_id);
-    }
-
     return result;
 }
 
@@ -369,24 +364,6 @@ void Recognizer::save_draws(const std::string& node_name, const RecoResult& resu
         imwrite(filepath, draw);
         LogDebug << "save draw to" << filepath;
     }
-}
-
-void Recognizer::show_hit_draw(const cv::Rect& box, const std::string& node_name, MaaRecoId uid) const
-{
-    if (!GlobalOptionMgr::get_instance().show_hit_draw()) {
-        return;
-    }
-
-    const std::string kWinName = std::format("Hit: {} {}", node_name, uid);
-
-    cv::Mat draw = image_.clone();
-
-    const cv::Scalar color(0, 255, 0);
-    cv::rectangle(draw, box, color, 2);
-
-    cv::imshow(kWinName, draw);
-    cv::waitKey(0);
-    cv::destroyWindow(kWinName);
 }
 
 bool Recognizer::debug_mode() const
