@@ -1,6 +1,7 @@
 #include "FeatureMatcher.h"
 
 MAA_SUPPRESS_CV_WARNINGS_BEGIN
+#include <opencv2/calib3d/calib3d.hpp>
 #include <opencv2/features2d.hpp>
 #include <opencv2/opencv.hpp>
 
