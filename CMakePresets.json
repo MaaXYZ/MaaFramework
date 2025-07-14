@@ -32,6 +32,26 @@
             }
         },
         {
+            "name": "NinjaMulti Linux x64",
+            "displayName": "Ninja MultiConfig Linux x64",
+            "description": "Ninja MultiConfig Linux x64",
+            "generator": "Ninja Multi-Config",
+            "binaryDir": "${sourceDir}/build",
+            "cacheVariables": {
+                "CMAKE_TOOLCHAIN_FILE": "${sourceDir}/3rdparty/MaaDeps/vcpkg-overlay/triplets/maa-x64-linux-toolchain.cmake"
+            }
+        },
+        {
+            "name": "NinjaMulti Linux arm64",
+            "displayName": "Ninja MultiConfig Linux arm64",
+            "description": "Ninja MultiConfig Linux arm64",
+            "generator": "Ninja Multi-Config",
+            "binaryDir": "${sourceDir}/build",
+            "cacheVariables": {
+                "CMAKE_TOOLCHAIN_FILE": "${sourceDir}/3rdparty/MaaDeps/vcpkg-overlay/triplets/maa-arm64-linux-toolchain.cmake"
+            }
+        },
+        {
             "name": "MSVC 2022",
             "displayName": "MSVC 2022",
             "description": "MSVC 2022",
@@ -82,6 +102,54 @@
             "displayName": "Ninja MultiConfig Release",
             "description": "Ninja MultiConfig Release",
             "configurePreset": "NinjaMulti",
+            "configuration": "Release",
+            "jobs": 16
+        },
+        {
+            "name": "NinjaMulti Linux x64 - Debug",
+            "displayName": "Ninja MultiConfig Linux x64 Debug",
+            "description": "Ninja MultiConfig Linux x64 Debug",
+            "configurePreset": "NinjaMulti Linux x64",
+            "configuration": "Debug",
+            "jobs": 16
+        },
+        {
+            "name": "NinjaMulti Linux x64 - RelWithDebInfo",
+            "displayName": "Ninja MultiConfig Linux x64 RelWithDebInfo",
+            "description": "Ninja MultiConfig Linux x64 RelWithDebInfo",
+            "configurePreset": "NinjaMulti Linux x64",
+            "configuration": "RelWithDebInfo",
+            "jobs": 16
+        },
+        {
+            "name": "NinjaMulti Linux x64 - Release",
+            "displayName": "Ninja MultiConfig Linux x64 Release",
+            "description": "Ninja MultiConfig Linux x64 Release",
+            "configurePreset": "NinjaMulti Linux x64",
+            "configuration": "Release",
+            "jobs": 16
+        },
+        {
+            "name": "NinjaMulti Linux arm64 - Debug",
+            "displayName": "Ninja MultiConfig Linux arm64 Debug",
+            "description": "Ninja MultiConfig Linux arm64 Debug",
+            "configurePreset": "NinjaMulti Linux arm64",
+            "configuration": "Debug",
+            "jobs": 16
+        },
+        {
+            "name": "NinjaMulti Linux arm64 - RelWithDebInfo",
+            "displayName": "Ninja MultiConfig Linux arm64 RelWithDebInfo",
+            "description": "Ninja MultiConfig Linux arm64 RelWithDebInfo",
+            "configurePreset": "NinjaMulti Linux arm64",
+            "configuration": "RelWithDebInfo",
+            "jobs": 16
+        },
+        {
+            "name": "NinjaMulti Linux arm64 - Release",
+            "displayName": "Ninja MultiConfig Linux arm64 Release",
+            "description": "Ninja MultiConfig Linux arm64 Release",
+            "configurePreset": "NinjaMulti Linux arm64",
             "configuration": "Release",
             "jobs": 16
         },

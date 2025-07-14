@@ -140,7 +140,7 @@ jobs:
             - name: Install dep
               run: |
                   pacman -Sy
-                  pacman -S --noconfirm cmake python ccache ninja git clang
+                  pacman -S --noconfirm cmake python ccache ninja git
 
             - uses: pnpm/action-setup@v4
               with:
@@ -156,12 +156,9 @@ jobs:
               with:
                   submodules: true
 
-            # 虽然换成了clang，但是需要gcc提供sysroot
             - name: Install cross compile toolchains
-              if: ${{ matrix.arch != 'x86_64' }}
               run: |
-                  pacman -Sy
-                  pacman -S --noconfirm aarch64-linux-gnu-gcc
+                  python3 3rdparty/MaaDeps/linux-toolchain-download.py ${{ matrix.arch == 'x86_64' && 'x64' || 'arm64' }}
 
             - name: Setup ccache
               uses: Chocobo1/setup-ccache-action@v1
@@ -181,18 +178,13 @@ jobs:
                   cd -
 
             - name: Build MAA
-              env:
-                  CC: clang
-                  CXX: clang++
-                  CFLAGS: ${{ matrix.arch == 'x86_64' && ' ' || '--target=aarch64-linux-gnu --sysroot=/usr/aarch64-linux-gnu' }}
-                  CXXFLAGS: ${{ matrix.arch == 'x86_64' && ' ' || '--target=aarch64-linux-gnu --sysroot=/usr/aarch64-linux-gnu' }}
               run: |
-                  cmake --preset 'NinjaMulti' \
+                  cmake --preset 'NinjaMulti Linux ${{ matrix.arch == 'x86_64' && 'x64' || 'arm64' }}' \
                     -DMAADEPS_TRIPLET='maa-${{ matrix.arch == 'x86_64' && 'x64' || 'arm64' }}-linux' \
                     -DMAA_HASH_VERSION='${{ needs.meta.outputs.tag }}' \
                     -DWITH_NODEJS_BINDING=ON
 
-                  cmake --build build --preset 'NinjaMulti - ${{ inputs.build_config || needs.meta.outputs.build_config }}' -j 16
+                  cmake --build build --preset 'NinjaMulti Linux ${{ matrix.arch == 'x86_64' && 'x64' || 'arm64' }} - ${{ inputs.build_config || needs.meta.outputs.build_config }}' -j 16
 
             - name: Install
               shell: bash

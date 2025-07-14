@@ -35,6 +35,26 @@ else()
     endif()
 endif()
 
+if(LINUX)
+    execute_process(
+        COMMAND ${CMAKE_CXX_COMPILER} -print-file-name=libstdc++.so.6
+        OUTPUT_VARIABLE LIBSTDCPP_PATH
+        OUTPUT_STRIP_TRAILING_WHITESPACE
+    )
+    file(READ_SYMLINK "${LIBSTDCPP_PATH}" LINK_TARGET)
+    if(NOT IS_ABSOLUTE "${LINK_TARGET}")
+        get_filename_component(LIBSTDCPP_PATH_DIR "${LIBSTDCPP_PATH}" DIRECTORY)
+        file(REAL_PATH "${LIBSTDCPP_PATH_DIR}/${LINK_TARGET}" LIBSTDCPP_PATH_REAL)
+    else()
+        set(LIBSTDCPP_PATH_REAL "${LINK_TARGET}")
+    endif()
+    message(STATUS "libstdc++.so.6 path: ${LIBSTDCPP_PATH_REAL}")
+    if(NOT EXISTS "${LIBSTDCPP_PATH_REAL}")
+        message(FATAL_ERROR "File not found: ${LIBSTDCPP_PATH_REAL}")
+    endif()
+    install(FILES "${LIBSTDCPP_PATH_REAL}" DESTINATION bin RENAME libstdc++.so.6)
+endif()
+
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
