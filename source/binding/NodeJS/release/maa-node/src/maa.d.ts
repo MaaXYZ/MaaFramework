@@ -232,12 +232,12 @@ export declare function resource_post_bundle(handle: ResourceHandle, path: strin
 export declare function resource_override_pipeline(
     handle: ResourceHandle,
     pipeline_override: string
-): bool
+): boolean
 export declare function resource_override_next(
     handle: ResourceHandle,
     node_name: string,
     next_list: string[]
-): bool
+): boolean
 export declare function resource_get_node_data(
     handle: ResourceHandle,
     node_name: string
