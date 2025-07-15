@@ -104,7 +104,7 @@ def main():
     # if len(sys.argv) == 1:
     #     print(f"to specify another triplet, run `{sys.argv[0]} <target triplet>`")
     #     print(f"e.g. `{sys.argv[0]} x64-windows`")
-    req = urllib.request.Request("https://api.github.com/repos/MaaXYZ/MaaDeps/releases/tags/v2.9.0")
+    req = urllib.request.Request("https://api.github.com/repos/MaaXYZ/MaaDeps/releases/tags/v2.9.1")
     token = os.environ.get("GH_TOKEN", os.environ.get("GITHUB_TOKEN", None))
     if token:
         req.add_header("Authorization", f"Bearer {token}")
