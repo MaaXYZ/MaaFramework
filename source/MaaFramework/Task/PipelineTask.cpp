@@ -68,7 +68,6 @@ bool PipelineTask::run()
                 task_stack.emplace(node.name);
             }
 
-            node = hit_node;
             if (node_detail.completed) {
                 next = hit_node.next;
                 interrupt = hit_node.interrupt;
@@ -79,6 +78,7 @@ bool PipelineTask::run()
                 next = hit_node.on_error;
                 interrupt.clear();
             }
+            node = std::move(hit_node);
         }
         else if (error_handling) {
             LogError << "error handling loop detected" << VAR(node.name);
