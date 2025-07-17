@@ -74,7 +74,10 @@ bool PipelineTask::run()
                 interrupt = hit_node.interrupt;
             }
             else {
-                next = hit_node.on_error;
+                LogWarn << "node not completed, handle error" << VAR(node_detail.name);
+                error_handling = true;
+                next = node.on_error;
+                interrupt.clear();
             }
         }
         else if (error_handling) {
@@ -83,7 +86,7 @@ bool PipelineTask::run()
             interrupt.clear();
         }
         else {
-            LogInfo << "handle error" << VAR(node.name);
+            LogInfo << "invalid node id, handle error" << VAR(node.name);
             error_handling = true;
             next = node.on_error;
             interrupt.clear();
