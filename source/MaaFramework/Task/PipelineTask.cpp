@@ -76,7 +76,7 @@ bool PipelineTask::run()
             else {
                 LogWarn << "node not completed, handle error" << VAR(node_detail.name);
                 error_handling = true;
-                next = node.on_error;
+                next = hit_node.on_error;
                 interrupt.clear();
             }
         }
