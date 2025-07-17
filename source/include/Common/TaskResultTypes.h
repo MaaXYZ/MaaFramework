@@ -11,7 +11,7 @@ MAA_TASK_NS_BEGIN
 
 struct RecoResult
 {
-    MaaRecoId reco_id = 0;
+    MaaRecoId reco_id = MaaInvalidId;
     std::string name;
     std::string algorithm;
     std::optional<cv::Rect> box = std::nullopt;
@@ -22,15 +22,15 @@ struct RecoResult
 
 struct NodeDetail
 {
-    MaaNodeId node_id = 0;
+    MaaNodeId node_id = MaaInvalidId;
     std::string name;
-    MaaRecoId reco_id = 0;
+    MaaRecoId reco_id = MaaInvalidId;
     bool completed = false;
 };
 
 struct TaskDetail
 {
-    MaaTaskId task_id = 0;
+    MaaTaskId task_id = MaaInvalidId;
     std::string entry;
     std::vector<MaaNodeId> node_ids;
     MaaStatus status = MaaStatus_Invalid;

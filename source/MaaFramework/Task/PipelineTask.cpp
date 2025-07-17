@@ -49,7 +49,7 @@ bool PipelineTask::run()
             return true;
         }
 
-        if (node_detail.completed) {
+        if (node_detail.node_id != MaaInvalidId) {
             error_handling = false;
 
             // 如果 list 里有同名任务，返回值也一定是第一个。同名任务第一个匹配上了后面肯定也会匹配上（除非 Custom 写了一些什么逻辑）
@@ -69,8 +69,13 @@ bool PipelineTask::run()
             }
 
             node = hit_node;
-            next = hit_node.next;
-            interrupt = hit_node.interrupt;
+            if (node_detail.completed) {
+                next = hit_node.next;
+                interrupt = hit_node.interrupt;
+            }
+            else {
+                next = hit_node.on_error;
+            }
         }
         else if (error_handling) {
             LogError << "error handling loop detected" << VAR(node.name);
