@@ -118,10 +118,11 @@ struct ImageList
         for (size_t i = 0; i < count; i++) {
             auto image = MaaImageListBufferAt(buffer_, i);
             auto data = MaaImageBufferGetEncoded(image);
-            result.push_back({
-                data,
-                data + MaaImageBufferGetEncodedSize(image),
-            });
+            result.push_back(
+                {
+                    data,
+                    data + MaaImageBufferGetEncodedSize(image),
+                });
         }
 
         return result;

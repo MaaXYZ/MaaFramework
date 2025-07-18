@@ -72,6 +72,8 @@ struct Tasker : public std::enable_shared_from_this<Tasker>
         };
     }
 
+    bool stopping() const { return MaaTaskerStopping(tasker_); }
+
     std::shared_ptr<Resource> resource() const { return resource_; }
 
     std::shared_ptr<Controller> controller() const { return controller_; }

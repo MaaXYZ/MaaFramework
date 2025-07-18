@@ -44,20 +44,29 @@ struct Context
         };
     }
 
-    void override_pipeline(const std::string& pipeline_override) const
+    void override_pipeline(const std::string& pipeline_override)
     {
         if (!MaaContextOverridePipeline(context_, pipeline_override.c_str())) {
             throw FunctionFailed("MaaContextOverridePipeline");
         }
     }
 
-    void override_next(const std::string& node_name, const std::vector<std::string>& next_list) const
+    void override_next(const std::string& node_name, const std::vector<std::string>& next_list)
     {
         pri::StringList nexts;
         nexts = next_list;
         if (!MaaContextOverrideNext(context_, node_name.c_str(), nexts.buffer_)) {
             throw FunctionFailed("MaaContextOverrideNext");
         }
+    }
+
+    std::string get_node_data(const std::string& node_name) const
+    {
+        pri::String node;
+        if (!MaaContextGetNodeData(context_, node_name.c_str(), node.buffer_)) {
+            throw FunctionFailed("MaaContextGetNodeData");
+        }
+        return node;
     }
 
     Task task() const

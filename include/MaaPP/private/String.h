@@ -117,10 +117,11 @@ struct StringList
 
         for (size_t i = 0; i < count; i++) {
             auto image = MaaStringListBufferAt(buffer_, i);
-            result.push_back({
-                MaaStringBufferGet(image),
-                MaaStringBufferSize(image),
-            });
+            result.push_back(
+                {
+                    MaaStringBufferGet(image),
+                    MaaStringBufferSize(image),
+                });
         }
 
         return result;

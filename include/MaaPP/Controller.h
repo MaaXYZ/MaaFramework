@@ -144,16 +144,17 @@ struct AdbController : public Controller
         result.reserve(count);
         for (size_t i = 0; i < count; i++) {
             auto dev = MaaToolkitAdbDeviceListAt(list, i);
-            result.push_back({
+            result.push_back(
                 {
-                    MaaToolkitAdbDeviceGetAdbPath(dev),
-                    MaaToolkitAdbDeviceGetAddress(dev),
-                    MaaToolkitAdbDeviceGetScreencapMethods(dev),
-                    MaaToolkitAdbDeviceGetInputMethods(dev),
-                    MaaToolkitAdbDeviceGetConfig(dev),
-                },
-                MaaToolkitAdbDeviceGetName(dev),
-            });
+                    {
+                        MaaToolkitAdbDeviceGetAdbPath(dev),
+                        MaaToolkitAdbDeviceGetAddress(dev),
+                        MaaToolkitAdbDeviceGetScreencapMethods(dev),
+                        MaaToolkitAdbDeviceGetInputMethods(dev),
+                        MaaToolkitAdbDeviceGetConfig(dev),
+                    },
+                    MaaToolkitAdbDeviceGetName(dev),
+                });
         }
         MaaToolkitAdbDeviceListDestroy(list);
         return result;

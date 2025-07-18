@@ -92,28 +92,29 @@ struct Resource : public std::enable_shared_from_this<Resource>
                     const MaaRect* roi,
                     void* trans_arg,
                     /* out */ MaaRect* out_box,
-                    /* out */ MaaStringBuffer* out_detail) {
+                    /* out */ MaaStringBuffer* out_detail) -> MaaBool {
                     auto self = reinterpret_cast<Resource*>(trans_arg)->shared_from_this();
                     const auto& func = self->recos_[custom_recognition_name];
                     if (!func) {
                         return false;
                     }
                     auto data = MaaImageBufferGetEncoded(image);
-                    auto rsp = func(CustomRecognitionRequest {
-                        Context { context },
-                        Task {
-                            MaaContextGetTasker(context),
-                            task_id,
-                        },
-                        node_name,
-                        custom_recognition_name,
-                        custom_recognition_param,
-                        std::vector<uint8_t> {
-                            data,
-                            data + MaaImageBufferGetEncodedSize(image),
-                        },
-                        *roi,
-                    });
+                    auto rsp = func(
+                        CustomRecognitionRequest {
+                            Context { context },
+                            Task {
+                                MaaContextGetTasker(context),
+                                task_id,
+                            },
+                            node_name,
+                            custom_recognition_name,
+                            custom_recognition_param,
+                            std::vector<uint8_t> {
+                                data,
+                                data + MaaImageBufferGetEncodedSize(image),
+                            },
+                            *roi,
+                        });
                     if (rsp.success) {
                         *out_box = rsp.box;
                         if (!MaaStringBufferSetEx(out_detail, rsp.detail.c_str(), rsp.detail.length())) {
@@ -160,27 +161,28 @@ struct Resource : public std::enable_shared_from_this<Resource>
                     const char* custom_action_param,
                     MaaRecoId reco_id,
                     const MaaRect* box,
-                    void* trans_arg) {
+                    void* trans_arg) -> MaaBool {
                     auto self = reinterpret_cast<Resource*>(trans_arg)->shared_from_this();
                     const auto& func = self->actions_[custom_action_name];
                     if (!func) {
                         return false;
                     }
-                    auto rsp = func(CustomActionRequest {
-                        Context { context },
-                        Task {
-                            MaaContextGetTasker(context),
-                            task_id,
-                        },
-                        node_name,
-                        custom_action_name,
-                        custom_action_param,
-                        Reco {
-                            MaaContextGetTasker(context),
-                            reco_id,
-                        },
-                        *box,
-                    });
+                    auto rsp = func(
+                        CustomActionRequest {
+                            Context { context },
+                            Task {
+                                MaaContextGetTasker(context),
+                                task_id,
+                            },
+                            node_name,
+                            custom_action_name,
+                            custom_action_param,
+                            Reco {
+                                MaaContextGetTasker(context),
+                                reco_id,
+                            },
+                            *box,
+                        });
                     return rsp.success;
                 },
                 this)) {
@@ -211,6 +213,31 @@ struct Resource : public std::enable_shared_from_this<Resource>
             resource_,
             MaaResourcePostBundle(resource_, path.c_str()),
         };
+    }
+
+    void override_pipeline(const std::string& pipeline_override)
+    {
+        if (!MaaResourceOverridePipeline(resource_, pipeline_override.c_str())) {
+            throw FunctionFailed("MaaResourceOverridePipeline");
+        }
+    }
+
+    void override_next(const std::string& node_name, const std::vector<std::string>& next_list)
+    {
+        pri::StringList nexts;
+        nexts = next_list;
+        if (!MaaResourceOverrideNext(resource_, node_name.c_str(), nexts.buffer_)) {
+            throw FunctionFailed("MaaResourceOverrideNext");
+        }
+    }
+
+    std::string get_node_data(const std::string& node_name) const
+    {
+        pri::String node;
+        if (!MaaResourceGetNodeData(resource_, node_name.c_str(), node.buffer_)) {
+            throw FunctionFailed("MaaResourceGetNodeData");
+        }
+        return node;
     }
 
     void clear()
