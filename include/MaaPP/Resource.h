@@ -9,6 +9,7 @@
 #include <MaaFramework/MaaAPI.h>
 
 #include "./Context.h"
+#include "./Custom.h"
 #include "./Exception.h"
 #include "./Reco.h"
 #include "./Task.h"
@@ -16,40 +17,6 @@
 
 namespace maapp
 {
-
-struct CustomRecognitionRequest
-{
-    Context context;
-    Task task;
-    std::string_view node_name;
-    std::string_view custom_recognition_name;
-    std::string_view custom_recognition_param;
-    std::vector<uint8_t> image;
-    MaaRect roi;
-};
-
-struct CustomRecognitionResponse
-{
-    bool success;
-    MaaRect box;
-    std::string detail;
-};
-
-struct CustomActionRequest
-{
-    Context context;
-    Task task;
-    std::string_view node_name;
-    std::string_view custom_action_name;
-    std::string_view custom_action_param;
-    Reco reco;
-    MaaRect box;
-};
-
-struct CustomActionResponse
-{
-    bool success;
-};
 
 struct Resource : public std::enable_shared_from_this<Resource>
 {
@@ -83,49 +50,13 @@ struct Resource : public std::enable_shared_from_this<Resource>
         if (!MaaResourceRegisterCustomRecognition(
                 resource_,
                 name.c_str(),
-                +[](MaaContext* context,
-                    MaaTaskId task_id,
-                    const char* node_name,
-                    const char* custom_recognition_name,
-                    const char* custom_recognition_param,
-                    const MaaImageBuffer* image,
-                    const MaaRect* roi,
-                    void* trans_arg,
-                    /* out */ MaaRect* out_box,
-                    /* out */ MaaStringBuffer* out_detail) -> MaaBool {
-                    auto self = reinterpret_cast<Resource*>(trans_arg)->shared_from_this();
-                    const auto& func = self->recos_[custom_recognition_name];
-                    if (!func) {
-                        return false;
-                    }
-                    auto data = MaaImageBufferGetEncoded(image);
-                    auto rsp = func(
-                        CustomRecognitionRequest {
-                            Context { context },
-                            Task {
-                                MaaContextGetTasker(context),
-                                task_id,
-                            },
-                            node_name,
-                            custom_recognition_name,
-                            custom_recognition_param,
-                            std::vector<uint8_t> {
-                                data,
-                                data + MaaImageBufferGetEncodedSize(image),
-                            },
-                            *roi,
-                        });
-                    if (rsp.success) {
-                        *out_box = rsp.box;
-                        if (!MaaStringBufferSetEx(out_detail, rsp.detail.c_str(), rsp.detail.length())) {
-                            throw FunctionFailed("MaaStringBufferSetEx");
-                        }
-                        return true;
-                    }
-                    else {
-                        return false;
-                    }
-                },
+                &pri::custom_reco_wrapper<
+                    std::shared_ptr<Resource>,
+                    +[](void* arg, const char* name) {
+                        auto self = reinterpret_cast<Resource*>(arg)->shared_from_this();
+                        const auto& func = self->recos_[name];
+                        return std::make_tuple(func, self);
+                    }>,
                 this)) {
             throw FunctionFailed("MaaResourceRegisterCustomRecognition");
         }
@@ -154,37 +85,13 @@ struct Resource : public std::enable_shared_from_this<Resource>
         if (!MaaResourceRegisterCustomAction(
                 resource_,
                 name.c_str(),
-                +[](MaaContext* context,
-                    MaaTaskId task_id,
-                    const char* node_name,
-                    const char* custom_action_name,
-                    const char* custom_action_param,
-                    MaaRecoId reco_id,
-                    const MaaRect* box,
-                    void* trans_arg) -> MaaBool {
-                    auto self = reinterpret_cast<Resource*>(trans_arg)->shared_from_this();
-                    const auto& func = self->actions_[custom_action_name];
-                    if (!func) {
-                        return false;
-                    }
-                    auto rsp = func(
-                        CustomActionRequest {
-                            Context { context },
-                            Task {
-                                MaaContextGetTasker(context),
-                                task_id,
-                            },
-                            node_name,
-                            custom_action_name,
-                            custom_action_param,
-                            Reco {
-                                MaaContextGetTasker(context),
-                                reco_id,
-                            },
-                            *box,
-                        });
-                    return rsp.success;
-                },
+                &pri::custom_act_wrapper<
+                    std::shared_ptr<Resource>,
+                    +[](void* arg, const char* name) {
+                        auto self = reinterpret_cast<Resource*>(arg)->shared_from_this();
+                        const auto& func = self->actions_[name];
+                        return std::make_tuple(func, self);
+                    }>,
                 this)) {
             throw FunctionFailed("MaaResourceRegisterCustomAction");
         }
@@ -296,8 +203,8 @@ struct Resource : public std::enable_shared_from_this<Resource>
     void set_inference_execution_provider_cuda() { set_inference_execution_provider(MaaInferenceExecutionProvider_CUDA); }
 
     MaaResource* resource_ {};
-    std::map<std::string, std::function<CustomRecognitionResponse(CustomRecognitionRequest)>> recos_;
-    std::map<std::string, std::function<CustomActionResponse(CustomActionRequest)>> actions_;
+    std::map<std::string, CustomRecognition> recos_;
+    std::map<std::string, CustomAction> actions_;
 
     static std::shared_ptr<Resource> find(MaaResource* resource)
     {

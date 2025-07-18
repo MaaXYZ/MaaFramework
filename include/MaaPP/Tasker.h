@@ -36,6 +36,8 @@ struct Tasker : public std::enable_shared_from_this<Tasker>
         MaaTaskerDestroy(tasker_);
     }
 
+    Tasker& operator=(const Tasker&) = delete;
+
     void bind(std::shared_ptr<Resource> resource)
     {
         if (!MaaTaskerBindResource(tasker_, resource->resource_)) {
