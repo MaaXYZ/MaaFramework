@@ -37,7 +37,8 @@ MaaNodeId ActionTask::run_with_param(const cv::Rect& box, const json::value& rec
 
     tasker_->runtime_cache().set_reco_detail(fake_reco.reco_id, fake_reco);
 
-    return run_action(fake_reco).node_id;
+    std::chrono::milliseconds notify_cost; // 这玩意其实理论上应该能通过context自动添加到custom所属的cost里面? 不知道咋搞了
+    return run_action(fake_reco, notify_cost).node_id;
 }
 
 MAA_TASK_NS_END

@@ -21,7 +21,8 @@ MaaRecoId RecognitionTask::run_with_param(const cv::Mat& image)
 
     PipelineData::NextList next_list = { entry_ };
 
-    auto reco = run_recognition(image, next_list);
+    std::chrono::milliseconds notify_cost; // 这玩意其实理论上应该能通过context自动添加到custom所属的cost里面? 不知道咋搞了
+    auto reco = run_recognition(image, next_list, notify_cost);
     if (!reco.box) {
         LogDebug << "No reco result";
         return MaaInvalidId;

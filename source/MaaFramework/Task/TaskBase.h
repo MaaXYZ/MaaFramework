@@ -1,6 +1,7 @@
 #pragma once
 
 #include <atomic>
+#include <chrono>
 
 #include <meojson/json.hpp>
 
@@ -37,8 +38,8 @@ protected:
     MAA_RES_NS::ResourceMgr* resource();
     MAA_CTRL_NS::ControllerAgent* controller();
 
-    RecoResult run_recognition(const cv::Mat& image, const PipelineData::NextList& list);
-    NodeDetail run_action(const RecoResult& reco);
+    RecoResult run_recognition(const cv::Mat& image, const PipelineData::NextList& list, std::chrono::milliseconds& notify_cost);
+    NodeDetail run_action(const RecoResult& reco, std::chrono::milliseconds& notify_cost);
     cv::Mat screencap();
     MaaTaskId generate_node_id();
     void set_node_detail(int64_t node_id, NodeDetail detail);
@@ -55,7 +56,7 @@ protected:
 
 private:
     bool debug_mode() const;
-    void notify(std::string_view msg, const json::value detail);
+    void notify(std::string_view msg, const json::value detail, std::chrono::milliseconds& notify_cost);
 
 private:
     inline static std::atomic<MaaTaskId> s_global_task_id = 100'000'000;

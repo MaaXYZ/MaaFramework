@@ -57,7 +57,7 @@ MAA_CTRL_NS::ControllerAgent* TaskBase::controller()
     return tasker_ ? tasker_->controller() : nullptr;
 }
 
-RecoResult TaskBase::run_recognition(const cv::Mat& image, const PipelineData::NextList& list)
+RecoResult TaskBase::run_recognition(const cv::Mat& image, const PipelineData::NextList& list, std::chrono::milliseconds& notify_cost)
 {
     LogFunc << VAR(cur_node_) << VAR(list);
 
@@ -70,6 +70,8 @@ RecoResult TaskBase::run_recognition(const cv::Mat& image, const PipelineData::N
         LogError << "Image is empty";
         return {};
     }
+
+    notify_cost = {};
 
     auto node_opt = context_->get_pipeline_data(cur_node_);
     if (!node_opt) {
@@ -84,7 +86,7 @@ RecoResult TaskBase::run_recognition(const cv::Mat& image, const PipelineData::N
         { "focus", node_opt->focus },
     };
     if (debug_mode() || !node_opt->focus.is_null()) {
-        notify(MaaMsg_Node_NextList_Starting, reco_list_cb_detail);
+        notify(MaaMsg_Node_NextList_Starting, reco_list_cb_detail, notify_cost);
     }
 
     Recognizer recognizer(tasker_, *context_, image);
@@ -109,7 +111,7 @@ RecoResult TaskBase::run_recognition(const cv::Mat& image, const PipelineData::N
                 { "name", node },
                 { "focus", pipeline_data.focus },
             };
-            notify(MaaMsg_Node_Recognition_Starting, reco_cb_detail);
+            notify(MaaMsg_Node_Recognition_Starting, reco_cb_detail, notify_cost);
         }
 
         RecoResult result = recognizer.recognize(pipeline_data);
@@ -121,7 +123,7 @@ RecoResult TaskBase::run_recognition(const cv::Mat& image, const PipelineData::N
                 { "name", node },
                 { "focus", pipeline_data.focus },
             };
-            notify(result.box ? MaaMsg_Node_Recognition_Succeeded : MaaMsg_Node_Recognition_Failed, reco_cb_detail);
+            notify(result.box ? MaaMsg_Node_Recognition_Succeeded : MaaMsg_Node_Recognition_Failed, reco_cb_detail, notify_cost);
         }
 
         if (!result.box) {
@@ -131,20 +133,20 @@ RecoResult TaskBase::run_recognition(const cv::Mat& image, const PipelineData::N
         LogInfo << "node hit" << VAR(result.name) << VAR(result.box);
 
         if (debug_mode() || !node_opt->focus.is_null()) {
-            notify(MaaMsg_Node_NextList_Succeeded, reco_list_cb_detail);
+            notify(MaaMsg_Node_NextList_Succeeded, reco_list_cb_detail, notify_cost);
         }
 
         return result;
     }
 
     if (debug_mode() || !node_opt->focus.is_null()) {
-        notify(MaaMsg_Node_NextList_Failed, reco_list_cb_detail);
+        notify(MaaMsg_Node_NextList_Failed, reco_list_cb_detail, notify_cost);
     }
 
     return {};
 }
 
-NodeDetail TaskBase::run_action(const RecoResult& reco)
+NodeDetail TaskBase::run_action(const RecoResult& reco, std::chrono::milliseconds& notify_cost)
 {
     if (!context_) {
         LogError << "context is null";
@@ -155,6 +157,8 @@ NodeDetail TaskBase::run_action(const RecoResult& reco)
         LogError << "reco box is nullopt, can NOT run";
         return {};
     }
+
+    notify_cost = {};
 
     auto node_opt = context_->get_pipeline_data(reco.name);
     if (!node_opt) {
@@ -170,7 +174,7 @@ NodeDetail TaskBase::run_action(const RecoResult& reco)
             { "name", reco.name },
             { "focus", pipeline_data.focus },
         };
-        notify(MaaMsg_Node_Action_Starting, cb_detail);
+        notify(MaaMsg_Node_Action_Starting, cb_detail, notify_cost);
     }
 
     Actuator actuator(tasker_, *context_);
@@ -192,7 +196,7 @@ NodeDetail TaskBase::run_action(const RecoResult& reco)
             { "name", reco.name },
             { "focus", pipeline_data.focus },
         };
-        notify(result.completed ? MaaMsg_Node_Action_Succeeded : MaaMsg_Node_Action_Failed, cb_detail);
+        notify(result.completed ? MaaMsg_Node_Action_Succeeded : MaaMsg_Node_Action_Failed, cb_detail, notify_cost);
     }
 
     return result;
@@ -247,13 +251,15 @@ bool TaskBase::debug_mode() const
     return GlobalOptionMgr::get_instance().debug_mode();
 }
 
-void TaskBase::notify(std::string_view msg, const json::value detail)
+void TaskBase::notify(std::string_view msg, const json::value detail, std::chrono::milliseconds& notify_cost)
 {
     if (!tasker_) {
         return;
     }
 
+    const auto start_clock = std::chrono::steady_clock::now();
     tasker_->notify(msg, detail);
+    notify_cost += duration_since(start_clock);
 }
 
 MAA_TASK_NS_END
