@@ -130,6 +130,12 @@ bool RemoteTasker::stopping() const
     return resp_opt->ret;
 }
 
+bool RemoteTasker::start_debug_server()
+{
+    LogError << "Can NOT start debug server at remote tasker";
+    return false;
+}
+
 MaaResource* RemoteTasker::resource() const
 {
     TaskerResourceReverseRequest req {

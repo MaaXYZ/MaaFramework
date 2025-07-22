@@ -12,6 +12,14 @@
             "args": [],
             "cwd": "${workspaceFolder}",
             "preLaunchTask": "build_picli"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Sample - Debug",
+            "program": "${workspaceFolder}/build/bin/Debug/sample",
+            "args": [],
+            "cwd": "${workspaceFolder}"
         }
     ]
 }

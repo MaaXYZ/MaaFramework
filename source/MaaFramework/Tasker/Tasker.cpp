@@ -3,10 +3,12 @@
 #include <ranges>
 
 #include "Controller/ControllerAgent.h"
+#include "Global/GlobalOptionMgr.h"
 #include "MaaFramework/MaaMsg.h"
 #include "Resource/ResourceMgr.h"
 #include "Task/EmptyTask.h"
 #include "Task/PipelineTask.h"
+#include "Tasker/DebugServer.h"
 #include "Utils/Logger.h"
 
 MAA_NS_BEGIN
@@ -138,6 +140,16 @@ bool Tasker::stopping() const
     return need_to_stop_ && running();
 }
 
+bool Tasker::start_debug_server()
+{
+    if (!GlobalOptionMgr::get_instance().debug_mode()) {
+        return false;
+    }
+
+    debug_server_ = DebugServer::create_server();
+    return debug_server_->start_service();
+}
+
 MAA_RES_NS::ResourceMgr* Tasker::resource() const
 {
     return resource_;
@@ -193,6 +205,14 @@ const RuntimeCache& Tasker::runtime_cache() const
 void Tasker::notify(std::string_view msg, const json::value& detail)
 {
     notifier_.notify(msg, detail);
+}
+
+std::string Tasker::call_debug(std::string request)
+{
+    if (!debug_server_) {
+        return {};
+    }
+    return debug_server_->call_remote(request);
 }
 
 MaaTaskId Tasker::post_task(TaskPtr task_ptr, const json::object& pipeline_override)
