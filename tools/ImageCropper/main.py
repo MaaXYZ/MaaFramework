@@ -13,7 +13,7 @@ from maa.toolkit import Toolkit
 # 初始化设备参数
 # device_serial = "127.0.0.1:16384"
 device_serial = None
-adb_screencap_method = MaaAdbScreencapMethodEnum.Encode
+adb_screencap_method = MaaAdbScreencapMethodEnum.Default
 win32_screencap_method = MaaWin32ScreencapMethodEnum.DXGI_DesktopDup
 
 # 初始窗口大小 (width, height)
