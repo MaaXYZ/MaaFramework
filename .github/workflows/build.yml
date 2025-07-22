@@ -41,7 +41,7 @@ jobs:
 
     windows:
         needs: meta
-        runs-on: windows-latest
+        runs-on: windows-2025
         strategy:
             matrix:
                 arch: [x86_64, aarch64]
