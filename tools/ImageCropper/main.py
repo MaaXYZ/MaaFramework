@@ -94,17 +94,16 @@ def parse_args() -> Controller:
     elif t == 2:
         window_list = Toolkit.find_desktop_windows()
         if len(window_list):
-            win32_names = [Toolkit.get_window_name(w) for w in window_list]
-            win32_class = [Toolkit.get_class_name(w) for w in window_list]
             max_len = 40
-            for i, (h, n, c) in enumerate(zip(window_list, win32_names, win32_class)):
-                print(f"{h:>19} {(c[:max_len - 3] + '...') if len(c) > max_len else c:>{max_len}} | {i:>3} | {n}")
+            for i, w in enumerate(window_list):
+                c = w.class_name[:max_len - 3] + '...' if len(w.class_name) > max_len else w.class_name
+                print(f"{w.hwnd:>19} {c:>{max_len}} | {i:>3} | {w.window_name}")
             print(str.format("{:->19} {:->{}} | {:->3} | {}", " hWnd", " class name", max_len, "num", "window name"))
-            i = int(input("Please select the window (ENTER to pass): "))
+        i = int(input("Please select the window (ENTER to pass): "))
         if 0 <= i < len(window_list):
-            device_serial = Toolkit.get_window_name(window_list[i])
-            return Win32Controller(hWnd=window_list[i],
-                                   screencap_methods=win32_screencap_method)
+            device_serial = window_list[i].window_name
+            return Win32Controller(hWnd=window_list[i].hwnd,
+                                   screencap_method=win32_screencap_method)
     return None
 
 
