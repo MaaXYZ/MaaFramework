@@ -8,6 +8,7 @@
 #include "Base/AsyncRunner.hpp"
 #include "Common/MaaTypes.h"
 #include "Controller/ControllerAgent.h"
+#include "DebugServer.h"
 #include "Resource/ResourceMgr.h"
 #include "RuntimeCache.h"
 #include "Utils/MessageNotifier.hpp"
@@ -39,6 +40,8 @@ public:
     virtual MaaTaskId post_stop() override;
     virtual bool stopping() const override;
 
+    virtual bool start_debug_server() override;
+
     virtual MAA_RES_NS::ResourceMgr* resource() const override;
     virtual MAA_CTRL_NS::ControllerAgent* controller() const override;
 
@@ -52,6 +55,7 @@ public:
     RuntimeCache& runtime_cache();
     const RuntimeCache& runtime_cache() const;
     void notify(std::string_view msg, const json::value& detail);
+    std::string call_debug(std::string request);
 
 private:
     using TaskPtr = std::shared_ptr<MAA_TASK_NS::TaskBase>;
@@ -78,6 +82,8 @@ private:
 
     RuntimeCache runtime_cache_;
     MessageNotifier notifier_;
+
+    std::shared_ptr<DebugServer> debug_server_;
 };
 
 MAA_NS_END

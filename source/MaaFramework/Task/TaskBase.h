@@ -56,6 +56,7 @@ protected:
 private:
     bool debug_mode() const;
     void notify(std::string_view msg, const json::value detail);
+    std::string call_debug(std::string request);
 
 private:
     inline static std::atomic<MaaTaskId> s_global_task_id = 100'000'000;
