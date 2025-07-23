@@ -19,7 +19,7 @@ public:
 public:
     Actuator(Tasker* tasker, Context& context);
 
-    bool run(const cv::Rect& reco_hit, MaaRecoId reco_id, const PipelineData& pipeline_data, const std::string& entry);
+    bool run(const cv::Rect& reco_hit, MaaRecoId reco_id, const PipelineData& pipeline_data, const std::string& entry, json::value& detail);
 
 private:
     bool click(const MAA_RES_NS::Action::ClickParam& param, const cv::Rect& box);

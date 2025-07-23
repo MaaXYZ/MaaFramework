@@ -14,7 +14,12 @@ Actuator::Actuator(Tasker* tasker, Context& context)
 {
 }
 
-bool Actuator::run(const cv::Rect& reco_hit, MaaRecoId reco_id, const PipelineData& pipeline_data, const std::string& entry)
+bool Actuator::run(
+    const cv::Rect& reco_hit,
+    MaaRecoId reco_id,
+    const PipelineData& pipeline_data,
+    const std::string& entry,
+    json::value& detail)
 {
     using namespace MAA_RES_NS::Action;
     LogFunc << VAR(pipeline_data.name);
@@ -23,6 +28,10 @@ bool Actuator::run(const cv::Rect& reco_hit, MaaRecoId reco_id, const PipelineDa
         LogDebug << "invalid action";
         return false;
     }
+
+    detail = {
+        { "info", "not impl yet" },
+    };
 
     wait_freezes(pipeline_data.pre_wait_freezes, reco_hit);
     sleep(pipeline_data.pre_delay);
