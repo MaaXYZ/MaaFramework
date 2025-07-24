@@ -88,7 +88,7 @@ public:
 
     virtual bool set_option(MaaTaskerOption key, MaaOptionValue value, MaaOptionValueSize val_size) = 0;
 
-    virtual MaaTaskId post_task(const std::string& entry, const json::object& pipeline_override) = 0;
+    virtual MaaTaskId post_task(const std::string& entry, const json::array& pipeline_override) = 0;
 
     virtual MaaStatus status(MaaTaskId task_id) const = 0;
     virtual MaaStatus wait(MaaTaskId task_id) const = 0;

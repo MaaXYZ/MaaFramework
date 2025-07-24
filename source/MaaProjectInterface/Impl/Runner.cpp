@@ -131,7 +131,7 @@ bool Runner::run(
 
     MaaId tid = 0;
     for (const auto& task : param.task) {
-        tid = tasker_handle->post_task(task.entry, task.pipeline_override);
+        tid = tasker_handle->post_task(task.entry, { task.pipeline_override });
     }
 
     tasker_handle->wait(tid);
