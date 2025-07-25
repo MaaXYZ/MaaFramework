@@ -225,12 +225,7 @@ MaaBool MaaTaskerGetRecognitionDetail(
     return true;
 }
 
-MaaBool MaaTaskerGetNodeDetail(const MaaTasker* tasker, MaaNodeId node_id, MaaStringBuffer* name, MaaRecoId* reco_id, MaaBool* completed)
-{
-    return MaaTaskerGetNodeDetailV2(tasker, node_id, name, reco_id, completed, nullptr);
-}
-
-MaaBool MaaTaskerGetNodeDetailV2(
+MaaBool MaaTaskerGetNodeDetail(
     const MaaTasker* tasker,
     MaaNodeId node_id,
     MaaStringBuffer* name,

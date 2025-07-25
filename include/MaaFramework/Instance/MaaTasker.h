@@ -79,17 +79,6 @@ extern "C"
         MaaNodeId node_id,
         /* out */ MaaStringBuffer* node_name,
         /* out */ MaaRecoId* reco_id,
-        /* out */ MaaBool* completed);
-
-    /**
-     * @param[out] reco_id
-     * @param[out] completed
-     */
-    MAA_FRAMEWORK_API MaaBool MaaTaskerGetNodeDetailV2(
-        const MaaTasker* tasker,
-        MaaNodeId node_id,
-        /* out */ MaaStringBuffer* node_name,
-        /* out */ MaaRecoId* reco_id,
         /* out */ MaaBool* completed,
         /* out */ MaaStringBuffer* action_detail_json);
 

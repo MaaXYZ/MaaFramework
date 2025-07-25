@@ -546,6 +546,7 @@ class NodeDetail:
     name: str
     recognition: RecognitionDetail
     completed: bool
+    raw_detail: Dict
 
 
 @dataclass
