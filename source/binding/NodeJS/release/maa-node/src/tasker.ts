@@ -23,7 +23,7 @@ export type RecoDetail = {
     best: RecoDetailEntry | null
 }
 
-class TaskJob extends Job<maa.TaskId, JobSource<maa.TaskId>> {
+export class TaskJob extends Job<maa.TaskId, JobSource<maa.TaskId>> {
     #tasker: TaskerBase
 
     constructor(tasker: TaskerBase, source: JobSource<maa.TaskId>, id: maa.TaskId) {
