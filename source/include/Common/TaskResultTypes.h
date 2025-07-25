@@ -26,6 +26,7 @@ struct NodeDetail
     std::string name;
     MaaRecoId reco_id = MaaInvalidId;
     bool completed = false;
+    json::value action_detail;
 };
 
 struct TaskDetail

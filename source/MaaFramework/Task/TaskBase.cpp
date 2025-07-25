@@ -174,13 +174,15 @@ NodeDetail TaskBase::run_action(const RecoResult& reco)
     }
 
     Actuator actuator(tasker_, *context_);
-    bool ret = actuator.run(*reco.box, reco.reco_id, pipeline_data, entry_);
+    json::value detail;
+    bool ret = actuator.run(*reco.box, reco.reco_id, pipeline_data, entry_, detail);
 
     NodeDetail result {
         .node_id = generate_node_id(),
         .name = reco.name,
         .reco_id = reco.reco_id,
         .completed = ret,
+        .action_detail = detail,
     };
 
     set_node_detail(result.node_id, result);

@@ -199,11 +199,12 @@ export class TaskerBase {
     node_detail(id: maa.NodeId) {
         const dt = maa.tasker_get_node_detail(this.handle, id)
         if (dt) {
-            const [name, reco_id, completed] = dt
+            const [name, reco_id, completed, detail] = dt
             return {
                 name,
                 reco: this.recognition_detail(reco_id),
-                completed
+                completed,
+                detail
             }
         } else {
             return null

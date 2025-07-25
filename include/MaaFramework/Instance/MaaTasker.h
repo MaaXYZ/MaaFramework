@@ -79,7 +79,8 @@ extern "C"
         MaaNodeId node_id,
         /* out */ MaaStringBuffer* node_name,
         /* out */ MaaRecoId* reco_id,
-        /* out */ MaaBool* completed);
+        /* out */ MaaBool* completed,
+        /* out */ MaaStringBuffer* action_detail_json);
 
     /**
      * @param[out] node_id_list
