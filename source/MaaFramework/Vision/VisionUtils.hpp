@@ -91,7 +91,7 @@ inline static std::optional<size_t> pythonic_index(size_t total, int index)
 template <typename ResultsVec>
 inline static ResultsVec NMS(ResultsVec results, double threshold = 0.7, bool max_val = true)
 {
-    std::ranges::sort(results, [&](const auto& a, const auto& b) { return max_val ? (a.score > b.score) : (b.score > a.score); });
+    std::ranges::sort(results, [&](const auto& a, const auto& b) { return max_val ? (a.score > b.score) : (a.score < b.score); });
 
     ResultsVec nms_results;
     for (size_t i = 0; i < results.size(); ++i) {
