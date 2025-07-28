@@ -89,14 +89,14 @@ inline static std::optional<size_t> pythonic_index(size_t total, int index)
 
 // Non-Maximum Suppression
 template <typename ResultsVec>
-inline static ResultsVec NMS(ResultsVec results, double threshold = 0.7)
+inline static ResultsVec NMS(ResultsVec results, double threshold = 0.7, bool max_val = true)
 {
-    std::ranges::sort(results, [](const auto& a, const auto& b) { return a.score > b.score; });
+    std::ranges::sort(results, [](const auto& a, const auto& b) { return max_val ? (a.score > b.score) : (b.score > a.score); });
 
     ResultsVec nms_results;
     for (size_t i = 0; i < results.size(); ++i) {
         const auto& res1 = results[i];
-        if (res1.score < 0.1f) {
+        if ((max_val && res1.score < 0.1f) || (!max_val && res1.score > 0.9f)) {
             continue;
         }
         auto res1_box = res1.box;
@@ -104,7 +104,7 @@ inline static ResultsVec NMS(ResultsVec results, double threshold = 0.7)
 
         for (size_t j = i + 1; j < results.size(); ++j) {
             auto& res2 = results[j];
-            if (res2.score < 0.1f) {
+            if ((max_val && res2.score < 0.1f) || (!max_val && res2.score > 0.9f)) {
                 continue;
             }
             int iou_area = (res1_box & res2.box).area();
