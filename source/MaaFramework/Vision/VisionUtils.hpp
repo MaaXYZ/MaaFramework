@@ -109,7 +109,7 @@ inline static ResultsVec NMS(ResultsVec results, double threshold = 0.7, bool ma
             }
             int iou_area = (res1_box & res2.box).area();
             if (iou_area >= threshold * res2.box.area()) {
-                res2.score = 0;
+                res2.score = max_val ? 0 : 1;
             }
         }
     }
