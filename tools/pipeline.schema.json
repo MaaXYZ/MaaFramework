@@ -590,7 +590,7 @@
                     "title": "Count Property",
                     "description": "匹配的特征点的最低数量要求（阈值）。可选，默认 4 。",
                     "$ref": "#/$defs/jsonNInt32",
-                    "markdownDescription": "*int*\n\n匹配的特征点的最低数量要求（阈值）。可选，默认 4 。",
+                    "markdownDescription": "*uint*\n\n匹配的特征点的最低数量要求（阈值）。可选，默认 4 。",
                     "default": 4
                 },
                 "order_by": {
@@ -623,7 +623,6 @@
                     "description": "特征检测器。可选，默认 `SIFT` 。",
                     "enum": [
                         "SIFT",
-                        "SURF",
                         "ORB",
                         "BRISK",
                         "KAZE",
@@ -732,7 +731,7 @@
                     "title": "Count Property",
                     "description": "符合的像素点的最低数量要求（阈值）。可选，默认 1。",
                     "$ref": "#/$defs/jsonNInt32",
-                    "markdownDescription": "*int*\n\n符合的像素点的最低数量要求（阈值）。可选，默认 1。",
+                    "markdownDescription": "*uint*\n\n符合的像素点的最低数量要求（阈值）。可选，默认 1。",
                     "default": 1
                 },
                 "order_by": {
@@ -952,7 +951,7 @@
                     "title": "Expected Property",
                     "description": "期望的分类下标。必选。",
                     "$ref": "#/$defs/jsonInt32OrList",
-                    "markdownDescription": "*int* | *list<int, >*\n\n期望的分类下标。"
+                    "markdownDescription": "*int* | *list<int, >*\n\n期望的分类下标。必选。"
                 },
                 "order_by": {
                     "title": "Order By Property",
@@ -964,7 +963,7 @@
                         "Area",
                         "Random"
                     ],
-                    "markdownDescription": "*string*\n\n结果排序方式。可选，默认 `Horizontal` 。\n\n可选的值：`Horizontal` | `Vertical` | `Score` | `Random` 。\n\n可结合 `index` 字段使用。",
+                    "markdownDescription": "*string*\n\n结果排序方式。可选，默认 `Horizontal` 。\n\n可选的值：`Horizontal` | `Vertical` | `Score` | `Area` | `Random` 。\n\n可结合 `index` 字段使用。",
                     "default": "Horizontal"
                 },
                 "index": {
@@ -1495,15 +1494,15 @@
             "properties": {
                 "target": {
                     "title": "Target Property",
-                    "description": "点击的位置。可选，默认 true 。",
+                    "description": "点击目标的位置。可选，默认 true 。",
                     "$ref": "#/$defs/jsonTarget",
-                    "markdownDescription": "*true* | *string* | *array<int, 4>*\n\n点击的位置。可选，默认 true 。\n\n- *true*: 点击本节点中刚刚识别到的目标（即点击自身）。\n\n- *string*: 填写节点名，点击之前执行过的某节点识别到的目标。\n\n- *array<int, 4>*: 点击固定坐标区域内随机一点，[x, y, w, h]，若希望全屏可设为 [0, 0, 0, 0] 。"
+                    "markdownDescription": "*true* | *string* | *array<int, 4>*\n\n点击目标的位置。可选，默认 true 。\n\n- *true*: 目标为本节点中刚刚识别到的位置（即自身）。\n\n- *string*: 填写节点名，目标为之前执行过的某节点识别到的位置。\n\n- *array<int, 4>*: 目标为固定坐标区域内随机一点，[x, y, w, h]，若希望全屏可设为 [0, 0, 0, 0] 。"
                 },
                 "target_offset": {
                     "title": "Target Offset Property",
-                    "description": "在 `target` 的基础上额外移动再点击，四个值分别相加。可选，默认 [0, 0, 0, 0] 。",
+                    "description": "在 `target` 的基础上额外移动再作为点击目标，四个值分别相加。可选，默认 [0, 0, 0, 0] 。",
                     "$ref": "#/$defs/jsonRect",
-                    "markdownDescription": "*array<int, 4>*\n\n在 `target` 的基础上额外移动再点击，四个值分别相加。可选，默认 [0, 0, 0, 0] 。"
+                    "markdownDescription": "*array<int, 4>*\n\n在 `target` 的基础上额外移动再作为点击目标，四个值分别相加。可选，默认 [0, 0, 0, 0] 。"
                 }
             }
         },
@@ -1540,15 +1539,15 @@
             "properties": {
                 "target": {
                     "title": "Target Property",
-                    "description": "长按的位置。可选，默认 true 。",
+                    "description": "长按目标的位置。可选，默认 true 。",
                     "$ref": "#/$defs/jsonTarget",
-                    "markdownDescription": "*true* | *string* | *array<int, 4>*\n\n长按的位置。可选，默认 true 。\n\n- *true*: 点击本节点中刚刚识别到的目标（即点击自身）。\n\n- *string*: 填写节点名，点击之前执行过的某节点识别到的目标。\n\n- *array<int, 4>*: 点击固定坐标区域内随机一点，[x, y, w, h]，若希望全屏可设为 [0, 0, 0, 0] 。"
+                    "markdownDescription": "*true* | *string* | *array<int, 4>*\n\n长按目标的位置。可选，默认 true 。\n\n- *true*: 目标为本节点中刚刚识别到的位置（即自身）。\n\n- *string*: 填写节点名，目标为之前执行过的某节点识别到的位置。\n\n- *array<int, 4>*: 目标为固定坐标区域内随机一点，[x, y, w, h]，若希望全屏可设为 [0, 0, 0, 0] 。"
                 },
                 "target_offset": {
                     "title": "Target Offset Property",
-                    "description": "在 `target` 的基础上额外移动再点击，四个值分别相加。可选，默认 [0, 0, 0, 0] 。",
+                    "description": "在 `target` 的基础上额外移动再作为长按目标，四个值分别相加。可选，默认 [0, 0, 0, 0] 。",
                     "$ref": "#/$defs/jsonRect",
-                    "markdownDescription": "*array<int, 4>*\n\n在 `target` 的基础上额外移动再点击，四个值分别相加。可选，默认 [0, 0, 0, 0] 。"
+                    "markdownDescription": "*array<int, 4>*\n\n在 `target` 的基础上额外移动再作为长按目标，四个值分别相加。可选，默认 [0, 0, 0, 0] 。"
                 },
                 "duration": {
                     "title": "Duration Property",
@@ -1594,7 +1593,7 @@
                     "title": "Begin Property",
                     "description": "滑动起点。可选，默认 true 。",
                     "$ref": "#/$defs/jsonTarget",
-                    "markdownDescription": "*true* | *string* | *array<int, 4>*\n\n滑动起点。可选，默认 true 。\n\n- *true*: 点击本节点中刚刚识别到的目标（即点击自身）。\n\n- *string*: 填写节点名，点击之前执行过的某节点识别到的目标。\n\n- *array<int, 4>*: 点击固定坐标区域内随机一点，[x, y, w, h]，若希望全屏可设为 [0, 0, 0, 0] 。"
+                    "markdownDescription": "*true* | *string* | *array<int, 4>*\n\n滑动起点。可选，默认 true 。\n\n- *true*: 目标为本节点中刚刚识别到的位置（即自身）。\n\n- *string*: 填写节点名，目标为之前执行过的某节点识别到的位置。\n\n- *array<int, 4>*: 目标为固定坐标区域内随机一点，[x, y, w, h]，若希望全屏可设为 [0, 0, 0, 0] 。"
                 },
                 "begin_offset": {
                     "title": "Begin Offset Property",
@@ -1606,7 +1605,7 @@
                     "title": "End Property",
                     "description": "滑动终点。可选，默认 true 。",
                     "$ref": "#/$defs/jsonTarget",
-                    "markdownDescription": "*true* | *string* | *array<int, 4>*\n\n滑动终点。可选，默认 true 。\n\n- *true*: 点击本节点中刚刚识别到的目标（即点击自身）。\n\n- *string*: 填写节点名，点击之前执行过的某节点识别到的目标。\n\n- *array<int, 4>*: 点击固定坐标区域内随机一点，[x, y, w, h]，若希望全屏可设为 [0, 0, 0, 0] 。"
+                    "markdownDescription": "*true* | *string* | *array<int, 4>*\n\n滑动终点。可选，默认 true 。\n\n- *true*: 目标为本节点中刚刚识别到的位置（即自身）。\n\n- *string*: 填写节点名，目标为之前执行过的某节点识别到的位置。\n\n- *array<int, 4>*: 目标为固定坐标区域内随机一点，[x, y, w, h]，若希望全屏可设为 [0, 0, 0, 0] 。"
                 },
                 "end_offset": {
                     "title": "End Offset Property",
@@ -1739,9 +1738,9 @@
             "properties": {
                 "key": {
                     "title": "Key Property",
-                    "description": "要按的键，仅支持对应控制器的虚拟按键码。",
+                    "description": "要按的键，仅支持对应控制器的虚拟按键码。必选。",
                     "$ref": "#/$defs/jsonInt32OrList",
-                    "markdownDescription": "*int* | *list<int, >*\n\n要按的键，仅支持对应控制器的虚拟按键码。\n\n\n\n- [Adb 控制器](https://developer.android.com/reference/android/view/KeyEvent)\n\n- [Win32 控制器](https://learn.microsoft.com/en-us/windows/win32/inputdev/virtual-key-codes)"
+                    "markdownDescription": "*int* | *list<int, >*\n\n要按的键，仅支持对应控制器的虚拟按键码。必选。\n\n- [Adb 控制器](https://developer.android.com/reference/android/view/KeyEvent)\n\n- [Win32 控制器](https://learn.microsoft.com/en-us/windows/win32/inputdev/virtual-key-codes)"
                 }
             },
             "anyOf": [
@@ -1795,9 +1794,9 @@
             "properties": {
                 "input_text": {
                     "title": "Input Text Property",
-                    "description": "要输入的文本，部分控制器仅支持 ascii 。",
+                    "description": "要输入的文本，部分控制器仅支持 ascii 。必选。",
                     "type": "string",
-                    "markdownDescription": "*string*\n\n要输入的文本，部分控制器仅支持 ascii 。"
+                    "markdownDescription": "*string*\n\n要输入的文本，部分控制器仅支持 ascii 。必选。"
                 }
             },
             "anyOf": [
@@ -2063,9 +2062,9 @@
             "properties": {
                 "target": {
                     "title": "Target Property",
-                    "description": "点击位置。可选，默认 true。",
+                    "description": "目标的位置，会通过 `MaaCustomActionCallback`.`box` 传出。可选，默认 true 。",
                     "$ref": "#/$defs/jsonTarget",
-                    "markdownDescription": "*true* | *string* | *array<int, 4>*\n\n点击的位置。可选，默认 true 。\n\n- *true*: 点击本节点中刚刚识别到的目标（即点击自身）。\n\n- *string*: 填写节点名，点击之前执行过的某节点识别到的目标。\n\n- *array<int, 4>*: 点击固定坐标区域内随机一点，[x, y, w, h]，若希望全屏可设为 [0, 0, 0, 0] 。"
+                    "markdownDescription": "*true* | *string* | *array<int, 4>*\n\n目标的位置，会通过 `MaaCustomActionCallback`.`box` 传出。可选，默认 true 。\n\n- *true*: 目标为本节点中刚刚识别到的位置（即自身）。\n\n- *string*: 填写节点名，目标为之前执行过的某节点识别到的位置。\n\n- *array<int, 4>*: 目标为固定坐标区域内随机一点，[x, y, w, h]，若希望全屏可设为 [0, 0, 0, 0] 。"
                 },
                 "target_offset": {
                     "title": "Target Offset Property",
@@ -2465,9 +2464,9 @@
                 },
                 "target": {
                     "title": "Target Property",
-                    "description": "等待的目标。可选，默认 true。",
+                    "description": "等待目标的位置。可选，默认 true。",
                     "$ref": "#/$defs/jsonTarget",
-                    "markdownDescription": "*true* | *string* | *array<int, 4>*\n\n等待的目标。可选，默认 true 。\n\n- *true*: 点击本节点中刚刚识别到的目标（即点击自身）。\n\n- *string*: 填写节点名，点击之前执行过的某节点识别到的目标。\n\n- *array<int, 4>*: 点击固定坐标区域内随机一点，[x, y, w, h]，若希望全屏可设为 [0, 0, 0, 0] 。"
+                    "markdownDescription": "*true* | *string* | *array<int, 4>*\n\n等待目标的位置。可选，默认 true。\n\n- *true*: 目标为本节点中刚刚识别到的位置（即自身）。\n\n- *string*: 填写节点名，目标为之前执行过的某节点识别到的位置。\n\n- *array<int, 4>*: 目标为固定坐标区域内随机一点，[x, y, w, h]，若希望全屏可设为 [0, 0, 0, 0] 。"
                 },
                 "target_offset": {
                     "title": "Target Offset Property",
