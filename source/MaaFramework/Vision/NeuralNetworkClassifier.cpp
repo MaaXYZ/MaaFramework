@@ -141,9 +141,6 @@ void NeuralNetworkClassifier::sort_(ResultsVec& results) const
     case ResultOrderBy::Score:
         sort_by_score_(results);
         break;
-    case ResultOrderBy::Area:
-        sort_by_area_(results);
-        break;
     case ResultOrderBy::Random:
         sort_by_random_(results);
         break;
