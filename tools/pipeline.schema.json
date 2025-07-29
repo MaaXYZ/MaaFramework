@@ -142,8 +142,8 @@
         "jsonInt8": {
             "type": "integer",
             "format": "sbyte",
-            "minimum": 127,
-            "maximum": -128,
+            "minimum": -128,
+            "maximum": 127,
             "default": 0
         },
         "jsonUInt8": {
@@ -156,8 +156,8 @@
         "jsonInt16": {
             "type": "integer",
             "format": "int16",
-            "minimum": 32767,
-            "maximum": -32768,
+            "minimum": -32768,
+            "maximum": 32767,
             "default": 0
         },
         "jsonUInt16": {
@@ -216,7 +216,8 @@
         },
         "jsonNInt64": {
             "$ref": "#/$defs/jsonInt64",
-            "minimum": 0
+            "minimum": 0,
+            "default": 0
         },
         "jsonNumber01": {
             "type": "number",
@@ -960,10 +961,9 @@
                         "Horizontal",
                         "Vertical",
                         "Score",
-                        "Area",
                         "Random"
                     ],
-                    "markdownDescription": "*string*\n\n结果排序方式。可选，默认 `Horizontal` 。\n\n可选的值：`Horizontal` | `Vertical` | `Score` | `Area` | `Random` 。\n\n可结合 `index` 字段使用。",
+                    "markdownDescription": "*string*\n\n结果排序方式。可选，默认 `Horizontal` 。\n\n可选的值：`Horizontal` | `Vertical` | `Score` | `Random` 。\n\n可结合 `index` 字段使用。",
                     "default": "Horizontal"
                 },
                 "index": {
