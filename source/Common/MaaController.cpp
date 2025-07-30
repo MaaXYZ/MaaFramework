@@ -56,6 +56,13 @@ MaaCtrlId MaaControllerPostSwipe(MaaController* ctrl, int32_t x1, int32_t y1, in
 
 MaaCtrlId MaaControllerPostPressKey(MaaController* ctrl, int32_t keycode)
 {
+    LogError << "Deprecated API, use MaaControllerPostClickKey instead";
+
+    return MaaControllerPostClickKey(ctrl, keycode);
+}
+
+MaaCtrlId MaaControllerPostClickKey(MaaController* ctrl, int32_t keycode)
+{
     LogFunc << VAR_VOIDP(ctrl) << VAR(keycode);
 
     if (!ctrl) {
@@ -63,7 +70,7 @@ MaaCtrlId MaaControllerPostPressKey(MaaController* ctrl, int32_t keycode)
         return MaaInvalidId;
     }
 
-    return ctrl->post_press_key(keycode);
+    return ctrl->post_click_key(keycode);
 }
 
 MaaCtrlId MaaControllerPostInputText(MaaController* ctrl, const char* text)

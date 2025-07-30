@@ -1733,11 +1733,11 @@
                 }
             }
         },
-        "Key": {
+        "ClickKey": {
             "type": "object",
             "properties": {
                 "key": {
-                    "title": "Key Property",
+                    "title": "ClickKey Property",
                     "description": "要按的键，仅支持对应控制器的虚拟按键码。必选。",
                     "$ref": "#/$defs/jsonInt32OrList",
                     "markdownDescription": "*int* | *list<int, >*\n\n要按的键，仅支持对应控制器的虚拟按键码。必选。\n\n- [Adb 控制器](https://developer.android.com/reference/android/view/KeyEvent)\n\n- [Win32 控制器](https://learn.microsoft.com/en-us/windows/win32/inputdev/virtual-key-codes)"
@@ -1756,25 +1756,25 @@
                 }
             ]
         },
-        "KeyV1": {
+        "ClickKeyV1": {
             "properties": {
                 "action": {
-                    "const": "Key"
+                    "const": "ClickKey"
                 }
             },
             "allOf": [
                 {
-                    "$ref": "#/$defs/Key"
+                    "$ref": "#/$defs/ClickKey"
                 }
             ]
         },
-        "KeyV2": {
+        "ClickKeyV2": {
             "properties": {
                 "type": {
-                    "const": "Key"
+                    "const": "ClickKey"
                 },
                 "param": {
-                    "$ref": "#/$defs/Key",
+                    "$ref": "#/$defs/ClickKey",
                     "unevaluatedProperties": false,
                     "allOf": [
                         {
@@ -2144,7 +2144,7 @@
                 "LongPress",
                 "Swipe",
                 "MultiSwipe",
-                "Key",
+                "ClickKey",
                 "InputText",
                 "StartApp",
                 "StopApp",
@@ -2213,13 +2213,13 @@
                     }
                 },
                 {
-                    "label": "KeyV1",
-                    "body": "^ \"Key\",\n\"key\": []"
+                    "label": "ClickKeyV1",
+                    "body": "^ \"ClickKey\",\n\"key\": []"
                 },
                 {
-                    "label": "KeyV2",
+                    "label": "ClickKeyV2",
                     "body": {
-                        "type": "Key",
+                        "type": "ClickKey",
                         "param": {
                             "key": []
                         }
@@ -2333,7 +2333,7 @@
                     "$ref": "#/$defs/MultiSwipeV1"
                 },
                 {
-                    "$ref": "#/$defs/KeyV1"
+                    "$ref": "#/$defs/ClickKeyV1"
                 },
                 {
                     "$ref": "#/$defs/InputTextV1"
@@ -2390,7 +2390,7 @@
                             "$ref": "#/$defs/MultiSwipeV2"
                         },
                         {
-                            "$ref": "#/$defs/KeyV2"
+                            "$ref": "#/$defs/ClickKeyV2"
                         },
                         {
                             "$ref": "#/$defs/InputTextV2"
@@ -2567,7 +2567,7 @@
                     "title": "Action Property",
                     "description": "执行的动作。可选，默认 `DoNothing` 。",
                     "$ref": "#/$defs/ActionProperty",
-                    "markdownDescription": "*string* | *object* (v2)\n\n执行的动作。可选，默认 `DoNothing` 。\n\n可选的值：`DoNothing` | `Click` | `LongPress` | `Swipe` | `MultiSwipe` | `Key` | `InputText` | `StartApp` | `StopApp` | `StopTask` | `Command` | `Custom`\n\n详见 [动作类型](#动作类型)。"
+                    "markdownDescription": "*string* | *object* (v2)\n\n执行的动作。可选，默认 `DoNothing` 。\n\n可选的值：`DoNothing` | `Click` | `LongPress` | `Swipe` | `MultiSwipe` | `ClickKey` | `InputText` | `StartApp` | `StopApp` | `StopTask` | `Command` | `Custom`\n\n详见 [动作类型](#动作类型)。"
                 },
                 "next": {
                     "title": "Next Property",

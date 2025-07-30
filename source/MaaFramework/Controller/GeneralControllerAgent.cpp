@@ -204,15 +204,15 @@ bool GeneralControllerAgent::_touch_up(TouchParam param)
     return true;
 }
 
-bool GeneralControllerAgent::_press_key(PressKeyParam param)
+bool GeneralControllerAgent::_click_key(ClickKeyParam param)
 {
     if (!control_unit_) {
         LogError << "controller is nullptr" << VAR(control_unit_);
         return false;
     }
 
-    if (!control_unit_->press_key(param.keycode)) {
-        LogError << "controller press_key failed" << VAR(param.keycode);
+    if (!control_unit_->click_key(param.keycode)) {
+        LogError << "controller click_key failed" << VAR(param.keycode);
         return false;
     }
 

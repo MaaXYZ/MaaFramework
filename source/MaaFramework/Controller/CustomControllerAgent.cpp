@@ -21,7 +21,7 @@ CustomControllerAgent::CustomControllerAgent(
              << VAR_VOIDP(controller->request_uuid) << VAR_VOIDP(controller->start_app) << VAR_VOIDP(controller->stop_app)
              << VAR_VOIDP(controller->screencap) << VAR_VOIDP(controller->click) << VAR_VOIDP(controller->swipe)
              << VAR_VOIDP(controller->touch_down) << VAR_VOIDP(controller->touch_move) << VAR_VOIDP(controller->touch_up)
-             << VAR_VOIDP(controller->press_key) << VAR_VOIDP(controller->input_text);
+             << VAR_VOIDP(controller->click_key) << VAR_VOIDP(controller->input_text);
 }
 
 bool CustomControllerAgent::_connect()
@@ -168,16 +168,16 @@ bool CustomControllerAgent::_touch_up(TouchParam param)
     return controller_->touch_up(param.contact, controller_arg_);
 }
 
-bool CustomControllerAgent::_press_key(PressKeyParam param)
+bool CustomControllerAgent::_click_key(ClickKeyParam param)
 {
-    LogFunc << VAR_VOIDP(controller_) << VAR_VOIDP(controller_->press_key) << VAR(param.keycode);
+    LogFunc << VAR_VOIDP(controller_) << VAR_VOIDP(controller_->click_key) << VAR(param.keycode);
 
-    if (!controller_ || !controller_->press_key) {
-        LogError << "controller_ or controller_->press_key is nullptr";
+    if (!controller_ || !controller_->click_key) {
+        LogError << "controller_ or controller_->click_key is nullptr";
         return false;
     }
 
-    return controller_->press_key(param.keycode, controller_arg_);
+    return controller_->click_key(param.keycode, controller_arg_);
 }
 
 bool CustomControllerAgent::_input_text(InputTextParam param)

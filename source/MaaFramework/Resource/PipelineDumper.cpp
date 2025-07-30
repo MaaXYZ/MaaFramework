@@ -237,15 +237,15 @@ json::object PipelineDumper::dump(const PipelineData& pp)
         data.action.param = std::move(jswipes);
     } break;
 
-    case Action::Type::Key: {
-        const auto& param = std::get<Action::KeyParam>(pp.action_param);
+    case Action::Type::ClickKey: {
+        const auto& param = std::get<Action::ClickKeyParam>(pp.action_param);
         data.action.param = PipelineV2::JKey {
             .key = param.keys,
         };
     } break;
 
-    case Action::Type::Text: {
-        const auto& param = std::get<Action::TextParam>(pp.action_param);
+    case Action::Type::InputText: {
+        const auto& param = std::get<Action::InputTextParam>(pp.action_param);
         data.action.param = PipelineV2::JInputText {
             .input_text = param.text,
         };

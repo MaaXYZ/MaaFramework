@@ -2,7 +2,6 @@
 
 #include "Utils/Codec.h"
 #include "Utils/Logger.h"
-#include "Utils/MicroControl.hpp"
 #include "Utils/Platform.h"
 #include "Utils/SafeWindows.hpp"
 
@@ -20,70 +19,14 @@ void SeizeInput::ensure_foreground()
 
 bool SeizeInput::click(int x, int y)
 {
-    POINT point = { x, y };
-
-    if (hwnd_) {
-        ensure_foreground();
-        ClientToScreen(hwnd_, &point);
-    }
-    LogInfo << VAR(x) << VAR(y) << VAR(point.x) << VAR(point.y) << VAR_VOIDP(hwnd_);
-
-    SetCursorPos(point.x, point.y);
-
-    INPUT inputs[2] = {};
-
-    inputs[0].type = INPUT_MOUSE;
-    inputs[0].mi.dwFlags = MOUSEEVENTF_LEFTDOWN;
-
-    inputs[1].type = INPUT_MOUSE;
-    inputs[1].mi.dwFlags = MOUSEEVENTF_LEFTUP;
-
-    SendInput(ARRAYSIZE(inputs), inputs, sizeof(INPUT));
-
-    return true;
+    LogError << "deprecated" << VAR(x) << VAR(y);
+    return false;
 }
 
 bool SeizeInput::swipe(int x1, int y1, int x2, int y2, int duration)
 {
-    POINT point1 = { x1, y1 };
-    POINT point2 = { x2, y2 };
-
-    if (hwnd_) {
-        ensure_foreground();
-        ClientToScreen(hwnd_, &point1);
-        ClientToScreen(hwnd_, &point2);
-    }
-    if (duration <= 0) {
-        LogWarn << "duration out of range" << VAR(duration);
-        duration = 200;
-    }
-
-    LogInfo << VAR(x1) << VAR(y1) << VAR(x2) << VAR(y2) << VAR(duration) << VAR(point1.x) << VAR(point1.y) << VAR(point2.x) << VAR(point2.y)
-            << VAR_VOIDP(hwnd_);
-
-    micro_swipe(
-        point1.x,
-        point1.y,
-        point2.x,
-        point2.y,
-        duration,
-        [&](int x, int y) {
-            SetCursorPos(x, y);
-
-            INPUT input = {};
-            input.type = INPUT_MOUSE;
-            input.mi.dwFlags = MOUSEEVENTF_LEFTDOWN;
-            SendInput(1, &input, sizeof(INPUT));
-        },
-        [&](int x, int y) { SetCursorPos(x, y); },
-        [&]([[maybe_unused]] int x, [[maybe_unused]] int y) {
-            INPUT input = {};
-            input.type = INPUT_MOUSE;
-            input.mi.dwFlags = MOUSEEVENTF_LEFTUP;
-            SendInput(1, &input, sizeof(INPUT));
-        });
-
-    return true;
+    LogError << "deprecated" << VAR(x1) << VAR(y1) << VAR(x2) << VAR(y2) << VAR(duration);
+    return false;
 }
 
 bool SeizeInput::touch_down(int contact, int x, int y, int pressure)
@@ -183,25 +126,10 @@ bool SeizeInput::touch_up(int contact)
     return true;
 }
 
-bool SeizeInput::press_key(int key)
+bool SeizeInput::click_key(int key)
 {
-    if (hwnd_) {
-        ensure_foreground();
-    }
-    LogInfo << VAR(key) << VAR(hwnd_);
-
-    INPUT inputs[2] = {};
-
-    inputs[0].type = INPUT_KEYBOARD;
-    inputs[0].ki.wVk = static_cast<WORD>(key);
-
-    inputs[1].type = INPUT_KEYBOARD;
-    inputs[1].ki.wVk = static_cast<WORD>(key);
-    inputs[1].ki.dwFlags = KEYEVENTF_KEYUP;
-
-    SendInput(ARRAYSIZE(inputs), inputs, sizeof(INPUT));
-
-    return true;
+    LogError << "deprecated" << VAR(key);
+    return false;
 }
 
 bool SeizeInput::input_text(const std::string& text)
@@ -234,6 +162,41 @@ bool SeizeInput::input_text(const std::string& text)
         LogError << VAR(written) << VAR(input_vec.size()) << VAR(u16_text.size());
         return false;
     }
+    return true;
+}
+
+bool SeizeInput::key_down(int key)
+{
+    if (hwnd_) {
+        ensure_foreground();
+    }
+    LogInfo << VAR(key) << VAR(hwnd_);
+
+    INPUT inputs[1] = {};
+
+    inputs[0].type = INPUT_KEYBOARD;
+    inputs[0].ki.wVk = static_cast<WORD>(key);
+
+    SendInput(ARRAYSIZE(inputs), inputs, sizeof(INPUT));
+
+    return true;
+}
+
+bool SeizeInput::key_up(int key)
+{
+    if (hwnd_) {
+        ensure_foreground();
+    }
+    LogInfo << VAR(key) << VAR(hwnd_);
+
+    INPUT inputs[1] = {};
+
+    inputs[0].type = INPUT_KEYBOARD;
+    inputs[0].ki.wVk = static_cast<WORD>(key);
+    inputs[0].ki.dwFlags = KEYEVENTF_KEYUP;
+
+    SendInput(ARRAYSIZE(inputs), inputs, sizeof(INPUT));
+
     return true;
 }
 

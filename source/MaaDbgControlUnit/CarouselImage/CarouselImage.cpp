@@ -103,10 +103,13 @@ bool CarouselImage::swipe(int x1, int y1, int x2, int y2, int duration)
     return true;
 }
 
-bool CarouselImage::multi_swipe(const std::vector<SwipeParam>& swipes)
+bool CarouselImage::is_touch_availabled() const
 {
-    std::ignore = swipes;
+    return true;
+}
 
+bool CarouselImage::is_multi_touch_availabled() const
+{
     return true;
 }
 
@@ -136,7 +139,7 @@ bool CarouselImage::touch_up(int contact)
     return true;
 }
 
-bool CarouselImage::press_key(int key)
+bool CarouselImage::click_key(int key)
 {
     std::ignore = key;
     return true;

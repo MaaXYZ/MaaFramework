@@ -51,9 +51,13 @@ extern "C"
 
         MaaBool (*touch_up)(int32_t contact, void* trans_arg);
 
-        MaaBool (*press_key)(int32_t keycode, void* trans_arg);
+        MaaBool (*click_key)(int32_t keycode, void* trans_arg);
 
         MaaBool (*input_text)(const char* text, void* trans_arg);
+        
+        MaaBool (*key_down)(int32_t keycode, void* trans_arg);
+
+        MaaBool (*key_up)(int32_t keycode, void* trans_arg);
     };
 
 #ifdef __cplusplus

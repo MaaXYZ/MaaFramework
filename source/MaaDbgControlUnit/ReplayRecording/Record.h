@@ -51,7 +51,7 @@ struct Record
         int pressure = 0;
     };
 
-    struct PressKeyParam
+    struct ClickKeyParam
     {
         int keycode = 0;
     };
@@ -77,9 +77,8 @@ struct Record
         ConnectParam,
         ClickParam,
         SwipeParam,
-        std::vector<SwipeParam>,
         TouchParam,
-        PressKeyParam,
+        ClickKeyParam,
         InputTextParam,
         AppParam,
         ScreencapParam>;
@@ -92,11 +91,10 @@ struct Record
             connect,
             click,
             swipe,
-            multi_swipe,
             touch_down,
             touch_move,
             touch_up,
-            press_key,
+            click_key,
             input_text,
             screencap,
             start_app,
@@ -135,9 +133,6 @@ inline std::ostream& operator<<(std::ostream& os, Record::Action::Type type)
     case Record::Action::Type::swipe:
         os << "swipe";
         break;
-    case Record::Action::Type::multi_swipe:
-        os << "multi_swipe";
-        break;
     case Record::Action::Type::touch_down:
         os << "touch_down";
         break;
@@ -147,8 +142,8 @@ inline std::ostream& operator<<(std::ostream& os, Record::Action::Type type)
     case Record::Action::Type::touch_up:
         os << "touch_up";
         break;
-    case Record::Action::Type::press_key:
-        os << "press_key";
+    case Record::Action::Type::click_key:
+        os << "click_key";
         break;
     case Record::Action::Type::input_text:
         os << "input_text";

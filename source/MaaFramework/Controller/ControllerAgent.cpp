@@ -69,9 +69,9 @@ MaaCtrlId ControllerAgent::post_swipe(int x1, int y1, int x2, int y2, int durati
     return id;
 }
 
-MaaCtrlId ControllerAgent::post_press_key(int keycode)
+MaaCtrlId ControllerAgent::post_click_key(int keycode)
 {
-    auto id = post_press_key_impl(keycode);
+    auto id = post_click_key_impl(keycode);
     focus_id(id);
     return id;
 }
@@ -230,9 +230,9 @@ bool ControllerAgent::multi_swipe(const std::vector<SwipeParamWithRect>& swipes)
     return wait(id) == MaaStatus_Succeeded;
 }
 
-bool ControllerAgent::press_key(int keycode)
+bool ControllerAgent::click_key(int keycode)
 {
-    auto id = post_press_key_impl(keycode);
+    auto id = post_click_key_impl(keycode);
     return wait(id) == MaaStatus_Succeeded;
 }
 
@@ -317,10 +317,10 @@ MaaCtrlId ControllerAgent::post_multi_swipe_impl(const std::vector<SwipeParam>& 
     return post({ .type = Action::Type::multi_swipe, .param = std::move(dst) });
 }
 
-MaaCtrlId ControllerAgent::post_press_key_impl(int keycode)
+MaaCtrlId ControllerAgent::post_click_key_impl(int keycode)
 {
-    PressKeyParam param { .keycode = keycode };
-    return post({ .type = Action::Type::press_key, .param = std::move(param) });
+    ClickKeyParam param { .keycode = keycode };
+    return post({ .type = Action::Type::click_key, .param = std::move(param) });
 }
 
 MaaCtrlId ControllerAgent::post_input_text_impl(const std::string& text)
@@ -498,18 +498,18 @@ bool ControllerAgent::handle_touch_up(const TouchParam& param)
     return ret;
 }
 
-bool ControllerAgent::handle_press_key(const PressKeyParam& param)
+bool ControllerAgent::handle_click_key(const ClickKeyParam& param)
 {
     std::chrono::steady_clock::time_point start_time;
     if (recording()) {
         start_time = std::chrono::steady_clock::now();
     }
 
-    bool ret = _press_key(param);
+    bool ret = _click_key(param);
 
     if (recording()) {
         json::value info = param;
-        info |= { { "type", "press_key" } };
+        info |= { { "type", "click_key" } };
         append_recording(std::move(info), start_time, ret);
     }
 
@@ -712,8 +712,8 @@ bool ControllerAgent::run_action(typename AsyncRunner<Action>::Id id, Action act
         ret = handle_touch_up(std::get<TouchParam>(action.param));
         break;
 
-    case Action::Type::press_key:
-        ret = handle_press_key(std::get<PressKeyParam>(action.param));
+    case Action::Type::click_key:
+        ret = handle_click_key(std::get<ClickKeyParam>(action.param));
         break;
     case Action::Type::input_text:
         ret = handle_input_text(std::get<InputTextParam>(action.param));
@@ -938,8 +938,8 @@ std::ostream& operator<<(std::ostream& os, const Action& action)
     case Action::Type::touch_up:
         os << "touch_up";
         break;
-    case Action::Type::press_key:
-        os << "press_key";
+    case Action::Type::click_key:
+        os << "click_key";
         break;
     case Action::Type::input_text:
         os << "input_text";
