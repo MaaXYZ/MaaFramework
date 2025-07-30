@@ -1,0 +1,80 @@
+{
+    "$schema": "../../tools/pipeline.schema.json",
+    "comments_v1": {
+        "v1_doc": "v1_doc",
+        "v1_code": "v1_code",
+        "v1_comment": "v1_comment"
+    },
+    "comments_v2": {
+        "recognition": {
+            "param": {
+                "doc": "v2_doc",
+                "code": "v2_code",
+                "comment": "v2_comment"
+            },
+            "_doc": "v2_doc",
+            "_code": "v2_code",
+            "_comment": "v2_comment"
+        },
+        "v2_doc": "v2_doc",
+        "v2_code": "v2_code",
+        "v2_comment": "v2_comment"
+    },
+    "recognition_v1": {
+        "recognition": "TemplateMatch",
+        "template": ""
+    },
+    "recognition_v2": {
+        "recognition": {
+            "type": "TemplateMatch",
+            "param": {
+                "template": ""
+            }
+        }
+    },
+    "action_v1": {
+        "action": "Key",
+        "key": []
+    },
+    "action_v2": {
+        "action": {
+            "type": "Key",
+            "param": {
+                "key": []
+            }
+        }
+    },
+    "pipeline_override_recognition_v1": {
+        "roi": "[]"
+    },
+    "pipeline_override_recognition_v2": {
+        "recognition": {
+            "param": {
+                "roi": [
+                    0,
+                    0,
+                    0,
+                    0
+                ]
+            }
+        }
+    },
+    "pipeline_override_action_v1": {
+        "swipes": [
+            {
+                "starting": 0
+            }
+        ]
+    },
+    "pipeline_override_action_v2": {
+        "action": {
+            "param": {
+                "swipes": [
+                    {
+                        "starting": 0
+                    }
+                ]
+            }
+        }
+    }
+}

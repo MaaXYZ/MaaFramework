@@ -1,0 +1,61 @@
+{
+    "$schema": "../../tools/pipeline.schema.json",
+    "others_v1": {
+        "v1": "v1"
+    },
+    "others_v2": {
+        "recognition": {
+            "param": {
+                "v2": "v2"
+            },
+            "v2": "v2"
+        },
+        "v2": "v2"
+    },
+    "recognition_v1": {
+        "recognition": "TemplateMatch"
+    },
+    "recognition_v2": {
+        "recognition": {
+            "type": "TemplateMatch",
+            "param": {}
+        }
+    },
+    "action_v1": {
+        "action": "Key"
+    },
+    "action_v2": {
+        "action": {
+            "type": "Key",
+            "param": {}
+        }
+    },
+    "pipeline_override_recognition_v1": {
+        "roi": 0
+    },
+    "pipeline_override_recognition_v2": {
+        "recognition": {
+            "param": {
+                "roi": 0
+            }
+        }
+    },
+    "pipeline_override_action_v1": {
+        "swipes": [
+            {
+                "starting": "0"
+            }
+        ]
+    },
+    "pipeline_override_action_v2": {
+        "action": {
+            "param": {
+                "swipes": [
+                    {
+                        "starting": "0"
+                    }
+                ]
+            }
+        }
+    }
+}

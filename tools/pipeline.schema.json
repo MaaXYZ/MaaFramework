@@ -1220,6 +1220,36 @@
                 }
             }
         },
+        "RecognitionPropertyFieldsV1": {
+            "not": {
+                "required": [
+                    "recognition"
+                ]
+            },
+            "allOf": [
+                {
+                    "$ref": "#/$defs/RecognitionPropertyFields"
+                }
+            ]
+        },
+        "RecognitionPropertyFieldsV2": {
+            "not": {
+                "required": [
+                    "type"
+                ]
+            },
+            "properties": {
+                "param": {
+                    "$ref": "#/$defs/RecognitionPropertyFields",
+                    "unevaluatedProperties": false,
+                    "allOf": [
+                        {
+                            "$ref": "#/$defs/jsonComments"
+                        }
+                    ]
+                }
+            }
+        },
         "RecognitionEnum": {
             "default": "DirectHit",
             "enum": [
@@ -1232,6 +1262,235 @@
                 "NeuralNetworkDetect",
                 "Custom"
             ]
+        },
+        "RecognitionPropertyFields": {
+            "properties": {
+                "roi": {
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/TemplateMatch/properties/roi"
+                        }
+                    ]
+                },
+                "roi_offset": {
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/TemplateMatch/properties/roi_offset"
+                        }
+                    ]
+                },
+                "template": {
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/TemplateMatch/properties/template"
+                        },
+                        {
+                            "$ref": "#/$defs/FeatureMatch/properties/template"
+                        }
+                    ]
+                },
+                "threshold": {
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/TemplateMatch/properties/threshold"
+                        },
+                        {
+                            "$ref": "#/$defs/Ocr/properties/threshold"
+                        },
+                        {
+                            "$ref": "#/$defs/NeuralNetworkDetect/properties/threshold"
+                        }
+                    ]
+                },
+                "order_by": {
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/TemplateMatch/properties/order_by"
+                        },
+                        {
+                            "$ref": "#/$defs/FeatureMatch/properties/order_by"
+                        },
+                        {
+                            "$ref": "#/$defs/ColorMatch/properties/order_by"
+                        },
+                        {
+                            "$ref": "#/$defs/Ocr/properties/order_by"
+                        },
+                        {
+                            "$ref": "#/$defs/NeuralNetworkClassify/properties/order_by"
+                        },
+                        {
+                            "$ref": "#/$defs/NeuralNetworkDetect/properties/order_by"
+                        }
+                    ]
+                },
+                "index": {
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/TemplateMatch/properties/index"
+                        },
+                        {
+                            "$ref": "#/$defs/FeatureMatch/properties/index"
+                        },
+                        {
+                            "$ref": "#/$defs/ColorMatch/properties/index"
+                        },
+                        {
+                            "$ref": "#/$defs/Ocr/properties/index"
+                        },
+                        {
+                            "$ref": "#/$defs/NeuralNetworkClassify/properties/index"
+                        },
+                        {
+                            "$ref": "#/$defs/NeuralNetworkDetect/properties/index"
+                        }
+                    ]
+                },
+                "method": {
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/TemplateMatch/properties/method"
+                        },
+                        {
+                            "$ref": "#/$defs/ColorMatch/properties/method"
+                        }
+                    ]
+                },
+                "green_mask": {
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/TemplateMatch/properties/green_mask"
+                        },
+                        {
+                            "$ref": "#/$defs/FeatureMatch/properties/green_mask"
+                        }
+                    ]
+                },
+                "count": {
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/TemplateMatch/properties/index"
+                        },
+                        {
+                            "$ref": "#/$defs/FeatureMatch/properties/index"
+                        },
+                        {
+                            "$ref": "#/$defs/ColorMatch/properties/index"
+                        },
+                        {
+                            "$ref": "#/$defs/Ocr/properties/index"
+                        },
+                        {
+                            "$ref": "#/$defs/NeuralNetworkClassify/properties/index"
+                        },
+                        {
+                            "$ref": "#/$defs/NeuralNetworkDetect/properties/index"
+                        }
+                    ]
+                },
+                "detector": {
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/FeatureMatch/properties/count"
+                        },
+                        {
+                            "$ref": "#/$defs/ColorMatch/properties/count"
+                        }
+                    ]
+                },
+                "ratio": {
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/FeatureMatch/properties/ratio"
+                        }
+                    ]
+                },
+                "lower": {
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/ColorMatch/properties/lower"
+                        }
+                    ]
+                },
+                "upper": {
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/ColorMatch/properties/upper"
+                        }
+                    ]
+                },
+                "connected": {
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/ColorMatch/properties/connected"
+                        }
+                    ]
+                },
+                "expected": {
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/Ocr/properties/expected"
+                        },
+                        {
+                            "$ref": "#/$defs/NeuralNetworkClassify/properties/expected"
+                        },
+                        {
+                            "$ref": "#/$defs/NeuralNetworkDetect/properties/expected"
+                        }
+                    ]
+                },
+                "replace": {
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/Ocr/properties/replace"
+                        }
+                    ]
+                },
+                "only_rec": {
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/Ocr/properties/only_rec"
+                        }
+                    ]
+                },
+                "model": {
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/Ocr/properties/model"
+                        },
+                        {
+                            "$ref": "#/$defs/NeuralNetworkClassify/properties/model"
+                        },
+                        {
+                            "$ref": "#/$defs/NeuralNetworkDetect/properties/model"
+                        }
+                    ]
+                },
+                "labels": {
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/NeuralNetworkClassify/properties/labels"
+                        },
+                        {
+                            "$ref": "#/$defs/NeuralNetworkDetect/properties/labels"
+                        }
+                    ]
+                },
+                "custom_recognition": {
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/CustomRecognition/properties/custom_recognition"
+                        }
+                    ]
+                },
+                "custom_recognition_param": {
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/CustomRecognition/properties/custom_recognition_param"
+                        }
+                    ]
+                }
+            }
         },
         "RecognitionProperty": {
             "type": [
@@ -1351,6 +1610,9 @@
             },
             "anyOf": [
                 {
+                    "$ref": "#/$defs/RecognitionPropertyFieldsV1"
+                },
+                {
                     "$ref": "#/$defs/DirectHitV1"
                 },
                 {
@@ -1395,6 +1657,9 @@
                         }
                     ],
                     "anyOf": [
+                        {
+                            "$ref": "#/$defs/RecognitionPropertyFieldsV2"
+                        },
                         {
                             "$ref": "#/$defs/DirectHitV2"
                         },
@@ -2136,6 +2401,36 @@
                 }
             }
         },
+        "ActionPropertyFieldsV1": {
+            "not": {
+                "required": [
+                    "action"
+                ]
+            },
+            "allOf": [
+                {
+                    "$ref": "#/$defs/ActionPropertyFields"
+                }
+            ]
+        },
+        "ActionPropertyFieldsV2": {
+            "not": {
+                "required": [
+                    "type"
+                ]
+            },
+            "properties": {
+                "param": {
+                    "$ref": "#/$defs/ActionPropertyFields",
+                    "unevaluatedProperties": false,
+                    "allOf": [
+                        {
+                            "$ref": "#/$defs/jsonComments"
+                        }
+                    ]
+                }
+            }
+        },
         "ActionEnum": {
             "default": "DoNothing",
             "enum": [
@@ -2152,6 +2447,140 @@
                 "Command",
                 "Custom"
             ]
+        },
+        "ActionPropertyFields": {
+            "properties": {
+                "target": {
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/Click/properties/target"
+                        },
+                        {
+                            "$ref": "#/$defs/LongPress/properties/target"
+                        },
+                        {
+                            "$ref": "#/$defs/CustomAction/properties/target"
+                        }
+                    ]
+                },
+                "target_offset": {
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/Click/properties/target_offset"
+                        },
+                        {
+                            "$ref": "#/$defs/LongPress/properties/target_offset"
+                        },
+                        {
+                            "$ref": "#/$defs/CustomAction/properties/target_offset"
+                        }
+                    ]
+                },
+                "duration": {
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/LongPress/properties/duration"
+                        },
+                        {
+                            "$ref": "#/$defs/Swipe/properties/duration"
+                        }
+                    ]
+                },
+                "begin": {
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/Swipe/properties/begin"
+                        }
+                    ]
+                },
+                "begin_offset": {
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/Swipe/properties/begin_offset"
+                        }
+                    ]
+                },
+                "end": {
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/Swipe/properties/end"
+                        }
+                    ]
+                },
+                "end_offset": {
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/Swipe/properties/end_offset"
+                        }
+                    ]
+                },
+                "swipes": {
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/MultiSwipe/properties/swipes"
+                        }
+                    ]
+                },
+                "key": {
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/Key/properties/key"
+                        }
+                    ]
+                },
+                "input_text": {
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/InputText/properties/input_text"
+                        }
+                    ]
+                },
+                "package": {
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/StartApp/properties/package"
+                        },
+                        {
+                            "$ref": "#/$defs/StopApp/properties/package"
+                        }
+                    ]
+                },
+                "exec": {
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/Command/properties/exec"
+                        }
+                    ]
+                },
+                "args": {
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/Command/properties/args"
+                        }
+                    ]
+                },
+                "detach": {
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/Command/properties/detach"
+                        }
+                    ]
+                },
+                "custom_action": {
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/CustomAction/properties/custom_action"
+                        }
+                    ]
+                },
+                "custom_action_param": {
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/CustomAction/properties/custom_action_param"
+                        }
+                    ]
+                }
+            }
         },
         "ActionProperty": {
             "type": [
@@ -2318,6 +2747,9 @@
             },
             "anyOf": [
                 {
+                    "$ref": "#/$defs/ActionPropertyFieldsV1"
+                },
+                {
                     "$ref": "#/$defs/DoNothingV1"
                 },
                 {
@@ -2374,6 +2806,9 @@
                         }
                     ],
                     "anyOf": [
+                        {
+                            "$ref": "#/$defs/ActionPropertyFieldsV2"
+                        },
                         {
                             "$ref": "#/$defs/DoNothingV2"
                         },
