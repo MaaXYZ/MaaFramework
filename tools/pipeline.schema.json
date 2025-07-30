@@ -15,7 +15,7 @@
     "$defs": {
         "CustomRecognitionSchema": {
             "$comment": "若要使用拓展模式，请为 ref 添加 $ ，编写方法类似 RecognitionV2",
-            "ref": "./custom.recognition.schema.json"
+            "ref": "../test/schema/custom.recognition.schema.json"
         },
         "CustomActionSchema": {
             "$comment": "若要使用拓展模式，请为 ref 添加 $ ，编写方法类似 ActionV2",

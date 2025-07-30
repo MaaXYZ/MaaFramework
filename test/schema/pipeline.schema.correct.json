@@ -76,5 +76,24 @@
                 ]
             }
         }
+    },
+    "custom_recognition_v1": {
+        "recognition": "Custom",
+        "custom_recognition": "<custom_1>",
+        "custom_recognition_param": {
+            "<param_string>": "<param_string>"
+        }
+    },
+    "custom_recognition_v2": {
+        "recognition": {
+            "type": "Custom",
+            "param": {
+                "custom_recognition": "<custom_2>",
+                "custom_recognition_param": {
+                    "<param_integer>": 0,
+                    "AdditionalParam": "The unevaluatedProperties is true (default)."
+                }
+            }
+        }
     }
 }
