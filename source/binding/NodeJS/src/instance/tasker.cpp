@@ -164,13 +164,14 @@ std::optional<std::tuple<std::string, std::string, bool, MaaRect, std::string, N
     }
 }
 
-std::optional<std::tuple<std::string, MaaRecoId, bool>> tasker_get_node_detail(Napi::External<TaskerInfo> info, MaaNodeId id)
+std::optional<std::tuple<std::string, MaaRecoId, bool, std::string>> tasker_get_node_detail(Napi::External<TaskerInfo> info, MaaNodeId id)
 {
     StringBuffer name;
     MaaRecoId reco_id = MaaInvalidId;
     MaaBool completed = false;
-    if (MaaTaskerGetNodeDetail(info.Data()->handle, id, name, &reco_id, &completed)) {
-        return std::make_tuple(name.str(), reco_id, completed);
+    StringBuffer detail;
+    if (MaaTaskerGetNodeDetail(info.Data()->handle, id, name, &reco_id, &completed, detail)) {
+        return std::make_tuple(name.str(), reco_id, completed, detail.str());
     }
     else {
         return std::nullopt;
