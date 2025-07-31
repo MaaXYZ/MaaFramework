@@ -90,6 +90,8 @@ struct Action
         screencap,
         start_app,
         stop_app,
+        key_down,
+        key_up,
     } type = Type::invalid;
 
     Param param;
@@ -118,6 +120,9 @@ public: // MaaController
     virtual MaaCtrlId post_touch_down(int contact, int x, int y, int pressure) override;
     virtual MaaCtrlId post_touch_move(int contact, int x, int y, int pressure) override;
     virtual MaaCtrlId post_touch_up(int contact) override;
+
+    virtual MaaCtrlId post_key_down(int keycode) override;
+    virtual MaaCtrlId post_key_up(int keycode) override;
 
     virtual MaaStatus status(MaaCtrlId ctrl_id) const override;
     virtual MaaStatus wait(MaaCtrlId ctrl_id) const override;
@@ -163,12 +168,13 @@ protected:
     virtual std::optional<cv::Mat> _screencap() = 0;
     virtual bool _click(ClickParam param) = 0;
     virtual bool _swipe(SwipeParam param) = 0;
-    virtual bool _multi_swipe(std::vector<SwipeParam> param) = 0;
     virtual bool _touch_down(TouchParam param) = 0;
     virtual bool _touch_move(TouchParam param) = 0;
     virtual bool _touch_up(TouchParam param) = 0;
     virtual bool _click_key(ClickKeyParam param) = 0;
     virtual bool _input_text(InputTextParam param) = 0;
+    virtual bool _key_down(ClickKeyParam param) = 0;
+    virtual bool _key_up(ClickKeyParam param) = 0;
 
 protected:
     MessageNotifier notifier_;
@@ -188,6 +194,9 @@ private:
     MaaCtrlId post_touch_move_impl(int contact, int x, int y, int pressure);
     MaaCtrlId post_touch_up_impl(int contact);
 
+    MaaCtrlId post_key_down_impl(int keycode);
+    MaaCtrlId post_key_up_impl(int keycode);
+
     bool handle_connect();
     bool handle_click(const ClickParam& param);
     bool handle_swipe(const SwipeParam& param);
@@ -200,6 +209,8 @@ private:
     bool handle_screencap();
     bool handle_start_app(const AppParam& param);
     bool handle_stop_app(const AppParam& param);
+    bool handle_key_down(const ClickKeyParam& param);
+    bool handle_key_up(const ClickKeyParam& param);
 
     bool recording() const;
     void init_recording();

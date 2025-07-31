@@ -131,34 +131,6 @@ bool GeneralControllerAgent::_swipe(SwipeParam param)
     return true;
 }
 
-bool GeneralControllerAgent::_multi_swipe(std::vector<SwipeParam> param)
-{
-    if (!control_unit_) {
-        LogError << "controller is nullptr" << VAR(control_unit_);
-        return false;
-    }
-
-    using ApiParam = MAA_CTRL_UNIT_NS::ControlUnitAPI::SwipeParam;
-    std::vector<ApiParam> api_param;
-    std::ranges::transform(param, std::back_inserter(api_param), [](const SwipeParam& swipe) {
-        return ApiParam {
-            .x1 = swipe.x1,
-            .y1 = swipe.y1,
-            .x2 = swipe.x2,
-            .y2 = swipe.y2,
-            .duration = swipe.duration,
-            .starting = swipe.starting,
-        };
-    });
-
-    if (!control_unit_->multi_swipe(api_param)) {
-        LogError << "controller swipe failed" << VAR(json::array(param));
-        return false;
-    }
-
-    return true;
-}
-
 bool GeneralControllerAgent::_touch_down(TouchParam param)
 {
     if (!control_unit_) {
@@ -228,6 +200,36 @@ bool GeneralControllerAgent::_input_text(InputTextParam param)
 
     if (!control_unit_->input_text(param.text)) {
         LogError << "controller input_text failed" << VAR(param.text);
+        return false;
+    }
+
+    return true;
+}
+
+bool GeneralControllerAgent::_key_down(ClickKeyParam param)
+{
+    if (!control_unit_) {
+        LogError << "controller is nullptr" << VAR(control_unit_);
+        return false;
+    }
+
+    if (!control_unit_->key_down(param.keycode)) {
+        LogError << "controller key_down failed" << VAR(param.keycode);
+        return false;
+    }
+
+    return true;
+}
+
+bool GeneralControllerAgent::_key_up(ClickKeyParam param)
+{
+    if (!control_unit_) {
+        LogError << "controller is nullptr" << VAR(control_unit_);
+        return false;
+    }
+
+    if (!control_unit_->key_up(param.keycode)) {
+        LogError << "controller key_up failed" << VAR(param.keycode);
         return false;
     }
 

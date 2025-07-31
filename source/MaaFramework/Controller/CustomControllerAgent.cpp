@@ -21,7 +21,8 @@ CustomControllerAgent::CustomControllerAgent(
              << VAR_VOIDP(controller->request_uuid) << VAR_VOIDP(controller->start_app) << VAR_VOIDP(controller->stop_app)
              << VAR_VOIDP(controller->screencap) << VAR_VOIDP(controller->click) << VAR_VOIDP(controller->swipe)
              << VAR_VOIDP(controller->touch_down) << VAR_VOIDP(controller->touch_move) << VAR_VOIDP(controller->touch_up)
-             << VAR_VOIDP(controller->click_key) << VAR_VOIDP(controller->input_text);
+             << VAR_VOIDP(controller->click_key) << VAR_VOIDP(controller->input_text) << VAR_VOIDP(controller->key_down)
+             << VAR_VOIDP(controller->key_up);
 }
 
 bool CustomControllerAgent::_connect()
@@ -121,15 +122,6 @@ bool CustomControllerAgent::_swipe(SwipeParam param)
     return controller_->swipe(param.x1, param.y1, param.x2, param.y2, param.duration, controller_arg_);
 }
 
-bool CustomControllerAgent::_multi_swipe(std::vector<SwipeParam> param)
-{
-    std::ignore = param;
-
-    LogError << "CustomController not support MulitSwipe now, We welcome your PR to implement it!" << VAR(param);
-
-    return false;
-}
-
 bool CustomControllerAgent::_touch_down(TouchParam param)
 {
     LogFunc << VAR_VOIDP(controller_) << VAR_VOIDP(controller_->touch_down) << VAR(param.contact) << VAR(param.x) << VAR(param.y)
@@ -190,6 +182,30 @@ bool CustomControllerAgent::_input_text(InputTextParam param)
     }
 
     return controller_->input_text(param.text.c_str(), controller_arg_);
+}
+
+bool CustomControllerAgent::_key_down(ClickKeyParam param)
+{
+    LogFunc << VAR_VOIDP(controller_) << VAR_VOIDP(controller_->key_down) << VAR(param.keycode);
+
+    if (!controller_ || !controller_->key_down) {
+        LogError << "controller_ or controller_->key_down is nullptr";
+        return false;
+    }
+
+    return controller_->key_down(param.keycode, controller_arg_);
+}
+
+bool CustomControllerAgent::_key_up(ClickKeyParam param)
+{
+    LogFunc << VAR_VOIDP(controller_) << VAR_VOIDP(controller_->key_up) << VAR(param.keycode);
+
+    if (!controller_ || !controller_->key_up) {
+        LogError << "controller_ or controller_->key_up is nullptr";
+        return false;
+    }
+
+    return controller_->key_up(param.keycode, controller_arg_);
 }
 
 MAA_CTRL_NS_END

@@ -26,6 +26,9 @@ public:
     virtual MaaCtrlId post_touch_move(int contact, int x, int y, int pressure) override;
     virtual MaaCtrlId post_touch_up(int contact) override;
 
+    virtual MaaCtrlId post_key_down(int keycode) override;
+    virtual MaaCtrlId post_key_up(int keycode) override;
+
     virtual MaaStatus status(MaaCtrlId ctrl_id) const override;
     virtual MaaStatus wait(MaaCtrlId ctrl_id) const override;
     virtual bool connected() const override;

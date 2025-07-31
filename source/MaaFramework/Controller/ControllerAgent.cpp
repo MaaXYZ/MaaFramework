@@ -125,6 +125,21 @@ MaaCtrlId ControllerAgent::post_touch_up(int contact)
     return id;
 }
 
+
+MaaCtrlId ControllerAgent::post_key_down(int keycode)
+{
+    auto id = post_key_down_impl(keycode);
+    focus_id(id);
+    return id;
+}
+
+MaaCtrlId ControllerAgent::post_key_up(int keycode)
+{
+    auto id = post_key_up_impl(keycode);
+    focus_id(id);
+    return id;
+}
+
 MaaStatus ControllerAgent::status(MaaCtrlId ctrl_id) const
 {
     if (!action_runner_) {
@@ -254,13 +269,13 @@ cv::Mat ControllerAgent::screencap()
 
 bool ControllerAgent::start_app(const std::string& package)
 {
-    auto id = post({ .type = Action::Type::start_app, .param = AppParam { .package = package } });
+    auto id = post_start_app_impl(package);
     return wait(id) == MaaStatus_Succeeded;
 }
 
 bool ControllerAgent::stop_app(const std::string& package)
 {
-    auto id = post({ .type = Action::Type::stop_app, .param = AppParam { .package = package } });
+    auto id = post_stop_app_impl(package);
     return wait(id) == MaaStatus_Succeeded;
 }
 
@@ -364,6 +379,18 @@ MaaCtrlId ControllerAgent::post_touch_up_impl(int contact)
 {
     TouchParam param { .contact = contact };
     return post({ .type = Action::Type::touch_up, .param = std::move(param) });
+}
+
+MaaCtrlId ControllerAgent::post_key_down_impl(int keycode)
+{
+    ClickKeyParam param { .keycode = keycode };
+    return post({ .type = Action::Type::key_down, .param = std::move(param) });
+}
+
+MaaCtrlId ControllerAgent::post_key_up_impl(int keycode)
+{
+    ClickKeyParam param { .keycode = keycode };
+    return post({ .type = Action::Type::key_up, .param = std::move(param) });
 }
 
 bool ControllerAgent::handle_connect()
@@ -594,6 +621,40 @@ bool ControllerAgent::handle_stop_app(const AppParam& param)
     if (recording()) {
         json::value info = param;
         info |= { { "type", "stop_app" } };
+        append_recording(std::move(info), start_time, ret);
+    }
+    return ret;
+}
+
+bool ControllerAgent::handle_key_down(const ClickKeyParam& param)
+{
+    std::chrono::steady_clock::time_point start_time;
+    if (recording()) {
+        start_time = std::chrono::steady_clock::now();
+    }
+
+    bool ret = _key_down(param);
+
+    if (recording()) {
+        json::value info = param;
+        info |= { { "type", "key_down" } };
+        append_recording(std::move(info), start_time, ret);
+    }
+    return ret;
+}
+
+bool ControllerAgent::handle_key_up(const ClickKeyParam& param)
+{
+    std::chrono::steady_clock::time_point start_time;
+    if (recording()) {
+        start_time = std::chrono::steady_clock::now();
+    }
+
+    bool ret = _key_up(param);
+
+    if (recording()) {
+        json::value info = param;
+        info |= { { "type", "key_up" } };
         append_recording(std::move(info), start_time, ret);
     }
     return ret;
