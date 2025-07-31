@@ -30,6 +30,8 @@ public:
     virtual MaaTaskId post_stop() override;
     virtual bool stopping() const override;
 
+    virtual bool start_debug_server() override;
+
     virtual MaaResource* resource() const override;
     virtual MaaController* controller() const override;
 
