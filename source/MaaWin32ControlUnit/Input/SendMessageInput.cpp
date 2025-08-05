@@ -1,6 +1,6 @@
 #include "SendMessageInput.h"
 
-#include "Utils/Codec.h"
+#include "Utils/Encoding.h"
 #include "Utils/Logger.h"
 #include "Utils/MicroControl.hpp"
 #include "Utils/Platform.h"

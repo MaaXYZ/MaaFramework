@@ -6,7 +6,7 @@
 #include "RemoteInstance/RemoteContext.h"
 #include "Utils/Buffer/ImageBuffer.hpp"
 #include "Utils/Buffer/StringBuffer.hpp"
-#include "Utils/Codec.h"
+#include "Utils/Encoding.h"
 #include "Utils/Logger.h"
 
 MAA_AGENT_SERVER_NS_BEGIN

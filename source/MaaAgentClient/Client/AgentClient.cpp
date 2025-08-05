@@ -8,7 +8,7 @@
 #include "Utils/Buffer/ImageBuffer.hpp"
 #include "Utils/Buffer/ListBuffer.hpp"
 #include "Utils/Buffer/StringBuffer.hpp"
-#include "Utils/Codec.h"
+#include "Utils/Encoding.h"
 #include "Utils/Logger.h"
 #include "Utils/Platform.h"
 #include "Utils/Uuid.h"

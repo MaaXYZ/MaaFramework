@@ -11,7 +11,7 @@
 #include <sys/utsname.h>
 #endif
 
-#include "Utils/Codec.h"
+#include "Utils/Encoding.h"
 #include "Utils/ImageIo.h"
 #include "Utils/Platform.h"
 #include "Utils/Uuid.h"

@@ -2,7 +2,7 @@
 
 #include "PipelineTypesV2.h"
 #include "Utils/Logger.h"
-#include "Utils/Codec.h"
+#include "Utils/Encoding.h"
 
 MAA_RES_NS_BEGIN
 

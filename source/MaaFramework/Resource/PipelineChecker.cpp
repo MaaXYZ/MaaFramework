@@ -3,7 +3,7 @@
 #include "Utils/Logger.h"
 #include "Utils/Platform.h"
 #include "Utils/StringMisc.hpp"
-#include "Utils/Codec.h"
+#include "Utils/Encoding.h"
 
 MAA_RES_NS_BEGIN
 

@@ -1,7 +1,7 @@
 #include "PipelineParser.h"
 
 #include "PipelineTypesV2.h"
-#include "Utils/Codec.h"
+#include "Utils/Encoding.h"
 #include "Utils/Logger.h"
 #include "Utils/Platform.h"
 #include "Utils/StringMisc.hpp"
