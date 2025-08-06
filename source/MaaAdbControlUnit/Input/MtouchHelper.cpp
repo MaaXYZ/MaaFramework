@@ -120,7 +120,7 @@ bool MtouchHelper::touch_move(int contact, int x, int y, int pressure)
 
     auto [touch_x, touch_y] = screen_to_touch(x, y);
 
-    LogInfo << VAR(contact) << VAR(x) << VAR(y) << VAR(touch_x) << VAR(touch_y);
+    // LogInfo << VAR(contact) << VAR(x) << VAR(y) << VAR(touch_x) << VAR(touch_y);
 
     bool ret = pipe_ios_->write(std::format(kMoveFormat, contact, touch_x, touch_y, pressure));
 

@@ -81,7 +81,7 @@ bool SeizeInput::touch_move(int contact, int x, int y, int pressure)
         ensure_foreground();
         ClientToScreen(hwnd_, &point);
     }
-    LogInfo << VAR(contact) << VAR(x) << VAR(y) << VAR(pressure) << VAR(point.x) << VAR(point.y) << VAR_VOIDP(hwnd_);
+    // LogInfo << VAR(contact) << VAR(x) << VAR(y) << VAR(pressure) << VAR(point.x) << VAR(point.y) << VAR_VOIDP(hwnd_);
 
     SetCursorPos(point.x, point.y);
 

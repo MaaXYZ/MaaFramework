@@ -66,7 +66,7 @@ bool SendMessageInput::touch_down(int contact, int x, int y, int pressure)
 
 bool SendMessageInput::touch_move(int contact, int x, int y, int pressure)
 {
-    LogInfo << VAR(contact) << VAR(x) << VAR(y) << VAR(pressure);
+    // LogInfo << VAR(contact) << VAR(x) << VAR(y) << VAR(pressure);
 
     std::ignore = pressure;
 
