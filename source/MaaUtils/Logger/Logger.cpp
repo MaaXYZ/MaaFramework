@@ -97,10 +97,6 @@ void Logger::set_stdout_level(MaaLoggingLevel level)
 
 void Logger::flush()
 {
-    internal_dbg() << kSplitLine;
-    internal_dbg() << "Flush log";
-    internal_dbg() << kSplitLine;
-
     bool rotated = rotate();
     open(!rotated);
 
@@ -225,6 +221,23 @@ void Logger::log_proc_info()
     internal_dbg() << "Working" << std::filesystem::current_path();
     internal_dbg() << "Logging" << log_path_;
     internal_dbg() << kSplitLine;
+}
+
+void Logger::count_and_check_flush()
+{
+    static constexpr size_t kMaxCount = 1'000'000;
+
+    if (++log_count_ < kMaxCount) {
+        return;
+    }
+
+    log_count_ = 0;
+
+    internal_dbg() << kSplitLine;
+    internal_dbg() << "Too many logs, flushing...";
+    internal_dbg() << kSplitLine;
+
+    flush();
 }
 
 LogStream Logger::internal_dbg()
