@@ -55,7 +55,7 @@ class Controller:
         )
         return self._gen_ctrl_job(ctrl_id)
 
-    def post_press_key(self, key: int) -> Job:
+    def post_click_key(self, key: int) -> Job:
         ctrl_id = Library.framework().MaaControllerPostPressKey(self._handle, key)
         return self._gen_ctrl_job(ctrl_id)
 
@@ -440,7 +440,7 @@ class CustomController(Controller):
             CustomController._c_touch_down_agent,
             CustomController._c_touch_move_agent,
             CustomController._c_touch_up_agent,
-            CustomController._c_press_key_agent,
+            CustomController._c_click_key_agent,
             CustomController._c_input_text_agent,
         )
 
@@ -514,7 +514,7 @@ class CustomController(Controller):
         raise NotImplementedError
 
     @abstractmethod
-    def press_key(self, keycode: int) -> bool:
+    def click_key(self, keycode: int) -> bool:
         raise NotImplementedError
 
     @abstractmethod
@@ -704,7 +704,7 @@ class CustomController(Controller):
 
     @staticmethod
     @MaaCustomControllerCallbacks.PressKeyFunc
-    def _c_press_key_agent(
+    def _c_click_key_agent(
         c_keycode: ctypes.c_int32,
         trans_arg: ctypes.c_void_p,
     ) -> int:
@@ -716,7 +716,7 @@ class CustomController(Controller):
             ctypes.py_object,
         ).value
 
-        return int(self.press_key(int(c_keycode)))
+        return int(self.click_key(int(c_keycode)))
 
     @staticmethod
     @MaaCustomControllerCallbacks.InputTextFunc

@@ -47,7 +47,7 @@ export type ControllerNotify = {
         | 'touch_down'
         | 'touch_move'
         | 'touch_up'
-        | 'press_key'
+        | 'click_key'
         | 'input_text'
         | 'screencap'
         | 'start_app'
@@ -127,8 +127,8 @@ export class ControllerBase {
         )
     }
 
-    post_press_key(keycode: number) {
-        return new Job(this.#source, maa.controller_post_press_key(this.handle, keycode))
+    post_click_key(keycode: number) {
+        return new Job(this.#source, maa.controller_post_click_key(this.handle, keycode))
     }
 
     post_input_text(text: string) {
@@ -289,7 +289,7 @@ export abstract class CustomControllerActor {
         pressure: number
     ): maa.MaybePromise<boolean>
     abstract touch_up(contact: number): maa.MaybePromise<boolean>
-    abstract press_key(keycode: number): maa.MaybePromise<boolean>
+    abstract click_key(keycode: number): maa.MaybePromise<boolean>
     abstract input_text(text: string): maa.MaybePromise<boolean>
 }
 
@@ -330,7 +330,7 @@ export class CustomControllerActorDefaultImpl extends CustomControllerActor {
     touch_up(contact: number): maa.MaybePromise<boolean> {
         return false
     }
-    press_key(keycode: number): maa.MaybePromise<boolean> {
+    click_key(keycode: number): maa.MaybePromise<boolean> {
         return false
     }
     input_text(text: string): maa.MaybePromise<boolean> {

@@ -359,7 +359,7 @@ class MaaCustomControllerCallbacks(ctypes.Structure):
         ("touch_down", TouchDownFunc),
         ("touch_move", TouchMoveFunc),
         ("touch_up", TouchUpFunc),
-        ("press_key", PressKeyFunc),
+        ("click_key", PressKeyFunc),
         ("input_text", InputTextFunc),
     ]
 

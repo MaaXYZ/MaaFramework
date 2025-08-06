@@ -338,7 +338,7 @@ inline MaaBool CustomControllerPressKey(int32_t keycode, void* trans_arg)
     auto ctx = reinterpret_cast<CallbackContext*>(trans_arg);
 
     auto res = ctx->Call<bool>(
-        [=](auto env, auto fn) { return fn.Call({ Napi::String::New(env, "press_key"), Napi::Number::New(env, keycode) }); },
+        [=](auto env, auto fn) { return fn.Call({ Napi::String::New(env, "click_key"), Napi::Number::New(env, keycode) }); },
         [](Napi::Value res) {
             try {
                 return JSConvert<bool>::from_value(res);

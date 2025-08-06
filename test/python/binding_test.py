@@ -91,7 +91,7 @@ class MyAction(CustomAction):
         controller.post_click(191, 98).wait()
         controller.post_swipe(100, 200, 300, 400, 100).wait()
         controller.post_input_text("Hello World!").wait()
-        controller.post_press_key(32).wait()
+        controller.post_click_key(32).wait()
         controller.post_touch_down(1, 100, 100, 0).wait()
         controller.post_touch_move(1, 200, 200, 0).wait()
         controller.post_touch_up(1).wait()
@@ -172,7 +172,7 @@ def api_test():
 
     stop_job = tasker.post_stop()
     stopping = tasker.stopping
-    
+
     print(f"stopping1: {stopping}")
     if not stop_job.wait().succeeded:
         raise RuntimeError("post_stop failed")
@@ -221,7 +221,7 @@ def custom_ctrl_test():
     ret &= controller.post_touch_down(1, 100, 100, 0).wait().succeeded
     ret &= controller.post_touch_move(1, 200, 200, 0).wait().succeeded
     ret &= controller.post_touch_up(1).wait().succeeded
-    ret &= controller.post_press_key(32).wait().succeeded
+    ret &= controller.post_click_key(32).wait().succeeded
     ret &= controller.post_input_text("Hello World!").wait().succeeded
 
     print(f"controller.count: {controller.count}, ret: {ret}")
@@ -313,8 +313,8 @@ class MyController(CustomController):
         self.count += 1
         return True
 
-    def press_key(self, keycode: int) -> bool:
-        print(f"on MyController.press_key, keycode: {keycode}")
+    def click_key(self, keycode: int) -> bool:
+        print(f"on MyController.click_key, keycode: {keycode}")
         self.count += 1
         return True
 

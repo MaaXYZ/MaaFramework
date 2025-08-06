@@ -64,7 +64,7 @@ export type CustomControllerParamResultMap = {
     touch_down: [[contact: number, x: number, y: number, pressure: number], boolean]
     touch_move: [[contact: number, x: number, y: number, pressure: number], boolean]
     touch_up: [[contact: number], boolean]
-    press_key: [[keycode: number], boolean]
+    click_key: [[keycode: number], boolean]
     input_text: [[text: string], boolean]
 }
 export type CustomControllerCallback = (
@@ -168,7 +168,7 @@ export declare function controller_post_swipe(
     y2: number,
     duration: number
 ): CtrlId
-export declare function controller_post_press_key(handle: ControllerHandle, keycode: number): CtrlId
+export declare function controller_post_click_key(handle: ControllerHandle, keycode: number): CtrlId
 export declare function controller_post_input_text(handle: ControllerHandle, text: string): CtrlId
 export declare function controller_post_start_app(handle: ControllerHandle, intent: string): CtrlId
 export declare function controller_post_stop_app(handle: ControllerHandle, intent: string): CtrlId
