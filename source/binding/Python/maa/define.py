@@ -338,7 +338,7 @@ class MaaCustomControllerCallbacks(ctypes.Structure):
         ctypes.c_int32,
         ctypes.c_void_p,
     )
-    PressKeyFunc = FUNCTYPE(
+    ClickKeyFunc = FUNCTYPE(
         MaaBool,
         ctypes.c_int32,
         ctypes.c_void_p,
@@ -346,6 +346,16 @@ class MaaCustomControllerCallbacks(ctypes.Structure):
     InputTextFunc = FUNCTYPE(
         MaaBool,
         ctypes.c_char_p,
+        ctypes.c_void_p,
+    )
+    KeyDownFunc = FUNCTYPE(
+        MaaBool,
+        ctypes.c_int32,
+        ctypes.c_void_p,
+    )
+    KeyUpFunc = FUNCTYPE(
+        MaaBool,
+        ctypes.c_int32,
         ctypes.c_void_p,
     )
     _fields_ = [
@@ -359,8 +369,10 @@ class MaaCustomControllerCallbacks(ctypes.Structure):
         ("touch_down", TouchDownFunc),
         ("touch_move", TouchMoveFunc),
         ("touch_up", TouchUpFunc),
-        ("click_key", PressKeyFunc),
+        ("click_key", ClickKeyFunc),
         ("input_text", InputTextFunc),
+        ("key_down", KeyDownFunc),
+        ("key_up", KeyUpFunc),
     ]
 
 

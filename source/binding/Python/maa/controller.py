@@ -727,7 +727,7 @@ class CustomController(Controller):
         return int(self.touch_up(int(c_contact)))
 
     @staticmethod
-    @MaaCustomControllerCallbacks.PressKeyFunc
+    @MaaCustomControllerCallbacks.ClickKeyFunc
     def _c_click_key_agent(
         c_keycode: ctypes.c_int32,
         trans_arg: ctypes.c_void_p,
@@ -741,6 +741,38 @@ class CustomController(Controller):
         ).value
 
         return int(self.click_key(int(c_keycode)))
+
+    @staticmethod
+    @MaaCustomControllerCallbacks.KeyDownFunc
+    def _c_key_down_agent(
+        c_keycode: ctypes.c_int32,
+        trans_arg: ctypes.c_void_p,
+    ) -> int:
+        if not trans_arg:
+            return int(False)
+
+        self: CustomController = ctypes.cast(
+            trans_arg,
+            ctypes.py_object,
+        ).value
+
+        return int(self.key_down(int(c_keycode)))
+
+    @staticmethod
+    @MaaCustomControllerCallbacks.KeyUpFunc
+    def _c_key_up_agent(
+        c_keycode: ctypes.c_int32,
+        trans_arg: ctypes.c_void_p,
+    ) -> int:
+        if not trans_arg:
+            return int(False)
+
+        self: CustomController = ctypes.cast(
+            trans_arg,
+            ctypes.py_object,
+        ).value
+
+        return int(self.key_up(int(c_keycode)))
 
     @staticmethod
     @MaaCustomControllerCallbacks.InputTextFunc

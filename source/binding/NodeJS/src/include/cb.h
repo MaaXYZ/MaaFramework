@@ -333,7 +333,7 @@ inline MaaBool CustomControllerTouchUp(int32_t contact, void* trans_arg)
     return res;
 }
 
-inline MaaBool CustomControllerPressKey(int32_t keycode, void* trans_arg)
+inline MaaBool CustomControllerClickKey(int32_t keycode, void* trans_arg)
 {
     auto ctx = reinterpret_cast<CallbackContext*>(trans_arg);
 

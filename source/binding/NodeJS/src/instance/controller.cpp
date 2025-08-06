@@ -89,7 +89,7 @@ std::optional<Napi::External<ControllerInfo>>
     static MaaCustomControllerCallbacks custom_controller_api = {
         CustomControllerConnect,   CustomControllerRequestUUID, CustomControllerStartApp, CustomControllerStopApp,
         CustomControllerScreencap, CustomControllerClick,       CustomControllerSwipe,    CustomControllerTouchDown,
-        CustomControllerTouchMove, CustomControllerTouchUp,     CustomControllerPressKey, CustomControllerInputText
+        CustomControllerTouchMove, CustomControllerTouchUp,     CustomControllerClickKey, CustomControllerInputText
     };
 
     MaaNotificationCallback cb = nullptr;
