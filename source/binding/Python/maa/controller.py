@@ -547,6 +547,14 @@ class CustomController(Controller):
     def input_text(self, text: str) -> bool:
         raise NotImplementedError
 
+    @abstractmethod
+    def key_down(self, keycode: int) -> bool:
+        raise NotImplementedError
+
+    @abstractmethod
+    def key_up(self, keycode: int) -> bool:
+        raise NotImplementedError
+
     @staticmethod
     @MaaCustomControllerCallbacks.ConnectFunc
     def _c_connect_agent(

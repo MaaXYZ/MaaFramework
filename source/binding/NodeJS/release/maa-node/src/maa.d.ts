@@ -66,6 +66,8 @@ export type CustomControllerParamResultMap = {
     touch_up: [[contact: number], boolean]
     click_key: [[keycode: number], boolean]
     input_text: [[text: string], boolean]
+    key_down: [[keycode: number], boolean]
+    key_up: [[keycode: number], boolean]
 }
 export type CustomControllerCallback = (
     action: keyof CustomControllerParamResultMap,

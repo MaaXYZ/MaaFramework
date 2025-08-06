@@ -52,6 +52,8 @@ export type ControllerNotify = {
         | 'screencap'
         | 'start_app'
         | 'stop_app'
+        | 'key_down'
+        | 'key_up'
     ctrl_id: maa.CtrlId
     uuid: string
 }
@@ -297,6 +299,8 @@ export abstract class CustomControllerActor {
     abstract touch_up(contact: number): maa.MaybePromise<boolean>
     abstract click_key(keycode: number): maa.MaybePromise<boolean>
     abstract input_text(text: string): maa.MaybePromise<boolean>
+    abstract key_down(keycode: number): maa.MaybePromise<boolean>
+    abstract key_up(keycode: number): maa.MaybePromise<boolean>
 }
 
 export class CustomControllerActorDefaultImpl extends CustomControllerActor {
@@ -340,6 +344,12 @@ export class CustomControllerActorDefaultImpl extends CustomControllerActor {
         return false
     }
     input_text(text: string): maa.MaybePromise<boolean> {
+        return false
+    }
+    key_down(keycode: number): maa.MaybePromise<boolean> {
+        return false
+    }
+    key_up(keycode: number): maa.MaybePromise<boolean> {
         return false
     }
 }
