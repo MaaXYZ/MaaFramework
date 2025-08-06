@@ -130,6 +130,12 @@ export class ControllerBase {
     post_click_key(keycode: number) {
         return new Job(this.#source, maa.controller_post_click_key(this.handle, keycode))
     }
+    post_key_down(keycode: number) {
+        return new Job(this.#source, maa.controller_post_key_down(this.handle, keycode))
+    }
+    post_key_up(keycode: number) {
+        return new Job(this.#source, maa.controller_post_key_up(this.handle, keycode))
+    }
 
     post_input_text(text: string) {
         return new Job(this.#source, maa.controller_post_input_text(this.handle, text))

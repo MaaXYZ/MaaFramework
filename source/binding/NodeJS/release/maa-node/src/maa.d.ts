@@ -169,6 +169,8 @@ export declare function controller_post_swipe(
     duration: number
 ): CtrlId
 export declare function controller_post_click_key(handle: ControllerHandle, keycode: number): CtrlId
+export declare function controller_post_key_down(handle: ControllerHandle, keycode: number): CtrlId
+export declare function controller_post_key_up(handle: ControllerHandle, keycode: number): CtrlId
 export declare function controller_post_input_text(handle: ControllerHandle, text: string): CtrlId
 export declare function controller_post_start_app(handle: ControllerHandle, intent: string): CtrlId
 export declare function controller_post_stop_app(handle: ControllerHandle, intent: string): CtrlId

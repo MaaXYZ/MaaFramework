@@ -55,8 +55,22 @@ class Controller:
         )
         return self._gen_ctrl_job(ctrl_id)
 
+    def post_press_key(self, key: int) -> Job:
+        """
+        Deprecated: Use post_click_key instead.
+        """
+        return self.post_click_key(key)
+
     def post_click_key(self, key: int) -> Job:
-        ctrl_id = Library.framework().MaaControllerPostPressKey(self._handle, key)
+        ctrl_id = Library.framework().MaaControllerPostClickKey(self._handle, key)
+        return self._gen_ctrl_job(ctrl_id)
+
+    def post_key_down(self, key: int) -> Job:
+        ctrl_id = Library.framework().MaaControllerPostKeyDown(self._handle, key)
+        return self._gen_ctrl_job(ctrl_id)
+
+    def post_key_up(self, key: int) -> Job:
+        ctrl_id = Library.framework().MaaControllerPostKeyUp(self._handle, key)
         return self._gen_ctrl_job(ctrl_id)
 
     def post_input_text(self, text: str) -> Job:
@@ -216,12 +230,22 @@ class Controller:
             c_int32,
         ]
 
-        Library.framework().MaaControllerPostPressKey.restype = MaaCtrlId
-        Library.framework().MaaControllerPostPressKey.argtypes = [
+        Library.framework().MaaControllerPostClickKey.restype = MaaCtrlId
+        Library.framework().MaaControllerPostClickKey.argtypes = [
             MaaControllerHandle,
             c_int32,
         ]
 
+        Library.framework().MaaControllerPostKeyDown.restype = MaaCtrlId
+        Library.framework().MaaControllerPostKeyDown.argtypes = [
+            MaaControllerHandle,
+            c_int32,
+        ]
+        Library.framework().MaaControllerPostKeyUp.restype = MaaCtrlId
+        Library.framework().MaaControllerPostKeyUp.argtypes = [
+            MaaControllerHandle,
+            c_int32,
+        ]
         Library.framework().MaaControllerPostInputText.restype = MaaCtrlId
         Library.framework().MaaControllerPostInputText.argtypes = [
             MaaControllerHandle,
