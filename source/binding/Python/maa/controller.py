@@ -466,6 +466,8 @@ class CustomController(Controller):
             CustomController._c_touch_up_agent,
             CustomController._c_click_key_agent,
             CustomController._c_input_text_agent,
+            CustomController._c_key_down_agent,
+            CustomController._c_key_up_agent,
         )
 
         self._handle = Library.framework().MaaCustomControllerCreate(

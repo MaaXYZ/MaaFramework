@@ -1371,7 +1371,7 @@ bool AgentClient::handle_controller_post_key_up(const json::value& j)
         LogError << "controller not found" << VAR(req.controller_id);
         return false;
     }
-    MaaCtrlId ctrl_id = controller->post_key_down(req.keycode);
+    MaaCtrlId ctrl_id = controller->post_key_up(req.keycode);
     ControllerPostKeyUpReverseResponse resp {
         .ctrl_id = ctrl_id,
     };
