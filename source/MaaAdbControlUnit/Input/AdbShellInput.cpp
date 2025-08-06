@@ -12,7 +12,7 @@ bool AdbShellInput::parse(const json::value& config)
     static const json::array kDefaultSwipeArgv = {
         "{ADB}", "-s", "{ADB_SERIAL}", "shell", "input swipe {X1} {Y1} {X2} {Y2} {DURATION}",
     };
-    static const json::array kDefaultPressKeyArgv = {
+    static const json::array kDefaultClickKeyArgv = {
         "{ADB}", "-s", "{ADB_SERIAL}", "shell", "input keyevent {KEY}",
     };
     static const json::array kDefaultInputTextArgv = {
@@ -20,7 +20,7 @@ bool AdbShellInput::parse(const json::value& config)
     };
 
     return parse_command("Click", config, kDefaultClickArgv, click_argv_) && parse_command("Swipe", config, kDefaultSwipeArgv, swipe_argv_)
-           && parse_command("PressKey", config, kDefaultPressKeyArgv, press_key_argv_)
+           && parse_command("ClickKey", config, kDefaultClickKeyArgv, click_key_argv_)
            && parse_command("InputText", config, kDefaultInputTextArgv, input_text_argv_);
 }
 
@@ -59,12 +59,6 @@ bool AdbShellInput::swipe(int x1, int y1, int x2, int y2, int duration)
     return output_opt && output_opt->empty();
 }
 
-bool AdbShellInput::multi_swipe(const std::vector<SwipeParam>& swipes)
-{
-    LogError << "AdbShellInput not supports" << VAR(swipes.size());
-    return false;
-}
-
 bool AdbShellInput::touch_down(int contact, int x, int y, int pressure)
 {
     LogError << "AdbShellInput not supports" << VAR(contact) << VAR(x) << VAR(y) << VAR(pressure);
@@ -83,13 +77,13 @@ bool AdbShellInput::touch_up(int contact)
     return false;
 }
 
-bool AdbShellInput::press_key(int key)
+bool AdbShellInput::click_key(int key)
 {
     LogInfo << VAR(key);
 
     merge_replacement({ { "{KEY}", std::to_string(key) } });
 
-    auto argv_opt = press_key_argv_.gen(argv_replace_);
+    auto argv_opt = click_key_argv_.gen(argv_replace_);
     if (!argv_opt) {
         return false;
     }
@@ -111,6 +105,18 @@ bool AdbShellInput::input_text(const std::string& text)
 
     auto output_opt = startup_and_read_pipe(*argv_opt);
     return output_opt && output_opt->empty();
+}
+
+bool AdbShellInput::key_down(int key)
+{
+    LogError << "AdbShellInput not supports" << VAR(key);
+    return false;
+}
+
+bool AdbShellInput::key_up(int key)
+{
+    LogError << "AdbShellInput not supports" << VAR(key);
+    return false;
 }
 
 MAA_CTRL_UNIT_NS_END

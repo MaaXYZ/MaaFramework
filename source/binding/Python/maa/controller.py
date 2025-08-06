@@ -56,7 +56,21 @@ class Controller:
         return self._gen_ctrl_job(ctrl_id)
 
     def post_press_key(self, key: int) -> Job:
-        ctrl_id = Library.framework().MaaControllerPostPressKey(self._handle, key)
+        """
+        Deprecated: Use post_click_key instead.
+        """
+        return self.post_click_key(key)
+
+    def post_click_key(self, key: int) -> Job:
+        ctrl_id = Library.framework().MaaControllerPostClickKey(self._handle, key)
+        return self._gen_ctrl_job(ctrl_id)
+
+    def post_key_down(self, key: int) -> Job:
+        ctrl_id = Library.framework().MaaControllerPostKeyDown(self._handle, key)
+        return self._gen_ctrl_job(ctrl_id)
+
+    def post_key_up(self, key: int) -> Job:
+        ctrl_id = Library.framework().MaaControllerPostKeyUp(self._handle, key)
         return self._gen_ctrl_job(ctrl_id)
 
     def post_input_text(self, text: str) -> Job:
@@ -216,12 +230,22 @@ class Controller:
             c_int32,
         ]
 
-        Library.framework().MaaControllerPostPressKey.restype = MaaCtrlId
-        Library.framework().MaaControllerPostPressKey.argtypes = [
+        Library.framework().MaaControllerPostClickKey.restype = MaaCtrlId
+        Library.framework().MaaControllerPostClickKey.argtypes = [
             MaaControllerHandle,
             c_int32,
         ]
 
+        Library.framework().MaaControllerPostKeyDown.restype = MaaCtrlId
+        Library.framework().MaaControllerPostKeyDown.argtypes = [
+            MaaControllerHandle,
+            c_int32,
+        ]
+        Library.framework().MaaControllerPostKeyUp.restype = MaaCtrlId
+        Library.framework().MaaControllerPostKeyUp.argtypes = [
+            MaaControllerHandle,
+            c_int32,
+        ]
         Library.framework().MaaControllerPostInputText.restype = MaaCtrlId
         Library.framework().MaaControllerPostInputText.argtypes = [
             MaaControllerHandle,
@@ -440,8 +464,10 @@ class CustomController(Controller):
             CustomController._c_touch_down_agent,
             CustomController._c_touch_move_agent,
             CustomController._c_touch_up_agent,
-            CustomController._c_press_key_agent,
+            CustomController._c_click_key_agent,
             CustomController._c_input_text_agent,
+            CustomController._c_key_down_agent,
+            CustomController._c_key_up_agent,
         )
 
         self._handle = Library.framework().MaaCustomControllerCreate(
@@ -514,11 +540,19 @@ class CustomController(Controller):
         raise NotImplementedError
 
     @abstractmethod
-    def press_key(self, keycode: int) -> bool:
+    def click_key(self, keycode: int) -> bool:
         raise NotImplementedError
 
     @abstractmethod
     def input_text(self, text: str) -> bool:
+        raise NotImplementedError
+
+    @abstractmethod
+    def key_down(self, keycode: int) -> bool:
+        raise NotImplementedError
+
+    @abstractmethod
+    def key_up(self, keycode: int) -> bool:
         raise NotImplementedError
 
     @staticmethod
@@ -703,8 +737,8 @@ class CustomController(Controller):
         return int(self.touch_up(int(c_contact)))
 
     @staticmethod
-    @MaaCustomControllerCallbacks.PressKeyFunc
-    def _c_press_key_agent(
+    @MaaCustomControllerCallbacks.ClickKeyFunc
+    def _c_click_key_agent(
         c_keycode: ctypes.c_int32,
         trans_arg: ctypes.c_void_p,
     ) -> int:
@@ -716,7 +750,39 @@ class CustomController(Controller):
             ctypes.py_object,
         ).value
 
-        return int(self.press_key(int(c_keycode)))
+        return int(self.click_key(int(c_keycode)))
+
+    @staticmethod
+    @MaaCustomControllerCallbacks.KeyDownFunc
+    def _c_key_down_agent(
+        c_keycode: ctypes.c_int32,
+        trans_arg: ctypes.c_void_p,
+    ) -> int:
+        if not trans_arg:
+            return int(False)
+
+        self: CustomController = ctypes.cast(
+            trans_arg,
+            ctypes.py_object,
+        ).value
+
+        return int(self.key_down(int(c_keycode)))
+
+    @staticmethod
+    @MaaCustomControllerCallbacks.KeyUpFunc
+    def _c_key_up_agent(
+        c_keycode: ctypes.c_int32,
+        trans_arg: ctypes.c_void_p,
+    ) -> int:
+        if not trans_arg:
+            return int(False)
+
+        self: CustomController = ctypes.cast(
+            trans_arg,
+            ctypes.py_object,
+        ).value
+
+        return int(self.key_up(int(c_keycode)))
 
     @staticmethod
     @MaaCustomControllerCallbacks.InputTextFunc

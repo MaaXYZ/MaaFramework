@@ -2,21 +2,17 @@
 
 #include <filesystem>
 
-#include <meojson/json.hpp>
-
 #include "ControlUnit/ControlUnitAPI.h"
+#include "MaaFramework/Instance/MaaCustomController.h"
 
 MAA_CTRL_UNIT_NS_BEGIN
 
-class CarouselImage : public ControlUnitAPI
+class CustomControlUnitMgr : public ControlUnitAPI
 {
 public:
-    explicit CarouselImage(std::filesystem::path path)
-        : path_(std::move(path))
-    {
-    }
+    CustomControlUnitMgr(MaaCustomControllerCallbacks* controller, void* controller_arg);
 
-    virtual ~CarouselImage() = default;
+    virtual ~CustomControlUnitMgr() override = default;
 
 public: // from ControlUnitAPI
     virtual bool connect() override;
@@ -46,10 +42,8 @@ public: // from ControlUnitAPI
     virtual bool key_up(int key) override;
 
 private:
-    std::filesystem::path path_;
-    std::vector<cv::Mat> images_;
-    size_t image_index_ = 0;
-    cv::Size resolution_ {};
+    MaaCustomControllerCallbacks* controller_ = nullptr;
+    void* controller_arg_ = nullptr;
 };
 
 MAA_CTRL_UNIT_NS_END

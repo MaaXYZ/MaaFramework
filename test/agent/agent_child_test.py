@@ -93,7 +93,7 @@ class MyAction(CustomAction):
         controller.post_click(191, 98).wait()
         controller.post_swipe(100, 200, 300, 400, 100).wait()
         controller.post_input_text("Hello World!").wait()
-        controller.post_press_key(32).wait()
+        controller.post_click_key(32).wait()
         controller.post_touch_down(1, 100, 100, 0).wait()
         controller.post_touch_move(1, 200, 200, 0).wait()
         controller.post_touch_up(1).wait()

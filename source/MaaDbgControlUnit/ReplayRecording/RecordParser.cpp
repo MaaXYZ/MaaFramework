@@ -73,11 +73,12 @@ std::optional<Record> RecordParser::parse_record(const json::value& record_json,
     std::string type_str = record_json.get("type", std::string());
     static const std::unordered_map<std::string, Record::Action::Type> kTypeMap = {
         { "connect", Record::Action::Type::connect },       { "click", Record::Action::Type::click },
-        { "swipe", Record::Action::Type::swipe },           { "multi_swipe", Record::Action::Type::multi_swipe },
-        { "touch_down", Record::Action::Type::touch_down }, { "touch_move", Record::Action::Type::touch_move },
-        { "touch_up", Record::Action::Type::touch_up },     { "press_key", Record::Action::Type::press_key },
-        { "input_text", Record::Action::Type::input_text }, { "screencap", Record::Action::Type::screencap },
-        { "start_app", Record::Action::Type::start_app },   { "stop_app", Record::Action::Type::stop_app },
+        { "swipe", Record::Action::Type::swipe },           { "touch_down", Record::Action::Type::touch_down },
+        { "touch_move", Record::Action::Type::touch_move }, { "touch_up", Record::Action::Type::touch_up },
+        { "click_key", Record::Action::Type::click_key },   { "input_text", Record::Action::Type::input_text },
+        { "screencap", Record::Action::Type::screencap },   { "start_app", Record::Action::Type::start_app },
+        { "stop_app", Record::Action::Type::stop_app },     { "key_down", Record::Action::Type::key_down },
+        { "key_up", Record::Action::Type::key_up },
     };
 
     auto it = kTypeMap.find(type_str);
@@ -107,8 +108,10 @@ std::optional<Record> RecordParser::parse_record(const json::value& record_json,
     case Record::Action::Type::touch_up:
         action_opt = parse_touch(record_json);
         break;
-    case Record::Action::Type::press_key:
-        action_opt = parse_press_key(record_json);
+    case Record::Action::Type::click_key:
+    case Record::Action::Type::key_down:
+    case Record::Action::Type::key_up:
+        action_opt = parse_click_key(record_json);
         break;
     case Record::Action::Type::input_text:
         action_opt = parse_input_text(record_json);
@@ -286,9 +289,9 @@ std::optional<Record::Param> RecordParser::parse_touch(const json::value& record
     return result;
 }
 
-std::optional<Record::Param> RecordParser::parse_press_key(const json::value& record_json)
+std::optional<Record::Param> RecordParser::parse_click_key(const json::value& record_json)
 {
-    Record::PressKeyParam result;
+    Record::ClickKeyParam result;
 
     if (auto keycode_opt = record_json.find<int>("keycode")) {
         result.keycode = *keycode_opt;

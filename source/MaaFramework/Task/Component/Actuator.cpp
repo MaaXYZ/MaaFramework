@@ -44,11 +44,11 @@ bool Actuator::run(const cv::Rect& reco_hit, MaaRecoId reco_id, const PipelineDa
     case Type::MultiSwipe:
         ret = multi_swipe(std::get<MultiSwipeParam>(pipeline_data.action_param), reco_hit);
         break;
-    case Type::Key:
-        ret = press_key(std::get<KeyParam>(pipeline_data.action_param));
+    case Type::ClickKey:
+        ret = click_key(std::get<ClickKeyParam>(pipeline_data.action_param));
         break;
-    case Type::Text:
-        ret = input_text(std::get<TextParam>(pipeline_data.action_param));
+    case Type::InputText:
+        ret = input_text(std::get<InputTextParam>(pipeline_data.action_param));
         break;
     case Type::StartApp:
         ret = start_app(std::get<AppParam>(pipeline_data.action_param));
@@ -138,7 +138,7 @@ bool Actuator::multi_swipe(const MAA_RES_NS::Action::MultiSwipeParam& param, con
     return controller()->multi_swipe(dst);
 }
 
-bool Actuator::press_key(const MAA_RES_NS::Action::KeyParam& param)
+bool Actuator::click_key(const MAA_RES_NS::Action::ClickKeyParam& param)
 {
     if (!controller()) {
         LogError << "Controller is null";
@@ -146,12 +146,12 @@ bool Actuator::press_key(const MAA_RES_NS::Action::KeyParam& param)
     }
     bool ret = true;
     for (const auto& key : param.keys) {
-        ret &= controller()->press_key(key);
+        ret &= controller()->click_key(key);
     }
     return ret;
 }
 
-bool Actuator::input_text(const MAA_RES_NS::Action::TextParam& param)
+bool Actuator::input_text(const MAA_RES_NS::Action::InputTextParam& param)
 {
     if (!controller()) {
         LogError << "Controller is null";

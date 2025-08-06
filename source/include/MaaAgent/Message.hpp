@@ -754,21 +754,55 @@ struct ControllerPostSwipeReverseResponse
     MEO_JSONIZATION(ctrl_id, _ControllerPostSwipeReverseResponse);
 };
 
-struct ControllerPostPressKeyReverseRequest
+struct ControllerPostClickKeyReverseRequest
 {
     std::string controller_id;
     int32_t keycode = 0;
 
-    MessageTypePlaceholder _ControllerPostPressKeyReverseRequest = 1;
-    MEO_JSONIZATION(controller_id, keycode, _ControllerPostPressKeyReverseRequest);
+    MessageTypePlaceholder _ControllerPostClickKeyReverseRequest = 1;
+    MEO_JSONIZATION(controller_id, keycode, _ControllerPostClickKeyReverseRequest);
 };
 
-struct ControllerPostPressKeyReverseResponse
+struct ControllerPostClickKeyReverseResponse
 {
     int64_t ctrl_id = 0;
 
-    MessageTypePlaceholder _ControllerPostPressKeyReverseResponse = 1;
-    MEO_JSONIZATION(ctrl_id, _ControllerPostPressKeyReverseResponse);
+    MessageTypePlaceholder _ControllerPostClickKeyReverseResponse = 1;
+    MEO_JSONIZATION(ctrl_id, _ControllerPostClickKeyReverseResponse);
+};
+
+struct ControllerPostKeyDownReverseRequest
+{
+    std::string controller_id;
+    int32_t keycode = 0;
+
+    MessageTypePlaceholder _ControllerPostKeyDownReverseRequest = 1;
+    MEO_JSONIZATION(controller_id, keycode, _ControllerPostKeyDownReverseRequest);
+};
+
+struct ControllerPostKeyDownReverseResponse
+{
+    int64_t ctrl_id = 0;
+
+    MessageTypePlaceholder _ControllerPostKeyDownReverseResponse = 1;
+    MEO_JSONIZATION(ctrl_id, _ControllerPostKeyDownReverseResponse);
+};
+
+struct ControllerPostKeyUpReverseRequest
+{
+    std::string controller_id;
+    int32_t keycode = 0;
+
+    MessageTypePlaceholder _ControllerPostKeyUpReverseRequest = 1;
+    MEO_JSONIZATION(controller_id, keycode, _ControllerPostKeyUpReverseRequest);
+};
+
+struct ControllerPostKeyUpReverseResponse
+{
+    int64_t ctrl_id = 0;
+
+    MessageTypePlaceholder _ControllerPostKeyUpReverseResponse = 1;
+    MEO_JSONIZATION(ctrl_id, _ControllerPostKeyUpReverseResponse);
 };
 
 struct ControllerPostInputTextReverseRequest

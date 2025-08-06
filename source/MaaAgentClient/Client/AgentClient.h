@@ -73,7 +73,7 @@ private:
     bool handle_controller_post_connection(const json::value& j);
     bool handle_controller_post_click(const json::value& j);
     bool handle_controller_post_swipe(const json::value& j);
-    bool handle_controller_post_press_key(const json::value& j);
+    bool handle_controller_post_click_key(const json::value& j);
     bool handle_controller_post_input_text(const json::value& j);
     bool handle_controller_post_start_app(const json::value& j);
     bool handle_controller_post_stop_app(const json::value& j);
@@ -81,6 +81,8 @@ private:
     bool handle_controller_post_touch_down(const json::value& j);
     bool handle_controller_post_touch_move(const json::value& j);
     bool handle_controller_post_touch_up(const json::value& j);
+    bool handle_controller_post_key_down(const json::value& j);
+    bool handle_controller_post_key_up(const json::value& j);
     bool handle_controller_status(const json::value& j);
     bool handle_controller_wait(const json::value& j);
     bool handle_controller_connected(const json::value& j);

@@ -2,7 +2,6 @@
 
 #include "Utils/Encoding.h"
 #include "Utils/Logger.h"
-#include "Utils/MicroControl.hpp"
 #include "Utils/Platform.h"
 #include "Utils/SafeWindows.hpp"
 
@@ -10,44 +9,14 @@ MAA_CTRL_UNIT_NS_BEGIN
 
 bool SendMessageInput::click(int x, int y)
 {
-    LogInfo << VAR(x) << VAR(y);
-
-    if (!hwnd_) {
-        LogError << "hwnd_ is nullptr";
-        return false;
-    }
-
-    SendMessage(hwnd_, WM_LBUTTONDOWN, MK_LBUTTON, MAKELPARAM(x, y));
-    SendMessage(hwnd_, WM_LBUTTONUP, MK_LBUTTON, MAKELPARAM(x, y));
-
-    return true;
+    LogError << "deprecated" << VAR(x) << VAR(y);
+    return false;
 }
 
 bool SendMessageInput::swipe(int x1, int y1, int x2, int y2, int duration)
 {
-    LogInfo << VAR(x1) << VAR(y1) << VAR(x2) << VAR(y2) << VAR(duration);
-
-    if (!hwnd_) {
-        LogError << "hwnd_ is nullptr";
-        return false;
-    }
-
-    if (duration <= 0) {
-        LogWarn << "duration out of range" << VAR(duration);
-        duration = 200;
-    }
-
-    micro_swipe(
-        x1,
-        y2,
-        x2,
-        y2,
-        duration,
-        [&](int x, int y) { SendMessage(hwnd_, WM_LBUTTONDOWN, MK_LBUTTON, MAKELPARAM(x, y)); },
-        [&](int x, int y) { SendMessage(hwnd_, WM_MOUSEMOVE, MK_LBUTTON, MAKELPARAM(x, y)); },
-        [&](int x, int y) { SendMessage(hwnd_, WM_LBUTTONUP, MK_LBUTTON, MAKELPARAM(x, y)); });
-
-    return true;
+    LogError << "deprecated" << VAR(x1) << VAR(y1) << VAR(x2) << VAR(y2) << VAR(duration);
+    return false;
 }
 
 bool SendMessageInput::touch_down(int contact, int x, int y, int pressure)
@@ -97,7 +66,7 @@ bool SendMessageInput::touch_down(int contact, int x, int y, int pressure)
 
 bool SendMessageInput::touch_move(int contact, int x, int y, int pressure)
 {
-    LogInfo << VAR(contact) << VAR(x) << VAR(y) << VAR(pressure);
+    // LogInfo << VAR(contact) << VAR(x) << VAR(y) << VAR(pressure);
 
     std::ignore = pressure;
 
@@ -185,19 +154,10 @@ bool SendMessageInput::touch_up(int contact)
     return true;
 }
 
-bool SendMessageInput::press_key(int key)
+bool SendMessageInput::click_key(int key)
 {
-    LogInfo << VAR(key);
-
-    if (!hwnd_) {
-        LogError << "hwnd_ is nullptr";
-        return false;
-    }
-
-    SendMessageW(hwnd_, WM_KEYDOWN, key, 0);
-    SendMessageW(hwnd_, WM_KEYUP, key, 0);
-
-    return true;
+    LogError << "deprecated" << VAR(key);
+    return false;
 }
 
 bool SendMessageInput::input_text(const std::string& text)
@@ -214,6 +174,28 @@ bool SendMessageInput::input_text(const std::string& text)
         SendMessageW(hwnd_, WM_CHAR, ch, 0);
         SendMessageW(hwnd_, WM_KEYUP, ch, 0);
     }
+    return true;
+}
+
+bool SendMessageInput::key_down(int key)
+{
+    if (!hwnd_) {
+        LogError << "hwnd_ is nullptr";
+        return false;
+    }
+
+    SendMessageW(hwnd_, WM_KEYDOWN, key, 0);
+    return true;
+}
+
+bool SendMessageInput::key_up(int key)
+{
+    if (!hwnd_) {
+        LogError << "hwnd_ is nullptr";
+        return false;
+    }
+
+    SendMessageW(hwnd_, WM_KEYUP, key, 0);
     return true;
 }
 

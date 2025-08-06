@@ -89,7 +89,8 @@ std::optional<Napi::External<ControllerInfo>>
     static MaaCustomControllerCallbacks custom_controller_api = {
         CustomControllerConnect,   CustomControllerRequestUUID, CustomControllerStartApp, CustomControllerStopApp,
         CustomControllerScreencap, CustomControllerClick,       CustomControllerSwipe,    CustomControllerTouchDown,
-        CustomControllerTouchMove, CustomControllerTouchUp,     CustomControllerPressKey, CustomControllerInputText
+        CustomControllerTouchMove, CustomControllerTouchUp,     CustomControllerClickKey, CustomControllerInputText,
+        CustomControllerKeyDown,   CustomControllerKeyUp
     };
 
     MaaNotificationCallback cb = nullptr;
@@ -187,9 +188,19 @@ MaaCtrlId controller_post_swipe(Napi::External<ControllerInfo> info, int32_t x1,
     return MaaControllerPostSwipe(info.Data()->handle, x1, y1, x2, y2, duration);
 }
 
-MaaCtrlId controller_post_press_key(Napi::External<ControllerInfo> info, int32_t keycode)
+MaaCtrlId controller_post_click_key(Napi::External<ControllerInfo> info, int32_t keycode)
 {
-    return MaaControllerPostPressKey(info.Data()->handle, keycode);
+    return MaaControllerPostClickKey(info.Data()->handle, keycode);
+}
+
+MaaCtrlId controller_post_key_down(Napi::External<ControllerInfo> info, int32_t keycode)
+{
+    return MaaControllerPostKeyDown(info.Data()->handle, keycode);
+}
+
+MaaCtrlId controller_post_key_up(Napi::External<ControllerInfo> info, int32_t keycode)
+{
+    return MaaControllerPostKeyUp(info.Data()->handle, keycode);
 }
 
 MaaCtrlId controller_post_input_text(Napi::External<ControllerInfo> info, std::string text)
@@ -283,7 +294,9 @@ void load_instance_controller(Napi::Env env, Napi::Object& exports, Napi::Extern
     BIND(controller_post_connection);
     BIND(controller_post_click);
     BIND(controller_post_swipe);
-    BIND(controller_post_press_key);
+    BIND(controller_post_click_key);
+    BIND(controller_post_key_down);
+    BIND(controller_post_key_up);
     BIND(controller_post_input_text);
     BIND(controller_post_start_app);
     BIND(controller_post_stop_app);
