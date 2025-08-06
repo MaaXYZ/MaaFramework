@@ -2,7 +2,7 @@
 
 #include "MaaAgent/Message.hpp"
 #include "RemoteTasker.h"
-#include "Utils/Codec.h"
+#include "Utils/Encoding.h"
 
 MAA_AGENT_SERVER_NS_BEGIN
 

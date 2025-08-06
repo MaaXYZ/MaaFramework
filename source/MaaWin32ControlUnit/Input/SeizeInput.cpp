@@ -1,6 +1,6 @@
 #include "SeizeInput.h"
 
-#include "Utils/Codec.h"
+#include "Utils/Encoding.h"
 #include "Utils/Logger.h"
 #include "Utils/Platform.h"
 #include "Utils/SafeWindows.hpp"

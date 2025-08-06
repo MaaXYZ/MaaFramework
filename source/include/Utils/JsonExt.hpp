@@ -7,7 +7,7 @@
 
 #include "Utils/NoWarningCVMat.hpp"
 
-#include "Utils/Codec.h"
+#include "Utils/Encoding.h"
 #include "Utils/Platform.h"
 
 namespace json::ext

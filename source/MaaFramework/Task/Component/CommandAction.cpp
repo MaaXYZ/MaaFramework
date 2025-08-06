@@ -2,7 +2,7 @@
 
 #include <functional>
 
-#include "Utils/Codec.h"
+#include "Utils/Encoding.h"
 #include "Utils/IOStream/BoostIO.hpp"
 #include "Utils/ImageIo.h"
 #include "Utils/Logger.h"
