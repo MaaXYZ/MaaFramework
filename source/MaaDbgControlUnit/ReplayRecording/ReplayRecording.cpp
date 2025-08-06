@@ -4,6 +4,11 @@
 
 MAA_CTRL_UNIT_NS_BEGIN
 
+ReplayRecording::ReplayRecording(Recording recording)
+    : recording_(std::move(recording))
+{
+}
+
 ReplayRecording::~ReplayRecording()
 {
     if (record_index_ != recording_.records.size()) {

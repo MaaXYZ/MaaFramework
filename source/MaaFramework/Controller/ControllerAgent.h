@@ -161,9 +161,6 @@ public:
     bool start_app(const std::string& package);
     bool stop_app(const std::string& package);
 
-protected:
-    MessageNotifier notifier_;
-
 private:
     MaaCtrlId post_connection_impl();
     MaaCtrlId post_click_impl(int x, int y);
@@ -229,6 +226,7 @@ private:
     static std::minstd_rand rand_engine_;
 
     const std::shared_ptr<MAA_CTRL_UNIT_NS::ControlUnitAPI> control_unit_ = nullptr;
+    MessageNotifier notifier_;
 
     bool connected_ = false;
     std::mutex image_mutex_;
