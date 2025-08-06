@@ -76,7 +76,7 @@ private:
 
     void reinit();
     bool rotate();
-    void open();
+    void open(bool append = true);
     void close();
     void log_proc_info();
 
