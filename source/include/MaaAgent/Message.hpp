@@ -754,21 +754,21 @@ struct ControllerPostSwipeReverseResponse
     MEO_JSONIZATION(ctrl_id, _ControllerPostSwipeReverseResponse);
 };
 
-struct ControllerPostPressKeyReverseRequest
+struct ControllerPostClickKeyReverseRequest
 {
     std::string controller_id;
     int32_t keycode = 0;
 
-    MessageTypePlaceholder _ControllerPostPressKeyReverseRequest = 1;
-    MEO_JSONIZATION(controller_id, keycode, _ControllerPostPressKeyReverseRequest);
+    MessageTypePlaceholder _ControllerPostClickKeyReverseRequest = 1;
+    MEO_JSONIZATION(controller_id, keycode, _ControllerPostClickKeyReverseRequest);
 };
 
-struct ControllerPostPressKeyReverseResponse
+struct ControllerPostClickKeyReverseResponse
 {
     int64_t ctrl_id = 0;
 
-    MessageTypePlaceholder _ControllerPostPressKeyReverseResponse = 1;
-    MEO_JSONIZATION(ctrl_id, _ControllerPostPressKeyReverseResponse);
+    MessageTypePlaceholder _ControllerPostClickKeyReverseResponse = 1;
+    MEO_JSONIZATION(ctrl_id, _ControllerPostClickKeyReverseResponse);
 };
 
 struct ControllerPostInputTextReverseRequest
