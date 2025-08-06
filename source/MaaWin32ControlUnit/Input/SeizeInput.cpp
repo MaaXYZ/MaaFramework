@@ -75,6 +75,9 @@ bool SeizeInput::touch_down(int contact, int x, int y, int pressure)
 
 bool SeizeInput::touch_move(int contact, int x, int y, int pressure)
 {
+    std::ignore = contact;
+    std::ignore = pressure;
+
     POINT point = { x, y };
 
     if (hwnd_) {
