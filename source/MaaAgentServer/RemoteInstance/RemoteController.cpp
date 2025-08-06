@@ -170,6 +170,32 @@ MaaCtrlId RemoteController::post_touch_up(int contact)
     return resp_opt->ctrl_id;
 }
 
+MaaCtrlId RemoteController::post_key_down(int keycode)
+{
+    ControllerPostKeyDownReverseRequest req {
+        .controller_id = controller_id_,
+        .keycode = keycode,
+    };
+    auto resp_opt = server_.send_and_recv<ControllerPostKeyDownReverseResponse>(req);
+    if (!resp_opt) {
+        return MaaInvalidId;
+    }
+    return resp_opt->ctrl_id;
+}
+
+MaaCtrlId RemoteController::post_key_up(int keycode)
+{
+    ControllerPostKeyUpReverseRequest req {
+        .controller_id = controller_id_,
+        .keycode = keycode,
+    };
+    auto resp_opt = server_.send_and_recv<ControllerPostKeyUpReverseResponse>(req);
+    if (!resp_opt) {
+        return MaaInvalidId;
+    }
+    return resp_opt->ctrl_id;
+}
+
 MaaStatus RemoteController::status(MaaCtrlId ctrl_id) const
 {
     ControllerStatusReverseRequest req {

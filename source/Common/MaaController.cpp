@@ -145,6 +145,30 @@ MaaCtrlId MaaControllerPostTouchUp(MaaController* ctrl, int32_t contact)
     return ctrl->post_touch_up(contact);
 }
 
+MaaCtrlId MaaControllerPostKeyDown(MaaController* ctrl, int32_t keycode)
+{
+    LogFunc << VAR_VOIDP(ctrl) << VAR(keycode);
+
+    if (!ctrl) {
+        LogError << "handle is null";
+        return MaaInvalidId;
+    }
+
+    return ctrl->post_key_down(keycode);
+}
+
+MaaCtrlId MaaControllerPostKeyUp(MaaController* ctrl, int32_t keycode)
+{
+    LogFunc << VAR_VOIDP(ctrl) << VAR(keycode);
+
+    if (!ctrl) {
+        LogError << "handle is null";
+        return MaaInvalidId;
+    }
+
+    return ctrl->post_key_up(keycode);
+}
+
 MaaCtrlId MaaControllerPostScreencap(MaaController* ctrl)
 {
     LogFunc << VAR_VOIDP(ctrl);
