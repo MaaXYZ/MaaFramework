@@ -10,6 +10,7 @@
 
 #include "Base/AsyncRunner.hpp"
 #include "Common/MaaTypes.h"
+#include "ControlUnit/ControlUnitAPI.h"
 #include "Utils/MessageNotifier.hpp"
 #include "Utils/NoWarningCVMat.hpp"
 
@@ -102,7 +103,7 @@ std::ostream& operator<<(std::ostream& os, const Action& action);
 class ControllerAgent : public MaaController
 {
 public:
-    ControllerAgent(MaaNotificationCallback notify, void* notify_trans_arg);
+    ControllerAgent(std::shared_ptr<MAA_CTRL_UNIT_NS::ControlUnitAPI> control_unit, MaaNotificationCallback notify, void* notify_trans_arg);
     virtual ~ControllerAgent() override;
 
 public: // MaaController
@@ -159,22 +160,6 @@ public:
 
     bool start_app(const std::string& package);
     bool stop_app(const std::string& package);
-
-protected:
-    virtual bool _connect() = 0;
-    virtual std::optional<std::string> _request_uuid() = 0;
-    virtual bool _start_app(AppParam param) = 0;
-    virtual bool _stop_app(AppParam param) = 0;
-    virtual std::optional<cv::Mat> _screencap() = 0;
-    virtual bool _click(ClickParam param) = 0;
-    virtual bool _swipe(SwipeParam param) = 0;
-    virtual bool _touch_down(TouchParam param) = 0;
-    virtual bool _touch_move(TouchParam param) = 0;
-    virtual bool _touch_up(TouchParam param) = 0;
-    virtual bool _click_key(ClickKeyParam param) = 0;
-    virtual bool _input_text(InputTextParam param) = 0;
-    virtual bool _key_down(ClickKeyParam param) = 0;
-    virtual bool _key_up(ClickKeyParam param) = 0;
 
 protected:
     MessageNotifier notifier_;
@@ -242,6 +227,8 @@ private:
 
 private:
     static std::minstd_rand rand_engine_;
+
+    const std::shared_ptr<MAA_CTRL_UNIT_NS::ControlUnitAPI> control_unit_ = nullptr;
 
     bool connected_ = false;
     std::mutex image_mutex_;

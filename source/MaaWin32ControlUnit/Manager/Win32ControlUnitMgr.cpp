@@ -126,16 +126,6 @@ bool Win32ControlUnitMgr::is_touch_availabled() const
     return input_->is_touch_availabled();
 }
 
-bool Win32ControlUnitMgr::is_multi_touch_availabled() const
-{
-    if (!input_) {
-        LogError << "input_ is null";
-        return false;
-    }
-
-    return input_->is_multi_touch_availabled();
-}
-
 bool Win32ControlUnitMgr::touch_down(int contact, int x, int y, int pressure)
 {
     if (!input_) {

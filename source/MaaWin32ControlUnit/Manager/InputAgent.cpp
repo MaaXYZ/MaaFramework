@@ -54,16 +54,6 @@ bool InputAgent::is_touch_availabled() const
     return input_->is_touch_availabled();
 }
 
-bool InputAgent::is_multi_touch_availabled() const
-{
-    if (!input_) {
-        LogError << "input_ is nullptr";
-        return false;
-    }
-
-    return input_->is_multi_touch_availabled();
-}
-
 bool InputAgent::touch_down(int contact, int x, int y, int pressure)
 {
     if (!input_) {

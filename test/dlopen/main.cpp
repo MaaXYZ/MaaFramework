@@ -46,6 +46,17 @@ int main()
 
 #endif
 
+#ifdef WITH_CUSTOM_CONTROLLER
+
+    std::cout << "********** CustomControlUnitLibraryHolder::create_control_unit **********" << std::endl;
+    auto custom_handle = MAA_NS::CustomControlUnitLibraryHolder::create_control_unit(MaaCustomControllerType_CarouselImage, "./");
+    if (!custom_handle) {
+        std::cerr << "Failed to create custom control unit" << std::endl;
+        return -1;
+    }
+
+#endif
+
     std::cout << "********** Done **********" << std::endl;
     return 0;
 }

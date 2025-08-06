@@ -167,16 +167,6 @@ bool AdbControlUnitMgr::is_touch_availabled() const
     return input_->is_touch_availabled();
 }
 
-bool AdbControlUnitMgr::is_multi_touch_availabled() const
-{
-    if (!input_) {
-        LogError << "input_ is null";
-        return false;
-    }
-
-    return input_->is_multi_touch_availabled();
-}
-
 bool AdbControlUnitMgr::touch_down(int contact, int x, int y, int pressure)
 {
     if (!input_) {

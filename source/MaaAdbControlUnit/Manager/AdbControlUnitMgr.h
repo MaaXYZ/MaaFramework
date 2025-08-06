@@ -5,10 +5,10 @@
 #include "Base/UnitBase.h"
 #include "ControlUnit/ControlUnitAPI.h"
 #include "General/Activity.h"
+#include "General/AdbCommand.h"
 #include "General/Connection.h"
 #include "General/DeviceInfo.h"
 #include "General/DeviceList.h"
-#include "General/AdbCommand.h"
 #include "Utils/Dispatcher.hpp"
 
 MAA_CTRL_UNIT_NS_BEGIN
@@ -39,10 +39,9 @@ public: // from ControlUnitAPI
     virtual bool screencap(/*out*/ cv::Mat& image) override;
 
     virtual bool click(int x, int y) override;
-    virtual bool swipe(int x1, int y1, int x2, int y2, int duration) override;    
+    virtual bool swipe(int x1, int y1, int x2, int y2, int duration) override;
 
     virtual bool is_touch_availabled() const override;
-    virtual bool is_multi_touch_availabled() const override;
 
     virtual bool touch_down(int contact, int x, int y, int pressure) override;
     virtual bool touch_move(int contact, int x, int y, int pressure) override;

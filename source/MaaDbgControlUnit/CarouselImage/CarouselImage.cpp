@@ -108,11 +108,6 @@ bool CarouselImage::is_touch_availabled() const
     return true;
 }
 
-bool CarouselImage::is_multi_touch_availabled() const
-{
-    return true;
-}
-
 bool CarouselImage::touch_down(int contact, int x, int y, int pressure)
 {
     std::ignore = contact;
@@ -148,6 +143,23 @@ bool CarouselImage::click_key(int key)
 bool CarouselImage::input_text(const std::string& text)
 {
     std::ignore = text;
+    return true;
+}
+
+bool CarouselImage::is_key_down_up_availabled() const
+{
+    return true;
+}
+
+bool CarouselImage::key_down(int key)
+{
+    std::ignore = key;
+    return true;
+}
+
+bool CarouselImage::key_up(int key)
+{
+    std::ignore = key;
     return true;
 }
 

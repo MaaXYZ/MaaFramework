@@ -19,7 +19,6 @@ public: // from InputBase
     virtual bool swipe(int x1, int y1, int x2, int y2, int duration) override;
 
     virtual bool is_touch_availabled() const override { return false; }
-    virtual bool is_multi_touch_availabled() const override { return false; }
 
     virtual bool touch_down(int contact, int x, int y, int pressure) override;
     virtual bool touch_move(int contact, int x, int y, int pressure) override;
@@ -27,7 +26,7 @@ public: // from InputBase
 
     virtual bool click_key(int key) override;
     virtual bool input_text(const std::string& text) override;
-    
+
     virtual bool is_key_down_up_availabled() const override { return false; }
 
     virtual bool key_down(int key) override;

@@ -77,6 +77,7 @@ struct Record
         ConnectParam,
         ClickParam,
         SwipeParam,
+        std::vector<SwipeParam>,
         TouchParam,
         ClickKeyParam,
         InputTextParam,
@@ -91,6 +92,7 @@ struct Record
             connect,
             click,
             swipe,
+            multi_swipe,
             touch_down,
             touch_move,
             touch_up,
@@ -99,6 +101,8 @@ struct Record
             screencap,
             start_app,
             stop_app,
+            key_down,
+            key_up,
         } type = Type::invalid;
 
         Param param;
@@ -156,6 +160,12 @@ inline std::ostream& operator<<(std::ostream& os, Record::Action::Type type)
         break;
     case Record::Action::Type::stop_app:
         os << "stop_app";
+        break;
+    case Record::Action::Type::key_down:
+        os << "key_down";
+        break;
+    case Record::Action::Type::key_up:
+        os << "key_up";
         break;
     default:
         os << "Unknown Record::Action::Type" << static_cast<int>(type);

@@ -18,6 +18,7 @@ private:
     static std::optional<Record::Param> parse_connect(const json::value& record_json);
     static std::optional<Record::Param> parse_click(const json::value& record_json);
     static std::optional<Record::Param> parse_swipe(const json::value& record_json);
+    static std::optional<Record::Param> parse_multi_swipe(const json::value& record_json);
     static std::optional<Record::Param> parse_touch(const json::value& record_json);
     static std::optional<Record::Param> parse_click_key(const json::value& record_json);
     static std::optional<Record::Param> parse_input_text(const json::value& record_json);

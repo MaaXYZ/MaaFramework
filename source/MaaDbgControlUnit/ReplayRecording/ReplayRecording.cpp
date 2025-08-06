@@ -185,11 +185,6 @@ bool ReplayRecording::is_touch_availabled() const
     return false;
 }
 
-bool ReplayRecording::is_multi_touch_availabled() const
-{
-    return false;
-}
-
 bool ReplayRecording::touch_down(int contact, int x, int y, int pressure)
 {
     LogInfo << VAR(contact) << VAR(x) << VAR(y) << VAR(pressure);
@@ -324,6 +319,67 @@ bool ReplayRecording::input_text(const std::string& text)
 
     if (param.text != text) {
         LogError << "record text is not match" << VAR(param.text) << VAR(text) << VAR(record.raw_data);
+        return false;
+    }
+
+    sleep(record.cost);
+    ++record_index_;
+    return record.success;
+}
+
+bool ReplayRecording::is_key_down_up_availabled() const
+{
+    return false;
+}
+
+bool ReplayRecording::key_down(int key)
+{
+    LogInfo << VAR(key);
+
+    if (record_index_ >= recording_.records.size()) {
+        LogError << "record index out of range" << VAR(record_index_) << VAR(recording_.records.size());
+        return false;
+    }
+
+    const Record& record = recording_.records.at(record_index_);
+
+    if (record.action.type != Record::Action::Type::key_down) {
+        LogError << "record type is not key_down" << VAR(record.action.type) << VAR(record.raw_data);
+        return false;
+    }
+
+    auto param = std::get<Record::ClickKeyParam>(record.action.param);
+
+    if (param.keycode != key) {
+        LogError << "record key_down is not match" << VAR(param.keycode) << VAR(key) << VAR(record.raw_data);
+        return false;
+    }
+
+    sleep(record.cost);
+    ++record_index_;
+    return record.success;
+}
+
+bool ReplayRecording::key_up(int key)
+{
+    LogInfo << VAR(key);
+
+    if (record_index_ >= recording_.records.size()) {
+        LogError << "record index out of range" << VAR(record_index_) << VAR(recording_.records.size());
+        return false;
+    }
+
+    const Record& record = recording_.records.at(record_index_);
+
+    if (record.action.type != Record::Action::Type::key_up) {
+        LogError << "record type is not key_up" << VAR(record.action.type) << VAR(record.raw_data);
+        return false;
+    }
+
+    auto param = std::get<Record::ClickKeyParam>(record.action.param);
+
+    if (param.keycode != key) {
+        LogError << "record key_up is not match" << VAR(param.keycode) << VAR(key) << VAR(record.raw_data);
         return false;
     }
 

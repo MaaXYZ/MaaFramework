@@ -145,16 +145,6 @@ bool InputAgent::is_touch_availabled() const
     return active_unit_->is_touch_availabled();
 }
 
-bool InputAgent::is_multi_touch_availabled() const
-{
-    if (!active_unit_) {
-        LogError << "No available input method" << VAR(active_unit_);
-        return false;
-    }
-
-    return active_unit_->is_multi_touch_availabled();
-}
-
 bool InputAgent::touch_down(int contact, int x, int y, int pressure)
 {
     if (!active_unit_) {
@@ -204,7 +194,6 @@ bool InputAgent::input_text(const std::string& text)
 
     return active_unit_->input_text(text);
 }
-
 
 bool InputAgent::is_key_down_up_availabled() const
 {

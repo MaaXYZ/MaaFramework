@@ -26,7 +26,6 @@ public:
     virtual bool swipe(int x1, int y1, int x2, int y2, int duration) = 0;
 
     virtual bool is_touch_availabled() const = 0;
-    virtual bool is_multi_touch_availabled() const = 0;
 
     virtual bool touch_down(int contact, int x, int y, int pressure) = 0;
     virtual bool touch_move(int contact, int x, int y, int pressure) = 0;
@@ -61,3 +60,4 @@ MAA_CTRL_UNIT_NS_END
 using MaaControlUnitHandle = MAA_CTRL_UNIT_NS::ControlUnitAPI*;
 using MaaAdbControlUnitHandle = MAA_CTRL_UNIT_NS::AdbControlUnitAPI*;
 using MaaWin32ControlUnitHandle = MAA_CTRL_UNIT_NS::Win32ControlUnitAPI*;
+using MaaCustomControlUnitHandle = MAA_CTRL_UNIT_NS::ControlUnitAPI*;
