@@ -66,11 +66,12 @@ class MaaGlobalOptionEnum(IntEnum):
     # value: bool, eg: true; val_size: sizeof(bool)
     SaveDraw = 2
 
+    # Deprecated
     # Dump all screenshots and actions
     #
     # Recording will evaluate to true if any of this or MaaCtrlOptionEnum::MaaCtrlOption_Recording
     # is true. value: bool, eg: true; val_size: sizeof(bool)
-    Recording = 3
+    # Recording = 3
 
     # The level of log output to stdout
     #
@@ -105,10 +106,11 @@ class MaaCtrlOptionEnum(IntEnum):
     # value: bool, eg: true; val_size: sizeof(bool)
     ScreenshotUseRawSize = 3
 
+    # Deprecated
     # Dump all screenshots and actions
     # this option will || with MaaGlobalOptionEnum.Recording
     # value: bool, eg: true; val_size: sizeof(bool)
-    Recording = 5
+    # Recording = 5
 
 
 class MaaInferenceDeviceEnum(IntEnum):

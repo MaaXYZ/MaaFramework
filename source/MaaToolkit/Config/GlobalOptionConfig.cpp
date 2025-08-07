@@ -73,8 +73,6 @@ bool GlobalOptionConfig::apply_option()
 
     ret &= MaaSetGlobalOption(MaaGlobalOption_SaveDraw, &option_.save_draw, sizeof(option_.save_draw));
 
-    ret &= MaaSetGlobalOption(MaaGlobalOption_Recording, &option_.recording, sizeof(option_.recording));
-
     ret &= MaaSetGlobalOption(MaaGlobalOption_StdoutLevel, &option_.stdout_level, sizeof(option_.stdout_level));
 
     bool bret = ret;

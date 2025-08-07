@@ -136,14 +136,10 @@ class Tasker:
 
     @staticmethod
     def set_recording(recording: bool) -> bool:
-        cbool = ctypes.c_bool(recording)
-        return bool(
-            Library.framework().MaaSetGlobalOption(
-                MaaOption(MaaGlobalOptionEnum.Recording),
-                ctypes.pointer(cbool),
-                ctypes.sizeof(ctypes.c_bool),
-            )
-        )
+        """
+        Deprecated
+        """
+        return False
 
     @staticmethod
     def set_stdout_level(level: LoggingLevelEnum) -> bool:

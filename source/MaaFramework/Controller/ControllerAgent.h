@@ -206,10 +206,6 @@ private:
     bool handle_key_down(const ClickKeyParam& param);
     bool handle_key_up(const ClickKeyParam& param);
 
-    bool recording() const;
-    void init_recording();
-    void append_recording(json::value info, const std::chrono::steady_clock::time_point& start_time, bool success);
-
     MaaCtrlId post(Action action);
     void focus_id(MaaCtrlId id);
     bool check_stop();
@@ -229,7 +225,6 @@ private: // options
     bool set_image_target_long_side(MaaOptionValue value, MaaOptionValueSize val_size);
     bool set_image_target_short_side(MaaOptionValue value, MaaOptionValueSize val_size);
     bool set_image_use_raw_size(MaaOptionValue value, MaaOptionValueSize val_size);
-    bool set_recording(MaaOptionValue value, MaaOptionValueSize val_size);
 
 private:
     bool need_to_stop_ = false;
@@ -253,9 +248,6 @@ private:
     int image_raw_height_ = 0;
 
     std::string uuid_cache_;
-
-    bool recording_ = false;
-    std::filesystem::path recording_path_;
 
     std::set<AsyncRunner<Action>::Id> focus_ids_;
     std::mutex focus_ids_mutex_;

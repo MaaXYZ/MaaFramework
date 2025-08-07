@@ -17,12 +17,6 @@ export const Global = {
         }
     },
 
-    set recording(value: boolean) {
-        if (!maa.set_global_option_recording(value)) {
-            throw 'Global set recording failed'
-        }
-    },
-
     set stdout_level(value: keyof typeof maa.LoggingLevel) {
         if (!maa.set_global_option_stdout_level(maa.LoggingLevel[value])) {
             throw 'Global set stdout_level failed'

@@ -108,12 +108,6 @@ export class ControllerBase {
         }
     }
 
-    set recording(value: boolean) {
-        if (!maa.controller_set_option_recording(this.handle, value)) {
-            throw 'Controller set recording failed'
-        }
-    }
-
     post_connection() {
         return new Job(this.#source, maa.controller_post_connection(this.handle))
     }

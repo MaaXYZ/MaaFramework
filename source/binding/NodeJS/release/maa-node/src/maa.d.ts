@@ -152,10 +152,6 @@ export declare function controller_set_option_screenshot_use_raw_size(
     handle: ControllerHandle,
     value: boolean
 ): boolean
-export declare function controller_set_option_recording(
-    handle: ControllerHandle,
-    value: boolean
-): boolean
 export declare function controller_post_connection(handle: ControllerHandle): CtrlId
 export declare function controller_post_click(
     handle: ControllerHandle,
@@ -334,7 +330,6 @@ export declare function find_desktop(): Promise<
 export declare function version(): string
 export declare function set_global_option_log_dir(value: string): boolean
 export declare function set_global_option_save_draw(value: boolean): boolean
-export declare function set_global_option_recording(value: boolean): boolean
 export declare function set_global_option_stdout_level(value: LoggingLevel): boolean
 export declare function set_global_option_debug_mode(value: boolean): boolean
 

@@ -187,7 +187,6 @@ def api_test():
     running = tasker.running
 
     Tasker.set_save_draw(True)
-    Tasker.set_recording(True)
     Tasker.set_stdout_level(LoggingLevelEnum.All)
     Tasker.set_log_dir(".")
 

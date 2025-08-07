@@ -154,7 +154,6 @@ async function api_test() {
     const running = tasker.running
 
     maa.Global.save_draw = true
-    maa.Global.recording = true
     maa.Global.stdout_level = 'All'
     maa.Global.log_dir = '.'
 

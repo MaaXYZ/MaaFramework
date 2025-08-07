@@ -168,11 +168,6 @@ bool controller_set_option_screenshot_use_raw_size(Napi::External<ControllerInfo
     return MaaControllerSetOption(info.Data()->handle, MaaCtrlOptionEnum::MaaCtrlOption_ScreenshotUseRawSize, &flag, sizeof(flag));
 }
 
-bool controller_set_option_recording(Napi::External<ControllerInfo> info, bool flag)
-{
-    return MaaControllerSetOption(info.Data()->handle, MaaCtrlOptionEnum::MaaCtrlOption_Recording, &flag, sizeof(flag));
-}
-
 MaaCtrlId controller_post_connection(Napi::External<ControllerInfo> info)
 {
     return MaaControllerPostConnection(info.Data()->handle);
@@ -290,7 +285,6 @@ void load_instance_controller(Napi::Env env, Napi::Object& exports, Napi::Extern
     BIND(controller_set_option_screenshot_target_long_side);
     BIND(controller_set_option_screenshot_target_short_side);
     BIND(controller_set_option_screenshot_use_raw_size);
-    BIND(controller_set_option_recording);
     BIND(controller_post_connection);
     BIND(controller_post_click);
     BIND(controller_post_swipe);

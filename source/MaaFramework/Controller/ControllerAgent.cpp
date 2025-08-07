@@ -43,8 +43,6 @@ bool ControllerAgent::set_option(MaaCtrlOption key, MaaOptionValue value, MaaOpt
         return set_image_target_short_side(value, val_size);
     case MaaCtrlOption_ScreenshotUseRawSize:
         return set_image_use_raw_size(value, val_size);
-    case MaaCtrlOption_Recording:
-        return set_recording(value, val_size);
 
     default:
         LogError << "Unknown key" << VAR(key) << VAR(value);
@@ -234,15 +232,14 @@ bool ControllerAgent::multi_swipe(const std::vector<SwipeParamWithRect>& swipes)
     for (const auto& src : swipes) {
         auto p1 = rand_point(src.r1);
         auto p2 = rand_point(src.r2);
-        dst_vec.emplace_back(
-            SwipeParam {
-                .x1 = p1.x,
-                .y1 = p1.y,
-                .x2 = p2.x,
-                .y2 = p2.y,
-                .duration = static_cast<int>(src.duration),
-                .starting = static_cast<int>(src.starting),
-            });
+        dst_vec.emplace_back(SwipeParam {
+            .x1 = p1.x,
+            .y1 = p1.y,
+            .x2 = p2.x,
+            .y2 = p2.y,
+            .duration = static_cast<int>(src.duration),
+            .starting = static_cast<int>(src.starting),
+        });
     }
 
     auto id = post_multi_swipe_impl(dst_vec);
@@ -416,25 +413,9 @@ bool ControllerAgent::handle_connect()
         return false;
     }
 
-    auto start_time = std::chrono::steady_clock::now();
-    if (recording()) {
-        start_time = std::chrono::steady_clock::now();
-
-        init_recording();
-    }
-
     connected_ = control_unit_->connect();
 
     request_uuid();
-
-    if (recording()) {
-        json::value info {
-            { "type", "connect" },
-            { "uuid", get_uuid() },
-            { "version", MAA_VERSION },
-        };
-        append_recording(std::move(info), start_time, connected_);
-    }
 
     return connected_;
 }
@@ -444,11 +425,6 @@ bool ControllerAgent::handle_click(const ClickParam& param)
     if (!control_unit_) {
         LogError << "control_unit_ is nullptr";
         return false;
-    }
-
-    auto start_time = std::chrono::steady_clock::now();
-    if (recording()) {
-        start_time = std::chrono::steady_clock::now();
     }
 
     bool ret = false;
@@ -461,12 +437,6 @@ bool ControllerAgent::handle_click(const ClickParam& param)
         ret = control_unit_->click(param.x, param.y);
     }
 
-    if (recording()) {
-        json::value info = param;
-        info |= { { "type", "click" } };
-        append_recording(std::move(info), start_time, ret);
-    }
-
     return ret;
 }
 
@@ -476,8 +446,6 @@ bool ControllerAgent::handle_swipe(const SwipeParam& param)
         LogError << "control_unit_ is nullptr";
         return false;
     }
-
-    auto start_time = std::chrono::steady_clock::now();
 
     bool ret = false;
     if (control_unit_->is_touch_availabled()) {
@@ -516,12 +484,6 @@ bool ControllerAgent::handle_swipe(const SwipeParam& param)
         ret = control_unit_->swipe(param.x1, param.y1, param.x2, param.y2, param.duration);
     }
 
-    if (recording()) {
-        json::value info = param;
-        info |= { { "type", "swipe" } };
-        append_recording(std::move(info), start_time, ret);
-    }
-
     return ret;
 }
 
@@ -536,8 +498,6 @@ bool ControllerAgent::handle_multi_swipe(const std::vector<SwipeParam>& param)
         LogError << "touch is not available";
         return false;
     }
-
-    auto start_time = std::chrono::steady_clock::now();
 
     constexpr double kInterval = 10; // ms
     const std::chrono::milliseconds delay(static_cast<int>(kInterval));
@@ -601,11 +561,6 @@ bool ControllerAgent::handle_multi_swipe(const std::vector<SwipeParam>& param)
         now = std::chrono::steady_clock::now();
     }
 
-    if (recording()) {
-        json::value info = { { "type", "multi_swipe" }, { "swipes", json::array(param) } };
-        append_recording(std::move(info), start_time, ret);
-    }
-
     return ret;
 }
 
@@ -621,15 +576,7 @@ bool ControllerAgent::handle_touch_down(const TouchParam& param)
         return false;
     }
 
-    auto start_time = std::chrono::steady_clock::now();
-
     bool ret = control_unit_->touch_down(param.contact, param.x, param.y, param.pressure);
-
-    if (recording()) {
-        json::value info = param;
-        info |= { { "type", "touch_down" } };
-        append_recording(std::move(info), start_time, ret);
-    }
 
     return ret;
 }
@@ -646,15 +593,7 @@ bool ControllerAgent::handle_touch_move(const TouchParam& param)
         return false;
     }
 
-    auto start_time = std::chrono::steady_clock::now();
-
     bool ret = control_unit_->touch_move(param.contact, param.x, param.y, param.pressure);
-
-    if (recording()) {
-        json::value info = param;
-        info |= { { "type", "touch_move" } };
-        append_recording(std::move(info), start_time, ret);
-    }
 
     return ret;
 }
@@ -671,15 +610,7 @@ bool ControllerAgent::handle_touch_up(const TouchParam& param)
         return false;
     }
 
-    auto start_time = std::chrono::steady_clock::now();
-
     bool ret = control_unit_->touch_up(param.contact);
-
-    if (recording()) {
-        json::value info = param;
-        info |= { { "type", "touch_up" } };
-        append_recording(std::move(info), start_time, ret);
-    }
 
     return ret;
 }
@@ -691,8 +622,6 @@ bool ControllerAgent::handle_click_key(const ClickKeyParam& param)
         return false;
     }
 
-    auto start_time = std::chrono::steady_clock::now();
-
     bool ret = false;
     if (control_unit_->is_key_down_up_availabled()) {
         ret = control_unit_->key_down(param.keycode);
@@ -701,12 +630,6 @@ bool ControllerAgent::handle_click_key(const ClickKeyParam& param)
     }
     else {
         ret = control_unit_->click_key(param.keycode);
-    }
-
-    if (recording()) {
-        json::value info = param;
-        info |= { { "type", "click_key" } };
-        append_recording(std::move(info), start_time, ret);
     }
 
     return ret;
@@ -718,23 +641,15 @@ bool ControllerAgent::handle_long_press_key(const LongPressKeyParam& param)
         LogError << "control_unit_ is nullptr";
         return false;
     }
-    
+
     if (!control_unit_->is_key_down_up_availabled()) {
         LogError << "key down up is not available";
         return false;
     }
 
-    auto start_time = std::chrono::steady_clock::now();
-
     bool ret = control_unit_->key_down(param.keycode);
     std::this_thread::sleep_for(std::chrono::milliseconds(param.duration));
     ret &= control_unit_->key_up(param.keycode);
-
-    if (recording()) {
-        json::value info = param;
-        info |= { { "type", "long_press_key" } };
-        append_recording(std::move(info), start_time, ret);
-    }
 
     return ret;
 }
@@ -746,15 +661,7 @@ bool ControllerAgent::handle_input_text(const InputTextParam& param)
         return false;
     }
 
-    auto start_time = std::chrono::steady_clock::now();
-
     bool ret = control_unit_->input_text(param.text);
-
-    if (recording()) {
-        json::value info = param;
-        info |= { { "type", "input_text" } };
-        append_recording(std::move(info), start_time, ret);
-    }
 
     return ret;
 }
@@ -766,8 +673,6 @@ bool ControllerAgent::handle_screencap()
         return false;
     }
 
-    auto start_time = std::chrono::steady_clock::now();
-
     cv::Mat raw_image;
     bool screencaped = control_unit_->screencap(raw_image);
     if (!screencaped) {
@@ -776,18 +681,6 @@ bool ControllerAgent::handle_screencap()
     }
 
     bool ret = postproc_screenshot(raw_image);
-
-    if (recording()) {
-        auto image_relative_path = path("screenshot") / path(format_now_for_filename() + ".png");
-        auto image_path = recording_path_.parent_path() / image_relative_path;
-        MAA_NS::imwrite(image_path, raw_image);
-
-        json::value info = {
-            { "type", "screencap" },
-            { "path", path_to_utf8_string(image_relative_path) },
-        };
-        append_recording(std::move(info), start_time, ret);
-    }
 
     return ret;
 }
@@ -799,15 +692,8 @@ bool ControllerAgent::handle_start_app(const AppParam& param)
         return false;
     }
 
-    auto start_time = std::chrono::steady_clock::now();
-
     bool ret = control_unit_->start_app(param.package);
 
-    if (recording()) {
-        json::value info = param;
-        info |= { { "type", "start_app" } };
-        append_recording(std::move(info), start_time, ret);
-    }
     return ret;
 }
 
@@ -818,15 +704,8 @@ bool ControllerAgent::handle_stop_app(const AppParam& param)
         return false;
     }
 
-    auto start_time = std::chrono::steady_clock::now();
-
     bool ret = control_unit_->stop_app(param.package);
 
-    if (recording()) {
-        json::value info = param;
-        info |= { { "type", "stop_app" } };
-        append_recording(std::move(info), start_time, ret);
-    }
     return ret;
 }
 
@@ -842,15 +721,8 @@ bool ControllerAgent::handle_key_down(const ClickKeyParam& param)
         return false;
     }
 
-    auto start_time = std::chrono::steady_clock::now();
-
     bool ret = control_unit_->key_down(param.keycode);
 
-    if (recording()) {
-        json::value info = param;
-        info |= { { "type", "key_down" } };
-        append_recording(std::move(info), start_time, ret);
-    }
     return ret;
 }
 
@@ -866,43 +738,9 @@ bool ControllerAgent::handle_key_up(const ClickKeyParam& param)
         return false;
     }
 
-    auto start_time = std::chrono::steady_clock::now();
-
     bool ret = control_unit_->key_up(param.keycode);
 
-    if (recording()) {
-        json::value info = param;
-        info |= { { "type", "key_up" } };
-        append_recording(std::move(info), start_time, ret);
-    }
     return ret;
-}
-
-bool ControllerAgent::recording() const
-{
-    return recording_ || GlobalOptionMgr::get_instance().recording();
-}
-
-void ControllerAgent::init_recording()
-{
-    auto recording_dir = GlobalOptionMgr::get_instance().log_dir() / "recording";
-    std::filesystem::create_directories(recording_dir);
-    recording_path_ = recording_dir / std::format("maa_recording_{}.txt", format_now_for_filename());
-}
-
-void ControllerAgent::append_recording(json::value info, const std::chrono::steady_clock::time_point& start_time, bool success)
-{
-    if (!recording()) {
-        return;
-    }
-
-    info["time"] = start_time.time_since_epoch().count();
-    info["cost"] = duration_since(start_time).count();
-    info["success"] = success;
-
-    std::ofstream ofs(recording_path_, std::ios::app);
-    ofs << info.to_string() << "\n";
-    ofs.close();
 }
 
 bool ControllerAgent::check_stop()
@@ -1191,17 +1029,6 @@ bool ControllerAgent::set_image_use_raw_size(MaaOptionValue value, MaaOptionValu
     image_use_raw_size_ = *reinterpret_cast<bool*>(value);
 
     clear_target_image_size();
-
-    return true;
-}
-
-bool ControllerAgent::set_recording(MaaOptionValue value, MaaOptionValueSize val_size)
-{
-    if (val_size != sizeof(recording_)) {
-        LogError << "invalid value size: " << val_size;
-        return false;
-    }
-    recording_ = *reinterpret_cast<bool*>(value);
 
     return true;
 }
