@@ -2524,7 +2524,7 @@
                 "key": {
                     "anyOf": [
                         {
-                            "$ref": "#/$defs/Key/properties/key"
+                            "$ref": "#/$defs/ClickKey/properties/key"
                         }
                     ]
                 },

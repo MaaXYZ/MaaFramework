@@ -33,12 +33,12 @@
         }
     },
     "action_v1": {
-        "action": "Key",
+        "action": "ClickKey",
         "key": []
     },
     "action_v2": {
         "action": {
-            "type": "Key",
+            "type": "ClickKey",
             "param": {
                 "key": []
             }
