@@ -47,6 +47,9 @@ bool Actuator::run(const cv::Rect& reco_hit, MaaRecoId reco_id, const PipelineDa
     case Type::ClickKey:
         ret = click_key(std::get<ClickKeyParam>(pipeline_data.action_param));
         break;
+    case Type::LongPressKey:
+        ret = long_press_key(std::get<LongPressKeyParam>(pipeline_data.action_param));
+        break;
     case Type::InputText:
         ret = input_text(std::get<InputTextParam>(pipeline_data.action_param));
         break;
@@ -147,6 +150,19 @@ bool Actuator::click_key(const MAA_RES_NS::Action::ClickKeyParam& param)
     bool ret = true;
     for (const auto& key : param.keys) {
         ret &= controller()->click_key(key);
+    }
+    return ret;
+}
+
+bool Actuator::long_press_key(const MAA_RES_NS::Action::LongPressKeyParam& param)
+{
+    if (!controller()) {
+        LogError << "Controller is null";
+        return false;
+    }
+    bool ret = true;
+    for (const auto& key : param.keys) {
+        ret &= controller()->long_press_key(key, param.duration);
     }
     return ret;
 }

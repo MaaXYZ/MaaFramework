@@ -255,6 +255,12 @@ bool ControllerAgent::click_key(int keycode)
     return wait(id) == MaaStatus_Succeeded;
 }
 
+bool ControllerAgent::long_press_key(int keycode, int duration)
+{
+    auto id = post_long_press_key_impl(keycode, duration);
+    return wait(id) == MaaStatus_Succeeded;
+}
+
 bool ControllerAgent::input_text(const std::string& text)
 {
     auto id = post_input_text_impl(text);
@@ -340,6 +346,12 @@ MaaCtrlId ControllerAgent::post_click_key_impl(int keycode)
 {
     ClickKeyParam param { .keycode = keycode };
     return post({ .type = Action::Type::click_key, .param = std::move(param) });
+}
+
+MaaCtrlId ControllerAgent::post_long_press_key_impl(int keycode, int duration)
+{
+    LongPressKeyParam param { .keycode = keycode, .duration = duration };
+    return post({ .type = Action::Type::long_press_key, .param = std::move(param) });
 }
 
 MaaCtrlId ControllerAgent::post_input_text_impl(const std::string& text)
@@ -442,6 +454,7 @@ bool ControllerAgent::handle_click(const ClickParam& param)
     bool ret = false;
     if (control_unit_->is_touch_availabled()) {
         ret = control_unit_->touch_down(0, param.x, param.y, 1);
+        std::this_thread::yield();
         ret &= control_unit_->touch_up(0);
     }
     else {
@@ -683,6 +696,7 @@ bool ControllerAgent::handle_click_key(const ClickKeyParam& param)
     bool ret = false;
     if (control_unit_->is_key_down_up_availabled()) {
         ret = control_unit_->key_down(param.keycode);
+        std::this_thread::yield();
         ret &= control_unit_->key_up(param.keycode);
     }
     else {
@@ -692,6 +706,33 @@ bool ControllerAgent::handle_click_key(const ClickKeyParam& param)
     if (recording()) {
         json::value info = param;
         info |= { { "type", "click_key" } };
+        append_recording(std::move(info), start_time, ret);
+    }
+
+    return ret;
+}
+
+bool ControllerAgent::handle_long_press_key(const LongPressKeyParam& param)
+{
+    if (!control_unit_) {
+        LogError << "control_unit_ is nullptr";
+        return false;
+    }
+    
+    if (!control_unit_->is_key_down_up_availabled()) {
+        LogError << "key down up is not available";
+        return false;
+    }
+
+    auto start_time = std::chrono::steady_clock::now();
+
+    bool ret = control_unit_->key_down(param.keycode);
+    std::this_thread::yield();
+    ret &= control_unit_->key_up(param.keycode);
+
+    if (recording()) {
+        json::value info = param;
+        info |= { { "type", "long_press_key" } };
         append_recording(std::move(info), start_time, ret);
     }
 
@@ -953,6 +994,9 @@ bool ControllerAgent::run_action(typename AsyncRunner<Action>::Id id, Action act
     case Action::Type::click_key:
         ret = handle_click_key(std::get<ClickKeyParam>(action.param));
         break;
+    case Action::Type::long_press_key:
+        ret = handle_long_press_key(std::get<LongPressKeyParam>(action.param));
+        break;
     case Action::Type::input_text:
         ret = handle_input_text(std::get<InputTextParam>(action.param));
         break;
@@ -1185,6 +1229,9 @@ std::ostream& operator<<(std::ostream& os, const Action& action)
         break;
     case Action::Type::click_key:
         os << "click_key";
+        break;
+    case Action::Type::long_press_key:
+        os << "long_press_key";
         break;
     case Action::Type::input_text:
         os << "input_text";

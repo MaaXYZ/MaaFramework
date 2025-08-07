@@ -57,6 +57,14 @@ struct ClickKeyParam
     MEO_JSONIZATION(keycode);
 };
 
+struct LongPressKeyParam
+{
+    int keycode = 0;
+    int duration = 0;
+
+    MEO_JSONIZATION(keycode, duration);
+};
+
 struct InputTextParam
 {
     std::string text;
@@ -72,7 +80,7 @@ struct AppParam
 };
 
 using Param =
-    std::variant<std::monostate, ClickParam, SwipeParam, std::vector<SwipeParam>, TouchParam, ClickKeyParam, InputTextParam, AppParam>;
+    std::variant<std::monostate, ClickParam, SwipeParam, std::vector<SwipeParam>, TouchParam, ClickKeyParam, LongPressKeyParam, InputTextParam, AppParam>;
 
 struct Action
 {
@@ -87,6 +95,7 @@ struct Action
         touch_move,
         touch_up,
         click_key,
+        long_press_key,
         input_text,
         screencap,
         start_app,
@@ -155,6 +164,7 @@ public:
     bool multi_swipe(const std::vector<SwipeParamWithRect>& swipes);
 
     bool click_key(int keycode);
+    bool long_press_key(int keycode, int duration);
     bool input_text(const std::string& text);
     cv::Mat screencap();
 
@@ -167,6 +177,7 @@ private:
     MaaCtrlId post_swipe_impl(int x1, int y1, int x2, int y2, int duration);
     MaaCtrlId post_multi_swipe_impl(const std::vector<SwipeParam>& swipes);
     MaaCtrlId post_click_key_impl(int keycode);
+    MaaCtrlId post_long_press_key_impl(int keycode, int duration);
     MaaCtrlId post_input_text_impl(const std::string& text);
     MaaCtrlId post_start_app_impl(const std::string& text);
     MaaCtrlId post_stop_app_impl(const std::string& text);
@@ -187,6 +198,7 @@ private:
     bool handle_touch_move(const TouchParam& param);
     bool handle_touch_up(const TouchParam& param);
     bool handle_click_key(const ClickKeyParam& param);
+    bool handle_long_press_key(const LongPressKeyParam& param);
     bool handle_input_text(const InputTextParam& param);
     bool handle_screencap();
     bool handle_start_app(const AppParam& param);
