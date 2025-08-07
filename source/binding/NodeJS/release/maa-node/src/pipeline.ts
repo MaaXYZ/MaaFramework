@@ -216,6 +216,15 @@ export type ActionClickKey<Mode> = RequiredIfStrict<
     Mode
 >
 
+export type ActionLongPressKey<Mode> = RequiredIfStrict<
+    {
+        key?: number
+        duration?: number
+    },
+    'key',
+    Mode
+>
+
 export type ActionInputText<Mode> = RequiredIfStrict<
     {
         input_text?: string
@@ -294,6 +303,7 @@ export type Action<Mode> =
     | MixAct<'MultiSwipe', ActionMultiSwipe<Mode>, Mode>
     | MixAct<'Key', ActionClickKey<Mode>, Mode>
     | MixAct<'ClickKey', ActionClickKey<Mode>, Mode>
+    | MixAct<'LongPressKey', ActionLongPressKey<Mode>, Mode>
     | MixAct<'InputText', ActionInputText<Mode>, Mode>
     | MixAct<'StartApp', ActionStartApp<Mode>, Mode>
     | MixAct<'StopApp', ActionStopApp<Mode>, Mode>
