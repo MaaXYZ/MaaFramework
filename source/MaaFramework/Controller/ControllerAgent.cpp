@@ -727,7 +727,7 @@ bool ControllerAgent::handle_long_press_key(const LongPressKeyParam& param)
     auto start_time = std::chrono::steady_clock::now();
 
     bool ret = control_unit_->key_down(param.keycode);
-    std::this_thread::yield();
+    std::this_thread::sleep_for(std::chrono::milliseconds(param.duration));
     ret &= control_unit_->key_up(param.keycode);
 
     if (recording()) {
