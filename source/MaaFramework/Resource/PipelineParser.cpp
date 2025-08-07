@@ -982,6 +982,15 @@ bool PipelineParser::parse_action(
         return parse_click_key(param_input, std::get<ClickKeyParam>(out_param), same_type ? std::get<ClickKeyParam>(parent_param) : default_param);
     } break;
 
+    case Type::LongPressKey: {
+        auto default_param = default_mgr.get_action_param<LongPressKeyParam>(Type::LongPressKey);
+        out_param = default_param;
+        return parse_long_press_key(
+            param_input,
+            std::get<LongPressKeyParam>(out_param),
+            same_type ? std::get<LongPressKeyParam>(parent_param) : default_param);
+    } break;
+
     case Type::InputText: {
         auto default_param = default_mgr.get_action_param<InputTextParam>(Type::InputText);
         out_param = default_param;
@@ -1121,6 +1130,25 @@ bool PipelineParser::parse_click_key(const json::value& input, Action::ClickKeyP
     // TODO: https://github.com/MaaXYZ/MaaFramework/issues/24#issuecomment-1666533842
     if (!get_and_check_value_or_array(input, "key", output.keys, default_value.keys)) {
         LogError << "failed to get_and_check_value_or_array key" << VAR(input);
+        return false;
+    }
+
+    return true;
+}
+
+bool PipelineParser::parse_long_press_key(
+    const json::value& input,
+    Action::LongPressKeyParam& output,
+    const Action::LongPressKeyParam& default_value)
+{
+    // TODO: https://github.com/MaaXYZ/MaaFramework/issues/24#issuecomment-1666533842
+    if (!get_and_check_value_or_array(input, "key", output.keys, default_value.keys)) {
+        LogError << "failed to get_and_check_value_or_array key" << VAR(input);
+        return false;
+    }
+
+    if (!get_and_check_value(input, "duration", output.duration, default_value.duration)) {
+        LogError << "failed to get_and_check_value duration" << VAR(input);
         return false;
     }
 

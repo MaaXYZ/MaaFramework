@@ -239,8 +239,16 @@ json::object PipelineDumper::dump(const PipelineData& pp)
 
     case Action::Type::ClickKey: {
         const auto& param = std::get<Action::ClickKeyParam>(pp.action_param);
-        data.action.param = PipelineV2::JKey {
+        data.action.param = PipelineV2::JClickKey {
             .key = param.keys,
+        };
+    } break;
+
+    case Action::Type::LongPressKey: {
+        const auto& param = std::get<Action::LongPressKeyParam>(pp.action_param);
+        data.action.param = PipelineV2::JLongPressKey {
+            .key = param.keys,
+            .duration = param.duration,
         };
     } break;
 

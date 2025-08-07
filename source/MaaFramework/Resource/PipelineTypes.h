@@ -87,6 +87,7 @@ enum class Type
     Swipe,
     MultiSwipe,
     ClickKey,
+    LongPressKey,
     InputText,
     StartApp,
     StopApp,
@@ -105,7 +106,7 @@ struct ClickParam
 struct LongPressParam
 {
     Target target;
-    uint duration = 500;
+    uint duration = 1000;
 };
 
 struct SwipeParam
@@ -125,6 +126,12 @@ struct MultiSwipeParam
 struct ClickKeyParam
 {
     std::vector<int> keys;
+};
+
+struct LongPressKeyParam
+{
+    std::vector<int> keys;
+    uint duration = 1000;
 };
 
 struct InputTextParam
@@ -158,6 +165,7 @@ using Param = std::variant<
     SwipeParam,
     MultiSwipeParam,
     ClickKeyParam,
+    LongPressKeyParam,
     InputTextParam,
     AppParam,
     CommandParam,
@@ -178,6 +186,8 @@ inline static const std::unordered_map<std::string, Type> kTypeMap = {
     { "key", Type::ClickKey },
     { "ClickKey", Type::ClickKey },
     { "clickkey", Type::ClickKey },
+    { "LongPressKey", Type::LongPressKey },
+    { "longpresskey", Type::LongPressKey },
     { "InputText", Type::InputText },
     { "inputtext", Type::InputText },
     { "StartApp", Type::StartApp },
@@ -195,9 +205,13 @@ inline static const std::unordered_map<std::string, Type> kTypeMap = {
 };
 
 inline static const std::unordered_map<Type, std::string> kTypeNameMap = {
-    { Type::DoNothing, "DoNothing" },   { Type::Click, "Click" },     { Type::LongPress, "LongPress" }, { Type::Swipe, "Swipe" },
-    { Type::MultiSwipe, "MultiSwipe" }, { Type::ClickKey, "ClickKey" },         { Type::InputText, "InputText" },           { Type::StartApp, "StartApp" },
-    { Type::StopApp, "StopApp" },       { Type::Command, "Command" }, { Type::Custom, "Custom" },       { Type::StopTask, "StopTask" },
+    { Type::DoNothing, "DoNothing" },       { Type::Click, "Click" },
+    { Type::LongPress, "LongPress" },       { Type::Swipe, "Swipe" },
+    { Type::MultiSwipe, "MultiSwipe" },     { Type::ClickKey, "ClickKey" },
+    { Type::LongPressKey, "LongPressKey" }, { Type::InputText, "InputText" },
+    { Type::StartApp, "StartApp" },         { Type::StopApp, "StopApp" },
+    { Type::Command, "Command" },           { Type::Custom, "Custom" },
+    { Type::StopTask, "StopTask" },
 };
 } // namespace Action
 
