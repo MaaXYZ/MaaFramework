@@ -63,12 +63,14 @@ bool MtouchHelper::request_display_info()
         return false;
     }
 
-    std::tie(display_width_, display_height_) = *resolution_opt;
+    display_width_ = resolution_opt->w;
+    display_height_ = resolution_opt->h;
+    orientation_ = resolution_opt->r;
 
     auto orientation_opt = device_info_->request_orientation();
     if (!orientation_opt) {
-        LogError << "failed to request orientation";
-        return false;
+        LogWarn << "failed to request orientation";
+        return true;
     }
 
     orientation_ = *orientation_opt;

@@ -85,7 +85,8 @@ bool LDPlayerExtras::load_ld_library()
         return false;
     }
 
-    std::tie(display_width_, display_height_) = *resolution_opt;
+    display_width_ = resolution_opt->w;
+    display_height_ = resolution_opt->h;
     LogInfo << "Display resolution: " << display_width_ << "x" << display_height_;
 
     return true;
