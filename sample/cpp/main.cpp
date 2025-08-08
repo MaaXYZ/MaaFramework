@@ -11,8 +11,6 @@
 #include "MaaFramework/MaaAPI.h"
 #include "MaaToolkit/MaaToolkitAPI.h"
 
-#include "conf.h"
-
 MaaController* create_adb_controller();
 MaaController* create_win32_controller();
 MaaBool my_reco(
