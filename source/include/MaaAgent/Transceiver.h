@@ -22,7 +22,7 @@ public:
     {
         auto req_id = ++s_req_id_;
 
-        LogFunc << VAR(req_id);
+        // LogFunc << VAR(req_id);
         bool sent = send(req);
         if (!sent) {
             LogError << "failed to send req" << VAR(req_id);
@@ -30,7 +30,7 @@ public:
         }
 
         for (int64_t loop_count = 0;; ++loop_count) {
-            LogTrace << "enter loop" << VAR(req_id) << VAR(loop_count);
+            // LogTrace << "enter loop" << VAR(req_id) << VAR(loop_count);
 
             auto msg_opt = recv();
             if (!msg_opt) {
@@ -39,14 +39,14 @@ public:
             }
             const json::value& msg = *msg_opt;
             if (msg.is<ResponseT>()) {
-                LogTrace << "response" << VAR(req_id) << VAR(loop_count);
+                // LogTrace << "response" << VAR(req_id) << VAR(loop_count);
                 return msg.as<ResponseT>();
             }
             else if (msg.is<ImageHeader>()) {
                 handle_image(msg.as<ImageHeader>());
             }
             else {
-                LogTrace << "inserted request" << VAR(req_id) << VAR(loop_count);
+                // LogTrace << "inserted request" << VAR(req_id) << VAR(loop_count);
                 handle_inserted_request(msg);
             }
         }
