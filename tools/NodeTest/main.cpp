@@ -1,20 +1,10 @@
 #include <iostream>
 
 #include <meojson/json.hpp>
+#include <opencv2/opencv.hpp>
 
 #include "MaaFramework/MaaAPI.h"
 #include "MaaToolkit/MaaToolkitAPI.h"
-
-#ifdef _MSC_VER
-#pragma warning(disable: 4100) // unreferenced formal parameter
-#pragma warning(disable: 4189) // local variable is initialized but not referenced
-#elif defined(__clang__)
-#pragma clang diagnostic ignored "-Wunused-parameter"
-#pragma clang diagnostic ignored "-Wunused-variable"
-#elif defined(__GNUC__)
-#pragma GCC diagnostic ignored "-Wunused-parameter"
-#pragma GCC diagnostic ignored "-Wunused-variable"
-#endif
 
 MaaBool my_action(
     MaaContext* context,
@@ -26,12 +16,36 @@ MaaBool my_action(
     const MaaRect* box,
     void* trans_arg);
 
+MaaBool connect(void*)
+{
+    return true;
+}
+
+MaaBool request_uuid(void* trans_arg, /* out */ MaaStringBuffer* buffer)
+{
+    MaaStringBufferSet(buffer, "1234567");
+    return true;
+}
+
+MaaBool screencap(void* trans_arg, /* out */ MaaImageBuffer* buffer)
+{
+    auto img = cv::imread("test.png");
+    MaaImageBufferSetRawData(buffer, img.data, img.cols, img.rows, img.type());
+    return true;
+}
+
 int main([[maybe_unused]] int argc, char** argv)
 {
     std::string user_path = "./";
     MaaToolkitConfigInitOption(user_path.c_str(), "{}");
 
-    auto controller_handle = MaaDbgControllerCreate("E:/Downloads/test", "./", MaaDbgControllerType_CarouselImage, "{}", nullptr, nullptr);
+    MaaCustomControllerCallbacks controller {
+        .connect = connect,
+        .request_uuid = request_uuid,
+        .screencap = screencap,
+    };
+
+    auto controller_handle = MaaCustomControllerCreate(&controller, nullptr, nullptr, nullptr);
 
     MaaControllerWait(controller_handle, MaaControllerPostConnection(controller_handle));
 

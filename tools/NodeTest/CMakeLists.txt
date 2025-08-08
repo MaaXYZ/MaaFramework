@@ -7,7 +7,13 @@ file(
 
 add_executable(NodeTest ${node_test_src})
 
-target_link_libraries(NodeTest MaaFramework MaaToolkit HeaderOnlyLibraries)
+if(MSVC)
+    target_compile_options(NodeTest PRIVATE "/WX-")
+else()
+    target_compile_options(NodeTest PRIVATE "-Wno-error")
+endif()
+
+target_link_libraries(NodeTest MaaFramework MaaToolkit HeaderOnlyLibraries ${OpenCV_LIBS})
 
 add_dependencies(NodeTest MaaFramework)
 set_target_properties(NodeTest PROPERTIES FOLDER Testing)
