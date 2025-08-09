@@ -87,9 +87,7 @@ var MaaDef_8h =
       [ "MaaGlobalOption_Invalid", "MaaDef_8h.html#ad09e62ec1fd03dadaf5fb009026c38eeaf81992513d077ca4fe38f7ae787695cd", null ],
       [ "MaaGlobalOption_LogDir", "MaaDef_8h.html#ad09e62ec1fd03dadaf5fb009026c38eea8669cc4382b1f28ea428aff511029b5c", null ],
       [ "MaaGlobalOption_SaveDraw", "MaaDef_8h.html#ad09e62ec1fd03dadaf5fb009026c38eeaaf9faa9621c830f79ba687467a3d9c5a", null ],
-      [ "MaaGlobalOption_Recording", "MaaDef_8h.html#ad09e62ec1fd03dadaf5fb009026c38eeaf316c8e11fd054dfe965b904e3ce93b4", null ],
       [ "MaaGlobalOption_StdoutLevel", "MaaDef_8h.html#ad09e62ec1fd03dadaf5fb009026c38eea58ba5999f483b497af3eac6d327d53e6", null ],
-      [ "MaaGlobalOption_ShowHitDraw", "MaaDef_8h.html#ad09e62ec1fd03dadaf5fb009026c38eea1a175dc6811ec0aedb23b87b98d68b40", null ],
       [ "MaaGlobalOption_DebugMode", "MaaDef_8h.html#ad09e62ec1fd03dadaf5fb009026c38eea85acfc5fc6cdca745d0eb2a090c05c5f", null ]
     ] ],
     [ "MaaInferenceDeviceEnum", "MaaDef_8h.html#a70d2d23982bb9114d93ce5e811288679", [
@@ -114,8 +112,7 @@ var MaaDef_8h =
       [ "MaaCtrlOption_Invalid", "MaaDef_8h.html#ac9daa36008267a26662244d2f5570003a4afeb097dfa70801c8fa43d83bb5c51f", null ],
       [ "MaaCtrlOption_ScreenshotTargetLongSide", "MaaDef_8h.html#ac9daa36008267a26662244d2f5570003a83157be6a22a5e62d4929c7bcd095f75", null ],
       [ "MaaCtrlOption_ScreenshotTargetShortSide", "MaaDef_8h.html#ac9daa36008267a26662244d2f5570003a8184b8456cf2148033e494be5d8220d3", null ],
-      [ "MaaCtrlOption_ScreenshotUseRawSize", "MaaDef_8h.html#ac9daa36008267a26662244d2f5570003a3fd0252e4db060bc453d7b8902260105", null ],
-      [ "MaaCtrlOption_Recording", "MaaDef_8h.html#ac9daa36008267a26662244d2f5570003afa8741fa6ccca208c0f65c0b8880832a", null ]
+      [ "MaaCtrlOption_ScreenshotUseRawSize", "MaaDef_8h.html#ac9daa36008267a26662244d2f5570003a3fd0252e4db060bc453d7b8902260105", null ]
     ] ],
     [ "MaaTaskerOptionEnum", "MaaDef_8h.html#a7ce6a82a2484734da58c3c422d19a9b1", [
       [ "MaaTaskerOption_Invalid", "MaaDef_8h.html#a7ce6a82a2484734da58c3c422d19a9b1a44343c1c73aabeacff9a9f91805a16aa", null ]

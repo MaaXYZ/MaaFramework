@@ -1,5 +1,5 @@
 {
-	"Version": "(main) v4.4.1",
+	"Version": "(main) v4.4.1-post.27-ci.16846291866",
 	"Compounds": {
 		"MaaAgentClientAPI.h": {
 			"Location": "include/MaaAgentClient/MaaAgentClientAPI.h",
@@ -1018,7 +1018,7 @@
 						}
 					}
 				},
-				"MaaControllerPostPressKey": {
+				"MaaControllerPostClickKey": {
 					"Description": {
 						"Brief": "",
 						"Details": [],
@@ -1229,6 +1229,56 @@
 						}
 					}
 				},
+				"MaaControllerPostKeyDown": {
+					"Description": {
+						"Brief": "",
+						"Details": [],
+						"Deprecated": null
+					},
+					"Types": {
+						"MAA_FRAMEWORK_API": "",
+						"MaaCtrlId": ""
+					},
+					"Parameters": {
+						"ctrl": {
+							"Type": "MaaController*",
+							"Description": "",
+							"Direction": 0,
+							"IsPointerToArray": null
+						},
+						"keycode": {
+							"Type": "int32_t",
+							"Description": "",
+							"Direction": 0,
+							"IsPointerToArray": null
+						}
+					}
+				},
+				"MaaControllerPostKeyUp": {
+					"Description": {
+						"Brief": "",
+						"Details": [],
+						"Deprecated": null
+					},
+					"Types": {
+						"MAA_FRAMEWORK_API": "",
+						"MaaCtrlId": ""
+					},
+					"Parameters": {
+						"ctrl": {
+							"Type": "MaaController*",
+							"Description": "",
+							"Direction": 0,
+							"IsPointerToArray": null
+						},
+						"keycode": {
+							"Type": "int32_t",
+							"Description": "",
+							"Direction": 0,
+							"IsPointerToArray": null
+						}
+					}
+				},
 				"MaaControllerPostScreencap": {
 					"Description": {
 						"Brief": "",
@@ -1361,6 +1411,32 @@
 						},
 						"buffer": {
 							"Type": "MaaStringBuffer*",
+							"Description": "",
+							"Direction": 0,
+							"IsPointerToArray": null
+						}
+					}
+				},
+				"MaaControllerPostPressKey": {
+					"Description": {
+						"Brief": "",
+						"Details": [],
+						"Deprecated": ""
+					},
+					"Types": {
+						"MAA_DEPRECATED": "",
+						"MAA_FRAMEWORK_API": "",
+						"MaaCtrlId": ""
+					},
+					"Parameters": {
+						"ctrl": {
+							"Type": "MaaController*",
+							"Description": "",
+							"Direction": 0,
+							"IsPointerToArray": null
+						},
+						"keycode": {
+							"Type": "int32_t",
 							"Description": "",
 							"Direction": 0,
 							"IsPointerToArray": null
@@ -1708,7 +1784,7 @@
 								}
 							}
 						},
-						"press_key": {
+						"click_key": {
 							"FunctionPointer": {
 								"Description": {
 									"Brief": "",
@@ -1747,6 +1823,58 @@
 								"Parameters": {
 									"text": {
 										"Type": "const char*",
+										"Description": "",
+										"Direction": 0,
+										"IsPointerToArray": null
+									},
+									"trans_arg": {
+										"Type": "void*",
+										"Description": "",
+										"Direction": 0,
+										"IsPointerToArray": null
+									}
+								}
+							}
+						},
+						"key_down": {
+							"FunctionPointer": {
+								"Description": {
+									"Brief": "",
+									"Details": [],
+									"Deprecated": null
+								},
+								"Types": {
+									"MaaBool": ""
+								},
+								"Parameters": {
+									"keycode": {
+										"Type": "int32_t",
+										"Description": "",
+										"Direction": 0,
+										"IsPointerToArray": null
+									},
+									"trans_arg": {
+										"Type": "void*",
+										"Description": "",
+										"Direction": 0,
+										"IsPointerToArray": null
+									}
+								}
+							}
+						},
+						"key_up": {
+							"FunctionPointer": {
+								"Description": {
+									"Brief": "",
+									"Details": [],
+									"Deprecated": null
+								},
+								"Types": {
+									"MaaBool": ""
+								},
+								"Parameters": {
+									"keycode": {
+										"Type": "int32_t",
 										"Description": "",
 										"Direction": 0,
 										"IsPointerToArray": null
@@ -3831,43 +3959,22 @@
 							},
 							"Value": "2"
 						},
-						"MaaGlobalOption_Recording": {
-							"Description": {
-								"Brief": "Dump all screenshots and actions",
-								"Details": [
-									"Recording will evaluate to true if any of this or MaaCtrlOptionEnum::MaaCtrlOption_Recording is true.",
-									"value: bool, eg: true; val_size: sizeof(bool)"
-								],
-								"Deprecated": null
-							},
-							"Value": "3"
-						},
 						"MaaGlobalOption_StdoutLevel": {
 							"Description": {
-								"Brief": "The level of log output to stdout",
+								"Brief": "Deprecated Dump all screenshots and actions",
 								"Details": [
-									"value: MaaLoggingLevel, val_size: sizeof(MaaLoggingLevel)",
+									"Recording will evaluate to true if any of this or MaaCtrlOptionEnum::MaaCtrlOption_Recording is true. value: bool, eg: true; val_size: sizeof(bool) MaaGlobalOption_Recording = 3, The level of log output to stdout value: MaaLoggingLevel, val_size: sizeof(MaaLoggingLevel)",
 									"default value is MaaLoggingLevel_Error"
 								],
 								"Deprecated": null
 							},
 							"Value": "4"
 						},
-						"MaaGlobalOption_ShowHitDraw": {
-							"Description": {
-								"Brief": "Whether to show hit draw",
-								"Details": [
-									"value: bool, eg: true; val_size: sizeof(bool)"
-								],
-								"Deprecated": null
-							},
-							"Value": "5"
-						},
 						"MaaGlobalOption_DebugMode": {
 							"Description": {
-								"Brief": "Whether to debug",
+								"Brief": "Deprecated Whether to show hit draw",
 								"Details": [
-									"value: bool, eg: true; val_size: sizeof(bool)"
+									"value: bool, eg: true; val_size: sizeof(bool) MaaGlobalOption_ShowHitDraw = 5, Whether to debug value: bool, eg: true; val_size: sizeof(bool)"
 								],
 								"Deprecated": null
 							},
@@ -4054,18 +4161,6 @@
 								"Deprecated": null
 							},
 							"Value": "3"
-						},
-						"MaaCtrlOption_Recording": {
-							"Description": {
-								"Brief": "Dump all screenshots and actions",
-								"Details": [
-									"Recording will evaluate to true if any of this or",
-									"MaaGlobalOptionEnum::MaaGlobalOption_Recording is true.",
-									"value: bool, eg: true; val_size: sizeof(bool)"
-								],
-								"Deprecated": null
-							},
-							"Value": "5"
 						}
 					},
 					"IsFlags": false,

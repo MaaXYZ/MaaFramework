@@ -10,6 +10,8 @@ var structMaaCustomControllerCallbacks =
     [ "touch_down", "structMaaCustomControllerCallbacks.html#a9cab96282d0a73e1354a4fa48c3712f3", null ],
     [ "touch_move", "structMaaCustomControllerCallbacks.html#ad7eb80327cea4f03830d13480ce03eb7", null ],
     [ "touch_up", "structMaaCustomControllerCallbacks.html#a17ac7005c5d69ace1aec0762b7909064", null ],
-    [ "press_key", "structMaaCustomControllerCallbacks.html#a2585bc805ceb3531821bc9f9c4e35cf5", null ],
-    [ "input_text", "structMaaCustomControllerCallbacks.html#add383d0ce3995532bfe0db9d008b6f7e", null ]
+    [ "click_key", "structMaaCustomControllerCallbacks.html#a2df5a214e13e5d9542d3458016c5f51c", null ],
+    [ "input_text", "structMaaCustomControllerCallbacks.html#add383d0ce3995532bfe0db9d008b6f7e", null ],
+    [ "key_down", "structMaaCustomControllerCallbacks.html#a46da9230073fb4ac1ccc7b8c28d87467", null ],
+    [ "key_up", "structMaaCustomControllerCallbacks.html#a99d5b6c3270039db39a1f5cdeb27b269", null ]
 ];

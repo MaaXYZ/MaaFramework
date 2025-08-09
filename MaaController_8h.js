@@ -10,17 +10,20 @@ var MaaController_8h =
     [ "MaaControllerPostConnection", "MaaController_8h.html#a08f41be1ab0845f494ad7357adac0336", null ],
     [ "MaaControllerPostClick", "MaaController_8h.html#aaf0eb096930a8a9592b11baf918a5910", null ],
     [ "MaaControllerPostSwipe", "MaaController_8h.html#ab45ddcc66eede5ebd38fd5952427006d", null ],
-    [ "MaaControllerPostPressKey", "MaaController_8h.html#adb4730eb9c0d1f87575fda9248804dd8", null ],
+    [ "MaaControllerPostClickKey", "MaaController_8h.html#a8d39d06718c5961f0f9a51849e3ed349", null ],
     [ "MaaControllerPostInputText", "MaaController_8h.html#ac7d6cae7d63684a3d6e78201fcca4b40", null ],
     [ "MaaControllerPostStartApp", "MaaController_8h.html#aab01b6a21228d8e18a0733f481278148", null ],
     [ "MaaControllerPostStopApp", "MaaController_8h.html#a1938a4f9df4fcb4c56aadd1ab5da7f3b", null ],
     [ "MaaControllerPostTouchDown", "MaaController_8h.html#ad4b315ff1a1c5da834aa76b6651a9cb7", null ],
     [ "MaaControllerPostTouchMove", "MaaController_8h.html#aa6044d3df3b659994b845317d4e67ec7", null ],
     [ "MaaControllerPostTouchUp", "MaaController_8h.html#a1131966cc2abcf3bf11d317413d4a529", null ],
+    [ "MaaControllerPostKeyDown", "MaaController_8h.html#ab879179f0c655d61c684d20132cc7c98", null ],
+    [ "MaaControllerPostKeyUp", "MaaController_8h.html#afb7c57e77010237effcfe2f638e0bd79", null ],
     [ "MaaControllerPostScreencap", "MaaController_8h.html#ad65392ee4028a2d8ba74d2fab960fb50", null ],
     [ "MaaControllerStatus", "MaaController_8h.html#afb8528c818e4fd03c7493b7b013474ed", null ],
     [ "MaaControllerWait", "MaaController_8h.html#a67674de1a9a97550510068d7c9a5abd1", null ],
     [ "MaaControllerConnected", "MaaController_8h.html#a0066bfa64a73b16f82a5060bdef72982", null ],
     [ "MaaControllerCachedImage", "MaaController_8h.html#a730b6f3a5048f143a83c22bb05aec583", null ],
-    [ "MaaControllerGetUuid", "MaaController_8h.html#a0d7b5199f257b233e79a062c0811b555", null ]
+    [ "MaaControllerGetUuid", "MaaController_8h.html#a0d7b5199f257b233e79a062c0811b555", null ],
+    [ "MaaControllerPostPressKey", "MaaController_8h.html#a5d20a13ed1473795423cc2f51423bea0", null ]
 ];

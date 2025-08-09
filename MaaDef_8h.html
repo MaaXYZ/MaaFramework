@@ -26,7 +26,7 @@
  <tbody>
  <tr id="projectrow">
   <td id="projectalign">
-   <div id="projectname">MaaFramework<span id="projectnumber">&#160;(main) v4.4.1</span>
+   <div id="projectname">MaaFramework<span id="projectnumber">&#160;(main) v4.4.1-post.27-ci.16846291866</span>
    </div>
    <div id="projectbrief">A automation black-box testing framework based on image recognition.</div>
   </td>
@@ -289,11 +289,7 @@ Enumerations</h2></td></tr>
 , <br />
 &#160;&#160;<a class="el" href="MaaDef_8h.html#ad09e62ec1fd03dadaf5fb009026c38eeaaf9faa9621c830f79ba687467a3d9c5a">MaaGlobalOption_SaveDraw</a> = 2
 , <br />
-&#160;&#160;<a class="el" href="MaaDef_8h.html#ad09e62ec1fd03dadaf5fb009026c38eeaf316c8e11fd054dfe965b904e3ce93b4">MaaGlobalOption_Recording</a> = 3
-, <br />
 &#160;&#160;<a class="el" href="MaaDef_8h.html#ad09e62ec1fd03dadaf5fb009026c38eea58ba5999f483b497af3eac6d327d53e6">MaaGlobalOption_StdoutLevel</a> = 4
-, <br />
-&#160;&#160;<a class="el" href="MaaDef_8h.html#ad09e62ec1fd03dadaf5fb009026c38eea1a175dc6811ec0aedb23b87b98d68b40">MaaGlobalOption_ShowHitDraw</a> = 5
 , <br />
 &#160;&#160;<a class="el" href="MaaDef_8h.html#ad09e62ec1fd03dadaf5fb009026c38eea85acfc5fc6cdca745d0eb2a090c05c5f">MaaGlobalOption_DebugMode</a> = 6
 <br />
@@ -340,8 +336,6 @@ Enumerations</h2></td></tr>
 &#160;&#160;<a class="el" href="MaaDef_8h.html#ac9daa36008267a26662244d2f5570003a8184b8456cf2148033e494be5d8220d3">MaaCtrlOption_ScreenshotTargetShortSide</a> = 2
 , <br />
 &#160;&#160;<a class="el" href="MaaDef_8h.html#ac9daa36008267a26662244d2f5570003a3fd0252e4db060bc453d7b8902260105">MaaCtrlOption_ScreenshotUseRawSize</a> = 3
-, <br />
-&#160;&#160;<a class="el" href="MaaDef_8h.html#ac9daa36008267a26662244d2f5570003afa8741fa6ccca208c0f65c0b8880832a">MaaCtrlOption_Recording</a> = 5
 <br />
  }</td></tr>
 <tr class="memdesc:ac9daa36008267a26662244d2f5570003"><td class="mdescLeft">&#160;</td><td class="mdescRight">Option keys for controller instance options. See <a class="el" href="MaaController_8h.html#ac0247a25f33dfbc7bd3a0183a669aad3">MaaControllerSetOption()</a>.  <a href="MaaDef_8h.html#ac9daa36008267a26662244d2f5570003">More...</a><br /></td></tr>
@@ -522,8 +516,8 @@ Enumerations</h2></td></tr>
 </div><div class="memdoc">
 <b>Value:</b><div class="fragment"><div class="line">    (<a class="code hl_define" href="MaaDef_8h.html#a004b0d855740e5d3894fd14d9e47d080">MaaAdbScreencapMethod_All</a> &amp; (~MaaAdbScreencapMethod_RawByNetcat) &amp; (~<a class="code hl_define" href="MaaDef_8h.html#a594d59b13a02d41b6a335e0f6575fca2">MaaAdbScreencapMethod_MinicapDirect</a>) \</div>
 <div class="line">     &amp; (~MaaAdbScreencapMethod_MinicapStream))</div>
-<div class="ttc" id="aMaaDef_8h_html_a004b0d855740e5d3894fd14d9e47d080"><div class="ttname"><a href="MaaDef_8h.html#a004b0d855740e5d3894fd14d9e47d080">MaaAdbScreencapMethod_All</a></div><div class="ttdeci">#define MaaAdbScreencapMethod_All</div><div class="ttdef"><b>Definition</b> MaaDef.h:222</div></div>
-<div class="ttc" id="aMaaDef_8h_html_a594d59b13a02d41b6a335e0f6575fca2"><div class="ttname"><a href="MaaDef_8h.html#a594d59b13a02d41b6a335e0f6575fca2">MaaAdbScreencapMethod_MinicapDirect</a></div><div class="ttdeci">#define MaaAdbScreencapMethod_MinicapDirect</div><div class="ttdef"><b>Definition</b> MaaDef.h:217</div></div>
+<div class="ttc" id="aMaaDef_8h_html_a004b0d855740e5d3894fd14d9e47d080"><div class="ttname"><a href="MaaDef_8h.html#a004b0d855740e5d3894fd14d9e47d080">MaaAdbScreencapMethod_All</a></div><div class="ttdeci">#define MaaAdbScreencapMethod_All</div><div class="ttdef"><b>Definition</b> MaaDef.h:225</div></div>
+<div class="ttc" id="aMaaDef_8h_html_a594d59b13a02d41b6a335e0f6575fca2"><div class="ttname"><a href="MaaDef_8h.html#a594d59b13a02d41b6a335e0f6575fca2">MaaAdbScreencapMethod_MinicapDirect</a></div><div class="ttdeci">#define MaaAdbScreencapMethod_MinicapDirect</div><div class="ttdef"><b>Definition</b> MaaDef.h:220</div></div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -1338,15 +1332,12 @@ Enumerations</h2></td></tr>
 </pre> </td></tr>
 <tr><td class="fieldname"><a id="ad09e62ec1fd03dadaf5fb009026c38eeaaf9faa9621c830f79ba687467a3d9c5a" name="ad09e62ec1fd03dadaf5fb009026c38eeaaf9faa9621c830f79ba687467a3d9c5a"></a>MaaGlobalOption_SaveDraw&#160;</td><td class="fielddoc"><p>Whether to save draw </p><pre class="fragment">value: bool, eg: true; val_size: sizeof(bool) 
 </pre> </td></tr>
-<tr><td class="fieldname"><a id="ad09e62ec1fd03dadaf5fb009026c38eeaf316c8e11fd054dfe965b904e3ce93b4" name="ad09e62ec1fd03dadaf5fb009026c38eeaf316c8e11fd054dfe965b904e3ce93b4"></a>MaaGlobalOption_Recording&#160;</td><td class="fielddoc"><p>Dump all screenshots and actions </p><pre class="fragment">Recording will evaluate to true if any of this or MaaCtrlOptionEnum::MaaCtrlOption_Recording is true.
-value: bool, eg: true; val_size: sizeof(bool) 
-</pre> </td></tr>
-<tr><td class="fieldname"><a id="ad09e62ec1fd03dadaf5fb009026c38eea58ba5999f483b497af3eac6d327d53e6" name="ad09e62ec1fd03dadaf5fb009026c38eea58ba5999f483b497af3eac6d327d53e6"></a>MaaGlobalOption_StdoutLevel&#160;</td><td class="fielddoc"><p>The level of log output to stdout </p><pre class="fragment">value: MaaLoggingLevel, val_size: sizeof(MaaLoggingLevel)
+<tr><td class="fieldname"><a id="ad09e62ec1fd03dadaf5fb009026c38eea58ba5999f483b497af3eac6d327d53e6" name="ad09e62ec1fd03dadaf5fb009026c38eea58ba5999f483b497af3eac6d327d53e6"></a>MaaGlobalOption_StdoutLevel&#160;</td><td class="fielddoc"><p>Deprecated Dump all screenshots and actions</p>
+<p>Recording will evaluate to true if any of this or MaaCtrlOptionEnum::MaaCtrlOption_Recording is true. value: bool, eg: true; val_size: sizeof(bool) MaaGlobalOption_Recording = 3, The level of log output to stdout </p><pre class="fragment">value: MaaLoggingLevel, val_size: sizeof(MaaLoggingLevel)
 default value is MaaLoggingLevel_Error 
 </pre> </td></tr>
-<tr><td class="fieldname"><a id="ad09e62ec1fd03dadaf5fb009026c38eea1a175dc6811ec0aedb23b87b98d68b40" name="ad09e62ec1fd03dadaf5fb009026c38eea1a175dc6811ec0aedb23b87b98d68b40"></a>MaaGlobalOption_ShowHitDraw&#160;</td><td class="fielddoc"><p>Whether to show hit draw </p><pre class="fragment">value: bool, eg: true; val_size: sizeof(bool) 
-</pre> </td></tr>
-<tr><td class="fieldname"><a id="ad09e62ec1fd03dadaf5fb009026c38eea85acfc5fc6cdca745d0eb2a090c05c5f" name="ad09e62ec1fd03dadaf5fb009026c38eea85acfc5fc6cdca745d0eb2a090c05c5f"></a>MaaGlobalOption_DebugMode&#160;</td><td class="fielddoc"><p>Whether to debug </p><pre class="fragment">value: bool, eg: true; val_size: sizeof(bool) 
+<tr><td class="fieldname"><a id="ad09e62ec1fd03dadaf5fb009026c38eea85acfc5fc6cdca745d0eb2a090c05c5f" name="ad09e62ec1fd03dadaf5fb009026c38eea85acfc5fc6cdca745d0eb2a090c05c5f"></a>MaaGlobalOption_DebugMode&#160;</td><td class="fielddoc"><p>Deprecated Whether to show hit draw</p>
+<p>value: bool, eg: true; val_size: sizeof(bool) MaaGlobalOption_ShowHitDraw = 5, Whether to debug </p><pre class="fragment">value: bool, eg: true; val_size: sizeof(bool) 
 </pre> </td></tr>
 </table>
 
@@ -1438,11 +1429,6 @@ default value is MaaLoggingLevel_Error
 <tr><td class="fieldname"><a id="ac9daa36008267a26662244d2f5570003a3fd0252e4db060bc453d7b8902260105" name="ac9daa36008267a26662244d2f5570003a3fd0252e4db060bc453d7b8902260105"></a>MaaCtrlOption_ScreenshotUseRawSize&#160;</td><td class="fielddoc"><p>Screenshot use raw size without scaling. Please note that this option may cause incorrect coordinates on user devices with different resolutions if scaling is not performed.</p>
 <p>value: bool, eg: true; val_size: sizeof(bool) </p>
 </td></tr>
-<tr><td class="fieldname"><a id="ac9daa36008267a26662244d2f5570003afa8741fa6ccca208c0f65c0b8880832a" name="ac9daa36008267a26662244d2f5570003afa8741fa6ccca208c0f65c0b8880832a"></a>MaaCtrlOption_Recording&#160;</td><td class="fielddoc"><p>Dump all screenshots and actions </p><pre class="fragment">Recording will evaluate to true if any of this or
-MaaGlobalOptionEnum::MaaGlobalOption_Recording is true.
-
-value: bool, eg: true; val_size: sizeof(bool) 
-</pre> </td></tr>
 </table>
 
 </div>
@@ -1470,7 +1456,7 @@ value: bool, eg: true; val_size: sizeof(bool)
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="dir_d44c64559bbebec7f509842c48db8b23.html">include</a></li><li class="navelem"><a class="el" href="dir_370cd1367c21b1a87c5c9c6803b8d0b9.html">MaaFramework</a></li><li class="navelem"><a class="el" href="MaaDef_8h.html">MaaDef.h</a></li>
-    <li class="footer">Generated on Mon Jul 28 2025 for MaaFramework by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.8 </li>
+    <li class="footer">Generated on Sat Aug 9 2025 for MaaFramework by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.8 </li>
   </ul>
 </div>
 </body>
