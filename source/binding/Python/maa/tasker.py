@@ -231,6 +231,7 @@ class Tasker:
         name = StringBuffer()
         c_reco_id = MaaRecoId()
         c_completed = MaaBool()
+        detail_json = StringBuffer()
 
         ret = bool(
             Library.framework().MaaTaskerGetNodeDetail(
@@ -239,11 +240,14 @@ class Tasker:
                 name._handle,
                 ctypes.pointer(c_reco_id),
                 ctypes.pointer(c_completed),
+                detail_json._handle,
             )
         )
 
         if not ret:
             return None
+
+        raw_detail = json.loads(detail_json.get())
 
         recognition = self.get_recognition_detail(int(c_reco_id.value))
         if not recognition:
@@ -254,6 +258,7 @@ class Tasker:
             name=name.get(),
             recognition=recognition,
             completed=bool(c_completed),
+            raw_detail=raw_detail,
         )
 
     def get_task_detail(self, task_id: int) -> Optional[TaskDetail]:

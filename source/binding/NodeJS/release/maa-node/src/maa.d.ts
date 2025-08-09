@@ -292,7 +292,7 @@ export declare function tasker_get_recognition_detail(
 export declare function tasker_get_node_detail(
     handle: TaskerHandle,
     node_id: NodeId
-): [name: string, reco_id: RecoId, completed: boolean] | null
+): [name: string, reco_id: RecoId, completed: boolean, detail: string] | null
 export declare function tasker_get_task_detail(
     handle: TaskerHandle,
     task_id: TaskId
