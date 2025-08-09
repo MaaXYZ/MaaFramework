@@ -126,6 +126,16 @@ MaaBool MaaTaskerStopping(const MaaTasker* tasker)
     return tasker->stopping();
 }
 
+MaaBool MaaTaskerStartDebugServer(MaaTasker* tasker)
+{
+    if (!tasker) {
+        LogError << "handle is null";
+        return false;
+    }
+
+    return tasker->start_debug_server();
+}
+
 MaaResource* MaaTaskerGetResource(const MaaTasker* tasker)
 {
     if (!tasker) {
