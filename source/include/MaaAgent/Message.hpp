@@ -14,7 +14,7 @@ MAA_AGENT_NS_BEGIN
 // ReverseRequest: server -> client
 
 using MessageTypePlaceholder = int;
-inline static constexpr int kProtocolVersion = 2;
+inline static constexpr int kProtocolVersion = 3;
 
 struct StartUpRequest
 {
@@ -280,7 +280,7 @@ struct TaskerPostTaskReverseRequest
 {
     std::string tasker_id;
     std::string entry;
-    json::object pipeline_override;
+    json::array pipeline_override;
 
     MessageTypePlaceholder _TaskerPostTaskReverseRequest = 1;
     MEO_JSONIZATION(tasker_id, entry, pipeline_override, _TaskerPostTaskReverseRequest);

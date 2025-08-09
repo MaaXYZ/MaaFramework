@@ -57,7 +57,7 @@ MaaTaskId Context::run_task(const std::string& entry, const json::object& pipeli
     }
 
     PipelineTask subtask(entry, tasker_, getptr());
-    bool ov = subtask.override_pipeline(pipeline_override);
+    bool ov = subtask.override_pipeline({ pipeline_override });
     if (!ov) {
         LogError << "failed to override_pipeline" << VAR(entry) << VAR(pipeline_override);
         return MaaInvalidId;
@@ -87,7 +87,7 @@ MaaRecoId Context::run_recognition(const std::string& entry, const json::object&
     LogFunc << VAR(getptr()) << VAR(entry) << VAR(pipeline_override);
 
     RecognitionTask subtask(entry, tasker_, getptr());
-    bool ov = subtask.override_pipeline(pipeline_override);
+    bool ov = subtask.override_pipeline({ pipeline_override });
     if (!ov) {
         LogError << "failed to override_pipeline" << VAR(entry) << VAR(pipeline_override);
         return MaaInvalidId;
@@ -104,7 +104,7 @@ MaaNodeId Context::run_action(
     LogFunc << VAR(getptr()) << VAR(entry) << VAR(pipeline_override) << VAR(box) << VAR(reco_detail);
 
     ActionTask subtask(entry, tasker_, getptr());
-    bool ov = subtask.override_pipeline(pipeline_override);
+    bool ov = subtask.override_pipeline({ pipeline_override });
     if (!ov) {
         LogError << "failed to override_pipeline" << VAR(entry) << VAR(pipeline_override);
         return MaaInvalidId;
