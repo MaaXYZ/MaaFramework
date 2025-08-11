@@ -167,7 +167,9 @@ std::optional<RuntimeParam::Task> Configurator::generate_runtime_task(const Conf
     }
     const auto& data_task = *data_iter;
 
-    RuntimeParam::Task runtime_task { .name = data_task.name, .entry = data_task.entry, .pipeline_override = data_task.pipeline_override };
+    RuntimeParam::Task runtime_task { .name = data_task.name,
+                                      .entry = data_task.entry,
+                                      .pipeline_override = { data_task.pipeline_override } };
 
     for (const auto& [config_option, config_option_value] : config_task.option) {
         auto data_option_iter =
@@ -186,10 +188,10 @@ std::optional<RuntimeParam::Task> Configurator::generate_runtime_task(const Conf
         }
         const auto& data_case = *data_case_iter;
 
-        // data_case first, duplicate keys will be overwritten by data_case.param
-        runtime_task.pipeline_override = data_case.pipeline_override | std::move(runtime_task.pipeline_override);
+        runtime_task.pipeline_override.push_back(data_case.pipeline_override);
     }
 
+    std::reverse(runtime_task.pipeline_override.begin(), runtime_task.pipeline_override.end());
     return runtime_task;
 }
 
