@@ -72,7 +72,7 @@ bool Tasker::set_option(MaaTaskerOption key, MaaOptionValue value, MaaOptionValu
     return false;
 }
 
-MaaTaskId Tasker::post_task(const std::string& entry, const json::array& pipeline_override)
+MaaTaskId Tasker::post_task(const std::string& entry, const json::value& pipeline_override)
 {
     LogInfo << VAR(entry) << VAR(pipeline_override);
 
@@ -130,7 +130,7 @@ MaaTaskId Tasker::post_stop()
     }
 
     auto task_ptr = std::make_shared<MAA_TASK_NS::EmptyTask>(std::string(MAA_FUNCTION), this);
-    return post_task(std::move(task_ptr), {});
+    return post_task(std::move(task_ptr), json::array {});
 }
 
 bool Tasker::stopping() const
@@ -195,7 +195,7 @@ void Tasker::notify(std::string_view msg, const json::value& detail)
     notifier_.notify(msg, detail);
 }
 
-MaaTaskId Tasker::post_task(TaskPtr task_ptr, const json::array& pipeline_override)
+MaaTaskId Tasker::post_task(TaskPtr task_ptr, const json::value& pipeline_override)
 {
 #ifndef MAA_DEBUG
     if (!inited()) {

@@ -175,7 +175,7 @@ bool ResourceMgr::clear()
     return true;
 }
 
-bool ResourceMgr::override_pipeline(const json::object& pipeline_override)
+bool ResourceMgr::override_pipeline(const json::value& pipeline_override)
 {
     LogFunc << VAR(pipeline_override);
 

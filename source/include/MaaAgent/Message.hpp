@@ -106,7 +106,7 @@ struct ContextRunTaskReverseRequest
 {
     std::string context_id;
     std::string entry;
-    json::object pipeline_override;
+    json::value pipeline_override;
 
     MessageTypePlaceholder _ContextRunTaskReverseRequest = 1;
     MEO_JSONIZATION(context_id, entry, pipeline_override, _ContextRunTaskReverseRequest);
@@ -124,7 +124,7 @@ struct ContextRunRecognitionReverseRequest
 {
     std::string context_id;
     std::string entry;
-    json::object pipeline_override;
+    json::value pipeline_override;
     std::string image;
 
     MessageTypePlaceholder _ContextRunRecognitionReverseRequest = 1;
@@ -143,7 +143,7 @@ struct ContextRunActionReverseRequest
 {
     std::string context_id;
     std::string entry;
-    json::object pipeline_override;
+    json::value pipeline_override;
     std::array<int, 4> box {};
     std::string reco_detail;
 
@@ -162,7 +162,7 @@ struct ContextRunActionReverseResponse
 struct ContextOverridePipelineReverseRequest
 {
     std::string context_id;
-    json::object pipeline_override;
+    json::value pipeline_override;
 
     MessageTypePlaceholder _ContextOverridePipelineReverseRequest = 1;
     MEO_JSONIZATION(context_id, pipeline_override, _ContextOverridePipelineReverseRequest);
@@ -280,7 +280,7 @@ struct TaskerPostTaskReverseRequest
 {
     std::string tasker_id;
     std::string entry;
-    json::array pipeline_override;
+    json::value pipeline_override;
 
     MessageTypePlaceholder _TaskerPostTaskReverseRequest = 1;
     MEO_JSONIZATION(tasker_id, entry, pipeline_override, _TaskerPostTaskReverseRequest);
@@ -617,7 +617,7 @@ struct ResourceClearReverseResponse
 struct ResourceOverridePipelineReverseRequest
 {
     std::string resource_id;
-    json::object pipeline_override;
+    json::value pipeline_override;
 
     MessageTypePlaceholder _ResourceOverridePipelineReverseRequest = 1;
     MEO_JSONIZATION(resource_id, pipeline_override, _ResourceOverridePipelineReverseRequest);

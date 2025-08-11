@@ -96,7 +96,7 @@ bool RemoteResource::clear()
     return resp_opt->ret;
 }
 
-bool RemoteResource::override_pipeline(const json::object& pipeline_override)
+bool RemoteResource::override_pipeline(const json::value& pipeline_override)
 {
     ResourceOverridePipelineReverseRequest req {
         .resource_id = resource_id_,

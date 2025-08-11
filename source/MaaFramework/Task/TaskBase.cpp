@@ -27,18 +27,13 @@ TaskBase::TaskBase(std::string entry, Tasker* tasker, std::shared_ptr<Context> c
 {
 }
 
-bool TaskBase::override_pipeline(const json::array& pipeline_override)
+bool TaskBase::override_pipeline(const json::value& pipeline_override)
 {
     if (!context_) {
         return false;
     }
-    for (const auto& val : pipeline_override) {
-        if (!val.is_object()) {
-            return false;
-        }
-        if (!context_->override_pipeline(val.as_object())) {
-            return false;
-        }
+    if (!context_->override_pipeline(pipeline_override)) {
+        return false;
     }
     return true;
 }

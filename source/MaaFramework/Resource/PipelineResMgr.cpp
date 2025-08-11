@@ -118,38 +118,64 @@ std::vector<std::string> PipelineResMgr::get_node_list() const
 }
 
 bool PipelineResMgr::parse_and_override(
-    const json::object& input,
+    const json::value& input,
     std::set<std::string>& existing_keys,
     const DefaultPipelineMgr& default_mgr)
 {
-    for (const auto& [key, value] : input) {
-        if (key.empty()) {
-            LogError << "key is empty" << VAR(key);
-            return false;
-        }
-        if (key.starts_with('$')) {
-            LogInfo << "key starts with '$', skip" << VAR(key);
-            continue;
-        }
-        if (existing_keys.contains(key)) {
-            LogError << "key already exists" << VAR(key);
-            return false;
-        }
-        if (!value.is_object()) {
-            LogError << "value is not object" << VAR(key) << VAR(value);
-            return false;
-        }
+    auto override_object = [&](const json::object& ovrd) {
+        for (const auto& [key, value] : ovrd) {
+            if (key.empty()) {
+                LogError << "key is empty" << VAR(key);
+                return false;
+            }
+            if (key.starts_with('$')) {
+                LogInfo << "key starts with '$', skip" << VAR(key);
+                continue;
+            }
+            if (existing_keys.contains(key)) {
+                LogError << "key already exists" << VAR(key);
+                return false;
+            }
+            if (!value.is_object()) {
+                LogError << "value is not object" << VAR(key) << VAR(value);
+                return false;
+            }
 
-        PipelineData result;
-        const auto& default_result = pipeline_data_map_.contains(key) ? pipeline_data_map_.at(key) : default_mgr.get_pipeline();
-        bool ret = PipelineParser::parse_node(key, value, result, default_result, default_mgr);
-        if (!ret) {
-            LogError << "parse_task failed" << VAR(key) << VAR(value);
+            PipelineData result;
+            const auto& default_result = pipeline_data_map_.contains(key) ? pipeline_data_map_.at(key) : default_mgr.get_pipeline();
+            bool ret = PipelineParser::parse_node(key, value, result, default_result, default_mgr);
+            if (!ret) {
+                LogError << "parse_task failed" << VAR(key) << VAR(value);
+                return false;
+            }
+
+            existing_keys.emplace(key);
+            pipeline_data_map_.insert_or_assign(key, std::move(result));
+        }
+        return true;
+    };
+
+    if (input.is_object()) {
+        if (!override_object(input.as_object())) {
             return false;
         }
-
-        existing_keys.emplace(key);
-        pipeline_data_map_.insert_or_assign(key, std::move(result));
+    }
+    else if (input.is_array()) {
+        for (const auto& val : input.as_array()) {
+            if (val.is_object()) {
+                if (!override_object(val.as_object())) {
+                    return false;
+                }
+            }
+            else {
+                LogError << "cannot override non-object " << val;
+                return false;
+            }
+        }
+    }
+    else {
+        LogError << "cannot override non-object " << input;
+        return false;
     }
 
     return true;

@@ -31,12 +31,12 @@ public:
     virtual ~Context() override = default;
 
 public: // from MaaContextAPI
-    virtual MaaTaskId run_task(const std::string& entry, const json::object& pipeline_override) override;
-    virtual MaaRecoId run_recognition(const std::string& entry, const json::object& pipeline_override, const cv::Mat& image) override;
+    virtual MaaTaskId run_task(const std::string& entry, const json::value& pipeline_override) override;
+    virtual MaaRecoId run_recognition(const std::string& entry, const json::value& pipeline_override, const cv::Mat& image) override;
     virtual MaaNodeId
-        run_action(const std::string& entry, const json::object& pipeline_override, const cv::Rect& box, const std::string& reco_detail)
+        run_action(const std::string& entry, const json::value& pipeline_override, const cv::Rect& box, const std::string& reco_detail)
             override;
-    virtual bool override_pipeline(const json::object& pipeline_override) override;
+    virtual bool override_pipeline(const json::value& pipeline_override) override;
     virtual bool override_next(const std::string& name, const std::vector<std::string>& next) override;
     virtual std::optional<json::object> get_node_data(const std::string& node_name) const override;
 
