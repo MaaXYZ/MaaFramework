@@ -144,8 +144,8 @@ export class ResourceBase {
         return new Job(this.#source, maa.resource_post_bundle(this.handle, path))
     }
 
-    override_pipeline(pipeline_override: string) {
-        if (!maa.resource_override_pipeline(this.handle, pipeline_override)) {
+    override_pipeline(pipeline_override: Record<string, unknown> | Record<string, unknown>[] = {}) {
+        if (!maa.resource_override_pipeline(this.handle, JSON.stringify(pipeline_override))) {
             throw 'Resource override_pipeline failed'
         }
     }
