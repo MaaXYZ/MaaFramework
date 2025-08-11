@@ -116,13 +116,14 @@ bool Win32ControlUnitMgr::swipe(int x1, int y1, int x2, int y2, int duration)
     return input_->swipe(x1, y1, x2, y2, duration);
 }
 
-bool Win32ControlUnitMgr::multi_swipe(const std::vector<SwipeParam>& swipes)
+bool Win32ControlUnitMgr::is_touch_availabled() const
 {
-    std::ignore = swipes;
+    if (!input_) {
+        LogError << "input_ is null";
+        return false;
+    }
 
-    LogError << "Win32 not support MultiSwipe. If you need it, please raise an issue with us!" << VAR(swipes.size());
-
-    return false;
+    return input_->is_touch_availabled();
 }
 
 bool Win32ControlUnitMgr::touch_down(int contact, int x, int y, int pressure)
@@ -155,14 +156,14 @@ bool Win32ControlUnitMgr::touch_up(int contact)
     return input_->touch_up(contact);
 }
 
-bool Win32ControlUnitMgr::press_key(int key)
+bool Win32ControlUnitMgr::click_key(int key)
 {
     if (!input_) {
         LogError << "input_ is null";
         return false;
     }
 
-    return input_->press_key(key);
+    return input_->click_key(key);
 }
 
 bool Win32ControlUnitMgr::input_text(const std::string& text)
@@ -173,6 +174,36 @@ bool Win32ControlUnitMgr::input_text(const std::string& text)
     }
 
     return input_->input_text(text);
+}
+
+bool Win32ControlUnitMgr::is_key_down_up_availabled() const
+{
+    if (!input_) {
+        LogError << "input_ is null";
+        return false;
+    }
+
+    return input_->is_key_down_up_availabled();
+}
+
+bool Win32ControlUnitMgr::key_down(int key)
+{
+    if (!input_) {
+        LogError << "input_ is null";
+        return false;
+    }
+
+    return input_->key_down(key);
+}
+
+bool Win32ControlUnitMgr::key_up(int key)
+{
+    if (!input_) {
+        LogError << "input_ is null";
+        return false;
+    }
+
+    return input_->key_up(key);
 }
 
 MAA_CTRL_UNIT_NS_END

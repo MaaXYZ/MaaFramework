@@ -42,7 +42,7 @@ std::optional<std::string> DeviceInfo::request_uuid()
     return uuid_str;
 }
 
-std::optional<std::pair<int, int>> DeviceInfo::request_resolution()
+std::optional<DeviceInfo::DisplayInfo> DeviceInfo::request_resolution()
 {
     LogFunc;
 
@@ -56,12 +56,12 @@ std::optional<std::pair<int, int>> DeviceInfo::request_resolution()
         return std::nullopt;
     }
 
-    int width = 0, height = 0;
+    DisplayInfo info;
 
     std::istringstream iss(output_opt.value());
-    iss >> width >> height;
+    iss >> info.w >> info.h >> info.r;
 
-    return std::make_pair(width, height);
+    return info;
 }
 
 std::optional<int> DeviceInfo::request_orientation()

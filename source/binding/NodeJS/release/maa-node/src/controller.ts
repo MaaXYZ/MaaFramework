@@ -47,11 +47,13 @@ export type ControllerNotify = {
         | 'touch_down'
         | 'touch_move'
         | 'touch_up'
-        | 'press_key'
+        | 'click_key'
         | 'input_text'
         | 'screencap'
         | 'start_app'
         | 'stop_app'
+        | 'key_down'
+        | 'key_up'
     ctrl_id: maa.CtrlId
     uuid: string
 }
@@ -106,12 +108,6 @@ export class ControllerBase {
         }
     }
 
-    set recording(value: boolean) {
-        if (!maa.controller_set_option_recording(this.handle, value)) {
-            throw 'Controller set recording failed'
-        }
-    }
-
     post_connection() {
         return new Job(this.#source, maa.controller_post_connection(this.handle))
     }
@@ -127,8 +123,16 @@ export class ControllerBase {
         )
     }
 
-    post_press_key(keycode: number) {
-        return new Job(this.#source, maa.controller_post_press_key(this.handle, keycode))
+    post_click_key(keycode: number) {
+        return new Job(this.#source, maa.controller_post_click_key(this.handle, keycode))
+    }
+
+    post_key_down(keycode: number) {
+        return new Job(this.#source, maa.controller_post_key_down(this.handle, keycode))
+    }
+
+    post_key_up(keycode: number) {
+        return new Job(this.#source, maa.controller_post_key_up(this.handle, keycode))
     }
 
     post_input_text(text: string) {
@@ -289,8 +293,10 @@ export abstract class CustomControllerActor {
         pressure: number
     ): maa.MaybePromise<boolean>
     abstract touch_up(contact: number): maa.MaybePromise<boolean>
-    abstract press_key(keycode: number): maa.MaybePromise<boolean>
+    abstract click_key(keycode: number): maa.MaybePromise<boolean>
     abstract input_text(text: string): maa.MaybePromise<boolean>
+    abstract key_down(keycode: number): maa.MaybePromise<boolean>
+    abstract key_up(keycode: number): maa.MaybePromise<boolean>
 }
 
 export class CustomControllerActorDefaultImpl extends CustomControllerActor {
@@ -330,10 +336,16 @@ export class CustomControllerActorDefaultImpl extends CustomControllerActor {
     touch_up(contact: number): maa.MaybePromise<boolean> {
         return false
     }
-    press_key(keycode: number): maa.MaybePromise<boolean> {
+    click_key(keycode: number): maa.MaybePromise<boolean> {
         return false
     }
     input_text(text: string): maa.MaybePromise<boolean> {
+        return false
+    }
+    key_down(keycode: number): maa.MaybePromise<boolean> {
+        return false
+    }
+    key_up(keycode: number): maa.MaybePromise<boolean> {
         return false
     }
 }

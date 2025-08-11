@@ -1,7 +1,7 @@
 #include "PipelineParser.h"
 
 #include "PipelineTypesV2.h"
-#include "Utils/Codec.h"
+#include "Utils/Encoding.h"
 #include "Utils/Logger.h"
 #include "Utils/Platform.h"
 #include "Utils/StringMisc.hpp"
@@ -976,16 +976,25 @@ bool PipelineParser::parse_action(
             default_single);
     } break;
 
-    case Type::Key: {
-        auto default_param = default_mgr.get_action_param<KeyParam>(Type::Key);
+    case Type::ClickKey: {
+        auto default_param = default_mgr.get_action_param<ClickKeyParam>(Type::ClickKey);
         out_param = default_param;
-        return parse_press_key(param_input, std::get<KeyParam>(out_param), same_type ? std::get<KeyParam>(parent_param) : default_param);
+        return parse_click_key(param_input, std::get<ClickKeyParam>(out_param), same_type ? std::get<ClickKeyParam>(parent_param) : default_param);
     } break;
 
-    case Type::Text: {
-        auto default_param = default_mgr.get_action_param<TextParam>(Type::Text);
+    case Type::LongPressKey: {
+        auto default_param = default_mgr.get_action_param<LongPressKeyParam>(Type::LongPressKey);
         out_param = default_param;
-        return parse_input_text(param_input, std::get<TextParam>(out_param), same_type ? std::get<TextParam>(parent_param) : default_param);
+        return parse_long_press_key(
+            param_input,
+            std::get<LongPressKeyParam>(out_param),
+            same_type ? std::get<LongPressKeyParam>(parent_param) : default_param);
+    } break;
+
+    case Type::InputText: {
+        auto default_param = default_mgr.get_action_param<InputTextParam>(Type::InputText);
+        out_param = default_param;
+        return parse_input_text(param_input, std::get<InputTextParam>(out_param), same_type ? std::get<InputTextParam>(parent_param) : default_param);
     } break;
 
     case Type::StartApp: {
@@ -1116,7 +1125,7 @@ bool PipelineParser::parse_multi_swipe(
     return true;
 }
 
-bool PipelineParser::parse_press_key(const json::value& input, Action::KeyParam& output, const Action::KeyParam& default_value)
+bool PipelineParser::parse_click_key(const json::value& input, Action::ClickKeyParam& output, const Action::ClickKeyParam& default_value)
 {
     // TODO: https://github.com/MaaXYZ/MaaFramework/issues/24#issuecomment-1666533842
     if (!get_and_check_value_or_array(input, "key", output.keys, default_value.keys)) {
@@ -1127,7 +1136,26 @@ bool PipelineParser::parse_press_key(const json::value& input, Action::KeyParam&
     return true;
 }
 
-bool PipelineParser::parse_input_text(const json::value& input, Action::TextParam& output, const Action::TextParam& default_value)
+bool PipelineParser::parse_long_press_key(
+    const json::value& input,
+    Action::LongPressKeyParam& output,
+    const Action::LongPressKeyParam& default_value)
+{
+    // TODO: https://github.com/MaaXYZ/MaaFramework/issues/24#issuecomment-1666533842
+    if (!get_and_check_value_or_array(input, "key", output.keys, default_value.keys)) {
+        LogError << "failed to get_and_check_value_or_array key" << VAR(input);
+        return false;
+    }
+
+    if (!get_and_check_value(input, "duration", output.duration, default_value.duration)) {
+        LogError << "failed to get_and_check_value duration" << VAR(input);
+        return false;
+    }
+
+    return true;
+}
+
+bool PipelineParser::parse_input_text(const json::value& input, Action::InputTextParam& output, const Action::InputTextParam& default_value)
 {
     if (!get_and_check_value(input, "input_text", output.text, default_value.text)) {
         LogError << "failed to get_and_check_value text" << VAR(input);

@@ -1,1041 +1,3180 @@
 {
-    "$schema": "https://json-schema.org/draft-07/schema",
+    "$comments": [
+        "1. 添加属性字段需要给出 title 、 description 、 $ref ， $ref 优先使用或新增基础类型，能不写就不要写 default 。",
+        "2. 基础类型以 json 开头，需要给出 default 。",
+        "3. 专有类型如 SwipeListItem ，需要给出 unevaluatedProperties 。",
+        "4. 属性类型如果有 required ，请在 V2 中加入 TypeWithDependent 。"
+    ],
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
     "type": "object",
     "patternProperties": {
-        "^(?!.*?\\$schema).*$": {
-            "type": "object",
+        "^(?!.*_comment$)(?!^comment$)(?!.*?\\$schema).*$": {
+            "$ref": "#/$defs/Node"
+        }
+    },
+    "$defs": {
+        "CustomRecognitionSchema": {
+            "$comment": "若要使用拓展模式，请为 ref 添加 $ ，编写方法类似 RecognitionV2",
+            "ref": "../test/schema/custom.recognition.schema.json"
+        },
+        "CustomActionSchema": {
+            "$comment": "若要使用拓展模式，请为 ref 添加 $ ，编写方法类似 ActionV2",
+            "ref": "./custom.action.schema.json"
+        },
+        "jsonDocument": {
             "patternProperties": {
                 ".*_doc$|^doc$": {
+                    "title": "Document Property",
+                    "description": "文档 | 该节点属性的文档说明。",
+                    "type": "string",
+                    "markdownDescription": "*string*\n\n文档 | 该节点属性的文档说明。"
+                }
+            }
+        },
+        "jsonComment": {
+            "patternProperties": {
+                ".*_comment$|^comment$": {
+                    "title": "Comment Property",
+                    "description": "注释 | 该节点属性的注释说明。",
+                    "type": "string",
+                    "markdownDescription": "*string*\n\n注释 | 该节点属性的注释说明。"
+                }
+            }
+        },
+        "jsonCode": {
+            "patternProperties": {
+                ".*_code$|^code$": {
+                    "title": "Code Overridden Property",
+                    "description": "代码覆写 | 该节点属性通过外部代码覆写",
+                    "markdownDescription": "*any*\n\n注释 | 该节点属性的注释说明。"
+                }
+            }
+        },
+        "jsonComments": {
+            "allOf": [
+                {
+                    "$ref": "#/$defs/jsonDocument"
+                },
+                {
+                    "$ref": "#/$defs/jsonComment"
+                },
+                {
+                    "$ref": "#/$defs/jsonCode"
+                }
+            ]
+        },
+        "jsonDateTime": {
+            "type": "string",
+            "format": "date-time"
+        },
+        "jsonDate": {
+            "type": "string",
+            "format": "date"
+        },
+        "jsonTime": {
+            "type": "string",
+            "format": "time"
+        },
+        "jsonDuration": {
+            "type": "string",
+            "format": "duration"
+        },
+        "jsonEmail": {
+            "type": "string",
+            "format": "email"
+        },
+        "jsonIdnEmail": {
+            "type": "string",
+            "format": "idn-email"
+        },
+        "jsonHostname": {
+            "type": "string",
+            "format": "hostname"
+        },
+        "jsonIdnHostname": {
+            "type": "string",
+            "format": "idn-hostname"
+        },
+        "jsonIPv4": {
+            "type": "string",
+            "format": "ipv4"
+        },
+        "jsonIPv6": {
+            "type": "string",
+            "format": "ipv6"
+        },
+        "jsonUri": {
+            "type": "string",
+            "format": "uri"
+        },
+        "jsonUriReference": {
+            "type": "string",
+            "format": "uri-reference"
+        },
+        "jsonIri": {
+            "type": "string",
+            "format": "iri"
+        },
+        "jsonIriReference": {
+            "type": "string",
+            "format": "iri-reference"
+        },
+        "jsonUuid": {
+            "type": "string",
+            "format": "uuid"
+        },
+        "jsonUriTemplate": {
+            "type": "string",
+            "format": "uri-template"
+        },
+        "jsonPointer": {
+            "type": "string",
+            "format": "json-pointer"
+        },
+        "jsonRelativePointer": {
+            "type": "string",
+            "format": "relative-json-pointer"
+        },
+        "jsonRegex": {
+            "type": "string",
+            "format": "regex"
+        },
+        "jsonInt8": {
+            "type": "integer",
+            "format": "sbyte",
+            "minimum": -128,
+            "maximum": 127,
+            "default": 0
+        },
+        "jsonUInt8": {
+            "type": "integer",
+            "format": "byte",
+            "minimum": 0,
+            "maximum": 255,
+            "default": 0
+        },
+        "jsonInt16": {
+            "type": "integer",
+            "format": "int16",
+            "minimum": -32768,
+            "maximum": 32767,
+            "default": 0
+        },
+        "jsonUInt16": {
+            "type": "integer",
+            "format": "uint16",
+            "minimum": 0,
+            "maximum": 65535,
+            "default": 0
+        },
+        "jsonInt32": {
+            "type": "integer",
+            "format": "int32",
+            "minimum": -2147483648,
+            "maximum": 2147483647,
+            "default": 0
+        },
+        "jsonUInt32": {
+            "type": "integer",
+            "format": "uint32",
+            "minimum": 0,
+            "maximum": 4294967295,
+            "default": 0
+        },
+        "jsonInt64": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": -9223372036854775808,
+            "maximum": 9223372036854775807,
+            "default": 0
+        },
+        "jsonUInt64": {
+            "type": "integer",
+            "format": "uint64",
+            "minimum": 0,
+            "maximum": 18446744073709551615,
+            "default": 0
+        },
+        "jsonInt128": {
+            "type": "integer",
+            "format": "int128",
+            "minimum": -170141183460469231731687303715884105728,
+            "maximum": 170141183460469231731687303715884105727,
+            "default": 0
+        },
+        "jsonUInt128": {
+            "type": "integer",
+            "format": "uint128",
+            "minimum": 0,
+            "maximum": 340282366920938463463374607431768211455,
+            "default": 0
+        },
+        "jsonNInt32": {
+            "$ref": "#/$defs/jsonInt32",
+            "minimum": 0,
+            "default": 0
+        },
+        "jsonNInt64": {
+            "$ref": "#/$defs/jsonInt64",
+            "minimum": 0,
+            "default": 0
+        },
+        "jsonNumber01": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1,
+            "default": 0
+        },
+        "jsonConstTrue": {
+            "const": true
+        },
+        "jsonBooleanTrue": {
+            "type": "boolean",
+            "default": true
+        },
+        "jsonBooleanFalse": {
+            "type": "boolean",
+            "default": false
+        },
+        "jsonDefaultNull": {
+            "default": null
+        },
+        "jsonDefaultObject": {
+            "default": {}
+        },
+        "jsonStringStringPair": {
+            "type": "array",
+            "items": false,
+            "prefixItems": [
+                {
                     "type": "string"
                 },
-                ".*_code$|^code$": {
+                {
                     "type": "string"
                 }
+            ],
+            "default": [
+                "",
+                ""
+            ]
+        },
+        "jsonStringStringPairList": {
+            "type": "array",
+            "items": {
+                "$ref": "#/$defs/jsonStringStringPair"
             },
+            "default": []
+        },
+        "jsonStringStringPairOrList": {
+            "anyOf": [
+                {
+                    "$ref": "#/$defs/jsonStringStringPair"
+                },
+                {
+                    "$ref": "#/$defs/jsonStringStringPairList"
+                }
+            ],
+            "default": []
+        },
+        "jsonStringList": {
+            "type": "array",
+            "items": {
+                "type": "string"
+            },
+            "default": []
+        },
+        "jsonStringOrList": {
+            "anyOf": [
+                {
+                    "type": "string"
+                },
+                {
+                    "$ref": "#/$defs/jsonStringList"
+                }
+            ],
+            "default": []
+        },
+        "jsonRegexList": {
+            "type": "array",
+            "items": {
+                "$ref": "#/$defs/jsonRegex"
+            },
+            "default": []
+        },
+        "jsonRegexOrList": {
+            "anyOf": [
+                {
+                    "$ref": "#/$defs/jsonRegex"
+                },
+                {
+                    "$ref": "#/$defs/jsonRegexList"
+                }
+            ],
+            "default": []
+        },
+        "jsonInt32List": {
+            "type": "array",
+            "items": {
+                "$ref": "#/$defs/jsonInt32"
+            },
+            "default": []
+        },
+        "jsonInt32OrList": {
+            "anyOf": [
+                {
+                    "$ref": "#/$defs/jsonInt32"
+                },
+                {
+                    "$ref": "#/$defs/jsonInt32List"
+                }
+            ],
+            "default": []
+        },
+        "jsonInt32ListList": {
+            "type": "array",
+            "items": {
+                "$ref": "#/$defs/jsonInt32List"
+            },
+            "default": []
+        },
+        "jsonInt32ListOrListList": {
+            "anyOf": [
+                {
+                    "$ref": "#/$defs/jsonInt32List"
+                },
+                {
+                    "$ref": "#/$defs/jsonInt32ListList"
+                }
+            ],
+            "default": []
+        },
+        "jsonNumber01List": {
+            "type": "array",
+            "items": {
+                "$ref": "#/$defs/jsonNumber01"
+            },
+            "default": []
+        },
+        "jsonNumber01OrList": {
+            "anyOf": [
+                {
+                    "$ref": "#/$defs/jsonNumber01"
+                },
+                {
+                    "$ref": "#/$defs/jsonNumber01List"
+                }
+            ],
+            "default": []
+        },
+        "jsonRect": {
+            "$ref": "#/$defs/jsonInt32List",
+            "minItems": 4,
+            "maxItems": 4,
+            "default": [
+                0,
+                0,
+                0,
+                0
+            ]
+        },
+        "jsonRoi": {
+            "anyOf": [
+                {
+                    "type": "string"
+                },
+                {
+                    "$ref": "#/$defs/jsonRect"
+                }
+            ],
+            "default": [
+                0,
+                0,
+                0,
+                0
+            ]
+        },
+        "jsonTarget": {
+            "anyOf": [
+                {
+                    "$ref": "#/$defs/jsonConstTrue"
+                },
+                {
+                    "$ref": "#/$defs/jsonRoi"
+                }
+            ],
+            "default": true
+        },
+        "TypeWithDependent": {
+            "properties": {
+                "type": "string"
+            },
+            "anyOf": [
+                {
+                    "required": [
+                        "param"
+                    ]
+                },
+                {
+                    "required": [
+                        "param_code"
+                    ]
+                }
+            ]
+        },
+        "DirectHit": {
+            "type": "object",
+            "properties": {}
+        },
+        "DirectHitV1": {
             "properties": {
                 "recognition": {
-                    "description": "识别算法类型。可选，默认 DirectHit。",
-                    "enum": [
-                        "DirectHit",
-                        "TemplateMatch",
-                        "FeatureMatch",
-                        "ColorMatch",
-                        "OCR",
-                        "NeuralNetworkClassify",
-                        "NeuralNetworkDetect",
-                        "Custom"
-                    ],
-                    "default": "DirectHit"
+                    "const": "DirectHit"
+                }
+            }
+        },
+        "DirectHitV2": {
+            "properties": {
+                "type": {
+                    "const": "DirectHit"
                 },
-                "action": {
-                    "description": "执行的动作。可选，默认 DoNothing。",
-                    "enum": [
-                        "DoNothing",
-                        "Click",
-                        "LongPress",
-                        "Swipe",
-                        "MultiSwipe",
-                        "Key",
-                        "InputText",
-                        "Text",
-                        "StartApp",
-                        "StopApp",
-                        "StopTask",
-                        "Command",
-                        "Custom"
-                    ],
-                    "default": "DoNothing"
-                },
-                "next": {
-                    "description": "接下来要执行的任务列表。可选，默认空。\n按序识别每个任务，只执行第一个识别到的。",
-                    "$ref": "#/definitions/tasklist"
-                },
-                "interrupt": {
-                    "description": "`next` 中全部未识别到时的候补任务列表，会执行类似中断操作。\n按序识别每个任务，只执行第一个识别到的。",
-                    "$ref": "#/definitions/tasklist"
-                },
-                "on_error": {
-                    "description": "当 `next` 识别完全失败，或动作执行失败后，接下来会执行该列表中的任务\n按序识别每个任务，只执行第一个识别到的。",
-                    "$ref": "#/definitions/tasklist"
-                },
-                "is_sub": {
-                    "description": "已废弃字段！\n是否是子任务。可选，默认否。\n若是，该任务在任意列表中行为均与 interrupt 中一致",
-                    "type": "boolean",
-                    "default": false
-                },
-                "inverse": {
-                    "description": "反转识别结果，识别到了当做没识别到，没识别到的当做识别到了。可选，默认否。",
-                    "type": "boolean",
-                    "default": false
-                },
-                "enabled": {
-                    "description": "是否启用该 task。可选，默认 true",
-                    "type": "boolean",
-                    "default": true
-                },
-                "rate_limit": {
-                    "description": "识别速率限制，单位毫秒。\n每轮识别 next 最低消耗 `rate_limit` 毫秒，不足的时间将会 sleep 等待。",
-                    "type": "integer",
-                    "minimum": 0,
-                    "default": 1000
-                },
-                "timeout": {
-                    "description": "`next` + `interrupt` 识别超时时间，毫秒。默认 20 * 1000 。\n具体逻辑为 `while(!timeout) { foreach(next + interrupt); sleep_until(rate_limit); }` 。",
-                    "type": "integer",
-                    "minimum": 0,
-                    "default": 20000
-                },
-                "pre_delay": {
-                    "description": "识别到 到 执行动作前 的延迟，毫秒。可选，默认 200。\n推荐尽可能增加中间过程任务，少用延迟，不然既慢还不稳定。",
-                    "type": "integer",
-                    "minimum": 0,
-                    "default": 200
-                },
-                "post_delay": {
-                    "description": "执行动作后 到 下一个步骤 的延迟，毫秒。可选，默认 200。\n推荐尽可能增加中间过程任务，少用延迟，不然既慢还不稳定。",
-                    "type": "integer",
-                    "minimum": 0,
-                    "default": 200
-                },
-                "pre_wait_freezes": {
-                    "description": "识别到 到 执行动作前，等待画面不动了的时间，毫秒。可选，默认 0，即不等待。",
-                    "$ref": "#/definitions/wait_freezes_type"
-                },
-                "post_wait_freezes": {
-                    "description": "行动动作后 到 识别 next，等待画面不动了的时间，毫秒。可选，默认 0，即不等待。",
-                    "$ref": "#/definitions/wait_freezes_type"
-                },
-                "focus": {
-                    "description": "同步回调消息。可选，默认 null，不产生。",
-                    "default": null
-                },
-                "roi": {
-                    "description": "识别区域坐标。可选，默认 [0, 0, 0, 0]，即全屏。",
-                    "$ref": "#/definitions/roi_type",
-                    "default": [
-                        0,
-                        0,
-                        0,
-                        0
+                "param": {
+                    "$ref": "#/$defs/DirectHit",
+                    "unevaluatedProperties": false,
+                    "allOf": [
+                        {
+                            "$ref": "#/$defs/jsonComments"
+                        }
                     ]
+                }
+            }
+        },
+        "TemplateMatch": {
+            "type": "object",
+            "properties": {
+                "roi": {
+                    "title": "ROI Property",
+                    "description": "识别区域坐标。可选，默认 [0, 0, 0, 0] ，即全屏。",
+                    "$ref": "#/$defs/jsonRoi",
+                    "markdownDescription": "*array<int, 4>* | *string*\n\n识别区域坐标。可选，默认 [0, 0, 0, 0] ，即全屏。\n\n- *array<int, 4>*: 识别区域坐标，[x, y, w, h]，若希望全屏可设为 [0, 0, 0, 0] 。\n\n- *string*: 填写节点名，在之前执行过的某节点识别到的目标范围内识别。"
                 },
                 "roi_offset": {
-                    "description": "在 roi_offset 的基础上额外移动再作为目标，四个值分别相加。可选，默认 [0, 0, 0, 0]。",
-                    "$ref": "#/definitions/rect",
-                    "default": [
-                        0,
-                        0,
-                        0,
-                        0
-                    ]
+                    "title": "ROI Offset Property",
+                    "description": "在 `roi` 的基础上额外移动再作为范围，四个值分别相加。可选，默认 [0, 0, 0, 0] 。",
+                    "$ref": "#/$defs/jsonRect",
+                    "markdownDescription": "*array<int, 4>*\n\n在 `roi` 的基础上额外移动再作为范围，四个值分别相加。可选，默认 [0, 0, 0, 0] 。"
+                },
+                "template": {
+                    "title": "Template Property",
+                    "description": "模板图片路径，需要 `image` 文件夹的相对路径。必选。",
+                    "$ref": "#/$defs/jsonStringOrList",
+                    "markdownDescription": "*string* | *list<string, >*\n\n模板图片路径，需要 `image` 文件夹的相对路径。必选。\n\n所使用的图片需要是无损原图缩放到 720p 后的裁剪。请参考 [这里](1.1-快速开始.md#图片文件)。\n\n支持填写文件夹路径，将递归加载其中所有图片文件。"
+                },
+                "threshold": {
+                    "title": "Threshold Property",
+                    "description": "模板匹配阈值。可选，默认 0.7 。",
+                    "$ref": "#/$defs/jsonNumber01OrList",
+                    "markdownDescription": "*double* | *list<double, >*\n\n模板匹配阈值。可选，默认 0.7 。\n\n若为数组，长度需和 `template` 数组长度相同。",
+                    "default": 0.7
                 },
                 "order_by": {
-                    "description": "识别结果排序方式。可选，默认 `Horizontal`",
+                    "title": "Order By Property",
+                    "description": "结果排序方式。可选，默认 `Horizontal`。",
+                    "enum": [
+                        "Horizontal",
+                        "Vertical",
+                        "Score",
+                        "Random"
+                    ],
+                    "markdownDescription": "*string*\n\n结果排序方式。可选，默认 `Horizontal`。\n\n可选的值：`Horizontal` | `Vertical` | `Score` | `Random` 。\n\n可结合 `index` 字段使用。",
+                    "default": "Horizontal"
+                },
+                "index": {
+                    "title": "Index Property",
+                    "description": "命中第几个结果。可选，默认 0 。",
+                    "$ref": "#/$defs/jsonInt32",
+                    "markdownDescription": "*int*\n\n命中第几个结果。可选，默认 0 。\n\n假设共有 N 个结果，则 `index` 的取值范围为 [-N, N - 1] ，其中负数使用类 Python 的规则转换为 N - index 。若超出范围，则视为当前识别无结果。"
+                },
+                "method": {
+                    "title": "Method Property",
+                    "description": "模板匹配算法，即 cv::TemplateMatchModes。可选，默认 5 。",
+                    "enum": [
+                        1,
+                        3,
+                        5
+                    ],
+                    "markdownDescription": "*int*\n\n模板匹配算法，即 cv::TemplateMatchModes。可选，默认 5 。\n\n仅支持 1、3、5，可简单理解为越大的越精确，但也会更慢。\n\n详情请参考 [OpenCV 官方文档](https://docs.opencv.org/4.x/df/dfb/group__imgproc__object.html)。",
+                    "defaultSnippets": [
+                        {
+                            "label": "SQDIFF",
+                            "body": 1
+                        },
+                        {
+                            "label": "CCORR",
+                            "body": 3
+                        },
+                        {
+                            "label": "CCOEFF",
+                            "body": 5
+                        }
+                    ],
+                    "default": 5
+                },
+                "green_mask": {
+                    "title": "Green Mask Property",
+                    "description": "是否进行绿色掩码。可选，默认 false 。",
+                    "$ref": "#/$defs/jsonBooleanFalse",
+                    "markdownDescription": "*bool*\n\n是否进行绿色掩码。可选，默认 false 。\n\n若为 true，可以将图片中不希望匹配的部分涂绿 RGB: (0, 255, 0)，则不对绿色部分进行匹配。"
+                }
+            },
+            "anyOf": [
+                {
+                    "required": [
+                        "template"
+                    ]
+                },
+                {
+                    "required": [
+                        "template_code"
+                    ]
+                }
+            ]
+        },
+        "TemplateMatchV1": {
+            "properties": {
+                "recognition": {
+                    "const": "TemplateMatch"
+                }
+            },
+            "allOf": [
+                {
+                    "$ref": "#/$defs/TemplateMatch"
+                }
+            ]
+        },
+        "TemplateMatchV2": {
+            "properties": {
+                "type": {
+                    "const": "TemplateMatch"
+                },
+                "param": {
+                    "$ref": "#/$defs/TemplateMatch",
+                    "unevaluatedProperties": false,
+                    "allOf": [
+                        {
+                            "$ref": "#/$defs/jsonComments"
+                        }
+                    ]
+                }
+            },
+            "dependentSchemas": {
+                "type": {
+                    "$ref": "#/$defs/TypeWithDependent"
+                }
+            }
+        },
+        "FeatureMatch": {
+            "type": "object",
+            "properties": {
+                "roi": {
+                    "$ref": "#/$defs/TemplateMatch/properties/roi"
+                },
+                "roi_offset": {
+                    "$ref": "#/$defs/TemplateMatch/properties/roi_offset"
+                },
+                "template": {
+                    "title": "Template Property",
+                    "description": "模板图片路径，需要 `image` 文件夹的相对路径。必选。",
+                    "$ref": "#/$defs/jsonStringOrList",
+                    "markdownDescription": "*string* | *list<string, >*\n\n模板图片路径，需要 `image` 文件夹的相对路径。必选。\n\n支持填写文件夹路径，将递归加载其中所有图片文件。"
+                },
+                "count": {
+                    "title": "Count Property",
+                    "description": "匹配的特征点的最低数量要求（阈值）。可选，默认 4 。",
+                    "$ref": "#/$defs/jsonNInt32",
+                    "markdownDescription": "*uint*\n\n匹配的特征点的最低数量要求（阈值）。可选，默认 4 。",
+                    "default": 4
+                },
+                "order_by": {
+                    "title": "Order By Property",
+                    "description": "结果排序方式。可选，默认 `Horizontal` 。",
                     "enum": [
                         "Horizontal",
                         "Vertical",
                         "Score",
                         "Area",
-                        "Length",
-                        "Random",
-                        "Excepted"
+                        "Random"
                     ],
+                    "markdownDescription": "*string*\n\n结果排序方式。可选，默认 `Horizontal` 。\n\n可选的值：`Horizontal` | `Vertical` | `Score` | `Area` | `Random` 。\n\n可结合 `index` 字段使用。",
                     "default": "Horizontal"
                 },
                 "index": {
-                    "description": "命中第几个识别结果。可选，默认 0。\n假设共有 N 个结果，则 `index` 的取值范围为 [-N, N - 1]，其中负数使用类 Python 的规则转换为 N - index。若超出范围，则视为当前识别无结果。",
-                    "type": "integer",
-                    "default": 0
+                    "title": "Index Property",
+                    "description": "命中第几个结果。可选，默认 0 。",
+                    "$ref": "#/$defs/jsonInt32",
+                    "markdownDescription": "*int*\n\n命中第几个结果。可选，默认 0 。\n\n假设共有 N 个结果，则 `index` 的取值范围为 [-N, N - 1] ，其中负数使用类 Python 的规则转换为 N - index 。若超出范围，则视为当前识别无结果。"
                 },
-                "template": {
-                    "description": "模板图片路径，需要 image 文件夹的相对路径。必选。",
-                    "$ref": "#/definitions/tasklist",
-                    "default": ""
-                },
-                "threshold": {},
-                "method": {},
                 "green_mask": {
-                    "description": "是否进行绿色掩码。可选，默认 false。",
-                    "type": "boolean",
-                    "default": false
+                    "title": "Green Mask Property",
+                    "description": "是否进行绿色掩码。可选，默认 false 。",
+                    "$ref": "#/$defs/jsonBooleanFalse",
+                    "markdownDescription": "*bool*\n\n是否进行绿色掩码。可选，默认 false 。\n\n若为 true，可以将图片中不希望匹配的部分涂绿 RGB: (0, 255, 0)，则不对绿色部分进行匹配。"
                 },
-                "lower": {
-                    "description": "颜色下限值。必选。最内层 list 长度需和 method 的通道数一致。",
-                    "$ref": "#/definitions/colorlist"
-                },
-                "upper": {
-                    "description": "颜色上限值。必选。最内层 list 长度需和 method 的通道数一致。",
-                    "$ref": "#/definitions/colorlist"
-                },
-                "count": {},
-                "connected": {
-                    "description": "是否是相连的点才会被计数。可选，默认否。",
-                    "type": "boolean",
-                    "default": false
-                },
-                "replace": {
-                    "description": "部分文字识别结果不准确，进行替换。可选。",
-                    "$ref": "#/definitions/replace_type",
-                    "default": []
-                },
-                "only_rec": {
-                    "description": "是否仅识别（不进行检测，需要精确设置 roi）。可选，默认 false。",
-                    "type": "boolean",
-                    "default": false
-                },
-                "model": {},
-                "labels": {
-                    "description": "标注，即每个分类的名字。可选。",
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
-                },
-                "expected": {},
                 "detector": {
-                    "description": "特征检测器。可选，默认 SIFT。",
+                    "title": "Detector Property",
+                    "description": "特征检测器。可选，默认 `SIFT` 。",
                     "enum": [
                         "SIFT",
-                        "KAZE",
-                        "AKAZE",
+                        "ORB",
                         "BRISK",
-                        "ORB"
+                        "KAZE",
+                        "AKAZE"
                     ],
+                    "markdownDescription": "*string*\n\n特征检测器。可选，默认 `SIFT` 。\n\n目前支持以下算法：\n\n  - SIFT\n\n计算复杂度高，具有尺度不变性、旋转不变性。效果最好。\n\n- KAZE\n\n适用于2D和3D图像，具有尺度不变性、旋转不变性。\n\n- AKAZE\n\n计算速度较快，具有尺度不变性、旋转不变性。\n\n- BRISK\n\n计算速度非常快，具有尺度不变性、旋转不变性。\n\n- ORB\n\n计算速度非常快，具有旋转不变性。但不具有尺度不变性。\n\n各算法特点详情可自行进一步查询。",
                     "default": "SIFT"
                 },
                 "ratio": {
-                    "description": "KNN 匹配算法的距离比值，[0 - 1.0], 越大则匹配越宽松（更容易连线）。可选，默认 0.6。",
-                    "type": "number",
-                    "default": 0.6,
-                    "minimum": 0,
-                    "maximum": 1
-                },
-                "custom_recognition": {
-                    "description": "识别器名，同 MaaResourceRegisterCustomRecognition 接口传入的识别器名。必选。",
-                    "type": "string",
-                    "default": ""
-                },
-                "custom_recognition_param": {
-                    "description": "识别器参数，任意类型，会在执行时透传。可选，默认空 json，即 {}",
-                    "default": {}
-                },
-                "target": {
-                    "description": "点击位置。可选，默认 true。",
-                    "$ref": "#/definitions/target_type",
-                    "default": true
-                },
-                "target_offset": {
-                    "description": "在 target 的基础上额外移动再作为目标，四个值分别相加。可选，默认 [0, 0, 0, 0]。",
-                    "$ref": "#/definitions/rect",
-                    "default": [
-                        0,
-                        0,
-                        0,
-                        0
-                    ]
-                },
-                "begin": {
-                    "description": "滑动起点。可选，默认 true。",
-                    "$ref": "#/definitions/target_type",
-                    "default": true
-                },
-                "begin_offset": {
-                    "description": "在 begin 的基础上额外移动再作为起点，四个值分别相加。可选，默认 [0, 0, 0, 0]。",
-                    "$ref": "#/definitions/rect",
-                    "default": [
-                        0,
-                        0,
-                        0,
-                        0
-                    ]
-                },
-                "end": {
-                    "description": "滑动终点。必选，默认 true。",
-                    "$ref": "#/definitions/target_type",
-                    "default": true
-                },
-                "end_offset": {
-                    "description": "在 end 的基础上额外移动再作为终点，四个值分别相加。可选，默认 [0, 0, 0, 0]。",
-                    "$ref": "#/definitions/rect",
-                    "default": [
-                        0,
-                        0,
-                        0,
-                        0
-                    ]
-                },
-                "duration": {
-                    "description": "滑动持续时间，单位毫秒。可选，默认 200。",
-                    "type": "integer",
-                    "default": 200
-                },
-                "swipes": {
-                    "description": "多个滑动的数组。必选。数组元素顺序没有影响，只基于 `starting` 确定顺序。",
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/swipe_type"
-                    }
-                },
-                "key": {
-                    "description": "要按的键，仅支持 ascii。",
-                    "$ref": "#/definitions/keylist",
-                    "default": 0
-                },
-                "input_text": {
-                    "description": "要输入的文本，部分控制器仅支持 ascii。",
-                    "type": "string",
-                    "default": ""
-                },
-                "package": {},
-                "exec": {
-                    "description": "执行的程序路径。必选。",
-                    "type": "string"
-                },
-                "args": {
-                    "description": "执行的参数。可选。支持部分运行期参数替换：{ENTRY}, {NODE}, {IMAGE}, {BOX}, {RESOURCE_DIR}, {LIBRARY_DIR}。",
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    },
-                    "default": []
-                },
-                "detach": {
-                    "description": "分离子进程，即不等待子进程执行完成，直接继续之后后面的节点。可选，默认 false。",
-                    "type": "boolean",
-                    "default": false
-                },
-                "custom_action": {
-                    "description": "动作名，同 MaaResourceRegisterCustomAction 接口传入的动作名。必选。",
-                    "type": "string",
-                    "default": ""
-                },
-                "custom_action_param": {
-                    "description": "动作参数，任意类型，会在执行时透传。可选，默认空 json，即 {}",
-                    "default": {}
+                    "title": "Ratio Property",
+                    "description": "KNN 匹配算法的距离比值，[0 - 1.0] , 越大则匹配越宽松（更容易连线）。可选，默认 0.6 。",
+                    "$ref": "#/$defs/jsonNumber01",
+                    "markdownDescription": "*double*\n\nKNN 匹配算法的距离比值，[0 - 1.0] , 越大则匹配越宽松（更容易连线）。可选，默认 0.6 。",
+                    "default": 0.6
                 }
             },
-            "additionalProperties": false,
-            "dependencies": {
-                "recognition": {
-                    "oneOf": [
-                        {
-                            "$comment": "DirectHit",
-                            "properties": {
-                                "recognition": {
-                                    "const": "DirectHit"
-                                }
-                            }
-                        },
-                        {
-                            "$comment": "TemplateMatch",
-                            "properties": {
-                                "recognition": {
-                                    "const": "TemplateMatch"
-                                },
-                                "method": {
-                                    "description": "模板匹配算法，即 cv::TemplateMatchModes。可选，默认 5 ",
-                                    "enum": [
-                                        1,
-                                        3,
-                                        5
-                                    ],
-                                    "default": 5
-                                },
-                                "threshold": {
-                                    "description": "模板匹配阈值。可选，默认 0.7 。",
-                                    "anyOf": [
-                                        {
-                                            "type": "number",
-                                            "default": 0.7,
-                                            "minimum": 0,
-                                            "maximum": 1
-                                        },
-                                        {
-                                            "type": "array",
-                                            "items": {
-                                                "type": "number",
-                                                "default": 0.7,
-                                                "minimum": 0,
-                                                "maximum": 1
-                                            }
-                                        }
-                                    ]
-                                }
-                            },
-                            "anyOf": [
-                                {
-                                    "required": [
-                                        "template"
-                                    ]
-                                },
-                                {
-                                    "required": [
-                                        "template_code"
-                                    ]
-                                }
-                            ]
-                        },
-                        {
-                            "$comment": "FeatureMatch",
-                            "properties": {
-                                "recognition": {
-                                    "const": "FeatureMatch"
-                                },
-                                "count": {
-                                    "description": "匹配的特征点的数量要求（阈值），默认 4。",
-                                    "type": "integer",
-                                    "default": 4
-                                }
-                            },
-                            "anyOf": [
-                                {
-                                    "required": [
-                                        "template"
-                                    ]
-                                },
-                                {
-                                    "required": [
-                                        "template_code"
-                                    ]
-                                }
-                            ]
-                        },
-                        {
-                            "$comment": "ColorMatch",
-                            "properties": {
-                                "recognition": {
-                                    "const": "ColorMatch"
-                                },
-                                "method": {
-                                    "description": "颜色匹配方式。即 cv::ColorConversionCodes。可选，默认 4 (RGB)。\n常用值：4 (RGB, 3 通道), 40 (HSV, 3 通道), 6 (GRAY, 1 通道)。",
-                                    "type": "integer",
-                                    "default": 4
-                                },
-                                "count": {
-                                    "description": "符合的点的数量要求。可选，默认 1。",
-                                    "type": "integer",
-                                    "default": 1
-                                }
-                            },
-                            "anyOf": [
-                                {
-                                    "required": [
-                                        "lower",
-                                        "upper"
-                                    ]
-                                },
-                                {
-                                    "required": [
-                                        "lower_code",
-                                        "upper_code"
-                                    ]
-                                },
-                                {
-                                    "required": [
-                                        "lower_code",
-                                        "upper"
-                                    ]
-                                },
-                                {
-                                    "required": [
-                                        "lower",
-                                        "upper_code"
-                                    ]
-                                }
-                            ]
-                        },
-                        {
-                            "$comment": "OCR",
-                            "properties": {
-                                "recognition": {
-                                    "const": "OCR"
-                                },
-                                "model": {
-                                    "description": "模型 文件夹 路径。使用 model/ocr 文件夹的相对路径。可选，默认为空。",
-                                    "type": "string",
-                                    "default": ""
-                                },
-                                "expected": {
-                                    "description": "期望的结果，支持正则。必选（除非通过接口单独设置）。",
-                                    "anyOf": [
-                                        {
-                                            "type": "string"
-                                        },
-                                        {
-                                            "type": "array",
-                                            "items": {
-                                                "type": "string"
-                                            },
-                                            "minItems": 1
-                                        }
-                                    ]
-                                }
-                            },
-                            "anyOf": [
-                                {
-                                    "required": [
-                                        "expected"
-                                    ]
-                                },
-                                {
-                                    "required": [
-                                        "expected_code"
-                                    ]
-                                }
-                            ]
-                        },
-                        {
-                            "$comment": "NeuralNetworkClassify",
-                            "properties": {
-                                "recognition": {
-                                    "const": "NeuralNetworkClassify"
-                                },
-                                "model": {
-                                    "description": "模型文件路径。使用 model/classify 文件夹的相对路径。必选。",
-                                    "type": "string",
-                                    "default": ""
-                                },
-                                "expected": {
-                                    "description": "期望的分类下标。必选",
-                                    "$ref": "#/definitions/expected_type"
-                                }
-                            },
-                            "anyOf": [
-                                {
-                                    "required": [
-                                        "model",
-                                        "expected"
-                                    ]
-                                },
-                                {
-                                    "required": [
-                                        "model_code",
-                                        "expected_code"
-                                    ]
-                                },
-                                {
-                                    "required": [
-                                        "model_code",
-                                        "expected"
-                                    ]
-                                },
-                                {
-                                    "required": [
-                                        "model",
-                                        "expected_code"
-                                    ]
-                                }
-                            ]
-                        },
-                        {
-                            "$comment": "NeuralNetworkDetect",
-                            "properties": {
-                                "recognition": {
-                                    "const": "NeuralNetworkDetect"
-                                },
-                                "model": {
-                                    "description": "模型文件路径。使用 model/detect 文件夹的相对路径。必选。",
-                                    "type": "string",
-                                    "default": ""
-                                },
-                                "threshold": {
-                                    "description": "模型置信度阈值。可选，默认 0.3 。",
-                                    "anyOf": [
-                                        {
-                                            "type": "number"
-                                        },
-                                        {
-                                            "type": "array",
-                                            "items": {
-                                                "type": "number"
-                                            },
-                                            "minItems": 1
-                                        }
-                                    ],
-                                    "default": 0.3
-                                },
-                                "expected": {
-                                    "description": "期望的分类下标。必选",
-                                    "$ref": "#/definitions/expected_type"
-                                }
-                            },
-                            "anyOf": [
-                                {
-                                    "required": [
-                                        "model",
-                                        "expected"
-                                    ]
-                                },
-                                {
-                                    "required": [
-                                        "model_code",
-                                        "expected_code"
-                                    ]
-                                },
-                                {
-                                    "required": [
-                                        "model_code",
-                                        "expected"
-                                    ]
-                                },
-                                {
-                                    "required": [
-                                        "model",
-                                        "expected_code"
-                                    ]
-                                }
-                            ]
-                        },
-                        {
-                            "$comment": "Custom",
-                            "properties": {
-                                "recognition": {
-                                    "const": "Custom"
-                                }
-                            },
-                            "anyOf": [
-                                {
-                                    "required": [
-                                        "custom_recognition"
-                                    ]
-                                },
-                                {
-                                    "required": [
-                                        "custom_recognition_code"
-                                    ]
-                                }
-                            ]
-                        }
+            "anyOf": [
+                {
+                    "required": [
+                        "template"
                     ]
                 },
-                "action": {
-                    "oneOf": [
+                {
+                    "required": [
+                        "template_code"
+                    ]
+                }
+            ]
+        },
+        "FeatureMatchV1": {
+            "properties": {
+                "recognition": {
+                    "const": "FeatureMatch"
+                }
+            },
+            "allOf": [
+                {
+                    "$ref": "#/$defs/FeatureMatch"
+                }
+            ]
+        },
+        "FeatureMatchV2": {
+            "properties": {
+                "type": {
+                    "const": "FeatureMatch"
+                },
+                "param": {
+                    "$ref": "#/$defs/FeatureMatch",
+                    "unevaluatedProperties": false,
+                    "allOf": [
                         {
-                            "$comment": "DoNothing",
-                            "properties": {
-                                "action": {
-                                    "const": "DoNothing"
-                                }
-                            }
+                            "$ref": "#/$defs/jsonComments"
+                        }
+                    ]
+                }
+            },
+            "dependentSchemas": {
+                "type": {
+                    "$ref": "#/$defs/TypeWithDependent"
+                }
+            }
+        },
+        "ColorMatch": {
+            "type": "object",
+            "properties": {
+                "roi": {
+                    "$ref": "#/$defs/TemplateMatch/properties/roi"
+                },
+                "roi_offset": {
+                    "$ref": "#/$defs/TemplateMatch/properties/roi_offset"
+                },
+                "method": {
+                    "title": "Method Property",
+                    "description": "颜色匹配方式。即 cv::ColorConversionCodes。可选，默认 4 (RGB) 。",
+                    "$ref": "#/$defs/jsonInt32",
+                    "markdownDescription": "*int*\n\n颜色匹配方式。即 cv::ColorConversionCodes。可选，默认 4 (RGB) 。\n\n常用值：4 (RGB, 3 通道), 40 (HSV, 3 通道), 6 (GRAY, 1 通道)。\n\n详情请参考 [OpenCV 官方文档](https://docs.opencv.org/4.x/d8/d01/group__imgproc__color__conversions.html)。",
+                    "defaultSnippets": [
+                        {
+                            "label": "RGB",
+                            "body": 4
                         },
                         {
-                            "$comment": "Click",
-                            "properties": {
-                                "action": {
-                                    "const": "Click"
-                                },
-                                "target": {
-                                    "description": "点击的位置。可选，默认 true。",
-                                    "$ref": "#/definitions/target_type",
-                                    "default": true
-                                },
-                                "target_offset": {
-                                    "description": "在 target 的基础上额外移动再点击，四个值分别相加。可选，默认 [0, 0, 0, 0]。",
-                                    "$ref": "#/definitions/rect",
-                                    "default": [
-                                        0,
-                                        0,
-                                        0,
-                                        0
-                                    ]
-                                }
-                            }
+                            "label": "GRAY",
+                            "body": 6
                         },
                         {
-                            "$comment": "LongPress",
-                            "properties": {
-                                "action": {
-                                    "const": "LongPress"
-                                },
-                                "target": {
-                                    "description": "点击的位置。可选，默认 true。",
-                                    "$ref": "#/definitions/target_type",
-                                    "default": true
-                                },
-                                "target_offset": {
-                                    "description": "在 target 的基础上额外移动再点击，四个值分别相加。可选，默认 [0, 0, 0, 0]。",
-                                    "$ref": "#/definitions/rect",
-                                    "default": [
-                                        0,
-                                        0,
-                                        0,
-                                        0
-                                    ]
-                                },
-                                "duration": {
-                                    "description": "动作持续的时间",
-                                    "type": "integer",
-                                    "default": 1000
-                                }
-                            }
-                        },
+                            "label": "HSV",
+                            "body": 40
+                        }
+                    ],
+                    "default": 4
+                },
+                "lower": {
+                    "title": "Lower Property",
+                    "description": "颜色下限值。必选。最内层 list 长度需和 `method` 的通道数一致。",
+                    "$ref": "#/$defs/jsonInt32ListOrListList",
+                    "markdownDescription": "*list<int, >* | *list<list<int, >>*\n\n颜色下限值。必选。最内层 list 长度需和 `method` 的通道数一致。"
+                },
+                "upper": {
+                    "title": "Upper Property",
+                    "description": "颜色上限值。必选。最内层 list 长度需和 `method` 的通道数一致。",
+                    "$ref": "#/$defs/jsonInt32ListOrListList",
+                    "markdownDescription": "*list<int, >* | *list<list<int, >>*\n\n颜色上限值。必选。最内层 list 长度需和 `method` 的通道数一致。"
+                },
+                "count": {
+                    "title": "Count Property",
+                    "description": "符合的像素点的最低数量要求（阈值）。可选，默认 1。",
+                    "$ref": "#/$defs/jsonNInt32",
+                    "markdownDescription": "*uint*\n\n符合的像素点的最低数量要求（阈值）。可选，默认 1。",
+                    "default": 1
+                },
+                "order_by": {
+                    "title": "Order By Property",
+                    "description": "结果排序方式。可选，默认 `Horizontal` 。",
+                    "enum": [
+                        "Horizontal",
+                        "Vertical",
+                        "Score",
+                        "Area",
+                        "Random"
+                    ],
+                    "markdownDescription": "*string*\n\n结果排序方式。可选，默认 `Horizontal` 。\n\n可选的值：`Horizontal` | `Vertical` | `Score` | `Area` | `Random` 。\n\n可结合 `index` 字段使用。",
+                    "default": "Horizontal"
+                },
+                "index": {
+                    "title": "Index Property",
+                    "description": "命中第几个结果。可选，默认 0 。",
+                    "$ref": "#/$defs/jsonInt32",
+                    "markdownDescription": "*int*\n\n命中第几个结果。可选，默认 0 。\n\n假设共有 N 个结果，则 `index` 的取值范围为 [-N, N - 1] ，其中负数使用类 Python 的规则转换为 N - index 。若超出范围，则视为当前识别无结果。"
+                },
+                "connected": {
+                    "title": "Connected Property",
+                    "description": "是否是相连的点才会被计数。可选，默认 false 。",
+                    "$ref": "#/$defs/jsonBooleanFalse",
+                    "markdownDescription": "*bool*\n\n是否是相连的点才会被计数。可选，默认 false 。\n\n若为是，在完成颜色过滤后，则只会计数像素点 **全部相连** 的最大块。\n\n若为否，则不考虑这些像素点是否相连。"
+                }
+            },
+            "anyOf": [
+                {
+                    "required": [
+                        "lower",
+                        "upper"
+                    ]
+                },
+                {
+                    "required": [
+                        "lower_code",
+                        "upper_code"
+                    ]
+                },
+                {
+                    "required": [
+                        "lower_code",
+                        "upper"
+                    ]
+                },
+                {
+                    "required": [
+                        "lower",
+                        "upper_code"
+                    ]
+                }
+            ]
+        },
+        "ColorMatchV1": {
+            "properties": {
+                "recognition": {
+                    "const": "ColorMatch"
+                }
+            },
+            "allOf": [
+                {
+                    "$ref": "#/$defs/ColorMatch"
+                }
+            ]
+        },
+        "ColorMatchV2": {
+            "properties": {
+                "type": {
+                    "const": "ColorMatch"
+                },
+                "param": {
+                    "$ref": "#/$defs/ColorMatch",
+                    "unevaluatedProperties": false,
+                    "allOf": [
                         {
-                            "$comment": "Swipe",
-                            "properties": {
-                                "action": {
-                                    "const": "Swipe"
-                                }
-                            }
-                        },
+                            "$ref": "#/$defs/jsonComments"
+                        }
+                    ]
+                }
+            },
+            "dependentSchemas": {
+                "type": {
+                    "$ref": "#/$defs/TypeWithDependent"
+                }
+            }
+        },
+        "Ocr": {
+            "type": "object",
+            "properties": {
+                "roi": {
+                    "$ref": "#/$defs/TemplateMatch/properties/roi"
+                },
+                "roi_offset": {
+                    "$ref": "#/$defs/TemplateMatch/properties/roi_offset"
+                },
+                "expected": {
+                    "title": "Expected Property",
+                    "description": "期望的结果，支持正则。必选。",
+                    "$ref": "#/$defs/jsonRegexOrList",
+                    "markdownDescription": "*string* | *list<string, >*\n\n期望的结果，支持正则。必选。"
+                },
+                "threshold": {
+                    "title": "Threshold Property",
+                    "description": "模型置信度阈值。可选，默认 0.3 。",
+                    "$ref": "#/$defs/jsonNumber01",
+                    "markdownDescription": "*double*\n\n模型置信度阈值。可选，默认 0.3 。",
+                    "default": 0.3
+                },
+                "replace": {
+                    "title": "Replace Property",
+                    "description": "部分文字识别结果不准确，进行替换。可选。",
+                    "$ref": "#/$defs/jsonStringStringPairOrList",
+                    "markdownDescription": "*array<string, 2>* | *list<array<string, 2>>*\n\n部分文字识别结果不准确，进行替换。可选。"
+                },
+                "order_by": {
+                    "title": "Order By Property",
+                    "description": "结果排序方式。可选，默认 `Horizontal`。",
+                    "enum": [
+                        "Horizontal",
+                        "Vertical",
+                        "Area",
+                        "Length",
+                        "Random"
+                    ],
+                    "markdownDescription": "*string*\n\n结果排序方式。可选，默认 `Horizontal`。\n\n可选的值：`Horizontal` | `Vertical` | `Area` | `Length` | `Random` 。\n\n可结合 `index` 字段使用。",
+                    "default": "Horizontal"
+                },
+                "index": {
+                    "title": "Index Property",
+                    "description": "命中第几个结果。可选，默认 0 。",
+                    "$ref": "#/$defs/jsonInt32",
+                    "markdownDescription": "*int*\n\n命中第几个结果。可选，默认 0 。\n\n假设共有 N 个结果，则 `index` 的取值范围为 [-N, N - 1] ，其中负数使用类 Python 的规则转换为 N - index 。若超出范围，则视为当前识别无结果。"
+                },
+                "only_rec": {
+                    "title": "Only Recognize Property",
+                    "description": "是否仅识别（不进行检测，需要精确设置 `roi`）。可选，默认 false 。",
+                    "$ref": "#/$defs/jsonBooleanFalse",
+                    "markdownDescription": "*bool*\n\n是否仅识别（不进行检测，需要精确设置 `roi`）。可选，默认 false 。"
+                },
+                "model": {
+                    "title": "Model Property",
+                    "description": "模型 **文件夹** 路径。使用 `model/ocr` 文件夹的相对路径。可选，默认为空。",
+                    "type": "string",
+                    "markdownDescription": "*string*\n\n模型 **文件夹** 路径。使用 `model/ocr` 文件夹的相对路径。可选，默认为空。\n\n若为空，则为 `model/ocr` 根目录下的模型文件。\n\n文件夹中需要包含 `rec.onnx`, `det.onnx`, `keys.txt` 三个文件。"
+                }
+            },
+            "anyOf": [
+                {
+                    "required": [
+                        "expected"
+                    ]
+                },
+                {
+                    "required": [
+                        "expected_code"
+                    ]
+                }
+            ]
+        },
+        "OcrV1": {
+            "properties": {
+                "recognition": {
+                    "const": "OCR"
+                }
+            },
+            "allOf": [
+                {
+                    "$ref": "#/$defs/Ocr"
+                }
+            ]
+        },
+        "OcrV2": {
+            "properties": {
+                "type": {
+                    "const": "OCR"
+                },
+                "param": {
+                    "$ref": "#/$defs/Ocr",
+                    "unevaluatedProperties": false,
+                    "allOf": [
                         {
-                            "$comment": "MultiSwipe",
-                            "properties": {
-                                "action": {
-                                    "const": "MultiSwipe"
-                                }
-                            },
-                            "anyOf": [
-                                {
-                                    "required": [
-                                        "swipes"
-                                    ]
-                                },
-                                {
-                                    "required": [
-                                        "swipes_code"
-                                    ]
-                                }
-                            ]
-                        },
+                            "$ref": "#/$defs/jsonComments"
+                        }
+                    ]
+                }
+            },
+            "dependentSchemas": {
+                "type": {
+                    "$ref": "#/$defs/TypeWithDependent"
+                }
+            }
+        },
+        "NeuralNetworkClassify": {
+            "type": "object",
+            "properties": {
+                "roi": {
+                    "$ref": "#/$defs/TemplateMatch/properties/roi"
+                },
+                "roi_offset": {
+                    "$ref": "#/$defs/TemplateMatch/properties/roi_offset"
+                },
+                "labels": {
+                    "title": "Labels Property",
+                    "description": "标注，即每个分类的名字。可选。",
+                    "$ref": "#/$defs/jsonStringList",
+                    "markdownDescription": "*list<string, >*\n\n标注，即每个分类的名字。可选。\n\n仅影响调试图片及日志等，若未填写则会填充 \"Unknown\" 。"
+                },
+                "model": {
+                    "title": "Model Property",
+                    "description": "模型文件路径。使用 `model/classify` 文件夹的相对路径。必选。",
+                    "type": "string",
+                    "markdownDescription": "*string*\n\n模型文件路径。使用 `model/classify` 文件夹的相对路径。必选。\n\n目前仅支持 ONNX 模型，参考 [NNClassify 食谱](https://github.com/MaaXYZ/MaaNeuralNetworkCookbook/tree/main/NeuralNetworkClassify)。"
+                },
+                "expected": {
+                    "title": "Expected Property",
+                    "description": "期望的分类下标。必选。",
+                    "$ref": "#/$defs/jsonInt32OrList",
+                    "markdownDescription": "*int* | *list<int, >*\n\n期望的分类下标。必选。"
+                },
+                "order_by": {
+                    "title": "Order By Property",
+                    "description": "结果排序方式。可选，默认 `Horizontal` 。",
+                    "enum": [
+                        "Horizontal",
+                        "Vertical",
+                        "Score",
+                        "Random"
+                    ],
+                    "markdownDescription": "*string*\n\n结果排序方式。可选，默认 `Horizontal` 。\n\n可选的值：`Horizontal` | `Vertical` | `Score` | `Random` 。\n\n可结合 `index` 字段使用。",
+                    "default": "Horizontal"
+                },
+                "index": {
+                    "title": "Index Property",
+                    "description": "命中第几个结果。可选，默认 0 。",
+                    "$ref": "#/$defs/jsonInt32",
+                    "markdownDescription": "*int*\n\n命中第几个结果。可选，默认 0 。\n\n假设共有 N 个结果，则 `index` 的取值范围为 [-N, N - 1] ，其中负数使用类 Python 的规则转换为 N - index 。若超出范围，则视为当前识别无结果。"
+                }
+            },
+            "anyOf": [
+                {
+                    "required": [
+                        "model",
+                        "expected"
+                    ]
+                },
+                {
+                    "required": [
+                        "model_code",
+                        "expected_code"
+                    ]
+                },
+                {
+                    "required": [
+                        "model_code",
+                        "expected"
+                    ]
+                },
+                {
+                    "required": [
+                        "model",
+                        "expected_code"
+                    ]
+                }
+            ]
+        },
+        "NeuralNetworkClassifyV1": {
+            "properties": {
+                "recognition": {
+                    "const": "NeuralNetworkClassify"
+                }
+            },
+            "allOf": [
+                {
+                    "$ref": "#/$defs/NeuralNetworkClassify"
+                }
+            ]
+        },
+        "NeuralNetworkClassifyV2": {
+            "properties": {
+                "type": {
+                    "const": "NeuralNetworkClassify"
+                },
+                "param": {
+                    "$ref": "#/$defs/NeuralNetworkClassify",
+                    "unevaluatedProperties": false,
+                    "allOf": [
                         {
-                            "$comment": "Key",
-                            "properties": {
-                                "action": {
-                                    "const": "Key"
-                                }
-                            },
-                            "anyOf": [
-                                {
-                                    "required": [
-                                        "key"
-                                    ]
-                                },
-                                {
-                                    "required": [
-                                        "key_code"
-                                    ]
-                                }
-                            ]
-                        },
+                            "$ref": "#/$defs/jsonComments"
+                        }
+                    ]
+                }
+            },
+            "dependentSchemas": {
+                "type": {
+                    "$ref": "#/$defs/TypeWithDependent"
+                }
+            }
+        },
+        "NeuralNetworkDetect": {
+            "type": "object",
+            "properties": {
+                "roi": {
+                    "$ref": "#/$defs/TemplateMatch/properties/roi"
+                },
+                "roi_offset": {
+                    "$ref": "#/$defs/TemplateMatch/properties/roi_offset"
+                },
+                "labels": {
+                    "title": "Labels Property",
+                    "description": "标注，即每个分类的名字。可选。",
+                    "$ref": "#/$defs/jsonStringList",
+                    "markdownDescription": "*list<string, >*\n\n标注，即每个分类的名字。可选。\n\n仅影响调试图片及日志等，若未填写则会填充 \"Unknown\" 。"
+                },
+                "model": {
+                    "title": "Model Property",
+                    "description": "模型文件路径。使用 `model/detect` 文件夹的相对路径。必选。",
+                    "type": "string",
+                    "markdownDescription": "*string*\n\n模型文件路径。使用 `model/detect` 文件夹的相对路径。必选。\n\n目前支持 YoloV8 ONNX 模型，其他同样输入输出的 Yolo 模型理论上也可以支持，但未经测试。\n\n训练参考 [NNDetect 食谱](https://github.com/MaaXYZ/MaaNeuralNetworkCookbook/tree/main/NeuralNetworkDetect)。"
+                },
+                "expected": {
+                    "title": "Expected Property",
+                    "description": "期望的分类下标。必选。",
+                    "$ref": "#/$defs/jsonInt32OrList",
+                    "markdownDescription": "*int* | *list<int, >*\n\n期望的分类下标。"
+                },
+                "threshold": {
+                    "title": "Threshold Property",
+                    "description": "模型置信度阈值。可选，默认 0.3 。",
+                    "$ref": "#/$defs/jsonNumber01OrList",
+                    "markdownDescription": "*double* | *list<double, >*\n\n模型置信度阈值。可选，默认 0.3 。\n\n若为数组，长度需和 `expected` 数组长度相同。",
+                    "default": 0.3
+                },
+                "order_by": {
+                    "title": "Order By Property",
+                    "description": "结果排序方式。可选，默认 `Horizontal` 。",
+                    "enum": [
+                        "Horizontal",
+                        "Vertical",
+                        "Score",
+                        "Area",
+                        "Random"
+                    ],
+                    "markdownDescription": "*string*\n\n结果排序方式。可选，默认 `Horizontal` 。\n\n可选的值：`Horizontal` | `Vertical` | `Score` | `Area` | `Random` 。\n\n可结合 `index` 字段使用。",
+                    "default": "Horizontal"
+                },
+                "index": {
+                    "title": "Index Property",
+                    "description": "命中第几个结果。可选，默认 0 。",
+                    "$ref": "#/$defs/jsonInt32",
+                    "markdownDescription": "*int*\n\n命中第几个结果。可选，默认 0 。\n\n假设共有 N 个结果，则 `index` 的取值范围为 [-N, N - 1] ，其中负数使用类 Python 的规则转换为 N - index 。若超出范围，则视为当前识别无结果。\n"
+                }
+            },
+            "anyOf": [
+                {
+                    "required": [
+                        "model",
+                        "expected"
+                    ]
+                },
+                {
+                    "required": [
+                        "model_code",
+                        "expected_code"
+                    ]
+                },
+                {
+                    "required": [
+                        "model_code",
+                        "expected"
+                    ]
+                },
+                {
+                    "required": [
+                        "model",
+                        "expected_code"
+                    ]
+                }
+            ]
+        },
+        "NeuralNetworkDetectV1": {
+            "properties": {
+                "recognition": {
+                    "const": "NeuralNetworkDetect"
+                }
+            },
+            "allOf": [
+                {
+                    "$ref": "#/$defs/NeuralNetworkDetect"
+                }
+            ]
+        },
+        "NeuralNetworkDetectV2": {
+            "properties": {
+                "type": {
+                    "const": "NeuralNetworkDetect"
+                },
+                "param": {
+                    "$ref": "#/$defs/NeuralNetworkDetect",
+                    "unevaluatedProperties": false,
+                    "allOf": [
                         {
-                            "$comment": "InputText/Text",
-                            "properties": {
-                                "action": {
-                                    "enum": [
-                                        "InputText",
-                                        "Text"
-                                    ]
-                                }
-                            },
-                            "anyOf": [
-                                {
-                                    "required": [
-                                        "input_text"
-                                    ]
-                                },
-                                {
-                                    "required": [
-                                        "input_text_code"
-                                    ]
-                                }
-                            ]
-                        },
+                            "$ref": "#/$defs/jsonComments"
+                        }
+                    ]
+                }
+            },
+            "dependentSchemas": {
+                "type": {
+                    "$ref": "#/$defs/TypeWithDependent"
+                }
+            }
+        },
+        "CustomRecognition": {
+            "type": "object",
+            "properties": {
+                "roi": {
+                    "$ref": "#/$defs/TemplateMatch/properties/roi"
+                },
+                "roi_offset": {
+                    "$ref": "#/$defs/TemplateMatch/properties/roi_offset"
+                },
+                "custom_recognition": {
+                    "title": "Custom Recognition Property",
+                    "description": "识别名，同注册接口传入的识别名。同时会通过 `MaaCustomRecognitionCallback`.`custom_recognition_name` 传出。必选。",
+                    "type": "string",
+                    "markdownDescription": "*string*\n\n识别名，同注册接口传入的识别名。同时会通过 `MaaCustomRecognitionCallback`.`custom_recognition_name` 传出。必选。"
+                },
+                "custom_recognition_param": {
+                    "title": "Custom Recognition Param Property",
+                    "description": "识别参数，任意类型，会通过 `MaaCustomRecognitionCallback`.`custom_recognition_param` 传出。可选，默认空 json，即 `{}` 。",
+                    "$ref": "#/$defs/jsonDefaultObject",
+                    "markdownDescription": "*any*\n\n识别参数，任意类型，会通过 `MaaCustomRecognitionCallback`.`custom_recognition_param` 传出。可选，默认空 json，即 `{}` 。"
+                }
+            },
+            "allOf": [
+                {
+                    "$ref": "#/$defs/CustomRecognitionSchema"
+                }
+            ],
+            "anyOf": [
+                {
+                    "required": [
+                        "custom_recognition"
+                    ]
+                },
+                {
+                    "required": [
+                        "custom_recognition_code"
+                    ]
+                }
+            ]
+        },
+        "CustomRecognitionV1": {
+            "properties": {
+                "recognition": {
+                    "const": "Custom"
+                }
+            },
+            "allOf": [
+                {
+                    "$ref": "#/$defs/CustomRecognition"
+                }
+            ]
+        },
+        "CustomRecognitionV2": {
+            "properties": {
+                "type": {
+                    "const": "Custom"
+                },
+                "param": {
+                    "$ref": "#/$defs/CustomRecognition",
+                    "unevaluatedProperties": false,
+                    "allOf": [
                         {
-                            "$comment": "StartApp",
-                            "properties": {
-                                "action": {
-                                    "const": "StartApp"
-                                },
-                                "package": {
-                                    "description": "启动入口。可选，默认空。",
-                                    "type": "string",
-                                    "default": ""
-                                }
-                            }
-                        },
+                            "$ref": "#/$defs/jsonComments"
+                        }
+                    ]
+                }
+            },
+            "dependentSchemas": {
+                "type": {
+                    "$ref": "#/$defs/TypeWithDependent"
+                }
+            }
+        },
+        "RecognitionPropertyFieldsV1": {
+            "not": {
+                "required": [
+                    "recognition"
+                ]
+            },
+            "allOf": [
+                {
+                    "$ref": "#/$defs/RecognitionPropertyFields"
+                }
+            ]
+        },
+        "RecognitionPropertyFieldsV2": {
+            "not": {
+                "required": [
+                    "type"
+                ]
+            },
+            "properties": {
+                "param": {
+                    "$ref": "#/$defs/RecognitionPropertyFields",
+                    "unevaluatedProperties": false,
+                    "allOf": [
                         {
-                            "$comment": "StopApp",
-                            "properties": {
-                                "action": {
-                                    "const": "StopApp"
-                                },
-                                "package": {
-                                    "description": "关闭要关闭的程序。可选，默认空。",
-                                    "type": "string",
-                                    "default": ""
-                                }
-                            }
-                        },
-                        {
-                            "$comment": "StopTask",
-                            "properties": {
-                                "action": {
-                                    "const": "StopTask"
-                                }
-                            }
-                        },
-                        {
-                            "$comment": "Command",
-                            "properties": {
-                                "action": {
-                                    "const": "Command"
-                                }
-                            }
-                        },
-                        {
-                            "$comment": "Custom",
-                            "properties": {
-                                "action": {
-                                    "const": "Custom"
-                                }
-                            },
-                            "anyOf": [
-                                {
-                                    "required": [
-                                        "custom_action"
-                                    ]
-                                },
-                                {
-                                    "required": [
-                                        "custom_action_code"
-                                    ]
-                                }
-                            ]
+                            "$ref": "#/$defs/jsonComments"
                         }
                     ]
                 }
             }
-        }
-    },
-    "definitions": {
-        "rect": {
-            "type": "array",
-            "items": {
-                "type": "number"
+        },
+        "RecognitionEnum": {
+            "default": "DirectHit",
+            "enum": [
+                "DirectHit",
+                "TemplateMatch",
+                "FeatureMatch",
+                "ColorMatch",
+                "OCR",
+                "NeuralNetworkClassify",
+                "NeuralNetworkDetect",
+                "Custom"
+            ]
+        },
+        "RecognitionPropertyFields": {
+            "properties": {
+                "roi": {
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/TemplateMatch/properties/roi"
+                        }
+                    ]
+                },
+                "roi_offset": {
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/TemplateMatch/properties/roi_offset"
+                        }
+                    ]
+                },
+                "template": {
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/TemplateMatch/properties/template"
+                        },
+                        {
+                            "$ref": "#/$defs/FeatureMatch/properties/template"
+                        }
+                    ]
+                },
+                "threshold": {
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/TemplateMatch/properties/threshold"
+                        },
+                        {
+                            "$ref": "#/$defs/Ocr/properties/threshold"
+                        },
+                        {
+                            "$ref": "#/$defs/NeuralNetworkDetect/properties/threshold"
+                        }
+                    ]
+                },
+                "order_by": {
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/TemplateMatch/properties/order_by"
+                        },
+                        {
+                            "$ref": "#/$defs/FeatureMatch/properties/order_by"
+                        },
+                        {
+                            "$ref": "#/$defs/ColorMatch/properties/order_by"
+                        },
+                        {
+                            "$ref": "#/$defs/Ocr/properties/order_by"
+                        },
+                        {
+                            "$ref": "#/$defs/NeuralNetworkClassify/properties/order_by"
+                        },
+                        {
+                            "$ref": "#/$defs/NeuralNetworkDetect/properties/order_by"
+                        }
+                    ]
+                },
+                "index": {
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/TemplateMatch/properties/index"
+                        },
+                        {
+                            "$ref": "#/$defs/FeatureMatch/properties/index"
+                        },
+                        {
+                            "$ref": "#/$defs/ColorMatch/properties/index"
+                        },
+                        {
+                            "$ref": "#/$defs/Ocr/properties/index"
+                        },
+                        {
+                            "$ref": "#/$defs/NeuralNetworkClassify/properties/index"
+                        },
+                        {
+                            "$ref": "#/$defs/NeuralNetworkDetect/properties/index"
+                        }
+                    ]
+                },
+                "method": {
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/TemplateMatch/properties/method"
+                        },
+                        {
+                            "$ref": "#/$defs/ColorMatch/properties/method"
+                        }
+                    ]
+                },
+                "green_mask": {
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/TemplateMatch/properties/green_mask"
+                        },
+                        {
+                            "$ref": "#/$defs/FeatureMatch/properties/green_mask"
+                        }
+                    ]
+                },
+                "count": {
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/TemplateMatch/properties/index"
+                        },
+                        {
+                            "$ref": "#/$defs/FeatureMatch/properties/index"
+                        },
+                        {
+                            "$ref": "#/$defs/ColorMatch/properties/index"
+                        },
+                        {
+                            "$ref": "#/$defs/Ocr/properties/index"
+                        },
+                        {
+                            "$ref": "#/$defs/NeuralNetworkClassify/properties/index"
+                        },
+                        {
+                            "$ref": "#/$defs/NeuralNetworkDetect/properties/index"
+                        }
+                    ]
+                },
+                "detector": {
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/FeatureMatch/properties/count"
+                        },
+                        {
+                            "$ref": "#/$defs/ColorMatch/properties/count"
+                        }
+                    ]
+                },
+                "ratio": {
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/FeatureMatch/properties/ratio"
+                        }
+                    ]
+                },
+                "lower": {
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/ColorMatch/properties/lower"
+                        }
+                    ]
+                },
+                "upper": {
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/ColorMatch/properties/upper"
+                        }
+                    ]
+                },
+                "connected": {
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/ColorMatch/properties/connected"
+                        }
+                    ]
+                },
+                "expected": {
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/Ocr/properties/expected"
+                        },
+                        {
+                            "$ref": "#/$defs/NeuralNetworkClassify/properties/expected"
+                        },
+                        {
+                            "$ref": "#/$defs/NeuralNetworkDetect/properties/expected"
+                        }
+                    ]
+                },
+                "replace": {
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/Ocr/properties/replace"
+                        }
+                    ]
+                },
+                "only_rec": {
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/Ocr/properties/only_rec"
+                        }
+                    ]
+                },
+                "model": {
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/Ocr/properties/model"
+                        },
+                        {
+                            "$ref": "#/$defs/NeuralNetworkClassify/properties/model"
+                        },
+                        {
+                            "$ref": "#/$defs/NeuralNetworkDetect/properties/model"
+                        }
+                    ]
+                },
+                "labels": {
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/NeuralNetworkClassify/properties/labels"
+                        },
+                        {
+                            "$ref": "#/$defs/NeuralNetworkDetect/properties/labels"
+                        }
+                    ]
+                },
+                "custom_recognition": {
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/CustomRecognition/properties/custom_recognition"
+                        }
+                    ]
+                },
+                "custom_recognition_param": {
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/CustomRecognition/properties/custom_recognition_param"
+                        }
+                    ]
+                }
+            }
+        },
+        "RecognitionProperty": {
+            "type": [
+                "string",
+                "object"
+            ],
+            "properties": {
+                "type": {
+                    "type": "string"
+                },
+                "param": {
+                    "type": "object"
+                }
             },
-            "minItems": 4,
-            "maxItems": 4
-        },
-        "tasklist": {
-            "anyOf": [
+            "defaultSnippets": [
                 {
-                    "type": "string"
+                    "label": "TemplateMatchV1",
+                    "body": "^ \"TemplateMatch\",\n\"template\": \"\""
                 },
                 {
-                    "type": "array",
-                    "items": {
-                        "type": "string"
+                    "label": "TemplateMatchV2",
+                    "body": {
+                        "type": "TemplateMatch",
+                        "param": {
+                            "template": ""
+                        }
                     }
-                }
-            ]
-        },
-        "colorlist": {
-            "anyOf": [
-                {
-                    "type": "array",
-                    "items": {
-                        "type": "integer"
-                    },
-                    "minItems": 1
                 },
                 {
-                    "type": "array",
-                    "items": {
-                        "type": "array",
-                        "items": {
-                            "type": "integer"
-                        },
-                        "minItems": 1
-                    },
-                    "minItems": 1
-                }
-            ]
-        },
-        "replace_type": {
-            "anyOf": [
-                {
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    },
-                    "minItems": 2,
-                    "maxItems": 2
+                    "label": "FeatureMatchV1",
+                    "body": "^ \"FeatureMatch\",\n\"template\": \"\""
                 },
                 {
-                    "type": "array",
-                    "items": {
-                        "type": "array",
-                        "items": {
-                            "type": "string"
-                        },
-                        "minItems": 2,
-                        "maxItems": 2
-                    },
-                    "minItems": 1
-                }
-            ]
-        },
-        "expected_type": {
-            "anyOf": [
-                {
-                    "type": "integer"
+                    "label": "FeatureMatchV2",
+                    "body": {
+                        "type": "FeatureMatch",
+                        "param": {
+                            "template": ""
+                        }
+                    }
                 },
                 {
-                    "type": "array",
-                    "items": {
-                        "type": "integer"
-                    },
-                    "minItems": 1
-                }
-            ]
-        },
-        "keylist": {
-            "anyOf": [
-                {
-                    "type": "integer",
-                    "minimum": 0,
-                    "maximum": 127
+                    "label": "ColorMatchV1",
+                    "body": "^ \"ColorMatch\",\n\"lower\": [],\n\"upper\": []"
                 },
                 {
-                    "type": "array",
-                    "items": {
-                        "type": "integer",
-                        "minimum": 0,
-                        "maximum": 127
-                    },
-                    "minItems": 1
-                }
-            ]
-        },
-        "roi_type": {
-            "anyOf": [
-                {
-                    "type": "string"
+                    "label": "ColorMatchV2",
+                    "body": {
+                        "type": "ColorMatch",
+                        "param": {
+                            "lower": [],
+                            "upper": []
+                        }
+                    }
                 },
                 {
-                    "$ref": "#/definitions/rect"
-                }
-            ]
-        },
-        "target_type": {
-            "anyOf": [
-                {
-                    "type": "boolean"
+                    "label": "OcrV1",
+                    "body": "^ \"OCR\",\n\"expected\": \"\""
                 },
                 {
-                    "type": "string"
+                    "label": "OcrV2",
+                    "body": {
+                        "type": "OCR",
+                        "param": {
+                            "expected": ""
+                        }
+                    }
                 },
                 {
-                    "$ref": "#/definitions/rect"
-                }
-            ]
-        },
-        "wait_freezes_type": {
-            "anyOf": [
-                {
-                    "type": "integer",
-                    "minimum": 0,
-                    "default": 1
+                    "label": "NeuralNetworkClassifyV1",
+                    "body": "^ \"NeuralNetworkClassify\",\n\"model\": \"\",\n\"expected\": 0"
                 },
                 {
-                    "type": "object",
-                    "properties": {
-                        "time": {
-                            "description": "连续 time 毫秒 画面 没有较大变化 才会退出动作。可选，默认 1。",
-                            "type": "integer",
-                            "minimum": 0,
-                            "default": 1
-                        },
-                        "target": {
-                            "description": "等待的目标。可选，默认 true。",
-                            "$ref": "#/definitions/target_type",
-                            "default": true
-                        },
-                        "target_offset": {
-                            "description": "在 target 的基础上额外移动再作为等待目标，四个值分别相加。可选，默认 [0, 0, 0, 0]。",
-                            "$ref": "#/definitions/rect",
-                            "default": [
-                                0,
-                                0,
-                                0,
-                                0
-                            ]
-                        },
-                        "threshold": {
-                            "description": "判断“没有较大变化”的模板匹配阈值。可选，默认 0.95 。",
-                            "type": "number",
-                            "minimum": 0,
-                            "maximum": 1,
-                            "default": 0.95
-                        },
-                        "method": {
-                            "description": "判断“没有较大变化”的模板匹配算法，即 cv::TemplateMatchModes。可选，默认 5 。",
-                            "type": "integer",
-                            "enum": [
-                                1,
-                                3,
-                                5
-                            ],
-                            "default": 5
-                        },
-                        "rate_limit": {
-                            "description": "识别速率限制，单位毫秒。\n每次识别最低消耗 `rate_limit` 毫秒，不足的时间将会 sleep 等待。",
-                            "type": "integer",
-                            "minimum": 0,
-                            "default": 1000
-                        },
-                        "timeout": {
-                            "description": "识别超时时间，毫秒。默认 20 * 1000 。",
-                            "type": "integer",
-                            "minimum": 0,
-                            "default": 20000
+                    "label": "NeuralNetworkClassifyV2",
+                    "body": {
+                        "type": "NeuralNetworkClassify",
+                        "param": {
+                            "model": "",
+                            "expected": 0
+                        }
+                    }
+                },
+                {
+                    "label": "NeuralNetworkDetectV1",
+                    "body": "^ \"NeuralNetworkDetect\",\n\"model\": \"\",\n\"expected\": 0"
+                },
+                {
+                    "label": "NeuralNetworkDetectV2",
+                    "body": {
+                        "type": "NeuralNetworkDetect",
+                        "param": {
+                            "model": "",
+                            "expected": 0
+                        }
+                    }
+                },
+                {
+                    "label": "CustomRecognitionV1",
+                    "body": "^ \"Custom\",\n\"custom_recognition\": \"\""
+                },
+                {
+                    "label": "CustomRecognitionV2",
+                    "body": {
+                        "type": "Custom",
+                        "param": {
+                            "custom_recognition": ""
                         }
                     }
                 }
             ]
         },
-        "swipe_type": {
+        "RecognitionV1": {
+            "properties": {
+                "recognition": {
+                    "$ref": "#/$defs/RecognitionEnum"
+                }
+            },
+            "anyOf": [
+                {
+                    "$ref": "#/$defs/RecognitionPropertyFieldsV1"
+                },
+                {
+                    "$ref": "#/$defs/DirectHitV1"
+                },
+                {
+                    "$ref": "#/$defs/TemplateMatchV1"
+                },
+                {
+                    "$ref": "#/$defs/FeatureMatchV1"
+                },
+                {
+                    "$ref": "#/$defs/ColorMatchV1"
+                },
+                {
+                    "$ref": "#/$defs/OcrV1"
+                },
+                {
+                    "$ref": "#/$defs/NeuralNetworkClassifyV1"
+                },
+                {
+                    "$ref": "#/$defs/NeuralNetworkDetectV1"
+                },
+                {
+                    "$ref": "#/$defs/CustomRecognitionV1"
+                }
+            ]
+        },
+        "RecognitionV2": {
+            "properties": {
+                "recognition": {
+                    "type": "object",
+                    "properties": {
+                        "type": {
+                            "$ref": "#/$defs/RecognitionEnum"
+                        },
+                        "param": {
+                            "type": "object"
+                        }
+                    },
+                    "unevaluatedProperties": false,
+                    "allOf": [
+                        {
+                            "$ref": "#/$defs/jsonComments"
+                        }
+                    ],
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/RecognitionPropertyFieldsV2"
+                        },
+                        {
+                            "$ref": "#/$defs/DirectHitV2"
+                        },
+                        {
+                            "$ref": "#/$defs/TemplateMatchV2"
+                        },
+                        {
+                            "$ref": "#/$defs/FeatureMatchV2"
+                        },
+                        {
+                            "$ref": "#/$defs/ColorMatchV2"
+                        },
+                        {
+                            "$ref": "#/$defs/OcrV2"
+                        },
+                        {
+                            "$ref": "#/$defs/NeuralNetworkClassifyV2"
+                        },
+                        {
+                            "$ref": "#/$defs/NeuralNetworkDetectV2"
+                        },
+                        {
+                            "$ref": "#/$defs/CustomRecognitionV2"
+                        }
+                    ]
+                }
+            }
+        },
+        "RecognitionFormat": {
+            "if": {
+                "$ref": "#/$defs/RecognitionFormat/$defs/V1Format"
+            },
+            "then": {
+                "$ref": "#/$defs/RecognitionV1"
+            },
+            "else": {
+                "$ref": "#/$defs/RecognitionFormat/$defs/NotV1Format"
+            },
+            "$defs": {
+                "V1Format": {
+                    "properties": {
+                        "recognition": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "V2Format": {
+                    "properties": {
+                        "recognition": {
+                            "type": "object"
+                        }
+                    }
+                },
+                "NotV1Format": {
+                    "if": {
+                        "$ref": "#/$defs/RecognitionFormat/$defs/V2Format"
+                    },
+                    "then": {
+                        "$ref": "#/$defs/RecognitionV2"
+                    },
+                    "else": {
+                        "$ref": "#/$defs/RecognitionFormat/$defs/NotV2Format"
+                    }
+                },
+                "NotV2Format": {}
+            }
+        },
+        "DoNothing": {
+            "type": "object",
+            "properties": {}
+        },
+        "DoNothingV1": {
+            "properties": {
+                "action": {
+                    "const": "DoNothing"
+                }
+            }
+        },
+        "DoNothingV2": {
+            "properties": {
+                "type": {
+                    "const": "DoNothing"
+                },
+                "param": {
+                    "$ref": "#/$defs/DoNothing",
+                    "unevaluatedProperties": false,
+                    "allOf": [
+                        {
+                            "$ref": "#/$defs/jsonComments"
+                        }
+                    ]
+                }
+            }
+        },
+        "Click": {
+            "type": "object",
+            "properties": {
+                "target": {
+                    "title": "Target Property",
+                    "description": "点击目标的位置。可选，默认 true 。",
+                    "$ref": "#/$defs/jsonTarget",
+                    "markdownDescription": "*true* | *string* | *array<int, 4>*\n\n点击目标的位置。可选，默认 true 。\n\n- *true*: 目标为本节点中刚刚识别到的位置（即自身）。\n\n- *string*: 填写节点名，目标为之前执行过的某节点识别到的位置。\n\n- *array<int, 4>*: 目标为固定坐标区域内随机一点，[x, y, w, h]，若希望全屏可设为 [0, 0, 0, 0] 。"
+                },
+                "target_offset": {
+                    "title": "Target Offset Property",
+                    "description": "在 `target` 的基础上额外移动再作为点击目标，四个值分别相加。可选，默认 [0, 0, 0, 0] 。",
+                    "$ref": "#/$defs/jsonRect",
+                    "markdownDescription": "*array<int, 4>*\n\n在 `target` 的基础上额外移动再作为点击目标，四个值分别相加。可选，默认 [0, 0, 0, 0] 。"
+                }
+            }
+        },
+        "ClickV1": {
+            "properties": {
+                "action": {
+                    "const": "Click"
+                }
+            },
+            "allOf": [
+                {
+                    "$ref": "#/$defs/Click"
+                }
+            ]
+        },
+        "ClickV2": {
+            "properties": {
+                "type": {
+                    "const": "Click"
+                },
+                "param": {
+                    "$ref": "#/$defs/Click",
+                    "unevaluatedProperties": false,
+                    "allOf": [
+                        {
+                            "$ref": "#/$defs/jsonComments"
+                        }
+                    ]
+                }
+            }
+        },
+        "LongPress": {
+            "type": "object",
+            "properties": {
+                "target": {
+                    "title": "Target Property",
+                    "description": "长按目标的位置。可选，默认 true 。",
+                    "$ref": "#/$defs/jsonTarget",
+                    "markdownDescription": "*true* | *string* | *array<int, 4>*\n\n长按目标的位置。可选，默认 true 。\n\n- *true*: 目标为本节点中刚刚识别到的位置（即自身）。\n\n- *string*: 填写节点名，目标为之前执行过的某节点识别到的位置。\n\n- *array<int, 4>*: 目标为固定坐标区域内随机一点，[x, y, w, h]，若希望全屏可设为 [0, 0, 0, 0] 。"
+                },
+                "target_offset": {
+                    "title": "Target Offset Property",
+                    "description": "在 `target` 的基础上额外移动再作为长按目标，四个值分别相加。可选，默认 [0, 0, 0, 0] 。",
+                    "$ref": "#/$defs/jsonRect",
+                    "markdownDescription": "*array<int, 4>*\n\n在 `target` 的基础上额外移动再作为长按目标，四个值分别相加。可选，默认 [0, 0, 0, 0] 。"
+                },
+                "duration": {
+                    "title": "Duration Property",
+                    "description": "长按持续时间，单位毫秒。可选，默认 1000 。",
+                    "$ref": "#/$defs/jsonUInt32",
+                    "markdownDescription": "*uint*\n\n长按持续时间，单位毫秒。可选，默认 1000 。",
+                    "default": 1000
+                }
+            }
+        },
+        "LongPressV1": {
+            "properties": {
+                "action": {
+                    "const": "LongPress"
+                }
+            },
+            "allOf": [
+                {
+                    "$ref": "#/$defs/LongPress"
+                }
+            ]
+        },
+        "LongPressV2": {
+            "properties": {
+                "type": {
+                    "const": "LongPress"
+                },
+                "param": {
+                    "$ref": "#/$defs/LongPress",
+                    "unevaluatedProperties": false,
+                    "allOf": [
+                        {
+                            "$ref": "#/$defs/jsonComments"
+                        }
+                    ]
+                }
+            }
+        },
+        "Swipe": {
             "type": "object",
             "properties": {
                 "begin": {
-                    "description": "滑动起点。可选，默认 true。",
-                    "$ref": "#/definitions/target_type",
-                    "default": true
+                    "title": "Begin Property",
+                    "description": "滑动起点。可选，默认 true 。",
+                    "$ref": "#/$defs/jsonTarget",
+                    "markdownDescription": "*true* | *string* | *array<int, 4>*\n\n滑动起点。可选，默认 true 。\n\n- *true*: 目标为本节点中刚刚识别到的位置（即自身）。\n\n- *string*: 填写节点名，目标为之前执行过的某节点识别到的位置。\n\n- *array<int, 4>*: 目标为固定坐标区域内随机一点，[x, y, w, h]，若希望全屏可设为 [0, 0, 0, 0] 。"
                 },
                 "begin_offset": {
-                    "description": "在 begin 的基础上额外移动再作为起点，四个值分别相加。可选，默认 [0, 0, 0, 0]。",
-                    "$ref": "#/definitions/rect",
-                    "default": [
-                        0,
-                        0,
-                        0,
-                        0
-                    ]
+                    "title": "Begin Offset Property",
+                    "description": "在 `begin` 的基础上额外移动再作为起点，四个值分别相加。可选，默认 [0, 0, 0, 0] 。",
+                    "$ref": "#/$defs/jsonRect",
+                    "markdownDescription": "*array<int, 4>*\n\n在 `begin` 的基础上额外移动再作为起点，四个值分别相加。可选，默认 [0, 0, 0, 0] 。"
                 },
                 "end": {
-                    "description": "滑动终点。必选，默认 true。",
-                    "$ref": "#/definitions/target_type",
-                    "default": true
+                    "title": "End Property",
+                    "description": "滑动终点。可选，默认 true 。",
+                    "$ref": "#/$defs/jsonTarget",
+                    "markdownDescription": "*true* | *string* | *array<int, 4>*\n\n滑动终点。可选，默认 true 。\n\n- *true*: 目标为本节点中刚刚识别到的位置（即自身）。\n\n- *string*: 填写节点名，目标为之前执行过的某节点识别到的位置。\n\n- *array<int, 4>*: 目标为固定坐标区域内随机一点，[x, y, w, h]，若希望全屏可设为 [0, 0, 0, 0] 。"
                 },
                 "end_offset": {
-                    "description": "在 end 的基础上额外移动再作为终点，四个值分别相加。可选，默认 [0, 0, 0, 0]。",
-                    "$ref": "#/definitions/rect",
-                    "default": [
-                        0,
-                        0,
-                        0,
-                        0
+                    "title": "End Offset Property",
+                    "description": "在 `end` 的基础上额外移动再作为终点，四个值分别相加。可选，默认 [0, 0, 0, 0] 。",
+                    "$ref": "#/$defs/jsonRect",
+                    "markdownDescription": "*array<int, 4>*\n\n在 `end` 的基础上额外移动再作为终点，四个值分别相加。可选，默认 [0, 0, 0, 0] 。"
+                },
+                "duration": {
+                    "title": "Duration Property",
+                    "description": "滑动持续时间，单位毫秒。可选，默认 200 。",
+                    "$ref": "#/$defs/jsonUInt32",
+                    "markdownDescription": "*uint*\n\n滑动持续时间，单位毫秒。可选，默认 200 。",
+                    "default": 200
+                }
+            }
+        },
+        "SwipeV1": {
+            "properties": {
+                "action": {
+                    "const": "Swipe"
+                }
+            },
+            "allOf": [
+                {
+                    "$ref": "#/$defs/Swipe"
+                }
+            ]
+        },
+        "SwipeV2": {
+            "properties": {
+                "type": {
+                    "const": "Swipe"
+                },
+                "param": {
+                    "$ref": "#/$defs/Swipe",
+                    "unevaluatedProperties": false,
+                    "allOf": [
+                        {
+                            "$ref": "#/$defs/jsonComments"
+                        }
+                    ]
+                }
+            }
+        },
+        "SwipeListItem": {
+            "type": "object",
+            "properties": {
+                "starting": {
+                    "title": "Starting Property",
+                    "description": "滑动起始时间，单位毫秒。可选，默认 0 。",
+                    "$ref": "#/$defs/jsonUInt32",
+                    "markdownDescription": "*uint*\n\n滑动起始时间，单位毫秒。可选，默认 0 。\n\n`MultiSwipe` 额外字段，该滑动会在本 action 中第 `starting` 毫秒才开始。"
+                }
+            },
+            "unevaluatedProperties": false,
+            "allOf": [
+                {
+                    "$ref": "#/$defs/Swipe"
+                },
+                {
+                    "$ref": "#/$defs/jsonComments"
+                }
+            ]
+        },
+        "SwipeList": {
+            "type": "array",
+            "items": {
+                "$ref": "#/$defs/SwipeListItem"
+            },
+            "default": []
+        },
+        "MultiSwipe": {
+            "type": "object",
+            "properties": {
+                "swipes": {
+                    "title": "Swipes Property",
+                    "description": "多个滑动的数组。必选。",
+                    "$ref": "#/$defs/SwipeList",
+                    "markdownDescription": "*list<object,>*\n\n多个滑动的数组。必选。\n\n数组元素顺序没有影响，只基于 `starting` 确定顺序。"
+                }
+            },
+            "anyOf": [
+                {
+                    "required": [
+                        "swipes"
+                    ]
+                },
+                {
+                    "required": [
+                        "swipes_code"
+                    ]
+                }
+            ]
+        },
+        "MultiSwipeV1": {
+            "properties": {
+                "action": {
+                    "const": "MultiSwipe"
+                }
+            },
+            "allOf": [
+                {
+                    "$ref": "#/$defs/MultiSwipe"
+                }
+            ]
+        },
+        "MultiSwipeV2": {
+            "properties": {
+                "type": {
+                    "const": "MultiSwipe"
+                },
+                "param": {
+                    "$ref": "#/$defs/MultiSwipe",
+                    "unevaluatedProperties": false,
+                    "allOf": [
+                        {
+                            "$ref": "#/$defs/jsonComments"
+                        }
+                    ]
+                }
+            },
+            "dependentSchemas": {
+                "type": {
+                    "$ref": "#/$defs/TypeWithDependent"
+                }
+            }
+        },
+        "ClickKey": {
+            "type": "object",
+            "properties": {
+                "key": {
+                    "title": "ClickKey Property",
+                    "description": "要单击的键，仅支持对应控制器的虚拟按键码。必选。",
+                    "$ref": "#/$defs/jsonInt32OrList",
+                    "markdownDescription": "*int* | *list<int, >*\n\n要单击的键，仅支持对应控制器的虚拟按键码。必选。\n\n- [Adb 控制器](https://developer.android.com/reference/android/view/KeyEvent)\n\n- [Win32 控制器](https://learn.microsoft.com/en-us/windows/win32/inputdev/virtual-key-codes)"
+                }
+            },
+            "anyOf": [
+                {
+                    "required": [
+                        "key"
+                    ]
+                },
+                {
+                    "required": [
+                        "key_code"
+                    ]
+                }
+            ]
+        },
+        "ClickKeyV1": {
+            "properties": {
+                "action": {
+                    "const": "ClickKey"
+                }
+            },
+            "allOf": [
+                {
+                    "$ref": "#/$defs/ClickKey"
+                }
+            ]
+        },
+        "ClickKeyV2": {
+            "properties": {
+                "type": {
+                    "const": "ClickKey"
+                },
+                "param": {
+                    "$ref": "#/$defs/ClickKey",
+                    "unevaluatedProperties": false,
+                    "allOf": [
+                        {
+                            "$ref": "#/$defs/jsonComments"
+                        }
+                    ]
+                }
+            },
+            "dependentSchemas": {
+                "type": {
+                    "$ref": "#/$defs/TypeWithDependent"
+                }
+            }
+        },
+        "LongPressKey": {
+            "type": "object",
+            "properties": {
+                "key": {
+                    "title": "LongPressKey Property",
+                    "description": "要按的键，仅支持对应控制器的虚拟按键码。必选。",
+                    "$ref": "#/$defs/jsonInt32OrList",
+                    "markdownDescription": "*int*\n\n要按的键，仅支持对应控制器的虚拟按键码。必选。\n\n- [Adb 控制器](https://developer.android.com/reference/android/view/KeyEvent)\n\n- [Win32 控制器](https://learn.microsoft.com/en-us/windows/win32/inputdev/virtual-key-codes)"
+                },
+                "duration": {
+                    "title": "Duration Property",
+                    "description": "长按持续时间，单位毫秒。可选，默认 1000 。",
+                    "$ref": "#/$defs/jsonUInt32",
+                    "markdownDescription": "*uint*\n\n长按持续时间，单位毫秒。可选，默认 1000 。",
+                    "default": 1000
+                }
+            },
+            "anyOf": [
+                {
+                    "required": [
+                        "key"
+                    ]
+                },
+                {
+                    "required": [
+                        "key_code"
+                    ]
+                }
+            ]
+        },
+        "LongPressKeyV1": {
+            "properties": {
+                "action": {
+                    "const": "LongPressKey"
+                }
+            },
+            "allOf": [
+                {
+                    "$ref": "#/$defs/LongPressKey"
+                }
+            ]
+        },
+        "LongPressKeyV2": {
+            "properties": {
+                "type": {
+                    "const": "LongPressKey"
+                },
+                "param": {
+                    "$ref": "#/$defs/LongPressKey",
+                    "unevaluatedProperties": false,
+                    "allOf": [
+                        {
+                            "$ref": "#/$defs/jsonComments"
+                        }
+                    ]
+                }
+            },
+            "dependentSchemas": {
+                "type": {
+                    "$ref": "#/$defs/TypeWithDependent"
+                }
+            }
+        },
+        "InputText": {
+            "type": "object",
+            "properties": {
+                "input_text": {
+                    "title": "Input Text Property",
+                    "description": "要输入的文本，部分控制器仅支持 ascii 。必选。",
+                    "type": "string",
+                    "markdownDescription": "*string*\n\n要输入的文本，部分控制器仅支持 ascii 。必选。"
+                }
+            },
+            "anyOf": [
+                {
+                    "required": [
+                        "input_text"
+                    ]
+                },
+                {
+                    "required": [
+                        "input_text_code"
+                    ]
+                }
+            ]
+        },
+        "InputTextV1": {
+            "properties": {
+                "action": {
+                    "const": "InputText"
+                }
+            },
+            "allOf": [
+                {
+                    "$ref": "#/$defs/InputText"
+                }
+            ]
+        },
+        "InputTextV2": {
+            "properties": {
+                "type": {
+                    "const": "InputText"
+                },
+                "param": {
+                    "$ref": "#/$defs/InputText",
+                    "unevaluatedProperties": false,
+                    "allOf": [
+                        {
+                            "$ref": "#/$defs/jsonComments"
+                        }
+                    ]
+                }
+            },
+            "dependentSchemas": {
+                "type": {
+                    "$ref": "#/$defs/TypeWithDependent"
+                }
+            }
+        },
+        "StartApp": {
+            "type": "object",
+            "properties": {
+                "package": {
+                    "title": "Package Property",
+                    "description": "启动入口。必选。",
+                    "type": "string",
+                    "markdownDescription": "*string*\n\n启动入口。必选。\n\n需要填入 package name 或 activity ，例如 `com.hypergryph.arknights` 或 `com.hypergryph.arknights/com.u8.sdk.U8UnityContext` 。"
+                }
+            },
+            "anyOf": [
+                {
+                    "required": [
+                        "package"
+                    ]
+                },
+                {
+                    "required": [
+                        "package_code"
+                    ]
+                }
+            ]
+        },
+        "StartAppV1": {
+            "properties": {
+                "action": {
+                    "const": "StartApp"
+                }
+            },
+            "allOf": [
+                {
+                    "$ref": "#/$defs/StartApp"
+                }
+            ]
+        },
+        "StartAppV2": {
+            "properties": {
+                "type": {
+                    "const": "StartApp"
+                },
+                "param": {
+                    "$ref": "#/$defs/StartApp",
+                    "unevaluatedProperties": false,
+                    "allOf": [
+                        {
+                            "$ref": "#/$defs/jsonComments"
+                        }
+                    ]
+                }
+            },
+            "dependentSchemas": {
+                "type": {
+                    "$ref": "#/$defs/TypeWithDependent"
+                }
+            }
+        },
+        "StopApp": {
+            "type": "object",
+            "properties": {
+                "package": {
+                    "title": "Package Property",
+                    "description": "要关闭的程序。必选。",
+                    "type": "string",
+                    "markdownDescription": "*string*\n\n要关闭的程序。必选。\n\n需要填入 package name ，例如 `com.hypergryph.arknights` 。"
+                }
+            },
+            "anyOf": [
+                {
+                    "required": [
+                        "package"
+                    ]
+                },
+                {
+                    "required": [
+                        "package_code"
+                    ]
+                }
+            ]
+        },
+        "StopAppV1": {
+            "properties": {
+                "action": {
+                    "const": "StopApp"
+                }
+            },
+            "allOf": [
+                {
+                    "$ref": "#/$defs/StopApp"
+                }
+            ]
+        },
+        "StopAppV2": {
+            "properties": {
+                "type": {
+                    "const": "StopApp"
+                },
+                "param": {
+                    "$ref": "#/$defs/StopApp",
+                    "unevaluatedProperties": false,
+                    "allOf": [
+                        {
+                            "$ref": "#/$defs/jsonComments"
+                        }
+                    ]
+                }
+            },
+            "dependentSchemas": {
+                "type": {
+                    "$ref": "#/$defs/TypeWithDependent"
+                }
+            }
+        },
+        "StopTask": {
+            "type": "object",
+            "properties": {}
+        },
+        "StopTaskV1": {
+            "properties": {
+                "action": {
+                    "const": "StopTask"
+                }
+            },
+            "allOf": [
+                {
+                    "$ref": "#/$defs/StopTask"
+                }
+            ]
+        },
+        "StopTaskV2": {
+            "properties": {
+                "type": {
+                    "const": "StopTask"
+                },
+                "param": {
+                    "$ref": "#/$defs/StopTask",
+                    "unevaluatedProperties": false,
+                    "allOf": [
+                        {
+                            "$ref": "#/$defs/jsonComments"
+                        }
+                    ]
+                }
+            }
+        },
+        "Command": {
+            "type": "object",
+            "properties": {
+                "exec": {
+                    "title": "Executor Property",
+                    "description": "执行的程序路径。必选。",
+                    "type": "string",
+                    "markdownDescription": "*string*\n\n执行的程序路径。必选。"
+                },
+                "args": {
+                    "title": "Args Property",
+                    "description": "执行的参数。可选。",
+                    "$ref": "#/$defs/jsonStringList",
+                    "markdownDescription": "*list<string,>*\n\n执行的参数。可选。\n\n支持部分运行期参数替换：\n\n  - `{ENTRY}`: 任务入口名。\n  - `{NODE}`: 当前节点名。\n  - `{IMAGE}`: 截图保存到文件的路径。该文件在进程退出前删除，若要持久保存请自行复制。\n  - `{BOX}`: 识别命中的目标，格式为 `[x, y, w, h]`。\n  - `{RESOURCE_DIR}`: 最后一次加载的资源文件夹路径。\n  - `{LIBRARY_DIR}`: MaaFW 库所在的文件夹路径。"
+                },
+                "detach": {
+                    "title": "Detach Property",
+                    "description": "分离子进程，即不等待子进程执行完成，直接继续执行后面的任务。可选，默认 false。",
+                    "$ref": "#/$defs/jsonBooleanFalse",
+                    "markdownDescription": "*bool*\n\n分离子进程，即不等待子进程执行完成，直接继续执行后面的任务。可选，默认 false。"
+                }
+            },
+            "anyOf": [
+                {
+                    "required": [
+                        "exec"
+                    ]
+                },
+                {
+                    "required": [
+                        "exec_code"
+                    ]
+                }
+            ]
+        },
+        "CommandV1": {
+            "properties": {
+                "action": {
+                    "const": "Command"
+                }
+            },
+            "allOf": [
+                {
+                    "$ref": "#/$defs/Command"
+                }
+            ]
+        },
+        "CommandV2": {
+            "properties": {
+                "type": {
+                    "const": "Command"
+                },
+                "param": {
+                    "$ref": "#/$defs/Command",
+                    "unevaluatedProperties": false,
+                    "allOf": [
+                        {
+                            "$ref": "#/$defs/jsonComments"
+                        }
+                    ]
+                }
+            },
+            "dependentSchemas": {
+                "type": {
+                    "$ref": "#/$defs/TypeWithDependent"
+                }
+            }
+        },
+        "CustomAction": {
+            "type": "object",
+            "properties": {
+                "target": {
+                    "title": "Target Property",
+                    "description": "目标的位置，会通过 `MaaCustomActionCallback`.`box` 传出。可选，默认 true 。",
+                    "$ref": "#/$defs/jsonTarget",
+                    "markdownDescription": "*true* | *string* | *array<int, 4>*\n\n目标的位置，会通过 `MaaCustomActionCallback`.`box` 传出。可选，默认 true 。\n\n- *true*: 目标为本节点中刚刚识别到的位置（即自身）。\n\n- *string*: 填写节点名，目标为之前执行过的某节点识别到的位置。\n\n- *array<int, 4>*: 目标为固定坐标区域内随机一点，[x, y, w, h]，若希望全屏可设为 [0, 0, 0, 0] 。"
+                },
+                "target_offset": {
+                    "title": "Target Offset Property",
+                    "description": "在 `target` 的基础上额外移动再作为目标，四个值分别相加。可选，默认 [0, 0, 0, 0] 。",
+                    "$ref": "#/$defs/jsonRect",
+                    "markdownDescription": "*array<int, 4>*\n\n在 `target` 的基础上额外移动再作为目标，四个值分别相加。可选，默认 [0, 0, 0, 0] 。"
+                },
+                "custom_action": {
+                    "title": "Custom Action Property",
+                    "description": "动作名，同注册接口传入的识别器名。同时会通过 `MaaCustomActionCallback`.`custom_action_name` 传出。必选。",
+                    "type": "string",
+                    "markdownDescription": "*string*\n\n动作名，同注册接口传入的识别器名。同时会通过 `MaaCustomActionCallback`.`custom_action_name` 传出。必选。"
+                },
+                "custom_action_param": {
+                    "title": "Custom Action Param Property",
+                    "description": "动作参数，任意类型，会通过 `MaaCustomActionCallback`.`custom_action_param` 传出。可选，默认空 json，即 `{}` 。",
+                    "$ref": "#/$defs/jsonDefaultObject",
+                    "markdownDescription": "*any*\n\n动作参数，任意类型，会通过 `MaaCustomActionCallback`.`custom_action_param` 传出。可选，默认空 json，即 `{}` 。"
+                }
+            },
+            "allOf": [
+                {
+                    "$ref": "#/$defs/CustomActionSchema"
+                }
+            ],
+            "anyOf": [
+                {
+                    "required": [
+                        "custom_action"
+                    ]
+                },
+                {
+                    "required": [
+                        "custom_action_code"
+                    ]
+                }
+            ]
+        },
+        "CustomActionV1": {
+            "properties": {
+                "action": {
+                    "const": "Custom"
+                }
+            },
+            "allOf": [
+                {
+                    "$ref": "#/$defs/CustomAction"
+                }
+            ]
+        },
+        "CustomActionV2": {
+            "properties": {
+                "type": {
+                    "const": "Custom"
+                },
+                "param": {
+                    "$ref": "#/$defs/CustomAction",
+                    "unevaluatedProperties": false,
+                    "allOf": [
+                        {
+                            "$ref": "#/$defs/jsonComments"
+                        }
+                    ]
+                }
+            },
+            "dependentSchemas": {
+                "type": {
+                    "$ref": "#/$defs/TypeWithDependent"
+                }
+            }
+        },
+        "ActionPropertyFieldsV1": {
+            "not": {
+                "required": [
+                    "action"
+                ]
+            },
+            "allOf": [
+                {
+                    "$ref": "#/$defs/ActionPropertyFields"
+                }
+            ]
+        },
+        "ActionPropertyFieldsV2": {
+            "not": {
+                "required": [
+                    "type"
+                ]
+            },
+            "properties": {
+                "param": {
+                    "$ref": "#/$defs/ActionPropertyFields",
+                    "unevaluatedProperties": false,
+                    "allOf": [
+                        {
+                            "$ref": "#/$defs/jsonComments"
+                        }
+                    ]
+                }
+            }
+        },
+        "ActionEnum": {
+            "default": "DoNothing",
+            "enum": [
+                "DoNothing",
+                "Click",
+                "LongPress",
+                "Swipe",
+                "MultiSwipe",
+                "ClickKey",
+                "LongPressKey",
+                "InputText",
+                "StartApp",
+                "StopApp",
+                "StopTask",
+                "Command",
+                "Custom"
+            ]
+        },
+        "ActionPropertyFields": {
+            "properties": {
+                "target": {
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/Click/properties/target"
+                        },
+                        {
+                            "$ref": "#/$defs/LongPress/properties/target"
+                        },
+                        {
+                            "$ref": "#/$defs/CustomAction/properties/target"
+                        }
+                    ]
+                },
+                "target_offset": {
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/Click/properties/target_offset"
+                        },
+                        {
+                            "$ref": "#/$defs/LongPress/properties/target_offset"
+                        },
+                        {
+                            "$ref": "#/$defs/CustomAction/properties/target_offset"
+                        }
                     ]
                 },
                 "duration": {
-                    "description": "滑动持续时间，单位毫秒。可选，默认 200",
-                    "type": "integer",
-                    "default": 200
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/LongPress/properties/duration"
+                        },
+                        {
+                            "$ref": "#/$defs/Swipe/properties/duration"
+                        },
+                        {
+                            "$ref": "#/$defs/LongPressKey/properties/duration"
+                        }
+                    ]
                 },
-                "starting": {
-                    "description": "滑动起始时间，单位毫秒。可选，默认 0 。该滑动会在本 action 中第 `starting` 毫秒才开始。",
-                    "type": "integer",
-                    "default": 0
+                "begin": {
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/Swipe/properties/begin"
+                        }
+                    ]
+                },
+                "begin_offset": {
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/Swipe/properties/begin_offset"
+                        }
+                    ]
+                },
+                "end": {
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/Swipe/properties/end"
+                        }
+                    ]
+                },
+                "end_offset": {
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/Swipe/properties/end_offset"
+                        }
+                    ]
+                },
+                "swipes": {
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/MultiSwipe/properties/swipes"
+                        }
+                    ]
+                },
+                "key": {
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/ClickKey/properties/key"
+                        },
+                        {
+                            "$ref": "#/$defs/LongPressKey/properties/key"
+                        }
+                    ]
+                },
+                "input_text": {
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/InputText/properties/input_text"
+                        }
+                    ]
+                },
+                "package": {
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/StartApp/properties/package"
+                        },
+                        {
+                            "$ref": "#/$defs/StopApp/properties/package"
+                        }
+                    ]
+                },
+                "exec": {
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/Command/properties/exec"
+                        }
+                    ]
+                },
+                "args": {
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/Command/properties/args"
+                        }
+                    ]
+                },
+                "detach": {
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/Command/properties/detach"
+                        }
+                    ]
+                },
+                "custom_action": {
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/CustomAction/properties/custom_action"
+                        }
+                    ]
+                },
+                "custom_action_param": {
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/CustomAction/properties/custom_action_param"
+                        }
+                    ]
+                }
+            }
+        },
+        "ActionProperty": {
+            "type": [
+                "string",
+                "object"
+            ],
+            "properties": {
+                "type": {
+                    "type": "string"
+                },
+                "param": {
+                    "type": "object"
+                }
+            },
+            "defaultSnippets": [
+                {
+                    "label": "ClickV1",
+                    "body": "^ \"Click\""
+                },
+                {
+                    "label": "ClickV2",
+                    "body": {
+                        "type": "Click"
+                    }
+                },
+                {
+                    "label": "LongPressV1",
+                    "body": "^ \"LongPress\""
+                },
+                {
+                    "label": "LongPressV2",
+                    "body": {
+                        "type": "LongPress"
+                    }
+                },
+                {
+                    "label": "SwipeV1",
+                    "body": "^ \"Swipe\""
+                },
+                {
+                    "label": "SwipeV2",
+                    "body": {
+                        "type": "Swipe"
+                    }
+                },
+                {
+                    "label": "MultiSwipeV1",
+                    "body": "^ \"MultiSwipe\",\n\"swipes\": [\n{}\n]"
+                },
+                {
+                    "label": "MultiSwipeV2",
+                    "body": {
+                        "type": "MultiSwipe",
+                        "param": {
+                            "swipes": [
+                                {}
+                            ]
+                        }
+                    }
+                },
+                {
+                    "label": "ClickKeyV1",
+                    "body": "^ \"ClickKey\",\n\"key\": []"
+                },
+                {
+                    "label": "ClickKeyV2",
+                    "body": {
+                        "type": "ClickKey",
+                        "param": {
+                            "key": []
+                        }
+                    }
+                },
+                {
+                    "label": "LongPressKeyV1",
+                    "body": "^ \"LongPressKey\",\n\"key\": []"
+                },
+                {
+                    "label": "LongPressKeyV2",
+                    "body": {
+                        "type": "LongPressKey",
+                        "param": {
+                            "key": []
+                        }
+                    }
+                },
+                {
+                    "label": "InputTextV1",
+                    "body": "^ \"InputText\",\n\"input_text\": \"\""
+                },
+                {
+                    "label": "InputTextV2",
+                    "body": {
+                        "type": "InputText",
+                        "param": {
+                            "input_text": ""
+                        }
+                    }
+                },
+                {
+                    "label": "StartAppV1",
+                    "body": "^ \"StartApp\",\n\"package\": \"\""
+                },
+                {
+                    "label": "StartAppV2",
+                    "body": {
+                        "type": "StartApp",
+                        "param": {
+                            "package": ""
+                        }
+                    }
+                },
+                {
+                    "label": "StopAppV1",
+                    "body": "^ \"StopApp\",\n\"package\": \"\""
+                },
+                {
+                    "label": "StopAppV2",
+                    "body": {
+                        "type": "StopApp",
+                        "param": {
+                            "package": ""
+                        }
+                    }
+                },
+                {
+                    "label": "StopTaskV1",
+                    "body": "^ \"StopTask\""
+                },
+                {
+                    "label": "StopTaskV2",
+                    "body": {
+                        "type": "StopTask"
+                    }
+                },
+                {
+                    "label": "CommandV1",
+                    "body": "^ \"Command\",\n\"exec\": \"\",\n\"args\": [\n\"{ENTRY}\",\n\"{NODE}\",\n\"{IMAGE}\",\n\"{BOX}\",\n\"{LIBRARY_DIR}\",\n\"{RESOURCE_DIR}\"\n]"
+                },
+                {
+                    "label": "CommandV2",
+                    "body": {
+                        "type": "Command",
+                        "param": {
+                            "exec": "",
+                            "args": [
+                                "{ENTRY}",
+                                "{NODE}",
+                                "{IMAGE}",
+                                "{BOX}",
+                                "{LIBRARY_DIR}",
+                                "{RESOURCE_DIR}"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "label": "CustomActionV1",
+                    "body": "^ \"Custom\",\n\"custom_action\": \"\""
+                },
+                {
+                    "label": "CustomActionV2",
+                    "body": {
+                        "type": "Custom",
+                        "param": {
+                            "custom_action": ""
+                        }
+                    }
+                }
+            ]
+        },
+        "ActionV1": {
+            "properties": {
+                "action": {
+                    "$ref": "#/$defs/ActionEnum"
+                }
+            },
+            "anyOf": [
+                {
+                    "$ref": "#/$defs/ActionPropertyFieldsV1"
+                },
+                {
+                    "$ref": "#/$defs/DoNothingV1"
+                },
+                {
+                    "$ref": "#/$defs/ClickV1"
+                },
+                {
+                    "$ref": "#/$defs/LongPressV1"
+                },
+                {
+                    "$ref": "#/$defs/SwipeV1"
+                },
+                {
+                    "$ref": "#/$defs/MultiSwipeV1"
+                },
+                {
+                    "$ref": "#/$defs/ClickKeyV1"
+                },
+                {
+                    "$ref": "#/$defs/LongPressKeyV1"
+                },
+                {
+                    "$ref": "#/$defs/InputTextV1"
+                },
+                {
+                    "$ref": "#/$defs/StartAppV1"
+                },
+                {
+                    "$ref": "#/$defs/StopAppV1"
+                },
+                {
+                    "$ref": "#/$defs/StopTaskV1"
+                },
+                {
+                    "$ref": "#/$defs/CommandV1"
+                },
+                {
+                    "$ref": "#/$defs/CustomActionV1"
+                }
+            ]
+        },
+        "ActionV2": {
+            "properties": {
+                "action": {
+                    "type": "object",
+                    "properties": {
+                        "type": {
+                            "$ref": "#/$defs/ActionEnum"
+                        },
+                        "param": {
+                            "type": "object"
+                        }
+                    },
+                    "unevaluatedProperties": false,
+                    "allOf": [
+                        {
+                            "$ref": "#/$defs/jsonComments"
+                        }
+                    ],
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/ActionPropertyFieldsV2"
+                        },
+                        {
+                            "$ref": "#/$defs/DoNothingV2"
+                        },
+                        {
+                            "$ref": "#/$defs/ClickV2"
+                        },
+                        {
+                            "$ref": "#/$defs/LongPressV2"
+                        },
+                        {
+                            "$ref": "#/$defs/SwipeV2"
+                        },
+                        {
+                            "$ref": "#/$defs/MultiSwipeV2"
+                        },
+                        {
+                            "$ref": "#/$defs/ClickKeyV2"
+                        },
+                        {
+                            "$ref": "#/$defs/LongPressKeyV2"
+                        },
+                        {
+                            "$ref": "#/$defs/InputTextV2"
+                        },
+                        {
+                            "$ref": "#/$defs/StartAppV2"
+                        },
+                        {
+                            "$ref": "#/$defs/StopAppV2"
+                        },
+                        {
+                            "$ref": "#/$defs/StopTaskV2"
+                        },
+                        {
+                            "$ref": "#/$defs/CommandV2"
+                        },
+                        {
+                            "$ref": "#/$defs/CustomActionV2"
+                        }
+                    ]
+                }
+            }
+        },
+        "ActionFormat": {
+            "if": {
+                "$ref": "#/$defs/ActionFormat/$defs/V1Format"
+            },
+            "then": {
+                "$ref": "#/$defs/ActionV1"
+            },
+            "else": {
+                "$ref": "#/$defs/ActionFormat/$defs/NotV1Format"
+            },
+            "$defs": {
+                "V1Format": {
+                    "properties": {
+                        "action": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "V2Format": {
+                    "properties": {
+                        "action": {
+                            "type": "object"
+                        }
+                    }
+                },
+                "NotV1Format": {
+                    "if": {
+                        "$ref": "#/$defs/ActionFormat/$defs/V2Format"
+                    },
+                    "then": {
+                        "$ref": "#/$defs/ActionV2"
+                    },
+                    "else": {
+                        "$ref": "#/$defs/ActionFormat/$defs/NotV2Format"
+                    }
+                },
+                "NotV2Format": {}
+            }
+        },
+        "WaitFreezes": {
+            "properties": {
+                "time": {
+                    "title": "Time Property",
+                    "description": "连续 `time` 毫秒 画面 **没有较大变化** 才会退出动作。可选，默认 1 。",
+                    "$ref": "#/$defs/jsonNInt64",
+                    "markdownDescription": "*uint*\n\n连续 `time` 毫秒 画面 **没有较大变化** 才会退出动作。可选，默认 1 。",
+                    "default": 1
+                },
+                "target": {
+                    "title": "Target Property",
+                    "description": "等待目标的位置。可选，默认 true。",
+                    "$ref": "#/$defs/jsonTarget",
+                    "markdownDescription": "*true* | *string* | *array<int, 4>*\n\n等待目标的位置。可选，默认 true。\n\n- *true*: 目标为本节点中刚刚识别到的位置（即自身）。\n\n- *string*: 填写节点名，目标为之前执行过的某节点识别到的位置。\n\n- *array<int, 4>*: 目标为固定坐标区域内随机一点，[x, y, w, h]，若希望全屏可设为 [0, 0, 0, 0] 。"
+                },
+                "target_offset": {
+                    "title": "Target Offset Property",
+                    "description": "在 `target` 的基础上额外移动再作为等待目标，四个值分别相加。可选，默认 [0, 0, 0, 0] 。",
+                    "$ref": "#/$defs/jsonRect",
+                    "markdownDescription": "*array<int, 4>*\n\n在 `target` 的基础上额外移动再作为等待目标，四个值分别相加。可选，默认 [0, 0, 0, 0] 。"
+                },
+                "threshold": {
+                    "title": "Threshold Property",
+                    "description": "判断“没有较大变化”的模板匹配阈值。可选，默认 0.95 。",
+                    "$ref": "#/$defs/jsonNumber01",
+                    "markdownDescription": "*double*\n\n判断“没有较大变化”的模板匹配阈值。可选，默认 0.95 。",
+                    "default": 0.95
+                },
+                "method": {
+                    "title": "Method Property",
+                    "description": "判断“没有较大变化”的模板匹配算法，即 cv::TemplateMatchModes。可选，默认 5 。",
+                    "enum": [
+                        1,
+                        3,
+                        5
+                    ],
+                    "markdownDescription": "*int*\n\n判断“没有较大变化”的模板匹配算法，即 cv::TemplateMatchModes。可选，默认 5 。\n\n仅支持 1、3、5，可简单理解为越大的越精确，但也会更慢。\n\n详情请参考 [OpenCV 官方文档](https://docs.opencv.org/4.x/df/dfb/group__imgproc__object.html)。",
+                    "defaultSnippets": [
+                        {
+                            "label": "SQDIFF",
+                            "body": 1
+                        },
+                        {
+                            "label": "CCORR",
+                            "body": 3
+                        },
+                        {
+                            "label": "CCOEFF",
+                            "body": 5
+                        }
+                    ],
+                    "default": 5
+                },
+                "rate_limit": {
+                    "title": "Rate Limit Property",
+                    "description": "识别速率限制，单位毫秒。可选，默认 1000 。",
+                    "$ref": "#/$defs/jsonNInt64",
+                    "markdownDescription": "*uint*\n\n识别速率限制，单位毫秒。可选，默认 1000 。\n\n每次识别最低消耗 `rate_limit` 毫秒，不足的时间将会 sleep 等待。",
+                    "default": 1000
+                },
+                "timeout": {
+                    "title": "Timeout Property",
+                    "description": "识别超时时间，毫秒。可选，默认 20 * 1000 。",
+                    "$ref": "#/$defs/jsonNInt64",
+                    "markdownDescription": "*uint*\n\n识别超时时间，毫秒。可选，默认 20 * 1000 。",
+                    "default": 20000
+                }
+            }
+        },
+        "WaitFreezesOrNInt64": {
+            "unevaluatedProperties": false,
+            "allOf": [
+                {
+                    "$ref": "#/$defs/jsonComments"
+                }
+            ],
+            "anyOf": [
+                {
+                    "$ref": "#/$defs/jsonNInt64"
+                },
+                {
+                    "$ref": "#/$defs/WaitFreezes"
+                }
+            ],
+            "default": 0
+        },
+        "Node": {
+            "title": "Node",
+            "description": "节点 | 符合任务流水线（Pipeline）协议的一个完整的 json Object。",
+            "type": "object",
+            "markdownDescription": "*object*\n\n**节点** | 符合 [任务流水线（Pipeline）协议](https://github.com/MaaXYZ/MaaFramework/blob/main/docs/zh_cn/3.1-%E4%BB%BB%E5%8A%A1%E6%B5%81%E6%B0%B4%E7%BA%BF%E5%8D%8F%E8%AE%AE.md) 的一个完整的 json Object。",
+            "unevaluatedProperties": false,
+            "allOf": [
+                {
+                    "$ref": "#/$defs/jsonComments"
+                },
+                {
+                    "$ref": "#/$defs/RecognitionFormat"
+                },
+                {
+                    "$ref": "#/$defs/ActionFormat"
+                }
+            ],
+            "properties": {
+                "recognition": {
+                    "title": "Recognition Property",
+                    "description": "识别算法类型。可选，默认 `DirectHit` 。",
+                    "$ref": "#/$defs/RecognitionProperty",
+                    "markdownDescription": "*string* | *object* (v2)\n\n识别算法类型。可选，默认 `DirectHit` 。\n\n可选的值：`DirectHit` | `TemplateMatch` | `FeatureMatch` | `ColorMatch` | `OCR` | `NeuralNetworkClassify` | `NeuralNetworkDetect` | `Custom`\n\n详见 [算法类型](#算法类型)。"
+                },
+                "action": {
+                    "title": "Action Property",
+                    "description": "执行的动作。可选，默认 `DoNothing` 。",
+                    "$ref": "#/$defs/ActionProperty",
+                    "markdownDescription": "*string* | *object* (v2)\n\n执行的动作。可选，默认 `DoNothing` 。\n\n可选的值：`DoNothing` | `Click` | `LongPress` | `Swipe` | `MultiSwipe` | `ClickKey` | `LongPressKey` | `InputText` | `StartApp` | `StopApp` | `StopTask` | `Command` | `Custom`\n\n详见 [动作类型](#动作类型)。"
+                },
+                "next": {
+                    "title": "Next Property",
+                    "description": "接下来要执行的节点列表。可选，默认空。",
+                    "$ref": "#/$defs/jsonStringOrList",
+                    "markdownDescription": "*string* | *list<string, >*\n\n接下来要执行的节点列表。可选，默认空。\n\n按顺序识别 next 中的每个节点，只执行第一个识别到的。"
+                },
+                "interrupt": {
+                    "title": "Interrupt Property",
+                    "description": "`next` 中全部未识别到时的候补节点列表，会执行类似中断操作。可选，默认空。",
+                    "$ref": "#/$defs/jsonStringOrList",
+                    "markdownDescription": "*string* | *list<string, >*\n\n`next` 中全部未识别到时的候补节点列表，会执行类似中断操作。可选，默认空。\n\n若 `next` 中的节点全部未识别到，则会按序识别该中断列表中的每个节点，并执行第一个识别到的。在后续节点全部执行完成后，重新跳转到该节点来再次尝试识别。\n\n例如: A: { next: [B, C], interrupt: [D, E] }\n\n当 B, C 未识别到而识别到 D 时，会去完整的执行 D 及 D.next。但当 D 的流水线完全执行完毕后。会再次回到节点 A，继续尝试识别 B, C, D, E 。\n\n该字段多用于异常处理，例如 D 是识别 “网络断开提示框”，在点击确认并等待网络连接成功后，继续之前的节点流程。"
+                },
+                "is_sub": {
+                    "title": "Is Sub Property",
+                    "deprecated": true,
+                    "description": "是否是子节点。可选，默认 false 。",
+                    "$ref": "#/$defs/jsonBooleanFalse",
+                    "markdownDescription": "*bool*\n\n**（已在 2.x 版本中废弃，但保留兼容性，推荐使用 `interrupt` 替代）**\n\n是否是子节点。可选，默认 false 。\n\n如果是子节点，执行完本节点（及后续 next 等）后，会返回来再次识别本节点 **所在的** next 列表。\n\n例如：A.next = [B, Sub_C, D]，这里的 Sub_C.is_sub = true，\n\n若匹配上了 Sub_C，在完整执行完 Sub_C 及后续节点后，会返回来再次识别 [B, Sub_C, D] 并执行命中项及后续节点。"
+                },
+                "rate_limit": {
+                    "title": "Rate Limit Property",
+                    "description": "识别速率限制，单位毫秒。可选，默认 1000 。",
+                    "$ref": "#/$defs/jsonNInt64",
+                    "default": 1000,
+                    "markdownDescription": "*uint*\n\n识别速率限制，单位毫秒。可选，默认 1000 。\n\n每轮识别 `next` + `interrupt` 最低消耗 `rate_limit` 毫秒，不足的时间将会 sleep 等待。"
+                },
+                "timeout": {
+                    "title": "Timeout Property",
+                    "description": "`next` + `interrupt` 识别超时时间，毫秒。可选，默认 20 * 1000 。",
+                    "$ref": "#/$defs/jsonNInt64",
+                    "default": 20000,
+                    "markdownDescription": "*uint*\n\n`next` + `interrupt` 识别超时时间，毫秒。可选，默认 20 * 1000 。\n\n具体逻辑为 `while(!timeout) { foreach(next + interrupt); sleep_until(rate_limit); }` 。"
+                },
+                "on_error": {
+                    "title": "On Error Property",
+                    "description": "当识别超时，或动作执行失败后，接下来会执行该列表中的节点。可选，默认空。",
+                    "$ref": "#/$defs/jsonStringOrList",
+                    "markdownDescription": "*string* | *list<string, >*\n\n当识别超时，或动作执行失败后，接下来会执行该列表中的节点。可选，默认空。"
+                },
+                "inverse": {
+                    "title": "Inverse Property",
+                    "description": "反转识别结果，识别到了当做没识别到，没识别到的当做识别到了。可选，默认 false 。",
+                    "$ref": "#/$defs/jsonBooleanFalse",
+                    "markdownDescription": "*bool*\n\n反转识别结果，识别到了当做没识别到，没识别到的当做识别到了。可选，默认 false 。\n\n请注意由此识别出的节点，Click 等动作的点击自身将失效（因为实际并没有识别到东西），若有需求可单独设置 `target` 。"
+                },
+                "enabled": {
+                    "title": "Enabled Property",
+                    "description": "是否启用该 node。可选，默认 true 。",
+                    "$ref": "#/$defs/jsonBooleanTrue",
+                    "markdownDescription": "*bool*\n\n是否启用该 node。可选，默认 true 。\n\n若为 false，其他 node 的 next 列表中的该 node 会被跳过，既不会被识别也不会被执行。"
+                },
+                "pre_delay": {
+                    "title": "Pre Delay Property",
+                    "description": "识别到 到 执行动作前 的延迟，毫秒。可选，默认 200 。",
+                    "$ref": "#/$defs/jsonNInt64",
+                    "default": 200,
+                    "markdownDescription": "*uint*\n\n识别到 到 执行动作前 的延迟，毫秒。可选，默认 200 。\n\n推荐尽可能增加中间过程节点，少用延迟，不然既慢还不稳定。"
+                },
+                "post_delay": {
+                    "title": "Post Delay Property",
+                    "description": "执行动作后 到 识别 next 的延迟，毫秒。可选，默认 200 。",
+                    "$ref": "#/$defs/jsonNInt64",
+                    "default": 200,
+                    "markdownDescription": "*uint*\n\n执行动作后 到 识别 next 的延迟，毫秒。可选，默认 200 。\n\n推荐尽可能增加中间过程节点，少用延迟，不然既慢还不稳定。"
+                },
+                "pre_wait_freezes": {
+                    "title": "Pre Wait Freezes Property",
+                    "$ref": "#/$defs/WaitFreezesOrNInt64",
+                    "description": "识别到 到 执行动作前，等待画面不动了的时间，毫秒。可选，默认 0 ，即不等待。",
+                    "markdownDescription": "*uint* | *object*\n\n识别到 到 执行动作前，等待画面不动了的时间，毫秒。可选，默认 0 ，即不等待。\n\n连续 `pre_wait_freezes` 毫秒 画面 **没有较大变化** 才会退出动作。\n\n若为 object，可设置更多参数，详见 [等待画面静止](#等待画面静止)。\n\n具体的顺序为 `pre_wait_freezes` - `pre_delay` - `action` - `post_wait_freezes` - `post_delay` 。"
+                },
+                "post_wait_freezes": {
+                    "title": "Post Wait Freezes Property",
+                    "description": "行动动作后 到 识别 next，等待画面不动了的时间，毫秒。可选，默认 0 ，即不等待。",
+                    "$ref": "#/$defs/WaitFreezesOrNInt64",
+                    "markdownDescription": "*uint* | *object*\n\n行动动作后 到 识别 next，等待画面不动了的时间，毫秒。可选，默认 0 ，即不等待。\n\n连续 `pre_wait_freezes` 毫秒 画面 **没有较大变化** 才会退出动作。\n\n若为 object，可设置更多参数，详见 [等待画面静止](#等待画面静止)。\n\n具体的顺序为 `pre_wait_freezes` - `pre_delay` - `action` - `post_wait_freezes` - `post_delay` 。"
+                },
+                "focus": {
+                    "title": "Focus Property",
+                    "description": "关注节点，会额外产生部分回调消息。可选，默认 null，不产生回调消息。",
+                    "$ref": "#/$defs/jsonDefaultNull",
+                    "markdownDescription": "*any*\n\n关注节点，会额外产生部分回调消息。可选，默认 null，不产生回调消息。\n\n详见 [节点通知](#节点通知)。"
                 }
             }
         }

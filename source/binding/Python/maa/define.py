@@ -66,11 +66,12 @@ class MaaGlobalOptionEnum(IntEnum):
     # value: bool, eg: true; val_size: sizeof(bool)
     SaveDraw = 2
 
+    # Deprecated
     # Dump all screenshots and actions
     #
     # Recording will evaluate to true if any of this or MaaCtrlOptionEnum::MaaCtrlOption_Recording
     # is true. value: bool, eg: true; val_size: sizeof(bool)
-    Recording = 3
+    # Recording = 3
 
     # The level of log output to stdout
     #
@@ -105,10 +106,11 @@ class MaaCtrlOptionEnum(IntEnum):
     # value: bool, eg: true; val_size: sizeof(bool)
     ScreenshotUseRawSize = 3
 
+    # Deprecated
     # Dump all screenshots and actions
     # this option will || with MaaGlobalOptionEnum.Recording
     # value: bool, eg: true; val_size: sizeof(bool)
-    Recording = 5
+    # Recording = 5
 
 
 class MaaInferenceDeviceEnum(IntEnum):
@@ -338,7 +340,7 @@ class MaaCustomControllerCallbacks(ctypes.Structure):
         ctypes.c_int32,
         ctypes.c_void_p,
     )
-    PressKeyFunc = FUNCTYPE(
+    ClickKeyFunc = FUNCTYPE(
         MaaBool,
         ctypes.c_int32,
         ctypes.c_void_p,
@@ -346,6 +348,16 @@ class MaaCustomControllerCallbacks(ctypes.Structure):
     InputTextFunc = FUNCTYPE(
         MaaBool,
         ctypes.c_char_p,
+        ctypes.c_void_p,
+    )
+    KeyDownFunc = FUNCTYPE(
+        MaaBool,
+        ctypes.c_int32,
+        ctypes.c_void_p,
+    )
+    KeyUpFunc = FUNCTYPE(
+        MaaBool,
+        ctypes.c_int32,
         ctypes.c_void_p,
     )
     _fields_ = [
@@ -359,8 +371,10 @@ class MaaCustomControllerCallbacks(ctypes.Structure):
         ("touch_down", TouchDownFunc),
         ("touch_move", TouchMoveFunc),
         ("touch_up", TouchUpFunc),
-        ("press_key", PressKeyFunc),
+        ("click_key", ClickKeyFunc),
         ("input_text", InputTextFunc),
+        ("key_down", KeyDownFunc),
+        ("key_up", KeyUpFunc),
     ]
 
 

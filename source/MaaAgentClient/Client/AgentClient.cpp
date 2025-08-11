@@ -8,7 +8,7 @@
 #include "Utils/Buffer/ImageBuffer.hpp"
 #include "Utils/Buffer/ListBuffer.hpp"
 #include "Utils/Buffer/StringBuffer.hpp"
-#include "Utils/Codec.h"
+#include "Utils/Encoding.h"
 #include "Utils/Logger.h"
 #include "Utils/Platform.h"
 #include "Utils/Uuid.h"
@@ -257,7 +257,7 @@ bool AgentClient::handle_inserted_request(const json::value& j)
     else if (handle_controller_post_swipe(j)) {
         return true;
     }
-    else if (handle_controller_post_press_key(j)) {
+    else if (handle_controller_post_click_key(j)) {
         return true;
     }
     else if (handle_controller_post_input_text(j)) {
@@ -279,6 +279,12 @@ bool AgentClient::handle_inserted_request(const json::value& j)
         return true;
     }
     else if (handle_controller_post_touch_up(j)) {
+        return true;
+    }
+    else if (handle_controller_post_key_down(j)) {
+        return true;
+    }
+    else if (handle_controller_post_key_up(j)) {
         return true;
     }
     else if (handle_controller_status(j)) {
@@ -1173,20 +1179,20 @@ bool AgentClient::handle_controller_post_swipe(const json::value& j)
     return true;
 }
 
-bool AgentClient::handle_controller_post_press_key(const json::value& j)
+bool AgentClient::handle_controller_post_click_key(const json::value& j)
 {
-    if (!j.is<ControllerPostPressKeyReverseRequest>()) {
+    if (!j.is<ControllerPostClickKeyReverseRequest>()) {
         return false;
     }
-    const ControllerPostPressKeyReverseRequest& req = j.as<ControllerPostPressKeyReverseRequest>();
+    const ControllerPostClickKeyReverseRequest& req = j.as<ControllerPostClickKeyReverseRequest>();
     LogFunc << VAR(req) << VAR(ipc_addr_);
     MaaController* controller = query_controller(req.controller_id);
     if (!controller) {
         LogError << "controller not found" << VAR(req.controller_id);
         return false;
     }
-    MaaCtrlId ctrl_id = controller->post_press_key(req.keycode);
-    ControllerPostPressKeyReverseResponse resp {
+    MaaCtrlId ctrl_id = controller->post_click_key(req.keycode);
+    ControllerPostClickKeyReverseResponse resp {
         .ctrl_id = ctrl_id,
     };
     send(resp);
@@ -1327,6 +1333,46 @@ bool AgentClient::handle_controller_post_touch_up(const json::value& j)
     }
     MaaCtrlId ctrl_id = controller->post_touch_up(req.contact);
     ControllerPostTouchUpReverseResponse resp {
+        .ctrl_id = ctrl_id,
+    };
+    send(resp);
+    return true;
+}
+
+bool AgentClient::handle_controller_post_key_down(const json::value& j)
+{
+    if (!j.is<ControllerPostKeyDownReverseRequest>()) {
+        return false;
+    }
+    const ControllerPostKeyDownReverseRequest& req = j.as<ControllerPostKeyDownReverseRequest>();
+    LogFunc << VAR(req) << VAR(ipc_addr_);
+    MaaController* controller = query_controller(req.controller_id);
+    if (!controller) {
+        LogError << "controller not found" << VAR(req.controller_id);
+        return false;
+    }
+    MaaCtrlId ctrl_id = controller->post_key_down(req.keycode);
+    ControllerPostKeyDownReverseResponse resp {
+        .ctrl_id = ctrl_id,
+    };
+    send(resp);
+    return true;
+}
+
+bool AgentClient::handle_controller_post_key_up(const json::value& j)
+{
+    if (!j.is<ControllerPostKeyUpReverseRequest>()) {
+        return false;
+    }
+    const ControllerPostKeyUpReverseRequest& req = j.as<ControllerPostKeyUpReverseRequest>();
+    LogFunc << VAR(req) << VAR(ipc_addr_);
+    MaaController* controller = query_controller(req.controller_id);
+    if (!controller) {
+        LogError << "controller not found" << VAR(req.controller_id);
+        return false;
+    }
+    MaaCtrlId ctrl_id = controller->post_key_up(req.keycode);
+    ControllerPostKeyUpReverseResponse resp {
         .ctrl_id = ctrl_id,
     };
     send(resp);

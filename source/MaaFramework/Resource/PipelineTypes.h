@@ -86,8 +86,9 @@ enum class Type
     LongPress,
     Swipe,
     MultiSwipe,
-    Key,
-    Text,
+    ClickKey,
+    LongPressKey,
+    InputText,
     StartApp,
     StopApp,
     Command,
@@ -105,7 +106,7 @@ struct ClickParam
 struct LongPressParam
 {
     Target target;
-    uint duration = 500;
+    uint duration = 1000;
 };
 
 struct SwipeParam
@@ -122,12 +123,18 @@ struct MultiSwipeParam
     std::vector<SwipeParam> swipes;
 };
 
-struct KeyParam
+struct ClickKeyParam
 {
     std::vector<int> keys;
 };
 
-struct TextParam
+struct LongPressKeyParam
+{
+    std::vector<int> keys;
+    uint duration = 1000;
+};
+
+struct InputTextParam
 {
     std::string text;
 };
@@ -157,8 +164,9 @@ using Param = std::variant<
     LongPressParam,
     SwipeParam,
     MultiSwipeParam,
-    KeyParam,
-    TextParam,
+    ClickKeyParam,
+    LongPressKeyParam,
+    InputTextParam,
     AppParam,
     CommandParam,
     CustomParam>;
@@ -174,14 +182,14 @@ inline static const std::unordered_map<std::string, Type> kTypeMap = {
     { "longpress", Type::LongPress },
     { "MultiSwipe", Type::MultiSwipe },
     { "multiswipe", Type::MultiSwipe },
-    { "PressKey", Type::Key },
-    { "presskey", Type::Key },
-    { "Key", Type::Key },
-    { "key", Type::Key },
-    { "InputText", Type::Text },
-    { "inputtext", Type::Text },
-    { "Text", Type::Text },
-    { "text", Type::Text },
+    { "Key", Type::ClickKey },
+    { "key", Type::ClickKey },
+    { "ClickKey", Type::ClickKey },
+    { "clickkey", Type::ClickKey },
+    { "LongPressKey", Type::LongPressKey },
+    { "longpresskey", Type::LongPressKey },
+    { "InputText", Type::InputText },
+    { "inputtext", Type::InputText },
     { "StartApp", Type::StartApp },
     { "startapp", Type::StartApp },
     { "StopApp", Type::StopApp },
@@ -197,9 +205,13 @@ inline static const std::unordered_map<std::string, Type> kTypeMap = {
 };
 
 inline static const std::unordered_map<Type, std::string> kTypeNameMap = {
-    { Type::DoNothing, "DoNothing" },   { Type::Click, "Click" },     { Type::LongPress, "LongPress" }, { Type::Swipe, "Swipe" },
-    { Type::MultiSwipe, "MultiSwipe" }, { Type::Key, "Key" },         { Type::Text, "Text" },           { Type::StartApp, "StartApp" },
-    { Type::StopApp, "StopApp" },       { Type::Command, "Command" }, { Type::Custom, "Custom" },       { Type::StopTask, "StopTask" },
+    { Type::DoNothing, "DoNothing" },       { Type::Click, "Click" },
+    { Type::LongPress, "LongPress" },       { Type::Swipe, "Swipe" },
+    { Type::MultiSwipe, "MultiSwipe" },     { Type::ClickKey, "ClickKey" },
+    { Type::LongPressKey, "LongPressKey" }, { Type::InputText, "InputText" },
+    { Type::StartApp, "StartApp" },         { Type::StopApp, "StopApp" },
+    { Type::Command, "Command" },           { Type::Custom, "Custom" },
+    { Type::StopTask, "StopTask" },
 };
 } // namespace Action
 

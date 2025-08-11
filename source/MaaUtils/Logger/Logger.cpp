@@ -11,7 +11,7 @@
 #include <sys/utsname.h>
 #endif
 
-#include "Utils/Codec.h"
+#include "Utils/Encoding.h"
 #include "Utils/ImageIo.h"
 #include "Utils/Platform.h"
 #include "Utils/Uuid.h"
@@ -97,12 +97,8 @@ void Logger::set_stdout_level(MaaLoggingLevel level)
 
 void Logger::flush()
 {
-    internal_dbg() << kSplitLine;
-    internal_dbg() << "Flush log";
-    internal_dbg() << kSplitLine;
-
     bool rotated = rotate();
-    open();
+    open(!rotated);
 
     if (rotated) {
         log_proc_info();
@@ -111,8 +107,8 @@ void Logger::flush()
 
 void Logger::reinit()
 {
-    rotate();
-    open();
+    bool rotated = rotate();
+    open(!rotated);
     log_proc_info();
 }
 
@@ -149,7 +145,7 @@ bool Logger::rotate()
     return true;
 }
 
-void Logger::open()
+void Logger::open(bool append)
 {
     if (log_path_.empty()) {
         return;
@@ -165,13 +161,13 @@ void Logger::open()
 
     // https://stackoverflow.com/questions/55513974/controlling-inheritability-of-file-handles-created-by-c-stdfstream-in-window
     std::string str_log_path = log_path_.string();
-    FILE* file_ptr = fopen(str_log_path.c_str(), "a");
+    FILE* file_ptr = fopen(str_log_path.c_str(), append ? "a" : "w");
     SetHandleInformation((HANDLE)_get_osfhandle(_fileno(file_ptr)), HANDLE_FLAG_INHERIT, 0);
     ofs_ = std::ofstream(file_ptr);
 
 #else
 
-    ofs_ = std::ofstream(log_path_, std::ios::out | std::ios::app);
+    ofs_ = std::ofstream(log_path_, std::ios::out | (append ? std::ios::app : std::ios::trunc));
 
 #endif
 }
@@ -225,6 +221,23 @@ void Logger::log_proc_info()
     internal_dbg() << "Working" << std::filesystem::current_path();
     internal_dbg() << "Logging" << log_path_;
     internal_dbg() << kSplitLine;
+}
+
+void Logger::count_and_check_flush()
+{
+    static constexpr size_t kMaxCount = 1'000'000;
+
+    if (++log_count_ < kMaxCount) {
+        return;
+    }
+
+    log_count_ = 0;
+
+    internal_dbg() << kSplitLine;
+    internal_dbg() << "Too many logs, flushing...";
+    internal_dbg() << kSplitLine;
+
+    flush();
 }
 
 LogStream Logger::internal_dbg()

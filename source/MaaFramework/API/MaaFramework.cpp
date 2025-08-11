@@ -1,7 +1,6 @@
 #include "MaaFramework/MaaAPI.h"
 
-#include "Controller/CustomControllerAgent.h"
-#include "Controller/GeneralControllerAgent.h"
+#include "Controller/ControllerAgent.h"
 #include "Global/GlobalOptionMgr.h"
 #include "LibraryHolder/ControlUnit.h"
 #include "Resource/ResourceMgr.h"
@@ -30,7 +29,7 @@ MaaController* MaaAdbControllerCreate(
         return nullptr;
     }
 
-    return new MAA_CTRL_NS::GeneralControllerAgent(std::move(control_unit), notify, notify_trans_arg);
+    return new MAA_CTRL_NS::ControllerAgent(std::move(control_unit), notify, notify_trans_arg);
 }
 
 MaaController* MaaWin32ControllerCreate(
@@ -60,7 +59,7 @@ MaaController* MaaWin32ControllerCreate(
         return nullptr;
     }
 
-    return new MAA_CTRL_NS::GeneralControllerAgent(std::move(control_unit), notify, notify_trans_arg);
+    return new MAA_CTRL_NS::ControllerAgent(std::move(control_unit), notify, notify_trans_arg);
 
 #endif
 }
@@ -78,7 +77,14 @@ MaaController* MaaCustomControllerCreate(
         return nullptr;
     }
 
-    return new MAA_CTRL_NS::CustomControllerAgent(controller, controller_arg, notify, notify_trans_arg);
+    auto control_unit = MAA_NS::CustomControlUnitLibraryHolder::create_control_unit(controller, controller_arg);
+
+    if (!control_unit) {
+        LogError << "Failed to create control unit";
+        return nullptr;
+    }
+
+    return new MAA_CTRL_NS::ControllerAgent(std::move(control_unit), notify, notify_trans_arg);
 }
 
 MaaController* MaaDbgControllerCreate(
@@ -101,7 +107,7 @@ MaaController* MaaDbgControllerCreate(
         return nullptr;
     }
 
-    return new MAA_CTRL_NS::GeneralControllerAgent(std::move(control_unit), notify, notify_trans_arg);
+    return new MAA_CTRL_NS::ControllerAgent(std::move(control_unit), notify, notify_trans_arg);
 }
 
 void MaaControllerDestroy(MaaController* ctrl)

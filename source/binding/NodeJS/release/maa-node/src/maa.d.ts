@@ -64,8 +64,10 @@ export type CustomControllerParamResultMap = {
     touch_down: [[contact: number, x: number, y: number, pressure: number], boolean]
     touch_move: [[contact: number, x: number, y: number, pressure: number], boolean]
     touch_up: [[contact: number], boolean]
-    press_key: [[keycode: number], boolean]
+    click_key: [[keycode: number], boolean]
     input_text: [[text: string], boolean]
+    key_down: [[keycode: number], boolean]
+    key_up: [[keycode: number], boolean]
 }
 export type CustomControllerCallback = (
     action: keyof CustomControllerParamResultMap,
@@ -150,10 +152,6 @@ export declare function controller_set_option_screenshot_use_raw_size(
     handle: ControllerHandle,
     value: boolean
 ): boolean
-export declare function controller_set_option_recording(
-    handle: ControllerHandle,
-    value: boolean
-): boolean
 export declare function controller_post_connection(handle: ControllerHandle): CtrlId
 export declare function controller_post_click(
     handle: ControllerHandle,
@@ -168,7 +166,9 @@ export declare function controller_post_swipe(
     y2: number,
     duration: number
 ): CtrlId
-export declare function controller_post_press_key(handle: ControllerHandle, keycode: number): CtrlId
+export declare function controller_post_click_key(handle: ControllerHandle, keycode: number): CtrlId
+export declare function controller_post_key_down(handle: ControllerHandle, keycode: number): CtrlId
+export declare function controller_post_key_up(handle: ControllerHandle, keycode: number): CtrlId
 export declare function controller_post_input_text(handle: ControllerHandle, text: string): CtrlId
 export declare function controller_post_start_app(handle: ControllerHandle, intent: string): CtrlId
 export declare function controller_post_stop_app(handle: ControllerHandle, intent: string): CtrlId
@@ -330,7 +330,6 @@ export declare function find_desktop(): Promise<
 export declare function version(): string
 export declare function set_global_option_log_dir(value: string): boolean
 export declare function set_global_option_save_draw(value: boolean): boolean
-export declare function set_global_option_recording(value: boolean): boolean
 export declare function set_global_option_stdout_level(value: LoggingLevel): boolean
 export declare function set_global_option_debug_mode(value: boolean): boolean
 

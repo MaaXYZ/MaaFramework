@@ -1,0 +1,17 @@
+name: deploy-maafw.xyz
+
+on:
+    push:
+        tags:
+            - "v*"
+
+    workflow_dispatch:
+
+jobs:
+    deploy:
+        runs-on: ubuntu-latest
+        env:
+          GH_TOKEN: ${{ secrets.MaaFwDocsDeploy }}
+        steps:
+            - run: |
+                gh workflow --repo MaaXYZ/MaaFrameworkDocsWebsite run deploy.yml

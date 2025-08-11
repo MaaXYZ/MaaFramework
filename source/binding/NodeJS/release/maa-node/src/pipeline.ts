@@ -208,9 +208,18 @@ export type ActionMultiSwipe<Mode> = RequiredIfStrict<
     Mode
 >
 
-export type ActionKey<Mode> = RequiredIfStrict<
+export type ActionClickKey<Mode> = RequiredIfStrict<
     {
         key?: MaybeArray<number, Mode>
+    },
+    'key',
+    Mode
+>
+
+export type ActionLongPressKey<Mode> = RequiredIfStrict<
+    {
+        key?: number
+        duration?: number
     },
     'key',
     Mode
@@ -292,7 +301,9 @@ export type Action<Mode> =
     | MixAct<'LongPress', ActionLongPress, Mode>
     | MixAct<'Swipe', ActionSwipe, Mode>
     | MixAct<'MultiSwipe', ActionMultiSwipe<Mode>, Mode>
-    | MixAct<'Key', ActionKey<Mode>, Mode>
+    | MixAct<'Key', ActionClickKey<Mode>, Mode>
+    | MixAct<'ClickKey', ActionClickKey<Mode>, Mode>
+    | MixAct<'LongPressKey', ActionLongPressKey<Mode>, Mode>
     | MixAct<'InputText', ActionInputText<Mode>, Mode>
     | MixAct<'StartApp', ActionStartApp<Mode>, Mode>
     | MixAct<'StopApp', ActionStopApp<Mode>, Mode>

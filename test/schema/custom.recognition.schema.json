@@ -1,0 +1,74 @@
+{
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "type": "object",
+    "properties": {
+        "custom_recognition": {
+            "enum": [
+                "<custom_1>",
+                "<custom_2>"
+            ]
+        }
+    },
+    "anyOf": [
+        {
+            "$ref": "#/$defs/<custom_1>"
+        },
+        {
+            "$ref": "#/$defs/<custom_2>"
+        }
+    ],
+    "$defs": {
+        "RequiredParam": {
+            "anyOf": [
+                {
+                    "required": [
+                        "custom_recognition_param"
+                    ]
+                },
+                {
+                    "required": [
+                        "custom_recognition_param_code"
+                    ]
+                }
+            ]
+        },
+        "<custom_1>": {
+            "$ref": "#/$defs/RequiredParam",
+            "properties": {
+                "custom_recognition": {
+                    "const": "<custom_1>"
+                },
+                "custom_recognition_param": {
+                    "type": "object",
+                    "properties": {
+                        "<param_string>": {
+                            "type": "string"
+                        }
+                    },
+                    "unevaluatedProperties": false
+                }
+            }
+        },
+        "<custom_2>": {
+            "allOf": [
+                {
+                    "$ref": "#/$defs/RequiredParam"
+                }
+            ],
+            "properties": {
+                "custom_recognition": {
+                    "const": "<custom_2>"
+                },
+                "custom_recognition_param": {
+                    "type": "object",
+                    "properties": {
+                        "<param_integer>": {
+                            "type": "integer"
+                        }
+                    },
+                    "unevaluatedProperties": true
+                }
+            }
+        }
+    }
+}

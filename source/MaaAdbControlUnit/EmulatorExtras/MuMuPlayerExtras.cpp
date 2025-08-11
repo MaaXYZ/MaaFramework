@@ -2,9 +2,8 @@
 
 #include "MuMuPlayerExtras.h"
 
-#include "Utils/Codec.h"
+#include "Utils/Encoding.h"
 #include "Utils/Logger.h"
-#include "Utils/MicroControl.hpp"
 #include "Utils/NoWarningCV.hpp"
 #include "Utils/Platform.h"
 
@@ -95,63 +94,13 @@ std::optional<cv::Mat> MuMuPlayerExtras::screencap()
 
 bool MuMuPlayerExtras::click(int x, int y)
 {
-    if (!input_event_touch_down_func_ || !input_event_touch_up_func_) {
-        LogError << "input_event_touch_down_func_ or input_event_touch_up_func_ is null";
-        return false;
-    }
-
-    int display_id = get_display_id();
-    LogInfo << VAR(x) << VAR(y) << VAR(display_id);
-
-    int down_ret = input_event_touch_down_func_(mumu_handle_, display_id, x, y);
-    int up_ret = input_event_touch_up_func_(mumu_handle_, display_id);
-
-    if (down_ret != 0 || up_ret != 0) {
-        LogError << "Failed to click" << VAR(down_ret) << VAR(up_ret);
-        return false;
-    }
-
-    return true;
+    LogError << "deprecated" << VAR(x) << VAR(y);
+    return false;
 }
 
 bool MuMuPlayerExtras::swipe(int x1, int y1, int x2, int y2, int duration)
 {
-    if (!input_event_touch_down_func_ || !input_event_touch_up_func_) {
-        LogError << "input_event_touch_down_func_ or input_event_touch_up_func_ is null";
-        return false;
-    }
-
-    if (duration <= 0) {
-        LogWarn << "duration out of range" << VAR(duration);
-        duration = 200;
-    }
-
-    int display_id = get_display_id();
-    LogInfo << VAR(x1) << VAR(y1) << VAR(x2) << VAR(y2) << VAR(duration) << VAR(display_id);
-
-    int ret = 0;
-
-    micro_swipe(
-        x1,
-        y1,
-        x2,
-        y2,
-        duration,
-        [&](int x, int y) { ret |= input_event_touch_down_func_(mumu_handle_, display_id, x, y); },
-        [&](int x, int y) { ret |= input_event_touch_down_func_(mumu_handle_, display_id, x, y); },
-        [&](int, int) { ret |= input_event_touch_up_func_(mumu_handle_, display_id); });
-
-    if (ret != 0) {
-        LogError << "Failed to swipe" << VAR(ret);
-        return false;
-    }
-
-    return true;
-}
-
-bool MuMuPlayerExtras::multi_swipe(const std::vector<SwipeParam>& swipes)
-{
-    LogError << "MuMuPlayerExtras not supports" << VAR(swipes.size());
+    LogError << "deprecated" << VAR(x1) << VAR(y1) << VAR(x2) << VAR(y2) << VAR(duration);
     return false;
 }
 
@@ -179,13 +128,16 @@ bool MuMuPlayerExtras::touch_move(int contact, int x, int y, int pressure)
 {
     // mumu: touch_down == touch_move
 
+    std::ignore = contact;
+    std::ignore = pressure;
+
     if (!input_event_touch_down_func_) {
         LogError << "input_event_touch_down_func_ is null";
         return false;
     }
 
     int display_id = get_display_id();
-    LogInfo << VAR(contact) << VAR(x) << VAR(y) << VAR(pressure) << VAR(display_id);
+    // LogInfo << VAR(contact) << VAR(x) << VAR(y) << VAR(pressure) << VAR(display_id);
 
     int ret = input_event_touch_down_func_(mumu_handle_, display_id, x, y);
 
@@ -217,25 +169,10 @@ bool MuMuPlayerExtras::touch_up(int contact)
     return true;
 }
 
-bool MuMuPlayerExtras::press_key(int key)
+bool MuMuPlayerExtras::click_key(int key)
 {
-    if (!input_event_key_down_func_ || !input_event_key_up_func_) {
-        LogError << "input_event_key_down_func_ or input_event_key_up_func_ is null";
-        return false;
-    }
-
-    int display_id = get_display_id();
-    LogInfo << VAR(key) << VAR(display_id);
-
-    int down_ret = input_event_key_down_func_(mumu_handle_, display_id, key);
-    int up_ret = input_event_key_up_func_(mumu_handle_, display_id, key);
-
-    if (down_ret != 0 || up_ret != 0) {
-        LogError << "Failed to press_key" << VAR(down_ret) << VAR(up_ret);
-        return false;
-    }
-
-    return true;
+    LogError << "deprecated" << VAR(key);
+    return false;
 }
 
 bool MuMuPlayerExtras::input_text(const std::string& text)
@@ -252,6 +189,46 @@ bool MuMuPlayerExtras::input_text(const std::string& text)
 
     if (ret != 0) {
         LogError << "Failed to input_text" << VAR(ret);
+        return false;
+    }
+
+    return true;
+}
+
+bool MuMuPlayerExtras::key_down(int key)
+{
+    if (!input_event_key_down_func_) {
+        LogError << "input_event_key_down_func_ is null";
+        return false;
+    }
+
+    int display_id = get_display_id();
+    LogInfo << VAR(key) << VAR(display_id);
+
+    int down_ret = input_event_key_down_func_(mumu_handle_, display_id, key);
+
+    if (down_ret != 0) {
+        LogError << "Failed to key_down" << VAR(down_ret);
+        return false;
+    }
+
+    return true;
+}
+
+bool MuMuPlayerExtras::key_up(int key)
+{
+    if (!input_event_key_up_func_) {
+        LogError << "input_event_key_up_func_ is null";
+        return false;
+    }
+
+    int display_id = get_display_id();
+    LogInfo << VAR(key) << VAR(display_id);
+
+    int up_ret = input_event_key_up_func_(mumu_handle_, display_id, key);
+
+    if (up_ret != 0) {
+        LogError << "Failed to click_key" << VAR(up_ret);
         return false;
     }
 

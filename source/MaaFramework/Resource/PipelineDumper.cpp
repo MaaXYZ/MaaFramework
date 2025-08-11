@@ -2,7 +2,7 @@
 
 #include "PipelineTypesV2.h"
 #include "Utils/Logger.h"
-#include "Utils/Codec.h"
+#include "Utils/Encoding.h"
 
 MAA_RES_NS_BEGIN
 
@@ -237,15 +237,23 @@ json::object PipelineDumper::dump(const PipelineData& pp)
         data.action.param = std::move(jswipes);
     } break;
 
-    case Action::Type::Key: {
-        const auto& param = std::get<Action::KeyParam>(pp.action_param);
-        data.action.param = PipelineV2::JKey {
+    case Action::Type::ClickKey: {
+        const auto& param = std::get<Action::ClickKeyParam>(pp.action_param);
+        data.action.param = PipelineV2::JClickKey {
             .key = param.keys,
         };
     } break;
 
-    case Action::Type::Text: {
-        const auto& param = std::get<Action::TextParam>(pp.action_param);
+    case Action::Type::LongPressKey: {
+        const auto& param = std::get<Action::LongPressKeyParam>(pp.action_param);
+        data.action.param = PipelineV2::JLongPressKey {
+            .key = param.keys,
+            .duration = param.duration,
+        };
+    } break;
+
+    case Action::Type::InputText: {
+        const auto& param = std::get<Action::InputTextParam>(pp.action_param);
         data.action.param = PipelineV2::JInputText {
             .input_text = param.text,
         };

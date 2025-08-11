@@ -4,8 +4,6 @@
 #include "MaaFramework/MaaAPI.h"
 #include "MaaFramework/Utility/MaaBuffer.h"
 
-#include "../conf.h"
-
 MaaBool ChildCustomRecognitionCallback(
     MaaContext* context,
     MaaTaskId task_id,

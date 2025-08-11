@@ -83,11 +83,12 @@ enum MaaGlobalOptionEnum
     /// value: bool, eg: true; val_size: sizeof(bool)
     MaaGlobalOption_SaveDraw = 2,
 
+    /// Deprecated
     /// Dump all screenshots and actions
     ///
     /// Recording will evaluate to true if any of this or MaaCtrlOptionEnum::MaaCtrlOption_Recording is true.
     /// value: bool, eg: true; val_size: sizeof(bool)
-    MaaGlobalOption_Recording = 3,
+    /// MaaGlobalOption_Recording = 3,
 
     /// The level of log output to stdout
     ///
@@ -95,10 +96,11 @@ enum MaaGlobalOptionEnum
     /// default value is MaaLoggingLevel_Error
     MaaGlobalOption_StdoutLevel = 4,
 
+    /// Deprecated
     /// Whether to show hit draw
     ///
     /// value: bool, eg: true; val_size: sizeof(bool)
-    MaaGlobalOption_ShowHitDraw = 5,
+    /// MaaGlobalOption_ShowHitDraw = 5,
 
     /// Whether to debug
     ///
@@ -189,13 +191,14 @@ enum MaaCtrlOptionEnum
     /// value: bool, eg: true; val_size: sizeof(bool)
     MaaCtrlOption_ScreenshotUseRawSize = 3,
 
+    /// Deprecated
     /// Dump all screenshots and actions
     ///
     /// Recording will evaluate to true if any of this or
     /// MaaGlobalOptionEnum::MaaGlobalOption_Recording is true.
     ///
     /// value: bool, eg: true; val_size: sizeof(bool)
-    MaaCtrlOption_Recording = 5,
+    /// MaaCtrlOption_Recording = 5,
 };
 
 typedef MaaOption MaaTaskerOption;

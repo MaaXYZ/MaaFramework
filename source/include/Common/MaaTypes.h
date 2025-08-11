@@ -58,7 +58,7 @@ public:
     virtual MaaCtrlId post_connection() = 0;
     virtual MaaCtrlId post_click(int x, int y) = 0;
     virtual MaaCtrlId post_swipe(int x1, int y1, int x2, int y2, int duration) = 0;
-    virtual MaaCtrlId post_press_key(int keycode) = 0;
+    virtual MaaCtrlId post_click_key(int keycode) = 0;
     virtual MaaCtrlId post_input_text(const std::string& text) = 0;
     virtual MaaCtrlId post_start_app(const std::string& intent) = 0;
     virtual MaaCtrlId post_stop_app(const std::string& intent) = 0;
@@ -67,6 +67,9 @@ public:
     virtual MaaCtrlId post_touch_down(int contact, int x, int y, int pressure) = 0;
     virtual MaaCtrlId post_touch_move(int contact, int x, int y, int pressure) = 0;
     virtual MaaCtrlId post_touch_up(int contact) = 0;
+
+    virtual MaaCtrlId post_key_down(int keycode) = 0;
+    virtual MaaCtrlId post_key_up(int keycode) = 0;
 
     virtual MaaStatus status(MaaCtrlId ctrl_id) const = 0;
     virtual MaaStatus wait(MaaCtrlId ctrl_id) const = 0;

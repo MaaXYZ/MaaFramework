@@ -6,7 +6,6 @@
 #include <ranges>
 
 #include "Utils/Logger.h"
-#include "Utils/MicroControl.hpp"
 
 MAA_CTRL_UNIT_NS_BEGIN
 
@@ -64,12 +63,14 @@ bool MtouchHelper::request_display_info()
         return false;
     }
 
-    std::tie(display_width_, display_height_) = *resolution_opt;
+    display_width_ = resolution_opt->w;
+    display_height_ = resolution_opt->h;
+    orientation_ = resolution_opt->r;
 
     auto orientation_opt = device_info_->request_orientation();
     if (!orientation_opt) {
-        LogError << "failed to request orientation";
-        return false;
+        LogWarn << "failed to request orientation";
+        return true;
     }
 
     orientation_ = *orientation_opt;
@@ -79,116 +80,16 @@ bool MtouchHelper::request_display_info()
 
 bool MtouchHelper::click(int x, int y)
 {
-    if (!pipe_ios_) {
-        LogError << "pipe_ios_ is nullptr";
-        return false;
-    }
+    LogError << "deprecated" << VAR(x) << VAR(y);
 
-    if (x < 0 || x >= display_width_ || y < 0 || y >= display_height_) {
-        LogWarn << "click point out of range" << VAR(x) << VAR(y);
-        x = std::clamp(x, 0, display_width_ - 1);
-        y = std::clamp(y, 0, display_height_ - 1);
-    }
-
-    auto [touch_x, touch_y] = screen_to_touch(x, y);
-
-    LogInfo << VAR(x) << VAR(y) << VAR(touch_x) << VAR(touch_y);
-
-    bool ret = pipe_ios_->write(std::format(kDownFormat, 0, touch_x, touch_y, press_)) && pipe_ios_->write(std::format(kUpFormat, 0));
-
-    if (!ret) {
-        LogError << "failed to write";
-        return false;
-    }
-
-    return true;
+    return false;
 }
 
 bool MtouchHelper::swipe(int x1, int y1, int x2, int y2, int duration)
 {
-    if (!pipe_ios_) {
-        LogError << "pipe_ios_ is nullptr";
-        return false;
-    }
+    LogError << "deprecated" << VAR(x1) << VAR(y1) << VAR(x2) << VAR(y2) << VAR(duration);
 
-    if (x1 < 0 || x1 >= display_width_ || y1 < 0 || y1 >= display_height_ || x2 < 0 || x2 >= display_width_ || y2 < 0
-        || y2 >= display_height_) {
-        LogWarn << "swipe point out of range" << VAR(x1) << VAR(y1) << VAR(x2) << VAR(y2);
-        x1 = std::clamp(x1, 0, display_width_ - 1);
-        y1 = std::clamp(y1, 0, display_height_ - 1);
-        x2 = std::clamp(x2, 0, display_width_ - 1);
-        y2 = std::clamp(y2, 0, display_height_ - 1);
-    }
-    if (duration <= 0) {
-        LogWarn << "duration out of range" << VAR(duration);
-        duration = 200;
-    }
-
-    auto [touch_x1, touch_y1] = screen_to_touch(x1, y1);
-    auto [touch_x2, touch_y2] = screen_to_touch(x2, y2);
-
-    LogInfo << VAR(x1) << VAR(y1) << VAR(touch_x1) << VAR(touch_y1) << VAR(x2) << VAR(y2) << VAR(touch_x2) << VAR(touch_y2)
-            << VAR(duration);
-
-    bool ret = true;
-
-    micro_swipe(
-        touch_x1,
-        touch_y1,
-        touch_x2,
-        touch_y2,
-        duration,
-        [&](int x, int y) { ret &= pipe_ios_->write(std::format(kDownFormat, 0, x, y, press_)); },
-        [&](int x, int y) { ret &= pipe_ios_->write(std::format(kMoveFormat, 0, x, y, press_)); },
-        [&]([[maybe_unused]] int x, [[maybe_unused]] int y) { ret &= pipe_ios_->write(std::format(kUpFormat, 0)); });
-
-    return ret;
-}
-
-bool MtouchHelper::multi_swipe(const std::vector<SwipeParam>& swipes)
-{
-    if (!pipe_ios_) {
-        LogError << "pipe_ios_ is nullptr";
-        return false;
-    }
-
-    std::vector<SwipeParam> correction = swipes;
-
-    for (SwipeParam& s : correction) {
-        if (s.x1 < 0 || s.x1 >= display_width_ || s.y1 < 0 || s.y1 >= display_height_ || s.x2 < 0 || s.x2 >= display_width_ || s.y2 < 0
-            || s.y2 >= display_height_) {
-            LogWarn << "swipe point out of range" << VAR(s.x1) << VAR(s.y1) << VAR(s.x2) << VAR(s.y2);
-            s.x1 = std::clamp(s.x1, 0, display_width_ - 1);
-            s.y1 = std::clamp(s.y1, 0, display_height_ - 1);
-            s.x2 = std::clamp(s.x2, 0, display_width_ - 1);
-            s.y2 = std::clamp(s.y2, 0, display_height_ - 1);
-        }
-        if (s.duration <= 0) {
-            LogWarn << "duration out of range" << VAR(s.duration);
-            s.duration = 200;
-        }
-
-        auto [touch_x1, touch_y1] = screen_to_touch(s.x1, s.y1);
-        auto [touch_x2, touch_y2] = screen_to_touch(s.x2, s.y2);
-
-        LogInfo << VAR(s.x1) << VAR(s.y1) << VAR(touch_x1) << VAR(touch_y1) << VAR(s.x2) << VAR(s.y2) << VAR(touch_x2) << VAR(touch_y2)
-                << VAR(s.duration);
-
-        s.x1 = touch_x1;
-        s.y1 = touch_y1;
-        s.x2 = touch_x2;
-        s.y2 = touch_y2;
-    }
-
-    bool ret = true;
-
-    micro_multi_swipe(
-        correction,
-        [&](int contact, int x, int y) { ret &= pipe_ios_->write(std::format(kDownFormat, contact, x, y, press_)); },
-        [&](int contact, int x, int y) { ret &= pipe_ios_->write(std::format(kMoveFormat, contact, x, y, press_)); },
-        [&](int contact, [[maybe_unused]] int x, [[maybe_unused]] int y) { ret &= pipe_ios_->write(std::format(kUpFormat, contact)); });
-
-    return ret;
+    return false;
 }
 
 bool MtouchHelper::touch_down(int contact, int x, int y, int pressure)
@@ -221,7 +122,7 @@ bool MtouchHelper::touch_move(int contact, int x, int y, int pressure)
 
     auto [touch_x, touch_y] = screen_to_touch(x, y);
 
-    LogInfo << VAR(contact) << VAR(x) << VAR(y) << VAR(touch_x) << VAR(touch_y);
+    // LogInfo << VAR(contact) << VAR(x) << VAR(y) << VAR(touch_x) << VAR(touch_y);
 
     bool ret = pipe_ios_->write(std::format(kMoveFormat, contact, touch_x, touch_y, pressure));
 

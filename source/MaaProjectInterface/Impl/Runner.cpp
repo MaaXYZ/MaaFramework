@@ -10,7 +10,7 @@
 
 #include "Common/MaaTypes.h"
 #include "LibraryHolder/AgentClient.h"
-#include "Utils/Codec.h"
+#include "Utils/Encoding.h"
 #include "Utils/IOStream/BoostIO.hpp"
 #include "Utils/Logger.h"
 #include "Utils/Platform.h"

@@ -5,7 +5,7 @@
 
 #include "Conf/Conf.h"
 
-#include "Utils/Codec.h"
+#include "Utils/Encoding.h"
 #include "Utils/JsonExt.hpp"
 #include "VisionBase.h"
 #include "VisionTypes.h"
