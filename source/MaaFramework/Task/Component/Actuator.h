@@ -38,6 +38,7 @@ private:
 
     bool start_app(const MAA_RES_NS::Action::AppParam& param);
     bool stop_app(const MAA_RES_NS::Action::AppParam& param);
+
     bool command(const MAA_RES_NS::Action::CommandParam& param, const cv::Rect& box, const std::string& name, const std::string& entry);
     bool custom_action(const MAA_RES_NS::Action::CustomParam& param, const cv::Rect& box, MaaRecoId reco_id, const std::string& name);
 

@@ -979,7 +979,10 @@ bool PipelineParser::parse_action(
     case Type::ClickKey: {
         auto default_param = default_mgr.get_action_param<ClickKeyParam>(Type::ClickKey);
         out_param = default_param;
-        return parse_click_key(param_input, std::get<ClickKeyParam>(out_param), same_type ? std::get<ClickKeyParam>(parent_param) : default_param);
+        return parse_click_key(
+            param_input,
+            std::get<ClickKeyParam>(out_param),
+            same_type ? std::get<ClickKeyParam>(parent_param) : default_param);
     } break;
 
     case Type::LongPressKey: {
@@ -994,7 +997,10 @@ bool PipelineParser::parse_action(
     case Type::InputText: {
         auto default_param = default_mgr.get_action_param<InputTextParam>(Type::InputText);
         out_param = default_param;
-        return parse_input_text(param_input, std::get<InputTextParam>(out_param), same_type ? std::get<InputTextParam>(parent_param) : default_param);
+        return parse_input_text(
+            param_input,
+            std::get<InputTextParam>(out_param),
+            same_type ? std::get<InputTextParam>(parent_param) : default_param);
     } break;
 
     case Type::StartApp: {

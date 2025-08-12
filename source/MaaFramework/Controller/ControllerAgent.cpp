@@ -63,14 +63,14 @@ MaaCtrlId ControllerAgent::post_click(int x, int y)
 
 MaaCtrlId ControllerAgent::post_swipe(int x1, int y1, int x2, int y2, int duration)
 {
-    SwipeParam p { .begin = { x1, y1 }, .end = { { x2, y2 } }, .duration = { duration } };
+    SwipeParam p { .begin = { x1, y1 }, .end = { { x2, y2 } }, .duration = { static_cast<uint>(duration) } };
     auto id = post({ .type = Action::Type::swipe, .param = std::move(p) });
     return focus_id(id);
 }
 
 MaaCtrlId ControllerAgent::post_click_key(int keycode)
 {
-    ClickKeyParam p { .keycode = keycode };
+    ClickKeyParam p { .keycode = { keycode } };
     auto id = post({ .type = Action::Type::click_key, .param = std::move(p) });
     return focus_id(id);
 }
@@ -365,7 +365,7 @@ bool ControllerAgent::handle_swipe(const SwipeParam& param)
     return ret;
 }
 
-bool ControllerAgent::handle_multi_swipe(const std::vector<SwipeParam>& param)
+bool ControllerAgent::handle_multi_swipe(const MultiSwipeParam& param)
 {
     if (!control_unit_) {
         LogError << "control_unit_ is nullptr";

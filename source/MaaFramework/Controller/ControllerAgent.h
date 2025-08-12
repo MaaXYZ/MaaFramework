@@ -54,13 +54,13 @@ struct TouchParam
 
 struct ClickKeyParam
 {
-    int keycode = 0;
+    std::vector<int> keycode;
 };
 
 struct LongPressKeyParam
 {
-    int keycode = 0;
-    int duration = 0;
+    std::vector<int> keycode;
+    uint duration = 0;
 };
 
 struct InputTextParam
@@ -73,8 +73,17 @@ struct AppParam
     std::string package;
 };
 
-using Param =
-    std::variant<std::monostate, ClickParam, LongPressParam, SwipeParam, MultiSwipeParam, TouchParam, ClickKeyParam, LongPressKeyParam, InputTextParam, AppParam>;
+using Param = std::variant<
+    std::monostate,
+    ClickParam,
+    LongPressParam,
+    SwipeParam,
+    MultiSwipeParam,
+    TouchParam,
+    ClickKeyParam,
+    LongPressKeyParam,
+    InputTextParam,
+    AppParam>;
 
 struct Action
 {
