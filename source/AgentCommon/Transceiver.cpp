@@ -45,11 +45,12 @@ void Transceiver::init_socket(const std::string& identifier, bool bind)
 
     is_bound_ = bind;
 
+    std::string os_addr = utf8_to_crt(ipc_addr_);
     if (is_bound_) {
-        zmq_sock_.bind(ipc_addr_);
+        zmq_sock_.bind(os_addr);
     }
     else {
-        zmq_sock_.connect(ipc_addr_);
+        zmq_sock_.connect(os_addr);
     }
 }
 
