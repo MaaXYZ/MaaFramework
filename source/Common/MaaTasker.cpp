@@ -66,7 +66,7 @@ MaaTaskId MaaTaskerPostTask(MaaTasker* tasker, const char* entry, const char* pi
         return MaaInvalidId;
     }
 
-    return tasker->post_task(entry, { *ov_opt });
+    return tasker->post_task(entry, *ov_opt);
 }
 
 MaaStatus MaaTaskerStatus(const MaaTasker* tasker, MaaTaskId id)

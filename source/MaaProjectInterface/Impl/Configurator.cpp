@@ -169,7 +169,7 @@ std::optional<RuntimeParam::Task> Configurator::generate_runtime_task(const Conf
 
     RuntimeParam::Task runtime_task { .name = data_task.name,
                                       .entry = data_task.entry,
-                                      .pipeline_override = { data_task.pipeline_override } };
+                                      .pipeline_override = data_task.pipeline_override };
 
     for (const auto& [config_option, config_option_value] : config_task.option) {
         auto data_option_iter =
@@ -188,10 +188,10 @@ std::optional<RuntimeParam::Task> Configurator::generate_runtime_task(const Conf
         }
         const auto& data_case = *data_case_iter;
 
-        runtime_task.pipeline_override.push_back(data_case.pipeline_override);
+        runtime_task.pipeline_override.emplace(data_case.pipeline_override);
     }
 
-    std::reverse(runtime_task.pipeline_override.begin(), runtime_task.pipeline_override.end());
+    std::ranges::reverse(runtime_task.pipeline_override.as_array());
     return runtime_task;
 }
 

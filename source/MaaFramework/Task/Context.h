@@ -50,6 +50,7 @@ public:
     bool& need_to_stop();
 
 private:
+    bool override_pipeline_once(const json::object& pipeline_override, const MAA_RES_NS::DefaultPipelineMgr& default_mgr);
     bool check_pipeline() const;
 
     MaaTaskId task_id_ = 0;
