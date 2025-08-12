@@ -12,7 +12,7 @@ RemoteContext::RemoteContext(Transceiver& server, const std::string& context_id)
 {
 }
 
-MaaTaskId RemoteContext::run_task(const std::string& entry, const json::object& pipeline_override)
+MaaTaskId RemoteContext::run_task(const std::string& entry, const json::value& pipeline_override)
 {
     ContextRunTaskReverseRequest req {
         .context_id = context_id_,
@@ -27,7 +27,7 @@ MaaTaskId RemoteContext::run_task(const std::string& entry, const json::object& 
     return resp_opt->task_id;
 }
 
-MaaRecoId RemoteContext::run_recognition(const std::string& entry, const json::object& pipeline_override, const cv::Mat& image)
+MaaRecoId RemoteContext::run_recognition(const std::string& entry, const json::value& pipeline_override, const cv::Mat& image)
 {
     ContextRunRecognitionReverseRequest req {
         .context_id = context_id_,
@@ -45,7 +45,7 @@ MaaRecoId RemoteContext::run_recognition(const std::string& entry, const json::o
 
 MaaNodeId RemoteContext::run_action(
     const std::string& entry,
-    const json::object& pipeline_override,
+    const json::value& pipeline_override,
     const cv::Rect& box,
     const std::string& reco_detail)
 {
@@ -64,7 +64,7 @@ MaaNodeId RemoteContext::run_action(
     return resp_opt->node_id;
 }
 
-bool RemoteContext::override_pipeline(const json::object& pipeline_override)
+bool RemoteContext::override_pipeline(const json::value& pipeline_override)
 {
     ContextOverridePipelineReverseRequest req {
         .context_id = context_id_,

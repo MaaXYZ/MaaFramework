@@ -130,7 +130,7 @@ export class TaskerBase {
         }
     }
 
-    post_task(entry: string, param: Record<string, unknown> = {}) {
+    post_task(entry: string, param: Record<string, unknown> | Record<string, unknown>[] = {}) {
         return new TaskJob(
             this,
             this.#source,

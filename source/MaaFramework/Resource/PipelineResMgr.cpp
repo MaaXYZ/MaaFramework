@@ -118,6 +118,33 @@ std::vector<std::string> PipelineResMgr::get_node_list() const
 }
 
 bool PipelineResMgr::parse_and_override(
+    const json::value& input,
+    std::set<std::string>& existing_keys,
+    const DefaultPipelineMgr& default_mgr)
+{
+    bool ret = false;
+    if (input.is_object()) {
+        ret = parse_and_override_once(input.as_object(), existing_keys, default_mgr);
+    }
+    else if (input.is_array()) {
+        ret = !input.empty();
+        for (const auto& val : input.as_array()) {
+            if (!val.is_object()) {
+                LogError << "input is not json array of object" << VAR(input);
+                return false;
+            }
+            ret &= parse_and_override_once(val.as_object(), existing_keys, default_mgr);
+        }
+    }
+    else {
+        LogError << "input is invalid" << VAR(input);
+        return false;
+    }
+
+    return ret;
+}
+
+bool PipelineResMgr::parse_and_override_once(
     const json::object& input,
     std::set<std::string>& existing_keys,
     const DefaultPipelineMgr& default_mgr)

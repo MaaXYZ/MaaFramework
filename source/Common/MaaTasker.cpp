@@ -65,12 +65,8 @@ MaaTaskId MaaTaskerPostTask(MaaTasker* tasker, const char* entry, const char* pi
         LogError << "failed to parse" << VAR(pipeline_override);
         return MaaInvalidId;
     }
-    if (!ov_opt->is_object()) {
-        LogError << "json is not object" << VAR(pipeline_override);
-        return MaaInvalidId;
-    }
 
-    return tasker->post_task(entry, ov_opt->as_object());
+    return tasker->post_task(entry, *ov_opt);
 }
 
 MaaStatus MaaTaskerStatus(const MaaTasker* tasker, MaaTaskId id)
