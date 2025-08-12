@@ -191,7 +191,6 @@ std::optional<RuntimeParam::Task> Configurator::generate_runtime_task(const Conf
         runtime_task.pipeline_override.emplace(data_case.pipeline_override);
     }
 
-    std::ranges::reverse(runtime_task.pipeline_override.as_array());
     return runtime_task;
 }
 
