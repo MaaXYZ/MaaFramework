@@ -254,6 +254,16 @@ void TaskBase::notify(std::string_view msg, const json::value detail)
     }
 
     tasker_->notify(msg, detail);
+    call_debug(json::object { { "message", std::string(msg) }, { "detail", detail } }.to_string());
+}
+
+std::string TaskBase::call_debug(std::string request)
+{
+    if (!tasker_) {
+        return {};
+    }
+
+    return tasker_->call_debug(request);
 }
 
 MAA_TASK_NS_END
