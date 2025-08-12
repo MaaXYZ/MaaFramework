@@ -8,6 +8,8 @@
 
 MAA_TASK_NS_BEGIN
 
+std::minstd_rand Actuator::rand_engine_(std::random_device {}());
+
 Actuator::Actuator(Tasker* tasker, Context& context)
     : tasker_(tasker)
     , context_(context)
@@ -82,6 +84,29 @@ bool Actuator::run(const cv::Rect& reco_hit, MaaRecoId reco_id, const PipelineDa
     return ret;
 }
 
+cv::Point Actuator::rand_point(const cv::Rect& r)
+{
+    int x = 0, y = 0;
+
+    if (r.width == 0) {
+        x = r.x;
+    }
+    else {
+        int x_rand = std::poisson_distribution<int>(r.width / 2.)(rand_engine_);
+        x = x_rand + r.x;
+    }
+
+    if (r.height == 0) {
+        y = r.y;
+    }
+    else {
+        int y_rand = std::poisson_distribution<int>(r.height / 2.)(rand_engine_);
+        y = y_rand + r.y;
+    }
+
+    return { x, y };
+}
+
 bool Actuator::click(const MAA_RES_NS::Action::ClickParam& param, const cv::Rect& box)
 {
     if (!controller()) {
@@ -89,9 +114,8 @@ bool Actuator::click(const MAA_RES_NS::Action::ClickParam& param, const cv::Rect
         return false;
     }
 
-    cv::Rect rect = get_target_rect(param.target, box);
-
-    return controller()->click(rect);
+    cv::Point point = rand_point(get_target_rect(param.target, box));
+    return controller()->click({ .point = point });
 }
 
 bool Actuator::long_press(const MAA_RES_NS::Action::LongPressParam& param, const cv::Rect& box)
@@ -101,9 +125,9 @@ bool Actuator::long_press(const MAA_RES_NS::Action::LongPressParam& param, const
         return false;
     }
 
-    cv::Rect rect = get_target_rect(param.target, box);
+    cv::Point point = rand_point(get_target_rect(param.target, box));
 
-    return controller()->long_press(rect, param.duration);
+    return controller()->long_press({ .point = point, .duration = param.duration });
 }
 
 bool Actuator::swipe(const MAA_RES_NS::Action::SwipeParam& param, const cv::Rect& box)
@@ -116,7 +140,7 @@ bool Actuator::swipe(const MAA_RES_NS::Action::SwipeParam& param, const cv::Rect
     cv::Rect begin = get_target_rect(param.begin, box);
     cv::Rect end = get_target_rect(param.end, box);
 
-    return controller()->swipe(begin, end, param.duration);
+    return controller()->swipe(rand_point(begin), end, param.duration);
 }
 
 bool Actuator::multi_swipe(const MAA_RES_NS::Action::MultiSwipeParam& param, const cv::Rect& box)

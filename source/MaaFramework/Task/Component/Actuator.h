@@ -1,5 +1,7 @@
 #pragma once
 
+#include <random>
+
 #include <meojson/json.hpp>
 
 #include "Common/MaaTypes.h"
@@ -20,6 +22,10 @@ public:
     Actuator(Tasker* tasker, Context& context);
 
     bool run(const cv::Rect& reco_hit, MaaRecoId reco_id, const PipelineData& pipeline_data, const std::string& entry);
+
+private:
+    static cv::Point rand_point(const cv::Rect& r);
+    static std::minstd_rand rand_engine_;
 
 private:
     bool click(const MAA_RES_NS::Action::ClickParam& param, const cv::Rect& box);

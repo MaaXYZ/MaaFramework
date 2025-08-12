@@ -8,8 +8,6 @@
 
 MAA_CTRL_NS_BEGIN
 
-std::minstd_rand ControllerAgent::rand_engine_(std::random_device {}());
-
 ControllerAgent::ControllerAgent(
     std::shared_ptr<MAA_CTRL_UNIT_NS::ControlUnitAPI> control_unit,
     MaaNotificationCallback notify,
@@ -52,93 +50,91 @@ bool ControllerAgent::set_option(MaaCtrlOption key, MaaOptionValue value, MaaOpt
 
 MaaCtrlId ControllerAgent::post_connection()
 {
-    auto id = post_connection_impl();
-    focus_id(id);
-    return id;
+    auto id = post({ .type = Action::Type::connect });
+    return focus_id(id);
 }
 
 MaaCtrlId ControllerAgent::post_click(int x, int y)
 {
-    auto id = post_click_impl(x, y);
-    focus_id(id);
-    return id;
+    ClickParam p { .point = { x, y } };
+    auto id = post({ .type = Action::Type::click, .param = std::move(p) });
+    return focus_id(id);
 }
 
 MaaCtrlId ControllerAgent::post_swipe(int x1, int y1, int x2, int y2, int duration)
 {
-    auto id = post_swipe_impl(x1, y1, x2, y2, duration);
-    focus_id(id);
-    return id;
+    SwipeParam p { .begin = { x1, y1 }, .end = { { x2, y2 } }, .duration = { duration } };
+    auto id = post({ .type = Action::Type::swipe, .param = std::move(p) });
+    return focus_id(id);
 }
 
 MaaCtrlId ControllerAgent::post_click_key(int keycode)
 {
-    auto id = post_click_key_impl(keycode);
-    focus_id(id);
-    return id;
+    ClickKeyParam p { .keycode = keycode };
+    auto id = post({ .type = Action::Type::click_key, .param = std::move(p) });
+    return focus_id(id);
 }
 
 MaaCtrlId ControllerAgent::post_input_text(const std::string& text)
 {
-    auto id = post_input_text_impl(text);
-    focus_id(id);
-    return id;
+    InputTextParam p { .text = text };
+    auto id = post({ .type = Action::Type::input_text, .param = std::move(p) });
+    return focus_id(id);
 }
 
 MaaCtrlId ControllerAgent::post_start_app(const std::string& intent)
 {
-    auto id = post_start_app_impl(intent);
-    focus_id(id);
-    return id;
+    AppParam p { .package = intent };
+    auto id = post({ .type = Action::Type::start_app, .param = std::move(p) });
+    return focus_id(id);
 }
 
 MaaCtrlId ControllerAgent::post_stop_app(const std::string& intent)
 {
-    auto id = post_stop_app_impl(intent);
-    focus_id(id);
-    return id;
+    AppParam p { .package = intent };
+    auto id = post({ .type = Action::Type::stop_app, .param = std::move(p) });
+    return focus_id(id);
 }
 
 MaaCtrlId ControllerAgent::post_screencap()
 {
-    auto id = post_screencap_impl();
-    focus_id(id);
-    return id;
+    auto id = post({ .type = Action::Type::screencap });
+    return focus_id(id);
 }
 
 MaaCtrlId ControllerAgent::post_touch_down(int contact, int x, int y, int pressure)
 {
-    auto id = post_touch_down_impl(contact, x, y, pressure);
-    focus_id(id);
-    return id;
+    TouchParam p { .contact = contact, .point = { x, y }, .pressure = pressure };
+    auto id = post({ .type = Action::Type::touch_down, .param = std::move(p) });
+    return focus_id(id);
 }
 
 MaaCtrlId ControllerAgent::post_touch_move(int contact, int x, int y, int pressure)
 {
-    auto id = post_touch_move_impl(contact, x, y, pressure);
-    focus_id(id);
-    return id;
+    TouchParam p { .contact = contact, .point = { x, y }, .pressure = pressure };
+    auto id = post({ .type = Action::Type::touch_move, .param = std::move(p) });
+    return focus_id(id);
 }
 
 MaaCtrlId ControllerAgent::post_touch_up(int contact)
 {
-    auto id = post_touch_up_impl(contact);
-    focus_id(id);
-    return id;
+    TouchParam p { .contact = contact };
+    auto id = post({ .type = Action::Type::touch_up, .param = std::move(p) });
+    return focus_id(id);
 }
 
 MaaCtrlId ControllerAgent::post_key_down(int keycode)
 {
-    auto id = post_key_down_impl(keycode);
-    focus_id(id);
-    return id;
+    ClickKeyParam p { .keycode = keycode };
+    auto id = post({ .type = Action::Type::key_down, .param = std::move(p) });
+    return focus_id(id);
 }
 
 MaaCtrlId ControllerAgent::post_key_up(int keycode)
 {
-    auto id = post_key_up_impl(keycode);
-    focus_id(id);
-    return id;
+    ClickKeyParam p { .keycode = keycode };
+    auto id = post({ .type = Action::Type::key_up, .param = std::move(p) });
+    return focus_id(id);
 }
 
 MaaStatus ControllerAgent::status(MaaCtrlId ctrl_id) const
@@ -198,91 +194,67 @@ bool ControllerAgent::running() const
     return action_runner_ && action_runner_->running();
 }
 
-bool ControllerAgent::click(const cv::Rect& r)
+bool ControllerAgent::click(ClickParam p)
 {
-    return click(rand_point(r));
-}
-
-bool ControllerAgent::click(const cv::Point& p)
-{
-    auto id = post_click_impl(p.x, p.y);
+    auto id = post({ .type = Action::Type::click, .param = std::move(p) });
     return wait(id) == MaaStatus_Succeeded;
 }
 
-bool ControllerAgent::long_press(const cv::Rect& r, int duration)
+bool ControllerAgent::long_press(LongPressParam p)
 {
-    cv::Point p = rand_point(r);
-    return swipe(p, p, duration);
-}
-
-bool ControllerAgent::swipe(const cv::Rect& r1, const cv::Rect& r2, int duration)
-{
-    return swipe(rand_point(r1), rand_point(r2), duration);
-}
-
-bool ControllerAgent::swipe(const cv::Point& p1, const cv::Point& p2, int duration)
-{
-    auto id = post_swipe_impl(p1.x, p1.y, p2.x, p2.y, duration);
+    auto id = post({ .type = Action::Type::long_press, .param = std::move(p) });
     return wait(id) == MaaStatus_Succeeded;
 }
 
-bool ControllerAgent::multi_swipe(const std::vector<SwipeParamWithRect>& swipes)
+bool ControllerAgent::swipe(SwipeParam p)
 {
-    std::vector<SwipeParam> dst_vec;
-    for (const auto& src : swipes) {
-        auto p1 = rand_point(src.r1);
-        auto p2 = rand_point(src.r2);
-        dst_vec.emplace_back(SwipeParam {
-            .x1 = p1.x,
-            .y1 = p1.y,
-            .x2 = p2.x,
-            .y2 = p2.y,
-            .duration = static_cast<int>(src.duration),
-            .starting = static_cast<int>(src.starting),
-        });
-    }
-
-    auto id = post_multi_swipe_impl(dst_vec);
+    auto id = post({ .type = Action::Type::swipe, .param = std::move(p) });
     return wait(id) == MaaStatus_Succeeded;
 }
 
-bool ControllerAgent::click_key(int keycode)
+bool ControllerAgent::multi_swipe(MultiSwipeParam p)
 {
-    auto id = post_click_key_impl(keycode);
+    auto id = post({ .type = Action::Type::multi_swipe, .param = std::move(p) });
     return wait(id) == MaaStatus_Succeeded;
 }
 
-bool ControllerAgent::long_press_key(int keycode, int duration)
+bool ControllerAgent::click_key(ClickKeyParam p)
 {
-    auto id = post_long_press_key_impl(keycode, duration);
+    auto id = post({ .type = Action::Type::click_key, .param = std::move(p) });
     return wait(id) == MaaStatus_Succeeded;
 }
 
-bool ControllerAgent::input_text(const std::string& text)
+bool ControllerAgent::long_press_key(LongPressKeyParam p)
 {
-    auto id = post_input_text_impl(text);
+    auto id = post({ .type = Action::Type::long_press_key, .param = std::move(p) });
+    return wait(id) == MaaStatus_Succeeded;
+}
+
+bool ControllerAgent::input_text(InputTextParam p)
+{
+    auto id = post({ .type = Action::Type::input_text, .param = std::move(p) });
     return wait(id) == MaaStatus_Succeeded;
 }
 
 cv::Mat ControllerAgent::screencap()
 {
     std::unique_lock lock(image_mutex_);
-    auto id = post_screencap_impl();
+    auto id = post({ .type = Action::Type::screencap });
     if (wait(id) != MaaStatus_Succeeded) {
         return {};
     }
     return image_.clone();
 }
 
-bool ControllerAgent::start_app(const std::string& package)
+bool ControllerAgent::start_app(AppParam p)
 {
-    auto id = post_start_app_impl(package);
+    auto id = post({ .type = Action::Type::start_app, .param = std::move(p) });
     return wait(id) == MaaStatus_Succeeded;
 }
 
-bool ControllerAgent::stop_app(const std::string& package)
+bool ControllerAgent::stop_app(AppParam p)
 {
-    auto id = post_stop_app_impl(package);
+    auto id = post({ .type = Action::Type::stop_app, .param = std::move(p) });
     return wait(id) == MaaStatus_Succeeded;
 }
 
@@ -298,112 +270,14 @@ MaaCtrlId ControllerAgent::post(Action action)
     return action_runner_->post(std::move(action));
 }
 
-void ControllerAgent::focus_id(MaaCtrlId id)
+MaaCtrlId ControllerAgent::focus_id(MaaCtrlId id)
 {
     if (id == MaaInvalidId) {
-        return;
+        return id;
     }
 
     std::unique_lock lock { focus_ids_mutex_ };
-    focus_ids_.emplace(id);
-}
-
-MaaCtrlId ControllerAgent::post_connection_impl()
-{
-    return post({ .type = Action::Type::connect });
-}
-
-MaaCtrlId ControllerAgent::post_click_impl(int x, int y)
-{
-    auto [xx, yy] = preproc_touch_point(x, y);
-    ClickParam param { .x = xx, .y = yy };
-    return post({ .type = Action::Type::click, .param = std::move(param) });
-}
-
-MaaCtrlId ControllerAgent::post_swipe_impl(int x1, int y1, int x2, int y2, int duration)
-{
-    auto [xx1, yy1] = preproc_touch_point(x1, y1);
-    auto [xx2, yy2] = preproc_touch_point(x2, y2);
-    SwipeParam param { .x1 = xx1, .y1 = yy1, .x2 = xx2, .y2 = yy2, .duration = duration };
-    return post({ .type = Action::Type::swipe, .param = std::move(param) });
-}
-
-MaaCtrlId ControllerAgent::post_multi_swipe_impl(const std::vector<SwipeParam>& swipes)
-{
-    std::vector<SwipeParam> dst = swipes;
-    for (SwipeParam& d : dst) {
-        std::tie(d.x1, d.y1) = preproc_touch_point(d.x1, d.y1);
-        std::tie(d.x2, d.y2) = preproc_touch_point(d.x2, d.y2);
-    }
-
-    return post({ .type = Action::Type::multi_swipe, .param = std::move(dst) });
-}
-
-MaaCtrlId ControllerAgent::post_click_key_impl(int keycode)
-{
-    ClickKeyParam param { .keycode = keycode };
-    return post({ .type = Action::Type::click_key, .param = std::move(param) });
-}
-
-MaaCtrlId ControllerAgent::post_long_press_key_impl(int keycode, int duration)
-{
-    LongPressKeyParam param { .keycode = keycode, .duration = duration };
-    return post({ .type = Action::Type::long_press_key, .param = std::move(param) });
-}
-
-MaaCtrlId ControllerAgent::post_input_text_impl(const std::string& text)
-{
-    InputTextParam param { .text = text };
-    return post({ .type = Action::Type::input_text, .param = std::move(param) });
-}
-
-MaaCtrlId ControllerAgent::post_start_app_impl(const std::string& intent)
-{
-    AppParam param { .package = intent };
-    return post({ .type = Action::Type::start_app, .param = std::move(param) });
-}
-
-MaaCtrlId ControllerAgent::post_stop_app_impl(const std::string& intent)
-{
-    AppParam param { .package = intent };
-    return post({ .type = Action::Type::stop_app, .param = std::move(param) });
-}
-
-MaaCtrlId ControllerAgent::post_screencap_impl()
-{
-    return post({ .type = Action::Type::screencap });
-}
-
-MaaCtrlId ControllerAgent::post_touch_down_impl(int contact, int x, int y, int pressure)
-{
-    auto [xx, yy] = preproc_touch_point(x, y);
-    TouchParam param { .contact = contact, .x = xx, .y = yy, .pressure = pressure };
-    return post({ .type = Action::Type::touch_down, .param = std::move(param) });
-}
-
-MaaCtrlId ControllerAgent::post_touch_move_impl(int contact, int x, int y, int pressure)
-{
-    auto [xx, yy] = preproc_touch_point(x, y);
-    TouchParam param { .contact = contact, .x = xx, .y = yy, .pressure = pressure };
-    return post({ .type = Action::Type::touch_move, .param = std::move(param) });
-}
-
-MaaCtrlId ControllerAgent::post_touch_up_impl(int contact)
-{
-    TouchParam param { .contact = contact };
-    return post({ .type = Action::Type::touch_up, .param = std::move(param) });
-}
-
-MaaCtrlId ControllerAgent::post_key_down_impl(int keycode)
-{
-    ClickKeyParam param { .keycode = keycode };
-    return post({ .type = Action::Type::key_down, .param = std::move(param) });
-}
-
-MaaCtrlId ControllerAgent::post_key_up_impl(int keycode)
-{
-    ClickKeyParam param { .keycode = keycode };
-    return post({ .type = Action::Type::key_up, .param = std::move(param) });
+    return *focus_ids_.emplace(id).first;
 }
 
 bool ControllerAgent::handle_connect()
@@ -438,6 +312,10 @@ bool ControllerAgent::handle_click(const ClickParam& param)
     }
 
     return ret;
+}
+
+bool ControllerAgent::handle_long_press(const LongPressParam& param)
+{
 }
 
 bool ControllerAgent::handle_swipe(const SwipeParam& param)
@@ -562,6 +440,10 @@ bool ControllerAgent::handle_multi_swipe(const std::vector<SwipeParam>& param)
     }
 
     return ret;
+}
+
+bool ControllerAgent::handle_multi_swipe(const MultiSwipeParam& param)
+{
 }
 
 bool ControllerAgent::handle_touch_down(const TouchParam& param)
@@ -758,33 +640,8 @@ bool ControllerAgent::check_stop()
     return true;
 }
 
-cv::Point ControllerAgent::rand_point(const cv::Rect& r)
-{
-    int x = 0, y = 0;
-
-    if (r.width == 0) {
-        x = r.x;
-    }
-    else {
-        int x_rand = std::poisson_distribution<int>(r.width / 2.)(rand_engine_);
-        x = x_rand + r.x;
-    }
-
-    if (r.height == 0) {
-        y = r.y;
-    }
-    else {
-        int y_rand = std::poisson_distribution<int>(r.height / 2.)(rand_engine_);
-        y = y_rand + r.y;
-    }
-
-    return { x, y };
-}
-
 bool ControllerAgent::run_action(typename AsyncRunner<Action>::Id id, Action action)
 {
-    // LogFunc << VAR(id) << VAR(action);
-
     bool ret = false;
 
     bool notify = false;
@@ -811,6 +668,9 @@ bool ControllerAgent::run_action(typename AsyncRunner<Action>::Id id, Action act
 
     case Action::Type::click:
         ret = handle_click(std::get<ClickParam>(action.param));
+        break;
+    case Action::Type::long_press:
+        ret = handle_long_press(std::get<LongPressParam>(action.param));
         break;
     case Action::Type::swipe:
         ret = handle_swipe(std::get<SwipeParam>(action.param));
@@ -1031,53 +891,6 @@ bool ControllerAgent::set_image_use_raw_size(MaaOptionValue value, MaaOptionValu
     clear_target_image_size();
 
     return true;
-}
-
-std::ostream& operator<<(std::ostream& os, const Action& action)
-{
-    switch (action.type) {
-    case Action::Type::connect:
-        os << "connect";
-        break;
-    case Action::Type::click:
-        os << "click";
-        break;
-    case Action::Type::swipe:
-        os << "swipe";
-        break;
-    case Action::Type::touch_down:
-        os << "touch_down";
-        break;
-    case Action::Type::touch_move:
-        os << "touch_move";
-        break;
-    case Action::Type::touch_up:
-        os << "touch_up";
-        break;
-    case Action::Type::click_key:
-        os << "click_key";
-        break;
-    case Action::Type::long_press_key:
-        os << "long_press_key";
-        break;
-    case Action::Type::input_text:
-        os << "input_text";
-        break;
-    case Action::Type::screencap:
-        os << "screencap";
-        break;
-    case Action::Type::start_app:
-        os << "start_app";
-        break;
-    case Action::Type::stop_app:
-        os << "stop_app";
-        break;
-
-    default:
-        os << "unknown action";
-        break;
-    }
-    return os;
 }
 
 MAA_CTRL_NS_END

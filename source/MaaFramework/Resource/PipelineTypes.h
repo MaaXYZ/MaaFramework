@@ -112,9 +112,12 @@ struct LongPressParam
 struct SwipeParam
 {
     Target begin;
-    Target end;
+    std::vector<Target> end;
+    std::vector<uint> end_hold = { 0 };
+    std::vector<uint> duration = { 200 };
 
-    uint duration = 200;
+    bool only_hover = false;
+
     uint starting = 0; // only for MultiSwipe
 };
 
