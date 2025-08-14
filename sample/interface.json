@@ -139,6 +139,10 @@
                     "name": "自定义关卡",
                     "description": "自己选打什么关", // 描述，应支持 markdown 和 html
                     "icon": "扳手.png", // 图标，可选
+                    "option": [ // 只有选中了当前 case，才会显示这些选项。这些选项同样放在外面的 option 中，可以无限递归下去
+                        "使用理智药",
+                        "刷完xxx"
+                    ],
                     "input": [
                         {
                             "name": "章节号",
