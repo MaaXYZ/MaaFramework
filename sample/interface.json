@@ -10,10 +10,10 @@
     "github_repo": "M9A", // GitHub 资源仓库
     "github_mirrors": [], // GitHub 镜像仓库列表，若不指定，则使用默认的 GitHub 镜像仓库
     "version": "1.0.0",
-    "contact_us": {    // 这里直接 key value 铺在 设置-关于 里面
-        "QQ群": "123456789", // QQ 群号
-        "QQ群链接": "https://qm.qq.com/cgi-bin/qm/qr?k=xxxxxxxxxxxxxxxxxxxxxx", // QQ 群链接
-        "B站": "https://space.bilibili.com/12345678", // B站空间链接
+    "contact_us": {    // 这里直接 key value 铺在 设置-关于 里面，key 也是资源作者自定义
+        "QQ群": "123456789",
+        "QQ群链接": "https://qm.qq.com/cgi-bin/qm/qr?k=xxxxxxxxxxxxxxxxxxxxxx",
+        "B站": "https://space.bilibili.com/12345678",
     },
     "description": "Welecome to MaaFramework!", // 描述应支持 markdown 和 html
     "agent": {
