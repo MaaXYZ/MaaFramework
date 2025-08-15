@@ -15,7 +15,8 @@
         "QQ群链接": "https://qm.qq.com/cgi-bin/qm/qr?k=xxxxxxxxxxxxxxxxxxxxxx",
         "B站": "https://space.bilibili.com/12345678",
     },
-    "description": "Welecome to MaaFramework!", // 描述应支持 markdown 和 html
+    "welcome": "Welecome to MaaFramework!", // 第一次使用软件时，弹窗显示。描述应支持 markdown 和 html。弹窗完记录一下显示的内容，后面更新如果发现变了，就再弹窗显示新的
+    "description": "MaaFramework is a framework for building automation applications.", // “关于”里显示的，应支持 markdown 和 html
     "agent": {
         "child_exec": "python",
         "child_args": [
