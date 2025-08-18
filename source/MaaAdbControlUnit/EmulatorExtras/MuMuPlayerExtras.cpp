@@ -337,7 +337,7 @@ bool MuMuPlayerExtras::connect_mumu()
         return false;
     }
 
-    ++mumu_handle_refs_[mumu_handle_];
+    ++s_mumu_handle_refs_[mumu_handle_];
 
     return true;
 }
@@ -375,12 +375,12 @@ void MuMuPlayerExtras::disconnect_mumu()
         return;
     }
 
-    int ref = --mumu_handle_refs_[mumu_handle_];
+    int ref = --s_mumu_handle_refs_[mumu_handle_];
     if (ref > 0) {
         LogDebug << "mumu_handle_ still has references" << VAR(ref);
         return;
     }
-    mumu_handle_refs_.erase(mumu_handle_);
+    s_mumu_handle_refs_.erase(mumu_handle_);
 
     if (mumu_handle_ != 0) {
         disconnect_func_(mumu_handle_);
