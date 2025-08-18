@@ -125,14 +125,14 @@ MaaCtrlId ControllerAgent::post_touch_up(int contact)
 
 MaaCtrlId ControllerAgent::post_key_down(int keycode)
 {
-    ClickKeyParam p { .keycode = keycode };
+    ClickKeyParam p { .keycode = { keycode } };
     auto id = post({ .type = Action::Type::key_down, .param = std::move(p) });
     return focus_id(id);
 }
 
 MaaCtrlId ControllerAgent::post_key_up(int keycode)
 {
-    ClickKeyParam p { .keycode = keycode };
+    ClickKeyParam p { .keycode = { keycode } };
     auto id = post({ .type = Action::Type::key_up, .param = std::move(p) });
     return focus_id(id);
 }
