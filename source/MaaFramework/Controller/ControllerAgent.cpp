@@ -303,12 +303,12 @@ bool ControllerAgent::handle_click(const ClickParam& param)
 
     bool ret = false;
     if (control_unit_->is_touch_availabled()) {
-        ret = control_unit_->touch_down(0, param.x, param.y, 1);
+        ret = control_unit_->touch_down(0, param.point.x, param.point.y, 1);
         std::this_thread::yield();
         ret &= control_unit_->touch_up(0);
     }
     else {
-        ret = control_unit_->click(param.x, param.y);
+        ret = control_unit_->click(param.point.x, param.point.y);
     }
 
     return ret;
@@ -316,6 +316,23 @@ bool ControllerAgent::handle_click(const ClickParam& param)
 
 bool ControllerAgent::handle_long_press(const LongPressParam& param)
 {
+    if (!control_unit_) {
+        LogError << "control_unit_ is nullptr";
+        return false;
+    }
+
+    bool ret = false;
+    if (control_unit_->is_touch_availabled()) {
+        ret = control_unit_->touch_down(0, param.point.x, param.point.y, 1);
+        std::this_thread::sleep_for(std::chrono::milliseconds(param.duration));
+        ret &= control_unit_->touch_up(0);
+    }
+    else {
+        LogWarn << "long press not supported, use click instead";
+        ret = control_unit_->click(param.point.x, param.point.y);
+    }
+
+    return ret;
 }
 
 bool ControllerAgent::handle_swipe(const SwipeParam& param)
@@ -325,41 +342,61 @@ bool ControllerAgent::handle_swipe(const SwipeParam& param)
         return false;
     }
 
+    const bool touch_availabled = control_unit_->is_touch_availabled();
+    if (!touch_availabled) {
+        LogWarn << "touch not supported, use swipe instead. some features can not work";
+    }
+
+    cv::Point begin = param.begin;
     bool ret = false;
-    if (control_unit_->is_touch_availabled()) {
-        constexpr double kInterval = 10; // ms
-        const std::chrono::milliseconds delay(static_cast<int>(kInterval));
 
-        const double total_step = param.duration / kInterval;
-        const double x_step_len = (param.x2 - param.x1) / total_step;
-        const double y_step_len = (param.y2 - param.y1) / total_step;
+    if (!param.only_hover && touch_availabled) {
+        ret = control_unit_->touch_down(0, begin.x, begin.y, 1);
+    }
 
-        auto now = std::chrono::steady_clock::now();
+    for (size_t i = 0; i < param.end.size(); ++i) {
+        const cv::Point& end = param.end.at(i);
+        const uint duration = param.duration.empty() ? 200 : (i < param.duration.size()) ? param.duration.at(i) : param.duration.back();
+        const uint end_hold = param.end_hold.empty() ? 0 : (i < param.end_hold.size()) ? param.end_hold.at(i) : param.end_hold.back();
 
-        ret = control_unit_->touch_down(0, param.x1, param.y1, 1);
+        if (touch_availabled) {
+            constexpr double kInterval = 10; // ms
+            const std::chrono::milliseconds delay(static_cast<int>(kInterval));
 
-        for (int step = 1; step < total_step; ++step) {
-            int mx = static_cast<int>(param.x1 + step * x_step_len);
-            int my = static_cast<int>(param.y1 + step * y_step_len);
+            const double total_step = duration / kInterval;
+            const double x_step_len = (end.x - begin.x) / total_step;
+            const double y_step_len = (end.y - begin.y) / total_step;
+
+            auto now = std::chrono::steady_clock::now();
+
+            for (int step = 1; step < total_step; ++step) {
+                int mx = static_cast<int>(begin.x + step * x_step_len);
+                int my = static_cast<int>(begin.y + step * y_step_len);
+
+                std::this_thread::sleep_until(now + delay);
+
+                now = std::chrono::steady_clock::now();
+                ret &= control_unit_->touch_move(0, mx, my, 1);
+            }
 
             std::this_thread::sleep_until(now + delay);
 
             now = std::chrono::steady_clock::now();
-            ret &= control_unit_->touch_move(0, mx, my, 1);
+            ret &= control_unit_->touch_move(0, end.x, end.y, 1);
+
+            std::this_thread::sleep_until(now + delay);
+        }
+        else {
+            ret &= control_unit_->swipe(begin.x, begin.y, end.x, end.y, duration);
         }
 
-        std::this_thread::sleep_until(now + delay);
+        std::this_thread::sleep_for(std::chrono::milliseconds(end_hold));
 
-        now = std::chrono::steady_clock::now();
-        ret &= control_unit_->touch_move(0, param.x2, param.y2, 1);
-
-        std::this_thread::sleep_until(now + delay);
-
-        now = std::chrono::steady_clock::now();
-        ret &= control_unit_->touch_up(0);
+        begin = end;
     }
-    else {
-        ret = control_unit_->swipe(param.x1, param.y1, param.x2, param.y2, param.duration);
+
+    if (!param.only_hover && touch_availabled) {
+        ret &= control_unit_->touch_up(0);
     }
 
     return ret;
@@ -380,57 +417,101 @@ bool ControllerAgent::handle_multi_swipe(const MultiSwipeParam& param)
     constexpr double kInterval = 10; // ms
     const std::chrono::milliseconds delay(static_cast<int>(kInterval));
 
-    struct Operating
+    struct SegmentOperating
     {
+        cv::Point begin {};
+        cv::Point end {};
         double total_step = 0;
         double x_step_len = 0;
         double y_step_len = 0;
-        int step = 0;
+        int step_index = 0;
+        uint duration = 0;
+        uint end_hold = 0;
     };
 
-    std::vector<Operating> operating(param.size());
+    struct CotactOperating
+    {
+        std::vector<SegmentOperating> seg;
+        int seg_index = 0;
+    };
 
-    for (size_t i = 0; i < param.size(); ++i) {
-        const SwipeParam& s = param.at(i);
-        Operating& o = operating.at(i);
-        o.total_step = s.duration / kInterval;
-        o.x_step_len = (s.x2 - s.x1) / o.total_step;
-        o.y_step_len = (s.y2 - s.y1) / o.total_step;
+    // contact index < end index < op >>
+    std::vector<CotactOperating> operating(param.swipes.size());
+
+    for (size_t s_i = 0; s_i < param.swipes.size(); ++s_i) {
+        const SwipeParam& s = param.swipes.at(s_i);
+
+        cv::Point begin = s.begin;
+        for (size_t e_i = 0; e_i < s.end.size(); ++e_i) {
+            const cv::Point& end = s.end.at(e_i);
+            const uint duration = s.duration.empty() ? 200 : (e_i < s.duration.size()) ? s.duration.at(e_i) : s.duration.back();
+            const uint end_hold = s.end_hold.empty() ? 0 : (e_i < s.end_hold.size()) ? s.end_hold.at(e_i) : s.end_hold.back();
+
+            SegmentOperating o;
+            o.begin = begin;
+            o.end = end;
+            o.total_step = duration / kInterval;
+            o.x_step_len = (end.x - begin.x) / o.total_step;
+            o.y_step_len = (end.y - begin.y) / o.total_step;
+            o.step_index = 0;
+            o.duration = duration;
+            o.end_hold = end_hold;
+
+            operating.at(s_i).seg.emplace_back(std::move(o));
+            operating.at(s_i).seg_index = 0;
+
+            begin = end;
+        }
     }
 
     const auto starting = std::chrono::steady_clock::now();
     auto now = starting;
 
-    bool ret = true;
+    bool ret = !param.swipes.empty();
     size_t over_count = 0;
-    while (over_count < param.size()) {
-        int now_point = static_cast<int>(std::chrono::duration_cast<std::chrono::milliseconds>(now - starting).count());
+    while (over_count < param.swipes.size()) {
+        uint now_point = static_cast<uint>(std::chrono::duration_cast<std::chrono::milliseconds>(now - starting).count());
 
-        for (size_t i = 0; i < param.size(); ++i) {
-            const SwipeParam& s = param.at(i);
+        for (size_t i = 0; i < param.swipes.size(); ++i) {
+            const SwipeParam& s = param.swipes.at(i);
             if (now_point < s.starting) {
                 continue;
             }
 
-            Operating& o = operating.at(i);
             int contact = static_cast<int>(i);
 
-            if (o.step == 0) {
-                control_unit_->touch_down(contact, s.x1, s.y1, 1);
-                ++o.step;
+            if (i >= operating.size()) {
+                LogError << "Invalid contact index" << VAR(i) << VAR(operating.size());
+                continue;
             }
-            else if (o.step < o.total_step) {
-                int mx = static_cast<int>(s.x1 + o.step * o.x_step_len);
-                int my = static_cast<int>(s.y1 + o.step * o.y_step_len);
-                control_unit_->touch_move(contact, mx, my, 1);
-                ++o.step;
+            auto& contact_op = operating.at(i);
+
+            if (contact_op.seg_index >= contact_op.seg.size()) {
+                continue; // all segments done
             }
-            else if (o.step == o.total_step) {
-                control_unit_->touch_up(contact);
-                ++o.step;
+            auto& seg_op = contact_op.seg.at(contact_op.seg_index);
+
+            if (seg_op.step_index == 0) {
+                if (!s.only_hover) {
+                    ret &= control_unit_->touch_down(contact, seg_op.begin.x, seg_op.begin.y, 1);
+                }
+                ++seg_op.step_index;
+            }
+            else if (seg_op.step_index < seg_op.total_step) {
+                int mx = static_cast<int>(seg_op.begin.x + seg_op.step_index * seg_op.x_step_len);
+                int my = static_cast<int>(seg_op.begin.y + seg_op.step_index * seg_op.y_step_len);
+                ret &= control_unit_->touch_move(contact, mx, my, 1);
+                ++seg_op.step_index;
+            }
+            else if (seg_op.step_index == seg_op.total_step) {
+                if (!s.only_hover) {
+                    ret &= control_unit_->touch_up(contact);
+                }
+                ++seg_op.step_index;
                 ++over_count;
             }
-            else { // step > total
+            else { // step_index > total
+                ++contact_op.seg_index;
                 continue;
             }
         }
@@ -440,10 +521,6 @@ bool ControllerAgent::handle_multi_swipe(const MultiSwipeParam& param)
     }
 
     return ret;
-}
-
-bool ControllerAgent::handle_multi_swipe(const MultiSwipeParam& param)
-{
 }
 
 bool ControllerAgent::handle_touch_down(const TouchParam& param)
@@ -458,7 +535,7 @@ bool ControllerAgent::handle_touch_down(const TouchParam& param)
         return false;
     }
 
-    bool ret = control_unit_->touch_down(param.contact, param.x, param.y, param.pressure);
+    bool ret = control_unit_->touch_down(param.contact, param.point.x, param.point.y, param.pressure);
 
     return ret;
 }
@@ -475,7 +552,7 @@ bool ControllerAgent::handle_touch_move(const TouchParam& param)
         return false;
     }
 
-    bool ret = control_unit_->touch_move(param.contact, param.x, param.y, param.pressure);
+    bool ret = control_unit_->touch_move(param.contact, param.point.x, param.point.y, param.pressure);
 
     return ret;
 }
@@ -504,14 +581,19 @@ bool ControllerAgent::handle_click_key(const ClickKeyParam& param)
         return false;
     }
 
-    bool ret = false;
-    if (control_unit_->is_key_down_up_availabled()) {
-        ret = control_unit_->key_down(param.keycode);
-        std::this_thread::yield();
-        ret &= control_unit_->key_up(param.keycode);
-    }
-    else {
-        ret = control_unit_->click_key(param.keycode);
+    bool ret = !param.keycode.empty();
+
+    bool key_down_up_availabled = control_unit_->is_key_down_up_availabled();
+
+    for (const auto& keycode : param.keycode) {
+        if (key_down_up_availabled) {
+            ret = control_unit_->key_down(keycode);
+            std::this_thread::yield();
+            ret &= control_unit_->key_up(keycode);
+        }
+        else {
+            ret = control_unit_->click_key(keycode);
+        }
     }
 
     return ret;
@@ -524,14 +606,21 @@ bool ControllerAgent::handle_long_press_key(const LongPressKeyParam& param)
         return false;
     }
 
-    if (!control_unit_->is_key_down_up_availabled()) {
-        LogError << "key down up is not available";
-        return false;
-    }
+    bool ret = !param.keycode.empty();
 
-    bool ret = control_unit_->key_down(param.keycode);
-    std::this_thread::sleep_for(std::chrono::milliseconds(param.duration));
-    ret &= control_unit_->key_up(param.keycode);
+    bool key_down_up_availabled = control_unit_->is_key_down_up_availabled();
+
+    for (const auto& keycode : param.keycode) {
+        if (key_down_up_availabled) {
+            ret = control_unit_->key_down(keycode);
+            std::this_thread::sleep_for(std::chrono::milliseconds(param.duration));
+            ret &= control_unit_->key_up(keycode);
+        }
+        else {
+            LogWarn << "long press key not supported, use click instead";
+            ret = control_unit_->click_key(keycode);
+        }
+    }
 
     return ret;
 }
@@ -603,7 +692,11 @@ bool ControllerAgent::handle_key_down(const ClickKeyParam& param)
         return false;
     }
 
-    bool ret = control_unit_->key_down(param.keycode);
+    bool ret = !param.keycode.empty();
+
+    for (const auto& keycode : param.keycode) {
+        ret &= control_unit_->key_down(keycode);
+    }
 
     return ret;
 }
@@ -620,7 +713,11 @@ bool ControllerAgent::handle_key_up(const ClickKeyParam& param)
         return false;
     }
 
-    bool ret = control_unit_->key_up(param.keycode);
+    bool ret = !param.keycode.empty();
+
+    for (const auto& keycode : param.keycode) {
+        ret &= control_unit_->key_up(keycode);
+    }
 
     return ret;
 }
@@ -676,7 +773,7 @@ bool ControllerAgent::run_action(typename AsyncRunner<Action>::Id id, Action act
         ret = handle_swipe(std::get<SwipeParam>(action.param));
         break;
     case Action::Type::multi_swipe:
-        ret = handle_multi_swipe(std::get<std::vector<SwipeParam>>(action.param));
+        ret = handle_multi_swipe(std::get<MultiSwipeParam>(action.param));
         break;
 
     case Action::Type::touch_down:
@@ -891,6 +988,59 @@ bool ControllerAgent::set_image_use_raw_size(MaaOptionValue value, MaaOptionValu
     clear_target_image_size();
 
     return true;
+}
+
+std::ostream& operator<<(std::ostream& os, const Action& action)
+{
+    switch (action.type) {
+    case Action::Type::connect:
+        os << "connect";
+        break;
+    case Action::Type::click:
+        os << "click";
+        break;
+    case Action::Type::long_press:
+        os << "long_press";
+        break;
+    case Action::Type::swipe:
+        os << "swipe";
+        break;
+    case Action::Type::multi_swipe:
+        os << "multi_swipe";
+        break;
+    case Action::Type::touch_down:
+        os << "touch_down";
+        break;
+    case Action::Type::touch_move:
+        os << "touch_move";
+        break;
+    case Action::Type::touch_up:
+        os << "touch_up";
+        break;
+    case Action::Type::click_key:
+        os << "click_key";
+        break;
+    case Action::Type::long_press_key:
+        os << "long_press_key";
+        break;
+    case Action::Type::input_text:
+        os << "input_text";
+        break;
+    case Action::Type::screencap:
+        os << "screencap";
+        break;
+    case Action::Type::start_app:
+        os << "start_app";
+        break;
+    case Action::Type::stop_app:
+        os << "stop_app";
+        break;
+
+        // default:
+        //     os << "unknown action";
+        //     break;
+    }
+    return os;
 }
 
 MAA_CTRL_NS_END

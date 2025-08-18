@@ -1406,8 +1406,8 @@ bool PipelineParser::parse_action_target_or_list(
     else if (param_opt->is<std::vector<json::object>>()) {
         for (const auto& val : param_opt->as_array()) {
             Action::Target res;
-            if (!parse_target_variant(*param_opt, res)) {
-                LogError << "failed to parse_target_variant" << VAR(*param_opt);
+            if (!parse_target_variant(val, res)) {
+                LogError << "failed to parse_target_variant" << VAR(val);
                 return false;
             }
             output.emplace_back(std::move(res));
@@ -1428,8 +1428,8 @@ bool PipelineParser::parse_action_target_or_list(
     else if (offset_opt->is<std::vector<json::object>>()) {
         for (const auto& val : offset_opt->as_array()) {
             Action::Target res;
-            if (!parse_target_variant(*offset_opt, res)) {
-                LogError << "failed to parse_target_variant" << VAR(*offset_opt);
+            if (!parse_target_variant(val, res)) {
+                LogError << "failed to parse_target_variant" << VAR(val);
                 return false;
             }
             output.emplace_back(std::move(res));
@@ -1443,6 +1443,8 @@ bool PipelineParser::parse_action_target_or_list(
         }
         output.emplace_back(std::move(res));
     }
+
+    return true;
 }
 
 MAA_RES_NS_END
