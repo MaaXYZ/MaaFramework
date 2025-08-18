@@ -62,6 +62,8 @@ private:
     std::filesystem::path mumu_path_;
     std::filesystem::path lib_path_;
     int mumu_index_ = 0;
+
+    static std::map<int, int> mumu_handle_refs_;
     int mumu_handle_ = 0;
 
     std::string mumu_app_package_;

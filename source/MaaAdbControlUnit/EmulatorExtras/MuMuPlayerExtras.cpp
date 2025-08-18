@@ -322,6 +322,11 @@ bool MuMuPlayerExtras::connect_mumu()
         return false;
     }
 
+    if (mumu_handle_) {
+        LogWarn << "mumu_handle_ is already connected" << VAR(mumu_handle_);
+        disconnect_mumu();
+    }
+
     std::u16string u16path = mumu_path_.u16string();
     std::wstring wpath(std::make_move_iterator(u16path.begin()), std::make_move_iterator(u16path.end()));
 
@@ -331,6 +336,8 @@ bool MuMuPlayerExtras::connect_mumu()
         LogError << "Failed to connect mumu" << VAR(wpath) << VAR(mumu_index_);
         return false;
     }
+
+    ++mumu_handle_refs_[mumu_handle_];
 
     return true;
 }
@@ -363,9 +370,23 @@ void MuMuPlayerExtras::disconnect_mumu()
 {
     LogFunc << VAR(mumu_handle_);
 
+    if (!disconnect_func_) {
+        LogError << "disconnect_func_ is null";
+        return;
+    }
+
+    int ref = --mumu_handle_refs_[mumu_handle_];
+    if (ref > 0) {
+        LogDebug << "mumu_handle_ still has references" << VAR(ref);
+        return;
+    }
+    mumu_handle_refs_.erase(mumu_handle_);
+
     if (mumu_handle_ != 0) {
         disconnect_func_(mumu_handle_);
     }
+
+    mumu_handle_ = 0;
 }
 
 void MuMuPlayerExtras::set_app_package(const std::string& package, int cloned_index)
