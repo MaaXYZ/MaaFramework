@@ -424,7 +424,7 @@ bool ControllerAgent::handle_multi_swipe(const MultiSwipeParam& param)
         double total_step = 0;
         double x_step_len = 0;
         double y_step_len = 0;
-        int step_index = 0;
+        size_t step_index = 0;
         uint duration = 0;
         uint end_hold = 0;
     };
@@ -432,7 +432,7 @@ bool ControllerAgent::handle_multi_swipe(const MultiSwipeParam& param)
     struct CotactOperating
     {
         std::vector<SegmentOperating> seg;
-        int seg_index = 0;
+        size_t seg_index = 0;
     };
 
     // contact index < end index < op >>
@@ -1034,6 +1034,10 @@ std::ostream& operator<<(std::ostream& os, const Action& action)
         break;
     case Action::Type::stop_app:
         os << "stop_app";
+        break;
+
+    case Action::Type::invalid:
+        os << "invalid";
         break;
 
         // default:
