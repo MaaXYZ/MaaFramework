@@ -1023,6 +1023,12 @@ std::ostream& operator<<(std::ostream& os, const Action& action)
     case Action::Type::long_press_key:
         os << "long_press_key";
         break;
+    case Action::Type::key_down:
+        os << "key_down";
+        break;
+    case Action::Type::key_up:
+        os << "key_up";
+        break;
     case Action::Type::input_text:
         os << "input_text";
         break;
