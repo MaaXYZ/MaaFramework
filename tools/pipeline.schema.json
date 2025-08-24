@@ -1167,6 +1167,12 @@
                     "description": "识别参数，任意类型，会通过 `MaaCustomRecognitionCallback`.`custom_recognition_param` 传出。可选，默认空 json，即 `{}` 。",
                     "$ref": "#/$defs/jsonDefaultObject",
                     "markdownDescription": "*any*\n\n识别参数，任意类型，会通过 `MaaCustomRecognitionCallback`.`custom_recognition_param` 传出。可选，默认空 json，即 `{}` 。"
+                },
+                "custom_recognition_param_code": {
+                    "title": "Custom Recognition Param Code Property",
+                    "description": "代码覆写 | 该节点属性通过外部代码覆写",
+                    "type": "string",
+                    "markdownDescription": "*string*\n\n代码覆写 | 该节点属性通过外部代码覆写。"
                 }
             },
             "allOf": [
