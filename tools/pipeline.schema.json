@@ -2411,6 +2411,12 @@
                     "description": "动作参数，任意类型，会通过 `MaaCustomActionCallback`.`custom_action_param` 传出。可选，默认空 json，即 `{}` 。",
                     "$ref": "#/$defs/jsonDefaultObject",
                     "markdownDescription": "*any*\n\n动作参数，任意类型，会通过 `MaaCustomActionCallback`.`custom_action_param` 传出。可选，默认空 json，即 `{}` 。"
+                },
+                "custom_action_param_code": {
+                    "title": "Custom Action Param Code Property",
+                    "description": "代码覆写 | 该节点属性通过外部代码覆写",
+                    "type": "string",
+                    "markdownDescription": "*string*\n\n代码覆写 | 该节点属性通过外部代码覆写。"
                 }
             },
             "allOf": [
