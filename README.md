@@ -70,8 +70,8 @@ _✨ 基于图像识别的自动化黑盒测试框架 ✨_
 - [MFATools](https://github.com/SweetSmellFox/MFATools) ![csharp](https://img.shields.io/badge/C%23-239120?logo=csharp&logoColor=white) ![license](https://img.shields.io/github/license/SweetSmellFox/MFATools) ![activity](https://img.shields.io/github/commit-activity/m/SweetSmellFox/MFATools?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/SweetSmellFox/MFATools?style=social)  
   基于WPF框架开发的工具界面，旨在提供类似于截图工具的功能
 
-- [YAMaaPE](https://github.com/kqcoxn/YAMaaPE) ![vue](https://img.shields.io/badge/vue-268923?logo=vue.js) ![js](https://img.shields.io/badge/Javascript-yellow?logo=Javascript) ![activity](https://img.shields.io/github/commit-activity/m/kqcoxn/YAMaaPE?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/kqcoxn/YAMaaPE?style=social)  
-  基于 vue-flow 的 Pipeline 编辑器。由 MaaFramework 强力驱动！
+- [MaaPipelineEditor](https://github.com/kqcoxn/MaaPipelineEditor) ![Typescript](https://img.shields.io/badge/Typescript-8A2BE2?logo=typescript) ![activity](https://img.shields.io/github/commit-activity/m/kqcoxn/MaaPipelineEditor?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/kqcoxn/MaaPipelineEditor?style=social)  
+  基于 react-flow 的 MaaFramework Pipeline 工作流式可视化编辑器，使用“无代码”流程图构建您的 Pipeline！
 
 ### 应用程序
 
