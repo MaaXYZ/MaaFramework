@@ -72,8 +72,8 @@ It offers low-code simplicity while maintaining high extensibility. The framewor
 - [MFATools](https://github.com/SweetSmellFox/MFATools) ![csharp](https://img.shields.io/badge/C%23-239120?logo=csharp&logoColor=white) ![license](https://img.shields.io/github/license/SweetSmellFox/MFATools) ![activity](https://img.shields.io/github/commit-activity/m/SweetSmellFox/MFATools?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/SweetSmellFox/MFATools?style=social)  
   The tool interface is developed based on the WPF framework, aiming to provide functions similar to the screenshot tool.
 
-- [YAMaaPE](https://github.com/kqcoxn/YAMaaPE) ![js](https://img.shields.io/badge/Javascript-yellow?logo=Javascript) ![vue](https://img.shields.io/badge/vue-268923?logo=vue.js) ![activity](https://img.shields.io/github/commit-activity/m/kqcoxn/YAMaaPE?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/kqcoxn/YAMaaPE?style=social)  
-  A Pipeline Editor based on vue-flow. Powerfully driven by MaaFramework!
+- [MaaPipelineEditor](https://github.com/kqcoxn/MaaPipelineEditor) ![Typescript](https://img.shields.io/badge/Typescript-8A2BE2?logo=typescript) ![activity](https://img.shields.io/github/commit-activity/m/kqcoxn/MaaPipelineEditor?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/kqcoxn/MaaPipelineEditor?style=social)  
+  MaaFramework Pipeline workflow visual editor based on react-flow. Create your Pipeline using a "no code" flowchart!
 
 ### Application
 
