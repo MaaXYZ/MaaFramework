@@ -143,13 +143,16 @@ NodeDetail PipelineTask::run_reco_and_action(const PipelineData::NextList& list,
     RecoResult reco;
 
     const auto start_clock = std::chrono::steady_clock::now();
+    std::chrono::milliseconds reco_notify_cost_sum;
     std::chrono::steady_clock::time_point current_clock;
 
     while (true) {
         current_clock = std::chrono::steady_clock::now();
         cv::Mat image = screencap();
 
-        reco = run_recognition(image, list);
+        std::chrono::milliseconds reco_notify_cost;
+        reco = run_recognition(image, list, reco_notify_cost);
+        reco_notify_cost_sum += reco_notify_cost;
         if (reco.box) { // hit
             break;
         }
@@ -159,8 +162,9 @@ NodeDetail PipelineTask::run_reco_and_action(const PipelineData::NextList& list,
             return {};
         }
 
-        if (duration_since(start_clock) > pretask.reco_timeout) {
-            LogError << "Task timeout" << VAR(pretask.name) << VAR(duration_since(start_clock)) << VAR(pretask.reco_timeout) << VAR(list);
+        if (duration_since(start_clock) - reco_notify_cost_sum > pretask.reco_timeout) {
+            LogError << "Task timeout" << VAR(pretask.name) << VAR(duration_since(start_clock) - reco_notify_cost_sum)
+                     << VAR(pretask.reco_timeout) << VAR(list);
             return {};
         }
 
@@ -168,7 +172,8 @@ NodeDetail PipelineTask::run_reco_and_action(const PipelineData::NextList& list,
         std::this_thread::sleep_until(current_clock + pretask.rate_limit);
     }
 
-    auto node_detail = run_action(reco);
+    std::chrono::milliseconds act_notify_cost;
+    auto node_detail = run_action(reco, act_notify_cost);
     return node_detail;
 }
 
