@@ -8,7 +8,7 @@
     "$schema": "https://json-schema.org/draft/2020-12/schema",
     "type": "object",
     "patternProperties": {
-        "^(?!.*_comment$)(?!^comment$)(?!.*?\\$schema).*$": {
+        "^(?!\\$).*": {
             "$ref": "#/$defs/Node"
         }
     },
@@ -21,6 +21,15 @@
             "$comment": "若要使用拓展模式，请为 ref 添加 $ ，编写方法类似 ActionV2",
             "ref": "./custom.action.schema.json"
         },
+        "jsonCode": {
+            "patternProperties": {
+                ".*_code$|^code$": {
+                    "title": "Code Overridden Property",
+                    "description": "代码覆写 | 该节点属性通过外部代码覆写",
+                    "markdownDescription": "*any*\n\n注释 | 该节点属性的注释说明。"
+                }
+            }
+        },
         "jsonDocument": {
             "patternProperties": {
                 ".*_doc$|^doc$": {
@@ -31,35 +40,23 @@
                 }
             }
         },
-        "jsonComment": {
+        "jsonKeywords": {
             "patternProperties": {
-                ".*_comment$|^comment$": {
-                    "title": "Comment Property",
-                    "description": "注释 | 该节点属性的注释说明。",
-                    "type": "string",
-                    "markdownDescription": "*string*\n\n注释 | 该节点属性的注释说明。"
-                }
-            }
-        },
-        "jsonCode": {
-            "patternProperties": {
-                ".*_code$|^code$": {
-                    "title": "Code Overridden Property",
-                    "description": "代码覆写 | 该节点属性通过外部代码覆写",
-                    "markdownDescription": "*any*\n\n注释 | 该节点属性的注释说明。"
+                "^\\$.*": {
+                    "title": "Reserved Property"
                 }
             }
         },
         "jsonComments": {
             "allOf": [
                 {
+                    "$ref": "#/$defs/jsonCode"
+                },
+                {
                     "$ref": "#/$defs/jsonDocument"
                 },
                 {
-                    "$ref": "#/$defs/jsonComment"
-                },
-                {
-                    "$ref": "#/$defs/jsonCode"
+                    "$ref": "#/$defs/jsonKeywords"
                 }
             ]
         },

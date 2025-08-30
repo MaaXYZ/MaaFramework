@@ -1,24 +1,24 @@
 {
     "$schema": "../../tools/pipeline.schema.json",
+    "$这是一个注释": "这真的是一个注释",
+    "这不是一个注释": {
+        "$这也是一个注释": "这还是一个注释"
+    },
     "comments_v1": {
         "v1_doc": "v1_doc",
-        "v1_code": "v1_code",
-        "v1_comment": "v1_comment"
+        "v1_code": "v1_code"
     },
     "comments_v2": {
         "recognition": {
             "param": {
                 "doc": "v2_doc",
-                "code": "v2_code",
-                "comment": "v2_comment"
+                "code": "v2_code"
             },
             "_doc": "v2_doc",
-            "_code": "v2_code",
-            "_comment": "v2_comment"
+            "_code": "v2_code"
         },
         "v2_doc": "v2_doc",
-        "v2_code": "v2_code",
-        "v2_comment": "v2_comment"
+        "v2_code": "v2_code"
     },
     "recognition_v1": {
         "recognition": "TemplateMatch",
