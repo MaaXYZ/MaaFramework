@@ -230,7 +230,7 @@ jobs:
 
             - name: Install dep
               run: |
-                  brew install cmake ninja ccache
+                  brew install ninja ccache
 
             - name: Setup ccache
               uses: Chocobo1/setup-ccache-action@v1
