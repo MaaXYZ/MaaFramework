@@ -134,12 +134,13 @@ jobs:
             # maybe should explicitly update some pkg instead of all?
             - name: Update system
               run: |
-                  sudo apt update -y
-                  sudo apt upgrade -y
+                  sudo apt-get update -y
+                  sudo apt-get remove -y --purge firefox
+                  sudo apt-get upgrade -y
 
             - name: Install dep
               run: |
-                  sudo apt install -y ninja-build cmake ccache
+                  sudo apt-get install -y ninja-build cmake ccache
 
             - uses: pnpm/action-setup@v4
               with:
