@@ -81,7 +81,7 @@ struct InterfaceData
             std::string name;
             json::object pipeline_override;
 
-            MEO_JSONIZATION(name, pipeline_override);
+            MEO_JSONIZATION(name, MEO_OPT pipeline_override);
         };
 
         std::vector<Case> cases;
