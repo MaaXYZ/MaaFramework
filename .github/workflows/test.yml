@@ -164,7 +164,7 @@ jobs:
             - name: Install dep
               run: |
                   pacman -Sy
-                  pacman -S --noconfirm cmake python python-pip ccache ninja git
+                  pacman -S --noconfirm cmake python python-pip ccache ninja git wget
 
             # https://github.com/MaaXYZ/MaaFramework/actions/runs/5643408179/job/15285186255
             - uses: actions/checkout@v4

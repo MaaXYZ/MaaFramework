@@ -140,7 +140,7 @@ jobs:
             - name: Install dep
               run: |
                   pacman -Sy
-                  pacman -S --noconfirm cmake python ccache ninja git
+                  pacman -S --noconfirm cmake python ccache ninja git wget
 
             - uses: pnpm/action-setup@v4
               with:
