@@ -125,7 +125,6 @@ jobs:
     ubuntu:
         needs: meta
         runs-on: ubuntu-latest
-        container: archlinux:base-devel
         strategy:
             matrix:
                 arch: [aarch64, x86_64]
@@ -135,12 +134,12 @@ jobs:
             # maybe should explicitly update some pkg instead of all?
             - name: Update system
               run: |
-                  pacman -Syu --noconfirm
+                  sudo apt update -y
+                  sudo apt upgrade -y
 
             - name: Install dep
               run: |
-                  pacman -Sy
-                  pacman -S --noconfirm cmake python ccache ninja git wget
+                  sudo apt install -y ninja-build cmake ccache
 
             - uses: pnpm/action-setup@v4
               with:
