@@ -13,12 +13,15 @@
         "v2": "v2"
     },
     "recognition_v1": {
-        "recognition": "TemplateMatch"
+        "recognition": "FeatureMatch",
+        "count": -1
     },
     "recognition_v2": {
         "recognition": {
-            "type": "TemplateMatch",
-            "param": {}
+            "type": "FeatureMatch",
+            "param": {
+                "count": 4294967295
+            }
         }
     },
     "action_v1": {

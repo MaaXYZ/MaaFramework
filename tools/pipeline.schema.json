@@ -174,6 +174,13 @@
             "maximum": 2147483647,
             "default": 0
         },
+        "jsonNInt32": {
+            "type": "integer",
+            "format": "int32",
+            "minimum": 0,
+            "maximum": 2147483647,
+            "default": 0
+        },
         "jsonUInt32": {
             "type": "integer",
             "format": "uint32",
@@ -185,6 +192,13 @@
             "type": "integer",
             "format": "int64",
             "minimum": -9223372036854775808,
+            "maximum": 9223372036854775807,
+            "default": 0
+        },
+        "jsonNInt64": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
             "maximum": 9223372036854775807,
             "default": 0
         },
@@ -202,21 +216,18 @@
             "maximum": 170141183460469231731687303715884105727,
             "default": 0
         },
+        "jsonNInt128": {
+            "type": "integer",
+            "format": "int128",
+            "minimum": 0,
+            "maximum": 170141183460469231731687303715884105727,
+            "default": 0
+        },
         "jsonUInt128": {
             "type": "integer",
             "format": "uint128",
             "minimum": 0,
             "maximum": 340282366920938463463374607431768211455,
-            "default": 0
-        },
-        "jsonNInt32": {
-            "$ref": "#/$defs/jsonInt32",
-            "minimum": 0,
-            "default": 0
-        },
-        "jsonNInt64": {
-            "$ref": "#/$defs/jsonInt64",
-            "minimum": 0,
             "default": 0
         },
         "jsonNumber01": {
@@ -438,9 +449,11 @@
                     "const": "DirectHit"
                 },
                 "param": {
-                    "$ref": "#/$defs/DirectHit",
                     "unevaluatedProperties": false,
                     "allOf": [
+                        {
+                            "$ref": "#/$defs/DirectHit"
+                        },
                         {
                             "$ref": "#/$defs/jsonComments"
                         }
@@ -557,9 +570,11 @@
                     "const": "TemplateMatch"
                 },
                 "param": {
-                    "$ref": "#/$defs/TemplateMatch",
                     "unevaluatedProperties": false,
                     "allOf": [
+                        {
+                            "$ref": "#/$defs/TemplateMatch"
+                        },
                         {
                             "$ref": "#/$defs/jsonComments"
                         }
@@ -671,9 +686,11 @@
                     "const": "FeatureMatch"
                 },
                 "param": {
-                    "$ref": "#/$defs/FeatureMatch",
                     "unevaluatedProperties": false,
                     "allOf": [
+                        {
+                            "$ref": "#/$defs/FeatureMatch"
+                        },
                         {
                             "$ref": "#/$defs/jsonComments"
                         }
@@ -806,9 +823,11 @@
                     "const": "ColorMatch"
                 },
                 "param": {
-                    "$ref": "#/$defs/ColorMatch",
                     "unevaluatedProperties": false,
                     "allOf": [
+                        {
+                            "$ref": "#/$defs/ColorMatch"
+                        },
                         {
                             "$ref": "#/$defs/jsonComments"
                         }
@@ -912,9 +931,11 @@
                     "const": "OCR"
                 },
                 "param": {
-                    "$ref": "#/$defs/Ocr",
                     "unevaluatedProperties": false,
                     "allOf": [
+                        {
+                            "$ref": "#/$defs/Ocr"
+                        },
                         {
                             "$ref": "#/$defs/jsonComments"
                         }
@@ -1018,9 +1039,11 @@
                     "const": "NeuralNetworkClassify"
                 },
                 "param": {
-                    "$ref": "#/$defs/NeuralNetworkClassify",
                     "unevaluatedProperties": false,
                     "allOf": [
+                        {
+                            "$ref": "#/$defs/NeuralNetworkClassify"
+                        },
                         {
                             "$ref": "#/$defs/jsonComments"
                         }
@@ -1132,9 +1155,11 @@
                     "const": "NeuralNetworkDetect"
                 },
                 "param": {
-                    "$ref": "#/$defs/NeuralNetworkDetect",
                     "unevaluatedProperties": false,
                     "allOf": [
+                        {
+                            "$ref": "#/$defs/NeuralNetworkDetect"
+                        },
                         {
                             "$ref": "#/$defs/jsonComments"
                         }
@@ -1242,9 +1267,11 @@
             },
             "properties": {
                 "param": {
-                    "$ref": "#/$defs/RecognitionPropertyFields",
                     "unevaluatedProperties": false,
                     "allOf": [
+                        {
+                            "$ref": "#/$defs/RecognitionPropertyFields"
+                        },
                         {
                             "$ref": "#/$defs/jsonComments"
                         }
@@ -1746,9 +1773,11 @@
                     "const": "DoNothing"
                 },
                 "param": {
-                    "$ref": "#/$defs/DoNothing",
                     "unevaluatedProperties": false,
                     "allOf": [
+                        {
+                            "$ref": "#/$defs/DoNothing"
+                        },
                         {
                             "$ref": "#/$defs/jsonComments"
                         }
@@ -1791,9 +1820,11 @@
                     "const": "Click"
                 },
                 "param": {
-                    "$ref": "#/$defs/Click",
                     "unevaluatedProperties": false,
                     "allOf": [
+                        {
+                            "$ref": "#/$defs/Click"
+                        },
                         {
                             "$ref": "#/$defs/jsonComments"
                         }
@@ -1843,9 +1874,11 @@
                     "const": "LongPress"
                 },
                 "param": {
-                    "$ref": "#/$defs/LongPress",
                     "unevaluatedProperties": false,
                     "allOf": [
+                        {
+                            "$ref": "#/$defs/LongPress"
+                        },
                         {
                             "$ref": "#/$defs/jsonComments"
                         }
@@ -1907,9 +1940,11 @@
                     "const": "Swipe"
                 },
                 "param": {
-                    "$ref": "#/$defs/Swipe",
                     "unevaluatedProperties": false,
                     "allOf": [
+                        {
+                            "$ref": "#/$defs/Swipe"
+                        },
                         {
                             "$ref": "#/$defs/jsonComments"
                         }
@@ -1985,9 +2020,11 @@
                     "const": "MultiSwipe"
                 },
                 "param": {
-                    "$ref": "#/$defs/MultiSwipe",
                     "unevaluatedProperties": false,
                     "allOf": [
+                        {
+                            "$ref": "#/$defs/MultiSwipe"
+                        },
                         {
                             "$ref": "#/$defs/jsonComments"
                         }
@@ -2041,9 +2078,11 @@
                     "const": "ClickKey"
                 },
                 "param": {
-                    "$ref": "#/$defs/ClickKey",
                     "unevaluatedProperties": false,
                     "allOf": [
+                        {
+                            "$ref": "#/$defs/ClickKey"
+                        },
                         {
                             "$ref": "#/$defs/jsonComments"
                         }
@@ -2104,9 +2143,11 @@
                     "const": "LongPressKey"
                 },
                 "param": {
-                    "$ref": "#/$defs/LongPressKey",
                     "unevaluatedProperties": false,
                     "allOf": [
+                        {
+                            "$ref": "#/$defs/LongPressKey"
+                        },
                         {
                             "$ref": "#/$defs/jsonComments"
                         }
@@ -2160,9 +2201,11 @@
                     "const": "InputText"
                 },
                 "param": {
-                    "$ref": "#/$defs/InputText",
                     "unevaluatedProperties": false,
                     "allOf": [
+                        {
+                            "$ref": "#/$defs/InputText"
+                        },
                         {
                             "$ref": "#/$defs/jsonComments"
                         }
@@ -2216,9 +2259,11 @@
                     "const": "StartApp"
                 },
                 "param": {
-                    "$ref": "#/$defs/StartApp",
                     "unevaluatedProperties": false,
                     "allOf": [
+                        {
+                            "$ref": "#/$defs/StartApp"
+                        },
                         {
                             "$ref": "#/$defs/jsonComments"
                         }
@@ -2272,9 +2317,11 @@
                     "const": "StopApp"
                 },
                 "param": {
-                    "$ref": "#/$defs/StopApp",
                     "unevaluatedProperties": false,
                     "allOf": [
+                        {
+                            "$ref": "#/$defs/StopApp"
+                        },
                         {
                             "$ref": "#/$defs/jsonComments"
                         }
@@ -2309,9 +2356,11 @@
                     "const": "StopTask"
                 },
                 "param": {
-                    "$ref": "#/$defs/StopTask",
                     "unevaluatedProperties": false,
                     "allOf": [
+                        {
+                            "$ref": "#/$defs/StopTask"
+                        },
                         {
                             "$ref": "#/$defs/jsonComments"
                         }
@@ -2372,9 +2421,11 @@
                     "const": "Command"
                 },
                 "param": {
-                    "$ref": "#/$defs/Command",
                     "unevaluatedProperties": false,
                     "allOf": [
+                        {
+                            "$ref": "#/$defs/Command"
+                        },
                         {
                             "$ref": "#/$defs/jsonComments"
                         }
@@ -2488,9 +2539,11 @@
             },
             "properties": {
                 "param": {
-                    "$ref": "#/$defs/ActionPropertyFields",
                     "unevaluatedProperties": false,
                     "allOf": [
+                        {
+                            "$ref": "#/$defs/ActionPropertyFields"
+                        },
                         {
                             "$ref": "#/$defs/jsonComments"
                         }

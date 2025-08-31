@@ -21,14 +21,16 @@
         "v2_code": "v2_code"
     },
     "recognition_v1": {
-        "recognition": "TemplateMatch",
-        "template": ""
+        "recognition": "FeatureMatch",
+        "template": "",
+        "count": 0
     },
     "recognition_v2": {
         "recognition": {
-            "type": "TemplateMatch",
+            "type": "FeatureMatch",
             "param": {
-                "template": ""
+                "template": "",
+                "count": 100
             }
         }
     },
