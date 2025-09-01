@@ -348,7 +348,7 @@ bool ControllerAgent::handle_swipe(const SwipeParam& param)
     }
 
     cv::Point begin = param.begin;
-    bool ret = false;
+    bool ret = !param.end.empty();
 
     if (!param.only_hover && touch_availabled) {
         ret = control_unit_->touch_down(0, begin.x, begin.y, 1);

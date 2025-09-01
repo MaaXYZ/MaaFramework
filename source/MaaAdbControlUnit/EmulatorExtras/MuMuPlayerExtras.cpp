@@ -114,7 +114,8 @@ bool MuMuPlayerExtras::touch_down(int contact, int x, int y, int pressure)
     int display_id = get_display_id();
     LogInfo << VAR(contact) << VAR(x) << VAR(y) << VAR(pressure) << VAR(display_id);
 
-    int ret = input_event_touch_down_func_(mumu_handle_, display_id, contact, x, y);
+    // contact start from 0, but mumu start from 1
+    int ret = input_event_touch_down_func_(mumu_handle_, display_id, contact + 1, x, y);
 
     if (ret != 0) {
         LogError << "Failed to touch_down" << VAR(ret);
@@ -139,7 +140,8 @@ bool MuMuPlayerExtras::touch_move(int contact, int x, int y, int pressure)
     int display_id = get_display_id();
     // LogInfo << VAR(contact) << VAR(x) << VAR(y) << VAR(pressure) << VAR(display_id);
 
-    int ret = input_event_touch_down_func_(mumu_handle_, display_id, contact, x, y);
+    // contact start from 0, but mumu start from 1
+    int ret = input_event_touch_down_func_(mumu_handle_, display_id, contact + 1, x, y);
 
     if (ret != 0) {
         LogError << "Failed to touch_down" << VAR(ret);
@@ -159,7 +161,8 @@ bool MuMuPlayerExtras::touch_up(int contact)
     int display_id = get_display_id();
     LogInfo << VAR(contact) << VAR(display_id);
 
-    int ret = input_event_touch_up_func_(mumu_handle_, display_id, contact);
+    // contact start from 0, but mumu start from 1
+    int ret = input_event_touch_up_func_(mumu_handle_, display_id, contact + 1);
 
     if (ret != 0) {
         LogError << "Failed to touch_up" << VAR(ret);
