@@ -626,11 +626,6 @@ bool PipelineParser::parse_custom_recognition_param(
         return false;
     }
 
-    if (output.name.empty()) {
-        LogError << "custom_recognition is empty" << VAR(input);
-        return false;
-    }
-
     if (!parse_roi_target(input, output.roi_target, default_value.roi_target)) {
         LogError << "failed to parse_roi_target" << VAR(input);
         return false;
@@ -1223,11 +1218,6 @@ bool PipelineParser::parse_custom_action_param(
 
     if (!parse_action_target(input, "target", output.target, default_value.target)) {
         LogError << "failed to parse_action_target" << VAR(input);
-        return false;
-    }
-
-    if (output.name.empty()) {
-        LogError << "custom_action is empty" << VAR(input);
         return false;
     }
 
