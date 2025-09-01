@@ -1403,7 +1403,7 @@ bool PipelineParser::parse_action_target_or_list(
     if (auto param_opt = input.find(key); !param_opt) {
         output = default_value;
     }
-    else if (param_opt->is<std::vector<json::object>>()) {
+    else if (param_opt->is_array() && !param_opt->is<std::array<int, 4>>()) {
         for (const auto& val : param_opt->as_array()) {
             Action::Target res;
             if (!parse_target_variant(val, res)) {
@@ -1423,25 +1423,29 @@ bool PipelineParser::parse_action_target_or_list(
     }
 
     if (auto offset_opt = input.find(key + "_offset"); !offset_opt) {
-        output = default_value;
+        // do nothing
     }
-    else if (offset_opt->is<std::vector<json::object>>()) {
-        for (const auto& val : offset_opt->as_array()) {
-            Action::Target res;
-            if (!parse_target_variant(val, res)) {
-                LogError << "failed to parse_target_variant" << VAR(val);
+    else if (offset_opt->is_array() && !offset_opt->is<std::array<int, 4>>()) {
+        const json::array& arr = offset_opt->as_array();
+        for (size_t i = 0; i < output.size() && i < arr.size(); ++i) {
+            if (!parse_target_offset(arr.at(i), output.at(i))) {
+                LogError << "failed to parse_target_offset" << VAR(offset_opt->as_array()[i]);
                 return false;
             }
-            output.emplace_back(std::move(res));
         }
     }
     else {
-        Action::Target res;
-        if (!parse_target_variant(*offset_opt, res)) {
+        for (auto& out : output) {
+            out.offset = {};
+        }
+        if (output.empty()) {
+            output.resize(1);
+        }
+
+        if (!parse_target_offset(*offset_opt, output.front())) {
             LogError << "failed to parse_target_variant" << VAR(*offset_opt);
             return false;
         }
-        output.emplace_back(std::move(res));
     }
 
     return true;
