@@ -280,13 +280,13 @@ bool MuMuPlayerExtras::load_mumu_library()
         return false;
     }
 
-    input_event_touch_down_func_ = get_function<decltype(nemu_input_event_touch_down)>(kInputEventTouchDownFuncName);
+    input_event_touch_down_func_ = get_function<decltype(nemu_input_event_finger_touch_down)>(kInputEventTouchDownFuncName);
     if (!input_event_touch_down_func_) {
         LogError << "Failed to get function" << VAR(kInputEventTouchDownFuncName);
         return false;
     }
 
-    input_event_touch_up_func_ = get_function<decltype(nemu_input_event_touch_up)>(kInputEventTouchUpFuncName);
+    input_event_touch_up_func_ = get_function<decltype(nemu_input_event_finger_touch_up)>(kInputEventTouchUpFuncName);
     if (!input_event_touch_up_func_) {
         LogError << "Failed to get function" << VAR(kInputEventTouchUpFuncName);
         return false;
