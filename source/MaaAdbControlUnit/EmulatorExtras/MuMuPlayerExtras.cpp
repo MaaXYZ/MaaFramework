@@ -159,7 +159,7 @@ bool MuMuPlayerExtras::touch_up(int contact)
     int display_id = get_display_id();
     LogInfo << VAR(contact) << VAR(display_id);
 
-    int ret = input_event_touch_up_func_(mumu_handle_, display_id);
+    int ret = input_event_touch_up_func_(mumu_handle_, display_id, contact);
 
     if (ret != 0) {
         LogError << "Failed to touch_up" << VAR(ret);
