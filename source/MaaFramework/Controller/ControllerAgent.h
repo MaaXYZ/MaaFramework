@@ -2,7 +2,6 @@
 
 #include <memory>
 #include <mutex>
-#include <random>
 #include <set>
 #include <variant>
 
@@ -22,65 +21,69 @@ MAA_CTRL_NS_BEGIN
 
 struct ClickParam
 {
-    int x = 0;
-    int y = 0;
+    cv::Point point {};
+};
 
-    MEO_JSONIZATION(x, y);
+struct LongPressParam
+{
+    cv::Point point {};
+    uint duration = 0;
 };
 
 struct SwipeParam
 {
-    int x1 = 0;
-    int y1 = 0;
-    int x2 = 0;
-    int y2 = 0;
-    int duration = 0;
-    int starting = 0;
+    cv::Point begin {};
+    std::vector<cv::Point> end;
+    std::vector<uint> end_hold;
+    std::vector<uint> duration;
+    bool only_hover = false;
+    uint starting = 0;
+};
 
-    MEO_JSONIZATION(x1, y1, x2, y2, duration, starting);
+struct MultiSwipeParam
+{
+    std::vector<SwipeParam> swipes;
 };
 
 struct TouchParam
 {
     int contact = 0;
-    int x = 0;
-    int y = 0;
+    cv::Point point {};
     int pressure = 0;
-
-    MEO_JSONIZATION(contact, x, y, pressure);
 };
 
 struct ClickKeyParam
 {
-    int keycode = 0;
-
-    MEO_JSONIZATION(keycode);
+    std::vector<int> keycode;
 };
 
 struct LongPressKeyParam
 {
-    int keycode = 0;
-    int duration = 0;
-
-    MEO_JSONIZATION(keycode, duration);
+    std::vector<int> keycode;
+    uint duration = 0;
 };
 
 struct InputTextParam
 {
     std::string text;
-
-    MEO_JSONIZATION(text);
 };
 
 struct AppParam
 {
     std::string package;
-
-    MEO_JSONIZATION(package);
 };
 
-using Param =
-    std::variant<std::monostate, ClickParam, SwipeParam, std::vector<SwipeParam>, TouchParam, ClickKeyParam, LongPressKeyParam, InputTextParam, AppParam>;
+using Param = std::variant<
+    std::monostate,
+    ClickParam,
+    LongPressParam,
+    SwipeParam,
+    MultiSwipeParam,
+    TouchParam,
+    ClickKeyParam,
+    LongPressKeyParam,
+    InputTextParam,
+    AppParam>;
 
 struct Action
 {
@@ -89,6 +92,7 @@ struct Action
         invalid,
         connect,
         click,
+        long_press,
         swipe,
         multi_swipe,
         touch_down,
@@ -142,58 +146,30 @@ public: // MaaController
     virtual cv::Mat cached_image() const override;
     virtual std::string get_uuid() override;
 
-public:
+public: // for Actuator
     void post_stop();
 
-    bool click(const cv::Rect& r);
-    bool click(const cv::Point& p);
+    bool click(ClickParam p);
+    bool long_press(LongPressParam p);
 
-    bool long_press(const cv::Rect& r, int duration);
+    bool swipe(SwipeParam p);
+    bool multi_swipe(MultiSwipeParam p);
 
-    bool swipe(const cv::Rect& r1, const cv::Rect& r2, int duration);
-    bool swipe(const cv::Point& p1, const cv::Point& p2, int duration);
+    bool click_key(ClickKeyParam p);
+    bool long_press_key(LongPressKeyParam p);
 
-    struct SwipeParamWithRect
-    {
-        cv::Rect r1 {};
-        cv::Rect r2 {};
-        uint duration = 0;
-        uint starting = 0;
-    };
-
-    bool multi_swipe(const std::vector<SwipeParamWithRect>& swipes);
-
-    bool click_key(int keycode);
-    bool long_press_key(int keycode, int duration);
-    bool input_text(const std::string& text);
+    bool input_text(InputTextParam p);
     cv::Mat screencap();
 
-    bool start_app(const std::string& package);
-    bool stop_app(const std::string& package);
+    bool start_app(AppParam p);
+    bool stop_app(AppParam p);
 
 private:
-    MaaCtrlId post_connection_impl();
-    MaaCtrlId post_click_impl(int x, int y);
-    MaaCtrlId post_swipe_impl(int x1, int y1, int x2, int y2, int duration);
-    MaaCtrlId post_multi_swipe_impl(const std::vector<SwipeParam>& swipes);
-    MaaCtrlId post_click_key_impl(int keycode);
-    MaaCtrlId post_long_press_key_impl(int keycode, int duration);
-    MaaCtrlId post_input_text_impl(const std::string& text);
-    MaaCtrlId post_start_app_impl(const std::string& text);
-    MaaCtrlId post_stop_app_impl(const std::string& text);
-    MaaCtrlId post_screencap_impl();
-
-    MaaCtrlId post_touch_down_impl(int contact, int x, int y, int pressure);
-    MaaCtrlId post_touch_move_impl(int contact, int x, int y, int pressure);
-    MaaCtrlId post_touch_up_impl(int contact);
-
-    MaaCtrlId post_key_down_impl(int keycode);
-    MaaCtrlId post_key_up_impl(int keycode);
-
     bool handle_connect();
     bool handle_click(const ClickParam& param);
+    bool handle_long_press(const LongPressParam& param);
     bool handle_swipe(const SwipeParam& param);
-    bool handle_multi_swipe(const std::vector<SwipeParam>& param);
+    bool handle_multi_swipe(const MultiSwipeParam& param);
     bool handle_touch_down(const TouchParam& param);
     bool handle_touch_move(const TouchParam& param);
     bool handle_touch_up(const TouchParam& param);
@@ -207,12 +183,10 @@ private:
     bool handle_key_up(const ClickKeyParam& param);
 
     MaaCtrlId post(Action action);
-    void focus_id(MaaCtrlId id);
+    MaaCtrlId focus_id(MaaCtrlId id);
     bool check_stop();
 
 private:
-    static cv::Point rand_point(const cv::Rect& r);
-
     bool run_action(typename AsyncRunner<Action>::Id id, Action action);
     std::pair<int, int> preproc_touch_point(int x, int y);
     bool postproc_screenshot(const cv::Mat& raw);
@@ -230,8 +204,6 @@ private:
     bool need_to_stop_ = false;
 
 private:
-    static std::minstd_rand rand_engine_;
-
     const std::shared_ptr<MAA_CTRL_UNIT_NS::ControlUnitAPI> control_unit_ = nullptr;
     MessageNotifier notifier_;
 

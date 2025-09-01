@@ -8,6 +8,8 @@
 
 MAA_TASK_NS_BEGIN
 
+std::minstd_rand Actuator::rand_engine_(std::random_device {}());
+
 Actuator::Actuator(Tasker* tasker, Context& context)
     : tasker_(tasker)
     , context_(context)
@@ -82,6 +84,29 @@ bool Actuator::run(const cv::Rect& reco_hit, MaaRecoId reco_id, const PipelineDa
     return ret;
 }
 
+cv::Point Actuator::rand_point(const cv::Rect& r)
+{
+    int x = 0, y = 0;
+
+    if (r.width == 0) {
+        x = r.x;
+    }
+    else {
+        int x_rand = std::poisson_distribution<int>(r.width / 2.)(rand_engine_);
+        x = x_rand + r.x;
+    }
+
+    if (r.height == 0) {
+        y = r.y;
+    }
+    else {
+        int y_rand = std::poisson_distribution<int>(r.height / 2.)(rand_engine_);
+        y = y_rand + r.y;
+    }
+
+    return { x, y };
+}
+
 bool Actuator::click(const MAA_RES_NS::Action::ClickParam& param, const cv::Rect& box)
 {
     if (!controller()) {
@@ -89,9 +114,8 @@ bool Actuator::click(const MAA_RES_NS::Action::ClickParam& param, const cv::Rect
         return false;
     }
 
-    cv::Rect rect = get_target_rect(param.target, box);
-
-    return controller()->click(rect);
+    cv::Point point = rand_point(get_target_rect(param.target, box));
+    return controller()->click({ .point = point });
 }
 
 bool Actuator::long_press(const MAA_RES_NS::Action::LongPressParam& param, const cv::Rect& box)
@@ -101,9 +125,9 @@ bool Actuator::long_press(const MAA_RES_NS::Action::LongPressParam& param, const
         return false;
     }
 
-    cv::Rect rect = get_target_rect(param.target, box);
+    cv::Point point = rand_point(get_target_rect(param.target, box));
 
-    return controller()->long_press(rect, param.duration);
+    return controller()->long_press({ .point = point, .duration = param.duration });
 }
 
 bool Actuator::swipe(const MAA_RES_NS::Action::SwipeParam& param, const cv::Rect& box)
@@ -113,10 +137,17 @@ bool Actuator::swipe(const MAA_RES_NS::Action::SwipeParam& param, const cv::Rect
         return false;
     }
 
-    cv::Rect begin = get_target_rect(param.begin, box);
-    cv::Rect end = get_target_rect(param.end, box);
+    cv::Point begin = rand_point(get_target_rect(param.begin, box));
+    std::vector<cv::Point> end;
+    std::ranges::transform(param.end, std::back_inserter(end), [&](const auto& ed) { return rand_point(get_target_rect(ed, box)); });
 
-    return controller()->swipe(begin, end, param.duration);
+    return controller()->swipe(
+        { .begin = begin,
+          .end = std::move(end),
+          .end_hold = param.end_hold,
+          .duration = param.duration,
+          .only_hover = param.only_hover,
+          .starting = param.starting });
 }
 
 bool Actuator::multi_swipe(const MAA_RES_NS::Action::MultiSwipeParam& param, const cv::Rect& box)
@@ -126,19 +157,21 @@ bool Actuator::multi_swipe(const MAA_RES_NS::Action::MultiSwipeParam& param, con
         return false;
     }
 
-    using CtrlParam = MAA_CTRL_NS::ControllerAgent::SwipeParamWithRect;
-
-    std::vector<CtrlParam> dst;
-
+    std::vector<MAA_CTRL_NS::SwipeParam> swipes;
     for (const auto& swipe : param.swipes) {
-        CtrlParam ctrl_param { .r1 = get_target_rect(swipe.begin, box),
-                               .r2 = get_target_rect(swipe.end, box),
-                               .duration = swipe.duration,
-                               .starting = swipe.starting };
-        dst.emplace_back(std::move(ctrl_param));
+        cv::Point begin = rand_point(get_target_rect(swipe.begin, box));
+        std::vector<cv::Point> end;
+        std::ranges::transform(swipe.end, std::back_inserter(end), [&](const auto& ed) { return rand_point(get_target_rect(ed, box)); });
+        swipes.push_back(
+            { .begin = begin,
+              .end = std::move(end),
+              .end_hold = swipe.end_hold,
+              .duration = swipe.duration,
+              .only_hover = swipe.only_hover,
+              .starting = swipe.starting });
     }
 
-    return controller()->multi_swipe(dst);
+    return controller()->multi_swipe({ .swipes = std::move(swipes) });
 }
 
 bool Actuator::click_key(const MAA_RES_NS::Action::ClickKeyParam& param)
@@ -147,11 +180,8 @@ bool Actuator::click_key(const MAA_RES_NS::Action::ClickKeyParam& param)
         LogError << "Controller is null";
         return false;
     }
-    bool ret = true;
-    for (const auto& key : param.keys) {
-        ret &= controller()->click_key(key);
-    }
-    return ret;
+
+    return controller()->click_key({ .keycode = param.keys });
 }
 
 bool Actuator::long_press_key(const MAA_RES_NS::Action::LongPressKeyParam& param)
@@ -160,11 +190,8 @@ bool Actuator::long_press_key(const MAA_RES_NS::Action::LongPressKeyParam& param
         LogError << "Controller is null";
         return false;
     }
-    bool ret = true;
-    for (const auto& key : param.keys) {
-        ret &= controller()->long_press_key(key, param.duration);
-    }
-    return ret;
+
+    return controller()->long_press_key({ .keycode = param.keys, .duration = param.duration });
 }
 
 bool Actuator::input_text(const MAA_RES_NS::Action::InputTextParam& param)
@@ -173,7 +200,8 @@ bool Actuator::input_text(const MAA_RES_NS::Action::InputTextParam& param)
         LogError << "Controller is null";
         return false;
     }
-    return controller()->input_text(param.text);
+
+    return controller()->input_text({ .text = param.text });
 }
 
 void Actuator::wait_freezes(const MAA_RES_NS::WaitFreezesParam& param, const cv::Rect& box)
@@ -242,7 +270,8 @@ bool Actuator::start_app(const MAA_RES_NS::Action::AppParam& param)
         LogError << "Controller is null";
         return false;
     }
-    return controller()->start_app(param.package);
+
+    return controller()->start_app({ .package = param.package });
 }
 
 bool Actuator::stop_app(const MAA_RES_NS::Action::AppParam& param)
@@ -251,7 +280,8 @@ bool Actuator::stop_app(const MAA_RES_NS::Action::AppParam& param)
         LogError << "Controller is null";
         return false;
     }
-    return controller()->stop_app(param.package);
+
+    return controller()->stop_app({ .package = param.package });
 }
 
 bool Actuator::command(

@@ -979,7 +979,10 @@ bool PipelineParser::parse_action(
     case Type::ClickKey: {
         auto default_param = default_mgr.get_action_param<ClickKeyParam>(Type::ClickKey);
         out_param = default_param;
-        return parse_click_key(param_input, std::get<ClickKeyParam>(out_param), same_type ? std::get<ClickKeyParam>(parent_param) : default_param);
+        return parse_click_key(
+            param_input,
+            std::get<ClickKeyParam>(out_param),
+            same_type ? std::get<ClickKeyParam>(parent_param) : default_param);
     } break;
 
     case Type::LongPressKey: {
@@ -994,7 +997,10 @@ bool PipelineParser::parse_action(
     case Type::InputText: {
         auto default_param = default_mgr.get_action_param<InputTextParam>(Type::InputText);
         out_param = default_param;
-        return parse_input_text(param_input, std::get<InputTextParam>(out_param), same_type ? std::get<InputTextParam>(parent_param) : default_param);
+        return parse_input_text(
+            param_input,
+            std::get<InputTextParam>(out_param),
+            same_type ? std::get<InputTextParam>(parent_param) : default_param);
     } break;
 
     case Type::StartApp: {
@@ -1071,7 +1077,7 @@ bool PipelineParser::parse_swipe(const json::value& input, Action::SwipeParam& o
         return false;
     }
 
-    if (!parse_action_target(input, "end", output.end, default_value.end)) {
+    if (!parse_action_target_or_list(input, "end", output.end, default_value.end)) {
         LogError << "failed to parse_action_target end" << VAR(input);
         return false;
     }
@@ -1081,8 +1087,18 @@ bool PipelineParser::parse_swipe(const json::value& input, Action::SwipeParam& o
     //     return false;
     // }
 
-    if (!get_and_check_value(input, "duration", output.duration, default_value.duration)) {
+    if (!get_and_check_value_or_array(input, "duration", output.duration, default_value.duration)) {
         LogError << "failed to get_and_check_value duration" << VAR(input);
+        return false;
+    }
+
+    if (!get_and_check_value_or_array(input, "end_hold", output.end_hold, default_value.end_hold)) {
+        LogError << "failed to get_and_check_value end_hold" << VAR(input);
+        return false;
+    }
+
+    if (!get_and_check_value(input, "only_hover", output.only_hover, default_value.only_hover)) {
+        LogError << "failed to get_and_check_value only_hover" << VAR(input);
         return false;
     }
 
@@ -1373,6 +1389,63 @@ bool PipelineParser::parse_action_target(
     else if (!parse_target_offset(*offset_opt, output)) {
         LogError << "failed to parse_target_offset" << VAR(*offset_opt);
         return false;
+    }
+
+    return true;
+}
+
+bool PipelineParser::parse_action_target_or_list(
+    const json::value& input,
+    const std::string& key,
+    std::vector<Action::Target>& output,
+    const std::vector<Action::Target>& default_value)
+{
+    if (auto param_opt = input.find(key); !param_opt) {
+        output = default_value;
+    }
+    else if (param_opt->is_array() && !param_opt->is<std::array<int, 4>>()) {
+        for (const auto& val : param_opt->as_array()) {
+            Action::Target res;
+            if (!parse_target_variant(val, res)) {
+                LogError << "failed to parse_target_variant" << VAR(val);
+                return false;
+            }
+            output.emplace_back(std::move(res));
+        }
+    }
+    else {
+        Action::Target res;
+        if (!parse_target_variant(*param_opt, res)) {
+            LogError << "failed to parse_target_variant" << VAR(*param_opt);
+            return false;
+        }
+        output.emplace_back(std::move(res));
+    }
+
+    if (auto offset_opt = input.find(key + "_offset"); !offset_opt) {
+        // do nothing
+    }
+    else if (offset_opt->is_array() && !offset_opt->is<std::array<int, 4>>()) {
+        const json::array& arr = offset_opt->as_array();
+        for (size_t i = 0; i < output.size() && i < arr.size(); ++i) {
+            if (!parse_target_offset(arr.at(i), output.at(i))) {
+                LogError << "failed to parse_target_offset" << VAR(offset_opt->as_array()[i]);
+                return false;
+            }
+        }
+    }
+    else {
+        for (auto& out : output) {
+            out.offset = {};
+        }
+        if (output.empty()) {
+            output.resize(1);
+        }
+
+        if (!parse_target_offset(*offset_opt, output.front())) {
+            LogError << "failed to parse_target_variant" << VAR(*offset_opt);
+            return false;
+        }
     }
 
     return true;

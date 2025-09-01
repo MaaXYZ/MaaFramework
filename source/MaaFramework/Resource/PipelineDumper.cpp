@@ -1,8 +1,8 @@
 #include "PipelineDumper.h"
 
 #include "PipelineTypesV2.h"
-#include "Utils/Logger.h"
 #include "Utils/Encoding.h"
+#include "Utils/Logger.h"
 
 MAA_RES_NS_BEGIN
 
@@ -42,6 +42,22 @@ json::object PipelineDumper::dump(const PipelineData& pp)
             LogError << "Invalid target type" << VAR(target.type);
             return {};
         }
+    };
+
+    auto dump_target_array = [&](const std::vector<Action::Target>& vec) -> std::vector<PipelineV2::JTarget> {
+        std::vector<PipelineV2::JTarget> result(vec.size());
+        for (const auto& target : vec) {
+            result.emplace_back(dump_target(target));
+        }
+        return result;
+    };
+
+    auto dump_target_offset_array = [&](const std::vector<Action::Target>& vec) -> std::vector<PipelineV2::JRect> {
+        std::vector<PipelineV2::JRect> result(vec.size());
+        for (const auto& target : vec) {
+            result.emplace_back(dump_rect(target.offset));
+        }
+        return result;
     };
 
     auto dump_order_by = [](MAA_VISION_NS::ResultOrderBy order_by) -> std::string {
@@ -215,8 +231,8 @@ json::object PipelineDumper::dump(const PipelineData& pp)
             .starting = 0,
             .begin = dump_target(param.begin),
             .begin_offset = dump_rect(param.begin.offset),
-            .end = dump_target(param.end),
-            .end_offset = dump_rect(param.end.offset),
+            .end = dump_target_array(param.end),
+            .end_offset = dump_target_offset_array(param.end),
             .duration = param.duration,
         };
     } break;
@@ -225,14 +241,15 @@ json::object PipelineDumper::dump(const PipelineData& pp)
         const auto& param = std::get<Action::MultiSwipeParam>(pp.action_param);
         PipelineV2::JMultiSwipe jswipes;
         for (const auto& s : param.swipes) {
-            jswipes.swipes.emplace_back(PipelineV2::JSwipe {
-                .starting = s.starting,
-                .begin = dump_target(s.begin),
-                .begin_offset = dump_rect(s.begin.offset),
-                .end = dump_target(s.end),
-                .end_offset = dump_rect(s.end.offset),
-                .duration = s.duration,
-            });
+            jswipes.swipes.emplace_back(
+                PipelineV2::JSwipe {
+                    .starting = s.starting,
+                    .begin = dump_target(s.begin),
+                    .begin_offset = dump_rect(s.begin.offset),
+                    .end = dump_target_array(s.end),
+                    .end_offset = dump_target_offset_array(s.end),
+                    .duration = s.duration,
+                });
         }
         data.action.param = std::move(jswipes);
     } break;
