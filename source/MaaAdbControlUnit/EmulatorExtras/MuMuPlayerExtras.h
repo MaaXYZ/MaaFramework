@@ -79,8 +79,8 @@ private:
     inline static const std::string kDisconnectFuncName = "nemu_disconnect";
     inline static const std::string kCaptureDisplayFuncName = "nemu_capture_display";
     inline static const std::string kInputTextFuncName = "nemu_input_text";
-    inline static const std::string kInputEventTouchDownFuncName = "nemu_input_event_touch_down";
-    inline static const std::string kInputEventTouchUpFuncName = "nemu_input_event_touch_up";
+    inline static const std::string kInputEventTouchDownFuncName = "nemu_input_event_finger_touch_down";
+    inline static const std::string kInputEventTouchUpFuncName = "nemu_input_event_finger_touch_up";
     inline static const std::string kInputEventKeyDownFuncName = "nemu_input_event_key_down";
     inline static const std::string kInputEventKeyUpFuncName = "nemu_input_event_key_up";
     inline static const std::string kGetDisplayIdFuncName = "nemu_get_display_id";
@@ -90,8 +90,8 @@ private:
     boost::function<decltype(nemu_disconnect)> disconnect_func_;
     boost::function<decltype(nemu_capture_display)> capture_display_func_;
     boost::function<decltype(nemu_input_text)> input_text_func_;
-    boost::function<decltype(nemu_input_event_touch_down)> input_event_touch_down_func_;
-    boost::function<decltype(nemu_input_event_touch_up)> input_event_touch_up_func_;
+    boost::function<decltype(nemu_input_event_finger_touch_down)> input_event_touch_down_func_;
+    boost::function<decltype(nemu_input_event_finger_touch_up)> input_event_touch_up_func_;
     boost::function<decltype(nemu_input_event_key_down)> input_event_key_down_func_;
     boost::function<decltype(nemu_input_event_key_up)> input_event_key_up_func_;
     boost::function<decltype(nemu_get_display_id)> get_display_id_func_;
