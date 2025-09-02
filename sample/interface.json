@@ -1,6 +1,14 @@
 {
     "interface_version": 2, // 接口版本号，当前为 2，固定 & 必须
+    "languages": [ // 支持的语言列表，若不指定，则默认仅支持中文
+        "zh",
+        "en"
+    ],
     "name": "MyDemo3", // 项目名。用户 GUI 称呼当前资源
+    "name": {          // 多语言支持，若仅为字符串，则表示所有语言均使用同一名称。后面所有UI显示文本相关的字段同理。
+        "en": "MyDemo3",
+        "zh": "Demo3"
+    },
     "title": "Demo3 v1.0.0", // 窗口标题，给什么就显示什么，UI 不要往上加别的东西。默认 null，则使用 name 和 version 拼接
     "icon": "demo3.png", // 应用图标，若不指定，则使用默认的图标
     "mirrorchyan_rid": "demo3",
