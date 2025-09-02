@@ -189,7 +189,7 @@ struct RuntimeParam
     {
         std::string name;
         std::string entry;
-        json::value pipeline_override;
+        json::array pipeline_override;
     };
 
     struct Agent
