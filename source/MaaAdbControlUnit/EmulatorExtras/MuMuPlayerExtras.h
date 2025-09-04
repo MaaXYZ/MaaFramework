@@ -50,6 +50,9 @@ public: // from ControlUnitSink
     virtual void on_app_stopped(const std::string& intent) override;
 
 private:
+    static int android_keycode_to_linux_key_code(int key);
+
+private:
     bool load_mumu_library();
     bool connect_mumu();
     bool init_screencap();
