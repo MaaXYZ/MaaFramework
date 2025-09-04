@@ -50,15 +50,7 @@ jobs:
                     version=${tag#v}+${commit_hash}.$(date +%Y%m%d)
                   fi
 
-                  if $is_release; then
-                    if $is_pre_release; then
-                      build_config="RelWithDebInfo"
-                    else
-                      build_config="Release"
-                    fi
-                  else
-                    build_config="Debug"
-                  fi
+                  build_config="Release"
 
                   echo "tag=$tag
                   version=$version
