@@ -112,7 +112,7 @@ struct LongPressParam
 struct SwipeParam
 {
     Target begin;
-    std::vector<Target> end;
+    std::vector<Target> end = std::vector<Target>(1);
     std::vector<uint> end_hold = { 0 };
     std::vector<uint> duration = { 200 };
 
