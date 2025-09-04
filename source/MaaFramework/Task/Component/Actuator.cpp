@@ -138,16 +138,24 @@ bool Actuator::swipe(const MAA_RES_NS::Action::SwipeParam& param, const cv::Rect
     }
 
     cv::Point begin = rand_point(get_target_rect(param.begin, box));
-    std::vector<cv::Point> end;
-    std::ranges::transform(param.end, std::back_inserter(end), [&](const auto& ed) { return rand_point(get_target_rect(ed, box)); });
 
-    return controller()->swipe(
-        { .begin = begin,
-          .end = std::move(end),
-          .end_hold = param.end_hold,
-          .duration = param.duration,
-          .only_hover = param.only_hover,
-          .starting = param.starting });
+    std::vector<cv::Point> end;
+    for (size_t i = 0; i < param.end.size(); ++i) {
+        const auto& e = param.end.at(i);
+        cv::Rect end_offset = param.end_offset.empty()      ? cv::Rect {}
+                              : i < param.end_offset.size() ? param.end_offset.at(i)
+                                                            : param.end_offset.back();
+        MAA_RES_NS::Action::Target end_target { .type = e.type, .param = e.param, .offset = end_offset };
+        cv::Point p = rand_point(get_target_rect(end_target, box));
+        end.emplace_back(p);
+    }
+
+    return controller()->swipe({ .begin = begin,
+                                 .end = std::move(end),
+                                 .end_hold = param.end_hold,
+                                 .duration = param.duration,
+                                 .only_hover = param.only_hover,
+                                 .starting = param.starting });
 }
 
 bool Actuator::multi_swipe(const MAA_RES_NS::Action::MultiSwipeParam& param, const cv::Rect& box)
@@ -160,15 +168,23 @@ bool Actuator::multi_swipe(const MAA_RES_NS::Action::MultiSwipeParam& param, con
     std::vector<MAA_CTRL_NS::SwipeParam> swipes;
     for (const auto& swipe : param.swipes) {
         cv::Point begin = rand_point(get_target_rect(swipe.begin, box));
+
         std::vector<cv::Point> end;
-        std::ranges::transform(swipe.end, std::back_inserter(end), [&](const auto& ed) { return rand_point(get_target_rect(ed, box)); });
-        swipes.push_back(
-            { .begin = begin,
-              .end = std::move(end),
-              .end_hold = swipe.end_hold,
-              .duration = swipe.duration,
-              .only_hover = swipe.only_hover,
-              .starting = swipe.starting });
+        for (size_t i = 0; i < swipe.end.size(); ++i) {
+            const auto& e = swipe.end.at(i);
+            cv::Rect end_offset = swipe.end_offset.empty()      ? cv::Rect {}
+                                  : i < swipe.end_offset.size() ? swipe.end_offset.at(i)
+                                                                : swipe.end_offset.back();
+            MAA_RES_NS::Action::Target end_target { .type = e.type, .param = e.param, .offset = end_offset };
+            cv::Point p = rand_point(get_target_rect(end_target, box));
+            end.emplace_back(p);
+        }
+        swipes.push_back({ .begin = begin,
+                           .end = std::move(end),
+                           .end_hold = swipe.end_hold,
+                           .duration = swipe.duration,
+                           .only_hover = swipe.only_hover,
+                           .starting = swipe.starting });
     }
 
     return controller()->multi_swipe({ .swipes = std::move(swipes) });

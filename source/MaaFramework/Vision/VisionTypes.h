@@ -13,15 +13,25 @@
 
 MAA_VISION_NS_BEGIN
 
-struct Target
+enum class TargetType
 {
-    enum class Type
-    {
-        Invalid = 0,
-        Self,
-        PreTask,
-        Region,
-    };
+    Invalid = 0,
+    Self,
+    PreTask,
+    Region,
+};
+
+struct TargetObj
+{
+    using Type = TargetType;
+
+    Type type = Type::Self;
+    std::variant<std::monostate, std::string, cv::Rect> param;
+};
+
+struct Target : public TargetObj
+{
+    using Type = TargetType;
 
     Type type = Type::Self;
     std::variant<std::monostate, std::string, cv::Rect> param;

@@ -96,6 +96,7 @@ enum class Type
     StopTask,
 };
 
+using TargetObj = MAA_VISION_NS::TargetObj;
 using Target = MAA_VISION_NS::Target;
 
 struct ClickParam
@@ -112,8 +113,9 @@ struct LongPressParam
 struct SwipeParam
 {
     Target begin;
-    std::vector<Target> end = std::vector<Target>(1);
-    std::vector<uint> end_hold = { 0 };
+    std::vector<TargetObj> end = { {} };
+    std::vector<cv::Rect> end_offset;
+    std::vector<uint> end_hold;
     std::vector<uint> duration = { 200 };
 
     bool only_hover = false;

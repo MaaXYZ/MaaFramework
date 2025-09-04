@@ -155,8 +155,10 @@ struct JSwipe
     JRect begin_offset {};
     std::vector<JTarget> end;
     std::vector<JRect> end_offset;
+    std::vector<uint32_t> end_hold;
     std::vector<uint32_t> duration;
-    MEO_TOJSON(starting, begin, begin_offset, end, end_offset, duration);
+    bool only_hover = false;
+    MEO_TOJSON(starting, begin, begin_offset, end, end_offset, end_hold, duration, only_hover);
 };
 
 struct JMultiSwipe

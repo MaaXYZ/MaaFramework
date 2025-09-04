@@ -103,14 +103,18 @@ private:
 
     static bool parse_rect(const json::value& input_rect, cv::Rect& output);
     static bool parse_target_variant(const json::value& input_target, Action::Target& output);
-    static bool parse_target_offset(const json::value& input_target, Action::Target& output);
     static bool
         parse_action_target(const json::value& input, const std::string& key, Action::Target& output, const Action::Target& default_value);
-    static bool parse_action_target_or_list(
+    static bool parse_action_target_obj_or_list(
         const json::value& input,
         const std::string& key,
-        std::vector<Action::Target>& output,
-        const std::vector<Action::Target>& default_value);
+        std::vector<Action::TargetObj>& output,
+        const std::vector<Action::TargetObj>& default_value);
+    static bool parse_action_target_offset_or_list(
+        const json::value& input,
+        const std::string& key,
+        std::vector<cv::Rect>& output,
+        const std::vector<cv::Rect>& default_value);
 };
 
 MAA_RES_NS_END

@@ -26,7 +26,7 @@ json::object PipelineDumper::dump(const PipelineData& pp)
         return { rect.x, rect.y, rect.width, rect.height };
     };
 
-    auto dump_target = [&](const Action::Target& target) -> PipelineV2::JTarget {
+    auto dump_target = [&](const auto& target) -> PipelineV2::JTarget {
         switch (target.type) {
         case Action::Target::Type::Self:
             return true;
@@ -44,18 +44,18 @@ json::object PipelineDumper::dump(const PipelineData& pp)
         }
     };
 
-    auto dump_target_array = [&](const std::vector<Action::Target>& vec) -> std::vector<PipelineV2::JTarget> {
-        std::vector<PipelineV2::JTarget> result(vec.size());
+    auto dump_target_obj_array = [&](const std::vector<Action::TargetObj>& vec) -> std::vector<PipelineV2::JTarget> {
+        std::vector<PipelineV2::JTarget> result;
         for (const auto& target : vec) {
             result.emplace_back(dump_target(target));
         }
         return result;
     };
 
-    auto dump_target_offset_array = [&](const std::vector<Action::Target>& vec) -> std::vector<PipelineV2::JRect> {
-        std::vector<PipelineV2::JRect> result(vec.size());
-        for (const auto& target : vec) {
-            result.emplace_back(dump_rect(target.offset));
+    auto dump_rect_array = [&](const std::vector<cv::Rect>& vec) -> std::vector<PipelineV2::JRect> {
+        std::vector<PipelineV2::JRect> result;
+        for (const auto& rect : vec) {
+            result.emplace_back(dump_rect(rect));
         }
         return result;
     };
@@ -231,9 +231,11 @@ json::object PipelineDumper::dump(const PipelineData& pp)
             .starting = 0,
             .begin = dump_target(param.begin),
             .begin_offset = dump_rect(param.begin.offset),
-            .end = dump_target_array(param.end),
-            .end_offset = dump_target_offset_array(param.end),
+            .end = dump_target_obj_array(param.end),
+            .end_offset = dump_rect_array(param.end_offset),
+            .end_hold = param.end_hold,
             .duration = param.duration,
+            .only_hover = param.only_hover,
         };
     } break;
 
@@ -246,10 +248,12 @@ json::object PipelineDumper::dump(const PipelineData& pp)
                     .starting = s.starting,
                     .begin = dump_target(s.begin),
                     .begin_offset = dump_rect(s.begin.offset),
-                    .end = dump_target_array(s.end),
-                    .end_offset = dump_target_offset_array(s.end),
+                    .end = dump_target_obj_array(s.end),
+                    .end_offset = dump_rect_array(s.end_offset),
+                    .end_hold = s.end_hold,
                     .duration = s.duration,
-                });
+                .only_hover = s.only_hover,
+            });
         }
         data.action.param = std::move(jswipes);
     } break;
