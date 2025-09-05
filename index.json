@@ -1,5 +1,5 @@
 {
-	"Version": "(main) v4.5.0-beta.2",
+	"Version": "(main) v4.5.0-beta.3",
 	"Compounds": {
 		"MaaAgentClientAPI.h": {
 			"Location": "include/MaaAgentClient/MaaAgentClientAPI.h",
@@ -5928,7 +5928,7 @@
 					"Description": {
 						"Brief": "Message for the controller actions.",
 						"Details": [
-							"payload: { ctrl_id: number, uuid: string, action: string, }"
+							"payload: { ctrl_id: number, uuid: string, action: string, param: object, }"
 						],
 						"Deprecated": null
 					},
@@ -5938,7 +5938,7 @@
 					"Description": {
 						"Brief": "Message for the controller actions.",
 						"Details": [
-							"payload: { ctrl_id: number, uuid: string, action: string, }"
+							"payload: { ctrl_id: number, uuid: string, action: string, param: object, }"
 						],
 						"Deprecated": null
 					},
@@ -5948,7 +5948,7 @@
 					"Description": {
 						"Brief": "Message for the controller actions.",
 						"Details": [
-							"payload: { ctrl_id: number, uuid: string, action: string, }"
+							"payload: { ctrl_id: number, uuid: string, action: string, param: object, }"
 						],
 						"Deprecated": null
 					},
