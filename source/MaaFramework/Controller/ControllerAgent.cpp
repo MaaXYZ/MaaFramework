@@ -260,6 +260,8 @@ bool ControllerAgent::stop_app(AppParam p)
 
 MaaCtrlId ControllerAgent::post(Action action)
 {
+    LogInfo << VAR(action.type) << VAR(action.param);
+
     if (!check_stop()) {
         return MaaInvalidId;
     }
@@ -753,13 +755,15 @@ bool ControllerAgent::run_action(typename AsyncRunner<Action>::Id id, Action act
         notify = focus_ids_.erase(id) > 0;
     }
 
-    std::stringstream ss;
-    ss << action;
     const json::value cb_detail = {
         { "ctrl_id", id },
         { "uuid", get_uuid() },
-        { "action", std::move(ss).str() },
+        { "action", action.type },
+        { "param", action.param },
     };
+
+    LogInfo << cb_detail;
+
     if (notify) {
         notifier_.notify(MaaMsg_Controller_Action_Starting, cb_detail);
     }
@@ -996,9 +1000,9 @@ bool ControllerAgent::set_image_use_raw_size(MaaOptionValue value, MaaOptionValu
     return true;
 }
 
-std::ostream& operator<<(std::ostream& os, const Action& action)
+std::ostream& operator<<(std::ostream& os, const Action::Type& action_type)
 {
-    switch (action.type) {
+    switch (action_type) {
     case Action::Type::connect:
         os << "connect";
         break;

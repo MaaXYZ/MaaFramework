@@ -5,13 +5,12 @@
 #include <set>
 #include <variant>
 
-#include <meojson/json.hpp>
-
 #include "Base/AsyncRunner.hpp"
 #include "Common/MaaTypes.h"
 #include "ControlUnit/ControlUnitAPI.h"
 #include "Utils/MessageNotifier.hpp"
 #include "Utils/NoWarningCVMat.hpp"
+#include "Utils/JsonExt.hpp"
 
 MAA_RES_NS_BEGIN
 class ResourceMgr;
@@ -22,12 +21,16 @@ MAA_CTRL_NS_BEGIN
 struct ClickParam
 {
     cv::Point point {};
+
+    MEO_TOJSON(point);
 };
 
 struct LongPressParam
 {
     cv::Point point {};
     uint duration = 0;
+
+    MEO_TOJSON(point, duration);
 };
 
 struct SwipeParam
@@ -38,11 +41,15 @@ struct SwipeParam
     std::vector<uint> duration;
     bool only_hover = false;
     uint starting = 0;
+
+    MEO_TOJSON(starting, begin, end, end_hold, duration, only_hover);
 };
 
 struct MultiSwipeParam
 {
     std::vector<SwipeParam> swipes;
+
+    MEO_TOJSON(swipes);
 };
 
 struct TouchParam
@@ -50,31 +57,40 @@ struct TouchParam
     int contact = 0;
     cv::Point point {};
     int pressure = 0;
+
+    MEO_TOJSON(contact, point, pressure);
 };
 
 struct ClickKeyParam
 {
     std::vector<int> keycode;
+
+    MEO_TOJSON(keycode);
 };
 
 struct LongPressKeyParam
 {
     std::vector<int> keycode;
     uint duration = 0;
+
+    MEO_TOJSON(keycode, duration);
 };
 
 struct InputTextParam
 {
     std::string text;
+
+    MEO_TOJSON(text);
 };
 
 struct AppParam
 {
     std::string package;
+
+    MEO_TOJSON(package);
 };
 
 using Param = std::variant<
-    std::monostate,
     ClickParam,
     LongPressParam,
     SwipeParam,
@@ -111,7 +127,7 @@ struct Action
     Param param;
 };
 
-std::ostream& operator<<(std::ostream& os, const Action& action);
+std::ostream& operator<<(std::ostream& os, const Action::Type& action);
 
 class ControllerAgent : public MaaController
 {

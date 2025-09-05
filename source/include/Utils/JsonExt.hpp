@@ -43,6 +43,22 @@ public:
 };
 
 template <>
+class jsonization<cv::Point>
+{
+public:
+    json::value to_json(const cv::Point& point) const { return json::array { point.x, point.y }; }
+
+    bool check_json(const json::value& json) const { return json.is<std::vector<int>>() && json.as_array().size() == 2; }
+
+    bool from_json(const json::value& json, cv::Point& point) const
+    {
+        auto arr = json.as<std::vector<int>>();
+        point = cv::Point(arr[0], arr[1]);
+        return true;
+    }
+};
+
+template <>
 class jsonization<cv::Rect>
 {
 public:
