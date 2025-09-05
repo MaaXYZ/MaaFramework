@@ -301,14 +301,16 @@ bool ControllerAgent::handle_click(const ClickParam& param)
         return false;
     }
 
+    cv::Point point = preproc_touch_point(param.point);
+
     bool ret = false;
     if (control_unit_->is_touch_availabled()) {
-        ret = control_unit_->touch_down(0, param.point.x, param.point.y, 1);
+        ret = control_unit_->touch_down(0, point.x, point.y, 1);
         std::this_thread::yield();
         ret &= control_unit_->touch_up(0);
     }
     else {
-        ret = control_unit_->click(param.point.x, param.point.y);
+        ret = control_unit_->click(point.x, point.y);
     }
 
     return ret;
@@ -321,15 +323,17 @@ bool ControllerAgent::handle_long_press(const LongPressParam& param)
         return false;
     }
 
+    cv::Point point = preproc_touch_point(param.point);
+
     bool ret = false;
     if (control_unit_->is_touch_availabled()) {
-        ret = control_unit_->touch_down(0, param.point.x, param.point.y, 1);
+        ret = control_unit_->touch_down(0, point.x, point.y, 1);
         std::this_thread::sleep_for(std::chrono::milliseconds(param.duration));
         ret &= control_unit_->touch_up(0);
     }
     else {
         LogWarn << "long press not supported, use click instead";
-        ret = control_unit_->click(param.point.x, param.point.y);
+        ret = control_unit_->click(point.x, point.y);
     }
 
     return ret;
@@ -347,7 +351,7 @@ bool ControllerAgent::handle_swipe(const SwipeParam& param)
         LogWarn << "touch not supported, use swipe instead. some features can not work";
     }
 
-    cv::Point begin = param.begin;
+    cv::Point begin = preproc_touch_point(param.begin);
     bool ret = !param.end.empty();
 
     if (!param.only_hover && touch_availabled) {
@@ -355,7 +359,7 @@ bool ControllerAgent::handle_swipe(const SwipeParam& param)
     }
 
     for (size_t i = 0; i < param.end.size(); ++i) {
-        const cv::Point& end = param.end.at(i);
+        const cv::Point& end = preproc_touch_point(param.end.at(i));
         const uint duration = param.duration.empty() ? 200 : (i < param.duration.size()) ? param.duration.at(i) : param.duration.back();
         const uint end_hold = param.end_hold.empty() ? 0 : (i < param.end_hold.size()) ? param.end_hold.at(i) : param.end_hold.back();
 
@@ -441,9 +445,9 @@ bool ControllerAgent::handle_multi_swipe(const MultiSwipeParam& param)
     for (size_t s_i = 0; s_i < param.swipes.size(); ++s_i) {
         const SwipeParam& s = param.swipes.at(s_i);
 
-        cv::Point begin = s.begin;
+        cv::Point begin = preproc_touch_point(s.begin);
         for (size_t e_i = 0; e_i < s.end.size(); ++e_i) {
-            const cv::Point& end = s.end.at(e_i);
+            const cv::Point& end = preproc_touch_point(s.end.at(e_i));
             const uint duration = s.duration.empty() ? 200 : (e_i < s.duration.size()) ? s.duration.at(e_i) : s.duration.back();
             const uint end_hold = s.end_hold.empty() ? 0 : (e_i < s.end_hold.size()) ? s.end_hold.at(e_i) : s.end_hold.back();
 
@@ -535,7 +539,8 @@ bool ControllerAgent::handle_touch_down(const TouchParam& param)
         return false;
     }
 
-    bool ret = control_unit_->touch_down(param.contact, param.point.x, param.point.y, param.pressure);
+    cv::Point point = preproc_touch_point(param.point);
+    bool ret = control_unit_->touch_down(param.contact, point.x, point.y, param.pressure);
 
     return ret;
 }
@@ -552,7 +557,8 @@ bool ControllerAgent::handle_touch_move(const TouchParam& param)
         return false;
     }
 
-    bool ret = control_unit_->touch_move(param.contact, param.point.x, param.point.y, param.pressure);
+    cv::Point point = preproc_touch_point(param.point);
+    bool ret = control_unit_->touch_move(param.contact, point.x, point.y, param.pressure);
 
     return ret;
 }
@@ -827,7 +833,7 @@ bool ControllerAgent::run_action(typename AsyncRunner<Action>::Id id, Action act
     return ret;
 }
 
-std::pair<int, int> ControllerAgent::preproc_touch_point(int x, int y)
+cv::Point ControllerAgent::preproc_touch_point(const cv::Point& p)
 {
     if (image_target_width_ == 0 || image_target_height_ == 0) {
         LogWarn << "Invalid image target size" << VAR(image_target_width_) << VAR(image_target_height_);
@@ -840,8 +846,8 @@ std::pair<int, int> ControllerAgent::preproc_touch_point(int x, int y)
     double scale_width = static_cast<double>(image_raw_width_) / image_target_width_;
     double scale_height = static_cast<double>(image_raw_height_) / image_target_height_;
 
-    int proced_x = static_cast<int>(std::round(x * scale_width));
-    int proced_y = static_cast<int>(std::round(y * scale_height));
+    int proced_x = static_cast<int>(std::round(p.x * scale_width));
+    int proced_y = static_cast<int>(std::round(p.y * scale_height));
 
     return { proced_x, proced_y };
 }

@@ -188,7 +188,7 @@ private:
 
 private:
     bool run_action(typename AsyncRunner<Action>::Id id, Action action);
-    std::pair<int, int> preproc_touch_point(int x, int y);
+    cv::Point preproc_touch_point(const cv::Point& p);
     bool postproc_screenshot(const cv::Mat& raw);
     bool calc_target_image_size();
     void clear_target_image_size();
