@@ -9,10 +9,15 @@
 
 MAA_CTRL_UNIT_NS_BEGIN
 
+std::string MtouchHelper::type_name() const
+{
+    return typeid(this).name();
+}
+
 bool MtouchHelper::read_info()
 {
     if (!pipe_ios_) {
-        LogError << "pipe_ios_ is nullptr";
+        LogError << type_name() << "pipe_ios_ is nullptr";
         return false;
     }
 
@@ -22,10 +27,10 @@ bool MtouchHelper::read_info()
     std::string info = pipe_ios_->read_until(kFlag, 1s);
 
     if (!info.ends_with(kFlag)) {
-        LogError << "failed to read info";
+        LogError << type_name() << "failed to read info";
         return false;
     }
-    LogInfo << VAR(info);
+    LogInfo << type_name() << VAR(info);
 
     int contact = 0;
     int x = 0;
@@ -38,7 +43,7 @@ bool MtouchHelper::read_info()
     }
 
     if (!request_display_info()) {
-        LogWarn << "failed to request display info";
+        LogWarn << type_name() << "failed to request display info";
         return false;
     }
 
@@ -49,8 +54,8 @@ bool MtouchHelper::read_info()
     yscale_ = static_cast<double>(touch_height_) / display_height_;
     press_ = pressure;
 
-    LogInfo << VAR(display_width_) << VAR(display_height_) << VAR(touch_width_) << VAR(touch_height_) << VAR(xscale_) << VAR(yscale_)
-            << VAR(press_) << VAR(orientation_);
+    LogInfo << type_name() << VAR(display_width_) << VAR(display_height_) << VAR(touch_width_) << VAR(touch_height_) << VAR(xscale_)
+            << VAR(yscale_) << VAR(press_) << VAR(orientation_);
 
     return true;
 }
@@ -59,7 +64,7 @@ bool MtouchHelper::request_display_info()
 {
     auto resolution_opt = device_info_->request_resolution();
     if (!resolution_opt) {
-        LogError << "failed to request resolution";
+        LogError << type_name() << "failed to request resolution";
         return false;
     }
 
@@ -69,7 +74,7 @@ bool MtouchHelper::request_display_info()
 
     auto orientation_opt = device_info_->request_orientation();
     if (!orientation_opt) {
-        LogWarn << "failed to request orientation";
+        LogWarn << type_name() << "failed to request orientation";
         return true;
     }
 
@@ -80,14 +85,14 @@ bool MtouchHelper::request_display_info()
 
 bool MtouchHelper::click(int x, int y)
 {
-    LogError << "deprecated" << VAR(x) << VAR(y);
+    LogError << type_name() << "deprecated" << VAR(x) << VAR(y);
 
     return false;
 }
 
 bool MtouchHelper::swipe(int x1, int y1, int x2, int y2, int duration)
 {
-    LogError << "deprecated" << VAR(x1) << VAR(y1) << VAR(x2) << VAR(y2) << VAR(duration);
+    LogError << type_name() << "deprecated" << VAR(x1) << VAR(y1) << VAR(x2) << VAR(y2) << VAR(duration);
 
     return false;
 }
@@ -95,18 +100,18 @@ bool MtouchHelper::swipe(int x1, int y1, int x2, int y2, int duration)
 bool MtouchHelper::touch_down(int contact, int x, int y, int pressure)
 {
     if (!pipe_ios_) {
-        LogError << "pipe_ios_ is nullptr";
+        LogError << type_name() << "pipe_ios_ is nullptr";
         return false;
     }
 
     auto [touch_x, touch_y] = screen_to_touch(x, y);
 
-    LogInfo << VAR(contact) << VAR(x) << VAR(y) << VAR(touch_x) << VAR(touch_y);
+    LogInfo << type_name() << VAR(contact) << VAR(x) << VAR(y) << VAR(touch_x) << VAR(touch_y);
 
     bool ret = pipe_ios_->write(std::format(kDownFormat, contact, touch_x, touch_y, pressure));
 
     if (!ret) {
-        LogError << "failed to write";
+        LogError << type_name() << "failed to write";
         return false;
     }
 
@@ -116,7 +121,7 @@ bool MtouchHelper::touch_down(int contact, int x, int y, int pressure)
 bool MtouchHelper::touch_move(int contact, int x, int y, int pressure)
 {
     if (!pipe_ios_) {
-        LogError << "pipe_ios_ is nullptr";
+        LogError << type_name() << "pipe_ios_ is nullptr";
         return false;
     }
 
@@ -127,7 +132,7 @@ bool MtouchHelper::touch_move(int contact, int x, int y, int pressure)
     bool ret = pipe_ios_->write(std::format(kMoveFormat, contact, touch_x, touch_y, pressure));
 
     if (!ret) {
-        LogError << "failed to write";
+        LogError << type_name() << "failed to write";
         return false;
     }
 
@@ -141,12 +146,12 @@ bool MtouchHelper::touch_up(int contact)
         return false;
     }
 
-    LogInfo << VAR(contact);
+    LogInfo << type_name() << VAR(contact);
 
     bool ret = pipe_ios_->write(std::format(kUpFormat, contact));
 
     if (!ret) {
-        LogError << "failed to write";
+        LogError << type_name() << "failed to write";
         return false;
     }
 

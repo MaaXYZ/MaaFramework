@@ -36,6 +36,8 @@ protected:
     virtual std::pair<int, int> screen_to_touch(int x, int y) = 0;
     virtual std::pair<int, int> screen_to_touch(double x, double y) = 0;
 
+    virtual std::string type_name() const;
+
     // https://github.com/openstf/minitouch#writable-to-the-socket
     static constexpr std::string_view kDownFormat = "d {} {} {} {}\nc\n";
     static constexpr std::string_view kMoveFormat = "m {} {} {} {}\nc\n";
