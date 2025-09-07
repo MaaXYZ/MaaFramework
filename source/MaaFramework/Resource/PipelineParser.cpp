@@ -1436,7 +1436,7 @@ bool PipelineParser::parse_action_target_offset_or_list(
     }
     else {
         cv::Rect res;
-        if (!parse_rect(input, res)) {
+        if (!parse_rect(*offset_opt, res)) {
             LogError << "failed to parse_target_offset" << VAR(input);
             return false;
         }
