@@ -56,6 +56,8 @@ bool get_and_check_value_or_array(
     std::vector<OutT>& output,
     const std::vector<OutT>& default_value)
 {
+    output.clear();
+
     auto opt = input.find(key);
     if (!opt) {
         output = default_value;
@@ -63,7 +65,6 @@ bool get_and_check_value_or_array(
     }
 
     if (opt->is_array()) {
-        output.clear();
         for (const auto& item : opt->as_array()) {
             if (!item.is<OutT>()) {
                 LogError << "type error" << VAR(key) << VAR(input);
@@ -90,13 +91,14 @@ bool get_multi_keys_and_check_value_or_array(
     std::vector<OutT>& output,
     const std::vector<OutT>& default_value)
 {
+    output.clear();
+
     for (const auto& k : keys) {
         auto opt = input.find(k);
         if (!opt) {
             continue;
         }
         else if (opt->is_array()) {
-            output.clear();
             for (const auto& item : opt->as_array()) {
                 if (!item.is<OutT>()) {
                     LogError << "type error" << VAR(keys) << VAR(input);
@@ -588,6 +590,8 @@ bool PipelineParser::parse_ocrer_param(
         return false;
     }
 
+    output.replace.clear();
+
     if (auto replace_opt = input.find("replace")) {
         auto append_repalce = [&](const json::value& in) {
             auto pair = in.as<std::array<std::string, 2>>();
@@ -791,6 +795,8 @@ bool PipelineParser::parse_color_matcher_param(
         LogError << "bad size" << VAR(lower.size()) << VAR(upper.size());
         return false;
     }
+
+    output.range.clear();
 
     for (size_t i = 0; i != lower.size(); ++i) {
         constexpr int kMaxChannel = 4;
@@ -1320,7 +1326,8 @@ bool PipelineParser::parse_rect(const json::value& input_rect, cv::Rect& output)
     return true;
 }
 
-bool PipelineParser::parse_target_variant(const json::value& input_target, Action::Target& output)
+template <typename TargetType>
+bool PipelineParser::parse_target_variant(const json::value& input_target, TargetType& output)
 {
     using namespace Action;
 
@@ -1379,12 +1386,14 @@ bool PipelineParser::parse_action_target_obj_or_list(
     std::vector<Action::TargetObj>& output,
     const std::vector<Action::TargetObj>& default_value)
 {
+    output.clear();
+
     if (auto param_opt = input.find(key); !param_opt) {
         output = default_value;
     }
     else if (param_opt->is_array() && !param_opt->is<std::array<int, 4>>()) {
         for (const auto& val : param_opt->as_array()) {
-            Action::Target res;
+            Action::TargetObj res;
             if (!parse_target_variant(val, res)) {
                 LogError << "failed to parse_target_variant" << VAR(val);
                 return false;
@@ -1393,7 +1402,7 @@ bool PipelineParser::parse_action_target_obj_or_list(
         }
     }
     else {
-        Action::Target res;
+        Action::TargetObj res;
         if (!parse_target_variant(*param_opt, res)) {
             LogError << "failed to parse_target_variant" << VAR(*param_opt);
             return false;
@@ -1410,6 +1419,8 @@ bool PipelineParser::parse_action_target_offset_or_list(
     std::vector<cv::Rect>& output,
     const std::vector<cv::Rect>& default_value)
 {
+    output.clear();
+
     if (auto offset_opt = input.find(key); !offset_opt) {
         output = default_value;
     }
