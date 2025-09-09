@@ -4,6 +4,7 @@
 #include <string>
 
 #include <meojson/json.hpp>
+#include <variant>
 
 #include "Utils/NoWarningCVMat.hpp"
 
@@ -25,6 +26,17 @@ public:
         path = MAA_NS::path(json.as_string());
         return true;
     }
+};
+
+template <>
+class jsonization<std::monostate>
+{
+public:
+    json::value to_json(const std::monostate&) const { return {}; }
+
+    bool check_json(const json::value& json) const { return json.is_null(); }
+
+    bool from_json(const json::value& json, std::monostate&) const { return check_json(json); }
 };
 
 template <>
