@@ -38,25 +38,85 @@ class ImageJob extends Job<maa.CtrlId, JobSource<maa.CtrlId>> {
     }
 }
 
+type Point = [x: number, y: number]
+
+export type SwipeParam = {
+    begin: Point
+    end: Point[]
+    end_hold: number[]
+    duration: number[]
+    only_hover: boolean
+    starting: number
+}
+
 export type ControllerNotify = {
     msg: 'Action.Starting' | 'Action.Succeeded' | 'Action.Failed'
-    action:
-        | 'connect'
-        | 'click'
-        | 'swipe'
-        | 'touch_down'
-        | 'touch_move'
-        | 'touch_up'
-        | 'click_key'
-        | 'input_text'
-        | 'screencap'
-        | 'start_app'
-        | 'stop_app'
-        | 'key_down'
-        | 'key_up'
     ctrl_id: maa.CtrlId
     uuid: string
-}
+} & (
+    | {
+          action: 'connect'
+          param?: never
+      }
+    | {
+          action: 'click'
+          param: {
+              point: Point
+          }
+      }
+    | {
+          action: 'long_press'
+          param: {
+              point: Point
+              duration: number
+          }
+      }
+    | {
+          action: 'swipe'
+          param: SwipeParam
+      }
+    | {
+          action: 'multi_swipe'
+          param: SwipeParam[]
+      }
+    | {
+          action: 'touch_down' | 'touch_move' | 'touch_up'
+          param: {
+              contact: number
+              point: Point
+              pressure: number
+          }
+      }
+    | {
+          action: 'click_key' | 'key_down' | 'key_up'
+          param: {
+              keycode: number[]
+          }
+      }
+    | {
+          action: 'long_press_key'
+          param: {
+              keycode: number[]
+              duration: number
+          }
+      }
+    | {
+          action: 'input_text'
+          param: {
+              text: string
+          }
+      }
+    | {
+          action: 'screencap'
+          param?: never
+      }
+    | {
+          action: 'start_app' | 'stop_app'
+          param: {
+              package: string
+          }
+      }
+)
 
 export class ControllerBase {
     handle: maa.ControllerHandle
