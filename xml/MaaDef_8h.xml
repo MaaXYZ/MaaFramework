@@ -655,8 +655,7 @@
           <briefdescription>
           </briefdescription>
           <detaileddescription>
-<para>Deprecated Dump all screenshots and actions</para>
-<para>Recording will evaluate to true if any of this or MaaCtrlOptionEnum::MaaCtrlOption_Recording is true. value: bool, eg: true; val_size: sizeof(bool) MaaGlobalOption_Recording = 3, The level of log output to stdout <verbatim>value: MaaLoggingLevel, val_size: sizeof(MaaLoggingLevel)
+<para>The level of log output to stdout <verbatim>value: MaaLoggingLevel, val_size: sizeof(MaaLoggingLevel)
 default value is MaaLoggingLevel_Error 
 </verbatim> </para>
           </detaileddescription>
@@ -667,8 +666,7 @@ default value is MaaLoggingLevel_Error
           <briefdescription>
           </briefdescription>
           <detaileddescription>
-<para>Deprecated Whether to show hit draw</para>
-<para>value: bool, eg: true; val_size: sizeof(bool) MaaGlobalOption_ShowHitDraw = 5, Whether to debug <verbatim>value: bool, eg: true; val_size: sizeof(bool) 
+<para>Whether to debug <verbatim>value: bool, eg: true; val_size: sizeof(bool) 
 </verbatim> </para>
           </detaileddescription>
         </enumvalue>

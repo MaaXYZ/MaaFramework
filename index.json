@@ -1,5 +1,5 @@
 {
-	"Version": "(main) v4.5.2",
+	"Version": "(main) v4.5.3",
 	"Compounds": {
 		"MaaAgentClientAPI.h": {
 			"Location": "include/MaaAgentClient/MaaAgentClientAPI.h",
@@ -3961,9 +3961,9 @@
 						},
 						"MaaGlobalOption_StdoutLevel": {
 							"Description": {
-								"Brief": "Deprecated Dump all screenshots and actions",
+								"Brief": "The level of log output to stdout",
 								"Details": [
-									"Recording will evaluate to true if any of this or MaaCtrlOptionEnum::MaaCtrlOption_Recording is true. value: bool, eg: true; val_size: sizeof(bool) MaaGlobalOption_Recording = 3, The level of log output to stdout value: MaaLoggingLevel, val_size: sizeof(MaaLoggingLevel)",
+									"value: MaaLoggingLevel, val_size: sizeof(MaaLoggingLevel)",
 									"default value is MaaLoggingLevel_Error"
 								],
 								"Deprecated": null
@@ -3972,9 +3972,9 @@
 						},
 						"MaaGlobalOption_DebugMode": {
 							"Description": {
-								"Brief": "Deprecated Whether to show hit draw",
+								"Brief": "Whether to debug",
 								"Details": [
-									"value: bool, eg: true; val_size: sizeof(bool) MaaGlobalOption_ShowHitDraw = 5, Whether to debug value: bool, eg: true; val_size: sizeof(bool)"
+									"value: bool, eg: true; val_size: sizeof(bool)"
 								],
 								"Deprecated": null
 							},
