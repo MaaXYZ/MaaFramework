@@ -305,14 +305,14 @@ bool ControllerAgent::handle_click(const ClickParam& param)
 
     cv::Point point = preproc_touch_point(param.point);
 
-    bool ret = false;
+    bool ret = true;
     if (control_unit_->is_touch_availabled()) {
-        ret = control_unit_->touch_down(0, point.x, point.y, 1);
+        ret &= control_unit_->touch_down(0, point.x, point.y, 1);
         std::this_thread::yield();
         ret &= control_unit_->touch_up(0);
     }
     else {
-        ret = control_unit_->click(point.x, point.y);
+        ret &= control_unit_->click(point.x, point.y);
     }
 
     return ret;
@@ -327,15 +327,15 @@ bool ControllerAgent::handle_long_press(const LongPressParam& param)
 
     cv::Point point = preproc_touch_point(param.point);
 
-    bool ret = false;
+    bool ret = true;
     if (control_unit_->is_touch_availabled()) {
-        ret = control_unit_->touch_down(0, point.x, point.y, 1);
+        ret &= control_unit_->touch_down(0, point.x, point.y, 1);
         std::this_thread::sleep_for(std::chrono::milliseconds(param.duration));
         ret &= control_unit_->touch_up(0);
     }
     else {
         LogWarn << "long press not supported, use click instead";
-        ret = control_unit_->click(point.x, point.y);
+        ret &= control_unit_->click(point.x, point.y);
     }
 
     return ret;
@@ -357,7 +357,7 @@ bool ControllerAgent::handle_swipe(const SwipeParam& param)
     bool ret = !param.end.empty();
 
     if (!param.only_hover && touch_availabled) {
-        ret = control_unit_->touch_down(0, begin.x, begin.y, 1);
+        ret &= control_unit_->touch_down(0, begin.x, begin.y, 1);
     }
 
     for (size_t i = 0; i < param.end.size(); ++i) {
@@ -595,12 +595,12 @@ bool ControllerAgent::handle_click_key(const ClickKeyParam& param)
 
     for (const auto& keycode : param.keycode) {
         if (key_down_up_availabled) {
-            ret = control_unit_->key_down(keycode);
+            ret &= control_unit_->key_down(keycode);
             std::this_thread::yield();
             ret &= control_unit_->key_up(keycode);
         }
         else {
-            ret = control_unit_->click_key(keycode);
+            ret &= control_unit_->click_key(keycode);
         }
     }
 
@@ -620,13 +620,13 @@ bool ControllerAgent::handle_long_press_key(const LongPressKeyParam& param)
 
     for (const auto& keycode : param.keycode) {
         if (key_down_up_availabled) {
-            ret = control_unit_->key_down(keycode);
+            ret &= control_unit_->key_down(keycode);
             std::this_thread::sleep_for(std::chrono::milliseconds(param.duration));
             ret &= control_unit_->key_up(keycode);
         }
         else {
             LogWarn << "long press key not supported, use click instead";
-            ret = control_unit_->click_key(keycode);
+            ret &= control_unit_->click_key(keycode);
         }
     }
 
