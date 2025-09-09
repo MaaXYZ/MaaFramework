@@ -33,6 +33,7 @@ private:
     inline static std::filesystem::path libname_;
     inline static std::mutex mutex_;
 
+    inline static size_t ref_count_ = 0;
     inline static boost::dll::shared_library module_;
 };
 
@@ -55,7 +56,9 @@ inline bool LibraryHolder<T>::load_library(const std::filesystem::path& libname)
             return false;
         }
 
-        LogDebug << "Already loaded";
+        ++ref_count_;
+        LogDebug << "Already loaded" << VAR(libname) << VAR(ref_count_);
+
         return true;
     }
 
@@ -76,6 +79,8 @@ inline bool LibraryHolder<T>::load_library(const std::filesystem::path& libname)
     }
 
     libname_ = libname;
+    ++ref_count_;
+
     return true;
 }
 
@@ -85,6 +90,11 @@ inline void LibraryHolder<T>::unload_library()
     LogFunc << VAR(libname_);
 
     std::unique_lock lock(mutex_);
+
+    if (--ref_count_ > 0) {
+        LogDebug << "Still has references" << VAR(ref_count_);
+        return;
+    }
 
     if (!module_.is_loaded()) {
         LogDebug << "LibraryHolder already unloaded";
