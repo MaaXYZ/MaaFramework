@@ -755,10 +755,12 @@ bool ControllerAgent::run_action(typename AsyncRunner<Action>::Id id, Action act
         notify = focus_ids_.erase(id) > 0;
     }
 
+    std::stringstream ss;
+    ss << action.type;
     const json::value cb_detail = {
         { "ctrl_id", id },
         { "uuid", get_uuid() },
-        { "action", action.type },
+        { "action", std::move(ss).str() },
         { "param", action.param },
     };
 

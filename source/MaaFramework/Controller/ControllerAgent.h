@@ -8,9 +8,9 @@
 #include "Base/AsyncRunner.hpp"
 #include "Common/MaaTypes.h"
 #include "ControlUnit/ControlUnitAPI.h"
+#include "Utils/JsonExt.hpp"
 #include "Utils/MessageNotifier.hpp"
 #include "Utils/NoWarningCVMat.hpp"
-#include "Utils/JsonExt.hpp"
 
 MAA_RES_NS_BEGIN
 class ResourceMgr;
@@ -91,6 +91,7 @@ struct AppParam
 };
 
 using Param = std::variant<
+    std::monostate,
     ClickParam,
     LongPressParam,
     SwipeParam,
