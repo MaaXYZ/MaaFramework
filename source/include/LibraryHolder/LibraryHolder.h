@@ -91,13 +91,13 @@ inline void LibraryHolder<T>::unload_library()
 
     std::unique_lock lock(mutex_);
 
-    if (--ref_count_ > 0) {
-        LogDebug << "Still has references" << VAR(ref_count_);
+    if (!module_.is_loaded()) {
+        LogDebug << "LibraryHolder already unloaded";
         return;
     }
 
-    if (!module_.is_loaded()) {
-        LogDebug << "LibraryHolder already unloaded";
+    if (--ref_count_ > 0) {
+        LogDebug << "Still has references" << VAR(ref_count_);
         return;
     }
 
