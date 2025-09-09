@@ -950,7 +950,7 @@ bool ControllerAgent::request_uuid()
 bool ControllerAgent::init_scale_info()
 {
     // 实际是通过 postproc_screenshot 初始化的
-    return !screencap().empty();
+    return handle_screencap();
 }
 
 bool ControllerAgent::set_image_target_long_side(MaaOptionValue value, MaaOptionValueSize val_size)
