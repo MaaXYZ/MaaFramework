@@ -26,6 +26,7 @@ option(BUILD_DLOPEN_TESTING "build dlopen testing" OFF)
 option(BUILD_NODE_TEST "build node test" OFF)
 
 option(ENABLE_CCACHE "enable ccache if possible" ON)
+option(ENABLE_HASH_VERSION "enable hash version from git" OFF)
 # option(ENABLE_CPP20_MODULES "enable C++20 modules" ON)
 
 set(MAA_PUBLIC_INC ${CMAKE_SOURCE_DIR}/include)
