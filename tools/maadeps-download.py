@@ -9,7 +9,7 @@ from pathlib import Path
 import shutil
 
 REPO = "MaaXYZ/MaaDeps"
-VERSION = "v2.9.2"
+VERSION = "v2.10.0-beta.1"
 
 basedir = Path(__file__).parent.parent
 maadeps_dir = Path(basedir, "3rdparty", "MaaDeps")
