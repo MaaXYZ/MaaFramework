@@ -171,16 +171,6 @@ jobs:
               with:
                   submodules: recursive
 
-            - name: Install cross compile toolchains
-              run: |
-                  python3 3rdparty/MaaDeps/linux-toolchain-download.py ${{ matrix.arch == 'x86_64' && 'x64' || 'arm64' }}
-
-            - name: Install llvm 20
-              run: |
-                  wget https://apt.llvm.org/llvm.sh
-                  chmod +x llvm.sh
-                  sudo ./llvm.sh 20
-
             - name: Setup ccache
               uses: Chocobo1/setup-ccache-action@v1
               with:
