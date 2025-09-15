@@ -18,16 +18,11 @@ MaaController* MaaAdbControllerCreate(
     MaaNotificationCallback notify,
     void* notify_trans_arg)
 {
-    LogFunc << VAR(adb_path) << VAR(address) << VAR(screencap_methods) << VAR(input_methods)
-            << VAR(config) << VAR(agent_path) << VAR_VOIDP(notify) << VAR_VOIDP(notify_trans_arg);
+    LogFunc << VAR(adb_path) << VAR(address) << VAR(screencap_methods) << VAR(input_methods) << VAR(config) << VAR(agent_path)
+            << VAR_VOIDP(notify) << VAR_VOIDP(notify_trans_arg);
 
-    auto control_unit = MAA_NS::AdbControlUnitLibraryHolder::create_control_unit(
-        adb_path,
-        address,
-        screencap_methods,
-        input_methods,
-        config,
-        agent_path);
+    auto control_unit =
+        MAA_NS::AdbControlUnitLibraryHolder::create_control_unit(adb_path, address, screencap_methods, input_methods, config, agent_path);
 
     if (!control_unit) {
         LogError << "Failed to create control unit";
@@ -44,8 +39,7 @@ MaaController* MaaWin32ControllerCreate(
     MaaNotificationCallback notify,
     void* notify_trans_arg)
 {
-    LogFunc << VAR_VOIDP(hWnd) << VAR(screencap_method) << VAR(input_method) << VAR_VOIDP(notify)
-            << VAR_VOIDP(notify_trans_arg);
+    LogFunc << VAR_VOIDP(hWnd) << VAR(screencap_method) << VAR(input_method) << VAR_VOIDP(notify) << VAR_VOIDP(notify_trans_arg);
 
 #ifndef _WIN32
 
@@ -58,10 +52,7 @@ MaaController* MaaWin32ControllerCreate(
         LogWarn << "hWnd is nullptr";
     }
 
-    auto control_unit = MAA_NS::Win32ControlUnitLibraryHolder::create_control_unit(
-        hWnd,
-        screencap_method,
-        input_method);
+    auto control_unit = MAA_NS::Win32ControlUnitLibraryHolder::create_control_unit(hWnd, screencap_method, input_method);
 
     if (!control_unit) {
         LogError << "Failed to create control unit";
@@ -80,8 +71,7 @@ MaaController* MaaMacControllerCreate(
     MaaNotificationCallback notify,
     void* notify_trans_arg)
 {
-    LogFunc << VAR_VOIDP(windowId) << VAR(screencap_method) << VAR(input_method)
-            << VAR_VOIDP(notify) << VAR_VOIDP(notify_trans_arg);
+    LogFunc << VAR(windowId) << VAR(screencap_method) << VAR(input_method) << VAR_VOIDP(notify) << VAR_VOIDP(notify_trans_arg);
 
 #ifndef __APPLE__
 
@@ -95,10 +85,7 @@ MaaController* MaaMacControllerCreate(
         return nullptr;
     }
 
-    auto control_unit = MAA_NS::MacControlUnitLibraryHolder::create_control_unit(
-        windowId,
-        screencap_method,
-        input_method);
+    auto control_unit = MAA_NS::MacControlUnitLibraryHolder::create_control_unit(windowId, screencap_method, input_method);
 
     if (!control_unit) {
         LogError << "Failed to create control unit";
@@ -116,16 +103,14 @@ MaaController* MaaCustomControllerCreate(
     MaaNotificationCallback notify,
     void* notify_trans_arg)
 {
-    LogFunc << VAR(controller) << VAR(controller_arg) << VAR_VOIDP(notify)
-            << VAR_VOIDP(notify_trans_arg);
+    LogFunc << VAR(controller) << VAR(controller_arg) << VAR_VOIDP(notify) << VAR_VOIDP(notify_trans_arg);
 
     if (!controller) {
         LogError << "controller is null";
         return nullptr;
     }
 
-    auto control_unit =
-        MAA_NS::CustomControlUnitLibraryHolder::create_control_unit(controller, controller_arg);
+    auto control_unit = MAA_NS::CustomControlUnitLibraryHolder::create_control_unit(controller, controller_arg);
 
     if (!control_unit) {
         LogError << "Failed to create control unit";
@@ -143,8 +128,7 @@ MaaController* MaaDbgControllerCreate(
     MaaNotificationCallback notify,
     void* notify_trans_arg)
 {
-    LogFunc << VAR(read_path) << VAR(write_path) << VAR(type) << VAR_VOIDP(notify)
-            << VAR_VOIDP(notify_trans_arg);
+    LogFunc << VAR(read_path) << VAR(write_path) << VAR(type) << VAR_VOIDP(notify) << VAR_VOIDP(notify_trans_arg);
 
     std::ignore = write_path;
     std::ignore = config;
