@@ -1,7 +1,8 @@
 /**
  * @file MaaController.h
  * @author
- * @brief The controller interface. See \ref MaaControllerPostRequest for details on how to post requests to the controller.
+ * @brief The controller interface. See \ref MaaControllerPostRequest for details on how to post
+ * requests to the controller.
  *
  * @copyright Copyright (c) 2024
  *
@@ -35,6 +36,13 @@ extern "C"
         void* hWnd,
         MaaWin32ScreencapMethod screencap_method,
         MaaWin32InputMethod input_method,
+        MaaNotificationCallback notify,
+        void* notify_trans_arg);
+
+    MAA_FRAMEWORK_API MaaController* MaaMacControllerCreate(
+        uint32_t windowId,
+        MaaMacScreencapMethod screencap_method,
+        MaaMacInputMethod input_method,
         MaaNotificationCallback notify,
         void* notify_trans_arg);
 

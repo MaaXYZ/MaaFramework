@@ -55,6 +55,12 @@ public:
     virtual ~Win32ControlUnitAPI() = default;
 };
 
+class MacControlUnitAPI : public ControlUnitAPI
+{
+public:
+    virtual ~MacControlUnitAPI() = default;
+};
+
 MAA_CTRL_UNIT_NS_END
 
 using MaaControlUnitHandle = MAA_CTRL_UNIT_NS::ControlUnitAPI*;

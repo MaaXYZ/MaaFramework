@@ -8,6 +8,10 @@ if(WITH_WIN32_CONTROLLER)
     add_subdirectory(MaaWin32ControlUnit)
 endif()
 
+if(WITH_MAC_CONTROLLER)
+    add_subdirectory(MaaMacControlUnit)
+endif()
+
 if(WITH_DBG_CONTROLLER)
     add_subdirectory(MaaDbgControlUnit)
 endif()

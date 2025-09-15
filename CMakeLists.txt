@@ -14,6 +14,7 @@ set(Boost_NO_WARN_NEW_VERSIONS ON)
 
 option(WITH_ADB_CONTROLLER "build with adb controller" ON)
 option(WITH_WIN32_CONTROLLER "build with win32 controller" ON)
+option(WITH_MAC_CONTROLLER "build with mac controller" ON)
 option(WITH_DBG_CONTROLLER "build with debugging controller" ON)
 option(WITH_CUSTOM_CONTROLLER "build with custom controller" ON)
 option(WITH_NODEJS_BINDING "build with nodejs binding" OFF)
@@ -49,6 +50,11 @@ endif()
 if(WITH_WIN32_CONTROLLER AND NOT WIN32)
     message(STATUS "Not on Windows, disable WITH_WIN32_CONTROLLER")
     set(WITH_WIN32_CONTROLLER OFF)
+endif()
+
+if(WITH_MAC_CONTROLLER AND NOT APPLE)
+    message(STATUS "Not on MacOS, disable WITH_MAC_CONTROLLER")
+    set(WITH_MAC_CONTROLLER OFF)
 endif()
 
 find_package(OpenCV REQUIRED COMPONENTS core imgproc imgcodecs)
@@ -132,3 +138,4 @@ if(EXISTS ${CMAKE_CURRENT_LIST_DIR}/export_targets.cmake)
     #
     # cmake-format: on
 endif()
+add_subdirectory(test/dummy)
