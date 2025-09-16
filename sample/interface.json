@@ -35,6 +35,7 @@
             "type": "Adb",
             "display_short_side": 720, // 默认缩放分辨率，long 和 short 二选一即可，默认 short 720
             // "display_long_side": 1080,
+            "display_raw": false, // 使用原始分辨率截图，和上面的long/short冲突
         },
         {
             "name": "Windows",
