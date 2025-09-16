@@ -19,8 +19,6 @@
     "license": "MIT", // 许可证，显示在“关于”里，应支持 文件名、URL、字符串，同时内容支持 markdown
     "welcome": "欢迎使用MAA!", // 第一次使用软件时，弹窗显示。描述应支持 文件名、URL、字符串，同时内容支持 markdown。弹窗完记录一下显示的内容，后面更新如果发现变了，就再弹窗显示新的
     "description": "MaaFramework is a framework for building automation applications.", // “关于”里显示的，应支持 文件名、URL、字符串，同时内容支持 markdown
-    "display_short_side": 720, // 默认缩放分辨率，long 和 short 二选一即可，默认 short 720
-    // "display_long_side": 1080,
     "agent": {
         "child_exec": "python",
         "child_args": [
@@ -34,7 +32,9 @@
             // 所有有 name 的地方都要支持 label
             "description": "通过 ADB 连接安卓设备", // 描述，应支持 文件名、URL、字符串，同时内容支持 markdown
             "icon": "adb.png", // 图标，可选
-            "type": "Adb"
+            "type": "Adb",
+            "display_short_side": 720, // 默认缩放分辨率，long 和 short 二选一即可，默认 short 720
+            // "display_long_side": 1080,
         },
         {
             "name": "Windows",
