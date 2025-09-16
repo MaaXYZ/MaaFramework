@@ -5,6 +5,7 @@
         "English": "interface_en.json"
     },
     "name": "MyDemo3", // 项目id
+    // "name": "$MyDemo3",  // 如果一个用于UI显示的字符串以$开头，表示是国际化字符串，需要去翻译json里读取实际值再显示
     "title": "Demo3 v1.0.0", // 窗口标题，给什么就显示什么，UI 不要往上加别的东西。默认 null，则使用 name 和 version 拼接
     "icon": "demo3.png", // 应用图标，若不指定，则使用默认的图标
     // "icon": "$demo3-png", // 应用图标，若不指定，则使用默认的图标
@@ -151,7 +152,7 @@
         },
         "自定义关卡": {
             "type": "input", // 用户输入类型
-            "name": "自定义关卡",
+            "label": "自定义关卡",
             "description": "自己选打什么关", // 描述，应支持 文件名、URL、字符串，同时内容支持 markdown
             "icon": "扳手.png", // 图标，可选
             "input": [
