@@ -5,7 +5,8 @@
         "en"
     ],
     "name": "MyDemo3", // 项目名。用户 GUI 称呼当前资源
-    "name": {          // 多语言支持，若仅为字符串，则表示所有语言均使用同一名称。后面所有UI显示文本相关的字段同理。
+    "name": { // 多语言支持，若仅为字符串，则表示所有语言均使用同一名称。
+        // 后面所有name, description 等 UI 显示文本相关的字段同理。
         "en": "MyDemo3",
         "zh": "Demo3"
     },
@@ -17,10 +18,12 @@
     "auto_update_maafw": false, // 是否支持独立更新 MaaFramework，若为 false，则仅跟随资源发布更新 MaaFramework，由资源作者自行在 CI 中指定 MaaFramework 版本。UI 上无 MaaFramework 的更新选项，用户无法自行更新
     "github": "https://github.com/MAA1999/M9A",
     "version": "1.0.0",
-    "contact": "QQ群: 592974962；B站：https://bilibili/xxxx", // 联系方式，显示在“关于”里，应支持 文件名、URL、字符串，同时内容支持 markdown 和 html
-    "license": "MIT", // 许可证，显示在“关于”里，应支持 文件名、URL、字符串，同时内容支持 markdown 和 html
-    "welcome": "Welecome to MaaFramework!", // 第一次使用软件时，弹窗显示。描述应支持 文件名、URL、字符串，同时内容支持 markdown 和 html。弹窗完记录一下显示的内容，后面更新如果发现变了，就再弹窗显示新的
-    "description": "MaaFramework is a framework for building automation applications.", // “关于”里显示的，应支持 文件名、URL、字符串，同时内容支持 markdown 和 html
+    "contact": "QQ群: 592974962；B站：https://bilibili/xxxx", // 联系方式，显示在“关于”里，应支持 文件名、URL、字符串，同时内容支持 markdown
+    "license": "MIT", // 许可证，显示在“关于”里，应支持 文件名、URL、字符串，同时内容支持 markdown
+    "welcome": "Welecome to MaaFramework!", // 第一次使用软件时，弹窗显示。描述应支持 文件名、URL、字符串，同时内容支持 markdown。弹窗完记录一下显示的内容，后面更新如果发现变了，就再弹窗显示新的
+    "description": "MaaFramework is a framework for building automation applications.", // “关于”里显示的，应支持 文件名、URL、字符串，同时内容支持 markdown
+    "display_short_side": 720, // 默认缩放分辨率，long 和 short 二选一即可，默认 short 720
+    // "display_long_side": 1080,
     "agent": {
         "child_exec": "python",
         "child_args": [
@@ -30,7 +33,7 @@
     "controller": [
         {
             "name": "安卓端",
-            "description": "通过 ADB 连接安卓设备", // 描述，应支持 文件名、URL、字符串，同时内容支持 markdown 和 html
+            "description": "通过 ADB 连接安卓设备", // 描述，应支持 文件名、URL、字符串，同时内容支持 markdown
             "icon": "adb.png", // 图标，可选
             "type": "Adb"
         },
@@ -46,7 +49,7 @@
     "resource": [
         {
             "name": "Official",
-            "description": "官服资源", // 描述，应支持 文件名、URL、字符串，同时内容支持 markdown 和 html
+            "description": "官服资源", // 描述，应支持 文件名、URL、字符串，同时内容支持 markdown
             "icon": "official.png", // 图标，可选
             "path": [
                 "{PROJECT_DIR}/resource"
@@ -64,9 +67,8 @@
         {
             "name": "收取荒原",
             "entry": "Wilderness",
-            "force_check": false, // 是否强制选中
             "default_check": true, // 是否默认选中
-            "description": "收取荒原资源，若不勾选，则不会执行此任务", // 任务详细描述，应支持 文件名、URL、字符串，同时内容支持 markdown 和 html
+            "description": "收取荒原资源，若不勾选，则不会执行此任务", // 任务详细描述，应支持 文件名、URL、字符串，同时内容支持 markdown
             "icon": "wilderness.png" // 任务图标，给用户看的
         },
         {
@@ -108,13 +110,18 @@
     ],
     "option": {
         "作战关卡": {
+            "type": "select", // 下拉选项框类型，默认
             "name": "选择作战关卡", // 别名，上面的key相当于 id，这里是显示的名字。若name 为空则显示id
             "description": "选择要刷的关卡", // 描述，应支持 文件名
             "cases": [
                 {
                     "name": "3-9 厄险（百灵百验鸟）",
-                    "description": "刷百灵鸟", // 描述，应支持 文件名、URL、字符串，同时内容支持 markdown 和 html
+                    "description": "刷百灵鸟", // 描述，应支持 文件名、URL、字符串，同时内容支持 markdown
                     "icon": "百灵鸟.png", // 图标，可选
+                    "option": [ // 只有选中了当前 case，才会显示这些选项。这些选项同样放在外面的 option 中，可以无限递归下去
+                        "使用理智药",
+                        "刷完xxx"
+                    ],
                     "pipeline_override": {
                         "EnterTheShow": {
                             "next": "MainChapter_3"
@@ -140,54 +147,54 @@
                             "next": "StageDifficulty_Hard"
                         }
                     }
-                },
-                {
-                    // 若 case 中仅有一个 input 的选项，考虑不显示 checkbox，而是直接显示输入框
-                    "name": "自定义关卡",
-                    "description": "自己选打什么关", // 描述，应支持 文件名、URL、字符串，同时内容支持 markdown 和 html
-                    "icon": "扳手.png", // 图标，可选
-                    "option": [ // 只有选中了当前 case，才会显示这些选项。这些选项同样放在外面的 option 中，可以无限递归下去
-                        "使用理智药",
-                        "刷完xxx"
-                    ],
-                    "input": [
-                        {
-                            "name": "章节号",
-                            "type": "number", // 用户输入类型校验
-                            "default": 4
-                        },
-                        {
-                            "name": "关卡号",
-                            "type": "number" // 若没有 default，则用户必须输入
-                        },
-                        {
-                            "name": "难度",
-                            "type": "string",
-                            "default": "Hard",
-                            "verify": "^(Normal|Hard)$" // 正则表达式校验用户输入
-                        }
-                    ],
-                    "pipeline_override": {
-                        "EnterTheShow": {
-                            "next": "MainChapter_{章节号}"
-                        },
-                        "TargetStageName": {
-                            "expected": "{关卡号}"
-                        },
-                        "StageDifficulty": {
-                            "next": "StageDifficulty_{难度}"
-                        }
-                    }
                 }
             ]
         },
+        "自定义关卡": {
+            "type": "input", // 用户输入类型
+            "name": "自定义关卡",
+            "description": "自己选打什么关", // 描述，应支持 文件名、URL、字符串，同时内容支持 markdown
+            "icon": "扳手.png", // 图标，可选
+            "input": [
+                {
+                    "name": "章节号",
+                    "default": "4",
+                    "pipeline_type": "string", // 拼接到 pipeline_override 中的类型
+                    "verify": "^\\d+$" // 正则表达式校验用户输入
+                },
+                {
+                    "name": "难度",
+                    "default": "Hard",
+                    "pipeline_type": "string",
+                    "verify": "^(Normal|Hard)$" // 正则表达式校验用户输入
+                },
+                {
+                    "name": "超时时间",
+                    "default": "20000",
+                    "pipeline_type": "int",
+                    "verify": "^\\d+$" // 正则表达式校验用户输入
+                }
+            ],
+            "pipeline_override": {
+                "EnterTheShow": {
+                    "next": "MainChapter_{章节号}",
+                    "timeout": "{超时时间}" // 这里会被拼接成 "timeout": 20000
+                },
+                "TargetStageName": {
+                    "expected": "{关卡号}"
+                },
+                "StageDifficulty": {
+                    "next": "StageDifficulty_{难度}"
+                }
+            }
+        },
         "复现次数": {
-            "description": "打几次", // 描述，应支持 文件名、URL、字符串，同时内容支持 markdown 和 html
+            "description": "打几次", // 描述，应支持 文件名、URL、字符串，同时内容支持 markdown
             "icon": "times.png", // 图标，可选
             "cases": [
                 {
                     "name": "x1",
-                    "description": "打1次", // 描述，应支持 文件名、URL、字符串，同时内容支持 markdown 和 html
+                    "description": "打1次", // 描述，应支持 文件名、URL、字符串，同时内容支持 markdown
                     "icon": "once.png", // 图标，可选
                     "pipeline_override": {
                         "SetReplaysTimes": {
