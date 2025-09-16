@@ -110,7 +110,7 @@
     "option": {
         "作战关卡": {
             "type": "select", // 下拉选项框类型，默认
-            "name": "选择作战关卡", // 别名，上面的key相当于 id，这里是显示的名字。若name 为空则显示id
+            "label": "$选择作战关卡",
             "description": "选择要刷的关卡", // 描述，应支持 文件名、URL、字符串，同时内容支持 markdown
             "cases": [
                 {
