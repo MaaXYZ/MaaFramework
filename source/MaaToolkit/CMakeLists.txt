@@ -1,6 +1,11 @@
 file(GLOB_RECURSE maa_toolkit_src *.h *.hpp *.cpp)
 file(GLOB_RECURSE maa_toolkit_header ${MAA_PUBLIC_INC}/MaaToolkit/*)
 
+if(APPLE)
+    file(GLOB_RECURSE maa_toolkit_src_objc *.mm)
+    list(APPEND maa_toolkit_src ${maa_toolkit_src_objc})
+endif()
+
 add_library(MaaToolkit SHARED ${maa_toolkit_src} ${maa_toolkit_header})
 
 target_include_directories(
@@ -15,6 +20,11 @@ target_link_libraries(
 
 if(LINUX)
     target_link_libraries(MaaToolkit PRIVATE pthread dl)
+endif()
+
+if(APPLE)
+    find_library(COCOA_LIBRARY Cocoa)
+    target_link_libraries(MaaToolkit PRIVATE ${COCOA_LIBRARY})
 endif()
 
 add_dependencies(MaaToolkit MaaUtils ProjectInterface LibraryHolder)
