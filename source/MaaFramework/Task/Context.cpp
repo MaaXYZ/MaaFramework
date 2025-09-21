@@ -37,6 +37,11 @@ std::shared_ptr<const Context> Context::getptr() const
     return shared_from_this();
 }
 
+std::shared_ptr<Context> Context::make_clone() const
+{
+    return std::make_shared<Context>(*this);
+}
+
 Context::Context(const Context& other)
     : std::enable_shared_from_this<Context>(other)
     , task_id_(other.task_id_)
@@ -56,7 +61,7 @@ MaaTaskId Context::run_task(const std::string& entry, const json::value& pipelin
         return MaaInvalidId;
     }
 
-    PipelineTask subtask(entry, tasker_, getptr());
+    PipelineTask subtask(entry, tasker_, make_clone());
     bool ov = subtask.override_pipeline(pipeline_override);
     if (!ov) {
         LogError << "failed to override_pipeline" << VAR(entry) << VAR(pipeline_override);
@@ -86,7 +91,7 @@ MaaRecoId Context::run_recognition(const std::string& entry, const json::value& 
 {
     LogFunc << VAR(getptr()) << VAR(entry) << VAR(pipeline_override);
 
-    RecognitionTask subtask(entry, tasker_, getptr());
+    RecognitionTask subtask(entry, tasker_, make_clone());
     bool ov = subtask.override_pipeline(pipeline_override);
     if (!ov) {
         LogError << "failed to override_pipeline" << VAR(entry) << VAR(pipeline_override);
@@ -100,7 +105,7 @@ MaaNodeId
 {
     LogFunc << VAR(getptr()) << VAR(entry) << VAR(pipeline_override) << VAR(box) << VAR(reco_detail);
 
-    ActionTask subtask(entry, tasker_, getptr());
+    ActionTask subtask(entry, tasker_, make_clone());
     bool ov = subtask.override_pipeline(pipeline_override);
     if (!ov) {
         LogError << "failed to override_pipeline" << VAR(entry) << VAR(pipeline_override);
@@ -187,7 +192,7 @@ Context* Context::clone() const
 {
     LogFunc << VAR(getptr());
 
-    auto cloned = std::make_shared<Context>(*this);
+    auto cloned = make_clone();
     auto& ref = clone_holder_.emplace_back(std::move(cloned));
     LogDebug << VAR(getptr()) << VAR(ref);
 
