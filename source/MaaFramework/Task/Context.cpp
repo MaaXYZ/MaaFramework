@@ -190,10 +190,7 @@ bool Context::override_next(const std::string& name, const std::vector<std::stri
 
 Context* Context::clone() const
 {
-    LogFunc << VAR(getptr());
-
-    auto cloned = make_clone();
-    auto& ref = clone_holder_.emplace_back(std::move(cloned));
+    auto& ref = clone_holder_.emplace_back(make_clone());
     LogDebug << VAR(getptr()) << VAR(ref);
 
     return ref.get();
