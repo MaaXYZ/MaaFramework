@@ -417,7 +417,7 @@ bool ResourceMgr::use_directml()
 {
     const auto& providers = available_providers();
     if (!providers.contains(MaaInferenceExecutionProvider_DirectML)) {
-        LogError << "DirectML is not available";
+        LogWarn << "DirectML is not available";
         return false;
     }
 
@@ -429,7 +429,7 @@ bool ResourceMgr::use_directml()
     else if (inference_device_ == MaaInferenceDevice_Auto) {
         auto gpu_id = perfer_gpu();
         if (!gpu_id) {
-            LogError << "No suitable inference GPU for DirectML";
+            LogWarn << "No suitable inference GPU for DirectML";
             return false;
         }
         device_id = *gpu_id;
