@@ -1,5 +1,6 @@
 #pragma once
 
+#include <MaaFramework/MaaAPI.h>
 #include <memory>
 
 #include "LibraryHolder.h"
@@ -10,6 +11,7 @@ MAA_CTRL_UNIT_NS_BEGIN
 class ControlUnitAPI;
 class AdbControlUnitAPI;
 class Win32ControlUnitAPI;
+class MacControlUnitAPI;
 class CustomControlUnitAPI;
 MAA_CTRL_UNIT_NS_END
 
@@ -44,6 +46,19 @@ private:
     inline static const std::string version_func_name_ = "MaaWin32ControlUnitGetVersion";
     inline static const std::string create_func_name_ = "MaaWin32ControlUnitCreate";
     inline static const std::string destroy_func_name_ = "MaaWin32ControlUnitDestroy";
+};
+
+class MacControlUnitLibraryHolder : public LibraryHolder<MacControlUnitLibraryHolder>
+{
+public:
+    static std::shared_ptr<MAA_CTRL_UNIT_NS::ControlUnitAPI>
+        create_control_unit(uint32_t windowId, MaaMacScreencapMethod screencap_method, MaaMacInputMethod input_method);
+
+private:
+    inline static const std::filesystem::path libname_ = MAA_NS::path("MaaMacControlUnit");
+    inline static const std::string version_func_name_ = "MaaMacControlUnitGetVersion";
+    inline static const std::string create_func_name_ = "MaaMacControlUnitCreate";
+    inline static const std::string destroy_func_name_ = "MaaMacControlUnitDestroy";
 };
 
 class DbgControlUnitLibraryHolder : public LibraryHolder<DbgControlUnitLibraryHolder>

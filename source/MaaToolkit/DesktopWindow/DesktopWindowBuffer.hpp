@@ -13,13 +13,13 @@ MAA_TOOLKIT_NS_BEGIN
 struct DesktopWindow
 {
     void* hwnd = nullptr;
-    std::wstring class_name;
-    std::wstring window_name;
+    std::string class_name;
+    std::string window_name;
 };
 
 inline std::ostream& operator<<(std::ostream& os, const DesktopWindow& window)
 {
-    return os << VAR_VOIDP_RAW(window.hwnd) << VAR_RAW(from_u16(window.class_name)) << VAR_RAW(from_u16(window.window_name));
+    return os << VAR_VOIDP_RAW(window.hwnd) << VAR_RAW(window.class_name) << VAR_RAW(window.window_name);
 }
 
 class DesktopWindowBuffer : public MaaToolkitDesktopWindow
@@ -27,8 +27,8 @@ class DesktopWindowBuffer : public MaaToolkitDesktopWindow
 public:
     DesktopWindowBuffer(const DesktopWindow& window)
         : hwnd_(window.hwnd)
-        , class_name_(from_u16(window.class_name))
-        , window_name_(from_u16(window.window_name))
+        , class_name_(window.class_name)
+        , window_name_(window.window_name)
     {
     }
 
