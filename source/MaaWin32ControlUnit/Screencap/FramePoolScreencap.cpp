@@ -166,6 +166,14 @@ bool FramePoolScreencap::init()
 
 void FramePoolScreencap::uninit()
 {
+    if (cap_frame_pool_ && frame_arrived_token_.value) {
+        cap_frame_pool_.FrameArrived(frame_arrived_token_);
+        frame_arrived_token_ = {};
+    }
+    readable_texture_ = nullptr;
+    cap_frame_pool_ = nullptr;
+    cap_session_ = nullptr;
+    latest_frame_ = nullptr;
     texture_desc_ = { 0 };
 }
 
