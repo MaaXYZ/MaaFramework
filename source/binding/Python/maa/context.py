@@ -8,7 +8,7 @@ from .buffer import ImageBuffer, RectBuffer, StringBuffer, StringListBuffer
 from .define import *
 from .library import Library
 from .tasker import Tasker
-from .resource import JPipelineData, _dict_to_dataclass, _dataclass_to_dict
+from .resource import JPipelineData, parse_pipeline_data, _dataclass_to_dict
 from .job import JobWithResult
 
 
@@ -117,9 +117,8 @@ class Context:
             return None
 
         try:
-            json_data = json.loads(data)
-            return _dict_to_dataclass(json_data)
-        except (json.JSONDecodeError, ValueError, TypeError) as e:
+            return parse_pipeline_data(data)
+        except (ValueError, TypeError) as e:
             # Log error for debugging but return None for backward compatibility
             return None
 

@@ -322,8 +322,13 @@ def _dict_to_action_param(param_type: str, param_data: dict) -> JActionParam:
         return JDoNothing()
 
 
-def _dict_to_dataclass(data: dict) -> JPipelineData:
-    """Convert dictionary to JPipelineData dataclass with proper variant types."""
+def parse_pipeline_data(json_str: str) -> JPipelineData:
+    """Parse JSON string to JPipelineData dataclass with proper variant types."""
+    try:
+        data = json.loads(json_str)
+    except json.JSONDecodeError as e:
+        raise ValueError(f"Invalid JSON format: {e}")
+    
     # Convert recognition
     recognition_data = data.get("recognition", {})
     recognition_type = recognition_data.get("type", "")
@@ -523,9 +528,8 @@ class Resource:
             return None
 
         try:
-            json_data = json.loads(data)
-            return _dict_to_dataclass(json_data)
-        except (json.JSONDecodeError, ValueError, TypeError) as e:
+            return parse_pipeline_data(data)
+        except (ValueError, TypeError) as e:
             # Log error for debugging but return None for backward compatibility
             return None
 
