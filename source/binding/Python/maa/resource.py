@@ -2,7 +2,7 @@ import ctypes
 import pathlib
 import json
 from typing import Any, Optional, Union, List
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 
 from .notification_handler import NotificationHandler
 from .define import *
@@ -64,13 +64,13 @@ class JColorMatch:
 class JOCR:
     roi: JTarget
     roi_offset: JRect
-    expected: List[str]
+    expected: List[str] = field(default_factory=list)
     threshold: float = 0
-    replace: List[List[str]]
-    order_by: str
+    replace: List[List[str]] = field(default_factory=list)
+    order_by: str = ""
     index: int = 0
     only_rec: bool = False
-    model: str
+    model: str = ""
 
 
 @dataclass
@@ -79,8 +79,8 @@ class JNeuralNetworkClassify:
     roi_offset: JRect
     labels: List[str]
     model: str
-    expected: List[int]
-    order_by: str
+    expected: List[int] = field(default_factory=list)
+    order_by: str = ""
     index: int = 0
 
 
@@ -90,9 +90,9 @@ class JNeuralNetworkDetect:
     roi_offset: JRect
     labels: List[str]
     model: str
-    expected: List[int]
-    threshold: List[float]
-    order_by: str
+    expected: List[int] = field(default_factory=list)
+    threshold: List[float] = field(default_factory=list)
+    order_by: str = ""
     index: int = 0
 
 
@@ -120,41 +120,41 @@ class JDoNothing:
 @dataclass
 class JClick:
     target: JTarget
-    target_offset: JRect
+    target_offset: JRect = field(default_factory=lambda: [0, 0, 0, 0])
 
 
 @dataclass
 class JLongPress:
     target: JTarget
-    target_offset: JRect
+    target_offset: JRect = field(default_factory=lambda: [0, 0, 0, 0])
     duration: int = 0
 
 
 @dataclass
 class JSwipe:
     starting: int = 0
-    begin: JTarget
-    begin_offset: JRect
-    end: List[JTarget]
-    end_offset: List[JRect]
-    end_hold: List[int]
-    duration: List[int]
+    begin: Optional[JTarget] = None
+    begin_offset: JRect = field(default_factory=lambda: [0, 0, 0, 0])
+    end: List[JTarget] = field(default_factory=list)
+    end_offset: List[JRect] = field(default_factory=list)
+    end_hold: List[int] = field(default_factory=list)
+    duration: List[int] = field(default_factory=list)
     only_hover: bool = False
 
 
 @dataclass
 class JMultiSwipe:
-    swipes: List[JSwipe]
+    swipes: List[JSwipe] = field(default_factory=list)
 
 
 @dataclass
 class JClickKey:
-    key: List[int]
+    key: List[int] = field(default_factory=list)
 
 
 @dataclass
 class JLongPressKey:
-    key: List[int]
+    key: List[int] = field(default_factory=list)
     duration: int = 0
 
 
@@ -181,14 +181,14 @@ class JStopTask:
 @dataclass
 class JCommand:
     exec: str
-    args: List[str]
+    args: List[str] = field(default_factory=list)
     detach: bool = False
 
 
 @dataclass
 class JCustomAction:
     target: JTarget
-    target_offset: JRect
+    target_offset: JRect = field(default_factory=lambda: [0, 0, 0, 0])
     custom_action: str
     custom_action_param: Any
 
@@ -217,7 +217,7 @@ class JAction:
 class JWaitFreezes:
     time: int = 0
     target: Optional[JTarget] = None
-    target_offset: JRect = None
+    target_offset: Optional[JRect] = None
     threshold: float = 0
     method: int = 0
     rate_limit: int = 0
@@ -228,12 +228,12 @@ class JWaitFreezes:
 class JPipelineData:
     recognition: JRecognition
     action: JAction
-    next: List[str] = None
-    interrupt: List[str] = None
+    next: List[str] = field(default_factory=list)
+    interrupt: List[str] = field(default_factory=list)
     is_sub: bool = False
     rate_limit: int = 0
     timeout: int = 0
-    on_error: List[str] = None
+    on_error: List[str] = field(default_factory=list)
     inverse: bool = False
     enabled: bool = False
     pre_delay: int = 0
@@ -345,7 +345,7 @@ def _dict_to_dataclass(data: dict) -> JPipelineData:
         return JWaitFreezes(
             time=data_dict.get("time", 0),
             target=data_dict.get("target"),
-            target_offset=data_dict.get("target_offset", []),
+            target_offset=data_dict.get("target_offset"),
             threshold=data_dict.get("threshold", 0),
             method=data_dict.get("method", 0),
             rate_limit=data_dict.get("rate_limit", 0),
