@@ -243,7 +243,7 @@ class JPipelineData:
     focus: Optional[Any] = None
 
 
-def _dict_to_recognition_param(param_type: str, param_data: dict) -> JRecognitionParam:
+def parse_recognition_param(param_type: str, param_data: dict) -> JRecognitionParam:
     """Convert dict to appropriate JRecognitionParam variant based on type."""
     param_type_map = {
         "DirectHit": JDirectHit,
@@ -283,7 +283,7 @@ def _dict_to_recognition_param(param_type: str, param_data: dict) -> JRecognitio
         return JDirectHit()
 
 
-def _dict_to_action_param(param_type: str, param_data: dict) -> JActionParam:
+def parse_action_param(param_type: str, param_data: dict) -> JActionParam:
     """Convert dict to appropriate JActionParam variant based on type."""
     param_type_map = {
         "DoNothing": JDoNothing,
@@ -333,14 +333,14 @@ def parse_pipeline_data(json_str: str) -> JPipelineData:
     recognition_data = data.get("recognition", {})
     recognition_type = recognition_data.get("type", "")
     recognition_param_data = recognition_data.get("param", {})
-    recognition_param = _dict_to_recognition_param(recognition_type, recognition_param_data)
+    recognition_param = parse_recognition_param(recognition_type, recognition_param_data)
     recognition = JRecognition(type=recognition_type, param=recognition_param)
     
     # Convert action
     action_data = data.get("action", {})
     action_type = action_data.get("type", "")
     action_param_data = action_data.get("param", {})
-    action_param = _dict_to_action_param(action_type, action_param_data)
+    action_param = parse_action_param(action_type, action_param_data)
     action = JAction(type=action_type, param=action_param)
     
     # Convert wait freezes with proper defaults

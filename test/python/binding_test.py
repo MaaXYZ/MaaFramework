@@ -198,10 +198,167 @@ def api_test():
     Toolkit.pi_register_custom_recognition("MyRec", MyRecognition())
     # Toolkit.run_pi_cli("C:/_maafw_testing_/aaabbbccc", ".", True)
 
+    # Test parse_pipeline_data and dump_pipeline_data functions
+    pipeline_data_test(tasker)
+
     global analyzed, runned
     if not analyzed or not runned:
         print("failed to run custom recognition or action")
         raise RuntimeError("failed to run custom recognition or action")
+
+
+
+def pipeline_data_test(tasker: Tasker):
+    """Test parse_pipeline_data and dump_pipeline_data round-trip conversion."""
+    print("test_pipeline_data")
+    
+    # Use the resource directly since it has both override_pipeline and get_node_data
+    resource = tasker.resource
+    
+    # Test 1: Test direct conversion functions first (most reliable)
+    print("  Round 1: Testing direct conversion functions...")
+    from maa.resource import parse_pipeline_data, dump_pipeline_data
+    import json
+    
+    # Test data with various field types - single node data
+    test_node_data = {
+        "recognition": {
+            "type": "TemplateMatch",
+            "param": {
+                "template": ["test.png", "test2.png"],
+                "roi": [0, 0, 100, 100],
+                "roi_offset": [5, 5, -5, -5],
+                "threshold": [0.8, 0.9],
+                "order_by": "score",
+                "index": 1,
+                "method": 3,
+                "green_mask": True
+            }
+        },
+        "action": {
+            "type": "Click",
+            "param": {
+                "target": [50, 50, 20, 20],
+                "target_offset": [2, 2, 0, 0]
+            }
+        },
+        "next": ["NextTask", "FallbackTask"],
+        "interrupt": ["CancelTask"],
+        "timeout": 5000,
+        "enabled": True,
+        "pre_delay": 100,
+        "post_delay": 200
+    }
+    
+    # Convert dict to JSON string and parse
+    json_str = json.dumps(test_node_data, ensure_ascii=False)
+    parsed_data = parse_pipeline_data(json_str)
+    
+    print(f"  Parsed recognition type: {parsed_data.recognition.type}")
+    print(f"  Parsed action type: {parsed_data.action.type}")
+    print(f"  Parsed next tasks: {parsed_data.next}")
+    print(f"  Parsed timeout: {parsed_data.timeout}")
+    
+    # Convert back to JSON string
+    dumped_json = dump_pipeline_data(parsed_data)
+    print(f"  Dumped JSON length: {len(dumped_json)} characters")
+    
+    # Parse again to verify round-trip
+    reparsed_data = parse_pipeline_data(dumped_json)
+    
+    conversion_match = True
+    if parsed_data.recognition.type != reparsed_data.recognition.type:
+        print(f"  ERROR: Recognition type mismatch: {parsed_data.recognition.type} != {reparsed_data.recognition.type}")
+        conversion_match = False
+        
+    if parsed_data.action.type != reparsed_data.action.type:
+        print(f"  ERROR: Action type mismatch: {parsed_data.action.type} != {reparsed_data.action.type}")
+        conversion_match = False
+        
+    if parsed_data.next != reparsed_data.next:
+        print(f"  ERROR: Next tasks mismatch: {parsed_data.next} != {reparsed_data.next}")
+        conversion_match = False
+        
+    if parsed_data.timeout != reparsed_data.timeout:
+        print(f"  ERROR: Timeout mismatch: {parsed_data.timeout} != {reparsed_data.timeout}")
+        conversion_match = False
+    
+    # Test 2: Test with simpler data
+    print("  Round 2: Testing with simple DirectHit + DoNothing...")
+    simple_node_data = {
+        "recognition": {"type": "DirectHit", "param": {}},
+        "action": {"type": "DoNothing", "param": {}},
+        "next": ["Task1"],
+        "enabled": True
+    }
+    
+    simple_json = json.dumps(simple_node_data, ensure_ascii=False)
+    simple_parsed = parse_pipeline_data(simple_json)
+    simple_dumped = dump_pipeline_data(simple_parsed)
+    simple_reparsed = parse_pipeline_data(simple_dumped)
+    
+    simple_match = True
+    if simple_parsed.recognition.type != "DirectHit":
+        print(f"  ERROR: Simple recognition type mismatch: {simple_parsed.recognition.type}")
+        simple_match = False
+    if simple_parsed.action.type != "DoNothing":
+        print(f"  ERROR: Simple action type mismatch: {simple_parsed.action.type}")
+        simple_match = False
+    if simple_parsed.next != simple_reparsed.next:
+        print(f"  ERROR: Simple next tasks mismatch: {simple_parsed.next} != {simple_reparsed.next}")
+        simple_match = False
+    
+    # Test 3: Test field mapping (template -> template_)
+    print("  Round 3: Testing field mapping...")
+    template_data = {
+        "recognition": {
+            "type": "TemplateMatch",
+            "param": {
+                "template": ["field_mapping_test.png"],
+                "roi": [0, 0, 50, 50],
+                "threshold": [0.7]
+            }
+        },
+        "action": {"type": "DoNothing", "param": {}}
+    }
+    
+    template_json = json.dumps(template_data, ensure_ascii=False)
+    template_parsed = parse_pipeline_data(template_json)
+    template_dumped = dump_pipeline_data(template_parsed)
+    
+    # Check if template_ appears in dumped JSON (C++ field name)
+    field_mapping_match = "template_" in template_dumped
+    if not field_mapping_match:
+        print(f"  ERROR: Field mapping failed - 'template_' not found in dumped JSON")
+    else:
+        print("  ✓ Field mapping test passed (template -> template_)")
+    
+    # Test 4: Test type safety with recognition param variants
+    print("  Round 4: Testing recognition parameter variants...")
+    variants_match = True
+    
+    # Check that the parsed param is the correct type
+    if hasattr(template_parsed.recognition.param, 'template'):
+        print("  ✓ JTemplateMatch param has 'template' attribute")
+    else:
+        print("  ERROR: JTemplateMatch param missing 'template' attribute")
+        variants_match = False
+        
+    if hasattr(simple_parsed.recognition.param, '__class__'):
+        param_class_name = simple_parsed.recognition.param.__class__.__name__
+        if param_class_name == 'JDirectHit':
+            print("  ✓ JDirectHit param has correct type")
+        else:
+            print(f"  ERROR: DirectHit param has wrong type: {param_class_name}")
+            variants_match = False
+    
+    # Final result
+    if conversion_match and simple_match and field_mapping_match and variants_match:
+        print("  ✓ All pipeline data tests passed!")
+        return True
+    else:
+        print("  ✗ Pipeline data tests failed!")
+        return False
 
 
 def custom_ctrl_test():
