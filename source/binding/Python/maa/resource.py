@@ -188,9 +188,9 @@ class JCommand:
 @dataclass
 class JCustomAction:
     target: JTarget
-    target_offset: JRect = field(default_factory=lambda: [0, 0, 0, 0])
     custom_action: str
     custom_action_param: Any
+    target_offset: JRect = field(default_factory=lambda: [0, 0, 0, 0])
 
 
 # Action parameter union type
