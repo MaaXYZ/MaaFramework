@@ -8,6 +8,7 @@ from .buffer import ImageBuffer, RectBuffer, StringBuffer, StringListBuffer
 from .define import *
 from .library import Library
 from .tasker import Tasker
+from .resource import JPipelineData, _dict_to_dataclass
 from .job import JobWithResult
 
 
@@ -101,7 +102,7 @@ class Context:
             )
         )
 
-    def get_node_data(self, name: str) -> Optional[dict]:
+    def get_node_data(self, name: str) -> Optional[JPipelineData]:
         string_buffer = StringBuffer()
         if not Library.framework().MaaContextGetNodeData(
             self._handle, name.encode(), string_buffer._handle
@@ -113,8 +114,10 @@ class Context:
             return None
 
         try:
-            return json.loads(data)
-        except json.JSONDecodeError:
+            json_data = json.loads(data)
+            return _dict_to_dataclass(json_data)
+        except (json.JSONDecodeError, ValueError, TypeError) as e:
+            # Log error for debugging but return None for backward compatibility
             return None
 
     @property
