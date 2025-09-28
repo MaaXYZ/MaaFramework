@@ -1,6 +1,6 @@
 import ctypes
 import json
-from typing import Dict, Optional, Tuple
+from typing import Dict, Optional, Tuple, Union
 
 import numpy
 
@@ -8,7 +8,7 @@ from .buffer import ImageBuffer, RectBuffer, StringBuffer, StringListBuffer
 from .define import *
 from .library import Library
 from .tasker import Tasker
-from .resource import JPipelineData, _dict_to_dataclass
+from .resource import JPipelineData, _dict_to_dataclass, _dataclass_to_dict
 from .job import JobWithResult
 
 
@@ -84,7 +84,10 @@ class Context:
 
         return self.tasker.get_node_detail(node_id)
 
-    def override_pipeline(self, pipeline_override: Dict) -> bool:
+    def override_pipeline(self, pipeline_override: Union[Dict, JPipelineData]) -> bool:
+        if isinstance(pipeline_override, JPipelineData):
+            pipeline_override = _dataclass_to_dict(pipeline_override)
+            
         return bool(
             Library.framework().MaaContextOverridePipeline(
                 self._handle,

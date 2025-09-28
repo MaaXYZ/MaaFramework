@@ -2,7 +2,7 @@ import ctypes
 import pathlib
 import json
 from typing import Any, Optional, Union, List
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, asdict
 
 from .notification_handler import NotificationHandler
 from .define import *
@@ -375,6 +375,80 @@ def _dict_to_dataclass(data: dict) -> JPipelineData:
     )
 
 
+def _dataclass_to_dict(pipeline_data: JPipelineData) -> dict:
+    """Convert JPipelineData dataclass back to dictionary format for JSON serialization."""
+    
+    def convert_param_to_dict(param_type: str, param_obj) -> dict:
+        """Convert a recognition/action parameter object back to dict."""
+        if hasattr(param_obj, '__dataclass_fields__'):
+            param_dict = asdict(param_obj)
+            
+            # Handle special field name mappings back to C++ convention
+            if param_type in ["TemplateMatch", "FeatureMatch"] and "template" in param_dict:
+                param_dict["template_"] = param_dict.pop("template")
+            
+            # Remove None values and empty lists to keep the dict clean
+            return {k: v for k, v in param_dict.items() if v is not None and v != []}
+        else:
+            return {}
+    
+    # Convert recognition param
+    recognition_param_dict = convert_param_to_dict(
+        pipeline_data.recognition.type, 
+        pipeline_data.recognition.param
+    )
+    
+    # Convert action param
+    action_param_dict = convert_param_to_dict(
+        pipeline_data.action.type, 
+        pipeline_data.action.param
+    )
+    
+    # Build the main dict
+    result = {
+        "recognition": {
+            "type": pipeline_data.recognition.type,
+            "param": recognition_param_dict
+        },
+        "action": {
+            "type": pipeline_data.action.type,
+            "param": action_param_dict
+        }
+    }
+    
+    # Add other fields if they have non-default values
+    if pipeline_data.next:
+        result["next"] = pipeline_data.next
+    if pipeline_data.interrupt:
+        result["interrupt"] = pipeline_data.interrupt
+    if pipeline_data.is_sub:
+        result["is_sub"] = pipeline_data.is_sub
+    if pipeline_data.rate_limit:
+        result["rate_limit"] = pipeline_data.rate_limit
+    if pipeline_data.timeout:
+        result["timeout"] = pipeline_data.timeout
+    if pipeline_data.on_error:
+        result["on_error"] = pipeline_data.on_error
+    if pipeline_data.inverse:
+        result["inverse"] = pipeline_data.inverse
+    if pipeline_data.enabled:
+        result["enabled"] = pipeline_data.enabled
+    if pipeline_data.pre_delay:
+        result["pre_delay"] = pipeline_data.pre_delay
+    if pipeline_data.post_delay:
+        result["post_delay"] = pipeline_data.post_delay
+    if pipeline_data.pre_wait_freezes:
+        pre_wait_dict = asdict(pipeline_data.pre_wait_freezes)
+        result["pre_wait_freezes"] = {k: v for k, v in pre_wait_dict.items() if v is not None and v != 0}
+    if pipeline_data.post_wait_freezes:
+        post_wait_dict = asdict(pipeline_data.post_wait_freezes)
+        result["post_wait_freezes"] = {k: v for k, v in post_wait_dict.items() if v is not None and v != 0}
+    if pipeline_data.focus is not None:
+        result["focus"] = pipeline_data.focus
+    
+    return result
+
+
 
 class Resource:
     _notification_handler: Optional[NotificationHandler]
@@ -416,7 +490,10 @@ class Resource:
         )
         return Job(resid, self._status, self._wait)
 
-    def override_pipeline(self, pipeline_override: Dict) -> bool:
+    def override_pipeline(self, pipeline_override: Union[Dict, JPipelineData]) -> bool:
+        if isinstance(pipeline_override, JPipelineData):
+            pipeline_override = _dataclass_to_dict(pipeline_override)
+            
         return bool(
             Library.framework().MaaResourceOverridePipeline(
                 self._handle,
