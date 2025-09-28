@@ -255,6 +255,24 @@ __all__ = [
 ]
 
 
+def parse_param(param_type: str, param_data: dict, param_type_map: dict, default_class):
+    """Generic function to parse parameters based on type map."""
+    param_class = param_type_map.get(param_type)
+    if not param_class:
+        raise ValueError(f"Unknown type: {param_type}")
+
+    if param_class == default_class:
+        return param_class()
+
+    filtered_data = {k: v for k, v in param_data.items()}
+
+    try:
+        return param_class(**filtered_data)
+    except TypeError as e:
+        print(f"Warning: Failed to create {param_class.__name__} with data {filtered_data}: {e}")
+        return default_class()
+
+
 def parse_recognition_param(param_type: str, param_data: dict) -> JRecognitionParam:
     """Convert dict to appropriate JRecognitionParam variant based on type."""
     param_type_map = {
@@ -267,32 +285,7 @@ def parse_recognition_param(param_type: str, param_data: dict) -> JRecognitionPa
         "NeuralNetworkDetect": JNeuralNetworkDetect,
         "Custom": JCustomRecognition,
     }
-    
-    param_class = param_type_map.get(param_type)
-    if not param_class:
-        raise ValueError(f"Unknown recognition type: {param_type}")
-    
-    if param_class == JDirectHit:
-        return JDirectHit()
-    
-    # Convert dict to dataclass, handling default values and field mappings
-    field_names = {f.name for f in param_class.__dataclass_fields__.values()}
-    filtered_data = {}
-    
-    for key, value in param_data.items():
-        # Handle special field name mappings from C++
-        if key == "template_" and "template" in field_names:
-            filtered_data["template"] = value
-        elif key in field_names:
-            filtered_data[key] = value
-    
-    try:
-        return param_class(**filtered_data)
-    except TypeError as e:
-        # Handle missing required fields by providing reasonable defaults
-        print(f"Warning: Failed to create {param_class.__name__} with data {filtered_data}: {e}")
-        # For now, return DirectHit as a fallback
-        return JDirectHit()
+    return parse_param(param_type, param_data, param_type_map, JDirectHit)
 
 
 def parse_action_param(param_type: str, param_data: dict) -> JActionParam:
@@ -304,7 +297,6 @@ def parse_action_param(param_type: str, param_data: dict) -> JActionParam:
         "Swipe": JSwipe,
         "MultiSwipe": JMultiSwipe,
         "ClickKey": JClickKey,
-        "Key": JClickKey,  # Alias for ClickKey
         "LongPressKey": JLongPressKey,
         "InputText": JInputText,
         "StartApp": JStartApp,
@@ -313,25 +305,7 @@ def parse_action_param(param_type: str, param_data: dict) -> JActionParam:
         "Command": JCommand,
         "Custom": JCustomAction,
     }
-    
-    param_class = param_type_map.get(param_type)
-    if not param_class:
-        raise ValueError(f"Unknown action type: {param_type}")
-    
-    if param_class in (JDoNothing, JStopTask):
-        return param_class()
-    
-    # Convert dict to dataclass, handling default values
-    field_names = {f.name for f in param_class.__dataclass_fields__.values()}
-    filtered_data = {k: v for k, v in param_data.items() if k in field_names}
-    
-    try:
-        return param_class(**filtered_data)
-    except TypeError as e:
-        # Handle missing required fields by providing reasonable defaults
-        print(f"Warning: Failed to create {param_class.__name__} with data {filtered_data}: {e}")
-        # For now, return DoNothing as a fallback
-        return JDoNothing()
+    return parse_param(param_type, param_data, param_type_map, JDoNothing)
 
 
 def parse_pipeline_data(json_str: str) -> JPipelineData:
@@ -398,32 +372,18 @@ def dump_pipeline_data(pipeline_data: JPipelineData) -> str:
     # Use asdict() to convert the entire dataclass to dict
     result = asdict(pipeline_data)
     
-    # Handle special field name mappings for recognition params
-    if "recognition" in result and "param" in result["recognition"]:
-        recognition_type = result["recognition"].get("type", "")
-        param_dict = result["recognition"]["param"]
-        if recognition_type in ["TemplateMatch", "FeatureMatch"] and "template" in param_dict:
-            param_dict["template_"] = param_dict.pop("template")
-    
     # Clean up the result: remove None values, empty lists, and default values
     def clean_dict(d):
+        """Recursively clean a dictionary or list by removing None, empty, and default values."""
         if isinstance(d, dict):
-            cleaned = {}
-            for k, v in d.items():
-                # Clean nested values and skip empty/default values
-                cleaned_v = clean_dict(v)
-                if cleaned_v is not None and cleaned_v != [] and cleaned_v != {}:
-                    # Include non-zero numbers and True booleans
-                    if cleaned_v != 0 and cleaned_v != False:
-                        cleaned[k] = cleaned_v
-                    elif cleaned_v is True or (isinstance(cleaned_v, (int, float)) and cleaned_v != 0):
-                        cleaned[k] = cleaned_v
-            return cleaned if cleaned else None
+            return {
+                k: clean_dict(v)
+                for k, v in d.items()
+                if v not in (None, [], {}, 0, False) or v is True
+            }
         elif isinstance(d, list):
-            cleaned_list = [clean_dict(item) for item in d if item is not None]
-            return cleaned_list if cleaned_list else None
-        else:
-            return d
+            return [clean_dict(item) for item in d if item not in (None, [], {}, 0, False)]
+        return d
     
     cleaned_result = clean_dict(result)
     final_dict = cleaned_result if cleaned_result else {}

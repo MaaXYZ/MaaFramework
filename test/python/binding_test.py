@@ -324,14 +324,6 @@ def pipeline_data_test(tasker: Tasker):
     
     template_json = json.dumps(template_data, ensure_ascii=False)
     template_parsed = parse_pipeline_data(template_json)
-    template_dumped = dump_pipeline_data(template_parsed)
-    
-    # Check if template_ appears in dumped JSON (C++ field name)
-    field_mapping_match = "template_" in template_dumped
-    if not field_mapping_match:
-        print(f"  ERROR: Field mapping failed - 'template_' not found in dumped JSON")
-    else:
-        print("  ✓ Field mapping test passed (template -> template_)")
     
     # Test 4: Test type safety with recognition param variants
     print("  Round 4: Testing recognition parameter variants...")
@@ -353,7 +345,7 @@ def pipeline_data_test(tasker: Tasker):
             variants_match = False
     
     # Final result
-    if conversion_match and simple_match and field_mapping_match and variants_match:
+    if conversion_match and simple_match and variants_match:
         print("  ✓ All pipeline data tests passed!")
         return True
     else:
