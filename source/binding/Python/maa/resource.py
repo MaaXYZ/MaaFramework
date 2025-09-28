@@ -380,8 +380,8 @@ def parse_pipeline_data(json_str: str) -> JPipelineData:
     )
 
 
-def _dataclass_to_dict(pipeline_data: JPipelineData) -> dict:
-    """Convert JPipelineData dataclass back to dictionary format for JSON serialization."""
+def dump_pipeline_data(pipeline_data: JPipelineData) -> str:
+    """Convert JPipelineData dataclass back to JSON string for C++ interop."""
     
     # Use asdict() to convert the entire dataclass to dict
     result = asdict(pipeline_data)
@@ -414,7 +414,10 @@ def _dataclass_to_dict(pipeline_data: JPipelineData) -> dict:
             return d
     
     cleaned_result = clean_dict(result)
-    return cleaned_result if cleaned_result else {}
+    final_dict = cleaned_result if cleaned_result else {}
+    
+    # Convert to JSON string
+    return json.dumps(final_dict, ensure_ascii=False)
 
 
 
@@ -460,12 +463,14 @@ class Resource:
 
     def override_pipeline(self, pipeline_override: Union[Dict, JPipelineData]) -> bool:
         if isinstance(pipeline_override, JPipelineData):
-            pipeline_override = _dataclass_to_dict(pipeline_override)
+            pipeline_json = dump_pipeline_data(pipeline_override)
+        else:
+            pipeline_json = json.dumps(pipeline_override, ensure_ascii=False)
             
         return bool(
             Library.framework().MaaResourceOverridePipeline(
                 self._handle,
-                json.dumps(pipeline_override, ensure_ascii=False).encode(),
+                pipeline_json.encode(),
             )
         )
 

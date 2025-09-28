@@ -8,7 +8,7 @@ from .library import Library
 from .buffer import ImageListBuffer, RectBuffer, StringBuffer, ImageBuffer
 from .job import Job, JobWithResult
 from .notification_handler import NotificationHandler
-from .resource import Resource, JPipelineData, _dataclass_to_dict
+from .resource import Resource, JPipelineData, dump_pipeline_data
 from .controller import Controller
 
 
@@ -168,11 +168,13 @@ class Tasker:
     @staticmethod
     def _gen_post_param(entry: str, pipeline_override: Union[Dict, JPipelineData]) -> Tuple[bytes, bytes]:
         if isinstance(pipeline_override, JPipelineData):
-            pipeline_override = _dataclass_to_dict(pipeline_override)
+            pipeline_json = dump_pipeline_data(pipeline_override)
+        else:
+            pipeline_json = json.dumps(pipeline_override, ensure_ascii=False)
             
         return (
             entry.encode(),
-            json.dumps(pipeline_override, ensure_ascii=False).encode(),
+            pipeline_json.encode(),
         )
 
     def _gen_task_job(self, taskid: MaaTaskId) -> JobWithResult:
