@@ -31,7 +31,7 @@ class Context:
         pass
 
     def run_task(
-        self, entry: str, pipeline_override: Dict = {}
+        self, entry: str, pipeline_override: Union[Dict, JPipelineData] = {}
     ) -> Optional[TaskDetail]:
         task_id = int(
             Library.framework().MaaContextRunTask(
@@ -44,7 +44,7 @@ class Context:
         return self.tasker.get_task_detail(task_id)
 
     def run_recognition(
-        self, entry: str, image: numpy.ndarray, pipeline_override: Dict = {}
+        self, entry: str, image: numpy.ndarray, pipeline_override: Union[Dict, JPipelineData] = {}
     ) -> Optional[RecognitionDetail]:
         image_buffer = ImageBuffer()
         image_buffer.set(image)
@@ -65,7 +65,7 @@ class Context:
         entry: str,
         box: RectType = (0, 0, 0, 0),
         reco_detail: str = "",
-        pipeline_override: Dict = {},
+        pipeline_override: Union[Dict, JPipelineData] = {},
     ) -> Optional[NodeDetail]:
         rect = RectBuffer()
         rect.set(box)
@@ -149,7 +149,10 @@ class Context:
         self._tasker = Tasker(handle=tasker_handle)
 
     @staticmethod
-    def _gen_post_param(entry: str, pipeline_override: Dict) -> Tuple[bytes, bytes]:
+    def _gen_post_param(entry: str, pipeline_override: Union[Dict, JPipelineData]) -> Tuple[bytes, bytes]:
+        if isinstance(pipeline_override, JPipelineData):
+            pipeline_override = _dataclass_to_dict(pipeline_override)
+            
         return (
             entry.encode(),
             json.dumps(pipeline_override, ensure_ascii=False).encode(),
