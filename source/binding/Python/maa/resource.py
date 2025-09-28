@@ -1,7 +1,7 @@
 import ctypes
 import pathlib
 import json
-from typing import Any, Optional, Union, List
+from typing import Any, Optional, Union, List, Dict
 from dataclasses import dataclass, field, asdict
 
 from .notification_handler import NotificationHandler
@@ -39,11 +39,11 @@ class JFeatureMatch:
     roi: JTarget
     roi_offset: JRect
     template: List[str]
-    count: int = 0
+    detector: str
     order_by: str
+    count: int = 0
     index: int = 0
     green_mask: bool = False
-    detector: str
     ratio: float = 0
 
 
@@ -51,11 +51,11 @@ class JFeatureMatch:
 class JColorMatch:
     roi: JTarget
     roi_offset: JRect
-    method: int = 0
     lower: List[List[int]]
     upper: List[List[int]]
-    count: int = 0
     order_by: str
+    method: int = 0
+    count: int = 0
     index: int = 0
     connected: bool = False
 
@@ -241,6 +241,18 @@ class JPipelineData:
     pre_wait_freezes: Optional[JWaitFreezes] = None
     post_wait_freezes: Optional[JWaitFreezes] = None
     focus: Optional[Any] = None
+
+
+# Export public functions and classes
+__all__ = [
+    'Resource',
+    'JPipelineData', 'JRecognition', 'JAction', 'JWaitFreezes',
+    'JDirectHit', 'JTemplateMatch', 'JFeatureMatch', 'JColorMatch', 'JOCR', 
+    'JNeuralNetworkClassify', 'JNeuralNetworkDetect', 'JCustomRecognition',
+    'JDoNothing', 'JClick', 'JLongPress', 'JSwipe', 'JMultiSwipe', 'JClickKey',
+    'JLongPressKey', 'JInputText', 'JStartApp', 'JStopApp', 'JStopTask', 'JCommand', 'JCustomAction',
+    'parse_pipeline_data', 'dump_pipeline_data'
+]
 
 
 def parse_recognition_param(param_type: str, param_data: dict) -> JRecognitionParam:
