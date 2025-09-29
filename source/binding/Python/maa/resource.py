@@ -1,7 +1,7 @@
 import ctypes
 import pathlib
 import json
-from typing import Any, Optional, Union, List, Dict
+from typing import Any, Optional, Union, List, Dict, Tuple
 from dataclasses import dataclass, field, asdict
 
 from .notification_handler import NotificationHandler
@@ -12,7 +12,7 @@ from .buffer import StringBuffer, StringListBuffer
 
 
 # Type aliases to match C++ std::variant types
-JRect = List[int]  # std::array<int, 4>
+JRect = Tuple[int, int, int, int]  # std::array<int, 4>
 JTarget = Union[bool, str, JRect]  # std::variant<bool, std::string, JRect>
 
 
@@ -106,8 +106,14 @@ class JCustomRecognition:
 
 # Recognition parameter union type
 JRecognitionParam = Union[
-    JDirectHit, JTemplateMatch, JFeatureMatch, JColorMatch, JOCR,
-    JNeuralNetworkClassify, JNeuralNetworkDetect, JCustomRecognition
+    JDirectHit,
+    JTemplateMatch,
+    JFeatureMatch,
+    JColorMatch,
+    JOCR,
+    JNeuralNetworkClassify,
+    JNeuralNetworkDetect,
+    JCustomRecognition,
 ]
 
 
@@ -195,8 +201,19 @@ class JCustomAction:
 
 # Action parameter union type
 JActionParam = Union[
-    JDoNothing, JClick, JLongPress, JSwipe, JMultiSwipe, JClickKey,
-    JLongPressKey, JInputText, JStartApp, JStopApp, JStopTask, JCommand, JCustomAction
+    JDoNothing,
+    JClick,
+    JLongPress,
+    JSwipe,
+    JMultiSwipe,
+    JClickKey,
+    JLongPressKey,
+    JInputText,
+    JStartApp,
+    JStopApp,
+    JStopTask,
+    JCommand,
+    JCustomAction,
 ]
 
 
@@ -245,13 +262,34 @@ class JPipelineData:
 
 # Export public functions and classes
 __all__ = [
-    'Resource',
-    'JPipelineData', 'JRecognition', 'JAction', 'JWaitFreezes',
-    'JDirectHit', 'JTemplateMatch', 'JFeatureMatch', 'JColorMatch', 'JOCR', 
-    'JNeuralNetworkClassify', 'JNeuralNetworkDetect', 'JCustomRecognition',
-    'JDoNothing', 'JClick', 'JLongPress', 'JSwipe', 'JMultiSwipe', 'JClickKey',
-    'JLongPressKey', 'JInputText', 'JStartApp', 'JStopApp', 'JStopTask', 'JCommand', 'JCustomAction',
-    'parse_pipeline_data', 'dump_pipeline_data'
+    "Resource",
+    "JPipelineData",
+    "JRecognition",
+    "JAction",
+    "JWaitFreezes",
+    "JDirectHit",
+    "JTemplateMatch",
+    "JFeatureMatch",
+    "JColorMatch",
+    "JOCR",
+    "JNeuralNetworkClassify",
+    "JNeuralNetworkDetect",
+    "JCustomRecognition",
+    "JDoNothing",
+    "JClick",
+    "JLongPress",
+    "JSwipe",
+    "JMultiSwipe",
+    "JClickKey",
+    "JLongPressKey",
+    "JInputText",
+    "JStartApp",
+    "JStopApp",
+    "JStopTask",
+    "JCommand",
+    "JCustomAction",
+    "parse_pipeline_data",
+    "dump_pipeline_data",
 ]
 
 
@@ -269,7 +307,9 @@ def parse_param(param_type: str, param_data: dict, param_type_map: dict, default
     try:
         return param_class(**filtered_data)
     except TypeError as e:
-        print(f"Warning: Failed to create {param_class.__name__} with data {filtered_data}: {e}")
+        print(
+            f"Warning: Failed to create {param_class.__name__} with data {filtered_data}: {e}"
+        )
         return default_class()
 
 
@@ -314,21 +354,23 @@ def parse_pipeline_data(json_str: str) -> JPipelineData:
         data = json.loads(json_str)
     except json.JSONDecodeError as e:
         raise ValueError(f"Invalid JSON format: {e}")
-    
+
     # Convert recognition
     recognition_data = data.get("recognition", {})
     recognition_type = recognition_data.get("type", "")
     recognition_param_data = recognition_data.get("param", {})
-    recognition_param = parse_recognition_param(recognition_type, recognition_param_data)
+    recognition_param = parse_recognition_param(
+        recognition_type, recognition_param_data
+    )
     recognition = JRecognition(type=recognition_type, param=recognition_param)
-    
+
     # Convert action
     action_data = data.get("action", {})
     action_type = action_data.get("type", "")
     action_param_data = action_data.get("param", {})
     action_param = parse_action_param(action_type, action_param_data)
     action = JAction(type=action_type, param=action_param)
-    
+
     # Convert wait freezes with proper defaults
     def create_wait_freezes(data_dict):
         if not data_dict:
@@ -342,10 +384,10 @@ def parse_pipeline_data(json_str: str) -> JPipelineData:
             rate_limit=data_dict.get("rate_limit", 0),
             timeout=data_dict.get("timeout", 0),
         )
-    
+
     pre_wait_freezes = create_wait_freezes(data.get("pre_wait_freezes"))
     post_wait_freezes = create_wait_freezes(data.get("post_wait_freezes"))
-    
+
     # Create JPipelineData with converted data
     return JPipelineData(
         recognition=recognition,
@@ -368,10 +410,10 @@ def parse_pipeline_data(json_str: str) -> JPipelineData:
 
 def dump_pipeline_data(pipeline_data: JPipelineData) -> str:
     """Convert JPipelineData dataclass back to JSON string for C++ interop."""
-    
+
     # Use asdict() to convert the entire dataclass to dict
     result = asdict(pipeline_data)
-    
+
     # Clean up the result: remove None values, empty lists, and default values
     def clean_dict(d):
         """Recursively clean a dictionary or list by removing None, empty, and default values."""
@@ -382,15 +424,16 @@ def dump_pipeline_data(pipeline_data: JPipelineData) -> str:
                 if v not in (None, [], {}, 0, False) or v is True
             }
         elif isinstance(d, list):
-            return [clean_dict(item) for item in d if item not in (None, [], {}, 0, False)]
+            return [
+                clean_dict(item) for item in d if item not in (None, [], {}, 0, False)
+            ]
         return d
-    
+
     cleaned_result = clean_dict(result)
     final_dict = cleaned_result if cleaned_result else {}
-    
+
     # Convert to JSON string
     return json.dumps(final_dict, ensure_ascii=False)
-
 
 
 class Resource:
@@ -438,7 +481,7 @@ class Resource:
             pipeline_json = dump_pipeline_data(pipeline_override)
         else:
             pipeline_json = json.dumps(pipeline_override, ensure_ascii=False)
-            
+
         return bool(
             Library.framework().MaaResourceOverridePipeline(
                 self._handle,
@@ -455,7 +498,7 @@ class Resource:
                 self._handle, name.encode(), list_buffer._handle
             )
         )
-    
+
     def get_node_data(self, name: str) -> Optional[JPipelineData]:
         string_buffer = StringBuffer()
         if not Library.framework().MaaResourceGetNodeData(
