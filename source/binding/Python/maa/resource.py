@@ -126,13 +126,13 @@ class JDoNothing:
 @dataclass
 class JClick:
     target: JTarget
-    target_offset: JRect = field(default_factory=lambda: [0, 0, 0, 0])
+    target_offset: JRect = (0, 0, 0, 0)
 
 
 @dataclass
 class JLongPress:
     target: JTarget
-    target_offset: JRect = field(default_factory=lambda: [0, 0, 0, 0])
+    target_offset: JRect = (0, 0, 0, 0)
     duration: int = 0
 
 
@@ -140,7 +140,7 @@ class JLongPress:
 class JSwipe:
     starting: int = 0
     begin: Optional[JTarget] = None
-    begin_offset: JRect = field(default_factory=lambda: [0, 0, 0, 0])
+    begin_offset: JRect = (0, 0, 0, 0)
     end: List[JTarget] = field(default_factory=list)
     end_offset: List[JRect] = field(default_factory=list)
     end_hold: List[int] = field(default_factory=list)
@@ -196,7 +196,7 @@ class JCustomAction:
     target: JTarget
     custom_action: str
     custom_action_param: Any
-    target_offset: JRect = field(default_factory=lambda: [0, 0, 0, 0])
+    target_offset: JRect = (0, 0, 0, 0)
 
 
 # Action parameter union type
@@ -260,120 +260,126 @@ class JPipelineData:
     focus: Optional[Any] = None
 
 
-# Convert wait freezes with proper defaults
-def create_wait_freezes(data: dict) -> Optional[JWaitFreezes]:
-    if not data:
-        return None
-    return JWaitFreezes(
-        time=data.get("time", 0),
-        target=data.get("target"),
-        target_offset=data.get("target_offset"),
-        threshold=data.get("threshold", 0),
-        method=data.get("method", 0),
-        rate_limit=data.get("rate_limit", 0),
-        timeout=data.get("timeout", 0),
-    )
-
-
-def parse_param(param_type: str, param_data: dict, param_type_map: dict, default_class):
-    """Generic function to parse parameters based on type map."""
-    param_class = param_type_map.get(param_type)
-    if not param_class:
-        raise ValueError(f"Unknown type: {param_type}")
-
-    if param_class == default_class:
-        return param_class()
-
-    filtered_data = {k: v for k, v in param_data.items()}
-
-    try:
-        return param_class(**filtered_data)
-    except TypeError as e:
-        print(
-            f"Warning: Failed to create {param_class.__name__} with data {filtered_data}: {e}"
+class JPipelineParser:
+    @staticmethod
+    def create_wait_freezes(data: dict) -> Optional[JWaitFreezes]:
+        """Convert wait freezes with proper defaults"""
+        if not data:
+            return None
+        return JWaitFreezes(
+            time=data.get("time", 0),
+            target=data.get("target"),
+            target_offset=data.get("target_offset"),
+            threshold=data.get("threshold", 0),
+            method=data.get("method", 0),
+            rate_limit=data.get("rate_limit", 0),
+            timeout=data.get("timeout", 0),
         )
-        return default_class()
 
+    @classmethod
+    def parse_param(
+        cls, param_type: str, param_data: dict, param_type_map: dict, default_class
+    ):
+        """Generic function to parse parameters based on type map."""
+        param_class = param_type_map.get(param_type)
+        if not param_class:
+            raise ValueError(f"Unknown type: {param_type}")
 
-def parse_recognition_param(param_type: str, param_data: dict) -> JRecognitionParam:
-    """Convert dict to appropriate JRecognitionParam variant based on type."""
-    param_type_map = {
-        "DirectHit": JDirectHit,
-        "TemplateMatch": JTemplateMatch,
-        "FeatureMatch": JFeatureMatch,
-        "ColorMatch": JColorMatch,
-        "OCR": JOCR,
-        "NeuralNetworkClassify": JNeuralNetworkClassify,
-        "NeuralNetworkDetect": JNeuralNetworkDetect,
-        "Custom": JCustomRecognition,
-    }
-    return parse_param(param_type, param_data, param_type_map, JDirectHit)
+        if param_class == default_class:
+            return param_class()
 
+        filtered_data = {k: v for k, v in param_data.items()}
 
-def parse_action_param(param_type: str, param_data: dict) -> JActionParam:
-    """Convert dict to appropriate JActionParam variant based on type."""
-    param_type_map = {
-        "DoNothing": JDoNothing,
-        "Click": JClick,
-        "LongPress": JLongPress,
-        "Swipe": JSwipe,
-        "MultiSwipe": JMultiSwipe,
-        "ClickKey": JClickKey,
-        "LongPressKey": JLongPressKey,
-        "InputText": JInputText,
-        "StartApp": JStartApp,
-        "StopApp": JStopApp,
-        "StopTask": JStopTask,
-        "Command": JCommand,
-        "Custom": JCustomAction,
-    }
-    return parse_param(param_type, param_data, param_type_map, JDoNothing)
+        try:
+            return param_class(**filtered_data)
+        except TypeError as e:
+            print(
+                f"Warning: Failed to create {param_class.__name__} with data {filtered_data}: {e}"
+            )
+            return default_class()
 
+    @classmethod
+    def parse_recognition_param(
+        cls, param_type: str, param_data: dict
+    ) -> JRecognitionParam:
+        """Convert dict to appropriate JRecognitionParam variant based on type."""
+        param_type_map = {
+            "DirectHit": JDirectHit,
+            "TemplateMatch": JTemplateMatch,
+            "FeatureMatch": JFeatureMatch,
+            "ColorMatch": JColorMatch,
+            "OCR": JOCR,
+            "NeuralNetworkClassify": JNeuralNetworkClassify,
+            "NeuralNetworkDetect": JNeuralNetworkDetect,
+            "Custom": JCustomRecognition,
+        }
+        return cls.parse_param(param_type, param_data, param_type_map, JDirectHit)
 
-def parse_pipeline_data(json_str: str) -> JPipelineData:
-    """Parse JSON string to JPipelineData dataclass with proper variant types."""
-    try:
-        data: dict = json.loads(json_str)
-    except json.JSONDecodeError as e:
-        raise ValueError(f"Invalid JSON format: {e}")
+    @classmethod
+    def parse_action_param(cls, param_type: str, param_data: dict) -> JActionParam:
+        """Convert dict to appropriate JActionParam variant based on type."""
+        param_type_map = {
+            "DoNothing": JDoNothing,
+            "Click": JClick,
+            "LongPress": JLongPress,
+            "Swipe": JSwipe,
+            "MultiSwipe": JMultiSwipe,
+            "ClickKey": JClickKey,
+            "LongPressKey": JLongPressKey,
+            "InputText": JInputText,
+            "StartApp": JStartApp,
+            "StopApp": JStopApp,
+            "StopTask": JStopTask,
+            "Command": JCommand,
+            "Custom": JCustomAction,
+        }
+        return cls.parse_param(param_type, param_data, param_type_map, JDoNothing)
 
-    # Convert recognition
-    recognition_data: dict = data.get("recognition", {})
-    recognition_type: str = recognition_data.get("type", "")
-    recognition_param_data: dict = recognition_data.get("param", {})
-    recognition_param = parse_recognition_param(
-        recognition_type, recognition_param_data
-    )
-    recognition = JRecognition(type=recognition_type, param=recognition_param)
+    @classmethod
+    def parse_pipeline_data(cls, json_str: str) -> JPipelineData:
+        """Parse JSON string to JPipelineData dataclass with proper variant types."""
+        try:
+            data: dict = json.loads(json_str)
+        except json.JSONDecodeError as e:
+            raise ValueError(f"Invalid JSON format: {e}")
 
-    # Convert action
-    action_data: dict = data.get("action", {})
-    action_type: str = action_data.get("type", "")
-    action_param_data = action_data.get("param", {})
-    action_param = parse_action_param(action_type, action_param_data)
-    action = JAction(type=action_type, param=action_param)
+        # Convert recognition
+        recognition_data: dict = data.get("recognition", {})
+        recognition_type: str = recognition_data.get("type", "")
+        recognition_param_data: dict = recognition_data.get("param", {})
+        recognition_param = cls.parse_recognition_param(
+            recognition_type, recognition_param_data
+        )
+        recognition = JRecognition(type=recognition_type, param=recognition_param)
 
-    pre_wait_freezes = create_wait_freezes(data.get("pre_wait_freezes"))
-    post_wait_freezes = create_wait_freezes(data.get("post_wait_freezes"))
+        # Convert action
+        action_data: dict = data.get("action", {})
+        action_type: str = action_data.get("type", "")
+        action_param_data = action_data.get("param", {})
+        action_param = cls.parse_action_param(action_type, action_param_data)
+        action = JAction(type=action_type, param=action_param)
 
-    # Create JPipelineData with converted data
-    return JPipelineData(
-        recognition=recognition,
-        action=action,
-        next=data.get("next", []),
-        interrupt=data.get("interrupt", []),
-        is_sub=data.get("is_sub", False),
-        rate_limit=data.get("rate_limit", 0),
-        timeout=data.get("timeout", 0),
-        on_error=data.get("on_error", []),
-        inverse=data.get("inverse", False),
-        enabled=data.get("enabled", False),
-        pre_delay=data.get("pre_delay", 0),
-        post_delay=data.get("post_delay", 0),
-        pre_wait_freezes=pre_wait_freezes,
-        post_wait_freezes=post_wait_freezes,
-        focus=data.get("focus"),
-    )
+        pre_wait_freezes = cls.create_wait_freezes(data.get("pre_wait_freezes"))  # type: ignore
+        post_wait_freezes = cls.create_wait_freezes(data.get("post_wait_freezes"))  # type: ignore
+
+        # Create JPipelineData with converted data
+        return JPipelineData(
+            recognition=recognition,
+            action=action,
+            next=data.get("next", []),
+            interrupt=data.get("interrupt", []),
+            is_sub=data.get("is_sub", False),
+            rate_limit=data.get("rate_limit", 0),
+            timeout=data.get("timeout", 0),
+            on_error=data.get("on_error", []),
+            inverse=data.get("inverse", False),
+            enabled=data.get("enabled", False),
+            pre_delay=data.get("pre_delay", 0),
+            post_delay=data.get("post_delay", 0),
+            pre_wait_freezes=pre_wait_freezes,
+            post_wait_freezes=post_wait_freezes,
+            focus=data.get("focus"),
+        )
 
 
 def dump_pipeline_data(pipeline_data: JPipelineData) -> str:
@@ -383,19 +389,21 @@ def dump_pipeline_data(pipeline_data: JPipelineData) -> str:
     result = asdict(pipeline_data)
 
     # Clean up the result: remove None values, empty lists, and default values
-    def clean_dict(d):
+    def clean_dict(data):
         """Recursively clean a dictionary or list by removing None, empty, and default values."""
-        if isinstance(d, dict):
+        if isinstance(data, dict):
             return {
                 k: clean_dict(v)
-                for k, v in d.items()
+                for k, v in data.items()
                 if v not in (None, [], {}, 0, False) or v is True
             }
-        elif isinstance(d, list):
+        elif isinstance(data, list):
             return [
-                clean_dict(item) for item in d if item not in (None, [], {}, 0, False)
+                clean_dict(item)
+                for item in data
+                if item not in (None, [], {}, 0, False)
             ]
-        return d
+        return data
 
     cleaned_result = clean_dict(result)
     final_dict = cleaned_result if cleaned_result else {}
@@ -479,7 +487,7 @@ class Resource:
             return None
 
         try:
-            return parse_pipeline_data(data)
+            return JPipelineParser.parse_pipeline_data(data)
         except (ValueError, TypeError) as e:
             # Log error for debugging but return None for backward compatibility
             return None

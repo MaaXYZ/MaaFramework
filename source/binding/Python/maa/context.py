@@ -8,7 +8,7 @@ from .buffer import ImageBuffer, RectBuffer, StringBuffer, StringListBuffer
 from .define import *
 from .library import Library
 from .tasker import Tasker
-from .resource import JPipelineData, parse_pipeline_data, dump_pipeline_data
+from .resource import JPipelineData, JPipelineParser, dump_pipeline_data
 from .job import JobWithResult
 
 
@@ -44,7 +44,10 @@ class Context:
         return self.tasker.get_task_detail(task_id)
 
     def run_recognition(
-        self, entry: str, image: numpy.ndarray, pipeline_override: Union[Dict, JPipelineData] = {}
+        self,
+        entry: str,
+        image: numpy.ndarray,
+        pipeline_override: Union[Dict, JPipelineData] = {},
     ) -> Optional[RecognitionDetail]:
         image_buffer = ImageBuffer()
         image_buffer.set(image)
@@ -89,7 +92,7 @@ class Context:
             pipeline_json = dump_pipeline_data(pipeline_override)
         else:
             pipeline_json = json.dumps(pipeline_override, ensure_ascii=False)
-            
+
         return bool(
             Library.framework().MaaContextOverridePipeline(
                 self._handle,
@@ -119,7 +122,7 @@ class Context:
             return None
 
         try:
-            return parse_pipeline_data(data)
+            return JPipelineParser.parse_pipeline_data(data)
         except (ValueError, TypeError) as e:
             # Log error for debugging but return None for backward compatibility
             return None
@@ -151,12 +154,14 @@ class Context:
         self._tasker = Tasker(handle=tasker_handle)
 
     @staticmethod
-    def _gen_post_param(entry: str, pipeline_override: Union[Dict, JPipelineData]) -> Tuple[bytes, bytes]:
+    def _gen_post_param(
+        entry: str, pipeline_override: Union[Dict, JPipelineData]
+    ) -> Tuple[bytes, bytes]:
         if isinstance(pipeline_override, JPipelineData):
             pipeline_json = dump_pipeline_data(pipeline_override)
         else:
             pipeline_json = json.dumps(pipeline_override, ensure_ascii=False)
-            
+
         return (
             entry.encode(),
             pipeline_json.encode(),
