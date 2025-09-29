@@ -486,8 +486,7 @@ class Resource:
 
         try:
             return JPipelineParser.parse_pipeline_data(data)
-        except (ValueError, TypeError) as e:
-            # Log error for debugging but return None for backward compatibility
+        except (ValueError, TypeError):
             return None
 
     @property
