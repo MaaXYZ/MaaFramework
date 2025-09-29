@@ -260,37 +260,19 @@ class JPipelineData:
     focus: Optional[Any] = None
 
 
-# Export public functions and classes
-__all__ = [
-    "Resource",
-    "JPipelineData",
-    "JRecognition",
-    "JAction",
-    "JWaitFreezes",
-    "JDirectHit",
-    "JTemplateMatch",
-    "JFeatureMatch",
-    "JColorMatch",
-    "JOCR",
-    "JNeuralNetworkClassify",
-    "JNeuralNetworkDetect",
-    "JCustomRecognition",
-    "JDoNothing",
-    "JClick",
-    "JLongPress",
-    "JSwipe",
-    "JMultiSwipe",
-    "JClickKey",
-    "JLongPressKey",
-    "JInputText",
-    "JStartApp",
-    "JStopApp",
-    "JStopTask",
-    "JCommand",
-    "JCustomAction",
-    "parse_pipeline_data",
-    "dump_pipeline_data",
-]
+# Convert wait freezes with proper defaults
+def create_wait_freezes(data: dict) -> Optional[JWaitFreezes]:
+    if not data:
+        return None
+    return JWaitFreezes(
+        time=data.get("time", 0),
+        target=data.get("target"),
+        target_offset=data.get("target_offset"),
+        threshold=data.get("threshold", 0),
+        method=data.get("method", 0),
+        rate_limit=data.get("rate_limit", 0),
+        timeout=data.get("timeout", 0),
+    )
 
 
 def parse_param(param_type: str, param_data: dict, param_type_map: dict, default_class):
@@ -351,39 +333,25 @@ def parse_action_param(param_type: str, param_data: dict) -> JActionParam:
 def parse_pipeline_data(json_str: str) -> JPipelineData:
     """Parse JSON string to JPipelineData dataclass with proper variant types."""
     try:
-        data = json.loads(json_str)
+        data: dict = json.loads(json_str)
     except json.JSONDecodeError as e:
         raise ValueError(f"Invalid JSON format: {e}")
 
     # Convert recognition
-    recognition_data = data.get("recognition", {})
-    recognition_type = recognition_data.get("type", "")
-    recognition_param_data = recognition_data.get("param", {})
+    recognition_data: dict = data.get("recognition", {})
+    recognition_type: str = recognition_data.get("type", "")
+    recognition_param_data: dict = recognition_data.get("param", {})
     recognition_param = parse_recognition_param(
         recognition_type, recognition_param_data
     )
     recognition = JRecognition(type=recognition_type, param=recognition_param)
 
     # Convert action
-    action_data = data.get("action", {})
-    action_type = action_data.get("type", "")
+    action_data: dict = data.get("action", {})
+    action_type: str = action_data.get("type", "")
     action_param_data = action_data.get("param", {})
     action_param = parse_action_param(action_type, action_param_data)
     action = JAction(type=action_type, param=action_param)
-
-    # Convert wait freezes with proper defaults
-    def create_wait_freezes(data_dict):
-        if not data_dict:
-            return None
-        return JWaitFreezes(
-            time=data_dict.get("time", 0),
-            target=data_dict.get("target"),
-            target_offset=data_dict.get("target_offset"),
-            threshold=data_dict.get("threshold", 0),
-            method=data_dict.get("method", 0),
-            rate_limit=data_dict.get("rate_limit", 0),
-            timeout=data_dict.get("timeout", 0),
-        )
 
     pre_wait_freezes = create_wait_freezes(data.get("pre_wait_freezes"))
     post_wait_freezes = create_wait_freezes(data.get("post_wait_freezes"))
@@ -471,10 +439,10 @@ class Resource:
             Library.framework().MaaResourceDestroy(self._handle)
 
     def post_bundle(self, path: Union[pathlib.Path, str]) -> Job:
-        resid = Library.framework().MaaResourcePostBundle(
+        res_id = Library.framework().MaaResourcePostBundle(
             self._handle, str(path).encode()
         )
-        return Job(resid, self._status, self._wait)
+        return Job(res_id, self._status, self._wait)
 
     def override_pipeline(self, pipeline_override: Union[Dict, JPipelineData]) -> bool:
         if isinstance(pipeline_override, JPipelineData):
@@ -808,3 +776,36 @@ class Resource:
             MaaResourceHandle,
             MaaStringListBufferHandle,
         ]
+
+
+# Export public functions and classes
+__all__ = [
+    "Resource",
+    "JPipelineData",
+    "JRecognition",
+    "JAction",
+    "JWaitFreezes",
+    "JDirectHit",
+    "JTemplateMatch",
+    "JFeatureMatch",
+    "JColorMatch",
+    "JOCR",
+    "JNeuralNetworkClassify",
+    "JNeuralNetworkDetect",
+    "JCustomRecognition",
+    "JDoNothing",
+    "JClick",
+    "JLongPress",
+    "JSwipe",
+    "JMultiSwipe",
+    "JClickKey",
+    "JLongPressKey",
+    "JInputText",
+    "JStartApp",
+    "JStopApp",
+    "JStopTask",
+    "JCommand",
+    "JCustomAction",
+    "parse_pipeline_data",
+    "dump_pipeline_data",
+]
