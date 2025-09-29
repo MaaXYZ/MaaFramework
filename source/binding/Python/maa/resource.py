@@ -288,13 +288,11 @@ class JPipelineParser:
         if param_class == default_class:
             return param_class()
 
-        filtered_data = {k: v for k, v in param_data.items()}
-
         try:
-            return param_class(**filtered_data)
+            return param_class(**param_data)
         except TypeError as e:
             print(
-                f"Warning: Failed to create {param_class.__name__} with data {filtered_data}: {e}"
+                f"Warning: Failed to create {param_class.__name__} with data {param_data}: {e}"
             )
             return default_class()
 
