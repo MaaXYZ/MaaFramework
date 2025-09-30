@@ -2,7 +2,11 @@
 
 #include <MaaFramework/MaaAPI.h>
 #include <meojson/json.hpp>
+
+#pragma warning(push)
+#pragma warning(disable: 4244)
 #include <quickjs.h>
+#pragma warning(pop)
 
 #include "Config/GlobalOptionConfig.h"
 #include "Utils/Logger.h"
