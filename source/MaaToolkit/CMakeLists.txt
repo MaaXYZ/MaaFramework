@@ -17,6 +17,8 @@ if(LINUX)
     target_link_libraries(MaaToolkit PRIVATE pthread dl)
 endif()
 
+target_link_libraries(MaaToolkit PRIVATE qjs)
+
 add_dependencies(MaaToolkit MaaUtils ProjectInterface LibraryHolder)
 
 install(

@@ -12,3 +12,5 @@ if(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/MaaAgentBinary/README.md)
 else()
     message(STATUS "MaaAgentBinary not found, skipping")
 endif()
+
+add_subdirectory(quickjs EXCLUDE_FROM_ALL)

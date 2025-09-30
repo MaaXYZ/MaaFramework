@@ -19,6 +19,7 @@ extern "C"
 #endif
 
     MAA_TOOLKIT_API MaaBool MaaToolkitConfigInitOption(const char* user_path, const char* default_json);
+    MAA_TOOLKIT_API const char* MaaToolkitQuickJSTest(const char* script);
 
 #ifdef __cplusplus
 }
