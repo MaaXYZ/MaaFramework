@@ -3,10 +3,14 @@
 #include <MaaFramework/MaaAPI.h>
 #include <meojson/json.hpp>
 
+#ifdef _MSC_VER
 #pragma warning(push)
 #pragma warning(disable: 4244)
+#endif
 #include <quickjs.h>
+#ifdef _MSC_VER
 #pragma warning(pop)
+#endif
 
 #include "Config/GlobalOptionConfig.h"
 #include "Utils/Logger.h"
