@@ -31,7 +31,7 @@ class Context:
         pass
 
     def run_task(
-        self, entry: str, pipeline_override: Union[Dict, JPipelineData] = {}
+        self, entry: str, pipeline_override: Dict = {}
     ) -> Optional[TaskDetail]:
         task_id = int(
             Library.framework().MaaContextRunTask(
@@ -47,7 +47,7 @@ class Context:
         self,
         entry: str,
         image: numpy.ndarray,
-        pipeline_override: Union[Dict, JPipelineData] = {},
+        pipeline_override: Dict = {},
     ) -> Optional[RecognitionDetail]:
         image_buffer = ImageBuffer()
         image_buffer.set(image)
@@ -68,7 +68,7 @@ class Context:
         entry: str,
         box: RectType = (0, 0, 0, 0),
         reco_detail: str = "",
-        pipeline_override: Union[Dict, JPipelineData] = {},
+        pipeline_override: Dict = {},
     ) -> Optional[NodeDetail]:
         rect = RectBuffer()
         rect.set(box)
@@ -107,7 +107,9 @@ class Context:
             )
         )
 
-    def get_node_data(self, name: str) -> Optional[JPipelineData]:
+    def get_node_data(
+        self, name: str, as_class: bool = False
+    ) -> Union[JPipelineData, Dict, None]:
         string_buffer = StringBuffer()
         if not Library.framework().MaaContextGetNodeData(
             self._handle, name.encode(), string_buffer._handle
@@ -119,10 +121,14 @@ class Context:
             return None
 
         try:
-            return JPipelineParser.parse_pipeline_data(data)
-        except (ValueError, TypeError) as e:
-            # Log error for debugging but return None for backward compatibility
-            return None
+            node_data = json.loads(data) or None
+        except json.JSONDecodeError:
+            node_data = None
+
+        if as_class and node_data:
+            return JPipelineParser.parse_pipeline_data(node_data)
+        else:
+            return node_data
 
     @property
     def tasker(self) -> Tasker:

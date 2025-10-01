@@ -8,7 +8,7 @@ from .library import Library
 from .buffer import ImageListBuffer, RectBuffer, StringBuffer, ImageBuffer
 from .job import Job, JobWithResult
 from .notification_handler import NotificationHandler
-from .resource import Resource, JPipelineData
+from .resource import Resource
 from .controller import Controller
 
 
@@ -76,9 +76,7 @@ class Tasker:
     def inited(self) -> bool:
         return bool(Library.framework().MaaTaskerInited(self._handle))
 
-    def post_task(
-        self, entry: str, pipeline_override: Union[Dict, JPipelineData] = {}
-    ) -> JobWithResult:
+    def post_task(self, entry: str, pipeline_override: Dict = {}) -> JobWithResult:
         taskid = Library.framework().MaaTaskerPostTask(
             self._handle,
             *Tasker._gen_post_param(entry, pipeline_override),
