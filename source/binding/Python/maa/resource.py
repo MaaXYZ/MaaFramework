@@ -2,7 +2,7 @@ import ctypes
 import pathlib
 import json
 from typing import Any, Optional, Union, List, Dict, Tuple
-from dataclasses import dataclass, field, asdict
+from dataclasses import dataclass, field
 
 from .notification_handler import NotificationHandler
 from .define import *
