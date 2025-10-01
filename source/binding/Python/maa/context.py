@@ -8,7 +8,7 @@ from .buffer import ImageBuffer, RectBuffer, StringBuffer, StringListBuffer
 from .define import *
 from .library import Library
 from .tasker import Tasker
-from .resource import JPipelineData, JPipelineParser, dump_pipeline_data
+from .resource import JPipelineData, JPipelineParser
 from .job import JobWithResult
 
 
@@ -87,11 +87,8 @@ class Context:
 
         return self.tasker.get_node_detail(node_id)
 
-    def override_pipeline(self, pipeline_override: Union[Dict, JPipelineData]) -> bool:
-        if isinstance(pipeline_override, JPipelineData):
-            pipeline_json = dump_pipeline_data(pipeline_override)
-        else:
-            pipeline_json = json.dumps(pipeline_override, ensure_ascii=False)
+    def override_pipeline(self, pipeline_override: Dict) -> bool:
+        pipeline_json = json.dumps(pipeline_override, ensure_ascii=False)
 
         return bool(
             Library.framework().MaaContextOverridePipeline(
@@ -154,13 +151,8 @@ class Context:
         self._tasker = Tasker(handle=tasker_handle)
 
     @staticmethod
-    def _gen_post_param(
-        entry: str, pipeline_override: Union[Dict, JPipelineData]
-    ) -> Tuple[bytes, bytes]:
-        if isinstance(pipeline_override, JPipelineData):
-            pipeline_json = dump_pipeline_data(pipeline_override)
-        else:
-            pipeline_json = json.dumps(pipeline_override, ensure_ascii=False)
+    def _gen_post_param(entry: str, pipeline_override: Dict) -> Tuple[bytes, bytes]:
+        pipeline_json = json.dumps(pipeline_override, ensure_ascii=False)
 
         return (
             entry.encode(),

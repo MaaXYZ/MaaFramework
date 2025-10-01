@@ -262,7 +262,7 @@ class JPipelineData:
 
 class JPipelineParser:
     @staticmethod
-    def create_wait_freezes(data: dict) -> Optional[JWaitFreezes]:
+    def _create_wait_freezes(data: dict) -> Optional[JWaitFreezes]:
         """Convert wait freezes with proper defaults"""
         if not data:
             return None
@@ -334,12 +334,17 @@ class JPipelineParser:
         return cls.parse_param(param_type, param_data, param_type_map, JDoNothing)
 
     @classmethod
-    def parse_pipeline_data(cls, json_str: str) -> JPipelineData:
+    def parse_pipeline_data(cls, pipeline_data: Union[str, Dict]) -> JPipelineData:
         """Parse JSON string to JPipelineData dataclass with proper variant types."""
-        try:
-            data: dict = json.loads(json_str)
-        except json.JSONDecodeError as e:
-            raise ValueError(f"Invalid JSON format: {e}")
+        if isinstance(pipeline_data, dict):
+            data = pipeline_data
+        elif isinstance(pipeline_data, str):
+            try:
+                data: dict = json.loads(pipeline_data)
+            except json.JSONDecodeError as e:
+                raise ValueError(f"Invalid JSON format: {e}")
+        else:
+            raise TypeError("Input must be a JSON string or a dict.")
 
         # Convert recognition
         recognition_data: dict = data.get("recognition", {})
@@ -357,8 +362,8 @@ class JPipelineParser:
         action_param = cls.parse_action_param(action_type, action_param_data)
         action = JAction(type=action_type, param=action_param)
 
-        pre_wait_freezes = cls.create_wait_freezes(data.get("pre_wait_freezes"))  # type: ignore
-        post_wait_freezes = cls.create_wait_freezes(data.get("post_wait_freezes"))  # type: ignore
+        pre_wait_freezes = cls._create_wait_freezes(data.get("pre_wait_freezes"))  # type: ignore
+        post_wait_freezes = cls._create_wait_freezes(data.get("post_wait_freezes"))  # type: ignore
 
         # Create JPipelineData with converted data
         return JPipelineData(
@@ -378,36 +383,6 @@ class JPipelineParser:
             post_wait_freezes=post_wait_freezes,
             focus=data.get("focus"),
         )
-
-
-def dump_pipeline_data(pipeline_data: JPipelineData) -> str:
-    """Convert JPipelineData dataclass back to JSON string for C++ interop."""
-
-    # Use asdict() to convert the entire dataclass to dict
-    result = asdict(pipeline_data)
-
-    # Clean up the result: remove None values, empty lists, and default values
-    def clean_dict(data):
-        """Recursively clean a dictionary or list by removing None, empty, and default values."""
-        if isinstance(data, dict):
-            return {
-                k: clean_dict(v)
-                for k, v in data.items()
-                if v not in (None, [], {}, 0, False) or v is True
-            }
-        elif isinstance(data, list):
-            return [
-                clean_dict(item)
-                for item in data
-                if item not in (None, [], {}, 0, False)
-            ]
-        return data
-
-    cleaned_result = clean_dict(result)
-    final_dict = cleaned_result if cleaned_result else {}
-
-    # Convert to JSON string
-    return json.dumps(final_dict, ensure_ascii=False)
 
 
 class Resource:
@@ -450,11 +425,8 @@ class Resource:
         )
         return Job(res_id, self._status, self._wait)
 
-    def override_pipeline(self, pipeline_override: Union[Dict, JPipelineData]) -> bool:
-        if isinstance(pipeline_override, JPipelineData):
-            pipeline_json = dump_pipeline_data(pipeline_override)
-        else:
-            pipeline_json = json.dumps(pipeline_override, ensure_ascii=False)
+    def override_pipeline(self, pipeline_override: Dict) -> bool:
+        pipeline_json = json.dumps(pipeline_override, ensure_ascii=False)
 
         return bool(
             Library.framework().MaaResourceOverridePipeline(
@@ -781,36 +753,3 @@ class Resource:
             MaaResourceHandle,
             MaaStringListBufferHandle,
         ]
-
-
-# Export public functions and classes
-__all__ = [
-    "Resource",
-    "JPipelineData",
-    "JRecognition",
-    "JAction",
-    "JWaitFreezes",
-    "JDirectHit",
-    "JTemplateMatch",
-    "JFeatureMatch",
-    "JColorMatch",
-    "JOCR",
-    "JNeuralNetworkClassify",
-    "JNeuralNetworkDetect",
-    "JCustomRecognition",
-    "JDoNothing",
-    "JClick",
-    "JLongPress",
-    "JSwipe",
-    "JMultiSwipe",
-    "JClickKey",
-    "JLongPressKey",
-    "JInputText",
-    "JStartApp",
-    "JStopApp",
-    "JStopTask",
-    "JCommand",
-    "JCustomAction",
-    "parse_pipeline_data",
-    "dump_pipeline_data",
-]
