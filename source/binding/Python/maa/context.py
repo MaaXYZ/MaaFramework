@@ -107,9 +107,7 @@ class Context:
             )
         )
 
-    def get_node_data(
-        self, name: str, as_class: bool = False
-    ) -> Union[JPipelineData, Dict, None]:
+    def get_node_data(self, name: str) -> Optional[Dict]:
         string_buffer = StringBuffer()
         if not Library.framework().MaaContextGetNodeData(
             self._handle, name.encode(), string_buffer._handle
@@ -121,14 +119,17 @@ class Context:
             return None
 
         try:
-            node_data = json.loads(data) or None
+            return json.loads(data)
         except json.JSONDecodeError:
-            node_data = None
+            return None
 
-        if as_class and node_data:
+    def get_node_object(self, name: str) -> Optional[JPipelineData]:
+        node_data = self.get_node_data(name)
+
+        if node_data is not None:
             return JPipelineParser.parse_pipeline_data(node_data)
         else:
-            return node_data
+            return None
 
     @property
     def tasker(self) -> Tasker:

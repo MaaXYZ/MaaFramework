@@ -190,7 +190,7 @@ class Tasker:
 
     def get_recognition_detail(self, reco_id: int) -> Optional[RecognitionDetail]:
         name = StringBuffer()
-        algorithm = StringBuffer()
+        algorithm = StringBuffer()  # type: ignore
         hit = MaaBool()
         box = RectBuffer()
         detail_json = StringBuffer()
