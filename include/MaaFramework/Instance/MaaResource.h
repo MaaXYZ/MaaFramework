@@ -23,6 +23,12 @@ extern "C"
 
     MAA_FRAMEWORK_API void MaaResourceDestroy(MaaResource* res);
 
+    MAA_FRAMEWORK_API void MaaResourceAddSink(MaaResource* res, MaaNotificationCallback notify, void* notify_trans_arg);
+
+    MAA_FRAMEWORK_API void MaaResourceRemoveSink(MaaResource* res, MaaNotificationCallback notify);
+
+    MAA_FRAMEWORK_API void MaaResourceClearSinks(MaaResource* res);
+
     MAA_FRAMEWORK_API MaaBool
         MaaResourceRegisterCustomRecognition(MaaResource* res, const char* name, MaaCustomRecognitionCallback recognition, void* trans_arg);
 

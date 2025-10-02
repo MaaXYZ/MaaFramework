@@ -5,6 +5,42 @@
 #include "Utils/Buffer/StringBuffer.hpp"
 #include "Utils/Logger.h"
 
+void MaaTaskerAddSink(MaaTasker* tasker, MaaNotificationCallback notify, void* notify_trans_arg)
+{
+    LogInfo << VAR_VOIDP(tasker);
+
+    if (!tasker) {
+        LogError << "handle is null";
+        return;
+    }
+
+    tasker->add_sink(notify, notify_trans_arg);
+}
+
+void MaaTaskerRemoveSink(MaaTasker* tasker, MaaNotificationCallback notify)
+{
+    LogInfo << VAR_VOIDP(tasker);
+
+    if (!tasker) {
+        LogError << "handle is null";
+        return;
+    }
+
+    tasker->remove_sink(notify);
+}
+
+void MaaTaskerClearSinks(MaaTasker* tasker)
+{
+    LogInfo << VAR_VOIDP(tasker);
+
+    if (!tasker) {
+        LogError << "handle is null";
+        return;
+    }
+
+    tasker->clear_sinks();
+}
+
 MaaBool MaaTaskerSetOption(MaaTasker* tasker, MaaTaskerOption key, MaaOptionValue value, MaaOptionValueSize val_size)
 {
     LogFunc << VAR_VOIDP(tasker) << VAR(key) << VAR_VOIDP(value) << VAR(val_size);

@@ -54,6 +54,12 @@ extern "C"
 
     MAA_FRAMEWORK_API void MaaControllerDestroy(MaaController* ctrl);
 
+    MAA_FRAMEWORK_API void MaaControllerAddSink(MaaController* ctrl, MaaNotificationCallback notify, void* notify_trans_arg);
+
+    MAA_FRAMEWORK_API void MaaControllerRemoveSink(MaaController* ctrl, MaaNotificationCallback notify);
+
+    MAA_FRAMEWORK_API void MaaControllerClearSinks(MaaController* ctrl);
+
     /**
      * @param[in] value
      */
