@@ -10,7 +10,7 @@
 #include "Controller/ControllerAgent.h"
 #include "Resource/ResourceMgr.h"
 #include "RuntimeCache.h"
-#include "Utils/MessageDispatcher.hpp"
+#include "Utils/MessageNotifier.hpp"
 
 MAA_TASK_NS_BEGIN
 class TaskBase;
@@ -77,7 +77,7 @@ private:
     bool need_to_stop_ = false;
 
     std::unique_ptr<AsyncRunner<TaskPtr>> task_runner_ = nullptr;
-    MessageDispatcher notifier_;
+    MessageNotifier notifier_;
 
     std::map<MaaTaskId, RunnerId> task_id_mapping_;
     mutable std::shared_mutex task_id_mapping_mutex_;

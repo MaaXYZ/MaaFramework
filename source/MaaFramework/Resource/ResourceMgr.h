@@ -10,7 +10,7 @@
 #include "ONNXResMgr.h"
 #include "PipelineResMgr.h"
 #include "TemplateResMgr.h"
-#include "Utils/MessageDispatcher.hpp"
+#include "Utils/MessageNotifier.hpp"
 
 MAA_RES_NS_BEGIN
 
@@ -126,7 +126,7 @@ private:
     std::atomic_bool valid_ = true;
 
     std::unique_ptr<AsyncRunner<std::filesystem::path>> res_loader_ = nullptr;
-    MessageDispatcher notifier_;
+    MessageNotifier notifier_;
 
     MaaInferenceDevice inference_device_ = MaaInferenceDevice_Auto;
     MaaInferenceExecutionProvider inference_ep_ = MaaInferenceExecutionProvider_Auto;

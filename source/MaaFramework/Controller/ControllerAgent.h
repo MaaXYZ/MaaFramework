@@ -9,7 +9,7 @@
 #include "Common/MaaTypes.h"
 #include "ControlUnit/ControlUnitAPI.h"
 #include "Utils/JsonExt.hpp"
-#include "Utils/MessageDispatcher.hpp"
+#include "Utils/MessageNotifier.hpp"
 #include "Utils/NoWarningCVMat.hpp"
 
 MAA_RES_NS_BEGIN
@@ -228,7 +228,7 @@ private:
 
 private:
     const std::shared_ptr<MAA_CTRL_UNIT_NS::ControlUnitAPI> control_unit_ = nullptr;
-    MessageDispatcher notifier_;
+    MessageNotifier notifier_;
 
     bool connected_ = false;
     std::mutex image_mutex_;

@@ -22,9 +22,9 @@ struct MessageSink
     void* trans_arg = nullptr;
 };
 
-class MessageDispatcher
+class MessageNotifier
     : public NonCopyable
-    , public IMaaCallbackDispatcher
+    , public IMaaNotifier
     , private Dispatcher<MessageSink>
 {
 public:
