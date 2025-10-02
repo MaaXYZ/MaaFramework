@@ -163,6 +163,23 @@ class Tasker:
             )
         )
 
+    def add_sink(self, notify: NotificationHandler) -> bool:
+        return bool(
+            Library.framework().MaaTaskerAddSink(
+                self._handle, *NotificationHandler._gen_c_param(notify)
+            )
+        )
+
+    def remove_sink(self, notify: NotificationHandler) -> bool:
+        return bool(
+            Library.framework().MaaTaskerRemoveSink(
+                self._handle, *NotificationHandler._gen_c_param(notify)
+            )
+        )
+
+    def clear_sinks(self) -> bool:
+        return bool(Library.framework().MaaTaskerClearSinks(self._handle))
+
     ### private ###
 
     @staticmethod
@@ -438,3 +455,19 @@ class Tasker:
             MaaOptionValue,
             MaaOptionValueSize,
         ]
+
+        Library.framework().MaaTaskerAddSink.restype = MaaBool
+        Library.framework().MaaTaskerAddSink.argtypes = [
+            MaaTaskerHandle,
+            MaaNotificationCallback,
+            ctypes.c_void_p,
+        ]
+
+        Library.framework().MaaTaskerRemoveSink.restype = MaaBool
+        Library.framework().MaaTaskerRemoveSink.argtypes = [
+            MaaTaskerHandle,
+            MaaNotificationCallback,
+        ]
+
+        Library.framework().MaaTaskerClearSinks.restype = MaaBool
+        Library.framework().MaaTaskerClearSinks.argtypes = [MaaTaskerHandle]

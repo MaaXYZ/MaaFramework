@@ -173,6 +173,23 @@ class Controller:
             )
         )
 
+    def add_sink(self, notify: NotificationHandler) -> bool:
+        return bool(
+            Library.framework().MaaControllerAddSink(
+                self._handle, *NotificationHandler._gen_c_param(notify)
+            )
+        )
+
+    def remove_sink(self, notify: NotificationHandler) -> bool:
+        return bool(
+            Library.framework().MaaControllerRemoveSink(
+                self._handle, *NotificationHandler._gen_c_param(notify)
+            )
+        )
+
+    def clear_sinks(self) -> bool:
+        return bool(Library.framework().MaaControllerClearSinks(self._handle))
+
     ### private ###
 
     def _status(self, maaid: int) -> MaaStatus:
@@ -318,6 +335,22 @@ class Controller:
             MaaControllerHandle,
             MaaStringBufferHandle,
         ]
+
+        Library.framework().MaaControllerAddSink.restype = MaaBool
+        Library.framework().MaaControllerAddSink.argtypes = [
+            MaaControllerHandle,
+            MaaNotificationCallback,
+            ctypes.c_void_p,
+        ]
+
+        Library.framework().MaaControllerRemoveSink.restype = MaaBool
+        Library.framework().MaaControllerRemoveSink.argtypes = [
+            MaaControllerHandle,
+            MaaNotificationCallback,
+        ]
+
+        Library.framework().MaaControllerClearSinks.restype = MaaBool
+        Library.framework().MaaControllerClearSinks.argtypes = [MaaControllerHandle]
 
 
 class AdbController(Controller):
