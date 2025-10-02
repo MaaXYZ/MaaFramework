@@ -22,7 +22,19 @@ public:
     virtual std::optional<json::object> get_node_data(const std::string& node_name) const = 0;
 };
 
-struct MaaResource : public IMaaPipeline
+struct IMaaCallbackDispatcher
+{
+public:
+    virtual ~IMaaCallbackDispatcher() = default;
+
+    virtual void add_sink(MaaNotificationCallback callback, void* trans_arg) = 0;
+    virtual void remove_sink(MaaNotificationCallback callback) = 0;
+    virtual void clear_sinks() = 0;
+};
+
+struct MaaResource
+    : public IMaaPipeline
+    , public IMaaCallbackDispatcher
 {
 public:
     virtual ~MaaResource() = default;
@@ -48,7 +60,7 @@ public:
     virtual std::vector<std::string> get_node_list() const = 0;
 };
 
-struct MaaController
+struct MaaController : public IMaaCallbackDispatcher
 {
 public:
     virtual ~MaaController() = default;
@@ -80,7 +92,7 @@ public:
     virtual std::string get_uuid() = 0;
 };
 
-struct MaaTasker
+struct MaaTasker : public IMaaCallbackDispatcher
 {
 public:
     virtual ~MaaTasker() = default;

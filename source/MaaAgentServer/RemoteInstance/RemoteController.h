@@ -37,6 +37,13 @@ public:
     virtual cv::Mat cached_image() const override;
     virtual std::string get_uuid() override;
 
+    // TODO
+    virtual void add_sink(MaaNotificationCallback, void*) override {}
+
+    virtual void remove_sink(MaaNotificationCallback) override {}
+
+    virtual void clear_sinks() override {}
+
 private:
     Transceiver& server_;
     std::string controller_id_;

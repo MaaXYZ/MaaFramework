@@ -8,14 +8,10 @@
 
 MAA_CTRL_NS_BEGIN
 
-ControllerAgent::ControllerAgent(
-    std::shared_ptr<MAA_CTRL_UNIT_NS::ControlUnitAPI> control_unit,
-    MaaNotificationCallback notify,
-    void* notify_trans_arg)
+ControllerAgent::ControllerAgent(std::shared_ptr<MAA_CTRL_UNIT_NS::ControlUnitAPI> control_unit)
     : control_unit_(std::move(control_unit))
-    , notifier_(notify, notify_trans_arg)
 {
-    LogFunc << VAR(control_unit_) << VAR_VOIDP(notify) << VAR_VOIDP(notify_trans_arg);
+    LogFunc << VAR(control_unit_);
 
     action_runner_ =
         std::make_unique<AsyncRunner<Action>>(std::bind(&ControllerAgent::run_action, this, std::placeholders::_1, std::placeholders::_2));

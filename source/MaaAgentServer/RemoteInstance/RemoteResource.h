@@ -35,6 +35,13 @@ public:
     virtual std::string get_hash() const override;
     virtual std::vector<std::string> get_node_list() const override;
 
+    // TODO
+    virtual void add_sink(MaaNotificationCallback, void*) override {}
+
+    virtual void remove_sink(MaaNotificationCallback) override {}
+
+    virtual void clear_sinks() override {}
+
 private:
     Transceiver& server_;
     std::string resource_id_;

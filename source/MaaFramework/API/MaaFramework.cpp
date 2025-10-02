@@ -29,7 +29,9 @@ MaaController* MaaAdbControllerCreate(
         return nullptr;
     }
 
-    return new MAA_CTRL_NS::ControllerAgent(std::move(control_unit), notify, notify_trans_arg);
+    auto* handle = new MAA_CTRL_NS::ControllerAgent(std::move(control_unit));
+    handle->add_sink(notify, notify_trans_arg);
+    return handle;
 }
 
 MaaController* MaaWin32ControllerCreate(
@@ -59,7 +61,9 @@ MaaController* MaaWin32ControllerCreate(
         return nullptr;
     }
 
-    return new MAA_CTRL_NS::ControllerAgent(std::move(control_unit), notify, notify_trans_arg);
+    auto* handle = new MAA_CTRL_NS::ControllerAgent(std::move(control_unit));
+    handle->add_sink(notify, notify_trans_arg);
+    return handle;
 
 #endif
 }
@@ -84,7 +88,9 @@ MaaController* MaaCustomControllerCreate(
         return nullptr;
     }
 
-    return new MAA_CTRL_NS::ControllerAgent(std::move(control_unit), notify, notify_trans_arg);
+    auto* handle = new MAA_CTRL_NS::ControllerAgent(std::move(control_unit));
+    handle->add_sink(notify, notify_trans_arg);
+    return handle;
 }
 
 MaaController* MaaDbgControllerCreate(
@@ -107,7 +113,9 @@ MaaController* MaaDbgControllerCreate(
         return nullptr;
     }
 
-    return new MAA_CTRL_NS::ControllerAgent(std::move(control_unit), notify, notify_trans_arg);
+    auto* handle = new MAA_CTRL_NS::ControllerAgent(std::move(control_unit));
+    handle->add_sink(notify, notify_trans_arg);
+    return handle;
 }
 
 void MaaControllerDestroy(MaaController* ctrl)
@@ -126,7 +134,9 @@ MaaResource* MaaResourceCreate(MaaNotificationCallback notify, void* notify_tran
 {
     LogFunc << VAR_VOIDP(notify) << VAR_VOIDP(notify_trans_arg);
 
-    return new MAA_RES_NS::ResourceMgr(notify, notify_trans_arg);
+    auto* handle = new MAA_RES_NS::ResourceMgr;
+    handle->add_sink(notify, notify_trans_arg);
+    return handle;
 }
 
 void MaaResourceDestroy(MaaResource* res)
@@ -145,7 +155,9 @@ MaaTasker* MaaTaskerCreate(MaaNotificationCallback notify, void* notify_trans_ar
 {
     LogFunc << VAR_VOIDP(notify) << VAR_VOIDP(notify_trans_arg);
 
-    return new MAA_NS::Tasker(notify, notify_trans_arg);
+    auto* handle = new MAA_NS::Tasker;
+    handle->add_sink(notify, notify_trans_arg);
+    return handle;
 }
 
 void MaaTaskerDestroy(MaaTasker* tasker)

@@ -2,44 +2,45 @@
 
 #include <functional>
 #include <memory>
+#include <ranges>
 #include <unordered_set>
 
 #include "Conf/Conf.h"
 
 MAA_NS_BEGIN
 
-template <typename T>
+template <typename SinkT>
 class Dispatcher
 {
 public:
+    using ObserverId = MaaId;
+
     virtual ~Dispatcher() = default;
 
 public:
-    bool register_observer(const std::shared_ptr<T>& observer)
+    ObserverId register_observer(const std::shared_ptr<SinkT>& observer)
     {
         if (!observer) {
             return false;
         }
-        return observers_.emplace(observer).second;
+        auto it = observers_.emplace(++observer_id_, observer).first;
+        if (it == observers_.end()) {
+            return 0;
+        }
+        return observer_id_;
     }
 
-    bool unregister_observer(const std::shared_ptr<T>& observer)
-    {
-        if (!observer) {
-            return false;
-        }
-        return observers_.erase(observer) > 0;
-    }
+    bool unregister_observer(ObserverId observer_id) { return observers_.erase(observer_id) > 0; }
 
     void clear_observer() { observers_.clear(); }
 
-    void dispatch(const std::function<void(const std::shared_ptr<T>&)>& pred)
+    void dispatch(const std::function<void(const std::shared_ptr<SinkT>&)>& pred)
     {
         if (!pred) {
             return;
         }
 
-        for (auto& elem : observers_) {
+        for (auto& elem : observers_ | std::views::values) {
             if (!elem) {
                 continue;
             }
@@ -49,7 +50,8 @@ public:
     }
 
 private:
-    std::unordered_set<std::shared_ptr<T>> observers_;
+    std::unordered_map<ObserverId, std::shared_ptr<SinkT>> observers_;
+    ObserverId observer_id_ = 0;
 };
 
 MAA_NS_END

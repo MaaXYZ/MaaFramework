@@ -39,6 +39,13 @@ public:
     virtual std::optional<MAA_TASK_NS::RecoResult> get_reco_result(MaaRecoId reco_id) const override;
     virtual std::optional<MaaNodeId> get_latest_node(const std::string& node_name) const override;
 
+    // TODO
+    virtual void add_sink(MaaNotificationCallback, void*) override {}
+
+    virtual void remove_sink(MaaNotificationCallback) override {}
+
+    virtual void clear_sinks() override {}
+
 private:
     Transceiver& server_;
     std::string tasker_id_;
