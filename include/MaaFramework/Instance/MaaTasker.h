@@ -23,11 +23,11 @@ extern "C"
 
     MAA_FRAMEWORK_API void MaaTaskerDestroy(MaaTasker* tasker);
 
-    MAA_FRAMEWORK_API void MaaTaskerAddSink(MaaTasker* tasker, MaaNotificationCallback notify, void* notify_trans_arg);
+    MAA_FRAMEWORK_API MaaBool MaaTaskerAddSink(MaaTasker* tasker, MaaNotificationCallback notify, void* notify_trans_arg);
 
-    MAA_FRAMEWORK_API void MaaTaskerRemoveSink(MaaTasker* tasker, MaaNotificationCallback notify);
+    MAA_FRAMEWORK_API MaaBool MaaTaskerRemoveSink(MaaTasker* tasker, MaaNotificationCallback notify);
 
-    MAA_FRAMEWORK_API void MaaTaskerClearSinks(MaaTasker* tasker);
+    MAA_FRAMEWORK_API MaaBool MaaTaskerClearSinks(MaaTasker* tasker);
 
     /**
      * @param[in] value
