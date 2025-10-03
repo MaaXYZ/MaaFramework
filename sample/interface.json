@@ -159,6 +159,7 @@
             "inputs": [
                 {
                     "name": "章节号",
+                    "description": "关卡章节号，用阿拉伯数字表示", // 描述，应支持 文件名、URL、字符串，同时内容支持 markdown,
                     "default": "4",
                     "pipeline_type": "string", // 拼接到 pipeline_override 中的类型
                     "verify": "^\\d+$" // 正则表达式校验用户输入
