@@ -156,7 +156,7 @@
             "label": "自定义关卡",
             "description": "自己选打什么关", // 描述，应支持 文件名、URL、字符串，同时内容支持 markdown
             "icon": "扳手.png", // 图标，可选
-            "input": [
+            "inputs": [
                 {
                     "name": "章节号",
                     "default": "4",
