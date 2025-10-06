@@ -45,6 +45,8 @@ int main([[maybe_unused]] int argc, char** argv)
     MaaTaskerBindResource(tasker_handle, resource_handle);
     MaaTaskerBindController(tasker_handle, controller_handle);
 
+    MaaToolkitPluginSystemLoadLibrary("plugins/MaaMagicNode", tasker_handle, resource_handle, controller_handle);
+
     auto destroy = [&]() {
         MaaTaskerDestroy(tasker_handle);
         MaaResourceDestroy(resource_handle);
