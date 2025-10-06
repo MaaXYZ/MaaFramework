@@ -21,11 +21,11 @@ public:
     ObserverId register_observer(const std::shared_ptr<SinkT>& observer)
     {
         if (!observer) {
-            return false;
+            return MaaInvalidId;
         }
         auto it = observers_.emplace(++observer_id_, observer).first;
         if (it == observers_.end()) {
-            return 0;
+            return MaaInvalidId;
         }
         return observer_id_;
     }
