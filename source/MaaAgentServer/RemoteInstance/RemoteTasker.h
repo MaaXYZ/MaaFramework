@@ -40,13 +40,13 @@ public:
     virtual std::optional<MaaNodeId> get_latest_node(const std::string& node_name) const override;
 
     // TODO
-    virtual MaaSinkId add_sink(MaaEventCallback, void*) override {}
+    virtual MaaSinkId add_sink(MaaEventCallback, void*) override { return MaaInvalidId; }
 
     virtual void remove_sink(MaaSinkId) override {}
 
     virtual void clear_sinks() override {}
 
-    virtual MaaSinkId add_node_sink(MaaEventCallback, void*) override {}
+    virtual MaaSinkId add_node_sink(MaaEventCallback, void*) override { return MaaInvalidId; }
 
     virtual void remove_node_sink(MaaSinkId) override {}
 

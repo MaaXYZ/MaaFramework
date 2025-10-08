@@ -36,7 +36,7 @@ public:
     virtual std::vector<std::string> get_node_list() const override;
 
     // TODO
-    virtual MaaSinkId add_sink(MaaEventCallback, void*) override {}
+    virtual MaaSinkId add_sink(MaaEventCallback, void*) override { return MaaInvalidId; }
 
     virtual void remove_sink(MaaSinkId) override {}
 

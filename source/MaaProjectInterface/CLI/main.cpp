@@ -60,6 +60,6 @@ int main(int argc, char** argv)
         break;
     }
 
-    bool ret = MaaToolkitProjectInterfaceRunCli(0, resource_path.c_str(), user_path.c_str(), directly, nullptr, nullptr);
+    bool ret = MaaToolkitProjectInterfaceRunCli(0, resource_path.c_str(), user_path.c_str(), directly);
     return ret ? 0 : -1;
 }
