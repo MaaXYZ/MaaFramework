@@ -27,14 +27,12 @@ bool ProjectInterfaceMgr::run_cli(
     uint64_t inst_id,
     const std::filesystem::path& resource_path,
     const std::filesystem::path& user_path,
-    bool directly,
-    MaaNotificationCallback notify,
-    void* notify_trans_arg)
+    bool directly)
 {
     auto& config = MAA_TOOLKIT_NS::GlobalOptionConfig::get_instance();
     config.init(user_path, {});
 
-    Interactor interactor(user_path, notify, notify_trans_arg, custom_recognitions_[inst_id], custom_actions_[inst_id]);
+    Interactor interactor(user_path, custom_recognitions_[inst_id], custom_actions_[inst_id]);
 
     if (!interactor.load(resource_path)) {
         return false;

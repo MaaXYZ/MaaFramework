@@ -189,6 +189,11 @@ const RuntimeCache& Tasker::runtime_cache() const
     return runtime_cache_;
 }
 
+void Tasker::node_notify(MaaContext* context, std::string_view msg, const json::value& details)
+{
+    node_notifier_.notify(context, msg, details);
+}
+
 MaaTaskId Tasker::post_task(TaskPtr task_ptr, const json::value& pipeline_override)
 {
 #ifndef MAA_DEBUG
@@ -250,7 +255,7 @@ bool Tasker::run_task(RunnerId runner_id, TaskPtr task_ptr)
         task_detail.status = MaaStatus_Running;
         runtime_cache_.set_task_detail(task_id, std::move(task_detail));
     }
-    notify(MaaMsg_Tasker_Task_Starting, cb_detail);
+    notifier_.notify(this, MaaMsg_Tasker_Task_Starting, cb_detail);
 
     bool ret = task_ptr->run();
 
@@ -261,7 +266,7 @@ bool Tasker::run_task(RunnerId runner_id, TaskPtr task_ptr)
         task_detail.status = ret ? MaaStatus_Succeeded : MaaStatus_Failed;
         runtime_cache_.set_task_detail(task_id, std::move(task_detail));
     }
-    notify(ret ? MaaMsg_Tasker_Task_Succeeded : MaaMsg_Tasker_Task_Failed, cb_detail);
+    notifier_.notify(this, ret ? MaaMsg_Tasker_Task_Succeeded : MaaMsg_Tasker_Task_Failed, cb_detail);
 
     running_task_ = nullptr;
 

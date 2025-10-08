@@ -27,38 +27,23 @@ extern "C"
         MaaAdbScreencapMethod screencap_methods,
         MaaAdbInputMethod input_methods,
         const char* config,
-        const char* agent_path,
-        MaaNotificationCallback notify,
-        void* notify_trans_arg);
+        const char* agent_path);
 
-    MAA_FRAMEWORK_API MaaController* MaaWin32ControllerCreate(
-        void* hWnd,
-        MaaWin32ScreencapMethod screencap_method,
-        MaaWin32InputMethod input_method,
-        MaaNotificationCallback notify,
-        void* notify_trans_arg);
+    MAA_FRAMEWORK_API MaaController*
+        MaaWin32ControllerCreate(void* hWnd, MaaWin32ScreencapMethod screencap_method, MaaWin32InputMethod input_method);
 
-    MAA_FRAMEWORK_API MaaController* MaaCustomControllerCreate(
-        MaaCustomControllerCallbacks* controller,
-        void* controller_arg,
-        MaaNotificationCallback notify,
-        void* notify_trans_arg);
+    MAA_FRAMEWORK_API MaaController* MaaCustomControllerCreate(MaaCustomControllerCallbacks* controller, void* controller_arg);
 
-    MAA_FRAMEWORK_API MaaController* MaaDbgControllerCreate(
-        const char* read_path,
-        const char* write_path,
-        MaaDbgControllerType type,
-        const char* config,
-        MaaNotificationCallback notify,
-        void* notify_trans_arg);
+    MAA_FRAMEWORK_API MaaController*
+        MaaDbgControllerCreate(const char* read_path, const char* write_path, MaaDbgControllerType type, const char* config);
 
     MAA_FRAMEWORK_API void MaaControllerDestroy(MaaController* ctrl);
 
-    MAA_FRAMEWORK_API MaaBool MaaControllerAddSink(MaaController* ctrl, MaaNotificationCallback notify, void* notify_trans_arg);
+    MAA_FRAMEWORK_API MaaSinkId MaaControllerAddSink(MaaController* ctrl, MaaEventCallback notify, void* notify_trans_arg);
 
-    MAA_FRAMEWORK_API MaaBool MaaControllerRemoveSink(MaaController* ctrl, MaaNotificationCallback notify);
+    MAA_FRAMEWORK_API void MaaControllerRemoveSink(MaaController* ctrl, MaaSinkId sink_id);
 
-    MAA_FRAMEWORK_API MaaBool MaaControllerClearSinks(MaaController* ctrl);
+    MAA_FRAMEWORK_API void MaaControllerClearSinks(MaaController* ctrl);
 
     /**
      * @param[in] value

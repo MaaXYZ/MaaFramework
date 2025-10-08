@@ -36,12 +36,10 @@ std::vector<std::string> conv_args(const std::vector<std::string>& args)
 
 bool Runner::run(
     const RuntimeParam& param,
-    MaaNotificationCallback notify,
-    void* notify_trans_arg,
     const std::map<std::string, CustomRecognitionSession>& custom_recognitions,
     const std::map<std::string, CustomActionSession>& custom_actions)
 {
-    MaaTasker* tasker_handle = MaaTaskerCreate(notify, notify_trans_arg);
+    MaaTasker* tasker_handle = MaaTaskerCreate();
 
     MaaController* controller_handle = nullptr;
     if (const auto* p_adb_param = std::get_if<RuntimeParam::AdbParam>(&param.controller_param)) {
@@ -51,20 +49,17 @@ bool Runner::run(
             p_adb_param->screencap,
             p_adb_param->input,
             p_adb_param->config.c_str(),
-            p_adb_param->agent_path.c_str(),
-            notify,
-            notify_trans_arg);
+            p_adb_param->agent_path.c_str());
     }
     else if (const auto* p_win32_param = std::get_if<RuntimeParam::Win32Param>(&param.controller_param)) {
-        controller_handle =
-            MaaWin32ControllerCreate(p_win32_param->hwnd, p_win32_param->screencap, p_win32_param->input, notify, notify_trans_arg);
+        controller_handle = MaaWin32ControllerCreate(p_win32_param->hwnd, p_win32_param->screencap, p_win32_param->input);
     }
     else {
         LogError << "Unknown controller type";
         return false;
     }
 
-    MaaResource* resource_handle = MaaResourceCreate(notify, notify_trans_arg);
+    MaaResource* resource_handle = MaaResourceCreate();
     resource_handle->set_option(MaaResOption_InferenceDevice, const_cast<int32_t*>(&param.gpu), sizeof(int32_t));
 
     OnScopeLeave([&]() {

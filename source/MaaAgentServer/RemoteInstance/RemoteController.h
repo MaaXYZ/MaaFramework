@@ -38,9 +38,9 @@ public:
     virtual std::string get_uuid() override;
 
     // TODO
-    virtual void add_sink(MaaNotificationCallback, void*) override {}
+    virtual MaaSinkId add_sink(MaaEventCallback, void*) override {}
 
-    virtual void remove_sink(MaaNotificationCallback) override {}
+    virtual void remove_sink(MaaSinkId) override {}
 
     virtual void clear_sinks() override {}
 

@@ -517,13 +517,13 @@ bool ResourceMgr::run_load(typename AsyncRunner<std::filesystem::path>::Id id, s
         { "hash", get_hash() },
     };
 
-    notifier_.notify(MaaMsg_Resource_Loading_Starting, cb_detail);
+    notifier_.notify(this, MaaMsg_Resource_Loading_Starting, cb_detail);
 
     valid_ = load(path);
 
     cb_detail["hash"] = calc_hash();
 
-    notifier_.notify(valid_ ? MaaMsg_Resource_Loading_Succeeded : MaaMsg_Resource_Loading_Failed, cb_detail);
+    notifier_.notify(this, valid_ ? MaaMsg_Resource_Loading_Succeeded : MaaMsg_Resource_Loading_Failed, cb_detail);
 
     return valid_;
 }

@@ -32,19 +32,14 @@ bool run_without_file(const std::filesystem::path& testset_dir)
     auto testing_path = testset_dir / "PipelineSmoking" / "Screenshot";
     auto result_path = testset_dir / "debug";
 
-    auto controller_handle = MaaDbgControllerCreate(
-        testing_path.string().c_str(),
-        result_path.string().c_str(),
-        MaaDbgControllerType_CarouselImage,
-        "{}",
-        nullptr,
-        nullptr);
+    auto controller_handle =
+        MaaDbgControllerCreate(testing_path.string().c_str(), result_path.string().c_str(), MaaDbgControllerType_CarouselImage, "{}");
 
     MaaControllerWait(controller_handle, MaaControllerPostConnection(controller_handle));
 
-    auto resource_handle = MaaResourceCreate(nullptr, nullptr);
+    auto resource_handle = MaaResourceCreate();
 
-    auto tasker_handle = MaaTaskerCreate(nullptr, nullptr);
+    auto tasker_handle = MaaTaskerCreate();
     MaaTaskerBindResource(tasker_handle, resource_handle);
     MaaTaskerBindController(tasker_handle, controller_handle);
 

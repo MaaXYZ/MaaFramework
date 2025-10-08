@@ -76,35 +76,46 @@ bool PluginMgr::load_and_register(
 
     MaaBool loaded = false;
 
-    constexpr const char* kFuncOnTaskerMessage = "OnTaskerMessage";
-    if (library.has(kFuncOnTaskerMessage)) {
-        auto func = library.get<decltype(OnTaskerMessage)>(kFuncOnTaskerMessage);
+    constexpr const char* kFuncOnResEvent = "OnResEvent";
+    if (library.has(kFuncOnResEvent)) {
+        auto func = library.get<decltype(OnResEvent)>(kFuncOnResEvent);
         if (!func) {
-            LogError << "Failed to get function" << VAR(library_path) << VAR(kFuncOnTaskerMessage);
+            LogError << "Failed to get function" << VAR(library_path) << VAR(kFuncOnResEvent);
             return false;
         }
-
-        loaded |= MaaTaskerAddSink(tasker, func, tasker);
+        loaded |= MaaResourceAddSink(resource, func, nullptr);
     }
 
-    constexpr const char* kFuncOnResourceMessage = "OnResourceMessage";
-    if (library.has(kFuncOnResourceMessage)) {
-        auto func = library.get<decltype(OnResourceMessage)>(kFuncOnResourceMessage);
+    constexpr const char* kFuncOnCtrlEvent = "OnCtrlEvent";
+    if (library.has(kFuncOnCtrlEvent)) {
+        auto func = library.get<decltype(OnCtrlEvent)>(kFuncOnCtrlEvent);
         if (!func) {
-            LogError << "Failed to get function" << VAR(library_path) << VAR(kFuncOnResourceMessage);
+            LogError << "Failed to get function" << VAR(library_path) << VAR(kFuncOnCtrlEvent);
             return false;
         }
-        loaded |= MaaResourceAddSink(resource, func, resource);
+        loaded |= MaaControllerAddSink(controller, func, nullptr);
     }
 
-    constexpr const char* kFuncOnControllerMessage = "OnControllerMessage";
-    if (library.has(kFuncOnControllerMessage)) {
-        auto func = library.get<decltype(OnControllerMessage)>(kFuncOnControllerMessage);
+    constexpr const char* kFuncOnTaskerEvent = "OnTaskerEvent";
+    if (library.has(kFuncOnTaskerEvent)) {
+        auto func = library.get<decltype(OnTaskerEvent)>(kFuncOnTaskerEvent);
         if (!func) {
-            LogError << "Failed to get function" << VAR(library_path) << VAR(kFuncOnControllerMessage);
+            LogError << "Failed to get function" << VAR(library_path) << VAR(kFuncOnTaskerEvent);
             return false;
         }
-        loaded |= MaaControllerAddSink(controller, func, controller);
+
+        loaded |= MaaTaskerAddSink(tasker, func, nullptr);
+    }
+
+    constexpr const char* kFuncOnNodeEvent = "OnNodeEvent";
+    if (library.has(kFuncOnNodeEvent)) {
+        auto func = library.get<decltype(OnNodeEvent)>(kFuncOnNodeEvent);
+        if (!func) {
+            LogError << "Failed to get function" << VAR(library_path) << VAR(kFuncOnNodeEvent);
+            return false;
+        }
+
+        loaded |= MaaTaskerAddNodeSink(tasker, func, nullptr);
     }
 
     if (loaded) {

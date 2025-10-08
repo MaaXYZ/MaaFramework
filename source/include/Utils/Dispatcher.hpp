@@ -1,9 +1,9 @@
 #pragma once
 
 #include <functional>
+#include <map>
 #include <memory>
 #include <ranges>
-#include <unordered_set>
 
 #include "Conf/Conf.h"
 
@@ -50,7 +50,7 @@ public:
     }
 
 private:
-    std::unordered_map<ObserverId, std::shared_ptr<SinkT>> observers_;
+    std::map<ObserverId, std::shared_ptr<SinkT>> observers_;
     ObserverId observer_id_ = 0;
 };
 

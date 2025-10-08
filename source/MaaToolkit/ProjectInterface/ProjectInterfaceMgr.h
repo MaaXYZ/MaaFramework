@@ -22,13 +22,7 @@ public:
         MAA_PROJECT_INTERFACE_NS::CustomRecognitionSession recognition);
     void register_custom_action(uint64_t inst_id, const std::string& name, MAA_PROJECT_INTERFACE_NS::CustomActionSession action);
 
-    bool run_cli(
-        uint64_t inst_id,
-        const std::filesystem::path& resource_path,
-        const std::filesystem::path& user_path,
-        bool directly,
-        MaaNotificationCallback notify,
-        void* notify_trans_arg);
+    bool run_cli(uint64_t inst_id, const std::filesystem::path& resource_path, const std::filesystem::path& user_path, bool directly);
 
 private:
     std::map<uint64_t, std::map<std::string, MAA_PROJECT_INTERFACE_NS::CustomRecognitionSession>> custom_recognitions_;

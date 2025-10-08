@@ -6,43 +6,40 @@
 #include "Utils/Logger.h"
 #include "Utils/Platform.h"
 
-MaaBool MaaControllerAddSink(MaaController* ctrl, MaaNotificationCallback notify, void* notify_trans_arg)
+MaaSinkId MaaControllerAddSink(MaaController* ctrl, MaaEventCallback sink, void* trans_arg)
 {
-    LogInfo << VAR_VOIDP(ctrl);
+    LogInfo << VAR_VOIDP(ctrl) << VAR_VOIDP(sink) << VAR_VOIDP(trans_arg);
 
     if (!ctrl) {
         LogError << "handle is null";
-        return false;
+        return MaaInvalidId;
     }
 
-    ctrl->add_sink(notify, notify_trans_arg);
-    return true;
+    return ctrl->add_sink(sink, trans_arg);
 }
 
-MaaBool MaaControllerRemoveSink(MaaController* ctrl, MaaNotificationCallback notify)
+void MaaControllerRemoveSink(MaaController* ctrl, MaaSinkId sink_id)
 {
-    LogInfo << VAR_VOIDP(ctrl);
+    LogInfo << VAR_VOIDP(ctrl) << VAR(sink_id);
 
     if (!ctrl) {
         LogError << "handle is null";
-        return false;
+        return;
     }
 
-    ctrl->remove_sink(notify);
-    return true;
+    ctrl->remove_sink(sink_id);
 }
 
-MaaBool MaaControllerClearSinks(MaaController* ctrl)
+void MaaControllerClearSinks(MaaController* ctrl)
 {
     LogInfo << VAR_VOIDP(ctrl);
 
     if (!ctrl) {
         LogError << "handle is null";
-        return false;
+        return;
     }
 
     ctrl->clear_sinks();
-    return true;
 }
 
 MaaBool MaaControllerSetOption(MaaController* ctrl, MaaCtrlOption key, MaaOptionValue value, MaaOptionValueSize val_size)

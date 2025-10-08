@@ -21,14 +21,8 @@ void MaaToolkitProjectInterfaceRegisterCustomAction(uint64_t inst_id, const char
     MAA_TOOLKIT_NS::ProjectInterfaceMgr::get_instance().register_custom_action(inst_id, name, { .action = action, .trans_arg = trans_arg });
 }
 
-MaaBool MaaToolkitProjectInterfaceRunCli(
-    uint64_t inst_id,
-    const char* resource_path,
-    const char* user_path,
-    MaaBool directly,
-    MaaNotificationCallback notify,
-    void* notify_trans_arg)
+MaaBool MaaToolkitProjectInterfaceRunCli(uint64_t inst_id, const char* resource_path, const char* user_path, MaaBool directly)
 {
     return MAA_TOOLKIT_NS::ProjectInterfaceMgr::get_instance()
-        .run_cli(inst_id, MAA_NS::path(resource_path), MAA_NS::path(user_path), directly, notify, notify_trans_arg);
+        .run_cli(inst_id, MAA_NS::path(resource_path), MAA_NS::path(user_path), directly);
 }

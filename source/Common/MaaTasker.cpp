@@ -5,43 +5,76 @@
 #include "Utils/Buffer/StringBuffer.hpp"
 #include "Utils/Logger.h"
 
-MaaBool MaaTaskerAddSink(MaaTasker* tasker, MaaNotificationCallback notify, void* notify_trans_arg)
+MaaSinkId MaaTaskerAddSink(MaaTasker* tasker, MaaEventCallback sink, void* trans_arg)
 {
-    LogInfo << VAR_VOIDP(tasker);
+    LogInfo << VAR_VOIDP(tasker) << VAR_VOIDP(sink) << VAR_VOIDP(trans_arg);
 
     if (!tasker) {
         LogError << "handle is null";
-        return false;
+        return MaaInvalidId;
     }
 
-    tasker->add_sink(notify, notify_trans_arg);
-    return true;
+    return tasker->add_sink(sink, trans_arg);
 }
 
-MaaBool MaaTaskerRemoveSink(MaaTasker* tasker, MaaNotificationCallback notify)
+void MaaTaskerRemoveSink(MaaTasker* tasker, MaaSinkId sink_id)
 {
-    LogInfo << VAR_VOIDP(tasker);
+    LogInfo << VAR_VOIDP(tasker) << VAR(sink_id);
 
     if (!tasker) {
         LogError << "handle is null";
-        return false;
+        return;
     }
 
-    tasker->remove_sink(notify);
-    return true;
+    tasker->remove_sink(sink_id);
 }
 
-MaaBool MaaTaskerClearSinks(MaaTasker* tasker)
+void MaaTaskerClearSinks(MaaTasker* tasker)
 {
     LogInfo << VAR_VOIDP(tasker);
 
     if (!tasker) {
         LogError << "handle is null";
-        return false;
+        return;
     }
 
     tasker->clear_sinks();
-    return true;
+}
+
+MaaSinkId MaaTaskerAddNodeSink(MaaTasker* tasker, MaaEventCallback sink, void* trans_arg)
+{
+    LogInfo << VAR_VOIDP(tasker) << VAR_VOIDP(sink) << VAR_VOIDP(trans_arg);
+
+    if (!tasker) {
+        LogError << "handle is null";
+        return MaaInvalidId;
+    }
+
+    return tasker->add_node_sink(sink, trans_arg);
+}
+
+void MaaTaskerRemoveNodeSink(MaaTasker* tasker, MaaSinkId sink_id)
+{
+    LogInfo << VAR_VOIDP(tasker) << VAR(sink_id);
+
+    if (!tasker) {
+        LogError << "handle is null";
+        return;
+    }
+
+    tasker->remove_node_sink(sink_id);
+}
+
+void MaaTaskerClearNodeSinks(MaaTasker* tasker)
+{
+    LogInfo << VAR_VOIDP(tasker);
+
+    if (!tasker) {
+        LogError << "handle is null";
+        return;
+    }
+
+    tasker->clear_node_sinks();
 }
 
 MaaBool MaaTaskerSetOption(MaaTasker* tasker, MaaTaskerOption key, MaaOptionValue value, MaaOptionValueSize val_size)

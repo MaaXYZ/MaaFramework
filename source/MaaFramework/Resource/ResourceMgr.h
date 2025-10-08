@@ -10,7 +10,7 @@
 #include "ONNXResMgr.h"
 #include "PipelineResMgr.h"
 #include "TemplateResMgr.h"
-#include "Utils/MessageNotifier.hpp"
+#include "Utils/EventDispatcher.hpp"
 
 MAA_RES_NS_BEGIN
 
@@ -57,9 +57,9 @@ public: // MaaResource
     virtual std::string get_hash() const override;
     virtual std::vector<std::string> get_node_list() const override;
 
-    virtual void add_sink(MaaNotificationCallback callback, void* trans_arg) override { notifier_.add_sink(callback, trans_arg); }
+    virtual MaaSinkId add_sink(MaaEventCallback callback, void* trans_arg) override { return notifier_.add_sink(callback, trans_arg); }
 
-    virtual void remove_sink(MaaNotificationCallback callback) override { notifier_.remove_sink(callback); }
+    virtual void remove_sink(MaaSinkId sink_id) override { notifier_.remove_sink(sink_id); }
 
     virtual void clear_sinks() override { notifier_.clear_sinks(); }
 
@@ -126,7 +126,7 @@ private:
     std::atomic_bool valid_ = true;
 
     std::unique_ptr<AsyncRunner<std::filesystem::path>> res_loader_ = nullptr;
-    MessageNotifier notifier_;
+    EventDispatcher notifier_;
 
     MaaInferenceDevice inference_device_ = MaaInferenceDevice_Auto;
     MaaInferenceExecutionProvider inference_ep_ = MaaInferenceExecutionProvider_Auto;

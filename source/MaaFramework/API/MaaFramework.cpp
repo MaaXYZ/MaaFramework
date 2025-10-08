@@ -14,12 +14,9 @@ MaaController* MaaAdbControllerCreate(
     MaaAdbScreencapMethod screencap_methods,
     MaaAdbInputMethod input_methods,
     const char* config,
-    const char* agent_path,
-    MaaNotificationCallback notify,
-    void* notify_trans_arg)
+    const char* agent_path)
 {
-    LogFunc << VAR(adb_path) << VAR(address) << VAR(screencap_methods) << VAR(input_methods) << VAR(config) << VAR(agent_path)
-            << VAR_VOIDP(notify) << VAR_VOIDP(notify_trans_arg);
+    LogFunc << VAR(adb_path) << VAR(address) << VAR(screencap_methods) << VAR(input_methods) << VAR(config) << VAR(agent_path);
 
     auto control_unit =
         MAA_NS::AdbControlUnitLibraryHolder::create_control_unit(adb_path, address, screencap_methods, input_methods, config, agent_path);
@@ -29,19 +26,12 @@ MaaController* MaaAdbControllerCreate(
         return nullptr;
     }
 
-    auto* handle = new MAA_CTRL_NS::ControllerAgent(std::move(control_unit));
-    handle->add_sink(notify, notify_trans_arg);
-    return handle;
+    return new MAA_CTRL_NS::ControllerAgent(std::move(control_unit));
 }
 
-MaaController* MaaWin32ControllerCreate(
-    void* hWnd,
-    MaaWin32ScreencapMethod screencap_method,
-    MaaWin32InputMethod input_method,
-    MaaNotificationCallback notify,
-    void* notify_trans_arg)
+MaaController* MaaWin32ControllerCreate(void* hWnd, MaaWin32ScreencapMethod screencap_method, MaaWin32InputMethod input_method)
 {
-    LogFunc << VAR_VOIDP(hWnd) << VAR(screencap_method) << VAR(input_method) << VAR_VOIDP(notify) << VAR_VOIDP(notify_trans_arg);
+    LogFunc << VAR_VOIDP(hWnd) << VAR(screencap_method) << VAR(input_method);
 
 #ifndef _WIN32
 
@@ -61,20 +51,13 @@ MaaController* MaaWin32ControllerCreate(
         return nullptr;
     }
 
-    auto* handle = new MAA_CTRL_NS::ControllerAgent(std::move(control_unit));
-    handle->add_sink(notify, notify_trans_arg);
-    return handle;
-
+    return new MAA_CTRL_NS::ControllerAgent(std::move(control_unit));
 #endif
 }
 
-MaaController* MaaCustomControllerCreate(
-    MaaCustomControllerCallbacks* controller,
-    void* controller_arg,
-    MaaNotificationCallback notify,
-    void* notify_trans_arg)
+MaaController* MaaCustomControllerCreate(MaaCustomControllerCallbacks* controller, void* controller_arg)
 {
-    LogFunc << VAR(controller) << VAR(controller_arg) << VAR_VOIDP(notify) << VAR_VOIDP(notify_trans_arg);
+    LogFunc << VAR(controller) << VAR(controller_arg);
 
     if (!controller) {
         LogError << "controller is null";
@@ -88,20 +71,12 @@ MaaController* MaaCustomControllerCreate(
         return nullptr;
     }
 
-    auto* handle = new MAA_CTRL_NS::ControllerAgent(std::move(control_unit));
-    handle->add_sink(notify, notify_trans_arg);
-    return handle;
+    return new MAA_CTRL_NS::ControllerAgent(std::move(control_unit));
 }
 
-MaaController* MaaDbgControllerCreate(
-    const char* read_path,
-    const char* write_path,
-    MaaDbgControllerType type,
-    const char* config,
-    MaaNotificationCallback notify,
-    void* notify_trans_arg)
+MaaController* MaaDbgControllerCreate(const char* read_path, const char* write_path, MaaDbgControllerType type, const char* config)
 {
-    LogFunc << VAR(read_path) << VAR(write_path) << VAR(type) << VAR_VOIDP(notify) << VAR_VOIDP(notify_trans_arg);
+    LogFunc << VAR(read_path) << VAR(write_path) << VAR(type);
 
     std::ignore = write_path;
     std::ignore = config;
@@ -113,9 +88,7 @@ MaaController* MaaDbgControllerCreate(
         return nullptr;
     }
 
-    auto* handle = new MAA_CTRL_NS::ControllerAgent(std::move(control_unit));
-    handle->add_sink(notify, notify_trans_arg);
-    return handle;
+    return new MAA_CTRL_NS::ControllerAgent(std::move(control_unit));
 }
 
 void MaaControllerDestroy(MaaController* ctrl)
@@ -130,13 +103,11 @@ void MaaControllerDestroy(MaaController* ctrl)
     delete ctrl;
 }
 
-MaaResource* MaaResourceCreate(MaaNotificationCallback notify, void* notify_trans_arg)
+MaaResource* MaaResourceCreate()
 {
-    LogFunc << VAR_VOIDP(notify) << VAR_VOIDP(notify_trans_arg);
+    LogFunc;
 
-    auto* handle = new MAA_RES_NS::ResourceMgr;
-    handle->add_sink(notify, notify_trans_arg);
-    return handle;
+    return new MAA_RES_NS::ResourceMgr;
 }
 
 void MaaResourceDestroy(MaaResource* res)
@@ -151,13 +122,11 @@ void MaaResourceDestroy(MaaResource* res)
     delete res;
 }
 
-MaaTasker* MaaTaskerCreate(MaaNotificationCallback notify, void* notify_trans_arg)
+MaaTasker* MaaTaskerCreate()
 {
-    LogFunc << VAR_VOIDP(notify) << VAR_VOIDP(notify_trans_arg);
+    LogFunc;
 
-    auto* handle = new MAA_NS::Tasker;
-    handle->add_sink(notify, notify_trans_arg);
-    return handle;
+    return new MAA_NS::Tasker;
 }
 
 void MaaTaskerDestroy(MaaTasker* tasker)

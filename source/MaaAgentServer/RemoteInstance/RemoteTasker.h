@@ -40,11 +40,17 @@ public:
     virtual std::optional<MaaNodeId> get_latest_node(const std::string& node_name) const override;
 
     // TODO
-    virtual void add_sink(MaaNotificationCallback, void*) override {}
+    virtual MaaSinkId add_sink(MaaEventCallback, void*) override {}
 
-    virtual void remove_sink(MaaNotificationCallback) override {}
+    virtual void remove_sink(MaaSinkId) override {}
 
     virtual void clear_sinks() override {}
+
+    virtual MaaSinkId add_node_sink(MaaEventCallback, void*) override {}
+
+    virtual void remove_node_sink(MaaSinkId) override {}
+
+    virtual void clear_node_sinks() override {}
 
 private:
     Transceiver& server_;

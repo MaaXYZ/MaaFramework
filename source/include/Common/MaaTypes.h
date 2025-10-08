@@ -22,19 +22,19 @@ public:
     virtual std::optional<json::object> get_node_data(const std::string& node_name) const = 0;
 };
 
-struct IMaaNotifier
+struct IMaaEventDispatcher
 {
 public:
-    virtual ~IMaaNotifier() = default;
+    virtual ~IMaaEventDispatcher() = default;
 
-    virtual void add_sink(MaaNotificationCallback callback, void* trans_arg) = 0;
-    virtual void remove_sink(MaaNotificationCallback callback) = 0;
+    virtual MaaSinkId add_sink(MaaEventCallback callback, void* trans_arg) = 0;
+    virtual void remove_sink(MaaSinkId sink_id) = 0;
     virtual void clear_sinks() = 0;
 };
 
 struct MaaResource
     : public IMaaPipeline
-    , public IMaaNotifier
+    , public IMaaEventDispatcher
 {
 public:
     virtual ~MaaResource() = default;
@@ -60,7 +60,7 @@ public:
     virtual std::vector<std::string> get_node_list() const = 0;
 };
 
-struct MaaController : public IMaaNotifier
+struct MaaController : public IMaaEventDispatcher
 {
 public:
     virtual ~MaaController() = default;
@@ -92,7 +92,7 @@ public:
     virtual std::string get_uuid() = 0;
 };
 
-struct MaaTasker : public IMaaNotifier
+struct MaaTasker : public IMaaEventDispatcher
 {
 public:
     virtual ~MaaTasker() = default;
@@ -120,6 +120,10 @@ public:
     virtual std::optional<MAA_TASK_NS::NodeDetail> get_node_detail(MaaNodeId node_id) const = 0;
     virtual std::optional<MAA_TASK_NS::RecoResult> get_reco_result(MaaRecoId reco_id) const = 0;
     virtual std::optional<MaaNodeId> get_latest_node(const std::string& node_name) const = 0;
+
+    virtual MaaSinkId add_node_sink(MaaEventCallback callback, void* trans_arg) = 0;
+    virtual void remove_node_sink(MaaSinkId sink_id) = 0;
+    virtual void clear_node_sinks() = 0;
 };
 
 struct MaaContext : public IMaaPipeline
