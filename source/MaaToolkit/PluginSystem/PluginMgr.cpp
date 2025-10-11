@@ -4,8 +4,8 @@
 #include "MaaPlugin/MaaPluginAPI.h"
 
 #include "Utils/Logger.h"
-#include "Utils/Runtime.h"
 #include "Utils/Platform.h"
+#include "Utils/Runtime.h"
 
 MAA_TOOLKIT_NS_BEGIN
 
@@ -76,6 +76,25 @@ bool PluginMgr::load_and_register(
     auto& library = *opt;
 
     MaaBool loaded = false;
+
+    constexpr uint32_t kApiVersion = 1;
+    constexpr const char* kFuncGetApiVersion = "GetApiVersion";
+    if (library.has(kFuncGetApiVersion)) {
+        auto func = library.get<decltype(GetApiVersion)>(kFuncGetApiVersion);
+        if (!func) {
+            LogError << "Failed to get function" << VAR(library_path) << VAR(kFuncGetApiVersion);
+            return false;
+        }
+        uint32_t version = func();
+        if (version != kApiVersion) {
+            LogError << "Unsupported API version" << VAR(library_path) << VAR(version) << VAR(kApiVersion);
+            return false;
+        }
+    }
+    else {
+        LogError << "No API version function found" << VAR(library_path);
+        return false;
+    }
 
     constexpr const char* kFuncOnResourceEvent = "OnResourceEvent";
     if (library.has(kFuncOnResourceEvent)) {
