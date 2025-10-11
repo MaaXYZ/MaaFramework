@@ -94,6 +94,26 @@ bool AgentServer::register_custom_action(const std::string& name, MaaCustomActio
     return custom_actions_.insert_or_assign(name, CustomActionSession { action, trans_arg }).second;
 }
 
+MaaSinkId AgentServer::add_resource_sink(MaaEventCallback sink, void* trans_arg)
+{
+    return res_notifier_.add_sink(sink, trans_arg);
+}
+
+MaaSinkId AgentServer::add_controller_sink(MaaEventCallback sink, void* trans_arg)
+{
+    return ctrl_notifier_.add_sink(sink, trans_arg);
+}
+
+MaaSinkId AgentServer::add_tasker_sink(MaaEventCallback sink, void* trans_arg)
+{
+    return tasker_notifier_.add_sink(sink, trans_arg);
+}
+
+MaaSinkId AgentServer::add_context_sink(MaaEventCallback sink, void* trans_arg)
+{
+    return ctx_notifier_.add_sink(sink, trans_arg);
+}
+
 bool AgentServer::handle_inserted_request(const json::value& j)
 {
     LogInfo << VAR(j) << VAR(ipc_addr_);
@@ -105,6 +125,18 @@ bool AgentServer::handle_inserted_request(const json::value& j)
         return true;
     }
     else if (handle_action_request(j)) {
+        return true;
+    }
+    else if (handle_resource_event(j)) {
+        return true;
+    }
+    else if (handle_controller_event(j)) {
+        return true;
+    }
+    else if (handle_tasker_event(j)) {
+        return true;
+    }
+    else if (handle_context_event(j)) {
         return true;
     }
     else if (handle_start_up_request(j)) {
@@ -253,6 +285,71 @@ bool AgentServer::handle_shut_down_request(const json::value& j)
     msg_loop_running_ = false;
 
     send(ShutDownResponse {});
+
+    return true;
+}
+
+bool AgentServer::handle_resource_event(const json::value& j)
+{
+    if (!j.is<ResourceEventRequest>()) {
+        return false;
+    }
+
+    const ResourceEventRequest& req = j.as<ResourceEventRequest>();
+    LogFunc << VAR(req) << VAR(ipc_addr_) << VAR(req.message);
+
+    RemoteResource resource(*this, req.resource_id);
+    res_notifier_.notify(&resource, req.message, req.details);
+
+    send(ResourceEventResponse {});
+
+    return true;
+}
+
+bool AgentServer::handle_controller_event(const json::value& j)
+{
+    if (!j.is<ControllerEventRequest>()) {
+        return false;
+    }
+    const ControllerEventRequest& req = j.as<ControllerEventRequest>();
+    LogFunc << VAR(req) << VAR(ipc_addr_) << VAR(req.message);
+
+    RemoteController controller(*this, req.controller_id);
+    ctrl_notifier_.notify(&controller, req.message, req.details);
+
+    send(ControllerEventResponse {});
+
+    return true;
+}
+
+bool AgentServer::handle_tasker_event(const json::value& j)
+{
+    if (!j.is<TaskerEventRequest>()) {
+        return false;
+    }
+    const TaskerEventRequest& req = j.as<TaskerEventRequest>();
+    LogFunc << VAR(req) << VAR(ipc_addr_) << VAR(req.message);
+
+    RemoteTasker tasker(*this, req.tasker_id);
+    tasker_notifier_.notify(&tasker, req.message, req.details);
+
+    send(TaskerEventResponse {});
+
+    return true;
+}
+
+bool AgentServer::handle_context_event(const json::value& j)
+{
+    if (!j.is<ContextEventRequest>()) {
+        return false;
+    }
+    const ContextEventRequest& req = j.as<ContextEventRequest>();
+    LogFunc << VAR(req) << VAR(ipc_addr_) << VAR(req.message);
+
+    RemoteContext context(*this, req.context_id);
+    ctx_notifier_.notify(&context, req.message, req.details);
+
+    send(ContextEventResponse {});
 
     return true;
 }

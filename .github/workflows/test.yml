@@ -335,7 +335,6 @@ jobs:
 
             - name: Install
               shell: bash
-              if: always()
               run: |
                   cmake --install build --prefix install --config Debug
 

@@ -1,4 +1,5 @@
 #include "../include/forward.h"
+#include <MaaFramework/MaaAPI.h>
 
 #if defined(_WIN32)
 #include <Windows.h>
@@ -17,33 +18,17 @@ std::optional<Napi::External<ControllerInfo>> adb_controller_create(
     MaaAdbScreencapMethod screencap_methods,
     MaaAdbInputMethod input_methods,
     std::string config,
-    std::string agent_path,
-    std::optional<Napi::Function> callback)
+    std::string agent_path)
 {
-    MaaNotificationCallback cb = nullptr;
-    CallbackContext* ctx = nullptr;
     MaaController* handle = nullptr;
 
-    if (callback) {
-        cb = NotificationCallback;
-        ctx = new CallbackContext { env, callback.value(), "NotificationCallback" };
-    }
-
-    handle = MaaAdbControllerCreate(
-        adb_path.c_str(),
-        address.c_str(),
-        screencap_methods,
-        input_methods,
-        config.c_str(),
-        agent_path.c_str(),
-        cb,
-        ctx);
+    handle =
+        MaaAdbControllerCreate(adb_path.c_str(), address.c_str(), screencap_methods, input_methods, config.c_str(), agent_path.c_str());
 
     if (handle) {
-        return Napi::External<ControllerInfo>::New(env, new ControllerInfo { { handle }, ctx }, &DeleteFinalizer<ControllerInfo*>);
+        return Napi::External<ControllerInfo>::New(env, new ControllerInfo { { handle } }, &DeleteFinalizer<ControllerInfo*>);
     }
     else {
-        delete ctx;
         return std::nullopt;
     }
 }
@@ -52,8 +37,7 @@ std::optional<Napi::External<ControllerInfo>> win32_controller_create(
     Napi::Env env,
     __DesktopHandle* hwnd,
     MaaWin32ScreencapMethod screencap_methods,
-    MaaWin32InputMethod input_methods,
-    std::optional<Napi::Function> callback)
+    MaaWin32InputMethod input_methods)
 {
     void* h = static_cast<void*>(hwnd);
 #if defined(_WIN32)
@@ -63,28 +47,19 @@ std::optional<Napi::External<ControllerInfo>> win32_controller_create(
 #endif
     std::ignore = h;
 
-    MaaNotificationCallback cb = nullptr;
-    CallbackContext* ctx = nullptr;
     MaaController* handle = nullptr;
 
-    if (callback) {
-        cb = NotificationCallback;
-        ctx = new CallbackContext { env, callback.value(), "NotificationCallback" };
-    }
-
-    handle = MaaWin32ControllerCreate(hwnd, screencap_methods, input_methods, cb, ctx);
+    handle = MaaWin32ControllerCreate(hwnd, screencap_methods, input_methods);
 
     if (handle) {
-        return Napi::External<ControllerInfo>::New(env, new ControllerInfo { { handle }, ctx }, &DeleteFinalizer<ControllerInfo*>);
+        return Napi::External<ControllerInfo>::New(env, new ControllerInfo { { handle } }, &DeleteFinalizer<ControllerInfo*>);
     }
     else {
-        delete ctx;
         return std::nullopt;
     }
 }
 
-std::optional<Napi::External<ControllerInfo>>
-    custom_controller_create(Napi::Env env, std::optional<Napi::Function> ctrl, std::optional<Napi::Function> callback)
+std::optional<Napi::External<ControllerInfo>> custom_controller_create(Napi::Env env, std::optional<Napi::Function> ctrl)
 {
     static MaaCustomControllerCallbacks custom_controller_api = {
         CustomControllerConnect,   CustomControllerRequestUUID, CustomControllerStartApp, CustomControllerStopApp,
@@ -93,57 +68,36 @@ std::optional<Napi::External<ControllerInfo>>
         CustomControllerKeyDown,   CustomControllerKeyUp
     };
 
-    MaaNotificationCallback cb = nullptr;
-    CallbackContext* ctx = nullptr;
     MaaController* handle = nullptr;
 
     CallbackContext* custom_ctx = nullptr;
 
     custom_ctx = new CallbackContext { env, ctrl.value(), "CustomControllerCallback" };
 
-    if (callback) {
-        cb = NotificationCallback;
-        ctx = new CallbackContext { env, callback.value(), "NotificationCallback" };
-    }
-
-    handle = MaaCustomControllerCreate(&custom_controller_api, custom_ctx, cb, ctx);
+    handle = MaaCustomControllerCreate(&custom_controller_api, custom_ctx);
 
     if (handle) {
         return Napi::External<ControllerInfo>::New(
             env,
-            new ControllerInfo { { handle }, ctx, custom_ctx },
+            new ControllerInfo { { handle }, {}, custom_ctx },
             &DeleteFinalizer<ControllerInfo*>);
     }
     else {
-        delete ctx;
         return std::nullopt;
     }
 }
 
-std::optional<Napi::External<ControllerInfo>> dbg_controller_create(
-    Napi::Env env,
-    std::string read_path,
-    std::string write_path,
-    MaaDbgControllerType type,
-    std::string config,
-    std::optional<Napi::Function> callback)
+std::optional<Napi::External<ControllerInfo>>
+    dbg_controller_create(Napi::Env env, std::string read_path, std::string write_path, MaaDbgControllerType type, std::string config)
 {
-    MaaNotificationCallback cb = nullptr;
-    CallbackContext* ctx = nullptr;
     MaaController* handle = nullptr;
 
-    if (callback) {
-        cb = NotificationCallback;
-        ctx = new CallbackContext { env, callback.value(), "NotificationCallback" };
-    }
-
-    handle = MaaDbgControllerCreate(read_path.c_str(), write_path.c_str(), type, config.c_str(), cb, ctx);
+    handle = MaaDbgControllerCreate(read_path.c_str(), write_path.c_str(), type, config.c_str());
 
     if (handle) {
-        return Napi::External<ControllerInfo>::New(env, new ControllerInfo { { handle }, ctx }, &DeleteFinalizer<ControllerInfo*>);
+        return Napi::External<ControllerInfo>::New(env, new ControllerInfo { { handle } }, &DeleteFinalizer<ControllerInfo*>);
     }
     else {
-        delete ctx;
         return std::nullopt;
     }
 }
@@ -151,6 +105,39 @@ std::optional<Napi::External<ControllerInfo>> dbg_controller_create(
 void controller_destroy(Napi::External<ControllerInfo> info)
 {
     info.Data()->dispose();
+}
+
+MaaSinkId controller_add_sink(Napi::Env env, Napi::External<ControllerInfo> info, Napi::Function callback)
+{
+    CallbackContext* ctx = new CallbackContext { env, callback, "EventCallback<Controller>" };
+    auto id = MaaControllerAddSink(info.Data()->handle, NotificationCallback, ctx);
+    if (id != MaaInvalidId) {
+        info.Data()->callback[id] = ctx;
+        return id;
+    }
+    else {
+        delete ctx;
+        return MaaInvalidId;
+    }
+}
+
+void controller_remove_sink(Napi::External<ControllerInfo> info, MaaSinkId id)
+{
+    auto& callback = info.Data()->callback;
+    if (auto it = callback.find(id); it != callback.end()) {
+        delete it->second;
+        callback.erase(it);
+    }
+    MaaControllerRemoveSink(info.Data()->handle, id);
+}
+
+void controller_clear_sinks(Napi::External<ControllerInfo> info)
+{
+    for (auto [_, ctx] : info.Data()->callback) {
+        delete ctx;
+    }
+    info.Data()->callback.clear();
+    MaaControllerClearSinks(info.Data()->handle);
 }
 
 bool controller_set_option_screenshot_target_long_side(Napi::External<ControllerInfo> info, int32_t size)
@@ -282,6 +269,9 @@ void load_instance_controller(Napi::Env env, Napi::Object& exports, Napi::Extern
     BIND(custom_controller_create);
     BIND(dbg_controller_create);
     BIND(controller_destroy);
+    BIND(controller_add_sink);
+    BIND(controller_remove_sink);
+    BIND(controller_clear_sinks);
     BIND(controller_set_option_screenshot_target_long_side);
     BIND(controller_set_option_screenshot_target_short_side);
     BIND(controller_set_option_screenshot_use_raw_size);

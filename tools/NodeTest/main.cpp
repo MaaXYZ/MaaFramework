@@ -45,13 +45,13 @@ int main([[maybe_unused]] int argc, char** argv)
         .screencap = screencap,
     };
 
-    auto controller_handle = MaaCustomControllerCreate(&controller, nullptr, nullptr, nullptr);
+    auto controller_handle = MaaCustomControllerCreate(&controller, nullptr);
 
     MaaControllerWait(controller_handle, MaaControllerPostConnection(controller_handle));
 
-    auto resource_handle = MaaResourceCreate(nullptr, nullptr);
+    auto resource_handle = MaaResourceCreate();
 
-    auto tasker_handle = MaaTaskerCreate(nullptr, nullptr);
+    auto tasker_handle = MaaTaskerCreate();
     MaaTaskerBindResource(tasker_handle, resource_handle);
     MaaTaskerBindController(tasker_handle, controller_handle);
 

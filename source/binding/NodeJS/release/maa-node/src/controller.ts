@@ -1,9 +1,7 @@
 import path from 'path'
 
 import { Job, JobSource } from './job'
-import maa, { ImageData } from './maa'
-import { ChainNotifyType } from './types'
-import { chain_notify_impl } from './utils'
+import maa from './maa'
 
 class ImageJob extends Job<maa.CtrlId, JobSource<maa.CtrlId>> {
     #ctrl: ControllerBase
@@ -122,20 +120,13 @@ export class ControllerBase {
     handle: maa.ControllerHandle
     #source: JobSource<maa.CtrlId>
 
-    notify(message: string, details_json: string): maa.MaybePromise<void> {}
-
-    chain_notify = chain_notify_impl
-
-    chain_parsed_notify(
-        cb: (msg: ControllerNotify) => maa.MaybePromise<void>,
-        order: ChainNotifyType = 'after'
-    ) {
-        this.chain_notify((msg: string, details: string) => {
-            return cb({
+    static wrapSink(cb: (ctrl: ControllerBase, msg: ControllerNotify) => maa.MaybePromise<void>) {
+        return ((ctrl: ControllerBase, msg: string, details: string) => {
+            return cb(ctrl, {
                 msg: msg.replace(/^Controller\./, '') as any,
                 ...JSON.parse(details)
             })
-        }, order)
+        }) satisfies maa.EventCallbackWithHandle<ControllerBase>
     }
 
     constructor(handle: maa.ControllerHandle) {
@@ -148,6 +139,28 @@ export class ControllerBase {
 
     destroy() {
         maa.controller_destroy(this.handle)
+    }
+
+    add_sink(cb: maa.EventCallbackWithHandle<ControllerBase>) {
+        const ws = new WeakRef(this)
+        return maa.controller_add_sink(this.handle, (msg: string, details: string) => {
+            const ctrl = ws.deref()
+            if (ctrl) {
+                cb(ctrl, msg, details)
+            }
+        })
+    }
+
+    add_wrapped_sink(cb: (ctrl: ControllerBase, msg: ControllerNotify) => maa.MaybePromise<void>) {
+        return this.add_sink(ControllerBase.wrapSink(cb))
+    }
+
+    remove_sink(sink_id: maa.SinkId) {
+        maa.controller_remove_sink(this.handle, sink_id)
+    }
+
+    clear_sinks() {
+        maa.controller_clear_sinks(this.handle)
     }
 
     set screenshot_target_long_side(value: number) {
@@ -251,23 +264,18 @@ export class AdbController extends ControllerBase {
         config: string,
         agent?: string
     ) {
-        let ws: WeakRef<this>
         const h = maa.adb_controller_create(
             adb_path,
             address,
             screencap_methods,
             input_methods,
             config,
-            agent ?? AdbController.agent_path(),
-            (message, details_json) => {
-                return ws.deref()?.notify(message, details_json)
-            }
+            agent ?? AdbController.agent_path()
         )
         if (!h) {
             throw 'AdbController create failed'
         }
         super(h)
-        ws = new WeakRef(this)
     }
 
     static agent_path() {
@@ -285,20 +293,15 @@ export class Win32Controller extends ControllerBase {
         screencap_methods: maa.ScreencapOrInputMethods,
         input_methods: maa.ScreencapOrInputMethods
     ) {
-        let ws: WeakRef<this>
         const h = maa.win32_controller_create(
             hwnd ?? ('0' as maa.DesktopHandle),
             screencap_methods,
-            input_methods,
-            (message, details_json) => {
-                return ws.deref()?.notify(message, details_json)
-            }
+            input_methods
         )
         if (!h) {
             throw 'Win32Controller create failed'
         }
         super(h)
-        ws = new WeakRef(this)
     }
 
     static find() {
@@ -308,21 +311,11 @@ export class Win32Controller extends ControllerBase {
 
 export class DbgController extends ControllerBase {
     constructor(read_path: string, write_path: string, type: maa.Uint64, config: string) {
-        let ws: WeakRef<this>
-        const h = maa.dbg_controller_create(
-            read_path,
-            write_path,
-            type,
-            config,
-            (message, details_json) => {
-                return ws.deref()?.notify(message, details_json)
-            }
-        )
+        const h = maa.dbg_controller_create(read_path, write_path, type, config)
         if (!h) {
             throw 'DbgController create failed'
         }
         super(h)
-        ws = new WeakRef(this)
     }
 }
 
@@ -331,7 +324,7 @@ export abstract class CustomControllerActor {
     abstract request_uuid(): maa.MaybePromise<string | null>
     abstract start_app(intent: string): maa.MaybePromise<boolean>
     abstract stop_app(intent: string): maa.MaybePromise<boolean>
-    abstract screencap(): maa.MaybePromise<ImageData | null>
+    abstract screencap(): maa.MaybePromise<maa.ImageData | null>
     abstract click(x: number, y: number): maa.MaybePromise<boolean>
     abstract swipe(
         x1: number,
@@ -372,7 +365,7 @@ export class CustomControllerActorDefaultImpl extends CustomControllerActor {
     stop_app(intent: string): maa.MaybePromise<boolean> {
         return false
     }
-    screencap(): maa.MaybePromise<ImageData | null> {
+    screencap(): maa.MaybePromise<maa.ImageData | null> {
         return null
     }
     click(x: number, y: number): maa.MaybePromise<boolean> {
@@ -412,19 +405,12 @@ export class CustomControllerActorDefaultImpl extends CustomControllerActor {
 
 export class CustomController extends ControllerBase {
     constructor(actor: CustomControllerActor) {
-        let ws: WeakRef<this>
-        const h = maa.custom_controller_create(
-            (action, ...param) => {
-                return (actor[action] as any)(...param)
-            },
-            (message, details_json) => {
-                return ws.deref()?.notify(message, details_json)
-            }
-        )
+        const h = maa.custom_controller_create((action, ...param) => {
+            return (actor[action] as any)(...param)
+        })
         if (!h) {
             throw 'CustomController create failed'
         }
         super(h)
-        ws = new WeakRef(this)
     }
 }

@@ -5,6 +5,78 @@
 #include "Utils/Buffer/StringBuffer.hpp"
 #include "Utils/Logger.h"
 
+MaaSinkId MaaTaskerAddSink(MaaTasker* tasker, MaaEventCallback sink, void* trans_arg)
+{
+    LogInfo << VAR_VOIDP(tasker) << VAR_VOIDP(sink) << VAR_VOIDP(trans_arg);
+
+    if (!tasker) {
+        LogError << "handle is null";
+        return MaaInvalidId;
+    }
+
+    return tasker->add_sink(sink, trans_arg);
+}
+
+void MaaTaskerRemoveSink(MaaTasker* tasker, MaaSinkId sink_id)
+{
+    LogInfo << VAR_VOIDP(tasker) << VAR(sink_id);
+
+    if (!tasker) {
+        LogError << "handle is null";
+        return;
+    }
+
+    tasker->remove_sink(sink_id);
+}
+
+void MaaTaskerClearSinks(MaaTasker* tasker)
+{
+    LogInfo << VAR_VOIDP(tasker);
+
+    if (!tasker) {
+        LogError << "handle is null";
+        return;
+    }
+
+    tasker->clear_sinks();
+}
+
+MaaSinkId MaaTaskerAddContextSink(MaaTasker* tasker, MaaEventCallback sink, void* trans_arg)
+{
+    LogInfo << VAR_VOIDP(tasker) << VAR_VOIDP(sink) << VAR_VOIDP(trans_arg);
+
+    if (!tasker) {
+        LogError << "handle is null";
+        return MaaInvalidId;
+    }
+
+    return tasker->add_context_sink(sink, trans_arg);
+}
+
+void MaaTaskerRemoveContextSink(MaaTasker* tasker, MaaSinkId sink_id)
+{
+    LogInfo << VAR_VOIDP(tasker) << VAR(sink_id);
+
+    if (!tasker) {
+        LogError << "handle is null";
+        return;
+    }
+
+    tasker->remove_context_sink(sink_id);
+}
+
+void MaaTaskerClearContextSinks(MaaTasker* tasker)
+{
+    LogInfo << VAR_VOIDP(tasker);
+
+    if (!tasker) {
+        LogError << "handle is null";
+        return;
+    }
+
+    tasker->clear_context_sinks();
+}
+
 MaaBool MaaTaskerSetOption(MaaTasker* tasker, MaaTaskerOption key, MaaOptionValue value, MaaOptionValueSize val_size)
 {
     LogFunc << VAR_VOIDP(tasker) << VAR(key) << VAR_VOIDP(value) << VAR(val_size);

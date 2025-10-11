@@ -7,7 +7,6 @@ export * from './resource'
 export * from './tasker'
 export * from './context'
 export * from './global'
-export * from './pi'
 export * from './types'
 export * from './pipeline'
 

@@ -67,7 +67,7 @@ class Resource:
                 self._handle, name.encode(), list_buffer._handle
             )
         )
-    
+
     def get_node_data(self, name: str) -> Optional[dict]:
         string_buffer = StringBuffer()
         if not Library.framework().MaaResourceGetNodeData(
@@ -231,6 +231,23 @@ class Resource:
             raise RuntimeError("Failed to get hash.")
         return buffer.get()
 
+    def add_sink(self, notify: NotificationHandler) -> bool:
+        return bool(
+            Library.framework().MaaResourceAddSink(
+                self._handle, *NotificationHandler._gen_c_param(notify)
+            )
+        )
+
+    def remove_sink(self, notify: NotificationHandler) -> bool:
+        return bool(
+            Library.framework().MaaResourceRemoveSink(
+                self._handle, *NotificationHandler._gen_c_param(notify)
+            )
+        )
+
+    def clear_sinks(self) -> bool:
+        return bool(Library.framework().MaaResourceClearSinks(self._handle))
+
     ### private ###
 
     def set_inference(self, execution_provider: int, device_id: int) -> bool:
@@ -376,3 +393,19 @@ class Resource:
             MaaResourceHandle,
             MaaStringListBufferHandle,
         ]
+
+        Library.framework().MaaResourceAddSink.restype = MaaBool
+        Library.framework().MaaResourceAddSink.argtypes = [
+            MaaResourceHandle,
+            MaaNotificationCallback,
+            ctypes.c_void_p,
+        ]
+
+        Library.framework().MaaResourceRemoveSink.restype = MaaBool
+        Library.framework().MaaResourceRemoveSink.argtypes = [
+            MaaResourceHandle,
+            MaaNotificationCallback,
+        ]
+
+        Library.framework().MaaResourceClearSinks.restype = MaaBool
+        Library.framework().MaaResourceClearSinks.argtypes = [MaaResourceHandle]

@@ -1,9 +1,8 @@
+import { Context } from './context'
 import { ControllerBase } from './controller'
 import { Job, JobSource } from './job'
 import maa from './maa'
 import { ResourceBase } from './resource'
-import { ChainNotifyType } from './types'
-import { chain_notify_impl } from './utils'
 
 type TaskDetail = ReturnType<TaskerBase['task_detail']>
 
@@ -56,14 +55,15 @@ export class TaskJob extends Job<maa.TaskId, JobSource<maa.TaskId>> {
     }
 }
 
-export type TaskerNotify =
-    | {
-          msg: 'Task.Started' | 'Task.Completed' | 'Task.Failed'
-          task_id: maa.TaskId
-          entry: string
-          uuid: string
-          hash: string
-      }
+export type TaskerNotify = {
+    msg: 'Task.Started' | 'Task.Completed' | 'Task.Failed'
+    task_id: maa.TaskId
+    entry: string
+    uuid: string
+    hash: string
+}
+
+export type TaskerContextNotify =
     | {
           msg: 'NextList.Starting' | 'NextList.Succeeded' | 'NextList.Failed'
           task_id: maa.TaskId
@@ -90,20 +90,22 @@ export class TaskerBase {
     handle: maa.TaskerHandle
     #source: JobSource<maa.TaskId>
 
-    notify(message: string, details_json: string): maa.MaybePromise<void> {}
-
-    chain_notify = chain_notify_impl
-
-    chain_parsed_notify(
-        cb: (msg: TaskerNotify) => maa.MaybePromise<void>,
-        order: ChainNotifyType = 'after'
-    ) {
-        this.chain_notify((msg: string, details: string) => {
-            return cb({
-                msg: msg.replace(/^(?:Tasker|Node)?\./, '') as any,
+    static wrapSink(cb: (tasker: TaskerBase, msg: TaskerNotify) => maa.MaybePromise<void>) {
+        return ((tasker: TaskerBase, msg: string, details: string) => {
+            return cb(tasker, {
+                msg: msg.replace(/^Tasker\./, '') as any,
                 ...JSON.parse(details)
             })
-        }, order)
+        }) satisfies maa.EventCallbackWithHandle<TaskerBase>
+    }
+
+    static wrapContextSink(cb: (ctx: Context, msg: TaskerContextNotify) => maa.MaybePromise<void>) {
+        return ((ctx: Context, msg: string, details: string) => {
+            return cb(ctx, {
+                msg: msg.replace(/^Node\./, '') as any,
+                ...JSON.parse(details)
+            })
+        }) satisfies maa.EventCallbackWithHandle<Context>
     }
 
     constructor(handle: maa.TaskerHandle) {
@@ -116,6 +118,48 @@ export class TaskerBase {
 
     destroy() {
         maa.tasker_destroy(this.handle)
+    }
+
+    add_sink(cb: maa.EventCallbackWithHandle<TaskerBase>) {
+        const ws = new WeakRef(this)
+        return maa.tasker_add_sink(this.handle, (msg: string, details: string) => {
+            const tasker = ws.deref()
+            if (tasker) {
+                cb(tasker, msg, details)
+            }
+        })
+    }
+
+    add_wrapped_sink(cb: (tasker: TaskerBase, msg: TaskerNotify) => maa.MaybePromise<void>) {
+        return this.add_sink(TaskerBase.wrapSink(cb))
+    }
+
+    remove_sink(sink_id: maa.SinkId) {
+        maa.tasker_remove_sink(this.handle, sink_id)
+    }
+
+    clear_sinks() {
+        maa.tasker_clear_sinks(this.handle)
+    }
+
+    add_context_sink(cb: maa.EventCallbackWithHandle<Context>) {
+        return maa.tasker_add_context_sink(this.handle, (ctx, msg, details) => {
+            cb(new Context(ctx), msg, details)
+        })
+    }
+
+    add_wrapped_context_sink(
+        cb: (ctx: Context, msg: TaskerContextNotify) => maa.MaybePromise<void>
+    ) {
+        return this.add_context_sink(TaskerBase.wrapContextSink(cb))
+    }
+
+    remove_context_sink(sink_id: maa.SinkId) {
+        maa.tasker_remove_context_sink(this.handle, sink_id)
+    }
+
+    clear_context_sinks() {
+        maa.tasker_clear_context_sinks(this.handle)
     }
 
     bind(slave: ControllerBase | ResourceBase) {
@@ -231,14 +275,10 @@ export class TaskerBase {
 
 export class Tasker extends TaskerBase {
     constructor() {
-        let ws: WeakRef<this>
-        const h = maa.tasker_create((message, details_json) => {
-            return ws.deref()?.notify(message, details_json)
-        })
+        const h = maa.tasker_create()
         if (!h) {
             throw 'Tasker create failed'
         }
         super(h)
-        ws = new WeakRef(this)
     }
 }

@@ -19,9 +19,21 @@ extern "C"
 {
 #endif
 
-    MAA_FRAMEWORK_API MaaTasker* MaaTaskerCreate(MaaNotificationCallback notify, void* notify_trans_arg);
+    MAA_FRAMEWORK_API MaaTasker* MaaTaskerCreate();
 
     MAA_FRAMEWORK_API void MaaTaskerDestroy(MaaTasker* tasker);
+
+    MAA_FRAMEWORK_API MaaSinkId MaaTaskerAddSink(MaaTasker* tasker, MaaEventCallback sink, void* trans_arg);
+
+    MAA_FRAMEWORK_API void MaaTaskerRemoveSink(MaaTasker* tasker, MaaSinkId sink_id);
+
+    MAA_FRAMEWORK_API void MaaTaskerClearSinks(MaaTasker* tasker);
+
+    MAA_FRAMEWORK_API MaaSinkId MaaTaskerAddContextSink(MaaTasker* tasker, MaaEventCallback sink, void* trans_arg);
+
+    MAA_FRAMEWORK_API void MaaTaskerRemoveContextSink(MaaTasker* tasker, MaaSinkId sink_id);
+
+    MAA_FRAMEWORK_API void MaaTaskerClearContextSinks(MaaTasker* tasker);
 
     /**
      * @param[in] value

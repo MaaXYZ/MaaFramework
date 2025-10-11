@@ -7,11 +7,33 @@
 #include "utils.h"
 #include "wrapper.h"
 
-inline void NotificationCallback(const char* message, const char* details_json, void* callback_arg)
+inline void NotificationCallback(void*, const char* message, const char* details_json, void* callback_arg)
 {
     auto ctx = reinterpret_cast<CallbackContext*>(callback_arg);
     ctx->Call<void>(
-        [=](auto env, auto fn) { return fn.Call({ Napi::String::New(env, message), Napi::String::New(env, details_json) }); },
+        [=](auto env, auto fn) {
+            return fn.Call(
+                {
+                    Napi::String::New(env, message),
+                    Napi::String::New(env, details_json),
+                });
+        },
+        [](auto res) { std::ignore = res; });
+}
+
+inline void ContextNotificationCallback(void* context, const char* message, const char* details_json, void* callback_arg)
+{
+    MaaContext* maaCtx = static_cast<MaaContext*>(context);
+    auto ctx = reinterpret_cast<CallbackContext*>(callback_arg);
+    ctx->Call<void>(
+        [=](auto env, auto fn) {
+            return fn.Call(
+                {
+                    Napi::External<MaaContext>::New(env, maaCtx),
+                    Napi::String::New(env, message),
+                    Napi::String::New(env, details_json),
+                });
+        },
         [](auto res) { std::ignore = res; });
 }
 
@@ -370,7 +392,6 @@ inline MaaBool CustomControllerInputText(const char* text, void* trans_arg)
 
     return res;
 }
-
 
 inline MaaBool CustomControllerKeyDown(int32_t keycode, void* trans_arg)
 {

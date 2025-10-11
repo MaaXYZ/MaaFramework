@@ -97,9 +97,9 @@ async function api_test() {
     r2.destroy()
 
     const resource = new maa.Resource()
-    resource.parsed_notify = msg => {
+    resource.add_wrapped_sink(msg => {
         console.log(msg)
-    }
+    })
     console.log('rsource', resource)
 
     const dbg_controller = new maa.DbgController(
@@ -108,16 +108,16 @@ async function api_test() {
         maa.api.DbgControllerType.CarouselImage,
         '{}'
     )
-    dbg_controller.parsed_notify = msg => {
+    dbg_controller.add_wrapped_sink(msg => {
         console.log(msg)
-    }
+    })
     console.log('controller', dbg_controller)
     await dbg_controller.post_connection().wait()
 
     const tasker = new maa.Tasker()
-    tasker.parsed_notify = msg => {
+    tasker.add_wrapped_sink(msg => {
         console.log(msg)
-    }
+    })
     console.log('tasker', tasker)
     tasker.bind(resource)
     tasker.bind(dbg_controller)
@@ -161,10 +161,6 @@ async function api_test() {
     console.log('devices', devices)
     const desktop = await maa.Win32Controller.find()
     console.log('desktop', desktop)
-
-    maa.Pi.register_custom_action(0, 'MyAct', myAct)
-    maa.Pi.register_custom_recognizer(0, 'MyReco', myReco)
-    // await maa.Pi.run_cli(0, '/path/to/resource', '.', true)
 
     if (!analyzed || !runned) {
         console.log('failed to run custom recognition or action')

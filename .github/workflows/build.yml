@@ -113,7 +113,6 @@ jobs:
 
             - name: Install
               shell: bash
-              if: always()
               run: |
                   cmake --install build --prefix install --config ${{ inputs.build_config || needs.meta.outputs.build_config }}
                   rm -rf install/bin/msvc-debug
@@ -193,7 +192,6 @@ jobs:
 
             - name: Install
               shell: bash
-              if: always()
               run: |
                   cmake --install build --prefix install --config ${{ inputs.build_config || needs.meta.outputs.build_config }}
 
@@ -270,7 +268,6 @@ jobs:
 
             - name: Install
               shell: bash
-              if: always()
               run: |
                   cmake --install build --prefix install --config ${{ inputs.build_config || needs.meta.outputs.build_config }}
 
@@ -336,7 +333,6 @@ jobs:
 
             - name: Install
               shell: bash
-              if: always()
               run: |
                   cmake --install build --prefix install --config ${{ inputs.build_config || needs.meta.outputs.build_config }}
 

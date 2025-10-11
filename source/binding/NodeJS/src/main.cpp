@@ -18,7 +18,6 @@ Napi::Object Init(Napi::Env env, Napi::Object exports)
 
     load_toolkit_config(env, exports, extCtx);
     load_toolkit_find(env, exports, extCtx);
-    load_toolkit_pi(env, exports, extCtx);
 
     load_agent(env, exports, extCtx);
 

@@ -50,7 +50,6 @@ set(maa_common_src
     src/instance/tasker.cpp
     src/toolkit/config.cpp
     src/toolkit/find.cpp
-    src/toolkit/pi.cpp
     src/utility/utility.cpp
     src/main.cpp
 
