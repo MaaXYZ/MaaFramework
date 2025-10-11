@@ -1780,7 +1780,7 @@ void AgentClient::res_event_sink(void* handle, const char* message, const char* 
     ResourceEventRequest req {
         .resource_id = pthis->resource_id(reinterpret_cast<MaaResource*>(handle)),
         .message = message,
-        .details = json::parse(details_json).value_or({}),
+        .details = json::parse(details_json).value_or(json::value {}),
     };
 
     std::ignore = pthis->send_and_recv<ResourceEventResponse>(req);
@@ -1809,7 +1809,7 @@ void AgentClient::ctrl_event_sink(void* handle, const char* message, const char*
     ControllerEventRequest req {
         .controller_id = pthis->controller_id(reinterpret_cast<MaaController*>(handle)),
         .message = message,
-        .details = json::parse(details_json).value_or({}),
+        .details = json::parse(details_json).value_or(json::value {}),
     };
 
     std::ignore = pthis->send_and_recv<ControllerEventResponse>(req);
@@ -1838,7 +1838,7 @@ void AgentClient::tasker_event_sink(void* handle, const char* message, const cha
     TaskerEventRequest req {
         .tasker_id = pthis->tasker_id(reinterpret_cast<MaaTasker*>(handle)),
         .message = message,
-        .details = json::parse(details_json).value_or({}),
+        .details = json::parse(details_json).value_or(json::value {}),
     };
 
     std::ignore = pthis->send_and_recv<TaskerEventResponse>(req);
@@ -1867,7 +1867,7 @@ void AgentClient::ctx_event_sink(void* handle, const char* message, const char* 
     ContextEventRequest req {
         .context_id = pthis->context_id(reinterpret_cast<MaaContext*>(handle)),
         .message = message,
-        .details = json::parse(details_json).value_or({}),
+        .details = json::parse(details_json).value_or(json::value {}),
     };
 
     std::ignore = pthis->send_and_recv<ContextEventResponse>(req);
