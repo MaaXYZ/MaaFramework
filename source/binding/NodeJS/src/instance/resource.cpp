@@ -17,7 +17,11 @@ std::optional<Napi::External<ResourceInfo>> resource_create(Napi::Env env, std::
         ctx = new CallbackContext { env, callback.value(), "NotificationCallback" };
     }
 
-    handle = MaaResourceCreate(cb, ctx);
+    // TODO
+    std::ignore = cb;
+    std::ignore = ctx;
+    
+    handle = MaaResourceCreate();
 
     if (handle) {
         return Napi::External<ResourceInfo>::New(env, new ResourceInfo { { handle }, ctx }, &DeleteFinalizer<ResourceInfo*>);

@@ -17,7 +17,11 @@ std::optional<Napi::External<TaskerInfo>> tasker_create(Napi::Env env, ExtContex
         ctx = new CallbackContext { env, callback.value(), "NotificationCallback" };
     }
 
-    handle = MaaTaskerCreate(cb, ctx);
+    // TODO
+    std::ignore = cb;
+    std::ignore = ctx;
+
+    handle = MaaTaskerCreate();
 
     if (handle) {
         auto info = Napi::External<TaskerInfo>::New(env, new TaskerInfo { { handle }, ctx }, &DeleteFinalizer<TaskerInfo*>);
