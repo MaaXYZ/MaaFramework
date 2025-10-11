@@ -333,26 +333,6 @@ export declare function set_global_option_save_draw(value: boolean): boolean
 export declare function set_global_option_stdout_level(value: LoggingLevel): boolean
 export declare function set_global_option_debug_mode(value: boolean): boolean
 
-// pi.cpp
-
-export declare function pi_register_custom_recognizer(
-    id: Id,
-    name: string,
-    recognizer: CustomRecognitionCallback
-): void
-export declare function pi_register_custom_action(
-    id: Id,
-    name: string,
-    action: CustomActionCallback
-): void
-export declare function pi_run_cli(
-    id: Id,
-    resource_path: string,
-    user_path: string,
-    directly: boolean,
-    callback: NotificationCallback | null
-): Promise<boolean>
-
 export declare const Status: Record<
     'Invalid' | 'Pending' | 'Running' | 'Succeeded' | 'Failed',
     Status

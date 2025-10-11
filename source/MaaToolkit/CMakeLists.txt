@@ -11,13 +11,13 @@ target_include_directories(
 target_compile_definitions(MaaToolkit PRIVATE MAA_TOOLKIT_EXPORTS)
 
 target_link_libraries(
-    MaaToolkit PRIVATE MaaUtils ProjectInterface LibraryHolder HeaderOnlyLibraries Boost::system ${OpenCV_LIBS})
+    MaaToolkit PRIVATE MaaUtils LibraryHolder HeaderOnlyLibraries Boost::system ${OpenCV_LIBS})
 
 if(LINUX)
     target_link_libraries(MaaToolkit PRIVATE pthread dl)
 endif()
 
-add_dependencies(MaaToolkit MaaUtils ProjectInterface LibraryHolder)
+add_dependencies(MaaToolkit MaaUtils LibraryHolder)
 
 install(
     TARGETS MaaToolkit

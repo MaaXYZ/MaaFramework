@@ -2,17 +2,19 @@
 #include <format>
 #include <iostream>
 
+#include "MaaToolkit/MaaToolkitAPI.h"
+
 #include "Utils/Platform.h"
 #include "Utils/Runtime.h"
 
-#include "MaaToolkit/ProjectInterface/MaaToolkitProjectInterface.h"
-
-// copy from https://github.com/ArthurSonzogni/FTXUI/commit/22afacc28badb35680e7fe03461680c52acbe507
-#if defined(_WIN32)
-#include <Windows.h>
+#include "interactor.h"
 
 void request_windows_emulate_vt100()
 {
+    // copy from https://github.com/ArthurSonzogni/FTXUI/commit/22afacc28badb35680e7fe03461680c52acbe507
+#if defined(_WIN32)
+#include "Utils/SafeWindows.hpp"
+
     // Enable VT processing on stdout and stdin
     auto stdout_handle = GetStdHandle(STD_OUTPUT_HANDLE);
 
@@ -26,16 +28,12 @@ void request_windows_emulate_vt100()
     out_mode |= disable_newline_auto_return;
 
     SetConsoleMode(stdout_handle, out_mode);
-}
-#else
-void request_windows_emulate_vt100()
-{
-}
 #endif
+}
 
 extern "C" void sig_handler(int sig)
 {
-    std::cout << std::format("\nsignal {} received, exit\n", sig);
+    std::cout << std::format("\nsignal {} received, exit\n", sig) << std::endl;
 
     exit(0);
 }
@@ -46,10 +44,8 @@ int main(int argc, char** argv)
     std::signal(SIGSEGV, sig_handler);
     std::signal(SIGINT, sig_handler);
     std::signal(SIGABRT, sig_handler);
-    request_windows_emulate_vt100();
 
-    std::string user_path = MAA_NS::path_to_utf8_string(MAA_NS::library_dir());
-    std::string resource_path = MAA_NS::path_to_utf8_string(MAA_NS::library_dir());
+    request_windows_emulate_vt100();
 
     bool directly = false;
     for (int i = 1; i < argc; ++i) {
@@ -60,6 +56,21 @@ int main(int argc, char** argv)
         break;
     }
 
-    bool ret = MaaToolkitProjectInterfaceRunCli(0, resource_path.c_str(), user_path.c_str(), directly);
-    return ret ? 0 : -1;
+    std::string user_path = MAA_NS::path_to_utf8_string(MAA_NS::library_dir());
+    std::string resource_path = MAA_NS::path_to_utf8_string(MAA_NS::library_dir());
+
+    MaaToolkitConfigInitOption(user_path.c_str(), "{}");
+
+    Interactor interactor(user_path, {}, {});
+
+    if (!interactor.load(resource_path)) {
+        return -1;
+    }
+    if (directly) {
+        interactor.print_config();
+        return interactor.run() ? 0 : -1;
+    }
+
+    interactor.interact();
+    return 0;
 }

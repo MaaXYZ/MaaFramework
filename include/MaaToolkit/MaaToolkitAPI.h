@@ -6,4 +6,3 @@
 #include "Config/MaaToolkitConfig.h"
 #include "DesktopWindow/MaaToolkitDesktopWindow.h"
 #include "PluginSystem/MaaToolkitPluginSystem.h"
-#include "ProjectInterface/MaaToolkitProjectInterface.h"
