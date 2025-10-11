@@ -8,6 +8,10 @@ target_include_directories(MaaPiCli
 
 target_link_libraries(MaaPiCli MaaUtils MaaFramework MaaToolkit MaaAgentClient HeaderOnlyLibraries Boost::system  ${OpenCV_LIBS})
 
+if(LINUX)
+    target_link_libraries(MaaPiCli PRIVATE pthread dl)
+endif()
+
 add_dependencies(MaaPiCli MaaUtils MaaFramework MaaToolkit MaaAgentClient)
 
 source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES ${maa_pi_cli_src})
