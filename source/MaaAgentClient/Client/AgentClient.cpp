@@ -34,73 +34,37 @@ bool AgentClient::bind_resource(MaaResource* new_res)
 {
     LogInfo << VAR_VOIDP(this) << VAR_VOIDP(new_res);
 
-    if (resource_ && resource_ != new_res) {
-        LogWarn << "resource is already bound" << VAR_VOIDP(resource_);
-        clear_registration();
+    if (bound_res_ && bound_res_ != new_res) {
+        LogWarn << "resource is already bound" << VAR_VOIDP(bound_res_);
+        clear_custom_registration();
     }
 
-    if (res_sink_id_ != MaaInvalidId && resource_) {
-        resource_->remove_sink(res_sink_id_);
-        res_sink_id_ = MaaInvalidId;
-    }
-
-    if (new_res) {
-        res_sink_id_ = new_res->add_sink(&AgentClient::res_event_sink, this);
-    }
-
-    resource_ = new_res;
+    bound_res_ = new_res;
 
     return true;
 }
 
-bool AgentClient::bind_controller(MaaController* new_ctrl)
+void AgentClient::register_sink(MaaTasker* tasker, MaaResource* res, MaaController* ctrl)
 {
-    LogInfo << VAR_VOIDP(this) << VAR_VOIDP(new_ctrl);
+    LogInfo << VAR_VOIDP(this) << VAR_VOIDP(tasker) << VAR_VOIDP(res) << VAR_VOIDP(ctrl);
 
-    if (controller_ && controller_ != new_ctrl) {
-        LogWarn << "controller is already bound" << VAR_VOIDP(controller_);
+    clear_sink_registration();
+
+    if (tasker) {
+        reg_tasker_sink_id_ = tasker->add_sink(&AgentClient::tasker_event_sink, this);
+        reg_context_sink_id_ = tasker->add_context_sink(&AgentClient::ctx_event_sink, this);
+        reg_tasker_ = tasker;
     }
 
-    if (ctrl_sink_id_ != MaaInvalidId && controller_) {
-        controller_->remove_sink(ctrl_sink_id_);
-        ctrl_sink_id_ = MaaInvalidId;
+    if (res) {
+        reg_res_sink_id_ = res->add_sink(&AgentClient::res_event_sink, this);
+        reg_res_ = res;
     }
 
-    if (new_ctrl) {
-        ctrl_sink_id_ = new_ctrl->add_sink(&AgentClient::ctrl_event_sink, this);
+    if (ctrl) {
+        reg_ctrl_sink_id_ = ctrl->add_sink(&AgentClient::ctrl_event_sink, this);
+        reg_ctrl_ = ctrl;
     }
-
-    controller_ = new_ctrl;
-
-    return true;
-}
-
-bool AgentClient::bind_tasker(MaaTasker* new_tasker)
-{
-    LogInfo << VAR_VOIDP(this) << VAR_VOIDP(new_tasker);
-
-    if (tasker_ && tasker_ != new_tasker) {
-        LogWarn << "tasker is already bound" << VAR_VOIDP(tasker_);
-    }
-
-    if (tasker_sink_id_ != MaaInvalidId && tasker_) {
-        tasker_->remove_sink(tasker_sink_id_);
-        tasker_sink_id_ = MaaInvalidId;
-    }
-
-    if (ctx_sink_id_ != MaaInvalidId && tasker_) {
-        tasker_->remove_context_sink(ctx_sink_id_);
-        ctx_sink_id_ = MaaInvalidId;
-    }
-
-    if (new_tasker) {
-        tasker_sink_id_ = new_tasker->add_sink(&AgentClient::tasker_event_sink, this);
-        ctx_sink_id_ = new_tasker->add_context_sink(&AgentClient::ctx_event_sink, this);
-    }
-
-    tasker_ = new_tasker;
-
-    return true;
 }
 
 std::string AgentClient::create_socket(const std::string& identifier)
@@ -126,12 +90,12 @@ bool AgentClient::connect()
 {
     LogFunc << VAR(ipc_addr_);
 
-    if (!resource_) {
+    if (!bound_res_) {
         LogError << "resource is not bound";
         return false;
     }
 
-    clear_registration();
+    clear_custom_registration();
 
     auto resp_opt = send_and_recv<StartUpResponse>(StartUpRequest {});
 
@@ -151,11 +115,11 @@ bool AgentClient::connect()
 
     for (const auto& reco : resp.recognitions) {
         LogInfo << "register recognition" << VAR(reco);
-        resource_->register_custom_recognition(reco, reco_agent, this);
+        bound_res_->register_custom_recognition(reco, reco_agent, this);
     }
     for (const auto& act : resp.actions) {
         LogInfo << "register action" << VAR(act);
-        resource_->register_custom_action(act, action_agent, this);
+        bound_res_->register_custom_action(act, action_agent, this);
     }
 
     registered_recognitions_ = resp.recognitions;
@@ -169,7 +133,7 @@ bool AgentClient::disconnect()
 {
     LogFunc << VAR(ipc_addr_);
 
-    clear_registration();
+    clear_custom_registration();
 
     if (!connected()) {
         return true;
@@ -941,21 +905,66 @@ bool AgentClient::handle_resource_post_bundle(const json::value& j)
     return true;
 }
 
-void AgentClient::clear_registration()
+void AgentClient::clear_custom_registration()
 {
     LogTrace;
 
     for (const auto& reco : registered_recognitions_) {
         LogInfo << "unregister pre recognition" << VAR(reco);
-        resource_->unregister_custom_recognition(reco);
+        bound_res_->unregister_custom_recognition(reco);
     }
     for (const auto& act : registered_actions_) {
         LogInfo << "unregister pre action" << VAR(act);
-        resource_->unregister_custom_action(act);
+        bound_res_->unregister_custom_action(act);
     }
 
     registered_recognitions_.clear();
     registered_actions_.clear();
+}
+
+void AgentClient::clear_sink_registration()
+{
+    LogTrace;
+
+    if (reg_tasker_sink_id_ != MaaInvalidId) {
+        if (reg_tasker_) {
+            reg_tasker_->remove_sink(reg_tasker_sink_id_);
+        }
+        reg_tasker_sink_id_ = MaaInvalidId;
+    }
+
+    if (reg_tasker_ && reg_context_sink_id_ != MaaInvalidId) {
+        if (reg_tasker_) {
+            reg_tasker_->remove_context_sink(reg_context_sink_id_);
+        }
+        reg_context_sink_id_ = MaaInvalidId;
+    }
+
+    if (reg_tasker_) {
+        reg_tasker_ = nullptr;
+    }
+
+    if (reg_res_sink_id_ != MaaInvalidId) {
+        if (reg_res_) {
+            reg_res_->remove_sink(reg_res_sink_id_);
+        }
+        reg_res_sink_id_ = MaaInvalidId;
+    }
+
+    if (reg_res_) {
+        reg_res_ = nullptr;
+    }
+
+    if (reg_ctrl_sink_id_ != MaaInvalidId) {
+        if (reg_ctrl_) {
+            reg_ctrl_->remove_sink(reg_ctrl_sink_id_);
+        }
+        reg_ctrl_sink_id_ = MaaInvalidId;
+    }
+
+    if (reg_ctrl_) {
+        reg_ctrl_ = nullptr;
+    }
 }
 
 bool AgentClient::handle_resource_status(const json::value& j)
