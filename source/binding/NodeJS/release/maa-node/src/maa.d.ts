@@ -14,6 +14,7 @@ export type CtrlId = Id & { __brand: 'CtrlId' }
 export type TaskId = Id & { __brand: 'TaskId' }
 export type RecoId = Id & { __brand: 'RecoId' }
 export type NodeId = Id & { __brand: 'NodeId' }
+export type SinkId = Id & { __brand: 'SinkId' }
 
 export type Status = number & { __brand: 'Status' }
 export type LoggingLevel = number & { __brand: 'LoggingLevel' }
@@ -33,7 +34,12 @@ export type FlatRect = [x: number, y: number, width: number, height: number]
 
 type MaybePromise<T> = T | Promise<T>
 
-export type NotificationCallback = (message: string, details_json: string) => MaybePromise<void>
+export type EventCallback = (message: string, details_json: string) => MaybePromise<void>
+export type EventCallbackWithHandle<T> = (
+    handle: T,
+    message: string,
+    details_json: string
+) => MaybePromise<void>
 export type CustomRecognitionCallback = (
     context: ContextHandle,
     task_id: TaskId,
@@ -119,27 +125,29 @@ export declare function adb_controller_create(
     screencap_methods: ScreencapOrInputMethods,
     input_methods: ScreencapOrInputMethods,
     config: string,
-    agent_path: string,
-    callback: NotificationCallback | null
+    agent_path: string
 ): ControllerHandle | null
 export declare function win32_controller_create(
     handle: DesktopHandle,
     screencap_methods: ScreencapOrInputMethods,
-    input_methods: ScreencapOrInputMethods,
-    callback: NotificationCallback | null
+    input_methods: ScreencapOrInputMethods
 ): ControllerHandle | null
 export declare function custom_controller_create(
-    custom_callback: CustomControllerCallback,
-    callback: NotificationCallback | null
+    custom_callback: CustomControllerCallback
 ): ControllerHandle | null
 export declare function dbg_controller_create(
     read_path: string,
     write_path: string,
     type: Uint64,
-    config: string,
-    callback: NotificationCallback | null
+    config: string
 ): ControllerHandle | null
 export declare function controller_destroy(handle: ControllerHandle): void
+export declare function controller_add_sink(
+    handle: ControllerHandle,
+    callback: EventCallback
+): SinkId
+export declare function controller_remove_sink(handle: ControllerHandle, sink_id: SinkId): void
+export declare function controller_clear_sinks(handle: ControllerHandle): void
 export declare function controller_set_option_screenshot_target_long_side(
     handle: ControllerHandle,
     value: number
@@ -196,10 +204,11 @@ export declare function controller_get_uuid(handle: ControllerHandle): string | 
 
 // resource.cpp
 
-export declare function resource_create(
-    callback: NotificationCallback | null
-): ResourceHandle | null
+export declare function resource_create(): ResourceHandle | null
 export declare function resource_destroy(handle: ResourceHandle): void
+export declare function resource_add_sink(handle: ResourceHandle, callback: EventCallback): SinkId
+export declare function resource_remove_sink(handle: ResourceHandle, sink_id: SinkId): void
+export declare function resource_clear_sinks(handle: ResourceHandle): void
 export declare function resource_set_option_inference_device(
     handle: ResourceHandle,
     id: InferenceDevice | number
@@ -251,7 +260,16 @@ export declare function resource_get_node_list(handle: ResourceHandle): string[]
 
 // tasker.cpp
 
-export declare function tasker_create(callback: NotificationCallback | null): TaskerHandle | null
+export declare function tasker_create(): TaskerHandle | null
+export declare function tasker_add_sink(handle: TaskerHandle, callback: EventCallback): SinkId
+export declare function tasker_remove_sink(handle: TaskerHandle, sink_id: SinkId): void
+export declare function tasker_clear_sinks(handle: TaskerHandle): void
+export declare function tasker_add_context_sink(
+    handle: TaskerHandle,
+    callback: EventCallbackWithHandle<ContextHandle>
+): SinkId
+export declare function tasker_remove_context_sink(handle: TaskerHandle, sink_id: SinkId): void
+export declare function tasker_clear_context_sinks(handle: TaskerHandle): void
 export declare function tasker_destroy(handle: TaskerHandle): void
 export declare function tasker_bind_resource(
     handle: TaskerHandle,

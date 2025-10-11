@@ -58,5 +58,6 @@ MaaBool MaaAgentServerRegisterCustomAction(const char* name, MaaCustomActionCall
 
 void MaaAgentServerAddResourceSink(MaaEventCallback sink, void* trans_arg)
 {
-    return MAA_AGENT_SERVER_API void();
+    std::ignore = sink;
+    std::ignore = trans_arg;
 }

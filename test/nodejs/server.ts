@@ -1,7 +1,4 @@
-import { join } from 'path'
 import * as maa from './maa-server'
-
-import fs from 'fs/promises'
 
 async function main() {
     console.log('MaaFw Version:', maa.Global.version)
