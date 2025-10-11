@@ -260,4 +260,37 @@ std::optional<MaaNodeId> RemoteTasker::get_latest_node(const std::string& node_n
     return resp_opt->latest_id;
 }
 
+MaaSinkId RemoteTasker::add_sink(MaaEventCallback callback, void* trans_arg)
+{
+    LogError << "Can NOT add sink for remote instance, use AgentServer.add_tasker_sink instead" << VAR_VOIDP(callback) << VAR_VOIDP(trans_arg);
+    return MaaInvalidId;
+}
+
+void RemoteTasker::remove_sink(MaaSinkId sink_id)
+{
+    LogError << "Can NOT remove sink for remote instance" << VAR(sink_id);
+}
+
+void RemoteTasker::clear_sinks()
+{
+    LogError << "Can NOT clear sink for remote instance";
+}
+
+MaaSinkId RemoteTasker::add_context_sink(MaaEventCallback callback, void* trans_arg)
+{
+    LogError << "Can NOT add sink for remote instance, use AgentServer.add_context_sink instead" << VAR_VOIDP(callback)
+             << VAR_VOIDP(trans_arg);
+    return MaaInvalidId;
+}
+
+void RemoteTasker::remove_context_sink(MaaSinkId sink_id)
+{
+    LogError << "Can NOT remove sink for remote instance" << VAR(sink_id);
+}
+
+void RemoteTasker::clear_context_sinks()
+{
+    LogError << "Can NOT clear sink for remote instance";
+}
+
 MAA_AGENT_SERVER_NS_END

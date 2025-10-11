@@ -77,21 +77,21 @@ bool PluginMgr::load_and_register(
 
     MaaBool loaded = false;
 
-    constexpr const char* kFuncOnResEvent = "OnResEvent";
-    if (library.has(kFuncOnResEvent)) {
-        auto func = library.get<decltype(OnResEvent)>(kFuncOnResEvent);
+    constexpr const char* kFuncOnResourceEvent = "OnResourceEvent";
+    if (library.has(kFuncOnResourceEvent)) {
+        auto func = library.get<decltype(OnResourceEvent)>(kFuncOnResourceEvent);
         if (!func) {
-            LogError << "Failed to get function" << VAR(library_path) << VAR(kFuncOnResEvent);
+            LogError << "Failed to get function" << VAR(library_path) << VAR(kFuncOnResourceEvent);
             return false;
         }
         loaded |= MaaResourceAddSink(resource, func, nullptr);
     }
 
-    constexpr const char* kFuncOnCtrlEvent = "OnCtrlEvent";
-    if (library.has(kFuncOnCtrlEvent)) {
-        auto func = library.get<decltype(OnCtrlEvent)>(kFuncOnCtrlEvent);
+    constexpr const char* kFuncOnControllerEvent = "OnControllerEvent";
+    if (library.has(kFuncOnControllerEvent)) {
+        auto func = library.get<decltype(OnControllerEvent)>(kFuncOnControllerEvent);
         if (!func) {
-            LogError << "Failed to get function" << VAR(library_path) << VAR(kFuncOnCtrlEvent);
+            LogError << "Failed to get function" << VAR(library_path) << VAR(kFuncOnControllerEvent);
             return false;
         }
         loaded |= MaaControllerAddSink(controller, func, nullptr);
@@ -108,15 +108,15 @@ bool PluginMgr::load_and_register(
         loaded |= MaaTaskerAddSink(tasker, func, nullptr);
     }
 
-    constexpr const char* kFuncOnNodeEvent = "OnNodeEvent";
-    if (library.has(kFuncOnNodeEvent)) {
-        auto func = library.get<decltype(OnNodeEvent)>(kFuncOnNodeEvent);
+    constexpr const char* kFuncOnContextEvent = "OnContextEvent";
+    if (library.has(kFuncOnContextEvent)) {
+        auto func = library.get<decltype(OnContextEvent)>(kFuncOnContextEvent);
         if (!func) {
-            LogError << "Failed to get function" << VAR(library_path) << VAR(kFuncOnNodeEvent);
+            LogError << "Failed to get function" << VAR(library_path) << VAR(kFuncOnContextEvent);
             return false;
         }
 
-        loaded |= MaaTaskerAddNodeSink(tasker, func, nullptr);
+        loaded |= MaaTaskerAddContextSink(tasker, func, nullptr);
     }
 
     if (loaded) {

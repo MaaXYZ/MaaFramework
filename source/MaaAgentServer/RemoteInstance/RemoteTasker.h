@@ -39,18 +39,13 @@ public:
     virtual std::optional<MAA_TASK_NS::RecoResult> get_reco_result(MaaRecoId reco_id) const override;
     virtual std::optional<MaaNodeId> get_latest_node(const std::string& node_name) const override;
 
-    // TODO
-    virtual MaaSinkId add_sink(MaaEventCallback, void*) override { return MaaInvalidId; }
+    virtual MaaSinkId add_sink(MaaEventCallback callback, void* trans_arg) override;
+    virtual void remove_sink(MaaSinkId sink_id) override;
+    virtual void clear_sinks() override;
 
-    virtual void remove_sink(MaaSinkId) override {}
-
-    virtual void clear_sinks() override {}
-
-    virtual MaaSinkId add_node_sink(MaaEventCallback, void*) override { return MaaInvalidId; }
-
-    virtual void remove_node_sink(MaaSinkId) override {}
-
-    virtual void clear_node_sinks() override {}
+    virtual MaaSinkId add_context_sink(MaaEventCallback callback, void* trans_arg) override;
+    virtual void remove_context_sink(MaaSinkId sink_id) override;
+    virtual void clear_context_sinks() override;
 
 private:
     Transceiver& server_;

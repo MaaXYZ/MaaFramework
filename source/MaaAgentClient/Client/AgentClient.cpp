@@ -30,16 +30,75 @@ std::string AgentClient::identifier() const
     return identifier_;
 }
 
-bool AgentClient::bind_resource(MaaResource* resource)
+bool AgentClient::bind_resource(MaaResource* new_res)
 {
-    LogInfo << VAR_VOIDP(this) << VAR_VOIDP(resource);
+    LogInfo << VAR_VOIDP(this) << VAR_VOIDP(new_res);
 
-    if (resource_ && resource_ != resource) {
+    if (resource_ && resource_ != new_res) {
         LogWarn << "resource is already bound" << VAR_VOIDP(resource_);
         clear_registration();
     }
 
-    resource_ = resource;
+    if (res_sink_id_ != MaaInvalidId && resource_) {
+        resource_->remove_sink(res_sink_id_);
+        res_sink_id_ = MaaInvalidId;
+    }
+
+    if (new_res) {
+        res_sink_id_ = new_res->add_sink(&AgentClient::res_event_sink, this);
+    }
+
+    resource_ = new_res;
+
+    return true;
+}
+
+bool AgentClient::bind_controller(MaaController* new_ctrl)
+{
+    LogInfo << VAR_VOIDP(this) << VAR_VOIDP(new_ctrl);
+
+    if (controller_ && controller_ != new_ctrl) {
+        LogWarn << "controller is already bound" << VAR_VOIDP(controller_);
+    }
+
+    if (ctrl_sink_id_ != MaaInvalidId && controller_) {
+        controller_->remove_sink(ctrl_sink_id_);
+        ctrl_sink_id_ = MaaInvalidId;
+    }
+
+    if (new_ctrl) {
+        ctrl_sink_id_ = new_ctrl->add_sink(&AgentClient::ctrl_event_sink, this);
+    }
+
+    controller_ = new_ctrl;
+
+    return true;
+}
+
+bool AgentClient::bind_tasker(MaaTasker* new_tasker)
+{
+    LogInfo << VAR_VOIDP(this) << VAR_VOIDP(new_tasker);
+
+    if (tasker_ && tasker_ != new_tasker) {
+        LogWarn << "tasker is already bound" << VAR_VOIDP(tasker_);
+    }
+
+    if (tasker_sink_id_ != MaaInvalidId && tasker_) {
+        tasker_->remove_sink(tasker_sink_id_);
+        tasker_sink_id_ = MaaInvalidId;
+    }
+
+    if (ctx_sink_id_ != MaaInvalidId && tasker_) {
+        tasker_->remove_context_sink(ctx_sink_id_);
+        ctx_sink_id_ = MaaInvalidId;
+    }
+
+    if (new_tasker) {
+        tasker_sink_id_ = new_tasker->add_sink(&AgentClient::tasker_event_sink, this);
+        ctx_sink_id_ = new_tasker->add_context_sink(&AgentClient::ctx_event_sink, this);
+    }
+
+    tasker_ = new_tasker;
 
     return true;
 }
@@ -1687,6 +1746,122 @@ MaaResource* AgentClient::query_resource(const std::string& resource_id)
         return nullptr;
     }
     return it->second;
+}
+
+void AgentClient::res_event_sink(void* handle, const char* message, const char* details_json, void* trans_arg)
+{
+    LogTrace << VAR_VOIDP(handle) << VAR(message) << VAR(details_json) << VAR_VOIDP(trans_arg);
+
+    if (!trans_arg) {
+        LogError << "trans_arg is null";
+        return;
+    }
+
+    AgentClient* pthis = reinterpret_cast<AgentClient*>(trans_arg);
+    if (!pthis) {
+        LogError << "pthis is null";
+        return;
+    }
+
+    if (!pthis->alive()) {
+        LogError << "server is not alive" << VAR(pthis->ipc_addr_);
+        return;
+    }
+
+    ResourceEventRequest req {
+        .resource_id = pthis->resource_id(reinterpret_cast<MaaResource*>(handle)),
+        .message = message,
+        .details = details_json,
+    };
+
+    std::ignore = pthis->send_and_recv<ResourceEventResponse>(req);
+}
+
+void AgentClient::ctrl_event_sink(void* handle, const char* message, const char* details_json, void* trans_arg)
+{
+    LogTrace << VAR_VOIDP(handle) << VAR(message) << VAR(details_json) << VAR_VOIDP(trans_arg);
+
+    if (!trans_arg) {
+        LogError << "trans_arg is null";
+        return;
+    }
+
+    AgentClient* pthis = reinterpret_cast<AgentClient*>(trans_arg);
+    if (!pthis) {
+        LogError << "pthis is null";
+        return;
+    }
+
+    if (!pthis->alive()) {
+        LogError << "server is not alive" << VAR(pthis->ipc_addr_);
+        return;
+    }
+
+    ControllerEventRequest req {
+        .controller_id = pthis->controller_id(reinterpret_cast<MaaController*>(handle)),
+        .message = message,
+        .details = details_json,
+    };
+
+    std::ignore = pthis->send_and_recv<ControllerEventResponse>(req);
+}
+
+void AgentClient::tasker_event_sink(void* handle, const char* message, const char* details_json, void* trans_arg)
+{
+    LogTrace << VAR_VOIDP(handle) << VAR(message) << VAR(details_json) << VAR_VOIDP(trans_arg);
+
+    if (!trans_arg) {
+        LogError << "trans_arg is null";
+        return;
+    }
+
+    AgentClient* pthis = reinterpret_cast<AgentClient*>(trans_arg);
+    if (!pthis) {
+        LogError << "pthis is null";
+        return;
+    }
+
+    if (!pthis->alive()) {
+        LogError << "server is not alive" << VAR(pthis->ipc_addr_);
+        return;
+    }
+
+    TaskerEventRequest req {
+        .tasker_id = pthis->tasker_id(reinterpret_cast<MaaTasker*>(handle)),
+        .message = message,
+        .details = details_json,
+    };
+
+    std::ignore = pthis->send_and_recv<TaskerEventResponse>(req);
+}
+
+void AgentClient::ctx_event_sink(void* handle, const char* message, const char* details_json, void* trans_arg)
+{
+    LogTrace << VAR_VOIDP(handle) << VAR(message) << VAR(details_json) << VAR_VOIDP(trans_arg);
+
+    if (!trans_arg) {
+        LogError << "trans_arg is null";
+        return;
+    }
+
+    AgentClient* pthis = reinterpret_cast<AgentClient*>(trans_arg);
+    if (!pthis) {
+        LogError << "pthis is null";
+        return;
+    }
+
+    if (!pthis->alive()) {
+        LogError << "server is not alive" << VAR(pthis->ipc_addr_);
+        return;
+    }
+
+    ContextEventRequest req {
+        .context_id = pthis->context_id(reinterpret_cast<MaaContext*>(handle)),
+        .message = message,
+        .details = details_json,
+    };
+
+    std::ignore = pthis->send_and_recv<ContextEventResponse>(req);
 }
 
 MAA_AGENT_CLIENT_NS_END

@@ -107,6 +107,18 @@ bool AgentServer::handle_inserted_request(const json::value& j)
     else if (handle_action_request(j)) {
         return true;
     }
+    else if (handle_resource_event(j)) {
+        return true;
+    }
+    else if (handle_controller_event(j)) {
+        return true;
+    }
+    else if (handle_tasker_event(j)) {
+        return true;
+    }
+    else if (handle_context_event(j)) {
+        return true;
+    }
     else if (handle_start_up_request(j)) {
         return true;
     }

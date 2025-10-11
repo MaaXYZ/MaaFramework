@@ -41,7 +41,7 @@ void MaaTaskerClearSinks(MaaTasker* tasker)
     tasker->clear_sinks();
 }
 
-MaaSinkId MaaTaskerAddNodeSink(MaaTasker* tasker, MaaEventCallback sink, void* trans_arg)
+MaaSinkId MaaTaskerAddContextSink(MaaTasker* tasker, MaaEventCallback sink, void* trans_arg)
 {
     LogInfo << VAR_VOIDP(tasker) << VAR_VOIDP(sink) << VAR_VOIDP(trans_arg);
 
@@ -50,10 +50,10 @@ MaaSinkId MaaTaskerAddNodeSink(MaaTasker* tasker, MaaEventCallback sink, void* t
         return MaaInvalidId;
     }
 
-    return tasker->add_node_sink(sink, trans_arg);
+    return tasker->add_context_sink(sink, trans_arg);
 }
 
-void MaaTaskerRemoveNodeSink(MaaTasker* tasker, MaaSinkId sink_id)
+void MaaTaskerRemoveContextSink(MaaTasker* tasker, MaaSinkId sink_id)
 {
     LogInfo << VAR_VOIDP(tasker) << VAR(sink_id);
 
@@ -62,10 +62,10 @@ void MaaTaskerRemoveNodeSink(MaaTasker* tasker, MaaSinkId sink_id)
         return;
     }
 
-    tasker->remove_node_sink(sink_id);
+    tasker->remove_context_sink(sink_id);
 }
 
-void MaaTaskerClearNodeSinks(MaaTasker* tasker)
+void MaaTaskerClearContextSinks(MaaTasker* tasker)
 {
     LogInfo << VAR_VOIDP(tasker);
 
@@ -74,7 +74,7 @@ void MaaTaskerClearNodeSinks(MaaTasker* tasker)
         return;
     }
 
-    tasker->clear_node_sinks();
+    tasker->clear_context_sinks();
 }
 
 MaaBool MaaTaskerSetOption(MaaTasker* tasker, MaaTaskerOption key, MaaOptionValue value, MaaOptionValueSize val_size)

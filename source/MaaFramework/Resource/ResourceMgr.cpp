@@ -111,6 +111,21 @@ std::vector<std::string> ResourceMgr::get_node_list() const
     return pipeline_res_.get_node_list();
 }
 
+MaaSinkId ResourceMgr::add_sink(MaaEventCallback callback, void* trans_arg)
+{
+    return notifier_.add_sink(callback, trans_arg);
+}
+
+void ResourceMgr::remove_sink(MaaSinkId sink_id)
+{
+    notifier_.remove_sink(sink_id);
+}
+
+void ResourceMgr::clear_sinks()
+{
+    notifier_.clear_sinks();
+}
+
 void ResourceMgr::post_stop()
 {
     LogFunc;

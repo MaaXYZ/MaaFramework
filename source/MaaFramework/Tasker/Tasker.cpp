@@ -189,6 +189,36 @@ const RuntimeCache& Tasker::runtime_cache() const
     return runtime_cache_;
 }
 
+MaaSinkId Tasker::add_sink(MaaEventCallback callback, void* trans_arg)
+{
+    return notifier_.add_sink(callback, trans_arg);
+}
+
+void Tasker::remove_sink(MaaSinkId sink_id)
+{
+    notifier_.remove_sink(sink_id);
+}
+
+void Tasker::clear_sinks()
+{
+    notifier_.clear_sinks();
+}
+
+MaaSinkId Tasker::add_context_sink(MaaEventCallback callback, void* trans_arg)
+{
+    return node_notifier_.add_sink(callback, trans_arg);
+}
+
+void Tasker::remove_context_sink(MaaSinkId sink_id)
+{
+    node_notifier_.remove_sink(sink_id);
+}
+
+void Tasker::clear_context_sinks()
+{
+    node_notifier_.clear_sinks();
+}
+
 void Tasker::node_notify(MaaContext* context, std::string_view msg, const json::value& details)
 {
     node_notifier_.notify(context, msg, details);

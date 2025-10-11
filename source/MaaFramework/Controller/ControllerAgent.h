@@ -163,11 +163,9 @@ public: // MaaController
     virtual cv::Mat cached_image() const override;
     virtual std::string get_uuid() override;
 
-    virtual MaaSinkId add_sink(MaaEventCallback callback, void* trans_arg) override { return notifier_.add_sink(callback, trans_arg); }
-
-    virtual void remove_sink(MaaSinkId sink_id) override { notifier_.remove_sink(sink_id); }
-
-    virtual void clear_sinks() override { notifier_.clear_sinks(); }
+    virtual MaaSinkId add_sink(MaaEventCallback callback, void* trans_arg) override;
+    virtual void remove_sink(MaaSinkId sink_id) override;
+    virtual void clear_sinks() override;
 
 public: // for Actuator
     void post_stop();

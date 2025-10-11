@@ -29,11 +29,11 @@ extern "C"
 
     MAA_FRAMEWORK_API void MaaTaskerClearSinks(MaaTasker* tasker);
 
-    MAA_FRAMEWORK_API MaaSinkId MaaTaskerAddNodeSink(MaaTasker* tasker, MaaEventCallback sink, void* trans_arg);
+    MAA_FRAMEWORK_API MaaSinkId MaaTaskerAddContextSink(MaaTasker* tasker, MaaEventCallback sink, void* trans_arg);
 
-    MAA_FRAMEWORK_API void MaaTaskerRemoveNodeSink(MaaTasker* tasker, MaaSinkId sink_id);
+    MAA_FRAMEWORK_API void MaaTaskerRemoveContextSink(MaaTasker* tasker, MaaSinkId sink_id);
 
-    MAA_FRAMEWORK_API void MaaTaskerClearNodeSinks(MaaTasker* tasker);
+    MAA_FRAMEWORK_API void MaaTaskerClearContextSinks(MaaTasker* tasker);
 
     /**
      * @param[in] value

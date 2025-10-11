@@ -35,12 +35,9 @@ public:
     virtual std::string get_hash() const override;
     virtual std::vector<std::string> get_node_list() const override;
 
-    // TODO
-    virtual MaaSinkId add_sink(MaaEventCallback, void*) override { return MaaInvalidId; }
-
-    virtual void remove_sink(MaaSinkId) override {}
-
-    virtual void clear_sinks() override {}
+    virtual MaaSinkId add_sink(MaaEventCallback callback, void* trans_arg) override;
+    virtual void remove_sink(MaaSinkId sink_id) override;
+    virtual void clear_sinks() override;
 
 private:
     Transceiver& server_;

@@ -121,9 +121,9 @@ public:
     virtual std::optional<MAA_TASK_NS::RecoResult> get_reco_result(MaaRecoId reco_id) const = 0;
     virtual std::optional<MaaNodeId> get_latest_node(const std::string& node_name) const = 0;
 
-    virtual MaaSinkId add_node_sink(MaaEventCallback callback, void* trans_arg) = 0;
-    virtual void remove_node_sink(MaaSinkId sink_id) = 0;
-    virtual void clear_node_sinks() = 0;
+    virtual MaaSinkId add_context_sink(MaaEventCallback callback, void* trans_arg) = 0;
+    virtual void remove_context_sink(MaaSinkId sink_id) = 0;
+    virtual void clear_context_sinks() = 0;
 };
 
 struct MaaContext : public IMaaPipeline
@@ -149,6 +149,8 @@ public:
 
     virtual std::string identifier() const = 0;
     virtual bool bind_resource(MaaResource* resource) = 0;
+    virtual bool bind_controller(MaaController* controller) = 0;
+    virtual bool bind_tasker(MaaTasker* tasker) = 0;
     virtual std::string create_socket(const std::string& identifier) = 0;
     virtual bool connect() = 0;
     virtual bool disconnect() = 0;

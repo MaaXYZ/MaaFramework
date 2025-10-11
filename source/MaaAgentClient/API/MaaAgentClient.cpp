@@ -56,6 +56,30 @@ MaaBool MaaAgentClientBindResource(MaaAgentClient* client, MaaResource* res)
     return client->bind_resource(res);
 }
 
+ MaaBool MaaAgentClientBindController(MaaAgentClient* client, MaaController* ctrl)
+{
+     LogFunc << VAR_VOIDP(client) << VAR_VOIDP(ctrl);
+
+     if (!client || !ctrl) {
+         LogError << "handle is null";
+         return false;
+     }
+
+     return client->bind_controller(ctrl);
+ }
+
+ MaaBool MaaAgentClientBindTasker(MaaAgentClient* client, MaaTasker* tasker)
+{
+     LogFunc << VAR_VOIDP(client) << VAR_VOIDP(tasker);
+
+     if (!client || !tasker) {
+         LogError << "handle is null";
+         return false;
+     }
+
+     return client->bind_tasker(tasker);
+ }
+
 MaaBool MaaAgentClientCreateSocket(MaaAgentClient* client, MaaStringBuffer* identifier)
 {
     LogError << "Deprecated API, use MaaAgentClientCreateV2 instead";

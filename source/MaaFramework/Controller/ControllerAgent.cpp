@@ -174,6 +174,21 @@ std::string ControllerAgent::get_uuid()
     return uuid_cache_;
 }
 
+MaaSinkId ControllerAgent::add_sink(MaaEventCallback callback, void* trans_arg)
+{
+    return notifier_.add_sink(callback, trans_arg);
+}
+
+void ControllerAgent::remove_sink(MaaSinkId sink_id)
+{
+    notifier_.remove_sink(sink_id);
+}
+
+void ControllerAgent::clear_sinks()
+{
+    notifier_.clear_sinks();
+}
+
 void ControllerAgent::post_stop()
 {
     LogFunc;

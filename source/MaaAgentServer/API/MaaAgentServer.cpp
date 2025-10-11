@@ -55,3 +55,8 @@ MaaBool MaaAgentServerRegisterCustomAction(const char* name, MaaCustomActionCall
 
     return MAA_AGENT_SERVER_NS::AgentServer::get_instance().register_custom_action(name, action, trans_arg);
 }
+
+void MaaAgentServerAddResourceSink(MaaEventCallback sink, void* trans_arg)
+{
+    return MAA_AGENT_SERVER_API void();
+}
