@@ -57,12 +57,16 @@ set(maa_common_src
     ${CMAKE_JS_SRC}
 )
 
+add_library(MaaQjs STATIC src/qjs/qjs.cpp)
+target_link_libraries(MaaQjs PRIVATE qjs)
+target_compile_options(MaaQjs PRIVATE /wd4244)
+
 # Master
 
 add_library(MaaNode SHARED ${maa_common_src} src/agent/client.cpp)
 set_target_properties(MaaNode PROPERTIES PREFIX "" SUFFIX ".node")
 target_include_directories(MaaNode PRIVATE ${CMAKE_JS_INC})
-target_link_libraries(MaaNode ${CMAKE_JS_LIB} MaaFramework MaaToolkit MaaAgentClient)
+target_link_libraries(MaaNode ${CMAKE_JS_LIB} MaaFramework MaaToolkit MaaAgentClient qjs)
 target_compile_definitions(MaaNode PRIVATE NODE_ADDON_API_ENABLE_TYPE_CHECK_ON_AS MAA_NODE_BUILD_CLIENT)
 set_target_properties(MaaNode PROPERTIES POSITION_INDEPENDENT_CODE ON)
 

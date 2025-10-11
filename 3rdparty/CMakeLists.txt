@@ -15,7 +15,7 @@ endif()
 
 add_subdirectory(quickjs EXCLUDE_FROM_ALL)
 if(MSVC)
-    target_compile_options(qjs PRIVATE /wd4146 /wd4668 /wd4132 /wd4334 /wd4702 /wd4701 /wd4746)
+    target_compile_options(qjs PRIVATE /wd4146 /wd4668 /wd4132 /wd4334 /wd4702 /wd4701 /wd4746 /wd4244)
 elseif(LINUX)
     target_compile_options(qjs PRIVATE -Wno-error=unused-command-line-argument)
 endif()
