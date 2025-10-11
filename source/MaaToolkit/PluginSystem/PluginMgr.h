@@ -28,7 +28,7 @@ private:
     bool load_and_register(const std::filesystem::path& library_path, MaaTasker* tasker, MaaResource* resource, MaaController* controller);
 
 private:
-    std::unordered_map<std::filesystem::path, boost::dll::shared_library> libraries_;
+    std::unordered_map<std::string, boost::dll::shared_library> libraries_;
 };
 
 MAA_TOOLKIT_NS_END

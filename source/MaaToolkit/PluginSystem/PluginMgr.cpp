@@ -5,6 +5,7 @@
 
 #include "Utils/Logger.h"
 #include "Utils/Runtime.h"
+#include "Utils/Platform.h"
 
 MAA_TOOLKIT_NS_BEGIN
 
@@ -36,7 +37,7 @@ std::optional<boost::dll::shared_library> PluginMgr::load_dll(const std::filesys
 {
     LogFunc << VAR(library_path);
 
-    if (auto it = libraries_.find(library_path); it != libraries_.end()) {
+    if (auto it = libraries_.find(path_to_utf8_string(library_path)); it != libraries_.end()) {
         LogDebug << "Library already loaded" << VAR(library_path);
         return it->second;
     }
@@ -120,7 +121,7 @@ bool PluginMgr::load_and_register(
 
     if (loaded) {
         auto filepath = library.location();
-        libraries_.insert_or_assign(filepath, std::move(library));
+        libraries_.insert_or_assign(path_to_utf8_string(filepath), std::move(library));
     }
     else {
         LogError << "No valid plugin interface found" << VAR(library_path);
