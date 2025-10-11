@@ -9,7 +9,6 @@
 #include "MaaFramework/MaaAPI.h"
 
 #include "Common/MaaTypes.h"
-#include "LibraryHolder/AgentClient.h"
 #include "Utils/Encoding.h"
 #include "Utils/IOStream/BoostIO.hpp"
 #include "Utils/Logger.h"
@@ -93,17 +92,15 @@ bool Runner::run(
         return false;
     }
 
-    std::shared_ptr<MaaAgentClient> agent = nullptr;
+    MaaAgentClient* agent = nullptr;
     boost::process::child agent_child;
     if (param.agent) {
-        agent = AgentClientLibraryHolder::create_agent_client();
-        if (!agent) {
-            LogError << "Failed to create AgentClient";
-            return false;
-        }
-
-        agent->bind_resource(resource_handle);
-        std::string socket_id = agent->identifier();
+        agent = MaaAgentClientCreateV2(nullptr);
+        MaaAgentClientBindResource(agent, resource_handle);
+        auto* id_buffer = MaaStringBufferCreate();
+        MaaAgentClientIdentifier(agent, id_buffer);
+        std::string socket_id = MaaStringBufferGet(id_buffer);
+        MaaStringBufferDestroy(id_buffer);
 
         std::vector<std::string> args = param.agent->child_args;
         args.emplace_back(socket_id);
@@ -117,7 +114,7 @@ bool Runner::run(
         LogInfo << "Start Agent" << VAR(exec) << VAR(os_args);
         agent_child = boost::process::child(exec, os_args);
 
-        bool connected = agent->connect();
+        bool connected = MaaAgentClientConnect(agent);
         if (!connected) {
             LogError << "Failed to connect agent" << VAR(param.agent->child_exec) << VAR(args);
             return false;
@@ -132,7 +129,8 @@ bool Runner::run(
     tasker_handle->wait(tid);
 
     if (agent) {
-        agent->disconnect();
+        MaaAgentClientDisconnect(agent);
+        MaaAgentClientDestroy(agent);
     }
 
     return true;
