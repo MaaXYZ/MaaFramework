@@ -39,7 +39,7 @@ extern "C"
 
     MAA_FRAMEWORK_API void MaaControllerDestroy(MaaController* ctrl);
 
-    MAA_FRAMEWORK_API MaaSinkId MaaControllerAddSink(MaaController* ctrl, MaaEventCallback notify, void* notify_trans_arg);
+    MAA_FRAMEWORK_API MaaSinkId MaaControllerAddSink(MaaController* ctrl, MaaEventCallback sink, void* trans_arg);
 
     MAA_FRAMEWORK_API void MaaControllerRemoveSink(MaaController* ctrl, MaaSinkId sink_id);
 
