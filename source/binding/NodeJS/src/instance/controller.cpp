@@ -29,15 +29,12 @@ std::optional<Napi::External<ControllerInfo>> adb_controller_create(
         ctx = new CallbackContext { env, callback.value(), "NotificationCallback" };
     }
 
-    handle = MaaAdbControllerCreate(
-        adb_path.c_str(),
-        address.c_str(),
-        screencap_methods,
-        input_methods,
-        config.c_str(),
-        agent_path.c_str(),
-        cb,
-        ctx);
+    // TODO
+    std::ignore = cb;
+    std::ignore = ctx;
+
+    handle =
+        MaaAdbControllerCreate(adb_path.c_str(), address.c_str(), screencap_methods, input_methods, config.c_str(), agent_path.c_str());
 
     if (handle) {
         return Napi::External<ControllerInfo>::New(env, new ControllerInfo { { handle }, ctx }, &DeleteFinalizer<ControllerInfo*>);
@@ -72,7 +69,11 @@ std::optional<Napi::External<ControllerInfo>> win32_controller_create(
         ctx = new CallbackContext { env, callback.value(), "NotificationCallback" };
     }
 
-    handle = MaaWin32ControllerCreate(hwnd, screencap_methods, input_methods, cb, ctx);
+    // TODO
+    std::ignore = cb;
+    std::ignore = ctx;
+    
+    handle = MaaWin32ControllerCreate(hwnd, screencap_methods, input_methods);
 
     if (handle) {
         return Napi::External<ControllerInfo>::New(env, new ControllerInfo { { handle }, ctx }, &DeleteFinalizer<ControllerInfo*>);
@@ -106,7 +107,11 @@ std::optional<Napi::External<ControllerInfo>>
         ctx = new CallbackContext { env, callback.value(), "NotificationCallback" };
     }
 
-    handle = MaaCustomControllerCreate(&custom_controller_api, custom_ctx, cb, ctx);
+    // TODO
+    std::ignore = cb;
+    std::ignore = ctx;
+
+    handle = MaaCustomControllerCreate(&custom_controller_api, custom_ctx);
 
     if (handle) {
         return Napi::External<ControllerInfo>::New(
@@ -137,7 +142,11 @@ std::optional<Napi::External<ControllerInfo>> dbg_controller_create(
         ctx = new CallbackContext { env, callback.value(), "NotificationCallback" };
     }
 
-    handle = MaaDbgControllerCreate(read_path.c_str(), write_path.c_str(), type, config.c_str(), cb, ctx);
+    // TODO
+    std::ignore = cb;
+    std::ignore = ctx;
+
+    handle = MaaDbgControllerCreate(read_path.c_str(), write_path.c_str(), type, config.c_str());
 
     if (handle) {
         return Napi::External<ControllerInfo>::New(env, new ControllerInfo { { handle }, ctx }, &DeleteFinalizer<ControllerInfo*>);
