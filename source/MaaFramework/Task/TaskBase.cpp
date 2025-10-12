@@ -253,7 +253,7 @@ void TaskBase::notify(std::string_view msg, const json::value detail)
         return;
     }
 
-    tasker_->node_notify(context_.get(), msg, detail);
+    tasker_->context_notify(context_.get(), msg, detail);
 }
 
 MAA_TASK_NS_END

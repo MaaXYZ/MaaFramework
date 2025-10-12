@@ -60,7 +60,7 @@ public:
     RuntimeCache& runtime_cache();
     const RuntimeCache& runtime_cache() const;
 
-    void node_notify(MaaContext* context, std::string_view msg, const json::value& details);
+    void context_notify(MaaContext* context, std::string_view msg, const json::value& details);
 
 private:
     using TaskPtr = std::shared_ptr<MAA_TASK_NS::TaskBase>;
@@ -80,7 +80,7 @@ private:
 
     std::unique_ptr<AsyncRunner<TaskPtr>> task_runner_ = nullptr;
     EventDispatcher notifier_;
-    EventDispatcher node_notifier_;
+    EventDispatcher context_notifier_;
 
     std::map<MaaTaskId, RunnerId> task_id_mapping_;
     mutable std::shared_mutex task_id_mapping_mutex_;

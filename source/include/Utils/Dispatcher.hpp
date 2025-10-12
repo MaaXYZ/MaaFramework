@@ -23,11 +23,14 @@ public:
         if (!observer) {
             return MaaInvalidId;
         }
-        auto it = observers_.emplace(++observer_id_, observer).first;
+
+        ObserverId ob_id = ++s_global_ob_id;
+
+        auto it = observers_.emplace(ob_id, observer).first;
         if (it == observers_.end()) {
             return MaaInvalidId;
         }
-        return observer_id_;
+        return ob_id;
     }
 
     bool unregister_observer(ObserverId observer_id) { return observers_.erase(observer_id) > 0; }
@@ -51,7 +54,7 @@ public:
 
 private:
     std::map<ObserverId, std::shared_ptr<SinkT>> observers_;
-    ObserverId observer_id_ = 0;
+    inline static std::atomic<ObserverId> s_global_ob_id = 400'000'000;
 };
 
 MAA_NS_END
