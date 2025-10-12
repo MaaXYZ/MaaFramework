@@ -398,6 +398,12 @@ export declare function agent_client_bind_resource(
     handle: AgentClientHandle,
     resource: ResourceHandle
 ): boolean
+export declare function agent_client_register_sink(
+    handle: AgentClientHandle,
+    tasker: TaskerHandle | null,
+    resource: ResourceHandle | null,
+    controller: ControllerHandle | null
+): boolean
 export declare function agent_client_connect(handle: AgentClientHandle): Promise<boolean>
 export declare function agent_client_disconnect(handle: AgentClientHandle): boolean
 export declare function agent_client_connected(handle: AgentClientHandle): boolean

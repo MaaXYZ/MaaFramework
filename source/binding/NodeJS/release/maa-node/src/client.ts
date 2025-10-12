@@ -1,5 +1,7 @@
+import { ControllerBase } from './controller'
 import * as maa from './maa'
 import { Resource } from './resource'
+import { Tasker } from './tasker'
 
 export class AgentClient {
     handle: maa.AgentClientHandle
@@ -23,6 +25,19 @@ export class AgentClient {
     bind_resource(resource: Resource) {
         if (!maa.agent_client_bind_resource(this.handle, resource.handle)) {
             throw 'AgentClient bind resource failed'
+        }
+    }
+
+    register_sink(tasker?: Tasker, resource?: Resource, controller?: ControllerBase) {
+        if (
+            !maa.agent_client_register_sink(
+                this.handle,
+                tasker?.handle ?? null,
+                resource?.handle ?? null,
+                controller?.handle ?? null
+            )
+        ) {
+            throw 'AgentClient register sink failed'
         }
     }
 
