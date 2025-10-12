@@ -196,9 +196,6 @@ def api_test():
     print(f"devices: {devices}")
     desktop = Toolkit.find_desktop_windows()
     print(f"desktop: {desktop}")
-    Toolkit.pi_register_custom_action("MyAct", MyAction())
-    Toolkit.pi_register_custom_recognition("MyRec", MyRecognition())
-    # Toolkit.run_pi_cli("C:/_maafw_testing_/aaabbbccc", ".", True)
 
     global analyzed, runned
     if not analyzed or not runned:

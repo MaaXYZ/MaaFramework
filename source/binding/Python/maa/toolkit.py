@@ -3,11 +3,9 @@ import json
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Dict, List, Union, Optional, Any
-from collections import defaultdict
 
 from .define import *
 from .library import Library
-from .event_sink import EventSink
 
 
 @dataclass
@@ -125,9 +123,6 @@ class Toolkit:
     ### private ###
 
     _api_properties_initialized: bool = False
-    _pi_custom_recognition_holder = defaultdict(dict)
-    _pi_custom_action_holder = defaultdict(dict)
-    _pi_notification_handler: Optional[EventSink] = None
 
     @staticmethod
     def _set_api_properties():
