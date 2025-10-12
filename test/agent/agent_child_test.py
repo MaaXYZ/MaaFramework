@@ -27,7 +27,7 @@ from maa.library import Library
 
 
 def main():
-    if sys.argv < 2:
+    if len(sys.argv) < 2:
         print("Usage: python agent_main.py <socket_id>")
         exit(1)
 
