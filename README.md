@@ -131,7 +131,9 @@ _✨ 基于图像识别的自动化黑盒测试框架 ✨_
 
 - [SLIMEIM_Maa](https://github.com/miaojiuqing/SLIMEIM_Maa) ![Pipeline](https://img.shields.io/badge/Pipeline-%23876f69?logo=paddypower&logoColor=%23FFFFFF) ![Python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white) ![license](https://img.shields.io/github/license/miaojiuqing/SLIMEIM_Maa) ![activity](https://img.shields.io/github/commit-activity/m/miaojiuqing/SLIMEIM_Maa?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/miaojiuqing/SLIMEIM_Maa?style=social) [![mirrorc](https://img.shields.io/badge/Mirror%E9%85%B1-%239af3f6?logo=countingworkspro&logoColor=4f46e5)](https://mirrorchyan.com/zh/projects?source=maafw-badge&rid=SLIMEIM_Maa)  
   魔王与龙的建国谭小助手。使用图像识别+模拟控制技术，解放双手！由 MaaFramework 强力驱动！
-
+  
+- [Maa_bbb](https://github.com/miaojiuqing/Maa_bbb) ![Pipeline](https://img.shields.io/badge/Pipeline-%23876f69?logo=paddypower&logoColor=%23FFFFFF) ![Python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white) ![license](https://img.shields.io/github/license/miaojiuqing/Maa_bbb) ![activity](https://img.shields.io/github/commit-activity/m/miaojiuqing/Maa_bbb?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/miaojiuqing/Maa_bbb?style=social) [![mirrorc](https://img.shields.io/badge/Mirror%E9%85%B1-%239af3f6?logo=countingworkspro&logoColor=4f46e5)](https://mirrorchyan.com/zh/projects?rid=Maa_bbb)  
+  崩坏三小助手。使用图像识别+模拟控制技术，解放双手！PC端与模拟器端同步支持，由 MaaFramework 强力驱动！
 
 ## 生态共建
 
