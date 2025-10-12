@@ -24,13 +24,11 @@ public:
             return MaaInvalidId;
         }
 
-        ObserverId ob_id = ++s_global_ob_id;
-
-        auto it = observers_.emplace(ob_id, observer).first;
+        auto it = observers_.emplace(++s_global_ob_id, observer).first;
         if (it == observers_.end()) {
             return MaaInvalidId;
         }
-        return ob_id;
+        return it->first;
     }
 
     bool unregister_observer(ObserverId observer_id) { return observers_.erase(observer_id) > 0; }
