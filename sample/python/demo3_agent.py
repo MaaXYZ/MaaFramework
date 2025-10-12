@@ -10,6 +10,11 @@ from maa.toolkit import Toolkit
 def main():
     Toolkit.init_option("./")
 
+    if sys.argv < 2:
+        print("Usage: python agent_main.py <socket_id>")
+        print("socket_id is provided by AgentIdentifier.")
+        exit(1)
+
     socket_id = sys.argv[-1]
 
     AgentServer.start_up(socket_id)

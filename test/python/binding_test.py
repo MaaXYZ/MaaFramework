@@ -231,12 +231,9 @@ def custom_ctrl_test():
 
 class MyEventSink(EventSink):
     def on_raw_notification(self, handle, msg: str, details: dict):
-        pass
         print(
             f"on MyEventSink.on_raw_notification, handle: {handle}, msg: {msg}, details: {details}"
         )
-
-        super().on_raw_notification(msg, details)
 
 
 class MyController(CustomController):

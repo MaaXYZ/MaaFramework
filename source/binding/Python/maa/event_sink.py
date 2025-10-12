@@ -41,12 +41,9 @@ class EventSink(ABC):
 
     @staticmethod
     def _gen_c_param(
-        handler: Optional["EventSink"],
+        sink: "EventSink",
     ) -> Tuple[MaaEventCallback, ctypes.c_void_p]:
-        if handler:
-            return handler.c_callback, handler.c_callback_arg
-        else:
-            return EventSink._c_sink_agent, ctypes.c_void_p()
+        return sink.c_callback, sink.c_callback_arg
 
     @staticmethod
     def _notification_type(message: str) -> NotificationType:
