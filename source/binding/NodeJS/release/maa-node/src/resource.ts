@@ -3,7 +3,6 @@ import { Job, JobSource } from './job'
 import maa from './maa'
 import { DumpTask } from './pipeline'
 import {
-    ChainNotifyType,
     CustomActionCallback,
     CustomActionSelf,
     CustomRecognizerCallback,
