@@ -64,8 +64,10 @@ export type CustomControllerParamResultMap = {
     touch_down: [[contact: number, x: number, y: number, pressure: number], boolean]
     touch_move: [[contact: number, x: number, y: number, pressure: number], boolean]
     touch_up: [[contact: number], boolean]
-    press_key: [[keycode: number], boolean]
+    click_key: [[keycode: number], boolean]
     input_text: [[text: string], boolean]
+    key_down: [[keycode: number], boolean]
+    key_up: [[keycode: number], boolean]
 }
 export type CustomControllerCallback = (
     action: keyof CustomControllerParamResultMap,
@@ -98,9 +100,13 @@ export declare function context_override_pipeline(
 ): boolean
 export declare function context_override_next(
     context: ContextHandle,
-    name: string,
+    node_name: string,
     next: string[]
 ): boolean
+export declare function context_get_node_data(
+    context: ContextHandle,
+    node_name: string
+): string | null
 export declare function context_get_task_id(context: ContextHandle): TaskId
 export declare function context_get_tasker(context: ContextHandle): TaskerHandle
 export declare function context_clone(context: ContextHandle): ContextHandle
@@ -146,10 +152,6 @@ export declare function controller_set_option_screenshot_use_raw_size(
     handle: ControllerHandle,
     value: boolean
 ): boolean
-export declare function controller_set_option_recording(
-    handle: ControllerHandle,
-    value: boolean
-): boolean
 export declare function controller_post_connection(handle: ControllerHandle): CtrlId
 export declare function controller_post_click(
     handle: ControllerHandle,
@@ -164,7 +166,9 @@ export declare function controller_post_swipe(
     y2: number,
     duration: number
 ): CtrlId
-export declare function controller_post_press_key(handle: ControllerHandle, keycode: number): CtrlId
+export declare function controller_post_click_key(handle: ControllerHandle, keycode: number): CtrlId
+export declare function controller_post_key_down(handle: ControllerHandle, keycode: number): CtrlId
+export declare function controller_post_key_up(handle: ControllerHandle, keycode: number): CtrlId
 export declare function controller_post_input_text(handle: ControllerHandle, text: string): CtrlId
 export declare function controller_post_start_app(handle: ControllerHandle, intent: string): CtrlId
 export declare function controller_post_stop_app(handle: ControllerHandle, intent: string): CtrlId
@@ -228,12 +232,16 @@ export declare function resource_post_bundle(handle: ResourceHandle, path: strin
 export declare function resource_override_pipeline(
     handle: ResourceHandle,
     pipeline_override: string
-): bool
+): boolean
 export declare function resource_override_next(
     handle: ResourceHandle,
     node_name: string,
     next_list: string[]
-): bool
+): boolean
+export declare function resource_get_node_data(
+    handle: ResourceHandle,
+    node_name: string
+): string | null
 export declare function resource_clear(handle: ResourceHandle): boolean
 export declare function resource_status(handle: ResourceHandle, res_id: ResId): Status
 export declare function resource_wait(handle: ResourceHandle, res_id: ResId): Promise<Status>
@@ -322,9 +330,7 @@ export declare function find_desktop(): Promise<
 export declare function version(): string
 export declare function set_global_option_log_dir(value: string): boolean
 export declare function set_global_option_save_draw(value: boolean): boolean
-export declare function set_global_option_recording(value: boolean): boolean
 export declare function set_global_option_stdout_level(value: LoggingLevel): boolean
-export declare function set_global_option_show_hit_draw(value: boolean): boolean
 export declare function set_global_option_debug_mode(value: boolean): boolean
 
 // pi.cpp
@@ -397,6 +403,8 @@ export declare function agent_client_bind_resource(
 export declare function agent_client_connect(handle: AgentClientHandle): Promise<boolean>
 export declare function agent_client_disconnect(handle: AgentClientHandle): boolean
 export declare function agent_client_connected(handle: AgentClientHandle): boolean
+export declare function agent_client_alive(handle: AgentClientHandle): boolean
+export declare function agent_client_set_timeout(handle: AgentClientHandle, ms: Uint64): boolean
 
 // agent.cpp - server
 

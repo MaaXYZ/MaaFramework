@@ -157,14 +157,14 @@ bool AdbControlUnitMgr::swipe(int x1, int y1, int x2, int y2, int duration)
     return input_->swipe(x1, y1, x2, y2, duration);
 }
 
-bool AdbControlUnitMgr::multi_swipe(const std::vector<SwipeParam>& swipes)
+bool AdbControlUnitMgr::is_touch_availabled() const
 {
     if (!input_) {
         LogError << "input_ is null";
         return false;
     }
 
-    return input_->multi_swipe(swipes);
+    return input_->is_touch_availabled();
 }
 
 bool AdbControlUnitMgr::touch_down(int contact, int x, int y, int pressure)
@@ -197,14 +197,14 @@ bool AdbControlUnitMgr::touch_up(int contact)
     return input_->touch_up(contact);
 }
 
-bool AdbControlUnitMgr::press_key(int key)
+bool AdbControlUnitMgr::click_key(int key)
 {
     if (!input_) {
         LogError << "input_ is null";
         return false;
     }
 
-    return input_->press_key(key);
+    return input_->click_key(key);
 }
 
 bool AdbControlUnitMgr::input_text(const std::string& text)
@@ -215,6 +215,36 @@ bool AdbControlUnitMgr::input_text(const std::string& text)
     }
 
     return input_->input_text(text);
+}
+
+bool AdbControlUnitMgr::is_key_down_up_availabled() const
+{
+    if (!input_) {
+        LogError << "input_ is null";
+        return false;
+    }
+
+    return input_->is_key_down_up_availabled();
+}
+
+bool AdbControlUnitMgr::key_down(int key)
+{
+    if (!input_) {
+        LogError << "input_ is null";
+        return false;
+    }
+
+    return input_->key_down(key);
+}
+
+bool AdbControlUnitMgr::key_up(int key)
+{
+    if (!input_) {
+        LogError << "input_ is null";
+        return false;
+    }
+
+    return input_->key_up(key);
 }
 
 bool AdbControlUnitMgr::find_device(std::vector<std::string>& devices)
@@ -240,7 +270,6 @@ bool AdbControlUnitMgr::shell(const std::string& cmd, std::string& output)
     output = std::move(opt).value();
     return true;
 }
-
 
 bool AdbControlUnitMgr::_screencap(cv::Mat& image)
 {

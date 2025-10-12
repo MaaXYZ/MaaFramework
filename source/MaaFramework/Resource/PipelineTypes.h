@@ -40,6 +40,40 @@ using Param = std::variant<
     MAA_VISION_NS::NeuralNetworkDetectorParam,
     MAA_VISION_NS::ColorMatcherParam,
     MAA_VISION_NS::CustomRecognitionParam>;
+
+inline static const std::unordered_map<std::string, Type> kTypeMap = {
+    { "DirectHit", Type::DirectHit },
+    { "directhit", Type::DirectHit },
+    { "TemplateMatch", Type::TemplateMatch },
+    { "templatematch", Type::TemplateMatch },
+    { "FeatureMatch", Type::FeatureMatch },
+    { "featurematch", Type::FeatureMatch },
+    { "ColorMatch", Type::ColorMatch },
+    { "colormatch", Type::ColorMatch },
+    { "OCR", Type::OCR },
+    { "ocr", Type::OCR },
+    { "NeuralNetworkClassify", Type::NeuralNetworkClassify },
+    { "neuralnetworkclassify", Type::NeuralNetworkClassify },
+    { "nnclassify", Type::NeuralNetworkClassify },
+    { "NNClassify", Type::NeuralNetworkClassify },
+    { "NeuralNetworkDetect", Type::NeuralNetworkDetect },
+    { "neuralnetworkdetect", Type::NeuralNetworkDetect },
+    { "NNDetect", Type::NeuralNetworkDetect },
+    { "nnDetect", Type::NeuralNetworkDetect },
+    { "Custom", Type::Custom },
+    { "custom", Type::Custom },
+};
+
+inline static const std::unordered_map<Type, std::string> kTypeNameMap = {
+    { Type::DirectHit, "DirectHit" },
+    { Type::TemplateMatch, "TemplateMatch" },
+    { Type::FeatureMatch, "FeatureMatch" },
+    { Type::OCR, "OCR" },
+    { Type::NeuralNetworkClassify, "NeuralNetworkClassify" },
+    { Type::NeuralNetworkDetect, "NeuralNetworkDetect" },
+    { Type::ColorMatch, "ColorMatch" },
+    { Type::Custom, "Custom" },
+};
 } // namespace Recognition
 
 namespace Action
@@ -52,8 +86,9 @@ enum class Type
     LongPress,
     Swipe,
     MultiSwipe,
-    Key,
-    Text,
+    ClickKey,
+    LongPressKey,
+    InputText,
     StartApp,
     StopApp,
     Command,
@@ -61,6 +96,7 @@ enum class Type
     StopTask,
 };
 
+using TargetObj = MAA_VISION_NS::TargetObj;
 using Target = MAA_VISION_NS::Target;
 
 struct ClickParam
@@ -71,15 +107,19 @@ struct ClickParam
 struct LongPressParam
 {
     Target target;
-    uint duration = 500;
+    uint duration = 1000;
 };
 
 struct SwipeParam
 {
     Target begin;
-    Target end;
+    std::vector<TargetObj> end = { {} };
+    std::vector<cv::Rect> end_offset;
+    std::vector<uint> end_hold;
+    std::vector<uint> duration = { 200 };
 
-    uint duration = 200;
+    bool only_hover = false;
+
     uint starting = 0; // only for MultiSwipe
 };
 
@@ -88,12 +128,18 @@ struct MultiSwipeParam
     std::vector<SwipeParam> swipes;
 };
 
-struct KeyParam
+struct ClickKeyParam
 {
     std::vector<int> keys;
 };
 
-struct TextParam
+struct LongPressKeyParam
+{
+    std::vector<int> keys;
+    uint duration = 1000;
+};
+
+struct InputTextParam
 {
     std::string text;
 };
@@ -123,11 +169,55 @@ using Param = std::variant<
     LongPressParam,
     SwipeParam,
     MultiSwipeParam,
-    KeyParam,
-    TextParam,
+    ClickKeyParam,
+    LongPressKeyParam,
+    InputTextParam,
     AppParam,
     CommandParam,
     CustomParam>;
+
+inline static const std::unordered_map<std::string, Type> kTypeMap = {
+    { "DoNothing", Type::DoNothing },
+    { "donothing", Type::DoNothing },
+    { "Click", Type::Click },
+    { "click", Type::Click },
+    { "Swipe", Type::Swipe },
+    { "swipe", Type::Swipe },
+    { "LongPress", Type::LongPress },
+    { "longpress", Type::LongPress },
+    { "MultiSwipe", Type::MultiSwipe },
+    { "multiswipe", Type::MultiSwipe },
+    { "Key", Type::ClickKey },
+    { "key", Type::ClickKey },
+    { "ClickKey", Type::ClickKey },
+    { "clickkey", Type::ClickKey },
+    { "LongPressKey", Type::LongPressKey },
+    { "longpresskey", Type::LongPressKey },
+    { "InputText", Type::InputText },
+    { "inputtext", Type::InputText },
+    { "StartApp", Type::StartApp },
+    { "startapp", Type::StartApp },
+    { "StopApp", Type::StopApp },
+    { "stopapp", Type::StopApp },
+    { "Command", Type::Command },
+    { "command", Type::Command },
+    { "Custom", Type::Custom },
+    { "custom", Type::Custom },
+    { "StopTask", Type::StopTask },
+    { "stoptask", Type::StopTask },
+    { "Stop", Type::StopTask },
+    { "stop", Type::StopTask },
+};
+
+inline static const std::unordered_map<Type, std::string> kTypeNameMap = {
+    { Type::DoNothing, "DoNothing" },       { Type::Click, "Click" },
+    { Type::LongPress, "LongPress" },       { Type::Swipe, "Swipe" },
+    { Type::MultiSwipe, "MultiSwipe" },     { Type::ClickKey, "ClickKey" },
+    { Type::LongPressKey, "LongPressKey" }, { Type::InputText, "InputText" },
+    { Type::StartApp, "StartApp" },         { Type::StopApp, "StopApp" },
+    { Type::Command, "Command" },           { Type::Custom, "Custom" },
+    { Type::StopTask, "StopTask" },
+};
 } // namespace Action
 
 struct WaitFreezesParam
@@ -148,7 +238,7 @@ struct PipelineData
 
     std::string name;
     bool is_sub = false; // for compatibility with 1.x
-    bool enable = true;
+    bool enabled = true;
 
     Recognition::Type reco_type = Recognition::Type::DirectHit;
     Recognition::Param reco_param = MAA_VISION_NS::DirectHitParam {};
@@ -173,3 +263,10 @@ struct PipelineData
 };
 
 MAA_RES_NS_END
+
+MAA_NS_BEGIN
+
+using PipelineData = MAA_RES_NS::PipelineData;
+using PipelineDataMap = std::unordered_map<std::string, PipelineData>;
+
+MAA_NS_END

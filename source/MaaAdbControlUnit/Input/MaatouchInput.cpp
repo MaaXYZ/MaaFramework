@@ -43,27 +43,10 @@ bool MaatouchInput::init()
     return invoke_and_read_info();
 }
 
-bool MaatouchInput::press_key(int key)
+bool MaatouchInput::click_key(int key)
 {
-    LogInfo << VAR(key);
-
-    if (!pipe_ios_) {
-        LogError << "pipe_ios_ is nullptr";
-        return false;
-    }
-
-    // https://github.com/openstf/minitouch#writable-to-the-socket
-    static constexpr std::string_view kKeyDownFormat = "k {} d\nc\n";
-    static constexpr std::string_view kKeyUpFormat = "k {} u\nc\n";
-
-    bool ret = pipe_ios_->write(std::format(kKeyDownFormat, key)) && pipe_ios_->write(std::format(kKeyUpFormat, key));
-
-    if (!ret) {
-        LogError << "failed to write";
-        return false;
-    }
-
-    return true;
+    LogError << "deprecated" << VAR(key);
+    return false;
 }
 
 bool MaatouchInput::input_text(const std::string& text)
@@ -79,6 +62,50 @@ bool MaatouchInput::input_text(const std::string& text)
     static constexpr std::string_view kTextFormat = "t {}\nc\n";
 
     bool ret = pipe_ios_->write(std::format(kTextFormat, text));
+
+    if (!ret) {
+        LogError << "failed to write";
+        return false;
+    }
+
+    return true;
+}
+
+bool MaatouchInput::key_down(int key)
+{
+    LogInfo << VAR(key);
+
+    if (!pipe_ios_) {
+        LogError << "pipe_ios_ is nullptr";
+        return false;
+    }
+
+    // https://github.com/openstf/minitouch#writable-to-the-socket
+    static constexpr std::string_view kKeyDownFormat = "k {} d\nc\n";
+
+    bool ret = pipe_ios_->write(std::format(kKeyDownFormat, key));
+
+    if (!ret) {
+        LogError << "failed to write";
+        return false;
+    }
+
+    return true;
+}
+
+bool MaatouchInput::key_up(int key)
+{
+    LogInfo << VAR(key);
+
+    if (!pipe_ios_) {
+        LogError << "pipe_ios_ is nullptr";
+        return false;
+    }
+
+    // https://github.com/openstf/minitouch#writable-to-the-socket
+    static constexpr std::string_view kKeyUpFormat = "k {} u\nc\n";
+
+    bool ret = pipe_ios_->write(std::format(kKeyUpFormat, key));
 
     if (!ret) {
         LogError << "failed to write";

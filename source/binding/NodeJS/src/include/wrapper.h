@@ -5,6 +5,8 @@
 #include <napi.h>
 #include <optional>
 
+#include "info.h"
+
 inline std::string PtrAsKey(void* ptr)
 {
     return std::format("{:#018x}", reinterpret_cast<uintptr_t>(ptr));

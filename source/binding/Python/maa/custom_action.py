@@ -88,5 +88,8 @@ class CustomAction(ABC):
         elif isinstance(result, bool):
             return int(result)
 
+        elif result is None:
+            return int(True)
+
         else:
             raise TypeError(f"Invalid return type: {result!r}")

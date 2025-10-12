@@ -1,22 +1,22 @@
 import { Context } from './context'
 import { Job, JobSource } from './job'
 import maa from './maa'
+import { DumpTask } from './pipeline'
 import {
+    ChainNotifyType,
     CustomActionCallback,
     CustomActionSelf,
     CustomRecognizerCallback,
     CustomRecognizerSelf
 } from './types'
+import { chain_notify_impl } from './utils'
 
-export type ResourceNotify = { res_id: maa.ResId; path: string } & (
-    | {
-          msg: 'StartLoading'
-      }
-    | {
-          msg: 'LoadingCompleted' | 'LoadingFailed'
-          hash: string
-      }
-)
+export type ResourceNotify = {
+    msg: 'Loading.Starting' | 'Loading.Succeeded' | 'Loading.Failed'
+    res_id: maa.ResId
+    path: string
+    hash: string
+}
 
 export class ResourceBase {
     handle: maa.ResourceHandle
@@ -24,13 +24,18 @@ export class ResourceBase {
 
     notify(message: string, details_json: string): maa.MaybePromise<void> {}
 
-    set parsed_notify(cb: (msg: ResourceNotify) => maa.MaybePromise<void>) {
-        this.notify = (msg, details) => {
+    chain_notify = chain_notify_impl
+
+    chain_parsed_notify(
+        cb: (msg: ResourceNotify) => maa.MaybePromise<void>,
+        order: ChainNotifyType = 'after'
+    ) {
+        this.chain_notify((msg: string, details: string) => {
             return cb({
                 msg: msg.replace(/^Resource\./, '') as any,
                 ...JSON.parse(details)
             })
-        }
+        }, order)
     }
 
     constructor(handle: maa.ResourceHandle) {
@@ -139,8 +144,8 @@ export class ResourceBase {
         return new Job(this.#source, maa.resource_post_bundle(this.handle, path))
     }
 
-    override_pipeline(pipeline_override: string) {
-        if (!maa.resource_override_pipeline(this.handle, pipeline_override)) {
+    override_pipeline(pipeline_override: Record<string, unknown> | Record<string, unknown>[] = {}) {
+        if (!maa.resource_override_pipeline(this.handle, JSON.stringify(pipeline_override))) {
             throw 'Resource override_pipeline failed'
         }
     }
@@ -148,6 +153,19 @@ export class ResourceBase {
     override_next(node_name: string, next_list: string[]) {
         if (!maa.resource_override_next(this.handle, node_name, next_list)) {
             throw 'Resource override_next failed'
+        }
+    }
+
+    get_node_data(node_name: string) {
+        return maa.resource_get_node_data(this.handle, node_name)
+    }
+
+    get_node_data_parsed(node_name: string) {
+        const content = this.get_node_data(node_name)
+        if (content) {
+            return JSON.parse(content) as DumpTask
+        } else {
+            return null
         }
     }
 
@@ -174,7 +192,7 @@ export class Resource extends ResourceBase {
     constructor() {
         let ws: WeakRef<this>
         const h = maa.resource_create((message, details_json) => {
-            ws.deref()?.notify(message, details_json)
+            return ws.deref()?.notify(message, details_json)
         })
         if (!h) {
             throw 'Resource create failed'

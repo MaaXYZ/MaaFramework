@@ -5,8 +5,6 @@
 #include "MaaFramework/MaaAPI.h"
 #include "MaaToolkit/MaaToolkitAPI.h"
 
-#include "../conf.h"
-
 MaaController* create_adb_controller();
 
 int main()

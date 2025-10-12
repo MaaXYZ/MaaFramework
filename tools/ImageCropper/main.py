@@ -2,7 +2,6 @@ import cv2
 import os
 import sys
 import numpy as np
-import asyncio
 import colormatcher
 from datetime import datetime
 from roimage import Roimage
@@ -14,7 +13,7 @@ from maa.toolkit import Toolkit
 # 初始化设备参数
 # device_serial = "127.0.0.1:16384"
 device_serial = None
-adb_screencap_method = MaaAdbScreencapMethodEnum.Encode
+adb_screencap_method = MaaAdbScreencapMethodEnum.Default
 win32_screencap_method = MaaWin32ScreencapMethodEnum.DXGI_DesktopDup
 
 # 初始窗口大小 (width, height)
@@ -35,7 +34,7 @@ def amplify(rect: list[int]) -> list[int]:
 
 
 # 颜色匹配方法
-def matchColor(image) -> tuple[int, list[tuple[list[int]]]]:
+def match_color(image) -> tuple[int, int, list[tuple[list[int]]]]:
     # framework ColorMatch common method:
     #   4.COLOR_BGR2RGB 40.COLOR_BGR2HSV 6.COLOR_BGR2GRAY
     # colormatcher method:
@@ -95,17 +94,17 @@ def parse_args() -> Controller:
     elif t == 2:
         window_list = Toolkit.find_desktop_windows()
         if len(window_list):
-            win32_names = [Toolkit.get_window_name(w) for w in window_list]
-            win32_class = [Toolkit.get_class_name(w) for w in window_list]
             max_len = 40
-            for i, (h, n, c) in enumerate(zip(window_list, win32_names, win32_class)):
-                print(f"{h:>19} {(c[:max_len - 3] + '...') if len(c) > max_len else c:>{max_len}} | {i:>3} | {n}")
+            for i, w in enumerate(window_list):
+                c = w.class_name[:max_len - 3] + '...' if len(w.class_name) > max_len else w.class_name
+                print(f"{w.hwnd:>19} {c:>{max_len}} | {i:>3} | {w.window_name}")
             print(str.format("{:->19} {:->{}} | {:->3} | {}", " hWnd", " class name", max_len, "num", "window name"))
-            i = int(input("Please select the window (ENTER to pass): "))
+        i = int(input("Please select the window (ENTER to pass): "))
         if 0 <= i < len(window_list):
-            device_serial = Toolkit.get_window_name(window_list[i])
-            return Win32Controller(hWnd=window_list[i],
-                                   screencap_methods=win32_screencap_method)
+            device_serial = window_list[i].window_name
+            return Win32Controller(hWnd=window_list[i].hwnd,
+                                   screencap_method=win32_screencap_method)
+    return None
 
 
 controller = parse_args()
@@ -132,7 +131,7 @@ files = [f for f in os.listdir("./src") if f.endswith('.png')]
 # -events 鼠标事件（如按下鼠标左键，释放鼠标左键，鼠标移动等）
 # -x x坐标
 # -y y坐标
-# -flages params 其他参数
+# -flags params 其他参数
 def mouse(event, x, y, flags, param) -> None:
     global crop_end
     crop_end = Roimage(0, 0, x, y, win_roimage).getRoiInRoot()
@@ -154,12 +153,12 @@ def show_roi(roi: Roimage):
 
 # 计算绘图四边形坐标
 # -rectPts 相对于 std_roimage 的两点坐标 ((left,top),(right,bottom))
-def count_draw_coordinate(rectPts):
+def count_draw_coordinate(rect_pts):
     z = win_roimage.zoom
     x, y = win_roimage.point
     return (
-        (int(rectPts[0][0] * z - x), int(rectPts[0][1] * z - y)),
-        (int(rectPts[1][0] * z - x), int(rectPts[1][1] * z - y)))
+        (int(rect_pts[0][0] * z - x), int(rect_pts[0][1] * z - y)),
+        (int(rect_pts[1][0] * z - x), int(rect_pts[1][1] * z - y)))
 
 
 # 绘图
@@ -233,7 +232,7 @@ def zoom(event, x, y, flags, param) -> None:
 # -pt1 鼠标按下右键时的坐标
 # -pt2 鼠标当前坐标
 def count_move_coordinate(pt0, pt1, pt2):
-    return (pt0[0] + pt1[0] - pt2[0], pt0[1] + pt1[1] - pt2[1])
+    return pt0[0] + pt1[0] - pt2[0], pt0[1] + pt1[1] - pt2[1]
 
 
 # 右键拖曳
@@ -258,7 +257,7 @@ def trackbar_change(pos) -> None:
     pos = pos / 100  # get a scaling factor from trackbar pos
     w = int(std_roimage.width * pos)  # scale w
     h = int(std_roimage.height * pos)  # scale h
-    cv2.resizeWindow(win_name, w, h)  # resize window
+    cv2.resizeWindow(win_name, w, h)  # resize a window
 
 
 # 读取文件
@@ -280,7 +279,7 @@ def screenshot() -> np.ndarray:
 
 
 # 获取标准化的 Roimage
-def getStdRoimage() -> Roimage:
+def get_std_roimage() -> Roimage:
     global file_name
     if len(files):
         file_name = files.pop(0)
@@ -299,16 +298,16 @@ def getStdRoimage() -> Roimage:
 
 # 获取放大后的 Roi 四边形
 # -roi: 需要放大的 Roi
-def getAmplifiedRoiRectangle(roi: Roimage) -> list[int]:
+def get_amplified_roi_rectangle(roi: Roimage) -> list[int]:
     x, y, w, h = amplify(roi.rectangle)
     return Roimage(w, h, x, y, roi.parent).rectangle
 
 
-def isWindowVisible(winName: str, destroyed: bool = False) -> bool:
+def is_window_visible(win_name: str, destroyed: bool = False) -> bool:
     if destroyed:
         return False
     try:
-        return cv2.getWindowProperty(winName, cv2.WND_PROP_VISIBLE) > 0
+        return cv2.getWindowProperty(win_name, cv2.WND_PROP_VISIBLE) > 0
     except cv2.error:
         return False
 
@@ -326,7 +325,7 @@ cropping = False
 destroyedMainColors = True
 while True:
     if not cropping:
-        std_roimage = getStdRoimage()
+        std_roimage = get_std_roimage()
         if std_roimage is None:
             break
         win_roimage = Roimage(0, 0, 0, 0, std_roimage)
@@ -360,6 +359,7 @@ while True:
     cropping = False
     needSave = True
     needColorMatch = False
+    connected = False
     mains = []
     # r R
     if key in [ord("r"), ord("R")]:
@@ -386,16 +386,16 @@ while True:
 
         if needSave:
             x1, y1, w1, h1 = roi.rectangle
-            x2, y2, w2, h2 = getAmplifiedRoiRectangle(roi)
+            x2, y2, w2, h2 = get_amplified_roi_rectangle(roi)
             dst_filename: str = f'{file_name}_{x1}_{y1}_{w1}_{h1}__{x2}_{y2}_{w2}_{h2}.png'
             print(f"dst: {os.getcwd()}\dst\{dst_filename}")
             cv2.imwrite('./dst/' + dst_filename, roi.image)
 
         print(f"original roi: {roi.rectangle}\n"
-              f"amplified roi: {getAmplifiedRoiRectangle(roi)}")
+              f"amplified roi: {get_amplified_roi_rectangle(roi)}")
 
         if needColorMatch:
-            method, reverse, colors = matchColor(img)
+            method, reverse, colors = match_color(img)
             ret = {"recognition": "ColorMatch", "roi": [], "method": method, "lower": [], "upper": [], "count": [],
                    "connected": connected}
             mainColors = []
@@ -422,7 +422,7 @@ while True:
                   .replace("'", '"')
                   .replace("False", "false")
                   .replace("True", "true"))
-        elif isWindowVisible('MainColors', destroyedMainColors):
+        elif is_window_visible('MainColors', destroyedMainColors):
             cv2.destroyWindow('MainColors')
             destroyedMainColors = True
 

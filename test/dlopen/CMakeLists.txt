@@ -12,6 +12,10 @@ target_include_directories(DlopenTesting
 
 target_link_libraries(DlopenTesting LibraryHolder)
 
+if(LINUX)
+    target_link_libraries(DlopenTesting dl)
+endif()
+
 if(WITH_ADB_CONTROLLER)
     target_compile_definitions(DlopenTesting PRIVATE WITH_ADB_CONTROLLER)
 endif()
@@ -22,6 +26,10 @@ endif()
 
 if(WITH_DBG_CONTROLLER)
     target_compile_definitions(DlopenTesting PRIVATE WITH_DBG_CONTROLLER)
+endif()
+
+if(WITH_CUSTOM_CONTROLLER)
+    target_compile_definitions(DlopenTesting PRIVATE WITH_CUSTOM_CONTROLLER)
 endif()
 
 add_dependencies(DlopenTesting LibraryHolder)

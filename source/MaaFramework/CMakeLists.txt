@@ -28,6 +28,10 @@ if(WITH_DBG_CONTROLLER)
     add_dependencies(MaaFramework MaaDbgControlUnit)
 endif()
 
+if(WITH_CUSTOM_CONTROLLER)
+    add_dependencies(LibraryHolder MaaCustomControlUnit)
+endif()
+
 # 提供一个仅包含include而不链接的target, 方便处理client/server通用代码
 add_library(MaaInterface INTERFACE)
 target_include_directories(MaaInterface INTERFACE $<BUILD_INTERFACE:${MAA_PUBLIC_INC}> $<INSTALL_INTERFACE:include>)
@@ -49,21 +53,11 @@ source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES ${maa_framework_src})
 source_group(PREFIX "Common" TREE ${CMAKE_CURRENT_SOURCE_DIR}/../Common FILES ${maa_common_src})
 
 if(WIN32)
-    if(USE_MAADEPS)
-        add_custom_command(
-            TARGET MaaFramework
-            POST_BUILD
-            COMMAND ${CMAKE_COMMAND} -E copy_directory_if_different
-            "${MAADEPS_DIR}/runtime/${MAADEPS_TRIPLET}/$<$<CONFIG:Debug>:msvc-debug/>"
-            $<TARGET_FILE_DIR:MaaFramework>
-            COMMAND_EXPAND_LISTS)
-    else()
-        add_custom_command(
-            TARGET MaaFramework
-            POST_BUILD
-            COMMAND ${CMAKE_COMMAND} -E copy_directory_if_different
-            $<TARGET_RUNTIME_DLLS:MaaFramework>
-            $<TARGET_FILE_DIR:MaaFramework>
-            COMMAND_EXPAND_LISTS)
-    endif()
+    add_custom_command(
+        TARGET MaaFramework
+        POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_directory_if_different
+        "${MAADEPS_DIR}/runtime/${MAADEPS_TRIPLET}/$<$<CONFIG:Debug>:msvc-debug/>"
+        $<TARGET_FILE_DIR:MaaFramework>
+        COMMAND_EXPAND_LISTS)
 endif()

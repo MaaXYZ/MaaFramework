@@ -1,6 +1,7 @@
 import './maa-client.js'
 
 export * as api from './maa'
+export * from './job'
 export * from './controller'
 export * from './resource'
 export * from './tasker'

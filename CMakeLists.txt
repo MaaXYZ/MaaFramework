@@ -6,14 +6,16 @@ list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake/modules")
 
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
+cmake_policy(SET CMP0155 OLD)
+
 set(Boost_NO_WARN_NEW_VERSIONS ON)
 
 # set(CMAKE_EXPORT_COMPILE_COMMANDS ON) see below
-option(USE_MAADEPS "use third-party libraries built by MaaDeps" ON)
 
 option(WITH_ADB_CONTROLLER "build with adb controller" ON)
 option(WITH_WIN32_CONTROLLER "build with win32 controller" ON)
 option(WITH_DBG_CONTROLLER "build with debugging controller" ON)
+option(WITH_CUSTOM_CONTROLLER "build with custom controller" ON)
 option(WITH_NODEJS_BINDING "build with nodejs binding" OFF)
 option(WITH_MAA_AGENT "build with MaaAgent" ON)
 
@@ -24,15 +26,14 @@ option(BUILD_DLOPEN_TESTING "build dlopen testing" OFF)
 option(BUILD_NODE_TEST "build node test" OFF)
 
 option(ENABLE_CCACHE "enable ccache if possible" ON)
+option(ENABLE_HASH_VERSION "enable hash version from git" OFF)
 # option(ENABLE_CPP20_MODULES "enable C++20 modules" ON)
 
 set(MAA_PUBLIC_INC ${CMAKE_SOURCE_DIR}/include)
 set(MAA_PRIVATE_INC ${CMAKE_SOURCE_DIR}/source/include)
 
-if(USE_MAADEPS)
-    set(MAADEPS_DIR ${PROJECT_SOURCE_DIR}/3rdparty/MaaDeps)
-    include(${MAADEPS_DIR}/maadeps.cmake)
-endif()
+set(MAADEPS_DIR ${PROJECT_SOURCE_DIR}/3rdparty/MaaDeps)
+include(${MAADEPS_DIR}/maadeps.cmake)
 
 # Basic compile and link configuration
 include(${PROJECT_SOURCE_DIR}/cmake/config.cmake)
@@ -51,7 +52,7 @@ if(WITH_WIN32_CONTROLLER AND NOT WIN32)
 endif()
 
 find_package(OpenCV REQUIRED COMPONENTS core imgproc imgcodecs)
-find_package(Boost REQUIRED COMPONENTS system)
+find_package(Boost REQUIRED CONFIG COMPONENTS system)
 find_package(ZLIB REQUIRED)
 find_package(fastdeploy_ppocr REQUIRED)
 find_package(ONNXRuntime REQUIRED)
@@ -89,9 +90,7 @@ if (BUILD_NODE_TEST)
     add_subdirectory(tools/NodeTest)
 endif()
 
-if(USE_MAADEPS)
-    maadeps_install(bin)
-endif()
+maadeps_install(bin)
 
 install(
     EXPORT MaaFrameworkTargets

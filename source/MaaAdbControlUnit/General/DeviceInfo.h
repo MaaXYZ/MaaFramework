@@ -7,6 +7,14 @@ MAA_CTRL_UNIT_NS_BEGIN
 class DeviceInfo : public UnitBase
 {
 public:
+    struct DisplayInfo
+    {
+        int w = 0;
+        int h = 0;
+        int r = 0;
+    };
+
+public:
     virtual ~DeviceInfo() override = default;
 
 public: // from UnitBase
@@ -14,7 +22,7 @@ public: // from UnitBase
 
 public:
     std::optional<std::string> request_uuid();
-    std::optional<std::pair<int, int>> request_resolution();
+    std::optional<DisplayInfo> request_resolution();
     std::optional<int> request_orientation();
 
 private:

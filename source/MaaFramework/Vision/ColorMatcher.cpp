@@ -98,7 +98,7 @@ ColorMatcher::ResultsVec ColorMatcher::count_non_zero_with_connected(const cv::M
         results.emplace_back(std::move(res));
     }
 
-    return NMS_for_count(std::move(results), 0.7);
+    return NMS_for_count(std::move(results));
 }
 
 cv::Mat ColorMatcher::draw_result(const cv::Mat& color, const cv::Mat& bin, const ResultsVec& results) const

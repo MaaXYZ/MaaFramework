@@ -135,14 +135,14 @@ bool InputAgent::swipe(int x1, int y1, int x2, int y2, int duration)
     return active_unit_->swipe(x1, y1, x2, y2, duration);
 }
 
-bool InputAgent::multi_swipe(const std::vector<SwipeParam>& swipes)
+bool InputAgent::is_touch_availabled() const
 {
     if (!active_unit_) {
         LogError << "No available input method" << VAR(active_unit_);
         return false;
     }
 
-    return active_unit_->multi_swipe(swipes);
+    return active_unit_->is_touch_availabled();
 }
 
 bool InputAgent::touch_down(int contact, int x, int y, int pressure)
@@ -175,14 +175,14 @@ bool InputAgent::touch_up(int contact)
     return active_unit_->touch_up(contact);
 }
 
-bool InputAgent::press_key(int key)
+bool InputAgent::click_key(int key)
 {
     if (!active_unit_) {
         LogError << "No available input method" << VAR(active_unit_);
         return false;
     }
 
-    return active_unit_->press_key(key);
+    return active_unit_->click_key(key);
 }
 
 bool InputAgent::input_text(const std::string& text)
@@ -193,6 +193,36 @@ bool InputAgent::input_text(const std::string& text)
     }
 
     return active_unit_->input_text(text);
+}
+
+bool InputAgent::is_key_down_up_availabled() const
+{
+    if (!active_unit_) {
+        LogError << "No available input method" << VAR(active_unit_);
+        return false;
+    }
+
+    return active_unit_->is_key_down_up_availabled();
+}
+
+bool InputAgent::key_down(int key)
+{
+    if (!active_unit_) {
+        LogError << "No available input method" << VAR(active_unit_);
+        return false;
+    }
+
+    return active_unit_->key_down(key);
+}
+
+bool InputAgent::key_up(int key)
+{
+    if (!active_unit_) {
+        LogError << "No available input method" << VAR(active_unit_);
+        return false;
+    }
+
+    return active_unit_->key_up(key);
 }
 
 void InputAgent::on_image_resolution_changed(const std::pair<int, int>& pre, const std::pair<int, int>& cur)

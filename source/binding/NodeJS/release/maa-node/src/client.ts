@@ -41,4 +41,14 @@ export class AgentClient {
     get connected() {
         return maa.agent_client_connected(this.handle)
     }
+
+    get alive() {
+        return maa.agent_client_alive(this.handle)
+    }
+
+    set timeout(ms: maa.Uint64) {
+        if (!maa.agent_client_set_timeout(this.handle, ms)) {
+            throw 'AgentClient set timeout failed'
+        }
+    }
 }

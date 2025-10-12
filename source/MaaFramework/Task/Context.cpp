@@ -5,6 +5,9 @@
 #include "ActionTask.h"
 #include "PipelineTask.h"
 #include "RecognitionTask.h"
+#include "Resource/PipelineChecker.h"
+#include "Resource/PipelineDumper.h"
+#include "Resource/PipelineParser.h"
 #include "Tasker/Tasker.h"
 #include "Utils/Logger.h"
 
@@ -34,6 +37,11 @@ std::shared_ptr<const Context> Context::getptr() const
     return shared_from_this();
 }
 
+std::shared_ptr<Context> Context::make_clone() const
+{
+    return std::make_shared<Context>(*this);
+}
+
 Context::Context(const Context& other)
     : std::enable_shared_from_this<Context>(other)
     , task_id_(other.task_id_)
@@ -44,7 +52,7 @@ Context::Context(const Context& other)
     LogDebug << VAR(other.getptr());
 }
 
-MaaTaskId Context::run_task(const std::string& entry, const json::object& pipeline_override)
+MaaTaskId Context::run_task(const std::string& entry, const json::value& pipeline_override)
 {
     LogFunc << VAR(getptr()) << VAR(entry) << VAR(pipeline_override);
 
@@ -53,7 +61,7 @@ MaaTaskId Context::run_task(const std::string& entry, const json::object& pipeli
         return MaaInvalidId;
     }
 
-    PipelineTask subtask(entry, tasker_, getptr());
+    PipelineTask subtask(entry, tasker_, make_clone());
     bool ov = subtask.override_pipeline(pipeline_override);
     if (!ov) {
         LogError << "failed to override_pipeline" << VAR(entry) << VAR(pipeline_override);
@@ -79,11 +87,11 @@ MaaTaskId Context::run_task(const std::string& entry, const json::object& pipeli
     return subtask.task_id();
 }
 
-MaaRecoId Context::run_recognition(const std::string& entry, const json::object& pipeline_override, const cv::Mat& image)
+MaaRecoId Context::run_recognition(const std::string& entry, const json::value& pipeline_override, const cv::Mat& image)
 {
     LogFunc << VAR(getptr()) << VAR(entry) << VAR(pipeline_override);
 
-    RecognitionTask subtask(entry, tasker_, getptr());
+    RecognitionTask subtask(entry, tasker_, make_clone());
     bool ov = subtask.override_pipeline(pipeline_override);
     if (!ov) {
         LogError << "failed to override_pipeline" << VAR(entry) << VAR(pipeline_override);
@@ -92,15 +100,12 @@ MaaRecoId Context::run_recognition(const std::string& entry, const json::object&
     return subtask.run_with_param(image);
 }
 
-MaaNodeId Context::run_action(
-    const std::string& entry,
-    const json::object& pipeline_override,
-    const cv::Rect& box,
-    const std::string& reco_detail)
+MaaNodeId
+    Context::run_action(const std::string& entry, const json::value& pipeline_override, const cv::Rect& box, const std::string& reco_detail)
 {
     LogFunc << VAR(getptr()) << VAR(entry) << VAR(pipeline_override) << VAR(box) << VAR(reco_detail);
 
-    ActionTask subtask(entry, tasker_, getptr());
+    ActionTask subtask(entry, tasker_, make_clone());
     bool ov = subtask.override_pipeline(pipeline_override);
     if (!ov) {
         LogError << "failed to override_pipeline" << VAR(entry) << VAR(pipeline_override);
@@ -110,7 +115,7 @@ MaaNodeId Context::run_action(
     return subtask.run_with_param(box, j_detail);
 }
 
-bool Context::override_pipeline(const json::object& pipeline_override)
+bool Context::override_pipeline(const json::value& pipeline_override)
 {
     LogFunc << VAR(getptr()) << VAR(pipeline_override);
 
@@ -125,10 +130,36 @@ bool Context::override_pipeline(const json::object& pipeline_override)
     }
     auto& default_mgr = resource->default_pipeline();
 
+    bool ret = false;
+    if (pipeline_override.is_object()) {
+        ret = override_pipeline_once(pipeline_override.as_object(), default_mgr);
+    }
+    else if (pipeline_override.is_array()) {
+        ret = !pipeline_override.empty();
+        for (const auto& val : pipeline_override.as_array()) {
+            if (!val.is_object()) {
+                LogError << "input is not json array of object" << VAR(pipeline_override);
+                return false;
+            }
+            ret &= override_pipeline_once(val.as_object(), default_mgr);
+        }
+    }
+    else {
+        LogError << "input is invalid" << VAR(pipeline_override);
+        return false;
+    }
+
+    return ret && check_pipeline();
+}
+
+bool Context::override_pipeline_once(const json::object& pipeline_override, const MAA_RES_NS::DefaultPipelineMgr& default_mgr)
+{
+    LogFunc << VAR(getptr()) << VAR(pipeline_override);
+
     for (const auto& [key, value] : pipeline_override) {
         PipelineData result;
         auto default_result = get_pipeline_data(key).value_or(default_mgr.get_pipeline());
-        bool ret = MAA_RES_NS::PipelineResMgr::parse_node(key, value, result, default_result, default_mgr);
+        bool ret = MAA_RES_NS::PipelineParser::parse_node(key, value, result, default_result, default_mgr);
         if (!ret) {
             LogError << "parse_task failed" << VAR(key) << VAR(value);
             return false;
@@ -137,7 +168,7 @@ bool Context::override_pipeline(const json::object& pipeline_override)
         pipeline_override_.insert_or_assign(key, std::move(result));
     }
 
-    return check_pipeline();
+    return true;
 }
 
 bool Context::override_next(const std::string& name, const std::vector<std::string>& next)
@@ -159,13 +190,20 @@ bool Context::override_next(const std::string& name, const std::vector<std::stri
 
 Context* Context::clone() const
 {
-    LogFunc << VAR(getptr());
-
-    auto cloned = std::make_shared<Context>(*this);
-    auto& ref = clone_holder_.emplace_back(std::move(cloned));
+    auto& ref = clone_holder_.emplace_back(make_clone());
     LogDebug << VAR(getptr()) << VAR(ref);
 
     return ref.get();
+}
+
+std::optional<json::object> Context::get_node_data(const std::string& node_name) const
+{
+    auto pp_opt = get_pipeline_data(node_name);
+    if (!pp_opt) {
+        return std::nullopt;
+    }
+
+    return MAA_RES_NS::PipelineDumper::dump(*pp_opt);
 }
 
 MaaTaskId Context::task_id() const
@@ -178,7 +216,7 @@ Tasker* Context::tasker() const
     return tasker_;
 }
 
-std::optional<Context::PipelineData> Context::get_pipeline_data(const std::string& node_name)
+std::optional<PipelineData> Context::get_pipeline_data(const std::string& node_name) const
 {
     auto override_it = pipeline_override_.find(node_name);
     if (override_it != pipeline_override_.end()) {
@@ -196,9 +234,9 @@ std::optional<Context::PipelineData> Context::get_pipeline_data(const std::strin
         return std::nullopt;
     }
 
-    auto& raw_data_map = resource->pipeline_res().get_pipeline_data_map();
-    auto raw_it = raw_data_map.find(node_name);
-    if (raw_it != raw_data_map.end()) {
+    const auto& raw_pp_map = resource->pipeline_res().get_pipeline_data_map();
+    auto raw_it = raw_pp_map.find(node_name);
+    if (raw_it != raw_pp_map.end()) {
         return raw_it->second;
     }
 
@@ -227,7 +265,7 @@ bool Context::check_pipeline() const
     auto all = pipeline_override_;
     all.merge(raw);
 
-    return MAA_RES_NS::PipelineResMgr::check_all_validity(all);
+    return MAA_RES_NS::PipelineChecker::check_all_validity(all);
 }
 
 MAA_TASK_NS_END

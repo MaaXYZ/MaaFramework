@@ -81,7 +81,7 @@ struct InterfaceData
             std::string name;
             json::object pipeline_override;
 
-            MEO_JSONIZATION(name, pipeline_override);
+            MEO_JSONIZATION(name, MEO_OPT pipeline_override);
         };
 
         std::vector<Case> cases;
@@ -189,7 +189,7 @@ struct RuntimeParam
     {
         std::string name;
         std::string entry;
-        json::object pipeline_override;
+        json::value pipeline_override;
     };
 
     struct Agent

@@ -49,11 +49,11 @@ bool PipelineTask::run()
             return true;
         }
 
-        if (node_detail.completed) {
+        if (node_detail.node_id != MaaInvalidId) {
             error_handling = false;
 
             // 如果 list 里有同名任务，返回值也一定是第一个。同名任务第一个匹配上了后面肯定也会匹配上（除非 Custom 写了一些什么逻辑）
-            // 且 PipelineResMgr::check_all_next_list 保证了 next + interrupt 中没有同名任务
+            // 且 PipelineChecker::check_all_next_list 保证了 next + interrupt 中没有同名任务
             auto pos = std::ranges::find(list, node_detail.name) - list.begin();
             bool is_interrupt = static_cast<size_t>(pos) >= next_size;
             auto hit_opt = context_->get_pipeline_data(node_detail.name);
@@ -68,9 +68,17 @@ bool PipelineTask::run()
                 task_stack.emplace(node.name);
             }
 
-            node = hit_node;
-            next = hit_node.next;
-            interrupt = hit_node.interrupt;
+            if (node_detail.completed) {
+                next = hit_node.next;
+                interrupt = hit_node.interrupt;
+            }
+            else {
+                LogWarn << "node not completed, handle error" << VAR(node_detail.name);
+                error_handling = true;
+                next = hit_node.on_error;
+                interrupt.clear();
+            }
+            node = std::move(hit_node);
         }
         else if (error_handling) {
             LogError << "error handling loop detected" << VAR(node.name);
@@ -78,7 +86,7 @@ bool PipelineTask::run()
             interrupt.clear();
         }
         else {
-            LogInfo << "handle error" << VAR(node.name);
+            LogInfo << "invalid node id, handle error" << VAR(node.name);
             error_handling = true;
             next = node.on_error;
             interrupt.clear();
@@ -120,6 +128,15 @@ NodeDetail PipelineTask::run_reco_and_action(const PipelineData::NextList& list,
     }
     if (!context_) {
         LogError << "context is null";
+        return {};
+    }
+
+    bool valid = std::ranges::any_of(list, [&](const std::string& name) {
+        auto data_opt = context_->get_pipeline_data(name);
+        return data_opt && data_opt->enabled;
+    });
+    if (!valid) {
+        LogInfo << "no valid/enabled node in list" << VAR(list);
         return {};
     }
 

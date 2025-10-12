@@ -1,6 +1,7 @@
 #include "DeviceInfo.h"
 
 #include "Utils/Logger.h"
+#include "Utils/Uuid.h"
 
 MAA_CTRL_UNIT_NS_BEGIN
 
@@ -32,7 +33,7 @@ std::optional<std::string> DeviceInfo::request_uuid()
 
     auto output_opt = startup_and_read_pipe(*argv_opt);
     if (!output_opt) {
-        return std::nullopt;
+        return make_uuid();
     }
 
     auto& uuid_str = output_opt.value();
@@ -41,7 +42,7 @@ std::optional<std::string> DeviceInfo::request_uuid()
     return uuid_str;
 }
 
-std::optional<std::pair<int, int>> DeviceInfo::request_resolution()
+std::optional<DeviceInfo::DisplayInfo> DeviceInfo::request_resolution()
 {
     LogFunc;
 
@@ -55,12 +56,12 @@ std::optional<std::pair<int, int>> DeviceInfo::request_resolution()
         return std::nullopt;
     }
 
-    int width = 0, height = 0;
+    DisplayInfo info;
 
     std::istringstream iss(output_opt.value());
-    iss >> width >> height;
+    iss >> info.w >> info.h >> info.r;
 
-    return std::make_pair(width, height);
+    return info;
 }
 
 std::optional<int> DeviceInfo::request_orientation()

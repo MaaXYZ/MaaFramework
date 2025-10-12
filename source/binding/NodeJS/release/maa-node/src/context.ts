@@ -1,4 +1,5 @@
 import * as maa from './maa'
+import { DumpTask } from './pipeline'
 import { TaskerBase } from './tasker'
 
 export class Context {
@@ -10,7 +11,10 @@ export class Context {
         this.#tasker = new TaskerBase(maa.context_get_tasker(this.handle))
     }
 
-    async run_task(entry: string, pipeline_override: Record<string, unknown> = {}) {
+    async run_task(
+        entry: string,
+        pipeline_override: Record<string, unknown> | Record<string, unknown>[] = {}
+    ) {
         const id = await maa.context_run_task(this.handle, entry, JSON.stringify(pipeline_override))
         return this.#tasker.task_detail(id)
     }
@@ -18,7 +22,7 @@ export class Context {
     async run_recognition(
         entry: string,
         image: ArrayBuffer | Buffer,
-        pipeline_override: Record<string, unknown> = {}
+        pipeline_override: Record<string, unknown> | Record<string, unknown>[] = {}
     ) {
         if (image instanceof Buffer) {
             image = image.buffer
@@ -36,7 +40,7 @@ export class Context {
         entry: string,
         box: maa.Rect,
         reco_detail: string,
-        pipeline_override: Record<string, unknown> = {}
+        pipeline_override: Record<string, unknown> | Record<string, unknown>[] = {}
     ) {
         const id = await maa.context_run_action(
             this.handle,
@@ -48,15 +52,28 @@ export class Context {
         return this.#tasker.node_detail(id)
     }
 
-    override_pipeline(pipeline_override: Record<string, unknown>) {
+    override_pipeline(pipeline_override: Record<string, unknown> | Record<string, unknown>[]) {
         if (!maa.context_override_pipeline(this.handle, JSON.stringify(pipeline_override))) {
             throw 'Context override_pipeline failed'
         }
     }
 
-    override_next(name: string, next: string[]) {
-        if (!maa.context_override_next(this.handle, name, next)) {
+    override_next(node_name: string, next: string[]) {
+        if (!maa.context_override_next(this.handle, node_name, next)) {
             throw 'Context override_next failed'
+        }
+    }
+
+    get_node_data(node_name: string) {
+        return maa.context_get_node_data(this.handle, node_name)
+    }
+
+    get_node_data_parsed(node_name: string) {
+        const content = this.get_node_data(node_name)
+        if (content) {
+            return JSON.parse(content) as DumpTask
+        } else {
+            return null
         }
     }
 

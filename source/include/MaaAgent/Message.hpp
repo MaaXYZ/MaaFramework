@@ -14,7 +14,7 @@ MAA_AGENT_NS_BEGIN
 // ReverseRequest: server -> client
 
 using MessageTypePlaceholder = int;
-inline static constexpr int kProtocolVersion = 2;
+inline static constexpr int kProtocolVersion = 3;
 
 struct StartUpRequest
 {
@@ -106,7 +106,7 @@ struct ContextRunTaskReverseRequest
 {
     std::string context_id;
     std::string entry;
-    json::object pipeline_override;
+    json::value pipeline_override;
 
     MessageTypePlaceholder _ContextRunTaskReverseRequest = 1;
     MEO_JSONIZATION(context_id, entry, pipeline_override, _ContextRunTaskReverseRequest);
@@ -124,7 +124,7 @@ struct ContextRunRecognitionReverseRequest
 {
     std::string context_id;
     std::string entry;
-    json::object pipeline_override;
+    json::value pipeline_override;
     std::string image;
 
     MessageTypePlaceholder _ContextRunRecognitionReverseRequest = 1;
@@ -143,7 +143,7 @@ struct ContextRunActionReverseRequest
 {
     std::string context_id;
     std::string entry;
-    json::object pipeline_override;
+    json::value pipeline_override;
     std::array<int, 4> box {};
     std::string reco_detail;
 
@@ -162,7 +162,7 @@ struct ContextRunActionReverseResponse
 struct ContextOverridePipelineReverseRequest
 {
     std::string context_id;
-    json::object pipeline_override;
+    json::value pipeline_override;
 
     MessageTypePlaceholder _ContextOverridePipelineReverseRequest = 1;
     MEO_JSONIZATION(context_id, pipeline_override, _ContextOverridePipelineReverseRequest);
@@ -192,6 +192,24 @@ struct ContextOverrideNextReverseResponse
 
     MessageTypePlaceholder _ContextOverrideNextReverseResponse = 1;
     MEO_JSONIZATION(ret, _ContextOverrideNextReverseResponse);
+};
+
+struct ContextGetNodeDataReverseRequest
+{
+    std::string context_id;
+    std::string node_name;
+
+    MessageTypePlaceholder _ContextGetNodeDataReverseRequest = 1;
+    MEO_JSONIZATION(context_id, node_name, _ContextGetNodeDataReverseRequest);
+};
+
+struct ContextGetNodeDataReverseResponse
+{
+    bool has_value = false;
+    json::object node_data;
+
+    MessageTypePlaceholder _ContextOverrideNextReverseResponse = 1;
+    MEO_JSONIZATION(has_value, MEO_OPT node_data, _ContextOverrideNextReverseResponse);
 };
 
 struct ContextCloneReverseRequest
@@ -262,7 +280,7 @@ struct TaskerPostTaskReverseRequest
 {
     std::string tasker_id;
     std::string entry;
-    json::object pipeline_override;
+    json::value pipeline_override;
 
     MessageTypePlaceholder _TaskerPostTaskReverseRequest = 1;
     MEO_JSONIZATION(tasker_id, entry, pipeline_override, _TaskerPostTaskReverseRequest);
@@ -599,7 +617,7 @@ struct ResourceClearReverseResponse
 struct ResourceOverridePipelineReverseRequest
 {
     std::string resource_id;
-    json::object pipeline_override;
+    json::value pipeline_override;
 
     MessageTypePlaceholder _ResourceOverridePipelineReverseRequest = 1;
     MEO_JSONIZATION(resource_id, pipeline_override, _ResourceOverridePipelineReverseRequest);
@@ -631,6 +649,23 @@ struct ResourceOverrideNextReverseResponse
     MEO_JSONIZATION(ret, _ResourceOverrideNextReverseResponse);
 };
 
+struct ResourceGetNodeDataReverseRequest
+{
+    std::string resource_id;
+    std::string node_name;
+
+    MessageTypePlaceholder _ResourceGetNodeDataReverseRequest = 1;
+    MEO_JSONIZATION(resource_id, node_name, _ResourceGetNodeDataReverseRequest);
+};
+
+struct ResourceGetNodeDataReverseResponse
+{
+    bool has_value = false;
+    json::object node_data;
+
+    MessageTypePlaceholder _ResourceOverrideNextReverseResponse = 1;
+    MEO_JSONIZATION(has_value, MEO_OPT node_data, _ResourceOverrideNextReverseResponse);
+};
 
 struct ResourceGetHashReverseRequest
 {
@@ -719,21 +754,55 @@ struct ControllerPostSwipeReverseResponse
     MEO_JSONIZATION(ctrl_id, _ControllerPostSwipeReverseResponse);
 };
 
-struct ControllerPostPressKeyReverseRequest
+struct ControllerPostClickKeyReverseRequest
 {
     std::string controller_id;
     int32_t keycode = 0;
 
-    MessageTypePlaceholder _ControllerPostPressKeyReverseRequest = 1;
-    MEO_JSONIZATION(controller_id, keycode, _ControllerPostPressKeyReverseRequest);
+    MessageTypePlaceholder _ControllerPostClickKeyReverseRequest = 1;
+    MEO_JSONIZATION(controller_id, keycode, _ControllerPostClickKeyReverseRequest);
 };
 
-struct ControllerPostPressKeyReverseResponse
+struct ControllerPostClickKeyReverseResponse
 {
     int64_t ctrl_id = 0;
 
-    MessageTypePlaceholder _ControllerPostPressKeyReverseResponse = 1;
-    MEO_JSONIZATION(ctrl_id, _ControllerPostPressKeyReverseResponse);
+    MessageTypePlaceholder _ControllerPostClickKeyReverseResponse = 1;
+    MEO_JSONIZATION(ctrl_id, _ControllerPostClickKeyReverseResponse);
+};
+
+struct ControllerPostKeyDownReverseRequest
+{
+    std::string controller_id;
+    int32_t keycode = 0;
+
+    MessageTypePlaceholder _ControllerPostKeyDownReverseRequest = 1;
+    MEO_JSONIZATION(controller_id, keycode, _ControllerPostKeyDownReverseRequest);
+};
+
+struct ControllerPostKeyDownReverseResponse
+{
+    int64_t ctrl_id = 0;
+
+    MessageTypePlaceholder _ControllerPostKeyDownReverseResponse = 1;
+    MEO_JSONIZATION(ctrl_id, _ControllerPostKeyDownReverseResponse);
+};
+
+struct ControllerPostKeyUpReverseRequest
+{
+    std::string controller_id;
+    int32_t keycode = 0;
+
+    MessageTypePlaceholder _ControllerPostKeyUpReverseRequest = 1;
+    MEO_JSONIZATION(controller_id, keycode, _ControllerPostKeyUpReverseRequest);
+};
+
+struct ControllerPostKeyUpReverseResponse
+{
+    int64_t ctrl_id = 0;
+
+    MessageTypePlaceholder _ControllerPostKeyUpReverseResponse = 1;
+    MEO_JSONIZATION(ctrl_id, _ControllerPostKeyUpReverseResponse);
 };
 
 struct ControllerPostInputTextReverseRequest

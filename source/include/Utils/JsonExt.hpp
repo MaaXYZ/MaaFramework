@@ -4,10 +4,11 @@
 #include <string>
 
 #include <meojson/json.hpp>
+#include <variant>
 
 #include "Utils/NoWarningCVMat.hpp"
 
-#include "Utils/Codec.h"
+#include "Utils/Encoding.h"
 #include "Utils/Platform.h"
 
 namespace json::ext
@@ -28,6 +29,17 @@ public:
 };
 
 template <>
+class jsonization<std::monostate>
+{
+public:
+    json::value to_json(const std::monostate&) const { return {}; }
+
+    bool check_json(const json::value& json) const { return json.is_null(); }
+
+    bool from_json(const json::value& json, std::monostate&) const { return check_json(json); }
+};
+
+template <>
 class jsonization<std::wstring>
 {
 public:
@@ -38,6 +50,22 @@ public:
     bool from_json(const json::value& json, std::wstring& wstr) const
     {
         wstr = MAA_NS::to_u16(json.as_string());
+        return true;
+    }
+};
+
+template <>
+class jsonization<cv::Point>
+{
+public:
+    json::value to_json(const cv::Point& point) const { return json::array { point.x, point.y }; }
+
+    bool check_json(const json::value& json) const { return json.is<std::vector<int>>() && json.as_array().size() == 2; }
+
+    bool from_json(const json::value& json, cv::Point& point) const
+    {
+        auto arr = json.as<std::vector<int>>();
+        point = cv::Point(arr[0], arr[1]);
         return true;
     }
 };

@@ -18,10 +18,6 @@ MAA_TASK_NS_BEGIN
 class TaskBase
 {
 public:
-    using PipelineData = Context::PipelineData;
-    using PipelineDataMap = Context::PipelineDataMap;
-
-public:
     TaskBase(std::string entry, Tasker* tasker);
     TaskBase(std::string entry, Tasker* tasker, std::shared_ptr<Context> context);
     virtual ~TaskBase() = default;
@@ -30,7 +26,7 @@ public:
     virtual void post_stop() = 0;
 
 public:
-    bool override_pipeline(const json::object& pipeline_override);
+    bool override_pipeline(const json::value& pipeline_override);
 
 public:
     Tasker* tasker() const;

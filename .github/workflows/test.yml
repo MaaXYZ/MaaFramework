@@ -149,7 +149,6 @@ jobs:
     ubuntu:
         needs: meta
         runs-on: ubuntu-latest
-        container: archlinux:base-devel
         strategy:
             matrix:
                 arch: [x86_64]
@@ -159,24 +158,18 @@ jobs:
             # maybe should explicitly update some pkg instead of all?
             - name: Update system
               run: |
-                  pacman -Syu --noconfirm
+                  sudo apt-get update -y
+                  sudo apt-get remove -y --purge firefox
+                  sudo apt-get upgrade -y
 
             - name: Install dep
               run: |
-                  pacman -Sy
-                  pacman -S --noconfirm cmake python python-pip ccache ninja git clang
+                  sudo apt-get install -y ninja-build cmake ccache
 
             # https://github.com/MaaXYZ/MaaFramework/actions/runs/5643408179/job/15285186255
             - uses: actions/checkout@v4
               with:
                   submodules: recursive
-
-            # 虽然换成了clang，但是需要gcc提供sysroot
-            - name: Install cross compile toolchains
-              if: ${{ matrix.arch != 'x86_64' }}
-              run: |
-                  pacman -Sy
-                  pacman -S --noconfirm aarch64-linux-gnu-gcc
 
             - name: Setup ccache
               uses: Chocobo1/setup-ccache-action@v1
@@ -213,13 +206,8 @@ jobs:
                   npm run build
 
             - name: Build MAA
-              env:
-                  CC: clang
-                  CXX: clang++
-                  CFLAGS: ${{ matrix.arch == 'x86_64' && ' ' || '--target=aarch64-linux-gnu --sysroot=/usr/aarch64-linux-gnu' }}
-                  CXXFLAGS: ${{ matrix.arch == 'x86_64' && ' ' || '--target=aarch64-linux-gnu --sysroot=/usr/aarch64-linux-gnu' }}
               run: |
-                  cmake --preset 'NinjaMulti' \
+                  cmake --preset 'NinjaMulti Linux ${{ matrix.arch == 'x86_64' && 'x64' || 'arm64' }}' \
                     -DMAADEPS_TRIPLET='maa-${{ matrix.arch == 'x86_64' && 'x64' || 'arm64' }}-linux' \
                     -DMAA_HASH_VERSION='${{ needs.meta.outputs.tag }}' \
                     -DWITH_NODEJS_BINDING=ON \
@@ -227,7 +215,7 @@ jobs:
                     -DBUILD_PIPELINE_TESTING=ON \
                     -DBUILD_DLOPEN_TESTING=ON
 
-                  cmake --build build --preset 'NinjaMulti - Debug' -j 16
+                  cmake --build build --preset 'NinjaMulti Linux ${{ matrix.arch == 'x86_64' && 'x64' || 'arm64' }} - Debug' -j 16
 
             - name: Install
               shell: bash
@@ -282,7 +270,7 @@ jobs:
             matrix:
                 arch: [aarch64]
             fail-fast: false
-        runs-on: macos-15
+        runs-on: macos-latest
 
         steps:
             - uses: actions/checkout@v4
@@ -295,7 +283,7 @@ jobs:
 
             - name: Install dep
               run: |
-                  brew install cmake ninja ccache
+                  brew install ninja ccache
 
             - name: Setup ccache
               uses: Chocobo1/setup-ccache-action@v1

@@ -95,9 +95,6 @@ class CustomRecognition(ABC):
             detail_buffer.set(result.detail)
             return int(result.box is not None)
 
-        elif result is None:
-            return int(False)
-
         # RectType
         elif (
             isinstance(result, Rect)
@@ -108,5 +105,8 @@ class CustomRecognition(ABC):
             rect_buffer.set(result)
             return int(True)
 
+        elif result is None:
+            return int(False)
+
         else:
-            raise ValueError("Invalid return type")
+            raise TypeError(f"Invalid return type: {result!r}")

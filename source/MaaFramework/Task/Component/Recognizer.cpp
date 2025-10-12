@@ -84,11 +84,6 @@ RecoResult Recognizer::recognize(const PipelineData& pipeline_data)
 
     save_draws(pipeline_data.name, result);
 
-    if (result.box) {
-        const auto& box = *result.box;
-        show_hit_draw(box, pipeline_data.name, result.reco_id);
-    }
-
     return result;
 }
 
@@ -107,7 +102,12 @@ json::value gen_detail(const std::vector<Res>& all, const std::vector<Res>& filt
 RecoResult Recognizer::direct_hit(const std::string& name)
 {
     LogDebug << name;
-    return RecoResult { .name = name, .algorithm = "DirectHit", .box = cv::Rect {} };
+    return RecoResult {
+        .reco_id = MAA_VISION_NS::VisionBase::generate_uid(),
+        .name = name,
+        .algorithm = "DirectHit",
+        .box = cv::Rect {},
+    };
 }
 
 RecoResult Recognizer::template_match(const MAA_VISION_NS::TemplateMatcherParam& param, const std::string& name)
@@ -121,7 +121,7 @@ RecoResult Recognizer::template_match(const MAA_VISION_NS::TemplateMatcherParam&
 
     cv::Rect roi = get_roi(param.roi_target);
 
-    auto templs = resource()->template_res().images(param.template_paths);
+    auto templs = resource()->template_res().images(param.template_);
     TemplateMatcher analyzer(image_, roi, param, templs, name);
 
     std::optional<cv::Rect> box = std::nullopt;
@@ -148,7 +148,7 @@ RecoResult Recognizer::feature_match(const MAA_VISION_NS::FeatureMatcherParam& p
 
     cv::Rect roi = get_roi(param.roi_target);
 
-    auto templs = resource()->template_res().images(param.template_paths);
+    auto templs = resource()->template_res().images(param.template_);
     FeatureMatcher analyzer(image_, roi, param, templs, name);
 
     std::optional<cv::Rect> box = std::nullopt;
@@ -364,24 +364,6 @@ void Recognizer::save_draws(const std::string& node_name, const RecoResult& resu
         imwrite(filepath, draw);
         LogDebug << "save draw to" << filepath;
     }
-}
-
-void Recognizer::show_hit_draw(const cv::Rect& box, const std::string& node_name, MaaRecoId uid) const
-{
-    if (!GlobalOptionMgr::get_instance().show_hit_draw()) {
-        return;
-    }
-
-    const std::string kWinName = std::format("Hit: {} {}", node_name, uid);
-
-    cv::Mat draw = image_.clone();
-
-    const cv::Scalar color(0, 255, 0);
-    cv::rectangle(draw, box, color, 2);
-
-    cv::imshow(kWinName, draw);
-    cv::waitKey(0);
-    cv::destroyWindow(kWinName);
 }
 
 bool Recognizer::debug_mode() const

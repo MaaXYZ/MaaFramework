@@ -1,7 +1,7 @@
 #include "RemoteController.h"
 
 #include "MaaAgent/Message.hpp"
-#include "Utils/Codec.h"
+#include "Utils/Encoding.h"
 #include "Utils/Logger.h"
 
 MAA_AGENT_SERVER_NS_BEGIN
@@ -61,13 +61,13 @@ MaaCtrlId RemoteController::post_swipe(int x1, int y1, int x2, int y2, int durat
     return resp_opt->ctrl_id;
 }
 
-MaaCtrlId RemoteController::post_press_key(int keycode)
+MaaCtrlId RemoteController::post_click_key(int keycode)
 {
-    ControllerPostPressKeyReverseRequest req {
+    ControllerPostClickKeyReverseRequest req {
         .controller_id = controller_id_,
         .keycode = keycode,
     };
-    auto resp_opt = server_.send_and_recv<ControllerPostPressKeyReverseResponse>(req);
+    auto resp_opt = server_.send_and_recv<ControllerPostClickKeyReverseResponse>(req);
     if (!resp_opt) {
         return MaaInvalidId;
     }
@@ -164,6 +164,32 @@ MaaCtrlId RemoteController::post_touch_up(int contact)
         .contact = contact,
     };
     auto resp_opt = server_.send_and_recv<ControllerPostTouchUpReverseResponse>(req);
+    if (!resp_opt) {
+        return MaaInvalidId;
+    }
+    return resp_opt->ctrl_id;
+}
+
+MaaCtrlId RemoteController::post_key_down(int keycode)
+{
+    ControllerPostKeyDownReverseRequest req {
+        .controller_id = controller_id_,
+        .keycode = keycode,
+    };
+    auto resp_opt = server_.send_and_recv<ControllerPostKeyDownReverseResponse>(req);
+    if (!resp_opt) {
+        return MaaInvalidId;
+    }
+    return resp_opt->ctrl_id;
+}
+
+MaaCtrlId RemoteController::post_key_up(int keycode)
+{
+    ControllerPostKeyUpReverseRequest req {
+        .controller_id = controller_id_,
+        .keycode = keycode,
+    };
+    auto resp_opt = server_.send_and_recv<ControllerPostKeyUpReverseResponse>(req);
     if (!resp_opt) {
         return MaaInvalidId;
     }

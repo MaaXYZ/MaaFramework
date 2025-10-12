@@ -2,7 +2,7 @@
 
 #include "MaaAgent/Message.hpp"
 #include "RemoteTasker.h"
-#include "Utils/Codec.h"
+#include "Utils/Encoding.h"
 
 MAA_AGENT_SERVER_NS_BEGIN
 
@@ -12,7 +12,7 @@ RemoteContext::RemoteContext(Transceiver& server, const std::string& context_id)
 {
 }
 
-MaaTaskId RemoteContext::run_task(const std::string& entry, const json::object& pipeline_override)
+MaaTaskId RemoteContext::run_task(const std::string& entry, const json::value& pipeline_override)
 {
     ContextRunTaskReverseRequest req {
         .context_id = context_id_,
@@ -27,7 +27,7 @@ MaaTaskId RemoteContext::run_task(const std::string& entry, const json::object& 
     return resp_opt->task_id;
 }
 
-MaaRecoId RemoteContext::run_recognition(const std::string& entry, const json::object& pipeline_override, const cv::Mat& image)
+MaaRecoId RemoteContext::run_recognition(const std::string& entry, const json::value& pipeline_override, const cv::Mat& image)
 {
     ContextRunRecognitionReverseRequest req {
         .context_id = context_id_,
@@ -45,7 +45,7 @@ MaaRecoId RemoteContext::run_recognition(const std::string& entry, const json::o
 
 MaaNodeId RemoteContext::run_action(
     const std::string& entry,
-    const json::object& pipeline_override,
+    const json::value& pipeline_override,
     const cv::Rect& box,
     const std::string& reco_detail)
 {
@@ -64,7 +64,7 @@ MaaNodeId RemoteContext::run_action(
     return resp_opt->node_id;
 }
 
-bool RemoteContext::override_pipeline(const json::object& pipeline_override)
+bool RemoteContext::override_pipeline(const json::value& pipeline_override)
 {
     ContextOverridePipelineReverseRequest req {
         .context_id = context_id_,
@@ -91,6 +91,20 @@ bool RemoteContext::override_next(const std::string& node_name, const std::vecto
         return false;
     }
     return resp_opt->ret;
+}
+
+std::optional<json::object> RemoteContext::get_node_data(const std::string& node_name) const
+{
+    ContextGetNodeDataReverseRequest req {
+        .context_id = context_id_,
+        .node_name = node_name,
+    };
+
+    auto resp_opt = server_.send_and_recv<ContextGetNodeDataReverseResponse>(req);
+    if (!resp_opt || !resp_opt->has_value) {
+        return std::nullopt;
+    }
+    return resp_opt->node_data;
 }
 
 MaaContext* RemoteContext::clone() const

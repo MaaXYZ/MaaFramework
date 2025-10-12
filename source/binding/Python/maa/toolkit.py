@@ -125,37 +125,33 @@ class Toolkit:
     @staticmethod
     def pi_register_custom_recognition(
         name: str, recognition: "CustomRecognition", inst_id: int = 0  # type: ignore
-    ) -> bool:
+    ) -> None:
         Toolkit._set_api_properties()
 
         # avoid gc
         Toolkit._pi_custom_recognition_holder[inst_id][name] = recognition
 
-        return bool(
-            Library.toolkit().MaaToolkitProjectInterfaceRegisterCustomRecognition(
-                ctypes.c_uint64(inst_id),
-                name.encode(),
-                recognition.c_handle,
-                recognition.c_arg,
-            )
+        Library.toolkit().MaaToolkitProjectInterfaceRegisterCustomRecognition(
+            ctypes.c_uint64(inst_id),
+            name.encode(),
+            recognition.c_handle,
+            recognition.c_arg,
         )
 
     @staticmethod
     def pi_register_custom_action(
         name: str, action: "CustomAction", inst_id: int = 0  # type: ignore
-    ) -> bool:
+    ) -> None:
         Toolkit._set_api_properties()
 
         # avoid gc
         Toolkit._pi_custom_recognition_holder[inst_id][name] = action
 
-        return bool(
-            Library.toolkit().MaaToolkitProjectInterfaceRegisterCustomAction(
-                ctypes.c_uint64(inst_id),
-                name.encode(),
-                action.c_handle,
-                action.c_arg,
-            ),
+        Library.toolkit().MaaToolkitProjectInterfaceRegisterCustomAction(
+            ctypes.c_uint64(inst_id),
+            name.encode(),
+            action.c_handle,
+            action.c_arg,
         )
 
     @staticmethod
@@ -306,9 +302,7 @@ class Toolkit:
             MaaToolkitDesktopWindowHandle
         ]
 
-        Library.toolkit().MaaToolkitProjectInterfaceRegisterCustomRecognition.restype = (
-            None
-        )
+        Library.toolkit().MaaToolkitProjectInterfaceRegisterCustomRecognition.restype = None
         Library.toolkit().MaaToolkitProjectInterfaceRegisterCustomRecognition.argtypes = [
             ctypes.c_uint64,
             ctypes.c_char_p,

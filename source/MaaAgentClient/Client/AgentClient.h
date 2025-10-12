@@ -26,6 +26,8 @@ public: // MaaAgentClient
     virtual bool connect() override;
     virtual bool disconnect() override;
     virtual bool connected() override;
+    virtual bool alive() override;
+    virtual void set_timeout(const std::chrono::milliseconds& timeout) override;
 
 private: // Transceiver
     virtual bool handle_inserted_request(const json::value& j) override;
@@ -36,6 +38,7 @@ private:
     bool handle_context_run_action(const json::value& j);
     bool handle_context_override_pipeline(const json::value& j);
     bool handle_context_override_next(const json::value& j);
+    bool handle_context_get_node_data(const json::value& j);
     bool handle_context_clone(const json::value& j);
     bool handle_context_task_id(const json::value& j);
     bool handle_context_tasker(const json::value& j);
@@ -63,13 +66,14 @@ private:
     bool handle_resource_clear(const json::value& j);
     bool handle_resource_override_pipeline(const json::value& j);
     bool handle_resource_override_next(const json::value& j);
+    bool handle_resource_get_node_data(const json::value& j);
     bool handle_resource_get_hash(const json::value& j);
     bool handle_resource_get_node_list(const json::value& j);
 
     bool handle_controller_post_connection(const json::value& j);
     bool handle_controller_post_click(const json::value& j);
     bool handle_controller_post_swipe(const json::value& j);
-    bool handle_controller_post_press_key(const json::value& j);
+    bool handle_controller_post_click_key(const json::value& j);
     bool handle_controller_post_input_text(const json::value& j);
     bool handle_controller_post_start_app(const json::value& j);
     bool handle_controller_post_stop_app(const json::value& j);
@@ -77,6 +81,8 @@ private:
     bool handle_controller_post_touch_down(const json::value& j);
     bool handle_controller_post_touch_move(const json::value& j);
     bool handle_controller_post_touch_up(const json::value& j);
+    bool handle_controller_post_key_down(const json::value& j);
+    bool handle_controller_post_key_up(const json::value& j);
     bool handle_controller_status(const json::value& j);
     bool handle_controller_wait(const json::value& j);
     bool handle_controller_connected(const json::value& j);

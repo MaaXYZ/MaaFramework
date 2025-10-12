@@ -2,6 +2,7 @@ import ctypes
 import ctypes.util
 import pathlib
 import platform
+from typing import Optional
 
 from .define import *
 
@@ -9,10 +10,10 @@ from .define import *
 class Library:
     _is_agent_server: bool = False
 
-    _framework: ctypes.CDLL = None
-    _toolkit: ctypes.CDLL = None
-    _agent_client: ctypes.CDLL = None
-    _agent_server: ctypes.CDLL = None
+    _framework: Optional[ctypes.CDLL] = None
+    _toolkit: Optional[ctypes.CDLL] = None
+    _agent_client: Optional[ctypes.CDLL] = None
+    _agent_server: Optional[ctypes.CDLL] = None
     _lib_type = None
 
     @staticmethod
@@ -55,7 +56,7 @@ class Library:
 
         platform_type = platform.system().lower()
 
-        if platform_type == "windows":
+        if platform_type == WINDOWS:
             Library._lib_type = ctypes.WinDLL
         else:
             Library._lib_type = ctypes.CDLL
@@ -72,7 +73,7 @@ class Library:
     def framework() -> ctypes.CDLL:
         if not Library.is_agent_server():
             if not Library._framework:
-                Library._framework = Library._lib_type(str(Library.framework_libpath))
+                Library._framework = Library._lib_type(str(Library.framework_libpath))  # type: ignore
 
             return Library._framework
         else:
@@ -81,7 +82,7 @@ class Library:
     @staticmethod
     def toolkit() -> ctypes.CDLL:
         if not Library._toolkit:
-            Library._toolkit = Library._lib_type(str(Library.toolkit_libpath))
+            Library._toolkit = Library._lib_type(str(Library.toolkit_libpath))  # type: ignore
 
         return Library._toolkit
 
@@ -91,9 +92,7 @@ class Library:
             raise ValueError("Agent server is not available in the current context.")
 
         if not Library._agent_client:
-            Library._agent_client = Library._lib_type(
-                str(Library.agent_client_libpath)
-            )
+            Library._agent_client = Library._lib_type(str(Library.agent_client_libpath))  # type: ignore
 
         return Library._agent_client
 
@@ -103,9 +102,7 @@ class Library:
             raise ValueError("Agent client is not available in the current context.")
 
         if not Library._agent_server:
-            Library._agent_server = Library._lib_type(
-                str(Library.agent_server_libpath)
-            )
+            Library._agent_server = Library._lib_type(str(Library.agent_server_libpath))  # type: ignore
 
         return Library._agent_server
 

@@ -7,9 +7,6 @@ MAA_TASK_NS_BEGIN
 class ActionTask : public TaskBase
 {
 public:
-    using PipelineDataMap = Context::PipelineDataMap;
-
-public:
     using TaskBase::TaskBase;
 
     virtual ~ActionTask() override = default;

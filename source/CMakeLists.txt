@@ -12,6 +12,10 @@ if(WITH_DBG_CONTROLLER)
     add_subdirectory(MaaDbgControlUnit)
 endif()
 
+if(WITH_CUSTOM_CONTROLLER)
+    add_subdirectory(MaaCustomControlUnit)
+endif()
+
 add_subdirectory(LibraryHolder)
 add_subdirectory(MaaFramework)
 add_subdirectory(MaaToolkit)

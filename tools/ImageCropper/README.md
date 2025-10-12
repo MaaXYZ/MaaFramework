@@ -10,13 +10,12 @@
 
 ## 依赖
 
+> [!TIP]
+> windows 用户推荐直接运行 install.bat 和 start.bat
+
 ```shell
 python -m pip install -r requirements.txt
 ```
-
-### 安装
-
-如果你不清楚如何执行上述命令，请运行 `install.bat`。
 
 ## 使用
 

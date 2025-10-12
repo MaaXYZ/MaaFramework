@@ -13,15 +13,25 @@
 
 MAA_VISION_NS_BEGIN
 
-struct Target
+enum class TargetType
 {
-    enum class Type
-    {
-        Invalid = 0,
-        Self,
-        PreTask,
-        Region,
-    };
+    Invalid = 0,
+    Self,
+    PreTask,
+    Region,
+};
+
+struct TargetObj
+{
+    using Type = TargetType;
+
+    Type type = Type::Self;
+    std::variant<std::monostate, std::string, cv::Rect> param;
+};
+
+struct Target : public TargetObj
+{
+    using Type = TargetType;
 
     Type type = Type::Self;
     std::variant<std::monostate, std::string, cv::Rect> param;
@@ -49,7 +59,7 @@ struct TemplateMatcherParam
     inline static constexpr int kDefaultMethod = 5; // cv::TM_CCOEFF_NORMED
 
     Target roi_target;
-    std::vector<std::string> template_paths;
+    std::vector<std::string> template_;
     std::vector<double> thresholds = { kDefaultThreshold };
     int method = kDefaultMethod;
     bool green_mask = false;
@@ -93,7 +103,7 @@ struct NeuralNetworkClassifierParam
 
     Target roi_target;
     std::vector<std::string> labels; // only for output and debug
-    std::vector</*result_index*/ size_t> expected;
+    std::vector</*result_index*/ int> expected;
 
     ResultOrderBy order_by = ResultOrderBy::Horizontal;
     int result_index = 0;
@@ -113,7 +123,7 @@ struct NeuralNetworkDetectorParam
 
     Target roi_target;
     std::vector<std::string> labels; // only for output and debug
-    std::vector</*result_index*/ size_t> expected;
+    std::vector</*result_index*/ int> expected;
     std::vector<double> thresholds = { kDefaultThreshold };
 
     ResultOrderBy order_by = ResultOrderBy::Horizontal;
@@ -160,7 +170,7 @@ struct FeatureMatcherParam
     inline static constexpr int kDefaultCount = 4;
 
     Target roi_target;
-    std::vector<std::string> template_paths;
+    std::vector<std::string> template_;
     bool green_mask = false;
 
     Detector detector = kDefaultDetector;

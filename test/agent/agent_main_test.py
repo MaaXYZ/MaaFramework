@@ -52,6 +52,16 @@ def api_test():
     if not socket_id:
         print("failed to create socket")
         exit(1)
+        
+    if not agent.set_timeout(0):
+        print("failed to set timeout")
+        exit(1)
+    if agent.connect():
+        print("failed to connect timeout")
+        exit(1)
+    if not agent.set_timeout(-1):
+        print("failed to set timeout")
+        exit(1)
 
     subprocess.Popen(
         [
@@ -65,6 +75,12 @@ def api_test():
 
     if not agent.connect():
         print("failed to connect")
+        exit(1)
+    if not agent.connected:
+        print("agent is not connected")
+        exit(1)
+    if not agent.alive:
+        print("agent is not alive")
         exit(1)
 
     ppover = {

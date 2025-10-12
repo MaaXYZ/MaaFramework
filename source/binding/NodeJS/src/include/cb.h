@@ -333,12 +333,12 @@ inline MaaBool CustomControllerTouchUp(int32_t contact, void* trans_arg)
     return res;
 }
 
-inline MaaBool CustomControllerPressKey(int32_t keycode, void* trans_arg)
+inline MaaBool CustomControllerClickKey(int32_t keycode, void* trans_arg)
 {
     auto ctx = reinterpret_cast<CallbackContext*>(trans_arg);
 
     auto res = ctx->Call<bool>(
-        [=](auto env, auto fn) { return fn.Call({ Napi::String::New(env, "press_key"), Napi::Number::New(env, keycode) }); },
+        [=](auto env, auto fn) { return fn.Call({ Napi::String::New(env, "click_key"), Napi::Number::New(env, keycode) }); },
         [](Napi::Value res) {
             try {
                 return JSConvert<bool>::from_value(res);
@@ -358,6 +358,45 @@ inline MaaBool CustomControllerInputText(const char* text, void* trans_arg)
 
     auto res = ctx->Call<bool>(
         [=](auto env, auto fn) { return fn.Call({ Napi::String::New(env, "input_text"), Napi::String::New(env, text) }); },
+        [](Napi::Value res) {
+            try {
+                return JSConvert<bool>::from_value(res);
+            }
+            catch (const MaaNodeException& exc) {
+                std::cerr << exc.what() << std::endl;
+                return false;
+            }
+        });
+
+    return res;
+}
+
+
+inline MaaBool CustomControllerKeyDown(int32_t keycode, void* trans_arg)
+{
+    auto ctx = reinterpret_cast<CallbackContext*>(trans_arg);
+
+    auto res = ctx->Call<bool>(
+        [=](auto env, auto fn) { return fn.Call({ Napi::String::New(env, "key_down"), Napi::Number::New(env, keycode) }); },
+        [](Napi::Value res) {
+            try {
+                return JSConvert<bool>::from_value(res);
+            }
+            catch (const MaaNodeException& exc) {
+                std::cerr << exc.what() << std::endl;
+                return false;
+            }
+        });
+
+    return res;
+}
+
+inline MaaBool CustomControllerKeyUp(int32_t keycode, void* trans_arg)
+{
+    auto ctx = reinterpret_cast<CallbackContext*>(trans_arg);
+
+    auto res = ctx->Call<bool>(
+        [=](auto env, auto fn) { return fn.Call({ Napi::String::New(env, "key_up"), Napi::Number::New(env, keycode) }); },
         [](Napi::Value res) {
             try {
                 return JSConvert<bool>::from_value(res);

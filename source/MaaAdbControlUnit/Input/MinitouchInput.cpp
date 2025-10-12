@@ -63,14 +63,14 @@ bool MinitouchInput::init()
     return invoke_and_read_info();
 }
 
-bool MinitouchInput::press_key(int key)
+bool MinitouchInput::click_key(int key)
 {
     if (!adb_shell_input_) {
         LogError << "adb_shell_input_ is nullptr";
         return false;
     }
 
-    return adb_shell_input_->press_key(key);
+    return adb_shell_input_->click_key(key);
 }
 
 bool MinitouchInput::input_text(const std::string& text)
@@ -81,6 +81,36 @@ bool MinitouchInput::input_text(const std::string& text)
     }
 
     return adb_shell_input_->input_text(text);
+}
+
+bool MinitouchInput::is_key_down_up_availabled() const
+{
+    if (!adb_shell_input_) {
+        LogError << "adb_shell_input_ is nullptr";
+        return false;
+    }
+
+    return adb_shell_input_->is_key_down_up_availabled();
+}
+
+bool MinitouchInput::key_down(int key)
+{
+    if (!adb_shell_input_) {
+        LogError << "adb_shell_input_ is nullptr";
+        return false;
+    }
+
+    return adb_shell_input_->key_down(key);
+}
+
+bool MinitouchInput::key_up(int key)
+{
+    if (!adb_shell_input_) {
+        LogError << "adb_shell_input_ is nullptr";
+        return false;
+    }
+
+    return adb_shell_input_->key_up(key);
 }
 
 void MinitouchInput::on_image_resolution_changed(const std::pair<int, int>& pre, const std::pair<int, int>& cur)

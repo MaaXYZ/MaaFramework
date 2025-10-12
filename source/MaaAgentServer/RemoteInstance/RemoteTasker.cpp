@@ -1,7 +1,7 @@
 #include "RemoteTasker.h"
 
 #include "MaaAgent/Message.hpp"
-#include "Utils/Codec.h"
+#include "Utils/Encoding.h"
 #include "Utils/Logger.h"
 
 MAA_AGENT_SERVER_NS_BEGIN
@@ -44,7 +44,7 @@ bool RemoteTasker::set_option(MaaTaskerOption key, MaaOptionValue value, MaaOpti
     return false;
 }
 
-MaaTaskId RemoteTasker::post_task(const std::string& entry, const json::object& pipeline_override)
+MaaTaskId RemoteTasker::post_task(const std::string& entry, const json::value& pipeline_override)
 {
     TaskerPostTaskReverseRequest req {
         .tasker_id = tasker_id_,

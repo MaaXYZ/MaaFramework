@@ -1,0 +1,101 @@
+{
+    "$schema": "../../tools/pipeline.schema.json",
+    "$这是一个注释": "这真的是一个注释",
+    "这不是一个注释": {
+        "$这也是一个注释": "这还是一个注释"
+    },
+    "comments_v1": {
+        "v1_doc": "v1_doc",
+        "v1_code": "v1_code"
+    },
+    "comments_v2": {
+        "recognition": {
+            "param": {
+                "doc": "v2_doc",
+                "code": "v2_code"
+            },
+            "_doc": "v2_doc",
+            "_code": "v2_code"
+        },
+        "v2_doc": "v2_doc",
+        "v2_code": "v2_code"
+    },
+    "recognition_v1": {
+        "recognition": "FeatureMatch",
+        "template": "",
+        "count": 0
+    },
+    "recognition_v2": {
+        "recognition": {
+            "type": "FeatureMatch",
+            "param": {
+                "template": "",
+                "count": 100
+            }
+        }
+    },
+    "action_v1": {
+        "action": "ClickKey",
+        "key": []
+    },
+    "action_v2": {
+        "action": {
+            "type": "ClickKey",
+            "param": {
+                "key": []
+            }
+        }
+    },
+    "pipeline_override_recognition_v1": {
+        "roi": "[]"
+    },
+    "pipeline_override_recognition_v2": {
+        "recognition": {
+            "param": {
+                "roi": [
+                    0,
+                    0,
+                    0,
+                    0
+                ]
+            }
+        }
+    },
+    "pipeline_override_action_v1": {
+        "swipes": [
+            {
+                "starting": 0
+            }
+        ]
+    },
+    "pipeline_override_action_v2": {
+        "action": {
+            "param": {
+                "swipes": [
+                    {
+                        "starting": 0
+                    }
+                ]
+            }
+        }
+    },
+    "custom_recognition_v1": {
+        "recognition": "Custom",
+        "custom_recognition": "<custom_1>",
+        "custom_recognition_param": {
+            "<param_string>": "<param_string>"
+        }
+    },
+    "custom_recognition_v2": {
+        "recognition": {
+            "type": "Custom",
+            "param": {
+                "custom_recognition": "<custom_2>",
+                "custom_recognition_param": {
+                    "<param_integer>": 0,
+                    "AdditionalParam": "The unevaluatedProperties is true (default)."
+                }
+            }
+        }
+    }
+}

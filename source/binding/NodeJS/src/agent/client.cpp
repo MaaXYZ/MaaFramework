@@ -68,6 +68,16 @@ bool agent_client_connected(Napi::External<AgentClientInfo> info)
     return MaaAgentClientConnected(info.Data()->handle);
 }
 
+bool agent_client_alive(Napi::External<AgentClientInfo> info)
+{
+    return MaaAgentClientAlive(info.Data()->handle);
+}
+
+bool agent_client_set_timeout(Napi::External<AgentClientInfo> info, uint64_t ms)
+{
+    return MaaAgentClientSetTimeout(info.Data()->handle, static_cast<int64_t>(ms));
+}
+
 void load_agent(Napi::Env env, Napi::Object& exports, Napi::External<ExtContextInfo> context)
 {
     BIND(agent_client_create);
@@ -77,6 +87,8 @@ void load_agent(Napi::Env env, Napi::Object& exports, Napi::External<ExtContextI
     BIND(agent_client_connect);
     BIND(agent_client_disconnect);
     BIND(agent_client_connected);
+    BIND(agent_client_alive);
+    BIND(agent_client_set_timeout);
 
     exports["AgentRole"] = "client";
 }

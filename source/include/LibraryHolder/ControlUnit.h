@@ -3,12 +3,14 @@
 #include <memory>
 
 #include "LibraryHolder.h"
+#include "MaaFramework/Instance/MaaCustomController.h"
 #include "Utils/Platform.h"
 
 MAA_CTRL_UNIT_NS_BEGIN
 class ControlUnitAPI;
 class AdbControlUnitAPI;
 class Win32ControlUnitAPI;
+class CustomControlUnitAPI;
 MAA_CTRL_UNIT_NS_END
 
 MAA_NS_BEGIN
@@ -54,6 +56,19 @@ private:
     inline static const std::string version_func_name_ = "MaaDbgControlUnitGetVersion";
     inline static const std::string create_func_name_ = "MaaDbgControlUnitCreate";
     inline static const std::string destroy_func_name_ = "MaaDbgControlUnitDestroy";
+};
+
+class CustomControlUnitLibraryHolder : public LibraryHolder<CustomControlUnitLibraryHolder>
+{
+public:
+    static std::shared_ptr<MAA_CTRL_UNIT_NS::ControlUnitAPI>
+        create_control_unit(MaaCustomControllerCallbacks* controller, void* controller_arg);
+
+private:
+    inline static const std::filesystem::path libname_ = MAA_NS::path("MaaCustomControlUnit");
+    inline static const std::string version_func_name_ = "MaaCustomControlUnitGetVersion";
+    inline static const std::string create_func_name_ = "MaaCustomControlUnitCreate";
+    inline static const std::string destroy_func_name_ = "MaaCustomControlUnitDestroy";
 };
 
 MAA_NS_END

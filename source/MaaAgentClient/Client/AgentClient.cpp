@@ -8,7 +8,7 @@
 #include "Utils/Buffer/ImageBuffer.hpp"
 #include "Utils/Buffer/ListBuffer.hpp"
 #include "Utils/Buffer/StringBuffer.hpp"
-#include "Utils/Codec.h"
+#include "Utils/Encoding.h"
 #include "Utils/Logger.h"
 #include "Utils/Platform.h"
 #include "Utils/Uuid.h"
@@ -116,14 +116,27 @@ bool AgentClient::disconnect()
         return true;
     }
 
-    send_and_recv<ShutDownResponse>(ShutDownRequest {});
+    if (alive()) {
+        send_and_recv<ShutDownResponse>(ShutDownRequest {});
+    }
+
     connected_ = false;
     return true;
 }
 
 bool AgentClient::connected()
 {
-    return connected_ && Transceiver::alive();
+    return connected_;
+}
+
+bool AgentClient::alive()
+{
+    return Transceiver::alive();
+}
+
+void AgentClient::set_timeout(const std::chrono::milliseconds& timeout)
+{
+    Transceiver::set_timeout(timeout);
 }
 
 bool AgentClient::handle_inserted_request(const json::value& j)
@@ -146,6 +159,9 @@ bool AgentClient::handle_inserted_request(const json::value& j)
         return true;
     }
     else if (handle_context_override_next(j)) {
+        return true;
+    }
+    else if (handle_context_get_node_data(j)) {
         return true;
     }
     else if (handle_context_clone(j)) {
@@ -223,6 +239,9 @@ bool AgentClient::handle_inserted_request(const json::value& j)
     else if (handle_resource_override_next(j)) {
         return true;
     }
+    else if (handle_resource_get_node_data(j)) {
+        return true;
+    }
     else if (handle_resource_get_hash(j)) {
         return true;
     }
@@ -238,7 +257,7 @@ bool AgentClient::handle_inserted_request(const json::value& j)
     else if (handle_controller_post_swipe(j)) {
         return true;
     }
-    else if (handle_controller_post_press_key(j)) {
+    else if (handle_controller_post_click_key(j)) {
         return true;
     }
     else if (handle_controller_post_input_text(j)) {
@@ -260,6 +279,12 @@ bool AgentClient::handle_inserted_request(const json::value& j)
         return true;
     }
     else if (handle_controller_post_touch_up(j)) {
+        return true;
+    }
+    else if (handle_controller_post_key_down(j)) {
+        return true;
+    }
+    else if (handle_controller_post_key_up(j)) {
         return true;
     }
     else if (handle_controller_status(j)) {
@@ -406,6 +431,32 @@ bool AgentClient::handle_context_override_next(const json::value& j)
 
     ContextOverrideNextReverseResponse resp {
         .ret = ret,
+    };
+    send(resp);
+
+    return true;
+}
+
+bool AgentClient::handle_context_get_node_data(const json::value& j)
+{
+    if (!j.is<ContextGetNodeDataReverseRequest>()) {
+        return false;
+    }
+
+    const ContextGetNodeDataReverseRequest& req = j.as<ContextGetNodeDataReverseRequest>();
+    LogFunc << VAR(req) << VAR(ipc_addr_);
+
+    MaaContext* context = query_context(req.context_id);
+    if (!context) {
+        LogError << "context not found" << VAR(req.context_id);
+        return false;
+    }
+
+    auto opt = context->get_node_data(req.node_name);
+
+    ContextGetNodeDataReverseResponse resp {
+        .has_value = opt.has_value(),
+        .node_data = opt ? *opt : json::object(),
     };
     send(resp);
 
@@ -998,6 +1049,32 @@ bool AgentClient::handle_resource_override_next(const json::value& j)
     return true;
 }
 
+bool AgentClient::handle_resource_get_node_data(const json::value& j)
+{
+    if (!j.is<ResourceGetNodeDataReverseRequest>()) {
+        return false;
+    }
+
+    const ResourceGetNodeDataReverseRequest& req = j.as<ResourceGetNodeDataReverseRequest>();
+    LogFunc << VAR(req) << VAR(ipc_addr_);
+
+    MaaResource* resource = query_resource(req.resource_id);
+    if (!resource) {
+        LogError << "Resource not found" << VAR(req.resource_id);
+        return false;
+    }
+
+    auto opt = resource->get_node_data(req.node_name);
+
+    ResourceGetNodeDataReverseResponse resp {
+        .has_value = opt.has_value(),
+        .node_data = opt ? *opt : json::object(),
+    };
+    send(resp);
+
+    return true;
+}
+
 bool AgentClient::handle_resource_get_hash(const json::value& j)
 {
     if (!j.is<ResourceGetHashReverseRequest>()) {
@@ -1102,20 +1179,20 @@ bool AgentClient::handle_controller_post_swipe(const json::value& j)
     return true;
 }
 
-bool AgentClient::handle_controller_post_press_key(const json::value& j)
+bool AgentClient::handle_controller_post_click_key(const json::value& j)
 {
-    if (!j.is<ControllerPostPressKeyReverseRequest>()) {
+    if (!j.is<ControllerPostClickKeyReverseRequest>()) {
         return false;
     }
-    const ControllerPostPressKeyReverseRequest& req = j.as<ControllerPostPressKeyReverseRequest>();
+    const ControllerPostClickKeyReverseRequest& req = j.as<ControllerPostClickKeyReverseRequest>();
     LogFunc << VAR(req) << VAR(ipc_addr_);
     MaaController* controller = query_controller(req.controller_id);
     if (!controller) {
         LogError << "controller not found" << VAR(req.controller_id);
         return false;
     }
-    MaaCtrlId ctrl_id = controller->post_press_key(req.keycode);
-    ControllerPostPressKeyReverseResponse resp {
+    MaaCtrlId ctrl_id = controller->post_click_key(req.keycode);
+    ControllerPostClickKeyReverseResponse resp {
         .ctrl_id = ctrl_id,
     };
     send(resp);
@@ -1256,6 +1333,46 @@ bool AgentClient::handle_controller_post_touch_up(const json::value& j)
     }
     MaaCtrlId ctrl_id = controller->post_touch_up(req.contact);
     ControllerPostTouchUpReverseResponse resp {
+        .ctrl_id = ctrl_id,
+    };
+    send(resp);
+    return true;
+}
+
+bool AgentClient::handle_controller_post_key_down(const json::value& j)
+{
+    if (!j.is<ControllerPostKeyDownReverseRequest>()) {
+        return false;
+    }
+    const ControllerPostKeyDownReverseRequest& req = j.as<ControllerPostKeyDownReverseRequest>();
+    LogFunc << VAR(req) << VAR(ipc_addr_);
+    MaaController* controller = query_controller(req.controller_id);
+    if (!controller) {
+        LogError << "controller not found" << VAR(req.controller_id);
+        return false;
+    }
+    MaaCtrlId ctrl_id = controller->post_key_down(req.keycode);
+    ControllerPostKeyDownReverseResponse resp {
+        .ctrl_id = ctrl_id,
+    };
+    send(resp);
+    return true;
+}
+
+bool AgentClient::handle_controller_post_key_up(const json::value& j)
+{
+    if (!j.is<ControllerPostKeyUpReverseRequest>()) {
+        return false;
+    }
+    const ControllerPostKeyUpReverseRequest& req = j.as<ControllerPostKeyUpReverseRequest>();
+    LogFunc << VAR(req) << VAR(ipc_addr_);
+    MaaController* controller = query_controller(req.controller_id);
+    if (!controller) {
+        LogError << "controller not found" << VAR(req.controller_id);
+        return false;
+    }
+    MaaCtrlId ctrl_id = controller->post_key_up(req.keycode);
+    ControllerPostKeyUpReverseResponse resp {
         .ctrl_id = ctrl_id,
     };
     send(resp);
@@ -1409,6 +1526,11 @@ MaaBool AgentClient::reco_agent(
 
     if (!image) {
         LogError << "image is null";
+        return false;
+    }
+
+    if (!pthis->alive()) {
+        LogError << "server is not alive" << VAR(pthis->ipc_addr_);
         return false;
     }
 

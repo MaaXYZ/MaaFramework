@@ -1,5 +1,8 @@
 #pragma once
 
+#include <condition_variable>
+#include <mutex>
+
 #include <sdkddkver.h>
 
 #ifndef MAA_FRAMEPOOL_SCREENCAP_AVAILABLE
@@ -35,6 +38,11 @@ public:
 public: // from ScreencapBase
     virtual std::optional<cv::Mat> screencap() override;
 
+public:
+    void frame_handler(
+        winrt::Windows::Graphics::Capture::Direct3D11CaptureFramePool const& sender,
+        winrt::Windows::Foundation::IInspectable const& args);
+
 private:
     bool init();
     bool init_texture(winrt::com_ptr<ID3D11Texture2D> raw_texture);
@@ -48,6 +56,11 @@ private:
     winrt::com_ptr<IDXGISwapChain> dxgi_swap_chain_ = nullptr;
     winrt::com_ptr<ID3D11Texture2D> readable_texture_ = nullptr;
     D3D11_TEXTURE2D_DESC texture_desc_ = {};
+
+    std::mutex frame_mutex_;
+    std::condition_variable frame_cv_;
+    winrt::Windows::Graphics::Capture::Direct3D11CaptureFrame latest_frame_ = nullptr;
+    winrt::event_token frame_arrived_token_;
 
     winrt::Windows::Graphics::Capture::GraphicsCaptureItem cap_item_ = nullptr;
     winrt::Windows::Graphics::Capture::Direct3D11CaptureFramePool cap_frame_pool_ = nullptr;

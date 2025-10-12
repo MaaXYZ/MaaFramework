@@ -2,6 +2,8 @@ import path from 'path'
 
 import { Job, JobSource } from './job'
 import maa, { ImageData } from './maa'
+import { ChainNotifyType } from './types'
+import { chain_notify_impl } from './utils'
 
 class ImageJob extends Job<maa.CtrlId, JobSource<maa.CtrlId>> {
     #ctrl: ControllerBase
@@ -36,38 +38,85 @@ class ImageJob extends Job<maa.CtrlId, JobSource<maa.CtrlId>> {
     }
 }
 
-export type ControllerNotify =
-    | ({
-          adb: string
-          address: string
-      } & (
-          | {
-                msg: 'UUIDGot'
-                uuid: string
-            }
-          | {
-                msg: 'UUIDGetFailed'
-            }
-          | {
-                msg: 'ConnectSuccess'
-            }
-          | {
-                msg: 'ConnectFailed'
-                why: 'ConnectFailed' | 'UUIDGetFailed'
-            }
-          | {
-                msg:
-                    | 'ScreencapInited'
-                    | 'ScreencapInitFailed'
-                    | 'TouchinputInited'
-                    | 'TouchinputInitFailed'
-            }
-      ))
+type Point = [x: number, y: number]
+
+export type SwipeParam = {
+    begin: Point
+    end: Point[]
+    end_hold: number[]
+    duration: number[]
+    only_hover: boolean
+    starting: number
+}
+
+export type ControllerNotify = {
+    msg: 'Action.Starting' | 'Action.Succeeded' | 'Action.Failed'
+    ctrl_id: maa.CtrlId
+    uuid: string
+} & (
     | {
-          msg: 'Action.Started' | 'Action.Completed' | 'Action.Failed'
-          ctrl_id: maa.CtrlId
-          uuid: string
+          action: 'connect'
+          param?: never
       }
+    | {
+          action: 'click'
+          param: {
+              point: Point
+          }
+      }
+    | {
+          action: 'long_press'
+          param: {
+              point: Point
+              duration: number
+          }
+      }
+    | {
+          action: 'swipe'
+          param: SwipeParam
+      }
+    | {
+          action: 'multi_swipe'
+          param: SwipeParam[]
+      }
+    | {
+          action: 'touch_down' | 'touch_move' | 'touch_up'
+          param: {
+              contact: number
+              point: Point
+              pressure: number
+          }
+      }
+    | {
+          action: 'click_key' | 'key_down' | 'key_up'
+          param: {
+              keycode: number[]
+          }
+      }
+    | {
+          action: 'long_press_key'
+          param: {
+              keycode: number[]
+              duration: number
+          }
+      }
+    | {
+          action: 'input_text'
+          param: {
+              text: string
+          }
+      }
+    | {
+          action: 'screencap'
+          param?: never
+      }
+    | {
+          action: 'start_app' | 'stop_app'
+          param: {
+              package: string
+          }
+      }
+)
 
 export class ControllerBase {
     handle: maa.ControllerHandle
@@ -75,13 +124,18 @@ export class ControllerBase {
 
     notify(message: string, details_json: string): maa.MaybePromise<void> {}
 
-    set parsed_notify(cb: (msg: ControllerNotify) => maa.MaybePromise<void>) {
-        this.notify = (msg, details) => {
+    chain_notify = chain_notify_impl
+
+    chain_parsed_notify(
+        cb: (msg: ControllerNotify) => maa.MaybePromise<void>,
+        order: ChainNotifyType = 'after'
+    ) {
+        this.chain_notify((msg: string, details: string) => {
             return cb({
                 msg: msg.replace(/^Controller\./, '') as any,
                 ...JSON.parse(details)
             })
-        }
+        }, order)
     }
 
     constructor(handle: maa.ControllerHandle) {
@@ -114,12 +168,6 @@ export class ControllerBase {
         }
     }
 
-    set recording(value: boolean) {
-        if (!maa.controller_set_option_recording(this.handle, value)) {
-            throw 'Controller set recording failed'
-        }
-    }
-
     post_connection() {
         return new Job(this.#source, maa.controller_post_connection(this.handle))
     }
@@ -135,8 +183,16 @@ export class ControllerBase {
         )
     }
 
-    post_press_key(keycode: number) {
-        return new Job(this.#source, maa.controller_post_press_key(this.handle, keycode))
+    post_click_key(keycode: number) {
+        return new Job(this.#source, maa.controller_post_click_key(this.handle, keycode))
+    }
+
+    post_key_down(keycode: number) {
+        return new Job(this.#source, maa.controller_post_key_down(this.handle, keycode))
+    }
+
+    post_key_up(keycode: number) {
+        return new Job(this.#source, maa.controller_post_key_up(this.handle, keycode))
     }
 
     post_input_text(text: string) {
@@ -204,7 +260,7 @@ export class AdbController extends ControllerBase {
             config,
             agent ?? AdbController.agent_path(),
             (message, details_json) => {
-                ws.deref()?.notify(message, details_json)
+                return ws.deref()?.notify(message, details_json)
             }
         )
         if (!h) {
@@ -235,7 +291,7 @@ export class Win32Controller extends ControllerBase {
             screencap_methods,
             input_methods,
             (message, details_json) => {
-                ws.deref()?.notify(message, details_json)
+                return ws.deref()?.notify(message, details_json)
             }
         )
         if (!h) {
@@ -259,7 +315,7 @@ export class DbgController extends ControllerBase {
             type,
             config,
             (message, details_json) => {
-                ws.deref()?.notify(message, details_json)
+                return ws.deref()?.notify(message, details_json)
             }
         )
         if (!h) {
@@ -297,8 +353,10 @@ export abstract class CustomControllerActor {
         pressure: number
     ): maa.MaybePromise<boolean>
     abstract touch_up(contact: number): maa.MaybePromise<boolean>
-    abstract press_key(keycode: number): maa.MaybePromise<boolean>
+    abstract click_key(keycode: number): maa.MaybePromise<boolean>
     abstract input_text(text: string): maa.MaybePromise<boolean>
+    abstract key_down(keycode: number): maa.MaybePromise<boolean>
+    abstract key_up(keycode: number): maa.MaybePromise<boolean>
 }
 
 export class CustomControllerActorDefaultImpl extends CustomControllerActor {
@@ -338,10 +396,16 @@ export class CustomControllerActorDefaultImpl extends CustomControllerActor {
     touch_up(contact: number): maa.MaybePromise<boolean> {
         return false
     }
-    press_key(keycode: number): maa.MaybePromise<boolean> {
+    click_key(keycode: number): maa.MaybePromise<boolean> {
         return false
     }
     input_text(text: string): maa.MaybePromise<boolean> {
+        return false
+    }
+    key_down(keycode: number): maa.MaybePromise<boolean> {
+        return false
+    }
+    key_up(keycode: number): maa.MaybePromise<boolean> {
         return false
     }
 }
@@ -354,7 +418,7 @@ export class CustomController extends ControllerBase {
                 return (actor[action] as any)(...param)
             },
             (message, details_json) => {
-                ws.deref()?.notify(message, details_json)
+                return ws.deref()?.notify(message, details_json)
             }
         )
         if (!h) {

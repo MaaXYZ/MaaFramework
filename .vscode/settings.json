@@ -55,7 +55,4 @@
         "./source/binding/Python"
     ],
     "editor.formatOnSave": true,
-    "clangd.arguments": [
-        "--experimental-modules-support"
-    ]
 }

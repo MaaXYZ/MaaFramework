@@ -1,6 +1,7 @@
 #include "RemoteResource.h"
 
 #include "MaaAgent/Message.hpp"
+#include "Utils/Platform.h"
 
 MAA_AGENT_SERVER_NS_BEGIN
 
@@ -20,7 +21,7 @@ MaaResId RemoteResource::post_bundle(const std::filesystem::path& path)
 {
     ResourcePostBundleReverseRequest req {
         .resource_id = resource_id_,
-        .path = path.string(),
+        .path = path_to_utf8_string(path),
     };
     auto resp_opt = server_.send_and_recv<ResourcePostBundleReverseResponse>(req);
     if (!resp_opt) {
@@ -95,7 +96,7 @@ bool RemoteResource::clear()
     return resp_opt->ret;
 }
 
-bool RemoteResource::override_pipeline(const json::object& pipeline_override)
+bool RemoteResource::override_pipeline(const json::value& pipeline_override)
 {
     ResourceOverridePipelineReverseRequest req {
         .resource_id = resource_id_,
@@ -120,6 +121,21 @@ bool RemoteResource::override_next(const std::string& node_name, const std::vect
         return false;
     }
     return resp_opt->ret;
+}
+
+std::optional<json::object> RemoteResource::get_node_data(const std::string& node_name) const
+{
+    ResourceGetNodeDataReverseRequest req {
+        .resource_id = resource_id_,
+        .node_name = node_name,
+    };
+
+    auto resp_opt = server_.send_and_recv<ResourceGetNodeDataReverseResponse>(req);
+    if (!resp_opt || !resp_opt->has_value) {
+        return std::nullopt;
+    }
+
+    return resp_opt->node_data;
 }
 
 void RemoteResource::register_custom_recognition(const std::string& name, MaaCustomRecognitionCallback recognition, void* trans_arg)

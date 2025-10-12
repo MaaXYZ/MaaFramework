@@ -123,13 +123,16 @@ struct ControllerInfo : InfoBase<MaaController*, ControllerInfo>
             return;
         }
         disposed = true;
-        MaaControllerDestroy(handle);
-        if (callback) {
-            delete callback;
-        }
-        if (custom_controller) {
-            delete custom_controller;
-        }
+
+        std::thread { [handle = handle, callback = callback, custom_controller = custom_controller]() {
+            MaaControllerDestroy(handle);
+            if (callback) {
+                delete callback;
+            }
+            if (custom_controller) {
+                delete custom_controller;
+            }
+        } }.detach();
     }
 
     ~ControllerInfo() { dispose(); }
@@ -153,12 +156,19 @@ struct ResourceInfo : InfoBase<MaaResource*, ResourceInfo>
             return;
         }
         disposed = true;
-        MaaResourceDestroy(handle);
-        if (callback) {
-            delete callback;
-        }
-        ClearRecos();
-        ClearActs();
+
+        std::thread { [handle = handle, callback = callback, custom_recognizers = custom_recognizers, custom_actions = custom_actions]() {
+            MaaResourceDestroy(handle);
+            if (callback) {
+                delete callback;
+            }
+            for (const auto& [_, cb] : custom_recognizers) {
+                delete cb;
+            }
+            for (const auto& [_, cb] : custom_actions) {
+                delete cb;
+            }
+        } }.detach();
     }
 
     ~ResourceInfo() { dispose(); }
@@ -195,10 +205,13 @@ struct TaskerInfo : InfoBase<MaaTasker*, TaskerInfo>
             return;
         }
         disposed = true;
-        MaaTaskerDestroy(handle);
-        if (callback) {
-            delete callback;
-        }
+
+        std::thread { [handle = handle, callback = callback]() {
+            MaaTaskerDestroy(handle);
+            if (callback) {
+                delete callback;
+            }
+        } }.detach();
     }
 
     ~TaskerInfo() { dispose(); }

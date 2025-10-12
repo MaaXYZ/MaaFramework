@@ -30,7 +30,7 @@ public:
 
     virtual bool set_option(MaaTaskerOption key, MaaOptionValue value, MaaOptionValueSize val_size) override;
 
-    virtual MaaTaskId post_task(const std::string& entry, const json::object& pipeline_override) override;
+    virtual MaaTaskId post_task(const std::string& entry, const json::value& pipeline_override) override;
 
     virtual MaaStatus status(MaaTaskId task_id) const override;
     virtual MaaStatus wait(MaaTaskId task_id) const override;
@@ -57,7 +57,7 @@ private:
     using TaskPtr = std::shared_ptr<MAA_TASK_NS::TaskBase>;
     using RunnerId = AsyncRunner<TaskPtr>::Id;
 
-    MaaTaskId post_task(TaskPtr task_ptr, const json::object& pipeline_override);
+    MaaTaskId post_task(TaskPtr task_ptr, const json::value& pipeline_override);
     bool run_task(RunnerId id, TaskPtr task_ptr);
 
     bool check_stop();

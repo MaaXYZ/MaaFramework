@@ -70,7 +70,7 @@ extern "C"
     MAA_FRAMEWORK_API MaaCtrlId
         MaaControllerPostSwipe(MaaController* ctrl, int32_t x1, int32_t y1, int32_t x2, int32_t y2, int32_t duration);
 
-    MAA_FRAMEWORK_API MaaCtrlId MaaControllerPostPressKey(MaaController* ctrl, int32_t keycode);
+    MAA_FRAMEWORK_API MaaCtrlId MaaControllerPostClickKey(MaaController* ctrl, int32_t keycode);
 
     MAA_FRAMEWORK_API MaaCtrlId MaaControllerPostInputText(MaaController* ctrl, const char* text);
 
@@ -88,6 +88,10 @@ extern "C"
     // for win32 controller, contact means mouse button id (0 for left, 1 for right, 2 for middle)
     MAA_FRAMEWORK_API MaaCtrlId MaaControllerPostTouchUp(MaaController* ctrl, int32_t contact);
 
+    MAA_FRAMEWORK_API MaaCtrlId MaaControllerPostKeyDown(MaaController* ctrl, int32_t keycode);
+
+    MAA_FRAMEWORK_API MaaCtrlId MaaControllerPostKeyUp(MaaController* ctrl, int32_t keycode);
+
     MAA_FRAMEWORK_API MaaCtrlId MaaControllerPostScreencap(MaaController* ctrl);
 
     MAA_FRAMEWORK_API MaaStatus MaaControllerStatus(const MaaController* ctrl, MaaCtrlId id);
@@ -99,6 +103,8 @@ extern "C"
     MAA_FRAMEWORK_API MaaBool MaaControllerCachedImage(const MaaController* ctrl, /* out */ MaaImageBuffer* buffer);
 
     MAA_FRAMEWORK_API MaaBool MaaControllerGetUuid(MaaController* ctrl, /* out */ MaaStringBuffer* buffer);
+
+    MAA_DEPRECATED MAA_FRAMEWORK_API MaaCtrlId MaaControllerPostPressKey(MaaController* ctrl, int32_t keycode);
 
 #ifdef __cplusplus
 }

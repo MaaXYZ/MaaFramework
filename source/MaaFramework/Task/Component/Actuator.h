@@ -1,5 +1,7 @@
 #pragma once
 
+#include <random>
+
 #include <meojson/json.hpp>
 
 #include "Common/MaaTypes.h"
@@ -14,7 +16,6 @@ MAA_TASK_NS_BEGIN
 class Actuator
 {
 public:
-    using PipelineData = MAA_RES_NS::PipelineData;
     using PreTaskBoxes = std::map<std::string, cv::Rect>;
 
 public:
@@ -23,15 +24,21 @@ public:
     bool run(const cv::Rect& reco_hit, MaaRecoId reco_id, const PipelineData& pipeline_data, const std::string& entry);
 
 private:
+    static cv::Point rand_point(const cv::Rect& r);
+    static std::minstd_rand rand_engine_;
+
+private:
     bool click(const MAA_RES_NS::Action::ClickParam& param, const cv::Rect& box);
     bool long_press(const MAA_RES_NS::Action::LongPressParam& param, const cv::Rect& box);
     bool swipe(const MAA_RES_NS::Action::SwipeParam& param, const cv::Rect& box);
     bool multi_swipe(const MAA_RES_NS::Action::MultiSwipeParam& param, const cv::Rect& box);
-    bool press_key(const MAA_RES_NS::Action::KeyParam& param);
-    bool input_text(const MAA_RES_NS::Action::TextParam& param);
+    bool click_key(const MAA_RES_NS::Action::ClickKeyParam& param);
+    bool long_press_key(const MAA_RES_NS::Action::LongPressKeyParam& param);
+    bool input_text(const MAA_RES_NS::Action::InputTextParam& param);
 
     bool start_app(const MAA_RES_NS::Action::AppParam& param);
     bool stop_app(const MAA_RES_NS::Action::AppParam& param);
+
     bool command(const MAA_RES_NS::Action::CommandParam& param, const cv::Rect& box, const std::string& name, const std::string& entry);
     bool custom_action(const MAA_RES_NS::Action::CustomParam& param, const cv::Rect& box, MaaRecoId reco_id, const std::string& name);
 

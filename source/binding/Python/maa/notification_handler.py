@@ -42,6 +42,7 @@ class NotificationHandler(ABC):
         ctrl_id: int
         uuid: str
         action: str
+        param: dict
 
     def on_controller_action(
         self, noti_type: NotificationType, detail: ControllerActionDetail
@@ -112,6 +113,7 @@ class NotificationHandler(ABC):
                 ctrl_id=details["ctrl_id"],
                 uuid=details["uuid"],
                 action=details["action"],
+                param=details["param"],
             )
             self.on_controller_action(noti_type, detail)
 
