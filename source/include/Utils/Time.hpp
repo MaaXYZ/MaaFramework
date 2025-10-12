@@ -34,7 +34,7 @@ inline std::string format_now()
     return std::format(
         kFormat,
         tm_info->tm_year + 1900,
-        tm_info->tm_mon,
+        tm_info->tm_mon + 1,
         tm_info->tm_mday,
         tm_info->tm_hour,
         tm_info->tm_min,
