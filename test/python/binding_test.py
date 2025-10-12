@@ -27,7 +27,7 @@ from maa.custom_action import CustomAction
 from maa.custom_recognition import CustomRecognition
 from maa.define import RectType, MaaDbgControllerTypeEnum, LoggingLevelEnum
 from maa.context import Context
-from maa.notification_handler import NotificationHandler
+from maa.event_sink import EventSink
 
 analyzed: bool = False
 runned: bool = False
@@ -124,19 +124,21 @@ def api_test():
     t2 = Tasker()
     t2.post_task("Entry", {}).wait()
 
-    resource = Resource(MyNotificationHandler())
+    resource = Resource()
+    resource.add_sink(MyEventSink())
     print(f"resource: {resource}")
 
     dbg_controller = DbgController(
         install_dir / "test" / "PipelineSmoking" / "Screenshot",
         install_dir / "test" / "user",
         MaaDbgControllerTypeEnum.CarouselImage,
-        notification_handler=MyNotificationHandler(),
     )
     print(f"controller: {dbg_controller}")
     dbg_controller.post_connection().wait()
 
-    tasker = Tasker(notification_handler=MyNotificationHandler())
+    tasker = Tasker()
+    tasker.add_sink(MyEventSink())
+    tasker.add_context_sink(MyEventSink())
     tasker.bind(resource, dbg_controller)
     print(f"tasker: {tasker}")
 
@@ -207,7 +209,8 @@ def api_test():
 def custom_ctrl_test():
     print("test_custom_controller")
 
-    controller = MyController(MyNotificationHandler())
+    controller = MyController()
+    controller.add_sink(MyEventSink())
     ret = controller.post_connection().wait().succeeded
     uuid = controller.uuid
     ret &= controller.post_start_app("custom_aaa").wait().succeeded
@@ -229,10 +232,11 @@ def custom_ctrl_test():
     #     raise RuntimeError("failed to run custom controller")
 
 
-class MyNotificationHandler(NotificationHandler):
-    def on_raw_notification(self, msg: str, details: dict):
+class MyEventSink(EventSink):
+    def on_raw_notification(self, handle, msg: str, details: dict):
+        pass
         print(
-            f"on MyNotificationHandler.on_raw_notification, msg: {msg}, details: {details}"
+            f"on MyEventSink.on_raw_notification, handle: {handle}, msg: {msg}, details: {details}"
         )
 
         super().on_raw_notification(msg, details)
@@ -240,8 +244,8 @@ class MyNotificationHandler(NotificationHandler):
 
 class MyController(CustomController):
 
-    def __init__(self, notification_handler: NotificationHandler):
-        super().__init__(notification_handler=notification_handler)
+    def __init__(self):
+        super().__init__()
         self.count = 0
 
     def connect(self) -> bool:

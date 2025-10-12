@@ -7,7 +7,7 @@ from collections import defaultdict
 
 from .define import *
 from .library import Library
-from .notification_handler import NotificationHandler
+from .event_sink import EventSink
 
 
 @dataclass
@@ -127,7 +127,7 @@ class Toolkit:
     _api_properties_initialized: bool = False
     _pi_custom_recognition_holder = defaultdict(dict)
     _pi_custom_action_holder = defaultdict(dict)
-    _pi_notification_handler: Optional[NotificationHandler] = None
+    _pi_notification_handler: Optional[EventSink] = None
 
     @staticmethod
     def _set_api_properties():
