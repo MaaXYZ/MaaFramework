@@ -135,7 +135,7 @@ It offers low-code simplicity while maintaining high extensibility. The framewor
   Assistant for the Founding Chronicles of the Demon King and Dragon.Free your hands with image recognition and simulated control technology! Powered by MaaFramework!
 
 - [Maa_bbb](https://github.com/miaojiuqing/Maa_bbb) ![Pipeline](https://img.shields.io/badge/Pipeline-%23876f69?logo=paddypower&logoColor=%23FFFFFF) ![Python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white)  ![stars](https://img.shields.io/github/stars/miaojiuqing/Maa_bbb?style=social) [![mirrorc](https://img.shields.io/badge/Mirror%E9%85%B1-%239af3f6?logo=countingworkspro&logoColor=4f46e5)](https://mirrorchyan.com/zh/projects?source=maafw-badge&rid=SLIMEIM_Maa)  
-  Honkai Impact 3 Assistant. Uses image recognition and simulated control technology to free your hands! Powered by MaaFramework!
+  Honkai Impact 3 Mini Assistant. Uses image recognition and simulation control technology to free your hands! Supports both PC and emulator simultaneously, powered by MaaFramework!
   
 ## Eco-Building
 
