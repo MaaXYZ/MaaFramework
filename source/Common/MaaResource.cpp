@@ -5,6 +5,42 @@
 #include "Utils/Logger.h"
 #include "Utils/Platform.h"
 
+MaaSinkId MaaResourceAddSink(MaaResource* res, MaaEventCallback sink, void* trans_arg)
+{
+    LogInfo << VAR_VOIDP(res) << VAR_VOIDP(sink) << VAR_VOIDP(trans_arg);
+
+    if (!res) {
+        LogError << "handle is null";
+        return MaaInvalidId;
+    }
+
+    return res->add_sink(sink, trans_arg);
+}
+
+void MaaResourceRemoveSink(MaaResource* res, MaaSinkId sink_id)
+{
+    LogInfo << VAR_VOIDP(res) << VAR(sink_id);
+
+    if (!res) {
+        LogError << "handle is null";
+        return;
+    }
+
+    res->remove_sink(sink_id);
+}
+
+void MaaResourceClearSinks(MaaResource* res)
+{
+    LogInfo << VAR_VOIDP(res);
+
+    if (!res) {
+        LogError << "handle is null";
+        return;
+    }
+
+    res->clear_sinks();
+}
+
 MaaBool MaaResourceRegisterCustomRecognition(MaaResource* res, const char* name, MaaCustomRecognitionCallback recognition, void* trans_arg)
 {
     LogFunc << VAR_VOIDP(res) << VAR(name) << VAR_VOIDP(recognition) << VAR_VOIDP(trans_arg);

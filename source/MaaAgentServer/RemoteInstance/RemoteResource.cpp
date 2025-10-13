@@ -192,4 +192,21 @@ std::vector<std::string> RemoteResource::get_node_list() const
     return resp_opt->node_list;
 }
 
+MaaSinkId RemoteResource::add_sink(MaaEventCallback callback, void* trans_arg)
+{
+    LogError << "Can NOT add sink for remote instance, use AgentServer.add_resource_sink instead" << VAR_VOIDP(callback)
+             << VAR_VOIDP(trans_arg);
+    return MaaInvalidId;
+}
+
+void RemoteResource::remove_sink(MaaSinkId sink_id)
+{
+    LogError << "Can NOT remove sink for remote instance" << VAR(sink_id);
+}
+
+void RemoteResource::clear_sinks()
+{
+    LogError << "Can NOT clear sink for remote instance";
+}
+
 MAA_AGENT_SERVER_NS_END

@@ -30,18 +30,41 @@ std::string AgentClient::identifier() const
     return identifier_;
 }
 
-bool AgentClient::bind_resource(MaaResource* resource)
+bool AgentClient::bind_resource(MaaResource* new_res)
 {
-    LogInfo << VAR_VOIDP(this) << VAR_VOIDP(resource);
+    LogInfo << VAR_VOIDP(this) << VAR_VOIDP(new_res);
 
-    if (resource_ && resource_ != resource) {
-        LogWarn << "resource is already bound" << VAR_VOIDP(resource_);
-        clear_registration();
+    if (bound_res_ && bound_res_ != new_res) {
+        LogWarn << "resource is already bound" << VAR_VOIDP(bound_res_);
+        clear_custom_registration();
     }
 
-    resource_ = resource;
+    bound_res_ = new_res;
 
     return true;
+}
+
+void AgentClient::register_sink(MaaTasker* tasker, MaaResource* res, MaaController* ctrl)
+{
+    LogInfo << VAR_VOIDP(this) << VAR_VOIDP(tasker) << VAR_VOIDP(res) << VAR_VOIDP(ctrl);
+
+    clear_sink_registration();
+
+    if (tasker) {
+        reg_tasker_sink_id_ = tasker->add_sink(&AgentClient::tasker_event_sink, this);
+        reg_context_sink_id_ = tasker->add_context_sink(&AgentClient::ctx_event_sink, this);
+        reg_tasker_ = tasker;
+    }
+
+    if (res) {
+        reg_res_sink_id_ = res->add_sink(&AgentClient::res_event_sink, this);
+        reg_res_ = res;
+    }
+
+    if (ctrl) {
+        reg_ctrl_sink_id_ = ctrl->add_sink(&AgentClient::ctrl_event_sink, this);
+        reg_ctrl_ = ctrl;
+    }
 }
 
 std::string AgentClient::create_socket(const std::string& identifier)
@@ -67,12 +90,12 @@ bool AgentClient::connect()
 {
     LogFunc << VAR(ipc_addr_);
 
-    if (!resource_) {
+    if (!bound_res_) {
         LogError << "resource is not bound";
         return false;
     }
 
-    clear_registration();
+    clear_custom_registration();
 
     auto resp_opt = send_and_recv<StartUpResponse>(StartUpRequest {});
 
@@ -92,11 +115,11 @@ bool AgentClient::connect()
 
     for (const auto& reco : resp.recognitions) {
         LogInfo << "register recognition" << VAR(reco);
-        resource_->register_custom_recognition(reco, reco_agent, this);
+        bound_res_->register_custom_recognition(reco, reco_agent, this);
     }
     for (const auto& act : resp.actions) {
         LogInfo << "register action" << VAR(act);
-        resource_->register_custom_action(act, action_agent, this);
+        bound_res_->register_custom_action(act, action_agent, this);
     }
 
     registered_recognitions_ = resp.recognitions;
@@ -110,7 +133,7 @@ bool AgentClient::disconnect()
 {
     LogFunc << VAR(ipc_addr_);
 
-    clear_registration();
+    clear_custom_registration();
 
     if (!connected()) {
         return true;
@@ -882,21 +905,66 @@ bool AgentClient::handle_resource_post_bundle(const json::value& j)
     return true;
 }
 
-void AgentClient::clear_registration()
+void AgentClient::clear_custom_registration()
 {
     LogTrace;
 
     for (const auto& reco : registered_recognitions_) {
         LogInfo << "unregister pre recognition" << VAR(reco);
-        resource_->unregister_custom_recognition(reco);
+        bound_res_->unregister_custom_recognition(reco);
     }
     for (const auto& act : registered_actions_) {
         LogInfo << "unregister pre action" << VAR(act);
-        resource_->unregister_custom_action(act);
+        bound_res_->unregister_custom_action(act);
     }
 
     registered_recognitions_.clear();
     registered_actions_.clear();
+}
+
+void AgentClient::clear_sink_registration()
+{
+    LogTrace;
+
+    if (reg_tasker_sink_id_ != MaaInvalidId) {
+        if (reg_tasker_) {
+            reg_tasker_->remove_sink(reg_tasker_sink_id_);
+        }
+        reg_tasker_sink_id_ = MaaInvalidId;
+    }
+
+    if (reg_tasker_ && reg_context_sink_id_ != MaaInvalidId) {
+        if (reg_tasker_) {
+            reg_tasker_->remove_context_sink(reg_context_sink_id_);
+        }
+        reg_context_sink_id_ = MaaInvalidId;
+    }
+
+    if (reg_tasker_) {
+        reg_tasker_ = nullptr;
+    }
+
+    if (reg_res_sink_id_ != MaaInvalidId) {
+        if (reg_res_) {
+            reg_res_->remove_sink(reg_res_sink_id_);
+        }
+        reg_res_sink_id_ = MaaInvalidId;
+    }
+
+    if (reg_res_) {
+        reg_res_ = nullptr;
+    }
+
+    if (reg_ctrl_sink_id_ != MaaInvalidId) {
+        if (reg_ctrl_) {
+            reg_ctrl_->remove_sink(reg_ctrl_sink_id_);
+        }
+        reg_ctrl_sink_id_ = MaaInvalidId;
+    }
+
+    if (reg_ctrl_) {
+        reg_ctrl_ = nullptr;
+    }
 }
 
 bool AgentClient::handle_resource_status(const json::value& j)
@@ -1687,6 +1755,122 @@ MaaResource* AgentClient::query_resource(const std::string& resource_id)
         return nullptr;
     }
     return it->second;
+}
+
+void AgentClient::res_event_sink(void* handle, const char* message, const char* details_json, void* trans_arg)
+{
+    LogTrace << VAR_VOIDP(handle) << VAR(message) << VAR(details_json) << VAR_VOIDP(trans_arg);
+
+    if (!trans_arg) {
+        LogError << "trans_arg is null";
+        return;
+    }
+
+    AgentClient* pthis = reinterpret_cast<AgentClient*>(trans_arg);
+    if (!pthis) {
+        LogError << "pthis is null";
+        return;
+    }
+
+    if (!pthis->alive()) {
+        LogError << "server is not alive" << VAR(pthis->ipc_addr_);
+        return;
+    }
+
+    ResourceEventRequest req {
+        .resource_id = pthis->resource_id(reinterpret_cast<MaaResource*>(handle)),
+        .message = message,
+        .details = json::parse(details_json).value_or(json::value {}),
+    };
+
+    std::ignore = pthis->send_and_recv<ResourceEventResponse>(req);
+}
+
+void AgentClient::ctrl_event_sink(void* handle, const char* message, const char* details_json, void* trans_arg)
+{
+    LogTrace << VAR_VOIDP(handle) << VAR(message) << VAR(details_json) << VAR_VOIDP(trans_arg);
+
+    if (!trans_arg) {
+        LogError << "trans_arg is null";
+        return;
+    }
+
+    AgentClient* pthis = reinterpret_cast<AgentClient*>(trans_arg);
+    if (!pthis) {
+        LogError << "pthis is null";
+        return;
+    }
+
+    if (!pthis->alive()) {
+        LogError << "server is not alive" << VAR(pthis->ipc_addr_);
+        return;
+    }
+
+    ControllerEventRequest req {
+        .controller_id = pthis->controller_id(reinterpret_cast<MaaController*>(handle)),
+        .message = message,
+        .details = json::parse(details_json).value_or(json::value {}),
+    };
+
+    std::ignore = pthis->send_and_recv<ControllerEventResponse>(req);
+}
+
+void AgentClient::tasker_event_sink(void* handle, const char* message, const char* details_json, void* trans_arg)
+{
+    LogTrace << VAR_VOIDP(handle) << VAR(message) << VAR(details_json) << VAR_VOIDP(trans_arg);
+
+    if (!trans_arg) {
+        LogError << "trans_arg is null";
+        return;
+    }
+
+    AgentClient* pthis = reinterpret_cast<AgentClient*>(trans_arg);
+    if (!pthis) {
+        LogError << "pthis is null";
+        return;
+    }
+
+    if (!pthis->alive()) {
+        LogError << "server is not alive" << VAR(pthis->ipc_addr_);
+        return;
+    }
+
+    TaskerEventRequest req {
+        .tasker_id = pthis->tasker_id(reinterpret_cast<MaaTasker*>(handle)),
+        .message = message,
+        .details = json::parse(details_json).value_or(json::value {}),
+    };
+
+    std::ignore = pthis->send_and_recv<TaskerEventResponse>(req);
+}
+
+void AgentClient::ctx_event_sink(void* handle, const char* message, const char* details_json, void* trans_arg)
+{
+    LogTrace << VAR_VOIDP(handle) << VAR(message) << VAR(details_json) << VAR_VOIDP(trans_arg);
+
+    if (!trans_arg) {
+        LogError << "trans_arg is null";
+        return;
+    }
+
+    AgentClient* pthis = reinterpret_cast<AgentClient*>(trans_arg);
+    if (!pthis) {
+        LogError << "pthis is null";
+        return;
+    }
+
+    if (!pthis->alive()) {
+        LogError << "server is not alive" << VAR(pthis->ipc_addr_);
+        return;
+    }
+
+    ContextEventRequest req {
+        .context_id = pthis->context_id(reinterpret_cast<MaaContext*>(handle)),
+        .message = message,
+        .details = json::parse(details_json).value_or(json::value {}),
+    };
+
+    std::ignore = pthis->send_and_recv<ContextEventResponse>(req);
 }
 
 MAA_AGENT_CLIENT_NS_END

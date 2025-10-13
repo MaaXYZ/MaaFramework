@@ -249,11 +249,11 @@ bool TaskBase::debug_mode() const
 
 void TaskBase::notify(std::string_view msg, const json::value detail)
 {
-    if (!tasker_) {
+    if (!tasker_ || !context_) {
         return;
     }
 
-    tasker_->notify(msg, detail);
+    tasker_->context_notify(context_.get(), msg, detail);
 }
 
 MAA_TASK_NS_END

@@ -108,13 +108,9 @@ void clear_screen()
 
 Interactor::Interactor(
     std::filesystem::path user_path,
-    MaaNotificationCallback notify,
-    void* notify_trans_arg,
     std::map<std::string, MAA_PROJECT_INTERFACE_NS::CustomRecognitionSession> custom_recognitions,
     std::map<std::string, MAA_PROJECT_INTERFACE_NS::CustomActionSession> custom_actions)
     : user_path_(std::move(user_path))
-    , notify_(notify)
-    , notify_trans_arg_(notify_trans_arg)
     , custom_recognitions_(std::move(custom_recognitions))
     , custom_actions_(std::move(custom_actions))
 {
@@ -168,7 +164,7 @@ bool Interactor::run()
         return false;
     }
 
-    bool ret = MAA_PROJECT_INTERFACE_NS::Runner::run(runtime.value(), on_maafw_notify, this, custom_recognitions_, custom_actions_);
+    bool ret = MAA_PROJECT_INTERFACE_NS::Runner::run(runtime.value(), custom_recognitions_, custom_actions_);
 
     if (!ret) {
         std::cout << "### Failed to run tasks ###\n\n";
@@ -640,17 +636,4 @@ void Interactor::mpause() const
     std::cout << "\nPress Enter to continue...";
     std::cin.sync();
     std::cin.get();
-}
-
-void Interactor::on_maafw_notify(const char* msg, const char* details_json, void* notify_trans_arg)
-{
-    if (std::string(msg).starts_with("Tasker.Task")) {
-        std::string entry = json::parse(details_json).value_or(json::value())["entry"].as_string();
-        std::cout << MAA_NS::utf8_to_crt(std::format("on_maafw_notify: {} {}", msg, entry)) << std::endl;
-    }
-
-    Interactor* pthis = static_cast<Interactor*>(notify_trans_arg);
-    if (pthis && pthis->notify_) {
-        pthis->notify_(msg, details_json, pthis->notify_trans_arg_);
-    }
 }

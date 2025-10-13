@@ -3,13 +3,11 @@ import { Job, JobSource } from './job'
 import maa from './maa'
 import { DumpTask } from './pipeline'
 import {
-    ChainNotifyType,
     CustomActionCallback,
     CustomActionSelf,
     CustomRecognizerCallback,
     CustomRecognizerSelf
 } from './types'
-import { chain_notify_impl } from './utils'
 
 export type ResourceNotify = {
     msg: 'Loading.Starting' | 'Loading.Succeeded' | 'Loading.Failed'
@@ -22,20 +20,13 @@ export class ResourceBase {
     handle: maa.ResourceHandle
     #source: JobSource<maa.ResId>
 
-    notify(message: string, details_json: string): maa.MaybePromise<void> {}
-
-    chain_notify = chain_notify_impl
-
-    chain_parsed_notify(
-        cb: (msg: ResourceNotify) => maa.MaybePromise<void>,
-        order: ChainNotifyType = 'after'
-    ) {
-        this.chain_notify((msg: string, details: string) => {
-            return cb({
+    static wrapSink(cb: (res: ResourceBase, msg: ResourceNotify) => maa.MaybePromise<void>) {
+        return ((res: ResourceBase, msg: string, details: string) => {
+            return cb(res, {
                 msg: msg.replace(/^Resource\./, '') as any,
                 ...JSON.parse(details)
             })
-        }, order)
+        }) satisfies maa.EventCallbackWithHandle<ResourceBase>
     }
 
     constructor(handle: maa.ResourceHandle) {
@@ -48,6 +39,28 @@ export class ResourceBase {
 
     destroy() {
         maa.resource_destroy(this.handle)
+    }
+
+    add_sink(cb: maa.EventCallbackWithHandle<ResourceBase>) {
+        const ws = new WeakRef(this)
+        return maa.resource_add_sink(this.handle, (msg: string, details: string) => {
+            const res = ws.deref()
+            if (res) {
+                cb(res, msg, details)
+            }
+        })
+    }
+
+    add_wrapped_sink(cb: (ctrl: ResourceBase, msg: ResourceNotify) => maa.MaybePromise<void>) {
+        return this.add_sink(ResourceBase.wrapSink(cb))
+    }
+
+    remove_sink(sink_id: maa.SinkId) {
+        maa.resource_remove_sink(this.handle, sink_id)
+    }
+
+    clear_sinks() {
+        maa.resource_clear_sinks(this.handle)
     }
 
     set inference_device(id: keyof typeof maa.InferenceDevice | number) {
@@ -190,14 +203,10 @@ export class ResourceBase {
 
 export class Resource extends ResourceBase {
     constructor() {
-        let ws: WeakRef<this>
-        const h = maa.resource_create((message, details_json) => {
-            return ws.deref()?.notify(message, details_json)
-        })
+        const h = maa.resource_create()
         if (!h) {
             throw 'Resource create failed'
         }
         super(h)
-        ws = new WeakRef(this)
     }
 }

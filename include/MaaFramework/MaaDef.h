@@ -25,6 +25,7 @@ typedef MaaId MaaResId;
 typedef MaaId MaaTaskId;
 typedef MaaId MaaRecoId;
 typedef MaaId MaaNodeId;
+typedef MaaId MaaSinkId;
 #define MaaInvalidId ((MaaId)0)
 
 typedef struct MaaStringBuffer MaaStringBuffer;
@@ -281,7 +282,16 @@ typedef struct MaaRect
 /*
  * See MaaMsg.h
  */
+
+// Deprecated, use MaaEventCallback instead
 typedef void(MAA_CALL* MaaNotificationCallback)(const char* message, const char* details_json, void* notify_trans_arg);
+
+/// void* hanlde:
+/// - MaaTasker* for MaaTasker event
+/// - MaaResource* for MaaResource event
+/// - MaaController* for MaaController event
+/// - MaaContext* for MaaContext event
+typedef void(MAA_CALL* MaaEventCallback)(void* handle, const char* message, const char* details_json, void* trans_arg);
 
 typedef MaaBool(MAA_CALL* MaaCustomRecognitionCallback)(
     MaaContext* context,

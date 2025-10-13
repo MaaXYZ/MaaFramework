@@ -2,33 +2,25 @@
 
 #include "Utils/Logger.h"
 
-MaaController* MaaAdbControllerCreate(
-    const char*,
-    const char*,
-    MaaAdbScreencapMethod,
-    MaaAdbInputMethod,
-    const char*,
-    const char*,
-    MaaNotificationCallback,
-    void*)
+MaaController* MaaAdbControllerCreate(const char*, const char*, MaaAdbScreencapMethod, MaaAdbInputMethod, const char*, const char*)
 {
     LogError << "MaaAgentServer Not implement this API, Please use MaaFramework";
     return nullptr;
 }
 
-MaaController* MaaWin32ControllerCreate(void*, MaaWin32ScreencapMethod, MaaWin32InputMethod, MaaNotificationCallback, void*)
+MaaController* MaaWin32ControllerCreate(void*, MaaWin32ScreencapMethod, MaaWin32InputMethod)
 {
     LogError << "MaaAgentServer Not implement this API, Please use MaaFramework";
     return nullptr;
 }
 
-MaaController* MaaCustomControllerCreate(MaaCustomControllerCallbacks*, void*, MaaNotificationCallback, void*)
+MaaController* MaaCustomControllerCreate(MaaCustomControllerCallbacks*, void*)
 {
     LogError << "MaaAgentServer Not implement this API, Please use MaaFramework";
     return nullptr;
 }
 
-MaaController* MaaDbgControllerCreate(const char*, const char*, MaaDbgControllerType, const char*, MaaNotificationCallback, void*)
+MaaController* MaaDbgControllerCreate(const char*, const char*, MaaDbgControllerType, const char*)
 {
     LogError << "MaaAgentServer Not implement this API, Please use MaaFramework";
     return nullptr;
@@ -39,7 +31,7 @@ void MaaControllerDestroy(MaaController*)
     LogError << "MaaAgentServer Not implement this API, Please use MaaFramework";
 }
 
-MaaResource* MaaResourceCreate(MaaNotificationCallback, void*)
+MaaResource* MaaResourceCreate()
 {
     LogError << "MaaAgentServer Not implement this API, Please use MaaFramework";
     return nullptr;
@@ -50,7 +42,7 @@ void MaaResourceDestroy(MaaResource*)
     LogError << "MaaAgentServer Not implement this API, Please use MaaFramework";
 }
 
-MaaTasker* MaaTaskerCreate(MaaNotificationCallback, void*)
+MaaTasker* MaaTaskerCreate()
 {
     LogError << "MaaAgentServer Not implement this API, Please use MaaFramework";
     return nullptr;

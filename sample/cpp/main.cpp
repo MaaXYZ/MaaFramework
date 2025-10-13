@@ -34,16 +34,18 @@ int main([[maybe_unused]] int argc, char** argv)
     // auto controller_handle = create_win32_controller();
     auto ctrl_id = MaaControllerPostConnection(controller_handle);
 
-    auto resource_handle = MaaResourceCreate(nullptr, nullptr);
+    auto resource_handle = MaaResourceCreate();
     std::string resource_dir = R"(E:\Code\MaaFramework\sample\resource)";
     auto res_id = MaaResourcePostBundle(resource_handle, resource_dir.c_str());
 
     MaaControllerWait(controller_handle, ctrl_id);
     MaaResourceWait(resource_handle, res_id);
 
-    auto tasker_handle = MaaTaskerCreate(nullptr, nullptr);
+    auto tasker_handle = MaaTaskerCreate();
     MaaTaskerBindResource(tasker_handle, resource_handle);
     MaaTaskerBindController(tasker_handle, controller_handle);
+
+    MaaToolkitPluginSystemLoadLibrary("plugins/MaaMagicNode", tasker_handle, resource_handle, controller_handle);
 
     auto destroy = [&]() {
         MaaTaskerDestroy(tasker_handle);
@@ -95,9 +97,7 @@ MaaController* create_adb_controller()
         MaaToolkitAdbDeviceGetScreencapMethods(device_handle),
         MaaToolkitAdbDeviceGetInputMethods(device_handle),
         MaaToolkitAdbDeviceGetConfig(device_handle),
-        agent_path.c_str(),
-        nullptr,
-        nullptr);
+        agent_path.c_str());
 
     destroy();
 
@@ -136,8 +136,7 @@ MaaController* create_win32_controller()
     }
 
     // create controller by hwnd
-    auto controller_handle =
-        MaaWin32ControllerCreate(hwnd, MaaWin32ScreencapMethod_DXGI_DesktopDup, MaaWin32InputMethod_Seize, nullptr, nullptr);
+    auto controller_handle = MaaWin32ControllerCreate(hwnd, MaaWin32ScreencapMethod_DXGI_DesktopDup, MaaWin32InputMethod_Seize);
 
     destroy();
     return controller_handle;

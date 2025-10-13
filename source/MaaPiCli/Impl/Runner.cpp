@@ -9,7 +9,6 @@
 #include "MaaFramework/MaaAPI.h"
 
 #include "Common/MaaTypes.h"
-#include "LibraryHolder/AgentClient.h"
 #include "Utils/Encoding.h"
 #include "Utils/IOStream/BoostIO.hpp"
 #include "Utils/Logger.h"
@@ -36,12 +35,10 @@ std::vector<std::string> conv_args(const std::vector<std::string>& args)
 
 bool Runner::run(
     const RuntimeParam& param,
-    MaaNotificationCallback notify,
-    void* notify_trans_arg,
     const std::map<std::string, CustomRecognitionSession>& custom_recognitions,
     const std::map<std::string, CustomActionSession>& custom_actions)
 {
-    MaaTasker* tasker_handle = MaaTaskerCreate(notify, notify_trans_arg);
+    MaaTasker* tasker_handle = MaaTaskerCreate();
 
     MaaController* controller_handle = nullptr;
     if (const auto* p_adb_param = std::get_if<RuntimeParam::AdbParam>(&param.controller_param)) {
@@ -51,20 +48,17 @@ bool Runner::run(
             p_adb_param->screencap,
             p_adb_param->input,
             p_adb_param->config.c_str(),
-            p_adb_param->agent_path.c_str(),
-            notify,
-            notify_trans_arg);
+            p_adb_param->agent_path.c_str());
     }
     else if (const auto* p_win32_param = std::get_if<RuntimeParam::Win32Param>(&param.controller_param)) {
-        controller_handle =
-            MaaWin32ControllerCreate(p_win32_param->hwnd, p_win32_param->screencap, p_win32_param->input, notify, notify_trans_arg);
+        controller_handle = MaaWin32ControllerCreate(p_win32_param->hwnd, p_win32_param->screencap, p_win32_param->input);
     }
     else {
         LogError << "Unknown controller type";
         return false;
     }
 
-    MaaResource* resource_handle = MaaResourceCreate(notify, notify_trans_arg);
+    MaaResource* resource_handle = MaaResourceCreate();
     resource_handle->set_option(MaaResOption_InferenceDevice, const_cast<int32_t*>(&param.gpu), sizeof(int32_t));
 
     OnScopeLeave([&]() {
@@ -98,17 +92,15 @@ bool Runner::run(
         return false;
     }
 
-    std::shared_ptr<MaaAgentClient> agent = nullptr;
+    MaaAgentClient* agent = nullptr;
     boost::process::child agent_child;
     if (param.agent) {
-        agent = AgentClientLibraryHolder::create_agent_client();
-        if (!agent) {
-            LogError << "Failed to create AgentClient";
-            return false;
-        }
-
-        agent->bind_resource(resource_handle);
-        std::string socket_id = agent->identifier();
+        agent = MaaAgentClientCreateV2(nullptr);
+        MaaAgentClientBindResource(agent, resource_handle);
+        auto* id_buffer = MaaStringBufferCreate();
+        MaaAgentClientIdentifier(agent, id_buffer);
+        std::string socket_id = MaaStringBufferGet(id_buffer);
+        MaaStringBufferDestroy(id_buffer);
 
         std::vector<std::string> args = param.agent->child_args;
         args.emplace_back(socket_id);
@@ -122,7 +114,7 @@ bool Runner::run(
         LogInfo << "Start Agent" << VAR(exec) << VAR(os_args);
         agent_child = boost::process::child(exec, os_args);
 
-        bool connected = agent->connect();
+        bool connected = MaaAgentClientConnect(agent);
         if (!connected) {
             LogError << "Failed to connect agent" << VAR(param.agent->child_exec) << VAR(args);
             return false;
@@ -137,7 +129,8 @@ bool Runner::run(
     tasker_handle->wait(tid);
 
     if (agent) {
-        agent->disconnect();
+        MaaAgentClientDisconnect(agent);
+        MaaAgentClientDestroy(agent);
     }
 
     return true;
