@@ -264,8 +264,8 @@ class ContextEventSink(EventSink):
     ):
         pass
 
-    def on_raw_notification(self, hanlde: ctypes.c_void_p, msg: str, details: dict):
-        context = Context(handle=hanlde)
+    def on_raw_notification(self, handle: ctypes.c_void_p, msg: str, details: dict):
+        context = Context(handle=handle)
         noti_type = EventSink._notification_type(msg)
 
         if msg.startswith("Node.NextList"):

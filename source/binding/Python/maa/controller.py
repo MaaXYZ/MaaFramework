@@ -865,9 +865,9 @@ class ControllerEventSink(EventSink):
     ):
         pass
 
-    def on_raw_notification(self, hanlde: ctypes.c_void_p, msg: str, details: dict):
+    def on_raw_notification(self, handle: ctypes.c_void_p, msg: str, details: dict):
 
-        controller = Controller(handle=hanlde)
+        controller = Controller(handle=handle)
         noti_type = EventSink._notification_type(msg)
 
         if msg.startswith("Controller.Action"):

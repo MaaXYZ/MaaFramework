@@ -28,7 +28,7 @@ class EventSink(ABC):
     def on_unknown_notification(self, instance, msg: str, details: dict):
         pass
 
-    def on_raw_notification(self, hanlde: ctypes.c_void_p, msg: str, details: dict):
+    def on_raw_notification(self, handle: ctypes.c_void_p, msg: str, details: dict):
         pass
 
     @property

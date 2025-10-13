@@ -286,7 +286,7 @@ typedef struct MaaRect
 // Deprecated, use MaaEventCallback instead
 typedef void(MAA_CALL* MaaNotificationCallback)(const char* message, const char* details_json, void* notify_trans_arg);
 
-/// void* hanlde:
+/// void* handle:
 /// - MaaTasker* for MaaTasker event
 /// - MaaResource* for MaaResource event
 /// - MaaController* for MaaController event
