@@ -64,7 +64,7 @@ void tasker_clear_sinks(Napi::External<TaskerInfo> info)
 MaaSinkId tasker_add_context_sink(Napi::Env env, Napi::External<TaskerInfo> info, Napi::Function callback)
 {
     CallbackContext* ctx = new CallbackContext { env, callback, "EventCallback<Tasker.Context>" };
-    auto id = MaaTaskerAddSink(info.Data()->handle, ContextNotificationCallback, ctx);
+    auto id = MaaTaskerAddContextSink(info.Data()->handle, ContextNotificationCallback, ctx);
     if (id != MaaInvalidId) {
         info.Data()->context_callback[id] = ctx;
         return id;
@@ -82,7 +82,7 @@ void tasker_remove_context_sink(Napi::External<TaskerInfo> info, MaaSinkId id)
         delete it->second;
         context_callback.erase(it);
     }
-    MaaTaskerRemoveSink(info.Data()->handle, id);
+    MaaTaskerRemoveContextSink(info.Data()->handle, id);
 }
 
 void tasker_clear_context_sinks(Napi::External<TaskerInfo> info)
@@ -91,7 +91,7 @@ void tasker_clear_context_sinks(Napi::External<TaskerInfo> info)
         delete ctx;
     }
     info.Data()->context_callback.clear();
-    MaaTaskerClearSinks(info.Data()->handle);
+    MaaTaskerClearContextSinks(info.Data()->handle);
 }
 
 bool tasker_bind_resource(Napi::External<TaskerInfo> info, std::optional<Napi::External<ResourceInfo>> res_info)
