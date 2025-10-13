@@ -261,6 +261,22 @@ typedef uint64_t MaaWin32InputMethod;
 #define MaaWin32InputMethod_Seize 1ULL
 #define MaaWin32InputMethod_SendMessage (1ULL << 1)
 
+// MaaMacScreencapMethod:
+/**
+ * No bitwise OR, just set it
+ */
+typedef uint64_t MaaMacScreencapMethod;
+#define MaaMacScreencapMethod_None 0ULL
+#define MaaMacScreencapMethod_CGWindowList 1ULL
+
+// MaaMacInputMethod:
+/**
+ * No bitwise OR, just set it
+ */
+typedef uint64_t MaaMacInputMethod;
+#define MaaMacInputMethod_None 0ULL
+#define MaaMacInputMethod_CGEvent 1ULL
+
 // MaaDbgControllerType:
 /**
  * No bitwise OR, just set it

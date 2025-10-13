@@ -5,6 +5,7 @@
 #include "ControlUnit/AdbControlUnitAPI.h"
 #include "ControlUnit/CustomControlUnitAPI.h"
 #include "ControlUnit/DbgControlUnitAPI.h"
+#include "ControlUnit/MacControlUnitAPI.h"
 #include "ControlUnit/Win32ControlUnitAPI.h"
 #include "Utils/Logger.h"
 #include "Utils/Runtime.h"
@@ -129,6 +130,45 @@ std::shared_ptr<MAA_CTRL_UNIT_NS::ControlUnitAPI>
     }
 
     return std::shared_ptr<MAA_CTRL_UNIT_NS::ControlUnitAPI>(control_unit_handle, destroy_control_unit_func);
+}
+
+std::shared_ptr<MAA_CTRL_UNIT_NS::ControlUnitAPI> MacControlUnitLibraryHolder::create_control_unit(
+    uint32_t windowId,
+    MaaMacScreencapMethod screencap_method,
+    MaaMacInputMethod input_method)
+{
+    if (!load_library(library_dir() / libname_)) {
+        LogError << "Failed to load library" << VAR(library_dir()) << VAR(libname_);
+        return nullptr;
+    }
+
+    check_version<MacControlUnitLibraryHolder, decltype(MaaMacControlUnitGetVersion)>(version_func_name_);
+
+    auto create_control_unit_func = get_function<decltype(MaaMacControlUnitCreate)>(create_func_name_);
+    if (!create_control_unit_func) {
+        LogError << "Failed to get function create_control_unit";
+        return nullptr;
+    }
+
+    auto destroy_control_unit_func = get_function<decltype(MaaMacControlUnitDestroy)>(destroy_func_name_);
+    if (!destroy_control_unit_func) {
+        LogError << "Failed to get function destroy_control_unit";
+        return nullptr;
+    }
+
+    auto control_unit_handle = create_control_unit_func(windowId, screencap_method, input_method);
+
+    if (!control_unit_handle) {
+        LogError << "Failed to create control unit";
+        return nullptr;
+    }
+
+    auto destroy_control_unit = [destroy_control_unit_func](MaaControlUnitHandle handle) {
+        destroy_control_unit_func(handle);
+        unload_library();
+    };
+
+    return std::shared_ptr<MAA_CTRL_UNIT_NS::ControlUnitAPI>(control_unit_handle, destroy_control_unit);
 }
 
 std::shared_ptr<MAA_CTRL_UNIT_NS::ControlUnitAPI>
