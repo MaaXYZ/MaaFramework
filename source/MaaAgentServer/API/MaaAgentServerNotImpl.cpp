@@ -59,7 +59,7 @@ MaaBool MaaGlobalSetOption(MaaGlobalOption, MaaOptionValue, MaaOptionValueSize)
     return false;
 }
 
-MaaBool MaaGlobalLoadPlugin(const char* library_path)
+MaaBool MaaGlobalLoadPlugin(const char*)
 {
     LogError << "MaaAgentServer Not implement this API, Please use MaaFramework";
     return false;
