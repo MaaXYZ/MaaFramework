@@ -229,7 +229,7 @@ inline void BindGetter(EnvType env, ConstObjectType object, const char* prop, co
 inline ValueType CallMember(EnvType env, ConstObjectType object, const char* prop, std::vector<ValueType> args)
 {
     auto func = JS_GetPropertyStr(env.context, object, prop);
-    auto result = JS_Call(env.context, func, object, args.size(), args.data());
+    auto result = JS_Call(env.context, func, object, static_cast<int>(args.size()), args.data());
     for (auto& arg : args) {
         JS_FreeValue(env.context, arg);
     }

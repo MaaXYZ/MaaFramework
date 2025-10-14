@@ -2,7 +2,9 @@
 
 #include <exception>
 #include <format>
+#include <optional>
 #include <string>
+#include <variant>
 
 #include "spec.h"
 
