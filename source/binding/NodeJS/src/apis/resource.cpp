@@ -11,7 +11,7 @@ struct ResourceImpl
 {
     MaaResource* resource;
 
-    constexpr static bool hasCtor = true;
+    constexpr static char name[] = "Resource";
 
     static ResourceImpl* ctor([[maybe_unused]] const maajs::CallbackInfo& info)
     {

@@ -98,6 +98,11 @@ struct QjsPointerHolder
     }
 };
 
+inline void FreeValue(EnvType env, ValueType val)
+{
+    JS_FreeValue(env.context, val);
+}
+
 inline ValueType MakeNull(EnvType)
 {
     return JS_NULL;
@@ -131,6 +136,11 @@ inline ValueType MakeNumber(EnvType env, double val)
 inline bool IsNumber(ConstValueType val)
 {
     return JS_IsNumber(val);
+}
+
+inline int32_t GetNumberI32(ConstValueType val)
+{
+    return JS_VALUE_GET_INT(val);
 }
 
 inline ObjectType MakeObject(EnvType env)
@@ -213,6 +223,16 @@ inline void BindGetter(EnvType env, ConstObjectType object, const char* prop, co
         maajs::MakeFunction(env, name, 0, func),
         JS_UNDEFINED,
         JS_PROP_ENUMERABLE);
+}
+
+inline ValueType CallMember(EnvType env, ConstObjectType object, const char* prop, std::vector<ValueType> args)
+{
+    auto func = JS_GetPropertyStr(env.context, object, prop);
+    auto result = JS_Call(env.context, func, object, args.size(), args.data());
+    for (auto& arg : args) {
+        JS_FreeValue(env.context, arg);
+    }
+    return result;
 }
 
 inline void init(EnvType env)

@@ -17,6 +17,10 @@ using EnvType = Napi::Env;
 using CallbackInfo = Napi::CallbackInfo;
 using RawCallback = std::function<ValueType(const CallbackInfo&)>;
 
+inline void FreeValue(EnvType, ValueType)
+{
+}
+
 inline ValueType MakeNull(EnvType env)
 {
     return env.Null();
@@ -50,6 +54,11 @@ inline ValueType MakeNumber(EnvType env, double val)
 inline bool IsNumber(ConstValueType val)
 {
     return val.IsNumber();
+}
+
+inline int32_t GetNumberI32(ConstValueType val)
+{
+    return val.As<Napi::Number>().Int32Value();
 }
 
 inline ObjectType MakeObject(EnvType env)
@@ -90,6 +99,11 @@ inline void BindValue([[maybe_unused]] EnvType env, ConstObjectType object, cons
 inline void BindGetter(EnvType, ConstObjectType object, const char* prop, const char*, RawCallback func)
 {
     object.DefineProperty(Napi::PropertyDescriptor::Accessor(prop, func, napi_enumerable));
+}
+
+inline ValueType CallMember(EnvType, ConstObjectType object, const char* prop, std::vector<ValueType> args)
+{
+    return object.Get(prop).As<Napi::Function>().Call(args);
 }
 
 inline void init(EnvType)

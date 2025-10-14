@@ -3,6 +3,8 @@
 #ifdef MAA_JS_IMPL_IS_NODEJS
 Napi::Object Init(Napi::Env env, Napi::Object exports)
 {
+    maajs::init(env);
+
     exports["Global"] = load_global(env);
     exports["Job"] = load_job(env);
     exports["Resource"] = load_resource(env);

@@ -48,7 +48,7 @@ endif()
 ## quickjs
 
 add_library(Maa STATIC
-    src/foundation/spec.cpp
+    src/foundation/spec.quickjs.cpp
     src/apis/loader.cpp
     src/apis/global.cpp
     src/apis/job.cpp
@@ -63,7 +63,7 @@ target_link_libraries(qjs_exe Maa)
 ## nodejs
 
 add_library(MaaNodeNew SHARED
-    src/foundation/spec.cpp
+    src/foundation/spec.node.cpp
     src/apis/loader.cpp
     src/apis/global.cpp
     src/apis/job.cpp

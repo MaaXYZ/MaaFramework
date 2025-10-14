@@ -18,12 +18,12 @@ struct StringHolder
 
 #ifdef MAA_JS_IMPL_IS_NODEJS
 
-template <typename Inherit, StringHolder name>
+template <typename Inherit>
 struct NativeClass
 {
     static void init(EnvType env, ValueType& ctor)
     {
-        ctor = MakeFunction(env, name.data, 0, [](const maajs::CallbackInfo& info) { //
+        ctor = MakeFunction(env, Inherit::name, 0, [](const maajs::CallbackInfo& info) { //
             if (!info.IsConstructCall()) {
                 return MakeNull(info.Env());
             }
@@ -58,7 +58,7 @@ struct NativeClass
 
 #ifdef MAA_JS_IMPL_IS_QUICKJS
 
-template <typename Inherit, StringHolder name>
+template <typename Inherit>
 struct NativeClass
 {
     static JSClassID classId;
@@ -66,7 +66,7 @@ struct NativeClass
     static void init(EnvType env, ValueType& ctor)
     {
         static JSClassDef classDef = {
-            .class_name = name.data,
+            .class_name = Inherit::name,
             .finalizer = +[](JSRuntime*, JSValueConst data) { delete (Inherit*)JS_GetOpaque(data, classId); },
         };
 
@@ -75,7 +75,7 @@ struct NativeClass
 
         auto proto = maajs::MakeObject(env);
 
-        ctor = maajs::MakeFunction(env, name.data, 0, [](const maajs::CallbackInfo& info) { //
+        ctor = maajs::MakeFunction(env, Inherit::name, 0, [](const maajs::CallbackInfo& info) { //
             auto obj = JS_NewObjectClass(info.context, classId);
             if (JS_IsException(obj)) {
                 return obj;
@@ -107,7 +107,7 @@ struct NativeClass
 
 #endif
 
-using JobNative = NativeClass<JobImpl, "Job">;
-using ResourceNative = NativeClass<ResourceImpl, "Resource">;
+using JobNative = NativeClass<JobImpl>;
+using ResourceNative = NativeClass<ResourceImpl>;
 
 }

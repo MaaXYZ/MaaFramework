@@ -71,6 +71,38 @@ struct JSConvert<std::string>
 };
 
 template <>
+struct JSConvert<int32_t>
+{
+    static std::string name() { return "number<int32_t>"; }
+
+    static int32_t from_value(EnvType, ConstValueType val)
+    {
+        if (IsNumber(val)) {
+            return GetNumberI32(val);
+        }
+        throw ConvertFailed {};
+    }
+
+    static ValueType to_value(EnvType env, const int32_t& val) { return MakeNumber(env, val); }
+};
+
+template <>
+struct JSConvert<int64_t>
+{
+    static std::string name() { return "string<int64_t>"; }
+
+    static int64_t from_value(EnvType env, ConstValueType val)
+    {
+        if (IsString(val)) {
+            return std::stoll(GetString(env, val));
+        }
+        throw ConvertFailed {};
+    }
+
+    static ValueType to_value(EnvType env, const int64_t& val) { return MakeString(env, std::to_string(val)); }
+};
+
+template <>
 struct JSConvert<uint64_t>
 {
     static std::string name() { return "string<uint64_t>"; }
