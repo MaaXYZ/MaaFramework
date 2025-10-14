@@ -19,3 +19,8 @@ if(MSVC)
 elseif(LINUX)
     target_compile_options(qjs PRIVATE -Wno-error=unused-command-line-argument)
 endif()
+
+set_target_properties(qjs_exe PROPERTIES EXCLUDE_FROM_ALL FALSE)
+
+add_library(qjs_headers INTERFACE)
+target_include_directories(qjs_headers INTERFACE quickjs)

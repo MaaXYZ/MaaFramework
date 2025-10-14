@@ -43,6 +43,41 @@ if(WIN32
     endif()
 endif()
 
+# new variant
+
+## quickjs
+
+add_library(Maa STATIC
+    src/foundation/spec.cpp
+    src/apis/loader.cpp
+    src/apis/global.cpp
+    src/apis/job.cpp
+    src/apis/resource.cpp
+)
+target_compile_definitions(Maa PRIVATE MAA_JS_IMPL_IS_QUICKJS)
+target_link_libraries(Maa PRIVATE MaaFramework MaaToolkit MaaAgentClient qjs_headers)
+# set_target_properties(Maa PROPERTIES POSITION_INDEPENDENT_CODE ON)
+
+target_link_libraries(qjs_exe Maa)
+
+## nodejs
+
+add_library(MaaNodeNew SHARED
+    src/foundation/spec.cpp
+    src/apis/loader.cpp
+    src/apis/global.cpp
+    src/apis/job.cpp
+    src/apis/resource.cpp
+)
+set_target_properties(MaaNodeNew PROPERTIES PREFIX "" SUFFIX ".node")
+target_compile_definitions(MaaNodeNew PRIVATE MAA_JS_IMPL_IS_NODEJS)
+target_include_directories(MaaNodeNew PRIVATE ${CMAKE_JS_INC})
+target_link_libraries(MaaNodeNew PRIVATE MaaFramework MaaToolkit MaaAgentClient ${CMAKE_JS_LIB})
+target_compile_definitions(MaaNodeNew PRIVATE NODE_ADDON_API_ENABLE_TYPE_CHECK_ON_AS MAA_NODE_BUILD_CLIENT)
+set_target_properties(MaaNodeNew PROPERTIES POSITION_INDEPENDENT_CODE ON)
+
+# old variant
+
 set(maa_common_src
     src/instance/context.cpp
     src/instance/controller.cpp
@@ -57,16 +92,12 @@ set(maa_common_src
     ${CMAKE_JS_SRC}
 )
 
-add_library(MaaQjs STATIC src/qjs/qjs.cpp)
-target_link_libraries(MaaQjs PRIVATE qjs)
-target_compile_options(MaaQjs PRIVATE /wd4244)
-
 # Master
 
 add_library(MaaNode SHARED ${maa_common_src} src/agent/client.cpp)
 set_target_properties(MaaNode PROPERTIES PREFIX "" SUFFIX ".node")
 target_include_directories(MaaNode PRIVATE ${CMAKE_JS_INC})
-target_link_libraries(MaaNode ${CMAKE_JS_LIB} MaaFramework MaaToolkit MaaAgentClient qjs)
+target_link_libraries(MaaNode ${CMAKE_JS_LIB} MaaFramework MaaToolkit MaaAgentClient)
 target_compile_definitions(MaaNode PRIVATE NODE_ADDON_API_ENABLE_TYPE_CHECK_ON_AS MAA_NODE_BUILD_CLIENT)
 set_target_properties(MaaNode PROPERTIES POSITION_INDEPENDENT_CODE ON)
 
