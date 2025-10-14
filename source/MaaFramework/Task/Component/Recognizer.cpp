@@ -1,7 +1,7 @@
 #include "Recognizer.h"
 
 #include "CustomRecognition.h"
-#include "Global/GlobalOptionMgr.h"
+#include "Global/OptionMgr.h"
 #include "Resource/ResourceMgr.h"
 #include "Utils/ImageIo.h"
 #include "Utils/Logger.h"
@@ -350,7 +350,7 @@ cv::Rect Recognizer::get_roi(const MAA_VISION_NS::Target& roi)
 
 void Recognizer::save_draws(const std::string& node_name, const RecoResult& result) const
 {
-    const auto& option = GlobalOptionMgr::get_instance();
+    const auto& option = MAA_GLOBAL_NS::OptionMgr::get_instance();
 
     if (!option.save_draw()) {
         return;
@@ -368,7 +368,7 @@ void Recognizer::save_draws(const std::string& node_name, const RecoResult& resu
 
 bool Recognizer::debug_mode() const
 {
-    return GlobalOptionMgr::get_instance().debug_mode();
+    return MAA_GLOBAL_NS::OptionMgr::get_instance().debug_mode();
 }
 
 MAA_RES_NS::ResourceMgr* Recognizer::resource()

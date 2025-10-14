@@ -2,6 +2,7 @@
 
 #include <tuple>
 
+#include "Global/PluginMgr.h"
 #include "MLProvider.h"
 #include "MaaFramework/MaaMsg.h"
 #include "PipelineDumper.h"
@@ -14,6 +15,11 @@ MAA_RES_NS_BEGIN
 ResourceMgr::ResourceMgr()
 {
     LogFunc;
+
+    auto& plugin_mgr = MAA_GLOBAL_NS::PluginMgr::get_instance();
+    for (const auto& sink : plugin_mgr.get_res_sinks()) {
+        add_sink(sink, nullptr);
+    }
 
     res_loader_ = std::make_unique<AsyncRunner<std::filesystem::path>>(
         std::bind(&ResourceMgr::run_load, this, std::placeholders::_1, std::placeholders::_2));

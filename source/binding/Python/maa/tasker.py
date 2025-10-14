@@ -117,7 +117,7 @@ class Tasker:
     def set_log_dir(path: Union[Path, str]) -> bool:
         strpath = str(path)
         return bool(
-            Library.framework().MaaSetGlobalOption(
+            Library.framework().MaaGlobalSetOption(
                 MaaOption(MaaGlobalOptionEnum.LogDir),
                 strpath.encode(),
                 len(strpath),
@@ -128,7 +128,7 @@ class Tasker:
     def set_save_draw(save_draw: bool) -> bool:
         cbool = ctypes.c_bool(save_draw)
         return bool(
-            Library.framework().MaaSetGlobalOption(
+            Library.framework().MaaGlobalSetOption(
                 MaaOption(MaaGlobalOptionEnum.SaveDraw),
                 ctypes.pointer(cbool),
                 ctypes.sizeof(ctypes.c_bool),
@@ -146,7 +146,7 @@ class Tasker:
     def set_stdout_level(level: LoggingLevelEnum) -> bool:
         clevel = MaaLoggingLevel(level)
         return bool(
-            Library.framework().MaaSetGlobalOption(
+            Library.framework().MaaGlobalSetOption(
                 MaaOption(MaaGlobalOptionEnum.StdoutLevel),
                 ctypes.pointer(clevel),
                 ctypes.sizeof(MaaLoggingLevel),
@@ -157,7 +157,7 @@ class Tasker:
     def set_debug_mode(debug_mode: bool) -> bool:
         cbool = ctypes.c_bool(debug_mode)
         return bool(
-            Library.framework().MaaSetGlobalOption(
+            Library.framework().MaaGlobalSetOption(
                 MaaOption(MaaGlobalOptionEnum.DebugMode),
                 ctypes.pointer(cbool),
                 ctypes.sizeof(ctypes.c_bool),
@@ -470,8 +470,8 @@ class Tasker:
             MaaTaskerHandle,
         ]
 
-        Library.framework().MaaSetGlobalOption.restype = MaaBool
-        Library.framework().MaaSetGlobalOption.argtypes = [
+        Library.framework().MaaGlobalSetOption.restype = MaaBool
+        Library.framework().MaaGlobalSetOption.argtypes = [
             MaaGlobalOption,
             MaaOptionValue,
             MaaOptionValueSize,

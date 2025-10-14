@@ -12,22 +12,22 @@ std::string version()
 
 bool set_global_option_log_dir(std::string dir)
 {
-    return MaaSetGlobalOption(MaaGlobalOptionEnum::MaaGlobalOption_LogDir, dir.data(), dir.size());
+    return MaaGlobalSetOption(MaaGlobalOptionEnum::MaaGlobalOption_LogDir, dir.data(), dir.size());
 }
 
 bool set_global_option_save_draw(bool flag)
 {
-    return MaaSetGlobalOption(MaaGlobalOptionEnum::MaaGlobalOption_SaveDraw, &flag, sizeof(flag));
+    return MaaGlobalSetOption(MaaGlobalOptionEnum::MaaGlobalOption_SaveDraw, &flag, sizeof(flag));
 }
 
 bool set_global_option_stdout_level(MaaLoggingLevel level)
 {
-    return MaaSetGlobalOption(MaaGlobalOptionEnum::MaaGlobalOption_StdoutLevel, &level, sizeof(level));
+    return MaaGlobalSetOption(MaaGlobalOptionEnum::MaaGlobalOption_StdoutLevel, &level, sizeof(level));
 }
 
 bool set_global_option_debug_mode(bool flag)
 {
-    return MaaSetGlobalOption(MaaGlobalOptionEnum::MaaGlobalOption_DebugMode, &flag, sizeof(flag));
+    return MaaGlobalSetOption(MaaGlobalOptionEnum::MaaGlobalOption_DebugMode, &flag, sizeof(flag));
 }
 
 void load_utility_utility(Napi::Env env, Napi::Object& exports, Napi::External<ExtContextInfo> context)

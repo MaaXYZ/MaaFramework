@@ -53,6 +53,18 @@ void MaaTaskerDestroy(MaaTasker*)
     LogError << "MaaAgentServer Not implement this API, Please use MaaFramework";
 }
 
+MaaBool MaaGlobalSetOption(MaaGlobalOption, MaaOptionValue, MaaOptionValueSize)
+{
+    LogError << "MaaAgentServer Not implement this API, Please use MaaFramework";
+    return false;
+}
+
+MaaBool MaaGlobalLoadPlugin(const char* library_path)
+{
+    LogError << "MaaAgentServer Not implement this API, Please use MaaFramework";
+    return false;
+}
+
 MaaBool MaaSetGlobalOption(MaaGlobalOption, MaaOptionValue, MaaOptionValueSize)
 {
     LogError << "MaaAgentServer Not implement this API, Please use MaaFramework";

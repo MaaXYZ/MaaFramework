@@ -1,7 +1,8 @@
 #include "MaaFramework/MaaAPI.h"
 
 #include "Controller/ControllerAgent.h"
-#include "Global/GlobalOptionMgr.h"
+#include "Global/OptionMgr.h"
+#include "Global/PluginMgr.h"
 #include "LibraryHolder/ControlUnit.h"
 #include "Resource/ResourceMgr.h"
 #include "Tasker/Tasker.h"
@@ -141,9 +142,23 @@ void MaaTaskerDestroy(MaaTasker* tasker)
     delete tasker;
 }
 
-MaaBool MaaSetGlobalOption(MaaGlobalOption key, MaaOptionValue value, MaaOptionValueSize val_size)
+MaaBool MaaGlobalSetOption(MaaGlobalOption key, MaaOptionValue value, MaaOptionValueSize val_size)
 {
     LogFunc << VAR(key) << VAR_VOIDP(value) << VAR(val_size);
 
-    return MAA_NS::GlobalOptionMgr::get_instance().set_option(key, value, val_size);
+    return MAA_GLOBAL_NS::OptionMgr::get_instance().set_option(key, value, val_size);
+}
+
+MaaBool MaaGlobalLoadPlugin(const char* library_path)
+{
+    LogFunc << VAR(library_path);
+
+    return MAA_GLOBAL_NS::PluginMgr::get_instance().load(MAA_NS::path(library_path));
+}
+
+MaaBool MaaSetGlobalOption(MaaGlobalOption key, MaaOptionValue value, MaaOptionValueSize val_size)
+{
+    LogError << "Deprecated API, use MaaGlobalSetOption instead";
+
+    return MaaGlobalSetOption(key, value, val_size);
 }

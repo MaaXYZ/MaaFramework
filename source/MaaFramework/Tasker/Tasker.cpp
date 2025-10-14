@@ -3,6 +3,7 @@
 #include <ranges>
 
 #include "Controller/ControllerAgent.h"
+#include "Global/PluginMgr.h"
 #include "MaaFramework/MaaMsg.h"
 #include "Resource/ResourceMgr.h"
 #include "Task/EmptyTask.h"
@@ -14,6 +15,14 @@ MAA_NS_BEGIN
 Tasker::Tasker()
 {
     LogFunc;
+
+    auto& plugin_mgr = MAA_GLOBAL_NS::PluginMgr::get_instance();
+    for (const auto& sink : plugin_mgr.get_tasker_sinks()) {
+        add_sink(sink, nullptr);
+    }
+    for (const auto& sink : plugin_mgr.get_ctx_sinks()) {
+        add_context_sink(sink, nullptr);
+    }
 
     task_runner_ = std::make_unique<AsyncRunner<TaskPtr>>(std::bind(&Tasker::run_task, this, std::placeholders::_1, std::placeholders::_2));
 }

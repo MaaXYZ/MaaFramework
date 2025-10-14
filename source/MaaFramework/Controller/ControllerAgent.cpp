@@ -1,6 +1,7 @@
 #include "ControllerAgent.h"
 
-#include "Global/GlobalOptionMgr.h"
+#include "Global/OptionMgr.h"
+#include "Global/PluginMgr.h"
 #include "MaaFramework/MaaMsg.h"
 #include "Resource/ResourceMgr.h"
 #include "Utils/ImageIo.h"
@@ -12,6 +13,11 @@ ControllerAgent::ControllerAgent(std::shared_ptr<MAA_CTRL_UNIT_NS::ControlUnitAP
     : control_unit_(std::move(control_unit))
 {
     LogFunc << VAR(control_unit_);
+
+    auto& plugin_mgr = MAA_GLOBAL_NS::PluginMgr::get_instance();
+    for (const auto& sink : plugin_mgr.get_ctrl_sinks()) {
+        add_sink(sink, nullptr);
+    }
 
     action_runner_ =
         std::make_unique<AsyncRunner<Action>>(std::bind(&ControllerAgent::run_action, this, std::placeholders::_1, std::placeholders::_2));

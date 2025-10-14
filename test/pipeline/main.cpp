@@ -14,11 +14,11 @@ int main([[maybe_unused]] int argc, char** argv)
     }
 
     std::string logging_dir = (cur_dir / "debug").string();
-    MaaSetGlobalOption(MaaGlobalOption_LogDir, static_cast<void*>(logging_dir.data()), logging_dir.size());
+    MaaGlobalSetOption(MaaGlobalOption_LogDir, static_cast<void*>(logging_dir.data()), logging_dir.size());
     bool on = true;
-    MaaSetGlobalOption(MaaGlobalOption_SaveDraw, &on, sizeof(on));
+    MaaGlobalSetOption(MaaGlobalOption_SaveDraw, &on, sizeof(on));
     MaaLoggingLevel lv = MaaLoggingLevel_Info;
-    MaaSetGlobalOption(MaaGlobalOption_StdoutLevel, &lv, sizeof(lv));
+    MaaGlobalSetOption(MaaGlobalOption_StdoutLevel, &lv, sizeof(lv));
 
     if (!run_without_file(testset_dir)) {
         return -1;
