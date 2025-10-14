@@ -18,6 +18,7 @@ if(MSVC)
     target_compile_options(qjs PRIVATE /wd4146 /wd4668 /wd4132 /wd4334 /wd4702 /wd4701 /wd4746 /wd4244)
 elseif(LINUX)
     target_compile_options(qjs PRIVATE -Wno-error=unused-command-line-argument)
+    target_compile_options(qjs_exe PRIVATE -Wno-error=unused-command-line-argument)
 endif()
 
 set_target_properties(qjs_exe PROPERTIES EXCLUDE_FROM_ALL FALSE)

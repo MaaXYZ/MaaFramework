@@ -1,6 +1,7 @@
 #pragma once
 
 #include <functional>
+#include <string>
 
 #ifdef _MSC_VER
 #pragma warning(push)
