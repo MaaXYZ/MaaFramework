@@ -113,57 +113,6 @@ class Tasker:
     def clear_cache(self) -> bool:
         return bool(Library.framework().MaaTaskerClearCache(self._handle))
 
-    @staticmethod
-    def set_log_dir(path: Union[Path, str]) -> bool:
-        strpath = str(path)
-        return bool(
-            Library.framework().MaaGlobalSetOption(
-                MaaOption(MaaGlobalOptionEnum.LogDir),
-                strpath.encode(),
-                len(strpath),
-            )
-        )
-
-    @staticmethod
-    def set_save_draw(save_draw: bool) -> bool:
-        cbool = ctypes.c_bool(save_draw)
-        return bool(
-            Library.framework().MaaGlobalSetOption(
-                MaaOption(MaaGlobalOptionEnum.SaveDraw),
-                ctypes.pointer(cbool),
-                ctypes.sizeof(ctypes.c_bool),
-            )
-        )
-
-    @staticmethod
-    def set_recording(recording: bool) -> bool:
-        """
-        Deprecated
-        """
-        return False
-
-    @staticmethod
-    def set_stdout_level(level: LoggingLevelEnum) -> bool:
-        clevel = MaaLoggingLevel(level)
-        return bool(
-            Library.framework().MaaGlobalSetOption(
-                MaaOption(MaaGlobalOptionEnum.StdoutLevel),
-                ctypes.pointer(clevel),
-                ctypes.sizeof(MaaLoggingLevel),
-            )
-        )
-
-    @staticmethod
-    def set_debug_mode(debug_mode: bool) -> bool:
-        cbool = ctypes.c_bool(debug_mode)
-        return bool(
-            Library.framework().MaaGlobalSetOption(
-                MaaOption(MaaGlobalOptionEnum.DebugMode),
-                ctypes.pointer(cbool),
-                ctypes.sizeof(ctypes.c_bool),
-            )
-        )
-
     _sink_holder: Dict[int, "TaskerEventSink"] = {}
 
     def add_sink(self, sink: "TaskerEventSink") -> Optional[int]:
@@ -337,6 +286,66 @@ class Tasker:
             task_id=task_id, entry=entry.get(), nodes=nodes, status=Status(status)
         )
 
+    @staticmethod
+    def set_log_dir(path: Union[Path, str]) -> bool:
+        strpath = str(path)
+        return bool(
+            Library.framework().MaaGlobalSetOption(
+                MaaOption(MaaGlobalOptionEnum.LogDir),
+                strpath.encode(),
+                len(strpath),
+            )
+        )
+
+    @staticmethod
+    def set_save_draw(save_draw: bool) -> bool:
+        cbool = ctypes.c_bool(save_draw)
+        return bool(
+            Library.framework().MaaGlobalSetOption(
+                MaaOption(MaaGlobalOptionEnum.SaveDraw),
+                ctypes.pointer(cbool),
+                ctypes.sizeof(ctypes.c_bool),
+            )
+        )
+
+    @staticmethod
+    def set_recording(recording: bool) -> bool:
+        """
+        Deprecated
+        """
+        return False
+
+    @staticmethod
+    def set_stdout_level(level: LoggingLevelEnum) -> bool:
+        clevel = MaaLoggingLevel(level)
+        return bool(
+            Library.framework().MaaGlobalSetOption(
+                MaaOption(MaaGlobalOptionEnum.StdoutLevel),
+                ctypes.pointer(clevel),
+                ctypes.sizeof(MaaLoggingLevel),
+            )
+        )
+
+    @staticmethod
+    def set_debug_mode(debug_mode: bool) -> bool:
+        cbool = ctypes.c_bool(debug_mode)
+        return bool(
+            Library.framework().MaaGlobalSetOption(
+                MaaOption(MaaGlobalOptionEnum.DebugMode),
+                ctypes.pointer(cbool),
+                ctypes.sizeof(ctypes.c_bool),
+            )
+        )
+
+    @staticmethod
+    def load_plugin(path: Union[Path, str]) -> bool:
+        strpath = str(path)
+        return bool(
+            Library.framework().MaaGlobalLoadPlugin(
+                strpath.encode(),
+            )
+        )
+
     _api_properties_initialized: bool = False
 
     @staticmethod
@@ -370,6 +379,18 @@ class Tasker:
         if Tasker._api_properties_initialized:
             return
         Tasker._api_properties_initialized = True
+
+        Library.framework().MaaGlobalSetOption.restype = MaaBool
+        Library.framework().MaaGlobalSetOption.argtypes = [
+            MaaGlobalOption,
+            MaaOptionValue,
+            MaaOptionValueSize,
+        ]
+
+        Library.framework().MaaGlobalLoadPlugin.restype = MaaBool
+        Library.framework().MaaGlobalLoadPlugin.argtypes = [
+            ctypes.c_char_p,
+        ]
 
         Library.framework().MaaTaskerCreate.restype = MaaTaskerHandle
         Library.framework().MaaTaskerCreate.argtypes = []
@@ -468,13 +489,6 @@ class Tasker:
         Library.framework().MaaTaskerClearCache.restype = MaaBool
         Library.framework().MaaTaskerClearCache.argtypes = [
             MaaTaskerHandle,
-        ]
-
-        Library.framework().MaaGlobalSetOption.restype = MaaBool
-        Library.framework().MaaGlobalSetOption.argtypes = [
-            MaaGlobalOption,
-            MaaOptionValue,
-            MaaOptionValueSize,
         ]
 
         Library.framework().MaaTaskerAddSink.restype = MaaSinkId
