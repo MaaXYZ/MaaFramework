@@ -115,31 +115,41 @@ bool PluginMgr::load_and_parse(const std::filesystem::path& library_path)
     std::filesystem::path filepath = library.location();
     plugin.library = std::move(library);
 
-    plugins_.emplace(path_to_utf8_string(filepath), std::move(plugin));
+    plugins_.insert_or_assign(path_to_utf8_string(filepath), std::move(plugin));
     return true;
+}
+
+std::vector<std::string> PluginMgr::get_names() const
+{
+    auto view = plugins_ | std::views::keys;
+    return { view.begin(), view.end() };
 }
 
 std::vector<PluginMgr::Sink> PluginMgr::get_res_sinks() const
 {
-    auto view = plugins_ | std::views::values | std::views::transform(&Plugin::on_res_event);
+    auto view = plugins_ | std::views::values | std::views::transform(&Plugin::on_res_event)
+                | std::views::filter([](const Sink& s) { return s != nullptr; });
     return { view.begin(), view.end() };
 }
 
 std::vector<PluginMgr::Sink> PluginMgr::get_ctrl_sinks() const
 {
-    auto view = plugins_ | std::views::values | std::views::transform(&Plugin::on_ctrl_event);
+    auto view = plugins_ | std::views::values | std::views::transform(&Plugin::on_ctrl_event)
+                | std::views::filter([](const Sink& s) { return s != nullptr; });
     return { view.begin(), view.end() };
 }
 
 std::vector<PluginMgr::Sink> PluginMgr::get_tasker_sinks() const
 {
-    auto view = plugins_ | std::views::values | std::views::transform(&Plugin::on_tasker_event);
+    auto view = plugins_ | std::views::values | std::views::transform(&Plugin::on_tasker_event)
+                | std::views::filter([](const Sink& s) { return s != nullptr; });
     return { view.begin(), view.end() };
 }
 
 std::vector<PluginMgr::Sink> PluginMgr::get_ctx_sinks() const
 {
-    auto view = plugins_ | std::views::values | std::views::transform(&Plugin::on_ctx_event);
+    auto view = plugins_ | std::views::values | std::views::transform(&Plugin::on_ctx_event)
+                | std::views::filter([](const Sink& s) { return s != nullptr; });
     return { view.begin(), view.end() };
 }
 

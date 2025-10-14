@@ -36,6 +36,7 @@ public:
 public:
     bool load(const std::filesystem::path& library_path);
 
+    std::vector<std::string> get_names() const;
     std::vector<Sink> get_res_sinks() const;
     std::vector<Sink> get_ctrl_sinks() const;
     std::vector<Sink> get_tasker_sinks() const;

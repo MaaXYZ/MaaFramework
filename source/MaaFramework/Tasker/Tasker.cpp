@@ -17,11 +17,13 @@ Tasker::Tasker()
     LogFunc;
 
     auto& plugin_mgr = MAA_GLOBAL_NS::PluginMgr::get_instance();
+    LogInfo << VAR(plugin_mgr.get_names());
+
     for (const auto& sink : plugin_mgr.get_tasker_sinks()) {
-        add_sink(sink, nullptr);
+        add_sink(sink, this);
     }
     for (const auto& sink : plugin_mgr.get_ctx_sinks()) {
-        add_context_sink(sink, nullptr);
+        add_context_sink(sink, this);
     }
 
     task_runner_ = std::make_unique<AsyncRunner<TaskPtr>>(std::bind(&Tasker::run_task, this, std::placeholders::_1, std::placeholders::_2));

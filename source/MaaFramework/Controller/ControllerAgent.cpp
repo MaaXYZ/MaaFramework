@@ -15,8 +15,10 @@ ControllerAgent::ControllerAgent(std::shared_ptr<MAA_CTRL_UNIT_NS::ControlUnitAP
     LogFunc << VAR(control_unit_);
 
     auto& plugin_mgr = MAA_GLOBAL_NS::PluginMgr::get_instance();
+    LogInfo << VAR(plugin_mgr.get_names());
+
     for (const auto& sink : plugin_mgr.get_ctrl_sinks()) {
-        add_sink(sink, nullptr);
+        add_sink(sink, this);
     }
 
     action_runner_ =
