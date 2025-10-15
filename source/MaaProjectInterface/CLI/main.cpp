@@ -43,8 +43,6 @@ extern "C" void sig_handler(int sig)
 
 int main(int argc, char** argv)
 {
-    std::cout << MaaToolkitQuickJSTest("MaaVersion()");
-
     std::signal(SIGTERM, sig_handler);
     std::signal(SIGSEGV, sig_handler);
     std::signal(SIGINT, sig_handler);

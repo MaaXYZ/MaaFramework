@@ -1,7 +1,7 @@
 /**
- * @file MaaToolkitConfig.h
+ * @file MaaToolkitQuickJS.h
  * @author
- * @brief Init and uninit the toolkit.
+ * @brief Simple quickjs runtime.
  *
  * @copyright Copyright (c) 2024
  *
@@ -18,7 +18,7 @@ extern "C"
 {
 #endif
 
-    MAA_TOOLKIT_API MaaBool MaaToolkitConfigInitOption(const char* user_path, const char* default_json);
+    MAA_TOOLKIT_API void MaaToolkitRunQuickJS(const char* script, MaaStringBuffer* output);
 
 #ifdef __cplusplus
 }

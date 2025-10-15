@@ -121,7 +121,32 @@ struct JSConvert<ValueType>
 
     static ValueType from_value(EnvType env, ConstValueType val) { return DupValue(env, val); }
 
-    static ValueType to_value(EnvType env, const ValueType& val) { return DupValue(env, val); }
+    static ValueType to_value(EnvType, const ValueType& val) { return val; }
+};
+
+template <>
+struct JSConvert<PromiseType>
+{
+    static std::string name() { return "promise"; };
+
+    static PromiseType from_value(EnvType env, ConstValueType val)
+    {
+#ifdef MAA_JS_IMPL_IS_NODEJS
+        if (val.IsPromise()) {
+            return val.As<Napi::Promise>();
+        }
+#endif
+
+#ifdef MAA_JS_IMPL_IS_QUICKJS
+        if (JS_IsPromise(val)) {
+            return { env.context, val };
+        }
+#endif
+
+        throw ConvertFailed { std::format("expect {}, got {}", name(), DumpValue(env, val)) };
+    }
+
+    static ValueType to_value(EnvType, const PromiseType& val) { return val; }
 };
 
 template <>
@@ -347,6 +372,23 @@ inline ValueType CallCtorHelper(EnvType env, const FunctionRefType& ctor, Args&&
     auto val = CallCtor(env, ctor, params);
 
     return val;
+}
+
+template <typename Ret, typename... Args>
+inline Ret CallFuncHelper(EnvType env, ConstObjectType func, Args&&... args)
+{
+    auto params = WrapArgs(env, std::forward<Args>(args)...);
+
+    auto val = CallFunc(env, func, params);
+
+    if constexpr (!std::is_same_v<Ret, void>) {
+        auto ret = JSConvert<Ret>::from_value(env, val);
+        FreeValue(env, val);
+        return ret;
+    }
+    else {
+        FreeValue(env, val);
+    }
 }
 
 template <typename Ret, typename... Args>

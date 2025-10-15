@@ -17,6 +17,7 @@ option(WITH_WIN32_CONTROLLER "build with win32 controller" ON)
 option(WITH_DBG_CONTROLLER "build with debugging controller" ON)
 option(WITH_CUSTOM_CONTROLLER "build with custom controller" ON)
 option(WITH_NODEJS_BINDING "build with nodejs binding" OFF)
+option(WITH_QUICKJS_BINDING "build with quickjs binding" ON)
 option(WITH_MAA_AGENT "build with MaaAgent" ON)
 
 option(BUILD_PICLI "build maa picli" ON)

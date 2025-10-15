@@ -45,36 +45,33 @@ endif()
 
 # new variant
 
-## quickjs
+# quickjs
 
-add_library(Maa STATIC
-    src/foundation/spec.quickjs.cpp
-    src/apis/loader.cpp
-    src/apis/global.cpp
-    src/apis/job.cpp
-    src/apis/resource.cpp
-)
-target_compile_definitions(Maa PRIVATE MAA_JS_IMPL_IS_QUICKJS)
-target_link_libraries(Maa PRIVATE MaaFramework MaaToolkit MaaAgentClient qjs_headers)
-# set_target_properties(Maa PROPERTIES POSITION_INDEPENDENT_CODE ON)
+if(WITH_QUICKJS_BINDING)
+    add_library(MaaQjs STATIC src/foundation/spec.quickjs.cpp src/apis/loader.cpp src/apis/global.cpp src/apis/job.cpp
+                              src/apis/resource.cpp)
+    target_compile_definitions(MaaQjs PRIVATE MAA_JS_IMPL_IS_QUICKJS)
+    target_link_libraries(MaaQjs PRIVATE MaaInterface qjs_headers)
+    set_target_properties(MaaQjs PROPERTIES POSITION_INDEPENDENT_CODE ON)
 
-target_link_libraries(qjs_exe Maa)
+    add_executable(MaaQjsRunner src/runner.cpp)
+    target_link_libraries(MaaQjsRunner PRIVATE MaaFramework MaaToolkit)
+endif()
 
-## nodejs
+# nodejs
 
-add_library(MaaNodeNew SHARED
-    src/foundation/spec.node.cpp
-    src/apis/loader.cpp
-    src/apis/global.cpp
-    src/apis/job.cpp
-    src/apis/resource.cpp
-)
-set_target_properties(MaaNodeNew PROPERTIES PREFIX "" SUFFIX ".node")
-target_compile_definitions(MaaNodeNew PRIVATE MAA_JS_IMPL_IS_NODEJS)
-target_include_directories(MaaNodeNew PRIVATE ${CMAKE_JS_INC})
-target_link_libraries(MaaNodeNew PRIVATE MaaFramework MaaToolkit MaaAgentClient ${CMAKE_JS_LIB})
-target_compile_definitions(MaaNodeNew PRIVATE NODE_ADDON_API_ENABLE_TYPE_CHECK_ON_AS MAA_NODE_BUILD_CLIENT)
-set_target_properties(MaaNodeNew PROPERTIES POSITION_INDEPENDENT_CODE ON)
+# TODO: differ agent and client
+
+if(WITH_NODEJS_BINDING)
+    add_library(MaaNodeNew SHARED src/foundation/spec.node.cpp src/apis/loader.cpp src/apis/global.cpp src/apis/job.cpp
+                                  src/apis/resource.cpp)
+    set_target_properties(MaaNodeNew PROPERTIES PREFIX "" SUFFIX ".node")
+    target_compile_definitions(MaaNodeNew PRIVATE MAA_JS_IMPL_IS_NODEJS)
+    target_include_directories(MaaNodeNew PRIVATE ${CMAKE_JS_INC})
+    target_link_libraries(MaaNodeNew PRIVATE MaaFramework MaaToolkit MaaAgentClient ${CMAKE_JS_LIB})
+    target_compile_definitions(MaaNodeNew PRIVATE NODE_ADDON_API_ENABLE_TYPE_CHECK_ON_AS MAA_NODE_BUILD_CLIENT)
+    set_target_properties(MaaNodeNew PROPERTIES POSITION_INDEPENDENT_CODE ON)
+endif()
 
 # old variant
 
@@ -88,9 +85,7 @@ set(maa_common_src
     src/toolkit/pi.cpp
     src/utility/utility.cpp
     src/main.cpp
-
-    ${CMAKE_JS_SRC}
-)
+    ${CMAKE_JS_SRC})
 
 # Master
 

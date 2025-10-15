@@ -1,5 +1,10 @@
 #include "loader.h"
 
+#include <iostream>
+
+#include "../foundation/macros.h"
+#include "bridge.h"
+
 #ifdef MAA_JS_IMPL_IS_NODEJS
 Napi::Object Init(Napi::Env env, Napi::Object exports)
 {
@@ -16,7 +21,7 @@ NODE_API_MODULE(maa, Init);
 #endif
 
 #ifdef MAA_JS_IMPL_IS_QUICKJS
-int Init(JSContext* ctx, JSModuleDef* m)
+void init_module_maa(JSContext* ctx)
 {
     maajs::EnvType env = {
         JS_GetRuntime(ctx),
@@ -25,23 +30,40 @@ int Init(JSContext* ctx, JSModuleDef* m)
 
     maajs::init(env);
 
-    JS_SetModuleExport(ctx, m, "Global", load_global(env));
-    JS_SetModuleExport(ctx, m, "Job", load_job(env));
-    JS_SetModuleExport(ctx, m, "Resource", load_resource(env));
+    auto maa = JS_NewObject(ctx);
+    auto globalObject = JS_GetGlobalObject(ctx);
 
-    return 0;
+    maajs::BindValue(env, maa, "Global", load_global(env));
+    maajs::BindValue(env, maa, "Job", load_job(env));
+    maajs::BindValue(env, maa, "Resource", load_resource(env));
+
+    maajs::BindValue(env, globalObject, "maa", maa);
+
+    JS_FreeValue(ctx, globalObject);
 }
 
-extern "C" JSModuleDef* js_init_module_maa(JSContext* ctx, const char* module_name)
+void maa_rt_print(std::string str)
 {
-    JSModuleDef* m;
-    m = JS_NewCModule(ctx, module_name, Init);
-    if (!m) {
-        return nullptr;
-    }
-    JS_AddModuleExport(ctx, m, "Global");
-    JS_AddModuleExport(ctx, m, "Job");
-    JS_AddModuleExport(ctx, m, "Resource");
-    return m;
+    std::cout << str << std::endl;
+}
+
+void maa_rt_exit(maajs::EnvType env, std::string result)
+{
+    QuickJSRuntimeBridgeInterface::get(env)->call_exit(result);
+}
+
+void init_module_sys(JSContext* ctx)
+{
+    maajs::EnvType env = {
+        JS_GetRuntime(ctx),
+        ctx,
+    };
+
+    auto globalObject = JS_GetGlobalObject(ctx);
+
+    MAA_BIND_FUNC(env, globalObject, "print", maa_rt_print);
+    MAA_BIND_FUNC(env, globalObject, "exit", maa_rt_exit);
+
+    JS_FreeValue(ctx, globalObject);
 }
 #endif

@@ -13,7 +13,7 @@ struct ExtContext : public maajs::NativeClassBase
         resourceCtor.Unref();
     }
 
-    void gc_mark(std::function<void(maajs::ConstValueType)> marker) override
+    void gc_mark([[maybe_unused]] maajs::NativeMarkerFunc marker) override
     {
         marker(jobCtor.Value());
         marker(resourceCtor.Value());

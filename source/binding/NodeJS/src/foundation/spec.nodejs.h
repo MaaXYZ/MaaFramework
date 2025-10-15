@@ -15,16 +15,19 @@ using ObjectType = Napi::Object;
 using ConstObjectType = Napi::Object;
 using ObjectRefType = Napi::ObjectReference;
 using FunctionRefType = Napi::FunctionReference;
+using PromiseType = Napi::Promise;
 
 using EnvType = Napi::Env;
 using CallbackInfo = Napi::CallbackInfo;
 using RawCallback = std::function<ValueType(const CallbackInfo&)>;
 
+using NativeMarkerFunc = std::function<void(maajs::ConstValueType)>;
+
 struct NativeClassBase
 {
     virtual ~NativeClassBase() = default;
 
-    virtual void gc_mark([[maybe_unused]] std::function<void(maajs::ConstValueType)> marker) {}
+    virtual void gc_mark([[maybe_unused]] NativeMarkerFunc marker) {}
 };
 
 inline ValueType DupValue(EnvType, ConstValueType val)
@@ -34,6 +37,16 @@ inline ValueType DupValue(EnvType, ConstValueType val)
 
 inline void FreeValue(EnvType, ValueType)
 {
+}
+
+inline ValueType ObjectToValue(ObjectType val)
+{
+    return val.As<Napi::Value>();
+}
+
+inline ObjectType ValueToObject(ValueType val)
+{
+    return val.As<Napi::Object>();
 }
 
 inline ValueType MakeNull(EnvType env)
@@ -106,7 +119,12 @@ inline FunctionRefType PersistentFunction(EnvType, ConstValueType val)
     return Napi::Persistent(val.As<Napi::Function>());
 }
 
-inline ValueType MakeFunction(EnvType env, const char* name, [[maybe_unused]] int argc, RawCallback func)
+inline ValueType MakeFunction(
+    EnvType env,
+    const char* name,
+    [[maybe_unused]] int argc,
+    RawCallback func,
+    std::function<void(NativeMarkerFunc)> = nullptr)
 {
     return Napi::Function::New(env, func, name);
 }
@@ -116,7 +134,13 @@ inline void BindValue([[maybe_unused]] EnvType env, ConstObjectType object, cons
     object.DefineProperty(Napi::PropertyDescriptor::Value(prop, value, napi_enumerable));
 }
 
-inline void BindGetter(EnvType, ConstObjectType object, const char* prop, const char*, RawCallback func)
+inline void BindGetter(
+    EnvType,
+    ConstObjectType object,
+    const char* prop,
+    const char*,
+    RawCallback func,
+    std::function<void(NativeMarkerFunc)> = nullptr)
 {
     object.DefineProperty(Napi::PropertyDescriptor::Accessor(prop, func, napi_enumerable));
 }

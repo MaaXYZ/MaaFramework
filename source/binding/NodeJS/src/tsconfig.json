@@ -1,3 +1,6 @@
 {
+    "compilerOptions": {
+        "lib": []
+    },
     "include": ["**/*.d.ts", "*.mts"]
 }

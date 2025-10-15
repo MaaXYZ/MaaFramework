@@ -1,5 +1,6 @@
 #include "loader.h"
 
+#include <cassert>
 #include <iostream>
 
 #include <MaaFramework/MaaAPI.h>
@@ -15,7 +16,17 @@ struct JobImpl : public maajs::NativeClassBase
 
     std::optional<MaaStatus> status;
 
-    ~JobImpl() { source.Unref(); }
+    JobImpl() { std::cout << "job create!" << std::endl; }
+
+    ~JobImpl()
+    {
+        std::cout << "job destroy!" << std::endl;
+        source.Unref();
+    }
+
+    maajs::ValueType get_source(maajs::EnvType env) { return maajs::DupValue(env, source.Value()); }
+
+    MaaId get_id() { return id; }
 
     MaaStatus get_status(maajs::EnvType env)
     {
@@ -23,6 +34,77 @@ struct JobImpl : public maajs::NativeClassBase
             status = maajs::CallMemberHelper<MaaStatus>(env, source.Value(), "status", id);
         }
         return *status;
+    }
+
+    maajs::ValueType wait(maajs::ConstValueType self, maajs::EnvType env)
+    {
+        auto pro = maajs::CallMemberHelper<maajs::ValueType>(env, source.Value(), "wait", id);
+
+        auto selfPtr = std::make_shared<maajs::ObjectRefType>(maajs::PersistentObject(env, self));
+#ifdef MAA_JS_IMPL_IS_QUICKJS
+        selfPtr->auto_unref = true;
+#endif
+        auto newPro = maajs::CallMemberHelper<maajs::ValueType>(
+            env,
+            maajs::ValueToObject(pro),
+            "then",
+            maajs::MakeFunction(
+                env,
+                "",
+                1,
+                [selfPtr](const maajs::CallbackInfo& info) { return maajs::DupValue(info.Env(), selfPtr->Value()); },
+                [selfPtr](auto marker) { marker(selfPtr->Value()); }));
+        maajs::FreeValue(env, pro);
+
+        auto newProPtr = std::make_shared<maajs::ObjectRefType>(maajs::PersistentObject(env, newPro));
+#ifdef MAA_JS_IMPL_IS_QUICKJS
+        newProPtr->auto_unref = true;
+#endif
+
+        std::vector<std::string> forwards = { "status", "done", "succeeded", "failed" };
+        for (auto key : forwards) {
+            maajs::BindGetter(
+                env,
+                maajs::ValueToObject(newPro),
+                key.c_str(),
+                "job_forward",
+                [key, newProPtr](const maajs::CallbackInfo& info) {
+#ifdef MAA_JS_IMPL_IS_NODEJS
+                    std::ignore = info;
+                    return Napi::Promise::Deferred::New(info.Env()).Promise();
+#endif
+
+#ifdef MAA_JS_IMPL_IS_QUICKJS
+                    JSValue funcs[2];
+                    auto retPro = JS_NewPromiseCapability(info.Env().context, funcs);
+                    maajs::FreeValue(info.Env(), funcs[1]);
+
+                    auto resolvePtr = std::make_shared<maajs::FunctionRefType>(maajs::PersistentFunction(info.Env(), funcs[0]));
+                    maajs::FreeValue(info.Env(), funcs[0]);
+
+                    maajs::CallMemberHelper<void>(
+                        info.Env(),
+                        newProPtr->Value(),
+                        "then",
+                        maajs::MakeFunction(
+                            info.Env(),
+                            "",
+                            1,
+                            [key, resolvePtr](const maajs::CallbackInfo& info) {
+                                auto self = info[0];
+                                auto result = JS_GetPropertyStr(info.Env().context, self, key.c_str());
+                                maajs::CallFuncHelper<void>(info.Env(), resolvePtr->Value(), result);
+                                return JS_UNDEFINED;
+                            },
+                            [resolvePtr](auto marker) { marker(resolvePtr->Value()); }));
+
+                    return retPro;
+#endif
+                },
+                [newProPtr](auto marker) { marker(newProPtr->Value()); });
+        }
+
+        return newPro;
     }
 
     constexpr static char name[] = "Job";
@@ -37,14 +119,17 @@ struct JobImpl : public maajs::NativeClassBase
 
     static void init_proto(maajs::EnvType env, maajs::ConstObjectType proto);
 
-    void gc_mark(std::function<void(maajs::ConstValueType)> marker) override { marker(source.Value()); }
+    void gc_mark([[maybe_unused]] maajs::NativeMarkerFunc marker) override { marker(source.Value()); }
 };
 
 MAA_JS_NATIVE_CLASS_STATIC_IMPL(JobImpl)
 
 void JobImpl::init_proto(maajs::EnvType env, maajs::ConstObjectType proto)
 {
+    MAA_BIND_GETTER(env, proto, "source", JobImpl::get_source);
+    MAA_BIND_GETTER(env, proto, "id", JobImpl::get_id);
     MAA_BIND_GETTER(env, proto, "status", JobImpl::get_status);
+    MAA_BIND_FUNC(env, proto, "wait", JobImpl::wait);
 }
 
 maajs::ValueType load_job(maajs::EnvType env)

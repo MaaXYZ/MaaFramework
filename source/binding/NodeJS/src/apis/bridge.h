@@ -1,0 +1,19 @@
+#pragma once
+
+#include <string>
+
+#include "../foundation/spec.h"
+
+#ifdef MAA_JS_IMPL_IS_QUICKJS
+struct QuickJSRuntimeBridgeInterface
+{
+    virtual ~QuickJSRuntimeBridgeInterface() = default;
+    virtual void push_task(std::function<void(JSContext* ctx)> task) = 0;
+    virtual void call_exit(std::string result) = 0;
+
+    static QuickJSRuntimeBridgeInterface* get(maajs::EnvType env)
+    {
+        return static_cast<QuickJSRuntimeBridgeInterface*>(JS_GetRuntimeOpaque(env.runtime));
+    }
+};
+#endif

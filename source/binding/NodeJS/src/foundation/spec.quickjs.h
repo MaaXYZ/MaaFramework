@@ -2,7 +2,9 @@
 
 #include <format>
 #include <functional>
+#include <iostream>
 #include <string>
+#include <typeinfo>
 
 #ifdef _MSC_VER
 #pragma warning(push)
@@ -27,9 +29,62 @@ struct QjsRef
     JSContext* context {};
     JSValue value;
 
+    bool auto_unref {};
+
+    QjsRef() = default;
+    QjsRef(JSContext* ctx, JSValue val)
+        : context(ctx)
+        , value(val) {};
+    QjsRef(const QjsRef&) = delete;
+
+    QjsRef(QjsRef&& ref)
+    {
+        context = ref.context;
+        value = ref.value;
+        auto_unref = ref.auto_unref;
+        ref.auto_unref = false;
+    }
+
+    ~QjsRef()
+    {
+        if (auto_unref) {
+            Unref();
+        }
+    }
+
+    QjsRef& operator=(const QjsRef&) = delete;
+
+    QjsRef& operator=(QjsRef&& ref)
+    {
+        if (&ref == this) {
+            return *this;
+        }
+        if (auto_unref) {
+            Unref();
+        }
+        context = ref.context;
+        value = ref.value;
+        auto_unref = ref.auto_unref;
+        ref.auto_unref = false;
+        return *this;
+    }
+
     JSValueConst Value() const { return value; }
 
-    void Unref() { JS_FreeValue(context, value); }
+    void Unref()
+    {
+        if (context) {
+            JS_FreeValue(context, value);
+        }
+    }
+};
+
+struct QjsPromise
+{
+    JSContext* context {};
+    JSValue value;
+
+    operator JSValue() const { return value; }
 };
 
 struct QjsCallbackInfo
@@ -60,16 +115,19 @@ using ObjectType = JSValue;
 using ConstObjectType = JSValue;
 using ObjectRefType = QjsRef;
 using FunctionRefType = QjsRef;
+using PromiseType = QjsPromise;
 
 using EnvType = QjsEnv;
 using CallbackInfo = QjsCallbackInfo;
 using RawCallback = std::function<ValueType(const CallbackInfo&)>;
 
+using NativeMarkerFunc = std::function<void(maajs::ConstValueType)>;
+
 struct NativeClassBase
 {
     virtual ~NativeClassBase() = default;
 
-    virtual void gc_mark([[maybe_unused]] std::function<void(maajs::ConstValueType)> marker) {}
+    virtual void gc_mark([[maybe_unused]] NativeMarkerFunc marker) {}
 };
 
 struct NativePointerHolder
@@ -80,7 +138,11 @@ struct NativePointerHolder
     {
         static JSClassDef classDef = {
             .class_name = "__MaaNativePointerHolder",
-            .finalizer = +[](JSRuntime*, JSValueConst data) { delete take<NativeClassBase>(data); },
+            .finalizer =
+                +[](JSRuntime*, JSValueConst data) {
+                    delete take<NativeClassBase>(data);
+                    JS_SetOpaque(data, nullptr);
+                },
             .gc_mark =
                 +[](JSRuntime* rt, JSValueConst data, JS_MarkFunc* func) {
                     take<NativeClassBase>(data)->gc_mark(
@@ -115,6 +177,16 @@ inline ValueType DupValue(EnvType env, ConstValueType val)
 inline void FreeValue(EnvType env, ValueType val)
 {
     JS_FreeValue(env.context, val);
+}
+
+inline ValueType ObjectToValue(ObjectType val)
+{
+    return val;
+}
+
+inline ObjectType ValueToObject(ValueType val)
+{
+    return val;
 }
 
 inline ValueType MakeNull(EnvType)
@@ -192,19 +264,34 @@ inline FunctionRefType PersistentFunction(EnvType env, ConstObjectType val)
 }
 
 // 必须要非常小心, 这里传入的回调不能持有Value, 内部的FuncHolder未实现gc_mark
-inline ValueType MakeFunction(EnvType env, const char* name, int argc, RawCallback func)
+inline ValueType
+    MakeFunction(EnvType env, const char* name, int argc, RawCallback func, std::function<void(NativeMarkerFunc)> run_marker = nullptr)
 {
     struct FuncHolder : public NativeClassBase
     {
         RawCallback func;
+        std::function<void(NativeMarkerFunc)> run_marker;
 
-        FuncHolder(RawCallback func)
+        FuncHolder(RawCallback func, std::function<void(NativeMarkerFunc)> run_marker)
             : func(func)
+            , run_marker(run_marker)
         {
+        }
+
+        void gc_mark(NativeMarkerFunc marker) override
+        {
+            if (run_marker) {
+                run_marker(marker);
+            }
         }
     };
 
-    auto data = NativePointerHolder::make(env.context, new FuncHolder { func });
+    auto data = NativePointerHolder::make(
+        env.context,
+        new FuncHolder {
+            func,
+            run_marker,
+        });
     auto result = JS_NewCFunctionData(
         env.context,
         +[](JSContext* ctx, JSValueConst this_val, int argc, JSValueConst* argv, int, JSValueConst* func_data) -> JSValue {
@@ -236,13 +323,19 @@ inline void BindValue(EnvType env, ConstObjectType object, const char* prop, Val
     JS_DefinePropertyValue(env.context, object, JS_NewAtom(env.context, prop), value, JS_PROP_ENUMERABLE);
 }
 
-inline void BindGetter(EnvType env, ConstObjectType object, const char* prop, const char* name, RawCallback func)
+inline void BindGetter(
+    EnvType env,
+    ConstObjectType object,
+    const char* prop,
+    const char* name,
+    RawCallback func,
+    std::function<void(NativeMarkerFunc)> run_marker = nullptr)
 {
     JS_DefinePropertyGetSet(
         env.context,
         object,
         JS_NewAtom(env.context, prop),
-        maajs::MakeFunction(env, name, 0, func),
+        maajs::MakeFunction(env, name, 0, func, run_marker),
         JS_UNDEFINED,
         JS_PROP_ENUMERABLE);
 }
@@ -250,6 +343,15 @@ inline void BindGetter(EnvType env, ConstObjectType object, const char* prop, co
 inline ValueType CallCtor(EnvType env, const FunctionRefType& ctor, std::vector<ValueType> args)
 {
     auto result = JS_CallConstructor(env.context, ctor.Value(), static_cast<int>(args.size()), args.data());
+    for (auto& arg : args) {
+        JS_FreeValue(env.context, arg);
+    }
+    return result;
+}
+
+inline ValueType CallFunc(EnvType env, ConstValueType func, std::vector<ValueType> args)
+{
+    auto result = JS_Call(env.context, func, JS_UNDEFINED, static_cast<int>(args.size()), args.data());
     for (auto& arg : args) {
         JS_FreeValue(env.context, arg);
     }
@@ -297,6 +399,8 @@ inline std::string_view TypeOf(EnvType env, ConstValueType val)
     case JS_TAG_BIG_INT:
     case JS_TAG_SHORT_BIG_INT:
         return "bigint";
+    case JS_TAG_EXCEPTION:
+        return "exception";
     }
     return "unknown";
 }
