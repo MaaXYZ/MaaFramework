@@ -12,6 +12,14 @@
             "args": [],
             "cwd": "${workspaceFolder}",
             "preLaunchTask": "build_picli"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "QjsTest",
+            "program": "${workspaceFolder}/build/bin/Debug/qjs",
+            "args": ["source/binding/NodeJS/src/test.mts"],
+            "cwd": "${workspaceFolder}"
         }
     ]
 }

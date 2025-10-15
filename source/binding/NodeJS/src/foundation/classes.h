@@ -1,24 +1,16 @@
 #pragma once
 
-#include "../foundation/spec.h"
+#include <iostream>
 
-struct JobImpl;
-struct ResourceImpl;
+#include "../foundation/spec.h"
 
 namespace maajs
 {
 
-template <size_t N>
-struct StringHolder
-{
-    char data[N];
-
-    constexpr StringHolder(const char (&str)[N]) { std::copy(str, str + N, data); }
-};
-
 #ifdef MAA_JS_IMPL_IS_NODEJS
 
 template <typename Inherit>
+requires std::is_base_of_v<NativeClassBase, Inherit>
 struct NativeClass
 {
     static void init(EnvType env, ValueType& ctor)
@@ -59,6 +51,7 @@ struct NativeClass
 #ifdef MAA_JS_IMPL_IS_QUICKJS
 
 template <typename Inherit>
+requires std::is_base_of_v<NativeClassBase, Inherit>
 struct NativeClass
 {
     static JSClassID classId;
@@ -67,7 +60,12 @@ struct NativeClass
     {
         static JSClassDef classDef = {
             .class_name = Inherit::name,
-            .finalizer = +[](JSRuntime*, JSValueConst data) { delete (Inherit*)JS_GetOpaque(data, classId); },
+            .finalizer = +[](JSRuntime*, JSValueConst data) { delete take(data); },
+            .gc_mark =
+                +[](JSRuntime* rt, JSValueConst data, JS_MarkFunc* func) {
+                    take(data)->gc_mark(
+                        [rt, func](ConstValueType value) { func(rt, reinterpret_cast<JSGCObjectHeader*>(JS_VALUE_GET_OBJ(value))); });
+                },
         };
 
         JS_NewClassID(env.runtime, &classId);
@@ -103,11 +101,8 @@ struct NativeClass
 
 #define MAA_JS_NATIVE_CLASS_STATIC_IMPL(Type) \
     template <>                               \
-    JSClassID maajs::Type::classId {};
+    JSClassID maajs::NativeClass<Type>::classId {};
 
 #endif
-
-using JobNative = NativeClass<JobImpl>;
-using ResourceNative = NativeClass<ResourceImpl>;
 
 }

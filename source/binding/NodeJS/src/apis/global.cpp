@@ -2,24 +2,25 @@
 
 #include <MaaFramework/MaaAPI.h>
 
+#include "../foundation/macros.h"
 #include "../foundation/spec.h"
 
-maajs::ValueType version_from_macro(const maajs::CallbackInfo& info)
+std::string version_from_macro()
 {
-    return maajs::MakeString(info.Env(), MAA_VERSION);
+    return MAA_VERSION;
 }
 
-maajs::ValueType version(const maajs::CallbackInfo& info)
+std::string version()
 {
-    return maajs::MakeString(info.Env(), MaaVersion());
+    return MaaVersion();
 }
 
 maajs::ObjectType load_global(maajs::EnvType env)
 {
     auto globalObject = maajs::MakeObject(env);
 
-    maajs::BindGetter(env, globalObject, "version_from_macro", "Global.[version_from_macro getter]", version_from_macro);
-    maajs::BindGetter(env, globalObject, "version", "Global.[version getter]", version);
+    MAA_BIND_GETTER(env, globalObject, "version_from_macro", version_from_macro);
+    MAA_BIND_GETTER(env, globalObject, "version", version);
 
     return globalObject;
 }

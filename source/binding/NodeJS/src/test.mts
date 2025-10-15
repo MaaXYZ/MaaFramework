@@ -1,7 +1,11 @@
 import { Global, Resource, Job } from '@nekosu/maa'
-console.log(Global.version, Global.version_from_macro)
+import * as os from 'qjs:os'
 
 const res = new Resource()
-console.log(res, res.status('0'))
-const job = new Job(res, '0')
+const job = res.post_bundle('sample/resource')
 console.log(job, job.status)
+
+os.setTimeout(() => {
+    console.log('wait finish!')
+    gc()
+}, 2000)

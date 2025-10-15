@@ -6,6 +6,7 @@
 #include <string>
 #include <variant>
 
+#include "classes.h"
 #include "spec.h"
 
 namespace maajs
@@ -21,6 +22,79 @@ struct ConvertFailed : public std::exception
     }
 
     virtual const char* what() const noexcept override { return error.c_str(); }
+};
+
+template <size_t N>
+struct StringHolder
+{
+    char data[N];
+
+    constexpr StringHolder(const char (&str)[N]) { std::copy(str, str + N, data); }
+};
+
+template <typename F>
+struct FuncTraits
+{
+};
+
+template <typename R, typename... Args>
+struct FuncTraits<R (*)(Args...)>
+{
+    using ret = R;
+    using args = std::tuple<Args...>;
+    using call_args = args;
+    using self = void;
+    static constexpr bool want_self = false;
+    static constexpr bool want_self_value = false;
+    static constexpr bool want_env = false;
+};
+
+template <typename R, typename... Args>
+struct FuncTraits<R (*)(EnvType, Args...)>
+{
+    using ret = R;
+    using args = std::tuple<Args...>;
+    using call_args = std::tuple<EnvType, Args...>;
+    using self = void;
+    static constexpr bool want_self = false;
+    static constexpr bool want_self_value = false;
+    static constexpr bool want_env = true;
+};
+
+template <typename R, typename T, typename... Args>
+struct FuncTraits<R (T::*)(Args...)>
+{
+    using ret = R;
+    using args = std::tuple<Args...>;
+    using call_args = args;
+    using self = T;
+    static constexpr bool want_self = true;
+    static constexpr bool want_self_value = false;
+    static constexpr bool want_env = false;
+};
+
+template <typename R, typename T, typename... Args>
+struct FuncTraits<R (T::*)(EnvType, Args...)>
+{
+    using ret = R;
+    using args = std::tuple<Args...>;
+    using call_args = std::tuple<EnvType, Args...>;
+    using self = T;
+    static constexpr bool want_self = true;
+    static constexpr bool want_self_value = false;
+    static constexpr bool want_env = true;
+};
+
+template <typename R, typename T, typename... Args>
+struct FuncTraits<R (T::*)(ConstValueType, EnvType, Args...)>
+{
+    using ret = R;
+    using args = std::tuple<Args...>;
+    using call_args = std::tuple<ConstValueType, EnvType, Args...>;
+    using self = T;
+    static constexpr bool want_self = true;
+    static constexpr bool want_self_value = true;
+    static constexpr bool want_env = true;
 };
 
 template <typename Type>
@@ -41,16 +115,26 @@ struct JSConvert<void>
 };
 
 template <>
+struct JSConvert<ValueType>
+{
+    static std::string name() = delete;
+
+    static ValueType from_value(EnvType env, ConstValueType val) { return DupValue(env, val); }
+
+    static ValueType to_value(EnvType env, const ValueType& val) { return DupValue(env, val); }
+};
+
+template <>
 struct JSConvert<std::monostate>
 {
     static std::string name() { return "null"; }
 
-    static std::monostate from_value(EnvType, ConstValueType val)
+    static std::monostate from_value(EnvType env, ConstValueType val)
     {
         if (IsNull(val)) {
             return {};
         }
-        throw ConvertFailed {};
+        throw ConvertFailed { std::format("expect {}, got {}", name(), DumpValue(env, val)) };
     }
 
     static ValueType to_value(EnvType env, const std::monostate&) { return MakeNull(env); }
@@ -66,7 +150,7 @@ struct JSConvert<std::string>
         if (IsString(val)) {
             return GetString(env, val);
         }
-        throw ConvertFailed {};
+        throw ConvertFailed { std::format("expect {}, got {}", name(), DumpValue(env, val)) };
     }
 
     static ValueType to_value(EnvType env, const std::string& val) { return MakeString(env, val); }
@@ -77,12 +161,12 @@ struct JSConvert<int32_t>
 {
     static std::string name() { return "number<int32_t>"; }
 
-    static int32_t from_value(EnvType, ConstValueType val)
+    static int32_t from_value(EnvType env, ConstValueType val)
     {
         if (IsNumber(val)) {
             return GetNumberI32(val);
         }
-        throw ConvertFailed {};
+        throw ConvertFailed { std::format("expect {}, got {}", name(), DumpValue(env, val)) };
     }
 
     static ValueType to_value(EnvType env, const int32_t& val) { return MakeNumber(env, val); }
@@ -98,7 +182,7 @@ struct JSConvert<int64_t>
         if (IsString(val)) {
             return std::stoll(GetString(env, val));
         }
-        throw ConvertFailed {};
+        throw ConvertFailed { std::format("expect {}, got {}", name(), DumpValue(env, val)) };
     }
 
     static ValueType to_value(EnvType env, const int64_t& val) { return MakeString(env, std::to_string(val)); }
@@ -114,7 +198,7 @@ struct JSConvert<uint64_t>
         if (IsString(val)) {
             return std::stoull(GetString(env, val));
         }
-        throw ConvertFailed {};
+        throw ConvertFailed { std::format("expect {}, got {}", name(), DumpValue(env, val)) };
     }
 
     static ValueType to_value(EnvType env, const uint64_t& val) { return MakeString(env, std::to_string(val)); }
@@ -145,5 +229,141 @@ struct JSConvert<std::optional<Type>>
         }
     }
 };
+
+template <typename Func, Func func, StringHolder name>
+struct WrapFunctionHelper
+{
+    using traits = FuncTraits<Func>;
+
+    constexpr static size_t arg_count = std::tuple_size_v<typename traits::args>;
+    using Args = typename traits::args;
+    using Ret = typename traits::ret;
+    using Self = typename traits::self;
+    using CallArgs = typename traits::call_args;
+
+    static auto make()
+    {
+        return +[](const CallbackInfo& info) {
+            try {
+                if (info.Length() != arg_count) {
+                    throw ConvertFailed { std::format("expect {} arguments, got {}", arg_count, info.Length()) };
+                }
+
+                typename traits::args params;
+
+                if constexpr (arg_count > 0) {
+                    [&params, &info]<size_t... I>(std::index_sequence<I...>) {
+                        ((std::get<I>(params) = JSConvert<std::tuple_element_t<I, Args>>::from_value(info.Env(), info[I])), ...);
+                    }(std::make_index_sequence<arg_count>());
+                }
+
+                ValueType ret;
+
+                CallArgs call_params = [p = std::move(params), &info]() {
+                    if constexpr (traits::want_env) {
+                        if constexpr (traits::want_self_value) {
+                            return std::tuple_cat(std::make_tuple(info.This(), info.Env()), std::move(p));
+                        }
+                        else {
+                            return std::tuple_cat(std::make_tuple(info.Env()), std::move(p));
+                        }
+                    }
+                    else {
+                        std::ignore = info;
+                        return p;
+                    }
+                }();
+
+                Self* self = nullptr;
+                if constexpr (traits::want_self) {
+                    self = NativeClass<Self>::take(info.This());
+                }
+
+                if constexpr (std::is_same_v<Ret, void>) {
+                    if constexpr (traits::want_self) {
+                        std::apply(std::bind_front(func, self), std::move(call_params));
+                    }
+                    else {
+                        std::apply(func, std::move(call_params));
+                    }
+                    ret = MakeUndefined(info.Env());
+                }
+                else {
+                    Ret retVal;
+                    if constexpr (traits::want_self) {
+                        retVal = std::apply(std::bind_front(func, self), std::move(call_params));
+                    }
+                    else {
+                        retVal = std::apply(func, std::move(call_params));
+                    }
+                    if constexpr (!std::is_same_v<Ret, ValueType>) {
+                        ret = JSConvert<Ret>::to_value(info.Env(), retVal);
+                    }
+                    else {
+                        ret = retVal;
+                    }
+                }
+
+                return ret;
+            }
+            catch (const ConvertFailed& exc) {
+                std::string what = std::format("maa.{}: {}", (const char*)name.data, exc.what());
+#ifdef MAA_JS_IMPL_IS_NODEJS
+                Napi::TypeError::New(info.Env(), what).ThrowAsJavaScriptException();
+                return info.Env().Undefined();
+#endif
+#ifdef MAA_JS_IMPL_IS_QUICKJS
+                JS_ThrowTypeError(info.Env().context, "%s", what.c_str());
+                return JS_EXCEPTION;
+#endif
+            }
+        };
+    }
+
+    static ValueType makeValue(EnvType env) { return MakeFunction(env, name.data, arg_count, make()); }
+};
+
+template <typename... Args>
+inline std::vector<ValueType> WrapArgs(EnvType env, Args&&... args)
+{
+    using ArgsTuple = std::tuple<Args...>;
+
+    ArgsTuple arg_tuple = ArgsTuple(std::forward<Args>(args)...);
+    std::vector<ValueType> params;
+
+    [&params, &arg_tuple, &env]<size_t... I>(std::index_sequence<I...>) {
+        ((params.push_back(JSConvert<std::remove_cvref_t<std::tuple_element_t<I, ArgsTuple>>>::to_value(env, std::get<I>(arg_tuple)))),
+         ...);
+    }(std::make_index_sequence<std::tuple_size_v<ArgsTuple>>());
+
+    return params;
+}
+
+template <typename... Args>
+inline ValueType CallCtorHelper(EnvType env, const FunctionRefType& ctor, Args&&... args)
+{
+    auto params = WrapArgs(env, std::forward<Args>(args)...);
+
+    auto val = CallCtor(env, ctor, params);
+
+    return val;
+}
+
+template <typename Ret, typename... Args>
+inline Ret CallMemberHelper(EnvType env, ConstObjectType object, const char* prop, Args&&... args)
+{
+    auto params = WrapArgs(env, std::forward<Args>(args)...);
+
+    auto val = CallMember(env, object, prop, params);
+
+    if constexpr (!std::is_same_v<Ret, void>) {
+        auto ret = JSConvert<Ret>::from_value(env, val);
+        FreeValue(env, val);
+        return ret;
+    }
+    else {
+        FreeValue(env, val);
+    }
+}
 
 }

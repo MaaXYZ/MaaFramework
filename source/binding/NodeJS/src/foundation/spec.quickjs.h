@@ -1,5 +1,6 @@
 #pragma once
 
+#include <format>
 #include <functional>
 #include <string>
 
@@ -21,7 +22,7 @@ struct QjsEnv
     JSContext* context {};
 };
 
-struct QjsObjRef
+struct QjsRef
 {
     JSContext* context {};
     JSValue value;
@@ -48,6 +49,8 @@ struct QjsCallbackInfo
 
     JSValueConst This() const { return thisObject; }
 
+    size_t Length() const { return static_cast<size_t>(argc); }
+
     JSValueConst operator[](size_t idx) const { return argv[idx]; }
 };
 
@@ -55,28 +58,33 @@ using ValueType = JSValue;
 using ConstValueType = JSValueConst;
 using ObjectType = JSValue;
 using ConstObjectType = JSValue;
-using ObjectRefType = QjsObjRef;
+using ObjectRefType = QjsRef;
+using FunctionRefType = QjsRef;
 
 using EnvType = QjsEnv;
 using CallbackInfo = QjsCallbackInfo;
 using RawCallback = std::function<ValueType(const CallbackInfo&)>;
 
-struct QjsPointerBase
+struct NativeClassBase
 {
-    virtual ~QjsPointerBase() = default;
+    virtual ~NativeClassBase() = default;
+
+    virtual void gc_mark([[maybe_unused]] std::function<void(maajs::ConstValueType)> marker) {}
 };
 
-struct QjsPointerHolder
+struct NativePointerHolder
 {
     static JSClassID _classId;
 
     static void init(EnvType env)
     {
         static JSClassDef classDef = {
-            .class_name = "__QjsPointerHolder",
-            .finalizer =
-                +[](JSRuntime*, JSValueConst data) { //
-                    delete (QjsPointerBase*)JS_GetOpaque(data, _classId);
+            .class_name = "__MaaNativePointerHolder",
+            .finalizer = +[](JSRuntime*, JSValueConst data) { delete take<NativeClassBase>(data); },
+            .gc_mark =
+                +[](JSRuntime* rt, JSValueConst data, JS_MarkFunc* func) {
+                    take<NativeClassBase>(data)->gc_mark(
+                        [rt, func](ConstValueType value) { func(rt, reinterpret_cast<JSGCObjectHeader*>(JS_VALUE_GET_OBJ(value))); });
                 },
         };
 
@@ -84,7 +92,7 @@ struct QjsPointerHolder
         JS_NewClass(env.runtime, _classId, &classDef);
     }
 
-    static JSValue make(JSContext* ctx, QjsPointerBase* pointer)
+    static JSValue make(JSContext* ctx, NativeClassBase* pointer)
     {
         auto obj = JS_NewObjectClass(ctx, _classId);
         JS_SetOpaque(obj, pointer);
@@ -94,10 +102,15 @@ struct QjsPointerHolder
     template <typename Type>
     static Type* take(JSValueConst value)
     {
-        auto ptr = static_cast<QjsPointerBase*>(JS_GetOpaque(value, _classId));
+        auto ptr = static_cast<NativeClassBase*>(JS_GetOpaque(value, _classId));
         return dynamic_cast<Type*>(ptr);
     }
 };
+
+inline ValueType DupValue(EnvType env, ConstValueType val)
+{
+    return JS_DupValue(env.context, val);
+}
 
 inline void FreeValue(EnvType env, ValueType val)
 {
@@ -163,17 +176,25 @@ inline std::string GetString(EnvType env, ConstValueType val)
 {
     size_t len {};
     auto ptr = JS_ToCStringLen2(env.context, &len, val, false);
-    return std::string(ptr, len);
+    auto ret = std::string(ptr, len);
+    JS_FreeCString(env.context, ptr);
+    return ret;
 }
 
-inline ObjectRefType Persistent(EnvType env, ConstObjectType val)
+inline ObjectRefType PersistentObject(EnvType env, ConstObjectType val)
 {
     return { env.context, JS_DupValue(env.context, val) };
 }
 
+inline FunctionRefType PersistentFunction(EnvType env, ConstObjectType val)
+{
+    return { env.context, JS_DupValue(env.context, val) };
+}
+
+// 必须要非常小心, 这里传入的回调不能持有Value, 内部的FuncHolder未实现gc_mark
 inline ValueType MakeFunction(EnvType env, const char* name, int argc, RawCallback func)
 {
-    struct FuncHolder : public QjsPointerBase
+    struct FuncHolder : public NativeClassBase
     {
         RawCallback func;
 
@@ -183,11 +204,11 @@ inline ValueType MakeFunction(EnvType env, const char* name, int argc, RawCallba
         }
     };
 
-    auto data = QjsPointerHolder::make(env.context, new FuncHolder { func });
+    auto data = NativePointerHolder::make(env.context, new FuncHolder { func });
     auto result = JS_NewCFunctionData(
         env.context,
         +[](JSContext* ctx, JSValueConst this_val, int argc, JSValueConst* argv, int, JSValueConst* func_data) -> JSValue {
-            auto data = QjsPointerHolder::take<FuncHolder>(func_data[0]);
+            auto data = NativePointerHolder::take<FuncHolder>(func_data[0]);
             if (!data) {
                 return JS_UNDEFINED;
             }
@@ -226,19 +247,74 @@ inline void BindGetter(EnvType env, ConstObjectType object, const char* prop, co
         JS_PROP_ENUMERABLE);
 }
 
-inline ValueType CallMember(EnvType env, ConstObjectType object, const char* prop, std::vector<ValueType> args)
+inline ValueType CallCtor(EnvType env, const FunctionRefType& ctor, std::vector<ValueType> args)
 {
-    auto func = JS_GetPropertyStr(env.context, object, prop);
-    auto result = JS_Call(env.context, func, object, static_cast<int>(args.size()), args.data());
+    auto result = JS_CallConstructor(env.context, ctor.Value(), static_cast<int>(args.size()), args.data());
     for (auto& arg : args) {
         JS_FreeValue(env.context, arg);
     }
     return result;
 }
 
+inline ValueType CallMember(EnvType env, ConstObjectType object, const char* prop, std::vector<ValueType> args)
+{
+    auto func = JS_GetPropertyStr(env.context, object, prop);
+    auto result = JS_Call(env.context, func, object, static_cast<int>(args.size()), args.data());
+    JS_FreeValue(env.context, func);
+    for (auto& arg : args) {
+        JS_FreeValue(env.context, arg);
+    }
+    return result;
+}
+
+inline std::string_view TypeOf(EnvType env, ConstValueType val)
+{
+    switch (val.tag) {
+    case JS_TAG_NULL:
+        return "null";
+    }
+    switch (val.tag) {
+    case JS_TAG_UNDEFINED:
+        return "undefined";
+    case JS_TAG_NULL:
+        return "null";
+    case JS_TAG_BOOL:
+        return "boolean";
+    case JS_TAG_INT:
+    case JS_TAG_FLOAT64:
+        return "number";
+    case JS_TAG_STRING:
+        return "string";
+    case JS_TAG_SYMBOL:
+        return "symbol";
+    case JS_TAG_OBJECT:
+        if (JS_IsFunction(env.context, val)) {
+            return "function";
+        }
+        else {
+            return "object";
+        }
+    case JS_TAG_BIG_INT:
+    case JS_TAG_SHORT_BIG_INT:
+        return "bigint";
+    }
+    return "unknown";
+}
+
+inline std::string DumpValue(EnvType env, ConstValueType val)
+{
+    auto desc = JS_ToString(env.context, val);
+    std::string descStr = GetString(env, desc);
+    JS_FreeValue(env.context, desc);
+    if (descStr.length() > 20) {
+        descStr = descStr.substr(0, 17) + "...";
+    }
+    return std::format("{} [{}]", descStr, TypeOf(env, val));
+}
+
 inline void init(EnvType env)
 {
-    QjsPointerHolder::init(env);
+    NativePointerHolder::init(env);
 }
 
 }

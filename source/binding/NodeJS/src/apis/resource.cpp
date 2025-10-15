@@ -2,16 +2,31 @@
 
 #include <MaaFramework/MaaAPI.h>
 
-#include "../foundation/convert.h"
-#include "classes.h"
+#include "../foundation/classes.h"
+#include "../foundation/macros.h"
+#include "ext.h"
 
-MAA_JS_NATIVE_CLASS_STATIC_IMPL(ResourceNative)
-
-struct ResourceImpl
+struct ResourceImpl : public maajs::NativeClassBase
 {
     MaaResource* resource;
 
+    ResourceImpl(MaaResource* res)
+        : resource(res)
+    {
+    }
+
+    void destroy() { MaaResourceDestroy(resource); }
+
+    maajs::ValueType post_bundle(maajs::ConstValueType self, maajs::EnvType env, std::string path)
+    {
+        auto id = MaaResourcePostBundle(resource, path.c_str());
+        return maajs::CallCtorHelper(env, ExtContext::get(env)->jobCtor, self, id);
+    }
+
+    MaaStatus status(MaaResId id) { return MaaResourceStatus(resource, id); }
+
     constexpr static char name[] = "Resource";
+    constexpr static bool need_gc_mark = false;
 
     static ResourceImpl* ctor([[maybe_unused]] const maajs::CallbackInfo& info)
     {
@@ -25,23 +40,19 @@ struct ResourceImpl
     static void init_proto([[maybe_unused]] maajs::EnvType env, [[maybe_unused]] maajs::ConstObjectType proto);
 };
 
-maajs::ValueType status(const maajs::CallbackInfo& info)
-{
-    auto res = maajs::ResourceNative::take(info.This());
-
-    MaaId id = maajs::JSConvert<uint64_t>::from_value(info.Env(), info[0]);
-    auto status = MaaResourceStatus(res->resource, id);
-    return maajs::MakeNumber(info.Env(), status);
-}
+MAA_JS_NATIVE_CLASS_STATIC_IMPL(ResourceImpl)
 
 void ResourceImpl::init_proto(maajs::EnvType env, [[maybe_unused]] maajs::ConstObjectType proto)
 {
-    maajs::BindValue(env, proto, "status", maajs::MakeFunction(env, "Resource.[status]", 1, status));
+    MAA_BIND_FUNC(env, proto, "destroy", ResourceImpl::destroy);
+    MAA_BIND_FUNC(env, proto, "post_bundle", ResourceImpl::post_bundle);
+    MAA_BIND_FUNC(env, proto, "status", ResourceImpl::status);
 }
 
 maajs::ValueType load_resource(maajs::EnvType env)
 {
     maajs::ValueType ctor;
-    maajs::ResourceNative::init(env, ctor);
+    maajs::NativeClass<ResourceImpl>::init(env, ctor);
+    ExtContext::get(env)->resourceCtor = maajs::PersistentFunction(env, ctor);
     return ctor;
 }

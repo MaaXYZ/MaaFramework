@@ -1,13 +1,14 @@
 #include "loader.h"
 
+#include <iostream>
+
 #include <MaaFramework/MaaAPI.h>
 
-#include "../foundation/convert.h"
-#include "classes.h"
+#include "../foundation/classes.h"
+#include "../foundation/macros.h"
+#include "ext.h"
 
-MAA_JS_NATIVE_CLASS_STATIC_IMPL(JobNative)
-
-struct JobImpl
+struct JobImpl : public maajs::NativeClassBase
 {
     maajs::ObjectRefType source;
     MaaId id;
@@ -16,19 +17,10 @@ struct JobImpl
 
     ~JobImpl() { source.Unref(); }
 
-    MaaStatus get_status(const maajs::CallbackInfo& info)
+    MaaStatus get_status(maajs::EnvType env)
     {
         if (!status) {
-            auto currentVal = maajs::CallMember(
-                info.Env(),
-                source.Value(),
-                "status",
-                {
-                    maajs::JSConvert<MaaId>::to_value(info.Env(), id),
-                });
-            auto current = maajs::JSConvert<MaaStatus>::from_value(info.Env(), currentVal);
-            maajs::FreeValue(info.Env(), currentVal);
-            status = current;
+            status = maajs::CallMemberHelper<MaaStatus>(env, source.Value(), "status", id);
         }
         return *status;
     }
@@ -38,28 +30,27 @@ struct JobImpl
     static JobImpl* ctor([[maybe_unused]] const maajs::CallbackInfo& info)
     {
         auto job = new JobImpl;
-        job->source = maajs::Persistent(info.Env(), info[0]);
+        job->source = maajs::PersistentObject(info.Env(), info[0]);
         job->id = maajs::JSConvert<uint64_t>::from_value(info.Env(), info[1]);
         return job;
     }
 
     static void init_proto(maajs::EnvType env, maajs::ConstObjectType proto);
+
+    void gc_mark(std::function<void(maajs::ConstValueType)> marker) override { marker(source.Value()); }
 };
 
-maajs::ValueType get_status(const maajs::CallbackInfo& info)
-{
-    auto job = maajs::JobNative::take(info.This());
-    return maajs::MakeNumber(info.Env(), job->get_status(info));
-}
+MAA_JS_NATIVE_CLASS_STATIC_IMPL(JobImpl)
 
 void JobImpl::init_proto(maajs::EnvType env, maajs::ConstObjectType proto)
 {
-    maajs::BindGetter(env, proto, "status", "Job.[getter status]", ::get_status);
+    MAA_BIND_GETTER(env, proto, "status", JobImpl::get_status);
 }
 
 maajs::ValueType load_job(maajs::EnvType env)
 {
     maajs::ValueType ctor;
-    maajs::JobNative::init(env, ctor);
+    maajs::NativeClass<JobImpl>::init(env, ctor);
+    ExtContext::get(env)->jobCtor = maajs::PersistentFunction(env, ctor);
     return ctor;
 }

@@ -55,4 +55,7 @@
         "./source/binding/Python"
     ],
     "editor.formatOnSave": true,
+    "clangd.arguments": [
+        "--header-insertion=never"
+    ]
 }
