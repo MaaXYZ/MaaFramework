@@ -109,12 +109,12 @@ inline std::string GetString(EnvType, ConstValueType val)
     return val.As<Napi::String>().Utf8Value();
 }
 
-inline ObjectRefType PersistentObject(EnvType, ConstValueType val)
+inline ObjectRefType PersistentObject(EnvType, ConstValueType val, bool = false)
 {
     return Napi::Persistent(val.As<Napi::Object>());
 }
 
-inline FunctionRefType PersistentFunction(EnvType, ConstValueType val)
+inline FunctionRefType PersistentFunction(EnvType, ConstValueType val, bool = false)
 {
     return Napi::Persistent(val.As<Napi::Function>());
 }

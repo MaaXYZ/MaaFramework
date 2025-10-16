@@ -32,9 +32,10 @@ struct QjsRef
     bool auto_unref {};
 
     QjsRef() = default;
-    QjsRef(JSContext* ctx, JSValue val)
+    QjsRef(JSContext* ctx, JSValue val, bool unref)
         : context(ctx)
-        , value(val) {};
+        , value(val)
+        , auto_unref(unref) {};
     QjsRef(const QjsRef&) = delete;
 
     QjsRef(QjsRef&& ref)
@@ -253,14 +254,14 @@ inline std::string GetString(EnvType env, ConstValueType val)
     return ret;
 }
 
-inline ObjectRefType PersistentObject(EnvType env, ConstObjectType val)
+inline ObjectRefType PersistentObject(EnvType env, ConstObjectType val, bool auto_unref = false)
 {
-    return { env.context, JS_DupValue(env.context, val) };
+    return { env.context, JS_DupValue(env.context, val), auto_unref };
 }
 
-inline FunctionRefType PersistentFunction(EnvType env, ConstObjectType val)
+inline FunctionRefType PersistentFunction(EnvType env, ConstObjectType val, bool auto_unref = false)
 {
-    return { env.context, JS_DupValue(env.context, val) };
+    return { env.context, JS_DupValue(env.context, val), auto_unref };
 }
 
 // 必须要非常小心, 这里传入的回调不能持有Value, 内部的FuncHolder未实现gc_mark

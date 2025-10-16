@@ -40,10 +40,7 @@ struct JobImpl : public maajs::NativeClassBase
     {
         auto pro = maajs::CallMemberHelper<maajs::ValueType>(env, source.Value(), "wait", id);
 
-        auto selfPtr = std::make_shared<maajs::ObjectRefType>(maajs::PersistentObject(env, self));
-#ifdef MAA_JS_IMPL_IS_QUICKJS
-        selfPtr->auto_unref = true;
-#endif
+        auto selfPtr = std::make_shared<maajs::ObjectRefType>(maajs::PersistentObject(env, self, true));
         auto newPro = maajs::CallMemberHelper<maajs::ValueType>(
             env,
             maajs::ValueToObject(pro),
@@ -56,13 +53,10 @@ struct JobImpl : public maajs::NativeClassBase
                 [selfPtr](auto marker) { marker(selfPtr->Value()); }));
         maajs::FreeValue(env, pro);
 
-        auto newProPtr = std::make_shared<maajs::ObjectRefType>(maajs::PersistentObject(env, newPro));
-#ifdef MAA_JS_IMPL_IS_QUICKJS
-        newProPtr->auto_unref = true;
-#endif
-
         std::vector<std::string> forwards = { "status", "done", "succeeded", "failed" };
         for (auto key : forwards) {
+            auto newProPtr = std::make_shared<maajs::ObjectRefType>(maajs::PersistentObject(env, newPro, true));
+
             maajs::BindGetter(
                 env,
                 maajs::ValueToObject(newPro),
@@ -79,7 +73,7 @@ struct JobImpl : public maajs::NativeClassBase
                     auto retPro = JS_NewPromiseCapability(info.Env().context, funcs);
                     maajs::FreeValue(info.Env(), funcs[1]);
 
-                    auto resolvePtr = std::make_shared<maajs::FunctionRefType>(maajs::PersistentFunction(info.Env(), funcs[0]));
+                    auto resolvePtr = std::make_shared<maajs::FunctionRefType>(maajs::PersistentFunction(info.Env(), funcs[0], true));
                     maajs::FreeValue(info.Env(), funcs[0]);
 
                     maajs::CallMemberHelper<void>(

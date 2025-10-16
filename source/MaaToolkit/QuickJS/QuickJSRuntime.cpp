@@ -90,7 +90,8 @@ QuickJSRuntime::~QuickJSRuntime()
 
 void QuickJSRuntime::eval_script(std::string script)
 {
-    JS_Eval(d_->ctx, script.c_str(), script.size(), "index.js", JS_EVAL_FLAG_STRICT);
+    auto val = JS_Eval(d_->ctx, script.c_str(), script.size(), "index.js", JS_EVAL_FLAG_STRICT);
+    JS_FreeValue(d_->ctx, val);
 }
 
 void QuickJSRuntime::exec_loop()
