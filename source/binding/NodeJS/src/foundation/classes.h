@@ -10,7 +10,6 @@ namespace maajs
 #ifdef MAA_JS_IMPL_IS_NODEJS
 
 template <typename Inherit>
-requires std::is_base_of_v<NativeClassBase, Inherit>
 struct NativeClass
 {
     static void init(EnvType env, ValueType& ctor)
@@ -51,7 +50,6 @@ struct NativeClass
 #ifdef MAA_JS_IMPL_IS_QUICKJS
 
 template <typename Inherit>
-requires std::is_base_of_v<NativeClassBase, Inherit>
 struct NativeClass
 {
     static JSClassID classId;
