@@ -17,6 +17,7 @@ MaaResId = MaaId
 MaaTaskId = MaaId
 MaaRecoId = MaaId
 MaaNodeId = MaaId
+MaaSinkId = MaaId
 MaaInvalidId = MaaId(0)
 
 MaaStringBufferHandle = ctypes.c_void_p
@@ -240,8 +241,8 @@ class MaaDbgControllerTypeEnum(IntEnum):
 
 FUNCTYPE = ctypes.WINFUNCTYPE if (platform.system() == "Windows") else ctypes.CFUNCTYPE
 
-MaaNotificationCallback = FUNCTYPE(
-    None, ctypes.c_char_p, ctypes.c_char_p, ctypes.c_void_p
+MaaEventCallback = FUNCTYPE(
+    None, ctypes.c_void_p, ctypes.c_char_p, ctypes.c_char_p, ctypes.c_void_p
 )
 
 MaaCustomRecognitionCallback = FUNCTYPE(

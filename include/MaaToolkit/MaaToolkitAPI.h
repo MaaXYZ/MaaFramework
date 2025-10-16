@@ -5,5 +5,4 @@
 #include "AdbDevice/MaaToolkitAdbDevice.h"
 #include "Config/MaaToolkitConfig.h"
 #include "DesktopWindow/MaaToolkitDesktopWindow.h"
-#include "ProjectInterface/MaaToolkitProjectInterface.h"
 #include "QuickJS/MaaToolkitQuickJS.h"

@@ -22,6 +22,7 @@ public:
 public: // MaaAgentClient
     virtual std::string identifier() const override;
     virtual bool bind_resource(MaaResource* resource) override;
+    virtual void register_sink(MaaTasker* tasker, MaaResource* res, MaaController* ctrl) override;
     virtual std::string create_socket(const std::string& identifier) override;
     virtual bool connect() override;
     virtual bool disconnect() override;
@@ -125,10 +126,28 @@ public:
     std::string resource_id(MaaResource* resource);
     MaaResource* query_resource(const std::string& resource_id);
 
-    void clear_registration();
+    void clear_custom_registration();
+    void clear_sink_registration();
+
+public:
+    static void res_event_sink(void* handle, const char* message, const char* details_json, void* trans_arg);
+    static void ctrl_event_sink(void* handle, const char* message, const char* details_json, void* trans_arg);
+    static void tasker_event_sink(void* handle, const char* message, const char* details_json, void* trans_arg);
+    static void ctx_event_sink(void* handle, const char* message, const char* details_json, void* trans_arg);
 
 private:
-    MaaResource* resource_ = nullptr;
+    // for bind_resource
+    MaaResource* bound_res_ = nullptr;
+
+    // for register_sink
+    MaaTasker* reg_tasker_ = nullptr;
+    MaaResource* reg_res_ = nullptr;
+    MaaController* reg_ctrl_ = nullptr;
+    MaaSinkId reg_tasker_sink_id_ = MaaInvalidId;
+    MaaSinkId reg_context_sink_id_ = MaaInvalidId;
+    MaaSinkId reg_res_sink_id_ = MaaInvalidId;
+    MaaSinkId reg_ctrl_sink_id_ = MaaInvalidId;
+
     bool connected_ = false;
     std::string identifier_;
 

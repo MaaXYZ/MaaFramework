@@ -55,3 +55,51 @@ MaaBool MaaAgentServerRegisterCustomAction(const char* name, MaaCustomActionCall
 
     return MAA_AGENT_SERVER_NS::AgentServer::get_instance().register_custom_action(name, action, trans_arg);
 }
+
+void MaaAgentServerAddResourceSink(MaaEventCallback sink, void* trans_arg)
+{
+    LogFunc << VAR_VOIDP(sink) << VAR_VOIDP(trans_arg);
+
+    if (!sink) {
+        LogError << "sink is null";
+        return;
+    }
+
+    MAA_AGENT_SERVER_NS::AgentServer::get_instance().add_resource_sink(sink, trans_arg);
+}
+
+void MaaAgentServerAddControllerSink(MaaEventCallback sink, void* trans_arg)
+{
+    LogFunc << VAR_VOIDP(sink) << VAR_VOIDP(trans_arg);
+
+    if (!sink) {
+        LogError << "sink is null";
+        return;
+    }
+
+    MAA_AGENT_SERVER_NS::AgentServer::get_instance().add_controller_sink(sink, trans_arg);
+}
+
+void MaaAgentServerAddTaskerSink(MaaEventCallback sink, void* trans_arg)
+{
+    LogFunc << VAR_VOIDP(sink) << VAR_VOIDP(trans_arg);
+
+    if (!sink) {
+        LogError << "sink is null";
+        return;
+    }
+
+    MAA_AGENT_SERVER_NS::AgentServer::get_instance().add_tasker_sink(sink, trans_arg);
+}
+
+void MaaAgentServerAddContextSink(MaaEventCallback sink, void* trans_arg)
+{
+    LogFunc << VAR_VOIDP(sink) << VAR_VOIDP(trans_arg);
+
+    if (!sink) {
+        LogError << "sink is null";
+        return;
+    }
+
+    MAA_AGENT_SERVER_NS::AgentServer::get_instance().add_context_sink(sink, trans_arg);
+}

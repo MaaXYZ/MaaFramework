@@ -236,4 +236,4 @@ export using ::MaaImageListBufferClear;
 // Utility/MaaUtility.h
 
 export using ::MaaVersion;
-export using ::MaaSetGlobalOption;
+export using ::MaaGlobalSetOption;

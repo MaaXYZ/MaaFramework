@@ -46,6 +46,8 @@ bool AdbControlUnitMgr::connect()
         return false;
     }
 
+    clear_observer();
+
     if (screencap_methods_ != MaaAdbScreencapMethod_None) {
         screencap_ = std::make_shared<ScreencapAgent>(screencap_methods_, agent_path_);
         screencap_->parse(config_);

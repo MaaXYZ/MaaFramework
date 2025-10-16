@@ -1,12 +1,12 @@
 # python -m pip install maafw
+from maa.event_sink import EventSink
 from maa.tasker import Tasker
 from maa.toolkit import Toolkit
-from maa.context import Context
+from maa.context import Context, ContextEventSink
 from maa.resource import Resource
 from maa.controller import AdbController
 from maa.custom_action import CustomAction
 from maa.custom_recognition import CustomRecognition
-from maa.notification_handler import NotificationHandler, NotificationType
 
 
 # for register decorator
@@ -21,7 +21,7 @@ def main():
 
     res_job = resource.post_bundle(resource_path)
     res_job.wait()
-    
+
     # If not found on Windows, try running as administrator
     adb_devices = Toolkit.find_adb_devices()
     if not adb_devices:
@@ -40,7 +40,6 @@ def main():
     controller.post_connection().wait()
 
     tasker = Tasker()
-    # tasker = Tasker(notification_handler=MyNotificationHandler())
     tasker.bind(resource, controller)
 
     if not tasker.inited:
@@ -72,7 +71,9 @@ class MyRecongition(CustomRecognition):
         reco_detail = context.run_recognition(
             "MyCustomOCR",
             argv.image,
-            pipeline_override={"MyCustomOCR": {"recognition": "OCR", "roi": [100, 100, 200, 300]}},
+            pipeline_override={
+                "MyCustomOCR": {"recognition": "OCR", "roi": [100, 100, 200, 300]}
+            },
         )
 
         # context is a reference, will override the pipeline for whole task
@@ -94,44 +95,30 @@ class MyRecongition(CustomRecognition):
         )
 
 
-class MyNotificationHandler(NotificationHandler):
-    def on_resource_loading(
-        self,
-        noti_type: NotificationType,
-        detail: NotificationHandler.ResourceLoadingDetail,
-    ):
-        print(f"on_resource_loading: {noti_type}, {detail}")
-
-    def on_controller_action(
-        self,
-        noti_type: NotificationType,
-        detail: NotificationHandler.ControllerActionDetail,
-    ):
-        print(f"on_controller_action: {noti_type}, {detail}")
-
-    def on_tasker_task(
-        self, noti_type: NotificationType, detail: NotificationHandler.TaskerTaskDetail
-    ):
-        print(f"on_tasker_task: {noti_type}, {detail}")
-
+class MyContextEventSink(ContextEventSink):
     def on_node_next_list(
         self,
-        noti_type: NotificationType,
-        detail: NotificationHandler.NodeNextListDetail,
+        context: "Context",
+        noti_type: EventSink.NotificationType,
+        detail: ContextEventSink.NodeNextListDetail,
     ):
-        print(f"on_node_next_list: {noti_type}, {detail}")
+        pass
 
     def on_node_recognition(
         self,
-        noti_type: NotificationType,
-        detail: NotificationHandler.NodeRecognitionDetail,
+        context: "Context",
+        noti_type: EventSink.NotificationType,
+        detail: ContextEventSink.NodeRecognitionDetail,
     ):
-        print(f"on_node_recognition: {noti_type}, {detail}")
+        pass
 
     def on_node_action(
-        self, noti_type: NotificationType, detail: NotificationHandler.NodeActionDetail
+        self,
+        context: "Context",
+        noti_type: EventSink.NotificationType,
+        detail: ContextEventSink.NodeActionDetail,
     ):
-        print(f"on_node_action: {noti_type}, {detail}")
+        pass
 
 
 # auto register by decorator, can also call `resource.register_custom_action` manually

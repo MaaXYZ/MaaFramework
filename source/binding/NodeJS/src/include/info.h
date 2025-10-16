@@ -113,7 +113,7 @@ struct ControllerInfo : InfoBase<MaaController*, ControllerInfo>
 {
     constexpr static std::string_view name = "Controller";
 
-    CallbackContext* callback = nullptr;
+    std::map<MaaSinkId, CallbackContext*> callback {};
     CallbackContext* custom_controller = nullptr;
     bool disposed = false;
 
@@ -126,8 +126,8 @@ struct ControllerInfo : InfoBase<MaaController*, ControllerInfo>
 
         std::thread { [handle = handle, callback = callback, custom_controller = custom_controller]() {
             MaaControllerDestroy(handle);
-            if (callback) {
-                delete callback;
+            for (auto [_, cb] : callback) {
+                delete cb;
             }
             if (custom_controller) {
                 delete custom_controller;
@@ -142,7 +142,7 @@ struct ResourceInfo : InfoBase<MaaResource*, ResourceInfo>
 {
     constexpr static std::string_view name = "Resource";
 
-    CallbackContext* callback = nullptr;
+    std::map<MaaSinkId, CallbackContext*> callback {};
     bool disposed = false;
     std::map<std::string, CallbackContext*> custom_recognizers = {};
     std::map<std::string, CallbackContext*> custom_actions = {};
@@ -159,8 +159,8 @@ struct ResourceInfo : InfoBase<MaaResource*, ResourceInfo>
 
         std::thread { [handle = handle, callback = callback, custom_recognizers = custom_recognizers, custom_actions = custom_actions]() {
             MaaResourceDestroy(handle);
-            if (callback) {
-                delete callback;
+            for (auto [_, cb] : callback) {
+                delete cb;
             }
             for (const auto& [_, cb] : custom_recognizers) {
                 delete cb;
@@ -194,7 +194,8 @@ struct TaskerInfo : InfoBase<MaaTasker*, TaskerInfo>
 {
     constexpr static std::string_view name = "Tasker";
 
-    CallbackContext* callback = nullptr;
+    std::map<MaaSinkId, CallbackContext*> callback {};
+    std::map<MaaSinkId, CallbackContext*> context_callback {};
     Napi::Reference<Napi::External<ResourceInfo>> resource = {};
     Napi::Reference<Napi::External<ControllerInfo>> controller = {};
     bool disposed = false;
@@ -206,10 +207,13 @@ struct TaskerInfo : InfoBase<MaaTasker*, TaskerInfo>
         }
         disposed = true;
 
-        std::thread { [handle = handle, callback = callback]() {
+        std::thread { [handle = handle, callback = callback, context_callback = context_callback]() {
             MaaTaskerDestroy(handle);
-            if (callback) {
-                delete callback;
+            for (auto [_, cb] : callback) {
+                delete cb;
+            }
+            for (auto [_, cb] : context_callback) {
+                delete cb;
             }
         } }.detach();
     }

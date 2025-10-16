@@ -1,11 +1,11 @@
-#include "GlobalOptionMgr.h"
+#include "OptionMgr.h"
 
 #include "Utils/Logger.h"
 #include "Utils/Platform.h"
 
-MAA_NS_BEGIN
+MAA_GLOBAL_NS_BEGIN
 
-bool GlobalOptionMgr::set_option(MaaGlobalOption key, MaaOptionValue value, MaaOptionValueSize val_size)
+bool OptionMgr::set_option(MaaGlobalOption key, MaaOptionValue value, MaaOptionValueSize val_size)
 {
     LogFunc << VAR(key) << VAR_VOIDP(value) << VAR(val_size);
 
@@ -24,7 +24,7 @@ bool GlobalOptionMgr::set_option(MaaGlobalOption key, MaaOptionValue value, MaaO
     }
 }
 
-bool GlobalOptionMgr::set_log_dir(MaaOptionValue value, MaaOptionValueSize val_size)
+bool OptionMgr::set_log_dir(MaaOptionValue value, MaaOptionValueSize val_size)
 {
     LogFunc;
 
@@ -38,7 +38,7 @@ bool GlobalOptionMgr::set_log_dir(MaaOptionValue value, MaaOptionValueSize val_s
     return true;
 }
 
-bool GlobalOptionMgr::set_save_draw(MaaOptionValue value, MaaOptionValueSize val_size)
+bool OptionMgr::set_save_draw(MaaOptionValue value, MaaOptionValueSize val_size)
 {
     LogFunc;
 
@@ -54,7 +54,7 @@ bool GlobalOptionMgr::set_save_draw(MaaOptionValue value, MaaOptionValueSize val
     return true;
 }
 
-bool GlobalOptionMgr::set_stdout_level(MaaOptionValue value, MaaOptionValueSize val_size)
+bool OptionMgr::set_stdout_level(MaaOptionValue value, MaaOptionValueSize val_size)
 {
     LogFunc;
 
@@ -72,7 +72,7 @@ bool GlobalOptionMgr::set_stdout_level(MaaOptionValue value, MaaOptionValueSize 
     return true;
 }
 
-bool GlobalOptionMgr::set_debug_mode(MaaOptionValue value, MaaOptionValueSize val_size)
+bool OptionMgr::set_debug_mode(MaaOptionValue value, MaaOptionValueSize val_size)
 {
     LogFunc;
 
@@ -88,4 +88,4 @@ bool GlobalOptionMgr::set_debug_mode(MaaOptionValue value, MaaOptionValueSize va
     return true;
 }
 
-MAA_NS_END
+MAA_GLOBAL_NS_END
