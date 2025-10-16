@@ -44,7 +44,7 @@ struct ResourceImpl : public maajs::NativeClassBase
 
     static ResourceImpl* ctor([[maybe_unused]] const maajs::CallbackInfo& info)
     {
-        auto handle = MaaResourceCreate(nullptr, nullptr);
+        auto handle = MaaResourceCreate();
         if (!handle) {
             return nullptr;
         }

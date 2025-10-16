@@ -14,7 +14,7 @@ int main(int argc, char* argv[])
     }
 
     int level = MaaLoggingLevel_Warn;
-    MaaSetGlobalOption(MaaGlobalOption_StdoutLevel, &level, sizeof(level));
+    MaaGlobalSetOption(MaaGlobalOption_StdoutLevel, &level, sizeof(level));
 
     std::ifstream fin(argv[1]);
     std::stringstream buf;

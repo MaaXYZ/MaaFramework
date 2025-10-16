@@ -4,7 +4,6 @@
 #include <functional>
 #include <iostream>
 #include <mutex>
-#include <unistd.h>
 #include <vector>
 
 #define MAA_JS_IMPL_IS_QUICKJS
