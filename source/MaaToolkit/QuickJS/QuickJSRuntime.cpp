@@ -47,10 +47,10 @@ struct QuickJSRuntimeData : public QuickJSRuntimeBridgeInterface
 
     std::vector<std::function<void(JSContext* ctx)>> take_tasks()
     {
-        std::vector<std::function<void(JSContext * ctx)>> result;
+        std::vector<std::function<void(JSContext * ctx)>> ret_tasks;
         std::unique_lock lock(async_tasks_mtx);
-        std::swap(async_tasks, result);
-        return result;
+        std::swap(async_tasks, ret_tasks);
+        return ret_tasks;
     }
 
     void wait_task()
