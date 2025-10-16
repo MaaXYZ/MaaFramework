@@ -2,8 +2,8 @@
 
 #include <iostream>
 
+#include "../foundation/bridge.h"
 #include "../foundation/macros.h"
-#include "bridge.h"
 
 #ifdef MAA_JS_IMPL_IS_NODEJS
 Napi::Object Init(Napi::Env env, Napi::Object exports)

@@ -129,18 +129,23 @@ inline ValueType MakeFunction(
     return Napi::Function::New(env, func, name);
 }
 
-inline std::pair<PromiseType, std::shared_ptr<FunctionRefType>> MakePromise(EnvType env)
+inline std::tuple<PromiseType, std::shared_ptr<FunctionRefType>, std::shared_ptr<FunctionRefType>> MakePromise(EnvType env)
 {
     auto deferred = Napi::Promise::Deferred::New(env);
 
-    auto func = MakeFunction(env, "__deferred_resolve", 1, [deferred](const CallbackInfo& info) {
+    auto resolveFunc = MakeFunction(env, "__deferred_resolve", 1, [deferred](const CallbackInfo& info) {
         deferred.Resolve(info[0]);
         return MakeUndefined(info.Env());
     });
+    auto resolvePtr = std::make_shared<maajs::FunctionRefType>(maajs::PersistentFunction(env, resolveFunc.As<Napi::Function>()));
 
-    auto resolvePtr = std::make_shared<maajs::FunctionRefType>(maajs::PersistentFunction(env, func.As<Napi::Function>()));
+    auto rejectFunc = MakeFunction(env, "__deferred_reject", 1, [deferred](const CallbackInfo& info) {
+        deferred.Reject(info[0]);
+        return MakeUndefined(info.Env());
+    });
+    auto rejectPtr = std::make_shared<maajs::FunctionRefType>(maajs::PersistentFunction(env, rejectFunc.As<Napi::Function>()));
 
-    return { deferred.Promise(), resolvePtr };
+    return { deferred.Promise(), resolvePtr, rejectPtr };
 }
 
 inline ValueType GetProp(EnvType, ConstObjectType object, const char* prop)

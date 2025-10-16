@@ -63,7 +63,7 @@ struct JobImpl : public maajs::NativeClassBase
                 key.c_str(),
                 "job_forward",
                 [key, newProPtr](const maajs::CallbackInfo& info) {
-                    auto [retProHolder, retProResolveRef] = maajs::MakePromise(info.Env());
+                    auto [retProHolder, retProResolveRef, _] = maajs::MakePromise(info.Env());
 
                     maajs::CallMemberHelper<void>(
                         info.Env(),

@@ -4,9 +4,10 @@
 
 #include <MaaFramework/MaaAPI.h>
 
+#include "../foundation/async.h"
+#include "../foundation/bridge.h"
 #include "../foundation/classes.h"
 #include "../foundation/macros.h"
-#include "bridge.h"
 #include "ext.h"
 
 struct ResourceImpl : public maajs::NativeClassBase
@@ -33,30 +34,9 @@ struct ResourceImpl : public maajs::NativeClassBase
 
     maajs::PromiseType wait(maajs::EnvType env, MaaResId id)
     {
-        auto [pro, resolve] = maajs::MakePromise(env);
-
-        // TODO: NodeJS thread safe functions + async work
-        std::ignore = id;
-
-#ifdef MAA_JS_IMPL_IS_QUICKJS
-        auto bridge = QuickJSRuntimeBridgeInterface::get(env);
-
-        (std::thread {
-             [bridge, handle = resource, id = id, resolve]() {
-                 auto status = MaaResourceWait(handle, id);
-                 bridge->push_task([resolve, status](JSContext* ctx) {
-                     maajs::EnvType env {
-                         JS_GetRuntime(ctx),
-                         ctx,
-                     };
-                     maajs::CallFuncHelper<void>(env, resolve->Value(), status);
-                 });
-             },
-         })
-            .detach();
-#endif
-
-        return pro;
+        auto worker = new maajs::AsyncWork<MaaStatus>(env, [handle = resource, id]() { return MaaResourceWait(handle, id); });
+        worker->Queue();
+        return worker->Promise();
     }
 
     constexpr static char name[] = "Resource";

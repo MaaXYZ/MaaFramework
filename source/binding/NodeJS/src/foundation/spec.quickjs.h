@@ -319,16 +319,18 @@ inline ValueType
     return result;
 }
 
-inline std::pair<PromiseType, std::shared_ptr<FunctionRefType>> MakePromise(EnvType env)
+inline std::tuple<PromiseType, std::shared_ptr<FunctionRefType>, std::shared_ptr<FunctionRefType>> MakePromise(EnvType env)
 {
     JSValue funcs[2];
     auto retPro = JS_NewPromiseCapability(env.context, funcs);
-    maajs::FreeValue(env, funcs[1]);
 
     auto resolvePtr = std::make_shared<maajs::FunctionRefType>(maajs::PersistentFunction(env, funcs[0], true));
     maajs::FreeValue(env, funcs[0]);
 
-    return { { env.context, retPro }, resolvePtr };
+    auto rejectPtr = std::make_shared<maajs::FunctionRefType>(maajs::PersistentFunction(env, funcs[1], true));
+    maajs::FreeValue(env, funcs[1]);
+
+    return { { env.context, retPro }, resolvePtr, rejectPtr };
 }
 
 inline ValueType GetProp(EnvType env, ConstObjectType object, const char* prop)

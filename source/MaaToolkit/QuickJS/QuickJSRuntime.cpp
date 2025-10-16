@@ -8,7 +8,7 @@
 #include <vector>
 
 #define MAA_JS_IMPL_IS_QUICKJS
-#include "../../binding/NodeJS/src/apis/bridge.h"
+#include "../../binding/NodeJS/src/foundation/bridge.h"
 
 void init_module_maa(JSContext* ctx);
 void init_module_sys(JSContext* ctx);
