@@ -31,28 +31,28 @@ struct ExtContext : public maajs::NativeClassBase
 #endif
 
 #ifdef MAA_JS_IMPL_IS_QUICKJS
-        auto global = JS_GetGlobalObject(env.context);
-        auto ctx = JS_GetPropertyStr(env.context, global, "__MAA_JS_EXT_CTX");
+        auto global = JS_GetGlobalObject(env);
+        auto ctx = JS_GetPropertyStr(env, global, "__MAA_JS_EXT_CTX");
 
         if (JS_IsUndefined(ctx)) {
-            JS_FreeValue(env.context, ctx);
+            JS_FreeValue(env, ctx);
             auto ptr = new ExtContext;
-            ctx = maajs::NativePointerHolder::make(env.context, ptr);
-            JS_SetPropertyStr(env.context, global, "__MAA_JS_EXT_CTX", ctx);
-            JS_FreeValue(env.context, global);
+            ctx = maajs::NativePointerHolder::make(env, ptr);
+            JS_SetPropertyStr(env, global, "__MAA_JS_EXT_CTX", ctx);
+            JS_FreeValue(env, global);
             return ptr;
         }
         else {
-            JS_FreeValue(env.context, global);
+            JS_FreeValue(env, global);
             auto ptr = maajs::NativePointerHolder::take<ExtContext>(ctx);
-            JS_FreeValue(env.context, ctx);
+            JS_FreeValue(env, ctx);
             return ptr;
         }
         /*
-        auto ptr = static_cast<ExtContext*>(JS_GetContextOpaque(env.context));
+        auto ptr = static_cast<ExtContext*>(JS_GetContextOpaque(env));
         if (!ptr) {
             ptr = new ExtContext {};
-            JS_SetContextOpaque(env.context, ptr);
+            JS_SetContextOpaque(env, ptr);
             JS_AddRuntimeFinalizer(env.runtime, +[](JSRuntime*, void* ptr) { delete static_cast<ExtContext*>(ptr); }, ptr);
         }
         return ptr;

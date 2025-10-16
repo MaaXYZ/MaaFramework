@@ -66,8 +66,8 @@ struct NativeClass
                 },
         };
 
-        JS_NewClassID(env.runtime, &classId);
-        JS_NewClass(env.runtime, classId, &classDef);
+        JS_NewClassID(JS_GetRuntime(env), &classId);
+        JS_NewClass(JS_GetRuntime(env), classId, &classDef);
 
         auto proto = maajs::MakeObject(env);
 
@@ -86,12 +86,12 @@ struct NativeClass
             return obj;
         });
 
-        JS_SetConstructorBit(env.context, ctor, true);
-        JS_SetConstructor(env.context, ctor, proto);
+        JS_SetConstructorBit(env, ctor, true);
+        JS_SetConstructor(env, ctor, proto);
 
         Inherit::init_proto(env, proto);
 
-        JS_SetClassProto(env.context, classId, proto);
+        JS_SetClassProto(env, classId, proto);
     }
 
     static Inherit* take(ConstValueType val) { return static_cast<Inherit*>(JS_GetOpaque(val, classId)); }

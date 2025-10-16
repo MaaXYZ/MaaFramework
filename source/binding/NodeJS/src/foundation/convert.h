@@ -139,7 +139,7 @@ struct JSConvert<PromiseType>
 
 #ifdef MAA_JS_IMPL_IS_QUICKJS
         if (JS_IsPromise(val)) {
-            return { env.context, val };
+            return { env, val };
         }
 #endif
 
@@ -383,7 +383,7 @@ struct WrapFunctionHelper
                 return info.Env().Undefined();
 #endif
 #ifdef MAA_JS_IMPL_IS_QUICKJS
-                JS_ThrowTypeError(info.Env().context, "%s", what.c_str());
+                JS_ThrowTypeError(info.Env(), "%s", what.c_str());
                 return JS_EXCEPTION;
 #endif
             }

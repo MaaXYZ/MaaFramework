@@ -66,12 +66,7 @@ struct AsyncWork
         (std::thread {
              [bridge, exec = exec, resolve = resolve, reject = reject, worker = this]() {
                  Ret result = exec();
-                 bridge->push_task([result, resolve, reject, worker](JSContext* ctx) {
-                     maajs::EnvType env {
-                         JS_GetRuntime(ctx),
-                         ctx,
-                     };
-
+                 bridge->push_task([result, resolve, reject, worker](JSContext* env) {
                      try {
                          auto val = JSConvert<Ret>::to_value(env, result);
                          maajs::CallFuncHelper<void>(env, resolve->Value(), val);

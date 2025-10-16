@@ -13,7 +13,7 @@ struct QuickJSRuntimeBridgeInterface
 
     static QuickJSRuntimeBridgeInterface* get(maajs::EnvType env)
     {
-        return static_cast<QuickJSRuntimeBridgeInterface*>(JS_GetRuntimeOpaque(env.runtime));
+        return static_cast<QuickJSRuntimeBridgeInterface*>(JS_GetRuntimeOpaque(JS_GetRuntime(env)));
     }
 };
 #endif
