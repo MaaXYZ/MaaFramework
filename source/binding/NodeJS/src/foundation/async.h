@@ -28,7 +28,7 @@ struct AsyncWork : public Napi::AsyncWorker
         try {
             deferred.Resolve(JSConvert<Ret>::to_value(Env(), result));
         }
-        catch (const ConvertFailed& exc) {
+        catch (const MaaError& exc) {
             deferred.Reject(Napi::String::New(Env(), exc.what()));
         }
     }
@@ -76,7 +76,7 @@ struct AsyncWork
                          auto val = JSConvert<Ret>::to_value(env, result);
                          maajs::CallFuncHelper<void>(env, resolve->Value(), val);
                      }
-                     catch (const ConvertFailed& exc) {
+                     catch (const MaaError& exc) {
                          maajs::CallFuncHelper<void>(env, reject->Value(), MakeString(env, exc.what()));
                      }
 

@@ -94,6 +94,21 @@ inline ObjectType MakeObject(EnvType env)
     return Napi::Object::New(env);
 }
 
+inline ValueType MakeBool(EnvType env, bool val)
+{
+    return Napi::Boolean::New(env, val);
+}
+
+inline bool IsBool(ConstValueType val)
+{
+    return val.IsBoolean();
+}
+
+inline bool GetBool(ConstValueType val)
+{
+    return val.As<Napi::Boolean>().Value();
+}
+
 inline ValueType MakeString(EnvType env, std::string value)
 {
     return Napi::String::New(env, value);
@@ -107,6 +122,32 @@ inline bool IsString(ConstValueType val)
 inline std::string GetString(EnvType, ConstValueType val)
 {
     return val.As<Napi::String>().Utf8Value();
+}
+
+inline ValueType MakeArray(EnvType env, std::vector<ValueType> vals)
+{
+    auto arr = Napi::Array::New(env, vals.size());
+    for (size_t i = 0; i < vals.size(); i++) {
+        arr[i] = vals[i];
+    }
+    return arr;
+}
+
+inline bool IsArray(ConstValueType val)
+{
+    return val.IsArray();
+}
+
+inline std::vector<ConstValueType> GetArray(EnvType, ConstValueType val)
+{
+    auto arr = val.As<Napi::Array>();
+    auto len = arr.Length();
+    std::vector<ConstValueType> result;
+    result.reserve(len);
+    for (uint32_t i = 0; i < len; i++) {
+        result.push_back(arr[i]);
+    }
+    return result;
 }
 
 inline ObjectRefType PersistentObject(EnvType, ConstValueType val, bool = false)
@@ -228,6 +269,11 @@ inline std::string DumpValue(EnvType env, ConstValueType val)
         }
         return std::format("{} [{}]", descStr, TypeOf(env, val));
     }
+}
+
+inline ObjectType GetGlobal(EnvType env)
+{
+    return env.Global();
 }
 
 inline void init(EnvType)

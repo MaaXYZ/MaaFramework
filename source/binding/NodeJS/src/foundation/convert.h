@@ -12,11 +12,11 @@
 namespace maajs
 {
 
-struct ConvertFailed : public std::exception
+struct MaaError : public std::exception
 {
     std::string error;
 
-    ConvertFailed(std::string&& err = "")
+    MaaError(std::string&& err = "")
         : error(err)
     {
     }
@@ -143,7 +143,7 @@ struct JSConvert<PromiseType>
         }
 #endif
 
-        throw ConvertFailed { std::format("expect {}, got {}", name(), DumpValue(env, val)) };
+        throw MaaError { std::format("expect {}, got {}", name(), DumpValue(env, val)) };
     }
 
     static ValueType to_value(EnvType, const PromiseType& val) { return val; }
@@ -159,10 +159,26 @@ struct JSConvert<std::monostate>
         if (IsNull(val)) {
             return {};
         }
-        throw ConvertFailed { std::format("expect {}, got {}", name(), DumpValue(env, val)) };
+        throw MaaError { std::format("expect {}, got {}", name(), DumpValue(env, val)) };
     }
 
     static ValueType to_value(EnvType env, const std::monostate&) { return MakeNull(env); }
+};
+
+template <>
+struct JSConvert<bool>
+{
+    static std::string name() { return "boolean"; }
+
+    static bool from_value(EnvType env, ConstValueType val)
+    {
+        if (IsBool(val)) {
+            return GetBool(val);
+        }
+        throw MaaError { std::format("expect {}, got {}", name(), DumpValue(env, val)) };
+    }
+
+    static ValueType to_value(EnvType env, const bool& val) { return MakeBool(env, val); }
 };
 
 template <>
@@ -175,7 +191,7 @@ struct JSConvert<std::string>
         if (IsString(val)) {
             return GetString(env, val);
         }
-        throw ConvertFailed { std::format("expect {}, got {}", name(), DumpValue(env, val)) };
+        throw MaaError { std::format("expect {}, got {}", name(), DumpValue(env, val)) };
     }
 
     static ValueType to_value(EnvType env, const std::string& val) { return MakeString(env, val); }
@@ -191,7 +207,7 @@ struct JSConvert<int32_t>
         if (IsNumber(val)) {
             return GetNumberI32(val);
         }
-        throw ConvertFailed { std::format("expect {}, got {}", name(), DumpValue(env, val)) };
+        throw MaaError { std::format("expect {}, got {}", name(), DumpValue(env, val)) };
     }
 
     static ValueType to_value(EnvType env, const int32_t& val) { return MakeNumber(env, val); }
@@ -207,7 +223,7 @@ struct JSConvert<int64_t>
         if (IsString(val)) {
             return std::stoll(GetString(env, val));
         }
-        throw ConvertFailed { std::format("expect {}, got {}", name(), DumpValue(env, val)) };
+        throw MaaError { std::format("expect {}, got {}", name(), DumpValue(env, val)) };
     }
 
     static ValueType to_value(EnvType env, const int64_t& val) { return MakeString(env, std::to_string(val)); }
@@ -223,10 +239,39 @@ struct JSConvert<uint64_t>
         if (IsString(val)) {
             return std::stoull(GetString(env, val));
         }
-        throw ConvertFailed { std::format("expect {}, got {}", name(), DumpValue(env, val)) };
+        throw MaaError { std::format("expect {}, got {}", name(), DumpValue(env, val)) };
     }
 
     static ValueType to_value(EnvType env, const uint64_t& val) { return MakeString(env, std::to_string(val)); }
+};
+
+template <typename Type>
+struct JSConvert<std::vector<Type>>
+{
+    static std::string name() { return std::format("{}[]", JSConvert<Type>::name()); }
+
+    static std::vector<Type> from_value(EnvType env, ConstValueType val)
+    {
+        if (IsArray(val)) {
+            auto vals = GetArray(env, val);
+            std::vector<Type> result;
+            for (const auto& val : vals) {
+                result.push_back(JSConvert<Type>::from_value(env, val));
+                FreeValue(env, val);
+            }
+        }
+        throw MaaError { std::format("expect {}, got {}", name(), DumpValue(env, val)) };
+    }
+
+    static ValueType to_value(EnvType env, const std::vector<Type>& vals)
+    {
+        std::vector<ValueType> result;
+        result.reserve(vals.size());
+        for (const auto& val : vals) {
+            result.push_back(JSConvert<Type>::to_value(env, val));
+        }
+        return MakeArray(env, result);
+    }
 };
 
 template <typename Type>
@@ -247,10 +292,10 @@ struct JSConvert<std::optional<Type>>
     static ValueType to_value(EnvType env, const std::optional<Type>& val)
     {
         if (val) {
-            return MakeNull(env);
+            return JSConvert<Type>::to_value(env, *val);
         }
         else {
-            return JSConvert<Type>::to_value(env, *val);
+            return MakeNull(env);
         }
     }
 };
@@ -271,7 +316,7 @@ struct WrapFunctionHelper
         return +[](const CallbackInfo& info) {
             try {
                 if (info.Length() != arg_count) {
-                    throw ConvertFailed { std::format("expect {} arguments, got {}", arg_count, info.Length()) };
+                    throw MaaError { std::format("expect {} arguments, got {}", arg_count, info.Length()) };
                 }
 
                 typename traits::args params;
@@ -331,7 +376,7 @@ struct WrapFunctionHelper
 
                 return ret;
             }
-            catch (const ConvertFailed& exc) {
+            catch (const MaaError& exc) {
                 std::string what = std::format("maa.{}: {}", (const char*)name.data, exc.what());
 #ifdef MAA_JS_IMPL_IS_NODEJS
                 Napi::TypeError::New(info.Env(), what).ThrowAsJavaScriptException();

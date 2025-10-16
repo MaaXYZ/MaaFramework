@@ -6,6 +6,8 @@ async function main() {
     await job.wait().status
     print('after await')
 
+    print(`loaded: ${res.loaded}\nhash: ${res.hash}\nnode_list: ${res.node_list?.join(', ')}`)
+
     exit('123')
 }
 

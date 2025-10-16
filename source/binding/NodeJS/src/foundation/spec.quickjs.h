@@ -235,6 +235,21 @@ inline ObjectType MakeObject(EnvType env)
     return JS_NewObject(env.context);
 }
 
+inline ValueType MakeBool(EnvType env, bool val)
+{
+    return JS_NewBool(env.context, val);
+}
+
+inline bool IsBool(ConstValueType val)
+{
+    return JS_IsBool(val);
+}
+
+inline bool GetBool(ConstValueType val)
+{
+    return JS_VALUE_GET_BOOL(val);
+}
+
 inline ValueType MakeString(EnvType env, std::string value)
 {
     return JS_NewStringLen(env.context, value.c_str(), value.size());
@@ -252,6 +267,28 @@ inline std::string GetString(EnvType env, ConstValueType val)
     auto ret = std::string(ptr, len);
     JS_FreeCString(env.context, ptr);
     return ret;
+}
+
+inline ValueType MakeArray(EnvType env, std::vector<ValueType> vals)
+{
+    return JS_NewArrayFrom(env.context, static_cast<int>(vals.size()), vals.data());
+}
+
+inline bool IsArray(ConstValueType val)
+{
+    return JS_IsArray(val);
+}
+
+inline std::vector<ConstValueType> GetArray(EnvType env, ConstValueType val)
+{
+    auto lenVal = JS_GetPropertyStr(env.context, val, "length");
+    uint32_t len = static_cast<uint32_t>(JS_VALUE_GET_INT(lenVal));
+    std::vector<ConstValueType> result;
+    result.reserve(len);
+    for (uint32_t i = 0; i < len; i++) {
+        result.push_back(JS_GetPropertyUint32(env.context, val, i));
+    }
+    return result;
 }
 
 inline ObjectRefType PersistentObject(EnvType env, ConstObjectType val, bool auto_unref = false)
@@ -434,6 +471,11 @@ inline std::string DumpValue(EnvType env, ConstValueType val)
         descStr = descStr.substr(0, 17) + "...";
     }
     return std::format("{} [{}]", descStr, TypeOf(env, val));
+}
+
+inline ObjectType GetGlobal(EnvType env)
+{
+    return JS_GetGlobalObject(env.context);
 }
 
 inline void init(EnvType env)

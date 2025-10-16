@@ -8,6 +8,8 @@
 #include "../foundation/bridge.h"
 #include "../foundation/classes.h"
 #include "../foundation/macros.h"
+#include "../foundation/utils.h"
+#include "buffer.h"
 #include "ext.h"
 
 struct ResourceImpl : public maajs::NativeClassBase
@@ -17,10 +19,9 @@ struct ResourceImpl : public maajs::NativeClassBase
     ResourceImpl(MaaResource* res)
         : resource(res)
     {
-        std::cout << "resource create!" << std::endl;
     }
 
-    ~ResourceImpl() { std::cout << "resource destroy!" << std::endl; }
+    ~ResourceImpl() {}
 
     void destroy() { MaaResourceDestroy(resource); }
 
@@ -30,6 +31,40 @@ struct ResourceImpl : public maajs::NativeClassBase
         return maajs::CallCtorHelper(env, ExtContext::get(env)->jobCtor, maajs::DupValue(env, self), id);
     }
 
+    void override_pipeline(maajs::EnvType env, maajs::ValueType pipeline)
+    {
+        auto str = maajs::JsonStringify(env, pipeline);
+        maajs::FreeValue(env, pipeline);
+
+        if (!MaaResourceOverridePipeline(resource, str.c_str())) {
+            throw maajs::MaaError { "Resource override_pipeline failed" };
+        }
+    }
+
+    void override_next(std::string node_name, std::vector<std::string> next_list)
+    {
+        StringListBuffer buffer;
+        buffer.set_vector(next_list, [](auto str) {
+            StringBuffer buf;
+            buf.set(str);
+            return buf;
+        });
+        if (!MaaResourceOverrideNext(resource, node_name.c_str(), buffer)) {
+            throw maajs::MaaError { "Resource override_next failed" };
+        }
+    }
+
+    std::optional<std::string> get_node_data(std::string node_name)
+    {
+        StringBuffer buffer;
+        if (!MaaResourceGetNodeData(resource, node_name.c_str(), buffer)) {
+            return std::nullopt;
+        }
+        return buffer.str();
+    }
+
+    void clear() { MaaResourceClear(resource); }
+
     MaaStatus status(MaaResId id) { return MaaResourceStatus(resource, id); }
 
     maajs::PromiseType wait(maajs::EnvType env, MaaResId id)
@@ -37,6 +72,27 @@ struct ResourceImpl : public maajs::NativeClassBase
         auto worker = new maajs::AsyncWork<MaaStatus>(env, [handle = resource, id]() { return MaaResourceWait(handle, id); });
         worker->Queue();
         return worker->Promise();
+    }
+
+    bool get_loaded() { return MaaResourceLoaded(resource); }
+
+    std::optional<std::string> get_hash()
+    {
+        StringBuffer buf;
+        if (!MaaResourceGetHash(resource, buf)) {
+            return std::nullopt;
+        }
+        return buf.str();
+    }
+
+    std::optional<std::vector<std::string>> get_node_list()
+    {
+        StringListBuffer buffer;
+        if (!MaaResourceGetNodeList(resource, buffer)) {
+            return std::nullopt;
+        }
+
+        return buffer.as_vector([](StringBufferRefer buf) { return buf.str(); });
     }
 
     constexpr static char name[] = "Resource";
@@ -60,8 +116,15 @@ void ResourceImpl::init_proto(maajs::EnvType env, [[maybe_unused]] maajs::ConstO
 {
     MAA_BIND_FUNC(env, proto, "destroy", ResourceImpl::destroy);
     MAA_BIND_FUNC(env, proto, "post_bundle", ResourceImpl::post_bundle);
+    MAA_BIND_FUNC(env, proto, "override_pipeline", ResourceImpl::override_pipeline);
+    MAA_BIND_FUNC(env, proto, "override_next", ResourceImpl::override_next);
+    MAA_BIND_FUNC(env, proto, "get_node_data", ResourceImpl::get_node_data);
+    MAA_BIND_FUNC(env, proto, "clear", ResourceImpl::clear);
     MAA_BIND_FUNC(env, proto, "status", ResourceImpl::status);
     MAA_BIND_FUNC(env, proto, "wait", ResourceImpl::wait);
+    MAA_BIND_GETTER(env, proto, "loaded", ResourceImpl::get_loaded);
+    MAA_BIND_GETTER(env, proto, "hash", ResourceImpl::get_hash);
+    MAA_BIND_GETTER(env, proto, "node_list", ResourceImpl::get_node_list);
 }
 
 maajs::ValueType load_resource(maajs::EnvType env)
