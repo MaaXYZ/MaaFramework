@@ -319,6 +319,23 @@ inline ValueType
     return result;
 }
 
+inline std::pair<PromiseType, std::shared_ptr<FunctionRefType>> MakePromise(EnvType env)
+{
+    JSValue funcs[2];
+    auto retPro = JS_NewPromiseCapability(env.context, funcs);
+    maajs::FreeValue(env, funcs[1]);
+
+    auto resolvePtr = std::make_shared<maajs::FunctionRefType>(maajs::PersistentFunction(env, funcs[0], true));
+    maajs::FreeValue(env, funcs[0]);
+
+    return { { env.context, retPro }, resolvePtr };
+}
+
+inline ValueType GetProp(EnvType env, ConstObjectType object, const char* prop)
+{
+    return JS_GetPropertyStr(env.context, object, prop);
+}
+
 inline void BindValue(EnvType env, ConstObjectType object, const char* prop, ValueType value)
 {
     JS_DefinePropertyValue(env.context, object, JS_NewAtom(env.context, prop), value, JS_PROP_ENUMERABLE);

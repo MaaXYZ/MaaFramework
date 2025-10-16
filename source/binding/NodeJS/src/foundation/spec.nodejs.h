@@ -129,7 +129,26 @@ inline ValueType MakeFunction(
     return Napi::Function::New(env, func, name);
 }
 
-inline void BindValue([[maybe_unused]] EnvType env, ConstObjectType object, const char* prop, ValueType value)
+inline std::pair<PromiseType, std::shared_ptr<FunctionRefType>> MakePromise(EnvType env)
+{
+    auto deferred = Napi::Promise::Deferred::New(env);
+
+    auto func = MakeFunction(env, "__deferred_resolve", 1, [deferred](const CallbackInfo& info) {
+        deferred.Resolve(info[0]);
+        return MakeUndefined(info.Env());
+    });
+
+    auto resolvePtr = std::make_shared<maajs::FunctionRefType>(maajs::PersistentFunction(env, func.As<Napi::Function>()));
+
+    return { deferred.Promise(), resolvePtr };
+}
+
+inline ValueType GetProp(EnvType, ConstObjectType object, const char* prop)
+{
+    return object[prop];
+}
+
+inline void BindValue(EnvType, ConstObjectType object, const char* prop, ValueType value)
 {
     object.DefineProperty(Napi::PropertyDescriptor::Value(prop, value, napi_enumerable));
 }
@@ -147,16 +166,22 @@ inline void BindGetter(
 
 inline ValueType CallCtor(EnvType, const FunctionRefType& ctor, std::vector<ValueType> args)
 {
-    std::vector<napi_value> rawArgs(args.size());
+    std::vector<napi_value> rawArgs;
+    rawArgs.reserve(args.size());
     for (auto arg : args) {
         rawArgs.push_back(arg);
     }
     return ctor.New(rawArgs);
 }
 
+inline ValueType CallFunc(EnvType, ConstValueType func, std::vector<ValueType> args)
+{
+    return func.As<Napi::Function>().Call(args);
+}
+
 inline ValueType CallMember(EnvType, ConstObjectType object, const char* prop, std::vector<ValueType> args)
 {
-    return object.Get(prop).As<Napi::Function>().Call(args);
+    return object.Get(prop).As<Napi::Function>().Call(object, args);
 }
 
 inline std::string_view TypeOf(EnvType, ConstValueType val)

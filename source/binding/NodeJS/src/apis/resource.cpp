@@ -33,35 +33,30 @@ struct ResourceImpl : public maajs::NativeClassBase
 
     maajs::PromiseType wait(maajs::EnvType env, MaaResId id)
     {
-#ifdef MAA_JS_IMPL_IS_NODEJS
+        auto [pro, resolve] = maajs::MakePromise(env);
+
+        // TODO: NodeJS thread safe functions + async work
         std::ignore = id;
-        return Napi::Promise::Deferred::New(env).Promise();
-#endif
 
 #ifdef MAA_JS_IMPL_IS_QUICKJS
         auto bridge = QuickJSRuntimeBridgeInterface::get(env);
 
-        JSValue funcs[2];
-        auto pro = JS_NewPromiseCapability(env.context, funcs);
-        maajs::FreeValue(env, funcs[1]);
-
         (std::thread {
-             [bridge, handle = resource, id = id, resolve = funcs[0]]() {
+             [bridge, handle = resource, id = id, resolve]() {
                  auto status = MaaResourceWait(handle, id);
                  bridge->push_task([resolve, status](JSContext* ctx) {
                      maajs::EnvType env {
                          JS_GetRuntime(ctx),
                          ctx,
                      };
-                     maajs::CallFuncHelper<void>(env, resolve, status);
-                     maajs::FreeValue(env, resolve);
+                     maajs::CallFuncHelper<void>(env, resolve->Value(), status);
                  });
              },
          })
             .detach();
-
-        return { env.context, pro };
 #endif
+
+        return pro;
     }
 
     constexpr static char name[] = "Resource";

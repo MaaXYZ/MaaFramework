@@ -63,18 +63,7 @@ struct JobImpl : public maajs::NativeClassBase
                 key.c_str(),
                 "job_forward",
                 [key, newProPtr](const maajs::CallbackInfo& info) {
-#ifdef MAA_JS_IMPL_IS_NODEJS
-                    std::ignore = info;
-                    return Napi::Promise::Deferred::New(info.Env()).Promise();
-#endif
-
-#ifdef MAA_JS_IMPL_IS_QUICKJS
-                    JSValue funcs[2];
-                    auto retPro = JS_NewPromiseCapability(info.Env().context, funcs);
-                    maajs::FreeValue(info.Env(), funcs[1]);
-
-                    auto resolvePtr = std::make_shared<maajs::FunctionRefType>(maajs::PersistentFunction(info.Env(), funcs[0], true));
-                    maajs::FreeValue(info.Env(), funcs[0]);
+                    auto [retProHolder, retProResolveRef] = maajs::MakePromise(info.Env());
 
                     maajs::CallMemberHelper<void>(
                         info.Env(),
@@ -84,16 +73,15 @@ struct JobImpl : public maajs::NativeClassBase
                             info.Env(),
                             "",
                             1,
-                            [key, resolvePtr](const maajs::CallbackInfo& info) {
+                            [key, retProResolveRef](const maajs::CallbackInfo& info) {
                                 auto self = info[0];
-                                auto result = JS_GetPropertyStr(info.Env().context, self, key.c_str());
-                                maajs::CallFuncHelper<void>(info.Env(), resolvePtr->Value(), result);
-                                return JS_UNDEFINED;
+                                auto result = maajs::GetProp(info.Env(), maajs::ValueToObject(self), key.c_str());
+                                maajs::CallFuncHelper<void>(info.Env(), retProResolveRef->Value(), result);
+                                return maajs::MakeUndefined(info.Env());
                             },
-                            [resolvePtr](auto marker) { marker(resolvePtr->Value()); }));
+                            [retProResolveRef](auto marker) { marker(retProResolveRef->Value()); }));
 
-                    return retPro;
-#endif
+                    return retProHolder;
                 },
                 [newProPtr](auto marker) { marker(newProPtr->Value()); });
         }

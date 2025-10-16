@@ -20,6 +20,14 @@
             "program": "${workspaceFolder}/build/bin/Debug/MaaQjsRunner",
             "args": ["source/binding/NodeJS/src/test.mts"],
             "cwd": "${workspaceFolder}"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "NodeTest",
+            "program": "node",
+            "args": ["source/binding/NodeJS/src/test-node.js"],
+            "cwd": "${workspaceFolder}"
         }
     ]
 }
