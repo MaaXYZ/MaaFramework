@@ -29,11 +29,11 @@ void init_module_maa(JSContext* ctx)
     auto maa = maajs::ObjectType::New(env);
     auto globalObject = env.Global();
 
-    maajs::BindValue(env, maa, "Global", load_global(env));
-    maajs::BindValue(env, maa, "Job", load_job(env));
-    maajs::BindValue(env, maa, "Resource", load_resource(env));
+    maajs::BindValue(maa, "Global", load_global(env));
+    maajs::BindValue(maa, "Job", load_job(env));
+    maajs::BindValue(maa, "Resource", load_resource(env));
 
-    maajs::BindValue(env, globalObject, "maa", maa);
+    maajs::BindValue(globalObject, "maa", maa);
 }
 
 void maa_rt_print(std::string str)
@@ -51,7 +51,7 @@ void init_module_sys(JSContext* ctx)
     maajs::EnvType env { ctx };
     auto globalObject = env.Global();
 
-    MAA_BIND_FUNC(env, globalObject, "print", maa_rt_print);
-    MAA_BIND_FUNC(env, globalObject, "exit", maa_rt_exit);
+    MAA_BIND_FUNC(globalObject, "print", maa_rt_print);
+    MAA_BIND_FUNC(globalObject, "exit", maa_rt_exit);
 }
 #endif

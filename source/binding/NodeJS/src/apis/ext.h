@@ -25,22 +25,15 @@ struct ExtContext : public maajs::NativeClassBase
 #endif
 
 #ifdef MAA_JS_IMPL_IS_QUICKJS
-        auto global = JS_GetGlobalObject(env);
-        auto ctx = JS_GetPropertyStr(env, global, "__MAA_JS_EXT_CTX");
-
-        if (JS_IsUndefined(ctx)) {
-            JS_FreeValue(env, ctx);
+        auto global = env.Global();
+        auto ctx = global["__MAA_JS_EXT_CTX"].AsValue();
+        if (ctx.IsUndefined()) {
             auto ptr = new ExtContext;
-            ctx = maajs::NativePointerHolder::make(env, ptr);
-            JS_SetPropertyStr(env, global, "__MAA_JS_EXT_CTX", ctx);
-            JS_FreeValue(env, global);
+            global["__MAA_JS_EXT_CTX"] = { env, maajs::NativePointerHolder::make(env, ptr) };
             return ptr;
         }
         else {
-            JS_FreeValue(env, global);
-            auto ptr = maajs::NativePointerHolder::take<ExtContext>(ctx);
-            JS_FreeValue(env, ctx);
-            return ptr;
+            return maajs::NativePointerHolder::take<ExtContext>(ctx.peek());
         }
         /*
         auto ptr = static_cast<ExtContext*>(JS_GetContextOpaque(env));

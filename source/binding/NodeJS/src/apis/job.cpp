@@ -20,37 +20,34 @@ struct JobImpl : public maajs::NativeClassBase
 
     MaaId get_id() { return id; }
 
-    MaaStatus get_status(maajs::EnvType env)
+    MaaStatus get_status()
     {
         if (!status) {
-            status = maajs::CallMemberHelper<MaaStatus>(env, source.Value(), "status", id);
+            status = maajs::CallMemberHelper<MaaStatus>(source.Value(), "status", id);
         }
         return *status;
     }
 
     maajs::ValueType wait(maajs::ValueType self, maajs::EnvType env)
     {
-        auto pro = maajs::CallMemberHelper<maajs::ValueType>(env, source.Value(), "wait", id).As<maajs::ObjectType>();
+        auto pro = maajs::CallMemberHelper<maajs::ObjectType>(source.Value(), "wait", id);
 
         auto selfPtr = std::make_shared<maajs::ObjectRefType>(maajs::PersistentObject(self.As<maajs::ObjectType>()));
-        auto newPro = maajs::CallMemberHelper<maajs::ValueType>(
-                          env,
-                          pro,
-                          "then",
-                          maajs::MakeFunction(
-                              env,
-                              "",
-                              1,
-                              [selfPtr](const maajs::CallbackInfo&) -> maajs::ValueType { return selfPtr->Value(); },
-                              [selfPtr](auto marker) { marker(selfPtr->Value()); }))
-                          .As<maajs::ObjectType>();
+        auto newPro = maajs::CallMemberHelper<maajs::ObjectType>(
+            pro,
+            "then",
+            maajs::MakeFunction(
+                env,
+                "",
+                1,
+                [selfPtr](const maajs::CallbackInfo&) -> maajs::ValueType { return selfPtr->Value(); },
+                [selfPtr](auto marker) { marker(selfPtr->Value()); }));
 
         std::vector<std::string> forwards = { "status", "done", "succeeded", "failed" };
         for (auto key : forwards) {
             auto newProPtr = std::make_shared<maajs::ObjectRefType>(maajs::PersistentObject(newPro));
 
             maajs::BindGetter(
-                env,
                 newPro,
                 key.c_str(),
                 "job_forward",
@@ -58,7 +55,6 @@ struct JobImpl : public maajs::NativeClassBase
                     auto [retProHolder, retProResolveRef, _] = maajs::MakePromise(info.Env());
 
                     maajs::CallMemberHelper<void>(
-                        info.Env(),
                         newProPtr->Value(),
                         "then",
                         maajs::MakeFunction(
@@ -68,7 +64,7 @@ struct JobImpl : public maajs::NativeClassBase
                             [key, retProResolveRef](const maajs::CallbackInfo& info) {
                                 auto self = info[0];
                                 auto result = self.As<maajs::ObjectType>()[key].AsValue();
-                                maajs::CallFuncHelper<void>(info.Env(), retProResolveRef->Value(), result);
+                                maajs::CallFuncHelper<void>(retProResolveRef->Value(), result);
                                 return info.Env().Undefined();
                             },
                             [retProResolveRef](auto marker) { marker(retProResolveRef->Value()); }));
@@ -100,10 +96,10 @@ MAA_JS_NATIVE_CLASS_STATIC_IMPL(JobImpl)
 
 void JobImpl::init_proto(maajs::EnvType env, maajs::ObjectType proto)
 {
-    MAA_BIND_GETTER(env, proto, "source", JobImpl::get_source);
-    MAA_BIND_GETTER(env, proto, "id", JobImpl::get_id);
-    MAA_BIND_GETTER(env, proto, "status", JobImpl::get_status);
-    MAA_BIND_FUNC(env, proto, "wait", JobImpl::wait);
+    MAA_BIND_GETTER(proto, "source", JobImpl::get_source);
+    MAA_BIND_GETTER(proto, "id", JobImpl::get_id);
+    MAA_BIND_GETTER(proto, "status", JobImpl::get_status);
+    MAA_BIND_FUNC(proto, "wait", JobImpl::wait);
 }
 
 maajs::ValueType load_job(maajs::EnvType env)

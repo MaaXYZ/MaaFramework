@@ -70,10 +70,10 @@ struct AsyncWork
                      QjsEnv env { ctx };
                      try {
                          auto val = JSConvert<Ret>::to_value(env, result);
-                         maajs::CallFuncHelper<void>(env, resolve->Value(), val);
+                         maajs::CallFuncHelper<void>(resolve->Value(), val);
                      }
                      catch (const MaaError& exc) {
-                         maajs::CallFuncHelper<void>(env, reject->Value(), std::string { exc.what() });
+                         maajs::CallFuncHelper<void>(reject->Value(), std::string { exc.what() });
                      }
 
                      delete worker;

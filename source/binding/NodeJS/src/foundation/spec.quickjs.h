@@ -2,9 +2,7 @@
 
 #include <format>
 #include <functional>
-#include <iostream>
 #include <string>
-#include <typeinfo>
 
 #ifdef _MSC_VER
 #pragma warning(push)
@@ -178,13 +176,12 @@ inline std::tuple<PromiseType, std::shared_ptr<FunctionRefType>, std::shared_ptr
     return { { env, retPro }, resolvePtr, rejectPtr };
 }
 
-inline void BindValue(EnvType env, ObjectType object, const char* prop, ValueType value)
+inline void BindValue(ObjectType object, const char* prop, ValueType value)
 {
-    JS_DefinePropertyValue(env, object.peek(), JS_NewAtom(env, prop), value.take(), JS_PROP_ENUMERABLE);
+    JS_DefinePropertyValue(object.Env(), object.peek(), JS_NewAtom(object.Env(), prop), value.take(), JS_PROP_ENUMERABLE);
 }
 
 inline void BindGetter(
-    EnvType env,
     ObjectType object,
     const char* prop,
     const char* name,
@@ -192,19 +189,19 @@ inline void BindGetter(
     std::function<void(NativeMarkerFunc)> run_marker = nullptr)
 {
     JS_DefinePropertyGetSet(
-        env,
+        object.Env(),
         object.peek(),
-        JS_NewAtom(env, prop),
-        maajs::MakeFunction(env, name, 0, func, run_marker).take(),
+        JS_NewAtom(object.Env(), prop),
+        maajs::MakeFunction(object.Env(), name, 0, func, run_marker).take(),
         JS_UNDEFINED,
         JS_PROP_ENUMERABLE);
 }
 
-inline ValueType CallCtor(EnvType env, FunctionType ctor, std::vector<ValueType> args)
+inline ValueType CallCtor(FunctionType ctor, std::vector<ValueType> args)
 {
     auto rawArgs = QjsArray::__Trans(args, false);
-    auto result = JS_CallConstructor(env, ctor.peek(), static_cast<int>(rawArgs.size()), rawArgs.data());
-    return { env, result };
+    auto result = JS_CallConstructor(ctor.Env(), ctor.peek(), static_cast<int>(rawArgs.size()), rawArgs.data());
+    return { ctor.Env(), result };
 }
 
 inline ValueType CallMember(ObjectType object, const char* prop, std::vector<ValueType> args)

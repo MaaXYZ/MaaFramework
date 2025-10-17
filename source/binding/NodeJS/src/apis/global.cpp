@@ -19,8 +19,8 @@ maajs::ObjectType load_global(maajs::EnvType env)
 {
     auto globalObject = maajs::ObjectType::New(env);
 
-    MAA_BIND_GETTER(env, globalObject, "version_from_macro", version_from_macro);
-    MAA_BIND_GETTER(env, globalObject, "version", version);
+    MAA_BIND_GETTER(globalObject, "version_from_macro", version_from_macro);
+    MAA_BIND_GETTER(globalObject, "version", version);
 
     return globalObject;
 }

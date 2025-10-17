@@ -93,18 +93,17 @@ inline std::tuple<PromiseType, std::shared_ptr<FunctionRefType>, std::shared_ptr
     return { deferred.Promise(), resolvePtr, rejectPtr };
 }
 
-inline void BindValue(EnvType, ObjectType object, const char* prop, ValueType value)
+inline void BindValue(ObjectType object, const char* prop, ValueType value)
 {
     object.DefineProperty(Napi::PropertyDescriptor::Value(prop, value, napi_enumerable));
 }
 
-inline void
-    BindGetter(EnvType, ObjectType object, const char* prop, const char*, RawCallback func, std::function<void(NativeMarkerFunc)> = nullptr)
+inline void BindGetter(ObjectType object, const char* prop, const char*, RawCallback func, std::function<void(NativeMarkerFunc)> = nullptr)
 {
     object.DefineProperty(Napi::PropertyDescriptor::Accessor(prop, func, napi_enumerable));
 }
 
-inline ValueType CallCtor(EnvType, const FunctionRefType& ctor, std::vector<ValueType> args)
+inline ValueType CallCtor(const FunctionRefType& ctor, std::vector<ValueType> args)
 {
     std::vector<napi_value> rawArgs;
     rawArgs.reserve(args.size());
@@ -158,11 +157,6 @@ inline std::string DumpValue(ValueType val)
         }
         return std::format("{} [{}]", descStr, TypeOf(val));
     }
-}
-
-inline ObjectType GetGlobal(EnvType env)
-{
-    return env.Global();
 }
 
 inline void init(EnvType)

@@ -125,6 +125,22 @@ struct JSConvert<ValueType>
 };
 
 template <>
+struct JSConvert<ObjectType>
+{
+    static std::string name() { return "object"; };
+
+    static ObjectType from_value(ValueType val)
+    {
+        if (val.IsObject()) {
+            return val.As<ObjectType>();
+        }
+        throw MaaError { std::format("expect {}, got {}", name(), DumpValue(val)) };
+    }
+
+    static ValueType to_value(EnvType, const ObjectType& val) { return val; }
+};
+
+template <>
 struct JSConvert<FunctionType>
 {
     static std::string name() { return "function"; };
@@ -416,19 +432,19 @@ inline std::vector<ValueType> WrapArgs(EnvType env, Args&&... args)
 }
 
 template <typename... Args>
-inline ValueType CallCtorHelper(EnvType env, const FunctionRefType& ctor, Args&&... args)
+inline ValueType CallCtorHelper(const FunctionRefType& ctor, Args&&... args)
 {
-    auto params = WrapArgs(env, std::forward<Args>(args)...);
+    auto params = WrapArgs(ctor.Env(), std::forward<Args>(args)...);
 
-    auto val = CallCtor(env, ctor, params);
+    auto val = CallCtor(ctor, params);
 
     return val;
 }
 
 template <typename Ret, typename... Args>
-inline Ret CallFuncHelper(EnvType env, FunctionType func, Args&&... args)
+inline Ret CallFuncHelper(FunctionType func, Args&&... args)
 {
-    auto params = WrapArgs(env, std::forward<Args>(args)...);
+    auto params = WrapArgs(func.Env(), std::forward<Args>(args)...);
 
     auto val = func.Call(params);
 
@@ -438,9 +454,9 @@ inline Ret CallFuncHelper(EnvType env, FunctionType func, Args&&... args)
 }
 
 template <typename Ret, typename... Args>
-inline Ret CallMemberHelper(EnvType env, ObjectType object, const char* prop, Args&&... args)
+inline Ret CallMemberHelper(ObjectType object, const char* prop, Args&&... args)
 {
-    auto params = WrapArgs(env, std::forward<Args>(args)...);
+    auto params = WrapArgs(object.Env(), std::forward<Args>(args)...);
 
     auto val = CallMember(object, prop, params);
 

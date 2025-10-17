@@ -1,10 +1,8 @@
 #pragma once
 
-#include <format>
-#include <functional>
-#include <iostream>
 #include <string>
-#include <typeinfo>
+#include <variant>
+#include <vector>
 
 #ifdef _MSC_VER
 #pragma warning(push)
@@ -110,6 +108,8 @@ struct QjsValue
     bool IsNull() const { return JS_IsNull(value); }
 
     bool IsUndefined() const { return JS_IsUndefined(value); }
+
+    bool IsObject() const { return JS_IsObject(value); }
 
     bool IsBoolean() const { return JS_IsBool(value); }
 

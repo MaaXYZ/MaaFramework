@@ -28,7 +28,7 @@ struct ResourceImpl : public maajs::NativeClassBase
     maajs::ValueType post_bundle(maajs::ValueType self, maajs::EnvType env, std::string path)
     {
         auto id = MaaResourcePostBundle(resource, path.c_str());
-        return maajs::CallCtorHelper(env, ExtContext::get(env)->jobCtor, self, id);
+        return maajs::CallCtorHelper(ExtContext::get(env)->jobCtor, self, id);
     }
 
     void override_pipeline(maajs::EnvType env, maajs::ValueType pipeline)
@@ -113,17 +113,17 @@ MAA_JS_NATIVE_CLASS_STATIC_IMPL(ResourceImpl)
 
 void ResourceImpl::init_proto(maajs::EnvType env, [[maybe_unused]] maajs::ObjectType proto)
 {
-    MAA_BIND_FUNC(env, proto, "destroy", ResourceImpl::destroy);
-    MAA_BIND_FUNC(env, proto, "post_bundle", ResourceImpl::post_bundle);
-    MAA_BIND_FUNC(env, proto, "override_pipeline", ResourceImpl::override_pipeline);
-    MAA_BIND_FUNC(env, proto, "override_next", ResourceImpl::override_next);
-    MAA_BIND_FUNC(env, proto, "get_node_data", ResourceImpl::get_node_data);
-    MAA_BIND_FUNC(env, proto, "clear", ResourceImpl::clear);
-    MAA_BIND_FUNC(env, proto, "status", ResourceImpl::status);
-    MAA_BIND_FUNC(env, proto, "wait", ResourceImpl::wait);
-    MAA_BIND_GETTER(env, proto, "loaded", ResourceImpl::get_loaded);
-    MAA_BIND_GETTER(env, proto, "hash", ResourceImpl::get_hash);
-    MAA_BIND_GETTER(env, proto, "node_list", ResourceImpl::get_node_list);
+    MAA_BIND_FUNC(proto, "destroy", ResourceImpl::destroy);
+    MAA_BIND_FUNC(proto, "post_bundle", ResourceImpl::post_bundle);
+    MAA_BIND_FUNC(proto, "override_pipeline", ResourceImpl::override_pipeline);
+    MAA_BIND_FUNC(proto, "override_next", ResourceImpl::override_next);
+    MAA_BIND_FUNC(proto, "get_node_data", ResourceImpl::get_node_data);
+    MAA_BIND_FUNC(proto, "clear", ResourceImpl::clear);
+    MAA_BIND_FUNC(proto, "status", ResourceImpl::status);
+    MAA_BIND_FUNC(proto, "wait", ResourceImpl::wait);
+    MAA_BIND_GETTER(proto, "loaded", ResourceImpl::get_loaded);
+    MAA_BIND_GETTER(proto, "hash", ResourceImpl::get_hash);
+    MAA_BIND_GETTER(proto, "node_list", ResourceImpl::get_node_list);
 }
 
 maajs::ValueType load_resource(maajs::EnvType env)
