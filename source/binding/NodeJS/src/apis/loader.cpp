@@ -21,20 +21,19 @@ NODE_API_MODULE(maa, Init);
 #endif
 
 #ifdef MAA_JS_IMPL_IS_QUICKJS
-void init_module_maa(JSContext* env)
+void init_module_maa(JSContext* ctx)
 {
+    maajs::EnvType env { ctx };
     maajs::init(env);
 
-    auto maa = maajs::MakeObject(env);
-    auto globalObject = maajs::GetGlobal(env);
+    auto maa = maajs::ObjectType::New(env);
+    auto globalObject = env.Global();
 
     maajs::BindValue(env, maa, "Global", load_global(env));
     maajs::BindValue(env, maa, "Job", load_job(env));
     maajs::BindValue(env, maa, "Resource", load_resource(env));
 
     maajs::BindValue(env, globalObject, "maa", maa);
-
-    maajs::FreeValue(env, globalObject);
 }
 
 void maa_rt_print(std::string str)
@@ -47,13 +46,12 @@ void maa_rt_exit(maajs::EnvType env, std::string result)
     QuickJSRuntimeBridgeInterface::get(env)->call_exit(result);
 }
 
-void init_module_sys(JSContext* env)
+void init_module_sys(JSContext* ctx)
 {
-    auto globalObject = maajs::GetGlobal(env);
+    maajs::EnvType env { ctx };
+    auto globalObject = env.Global();
 
     MAA_BIND_FUNC(env, globalObject, "print", maa_rt_print);
     MAA_BIND_FUNC(env, globalObject, "exit", maa_rt_exit);
-
-    maajs::FreeValue(env, globalObject);
 }
 #endif

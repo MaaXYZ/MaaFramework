@@ -15,102 +15,28 @@
 #pragma warning(pop)
 #endif
 
+#include "spec.quickjs.wrapper.h"
+
 namespace maajs
 {
 
-struct QjsRef
-{
-    JSContext* context {};
-    JSValue value;
-
-    bool auto_unref {};
-
-    QjsRef() = default;
-    QjsRef(JSContext* ctx, JSValue val, bool unref)
-        : context(ctx)
-        , value(val)
-        , auto_unref(unref) {};
-    QjsRef(const QjsRef&) = delete;
-
-    QjsRef(QjsRef&& ref)
-    {
-        context = ref.context;
-        value = ref.value;
-        auto_unref = ref.auto_unref;
-        ref.auto_unref = false;
-    }
-
-    ~QjsRef()
-    {
-        if (auto_unref) {
-            Unref();
-        }
-    }
-
-    QjsRef& operator=(const QjsRef&) = delete;
-
-    QjsRef& operator=(QjsRef&& ref)
-    {
-        if (&ref == this) {
-            return *this;
-        }
-        if (auto_unref) {
-            Unref();
-        }
-        context = ref.context;
-        value = ref.value;
-        auto_unref = ref.auto_unref;
-        ref.auto_unref = false;
-        return *this;
-    }
-
-    JSValueConst Value() const { return value; }
-
-    void Unref()
-    {
-        if (context) {
-            JS_FreeValue(context, value);
-        }
-    }
-};
-
-struct QjsPromise
-{
-    JSContext* context {};
-    JSValue value;
-
-    operator JSValue() const { return value; }
-};
-
-struct QjsCallbackInfo
-{
-    JSContext* context {};
-    JSValueConst thisObject;
-    int argc {};
-    JSValueConst* argv;
-
-    JSContext* Env() const { return context; }
-
-    JSValueConst This() const { return thisObject; }
-
-    size_t Length() const { return static_cast<size_t>(argc); }
-
-    JSValueConst operator[](size_t idx) const { return argv[idx]; }
-};
-
-using ValueType = JSValue;
-using ConstValueType = JSValueConst;
-using ObjectType = JSValue;
-using ConstObjectType = JSValue;
-using ObjectRefType = QjsRef;
-using FunctionRefType = QjsRef;
+using EnvType = QjsEnv;
+using ValueType = QjsValue;
+using ObjectType = QjsObject;
+using BooleanType = QjsBoolean;
+using StringType = QjsString;
+using NumberType = QjsNumber;
+using FunctionType = QjsFunction;
+using ArrayType = QjsArray;
 using PromiseType = QjsPromise;
 
-using EnvType = JSContext*;
+using ObjectRefType = QjsRef<ObjectType>;
+using FunctionRefType = QjsRef<FunctionType>;
+
 using CallbackInfo = QjsCallbackInfo;
 using RawCallback = std::function<ValueType(const CallbackInfo&)>;
 
-using NativeMarkerFunc = std::function<void(maajs::ConstValueType)>;
+using NativeMarkerFunc = std::function<void(const ValueType& value)>;
 
 struct NativeClassBase
 {
@@ -134,8 +60,9 @@ struct NativePointerHolder
                 },
             .gc_mark =
                 +[](JSRuntime* rt, JSValueConst data, JS_MarkFunc* func) {
-                    take<NativeClassBase>(data)->gc_mark(
-                        [rt, func](ConstValueType value) { func(rt, reinterpret_cast<JSGCObjectHeader*>(JS_VALUE_GET_OBJ(value))); });
+                    take<NativeClassBase>(data)->gc_mark([rt, func](const ValueType& value) {
+                        func(rt, reinterpret_cast<JSGCObjectHeader*>(JS_VALUE_GET_OBJ(value.value)));
+                    });
                 },
         };
 
@@ -158,139 +85,34 @@ struct NativePointerHolder
     }
 };
 
-inline ValueType DupValue(EnvType env, ConstValueType val)
-{
-    return JS_DupValue(env, val);
-}
-
-inline void FreeValue(EnvType env, ValueType val)
-{
-    JS_FreeValue(env, val);
-}
-
-inline ValueType ObjectToValue(ObjectType val)
-{
-    return val;
-}
-
-inline ObjectType ValueToObject(ValueType val)
-{
-    return val;
-}
-
-inline ValueType MakeNull(EnvType)
-{
-    return JS_NULL;
-}
-
-inline bool IsNull(ConstValueType val)
-{
-    return JS_IsNull(val);
-}
-
-inline ValueType MakeUndefined(EnvType)
-{
-    return JS_UNDEFINED;
-}
-
-inline bool IsUndefined(ConstValueType val)
-{
-    return JS_IsUndefined(val);
-}
-
-inline ValueType MakeNumber(EnvType env, int32_t val)
-{
-    return JS_NewInt32(env, val);
-}
-
-inline ValueType MakeNumber(EnvType env, double val)
-{
-    return JS_NewFloat64(env, val);
-}
-
-inline bool IsNumber(ConstValueType val)
-{
-    return JS_IsNumber(val);
-}
-
-inline int32_t GetNumberI32(ConstValueType val)
-{
-    return JS_VALUE_GET_INT(val);
-}
-
-inline ObjectType MakeObject(EnvType env)
-{
-    return JS_NewObject(env);
-}
-
-inline ValueType MakeBool(EnvType env, bool val)
-{
-    return JS_NewBool(env, val);
-}
-
-inline bool IsBool(ConstValueType val)
-{
-    return JS_IsBool(val);
-}
-
-inline bool GetBool(ConstValueType val)
-{
-    return JS_VALUE_GET_BOOL(val);
-}
-
-inline ValueType MakeString(EnvType env, std::string value)
-{
-    return JS_NewStringLen(env, value.c_str(), value.size());
-}
-
-inline bool IsString(ConstValueType val)
-{
-    return JS_IsString(val);
-}
-
-inline std::string GetString(EnvType env, ConstValueType val)
-{
-    size_t len {};
-    auto ptr = JS_ToCStringLen2(env, &len, val, false);
-    auto ret = std::string(ptr, len);
-    JS_FreeCString(env, ptr);
-    return ret;
-}
-
 inline ValueType MakeArray(EnvType env, std::vector<ValueType> vals)
 {
-    return JS_NewArrayFrom(env, static_cast<int>(vals.size()), vals.data());
+    return ArrayType::Make(env, vals);
 }
 
-inline bool IsArray(ConstValueType val)
+inline std::vector<ValueType> GetArray(const ArrayType& val)
 {
-    return JS_IsArray(val);
-}
-
-inline std::vector<ConstValueType> GetArray(EnvType env, ConstValueType val)
-{
-    auto lenVal = JS_GetPropertyStr(env, val, "length");
-    uint32_t len = static_cast<uint32_t>(JS_VALUE_GET_INT(lenVal));
-    std::vector<ConstValueType> result;
+    auto len = val.Length();
+    std::vector<ValueType> result;
     result.reserve(len);
     for (uint32_t i = 0; i < len; i++) {
-        result.push_back(JS_GetPropertyUint32(env, val, i));
+        result.push_back(val[i]);
     }
     return result;
 }
 
-inline ObjectRefType PersistentObject(EnvType env, ConstObjectType val, bool auto_unref = false)
+inline ObjectRefType PersistentObject(ObjectType val)
 {
-    return { env, JS_DupValue(env, val), auto_unref };
+    return { val };
 }
 
-inline FunctionRefType PersistentFunction(EnvType env, ConstObjectType val, bool auto_unref = false)
+inline FunctionRefType PersistentFunction(FunctionType val)
 {
-    return { env, JS_DupValue(env, val), auto_unref };
+    return { val };
 }
 
 // 必须要非常小心, 这里传入的回调不能持有Value, 内部的FuncHolder未实现gc_mark
-inline ValueType
+inline FunctionType
     MakeFunction(EnvType env, const char* name, int argc, RawCallback func, std::function<void(NativeMarkerFunc)> run_marker = nullptr)
 {
     struct FuncHolder : public NativeClassBase
@@ -331,7 +153,7 @@ inline ValueType
                 argc,
                 argv,
             };
-            return data->func(info);
+            return data->func(info).take();
         },
         argc,
         0,
@@ -341,7 +163,7 @@ inline ValueType
 
     JS_DefinePropertyValue(env, result, 55 /* JS_ATOM_name */, JS_NewString(env, name), JS_PROP_CONFIGURABLE);
 
-    return result;
+    return { env, result };
 }
 
 inline std::tuple<PromiseType, std::shared_ptr<FunctionRefType>, std::shared_ptr<FunctionRefType>> MakePromise(EnvType env)
@@ -349,28 +171,21 @@ inline std::tuple<PromiseType, std::shared_ptr<FunctionRefType>, std::shared_ptr
     JSValue funcs[2];
     auto retPro = JS_NewPromiseCapability(env, funcs);
 
-    auto resolvePtr = std::make_shared<maajs::FunctionRefType>(maajs::PersistentFunction(env, funcs[0], true));
-    maajs::FreeValue(env, funcs[0]);
+    auto resolvePtr = std::make_shared<FunctionRefType>(PersistentFunction({ env, funcs[0] }));
 
-    auto rejectPtr = std::make_shared<maajs::FunctionRefType>(maajs::PersistentFunction(env, funcs[1], true));
-    maajs::FreeValue(env, funcs[1]);
+    auto rejectPtr = std::make_shared<FunctionRefType>(PersistentFunction({ env, funcs[1] }));
 
     return { { env, retPro }, resolvePtr, rejectPtr };
 }
 
-inline ValueType GetProp(EnvType env, ConstObjectType object, const char* prop)
+inline void BindValue(EnvType env, ObjectType object, const char* prop, ValueType value)
 {
-    return JS_GetPropertyStr(env, object, prop);
-}
-
-inline void BindValue(EnvType env, ConstObjectType object, const char* prop, ValueType value)
-{
-    JS_DefinePropertyValue(env, object, JS_NewAtom(env, prop), value, JS_PROP_ENUMERABLE);
+    JS_DefinePropertyValue(env, object.peek(), JS_NewAtom(env, prop), value.take(), JS_PROP_ENUMERABLE);
 }
 
 inline void BindGetter(
     EnvType env,
-    ConstObjectType object,
+    ObjectType object,
     const char* prop,
     const char* name,
     RawCallback func,
@@ -378,49 +193,28 @@ inline void BindGetter(
 {
     JS_DefinePropertyGetSet(
         env,
-        object,
+        object.peek(),
         JS_NewAtom(env, prop),
-        maajs::MakeFunction(env, name, 0, func, run_marker),
+        maajs::MakeFunction(env, name, 0, func, run_marker).take(),
         JS_UNDEFINED,
         JS_PROP_ENUMERABLE);
 }
 
-inline ValueType CallCtor(EnvType env, const FunctionRefType& ctor, std::vector<ValueType> args)
+inline ValueType CallCtor(EnvType env, FunctionType ctor, std::vector<ValueType> args)
 {
-    auto result = JS_CallConstructor(env, ctor.Value(), static_cast<int>(args.size()), args.data());
-    for (auto& arg : args) {
-        JS_FreeValue(env, arg);
-    }
-    return result;
+    auto rawArgs = QjsArray::__Trans(args, false);
+    auto result = JS_CallConstructor(env, ctor.peek(), static_cast<int>(rawArgs.size()), rawArgs.data());
+    return { env, result };
 }
 
-inline ValueType CallFunc(EnvType env, ConstValueType func, std::vector<ValueType> args)
+inline ValueType CallMember(ObjectType object, const char* prop, std::vector<ValueType> args)
 {
-    auto result = JS_Call(env, func, JS_UNDEFINED, static_cast<int>(args.size()), args.data());
-    for (auto& arg : args) {
-        JS_FreeValue(env, arg);
-    }
-    return result;
+    return object[prop].AsValue().As<FunctionType>().Call(object, args);
 }
 
-inline ValueType CallMember(EnvType env, ConstObjectType object, const char* prop, std::vector<ValueType> args)
+inline std::string_view TypeOf(ValueType val)
 {
-    auto func = JS_GetPropertyStr(env, object, prop);
-    auto result = JS_Call(env, func, object, static_cast<int>(args.size()), args.data());
-    JS_FreeValue(env, func);
-    for (auto& arg : args) {
-        JS_FreeValue(env, arg);
-    }
-    return result;
-}
-
-inline std::string_view TypeOf(EnvType env, ConstValueType val)
-{
-    switch (val.tag) {
-    case JS_TAG_NULL:
-        return "null";
-    }
-    switch (val.tag) {
+    switch (val.value.tag) {
     case JS_TAG_UNDEFINED:
         return "undefined";
     case JS_TAG_NULL:
@@ -435,7 +229,7 @@ inline std::string_view TypeOf(EnvType env, ConstValueType val)
     case JS_TAG_SYMBOL:
         return "symbol";
     case JS_TAG_OBJECT:
-        if (JS_IsFunction(env, val)) {
+        if (val.IsFunction()) {
             return "function";
         }
         else {
@@ -450,20 +244,13 @@ inline std::string_view TypeOf(EnvType env, ConstValueType val)
     return "unknown";
 }
 
-inline std::string DumpValue(EnvType env, ConstValueType val)
+inline std::string DumpValue(ValueType val)
 {
-    auto desc = JS_ToString(env, val);
-    std::string descStr = GetString(env, desc);
-    JS_FreeValue(env, desc);
+    std::string descStr = val.ToString().Utf8Value();
     if (descStr.length() > 20) {
         descStr = descStr.substr(0, 17) + "...";
     }
-    return std::format("{} [{}]", descStr, TypeOf(env, val));
-}
-
-inline ObjectType GetGlobal(EnvType env)
-{
-    return JS_GetGlobalObject(env);
+    return std::format("{} [{}]", descStr, TypeOf(val));
 }
 
 inline void init(EnvType env)

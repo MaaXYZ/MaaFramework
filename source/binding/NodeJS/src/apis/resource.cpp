@@ -25,16 +25,15 @@ struct ResourceImpl : public maajs::NativeClassBase
 
     void destroy() { MaaResourceDestroy(resource); }
 
-    maajs::ValueType post_bundle(maajs::ConstValueType self, maajs::EnvType env, std::string path)
+    maajs::ValueType post_bundle(maajs::ValueType self, maajs::EnvType env, std::string path)
     {
         auto id = MaaResourcePostBundle(resource, path.c_str());
-        return maajs::CallCtorHelper(env, ExtContext::get(env)->jobCtor, maajs::DupValue(env, self), id);
+        return maajs::CallCtorHelper(env, ExtContext::get(env)->jobCtor, self, id);
     }
 
     void override_pipeline(maajs::EnvType env, maajs::ValueType pipeline)
     {
         auto str = maajs::JsonStringify(env, pipeline);
-        maajs::FreeValue(env, pipeline);
 
         if (!MaaResourceOverridePipeline(resource, str.c_str())) {
             throw maajs::MaaError { "Resource override_pipeline failed" };
@@ -107,12 +106,12 @@ struct ResourceImpl : public maajs::NativeClassBase
         return new ResourceImpl { handle };
     }
 
-    static void init_proto([[maybe_unused]] maajs::EnvType env, [[maybe_unused]] maajs::ConstObjectType proto);
+    static void init_proto([[maybe_unused]] maajs::EnvType env, [[maybe_unused]] maajs::ObjectType proto);
 };
 
 MAA_JS_NATIVE_CLASS_STATIC_IMPL(ResourceImpl)
 
-void ResourceImpl::init_proto(maajs::EnvType env, [[maybe_unused]] maajs::ConstObjectType proto)
+void ResourceImpl::init_proto(maajs::EnvType env, [[maybe_unused]] maajs::ObjectType proto)
 {
     MAA_BIND_FUNC(env, proto, "destroy", ResourceImpl::destroy);
     MAA_BIND_FUNC(env, proto, "post_bundle", ResourceImpl::post_bundle);
@@ -129,8 +128,8 @@ void ResourceImpl::init_proto(maajs::EnvType env, [[maybe_unused]] maajs::ConstO
 
 maajs::ValueType load_resource(maajs::EnvType env)
 {
-    maajs::ValueType ctor;
+    maajs::FunctionType ctor;
     maajs::NativeClass<ResourceImpl>::init(env, ctor);
-    ExtContext::get(env)->resourceCtor = maajs::PersistentFunction(env, ctor);
+    ExtContext::get(env)->resourceCtor = maajs::PersistentFunction(ctor);
     return ctor;
 }

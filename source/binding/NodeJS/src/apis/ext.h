@@ -7,12 +7,6 @@ struct ExtContext : public maajs::NativeClassBase
     maajs::FunctionRefType jobCtor;
     maajs::FunctionRefType resourceCtor;
 
-    ~ExtContext()
-    {
-        jobCtor.Unref();
-        resourceCtor.Unref();
-    }
-
     void gc_mark([[maybe_unused]] maajs::NativeMarkerFunc marker) override
     {
         marker(jobCtor.Value());

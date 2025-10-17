@@ -16,12 +16,12 @@ struct NativeClass
     {
         ctor = MakeFunction(env, Inherit::name, 0, [](const maajs::CallbackInfo& info) { //
             if (!info.IsConstructCall()) {
-                return MakeNull(info.Env());
+                return info.Env().Null();
             }
 
             auto impl = Inherit::ctor(info);
             if (!impl) {
-                return MakeNull(info.Env());
+                return info.Env().Null();
             }
 
             auto obj = info.This().As<Napi::Object>();
@@ -35,7 +35,7 @@ struct NativeClass
         Inherit::init_proto(env, proto);
     }
 
-    static Inherit* take(ConstValueType val)
+    static Inherit* take(ValueType val)
     {
         void* result = nullptr;
         napi_unwrap(val.Env(), val, &result);
@@ -54,47 +54,50 @@ struct NativeClass
 {
     static JSClassID classId;
 
-    static void init(EnvType env, ValueType& ctor)
+    static void init(EnvType env, FunctionType& ctor)
     {
         static JSClassDef classDef = {
             .class_name = Inherit::name,
             .finalizer = +[](JSRuntime*, JSValueConst data) { delete take(data); },
             .gc_mark =
                 +[](JSRuntime* rt, JSValueConst data, JS_MarkFunc* func) {
-                    take(data)->gc_mark(
-                        [rt, func](ConstValueType value) { func(rt, reinterpret_cast<JSGCObjectHeader*>(JS_VALUE_GET_OBJ(value))); });
+                    take(data)->gc_mark([rt, func](const ValueType& value) {
+                        func(rt, reinterpret_cast<JSGCObjectHeader*>(JS_VALUE_GET_OBJ(value.value)));
+                    });
                 },
         };
 
         JS_NewClassID(JS_GetRuntime(env), &classId);
         JS_NewClass(JS_GetRuntime(env), classId, &classDef);
 
-        auto proto = maajs::MakeObject(env);
+        auto proto = QjsObject::New(env);
 
-        ctor = maajs::MakeFunction(env, Inherit::name, 0, [](const maajs::CallbackInfo& info) { //
+        ctor = maajs::MakeFunction(env, Inherit::name, 0, [](const maajs::CallbackInfo& info) -> ValueType { //
             auto obj = JS_NewObjectClass(info.context, classId);
             if (JS_IsException(obj)) {
-                return obj;
+                return { info.Env(), obj };
             }
 
             auto impl = Inherit::ctor(info);
             if (!impl) {
-                return JS_EXCEPTION;
+                return { info.Env(), JS_EXCEPTION };
             }
 
             JS_SetOpaque(obj, impl);
-            return obj;
+            return { info.Env(), obj };
         });
 
-        JS_SetConstructorBit(env, ctor, true);
-        JS_SetConstructor(env, ctor, proto);
+        JS_SetConstructorBit(env, ctor.peek(), true);
+        JS_SetConstructor(env, ctor.peek(), proto.peek());
 
         Inherit::init_proto(env, proto);
 
-        JS_SetClassProto(env, classId, proto);
+        JS_SetClassProto(env, classId, proto.take());
     }
 
-    static Inherit* take(ConstValueType val) { return static_cast<Inherit*>(JS_GetOpaque(val, classId)); }
+    static Inherit* take(ValueType val) { return take(val.peek()); }
+
+    static Inherit* take(JSValueConst val) { return static_cast<Inherit*>(JS_GetOpaque(val, classId)); }
 };
 
 #define MAA_JS_NATIVE_CLASS_STATIC_IMPL(Type) \

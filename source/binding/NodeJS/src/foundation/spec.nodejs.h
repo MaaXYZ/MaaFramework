@@ -9,19 +9,23 @@
 namespace maajs
 {
 
+using EnvType = Napi::Env;
 using ValueType = Napi::Value;
-using ConstValueType = Napi::Value;
 using ObjectType = Napi::Object;
-using ConstObjectType = Napi::Object;
-using ObjectRefType = Napi::ObjectReference;
-using FunctionRefType = Napi::FunctionReference;
+using BooleanType = Napi::Boolean;
+using StringType = Napi::String;
+using NumberType = Napi::Number;
+using FunctionType = Napi::Function;
+using ArrayType = Napi::Array;
 using PromiseType = Napi::Promise;
 
-using EnvType = Napi::Env;
+using ObjectRefType = Napi::ObjectReference;
+using FunctionRefType = Napi::FunctionReference;
+
 using CallbackInfo = Napi::CallbackInfo;
 using RawCallback = std::function<ValueType(const CallbackInfo&)>;
 
-using NativeMarkerFunc = std::function<void(maajs::ConstValueType)>;
+using NativeMarkerFunc = std::function<void(const maajs::ValueType&)>;
 
 struct NativeClassBase
 {
@@ -29,100 +33,6 @@ struct NativeClassBase
 
     virtual void gc_mark([[maybe_unused]] NativeMarkerFunc marker) {}
 };
-
-inline ValueType DupValue(EnvType, ConstValueType val)
-{
-    return val;
-}
-
-inline void FreeValue(EnvType, ValueType)
-{
-}
-
-inline ValueType ObjectToValue(ObjectType val)
-{
-    return val.As<Napi::Value>();
-}
-
-inline ObjectType ValueToObject(ValueType val)
-{
-    return val.As<Napi::Object>();
-}
-
-inline ValueType MakeNull(EnvType env)
-{
-    return env.Null();
-}
-
-inline bool IsNull(ConstValueType val)
-{
-    return val.IsNull();
-}
-
-inline ValueType MakeUndefined(EnvType env)
-{
-    return env.Undefined();
-}
-
-inline bool IsUndefined(ConstValueType val)
-{
-    return val.IsUndefined();
-}
-
-inline ValueType MakeNumber(EnvType env, int32_t val)
-{
-    return Napi::Number::New(env, val);
-}
-
-inline ValueType MakeNumber(EnvType env, double val)
-{
-    return Napi::Number::New(env, val);
-}
-
-inline bool IsNumber(ConstValueType val)
-{
-    return val.IsNumber();
-}
-
-inline int32_t GetNumberI32(ConstValueType val)
-{
-    return val.As<Napi::Number>().Int32Value();
-}
-
-inline ObjectType MakeObject(EnvType env)
-{
-    return Napi::Object::New(env);
-}
-
-inline ValueType MakeBool(EnvType env, bool val)
-{
-    return Napi::Boolean::New(env, val);
-}
-
-inline bool IsBool(ConstValueType val)
-{
-    return val.IsBoolean();
-}
-
-inline bool GetBool(ConstValueType val)
-{
-    return val.As<Napi::Boolean>().Value();
-}
-
-inline ValueType MakeString(EnvType env, std::string value)
-{
-    return Napi::String::New(env, value);
-}
-
-inline bool IsString(ConstValueType val)
-{
-    return val.IsString();
-}
-
-inline std::string GetString(EnvType, ConstValueType val)
-{
-    return val.As<Napi::String>().Utf8Value();
-}
 
 inline ValueType MakeArray(EnvType env, std::vector<ValueType> vals)
 {
@@ -133,16 +43,10 @@ inline ValueType MakeArray(EnvType env, std::vector<ValueType> vals)
     return arr;
 }
 
-inline bool IsArray(ConstValueType val)
+inline std::vector<ValueType> GetArray(ArrayType arr)
 {
-    return val.IsArray();
-}
-
-inline std::vector<ConstValueType> GetArray(EnvType, ConstValueType val)
-{
-    auto arr = val.As<Napi::Array>();
     auto len = arr.Length();
-    std::vector<ConstValueType> result;
+    std::vector<ValueType> result;
     result.reserve(len);
     for (uint32_t i = 0; i < len; i++) {
         result.push_back(arr[i]);
@@ -150,17 +54,17 @@ inline std::vector<ConstValueType> GetArray(EnvType, ConstValueType val)
     return result;
 }
 
-inline ObjectRefType PersistentObject(EnvType, ConstValueType val, bool = false)
+inline ObjectRefType PersistentObject(ObjectType val)
 {
-    return Napi::Persistent(val.As<Napi::Object>());
+    return Napi::Persistent(val);
 }
 
-inline FunctionRefType PersistentFunction(EnvType, ConstValueType val, bool = false)
+inline FunctionRefType PersistentFunction(FunctionType val)
 {
-    return Napi::Persistent(val.As<Napi::Function>());
+    return Napi::Persistent(val);
 }
 
-inline ValueType MakeFunction(
+inline FunctionType MakeFunction(
     EnvType env,
     const char* name,
     [[maybe_unused]] int argc,
@@ -176,36 +80,26 @@ inline std::tuple<PromiseType, std::shared_ptr<FunctionRefType>, std::shared_ptr
 
     auto resolveFunc = MakeFunction(env, "__deferred_resolve", 1, [deferred](const CallbackInfo& info) {
         deferred.Resolve(info[0]);
-        return MakeUndefined(info.Env());
+        return info.Env().Undefined();
     });
-    auto resolvePtr = std::make_shared<maajs::FunctionRefType>(maajs::PersistentFunction(env, resolveFunc.As<Napi::Function>()));
+    auto resolvePtr = std::make_shared<maajs::FunctionRefType>(maajs::PersistentFunction(resolveFunc));
 
     auto rejectFunc = MakeFunction(env, "__deferred_reject", 1, [deferred](const CallbackInfo& info) {
         deferred.Reject(info[0]);
-        return MakeUndefined(info.Env());
+        return info.Env().Undefined();
     });
-    auto rejectPtr = std::make_shared<maajs::FunctionRefType>(maajs::PersistentFunction(env, rejectFunc.As<Napi::Function>()));
+    auto rejectPtr = std::make_shared<maajs::FunctionRefType>(maajs::PersistentFunction(rejectFunc));
 
     return { deferred.Promise(), resolvePtr, rejectPtr };
 }
 
-inline ValueType GetProp(EnvType, ConstObjectType object, const char* prop)
-{
-    return object[prop];
-}
-
-inline void BindValue(EnvType, ConstObjectType object, const char* prop, ValueType value)
+inline void BindValue(EnvType, ObjectType object, const char* prop, ValueType value)
 {
     object.DefineProperty(Napi::PropertyDescriptor::Value(prop, value, napi_enumerable));
 }
 
-inline void BindGetter(
-    EnvType,
-    ConstObjectType object,
-    const char* prop,
-    const char*,
-    RawCallback func,
-    std::function<void(NativeMarkerFunc)> = nullptr)
+inline void
+    BindGetter(EnvType, ObjectType object, const char* prop, const char*, RawCallback func, std::function<void(NativeMarkerFunc)> = nullptr)
 {
     object.DefineProperty(Napi::PropertyDescriptor::Accessor(prop, func, napi_enumerable));
 }
@@ -220,17 +114,12 @@ inline ValueType CallCtor(EnvType, const FunctionRefType& ctor, std::vector<Valu
     return ctor.New(rawArgs);
 }
 
-inline ValueType CallFunc(EnvType, ConstValueType func, std::vector<ValueType> args)
+inline ValueType CallMember(ObjectType object, const char* prop, std::vector<ValueType> args)
 {
-    return func.As<Napi::Function>().Call(args);
+    return object[prop].AsValue().As<Napi::Function>().Call(object, args);
 }
 
-inline ValueType CallMember(EnvType, ConstObjectType object, const char* prop, std::vector<ValueType> args)
-{
-    return object.Get(prop).As<Napi::Function>().Call(object, args);
-}
-
-inline std::string_view TypeOf(EnvType, ConstValueType val)
+inline std::string_view TypeOf(ValueType val)
 {
     switch (val.Type()) {
     case napi_undefined:
@@ -257,7 +146,7 @@ inline std::string_view TypeOf(EnvType, ConstValueType val)
     return "unknown";
 }
 
-inline std::string DumpValue(EnvType env, ConstValueType val)
+inline std::string DumpValue(ValueType val)
 {
     if (val.IsExternal()) {
         return "[external]";
@@ -267,7 +156,7 @@ inline std::string DumpValue(EnvType env, ConstValueType val)
         if (descStr.length() > 20) {
             descStr = descStr.substr(0, 17) + "...";
         }
-        return std::format("{} [{}]", descStr, TypeOf(env, val));
+        return std::format("{} [{}]", descStr, TypeOf(val));
     }
 }
 

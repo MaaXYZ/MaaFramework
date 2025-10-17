@@ -66,13 +66,14 @@ struct AsyncWork
         (std::thread {
              [bridge, exec = exec, resolve = resolve, reject = reject, worker = this]() {
                  Ret result = exec();
-                 bridge->push_task([result, resolve, reject, worker](JSContext* env) {
+                 bridge->push_task([result, resolve, reject, worker](JSContext* ctx) {
+                     QjsEnv env { ctx };
                      try {
                          auto val = JSConvert<Ret>::to_value(env, result);
                          maajs::CallFuncHelper<void>(env, resolve->Value(), val);
                      }
                      catch (const MaaError& exc) {
-                         maajs::CallFuncHelper<void>(env, reject->Value(), MakeString(env, exc.what()));
+                         maajs::CallFuncHelper<void>(env, reject->Value(), std::string { exc.what() });
                      }
 
                      delete worker;
@@ -87,8 +88,8 @@ struct AsyncWork
     EnvType env;
     std::function<Ret()> exec;
     PromiseType promise;
-    std::shared_ptr<QjsRef> resolve;
-    std::shared_ptr<QjsRef> reject;
+    std::shared_ptr<FunctionRefType> resolve;
+    std::shared_ptr<FunctionRefType> reject;
 };
 
 #endif

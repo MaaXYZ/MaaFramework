@@ -4,22 +4,12 @@
 
 namespace maajs
 {
-inline std::string JsonStringify(EnvType env, ConstValueType val)
+inline std::string JsonStringify(EnvType env, ValueType val)
 {
-    auto global = GetGlobal(env);
-    auto json = GetProp(env, global, "JSON");
-    FreeValue(env, global);
-    auto result = CallMember(
-        env,
-        ValueToObject(json),
-        "stringify",
-        {
-            DupValue(env, val),
-        });
-    FreeValue(env, json);
-    auto str = GetString(env, result);
-    FreeValue(env, result);
-    return str;
+    auto global = env.Global();
+    auto json = global["JSON"].AsValue().As<ObjectType>();
+    auto result = CallMember(json, "stringify", { val });
+    return result.As<StringType>().Utf8Value();
 }
 
 }
