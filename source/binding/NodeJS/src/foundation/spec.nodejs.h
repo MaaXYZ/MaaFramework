@@ -18,6 +18,7 @@ using NumberType = Napi::Number;
 using FunctionType = Napi::Function;
 using ArrayType = Napi::Array;
 using PromiseType = Napi::Promise;
+using ArrayBufferType = Napi::ArrayBuffer;
 
 using ObjectRefType = Napi::ObjectReference;
 using FunctionRefType = Napi::FunctionReference;
@@ -29,9 +30,17 @@ using NativeMarkerFunc = std::function<void(const maajs::ValueType&)>;
 
 struct NativeClassBase
 {
-    virtual ~NativeClassBase() = default;
+    virtual ~NativeClassBase()
+    {
+        if (child_instance) {
+            delete child_instance;
+        }
+    }
 
     virtual void gc_mark([[maybe_unused]] NativeMarkerFunc marker) {}
+
+    NativeClassBase* super_instance {};
+    NativeClassBase* child_instance {};
 };
 
 inline ValueType MakeArray(EnvType env, std::vector<ValueType> vals)
@@ -103,7 +112,7 @@ inline void BindGetter(ObjectType object, const char* prop, const char*, RawCall
     object.DefineProperty(Napi::PropertyDescriptor::Accessor(prop, func, napi_enumerable));
 }
 
-inline ValueType CallCtor(const FunctionRefType& ctor, std::vector<ValueType> args)
+inline ObjectType CallCtor(const FunctionRefType& ctor, std::vector<ValueType> args)
 {
     std::vector<napi_value> rawArgs;
     rawArgs.reserve(args.size());

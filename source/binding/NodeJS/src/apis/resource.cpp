@@ -1,11 +1,8 @@
 #include "loader.h"
 
-#include <thread>
-
 #include <MaaFramework/MaaAPI.h>
 
 #include "../foundation/async.h"
-#include "../foundation/bridge.h"
 #include "../foundation/classes.h"
 #include "../foundation/macros.h"
 #include "../foundation/utils.h"
@@ -14,16 +11,23 @@
 
 struct ResourceImpl : public maajs::NativeClassBase
 {
-    MaaResource* resource;
+    MaaResource* resource {};
+    bool own = false;
 
-    ResourceImpl(MaaResource* res)
+    ResourceImpl() = default;
+
+    ResourceImpl(MaaResource* res, bool own)
         : resource(res)
+        , own(own)
     {
     }
 
-    ~ResourceImpl() {}
-
-    void destroy() { MaaResourceDestroy(resource); }
+    void destroy()
+    {
+        if (own && resource) {
+            MaaResourceDestroy(resource);
+        }
+    }
 
     maajs::ValueType post_bundle(maajs::ValueType self, maajs::EnvType env, std::string path)
     {
@@ -62,6 +66,15 @@ struct ResourceImpl : public maajs::NativeClassBase
         return buffer.str();
     }
 
+    std::optional<maajs::ValueType> get_node_data_parsed(maajs::EnvType env, std::string node_name)
+    {
+        auto json = get_node_data(node_name);
+        if (!json) {
+            return std::nullopt;
+        }
+        return maajs::JsonParse(env, *json);
+    }
+
     void clear() { MaaResourceClear(resource); }
 
     MaaStatus status(MaaResId id) { return MaaResourceStatus(resource, id); }
@@ -95,15 +108,25 @@ struct ResourceImpl : public maajs::NativeClassBase
     }
 
     constexpr static char name[] = "Resource";
-    constexpr static bool need_gc_mark = false;
 
     static ResourceImpl* ctor([[maybe_unused]] const maajs::CallbackInfo& info)
     {
-        auto handle = MaaResourceCreate();
-        if (!handle) {
-            return nullptr;
+        if (info.Length() == 1) {
+            try {
+                MaaResource* handle = reinterpret_cast<MaaResource*>(std::stoull(info[0].As<maajs::StringType>().Utf8Value()));
+                return new ResourceImpl { handle, false };
+            }
+            catch (std::exception&) {
+                return nullptr;
+            }
         }
-        return new ResourceImpl { handle };
+        else {
+            auto handle = MaaResourceCreate();
+            if (!handle) {
+                return nullptr;
+            }
+            return new ResourceImpl { handle, true };
+        }
     }
 
     static void init_proto([[maybe_unused]] maajs::EnvType env, [[maybe_unused]] maajs::ObjectType proto);
@@ -118,6 +141,7 @@ void ResourceImpl::init_proto(maajs::EnvType env, [[maybe_unused]] maajs::Object
     MAA_BIND_FUNC(proto, "override_pipeline", ResourceImpl::override_pipeline);
     MAA_BIND_FUNC(proto, "override_next", ResourceImpl::override_next);
     MAA_BIND_FUNC(proto, "get_node_data", ResourceImpl::get_node_data);
+    MAA_BIND_FUNC(proto, "get_node_data_parsed", ResourceImpl::get_node_data_parsed);
     MAA_BIND_FUNC(proto, "clear", ResourceImpl::clear);
     MAA_BIND_FUNC(proto, "status", ResourceImpl::status);
     MAA_BIND_FUNC(proto, "wait", ResourceImpl::wait);

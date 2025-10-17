@@ -13,6 +13,8 @@ Napi::Object Init(Napi::Env env, Napi::Object exports)
     exports["Global"] = load_global(env);
     exports["Job"] = load_job(env);
     exports["Resource"] = load_resource(env);
+    exports["ImageJob"] = load_image_job(env);
+    exports["Controller"] = load_controller(env);
 
     return exports;
 }
@@ -32,6 +34,8 @@ void init_module_maa(JSContext* ctx)
     maajs::BindValue(maa, "Global", load_global(env));
     maajs::BindValue(maa, "Job", load_job(env));
     maajs::BindValue(maa, "Resource", load_resource(env));
+    maajs::BindValue(maa, "ImageJob", load_image_job(env));
+    maajs::BindValue(maa, "Controller", load_controller(env));
 
     maajs::BindValue(globalObject, "maa", maa);
 }

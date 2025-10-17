@@ -1,11 +1,13 @@
 cmake_policy(SET CMP0091 NEW)
 cmake_policy(SET CMP0042 NEW)
 
+set(MAA_JS_COMMON_SOURCES src/apis/loader.cpp src/apis/global.cpp src/apis/job.cpp src/apis/resource.cpp
+                          src/apis/controller.cpp)
+
 # quickjs
 
 if(WITH_QUICKJS_BINDING)
-    add_library(MaaQjs STATIC src/foundation/spec.quickjs.cpp src/apis/loader.cpp src/apis/global.cpp src/apis/job.cpp
-                              src/apis/resource.cpp)
+    add_library(MaaQjs STATIC src/foundation/spec.quickjs.cpp ${MAA_JS_COMMON_SOURCES})
     target_compile_definitions(MaaQjs PRIVATE MAA_JS_IMPL_IS_QUICKJS)
     target_link_libraries(MaaQjs PRIVATE MaaInterface qjs_headers)
     set_target_properties(MaaQjs PROPERTIES POSITION_INDEPENDENT_CODE ON)
@@ -65,8 +67,7 @@ if(WITH_NODEJS_BINDING)
         endif()
     endif()
 
-    add_library(MaaNodeNew SHARED src/foundation/spec.node.cpp src/apis/loader.cpp src/apis/global.cpp src/apis/job.cpp
-                                  src/apis/resource.cpp)
+    add_library(MaaNodeNew SHARED src/foundation/spec.node.cpp ${MAA_JS_COMMON_SOURCES} ${CMAKE_JS_SRC})
     set_target_properties(MaaNodeNew PROPERTIES PREFIX "" SUFFIX ".node")
     target_compile_definitions(MaaNodeNew PRIVATE MAA_JS_IMPL_IS_NODEJS)
     target_include_directories(MaaNodeNew PRIVATE ${CMAKE_JS_INC})

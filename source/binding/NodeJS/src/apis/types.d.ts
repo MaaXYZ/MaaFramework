@@ -16,6 +16,15 @@ declare global {
         type InferenceExecutionProvider = number & { __brand: 'InferenceExecutionProvider' }
 
         type ImageData = ArrayBuffer
+
+        type Rect = {
+            x: number
+            y: number
+            width: number
+            height: number
+        }
+
+        type FlatRect = [x: number, y: number, width: number, height: number]
     }
 }
 

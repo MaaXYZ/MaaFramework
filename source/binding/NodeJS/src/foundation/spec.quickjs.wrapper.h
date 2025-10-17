@@ -123,6 +123,8 @@ struct QjsValue
 
     bool IsPromise() const { return JS_IsPromise(value); }
 
+    bool IsArrayBuffer() const { return JS_IsArrayBuffer(value); }
+
     QjsString ToString() const;
 
     JSValue take()
@@ -149,35 +151,35 @@ struct QjsObject : public QjsValue
 
         void operator=(QjsValue val) const
         {
-            if (const std::string* key = std::get_if<std::string>(&prop)) {
-                JS_SetPropertyStr(obj.context, obj.value, key->c_str(), val.take());
+            if (const std::string* str_key = std::get_if<std::string>(&prop)) {
+                JS_SetPropertyStr(obj.context, obj.value, str_key->c_str(), val.take());
             }
-            else if (const uint32_t* key = std::get_if<uint32_t>(&prop)) {
-                JS_SetPropertyUint32(obj.context, obj.value, *key, val.take());
+            else if (const uint32_t* ui32_key = std::get_if<uint32_t>(&prop)) {
+                JS_SetPropertyUint32(obj.context, obj.value, *ui32_key, val.take());
             }
-            else if (const int64_t* key = std::get_if<int64_t>(&prop)) {
-                JS_SetPropertyInt64(obj.context, obj.value, *key, val.take());
+            else if (const int64_t* i64_key = std::get_if<int64_t>(&prop)) {
+                JS_SetPropertyInt64(obj.context, obj.value, *i64_key, val.take());
             }
         }
 
         operator QjsValue() const
         {
-            if (const std::string* key = std::get_if<std::string>(&prop)) {
+            if (const std::string* str_key = std::get_if<std::string>(&prop)) {
                 return {
                     obj.context,
-                    JS_GetPropertyStr(obj.context, obj.value, key->c_str()),
+                    JS_GetPropertyStr(obj.context, obj.value, str_key->c_str()),
                 };
             }
-            else if (const uint32_t* key = std::get_if<uint32_t>(&prop)) {
+            else if (const uint32_t* ui32_key = std::get_if<uint32_t>(&prop)) {
                 return {
                     obj.context,
-                    JS_GetPropertyUint32(obj.context, obj.value, *key),
+                    JS_GetPropertyUint32(obj.context, obj.value, *ui32_key),
                 };
             }
-            else if (const int64_t* key = std::get_if<int64_t>(&prop)) {
+            else if (const int64_t* i64_key = std::get_if<int64_t>(&prop)) {
                 return {
                     obj.context,
-                    JS_GetPropertyInt64(obj.context, obj.value, *key),
+                    JS_GetPropertyInt64(obj.context, obj.value, *i64_key),
                 };
             }
             else {
@@ -287,6 +289,39 @@ struct QjsFunction : public QjsObject
 struct QjsPromise : public QjsObject
 {
     using QjsObject::QjsObject;
+
+    QjsPromise Then(QjsFunction onFulfilled) const
+    {
+        return this->operator[]("then")
+            .AsValue()
+            .As<QjsFunction>()
+            .Call(
+                *this,
+                {
+                    onFulfilled,
+                })
+            .As<QjsPromise>();
+    }
+};
+
+struct QjsArrayBuffer : public QjsObject
+{
+    using QjsObject::QjsObject;
+
+    static QjsArrayBuffer New(QjsEnv env, size_t len) { return { env, JS_NewArrayBufferCopy(env, nullptr, len) }; }
+
+    void* Data() const
+    {
+        size_t size {};
+        return JS_GetArrayBuffer(Env(), &size, peek());
+    }
+
+    size_t ByteLength() const
+    {
+        size_t size {};
+        JS_GetArrayBuffer(Env(), &size, peek());
+        return size;
+    }
 };
 
 struct QjsCallbackInfo

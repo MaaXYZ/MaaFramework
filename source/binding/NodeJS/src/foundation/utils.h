@@ -1,15 +1,22 @@
 #pragma once
 
+#include "convert.h"
 #include "spec.h"
 
 namespace maajs
 {
+
 inline std::string JsonStringify(EnvType env, ValueType val)
 {
-    auto global = env.Global();
-    auto json = global["JSON"].AsValue().As<ObjectType>();
-    auto result = CallMember(json, "stringify", { val });
-    return result.As<StringType>().Utf8Value();
+    auto json = env.Global()["JSON"].AsValue().As<ObjectType>();
+    return CallMemberHelper<std::string>(json, "stringify", val);
+}
+
+inline ValueType JsonParse(EnvType env, std::string str)
+{
+    auto json = env.Global()["JSON"].AsValue().As<ObjectType>();
+    auto result = CallMemberHelper<ValueType>(json, "parse", str);
+    return result;
 }
 
 }

@@ -5,7 +5,7 @@ declare global {
             wait(id: Id): Promise<Status>
         }
 
-        class Job<Id, Source extends JobSource<Id>> {
+        class Job<Id, Source extends JobSource<Id>, Result = void> {
             constructor(source: Source, id: Id)
 
             get source(): Source
@@ -16,7 +16,9 @@ declare global {
                 done: Promise<boolean>
                 succeeded: Promise<boolean>
                 failed: Promise<boolean>
+                get(): Promise<Result>
             }
+            get(): Result
             get done(): boolean
             get succeeded(): boolean
             get failed(): boolean

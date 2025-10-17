@@ -173,6 +173,22 @@ struct JSConvert<PromiseType>
 };
 
 template <>
+struct JSConvert<ArrayBufferType>
+{
+    static std::string name() { return "arraybuffer"; };
+
+    static ArrayBufferType from_value(ValueType val)
+    {
+        if (val.IsArrayBuffer()) {
+            return val.As<ArrayBufferType>();
+        }
+        throw MaaError { std::format("expect {}, got {}", name(), DumpValue(val)) };
+    }
+
+    static ValueType to_value(EnvType, const ArrayBufferType& val) { return val; }
+};
+
+template <>
 struct JSConvert<std::monostate>
 {
     static std::string name() { return "null"; }
@@ -432,7 +448,7 @@ inline std::vector<ValueType> WrapArgs(EnvType env, Args&&... args)
 }
 
 template <typename... Args>
-inline ValueType CallCtorHelper(const FunctionRefType& ctor, Args&&... args)
+inline ObjectType CallCtorHelper(const FunctionRefType& ctor, Args&&... args)
 {
     auto params = WrapArgs(ctor.Env(), std::forward<Args>(args)...);
 

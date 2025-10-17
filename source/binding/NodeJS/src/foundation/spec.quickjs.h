@@ -27,6 +27,7 @@ using NumberType = QjsNumber;
 using FunctionType = QjsFunction;
 using ArrayType = QjsArray;
 using PromiseType = QjsPromise;
+using ArrayBufferType = QjsArrayBuffer;
 
 using ObjectRefType = QjsRef<ObjectType>;
 using FunctionRefType = QjsRef<FunctionType>;
@@ -38,9 +39,17 @@ using NativeMarkerFunc = std::function<void(const ValueType& value)>;
 
 struct NativeClassBase
 {
-    virtual ~NativeClassBase() = default;
+    virtual ~NativeClassBase()
+    {
+        if (child_instance) {
+            delete child_instance;
+        }
+    }
 
     virtual void gc_mark([[maybe_unused]] NativeMarkerFunc marker) {}
+
+    NativeClassBase* super_instance {};
+    NativeClassBase* child_instance {};
 };
 
 struct NativePointerHolder
@@ -58,9 +67,13 @@ struct NativePointerHolder
                 },
             .gc_mark =
                 +[](JSRuntime* rt, JSValueConst data, JS_MarkFunc* func) {
-                    take<NativeClassBase>(data)->gc_mark([rt, func](const ValueType& value) {
-                        func(rt, reinterpret_cast<JSGCObjectHeader*>(JS_VALUE_GET_OBJ(value.value)));
-                    });
+                    auto rootImpl = take<NativeClassBase>(data);
+                    while (rootImpl) {
+                        rootImpl->gc_mark([rt, func](const ValueType& value) {
+                            func(rt, reinterpret_cast<JSGCObjectHeader*>(JS_VALUE_GET_OBJ(value.value)));
+                        });
+                        rootImpl = rootImpl->child_instance;
+                    }
                 },
         };
 
@@ -197,7 +210,7 @@ inline void BindGetter(
         JS_PROP_ENUMERABLE);
 }
 
-inline ValueType CallCtor(FunctionType ctor, std::vector<ValueType> args)
+inline ObjectType CallCtor(FunctionType ctor, std::vector<ValueType> args)
 {
     auto rawArgs = QjsArray::__Trans(args, false);
     auto result = JS_CallConstructor(ctor.Env(), ctor.peek(), static_cast<int>(rawArgs.size()), rawArgs.data());

@@ -4,6 +4,8 @@
 
 #include <MaaFramework/MaaAPI.h>
 
+#include "../foundation/spec.h"
+
 template <typename Handle, Handle* (*Create)(), void (*Destroy)(Handle*)>
 struct HandlerHolder
 {
@@ -101,16 +103,18 @@ struct ImageBuffer : public HandlerHolder<MaaImageBuffer, &MaaImageBufferCreate,
 
     operator MaaImageBuffer*() const { return buffer; }
 
-    // Napi::ArrayBuffer data(Napi::Env env) const
-    // {
-    //     auto len = MaaImageBufferGetEncodedSize(buffer);
-    //     auto buf = Napi::ArrayBuffer::New(env, len);
-    //     std::memcpy(buf.Data(), MaaImageBufferGetEncoded(buffer), len);
-    //     return buf;
-    // }
+    maajs::ArrayBufferType data(maajs::EnvType env) const
+    {
+        auto len = MaaImageBufferGetEncodedSize(buffer);
+        auto buf = maajs::ArrayBufferType::New(env, len);
+        std::memcpy(buf.Data(), MaaImageBufferGetEncoded(buffer), len);
+        return buf;
+    }
 
-    // void set(Napi::ArrayBuffer data) const { MaaImageBufferSetEncoded(buffer, reinterpret_cast<uint8_t*>(data.Data()),
-    // data.ByteLength()); }
+    void set(maajs::ArrayBufferType data) const
+    {
+        MaaImageBufferSetEncoded(buffer, reinterpret_cast<uint8_t*>(data.Data()), data.ByteLength());
+    }
 };
 
 struct ImageBufferRefer : public HandlerReferHolder<const MaaImageBuffer>
