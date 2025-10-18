@@ -59,8 +59,6 @@ struct AsyncWork
         reject = rej;
     }
 
-    ~AsyncWork() { std::cerr << "Async worker destructed!" << std::endl; }
-
     void Queue()
     {
         auto bridge = QuickJSRuntimeBridgeInterface::get(env);

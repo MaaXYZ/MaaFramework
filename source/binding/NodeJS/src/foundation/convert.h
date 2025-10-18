@@ -37,14 +37,14 @@ inline std::string DumpCallParams(const CallbackInfo& info)
     std::vector<std::string> parts;
 
     for (size_t i = 0; i < info.Length(); i++) {
-        parts.push_back(std::string(TypeOf(info[i])));
+        parts.push_back(TypeOf(info[i]));
     }
 
-    return JoinString(parts, ", ");
+    return std::format("{}.({})", TypeOf(info.This()), JoinString(parts, ", "));
 }
 
 template <typename ArgsTuple>
-inline std::string DumpExpectNames()
+inline std::string DumpTypeNames()
 {
     std::vector<std::string> parts;
 
@@ -53,6 +53,17 @@ inline std::string DumpExpectNames()
     }(std::make_index_sequence<std::tuple_size_v<ArgsTuple>>());
 
     return JoinString(parts, ", ");
+}
+
+template <typename ArgsTuple, typename Self = void>
+inline std::string DumpExpectNames()
+{
+    if constexpr (std::is_same_v<Self, void>) {
+        return std::format("undefined.{}", DumpTypeNames<ArgsTuple>());
+    }
+    else {
+        return std::format("object[{}].{}", Self::name, DumpTypeNames<ArgsTuple>());
+    }
 }
 
 template <size_t N>
@@ -366,7 +377,7 @@ struct JSConvert<std::tuple<Args...>>
 {
     using T = std::tuple<Args...>;
 
-    static std::string name() { return std::format("[{}]", DumpExpectNames<T>()); }
+    static std::string name() { return std::format("[{}]", DumpTypeNames<T>()); }
 
     static T from_value(ValueType val)
     {
@@ -462,7 +473,7 @@ inline std::vector<ValueType> WrapArgs(EnvType env, Args&&... args)
     return params;
 }
 
-template <typename ArgsTuple>
+template <typename ArgsTuple, typename Self>
 inline ArgsTuple UnWrapArgs(const CallbackInfo& info)
 {
     constexpr size_t arg_count = std::tuple_size_v<ArgsTuple>;
@@ -477,7 +488,7 @@ inline ArgsTuple UnWrapArgs(const CallbackInfo& info)
                 min_count,
                 arg_count,
                 info.Length(),
-                DumpExpectNames<ArgsTuple>(),
+                DumpExpectNames<ArgsTuple, Self>(),
                 DumpCallParams(info)),
         };
     }
@@ -513,13 +524,11 @@ struct WrapFunctionHelper
     using Self = typename traits::self;
     using CallArgs = typename traits::call_args;
 
-    static std::string signature() { return DumpExpectNames<Args>(); }
-
     static auto make()
     {
         return +[](const CallbackInfo& info) {
             try {
-                auto params = UnWrapArgs<Args>(info);
+                auto params = UnWrapArgs<Args, Self>(info);
 
                 ValueType ret = info.Env().Undefined();
 
@@ -541,6 +550,9 @@ struct WrapFunctionHelper
                 Self* self = nullptr;
                 if constexpr (traits::want_self) {
                     self = NativeClass<Self>::take(info.This());
+                    if (!self) {
+                        throw MaaError { "Cast this failed" };
+                    }
                 }
 
                 if constexpr (std::is_same_v<Ret, void>) {
@@ -575,7 +587,7 @@ struct WrapFunctionHelper
                     "maa.{}: {}\n    Sig: {}\n    Got: {}",
                     (const char*)name.data,
                     exc.what(),
-                    signature(),
+                    DumpExpectNames<Args, Self>(),
                     DumpCallParams(info));
                 return ThrowTypeError(info.Env(), what);
             }

@@ -1,5 +1,6 @@
 #pragma once
 
+#include <cassert>
 #include <iostream>
 
 #include "error.h"
@@ -59,6 +60,7 @@ struct NativeClass
     }
 };
 
+#define MAA_JS_NATIVE_CLASS_STATIC_FORWARD(Type)
 #define MAA_JS_NATIVE_CLASS_STATIC_IMPL(Type)
 
 #endif
@@ -68,6 +70,7 @@ struct NativeClass
 struct NativeClassIDChain
 {
     JSClassID classId {};
+    std::vector<JSClassID> possibleIds {};
     NativeClassIDChain* superId {};
 };
 
@@ -94,6 +97,10 @@ struct NativeClass
 
         JS_NewClassID(JS_GetRuntime(env), &classId.classId);
         JS_NewClass(JS_GetRuntime(env), classId.classId, &classDef);
+
+        classId.possibleIds.push_back(classId.classId);
+
+        std::cerr << Inherit::name << ": " << classId.classId << std::endl;
 
         auto proto = QjsObject::New(env);
 
@@ -124,7 +131,14 @@ struct NativeClass
         JS_SetConstructor(env, ctor.peek(), proto.peek());
 
         if constexpr (!std::is_same_v<Super, void>) {
-            classId.superId = &NativeClass<Super>::classId;
+            std::cerr << "Link " << classId.classId << " to " << NativeClass<Super>::classId.classId << std::endl;
+            auto super = &NativeClass<Super>::classId;
+            classId.superId = super;
+            while (super) {
+                super->possibleIds.push_back(classId.classId);
+                super = super->superId;
+            }
+
             auto superProto = JS_GetClassProto(env, classId.superId->classId);
             JS_SetPrototype(env, proto.peek(), superProto);
             JS_FreeValue(env, superProto);
@@ -139,15 +153,19 @@ struct NativeClass
 
     static Inherit* take(JSValueConst val)
     {
-        auto idChain = &classId;
-        NativeClassBase* impl = nullptr;
-        while (!impl && idChain) {
-            impl = static_cast<NativeClassBase*>(JS_GetOpaque(val, idChain->classId));
-            idChain = idChain->superId;
+        for (auto id : classId.possibleIds) {
+            auto impl = static_cast<NativeClassBase*>(JS_GetOpaque(val, id));
+            if (impl) {
+                return dynamic_cast<Inherit*>(impl);
+            }
         }
-        return dynamic_cast<Inherit*>(impl);
+        return nullptr;
     }
 };
+
+#define MAA_JS_NATIVE_CLASS_STATIC_FORWARD(Type) \
+    template <>                                  \
+    maajs::NativeClassIDChain maajs::NativeClass<Type>::classId;
 
 #define MAA_JS_NATIVE_CLASS_STATIC_IMPL(Type) \
     template <>                               \

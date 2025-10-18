@@ -5,17 +5,12 @@ const console = {
 }
 
 async function main() {
-    print('1')
-    const devs = await maa.AdbController.find()
-    print('1.5')
-    const dev = devs[0]
-    print('2')
+    const dev = (await maa.AdbController.find())[0]
     dev.shift()
-    print('3')
-    console.log(dev)
-    print('4')
-    console.log(new maa.AdbController(...dev))
-    print('5')
+    const ctrl = new maa.AdbController(...dev)
+    await ctrl.post_connection().wait()
+    const img = await ctrl.post_screencap().wait().get()
+    save('1.png', img)
     /*
     const res = new maa.Resource()
 

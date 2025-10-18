@@ -125,7 +125,7 @@ inline ValueType CallMember(ObjectType object, const char* prop, std::vector<Val
     return object[prop].AsValue().As<Napi::Function>().Call(object, args);
 }
 
-inline std::string_view TypeOf(ValueType val)
+inline std::string TypeOf(ValueType val)
 {
     switch (val.Type()) {
     case napi_undefined:

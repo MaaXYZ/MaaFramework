@@ -4,6 +4,7 @@
 
 #include <MaaFramework/MaaAPI.h>
 
+#include "../foundation/classes.h"
 #include "../foundation/spec.h"
 
 struct ResourceImpl : public maajs::NativeClassBase
@@ -32,3 +33,5 @@ struct ResourceImpl : public maajs::NativeClassBase
     static ResourceImpl* ctor(const maajs::CallbackInfo&);
     static void init_proto(maajs::EnvType env, maajs::ObjectType proto, maajs::FunctionType);
 };
+
+MAA_JS_NATIVE_CLASS_STATIC_FORWARD(ResourceImpl)

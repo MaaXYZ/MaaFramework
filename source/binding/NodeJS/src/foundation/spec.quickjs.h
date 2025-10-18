@@ -218,7 +218,7 @@ inline ValueType CallMember(ObjectType object, const char* prop, std::vector<Val
     return object[prop].AsValue().As<FunctionType>().Call(object, args);
 }
 
-inline std::string_view TypeOf(ValueType val)
+inline std::string TypeOf(ValueType val)
 {
     switch (val.value.tag) {
     case JS_TAG_UNDEFINED:
@@ -239,7 +239,9 @@ inline std::string_view TypeOf(ValueType val)
             return "function";
         }
         else {
-            return "object";
+            return std::format(
+                "object[{}]",
+                val.As<ObjectType>()["constructor"].AsValue().As<ObjectType>()["name"].AsValue().As<StringType>().Utf8Value());
         }
     case JS_TAG_BIG_INT:
     case JS_TAG_SHORT_BIG_INT:

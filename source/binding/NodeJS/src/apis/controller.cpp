@@ -178,7 +178,7 @@ maajs::PromiseType AdbControllerImpl::find(maajs::EnvType env, maajs::OptionalPa
 
 AdbControllerImpl* AdbControllerImpl::ctor(const maajs::CallbackInfo& info)
 {
-    auto [adb_path, address, screencap_methods, input_methods, config, agent] = maajs::UnWrapArgs<AdbControllerCtorParam>(info);
+    auto [adb_path, address, screencap_methods, input_methods, config, agent] = maajs::UnWrapArgs<AdbControllerCtorParam, void>(info);
     auto ctrl = MaaAdbControllerCreate(
         adb_path.c_str(),
         address.c_str(),

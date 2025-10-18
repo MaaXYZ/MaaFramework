@@ -15,6 +15,8 @@ struct ImageJobImpl : public JobImpl
     static void init_proto(maajs::EnvType env, maajs::ObjectType proto, maajs::FunctionType ctor);
 };
 
+MAA_JS_NATIVE_CLASS_STATIC_FORWARD(ImageJobImpl)
+
 struct ControllerImpl : public maajs::NativeClassBase
 {
     MaaController* controller {};
@@ -38,6 +40,8 @@ struct ControllerImpl : public maajs::NativeClassBase
     static void init_proto(maajs::EnvType env, maajs::ObjectType proto, maajs::FunctionType ctor);
 };
 
+MAA_JS_NATIVE_CLASS_STATIC_FORWARD(ControllerImpl)
+
 using AdbDevice = std::tuple<std::string, std::string, std::string, MaaAdbScreencapMethod, MaaAdbInputMethod, std::string>;
 using AdbControllerCtorParam =
     std::tuple<std::string, std::string, MaaAdbScreencapMethod, MaaAdbInputMethod, std::string, maajs::OptionalParam<std::string>>;
@@ -54,3 +58,5 @@ struct AdbControllerImpl : public ControllerImpl
     static AdbControllerImpl* ctor(const maajs::CallbackInfo&);
     static void init_proto(maajs::EnvType env, maajs::ObjectType proto, maajs::FunctionType ctor);
 };
+
+MAA_JS_NATIVE_CLASS_STATIC_FORWARD(AdbControllerImpl)
