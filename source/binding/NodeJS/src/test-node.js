@@ -12,7 +12,7 @@ async function main() {
     // await job.wait().status
 
     console.log(maa.AdbController)
-    console.log(new maa.AdbController())
+    console.log(new maa.AdbController(1, 2, 3))
 }
 
 main()

@@ -112,6 +112,12 @@ inline FunctionRefType PersistentFunction(FunctionType val)
     return { val };
 }
 
+inline ValueType ThrowTypeError(EnvType env, const std::string& err)
+{
+    JS_ThrowTypeError(env, "%s", err.c_str());
+    return { env, JS_EXCEPTION };
+}
+
 // 必须要非常小心, 这里传入的回调不能持有Value, 内部的FuncHolder未实现gc_mark
 inline FunctionType
     MakeFunction(EnvType env, const char* name, int argc, RawCallback func, std::function<void(NativeMarkerFunc)> run_marker = nullptr)

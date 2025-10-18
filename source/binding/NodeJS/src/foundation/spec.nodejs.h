@@ -65,6 +65,12 @@ inline FunctionRefType PersistentFunction(FunctionType val)
     return Napi::Persistent(val);
 }
 
+inline ValueType ThrowTypeError(EnvType env, const std::string& err)
+{
+    Napi::TypeError::New(env, err).ThrowAsJavaScriptException();
+    return env.Undefined();
+}
+
 inline FunctionType MakeFunction(
     EnvType env,
     const char* name,

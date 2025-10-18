@@ -35,8 +35,7 @@ struct NativeClass
             }
             catch (const MaaError& exc) {
                 std::string what = std::format("maa.{}.ctor: {}", Inherit::name, exc.what());
-                Napi::TypeError::New(info.Env(), what).ThrowAsJavaScriptException();
-                return info.Env().Undefined();
+                return ThrowTypeError(info.Env(), what);
             }
 
         });
@@ -117,8 +116,7 @@ struct NativeClass
             }
             catch (const MaaError& exc) {
                 std::string what = std::format("maa.{}.ctor: {}", Inherit::name, exc.what());
-                JS_ThrowTypeError(info.Env(), "%s", what.c_str());
-                return { info.Env(), JS_EXCEPTION };
+                return ThrowTypeError(info.Env(), what);
             }
         });
 

@@ -13,6 +13,48 @@
 namespace maajs
 {
 
+template <typename Type>
+struct JSConvert
+{
+    static std::string name() = delete;
+    static Type from_value(ValueType val) = delete;
+    static ValueType to_value(EnvType env, const Type& val) = delete;
+};
+
+inline std::string JoinString(std::vector<std::string> parts, std::string sep)
+{
+    std::string result = "";
+    bool first = true;
+    for (const auto& name : parts) {
+        result += first ? name : sep + name;
+        first = false;
+    }
+    return result;
+}
+
+inline std::string DumpCallParams(const CallbackInfo& info)
+{
+    std::vector<std::string> parts;
+
+    for (size_t i = 0; i < info.Length(); i++) {
+        parts.push_back(std::string(TypeOf(info[i])));
+    }
+
+    return JoinString(parts, ", ");
+}
+
+template <typename ArgsTuple>
+inline std::string DumpExpectNames()
+{
+    std::vector<std::string> parts;
+
+    [&]<size_t... I>(std::index_sequence<I...>) {
+        ((parts.push_back(JSConvert<std::tuple_element_t<I, ArgsTuple>>::name())), ...);
+    }(std::make_index_sequence<std::tuple_size_v<ArgsTuple>>());
+
+    return JoinString(parts, ", ");
+}
+
 template <size_t N>
 struct StringHolder
 {
@@ -112,14 +154,6 @@ struct FuncTraits<R (T::*)(ValueType, EnvType, Args...)>
     static constexpr bool want_env = true;
 };
 
-template <typename Type>
-struct JSConvert
-{
-    static std::string name() = delete;
-    static Type from_value(ValueType val) = delete;
-    static ValueType to_value(EnvType env, const Type& val) = delete;
-};
-
 // msvc want this
 template <>
 struct JSConvert<void>
@@ -132,7 +166,7 @@ struct JSConvert<void>
 template <>
 struct JSConvert<ValueType>
 {
-    static std::string name() = delete;
+    static std::string name() { return "unknown"; };
 
     static ValueType from_value(ValueType val) { return val; }
 
@@ -190,7 +224,7 @@ struct JSConvert<PromiseType>
 template <>
 struct JSConvert<ArrayBufferType>
 {
-    static std::string name() { return "arraybuffer"; };
+    static std::string name() { return "ArrayBuffer"; };
 
     static ArrayBufferType from_value(ValueType val)
     {
@@ -332,21 +366,7 @@ struct JSConvert<std::tuple<Args...>>
 {
     using T = std::tuple<Args...>;
 
-    static std::string name()
-    {
-        std::vector<std::string> parts;
-
-        [&]<size_t... I>(std::index_sequence<I...>) {
-            ((parts.push_back(JSConvert<std::tuple_element_t<I, T>>::name())), ...);
-        }(std::make_index_sequence<std::tuple_size_v<T>>());
-
-        std::string type = "";
-        bool first = true;
-        for (const auto& name : parts) {
-            type += first ? name : ", " + name;
-        }
-        return std::format("Tuple of ({})", type);
-    }
+    static std::string name() { return std::format("[{}]", DumpExpectNames<T>()); }
 
     static T from_value(ValueType val)
     {
@@ -403,7 +423,7 @@ struct JSConvert<std::optional<Type>>
 template <typename Type>
 struct JSConvert<OptionalParam<Type>>
 {
-    static std::string name() { return std::format("{}?", JSConvert<Type>::name()); }
+    static std::string name() { return std::format("?{}", JSConvert<Type>::name()); }
 
     static OptionalParam<Type> from_value(ValueType val)
     {
@@ -451,18 +471,33 @@ inline ArgsTuple UnWrapArgs(const CallbackInfo& info)
     constexpr size_t min_count = arg_count - opt_count;
 
     if (info.Length() < min_count || info.Length() > arg_count) {
-        throw MaaError { std::format("expect {} ~ {} arguments, got {}", min_count, arg_count, info.Length()) };
+        throw MaaError {
+            std::format(
+                "expect {} ~ {} arguments, got {}\n    Sig: {}\n    Got: {}",
+                min_count,
+                arg_count,
+                info.Length(),
+                DumpExpectNames<ArgsTuple>(),
+                DumpCallParams(info)),
+        };
     }
 
-    ArgsTuple params;
+    try {
+        ArgsTuple params;
 
-    if constexpr (arg_count > 0) {
-        [&params, &info]<size_t... I>(std::index_sequence<I...>) {
-            ((std::get<I>(params) = JSConvert<std::tuple_element_t<I, ArgsTuple>>::from_value(info[I])), ...);
-        }(std::make_index_sequence<arg_count>());
+        if constexpr (arg_count > 0) {
+            [&params, &info]<size_t... I>(std::index_sequence<I...>) {
+                ((std::get<I>(params) = JSConvert<std::tuple_element_t<I, ArgsTuple>>::from_value(info[I])), ...);
+            }(std::make_index_sequence<arg_count>());
+        }
+
+        return params;
     }
-
-    return params;
+    catch (const MaaError& err) {
+        throw MaaError {
+            std::format("{}\n    Sig: {}\n    Got: {}", err.what(), DumpExpectNames<ArgsTuple>(), DumpCallParams(info)),
+        };
+    }
 }
 
 template <typename Func, Func func, StringHolder name>
@@ -475,6 +510,8 @@ struct WrapFunctionHelper
     using Ret = typename traits::ret;
     using Self = typename traits::self;
     using CallArgs = typename traits::call_args;
+
+    static std::string signature() { return DumpExpectNames<Args>(); }
 
     static auto make()
     {
@@ -532,15 +569,13 @@ struct WrapFunctionHelper
                 return ret;
             }
             catch (const MaaError& exc) {
-                std::string what = std::format("maa.{}: {}", (const char*)name.data, exc.what());
-#ifdef MAA_JS_IMPL_IS_NODEJS
-                Napi::TypeError::New(info.Env(), what).ThrowAsJavaScriptException();
-                return info.Env().Undefined();
-#endif
-#ifdef MAA_JS_IMPL_IS_QUICKJS
-                JS_ThrowTypeError(info.Env(), "%s", what.c_str());
-                return QjsValue { info.Env(), JS_EXCEPTION };
-#endif
+                std::string what = std::format(
+                    "maa.{}: {}\n    Sig: {}\n    Got: {}",
+                    (const char*)name.data,
+                    exc.what(),
+                    signature(),
+                    DumpCallParams(info));
+                return ThrowTypeError(info.Env(), what);
             }
         };
     }
