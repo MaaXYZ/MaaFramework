@@ -4,6 +4,7 @@
 
 #include <MaaFramework/MaaAPI.h>
 
+#include "../foundation/classes.h"
 #include "../foundation/spec.h"
 
 struct JobImpl : public maajs::NativeClassBase
@@ -21,6 +22,8 @@ struct JobImpl : public maajs::NativeClassBase
     constexpr static char name[] = "Job";
 
     static JobImpl* ctor(const maajs::CallbackInfo& info);
-    static void init_proto(maajs::EnvType env, maajs::ObjectType proto);
+    static void init_proto(maajs::EnvType env, maajs::ObjectType proto, maajs::FunctionType);
     void gc_mark(maajs::NativeMarkerFunc marker) override;
 };
+
+using JobNative = maajs::NativeClass<JobImpl>;

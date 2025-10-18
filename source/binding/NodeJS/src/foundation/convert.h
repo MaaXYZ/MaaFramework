@@ -7,22 +7,11 @@
 #include <variant>
 
 #include "classes.h"
+#include "error.h"
 #include "spec.h"
 
 namespace maajs
 {
-
-struct MaaError : public std::exception
-{
-    std::string error;
-
-    MaaError(std::string&& err = "")
-        : error(err)
-    {
-    }
-
-    virtual const char* what() const noexcept override { return error.c_str(); }
-};
 
 template <size_t N>
 struct StringHolder
@@ -31,6 +20,32 @@ struct StringHolder
 
     constexpr StringHolder(const char (&str)[N]) { std::copy(str, str + N, data); }
 };
+
+template <typename T>
+struct OptionalParam : public std::optional<T>
+{
+    using std::optional<T>::optional;
+};
+
+template <typename T>
+constexpr bool IsOptionalParam = false;
+
+template <typename T>
+constexpr bool IsOptionalParam<OptionalParam<T>> = true;
+
+template <typename Args>
+constexpr size_t OptionalCount()
+{
+    constexpr size_t arg_count = std::tuple_size_v<Args>;
+
+    size_t opt_count = 0;
+    bool met_required = false;
+    [&opt_count, &met_required]<size_t... I>(std::index_sequence<I...>) {
+        ((IsOptionalParam<std::tuple_element_t<arg_count - I - 1, Args>> ? (met_required ? 0 : opt_count++) : (met_required = true)), ...);
+    }(std::make_index_sequence<arg_count>());
+
+    return opt_count;
+}
 
 template <typename F>
 struct FuncTraits
@@ -312,6 +327,53 @@ struct JSConvert<std::vector<Type>>
     }
 };
 
+template <typename... Args>
+struct JSConvert<std::tuple<Args...>>
+{
+    using T = std::tuple<Args...>;
+
+    static std::string name()
+    {
+        std::vector<std::string> parts;
+
+        [&]<size_t... I>(std::index_sequence<I...>) {
+            ((parts.push_back(JSConvert<std::tuple_element_t<I, T>>::name())), ...);
+        }(std::make_index_sequence<std::tuple_size_v<T>>());
+
+        std::string type = "";
+        bool first = true;
+        for (const auto& name : parts) {
+            type += first ? name : ", " + name;
+        }
+        return std::format("Tuple of ({})", type);
+    }
+
+    static T from_value(ValueType val)
+    {
+        if (val.IsArray()) {
+            auto arr = val.As<ArrayType>();
+            if (arr.Length() != std::tuple_size_v<T>) {
+                throw MaaError { std::format("expect {}, got {}", name(), DumpValue(val)) };
+            }
+            T result;
+            [&]<size_t... I>(std::index_sequence<I...>) {
+                ((std::get<I>(result) = JSConvert<std::tuple_element_t<I, T>>::from_value(arr[I])), ...);
+            }(std::make_index_sequence<std::tuple_size_v<T>>());
+            return result;
+        }
+        throw MaaError { std::format("expect {}, got {}", name(), DumpValue(val)) };
+    }
+
+    static ValueType to_value(EnvType env, const T& val)
+    {
+        std::vector<ValueType> arr;
+        [&]<size_t... I>(std::index_sequence<I...>) {
+            ((arr.push_back(JSConvert<std::tuple_element_t<I, T>>::to_value(env, std::get<I>(val)))), ...);
+        }(std::make_index_sequence<std::tuple_size_v<T>>());
+        return MakeArray(env, arr);
+    }
+};
+
 template <typename Type>
 struct JSConvert<std::optional<Type>>
 {
@@ -338,6 +400,71 @@ struct JSConvert<std::optional<Type>>
     }
 };
 
+template <typename Type>
+struct JSConvert<OptionalParam<Type>>
+{
+    static std::string name() { return std::format("{}?", JSConvert<Type>::name()); }
+
+    static OptionalParam<Type> from_value(ValueType val)
+    {
+        if (val.IsUndefined()) {
+            return std::nullopt;
+        }
+        else {
+            return JSConvert<Type>::from_value(val);
+        }
+    }
+
+    static ValueType to_value(EnvType env, const OptionalParam<Type>& val)
+    {
+        if (val) {
+            return JSConvert<Type>::to_value(env, *val);
+        }
+        else {
+            return env.Undefined();
+        }
+    }
+};
+
+template <typename... Args>
+inline std::vector<ValueType> WrapArgs(EnvType env, Args&&... args)
+{
+    using ArgsTuple = std::tuple<Args...>;
+
+    ArgsTuple arg_tuple = ArgsTuple(std::forward<Args>(args)...);
+    std::vector<ValueType> params;
+
+    [&params, &arg_tuple, &env]<size_t... I>(std::index_sequence<I...>) {
+        ((params.push_back(JSConvert<std::remove_cvref_t<std::tuple_element_t<I, ArgsTuple>>>::to_value(env, std::get<I>(arg_tuple)))),
+         ...);
+    }(std::make_index_sequence<std::tuple_size_v<ArgsTuple>>());
+
+    return params;
+}
+
+template <typename ArgsTuple>
+inline ArgsTuple UnWrapArgs(const CallbackInfo& info)
+{
+    constexpr size_t arg_count = std::tuple_size_v<ArgsTuple>;
+
+    constexpr size_t opt_count = OptionalCount<ArgsTuple>();
+    constexpr size_t min_count = arg_count - opt_count;
+
+    if (info.Length() < min_count || info.Length() > arg_count) {
+        throw MaaError { std::format("expect {} ~ {} arguments, got {}", min_count, arg_count, info.Length()) };
+    }
+
+    ArgsTuple params;
+
+    if constexpr (arg_count > 0) {
+        [&params, &info]<size_t... I>(std::index_sequence<I...>) {
+            ((std::get<I>(params) = JSConvert<std::tuple_element_t<I, ArgsTuple>>::from_value(info[I])), ...);
+        }(std::make_index_sequence<arg_count>());
+    }
+
+    return params;
+}
+
 template <typename Func, Func func, StringHolder name>
 struct WrapFunctionHelper
 {
@@ -353,17 +480,7 @@ struct WrapFunctionHelper
     {
         return +[](const CallbackInfo& info) {
             try {
-                if (info.Length() != arg_count) {
-                    throw MaaError { std::format("expect {} arguments, got {}", arg_count, info.Length()) };
-                }
-
-                typename traits::args params;
-
-                if constexpr (arg_count > 0) {
-                    [&params, &info]<size_t... I>(std::index_sequence<I...>) {
-                        ((std::get<I>(params) = JSConvert<std::tuple_element_t<I, Args>>::from_value(info[I])), ...);
-                    }(std::make_index_sequence<arg_count>());
-                }
+                auto params = UnWrapArgs<Args>(info);
 
                 ValueType ret = info.Env().Undefined();
 
@@ -430,22 +547,6 @@ struct WrapFunctionHelper
 
     static ValueType makeValue(EnvType env) { return MakeFunction(env, name.data, arg_count, make()); }
 };
-
-template <typename... Args>
-inline std::vector<ValueType> WrapArgs(EnvType env, Args&&... args)
-{
-    using ArgsTuple = std::tuple<Args...>;
-
-    ArgsTuple arg_tuple = ArgsTuple(std::forward<Args>(args)...);
-    std::vector<ValueType> params;
-
-    [&params, &arg_tuple, &env]<size_t... I>(std::index_sequence<I...>) {
-        ((params.push_back(JSConvert<std::remove_cvref_t<std::tuple_element_t<I, ArgsTuple>>>::to_value(env, std::get<I>(arg_tuple)))),
-         ...);
-    }(std::make_index_sequence<std::tuple_size_v<ArgsTuple>>());
-
-    return params;
-}
 
 template <typename... Args>
 inline ObjectType CallCtorHelper(const FunctionRefType& ctor, Args&&... args)

@@ -16,7 +16,7 @@ struct ExtContext : public maajs::NativeClassBase
         marker(resourceCtor.Value());
         marker(imageJobCtor.Value());
         marker(controllerCtor.Value());
-        // marker(adbControllerCtor.Value());
+        marker(adbControllerCtor.Value());
     }
 
     static ExtContext* get(maajs::EnvType env)

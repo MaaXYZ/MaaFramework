@@ -2,7 +2,8 @@
 
 #include <iostream>
 
-#include "../foundation/spec.h"
+#include "error.h"
+#include "spec.h"
 
 namespace maajs
 {
@@ -13,26 +14,34 @@ template <typename Inherit>
 struct NativeClass
 {
     template <typename Super = void>
-    static void init(EnvType env, ValueType& ctor, FunctionRefType* superCtor = nullptr)
+    static void init(EnvType env, FunctionType& ctor, FunctionRefType* superCtor = nullptr)
     {
         ctor = MakeFunction(env, Inherit::name, 0, [](const maajs::CallbackInfo& info) { //
             if (!info.IsConstructCall()) {
                 return info.Env().Null();
             }
 
-            auto impl = Inherit::ctor(info);
-            if (!impl) {
-                return info.Env().Null();
+            try {
+                auto impl = Inherit::ctor(info);
+                if (!impl) {
+                    return info.Env().Null();
+                }
+
+                auto obj = info.This().As<Napi::Object>();
+
+                napi_wrap(info.Env(), obj, impl, +[](napi_env, void* ptr, void*) { delete static_cast<Inherit*>(ptr); }, nullptr, nullptr);
+
+                return obj.As<Napi::Value>();
+            }
+            catch (const MaaError& exc) {
+                std::string what = std::format("maa.{}.ctor: {}", Inherit::name, exc.what());
+                Napi::TypeError::New(info.Env(), what).ThrowAsJavaScriptException();
+                return info.Env().Undefined();
             }
 
-            auto obj = info.This().As<Napi::Object>();
-
-            napi_wrap(info.Env(), obj, impl, +[](napi_env, void* ptr, void*) { delete static_cast<Inherit*>(ptr); }, nullptr, nullptr);
-
-            return obj.As<Napi::Value>();
         });
 
-        ObjectType proto = ctor.As<Napi::Function>().Get("prototype").As<Napi::Object>();
+        ObjectType proto = ctor.Get("prototype").As<Napi::Object>();
 
         if constexpr (!std::is_same_v<Super, void>) {
             auto superProto = superCtor->Value().Get("prototype");
@@ -40,7 +49,7 @@ struct NativeClass
             objectObj["setPrototypeOf"].AsValue().As<Napi::Function>().Call(objectObj, { proto, superProto });
         }
 
-        Inherit::init_proto(env, proto);
+        Inherit::init_proto(env, proto, ctor);
     }
 
     static Inherit* take(ValueType val)
@@ -96,14 +105,21 @@ struct NativeClass
                 return { info.Env(), obj };
             }
 
-            auto impl = Inherit::ctor(info);
-            if (!impl) {
+            try {
+                auto impl = Inherit::ctor(info);
+                if (!impl) {
+                    return { info.Env(), JS_EXCEPTION };
+                }
+
+                JS_SetOpaque(obj, impl);
+
+                return { info.Env(), obj };
+            }
+            catch (const MaaError& exc) {
+                std::string what = std::format("maa.{}.ctor: {}", Inherit::name, exc.what());
+                JS_ThrowTypeError(info.Env(), "%s", what.c_str());
                 return { info.Env(), JS_EXCEPTION };
             }
-
-            JS_SetOpaque(obj, impl);
-
-            return { info.Env(), obj };
         });
 
         JS_SetConstructorBit(env, ctor.peek(), true);
@@ -116,7 +132,7 @@ struct NativeClass
             JS_FreeValue(env, superProto);
         }
 
-        Inherit::init_proto(env, proto);
+        Inherit::init_proto(env, proto, ctor);
 
         JS_SetClassProto(env, classId.classId, proto.take());
     }

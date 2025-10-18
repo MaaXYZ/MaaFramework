@@ -1,0 +1,34 @@
+#pragma once
+
+#include <optional>
+
+#include <MaaFramework/MaaAPI.h>
+
+#include "../foundation/spec.h"
+
+struct ResourceImpl : public maajs::NativeClassBase
+{
+    MaaResource* resource {};
+    bool own = false;
+
+    ResourceImpl() = default;
+    ResourceImpl(MaaResource* res, bool own);
+    ~ResourceImpl();
+    void destroy();
+    maajs::ValueType post_bundle(maajs::ValueType self, maajs::EnvType env, std::string path);
+    void override_pipeline(maajs::EnvType env, maajs::ValueType pipeline);
+    void override_next(std::string node_name, std::vector<std::string> next_list);
+    std::optional<std::string> get_node_data(std::string node_name);
+    std::optional<maajs::ValueType> get_node_data_parsed(maajs::EnvType env, std::string node_name);
+    void clear();
+    MaaStatus status(MaaResId id);
+    maajs::PromiseType wait(maajs::EnvType env, MaaResId id);
+    bool get_loaded();
+    std::optional<std::string> get_hash();
+    std::optional<std::vector<std::string>> get_node_list();
+
+    constexpr static char name[] = "Resource";
+
+    static ResourceImpl* ctor(const maajs::CallbackInfo&);
+    static void init_proto(maajs::EnvType env, maajs::ObjectType proto, maajs::FunctionType);
+};

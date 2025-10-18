@@ -1,3 +1,4 @@
+#include "resource.h"
 #include "loader.h"
 
 #include <MaaFramework/MaaAPI.h>
@@ -9,132 +10,134 @@
 #include "buffer.h"
 #include "ext.h"
 
-struct ResourceImpl : public maajs::NativeClassBase
-{
-    MaaResource* resource {};
-    bool own = false;
-
-    ResourceImpl() = default;
-
-    ResourceImpl(MaaResource* res, bool own)
-        : resource(res)
-        , own(own)
-    {
-    }
-
-    void destroy()
-    {
-        if (own && resource) {
-            MaaResourceDestroy(resource);
-        }
-    }
-
-    maajs::ValueType post_bundle(maajs::ValueType self, maajs::EnvType env, std::string path)
-    {
-        auto id = MaaResourcePostBundle(resource, path.c_str());
-        return maajs::CallCtorHelper(ExtContext::get(env)->jobCtor, self, id);
-    }
-
-    void override_pipeline(maajs::EnvType env, maajs::ValueType pipeline)
-    {
-        auto str = maajs::JsonStringify(env, pipeline);
-
-        if (!MaaResourceOverridePipeline(resource, str.c_str())) {
-            throw maajs::MaaError { "Resource override_pipeline failed" };
-        }
-    }
-
-    void override_next(std::string node_name, std::vector<std::string> next_list)
-    {
-        StringListBuffer buffer;
-        buffer.set_vector(next_list, [](auto str) {
-            StringBuffer buf;
-            buf.set(str);
-            return buf;
-        });
-        if (!MaaResourceOverrideNext(resource, node_name.c_str(), buffer)) {
-            throw maajs::MaaError { "Resource override_next failed" };
-        }
-    }
-
-    std::optional<std::string> get_node_data(std::string node_name)
-    {
-        StringBuffer buffer;
-        if (!MaaResourceGetNodeData(resource, node_name.c_str(), buffer)) {
-            return std::nullopt;
-        }
-        return buffer.str();
-    }
-
-    std::optional<maajs::ValueType> get_node_data_parsed(maajs::EnvType env, std::string node_name)
-    {
-        auto json = get_node_data(node_name);
-        if (!json) {
-            return std::nullopt;
-        }
-        return maajs::JsonParse(env, *json);
-    }
-
-    void clear() { MaaResourceClear(resource); }
-
-    MaaStatus status(MaaResId id) { return MaaResourceStatus(resource, id); }
-
-    maajs::PromiseType wait(maajs::EnvType env, MaaResId id)
-    {
-        auto worker = new maajs::AsyncWork<MaaStatus>(env, [handle = resource, id]() { return MaaResourceWait(handle, id); });
-        worker->Queue();
-        return worker->Promise();
-    }
-
-    bool get_loaded() { return MaaResourceLoaded(resource); }
-
-    std::optional<std::string> get_hash()
-    {
-        StringBuffer buf;
-        if (!MaaResourceGetHash(resource, buf)) {
-            return std::nullopt;
-        }
-        return buf.str();
-    }
-
-    std::optional<std::vector<std::string>> get_node_list()
-    {
-        StringListBuffer buffer;
-        if (!MaaResourceGetNodeList(resource, buffer)) {
-            return std::nullopt;
-        }
-
-        return buffer.as_vector([](StringBufferRefer buf) { return buf.str(); });
-    }
-
-    constexpr static char name[] = "Resource";
-
-    static ResourceImpl* ctor([[maybe_unused]] const maajs::CallbackInfo& info)
-    {
-        if (info.Length() == 1) {
-            try {
-                MaaResource* handle = reinterpret_cast<MaaResource*>(std::stoull(info[0].As<maajs::StringType>().Utf8Value()));
-                return new ResourceImpl { handle, false };
-            }
-            catch (std::exception&) {
-                return nullptr;
-            }
-        }
-        else {
-            auto handle = MaaResourceCreate();
-            if (!handle) {
-                return nullptr;
-            }
-            return new ResourceImpl { handle, true };
-        }
-    }
-
-    static void init_proto([[maybe_unused]] maajs::EnvType env, [[maybe_unused]] maajs::ObjectType proto);
-};
-
 MAA_JS_NATIVE_CLASS_STATIC_IMPL(ResourceImpl)
 
-void ResourceImpl::init_proto(maajs::EnvType env, [[maybe_unused]] maajs::ObjectType proto)
+ResourceImpl::ResourceImpl(MaaResource* res, bool own)
+    : resource(res)
+    , own(own)
+{
+}
+
+ResourceImpl::~ResourceImpl()
+{
+    destroy();
+}
+
+void ResourceImpl::destroy()
+{
+    if (own && resource) {
+        MaaResourceDestroy(resource);
+    }
+}
+
+maajs::ValueType ResourceImpl::post_bundle(maajs::ValueType self, maajs::EnvType env, std::string path)
+{
+    auto id = MaaResourcePostBundle(resource, path.c_str());
+    return maajs::CallCtorHelper(ExtContext::get(env)->jobCtor, self, id);
+}
+
+void ResourceImpl::override_pipeline(maajs::EnvType env, maajs::ValueType pipeline)
+{
+    auto str = maajs::JsonStringify(env, pipeline);
+
+    if (!MaaResourceOverridePipeline(resource, str.c_str())) {
+        throw maajs::MaaError { "Resource override_pipeline failed" };
+    }
+}
+
+void ResourceImpl::override_next(std::string node_name, std::vector<std::string> next_list)
+{
+    StringListBuffer buffer;
+    buffer.set_vector(next_list, [](auto str) {
+        StringBuffer buf;
+        buf.set(str);
+        return buf;
+    });
+    if (!MaaResourceOverrideNext(resource, node_name.c_str(), buffer)) {
+        throw maajs::MaaError { "Resource override_next failed" };
+    }
+}
+
+std::optional<std::string> ResourceImpl::get_node_data(std::string node_name)
+{
+    StringBuffer buffer;
+    if (!MaaResourceGetNodeData(resource, node_name.c_str(), buffer)) {
+        return std::nullopt;
+    }
+    return buffer.str();
+}
+
+std::optional<maajs::ValueType> ResourceImpl::get_node_data_parsed(maajs::EnvType env, std::string node_name)
+{
+    auto json = get_node_data(node_name);
+    if (!json) {
+        return std::nullopt;
+    }
+    return maajs::JsonParse(env, *json);
+}
+
+void ResourceImpl::clear()
+{
+    MaaResourceClear(resource);
+}
+
+MaaStatus ResourceImpl::status(MaaResId id)
+{
+    return MaaResourceStatus(resource, id);
+}
+
+maajs::PromiseType ResourceImpl::wait(maajs::EnvType env, MaaResId id)
+{
+    auto worker = new maajs::AsyncWork<MaaStatus>(env, [handle = resource, id]() { return MaaResourceWait(handle, id); });
+    worker->Queue();
+    return worker->Promise();
+}
+
+bool ResourceImpl::get_loaded()
+{
+    return MaaResourceLoaded(resource);
+}
+
+std::optional<std::string> ResourceImpl::get_hash()
+{
+    StringBuffer buf;
+    if (!MaaResourceGetHash(resource, buf)) {
+        return std::nullopt;
+    }
+    return buf.str();
+}
+
+std::optional<std::vector<std::string>> ResourceImpl::get_node_list()
+{
+    StringListBuffer buffer;
+    if (!MaaResourceGetNodeList(resource, buffer)) {
+        return std::nullopt;
+    }
+
+    return buffer.as_vector([](StringBufferRefer buf) { return buf.str(); });
+}
+
+ResourceImpl* ResourceImpl::ctor(const maajs::CallbackInfo& info)
+{
+    if (info.Length() == 1) {
+        try {
+            MaaResource* handle = reinterpret_cast<MaaResource*>(std::stoull(info[0].As<maajs::StringType>().Utf8Value()));
+            return new ResourceImpl { handle, false };
+        }
+        catch (std::exception&) {
+            return nullptr;
+        }
+    }
+    else {
+        auto handle = MaaResourceCreate();
+        if (!handle) {
+            return nullptr;
+        }
+        return new ResourceImpl { handle, true };
+    }
+}
+
+void ResourceImpl::init_proto(maajs::EnvType env, maajs::ObjectType proto, maajs::FunctionType)
 {
     MAA_BIND_FUNC(proto, "destroy", ResourceImpl::destroy);
     MAA_BIND_FUNC(proto, "post_bundle", ResourceImpl::post_bundle);

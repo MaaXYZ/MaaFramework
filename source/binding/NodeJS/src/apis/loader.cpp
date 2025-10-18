@@ -15,6 +15,7 @@ Napi::Object Init(Napi::Env env, Napi::Object exports)
     exports["Resource"] = load_resource(env);
     exports["ImageJob"] = load_image_job(env);
     exports["Controller"] = load_controller(env);
+    exports["AdbController"] = load_adb_controller(env);
 
     return exports;
 }
@@ -36,6 +37,7 @@ void init_module_maa(JSContext* ctx)
     maajs::BindValue(maa, "Resource", load_resource(env));
     maajs::BindValue(maa, "ImageJob", load_image_job(env));
     maajs::BindValue(maa, "Controller", load_controller(env));
+    maajs::BindValue(maa, "AdbController", load_adb_controller(env));
 
     maajs::BindValue(globalObject, "maa", maa);
 }

@@ -114,7 +114,7 @@ JobImpl* JobImpl::ctor(const maajs::CallbackInfo& info)
     return job;
 }
 
-void JobImpl::init_proto(maajs::EnvType env, maajs::ObjectType proto)
+void JobImpl::init_proto(maajs::EnvType env, maajs::ObjectType proto, maajs::FunctionType)
 {
     MAA_BIND_GETTER(proto, "source", JobImpl::get_source);
     MAA_BIND_GETTER(proto, "id", JobImpl::get_id);
