@@ -12,7 +12,8 @@ namespace maajs
 template <typename Inherit>
 struct NativeClass
 {
-    static void init(EnvType env, ValueType& ctor, [[maybe_unused]] FunctionRefType* super = nullptr)
+    template <typename Super = void>
+    static void init(EnvType env, ValueType& ctor)
     {
         ctor = MakeFunction(env, Inherit::name, 0, [](const maajs::CallbackInfo& info) { //
             if (!info.IsConstructCall()) {
@@ -40,16 +41,7 @@ struct NativeClass
     {
         void* result = nullptr;
         napi_unwrap(val.Env(), val, &result);
-        auto rootImpl = static_cast<NativeClassBase*>(result);
-        auto currImpl = rootImpl;
-        while (currImpl) {
-            auto impl = dynamic_cast<Inherit*>(currImpl);
-            if (impl) {
-                return impl;
-            }
-            currImpl = currImpl->child_instance;
-        }
-        return nullptr;
+        return dynamic_cast<Inherit*>(static_cast<NativeClassBase*>(result));
     }
 };
 
@@ -59,121 +51,87 @@ struct NativeClass
 
 #ifdef MAA_JS_IMPL_IS_QUICKJS
 
+struct NativeClassIDChain
+{
+    JSClassID classId {};
+    NativeClassIDChain* superId {};
+};
+
 template <typename Inherit>
 struct NativeClass
 {
-    static JSClassID classId;
+    static NativeClassIDChain classId;
 
-    static void init(EnvType env, FunctionType& ctor, FunctionRefType* super = nullptr)
+    template <typename Super = void>
+    static void init(EnvType env, FunctionType& ctor)
     {
         static JSClassDef classDef = {
             .class_name = Inherit::name,
             .finalizer = +[](JSRuntime*, JSValueConst data) { delete take(data); },
             .gc_mark =
                 +[](JSRuntime* rt, JSValueConst data, JS_MarkFunc* func) {
-                    auto rootImpl = static_cast<NativeClassBase*>(JS_GetOpaque(data, classId));
-                    auto currImpl = rootImpl;
-                    while (currImpl) {
-                        currImpl->gc_mark([rt, func](const ValueType& value) {
-                            func(rt, reinterpret_cast<JSGCObjectHeader*>(JS_VALUE_GET_OBJ(value.value)));
-                        });
-                        currImpl = currImpl->child_instance;
-                    }
+                    take(data)->gc_mark([rt, func](const ValueType& value) {
+                        func(rt, reinterpret_cast<JSGCObjectHeader*>(JS_VALUE_GET_OBJ(value.value)));
+                    });
                 },
+            .call = nullptr,
+            .exotic = nullptr,
         };
 
-        JS_NewClassID(JS_GetRuntime(env), &classId);
-        JS_NewClass(JS_GetRuntime(env), classId, &classDef);
+        JS_NewClassID(JS_GetRuntime(env), &classId.classId);
+        JS_NewClass(JS_GetRuntime(env), classId.classId, &classDef);
 
         auto proto = QjsObject::New(env);
 
-        std::shared_ptr<FunctionRefType> superPtr {};
-        std::function<void(NativeMarkerFunc)> ctorMarker {};
-        if (super) {
-            superPtr = std::make_shared<FunctionRefType>(PersistentFunction(super->Value()));
-            ctorMarker = [superPtr](auto marker) {
-                marker(superPtr->Value());
-            };
-        }
+        ctor = maajs::MakeFunction(env, Inherit::name, 0, [](const maajs::CallbackInfo& info) -> ValueType {
+            auto obj = JS_NewObjectClass(info.context, classId.classId);
 
-        ctor = maajs::MakeFunction(
-            env,
-            Inherit::name,
-            0,
-            [superPtr](const maajs::CallbackInfo& info) -> ValueType {
-                // TODO: 调用Inherit把参数提前拆分下
-                // 即, 指导如何调用super
-                JSValue obj;
-                if (superPtr) {
-                    std::vector<ValueType> args;
-                    args.reserve(info.Length());
-                    for (size_t i = 0; i < info.Length(); i++) {
-                        args.push_back(info[i]);
-                    }
-                    obj = CallCtor(*superPtr, args).take();
-                }
-                else {
-                    obj = JS_NewObjectClass(info.context, classId);
-                }
-
-                if (JS_IsException(obj)) {
-                    return { info.Env(), obj };
-                }
-
-                auto impl = Inherit::ctor(info);
-                if (!impl) {
-                    return { info.Env(), JS_EXCEPTION };
-                }
-
-                auto rootImpl = static_cast<NativeClassBase*>(JS_GetOpaque(obj, classId));
-                if (rootImpl) {
-                    auto currImpl = rootImpl;
-                    while (currImpl->child_instance) {
-                        currImpl = currImpl->child_instance;
-                    }
-                    currImpl->child_instance = impl;
-                    impl->super_instance = currImpl;
-                }
-                else {
-                    JS_SetOpaque(obj, impl);
-                }
-
+            if (JS_IsException(obj)) {
                 return { info.Env(), obj };
-            },
-            ctorMarker);
+            }
+
+            auto impl = Inherit::ctor(info);
+            if (!impl) {
+                return { info.Env(), JS_EXCEPTION };
+            }
+
+            JS_SetOpaque(obj, impl);
+
+            return { info.Env(), obj };
+        });
 
         JS_SetConstructorBit(env, ctor.peek(), true);
         JS_SetConstructor(env, ctor.peek(), proto.peek());
 
-        if (super) {
-            JS_SetPrototype(env, ctor.peek(), super->Value().peek());
+        if constexpr (!std::is_same_v<Super, void>) {
+            classId.superId = &NativeClass<Super>::classId;
+            auto superProto = JS_GetClassProto(env, classId.superId->classId);
+            JS_SetPrototype(env, proto.peek(), superProto);
+            JS_FreeValue(env, superProto);
         }
 
         Inherit::init_proto(env, proto);
 
-        JS_SetClassProto(env, classId, proto.take());
+        JS_SetClassProto(env, classId.classId, proto.take());
     }
 
     static Inherit* take(ValueType val) { return take(val.peek()); }
 
     static Inherit* take(JSValueConst val)
     {
-        auto rootImpl = static_cast<NativeClassBase*>(JS_GetOpaque(val, classId));
-        auto currImpl = rootImpl;
-        while (currImpl) {
-            auto impl = dynamic_cast<Inherit*>(currImpl);
-            if (impl) {
-                return impl;
-            }
-            currImpl = currImpl->child_instance;
+        auto idChain = &classId;
+        NativeClassBase* impl = nullptr;
+        while (!impl && idChain) {
+            impl = static_cast<NativeClassBase*>(JS_GetOpaque(val, idChain->classId));
+            idChain = idChain->superId;
         }
-        return nullptr;
+        return dynamic_cast<Inherit*>(impl);
     }
 };
 
 #define MAA_JS_NATIVE_CLASS_STATIC_IMPL(Type) \
     template <>                               \
-    JSClassID maajs::NativeClass<Type>::classId {};
+    maajs::NativeClassIDChain maajs::NativeClass<Type>::classId {};
 
 #endif
 

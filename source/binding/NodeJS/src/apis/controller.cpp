@@ -11,14 +11,17 @@
 
 MAA_JS_NATIVE_CLASS_STATIC_IMPL(ImageJobImpl)
 
-maajs::ValueType ImageJobImpl::get()
+maajs::ValueType ImageJobImpl::get(maajs::EnvType)
 {
-    return dynamic_cast<JobImpl*>(super_instance)->source.Value()["cached_image"];
+    return source.Value()["cached_image"];
 }
 
-ImageJobImpl* ImageJobImpl::ctor(const maajs::CallbackInfo&)
+ImageJobImpl* ImageJobImpl::ctor(const maajs::CallbackInfo& info)
 {
-    return new ImageJobImpl;
+    auto job = new ImageJobImpl;
+    job->source = maajs::PersistentObject(info[0].As<maajs::ObjectType>());
+    job->id = maajs::JSConvert<uint64_t>::from_value(info[1]);
+    return job;
 }
 
 void ImageJobImpl::init_proto(maajs::EnvType env, maajs::ObjectType proto)
@@ -29,7 +32,7 @@ void ImageJobImpl::init_proto(maajs::EnvType env, maajs::ObjectType proto)
 maajs::ValueType load_image_job(maajs::EnvType env)
 {
     maajs::FunctionType ctor;
-    maajs::NativeClass<ImageJobImpl>::init(env, ctor, &ExtContext::get(env)->jobCtor);
+    maajs::NativeClass<ImageJobImpl>::init<JobImpl>(env, ctor);
     ExtContext::get(env)->imageJobCtor = maajs::PersistentFunction(ctor);
     return ctor;
 }

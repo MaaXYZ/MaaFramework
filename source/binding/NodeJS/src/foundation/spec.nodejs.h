@@ -30,17 +30,9 @@ using NativeMarkerFunc = std::function<void(const maajs::ValueType&)>;
 
 struct NativeClassBase
 {
-    virtual ~NativeClassBase()
-    {
-        if (child_instance) {
-            delete child_instance;
-        }
-    }
+    virtual ~NativeClassBase() = default;
 
     virtual void gc_mark([[maybe_unused]] NativeMarkerFunc marker) {}
-
-    NativeClassBase* super_instance {};
-    NativeClassBase* child_instance {};
 };
 
 inline ValueType MakeArray(EnvType env, std::vector<ValueType> vals)

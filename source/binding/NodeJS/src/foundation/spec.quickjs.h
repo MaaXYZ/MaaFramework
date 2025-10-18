@@ -39,17 +39,9 @@ using NativeMarkerFunc = std::function<void(const ValueType& value)>;
 
 struct NativeClassBase
 {
-    virtual ~NativeClassBase()
-    {
-        if (child_instance) {
-            delete child_instance;
-        }
-    }
+    virtual ~NativeClassBase() = default;
 
     virtual void gc_mark([[maybe_unused]] NativeMarkerFunc marker) {}
-
-    NativeClassBase* super_instance {};
-    NativeClassBase* child_instance {};
 };
 
 struct NativePointerHolder
@@ -67,14 +59,12 @@ struct NativePointerHolder
                 },
             .gc_mark =
                 +[](JSRuntime* rt, JSValueConst data, JS_MarkFunc* func) {
-                    auto rootImpl = take<NativeClassBase>(data);
-                    while (rootImpl) {
-                        rootImpl->gc_mark([rt, func](const ValueType& value) {
-                            func(rt, reinterpret_cast<JSGCObjectHeader*>(JS_VALUE_GET_OBJ(value.value)));
-                        });
-                        rootImpl = rootImpl->child_instance;
-                    }
+                    take<NativeClassBase>(data)->gc_mark([rt, func](const ValueType& value) {
+                        func(rt, reinterpret_cast<JSGCObjectHeader*>(JS_VALUE_GET_OBJ(value.value)));
+                    });
                 },
+            .call = nullptr,
+            .exotic = nullptr,
         };
 
         JS_NewClassID(JS_GetRuntime(env), &_classId);

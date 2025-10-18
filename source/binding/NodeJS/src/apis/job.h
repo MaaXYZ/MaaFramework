@@ -16,7 +16,7 @@ struct JobImpl : public maajs::NativeClassBase
     MaaId get_id();
     MaaStatus get_status();
     maajs::PromiseType wait(maajs::ValueType self, maajs::EnvType env);
-    maajs::ValueType get(maajs::EnvType env);
+    virtual maajs::ValueType get(maajs::EnvType env);
 
     constexpr static char name[] = "Job";
 

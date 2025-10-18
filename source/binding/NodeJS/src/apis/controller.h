@@ -2,9 +2,9 @@
 
 #include "job.h"
 
-struct ImageJobImpl : public maajs::NativeClassBase
+struct ImageJobImpl : public JobImpl
 {
-    maajs::ValueType get();
+    virtual maajs::ValueType get(maajs::EnvType env) override;
 
     constexpr static char name[] = "ImageJob";
 
