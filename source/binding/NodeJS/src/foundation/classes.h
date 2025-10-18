@@ -13,7 +13,7 @@ template <typename Inherit>
 struct NativeClass
 {
     template <typename Super = void>
-    static void init(EnvType env, ValueType& ctor)
+    static void init(EnvType env, ValueType& ctor, FunctionRefType* superCtor = nullptr)
     {
         ctor = MakeFunction(env, Inherit::name, 0, [](const maajs::CallbackInfo& info) { //
             if (!info.IsConstructCall()) {
@@ -33,6 +33,12 @@ struct NativeClass
         });
 
         ObjectType proto = ctor.As<Napi::Function>().Get("prototype").As<Napi::Object>();
+
+        if constexpr (!std::is_same_v<Super, void>) {
+            auto superProto = superCtor->Value().Get("prototype");
+            auto objectObj = env.Global()["Object"].AsValue().As<Napi::Object>();
+            objectObj["setPrototypeOf"].AsValue().As<Napi::Function>().Call(objectObj, { proto, superProto });
+        }
 
         Inherit::init_proto(env, proto);
     }
@@ -63,7 +69,7 @@ struct NativeClass
     static NativeClassIDChain classId;
 
     template <typename Super = void>
-    static void init(EnvType env, FunctionType& ctor)
+    static void init(EnvType env, FunctionType& ctor, FunctionRefType* = nullptr)
     {
         static JSClassDef classDef = {
             .class_name = Inherit::name,

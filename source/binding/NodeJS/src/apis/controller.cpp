@@ -32,7 +32,7 @@ void ImageJobImpl::init_proto(maajs::EnvType env, maajs::ObjectType proto)
 maajs::ValueType load_image_job(maajs::EnvType env)
 {
     maajs::FunctionType ctor;
-    maajs::NativeClass<ImageJobImpl>::init<JobImpl>(env, ctor);
+    maajs::NativeClass<ImageJobImpl>::init<JobImpl>(env, ctor, &ExtContext::get(env)->jobCtor);
     ExtContext::get(env)->imageJobCtor = maajs::PersistentFunction(ctor);
     return ctor;
 }
