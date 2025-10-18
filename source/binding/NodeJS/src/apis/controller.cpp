@@ -53,9 +53,11 @@ ControllerImpl::~ControllerImpl()
 
 void ControllerImpl::destroy()
 {
-    if (own) {
+    if (own && controller) {
         MaaControllerDestroy(controller);
     }
+    controller = nullptr;
+    own = false;
 }
 
 maajs::ValueType ControllerImpl::post_connection(maajs::ValueType self, maajs::EnvType env)

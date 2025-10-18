@@ -28,6 +28,8 @@ void ResourceImpl::destroy()
     if (own && resource) {
         MaaResourceDestroy(resource);
     }
+    resource = nullptr;
+    own = false;
 }
 
 maajs::ValueType ResourceImpl::post_bundle(maajs::ValueType self, maajs::EnvType env, std::string path)
