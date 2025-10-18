@@ -11,8 +11,10 @@ async function main() {
     // console.log(job, job.wait)
     // await job.wait().status
 
-    console.log(maa.AdbController)
-    console.log(new maa.AdbController(1, 2, 3))
+    const dev = (await maa.AdbController.find())[0]
+    dev.shift()
+    console.log(dev)
+    console.log(new maa.AdbController(...dev))
 }
 
 main()

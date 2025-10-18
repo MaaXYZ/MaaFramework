@@ -16,10 +16,14 @@ MAA_TOOLKIT_NS_BEGIN
 
 struct QuickJSRuntimeData : public QuickJSRuntimeBridgeInterface
 {
-    JSRuntime* rt;
-    JSContext* ctx;
-    bool quit;
+    JSRuntime* rt {};
+    JSContext* ctx {};
+    bool quit {};
     std::string result;
+
+    std::mutex running_task_count_mtx;
+    std::condition_variable running_task_count_cv;
+    size_t running_task_count {};
 
     std::mutex async_tasks_mtx;
     std::condition_variable async_tasks_cv;
@@ -45,7 +49,15 @@ struct QuickJSRuntimeData : public QuickJSRuntimeBridgeInterface
         JS_FreeRuntime(rt);
     }
 
-    std::vector<std::function<void(JSContext* ctx)>> take_tasks()
+    bool has_running_task() { return running_task_count > 0; }
+
+    bool has_pending_task_callback()
+    {
+        std::unique_lock lock(async_tasks_mtx);
+        return async_tasks.size() > 0;
+    }
+
+    std::vector<std::function<void(JSContext* ctx)>> take_task_callbacks()
     {
         std::vector<std::function<void(JSContext * ctx)>> ret_tasks;
         std::unique_lock lock(async_tasks_mtx);
@@ -53,19 +65,47 @@ struct QuickJSRuntimeData : public QuickJSRuntimeBridgeInterface
         return ret_tasks;
     }
 
-    void wait_task()
+    void wait_task_callback()
     {
         std::unique_lock lock(async_tasks_mtx);
         async_tasks_cv.wait(lock, [this]() { return async_tasks.size() > 0 || quit; });
     }
 
+    void wait_running_task()
+    {
+        std::unique_lock lock(running_task_count_mtx);
+        running_task_count_cv.wait(lock, [this]() { return running_task_count == 0; });
+    }
+
+    void reg_task() override
+    {
+        std::unique_lock lock(running_task_count_mtx);
+        ++running_task_count;
+    }
+
     void push_task(std::function<void(JSContext* ctx)> task) override
     {
+        bool notify_running_task_done = false;
+        {
+            std::unique_lock lock(running_task_count_mtx);
+            --running_task_count;
+            if (running_task_count == 0) {
+                notify_running_task_done = true;
+            }
+        }
+
+        // 这里即使是quit状态，也要存起来所有task
+        // 这样其它线程的worker才能把所有权移交到主线程
+        // 直接在这里丢弃的话，会导致在其它线程析构
         {
             std::unique_lock lock(async_tasks_mtx);
             async_tasks.push_back(std::move(task));
         }
         async_tasks_cv.notify_all();
+
+        if (notify_running_task_done) {
+            running_task_count_cv.notify_all();
+        }
     }
 
     virtual void call_exit(std::string ret) override
@@ -96,7 +136,7 @@ void QuickJSRuntime::eval_script(std::string script)
 void QuickJSRuntime::exec_loop()
 {
     JSContext* unused;
-    while (JS_IsJobPending(d_->rt) || !d_->quit) {
+    while ((JS_IsJobPending(d_->rt) || d_->has_pending_task_callback() || d_->has_running_task()) && !d_->quit) {
         while (true) {
             auto state = JS_ExecutePendingJob(d_->rt, &unused);
             if (!state) {
@@ -109,15 +149,18 @@ void QuickJSRuntime::exec_loop()
             }
         }
 
-        auto tasks = d_->take_tasks();
+        auto tasks = d_->take_task_callbacks();
         for (const auto& task : tasks) {
             task(d_->ctx);
         }
 
         if (!JS_IsJobPending(d_->rt)) {
-            d_->wait_task();
+            d_->wait_task_callback();
         }
     }
+
+    d_->wait_running_task();
+    d_->take_task_callbacks();
 }
 
 std::string QuickJSRuntime::get_result()

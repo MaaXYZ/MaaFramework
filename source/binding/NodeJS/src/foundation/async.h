@@ -55,18 +55,22 @@ struct AsyncWork
     {
         auto [pro, res, rej] = maajs::MakePromise(env);
         promise = pro;
-        resolve = std::move(res);
-        reject = std::move(rej);
+        resolve = res;
+        reject = rej;
     }
+
+    ~AsyncWork() { std::cerr << "Async worker destructed!" << std::endl; }
 
     void Queue()
     {
         auto bridge = QuickJSRuntimeBridgeInterface::get(env);
 
+        bridge->reg_task();
+
         (std::thread {
              [bridge, exec = exec, resolve = resolve, reject = reject, worker = this]() {
                  Ret result = exec();
-                 bridge->push_task([result, resolve, reject, worker](JSContext* ctx) {
+                 bridge->push_task([result, resolve, reject, worker = std::shared_ptr<AsyncWork<Ret>>(worker)](JSContext* ctx) {
                      QjsEnv env { ctx };
                      try {
                          auto val = JSConvert<Ret>::to_value(env, result);
@@ -75,8 +79,6 @@ struct AsyncWork
                      catch (const MaaError& exc) {
                          maajs::CallFuncHelper<void>(reject->Value(), std::string { exc.what() });
                      }
-
-                     delete worker;
                  });
              },
          })
