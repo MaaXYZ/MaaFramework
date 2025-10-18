@@ -76,7 +76,7 @@ if(WITH_NODEJS_BINDING)
     set_target_properties(MaaNodeNew PROPERTIES POSITION_INDEPENDENT_CODE ON)
 endif()
 
-if(TRUE)
+if(WITH_NODEJS_BINDING)
 
     # old variant
 
