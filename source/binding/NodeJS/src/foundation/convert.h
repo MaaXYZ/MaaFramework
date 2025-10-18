@@ -294,8 +294,8 @@ struct JSConvert<std::vector<Type>>
         if (val.IsArray()) {
             auto vals = GetArray(val.As<ArrayType>());
             std::vector<Type> result;
-            for (const auto& val : vals) {
-                result.push_back(JSConvert<Type>::from_value(val));
+            for (const auto& v : vals) {
+                result.push_back(JSConvert<Type>::from_value(v));
             }
         }
         throw MaaError { std::format("expect {}, got {}", name(), DumpValue(val)) };

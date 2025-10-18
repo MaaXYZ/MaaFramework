@@ -1,5 +1,7 @@
 #pragma once
 
+#include <optional>
+
 #include <MaaFramework/MaaAPI.h>
 
 #include "../foundation/spec.h"

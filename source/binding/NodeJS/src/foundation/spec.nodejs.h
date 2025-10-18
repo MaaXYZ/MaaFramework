@@ -47,7 +47,7 @@ inline ValueType MakeArray(EnvType env, std::vector<ValueType> vals)
 {
     auto arr = Napi::Array::New(env, vals.size());
     for (size_t i = 0; i < vals.size(); i++) {
-        arr[i] = vals[i];
+        arr[static_cast<uint32_t>(i)] = vals[i];
     }
     return arr;
 }
