@@ -364,13 +364,13 @@ struct QjsWeakRef : public QjsObject
     Target Value()
     {
         auto derefFunc = this->operator[]("deref").AsValue().template As<QjsFunction>();
-        auto target = JS_Call(Env(), derefFunc, peek(), 0, nullptr);
+        auto target = JS_Call(Env(), derefFunc.peek(), peek(), 0, nullptr);
         QjsValue targetVal = { Env(), target };
         // 这里迁就Napi中的行为，weakref失效了返回null
         if (targetVal.IsUndefined()) {
             targetVal = Env().Null();
         }
-        return targetVal;
+        return targetVal.As<Target>();
     }
 };
 

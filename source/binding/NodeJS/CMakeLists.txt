@@ -2,7 +2,7 @@ cmake_policy(SET CMP0091 NEW)
 cmake_policy(SET CMP0042 NEW)
 
 set(MAA_JS_COMMON_SOURCES src/apis/loader.cpp src/apis/global.cpp src/apis/job.cpp src/apis/resource.cpp
-                          src/apis/controller.cpp)
+                          src/apis/controller.cpp src/apis/tasker.cpp)
 
 # quickjs
 

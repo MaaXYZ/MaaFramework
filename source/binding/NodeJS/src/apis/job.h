@@ -19,10 +19,12 @@ struct JobImpl : public maajs::NativeClassBase
     maajs::PromiseType wait(maajs::ValueType self, maajs::EnvType env);
     virtual maajs::ValueType get();
 
+    std::string to_string() override;
+
     constexpr static char name[] = "Job";
 
     static JobImpl* ctor(const maajs::CallbackInfo& info);
-    static void init_proto(maajs::EnvType env, maajs::ObjectType proto, maajs::FunctionType);
+    static void init_proto(maajs::ObjectType proto, maajs::FunctionType);
     void gc_mark(maajs::NativeMarkerFunc marker) override;
 };
 

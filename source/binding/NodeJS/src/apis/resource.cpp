@@ -5,7 +5,7 @@
 
 #include "../foundation/async.h"
 #include "../foundation/classes.h"
-#include "../foundation/macros.h"
+#include "../foundation/convert.h"
 #include "../foundation/utils.h"
 #include "buffer.h"
 #include "ext.h"
@@ -123,6 +123,11 @@ std::optional<std::vector<std::string>> ResourceImpl::get_node_list()
     return buffer.as_vector([](StringBufferRefer buf) { return buf.str(); });
 }
 
+std::string ResourceImpl::to_string()
+{
+    return std::format(" handle = {:#018x}, {} ", reinterpret_cast<uintptr_t>(resource), own ? "owned" : "rented");
+}
+
 void ResourceImpl::init_bind(maajs::ObjectType self)
 {
     ExtContext::get(env)->resources.add(resource, self);
@@ -148,7 +153,7 @@ ResourceImpl* ResourceImpl::ctor(const maajs::CallbackInfo& info)
     }
 }
 
-void ResourceImpl::init_proto(maajs::EnvType env, maajs::ObjectType proto, maajs::FunctionType)
+void ResourceImpl::init_proto(maajs::ObjectType proto, maajs::FunctionType)
 {
     MAA_BIND_FUNC(proto, "destroy", ResourceImpl::destroy);
     MAA_BIND_FUNC(proto, "post_bundle", ResourceImpl::post_bundle);

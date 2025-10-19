@@ -7,8 +7,17 @@
 #include <variant>
 
 #include "classes.h"
-#include "error.h"
 #include "spec.h"
+#include "tools.h"
+
+#define MAA_WRAP_FUNC(func) maajs::WrapFunctionHelper<decltype(&func), &func, #func>::make()
+#define MAA_WRAP_FUNC_VALUE(env, func) maajs::WrapFunctionHelper<decltype(&func), (&func), #func>::makeValue(env)
+
+#define MAA_BIND_FUNC(object, prop, func) maajs::BindValue(object, prop, MAA_WRAP_FUNC_VALUE(object.Env(), func))
+#define MAA_BIND_GETTER(object, prop, func) maajs::BindGetterSetter(object, prop, #func, "", MAA_WRAP_FUNC(func), nullptr)
+#define MAA_BIND_SETTER(object, prop, func) maajs::BindGetterSetter(object, prop, "", #func, nullptr, MAA_WRAP_FUNC(func))
+#define MAA_BIND_GETTER_SETTER(object, prop, getter, setter) \
+    maajs::BindGetterSetter(object, prop, #getter, #setter, MAA_WRAP_FUNC(getter), MAA_WRAP_FUNC(setter))
 
 namespace maajs
 {
@@ -62,17 +71,9 @@ inline std::string DumpExpectNames()
         return std::format("undefined.{}", DumpTypeNames<ArgsTuple>());
     }
     else {
-        return std::format("object[{}].{}", Self::name, DumpTypeNames<ArgsTuple>());
+        return std::format("object<{}>.{}", Self::name, DumpTypeNames<ArgsTuple>());
     }
 }
-
-template <size_t N>
-struct StringHolder
-{
-    char data[N];
-
-    constexpr StringHolder(const char (&str)[N]) { std::copy(str, str + N, data); }
-};
 
 template <typename T>
 struct OptionalParam : public std::optional<T>
@@ -99,6 +100,22 @@ constexpr size_t OptionalCount()
 
     return opt_count;
 }
+
+template <typename Inherit>
+struct NativeObject
+{
+    Inherit* impl {};
+
+    operator Inherit*() const { return impl; }
+
+    Inherit* operator->() const { return impl; }
+};
+
+template <typename T>
+constexpr bool IsNativeObject = false;
+
+template <typename T>
+constexpr bool IsNativeObject<NativeObject<T>> = true;
 
 template <typename F>
 struct FuncTraits
@@ -246,6 +263,25 @@ struct JSConvert<ArrayBufferType>
     }
 
     static ValueType to_value(EnvType, const ArrayBufferType& val) { return val; }
+};
+
+template <typename Inherit>
+struct JSConvert<NativeObject<Inherit>>
+{
+    static std::string name() { return std::format("object<{}>", Inherit::name); }
+
+    static NativeObject<Inherit> from_value(ValueType val)
+    {
+        if (val.IsObject()) {
+            auto impl = NativeClass<Inherit>::take(val);
+            if (impl) {
+                return { impl };
+            }
+        }
+        throw MaaError { std::format("expect {}, got {}", name(), DumpValue(val)) };
+    }
+
+    static ValueType to_value(EnvType env, const NativeObject<Inherit>&) = delete;
 };
 
 template <>
@@ -629,6 +665,27 @@ inline Ret CallMemberHelper(ObjectType object, const char* prop, Args&&... args)
     if constexpr (!std::is_same_v<Ret, void>) {
         return JSConvert<Ret>::from_value(val);
     }
+}
+
+template <typename Inherit>
+inline void NativeClass<Inherit>::bind_to_string(ObjectType proto)
+{
+    maajs::BindValue(
+        proto,
+        "toString",
+        maajs::MakeFunction(
+            proto.Env(),
+            std::format("{}.toString", Inherit::name).c_str(),
+            0,
+            +[](const CallbackInfo& info) {
+                auto impl = NativeClass<Inherit>::take(info.This());
+                if (!impl) {
+                    return StringType::New(info.Env(), std::format("{} {{}}", TypeOf(info.This())));
+                }
+                else {
+                    return StringType::New(info.Env(), std::format("{} {{{}}}", Inherit::name, impl->to_string()));
+                }
+            }));
 }
 
 }

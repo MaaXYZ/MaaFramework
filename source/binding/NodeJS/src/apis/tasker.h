@@ -1,0 +1,59 @@
+#pragma once
+
+#include <optional>
+
+#include <MaaFramework/MaaAPI.h>
+
+#include "../foundation/classes.h"
+#include "../foundation/convert.h"
+#include "../foundation/spec.h"
+#include "controller.h"
+#include "resource.h"
+
+struct TaskJobImpl : public JobImpl
+{
+    virtual maajs::ValueType get() override;
+
+    constexpr static char name[] = "TaskJob";
+
+    static TaskJobImpl* ctor(const maajs::CallbackInfo& info);
+    static void init_proto(maajs::ObjectType proto, maajs::FunctionType ctor);
+};
+
+MAA_JS_NATIVE_CLASS_STATIC_FORWARD(TaskJobImpl)
+
+struct TaskerImpl : public maajs::NativeClassBase
+{
+    MaaTasker* tasker {};
+    bool own = false;
+
+    TaskerImpl() = default;
+    TaskerImpl(MaaTasker* res, bool own);
+    ~TaskerImpl();
+    void destroy();
+    maajs::ValueType post_task(maajs::ValueType self, maajs::EnvType env, std::string entry, maajs::OptionalParam<maajs::ValueType> param);
+    maajs::ValueType post_stop(maajs::ValueType self, maajs::EnvType env);
+    MaaStatus status(MaaResId id);
+    maajs::PromiseType wait(MaaResId id);
+    bool get_inited();
+    bool get_running();
+    bool get_stopping();
+    void set_resource(std::optional<maajs::NativeObject<ResourceImpl>> res);
+    std::optional<maajs::ValueType> get_resource();
+    void set_controller(std::optional<maajs::NativeObject<ControllerImpl>> ctrl);
+    std::optional<maajs::ValueType> get_controller();
+    void clear_cache();
+    std::optional<maajs::ValueType> recognition_detail(MaaRecoId id);
+    std::optional<maajs::ValueType> node_detail(MaaNodeId id);
+    std::optional<maajs::ValueType> task_detail(MaaTaskId id);
+
+    std::string to_string() override;
+
+    constexpr static char name[] = "Tasker";
+
+    virtual void init_bind(maajs::ObjectType self) override;
+    static TaskerImpl* ctor(const maajs::CallbackInfo&);
+    static void init_proto(maajs::ObjectType proto, maajs::FunctionType);
+};
+
+MAA_JS_NATIVE_CLASS_STATIC_FORWARD(TaskerImpl)

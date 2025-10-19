@@ -28,11 +28,13 @@ struct ResourceImpl : public maajs::NativeClassBase
     std::optional<std::string> get_hash();
     std::optional<std::vector<std::string>> get_node_list();
 
+    std::string to_string() override;
+
     constexpr static char name[] = "Resource";
 
     virtual void init_bind(maajs::ObjectType self) override;
     static ResourceImpl* ctor(const maajs::CallbackInfo&);
-    static void init_proto(maajs::EnvType env, maajs::ObjectType proto, maajs::FunctionType);
+    static void init_proto(maajs::ObjectType proto, maajs::FunctionType);
 };
 
 MAA_JS_NATIVE_CLASS_STATIC_FORWARD(ResourceImpl)

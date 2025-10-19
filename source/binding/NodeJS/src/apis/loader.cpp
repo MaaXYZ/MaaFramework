@@ -4,21 +4,30 @@
 #include <iostream>
 
 #include "../foundation/bridge.h"
-#include "../foundation/macros.h"
+#include "../foundation/convert.h"
 
-#ifdef MAA_JS_IMPL_IS_NODEJS
-Napi::Object Init(Napi::Env env, Napi::Object exports)
+static maajs::ObjectType init(maajs::EnvType env)
 {
     maajs::init(env);
 
-    exports["Global"] = load_global(env);
-    exports["Job"] = load_job(env);
-    exports["Resource"] = load_resource(env);
-    exports["ImageJob"] = load_image_job(env);
-    exports["Controller"] = load_controller(env);
-    exports["AdbController"] = load_adb_controller(env);
+    auto maa = maajs::ObjectType::New(env);
 
-    return exports;
+    maajs::BindValue(maa, "Global", load_global(env));
+    maajs::BindValue(maa, "Job", load_job(env));
+    maajs::BindValue(maa, "Resource", load_resource(env));
+    maajs::BindValue(maa, "ImageJob", load_image_job(env));
+    maajs::BindValue(maa, "Controller", load_controller(env));
+    maajs::BindValue(maa, "AdbController", load_adb_controller(env));
+    maajs::BindValue(maa, "TaskJob", load_task_job(env));
+    maajs::BindValue(maa, "Tasker", load_tasker(env));
+
+    return maa;
+}
+
+#ifdef MAA_JS_IMPL_IS_NODEJS
+Napi::Object Init(Napi::Env env, Napi::Object)
+{
+    return ::init(env);
 }
 
 NODE_API_MODULE(maa, Init);
@@ -28,19 +37,10 @@ NODE_API_MODULE(maa, Init);
 void init_module_maa(JSContext* ctx)
 {
     maajs::EnvType env { ctx };
-    maajs::init(env);
 
-    auto maa = maajs::ObjectType::New(env);
-    auto globalObject = env.Global();
+    auto maa = ::init(env);
 
-    maajs::BindValue(maa, "Global", load_global(env));
-    maajs::BindValue(maa, "Job", load_job(env));
-    maajs::BindValue(maa, "Resource", load_resource(env));
-    maajs::BindValue(maa, "ImageJob", load_image_job(env));
-    maajs::BindValue(maa, "Controller", load_controller(env));
-    maajs::BindValue(maa, "AdbController", load_adb_controller(env));
-
-    maajs::BindValue(globalObject, "maa", maa);
+    maajs::BindValue(env.Global(), "maa", maa);
 }
 
 void maa_rt_print(std::string str)

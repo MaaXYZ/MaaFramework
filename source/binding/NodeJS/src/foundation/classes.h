@@ -3,8 +3,8 @@
 #include <cassert>
 #include <iostream>
 
-#include "error.h"
 #include "spec.h"
+#include "tools.h"
 
 namespace maajs
 {
@@ -17,7 +17,7 @@ struct NativeClass
     template <typename Super = void>
     static void init(EnvType env, FunctionType& ctor, FunctionRefType* superCtor = nullptr)
     {
-        ctor = MakeFunction(env, Inherit::name, 0, [](const maajs::CallbackInfo& info) { //
+        ctor = MakeFunction(env, Inherit::name, 0, [](const CallbackInfo& info) { //
             if (!info.IsConstructCall()) {
                 return info.Env().Null();
             }
@@ -53,7 +53,9 @@ struct NativeClass
             objectObj["setPrototypeOf"].AsValue().As<Napi::Function>().Call(objectObj, { proto, superProto });
         }
 
-        Inherit::init_proto(env, proto, ctor);
+        bind_to_string(proto);
+
+        Inherit::init_proto(proto, ctor);
     }
 
     static Inherit* take(ValueType val)
@@ -62,6 +64,8 @@ struct NativeClass
         napi_unwrap(val.Env(), val, &result);
         return dynamic_cast<Inherit*>(static_cast<NativeClassBase*>(result));
     }
+
+    static void bind_to_string(ObjectType proto);
 };
 
 #define MAA_JS_NATIVE_CLASS_STATIC_FORWARD(Type)
@@ -108,7 +112,7 @@ struct NativeClass
 
         auto proto = QjsObject::New(env);
 
-        ctor = maajs::MakeFunction(env, Inherit::name, 0, [](const maajs::CallbackInfo& info) -> ValueType {
+        ctor = MakeFunction(env, Inherit::name, 0, [](const CallbackInfo& info) -> ValueType {
             auto obj = JS_NewObjectClass(info.context, classId.classId);
 
             if (JS_IsException(obj)) {
@@ -153,7 +157,9 @@ struct NativeClass
             JS_FreeValue(env, superProto);
         }
 
-        Inherit::init_proto(env, proto, ctor);
+        bind_to_string(proto);
+
+        Inherit::init_proto(proto, ctor);
 
         JS_SetClassProto(env, classId.classId, proto.take());
     }
@@ -170,6 +176,8 @@ struct NativeClass
         }
         return nullptr;
     }
+
+    static void bind_to_string(ObjectType proto);
 };
 
 #define MAA_JS_NATIVE_CLASS_STATIC_FORWARD(Type) \

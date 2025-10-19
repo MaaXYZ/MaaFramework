@@ -50,9 +50,12 @@ struct ExtContext : public maajs::NativeClassBase
     maajs::FunctionRefType imageJobCtor;
     maajs::FunctionRefType controllerCtor;
     maajs::FunctionRefType adbControllerCtor;
+    maajs::FunctionRefType taskJobCtor;
+    maajs::FunctionRefType taskerCtor;
 
     HandleMap<MaaResource> resources;
     HandleMap<MaaController> controllers;
+    HandleMap<MaaTasker> taskers;
 
     void gc_mark(maajs::NativeMarkerFunc marker) override
     {
@@ -61,9 +64,12 @@ struct ExtContext : public maajs::NativeClassBase
         marker(imageJobCtor.Value());
         marker(controllerCtor.Value());
         marker(adbControllerCtor.Value());
+        marker(taskJobCtor.Value());
+        marker(taskerCtor.Value());
 
         resources.gc_mark(marker);
         controllers.gc_mark(marker);
+        taskers.gc_mark(marker);
     }
 
     static ExtContext* get(maajs::EnvType env)

@@ -9,20 +9,21 @@ async function main() {
     dev.shift()
     const ctrl = new maa.AdbController(...dev)
     await ctrl.post_connection().wait()
-    const img = await ctrl.post_screencap().wait().get()
-    save('1.png', img)
-    /*
+
     const res = new maa.Resource()
+    await res.post_bundle('sample/resource').wait()
 
-    print('before await')
-    const job = res.post_bundle('sample/resource')
-    await job.wait().status
-    print('after await')
+    const tsk = new maa.Tasker()
 
-    print(`loaded: ${res.loaded}\nhash: ${res.hash}\nnode_list: ${res.node_list?.join(', ')}`)
+    tsk.resource = res
+    tsk.controller = ctrl
 
-    exit('123')
-    */
+    print(`inited: ${tsk.inited}`)
+
+    print(`${ctrl} ${res} ${tsk}`)
+
+    const imageJob = ctrl.post_screencap()
+    print(`${imageJob} ${tsk.controller}`)
 
     return '123123'
 }

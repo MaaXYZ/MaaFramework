@@ -4,7 +4,7 @@
 #include <MaaFramework/MaaAPI.h>
 
 #include "../foundation/classes.h"
-#include "../foundation/macros.h"
+#include "../foundation/convert.h"
 #include "ext.h"
 
 MAA_JS_NATIVE_CLASS_STATIC_IMPL(JobImpl)
@@ -44,10 +44,11 @@ maajs::PromiseType JobImpl::wait(maajs::ValueType self, maajs::EnvType)
     for (auto key : forwards) {
         auto newProPtr = std::make_shared<maajs::ObjectRefType>(maajs::PersistentObject(newPro));
 
-        maajs::BindGetter(
+        maajs::BindGetterSetter(
             newPro,
             key.c_str(),
             "job_forward",
+            "",
             [key, newProPtr](const maajs::CallbackInfo& info) {
                 auto [retProHolder, retProResolveRef, _] = maajs::MakePromise(info.Env());
                 newProPtr->Value().As<maajs::PromiseType>().Then(
@@ -65,6 +66,7 @@ maajs::PromiseType JobImpl::wait(maajs::ValueType self, maajs::EnvType)
 
                 return retProHolder;
             },
+            nullptr,
             [newProPtr](auto marker) { marker(newProPtr->Value()); });
     }
 
@@ -106,6 +108,11 @@ maajs::ValueType JobImpl::get()
     return env.Undefined();
 }
 
+std::string JobImpl::to_string()
+{
+    return std::format(" source = {}, id = {} ", source.Value().ToString().Utf8Value(), id);
+}
+
 JobImpl* JobImpl::ctor(const maajs::CallbackInfo& info)
 {
     auto job = new JobImpl;
@@ -114,7 +121,7 @@ JobImpl* JobImpl::ctor(const maajs::CallbackInfo& info)
     return job;
 }
 
-void JobImpl::init_proto(maajs::EnvType env, maajs::ObjectType proto, maajs::FunctionType)
+void JobImpl::init_proto(maajs::ObjectType proto, maajs::FunctionType)
 {
     MAA_BIND_GETTER(proto, "source", JobImpl::get_source);
     MAA_BIND_GETTER(proto, "id", JobImpl::get_id);

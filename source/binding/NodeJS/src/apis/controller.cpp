@@ -6,7 +6,7 @@
 
 #include "../foundation/async.h"
 #include "../foundation/classes.h"
-#include "../foundation/macros.h"
+#include "../foundation/convert.h"
 #include "buffer.h"
 #include "ext.h"
 
@@ -25,7 +25,7 @@ ImageJobImpl* ImageJobImpl::ctor(const maajs::CallbackInfo& info)
     return job;
 }
 
-void ImageJobImpl::init_proto(maajs::EnvType env, maajs::ObjectType proto, maajs::FunctionType)
+void ImageJobImpl::init_proto(maajs::ObjectType proto, maajs::FunctionType)
 {
     MAA_BIND_FUNC(proto, "get", ImageJobImpl::get);
 }
@@ -111,17 +111,31 @@ std::optional<std::string> ControllerImpl::get_uuid()
     return buf.str();
 }
 
+std::string ControllerImpl::to_string()
+{
+    return std::format(" handle = {:#018x}, {} ", reinterpret_cast<uintptr_t>(controller), own ? "owned" : "rented");
+}
+
 void ControllerImpl::init_bind(maajs::ObjectType self)
 {
     ExtContext::get(env)->controllers.add(controller, self);
 }
 
-ControllerImpl* ControllerImpl::ctor(const maajs::CallbackInfo&)
+ControllerImpl* ControllerImpl::ctor(const maajs::CallbackInfo& info)
 {
+    if (info.Length() == 1) {
+        try {
+            MaaController* handle = reinterpret_cast<MaaController*>(std::stoull(info[0].As<maajs::StringType>().Utf8Value()));
+            return new ControllerImpl { handle, false };
+        }
+        catch (std::exception&) {
+            return nullptr;
+        }
+    }
     return nullptr;
 }
 
-void ControllerImpl::init_proto(maajs::EnvType env, maajs::ObjectType proto, maajs::FunctionType)
+void ControllerImpl::init_proto(maajs::ObjectType proto, maajs::FunctionType)
 {
     MAA_BIND_FUNC(proto, "destroy", ControllerImpl::destroy);
     MAA_BIND_FUNC(proto, "post_connection", ControllerImpl::post_connection);
@@ -203,7 +217,7 @@ AdbControllerImpl* AdbControllerImpl::ctor(const maajs::CallbackInfo& info)
     return new AdbControllerImpl(ctrl, true);
 }
 
-void AdbControllerImpl::init_proto(maajs::EnvType env, maajs::ObjectType, maajs::FunctionType ctor)
+void AdbControllerImpl::init_proto(maajs::ObjectType, maajs::FunctionType ctor)
 {
     MAA_BIND_FUNC(ctor, "agent_path", agent_path);
     MAA_BIND_FUNC(ctor, "find", find);

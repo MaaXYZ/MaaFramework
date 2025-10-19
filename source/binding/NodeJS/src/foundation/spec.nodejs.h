@@ -6,6 +6,8 @@
 
 #include <napi.h> // IWYU pragma: export
 
+#include "tools.h"
+
 namespace maajs
 {
 
@@ -39,6 +41,8 @@ struct NativeClassBase
     virtual void init_bind([[maybe_unused]] ObjectType self) {};
 
     virtual void gc_mark([[maybe_unused]] NativeMarkerFunc marker) {}
+
+    virtual std::string to_string() { return ""; }
 };
 
 inline ValueType MakeArray(EnvType env, std::vector<ValueType> vals)
@@ -116,9 +120,18 @@ inline void BindValue(ObjectType object, const char* prop, ValueType value)
     object.DefineProperty(Napi::PropertyDescriptor::Value(prop, value, napi_enumerable));
 }
 
-inline void BindGetter(ObjectType object, const char* prop, const char*, RawCallback func, std::function<void(NativeMarkerFunc)> = nullptr)
+inline void BindGetterSetter(
+    ObjectType object,
+    const char* prop,
+    const char*,
+    const char*,
+    RawCallback getter,
+    RawCallback setter,
+    std::function<void(NativeMarkerFunc)> = nullptr,
+    std::function<void(NativeMarkerFunc)> = nullptr)
 {
-    object.DefineProperty(Napi::PropertyDescriptor::Accessor(prop, func, napi_enumerable));
+    object.DefineProperty(
+        Napi::PropertyDescriptor::Accessor(prop, getter, [setter](const CallbackInfo& info) { setter(info); }, napi_enumerable));
 }
 
 inline ObjectType CallCtor(const FunctionRefType& ctor, std::vector<ValueType> args)

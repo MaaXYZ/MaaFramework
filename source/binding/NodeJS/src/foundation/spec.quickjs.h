@@ -14,6 +14,7 @@
 #endif
 
 #include "spec.quickjs.wrapper.h"
+#include "tools.h"
 
 namespace maajs
 {
@@ -48,6 +49,8 @@ struct NativeClassBase
     virtual void init_bind([[maybe_unused]] ObjectType self) {};
 
     virtual void gc_mark([[maybe_unused]] NativeMarkerFunc marker) {}
+
+    virtual std::string to_string() { return ""; }
 };
 
 struct NativePointerHolder
@@ -201,19 +204,22 @@ inline void BindValue(ObjectType object, const char* prop, ValueType value)
     JS_DefinePropertyValue(object.Env(), object.peek(), JS_NewAtom(object.Env(), prop), value.take(), JS_PROP_ENUMERABLE);
 }
 
-inline void BindGetter(
+inline void BindGetterSetter(
     ObjectType object,
     const char* prop,
-    const char* name,
-    RawCallback func,
-    std::function<void(NativeMarkerFunc)> run_marker = nullptr)
+    const char* getter_name,
+    const char* setter_name,
+    RawCallback getter,
+    RawCallback setter,
+    std::function<void(NativeMarkerFunc)> run_getter_marker = nullptr,
+    std::function<void(NativeMarkerFunc)> run_setter_marker = nullptr)
 {
     JS_DefinePropertyGetSet(
         object.Env(),
         object.peek(),
         JS_NewAtom(object.Env(), prop),
-        maajs::MakeFunction(object.Env(), name, 0, func, run_marker).take(),
-        JS_UNDEFINED,
+        getter ? maajs::MakeFunction(object.Env(), getter_name, 0, getter, run_getter_marker).take() : JS_UNDEFINED,
+        setter ? maajs::MakeFunction(object.Env(), setter_name, 1, setter, run_setter_marker).take() : JS_UNDEFINED,
         JS_PROP_ENUMERABLE);
 }
 

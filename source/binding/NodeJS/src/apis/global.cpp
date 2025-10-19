@@ -2,7 +2,7 @@
 
 #include <MaaFramework/MaaAPI.h>
 
-#include "../foundation/macros.h"
+#include "../foundation/convert.h"
 #include "../foundation/spec.h"
 
 std::string version_from_macro()

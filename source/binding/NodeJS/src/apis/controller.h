@@ -12,7 +12,7 @@ struct ImageJobImpl : public JobImpl
     constexpr static char name[] = "ImageJob";
 
     static ImageJobImpl* ctor(const maajs::CallbackInfo& info);
-    static void init_proto(maajs::EnvType env, maajs::ObjectType proto, maajs::FunctionType ctor);
+    static void init_proto(maajs::ObjectType proto, maajs::FunctionType ctor);
 };
 
 MAA_JS_NATIVE_CLASS_STATIC_FORWARD(ImageJobImpl)
@@ -34,11 +34,13 @@ struct ControllerImpl : public maajs::NativeClassBase
     std::optional<maajs::ArrayBufferType> get_cached_image();
     std::optional<std::string> get_uuid();
 
+    std::string to_string() override;
+
     constexpr static char name[] = "Controller";
 
     virtual void init_bind(maajs::ObjectType self) override;
     static ControllerImpl* ctor(const maajs::CallbackInfo&);
-    static void init_proto(maajs::EnvType env, maajs::ObjectType proto, maajs::FunctionType ctor);
+    static void init_proto(maajs::ObjectType proto, maajs::FunctionType ctor);
 };
 
 MAA_JS_NATIVE_CLASS_STATIC_FORWARD(ControllerImpl)
@@ -57,7 +59,7 @@ struct AdbControllerImpl : public ControllerImpl
     constexpr static char name[] = "AdbController";
 
     static AdbControllerImpl* ctor(const maajs::CallbackInfo&);
-    static void init_proto(maajs::EnvType env, maajs::ObjectType proto, maajs::FunctionType ctor);
+    static void init_proto(maajs::ObjectType proto, maajs::FunctionType ctor);
 };
 
 MAA_JS_NATIVE_CLASS_STATIC_FORWARD(AdbControllerImpl)
