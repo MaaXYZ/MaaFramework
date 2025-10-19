@@ -64,6 +64,9 @@ declare global {
         class Tasker {
             constructor(handle?: string)
             destroy(): void
+            add_sink(cb: (tasker: Tasker, msg: TaskerNotify) => MaybePromise<void>): SinkId
+            remove_sink(id: SinkId): void
+            clear_sinks(): void
             post_task(
                 entry: string,
                 param?: Record<string, unknown> | Record<string, unknown>[]

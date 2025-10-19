@@ -41,6 +41,7 @@ struct ResourceImpl : public maajs::NativeClassBase
     constexpr static char name[] = "Resource";
 
     virtual void init_bind(maajs::ObjectType self) override;
+    virtual void gc_mark(maajs::NativeMarkerFunc marker) override;
     static ResourceImpl* ctor(const maajs::CallbackInfo&);
     static void init_proto(maajs::ObjectType proto, maajs::FunctionType);
 };

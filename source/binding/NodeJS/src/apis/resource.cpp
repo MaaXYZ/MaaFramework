@@ -193,6 +193,13 @@ void ResourceImpl::init_bind(maajs::ObjectType self)
     ExtContext::get(env)->resources.add(resource, self);
 }
 
+void ResourceImpl::gc_mark(maajs::NativeMarkerFunc marker)
+{
+    for (const auto& [_, ctx] : sinks) {
+        marker(ctx->fn);
+    }
+}
+
 ResourceImpl* ResourceImpl::ctor(const maajs::CallbackInfo& info)
 {
     if (info.Length() == 1) {

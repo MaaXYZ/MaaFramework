@@ -13,7 +13,7 @@ declare global {
         class Resource {
             constructor(handle?: string)
             destroy(): void
-            add_sink(cb: (ctrl: Resource, msg: ResourceNotify) => MaybePromise<void>): SinkId
+            add_sink(cb: (res: Resource, msg: ResourceNotify) => MaybePromise<void>): SinkId
             remove_sink(id: SinkId): void
             clear_sinks(): void
             post_bundle(path: string): Job<ResId, Resource>
