@@ -28,9 +28,13 @@ struct NativeClass
                     return info.Env().Null();
                 }
 
+                impl->env = info.Env();
+
                 auto obj = info.This().As<Napi::Object>();
 
                 napi_wrap(info.Env(), obj, impl, +[](napi_env, void* ptr, void*) { delete static_cast<Inherit*>(ptr); }, nullptr, nullptr);
+
+                impl->init_bind(obj);
 
                 return obj.As<Napi::Value>();
             }
@@ -117,9 +121,14 @@ struct NativeClass
                     return { info.Env(), JS_EXCEPTION };
                 }
 
+                impl->env = info.Env();
+
                 JS_SetOpaque(obj, impl);
 
-                return { info.Env(), obj };
+                auto self = QjsObject { info.Env(), obj };
+                impl->init_bind(self);
+
+                return self;
             }
             catch (const MaaError& exc) {
                 std::string what = std::format("maa.{}.ctor: {}", Inherit::name, exc.what());

@@ -17,19 +17,20 @@ struct ResourceImpl : public maajs::NativeClassBase
     ~ResourceImpl();
     void destroy();
     maajs::ValueType post_bundle(maajs::ValueType self, maajs::EnvType env, std::string path);
-    void override_pipeline(maajs::EnvType env, maajs::ValueType pipeline);
+    void override_pipeline(maajs::ValueType pipeline);
     void override_next(std::string node_name, std::vector<std::string> next_list);
     std::optional<std::string> get_node_data(std::string node_name);
-    std::optional<maajs::ValueType> get_node_data_parsed(maajs::EnvType env, std::string node_name);
+    std::optional<maajs::ValueType> get_node_data_parsed(std::string node_name);
     void clear();
     MaaStatus status(MaaResId id);
-    maajs::PromiseType wait(maajs::EnvType env, MaaResId id);
+    maajs::PromiseType wait(MaaResId id);
     bool get_loaded();
     std::optional<std::string> get_hash();
     std::optional<std::vector<std::string>> get_node_list();
 
     constexpr static char name[] = "Resource";
 
+    virtual void init_bind(maajs::ObjectType self) override;
     static ResourceImpl* ctor(const maajs::CallbackInfo&);
     static void init_proto(maajs::EnvType env, maajs::ObjectType proto, maajs::FunctionType);
 };

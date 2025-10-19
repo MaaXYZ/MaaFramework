@@ -22,6 +22,7 @@ using ArrayBufferType = Napi::ArrayBuffer;
 
 using ObjectRefType = Napi::ObjectReference;
 using FunctionRefType = Napi::FunctionReference;
+using WeakObjectRefType = Napi::ObjectReference;
 
 using CallbackInfo = Napi::CallbackInfo;
 using RawCallback = std::function<ValueType(const CallbackInfo&)>;
@@ -30,7 +31,12 @@ using NativeMarkerFunc = std::function<void(const maajs::ValueType&)>;
 
 struct NativeClassBase
 {
+    EnvType env { nullptr };
+
+    NativeClassBase() = default;
     virtual ~NativeClassBase() = default;
+
+    virtual void init_bind([[maybe_unused]] ObjectType self) {};
 
     virtual void gc_mark([[maybe_unused]] NativeMarkerFunc marker) {}
 };
@@ -63,6 +69,11 @@ inline ObjectRefType PersistentObject(ObjectType val)
 inline FunctionRefType PersistentFunction(FunctionType val)
 {
     return Napi::Persistent(val);
+}
+
+inline WeakObjectRefType WeakRefObject(ObjectType val)
+{
+    return Napi::Weak(val);
 }
 
 inline ValueType ThrowTypeError(EnvType env, const std::string& err)

@@ -7,7 +7,7 @@
 
 struct ImageJobImpl : public JobImpl
 {
-    virtual maajs::ValueType get(maajs::EnvType env) override;
+    virtual maajs::ValueType get() override;
 
     constexpr static char name[] = "ImageJob";
 
@@ -29,13 +29,14 @@ struct ControllerImpl : public maajs::NativeClassBase
     maajs::ValueType post_connection(maajs::ValueType self, maajs::EnvType env);
     maajs::ValueType post_screencap(maajs::ValueType self, maajs::EnvType env);
     MaaStatus status(MaaCtrlId id);
-    maajs::PromiseType wait(maajs::EnvType env, MaaCtrlId id);
+    maajs::PromiseType wait(MaaCtrlId id);
     bool get_connected();
-    std::optional<maajs::ArrayBufferType> get_cached_image(maajs::EnvType env);
+    std::optional<maajs::ArrayBufferType> get_cached_image();
     std::optional<std::string> get_uuid();
 
     constexpr static char name[] = "Controller";
 
+    virtual void init_bind(maajs::ObjectType self) override;
     static ControllerImpl* ctor(const maajs::CallbackInfo&);
     static void init_proto(maajs::EnvType env, maajs::ObjectType proto, maajs::FunctionType ctor);
 };

@@ -347,6 +347,33 @@ struct QjsRef : public Target
     const Target& Value() const { return *this; }
 };
 
+template <typename Target>
+struct QjsWeakRef : public QjsObject
+{
+    using QjsObject::QjsObject;
+
+    static QjsWeakRef<Target> Make(Target target)
+    {
+        QjsEnv env = target.Env();
+        auto weakRefCtor = env.Global()["WeakRef"].AsValue().As<QjsFunction>();
+        JSValueConst args = target.peek();
+        auto ref = JS_CallConstructor(env, weakRefCtor.peek(), 1, &args);
+        return { env, ref };
+    }
+
+    Target Value()
+    {
+        auto derefFunc = this->operator[]("deref").AsValue().template As<QjsFunction>();
+        auto target = JS_Call(Env(), derefFunc, peek(), 0, nullptr);
+        QjsValue targetVal = { Env(), target };
+        // 这里迁就Napi中的行为，weakref失效了返回null
+        if (targetVal.IsUndefined()) {
+            targetVal = Env().Null();
+        }
+        return targetVal;
+    }
+};
+
 inline QjsValue QjsEnv::Null() const
 
 {

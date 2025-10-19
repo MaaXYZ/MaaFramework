@@ -12,7 +12,7 @@
 
 MAA_JS_NATIVE_CLASS_STATIC_IMPL(ImageJobImpl)
 
-maajs::ValueType ImageJobImpl::get(maajs::EnvType)
+maajs::ValueType ImageJobImpl::get()
 {
     return source.Value()["cached_image"];
 }
@@ -53,6 +53,10 @@ ControllerImpl::~ControllerImpl()
 
 void ControllerImpl::destroy()
 {
+    if (controller) {
+        ExtContext::get(env)->controllers.del(controller);
+    }
+
     if (own && controller) {
         MaaControllerDestroy(controller);
     }
@@ -60,13 +64,13 @@ void ControllerImpl::destroy()
     own = false;
 }
 
-maajs::ValueType ControllerImpl::post_connection(maajs::ValueType self, maajs::EnvType env)
+maajs::ValueType ControllerImpl::post_connection(maajs::ValueType self, maajs::EnvType)
 {
     auto id = MaaControllerPostConnection(controller);
     return maajs::CallCtorHelper(ExtContext::get(env)->jobCtor, self, id);
 }
 
-maajs::ValueType ControllerImpl::post_screencap(maajs::ValueType self, maajs::EnvType env)
+maajs::ValueType ControllerImpl::post_screencap(maajs::ValueType self, maajs::EnvType)
 {
     auto id = MaaControllerPostScreencap(controller);
     return maajs::CallCtorHelper(ExtContext::get(env)->imageJobCtor, self, id);
@@ -77,7 +81,7 @@ MaaStatus ControllerImpl::status(MaaCtrlId id)
     return MaaControllerStatus(controller, id);
 }
 
-maajs::PromiseType ControllerImpl::wait(maajs::EnvType env, MaaCtrlId id)
+maajs::PromiseType ControllerImpl::wait(MaaCtrlId id)
 {
     auto worker = new maajs::AsyncWork<MaaStatus>(env, [handle = controller, id]() { return MaaControllerWait(handle, id); });
     worker->Queue();
@@ -89,7 +93,7 @@ bool ControllerImpl::get_connected()
     return MaaControllerConnected(controller);
 }
 
-std::optional<maajs::ArrayBufferType> ControllerImpl::get_cached_image(maajs::EnvType env)
+std::optional<maajs::ArrayBufferType> ControllerImpl::get_cached_image()
 {
     ImageBuffer buf;
     if (!MaaControllerCachedImage(controller, buf)) {
@@ -105,6 +109,11 @@ std::optional<std::string> ControllerImpl::get_uuid()
         return std::nullopt;
     }
     return buf.str();
+}
+
+void ControllerImpl::init_bind(maajs::ObjectType self)
+{
+    ExtContext::get(env)->controllers.add(controller, self);
 }
 
 ControllerImpl* ControllerImpl::ctor(const maajs::CallbackInfo&)

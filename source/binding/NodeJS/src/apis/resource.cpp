@@ -25,6 +25,10 @@ ResourceImpl::~ResourceImpl()
 
 void ResourceImpl::destroy()
 {
+    if (resource) {
+        ExtContext::get(env)->resources.del(resource);
+    }
+
     if (own && resource) {
         MaaResourceDestroy(resource);
     }
@@ -32,13 +36,13 @@ void ResourceImpl::destroy()
     own = false;
 }
 
-maajs::ValueType ResourceImpl::post_bundle(maajs::ValueType self, maajs::EnvType env, std::string path)
+maajs::ValueType ResourceImpl::post_bundle(maajs::ValueType self, maajs::EnvType, std::string path)
 {
     auto id = MaaResourcePostBundle(resource, path.c_str());
     return maajs::CallCtorHelper(ExtContext::get(env)->jobCtor, self, id);
 }
 
-void ResourceImpl::override_pipeline(maajs::EnvType env, maajs::ValueType pipeline)
+void ResourceImpl::override_pipeline(maajs::ValueType pipeline)
 {
     auto str = maajs::JsonStringify(env, pipeline);
 
@@ -69,7 +73,7 @@ std::optional<std::string> ResourceImpl::get_node_data(std::string node_name)
     return buffer.str();
 }
 
-std::optional<maajs::ValueType> ResourceImpl::get_node_data_parsed(maajs::EnvType env, std::string node_name)
+std::optional<maajs::ValueType> ResourceImpl::get_node_data_parsed(std::string node_name)
 {
     auto json = get_node_data(node_name);
     if (!json) {
@@ -88,7 +92,7 @@ MaaStatus ResourceImpl::status(MaaResId id)
     return MaaResourceStatus(resource, id);
 }
 
-maajs::PromiseType ResourceImpl::wait(maajs::EnvType env, MaaResId id)
+maajs::PromiseType ResourceImpl::wait(MaaResId id)
 {
     auto worker = new maajs::AsyncWork<MaaStatus>(env, [handle = resource, id]() { return MaaResourceWait(handle, id); });
     worker->Queue();
@@ -117,6 +121,11 @@ std::optional<std::vector<std::string>> ResourceImpl::get_node_list()
     }
 
     return buffer.as_vector([](StringBufferRefer buf) { return buf.str(); });
+}
+
+void ResourceImpl::init_bind(maajs::ObjectType self)
+{
+    ExtContext::get(env)->resources.add(resource, self);
 }
 
 ResourceImpl* ResourceImpl::ctor(const maajs::CallbackInfo& info)

@@ -27,7 +27,7 @@ MaaStatus JobImpl::get_status()
     return *status;
 }
 
-maajs::PromiseType JobImpl::wait(maajs::ValueType self, maajs::EnvType env)
+maajs::PromiseType JobImpl::wait(maajs::ValueType self, maajs::EnvType)
 {
     auto pro = maajs::CallMemberHelper<maajs::PromiseType>(source.Value(), "wait", id);
 
@@ -101,7 +101,7 @@ maajs::PromiseType JobImpl::wait(maajs::ValueType self, maajs::EnvType env)
     return newPro;
 }
 
-maajs::ValueType JobImpl::get(maajs::EnvType env)
+maajs::ValueType JobImpl::get()
 {
     return env.Undefined();
 }

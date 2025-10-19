@@ -30,6 +30,5 @@ async function main() {
 main()
     .then(exit)
     .catch(err => {
-        print(`${err}`)
         exit(`${err}`)
     })

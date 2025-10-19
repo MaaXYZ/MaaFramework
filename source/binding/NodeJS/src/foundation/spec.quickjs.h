@@ -31,6 +31,7 @@ using ArrayBufferType = QjsArrayBuffer;
 
 using ObjectRefType = QjsRef<ObjectType>;
 using FunctionRefType = QjsRef<FunctionType>;
+using WeakObjectRefType = QjsWeakRef<ObjectType>;
 
 using CallbackInfo = QjsCallbackInfo;
 using RawCallback = std::function<ValueType(const CallbackInfo&)>;
@@ -39,7 +40,12 @@ using NativeMarkerFunc = std::function<void(const ValueType& value)>;
 
 struct NativeClassBase
 {
+    EnvType env {};
+
+    NativeClassBase() = default;
     virtual ~NativeClassBase() = default;
+
+    virtual void init_bind([[maybe_unused]] ObjectType self) {};
 
     virtual void gc_mark([[maybe_unused]] NativeMarkerFunc marker) {}
 };
@@ -110,6 +116,11 @@ inline ObjectRefType PersistentObject(ObjectType val)
 inline FunctionRefType PersistentFunction(FunctionType val)
 {
     return { val };
+}
+
+inline WeakObjectRefType WeakRefObject(ObjectType val)
+{
+    return WeakObjectRefType::Make(val);
 }
 
 inline ValueType ThrowTypeError(EnvType env, const std::string& err)

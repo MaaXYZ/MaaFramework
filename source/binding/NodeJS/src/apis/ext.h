@@ -1,6 +1,47 @@
 #pragma once
 
+#include <map>
+#include <optional>
+
+#include <MaaFramework/MaaAPI.h>
+
 #include "../foundation/spec.h"
+
+template <typename Handle>
+struct HandleMap
+{
+    std::map<Handle*, maajs::WeakObjectRefType> objs;
+
+    void gc_mark([[maybe_unused]] maajs::NativeMarkerFunc marker)
+    {
+#ifdef MAA_JS_IMPL_IS_QUICKJS
+        for (const auto& [_, val] : objs) {
+            marker(val);
+        }
+#endif
+    }
+
+    std::optional<maajs::ObjectType> find(Handle* handle)
+    {
+        if (auto it = objs.find(handle); it != objs.end()) {
+            auto val = it->second.Value();
+            if (val.IsNull()) {
+                objs.erase(it);
+                return std::nullopt;
+            }
+            else {
+                return val;
+            }
+        }
+        else {
+            return std::nullopt;
+        }
+    }
+
+    void add(Handle* handle, maajs::ObjectType object) { objs[handle] = maajs::WeakRefObject(object); }
+
+    void del(Handle* handle) { objs.erase(handle); }
+};
 
 struct ExtContext : public maajs::NativeClassBase
 {
@@ -10,13 +51,19 @@ struct ExtContext : public maajs::NativeClassBase
     maajs::FunctionRefType controllerCtor;
     maajs::FunctionRefType adbControllerCtor;
 
-    void gc_mark([[maybe_unused]] maajs::NativeMarkerFunc marker) override
+    HandleMap<MaaResource> resources;
+    HandleMap<MaaController> controllers;
+
+    void gc_mark(maajs::NativeMarkerFunc marker) override
     {
         marker(jobCtor.Value());
         marker(resourceCtor.Value());
         marker(imageJobCtor.Value());
         marker(controllerCtor.Value());
         marker(adbControllerCtor.Value());
+
+        resources.gc_mark(marker);
+        controllers.gc_mark(marker);
     }
 
     static ExtContext* get(maajs::EnvType env)
