@@ -10,6 +10,9 @@ declare global {
         class Resource {
             constructor(handle?: string)
             destroy(): void
+            add_sink(cb: (ctrl: Resource, msg: ResourceNotify) => MaybePromise<void>): SinkId
+            remove_sink(id: SinkId): void
+            clear_sinks(): void
             post_bundle(path: string): Job<ResId, Resource>
             override_pipeline(pipeline: Record<string, unknown> | Record<string, unknown>[]): void
             override_next(node_name: string, next_list: string[]): void

@@ -1,9 +1,11 @@
 #pragma once
 
+#include <map>
 #include <optional>
 
 #include <MaaFramework/MaaAPI.h>
 
+#include "../foundation/callback.h"
 #include "../foundation/classes.h"
 #include "../foundation/spec.h"
 
@@ -11,11 +13,15 @@ struct ResourceImpl : public maajs::NativeClassBase
 {
     MaaResource* resource {};
     bool own = false;
+    std::map<MaaSinkId, maajs::CallbackContext*> sinks {};
 
     ResourceImpl() = default;
     ResourceImpl(MaaResource* res, bool own);
     ~ResourceImpl();
     void destroy();
+    MaaSinkId add_sink(maajs::FunctionType sink);
+    void remove_sink(MaaSinkId id);
+    void clear_sinks();
     maajs::ValueType post_bundle(maajs::ValueType self, maajs::EnvType env, std::string path);
     void override_pipeline(maajs::ValueType pipeline);
     void override_next(std::string node_name, std::vector<std::string> next_list);

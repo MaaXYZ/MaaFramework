@@ -11,7 +11,6 @@
 #include "buffer.h"
 #include "ext.h"
 
-/*
 static void ResourceSink(void* resource, const char* message, const char* details_json, void* callback_arg)
 {
     auto ctx = reinterpret_cast<maajs::CallbackContext*>(callback_arg);
@@ -27,7 +26,7 @@ static void ResourceSink(void* resource, const char* message, const char* detail
                 });
         },
         [](auto res) { std::ignore = res; });
-}*/
+}
 
 MAA_JS_NATIVE_CLASS_STATIC_IMPL(ResourceImpl)
 
@@ -49,10 +48,42 @@ void ResourceImpl::destroy()
     }
 
     if (own && resource) {
+        for (const auto& [id, ctx] : sinks) {
+            MaaResourceRemoveSink(resource, id);
+            delete ctx;
+        }
         MaaResourceDestroy(resource);
     }
     resource = nullptr;
     own = false;
+}
+
+MaaSinkId ResourceImpl::add_sink(maajs::FunctionType sink)
+{
+    auto ctx = new maajs::CallbackContext(sink, "ResourceSink");
+    auto id = MaaResourceAddSink(resource, ResourceSink, ctx);
+    if (id != MaaInvalidId) {
+        sinks[id] = ctx;
+    }
+    return id;
+}
+
+void ResourceImpl::remove_sink(MaaSinkId id)
+{
+    if (auto it = sinks.find(id); it != sinks.end()) {
+        MaaResourceRemoveSink(resource, id);
+        delete it->second;
+        sinks.erase(it);
+    }
+}
+
+void ResourceImpl::clear_sinks()
+{
+    MaaResourceClearSinks(resource);
+    for (const auto& [_, ctx] : sinks) {
+        delete ctx;
+    }
+    sinks.clear();
 }
 
 maajs::ValueType ResourceImpl::post_bundle(maajs::ValueType self, maajs::EnvType, std::string path)
@@ -185,6 +216,9 @@ ResourceImpl* ResourceImpl::ctor(const maajs::CallbackInfo& info)
 void ResourceImpl::init_proto(maajs::ObjectType proto, maajs::FunctionType)
 {
     MAA_BIND_FUNC(proto, "destroy", ResourceImpl::destroy);
+    MAA_BIND_FUNC(proto, "add_sink", ResourceImpl::add_sink);
+    MAA_BIND_FUNC(proto, "remove_sink", ResourceImpl::remove_sink);
+    MAA_BIND_FUNC(proto, "clear_sinks", ResourceImpl::clear_sinks);
     MAA_BIND_FUNC(proto, "post_bundle", ResourceImpl::post_bundle);
     MAA_BIND_FUNC(proto, "override_pipeline", ResourceImpl::override_pipeline);
     MAA_BIND_FUNC(proto, "override_next", ResourceImpl::override_next);
