@@ -1,7 +1,10 @@
 declare global {
     namespace maa {
         type ResourceNotify = {
-            msg: 'Loading.Starting' | 'Loading.Succeeded' | 'Loading.Failed'
+            msg:
+                | 'Resource.Loading.Starting'
+                | 'Resource.Loading.Succeeded'
+                | 'Resource.Loading.Failed'
             res_id: ResId
             path: string
             hash: string

@@ -12,7 +12,10 @@ declare global {
         }
 
         type ControllerNotify = {
-            msg: 'Action.Starting' | 'Action.Succeeded' | 'Action.Failed'
+            msg:
+                | 'Controller.Action.Starting'
+                | 'Controller.Action.Succeeded'
+                | 'Controller.Action.Failed'
             ctrl_id: CtrlId
             uuid: string
         } & (
