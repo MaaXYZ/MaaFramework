@@ -302,6 +302,19 @@ struct QjsPromise : public QjsObject
                 })
             .As<QjsPromise>();
     }
+
+    QjsPromise Catch(QjsFunction onRejected) const
+    {
+        return this->operator[]("catch")
+            .AsValue()
+            .As<QjsFunction>()
+            .Call(
+                *this,
+                {
+                    onRejected,
+                })
+            .As<QjsPromise>();
+    }
 };
 
 struct QjsArrayBuffer : public QjsObject

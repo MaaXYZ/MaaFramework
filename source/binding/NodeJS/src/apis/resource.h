@@ -30,6 +30,8 @@ struct ResourceImpl : public maajs::NativeClassBase
 
     std::string to_string() override;
 
+    static maajs::ValueType locate_object(maajs::EnvType env, MaaResource* res);
+
     constexpr static char name[] = "Resource";
 
     virtual void init_bind(maajs::ObjectType self) override;

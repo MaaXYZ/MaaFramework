@@ -123,12 +123,7 @@ std::optional<maajs::ValueType> TaskerImpl::get_resource()
     if (!res) {
         return std::nullopt;
     }
-    if (auto obj = ExtContext::get(env)->resources.find(res)) {
-        return *obj;
-    }
-    else {
-        return maajs::CallCtorHelper(ExtContext::get(env)->resourceCtor, std::to_string(reinterpret_cast<size_t>(res)));
-    }
+    return ResourceImpl::locate_object(env, res);
 }
 
 void TaskerImpl::set_controller(std::optional<maajs::NativeObject<ControllerImpl>> ctrl)
@@ -151,12 +146,7 @@ std::optional<maajs::ValueType> TaskerImpl::get_controller()
     if (!ctrl) {
         return std::nullopt;
     }
-    if (auto obj = ExtContext::get(env)->controllers.find(ctrl)) {
-        return *obj;
-    }
-    else {
-        return maajs::CallCtorHelper(ExtContext::get(env)->controllerCtor, std::to_string(reinterpret_cast<size_t>(ctrl)));
-    }
+    return ControllerImpl::locate_object(env, ctrl);
 }
 
 void TaskerImpl::clear_cache()

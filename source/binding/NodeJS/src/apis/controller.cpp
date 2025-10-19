@@ -5,10 +5,29 @@
 #include <MaaToolkit/MaaToolkitAPI.h>
 
 #include "../foundation/async.h"
+#include "../foundation/callback.h"
 #include "../foundation/classes.h"
 #include "../foundation/convert.h"
+#include "../foundation/utils.h"
 #include "buffer.h"
 #include "ext.h"
+
+static void ControllerSink(void* controller, const char* message, const char* details_json, void* callback_arg)
+{
+    auto ctx = reinterpret_cast<maajs::CallbackContext*>(callback_arg);
+    ctx->Call<void>(
+        [=](maajs::FunctionType fn) {
+            auto ctrl = ControllerImpl::locate_object(fn.Env(), reinterpret_cast<MaaController*>(controller));
+            auto detail = maajs::JsonParse(fn.Env(), details_json).As<maajs::ObjectType>();
+            detail["msg"] = maajs::StringType::New(fn.Env(), message);
+            return fn.Call(
+                {
+                    ctrl,
+                    detail,
+                });
+        },
+        [](auto res) { std::ignore = res; });
+}
 
 MAA_JS_NATIVE_CLASS_STATIC_IMPL(ImageJobImpl)
 
@@ -58,10 +77,42 @@ void ControllerImpl::destroy()
     }
 
     if (own && controller) {
+        for (const auto& [id, ctx] : sinks) {
+            MaaControllerRemoveSink(controller, id);
+            delete ctx;
+        }
         MaaControllerDestroy(controller);
     }
     controller = nullptr;
     own = false;
+}
+
+MaaSinkId ControllerImpl::add_sink(maajs::FunctionType sink)
+{
+    auto ctx = new maajs::CallbackContext(sink, "ControllerSink");
+    auto id = MaaControllerAddSink(controller, ControllerSink, ctx);
+    if (id != MaaInvalidId) {
+        sinks[id] = ctx;
+    }
+    return id;
+}
+
+void ControllerImpl::remove_sink(MaaSinkId id)
+{
+    if (auto it = sinks.find(id); it != sinks.end()) {
+        MaaControllerRemoveSink(controller, id);
+        delete it->second;
+        sinks.erase(it);
+    }
+}
+
+void ControllerImpl::clear_sinks()
+{
+    MaaControllerClearSinks(controller);
+    for (const auto& [_, ctx] : sinks) {
+        delete ctx;
+    }
+    sinks.clear();
 }
 
 maajs::ValueType ControllerImpl::post_connection(maajs::ValueType self, maajs::EnvType)
@@ -116,9 +167,26 @@ std::string ControllerImpl::to_string()
     return std::format(" handle = {:#018x}, {} ", reinterpret_cast<uintptr_t>(controller), own ? "owned" : "rented");
 }
 
+maajs::ValueType ControllerImpl::locate_object(maajs::EnvType env, MaaController* ctrl)
+{
+    if (auto obj = ExtContext::get(env)->controllers.find(ctrl)) {
+        return *obj;
+    }
+    else {
+        return maajs::CallCtorHelper(ExtContext::get(env)->controllerCtor, std::to_string(reinterpret_cast<size_t>(ctrl)));
+    }
+}
+
 void ControllerImpl::init_bind(maajs::ObjectType self)
 {
     ExtContext::get(env)->controllers.add(controller, self);
+}
+
+void ControllerImpl::gc_mark(maajs::NativeMarkerFunc marker)
+{
+    for (const auto& [_, ctx] : sinks) {
+        marker(ctx->fn);
+    }
 }
 
 ControllerImpl* ControllerImpl::ctor(const maajs::CallbackInfo& info)
@@ -138,6 +206,9 @@ ControllerImpl* ControllerImpl::ctor(const maajs::CallbackInfo& info)
 void ControllerImpl::init_proto(maajs::ObjectType proto, maajs::FunctionType)
 {
     MAA_BIND_FUNC(proto, "destroy", ControllerImpl::destroy);
+    MAA_BIND_FUNC(proto, "add_sink", ControllerImpl::add_sink);
+    MAA_BIND_FUNC(proto, "remove_sink", ControllerImpl::remove_sink);
+    MAA_BIND_FUNC(proto, "clear_sinks", ControllerImpl::clear_sinks);
     MAA_BIND_FUNC(proto, "post_connection", ControllerImpl::post_connection);
     MAA_BIND_FUNC(proto, "post_screencap", ControllerImpl::post_screencap);
     MAA_BIND_FUNC(proto, "status", ControllerImpl::status);

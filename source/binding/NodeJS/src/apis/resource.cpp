@@ -4,11 +4,30 @@
 #include <MaaFramework/MaaAPI.h>
 
 #include "../foundation/async.h"
+#include "../foundation/callback.h"
 #include "../foundation/classes.h"
 #include "../foundation/convert.h"
 #include "../foundation/utils.h"
 #include "buffer.h"
 #include "ext.h"
+
+/*
+static void ResourceSink(void* resource, const char* message, const char* details_json, void* callback_arg)
+{
+    auto ctx = reinterpret_cast<maajs::CallbackContext*>(callback_arg);
+    ctx->Call<void>(
+        [=](maajs::FunctionType fn) {
+            auto res = ResourceImpl::locate_object(fn.Env(), reinterpret_cast<MaaResource*>(resource));
+            auto detail = maajs::JsonParse(fn.Env(), details_json).As<maajs::ObjectType>();
+            detail["msg"] = maajs::StringType::New(fn.Env(), message);
+            return fn.Call(
+                {
+                    res,
+                    detail,
+                });
+        },
+        [](auto res) { std::ignore = res; });
+}*/
 
 MAA_JS_NATIVE_CLASS_STATIC_IMPL(ResourceImpl)
 
@@ -126,6 +145,16 @@ std::optional<std::vector<std::string>> ResourceImpl::get_node_list()
 std::string ResourceImpl::to_string()
 {
     return std::format(" handle = {:#018x}, {} ", reinterpret_cast<uintptr_t>(resource), own ? "owned" : "rented");
+}
+
+maajs::ValueType ResourceImpl::locate_object(maajs::EnvType env, MaaResource* res)
+{
+    if (auto obj = ExtContext::get(env)->resources.find(res)) {
+        return *obj;
+    }
+    else {
+        return maajs::CallCtorHelper(ExtContext::get(env)->resourceCtor, std::to_string(reinterpret_cast<size_t>(res)));
+    }
 }
 
 void ResourceImpl::init_bind(maajs::ObjectType self)

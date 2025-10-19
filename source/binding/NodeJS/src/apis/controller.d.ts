@@ -88,6 +88,9 @@ declare global {
             constructor(handle?: string)
 
             destroy(): void
+            add_sink(cb: (ctrl: Controller, msg: ControllerNotify) => MaybePromise<void>): SinkId
+            remove_sink(id: SinkId): void
+            clear_sinks(): void
             post_connection(): Job<CtrlId, Controller>
             post_screencap(): ImageJob
             override_pipeline(pipeline: Record<string, unknown> | Record<string, unknown>[]): void

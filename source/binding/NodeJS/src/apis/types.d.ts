@@ -9,6 +9,7 @@ declare global {
         type TaskId = Id & { __brand: 'TaskId' }
         type RecoId = Id & { __brand: 'RecoId' }
         type NodeId = Id & { __brand: 'NodeId' }
+        type SinkId = Id & { __brand: 'SinkId' }
 
         type Status = number & { __brand: 'Status' }
         type LoggingLevel = number & { __brand: 'LoggingLevel' }
@@ -25,6 +26,8 @@ declare global {
         }
 
         type FlatRect = [x: number, y: number, width: number, height: number]
+
+        type MaybePromise<T> = T | Promise<T>
     }
 }
 

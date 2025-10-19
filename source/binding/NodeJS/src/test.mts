@@ -8,6 +8,11 @@ async function main() {
     const dev = (await maa.AdbController.find())[0]
     dev.shift()
     const ctrl = new maa.AdbController(...dev)
+
+    ctrl.add_sink((ctrl, msg) => {
+        print(`${ctrl} ${JSON.stringify(msg, null, 4)}`)
+    })
+
     await ctrl.post_connection().wait()
 
     const res = new maa.Resource()
@@ -19,11 +24,6 @@ async function main() {
     tsk.controller = ctrl
 
     print(`inited: ${tsk.inited}`)
-
-    print(`${ctrl} ${res} ${tsk}`)
-
-    const imageJob = ctrl.post_screencap()
-    print(`${imageJob} ${tsk.controller}`)
 
     return '123123'
 }
