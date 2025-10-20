@@ -4,7 +4,6 @@
 
 #include <MaaFramework/MaaAPI.h>
 
-#include "../foundation/classes.h"
 #include "../foundation/spec.h"
 
 struct JobImpl : public maajs::NativeClassBase

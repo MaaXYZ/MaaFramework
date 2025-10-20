@@ -1,49 +1,11 @@
 #pragma once
 
 #include <format>
-#include <functional>
-#include <string>
 
-#include <napi.h> // IWYU pragma: export
-
-#include "tools.h"
+#include "../instric.forward.h"
 
 namespace maajs
 {
-
-using EnvType = Napi::Env;
-using ValueType = Napi::Value;
-using ObjectType = Napi::Object;
-using BooleanType = Napi::Boolean;
-using StringType = Napi::String;
-using NumberType = Napi::Number;
-using FunctionType = Napi::Function;
-using ArrayType = Napi::Array;
-using PromiseType = Napi::Promise;
-using ArrayBufferType = Napi::ArrayBuffer;
-
-using ObjectRefType = Napi::ObjectReference;
-using FunctionRefType = Napi::FunctionReference;
-using WeakObjectRefType = Napi::ObjectReference;
-
-using CallbackInfo = Napi::CallbackInfo;
-using RawCallback = std::function<ValueType(const CallbackInfo&)>;
-
-using NativeMarkerFunc = std::function<void(const maajs::ValueType&)>;
-
-struct NativeClassBase
-{
-    EnvType env { nullptr };
-
-    NativeClassBase() = default;
-    virtual ~NativeClassBase() = default;
-
-    virtual void init_bind([[maybe_unused]] ObjectType self) {};
-
-    virtual void gc_mark([[maybe_unused]] NativeMarkerFunc marker) {}
-
-    virtual std::string to_string() { return ""; }
-};
 
 inline ValueType MakeArray(EnvType env, std::vector<ValueType> vals)
 {
@@ -54,7 +16,7 @@ inline ValueType MakeArray(EnvType env, std::vector<ValueType> vals)
     return arr;
 }
 
-inline std::vector<ValueType> GetArray(ArrayType arr)
+inline std::vector<ValueType> GetArray(const ArrayType& arr)
 {
     auto len = arr.Length();
     std::vector<ValueType> result;
@@ -86,12 +48,8 @@ inline ValueType ThrowTypeError(EnvType env, const std::string& err)
     return env.Undefined();
 }
 
-inline FunctionType MakeFunction(
-    EnvType env,
-    const char* name,
-    [[maybe_unused]] int argc,
-    RawCallback func,
-    std::function<void(NativeMarkerFunc)> = nullptr)
+inline FunctionType
+    MakeFunction(EnvType env, const char* name, [[maybe_unused]] int argc, RawCallback func, std::function<void(NativeMarkerFunc)>)
 {
     return Napi::Function::New(env, func, name);
 }
@@ -127,8 +85,8 @@ inline void BindGetterSetter(
     const char*,
     RawCallback getter,
     RawCallback setter,
-    std::function<void(NativeMarkerFunc)> = nullptr,
-    std::function<void(NativeMarkerFunc)> = nullptr)
+    std::function<void(NativeMarkerFunc)>,
+    std::function<void(NativeMarkerFunc)>)
 {
     object.DefineProperty(
         Napi::PropertyDescriptor::Accessor(prop, getter, [setter](const CallbackInfo& info) { setter(info); }, napi_enumerable));

@@ -2,6 +2,7 @@
 
 #include <exception>
 #include <string>
+#include <vector>
 
 namespace maajs
 {
@@ -34,5 +35,16 @@ struct StringHolder
         return ret;
     }
 };
+
+inline std::string JoinString(std::vector<std::string> parts, std::string sep)
+{
+    std::string result = "";
+    bool first = true;
+    for (const auto& name : parts) {
+        result += first ? name : sep + name;
+        first = false;
+    }
+    return result;
+}
 
 }

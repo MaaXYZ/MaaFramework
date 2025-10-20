@@ -2,7 +2,7 @@
 
 #include <string>
 
-#include "../foundation/spec.h"
+#include "spec.h"
 
 #ifdef MAA_JS_IMPL_IS_QUICKJS
 struct QuickJSRuntimeBridgeInterface

@@ -1,57 +1,11 @@
 #pragma once
 
 #include <format>
-#include <functional>
-#include <string>
 
-#ifdef _MSC_VER
-#pragma warning(push)
-#pragma warning(disable: 4244)
-#endif
-#include <quickjs.h> // IWYU pragma: export
-#ifdef _MSC_VER
-#pragma warning(pop)
-#endif
-
-#include "spec.quickjs.wrapper.h"
-#include "tools.h"
+#include "../instric.forward.h"
 
 namespace maajs
 {
-
-using EnvType = QjsEnv;
-using ValueType = QjsValue;
-using ObjectType = QjsObject;
-using BooleanType = QjsBoolean;
-using StringType = QjsString;
-using NumberType = QjsNumber;
-using FunctionType = QjsFunction;
-using ArrayType = QjsArray;
-using PromiseType = QjsPromise;
-using ArrayBufferType = QjsArrayBuffer;
-
-using ObjectRefType = QjsRef<ObjectType>;
-using FunctionRefType = QjsRef<FunctionType>;
-using WeakObjectRefType = QjsWeakRef<ObjectType>;
-
-using CallbackInfo = QjsCallbackInfo;
-using RawCallback = std::function<ValueType(const CallbackInfo&)>;
-
-using NativeMarkerFunc = std::function<void(const ValueType& value)>;
-
-struct NativeClassBase
-{
-    EnvType env {};
-
-    NativeClassBase() = default;
-    virtual ~NativeClassBase() = default;
-
-    virtual void init_bind([[maybe_unused]] ObjectType self) {};
-
-    virtual void gc_mark([[maybe_unused]] NativeMarkerFunc marker) {}
-
-    virtual std::string to_string() { return ""; }
-};
 
 struct NativePointerHolder
 {
@@ -132,9 +86,8 @@ inline ValueType ThrowTypeError(EnvType env, const std::string& err)
     return { env, JS_EXCEPTION };
 }
 
-// 必须要非常小心, 这里传入的回调不能持有Value, 内部的FuncHolder未实现gc_mark
 inline FunctionType
-    MakeFunction(EnvType env, const char* name, int argc, RawCallback func, std::function<void(NativeMarkerFunc)> run_marker = nullptr)
+    MakeFunction(EnvType env, const char* name, int argc, RawCallback func, std::function<void(NativeMarkerFunc)> run_marker)
 {
     struct FuncHolder : public NativeClassBase
     {
@@ -211,8 +164,8 @@ inline void BindGetterSetter(
     const char* setter_name,
     RawCallback getter,
     RawCallback setter,
-    std::function<void(NativeMarkerFunc)> run_getter_marker = nullptr,
-    std::function<void(NativeMarkerFunc)> run_setter_marker = nullptr)
+    std::function<void(NativeMarkerFunc)> run_getter_marker,
+    std::function<void(NativeMarkerFunc)> run_setter_marker)
 {
     JS_DefinePropertyGetSet(
         object.Env(),

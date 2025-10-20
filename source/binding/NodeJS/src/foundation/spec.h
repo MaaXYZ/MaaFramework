@@ -8,10 +8,5 @@
 // #define MAA_JS_IMPL_IS_QUICKJS
 #endif
 
-#ifdef MAA_JS_IMPL_IS_NODEJS
-#include "spec.nodejs.h" // IWYU pragma: export
-#endif
-
-#ifdef MAA_JS_IMPL_IS_QUICKJS
-#include "spec.quickjs.h" // IWYU pragma: export
-#endif
+#include "spec/class.h"   // IWYU pragma: export
+#include "spec/instric.h" // IWYU pragma: export

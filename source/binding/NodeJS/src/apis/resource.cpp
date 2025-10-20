@@ -5,7 +5,6 @@
 
 #include "../foundation/async.h"
 #include "../foundation/callback.h"
-#include "../foundation/classes.h"
 #include "../foundation/convert.h"
 #include "../foundation/utils.h"
 #include "buffer.h"

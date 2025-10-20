@@ -6,7 +6,6 @@
 #include <string>
 #include <variant>
 
-#include "classes.h"
 #include "spec.h"
 #include "tools.h"
 
@@ -29,17 +28,6 @@ struct JSConvert
     static Type from_value(ValueType val) = delete;
     static ValueType to_value(EnvType env, const Type& val) = delete;
 };
-
-inline std::string JoinString(std::vector<std::string> parts, std::string sep)
-{
-    std::string result = "";
-    bool first = true;
-    for (const auto& name : parts) {
-        result += first ? name : sep + name;
-        first = false;
-    }
-    return result;
-}
 
 inline std::string DumpCallParams(const CallbackInfo& info)
 {

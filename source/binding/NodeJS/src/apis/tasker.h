@@ -4,7 +4,6 @@
 
 #include <MaaFramework/MaaAPI.h>
 
-#include "../foundation/classes.h"
 #include "../foundation/convert.h"
 #include "../foundation/spec.h"
 #include "controller.h"

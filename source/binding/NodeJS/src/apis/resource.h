@@ -6,7 +6,6 @@
 #include <MaaFramework/MaaAPI.h>
 
 #include "../foundation/callback.h"
-#include "../foundation/classes.h"
 #include "../foundation/spec.h"
 
 struct ResourceImpl : public maajs::NativeClassBase
