@@ -2,13 +2,13 @@ declare global {
     namespace maa {
         type TaskDetail = {
             entry: string
-            nodes: NodeDetail[]
+            nodes: (NodeDetail | null)[]
             status: Status
         }
 
         type NodeDetail = {
             name: string
-            reco: RecoDetail
+            reco: RecoDetail | null
             completed: boolean
         }
 
@@ -69,7 +69,7 @@ declare global {
             clear_sinks(): void
             post_task(
                 entry: string,
-                param?: Record<string, unknown> | Record<string, unknown>[]
+                pipeline_override?: Record<string, unknown> | Record<string, unknown>[]
             ): TaskJob
             post_stop(): TaskJob
             status(id: TaskId): Status
