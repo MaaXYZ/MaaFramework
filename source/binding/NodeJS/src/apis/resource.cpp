@@ -66,6 +66,36 @@ static MaaBool ResourceCustomReco(
     }
 }
 
+static MaaBool ResourceCustomAct(
+    MaaContext* context,
+    MaaTaskId task_id,
+    const char* node_name,
+    const char* custom_action_name,
+    const char* custom_action_param,
+    MaaRecoId reco_id,
+    const MaaRect* box,
+    void* trans_arg)
+{
+    using Ret = bool;
+    auto ctx = reinterpret_cast<maajs::CallbackContext*>(trans_arg);
+    return ctx->Call<Ret>(
+        [&](maajs::FunctionType func) {
+            auto env = func.Env();
+            auto self = maajs::ObjectType::New(env);
+
+            self["context"] = ContextImpl::locate_object(env, context);
+            self["id"] = maajs::JSConvert<MaaTaskId>::to_value(env, task_id);
+            self["task"] = maajs::StringType::New(env, node_name);
+            self["name"] = maajs::StringType::New(env, custom_action_name);
+            self["param"] = maajs::JsonParse(env, custom_action_param);
+            self["recoId"] = maajs::JSConvert<MaaRecoId>::to_value(env, reco_id);
+            self["box"] = maajs::JSConvert<MaaRect>::to_value(env, *box);
+
+            return func.Call(self, { self });
+        },
+        [](maajs::ValueType result) { return maajs::JSConvert<Ret>::from_value(result); });
+}
+
 MAA_JS_NATIVE_CLASS_STATIC_IMPL(ResourceImpl)
 
 ResourceImpl::ResourceImpl(MaaResource* res, bool own)
@@ -92,14 +122,14 @@ void ResourceImpl::destroy()
         }
         sinks.clear();
 
-        for (const auto& [name, ctx] : recos) {
-            MaaResourceUnregisterCustomRecognition(resource, name.c_str());
+        for (const auto& [key, ctx] : recos) {
+            MaaResourceUnregisterCustomRecognition(resource, key.c_str());
             delete ctx;
         }
         recos.clear();
 
-        for (const auto& [name, ctx] : acts) {
-            MaaResourceUnregisterCustomAction(resource, name.c_str());
+        for (const auto& [key, ctx] : acts) {
+            MaaResourceUnregisterCustomAction(resource, key.c_str());
             delete ctx;
         }
         acts.clear();
@@ -193,15 +223,15 @@ void ResourceImpl::set_inference_execution_provider(std::string provider)
     }
 }
 
-void ResourceImpl::register_custom_recognition(std::string name, maajs::FunctionType func)
+void ResourceImpl::register_custom_recognition(std::string key, maajs::FunctionType func)
 {
     if (!own) {
         return;
     }
 
     auto ctx = new maajs::CallbackContext(func, "CustomReco");
-    if (MaaResourceRegisterCustomRecognition(resource, name.c_str(), ResourceCustomReco, ctx)) {
-        recos[name] = ctx;
+    if (MaaResourceRegisterCustomRecognition(resource, key.c_str(), ResourceCustomReco, ctx)) {
+        recos[key] = ctx;
     }
     else {
         delete ctx;
@@ -209,12 +239,12 @@ void ResourceImpl::register_custom_recognition(std::string name, maajs::Function
     }
 }
 
-void ResourceImpl::unregister_custom_recognition(std::string name)
+void ResourceImpl::unregister_custom_recognition(std::string key)
 {
-    if (!MaaResourceUnregisterCustomRecognition(resource, name.c_str())) {
+    if (!MaaResourceUnregisterCustomRecognition(resource, key.c_str())) {
         throw maajs::MaaError { "Resource unregister_custom_recognition failed" };
     }
-    if (auto it = recos.find(name); it != recos.end()) {
+    if (auto it = recos.find(key); it != recos.end()) {
         delete it->second;
         recos.erase(it);
     }
@@ -226,29 +256,49 @@ void ResourceImpl::clear_custom_recognition()
         throw maajs::MaaError { "Resource clear_custom_recognition failed" };
     }
 
-    for (const auto& [name, ctx] : recos) {
+    for (const auto& [key, ctx] : recos) {
         delete ctx;
     }
     recos.clear();
 }
 
-void ResourceImpl::register_custom_action(std::string name, maajs::FunctionType func)
+void ResourceImpl::register_custom_action(std::string key, maajs::FunctionType func)
 {
     if (!own) {
         return;
     }
 
-    std::ignore = name;
-    std::ignore = func;
+    auto ctx = new maajs::CallbackContext(func, "CustomAct");
+    if (MaaResourceRegisterCustomAction(resource, key.c_str(), ResourceCustomAct, ctx)) {
+        acts[key] = ctx;
+    }
+    else {
+        delete ctx;
+        throw maajs::MaaError { "Resource register_custom_action failed" };
+    }
 }
 
-void ResourceImpl::unregister_custom_action(std::string name)
+void ResourceImpl::unregister_custom_action(std::string key)
 {
-    std::ignore = name;
+    if (!MaaResourceUnregisterCustomAction(resource, key.c_str())) {
+        throw maajs::MaaError { "Resource unregister_custom_action failed" };
+    }
+    if (auto it = acts.find(key); it != acts.end()) {
+        delete it->second;
+        acts.erase(it);
+    }
 }
 
 void ResourceImpl::clear_custom_action()
 {
+    if (!MaaResourceClearCustomAction(resource)) {
+        throw maajs::MaaError { "Resource clear_custom_action failed" };
+    }
+
+    for (const auto& [key, ctx] : acts) {
+        delete ctx;
+    }
+    acts.clear();
 }
 
 maajs::ValueType ResourceImpl::post_bundle(maajs::ValueType self, maajs::EnvType, std::string path)
