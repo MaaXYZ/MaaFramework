@@ -14,3 +14,5 @@ maajs::ValueType load_adb_controller(maajs::EnvType env);
 
 maajs::ValueType load_task_job(maajs::EnvType env);
 maajs::ValueType load_tasker(maajs::EnvType env);
+
+maajs::ValueType load_context(maajs::EnvType env);

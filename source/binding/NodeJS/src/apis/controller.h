@@ -1,7 +1,11 @@
 #pragma once
 
 #include <map>
+#include <optional>
+#include <string>
 #include <tuple>
+
+#include <MaaFramework/MaaAPI.h>
 
 #include "../foundation/spec.h"
 #include "job.h"

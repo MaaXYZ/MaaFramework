@@ -8,7 +8,8 @@ set(MAA_JS_COMMON_SOURCES
     src/apis/job.cpp
     src/apis/resource.cpp
     src/apis/controller.cpp
-    src/apis/tasker.cpp)
+    src/apis/tasker.cpp
+    src/apis/context.cpp)
 
 # quickjs
 

@@ -1,6 +1,8 @@
 #pragma once
 
+#include <map>
 #include <optional>
+#include <string>
 
 #include <MaaFramework/MaaAPI.h>
 

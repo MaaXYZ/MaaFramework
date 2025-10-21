@@ -19,6 +19,7 @@ static maajs::ObjectType init(maajs::EnvType env)
     maajs::BindValue(maa, "AdbController", load_adb_controller(env));
     maajs::BindValue(maa, "TaskJob", load_task_job(env));
     maajs::BindValue(maa, "Tasker", load_tasker(env));
+    maajs::BindValue(maa, "Context", load_context(env));
 
     return maa;
 }

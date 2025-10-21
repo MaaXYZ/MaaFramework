@@ -52,6 +52,7 @@ struct ExtContext : public maajs::NativeClassBase
     maajs::FunctionRefType adbControllerCtor;
     maajs::FunctionRefType taskJobCtor;
     maajs::FunctionRefType taskerCtor;
+    maajs::FunctionRefType contextCtor;
 
     HandleMap<MaaResource> resources;
     HandleMap<MaaController> controllers;
@@ -66,6 +67,7 @@ struct ExtContext : public maajs::NativeClassBase
         marker(adbControllerCtor.Value());
         marker(taskJobCtor.Value());
         marker(taskerCtor.Value());
+        marker(contextCtor.Value());
 
         resources.gc_mark(marker);
         controllers.gc_mark(marker);
