@@ -3,26 +3,29 @@
 #include <format>
 
 #include "../instric.forward.h"
+#include "bridge.h"
 
 namespace maajs
 {
 
 struct NativePointerHolder
 {
-    static JSClassID _classId;
+    static JSClassID& getClassId(EnvType env) { return getClassId(env.Runtime()); }
+
+    static JSClassID& getClassId(JSRuntime* rt) { return QuickJSRuntimeBridgeData::get(rt)->nativePointerHolderClassId; }
 
     static void init(EnvType env)
     {
         static JSClassDef classDef = {
-            .class_name = "__MaaNativePointerHolder",
+            .class_name = "NativePointerHolder",
             .finalizer =
-                +[](JSRuntime*, JSValueConst data) {
-                    delete take<NativeClassBase>(data);
+                +[](JSRuntime* rt, JSValueConst data) {
+                    delete take<NativeClassBase>(rt, data);
                     JS_SetOpaque(data, nullptr);
                 },
             .gc_mark =
                 +[](JSRuntime* rt, JSValueConst data, JS_MarkFunc* func) {
-                    take<NativeClassBase>(data)->gc_mark([rt, func](const ValueType& value) {
+                    take<NativeClassBase>(rt, data)->gc_mark([rt, func](const ValueType& value) {
                         func(rt, reinterpret_cast<JSGCObjectHeader*>(JS_VALUE_GET_OBJ(value.value)));
                     });
                 },
@@ -30,21 +33,29 @@ struct NativePointerHolder
             .exotic = nullptr,
         };
 
-        JS_NewClassID(JS_GetRuntime(env), &_classId);
-        JS_NewClass(JS_GetRuntime(env), _classId, &classDef);
+        auto& classId = getClassId(env);
+
+        JS_NewClassID(env.Runtime(), &classId);
+        JS_NewClass(env.Runtime(), classId, &classDef);
     }
 
-    static JSValue make(JSContext* ctx, NativeClassBase* pointer)
+    static JSValue make(EnvType env, NativeClassBase* pointer)
     {
-        auto obj = JS_NewObjectClass(ctx, _classId);
+        auto obj = JS_NewObjectClass(env, getClassId(env));
         JS_SetOpaque(obj, pointer);
         return obj;
     }
 
     template <typename Type>
-    static Type* take(JSValueConst value)
+    static Type* take(EnvType env, JSValueConst value)
     {
-        auto ptr = static_cast<NativeClassBase*>(JS_GetOpaque(value, _classId));
+        return take<Type>(env.Runtime(), value);
+    }
+
+    template <typename Type>
+    static Type* take(JSRuntime* rt, JSValueConst value)
+    {
+        auto ptr = static_cast<NativeClassBase*>(JS_GetOpaque(value, getClassId(rt)));
         return dynamic_cast<Type*>(ptr);
     }
 };
@@ -117,7 +128,7 @@ inline FunctionType
     auto result = JS_NewCFunctionData(
         env,
         +[](JSContext* ctx, JSValueConst this_val, int argc, JSValueConst* argv, int, JSValueConst* func_data) -> JSValue {
-            auto data = NativePointerHolder::take<FuncHolder>(func_data[0]);
+            auto data = NativePointerHolder::take<FuncHolder>({ ctx }, func_data[0]);
             if (!data) {
                 return JS_UNDEFINED;
             }

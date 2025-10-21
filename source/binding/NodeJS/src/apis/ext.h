@@ -94,7 +94,7 @@ struct ExtContext : public maajs::NativeClassBase
             return ptr;
         }
         else {
-            return maajs::NativePointerHolder::take<ExtContext>(ctx.peek());
+            return maajs::NativePointerHolder::take<ExtContext>(env, ctx.peek());
         }
         /*
         auto ptr = static_cast<ExtContext*>(JS_GetContextOpaque(env));

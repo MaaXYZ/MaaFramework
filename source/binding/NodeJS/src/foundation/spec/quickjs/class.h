@@ -5,6 +5,7 @@
 #include "../instric.h"
 #include "../tools.h"
 #include "../types.h"
+#include "bridge.h"
 
 namespace maajs
 {
@@ -19,17 +20,26 @@ struct NativeClassIDChain
 template <typename Inherit>
 struct NativeClass
 {
-    static NativeClassIDChain classId;
+    static NativeClassIDChain& getClassId(EnvType env) { return getClassId(env.Runtime()); }
+
+    static NativeClassIDChain& getClassId(JSRuntime* rt)
+    {
+        auto& chain = QuickJSRuntimeBridgeData::get(rt)->nativeClassId[Inherit::name];
+        if (!chain) {
+            chain = std::make_shared<NativeClassIDChain>();
+        }
+        return *chain;
+    }
 
     template <typename Super = void>
     static void init(EnvType env, FunctionType& ctor, FunctionRefType* = nullptr)
     {
         static JSClassDef classDef = {
             .class_name = Inherit::name,
-            .finalizer = +[](JSRuntime*, JSValueConst data) { delete take(data); },
+            .finalizer = +[](JSRuntime* rt, JSValueConst data) { delete take(rt, data); },
             .gc_mark =
                 +[](JSRuntime* rt, JSValueConst data, JS_MarkFunc* func) {
-                    take(data)->gc_mark([rt, func](const ValueType& value) {
+                    take(rt, data)->gc_mark([rt, func](const ValueType& value) {
                         func(rt, reinterpret_cast<JSGCObjectHeader*>(JS_VALUE_GET_OBJ(value.value)));
                     });
                 },
@@ -37,8 +47,10 @@ struct NativeClass
             .exotic = nullptr,
         };
 
-        JS_NewClassID(JS_GetRuntime(env), &classId.classId);
-        JS_NewClass(JS_GetRuntime(env), classId.classId, &classDef);
+        auto& classId = getClassId(env);
+
+        JS_NewClassID(env.Runtime(), &classId.classId);
+        JS_NewClass(env.Runtime(), classId.classId, &classDef);
 
         classId.possibleIds.push_back(classId.classId);
 
@@ -47,7 +59,7 @@ struct NativeClass
         auto proto = QjsObject::New(env);
 
         ctor = MakeFunction(env, Inherit::name, 0, [](const CallbackInfo& info) -> ValueType {
-            auto obj = JS_NewObjectClass(info.context, classId.classId);
+            auto obj = JS_NewObjectClass(info.context, getClassId(info.Env()).classId);
 
             if (JS_IsException(obj)) {
                 return { info.Env(), obj };
@@ -78,8 +90,8 @@ struct NativeClass
         JS_SetConstructor(env, ctor.peek(), proto.peek());
 
         if constexpr (!std::is_same_v<Super, void>) {
-            std::cerr << "Link " << classId.classId << " to " << NativeClass<Super>::classId.classId << std::endl;
-            auto super = &NativeClass<Super>::classId;
+            std::cerr << "Link " << classId.classId << " to " << NativeClass<Super>::getClassId(env).classId << std::endl;
+            auto super = &NativeClass<Super>::getClassId(env);
             classId.superId = super;
             while (super) {
                 super->possibleIds.push_back(classId.classId);
@@ -98,11 +110,12 @@ struct NativeClass
         JS_SetClassProto(env, classId.classId, proto.take());
     }
 
-    static Inherit* take(ValueType val) { return take(val.peek()); }
+    static Inherit* take(ValueType val) { return take(val.Env().Runtime(), val.peek()); }
 
-    static Inherit* take(JSValueConst val)
+    static Inherit* take(JSRuntime* env, JSValueConst val)
     {
-        for (auto id : classId.possibleIds) {
+        auto ids = getClassId({ env }).possibleIds;
+        for (auto id : ids) {
             auto impl = static_cast<NativeClassBase*>(JS_GetOpaque(val, id));
             if (impl) {
                 return dynamic_cast<Inherit*>(impl);
@@ -116,11 +129,7 @@ struct NativeClass
 
 }
 
-#define MAA_JS_NATIVE_CLASS_STATIC_FORWARD(Type) \
-    template <>                                  \
-    maajs::NativeClassIDChain maajs::NativeClass<Type>::classId;
+#define MAA_JS_NATIVE_CLASS_STATIC_FORWARD(Type)
 
-#define MAA_JS_NATIVE_CLASS_STATIC_IMPL(Type) \
-    template <>                               \
-    maajs::NativeClassIDChain maajs::NativeClass<Type>::classId {};
+#define MAA_JS_NATIVE_CLASS_STATIC_IMPL(Type)
 

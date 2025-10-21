@@ -29,6 +29,8 @@ struct QjsEnv
     QjsValue Null() const;
     QjsValue Undefined() const;
     QjsObject Global() const;
+
+    JSRuntime* Runtime() const { return JS_GetRuntime(context); }
 };
 
 struct QjsValue

@@ -35,18 +35,22 @@ struct QuickJSRuntimeData : public QuickJSRuntimeBridgeInterface
         ctx = JS_NewContext(rt);
 
         JS_SetDumpFlags(rt, JS_DUMP_LEAKS);
-
-        // load globalThis.maa
-        init_module_maa(ctx);
-
-        // load sys
-        init_module_sys(ctx);
+        JS_SetRuntimeOpaque(rt, this);
     }
 
     ~QuickJSRuntimeData()
     {
         JS_FreeContext(ctx);
         JS_FreeRuntime(rt);
+    }
+
+    void load_modules()
+    {
+        // load globalThis.maa
+        init_module_maa(ctx);
+
+        // load sys
+        init_module_sys(ctx);
     }
 
     bool has_running_task() { return running_task_count > 0; }
@@ -119,7 +123,8 @@ struct QuickJSRuntimeData : public QuickJSRuntimeBridgeInterface
 QuickJSRuntime::QuickJSRuntime()
 {
     d_ = new QuickJSRuntimeData;
-    JS_SetRuntimeOpaque(d_->rt, d_);
+
+    d_->load_modules();
 }
 
 QuickJSRuntime::~QuickJSRuntime()
