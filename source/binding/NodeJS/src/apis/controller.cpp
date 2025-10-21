@@ -77,6 +77,8 @@ void ControllerImpl::destroy()
             MaaControllerRemoveSink(controller, id);
             delete ctx;
         }
+        sinks.clear();
+
         MaaControllerDestroy(controller);
     }
     controller = nullptr;
@@ -93,6 +95,9 @@ MaaSinkId ControllerImpl::add_sink(maajs::FunctionType sink)
     auto id = MaaControllerAddSink(controller, ControllerSink, ctx);
     if (id != MaaInvalidId) {
         sinks[id] = ctx;
+    }
+    else {
+        delete ctx;
     }
     return id;
 }

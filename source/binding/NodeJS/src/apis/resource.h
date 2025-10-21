@@ -14,6 +14,8 @@ struct ResourceImpl : public maajs::NativeClassBase
     MaaResource* resource {};
     bool own = false;
     std::map<MaaSinkId, maajs::CallbackContext*> sinks {};
+    std::map<std::string, maajs::CallbackContext*> recos {};
+    std::map<std::string, maajs::CallbackContext*> acts {};
 
     ResourceImpl() = default;
     ResourceImpl(MaaResource* res, bool own);
@@ -24,6 +26,12 @@ struct ResourceImpl : public maajs::NativeClassBase
     void clear_sinks();
     void set_inference_device(std::variant<std::string, int32_t> id);
     void set_inference_execution_provider(std::string provider);
+    void register_custom_recognition(std::string name, maajs::FunctionType func);
+    void unregister_custom_recognition(std::string name);
+    void clear_custom_recognition();
+    void register_custom_action(std::string name, maajs::FunctionType func);
+    void unregister_custom_action(std::string name);
+    void clear_custom_action();
     maajs::ValueType post_bundle(maajs::ValueType self, maajs::EnvType env, std::string path);
     void override_pipeline(maajs::ValueType pipeline);
     void override_next(std::string node_name, std::vector<std::string> next_list);

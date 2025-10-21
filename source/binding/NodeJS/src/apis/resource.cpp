@@ -5,6 +5,8 @@
 
 #include "../foundation/spec.h"
 #include "buffer.h"
+#include "context.h"
+#include "convert.h"
 #include "ext.h"
 
 static void ResourceSink(void* resource, const char* message, const char* details_json, void* callback_arg)
@@ -22,6 +24,46 @@ static void ResourceSink(void* resource, const char* message, const char* detail
                 });
         },
         [](auto res) { std::ignore = res; });
+}
+
+static MaaBool ResourceCustomReco(
+    MaaContext* context,
+    MaaTaskId task_id,
+    const char* node_name,
+    const char* custom_recognition_name,
+    const char* custom_recognition_param,
+    const MaaImageBuffer* image,
+    const MaaRect* roi,
+    void* trans_arg,
+    /* out */ MaaRect* out_box,
+    /* out */ MaaStringBuffer* out_detail)
+{
+    using Ret = std::optional<std::tuple<MaaRect, std::string>>;
+    auto ctx = reinterpret_cast<maajs::CallbackContext*>(trans_arg);
+    auto result = ctx->Call<Ret>(
+        [&](maajs::FunctionType func) {
+            auto env = func.Env();
+            auto self = maajs::ObjectType::New(env);
+
+            self["context"] = ContextImpl::locate_object(env, context);
+            self["id"] = maajs::JSConvert<MaaTaskId>::to_value(env, task_id);
+            self["task"] = maajs::StringType::New(env, node_name);
+            self["name"] = maajs::StringType::New(env, custom_recognition_name);
+            self["param"] = maajs::JsonParse(env, custom_recognition_param);
+            self["image"] = ImageBufferRefer(image).data(env);
+            self["roi"] = maajs::JSConvert<MaaRect>::to_value(env, *roi);
+
+            return func.Call(self, { self });
+        },
+        [](maajs::ValueType result) { return maajs::JSConvert<Ret>::from_value(result); });
+    if (result) {
+        *out_box = std::get<0>(*result);
+        StringBuffer(out_detail, false).set(std::get<1>(*result));
+        return true;
+    }
+    else {
+        return false;
+    }
 }
 
 MAA_JS_NATIVE_CLASS_STATIC_IMPL(ResourceImpl)
@@ -48,6 +90,20 @@ void ResourceImpl::destroy()
             MaaResourceRemoveSink(resource, id);
             delete ctx;
         }
+        sinks.clear();
+
+        for (const auto& [name, ctx] : recos) {
+            MaaResourceUnregisterCustomRecognition(resource, name.c_str());
+            delete ctx;
+        }
+        recos.clear();
+
+        for (const auto& [name, ctx] : acts) {
+            MaaResourceUnregisterCustomAction(resource, name.c_str());
+            delete ctx;
+        }
+        acts.clear();
+
         MaaResourceDestroy(resource);
     }
     resource = nullptr;
@@ -64,6 +120,9 @@ MaaSinkId ResourceImpl::add_sink(maajs::FunctionType sink)
     auto id = MaaResourceAddSink(resource, ResourceSink, ctx);
     if (id != MaaInvalidId) {
         sinks[id] = ctx;
+    }
+    else {
+        delete ctx;
     }
     return id;
 }
@@ -132,6 +191,64 @@ void ResourceImpl::set_inference_execution_provider(std::string provider)
     if (!MaaResourceSetOption(resource, MaaResOption_InferenceExecutionProvider, &value, sizeof(value))) {
         throw maajs::MaaError { "Resource set inference_execution_provider failed" };
     }
+}
+
+void ResourceImpl::register_custom_recognition(std::string name, maajs::FunctionType func)
+{
+    if (!own) {
+        return;
+    }
+
+    auto ctx = new maajs::CallbackContext(func, "CustomReco");
+    if (MaaResourceRegisterCustomRecognition(resource, name.c_str(), ResourceCustomReco, ctx)) {
+        recos[name] = ctx;
+    }
+    else {
+        delete ctx;
+        throw maajs::MaaError { "Resource register_custom_recognition failed" };
+    }
+}
+
+void ResourceImpl::unregister_custom_recognition(std::string name)
+{
+    if (!MaaResourceUnregisterCustomRecognition(resource, name.c_str())) {
+        throw maajs::MaaError { "Resource unregister_custom_recognition failed" };
+    }
+    if (auto it = recos.find(name); it != recos.end()) {
+        delete it->second;
+        recos.erase(it);
+    }
+}
+
+void ResourceImpl::clear_custom_recognition()
+{
+    if (!MaaResourceClearCustomRecognition(resource)) {
+        throw maajs::MaaError { "Resource clear_custom_recognition failed" };
+    }
+
+    for (const auto& [name, ctx] : recos) {
+        delete ctx;
+    }
+    recos.clear();
+}
+
+void ResourceImpl::register_custom_action(std::string name, maajs::FunctionType func)
+{
+    if (!own) {
+        return;
+    }
+
+    std::ignore = name;
+    std::ignore = func;
+}
+
+void ResourceImpl::unregister_custom_action(std::string name)
+{
+    std::ignore = name;
+}
+
+void ResourceImpl::clear_custom_action()
+{
 }
 
 maajs::ValueType ResourceImpl::post_bundle(maajs::ValueType self, maajs::EnvType, std::string path)
@@ -274,6 +391,12 @@ void ResourceImpl::init_proto(maajs::ObjectType proto, maajs::FunctionType)
     MAA_BIND_FUNC(proto, "add_sink", ResourceImpl::add_sink);
     MAA_BIND_FUNC(proto, "remove_sink", ResourceImpl::remove_sink);
     MAA_BIND_FUNC(proto, "clear_sinks", ResourceImpl::clear_sinks);
+    MAA_BIND_FUNC(proto, "register_custom_recognition", ResourceImpl::register_custom_recognition);
+    MAA_BIND_FUNC(proto, "unregister_custom_recognition", ResourceImpl::unregister_custom_recognition);
+    MAA_BIND_FUNC(proto, "clear_custom_recognition", ResourceImpl::clear_custom_recognition);
+    MAA_BIND_FUNC(proto, "register_custom_action", ResourceImpl::register_custom_action);
+    MAA_BIND_FUNC(proto, "unregister_custom_action", ResourceImpl::unregister_custom_action);
+    MAA_BIND_FUNC(proto, "clear_custom_action", ResourceImpl::clear_custom_action);
     MAA_BIND_FUNC(proto, "post_bundle", ResourceImpl::post_bundle);
     MAA_BIND_SETTER(proto, "inference_device", ResourceImpl::set_inference_device);
     MAA_BIND_SETTER(proto, "inference_execution_provider", ResourceImpl::set_inference_execution_provider);

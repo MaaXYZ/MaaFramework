@@ -28,6 +28,35 @@ declare global {
         type FlatRect = [x: number, y: number, width: number, height: number]
 
         type MaybePromise<T> = T | Promise<T>
+
+        interface CustomRecognitionSelf {
+            context: Context
+            id: TaskId
+            task: string
+            name: string
+            param: unknown
+            image: ImageData
+            roi: Rect
+        }
+
+        interface CustomActionSelf {
+            context: Context
+            id: TaskId
+            task: string
+            name: string
+            param: unknown
+            recoId: RecoId
+            box: Rect
+        }
+
+        type CustomCallback<Self, Ret> = (this: Self, self: Self) => MaybePromise<Ret>
+
+        type CustomRecognitionCallback = CustomCallback<
+            CustomRecognitionSelf,
+            [out_box: Rect, out_detail: string] | null
+        >
+
+        export type CustomActionCallback = CustomCallback<CustomActionSelf, boolean>
     }
 }
 

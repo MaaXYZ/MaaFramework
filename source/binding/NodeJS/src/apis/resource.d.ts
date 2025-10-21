@@ -22,6 +22,12 @@ declare global {
                 provider: 'Auto' | 'CPU' | 'DirectML' | 'CoreML' | 'CUDA'
             )
 
+            register_custom_recognition(name: string, func: CustomRecognitionCallback): void
+            unregister_custom_recognition(name: string): void
+            clear_custom_recognition(): void
+            register_custom_action(name: string, func: CustomActionCallback): void
+            unregister_custom_action(name: string): void
+            clear_custom_action(): void
             post_bundle(path: string): Job<ResId, Resource>
             override_pipeline(
                 pipeline_override: Record<string, unknown> | Record<string, unknown>[]

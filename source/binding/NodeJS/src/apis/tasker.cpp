@@ -95,10 +95,14 @@ void TaskerImpl::destroy()
             MaaTaskerRemoveSink(tasker, id);
             delete ctx;
         }
+        sinks.clear();
+
         for (const auto& [id, ctx] : ctxSinks) {
             MaaTaskerRemoveContextSink(tasker, id);
             delete ctx;
         }
+        ctxSinks.clear();
+
         MaaTaskerDestroy(tasker);
     }
     tasker = nullptr;
@@ -115,6 +119,9 @@ MaaSinkId TaskerImpl::add_sink(maajs::FunctionType sink)
     auto id = MaaTaskerAddSink(tasker, TaskerSink, ctx);
     if (id != MaaInvalidId) {
         sinks[id] = ctx;
+    }
+    else {
+        delete ctx;
     }
     return id;
 }
@@ -147,6 +154,9 @@ MaaSinkId TaskerImpl::add_context_sink(maajs::FunctionType sink)
     auto id = MaaTaskerAddContextSink(tasker, ContextSink, ctx);
     if (id != MaaInvalidId) {
         ctxSinks[id] = ctx;
+    }
+    else {
+        delete ctx;
     }
     return id;
 }
