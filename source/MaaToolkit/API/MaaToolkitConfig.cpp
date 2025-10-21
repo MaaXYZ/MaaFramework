@@ -1,6 +1,5 @@
 #include "MaaToolkit/Config/MaaToolkitConfig.h"
 
-#include <MaaFramework/MaaAPI.h>
 #include <meojson/json.hpp>
 
 #include "Config/GlobalOptionConfig.h"

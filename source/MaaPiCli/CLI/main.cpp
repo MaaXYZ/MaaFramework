@@ -1,4 +1,3 @@
-#include <MaaToolkit/MaaToolkitAPI.h>
 #include <csignal>
 #include <format>
 #include <iostream>
