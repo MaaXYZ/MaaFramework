@@ -1,6 +1,5 @@
 #pragma once
 
-#include "convert.h"
 #include "spec.h"
 
 namespace maajs

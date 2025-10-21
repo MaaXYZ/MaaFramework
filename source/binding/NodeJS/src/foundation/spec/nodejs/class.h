@@ -2,8 +2,8 @@
 
 #include <iostream>
 
-#include "../../tools.h"
 #include "../instric.h"
+#include "../tools.h"
 #include "../types.h"
 
 namespace maajs

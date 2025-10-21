@@ -4,10 +4,7 @@
 #include <MaaFramework/MaaAPI.h>
 #include <MaaToolkit/MaaToolkitAPI.h>
 
-#include "../foundation/async.h"
-#include "../foundation/callback.h"
-#include "../foundation/convert.h"
-#include "../foundation/utils.h"
+#include "../foundation/spec.h"
 #include "buffer.h"
 #include "ext.h"
 

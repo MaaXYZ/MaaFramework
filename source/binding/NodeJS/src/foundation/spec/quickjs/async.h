@@ -4,8 +4,8 @@
 #include <memory>
 #include <thread>
 
-#include "../../bridge.h"
-#include "../../convert.h"
+#include "../utils.h"
+#include "bridge.h"
 
 namespace maajs
 {

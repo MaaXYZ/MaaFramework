@@ -3,8 +3,7 @@
 #include <fstream>
 #include <iostream>
 
-#include "../foundation/bridge.h"
-#include "../foundation/convert.h"
+#include "../foundation/spec.h"
 
 static maajs::ObjectType init(maajs::EnvType env)
 {

@@ -2,11 +2,10 @@
 
 #include <functional>
 
-#include "../../convert.h"
+#include "../utils.h"
 
 namespace maajs
 {
-
 template <typename Ret>
 struct AsyncWork : public Napi::AsyncWorker
 {
@@ -37,5 +36,4 @@ struct AsyncWork : public Napi::AsyncWorker
     Ret result;
     Napi::Promise::Deferred deferred;
 };
-
 }

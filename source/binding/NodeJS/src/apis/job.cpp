@@ -3,7 +3,7 @@
 
 #include <MaaFramework/MaaAPI.h>
 
-#include "../foundation/convert.h"
+#include "../foundation/spec.h"
 #include "ext.h"
 
 MAA_JS_NATIVE_CLASS_STATIC_IMPL(JobImpl)

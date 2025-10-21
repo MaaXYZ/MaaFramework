@@ -102,11 +102,6 @@ inline ObjectType CallCtor(const FunctionRefType& ctor, std::vector<ValueType> a
     return ctor.New(rawArgs);
 }
 
-inline ValueType CallMember(ObjectType object, const char* prop, std::vector<ValueType> args)
-{
-    return object[prop].AsValue().As<Napi::Function>().Call(object, args);
-}
-
 inline std::string TypeOf(ValueType val)
 {
     switch (val.Type()) {

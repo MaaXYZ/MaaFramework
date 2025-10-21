@@ -183,11 +183,6 @@ inline ObjectType CallCtor(FunctionType ctor, std::vector<ValueType> args)
     return { ctor.Env(), result };
 }
 
-inline ValueType CallMember(ObjectType object, const char* prop, std::vector<ValueType> args)
-{
-    return object[prop].AsValue().As<FunctionType>().Call(object, args);
-}
-
 inline std::string TypeOf(ValueType val)
 {
     switch (val.value.tag) {

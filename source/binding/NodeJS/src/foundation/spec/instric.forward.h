@@ -33,7 +33,6 @@ inline void BindGetterSetter(
     std::function<void(NativeMarkerFunc)> run_setter_marker = nullptr);
 
 inline ObjectType CallCtor(FunctionType ctor, std::vector<ValueType> args);
-inline ValueType CallMember(ObjectType object, const char* prop, std::vector<ValueType> args);
 
 inline std::string TypeOf(ValueType val);
 inline std::string DumpValue(ValueType val);

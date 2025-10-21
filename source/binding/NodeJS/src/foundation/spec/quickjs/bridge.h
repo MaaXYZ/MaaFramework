@@ -1,10 +1,10 @@
 #pragma once
 
+#include <functional>
 #include <string>
 
-#include "spec.h"
+#include "../types.h"
 
-#ifdef MAA_JS_IMPL_IS_QUICKJS
 struct QuickJSRuntimeBridgeInterface
 {
     virtual ~QuickJSRuntimeBridgeInterface() = default;
@@ -17,4 +17,3 @@ struct QuickJSRuntimeBridgeInterface
         return static_cast<QuickJSRuntimeBridgeInterface*>(JS_GetRuntimeOpaque(JS_GetRuntime(env)));
     }
 };
-#endif

@@ -3,8 +3,7 @@
 #include <map>
 #include <tuple>
 
-#include "../foundation/callback.h"
-#include "../foundation/convert.h"
+#include "../foundation/spec.h"
 #include "job.h"
 
 struct ImageJobImpl : public JobImpl

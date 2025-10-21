@@ -3,9 +3,7 @@
 
 #include <MaaFramework/MaaAPI.h>
 
-#include "../foundation/async.h"
-#include "../foundation/convert.h"
-#include "../foundation/utils.h"
+#include "../foundation/spec.h"
 #include "ext.h"
 
 static void TaskerSink(void* tasker, const char* message, const char* details_json, void* callback_arg)
