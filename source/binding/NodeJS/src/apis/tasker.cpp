@@ -262,7 +262,7 @@ void TaskerImpl::clear_cache()
 
 std::optional<maajs::ValueType> TaskerImpl::recognition_detail(MaaRecoId id)
 {
-    StringBuffer name;
+    StringBuffer node_name;
     StringBuffer algorithm;
     MaaBool hit = false;
     MaaRect box {};
@@ -270,10 +270,10 @@ std::optional<maajs::ValueType> TaskerImpl::recognition_detail(MaaRecoId id)
     ImageBuffer raw;
     raw.data(env);
     ImageListBuffer draws;
-    if (MaaTaskerGetRecognitionDetail(tasker, id, name, algorithm, &hit, &box, detail, raw, draws)) {
+    if (MaaTaskerGetRecognitionDetail(tasker, id, node_name, algorithm, &hit, &box, detail, raw, draws)) {
         auto result = maajs::ObjectType::New(env);
 
-        result["name"] = maajs::StringType::New(env, name.str());
+        result["name"] = maajs::StringType::New(env, node_name.str());
         result["algorithm"] = maajs::StringType::New(env, algorithm.str());
         result["hit"] = maajs::BooleanType::New(env, hit);
         result["box"] = maajs::JSConvert<MaaRect>::to_value(env, box);
@@ -296,13 +296,13 @@ std::optional<maajs::ValueType> TaskerImpl::recognition_detail(MaaRecoId id)
 
 std::optional<maajs::ValueType> TaskerImpl::node_detail(MaaNodeId id)
 {
-    StringBuffer name;
+    StringBuffer node_name;
     MaaRecoId reco_id = MaaInvalidId;
     MaaBool completed = false;
-    if (MaaTaskerGetNodeDetail(tasker, id, name, &reco_id, &completed)) {
+    if (MaaTaskerGetNodeDetail(tasker, id, node_name, &reco_id, &completed)) {
         auto result = maajs::ObjectType::New(env);
 
-        result["name"] = maajs::StringType::New(env, name.str());
+        result["name"] = maajs::StringType::New(env, node_name.str());
         result["reco"] = reco_id == MaaInvalidId ? env.Null() : recognition_detail(reco_id).value_or(env.Null());
         result["completed"] = maajs::BooleanType::New(env, completed);
 
