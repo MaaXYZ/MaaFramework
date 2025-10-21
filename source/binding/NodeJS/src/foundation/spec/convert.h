@@ -1,7 +1,10 @@
 #pragma once
 
 #include <format>
+#include <optional>
 #include <string>
+#include <tuple>
+#include <variant>
 
 #include "class.h"
 #include "tools.h"
