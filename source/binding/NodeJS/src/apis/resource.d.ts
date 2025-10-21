@@ -16,6 +16,12 @@ declare global {
             add_sink(cb: (res: Resource, msg: ResourceNotify) => MaybePromise<void>): SinkId
             remove_sink(id: SinkId): void
             clear_sinks(): void
+
+            set inference_device(id: 'CPU' | 'Auto' | number)
+            set inference_execution_provider(
+                provider: 'Auto' | 'CPU' | 'DirectML' | 'CoreML' | 'CUDA'
+            )
+
             post_bundle(path: string): Job<ResId, Resource>
             override_pipeline(
                 pipeline_override: Record<string, unknown> | Record<string, unknown>[]

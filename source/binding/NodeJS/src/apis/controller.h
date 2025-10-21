@@ -35,6 +35,9 @@ struct ControllerImpl : public maajs::NativeClassBase
     MaaSinkId add_sink(maajs::FunctionType sink);
     void remove_sink(MaaSinkId id);
     void clear_sinks();
+    void set_screenshot_target_long_side(int32_t value);
+    void set_screenshot_target_short_side(int32_t value);
+    void set_screenshot_use_raw_size(bool value);
     maajs::ValueType post_connection(maajs::ValueType self, maajs::EnvType env);
     maajs::ValueType post_screencap(maajs::ValueType self, maajs::EnvType env);
     MaaStatus status(MaaCtrlId id);

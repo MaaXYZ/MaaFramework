@@ -22,6 +22,8 @@ struct ResourceImpl : public maajs::NativeClassBase
     MaaSinkId add_sink(maajs::FunctionType sink);
     void remove_sink(MaaSinkId id);
     void clear_sinks();
+    void set_inference_device(std::variant<std::string, int32_t> id);
+    void set_inference_execution_provider(std::string provider);
     maajs::ValueType post_bundle(maajs::ValueType self, maajs::EnvType env, std::string path);
     void override_pipeline(maajs::ValueType pipeline);
     void override_next(std::string node_name, std::vector<std::string> next_list);

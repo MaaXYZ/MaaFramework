@@ -94,6 +94,11 @@ declare global {
             add_sink(cb: (ctrl: Controller, msg: ControllerNotify) => MaybePromise<void>): SinkId
             remove_sink(id: SinkId): void
             clear_sinks(): void
+
+            set screenshot_target_long_side(value: number)
+            set screenshot_target_short_side(value: number)
+            set screenshot_use_raw_size(value: boolean)
+
             post_connection(): Job<CtrlId, Controller>
             post_screencap(): ImageJob
             override_pipeline(pipeline: Record<string, unknown> | Record<string, unknown>[]): void

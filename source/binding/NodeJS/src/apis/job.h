@@ -17,6 +17,11 @@ struct JobImpl : public maajs::NativeClassBase
     MaaStatus get_status();
     maajs::PromiseType wait(maajs::ValueType self, maajs::EnvType env);
     virtual maajs::ValueType get();
+    bool get_done();
+    bool get_succeeded();
+    bool get_failed();
+    bool get_running();
+    bool get_pending();
 
     std::string to_string() override;
 

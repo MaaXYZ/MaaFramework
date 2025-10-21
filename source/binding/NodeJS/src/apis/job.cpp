@@ -97,6 +97,31 @@ maajs::ValueType JobImpl::get()
     return env.Undefined();
 }
 
+bool JobImpl::get_done()
+{
+    return get_succeeded() || get_failed();
+}
+
+bool JobImpl::get_succeeded()
+{
+    return get_status() == MaaStatus_Succeeded;
+}
+
+bool JobImpl::get_failed()
+{
+    return get_status() == MaaStatus_Failed;
+}
+
+bool JobImpl::get_running()
+{
+    return get_status() == MaaStatus_Running;
+}
+
+bool JobImpl::get_pending()
+{
+    return get_status() == MaaStatus_Pending;
+}
+
 std::string JobImpl::to_string()
 {
     return std::format(" source = {}, id = {} ", source.Value().ToString().Utf8Value(), id);
@@ -116,6 +141,11 @@ void JobImpl::init_proto(maajs::ObjectType proto, maajs::FunctionType)
     MAA_BIND_GETTER(proto, "id", JobImpl::get_id);
     MAA_BIND_GETTER(proto, "status", JobImpl::get_status);
     MAA_BIND_FUNC(proto, "wait", JobImpl::wait);
+    MAA_BIND_GETTER(proto, "done", JobImpl::get_done);
+    MAA_BIND_GETTER(proto, "succeeded", JobImpl::get_succeeded);
+    MAA_BIND_GETTER(proto, "failed", JobImpl::get_failed);
+    MAA_BIND_GETTER(proto, "running", JobImpl::get_running);
+    MAA_BIND_GETTER(proto, "pending", JobImpl::get_pending);
 }
 
 void JobImpl::gc_mark(maajs::NativeMarkerFunc marker)

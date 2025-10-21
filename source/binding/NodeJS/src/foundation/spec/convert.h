@@ -48,16 +48,35 @@ struct JSConvert
     static ValueType to_value(EnvType env, const Type& val) = delete;
 };
 
+template <typename T>
+constexpr bool IsTuple = false;
+
+template <typename... Args>
+constexpr bool IsTuple<std::tuple<Args...>> = true;
+
+template <typename T>
+constexpr bool IsVariant = false;
+
+template <typename... Args>
+constexpr bool IsVariant<std::variant<Args...>> = true;
+
 template <typename ArgsTuple>
-inline std::string DumpTypeNames()
+inline std::string DumpTypeNames(std::string sep = ", ")
 {
     std::vector<std::string> parts;
 
-    [&]<size_t... I>(std::index_sequence<I...>) {
-        ((parts.push_back(JSConvert<std::tuple_element_t<I, ArgsTuple>>::name())), ...);
-    }(std::make_index_sequence<std::tuple_size_v<ArgsTuple>>());
+    if constexpr (IsTuple<ArgsTuple>) {
+        [&]<size_t... I>(std::index_sequence<I...>) {
+            ((parts.push_back(JSConvert<std::tuple_element_t<I, ArgsTuple>>::name())), ...);
+        }(std::make_index_sequence<std::tuple_size_v<ArgsTuple>>());
+    }
+    else if constexpr (IsVariant<ArgsTuple>) {
+        [&]<size_t... I>(std::index_sequence<I...>) {
+            ((parts.push_back(JSConvert<std::variant_alternative_t<I, ArgsTuple>>::name())), ...);
+        }(std::make_index_sequence<std::variant_size_v<ArgsTuple>>());
+    }
 
-    return JoinString(parts, ", ");
+    return JoinString(parts, sep);
 }
 
 // msvc want this
@@ -302,6 +321,61 @@ struct JSConvert<std::tuple<Args...>>
             ((arr.push_back(JSConvert<std::tuple_element_t<I, T>>::to_value(env, std::get<I>(val)))), ...);
         }(std::make_index_sequence<std::tuple_size_v<T>>());
         return MakeArray(env, arr);
+    }
+};
+
+template <typename... Args>
+struct JSConvert<std::variant<Args...>>
+{
+    using T = std::variant<Args...>;
+
+    static std::string name() { return std::format("{}", DumpTypeNames<T>(" | ")); }
+
+    template <size_t I>
+    static bool try_from_value(T& result, ValueType val)
+    {
+        using Type = std::variant_alternative_t<I, T>;
+        try {
+            result = JSConvert<Type>::from_value(val);
+            return true;
+        }
+        catch (const MaaError&) {
+            return false;
+        }
+    }
+
+    static T from_value(ValueType val)
+    {
+        T result;
+        auto succ = [&]<size_t... I>(std::index_sequence<I...>) {
+            return (try_from_value<I>(result, val) || ...);
+        }(std::make_index_sequence<std::variant_size_v<T>>());
+        if (succ) {
+            return result;
+        }
+        throw MaaError { std::format("expect {}, got {}", name(), DumpValue(val)) };
+    }
+
+    template <size_t I>
+    static bool try_to_value(ValueType& result, EnvType env, const T& val)
+    {
+        using Type = std::variant_alternative_t<I, T>;
+        if (auto ptr = std::get_if<Type>(&val)) {
+            result = JSConvert<Type>::to_value(env, *ptr);
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
+
+    static ValueType to_value(EnvType env, const T& val)
+    {
+        ValueType result;
+        [&]<size_t... I>(std::index_sequence<I...>) {
+            std::ignore = (try_to_value<I>(result, env, val) || ...);
+        }(std::make_index_sequence<std::variant_size_v<T>>());
+        return result;
     }
 };
 

@@ -86,6 +86,54 @@ void ResourceImpl::clear_sinks()
     sinks.clear();
 }
 
+void ResourceImpl::set_inference_device(std::variant<std::string, int32_t> id)
+{
+    int32_t value = 0;
+    if (auto str = std::get_if<std::string>(&id)) {
+        if (*str == "Auto") {
+            value = MaaInferenceDevice_Auto;
+        }
+        else if (*str == "CPU") {
+            value = MaaInferenceDevice_CPU;
+        }
+        else {
+            throw maajs::MaaError { std::format("Resource set inference_device failed, invalid id {}", *str) };
+        }
+    }
+    else if (auto ival = std::get_if<int32_t>(&id)) {
+        value = *ival;
+    }
+    if (!MaaResourceSetOption(resource, MaaResOption_InferenceDevice, &value, sizeof(value))) {
+        throw maajs::MaaError { "Resource set inference_device failed" };
+    }
+}
+
+void ResourceImpl::set_inference_execution_provider(std::string provider)
+{
+    int32_t value = 0;
+    if (provider == "Auto") {
+        value = MaaInferenceExecutionProvider_Auto;
+    }
+    else if (provider == "CPU") {
+        value = MaaInferenceExecutionProvider_CPU;
+    }
+    else if (provider == "DirectML") {
+        value = MaaInferenceExecutionProvider_DirectML;
+    }
+    else if (provider == "CoreML") {
+        value = MaaInferenceExecutionProvider_CoreML;
+    }
+    else if (provider == "CUDA") {
+        value = MaaInferenceExecutionProvider_CUDA;
+    }
+    else {
+        throw maajs::MaaError { std::format("Resource set inference_execution_provider failed, invalid provider {}", provider) };
+    }
+    if (!MaaResourceSetOption(resource, MaaResOption_InferenceExecutionProvider, &value, sizeof(value))) {
+        throw maajs::MaaError { "Resource set inference_execution_provider failed" };
+    }
+}
+
 maajs::ValueType ResourceImpl::post_bundle(maajs::ValueType self, maajs::EnvType, std::string path)
 {
     auto id = MaaResourcePostBundle(resource, path.c_str());
@@ -227,6 +275,8 @@ void ResourceImpl::init_proto(maajs::ObjectType proto, maajs::FunctionType)
     MAA_BIND_FUNC(proto, "remove_sink", ResourceImpl::remove_sink);
     MAA_BIND_FUNC(proto, "clear_sinks", ResourceImpl::clear_sinks);
     MAA_BIND_FUNC(proto, "post_bundle", ResourceImpl::post_bundle);
+    MAA_BIND_SETTER(proto, "inference_device", ResourceImpl::set_inference_device);
+    MAA_BIND_SETTER(proto, "inference_execution_provider", ResourceImpl::set_inference_execution_provider);
     MAA_BIND_FUNC(proto, "override_pipeline", ResourceImpl::override_pipeline);
     MAA_BIND_FUNC(proto, "override_next", ResourceImpl::override_next);
     MAA_BIND_FUNC(proto, "get_node_data", ResourceImpl::get_node_data);
