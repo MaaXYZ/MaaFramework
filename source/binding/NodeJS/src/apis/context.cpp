@@ -5,6 +5,7 @@
 
 #include "../foundation/spec.h"
 #include "buffer.h"
+#include "convert.h"
 #include "ext.h"
 #include "tasker.h"
 
@@ -13,6 +14,59 @@ MAA_JS_NATIVE_CLASS_STATIC_IMPL(ContextImpl)
 ContextImpl::ContextImpl(MaaContext* ctx)
     : context(ctx)
 {
+}
+
+maajs::PromiseType ContextImpl::run_task(maajs::ValueType self, std::string entry, maajs::OptionalParam<maajs::ValueType> pipeline_override)
+{
+    auto overr = maajs::JsonStringify(env, pipeline_override.value_or(maajs::ObjectType::New(env)));
+    auto worker = new maajs::AsyncWork<MaaTaskId>(env, [context = context, entry, overr]() {
+        return MaaContextRunTask(context, entry.c_str(), overr.c_str());
+    });
+    worker->Queue();
+
+    return maajs::PromiseThen(worker->Promise(), self.As<maajs::ObjectType>(), [](const maajs::CallbackInfo& info, maajs::ObjectType self) {
+        auto tasker = self["tasker"].AsValue().As<maajs::ObjectType>();
+        return maajs::CallMemberHelper<maajs::ValueType>(tasker, "task_detail", maajs::JSConvert<MaaTaskId>::from_value(info[0]));
+    });
+}
+
+maajs::PromiseType ContextImpl::run_recognition(
+    maajs::ValueType self,
+    std::string entry,
+    maajs::ArrayBufferType image,
+    maajs::OptionalParam<maajs::ValueType> pipeline_override)
+{
+    auto buf = std::make_shared<ImageBuffer>();
+    buf->set(image);
+    auto overr = maajs::JsonStringify(env, pipeline_override.value_or(maajs::ObjectType::New(env)));
+    auto worker = new maajs::AsyncWork<MaaRecoId>(env, [context = context, entry, buf, overr]() {
+        return MaaContextRunRecognition(context, entry.c_str(), overr.c_str(), *buf);
+    });
+    worker->Queue();
+
+    return maajs::PromiseThen(worker->Promise(), self.As<maajs::ObjectType>(), [](const maajs::CallbackInfo& info, maajs::ObjectType self) {
+        auto tasker = self["tasker"].AsValue().As<maajs::ObjectType>();
+        return maajs::CallMemberHelper<maajs::ValueType>(tasker, "recognition_detail", maajs::JSConvert<MaaRecoId>::from_value(info[0]));
+    });
+}
+
+maajs::PromiseType ContextImpl::run_action(
+    maajs::ValueType self,
+    std::string entry,
+    MaaRect box,
+    std::string reco_detail,
+    maajs::OptionalParam<maajs::ValueType> pipeline_override)
+{
+    auto overr = maajs::JsonStringify(env, pipeline_override.value_or(maajs::ObjectType::New(env)));
+    auto worker = new maajs::AsyncWork<MaaNodeId>(env, [context = context, entry, box, reco_detail, overr]() {
+        return MaaContextRunAction(context, entry.c_str(), overr.c_str(), &box, reco_detail.c_str());
+    });
+    worker->Queue();
+
+    return maajs::PromiseThen(worker->Promise(), self.As<maajs::ObjectType>(), [](const maajs::CallbackInfo& info, maajs::ObjectType self) {
+        auto tasker = self["tasker"].AsValue().As<maajs::ObjectType>();
+        return maajs::CallMemberHelper<maajs::ValueType>(tasker, "node_detail", maajs::JSConvert<MaaNodeId>::from_value(info[0]));
+    });
 }
 
 void ContextImpl::override_pipeline(maajs::ValueType pipeline)
@@ -67,12 +121,17 @@ maajs::ValueType ContextImpl::get_tasker()
 
 maajs::ValueType ContextImpl::clone()
 {
-    return maajs::CallCtorHelper(ExtContext::get(env)->contextCtor, std::to_string(reinterpret_cast<uintptr_t>(MaaContextClone(context))));
+    return locate_object(env, MaaContextClone(context));
 }
 
 std::string ContextImpl::to_string()
 {
     return std::format(" handle = {:#018x} ", reinterpret_cast<uintptr_t>(context));
+}
+
+maajs::ValueType ContextImpl::locate_object(maajs::EnvType env, MaaContext* ctx)
+{
+    return maajs::CallCtorHelper(ExtContext::get(env)->contextCtor, std::to_string(reinterpret_cast<uintptr_t>(ctx)));
 }
 
 ContextImpl* ContextImpl::ctor(const maajs::CallbackInfo& info)
@@ -91,6 +150,9 @@ ContextImpl* ContextImpl::ctor(const maajs::CallbackInfo& info)
 
 void ContextImpl::init_proto(maajs::ObjectType proto, maajs::FunctionType)
 {
+    MAA_BIND_FUNC(proto, "run_task", ContextImpl::run_task);
+    MAA_BIND_FUNC(proto, "run_recognition", ContextImpl::run_recognition);
+    MAA_BIND_FUNC(proto, "run_action", ContextImpl::run_action);
     MAA_BIND_FUNC(proto, "override_pipeline", ContextImpl::override_pipeline);
     MAA_BIND_FUNC(proto, "override_next", ContextImpl::override_next);
     MAA_BIND_FUNC(proto, "get_node_data", ContextImpl::get_node_data);

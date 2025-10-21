@@ -30,14 +30,8 @@ maajs::PromiseType JobImpl::wait(maajs::ValueType self, maajs::EnvType)
 {
     auto pro = maajs::CallMemberHelper<maajs::PromiseType>(source.Value(), "wait", id);
 
-    auto selfPtr = std::make_shared<maajs::ObjectRefType>(maajs::PersistentObject(self.As<maajs::ObjectType>()));
-    auto newPro = pro.Then(
-        maajs::MakeFunction(
-            env,
-            "",
-            1,
-            [selfPtr](const maajs::CallbackInfo&) -> maajs::ValueType { return selfPtr->Value(); },
-            [selfPtr](auto marker) { marker(selfPtr->Value()); }));
+    auto newPro =
+        maajs::PromiseThen(pro, self.As<maajs::ObjectType>(), [](const maajs::CallbackInfo&, maajs::ObjectType self) { return self; });
 
     std::vector<std::string> forwards = { "status", "done", "succeeded", "failed" };
     for (auto key : forwards) {
@@ -50,18 +44,16 @@ maajs::PromiseType JobImpl::wait(maajs::ValueType self, maajs::EnvType)
             "",
             [key, newProPtr](const maajs::CallbackInfo& info) {
                 auto [retProHolder, retProResolveRef, _] = maajs::MakePromise(info.Env());
-                newProPtr->Value().As<maajs::PromiseType>().Then(
-                    maajs::MakeFunction(
-                        info.Env(),
-                        "",
-                        1,
-                        [key, retProResolveRef](const maajs::CallbackInfo& info) {
-                            auto self = info[0];
-                            auto result = self.As<maajs::ObjectType>()[key].AsValue();
-                            maajs::CallFuncHelper<void>(retProResolveRef->Value(), result);
-                            return info.Env().Undefined();
-                        },
-                        [retProResolveRef](auto marker) { marker(retProResolveRef->Value()); }));
+
+                maajs::PromiseThen(
+                    newProPtr->Value().As<maajs::PromiseType>(),
+                    retProResolveRef->Value(),
+                    [key](const maajs::CallbackInfo& info, maajs::FunctionType resolve) {
+                        auto self = info[0];
+                        auto result = self.As<maajs::ObjectType>()[key].AsValue();
+                        maajs::CallFuncHelper<void>(resolve, result);
+                        return info.Env().Undefined();
+                    });
 
                 return retProHolder;
             },
@@ -81,18 +73,16 @@ maajs::PromiseType JobImpl::wait(maajs::ValueType self, maajs::EnvType)
                 0,
                 [newProPtr](const maajs::CallbackInfo& info) {
                     auto [retProHolder, retProResolveRef, _] = maajs::MakePromise(info.Env());
-                    newProPtr->Value().As<maajs::PromiseType>().Then(
-                        maajs::MakeFunction(
-                            info.Env(),
-                            "",
-                            1,
-                            [retProResolveRef](const maajs::CallbackInfo& info) {
-                                auto self = info[0];
-                                auto result = maajs::CallMemberHelper<maajs::ValueType>(self.As<maajs::ObjectType>(), "get");
-                                maajs::CallFuncHelper<void>(retProResolveRef->Value(), result);
-                                return info.Env().Undefined();
-                            },
-                            [retProResolveRef](auto marker) { marker(retProResolveRef->Value()); }));
+
+                    maajs::PromiseThen(
+                        newProPtr->Value().As<maajs::PromiseType>(),
+                        retProResolveRef->Value(),
+                        [](const maajs::CallbackInfo& info, maajs::FunctionType resolve) {
+                            auto self = info[0];
+                            auto result = maajs::CallMemberHelper<maajs::ValueType>(self.As<maajs::ObjectType>(), "get");
+                            maajs::CallFuncHelper<void>(resolve, result);
+                            return info.Env().Undefined();
+                        });
 
                     return retProHolder;
                 },

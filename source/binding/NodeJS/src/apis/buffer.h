@@ -128,13 +128,13 @@ struct ImageBufferRefer : public HandlerReferHolder<const MaaImageBuffer>
 
     operator const MaaImageBuffer*() const { return buffer; }
 
-    // Napi::ArrayBuffer data(Napi::Env env) const
-    // {
-    //     auto len = MaaImageBufferGetEncodedSize(buffer);
-    //     auto buf = Napi::ArrayBuffer::New(env, len);
-    //     std::memcpy(buf.Data(), MaaImageBufferGetEncoded(buffer), len);
-    //     return buf;
-    // }
+    maajs::ArrayBufferType data(maajs::EnvType env) const
+    {
+        auto len = MaaImageBufferGetEncodedSize(buffer);
+        auto buf = maajs::ArrayBufferType::New(env, len);
+        std::memcpy(buf.Data(), MaaImageBufferGetEncoded(buffer), len);
+        return buf;
+    }
 };
 
 template <

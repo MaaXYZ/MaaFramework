@@ -85,6 +85,10 @@ void ControllerImpl::destroy()
 
 MaaSinkId ControllerImpl::add_sink(maajs::FunctionType sink)
 {
+    if (!own) {
+        return MaaInvalidId;
+    }
+
     auto ctx = new maajs::CallbackContext(sink, "ControllerSink");
     auto id = MaaControllerAddSink(controller, ControllerSink, ctx);
     if (id != MaaInvalidId) {
@@ -169,7 +173,7 @@ maajs::ValueType ControllerImpl::locate_object(maajs::EnvType env, MaaController
         return *obj;
     }
     else {
-        return maajs::CallCtorHelper(ExtContext::get(env)->controllerCtor, std::to_string(reinterpret_cast<size_t>(ctrl)));
+        return maajs::CallCtorHelper(ExtContext::get(env)->controllerCtor, std::to_string(reinterpret_cast<uintptr_t>(ctrl)));
     }
 }
 

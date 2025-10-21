@@ -1,9 +1,12 @@
 #include "tasker.h"
+#include "buffer.h"
 #include "loader.h"
 
 #include <MaaFramework/MaaAPI.h>
 
 #include "../foundation/spec.h"
+#include "context.h"
+#include "convert.h"
 #include "ext.h"
 
 static void TaskerSink(void* tasker, const char* message, const char* details_json, void* callback_arg)
@@ -17,6 +20,23 @@ static void TaskerSink(void* tasker, const char* message, const char* details_js
             return fn.Call(
                 {
                     tsk,
+                    detail,
+                });
+        },
+        [](auto res) { std::ignore = res; });
+}
+
+static void ContextSink(void* context, const char* message, const char* details_json, void* callback_arg)
+{
+    auto ctx = reinterpret_cast<maajs::CallbackContext*>(callback_arg);
+    ctx->Call<void>(
+        [=](maajs::FunctionType fn) {
+            auto ctx = ContextImpl::locate_object(fn.Env(), reinterpret_cast<MaaContext*>(context));
+            auto detail = maajs::JsonParse(fn.Env(), details_json).As<maajs::ObjectType>();
+            detail["msg"] = maajs::StringType::New(fn.Env(), message);
+            return fn.Call(
+                {
+                    ctx,
                     detail,
                 });
         },
@@ -75,6 +95,10 @@ void TaskerImpl::destroy()
             MaaTaskerRemoveSink(tasker, id);
             delete ctx;
         }
+        for (const auto& [id, ctx] : ctxSinks) {
+            MaaTaskerRemoveContextSink(tasker, id);
+            delete ctx;
+        }
         MaaTaskerDestroy(tasker);
     }
     tasker = nullptr;
@@ -83,6 +107,10 @@ void TaskerImpl::destroy()
 
 MaaSinkId TaskerImpl::add_sink(maajs::FunctionType sink)
 {
+    if (!own) {
+        return MaaInvalidId;
+    }
+
     auto ctx = new maajs::CallbackContext(sink, "TaskerSink");
     auto id = MaaTaskerAddSink(tasker, TaskerSink, ctx);
     if (id != MaaInvalidId) {
@@ -107,6 +135,38 @@ void TaskerImpl::clear_sinks()
         delete ctx;
     }
     sinks.clear();
+}
+
+MaaSinkId TaskerImpl::add_context_sink(maajs::FunctionType sink)
+{
+    if (!own) {
+        return MaaInvalidId;
+    }
+
+    auto ctx = new maajs::CallbackContext(sink, "ContextSink");
+    auto id = MaaTaskerAddContextSink(tasker, ContextSink, ctx);
+    if (id != MaaInvalidId) {
+        ctxSinks[id] = ctx;
+    }
+    return id;
+}
+
+void TaskerImpl::remove_context_sink(MaaSinkId id)
+{
+    if (auto it = ctxSinks.find(id); it != ctxSinks.end()) {
+        MaaTaskerRemoveContextSink(tasker, id);
+        delete it->second;
+        ctxSinks.erase(it);
+    }
+}
+
+void TaskerImpl::clear_context_sinks()
+{
+    MaaTaskerClearContextSinks(tasker);
+    for (const auto& [_, ctx] : ctxSinks) {
+        delete ctx;
+    }
+    ctxSinks.clear();
 }
 
 maajs::ValueType
@@ -200,6 +260,99 @@ void TaskerImpl::clear_cache()
     MaaTaskerClearCache(tasker);
 }
 
+std::optional<maajs::ValueType> TaskerImpl::recognition_detail(MaaRecoId id)
+{
+    StringBuffer name;
+    StringBuffer algorithm;
+    MaaBool hit = false;
+    MaaRect box {};
+    StringBuffer detail;
+    ImageBuffer raw;
+    raw.data(env);
+    ImageListBuffer draws;
+    if (MaaTaskerGetRecognitionDetail(tasker, id, name, algorithm, &hit, &box, detail, raw, draws)) {
+        auto result = maajs::ObjectType::New(env);
+
+        result["name"] = maajs::StringType::New(env, name.str());
+        result["algorithm"] = maajs::StringType::New(env, algorithm.str());
+        result["hit"] = maajs::BooleanType::New(env, hit);
+        result["box"] = maajs::JSConvert<MaaRect>::to_value(env, box);
+        result["detail"] = maajs::JsonParse(env, detail.str());
+        result["raw"] = raw.data(env);
+
+        auto typedDrawsArr = draws.as_vector([&](auto draw) { return draw.data(env); });
+        std::vector<maajs::ValueType> drawsArr;
+        for (const auto& val : typedDrawsArr) {
+            drawsArr.push_back(val);
+        }
+        result["draws"] = maajs::MakeArray(env, drawsArr);
+
+        return result;
+    }
+    else {
+        return std::nullopt;
+    }
+}
+
+std::optional<maajs::ValueType> TaskerImpl::node_detail(MaaNodeId id)
+{
+    StringBuffer name;
+    MaaRecoId reco_id = MaaInvalidId;
+    MaaBool completed = false;
+    if (MaaTaskerGetNodeDetail(tasker, id, name, &reco_id, &completed)) {
+        auto result = maajs::ObjectType::New(env);
+
+        result["name"] = maajs::StringType::New(env, name.str());
+        result["reco"] = reco_id == MaaInvalidId ? env.Null() : recognition_detail(reco_id).value_or(env.Null());
+        result["completed"] = maajs::BooleanType::New(env, completed);
+
+        return result;
+    }
+    else {
+        return std::nullopt;
+    }
+}
+
+std::optional<maajs::ValueType> TaskerImpl::task_detail(MaaTaskId id)
+{
+    MaaSize node_size = 0;
+    if (!MaaTaskerGetTaskDetail(tasker, id, nullptr, nullptr, &node_size, nullptr)) {
+        return std::nullopt;
+    }
+    StringBuffer entry;
+    std::vector<MaaNodeId> nodes(node_size);
+    MaaStatus status = MaaStatusEnum::MaaStatus_Invalid;
+    if (MaaTaskerGetTaskDetail(tasker, id, entry, nodes.data(), &node_size, &status)) {
+        auto result = maajs::ObjectType::New(env);
+
+        result["entry"] = maajs::StringType::New(env, entry.str());
+
+        std::vector<maajs::ValueType> nodesArr;
+        for (auto node_id : nodes) {
+            nodesArr.push_back(node_detail(node_id).value_or(env.Null()));
+        }
+        result["nodes"] = maajs::MakeArray(env, nodesArr);
+
+        result["status"] = maajs::NumberType::New(env, status);
+
+        return result;
+    }
+    else {
+        return std::nullopt;
+    }
+}
+
+std::optional<MaaNodeId> TaskerImpl::latest_node(std::string node_name)
+{
+    MaaNodeId id;
+    if (MaaTaskerGetLatestNode(tasker, node_name.c_str(), &id)) {
+        return id;
+    }
+    else {
+        return std::nullopt;
+    }
+}
+
 std::string TaskerImpl::to_string()
 {
     return std::format(" handle = {:#018x}, {} ", reinterpret_cast<uintptr_t>(tasker), own ? "owned" : "rented");
@@ -211,7 +364,7 @@ maajs::ValueType TaskerImpl::locate_object(maajs::EnvType env, MaaTasker* tsk)
         return *obj;
     }
     else {
-        return maajs::CallCtorHelper(ExtContext::get(env)->taskerCtor, std::to_string(reinterpret_cast<size_t>(tsk)));
+        return maajs::CallCtorHelper(ExtContext::get(env)->taskerCtor, std::to_string(reinterpret_cast<uintptr_t>(tsk)));
     }
 }
 
@@ -223,6 +376,9 @@ void TaskerImpl::init_bind(maajs::ObjectType self)
 void TaskerImpl::gc_mark(maajs::NativeMarkerFunc marker)
 {
     for (const auto& [_, ctx] : sinks) {
+        marker(ctx->fn);
+    }
+    for (const auto& [_, ctx] : ctxSinks) {
         marker(ctx->fn);
     }
 }
@@ -253,6 +409,9 @@ void TaskerImpl::init_proto(maajs::ObjectType proto, maajs::FunctionType)
     MAA_BIND_FUNC(proto, "add_sink", TaskerImpl::add_sink);
     MAA_BIND_FUNC(proto, "remove_sink", TaskerImpl::remove_sink);
     MAA_BIND_FUNC(proto, "clear_sinks", TaskerImpl::clear_sinks);
+    MAA_BIND_FUNC(proto, "add_context_sink", TaskerImpl::add_context_sink);
+    MAA_BIND_FUNC(proto, "remove_context_sink", TaskerImpl::remove_context_sink);
+    MAA_BIND_FUNC(proto, "clear_context_sinks", TaskerImpl::clear_context_sinks);
     MAA_BIND_FUNC(proto, "post_task", TaskerImpl::post_task);
     MAA_BIND_FUNC(proto, "post_stop", TaskerImpl::post_stop);
     MAA_BIND_FUNC(proto, "status", TaskerImpl::status);
@@ -263,7 +422,10 @@ void TaskerImpl::init_proto(maajs::ObjectType proto, maajs::FunctionType)
     MAA_BIND_GETTER_SETTER(proto, "resource", TaskerImpl::get_resource, TaskerImpl::set_resource);
     MAA_BIND_GETTER_SETTER(proto, "controller", TaskerImpl::get_controller, TaskerImpl::set_controller);
     MAA_BIND_FUNC(proto, "clear_cache", TaskerImpl::clear_cache);
-    // TODO: details
+    MAA_BIND_FUNC(proto, "recognition_detail", TaskerImpl::recognition_detail);
+    MAA_BIND_FUNC(proto, "node_detail", TaskerImpl::node_detail);
+    MAA_BIND_FUNC(proto, "task_detail", TaskerImpl::task_detail);
+    MAA_BIND_FUNC(proto, "latest_node", TaskerImpl::latest_node);
 }
 
 maajs::ValueType load_tasker(maajs::EnvType env)

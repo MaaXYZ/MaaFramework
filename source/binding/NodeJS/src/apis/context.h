@@ -16,6 +16,18 @@ struct ContextImpl : public maajs::NativeClassBase
     ContextImpl() = default;
     ContextImpl(MaaContext* ctx);
 
+    maajs::PromiseType run_task(maajs::ValueType self, std::string entry, maajs::OptionalParam<maajs::ValueType> pipeline_override);
+    maajs::PromiseType run_recognition(
+        maajs::ValueType self,
+        std::string entry,
+        maajs::ArrayBufferType image,
+        maajs::OptionalParam<maajs::ValueType> pipeline_override);
+    maajs::PromiseType run_action(
+        maajs::ValueType self,
+        std::string entry,
+        MaaRect box,
+        std::string reco_detail,
+        maajs::OptionalParam<maajs::ValueType> pipeline_override);
     void override_pipeline(maajs::ValueType pipeline);
     void override_next(std::string node_name, std::vector<std::string> next_list);
     std::optional<std::string> get_node_data(std::string node_name);
@@ -25,6 +37,9 @@ struct ContextImpl : public maajs::NativeClassBase
     maajs::ValueType clone();
 
     std::string to_string() override;
+
+    // 写作locate, 实际上总是create
+    static maajs::ValueType locate_object(maajs::EnvType env, MaaContext* ctx);
 
     constexpr static char name[] = "Context";
 

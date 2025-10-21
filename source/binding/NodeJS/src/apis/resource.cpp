@@ -56,6 +56,10 @@ void ResourceImpl::destroy()
 
 MaaSinkId ResourceImpl::add_sink(maajs::FunctionType sink)
 {
+    if (!own) {
+        return MaaInvalidId;
+    }
+
     auto ctx = new maajs::CallbackContext(sink, "ResourceSink");
     auto id = MaaResourceAddSink(resource, ResourceSink, ctx);
     if (id != MaaInvalidId) {
@@ -180,7 +184,7 @@ maajs::ValueType ResourceImpl::locate_object(maajs::EnvType env, MaaResource* re
         return *obj;
     }
     else {
-        return maajs::CallCtorHelper(ExtContext::get(env)->resourceCtor, std::to_string(reinterpret_cast<size_t>(res)));
+        return maajs::CallCtorHelper(ExtContext::get(env)->resourceCtor, std::to_string(reinterpret_cast<uintptr_t>(res)));
     }
 }
 

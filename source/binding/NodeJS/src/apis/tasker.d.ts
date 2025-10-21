@@ -67,6 +67,11 @@ declare global {
             add_sink(cb: (tasker: Tasker, msg: TaskerNotify) => MaybePromise<void>): SinkId
             remove_sink(id: SinkId): void
             clear_sinks(): void
+            add_context_sink(
+                cb: (context: Context, msg: TaskerContextNotify) => MaybePromise<void>
+            ): SinkId
+            remove_context_sink(id: SinkId): void
+            clear_context_sinks(): void
             post_task(
                 entry: string,
                 pipeline_override?: Record<string, unknown> | Record<string, unknown>[]
@@ -85,7 +90,7 @@ declare global {
             recognition_detail(id: RecoId): RecoDetail | null
             node_detail(id: NodeId): NodeDetail | null
             task_detail(id: TaskId): TaskDetail | null
-            latest_node(node: string): NodeId | null
+            latest_node(node_name: string): NodeId | null
         }
     }
 }

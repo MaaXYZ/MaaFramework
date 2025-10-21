@@ -15,7 +15,7 @@ struct AsyncWork
 {
     AsyncWork(EnvType env, std::function<Ret()> exec)
         : env(env)
-        , exec(exec)
+        , exec(std::move(exec))
     {
         auto [pro, res, rej] = MakePromise(env);
         promise = pro;
@@ -30,7 +30,7 @@ struct AsyncWork
         bridge->reg_task();
 
         (std::thread {
-             [bridge, exec = exec, resolve = resolve, reject = reject, worker = this]() {
+             [bridge, exec = std::move(exec), resolve = resolve, reject = reject, worker = this]() {
                  Ret result = exec();
                  bridge->push_task([result, resolve, reject, worker = std::shared_ptr<AsyncWork<Ret>>(worker)](JSContext* ctx) {
                      QjsEnv env { ctx };

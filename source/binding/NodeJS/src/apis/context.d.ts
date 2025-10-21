@@ -14,7 +14,7 @@ declare global {
             ): Promise<RecoDetail | null>
             run_action(
                 entry: string,
-                box: maa.Rect,
+                box: Rect,
                 reco_detail: string,
                 pipeline_override?: Record<string, unknown> | Record<string, unknown>[]
             ): Promise<NodeDetail | null>

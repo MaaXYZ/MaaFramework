@@ -26,6 +26,7 @@ struct TaskerImpl : public maajs::NativeClassBase
     MaaTasker* tasker {};
     bool own = false;
     std::map<MaaSinkId, maajs::CallbackContext*> sinks {};
+    std::map<MaaSinkId, maajs::CallbackContext*> ctxSinks {};
 
     TaskerImpl() = default;
     TaskerImpl(MaaTasker* res, bool own);
@@ -34,6 +35,9 @@ struct TaskerImpl : public maajs::NativeClassBase
     MaaSinkId add_sink(maajs::FunctionType sink);
     void remove_sink(MaaSinkId id);
     void clear_sinks();
+    MaaSinkId add_context_sink(maajs::FunctionType sink);
+    void remove_context_sink(MaaSinkId id);
+    void clear_context_sinks();
     maajs::ValueType post_task(maajs::ValueType self, maajs::EnvType env, std::string entry, maajs::OptionalParam<maajs::ValueType> param);
     maajs::ValueType post_stop(maajs::ValueType self, maajs::EnvType env);
     MaaStatus status(MaaResId id);
@@ -49,6 +53,7 @@ struct TaskerImpl : public maajs::NativeClassBase
     std::optional<maajs::ValueType> recognition_detail(MaaRecoId id);
     std::optional<maajs::ValueType> node_detail(MaaNodeId id);
     std::optional<maajs::ValueType> task_detail(MaaTaskId id);
+    std::optional<MaaNodeId> latest_node(std::string node_name);
 
     std::string to_string() override;
 
