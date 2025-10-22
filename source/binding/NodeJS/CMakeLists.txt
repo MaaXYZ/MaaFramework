@@ -2,6 +2,7 @@ cmake_policy(SET CMP0091 NEW)
 cmake_policy(SET CMP0042 NEW)
 
 set(MAA_JS_COMMON_SOURCES
+    src/utils/library.cpp
     src/apis/loader.cpp
     src/apis/global.cpp
     src/apis/job.cpp

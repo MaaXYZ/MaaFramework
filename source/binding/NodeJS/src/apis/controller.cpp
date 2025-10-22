@@ -5,6 +5,7 @@
 #include <MaaToolkit/MaaToolkitAPI.h>
 
 #include "../foundation/spec.h"
+#include "../utils/library.h"
 #include "buffer.h"
 #include "ext.h"
 
@@ -253,7 +254,10 @@ maajs::ValueType load_controller(maajs::EnvType env)
 
 std::string AdbControllerImpl::agent_path()
 {
-    return "not impl yet";
+    // node_modules/@maaxyz/maa-node-{os}-{cpu}
+    auto folder = get_library_path(reinterpret_cast<void*>(agent_path)).parent_path();
+    // node_modules/@maaxyz/maa-node/agent
+    return folder.parent_path().append("maa-node").append("agent").string();
 }
 
 maajs::PromiseType AdbControllerImpl::find(maajs::EnvType env, maajs::OptionalParam<std::string> adb)
