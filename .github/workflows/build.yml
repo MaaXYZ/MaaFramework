@@ -421,9 +421,10 @@ jobs:
 
             - name: Build wrapper
               run: |
-                  cd source/binding/NodeJS/release/maa-node
-                  pnpm i
-                  npm run build
+                  cd source/binding/NodeJS
+                  mkdir -p release/maa-node/dist
+                  cp src/apis/*.d.ts release/maa-node/dist
+                  cp release/maa-node/src/*.js release/maa-node/dist
 
             - name: Package wrapper
               run: |
