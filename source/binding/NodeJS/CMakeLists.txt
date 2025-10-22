@@ -10,6 +10,7 @@ set(MAA_JS_COMMON_SOURCES
     src/apis/controller.cpp
     src/apis/tasker.cpp
     src/apis/context.cpp
+    src/apis/callback.cpp
     src/apis/constant.cpp)
 
 set(MAA_JS_CLIENT_SOURCES src/apis/client.cpp)

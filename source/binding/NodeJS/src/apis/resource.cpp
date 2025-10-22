@@ -5,96 +5,8 @@
 
 #include "../foundation/spec.h"
 #include "buffer.h"
-#include "context.h"
-#include "convert.h"
+#include "callback.h"
 #include "ext.h"
-
-static void ResourceSink(void* resource, const char* message, const char* details_json, void* callback_arg)
-{
-    auto ctx = reinterpret_cast<maajs::CallbackContext*>(callback_arg);
-    ctx->Call<void>(
-        [=](maajs::FunctionType fn) {
-            auto res = ResourceImpl::locate_object(fn.Env(), reinterpret_cast<MaaResource*>(resource));
-            auto detail = maajs::JsonParse(fn.Env(), details_json).As<maajs::ObjectType>();
-            detail["msg"] = maajs::StringType::New(fn.Env(), message);
-            return fn.Call(
-                {
-                    res,
-                    detail,
-                });
-        },
-        [](auto res) { std::ignore = res; });
-}
-
-static MaaBool ResourceCustomReco(
-    MaaContext* context,
-    MaaTaskId task_id,
-    const char* node_name,
-    const char* custom_recognition_name,
-    const char* custom_recognition_param,
-    const MaaImageBuffer* image,
-    const MaaRect* roi,
-    void* trans_arg,
-    /* out */ MaaRect* out_box,
-    /* out */ MaaStringBuffer* out_detail)
-{
-    using Ret = std::optional<std::tuple<MaaRect, std::string>>;
-    auto ctx = reinterpret_cast<maajs::CallbackContext*>(trans_arg);
-    auto result = ctx->Call<Ret>(
-        [&](maajs::FunctionType func) {
-            auto env = func.Env();
-            auto self = maajs::ObjectType::New(env);
-
-            self["context"] = ContextImpl::locate_object(env, context);
-            self["id"] = maajs::JSConvert<MaaTaskId>::to_value(env, task_id);
-            self["task"] = maajs::StringType::New(env, node_name);
-            self["name"] = maajs::StringType::New(env, custom_recognition_name);
-            self["param"] = maajs::JsonParse(env, custom_recognition_param);
-            self["image"] = ImageBufferRefer(image).data(env);
-            self["roi"] = maajs::JSConvert<MaaRect>::to_value(env, *roi);
-
-            return func.Call(self, { self });
-        },
-        [](maajs::ValueType result) { return maajs::JSConvert<Ret>::from_value(result); });
-    if (result) {
-        *out_box = std::get<0>(*result);
-        StringBuffer(out_detail, false).set(std::get<1>(*result));
-        return true;
-    }
-    else {
-        return false;
-    }
-}
-
-static MaaBool ResourceCustomAct(
-    MaaContext* context,
-    MaaTaskId task_id,
-    const char* node_name,
-    const char* custom_action_name,
-    const char* custom_action_param,
-    MaaRecoId reco_id,
-    const MaaRect* box,
-    void* trans_arg)
-{
-    using Ret = bool;
-    auto ctx = reinterpret_cast<maajs::CallbackContext*>(trans_arg);
-    return ctx->Call<Ret>(
-        [&](maajs::FunctionType func) {
-            auto env = func.Env();
-            auto self = maajs::ObjectType::New(env);
-
-            self["context"] = ContextImpl::locate_object(env, context);
-            self["id"] = maajs::JSConvert<MaaTaskId>::to_value(env, task_id);
-            self["task"] = maajs::StringType::New(env, node_name);
-            self["name"] = maajs::StringType::New(env, custom_action_name);
-            self["param"] = maajs::JsonParse(env, custom_action_param);
-            self["recoId"] = maajs::JSConvert<MaaRecoId>::to_value(env, reco_id);
-            self["box"] = maajs::JSConvert<MaaRect>::to_value(env, *box);
-
-            return func.Call(self, { self });
-        },
-        [](maajs::ValueType result) { return maajs::JSConvert<Ret>::from_value(result); });
-}
 
 ResourceImpl::ResourceImpl(MaaResource* res, bool own)
     : resource(res)
@@ -228,7 +140,7 @@ void ResourceImpl::register_custom_recognition(std::string key, maajs::FunctionT
     }
 
     auto ctx = new maajs::CallbackContext(func, "CustomReco");
-    if (MaaResourceRegisterCustomRecognition(resource, key.c_str(), ResourceCustomReco, ctx)) {
+    if (MaaResourceRegisterCustomRecognition(resource, key.c_str(), CustomReco, ctx)) {
         recos[key] = ctx;
     }
     else {
@@ -267,7 +179,7 @@ void ResourceImpl::register_custom_action(std::string key, maajs::FunctionType f
     }
 
     auto ctx = new maajs::CallbackContext(func, "CustomAct");
-    if (MaaResourceRegisterCustomAction(resource, key.c_str(), ResourceCustomAct, ctx)) {
+    if (MaaResourceRegisterCustomAction(resource, key.c_str(), CustomAct, ctx)) {
         acts[key] = ctx;
     }
     else {

@@ -7,24 +7,8 @@
 #include "../foundation/spec.h"
 #include "../utils/library.h"
 #include "buffer.h"
+#include "callback.h"
 #include "ext.h"
-
-static void ControllerSink(void* controller, const char* message, const char* details_json, void* callback_arg)
-{
-    auto ctx = reinterpret_cast<maajs::CallbackContext*>(callback_arg);
-    ctx->Call<void>(
-        [=](maajs::FunctionType fn) {
-            auto ctrl = ControllerImpl::locate_object(fn.Env(), reinterpret_cast<MaaController*>(controller));
-            auto detail = maajs::JsonParse(fn.Env(), details_json).As<maajs::ObjectType>();
-            detail["msg"] = maajs::StringType::New(fn.Env(), message);
-            return fn.Call(
-                {
-                    ctrl,
-                    detail,
-                });
-        },
-        [](auto res) { std::ignore = res; });
-}
 
 maajs::ValueType ImageJobImpl::get()
 {
