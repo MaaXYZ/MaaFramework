@@ -3,6 +3,7 @@
 #if defined(_WIN32)
 
 #include <Windows.h>
+#include <psapi.h>
 
 std::filesystem::path get_library_path(void* addr)
 {
