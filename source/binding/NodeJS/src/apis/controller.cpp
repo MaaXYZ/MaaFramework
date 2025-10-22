@@ -25,8 +25,6 @@ static void ControllerSink(void* controller, const char* message, const char* de
         [](auto res) { std::ignore = res; });
 }
 
-MAA_JS_NATIVE_CLASS_STATIC_IMPL(ImageJobImpl)
-
 maajs::ValueType ImageJobImpl::get()
 {
     return source.Value()["cached_image"];
@@ -52,8 +50,6 @@ maajs::ValueType load_image_job(maajs::EnvType env)
     ExtContext::get(env)->imageJobCtor = maajs::PersistentFunction(ctor);
     return ctor;
 }
-
-MAA_JS_NATIVE_CLASS_STATIC_IMPL(ControllerImpl)
 
 ControllerImpl::ControllerImpl(MaaController* ctrl, bool own)
     : controller(ctrl)
@@ -254,8 +250,6 @@ maajs::ValueType load_controller(maajs::EnvType env)
     ExtContext::get(env)->controllerCtor = maajs::PersistentFunction(ctor);
     return ctor;
 }
-
-MAA_JS_NATIVE_CLASS_STATIC_IMPL(AdbControllerImpl)
 
 std::string AdbControllerImpl::agent_path()
 {

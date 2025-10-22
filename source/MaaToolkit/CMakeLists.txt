@@ -17,10 +17,6 @@ if(LINUX)
     target_link_libraries(MaaToolkit PRIVATE pthread dl)
 endif()
 
-if(WITH_QUICKJS_BINDING)
-    target_link_libraries(MaaToolkit PRIVATE qjs MaaQjs)
-endif()
-
 add_dependencies(MaaToolkit MaaUtils MaaFramework LibraryHolder)
 
 install(

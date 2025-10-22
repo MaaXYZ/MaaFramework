@@ -43,8 +43,6 @@ static void ContextSink(void* context, const char* message, const char* details_
         [](auto res) { std::ignore = res; });
 }
 
-MAA_JS_NATIVE_CLASS_STATIC_IMPL(TaskJobImpl)
-
 maajs::ValueType TaskJobImpl::get()
 {
     return source.Value()["cached_image"];
@@ -70,8 +68,6 @@ maajs::ValueType load_task_job(maajs::EnvType env)
     ExtContext::get(env)->taskJobCtor = maajs::PersistentFunction(ctor);
     return ctor;
 }
-
-MAA_JS_NATIVE_CLASS_STATIC_IMPL(TaskerImpl)
 
 TaskerImpl::TaskerImpl(MaaTasker* tasker, bool own)
     : tasker(tasker)

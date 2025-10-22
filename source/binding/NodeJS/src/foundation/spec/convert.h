@@ -168,11 +168,11 @@ struct JSConvert<ArrayBufferType>
 };
 
 template <>
-struct JSConvert<std::monostate>
+struct JSConvert<nullptr_t>
 {
     static std::string name() { return "null"; }
 
-    static std::monostate from_value(ValueType val)
+    static nullptr_t from_value(ValueType val)
     {
         if (val.IsNull()) {
             return {};
@@ -180,7 +180,23 @@ struct JSConvert<std::monostate>
         throw MaaError { std::format("expect {}, got {}", name(), DumpValue(val)) };
     }
 
-    static ValueType to_value(EnvType env, const std::monostate&) { return env.Null(); }
+    static ValueType to_value(EnvType env, const nullptr_t&) { return env.Null(); }
+};
+
+template <>
+struct JSConvert<std::monostate>
+{
+    static std::string name() { return "undefined"; }
+
+    static std::monostate from_value(ValueType val)
+    {
+        if (val.IsUndefined()) {
+            return {};
+        }
+        throw MaaError { std::format("expect {}, got {}", name(), DumpValue(val)) };
+    }
+
+    static ValueType to_value(EnvType env, const std::monostate&) { return env.Undefined(); }
 };
 
 template <>

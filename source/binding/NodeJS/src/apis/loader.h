@@ -20,4 +20,12 @@ maajs::ValueType load_tasker(maajs::EnvType env);
 
 maajs::ValueType load_context(maajs::EnvType env);
 
+maajs::ValueType load_client(maajs::EnvType env);
+maajs::ValueType load_server(maajs::EnvType env);
+
 std::map<std::string, maajs::ValueType> load_constant(maajs::EnvType env);
+
+#ifdef MAA_JS_IMPL_IS_QUICKJS
+void init_module_maa(JSContext* ctx);
+void init_module_sys(JSContext* ctx);
+#endif

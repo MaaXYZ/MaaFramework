@@ -47,4 +47,3 @@ struct ContextImpl : public maajs::NativeClassBase
     static void init_proto(maajs::ObjectType proto, maajs::FunctionType ctor);
 };
 
-MAA_JS_NATIVE_CLASS_STATIC_FORWARD(ContextImpl)

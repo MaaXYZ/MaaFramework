@@ -62,7 +62,7 @@ inline std::vector<ValueType> WrapArgs(EnvType env, Args&&... args)
     return params;
 }
 
-template <typename ArgsTuple, typename Self>
+template <typename ArgsTuple, typename Self = void>
 inline ArgsTuple UnWrapArgs(const CallbackInfo& info)
 {
     constexpr size_t arg_count = std::tuple_size_v<ArgsTuple>;

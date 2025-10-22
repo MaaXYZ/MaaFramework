@@ -19,8 +19,6 @@ struct TaskJobImpl : public JobImpl
     static void init_proto(maajs::ObjectType proto, maajs::FunctionType ctor);
 };
 
-MAA_JS_NATIVE_CLASS_STATIC_FORWARD(TaskJobImpl)
-
 struct TaskerImpl : public maajs::NativeClassBase
 {
     MaaTasker* tasker {};
@@ -67,4 +65,3 @@ struct TaskerImpl : public maajs::NativeClassBase
     static void init_proto(maajs::ObjectType proto, maajs::FunctionType);
 };
 
-MAA_JS_NATIVE_CLASS_STATIC_FORWARD(TaskerImpl)

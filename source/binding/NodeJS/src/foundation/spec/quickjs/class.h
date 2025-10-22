@@ -128,8 +128,3 @@ struct NativeClass
 };
 
 }
-
-#define MAA_JS_NATIVE_CLASS_STATIC_FORWARD(Type)
-
-#define MAA_JS_NATIVE_CLASS_STATIC_IMPL(Type)
-

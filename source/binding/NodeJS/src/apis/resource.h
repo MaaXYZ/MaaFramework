@@ -56,4 +56,3 @@ struct ResourceImpl : public maajs::NativeClassBase
     static void init_proto(maajs::ObjectType proto, maajs::FunctionType);
 };
 
-MAA_JS_NATIVE_CLASS_STATIC_FORWARD(ResourceImpl)

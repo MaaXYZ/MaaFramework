@@ -32,4 +32,3 @@ struct JobImpl : public maajs::NativeClassBase
     void gc_mark(maajs::NativeMarkerFunc marker) override;
 };
 
-MAA_JS_NATIVE_CLASS_STATIC_FORWARD(JobImpl)

@@ -96,8 +96,6 @@ static MaaBool ResourceCustomAct(
         [](maajs::ValueType result) { return maajs::JSConvert<Ret>::from_value(result); });
 }
 
-MAA_JS_NATIVE_CLASS_STATIC_IMPL(ResourceImpl)
-
 ResourceImpl::ResourceImpl(MaaResource* res, bool own)
     : resource(res)
     , own(own)

@@ -1,18 +1,16 @@
-#include "QuickJSRuntime.h"
+#include "runtime.h"
 
 #include <condition_variable>
+#include <fstream>
 #include <functional>
 #include <iostream>
 #include <mutex>
+#include <sstream>
+#include <string>
 #include <vector>
 
-#define MAA_JS_IMPL_IS_QUICKJS
-#include "../../binding/NodeJS/src/foundation/spec.h"
-
-void init_module_maa(JSContext* ctx);
-void init_module_sys(JSContext* ctx);
-
-MAA_TOOLKIT_NS_BEGIN
+#include "../apis/loader.h"
+#include "../foundation/spec.h"
 
 struct QuickJSRuntimeData : public QuickJSRuntimeBridgeInterface
 {
@@ -60,6 +58,8 @@ struct QuickJSRuntimeData : public QuickJSRuntimeBridgeInterface
         std::unique_lock lock(async_tasks_mtx);
         return async_tasks.size() > 0;
     }
+
+    bool should_quit() { return !(JS_IsJobPending(rt) || has_running_task() || has_pending_task_callback()); }
 
     std::vector<std::function<void(JSContext* ctx)>> take_task_callbacks()
     {
@@ -132,16 +132,32 @@ QuickJSRuntime::~QuickJSRuntime()
     delete d_;
 }
 
+void QuickJSRuntime::eval_file(std::string path)
+{
+    std::ifstream fin(path);
+    std::stringstream buf;
+    buf << fin.rdbuf();
+
+    std::string source = buf.str();
+    eval_script(source);
+}
+
 void QuickJSRuntime::eval_script(std::string script)
 {
     auto val = JS_Eval(d_->ctx, script.c_str(), script.size(), "index.js", JS_EVAL_FLAG_STRICT);
     JS_FreeValue(d_->ctx, val);
 }
 
-void QuickJSRuntime::exec_loop()
+void QuickJSRuntime::exec_loop(bool auto_quit)
 {
     JSContext* unused;
-    while ((JS_IsJobPending(d_->rt) || d_->has_pending_task_callback() || d_->has_running_task()) && !d_->quit) {
+    while (true) {
+        if (d_->quit) {
+            break;
+        }
+        if (auto_quit && d_->should_quit()) {
+            break;
+        }
         while (true) {
             auto state = JS_ExecutePendingJob(d_->rt, &unused);
             if (!state) {
@@ -172,5 +188,3 @@ std::string QuickJSRuntime::get_result()
 {
     return d_->result;
 }
-
-MAA_TOOLKIT_NS_END

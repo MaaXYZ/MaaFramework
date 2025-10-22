@@ -6,8 +6,6 @@
 #include "../foundation/spec.h"
 #include "ext.h"
 
-MAA_JS_NATIVE_CLASS_STATIC_IMPL(JobImpl)
-
 maajs::ValueType JobImpl::get_source()
 {
     return source.Value();

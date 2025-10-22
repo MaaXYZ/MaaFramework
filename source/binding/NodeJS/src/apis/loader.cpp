@@ -26,6 +26,14 @@ static maajs::ObjectType init(maajs::EnvType env)
         maajs::BindValue(maa, key.c_str(), obj);
     }
 
+#ifdef MAA_JS_BUILD_CLIENT
+    maajs::BindValue(maa, "Client", load_client(env));
+#endif
+
+#ifdef MAA_JS_BUILD_SERVER
+    maajs::BindValue(maa, "Server", load_server(env));
+#endif
+
     return maa;
 }
 

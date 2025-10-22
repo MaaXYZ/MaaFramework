@@ -1,7 +1,7 @@
 declare global {
     namespace maa {
         class Client {
-            constructor(identifier?: string, handle?: string)
+            constructor(identifier?: string)
 
             destroy(): void
             get identifier(): string

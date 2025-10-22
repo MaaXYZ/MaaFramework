@@ -9,8 +9,6 @@
 #include "ext.h"
 #include "tasker.h"
 
-MAA_JS_NATIVE_CLASS_STATIC_IMPL(ContextImpl)
-
 ContextImpl::ContextImpl(MaaContext* ctx)
     : context(ctx)
 {

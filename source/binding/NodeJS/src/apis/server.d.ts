@@ -13,9 +13,9 @@ declare global {
                 cb: (ctx: Context, msg: TaskerContextNotify) => MaybePromise<void>
             ): void
 
-            start_up(identifier): Promise<boolean>
+            start_up(identifier: string): Promise<boolean>
             shut_down(): Promise<void>
-            join(): Promise<boolean>
+            join(): Promise<void>
             detach(): void
         }
     }

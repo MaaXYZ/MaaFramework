@@ -11,16 +11,25 @@ set(MAA_JS_COMMON_SOURCES
     src/apis/context.cpp
     src/apis/constant.cpp)
 
+set(MAA_JS_CLIENT_SOURCES src/apis/client.cpp)
+set(MAA_JS_SERVER_SOURCES src/apis/server.cpp)
+
 # quickjs
 
 if(WITH_QUICKJS_BINDING)
-    add_library(MaaQjs STATIC ${MAA_JS_COMMON_SOURCES})
-    target_compile_definitions(MaaQjs PRIVATE MAA_JS_IMPL_IS_QUICKJS)
-    target_link_libraries(MaaQjs PRIVATE MaaInterface qjs_headers)
+    add_library(MaaQjs STATIC ${MAA_JS_COMMON_SOURCES} ${MAA_JS_CLIENT_SOURCES} src/plugin/runtime.cpp)
+    target_compile_definitions(MaaQjs PRIVATE MAA_JS_IMPL_IS_QUICKJS MAA_JS_BUILD_CLIENT)
+    target_link_libraries(MaaQjs PRIVATE MaaInterface qjs HeaderOnlyLibraries)
     set_target_properties(MaaQjs PROPERTIES POSITION_INDEPENDENT_CODE ON)
+    set_target_properties(MaaQjs PROPERTIES CXX_VISIBILITY_PRESET hidden)
 
-    add_executable(MaaQjsRunner src/runner.cpp)
-    target_link_libraries(MaaQjsRunner PRIVATE MaaFramework MaaToolkit)
+    add_library(MaaQjsPlugin SHARED src/plugin/entry.cpp)
+    target_link_libraries(MaaQjsPlugin PRIVATE MaaFramework MaaToolkit MaaAgentClient MaaQjs HeaderOnlyLibraries)
+    set_target_properties(MaaQjsPlugin PROPERTIES CXX_VISIBILITY_PRESET hidden)
+
+    add_executable(MaaQjsRunner src/plugin/runner.cpp)
+    target_link_libraries(MaaQjsRunner PRIVATE MaaFramework MaaToolkit MaaAgentClient MaaQjs)
+    set_target_properties(MaaQjsRunner PROPERTIES CXX_VISIBILITY_PRESET hidden)
 endif()
 
 # nodejs
@@ -74,13 +83,21 @@ if(WITH_NODEJS_BINDING)
         endif()
     endif()
 
-    add_library(MaaNodeNew SHARED ${MAA_JS_COMMON_SOURCES} ${CMAKE_JS_SRC})
+    add_library(MaaNodeNew SHARED ${MAA_JS_COMMON_SOURCES} ${MAA_JS_CLIENT_SOURCES} ${CMAKE_JS_SRC})
     set_target_properties(MaaNodeNew PROPERTIES PREFIX "" SUFFIX ".node")
-    target_compile_definitions(MaaNodeNew PRIVATE MAA_JS_IMPL_IS_NODEJS)
+    target_compile_definitions(MaaNodeNew PRIVATE MAA_JS_IMPL_IS_NODEJS MAA_JS_BUILD_CLIENT)
     target_include_directories(MaaNodeNew PRIVATE ${CMAKE_JS_INC})
     target_link_libraries(MaaNodeNew PRIVATE MaaFramework MaaToolkit MaaAgentClient ${CMAKE_JS_LIB})
-    target_compile_definitions(MaaNodeNew PRIVATE NODE_ADDON_API_ENABLE_TYPE_CHECK_ON_AS MAA_NODE_BUILD_CLIENT)
+    target_compile_definitions(MaaNodeNew PRIVATE NODE_ADDON_API_ENABLE_TYPE_CHECK_ON_AS)
     set_target_properties(MaaNodeNew PROPERTIES POSITION_INDEPENDENT_CODE ON)
+
+    add_library(MaaNodeNewServer SHARED ${MAA_JS_COMMON_SOURCES} ${MAA_JS_SERVER_SOURCES} ${CMAKE_JS_SRC})
+    set_target_properties(MaaNodeNewServer PROPERTIES PREFIX "" SUFFIX ".node")
+    target_compile_definitions(MaaNodeNewServer PRIVATE MAA_JS_IMPL_IS_NODEJS MAA_JS_BUILD_SERVER)
+    target_include_directories(MaaNodeNewServer PRIVATE ${CMAKE_JS_INC})
+    target_link_libraries(MaaNodeNewServer PRIVATE MaaAgentServer MaaToolkit ${CMAKE_JS_LIB})
+    target_compile_definitions(MaaNodeNewServer PRIVATE NODE_ADDON_API_ENABLE_TYPE_CHECK_ON_AS)
+    set_target_properties(MaaNodeNewServer PROPERTIES POSITION_INDEPENDENT_CODE ON)
 endif()
 
 if(WITH_NODEJS_BINDING)
