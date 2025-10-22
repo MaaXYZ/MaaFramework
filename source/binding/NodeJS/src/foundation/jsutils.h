@@ -33,6 +33,12 @@ inline PromiseType
             [capturePtr](auto marker) { marker(capturePtr->Value()); }));
 }
 
+inline PromiseType PromiseAll(EnvType env, std::vector<ValueType> pros)
+{
+    auto promise = env.Global()["Promise"].AsValue().As<ObjectType>();
+    return promise["all"].AsValue().As<FunctionType>().Call(promise, pros).As<PromiseType>();
+}
+
 inline std::string JsonStringify(EnvType env, ValueType val)
 {
     auto json = env.Global()["JSON"].AsValue().As<ObjectType>();

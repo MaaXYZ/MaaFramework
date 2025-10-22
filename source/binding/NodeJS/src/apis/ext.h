@@ -8,7 +8,7 @@
 #include "../foundation/spec.h"
 
 template <typename Handle>
-struct HandleMap
+struct WeakHandleMap
 {
     std::map<Handle*, maajs::WeakObjectRefType> objs;
 
@@ -43,6 +43,43 @@ struct HandleMap
     void del(Handle* handle) { objs.erase(handle); }
 };
 
+template <typename Handle>
+struct StrongHandleMap
+{
+    std::map<Handle*, maajs::ObjectRefType> objs;
+
+    void gc_mark([[maybe_unused]] maajs::NativeMarkerFunc marker)
+    {
+#ifdef MAA_JS_IMPL_IS_QUICKJS
+        for (const auto& [_, val] : objs) {
+            marker(val);
+        }
+#endif
+    }
+
+    std::optional<maajs::ObjectType> find(Handle* handle)
+    {
+        if (auto it = objs.find(handle); it != objs.end()) {
+            return it->second.Value();
+        }
+        else {
+            return std::nullopt;
+        }
+    }
+
+    void add(Handle* handle, maajs::ObjectType object) { objs[handle] = maajs::PersistentObject(object); }
+
+    void del(Handle* handle) { objs.erase(handle); }
+};
+
+#if defined(MAA_JS_IMPL_IS_QUICKJS) || defined(MAA_JS_BUILD_SERVER)
+template <typename Handle>
+using HandleMap = StrongHandleMap<Handle>;
+#else
+template <typename Handle>
+using HandleMap = WeakHandleMap<Handle>;
+#endif
+
 struct ExtContext : public maajs::NativeClassBase
 {
     maajs::FunctionRefType jobCtor;
@@ -59,6 +96,8 @@ struct ExtContext : public maajs::NativeClassBase
     HandleMap<MaaResource> resources;
     HandleMap<MaaController> controllers;
     HandleMap<MaaTasker> taskers;
+
+    std::vector<std::unique_ptr<maajs::CallbackContext>> globalCallbacks;
 
     void gc_mark(maajs::NativeMarkerFunc marker) override
     {
@@ -78,6 +117,10 @@ struct ExtContext : public maajs::NativeClassBase
         resources.gc_mark(marker);
         controllers.gc_mark(marker);
         taskers.gc_mark(marker);
+
+        for (const auto& ptr : globalCallbacks) {
+            marker(ptr->fn);
+        }
     }
 
     static ExtContext* get(maajs::EnvType env)

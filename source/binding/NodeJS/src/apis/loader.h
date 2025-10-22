@@ -23,6 +23,7 @@ maajs::ValueType load_context(maajs::EnvType env);
 
 maajs::ValueType load_client(maajs::EnvType env);
 maajs::ValueType load_server(maajs::EnvType env);
+maajs::ValueType load_plugin(maajs::EnvType env);
 
 std::map<std::string, maajs::ValueType> load_constant(maajs::EnvType env);
 

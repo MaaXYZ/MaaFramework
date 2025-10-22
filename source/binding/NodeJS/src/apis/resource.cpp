@@ -21,41 +21,40 @@ ResourceImpl::~ResourceImpl()
 
 void ResourceImpl::destroy()
 {
-    if (resource) {
-        ExtContext::get(env)->resources.del(resource);
+    if (!resource) {
+        return;
     }
 
-    if (own && resource) {
-        for (const auto& [id, ctx] : sinks) {
-            MaaResourceRemoveSink(resource, id);
-            delete ctx;
-        }
-        sinks.clear();
+    ExtContext::get(env)->resources.del(resource);
 
-        for (const auto& [key, ctx] : recos) {
-            MaaResourceUnregisterCustomRecognition(resource, key.c_str());
-            delete ctx;
-        }
-        recos.clear();
+    for (const auto& [id, ctx] : sinks) {
+        MaaResourceRemoveSink(resource, id);
+        delete ctx;
+    }
+    sinks.clear();
 
-        for (const auto& [key, ctx] : acts) {
-            MaaResourceUnregisterCustomAction(resource, key.c_str());
-            delete ctx;
-        }
-        acts.clear();
+    for (const auto& [key, ctx] : recos) {
+        MaaResourceUnregisterCustomRecognition(resource, key.c_str());
+        delete ctx;
+    }
+    recos.clear();
 
+    for (const auto& [key, ctx] : acts) {
+        MaaResourceUnregisterCustomAction(resource, key.c_str());
+        delete ctx;
+    }
+    acts.clear();
+
+    if (own) {
         MaaResourceDestroy(resource);
     }
+
     resource = nullptr;
     own = false;
 }
 
 MaaSinkId ResourceImpl::add_sink(maajs::FunctionType sink)
 {
-    if (!own) {
-        return MaaInvalidId;
-    }
-
     auto ctx = new maajs::CallbackContext(sink, "ResourceSink");
     auto id = MaaResourceAddSink(resource, ResourceSink, ctx);
     if (id != MaaInvalidId) {
@@ -135,10 +134,6 @@ void ResourceImpl::set_inference_execution_provider(std::string provider)
 
 void ResourceImpl::register_custom_recognition(std::string key, maajs::FunctionType func)
 {
-    if (!own) {
-        return;
-    }
-
     auto ctx = new maajs::CallbackContext(func, "CustomReco");
     if (MaaResourceRegisterCustomRecognition(resource, key.c_str(), CustomReco, ctx)) {
         recos[key] = ctx;
@@ -174,10 +169,6 @@ void ResourceImpl::clear_custom_recognition()
 
 void ResourceImpl::register_custom_action(std::string key, maajs::FunctionType func)
 {
-    if (!own) {
-        return;
-    }
-
     auto ctx = new maajs::CallbackContext(func, "CustomAct");
     if (MaaResourceRegisterCustomAction(resource, key.c_str(), CustomAct, ctx)) {
         acts[key] = ctx;

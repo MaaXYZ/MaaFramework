@@ -49,29 +49,27 @@ ControllerImpl::~ControllerImpl()
 
 void ControllerImpl::destroy()
 {
-    if (controller) {
-        ExtContext::get(env)->controllers.del(controller);
+    if (!controller) {
+        return;
     }
 
-    if (own && controller) {
-        for (const auto& [id, ctx] : sinks) {
-            MaaControllerRemoveSink(controller, id);
-            delete ctx;
-        }
-        sinks.clear();
+    ExtContext::get(env)->controllers.del(controller);
 
+    for (const auto& [id, ctx] : sinks) {
+        MaaControllerRemoveSink(controller, id);
+    }
+    sinks.clear();
+
+    if (own) {
         MaaControllerDestroy(controller);
     }
+
     controller = nullptr;
     own = false;
 }
 
 MaaSinkId ControllerImpl::add_sink(maajs::FunctionType sink)
 {
-    if (!own) {
-        return MaaInvalidId;
-    }
-
     auto ctx = new maajs::CallbackContext(sink, "ControllerSink");
     auto id = MaaControllerAddSink(controller, ControllerSink, ctx);
     if (id != MaaInvalidId) {

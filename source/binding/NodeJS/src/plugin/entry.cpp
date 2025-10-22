@@ -44,43 +44,23 @@ uint32_t GetApiVersion()
     return 1;
 }
 
-void OnResourceEvent(void* handle, const char* message, const char* details_json, void* trans_arg)
+void OnResourceEvent(void* handle, const char* message, const char* details_json, void*)
 {
-    getRuntime();
-
-    std::ignore = handle;
-    std::ignore = message;
-    std::ignore = details_json;
-    std::ignore = trans_arg;
+    getRuntime()->dispatch_resource_sink(reinterpret_cast<MaaResource*>(handle), message, details_json);
 }
 
-void OnControllerEvent(void* handle, const char* message, const char* details_json, void* trans_arg)
+void OnControllerEvent(void* handle, const char* message, const char* details_json, void*)
 {
-    getRuntime();
-
-    std::ignore = handle;
-    std::ignore = message;
-    std::ignore = details_json;
-    std::ignore = trans_arg;
+    getRuntime()->dispatch_controller_sink(reinterpret_cast<MaaController*>(handle), message, details_json);
 }
 
-void OnTaskerEvent(void* handle, const char* message, const char* details_json, void* trans_arg)
+void OnTaskerEvent(void* handle, const char* message, const char* details_json, void*)
 {
-    getRuntime();
-
-    std::ignore = handle;
-    std::ignore = message;
-    std::ignore = details_json;
-    std::ignore = trans_arg;
+    getRuntime()->dispatch_tasker_sink(reinterpret_cast<MaaTasker*>(handle), message, details_json);
 }
 
-void OnContextEvent(void* handle, const char* message, const char* details_json, void* trans_arg)
+void OnContextEvent(void* handle, const char* message, const char* details_json, void*)
 {
-    getRuntime();
-
-    std::ignore = handle;
-    std::ignore = message;
-    std::ignore = details_json;
-    std::ignore = trans_arg;
+    getRuntime()->dispatch_context_sink(reinterpret_cast<MaaContext*>(handle), message, details_json);
 }
 

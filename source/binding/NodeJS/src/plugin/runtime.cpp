@@ -3,6 +3,7 @@
 #include <condition_variable>
 #include <fstream>
 #include <functional>
+#include <future>
 #include <iostream>
 #include <mutex>
 #include <sstream>
@@ -11,6 +12,14 @@
 
 #include "../apis/loader.h"
 #include "../foundation/spec.h"
+
+template <typename Type>
+inline auto BindData(QuickJSRuntimeBridgeInterface::SinkFunc func, void* data)
+{
+    return [func, data](Type* handle, const char* msg, const char* details) {
+        func(handle, msg, details, data);
+    };
+}
 
 struct QuickJSRuntimeData : public QuickJSRuntimeBridgeInterface
 {
@@ -26,6 +35,11 @@ struct QuickJSRuntimeData : public QuickJSRuntimeBridgeInterface
     std::mutex async_tasks_mtx;
     std::condition_variable async_tasks_cv;
     std::vector<std::function<void(JSContext* ctx)>> async_tasks;
+
+    std::vector<std::function<void(MaaResource*, const char*, const char*)>> plugin_resource_sinks;
+    std::vector<std::function<void(MaaController*, const char*, const char*)>> plugin_controller_sinks;
+    std::vector<std::function<void(MaaTasker*, const char*, const char*)>> plugin_tasker_sinks;
+    std::vector<std::function<void(MaaContext*, const char*, const char*)>> plugin_context_sinks;
 
     QuickJSRuntimeData()
     {
@@ -118,6 +132,24 @@ struct QuickJSRuntimeData : public QuickJSRuntimeBridgeInterface
         result = ret;
         async_tasks_cv.notify_all();
     }
+
+    virtual void plugin_add_sink(SinkType type, SinkFunc func, void* ptr) override
+    {
+        switch (type) {
+        case QuickJSRuntimeBridgeInterface::Resource:
+            plugin_resource_sinks.push_back(BindData<MaaResource>(func, ptr));
+            break;
+        case QuickJSRuntimeBridgeInterface::Controller:
+            plugin_controller_sinks.push_back(BindData<MaaController>(func, ptr));
+            break;
+        case QuickJSRuntimeBridgeInterface::Tasker:
+            plugin_tasker_sinks.push_back(BindData<MaaTasker>(func, ptr));
+            break;
+        case QuickJSRuntimeBridgeInterface::Context:
+            plugin_context_sinks.push_back(BindData<MaaContext>(func, ptr));
+            break;
+        }
+    }
 };
 
 QuickJSRuntime::QuickJSRuntime()
@@ -187,4 +219,57 @@ void QuickJSRuntime::exec_loop(bool auto_quit)
 std::string QuickJSRuntime::get_result()
 {
     return d_->result;
+}
+
+void QuickJSRuntime::dispatch_resource_sink(MaaResource* handle, const char* message, const char* details_json)
+{
+    std::promise<void> promise;
+    std::future<void> future = promise.get_future();
+    d_->push_task([&promise, handle, message, details_json, &sinks = d_->plugin_resource_sinks](JSContext*) {
+        // TODO: 这里实际上在串行执行所有sink，逻辑上用Promise.all并行会更好，但是复用的sink函数已经阻塞了。
+        for (const auto& sink : sinks) {
+            sink(handle, message, details_json);
+        }
+        promise.set_value();
+    });
+    return future.get();
+}
+
+void QuickJSRuntime::dispatch_controller_sink(MaaController* handle, const char* message, const char* details_json)
+{
+    std::promise<void> promise;
+    std::future<void> future = promise.get_future();
+    d_->push_task([&promise, handle, message, details_json, &sinks = d_->plugin_controller_sinks](JSContext*) {
+        for (const auto& sink : sinks) {
+            sink(handle, message, details_json);
+        }
+        promise.set_value();
+    });
+    return future.get();
+}
+
+void QuickJSRuntime::dispatch_tasker_sink(MaaTasker* handle, const char* message, const char* details_json)
+{
+    std::promise<void> promise;
+    std::future<void> future = promise.get_future();
+    d_->push_task([&promise, handle, message, details_json, &sinks = d_->plugin_tasker_sinks](JSContext*) {
+        for (const auto& sink : sinks) {
+            sink(handle, message, details_json);
+        }
+        promise.set_value();
+    });
+    return future.get();
+}
+
+void QuickJSRuntime::dispatch_context_sink(MaaContext* handle, const char* message, const char* details_json)
+{
+    std::promise<void> promise;
+    std::future<void> future = promise.get_future();
+    d_->push_task([&promise, handle, message, details_json, &sinks = d_->plugin_context_sinks](JSContext*) {
+        for (const auto& sink : sinks) {
+            sink(handle, message, details_json);
+        }
+        promise.set_value();
+    });
+    return future.get();
 }

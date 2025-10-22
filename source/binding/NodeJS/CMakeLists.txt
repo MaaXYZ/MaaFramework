@@ -15,12 +15,13 @@ set(MAA_JS_COMMON_SOURCES
 
 set(MAA_JS_CLIENT_SOURCES src/apis/client.cpp)
 set(MAA_JS_SERVER_SOURCES src/apis/server.cpp)
+set(MAA_JS_PLUGIN_SOURCES src/apis/plugin.cpp)
 
 # quickjs
 
 if(WITH_QUICKJS_BINDING)
-    add_library(MaaQjs STATIC ${MAA_JS_COMMON_SOURCES} ${MAA_JS_CLIENT_SOURCES} src/plugin/runtime.cpp)
-    target_compile_definitions(MaaQjs PRIVATE MAA_JS_IMPL_IS_QUICKJS MAA_JS_BUILD_CLIENT)
+    add_library(MaaQjs STATIC ${MAA_JS_COMMON_SOURCES} ${MAA_JS_CLIENT_SOURCES} ${MAA_JS_PLUGIN_SOURCES} src/plugin/runtime.cpp)
+    target_compile_definitions(MaaQjs PRIVATE MAA_JS_IMPL_IS_QUICKJS MAA_JS_BUILD_CLIENT MAA_JS_BUILD_PLUGIN)
     target_link_libraries(MaaQjs PRIVATE MaaInterface qjs HeaderOnlyLibraries)
     set_target_properties(MaaQjs PROPERTIES POSITION_INDEPENDENT_CODE ON)
     set_target_properties(MaaQjs PROPERTIES CXX_VISIBILITY_PRESET hidden)

@@ -48,35 +48,34 @@ TaskerImpl::~TaskerImpl()
 
 void TaskerImpl::destroy()
 {
-    if (tasker) {
-        ExtContext::get(env)->taskers.del(tasker);
+    if (!tasker) {
+        return;
     }
 
-    if (own && tasker) {
-        for (const auto& [id, ctx] : sinks) {
-            MaaTaskerRemoveSink(tasker, id);
-            delete ctx;
-        }
-        sinks.clear();
+    ExtContext::get(env)->taskers.del(tasker);
 
-        for (const auto& [id, ctx] : ctxSinks) {
-            MaaTaskerRemoveContextSink(tasker, id);
-            delete ctx;
-        }
-        ctxSinks.clear();
+    for (const auto& [id, ctx] : sinks) {
+        MaaTaskerRemoveSink(tasker, id);
+        delete ctx;
+    }
+    sinks.clear();
 
+    for (const auto& [id, ctx] : ctxSinks) {
+        MaaTaskerRemoveContextSink(tasker, id);
+        delete ctx;
+    }
+    ctxSinks.clear();
+
+    if (own) {
         MaaTaskerDestroy(tasker);
     }
+
     tasker = nullptr;
     own = false;
 }
 
 MaaSinkId TaskerImpl::add_sink(maajs::FunctionType sink)
 {
-    if (!own) {
-        return MaaInvalidId;
-    }
-
     auto ctx = new maajs::CallbackContext(sink, "TaskerSink");
     auto id = MaaTaskerAddSink(tasker, TaskerSink, ctx);
     if (id != MaaInvalidId) {
@@ -108,10 +107,6 @@ void TaskerImpl::clear_sinks()
 
 MaaSinkId TaskerImpl::add_context_sink(maajs::FunctionType sink)
 {
-    if (!own) {
-        return MaaInvalidId;
-    }
-
     auto ctx = new maajs::CallbackContext(sink, "ContextSink");
     auto id = MaaTaskerAddContextSink(tasker, ContextSink, ctx);
     if (id != MaaInvalidId) {

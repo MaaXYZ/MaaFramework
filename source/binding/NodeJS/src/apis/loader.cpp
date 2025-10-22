@@ -35,6 +35,10 @@ static maajs::ObjectType init(maajs::EnvType env)
     maajs::BindValue(maa, "Server", load_server(env));
 #endif
 
+#ifdef MAA_JS_BUILD_PLUGIN
+    maajs::BindValue(maa, "Plugin", load_plugin(env));
+#endif
+
     return maa;
 }
 
