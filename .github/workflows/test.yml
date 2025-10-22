@@ -91,9 +91,9 @@ jobs:
               run: |
                   cd source/binding/NodeJS
                   pnpm i
-                  cd release/maa-node
-                  pnpm i
-                  npm run build
+                  mkdir -p release/maa-node/dist
+                  cp src/apis/*.d.ts release/maa-node/dist
+                  cp release/maa-node/src/*.js release/maa-node/dist
 
             - name: Build MAA
               run: |
@@ -201,9 +201,9 @@ jobs:
               run: |
                   cd source/binding/NodeJS
                   pnpm i
-                  cd release/maa-node
-                  pnpm i
-                  npm run build
+                  mkdir -p release/maa-node/dist
+                  cp src/apis/*.d.ts release/maa-node/dist
+                  cp release/maa-node/src/*.js release/maa-node/dist
 
             - name: Build MAA
               run: |
@@ -315,9 +315,9 @@ jobs:
               run: |
                   cd source/binding/NodeJS
                   pnpm i
-                  cd release/maa-node
-                  pnpm i
-                  npm run build
+                  mkdir -p release/maa-node/dist
+                  cp src/apis/*.d.ts release/maa-node/dist
+                  cp release/maa-node/src/*.js release/maa-node/dist
 
             - name: Build MAA
               run: |
