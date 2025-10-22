@@ -29,8 +29,37 @@ void set_save_draw(bool value)
     }
 }
 
-void set_stdout_level(int32_t value)
+void set_stdout_level(std::string level)
 {
+    int32_t value = 0;
+    if (level == "Off") {
+        value = MaaLoggingLevel_Off;
+    }
+    else if (level == "Fatal") {
+        value = MaaLoggingLevel_Fatal;
+    }
+    else if (level == "Error") {
+        value = MaaLoggingLevel_Error;
+    }
+    else if (level == "Warn") {
+        value = MaaLoggingLevel_Warn;
+    }
+    else if (level == "Info") {
+        value = MaaLoggingLevel_Info;
+    }
+    else if (level == "Debug") {
+        value = MaaLoggingLevel_Debug;
+    }
+    else if (level == "Trace") {
+        value = MaaLoggingLevel_Trace;
+    }
+    else if (level == "All") {
+        value = MaaLoggingLevel_All;
+    }
+    else {
+        throw maajs::MaaError { std::format("Global set stdout_level failed, invalid level {}", level) };
+    }
+
     if (!MaaGlobalSetOption(MaaGlobalOption_StdoutLevel, &value, sizeof(value))) {
         throw maajs::MaaError { "Global set stdout_level failed" };
     }

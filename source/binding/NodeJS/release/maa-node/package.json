@@ -4,11 +4,8 @@
     "main": "./dist/index-client.js",
     "types": "./dist/index-client.d.ts",
     "exports": {
-        ".": "./dist/index-client.js",
-        "./server": "./dist/index-server.js"
-    },
-    "scripts": {
-        "build": "node scripts/build.mjs && tsc"
+        ".": "./dist/index-server.js",
+        "./server": "./dist/index-server.d.ts"
     },
     "repository": {
         "type": "git",

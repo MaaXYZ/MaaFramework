@@ -1,4 +1,4 @@
 {
     "extends": "@tsconfig/node20/tsconfig.json",
-    "include": ["*.ts"]
+    "include": ["*.ts", "inject-server.js", "inject-client.js"]
 }

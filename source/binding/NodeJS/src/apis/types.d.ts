@@ -12,9 +12,6 @@ declare global {
         type SinkId = Id & { __brand: 'SinkId' }
 
         type Status = number & { __brand: 'Status' }
-        type LoggingLevel = number & { __brand: 'LoggingLevel' }
-        type InferenceDevice = number & { __brand: 'InferenceDevice' }
-        type InferenceExecutionProvider = number & { __brand: 'InferenceExecutionProvider' }
 
         type ImageData = ArrayBuffer
 
@@ -56,7 +53,7 @@ declare global {
             [out_box: Rect, out_detail: string] | null
         >
 
-        export type CustomActionCallback = CustomCallback<CustomActionSelf, boolean>
+        type CustomActionCallback = CustomCallback<CustomActionSelf, boolean>
     }
 }
 

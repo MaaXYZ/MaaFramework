@@ -1,10 +1,6 @@
 declare global {
     namespace maa {
         const Status: Record<'Invalid' | 'Pending' | 'Running' | 'Succeeded' | 'Failed', Status>
-        const LoggingLevel: Record<
-            'Off' | 'Fatal' | 'Error' | 'Warn' | 'Info' | 'Debug' | 'Trace' | 'All',
-            LoggingLevel
-        >
         const AdbScreencapMethod: Record<
             | 'EncodeToFileAndPull'
             | 'Encode'

@@ -20,22 +20,6 @@ static maajs::ValueType load_status(maajs::EnvType env)
     return obj;
 }
 
-static maajs::ValueType load_logging_level(maajs::EnvType env)
-{
-    auto obj = maajs::ObjectType::New(env);
-
-    DE(MaaLoggingLevel, Off);
-    DE(MaaLoggingLevel, Fatal);
-    DE(MaaLoggingLevel, Error);
-    DE(MaaLoggingLevel, Warn);
-    DE(MaaLoggingLevel, Info);
-    DE(MaaLoggingLevel, Debug);
-    DE(MaaLoggingLevel, Trace);
-    DE(MaaLoggingLevel, All);
-
-    return obj;
-}
-
 static maajs::ValueType load_adb_screencap_method(maajs::EnvType env)
 {
     auto obj = maajs::ObjectType::New(env);
@@ -92,7 +76,6 @@ std::map<std::string, maajs::ValueType> load_constant(maajs::EnvType env)
 {
     return {
         { "Status", load_status(env) },
-        { "LoggingLevel", load_logging_level(env) },
         { "AdbScreencapMethod", load_adb_screencap_method(env) },
         { "AdbInputMethod", load_adb_input_method(env) },
         { "Win32ScreencapMethod", load_win32_screencap_method(env) },
