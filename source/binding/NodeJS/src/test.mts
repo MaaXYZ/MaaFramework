@@ -5,6 +5,8 @@ const console = {
 }
 
 async function main() {
+    print(`${JSON.stringify(maa, null, 4)}`)
+
     const dev = (await maa.AdbController.find())[0]
     dev.shift()
     const ctrl = new maa.AdbController(...dev)

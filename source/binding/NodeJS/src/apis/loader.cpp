@@ -21,6 +21,11 @@ static maajs::ObjectType init(maajs::EnvType env)
     maajs::BindValue(maa, "Tasker", load_tasker(env));
     maajs::BindValue(maa, "Context", load_context(env));
 
+    auto constants = load_constant(env);
+    for (const auto& [key, obj] : constants) {
+        maajs::BindValue(maa, key.c_str(), obj);
+    }
+
     return maa;
 }
 
