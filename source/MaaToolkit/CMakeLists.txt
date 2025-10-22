@@ -10,8 +10,8 @@ target_include_directories(
 
 target_compile_definitions(MaaToolkit PRIVATE MAA_TOOLKIT_EXPORTS)
 
-target_link_libraries(MaaToolkit PRIVATE MaaUtils MaaFramework LibraryHolder HeaderOnlyLibraries Boost::system
-                                         ${OpenCV_LIBS})
+target_link_libraries(
+    MaaToolkit PRIVATE MaaUtils MaaFramework LibraryHolder HeaderOnlyLibraries Boost::system ${OpenCV_LIBS})
 
 if(LINUX)
     target_link_libraries(MaaToolkit PRIVATE pthread dl)
@@ -27,10 +27,7 @@ install(
     ARCHIVE DESTINATION lib)
 
 if(WIN32)
-    install(
-        FILES $<TARGET_PDB_FILE:MaaToolkit>
-        DESTINATION symbol
-        OPTIONAL)
+    install(FILES $<TARGET_PDB_FILE:MaaToolkit> DESTINATION symbol OPTIONAL)
 endif()
 
 install(DIRECTORY "${MAA_PUBLIC_INC}/MaaToolkit" DESTINATION "include")
