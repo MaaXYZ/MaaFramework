@@ -73,3 +73,18 @@ struct AdbControllerImpl : public ControllerImpl
     static void init_proto(maajs::ObjectType proto, maajs::FunctionType ctor);
 };
 
+using Win32Device = std::tuple<uintptr_t, std::string, std::string>;
+using Win32ControllerCtorParam = std::tuple<uintptr_t, MaaWin32ScreencapMethod, MaaWin32InputMethod>;
+
+struct Win32ControllerImpl : public ControllerImpl
+{
+    using ControllerImpl::ControllerImpl;
+
+    static maajs::PromiseType find(maajs::EnvType env);
+
+    constexpr static char name[] = "Win32Controller";
+
+    static Win32ControllerImpl* ctor(const maajs::CallbackInfo&);
+    static void init_proto(maajs::ObjectType proto, maajs::FunctionType ctor);
+};
+

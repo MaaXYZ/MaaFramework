@@ -135,6 +135,18 @@ declare global {
             static agent_path(): string
             static find(adb?: string): Promise<AdbDevice[] | null>
         }
+
+        type DesktopDevice = [handle: DesktopHandle, class_name: string, window_name: string]
+
+        class Win32Controller extends Controller {
+            constructor(
+                hwnd: DesktopHandle,
+                screencap_methods: ScreencapOrInputMethods,
+                input_methods: ScreencapOrInputMethods
+            )
+
+            static find(): Promise<DesktopDevice[] | null>
+        }
     }
 }
 

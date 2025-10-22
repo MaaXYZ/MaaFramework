@@ -279,7 +279,7 @@ maajs::PromiseType AdbControllerImpl::find(maajs::EnvType env, maajs::OptionalPa
 
         std::vector<AdbDevice> result;
         auto size = MaaToolkitAdbDeviceListSize(lst);
-        std::vector<AdbDevice> infos(size);
+        result.reserve(size);
         for (size_t i = 0; i < size; i++) {
             auto dev = MaaToolkitAdbDeviceListAt(lst, i);
             result.push_back(
@@ -326,5 +326,57 @@ maajs::ValueType load_adb_controller(maajs::EnvType env)
     maajs::FunctionType ctor;
     maajs::NativeClass<AdbControllerImpl>::init<ControllerImpl>(env, ctor, &ExtContext::get(env)->controllerCtor);
     ExtContext::get(env)->adbControllerCtor = maajs::PersistentFunction(ctor);
+    return ctor;
+}
+
+maajs::PromiseType Win32ControllerImpl::find(maajs::EnvType env)
+{
+    using Result = std::optional<std::vector<Win32Device>>;
+    auto worker = new maajs::AsyncWork<Result>(env, []() -> Result {
+        auto lst = MaaToolkitDesktopWindowListCreate();
+        if (!MaaToolkitDesktopWindowFindAll(lst)) {
+            MaaToolkitDesktopWindowListDestroy(lst);
+            return std::nullopt;
+        }
+
+        std::vector<Win32Device> result;
+        auto size = MaaToolkitDesktopWindowListSize(lst);
+        result.reserve(size);
+        for (size_t i = 0; i < size; i++) {
+            auto dev = MaaToolkitDesktopWindowListAt(lst, i);
+            result.push_back(
+                std::make_tuple(
+                    reinterpret_cast<uintptr_t>(MaaToolkitDesktopWindowGetHandle(dev)),
+                    std::string(MaaToolkitDesktopWindowGetClassName(dev)),
+                    std::string(MaaToolkitDesktopWindowGetClassName(dev))));
+        }
+        MaaToolkitDesktopWindowListDestroy(lst);
+
+        return result;
+    });
+    worker->Queue();
+    return worker->Promise();
+}
+
+Win32ControllerImpl* Win32ControllerImpl::ctor(const maajs::CallbackInfo& info)
+{
+    auto [hwnd, screencap_methods, input_methods] = maajs::UnWrapArgs<Win32ControllerCtorParam, void>(info);
+    auto ctrl = MaaWin32ControllerCreate(reinterpret_cast<void*>(hwnd), screencap_methods, input_methods);
+    if (!ctrl) {
+        return nullptr;
+    }
+    return new Win32ControllerImpl(ctrl, true);
+}
+
+void Win32ControllerImpl::init_proto(maajs::ObjectType, maajs::FunctionType ctor)
+{
+    MAA_BIND_FUNC(ctor, "find", find);
+}
+
+maajs::ValueType load_win32_controller(maajs::EnvType env)
+{
+    maajs::FunctionType ctor;
+    maajs::NativeClass<Win32ControllerImpl>::init<ControllerImpl>(env, ctor, &ExtContext::get(env)->controllerCtor);
+    ExtContext::get(env)->win32ControllerCtor = maajs::PersistentFunction(ctor);
     return ctor;
 }

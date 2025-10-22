@@ -279,6 +279,27 @@ struct JSConvert<uint64_t>
     static ValueType to_value(EnvType env, const uint64_t& val) { return StringType::New(env, std::to_string(val)); }
 };
 
+#ifdef __APPLE__
+// mac上uintptr_t是unsigned long, uint64_t是unsigned long long
+template <>
+struct JSConvert<uintptr_t>
+{
+    static std::string name() { return "string<uint64_t>"; }
+
+    static uintptr_t from_value(ValueType val)
+    {
+        if (val.IsString()) {
+            return std::stoull(val.As<StringType>().Utf8Value());
+        }
+        throw MaaError { std::format("expect {}, got {}", name(), DumpValue(val)) };
+    }
+
+    static ValueType to_value(EnvType env, const uintptr_t& val) { return StringType::New(env, std::to_string(val)); }
+};
+#else
+static_assert(std::is_same_v<uint64_t, uintptr_t>, "");
+#endif
+
 template <typename Type>
 struct JSConvert<std::vector<Type>>
 {

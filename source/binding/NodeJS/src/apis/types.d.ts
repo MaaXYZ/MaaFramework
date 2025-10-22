@@ -1,5 +1,7 @@
 declare global {
     namespace maa {
+        type DesktopHandle = string & { __brand: 'DesktopHandle' }
+
         type Uint64 = string
         type Id = Uint64
         type ScreencapOrInputMethods = Uint64
