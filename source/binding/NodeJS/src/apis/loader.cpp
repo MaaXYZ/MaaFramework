@@ -1,7 +1,9 @@
 #include "loader.h"
 
+#include <cstring>
 #include <fstream>
 #include <iostream>
+#include <sstream>
 
 #include "../foundation/spec.h"
 
@@ -61,12 +63,24 @@ void init_module_maa(JSContext* ctx)
     maajs::BindValue(env.Global(), "maa", maa);
 }
 
-void maa_rt_print(std::string str)
+void maa_rt_print(maajs::ValueType value)
 {
-    std::cout << str << std::endl;
+    std::cout << value.ToString().Utf8Value() << std::endl;
 }
 
-void maa_rt_save(std::string path, maajs::ArrayBufferType data)
+maajs::ArrayBufferType maa_rt_read_file(maajs::EnvType env, std::string path)
+{
+    std::ifstream fin(path, std::ios_base::in | std::ios_base::binary);
+    std::stringstream buf;
+    buf << fin.rdbuf();
+    std::string content = buf.str();
+
+    auto result = maajs::ArrayBufferType::New(env, content.size());
+    std::memcpy(result.Data(), content.c_str(), content.size());
+    return result;
+}
+
+void maa_rt_write_file(std::string path, maajs::ArrayBufferType data)
 {
     std::ofstream fout(path, std::ios_base::out | std::ios_base::binary);
     fout.write(static_cast<char*>(data.Data()), data.ByteLength());
@@ -83,7 +97,8 @@ void init_module_sys(JSContext* ctx)
     auto globalObject = env.Global();
 
     MAA_BIND_FUNC(globalObject, "print", maa_rt_print);
-    MAA_BIND_FUNC(globalObject, "save", maa_rt_save);
+    MAA_BIND_FUNC(globalObject, "readFile", maa_rt_read_file);
+    MAA_BIND_FUNC(globalObject, "writeFile", maa_rt_write_file);
     MAA_BIND_FUNC(globalObject, "exit", maa_rt_exit);
 }
 #endif
