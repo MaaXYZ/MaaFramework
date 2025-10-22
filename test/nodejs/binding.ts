@@ -3,6 +3,8 @@ import './maa-client'
 
 import * as fs from 'fs/promises'
 
+/*
+
 let analyzed = false
 let runned = false
 
@@ -115,12 +117,12 @@ async function api_test() {
     await dbg_controller.post_connection().wait()
 
     const tasker = new maa.Tasker()
-    tasker.add_wrapped_sink(msg => {
+    tasker.add_sink(msg => {
         console.log(msg)
     })
     console.log('tasker', tasker)
-    tasker.bind(resource)
-    tasker.bind(dbg_controller)
+    tasker.resource = resource
+    tasker.controller = dbg_controller
 
     if (!tasker.inited) {
         console.log('failed to init tasker')
@@ -326,3 +328,5 @@ async function main() {
 }
 
 main()
+
+*/
