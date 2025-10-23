@@ -1,13 +1,15 @@
 import ctypes
 import pathlib
 import json
-from typing import Any, Optional, Union
+from typing import Any, Optional, Union, List, Dict, Tuple
+from dataclasses import dataclass, field
 
 from .event_sink import EventSink, NotificationType
 from .define import *
 from .job import Job
 from .library import Library
 from .buffer import StringBuffer, StringListBuffer
+from .pipeline import JPipelineData, JPipelineParser
 
 
 class Resource:
@@ -46,16 +48,18 @@ class Resource:
             Library.framework().MaaResourceDestroy(self._handle)
 
     def post_bundle(self, path: Union[pathlib.Path, str]) -> Job:
-        resid = Library.framework().MaaResourcePostBundle(
+        res_id = Library.framework().MaaResourcePostBundle(
             self._handle, str(path).encode()
         )
-        return Job(resid, self._status, self._wait)
+        return Job(res_id, self._status, self._wait)
 
     def override_pipeline(self, pipeline_override: Dict) -> bool:
+        pipeline_json = json.dumps(pipeline_override, ensure_ascii=False)
+
         return bool(
             Library.framework().MaaResourceOverridePipeline(
                 self._handle,
-                json.dumps(pipeline_override, ensure_ascii=False).encode(),
+                pipeline_json.encode(),
             )
         )
 
@@ -69,13 +73,12 @@ class Resource:
             )
         )
 
-    def get_node_data(self, name: str) -> Optional[dict]:
+    def get_node_data(self, name: str) -> Optional[Dict]:
         string_buffer = StringBuffer()
         if not Library.framework().MaaResourceGetNodeData(
             self._handle, name.encode(), string_buffer._handle
         ):
             return None
-
         data = string_buffer.get()
         if not data:
             return None
@@ -84,6 +87,14 @@ class Resource:
             return json.loads(data)
         except json.JSONDecodeError:
             return None
+
+    def get_node_object(self, name: str) -> Optional[JPipelineData]:
+        node_data = self.get_node_data(name)
+
+        if not node_data:
+            return None
+
+        return JPipelineParser.parse_pipeline_data(node_data)
 
     @property
     def loaded(self) -> bool:

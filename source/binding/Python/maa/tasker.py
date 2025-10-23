@@ -157,9 +157,11 @@ class Tasker:
 
     @staticmethod
     def _gen_post_param(entry: str, pipeline_override: Dict) -> Tuple[bytes, bytes]:
+        pipeline_json = json.dumps(pipeline_override, ensure_ascii=False)
+
         return (
             entry.encode(),
-            json.dumps(pipeline_override, ensure_ascii=False).encode(),
+            pipeline_json.encode(),
         )
 
     def _gen_task_job(self, taskid: MaaTaskId) -> JobWithResult:
@@ -178,7 +180,7 @@ class Tasker:
 
     def get_recognition_detail(self, reco_id: int) -> Optional[RecognitionDetail]:
         name = StringBuffer()
-        algorithm = StringBuffer()
+        algorithm = StringBuffer()  # type: ignore
         hit = MaaBool()
         box = RectBuffer()
         detail_json = StringBuffer()
