@@ -88,3 +88,25 @@ struct Win32ControllerImpl : public ControllerImpl
     static void init_proto(maajs::ObjectType proto, maajs::FunctionType ctor);
 };
 
+struct CustomControllerContext
+{
+    std::map<std::string, maajs::CallbackContext*> callbacks;
+
+    ~CustomControllerContext();
+    void add_bind(maajs::EnvType env, std::string name, std::string func_name, std::shared_ptr<maajs::ObjectRefType> actor);
+    void gc_mark(maajs::NativeMarkerFunc marker);
+};
+
+struct CustomControllerImpl : public ControllerImpl
+{
+    std::shared_ptr<maajs::ObjectRefType> actor;
+    std::unique_ptr<CustomControllerContext> context;
+
+    using ControllerImpl::ControllerImpl;
+
+    constexpr static char name[] = "CustomController";
+
+    virtual void gc_mark(maajs::NativeMarkerFunc marker) override;
+    static CustomControllerImpl* ctor(const maajs::CallbackInfo&);
+    static void init_proto(maajs::ObjectType proto, maajs::FunctionType ctor);
+};

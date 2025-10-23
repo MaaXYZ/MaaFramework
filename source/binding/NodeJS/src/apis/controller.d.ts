@@ -147,6 +147,43 @@ declare global {
 
             static find(): Promise<DesktopDevice[] | null>
         }
+
+        interface CustomControllerActor {
+            connect?(): maa.MaybePromise<boolean>
+            request_uuid?(): maa.MaybePromise<string | null>
+            start_app?(intent: string): maa.MaybePromise<boolean>
+            stop_app?(intent: string): maa.MaybePromise<boolean>
+            screencap?(): maa.MaybePromise<maa.ImageData | null>
+            click?(x: number, y: number): maa.MaybePromise<boolean>
+            swipe?(
+                x1: number,
+                y1: number,
+                x2: number,
+                y2: number,
+                duration: number
+            ): maa.MaybePromise<boolean>
+            touch_down?(
+                contact: number,
+                x: number,
+                y: number,
+                pressure: number
+            ): maa.MaybePromise<boolean>
+            touch_move?(
+                contact: number,
+                x: number,
+                y: number,
+                pressure: number
+            ): maa.MaybePromise<boolean>
+            touch_up?(contact: number): maa.MaybePromise<boolean>
+            click_key?(keycode: number): maa.MaybePromise<boolean>
+            input_text?(text: string): maa.MaybePromise<boolean>
+            key_down?(keycode: number): maa.MaybePromise<boolean>
+            key_up?(keycode: number): maa.MaybePromise<boolean>
+        }
+
+        class CustomController extends Controller {
+            constructor(actor: CustomControllerActor)
+        }
     }
 }
 

@@ -19,6 +19,8 @@ inline WeakObjectRefType WeakRefObject(ObjectType val);
 inline ValueType ThrowTypeError(EnvType env, const std::string& err);
 inline FunctionType
     MakeFunction(EnvType env, const char* name, int argc, RawCallback func, std::function<void(NativeMarkerFunc)> run_marker = nullptr);
+inline FunctionType MakeFunction(EnvType env, const char* name, int argc, RawCallback func, std::shared_ptr<ObjectRefType> capture);
+
 inline std::tuple<PromiseType, std::shared_ptr<FunctionRefType>, std::shared_ptr<FunctionRefType>> MakePromise(EnvType env);
 
 inline void BindValue(ObjectType object, const char* prop, ValueType value);

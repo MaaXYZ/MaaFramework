@@ -9,3 +9,13 @@
 #ifdef MAA_JS_IMPL_IS_QUICKJS
 #include "quickjs/instric.impl.h" // IWYU pragma: export
 #endif
+
+namespace maajs
+{
+
+inline FunctionType MakeFunction(EnvType env, const char* name, int argc, RawCallback func, std::shared_ptr<ObjectRefType> capture)
+{
+    return MakeFunction(env, name, argc, func, [capture](auto marker) { marker(capture->Value()); });
+}
+
+}

@@ -3,6 +3,7 @@
 #include <functional>
 #include <future>
 
+#include "../convert.h"
 #include "../types.h"
 #include "bridge.h"
 
@@ -66,6 +67,17 @@ struct CallbackContext
             }
         });
         return future.get();
+    }
+
+    template <typename Result>
+    Result Call(std::function<ValueType(FunctionType)> caller)
+    {
+        if constexpr (std::is_same_v<Result, void>) {
+            Call<void>(caller, [](maajs::ValueType) {});
+        }
+        else {
+            return Call<Result>(caller, [](maajs::ValueType result) -> Result { return maajs::JSConvert<Result>::from_value(result); });
+        }
     }
 };
 

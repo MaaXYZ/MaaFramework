@@ -362,3 +362,104 @@ maajs::ValueType load_win32_controller(maajs::EnvType env)
     ExtContext::get(env)->win32ControllerCtor = maajs::PersistentFunction(ctor);
     return ctor;
 }
+
+CustomControllerContext::~CustomControllerContext()
+{
+    for (const auto& [_, ctx] : callbacks) {
+        delete ctx;
+    }
+}
+
+void CustomControllerContext::add_bind(
+    maajs::EnvType env,
+    std::string name,
+    std::string func_name,
+    std::shared_ptr<maajs::ObjectRefType> actor)
+{
+    callbacks[name] = new maajs::CallbackContext(
+        maajs::MakeFunction(
+            env,
+            func_name.c_str(),
+            0,
+            [actor, name](const auto& info) -> maajs::ValueType {
+                auto func = actor->Value()[name].AsValue();
+                if (func.IsFunction()) {
+                    std::vector<maajs::ValueType> args;
+                    args.reserve(info.Length());
+                    for (size_t i = 0; i < info.Length(); i++) {
+                        args.push_back(info[i]);
+                    }
+                    return func.As<maajs::FunctionType>().Call(actor->Value(), args);
+                }
+                else {
+                    return maajs::BooleanType::New(info.Env(), false);
+                }
+            },
+            actor),
+        func_name.c_str());
+}
+
+void CustomControllerContext::gc_mark(maajs::NativeMarkerFunc marker)
+{
+    for (const auto& [_, ctx] : callbacks) {
+        marker(ctx->fn);
+    }
+}
+
+void CustomControllerImpl::gc_mark(maajs::NativeMarkerFunc marker)
+{
+    ControllerImpl::gc_mark(marker);
+
+    if (actor) {
+        marker(actor->Value());
+    }
+    if (context) {
+        context->gc_mark(marker);
+    }
+}
+
+CustomControllerImpl* CustomControllerImpl::ctor(const maajs::CallbackInfo& info)
+{
+    if (info.Length() != 1) {
+        return nullptr;
+    }
+
+    auto actor = std::make_shared<maajs::ObjectRefType>(maajs::PersistentObject(info[0].As<maajs::ObjectType>()));
+    auto context = std::make_unique<CustomControllerContext>();
+    auto ctrl = MaaCustomControllerCreate(&CustomCallbacks, context.get());
+    if (!ctrl) {
+        return nullptr;
+    }
+
+    context->add_bind(info.Env(), "connect", "CustomConnect", actor);
+    context->add_bind(info.Env(), "request_uuid", "CustomRequestUuid", actor);
+    context->add_bind(info.Env(), "start_app", "CustomStartApp", actor);
+    context->add_bind(info.Env(), "stop_app", "CustomStopApp", actor);
+    context->add_bind(info.Env(), "screencap", "CustomScreencap", actor);
+    context->add_bind(info.Env(), "click", "CustomClick", actor);
+    context->add_bind(info.Env(), "swipe", "CustomSwipe", actor);
+    context->add_bind(info.Env(), "touch_down", "CustomTouchDown", actor);
+    context->add_bind(info.Env(), "touch_move", "CustomTouchMove", actor);
+    context->add_bind(info.Env(), "touch_up", "CustomTouchUp", actor);
+    context->add_bind(info.Env(), "click_key", "CustomClickKey", actor);
+    context->add_bind(info.Env(), "input_text", "CustomInputText", actor);
+    context->add_bind(info.Env(), "key_down", "CustomKeyDown", actor);
+    context->add_bind(info.Env(), "key_up", "CustomKeyUp", actor);
+
+    auto impl = new CustomControllerImpl(ctrl, true);
+    impl->actor = actor;
+    impl->context = std::move(context);
+    return impl;
+}
+
+void CustomControllerImpl::init_proto(maajs::ObjectType, maajs::FunctionType)
+{
+}
+
+maajs::ValueType load_custom_controller(maajs::EnvType env)
+{
+    maajs::FunctionType ctor;
+    maajs::NativeClass<CustomControllerImpl>::init<ControllerImpl>(env, ctor, &ExtContext::get(env)->controllerCtor);
+    ExtContext::get(env)->win32ControllerCtor = maajs::PersistentFunction(ctor);
+    return ctor;
+}

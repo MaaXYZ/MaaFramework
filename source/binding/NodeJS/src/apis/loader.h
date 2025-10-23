@@ -15,6 +15,7 @@ maajs::ValueType load_image_job(maajs::EnvType env);
 maajs::ValueType load_controller(maajs::EnvType env);
 maajs::ValueType load_adb_controller(maajs::EnvType env);
 maajs::ValueType load_win32_controller(maajs::EnvType env);
+maajs::ValueType load_custom_controller(maajs::EnvType env);
 
 maajs::ValueType load_task_job(maajs::EnvType env);
 maajs::ValueType load_tasker(maajs::EnvType env);
