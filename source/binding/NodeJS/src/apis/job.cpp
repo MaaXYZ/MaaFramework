@@ -84,7 +84,7 @@ maajs::PromiseType JobImpl::wait(maajs::ValueType self, maajs::EnvType)
 
                     return retProHolder;
                 },
-                [newProPtr](auto marker) { marker(newProPtr->Value()); }));
+                newProPtr));
     }
 
     return newPro;

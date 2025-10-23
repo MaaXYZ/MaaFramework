@@ -18,4 +18,9 @@ inline FunctionType MakeFunction(EnvType env, const char* name, int argc, RawCal
     return MakeFunction(env, name, argc, func, [capture](auto marker) { marker(capture->Value()); });
 }
 
+inline FunctionType MakeFunction(EnvType env, const char* name, int argc, RawCallback func, std::shared_ptr<FunctionRefType> capture)
+{
+    return MakeFunction(env, name, argc, func, [capture](auto marker) { marker(capture->Value()); });
+}
+
 }

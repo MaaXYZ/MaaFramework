@@ -17,7 +17,7 @@ inline PromiseType
             "",
             1,
             [capturePtr, action = std::move(action)](const CallbackInfo& info) { return action(info, capturePtr->Value()); },
-            [capturePtr](auto marker) { marker(capturePtr->Value()); }));
+            capturePtr));
 }
 
 inline PromiseType
@@ -30,7 +30,7 @@ inline PromiseType
             "",
             1,
             [capturePtr, action = std::move(action)](const CallbackInfo& info) { return action(info, capturePtr->Value()); },
-            [capturePtr](auto marker) { marker(capturePtr->Value()); }));
+            capturePtr));
 }
 
 inline PromiseType PromiseAll(EnvType env, std::vector<ValueType> pros)
