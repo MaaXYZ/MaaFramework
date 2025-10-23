@@ -126,10 +126,10 @@ class Context:
     def get_node_object(self, name: str) -> Optional[JPipelineData]:
         node_data = self.get_node_data(name)
 
-        if node_data is not None:
-            return JPipelineParser.parse_pipeline_data(node_data)
-        else:
+        if not node_data:
             return None
+
+        return JPipelineParser.parse_pipeline_data(node_data)
 
     @property
     def tasker(self) -> Tasker:

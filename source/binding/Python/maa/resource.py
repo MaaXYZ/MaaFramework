@@ -72,21 +72,28 @@ class Resource:
             )
         )
 
-    def get_node_data(self, name: str) -> Optional[JPipelineData]:
+    def get_node_data(self, name: str) -> Optional[Dict]:
         string_buffer = StringBuffer()
         if not Library.framework().MaaResourceGetNodeData(
             self._handle, name.encode(), string_buffer._handle
         ):
             return None
-
         data = string_buffer.get()
         if not data:
             return None
 
         try:
-            return JPipelineParser.parse_pipeline_data(data)
-        except (ValueError, TypeError):
+            return json.loads(data)
+        except json.JSONDecodeError:
             return None
+
+    def get_node_object(self, name: str) -> Optional[JPipelineData]:
+        node_data = self.get_node_data(name)
+
+        if not node_data:
+            return None
+
+        return JPipelineParser.parse_pipeline_data(node_data)
 
     @property
     def loaded(self) -> bool:
