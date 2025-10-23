@@ -64,8 +64,8 @@ class MyRecognition(CustomRecognition):
         node_obj = new_ctx.get_node_object(argv.node_name)
         print(f"node_data: {node_data}, node_obj: {node_obj}")
 
-        res_node_data = new_ctx.tasker.resource.get_node_data("Rec")
-        res_node_obj = new_ctx.tasker.resource.get_node_object("Rec")
+        res_node_data = new_ctx.tasker.resource.get_node_data(argv.node_name)
+        res_node_obj = new_ctx.tasker.resource.get_node_object(argv.node_name)
         print(f"res_node_data: {res_node_data}, res_node_obj: {res_node_obj}")
 
         node_detail = new_ctx.tasker.get_latest_node("ColorMatch")
