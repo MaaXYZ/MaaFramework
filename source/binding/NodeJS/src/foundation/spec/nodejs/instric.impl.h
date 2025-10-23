@@ -102,6 +102,17 @@ inline ObjectType CallCtor(const FunctionRefType& ctor, std::vector<ValueType> a
     return ctor.New(rawArgs);
 }
 
+inline bool IsError(ValueType val)
+{
+    bool isError = false;
+    return napi_ok == napi_is_error(val.Env(), val, &isError) && isError;
+}
+
+inline std::string ClassName(ObjectType val)
+{
+    return val["constructor"].AsValue().As<ObjectType>()["name"].AsValue().As<StringType>().Utf8Value();
+}
+
 inline std::string TypeOf(ValueType val)
 {
     switch (val.Type()) {
@@ -118,7 +129,20 @@ inline std::string TypeOf(ValueType val)
     case napi_symbol:
         return "symbol";
     case napi_object:
-        return "object";
+        if (IsError(val)) {
+            return std::format("error[{}]", ClassName(val.As<ObjectType>()));
+        }
+        else if (val.IsArray()) {
+            return "array";
+        }
+        else if (val.IsArrayBuffer()) {
+            return "arraybuffer";
+        }
+        else {
+            return std::format(
+                "object[{}]",
+                val.As<ObjectType>()["constructor"].AsValue().As<ObjectType>()["name"].AsValue().As<StringType>().Utf8Value());
+        }
     case napi_function:
         return "function";
     case napi_external:
@@ -131,13 +155,16 @@ inline std::string TypeOf(ValueType val)
 
 inline std::string DumpValue(ValueType val)
 {
-    if (val.IsExternal()) {
+    if (IsError(val)) {
+        return std::format("{} [{}]", val.As<ObjectType>()["message"].AsValue().As<StringType>().Utf8Value(), TypeOf(val));
+    }
+    else if (val.IsExternal()) {
         return "[external]";
     }
     else {
         std::string descStr = val.ToString().Utf8Value();
-        if (descStr.length() > 20) {
-            descStr = descStr.substr(0, 17) + "...";
+        if (descStr.length() > 50) {
+            descStr = descStr.substr(0, 47) + "...";
         }
         return std::format("{} [{}]", descStr, TypeOf(val));
     }

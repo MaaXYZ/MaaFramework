@@ -313,6 +313,7 @@ struct JSConvert<std::vector<Type>>
             for (const auto& v : vals) {
                 result.push_back(JSConvert<Type>::from_value(v));
             }
+            return result;
         }
         throw MaaError { std::format("expect {}, got {}", name(), DumpValue(val)) };
     }

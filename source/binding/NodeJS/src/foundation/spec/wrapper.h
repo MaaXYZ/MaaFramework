@@ -63,7 +63,7 @@ inline std::vector<ValueType> WrapArgs(EnvType env, Args&&... args)
 }
 
 template <typename ArgsTuple, typename Self = void>
-inline ArgsTuple UnWrapArgs(const CallbackInfo& info)
+inline ArgsTuple UnWrapArgs(const CallbackInfo& info, bool append_sig = true)
 {
     constexpr size_t arg_count = std::tuple_size_v<ArgsTuple>;
 
@@ -71,15 +71,11 @@ inline ArgsTuple UnWrapArgs(const CallbackInfo& info)
     constexpr size_t min_count = arg_count - opt_count;
 
     if (info.Length() < min_count || info.Length() > arg_count) {
-        throw MaaError {
-            std::format(
-                "expect {} ~ {} arguments, got {}\n    Sig: {}\n    Got: {}",
-                min_count,
-                arg_count,
-                info.Length(),
-                DumpExpectNames<ArgsTuple, Self>(),
-                DumpCallParams(info)),
-        };
+        std::string errStr = std::format("expect {} ~ {} arguments, got {}", min_count, arg_count, info.Length());
+        if (append_sig) {
+            errStr = std::format("{}\n    Sig: {}\n    Got: {}", errStr, DumpExpectNames<ArgsTuple, Self>(), DumpCallParams(info));
+        }
+        throw MaaError { errStr };
     }
 
     try {
@@ -96,9 +92,14 @@ inline ArgsTuple UnWrapArgs(const CallbackInfo& info)
         return params;
     }
     catch (const MaaError& err) {
-        throw MaaError {
-            std::format("{}\n    Sig: {}\n    Got: {}", err.what(), DumpExpectNames<ArgsTuple>(), DumpCallParams(info)),
-        };
+        if (append_sig) {
+            throw MaaError {
+                std::format("{}\n    Sig: {}\n    Got: {}", err.what(), DumpExpectNames<ArgsTuple, Self>(), DumpCallParams(info)),
+            };
+        }
+        else {
+            throw;
+        }
     }
 }
 
@@ -117,7 +118,7 @@ struct WrapFunctionHelper
     {
         return +[](const CallbackInfo& info) {
             try {
-                auto params = UnWrapArgs<Args, Self>(info);
+                auto params = UnWrapArgs<Args, Self>(info, false);
 
                 ValueType ret = info.Env().Undefined();
 

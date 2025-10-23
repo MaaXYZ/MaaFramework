@@ -36,6 +36,8 @@ inline void BindGetterSetter(
 
 inline ObjectType CallCtor(FunctionType ctor, std::vector<ValueType> args);
 
+inline bool IsError(ValueType val);
+inline std::string ClassName(ObjectType val);
 inline std::string TypeOf(ValueType val);
 inline std::string DumpValue(ValueType val);
 

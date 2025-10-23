@@ -287,6 +287,17 @@ void ControllerImpl::init_proto(maajs::ObjectType proto, maajs::FunctionType)
     MAA_BIND_SETTER(proto, "screenshot_use_raw_size", ControllerImpl::set_screenshot_use_raw_size);
     MAA_BIND_FUNC(proto, "clear_sinks", ControllerImpl::clear_sinks);
     MAA_BIND_FUNC(proto, "post_connection", ControllerImpl::post_connection);
+    MAA_BIND_FUNC(proto, "post_click", ControllerImpl::post_click);
+    MAA_BIND_FUNC(proto, "post_swipe", ControllerImpl::post_swipe);
+    MAA_BIND_FUNC(proto, "post_click_key", ControllerImpl::post_click_key);
+    MAA_BIND_FUNC(proto, "post_input_text", ControllerImpl::post_input_text);
+    MAA_BIND_FUNC(proto, "post_start_app", ControllerImpl::post_start_app);
+    MAA_BIND_FUNC(proto, "post_stop_app", ControllerImpl::post_stop_app);
+    MAA_BIND_FUNC(proto, "post_touch_down", ControllerImpl::post_touch_down);
+    MAA_BIND_FUNC(proto, "post_touch_move", ControllerImpl::post_touch_move);
+    MAA_BIND_FUNC(proto, "post_touch_up", ControllerImpl::post_touch_up);
+    MAA_BIND_FUNC(proto, "post_key_down", ControllerImpl::post_key_down);
+    MAA_BIND_FUNC(proto, "post_key_up", ControllerImpl::post_key_up);
     MAA_BIND_FUNC(proto, "post_screencap", ControllerImpl::post_screencap);
     MAA_BIND_FUNC(proto, "status", ControllerImpl::status);
     MAA_BIND_FUNC(proto, "wait", ControllerImpl::wait);

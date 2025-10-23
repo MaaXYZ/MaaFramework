@@ -14,7 +14,11 @@ ContextImpl::ContextImpl(MaaContext* ctx)
 {
 }
 
-maajs::PromiseType ContextImpl::run_task(maajs::ValueType self, std::string entry, maajs::OptionalParam<maajs::ValueType> pipeline_override)
+maajs::PromiseType ContextImpl::run_task(
+    maajs::ValueType self,
+    maajs::EnvType,
+    std::string entry,
+    maajs::OptionalParam<maajs::ValueType> pipeline_override)
 {
     auto overr = maajs::JsonStringify(env, pipeline_override.value_or(maajs::ObjectType::New(env)));
     auto worker = new maajs::AsyncWork<MaaTaskId>(env, [context = context, entry, overr]() {
@@ -30,6 +34,7 @@ maajs::PromiseType ContextImpl::run_task(maajs::ValueType self, std::string entr
 
 maajs::PromiseType ContextImpl::run_recognition(
     maajs::ValueType self,
+    maajs::EnvType,
     std::string entry,
     maajs::ArrayBufferType image,
     maajs::OptionalParam<maajs::ValueType> pipeline_override)
@@ -50,6 +55,7 @@ maajs::PromiseType ContextImpl::run_recognition(
 
 maajs::PromiseType ContextImpl::run_action(
     maajs::ValueType self,
+    maajs::EnvType,
     std::string entry,
     MaaRect box,
     std::string reco_detail,

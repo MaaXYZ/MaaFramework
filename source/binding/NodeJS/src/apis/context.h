@@ -16,14 +16,17 @@ struct ContextImpl : public maajs::NativeClassBase
     ContextImpl() = default;
     ContextImpl(MaaContext* ctx);
 
-    maajs::PromiseType run_task(maajs::ValueType self, std::string entry, maajs::OptionalParam<maajs::ValueType> pipeline_override);
+    maajs::PromiseType
+        run_task(maajs::ValueType self, maajs::EnvType env, std::string entry, maajs::OptionalParam<maajs::ValueType> pipeline_override);
     maajs::PromiseType run_recognition(
         maajs::ValueType self,
+        maajs::EnvType env,
         std::string entry,
         maajs::ArrayBufferType image,
         maajs::OptionalParam<maajs::ValueType> pipeline_override);
     maajs::PromiseType run_action(
         maajs::ValueType self,
+        maajs::EnvType env,
         std::string entry,
         MaaRect box,
         std::string reco_detail,

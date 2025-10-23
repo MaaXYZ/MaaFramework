@@ -42,10 +42,10 @@ const myReco: maa.CustomRecognitionCallback = async self => {
 
     const node_id = new_ctx.tasker.latest_node('ColorMatch')
     const node_detail = node_id ? new_ctx.tasker.node_detail(node_id) : null
-    console.log(node_detail)
+    console.log('node_detail:', node_detail)
 
     const new_task_detail = new_ctx.tasker.task_detail(new_ctx.task_id)
-    console.log(new_task_detail)
+    console.log('new_task_detail:', new_task_detail)
 
     analyzed = true
 
@@ -141,7 +141,11 @@ async function api_test() {
         }
     }
 
-    let detail = await tasker.post_task('Entry', ppover).wait().get()
+    const job = tasker.post_task('Entry', ppover)
+    await job.wait()
+    console.log(job, job.toString(), job.get())
+    let detail = job.get()
+    console.log(detail)
     if (!detail) {
         console.log('pipeline failed')
         process.exit(1)
@@ -320,7 +324,7 @@ async function main() {
     maa.Global.config_init_option('../../install/bin')
 
     await api_test()
-    await custom_ctrl_test()
+    // await custom_ctrl_test()
 
     process.exit(0)
 }

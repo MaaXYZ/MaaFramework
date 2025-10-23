@@ -56,22 +56,24 @@ inline Ret CallMemberHelper(ObjectType object, const char* prop, Args&&... args)
 template <typename Inherit>
 inline void NativeClass<Inherit>::bind_to_string(ObjectType proto)
 {
-    maajs::BindValue(
-        proto,
-        "toString",
-        maajs::MakeFunction(
-            proto.Env(),
-            std::format("{}.toString", Inherit::name).c_str(),
-            0,
-            +[](const CallbackInfo& info) {
-                auto impl = NativeClass<Inherit>::take(info.This());
-                if (!impl) {
-                    return StringType::New(info.Env(), std::format("{} {{}}", TypeOf(info.This())));
-                }
-                else {
-                    return StringType::New(info.Env(), std::format("{} {{{}}}", Inherit::name, impl->to_string()));
-                }
-            }));
+    auto func = maajs::MakeFunction(
+        proto.Env(),
+        std::format("{}.toString", Inherit::name).c_str(),
+        0,
+        +[](const CallbackInfo& info) {
+            auto impl = NativeClass<Inherit>::take(info.This());
+            if (!impl) {
+                return StringType::New(info.Env(), std::format("{} {{}}", TypeOf(info.This())));
+            }
+            else {
+                return StringType::New(info.Env(), std::format("{} {{{}}}", Inherit::name, impl->to_string()));
+            }
+        });
+    maajs::BindValue(proto, "toString", func);
+#ifdef MAA_JS_IMPL_IS_NODEJS
+    // 虽然是接受三个参数, 但是无所谓了
+    proto.DefineProperty(Napi::PropertyDescriptor::Value(Napi::Symbol::For(proto.Env(), "nodejs.util.inspect.custom"), func));
+#endif
 }
 
 }

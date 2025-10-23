@@ -11,7 +11,12 @@ struct MaaError : public std::exception
 {
     std::string error;
 
-    MaaError(std::string&& err = "")
+    MaaError(const std::string& err)
+        : error(err)
+    {
+    }
+
+    MaaError(std::string&& err)
         : error(err)
     {
     }

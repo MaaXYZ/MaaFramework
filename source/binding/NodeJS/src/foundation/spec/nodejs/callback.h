@@ -78,7 +78,15 @@ struct CallbackContext
             Call<void>(caller, [](maajs::ValueType) {});
         }
         else {
-            return Call<Result>(caller, [](maajs::ValueType result) -> Result { return maajs::JSConvert<Result>::from_value(result); });
+            return Call<Result>(caller, [](maajs::ValueType result) -> Result {
+                try {
+                    return maajs::JSConvert<Result>::from_value(result);
+                }
+                catch (const maajs::MaaError& err) {
+                    std::cerr << err.what() << std::endl;
+                    return {};
+                }
+            });
         }
     }
 };

@@ -11,7 +11,7 @@
 
 maajs::ValueType TaskJobImpl::get()
 {
-    return source.Value()["cached_image"];
+    return maajs::CallMemberHelper<maajs::ValueType>(source.Value(), "task_detail", id);
 }
 
 TaskJobImpl* TaskJobImpl::ctor(const maajs::CallbackInfo& info)

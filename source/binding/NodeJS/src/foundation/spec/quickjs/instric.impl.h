@@ -194,6 +194,16 @@ inline ObjectType CallCtor(FunctionType ctor, std::vector<ValueType> args)
     return { ctor.Env(), result };
 }
 
+inline bool IsError(ValueType val)
+{
+    return JS_IsError(val.context, val.peek());
+}
+
+inline std::string ClassName(ObjectType val)
+{
+    return val["constructor"].AsValue().As<ObjectType>()["name"].AsValue().As<StringType>().Utf8Value();
+}
+
 inline std::string TypeOf(ValueType val)
 {
     switch (val.value.tag) {
@@ -211,13 +221,20 @@ inline std::string TypeOf(ValueType val)
     case JS_TAG_SYMBOL:
         return "symbol";
     case JS_TAG_OBJECT:
-        if (val.IsFunction()) {
+        if (IsError(val)) {
+            return std::format("error[{}]", ClassName(val.As<ObjectType>()));
+        }
+        else if (val.IsFunction()) {
             return "function";
         }
+        else if (val.IsArray()) {
+            return "array";
+        }
+        else if (val.IsArrayBuffer()) {
+            return "arraybuffer";
+        }
         else {
-            return std::format(
-                "object[{}]",
-                val.As<ObjectType>()["constructor"].AsValue().As<ObjectType>()["name"].AsValue().As<StringType>().Utf8Value());
+            return std::format("object[{}]", ClassName(val.As<ObjectType>()));
         }
     case JS_TAG_BIG_INT:
     case JS_TAG_SHORT_BIG_INT:
@@ -230,9 +247,13 @@ inline std::string TypeOf(ValueType val)
 
 inline std::string DumpValue(ValueType val)
 {
+    if (IsError(val)) {
+        return val.As<ObjectType>()["message"].AsValue().As<StringType>().Utf8Value();
+    }
+
     std::string descStr = val.ToString().Utf8Value();
-    if (descStr.length() > 20) {
-        descStr = descStr.substr(0, 17) + "...";
+    if (descStr.length() > 50) {
+        descStr = descStr.substr(0, 47) + "...";
     }
     return std::format("{} [{}]", descStr, TypeOf(val));
 }
