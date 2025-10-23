@@ -22,10 +22,23 @@ declare global {
             detail?: string | Record<string, unknown> // Custom
         }
 
-        type RecoDetail = {
+        type RecoDetailObject = {
             all: RecoDetailEntry[]
             filtered: RecoDetailEntry[]
             best: RecoDetailEntry | null
+        }
+
+        type RecoDetailWithoutDraws = {
+            name: string
+            algorithm: string
+            hit: boolean
+            box: Rect
+            detail: RecoDetailObject
+        }
+
+        type RecoDetail = RecoDetailWithoutDraws & {
+            raw: ArrayBuffer
+            draws: ArrayBuffer[]
         }
 
         type TaskerNotify = {
