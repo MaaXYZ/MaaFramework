@@ -363,6 +363,28 @@ maajs::ValueType load_win32_controller(maajs::EnvType env)
     return ctor;
 }
 
+DbgControllerImpl* DbgControllerImpl::ctor(const maajs::CallbackInfo& info)
+{
+    auto [read_path, write_path, type, config] = maajs::UnWrapArgs<DbgControllerCtorParam, void>(info);
+    auto ctrl = MaaDbgControllerCreate(read_path.c_str(), write_path.c_str(), type, config.c_str());
+    if (!ctrl) {
+        return nullptr;
+    }
+    return new DbgControllerImpl(ctrl, true);
+}
+
+void DbgControllerImpl::init_proto(maajs::ObjectType, maajs::FunctionType)
+{
+}
+
+maajs::ValueType load_dbg_controller(maajs::EnvType env)
+{
+    maajs::FunctionType ctor;
+    maajs::NativeClass<DbgControllerImpl>::init<ControllerImpl>(env, ctor, &ExtContext::get(env)->controllerCtor);
+    ExtContext::get(env)->dbgControllerCtor = maajs::PersistentFunction(ctor);
+    return ctor;
+}
+
 CustomControllerContext::~CustomControllerContext()
 {
     for (const auto& [_, ctx] : callbacks) {

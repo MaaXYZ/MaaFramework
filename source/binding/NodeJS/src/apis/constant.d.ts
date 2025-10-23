@@ -22,6 +22,7 @@ declare global {
             ScreencapOrInputMethods
         >
         const Win32InputMethod: Record<'Seize' | 'SendMessage', ScreencapOrInputMethods>
+        const DbgControllerType: Record<'CarouselImage' | 'ReplayRecording', Uint64>
     }
 }
 export {}

@@ -88,6 +88,7 @@ struct ExtContext : public maajs::NativeClassBase
     maajs::FunctionRefType controllerCtor;
     maajs::FunctionRefType adbControllerCtor;
     maajs::FunctionRefType win32ControllerCtor;
+    maajs::FunctionRefType dbgControllerCtor;
     maajs::FunctionRefType customControllerCtor;
     maajs::FunctionRefType taskJobCtor;
     maajs::FunctionRefType taskerCtor;
@@ -108,6 +109,7 @@ struct ExtContext : public maajs::NativeClassBase
         marker(controllerCtor.Value());
         marker(adbControllerCtor.Value());
         marker(win32ControllerCtor.Value());
+        marker(dbgControllerCtor.Value());
         marker(customControllerCtor.Value());
         marker(taskJobCtor.Value());
         marker(taskerCtor.Value());

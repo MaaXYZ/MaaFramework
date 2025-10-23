@@ -72,6 +72,16 @@ static maajs::ValueType load_win32_input_method(maajs::EnvType env)
     return obj;
 }
 
+static maajs::ValueType load_dbg_controller_type(maajs::EnvType env)
+{
+    auto obj = maajs::ObjectType::New(env);
+
+    DEM(MaaDbgControllerType, CarouselImage);
+    DEM(MaaDbgControllerType, ReplayRecording);
+
+    return obj;
+}
+
 std::map<std::string, maajs::ValueType> load_constant(maajs::EnvType env)
 {
     return {
@@ -80,5 +90,6 @@ std::map<std::string, maajs::ValueType> load_constant(maajs::EnvType env)
         { "AdbInputMethod", load_adb_input_method(env) },
         { "Win32ScreencapMethod", load_win32_screencap_method(env) },
         { "Win32InputMethod", load_win32_input_method(env) },
+        { "DbgControllerType", load_dbg_controller_type(env) },
     };
 }

@@ -88,6 +88,18 @@ struct Win32ControllerImpl : public ControllerImpl
     static void init_proto(maajs::ObjectType proto, maajs::FunctionType ctor);
 };
 
+using DbgControllerCtorParam = std::tuple<std::string, std::string, MaaDbgControllerType, std::string>;
+
+struct DbgControllerImpl : public ControllerImpl
+{
+    using ControllerImpl::ControllerImpl;
+
+    constexpr static char name[] = "DbgController";
+
+    static DbgControllerImpl* ctor(const maajs::CallbackInfo&);
+    static void init_proto(maajs::ObjectType proto, maajs::FunctionType ctor);
+};
+
 struct CustomControllerContext
 {
     std::map<std::string, maajs::CallbackContext*> callbacks;

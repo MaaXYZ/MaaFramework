@@ -148,6 +148,15 @@ declare global {
             static find(): Promise<DesktopDevice[] | null>
         }
 
+        class DbgController extends Controller {
+            constructor(
+                read_path: string,
+                write_path: string,
+                type: Uint64, // DbgControllerType
+                config: string
+            )
+        }
+
         interface CustomControllerActor {
             connect?(): maa.MaybePromise<boolean>
             request_uuid?(): maa.MaybePromise<string | null>
