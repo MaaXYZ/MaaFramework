@@ -37,6 +37,18 @@ struct ControllerImpl : public maajs::NativeClassBase
     void set_screenshot_target_short_side(int32_t value);
     void set_screenshot_use_raw_size(bool value);
     maajs::ValueType post_connection(maajs::ValueType self, maajs::EnvType env);
+    maajs::ValueType post_click(maajs::ValueType self, maajs::EnvType env, int32_t x, int32_t y);
+    maajs::ValueType
+        post_swipe(maajs::ValueType self, maajs::EnvType env, int32_t x1, int32_t y1, int32_t x2, int32_t y2, int32_t duration);
+    maajs::ValueType post_click_key(maajs::ValueType self, maajs::EnvType env, int32_t keycode);
+    maajs::ValueType post_input_text(maajs::ValueType self, maajs::EnvType env, std::string text);
+    maajs::ValueType post_start_app(maajs::ValueType self, maajs::EnvType env, std::string intent);
+    maajs::ValueType post_stop_app(maajs::ValueType self, maajs::EnvType env, std::string intent);
+    maajs::ValueType post_touch_down(maajs::ValueType self, maajs::EnvType env, int32_t contact, int32_t x, int32_t y, int32_t pressure);
+    maajs::ValueType post_touch_move(maajs::ValueType self, maajs::EnvType env, int32_t contact, int32_t x, int32_t y, int32_t pressure);
+    maajs::ValueType post_touch_up(maajs::ValueType self, maajs::EnvType env, int32_t contact);
+    maajs::ValueType post_key_down(maajs::ValueType self, maajs::EnvType env, int32_t keycode);
+    maajs::ValueType post_key_up(maajs::ValueType self, maajs::EnvType env, int32_t keycode);
     maajs::ValueType post_screencap(maajs::ValueType self, maajs::EnvType env);
     MaaStatus status(MaaCtrlId id);
     maajs::PromiseType wait(MaaCtrlId id);

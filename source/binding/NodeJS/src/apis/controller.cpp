@@ -126,6 +126,75 @@ maajs::ValueType ControllerImpl::post_connection(maajs::ValueType self, maajs::E
     return maajs::CallCtorHelper(ExtContext::get(env)->jobCtor, self, id);
 }
 
+maajs::ValueType ControllerImpl::post_click(maajs::ValueType self, maajs::EnvType env, int32_t x, int32_t y)
+{
+    auto id = MaaControllerPostClick(controller, x, y);
+    return maajs::CallCtorHelper(ExtContext::get(env)->jobCtor, self, id);
+}
+
+maajs::ValueType
+    ControllerImpl::post_swipe(maajs::ValueType self, maajs::EnvType env, int32_t x1, int32_t y1, int32_t x2, int32_t y2, int32_t duration)
+{
+    auto id = MaaControllerPostSwipe(controller, x1, y1, x2, y2, duration);
+    return maajs::CallCtorHelper(ExtContext::get(env)->jobCtor, self, id);
+}
+
+maajs::ValueType ControllerImpl::post_click_key(maajs::ValueType self, maajs::EnvType env, int32_t keycode)
+{
+    auto id = MaaControllerPostClickKey(controller, keycode);
+    return maajs::CallCtorHelper(ExtContext::get(env)->jobCtor, self, id);
+}
+
+maajs::ValueType ControllerImpl::post_input_text(maajs::ValueType self, maajs::EnvType env, std::string text)
+{
+    auto id = MaaControllerPostInputText(controller, text.c_str());
+    return maajs::CallCtorHelper(ExtContext::get(env)->jobCtor, self, id);
+}
+
+maajs::ValueType ControllerImpl::post_start_app(maajs::ValueType self, maajs::EnvType env, std::string intent)
+{
+    auto id = MaaControllerPostStartApp(controller, intent.c_str());
+    return maajs::CallCtorHelper(ExtContext::get(env)->jobCtor, self, id);
+}
+
+maajs::ValueType ControllerImpl::post_stop_app(maajs::ValueType self, maajs::EnvType env, std::string intent)
+{
+    auto id = MaaControllerPostStopApp(controller, intent.c_str());
+    return maajs::CallCtorHelper(ExtContext::get(env)->jobCtor, self, id);
+}
+
+maajs::ValueType
+    ControllerImpl::post_touch_down(maajs::ValueType self, maajs::EnvType env, int32_t contact, int32_t x, int32_t y, int32_t pressure)
+{
+    auto id = MaaControllerPostTouchDown(controller, contact, x, y, pressure);
+    return maajs::CallCtorHelper(ExtContext::get(env)->jobCtor, self, id);
+}
+
+maajs::ValueType
+    ControllerImpl::post_touch_move(maajs::ValueType self, maajs::EnvType env, int32_t contact, int32_t x, int32_t y, int32_t pressure)
+{
+    auto id = MaaControllerPostTouchMove(controller, contact, x, y, pressure);
+    return maajs::CallCtorHelper(ExtContext::get(env)->jobCtor, self, id);
+}
+
+maajs::ValueType ControllerImpl::post_touch_up(maajs::ValueType self, maajs::EnvType env, int32_t contact)
+{
+    auto id = MaaControllerPostTouchUp(controller, contact);
+    return maajs::CallCtorHelper(ExtContext::get(env)->jobCtor, self, id);
+}
+
+maajs::ValueType ControllerImpl::post_key_down(maajs::ValueType self, maajs::EnvType env, int32_t keycode)
+{
+    auto id = MaaControllerPostKeyDown(controller, keycode);
+    return maajs::CallCtorHelper(ExtContext::get(env)->jobCtor, self, id);
+}
+
+maajs::ValueType ControllerImpl::post_key_up(maajs::ValueType self, maajs::EnvType env, int32_t keycode)
+{
+    auto id = MaaControllerPostKeyUp(controller, keycode);
+    return maajs::CallCtorHelper(ExtContext::get(env)->jobCtor, self, id);
+}
+
 maajs::ValueType ControllerImpl::post_screencap(maajs::ValueType self, maajs::EnvType)
 {
     auto id = MaaControllerPostScreencap(controller);

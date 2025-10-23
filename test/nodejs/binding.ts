@@ -3,8 +3,6 @@ import './maa-client'
 
 import * as fs from 'fs/promises'
 
-/*
-
 let analyzed = false
 let runned = false
 
@@ -69,8 +67,8 @@ const myAct: maa.CustomActionCallback = async self => {
     await ctrl.post_touch_down(1, 100, 100, 0).wait()
     await ctrl.post_touch_move(1, 200, 200, 0).wait()
     await ctrl.post_touch_up(1).wait()
-    ctrl.post_start_app('aaa')
-    ctrl.post_stop_app('bbb')
+    await ctrl.post_start_app('aaa').wait()
+    await ctrl.post_stop_app('bbb').wait()
 
     const cached_image = ctrl.cached_image
     const connected = ctrl.connected
@@ -110,7 +108,7 @@ async function api_test() {
         maa.DbgControllerType.CarouselImage,
         '{}'
     )
-    dbg_controller.add_wrapped_sink(msg => {
+    dbg_controller.add_sink((res, msg) => {
         console.log(msg)
     })
     console.log('controller', dbg_controller)
@@ -205,7 +203,7 @@ async function custom_ctrl_test() {
     // }
 }
 
-class MyController extends maa.CustomControllerActorDefaultImpl {
+class MyController implements maa.CustomControllerActor {
     count = 0
 
     connect(): maa.MaybePromise<boolean> {
@@ -317,7 +315,7 @@ class MyController extends maa.CustomControllerActorDefaultImpl {
 
 async function main() {
     console.log('MaaFw Version:', maa.Global.version)
-    console.log('MaaFw Role', maa.AgentRole)
+    // console.log('MaaFw Role', maa.AgentRole)
 
     maa.Global.config_init_option('../../install/bin')
 
@@ -328,5 +326,3 @@ async function main() {
 }
 
 main()
-
-*/

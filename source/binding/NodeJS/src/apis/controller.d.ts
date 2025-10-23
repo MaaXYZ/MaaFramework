@@ -100,6 +100,33 @@ declare global {
             set screenshot_use_raw_size(value: boolean)
 
             post_connection(): Job<CtrlId, Controller>
+            post_click(x: number, y: number): Job<CtrlId, Controller>
+            post_swipe(
+                x1: number,
+                y1: number,
+                x2: number,
+                y2: number,
+                duration: number
+            ): Job<CtrlId, Controller>
+            post_click_key(keycode: number): Job<CtrlId, Controller>
+            post_input_text(text: string): Job<CtrlId, Controller>
+            post_start_app(intent: string): Job<CtrlId, Controller>
+            post_stop_app(intent: string): Job<CtrlId, Controller>
+            post_touch_down(
+                contact: number,
+                x: number,
+                y: number,
+                pressure: number
+            ): Job<CtrlId, Controller>
+            post_touch_move(
+                contact: number,
+                x: number,
+                y: number,
+                pressure: number
+            ): Job<CtrlId, Controller>
+            post_touch_up(contact: number): Job<CtrlId, Controller>
+            post_key_down(keycode: number): Job<CtrlId, Controller>
+            post_key_up(keycode: number): Job<CtrlId, Controller>
             post_screencap(): ImageJob
             override_pipeline(pipeline: Record<string, unknown> | Record<string, unknown>[]): void
             override_next(node_name: string, next_list: string[]): void
