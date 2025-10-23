@@ -184,14 +184,24 @@ MaaBool CustomScreencap(void* trans_arg, MaaImageBuffer* buffer)
 {
     auto customCtx = reinterpret_cast<CustomControllerContext*>(trans_arg);
     auto ctx = customCtx->callbacks["screencap"];
-    auto result = ctx->Call<std::optional<maajs::ArrayBufferType>>([&](maajs::FunctionType func) { return func.Call({}); });
-    if (result) {
-        ImageBuffer(buffer, false).set(*result);
-        return true;
-    }
-    else {
-        return false;
-    }
+    return ctx->Call<bool>(
+        [&](maajs::FunctionType func) { return func.Call({}); },
+        [buffer](maajs::ValueType result) {
+            try {
+                auto data = maajs::JSConvert<std::optional<maajs::ArrayBufferType>>::from_value(result);
+                if (data) {
+                    ImageBuffer(buffer, false).set(*data);
+                    return true;
+                }
+                else {
+                    return false;
+                }
+            }
+            catch (const maajs::MaaError& err) {
+                std::cerr << err.what() << std::endl;
+                return false;
+            }
+        });
 }
 
 MaaBool CustomClick(int32_t x, int32_t y, void* trans_arg)

@@ -320,7 +320,7 @@ async function main() {
     maa.Global.config_init_option('../../install/bin')
 
     await api_test()
-    // await custom_ctrl_test()
+    await custom_ctrl_test()
 
     process.exit(0)
 }
