@@ -5,7 +5,7 @@ declare global {
                 | 'Resource.Loading.Starting'
                 | 'Resource.Loading.Succeeded'
                 | 'Resource.Loading.Failed'
-            res_id: ResId
+            res_id: number // ResId
             path: string
             hash: string
         }

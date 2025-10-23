@@ -16,7 +16,7 @@ declare global {
                 | 'Controller.Action.Starting'
                 | 'Controller.Action.Succeeded'
                 | 'Controller.Action.Failed'
-            ctrl_id: CtrlId
+            ctrl_id: number // CtrlId
             uuid: string
         } & (
             | {

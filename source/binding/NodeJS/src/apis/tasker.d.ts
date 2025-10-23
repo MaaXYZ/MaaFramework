@@ -43,7 +43,7 @@ declare global {
 
         type TaskerNotify = {
             msg: 'Task.Started' | 'Task.Completed' | 'Task.Failed'
-            task_id: maa.TaskId
+            task_id: number // TaskId
             entry: string
             uuid: string
             hash: string
@@ -52,22 +52,22 @@ declare global {
         type TaskerContextNotify =
             | {
                   msg: 'NextList.Starting' | 'NextList.Succeeded' | 'NextList.Failed'
-                  task_id: maa.TaskId
+                  task_id: number // TaskId
                   name: string
                   list: string[]
                   focus: unknown
               }
             | {
                   msg: 'Recognition.Starting' | 'Recognition.Succeeded' | 'Recognition.Failed'
-                  task_id: maa.TaskId
-                  reco_id: maa.RecoId
+                  task_id: number // TaskId
+                  reco_id: number // RecoId
                   name: string
                   focus: unknown
               }
             | {
                   msg: 'Action.Starting' | 'Action.Succeeded' | 'Action.Failed'
-                  task_id: maa.TaskId
-                  node_id: maa.NodeId
+                  task_id: number // TaskId
+                  node_id: number // NodeId
                   name: string
                   focus: unknown
               }
