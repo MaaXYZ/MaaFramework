@@ -1,9 +1,9 @@
-import * as maa from '../../test/nodejs/maa-server'
-// import maa from '@maaxyz/maa-node/server'
+import '../../test/nodejs/maa-server'
+// import '@maaxyz/maa-node/server'
 
 console.log(maa.Global.version)
 
-const my_reco: maa.CustomRecognizerCallback = async self => {
+const my_reco: maa.CustomRecognitionCallback = async self => {
     let reco_detail = await self.context.run_recognition('MyCustomOCR', self.image, {
         MyCustomOCR: {
             roi: [100, 100, 200, 300]

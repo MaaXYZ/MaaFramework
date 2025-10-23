@@ -14,6 +14,27 @@ else()
     message(STATUS "MaaAgentBinary not found, skipping")
 endif()
 
+if(WITH_QUICKJS_BINDING)
+    add_subdirectory(quickjs EXCLUDE_FROM_ALL)
+    add_library(qjs_headers INTERFACE)
+    target_include_directories(qjs_headers INTERFACE quickjs)
+
+    if(MSVC)
+        target_compile_options(
+            qjs
+            PRIVATE /wd4146
+                    /wd4668
+                    /wd4132
+                    /wd4334
+                    /wd4702
+                    /wd4701
+                    /wd4746
+                    /wd4244)
+    elseif(LINUX)
+        target_compile_options(qjs PRIVATE -Wno-error=unused-command-line-argument)
+    endif()
+endif()
+
 add_custom_target(MaaPlugin ALL DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/include/MaaPlugin)
 set_target_properties(MaaPlugin PROPERTIES FOLDER Assets)
 install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/include/MaaPlugin DESTINATION share)

@@ -54,7 +54,7 @@ extern "C"
         MaaBool (*click_key)(int32_t keycode, void* trans_arg);
 
         MaaBool (*input_text)(const char* text, void* trans_arg);
-        
+
         MaaBool (*key_down)(int32_t keycode, void* trans_arg);
 
         MaaBool (*key_up)(int32_t keycode, void* trans_arg);

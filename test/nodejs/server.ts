@@ -1,10 +1,10 @@
-import * as maa from './maa-server'
+import './maa-server'
 
 async function main() {
-    console.log('MaaFw Version:', maa.Global.version)
-    console.log('MaaFw Role', maa.api.AgentRole)
+    console.log('MaaFw Version:', maa.Global)
+    // console.log('MaaFw Role', maa.AgentRole)
 
-    console.log('AgentServer', maa.AgentServer)
+    console.log('AgentServer', maa.Server)
 
     process.exit(0)
 }

@@ -10,3 +10,6 @@
 [submodule "3rdparty/EmulatorExtras"]
 	path = 3rdparty/EmulatorExtras
 	url = https://github.com/MaaXYZ/EmulatorExtras.git
+[submodule "3rdparty/quickjs"]
+	path = 3rdparty/quickjs
+	url = https://github.com/quickjs-ng/quickjs
