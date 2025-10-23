@@ -374,13 +374,14 @@ void CustomControllerContext::add_bind(
     maajs::EnvType env,
     std::string name,
     std::string func_name,
+    int argc,
     std::shared_ptr<maajs::ObjectRefType> actor)
 {
     callbacks[name] = new maajs::CallbackContext(
         maajs::MakeFunction(
             env,
             func_name.c_str(),
-            0,
+            argc,
             [actor, name](const auto& info) -> maajs::ValueType {
                 auto func = actor->Value()[name].AsValue();
                 if (func.IsFunction()) {
@@ -431,20 +432,20 @@ CustomControllerImpl* CustomControllerImpl::ctor(const maajs::CallbackInfo& info
         return nullptr;
     }
 
-    context->add_bind(info.Env(), "connect", "CustomConnect", actor);
-    context->add_bind(info.Env(), "request_uuid", "CustomRequestUuid", actor);
-    context->add_bind(info.Env(), "start_app", "CustomStartApp", actor);
-    context->add_bind(info.Env(), "stop_app", "CustomStopApp", actor);
-    context->add_bind(info.Env(), "screencap", "CustomScreencap", actor);
-    context->add_bind(info.Env(), "click", "CustomClick", actor);
-    context->add_bind(info.Env(), "swipe", "CustomSwipe", actor);
-    context->add_bind(info.Env(), "touch_down", "CustomTouchDown", actor);
-    context->add_bind(info.Env(), "touch_move", "CustomTouchMove", actor);
-    context->add_bind(info.Env(), "touch_up", "CustomTouchUp", actor);
-    context->add_bind(info.Env(), "click_key", "CustomClickKey", actor);
-    context->add_bind(info.Env(), "input_text", "CustomInputText", actor);
-    context->add_bind(info.Env(), "key_down", "CustomKeyDown", actor);
-    context->add_bind(info.Env(), "key_up", "CustomKeyUp", actor);
+    context->add_bind(info.Env(), "connect", "CustomConnect", 0, actor);
+    context->add_bind(info.Env(), "request_uuid", "CustomRequestUuid", 0, actor);
+    context->add_bind(info.Env(), "start_app", "CustomStartApp", 1, actor);
+    context->add_bind(info.Env(), "stop_app", "CustomStopApp", 1, actor);
+    context->add_bind(info.Env(), "screencap", "CustomScreencap", 0, actor);
+    context->add_bind(info.Env(), "click", "CustomClick", 2, actor);
+    context->add_bind(info.Env(), "swipe", "CustomSwipe", 5, actor);
+    context->add_bind(info.Env(), "touch_down", "CustomTouchDown", 4, actor);
+    context->add_bind(info.Env(), "touch_move", "CustomTouchMove", 4, actor);
+    context->add_bind(info.Env(), "touch_up", "CustomTouchUp", 1, actor);
+    context->add_bind(info.Env(), "click_key", "CustomClickKey", 1, actor);
+    context->add_bind(info.Env(), "input_text", "CustomInputText", 1, actor);
+    context->add_bind(info.Env(), "key_down", "CustomKeyDown", 1, actor);
+    context->add_bind(info.Env(), "key_up", "CustomKeyUp", 1, actor);
 
     auto impl = new CustomControllerImpl(ctrl, true);
     impl->actor = actor;

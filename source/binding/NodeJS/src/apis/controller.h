@@ -93,7 +93,7 @@ struct CustomControllerContext
     std::map<std::string, maajs::CallbackContext*> callbacks;
 
     ~CustomControllerContext();
-    void add_bind(maajs::EnvType env, std::string name, std::string func_name, std::shared_ptr<maajs::ObjectRefType> actor);
+    void add_bind(maajs::EnvType env, std::string name, std::string func_name, int argc, std::shared_ptr<maajs::ObjectRefType> actor);
     void gc_mark(maajs::NativeMarkerFunc marker);
 };
 
