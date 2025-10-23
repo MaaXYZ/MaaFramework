@@ -1,6 +1,6 @@
 import json
 from dataclasses import dataclass, field
-from typing import Any, List, Tuple, Union, Optional, Dict
+from typing import Any, List, Tuple, Union, Dict
 
 # Type aliases to match C++ std::variant types
 JRect = Tuple[int, int, int, int]  # std::array<int, 4>
@@ -20,9 +20,9 @@ class JTemplateMatch:
     template: List[str]
     threshold: List[float]
     order_by: str
-    index: int = 0
-    method: int = 0
-    green_mask: bool = False
+    index: int
+    method: int
+    green_mask: bool
 
 
 @dataclass
@@ -32,10 +32,10 @@ class JFeatureMatch:
     template: List[str]
     detector: str
     order_by: str
-    count: int = 0
-    index: int = 0
-    green_mask: bool = False
-    ratio: float = 0
+    count: int
+    index: int
+    green_mask: bool
+    ratio: float
 
 
 @dataclass
@@ -45,23 +45,23 @@ class JColorMatch:
     lower: List[List[int]]
     upper: List[List[int]]
     order_by: str
-    method: int = 0
-    count: int = 0
-    index: int = 0
-    connected: bool = False
+    method: int
+    count: int
+    index: int
+    connected: bool
 
 
 @dataclass
 class JOCR:
     roi: JTarget
     roi_offset: JRect
-    expected: List[str] = field(default_factory=list)
-    threshold: float = 0
-    replace: List[List[str]] = field(default_factory=list)
-    order_by: str = ""
-    index: int = 0
-    only_rec: bool = False
-    model: str = ""
+    expected: List[str]
+    threshold: float
+    replace: List[List[str]]
+    order_by: str
+    index: int
+    only_rec: bool
+    model: str
 
 
 @dataclass
@@ -70,9 +70,9 @@ class JNeuralNetworkClassify:
     roi_offset: JRect
     labels: List[str]
     model: str
-    expected: List[int] = field(default_factory=list)
-    order_by: str = ""
-    index: int = 0
+    expected: List[int]
+    order_by: str
+    index: int
 
 
 @dataclass
@@ -81,10 +81,10 @@ class JNeuralNetworkDetect:
     roi_offset: JRect
     labels: List[str]
     model: str
-    expected: List[int] = field(default_factory=list)
-    threshold: List[float] = field(default_factory=list)
-    order_by: str = ""
-    index: int = 0
+    expected: List[int]
+    threshold: List[float]
+    order_by: str
+    index: int
 
 
 @dataclass
@@ -117,14 +117,14 @@ class JDoNothing:
 @dataclass
 class JClick:
     target: JTarget
-    target_offset: JRect = (0, 0, 0, 0)
+    target_offset: JRect
 
 
 @dataclass
 class JLongPress:
     target: JTarget
-    target_offset: JRect = (0, 0, 0, 0)
-    duration: int = 0
+    target_offset: JRect
+    duration: int
 
 
 @dataclass
@@ -141,18 +141,18 @@ class JSwipe:
 
 @dataclass
 class JMultiSwipe:
-    swipes: List[JSwipe] = field(default_factory=list)
+    swipes: List[JSwipe]
 
 
 @dataclass
 class JClickKey:
-    key: List[int] = field(default_factory=list)
+    key: List[int]
 
 
 @dataclass
 class JLongPressKey:
-    key: List[int] = field(default_factory=list)
-    duration: int = 0
+    key: List[int]
+    duration: int
 
 
 @dataclass
@@ -178,8 +178,8 @@ class JStopTask:
 @dataclass
 class JCommand:
     exec: str
-    args: List[str] = field(default_factory=list)
-    detach: bool = False
+    args: List[str]
+    detach: bool
 
 
 @dataclass
@@ -187,7 +187,7 @@ class JCustomAction:
     target: JTarget
     custom_action: str
     custom_action_param: Any
-    target_offset: JRect = (0, 0, 0, 0)
+    target_offset: JRect
 
 
 # Action parameter union type
@@ -253,22 +253,20 @@ class JPipelineData:
 
 class JPipelineParser:
     @staticmethod
-    def _create_wait_freezes(data: dict) -> Optional[JWaitFreezes]:
+    def _parse_wait_freezes(data: dict) -> JWaitFreezes:
         """Convert wait freezes with proper defaults"""
-        if not data:
-            return None
         return JWaitFreezes(
-            time=data.get("time", 0),
+            time=data.get("time"),
             target=data.get("target"),  # type: ignore
             target_offset=data.get("target_offset"),  # type: ignore
-            threshold=data.get("threshold", 0),
-            method=data.get("method", 0),
-            rate_limit=data.get("rate_limit", 0),
-            timeout=data.get("timeout", 0),
+            threshold=data.get("threshold"),
+            method=data.get("method"),
+            rate_limit=data.get("rate_limit"),
+            timeout=data.get("timeout"),
         )
 
     @classmethod
-    def parse_param(
+    def _parse_param(
         cls, param_type: str, param_data: dict, param_type_map: dict, default_class
     ):
         """Generic function to parse parameters based on type map."""
@@ -288,7 +286,7 @@ class JPipelineParser:
             return default_class()
 
     @classmethod
-    def parse_recognition_param(
+    def _parse_recognition_param(
         cls, param_type: str, param_data: dict
     ) -> JRecognitionParam:
         """Convert dict to appropriate JRecognitionParam variant based on type."""
@@ -302,10 +300,10 @@ class JPipelineParser:
             "NeuralNetworkDetect": JNeuralNetworkDetect,
             "Custom": JCustomRecognition,
         }
-        return cls.parse_param(param_type, param_data, param_type_map, JDirectHit)
+        return cls._parse_param(param_type, param_data, param_type_map, JDirectHit)
 
     @classmethod
-    def parse_action_param(cls, param_type: str, param_data: dict) -> JActionParam:
+    def _parse_action_param(cls, param_type: str, param_data: dict) -> JActionParam:
         """Convert dict to appropriate JActionParam variant based on type."""
         param_type_map = {
             "DoNothing": JDoNothing,
@@ -322,7 +320,7 @@ class JPipelineParser:
             "Command": JCommand,
             "Custom": JCustomAction,
         }
-        return cls.parse_param(param_type, param_data, param_type_map, JDoNothing)
+        return cls._parse_param(param_type, param_data, param_type_map, JDoNothing)
 
     @classmethod
     def parse_pipeline_data(cls, pipeline_data: Union[str, Dict]) -> JPipelineData:
@@ -338,38 +336,38 @@ class JPipelineParser:
             raise TypeError("Input must be a JSON string or a dict.")
 
         # Convert recognition
-        recognition_data: dict = data.get("recognition", {})
-        recognition_type: str = recognition_data.get("type", "")
-        recognition_param_data: dict = recognition_data.get("param", {})
-        recognition_param = cls.parse_recognition_param(
+        recognition_data: dict = data.get("recognition")
+        recognition_type: str = recognition_data.get("type")
+        recognition_param_data: dict = recognition_data.get("param")
+        recognition_param = cls._parse_recognition_param(
             recognition_type, recognition_param_data
         )
         recognition = JRecognition(type=recognition_type, param=recognition_param)
 
         # Convert action
-        action_data: dict = data.get("action", {})
-        action_type: str = action_data.get("type", "")
-        action_param_data = action_data.get("param", {})
-        action_param = cls.parse_action_param(action_type, action_param_data)
+        action_data: dict = data.get("action")
+        action_type: str = action_data.get("type")
+        action_param_data = action_data.get("param")
+        action_param = cls._parse_action_param(action_type, action_param_data)
         action = JAction(type=action_type, param=action_param)
 
-        pre_wait_freezes = cls._create_wait_freezes(data.get("pre_wait_freezes"))  # type: ignore
-        post_wait_freezes = cls._create_wait_freezes(data.get("post_wait_freezes"))  # type: ignore
+        pre_wait_freezes = cls._parse_wait_freezes(data.get("pre_wait_freezes"))  # type: ignore
+        post_wait_freezes = cls._parse_wait_freezes(data.get("post_wait_freezes"))  # type: ignore
 
         # Create JPipelineData with converted data
         return JPipelineData(
             recognition=recognition,
             action=action,
-            next=data.get("next", []),
-            interrupt=data.get("interrupt", []),
-            is_sub=data.get("is_sub", False),
-            rate_limit=data.get("rate_limit", 0),
-            timeout=data.get("timeout", 0),
-            on_error=data.get("on_error", []),
-            inverse=data.get("inverse", False),
-            enabled=data.get("enabled", False),
-            pre_delay=data.get("pre_delay", 0),
-            post_delay=data.get("post_delay", 0),
+            next=data.get("next"),
+            interrupt=data.get("interrupt"),
+            is_sub=data.get("is_sub"),
+            rate_limit=data.get("rate_limit"),
+            timeout=data.get("timeout"),
+            on_error=data.get("on_error"),
+            inverse=data.get("inverse"),
+            enabled=data.get("enabled"),
+            pre_delay=data.get("pre_delay"),
+            post_delay=data.get("post_delay"),
             pre_wait_freezes=pre_wait_freezes,  # type: ignore
             post_wait_freezes=post_wait_freezes,  # type: ignore
             focus=data.get("focus"),
