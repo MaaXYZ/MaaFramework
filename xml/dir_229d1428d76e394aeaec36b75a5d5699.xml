@@ -5,7 +5,6 @@
     <innerdir refid="dir_3f6e8cd112d1e824096c35d6249bbf1f">include/MaaToolkit/AdbDevice</innerdir>
     <innerdir refid="dir_6eb8a3b80c08358342d8d19b4780874f">include/MaaToolkit/Config</innerdir>
     <innerdir refid="dir_5fd7a4c0d2eb20e652f065856939ee93">include/MaaToolkit/DesktopWindow</innerdir>
-    <innerdir refid="dir_ad27c7cb25637142423800785cfd3317">include/MaaToolkit/ProjectInterface</innerdir>
     <innerfile refid="MaaToolkitAPI_8h">MaaToolkitAPI.h</innerfile>
     <innerfile refid="MaaToolkitDef_8h">MaaToolkitDef.h</innerfile>
     <briefdescription>

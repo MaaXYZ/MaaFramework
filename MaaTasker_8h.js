@@ -1,7 +1,13 @@
 var MaaTasker_8h =
 [
-    [ "MaaTaskerCreate", "MaaTasker_8h.html#a1be38fb8f5e4b9e8240d5847c1f558ac", null ],
+    [ "MaaTaskerCreate", "MaaTasker_8h.html#abc517c855a09e5cd6a3cf33f0c7abb4b", null ],
     [ "MaaTaskerDestroy", "MaaTasker_8h.html#abefa8dae5713c3393833d8644f2435a8", null ],
+    [ "MaaTaskerAddSink", "MaaTasker_8h.html#a5a7ad510d2569e8cae40a60725ca5a22", null ],
+    [ "MaaTaskerRemoveSink", "MaaTasker_8h.html#a489c89310019ea5780c253beca2a4e07", null ],
+    [ "MaaTaskerClearSinks", "MaaTasker_8h.html#a9b5b5d86d47472092e1b468bb489fd3c", null ],
+    [ "MaaTaskerAddContextSink", "MaaTasker_8h.html#af8fe24f4efa61c47ee8e018a7f67c10f", null ],
+    [ "MaaTaskerRemoveContextSink", "MaaTasker_8h.html#af20736e5613012b909a3483757426923", null ],
+    [ "MaaTaskerClearContextSinks", "MaaTasker_8h.html#af3d259c9f9fdf89c59870f607e403375", null ],
     [ "MaaTaskerSetOption", "MaaTasker_8h.html#a08e81fb30421633ca6300d7c98056f03", null ],
     [ "MaaTaskerBindResource", "MaaTasker_8h.html#ac4e288dec1904fba61b65655c4317e79", null ],
     [ "MaaTaskerBindController", "MaaTasker_8h.html#a9979e64533deaf3d002cbd08338bb426", null ],

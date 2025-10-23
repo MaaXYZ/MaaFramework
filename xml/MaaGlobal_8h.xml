@@ -1,0 +1,135 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="MaaGlobal_8h" kind="file" language="C++">
+    <compoundname>MaaGlobal.h</compoundname>
+    <includes refid="MaaDef_8h" local="yes">../MaaDef.h</includes>
+    <includes refid="MaaPort_8h" local="yes">../MaaPort.h</includes>
+    <includedby refid="MaaAPI_8h" local="yes">include/MaaFramework/MaaAPI.h</includedby>
+    <incdepgraph>
+      <node id="1">
+        <label>include/MaaFramework/Global/MaaGlobal.h</label>
+        <link refid="MaaGlobal_8h"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>../MaaDef.h</label>
+        <link refid="MaaDef_8h"/>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+      </node>
+      <node id="4">
+        <label>MaaPort.h</label>
+        <link refid="MaaPort_8h"/>
+      </node>
+      <node id="3">
+        <label>stdint.h</label>
+      </node>
+    </incdepgraph>
+    <invincdepgraph>
+      <node id="1">
+        <label>include/MaaFramework/Global/MaaGlobal.h</label>
+        <link refid="MaaGlobal_8h"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>include/MaaFramework/MaaAPI.h</label>
+        <link refid="MaaAPI_8h"/>
+      </node>
+    </invincdepgraph>
+    <sectiondef kind="func">
+      <memberdef kind="function" id="MaaGlobal_8h_1ab8a3bdd731560655c4fa049bf5886501" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="MaaPort_8h_1a67006334d91d228121dbba7a8bf8fe05" kindref="member">MAA_FRAMEWORK_API</ref> <ref refid="MaaDef_8h_1a2f7289f2a8e07f48c6261b52a120cdf6" kindref="member">MaaBool</ref></type>
+        <definition>MAA_FRAMEWORK_API MaaBool MaaGlobalSetOption</definition>
+        <argsstring>(MaaGlobalOption key, MaaOptionValue value, MaaOptionValueSize val_size)</argsstring>
+        <name>MaaGlobalSetOption</name>
+        <param>
+          <type><ref refid="MaaDef_8h_1a78a454cf5bf3e18aab3aef29cfc7b91c" kindref="member">MaaGlobalOption</ref></type>
+          <declname>key</declname>
+        </param>
+        <param>
+          <type><ref refid="MaaDef_8h_1abb976599f915b1e04a9ff8bf7055bf81" kindref="member">MaaOptionValue</ref></type>
+          <declname>value</declname>
+          <briefdescription><para>byte array, int*, char*, bool* </para>
+</briefdescription>
+        </param>
+        <param>
+          <type><ref refid="MaaDef_8h_1a56ff604006917171af8e4b4974db28ef" kindref="member">MaaOptionValueSize</ref></type>
+          <declname>val_size</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername direction="in">value</parametername>
+</parameternamelist>
+<parameterdescription>
+<para></para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaFramework/Global/MaaGlobal.h" line="26" column="9" declfile="include/MaaFramework/Global/MaaGlobal.h" declline="26" declcolumn="9"/>
+      </memberdef>
+      <memberdef kind="function" id="MaaGlobal_8h_1ab488228d24cc5477ccff6d83ca505441" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="MaaPort_8h_1a67006334d91d228121dbba7a8bf8fe05" kindref="member">MAA_FRAMEWORK_API</ref> <ref refid="MaaDef_8h_1a2f7289f2a8e07f48c6261b52a120cdf6" kindref="member">MaaBool</ref></type>
+        <definition>MAA_FRAMEWORK_API MaaBool MaaGlobalLoadPlugin</definition>
+        <argsstring>(const char *library_path)</argsstring>
+        <name>MaaGlobalLoadPlugin</name>
+        <param>
+          <type>const char *</type>
+          <declname>library_path</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>load a plugin with full path or name only, name only will search in system directory and current directory or load plugins with recursive search in the directory </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaFramework/Global/MaaGlobal.h" line="31" column="31" declfile="include/MaaFramework/Global/MaaGlobal.h" declline="31" declcolumn="31"/>
+      </memberdef>
+      <memberdef kind="function" id="MaaGlobal_8h_1a0f846923ddbabcfb0343eeabd88ccb94" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="MaaPort_8h_1aea94eb63afa29e65c59844ec3f57d691" kindref="member">MAA_DEPRECATED</ref> <ref refid="MaaPort_8h_1a67006334d91d228121dbba7a8bf8fe05" kindref="member">MAA_FRAMEWORK_API</ref> <ref refid="MaaDef_8h_1a2f7289f2a8e07f48c6261b52a120cdf6" kindref="member">MaaBool</ref></type>
+        <definition>MAA_DEPRECATED MAA_FRAMEWORK_API MaaBool MaaSetGlobalOption</definition>
+        <argsstring>(MaaGlobalOption key, MaaOptionValue value, MaaOptionValueSize val_size)</argsstring>
+        <name>MaaSetGlobalOption</name>
+        <param>
+          <type><ref refid="MaaDef_8h_1a78a454cf5bf3e18aab3aef29cfc7b91c" kindref="member">MaaGlobalOption</ref></type>
+          <declname>key</declname>
+        </param>
+        <param>
+          <type><ref refid="MaaDef_8h_1abb976599f915b1e04a9ff8bf7055bf81" kindref="member">MaaOptionValue</ref></type>
+          <declname>value</declname>
+          <briefdescription><para>byte array, int*, char*, bool* </para>
+</briefdescription>
+        </param>
+        <param>
+          <type><ref refid="MaaDef_8h_1a56ff604006917171af8e4b4974db28ef" kindref="member">MaaOptionValueSize</ref></type>
+          <declname>val_size</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaFramework/Global/MaaGlobal.h" line="34" column="9" declfile="include/MaaFramework/Global/MaaGlobal.h" declline="34" declcolumn="9"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="include/MaaFramework/Global/MaaGlobal.h"/>
+  </compounddef>
+</doxygen>

@@ -1,11 +1,14 @@
 var MaaController_8h =
 [
     [ "MaaCustomControllerCallbacks", "MaaController_8h.html#a22203468df2e11d45892a524d48404a4", null ],
-    [ "MaaAdbControllerCreate", "MaaController_8h.html#a75bf05e524a4f086053e17554eb58d9e", null ],
-    [ "MaaWin32ControllerCreate", "MaaController_8h.html#a9a76a72f540f0bec888228dca7b88a12", null ],
-    [ "MaaCustomControllerCreate", "MaaController_8h.html#ae9506f63397ad53296fb8dfd3f0dbef4", null ],
-    [ "MaaDbgControllerCreate", "MaaController_8h.html#a4089d1020a79a680c013b3be0eb88450", null ],
+    [ "MaaAdbControllerCreate", "MaaController_8h.html#a7b3f6215fdc0ae3e8beeb51a3dd75e16", null ],
+    [ "MaaWin32ControllerCreate", "MaaController_8h.html#a53e929d892b47209873aa026548b7f64", null ],
+    [ "MaaCustomControllerCreate", "MaaController_8h.html#a2ff145414faed5fdeedc36e97729677e", null ],
+    [ "MaaDbgControllerCreate", "MaaController_8h.html#a1ea4c3aa0b3bcb39d35dc13cdde9a044", null ],
     [ "MaaControllerDestroy", "MaaController_8h.html#a497982481bf79e89bc457d8a6e5e7bed", null ],
+    [ "MaaControllerAddSink", "MaaController_8h.html#aa01ed95af83d12f7bc3d49fdba415419", null ],
+    [ "MaaControllerRemoveSink", "MaaController_8h.html#a1ae3f067cb374a85ae7580a08945e7b6", null ],
+    [ "MaaControllerClearSinks", "MaaController_8h.html#a4b4a854e5d591d14a303d9ab622332fb", null ],
     [ "MaaControllerSetOption", "MaaController_8h.html#ac0247a25f33dfbc7bd3a0183a669aad3", null ],
     [ "MaaControllerPostConnection", "MaaController_8h.html#a08f41be1ab0845f494ad7357adac0336", null ],
     [ "MaaControllerPostClick", "MaaController_8h.html#aaf0eb096930a8a9592b11baf918a5910", null ],

@@ -56,43 +56,6 @@
         </inbodydescription>
         <location file="include/MaaFramework/Utility/MaaUtility.h" line="22" column="34" declfile="include/MaaFramework/Utility/MaaUtility.h" declline="22" declcolumn="34"/>
       </memberdef>
-      <memberdef kind="function" id="MaaUtility_8h_1a1dba15d9cc61cf339c434085738f873c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
-        <type><ref refid="MaaPort_8h_1a67006334d91d228121dbba7a8bf8fe05" kindref="member">MAA_FRAMEWORK_API</ref> <ref refid="MaaDef_8h_1a2f7289f2a8e07f48c6261b52a120cdf6" kindref="member">MaaBool</ref></type>
-        <definition>MAA_FRAMEWORK_API MaaBool MaaSetGlobalOption</definition>
-        <argsstring>(MaaGlobalOption key, MaaOptionValue value, MaaOptionValueSize val_size)</argsstring>
-        <name>MaaSetGlobalOption</name>
-        <param>
-          <type><ref refid="MaaDef_8h_1a78a454cf5bf3e18aab3aef29cfc7b91c" kindref="member">MaaGlobalOption</ref></type>
-          <declname>key</declname>
-        </param>
-        <param>
-          <type><ref refid="MaaDef_8h_1abb976599f915b1e04a9ff8bf7055bf81" kindref="member">MaaOptionValue</ref></type>
-          <declname>value</declname>
-          <briefdescription><para>byte array, int*, char*, bool* </para>
-</briefdescription>
-        </param>
-        <param>
-          <type><ref refid="MaaDef_8h_1a56ff604006917171af8e4b4974db28ef" kindref="member">MaaOptionValueSize</ref></type>
-          <declname>val_size</declname>
-        </param>
-        <briefdescription>
-        </briefdescription>
-        <detaileddescription>
-<para><parameterlist kind="param"><parameteritem>
-<parameternamelist>
-<parametername direction="in">value</parametername>
-</parameternamelist>
-<parameterdescription>
-<para></para>
-</parameterdescription>
-</parameteritem>
-</parameterlist>
-</para>
-        </detaileddescription>
-        <inbodydescription>
-        </inbodydescription>
-        <location file="include/MaaFramework/Utility/MaaUtility.h" line="28" column="9" declfile="include/MaaFramework/Utility/MaaUtility.h" declline="28" declcolumn="9"/>
-      </memberdef>
     </sectiondef>
     <briefdescription>
 <para>Provide global functions for the framework. </para>

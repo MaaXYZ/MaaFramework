@@ -17,6 +17,9 @@
     <loc>https://maafw.xyz/MaaAgentServerDef_8h_source.html</loc>
   </url>
   <url>
+    <loc>https://maafw.xyz/MaaGlobal_8h_source.html</loc>
+  </url>
+  <url>
     <loc>https://maafw.xyz/MaaContext_8h_source.html</loc>
   </url>
   <url>
@@ -65,9 +68,6 @@
     <loc>https://maafw.xyz/MaaToolkitDef_8h_source.html</loc>
   </url>
   <url>
-    <loc>https://maafw.xyz/MaaToolkitProjectInterface_8h_source.html</loc>
-  </url>
-  <url>
     <loc>https://maafw.xyz/MaaAgentClientAPI_8h.html</loc>
   </url>
   <url>
@@ -78,6 +78,9 @@
   </url>
   <url>
     <loc>https://maafw.xyz/MaaAgentServerDef_8h.html</loc>
+  </url>
+  <url>
+    <loc>https://maafw.xyz/MaaGlobal_8h.html</loc>
   </url>
   <url>
     <loc>https://maafw.xyz/MaaContext_8h.html</loc>
@@ -128,9 +131,6 @@
     <loc>https://maafw.xyz/MaaToolkitDef_8h.html</loc>
   </url>
   <url>
-    <loc>https://maafw.xyz/MaaToolkitProjectInterface_8h.html</loc>
-  </url>
-  <url>
     <loc>https://maafw.xyz/group__MaaMsg.html</loc>
   </url>
   <url>
@@ -155,6 +155,9 @@
     <loc>https://maafw.xyz/dir_5fd7a4c0d2eb20e652f065856939ee93.html</loc>
   </url>
   <url>
+    <loc>https://maafw.xyz/dir_40c6fe55fc949fd40ad3e87842c632ab.html</loc>
+  </url>
+  <url>
     <loc>https://maafw.xyz/dir_d44c64559bbebec7f509842c48db8b23.html</loc>
   </url>
   <url>
@@ -171,9 +174,6 @@
   </url>
   <url>
     <loc>https://maafw.xyz/dir_229d1428d76e394aeaec36b75a5d5699.html</loc>
-  </url>
-  <url>
-    <loc>https://maafw.xyz/dir_ad27c7cb25637142423800785cfd3317.html</loc>
   </url>
   <url>
     <loc>https://maafw.xyz/dir_d3f066ca4d2612436eb7c36c3816b59b.html</loc>

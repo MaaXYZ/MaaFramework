@@ -1,7 +1,10 @@
 var MaaResource_8h =
 [
-    [ "MaaResourceCreate", "MaaResource_8h.html#ab4ceccc16012049fe2ea822ff543fedb", null ],
+    [ "MaaResourceCreate", "MaaResource_8h.html#a87f6f24fde2ce7ec333cc77fed5cc36b", null ],
     [ "MaaResourceDestroy", "MaaResource_8h.html#a2c9731b5a32da11f25ae57ea8ce5373e", null ],
+    [ "MaaResourceAddSink", "MaaResource_8h.html#ae9f53112f5b3adcaa9a50894aebb9a61", null ],
+    [ "MaaResourceRemoveSink", "MaaResource_8h.html#a68481a336bd0cc2d0fd841754599a5b2", null ],
+    [ "MaaResourceClearSinks", "MaaResource_8h.html#a89ee9a59c95bcbdd012924a353fb84ce", null ],
     [ "MaaResourceRegisterCustomRecognition", "MaaResource_8h.html#ae38c53cb841ae50276792ac1abe3f810", null ],
     [ "MaaResourceUnregisterCustomRecognition", "MaaResource_8h.html#a686b581740db7d280be58316abe59267", null ],
     [ "MaaResourceClearCustomRecognition", "MaaResource_8h.html#a29d01b1290d07ef263e29b80c3b6d843", null ],

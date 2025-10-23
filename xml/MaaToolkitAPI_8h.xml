@@ -6,7 +6,6 @@
     <includes refid="MaaToolkitAdbDevice_8h" local="yes">AdbDevice/MaaToolkitAdbDevice.h</includes>
     <includes refid="MaaToolkitConfig_8h" local="yes">Config/MaaToolkitConfig.h</includes>
     <includes refid="MaaToolkitDesktopWindow_8h" local="yes">DesktopWindow/MaaToolkitDesktopWindow.h</includes>
-    <includes refid="MaaToolkitProjectInterface_8h" local="yes">ProjectInterface/MaaToolkitProjectInterface.h</includes>
     <incdepgraph>
       <node id="3">
         <label>MaaFramework/MaaDef.h</label>
@@ -49,19 +48,11 @@
         </childnode>
         <childnode refid="8" relation="include">
         </childnode>
-        <childnode refid="9" relation="include">
-        </childnode>
       </node>
       <node id="2">
         <label>MaaToolkitDef.h</label>
         <link refid="MaaToolkitDef_8h"/>
         <childnode refid="3" relation="include">
-        </childnode>
-      </node>
-      <node id="9">
-        <label>ProjectInterface/MaaToolkitProjectInterface.h</label>
-        <link refid="MaaToolkitProjectInterface_8h"/>
-        <childnode refid="2" relation="include">
         </childnode>
       </node>
       <node id="4">

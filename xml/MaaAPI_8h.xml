@@ -3,6 +3,7 @@
   <compounddef id="MaaAPI_8h" kind="file" language="C++">
     <compoundname>MaaAPI.h</compoundname>
     <includes refid="MaaDef_8h" local="yes">MaaDef.h</includes>
+    <includes refid="MaaGlobal_8h" local="yes">Global/MaaGlobal.h</includes>
     <includes refid="MaaContext_8h" local="yes">Instance/MaaContext.h</includes>
     <includes refid="MaaController_8h" local="yes">Instance/MaaController.h</includes>
     <includes refid="MaaCustomController_8h" local="yes">Instance/MaaCustomController.h</includes>
@@ -12,6 +13,14 @@
     <includes refid="MaaUtility_8h" local="yes">Utility/MaaUtility.h</includes>
     <incdepgraph>
       <node id="5">
+        <label>Global/MaaGlobal.h</label>
+        <link refid="MaaGlobal_8h"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+      </node>
+      <node id="6">
         <label>Instance/MaaContext.h</label>
         <link refid="MaaContext_8h"/>
         <childnode refid="2" relation="include">
@@ -19,7 +28,7 @@
         <childnode refid="4" relation="include">
         </childnode>
       </node>
-      <node id="6">
+      <node id="7">
         <label>Instance/MaaController.h</label>
         <link refid="MaaController_8h"/>
         <childnode refid="2" relation="include">
@@ -27,7 +36,7 @@
         <childnode refid="4" relation="include">
         </childnode>
       </node>
-      <node id="7">
+      <node id="8">
         <label>Instance/MaaCustomController.h</label>
         <link refid="MaaCustomController_8h"/>
         <childnode refid="2" relation="include">
@@ -35,7 +44,7 @@
         <childnode refid="4" relation="include">
         </childnode>
       </node>
-      <node id="8">
+      <node id="9">
         <label>Instance/MaaResource.h</label>
         <link refid="MaaResource_8h"/>
         <childnode refid="2" relation="include">
@@ -43,7 +52,7 @@
         <childnode refid="4" relation="include">
         </childnode>
       </node>
-      <node id="9">
+      <node id="10">
         <label>Instance/MaaTasker.h</label>
         <link refid="MaaTasker_8h"/>
         <childnode refid="2" relation="include">
@@ -70,6 +79,8 @@
         </childnode>
         <childnode refid="11" relation="include">
         </childnode>
+        <childnode refid="12" relation="include">
+        </childnode>
       </node>
       <node id="2">
         <label>MaaDef.h</label>
@@ -83,7 +94,7 @@
         <label>MaaPort.h</label>
         <link refid="MaaPort_8h"/>
       </node>
-      <node id="10">
+      <node id="11">
         <label>Utility/MaaBuffer.h</label>
         <link refid="MaaBuffer_8h"/>
         <childnode refid="2" relation="include">
@@ -91,7 +102,7 @@
         <childnode refid="4" relation="include">
         </childnode>
       </node>
-      <node id="11">
+      <node id="12">
         <label>Utility/MaaUtility.h</label>
         <link refid="MaaUtility_8h"/>
         <childnode refid="2" relation="include">

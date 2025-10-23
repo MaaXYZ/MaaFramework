@@ -38,6 +38,7 @@ var MaaDef_8h =
     [ "MaaTaskId", "MaaDef_8h.html#a711b3db9be6db60ae4cb09e3629e42f0", null ],
     [ "MaaRecoId", "MaaDef_8h.html#a7519e6a8329a32c8e3058c20ec74cda8", null ],
     [ "MaaNodeId", "MaaDef_8h.html#aeedbbed1bc17d1ffd80ff719a71cfed5", null ],
+    [ "MaaSinkId", "MaaDef_8h.html#aac4cf6870bfe8fef31ead507dcfb4251", null ],
     [ "MaaStringBuffer", "MaaDef_8h.html#a4010bb63df489fc09efb6ba9a1fc1c98", null ],
     [ "MaaImageBuffer", "MaaDef_8h.html#a0a52c8503deca448e71a407cdb14d259", null ],
     [ "MaaStringListBuffer", "MaaDef_8h.html#a7668a404d5063ffc525180d3e144999f", null ],
@@ -64,6 +65,7 @@ var MaaDef_8h =
     [ "MaaDbgControllerType", "MaaDef_8h.html#a7a7491d55c50840ccb1891ba9b7740c4", null ],
     [ "MaaRect", "MaaDef_8h.html#a90ae9b4896224481bd0967903dafdfa1", null ],
     [ "MaaNotificationCallback", "MaaDef_8h.html#a83fe073ae3fefc09c17fd9eb6b6b3e50", null ],
+    [ "MaaEventCallback", "MaaDef_8h.html#a6b9bcefbd6beaf7a0da83c92318a8693", null ],
     [ "MaaCustomRecognitionCallback", "MaaDef_8h.html#a5ea5d33341ce8007c366ebd04f08ee51", null ],
     [ "MaaCustomActionCallback", "MaaDef_8h.html#a5d8d307550fff35a2df364eeac7f5191", null ],
     [ "MaaStatusEnum", "MaaDef_8h.html#a92a321c9e89a79ab64dc5176057d76a6", [

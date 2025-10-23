@@ -191,6 +191,8 @@ Typedefs</h2></td></tr>
 <tr class="separator:a7519e6a8329a32c8e3058c20ec74cda8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aeedbbed1bc17d1ffd80ff719a71cfed5" id="r_aeedbbed1bc17d1ffd80ff719a71cfed5"><td class="memItemLeft" align="right" valign="top">typedef <a class="el" href="MaaDef_8h.html#a9a764a8b46c0c97cbfe2d8e295d90e03">MaaId</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="MaaDef_8h.html#aeedbbed1bc17d1ffd80ff719a71cfed5">MaaNodeId</a></td></tr>
 <tr class="separator:aeedbbed1bc17d1ffd80ff719a71cfed5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aac4cf6870bfe8fef31ead507dcfb4251" id="r_aac4cf6870bfe8fef31ead507dcfb4251"><td class="memItemLeft" align="right" valign="top">typedef <a class="el" href="MaaDef_8h.html#a9a764a8b46c0c97cbfe2d8e295d90e03">MaaId</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="MaaDef_8h.html#aac4cf6870bfe8fef31ead507dcfb4251">MaaSinkId</a></td></tr>
+<tr class="separator:aac4cf6870bfe8fef31ead507dcfb4251"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4010bb63df489fc09efb6ba9a1fc1c98" id="r_a4010bb63df489fc09efb6ba9a1fc1c98"><td class="memItemLeft" align="right" valign="top">typedef struct <a class="el" href="MaaDef_8h.html#a4010bb63df489fc09efb6ba9a1fc1c98">MaaStringBuffer</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="MaaDef_8h.html#a4010bb63df489fc09efb6ba9a1fc1c98">MaaStringBuffer</a></td></tr>
 <tr class="separator:a4010bb63df489fc09efb6ba9a1fc1c98"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0a52c8503deca448e71a407cdb14d259" id="r_a0a52c8503deca448e71a407cdb14d259"><td class="memItemLeft" align="right" valign="top">typedef struct <a class="el" href="MaaDef_8h.html#a0a52c8503deca448e71a407cdb14d259">MaaImageBuffer</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="MaaDef_8h.html#a0a52c8503deca448e71a407cdb14d259">MaaImageBuffer</a></td></tr>
@@ -243,6 +245,8 @@ Typedefs</h2></td></tr>
 <tr class="separator:a90ae9b4896224481bd0967903dafdfa1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a83fe073ae3fefc09c17fd9eb6b6b3e50" id="r_a83fe073ae3fefc09c17fd9eb6b6b3e50"><td class="memItemLeft" align="right" valign="top">typedef void(<a class="el" href="MaaPort_8h.html#afaf570464c85866c04fabe324fe35c18">MAA_CALL</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="MaaDef_8h.html#a83fe073ae3fefc09c17fd9eb6b6b3e50">MaaNotificationCallback</a>) (const char *message, const char *details_json, void *notify_trans_arg)</td></tr>
 <tr class="separator:a83fe073ae3fefc09c17fd9eb6b6b3e50"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6b9bcefbd6beaf7a0da83c92318a8693" id="r_a6b9bcefbd6beaf7a0da83c92318a8693"><td class="memItemLeft" align="right" valign="top">typedef void(<a class="el" href="MaaPort_8h.html#afaf570464c85866c04fabe324fe35c18">MAA_CALL</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="MaaDef_8h.html#a6b9bcefbd6beaf7a0da83c92318a8693">MaaEventCallback</a>) (void *handle, const char *message, const char *details_json, void *trans_arg)</td></tr>
+<tr class="separator:a6b9bcefbd6beaf7a0da83c92318a8693"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5ea5d33341ce8007c366ebd04f08ee51" id="r_a5ea5d33341ce8007c366ebd04f08ee51"><td class="memItemLeft" align="right" valign="top">typedef <a class="el" href="MaaDef_8h.html#a2f7289f2a8e07f48c6261b52a120cdf6">MaaBool</a>(<a class="el" href="MaaPort_8h.html#afaf570464c85866c04fabe324fe35c18">MAA_CALL</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="MaaDef_8h.html#a5ea5d33341ce8007c366ebd04f08ee51">MaaCustomRecognitionCallback</a>) (<a class="el" href="MaaDef_8h.html#ad2101e87aad0f5d03b8136943daee40e">MaaContext</a> *context, <a class="el" href="MaaDef_8h.html#a711b3db9be6db60ae4cb09e3629e42f0">MaaTaskId</a> task_id, const char *node_name, const char *custom_recognition_name, const char *custom_recognition_param, const <a class="el" href="MaaDef_8h.html#a0a52c8503deca448e71a407cdb14d259">MaaImageBuffer</a> *image, const <a class="el" href="structMaaRect.html">MaaRect</a> *roi, void *trans_arg, <a class="el" href="structMaaRect.html">MaaRect</a> *out_box, <a class="el" href="MaaDef_8h.html#a4010bb63df489fc09efb6ba9a1fc1c98">MaaStringBuffer</a> *out_detail)</td></tr>
 <tr class="separator:a5ea5d33341ce8007c366ebd04f08ee51"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5d8d307550fff35a2df364eeac7f5191" id="r_a5d8d307550fff35a2df364eeac7f5191"><td class="memItemLeft" align="right" valign="top">typedef <a class="el" href="MaaDef_8h.html#a2f7289f2a8e07f48c6261b52a120cdf6">MaaBool</a>(<a class="el" href="MaaPort_8h.html#afaf570464c85866c04fabe324fe35c18">MAA_CALL</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="MaaDef_8h.html#a5d8d307550fff35a2df364eeac7f5191">MaaCustomActionCallback</a>) (<a class="el" href="MaaDef_8h.html#ad2101e87aad0f5d03b8136943daee40e">MaaContext</a> *context, <a class="el" href="MaaDef_8h.html#a711b3db9be6db60ae4cb09e3629e42f0">MaaTaskId</a> task_id, const char *node_name, const char *custom_action_name, const char *custom_action_param, <a class="el" href="MaaDef_8h.html#a7519e6a8329a32c8e3058c20ec74cda8">MaaRecoId</a> reco_id, const <a class="el" href="structMaaRect.html">MaaRect</a> *box, void *trans_arg)</td></tr>
@@ -516,8 +520,8 @@ Enumerations</h2></td></tr>
 </div><div class="memdoc">
 <b>Value:</b><div class="fragment"><div class="line">    (<a class="code hl_define" href="MaaDef_8h.html#a004b0d855740e5d3894fd14d9e47d080">MaaAdbScreencapMethod_All</a> &amp; (~MaaAdbScreencapMethod_RawByNetcat) &amp; (~<a class="code hl_define" href="MaaDef_8h.html#a594d59b13a02d41b6a335e0f6575fca2">MaaAdbScreencapMethod_MinicapDirect</a>) \</div>
 <div class="line">     &amp; (~MaaAdbScreencapMethod_MinicapStream))</div>
-<div class="ttc" id="aMaaDef_8h_html_a004b0d855740e5d3894fd14d9e47d080"><div class="ttname"><a href="MaaDef_8h.html#a004b0d855740e5d3894fd14d9e47d080">MaaAdbScreencapMethod_All</a></div><div class="ttdeci">#define MaaAdbScreencapMethod_All</div><div class="ttdef"><b>Definition</b> MaaDef.h:225</div></div>
-<div class="ttc" id="aMaaDef_8h_html_a594d59b13a02d41b6a335e0f6575fca2"><div class="ttname"><a href="MaaDef_8h.html#a594d59b13a02d41b6a335e0f6575fca2">MaaAdbScreencapMethod_MinicapDirect</a></div><div class="ttdeci">#define MaaAdbScreencapMethod_MinicapDirect</div><div class="ttdef"><b>Definition</b> MaaDef.h:220</div></div>
+<div class="ttc" id="aMaaDef_8h_html_a004b0d855740e5d3894fd14d9e47d080"><div class="ttname"><a href="MaaDef_8h.html#a004b0d855740e5d3894fd14d9e47d080">MaaAdbScreencapMethod_All</a></div><div class="ttdeci">#define MaaAdbScreencapMethod_All</div><div class="ttdef"><b>Definition</b> MaaDef.h:226</div></div>
+<div class="ttc" id="aMaaDef_8h_html_a594d59b13a02d41b6a335e0f6575fca2"><div class="ttname"><a href="MaaDef_8h.html#a594d59b13a02d41b6a335e0f6575fca2">MaaAdbScreencapMethod_MinicapDirect</a></div><div class="ttdeci">#define MaaAdbScreencapMethod_MinicapDirect</div><div class="ttdef"><b>Definition</b> MaaDef.h:221</div></div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -866,6 +870,20 @@ Enumerations</h2></td></tr>
       <table class="memname">
         <tr>
           <td class="memname">typedef <a class="el" href="MaaDef_8h.html#a9a764a8b46c0c97cbfe2d8e295d90e03">MaaId</a> <a class="el" href="MaaDef_8h.html#aeedbbed1bc17d1ffd80ff719a71cfed5">MaaNodeId</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="aac4cf6870bfe8fef31ead507dcfb4251" name="aac4cf6870bfe8fef31ead507dcfb4251"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aac4cf6870bfe8fef31ead507dcfb4251">&#9670;&#160;</a></span>MaaSinkId</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">typedef <a class="el" href="MaaDef_8h.html#a9a764a8b46c0c97cbfe2d8e295d90e03">MaaId</a> <a class="el" href="MaaDef_8h.html#aac4cf6870bfe8fef31ead507dcfb4251">MaaSinkId</a></td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -1241,6 +1259,26 @@ Enumerations</h2></td></tr>
 
 </div>
 </div>
+<a id="a6b9bcefbd6beaf7a0da83c92318a8693" name="a6b9bcefbd6beaf7a0da83c92318a8693"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6b9bcefbd6beaf7a0da83c92318a8693">&#9670;&#160;</a></span>MaaEventCallback</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">typedef void(<a class="el" href="MaaPort_8h.html#afaf570464c85866c04fabe324fe35c18">MAA_CALL</a> * MaaEventCallback) (void *handle, const char *message, const char *details_json, void *trans_arg)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>void* handle:</p><ul>
+<li>MaaTasker* for MaaTasker event</li>
+<li>MaaResource* for MaaResource event</li>
+<li>MaaController* for MaaController event</li>
+<li>MaaContext* for MaaContext event </li>
+</ul>
+
+</div>
+</div>
 <a id="a5ea5d33341ce8007c366ebd04f08ee51" name="a5ea5d33341ce8007c366ebd04f08ee51"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a5ea5d33341ce8007c366ebd04f08ee51">&#9670;&#160;</a></span>MaaCustomRecognitionCallback</h2>
 
@@ -1454,7 +1492,7 @@ default value is MaaLoggingLevel_Error
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="dir_d44c64559bbebec7f509842c48db8b23.html">include</a></li><li class="navelem"><a class="el" href="dir_370cd1367c21b1a87c5c9c6803b8d0b9.html">MaaFramework</a></li><li class="navelem"><a class="el" href="MaaDef_8h.html">MaaDef.h</a></li>
-    <li class="footer">Generated on Mon Oct 6 2025 for MaaFramework by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.8 </li>
+    <li class="footer">Generated on Thu Oct 23 2025 for MaaFramework by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.8 </li>
   </ul>
 </div>
 </body>

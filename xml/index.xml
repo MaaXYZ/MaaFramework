@@ -29,6 +29,7 @@
     <member refid="MaaAgentClientAPI_8h_1a330835a995399c4cd083671a72c42331" kind="function"><name>MaaAgentClientDestroy</name></member>
     <member refid="MaaAgentClientAPI_8h_1aa8883d8757c32c9cc0c3308b6f91e786" kind="function"><name>MaaAgentClientIdentifier</name></member>
     <member refid="MaaAgentClientAPI_8h_1ae92e9c2dd74218aa0617a8630456ef64" kind="function"><name>MaaAgentClientBindResource</name></member>
+    <member refid="MaaAgentClientAPI_8h_1a335520c4d1a595abdb34179d9fc6f6c4" kind="function"><name>MaaAgentClientRegisterSink</name></member>
     <member refid="MaaAgentClientAPI_8h_1ad0cddf9217464eb1ab89eadbaf43a97f" kind="function"><name>MaaAgentClientConnect</name></member>
     <member refid="MaaAgentClientAPI_8h_1aa4e4ccf8021abbf557bfb9efc32667da" kind="function"><name>MaaAgentClientDisconnect</name></member>
     <member refid="MaaAgentClientAPI_8h_1afd0af277e6592e0608af78dd9b64dd68" kind="function"><name>MaaAgentClientConnected</name></member>
@@ -43,12 +44,21 @@
   <compound refid="MaaAgentServerAPI_8h" kind="file"><name>MaaAgentServerAPI.h</name>
     <member refid="MaaAgentServerAPI_8h_1a0d1797cec219b8c2e53d3415e27932cb" kind="function"><name>MaaAgentServerRegisterCustomRecognition</name></member>
     <member refid="MaaAgentServerAPI_8h_1a7d02bde2c0a8eeaf0f2186626a4569cf" kind="function"><name>MaaAgentServerRegisterCustomAction</name></member>
+    <member refid="MaaAgentServerAPI_8h_1a704264f61b92d7b37793d0e93eb05acf" kind="function"><name>MaaAgentServerAddResourceSink</name></member>
+    <member refid="MaaAgentServerAPI_8h_1ae9be464a41e7d772d8952fa8f9528d64" kind="function"><name>MaaAgentServerAddControllerSink</name></member>
+    <member refid="MaaAgentServerAPI_8h_1a173603599fdac0776e1256b9f1d08d7a" kind="function"><name>MaaAgentServerAddTaskerSink</name></member>
+    <member refid="MaaAgentServerAPI_8h_1a540d14245e81452008e946d37bcf7f79" kind="function"><name>MaaAgentServerAddContextSink</name></member>
     <member refid="MaaAgentServerAPI_8h_1ac9e6a88f95da30fca84538dfb64d664c" kind="function"><name>MaaAgentServerStartUp</name></member>
     <member refid="MaaAgentServerAPI_8h_1abaa102ff4a1d7665a50effc26db19146" kind="function"><name>MaaAgentServerShutDown</name></member>
     <member refid="MaaAgentServerAPI_8h_1ab696af31846dc5d0b164d56319a0c0a1" kind="function"><name>MaaAgentServerJoin</name></member>
     <member refid="MaaAgentServerAPI_8h_1ad807d652979672cef09037e3f558dd25" kind="function"><name>MaaAgentServerDetach</name></member>
   </compound>
   <compound refid="MaaAgentServerDef_8h" kind="file"><name>MaaAgentServerDef.h</name>
+  </compound>
+  <compound refid="MaaGlobal_8h" kind="file"><name>MaaGlobal.h</name>
+    <member refid="MaaGlobal_8h_1ab8a3bdd731560655c4fa049bf5886501" kind="function"><name>MaaGlobalSetOption</name></member>
+    <member refid="MaaGlobal_8h_1ab488228d24cc5477ccff6d83ca505441" kind="function"><name>MaaGlobalLoadPlugin</name></member>
+    <member refid="MaaGlobal_8h_1a0f846923ddbabcfb0343eeabd88ccb94" kind="function"><name>MaaSetGlobalOption</name></member>
   </compound>
   <compound refid="MaaContext_8h" kind="file"><name>MaaContext.h</name>
     <member refid="MaaContext_8h_1ae55a7608008e1f51ce52614e3cae3a2d" kind="function"><name>MaaContextRunTask</name></member>
@@ -63,11 +73,14 @@
   </compound>
   <compound refid="MaaController_8h" kind="file"><name>MaaController.h</name>
     <member refid="MaaController_8h_1a22203468df2e11d45892a524d48404a4" kind="typedef"><name>MaaCustomControllerCallbacks</name></member>
-    <member refid="MaaController_8h_1a75bf05e524a4f086053e17554eb58d9e" kind="function"><name>MaaAdbControllerCreate</name></member>
-    <member refid="MaaController_8h_1a9a76a72f540f0bec888228dca7b88a12" kind="function"><name>MaaWin32ControllerCreate</name></member>
-    <member refid="MaaController_8h_1ae9506f63397ad53296fb8dfd3f0dbef4" kind="function"><name>MaaCustomControllerCreate</name></member>
-    <member refid="MaaController_8h_1a4089d1020a79a680c013b3be0eb88450" kind="function"><name>MaaDbgControllerCreate</name></member>
+    <member refid="MaaController_8h_1a7b3f6215fdc0ae3e8beeb51a3dd75e16" kind="function"><name>MaaAdbControllerCreate</name></member>
+    <member refid="MaaController_8h_1a53e929d892b47209873aa026548b7f64" kind="function"><name>MaaWin32ControllerCreate</name></member>
+    <member refid="MaaController_8h_1a2ff145414faed5fdeedc36e97729677e" kind="function"><name>MaaCustomControllerCreate</name></member>
+    <member refid="MaaController_8h_1a1ea4c3aa0b3bcb39d35dc13cdde9a044" kind="function"><name>MaaDbgControllerCreate</name></member>
     <member refid="MaaController_8h_1a497982481bf79e89bc457d8a6e5e7bed" kind="function"><name>MaaControllerDestroy</name></member>
+    <member refid="MaaController_8h_1aa01ed95af83d12f7bc3d49fdba415419" kind="function"><name>MaaControllerAddSink</name></member>
+    <member refid="MaaController_8h_1a1ae3f067cb374a85ae7580a08945e7b6" kind="function"><name>MaaControllerRemoveSink</name></member>
+    <member refid="MaaController_8h_1a4b4a854e5d591d14a303d9ab622332fb" kind="function"><name>MaaControllerClearSinks</name></member>
     <member refid="MaaController_8h_1ac0247a25f33dfbc7bd3a0183a669aad3" kind="function"><name>MaaControllerSetOption</name></member>
     <member refid="MaaController_8h_1a08f41be1ab0845f494ad7357adac0336" kind="function"><name>MaaControllerPostConnection</name></member>
     <member refid="MaaController_8h_1aaf0eb096930a8a9592b11baf918a5910" kind="function"><name>MaaControllerPostClick</name></member>
@@ -92,8 +105,11 @@
   <compound refid="MaaCustomController_8h" kind="file"><name>MaaCustomController.h</name>
   </compound>
   <compound refid="MaaResource_8h" kind="file"><name>MaaResource.h</name>
-    <member refid="MaaResource_8h_1ab4ceccc16012049fe2ea822ff543fedb" kind="function"><name>MaaResourceCreate</name></member>
+    <member refid="MaaResource_8h_1a87f6f24fde2ce7ec333cc77fed5cc36b" kind="function"><name>MaaResourceCreate</name></member>
     <member refid="MaaResource_8h_1a2c9731b5a32da11f25ae57ea8ce5373e" kind="function"><name>MaaResourceDestroy</name></member>
+    <member refid="MaaResource_8h_1ae9f53112f5b3adcaa9a50894aebb9a61" kind="function"><name>MaaResourceAddSink</name></member>
+    <member refid="MaaResource_8h_1a68481a336bd0cc2d0fd841754599a5b2" kind="function"><name>MaaResourceRemoveSink</name></member>
+    <member refid="MaaResource_8h_1a89ee9a59c95bcbdd012924a353fb84ce" kind="function"><name>MaaResourceClearSinks</name></member>
     <member refid="MaaResource_8h_1ae38c53cb841ae50276792ac1abe3f810" kind="function"><name>MaaResourceRegisterCustomRecognition</name></member>
     <member refid="MaaResource_8h_1a686b581740db7d280be58316abe59267" kind="function"><name>MaaResourceUnregisterCustomRecognition</name></member>
     <member refid="MaaResource_8h_1a29d01b1290d07ef263e29b80c3b6d843" kind="function"><name>MaaResourceClearCustomRecognition</name></member>
@@ -113,8 +129,14 @@
     <member refid="MaaResource_8h_1a93292991dbd360311465e875e9053055" kind="function"><name>MaaResourceGetNodeList</name></member>
   </compound>
   <compound refid="MaaTasker_8h" kind="file"><name>MaaTasker.h</name>
-    <member refid="MaaTasker_8h_1a1be38fb8f5e4b9e8240d5847c1f558ac" kind="function"><name>MaaTaskerCreate</name></member>
+    <member refid="MaaTasker_8h_1abc517c855a09e5cd6a3cf33f0c7abb4b" kind="function"><name>MaaTaskerCreate</name></member>
     <member refid="MaaTasker_8h_1abefa8dae5713c3393833d8644f2435a8" kind="function"><name>MaaTaskerDestroy</name></member>
+    <member refid="MaaTasker_8h_1a5a7ad510d2569e8cae40a60725ca5a22" kind="function"><name>MaaTaskerAddSink</name></member>
+    <member refid="MaaTasker_8h_1a489c89310019ea5780c253beca2a4e07" kind="function"><name>MaaTaskerRemoveSink</name></member>
+    <member refid="MaaTasker_8h_1a9b5b5d86d47472092e1b468bb489fd3c" kind="function"><name>MaaTaskerClearSinks</name></member>
+    <member refid="MaaTasker_8h_1af8fe24f4efa61c47ee8e018a7f67c10f" kind="function"><name>MaaTaskerAddContextSink</name></member>
+    <member refid="MaaTasker_8h_1af20736e5613012b909a3483757426923" kind="function"><name>MaaTaskerRemoveContextSink</name></member>
+    <member refid="MaaTasker_8h_1af3d259c9f9fdf89c59870f607e403375" kind="function"><name>MaaTaskerClearContextSinks</name></member>
     <member refid="MaaTasker_8h_1a08e81fb30421633ca6300d7c98056f03" kind="function"><name>MaaTaskerSetOption</name></member>
     <member refid="MaaTasker_8h_1ac4e288dec1904fba61b65655c4317e79" kind="function"><name>MaaTaskerBindResource</name></member>
     <member refid="MaaTasker_8h_1a9979e64533deaf3d002cbd08338bb426" kind="function"><name>MaaTaskerBindController</name></member>
@@ -216,6 +238,7 @@
     <member refid="MaaDef_8h_1a711b3db9be6db60ae4cb09e3629e42f0" kind="typedef"><name>MaaTaskId</name></member>
     <member refid="MaaDef_8h_1a7519e6a8329a32c8e3058c20ec74cda8" kind="typedef"><name>MaaRecoId</name></member>
     <member refid="MaaDef_8h_1aeedbbed1bc17d1ffd80ff719a71cfed5" kind="typedef"><name>MaaNodeId</name></member>
+    <member refid="MaaDef_8h_1aac4cf6870bfe8fef31ead507dcfb4251" kind="typedef"><name>MaaSinkId</name></member>
     <member refid="MaaDef_8h_1a4010bb63df489fc09efb6ba9a1fc1c98" kind="typedef"><name>MaaStringBuffer</name></member>
     <member refid="MaaDef_8h_1a0a52c8503deca448e71a407cdb14d259" kind="typedef"><name>MaaImageBuffer</name></member>
     <member refid="MaaDef_8h_1a7668a404d5063ffc525180d3e144999f" kind="typedef"><name>MaaStringListBuffer</name></member>
@@ -242,6 +265,7 @@
     <member refid="MaaDef_8h_1a7a7491d55c50840ccb1891ba9b7740c4" kind="typedef"><name>MaaDbgControllerType</name></member>
     <member refid="MaaDef_8h_1a90ae9b4896224481bd0967903dafdfa1" kind="typedef"><name>MaaRect</name></member>
     <member refid="MaaDef_8h_1a83fe073ae3fefc09c17fd9eb6b6b3e50" kind="typedef"><name>MaaNotificationCallback</name></member>
+    <member refid="MaaDef_8h_1a6b9bcefbd6beaf7a0da83c92318a8693" kind="typedef"><name>MaaEventCallback</name></member>
     <member refid="MaaDef_8h_1a5ea5d33341ce8007c366ebd04f08ee51" kind="typedef"><name>MaaCustomRecognitionCallback</name></member>
     <member refid="MaaDef_8h_1a5d8d307550fff35a2df364eeac7f5191" kind="typedef"><name>MaaCustomActionCallback</name></member>
   </compound>
@@ -328,7 +352,6 @@
   </compound>
   <compound refid="MaaUtility_8h" kind="file"><name>MaaUtility.h</name>
     <member refid="MaaUtility_8h_1a0329e2aed44c80bc9d10f6c1f6a8872f" kind="function"><name>MaaVersion</name></member>
-    <member refid="MaaUtility_8h_1a1dba15d9cc61cf339c434085738f873c" kind="function"><name>MaaSetGlobalOption</name></member>
   </compound>
   <compound refid="MaaToolkitAdbDevice_8h" kind="file"><name>MaaToolkitAdbDevice.h</name>
     <member refid="MaaToolkitAdbDevice_8h_1ab8dc9a69e2a1d91dc9f04e1a0c3b0dc5" kind="function"><name>MaaToolkitAdbDeviceListCreate</name></member>
@@ -365,11 +388,6 @@
     <member refid="MaaToolkitDef_8h_1a5d8743988770806277c247ba9e84040a" kind="typedef"><name>MaaToolkitDesktopWindow</name></member>
     <member refid="MaaToolkitDef_8h_1aaf164274a2c0089edb67f33e26719ff0" kind="typedef"><name>MaaToolkitDesktopWindowList</name></member>
   </compound>
-  <compound refid="MaaToolkitProjectInterface_8h" kind="file"><name>MaaToolkitProjectInterface.h</name>
-    <member refid="MaaToolkitProjectInterface_8h_1a15874efc8d0792307bef96f846b22063" kind="function"><name>MaaToolkitProjectInterfaceRegisterCustomRecognition</name></member>
-    <member refid="MaaToolkitProjectInterface_8h_1ae82e9ab49b3d6fa22c3d10bf074c1180" kind="function"><name>MaaToolkitProjectInterfaceRegisterCustomAction</name></member>
-    <member refid="MaaToolkitProjectInterface_8h_1a5c739cd4c579c77cbc50ae54e6364619" kind="function"><name>MaaToolkitProjectInterfaceRunCli</name></member>
-  </compound>
   <compound refid="group__MaaMsg" kind="group"><name>MaaMsg</name>
     <member refid="group__MaaMsg_1ga7297c67f0f81b33f8811e1405a24a437" kind="define"><name>MaaMsg_Resource_Loading_Starting</name></member>
     <member refid="group__MaaMsg_1ga46e053d230031807feaed18e628782da" kind="define"><name>MaaMsg_Resource_Loading_Succeeded</name></member>
@@ -396,6 +414,8 @@
   </compound>
   <compound refid="dir_5fd7a4c0d2eb20e652f065856939ee93" kind="dir"><name>include/MaaToolkit/DesktopWindow</name>
   </compound>
+  <compound refid="dir_40c6fe55fc949fd40ad3e87842c632ab" kind="dir"><name>include/MaaFramework/Global</name>
+  </compound>
   <compound refid="dir_d44c64559bbebec7f509842c48db8b23" kind="dir"><name>include</name>
   </compound>
   <compound refid="dir_0debf1eee29073ebb629a4e1dfd2a5f6" kind="dir"><name>include/MaaFramework/Instance</name>
@@ -407,8 +427,6 @@
   <compound refid="dir_370cd1367c21b1a87c5c9c6803b8d0b9" kind="dir"><name>include/MaaFramework</name>
   </compound>
   <compound refid="dir_229d1428d76e394aeaec36b75a5d5699" kind="dir"><name>include/MaaToolkit</name>
-  </compound>
-  <compound refid="dir_ad27c7cb25637142423800785cfd3317" kind="dir"><name>include/MaaToolkit/ProjectInterface</name>
   </compound>
   <compound refid="dir_d3f066ca4d2612436eb7c36c3816b59b" kind="dir"><name>include/MaaFramework/Utility</name>
   </compound>

@@ -1,5 +1,5 @@
 {
-	"Version": "(main) v4.5.6",
+	"Version": "(main) v5.0.0-alpha.1",
 	"Compounds": {
 		"MaaAgentClientAPI.h": {
 			"Location": "include/MaaAgentClient/MaaAgentClientAPI.h",
@@ -88,6 +88,43 @@
 						},
 						"res": {
 							"Type": "MaaResource*",
+							"Description": "",
+							"Direction": 0,
+							"IsPointerToArray": null
+						}
+					}
+				},
+				"MaaAgentClientRegisterSink": {
+					"Description": {
+						"Brief": "",
+						"Details": [],
+						"Deprecated": null
+					},
+					"Types": {
+						"MAA_AGENT_CLIENT_API": "",
+						"MaaBool": ""
+					},
+					"Parameters": {
+						"client": {
+							"Type": "MaaAgentClient*",
+							"Description": "",
+							"Direction": 0,
+							"IsPointerToArray": null
+						},
+						"tasker": {
+							"Type": "MaaTasker*",
+							"Description": "",
+							"Direction": 0,
+							"IsPointerToArray": null
+						},
+						"res": {
+							"Type": "MaaResource*",
+							"Description": "",
+							"Direction": 0,
+							"IsPointerToArray": null
+						},
+						"ctrl": {
+							"Type": "MaaController*",
 							"Description": "",
 							"Direction": 0,
 							"IsPointerToArray": null
@@ -325,6 +362,106 @@
 						}
 					}
 				},
+				"MaaAgentServerAddResourceSink": {
+					"Description": {
+						"Brief": "",
+						"Details": [],
+						"Deprecated": null
+					},
+					"Types": {
+						"MAA_AGENT_SERVER_API": "",
+						"void": ""
+					},
+					"Parameters": {
+						"sink": {
+							"Type": "MaaEventCallback",
+							"Description": "",
+							"Direction": 0,
+							"IsPointerToArray": null
+						},
+						"trans_arg": {
+							"Type": "void*",
+							"Description": "",
+							"Direction": 0,
+							"IsPointerToArray": null
+						}
+					}
+				},
+				"MaaAgentServerAddControllerSink": {
+					"Description": {
+						"Brief": "",
+						"Details": [],
+						"Deprecated": null
+					},
+					"Types": {
+						"MAA_AGENT_SERVER_API": "",
+						"void": ""
+					},
+					"Parameters": {
+						"sink": {
+							"Type": "MaaEventCallback",
+							"Description": "",
+							"Direction": 0,
+							"IsPointerToArray": null
+						},
+						"trans_arg": {
+							"Type": "void*",
+							"Description": "",
+							"Direction": 0,
+							"IsPointerToArray": null
+						}
+					}
+				},
+				"MaaAgentServerAddTaskerSink": {
+					"Description": {
+						"Brief": "",
+						"Details": [],
+						"Deprecated": null
+					},
+					"Types": {
+						"MAA_AGENT_SERVER_API": "",
+						"void": ""
+					},
+					"Parameters": {
+						"sink": {
+							"Type": "MaaEventCallback",
+							"Description": "",
+							"Direction": 0,
+							"IsPointerToArray": null
+						},
+						"trans_arg": {
+							"Type": "void*",
+							"Description": "",
+							"Direction": 0,
+							"IsPointerToArray": null
+						}
+					}
+				},
+				"MaaAgentServerAddContextSink": {
+					"Description": {
+						"Brief": "",
+						"Details": [],
+						"Deprecated": null
+					},
+					"Types": {
+						"MAA_AGENT_SERVER_API": "",
+						"void": ""
+					},
+					"Parameters": {
+						"sink": {
+							"Type": "MaaEventCallback",
+							"Description": "",
+							"Direction": 0,
+							"IsPointerToArray": null
+						},
+						"trans_arg": {
+							"Type": "void*",
+							"Description": "",
+							"Direction": 0,
+							"IsPointerToArray": null
+						}
+					}
+				},
 				"MaaAgentServerStartUp": {
 					"Description": {
 						"Brief": "",
@@ -389,6 +526,99 @@
 			"Typedefs": {},
 			"Defines": {},
 			"Functions": {},
+			"Enums": {},
+			"Structs": {}
+		},
+		"MaaGlobal.h": {
+			"Location": "include/MaaFramework/Global/MaaGlobal.h",
+			"Typedefs": {},
+			"Defines": {},
+			"Functions": {
+				"MaaGlobalSetOption": {
+					"Description": {
+						"Brief": "",
+						"Details": [],
+						"Deprecated": null
+					},
+					"Types": {
+						"MAA_FRAMEWORK_API": "",
+						"MaaBool": ""
+					},
+					"Parameters": {
+						"key": {
+							"Type": "MaaGlobalOption",
+							"Description": "",
+							"Direction": 0,
+							"IsPointerToArray": null
+						},
+						"value": {
+							"Type": "MaaOptionValue",
+							"Description": "",
+							"Direction": 1,
+							"IsPointerToArray": true
+						},
+						"val_size": {
+							"Type": "MaaOptionValueSize",
+							"Description": "",
+							"Direction": 0,
+							"IsPointerToArray": null
+						}
+					}
+				},
+				"MaaGlobalLoadPlugin": {
+					"Description": {
+						"Brief": "",
+						"Details": [
+							"load a plugin with full path or name only, name only will search in system directory and current directory or load plugins with recursive search in the directory"
+						],
+						"Deprecated": null
+					},
+					"Types": {
+						"MAA_FRAMEWORK_API": "",
+						"MaaBool": ""
+					},
+					"Parameters": {
+						"library_path": {
+							"Type": "const char*",
+							"Description": "",
+							"Direction": 0,
+							"IsPointerToArray": null
+						}
+					}
+				},
+				"MaaSetGlobalOption": {
+					"Description": {
+						"Brief": "",
+						"Details": [],
+						"Deprecated": ""
+					},
+					"Types": {
+						"MAA_DEPRECATED": "",
+						"MAA_FRAMEWORK_API": "",
+						"MaaBool": ""
+					},
+					"Parameters": {
+						"key": {
+							"Type": "MaaGlobalOption",
+							"Description": "",
+							"Direction": 0,
+							"IsPointerToArray": null
+						},
+						"value": {
+							"Type": "MaaOptionValue",
+							"Description": "",
+							"Direction": 0,
+							"IsPointerToArray": true
+						},
+						"val_size": {
+							"Type": "MaaOptionValueSize",
+							"Description": "",
+							"Direction": 0,
+							"IsPointerToArray": null
+						}
+					}
+				}
+			},
 			"Enums": {},
 			"Structs": {}
 		},
@@ -719,18 +949,6 @@
 							"Description": "",
 							"Direction": 0,
 							"IsPointerToArray": null
-						},
-						"notify": {
-							"Type": "MaaNotificationCallback",
-							"Description": "",
-							"Direction": 0,
-							"IsPointerToArray": null
-						},
-						"notify_trans_arg": {
-							"Type": "void*",
-							"Description": "",
-							"Direction": 0,
-							"IsPointerToArray": null
 						}
 					}
 				},
@@ -762,18 +980,6 @@
 							"Description": "",
 							"Direction": 0,
 							"IsPointerToArray": null
-						},
-						"notify": {
-							"Type": "MaaNotificationCallback",
-							"Description": "",
-							"Direction": 0,
-							"IsPointerToArray": null
-						},
-						"notify_trans_arg": {
-							"Type": "void*",
-							"Description": "",
-							"Direction": 0,
-							"IsPointerToArray": null
 						}
 					}
 				},
@@ -795,18 +1001,6 @@
 							"IsPointerToArray": null
 						},
 						"controller_arg": {
-							"Type": "void*",
-							"Description": "",
-							"Direction": 0,
-							"IsPointerToArray": null
-						},
-						"notify": {
-							"Type": "MaaNotificationCallback",
-							"Description": "",
-							"Direction": 0,
-							"IsPointerToArray": null
-						},
-						"notify_trans_arg": {
 							"Type": "void*",
 							"Description": "",
 							"Direction": 0,
@@ -848,14 +1042,52 @@
 							"Description": "",
 							"Direction": 0,
 							"IsPointerToArray": null
-						},
-						"notify": {
-							"Type": "MaaNotificationCallback",
+						}
+					}
+				},
+				"MaaControllerDestroy": {
+					"Description": {
+						"Brief": "",
+						"Details": [],
+						"Deprecated": null
+					},
+					"Types": {
+						"MAA_FRAMEWORK_API": "",
+						"void": ""
+					},
+					"Parameters": {
+						"ctrl": {
+							"Type": "MaaController*",
+							"Description": "",
+							"Direction": 0,
+							"IsPointerToArray": null
+						}
+					}
+				},
+				"MaaControllerAddSink": {
+					"Description": {
+						"Brief": "",
+						"Details": [],
+						"Deprecated": null
+					},
+					"Types": {
+						"MAA_FRAMEWORK_API": "",
+						"MaaSinkId": ""
+					},
+					"Parameters": {
+						"ctrl": {
+							"Type": "MaaController*",
 							"Description": "",
 							"Direction": 0,
 							"IsPointerToArray": null
 						},
-						"notify_trans_arg": {
+						"sink": {
+							"Type": "MaaEventCallback",
+							"Description": "",
+							"Direction": 0,
+							"IsPointerToArray": null
+						},
+						"trans_arg": {
 							"Type": "void*",
 							"Description": "",
 							"Direction": 0,
@@ -863,7 +1095,32 @@
 						}
 					}
 				},
-				"MaaControllerDestroy": {
+				"MaaControllerRemoveSink": {
+					"Description": {
+						"Brief": "",
+						"Details": [],
+						"Deprecated": null
+					},
+					"Types": {
+						"MAA_FRAMEWORK_API": "",
+						"void": ""
+					},
+					"Parameters": {
+						"ctrl": {
+							"Type": "MaaController*",
+							"Description": "",
+							"Direction": 0,
+							"IsPointerToArray": null
+						},
+						"sink_id": {
+							"Type": "MaaSinkId",
+							"Description": "",
+							"Direction": 0,
+							"IsPointerToArray": null
+						}
+					}
+				},
+				"MaaControllerClearSinks": {
 					"Description": {
 						"Brief": "",
 						"Details": [],
@@ -1907,14 +2164,51 @@
 						"MAA_FRAMEWORK_API": "",
 						"MaaResource*": ""
 					},
+					"Parameters": {}
+				},
+				"MaaResourceDestroy": {
+					"Description": {
+						"Brief": "",
+						"Details": [],
+						"Deprecated": null
+					},
+					"Types": {
+						"MAA_FRAMEWORK_API": "",
+						"void": ""
+					},
 					"Parameters": {
-						"notify": {
-							"Type": "MaaNotificationCallback",
+						"res": {
+							"Type": "MaaResource*",
+							"Description": "",
+							"Direction": 0,
+							"IsPointerToArray": null
+						}
+					}
+				},
+				"MaaResourceAddSink": {
+					"Description": {
+						"Brief": "",
+						"Details": [],
+						"Deprecated": null
+					},
+					"Types": {
+						"MAA_FRAMEWORK_API": "",
+						"MaaSinkId": ""
+					},
+					"Parameters": {
+						"res": {
+							"Type": "MaaResource*",
 							"Description": "",
 							"Direction": 0,
 							"IsPointerToArray": null
 						},
-						"notify_trans_arg": {
+						"sink": {
+							"Type": "MaaEventCallback",
+							"Description": "",
+							"Direction": 0,
+							"IsPointerToArray": null
+						},
+						"trans_arg": {
 							"Type": "void*",
 							"Description": "",
 							"Direction": 0,
@@ -1922,7 +2216,32 @@
 						}
 					}
 				},
-				"MaaResourceDestroy": {
+				"MaaResourceRemoveSink": {
+					"Description": {
+						"Brief": "",
+						"Details": [],
+						"Deprecated": null
+					},
+					"Types": {
+						"MAA_FRAMEWORK_API": "",
+						"void": ""
+					},
+					"Parameters": {
+						"res": {
+							"Type": "MaaResource*",
+							"Description": "",
+							"Direction": 0,
+							"IsPointerToArray": null
+						},
+						"sink_id": {
+							"Type": "MaaSinkId",
+							"Description": "",
+							"Direction": 0,
+							"IsPointerToArray": null
+						}
+					}
+				},
+				"MaaResourceClearSinks": {
 					"Description": {
 						"Brief": "",
 						"Details": [],
@@ -2409,14 +2728,51 @@
 						"MAA_FRAMEWORK_API": "",
 						"MaaTasker*": ""
 					},
+					"Parameters": {}
+				},
+				"MaaTaskerDestroy": {
+					"Description": {
+						"Brief": "",
+						"Details": [],
+						"Deprecated": null
+					},
+					"Types": {
+						"MAA_FRAMEWORK_API": "",
+						"void": ""
+					},
 					"Parameters": {
-						"notify": {
-							"Type": "MaaNotificationCallback",
+						"tasker": {
+							"Type": "MaaTasker*",
+							"Description": "",
+							"Direction": 0,
+							"IsPointerToArray": null
+						}
+					}
+				},
+				"MaaTaskerAddSink": {
+					"Description": {
+						"Brief": "",
+						"Details": [],
+						"Deprecated": null
+					},
+					"Types": {
+						"MAA_FRAMEWORK_API": "",
+						"MaaSinkId": ""
+					},
+					"Parameters": {
+						"tasker": {
+							"Type": "MaaTasker*",
 							"Description": "",
 							"Direction": 0,
 							"IsPointerToArray": null
 						},
-						"notify_trans_arg": {
+						"sink": {
+							"Type": "MaaEventCallback",
+							"Description": "",
+							"Direction": 0,
+							"IsPointerToArray": null
+						},
+						"trans_arg": {
 							"Type": "void*",
 							"Description": "",
 							"Direction": 0,
@@ -2424,7 +2780,107 @@
 						}
 					}
 				},
-				"MaaTaskerDestroy": {
+				"MaaTaskerRemoveSink": {
+					"Description": {
+						"Brief": "",
+						"Details": [],
+						"Deprecated": null
+					},
+					"Types": {
+						"MAA_FRAMEWORK_API": "",
+						"void": ""
+					},
+					"Parameters": {
+						"tasker": {
+							"Type": "MaaTasker*",
+							"Description": "",
+							"Direction": 0,
+							"IsPointerToArray": null
+						},
+						"sink_id": {
+							"Type": "MaaSinkId",
+							"Description": "",
+							"Direction": 0,
+							"IsPointerToArray": null
+						}
+					}
+				},
+				"MaaTaskerClearSinks": {
+					"Description": {
+						"Brief": "",
+						"Details": [],
+						"Deprecated": null
+					},
+					"Types": {
+						"MAA_FRAMEWORK_API": "",
+						"void": ""
+					},
+					"Parameters": {
+						"tasker": {
+							"Type": "MaaTasker*",
+							"Description": "",
+							"Direction": 0,
+							"IsPointerToArray": null
+						}
+					}
+				},
+				"MaaTaskerAddContextSink": {
+					"Description": {
+						"Brief": "",
+						"Details": [],
+						"Deprecated": null
+					},
+					"Types": {
+						"MAA_FRAMEWORK_API": "",
+						"MaaSinkId": ""
+					},
+					"Parameters": {
+						"tasker": {
+							"Type": "MaaTasker*",
+							"Description": "",
+							"Direction": 0,
+							"IsPointerToArray": null
+						},
+						"sink": {
+							"Type": "MaaEventCallback",
+							"Description": "",
+							"Direction": 0,
+							"IsPointerToArray": null
+						},
+						"trans_arg": {
+							"Type": "void*",
+							"Description": "",
+							"Direction": 0,
+							"IsPointerToArray": null
+						}
+					}
+				},
+				"MaaTaskerRemoveContextSink": {
+					"Description": {
+						"Brief": "",
+						"Details": [],
+						"Deprecated": null
+					},
+					"Types": {
+						"MAA_FRAMEWORK_API": "",
+						"void": ""
+					},
+					"Parameters": {
+						"tasker": {
+							"Type": "MaaTasker*",
+							"Description": "",
+							"Direction": 0,
+							"IsPointerToArray": null
+						},
+						"sink_id": {
+							"Type": "MaaSinkId",
+							"Description": "",
+							"Direction": 0,
+							"IsPointerToArray": null
+						}
+					}
+				},
+				"MaaTaskerClearContextSinks": {
 					"Description": {
 						"Brief": "",
 						"Details": [],
@@ -3037,6 +3493,17 @@
 					},
 					"FunctionPointer": null
 				},
+				"MaaSinkId": {
+					"Type": {
+						"Description": {
+							"Brief": "",
+							"Details": [],
+							"Deprecated": null
+						},
+						"Define": "MaaId"
+					},
+					"FunctionPointer": null
+				},
 				"MaaStringBuffer": {
 					"Type": {
 						"Description": {
@@ -3348,6 +3815,48 @@
 								"IsPointerToArray": null
 							},
 							"notify_trans_arg": {
+								"Type": "void*",
+								"Description": "",
+								"Direction": 0,
+								"IsPointerToArray": null
+							}
+						}
+					}
+				},
+				"MaaEventCallback": {
+					"Type": null,
+					"FunctionPointer": {
+						"Description": {
+							"Brief": "",
+							"Details": [
+								"void* handle:MaaTasker* for MaaTasker eventMaaResource* for MaaResource eventMaaController* for MaaController eventMaaContext* for MaaContext event"
+							],
+							"Deprecated": null
+						},
+						"Types": {
+							"void": "",
+							"MAA_CALL": ""
+						},
+						"Parameters": {
+							"handle": {
+								"Type": "void*",
+								"Description": "",
+								"Direction": 0,
+								"IsPointerToArray": null
+							},
+							"message": {
+								"Type": "const char*",
+								"Description": "",
+								"Direction": 0,
+								"IsPointerToArray": null
+							},
+							"details_json": {
+								"Type": "const char*",
+								"Description": "",
+								"Direction": 0,
+								"IsPointerToArray": null
+							},
+							"trans_arg": {
 								"Type": "void*",
 								"Description": "",
 								"Direction": 0,
@@ -5217,37 +5726,6 @@
 						"char*": ""
 					},
 					"Parameters": {}
-				},
-				"MaaSetGlobalOption": {
-					"Description": {
-						"Brief": "",
-						"Details": [],
-						"Deprecated": null
-					},
-					"Types": {
-						"MAA_FRAMEWORK_API": "",
-						"MaaBool": ""
-					},
-					"Parameters": {
-						"key": {
-							"Type": "MaaGlobalOption",
-							"Description": "",
-							"Direction": 0,
-							"IsPointerToArray": null
-						},
-						"value": {
-							"Type": "MaaOptionValue",
-							"Description": "",
-							"Direction": 1,
-							"IsPointerToArray": true
-						},
-						"val_size": {
-							"Type": "MaaOptionValueSize",
-							"Description": "",
-							"Direction": 0,
-							"IsPointerToArray": null
-						}
-					}
 				}
 			},
 			"Enums": {},
@@ -5755,138 +6233,6 @@
 			},
 			"Defines": {},
 			"Functions": {},
-			"Enums": {},
-			"Structs": {}
-		},
-		"MaaToolkitProjectInterface.h": {
-			"Location": "include/MaaToolkit/ProjectInterface/MaaToolkitProjectInterface.h",
-			"Typedefs": {},
-			"Defines": {},
-			"Functions": {
-				"MaaToolkitProjectInterfaceRegisterCustomRecognition": {
-					"Description": {
-						"Brief": "",
-						"Details": [],
-						"Deprecated": null
-					},
-					"Types": {
-						"MAA_TOOLKIT_API": "",
-						"void": ""
-					},
-					"Parameters": {
-						"inst_id": {
-							"Type": "uint64_t",
-							"Description": "",
-							"Direction": 0,
-							"IsPointerToArray": null
-						},
-						"name": {
-							"Type": "const char*",
-							"Description": "",
-							"Direction": 0,
-							"IsPointerToArray": null
-						},
-						"recognition": {
-							"Type": "MaaCustomRecognitionCallback",
-							"Description": "",
-							"Direction": 0,
-							"IsPointerToArray": null
-						},
-						"trans_arg": {
-							"Type": "void*",
-							"Description": "",
-							"Direction": 0,
-							"IsPointerToArray": null
-						}
-					}
-				},
-				"MaaToolkitProjectInterfaceRegisterCustomAction": {
-					"Description": {
-						"Brief": "",
-						"Details": [],
-						"Deprecated": null
-					},
-					"Types": {
-						"MAA_TOOLKIT_API": "",
-						"void": ""
-					},
-					"Parameters": {
-						"inst_id": {
-							"Type": "uint64_t",
-							"Description": "",
-							"Direction": 0,
-							"IsPointerToArray": null
-						},
-						"name": {
-							"Type": "const char*",
-							"Description": "",
-							"Direction": 0,
-							"IsPointerToArray": null
-						},
-						"action": {
-							"Type": "MaaCustomActionCallback",
-							"Description": "",
-							"Direction": 0,
-							"IsPointerToArray": null
-						},
-						"trans_arg": {
-							"Type": "void*",
-							"Description": "",
-							"Direction": 0,
-							"IsPointerToArray": null
-						}
-					}
-				},
-				"MaaToolkitProjectInterfaceRunCli": {
-					"Description": {
-						"Brief": "",
-						"Details": [],
-						"Deprecated": null
-					},
-					"Types": {
-						"MAA_TOOLKIT_API": "",
-						"MaaBool": ""
-					},
-					"Parameters": {
-						"inst_id": {
-							"Type": "uint64_t",
-							"Description": "",
-							"Direction": 0,
-							"IsPointerToArray": null
-						},
-						"resource_path": {
-							"Type": "const char*",
-							"Description": "",
-							"Direction": 0,
-							"IsPointerToArray": null
-						},
-						"user_path": {
-							"Type": "const char*",
-							"Description": "",
-							"Direction": 0,
-							"IsPointerToArray": null
-						},
-						"directly": {
-							"Type": "MaaBool",
-							"Description": "",
-							"Direction": 0,
-							"IsPointerToArray": null
-						},
-						"notify": {
-							"Type": "MaaNotificationCallback",
-							"Description": "",
-							"Direction": 0,
-							"IsPointerToArray": null
-						},
-						"notify_trans_arg": {
-							"Type": "void*",
-							"Description": "",
-							"Direction": 0,
-							"IsPointerToArray": null
-						}
-					}
-				}
-			},
 			"Enums": {},
 			"Structs": {}
 		},

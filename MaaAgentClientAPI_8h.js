@@ -4,6 +4,7 @@ var MaaAgentClientAPI_8h =
     [ "MaaAgentClientDestroy", "MaaAgentClientAPI_8h.html#a330835a995399c4cd083671a72c42331", null ],
     [ "MaaAgentClientIdentifier", "MaaAgentClientAPI_8h.html#aa8883d8757c32c9cc0c3308b6f91e786", null ],
     [ "MaaAgentClientBindResource", "MaaAgentClientAPI_8h.html#ae92e9c2dd74218aa0617a8630456ef64", null ],
+    [ "MaaAgentClientRegisterSink", "MaaAgentClientAPI_8h.html#a335520c4d1a595abdb34179d9fc6f6c4", null ],
     [ "MaaAgentClientConnect", "MaaAgentClientAPI_8h.html#ad0cddf9217464eb1ab89eadbaf43a97f", null ],
     [ "MaaAgentClientDisconnect", "MaaAgentClientAPI_8h.html#aa4e4ccf8021abbf557bfb9efc32667da", null ],
     [ "MaaAgentClientConnected", "MaaAgentClientAPI_8h.html#afd0af277e6592e0608af78dd9b64dd68", null ],
