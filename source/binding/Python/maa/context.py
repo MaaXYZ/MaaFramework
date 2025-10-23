@@ -8,7 +8,7 @@ from .buffer import ImageBuffer, RectBuffer, StringBuffer, StringListBuffer
 from .define import *
 from .library import Library
 from .tasker import Tasker
-from .resource import JPipelineData, JPipelineParser
+from .pipeline import JPipelineData, JPipelineParser
 from .job import JobWithResult
 
 
