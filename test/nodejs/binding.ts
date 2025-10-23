@@ -141,11 +141,7 @@ async function api_test() {
         }
     }
 
-    const job = tasker.post_task('Entry', ppover)
-    await job.wait()
-    console.log(job, job.toString(), job.get())
-    let detail = job.get()
-    console.log(detail)
+    let detail = await tasker.post_task('Entry', ppover).wait().get()
     if (!detail) {
         console.log('pipeline failed')
         process.exit(1)
