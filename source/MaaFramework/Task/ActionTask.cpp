@@ -1,7 +1,6 @@
 #include "ActionTask.h"
 
 #include "Controller/ControllerAgent.h"
-#include "Global/GlobalOptionMgr.h"
 #include "MaaFramework/MaaMsg.h"
 #include "Resource/ResourceMgr.h"
 #include "Tasker/Tasker.h"

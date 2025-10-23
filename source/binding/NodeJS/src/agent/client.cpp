@@ -50,6 +50,24 @@ bool agent_client_bind_resource(Napi::External<AgentClientInfo> info, Napi::Exte
     }
 }
 
+bool agent_client_register_sink(
+    Napi::External<AgentClientInfo> info,
+    std::optional<Napi::External<TaskerInfo>> tasker_info,
+    std::optional<Napi::External<ResourceInfo>> res_info,
+    std::optional<Napi::External<ControllerInfo>> ctrl_info)
+{
+    if (MaaAgentClientRegisterSink(
+            info.Data()->handle,
+            tasker_info ? tasker_info->Data()->handle : nullptr,
+            res_info ? res_info->Data()->handle : nullptr,
+            ctrl_info ? ctrl_info->Data()->handle : nullptr)) {
+        return true;
+    }
+    else {
+        return false;
+    }
+}
+
 Napi::Promise agent_client_connect(Napi::Env env, Napi::External<AgentClientInfo> info)
 {
     auto handle = info.Data()->handle;
@@ -84,6 +102,7 @@ void load_agent(Napi::Env env, Napi::Object& exports, Napi::External<ExtContextI
     BIND(agent_client_destroy);
     BIND(agent_client_identifier);
     BIND(agent_client_bind_resource);
+    BIND(agent_client_register_sink);
     BIND(agent_client_connect);
     BIND(agent_client_disconnect);
     BIND(agent_client_connected);

@@ -6,24 +6,16 @@
 #include "../include/utils.h"
 #include "../include/wrapper.h"
 
-std::optional<Napi::External<ResourceInfo>> resource_create(Napi::Env env, std::optional<Napi::Function> callback)
+std::optional<Napi::External<ResourceInfo>> resource_create(Napi::Env env)
 {
-    MaaNotificationCallback cb = nullptr;
-    CallbackContext* ctx = nullptr;
     MaaResource* handle = nullptr;
 
-    if (callback) {
-        cb = NotificationCallback;
-        ctx = new CallbackContext { env, callback.value(), "NotificationCallback" };
-    }
-
-    handle = MaaResourceCreate(cb, ctx);
+    handle = MaaResourceCreate();
 
     if (handle) {
-        return Napi::External<ResourceInfo>::New(env, new ResourceInfo { { handle }, ctx }, &DeleteFinalizer<ResourceInfo*>);
+        return Napi::External<ResourceInfo>::New(env, new ResourceInfo { { handle } }, &DeleteFinalizer<ResourceInfo*>);
     }
     else {
-        delete ctx;
         return std::nullopt;
     }
 }
@@ -31,6 +23,39 @@ std::optional<Napi::External<ResourceInfo>> resource_create(Napi::Env env, std::
 void resource_destroy(Napi::External<ResourceInfo> info)
 {
     info.Data()->dispose();
+}
+
+MaaSinkId resource_add_sink(Napi::Env env, Napi::External<ResourceInfo> info, Napi::Function callback)
+{
+    CallbackContext* ctx = new CallbackContext { env, callback, "EventCallback<Resource>" };
+    auto id = MaaResourceAddSink(info.Data()->handle, NotificationCallback, ctx);
+    if (id != MaaInvalidId) {
+        info.Data()->callback[id] = ctx;
+        return id;
+    }
+    else {
+        delete ctx;
+        return MaaInvalidId;
+    }
+}
+
+void resource_remove_sink(Napi::External<ResourceInfo> info, MaaSinkId id)
+{
+    auto& callback = info.Data()->callback;
+    if (auto it = callback.find(id); it != callback.end()) {
+        delete it->second;
+        callback.erase(it);
+    }
+    MaaResourceRemoveSink(info.Data()->handle, id);
+}
+
+void resource_clear_sinks(Napi::External<ResourceInfo> info)
+{
+    for (auto [_, ctx] : info.Data()->callback) {
+        delete ctx;
+    }
+    info.Data()->callback.clear();
+    MaaResourceClearSinks(info.Data()->handle);
 }
 
 bool resource_set_option_inference_device(Napi::External<ResourceInfo> info, int32_t id)
@@ -210,6 +235,9 @@ void load_instance_resource(Napi::Env env, Napi::Object& exports, Napi::External
 {
     BIND(resource_create);
     BIND(resource_destroy);
+    BIND(resource_add_sink);
+    BIND(resource_remove_sink);
+    BIND(resource_clear_sinks);
     BIND(resource_set_option_inference_device);
     BIND(resource_set_option_inference_execution_provider);
     BIND(resource_register_custom_recognition);

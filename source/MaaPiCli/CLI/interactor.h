@@ -8,8 +8,6 @@ class Interactor
 public:
     Interactor(
         std::filesystem::path user_path,
-        MaaNotificationCallback notify,
-        void* notify_trans_arg,
         std::map<std::string, MAA_PROJECT_INTERFACE_NS::CustomRecognitionSession> custom_recognitions,
         std::map<std::string, MAA_PROJECT_INTERFACE_NS::CustomActionSession> custom_actions);
 
@@ -43,14 +41,11 @@ private:
 
     void mpause() const;
 
-    static void on_maafw_notify(const char* msg, const char* details_json, void* notify_trans_arg);
     static std::string format_win32_config(const MAA_PROJECT_INTERFACE_NS::Configuration::Win32Config& win32_config);
 
 private:
     MAA_PROJECT_INTERFACE_NS::Configurator config_;
     std::filesystem::path user_path_;
-    MaaNotificationCallback notify_ = nullptr;
-    void* notify_trans_arg_ = nullptr;
     std::map<std::string, MAA_PROJECT_INTERFACE_NS::CustomRecognitionSession> custom_recognitions_;
     std::map<std::string, MAA_PROJECT_INTERFACE_NS::CustomActionSession> custom_actions_;
 };

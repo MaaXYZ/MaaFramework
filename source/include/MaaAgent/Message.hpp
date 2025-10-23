@@ -14,7 +14,7 @@ MAA_AGENT_NS_BEGIN
 // ReverseRequest: server -> client
 
 using MessageTypePlaceholder = int;
-inline static constexpr int kProtocolVersion = 3;
+inline static constexpr int kProtocolVersion = 4;
 
 struct StartUpRequest
 {
@@ -100,6 +100,70 @@ struct CustomActionResponse
 
     MessageTypePlaceholder _CustomActionResponse = 1;
     MEO_JSONIZATION(ret, _CustomActionResponse);
+};
+
+struct ResourceEventRequest
+{
+    std::string resource_id;
+    std::string message;
+    json::value details;
+
+    MessageTypePlaceholder _ResourceEventRequest = 1;
+    MEO_JSONIZATION(resource_id, message, details, _ResourceEventRequest);
+};
+
+struct ResourceEventResponse
+{
+    MessageTypePlaceholder _ResourceEventResponse = 1;
+    MEO_JSONIZATION(_ResourceEventResponse);
+};
+
+struct ControllerEventRequest
+{
+    std::string controller_id;
+    std::string message;
+    json::value details;
+
+    MessageTypePlaceholder _ControllerEventRequest = 1;
+    MEO_JSONIZATION(controller_id, message, details, _ControllerEventRequest);
+};
+
+struct ControllerEventResponse
+{
+    MessageTypePlaceholder _ControllerEventResponse = 1;
+    MEO_JSONIZATION(_ControllerEventResponse);
+};
+
+struct TaskerEventRequest
+{
+    std::string tasker_id;
+    std::string message;
+    json::value details;
+
+    MessageTypePlaceholder _TaskerEventRequest = 1;
+    MEO_JSONIZATION(tasker_id, message, details, _TaskerEventRequest);
+};
+
+struct TaskerEventResponse
+{
+    MessageTypePlaceholder _TaskerEventResponse = 1;
+    MEO_JSONIZATION(_TaskerEventResponse);
+};
+
+struct ContextEventRequest
+{
+    std::string context_id;
+    std::string message;
+    json::value details;
+
+    MessageTypePlaceholder _ContextEventRequest = 1;
+    MEO_JSONIZATION(context_id, message, details, _ContextEventRequest);
+};
+
+struct ContextEventResponse
+{
+    MessageTypePlaceholder _ContextEventResponse = 1;
+    MEO_JSONIZATION(_ContextEventResponse);
 };
 
 struct ContextRunTaskReverseRequest

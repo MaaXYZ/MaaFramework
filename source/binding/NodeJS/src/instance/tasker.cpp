@@ -6,26 +6,18 @@
 #include "../include/utils.h"
 #include "../include/wrapper.h"
 
-std::optional<Napi::External<TaskerInfo>> tasker_create(Napi::Env env, ExtContextInfo* context, std::optional<Napi::Function> callback)
+std::optional<Napi::External<TaskerInfo>> tasker_create(Napi::Env env, ExtContextInfo* context)
 {
-    MaaNotificationCallback cb = nullptr;
-    CallbackContext* ctx = nullptr;
     MaaTasker* handle = nullptr;
 
-    if (callback) {
-        cb = NotificationCallback;
-        ctx = new CallbackContext { env, callback.value(), "NotificationCallback" };
-    }
-
-    handle = MaaTaskerCreate(cb, ctx);
+    handle = MaaTaskerCreate();
 
     if (handle) {
-        auto info = Napi::External<TaskerInfo>::New(env, new TaskerInfo { { handle }, ctx }, &DeleteFinalizer<TaskerInfo*>);
+        auto info = Napi::External<TaskerInfo>::New(env, new TaskerInfo { { handle } }, &DeleteFinalizer<TaskerInfo*>);
         context->taskers[handle] = Napi::Weak(info);
         return info;
     }
     else {
-        delete ctx;
         return std::nullopt;
     }
 }
@@ -34,6 +26,72 @@ void tasker_destroy(ExtContextInfo* context, Napi::External<TaskerInfo> info)
 {
     context->taskers.erase(info.Data()->handle);
     info.Data()->dispose();
+}
+
+MaaSinkId tasker_add_sink(Napi::Env env, Napi::External<TaskerInfo> info, Napi::Function callback)
+{
+    CallbackContext* ctx = new CallbackContext { env, callback, "EventCallback<Tasker>" };
+    auto id = MaaTaskerAddSink(info.Data()->handle, NotificationCallback, ctx);
+    if (id != MaaInvalidId) {
+        info.Data()->callback[id] = ctx;
+        return id;
+    }
+    else {
+        delete ctx;
+        return MaaInvalidId;
+    }
+}
+
+void tasker_remove_sink(Napi::External<TaskerInfo> info, MaaSinkId id)
+{
+    auto& callback = info.Data()->callback;
+    if (auto it = callback.find(id); it != callback.end()) {
+        delete it->second;
+        callback.erase(it);
+    }
+    MaaTaskerRemoveSink(info.Data()->handle, id);
+}
+
+void tasker_clear_sinks(Napi::External<TaskerInfo> info)
+{
+    for (auto [_, ctx] : info.Data()->callback) {
+        delete ctx;
+    }
+    info.Data()->callback.clear();
+    MaaTaskerClearSinks(info.Data()->handle);
+}
+
+MaaSinkId tasker_add_context_sink(Napi::Env env, Napi::External<TaskerInfo> info, Napi::Function callback)
+{
+    CallbackContext* ctx = new CallbackContext { env, callback, "EventCallback<Tasker.Context>" };
+    auto id = MaaTaskerAddContextSink(info.Data()->handle, ContextNotificationCallback, ctx);
+    if (id != MaaInvalidId) {
+        info.Data()->context_callback[id] = ctx;
+        return id;
+    }
+    else {
+        delete ctx;
+        return MaaInvalidId;
+    }
+}
+
+void tasker_remove_context_sink(Napi::External<TaskerInfo> info, MaaSinkId id)
+{
+    auto& context_callback = info.Data()->context_callback;
+    if (auto it = context_callback.find(id); it != context_callback.end()) {
+        delete it->second;
+        context_callback.erase(it);
+    }
+    MaaTaskerRemoveContextSink(info.Data()->handle, id);
+}
+
+void tasker_clear_context_sinks(Napi::External<TaskerInfo> info)
+{
+    for (auto [_, ctx] : info.Data()->context_callback) {
+        delete ctx;
+    }
+    info.Data()->context_callback.clear();
+    MaaTaskerClearContextSinks(info.Data()->handle);
 }
 
 bool tasker_bind_resource(Napi::External<TaskerInfo> info, std::optional<Napi::External<ResourceInfo>> res_info)
@@ -210,6 +268,12 @@ void load_instance_tasker(Napi::Env env, Napi::Object& exports, Napi::External<E
 {
     BIND(tasker_create);
     BIND(tasker_destroy);
+    BIND(tasker_add_sink);
+    BIND(tasker_remove_sink);
+    BIND(tasker_clear_sinks);
+    BIND(tasker_add_context_sink);
+    BIND(tasker_remove_context_sink);
+    BIND(tasker_clear_context_sinks);
     BIND(tasker_bind_resource);
     BIND(tasker_bind_controller);
     BIND(tasker_inited);

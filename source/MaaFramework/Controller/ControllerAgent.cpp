@@ -1,6 +1,7 @@
 #include "ControllerAgent.h"
 
-#include "Global/GlobalOptionMgr.h"
+#include "Global/OptionMgr.h"
+#include "Global/PluginMgr.h"
 #include "MaaFramework/MaaMsg.h"
 #include "Resource/ResourceMgr.h"
 #include "Utils/ImageIo.h"
@@ -8,14 +9,17 @@
 
 MAA_CTRL_NS_BEGIN
 
-ControllerAgent::ControllerAgent(
-    std::shared_ptr<MAA_CTRL_UNIT_NS::ControlUnitAPI> control_unit,
-    MaaNotificationCallback notify,
-    void* notify_trans_arg)
+ControllerAgent::ControllerAgent(std::shared_ptr<MAA_CTRL_UNIT_NS::ControlUnitAPI> control_unit)
     : control_unit_(std::move(control_unit))
-    , notifier_(notify, notify_trans_arg)
 {
-    LogFunc << VAR(control_unit_) << VAR_VOIDP(notify) << VAR_VOIDP(notify_trans_arg);
+    LogFunc << VAR(control_unit_);
+
+    auto& plugin_mgr = MAA_GLOBAL_NS::PluginMgr::get_instance();
+    LogInfo << VAR(plugin_mgr.get_names());
+
+    for (const auto& sink : plugin_mgr.get_ctrl_sinks()) {
+        add_sink(sink, this);
+    }
 
     action_runner_ =
         std::make_unique<AsyncRunner<Action>>(std::bind(&ControllerAgent::run_action, this, std::placeholders::_1, std::placeholders::_2));
@@ -176,6 +180,21 @@ std::string ControllerAgent::get_uuid()
         request_uuid();
     }
     return uuid_cache_;
+}
+
+MaaSinkId ControllerAgent::add_sink(MaaEventCallback callback, void* trans_arg)
+{
+    return notifier_.add_sink(callback, trans_arg);
+}
+
+void ControllerAgent::remove_sink(MaaSinkId sink_id)
+{
+    notifier_.remove_sink(sink_id);
+}
+
+void ControllerAgent::clear_sinks()
+{
+    notifier_.clear_sinks();
 }
 
 void ControllerAgent::post_stop()
@@ -767,7 +786,7 @@ bool ControllerAgent::run_action(typename AsyncRunner<Action>::Id id, Action act
     LogInfo << cb_detail.to_string();
 
     if (notify) {
-        notifier_.notify(MaaMsg_Controller_Action_Starting, cb_detail);
+        notifier_.notify(this, MaaMsg_Controller_Action_Starting, cb_detail);
     }
 
     switch (action.type) {
@@ -833,7 +852,7 @@ bool ControllerAgent::run_action(typename AsyncRunner<Action>::Id id, Action act
     }
 
     if (notify) {
-        notifier_.notify(ret ? MaaMsg_Controller_Action_Succeeded : MaaMsg_Controller_Action_Failed, cb_detail);
+        notifier_.notify(this, ret ? MaaMsg_Controller_Action_Succeeded : MaaMsg_Controller_Action_Failed, cb_detail);
     }
 
     return ret;

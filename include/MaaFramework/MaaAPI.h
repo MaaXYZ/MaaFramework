@@ -2,6 +2,8 @@
 
 #include "MaaDef.h" // IWYU pragma: export
 
+#include "Global/MaaGlobal.h"
+
 #include "Instance/MaaContext.h"
 #include "Instance/MaaController.h"
 #include "Instance/MaaCustomController.h"

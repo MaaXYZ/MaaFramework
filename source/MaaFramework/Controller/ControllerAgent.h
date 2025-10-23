@@ -8,8 +8,8 @@
 #include "Base/AsyncRunner.hpp"
 #include "Common/MaaTypes.h"
 #include "ControlUnit/ControlUnitAPI.h"
+#include "Utils/EventDispatcher.hpp"
 #include "Utils/JsonExt.hpp"
-#include "Utils/MessageNotifier.hpp"
 #include "Utils/NoWarningCVMat.hpp"
 
 MAA_RES_NS_BEGIN
@@ -133,7 +133,7 @@ std::ostream& operator<<(std::ostream& os, const Action::Type& action);
 class ControllerAgent : public MaaController
 {
 public:
-    ControllerAgent(std::shared_ptr<MAA_CTRL_UNIT_NS::ControlUnitAPI> control_unit, MaaNotificationCallback notify, void* notify_trans_arg);
+    ControllerAgent(std::shared_ptr<MAA_CTRL_UNIT_NS::ControlUnitAPI> control_unit);
     virtual ~ControllerAgent() override;
 
 public: // MaaController
@@ -162,6 +162,10 @@ public: // MaaController
 
     virtual cv::Mat cached_image() const override;
     virtual std::string get_uuid() override;
+
+    virtual MaaSinkId add_sink(MaaEventCallback callback, void* trans_arg) override;
+    virtual void remove_sink(MaaSinkId sink_id) override;
+    virtual void clear_sinks() override;
 
 public: // for Actuator
     void post_stop();
@@ -222,7 +226,7 @@ private:
 
 private:
     const std::shared_ptr<MAA_CTRL_UNIT_NS::ControlUnitAPI> control_unit_ = nullptr;
-    MessageNotifier notifier_;
+    EventDispatcher notifier_;
 
     bool connected_ = false;
     std::mutex image_mutex_;

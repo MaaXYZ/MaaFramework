@@ -8,15 +8,15 @@
 #include "MaaFramework/MaaDef.h"
 #include "Utils/SingletonHolder.hpp"
 
-MAA_NS_BEGIN
+MAA_GLOBAL_NS_BEGIN
 
-class GlobalOptionMgr : public SingletonHolder<GlobalOptionMgr>
+class OptionMgr : public SingletonHolder<OptionMgr>
 {
 public:
-    friend class SingletonHolder<GlobalOptionMgr>;
+    friend class SingletonHolder<OptionMgr>;
 
 public:
-    virtual ~GlobalOptionMgr() = default;
+    virtual ~OptionMgr() = default;
     bool set_option(MaaGlobalOption key, MaaOptionValue value, MaaOptionValueSize val_size);
 
 public:
@@ -27,7 +27,7 @@ public:
     bool debug_mode() const { return debug_mode_; }
 
 private:
-    GlobalOptionMgr() = default;
+    OptionMgr() = default;
 
 private:
     bool set_log_dir(MaaOptionValue value, MaaOptionValueSize val_size);
@@ -41,4 +41,4 @@ private:
     bool debug_mode_ = false;
 };
 
-MAA_NS_END
+MAA_GLOBAL_NS_END

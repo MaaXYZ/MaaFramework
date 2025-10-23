@@ -2,6 +2,7 @@
 
 #include <tuple>
 
+#include "Global/PluginMgr.h"
 #include "MLProvider.h"
 #include "MaaFramework/MaaMsg.h"
 #include "PipelineDumper.h"
@@ -11,10 +12,16 @@
 
 MAA_RES_NS_BEGIN
 
-ResourceMgr::ResourceMgr(MaaNotificationCallback notify, void* notify_trans_arg)
-    : notifier_(notify, notify_trans_arg)
+ResourceMgr::ResourceMgr()
 {
-    LogFunc << VAR_VOIDP(notify) << VAR_VOIDP(notify_trans_arg);
+    LogFunc;
+
+    auto& plugin_mgr = MAA_GLOBAL_NS::PluginMgr::get_instance();
+    LogInfo << VAR(plugin_mgr.get_names());
+
+    for (const auto& sink : plugin_mgr.get_res_sinks()) {
+        add_sink(sink, this);
+    }
 
     res_loader_ = std::make_unique<AsyncRunner<std::filesystem::path>>(
         std::bind(&ResourceMgr::run_load, this, std::placeholders::_1, std::placeholders::_2));
@@ -110,6 +117,21 @@ std::string ResourceMgr::get_hash() const
 std::vector<std::string> ResourceMgr::get_node_list() const
 {
     return pipeline_res_.get_node_list();
+}
+
+MaaSinkId ResourceMgr::add_sink(MaaEventCallback callback, void* trans_arg)
+{
+    return notifier_.add_sink(callback, trans_arg);
+}
+
+void ResourceMgr::remove_sink(MaaSinkId sink_id)
+{
+    notifier_.remove_sink(sink_id);
+}
+
+void ResourceMgr::clear_sinks()
+{
+    notifier_.clear_sinks();
 }
 
 void ResourceMgr::post_stop()
@@ -518,13 +540,13 @@ bool ResourceMgr::run_load(typename AsyncRunner<std::filesystem::path>::Id id, s
         { "hash", get_hash() },
     };
 
-    notifier_.notify(MaaMsg_Resource_Loading_Starting, cb_detail);
+    notifier_.notify(this, MaaMsg_Resource_Loading_Starting, cb_detail);
 
     valid_ = load(path);
 
     cb_detail["hash"] = calc_hash();
 
-    notifier_.notify(valid_ ? MaaMsg_Resource_Loading_Succeeded : MaaMsg_Resource_Loading_Failed, cb_detail);
+    notifier_.notify(this, valid_ ? MaaMsg_Resource_Loading_Succeeded : MaaMsg_Resource_Loading_Failed, cb_detail);
 
     return valid_;
 }

@@ -271,4 +271,21 @@ std::string RemoteController::get_uuid()
     return resp_opt->uuid;
 }
 
+MaaSinkId RemoteController::add_sink(MaaEventCallback callback, void* trans_arg)
+{
+    LogError << "Can NOT add sink for remote instance, use AgentServer.add_controller_sink instead" << VAR_VOIDP(callback)
+             << VAR_VOIDP(trans_arg);
+    return MaaInvalidId;
+}
+
+void RemoteController::remove_sink(MaaSinkId sink_id)
+{
+    LogError << "Can NOT remove sink for remote instance" << VAR(sink_id);
+}
+
+void RemoteController::clear_sinks()
+{
+    LogError << "Can NOT clear sink for remote instance";
+}
+
 MAA_AGENT_SERVER_NS_END

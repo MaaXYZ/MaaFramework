@@ -3,7 +3,7 @@
 #include "Component/Actuator.h"
 #include "Component/Recognizer.h"
 #include "Controller/ControllerAgent.h"
-#include "Global/GlobalOptionMgr.h"
+#include "Global/OptionMgr.h"
 #include "MaaFramework/MaaMsg.h"
 #include "Resource/ResourceMgr.h"
 #include "Utils/JsonExt.hpp"
@@ -244,16 +244,16 @@ void TaskBase::set_task_detail(TaskDetail detail)
 
 bool TaskBase::debug_mode() const
 {
-    return GlobalOptionMgr::get_instance().debug_mode();
+    return MAA_GLOBAL_NS::OptionMgr::get_instance().debug_mode();
 }
 
 void TaskBase::notify(std::string_view msg, const json::value detail)
 {
-    if (!tasker_) {
+    if (!tasker_ || !context_) {
         return;
     }
 
-    tasker_->notify(msg, detail);
+    tasker_->context_notify(context_.get(), msg, detail);
 }
 
 MAA_TASK_NS_END

@@ -3,11 +3,9 @@ import json
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Dict, List, Union, Optional, Any
-from collections import defaultdict
 
 from .define import *
 from .library import Library
-from .notification_handler import NotificationHandler
 
 
 @dataclass
@@ -122,70 +120,9 @@ class Toolkit:
         Library.toolkit().MaaToolkitDesktopWindowListDestroy(list_handle)
         return windows
 
-    @staticmethod
-    def pi_register_custom_recognition(
-        name: str, recognition: "CustomRecognition", inst_id: int = 0  # type: ignore
-    ) -> bool:
-        Toolkit._set_api_properties()
-
-        # avoid gc
-        Toolkit._pi_custom_recognition_holder[inst_id][name] = recognition
-
-        return bool(
-            Library.toolkit().MaaToolkitProjectInterfaceRegisterCustomRecognition(
-                ctypes.c_uint64(inst_id),
-                name.encode(),
-                recognition.c_handle,
-                recognition.c_arg,
-            )
-        )
-
-    @staticmethod
-    def pi_register_custom_action(
-        name: str, action: "CustomAction", inst_id: int = 0  # type: ignore
-    ) -> bool:
-        Toolkit._set_api_properties()
-
-        # avoid gc
-        Toolkit._pi_custom_recognition_holder[inst_id][name] = action
-
-        return bool(
-            Library.toolkit().MaaToolkitProjectInterfaceRegisterCustomAction(
-                ctypes.c_uint64(inst_id),
-                name.encode(),
-                action.c_handle,
-                action.c_arg,
-            ),
-        )
-
-    @staticmethod
-    def pi_run_cli(
-        resource_path: Union[str, Path],
-        user_path: Union[str, Path],
-        directly: bool = False,
-        notification_handler: Optional[NotificationHandler] = None,
-        inst_id: int = 0,
-    ) -> bool:
-        Toolkit._set_api_properties()
-
-        Toolkit._pi_notification_handler = notification_handler
-
-        return bool(
-            Library.toolkit().MaaToolkitProjectInterfaceRunCli(
-                ctypes.c_uint64(inst_id),
-                str(resource_path).encode(),
-                str(user_path).encode(),
-                directly,
-                *NotificationHandler._gen_c_param(Toolkit._pi_notification_handler),
-            )
-        )
-
     ### private ###
 
     _api_properties_initialized: bool = False
-    _pi_custom_recognition_holder = defaultdict(dict)
-    _pi_custom_action_holder = defaultdict(dict)
-    _pi_notification_handler: Optional[NotificationHandler] = None
 
     @staticmethod
     def _set_api_properties():
@@ -304,32 +241,4 @@ class Toolkit:
         Library.toolkit().MaaToolkitDesktopWindowGetWindowName.restype = ctypes.c_char_p
         Library.toolkit().MaaToolkitDesktopWindowGetWindowName.argtypes = [
             MaaToolkitDesktopWindowHandle
-        ]
-
-        Library.toolkit().MaaToolkitProjectInterfaceRegisterCustomRecognition.restype = (
-            None
-        )
-        Library.toolkit().MaaToolkitProjectInterfaceRegisterCustomRecognition.argtypes = [
-            ctypes.c_uint64,
-            ctypes.c_char_p,
-            MaaCustomRecognitionCallback,
-            ctypes.c_void_p,
-        ]
-
-        Library.toolkit().MaaToolkitProjectInterfaceRegisterCustomAction.restype = None
-        Library.toolkit().MaaToolkitProjectInterfaceRegisterCustomAction.argtypes = [
-            ctypes.c_uint64,
-            ctypes.c_char_p,
-            MaaCustomActionCallback,
-            ctypes.c_void_p,
-        ]
-
-        Library.toolkit().MaaToolkitProjectInterfaceRunCli.restype = MaaBool
-        Library.toolkit().MaaToolkitProjectInterfaceRunCli.argtypes = [
-            ctypes.c_uint64,
-            ctypes.c_char_p,
-            ctypes.c_char_p,
-            MaaBool,
-            MaaNotificationCallback,
-            ctypes.c_void_p,
         ]

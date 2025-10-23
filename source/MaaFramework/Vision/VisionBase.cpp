@@ -2,7 +2,7 @@
 
 #include "Utils/NoWarningCV.hpp"
 
-#include "Global/GlobalOptionMgr.h"
+#include "Global/OptionMgr.h"
 #include "Utils/Logger.h"
 #include "VisionUtils.hpp"
 
@@ -45,7 +45,7 @@ void VisionBase::init_draw()
 #ifdef MAA_DEBUG
     debug_draw_ = true;
 #else
-    const auto& option = GlobalOptionMgr::get_instance();
+    const auto& option = MAA_GLOBAL_NS::OptionMgr::get_instance();
     debug_draw_ = option.save_draw() || option.debug_mode();
 #endif
 }

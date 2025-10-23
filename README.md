@@ -22,7 +22,7 @@ _✨ 基于图像识别的自动化黑盒测试框架 ✨_
   <img alt="activity" src="https://img.shields.io/github/commit-activity/m/MaaXYZ/MaaFramework?color=%23ff69b4">
   <img alt="stars" src="https://img.shields.io/github/stars/MaaXYZ/MaaFramework?style=social">
   <br>
-  <a href="https://pypi.org/project/MaaFw/" target="_blank"><img alt="pypi" src="https://img.shields.io/badge/PyPI-3775A9?logo=pypi&logoColor=white"></a>
+  <a href="https://pypi.org/project/MaaFw/" target="_blank"><img alt="pypi" src="https://img.shields.io/pypi/dm/maafw?logo=pypi&label=PyPI"></a>
   <a href="https://www.nuget.org/packages/Maa.Framework.Runtimes" target="_blank"><img alt="nuget" src="https://img.shields.io/badge/NuGet-004880?logo=nuget"></a>
   <a href="https://www.npmjs.com/package/@maaxyz/maa-node" target="_blank"><img alt="npm" src="https://img.shields.io/badge/npm-CB3837?logo=npm"></a>
   <a href="https://mirrorchyan.com/zh/projects?source=maafw-badge" target="_blank"><img alt="mirrorc" src="https://img.shields.io/badge/Mirror%E9%85%B1-%239af3f6?logo=countingworkspro&logoColor=4f46e5"></a>
@@ -41,6 +41,9 @@ _✨ 基于图像识别的自动化黑盒测试框架 ✨_
 低代码的同时仍拥有高扩展性，旨在打造一款丰富、领先、且实用的开源库，助力开发者轻松编写出更好的黑盒测试程序，并推广普及。
 
 ## 即刻开始
+
+> [!TIP]
+> 访问我们的 [官网](https://maafw.xyz/) 以获得更优秀的文档阅读体验。
 
 - [快速开始](docs/zh_cn/1.1-快速开始.md)
 - [集成文档](docs/zh_cn/2.1-集成文档.md)
@@ -131,7 +134,9 @@ _✨ 基于图像识别的自动化黑盒测试框架 ✨_
 
 - [SLIMEIM_Maa](https://github.com/miaojiuqing/SLIMEIM_Maa) ![Pipeline](https://img.shields.io/badge/Pipeline-%23876f69?logo=paddypower&logoColor=%23FFFFFF) ![Python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white) ![license](https://img.shields.io/github/license/miaojiuqing/SLIMEIM_Maa) ![activity](https://img.shields.io/github/commit-activity/m/miaojiuqing/SLIMEIM_Maa?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/miaojiuqing/SLIMEIM_Maa?style=social) [![mirrorc](https://img.shields.io/badge/Mirror%E9%85%B1-%239af3f6?logo=countingworkspro&logoColor=4f46e5)](https://mirrorchyan.com/zh/projects?source=maafw-badge&rid=SLIMEIM_Maa)  
   魔王与龙的建国谭小助手。使用图像识别+模拟控制技术，解放双手！由 MaaFramework 强力驱动！
-
+  
+- [Maa_bbb](https://github.com/miaojiuqing/Maa_bbb) ![Pipeline](https://img.shields.io/badge/Pipeline-%23876f69?logo=paddypower&logoColor=%23FFFFFF) ![Python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white) ![license](https://img.shields.io/github/license/miaojiuqing/Maa_bbb) ![activity](https://img.shields.io/github/commit-activity/m/miaojiuqing/Maa_bbb?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/miaojiuqing/Maa_bbb?style=social) [![mirrorc](https://img.shields.io/badge/Mirror%E9%85%B1-%239af3f6?logo=countingworkspro&logoColor=4f46e5)](https://mirrorchyan.com/zh/projects?rid=Maa_bbb)  
+  崩坏三小助手。使用图像识别+模拟控制技术，解放双手！PC端与模拟器端同步支持，由 MaaFramework 强力驱动！
 
 ## 生态共建
 

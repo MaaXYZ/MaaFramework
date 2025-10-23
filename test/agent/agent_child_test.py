@@ -27,6 +27,10 @@ from maa.library import Library
 
 
 def main():
+    if len(sys.argv) < 2:
+        print("Usage: python agent_main.py <socket_id>")
+        exit(1)
+
     socket_id = sys.argv[-1]
     AgentServer.start_up(socket_id)
     AgentServer.join()
