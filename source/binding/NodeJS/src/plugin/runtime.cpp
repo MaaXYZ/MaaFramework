@@ -112,9 +112,8 @@ struct QuickJSRuntimeData : public QuickJSRuntimeBridgeInterface
             }
         }
 
-        // 这里即使是quit状态，也要存起来所有task
-        // 这样其它线程的worker才能把所有权移交到主线程
-        // 直接在这里丢弃的话，会导致在其它线程析构
+        // transfer tasks to properly destruct values on main threads.
+
         {
             std::unique_lock lock(async_tasks_mtx);
             async_tasks.push_back(std::move(task));
@@ -196,7 +195,7 @@ void QuickJSRuntime::exec_loop(bool auto_quit)
                 break;
             }
             if (state < 0) {
-                std::cerr << "got exception" << std::endl;
+                std::cerr << "got unhandled exception" << std::endl;
                 d_->quit = true;
                 return;
             }

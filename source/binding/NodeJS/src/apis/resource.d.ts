@@ -19,7 +19,7 @@ declare global {
 
             set inference_device(id: 'CPU' | 'Auto' | number)
             set inference_execution_provider(
-                provider: 'Auto' | 'CPU' | 'DirectML' | 'CoreML' | 'CUDA'
+                provider: 'Auto' | 'CPU' | 'DirectML' | 'CoreML' | 'CUDA',
             )
 
             register_custom_recognition(name: string, func: CustomRecognitionCallback): void
@@ -30,7 +30,7 @@ declare global {
             clear_custom_action(): void
             post_bundle(path: string): Job<ResId, Resource>
             override_pipeline(
-                pipeline_override: Record<string, unknown> | Record<string, unknown>[]
+                pipeline_override: Record<string, unknown> | Record<string, unknown>[],
             ): void
             override_next(node_name: string, next_list: string[]): void
             get_node_data(node_name: string): string | null

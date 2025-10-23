@@ -106,7 +106,7 @@ declare global {
                 y1: number,
                 x2: number,
                 y2: number,
-                duration: number
+                duration: number,
             ): Job<CtrlId, Controller>
             post_click_key(keycode: number): Job<CtrlId, Controller>
             post_input_text(text: string): Job<CtrlId, Controller>
@@ -116,13 +116,13 @@ declare global {
                 contact: number,
                 x: number,
                 y: number,
-                pressure: number
+                pressure: number,
             ): Job<CtrlId, Controller>
             post_touch_move(
                 contact: number,
                 x: number,
                 y: number,
-                pressure: number
+                pressure: number,
             ): Job<CtrlId, Controller>
             post_touch_up(contact: number): Job<CtrlId, Controller>
             post_key_down(keycode: number): Job<CtrlId, Controller>
@@ -146,7 +146,7 @@ declare global {
             address: string,
             screencap_methods: ScreencapOrInputMethods,
             input_methods: ScreencapOrInputMethods,
-            config: string
+            config: string,
         ]
 
         class AdbController extends Controller {
@@ -156,7 +156,7 @@ declare global {
                 screencap_methods: ScreencapOrInputMethods,
                 input_methods: ScreencapOrInputMethods,
                 config: string,
-                agent?: string
+                agent?: string,
             )
 
             static agent_path(): string
@@ -169,7 +169,7 @@ declare global {
             constructor(
                 hwnd: DesktopHandle,
                 screencap_methods: ScreencapOrInputMethods,
-                input_methods: ScreencapOrInputMethods
+                input_methods: ScreencapOrInputMethods,
             )
 
             static find(): Promise<DesktopDevice[] | null>
@@ -180,7 +180,7 @@ declare global {
                 read_path: string,
                 write_path: string,
                 type: Uint64, // DbgControllerType
-                config: string
+                config: string,
             )
         }
 
@@ -196,19 +196,19 @@ declare global {
                 y1: number,
                 x2: number,
                 y2: number,
-                duration: number
+                duration: number,
             ): maa.MaybePromise<boolean>
             touch_down?(
                 contact: number,
                 x: number,
                 y: number,
-                pressure: number
+                pressure: number,
             ): maa.MaybePromise<boolean>
             touch_move?(
                 contact: number,
                 x: number,
                 y: number,
-                pressure: number
+                pressure: number,
             ): maa.MaybePromise<boolean>
             touch_up?(contact: number): maa.MaybePromise<boolean>
             click_key?(keycode: number): maa.MaybePromise<boolean>

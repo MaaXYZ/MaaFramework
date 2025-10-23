@@ -15,20 +15,19 @@ const platforms: [maa: string, node: string][] = [
     ['macos-x86_64', 'darwin-x64'],
     ['win-aarch64', 'win32-arm64'],
     ['linux-aarch64', 'linux-arm64'],
-    ['macos-aarch64', 'darwin-arm64']
+    ['macos-aarch64', 'darwin-arm64'],
 ]
 
 async function main() {
     const corePackPath = path.join(releasePath, 'maa-node')
     cp.execSync(`npm --prefix ${corePackPath} pkg set version=${version}`)
-    // await fs.rm(path.join(corePackPath, 'node_modules'), { recursive: true })
     for (const dir of ['minitouch', 'maatouch', 'minicap']) {
         await fs.cp(
             path.join(assetsPath, 'MAA-win-x86_64', 'share', 'MaaAgentBinary', dir),
             path.join(corePackPath, 'agent', dir),
             {
-                recursive: true
-            }
+                recursive: true,
+            },
         )
     }
 
@@ -44,7 +43,7 @@ async function main() {
         }
 
         cp.execSync(
-            `npm --prefix ${corePackPath} pkg set optionalDependencies.@maaxyz/maa-node-${nplat}=${version}`
+            `npm --prefix ${corePackPath} pkg set optionalDependencies.@maaxyz/maa-node-${nplat}=${version}`,
         )
         cp.execSync(`npm --prefix ${sepPackPath} pkg set version=${version}`)
     }

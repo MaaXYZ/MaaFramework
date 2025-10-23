@@ -54,7 +54,7 @@ struct NativeClass
 
         classId.possibleIds.push_back(classId.classId);
 
-        std::cerr << Inherit::name << ": " << classId.classId << std::endl;
+        // std::cerr << Inherit::name << ": " << classId.classId << std::endl;
 
         auto proto = QjsObject::New(env);
 
@@ -90,7 +90,7 @@ struct NativeClass
         JS_SetConstructor(env, ctor.peek(), proto.peek());
 
         if constexpr (!std::is_same_v<Super, void>) {
-            std::cerr << "Link " << classId.classId << " to " << NativeClass<Super>::getClassId(env).classId << std::endl;
+            // std::cerr << "Link " << classId.classId << " to " << NativeClass<Super>::getClassId(env).classId << std::endl;
             auto super = &NativeClass<Super>::getClassId(env);
             classId.superId = super;
             while (super) {

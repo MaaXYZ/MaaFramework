@@ -68,13 +68,13 @@ declare global {
             remove_sink(id: SinkId): void
             clear_sinks(): void
             add_context_sink(
-                cb: (context: Context, msg: TaskerContextNotify) => MaybePromise<void>
+                cb: (context: Context, msg: TaskerContextNotify) => MaybePromise<void>,
             ): SinkId
             remove_context_sink(id: SinkId): void
             clear_context_sinks(): void
             post_task(
                 entry: string,
-                pipeline_override?: Record<string, unknown> | Record<string, unknown>[]
+                pipeline_override?: Record<string, unknown> | Record<string, unknown>[],
             ): TaskJob
             post_stop(): TaskJob
             status(id: TaskId): Status

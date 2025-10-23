@@ -410,7 +410,7 @@ maajs::PromiseType Win32ControllerImpl::find(maajs::EnvType env)
                 std::make_tuple(
                     reinterpret_cast<uintptr_t>(MaaToolkitDesktopWindowGetHandle(dev)),
                     std::string(MaaToolkitDesktopWindowGetClassName(dev)),
-                    std::string(MaaToolkitDesktopWindowGetClassName(dev))));
+                    std::string(MaaToolkitDesktopWindowGetWindowName(dev))));
         }
         MaaToolkitDesktopWindowListDestroy(lst);
 
