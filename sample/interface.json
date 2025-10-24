@@ -22,7 +22,7 @@
     "agent": {
         "child_exec": "python",
         "child_args": [
-            "sample/python/demo3_agent.py"
+            "sample/python/demo3_agent.py" // 子进程参数。{PROJECT_DIR}可选，不使用时为相对于interface.json所在目录的相对路径
         ]
     },
     "controller": [
@@ -35,7 +35,7 @@
             "type": "Adb",
             "display_short_side": 720, // 默认缩放分辨率的短边长度，用于屏幕适配。与long_side二选一
             // "display_long_side": 1080, // 默认缩放分辨率的长边长度，与short_side二选一
-            "display_raw": false, // 是否使用原始分辨率进行截图，与缩放分辨率设置互斥
+            "display_raw": false // 是否使用原始分辨率进行截图，与缩放分辨率设置互斥
         },
         {
             "name": "Windows",
@@ -54,7 +54,7 @@
             "description": "官服资源", // 资源详细描述。支持文件路径、URL或直接文本，内容支持Markdown格式
             "icon": "official.png", // 资源图标文件路径，相对于项目根目录
             "path": [
-                "{PROJECT_DIR}/resource"
+                "{PROJECT_DIR}/resource" // 资源路径。{PROJECT_DIR}可选，不使用时为相对于interface.json所在目录的相对路径
             ],
             "controller": [
                 "Android"
@@ -65,7 +65,7 @@
             "label": "$B站资源", // 显示名称，支持国际化。优先显示label，未设置时显示name
             "path": [
                 "{PROJECT_DIR}/resource",
-                "{PROJECT_DIR}/resource_bilibili"
+                "resource_bilibili" // 相对路径示例，相对于interface.json所在目录
             ]
         }
     ],
