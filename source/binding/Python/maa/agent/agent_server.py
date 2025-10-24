@@ -117,7 +117,7 @@ class AgentServer:
         AgentServer._sink_holder.append(sink)
 
     @staticmethod
-    def add_tasker_sink(sink: "ContextEventSink") -> None:
+    def add_context_sink(sink: "ContextEventSink") -> None:
         Library.agent_server().MaaAgentServerAddContextSink(
             *EventSink._gen_c_param(sink)
         )
