@@ -1,9 +1,8 @@
 import ctypes
-import sys
 
 from ..define import *
 from ..library import Library
-from ..buffer import StringBuffer
+from ..event_sink import EventSink
 
 
 class AgentServer:
@@ -88,11 +87,41 @@ class AgentServer:
         Library.agent_server().MaaAgentServerJoin()
 
     @staticmethod
-    def detach(self) -> None:
+    def detach() -> None:
 
         AgentServer._set_api_properties()
 
         Library.agent_server().MaaAgentServerDetach()
+
+    _sink_holder: List[EventSink] = []
+
+    @staticmethod
+    def add_resource_sink(sink: "ResourceEventSink") -> None:
+        Library.agent_server().MaaAgentServerAddResourceSink(
+            *EventSink._gen_c_param(sink)
+        )
+        AgentServer._sink_holder.append(sink)
+
+    @staticmethod
+    def add_controller_sink(sink: "ControllerEventSink") -> None:
+        Library.agent_server().MaaAgentServerAddControllerSink(
+            *EventSink._gen_c_param(sink)
+        )
+        AgentServer._sink_holder.append(sink)
+
+    @staticmethod
+    def add_tasker_sink(sink: "TaskerEventSink") -> None:
+        Library.agent_server().MaaAgentServerAddTaskerSink(
+            *EventSink._gen_c_param(sink)
+        )
+        AgentServer._sink_holder.append(sink)
+
+    @staticmethod
+    def add_tasker_sink(sink: "ContextEventSink") -> None:
+        Library.agent_server().MaaAgentServerAddContextSink(
+            *EventSink._gen_c_param(sink)
+        )
+        AgentServer._sink_holder.append(sink)
 
     _api_properties_initialized: bool = False
 
@@ -130,3 +159,27 @@ class AgentServer:
 
         Library.agent_server().MaaAgentServerDetach.restype = None
         Library.agent_server().MaaAgentServerDetach.argtypes = []
+
+        Library.agent_server().MaaAgentServerAddResourceSink.restype = None
+        Library.agent_server().MaaAgentServerAddResourceSink.argtypes = [
+            MaaEventCallback,
+            ctypes.c_void_p,
+        ]
+
+        Library.agent_server().MaaAgentServerAddControllerSink.restype = None
+        Library.agent_server().MaaAgentServerAddControllerSink.argtypes = [
+            MaaEventCallback,
+            ctypes.c_void_p,
+        ]
+
+        Library.agent_server().MaaAgentServerAddTaskerSink.restype = None
+        Library.agent_server().MaaAgentServerAddTaskerSink.argtypes = [
+            MaaEventCallback,
+            ctypes.c_void_p,
+        ]
+
+        Library.agent_server().MaaAgentServerAddContextSink.restype = None
+        Library.agent_server().MaaAgentServerAddContextSink.argtypes = [
+            MaaEventCallback,
+            ctypes.c_void_p,
+        ]
