@@ -12,6 +12,7 @@
 struct ContextImpl : public maajs::NativeClassBase
 {
     MaaContext* context {};
+    std::vector<std::unique_ptr<maajs::ObjectRefType>> cloned_contexts;
 
     ContextImpl() = default;
     ContextImpl(MaaContext* ctx);
@@ -39,6 +40,8 @@ struct ContextImpl : public maajs::NativeClassBase
     maajs::ValueType get_tasker();
     maajs::ValueType clone();
 
+    void recursive_clean();
+
     std::string to_string() override;
 
     // 写作locate, 实际上总是create
@@ -46,7 +49,14 @@ struct ContextImpl : public maajs::NativeClassBase
 
     constexpr static char name[] = "Context";
 
+    virtual void gc_mark(maajs::NativeMarkerFunc marker) override;
     static ContextImpl* ctor(const maajs::CallbackInfo& info);
     static void init_proto(maajs::ObjectType proto, maajs::FunctionType ctor);
 };
 
+struct ScopedContextHolder
+{
+    maajs::ValueType value;
+
+    ~ScopedContextHolder();
+};

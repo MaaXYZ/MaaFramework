@@ -58,12 +58,12 @@ void ContextSink(void* context, const char* message, const char* details_json, v
 {
     auto ctx = reinterpret_cast<maajs::CallbackContext*>(callback_arg);
     ctx->Call<void>([=](maajs::FunctionType fn) {
-        auto ctx = ContextImpl::locate_object(fn.Env(), reinterpret_cast<MaaContext*>(context));
+        ScopedContextHolder ctx = { ContextImpl::locate_object(fn.Env(), reinterpret_cast<MaaContext*>(context)) };
         auto detail = maajs::JsonParse(fn.Env(), details_json).As<maajs::ObjectType>();
         detail["msg"] = maajs::StringType::New(fn.Env(), message);
         return fn.Call(
             {
-                ctx,
+                ctx.value,
                 detail,
             });
     });
@@ -86,8 +86,9 @@ MaaBool CustomReco(
     auto result = ctx->Call<Ret>([&](maajs::FunctionType func) {
         auto env = func.Env();
         auto self = maajs::ObjectType::New(env);
+        ScopedContextHolder ctx = { ContextImpl::locate_object(env, context) };
 
-        self["context"] = ContextImpl::locate_object(env, context);
+        self["context"] = ctx.value;
         self["id"] = maajs::JSConvert<MaaTaskId>::to_value(env, task_id);
         self["task"] = maajs::StringType::New(env, node_name);
         self["name"] = maajs::StringType::New(env, custom_recognition_name);
@@ -122,8 +123,9 @@ MaaBool CustomAct(
     return ctx->Call<Ret>([&](maajs::FunctionType func) {
         auto env = func.Env();
         auto self = maajs::ObjectType::New(env);
+        ScopedContextHolder ctx = { ContextImpl::locate_object(env, context) };
 
-        self["context"] = ContextImpl::locate_object(env, context);
+        self["context"] = ctx.value;
         self["id"] = maajs::JSConvert<MaaTaskId>::to_value(env, task_id);
         self["task"] = maajs::StringType::New(env, node_name);
         self["name"] = maajs::StringType::New(env, custom_action_name);

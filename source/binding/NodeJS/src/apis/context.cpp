@@ -125,7 +125,18 @@ maajs::ValueType ContextImpl::get_tasker()
 
 maajs::ValueType ContextImpl::clone()
 {
-    return locate_object(env, MaaContextClone(context));
+    auto cloned = locate_object(env, MaaContextClone(context));
+    cloned_contexts.push_back(std::make_unique<maajs::ObjectRefType>(maajs::PersistentObject(cloned.As<maajs::ObjectType>())));
+    return cloned;
+}
+
+void ContextImpl::recursive_clean()
+{
+    context = nullptr;
+    for (const auto& cloned : cloned_contexts) {
+        maajs::NativeClass<ContextImpl>::take(cloned->Value())->recursive_clean();
+    }
+    cloned_contexts.clear();
 }
 
 std::string ContextImpl::to_string()
@@ -136,6 +147,13 @@ std::string ContextImpl::to_string()
 maajs::ValueType ContextImpl::locate_object(maajs::EnvType env, MaaContext* ctx)
 {
     return maajs::CallCtorHelper(ExtContext::get(env)->contextCtor, std::to_string(reinterpret_cast<uintptr_t>(ctx)));
+}
+
+void ContextImpl::gc_mark(maajs::NativeMarkerFunc marker)
+{
+    for (const auto& cloned : cloned_contexts) {
+        marker(cloned->Value());
+    }
 }
 
 ContextImpl* ContextImpl::ctor(const maajs::CallbackInfo& info)
@@ -172,4 +190,9 @@ maajs::ValueType load_context(maajs::EnvType env)
     maajs::NativeClass<ContextImpl>::init(env, ctor);
     ExtContext::get(env)->contextCtor = maajs::PersistentFunction(ctor);
     return ctor;
+}
+
+ScopedContextHolder::~ScopedContextHolder()
+{
+    maajs::NativeClass<ContextImpl>::take(value)->recursive_clean();
 }
