@@ -50,6 +50,7 @@
     "resource": [
         {
             "name": "Official",
+            "label": "$官服资源", // 显示名称，支持国际化。优先显示label，未设置时显示name
             "description": "官服资源", // 资源详细描述。支持文件路径、URL或直接文本，内容支持Markdown格式
             "icon": "official.png", // 资源图标文件路径，相对于项目根目录
             "path": [
@@ -61,6 +62,7 @@
         },
         {
             "name": "Bilibili",
+            "label": "$B站资源", // 显示名称，支持国际化。优先显示label，未设置时显示name
             "path": [
                 "{PROJECT_DIR}/resource",
                 "{PROJECT_DIR}/resource_bilibili"
@@ -70,6 +72,7 @@
     "task": [
         {
             "name": "收取荒原",
+            "label": "$收取荒原", // 显示名称，支持国际化。优先显示label，未设置时显示name
             "entry": "Wilderness",
             "default_check": true, // 是否默认选中该任务。Client初始化时根据该值决定是否勾选
             "description": "收取荒原资源，若不勾选，则不会执行此任务", // 任务详细描述，帮助用户理解任务功能。支持文件路径、URL或直接文本，内容支持Markdown格式
@@ -77,10 +80,12 @@
         },
         {
             "name": "每日心相（意志解析）",
+            "label": "$每日心相", // 显示名称，支持国际化。优先显示label，未设置时显示name
             "entry": "Psychube"
         },
         {
             "name": "常规作战",
+            "label": "$常规作战", // 显示名称，支持国际化。优先显示label，未设置时显示name
             "entry": "Combat",
             "option": [
                 "作战关卡",
@@ -90,6 +95,7 @@
         },
         {
             "name": "活动：绿湖噩梦 17 艰难（活动已结束）",
+            "label": "$活动任务", // 显示名称，支持国际化。优先显示label，未设置时显示name
             "entry": "ANightmareAtGreenLake",
             "resource": [
                 "Official"
@@ -112,6 +118,7 @@
         },
         {
             "name": "领取奖励",
+            "label": "$领取奖励", // 显示名称，支持国际化。优先显示label，未设置时显示name
             "entry": "Awards"
         }
     ],
@@ -123,6 +130,7 @@
             "cases": [
                 {
                     "name": "3-9 厄险（百灵百验鸟）",
+                    "label": "$3-9厄险", // 显示名称，支持国际化。优先显示label，未设置时显示name
                     "description": "刷百灵鸟", // 选项详细描述。支持文件路径、URL或直接文本，内容支持Markdown格式
                     "icon": "百灵鸟.png", // 选项图标文件路径，相对于项目根目录
                     "option": [ // 子配置项列表。只有用户选中当前选项时才显示。子选项同样在外层option中定义，支持无限嵌套
@@ -143,6 +151,7 @@
                 },
                 {
                     "name": "4-20 厄险（双头形骨架）",
+                    "label": "$4-20厄险", // 显示名称，支持国际化。优先显示label，未设置时显示name
                     "pipeline_override": {
                         "EnterTheShow": {
                             "next": "MainChapter_4"
@@ -165,6 +174,7 @@
             "inputs": [
                 {
                     "name": "章节号",
+                    "label": "$章节号", // 显示名称，支持国际化。优先显示label，未设置时显示name
                     "description": "关卡章节号，用阿拉伯数字表示", // 描述，应支持 文件名、URL、字符串，同时内容支持 markdown,
                     "default": "4",
                     "pipeline_type": "string", // 拼接到 pipeline_override 中的类型
@@ -172,12 +182,14 @@
                 },
                 {
                     "name": "难度",
+                    "label": "$难度", // 显示名称，支持国际化。优先显示label，未设置旰显示name
                     "default": "Hard",
                     "pipeline_type": "string",
                     "verify": "^(Normal|Hard)$" // 正则表达式校验用户输入
                 },
                 {
                     "name": "超时时间",
+                    "label": "$超时时间", // 显示名称，支持国际化。优先显示label，未设置时显示name
                     "default": "20000",
                     "pipeline_type": "int",
                     "verify": "^\\d+$" // 正则表达式校验用户输入
@@ -202,6 +214,7 @@
             "cases": [
                 {
                     "name": "x1",
+                    "label": "$1次", // 显示名称，支持国际化。优先显示label，未设置时显示name
                     "description": "打1次", // 描述，应支持 文件名、URL、字符串，同时内容支持 markdown
                     "icon": "once.png", // 图标，可选
                     "pipeline_override": {
@@ -212,6 +225,7 @@
                 },
                 {
                     "name": "x2",
+                    "label": "$2次", // 显示名称，支持国际化。优先显示label，未设置时显示name
                     "pipeline_override": {
                         "SetReplaysTimes": {
                             "expected": "2"
@@ -220,6 +234,7 @@
                 },
                 {
                     "name": "x3",
+                    "label": "$3次", // 显示名称，支持国际化。优先显示label，未设置时显示name
                     "pipeline_override": {
                         "SetReplaysTimes": {
                             "expected": "3"
@@ -228,6 +243,7 @@
                 },
                 {
                     "name": "x4",
+                    "label": "$4次", // 显示名称，支持国际化。优先显示label，未设置时显示name
                     "pipeline_override": {
                         "SetReplaysTimes": {
                             "expected": "4"
@@ -240,6 +256,7 @@
             "cases": [
                 {
                     "name": "Yes",
+                    "label": "$是", // 显示名称，支持国际化。优先显示label，未设置时显示name
                     "pipeline_override": {
                         "AllIn": {
                             "enabled": true
@@ -248,6 +265,7 @@
                 },
                 {
                     "name": "No",
+                    "label": "$否", // 显示名称，支持国际化。优先显示label，未设置时显示name
                     "pipeline_override": {
                         "AllIn": {
                             "enabled": false
