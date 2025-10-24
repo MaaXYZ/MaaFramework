@@ -58,5 +58,10 @@ struct ScopedContextHolder
 {
     maajs::ValueType value;
 
+    ScopedContextHolder(maajs::ValueType value);
+    ScopedContextHolder(const ScopedContextHolder&) = delete;
+    ScopedContextHolder(ScopedContextHolder&&);
     ~ScopedContextHolder();
+    ScopedContextHolder& operator=(const ScopedContextHolder&) = delete;
+    ScopedContextHolder& operator=(ScopedContextHolder&&);
 };

@@ -192,7 +192,26 @@ maajs::ValueType load_context(maajs::EnvType env)
     return ctor;
 }
 
+ScopedContextHolder::ScopedContextHolder(ScopedContextHolder&& holder)
+{
+    value = holder.value;
+    holder.value = value.Env().Undefined();
+}
+
 ScopedContextHolder::~ScopedContextHolder()
 {
-    maajs::NativeClass<ContextImpl>::take(value)->recursive_clean();
+    if (!value.IsUndefined()) {
+        maajs::NativeClass<ContextImpl>::take(value)->recursive_clean();
+    }
+}
+
+ScopedContextHolder& ScopedContextHolder::operator=(ScopedContextHolder&& holder)
+{
+    if (this == &holder) {
+        return *this;
+    }
+    this->~ScopedContextHolder();
+    value = holder.value;
+    holder.value = value.Env().Undefined();
+    return *this;
 }
