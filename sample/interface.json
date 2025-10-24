@@ -54,7 +54,10 @@
             "icon": "official.png", // 资源图标文件路径，相对于项目根目录
             "path": [
                 "{PROJECT_DIR}/resource"
-            ]
+            ],
+            "controller": [
+                "Android"
+            ] // 指定该资源包支持的控制器类型列表。若不指定，则支持所有控制器。当用户选择某控制器时，只有支持该控制器的资源包才会显示
         },
         {
             "name": "Bilibili",
