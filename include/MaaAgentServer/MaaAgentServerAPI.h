@@ -12,10 +12,10 @@ extern "C"
 
     MAA_AGENT_SERVER_API MaaBool MaaAgentServerRegisterCustomAction(const char* name, MaaCustomActionCallback action, void* trans_arg);
     
-    MAA_AGENT_SERVER_API void MaaAgentServerAddResourceSink(MaaEventCallback sink, void* trans_arg);
-    MAA_AGENT_SERVER_API void MaaAgentServerAddControllerSink(MaaEventCallback sink, void* trans_arg);
-    MAA_AGENT_SERVER_API void MaaAgentServerAddTaskerSink(MaaEventCallback sink, void* trans_arg);
-    MAA_AGENT_SERVER_API void MaaAgentServerAddContextSink(MaaEventCallback sink, void* trans_arg);
+    MAA_AGENT_SERVER_API MaaSinkId MaaAgentServerAddResourceSink(MaaEventCallback sink, void* trans_arg);
+    MAA_AGENT_SERVER_API MaaSinkId MaaAgentServerAddControllerSink(MaaEventCallback sink, void* trans_arg);
+    MAA_AGENT_SERVER_API MaaSinkId MaaAgentServerAddTaskerSink(MaaEventCallback sink, void* trans_arg);
+    MAA_AGENT_SERVER_API MaaSinkId MaaAgentServerAddContextSink(MaaEventCallback sink, void* trans_arg);
 
     MAA_AGENT_SERVER_API MaaBool MaaAgentServerStartUp(const char* identifier);
     MAA_AGENT_SERVER_API void MaaAgentServerShutDown();
