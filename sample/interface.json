@@ -22,7 +22,7 @@
     "agent": {
         "child_exec": "python",
         "child_args": [
-            "sample/python/demo3_agent.py" // 子进程参数。{PROJECT_DIR}可选，不使用时为相对于interface.json所在目录的相对路径
+            "sample/python/demo3_agent.py" // 子进程参数。{PROJECT_DIR}可选，不使用时则为固定字符串
         ]
     },
     "controller": [
