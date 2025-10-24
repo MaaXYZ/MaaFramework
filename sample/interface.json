@@ -6,19 +6,18 @@
     },
     "name": "MyDemo3", // 项目唯一标识符，用作项目ID
     "label": "$MyDemo3", // 项目显示名称，支持国际化。优先显示label，未设置时显示name
-    "title": "Demo3 v1.0.0", // 窗口标题，Client直接显示该内容不做修饰。默认使用name和version拼接生成
+    "title": "Demo3 v1.0.0", // 窗口标题，Client直接显示该内容不做修饰。默认使用name和version拼接生成，支持国际化
     "icon": "demo3.png", // 应用图标文件路径，相对于项目根目录。未设置时使用默认图标
-    // "icon": "$demo3-png", // 应用图标，若不指定，则使用默认的图标
     "mirrorchyan_rid": "demo3", // MirrorChyan资源包标识符，用于资源管理和分发
     "mirrorchyan_multiplatform": false, // 是否支持多平台，影响资源包的打包和分发策略
     "auto_update_ui": false, // 是否支持独立更新UI。为false时仅跟随资源发布更新，用户界面不显示UI更新选项
     "auto_update_maafw": false, // 是否支持独立更新MaaFramework。为false时仅跟随资源发布更新，用户界面不显示框架更新选项
     "github": "https://github.com/MAA1999/M9A", // 项目GitHub仓库地址，用于版本更新检查和问题反馈
     "version": "1.0.0", // 项目版本号，用于版本更新检查和Client显示
-    "contact": "QQ群: 592974962；B站：https://bilibili/xxxx", // 联系方式信息，显示在"关于"页面。支持文件路径、URL或直接文本，内容支持Markdown格式
-    "license": "MIT", // 项目许可证信息，显示在"关于"页面。支持文件路径、URL或直接文本，内容支持Markdown格式
-    "welcome": "欢迎使用MAA!", // 欢迎消息，在用户首次使用时弹窗显示。支持文件路径、URL或直接文本，内容支持Markdown格式。当内容更新时会再次弹窗
-    "description": "MaaFramework is a framework for building automation applications.", // 项目描述信息，显示在"关于"页面。支持文件路径、URL或直接文本，内容支持Markdown格式
+    "contact": "QQ群: 592974962；B站：https://bilibili/xxxx", // 联系方式信息，显示在"关于"页面。支持文件路径、URL或直接文本，内容支持Markdown格式，支持国际化
+    "license": "MIT", // 项目许可证信息，显示在"关于"页面。支持文件路径、URL或直接文本，内容支持Markdown格式，支持国际化
+    "welcome": "欢迎使用MAA!", // 欢迎消息，在用户首次使用时弹窗显示，亦可作为公告使用。支持文件路径、URL或直接文本，内容支持Markdown格式。当内容更新时会再次弹窗，支持国际化
+    "description": "MaaFramework is a framework for building automation applications.", // 项目描述信息，显示在"关于"页面。支持文件路径、URL或直接文本，内容支持Markdown格式，支持国际化
     "agent": {
         "child_exec": "python",
         "child_args": [
@@ -29,8 +28,7 @@
         {
             "name": "Android",
             "label": "$安卓端", // 显示名称，支持国际化。优先显示label，未设置时显示name
-            // 所有具有name字段的对象都应支持label字段
-            "description": "通过 ADB 连接安卓设备", // 控制器详细描述。支持文件路径、URL或直接文本，内容支持Markdown格式
+            "description": "通过 ADB 连接安卓设备", // 控制器详细描述。支持文件路径、URL或直接文本，内容支持Markdown格式，支持国际化
             "icon": "adb.png", // 控制器图标文件路径，相对于项目根目录
             "type": "Adb",
             "display_short_side": 720, // 默认缩放分辨率的短边长度，用于屏幕适配。与long_side二选一
@@ -51,7 +49,7 @@
         {
             "name": "Official",
             "label": "$官服资源", // 显示名称，支持国际化。优先显示label，未设置时显示name
-            "description": "官服资源", // 资源详细描述。支持文件路径、URL或直接文本，内容支持Markdown格式
+            "description": "官服资源", // 资源详细描述。支持文件路径、URL或直接文本，内容支持Markdown格式，支持国际化
             "icon": "official.png", // 资源图标文件路径，相对于项目根目录
             "path": [
                 "{PROJECT_DIR}/resource" // 资源路径。{PROJECT_DIR}占位符会被替换为interface.json所在目录的实际路径
@@ -75,7 +73,7 @@
             "label": "$收取荒原", // 显示名称，支持国际化。优先显示label，未设置时显示name
             "entry": "Wilderness",
             "default_check": true, // 是否默认选中该任务。Client初始化时根据该值决定是否勾选
-            "description": "收取荒原资源，若不勾选，则不会执行此任务", // 任务详细描述，帮助用户理解任务功能。支持文件路径、URL或直接文本，内容支持Markdown格式
+            "description": "收取荒原资源，若不勾选，则不会执行此任务", // 任务详细描述，帮助用户理解任务功能。支持文件路径、URL或直接文本，内容支持Markdown格式，支持国际化
             "icon": "wilderness.png" // 任务图标文件路径，相对于项目根目录。用于在用户界面中显示
         },
         {
@@ -126,12 +124,12 @@
         "作战关卡": {
             "type": "select", // 配置项类型。select为下拉选项框，用户从预定义选项中选择
             "label": "$选择作战关卡",
-            "description": "选择要刷的关卡", // 配置项详细描述。支持文件路径、URL或直接文本，内容支持Markdown格式
+            "description": "选择要刷的关卡", // 配置项详细描述。支持文件路径、URL或直接文本，内容支持Markdown格式，支持国际化
             "cases": [
                 {
                     "name": "3-9 厄险（百灵百验鸟）",
                     "label": "$3-9厄险", // 显示名称，支持国际化。优先显示label，未设置时显示name
-                    "description": "刷百灵鸟", // 选项详细描述。支持文件路径、URL或直接文本，内容支持Markdown格式
+                    "description": "刷百灵鸟", // 选项详细描述。支持文件路径、URL或直接文本，内容支持Markdown格式，支持国际化
                     "icon": "百灵鸟.png", // 选项图标文件路径，相对于项目根目录
                     "option": [ // 子配置项列表。只有用户选中当前选项时才显示。子选项同样在外层option中定义，支持无限嵌套
                         "使用理智药",
@@ -169,13 +167,13 @@
         "自定义关卡": {
             "type": "input", // 用户输入类型
             "label": "自定义关卡",
-            "description": "自己选打什么关", // 描述，应支持 文件名、URL、字符串，同时内容支持 markdown
+            "description": "自己选打什么关", // 描述，应支持 文件名、URL、字符串，同时内容支持 markdown，支持国际化
             "icon": "扳手.png", // 图标，可选
             "inputs": [
                 {
                     "name": "章节号",
                     "label": "$章节号", // 显示名称，支持国际化。优先显示label，未设置时显示name
-                    "description": "关卡章节号，用阿拉伯数字表示", // 描述，应支持 文件名、URL、字符串，同时内容支持 markdown,
+                    "description": "关卡章节号，用阿拉伯数字表示", // 描述，应支持 文件名、URL、字符串，同时内容支持 markdown，支持国际化
                     "default": "4",
                     "pipeline_type": "string", // 拼接到 pipeline_override 中的类型
                     "verify": "^\\d+$" // 正则表达式校验用户输入
@@ -209,13 +207,13 @@
             }
         },
         "复现次数": {
-            "description": "打几次", // 描述，应支持 文件名、URL、字符串，同时内容支持 markdown
+            "description": "打几次", // 描述，应支持 文件名、URL、字符串，同时内容支持 markdown，支持国际化
             "icon": "times.png", // 图标，可选
             "cases": [
                 {
                     "name": "x1",
                     "label": "$1次", // 显示名称，支持国际化。优先显示label，未设置时显示name
-                    "description": "打1次", // 描述，应支持 文件名、URL、字符串，同时内容支持 markdown
+                    "description": "打1次", // 描述，应支持 文件名、URL、字符串，同时内容支持 markdown，支持国际化
                     "icon": "once.png", // 图标，可选
                     "pipeline_override": {
                         "SetReplaysTimes": {
