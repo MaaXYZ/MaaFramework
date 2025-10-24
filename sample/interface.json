@@ -5,7 +5,7 @@
         "en_us": "interface_en.json"
     },
     "name": "MyDemo3", // 项目唯一标识符，用作项目ID
-    // "name": "$MyDemo3",  // 以$开头表示国际化字符串，系统会从翻译文件中读取实际显示值
+    "label": "$MyDemo3", // 项目显示名称，支持国际化。优先显示label，未设置时显示name
     "title": "Demo3 v1.0.0", // 窗口标题，Client直接显示该内容不做修饰。默认使用name和version拼接生成
     "icon": "demo3.png", // 应用图标文件路径，相对于项目根目录。未设置时使用默认图标
     // "icon": "$demo3-png", // 应用图标，若不指定，则使用默认的图标
