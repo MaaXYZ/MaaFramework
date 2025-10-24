@@ -192,6 +192,11 @@ maajs::ValueType load_context(maajs::EnvType env)
     return ctor;
 }
 
+ScopedContextHolder::ScopedContextHolder(maajs::ValueType value)
+    : value(value)
+{
+}
+
 ScopedContextHolder::ScopedContextHolder(ScopedContextHolder&& holder)
 {
     value = holder.value;
