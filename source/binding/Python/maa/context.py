@@ -143,7 +143,7 @@ class Context:
 
         return self.tasker._gen_task_job(task_id)
 
-    def clone(self) -> Context:
+    def clone(self) -> "Context":
         cloned_handle = Library.framework().MaaContextClone(self._handle)
         if not cloned_handle:
             raise ValueError("cloned_handle is None")
