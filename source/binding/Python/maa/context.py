@@ -143,7 +143,7 @@ class Context:
 
         return self.tasker._gen_task_job(task_id)
 
-    def clone(self) -> "Context":
+    def clone(self) -> Context:
         cloned_handle = Library.framework().MaaContextClone(self._handle)
         if not cloned_handle:
             raise ValueError("cloned_handle is None")
@@ -247,7 +247,7 @@ class ContextEventSink(EventSink):
 
     def on_node_next_list(
         self,
-        context: "Context",
+        context: Context,
         noti_type: NotificationType,
         detail: NodeNextListDetail,
     ):
@@ -262,7 +262,7 @@ class ContextEventSink(EventSink):
 
     def on_node_recognition(
         self,
-        context: "Context",
+        context: Context,
         noti_type: NotificationType,
         detail: NodeRecognitionDetail,
     ):
@@ -276,14 +276,19 @@ class ContextEventSink(EventSink):
         focus: Any
 
     def on_node_action(
-        self, context: "Context", noti_type: NotificationType, detail: NodeActionDetail
+        self, context: Context, noti_type: NotificationType, detail: NodeActionDetail
     ):
         pass
 
-    def on_raw_notification(self, handle: ctypes.c_void_p, msg: str, details: dict):
-        context = Context(handle=handle)
-        noti_type = EventSink._notification_type(msg)
+    def on_raw_notification(self, context: Context, msg: str, details: dict):
+        pass
 
+    def _on_raw_notification(self, handle: ctypes.c_void_p, msg: str, details: dict):
+
+        context = Context(handle=handle)
+        self.on_raw_notification(context, msg, details)
+
+        noti_type = EventSink._notification_type(msg)
         if msg.startswith("Node.NextList"):
             detail = self.NodeNextListDetail(
                 task_id=details["task_id"],

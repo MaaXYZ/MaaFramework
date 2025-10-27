@@ -237,9 +237,9 @@ def custom_ctrl_test():
 
 
 class MyEventSink(EventSink):
-    def on_raw_notification(self, handle, msg: str, details: dict):
+    def _on_raw_notification(self, handle, msg: str, details: dict):
         print(
-            f"on MyEventSink.on_raw_notification, handle: {handle}, msg: {msg}, details: {details}"
+            f"on MyEventSink._on_raw_notification, handle: {handle}, msg: {msg}, details: {details}"
         )
 
 

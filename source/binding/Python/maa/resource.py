@@ -440,11 +440,15 @@ class ResourceEventSink(EventSink):
     ):
         pass
 
-    def on_raw_notification(self, handle: ctypes.c_void_p, msg: str, details: dict):
+    def on_raw_notification(self, resource: Resource, msg: str, details: dict):
+        pass
+
+    def _on_raw_notification(self, handle: ctypes.c_void_p, msg: str, details: dict):
 
         resource = Resource(handle=handle)
-        noti_type = EventSink._notification_type(msg)
+        self.on_raw_notification(resource, msg, details)
 
+        noti_type = EventSink._notification_type(msg)
         if msg.startswith("Resource.Loading"):
             detail = self.ResourceLoadingDetail(
                 res_id=details["res_id"],

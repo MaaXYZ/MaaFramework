@@ -28,7 +28,7 @@ class EventSink(ABC):
     def on_unknown_notification(self, instance, msg: str, details: dict):
         pass
 
-    def on_raw_notification(self, handle: ctypes.c_void_p, msg: str, details: dict):
+    def _on_raw_notification(self, handle: ctypes.c_void_p, msg: str, details: dict):
         pass
 
     @property
@@ -69,6 +69,6 @@ class EventSink(ABC):
 
         self: EventSink = ctypes.cast(callback_arg, ctypes.py_object).value
 
-        self.on_raw_notification(
+        self._on_raw_notification(
             handle, msg.decode(), json.loads(details_json.decode())
         )

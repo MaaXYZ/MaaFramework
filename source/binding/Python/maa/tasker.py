@@ -540,11 +540,15 @@ class TaskerEventSink(EventSink):
     ):
         pass
 
-    def on_raw_notification(self, handle: ctypes.c_void_p, msg: str, details: dict):
+    def on_raw_notification(self, tasker: Tasker, msg: str, details: dict):
+        pass
+
+    def _on_raw_notification(self, handle: ctypes.c_void_p, msg: str, details: dict):
 
         tasker = Tasker(handle=handle)
-        noti_type = EventSink._notification_type(msg)
+        self.on_raw_notification(tasker, msg, details)
 
+        noti_type = EventSink._notification_type(msg)
         if msg.startswith("Tasker.Task"):
             detail = self.TaskerTaskDetail(
                 task_id=details["task_id"],
@@ -553,5 +557,6 @@ class TaskerEventSink(EventSink):
                 hash=details["hash"],
             )
             self.on_tasker_task(tasker, noti_type, detail)
+
         else:
             self.on_unknown_notification(tasker, msg, details)
