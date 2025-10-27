@@ -10,7 +10,7 @@
 #include "Controller/ControllerAgent.h"
 #include "Resource/ResourceMgr.h"
 #include "RuntimeCache.h"
-#include "Utils/MessageNotifier.hpp"
+#include "Utils/EventDispatcher.hpp"
 
 MAA_TASK_NS_BEGIN
 class TaskBase;
@@ -21,7 +21,7 @@ MAA_NS_BEGIN
 class Tasker : public MaaTasker
 {
 public:
-    Tasker(MaaNotificationCallback notify, void* notify_trans_arg);
+    Tasker();
     virtual ~Tasker() override;
 
     virtual bool bind_resource(MaaResource* resource) override;
@@ -48,10 +48,19 @@ public:
     virtual std::optional<MAA_TASK_NS::RecoResult> get_reco_result(MaaRecoId reco_id) const override;
     virtual std::optional<MaaNodeId> get_latest_node(const std::string& node_name) const override;
 
+    virtual MaaSinkId add_sink(MaaEventCallback callback, void* trans_arg) override;
+    virtual void remove_sink(MaaSinkId sink_id) override;
+    virtual void clear_sinks() override;
+
+    virtual MaaSinkId add_context_sink(MaaEventCallback callback, void* trans_arg) override;
+    virtual void remove_context_sink(MaaSinkId sink_id) override;
+    virtual void clear_context_sinks() override;
+
 public:
     RuntimeCache& runtime_cache();
     const RuntimeCache& runtime_cache() const;
-    void notify(std::string_view msg, const json::value& detail);
+
+    void context_notify(MaaContext* context, std::string_view msg, const json::value& details);
 
 private:
     using TaskPtr = std::shared_ptr<MAA_TASK_NS::TaskBase>;
@@ -70,6 +79,8 @@ private:
     bool need_to_stop_ = false;
 
     std::unique_ptr<AsyncRunner<TaskPtr>> task_runner_ = nullptr;
+    EventDispatcher notifier_;
+    EventDispatcher context_notifier_;
 
     std::map<MaaTaskId, RunnerId> task_id_mapping_;
     mutable std::shared_mutex task_id_mapping_mutex_;
@@ -77,7 +88,6 @@ private:
     TaskPtr running_task_ = nullptr;
 
     RuntimeCache runtime_cache_;
-    MessageNotifier notifier_;
 };
 
 MAA_NS_END

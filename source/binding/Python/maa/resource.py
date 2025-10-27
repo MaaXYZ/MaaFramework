@@ -1,17 +1,18 @@
 import ctypes
 import pathlib
 import json
-from typing import Any, Optional, Union
+from typing import Any, Optional, Union, List, Dict, Tuple
+from dataclasses import dataclass, field
 
-from .notification_handler import NotificationHandler
+from .event_sink import EventSink, NotificationType
 from .define import *
 from .job import Job
 from .library import Library
 from .buffer import StringBuffer, StringListBuffer
+from .pipeline import JPipelineData, JPipelineParser
 
 
 class Resource:
-    _notification_handler: Optional[NotificationHandler]
     _handle: MaaResourceHandle
     _own: bool
 
@@ -19,19 +20,21 @@ class Resource:
 
     def __init__(
         self,
-        notification_handler: Optional[NotificationHandler] = None,
+        notification_handler: None = None,
         handle: Optional[MaaResourceHandle] = None,
     ):
+        if notification_handler:
+            raise NotImplementedError(
+                "NotificationHandler is deprecated, use add_sink instead."
+            )
+
         self._set_api_properties()
 
         if handle:
             self._handle = handle
             self._own = False
         else:
-            self._notification_handler = notification_handler
-            self._handle = Library.framework().MaaResourceCreate(
-                *NotificationHandler._gen_c_param(self._notification_handler)
-            )
+            self._handle = Library.framework().MaaResourceCreate()
             self._own = True
 
         if not self._handle:
@@ -45,16 +48,18 @@ class Resource:
             Library.framework().MaaResourceDestroy(self._handle)
 
     def post_bundle(self, path: Union[pathlib.Path, str]) -> Job:
-        resid = Library.framework().MaaResourcePostBundle(
+        res_id = Library.framework().MaaResourcePostBundle(
             self._handle, str(path).encode()
         )
-        return Job(resid, self._status, self._wait)
+        return Job(res_id, self._status, self._wait)
 
     def override_pipeline(self, pipeline_override: Dict) -> bool:
+        pipeline_json = json.dumps(pipeline_override, ensure_ascii=False)
+
         return bool(
             Library.framework().MaaResourceOverridePipeline(
                 self._handle,
-                json.dumps(pipeline_override, ensure_ascii=False).encode(),
+                pipeline_json.encode(),
             )
         )
 
@@ -67,14 +72,13 @@ class Resource:
                 self._handle, name.encode(), list_buffer._handle
             )
         )
-    
-    def get_node_data(self, name: str) -> Optional[dict]:
+
+    def get_node_data(self, name: str) -> Optional[Dict]:
         string_buffer = StringBuffer()
         if not Library.framework().MaaResourceGetNodeData(
             self._handle, name.encode(), string_buffer._handle
         ):
             return None
-
         data = string_buffer.get()
         if not data:
             return None
@@ -83,6 +87,14 @@ class Resource:
             return json.loads(data)
         except json.JSONDecodeError:
             return None
+
+    def get_node_object(self, name: str) -> Optional[JPipelineData]:
+        node_data = self.get_node_data(name)
+
+        if not node_data:
+            return None
+
+        return JPipelineParser.parse_pipeline_data(node_data)
 
     @property
     def loaded(self) -> bool:
@@ -231,6 +243,27 @@ class Resource:
             raise RuntimeError("Failed to get hash.")
         return buffer.get()
 
+    _sink_holder: Dict[int, "ResourceEventSink"] = {}
+
+    def add_sink(self, sink: "ResourceEventSink") -> Optional[int]:
+        sink_id = int(
+            Library.framework().MaaResourceAddSink(
+                self._handle, *EventSink._gen_c_param(sink)
+            )
+        )
+        if sink_id == MaaInvalidId:
+            return None
+
+        self._sink_holder[sink_id] = sink
+        return sink_id
+
+    def remove_sink(self, sink_id: int) -> None:
+        Library.framework().MaaResourceRemoveSink(self._handle, sink_id)
+        self._sink_holder.pop(sink_id)
+
+    def clear_sinks(self) -> None:
+        Library.framework().MaaResourceClearSinks(self._handle)
+
     ### private ###
 
     def set_inference(self, execution_provider: int, device_id: int) -> bool:
@@ -267,10 +300,7 @@ class Resource:
         Resource._api_properties_initialized = True
 
         Library.framework().MaaResourceCreate.restype = MaaResourceHandle
-        Library.framework().MaaResourceCreate.argtypes = [
-            MaaNotificationCallback,
-            ctypes.c_void_p,
-        ]
+        Library.framework().MaaResourceCreate.argtypes = []
 
         Library.framework().MaaResourceDestroy.restype = None
         Library.framework().MaaResourceDestroy.argtypes = [MaaResourceHandle]
@@ -376,3 +406,52 @@ class Resource:
             MaaResourceHandle,
             MaaStringListBufferHandle,
         ]
+
+        Library.framework().MaaResourceAddSink.restype = MaaSinkId
+        Library.framework().MaaResourceAddSink.argtypes = [
+            MaaResourceHandle,
+            MaaEventCallback,
+            ctypes.c_void_p,
+        ]
+
+        Library.framework().MaaResourceRemoveSink.restype = None
+        Library.framework().MaaResourceRemoveSink.argtypes = [
+            MaaResourceHandle,
+            MaaSinkId,
+        ]
+
+        Library.framework().MaaResourceClearSinks.restype = None
+        Library.framework().MaaResourceClearSinks.argtypes = [MaaResourceHandle]
+
+
+class ResourceEventSink(EventSink):
+
+    @dataclass
+    class ResourceLoadingDetail:
+        res_id: int
+        hash: str
+        path: str
+
+    def on_resource_loading(
+        self,
+        resource: Resource,
+        noti_type: NotificationType,
+        detail: ResourceLoadingDetail,
+    ):
+        pass
+
+    def on_raw_notification(self, handle: ctypes.c_void_p, msg: str, details: dict):
+
+        resource = Resource(handle=handle)
+        noti_type = EventSink._notification_type(msg)
+
+        if msg.startswith("Resource.Loading"):
+            detail = self.ResourceLoadingDetail(
+                res_id=details["res_id"],
+                hash=details["hash"],
+                path=details["path"],
+            )
+            self.on_resource_loading(resource, noti_type, detail)
+
+        else:
+            self.on_unknown_notification(resource, msg, details)

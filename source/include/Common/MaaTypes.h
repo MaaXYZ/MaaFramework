@@ -22,7 +22,19 @@ public:
     virtual std::optional<json::object> get_node_data(const std::string& node_name) const = 0;
 };
 
-struct MaaResource : public IMaaPipeline
+struct IMaaEventDispatcher
+{
+public:
+    virtual ~IMaaEventDispatcher() = default;
+
+    virtual MaaSinkId add_sink(MaaEventCallback callback, void* trans_arg) = 0;
+    virtual void remove_sink(MaaSinkId sink_id) = 0;
+    virtual void clear_sinks() = 0;
+};
+
+struct MaaResource
+    : public IMaaPipeline
+    , public IMaaEventDispatcher
 {
 public:
     virtual ~MaaResource() = default;
@@ -48,7 +60,7 @@ public:
     virtual std::vector<std::string> get_node_list() const = 0;
 };
 
-struct MaaController
+struct MaaController : public IMaaEventDispatcher
 {
 public:
     virtual ~MaaController() = default;
@@ -80,7 +92,7 @@ public:
     virtual std::string get_uuid() = 0;
 };
 
-struct MaaTasker
+struct MaaTasker : public IMaaEventDispatcher
 {
 public:
     virtual ~MaaTasker() = default;
@@ -108,6 +120,10 @@ public:
     virtual std::optional<MAA_TASK_NS::NodeDetail> get_node_detail(MaaNodeId node_id) const = 0;
     virtual std::optional<MAA_TASK_NS::RecoResult> get_reco_result(MaaRecoId reco_id) const = 0;
     virtual std::optional<MaaNodeId> get_latest_node(const std::string& node_name) const = 0;
+
+    virtual MaaSinkId add_context_sink(MaaEventCallback callback, void* trans_arg) = 0;
+    virtual void remove_context_sink(MaaSinkId sink_id) = 0;
+    virtual void clear_context_sinks() = 0;
 };
 
 struct MaaContext : public IMaaPipeline
@@ -133,6 +149,7 @@ public:
 
     virtual std::string identifier() const = 0;
     virtual bool bind_resource(MaaResource* resource) = 0;
+    virtual void register_sink(MaaTasker* tasker, MaaResource* res, MaaController* ctrl) = 0;
     virtual std::string create_socket(const std::string& identifier) = 0;
     virtual bool connect() = 0;
     virtual bool disconnect() = 0;

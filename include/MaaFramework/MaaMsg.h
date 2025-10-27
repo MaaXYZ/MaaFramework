@@ -41,6 +41,7 @@
  *     ctrl_id: number,
  *     uuid: string,
  *     action: string,
+ *     param: object,
  * }
  */
 #define MaaMsg_Controller_Action_Starting ("Controller.Action.Starting")

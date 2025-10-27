@@ -50,6 +50,9 @@ public: // from ControlUnitSink
     virtual void on_app_stopped(const std::string& intent) override;
 
 private:
+    static int android_keycode_to_linux_key_code(int key);
+
+private:
     bool load_mumu_library();
     bool connect_mumu();
     bool init_screencap();
@@ -62,6 +65,8 @@ private:
     std::filesystem::path mumu_path_;
     std::filesystem::path lib_path_;
     int mumu_index_ = 0;
+
+    inline static std::map<int, int> s_mumu_handle_refs_;
     int mumu_handle_ = 0;
 
     std::string mumu_app_package_;
@@ -77,8 +82,8 @@ private:
     inline static const std::string kDisconnectFuncName = "nemu_disconnect";
     inline static const std::string kCaptureDisplayFuncName = "nemu_capture_display";
     inline static const std::string kInputTextFuncName = "nemu_input_text";
-    inline static const std::string kInputEventTouchDownFuncName = "nemu_input_event_touch_down";
-    inline static const std::string kInputEventTouchUpFuncName = "nemu_input_event_touch_up";
+    inline static const std::string kInputEventTouchDownFuncName = "nemu_input_event_finger_touch_down";
+    inline static const std::string kInputEventTouchUpFuncName = "nemu_input_event_finger_touch_up";
     inline static const std::string kInputEventKeyDownFuncName = "nemu_input_event_key_down";
     inline static const std::string kInputEventKeyUpFuncName = "nemu_input_event_key_up";
     inline static const std::string kGetDisplayIdFuncName = "nemu_get_display_id";
@@ -88,8 +93,8 @@ private:
     boost::function<decltype(nemu_disconnect)> disconnect_func_;
     boost::function<decltype(nemu_capture_display)> capture_display_func_;
     boost::function<decltype(nemu_input_text)> input_text_func_;
-    boost::function<decltype(nemu_input_event_touch_down)> input_event_touch_down_func_;
-    boost::function<decltype(nemu_input_event_touch_up)> input_event_touch_up_func_;
+    boost::function<decltype(nemu_input_event_finger_touch_down)> input_event_touch_down_func_;
+    boost::function<decltype(nemu_input_event_finger_touch_up)> input_event_touch_up_func_;
     boost::function<decltype(nemu_input_event_key_down)> input_event_key_down_func_;
     boost::function<decltype(nemu_input_event_key_up)> input_event_key_up_func_;
     boost::function<decltype(nemu_get_display_id)> get_display_id_func_;

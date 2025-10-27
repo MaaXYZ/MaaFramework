@@ -7,13 +7,12 @@ from .define import *
 from .library import Library
 from .buffer import ImageListBuffer, RectBuffer, StringBuffer, ImageBuffer
 from .job import Job, JobWithResult
-from .notification_handler import NotificationHandler
+from .event_sink import EventSink, NotificationType
 from .resource import Resource
 from .controller import Controller
 
 
 class Tasker:
-    _notification_handler: Optional[NotificationHandler]
     _handle: MaaTaskerHandle
     _own: bool
 
@@ -21,19 +20,21 @@ class Tasker:
 
     def __init__(
         self,
-        notification_handler: Optional[NotificationHandler] = None,
+        notification_handler: None = None,
         handle: Optional[MaaTaskerHandle] = None,
     ):
+        if notification_handler:
+            raise NotImplementedError(
+                "NotificationHandler is deprecated, use add_sink, add_context_sink instead."
+            )
+
         self._set_api_properties()
 
         if handle:
             self._handle = handle
             self._own = False
         else:
-            self._notification_handler = notification_handler
-            self._handle = Library.framework().MaaTaskerCreate(
-                *NotificationHandler._gen_c_param(self._notification_handler)
-            )
+            self._handle = Library.framework().MaaTaskerCreate()
             self._own = True
 
         if not self._handle:
@@ -112,64 +113,55 @@ class Tasker:
     def clear_cache(self) -> bool:
         return bool(Library.framework().MaaTaskerClearCache(self._handle))
 
-    @staticmethod
-    def set_log_dir(path: Union[Path, str]) -> bool:
-        strpath = str(path)
-        return bool(
-            Library.framework().MaaSetGlobalOption(
-                MaaOption(MaaGlobalOptionEnum.LogDir),
-                strpath.encode(),
-                len(strpath),
+    _sink_holder: Dict[int, "TaskerEventSink"] = {}
+
+    def add_sink(self, sink: "TaskerEventSink") -> Optional[int]:
+        sink_id = int(
+            Library.framework().MaaTaskerAddSink(
+                self._handle, *EventSink._gen_c_param(sink)
             )
         )
+        if sink_id == MaaInvalidId:
+            return None
 
-    @staticmethod
-    def set_save_draw(save_draw: bool) -> bool:
-        cbool = ctypes.c_bool(save_draw)
-        return bool(
-            Library.framework().MaaSetGlobalOption(
-                MaaOption(MaaGlobalOptionEnum.SaveDraw),
-                ctypes.pointer(cbool),
-                ctypes.sizeof(ctypes.c_bool),
+        self._sink_holder[sink_id] = sink
+        return sink_id
+
+    def remove_sink(self, sink_id: int) -> None:
+        Library.framework().MaaTaskerRemoveSink(self._handle, sink_id)
+        self._sink_holder.pop(sink_id)
+
+    def clear_sinks(self) -> None:
+        Library.framework().MaaTaskerClearSinks(self._handle)
+
+    def add_context_sink(self, sink: "ContextEventSink") -> Optional[int]:
+        sink_id = int(
+            Library.framework().MaaTaskerAddContextSink(
+                self._handle, *EventSink._gen_c_param(sink)
             )
         )
+        if sink_id == MaaInvalidId:
+            return None
 
-    @staticmethod
-    def set_recording(recording: bool) -> bool:
-        """
-        Deprecated
-        """
-        return False
+        self._sink_holder[sink_id] = sink
+        return sink_id
 
-    @staticmethod
-    def set_stdout_level(level: LoggingLevelEnum) -> bool:
-        clevel = MaaLoggingLevel(level)
-        return bool(
-            Library.framework().MaaSetGlobalOption(
-                MaaOption(MaaGlobalOptionEnum.StdoutLevel),
-                ctypes.pointer(clevel),
-                ctypes.sizeof(MaaLoggingLevel),
-            )
-        )
+    def remove_context_sink(self, sink_id: int) -> None:
+        Library.framework().MaaTaskerRemoveContextSink(self._handle, sink_id)
+        self._sink_holder.pop(sink_id)
 
-    @staticmethod
-    def set_debug_mode(debug_mode: bool) -> bool:
-        cbool = ctypes.c_bool(debug_mode)
-        return bool(
-            Library.framework().MaaSetGlobalOption(
-                MaaOption(MaaGlobalOptionEnum.DebugMode),
-                ctypes.pointer(cbool),
-                ctypes.sizeof(ctypes.c_bool),
-            )
-        )
+    def clear_context_sinks(self) -> None:
+        Library.framework().MaaTaskerClearContextSinks(self._handle)
 
     ### private ###
 
     @staticmethod
     def _gen_post_param(entry: str, pipeline_override: Dict) -> Tuple[bytes, bytes]:
+        pipeline_json = json.dumps(pipeline_override, ensure_ascii=False)
+
         return (
             entry.encode(),
-            json.dumps(pipeline_override, ensure_ascii=False).encode(),
+            pipeline_json.encode(),
         )
 
     def _gen_task_job(self, taskid: MaaTaskId) -> JobWithResult:
@@ -188,7 +180,7 @@ class Tasker:
 
     def get_recognition_detail(self, reco_id: int) -> Optional[RecognitionDetail]:
         name = StringBuffer()
-        algorithm = StringBuffer()
+        algorithm = StringBuffer()  # type: ignore
         hit = MaaBool()
         box = RectBuffer()
         detail_json = StringBuffer()
@@ -296,6 +288,66 @@ class Tasker:
             task_id=task_id, entry=entry.get(), nodes=nodes, status=Status(status)
         )
 
+    @staticmethod
+    def set_log_dir(path: Union[Path, str]) -> bool:
+        strpath = str(path)
+        return bool(
+            Library.framework().MaaGlobalSetOption(
+                MaaOption(MaaGlobalOptionEnum.LogDir),
+                strpath.encode(),
+                len(strpath),
+            )
+        )
+
+    @staticmethod
+    def set_save_draw(save_draw: bool) -> bool:
+        cbool = ctypes.c_bool(save_draw)
+        return bool(
+            Library.framework().MaaGlobalSetOption(
+                MaaOption(MaaGlobalOptionEnum.SaveDraw),
+                ctypes.pointer(cbool),
+                ctypes.sizeof(ctypes.c_bool),
+            )
+        )
+
+    @staticmethod
+    def set_recording(recording: bool) -> bool:
+        """
+        Deprecated
+        """
+        return False
+
+    @staticmethod
+    def set_stdout_level(level: LoggingLevelEnum) -> bool:
+        clevel = MaaLoggingLevel(level)
+        return bool(
+            Library.framework().MaaGlobalSetOption(
+                MaaOption(MaaGlobalOptionEnum.StdoutLevel),
+                ctypes.pointer(clevel),
+                ctypes.sizeof(MaaLoggingLevel),
+            )
+        )
+
+    @staticmethod
+    def set_debug_mode(debug_mode: bool) -> bool:
+        cbool = ctypes.c_bool(debug_mode)
+        return bool(
+            Library.framework().MaaGlobalSetOption(
+                MaaOption(MaaGlobalOptionEnum.DebugMode),
+                ctypes.pointer(cbool),
+                ctypes.sizeof(ctypes.c_bool),
+            )
+        )
+
+    @staticmethod
+    def load_plugin(path: Union[Path, str]) -> bool:
+        strpath = str(path)
+        return bool(
+            Library.framework().MaaGlobalLoadPlugin(
+                strpath.encode(),
+            )
+        )
+
     _api_properties_initialized: bool = False
 
     @staticmethod
@@ -330,11 +382,20 @@ class Tasker:
             return
         Tasker._api_properties_initialized = True
 
-        Library.framework().MaaTaskerCreate.restype = MaaTaskerHandle
-        Library.framework().MaaTaskerCreate.argtypes = [
-            MaaNotificationCallback,
-            ctypes.c_void_p,
+        Library.framework().MaaGlobalSetOption.restype = MaaBool
+        Library.framework().MaaGlobalSetOption.argtypes = [
+            MaaGlobalOption,
+            MaaOptionValue,
+            MaaOptionValueSize,
         ]
+
+        Library.framework().MaaGlobalLoadPlugin.restype = MaaBool
+        Library.framework().MaaGlobalLoadPlugin.argtypes = [
+            ctypes.c_char_p,
+        ]
+
+        Library.framework().MaaTaskerCreate.restype = MaaTaskerHandle
+        Library.framework().MaaTaskerCreate.argtypes = []
 
         Library.framework().MaaTaskerDestroy.restype = None
         Library.framework().MaaTaskerDestroy.argtypes = [MaaTaskerHandle]
@@ -432,9 +493,65 @@ class Tasker:
             MaaTaskerHandle,
         ]
 
-        Library.framework().MaaSetGlobalOption.restype = MaaBool
-        Library.framework().MaaSetGlobalOption.argtypes = [
-            MaaGlobalOption,
-            MaaOptionValue,
-            MaaOptionValueSize,
+        Library.framework().MaaTaskerAddSink.restype = MaaSinkId
+        Library.framework().MaaTaskerAddSink.argtypes = [
+            MaaTaskerHandle,
+            MaaEventCallback,
+            ctypes.c_void_p,
         ]
+
+        Library.framework().MaaTaskerRemoveSink.restype = None
+        Library.framework().MaaTaskerRemoveSink.argtypes = [
+            MaaTaskerHandle,
+            MaaSinkId,
+        ]
+
+        Library.framework().MaaTaskerClearSinks.restype = None
+        Library.framework().MaaTaskerClearSinks.argtypes = [MaaTaskerHandle]
+
+        Library.framework().MaaTaskerAddContextSink.restype = MaaSinkId
+        Library.framework().MaaTaskerAddContextSink.argtypes = [
+            MaaTaskerHandle,
+            MaaEventCallback,
+            ctypes.c_void_p,
+        ]
+
+        Library.framework().MaaTaskerRemoveContextSink.restype = None
+        Library.framework().MaaTaskerRemoveContextSink.argtypes = [
+            MaaTaskerHandle,
+            MaaSinkId,
+        ]
+
+        Library.framework().MaaTaskerClearContextSinks.restype = None
+        Library.framework().MaaTaskerClearContextSinks.argtypes = [MaaTaskerHandle]
+
+
+class TaskerEventSink(EventSink):
+
+    @dataclass
+    class TaskerTaskDetail:
+        task_id: int
+        entry: str
+        uuid: str
+        hash: str
+
+    def on_tasker_task(
+        self, tasker: Tasker, noti_type: NotificationType, detail: TaskerTaskDetail
+    ):
+        pass
+
+    def on_raw_notification(self, handle: ctypes.c_void_p, msg: str, details: dict):
+
+        tasker = Tasker(handle=handle)
+        noti_type = EventSink._notification_type(msg)
+
+        if msg.startswith("Tasker.Task"):
+            detail = self.TaskerTaskDetail(
+                task_id=details["task_id"],
+                entry=details["entry"],
+                uuid=details["uuid"],
+                hash=details["hash"],
+            )
+            self.on_tasker_task(tasker, noti_type, detail)
+        else:
+            self.on_unknown_notification(tasker, msg, details)

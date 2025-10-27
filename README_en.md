@@ -22,7 +22,7 @@ _✨ An automation black-box testing framework based on image recognition ✨_
   <img alt="activity" src="https://img.shields.io/github/commit-activity/m/MaaXYZ/MaaFramework?color=%23ff69b4">
   <img alt="stars" src="https://img.shields.io/github/stars/MaaXYZ/MaaFramework?style=social">
   <br>
-  <a href="https://pypi.org/project/MaaFw/" target="_blank"><img alt="pypi" src="https://img.shields.io/badge/PyPI-3775A9?logo=pypi&logoColor=white"></a>
+  <a href="https://pypi.org/project/MaaFw/" target="_blank"><img alt="pypi" src="https://img.shields.io/pypi/dm/maafw?logo=pypi&label=PyPI"></a>
   <a href="https://www.nuget.org/packages/Maa.Framework.Runtimes" target="_blank"><img alt="nuget" src="https://img.shields.io/badge/NuGet-004880?logo=nuget"></a>
   <a href="https://www.npmjs.com/package/@maaxyz/maa-node" target="_blank"><img alt="npm" src="https://img.shields.io/badge/npm-CB3837?logo=npm"></a>
   <a href="https://mirrorchyan.com/en/projects?source=maafw-badge" target="_blank"><img alt="mirrorc" src="https://img.shields.io/badge/MirrorChyan-%239af3f6?logo=countingworkspro&logoColor=4f46e5"></a>
@@ -43,6 +43,9 @@ _✨ An automation black-box testing framework based on image recognition ✨_
 It offers low-code simplicity while maintaining high extensibility. The framework aims to create a rich, leading-edge, and practical open-source library, empowering developers to easily write better black-box test programs and promoting widespread use.
 
 ## Get Started
+
+> [!TIP]
+> Visit our [website](https://maafw.xyz/) for a better documentation experience.
 
 - [Quick Start](docs/en_us/1.1-QuickStarted.md)
 - [Integration](docs/en_us/2.1-Integration.md)
@@ -72,8 +75,8 @@ It offers low-code simplicity while maintaining high extensibility. The framewor
 - [MFATools](https://github.com/SweetSmellFox/MFATools) ![csharp](https://img.shields.io/badge/C%23-239120?logo=csharp&logoColor=white) ![license](https://img.shields.io/github/license/SweetSmellFox/MFATools) ![activity](https://img.shields.io/github/commit-activity/m/SweetSmellFox/MFATools?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/SweetSmellFox/MFATools?style=social)  
   The tool interface is developed based on the WPF framework, aiming to provide functions similar to the screenshot tool.
 
-- [YAMaaPE](https://github.com/kqcoxn/YAMaaPE) ![js](https://img.shields.io/badge/Javascript-yellow?logo=Javascript) ![vue](https://img.shields.io/badge/vue-268923?logo=vue.js) ![activity](https://img.shields.io/github/commit-activity/m/kqcoxn/YAMaaPE?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/kqcoxn/YAMaaPE?style=social)  
-  A Pipeline Editor based on vue-flow. Powerfully driven by MaaFramework!
+- [MaaPipelineEditor](https://github.com/kqcoxn/MaaPipelineEditor) ![Typescript](https://img.shields.io/badge/Typescript-8A2BE2?logo=typescript) ![activity](https://img.shields.io/github/commit-activity/m/kqcoxn/MaaPipelineEditor?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/kqcoxn/MaaPipelineEditor?style=social)  
+  MaaFramework Pipeline workflow visual editor based on react-flow. Create your Pipeline using a "no code" flowchart!
 
 ### Application
 
@@ -133,6 +136,9 @@ It offers low-code simplicity while maintaining high extensibility. The framewor
 
 - [SLIMEIM_Maa](https://github.com/miaojiuqing/SLIMEIM_Maa) ![Pipeline](https://img.shields.io/badge/Pipeline-%23876f69?logo=paddypower&logoColor=%23FFFFFF) ![Python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white) ![license](https://img.shields.io/github/license/miaojiuqing/SLIMEIM_Maa) ![activity](https://img.shields.io/github/commit-activity/m/miaojiuqing/SLIMEIM_Maa?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/miaojiuqing/SLIMEIM_Maa?style=social) [![mirrorc](https://img.shields.io/badge/Mirror%E9%85%B1-%239af3f6?logo=countingworkspro&logoColor=4f46e5)](https://mirrorchyan.com/en/projects?source=maafw-badge&rid=SLIMEIM_Maa)  
   Assistant for the Founding Chronicles of the Demon King and Dragon.Free your hands with image recognition and simulated control technology! Powered by MaaFramework!
+
+- [Maa_bbb](https://github.com/miaojiuqing/Maa_bbb) ![Pipeline](https://img.shields.io/badge/Pipeline-%23876f69?logo=paddypower&logoColor=%23FFFFFF) ![Python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white) ![license](https://img.shields.io/github/license/miaojiuqing/Maa_bbb) ![activity](https://img.shields.io/github/commit-activity/m/miaojiuqing/Maa_bbb?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/miaojiuqing/Maa_bbb?style=social) [![mirrorc](https://img.shields.io/badge/Mirror%E9%85%B1-%239af3f6?logo=countingworkspro&logoColor=4f46e5)](https://mirrorchyan.com/en/projects?rid=Maa_bbb)  
+  Honkai Impact 3 Mini Assistant. Uses image recognition and simulation control technology to free your hands! Supports both PC and emulator simultaneously, powered by MaaFramework!
   
 ## Eco-Building
 

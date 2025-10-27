@@ -75,7 +75,16 @@ jobs:
               with:
                   sdk-version: 26100
 
+            - name: Cache MaaDeps
+              id: cache-maadeps
+              uses: actions/cache@v4
+              with:
+                path: |
+                    ./3rdparty/MaaDeps
+                key: maadeps-${{ runner.os }}-${{ matrix.arch }}-${{ hashFiles('./tools/maadeps-download.py') }}
+
             - name: Bootstrap MaaDeps
+              if: steps.cache-maadeps.outputs.cache-hit != 'true'
               env:
                   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
               run: |
@@ -104,7 +113,6 @@ jobs:
 
             - name: Install
               shell: bash
-              if: always()
               run: |
                   cmake --install build --prefix install --config ${{ inputs.build_config || needs.meta.outputs.build_config }}
                   rm -rf install/bin/msvc-debug
@@ -125,7 +133,6 @@ jobs:
     ubuntu:
         needs: meta
         runs-on: ubuntu-latest
-        container: archlinux:base-devel
         strategy:
             matrix:
                 arch: [aarch64, x86_64]
@@ -135,12 +142,13 @@ jobs:
             # maybe should explicitly update some pkg instead of all?
             - name: Update system
               run: |
-                  pacman -Syu --noconfirm
+                  sudo apt-get update -y
+                  sudo apt-get remove -y --purge firefox
+                  sudo apt-get upgrade -y
 
             - name: Install dep
               run: |
-                  pacman -Sy
-                  pacman -S --noconfirm cmake python ccache ninja git
+                  sudo apt-get install -y ninja-build cmake ccache
 
             - uses: pnpm/action-setup@v4
               with:
@@ -155,10 +163,6 @@ jobs:
             - uses: actions/checkout@v4
               with:
                   submodules: true
-
-            - name: Install cross compile toolchains
-              run: |
-                  python3 3rdparty/MaaDeps/linux-toolchain-download.py ${{ matrix.arch == 'x86_64' && 'x64' || 'arm64' }}
 
             - name: Setup ccache
               uses: Chocobo1/setup-ccache-action@v1
@@ -188,7 +192,6 @@ jobs:
 
             - name: Install
               shell: bash
-              if: always()
               run: |
                   cmake --install build --prefix install --config ${{ inputs.build_config || needs.meta.outputs.build_config }}
 
@@ -211,7 +214,7 @@ jobs:
             matrix:
                 arch: [aarch64, x86_64]
             fail-fast: false
-        runs-on: macos-15
+        runs-on: macos-latest
 
         steps:
             - uses: actions/checkout@v4
@@ -224,7 +227,7 @@ jobs:
 
             - name: Install dep
               run: |
-                  brew install cmake ninja ccache
+                  brew install ninja ccache
 
             - name: Setup ccache
               uses: Chocobo1/setup-ccache-action@v1
@@ -265,7 +268,6 @@ jobs:
 
             - name: Install
               shell: bash
-              if: always()
               run: |
                   cmake --install build --prefix install --config ${{ inputs.build_config || needs.meta.outputs.build_config }}
 
@@ -331,7 +333,6 @@ jobs:
 
             - name: Install
               shell: bash
-              if: always()
               run: |
                   cmake --install build --prefix install --config ${{ inputs.build_config || needs.meta.outputs.build_config }}
 
@@ -420,9 +421,10 @@ jobs:
 
             - name: Build wrapper
               run: |
-                  cd source/binding/NodeJS/release/maa-node
-                  pnpm i
-                  npm run build
+                  cd source/binding/NodeJS
+                  mkdir -p release/maa-node/dist
+                  cp src/apis/*.d.ts release/maa-node/dist
+                  cp release/maa-node/src/*.js release/maa-node/dist
 
             - name: Package wrapper
               run: |

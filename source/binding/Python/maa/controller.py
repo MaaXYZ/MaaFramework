@@ -6,7 +6,7 @@ from pathlib import Path
 from typing import Any, Dict, Optional, Union
 
 from .buffer import ImageBuffer, StringBuffer
-from .notification_handler import NotificationHandler
+from .event_sink import EventSink, NotificationType
 from .define import *
 from .job import Job, JobWithResult
 from .library import Library
@@ -20,7 +20,6 @@ __all__ = [
 
 
 class Controller:
-    _notification_handler: Optional[NotificationHandler]
     _handle: MaaControllerHandle
     _own: bool
 
@@ -173,6 +172,27 @@ class Controller:
             )
         )
 
+    _sink_holder: Dict[int, "ControllerEventSink"] = {}
+
+    def add_sink(self, sink: "ControllerEventSink") -> Optional[int]:
+        sink_id = int(
+            Library.framework().MaaControllerAddSink(
+                self._handle, *EventSink._gen_c_param(sink)
+            )
+        )
+        if sink_id == MaaInvalidId:
+            return None
+
+        self._sink_holder[sink_id] = sink
+        return sink_id
+
+    def remove_sink(self, sink_id: int) -> None:
+        Library.framework().MaaControllerRemoveSink(self._handle, sink_id)
+        self._sink_holder.pop(sink_id)
+
+    def clear_sinks(self) -> None:
+        Library.framework().MaaControllerClearSinks(self._handle)
+
     ### private ###
 
     def _status(self, maaid: int) -> MaaStatus:
@@ -319,6 +339,22 @@ class Controller:
             MaaStringBufferHandle,
         ]
 
+        Library.framework().MaaControllerAddSink.restype = MaaSinkId
+        Library.framework().MaaControllerAddSink.argtypes = [
+            MaaControllerHandle,
+            MaaEventCallback,
+            ctypes.c_void_p,
+        ]
+
+        Library.framework().MaaControllerRemoveSink.restype = None
+        Library.framework().MaaControllerRemoveSink.argtypes = [
+            MaaControllerHandle,
+            MaaSinkId,
+        ]
+
+        Library.framework().MaaControllerClearSinks.restype = None
+        Library.framework().MaaControllerClearSinks.argtypes = [MaaControllerHandle]
+
 
 class AdbController(Controller):
     AGENT_BINARY_PATH = os.path.join(
@@ -334,12 +370,15 @@ class AdbController(Controller):
         input_methods: int = MaaAdbInputMethodEnum.Default,
         config: Dict[str, Any] = {},
         agent_path: Union[str, Path] = AGENT_BINARY_PATH,
-        notification_handler: Optional[NotificationHandler] = None,
+        notification_handler: None = None,
     ):
+        if notification_handler:
+            raise NotImplementedError(
+                "NotificationHandler is deprecated, use add_sink instead."
+            )
+
         super().__init__()
         self._set_adb_api_properties()
-
-        self._notification_handler = notification_handler
 
         self._handle = Library.framework().MaaAdbControllerCreate(
             str(adb_path).encode(),
@@ -348,7 +387,6 @@ class AdbController(Controller):
             MaaAdbInputMethod(input_methods),
             json.dumps(config, ensure_ascii=False).encode(),
             str(agent_path).encode(),
-            *NotificationHandler._gen_c_param(self._notification_handler)
         )
 
         if not self._handle:
@@ -364,8 +402,6 @@ class AdbController(Controller):
             MaaAdbInputMethod,
             ctypes.c_char_p,
             ctypes.c_char_p,
-            MaaNotificationCallback,
-            ctypes.c_void_p,
         ]
 
 
@@ -376,17 +412,20 @@ class Win32Controller(Controller):
         hWnd: Union[ctypes.c_void_p, int, None],
         screencap_method: int = MaaWin32ScreencapMethodEnum.DXGI_DesktopDup,
         input_method: int = MaaWin32InputMethodEnum.Seize,
-        notification_handler: Optional[NotificationHandler] = None,
+        notification_handler: None = None,
     ):
+        if notification_handler:
+            raise NotImplementedError(
+                "NotificationHandler is deprecated, use add_sink instead."
+            )
+
         super().__init__()
         self._set_win32_api_properties()
 
-        self._notification_handler = notification_handler
         self._handle = Library.framework().MaaWin32ControllerCreate(
             hWnd,
             MaaWin32ScreencapMethod(screencap_method),
             MaaWin32InputMethod(input_method),
-            *NotificationHandler._gen_c_param(self._notification_handler)
         )
 
         if not self._handle:
@@ -398,8 +437,6 @@ class Win32Controller(Controller):
             ctypes.c_void_p,
             MaaWin32ScreencapMethod,
             MaaWin32InputMethod,
-            MaaNotificationCallback,
-            ctypes.c_void_p,
         ]
 
 
@@ -411,18 +448,21 @@ class DbgController(Controller):
         write_path: Union[str, Path],
         dbg_type: int,
         config: Dict[str, Any] = {},
-        notification_handler: Optional[NotificationHandler] = None,
+        notification_handler: None = None,
     ):
+        if notification_handler:
+            raise NotImplementedError(
+                "NotificationHandler is deprecated, use add_sink instead."
+            )
+
         super().__init__()
         self._set_dbg_api_properties()
 
-        self._notification_handler = notification_handler
         self._handle = Library.framework().MaaDbgControllerCreate(
             str(read_path).encode(),
             str(write_path).encode(),
             MaaDbgControllerType(dbg_type),
             json.dumps(config, ensure_ascii=False).encode(),
-            *NotificationHandler._gen_c_param(self._notification_handler)
         )
 
         if not self._handle:
@@ -435,8 +475,6 @@ class DbgController(Controller):
             ctypes.c_char_p,
             MaaDbgControllerType,
             ctypes.c_char_p,
-            MaaNotificationCallback,
-            ctypes.c_void_p,
         ]
 
 
@@ -446,12 +484,15 @@ class CustomController(Controller):
 
     def __init__(
         self,
-        notification_handler: Optional[NotificationHandler] = None,
+        notification_handler: None = None,
     ):
+        if notification_handler:
+            raise NotImplementedError(
+                "NotificationHandler is deprecated, use add_sink instead."
+            )
+
         super().__init__()
         self._set_custom_api_properties()
-
-        self._notification_handler = notification_handler
 
         self._callbacks = MaaCustomControllerCallbacks(
             CustomController._c_connect_agent,
@@ -473,7 +514,6 @@ class CustomController(Controller):
         self._handle = Library.framework().MaaCustomControllerCreate(
             self.c_handle,
             self.c_arg,
-            *NotificationHandler._gen_c_param(self._notification_handler)
         )
 
         if not self._handle:
@@ -805,6 +845,39 @@ class CustomController(Controller):
         Library.framework().MaaCustomControllerCreate.argtypes = [
             ctypes.POINTER(MaaCustomControllerCallbacks),
             ctypes.c_void_p,
-            MaaNotificationCallback,
-            ctypes.c_void_p,
         ]
+
+
+class ControllerEventSink(EventSink):
+
+    @dataclass
+    class ControllerActionDetail:
+        ctrl_id: int
+        uuid: str
+        action: str
+        param: dict
+
+    def on_controller_action(
+        self,
+        controller: Controller,
+        noti_type: NotificationType,
+        detail: ControllerActionDetail,
+    ):
+        pass
+
+    def on_raw_notification(self, handle: ctypes.c_void_p, msg: str, details: dict):
+
+        controller = Controller(handle=handle)
+        noti_type = EventSink._notification_type(msg)
+
+        if msg.startswith("Controller.Action"):
+            detail = self.ControllerActionDetail(
+                ctrl_id=details["ctrl_id"],
+                uuid=details["uuid"],
+                action=details["action"],
+                param=details["param"],
+            )
+            self.on_controller_action(controller, noti_type, detail)
+
+        else:
+            self.on_unknown_notification(controller, msg, details)

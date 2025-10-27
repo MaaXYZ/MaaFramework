@@ -1,25 +1,37 @@
 {
-    "$comments": [
-        "1. 添加属性字段需要给出 title 、 description 、 $ref ， $ref 优先使用或新增基础类型，能不写就不要写 default 。",
-        "2. 基础类型以 json 开头，需要给出 default 。",
-        "3. 专有类型如 SwipeListItem ，需要给出 unevaluatedProperties 。",
-        "4. 属性类型如果有 required ，请在 V2 中加入 TypeWithDependent 。"
-    ],
     "$schema": "https://json-schema.org/draft/2020-12/schema",
     "type": "object",
     "patternProperties": {
-        "^(?!.*_comment$)(?!^comment$)(?!.*?\\$schema).*$": {
+        "^(?!\\$).*": {
             "$ref": "#/$defs/Node"
         }
     },
+    "$comment": "*** 初次使用，请连同 custom.*.schema.json 一起复制。 ***",
     "$defs": {
         "CustomRecognitionSchema": {
-            "$comment": "若要使用拓展模式，请为 ref 添加 $ ，编写方法类似 RecognitionV2",
-            "ref": "../test/schema/custom.recognition.schema.json"
+            "$example": "../test/schema/custom.recognition.schema.json",
+            "$comment": "若要使用该拓展模式，请在下面文件中编写，编写方法类似 RecognitionV2",
+            "$ref": "./custom.recognition.schema.json"
         },
         "CustomActionSchema": {
-            "$comment": "若要使用拓展模式，请为 ref 添加 $ ，编写方法类似 ActionV2",
-            "ref": "./custom.action.schema.json"
+            "$comment": "若要使用该拓展模式，请在下面文件中编写，编写方法类似 ActionV2",
+            "$ref": "./custom.action.schema.json"
+        },
+        "$comments": [
+            "如何编写 pipeline schema",
+            "1. 添加属性字段需要给出 title 、 description 、 $ref ， $ref 优先使用或新增基础类型，能不写就不要写 default 。",
+            "2. 基础类型以 json 开头，需要给出 default 。",
+            "3. 专有类型如 SwipeListItem ，需要给出 unevaluatedProperties 。",
+            "4. 属性类型如果有 required ，请在 V2 中加入 TypeWithDependent 。"
+        ],
+        "jsonCode": {
+            "patternProperties": {
+                ".*_code$|^code$": {
+                    "title": "Code Overridden Property",
+                    "description": "代码覆写 | 该节点属性通过外部代码覆写",
+                    "markdownDescription": "*any*\n\n注释 | 该节点属性的注释说明。"
+                }
+            }
         },
         "jsonDocument": {
             "patternProperties": {
@@ -31,35 +43,23 @@
                 }
             }
         },
-        "jsonComment": {
+        "jsonKeywords": {
             "patternProperties": {
-                ".*_comment$|^comment$": {
-                    "title": "Comment Property",
-                    "description": "注释 | 该节点属性的注释说明。",
-                    "type": "string",
-                    "markdownDescription": "*string*\n\n注释 | 该节点属性的注释说明。"
-                }
-            }
-        },
-        "jsonCode": {
-            "patternProperties": {
-                ".*_code$|^code$": {
-                    "title": "Code Overridden Property",
-                    "description": "代码覆写 | 该节点属性通过外部代码覆写",
-                    "markdownDescription": "*any*\n\n注释 | 该节点属性的注释说明。"
+                "^\\$.*": {
+                    "title": "Reserved Property"
                 }
             }
         },
         "jsonComments": {
             "allOf": [
                 {
+                    "$ref": "#/$defs/jsonCode"
+                },
+                {
                     "$ref": "#/$defs/jsonDocument"
                 },
                 {
-                    "$ref": "#/$defs/jsonComment"
-                },
-                {
-                    "$ref": "#/$defs/jsonCode"
+                    "$ref": "#/$defs/jsonKeywords"
                 }
             ]
         },
@@ -174,6 +174,13 @@
             "maximum": 2147483647,
             "default": 0
         },
+        "jsonNInt32": {
+            "type": "integer",
+            "format": "int32",
+            "minimum": 0,
+            "maximum": 2147483647,
+            "default": 0
+        },
         "jsonUInt32": {
             "type": "integer",
             "format": "uint32",
@@ -185,6 +192,13 @@
             "type": "integer",
             "format": "int64",
             "minimum": -9223372036854775808,
+            "maximum": 9223372036854775807,
+            "default": 0
+        },
+        "jsonNInt64": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0,
             "maximum": 9223372036854775807,
             "default": 0
         },
@@ -202,21 +216,18 @@
             "maximum": 170141183460469231731687303715884105727,
             "default": 0
         },
+        "jsonNInt128": {
+            "type": "integer",
+            "format": "int128",
+            "minimum": 0,
+            "maximum": 170141183460469231731687303715884105727,
+            "default": 0
+        },
         "jsonUInt128": {
             "type": "integer",
             "format": "uint128",
             "minimum": 0,
             "maximum": 340282366920938463463374607431768211455,
-            "default": 0
-        },
-        "jsonNInt32": {
-            "$ref": "#/$defs/jsonInt32",
-            "minimum": 0,
-            "default": 0
-        },
-        "jsonNInt64": {
-            "$ref": "#/$defs/jsonInt64",
-            "minimum": 0,
             "default": 0
         },
         "jsonNumber01": {
@@ -438,9 +449,11 @@
                     "const": "DirectHit"
                 },
                 "param": {
-                    "$ref": "#/$defs/DirectHit",
                     "unevaluatedProperties": false,
                     "allOf": [
+                        {
+                            "$ref": "#/$defs/DirectHit"
+                        },
                         {
                             "$ref": "#/$defs/jsonComments"
                         }
@@ -557,9 +570,11 @@
                     "const": "TemplateMatch"
                 },
                 "param": {
-                    "$ref": "#/$defs/TemplateMatch",
                     "unevaluatedProperties": false,
                     "allOf": [
+                        {
+                            "$ref": "#/$defs/TemplateMatch"
+                        },
                         {
                             "$ref": "#/$defs/jsonComments"
                         }
@@ -671,9 +686,11 @@
                     "const": "FeatureMatch"
                 },
                 "param": {
-                    "$ref": "#/$defs/FeatureMatch",
                     "unevaluatedProperties": false,
                     "allOf": [
+                        {
+                            "$ref": "#/$defs/FeatureMatch"
+                        },
                         {
                             "$ref": "#/$defs/jsonComments"
                         }
@@ -806,9 +823,11 @@
                     "const": "ColorMatch"
                 },
                 "param": {
-                    "$ref": "#/$defs/ColorMatch",
                     "unevaluatedProperties": false,
                     "allOf": [
+                        {
+                            "$ref": "#/$defs/ColorMatch"
+                        },
                         {
                             "$ref": "#/$defs/jsonComments"
                         }
@@ -912,9 +931,11 @@
                     "const": "OCR"
                 },
                 "param": {
-                    "$ref": "#/$defs/Ocr",
                     "unevaluatedProperties": false,
                     "allOf": [
+                        {
+                            "$ref": "#/$defs/Ocr"
+                        },
                         {
                             "$ref": "#/$defs/jsonComments"
                         }
@@ -1018,9 +1039,11 @@
                     "const": "NeuralNetworkClassify"
                 },
                 "param": {
-                    "$ref": "#/$defs/NeuralNetworkClassify",
                     "unevaluatedProperties": false,
                     "allOf": [
+                        {
+                            "$ref": "#/$defs/NeuralNetworkClassify"
+                        },
                         {
                             "$ref": "#/$defs/jsonComments"
                         }
@@ -1132,9 +1155,11 @@
                     "const": "NeuralNetworkDetect"
                 },
                 "param": {
-                    "$ref": "#/$defs/NeuralNetworkDetect",
                     "unevaluatedProperties": false,
                     "allOf": [
+                        {
+                            "$ref": "#/$defs/NeuralNetworkDetect"
+                        },
                         {
                             "$ref": "#/$defs/jsonComments"
                         }
@@ -1164,9 +1189,9 @@
                 },
                 "custom_recognition_param": {
                     "title": "Custom Recognition Param Property",
-                    "description": "识别参数，任意类型，会通过 `MaaCustomRecognitionCallback`.`custom_recognition_param` 传出。可选，默认空 json，即 `{}` 。",
+                    "description": "识别参数，任意类型，会通过 `MaaCustomRecognitionCallback`.`custom_recognition_param` 传出。可选，默认 `null` 。",
                     "$ref": "#/$defs/jsonDefaultObject",
-                    "markdownDescription": "*any*\n\n识别参数，任意类型，会通过 `MaaCustomRecognitionCallback`.`custom_recognition_param` 传出。可选，默认空 json，即 `{}` 。"
+                    "markdownDescription": "*any*\n\n识别参数，任意类型，会通过 `MaaCustomRecognitionCallback`.`custom_recognition_param` 传出。可选，默认 `null` 。"
                 }
             },
             "allOf": [
@@ -1205,9 +1230,11 @@
                     "const": "Custom"
                 },
                 "param": {
-                    "$ref": "#/$defs/CustomRecognition",
                     "unevaluatedProperties": false,
                     "allOf": [
+                        {
+                            "$ref": "#/$defs/CustomRecognition"
+                        },
                         {
                             "$ref": "#/$defs/jsonComments"
                         }
@@ -1240,9 +1267,11 @@
             },
             "properties": {
                 "param": {
-                    "$ref": "#/$defs/RecognitionPropertyFields",
                     "unevaluatedProperties": false,
                     "allOf": [
+                        {
+                            "$ref": "#/$defs/RecognitionPropertyFields"
+                        },
                         {
                             "$ref": "#/$defs/jsonComments"
                         }
@@ -1744,9 +1773,11 @@
                     "const": "DoNothing"
                 },
                 "param": {
-                    "$ref": "#/$defs/DoNothing",
                     "unevaluatedProperties": false,
                     "allOf": [
+                        {
+                            "$ref": "#/$defs/DoNothing"
+                        },
                         {
                             "$ref": "#/$defs/jsonComments"
                         }
@@ -1789,9 +1820,11 @@
                     "const": "Click"
                 },
                 "param": {
-                    "$ref": "#/$defs/Click",
                     "unevaluatedProperties": false,
                     "allOf": [
+                        {
+                            "$ref": "#/$defs/Click"
+                        },
                         {
                             "$ref": "#/$defs/jsonComments"
                         }
@@ -1841,9 +1874,11 @@
                     "const": "LongPress"
                 },
                 "param": {
-                    "$ref": "#/$defs/LongPress",
                     "unevaluatedProperties": false,
                     "allOf": [
+                        {
+                            "$ref": "#/$defs/LongPress"
+                        },
                         {
                             "$ref": "#/$defs/jsonComments"
                         }
@@ -1905,9 +1940,11 @@
                     "const": "Swipe"
                 },
                 "param": {
-                    "$ref": "#/$defs/Swipe",
                     "unevaluatedProperties": false,
                     "allOf": [
+                        {
+                            "$ref": "#/$defs/Swipe"
+                        },
                         {
                             "$ref": "#/$defs/jsonComments"
                         }
@@ -1983,9 +2020,11 @@
                     "const": "MultiSwipe"
                 },
                 "param": {
-                    "$ref": "#/$defs/MultiSwipe",
                     "unevaluatedProperties": false,
                     "allOf": [
+                        {
+                            "$ref": "#/$defs/MultiSwipe"
+                        },
                         {
                             "$ref": "#/$defs/jsonComments"
                         }
@@ -2039,9 +2078,11 @@
                     "const": "ClickKey"
                 },
                 "param": {
-                    "$ref": "#/$defs/ClickKey",
                     "unevaluatedProperties": false,
                     "allOf": [
+                        {
+                            "$ref": "#/$defs/ClickKey"
+                        },
                         {
                             "$ref": "#/$defs/jsonComments"
                         }
@@ -2102,9 +2143,11 @@
                     "const": "LongPressKey"
                 },
                 "param": {
-                    "$ref": "#/$defs/LongPressKey",
                     "unevaluatedProperties": false,
                     "allOf": [
+                        {
+                            "$ref": "#/$defs/LongPressKey"
+                        },
                         {
                             "$ref": "#/$defs/jsonComments"
                         }
@@ -2158,9 +2201,11 @@
                     "const": "InputText"
                 },
                 "param": {
-                    "$ref": "#/$defs/InputText",
                     "unevaluatedProperties": false,
                     "allOf": [
+                        {
+                            "$ref": "#/$defs/InputText"
+                        },
                         {
                             "$ref": "#/$defs/jsonComments"
                         }
@@ -2214,9 +2259,11 @@
                     "const": "StartApp"
                 },
                 "param": {
-                    "$ref": "#/$defs/StartApp",
                     "unevaluatedProperties": false,
                     "allOf": [
+                        {
+                            "$ref": "#/$defs/StartApp"
+                        },
                         {
                             "$ref": "#/$defs/jsonComments"
                         }
@@ -2270,9 +2317,11 @@
                     "const": "StopApp"
                 },
                 "param": {
-                    "$ref": "#/$defs/StopApp",
                     "unevaluatedProperties": false,
                     "allOf": [
+                        {
+                            "$ref": "#/$defs/StopApp"
+                        },
                         {
                             "$ref": "#/$defs/jsonComments"
                         }
@@ -2307,9 +2356,11 @@
                     "const": "StopTask"
                 },
                 "param": {
-                    "$ref": "#/$defs/StopTask",
                     "unevaluatedProperties": false,
                     "allOf": [
+                        {
+                            "$ref": "#/$defs/StopTask"
+                        },
                         {
                             "$ref": "#/$defs/jsonComments"
                         }
@@ -2370,9 +2421,11 @@
                     "const": "Command"
                 },
                 "param": {
-                    "$ref": "#/$defs/Command",
                     "unevaluatedProperties": false,
                     "allOf": [
+                        {
+                            "$ref": "#/$defs/Command"
+                        },
                         {
                             "$ref": "#/$defs/jsonComments"
                         }
@@ -2408,9 +2461,9 @@
                 },
                 "custom_action_param": {
                     "title": "Custom Action Param Property",
-                    "description": "动作参数，任意类型，会通过 `MaaCustomActionCallback`.`custom_action_param` 传出。可选，默认空 json，即 `{}` 。",
+                    "description": "动作参数，任意类型，会通过 `MaaCustomActionCallback`.`custom_action_param` 传出。可选，默认 `null` 。",
                     "$ref": "#/$defs/jsonDefaultObject",
-                    "markdownDescription": "*any*\n\n动作参数，任意类型，会通过 `MaaCustomActionCallback`.`custom_action_param` 传出。可选，默认空 json，即 `{}` 。"
+                    "markdownDescription": "*any*\n\n动作参数，任意类型，会通过 `MaaCustomActionCallback`.`custom_action_param` 传出。可选，默认 `null` 。"
                 }
             },
             "allOf": [
@@ -2449,9 +2502,11 @@
                     "const": "Custom"
                 },
                 "param": {
-                    "$ref": "#/$defs/CustomAction",
                     "unevaluatedProperties": false,
                     "allOf": [
+                        {
+                            "$ref": "#/$defs/CustomAction"
+                        },
                         {
                             "$ref": "#/$defs/jsonComments"
                         }
@@ -2484,9 +2539,11 @@
             },
             "properties": {
                 "param": {
-                    "$ref": "#/$defs/ActionPropertyFields",
                     "unevaluatedProperties": false,
                     "allOf": [
+                        {
+                            "$ref": "#/$defs/ActionPropertyFields"
+                        },
                         {
                             "$ref": "#/$defs/jsonComments"
                         }

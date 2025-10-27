@@ -10,6 +10,10 @@ if(WIN32)
     target_link_libraries(MaaUtils PRIVATE d3d12 dxgi Cfgmgr32)
 endif()
 
+if(LINUX)
+    target_link_libraries(MaaUtils PRIVATE pthread dl)
+endif()
+
 target_compile_definitions(MaaUtils PRIVATE MAA_UTILS_EXPORTS)
 
 install(

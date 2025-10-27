@@ -56,6 +56,8 @@ bool get_and_check_value_or_array(
     std::vector<OutT>& output,
     const std::vector<OutT>& default_value)
 {
+    output.clear();
+
     auto opt = input.find(key);
     if (!opt) {
         output = default_value;
@@ -63,7 +65,6 @@ bool get_and_check_value_or_array(
     }
 
     if (opt->is_array()) {
-        output.clear();
         for (const auto& item : opt->as_array()) {
             if (!item.is<OutT>()) {
                 LogError << "type error" << VAR(key) << VAR(input);
@@ -90,13 +91,14 @@ bool get_multi_keys_and_check_value_or_array(
     std::vector<OutT>& output,
     const std::vector<OutT>& default_value)
 {
+    output.clear();
+
     for (const auto& k : keys) {
         auto opt = input.find(k);
         if (!opt) {
             continue;
         }
         else if (opt->is_array()) {
-            output.clear();
             for (const auto& item : opt->as_array()) {
                 if (!item.is<OutT>()) {
                     LogError << "type error" << VAR(keys) << VAR(input);
@@ -588,6 +590,8 @@ bool PipelineParser::parse_ocrer_param(
         return false;
     }
 
+    output.replace.clear();
+
     if (auto replace_opt = input.find("replace")) {
         auto append_repalce = [&](const json::value& in) {
             auto pair = in.as<std::array<std::string, 2>>();
@@ -623,11 +627,6 @@ bool PipelineParser::parse_custom_recognition_param(
 {
     if (!get_and_check_value(input, "custom_recognition", output.name, default_value.name)) {
         LogError << "failed to get_and_check_value custom_recognition" << VAR(input);
-        return false;
-    }
-
-    if (output.name.empty()) {
-        LogError << "custom_recognition is empty" << VAR(input);
         return false;
     }
 
@@ -797,6 +796,8 @@ bool PipelineParser::parse_color_matcher_param(
         return false;
     }
 
+    output.range.clear();
+
     for (size_t i = 0; i != lower.size(); ++i) {
         constexpr int kMaxChannel = 4;
         auto& l = lower[i];
@@ -846,7 +847,7 @@ bool PipelineParser::parse_roi_target(const json::value& input, MAA_VISION_NS::T
     if (auto offset_opt = input.find("roi_offset"); !offset_opt) {
         output.offset = default_value.offset;
     }
-    else if (!parse_target_offset(*offset_opt, output)) {
+    else if (!parse_rect(*offset_opt, output.offset)) {
         LogError << "failed to parse_target_offset" << VAR(*offset_opt);
         return false;
     }
@@ -979,7 +980,10 @@ bool PipelineParser::parse_action(
     case Type::ClickKey: {
         auto default_param = default_mgr.get_action_param<ClickKeyParam>(Type::ClickKey);
         out_param = default_param;
-        return parse_click_key(param_input, std::get<ClickKeyParam>(out_param), same_type ? std::get<ClickKeyParam>(parent_param) : default_param);
+        return parse_click_key(
+            param_input,
+            std::get<ClickKeyParam>(out_param),
+            same_type ? std::get<ClickKeyParam>(parent_param) : default_param);
     } break;
 
     case Type::LongPressKey: {
@@ -994,7 +998,10 @@ bool PipelineParser::parse_action(
     case Type::InputText: {
         auto default_param = default_mgr.get_action_param<InputTextParam>(Type::InputText);
         out_param = default_param;
-        return parse_input_text(param_input, std::get<InputTextParam>(out_param), same_type ? std::get<InputTextParam>(parent_param) : default_param);
+        return parse_input_text(
+            param_input,
+            std::get<InputTextParam>(out_param),
+            same_type ? std::get<InputTextParam>(parent_param) : default_param);
     } break;
 
     case Type::StartApp: {
@@ -1071,7 +1078,12 @@ bool PipelineParser::parse_swipe(const json::value& input, Action::SwipeParam& o
         return false;
     }
 
-    if (!parse_action_target(input, "end", output.end, default_value.end)) {
+    if (!parse_action_target_obj_or_list(input, "end", output.end, default_value.end)) {
+        LogError << "failed to parse_action_target end" << VAR(input);
+        return false;
+    }
+
+    if (!parse_action_target_offset_or_list(input, "end_offset", output.end_offset, default_value.end_offset)) {
         LogError << "failed to parse_action_target end" << VAR(input);
         return false;
     }
@@ -1081,8 +1093,18 @@ bool PipelineParser::parse_swipe(const json::value& input, Action::SwipeParam& o
     //     return false;
     // }
 
-    if (!get_and_check_value(input, "duration", output.duration, default_value.duration)) {
+    if (!get_and_check_value_or_array(input, "duration", output.duration, default_value.duration)) {
         LogError << "failed to get_and_check_value duration" << VAR(input);
+        return false;
+    }
+
+    if (!get_and_check_value_or_array(input, "end_hold", output.end_hold, default_value.end_hold)) {
+        LogError << "failed to get_and_check_value end_hold" << VAR(input);
+        return false;
+    }
+
+    if (!get_and_check_value(input, "only_hover", output.only_hover, default_value.only_hover)) {
+        LogError << "failed to get_and_check_value only_hover" << VAR(input);
         return false;
     }
 
@@ -1210,11 +1232,6 @@ bool PipelineParser::parse_custom_action_param(
         return false;
     }
 
-    if (output.name.empty()) {
-        LogError << "custom_action is empty" << VAR(input);
-        return false;
-    }
-
     output.custom_param = input.get("custom_action_param", default_value.custom_param);
 
     return true;
@@ -1309,7 +1326,8 @@ bool PipelineParser::parse_rect(const json::value& input_rect, cv::Rect& output)
     return true;
 }
 
-bool PipelineParser::parse_target_variant(const json::value& input_target, Action::Target& output)
+template <typename TargetType>
+bool PipelineParser::parse_target_variant(const json::value& input_target, TargetType& output)
 {
     using namespace Action;
 
@@ -1337,22 +1355,6 @@ bool PipelineParser::parse_target_variant(const json::value& input_target, Actio
     return true;
 }
 
-bool PipelineParser::parse_target_offset(const json::value& input_target, Action::Target& output)
-{
-    if (input_target.is_array()) {
-        if (!parse_rect(input_target, output.offset)) {
-            LogError << "failed to parse_rect" << VAR(input_target);
-            return false;
-        }
-    }
-    else {
-        LogError << "offset type error" << VAR(input_target);
-        return false;
-    }
-
-    return true;
-}
-
 bool PipelineParser::parse_action_target(
     const json::value& input,
     const std::string& key,
@@ -1370,9 +1372,75 @@ bool PipelineParser::parse_action_target(
     if (auto offset_opt = input.find(key + "_offset"); !offset_opt) {
         output.offset = default_value.offset;
     }
-    else if (!parse_target_offset(*offset_opt, output)) {
+    else if (!parse_rect(*offset_opt, output.offset)) {
         LogError << "failed to parse_target_offset" << VAR(*offset_opt);
         return false;
+    }
+
+    return true;
+}
+
+bool PipelineParser::parse_action_target_obj_or_list(
+    const json::value& input,
+    const std::string& key,
+    std::vector<Action::TargetObj>& output,
+    const std::vector<Action::TargetObj>& default_value)
+{
+    output.clear();
+
+    if (auto param_opt = input.find(key); !param_opt) {
+        output = default_value;
+    }
+    else if (param_opt->is_array() && !param_opt->is<std::array<int, 4>>()) {
+        for (const auto& val : param_opt->as_array()) {
+            Action::TargetObj res;
+            if (!parse_target_variant(val, res)) {
+                LogError << "failed to parse_target_variant" << VAR(val);
+                return false;
+            }
+            output.emplace_back(std::move(res));
+        }
+    }
+    else {
+        Action::TargetObj res;
+        if (!parse_target_variant(*param_opt, res)) {
+            LogError << "failed to parse_target_variant" << VAR(*param_opt);
+            return false;
+        }
+        output.emplace_back(std::move(res));
+    }
+
+    return true;
+}
+
+bool PipelineParser::parse_action_target_offset_or_list(
+    const json::value& input,
+    const std::string& key,
+    std::vector<cv::Rect>& output,
+    const std::vector<cv::Rect>& default_value)
+{
+    output.clear();
+
+    if (auto offset_opt = input.find(key); !offset_opt) {
+        output = default_value;
+    }
+    else if (offset_opt->is_array() && !offset_opt->is<std::array<int, 4>>()) {
+        for (const auto& val : offset_opt->as_array()) {
+            cv::Rect res;
+            if (!parse_rect(val, res)) {
+                LogError << "failed to parse_target_offset" << VAR(val);
+                return false;
+            }
+            output.emplace_back(std::move(res));
+        }
+    }
+    else {
+        cv::Rect res;
+        if (!parse_rect(*offset_opt, res)) {
+            LogError << "failed to parse_target_offset" << VAR(input);
+            return false;
+        }
+        output.emplace_back(std::move(res));
     }
 
     return true;

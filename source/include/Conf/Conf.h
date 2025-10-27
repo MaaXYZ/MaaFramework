@@ -71,11 +71,11 @@
     {
 #define MAA_NS_END }
 
-#define MAA_PLATFORM_NS MAA_NS::PlatformNS
-#define MAA_PLATFORM_NS_BEGIN \
-    namespace MAA_PLATFORM_NS \
+#define MAA_GLOBAL_NS MAA_NS::GlobalNS
+#define MAA_GLOBAL_NS_BEGIN \
+    namespace MAA_GLOBAL_NS \
     {
-#define MAA_PLATFORM_NS_END }
+#define MAA_GLOBAL_NS_END }
 
 #define MAA_LOG_NS MAA_NS::LogNS
 #define MAA_LOG_NS_BEGIN \

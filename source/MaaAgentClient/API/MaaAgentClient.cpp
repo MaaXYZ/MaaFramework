@@ -56,6 +56,19 @@ MaaBool MaaAgentClientBindResource(MaaAgentClient* client, MaaResource* res)
     return client->bind_resource(res);
 }
 
+MaaBool MaaAgentClientRegisterSink(MaaAgentClient* client, MaaTasker* tasker, MaaResource* res, MaaController* ctrl)
+{
+    LogFunc << VAR_VOIDP(client) << VAR_VOIDP(tasker) << VAR_VOIDP(res) << VAR_VOIDP(ctrl);
+
+    if (!client) {
+        LogError << "handle is null";
+        return false;
+    }
+
+    client->register_sink(tasker, res, ctrl);
+    return true;
+}
+
 MaaBool MaaAgentClientCreateSocket(MaaAgentClient* client, MaaStringBuffer* identifier)
 {
     LogError << "Deprecated API, use MaaAgentClientCreateV2 instead";

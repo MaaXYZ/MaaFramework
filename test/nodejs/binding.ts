@@ -1,12 +1,12 @@
 import { join } from 'path'
-import * as maa from './maa-client'
+import './maa-client'
 
-import fs from 'fs/promises'
+import * as fs from 'fs/promises'
 
 let analyzed = false
 let runned = false
 
-const myReco: maa.CustomRecognizerCallback = async self => {
+const myReco: maa.CustomRecognitionCallback = async self => {
     console.log('on myReco')
     const entry = 'ColorMatch'
     const ppover = {
@@ -42,10 +42,10 @@ const myReco: maa.CustomRecognizerCallback = async self => {
 
     const node_id = new_ctx.tasker.latest_node('ColorMatch')
     const node_detail = node_id ? new_ctx.tasker.node_detail(node_id) : null
-    console.log(node_detail)
+    console.log('node_detail:', node_detail)
 
     const new_task_detail = new_ctx.tasker.task_detail(new_ctx.task_id)
-    console.log(new_task_detail)
+    console.log('new_task_detail:', new_task_detail)
 
     analyzed = true
 
@@ -67,8 +67,8 @@ const myAct: maa.CustomActionCallback = async self => {
     await ctrl.post_touch_down(1, 100, 100, 0).wait()
     await ctrl.post_touch_move(1, 200, 200, 0).wait()
     await ctrl.post_touch_up(1).wait()
-    ctrl.post_start_app('aaa')
-    ctrl.post_stop_app('bbb')
+    await ctrl.post_start_app('aaa').wait()
+    await ctrl.post_stop_app('bbb').wait()
 
     const cached_image = ctrl.cached_image
     const connected = ctrl.connected
@@ -97,30 +97,30 @@ async function api_test() {
     r2.destroy()
 
     const resource = new maa.Resource()
-    resource.parsed_notify = msg => {
+    resource.add_sink((res, msg) => {
         console.log(msg)
-    }
+    })
     console.log('rsource', resource)
 
     const dbg_controller = new maa.DbgController(
         '../../install/test/PipelineSmoking/Screenshot',
         '../../install/test/user',
-        maa.api.DbgControllerType.CarouselImage,
+        maa.DbgControllerType.CarouselImage,
         '{}'
     )
-    dbg_controller.parsed_notify = msg => {
+    dbg_controller.add_sink((res, msg) => {
         console.log(msg)
-    }
+    })
     console.log('controller', dbg_controller)
     await dbg_controller.post_connection().wait()
 
     const tasker = new maa.Tasker()
-    tasker.parsed_notify = msg => {
+    tasker.add_sink(msg => {
         console.log(msg)
-    }
+    })
     console.log('tasker', tasker)
-    tasker.bind(resource)
-    tasker.bind(dbg_controller)
+    tasker.resource = resource
+    tasker.controller = dbg_controller
 
     if (!tasker.inited) {
         console.log('failed to init tasker')
@@ -128,7 +128,7 @@ async function api_test() {
     }
 
     resource.register_custom_action('MyAct', myAct)
-    resource.register_custom_recognizer('MyRec', myReco)
+    resource.register_custom_recognition('MyRec', myReco)
 
     const ppover = {
         Entry: { next: 'Rec' },
@@ -161,10 +161,6 @@ async function api_test() {
     console.log('devices', devices)
     const desktop = await maa.Win32Controller.find()
     console.log('desktop', desktop)
-
-    maa.Pi.register_custom_action(0, 'MyAct', myAct)
-    maa.Pi.register_custom_recognizer(0, 'MyReco', myReco)
-    // await maa.Pi.run_cli(0, '/path/to/resource', '.', true)
 
     if (!analyzed || !runned) {
         console.log('failed to run custom recognition or action')
@@ -207,35 +203,35 @@ async function custom_ctrl_test() {
     // }
 }
 
-class MyController extends maa.CustomControllerActorDefaultImpl {
+class MyController implements maa.CustomControllerActor {
     count = 0
 
-    connect(): maa.api.MaybePromise<boolean> {
+    connect(): maa.MaybePromise<boolean> {
         console.log('on MyController.connect')
         this.count += 1
         return true
     }
-    request_uuid(): maa.api.MaybePromise<string | null> {
+    request_uuid(): maa.MaybePromise<string | null> {
         console.log('on MyController.request_uuid')
         // this.count += 1
         return '12345678'
     }
-    start_app(intent: string): maa.api.MaybePromise<boolean> {
+    start_app(intent: string): maa.MaybePromise<boolean> {
         console.log('on MyController.start_app, intent', intent)
         this.count += 1
         return true
     }
-    stop_app(intent: string): maa.api.MaybePromise<boolean> {
+    stop_app(intent: string): maa.MaybePromise<boolean> {
         console.log('on MyController.stop_app, intent', intent)
         this.count += 1
         return true
     }
-    screencap(): maa.api.MaybePromise<maa.api.ImageData | null> {
+    screencap(): maa.MaybePromise<maa.ImageData | null> {
         console.log('on MyController.screencap')
         this.count += 1
         return fs.readFile('empty.png').then(x => x.buffer)
     }
-    click(x: number, y: number): maa.api.MaybePromise<boolean> {
+    click(x: number, y: number): maa.MaybePromise<boolean> {
         console.log('on MyController.click, x', x, 'y', y)
         this.count += 1
         return true
@@ -246,7 +242,7 @@ class MyController extends maa.CustomControllerActorDefaultImpl {
         x2: number,
         y2: number,
         duration: number
-    ): maa.api.MaybePromise<boolean> {
+    ): maa.MaybePromise<boolean> {
         console.log(
             'on MyController.swipe, x1',
             x1,
@@ -262,12 +258,7 @@ class MyController extends maa.CustomControllerActorDefaultImpl {
         this.count += 1
         return true
     }
-    touch_down(
-        contact: number,
-        x: number,
-        y: number,
-        pressure: number
-    ): maa.api.MaybePromise<boolean> {
+    touch_down(contact: number, x: number, y: number, pressure: number): maa.MaybePromise<boolean> {
         console.log(
             'on MyController.touch_down, contact',
             contact,
@@ -281,12 +272,7 @@ class MyController extends maa.CustomControllerActorDefaultImpl {
         this.count += 1
         return true
     }
-    touch_move(
-        contact: number,
-        x: number,
-        y: number,
-        pressure: number
-    ): maa.api.MaybePromise<boolean> {
+    touch_move(contact: number, x: number, y: number, pressure: number): maa.MaybePromise<boolean> {
         console.log(
             'on MyController.touch_move, contact',
             contact,
@@ -300,27 +286,27 @@ class MyController extends maa.CustomControllerActorDefaultImpl {
         this.count += 1
         return true
     }
-    touch_up(contact: number): maa.api.MaybePromise<boolean> {
+    touch_up(contact: number): maa.MaybePromise<boolean> {
         console.log('on MyController.touch_up, contact', contact)
         this.count += 1
         return true
     }
-    click_key(keycode: number): maa.api.MaybePromise<boolean> {
+    click_key(keycode: number): maa.MaybePromise<boolean> {
         console.log('on MyController.click_key, keycode', keycode)
         this.count += 1
         return true
     }
-    input_text(text: string): maa.api.MaybePromise<boolean> {
+    input_text(text: string): maa.MaybePromise<boolean> {
         console.log('on MyController.input_text, text', text)
         this.count += 1
         return true
     }
-    key_down(keycode: number): maa.api.MaybePromise<boolean> {
+    key_down(keycode: number): maa.MaybePromise<boolean> {
         console.log('on MyController.key_down, keycode', keycode)
         this.count += 1
         return true
     }
-    key_up(keycode: number): maa.api.MaybePromise<boolean> {
+    key_up(keycode: number): maa.MaybePromise<boolean> {
         console.log('on MyController.key_up, keycode', keycode)
         this.count += 1
         return true
@@ -329,7 +315,7 @@ class MyController extends maa.CustomControllerActorDefaultImpl {
 
 async function main() {
     console.log('MaaFw Version:', maa.Global.version)
-    console.log('MaaFw Role', maa.api.AgentRole)
+    // console.log('MaaFw Role', maa.AgentRole)
 
     maa.Global.config_init_option('../../install/bin')
 

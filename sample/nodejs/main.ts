@@ -1,9 +1,9 @@
-import * as maa from '../../test/nodejs/maa-client'
-// import maa from '@maaxyz/maa-node'
+import '../../test/nodejs/maa-client'
+// import '@maaxyz/maa-node'
 
 console.log(maa.Global.version)
 
-const my_reco: maa.CustomRecognizerCallback = async self => {
+const my_reco: maa.CustomRecognitionCallback = async self => {
     let reco_detail = await self.context.run_recognition('MyCustomOCR', self.image, {
         MyCustomOCR: {
             roi: [100, 100, 200, 300]
@@ -45,9 +45,9 @@ async function main() {
     maa.Global.config_init_option('./')
 
     const res = new maa.Resource()
-    res.notify = (msg, detail) => {
-        console.log(msg, detail)
-    }
+    res.add_wrapped_sink(msg => {
+        console.log(msg)
+    })
     await res.post_bundle('sample/resource').wait()
 
     const devices = await maa.AdbController.find()
@@ -56,18 +56,15 @@ async function main() {
     }
     const [name, adb_path, address, screencap_methods, input_methods, config] = devices[0]
     const ctrl = new maa.AdbController(adb_path, address, screencap_methods, input_methods, config)
-    ctrl.notify = (msg, detail) => {
-        console.log(msg, detail)
-    }
+    ctrl.add_wrapped_sink(msg => {
+        console.log(msg)
+    })
     await ctrl.post_connection().wait()
 
     const tskr = new maa.Tasker()
-    tskr.notify = (msg, detail) => {
-        console.log(msg, detail)
-    }
-    // tskr.parsed_notify = (msg) => {
-    //     console.log(msg)
-    // }
+    tskr.add_wrapped_sink(msg => {
+        console.log(msg)
+    })
 
     tskr.bind(ctrl)
     tskr.bind(res)

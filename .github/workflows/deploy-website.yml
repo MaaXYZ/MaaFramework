@@ -14,4 +14,4 @@ jobs:
           GH_TOKEN: ${{ secrets.MaaFwDocsDeploy }}
         steps:
             - run: |
-                gh workflow --repo MaaXYZ/MaaFrameworkDocsWebsite run deploy.yml
+                gh workflow --repo MaaXYZ/MaaFrameworkWebsite run deploy.yml

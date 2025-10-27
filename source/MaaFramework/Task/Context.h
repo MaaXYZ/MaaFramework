@@ -23,6 +23,7 @@ public:
     static std::shared_ptr<Context> create(MaaTaskId id, Tasker* tasker);
     std::shared_ptr<Context> getptr();
     std::shared_ptr<const Context> getptr() const;
+    std::shared_ptr<Context> make_clone() const;
 
     Context(MaaTaskId id, Tasker* tasker, PrivateArg);
     Context(const Context& other);

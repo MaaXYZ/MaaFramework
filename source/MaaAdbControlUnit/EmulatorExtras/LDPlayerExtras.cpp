@@ -101,7 +101,13 @@ bool LDPlayerExtras::create_ld_instance()
         return false;
     }
 
+    if (ld_handle_) {
+        LogWarn << "ld_handle_ is not null";
+        release_ld_instance();
+    }
+
     ld_handle_ = create_instance_func_(ld_index_, ld_pid_);
+    LogInfo << VAR_VOIDP(ld_handle_);
 
     if (!ld_handle_) {
         LogError << "Failed to create ld inst" << VAR(ld_index_) << VAR(ld_pid_);
@@ -113,6 +119,8 @@ bool LDPlayerExtras::create_ld_instance()
 
 void LDPlayerExtras::release_ld_instance()
 {
+    LogFunc << VAR_VOIDP(ld_handle_);
+
     if (ld_handle_) {
         ld_handle_->release();
     }

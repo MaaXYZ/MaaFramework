@@ -8,6 +8,9 @@ import time
 from pathlib import Path
 import shutil
 
+REPO = "MaaXYZ/MaaDeps"
+VERSION = "v2.10.0-beta.1"
+
 basedir = Path(__file__).parent.parent
 maadeps_dir = Path(basedir, "3rdparty", "MaaDeps")
 download_dir = Path(maadeps_dir, "tarball")
@@ -104,7 +107,7 @@ def main():
     # if len(sys.argv) == 1:
     #     print(f"to specify another triplet, run `{sys.argv[0]} <target triplet>`")
     #     print(f"e.g. `{sys.argv[0]} x64-windows`")
-    req = urllib.request.Request("https://api.github.com/repos/MaaXYZ/MaaDeps/releases/tags/v2.9.1")
+    req = urllib.request.Request(f"https://api.github.com/repos/{REPO}/releases/tags/{VERSION}")
     token = os.environ.get("GH_TOKEN", os.environ.get("GITHUB_TOKEN", None))
     if token:
         req.add_header("Authorization", f"Bearer {token}")

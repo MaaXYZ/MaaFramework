@@ -89,6 +89,7 @@ void AdbDeviceWin32Finder::request_device_config(const Emulator& emulator, AdbDe
         mumu_cfg["index"] = get_mumu_index(device.serial);
 
         device.screencap_methods = MaaAdbScreencapMethod_EmulatorExtras;
+        device.input_methods = MaaAdbInputMethod_Default | MaaAdbInputMethod_EmulatorExtras;
 
         LogInfo << "MuMuPlayer12 cfg" << VAR(device.serial) << device.config;
     }
@@ -107,6 +108,7 @@ void AdbDeviceWin32Finder::request_device_config(const Emulator& emulator, AdbDe
         mumu_cfg["index"] = get_mumu_index(device.serial);
 
         device.screencap_methods = MaaAdbScreencapMethod_EmulatorExtras;
+        device.input_methods = MaaAdbInputMethod_Default | MaaAdbInputMethod_EmulatorExtras;
 
         LogInfo << "MuMuPlayer12 cfg" << VAR(device.serial) << device.config;
     }
@@ -126,6 +128,7 @@ void AdbDeviceWin32Finder::request_device_config(const Emulator& emulator, AdbDe
         ld_cfg["pid"] = emulator.process.pid;
 
         device.screencap_methods = MaaAdbScreencapMethod_EmulatorExtras;
+        device.input_methods = MaaAdbInputMethod_Default;
 
         LogInfo << "LDPlayer cfg" << VAR(device.serial) << device.config;
     }

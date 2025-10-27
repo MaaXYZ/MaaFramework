@@ -1,8 +1,8 @@
 #include "PipelineDumper.h"
 
 #include "PipelineTypesV2.h"
-#include "Utils/Logger.h"
 #include "Utils/Encoding.h"
+#include "Utils/Logger.h"
 
 MAA_RES_NS_BEGIN
 
@@ -26,7 +26,7 @@ json::object PipelineDumper::dump(const PipelineData& pp)
         return { rect.x, rect.y, rect.width, rect.height };
     };
 
-    auto dump_target = [&](const Action::Target& target) -> PipelineV2::JTarget {
+    auto dump_target = [&](const auto& target) -> PipelineV2::JTarget {
         switch (target.type) {
         case Action::Target::Type::Self:
             return true;
@@ -42,6 +42,22 @@ json::object PipelineDumper::dump(const PipelineData& pp)
             LogError << "Invalid target type" << VAR(target.type);
             return {};
         }
+    };
+
+    auto dump_target_obj_array = [&](const std::vector<Action::TargetObj>& vec) -> std::vector<PipelineV2::JTarget> {
+        std::vector<PipelineV2::JTarget> result;
+        for (const auto& target : vec) {
+            result.emplace_back(dump_target(target));
+        }
+        return result;
+    };
+
+    auto dump_rect_array = [&](const std::vector<cv::Rect>& vec) -> std::vector<PipelineV2::JRect> {
+        std::vector<PipelineV2::JRect> result;
+        for (const auto& rect : vec) {
+            result.emplace_back(dump_rect(rect));
+        }
+        return result;
     };
 
     auto dump_order_by = [](MAA_VISION_NS::ResultOrderBy order_by) -> std::string {
@@ -215,9 +231,11 @@ json::object PipelineDumper::dump(const PipelineData& pp)
             .starting = 0,
             .begin = dump_target(param.begin),
             .begin_offset = dump_rect(param.begin.offset),
-            .end = dump_target(param.end),
-            .end_offset = dump_rect(param.end.offset),
+            .end = dump_target_obj_array(param.end),
+            .end_offset = dump_rect_array(param.end_offset),
+            .end_hold = param.end_hold,
             .duration = param.duration,
+            .only_hover = param.only_hover,
         };
     } break;
 
@@ -225,13 +243,16 @@ json::object PipelineDumper::dump(const PipelineData& pp)
         const auto& param = std::get<Action::MultiSwipeParam>(pp.action_param);
         PipelineV2::JMultiSwipe jswipes;
         for (const auto& s : param.swipes) {
-            jswipes.swipes.emplace_back(PipelineV2::JSwipe {
-                .starting = s.starting,
-                .begin = dump_target(s.begin),
-                .begin_offset = dump_rect(s.begin.offset),
-                .end = dump_target(s.end),
-                .end_offset = dump_rect(s.end.offset),
-                .duration = s.duration,
+            jswipes.swipes.emplace_back(
+                PipelineV2::JSwipe {
+                    .starting = s.starting,
+                    .begin = dump_target(s.begin),
+                    .begin_offset = dump_rect(s.begin.offset),
+                    .end = dump_target_obj_array(s.end),
+                    .end_offset = dump_rect_array(s.end_offset),
+                    .end_hold = s.end_hold,
+                    .duration = s.duration,
+                .only_hover = s.only_hover,
             });
         }
         data.action.param = std::move(jswipes);

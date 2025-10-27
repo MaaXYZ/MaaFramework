@@ -26,6 +26,9 @@ importers:
       tsx:
         specifier: ^4.20.3
         version: 4.20.3
+      typescript:
+        specifier: ^5.9.3
+        version: 5.9.3
 
 packages:
 
@@ -210,8 +213,8 @@ packages:
   asynckit@0.4.0:
     resolution: {integrity: sha512-Oei9OH4tRh0YqU3GxhX79dM/mwVgvbZJaSNaRk+bshkj0S5cfHcgYakreBjrHwatXKbz+IoIdYLxrKim2MjW0Q==}
 
-  axios@1.11.0:
-    resolution: {integrity: sha512-1Lx3WLFQWm3ooKDYZD1eXmoGO9fxYQjrycfHFC8P0sCfQVXyROp0p9PFWBehewBOdCwHc+f/b8I0fMto5eSfwA==}
+  axios@1.12.1:
+    resolution: {integrity: sha512-Kn4kbSXpkFHCGE6rBFNwIv0GQs4AvDT80jlveJDKFxjbTYMUeB4QtsdPCv6H8Cm19Je7IU6VFtRl2zWZI0rudQ==}
 
   call-bind-apply-helpers@1.0.2:
     resolution: {integrity: sha512-Sp1ablJ0ivDkSzjcaJdxEunN5/XvksFJ2sMBFfq6x0ryhQV/2b/KwFe21cMpmHtPOSij8K99/wSfoEuTObmuMQ==}
@@ -493,6 +496,11 @@ packages:
     engines: {node: '>=18.0.0'}
     hasBin: true
 
+  typescript@5.9.3:
+    resolution: {integrity: sha512-jl1vZzPDinLr9eUt3J/t7V6FgNEw9QjvBPdysz9KfQDD41fQrC2Y4vKQdiaUpFT4bXlb1RHhLpp8wtm6M5TgSw==}
+    engines: {node: '>=14.17'}
+    hasBin: true
+
   undici-types@6.21.0:
     resolution: {integrity: sha512-iwDZqg0QAGrg9Rav5H4n0M64c3mkR59cJ6wQp+7C4nI0gsmExaedaYLNO44eT4AtBBwjbTiGPMlt2Md0T9H9JQ==}
 
@@ -634,7 +642,7 @@ snapshots:
 
   asynckit@0.4.0: {}
 
-  axios@1.11.0(debug@4.4.1):
+  axios@1.12.1(debug@4.4.1):
     dependencies:
       follow-redirects: 1.15.9(debug@4.4.1)
       form-data: 4.0.4
@@ -657,7 +665,7 @@ snapshots:
 
   cmake-js@7.3.1:
     dependencies:
-      axios: 1.11.0(debug@4.4.1)
+      axios: 1.12.1(debug@4.4.1)
       debug: 4.4.1
       fs-extra: 11.3.0
       memory-stream: 1.0.0
@@ -940,6 +948,8 @@ snapshots:
       get-tsconfig: 4.10.1
     optionalDependencies:
       fsevents: 2.3.3
+
+  typescript@5.9.3: {}
 
   undici-types@6.21.0: {}
 
