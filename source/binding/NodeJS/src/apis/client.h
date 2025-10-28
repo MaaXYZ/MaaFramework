@@ -23,10 +23,6 @@ struct ClientImpl : public maajs::NativeClassBase
     void destroy();
     std::string get_identifier();
     void bind_resource(maajs::NativeObject<ResourceImpl> resource);
-    void register_sink(
-        maajs::OptionalParam<maajs::NativeObject<TaskerImpl>> tasker,
-        maajs::OptionalParam<maajs::NativeObject<ResourceImpl>> resource,
-        maajs::OptionalParam<maajs::NativeObject<ControllerImpl>> controller);
     maajs::PromiseType connect();
     void disconnect();
     bool get_connected();

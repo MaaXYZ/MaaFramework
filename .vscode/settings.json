@@ -57,5 +57,6 @@
     "editor.formatOnSave": true,
     "clangd.arguments": [
         "--header-insertion=never"
-    ]
+    ],
+    "python.languageServer": "None"
 }

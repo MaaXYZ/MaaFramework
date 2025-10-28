@@ -149,7 +149,9 @@ public:
 
     virtual std::string identifier() const = 0;
     virtual bool bind_resource(MaaResource* resource) = 0;
-    virtual void register_sink(MaaTasker* tasker, MaaResource* res, MaaController* ctrl) = 0;
+    virtual void register_resource_sink(MaaResource* res) = 0;
+    virtual void register_controller_sink(MaaController* ctrl) = 0;
+    virtual void register_tasker_sink(MaaTasker* tasker) = 0;
     virtual std::string create_socket(const std::string& identifier) = 0;
     virtual bool connect() = 0;
     virtual bool disconnect() = 0;

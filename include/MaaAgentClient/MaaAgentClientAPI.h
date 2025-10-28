@@ -14,8 +14,9 @@ extern "C"
     MAA_AGENT_CLIENT_API MaaBool MaaAgentClientIdentifier(MaaAgentClient* client, MaaStringBuffer* identifier);
 
     MAA_AGENT_CLIENT_API MaaBool MaaAgentClientBindResource(MaaAgentClient* client, MaaResource* res);
-    MAA_AGENT_CLIENT_API MaaBool
-        MaaAgentClientRegisterSink(MaaAgentClient* client, MaaTasker* tasker, MaaResource* res, MaaController* ctrl);
+    MAA_AGENT_CLIENT_API MaaBool MaaAgentClientRegisterResourceSink(MaaAgentClient* client, MaaResource* res);
+    MAA_AGENT_CLIENT_API MaaBool MaaAgentClientRegisterControllerSink(MaaAgentClient* client, MaaController* ctrl);
+    MAA_AGENT_CLIENT_API MaaBool MaaAgentClientRegisterTaskerSink(MaaAgentClient* client, MaaTasker* tasker);
 
     MAA_AGENT_CLIENT_API MaaBool MaaAgentClientConnect(MaaAgentClient* client);
     MAA_AGENT_CLIENT_API MaaBool MaaAgentClientDisconnect(MaaAgentClient* client);

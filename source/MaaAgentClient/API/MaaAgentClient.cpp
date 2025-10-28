@@ -56,16 +56,42 @@ MaaBool MaaAgentClientBindResource(MaaAgentClient* client, MaaResource* res)
     return client->bind_resource(res);
 }
 
-MaaBool MaaAgentClientRegisterSink(MaaAgentClient* client, MaaTasker* tasker, MaaResource* res, MaaController* ctrl)
+MaaBool MaaAgentClientRegisterResourceSink(MaaAgentClient* client, MaaResource* res)
 {
-    LogFunc << VAR_VOIDP(client) << VAR_VOIDP(tasker) << VAR_VOIDP(res) << VAR_VOIDP(ctrl);
+    LogFunc << VAR_VOIDP(client) << VAR_VOIDP(res);
 
     if (!client) {
-        LogError << "handle is null";
+        LogError << "client is null";
         return false;
     }
 
-    client->register_sink(tasker, res, ctrl);
+    client->register_resource_sink(res);
+    return true;
+}
+
+MaaBool MaaAgentClientRegisterControllerSink(MaaAgentClient* client, MaaController* ctrl)
+{
+    LogFunc << VAR_VOIDP(client) << VAR_VOIDP(ctrl);
+
+    if (!client) {
+        LogError << "client is null";
+        return false;
+    }
+
+    client->register_controller_sink(ctrl);
+    return true;
+}
+
+MaaBool MaaAgentClientRegisterTaskerSink(MaaAgentClient* client, MaaTasker* tasker)
+{
+    LogFunc << VAR_VOIDP(client) << VAR_VOIDP(tasker);
+
+    if (!client) {
+        LogError << "client is null";
+        return false;
+    }
+
+    client->register_tasker_sink(tasker);
     return true;
 }
 

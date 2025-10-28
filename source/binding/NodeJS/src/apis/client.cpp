@@ -39,20 +39,6 @@ void ClientImpl::bind_resource(maajs::NativeObject<ResourceImpl> resource)
     }
 }
 
-void ClientImpl::register_sink(
-    maajs::OptionalParam<maajs::NativeObject<TaskerImpl>> tasker,
-    maajs::OptionalParam<maajs::NativeObject<ResourceImpl>> resource,
-    maajs::OptionalParam<maajs::NativeObject<ControllerImpl>> controller)
-{
-    if (!MaaAgentClientRegisterSink(
-            client,
-            tasker ? (*tasker)->tasker : nullptr,
-            resource ? (*resource)->resource : nullptr,
-            controller ? (*controller)->controller : nullptr)) {
-        throw maajs::MaaError { "Client register_sink failed" };
-    }
-}
-
 maajs::PromiseType ClientImpl::connect()
 {
     auto work = new maajs::AsyncWork<bool>(env, [client = client]() { return MaaAgentClientConnect(client); });
@@ -105,7 +91,6 @@ void ClientImpl::init_proto(maajs::ObjectType proto, maajs::FunctionType)
     MAA_BIND_FUNC(proto, "destroy", ClientImpl::destroy);
     MAA_BIND_GETTER(proto, "identifier", ClientImpl::get_identifier);
     MAA_BIND_FUNC(proto, "bind_resource", ClientImpl::bind_resource);
-    MAA_BIND_FUNC(proto, "register_sink", ClientImpl::register_sink);
     MAA_BIND_FUNC(proto, "connect", ClientImpl::connect);
     MAA_BIND_FUNC(proto, "disconnect", ClientImpl::disconnect);
     MAA_BIND_GETTER(proto, "connected", ClientImpl::get_connected);
