@@ -6,7 +6,6 @@ declare global {
             destroy(): void
             get identifier(): string
             bind_resource(resource: Resource): void
-            register_sink(tasker?: Tasker, resource?: Resource, controller?: Controller): void
             connect(): Promise<void>
             disconnect(): void
             get connected(): boolean

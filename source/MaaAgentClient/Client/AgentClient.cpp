@@ -44,27 +44,47 @@ bool AgentClient::bind_resource(MaaResource* new_res)
     return true;
 }
 
-void AgentClient::register_sink(MaaTasker* tasker, MaaResource* res, MaaController* ctrl)
+void AgentClient::register_resource_sink(MaaResource* res)
 {
-    LogInfo << VAR_VOIDP(this) << VAR_VOIDP(tasker) << VAR_VOIDP(res) << VAR_VOIDP(ctrl);
+    LogInfo << VAR_VOIDP(this) << VAR_VOIDP(res);
 
-    clear_sink_registration();
-
-    if (tasker) {
-        reg_tasker_sink_id_ = tasker->add_sink(&AgentClient::tasker_event_sink, this);
-        reg_context_sink_id_ = tasker->add_context_sink(&AgentClient::ctx_event_sink, this);
-        reg_tasker_ = tasker;
+    if (!res) {
+        LogError << "resource is null";
+        return;
     }
 
-    if (res) {
-        reg_res_sink_id_ = res->add_sink(&AgentClient::res_event_sink, this);
-        reg_res_ = res;
+    clear_resource_sink();
+    reg_res_sink_id_ = res->add_sink(&AgentClient::res_event_sink, this);
+    reg_res_ = res;
+}
+
+void AgentClient::register_controller_sink(MaaController* ctrl)
+{
+    LogInfo << VAR_VOIDP(this) << VAR_VOIDP(ctrl);
+
+    if (!ctrl) {
+        LogError << "controller is null";
+        return;
     }
 
-    if (ctrl) {
-        reg_ctrl_sink_id_ = ctrl->add_sink(&AgentClient::ctrl_event_sink, this);
-        reg_ctrl_ = ctrl;
+    clear_controller_sink();
+    reg_ctrl_sink_id_ = ctrl->add_sink(&AgentClient::ctrl_event_sink, this);
+    reg_ctrl_ = ctrl;
+}
+
+void AgentClient::register_tasker_sink(MaaTasker* tasker)
+{
+    LogInfo << VAR_VOIDP(this) << VAR_VOIDP(tasker);
+
+    if (!tasker) {
+        LogError << "tasker is null";
+        return;
     }
+
+    clear_tasker_sink();
+    reg_tasker_sink_id_ = tasker->add_sink(&AgentClient::tasker_event_sink, this);
+    reg_context_sink_id_ = tasker->add_context_sink(&AgentClient::ctx_event_sink, this);
+    reg_tasker_ = tasker;
 }
 
 std::string AgentClient::create_socket(const std::string& identifier)
@@ -922,7 +942,39 @@ void AgentClient::clear_custom_registration()
     registered_actions_.clear();
 }
 
-void AgentClient::clear_sink_registration()
+void AgentClient::clear_resource_sink()
+{
+    LogTrace;
+
+    if (reg_res_sink_id_ != MaaInvalidId) {
+        if (reg_res_) {
+            reg_res_->remove_sink(reg_res_sink_id_);
+        }
+        reg_res_sink_id_ = MaaInvalidId;
+    }
+
+    if (reg_res_) {
+        reg_res_ = nullptr;
+    }
+}
+
+void AgentClient::clear_controller_sink()
+{
+    LogTrace;
+
+    if (reg_ctrl_sink_id_ != MaaInvalidId) {
+        if (reg_ctrl_) {
+            reg_ctrl_->remove_sink(reg_ctrl_sink_id_);
+        }
+        reg_ctrl_sink_id_ = MaaInvalidId;
+    }
+
+    if (reg_ctrl_) {
+        reg_ctrl_ = nullptr;
+    }
+}
+
+void AgentClient::clear_tasker_sink()
 {
     LogTrace;
 
@@ -942,28 +994,6 @@ void AgentClient::clear_sink_registration()
 
     if (reg_tasker_) {
         reg_tasker_ = nullptr;
-    }
-
-    if (reg_res_sink_id_ != MaaInvalidId) {
-        if (reg_res_) {
-            reg_res_->remove_sink(reg_res_sink_id_);
-        }
-        reg_res_sink_id_ = MaaInvalidId;
-    }
-
-    if (reg_res_) {
-        reg_res_ = nullptr;
-    }
-
-    if (reg_ctrl_sink_id_ != MaaInvalidId) {
-        if (reg_ctrl_) {
-            reg_ctrl_->remove_sink(reg_ctrl_sink_id_);
-        }
-        reg_ctrl_sink_id_ = MaaInvalidId;
-    }
-
-    if (reg_ctrl_) {
-        reg_ctrl_ = nullptr;
     }
 }
 
@@ -1874,3 +1904,4 @@ void AgentClient::ctx_event_sink(void* handle, const char* message, const char* 
 }
 
 MAA_AGENT_CLIENT_NS_END
+
