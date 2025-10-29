@@ -22,7 +22,7 @@
  * @{
  * @brief The message for the resource loading.
  *
- * payload: {
+ * details_json: {
  *      res_id: number,
  *      hash: string,
  *      path: string,
@@ -37,7 +37,7 @@
  * @{
  * @brief Message for the controller actions.
  *
- * payload: {
+ * details_json: {
  *     ctrl_id: number,
  *     uuid: string,
  *     action: string,
@@ -53,7 +53,7 @@
  * @{
  * @brief Message for the task.
  *
- * payload: {
+ * details_json: {
  *     task_id: number,
  *     entry: string,
  *     uuid: string,
@@ -69,7 +69,7 @@
  * @{
  * @brief Message for the next list of node.
  *
- * payload: {
+ * details_json: {
  *     task_id: number,
  *     name: string,
  *     list: string[],
@@ -85,7 +85,7 @@
  * @{
  * @brief Message for the recognition list of node.
  *
- * payload: {
+ * details_json: {
  *     task_id: number,
  *     reco_id: number,
  *     name: string,
@@ -101,7 +101,7 @@
  * @{
  * @brief Message for the action of node.
  *
- * payload: {
+ * details_json: {
  *     task_id: number,
  *     node_id: number,
  *     name: string,
