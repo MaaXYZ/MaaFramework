@@ -10,6 +10,6 @@
 [submodule "3rdparty/quickjs"]
 	path = 3rdparty/quickjs
 	url = https://github.com/quickjs-ng/quickjs
-[submodule "3rdparty/MaaUtils"]
-	path = 3rdparty/MaaUtils
-	url = https://github.com/MaaXYZ/MaaUtils
+[submodule "source/MaaUtils"]
+	path = source/MaaUtils
+	url = https://github.com/MaaXYZ/MaaUtils.git

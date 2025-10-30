@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.28)
 
 project(MaaFw)
 
-include(3rdparty/MaaUtils/MaaUtils.cmake)
+include(source/MaaUtils/MaaUtils.cmake)
 
 option(WITH_ADB_CONTROLLER "build with adb controller" ON)
 option(WITH_WIN32_CONTROLLER "build with win32 controller" ON)
