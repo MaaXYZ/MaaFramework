@@ -6,7 +6,7 @@ add_library(MaaCustomControlUnit SHARED ${maa_custom_control_unit_src} ${maa_cus
 target_include_directories(MaaCustomControlUnit
     PRIVATE ${CMAKE_CURRENT_SOURCE_DIR} ${MAA_PRIVATE_INC} ${MAA_PUBLIC_INC})
 
-target_link_libraries(MaaCustomControlUnit MaaUtils HeaderOnlyLibraries ${OpenCV_LIBS})
+target_link_libraries(MaaCustomControlUnit MaaUtils ${OpenCV_LIBS})
 
 target_compile_definitions(MaaCustomControlUnit PRIVATE MAA_CONTROL_UNIT_EXPORTS)
 

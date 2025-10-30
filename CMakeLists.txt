@@ -57,6 +57,19 @@ if (BUILD_NODE_TEST)
     add_subdirectory(tools/NodeTest)
 endif()
 
+maadeps_install(bin)
+
+install(
+    TARGETS MaaUtils
+    EXPORT MaaFrameworkTargets
+    RUNTIME DESTINATION bin
+    LIBRARY DESTINATION bin # ARCHIVE DESTINATION lib
+)
+
+if(WIN32)
+    install(FILES $<TARGET_PDB_FILE:MaaUtils> DESTINATION symbol OPTIONAL)
+endif()
+
 install(
     EXPORT MaaFrameworkTargets
     FILE MaaFramework.cmake

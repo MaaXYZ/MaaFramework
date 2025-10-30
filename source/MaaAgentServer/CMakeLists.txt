@@ -15,7 +15,7 @@ target_compile_definitions(MaaAgentServer PRIVATE MAA_AGENT_SERVER_EXPORTS)
 # 复用 MaaFramework 导出接口
 target_compile_definitions(MaaAgentServer PRIVATE MAA_FRAMEWORK_EXPORTS)
 
-target_link_libraries(MaaAgentServer PRIVATE cppzmq-static ${OpenCV_LIBS} MaaUtils HeaderOnlyLibraries)
+target_link_libraries(MaaAgentServer PRIVATE cppzmq-static ${OpenCV_LIBS} MaaUtils)
 
 add_dependencies(MaaAgentServer MaaUtils)
 

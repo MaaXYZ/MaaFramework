@@ -1,18 +1,5 @@
 add_library(HeaderOnlyLibraries INTERFACE)
-target_include_directories(HeaderOnlyLibraries INTERFACE include MaaUtils/include)
-
-maadeps_install(bin)
-
-install(
-    TARGETS MaaUtils
-    EXPORT MaaFrameworkTargets
-    RUNTIME DESTINATION bin
-    LIBRARY DESTINATION bin # ARCHIVE DESTINATION lib
-)
-
-if(WIN32)
-    install(FILES $<TARGET_PDB_FILE:MaaUtils> DESTINATION symbol OPTIONAL)
-endif()
+target_include_directories(HeaderOnlyLibraries INTERFACE include)
 
 add_library(EmulatorExtras INTERFACE)
 target_include_directories(EmulatorExtras INTERFACE EmulatorExtras)

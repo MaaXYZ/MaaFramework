@@ -6,7 +6,7 @@ add_library(MaaDbgControlUnit SHARED ${maa_dbg_control_unit_src} ${maa_dbg_contr
 target_include_directories(MaaDbgControlUnit
     PRIVATE ${CMAKE_CURRENT_SOURCE_DIR} ${MAA_PRIVATE_INC} ${MAA_PUBLIC_INC})
 
-target_link_libraries(MaaDbgControlUnit MaaUtils HeaderOnlyLibraries ${OpenCV_LIBS})
+target_link_libraries(MaaDbgControlUnit MaaUtils ${OpenCV_LIBS})
 
 target_compile_definitions(MaaDbgControlUnit PRIVATE MAA_CONTROL_UNIT_EXPORTS)
 

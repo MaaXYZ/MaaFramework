@@ -13,7 +13,7 @@ else()
     target_compile_options(NodeTest PRIVATE "-Wno-error")
 endif()
 
-target_link_libraries(NodeTest MaaFramework MaaToolkit HeaderOnlyLibraries ${OpenCV_LIBS})
+target_link_libraries(NodeTest MaaFramework MaaToolkit ${OpenCV_LIBS})
 
 add_dependencies(NodeTest MaaFramework)
 set_target_properties(NodeTest PROPERTIES FOLDER Testing)
