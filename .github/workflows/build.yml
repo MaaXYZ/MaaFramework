@@ -80,7 +80,7 @@ jobs:
               uses: actions/cache@v4
               with:
                 path: |
-                    ./3rdparty/MaaDeps
+                    ./source/MaaUtils/3rdparty/MaaDeps
                 key: maadeps-${{ runner.os }}-${{ matrix.arch }}-${{ hashFiles('./tools/maadeps-download.py') }}
 
             - name: Bootstrap MaaDeps

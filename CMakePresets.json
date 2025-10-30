@@ -38,7 +38,7 @@
             "generator": "Ninja Multi-Config",
             "binaryDir": "${sourceDir}/build",
             "cacheVariables": {
-                "CMAKE_TOOLCHAIN_FILE": "${sourceDir}/3rdparty/MaaDeps/cmake/maa-x64-linux-toolchain.cmake"
+                "CMAKE_TOOLCHAIN_FILE": "${sourceDir}/source/MaaUtils/3rdparty/MaaDeps/cmake/maa-x64-linux-toolchain.cmake"
             }
         },
         {
@@ -48,7 +48,7 @@
             "generator": "Ninja Multi-Config",
             "binaryDir": "${sourceDir}/build",
             "cacheVariables": {
-                "CMAKE_TOOLCHAIN_FILE": "${sourceDir}/3rdparty/MaaDeps/cmake/maa-arm64-linux-toolchain.cmake"
+                "CMAKE_TOOLCHAIN_FILE": "${sourceDir}/source/MaaUtils/3rdparty/MaaDeps/cmake/maa-arm64-linux-toolchain.cmake"
             }
         },
         {
