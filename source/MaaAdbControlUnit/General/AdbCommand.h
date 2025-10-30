@@ -2,6 +2,8 @@
 
 #include "Base/UnitBase.h"
 
+#include "Common/Conf.h"
+
 MAA_CTRL_UNIT_NS_BEGIN
 
 class AdbCommand : public UnitBase

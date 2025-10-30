@@ -9,6 +9,8 @@
 #include "Message.hpp"
 #include "Utils/Logger.h"
 
+#include "Common/Conf.h"
+
 MAA_AGENT_NS_BEGIN
 
 class Transceiver

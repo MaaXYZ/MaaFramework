@@ -9,6 +9,8 @@
 #include "Base/UnitBase.h"
 #include "LibraryHolder/LibraryHolder.h"
 
+#include "Common/Conf.h"
+
 MAA_CTRL_UNIT_NS_BEGIN
 
 class MuMuPlayerExtras

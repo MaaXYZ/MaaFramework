@@ -67,7 +67,7 @@ bool OptionMgr::set_stdout_level(MaaOptionValue value, MaaOptionValueSize val_si
 
     LogInfo << "Set log stdout level" << VAR(level);
 
-    MAA_LOG_NS::Logger::get_instance().set_stdout_level(level);
+    MAA_LOG_NS::Logger::get_instance().set_stdout_level(static_cast<MAA_LOG_NS::level>(level));
 
     return true;
 }

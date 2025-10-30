@@ -8,7 +8,7 @@
 #include <boost/dll.hpp>
 #include <boost/function.hpp>
 
-#include "Conf/Conf.h"
+#include "Common/Conf.h"
 #include "Utils/Logger.h"
 
 MAA_NS_BEGIN

@@ -1,5 +1,3 @@
-add_subdirectory(MaaUtils)
-
 if(WITH_ADB_CONTROLLER)
     add_subdirectory(MaaAdbControlUnit)
 endif()

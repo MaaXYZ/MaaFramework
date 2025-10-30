@@ -3,7 +3,7 @@
 #include <meojson/json.hpp>
 
 #include "Common/MaaTypes.h"
-#include "Conf/Conf.h"
+#include "Common/Conf.h"
 #include "Resource/PipelineTypes.h"
 #include "Task/Context.h"
 #include "Tasker/Tasker.h"

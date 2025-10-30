@@ -8,7 +8,7 @@
 #include <meojson/json.hpp>
 #include <zmq.hpp>
 
-#include "Conf/Conf.h"
+#include "Common/Conf.h"
 #include "MaaAgent/Transceiver.h"
 #include "MaaAgentServer/MaaAgentServerDef.h"
 #include "Utils/EventDispatcher.hpp"

@@ -3,7 +3,7 @@
 #include <random>
 #include <ranges>
 
-#include "Conf/Conf.h"
+#include "Common/Conf.h"
 #include "Utils/Logger.h"
 #include "Utils/NoWarningCV.hpp"
 

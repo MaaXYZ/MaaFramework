@@ -4,6 +4,8 @@
 
 #include "ScreencapHelper.h"
 
+#include "Common/Conf.h"
+
 MAA_CTRL_UNIT_NS_BEGIN
 
 class ScreencapRawWithGzip : public ScreencapBase

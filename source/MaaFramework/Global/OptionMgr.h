@@ -4,7 +4,7 @@
 #include <filesystem>
 #include <string_view>
 
-#include "Conf/Conf.h"
+#include "Common/Conf.h"
 #include "MaaFramework/MaaDef.h"
 #include "Utils/SingletonHolder.hpp"
 

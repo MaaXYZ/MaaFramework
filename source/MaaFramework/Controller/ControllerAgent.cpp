@@ -147,7 +147,7 @@ MaaStatus ControllerAgent::status(MaaCtrlId ctrl_id) const
         LogError << "action_runner_ is nullptr";
         return MaaStatus_Invalid;
     }
-    return action_runner_->status(ctrl_id);
+    return static_cast<MaaStatus>(action_runner_->status(ctrl_id));
 }
 
 MaaStatus ControllerAgent::wait(MaaCtrlId ctrl_id) const
@@ -161,7 +161,7 @@ MaaStatus ControllerAgent::wait(MaaCtrlId ctrl_id) const
     }
 
     action_runner_->wait(ctrl_id);
-    return action_runner_->status(ctrl_id);
+    return status(ctrl_id);
 }
 
 bool ControllerAgent::connected() const

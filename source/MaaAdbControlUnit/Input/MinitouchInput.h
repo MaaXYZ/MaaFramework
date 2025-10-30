@@ -7,6 +7,8 @@
 #include "AdbShellInput.h"
 #include "Invoke/InvokeApp.h"
 
+#include "Common/Conf.h"
+
 MAA_CTRL_UNIT_NS_BEGIN
 
 class MinitouchInput : public MtouchHelper

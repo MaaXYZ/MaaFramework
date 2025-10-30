@@ -12,6 +12,8 @@
 #include "Utils/JsonExt.hpp"
 #include "Utils/NoWarningCVMat.hpp"
 
+#include "Common/Conf.h"
+
 MAA_RES_NS_BEGIN
 class ResourceMgr;
 MAA_RES_NS_END

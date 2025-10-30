@@ -12,7 +12,7 @@ REPO = "MaaXYZ/MaaDeps"
 VERSION = "v2.10.0-beta.1"
 
 basedir = Path(__file__).parent.parent
-maadeps_dir = Path(basedir, "3rdparty", "MaaDeps")
+maadeps_dir = Path(basedir, "3rdparty", "MaaUtils", "3rdparty", "MaaDeps")
 download_dir = Path(maadeps_dir, "tarball")
 
 def detect_host_triplet():

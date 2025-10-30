@@ -11,6 +11,8 @@
 #include "General/DeviceList.h"
 #include "Utils/Dispatcher.hpp"
 
+#include "Common/Conf.h"
+
 MAA_CTRL_UNIT_NS_BEGIN
 
 class AdbControlUnitMgr

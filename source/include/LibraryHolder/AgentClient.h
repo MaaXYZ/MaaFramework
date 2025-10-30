@@ -5,6 +5,8 @@
 #include "LibraryHolder.h"
 #include "Utils/Platform.h"
 
+#include "Common/Conf.h"
+
 struct MaaAgentClient;
 
 MAA_NS_BEGIN

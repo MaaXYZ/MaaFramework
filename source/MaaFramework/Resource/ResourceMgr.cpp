@@ -78,7 +78,7 @@ MaaStatus ResourceMgr::status(MaaResId res_id) const
         LogError << "res_loader_ is nullptr";
         return MaaStatus_Invalid;
     }
-    return res_loader_->status(res_id);
+    return static_cast<MaaStatus>(res_loader_->status(res_id));
 }
 
 MaaStatus ResourceMgr::wait(MaaResId res_id) const
@@ -88,7 +88,7 @@ MaaStatus ResourceMgr::wait(MaaResId res_id) const
         return false;
     }
     res_loader_->wait(res_id);
-    return res_loader_->status(res_id);
+    return status(res_id);
 }
 
 bool ResourceMgr::valid() const

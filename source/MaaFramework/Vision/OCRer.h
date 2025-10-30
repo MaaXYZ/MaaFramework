@@ -3,7 +3,7 @@
 #include <ostream>
 #include <vector>
 
-#include "Conf/Conf.h"
+#include "Common/Conf.h"
 
 #include "Utils/Encoding.h"
 #include "Utils/JsonExt.hpp"

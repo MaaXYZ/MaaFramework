@@ -4,6 +4,8 @@
 #include "VisionBase.h"
 #include "VisionTypes.h"
 
+#include "Common/Conf.h"
+
 MAA_VISION_NS_BEGIN
 
 struct TemplateComparatorResult

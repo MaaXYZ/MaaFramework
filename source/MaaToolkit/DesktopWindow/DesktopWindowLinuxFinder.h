@@ -5,6 +5,8 @@
 #include "DesktopWindowFinder.h"
 #include "Utils/SingletonHolder.hpp"
 
+#include "Common/Conf.h"
+
 MAA_TOOLKIT_NS_BEGIN
 
 class DesktopWindowLinuxFinder

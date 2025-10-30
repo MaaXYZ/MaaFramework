@@ -6,6 +6,8 @@
 
 #include "ControlUnit/ControlUnitAPI.h"
 
+#include "Common/Conf.h"
+
 MAA_CTRL_UNIT_NS_BEGIN
 
 class CarouselImage : public ControlUnitAPI

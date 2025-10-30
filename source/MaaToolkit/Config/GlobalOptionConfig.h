@@ -8,7 +8,7 @@
 
 #include <meojson/json.hpp>
 
-#include "Conf/Conf.h"
+#include "Common/Conf.h"
 #include "MaaFramework/MaaDef.h"
 #include "Utils/SingletonHolder.hpp"
 

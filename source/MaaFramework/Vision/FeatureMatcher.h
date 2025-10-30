@@ -3,7 +3,7 @@
 #include <ostream>
 #include <vector>
 
-#include "Conf/Conf.h"
+#include "Common/Conf.h"
 
 MAA_SUPPRESS_CV_WARNINGS_BEGIN
 #include <opencv2/features2d.hpp>

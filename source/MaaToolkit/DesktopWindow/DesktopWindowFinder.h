@@ -3,6 +3,8 @@
 #include "DesktopWindowBuffer.hpp"
 #include "Utils/Platform.h"
 
+#include "Common/Conf.h"
+
 MAA_TOOLKIT_NS_BEGIN
 
 class DesktopWindowFinder

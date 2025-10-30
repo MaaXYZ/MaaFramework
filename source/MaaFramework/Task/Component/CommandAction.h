@@ -4,7 +4,7 @@
 #include <string>
 #include <vector>
 
-#include "Conf/Conf.h"
+#include "Common/Conf.h"
 #include "Resource/PipelineTypes.h"
 #include "Utils/Platform.h"
 #include "Utils/SingletonHolder.hpp"

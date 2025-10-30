@@ -6,7 +6,7 @@
 
 #include <onnxruntime/onnxruntime_cxx_api.h>
 
-#include "Conf/Conf.h"
+#include "Common/Conf.h"
 #include "Utils/NonCopyable.hpp"
 
 MAA_RES_NS_BEGIN

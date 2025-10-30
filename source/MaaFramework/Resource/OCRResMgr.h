@@ -2,7 +2,7 @@
 
 #include <filesystem>
 
-#include "Conf/Conf.h"
+#include "Common/Conf.h"
 
 #ifdef _WIN32
 #include "Utils/SafeWindows.hpp"

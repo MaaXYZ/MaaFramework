@@ -8,6 +8,8 @@
 
 #include "Utils/StringMisc.hpp"
 
+#include "Common/Conf.h"
+
 MAA_CTRL_UNIT_NS_BEGIN
 
 class ProcessArgvGenerator

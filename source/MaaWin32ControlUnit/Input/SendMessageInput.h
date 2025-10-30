@@ -5,6 +5,8 @@
 #include "Base/UnitBase.h"
 #include "Utils/SafeWindows.hpp"
 
+#include "Common/Conf.h"
+
 MAA_CTRL_UNIT_NS_BEGIN
 
 class SendMessageInput : public InputBase

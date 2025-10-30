@@ -8,6 +8,8 @@
 
 #include "Utils/SafeWindows.hpp" // for dnopengl
 
+#include "Common/Conf.h"
+
 namespace dnopengl
 {
 #include "LD/dnopengl/dnopengl.h"

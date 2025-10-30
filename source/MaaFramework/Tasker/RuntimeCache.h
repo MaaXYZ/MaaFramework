@@ -8,6 +8,8 @@
 #include "Common/TaskResultTypes.h"
 #include "Utils/NoWarningCVMat.hpp"
 
+#include "Common/Conf.h"
+
 MAA_NS_BEGIN
 
 class RuntimeCache

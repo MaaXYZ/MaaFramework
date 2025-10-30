@@ -8,7 +8,7 @@
 #include <boost/dll.hpp>
 #include <boost/function.hpp>
 
-#include "Conf/Conf.h"
+#include "Common/Conf.h"
 #include "LibraryHolder/LibraryHolder.h"
 #include "MaaFramework/MaaDef.h"
 #include "MaaPlugin/MaaPluginAPI.h"

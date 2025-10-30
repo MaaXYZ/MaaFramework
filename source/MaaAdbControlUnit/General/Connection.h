@@ -4,6 +4,8 @@
 
 #include "Base/UnitBase.h"
 
+#include "Common/Conf.h"
+
 MAA_CTRL_UNIT_NS_BEGIN
 
 class Connection : public UnitBase

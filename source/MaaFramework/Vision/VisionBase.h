@@ -3,7 +3,7 @@
 #include <atomic>
 #include <filesystem>
 
-#include "Conf/Conf.h"
+#include "Common/Conf.h"
 #include "MaaFramework/MaaDef.h"
 #include "Utils/JsonExt.hpp"
 #include "Utils/NoWarningCVMat.hpp"

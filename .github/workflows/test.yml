@@ -97,7 +97,7 @@ jobs:
 
             - name: Build MAA
               run: |
-                  cmake --preset "${{ matrix.arch == 'x86_64' && 'MSVC 2022' || 'MSVC 2022 ARM' }}" -DMAADEPS_TRIPLET="maa-${{ matrix.arch == 'x86_64' && 'x64' || 'arm64' }}-windows" -DCMAKE_SYSTEM_VERSION="10.0.26100.0" -DMAA_HASH_VERSION='${{ needs.meta.outputs.tag }}' -DWITH_NODEJS_BINDING=ON -DBUILD_PICLI=OFF -DBUILD_PIPELINE_TESTING=ON -DBUILD_DLOPEN_TESTING=ON
+                  cmake --preset "${{ matrix.arch == 'x86_64' && 'MSVC 2022' || 'MSVC 2022 ARM' }}" -DMAADEPS_TRIPLET="maa-${{ matrix.arch == 'x86_64' && 'x64' || 'arm64' }}-windows" -DCMAKE_SYSTEM_VERSION="10.0.26100.0" -DMAA_HASH_VERSION='${{ needs.meta.outputs.tag }}' -DWITH_NODEJS_BINDING=ON -DWITH_QUICKJS_BINDING=ON -DBUILD_PICLI=OFF -DBUILD_PIPELINE_TESTING=ON -DBUILD_DLOPEN_TESTING=ON
 
                   cmake --build build --preset "${{ matrix.arch == 'x86_64' && 'MSVC 2022' || 'MSVC 2022 ARM' }} - Debug" -j 16
 
@@ -210,7 +210,7 @@ jobs:
                   cmake --preset 'NinjaMulti Linux ${{ matrix.arch == 'x86_64' && 'x64' || 'arm64' }}' \
                     -DMAADEPS_TRIPLET='maa-${{ matrix.arch == 'x86_64' && 'x64' || 'arm64' }}-linux' \
                     -DMAA_HASH_VERSION='${{ needs.meta.outputs.tag }}' \
-                    -DWITH_NODEJS_BINDING=ON \
+                    -DWITH_NODEJS_BINDING=ON -DWITH_QUICKJS_BINDING=ON \
                     -DBUILD_PICLI=OFF \
                     -DBUILD_PIPELINE_TESTING=ON \
                     -DBUILD_DLOPEN_TESTING=ON
@@ -325,7 +325,7 @@ jobs:
                     -DMAADEPS_TRIPLET='maa-${{ matrix.arch == 'x86_64' && 'x64' || 'arm64' }}-osx' \
                     -DMAA_HASH_VERSION='${{ needs.meta.outputs.tag }}' \
                     -DCMAKE_OSX_SYSROOT=macosx \
-                    -DWITH_NODEJS_BINDING=ON \
+                    -DWITH_NODEJS_BINDING=ON -DWITH_QUICKJS_BINDING=ON \
                     -DBUILD_PICLI=OFF \
                     -DBUILD_PIPELINE_TESTING=ON \
                     -DBUILD_DLOPEN_TESTING=ON \

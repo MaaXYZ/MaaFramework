@@ -107,7 +107,7 @@ jobs:
 
             - name: Build MAA
               run: |
-                  cmake --preset "${{ matrix.arch == 'x86_64' && 'MSVC 2022' || 'MSVC 2022 ARM' }}" -DCMAKE_SYSTEM_VERSION="10.0.26100.0" -DMAADEPS_TRIPLET="maa-${{ matrix.arch == 'x86_64' && 'x64' || 'arm64' }}-windows" -DMAA_HASH_VERSION='${{ needs.meta.outputs.tag }}' -DWITH_NODEJS_BINDING=ON
+                  cmake --preset "${{ matrix.arch == 'x86_64' && 'MSVC 2022' || 'MSVC 2022 ARM' }}" -DCMAKE_SYSTEM_VERSION="10.0.26100.0" -DMAADEPS_TRIPLET="maa-${{ matrix.arch == 'x86_64' && 'x64' || 'arm64' }}-windows" -DMAA_HASH_VERSION='${{ needs.meta.outputs.tag }}' -DWITH_NODEJS_BINDING=ON -DWITH_QUICKJS_BINDING=ON
 
                   cmake --build build --preset "${{ matrix.arch == 'x86_64' && 'MSVC 2022' || 'MSVC 2022 ARM' }} - ${{ inputs.build_config || needs.meta.outputs.build_config }}" -j 16
 
@@ -186,7 +186,7 @@ jobs:
                   cmake --preset 'NinjaMulti Linux ${{ matrix.arch == 'x86_64' && 'x64' || 'arm64' }}' \
                     -DMAADEPS_TRIPLET='maa-${{ matrix.arch == 'x86_64' && 'x64' || 'arm64' }}-linux' \
                     -DMAA_HASH_VERSION='${{ needs.meta.outputs.tag }}' \
-                    -DWITH_NODEJS_BINDING=ON
+                    -DWITH_NODEJS_BINDING=ON -DWITH_QUICKJS_BINDING=ON
 
                   cmake --build build --preset 'NinjaMulti Linux ${{ matrix.arch == 'x86_64' && 'x64' || 'arm64' }} - ${{ inputs.build_config || needs.meta.outputs.build_config }}' -j 16
 
@@ -261,7 +261,7 @@ jobs:
                     -DMAADEPS_TRIPLET='maa-${{ matrix.arch == 'x86_64' && 'x64' || 'arm64' }}-osx' \
                     -DMAA_HASH_VERSION='${{ needs.meta.outputs.tag }}' \
                     -DCMAKE_OSX_SYSROOT=macosx \
-                    -DWITH_NODEJS_BINDING=ON \
+                    -DWITH_NODEJS_BINDING=ON -DWITH_QUICKJS_BINDING=ON \
                     -DCMAKE_OSX_ARCHITECTURES='${{ matrix.arch == 'x86_64' && 'x86_64' || 'arm64' }}'
 
                   cmake --build build --preset 'NinjaMulti - ${{ inputs.build_config || needs.meta.outputs.build_config }}' -j 16

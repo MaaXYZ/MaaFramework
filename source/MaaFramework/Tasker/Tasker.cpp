@@ -101,7 +101,7 @@ MaaStatus Tasker::status(MaaTaskId task_id) const
         return MaaStatus_Invalid;
     }
     RunnerId runner_id = task_id_to_runner_id(task_id);
-    return task_runner_->status(runner_id);
+    return static_cast<MaaStatus>(task_runner_->status(runner_id));
 }
 
 MaaStatus Tasker::wait(MaaTaskId task_id) const
@@ -112,7 +112,7 @@ MaaStatus Tasker::wait(MaaTaskId task_id) const
     }
     RunnerId runner_id = task_id_to_runner_id(task_id);
     task_runner_->wait(runner_id);
-    return task_runner_->status(runner_id);
+    return status(runner_id);
 }
 
 bool Tasker::running() const

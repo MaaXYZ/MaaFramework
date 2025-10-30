@@ -9,6 +9,8 @@
 
 #include <onnxruntime/onnxruntime_cxx_api.h>
 
+#include "Common/Conf.h"
+
 MAA_VISION_NS_BEGIN
 
 struct NeuralNetworkDetectorResult

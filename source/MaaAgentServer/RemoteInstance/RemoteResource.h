@@ -3,6 +3,8 @@
 #include "Common/MaaTypes.h"
 #include "MaaAgent/Transceiver.h"
 
+#include "Common/Conf.h"
+
 MAA_AGENT_SERVER_NS_BEGIN
 
 class RemoteResource : public MaaResource

@@ -6,6 +6,8 @@
 #include "Invoke/InvokeApp.h"
 #include "Utils/IOStream/ChildPipeIOStream.h"
 
+#include "Common/Conf.h"
+
 MAA_CTRL_UNIT_NS_BEGIN
 
 class MtouchHelper : public InputBase

@@ -22,6 +22,8 @@ static_assert(false, "Windows 10 SDK 10.0.22000.0 or higher is required");
 
 #include <winrt/Windows.Graphics.Capture.h>
 
+#include "Common/Conf.h"
+
 MAA_CTRL_UNIT_NS_BEGIN
 
 // Not work

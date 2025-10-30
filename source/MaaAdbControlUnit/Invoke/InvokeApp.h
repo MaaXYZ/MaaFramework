@@ -5,6 +5,8 @@
 #include "Base/UnitBase.h"
 #include "Utils/IOStream/ChildPipeIOStream.h"
 
+#include "Common/Conf.h"
+
 MAA_CTRL_UNIT_NS_BEGIN
 
 class InvokeApp : public UnitBase

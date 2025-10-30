@@ -6,7 +6,7 @@
 
 #include <meojson/json.hpp>
 
-#include "Conf/Conf.h"
+#include "Common/Conf.h"
 #include "DefaultPipelineMgr.h"
 #include "PipelineTypes.h"
 #include "Utils/NonCopyable.hpp"

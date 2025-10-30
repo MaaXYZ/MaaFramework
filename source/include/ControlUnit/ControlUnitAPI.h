@@ -3,7 +3,7 @@
 #include <string>
 #include <utility>
 
-#include "Conf/Conf.h"
+#include "Common/Conf.h"
 #include "Utils/NoWarningCVMat.hpp"
 
 MAA_CTRL_UNIT_NS_BEGIN

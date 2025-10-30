@@ -8,6 +8,8 @@
 #include "ControlUnit/AdbControlUnitAPI.h"
 #include "Screencap/ScreencapHelper.h"
 
+#include "Common/Conf.h"
+
 MAA_CTRL_UNIT_NS_BEGIN
 
 class UnitBase

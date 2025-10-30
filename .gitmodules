@@ -1,6 +1,3 @@
-[submodule "3rdparty/MaaDeps"]
-	path = 3rdparty/MaaDeps
-	url = https://github.com/MaaXYZ/MaaDeps
 [submodule "3rdparty/MaaAgentBinary"]
 	path = 3rdparty/MaaAgentBinary
 	url = https://github.com/MaaXYZ/MaaAgentBinary
@@ -13,3 +10,6 @@
 [submodule "3rdparty/quickjs"]
 	path = 3rdparty/quickjs
 	url = https://github.com/quickjs-ng/quickjs
+[submodule "3rdparty/MaaUtils"]
+	path = 3rdparty/MaaUtils
+	url = https://github.com/MaaXYZ/MaaUtils

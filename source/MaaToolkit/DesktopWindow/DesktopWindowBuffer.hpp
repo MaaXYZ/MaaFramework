@@ -3,7 +3,7 @@
 #include <ostream>
 
 #include "API/MaaToolkitBufferTypes.hpp"
-#include "Conf/Conf.h"
+#include "Common/Conf.h"
 #include "Utils/Buffer/ListBuffer.hpp"
 #include "Utils/Encoding.h"
 #include "Utils/Logger.h"

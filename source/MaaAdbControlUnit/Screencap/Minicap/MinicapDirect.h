@@ -2,6 +2,8 @@
 
 #include "MinicapBase.h"
 
+#include "Common/Conf.h"
+
 MAA_CTRL_UNIT_NS_BEGIN
 
 class MinicapDirect : public MinicapBase

@@ -2,7 +2,7 @@
 
 #include <cstdint>
 
-#include "Conf/Conf.h"
+#include "Common/Conf.h"
 
 MAA_CTRL_UNIT_NS_BEGIN
 

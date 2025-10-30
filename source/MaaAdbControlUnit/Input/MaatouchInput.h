@@ -6,6 +6,8 @@
 #include "Invoke/InvokeApp.h"
 #include "MtouchHelper.h"
 
+#include "Common/Conf.h"
+
 MAA_CTRL_UNIT_NS_BEGIN
 
 class MaatouchInput : public MtouchHelper

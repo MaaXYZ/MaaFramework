@@ -4,6 +4,8 @@
 
 #include "MaaFramework/MaaDef.h"
 
+#include "Common/Conf.h"
+
 MAA_PROJECT_INTERFACE_NS_BEGIN
 
 class Runner

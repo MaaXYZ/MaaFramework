@@ -5,7 +5,7 @@
 #include <meojson/json.hpp>
 
 #include "API/MaaToolkitBufferTypes.hpp"
-#include "Conf/Conf.h"
+#include "Common/Conf.h"
 #include "Utils/Buffer/ListBuffer.hpp"
 #include "Utils/Logger.h"
 #include "Utils/Platform.h"

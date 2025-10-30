@@ -6,6 +6,8 @@
 #include "MaaFramework/Instance/MaaCustomController.h"
 #include "Utils/Platform.h"
 
+#include "Common/Conf.h"
+
 MAA_CTRL_UNIT_NS_BEGIN
 class ControlUnitAPI;
 class AdbControlUnitAPI;
