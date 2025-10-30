@@ -1,6 +1,8 @@
 add_library(HeaderOnlyLibraries INTERFACE)
 target_include_directories(HeaderOnlyLibraries INTERFACE include MaaUtils/include)
 
+maadeps_install(bin)
+
 install(
     TARGETS MaaUtils
     EXPORT MaaFrameworkTargets
@@ -35,13 +37,13 @@ if(WITH_QUICKJS_BINDING)
         target_compile_options(
             qjs
             PRIVATE /wd4146
-                    /wd4668
-                    /wd4132
-                    /wd4334
-                    /wd4702
-                    /wd4701
-                    /wd4746
-                    /wd4244)
+            /wd4668
+            /wd4132
+            /wd4334
+            /wd4702
+            /wd4701
+            /wd4746
+            /wd4244)
     elseif(LINUX)
         target_compile_options(qjs PRIVATE -Wno-error=unused-command-line-argument)
     endif()

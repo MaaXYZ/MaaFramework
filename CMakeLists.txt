@@ -57,8 +57,6 @@ if (BUILD_NODE_TEST)
     add_subdirectory(tools/NodeTest)
 endif()
 
-maadeps_install(bin)
-
 install(
     EXPORT MaaFrameworkTargets
     FILE MaaFramework.cmake
