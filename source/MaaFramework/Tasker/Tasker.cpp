@@ -112,7 +112,7 @@ MaaStatus Tasker::wait(MaaTaskId task_id) const
     }
     RunnerId runner_id = task_id_to_runner_id(task_id);
     task_runner_->wait(runner_id);
-    return status(runner_id);
+    return status(task_id);
 }
 
 bool Tasker::running() const
