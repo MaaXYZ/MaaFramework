@@ -8,10 +8,9 @@
 #include "Base/AsyncRunner.hpp"
 #include "Common/MaaTypes.h"
 #include "Controller/ControllerAgent.h"
-#include "MaaUtils/EventDispatcher.hpp"
 #include "Resource/ResourceMgr.h"
 #include "RuntimeCache.h"
-
+#include "Utils/EventDispatcher.hpp"
 
 #include "Common/Conf.h"
 

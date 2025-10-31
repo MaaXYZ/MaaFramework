@@ -11,8 +11,9 @@
 #include "Common/Conf.h"
 #include "MaaAgent/Transceiver.h"
 #include "MaaAgentServer/MaaAgentServerDef.h"
-#include "MaaUtils/EventDispatcher.hpp"
 #include "MaaUtils/SingletonHolder.hpp"
+#include "Utils/EventDispatcher.hpp"
+
 
 MAA_AGENT_SERVER_NS_BEGIN
 
