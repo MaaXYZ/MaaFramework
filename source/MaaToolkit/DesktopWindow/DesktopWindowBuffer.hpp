@@ -4,9 +4,9 @@
 
 #include "API/MaaToolkitBufferTypes.hpp"
 #include "Common/Conf.h"
-#include "Utils/Buffer/ListBuffer.hpp"
-#include "Utils/Encoding.h"
-#include "Utils/Logger.h"
+#include "MaaUtils/Buffer/ListBuffer.hpp"
+#include "MaaUtils/Encoding.h"
+#include "MaaUtils/Logger.h"
 
 MAA_TOOLKIT_NS_BEGIN
 

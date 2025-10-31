@@ -2,9 +2,9 @@
 
 #include "DesktopWindowWin32Finder.h"
 
-#include "Utils/Encoding.h"
-#include "Utils/Logger.h"
-#include "Utils/Platform.h"
+#include "MaaUtils/Encoding.h"
+#include "MaaUtils/Logger.h"
+#include "MaaUtils/Platform.h"
 
 MAA_TOOLKIT_NS_BEGIN
 

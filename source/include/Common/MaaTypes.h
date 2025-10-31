@@ -10,7 +10,7 @@
 
 #include "Common/TaskResultTypes.h"
 #include "MaaFramework/MaaDef.h"
-#include "Utils/NoWarningCVMat.hpp"
+#include "MaaUtils/NoWarningCVMat.hpp"
 
 struct IMaaPipeline
 {

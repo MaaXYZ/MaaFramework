@@ -1,9 +1,10 @@
 #include "ScreencapAgent.h"
 
+#include "MaaUtils/Logger.h"
 #include "Screencap/DesktopDupScreencap.h"
 #include "Screencap/FramePoolScreencap.h"
 #include "Screencap/GdiScreencap.h"
-#include "Utils/Logger.h"
+
 
 MAA_CTRL_UNIT_NS_BEGIN
 

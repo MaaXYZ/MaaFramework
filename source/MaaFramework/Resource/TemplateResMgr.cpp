@@ -1,7 +1,7 @@
 #include "TemplateResMgr.h"
 
-#include "Utils/ImageIo.h"
-#include "Utils/Logger.h"
+#include "MaaUtils/ImageIo.h"
+#include "MaaUtils/Logger.h"
 
 MAA_RES_NS_BEGIN
 

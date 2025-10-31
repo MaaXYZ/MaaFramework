@@ -2,7 +2,7 @@
 
 #include "Base/UnitBase.h"
 #include "MaaFramework/MaaDef.h"
-#include "Utils/SafeWindows.hpp"
+#include "MaaUtils/SafeWindows.hpp"
 
 #include "Common/Conf.h"
 

@@ -5,8 +5,8 @@
 
 #include "Common/Conf.h"
 
-#include "Utils/Encoding.h"
-#include "Utils/JsonExt.hpp"
+#include "MaaUtils/Encoding.h"
+#include "MaaUtils/JsonExt.hpp"
 #include "VisionBase.h"
 #include "VisionTypes.h"
 

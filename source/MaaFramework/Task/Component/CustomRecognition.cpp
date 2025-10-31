@@ -1,11 +1,12 @@
 #include "CustomRecognition.h"
 
-#include "Utils/NoWarningCV.hpp"
+#include "MaaUtils/NoWarningCV.hpp"
 
+#include "MaaUtils/Buffer/ImageBuffer.hpp"
+#include "MaaUtils/Buffer/StringBuffer.hpp"
+#include "MaaUtils/Logger.h"
 #include "Task/Context.h"
-#include "Utils/Buffer/ImageBuffer.hpp"
-#include "Utils/Buffer/StringBuffer.hpp"
-#include "Utils/Logger.h"
+
 
 MAA_TASK_NS_BEGIN
 

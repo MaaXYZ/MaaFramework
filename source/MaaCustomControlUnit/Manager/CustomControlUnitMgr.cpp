@@ -1,8 +1,8 @@
 #include "CustomControlUnitMgr.h"
 
-#include "Utils/Buffer/ImageBuffer.hpp"
-#include "Utils/Buffer/StringBuffer.hpp"
-#include "Utils/Logger.h"
+#include "MaaUtils/Buffer/ImageBuffer.hpp"
+#include "MaaUtils/Buffer/StringBuffer.hpp"
+#include "MaaUtils/Logger.h"
 
 MAA_CTRL_UNIT_NS_BEGIN
 

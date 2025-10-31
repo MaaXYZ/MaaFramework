@@ -5,8 +5,8 @@
 
 #include "ControlUnit/ControlUnitAPI.h"
 #include "LibraryHolder/ControlUnit.h"
-#include "Utils/IOStream/BoostIO.hpp"
-#include "Utils/Logger.h"
+#include "MaaUtils/IOStream/BoostIO.hpp"
+#include "MaaUtils/Logger.h"
 
 MAA_TOOLKIT_NS_BEGIN
 

@@ -6,14 +6,15 @@
 
 #include "EmulatorExtras/LDPlayerExtras.h"
 #include "EmulatorExtras/MuMuPlayerExtras.h"
+#include "MaaUtils/Logger.h"
+#include "MaaUtils/NoWarningCV.hpp"
 #include "Screencap/Encode.h"
 #include "Screencap/EncodeToFile.h"
 #include "Screencap/Minicap/MinicapDirect.h"
 #include "Screencap/Minicap/MinicapStream.h"
 #include "Screencap/RawByNetcat.h"
 #include "Screencap/RawWithGzip.h"
-#include "Utils/Logger.h"
-#include "Utils/NoWarningCV.hpp"
+
 
 MAA_CTRL_UNIT_NS_BEGIN
 

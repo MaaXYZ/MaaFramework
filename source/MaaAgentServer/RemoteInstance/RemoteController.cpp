@@ -1,8 +1,8 @@
 #include "RemoteController.h"
 
 #include "MaaAgent/Message.hpp"
-#include "Utils/Encoding.h"
-#include "Utils/Logger.h"
+#include "MaaUtils/Encoding.h"
+#include "MaaUtils/Logger.h"
 
 MAA_AGENT_SERVER_NS_BEGIN
 

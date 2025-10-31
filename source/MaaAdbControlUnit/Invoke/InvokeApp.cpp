@@ -1,8 +1,8 @@
 #include "InvokeApp.h"
 
-#include "Utils/Logger.h"
-#include "Utils/Platform.h"
-#include "Utils/Time.hpp"
+#include "MaaUtils/Logger.h"
+#include "MaaUtils/Platform.h"
+#include "MaaUtils/Time.hpp"
 
 MAA_CTRL_UNIT_NS_BEGIN
 

@@ -2,8 +2,8 @@
 
 #include <format>
 
-#include "Utils/Platform.h"
-#include "Utils/Uuid.h"
+#include "MaaUtils/Platform.h"
+#include "MaaUtils/Uuid.h"
 
 MAA_AGENT_NS_BEGIN
 

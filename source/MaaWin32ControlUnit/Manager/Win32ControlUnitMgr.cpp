@@ -1,10 +1,11 @@
 #include "Win32ControlUnitMgr.h"
 
 #include "MaaFramework/MaaMsg.h"
+#include "MaaUtils/Logger.h"
 #include "Manager/InputAgent.h"
 #include "Manager/ScreencapAgent.h"
 #include "Screencap/HwndUtils.hpp"
-#include "Utils/Logger.h"
+
 
 MAA_CTRL_UNIT_NS_BEGIN
 

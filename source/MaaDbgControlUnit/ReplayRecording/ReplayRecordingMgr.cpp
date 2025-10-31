@@ -1,7 +1,8 @@
 #include "ReplayRecordingMgr.h"
 
+#include "MaaUtils/Logger.h"
 #include "ReplayRecording/RecordParser.h"
-#include "Utils/Logger.h"
+
 
 MAA_CTRL_UNIT_NS_BEGIN
 

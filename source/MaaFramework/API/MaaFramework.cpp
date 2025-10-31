@@ -4,10 +4,11 @@
 #include "Global/OptionMgr.h"
 #include "Global/PluginMgr.h"
 #include "LibraryHolder/ControlUnit.h"
+#include "MaaUtils/Logger.h"
+#include "MaaUtils/Platform.h"
 #include "Resource/ResourceMgr.h"
 #include "Tasker/Tasker.h"
-#include "Utils/Logger.h"
-#include "Utils/Platform.h"
+
 
 MaaController* MaaAdbControllerCreate(
     const char* adb_path,

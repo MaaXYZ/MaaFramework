@@ -8,8 +8,8 @@
 #include <thread>
 
 #include "Common/Conf.h"
-#include "Utils/Logger.h"
-#include "Utils/NonCopyable.hpp"
+#include "MaaUtils/Logger.h"
+#include "MaaUtils/NonCopyable.hpp"
 
 MAA_NS_BEGIN
 

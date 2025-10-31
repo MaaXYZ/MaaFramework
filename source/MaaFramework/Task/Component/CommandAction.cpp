@@ -2,13 +2,13 @@
 
 #include <functional>
 
-#include "Utils/Encoding.h"
-#include "Utils/IOStream/BoostIO.hpp"
-#include "Utils/ImageIo.h"
-#include "Utils/Logger.h"
-#include "Utils/Platform.h"
-#include "Utils/Runtime.h"
-#include "Utils/StringMisc.hpp"
+#include "MaaUtils/Encoding.h"
+#include "MaaUtils/IOStream/BoostIO.hpp"
+#include "MaaUtils/ImageIo.h"
+#include "MaaUtils/Logger.h"
+#include "MaaUtils/Platform.h"
+#include "MaaUtils/Runtime.h"
+#include "MaaUtils/StringMisc.hpp"
 
 MAA_TASK_NS_BEGIN
 

@@ -1,7 +1,7 @@
 #include "DeviceInfo.h"
 
-#include "Utils/Logger.h"
-#include "Utils/Uuid.h"
+#include "MaaUtils/Logger.h"
+#include "MaaUtils/Uuid.h"
 
 MAA_CTRL_UNIT_NS_BEGIN
 

@@ -5,12 +5,12 @@
 #include <unordered_set>
 
 #ifdef _WIN32
-#include "Utils/SafeWindows.hpp"
+#include "MaaUtils/SafeWindows.hpp"
 #endif
 
 #include "MLProvider.h"
-#include "Utils/Logger.h"
-#include "Utils/Platform.h"
+#include "MaaUtils/Logger.h"
+#include "MaaUtils/Platform.h"
 
 MAA_RES_NS_BEGIN
 

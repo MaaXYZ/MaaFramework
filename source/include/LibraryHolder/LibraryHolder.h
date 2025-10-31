@@ -9,7 +9,7 @@
 #include <boost/function.hpp>
 
 #include "Common/Conf.h"
-#include "Utils/Logger.h"
+#include "MaaUtils/Logger.h"
 
 MAA_NS_BEGIN
 

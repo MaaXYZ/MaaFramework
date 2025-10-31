@@ -6,7 +6,7 @@
 
 #include <meojson/json.hpp>
 
-#include "Utils/StringMisc.hpp"
+#include "MaaUtils/StringMisc.hpp"
 
 #include "Common/Conf.h"
 

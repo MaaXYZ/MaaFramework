@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Base/UnitBase.h"
-#include "Utils/SafeWindows.hpp"
+#include "MaaUtils/SafeWindows.hpp"
 
 #include "Common/Conf.h"
 

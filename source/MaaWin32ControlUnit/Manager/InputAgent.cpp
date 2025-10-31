@@ -2,7 +2,7 @@
 
 #include "Input/SeizeInput.h"
 #include "Input/SendMessageInput.h"
-#include "Utils/Logger.h"
+#include "MaaUtils/Logger.h"
 
 MAA_CTRL_UNIT_NS_BEGIN
 

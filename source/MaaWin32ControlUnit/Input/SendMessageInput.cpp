@@ -1,9 +1,9 @@
 #include "SendMessageInput.h"
 
-#include "Utils/Encoding.h"
-#include "Utils/Logger.h"
-#include "Utils/Platform.h"
-#include "Utils/SafeWindows.hpp"
+#include "MaaUtils/Encoding.h"
+#include "MaaUtils/Logger.h"
+#include "MaaUtils/Platform.h"
+#include "MaaUtils/SafeWindows.hpp"
 
 MAA_CTRL_UNIT_NS_BEGIN
 

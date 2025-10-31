@@ -1,11 +1,12 @@
 #include "PipelineParser.h"
 
+#include "MaaUtils/Encoding.h"
+#include "MaaUtils/Logger.h"
+#include "MaaUtils/Platform.h"
+#include "MaaUtils/StringMisc.hpp"
 #include "PipelineTypesV2.h"
-#include "Utils/Encoding.h"
-#include "Utils/Logger.h"
-#include "Utils/Platform.h"
-#include "Utils/StringMisc.hpp"
 #include "Vision/VisionTypes.h"
+
 
 MAA_RES_NS_BEGIN
 

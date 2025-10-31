@@ -5,7 +5,7 @@
 #include "Common/Conf.h"
 
 #ifdef _WIN32
-#include "Utils/SafeWindows.hpp"
+#include "MaaUtils/SafeWindows.hpp"
 #endif
 
 MAA_SUPPRESS_CV_WARNINGS_BEGIN
@@ -14,8 +14,8 @@ MAA_SUPPRESS_CV_WARNINGS_BEGIN
 #include "fastdeploy/vision/ocr/ppocr/recognizer.h"
 MAA_SUPPRESS_CV_WARNINGS_END
 
-#include "Utils/NoWarningCV.hpp"
-#include "Utils/NonCopyable.hpp"
+#include "MaaUtils/NoWarningCV.hpp"
+#include "MaaUtils/NonCopyable.hpp"
 
 MAA_RES_NS_BEGIN
 

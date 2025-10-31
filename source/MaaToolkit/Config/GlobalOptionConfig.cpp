@@ -6,9 +6,9 @@
 #include <meojson/json.hpp>
 
 #include "MaaFramework/MaaAPI.h"
-#include "Utils/Logger.h"
-#include "Utils/Platform.h"
-#include "Utils/Runtime.h"
+#include "MaaUtils/Logger.h"
+#include "MaaUtils/Platform.h"
+#include "MaaUtils/Runtime.h"
 
 MAA_TOOLKIT_NS_BEGIN
 

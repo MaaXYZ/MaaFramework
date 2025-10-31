@@ -3,7 +3,7 @@
 #include <filesystem>
 
 #include "Base/UnitBase.h"
-#include "Utils/IOStream/ChildPipeIOStream.h"
+#include "MaaUtils/IOStream/ChildPipeIOStream.h"
 
 #include "Common/Conf.h"
 

@@ -2,10 +2,11 @@
 
 #include <ranges>
 
+#include "MaaUtils/Logger.h"
+#include "MaaUtils/Platform.h"
+#include "MaaUtils/StringMisc.hpp"
 #include "ProjectInterface/Parser.h"
-#include "Utils/Logger.h"
-#include "Utils/Platform.h"
-#include "Utils/StringMisc.hpp"
+
 
 MAA_PROJECT_INTERFACE_NS_BEGIN
 

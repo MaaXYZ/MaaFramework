@@ -3,9 +3,9 @@
 #include <meojson/json.hpp>
 
 #include "Config/GlobalOptionConfig.h"
-#include "Utils/Logger.h"
-#include "Utils/Platform.h"
-#include "Utils/Runtime.h"
+#include "MaaUtils/Logger.h"
+#include "MaaUtils/Platform.h"
+#include "MaaUtils/Runtime.h"
 
 MaaBool MaaToolkitConfigInitOption(const char* user_path, const char* default_json)
 {

@@ -3,7 +3,7 @@
 #if defined(__linux__)
 
 #include "DesktopWindowFinder.h"
-#include "Utils/SingletonHolder.hpp"
+#include "MaaUtils/SingletonHolder.hpp"
 
 #include "Common/Conf.h"
 

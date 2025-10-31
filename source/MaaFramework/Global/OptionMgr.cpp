@@ -1,7 +1,7 @@
 #include "OptionMgr.h"
 
-#include "Utils/Logger.h"
-#include "Utils/Platform.h"
+#include "MaaUtils/Logger.h"
+#include "MaaUtils/Platform.h"
 
 MAA_GLOBAL_NS_BEGIN
 

@@ -2,9 +2,10 @@
 
 #include <format>
 
+#include "MaaUtils/Logger.h"
+#include "MaaUtils/NoWarningCV.hpp"
 #include "MinicapDef.h"
-#include "Utils/Logger.h"
-#include "Utils/NoWarningCV.hpp"
+
 
 MAA_CTRL_UNIT_NS_BEGIN
 

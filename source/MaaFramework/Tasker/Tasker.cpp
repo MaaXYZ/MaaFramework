@@ -5,10 +5,11 @@
 #include "Controller/ControllerAgent.h"
 #include "Global/PluginMgr.h"
 #include "MaaFramework/MaaMsg.h"
+#include "MaaUtils/Logger.h"
 #include "Resource/ResourceMgr.h"
 #include "Task/EmptyTask.h"
 #include "Task/PipelineTask.h"
-#include "Utils/Logger.h"
+
 
 MAA_NS_BEGIN
 

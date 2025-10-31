@@ -5,13 +5,13 @@
 #include "Common/MaaTypes.h"
 #include "MaaAgent/Message.hpp"
 #include "MaaFramework/MaaAPI.h"
-#include "Utils/Buffer/ImageBuffer.hpp"
-#include "Utils/Buffer/ListBuffer.hpp"
-#include "Utils/Buffer/StringBuffer.hpp"
-#include "Utils/Encoding.h"
-#include "Utils/Logger.h"
-#include "Utils/Platform.h"
-#include "Utils/Uuid.h"
+#include "MaaUtils/Buffer/ImageBuffer.hpp"
+#include "MaaUtils/Buffer/ListBuffer.hpp"
+#include "MaaUtils/Buffer/StringBuffer.hpp"
+#include "MaaUtils/Encoding.h"
+#include "MaaUtils/Logger.h"
+#include "MaaUtils/Platform.h"
+#include "MaaUtils/Uuid.h"
 
 MAA_AGENT_CLIENT_NS_BEGIN
 

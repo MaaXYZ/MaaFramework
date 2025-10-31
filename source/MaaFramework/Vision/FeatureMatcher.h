@@ -9,7 +9,7 @@ MAA_SUPPRESS_CV_WARNINGS_BEGIN
 #include <opencv2/features2d.hpp>
 MAA_SUPPRESS_CV_WARNINGS_END
 
-#include "Utils/JsonExt.hpp"
+#include "MaaUtils/JsonExt.hpp"
 #include "VisionBase.h"
 #include "VisionTypes.h"
 

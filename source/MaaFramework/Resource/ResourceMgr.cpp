@@ -5,10 +5,11 @@
 #include "Global/PluginMgr.h"
 #include "MLProvider.h"
 #include "MaaFramework/MaaMsg.h"
+#include "MaaUtils/GpuOption.h"
+#include "MaaUtils/Logger.h"
+#include "MaaUtils/Platform.h"
 #include "PipelineDumper.h"
-#include "Utils/GpuOption.h"
-#include "Utils/Logger.h"
-#include "Utils/Platform.h"
+
 
 MAA_RES_NS_BEGIN
 

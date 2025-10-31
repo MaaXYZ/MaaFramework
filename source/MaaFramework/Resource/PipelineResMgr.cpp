@@ -2,11 +2,12 @@
 
 #include <ranges>
 
+#include "MaaUtils/Logger.h"
+#include "MaaUtils/Platform.h"
+#include "MaaUtils/StringMisc.hpp"
 #include "PipelineChecker.h"
 #include "PipelineParser.h"
-#include "Utils/Logger.h"
-#include "Utils/Platform.h"
-#include "Utils/StringMisc.hpp"
+
 
 MAA_RES_NS_BEGIN
 

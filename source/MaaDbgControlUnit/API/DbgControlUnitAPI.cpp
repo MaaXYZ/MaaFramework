@@ -1,9 +1,10 @@
 #include "ControlUnit/DbgControlUnitAPI.h"
 
 #include "CarouselImage/CarouselImage.h"
+#include "MaaUtils/Logger.h"
+#include "MaaUtils/Platform.h"
 #include "ReplayRecording/ReplayRecordingMgr.h"
-#include "Utils/Logger.h"
-#include "Utils/Platform.h"
+
 
 const char* MaaDbgControlUnitGetVersion()
 {

@@ -1,9 +1,10 @@
 #include "ControlUnit/Win32ControlUnitAPI.h"
 
 #include "Base/UnitBase.h"
+#include "MaaUtils/Logger.h"
+#include "MaaUtils/SafeWindows.hpp"
 #include "Manager/Win32ControlUnitMgr.h"
-#include "Utils/Logger.h"
-#include "Utils/SafeWindows.hpp"
+
 
 const char* MaaWin32ControlUnitGetVersion()
 {

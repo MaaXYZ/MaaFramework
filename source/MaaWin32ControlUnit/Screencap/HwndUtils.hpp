@@ -3,8 +3,8 @@
 #include <utility>
 
 #include "Common/Conf.h"
-#include "Utils/NoWarningCV.hpp"
-#include "Utils/SafeWindows.hpp"
+#include "MaaUtils/NoWarningCV.hpp"
+#include "MaaUtils/SafeWindows.hpp"
 
 MAA_CTRL_UNIT_NS_BEGIN
 

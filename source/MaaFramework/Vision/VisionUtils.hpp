@@ -4,8 +4,8 @@
 #include <ranges>
 
 #include "Common/Conf.h"
-#include "Utils/Logger.h"
-#include "Utils/NoWarningCV.hpp"
+#include "MaaUtils/Logger.h"
+#include "MaaUtils/NoWarningCV.hpp"
 
 MAA_VISION_NS_BEGIN
 

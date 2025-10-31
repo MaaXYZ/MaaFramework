@@ -2,8 +2,8 @@
 
 #include <format>
 
-#include "Utils/Logger.h"
-#include "Utils/NoWarningCV.hpp"
+#include "MaaUtils/Logger.h"
+#include "MaaUtils/NoWarningCV.hpp"
 
 MAA_CTRL_UNIT_NS_BEGIN
 

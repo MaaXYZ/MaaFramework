@@ -3,9 +3,10 @@
 #include "Global/OptionMgr.h"
 #include "Global/PluginMgr.h"
 #include "MaaFramework/MaaMsg.h"
+#include "MaaUtils/ImageIo.h"
+#include "MaaUtils/NoWarningCV.hpp"
 #include "Resource/ResourceMgr.h"
-#include "Utils/ImageIo.h"
-#include "Utils/NoWarningCV.hpp"
+
 
 MAA_CTRL_NS_BEGIN
 

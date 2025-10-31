@@ -3,7 +3,7 @@
 #include <memory>
 
 #include "LibraryHolder.h"
-#include "Utils/Platform.h"
+#include "MaaUtils/Platform.h"
 
 #include "Common/Conf.h"
 

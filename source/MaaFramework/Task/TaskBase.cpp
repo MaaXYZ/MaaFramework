@@ -5,9 +5,10 @@
 #include "Controller/ControllerAgent.h"
 #include "Global/OptionMgr.h"
 #include "MaaFramework/MaaMsg.h"
+#include "MaaUtils/JsonExt.hpp"
+#include "MaaUtils/Logger.h"
 #include "Resource/ResourceMgr.h"
-#include "Utils/JsonExt.hpp"
-#include "Utils/Logger.h"
+
 
 MAA_TASK_NS_BEGIN
 

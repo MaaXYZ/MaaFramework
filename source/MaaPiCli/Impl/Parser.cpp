@@ -3,7 +3,7 @@
 #include <functional>
 #include <ranges>
 
-#include "Utils/Logger.h"
+#include "MaaUtils/Logger.h"
 
 MAA_PROJECT_INTERFACE_NS_BEGIN
 

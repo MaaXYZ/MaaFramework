@@ -3,10 +3,10 @@
 #include <filesystem>
 #include <ranges>
 
-#include "Utils/File.hpp"
-#include "Utils/Logger.h"
-#include "Utils/Platform.h"
-#include "Utils/StringMisc.hpp"
+#include "MaaUtils/File.hpp"
+#include "MaaUtils/Logger.h"
+#include "MaaUtils/Platform.h"
+#include "MaaUtils/StringMisc.hpp"
 
 MAA_RES_NS_BEGIN
 

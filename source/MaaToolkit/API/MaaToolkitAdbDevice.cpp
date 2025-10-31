@@ -4,7 +4,7 @@
 #include "AdbDevice/AdbDeviceLinuxFinder.h"
 #include "AdbDevice/AdbDeviceMacOSFinder.h"
 #include "AdbDevice/AdbDeviceWin32Finder.h"
-#include "Utils/Logger.h"
+#include "MaaUtils/Logger.h"
 
 static MAA_TOOLKIT_NS::AdbDeviceFinder& finder()
 {

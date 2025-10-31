@@ -4,7 +4,7 @@
 #include "DesktopWindow/DesktopWindowLinuxFinder.h"
 #include "DesktopWindow/DesktopWindowMacOSFinder.h"
 #include "DesktopWindow/DesktopWindowWin32Finder.h"
-#include "Utils/Logger.h"
+#include "MaaUtils/Logger.h"
 
 static MAA_TOOLKIT_NS::DesktopWindowFinder& finder()
 {

@@ -1,7 +1,7 @@
 #include "RemoteResource.h"
 
 #include "MaaAgent/Message.hpp"
-#include "Utils/Platform.h"
+#include "MaaUtils/Platform.h"
 
 MAA_AGENT_SERVER_NS_BEGIN
 

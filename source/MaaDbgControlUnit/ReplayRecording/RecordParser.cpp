@@ -5,8 +5,8 @@
 
 #include <meojson/json.hpp>
 
-#include "Utils/ImageIo.h"
-#include "Utils/Logger.h"
+#include "MaaUtils/ImageIo.h"
+#include "MaaUtils/Logger.h"
 
 MAA_CTRL_UNIT_NS_BEGIN
 

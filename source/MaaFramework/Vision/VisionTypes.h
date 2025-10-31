@@ -9,7 +9,7 @@
 #include <meojson/json.hpp>
 
 #include "Common/Conf.h"
-#include "Utils/NoWarningCVMat.hpp"
+#include "MaaUtils/NoWarningCVMat.hpp"
 
 MAA_VISION_NS_BEGIN
 

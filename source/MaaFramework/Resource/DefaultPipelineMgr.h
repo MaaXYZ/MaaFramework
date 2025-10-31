@@ -8,8 +8,9 @@
 #include <meojson/json.hpp>
 
 #include "Common/Conf.h"
+#include "MaaUtils/NonCopyable.hpp"
 #include "PipelineTypes.h"
-#include "Utils/NonCopyable.hpp"
+
 
 MAA_RES_NS_BEGIN
 

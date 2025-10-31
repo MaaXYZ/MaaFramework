@@ -6,11 +6,12 @@
 #include "Common/MaaTypes.h"
 #include "DefaultPipelineMgr.h"
 #include "MaaFramework/Instance/MaaResource.h"
+#include "MaaUtils/EventDispatcher.hpp"
 #include "OCRResMgr.h"
 #include "ONNXResMgr.h"
 #include "PipelineResMgr.h"
 #include "TemplateResMgr.h"
-#include "Utils/EventDispatcher.hpp"
+
 
 #include "Common/Conf.h"
 

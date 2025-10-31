@@ -1,9 +1,9 @@
 #include "MaaFramework/MaaAPI.h"
 
 #include "Common/MaaTypes.h"
-#include "Utils/Buffer/StringBuffer.hpp"
-#include "Utils/Logger.h"
-#include "Utils/Platform.h"
+#include "MaaUtils/Buffer/StringBuffer.hpp"
+#include "MaaUtils/Logger.h"
+#include "MaaUtils/Platform.h"
 
 MaaSinkId MaaResourceAddSink(MaaResource* res, MaaEventCallback sink, void* trans_arg)
 {

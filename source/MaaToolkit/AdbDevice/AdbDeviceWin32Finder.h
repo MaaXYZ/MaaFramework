@@ -7,7 +7,7 @@
 
 #include "AdbDeviceFinder.h"
 #include "Common/Conf.h"
-#include "Utils/SingletonHolder.hpp"
+#include "MaaUtils/SingletonHolder.hpp"
 
 MAA_TOOLKIT_NS_BEGIN
 

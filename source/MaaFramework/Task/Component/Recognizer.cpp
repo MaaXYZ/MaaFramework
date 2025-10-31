@@ -2,9 +2,9 @@
 
 #include "CustomRecognition.h"
 #include "Global/OptionMgr.h"
+#include "MaaUtils/ImageIo.h"
+#include "MaaUtils/Logger.h"
 #include "Resource/ResourceMgr.h"
-#include "Utils/ImageIo.h"
-#include "Utils/Logger.h"
 #include "Vision/ColorMatcher.h"
 #include "Vision/FeatureMatcher.h"
 #include "Vision/NeuralNetworkClassifier.h"
@@ -12,6 +12,7 @@
 #include "Vision/OCRer.h"
 #include "Vision/TemplateMatcher.h"
 #include "Vision/VisionUtils.hpp"
+
 
 MAA_TASK_NS_BEGIN
 

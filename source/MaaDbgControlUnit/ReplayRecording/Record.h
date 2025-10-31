@@ -8,7 +8,7 @@
 #include <meojson/json.hpp>
 
 #include "Common/Conf.h"
-#include "Utils/NoWarningCVMat.hpp"
+#include "MaaUtils/NoWarningCVMat.hpp"
 
 MAA_CTRL_UNIT_NS_BEGIN
 

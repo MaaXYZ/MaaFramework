@@ -1,9 +1,9 @@
 #include "MaaAgentClient/MaaAgentClientAPI.h"
 
 #include "Client/AgentClient.h"
-#include "Utils/Buffer/StringBuffer.hpp"
-#include "Utils/Logger.h"
-#include "Utils/Platform.h"
+#include "MaaUtils/Buffer/StringBuffer.hpp"
+#include "MaaUtils/Logger.h"
+#include "MaaUtils/Platform.h"
 
 MaaAgentClient* MaaAgentClientCreate()
 {

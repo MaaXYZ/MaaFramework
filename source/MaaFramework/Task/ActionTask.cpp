@@ -2,11 +2,12 @@
 
 #include "Controller/ControllerAgent.h"
 #include "MaaFramework/MaaMsg.h"
+#include "MaaUtils/JsonExt.hpp"
+#include "MaaUtils/Logger.h"
 #include "Resource/ResourceMgr.h"
 #include "Tasker/Tasker.h"
-#include "Utils/JsonExt.hpp"
-#include "Utils/Logger.h"
 #include "Vision/VisionBase.h"
+
 
 MAA_TASK_NS_BEGIN
 

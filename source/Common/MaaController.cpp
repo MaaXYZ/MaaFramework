@@ -1,10 +1,10 @@
 #include "MaaFramework/MaaAPI.h"
 
 #include "Common/MaaTypes.h"
-#include "Utils/Buffer/ImageBuffer.hpp"
-#include "Utils/Buffer/StringBuffer.hpp"
-#include "Utils/Logger.h"
-#include "Utils/Platform.h"
+#include "MaaUtils/Buffer/ImageBuffer.hpp"
+#include "MaaUtils/Buffer/StringBuffer.hpp"
+#include "MaaUtils/Logger.h"
+#include "MaaUtils/Platform.h"
 
 MaaSinkId MaaControllerAddSink(MaaController* ctrl, MaaEventCallback sink, void* trans_arg)
 {

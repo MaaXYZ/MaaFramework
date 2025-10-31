@@ -1,6 +1,6 @@
 #include "CustomAction.h"
 
-#include "Utils/Logger.h"
+#include "MaaUtils/Logger.h"
 
 MAA_TASK_NS_BEGIN
 

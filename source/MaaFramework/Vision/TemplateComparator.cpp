@@ -1,7 +1,7 @@
 #include "TemplateComparator.h"
 
-#include "Utils/Logger.h"
-#include "Utils/NoWarningCV.hpp"
+#include "MaaUtils/Logger.h"
+#include "MaaUtils/NoWarningCV.hpp"
 #include "VisionUtils.hpp"
 
 MAA_VISION_NS_BEGIN
