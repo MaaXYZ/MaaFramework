@@ -7,7 +7,7 @@
 #include "Mumu/external_renderer_ipc/external_renderer_ipc.h"
 
 #include "Base/UnitBase.h"
-#include "LibraryHolder/LibraryHolder.h"
+#include "MaaUtils/LibraryHolder.h"
 
 #include "Common/Conf.h"
 

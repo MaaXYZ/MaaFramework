@@ -4,7 +4,7 @@
 
 #include "Base/UnitBase.h"
 #include "General/DeviceInfo.h"
-#include "LibraryHolder/LibraryHolder.h"
+#include "MaaUtils/LibraryHolder.h"
 
 #include "MaaUtils/SafeWindows.hpp" // for dnopengl
 

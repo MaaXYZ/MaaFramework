@@ -9,7 +9,7 @@
 #include <boost/function.hpp>
 
 #include "Common/Conf.h"
-#include "LibraryHolder/LibraryHolder.h"
+#include "MaaUtils/LibraryHolder.h"
 #include "MaaFramework/MaaDef.h"
 #include "MaaPlugin/MaaPluginAPI.h"
 #include "MaaUtils/SingletonHolder.hpp"

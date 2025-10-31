@@ -2,7 +2,7 @@
 
 #include <memory>
 
-#include "LibraryHolder.h"
+#include "MaaUtils/LibraryHolder.h"
 #include "MaaFramework/Instance/MaaCustomController.h"
 #include "MaaUtils/Platform.h"
 
