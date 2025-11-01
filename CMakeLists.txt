@@ -2,6 +2,8 @@ cmake_minimum_required(VERSION 3.28)
 
 project(MaaFw)
 
+set(CMAKE_CXX_SCAN_FOR_MODULES  OFF)
+
 include(source/MaaUtils/MaaUtils.cmake)
 
 option(WITH_ADB_CONTROLLER "build with adb controller" ON)
