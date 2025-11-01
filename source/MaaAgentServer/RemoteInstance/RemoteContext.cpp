@@ -1,8 +1,9 @@
 #include "RemoteContext.h"
 
 #include "MaaAgent/Message.hpp"
+#include "MaaUtils/Encoding.h"
 #include "RemoteTasker.h"
-#include "Utils/Encoding.h"
+
 
 MAA_AGENT_SERVER_NS_BEGIN
 

@@ -2,8 +2,8 @@
 
 #include <ranges>
 
-#include "Utils/Logger.h"
-#include "Utils/StringMisc.hpp"
+#include "MaaUtils/Logger.h"
+#include "MaaUtils/StringMisc.hpp"
 
 MAA_CTRL_UNIT_NS_BEGIN
 

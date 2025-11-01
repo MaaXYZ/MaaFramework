@@ -3,13 +3,13 @@
 #include <ostream>
 #include <vector>
 
-#include "Conf/Conf.h"
+#include "Common/Conf.h"
 
 MAA_SUPPRESS_CV_WARNINGS_BEGIN
 #include <opencv2/features2d.hpp>
 MAA_SUPPRESS_CV_WARNINGS_END
 
-#include "Utils/JsonExt.hpp"
+#include "MaaUtils/JsonExt.hpp"
 #include "VisionBase.h"
 #include "VisionTypes.h"
 

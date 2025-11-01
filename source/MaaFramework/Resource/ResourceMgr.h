@@ -12,6 +12,8 @@
 #include "TemplateResMgr.h"
 #include "Utils/EventDispatcher.hpp"
 
+#include "Common/Conf.h"
+
 MAA_RES_NS_BEGIN
 
 struct CustomRecognitionSession

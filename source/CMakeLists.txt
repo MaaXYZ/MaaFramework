@@ -1,5 +1,3 @@
-add_subdirectory(MaaUtils)
-
 if(WITH_ADB_CONTROLLER)
     add_subdirectory(MaaAdbControlUnit)
 endif()
@@ -19,7 +17,10 @@ endif()
 add_subdirectory(LibraryHolder)
 add_subdirectory(MaaFramework)
 add_subdirectory(MaaToolkit)
-add_subdirectory(MaaPiCli)
+
+if(BUILD_PICLI)
+    add_subdirectory(MaaPiCli)
+endif()
 
 if(WITH_MAA_AGENT)
     add_subdirectory(MaaAgentClient)
@@ -29,5 +30,5 @@ endif()
 add_subdirectory(binding)
 
 # if(ENABLE_CPP20_MODULES)
-    # add_subdirectory(modules)
+# add_subdirectory(modules)
 # endif()

@@ -1,7 +1,7 @@
 #include "GdiScreencap.h"
 
 #include "HwndUtils.hpp"
-#include "Utils/Logger.h"
+#include "MaaUtils/Logger.h"
 
 MAA_CTRL_UNIT_NS_BEGIN
 

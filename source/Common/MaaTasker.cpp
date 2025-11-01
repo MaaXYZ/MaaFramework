@@ -1,9 +1,9 @@
 #include "MaaFramework/Instance/MaaTasker.h"
 
 #include "Common/MaaTypes.h"
-#include "Utils/Buffer/ImageBuffer.hpp"
-#include "Utils/Buffer/StringBuffer.hpp"
-#include "Utils/Logger.h"
+#include "MaaUtils/Buffer/ImageBuffer.hpp"
+#include "MaaUtils/Buffer/StringBuffer.hpp"
+#include "MaaUtils/Logger.h"
 
 MaaSinkId MaaTaskerAddSink(MaaTasker* tasker, MaaEventCallback sink, void* trans_arg)
 {

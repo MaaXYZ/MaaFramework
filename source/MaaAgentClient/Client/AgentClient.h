@@ -5,7 +5,7 @@
 #include <meojson/json.hpp>
 
 #include "Common/MaaTypes.h"
-#include "Conf/Conf.h"
+#include "Common/Conf.h"
 #include "MaaAgent/Transceiver.h"
 
 MAA_AGENT_CLIENT_NS_BEGIN

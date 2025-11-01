@@ -9,9 +9,9 @@ MAA_SUPPRESS_CV_WARNINGS_BEGIN
 #include "fastdeploy/vision/ocr/ppocr/recognizer.h"
 MAA_SUPPRESS_CV_WARNINGS_END
 
-#include "Utils/ImageIo.h"
-#include "Utils/Logger.h"
-#include "Utils/StringMisc.hpp"
+#include "MaaUtils/ImageIo.h"
+#include "MaaUtils/Logger.h"
+#include "MaaUtils/StringMisc.hpp"
 #include "VisionUtils.hpp"
 
 MAA_VISION_NS_BEGIN

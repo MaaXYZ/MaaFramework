@@ -2,7 +2,9 @@
 
 #include <optional>
 
-#include "Utils/NoWarningCVMat.hpp"
+#include "MaaUtils/NoWarningCVMat.hpp"
+
+#include "Common/Conf.h"
 
 MAA_CTRL_UNIT_NS_BEGIN
 

@@ -7,6 +7,8 @@
 #include "MaaAgent/Transceiver.h"
 #include "RemoteTasker.h"
 
+#include "Common/Conf.h"
+
 MAA_AGENT_SERVER_NS_BEGIN
 
 class RemoteContext : public MaaContext

@@ -6,7 +6,9 @@
 
 #include <meojson/json.hpp>
 
-#include "Utils/StringMisc.hpp"
+#include "MaaUtils/StringMisc.hpp"
+
+#include "Common/Conf.h"
 
 MAA_CTRL_UNIT_NS_BEGIN
 

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Conf/Conf.h"
+#include "Common/Conf.h"
 #include "PipelineTypes.h"
 
 MAA_RES_NS_BEGIN

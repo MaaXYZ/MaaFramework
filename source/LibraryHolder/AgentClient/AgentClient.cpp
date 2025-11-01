@@ -4,8 +4,9 @@
 
 #include <filesystem>
 
-#include "Utils/Runtime.h"
-#include "Utils/Logger.h"
+#include "MaaUtils/Logger.h"
+#include "MaaUtils/Runtime.h"
+
 
 MAA_NS_BEGIN
 

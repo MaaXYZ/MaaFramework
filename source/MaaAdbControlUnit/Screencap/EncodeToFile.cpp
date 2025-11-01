@@ -1,9 +1,9 @@
 #include "EncodeToFile.h"
 
-#include "Utils/ImageIo.h"
-#include "Utils/Logger.h"
-#include "Utils/NoWarningCV.hpp"
-#include "Utils/Time.hpp"
+#include "MaaUtils/ImageIo.h"
+#include "MaaUtils/Logger.h"
+#include "MaaUtils/NoWarningCV.hpp"
+#include "MaaUtils/Time.hpp"
 
 MAA_CTRL_UNIT_NS_BEGIN
 

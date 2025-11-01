@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Conf/Conf.h"
+#include "Common/Conf.h"
 
 #include "Common/MaaTypes.h"
 #include "MaaFramework/MaaDef.h"

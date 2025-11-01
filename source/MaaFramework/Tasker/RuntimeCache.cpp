@@ -2,7 +2,7 @@
 
 #include <mutex>
 
-#include "Utils/Logger.h"
+#include "MaaUtils/Logger.h"
 
 MAA_NS_BEGIN
 

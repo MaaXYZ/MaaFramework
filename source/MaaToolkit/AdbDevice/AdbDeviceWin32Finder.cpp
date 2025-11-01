@@ -3,9 +3,9 @@
 
 #include <unordered_map>
 
-#include "Utils/IOStream/ChildPipeIOStream.h"
-#include "Utils/Logger.h"
-#include "Utils/StringMisc.hpp"
+#include "MaaUtils/IOStream/ChildPipeIOStream.h"
+#include "MaaUtils/Logger.h"
+#include "MaaUtils/StringMisc.hpp"
 
 MAA_TOOLKIT_NS_BEGIN
 

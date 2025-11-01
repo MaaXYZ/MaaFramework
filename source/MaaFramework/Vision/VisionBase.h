@@ -3,10 +3,10 @@
 #include <atomic>
 #include <filesystem>
 
-#include "Conf/Conf.h"
+#include "Common/Conf.h"
 #include "MaaFramework/MaaDef.h"
-#include "Utils/JsonExt.hpp"
-#include "Utils/NoWarningCVMat.hpp"
+#include "MaaUtils/JsonExt.hpp"
+#include "MaaUtils/NoWarningCVMat.hpp"
 
 MAA_VISION_NS_BEGIN
 

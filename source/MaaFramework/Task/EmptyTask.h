@@ -2,6 +2,8 @@
 
 #include "TaskBase.h"
 
+#include "Common/Conf.h"
+
 MAA_TASK_NS_BEGIN
 
 // for MaaTaskerPostStop, as a stop mark

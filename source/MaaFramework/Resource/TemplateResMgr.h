@@ -3,9 +3,9 @@
 #include <filesystem>
 #include <map>
 
-#include "Conf/Conf.h"
-#include "Utils/NoWarningCVMat.hpp"
-#include "Utils/NonCopyable.hpp"
+#include "Common/Conf.h"
+#include "MaaUtils/NoWarningCVMat.hpp"
+#include "MaaUtils/NonCopyable.hpp"
 
 MAA_RES_NS_BEGIN
 

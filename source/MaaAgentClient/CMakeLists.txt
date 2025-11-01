@@ -11,7 +11,7 @@ target_include_directories(
 
 target_compile_definitions(MaaAgentClient PRIVATE MAA_AGENT_CLIENT_EXPORTS)
 
-target_link_libraries(MaaAgentClient PRIVATE cppzmq-static ${OpenCV_LIBS} MaaUtils MaaFramework HeaderOnlyLibraries)
+target_link_libraries(MaaAgentClient PRIVATE cppzmq-static ${OpenCV_LIBS} MaaUtils MaaFramework)
 
 add_dependencies(MaaAgentClient MaaUtils MaaFramework)
 

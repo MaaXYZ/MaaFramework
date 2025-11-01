@@ -8,9 +8,9 @@
 #include <meojson/json.hpp>
 
 #include "AdbDeviceBuffer.hpp"
-#include "Conf/Conf.h"
+#include "Common/Conf.h"
 #include "MaaToolkit/MaaToolkitDef.h"
-#include "Utils/Platform.h"
+#include "MaaUtils/Platform.h"
 
 MAA_TOOLKIT_NS_BEGIN
 

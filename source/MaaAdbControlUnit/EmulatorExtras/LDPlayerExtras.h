@@ -4,9 +4,11 @@
 
 #include "Base/UnitBase.h"
 #include "General/DeviceInfo.h"
-#include "LibraryHolder/LibraryHolder.h"
+#include "MaaUtils/LibraryHolder.h"
 
-#include "Utils/SafeWindows.hpp" // for dnopengl
+#include "MaaUtils/SafeWindows.hpp" // for dnopengl
+
+#include "Common/Conf.h"
 
 namespace dnopengl
 {

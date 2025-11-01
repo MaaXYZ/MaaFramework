@@ -5,7 +5,9 @@
 #include <meojson/json.hpp>
 
 #include "MaaFramework/MaaDef.h"
-#include "Utils/NoWarningCVMat.hpp"
+#include "MaaUtils/NoWarningCVMat.hpp"
+
+#include "Common/Conf.h"
 
 MAA_TASK_NS_BEGIN
 

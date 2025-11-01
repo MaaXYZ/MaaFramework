@@ -1,7 +1,9 @@
 #pragma once
 
 #include "DesktopWindowBuffer.hpp"
-#include "Utils/Platform.h"
+#include "MaaUtils/Platform.h"
+
+#include "Common/Conf.h"
 
 MAA_TOOLKIT_NS_BEGIN
 

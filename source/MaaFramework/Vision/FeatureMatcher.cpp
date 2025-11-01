@@ -10,7 +10,7 @@ MAA_SUPPRESS_CV_WARNINGS_BEGIN
 #endif
 MAA_SUPPRESS_CV_WARNINGS_END
 
-#include "Utils/Logger.h"
+#include "MaaUtils/Logger.h"
 #include "VisionUtils.hpp"
 
 MAA_VISION_NS_BEGIN

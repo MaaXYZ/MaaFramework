@@ -2,10 +2,10 @@
 
 #include "LDPlayerExtras.h"
 
-#include "Utils/Encoding.h"
-#include "Utils/Logger.h"
-#include "Utils/NoWarningCV.hpp"
-#include "Utils/Platform.h"
+#include "MaaUtils/Encoding.h"
+#include "MaaUtils/Logger.h"
+#include "MaaUtils/NoWarningCV.hpp"
+#include "MaaUtils/Platform.h"
 
 MAA_CTRL_UNIT_NS_BEGIN
 

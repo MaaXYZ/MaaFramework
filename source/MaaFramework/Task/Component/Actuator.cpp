@@ -3,7 +3,7 @@
 #include "CommandAction.h"
 #include "Controller/ControllerAgent.h"
 #include "CustomAction.h"
-#include "Utils/Logger.h"
+#include "MaaUtils/Logger.h"
 #include "Vision/TemplateComparator.h"
 
 MAA_TASK_NS_BEGIN

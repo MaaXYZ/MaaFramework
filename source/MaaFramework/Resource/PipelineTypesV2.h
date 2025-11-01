@@ -6,7 +6,7 @@
 
 #include <meojson/json.hpp>
 
-#include "Conf/Conf.h"
+#include "Common/Conf.h"
 
 MAA_RES_NS_BEGIN
 

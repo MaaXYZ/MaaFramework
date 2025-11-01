@@ -7,6 +7,8 @@
 #include "RemoteController.h"
 #include "RemoteResource.h"
 
+#include "Common/Conf.h"
+
 MAA_AGENT_SERVER_NS_BEGIN
 
 class RemoteTasker : public MaaTasker

@@ -7,6 +7,8 @@
 #include "ControlUnit/ControlUnitAPI.h"
 #include "Record.h"
 
+#include "Common/Conf.h"
+
 MAA_CTRL_UNIT_NS_BEGIN
 
 class ReplayRecording : public ControlUnitAPI

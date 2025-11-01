@@ -4,10 +4,11 @@
 #include <string>
 #include <vector>
 
-#include "Conf/Conf.h"
+#include "Common/Conf.h"
+#include "MaaUtils/Platform.h"
+#include "MaaUtils/SingletonHolder.hpp"
 #include "Resource/PipelineTypes.h"
-#include "Utils/Platform.h"
-#include "Utils/SingletonHolder.hpp"
+
 
 MAA_TASK_NS_BEGIN
 

@@ -2,9 +2,11 @@
 
 #include <memory>
 
-#include "LibraryHolder.h"
+#include "MaaUtils/LibraryHolder.h"
 #include "MaaFramework/Instance/MaaCustomController.h"
-#include "Utils/Platform.h"
+#include "MaaUtils/Platform.h"
+
+#include "Common/Conf.h"
 
 MAA_CTRL_UNIT_NS_BEGIN
 class ControlUnitAPI;

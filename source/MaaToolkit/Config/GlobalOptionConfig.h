@@ -8,9 +8,9 @@
 
 #include <meojson/json.hpp>
 
-#include "Conf/Conf.h"
+#include "Common/Conf.h"
 #include "MaaFramework/MaaDef.h"
-#include "Utils/SingletonHolder.hpp"
+#include "MaaUtils/SingletonHolder.hpp"
 
 MAA_TOOLKIT_NS_BEGIN
 

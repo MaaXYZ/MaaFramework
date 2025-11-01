@@ -6,7 +6,7 @@ add_executable(MaaPiCli ${maa_pi_cli_src} ${maa_pi_cli_header})
 target_include_directories(MaaPiCli
     PRIVATE ${CMAKE_CURRENT_SOURCE_DIR} ${MAA_PRIVATE_INC} ${MAA_PUBLIC_INC})
 
-target_link_libraries(MaaPiCli PRIVATE MaaUtils MaaFramework MaaToolkit MaaAgentClient HeaderOnlyLibraries Boost::system ${OpenCV_LIBS})
+target_link_libraries(MaaPiCli PRIVATE MaaUtils MaaFramework MaaToolkit MaaAgentClient Boost::system ${OpenCV_LIBS})
 
 if(LINUX)
     target_link_libraries(MaaPiCli PRIVATE pthread dl)

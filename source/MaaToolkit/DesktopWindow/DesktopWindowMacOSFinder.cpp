@@ -2,7 +2,7 @@
 
 #include "DesktopWindowMacOSFinder.h"
 
-#include "Utils/Logger.h"
+#include "MaaUtils/Logger.h"
 
 MAA_TOOLKIT_NS_BEGIN
 

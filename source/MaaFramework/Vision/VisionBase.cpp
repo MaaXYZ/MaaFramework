@@ -1,9 +1,9 @@
 #include "VisionBase.h"
 
-#include "Utils/NoWarningCV.hpp"
+#include "MaaUtils/NoWarningCV.hpp"
 
 #include "Global/OptionMgr.h"
-#include "Utils/Logger.h"
+#include "MaaUtils/Logger.h"
 #include "VisionUtils.hpp"
 
 MAA_VISION_NS_BEGIN

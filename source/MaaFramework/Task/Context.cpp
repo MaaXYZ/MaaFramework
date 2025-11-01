@@ -3,13 +3,14 @@
 #include <meojson/json.hpp>
 
 #include "ActionTask.h"
+#include "MaaUtils/Logger.h"
 #include "PipelineTask.h"
 #include "RecognitionTask.h"
 #include "Resource/PipelineChecker.h"
 #include "Resource/PipelineDumper.h"
 #include "Resource/PipelineParser.h"
 #include "Tasker/Tasker.h"
-#include "Utils/Logger.h"
+
 
 MAA_TASK_NS_BEGIN
 

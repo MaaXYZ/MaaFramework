@@ -9,8 +9,8 @@
 
 #include <meojson/json.hpp>
 
-#include "Conf/Conf.h"
-#include "Utils/NoWarningCVMat.hpp"
+#include "Common/Conf.h"
+#include "MaaUtils/NoWarningCVMat.hpp"
 #include "Vision/VisionTypes.h"
 
 MAA_RES_NS_BEGIN

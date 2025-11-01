@@ -6,8 +6,8 @@
 #include "ControlUnit/CustomControlUnitAPI.h"
 #include "ControlUnit/DbgControlUnitAPI.h"
 #include "ControlUnit/Win32ControlUnitAPI.h"
-#include "Utils/Logger.h"
-#include "Utils/Runtime.h"
+#include "MaaUtils/Logger.h"
+#include "MaaUtils/Runtime.h"
 
 MAA_NS_BEGIN
 

@@ -2,9 +2,10 @@
 
 #include <meojson/json.hpp>
 
+#include "MaaUtils/Logger.h"
+#include "MaaUtils/Platform.h"
 #include "Manager/AdbControlUnitMgr.h"
-#include "Utils/Logger.h"
-#include "Utils/Platform.h"
+
 
 using MAA_NS::path;
 

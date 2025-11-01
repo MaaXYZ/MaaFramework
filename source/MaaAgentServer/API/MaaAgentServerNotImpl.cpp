@@ -1,6 +1,6 @@
 #include "MaaFramework/MaaAPI.h"
 
-#include "Utils/Logger.h"
+#include "MaaUtils/Logger.h"
 
 MaaController* MaaAdbControllerCreate(const char*, const char*, MaaAdbScreencapMethod, MaaAdbInputMethod, const char*, const char*)
 {

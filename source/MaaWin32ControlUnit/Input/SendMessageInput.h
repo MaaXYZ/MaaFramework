@@ -3,7 +3,9 @@
 #include "ControlUnit/ControlUnitAPI.h"
 
 #include "Base/UnitBase.h"
-#include "Utils/SafeWindows.hpp"
+#include "MaaUtils/SafeWindows.hpp"
+
+#include "Common/Conf.h"
 
 MAA_CTRL_UNIT_NS_BEGIN
 

@@ -9,11 +9,11 @@
 #include "MaaFramework/MaaAPI.h"
 
 #include "Common/MaaTypes.h"
-#include "Utils/Encoding.h"
-#include "Utils/IOStream/BoostIO.hpp"
-#include "Utils/Logger.h"
-#include "Utils/Platform.h"
-#include "Utils/ScopeLeave.hpp"
+#include "MaaUtils/Encoding.h"
+#include "MaaUtils/IOStream/BoostIO.hpp"
+#include "MaaUtils/Logger.h"
+#include "MaaUtils/Platform.h"
+#include "MaaUtils/ScopeLeave.hpp"
 
 MAA_PROJECT_INTERFACE_NS_BEGIN
 

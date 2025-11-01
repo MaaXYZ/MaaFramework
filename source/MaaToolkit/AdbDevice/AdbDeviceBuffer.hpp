@@ -5,10 +5,10 @@
 #include <meojson/json.hpp>
 
 #include "API/MaaToolkitBufferTypes.hpp"
-#include "Conf/Conf.h"
-#include "Utils/Buffer/ListBuffer.hpp"
-#include "Utils/Logger.h"
-#include "Utils/Platform.h"
+#include "Common/Conf.h"
+#include "MaaUtils/Buffer/ListBuffer.hpp"
+#include "MaaUtils/Logger.h"
+#include "MaaUtils/Platform.h"
 
 MAA_TOOLKIT_NS_BEGIN
 

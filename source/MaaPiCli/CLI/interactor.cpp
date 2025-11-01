@@ -10,10 +10,11 @@
 #include "MaaFramework/Utility/MaaBuffer.h"
 #include "MaaToolkit/AdbDevice/MaaToolkitAdbDevice.h"
 #include "MaaToolkit/DesktopWindow/MaaToolkitDesktopWindow.h"
+#include "MaaUtils/Encoding.h"
+#include "MaaUtils/Logger.h"
+#include "MaaUtils/Platform.h"
 #include "ProjectInterface/Runner.h"
-#include "Utils/Encoding.h"
-#include "Utils/Logger.h"
-#include "Utils/Platform.h"
+
 
 static bool s_eof = false;
 

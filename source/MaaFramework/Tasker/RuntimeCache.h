@@ -6,7 +6,9 @@
 #include <string>
 
 #include "Common/TaskResultTypes.h"
-#include "Utils/NoWarningCVMat.hpp"
+#include "MaaUtils/NoWarningCVMat.hpp"
+
+#include "Common/Conf.h"
 
 MAA_NS_BEGIN
 

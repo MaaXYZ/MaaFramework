@@ -2,6 +2,8 @@
 
 #include "TaskBase.h"
 
+#include "Common/Conf.h"
+
 MAA_TASK_NS_BEGIN
 
 class RecognitionTask : public TaskBase

@@ -1,9 +1,9 @@
 #pragma once
 
 #include "Common/MaaTypes.h"
-#include "Utils/Dispatcher.hpp"
-#include "Utils/Logger.h"
-#include "Utils/NonCopyable.hpp"
+#include "MaaUtils/Dispatcher.hpp"
+#include "MaaUtils/Logger.h"
+#include "MaaUtils/NonCopyable.hpp"
 
 MAA_NS_BEGIN
 

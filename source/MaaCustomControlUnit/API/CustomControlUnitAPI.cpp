@@ -1,7 +1,8 @@
 #include "ControlUnit/CustomControlUnitAPI.h"
 
+#include "MaaUtils/Logger.h"
 #include "Manager/CustomControlUnitMgr.h"
-#include "Utils/Logger.h"
+
 
 const char* MaaCustomControlUnitGetVersion()
 {

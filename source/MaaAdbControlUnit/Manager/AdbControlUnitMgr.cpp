@@ -3,10 +3,11 @@
 #include <meojson/json.hpp>
 
 #include "MaaFramework/MaaMsg.h"
+#include "MaaUtils/Logger.h"
+#include "MaaUtils/Platform.h"
 #include "Manager/InputAgent.h"
 #include "Manager/ScreencapAgent.h"
-#include "Utils/Logger.h"
-#include "Utils/Platform.h"
+
 
 MAA_CTRL_UNIT_NS_BEGIN
 

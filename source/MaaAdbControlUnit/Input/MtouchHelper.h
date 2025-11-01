@@ -4,7 +4,9 @@
 
 #include "General/DeviceInfo.h"
 #include "Invoke/InvokeApp.h"
-#include "Utils/IOStream/ChildPipeIOStream.h"
+#include "MaaUtils/IOStream/ChildPipeIOStream.h"
+
+#include "Common/Conf.h"
 
 MAA_CTRL_UNIT_NS_BEGIN
 

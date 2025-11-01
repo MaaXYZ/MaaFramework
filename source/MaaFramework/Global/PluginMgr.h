@@ -8,11 +8,11 @@
 #include <boost/dll.hpp>
 #include <boost/function.hpp>
 
-#include "Conf/Conf.h"
-#include "LibraryHolder/LibraryHolder.h"
+#include "Common/Conf.h"
+#include "MaaUtils/LibraryHolder.h"
 #include "MaaFramework/MaaDef.h"
 #include "MaaPlugin/MaaPluginAPI.h"
-#include "Utils/SingletonHolder.hpp"
+#include "MaaUtils/SingletonHolder.hpp"
 
 MAA_GLOBAL_NS_BEGIN
 

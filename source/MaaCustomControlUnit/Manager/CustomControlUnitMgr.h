@@ -5,6 +5,8 @@
 #include "ControlUnit/ControlUnitAPI.h"
 #include "MaaFramework/Instance/MaaCustomController.h"
 
+#include "Common/Conf.h"
+
 MAA_CTRL_UNIT_NS_BEGIN
 
 class CustomControlUnitMgr : public ControlUnitAPI

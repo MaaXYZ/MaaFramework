@@ -6,9 +6,11 @@
 
 #include <onnxruntime/onnxruntime_cxx_api.h>
 
-#include "Utils/JsonExt.hpp"
+#include "MaaUtils/JsonExt.hpp"
 #include "VisionBase.h"
 #include "VisionTypes.h"
+
+#include "Common/Conf.h"
 
 MAA_VISION_NS_BEGIN
 

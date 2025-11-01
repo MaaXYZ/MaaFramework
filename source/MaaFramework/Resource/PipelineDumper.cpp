@@ -1,8 +1,9 @@
 #include "PipelineDumper.h"
 
+#include "MaaUtils/Encoding.h"
+#include "MaaUtils/Logger.h"
 #include "PipelineTypesV2.h"
-#include "Utils/Encoding.h"
-#include "Utils/Logger.h"
+
 
 MAA_RES_NS_BEGIN
 

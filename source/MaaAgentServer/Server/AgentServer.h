@@ -8,11 +8,12 @@
 #include <meojson/json.hpp>
 #include <zmq.hpp>
 
-#include "Conf/Conf.h"
+#include "Common/Conf.h"
 #include "MaaAgent/Transceiver.h"
 #include "MaaAgentServer/MaaAgentServerDef.h"
+#include "MaaUtils/SingletonHolder.hpp"
 #include "Utils/EventDispatcher.hpp"
-#include "Utils/SingletonHolder.hpp"
+
 
 MAA_AGENT_SERVER_NS_BEGIN
 

@@ -4,8 +4,8 @@
 
 #include "MaaToolkit/MaaToolkitAPI.h"
 
-#include "Utils/Platform.h"
-#include "Utils/Runtime.h"
+#include "MaaUtils/Platform.h"
+#include "MaaUtils/Runtime.h"
 
 #include "interactor.h"
 
@@ -13,7 +13,7 @@ void request_windows_emulate_vt100()
 {
     // copy from https://github.com/ArthurSonzogni/FTXUI/commit/22afacc28badb35680e7fe03461680c52acbe507
 #if defined(_WIN32)
-#include "Utils/SafeWindows.hpp"
+#include "MaaUtils/SafeWindows.hpp"
 
     // Enable VT processing on stdout and stdin
     auto stdout_handle = GetStdHandle(STD_OUTPUT_HANDLE);

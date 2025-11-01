@@ -3,10 +3,10 @@
 #include <ostream>
 
 #include "API/MaaToolkitBufferTypes.hpp"
-#include "Conf/Conf.h"
-#include "Utils/Buffer/ListBuffer.hpp"
-#include "Utils/Encoding.h"
-#include "Utils/Logger.h"
+#include "Common/Conf.h"
+#include "MaaUtils/Buffer/ListBuffer.hpp"
+#include "MaaUtils/Encoding.h"
+#include "MaaUtils/Logger.h"
 
 MAA_TOOLKIT_NS_BEGIN
 

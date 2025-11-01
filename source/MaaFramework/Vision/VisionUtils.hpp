@@ -3,9 +3,9 @@
 #include <random>
 #include <ranges>
 
-#include "Conf/Conf.h"
-#include "Utils/Logger.h"
-#include "Utils/NoWarningCV.hpp"
+#include "Common/Conf.h"
+#include "MaaUtils/Logger.h"
+#include "MaaUtils/NoWarningCV.hpp"
 
 MAA_VISION_NS_BEGIN
 

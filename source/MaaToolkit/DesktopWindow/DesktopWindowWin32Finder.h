@@ -3,8 +3,10 @@
 #if defined(_WIN32)
 
 #include "DesktopWindowFinder.h"
-#include "Utils/Platform.h"
-#include "Utils/SingletonHolder.hpp"
+#include "MaaUtils/Platform.h"
+#include "MaaUtils/SingletonHolder.hpp"
+
+#include "Common/Conf.h"
 
 MAA_TOOLKIT_NS_BEGIN
 

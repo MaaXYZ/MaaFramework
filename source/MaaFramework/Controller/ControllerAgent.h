@@ -8,9 +8,12 @@
 #include "Base/AsyncRunner.hpp"
 #include "Common/MaaTypes.h"
 #include "ControlUnit/ControlUnitAPI.h"
+#include "MaaUtils/JsonExt.hpp"
+#include "MaaUtils/NoWarningCVMat.hpp"
 #include "Utils/EventDispatcher.hpp"
-#include "Utils/JsonExt.hpp"
-#include "Utils/NoWarningCVMat.hpp"
+
+
+#include "Common/Conf.h"
 
 MAA_RES_NS_BEGIN
 class ResourceMgr;

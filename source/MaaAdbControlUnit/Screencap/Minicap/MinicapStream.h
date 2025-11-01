@@ -5,8 +5,10 @@
 #include <condition_variable>
 #include <thread>
 
-#include "Utils/IOStream/ChildPipeIOStream.h"
-#include "Utils/IOStream/SockIOStream.h"
+#include "MaaUtils/IOStream/ChildPipeIOStream.h"
+#include "MaaUtils/IOStream/SockIOStream.h"
+
+#include "Common/Conf.h"
 
 MAA_CTRL_UNIT_NS_BEGIN
 

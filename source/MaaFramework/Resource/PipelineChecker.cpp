@@ -1,9 +1,10 @@
 #include "PipelineChecker.h"
 
-#include "Utils/Logger.h"
-#include "Utils/Platform.h"
-#include "Utils/StringMisc.hpp"
-#include "Utils/Encoding.h"
+#include "MaaUtils/Encoding.h"
+#include "MaaUtils/Logger.h"
+#include "MaaUtils/Platform.h"
+#include "MaaUtils/StringMisc.hpp"
+
 
 MAA_RES_NS_BEGIN
 

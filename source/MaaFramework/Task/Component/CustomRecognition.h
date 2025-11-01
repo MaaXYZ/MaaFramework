@@ -8,6 +8,8 @@
 #include "Task/Context.h"
 #include "Vision/VisionBase.h"
 
+#include "Common/Conf.h"
+
 MAA_TASK_NS_BEGIN
 
 struct CustomRecognitionResult
