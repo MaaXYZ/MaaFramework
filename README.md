@@ -26,6 +26,7 @@ _✨ 基于图像识别的自动化黑盒测试框架 ✨_
   <a href="https://www.nuget.org/packages/Maa.Framework.Runtimes" target="_blank"><img alt="nuget" src="https://img.shields.io/badge/NuGet-004880?logo=nuget"></a>
   <a href="https://www.npmjs.com/package/@maaxyz/maa-node" target="_blank"><img alt="npm" src="https://img.shields.io/badge/npm-CB3837?logo=npm"></a>
   <a href="https://mirrorchyan.com/zh/projects?source=maafw-badge" target="_blank"><img alt="mirrorc" src="https://img.shields.io/badge/Mirror%E9%85%B1-%239af3f6?logo=countingworkspro&logoColor=4f46e5"></a>
+  <a href="https://deepwiki.com/MaaXYZ/MaaFramework" target="_blank"><img alt="deepwiki" src="https://deepwiki.com/badge.svg"></a>
 </p>
 
 <div align="center">
@@ -44,6 +45,8 @@ _✨ 基于图像识别的自动化黑盒测试框架 ✨_
 
 > [!TIP]
 > 访问我们的 [官网](https://maafw.xyz/) 以获得更优秀的文档阅读体验。
+> 
+> 找不到相关文档？试试问 [AI](https://deepwiki.com/MaaXYZ/MaaFramework)！
 
 - [快速开始](docs/zh_cn/1.1-快速开始.md)
 - [集成文档](docs/zh_cn/2.1-集成文档.md)
