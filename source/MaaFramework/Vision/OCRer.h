@@ -1,5 +1,6 @@
 #pragma once
 
+#include <mutex>
 #include <ostream>
 #include <vector>
 
@@ -78,6 +79,8 @@ private:
     std::shared_ptr<fastdeploy::vision::ocr::DBDetector> deter_ = nullptr;
     std::shared_ptr<fastdeploy::vision::ocr::Recognizer> recer_ = nullptr;
     std::shared_ptr<fastdeploy::pipeline::PPOCRv3> ocrer_ = nullptr;
+
+    inline static std::mutex s_predict_mutex_;
 
     Cache& cache_;
 };

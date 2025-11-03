@@ -84,7 +84,12 @@ OCRer::ResultsVec OCRer::predict_det_and_rec(const cv::Mat& image_roi) const
     }
 
     fastdeploy::vision::OCRResult ocr_result;
-    bool ret = ocrer_->Predict(image_roi, &ocr_result);
+
+    bool ret = false;
+    {
+        std::unique_lock lock(s_predict_mutex_);
+        ret = ocrer_->Predict(image_roi, &ocr_result);
+    }
     if (!ret) {
         LogWarn << "predict return false" << VAR(ocrer_) << VAR(image_) << VAR(image_roi);
         return {};
@@ -136,8 +141,11 @@ OCRer::Result OCRer::predict_only_rec(const cv::Mat& image_roi) const
 
     std::string reco_text;
     float reco_score = 0;
-
-    bool ret = recer_->Predict(image_roi, &reco_text, &reco_score);
+    bool ret = false;
+    {
+        std::unique_lock lock(s_predict_mutex_);
+        ret = recer_->Predict(image_roi, &reco_text, &reco_score);
+    }
     if (!ret) {
         LogWarn << "recer_ return false" << VAR(recer_) << VAR(image_) << VAR(image_roi);
         return {};
