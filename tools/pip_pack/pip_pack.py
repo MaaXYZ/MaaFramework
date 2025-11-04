@@ -118,7 +118,7 @@ def pack(pack_dir: Path, info_dir: Path):
         for fp in bin_path.iterdir():
             if fp.name.startswith(("MaaPiCli", "MaaNode")):
                 continue
-            shutil.copyfile(fp, pack_bin_path / fp.name)
+            shutil.copy2(fp, pack_bin_path / fp.name)
 
         print("done")
 
