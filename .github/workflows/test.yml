@@ -232,6 +232,11 @@ jobs:
 
                   cmake --build build --preset 'NinjaMulti Linux ${{ matrix.arch == 'x86_64' && 'x64' || 'arm64' }} - Debug' -j 16
 
+            - name: Install
+              shell: bash
+              run: |
+                  cmake --install build --prefix install --config Debug
+
             - name: Download Plugin
               uses: robinraju/release-downloader@v1
               with:
@@ -246,11 +251,6 @@ jobs:
               shell: bash
               run: |
                   cp -r build/download_plugins/bin install/bin/plugins
-
-            - name: Install
-              shell: bash
-              run: |
-                  cmake --install build --prefix install --config Debug
 
             - name: Run DlopenTesting
               # TODO: qemu for aarch64
