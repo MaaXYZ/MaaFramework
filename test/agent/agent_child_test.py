@@ -19,7 +19,10 @@ if str(binding_dir) not in sys.path:
 # Must be imported first
 from maa.agent.agent_server import AgentServer
 
-from maa.context import Context
+from maa.resource import ResourceEventSink
+from maa.controller import ControllerEventSink
+from maa.tasker import TaskerEventSink
+from maa.context import Context, ContextEventSink
 from maa.custom_action import CustomAction
 from maa.custom_recognition import CustomRecognition
 from maa.toolkit import Toolkit
@@ -112,6 +115,30 @@ class MyAction(CustomAction):
         runned = True
 
         return CustomAction.RunResult(success=True)
+
+
+@AgentServer.resource_sink()
+class MyResSink(ResourceEventSink):
+    def on_raw_notification(self, resource, msg: str, details: dict):
+        print(f"resource: {resource}, msg: {msg}, details: {details} ")
+
+
+@AgentServer.controller_sink()
+class MyCtrlSink(ControllerEventSink):
+    def on_raw_notification(self, controller, msg: str, details: dict):
+        print(f"controller: {controller}, msg: {msg}, details: {details} ")
+
+
+@AgentServer.tasker_sink()
+class MyTaskerSink(TaskerEventSink):
+    def on_raw_notification(self, tasker, msg: str, details: dict):
+        print(f"tasker: {tasker}, msg: {msg}, details: {details} ")
+
+
+@AgentServer.context_sink()
+class MyResSink(ContextEventSink):
+    def on_raw_notification(self, context, msg: str, details: dict):
+        print(f"context: {context}, msg: {msg}, details: {details} ")
 
 
 if __name__ == "__main__":

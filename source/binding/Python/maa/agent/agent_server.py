@@ -96,6 +96,14 @@ class AgentServer:
     _sink_holder: Dict[int, "EventSink"] = {}
 
     @staticmethod
+    def resource_sink():
+        def wrapper_sink(sink):
+            AgentServer.add_resource_sink(sink=sink())
+            return sink
+
+        return wrapper_sink
+
+    @staticmethod
     def add_resource_sink(sink: "ResourceEventSink") -> None:
         sink_id = int(
             Library.agent_server().MaaAgentServerAddResourceSink(
@@ -106,6 +114,14 @@ class AgentServer:
             return None
 
         AgentServer._sink_holder[sink_id] = sink
+
+    @staticmethod
+    def controller_sink():
+        def wrapper_sink(sink):
+            AgentServer.add_controller_sink(sink=sink())
+            return sink
+
+        return wrapper_sink
 
     @staticmethod
     def add_controller_sink(sink: "ControllerEventSink") -> None:
@@ -120,6 +136,14 @@ class AgentServer:
         AgentServer._sink_holder[sink_id] = sink
 
     @staticmethod
+    def tasker_sink():
+        def wrapper_sink(sink):
+            AgentServer.add_tasker_sink(sink=sink())
+            return sink
+
+        return wrapper_sink
+
+    @staticmethod
     def add_tasker_sink(sink: "TaskerEventSink") -> None:
         sink_id = int(
             Library.agent_server().MaaAgentServerAddTaskerSink(
@@ -130,6 +154,14 @@ class AgentServer:
             return None
 
         AgentServer._sink_holder[sink_id] = sink
+
+    @staticmethod
+    def context_sink():
+        def wrapper_sink(sink):
+            AgentServer.add_context_sink(sink=sink())
+            return sink
+
+        return wrapper_sink
 
     @staticmethod
     def add_context_sink(sink: "ContextEventSink") -> None:
