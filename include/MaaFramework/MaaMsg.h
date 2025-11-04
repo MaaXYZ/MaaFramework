@@ -77,6 +77,7 @@
  */
 #define MaaMsg_Tasker_Instance_Created("Tasker.Instance.Created")
 #define MaaMsg_Tasker_Instance_Destroying("Tasker.Instance.Destroying")
+/// @}
 
 /**
  * @{
