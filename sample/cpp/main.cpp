@@ -134,7 +134,7 @@ MaaController* create_win32_controller()
     }
 
     // create controller by hwnd
-    auto controller_handle = MaaWin32ControllerCreate(hwnd, MaaWin32ScreencapMethod_DXGI_DesktopDup, MaaWin32InputMethod_Seize);
+    auto controller_handle = MaaWin32ControllerCreate(hwnd, MaaWin32ScreencapMethod_DXGI_DesktopDup, MaaWin32InputMethod_Seize, MaaWin32InputMethod_SendMessage);
 
     destroy();
     return controller_handle;

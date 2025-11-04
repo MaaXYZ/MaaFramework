@@ -14,7 +14,11 @@ MAA_CTRL_UNIT_NS_BEGIN
 class Win32ControlUnitMgr : public Win32ControlUnitAPI
 {
 public:
-    Win32ControlUnitMgr(HWND hWnd, MaaWin32ScreencapMethod screencap_method, MaaWin32InputMethod input_method);
+    Win32ControlUnitMgr(
+        HWND hWnd,
+        MaaWin32ScreencapMethod screencap_method,
+        MaaWin32InputMethod mouse_method,
+        MaaWin32InputMethod keyboard_method);
     virtual ~Win32ControlUnitMgr() override = default;
 
 public: // from ControlUnitAPI
@@ -47,9 +51,11 @@ public: // from ControlUnitAPI
 private:
     HWND hwnd_ = nullptr;
     MaaWin32ScreencapMethod screencap_method_ = MaaWin32ScreencapMethod_None;
-    MaaWin32InputMethod input_method_ = MaaWin32InputMethod_None;
+    MaaWin32InputMethod mouse_method_ = MaaWin32InputMethod_None;
+    MaaWin32InputMethod keyboard_method_ = MaaWin32InputMethod_None;
 
-    std::shared_ptr<InputBase> input_ = nullptr;
+    std::shared_ptr<InputBase> mouse_ = nullptr;
+    std::shared_ptr<InputBase> keyboard_ = nullptr;
     std::shared_ptr<ScreencapBase> screencap_ = nullptr;
 };
 

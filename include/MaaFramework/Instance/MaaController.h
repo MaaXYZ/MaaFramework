@@ -29,8 +29,11 @@ extern "C"
         const char* config,
         const char* agent_path);
 
-    MAA_FRAMEWORK_API MaaController*
-        MaaWin32ControllerCreate(void* hWnd, MaaWin32ScreencapMethod screencap_method, MaaWin32InputMethod input_method);
+    MAA_FRAMEWORK_API MaaController* MaaWin32ControllerCreate(
+        void* hWnd,
+        MaaWin32ScreencapMethod screencap_method,
+        MaaWin32InputMethod mouse_method,
+        MaaWin32InputMethod keyboard_method);
 
     MAA_FRAMEWORK_API MaaController* MaaCustomControllerCreate(MaaCustomControllerCallbacks* controller, void* controller_arg);
 

@@ -411,7 +411,8 @@ class Win32Controller(Controller):
         self,
         hWnd: Union[ctypes.c_void_p, int, None],
         screencap_method: int = MaaWin32ScreencapMethodEnum.DXGI_DesktopDup,
-        input_method: int = MaaWin32InputMethodEnum.Seize,
+        mouse_method: int = MaaWin32InputMethodEnum.Seize,
+        keyboard_method: int = MaaWin32InputMethodEnum.Seize,
         notification_handler: None = None,
     ):
         if notification_handler:
@@ -425,7 +426,8 @@ class Win32Controller(Controller):
         self._handle = Library.framework().MaaWin32ControllerCreate(
             hWnd,
             MaaWin32ScreencapMethod(screencap_method),
-            MaaWin32InputMethod(input_method),
+            MaaWin32InputMethod(mouse_method),
+            MaaWin32InputMethod(keyboard_method),
         )
 
         if not self._handle:
@@ -436,6 +438,7 @@ class Win32Controller(Controller):
         Library.framework().MaaWin32ControllerCreate.argtypes = [
             ctypes.c_void_p,
             MaaWin32ScreencapMethod,
+            MaaWin32InputMethod,
             MaaWin32InputMethod,
         ]
 
