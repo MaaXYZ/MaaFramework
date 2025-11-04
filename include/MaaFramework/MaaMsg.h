@@ -51,6 +51,7 @@
  */
 #define MaaMsg_Controller_Instance_Created("Controller.Instance.Created")
 #define MaaMsg_Controller_Instance_Destroying("Controller.Instance.Destroying")
+/// @}
 
 /**
  * @{
