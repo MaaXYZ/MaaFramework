@@ -335,7 +335,7 @@ var searchData=
   ['maatoolkitdesktopwindowlistsize_332',['MaaToolkitDesktopWindowListSize',['../MaaToolkitDesktopWindow_8h.html#a9630496646deb94ccf5976877ce12e92',1,'MaaToolkitDesktopWindow.h']]],
   ['maautility_2eh_333',['MaaUtility.h',['../MaaUtility_8h.html',1,'']]],
   ['maaversion_334',['MaaVersion',['../MaaUtility_8h.html#a0329e2aed44c80bc9d10f6c1f6a8872f',1,'MaaUtility.h']]],
-  ['maawin32controllercreate_335',['MaaWin32ControllerCreate',['../MaaController_8h.html#a53e929d892b47209873aa026548b7f64',1,'MaaController.h']]],
+  ['maawin32controllercreate_335',['MaaWin32ControllerCreate',['../MaaController_8h.html#a0a0532a08e57b6b8b23282b51f6431a0',1,'MaaController.h']]],
   ['maawin32inputmethod_336',['MaaWin32InputMethod',['../MaaDef_8h.html#a29af4457ff72b57b157a1d58d6d28878',1,'MaaDef.h']]],
   ['maawin32inputmethod_5fnone_337',['MaaWin32InputMethod_None',['../MaaDef_8h.html#a637a673d747aa47edfa545da69c936b1',1,'MaaDef.h']]],
   ['maawin32inputmethod_5fseize_338',['MaaWin32InputMethod_Seize',['../MaaDef_8h.html#a28f884858b13895fa20adec0fede3aaf',1,'MaaDef.h']]],

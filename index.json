@@ -1,5 +1,5 @@
 {
-	"Version": "(main) v5.0.0-alpha.4",
+	"Version": "(main) v5.0.0-alpha.5",
 	"Compounds": {
 		"MaaAgentClientAPI.h": {
 			"Location": "include/MaaAgentClient/MaaAgentClientAPI.h",
@@ -1013,7 +1013,13 @@
 							"Direction": 0,
 							"IsPointerToArray": null
 						},
-						"input_method": {
+						"mouse_method": {
+							"Type": "MaaWin32InputMethod",
+							"Description": "",
+							"Direction": 0,
+							"IsPointerToArray": null
+						},
+						"keyboard_method": {
 							"Type": "MaaWin32InputMethod",
 							"Description": "",
 							"Direction": 0,

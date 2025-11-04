@@ -176,5 +176,5 @@ var searchData=
   ['maatoolkitdesktopwindowlistdestroy_173',['MaaToolkitDesktopWindowListDestroy',['../MaaToolkitDesktopWindow_8h.html#a9ec7e382179fd165bbc4dd7726c058ee',1,'MaaToolkitDesktopWindow.h']]],
   ['maatoolkitdesktopwindowlistsize_174',['MaaToolkitDesktopWindowListSize',['../MaaToolkitDesktopWindow_8h.html#a9630496646deb94ccf5976877ce12e92',1,'MaaToolkitDesktopWindow.h']]],
   ['maaversion_175',['MaaVersion',['../MaaUtility_8h.html#a0329e2aed44c80bc9d10f6c1f6a8872f',1,'MaaUtility.h']]],
-  ['maawin32controllercreate_176',['MaaWin32ControllerCreate',['../MaaController_8h.html#a53e929d892b47209873aa026548b7f64',1,'MaaController.h']]]
+  ['maawin32controllercreate_176',['MaaWin32ControllerCreate',['../MaaController_8h.html#a0a0532a08e57b6b8b23282b51f6431a0',1,'MaaController.h']]]
 ];

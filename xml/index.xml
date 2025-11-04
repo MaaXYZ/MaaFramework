@@ -76,7 +76,7 @@
   <compound refid="MaaController_8h" kind="file"><name>MaaController.h</name>
     <member refid="MaaController_8h_1a22203468df2e11d45892a524d48404a4" kind="typedef"><name>MaaCustomControllerCallbacks</name></member>
     <member refid="MaaController_8h_1a7b3f6215fdc0ae3e8beeb51a3dd75e16" kind="function"><name>MaaAdbControllerCreate</name></member>
-    <member refid="MaaController_8h_1a53e929d892b47209873aa026548b7f64" kind="function"><name>MaaWin32ControllerCreate</name></member>
+    <member refid="MaaController_8h_1a0a0532a08e57b6b8b23282b51f6431a0" kind="function"><name>MaaWin32ControllerCreate</name></member>
     <member refid="MaaController_8h_1a2ff145414faed5fdeedc36e97729677e" kind="function"><name>MaaCustomControllerCreate</name></member>
     <member refid="MaaController_8h_1a1ea4c3aa0b3bcb39d35dc13cdde9a044" kind="function"><name>MaaDbgControllerCreate</name></member>
     <member refid="MaaController_8h_1a497982481bf79e89bc457d8a6e5e7bed" kind="function"><name>MaaControllerDestroy</name></member>

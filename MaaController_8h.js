@@ -2,7 +2,7 @@ var MaaController_8h =
 [
     [ "MaaCustomControllerCallbacks", "MaaController_8h.html#a22203468df2e11d45892a524d48404a4", null ],
     [ "MaaAdbControllerCreate", "MaaController_8h.html#a7b3f6215fdc0ae3e8beeb51a3dd75e16", null ],
-    [ "MaaWin32ControllerCreate", "MaaController_8h.html#a53e929d892b47209873aa026548b7f64", null ],
+    [ "MaaWin32ControllerCreate", "MaaController_8h.html#a0a0532a08e57b6b8b23282b51f6431a0", null ],
     [ "MaaCustomControllerCreate", "MaaController_8h.html#a2ff145414faed5fdeedc36e97729677e", null ],
     [ "MaaDbgControllerCreate", "MaaController_8h.html#a1ea4c3aa0b3bcb39d35dc13cdde9a044", null ],
     [ "MaaControllerDestroy", "MaaController_8h.html#a497982481bf79e89bc457d8a6e5e7bed", null ],
