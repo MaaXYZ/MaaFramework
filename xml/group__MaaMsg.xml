@@ -11,7 +11,7 @@
 <para>The message for the resource loading. </para>
         </briefdescription>
         <detaileddescription>
-<para>payload: { res_id: number, hash: string, path: string, } </para>
+<para>details_json: { res_id: number, hash: string, path: string, } </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
@@ -24,7 +24,7 @@
 <para>The message for the resource loading. </para>
         </briefdescription>
         <detaileddescription>
-<para>payload: { res_id: number, hash: string, path: string, } </para>
+<para>details_json: { res_id: number, hash: string, path: string, } </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
@@ -37,7 +37,7 @@
 <para>The message for the resource loading. </para>
         </briefdescription>
         <detaileddescription>
-<para>payload: { res_id: number, hash: string, path: string, } </para>
+<para>details_json: { res_id: number, hash: string, path: string, } </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
@@ -52,7 +52,7 @@
 <para>Message for the controller actions. </para>
         </briefdescription>
         <detaileddescription>
-<para>payload: { ctrl_id: number, uuid: string, action: string, param: object, } </para>
+<para>details_json: { ctrl_id: number, uuid: string, action: string, param: object, } </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
@@ -65,7 +65,7 @@
 <para>Message for the controller actions. </para>
         </briefdescription>
         <detaileddescription>
-<para>payload: { ctrl_id: number, uuid: string, action: string, param: object, } </para>
+<para>details_json: { ctrl_id: number, uuid: string, action: string, param: object, } </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
@@ -78,7 +78,7 @@
 <para>Message for the controller actions. </para>
         </briefdescription>
         <detaileddescription>
-<para>payload: { ctrl_id: number, uuid: string, action: string, param: object, } </para>
+<para>details_json: { ctrl_id: number, uuid: string, action: string, param: object, } </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
@@ -93,7 +93,7 @@
 <para>Message for the task. </para>
         </briefdescription>
         <detaileddescription>
-<para>payload: { task_id: number, entry: string, uuid: string, hash: string } </para>
+<para>details_json: { task_id: number, entry: string, uuid: string, hash: string } </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
@@ -106,7 +106,7 @@
 <para>Message for the task. </para>
         </briefdescription>
         <detaileddescription>
-<para>payload: { task_id: number, entry: string, uuid: string, hash: string } </para>
+<para>details_json: { task_id: number, entry: string, uuid: string, hash: string } </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
@@ -119,7 +119,7 @@
 <para>Message for the task. </para>
         </briefdescription>
         <detaileddescription>
-<para>payload: { task_id: number, entry: string, uuid: string, hash: string } </para>
+<para>details_json: { task_id: number, entry: string, uuid: string, hash: string } </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
@@ -134,7 +134,7 @@
 <para>Message for the next list of node. </para>
         </briefdescription>
         <detaileddescription>
-<para>payload: { task_id: number, name: string, list: string[], focus: any, } </para>
+<para>details_json: { task_id: number, name: string, list: string[], focus: any, } </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
@@ -147,7 +147,7 @@
 <para>Message for the next list of node. </para>
         </briefdescription>
         <detaileddescription>
-<para>payload: { task_id: number, name: string, list: string[], focus: any, } </para>
+<para>details_json: { task_id: number, name: string, list: string[], focus: any, } </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
@@ -160,7 +160,7 @@
 <para>Message for the next list of node. </para>
         </briefdescription>
         <detaileddescription>
-<para>payload: { task_id: number, name: string, list: string[], focus: any, } </para>
+<para>details_json: { task_id: number, name: string, list: string[], focus: any, } </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
@@ -175,7 +175,7 @@
 <para>Message for the recognition list of node. </para>
         </briefdescription>
         <detaileddescription>
-<para>payload: { task_id: number, reco_id: number, name: string, focus: any, } </para>
+<para>details_json: { task_id: number, reco_id: number, name: string, focus: any, } </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
@@ -188,7 +188,7 @@
 <para>Message for the recognition list of node. </para>
         </briefdescription>
         <detaileddescription>
-<para>payload: { task_id: number, reco_id: number, name: string, focus: any, } </para>
+<para>details_json: { task_id: number, reco_id: number, name: string, focus: any, } </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
@@ -201,7 +201,7 @@
 <para>Message for the recognition list of node. </para>
         </briefdescription>
         <detaileddescription>
-<para>payload: { task_id: number, reco_id: number, name: string, focus: any, } </para>
+<para>details_json: { task_id: number, reco_id: number, name: string, focus: any, } </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
@@ -216,7 +216,7 @@
 <para>Message for the action of node. </para>
         </briefdescription>
         <detaileddescription>
-<para>payload: { task_id: number, node_id: number, name: string, focus: any, } </para>
+<para>details_json: { task_id: number, node_id: number, name: string, focus: any, } </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
@@ -229,7 +229,7 @@
 <para>Message for the action of node. </para>
         </briefdescription>
         <detaileddescription>
-<para>payload: { task_id: number, node_id: number, name: string, focus: any, } </para>
+<para>details_json: { task_id: number, node_id: number, name: string, focus: any, } </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
@@ -242,7 +242,7 @@
 <para>Message for the action of node. </para>
         </briefdescription>
         <detaileddescription>
-<para>payload: { task_id: number, node_id: number, name: string, focus: any, } </para>
+<para>details_json: { task_id: number, node_id: number, name: string, focus: any, } </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>

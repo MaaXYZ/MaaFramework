@@ -83,9 +83,9 @@
         </inbodydescription>
         <location file="include/MaaAgentServer/MaaAgentServerAPI.h" line="13" column="34" declfile="include/MaaAgentServer/MaaAgentServerAPI.h" declline="13" declcolumn="34"/>
       </memberdef>
-      <memberdef kind="function" id="MaaAgentServerAPI_8h_1a704264f61b92d7b37793d0e93eb05acf" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
-        <type><ref refid="MaaPort_8h_1a9ed6fc02e7a36536960b7e117c31087f" kindref="member">MAA_AGENT_SERVER_API</ref> void</type>
-        <definition>MAA_AGENT_SERVER_API void MaaAgentServerAddResourceSink</definition>
+      <memberdef kind="function" id="MaaAgentServerAPI_8h_1a8347bf15c252b4255ddf5dc33ea54d19" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="MaaPort_8h_1a9ed6fc02e7a36536960b7e117c31087f" kindref="member">MAA_AGENT_SERVER_API</ref> <ref refid="MaaDef_8h_1aac4cf6870bfe8fef31ead507dcfb4251" kindref="member">MaaSinkId</ref></type>
+        <definition>MAA_AGENT_SERVER_API MaaSinkId MaaAgentServerAddResourceSink</definition>
         <argsstring>(MaaEventCallback sink, void *trans_arg)</argsstring>
         <name>MaaAgentServerAddResourceSink</name>
         <param>
@@ -102,11 +102,11 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="include/MaaAgentServer/MaaAgentServerAPI.h" line="15" column="31" declfile="include/MaaAgentServer/MaaAgentServerAPI.h" declline="15" declcolumn="31"/>
+        <location file="include/MaaAgentServer/MaaAgentServerAPI.h" line="15" column="36" declfile="include/MaaAgentServer/MaaAgentServerAPI.h" declline="15" declcolumn="36"/>
       </memberdef>
-      <memberdef kind="function" id="MaaAgentServerAPI_8h_1ae9be464a41e7d772d8952fa8f9528d64" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
-        <type><ref refid="MaaPort_8h_1a9ed6fc02e7a36536960b7e117c31087f" kindref="member">MAA_AGENT_SERVER_API</ref> void</type>
-        <definition>MAA_AGENT_SERVER_API void MaaAgentServerAddControllerSink</definition>
+      <memberdef kind="function" id="MaaAgentServerAPI_8h_1adce71dd9ae942d93a8c63cac6487c994" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="MaaPort_8h_1a9ed6fc02e7a36536960b7e117c31087f" kindref="member">MAA_AGENT_SERVER_API</ref> <ref refid="MaaDef_8h_1aac4cf6870bfe8fef31ead507dcfb4251" kindref="member">MaaSinkId</ref></type>
+        <definition>MAA_AGENT_SERVER_API MaaSinkId MaaAgentServerAddControllerSink</definition>
         <argsstring>(MaaEventCallback sink, void *trans_arg)</argsstring>
         <name>MaaAgentServerAddControllerSink</name>
         <param>
@@ -123,11 +123,11 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="include/MaaAgentServer/MaaAgentServerAPI.h" line="16" column="31" declfile="include/MaaAgentServer/MaaAgentServerAPI.h" declline="16" declcolumn="31"/>
+        <location file="include/MaaAgentServer/MaaAgentServerAPI.h" line="16" column="36" declfile="include/MaaAgentServer/MaaAgentServerAPI.h" declline="16" declcolumn="36"/>
       </memberdef>
-      <memberdef kind="function" id="MaaAgentServerAPI_8h_1a173603599fdac0776e1256b9f1d08d7a" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
-        <type><ref refid="MaaPort_8h_1a9ed6fc02e7a36536960b7e117c31087f" kindref="member">MAA_AGENT_SERVER_API</ref> void</type>
-        <definition>MAA_AGENT_SERVER_API void MaaAgentServerAddTaskerSink</definition>
+      <memberdef kind="function" id="MaaAgentServerAPI_8h_1ab3d58a17c7260cf18afa7494d67069e0" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="MaaPort_8h_1a9ed6fc02e7a36536960b7e117c31087f" kindref="member">MAA_AGENT_SERVER_API</ref> <ref refid="MaaDef_8h_1aac4cf6870bfe8fef31ead507dcfb4251" kindref="member">MaaSinkId</ref></type>
+        <definition>MAA_AGENT_SERVER_API MaaSinkId MaaAgentServerAddTaskerSink</definition>
         <argsstring>(MaaEventCallback sink, void *trans_arg)</argsstring>
         <name>MaaAgentServerAddTaskerSink</name>
         <param>
@@ -144,11 +144,11 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="include/MaaAgentServer/MaaAgentServerAPI.h" line="17" column="31" declfile="include/MaaAgentServer/MaaAgentServerAPI.h" declline="17" declcolumn="31"/>
+        <location file="include/MaaAgentServer/MaaAgentServerAPI.h" line="17" column="36" declfile="include/MaaAgentServer/MaaAgentServerAPI.h" declline="17" declcolumn="36"/>
       </memberdef>
-      <memberdef kind="function" id="MaaAgentServerAPI_8h_1a540d14245e81452008e946d37bcf7f79" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
-        <type><ref refid="MaaPort_8h_1a9ed6fc02e7a36536960b7e117c31087f" kindref="member">MAA_AGENT_SERVER_API</ref> void</type>
-        <definition>MAA_AGENT_SERVER_API void MaaAgentServerAddContextSink</definition>
+      <memberdef kind="function" id="MaaAgentServerAPI_8h_1a9caef6fe833d89cc93806b14f3203cad" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="MaaPort_8h_1a9ed6fc02e7a36536960b7e117c31087f" kindref="member">MAA_AGENT_SERVER_API</ref> <ref refid="MaaDef_8h_1aac4cf6870bfe8fef31ead507dcfb4251" kindref="member">MaaSinkId</ref></type>
+        <definition>MAA_AGENT_SERVER_API MaaSinkId MaaAgentServerAddContextSink</definition>
         <argsstring>(MaaEventCallback sink, void *trans_arg)</argsstring>
         <name>MaaAgentServerAddContextSink</name>
         <param>
@@ -165,7 +165,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="include/MaaAgentServer/MaaAgentServerAPI.h" line="18" column="31" declfile="include/MaaAgentServer/MaaAgentServerAPI.h" declline="18" declcolumn="31"/>
+        <location file="include/MaaAgentServer/MaaAgentServerAPI.h" line="18" column="36" declfile="include/MaaAgentServer/MaaAgentServerAPI.h" declline="18" declcolumn="36"/>
       </memberdef>
       <memberdef kind="function" id="MaaAgentServerAPI_8h_1ac9e6a88f95da30fca84538dfb64d664c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="MaaPort_8h_1a9ed6fc02e7a36536960b7e117c31087f" kindref="member">MAA_AGENT_SERVER_API</ref> <ref refid="MaaDef_8h_1a2f7289f2a8e07f48c6261b52a120cdf6" kindref="member">MaaBool</ref></type>

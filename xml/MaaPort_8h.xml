@@ -243,17 +243,6 @@
         </inbodydescription>
         <location file="include/MaaFramework/MaaPort.h" line="42" column="10" bodyfile="include/MaaFramework/MaaPort.h" bodystart="42" bodyend="-1"/>
       </memberdef>
-      <memberdef kind="define" id="MaaPort_8h_1aabeb9919a6a22899b3e2e224c83e90db" prot="public" static="no">
-        <name>MAA_UTILS_API</name>
-        <initializer><ref refid="MaaPort_8h_1aed0af92192d8a7f6278afec3adfee80c" kindref="member">MAA_DLL_IMPORT</ref></initializer>
-        <briefdescription>
-        </briefdescription>
-        <detaileddescription>
-        </detaileddescription>
-        <inbodydescription>
-        </inbodydescription>
-        <location file="include/MaaFramework/MaaPort.h" line="48" column="10" bodyfile="include/MaaFramework/MaaPort.h" bodystart="48" bodyend="-1"/>
-      </memberdef>
       <memberdef kind="define" id="MaaPort_8h_1a011c7bbd355fdfe6aa7599af52cc20ac" prot="public" static="no">
         <name>MAA_TOOLKIT_API</name>
         <initializer><ref refid="MaaPort_8h_1aed0af92192d8a7f6278afec3adfee80c" kindref="member">MAA_DLL_IMPORT</ref></initializer>
@@ -263,7 +252,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="include/MaaFramework/MaaPort.h" line="54" column="10" bodyfile="include/MaaFramework/MaaPort.h" bodystart="54" bodyend="-1"/>
+        <location file="include/MaaFramework/MaaPort.h" line="48" column="10" bodyfile="include/MaaFramework/MaaPort.h" bodystart="48" bodyend="-1"/>
       </memberdef>
       <memberdef kind="define" id="MaaPort_8h_1a8531b324af2e8db59debbd708e028c3c" prot="public" static="no">
         <name>MAA_AGENT_CLIENT_API</name>
@@ -274,7 +263,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="include/MaaFramework/MaaPort.h" line="60" column="10" bodyfile="include/MaaFramework/MaaPort.h" bodystart="60" bodyend="-1"/>
+        <location file="include/MaaFramework/MaaPort.h" line="54" column="10" bodyfile="include/MaaFramework/MaaPort.h" bodystart="54" bodyend="-1"/>
       </memberdef>
       <memberdef kind="define" id="MaaPort_8h_1a9ed6fc02e7a36536960b7e117c31087f" prot="public" static="no">
         <name>MAA_AGENT_SERVER_API</name>
@@ -285,7 +274,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="include/MaaFramework/MaaPort.h" line="66" column="10" bodyfile="include/MaaFramework/MaaPort.h" bodystart="66" bodyend="-1"/>
+        <location file="include/MaaFramework/MaaPort.h" line="60" column="10" bodyfile="include/MaaFramework/MaaPort.h" bodystart="60" bodyend="-1"/>
       </memberdef>
     </sectiondef>
     <briefdescription>

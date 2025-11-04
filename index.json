@@ -1,5 +1,5 @@
 {
-	"Version": "(main) v5.0.0-alpha.3",
+	"Version": "(main) v5.0.0-alpha.4",
 	"Compounds": {
 		"MaaAgentClientAPI.h": {
 			"Location": "include/MaaAgentClient/MaaAgentClientAPI.h",
@@ -94,7 +94,57 @@
 						}
 					}
 				},
-				"MaaAgentClientRegisterSink": {
+				"MaaAgentClientRegisterResourceSink": {
+					"Description": {
+						"Brief": "",
+						"Details": [],
+						"Deprecated": null
+					},
+					"Types": {
+						"MAA_AGENT_CLIENT_API": "",
+						"MaaBool": ""
+					},
+					"Parameters": {
+						"client": {
+							"Type": "MaaAgentClient*",
+							"Description": "",
+							"Direction": 0,
+							"IsPointerToArray": null
+						},
+						"res": {
+							"Type": "MaaResource*",
+							"Description": "",
+							"Direction": 0,
+							"IsPointerToArray": null
+						}
+					}
+				},
+				"MaaAgentClientRegisterControllerSink": {
+					"Description": {
+						"Brief": "",
+						"Details": [],
+						"Deprecated": null
+					},
+					"Types": {
+						"MAA_AGENT_CLIENT_API": "",
+						"MaaBool": ""
+					},
+					"Parameters": {
+						"client": {
+							"Type": "MaaAgentClient*",
+							"Description": "",
+							"Direction": 0,
+							"IsPointerToArray": null
+						},
+						"ctrl": {
+							"Type": "MaaController*",
+							"Description": "",
+							"Direction": 0,
+							"IsPointerToArray": null
+						}
+					}
+				},
+				"MaaAgentClientRegisterTaskerSink": {
 					"Description": {
 						"Brief": "",
 						"Details": [],
@@ -113,18 +163,6 @@
 						},
 						"tasker": {
 							"Type": "MaaTasker*",
-							"Description": "",
-							"Direction": 0,
-							"IsPointerToArray": null
-						},
-						"res": {
-							"Type": "MaaResource*",
-							"Description": "",
-							"Direction": 0,
-							"IsPointerToArray": null
-						},
-						"ctrl": {
-							"Type": "MaaController*",
 							"Description": "",
 							"Direction": 0,
 							"IsPointerToArray": null
@@ -370,7 +408,7 @@
 					},
 					"Types": {
 						"MAA_AGENT_SERVER_API": "",
-						"void": ""
+						"MaaSinkId": ""
 					},
 					"Parameters": {
 						"sink": {
@@ -395,7 +433,7 @@
 					},
 					"Types": {
 						"MAA_AGENT_SERVER_API": "",
-						"void": ""
+						"MaaSinkId": ""
 					},
 					"Parameters": {
 						"sink": {
@@ -420,7 +458,7 @@
 					},
 					"Types": {
 						"MAA_AGENT_SERVER_API": "",
-						"void": ""
+						"MaaSinkId": ""
 					},
 					"Parameters": {
 						"sink": {
@@ -445,7 +483,7 @@
 					},
 					"Types": {
 						"MAA_AGENT_SERVER_API": "",
-						"void": ""
+						"MaaSinkId": ""
 					},
 					"Parameters": {
 						"sink": {
@@ -6244,7 +6282,7 @@
 					"Description": {
 						"Brief": "The message for the resource loading.",
 						"Details": [
-							"payload: { res_id: number, hash: string, path: string, }"
+							"details_json: { res_id: number, hash: string, path: string, }"
 						],
 						"Deprecated": null
 					},
@@ -6254,7 +6292,7 @@
 					"Description": {
 						"Brief": "The message for the resource loading.",
 						"Details": [
-							"payload: { res_id: number, hash: string, path: string, }"
+							"details_json: { res_id: number, hash: string, path: string, }"
 						],
 						"Deprecated": null
 					},
@@ -6264,7 +6302,7 @@
 					"Description": {
 						"Brief": "The message for the resource loading.",
 						"Details": [
-							"payload: { res_id: number, hash: string, path: string, }"
+							"details_json: { res_id: number, hash: string, path: string, }"
 						],
 						"Deprecated": null
 					},
@@ -6274,7 +6312,7 @@
 					"Description": {
 						"Brief": "Message for the controller actions.",
 						"Details": [
-							"payload: { ctrl_id: number, uuid: string, action: string, param: object, }"
+							"details_json: { ctrl_id: number, uuid: string, action: string, param: object, }"
 						],
 						"Deprecated": null
 					},
@@ -6284,7 +6322,7 @@
 					"Description": {
 						"Brief": "Message for the controller actions.",
 						"Details": [
-							"payload: { ctrl_id: number, uuid: string, action: string, param: object, }"
+							"details_json: { ctrl_id: number, uuid: string, action: string, param: object, }"
 						],
 						"Deprecated": null
 					},
@@ -6294,7 +6332,7 @@
 					"Description": {
 						"Brief": "Message for the controller actions.",
 						"Details": [
-							"payload: { ctrl_id: number, uuid: string, action: string, param: object, }"
+							"details_json: { ctrl_id: number, uuid: string, action: string, param: object, }"
 						],
 						"Deprecated": null
 					},
@@ -6304,7 +6342,7 @@
 					"Description": {
 						"Brief": "Message for the task.",
 						"Details": [
-							"payload: { task_id: number, entry: string, uuid: string, hash: string }"
+							"details_json: { task_id: number, entry: string, uuid: string, hash: string }"
 						],
 						"Deprecated": null
 					},
@@ -6314,7 +6352,7 @@
 					"Description": {
 						"Brief": "Message for the task.",
 						"Details": [
-							"payload: { task_id: number, entry: string, uuid: string, hash: string }"
+							"details_json: { task_id: number, entry: string, uuid: string, hash: string }"
 						],
 						"Deprecated": null
 					},
@@ -6324,7 +6362,7 @@
 					"Description": {
 						"Brief": "Message for the task.",
 						"Details": [
-							"payload: { task_id: number, entry: string, uuid: string, hash: string }"
+							"details_json: { task_id: number, entry: string, uuid: string, hash: string }"
 						],
 						"Deprecated": null
 					},
@@ -6334,7 +6372,7 @@
 					"Description": {
 						"Brief": "Message for the next list of node.",
 						"Details": [
-							"payload: { task_id: number, name: string, list: string[], focus: any, }"
+							"details_json: { task_id: number, name: string, list: string[], focus: any, }"
 						],
 						"Deprecated": null
 					},
@@ -6344,7 +6382,7 @@
 					"Description": {
 						"Brief": "Message for the next list of node.",
 						"Details": [
-							"payload: { task_id: number, name: string, list: string[], focus: any, }"
+							"details_json: { task_id: number, name: string, list: string[], focus: any, }"
 						],
 						"Deprecated": null
 					},
@@ -6354,7 +6392,7 @@
 					"Description": {
 						"Brief": "Message for the next list of node.",
 						"Details": [
-							"payload: { task_id: number, name: string, list: string[], focus: any, }"
+							"details_json: { task_id: number, name: string, list: string[], focus: any, }"
 						],
 						"Deprecated": null
 					},
@@ -6364,7 +6402,7 @@
 					"Description": {
 						"Brief": "Message for the recognition list of node.",
 						"Details": [
-							"payload: { task_id: number, reco_id: number, name: string, focus: any, }"
+							"details_json: { task_id: number, reco_id: number, name: string, focus: any, }"
 						],
 						"Deprecated": null
 					},
@@ -6374,7 +6412,7 @@
 					"Description": {
 						"Brief": "Message for the recognition list of node.",
 						"Details": [
-							"payload: { task_id: number, reco_id: number, name: string, focus: any, }"
+							"details_json: { task_id: number, reco_id: number, name: string, focus: any, }"
 						],
 						"Deprecated": null
 					},
@@ -6384,7 +6422,7 @@
 					"Description": {
 						"Brief": "Message for the recognition list of node.",
 						"Details": [
-							"payload: { task_id: number, reco_id: number, name: string, focus: any, }"
+							"details_json: { task_id: number, reco_id: number, name: string, focus: any, }"
 						],
 						"Deprecated": null
 					},
@@ -6394,7 +6432,7 @@
 					"Description": {
 						"Brief": "Message for the action of node.",
 						"Details": [
-							"payload: { task_id: number, node_id: number, name: string, focus: any, }"
+							"details_json: { task_id: number, node_id: number, name: string, focus: any, }"
 						],
 						"Deprecated": null
 					},
@@ -6404,7 +6442,7 @@
 					"Description": {
 						"Brief": "Message for the action of node.",
 						"Details": [
-							"payload: { task_id: number, node_id: number, name: string, focus: any, }"
+							"details_json: { task_id: number, node_id: number, name: string, focus: any, }"
 						],
 						"Deprecated": null
 					},
@@ -6414,7 +6452,7 @@
 					"Description": {
 						"Brief": "Message for the action of node.",
 						"Details": [
-							"payload: { task_id: number, node_id: number, name: string, focus: any, }"
+							"details_json: { task_id: number, node_id: number, name: string, focus: any, }"
 						],
 						"Deprecated": null
 					},
