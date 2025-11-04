@@ -26,6 +26,7 @@
  */
 #define MaaMsg_Resource_Instance_Created("Resource.Instance.Created")
 #define MaaMsg_Resource_Instance_Destroying("Resource.Instance.Destroying")
+/// @}
 
 /**
  * @{
