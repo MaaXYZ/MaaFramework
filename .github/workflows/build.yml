@@ -137,7 +137,7 @@ jobs:
             - name: Install Plugin
               shell: bash
               run: |
-                  cp build/download_plugins/bin install/bin/plugins
+                  cp -r build/download_plugins/bin install/bin/plugins
 
             - uses: actions/upload-artifact@v4
               if: always()
@@ -230,7 +230,7 @@ jobs:
             - name: Install Plugin
               shell: bash
               run: |
-                  cp build/download_plugins/lib install/lib/plugins
+                  cp -r build/download_plugins/lib install/lib/plugins
 
             - uses: actions/upload-artifact@v4
               if: always()
@@ -321,7 +321,7 @@ jobs:
             - name: Install Plugin
               shell: bash
               run: |
-                  cp build/download_plugins/lib install/lib/plugins
+                  cp -r build/download_plugins/lib install/lib/plugins
 
             - uses: actions/upload-artifact@v4
               if: always()
@@ -401,7 +401,7 @@ jobs:
             - name: Install Plugin
               shell: bash
               run: |
-                  cp build/download_plugins/lib install/lib/plugins
+                  cp -r build/download_plugins/lib install/lib/plugins
 
             - uses: actions/upload-artifact@v4
               if: always()
