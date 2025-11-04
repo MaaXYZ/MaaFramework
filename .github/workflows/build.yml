@@ -130,15 +130,14 @@ jobs:
                 repository: MaaXYZ/MaaPluginDemo
                 latest: true
                 prerelease: ${{ needs.meta.outputs.is_release != 'true' || needs.meta.outputs.is_pre_release == 'true' }}
-                fileName: "*-win-${{ matrix.arch }}*"
+                fileName: "*win-${{ matrix.arch }}*"
                 out-file-path: "build/download_plugins"
                 extract: true
 
             - name: Install Plugin
               shell: bash
               run: |
-                  mkdir -p install/bin/plugins
-                  cp build/download_plugins/bin/* install/bin/plugins
+                  cp build/download_plugins/bin install/bin/plugins
 
             - uses: actions/upload-artifact@v4
               if: always()
@@ -224,15 +223,14 @@ jobs:
                 repository: MaaXYZ/MaaPluginDemo
                 latest: true
                 prerelease: ${{ needs.meta.outputs.is_release != 'true' || needs.meta.outputs.is_pre_release == 'true' }}
-                fileName: "*-linux-${{ matrix.arch }}*"
+                fileName: "*linux-${{ matrix.arch }}*"
                 out-file-path: "build/download_plugins"
                 extract: true
 
             - name: Install Plugin
               shell: bash
               run: |
-                  mkdir -p install/bin/plugins
-                  cp build/download_plugins/lib/* install/lib/plugins
+                  cp build/download_plugins/lib install/lib/plugins
 
             - uses: actions/upload-artifact@v4
               if: always()
@@ -316,15 +314,14 @@ jobs:
                 repository: MaaXYZ/MaaPluginDemo
                 latest: true
                 prerelease: ${{ needs.meta.outputs.is_release != 'true' || needs.meta.outputs.is_pre_release == 'true' }}
-                fileName: "*-linux-${{ matrix.arch }}*"
+                fileName: "*macos-${{ matrix.arch }}*"
                 out-file-path: "build/download_plugins"
                 extract: true
 
             - name: Install Plugin
               shell: bash
               run: |
-                  mkdir -p install/bin/plugins
-                  cp build/download_plugins/lib/* install/lib/plugins
+                  cp build/download_plugins/lib install/lib/plugins
 
             - uses: actions/upload-artifact@v4
               if: always()
@@ -397,15 +394,14 @@ jobs:
                 repository: MaaXYZ/MaaPluginDemo
                 latest: true
                 prerelease: ${{ needs.meta.outputs.is_release != 'true' || needs.meta.outputs.is_pre_release == 'true' }}
-                fileName: "*-linux-${{ matrix.arch }}*"
+                fileName: "*android-${{ matrix.arch }}*"
                 out-file-path: "build/download_plugins"
                 extract: true
 
             - name: Install Plugin
               shell: bash
               run: |
-                  mkdir -p install/bin/plugins
-                  cp build/download_plugins/lib/* install/lib/plugins
+                  cp build/download_plugins/lib install/lib/plugins
 
             - uses: actions/upload-artifact@v4
               if: always()
