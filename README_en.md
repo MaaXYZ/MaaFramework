@@ -139,6 +139,8 @@ It offers low-code simplicity while maintaining high extensibility. The framewor
 
 - [Maa_bbb](https://github.com/miaojiuqing/Maa_bbb) ![Pipeline](https://img.shields.io/badge/Pipeline-%23876f69?logo=paddypower&logoColor=%23FFFFFF) ![Python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white) ![license](https://img.shields.io/github/license/miaojiuqing/Maa_bbb) ![activity](https://img.shields.io/github/commit-activity/m/miaojiuqing/Maa_bbb?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/miaojiuqing/Maa_bbb?style=social) [![mirrorc](https://img.shields.io/badge/Mirror%E9%85%B1-%239af3f6?logo=countingworkspro&logoColor=4f46e5)](https://mirrorchyan.com/en/projects?rid=Maa_bbb)  
   Honkai Impact 3 Mini Assistant. Uses image recognition and simulation control technology to free your hands! Supports both PC and emulator simultaneously, powered by MaaFramework!
+- [MAN](https://github.com/duorua/narutomobile) ![Pipeline](https://img.shields.io/badge/Pipeline-%23876f69?logo=paddypower&logoColor=%23FFFFFF) ![Python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white) ![license](https://img.shields.io/github/license/duorua/narutomobile) ![activity](https://img.shields.io/github/commit-activity/m/duorua/narutomobile?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/duorua/narutomobile?style=social) [![mirrorc](https://img.shields.io/badge/Mirror%E9%85%B1-%239af3f6?logo=countingworkspro&logoColor=4f46e5)](https://mirrorchyan.com/en/projects?rid=MAN)  
+  Naruto Moblie head-stroke village Mini Assistant. Uses image recognition and simulation control technology to free your hands! Supports both PC and emulator simultaneously, powered by MaaFramework!
   
 ## Eco-Building
 
