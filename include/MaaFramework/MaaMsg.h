@@ -75,8 +75,8 @@
  *
  * details_json: null
  */
-#define MaaMsg_Controller_Instance_Created("Controller.Instance.Created")
-#define MaaMsg_Controller_Instance_Destroying("Controller.Instance.Destroying")
+#define MaaMsg_Tasker_Instance_Created("Tasker.Instance.Created")
+#define MaaMsg_Tasker_Instance_Destroying("Tasker.Instance.Destroying")
 
 /**
  * @{
