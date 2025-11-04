@@ -10,7 +10,6 @@
 #include "MaaUtils/Platform.h"
 #include "PipelineDumper.h"
 
-
 MAA_RES_NS_BEGIN
 
 ResourceMgr::ResourceMgr()
@@ -26,11 +25,15 @@ ResourceMgr::ResourceMgr()
 
     res_loader_ = std::make_unique<AsyncRunner<std::filesystem::path>>(
         std::bind(&ResourceMgr::run_load, this, std::placeholders::_1, std::placeholders::_2));
+
+    notifier_.notify(this, MaaMsg_Resource_Instance_Created);
 }
 
 ResourceMgr::~ResourceMgr()
 {
     LogFunc;
+
+    notifier_.notify(this, MaaMsg_Resource_Instance_Destroying);
 
     if (res_loader_) {
         res_loader_->wait_all();

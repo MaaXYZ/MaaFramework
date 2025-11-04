@@ -53,7 +53,7 @@ public:
     }
 
 public:
-    void notify(void* handle, std::string_view msg, const json::value& details)
+    void notify(void* handle, std::string_view msg, const json::value& details = json::value())
     {
         LogFunc << VAR_VOIDP(handle) << VAR(msg) << VAR(details);
 

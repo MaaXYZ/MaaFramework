@@ -7,7 +7,6 @@
 #include "MaaUtils/NoWarningCV.hpp"
 #include "Resource/ResourceMgr.h"
 
-
 MAA_CTRL_NS_BEGIN
 
 ControllerAgent::ControllerAgent(std::shared_ptr<MAA_CTRL_UNIT_NS::ControlUnitAPI> control_unit)
@@ -24,11 +23,15 @@ ControllerAgent::ControllerAgent(std::shared_ptr<MAA_CTRL_UNIT_NS::ControlUnitAP
 
     action_runner_ =
         std::make_unique<AsyncRunner<Action>>(std::bind(&ControllerAgent::run_action, this, std::placeholders::_1, std::placeholders::_2));
+
+    notifier_.notify(this, MaaMsg_Controller_Instance_Created);
 }
 
 ControllerAgent::~ControllerAgent()
 {
     LogFunc;
+
+    notifier_.notify(this, MaaMsg_Controller_Instance_Destroying);
 
     if (action_runner_) {
         action_runner_->wait_all();

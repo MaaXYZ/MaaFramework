@@ -73,6 +73,16 @@ bool PluginMgr::load_and_parse(const std::filesystem::path& library_path)
     std::filesystem::path filepath = library.location();
     LogInfo << VAR(library_path) << VAR(filepath);
 
+    constexpr const char* kFuncGetPluginVersion = "GetPluginVersion";
+    if (library.has(kFuncGetPluginVersion)) {
+        auto func = library.get<decltype(GetPluginVersion)>(kFuncGetPluginVersion);
+        std::string_view plugin_version = func();
+        LogInfo << VAR(plugin_version) << VAR(filepath);
+    }
+    else {
+        LogWarn << "No func, ignore" << kFuncGetPluginVersion << VAR(filepath);
+    }
+
     constexpr uint32_t kApiVersion = 1;
     constexpr const char* kFuncGetApiVersion = "GetApiVersion";
     if (library.has(kFuncGetApiVersion)) {
@@ -81,11 +91,11 @@ bool PluginMgr::load_and_parse(const std::filesystem::path& library_path)
             LogError << "Failed to get function" << VAR(kFuncGetApiVersion) << VAR(filepath);
             return false;
         }
-        uint32_t version = func();
-        LogInfo << VAR(version) << VAR(filepath);
+        uint32_t api_version = func();
+        LogInfo << VAR(api_version) << VAR(filepath);
 
-        if (version != kApiVersion) {
-            LogError << "Unsupported API version" << VAR(version) << VAR(kApiVersion) << VAR(filepath);
+        if (api_version != kApiVersion) {
+            LogError << "Unsupported API version" << VAR(api_version) << VAR(kApiVersion) << VAR(filepath);
             return false;
         }
     }

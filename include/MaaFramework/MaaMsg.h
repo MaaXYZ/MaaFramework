@@ -20,6 +20,15 @@
 
 /**
  * @{
+ * @brief The message for the resource instance.
+ *
+ * details_json: null
+ */
+#define MaaMsg_Resource_Instance_Created("Resource.Instance.Created")
+#define MaaMsg_Resource_Instance_Destroying("Resource.Instance.Destroying")
+
+/**
+ * @{
  * @brief The message for the resource loading.
  *
  * details_json: {
@@ -32,6 +41,15 @@
 #define MaaMsg_Resource_Loading_Succeeded ("Resource.Loading.Succeeded")
 #define MaaMsg_Resource_Loading_Failed ("Resource.Loading.Failed")
 /// @}
+
+/**
+ * @{
+ * @brief The message for the controller instance.
+ *
+ * details_json: null
+ */
+#define MaaMsg_Controller_Instance_Created("Controller.Instance.Created")
+#define MaaMsg_Controller_Instance_Destroying("Controller.Instance.Destroying")
 
 /**
  * @{
@@ -48,6 +66,15 @@
 #define MaaMsg_Controller_Action_Succeeded ("Controller.Action.Succeeded")
 #define MaaMsg_Controller_Action_Failed ("Controller.Action.Failed")
 /// @}
+
+/**
+ * @{
+ * @brief The message for the tasker instance.
+ *
+ * details_json: null
+ */
+#define MaaMsg_Controller_Instance_Created("Controller.Instance.Created")
+#define MaaMsg_Controller_Instance_Destroying("Controller.Instance.Destroying")
 
 /**
  * @{
