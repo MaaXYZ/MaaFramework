@@ -9,7 +9,6 @@
 #include "Resource/ResourceMgr.h"
 #include "Tasker/Tasker.h"
 
-
 MaaController* MaaAdbControllerCreate(
     const char* adb_path,
     const char* address,
@@ -31,9 +30,13 @@ MaaController* MaaAdbControllerCreate(
     return new MAA_CTRL_NS::ControllerAgent(std::move(control_unit));
 }
 
-MaaController* MaaWin32ControllerCreate(void* hWnd, MaaWin32ScreencapMethod screencap_method, MaaWin32InputMethod input_method)
+MaaController* MaaWin32ControllerCreate(
+    void* hWnd,
+    MaaWin32ScreencapMethod screencap_method,
+    MaaWin32InputMethod mouse_method,
+    MaaWin32InputMethod keyboard_method)
 {
-    LogFunc << VAR_VOIDP(hWnd) << VAR(screencap_method) << VAR(input_method);
+    LogFunc << VAR_VOIDP(hWnd) << VAR(screencap_method) << VAR(mouse_method) << VAR(keyboard_method);
 
 #ifndef _WIN32
 
@@ -46,7 +49,7 @@ MaaController* MaaWin32ControllerCreate(void* hWnd, MaaWin32ScreencapMethod scre
         LogWarn << "hWnd is nullptr";
     }
 
-    auto control_unit = MAA_NS::Win32ControlUnitLibraryHolder::create_control_unit(hWnd, screencap_method, input_method);
+    auto control_unit = MAA_NS::Win32ControlUnitLibraryHolder::create_control_unit(hWnd, screencap_method, mouse_method, keyboard_method);
 
     if (!control_unit) {
         LogError << "Failed to create control unit";
