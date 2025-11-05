@@ -156,7 +156,7 @@ MaaBool CustomRequestUuid(void* trans_arg, MaaStringBuffer* buffer)
     }
 }
 
-MaaControllerFeature CustomGetAvailability(void* trans_arg)
+MaaControllerFeature CustomGetFeatures(void* trans_arg)
 {
     using Ret = std::optional<std::vector<std::string>>;
     auto customCtx = reinterpret_cast<CustomControllerContext*>(trans_arg);
