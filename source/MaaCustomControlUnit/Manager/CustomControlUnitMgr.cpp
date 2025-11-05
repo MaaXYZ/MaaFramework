@@ -113,7 +113,13 @@ bool CustomControlUnitMgr::swipe(int x1, int y1, int x2, int y2, int duration)
 
 bool CustomControlUnitMgr::is_touch_availabled() const
 {
-    return controller_ && controller_->touch_down && controller_->touch_move && controller_->touch_up;
+    if (!controller_) {
+        return false;
+    }
+    if (controller_->get_availability && !(controller_->get_availability(controller_arg_) & MaaCustomControllerAvailability_Touch)) {
+        return false;
+    }
+    return controller_->touch_down && controller_->touch_move && controller_->touch_up;
 }
 
 bool CustomControlUnitMgr::touch_down(int contact, int x, int y, int pressure)
@@ -178,7 +184,13 @@ bool CustomControlUnitMgr::input_text(const std::string& text)
 
 bool CustomControlUnitMgr::is_key_down_up_availabled() const
 {
-    return controller_ && controller_->key_down && controller_->key_up;
+    if (!controller_) {
+        return false;
+    }
+    if (controller_->get_availability && !(controller_->get_availability(controller_arg_) & MaaCustomControllerAvailability_Key)) {
+        return false;
+    }
+    return controller_->key_down && controller_->key_up;
 }
 
 bool CustomControlUnitMgr::key_down(int key)

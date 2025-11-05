@@ -548,6 +548,7 @@ CustomControllerImpl* CustomControllerImpl::ctor(const maajs::CallbackInfo& info
     context->add_bind(info.Env(), "input_text", "CustomInputText", 1, actor);
     context->add_bind(info.Env(), "key_down", "CustomKeyDown", 1, actor);
     context->add_bind(info.Env(), "key_up", "CustomKeyUp", 1, actor);
+    context->add_bind(info.Env(), "get_availability", "CustomGetAvailability", 0, actor);
 
     auto impl = new CustomControllerImpl(ctrl, true);
     impl->actor = actor;
