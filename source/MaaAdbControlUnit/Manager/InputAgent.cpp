@@ -115,6 +115,16 @@ bool InputAgent::init()
     return true;
 }
 
+MaaControllerFeature InputAgent::get_features() const
+{
+    if (!active_unit_) {
+        LogError << "No available input method" << VAR(active_unit_);
+        return false;
+    }
+
+    return active_unit_->get_features();
+}
+
 bool InputAgent::click(int x, int y)
 {
     if (!active_unit_) {
@@ -133,16 +143,6 @@ bool InputAgent::swipe(int x1, int y1, int x2, int y2, int duration)
     }
 
     return active_unit_->swipe(x1, y1, x2, y2, duration);
-}
-
-bool InputAgent::is_touch_availabled() const
-{
-    if (!active_unit_) {
-        LogError << "No available input method" << VAR(active_unit_);
-        return false;
-    }
-
-    return active_unit_->is_touch_availabled();
 }
 
 bool InputAgent::touch_down(int contact, int x, int y, int pressure)
@@ -195,16 +195,6 @@ bool InputAgent::input_text(const std::string& text)
     return active_unit_->input_text(text);
 }
 
-bool InputAgent::is_key_down_up_availabled() const
-{
-    if (!active_unit_) {
-        LogError << "No available input method" << VAR(active_unit_);
-        return false;
-    }
-
-    return active_unit_->is_key_down_up_availabled();
-}
-
 bool InputAgent::key_down(int key)
 {
     if (!active_unit_) {
@@ -254,6 +244,7 @@ void InputAgent::on_app_stopped(const std::string& intent)
 
     active_unit_->on_app_stopped(intent);
 }
+
 
 std::ostream& operator<<(std::ostream& os, InputAgent::Method m)
 {

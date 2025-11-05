@@ -18,10 +18,10 @@ public:
     virtual ~MtouchHelper() override = default;
 
 public: // from InputBase
+    virtual MaaControllerFeature get_features() const override = 0;
+
     virtual bool click(int x, int y) override;
     virtual bool swipe(int x1, int y1, int x2, int y2, int duration) override;
-
-    virtual bool is_touch_availabled() const override { return true; }
 
     virtual bool touch_down(int contact, int x, int y, int pressure) override;
     virtual bool touch_move(int contact, int x, int y, int pressure) override;

@@ -92,6 +92,11 @@ std::optional<cv::Mat> MuMuPlayerExtras::screencap()
     return dst;
 }
 
+MaaControllerFeature MuMuPlayerExtras::get_features() const
+{
+    return MaaControllerFeature_UseDownAndUpInsteadOfMouseClick | MaaControllerFeature_UseDownAndUpInsteadOfKeyboardClick;
+}
+
 bool MuMuPlayerExtras::click(int x, int y)
 {
     LogError << "deprecated" << VAR(x) << VAR(y);
@@ -554,6 +559,7 @@ int MuMuPlayerExtras::get_display_id()
     mumu_display_id_cache_ = display_id;
     return display_id;
 }
+
 
 MAA_CTRL_UNIT_NS_END
 

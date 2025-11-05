@@ -44,6 +44,20 @@ bool CustomControlUnitMgr::request_uuid(std::string& uuid)
     return true;
 }
 
+MaaControllerFeature CustomControlUnitMgr::get_features() const
+{
+    LogFunc << VAR_VOIDP(controller_) << VAR_VOIDP(controller_->get_features);
+
+    if (!controller_ || !controller_->get_features) {
+        LogError << "controller_ or controller_->request_uuid is nullptr";
+        return false;
+    }
+
+    MaaControllerFeature features = controller_->get_features(controller_arg_);
+    return features;
+}
+
+
 bool CustomControlUnitMgr::start_app(const std::string& intent)
 {
     LogFunc << VAR_VOIDP(controller_) << VAR_VOIDP(controller_->start_app) << VAR(intent);
@@ -111,17 +125,6 @@ bool CustomControlUnitMgr::swipe(int x1, int y1, int x2, int y2, int duration)
     return controller_->swipe(x1, y1, x2, y2, duration, controller_arg_);
 }
 
-bool CustomControlUnitMgr::is_touch_availabled() const
-{
-    if (!controller_) {
-        return false;
-    }
-    if (controller_->get_availability && !(controller_->get_availability(controller_arg_) & MaaCustomControllerAvailability_Touch)) {
-        return false;
-    }
-    return controller_->touch_down && controller_->touch_move && controller_->touch_up;
-}
-
 bool CustomControlUnitMgr::touch_down(int contact, int x, int y, int pressure)
 {
     LogFunc << VAR_VOIDP(controller_) << VAR_VOIDP(controller_->touch_down) << VAR(contact) << VAR(x) << VAR(y) << VAR(pressure);
@@ -180,17 +183,6 @@ bool CustomControlUnitMgr::input_text(const std::string& text)
     }
 
     return controller_->input_text(text.c_str(), controller_arg_);
-}
-
-bool CustomControlUnitMgr::is_key_down_up_availabled() const
-{
-    if (!controller_) {
-        return false;
-    }
-    if (controller_->get_availability && !(controller_->get_availability(controller_arg_) & MaaCustomControllerAvailability_Key)) {
-        return false;
-    }
-    return controller_->key_down && controller_->key_up;
 }
 
 bool CustomControlUnitMgr::key_down(int key)

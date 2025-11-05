@@ -24,6 +24,11 @@ bool AdbShellInput::parse(const json::value& config)
            && parse_command("InputText", config, kDefaultInputTextArgv, input_text_argv_);
 }
 
+MaaControllerFeature AdbShellInput::get_features() const
+{
+    return MaaControllerFeature_None;
+}
+
 bool AdbShellInput::click(int x, int y)
 {
     LogInfo << VAR(x) << VAR(y);
