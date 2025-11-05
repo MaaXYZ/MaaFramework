@@ -190,19 +190,6 @@ bool AgentClient::handle_inserted_request(const json::value& j)
         return true;
     }
 
-    else if (handle_context_event_response(j)) {
-        return true;
-    }
-    else if (handle_tasker_event_response(j)) {
-        return true;
-    }
-    else if (handle_resource_event_response(j)) {
-        return true;
-    }
-    else if (handle_controller_event_response(j)) {
-        return true;
-    }
-
     else if (handle_context_run_task(j)) {
         return true;
     }
@@ -369,46 +356,6 @@ bool AgentClient::handle_inserted_request(const json::value& j)
         LogError << "unexpected msg" << VAR(j) << VAR(ipc_addr_);
         return false;
     }
-}
-
-bool AgentClient::handle_context_event_response(const json::value& j)
-{
-    if (!j.is<ContextEventResponse>()) {
-        return false;
-    }
-    const ContextEventResponse& resp = j.as<ContextEventResponse>();
-    LogInfo << VAR(resp) << VAR(ipc_addr_);
-    return true;
-}
-
-bool AgentClient::handle_tasker_event_response(const json::value& j)
-{
-    if (!j.is<TaskerEventResponse>()) {
-        return false;
-    }
-    const TaskerEventResponse& resp = j.as<TaskerEventResponse>();
-    LogInfo << VAR(resp) << VAR(ipc_addr_);
-    return true;
-}
-
-bool AgentClient::handle_resource_event_response(const json::value& j)
-{
-    if (!j.is<ResourceEventResponse>()) {
-        return false;
-    }
-    const ResourceEventResponse& resp = j.as<ResourceEventResponse>();
-    LogInfo << VAR(resp) << VAR(ipc_addr_);
-    return true;
-}
-
-bool AgentClient::handle_controller_event_response(const json::value& j)
-{
-    if (!j.is<ControllerEventResponse>()) {
-        return false;
-    }
-    const ControllerEventResponse& resp = j.as<ControllerEventResponse>();
-    LogInfo << VAR(resp) << VAR(ipc_addr_);
-    return true;
 }
 
 bool AgentClient::handle_context_run_task(const json::value& j)
