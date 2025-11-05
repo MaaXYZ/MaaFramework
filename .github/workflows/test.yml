@@ -26,6 +26,10 @@ on:
             - 'test/**'
     workflow_dispatch:
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}${{ github.ref == 'refs/heads/main' && github.sha }}
+  cancel-in-progress: true
+
 jobs:
     meta:
         uses: ./.github/workflows/meta.yml
