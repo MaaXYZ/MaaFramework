@@ -156,6 +156,28 @@ MaaBool CustomRequestUuid(void* trans_arg, MaaStringBuffer* buffer)
     }
 }
 
+MaaControllerFeature CustomGetAvailability(void* trans_arg)
+{
+    using Ret = std::optional<std::vector<std::string>>;
+    auto customCtx = reinterpret_cast<CustomControllerContext*>(trans_arg);
+    auto ctx = customCtx->callbacks["get_features"];
+    auto result = ctx->Call<Ret>([&](maajs::FunctionType func) { return func.Call({}); });
+    if (!result) {
+        return 0;
+    }
+
+    MaaControllerFeature ret = 0;
+    for (auto key : *result) {
+        if (key == "mouse") {
+            ret |= MaaControllerFeature_UseMouseDownAndUpInsteadOfClick;
+        }
+        else if (key == "keyboard") {
+            ret |= MaaControllerFeature_UseKeyboardDownAndUpInsteadOfClick;
+        }
+    }
+    return ret;
+}
+
 MaaBool CustomStartApp(const char* intent, void* trans_arg)
 {
     auto customCtx = reinterpret_cast<CustomControllerContext*>(trans_arg);
@@ -321,31 +343,4 @@ MaaBool CustomKeyUp(int32_t keycode, void* trans_arg)
                 maajs::NumberType::New(func.Env(), keycode),
             });
     });
-}
-
-MaaCustomControllerAvailability CustomGetAvailability(void* trans_arg)
-{
-    using Ret = std::variant<bool, std::vector<std::string>>;
-    auto customCtx = reinterpret_cast<CustomControllerContext*>(trans_arg);
-    auto ctx = customCtx->callbacks["get_availability"];
-    auto result = ctx->Call<Ret>([&](maajs::FunctionType func) { return func.Call({}); });
-    if (auto bool_ptr = std::get_if<bool>(&result)) {
-        std::ignore = bool_ptr;
-        return 0;
-    }
-    else if (auto vec_ptr = std::get_if<std::vector<std::string>>(&result)) {
-        MaaCustomControllerAvailability ret = 0;
-        for (auto key : *vec_ptr) {
-            if (key == "touch") {
-                ret |= MaaCustomControllerAvailability_Touch;
-            }
-            else if (key == "key") {
-                ret |= MaaCustomControllerAvailability_Key;
-            }
-        }
-        return ret;
-    }
-    else {
-        return 0;
-    }
 }

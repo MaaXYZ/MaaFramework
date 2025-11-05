@@ -30,6 +30,7 @@ MaaBool CustomAct(
 
 MaaBool CustomConnect(void* trans_arg);
 MaaBool CustomRequestUuid(void* trans_arg, MaaStringBuffer* buffer);
+MaaControllerFeature CustomGetFeatures(void* trans_arg);
 MaaBool CustomStartApp(const char* intent, void* trans_arg);
 MaaBool CustomStopApp(const char* intent, void* trans_arg);
 MaaBool CustomScreencap(void* trans_arg, MaaImageBuffer* buffer);
@@ -42,11 +43,11 @@ MaaBool CustomClickKey(int32_t keycode, void* trans_arg);
 MaaBool CustomInputText(const char* text, void* trans_arg);
 MaaBool CustomKeyDown(int32_t keycode, void* trans_arg);
 MaaBool CustomKeyUp(int32_t keycode, void* trans_arg);
-MaaCustomControllerAvailability CustomGetAvailability(void* trans_arg);
 
 inline MaaCustomControllerCallbacks CustomCallbacks {
     .connect = CustomConnect,
     .request_uuid = CustomRequestUuid,
+    .get_features = CustomGetFeatures,
     .start_app = CustomStartApp,
     .stop_app = CustomStopApp,
     .screencap = CustomScreencap,
@@ -59,5 +60,4 @@ inline MaaCustomControllerCallbacks CustomCallbacks {
     .input_text = CustomInputText,
     .key_down = CustomKeyDown,
     .key_up = CustomKeyUp,
-    .get_availability = CustomGetAvailability,
 };
