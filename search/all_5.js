@@ -1,5 +1,5 @@
 var searchData=
 [
-  ['key_5fdown_0',['key_down',['../structMaaCustomControllerCallbacks.html#a46da9230073fb4ac1ccc7b8c28d87467',1,'MaaCustomControllerCallbacks']]],
-  ['key_5fup_1',['key_up',['../structMaaCustomControllerCallbacks.html#a99d5b6c3270039db39a1f5cdeb27b269',1,'MaaCustomControllerCallbacks']]]
+  ['input_5ftext_0',['input_text',['../structMaaCustomControllerCallbacks.html#add383d0ce3995532bfe0db9d008b6f7e',1,'MaaCustomControllerCallbacks']]],
+  ['introduction_1',['Introduction',['../index.html#intro_sec',1,'']]]
 ];

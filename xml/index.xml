@@ -3,6 +3,7 @@
   <compound refid="structMaaCustomControllerCallbacks" kind="struct"><name>MaaCustomControllerCallbacks</name>
     <member refid="structMaaCustomControllerCallbacks_1a74d6aa4b9e6fc074f4d97d6ebe3be6ad" kind="variable"><name>connect</name></member>
     <member refid="structMaaCustomControllerCallbacks_1af0a00cdd379be8608bf360acfdfde4ea" kind="variable"><name>request_uuid</name></member>
+    <member refid="structMaaCustomControllerCallbacks_1a318dbd580c96d8bf215a2df9d565d450" kind="variable"><name>get_features</name></member>
     <member refid="structMaaCustomControllerCallbacks_1ac25e877ae83b359a0b3e7ee8b02f534f" kind="variable"><name>start_app</name></member>
     <member refid="structMaaCustomControllerCallbacks_1a5a1d73d4f14d2d7b702a1cdafcf96efd" kind="variable"><name>stop_app</name></member>
     <member refid="structMaaCustomControllerCallbacks_1a08c5a1a4ae71f851dbc8a98954d60f0b" kind="variable"><name>screencap</name></member>
@@ -68,6 +69,7 @@
     <member refid="MaaContext_8h_1a415581acd9270998661ff49a3f362a66" kind="function"><name>MaaContextRunAction</name></member>
     <member refid="MaaContext_8h_1a581b031a7dceedcf1ff6cec308895cce" kind="function"><name>MaaContextOverridePipeline</name></member>
     <member refid="MaaContext_8h_1a1ece7f4198230c43f226ab8f7923728d" kind="function"><name>MaaContextOverrideNext</name></member>
+    <member refid="MaaContext_8h_1a6064c7441f9e387eb1f0cbfa6d1ea38d" kind="function"><name>MaaContextOverrideImage</name></member>
     <member refid="MaaContext_8h_1a2b0cbab881d3ade5dc8b7a1e8571be3d" kind="function"><name>MaaContextGetNodeData</name></member>
     <member refid="MaaContext_8h_1abecb5883a59f9a8037982bb1cbc3ff43" kind="function"><name>MaaContextGetTaskId</name></member>
     <member refid="MaaContext_8h_1a646adf1aa6a50e61fd06c173b72fab1f" kind="function"><name>MaaContextGetTasker</name></member>
@@ -121,6 +123,7 @@
     <member refid="MaaResource_8h_1a08043e4ee98ab14cc8c731cd5d98c064" kind="function"><name>MaaResourcePostBundle</name></member>
     <member refid="MaaResource_8h_1a8585514c308fa0e9004e26ccd9ec240a" kind="function"><name>MaaResourceOverridePipeline</name></member>
     <member refid="MaaResource_8h_1af54353480b6dcd1e22723a560545c9b9" kind="function"><name>MaaResourceOverrideNext</name></member>
+    <member refid="MaaResource_8h_1a1310b4983c90e6fe58ed41a43661f947" kind="function"><name>MaaResourceOverrideImage</name></member>
     <member refid="MaaResource_8h_1ad583785acf9660578fbf229a52dff018" kind="function"><name>MaaResourceGetNodeData</name></member>
     <member refid="MaaResource_8h_1a245abf490b3967003e4645f7bb2f2a32" kind="function"><name>MaaResourceClear</name></member>
     <member refid="MaaResource_8h_1ac6bd925883ee8e117dc224aabf279e5a" kind="function"><name>MaaResourceStatus</name></member>
@@ -189,6 +192,9 @@
     <member refid="MaaDef_8h_1ab67ca0fce1cf517080804b1cae4be9b6" kind="define"><name>MaaDbgControllerType_None</name></member>
     <member refid="MaaDef_8h_1a6a9179147858e053948175909352e60d" kind="define"><name>MaaDbgControllerType_CarouselImage</name></member>
     <member refid="MaaDef_8h_1ad5fbfc89110fdbfd5f535c0a4557b809" kind="define"><name>MaaDbgControllerType_ReplayRecording</name></member>
+    <member refid="MaaDef_8h_1a9d97a808d79e338e4a9001268e805336" kind="define"><name>MaaControllerFeature_None</name></member>
+    <member refid="MaaDef_8h_1a717d745204302e5eabf406b008c5a957" kind="define"><name>MaaControllerFeature_UseMouseDownAndUpInsteadOfClick</name></member>
+    <member refid="MaaDef_8h_1ac8dc1b4410fe6a3ff2d62f5a2ee803ec" kind="define"><name>MaaControllerFeature_UseKeyboardDownAndUpInsteadOfClick</name></member>
     <member refid="MaaDef_8h_1a92a321c9e89a79ab64dc5176057d76a6" kind="enum"><name>MaaStatusEnum</name></member>
     <member refid="MaaDef_8h_1a92a321c9e89a79ab64dc5176057d76a6a062c9b1508f38dba096aa2587ba08d40" kind="enumvalue"><name>MaaStatus_Invalid</name></member>
     <member refid="MaaDef_8h_1a92a321c9e89a79ab64dc5176057d76a6ad675ca7fe058998743ec8d99c72a914e" kind="enumvalue"><name>MaaStatus_Pending</name></member>
@@ -265,6 +271,7 @@
     <member refid="MaaDef_8h_1a23833339ba6406d680688350d27d37b3" kind="typedef"><name>MaaWin32ScreencapMethod</name></member>
     <member refid="MaaDef_8h_1a29af4457ff72b57b157a1d58d6d28878" kind="typedef"><name>MaaWin32InputMethod</name></member>
     <member refid="MaaDef_8h_1a7a7491d55c50840ccb1891ba9b7740c4" kind="typedef"><name>MaaDbgControllerType</name></member>
+    <member refid="MaaDef_8h_1a350d60e24f82240806bc6569f4da65f8" kind="typedef"><name>MaaControllerFeature</name></member>
     <member refid="MaaDef_8h_1a90ae9b4896224481bd0967903dafdfa1" kind="typedef"><name>MaaRect</name></member>
     <member refid="MaaDef_8h_1a83fe073ae3fefc09c17fd9eb6b6b3e50" kind="typedef"><name>MaaNotificationCallback</name></member>
     <member refid="MaaDef_8h_1a6b9bcefbd6beaf7a0da83c92318a8693" kind="typedef"><name>MaaEventCallback</name></member>

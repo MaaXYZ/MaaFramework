@@ -14,6 +14,7 @@ var MaaResource_8h =
     [ "MaaResourcePostBundle", "MaaResource_8h.html#a08043e4ee98ab14cc8c731cd5d98c064", null ],
     [ "MaaResourceOverridePipeline", "MaaResource_8h.html#a8585514c308fa0e9004e26ccd9ec240a", null ],
     [ "MaaResourceOverrideNext", "MaaResource_8h.html#af54353480b6dcd1e22723a560545c9b9", null ],
+    [ "MaaResourceOverrideImage", "MaaResource_8h.html#a1310b4983c90e6fe58ed41a43661f947", null ],
     [ "MaaResourceGetNodeData", "MaaResource_8h.html#ad583785acf9660578fbf229a52dff018", null ],
     [ "MaaResourceClear", "MaaResource_8h.html#a245abf490b3967003e4645f7bb2f2a32", null ],
     [ "MaaResourceStatus", "MaaResource_8h.html#ac6bd925883ee8e117dc224aabf279e5a", null ],

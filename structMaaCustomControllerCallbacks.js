@@ -2,6 +2,7 @@ var structMaaCustomControllerCallbacks =
 [
     [ "connect", "structMaaCustomControllerCallbacks.html#a74d6aa4b9e6fc074f4d97d6ebe3be6ad", null ],
     [ "request_uuid", "structMaaCustomControllerCallbacks.html#af0a00cdd379be8608bf360acfdfde4ea", null ],
+    [ "get_features", "structMaaCustomControllerCallbacks.html#a318dbd580c96d8bf215a2df9d565d450", null ],
     [ "start_app", "structMaaCustomControllerCallbacks.html#ac25e877ae83b359a0b3e7ee8b02f534f", null ],
     [ "stop_app", "structMaaCustomControllerCallbacks.html#a5a1d73d4f14d2d7b702a1cdafcf96efd", null ],
     [ "screencap", "structMaaCustomControllerCallbacks.html#a08c5a1a4ae71f851dbc8a98954d60f0b", null ],

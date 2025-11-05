@@ -116,6 +116,8 @@ Functions</h2></td></tr>
 <tr class="separator:a581b031a7dceedcf1ff6cec308895cce"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1ece7f4198230c43f226ab8f7923728d" id="r_a1ece7f4198230c43f226ab8f7923728d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="MaaPort_8h.html#a67006334d91d228121dbba7a8bf8fe05">MAA_FRAMEWORK_API</a> <a class="el" href="MaaDef_8h.html#a2f7289f2a8e07f48c6261b52a120cdf6">MaaBool</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="MaaContext_8h.html#a1ece7f4198230c43f226ab8f7923728d">MaaContextOverrideNext</a> (<a class="el" href="MaaDef_8h.html#ad2101e87aad0f5d03b8136943daee40e">MaaContext</a> *context, const char *node_name, const <a class="el" href="MaaDef_8h.html#a7668a404d5063ffc525180d3e144999f">MaaStringListBuffer</a> *next_list)</td></tr>
 <tr class="separator:a1ece7f4198230c43f226ab8f7923728d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6064c7441f9e387eb1f0cbfa6d1ea38d" id="r_a6064c7441f9e387eb1f0cbfa6d1ea38d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="MaaPort_8h.html#a67006334d91d228121dbba7a8bf8fe05">MAA_FRAMEWORK_API</a> <a class="el" href="MaaDef_8h.html#a2f7289f2a8e07f48c6261b52a120cdf6">MaaBool</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="MaaContext_8h.html#a6064c7441f9e387eb1f0cbfa6d1ea38d">MaaContextOverrideImage</a> (<a class="el" href="MaaDef_8h.html#ad2101e87aad0f5d03b8136943daee40e">MaaContext</a> *context, const char *image_name, const <a class="el" href="MaaDef_8h.html#a0a52c8503deca448e71a407cdb14d259">MaaImageBuffer</a> *image)</td></tr>
+<tr class="separator:a6064c7441f9e387eb1f0cbfa6d1ea38d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2b0cbab881d3ade5dc8b7a1e8571be3d" id="r_a2b0cbab881d3ade5dc8b7a1e8571be3d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="MaaPort_8h.html#a67006334d91d228121dbba7a8bf8fe05">MAA_FRAMEWORK_API</a> <a class="el" href="MaaDef_8h.html#a2f7289f2a8e07f48c6261b52a120cdf6">MaaBool</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="MaaContext_8h.html#a2b0cbab881d3ade5dc8b7a1e8571be3d">MaaContextGetNodeData</a> (<a class="el" href="MaaDef_8h.html#ad2101e87aad0f5d03b8136943daee40e">MaaContext</a> *context, const char *node_name, <a class="el" href="MaaDef_8h.html#a4010bb63df489fc09efb6ba9a1fc1c98">MaaStringBuffer</a> *buffer)</td></tr>
 <tr class="separator:a2b0cbab881d3ade5dc8b7a1e8571be3d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:abecb5883a59f9a8037982bb1cbc3ff43" id="r_abecb5883a59f9a8037982bb1cbc3ff43"><td class="memItemLeft" align="right" valign="top"><a class="el" href="MaaPort_8h.html#a67006334d91d228121dbba7a8bf8fe05">MAA_FRAMEWORK_API</a> <a class="el" href="MaaDef_8h.html#a711b3db9be6db60ae4cb09e3629e42f0">MaaTaskId</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="MaaContext_8h.html#abecb5883a59f9a8037982bb1cbc3ff43">MaaContextGetTaskId</a> (const <a class="el" href="MaaDef_8h.html#ad2101e87aad0f5d03b8136943daee40e">MaaContext</a> *context)</td></tr>
@@ -312,6 +314,40 @@ Functions</h2></td></tr>
 
 </div>
 </div>
+<a id="a6064c7441f9e387eb1f0cbfa6d1ea38d" name="a6064c7441f9e387eb1f0cbfa6d1ea38d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6064c7441f9e387eb1f0cbfa6d1ea38d">&#9670;&#160;</a></span>MaaContextOverrideImage()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="MaaPort_8h.html#a67006334d91d228121dbba7a8bf8fe05">MAA_FRAMEWORK_API</a> <a class="el" href="MaaDef_8h.html#a2f7289f2a8e07f48c6261b52a120cdf6">MaaBool</a> MaaContextOverrideImage </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="MaaDef_8h.html#ad2101e87aad0f5d03b8136943daee40e">MaaContext</a> *&#160;</td>
+          <td class="paramname"><em>context</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const char *&#160;</td>
+          <td class="paramname"><em>image_name</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="MaaDef_8h.html#a0a52c8503deca448e71a407cdb14d259">MaaImageBuffer</a> *&#160;</td>
+          <td class="paramname"><em>image</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
 <a id="a2b0cbab881d3ade5dc8b7a1e8571be3d" name="a2b0cbab881d3ade5dc8b7a1e8571be3d"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a2b0cbab881d3ade5dc8b7a1e8571be3d">&#9670;&#160;</a></span>MaaContextGetNodeData()</h2>
 
@@ -406,7 +442,7 @@ Functions</h2></td></tr>
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="dir_d44c64559bbebec7f509842c48db8b23.html">include</a></li><li class="navelem"><a class="el" href="dir_370cd1367c21b1a87c5c9c6803b8d0b9.html">MaaFramework</a></li><li class="navelem"><a class="el" href="dir_0debf1eee29073ebb629a4e1dfd2a5f6.html">Instance</a></li><li class="navelem"><a class="el" href="MaaContext_8h.html">MaaContext.h</a></li>
-    <li class="footer">Generated on Tue Nov 4 2025 for MaaFramework by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.8 </li>
+    <li class="footer">Generated on Wed Nov 5 2025 for MaaFramework by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.8 </li>
   </ul>
 </div>
 </body>

@@ -8,7 +8,7 @@
     <detaileddescription>
 <sect1 id="index_1intro_sec">
 <title>Introduction</title>
-<para>MaaFramework is a toolset used to create automated tests under various environments such as Windows and Andoroid emulators.</para>
+<para>MaaFramework is a toolset used to create automated tests under various environments such as Windows and Android emulators.</para>
 <para>For starter, take a look at the following pages:</para>
 <para><itemizedlist>
 <listitem><para><ref refid="MaaTasker_8h" kindref="compound">MaaTasker.h</ref></para>

@@ -172,6 +172,12 @@ Macros</h2></td></tr>
 <tr class="separator:a6a9179147858e053948175909352e60d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad5fbfc89110fdbfd5f535c0a4557b809" id="r_ad5fbfc89110fdbfd5f535c0a4557b809"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="MaaDef_8h.html#ad5fbfc89110fdbfd5f535c0a4557b809">MaaDbgControllerType_ReplayRecording</a>&#160;&#160;&#160;(1ULL &lt;&lt; 1)</td></tr>
 <tr class="separator:ad5fbfc89110fdbfd5f535c0a4557b809"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9d97a808d79e338e4a9001268e805336" id="r_a9d97a808d79e338e4a9001268e805336"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="MaaDef_8h.html#a9d97a808d79e338e4a9001268e805336">MaaControllerFeature_None</a>&#160;&#160;&#160;0</td></tr>
+<tr class="separator:a9d97a808d79e338e4a9001268e805336"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a717d745204302e5eabf406b008c5a957" id="r_a717d745204302e5eabf406b008c5a957"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="MaaDef_8h.html#a717d745204302e5eabf406b008c5a957">MaaControllerFeature_UseMouseDownAndUpInsteadOfClick</a>&#160;&#160;&#160;1ULL</td></tr>
+<tr class="separator:a717d745204302e5eabf406b008c5a957"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac8dc1b4410fe6a3ff2d62f5a2ee803ec" id="r_ac8dc1b4410fe6a3ff2d62f5a2ee803ec"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="MaaDef_8h.html#ac8dc1b4410fe6a3ff2d62f5a2ee803ec">MaaControllerFeature_UseKeyboardDownAndUpInsteadOfClick</a>&#160;&#160;&#160;(1ULL &lt;&lt; 1)</td></tr>
+<tr class="separator:ac8dc1b4410fe6a3ff2d62f5a2ee803ec"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="typedef-members" name="typedef-members"></a>
 Typedefs</h2></td></tr>
@@ -241,6 +247,8 @@ Typedefs</h2></td></tr>
 <tr class="separator:a29af4457ff72b57b157a1d58d6d28878"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7a7491d55c50840ccb1891ba9b7740c4" id="r_a7a7491d55c50840ccb1891ba9b7740c4"><td class="memItemLeft" align="right" valign="top">typedef uint64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="MaaDef_8h.html#a7a7491d55c50840ccb1891ba9b7740c4">MaaDbgControllerType</a></td></tr>
 <tr class="separator:a7a7491d55c50840ccb1891ba9b7740c4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a350d60e24f82240806bc6569f4da65f8" id="r_a350d60e24f82240806bc6569f4da65f8"><td class="memItemLeft" align="right" valign="top">typedef uint64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="MaaDef_8h.html#a350d60e24f82240806bc6569f4da65f8">MaaControllerFeature</a></td></tr>
+<tr class="separator:a350d60e24f82240806bc6569f4da65f8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a90ae9b4896224481bd0967903dafdfa1" id="r_a90ae9b4896224481bd0967903dafdfa1"><td class="memItemLeft" align="right" valign="top">typedef struct <a class="el" href="structMaaRect.html">MaaRect</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="MaaDef_8h.html#a90ae9b4896224481bd0967903dafdfa1">MaaRect</a></td></tr>
 <tr class="separator:a90ae9b4896224481bd0967903dafdfa1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a83fe073ae3fefc09c17fd9eb6b6b3e50" id="r_a83fe073ae3fefc09c17fd9eb6b6b3e50"><td class="memItemLeft" align="right" valign="top">typedef void(<a class="el" href="MaaPort_8h.html#afaf570464c85866c04fabe324fe35c18">MAA_CALL</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="MaaDef_8h.html#a83fe073ae3fefc09c17fd9eb6b6b3e50">MaaNotificationCallback</a>) (const char *message, const char *details_json, void *notify_trans_arg)</td></tr>
@@ -763,6 +771,48 @@ Enumerations</h2></td></tr>
 
 </div>
 </div>
+<a id="a9d97a808d79e338e4a9001268e805336" name="a9d97a808d79e338e4a9001268e805336"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9d97a808d79e338e4a9001268e805336">&#9670;&#160;</a></span>MaaControllerFeature_None</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define MaaControllerFeature_None&#160;&#160;&#160;0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a717d745204302e5eabf406b008c5a957" name="a717d745204302e5eabf406b008c5a957"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a717d745204302e5eabf406b008c5a957">&#9670;&#160;</a></span>MaaControllerFeature_UseMouseDownAndUpInsteadOfClick</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define MaaControllerFeature_UseMouseDownAndUpInsteadOfClick&#160;&#160;&#160;1ULL</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ac8dc1b4410fe6a3ff2d62f5a2ee803ec" name="ac8dc1b4410fe6a3ff2d62f5a2ee803ec"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac8dc1b4410fe6a3ff2d62f5a2ee803ec">&#9670;&#160;</a></span>MaaControllerFeature_UseKeyboardDownAndUpInsteadOfClick</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define MaaControllerFeature_UseKeyboardDownAndUpInsteadOfClick&#160;&#160;&#160;(1ULL &lt;&lt; 1)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
 <h2 class="groupheader">Typedef Documentation</h2>
 <a id="a2f7289f2a8e07f48c6261b52a120cdf6" name="a2f7289f2a8e07f48c6261b52a120cdf6"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a2f7289f2a8e07f48c6261b52a120cdf6">&#9670;&#160;</a></span>MaaBool</h2>
@@ -1231,6 +1281,20 @@ Enumerations</h2></td></tr>
 
 </div>
 </div>
+<a id="a350d60e24f82240806bc6569f4da65f8" name="a350d60e24f82240806bc6569f4da65f8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a350d60e24f82240806bc6569f4da65f8">&#9670;&#160;</a></span>MaaControllerFeature</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">typedef uint64_t <a class="el" href="MaaDef_8h.html#a350d60e24f82240806bc6569f4da65f8">MaaControllerFeature</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
 <a id="a90ae9b4896224481bd0967903dafdfa1" name="a90ae9b4896224481bd0967903dafdfa1"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a90ae9b4896224481bd0967903dafdfa1">&#9670;&#160;</a></span>MaaRect</h2>
 
@@ -1492,7 +1556,7 @@ default value is MaaLoggingLevel_Error
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="dir_d44c64559bbebec7f509842c48db8b23.html">include</a></li><li class="navelem"><a class="el" href="dir_370cd1367c21b1a87c5c9c6803b8d0b9.html">MaaFramework</a></li><li class="navelem"><a class="el" href="MaaDef_8h.html">MaaDef.h</a></li>
-    <li class="footer">Generated on Tue Nov 4 2025 for MaaFramework by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.8 </li>
+    <li class="footer">Generated on Wed Nov 5 2025 for MaaFramework by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.8 </li>
   </ul>
 </div>
 </body>

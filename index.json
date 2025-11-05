@@ -1,5 +1,5 @@
 {
-	"Version": "(main) v5.0.0-alpha.5",
+	"Version": "(main) v5.0.0-alpha.6",
 	"Compounds": {
 		"MaaAgentClientAPI.h": {
 			"Location": "include/MaaAgentClient/MaaAgentClientAPI.h",
@@ -826,6 +826,37 @@
 						},
 						"next_list": {
 							"Type": "const MaaStringListBuffer*",
+							"Description": "",
+							"Direction": 0,
+							"IsPointerToArray": null
+						}
+					}
+				},
+				"MaaContextOverrideImage": {
+					"Description": {
+						"Brief": "",
+						"Details": [],
+						"Deprecated": null
+					},
+					"Types": {
+						"MAA_FRAMEWORK_API": "",
+						"MaaBool": ""
+					},
+					"Parameters": {
+						"context": {
+							"Type": "MaaContext*",
+							"Description": "",
+							"Direction": 0,
+							"IsPointerToArray": null
+						},
+						"image_name": {
+							"Type": "const char*",
+							"Description": "",
+							"Direction": 0,
+							"IsPointerToArray": null
+						},
+						"image": {
+							"Type": "const MaaImageBuffer*",
 							"Description": "",
 							"Direction": 0,
 							"IsPointerToArray": null
@@ -1811,6 +1842,26 @@
 								}
 							}
 						},
+						"get_features": {
+							"FunctionPointer": {
+								"Description": {
+									"Brief": "",
+									"Details": [],
+									"Deprecated": null
+								},
+								"Types": {
+									"MaaControllerFeature": ""
+								},
+								"Parameters": {
+									"trans_arg": {
+										"Type": "void*",
+										"Description": "",
+										"Direction": 0,
+										"IsPointerToArray": null
+									}
+								}
+							}
+						},
 						"start_app": {
 							"FunctionPointer": {
 								"Description": {
@@ -2541,6 +2592,37 @@
 						},
 						"next_list": {
 							"Type": "const MaaStringListBuffer*",
+							"Description": "",
+							"Direction": 0,
+							"IsPointerToArray": null
+						}
+					}
+				},
+				"MaaResourceOverrideImage": {
+					"Description": {
+						"Brief": "",
+						"Details": [],
+						"Deprecated": null
+					},
+					"Types": {
+						"MAA_FRAMEWORK_API": "",
+						"MaaBool": ""
+					},
+					"Parameters": {
+						"res": {
+							"Type": "MaaResource*",
+							"Description": "",
+							"Direction": 0,
+							"IsPointerToArray": null
+						},
+						"image_name": {
+							"Type": "const char*",
+							"Description": "",
+							"Direction": 0,
+							"IsPointerToArray": null
+						},
+						"image": {
+							"Type": "const MaaImageBuffer*",
 							"Description": "",
 							"Direction": 0,
 							"IsPointerToArray": null
@@ -3822,6 +3904,17 @@
 					},
 					"FunctionPointer": null
 				},
+				"MaaControllerFeature": {
+					"Type": {
+						"Description": {
+							"Brief": "",
+							"Details": [],
+							"Deprecated": null
+						},
+						"Define": "uint64_t"
+					},
+					"FunctionPointer": null
+				},
 				"MaaRect": {
 					"Type": {
 						"Description": {
@@ -4340,6 +4433,41 @@
 							"Value": "1ULL"
 						},
 						"ReplayRecording": {
+							"Description": {
+								"Brief": "",
+								"Details": [],
+								"Deprecated": null
+							},
+							"Value": "(1ULL \u003C\u003C 1)"
+						}
+					},
+					"IsFlags": false,
+					"UnderlyingType": "uint64_t"
+				},
+				"MaaControllerFeature": {
+					"Description": {
+						"Brief": "",
+						"Details": [],
+						"Deprecated": null
+					},
+					"EnumValues": {
+						"None": {
+							"Description": {
+								"Brief": "",
+								"Details": [],
+								"Deprecated": null
+							},
+							"Value": "0"
+						},
+						"UseMouseDownAndUpInsteadOfClick": {
+							"Description": {
+								"Brief": "",
+								"Details": [],
+								"Deprecated": null
+							},
+							"Value": "1ULL"
+						},
+						"UseKeyboardDownAndUpInsteadOfClick": {
 							"Description": {
 								"Brief": "",
 								"Details": [],
