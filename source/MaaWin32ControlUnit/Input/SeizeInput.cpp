@@ -17,6 +17,11 @@ void SeizeInput::ensure_foreground()
     SetForegroundWindow(hwnd_);
 }
 
+MaaControllerFeature SeizeInput::get_features() const
+{
+    return MaaControllerFeature_UseMouseDownAndUpInsteadOfClick | MaaControllerFeature_UseKeyboardDownAndUpInsteadOfClick;
+}
+
 bool SeizeInput::click(int x, int y)
 {
     LogError << "deprecated" << VAR(x) << VAR(y);

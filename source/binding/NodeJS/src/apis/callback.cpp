@@ -156,6 +156,28 @@ MaaBool CustomRequestUuid(void* trans_arg, MaaStringBuffer* buffer)
     }
 }
 
+MaaControllerFeature CustomGetFeatures(void* trans_arg)
+{
+    using Ret = std::optional<std::vector<std::string>>;
+    auto customCtx = reinterpret_cast<CustomControllerContext*>(trans_arg);
+    auto ctx = customCtx->callbacks["get_features"];
+    auto result = ctx->Call<Ret>([&](maajs::FunctionType func) { return func.Call({}); });
+    if (!result) {
+        return 0;
+    }
+
+    MaaControllerFeature ret = 0;
+    for (auto key : *result) {
+        if (key == "mouse") {
+            ret |= MaaControllerFeature_UseMouseDownAndUpInsteadOfClick;
+        }
+        else if (key == "keyboard") {
+            ret |= MaaControllerFeature_UseKeyboardDownAndUpInsteadOfClick;
+        }
+    }
+    return ret;
+}
+
 MaaBool CustomStartApp(const char* intent, void* trans_arg)
 {
     auto customCtx = reinterpret_cast<CustomControllerContext*>(trans_arg);

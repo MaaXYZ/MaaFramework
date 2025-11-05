@@ -271,6 +271,11 @@ typedef uint64_t MaaDbgControllerType;
 #define MaaDbgControllerType_CarouselImage 1ULL
 #define MaaDbgControllerType_ReplayRecording (1ULL << 1)
 
+typedef uint64_t MaaControllerFeature;
+#define MaaControllerFeature_None 0
+#define MaaControllerFeature_UseMouseDownAndUpInsteadOfClick 1ULL
+#define MaaControllerFeature_UseKeyboardDownAndUpInsteadOfClick (1ULL << 1)
+
 typedef struct MaaRect
 {
     int32_t x;

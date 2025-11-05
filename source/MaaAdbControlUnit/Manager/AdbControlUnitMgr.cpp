@@ -95,6 +95,14 @@ bool AdbControlUnitMgr::request_uuid(std::string& uuid)
     return true;
 }
 
+MaaControllerFeature AdbControlUnitMgr::get_features() const
+{
+    if (!input_) {
+        return MaaControllerFeature_None;
+    }
+    return input_->get_features();
+}
+
 bool AdbControlUnitMgr::start_app(const std::string& intent)
 {
     bool ret = activity_.start_app(intent);
@@ -160,16 +168,6 @@ bool AdbControlUnitMgr::swipe(int x1, int y1, int x2, int y2, int duration)
     return input_->swipe(x1, y1, x2, y2, duration);
 }
 
-bool AdbControlUnitMgr::is_touch_availabled() const
-{
-    if (!input_) {
-        LogError << "input_ is null";
-        return false;
-    }
-
-    return input_->is_touch_availabled();
-}
-
 bool AdbControlUnitMgr::touch_down(int contact, int x, int y, int pressure)
 {
     if (!input_) {
@@ -218,16 +216,6 @@ bool AdbControlUnitMgr::input_text(const std::string& text)
     }
 
     return input_->input_text(text);
-}
-
-bool AdbControlUnitMgr::is_key_down_up_availabled() const
-{
-    if (!input_) {
-        LogError << "input_ is null";
-        return false;
-    }
-
-    return input_->is_key_down_up_availabled();
 }
 
 bool AdbControlUnitMgr::key_down(int key)

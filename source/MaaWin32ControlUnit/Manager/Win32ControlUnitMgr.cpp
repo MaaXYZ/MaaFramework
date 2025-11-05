@@ -93,6 +93,18 @@ bool Win32ControlUnitMgr::request_uuid(std::string& uuid)
     return true;
 }
 
+MaaControllerFeature Win32ControlUnitMgr::get_features() const
+{
+    MaaControllerFeature feat = MaaControllerFeature_None;
+    if (mouse_) {
+        feat |= mouse_->get_features() & MaaControllerFeature_UseMouseDownAndUpInsteadOfClick;
+    }
+    if (keyboard_) {
+        feat |= keyboard_->get_features() & MaaControllerFeature_UseKeyboardDownAndUpInsteadOfClick;
+    }
+    return feat;
+}
+
 bool Win32ControlUnitMgr::start_app(const std::string& intent)
 {
     // TODO
@@ -147,16 +159,6 @@ bool Win32ControlUnitMgr::swipe(int x1, int y1, int x2, int y2, int duration)
     return mouse_->swipe(x1, y1, x2, y2, duration);
 }
 
-bool Win32ControlUnitMgr::is_touch_availabled() const
-{
-    if (!mouse_) {
-        LogError << "mouse_ is null";
-        return false;
-    }
-
-    return mouse_->is_touch_availabled();
-}
-
 bool Win32ControlUnitMgr::touch_down(int contact, int x, int y, int pressure)
 {
     if (!mouse_) {
@@ -205,16 +207,6 @@ bool Win32ControlUnitMgr::input_text(const std::string& text)
     }
 
     return keyboard_->input_text(text);
-}
-
-bool Win32ControlUnitMgr::is_key_down_up_availabled() const
-{
-    if (!keyboard_) {
-        LogError << "keyboard_ is null";
-        return false;
-    }
-
-    return keyboard_->is_key_down_up_availabled();
 }
 
 bool Win32ControlUnitMgr::key_down(int key)

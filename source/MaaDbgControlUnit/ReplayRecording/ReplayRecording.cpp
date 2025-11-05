@@ -43,6 +43,11 @@ bool ReplayRecording::request_uuid(std::string& uuid)
     return true;
 }
 
+MaaControllerFeature ReplayRecording::get_features() const
+{
+    return MaaControllerFeature_None;
+}
+
 bool ReplayRecording::start_app(const std::string& intent)
 {
     LogInfo << VAR(intent);
@@ -185,11 +190,6 @@ bool ReplayRecording::swipe(int x1, int y1, int x2, int y2, int duration)
     return record.success;
 }
 
-bool ReplayRecording::is_touch_availabled() const
-{
-    return false;
-}
-
 bool ReplayRecording::touch_down(int contact, int x, int y, int pressure)
 {
     LogInfo << VAR(contact) << VAR(x) << VAR(y) << VAR(pressure);
@@ -330,11 +330,6 @@ bool ReplayRecording::input_text(const std::string& text)
     sleep(record.cost);
     ++record_index_;
     return record.success;
-}
-
-bool ReplayRecording::is_key_down_up_availabled() const
-{
-    return false;
 }
 
 bool ReplayRecording::key_down(int key)

@@ -326,7 +326,7 @@ bool ControllerAgent::handle_click(const ClickParam& param)
     cv::Point point = preproc_touch_point(param.point);
 
     bool ret = true;
-    if (control_unit_->is_touch_availabled()) {
+    if (control_unit_->get_features() & MaaControllerFeature_UseMouseDownAndUpInsteadOfClick) {
         ret &= control_unit_->touch_down(0, point.x, point.y, 1);
         std::this_thread::yield();
         ret &= control_unit_->touch_up(0);
@@ -348,7 +348,7 @@ bool ControllerAgent::handle_long_press(const LongPressParam& param)
     cv::Point point = preproc_touch_point(param.point);
 
     bool ret = true;
-    if (control_unit_->is_touch_availabled()) {
+    if (control_unit_->get_features() & MaaControllerFeature_UseMouseDownAndUpInsteadOfClick) {
         ret &= control_unit_->touch_down(0, point.x, point.y, 1);
         std::this_thread::sleep_for(std::chrono::milliseconds(param.duration));
         ret &= control_unit_->touch_up(0);
@@ -368,15 +368,15 @@ bool ControllerAgent::handle_swipe(const SwipeParam& param)
         return false;
     }
 
-    const bool touch_availabled = control_unit_->is_touch_availabled();
-    if (!touch_availabled) {
+    const bool use_touch_down_up = control_unit_->get_features()  & MaaControllerFeature_UseMouseDownAndUpInsteadOfClick;
+    if (!use_touch_down_up) {
         LogWarn << "touch not supported, use swipe instead. some features can not work";
     }
 
     cv::Point begin = preproc_touch_point(param.begin);
     bool ret = !param.end.empty();
 
-    if (!param.only_hover && touch_availabled) {
+    if (!param.only_hover && use_touch_down_up) {
         ret &= control_unit_->touch_down(0, begin.x, begin.y, 1);
     }
 
@@ -385,7 +385,7 @@ bool ControllerAgent::handle_swipe(const SwipeParam& param)
         const uint duration = param.duration.empty() ? 200 : (i < param.duration.size()) ? param.duration.at(i) : param.duration.back();
         const uint end_hold = param.end_hold.empty() ? 0 : (i < param.end_hold.size()) ? param.end_hold.at(i) : param.end_hold.back();
 
-        if (touch_availabled) {
+        if (use_touch_down_up) {
             constexpr double kInterval = 10; // ms
             const std::chrono::milliseconds delay(static_cast<int>(kInterval));
 
@@ -421,7 +421,7 @@ bool ControllerAgent::handle_swipe(const SwipeParam& param)
         begin = end;
     }
 
-    if (!param.only_hover && touch_availabled) {
+    if (!param.only_hover && use_touch_down_up) {
         ret &= control_unit_->touch_up(0);
     }
 
@@ -435,7 +435,7 @@ bool ControllerAgent::handle_multi_swipe(const MultiSwipeParam& param)
         return false;
     }
 
-    if (!control_unit_->is_touch_availabled()) {
+    if (!(control_unit_->get_features() & MaaControllerFeature_UseMouseDownAndUpInsteadOfClick)) {
         LogError << "touch is not available";
         return false;
     }
@@ -556,11 +556,6 @@ bool ControllerAgent::handle_touch_down(const TouchParam& param)
         return false;
     }
 
-    if (!control_unit_->is_touch_availabled()) {
-        LogError << "touch is not available";
-        return false;
-    }
-
     cv::Point point = preproc_touch_point(param.point);
     bool ret = control_unit_->touch_down(param.contact, point.x, point.y, param.pressure);
 
@@ -574,11 +569,6 @@ bool ControllerAgent::handle_touch_move(const TouchParam& param)
         return false;
     }
 
-    if (!control_unit_->is_touch_availabled()) {
-        LogError << "touch is not available";
-        return false;
-    }
-
     cv::Point point = preproc_touch_point(param.point);
     bool ret = control_unit_->touch_move(param.contact, point.x, point.y, param.pressure);
 
@@ -589,11 +579,6 @@ bool ControllerAgent::handle_touch_up(const TouchParam& param)
 {
     if (!control_unit_) {
         LogError << "control_unit_ is nullptr";
-        return false;
-    }
-
-    if (!control_unit_->is_touch_availabled()) {
-        LogError << "touch is not available";
         return false;
     }
 
@@ -611,10 +596,10 @@ bool ControllerAgent::handle_click_key(const ClickKeyParam& param)
 
     bool ret = !param.keycode.empty();
 
-    bool key_down_up_availabled = control_unit_->is_key_down_up_availabled();
+    bool use_key_down_up = control_unit_->get_features() & MaaControllerFeature_UseKeyboardDownAndUpInsteadOfClick;
 
     for (const auto& keycode : param.keycode) {
-        if (key_down_up_availabled) {
+        if (use_key_down_up) {
             ret &= control_unit_->key_down(keycode);
             std::this_thread::yield();
             ret &= control_unit_->key_up(keycode);
@@ -636,10 +621,10 @@ bool ControllerAgent::handle_long_press_key(const LongPressKeyParam& param)
 
     bool ret = !param.keycode.empty();
 
-    bool key_down_up_availabled = control_unit_->is_key_down_up_availabled();
+    bool use_key_down_up = control_unit_->get_features() & MaaControllerFeature_UseKeyboardDownAndUpInsteadOfClick;
 
     for (const auto& keycode : param.keycode) {
-        if (key_down_up_availabled) {
+        if (use_key_down_up) {
             ret &= control_unit_->key_down(keycode);
             std::this_thread::sleep_for(std::chrono::milliseconds(param.duration));
             ret &= control_unit_->key_up(keycode);
@@ -715,11 +700,6 @@ bool ControllerAgent::handle_key_down(const ClickKeyParam& param)
         return false;
     }
 
-    if (!control_unit_->is_key_down_up_availabled()) {
-        LogError << "key down/up is not available";
-        return false;
-    }
-
     bool ret = !param.keycode.empty();
 
     for (const auto& keycode : param.keycode) {
@@ -733,11 +713,6 @@ bool ControllerAgent::handle_key_up(const ClickKeyParam& param)
 {
     if (!control_unit_) {
         LogError << "control_unit_ is nullptr";
-        return false;
-    }
-
-    if (!control_unit_->is_key_down_up_availabled()) {
-        LogError << "key down/up is not available";
         return false;
     }
 

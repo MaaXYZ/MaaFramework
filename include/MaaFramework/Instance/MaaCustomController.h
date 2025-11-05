@@ -34,6 +34,7 @@ extern "C"
 
         /// Write result to buffer.
         MaaBool (*request_uuid)(void* trans_arg, /* out */ MaaStringBuffer* buffer);
+        MaaControllerFeature (*get_features)(void* trans_arg);
 
         MaaBool (*start_app)(const char* intent, void* trans_arg);
         MaaBool (*stop_app)(const char* intent, void* trans_arg);

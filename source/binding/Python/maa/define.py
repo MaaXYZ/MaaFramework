@@ -231,6 +231,16 @@ class MaaWin32InputMethodEnum(IntEnum):
 # No bitwise OR, just set it
 MaaDbgControllerType = ctypes.c_uint64
 
+MaaControllerFeature = ctypes.c_uint64
+
+
+# Use bitwise OR to set the features you need
+class MaaControllerFeatureEnum(IntEnum):
+    Null = 0
+
+    UseMouseDownAndUpInsteadOfClick = 1
+    UseKeyboardDownAndUpInsteadOfClick = 1 << 1
+
 
 class MaaDbgControllerTypeEnum(IntEnum):
     Null = 0
@@ -289,6 +299,10 @@ class MaaCustomControllerCallbacks(ctypes.Structure):
         MaaBool,
         ctypes.c_void_p,
         MaaStringBufferHandle,
+    )
+    GetFeaturesFunc = FUNCTYPE(
+        MaaControllerFeature,
+        ctypes.c_void_p,
     )
     StartAppFunc = FUNCTYPE(
         MaaBool,
@@ -364,6 +378,7 @@ class MaaCustomControllerCallbacks(ctypes.Structure):
     _fields_ = [
         ("connect", ConnectFunc),
         ("request_uuid", RequestUuidFunc),
+        ("get_features", GetFeaturesFunc),
         ("start_app", StartAppFunc),
         ("stop_app", StopAppFunc),
         ("screencap", ScreencapFunc),
