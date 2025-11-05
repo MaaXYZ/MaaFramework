@@ -84,7 +84,7 @@ NeuralNetworkClassifier::Result NeuralNetworkClassifier::classify() const
     res.probs = softmax(res.raw);
     res.cls_index = std::max_element(res.probs.begin(), res.probs.end()) - res.probs.begin();
     res.score = res.probs[res.cls_index];
-    res.label = res.cls_index < param_.labels.size() ? param_.labels[res.cls_index] : std::format("Unkonwn_{}", res.cls_index);
+    res.label = res.cls_index < param_.labels.size() ? param_.labels[res.cls_index] : std::format("Unknown_{}", res.cls_index);
     res.box = roi_;
 
     if (debug_draw_) {

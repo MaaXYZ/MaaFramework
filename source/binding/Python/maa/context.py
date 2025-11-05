@@ -108,6 +108,16 @@ class Context:
             )
         )
 
+    def override_image(self, image_name: str, image: numpy.ndarray) -> bool:
+        image_buffer = ImageBuffer()
+        image_buffer.set(image)
+
+        return bool(
+            Library.framework().MaaContextOverrideImage(
+                self._handle, image_name.encode(), image_buffer._handle
+            )
+        )
+
     def get_node_data(self, name: str) -> Optional[Dict]:
         string_buffer = StringBuffer()
         if not Library.framework().MaaContextGetNodeData(
@@ -211,6 +221,13 @@ class Context:
             MaaContextHandle,
             ctypes.c_char_p,
             MaaStringListBufferHandle,
+        ]
+
+        Library.framework().MaaContextOverrideImage.restype = MaaBool
+        Library.framework().MaaContextOverrideImage.argtypes = [
+            MaaContextHandle,
+            ctypes.c_char_p,
+            MaaImageBufferHandle,
         ]
 
         Library.framework().MaaContextGetNodeData.restype = MaaBool

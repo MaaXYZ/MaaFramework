@@ -205,6 +205,9 @@ bool AgentClient::handle_inserted_request(const json::value& j)
     else if (handle_context_override_next(j)) {
         return true;
     }
+    else if (handle_context_override_image(j)) {
+        return true;
+    }
     else if (handle_context_get_node_data(j)) {
         return true;
     }
@@ -283,6 +286,9 @@ bool AgentClient::handle_inserted_request(const json::value& j)
         return true;
     }
     else if (handle_resource_override_next(j)) {
+        return true;
+    }
+    else if (handle_resource_override_image(j)) {
         return true;
     }
     else if (handle_resource_get_node_data(j)) {
@@ -477,6 +483,32 @@ bool AgentClient::handle_context_override_next(const json::value& j)
     bool ret = context->override_next(req.node_name, req.next);
 
     ContextOverrideNextReverseResponse resp {
+        .ret = ret,
+    };
+    send(resp);
+
+    return true;
+}
+
+bool AgentClient::handle_context_override_image(const json::value& j)
+{
+    if (!j.is<ContextOverrideImageReverseRequest>()) {
+        return false;
+    }
+
+    const ContextOverrideImageReverseRequest& req = j.as<ContextOverrideImageReverseRequest>();
+    LogFunc << VAR(req) << VAR(ipc_addr_);
+
+    MaaContext* context = query_context(req.context_id);
+    if (!context) {
+        LogError << "context not found" << VAR(req.context_id);
+        return false;
+    }
+
+    cv::Mat image = get_image_cache(req.image);
+    bool ret = context->override_image(req.image_name, image);
+
+    ContextOverrideImageReverseResponse resp {
         .ret = ret,
     };
     send(resp);
@@ -1144,6 +1176,32 @@ bool AgentClient::handle_resource_override_next(const json::value& j)
     bool ret = resource->override_next(req.node_name, req.next);
 
     ResourceOverrideNextReverseResponse resp {
+        .ret = ret,
+    };
+    send(resp);
+
+    return true;
+}
+
+bool AgentClient::handle_resource_override_image(const json::value& j)
+{
+    if (!j.is<ResourceOverrideImageReverseRequest>()) {
+        return false;
+    }
+
+    const ResourceOverrideImageReverseRequest& req = j.as<ResourceOverrideImageReverseRequest>();
+    LogFunc << VAR(req) << VAR(ipc_addr_);
+
+    MaaResource* resource = query_resource(req.resource_id);
+    if (!resource) {
+        LogError << "resource not found" << VAR(req.resource_id);
+        return false;
+    }
+
+    cv::Mat image = get_image_cache(req.image);
+    bool ret = resource->override_image(req.image_name, image);
+
+    ResourceOverrideImageReverseResponse resp {
         .ret = ret,
     };
     send(resp);

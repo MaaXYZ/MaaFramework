@@ -38,7 +38,8 @@ public: // from MaaContextAPI
         run_action(const std::string& entry, const json::value& pipeline_override, const cv::Rect& box, const std::string& reco_detail)
             override;
     virtual bool override_pipeline(const json::value& pipeline_override) override;
-    virtual bool override_next(const std::string& name, const std::vector<std::string>& next) override;
+    virtual bool override_next(const std::string& node_name, const std::vector<std::string>& next) override;
+    virtual bool override_image(const std::string& image_name, const cv::Mat& image) override;
     virtual std::optional<json::object> get_node_data(const std::string& node_name) const override;
 
     virtual Context* clone() const override;
@@ -48,6 +49,8 @@ public: // from MaaContextAPI
 
 public:
     std::optional<PipelineData> get_pipeline_data(const std::string& node_name) const;
+    std::vector<cv::Mat> get_images(const std::vector<std::string>& names);
+
     bool& need_to_stop();
 
 private:
@@ -58,6 +61,7 @@ private:
     Tasker* tasker_ = nullptr;
 
     PipelineDataMap pipeline_override_;
+    std::unordered_map<std::string, cv::Mat> image_override_;
 
 private:
     bool need_to_stop_ = false;

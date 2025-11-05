@@ -115,14 +115,9 @@ RecoResult Recognizer::template_match(const MAA_VISION_NS::TemplateMatcherParam&
 {
     using namespace MAA_VISION_NS;
 
-    if (!resource()) {
-        LogError << "Resource not bound";
-        return {};
-    }
-
     cv::Rect roi = get_roi(param.roi_target);
 
-    auto templs = resource()->template_res().images(param.template_);
+    auto templs = context_.get_images(param.template_);
     TemplateMatcher analyzer(image_, roi, param, templs, name);
 
     std::optional<cv::Rect> box = std::nullopt;
@@ -142,14 +137,9 @@ RecoResult Recognizer::feature_match(const MAA_VISION_NS::FeatureMatcherParam& p
 {
     using namespace MAA_VISION_NS;
 
-    if (!resource()) {
-        LogError << "Resource not bound";
-        return {};
-    }
-
     cv::Rect roi = get_roi(param.roi_target);
 
-    auto templs = resource()->template_res().images(param.template_);
+    auto templs = context_.get_images(param.template_);
     FeatureMatcher analyzer(image_, roi, param, templs, name);
 
     std::optional<cv::Rect> box = std::nullopt;
@@ -168,11 +158,6 @@ RecoResult Recognizer::feature_match(const MAA_VISION_NS::FeatureMatcherParam& p
 RecoResult Recognizer::color_match(const MAA_VISION_NS::ColorMatcherParam& param, const std::string& name)
 {
     using namespace MAA_VISION_NS;
-
-    if (!resource()) {
-        LogError << "Resource not bound";
-        return {};
-    }
 
     cv::Rect roi = get_roi(param.roi_target);
 
@@ -286,17 +271,13 @@ RecoResult Recognizer::custom_recognize(const MAA_VISION_NS::CustomRecognitionPa
     using namespace MAA_VISION_NS;
     std::ignore = name; // node name
 
-    if (!tasker_) {
-        LogError << "tasker_ is null";
-        return {};
-    }
-    if (!tasker_->resource()) {
+    if (!resource()) {
         LogError << "resource is null";
         return {};
     }
     cv::Rect roi = get_roi(param.roi_target);
 
-    auto session = tasker_->resource()->custom_recognition(param.name);
+    auto session = resource()->custom_recognition(param.name);
     CustomRecognition analyzer(image_, roi, param, session, context_, name);
 
     std::optional<cv::Rect> box = std::nullopt;
