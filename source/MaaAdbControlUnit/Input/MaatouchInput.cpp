@@ -45,7 +45,7 @@ bool MaatouchInput::init()
 
 MaaControllerFeature MaatouchInput::get_features() const
 {
-    return MaaControllerFeature_UseDownAndUpInsteadOfMouseClick | MaaControllerFeature_UseDownAndUpInsteadOfKeyboardClick;
+    return MaaControllerFeature_UseMouseDownAndUpInsteadOfClick | MaaControllerFeature_UseKeyboardDownAndUpInsteadOfClick;
 }
 
 bool MaatouchInput::click_key(int key)

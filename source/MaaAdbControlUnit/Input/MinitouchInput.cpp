@@ -65,7 +65,7 @@ bool MinitouchInput::init()
 
 MaaControllerFeature MinitouchInput::get_features() const
 {
-    return MaaControllerFeature_UseDownAndUpInsteadOfMouseClick;
+    return MaaControllerFeature_UseMouseDownAndUpInsteadOfClick;
 }
 
 bool MinitouchInput::click_key(int key)

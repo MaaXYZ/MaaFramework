@@ -273,8 +273,8 @@ typedef uint64_t MaaDbgControllerType;
 
 typedef uint64_t MaaControllerFeature;
 #define MaaControllerFeature_None 0
-#define MaaControllerFeature_UseDownAndUpInsteadOfMouseClick 1ULL
-#define MaaControllerFeature_UseDownAndUpInsteadOfKeyboardClick (1ULL << 1)
+#define MaaControllerFeature_UseMouseDownAndUpInsteadOfClick 1ULL
+#define MaaControllerFeature_UseKeyboardDownAndUpInsteadOfClick (1ULL << 1)
 
 typedef struct MaaRect
 {

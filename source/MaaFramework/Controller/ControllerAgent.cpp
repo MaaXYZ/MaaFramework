@@ -326,7 +326,7 @@ bool ControllerAgent::handle_click(const ClickParam& param)
     cv::Point point = preproc_touch_point(param.point);
 
     bool ret = true;
-    if (control_unit_->get_features() & MaaControllerFeature_UseDownAndUpInsteadOfMouseClick) {
+    if (control_unit_->get_features() & MaaControllerFeature_UseMouseDownAndUpInsteadOfClick) {
         ret &= control_unit_->touch_down(0, point.x, point.y, 1);
         std::this_thread::yield();
         ret &= control_unit_->touch_up(0);
@@ -348,7 +348,7 @@ bool ControllerAgent::handle_long_press(const LongPressParam& param)
     cv::Point point = preproc_touch_point(param.point);
 
     bool ret = true;
-    if (control_unit_->get_features() & MaaControllerFeature_UseDownAndUpInsteadOfMouseClick) {
+    if (control_unit_->get_features() & MaaControllerFeature_UseMouseDownAndUpInsteadOfClick) {
         ret &= control_unit_->touch_down(0, point.x, point.y, 1);
         std::this_thread::sleep_for(std::chrono::milliseconds(param.duration));
         ret &= control_unit_->touch_up(0);
@@ -368,7 +368,7 @@ bool ControllerAgent::handle_swipe(const SwipeParam& param)
         return false;
     }
 
-    const bool use_touch_down_up = control_unit_->get_features()  & MaaControllerFeature_UseDownAndUpInsteadOfMouseClick;
+    const bool use_touch_down_up = control_unit_->get_features()  & MaaControllerFeature_UseMouseDownAndUpInsteadOfClick;
     if (!use_touch_down_up) {
         LogWarn << "touch not supported, use swipe instead. some features can not work";
     }
@@ -435,7 +435,7 @@ bool ControllerAgent::handle_multi_swipe(const MultiSwipeParam& param)
         return false;
     }
 
-    if (!(control_unit_->get_features() & MaaControllerFeature_UseDownAndUpInsteadOfMouseClick)) {
+    if (!(control_unit_->get_features() & MaaControllerFeature_UseMouseDownAndUpInsteadOfClick)) {
         LogError << "touch is not available";
         return false;
     }
@@ -596,7 +596,7 @@ bool ControllerAgent::handle_click_key(const ClickKeyParam& param)
 
     bool ret = !param.keycode.empty();
 
-    bool use_key_down_up = control_unit_->get_features() & MaaControllerFeature_UseDownAndUpInsteadOfKeyboardClick;
+    bool use_key_down_up = control_unit_->get_features() & MaaControllerFeature_UseKeyboardDownAndUpInsteadOfClick;
 
     for (const auto& keycode : param.keycode) {
         if (use_key_down_up) {
@@ -621,7 +621,7 @@ bool ControllerAgent::handle_long_press_key(const LongPressKeyParam& param)
 
     bool ret = !param.keycode.empty();
 
-    bool use_key_down_up = control_unit_->get_features() & MaaControllerFeature_UseDownAndUpInsteadOfKeyboardClick;
+    bool use_key_down_up = control_unit_->get_features() & MaaControllerFeature_UseKeyboardDownAndUpInsteadOfClick;
 
     for (const auto& keycode : param.keycode) {
         if (use_key_down_up) {

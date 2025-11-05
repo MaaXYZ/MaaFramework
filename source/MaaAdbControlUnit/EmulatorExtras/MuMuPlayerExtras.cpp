@@ -94,7 +94,7 @@ std::optional<cv::Mat> MuMuPlayerExtras::screencap()
 
 MaaControllerFeature MuMuPlayerExtras::get_features() const
 {
-    return MaaControllerFeature_UseDownAndUpInsteadOfMouseClick | MaaControllerFeature_UseDownAndUpInsteadOfKeyboardClick;
+    return MaaControllerFeature_UseMouseDownAndUpInsteadOfClick | MaaControllerFeature_UseKeyboardDownAndUpInsteadOfClick;
 }
 
 bool MuMuPlayerExtras::click(int x, int y)
