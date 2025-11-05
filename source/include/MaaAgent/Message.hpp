@@ -258,6 +258,24 @@ struct ContextOverrideNextReverseResponse
     MEO_JSONIZATION(ret, _ContextOverrideNextReverseResponse);
 };
 
+struct ContextOverrideImageReverseRequest
+{
+    std::string context_id;
+    std::string image_name;
+    std::string image;
+
+    MessageTypePlaceholder _ContextOverrideImageReverseRequest = 1;
+    MEO_JSONIZATION(context_id, image_name, image, _ContextOverrideImageReverseRequest);
+};
+
+struct ContextOverrideImageReverseResponse
+{
+    bool ret = false;
+
+    MessageTypePlaceholder _ContextOverrideImageReverseResponse = 1;
+    MEO_JSONIZATION(ret, _ContextOverrideImageReverseResponse);
+};
+
 struct ContextGetNodeDataReverseRequest
 {
     std::string context_id;
@@ -272,8 +290,8 @@ struct ContextGetNodeDataReverseResponse
     bool has_value = false;
     json::object node_data;
 
-    MessageTypePlaceholder _ContextOverrideNextReverseResponse = 1;
-    MEO_JSONIZATION(has_value, MEO_OPT node_data, _ContextOverrideNextReverseResponse);
+    MessageTypePlaceholder _ContextGetNodeDataReverseResponse = 1;
+    MEO_JSONIZATION(has_value, node_data, _ContextGetNodeDataReverseResponse);
 };
 
 struct ContextCloneReverseRequest
@@ -504,7 +522,7 @@ struct TaskerGetTaskDetailReverseResponse
     int32_t status = 0;
 
     MessageTypePlaceholder _TaskerGetTaskDetailReverseResponse = 1;
-    MEO_JSONIZATION(has_value, MEO_OPT task_id, MEO_OPT entry, MEO_OPT node_ids, MEO_OPT status, _TaskerGetTaskDetailReverseResponse);
+    MEO_JSONIZATION(has_value, task_id, entry, node_ids, status, _TaskerGetTaskDetailReverseResponse);
 };
 
 struct TaskerGetNodeDetailReverseRequest
@@ -525,7 +543,7 @@ struct TaskerGetNodeDetailReverseResponse
     bool completed = false;
 
     MessageTypePlaceholder _TaskerGetNodeDetailReverseResponse = 1;
-    MEO_JSONIZATION(has_value, MEO_OPT node_id, MEO_OPT name, MEO_OPT reco_id, MEO_OPT completed, _TaskerGetNodeDetailReverseResponse);
+    MEO_JSONIZATION(has_value, node_id, name, reco_id, completed, _TaskerGetNodeDetailReverseResponse);
 };
 
 struct TaskerGetRecoResultReverseRequest
@@ -549,16 +567,7 @@ struct TaskerGetRecoResultReverseResponse
     std::vector<std::string> draws;
 
     MessageTypePlaceholder _TaskerGetRecoResultReverseResponse = 1;
-    MEO_JSONIZATION(
-        has_value,
-        MEO_OPT reco_id,
-        MEO_OPT name,
-        MEO_OPT algorithm,
-        MEO_OPT box,
-        MEO_OPT detail,
-        MEO_OPT raw,
-        MEO_OPT draws,
-        _TaskerGetRecoResultReverseResponse);
+    MEO_JSONIZATION(has_value, reco_id, name, algorithm, box, detail, raw, draws, _TaskerGetRecoResultReverseResponse);
 };
 
 struct TaskerGetLatestNodeReverseRequest
@@ -576,7 +585,7 @@ struct TaskerGetLatestNodeReverseResponse
     int64_t latest_id = 0;
 
     MessageTypePlaceholder _TaskerGetLatestNodeReverseResponse = 1;
-    MEO_JSONIZATION(has_value, MEO_OPT latest_id, _TaskerGetLatestNodeReverseResponse);
+    MEO_JSONIZATION(has_value, latest_id, _TaskerGetLatestNodeReverseResponse);
 };
 
 struct ResourcePostBundleReverseRequest
@@ -713,6 +722,24 @@ struct ResourceOverrideNextReverseResponse
     MEO_JSONIZATION(ret, _ResourceOverrideNextReverseResponse);
 };
 
+struct ResourceOverrideImageReverseRequest
+{
+    std::string resource_id;
+    std::string image_name;
+    std::string image;
+
+    MessageTypePlaceholder _ResourceOverrideImageReverseRequest = 1;
+    MEO_JSONIZATION(resource_id, image_name, image, _ResourceOverrideImageReverseRequest);
+};
+
+struct ResourceOverrideImageReverseResponse
+{
+    bool ret = false;
+
+    MessageTypePlaceholder _ResourceOverrideImageReverseResponse = 1;
+    MEO_JSONIZATION(ret, _ResourceOverrideImageReverseResponse);
+};
+
 struct ResourceGetNodeDataReverseRequest
 {
     std::string resource_id;
@@ -727,8 +754,8 @@ struct ResourceGetNodeDataReverseResponse
     bool has_value = false;
     json::object node_data;
 
-    MessageTypePlaceholder _ResourceOverrideNextReverseResponse = 1;
-    MEO_JSONIZATION(has_value, MEO_OPT node_data, _ResourceOverrideNextReverseResponse);
+    MessageTypePlaceholder _ResourceGetNodeDataReverseResponse = 1;
+    MEO_JSONIZATION(has_value, node_data, _ResourceGetNodeDataReverseResponse);
 };
 
 struct ResourceGetHashReverseRequest

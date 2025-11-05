@@ -123,6 +123,21 @@ bool RemoteResource::override_next(const std::string& node_name, const std::vect
     return resp_opt->ret;
 }
 
+bool RemoteResource::override_image(const std::string& image_name, const cv::Mat& image)
+{
+    ResourceOverrideImageReverseRequest req {
+        .resource_id = resource_id_,
+        .image_name = image_name,
+        .image = server_.send_image(image),
+    };
+
+    auto resp_opt = server_.send_and_recv<ResourceOverrideImageReverseResponse>(req);
+    if (!resp_opt) {
+        return false;
+    }
+    return resp_opt->ret;
+}
+
 std::optional<json::object> RemoteResource::get_node_data(const std::string& node_name) const
 {
     ResourceGetNodeDataReverseRequest req {
