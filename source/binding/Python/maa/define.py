@@ -233,11 +233,13 @@ MaaDbgControllerType = ctypes.c_uint64
 
 MaaControllerFeature = ctypes.c_uint64
 
+
 class MaaControllerFeatureEnum(IntEnum):
     Null = 0
 
     UseMouseDownAndUpInsteadOfClick = 1
     UseKeyboardDownAndUpInsteadOfClick = 1 << 1
+
 
 class MaaDbgControllerTypeEnum(IntEnum):
     Null = 0
@@ -296,7 +298,7 @@ class MaaCustomControllerCallbacks(ctypes.Structure):
         MaaBool,
         ctypes.c_void_p,
         MaaStringBufferHandle,
-    )    
+    )
     GetFeaturesFunc = FUNCTYPE(
         MaaControllerFeature,
         ctypes.c_void_p,
@@ -375,6 +377,7 @@ class MaaCustomControllerCallbacks(ctypes.Structure):
     _fields_ = [
         ("connect", ConnectFunc),
         ("request_uuid", RequestUuidFunc),
+        ("get_features", GetFeaturesFunc),
         ("start_app", StartAppFunc),
         ("stop_app", StopAppFunc),
         ("screencap", ScreencapFunc),
