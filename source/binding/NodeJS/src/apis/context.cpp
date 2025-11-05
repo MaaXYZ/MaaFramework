@@ -95,6 +95,15 @@ void ContextImpl::override_next(std::string node_name, std::vector<std::string> 
     }
 }
 
+void ContextImpl::override_image(std::string image_name, maajs::ArrayBufferType image)
+{
+    ImageBuffer buffer;
+    buffer.set(image);
+    if (!MaaContextOverrideImage(context, image_name.c_str(), buffer)) {
+        throw maajs::MaaError { "Context override_image failed" };
+    }
+}
+
 std::optional<std::string> ContextImpl::get_node_data(std::string node_name)
 {
     StringBuffer buffer;
@@ -159,6 +168,7 @@ void ContextImpl::init_proto(maajs::ObjectType proto, maajs::FunctionType)
     MAA_BIND_FUNC(proto, "run_action", ContextImpl::run_action);
     MAA_BIND_FUNC(proto, "override_pipeline", ContextImpl::override_pipeline);
     MAA_BIND_FUNC(proto, "override_next", ContextImpl::override_next);
+    MAA_BIND_FUNC(proto, "override_image", ContextImpl::override_image);
     MAA_BIND_FUNC(proto, "get_node_data", ContextImpl::get_node_data);
     MAA_BIND_FUNC(proto, "get_node_data_parsed", ContextImpl::get_node_data_parsed);
     MAA_BIND_GETTER(proto, "task_id", ContextImpl::get_task_id);

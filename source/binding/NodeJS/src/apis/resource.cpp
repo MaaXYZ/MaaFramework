@@ -230,6 +230,15 @@ void ResourceImpl::override_next(std::string node_name, std::vector<std::string>
     }
 }
 
+void ResourceImpl::override_image(std::string image_name, maajs::ArrayBufferType image)
+{
+    ImageBuffer buffer;
+    buffer.set(image);
+    if (!MaaResourceOverrideImage(resource, image_name.c_str(), buffer)) {
+        throw maajs::MaaError { "Resource override_image failed" };
+    }
+}
+
 std::optional<std::string> ResourceImpl::get_node_data(std::string node_name)
 {
     StringBuffer buffer;
@@ -353,6 +362,7 @@ void ResourceImpl::init_proto(maajs::ObjectType proto, maajs::FunctionType)
     MAA_BIND_SETTER(proto, "inference_execution_provider", ResourceImpl::set_inference_execution_provider);
     MAA_BIND_FUNC(proto, "override_pipeline", ResourceImpl::override_pipeline);
     MAA_BIND_FUNC(proto, "override_next", ResourceImpl::override_next);
+    MAA_BIND_FUNC(proto, "override_image", ResourceImpl::override_image);
     MAA_BIND_FUNC(proto, "get_node_data", ResourceImpl::get_node_data);
     MAA_BIND_FUNC(proto, "get_node_data_parsed", ResourceImpl::get_node_data_parsed);
     MAA_BIND_FUNC(proto, "clear", ResourceImpl::clear);
