@@ -171,6 +171,20 @@ MaaBool MaaResourceOverrideNext(MaaResource* res, const char* node_name, const M
     return res->override_next(node_name, next);
 }
 
+MaaBool MaaResourceOverrideImage(MaaResource* res, const char* image_name, const MaaImageBuffer* image)
+{
+    LogFunc << VAR_VOIDP(res) << VAR(image_name);
+
+    if (!res || !image) {
+        LogError << "handle is null";
+        return false;
+    }
+
+    const cv::Mat& mat = image->get();
+
+    return res->override_image(image_name, mat);
+}
+
 MaaBool MaaResourceGetNodeData(MaaResource* res, const char* node_name, MaaStringBuffer* buffer)
 {
     LogFunc << VAR_VOIDP(res) << VAR(node_name);

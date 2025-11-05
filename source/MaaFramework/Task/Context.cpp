@@ -172,21 +172,25 @@ bool Context::override_pipeline_once(const json::object& pipeline_override, cons
     return true;
 }
 
-bool Context::override_next(const std::string& name, const std::vector<std::string>& next)
+bool Context::override_next(const std::string& node_name, const std::vector<std::string>& next)
 {
-    LogFunc << VAR(getptr()) << VAR(name) << VAR(next);
+    LogFunc << VAR(getptr()) << VAR(node_name) << VAR(next);
 
-    auto data_opt = get_pipeline_data(name);
+    auto data_opt = get_pipeline_data(node_name);
     if (!data_opt) {
-        LogError << "get_pipeline_data failed, task not exist" << VAR(name);
+        LogError << "get_pipeline_data failed, task not exist" << VAR(node_name);
         return false;
     }
 
     data_opt->next = next;
 
-    pipeline_override_.insert_or_assign(name, std::move(*data_opt));
+    pipeline_override_.insert_or_assign(node_name, std::move(*data_opt));
 
     return check_pipeline();
+}
+
+bool Context::override_image(const std::string& image_name, const cv::Mat& image)
+{
 }
 
 Context* Context::clone() const

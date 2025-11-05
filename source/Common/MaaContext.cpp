@@ -106,9 +106,9 @@ MaaBool MaaContextOverridePipeline(MaaContext* context, const char* pipeline_ove
     return context->override_pipeline(ov_opt->as_object());
 }
 
-MaaBool MaaContextOverrideNext(MaaContext* context, const char* name, const MaaStringListBuffer* next_list)
+MaaBool MaaContextOverrideNext(MaaContext* context, const char* node_name, const MaaStringListBuffer* next_list)
 {
-    LogFunc << VAR_VOIDP(context) << VAR(name);
+    LogFunc << VAR_VOIDP(context) << VAR(node_name);
 
     if (!context || !next_list) {
         LogError << "handle is null";
@@ -122,7 +122,21 @@ MaaBool MaaContextOverrideNext(MaaContext* context, const char* name, const MaaS
         next.emplace_back(next_list->at(i).get());
     }
 
-    return context->override_next(name, next);
+    return context->override_next(node_name, next);
+}
+
+MaaBool MaaContextOverrideImage(MaaContext* context, const char* image_name, const MaaImageBuffer* image)
+{
+    LogFunc << VAR_VOIDP(context) << VAR(image_name);
+
+    if (!context || !image) {
+        LogError << "handle is null";
+        return false;
+    }
+
+    const cv::Mat& mat = image->get();
+
+    return context->override_image(image_name, mat);
 }
 
 MaaBool MaaContextGetNodeData(MaaContext* context, const char* node_name, MaaStringBuffer* buffer)
