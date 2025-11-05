@@ -535,11 +535,11 @@ CustomControllerImpl* CustomControllerImpl::ctor(const maajs::CallbackInfo& info
         return nullptr;
     }
 
-    auto ret_false = [](maajs::EnvType env) {
-        return maajs::BooleanType::New(env, false);
+    auto ret_false = [](maajs::EnvType env2) {
+        return maajs::BooleanType::New(env2, false);
     };
-    auto ret_null = [](maajs::EnvType env) {
-        return env.Null();
+    auto ret_null = [](maajs::EnvType env2) {
+        return env2.Null();
     };
 
     context->add_bind(info.Env(), "connect", "CustomConnect", 0, actor, ret_false);
