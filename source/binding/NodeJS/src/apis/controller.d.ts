@@ -169,7 +169,8 @@ declare global {
             constructor(
                 hwnd: DesktopHandle,
                 screencap_methods: ScreencapOrInputMethods,
-                input_methods: ScreencapOrInputMethods,
+                mouse_method: ScreencapOrInputMethods,
+                keyboard_methods: ScreencapOrInputMethods,
             )
 
             static find(): Promise<DesktopDevice[] | null>
