@@ -215,6 +215,8 @@ bool ResourceMgr::override_next(const std::string& node_name, const std::vector<
 
 bool ResourceMgr::override_image(const std::string& image_name, const cv::Mat& image)
 {
+    template_res_.set_image(image_name, image);
+    return true;
 }
 
 std::optional<json::object> ResourceMgr::get_node_data(const std::string& node_name) const

@@ -191,6 +191,8 @@ bool Context::override_next(const std::string& node_name, const std::vector<std:
 
 bool Context::override_image(const std::string& image_name, const cv::Mat& image)
 {
+    image_override_.insert_or_assign(image_name, image);
+    return true;
 }
 
 Context* Context::clone() const
@@ -247,6 +249,35 @@ std::optional<PipelineData> Context::get_pipeline_data(const std::string& node_n
 
     LogWarn << "task not found" << VAR(node_name);
     return std::nullopt;
+}
+
+std::vector<cv::Mat> Context::get_images(const std::vector<std::string>& names)
+{
+    if (!tasker_) {
+        LogError << "tasker is null";
+        return {};
+    }
+    auto* resource = tasker_->resource();
+    if (!resource) {
+        LogError << "resource not bound";
+        return {};
+    }
+
+    std::vector<cv::Mat> results;
+
+    for (const std::string& name : names) {
+        auto it = image_override_.find(name);
+        if (it != image_override_.end()) {
+            LogTrace << "image override" << VAR(name);
+            results.emplace_back(it->second);
+            continue;
+        }
+
+        auto imgs = resource->template_res().get_image(name);
+        results.insert(results.end(), std::make_move_iterator(imgs.begin()), std::make_move_iterator(imgs.end()));
+    }
+
+    return results;
 }
 
 bool& Context::need_to_stop()

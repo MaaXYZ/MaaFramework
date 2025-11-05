@@ -49,6 +49,8 @@ public: // from MaaContextAPI
 
 public:
     std::optional<PipelineData> get_pipeline_data(const std::string& node_name) const;
+    std::vector<cv::Mat> get_images(const std::vector<std::string>& names);
+
     bool& need_to_stop();
 
 private:
@@ -59,6 +61,7 @@ private:
     Tasker* tasker_ = nullptr;
 
     PipelineDataMap pipeline_override_;
+    std::unordered_map<std::string, cv::Mat> image_override_;
 
 private:
     bool need_to_stop_ = false;

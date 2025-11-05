@@ -21,25 +21,23 @@ void TemplateResMgr::clear()
     image_cahce_.clear();
 }
 
-std::vector<cv::Mat> TemplateResMgr::images(const std::vector<std::string>& names)
+std::vector<cv::Mat> TemplateResMgr::get_image(const std::string& name)
 {
-    std::vector<cv::Mat> results;
-
-    for (const auto& name : names) {
-        if (auto iter = image_cahce_.find(name); iter != image_cahce_.end()) {
-            results.insert(results.end(), iter->second.begin(), iter->second.end());
-            continue;
-        }
-
-        auto imgs = load(name);
-        if (imgs.empty()) {
-            continue;
-        }
-        image_cahce_.emplace(name, imgs);
-        results.insert(results.end(), std::make_move_iterator(imgs.begin()), std::make_move_iterator(imgs.end()));
+    if (auto iter = image_cahce_.find(name); iter != image_cahce_.end()) {
+        return iter->second;
     }
 
-    return results;
+    auto imgs = load(name);
+    if (imgs.empty()) {
+        return {};
+    }
+    image_cahce_.emplace(name, imgs);
+    return imgs;
+}
+
+void TemplateResMgr::set_image(const std::string& name, const cv::Mat& image)
+{
+    image_cahce_[name] = { image };
 }
 
 std::vector<cv::Mat> TemplateResMgr::load(const std::string& name)
