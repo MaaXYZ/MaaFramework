@@ -178,7 +178,7 @@ MaaTaskId MaaTaskerPostStop(MaaTasker* tasker)
 
     if (!tasker) {
         LogError << "handle is null";
-        return false;
+        return MaaInvalidId;
     }
 
     return tasker->post_stop();
