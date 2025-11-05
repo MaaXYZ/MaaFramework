@@ -49,7 +49,7 @@ MaaControllerFeature CustomControlUnitMgr::get_features() const
     LogFunc << VAR_VOIDP(controller_) << VAR_VOIDP(controller_->get_features);
 
     if (!controller_ || !controller_->get_features) {
-        LogError << "controller_ or controller_->request_uuid is nullptr";
+        LogError << "controller_ or controller_->get_features is nullptr";
         return MaaControllerFeature_None;
     }
 
