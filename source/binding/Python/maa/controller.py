@@ -641,7 +641,7 @@ class CustomController(Controller):
     @MaaCustomControllerCallbacks.GetFeaturesFunc
     def _c_get_features_agent(trans_arg: ctypes.c_void_p) -> int:
         if not trans_arg:
-            return int(False)
+            return int(MaaControllerFeatureEnum.Null)
 
         self: CustomController = ctypes.cast(
             trans_arg,

@@ -234,6 +234,7 @@ MaaDbgControllerType = ctypes.c_uint64
 MaaControllerFeature = ctypes.c_uint64
 
 
+# Use bitwise OR to set the features you need
 class MaaControllerFeatureEnum(IntEnum):
     Null = 0
 
