@@ -4,11 +4,13 @@ import json
 from typing import Any, Optional, Union, List, Dict, Tuple
 from dataclasses import dataclass, field
 
+import numpy
+
 from .event_sink import EventSink, NotificationType
 from .define import *
 from .job import Job
 from .library import Library
-from .buffer import StringBuffer, StringListBuffer
+from .buffer import StringBuffer, StringListBuffer, ImageBuffer
 from .pipeline import JPipelineData, JPipelineParser
 
 
@@ -70,6 +72,16 @@ class Resource:
         return bool(
             Library.framework().MaaResourceOverrideNext(
                 self._handle, name.encode(), list_buffer._handle
+            )
+        )
+
+    def override_image(self, image_name: str, image: numpy.ndarray) -> bool:
+        image_buffer = ImageBuffer()
+        image_buffer.set(image)
+
+        return bool(
+            Library.framework().MaaResourceOverrideImage(
+                self._handle, image_name.encode(), image_buffer._handle
             )
         )
 
@@ -340,6 +352,13 @@ class Resource:
             MaaResourceHandle,
             ctypes.c_char_p,
             MaaStringListBufferHandle,
+        ]
+
+        Library.framework().MaaResourceOverrideImage.restype = MaaBool
+        Library.framework().MaaResourceOverrideImage.argtypes = [
+            MaaResourceHandle,
+            ctypes.c_char_p,
+            MaaImageBufferHandle,
         ]
 
         Library.framework().MaaResourceGetNodeData.restype = MaaBool
