@@ -189,6 +189,20 @@ bool AgentClient::handle_inserted_request(const json::value& j)
     if (handle_image_header(j)) {
         return true;
     }
+
+    else if (handle_context_event_response(j)) {
+        return true;
+    }
+    else if (handle_tasker_event_response(j)) {
+        return true;
+    }
+    else if (handle_resource_event_response(j)) {
+        return true;
+    }
+    else if (handle_controller_event_response(j)) {
+        return true;
+    }
+
     else if (handle_context_run_task(j)) {
         return true;
     }
@@ -219,6 +233,7 @@ bool AgentClient::handle_inserted_request(const json::value& j)
     else if (handle_context_tasker(j)) {
         return true;
     }
+
     else if (handle_tasker_inited(j)) {
         return true;
     }
@@ -261,6 +276,7 @@ bool AgentClient::handle_inserted_request(const json::value& j)
     else if (handle_tasker_get_latest_node(j)) {
         return true;
     }
+
     else if (handle_resource_post_bundle(j)) {
         return true;
     }
@@ -297,6 +313,7 @@ bool AgentClient::handle_inserted_request(const json::value& j)
     else if (handle_resource_get_node_list(j)) {
         return true;
     }
+
     else if (handle_controller_post_connection(j)) {
         return true;
     }
@@ -358,6 +375,46 @@ bool AgentClient::handle_inserted_request(const json::value& j)
         LogError << "unexpected msg" << VAR(j) << VAR(ipc_addr_);
         return false;
     }
+}
+
+bool AgentClient::handle_context_event_response(const json::value& j)
+{
+    if (!j.is<ContextEventResponse>()) {
+        return false;
+    }
+    const ContextEventResponse& resp = j.as<ContextEventResponse>();
+    LogInfo << VAR(resp) << VAR(ipc_addr_);
+    return true;
+}
+
+bool AgentClient::handle_tasker_event_response(const json::value& j)
+{
+    if (!j.is<TaskerEventResponse>()) {
+        return false;
+    }
+    const TaskerEventResponse& resp = j.as<TaskerEventResponse>();
+    LogInfo << VAR(resp) << VAR(ipc_addr_);
+    return true;
+}
+
+bool AgentClient::handle_resource_event_response(const json::value& j)
+{
+    if (!j.is<ResourceEventResponse>()) {
+        return false;
+    }
+    const ResourceEventResponse& resp = j.as<ResourceEventResponse>();
+    LogInfo << VAR(resp) << VAR(ipc_addr_);
+    return true;
+}
+
+bool AgentClient::handle_controller_event_response(const json::value& j)
+{
+    if (!j.is<ControllerEventResponse>()) {
+        return false;
+    }
+    const ControllerEventResponse& resp = j.as<ControllerEventResponse>();
+    LogInfo << VAR(resp) << VAR(ipc_addr_);
+    return true;
 }
 
 bool AgentClient::handle_context_run_task(const json::value& j)
@@ -1962,4 +2019,3 @@ void AgentClient::ctx_event_sink(void* handle, const char* message, const char* 
 }
 
 MAA_AGENT_CLIENT_NS_END
-

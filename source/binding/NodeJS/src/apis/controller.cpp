@@ -422,8 +422,8 @@ maajs::PromiseType Win32ControllerImpl::find(maajs::EnvType env)
 
 Win32ControllerImpl* Win32ControllerImpl::ctor(const maajs::CallbackInfo& info)
 {
-    auto [hwnd, screencap_methods, input_methods] = maajs::UnWrapArgs<Win32ControllerCtorParam, void>(info);
-    auto ctrl = MaaWin32ControllerCreate(reinterpret_cast<void*>(hwnd), screencap_methods, input_methods);
+    auto [hwnd, screencap_method, mouse_method, keyboard_method] = maajs::UnWrapArgs<Win32ControllerCtorParam, void>(info);
+    auto ctrl = MaaWin32ControllerCreate(reinterpret_cast<void*>(hwnd), screencap_method, mouse_method, keyboard_method);
     if (!ctrl) {
         return nullptr;
     }

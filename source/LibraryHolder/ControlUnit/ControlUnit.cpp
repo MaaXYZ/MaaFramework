@@ -68,7 +68,8 @@ std::shared_ptr<MAA_CTRL_UNIT_NS::AdbControlUnitAPI> AdbControlUnitLibraryHolder
 std::shared_ptr<MAA_CTRL_UNIT_NS::Win32ControlUnitAPI> Win32ControlUnitLibraryHolder::create_control_unit(
     void* hWnd,
     MaaWin32ScreencapMethod screencap_method,
-    MaaWin32InputMethod input_method)
+    MaaWin32InputMethod mouse_method,
+    MaaWin32InputMethod keyboard_method)
 {
     if (!load_library(library_dir() / libname_)) {
         LogError << "Failed to load library" << VAR(library_dir()) << VAR(libname_);
@@ -89,7 +90,7 @@ std::shared_ptr<MAA_CTRL_UNIT_NS::Win32ControlUnitAPI> Win32ControlUnitLibraryHo
         return nullptr;
     }
 
-    auto control_unit_handle = create_control_unit_func(hWnd, screencap_method, input_method);
+    auto control_unit_handle = create_control_unit_func(hWnd, screencap_method, mouse_method, keyboard_method);
 
     if (!control_unit_handle) {
         LogError << "Failed to create control unit";

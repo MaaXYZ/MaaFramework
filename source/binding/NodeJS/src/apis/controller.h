@@ -86,7 +86,7 @@ struct AdbControllerImpl : public ControllerImpl
 };
 
 using Win32Device = std::tuple<uintptr_t, std::string, std::string>;
-using Win32ControllerCtorParam = std::tuple<uintptr_t, MaaWin32ScreencapMethod, MaaWin32InputMethod>;
+using Win32ControllerCtorParam = std::tuple<uintptr_t, MaaWin32ScreencapMethod, MaaWin32InputMethod, MaaWin32InputMethod>;
 
 struct Win32ControllerImpl : public ControllerImpl
 {

@@ -7,7 +7,6 @@
 #include "MaaUtils/StringMisc.hpp"
 #include "ProjectInterface/Parser.h"
 
-
 MAA_PROJECT_INTERFACE_NS_BEGIN
 
 bool Configurator::load(const std::filesystem::path& resource_dir, const std::filesystem::path& user_dir)
@@ -129,7 +128,14 @@ std::optional<RuntimeParam> Configurator::generate_runtime() const
 
         win32.hwnd = config_.win32.hwnd;
         win32.screencap = controller.win32.screencap;
-        win32.input = controller.win32.input;
+        if (controller.win32.input == MaaWin32InputMethod_None) {
+            win32.mouse = controller.win32.mouse;
+            win32.keyboard = controller.win32.keyboard;
+        }
+        else {
+            win32.mouse = controller.win32.input;
+            win32.keyboard = controller.win32.input;
+        }
 
         runtime.controller_param = std::move(win32);
     } break;

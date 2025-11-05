@@ -185,10 +185,9 @@ bool MuMuPlayerExtras::input_text(const std::string& text)
         return false;
     }
 
-    int display_id = get_display_id();
-    LogInfo << VAR(text) << VAR(display_id);
+    LogInfo << VAR(text) << VAR(text.size());
 
-    int ret = input_text_func_(mumu_handle_, display_id, text.c_str());
+    int ret = input_text_func_(mumu_handle_, static_cast<int>(text.size()), text.c_str());
 
     if (ret != 0) {
         LogError << "Failed to input_text" << VAR(ret);

@@ -26,6 +26,10 @@ on:
             - 'test/**'
     workflow_dispatch:
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}${{ github.ref == 'refs/heads/main' && github.sha }}
+  cancel-in-progress: true
+
 jobs:
     meta:
         uses: ./.github/workflows/meta.yml
@@ -105,6 +109,21 @@ jobs:
               shell: bash
               run: |
                   cmake --install build --prefix install --config Debug
+
+            - name: Download Plugin
+              uses: robinraju/release-downloader@v1
+              with:
+                repository: MaaXYZ/MaaPluginDemo
+                latest: true
+                prerelease: ${{ needs.meta.outputs.is_release != 'true' || needs.meta.outputs.is_pre_release == 'true' }}
+                fileName: "*win-${{ matrix.arch }}*"
+                out-file-path: "build/download_plugins"
+                extract: true
+
+            - name: Install Plugin
+              shell: bash
+              run: |
+                  cp -r build/download_plugins/bin install/bin/plugins
 
             - name: Run DlopenTesting
               # TODO: qemu for aarch64
@@ -222,6 +241,21 @@ jobs:
               run: |
                   cmake --install build --prefix install --config Debug
 
+            - name: Download Plugin
+              uses: robinraju/release-downloader@v1
+              with:
+                repository: MaaXYZ/MaaPluginDemo
+                latest: true
+                prerelease: ${{ needs.meta.outputs.is_release != 'true' || needs.meta.outputs.is_pre_release == 'true' }}
+                fileName: "*linux-${{ matrix.arch }}*"
+                out-file-path: "build/download_plugins"
+                extract: true
+
+            - name: Install Plugin
+              shell: bash
+              run: |
+                  cp -r build/download_plugins/bin install/bin/plugins
+
             - name: Run DlopenTesting
               # TODO: qemu for aarch64
               if: ${{matrix.arch == 'x86_64'}}
@@ -337,6 +371,21 @@ jobs:
               shell: bash
               run: |
                   cmake --install build --prefix install --config Debug
+
+            - name: Download Plugin
+              uses: robinraju/release-downloader@v1
+              with:
+                repository: MaaXYZ/MaaPluginDemo
+                latest: true
+                prerelease: ${{ needs.meta.outputs.is_release != 'true' || needs.meta.outputs.is_pre_release == 'true' }}
+                fileName: "*macos-${{ matrix.arch }}*"
+                out-file-path: "build/download_plugins"
+                extract: true
+
+            - name: Install Plugin
+              shell: bash
+              run: |
+                  cp -r build/download_plugins/bin install/bin/plugins
 
             - name: Run DlopenTesting
               shell: bash

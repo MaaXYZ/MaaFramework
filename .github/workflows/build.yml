@@ -13,6 +13,7 @@ on:
             - 'include/**'
             - 'source/**'
             - 'CMakeLists.txt'
+            - 'tools/pip_pack/**'
 
     pull_request:
         branches:
@@ -24,6 +25,8 @@ on:
             - 'include/**'
             - 'source/**'
             - 'CMakeLists.txt'
+            - 'tools/pip_pack/**'
+
     workflow_dispatch:
         inputs:
             build_config:
@@ -34,6 +37,10 @@ on:
                     - Debug
                     - RelWithDebInfo
                     - Release
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}${{ github.ref == 'refs/heads/main' && github.sha }}
+  cancel-in-progress: true
 
 jobs:
     meta:
@@ -124,6 +131,21 @@ jobs:
 
                   cp -r LICENSE.md install
 
+            - name: Download Plugin
+              uses: robinraju/release-downloader@v1
+              with:
+                repository: MaaXYZ/MaaPluginDemo
+                latest: true
+                prerelease: ${{ needs.meta.outputs.is_release != 'true' || needs.meta.outputs.is_pre_release == 'true' }}
+                fileName: "*win-${{ matrix.arch }}*"
+                out-file-path: "build/download_plugins"
+                extract: true
+
+            - name: Install Plugin
+              shell: bash
+              run: |
+                  cp -r build/download_plugins/bin install/bin/plugins
+
             - uses: actions/upload-artifact@v4
               if: always()
               with:
@@ -202,6 +224,21 @@ jobs:
 
                   cp -r LICENSE.md install
 
+            - name: Download Plugin
+              uses: robinraju/release-downloader@v1
+              with:
+                repository: MaaXYZ/MaaPluginDemo
+                latest: true
+                prerelease: ${{ needs.meta.outputs.is_release != 'true' || needs.meta.outputs.is_pre_release == 'true' }}
+                fileName: "*linux-${{ matrix.arch }}*"
+                out-file-path: "build/download_plugins"
+                extract: true
+
+            - name: Install Plugin
+              shell: bash
+              run: |
+                  cp -r build/download_plugins/bin install/bin/plugins
+
             - uses: actions/upload-artifact@v4
               if: always()
               with:
@@ -278,6 +315,21 @@ jobs:
 
                   cp -r LICENSE.md install
 
+            - name: Download Plugin
+              uses: robinraju/release-downloader@v1
+              with:
+                repository: MaaXYZ/MaaPluginDemo
+                latest: true
+                prerelease: ${{ needs.meta.outputs.is_release != 'true' || needs.meta.outputs.is_pre_release == 'true' }}
+                fileName: "*macos-${{ matrix.arch }}*"
+                out-file-path: "build/download_plugins"
+                extract: true
+
+            - name: Install Plugin
+              shell: bash
+              run: |
+                  cp -r build/download_plugins/bin install/bin/plugins
+
             - uses: actions/upload-artifact@v4
               if: always()
               with:
@@ -342,6 +394,21 @@ jobs:
                   cp -r sample install
 
                   cp -r LICENSE.md install
+
+            - name: Download Plugin
+              uses: robinraju/release-downloader@v1
+              with:
+                repository: MaaXYZ/MaaPluginDemo
+                latest: true
+                prerelease: ${{ needs.meta.outputs.is_release != 'true' || needs.meta.outputs.is_pre_release == 'true' }}
+                fileName: "*android-${{ matrix.arch }}*"
+                out-file-path: "build/download_plugins"
+                extract: true
+
+            - name: Install Plugin
+              shell: bash
+              run: |
+                  cp -r build/download_plugins/bin install/bin/plugins
 
             - uses: actions/upload-artifact@v4
               if: always()
