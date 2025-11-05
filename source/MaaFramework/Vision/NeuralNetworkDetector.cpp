@@ -128,7 +128,7 @@ NeuralNetworkDetector::ResultsVec NeuralNetworkDetector::detect() const
 
             Result res;
             res.cls_index = j - kConfidenceIndex;
-            res.label = res.cls_index < param_.labels.size() ? param_.labels[res.cls_index] : std::format("Unkonwn_{}", res.cls_index);
+            res.label = res.cls_index < param_.labels.size() ? param_.labels[res.cls_index] : std::format("Unknown_{}", res.cls_index);
             res.box = box;
             res.score = score;
 

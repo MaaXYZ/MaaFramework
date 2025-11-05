@@ -273,6 +273,9 @@ bool Interactor::interact_once()
         break;
     case 7:
         return false;
+    default:
+        LogError << "Invalid action" << VAR(action);
+        return false;
     }
 
     return true;
