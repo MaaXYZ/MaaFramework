@@ -35,6 +35,8 @@ extern "C"
 
     MAA_FRAMEWORK_API MaaBool MaaContextOverrideNext(MaaContext* context, const char* node_name, const MaaStringListBuffer* next_list);
 
+    MAA_FRAMEWORK_API MaaBool MaaContextOverrideImage(MaaContext* context, const char* image_name, const MaaImageBuffer* image);
+
     MAA_FRAMEWORK_API MaaBool MaaContextGetNodeData(MaaContext* context, const char* node_name, /* out */ MaaStringBuffer* buffer);
 
     MAA_FRAMEWORK_API MaaTaskId MaaContextGetTaskId(const MaaContext* context);

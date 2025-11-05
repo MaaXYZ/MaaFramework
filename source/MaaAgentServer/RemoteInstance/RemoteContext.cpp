@@ -94,6 +94,21 @@ bool RemoteContext::override_next(const std::string& node_name, const std::vecto
     return resp_opt->ret;
 }
 
+bool RemoteContext::override_image(const std::string& image_name, const cv::Mat& image)
+{
+    ContextOverrideImageReverseRequest req {
+        .context_id = context_id_,
+        .image_name = image_name,
+        .image = server_.send_image(image),
+    };
+
+    auto resp_opt = server_.send_and_recv<ContextOverrideImageReverseResponse>(req);
+    if (!resp_opt) {
+        return false;
+    }
+    return resp_opt->ret;
+}
+
 std::optional<json::object> RemoteContext::get_node_data(const std::string& node_name) const
 {
     ContextGetNodeDataReverseRequest req {
