@@ -18,12 +18,12 @@ void TemplateResMgr::clear()
     LogFunc;
 
     roots_.clear();
-    image_cahce_.clear();
+    image_cache_.clear();
 }
 
 std::vector<cv::Mat> TemplateResMgr::get_image(const std::string& name)
 {
-    if (auto iter = image_cahce_.find(name); iter != image_cahce_.end()) {
+    if (auto iter = image_cache_.find(name); iter != image_cache_.end()) {
         return iter->second;
     }
 
@@ -31,13 +31,13 @@ std::vector<cv::Mat> TemplateResMgr::get_image(const std::string& name)
     if (imgs.empty()) {
         return {};
     }
-    image_cahce_.emplace(name, imgs);
+    image_cache_.emplace(name, imgs);
     return imgs;
 }
 
 void TemplateResMgr::set_image(const std::string& name, const cv::Mat& image)
 {
-    image_cahce_[name] = { image };
+    image_cache_[name] = { image };
 }
 
 std::vector<cv::Mat> TemplateResMgr::load(const std::string& name)

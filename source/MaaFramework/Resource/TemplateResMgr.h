@@ -25,7 +25,7 @@ private:
 
     std::vector<std::filesystem::path> roots_ = { "" }; // for filepath without prefix
 
-    std::unordered_map<std::string, std::vector<cv::Mat>> image_cahce_;
+    std::unordered_map<std::string, std::vector<cv::Mat>> image_cache_;
 };
 
 MAA_RES_NS_END

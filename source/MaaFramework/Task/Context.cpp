@@ -48,6 +48,7 @@ Context::Context(const Context& other)
     , task_id_(other.task_id_)
     , tasker_(other.tasker_)
     , pipeline_override_(other.pipeline_override_)
+    , image_override_(other.image_override_)
 // don't copy clone_holder_
 {
     LogDebug << VAR(other.getptr());
