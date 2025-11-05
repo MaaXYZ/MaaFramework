@@ -539,7 +539,6 @@ class CustomController(Controller):
     def request_uuid(self) -> str:
         raise NotImplementedError
     
-    @abstractmethod
     def get_features(self) -> int:
         return MaaControllerFeatureEnum.UseMouseDownAndUpInsteadOfClick | MaaControllerFeatureEnum.UseKeyboardDownAndUpInsteadOfClick
 
@@ -620,19 +619,6 @@ class CustomController(Controller):
 
     @staticmethod
     @MaaCustomControllerCallbacks.RequestUuidFunc
-    def _c_get_features_agent(trans_arg: ctypes.c_void_p) -> int:
-        if not trans_arg:
-            return int(False)
-
-        self: CustomController = ctypes.cast(
-            trans_arg,
-            ctypes.py_object,
-        ).value
-
-        return int(self.get_features())
-
-    @staticmethod
-    @MaaCustomControllerCallbacks.GetFeaturesFunc
     def _c_request_uuid_agent(
         trans_arg: ctypes.c_void_p,
         c_buffer: MaaStringBufferHandle,
@@ -650,6 +636,19 @@ class CustomController(Controller):
         uuid_buffer = StringBuffer(c_buffer)
         uuid_buffer.set(uuid)
         return int(True)
+
+    @staticmethod
+    @MaaCustomControllerCallbacks.GetFeaturesFunc
+    def _c_get_features_agent(trans_arg: ctypes.c_void_p) -> int:
+        if not trans_arg:
+            return int(False)
+
+        self: CustomController = ctypes.cast(
+            trans_arg,
+            ctypes.py_object,
+        ).value
+
+        return int(self.get_features())
 
     @staticmethod
     @MaaCustomControllerCallbacks.StartAppFunc
