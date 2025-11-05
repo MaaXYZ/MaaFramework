@@ -65,7 +65,11 @@ bool MinitouchInput::init()
 
 MaaControllerFeature MinitouchInput::get_features() const
 {
-    return MaaControllerFeature_UseMouseDownAndUpInsteadOfClick;
+    MaaControllerFeature feat = MaaControllerFeature_UseMouseDownAndUpInsteadOfClick;
+    if (adb_shell_input_) {
+        feat |= adb_shell_input_->get_features() & MaaControllerFeature_UseKeyboardDownAndUpInsteadOfClick;
+    }
+    return feat;
 }
 
 bool MinitouchInput::click_key(int key)

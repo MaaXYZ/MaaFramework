@@ -119,7 +119,7 @@ MaaControllerFeature InputAgent::get_features() const
 {
     if (!active_unit_) {
         LogError << "No available input method" << VAR(active_unit_);
-        return false;
+        return MaaControllerFeature_None;
     }
 
     return active_unit_->get_features();
