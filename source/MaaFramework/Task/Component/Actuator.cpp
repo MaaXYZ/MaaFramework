@@ -86,9 +86,9 @@ bool Actuator::run(const cv::Rect& reco_hit, MaaRecoId reco_id, const PipelineDa
 
 cv::Point Actuator::rand_point(const cv::Rect& r)
 {
-    // 处理零面积与无效矩形，避免死循环
-    if (r.width <= 0 || r.height <= 0) {
-        return { r.x, r.y };
+    // 过小矩形直接返回中心点，避免死循环
+    if (r.width <= 2 || r.height <= 2) {
+        return { r.x + r.width / 2, r.y + r.height / 2 };
     }
 
     constexpr double kStdDevFactor = 3.0;
