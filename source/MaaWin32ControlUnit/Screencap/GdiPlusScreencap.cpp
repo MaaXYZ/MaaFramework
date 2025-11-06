@@ -1,18 +1,19 @@
 #include "GdiPlusScreencap.h"
 
-// TODO: 编不过，回头再说
-#if 0
+#define max(a, b) (((a) > (b)) ? (a) : (b))
+#define min(a, b) (((a) < (b)) ? (a) : (b))
 
 // GDI+ requires Windows headers and COM interfaces to be included first
 #include <objidl.h>
 #include <gdiplus.h>
 
+#undef max
+#undef min
+
 #include "HwndUtils.hpp"
 #include "MaaUtils/Logger.h"
 
 #pragma comment(lib, "gdiplus.lib")
-
-using namespace Gdiplus;
 
 MAA_CTRL_UNIT_NS_BEGIN
 
@@ -66,15 +67,15 @@ std::optional<cv::Mat> GdiPlusScreencap::screencap()
     }
     OnScopeLeave([&]() { ReleaseDC(nullptr, screen_dc); });
 
-    Bitmap bitmap(width, height, PixelFormat32bppARGB);
-    if (bitmap.GetLastStatus() != Ok) {
+    Gdiplus::Bitmap bitmap(width, height, PixelFormat32bppARGB);
+    if (bitmap.GetLastStatus() != Gdiplus::Ok) {
         LogError << "Bitmap creation failed";
         return std::nullopt;
     }
 
     // 创建Graphics对象用于绘制到位图
-    Graphics* mem_graphics = Graphics::FromImage(&bitmap);
-    if (!mem_graphics || mem_graphics->GetLastStatus() != Ok) {
+    Gdiplus::Graphics* mem_graphics = Gdiplus::Graphics::FromImage(&bitmap);
+    if (!mem_graphics || mem_graphics->GetLastStatus() != Gdiplus::Ok) {
         LogError << "Graphics::FromImage failed";
         delete mem_graphics;
         return std::nullopt;
@@ -96,9 +97,9 @@ std::optional<cv::Mat> GdiPlusScreencap::screencap()
     }
 
     // 锁定位图数据
-    BitmapData bitmap_data;
-    Rect rect(0, 0, width, height);
-    if (bitmap.LockBits(&rect, ImageLockModeRead, PixelFormat32bppARGB, &bitmap_data) != Ok) {
+    Gdiplus::BitmapData bitmap_data;
+    Gdiplus::Rect rect(0, 0, width, height);
+    if (bitmap.LockBits(&rect, Gdiplus::ImageLockModeRead, PixelFormat32bppARGB, &bitmap_data) != Gdiplus::Ok) {
         LogError << "LockBits failed";
         return std::nullopt;
     }
@@ -134,5 +135,3 @@ void GdiPlusScreencap::uninit()
 }
 
 MAA_CTRL_UNIT_NS_END
-
-#endif

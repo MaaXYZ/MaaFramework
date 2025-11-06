@@ -15,10 +15,10 @@ public:
     {
     }
 
-    virtual ~GdiPlusScreencap() override = default;
+    virtual ~GdiPlusScreencap() override;
 
 public: // from ScreencapBase
-    virtual std::optional<cv::Mat> screencap() override { return {}; }
+    virtual std::optional<cv::Mat> screencap() override;
 
 private:
     bool init();
