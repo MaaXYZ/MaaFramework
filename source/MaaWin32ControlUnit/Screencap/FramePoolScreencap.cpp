@@ -83,34 +83,15 @@ std::optional<cv::Mat> FramePoolScreencap::screencap()
         return std::nullopt;
     }
 
-    // 计算边框偏移量（窗口左上角到客户区左上角的偏移）
-    int border_left = client_top_left.x - window_rect.left;
+    int border_left = 2; // 这个 2 不知道是怎么来的，实测是 2，但不知道怎么获取到
     int border_top = client_top_left.y - window_rect.top;
 
     // 获取客户区大小
     int client_width = client_rect.right - client_rect.left;
     int client_height = client_rect.bottom - client_rect.top;
 
-    // 考虑 DPI 缩放
-    double scale = window_scale(hwnd_);
-    int scaled_border_left = static_cast<int>(border_left * scale);
-    int scaled_border_top = static_cast<int>(border_top * scale);
-    int scaled_client_width = static_cast<int>(client_width * scale);
-    int scaled_client_height = static_cast<int>(client_height * scale);
-
-    // 确保裁剪区域在图像范围内
-    int crop_x = std::max(0, scaled_border_left);
-    int crop_y = std::max(0, scaled_border_top);
-    int crop_width = std::min(scaled_client_width, raw.cols - crop_x);
-    int crop_height = std::min(scaled_client_height, raw.rows - crop_y);
-
-    if (crop_width <= 0 || crop_height <= 0) {
-        LogError << "Invalid crop region" << VAR(crop_x) << VAR(crop_y) << VAR(crop_width) << VAR(crop_height);
-        return std::nullopt;
-    }
-
     // 裁剪出客户区（去掉边框）
-    cv::Rect client_roi(crop_x, crop_y, crop_width, crop_height);
+    cv::Rect client_roi(border_left, border_top, client_width, client_height);
     cv::Mat image = raw(client_roi);
 
     return bgra_to_bgr(image);
