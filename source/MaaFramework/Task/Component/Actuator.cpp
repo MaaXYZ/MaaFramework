@@ -86,23 +86,34 @@ bool Actuator::run(const cv::Rect& reco_hit, MaaRecoId reco_id, const PipelineDa
 
 cv::Point Actuator::rand_point(const cv::Rect& r)
 {
+    // 处理零面积与无效矩形，避免死循环
+    if (r.width <= 0 || r.height <= 0) {
+        return { r.x, r.y };
+    }
+
     constexpr double kStdDevFactor = 3.0;
 
-    double std_dev_x = r.width / kStdDevFactor;
-    double std_dev_y = r.height / kStdDevFactor;
+    const double std_dev_x = r.width / kStdDevFactor;
+    const double std_dev_y = r.height / kStdDevFactor;
 
     std::normal_distribution<double> dist_x(r.x + r.width / 2.0, std_dev_x);
     std::normal_distribution<double> dist_y(r.y + r.height / 2.0, std_dev_y);
 
-    cv::Point point {};
+    // 优先进行有限次拒绝采样
+    const int kMaxAttempts = 8;
+    for (int i = 0; i < kMaxAttempts; ++i) {
+        const int x = static_cast<int>(std::round(dist_x(rand_engine_)));
+        const int y = static_cast<int>(std::round(dist_y(rand_engine_)));
+        const cv::Point sampled { x, y };
+        if (!r.contains(sampled)) {
+            continue;
+        }
 
-    // 确保生成的点在矩形内
-    do {
-        point.x = static_cast<int>(dist_x(rand_engine_));
-        point.y = static_cast<int>(dist_y(rand_engine_));
-    } while (!r.contains(point));
+        return sampled;
+    }
 
-    return point;
+    // 返回中心点
+    return { r.x + r.width / 2, r.y + r.height / 2 };
 }
 
 bool Actuator::click(const MAA_RES_NS::Action::ClickParam& param, const cv::Rect& box)
