@@ -190,19 +190,6 @@ bool AgentClient::handle_inserted_request(const json::value& j)
         return true;
     }
 
-    else if (handle_context_event_response(j)) {
-        return true;
-    }
-    else if (handle_tasker_event_response(j)) {
-        return true;
-    }
-    else if (handle_resource_event_response(j)) {
-        return true;
-    }
-    else if (handle_controller_event_response(j)) {
-        return true;
-    }
-
     else if (handle_context_run_task(j)) {
         return true;
     }
@@ -371,50 +358,13 @@ bool AgentClient::handle_inserted_request(const json::value& j)
     else if (handle_controller_get_uuid(j)) {
         return true;
     }
+    else if (handle_event_response(j)) {
+        return true;
+    }
     else {
         LogError << "unexpected msg" << VAR(j) << VAR(ipc_addr_);
         return false;
     }
-}
-
-bool AgentClient::handle_context_event_response(const json::value& j)
-{
-    if (!j.is<ContextEventResponse>()) {
-        return false;
-    }
-    const ContextEventResponse& resp = j.as<ContextEventResponse>();
-    LogInfo << VAR(resp) << VAR(ipc_addr_);
-    return true;
-}
-
-bool AgentClient::handle_tasker_event_response(const json::value& j)
-{
-    if (!j.is<TaskerEventResponse>()) {
-        return false;
-    }
-    const TaskerEventResponse& resp = j.as<TaskerEventResponse>();
-    LogInfo << VAR(resp) << VAR(ipc_addr_);
-    return true;
-}
-
-bool AgentClient::handle_resource_event_response(const json::value& j)
-{
-    if (!j.is<ResourceEventResponse>()) {
-        return false;
-    }
-    const ResourceEventResponse& resp = j.as<ResourceEventResponse>();
-    LogInfo << VAR(resp) << VAR(ipc_addr_);
-    return true;
-}
-
-bool AgentClient::handle_controller_event_response(const json::value& j)
-{
-    if (!j.is<ControllerEventResponse>()) {
-        return false;
-    }
-    const ControllerEventResponse& resp = j.as<ControllerEventResponse>();
-    LogInfo << VAR(resp) << VAR(ipc_addr_);
-    return true;
 }
 
 bool AgentClient::handle_context_run_task(const json::value& j)
@@ -1712,6 +1662,17 @@ bool AgentClient::handle_controller_get_uuid(const json::value& j)
     return true;
 }
 
+// FIXME: 不应该存在这个函数
+// 等 send_and_recv 支持在子线程中使用后，应该删除这个函数
+bool AgentClient::handle_event_response(const json::value& j)
+{
+    if (j.is<ResourceEventResponse>() || j.is<ControllerEventResponse>() || j.is<TaskerEventResponse>()) {
+        LogTrace << "handle event response" << VAR(j);
+        return true;
+    }
+    return false;
+}
+
 MaaBool AgentClient::reco_agent(
     MaaContext* context,
     MaaTaskId task_id,
@@ -1928,7 +1889,11 @@ void AgentClient::res_event_sink(void* handle, const char* message, const char* 
         .details = json::parse(details_json).value_or(json::value {}),
     };
 
-    std::ignore = pthis->send_and_recv<ResourceEventResponse>(req);
+    // FIXME: 应该用 send_and_recv 但是暂时用 send 代替
+    // 由于 sink 在 async_runner 的子线程中的，recv 会被其他线程抢掉。
+    // 一直接收不到 recv 导致卡死在这里
+    // std::ignore = pthis->send_and_recv<ControllerEventResponse>(req);
+    std::ignore = pthis->send(req);
 }
 
 void AgentClient::ctrl_event_sink(void* handle, const char* message, const char* details_json, void* trans_arg)
@@ -1957,7 +1922,11 @@ void AgentClient::ctrl_event_sink(void* handle, const char* message, const char*
         .details = json::parse(details_json).value_or(json::value {}),
     };
 
-    std::ignore = pthis->send_and_recv<ControllerEventResponse>(req);
+    // FIXME: 应该用 send_and_recv 但是暂时用 send 代替
+    // 由于 sink 在 async_runner 的子线程中的，recv 会被其他线程抢掉。
+    // 一直接收不到 recv 导致卡死在这里
+    // std::ignore = pthis->send_and_recv<ControllerEventResponse>(req);
+    std::ignore = pthis->send(req);
 }
 
 void AgentClient::tasker_event_sink(void* handle, const char* message, const char* details_json, void* trans_arg)
@@ -1986,7 +1955,11 @@ void AgentClient::tasker_event_sink(void* handle, const char* message, const cha
         .details = json::parse(details_json).value_or(json::value {}),
     };
 
-    std::ignore = pthis->send_and_recv<TaskerEventResponse>(req);
+    // FIXME: 应该用 send_and_recv 但是暂时用 send 代替
+    // 由于 sink 在 async_runner 的子线程中的，recv 会被其他线程抢掉。
+    // 一直接收不到 recv 导致卡死在这里
+    // std::ignore = pthis->send_and_recv<ControllerEventResponse>(req);
+    std::ignore = pthis->send(req);
 }
 
 void AgentClient::ctx_event_sink(void* handle, const char* message, const char* details_json, void* trans_arg)
