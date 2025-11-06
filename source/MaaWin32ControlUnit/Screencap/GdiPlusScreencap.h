@@ -1,9 +1,9 @@
 #pragma once
 
-#include "Base/UnitBase.h"
+#include "Common/Conf.h"
 #include "MaaUtils/SafeWindows.hpp"
 
-#include "Common/Conf.h"
+#include "Base/UnitBase.h"
 
 MAA_CTRL_UNIT_NS_BEGIN
 

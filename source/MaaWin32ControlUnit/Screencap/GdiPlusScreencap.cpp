@@ -1,9 +1,10 @@
 #include "GdiPlusScreencap.h"
 
 // GDI+ requires Windows headers and COM interfaces to be included first
-#include <gdiplus.h>
+// objidl.h must be included before gdiplus.h to provide IStream and other COM interfaces
 #include <objidl.h>
 
+#include <gdiplus.h>
 
 #include "HwndUtils.hpp"
 #include "MaaUtils/Logger.h"

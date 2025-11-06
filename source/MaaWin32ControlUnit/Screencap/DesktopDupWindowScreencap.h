@@ -1,10 +1,10 @@
 #pragma once
 
-#include "Base/UnitBase.h"
-#include "SafeDXGI.hpp"
+#include "Common/Conf.h"
 #include "MaaUtils/SafeWindows.hpp"
 
-#include "Common/Conf.h"
+#include "Base/UnitBase.h"
+#include "SafeDXGI.hpp"
 
 MAA_CTRL_UNIT_NS_BEGIN
 
