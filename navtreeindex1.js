@@ -1,5 +1,11 @@
 var NAVTREEINDEX1 =
 {
+"MaaGlobal_8h.html":[3,0,0,2,0,0],
+"MaaGlobal_8h.html#a0f846923ddbabcfb0343eeabd88ccb94":[3,0,0,2,0,0,2],
+"MaaGlobal_8h.html#ab488228d24cc5477ccff6d83ca505441":[3,0,0,2,0,0,1],
+"MaaGlobal_8h.html#ab8a3bdd731560655c4fa049bf5886501":[3,0,0,2,0,0,0],
+"MaaGlobal_8h_source.html":[3,0,0,2,0,0],
+"MaaMsg_8h.html":[3,0,0,2,5],
 "MaaMsg_8h_source.html":[3,0,0,2,5],
 "MaaPort_8h.html":[3,0,0,2,6],
 "MaaPort_8h.html#a011c7bbd355fdfe6aa7599af52cc20ac":[3,0,0,2,6,7],

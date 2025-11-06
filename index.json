@@ -1,5 +1,5 @@
 {
-	"Version": "(main) v5.0.0-alpha.6",
+	"Version": "(main) v5.0.0-beta.1",
 	"Compounds": {
 		"MaaAgentClientAPI.h": {
 			"Location": "include/MaaAgentClient/MaaAgentClientAPI.h",
@@ -4365,6 +4365,30 @@
 								"Deprecated": null
 							},
 							"Value": "(1ULL \u003C\u003C 2)"
+						},
+						"DXGI_DesktopDup_Window": {
+							"Description": {
+								"Brief": "",
+								"Details": [],
+								"Deprecated": null
+							},
+							"Value": "(1ULL \u003C\u003C 3)"
+						},
+						"PrintWindow": {
+							"Description": {
+								"Brief": "",
+								"Details": [],
+								"Deprecated": null
+							},
+							"Value": "(1ULL \u003C\u003C 4)"
+						},
+						"ScreenDC": {
+							"Description": {
+								"Brief": "",
+								"Details": [],
+								"Deprecated": null
+							},
+							"Value": "(1ULL \u003C\u003C 5)"
 						}
 					},
 					"IsFlags": false,
@@ -4402,6 +4426,30 @@
 								"Deprecated": null
 							},
 							"Value": "(1ULL \u003C\u003C 1)"
+						},
+						"PostMessage": {
+							"Description": {
+								"Brief": "",
+								"Details": [],
+								"Deprecated": null
+							},
+							"Value": "(1ULL \u003C\u003C 2)"
+						},
+						"LegacyEvent": {
+							"Description": {
+								"Brief": "",
+								"Details": [],
+								"Deprecated": null
+							},
+							"Value": "(1ULL \u003C\u003C 3)"
+						},
+						"PostThreadMessage": {
+							"Description": {
+								"Brief": "",
+								"Details": [],
+								"Deprecated": null
+							},
+							"Value": "(1ULL \u003C\u003C 4)"
 						}
 					},
 					"IsFlags": false,
