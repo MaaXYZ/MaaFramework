@@ -10,23 +10,22 @@
 #define MAA_FRAMEPOOL_SCREENCAP_AVAILABLE 1
 #else                               // else of WDK_NTDDI_VERSION
 #define MAA_FRAMEPOOL_SCREENCAP_AVAILABLE 0
-static_assert(false, "Windows 10 SDK 10.0.22000.0 or higher is required");
+#pragma message("Win32 FramePool needs Windows 10 SDK 10.0.22000.0 or higher")
 #endif                              // end of WDK_NTDDI_VERSION
 #endif                              // end of MAA_FRAMEPOOL_SCREENCAP_AVAILABLE
 
+#include "Common/Conf.h"
+#include "Base/UnitBase.h"
+
 #if MAA_FRAMEPOOL_SCREENCAP_AVAILABLE
 
-#include "Base/UnitBase.h"
 
 #include "SafeDXGI.hpp"
 
 #include <winrt/Windows.Graphics.Capture.h>
 
-#include "Common/Conf.h"
-
 MAA_CTRL_UNIT_NS_BEGIN
 
-// Not work
 class FramePoolScreencap : public ScreencapBase
 {
 public:
@@ -67,6 +66,25 @@ private:
     winrt::Windows::Graphics::Capture::GraphicsCaptureItem cap_item_ = nullptr;
     winrt::Windows::Graphics::Capture::Direct3D11CaptureFramePool cap_frame_pool_ = nullptr;
     winrt::Windows::Graphics::Capture::GraphicsCaptureSession cap_session_ = nullptr;
+};
+
+MAA_CTRL_UNIT_NS_END
+
+#else
+
+
+MAA_CTRL_UNIT_NS_BEGIN
+
+#include "MaaUtils/SafeWindows.hpp"
+
+class FramePoolScreencap : public ScreencapBase
+{
+public:
+    FramePoolScreencap(HWND) {}
+    virtual ~FramePoolScreencap() override = default;
+
+public: // from ScreencapBase
+    virtual std::optional<cv::Mat> screencap() override { return {}; }
 };
 
 MAA_CTRL_UNIT_NS_END

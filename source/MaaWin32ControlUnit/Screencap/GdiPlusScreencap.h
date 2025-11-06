@@ -1,9 +1,9 @@
 #pragma once
 
-#include "Common/Conf.h"
 #include "MaaUtils/SafeWindows.hpp"
 
 #include "Base/UnitBase.h"
+#include "Common/Conf.h"
 
 MAA_CTRL_UNIT_NS_BEGIN
 
@@ -15,10 +15,10 @@ public:
     {
     }
 
-    virtual ~GdiPlusScreencap() override;
+    virtual ~GdiPlusScreencap() override = default;
 
 public: // from ScreencapBase
-    virtual std::optional<cv::Mat> screencap() override;
+    virtual std::optional<cv::Mat> screencap() override { return {}; }
 
 private:
     bool init();

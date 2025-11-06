@@ -1,5 +1,7 @@
 #include "DesktopDupWindowScreencap.h"
 
+#include <algorithm>
+
 #include "HwndUtils.hpp"
 #include "MaaUtils/ImageIo.h"
 #include "MaaUtils/Logger.h"
@@ -65,8 +67,8 @@ std::optional<cv::Mat> DesktopDupWindowScreencap::screencap()
     }
 
     // 计算裁剪区域（确保在图像范围内）
-    int crop_x = std::max(0, client_rect_screen.left);
-    int crop_y = std::max(0, client_rect_screen.top);
+    int crop_x = std::max(0, static_cast<int>(client_rect_screen.left));
+    int crop_y = std::max(0, static_cast<int>(client_rect_screen.top));
     int crop_width = std::min(client_width, img->cols - crop_x);
     int crop_height = std::min(client_height, img->rows - crop_y);
 
