@@ -218,6 +218,9 @@ class MaaWin32ScreencapMethodEnum(IntEnum):
     PrintWindow = 1 << 3
     ScreenDC = 1 << 4
     Magnification = 1 << 5
+    GdiPlus = 1 << 6
+    StretchBlt = 1 << 7
+    GetDIBits = 1 << 8
 
 
 MaaWin32InputMethod = ctypes.c_uint64
