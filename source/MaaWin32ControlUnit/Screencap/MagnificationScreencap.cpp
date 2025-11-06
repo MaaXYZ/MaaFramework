@@ -178,18 +178,18 @@ bool MagnificationScreencap::init()
     // 注册放大镜窗口类（如果还没有注册）
     static bool class_registered = false;
     if (!class_registered) {
-        WNDCLASSEX wc = { 0 };
-        wc.cbSize = sizeof(WNDCLASSEX);
+        WNDCLASSEXW wc = { 0 };
+        wc.cbSize = sizeof(WNDCLASSEXW);
         wc.lpfnWndProc = MagnifierWndProc;
         wc.hInstance = GetModuleHandle(nullptr);
         wc.lpszClassName = kMagnifierWindowClass;
         wc.hbrBackground = (HBRUSH)GetStockObject(BLACK_BRUSH);
         wc.hCursor = LoadCursor(nullptr, IDC_ARROW);
 
-        if (!RegisterClassEx(&wc)) {
+        if (!RegisterClassExW(&wc)) {
             DWORD error = GetLastError();
             if (error != ERROR_CLASS_ALREADY_EXISTS) {
-                LogError << "RegisterClassEx failed, error code: " << error;
+                LogError << "RegisterClassExW failed, error code: " << error;
                 MagUninitialize();
                 return false;
             }
@@ -198,7 +198,7 @@ bool MagnificationScreencap::init()
     }
 
     // 创建放大镜窗口（初始位置在屏幕外，大小1x1）
-    mag_window_ = CreateWindowEx(
+    mag_window_ = CreateWindowExW(
         WS_EX_LAYERED | WS_EX_TRANSPARENT | WS_EX_TOOLWINDOW,
         kMagnifierWindowClass,
         L"MaaMagnifier",
@@ -213,7 +213,7 @@ bool MagnificationScreencap::init()
         nullptr);
 
     if (!mag_window_) {
-        LogError << "CreateWindowEx failed, error code: " << GetLastError();
+        LogError << "CreateWindowExW failed, error code: " << GetLastError();
         MagUninitialize();
         return false;
     }
