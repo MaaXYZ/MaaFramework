@@ -6,6 +6,7 @@
 #include "Input/SeizeInput.h"
 #include "Input/SendMessageInput.h"
 #include "Screencap/DesktopDupScreencap.h"
+#include "Screencap/DesktopDupWindowScreencap.h"
 #include "Screencap/FramePoolScreencap.h"
 #include "Screencap/GdiPlusScreencap.h"
 #include "Screencap/GdiScreencap.h"
@@ -57,6 +58,9 @@ bool Win32ControlUnitMgr::connect()
     case MaaWin32ScreencapMethod_DXGI_DesktopDup:
         screencap_ = std::make_shared<DesktopDupScreencap>();
         break;
+    case MaaWin32ScreencapMethod_DXGI_DesktopDup_Window:
+        screencap_ = std::make_shared<DesktopDupWindowScreencap>(hwnd_);
+        break;
     case MaaWin32ScreencapMethod_PrintWindow:
         screencap_ = std::make_shared<PrintWindowScreencap>(hwnd_);
         break;
@@ -66,14 +70,14 @@ bool Win32ControlUnitMgr::connect()
     case MaaWin32ScreencapMethod_Magnification:
         screencap_ = std::make_shared<MagnificationScreencap>(hwnd_);
         break;
-    case MaaWin32ScreencapMethod_GdiPlus:
-        screencap_ = std::make_shared<GdiPlusScreencap>(hwnd_);
-        break;
     case MaaWin32ScreencapMethod_StretchBlt:
         screencap_ = std::make_shared<StretchBltScreencap>(hwnd_);
         break;
     case MaaWin32ScreencapMethod_GetDIBits:
         screencap_ = std::make_shared<GetDIBitsScreencap>(hwnd_);
+        break;
+    case MaaWin32ScreencapMethod_GdiPlus:
+        screencap_ = std::make_shared<GdiPlusScreencap>(hwnd_);
         break;
     default:
         LogError << "Unknown screencap method: " << static_cast<int>(screencap_method_);
