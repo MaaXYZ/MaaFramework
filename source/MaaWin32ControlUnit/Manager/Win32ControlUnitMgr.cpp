@@ -9,6 +9,8 @@
 #include "Screencap/FramePoolScreencap.h"
 #include "Screencap/GdiScreencap.h"
 #include "Screencap/HwndUtils.hpp"
+#include "Screencap/PrintWindowScreencap.h"
+
 
 MAA_CTRL_UNIT_NS_BEGIN
 
@@ -50,6 +52,10 @@ bool Win32ControlUnitMgr::connect()
         break;
     case MaaWin32ScreencapMethod_DXGI_DesktopDup:
         screencap_ = std::make_shared<DesktopDupScreencap>();
+        break;
+    case MaaWin32ScreencapMethod_PrintWindow:
+        // 默认使用PW_RENDERFULLCONTENT以支持捕获后台窗口
+        screencap_ = std::make_shared<PrintWindowScreencap>(hwnd_, PW_CLIENTONLY | PW_RENDERFULLCONTENT);
         break;
     default:
         LogError << "Unknown screencap method: " << static_cast<int>(screencap_method_);
