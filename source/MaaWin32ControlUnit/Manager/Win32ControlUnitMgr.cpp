@@ -3,6 +3,9 @@
 #include "MaaFramework/MaaMsg.h"
 #include "MaaUtils/Logger.h"
 
+#include "Input/LegacyEventInput.h"
+#include "Input/PostMessageInput.h"
+#include "Input/PostThreadMessageInput.h"
 #include "Input/SeizeInput.h"
 #include "Input/SendMessageInput.h"
 #include "Screencap/DesktopDupScreencap.h"
@@ -62,6 +65,12 @@ bool Win32ControlUnitMgr::connect()
             return std::make_shared<SeizeInput>(hwnd_);
         case MaaWin32InputMethod_SendMessage:
             return std::make_shared<SendMessageInput>(hwnd_);
+        case MaaWin32InputMethod_PostMessage:
+            return std::make_shared<PostMessageInput>(hwnd_);
+        case MaaWin32InputMethod_LegacyEvent:
+            return std::make_shared<LegacyEventInput>(hwnd_);
+        case MaaWin32InputMethod_PostThreadMessage:
+            return std::make_shared<PostThreadMessageInput>(hwnd_);
         default:
             LogError << "Unknown input method: " << static_cast<int>(method);
             return nullptr;

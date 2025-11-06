@@ -68,6 +68,9 @@ static maajs::ValueType load_win32_input_method(maajs::EnvType env)
 
     DEM(MaaWin32InputMethod, Seize);
     DEM(MaaWin32InputMethod, SendMessage);
+    DEM(MaaWin32InputMethod, PostMessage);
+    DEM(MaaWin32InputMethod, LegacyEvent);
+    DEM(MaaWin32InputMethod, PostThreadMessage);
 
     return obj;
 }

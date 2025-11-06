@@ -226,6 +226,9 @@ class MaaWin32InputMethodEnum(IntEnum):
 
     Seize = 1
     SendMessage = 1 << 1
+    PostMessage = 1 << 2
+    LegacyEvent = 1 << 3
+    PostThreadMessage = 1 << 4
 
 
 # No bitwise OR, just set it
