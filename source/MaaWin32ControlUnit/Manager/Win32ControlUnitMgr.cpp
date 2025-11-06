@@ -9,6 +9,7 @@
 #include "Screencap/FramePoolScreencap.h"
 #include "Screencap/GdiScreencap.h"
 #include "Screencap/HwndUtils.hpp"
+#include "Screencap/MagnificationScreencap.h"
 #include "Screencap/PrintWindowScreencap.h"
 #include "Screencap/ScreenDCScreencap.h"
 
@@ -58,6 +59,9 @@ bool Win32ControlUnitMgr::connect()
         break;
     case MaaWin32ScreencapMethod_ScreenDC:
         screencap_ = std::make_shared<ScreenDCScreencap>(hwnd_);
+        break;
+    case MaaWin32ScreencapMethod_Magnification:
+        screencap_ = std::make_shared<MagnificationScreencap>(hwnd_);
         break;
     default:
         LogError << "Unknown screencap method: " << static_cast<int>(screencap_method_);

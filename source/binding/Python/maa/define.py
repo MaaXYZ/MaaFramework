@@ -217,6 +217,7 @@ class MaaWin32ScreencapMethodEnum(IntEnum):
     DXGI_DesktopDup = 1 << 2
     PrintWindow = 1 << 3
     ScreenDC = 1 << 4
+    Magnification = 1 << 5
 
 
 MaaWin32InputMethod = ctypes.c_uint64
