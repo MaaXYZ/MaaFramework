@@ -95,6 +95,8 @@ private:
     bool handle_controller_cached_image(const json::value& j);
     bool handle_controller_get_uuid(const json::value& j);
 
+    bool handle_event_response(const json::value& j);
+
 public:
     static MaaBool reco_agent(
         MaaContext* context,
