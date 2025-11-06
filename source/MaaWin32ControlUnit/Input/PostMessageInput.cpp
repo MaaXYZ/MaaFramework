@@ -53,11 +53,11 @@ bool PostMessageInput::touch_down(int contact, int x, int y, int pressure)
         break;
     case 3:
         message = WM_XBUTTONDOWN;
-        w_param = MK_XBUTTON1;
+        w_param = MAKEWPARAM(MK_XBUTTON1, XBUTTON1);
         break;
     case 4:
         message = WM_XBUTTONDOWN;
-        w_param = MK_XBUTTON2;
+        w_param = MAKEWPARAM(MK_XBUTTON2, XBUTTON2);
         break;
     default:
         LogError << "contact out of range" << VAR(contact);
@@ -66,6 +66,7 @@ bool PostMessageInput::touch_down(int contact, int x, int y, int pressure)
 
     // PostMessage是异步的，不等待消息处理完成
     PostMessage(hwnd_, message, w_param, MAKELPARAM(x, y));
+    last_pos_ = { x, y };
 
     return true;
 }
@@ -111,6 +112,7 @@ bool PostMessageInput::touch_move(int contact, int x, int y, int pressure)
     }
 
     PostMessage(hwnd_, message, w_param, MAKELPARAM(x, y));
+    last_pos_ = { x, y };
 
     return true;
 }
@@ -142,18 +144,18 @@ bool PostMessageInput::touch_up(int contact)
         break;
     case 3:
         message = WM_XBUTTONUP;
-        w_param = MAKEWPARAM(MK_XBUTTON1, XBUTTON1);
+        w_param = MAKEWPARAM(0, XBUTTON1);
         break;
     case 4:
         message = WM_XBUTTONUP;
-        w_param = MAKEWPARAM(MK_XBUTTON2, XBUTTON2);
+        w_param = MAKEWPARAM(0, XBUTTON2);
         break;
     default:
         LogError << "contact out of range" << VAR(contact);
         return false;
     }
 
-    PostMessage(hwnd_, message, w_param, 0);
+    PostMessage(hwnd_, message, w_param, MAKELPARAM(last_pos_.first, last_pos_.second));
 
     return true;
 }

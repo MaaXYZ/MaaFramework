@@ -7,7 +7,6 @@
 #include "MaaUtils/NoWarningCV.hpp"
 #include "Resource/ResourceMgr.h"
 
-
 MAA_CTRL_NS_BEGIN
 
 ControllerAgent::ControllerAgent(std::shared_ptr<MAA_CTRL_UNIT_NS::ControlUnitAPI> control_unit)
@@ -328,7 +327,7 @@ bool ControllerAgent::handle_click(const ClickParam& param)
     bool ret = true;
     if (control_unit_->get_features() & MaaControllerFeature_UseMouseDownAndUpInsteadOfClick) {
         ret &= control_unit_->touch_down(0, point.x, point.y, 1);
-        std::this_thread::yield();
+        std::this_thread::sleep_for(std::chrono::milliseconds(20));
         ret &= control_unit_->touch_up(0);
     }
     else {
@@ -368,7 +367,7 @@ bool ControllerAgent::handle_swipe(const SwipeParam& param)
         return false;
     }
 
-    const bool use_touch_down_up = control_unit_->get_features()  & MaaControllerFeature_UseMouseDownAndUpInsteadOfClick;
+    const bool use_touch_down_up = control_unit_->get_features() & MaaControllerFeature_UseMouseDownAndUpInsteadOfClick;
     if (!use_touch_down_up) {
         LogWarn << "touch not supported, use swipe instead. some features can not work";
     }
@@ -601,7 +600,7 @@ bool ControllerAgent::handle_click_key(const ClickKeyParam& param)
     for (const auto& keycode : param.keycode) {
         if (use_key_down_up) {
             ret &= control_unit_->key_down(keycode);
-            std::this_thread::yield();
+            std::this_thread::sleep_for(std::chrono::milliseconds(20));
             ret &= control_unit_->key_up(keycode);
         }
         else {

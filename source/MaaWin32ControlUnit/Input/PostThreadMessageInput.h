@@ -35,6 +35,7 @@ public: // from InputBase
 private:
     HWND hwnd_ = nullptr;
     DWORD thread_id_ = 0;
+    std::pair<int, int> last_pos_;
 };
 
 MAA_CTRL_UNIT_NS_END

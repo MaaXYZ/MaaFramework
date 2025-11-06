@@ -52,12 +52,12 @@ bool SendMessageInput::touch_down(int contact, int x, int y, int pressure)
         w_param = MK_MBUTTON;
         break;
     case 3:
-        message = WM_XBUTTONUP;
-        w_param = MK_XBUTTON1;
+        message = WM_XBUTTONDOWN;
+        w_param = MAKEWPARAM(MK_XBUTTON1, XBUTTON1);
         break;
     case 4:
-        message = WM_XBUTTONUP;
-        w_param = MK_XBUTTON2;
+        message = WM_XBUTTONDOWN;
+        w_param = MAKEWPARAM(MK_XBUTTON2, XBUTTON2);
         break;
     default:
         LogError << "contact out of range" << VAR(contact);
@@ -65,6 +65,7 @@ bool SendMessageInput::touch_down(int contact, int x, int y, int pressure)
     }
 
     SendMessage(hwnd_, message, w_param, MAKELPARAM(x, y));
+    last_pos_ = { x, y };
 
     return true;
 }
@@ -110,6 +111,7 @@ bool SendMessageInput::touch_move(int contact, int x, int y, int pressure)
     }
 
     SendMessage(hwnd_, message, w_param, MAKELPARAM(x, y));
+    last_pos_ = { x, y };
 
     return true;
 }
@@ -126,35 +128,35 @@ bool SendMessageInput::touch_up(int contact)
     }
 
     UINT message = WM_LBUTTONUP;
-    WPARAM w_param = MK_LBUTTON;
+    WPARAM w_param = 0;
 
     switch (contact) {
     case 0:
         message = WM_LBUTTONUP;
-        w_param = MK_LBUTTON;
+        w_param = 0;
         break;
     case 1:
         message = WM_RBUTTONUP;
-        w_param = MK_RBUTTON;
+        w_param = 0;
         break;
     case 2:
         message = WM_MBUTTONUP;
-        w_param = MK_MBUTTON;
+        w_param = 0;
         break;
     case 3:
         message = WM_XBUTTONUP;
-        w_param = MK_XBUTTON1;
+        w_param = MAKEWPARAM(0, XBUTTON1);
         break;
     case 4:
         message = WM_XBUTTONUP;
-        w_param = MK_XBUTTON2;
+        w_param = MAKEWPARAM(0, XBUTTON2);
         break;
     default:
         LogError << "contact out of range" << VAR(contact);
         return false;
     }
 
-    SendMessage(hwnd_, WM_LBUTTONUP, w_param, 0);
+    SendMessage(hwnd_, message, w_param, MAKELPARAM(last_pos_.first, last_pos_.second));
 
     return true;
 }

@@ -38,6 +38,7 @@ public: // from InputBase
 
 private:
     HWND hwnd_ = nullptr;
+    std::pair<int, int> last_pos_;
 };
 
 MAA_CTRL_UNIT_NS_END

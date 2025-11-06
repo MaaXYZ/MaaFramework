@@ -61,11 +61,11 @@ bool PostThreadMessageInput::touch_down(int contact, int x, int y, int pressure)
         break;
     case 3:
         message = WM_XBUTTONDOWN;
-        w_param = MK_XBUTTON1;
+        w_param = MAKEWPARAM(MK_XBUTTON1, XBUTTON1);
         break;
     case 4:
         message = WM_XBUTTONDOWN;
-        w_param = MK_XBUTTON2;
+        w_param = MAKEWPARAM(MK_XBUTTON2, XBUTTON2);
         break;
     default:
         LogError << "contact out of range" << VAR(contact);
@@ -74,6 +74,7 @@ bool PostThreadMessageInput::touch_down(int contact, int x, int y, int pressure)
 
     // PostThreadMessage发送到线程消息队列，不依赖窗口句柄
     PostThreadMessage(thread_id_, message, w_param, MAKELPARAM(x, y));
+    last_pos_ = { x, y };
 
     return true;
 }
@@ -119,6 +120,7 @@ bool PostThreadMessageInput::touch_move(int contact, int x, int y, int pressure)
     }
 
     PostThreadMessage(thread_id_, message, w_param, MAKELPARAM(x, y));
+    last_pos_ = { x, y };
 
     return true;
 }
@@ -150,18 +152,18 @@ bool PostThreadMessageInput::touch_up(int contact)
         break;
     case 3:
         message = WM_XBUTTONUP;
-        w_param = MAKEWPARAM(MK_XBUTTON1, XBUTTON1);
+        w_param = MAKEWPARAM(0, XBUTTON1);
         break;
     case 4:
         message = WM_XBUTTONUP;
-        w_param = MAKEWPARAM(MK_XBUTTON2, XBUTTON2);
+        w_param = MAKEWPARAM(0, XBUTTON2);
         break;
     default:
         LogError << "contact out of range" << VAR(contact);
         return false;
     }
 
-    PostThreadMessage(thread_id_, message, w_param, 0);
+    PostThreadMessage(thread_id_, message, w_param, MAKELPARAM(last_pos_.first, last_pos_.second));
 
     return true;
 }
