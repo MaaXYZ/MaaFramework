@@ -62,13 +62,56 @@ std::optional<cv::Mat> FramePoolScreencap::screencap()
 
     cv::Mat raw(texture_desc_.Height, texture_desc_.Width, CV_8UC4, mapped.pData, mapped.RowPitch);
 
-    std::vector<cv::Mat> channels;
-    cv::split(raw, channels);
-    cv::Mat alpha_bin;
-    cv::threshold(channels.back(), alpha_bin, UCHAR_MAX - 1, UCHAR_MAX, cv::THRESH_BINARY);
+    // 获取窗口客户区矩形（相对于窗口）
+    RECT client_rect = { 0 };
+    if (!GetClientRect(hwnd_, &client_rect)) {
+        LogError << "GetClientRect failed";
+        return std::nullopt;
+    }
 
-    cv::Rect boundary = cv::boundingRect(alpha_bin);
-    cv::Mat image = raw(boundary);
+    // 将客户区左上角转换为屏幕坐标
+    POINT client_top_left = { client_rect.left, client_rect.top };
+    if (!ClientToScreen(hwnd_, &client_top_left)) {
+        LogError << "ClientToScreen failed";
+        return std::nullopt;
+    }
+
+    // 获取窗口矩形（屏幕坐标）
+    RECT window_rect = { 0 };
+    if (!GetWindowRect(hwnd_, &window_rect)) {
+        LogError << "GetWindowRect failed";
+        return std::nullopt;
+    }
+
+    // 计算边框偏移量（窗口左上角到客户区左上角的偏移）
+    int border_left = client_top_left.x - window_rect.left;
+    int border_top = client_top_left.y - window_rect.top;
+
+    // 获取客户区大小
+    int client_width = client_rect.right - client_rect.left;
+    int client_height = client_rect.bottom - client_rect.top;
+
+    // 考虑 DPI 缩放
+    double scale = window_scale(hwnd_);
+    int scaled_border_left = static_cast<int>(border_left * scale);
+    int scaled_border_top = static_cast<int>(border_top * scale);
+    int scaled_client_width = static_cast<int>(client_width * scale);
+    int scaled_client_height = static_cast<int>(client_height * scale);
+
+    // 确保裁剪区域在图像范围内
+    int crop_x = std::max(0, scaled_border_left);
+    int crop_y = std::max(0, scaled_border_top);
+    int crop_width = std::min(scaled_client_width, raw.cols - crop_x);
+    int crop_height = std::min(scaled_client_height, raw.rows - crop_y);
+
+    if (crop_width <= 0 || crop_height <= 0) {
+        LogError << "Invalid crop region" << VAR(crop_x) << VAR(crop_y) << VAR(crop_width) << VAR(crop_height);
+        return std::nullopt;
+    }
+
+    // 裁剪出客户区（去掉边框）
+    cv::Rect client_roi(crop_x, crop_y, crop_width, crop_height);
+    cv::Mat image = raw(client_roi);
 
     return bgra_to_bgr(image);
 }
