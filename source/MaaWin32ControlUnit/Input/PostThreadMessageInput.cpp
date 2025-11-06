@@ -72,7 +72,7 @@ bool PostThreadMessageInput::touch_down(int contact, int x, int y, int pressure)
         return false;
     }
 
-    // PostThreadMessage发送到线程消息队列，不依赖窗口句柄
+    // 发送到目标线程队列
     PostThreadMessage(thread_id_, message, w_param, MAKELPARAM(x, y));
     last_pos_ = { x, y };
 
@@ -183,10 +183,10 @@ bool PostThreadMessageInput::input_text(const std::string& text)
         return false;
     }
 
+    // 文本输入仅发送 WM_CHAR
     for (const auto ch : to_u16(text)) {
-        PostThreadMessage(thread_id_, WM_KEYDOWN, ch, 0);
-        PostThreadMessage(thread_id_, WM_CHAR, ch, 0);
-        PostThreadMessage(thread_id_, WM_KEYUP, ch, 0);
+        PostThreadMessage(thread_id_, WM_CHAR, static_cast<WPARAM>(ch), 0);
+        std::this_thread::sleep_for(std::chrono::milliseconds(10));
     }
     return true;
 }
@@ -198,7 +198,9 @@ bool PostThreadMessageInput::key_down(int key)
         return false;
     }
 
-    PostThreadMessage(thread_id_, WM_KEYDOWN, key, 0);
+    UINT sc = MapVirtualKeyW(static_cast<UINT>(key), MAPVK_VK_TO_VSC);
+    LPARAM lParam = 1 | (static_cast<LPARAM>(sc) << 16);
+    PostThreadMessage(thread_id_, WM_KEYDOWN, static_cast<WPARAM>(key), lParam);
     return true;
 }
 
@@ -209,7 +211,9 @@ bool PostThreadMessageInput::key_up(int key)
         return false;
     }
 
-    PostThreadMessage(thread_id_, WM_KEYUP, key, 0);
+    UINT sc = MapVirtualKeyW(static_cast<UINT>(key), MAPVK_VK_TO_VSC);
+    LPARAM lParam = (1 | (static_cast<LPARAM>(sc) << 16) | (1 << 30) | (1 << 31));
+    PostThreadMessage(thread_id_, WM_KEYUP, static_cast<WPARAM>(key), lParam);
     return true;
 }
 

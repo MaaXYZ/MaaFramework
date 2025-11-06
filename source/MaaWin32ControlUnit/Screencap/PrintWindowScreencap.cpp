@@ -44,12 +44,12 @@ std::optional<cv::Mat> PrintWindowScreencap::screencap()
             DeleteDC(mem_dc);
         }
         if (hdc) {
-            ReleaseDC(nullptr, hdc);
+            ReleaseDC(hwnd_, hdc);
         }
     });
 
-    // 创建内存DC
-    hdc = GetDC(nullptr);
+    // 创建与窗口兼容的 DC
+    hdc = GetDC(hwnd_);
     if (!hdc) {
         LogError << "GetDC failed, error code: " << GetLastError();
         return std::nullopt;
@@ -83,9 +83,18 @@ std::optional<cv::Mat> PrintWindowScreencap::screencap()
         return std::nullopt;
     }
 
+    // 使用 GetDIBits 将位图一致转换为 32bpp BGRA
+    BITMAPINFO bmi = {};
+    bmi.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
+    bmi.bmiHeader.biWidth = width;
+    bmi.bmiHeader.biHeight = -height; // top-down
+    bmi.bmiHeader.biPlanes = 1;
+    bmi.bmiHeader.biBitCount = 32;
+    bmi.bmiHeader.biCompression = BI_RGB;
+
     cv::Mat mat(height, width, CV_8UC4);
-    if (!GetBitmapBits(bitmap, width * height * 4, mat.data)) {
-        LogError << "GetBitmapBits failed, error code: " << GetLastError();
+    if (!GetDIBits(mem_dc, bitmap, 0, height, mat.data, &bmi, DIB_RGB_COLORS)) {
+        LogError << "GetDIBits failed, error code: " << GetLastError();
         return std::nullopt;
     }
 

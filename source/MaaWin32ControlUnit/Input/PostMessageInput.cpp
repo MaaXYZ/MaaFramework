@@ -175,10 +175,10 @@ bool PostMessageInput::input_text(const std::string& text)
         return false;
     }
 
+    // 文本输入仅发送 WM_CHAR，更符合 Win32 语义（WM_KEYDOWN/UP 由系统生成并经 TranslateMessage 转为 WM_CHAR）
     for (const auto ch : to_u16(text)) {
-        PostMessageW(hwnd_, WM_KEYDOWN, ch, 0);
-        PostMessageW(hwnd_, WM_CHAR, ch, 0);
-        PostMessageW(hwnd_, WM_KEYUP, ch, 0);
+        PostMessageW(hwnd_, WM_CHAR, static_cast<WPARAM>(ch), 0);
+        std::this_thread::sleep_for(std::chrono::milliseconds(10));
     }
     return true;
 }
@@ -190,7 +190,10 @@ bool PostMessageInput::key_down(int key)
         return false;
     }
 
-    PostMessageW(hwnd_, WM_KEYDOWN, key, 0);
+    // 构造更接近系统生成的 lParam：重复计数=1，扫描码填充
+    UINT sc = MapVirtualKeyW(static_cast<UINT>(key), MAPVK_VK_TO_VSC);
+    LPARAM lParam = 1 | (static_cast<LPARAM>(sc) << 16);
+    PostMessageW(hwnd_, WM_KEYDOWN, static_cast<WPARAM>(key), lParam);
     return true;
 }
 
@@ -201,7 +204,10 @@ bool PostMessageInput::key_up(int key)
         return false;
     }
 
-    PostMessageW(hwnd_, WM_KEYUP, key, 0);
+    UINT sc = MapVirtualKeyW(static_cast<UINT>(key), MAPVK_VK_TO_VSC);
+    // 置位先前状态与转换状态位
+    LPARAM lParam = (1 | (static_cast<LPARAM>(sc) << 16) | (1 << 30) | (1 << 31));
+    PostMessageW(hwnd_, WM_KEYUP, static_cast<WPARAM>(key), lParam);
     return true;
 }
 
