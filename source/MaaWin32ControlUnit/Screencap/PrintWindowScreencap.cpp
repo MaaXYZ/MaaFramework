@@ -13,27 +13,11 @@ std::optional<cv::Mat> PrintWindowScreencap::screencap()
     }
 
     // 确定要捕获的区域大小
+    // 使用PW_CLIENTONLY标志，只获取客户端区域（不含窗口边框）
     RECT rect = { 0 };
-    bool use_client_rect = (nFlags_ & PW_CLIENTONLY) != 0;
-
-    if (use_client_rect) {
-        // 只获取客户端区域（不含窗口边框）
-        if (!GetClientRect(hwnd_, &rect)) {
-            LogError << "GetClientRect failed, error code: " << GetLastError();
-            return std::nullopt;
-        }
-    }
-    else {
-        // 获取整个窗口区域
-        if (!GetWindowRect(hwnd_, &rect)) {
-            LogError << "GetWindowRect failed, error code: " << GetLastError();
-            return std::nullopt;
-        }
-        // 转换为相对于窗口的坐标
-        rect.right -= rect.left;
-        rect.bottom -= rect.top;
-        rect.left = 0;
-        rect.top = 0;
+    if (!GetClientRect(hwnd_, &rect)) {
+        LogError << "GetClientRect failed, error code: " << GetLastError();
+        return std::nullopt;
     }
 
     int width = rect.right - rect.left;
@@ -90,10 +74,11 @@ std::optional<cv::Mat> PrintWindowScreencap::screencap()
     }
 
     // 使用PrintWindow捕获窗口内容
-    // nFlags可以包含:
+    // 使用PW_CLIENTONLY | PW_RENDERFULLCONTENT标志:
     // - PW_CLIENTONLY (0x1): 只获取客户端区域
     // - PW_RENDERFULLCONTENT (0x2): 捕获非最小化后台窗口
-    if (!PrintWindow(hwnd_, mem_dc, nFlags_)) {
+    constexpr UINT nFlags = PW_CLIENTONLY | PW_RENDERFULLCONTENT;
+    if (!PrintWindow(hwnd_, mem_dc, nFlags)) {
         LogError << "PrintWindow failed, error code: " << GetLastError();
         return std::nullopt;
     }

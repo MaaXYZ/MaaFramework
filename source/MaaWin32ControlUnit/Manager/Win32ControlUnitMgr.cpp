@@ -54,8 +54,7 @@ bool Win32ControlUnitMgr::connect()
         screencap_ = std::make_shared<DesktopDupScreencap>();
         break;
     case MaaWin32ScreencapMethod_PrintWindow:
-        // 默认使用PW_RENDERFULLCONTENT以支持捕获后台窗口
-        screencap_ = std::make_shared<PrintWindowScreencap>(hwnd_, PW_CLIENTONLY | PW_RENDERFULLCONTENT);
+        screencap_ = std::make_shared<PrintWindowScreencap>(hwnd_);
         break;
     default:
         LogError << "Unknown screencap method: " << static_cast<int>(screencap_method_);

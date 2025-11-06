@@ -10,9 +10,8 @@ MAA_CTRL_UNIT_NS_BEGIN
 class PrintWindowScreencap : public ScreencapBase
 {
 public:
-    explicit PrintWindowScreencap(HWND hwnd, UINT nFlags = 0)
+    explicit PrintWindowScreencap(HWND hwnd)
         : hwnd_(hwnd)
-        , nFlags_(nFlags)
     {
     }
 
@@ -23,7 +22,6 @@ public: // from ScreencapBase
 
 private:
     HWND hwnd_ = nullptr;
-    UINT nFlags_ = 0;
 };
 
 MAA_CTRL_UNIT_NS_END
