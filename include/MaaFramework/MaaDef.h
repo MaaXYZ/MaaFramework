@@ -252,6 +252,13 @@ typedef uint64_t MaaWin32ScreencapMethod;
 #define MaaWin32ScreencapMethod_GDI 1ULL
 #define MaaWin32ScreencapMethod_FramePool (1ULL << 1)
 #define MaaWin32ScreencapMethod_DXGI_DesktopDup (1ULL << 2)
+#define MaaWin32ScreencapMethod_DXGI_DesktopDup_Window (1ULL << 3)
+#define MaaWin32ScreencapMethod_PrintWindow (1ULL << 4)
+#define MaaWin32ScreencapMethod_ScreenDC (1ULL << 5)
+#define MaaWin32ScreencapMethod_Magnification (1ULL << 6)
+#define MaaWin32ScreencapMethod_StretchBlt (1ULL << 7)
+#define MaaWin32ScreencapMethod_GetDIBits (1ULL << 8)
+#define MaaWin32ScreencapMethod_GdiPlus (1ULL << 9)
 
 // MaaWin32InputMethod:
 /**
