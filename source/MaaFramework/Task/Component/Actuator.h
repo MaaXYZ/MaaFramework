@@ -4,8 +4,8 @@
 
 #include <meojson/json.hpp>
 
-#include "Common/MaaTypes.h"
 #include "Common/Conf.h"
+#include "Common/MaaTypes.h"
 #include "Controller/ControllerAgent.h"
 #include "Resource/PipelineTypes.h"
 #include "Task/Context.h"
@@ -25,7 +25,7 @@ public:
 
 private:
     static cv::Point rand_point(const cv::Rect& r);
-    static std::minstd_rand rand_engine_;
+    static std::mt19937 rand_engine_;
 
 private:
     bool click(const MAA_RES_NS::Action::ClickParam& param, const cv::Rect& box);
