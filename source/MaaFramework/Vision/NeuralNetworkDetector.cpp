@@ -281,16 +281,6 @@ std::vector<std::string> NeuralNetworkDetector::parse_labels_from_metadata() con
         }
 
         const std::string& index_str = match[1].str();
-        if (index_str.empty()) {
-            continue;
-        }
-
-        // 检查是否所有字符都是数字
-        if (!std::ranges::all_of(index_str, [](char c) { return std::isdigit(static_cast<unsigned char>(c)); })) {
-            LogWarn << name_ << VAR(uid_) << "Invalid index format" << VAR(index_str);
-            continue;
-        }
-
         int index = std::stoi(index_str);
 
         const std::string& label = match[2].str();
