@@ -3,35 +3,35 @@ name: build
 on:
     push:
         tags:
-            - 'v*'
+            - "v*"
         branches:
-            - '**'
+            - "**"
         paths:
-            - '.github/workflows/build.yml'
-            - '3rdparty/**'
-            - 'cmake/**'
-            - 'include/**'
-            - 'source/**'
-            - 'CMakeLists.txt'
-            - 'tools/pip_pack/**'
+            - ".github/workflows/build.yml"
+            - "3rdparty/**"
+            - "cmake/**"
+            - "include/**"
+            - "source/**"
+            - "CMakeLists.txt"
+            - "tools/pip_pack/**"
 
     pull_request:
         branches:
-            - '**'
+            - "**"
         paths:
-            - '.github/workflows/build.yml'
-            - '3rdparty/**'
-            - 'cmake/**'
-            - 'include/**'
-            - 'source/**'
-            - 'CMakeLists.txt'
-            - 'tools/pip_pack/**'
+            - ".github/workflows/build.yml"
+            - "3rdparty/**"
+            - "cmake/**"
+            - "include/**"
+            - "source/**"
+            - "CMakeLists.txt"
+            - "tools/pip_pack/**"
 
     workflow_dispatch:
         inputs:
             build_config:
                 required: true
-                default: 'RelWithDebInfo'
+                default: "RelWithDebInfo"
                 type: choice
                 options:
                     - Debug
@@ -42,8 +42,8 @@ on:
         types: [MaaUtilsUpdated]
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}-${{ github.ref == 'refs/heads/main' && github.sha }}-${{ github.event_name == 'repository_dispatch' && github.event.action }}
-  cancel-in-progress: true
+    group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}-${{ github.ref == 'refs/heads/main' && github.sha }}-${{ github.event_name == 'repository_dispatch' && github.event.action }}
+    cancel-in-progress: true
 
 jobs:
     meta:
@@ -74,7 +74,7 @@ jobs:
               with:
                   minimum-size: 16GB
                   maximum-size: 16GB
-                  disk-root: 'D:'
+                  disk-root: "D:"
 
             - uses: actions/checkout@v4
               with:
@@ -94,9 +94,9 @@ jobs:
               id: cache-maadeps
               uses: actions/cache@v4
               with:
-                path: |
-                    ./source/MaaUtils/MaaDeps
-                key: maadeps-${{ runner.os }}-${{ matrix.arch }}-${{ hashFiles('./tools/maadeps-download.py') }}
+                  path: |
+                      ./source/MaaUtils/MaaDeps
+                  key: maadeps-${{ runner.os }}-${{ matrix.arch }}-${{ hashFiles('./tools/maadeps-download.py') }}
 
             - name: Bootstrap MaaDeps
               if: steps.cache-maadeps.outputs.cache-hit != 'true'
@@ -142,12 +142,12 @@ jobs:
             - name: Download Plugin
               uses: robinraju/release-downloader@v1
               with:
-                repository: MaaXYZ/MaaPluginDemo
-                latest: true
-                prerelease: ${{ needs.meta.outputs.is_release != 'true' || needs.meta.outputs.is_pre_release == 'true' }}
-                fileName: "*win-${{ matrix.arch }}*"
-                out-file-path: "build/download_plugins"
-                extract: true
+                  repository: MaaXYZ/MaaPluginDemo
+                  latest: true
+                  prerelease: ${{ needs.meta.outputs.is_release != 'true' || needs.meta.outputs.is_pre_release == 'true' }}
+                  fileName: "*win-${{ matrix.arch }}*"
+                  out-file-path: "build/download_plugins"
+                  extract: true
 
             - name: Install Plugin
               shell: bash
@@ -158,7 +158,7 @@ jobs:
               if: always()
               with:
                   name: MAA-win-${{ matrix.arch }}
-                  path: 'install'
+                  path: "install"
 
     ubuntu:
         needs: meta
@@ -240,12 +240,12 @@ jobs:
             - name: Download Plugin
               uses: robinraju/release-downloader@v1
               with:
-                repository: MaaXYZ/MaaPluginDemo
-                latest: true
-                prerelease: ${{ needs.meta.outputs.is_release != 'true' || needs.meta.outputs.is_pre_release == 'true' }}
-                fileName: "*linux-${{ matrix.arch }}*"
-                out-file-path: "build/download_plugins"
-                extract: true
+                  repository: MaaXYZ/MaaPluginDemo
+                  latest: true
+                  prerelease: ${{ needs.meta.outputs.is_release != 'true' || needs.meta.outputs.is_pre_release == 'true' }}
+                  fileName: "*linux-${{ matrix.arch }}*"
+                  out-file-path: "build/download_plugins"
+                  extract: true
 
             - name: Install Plugin
               shell: bash
@@ -256,7 +256,7 @@ jobs:
               if: always()
               with:
                   name: MAA-linux-${{ matrix.arch }}
-                  path: 'install'
+                  path: "install"
 
     macos:
         needs: meta
@@ -336,12 +336,12 @@ jobs:
             - name: Download Plugin
               uses: robinraju/release-downloader@v1
               with:
-                repository: MaaXYZ/MaaPluginDemo
-                latest: true
-                prerelease: ${{ needs.meta.outputs.is_release != 'true' || needs.meta.outputs.is_pre_release == 'true' }}
-                fileName: "*macos-${{ matrix.arch }}*"
-                out-file-path: "build/download_plugins"
-                extract: true
+                  repository: MaaXYZ/MaaPluginDemo
+                  latest: true
+                  prerelease: ${{ needs.meta.outputs.is_release != 'true' || needs.meta.outputs.is_pre_release == 'true' }}
+                  fileName: "*macos-${{ matrix.arch }}*"
+                  out-file-path: "build/download_plugins"
+                  extract: true
 
             - name: Install Plugin
               shell: bash
@@ -352,7 +352,7 @@ jobs:
               if: always()
               with:
                   name: MAA-macos-${{ matrix.arch }}
-                  path: 'install'
+                  path: "install"
 
     android:
         needs: meta
@@ -421,12 +421,12 @@ jobs:
             - name: Download Plugin
               uses: robinraju/release-downloader@v1
               with:
-                repository: MaaXYZ/MaaPluginDemo
-                latest: true
-                prerelease: ${{ needs.meta.outputs.is_release != 'true' || needs.meta.outputs.is_pre_release == 'true' }}
-                fileName: "*android-${{ matrix.arch }}*"
-                out-file-path: "build/download_plugins"
-                extract: true
+                  repository: MaaXYZ/MaaPluginDemo
+                  latest: true
+                  prerelease: ${{ needs.meta.outputs.is_release != 'true' || needs.meta.outputs.is_pre_release == 'true' }}
+                  fileName: "*android-${{ matrix.arch }}*"
+                  out-file-path: "build/download_plugins"
+                  extract: true
 
             - name: Install Plugin
               shell: bash
@@ -437,7 +437,7 @@ jobs:
               if: always()
               with:
                   name: MAA-android-${{ matrix.arch }}
-                  path: 'install'
+                  path: "install"
 
     nuget_pack:
         needs: [meta, windows, ubuntu, macos, android]
@@ -468,7 +468,7 @@ jobs:
               if: always()
               with:
                   name: MAA-nupkgs
-                  path: 'tools/nupkgs/*.nupkg'
+                  path: "tools/nupkgs/*.nupkg"
 
     pip_pack:
         needs: [meta, windows, ubuntu, macos, android]
@@ -489,7 +489,7 @@ jobs:
               if: always()
               with:
                   name: MAA-pip-pkgs
-                  path: 'pip_pack/wheel/*.whl'
+                  path: "pip_pack/wheel/*.whl"
 
     nodejs_pack:
         needs: [meta, windows, ubuntu, macos, android]
@@ -527,36 +527,56 @@ jobs:
             - uses: actions/upload-artifact@v4
               with:
                   name: MAA-nodejs-package
-                  path: 'source/binding/NodeJS/release'
+                  path: "source/binding/NodeJS/release"
 
     update_submodule:
         if: ${{ github.event_name == 'repository_dispatch' && github.event.action == 'MaaUtilsUpdated' }}
-        needs: [meta, windows, ubuntu, macos, android, nuget_pack, pip_pack, nodejs_pack]
+        needs:
+            [
+                meta,
+                windows,
+                ubuntu,
+                macos,
+                android,
+                nuget_pack,
+                pip_pack,
+                nodejs_pack,
+            ]
         runs-on: ubuntu-latest
         steps:
-          - name: Checkout repository
-            uses: actions/checkout@v5
-            with:
-              submodules: true
-    
-          - name: Update submodules
-            run: |
-              git submodule update --remote source/MaaUtils
-    
-          - name: Commit and push changes
-            uses: actions-js/push@master
-            with:
-              github_token: ${{ secrets.GITHUB_TOKEN }}
-              message: "chore: Update Submodule MaaUtils
+            - name: Checkout repository
+              uses: actions/checkout@v5
+              with:
+                  submodules: true
 
-                https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
+            - name: Update submodules
+              run: |
+                  git submodule update --remote source/MaaUtils
 
-                [skip changelog]"
-              branch: ${{ github.ref }}
-          
+            - name: Commit and push changes
+              uses: actions-js/push@master
+              with:
+                  github_token: ${{ secrets.GITHUB_TOKEN }}
+                  message: "chore: Update Submodule MaaUtils
+
+                      https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
+
+                      [skip changelog]"
+                  branch: ${{ github.ref }}
+
     release:
         if: ${{ needs.meta.outputs.is_release == 'true' && github.repository_id == '632024122' }}
-        needs: [meta, windows, ubuntu, macos, android, nuget_pack, pip_pack, nodejs_pack]
+        needs:
+            [
+                meta,
+                windows,
+                ubuntu,
+                macos,
+                android,
+                nuget_pack,
+                pip_pack,
+                nodejs_pack,
+            ]
         runs-on: ubuntu-latest
         env:
             OUTPUT_PUBLISH_FAILED: 'echo "failed=true" >> $GITHUB_OUTPUT && echo "::error::Failed to publish packages"'
@@ -620,8 +640,8 @@ jobs:
               if: failure() || steps.nuget.outputs.failed || steps.pip.outputs.failed || steps.nodejs.outputs.failed
               uses: actions-cool/issues-helper@v3
               with:
-                  actions: 'create-issue'
-                  title: '${{ needs.meta.outputs.tag }} failed to release'
+                  actions: "create-issue"
+                  title: "${{ needs.meta.outputs.tag }} failed to release"
                   body: |
                       Please manually publish the following packages:
                       ${{ steps.nuget.outputs.failed && '- nuget @moomiji' || '' }}
