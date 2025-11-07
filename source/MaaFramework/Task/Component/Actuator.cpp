@@ -8,7 +8,7 @@
 
 MAA_TASK_NS_BEGIN
 
-std::minstd_rand Actuator::rand_engine_(std::random_device {}());
+std::mt19937 Actuator::rand_engine_(std::random_device {}());
 
 Actuator::Actuator(Tasker* tasker, Context& context)
     : tasker_(tasker)
@@ -86,25 +86,35 @@ bool Actuator::run(const cv::Rect& reco_hit, MaaRecoId reco_id, const PipelineDa
 
 cv::Point Actuator::rand_point(const cv::Rect& r)
 {
-    int x = 0, y = 0;
-
-    if (r.width == 0) {
-        x = r.x;
-    }
-    else {
-        int x_rand = std::poisson_distribution<int>(r.width / 2.)(rand_engine_);
-        x = x_rand + r.x;
+    // 过小矩形直接返回中心点，避免死循环
+    if (r.width <= 2 || r.height <= 2) {
+        return { r.x + r.width / 2, r.y + r.height / 2 };
     }
 
-    if (r.height == 0) {
-        y = r.y;
-    }
-    else {
-        int y_rand = std::poisson_distribution<int>(r.height / 2.)(rand_engine_);
-        y = y_rand + r.y;
+    constexpr double kStdDevFactor = 3.0;
+
+    const double std_dev_x = r.width / kStdDevFactor;
+    const double std_dev_y = r.height / kStdDevFactor;
+
+    std::normal_distribution<double> dist_x(r.x + r.width / 2.0, std_dev_x);
+    std::normal_distribution<double> dist_y(r.y + r.height / 2.0, std_dev_y);
+
+    // 优先进行有限次拒绝采样
+    constexpr int kMaxAttempts = 8;
+    for (int i = 0; i < kMaxAttempts; ++i) {
+        const int x = static_cast<int>(std::round(dist_x(rand_engine_)));
+        const int y = static_cast<int>(std::round(dist_y(rand_engine_)));
+        const cv::Point sampled { x, y };
+        if (!r.contains(sampled)) {
+            continue;
+        }
+
+        return sampled;
     }
 
-    return { x, y };
+    LogWarn << "Too many sampling attempts";
+    // 返回中心点
+    return { r.x + r.width / 2, r.y + r.height / 2 };
 }
 
 bool Actuator::click(const MAA_RES_NS::Action::ClickParam& param, const cv::Rect& box)
@@ -150,12 +160,13 @@ bool Actuator::swipe(const MAA_RES_NS::Action::SwipeParam& param, const cv::Rect
         end.emplace_back(p);
     }
 
-    return controller()->swipe({ .begin = begin,
-                                 .end = std::move(end),
-                                 .end_hold = param.end_hold,
-                                 .duration = param.duration,
-                                 .only_hover = param.only_hover,
-                                 .starting = param.starting });
+    return controller()->swipe(
+        { .begin = begin,
+          .end = std::move(end),
+          .end_hold = param.end_hold,
+          .duration = param.duration,
+          .only_hover = param.only_hover,
+          .starting = param.starting });
 }
 
 bool Actuator::multi_swipe(const MAA_RES_NS::Action::MultiSwipeParam& param, const cv::Rect& box)
@@ -179,12 +190,13 @@ bool Actuator::multi_swipe(const MAA_RES_NS::Action::MultiSwipeParam& param, con
             cv::Point p = rand_point(get_target_rect(end_target, box));
             end.emplace_back(p);
         }
-        swipes.push_back({ .begin = begin,
-                           .end = std::move(end),
-                           .end_hold = swipe.end_hold,
-                           .duration = swipe.duration,
-                           .only_hover = swipe.only_hover,
-                           .starting = swipe.starting });
+        swipes.push_back(
+            { .begin = begin,
+              .end = std::move(end),
+              .end_hold = swipe.end_hold,
+              .duration = swipe.duration,
+              .only_hover = swipe.only_hover,
+              .starting = swipe.starting });
     }
 
     return controller()->multi_swipe({ .swipes = std::move(swipes) });
