@@ -7,7 +7,6 @@
 #include "PipelineTypesV2.h"
 #include "Vision/VisionTypes.h"
 
-
 MAA_RES_NS_BEGIN
 
 template <typename OutT>
@@ -1310,8 +1309,8 @@ bool PipelineParser::parse_rect(const json::value& input_rect, cv::Rect& output)
     }
 
     auto& rect_array = input_rect.as_array();
-    if (rect_array.size() != 4) {
-        LogError << "rect size != 4" << VAR(rect_array.size());
+    if (rect_array.empty()) {
+        LogError << "rect size invalid" << VAR(rect_array.size());
         return false;
     }
 
@@ -1323,7 +1322,16 @@ bool PipelineParser::parse_rect(const json::value& input_rect, cv::Rect& output)
         }
         rect_move_vec.emplace_back(r.as_integer());
     }
-    output = cv::Rect(rect_move_vec[0], rect_move_vec[1], rect_move_vec[2], rect_move_vec[3]);
+    if (rect_move_vec.size() == 2) {
+        output = cv::Rect(rect_move_vec[0], rect_move_vec[1], 0, 0);
+    }
+    else if (rect_move_vec.size() == 4) {
+        output = cv::Rect(rect_move_vec[0], rect_move_vec[1], rect_move_vec[2], rect_move_vec[3]);
+    }
+    else {
+        LogError << "rect size unsupported" << VAR(rect_move_vec.size());
+        return false;
+    }
     return true;
 }
 
@@ -1392,7 +1400,7 @@ bool PipelineParser::parse_action_target_obj_or_list(
     if (auto param_opt = input.find(key); !param_opt) {
         output = default_value;
     }
-    else if (param_opt->is_array() && !param_opt->is<std::array<int, 4>>()) {
+    else if (param_opt->is_array() && !param_opt->is<std::array<int, 4>>() && !param_opt->is<std::array<int, 2>>()) {
         for (const auto& val : param_opt->as_array()) {
             Action::TargetObj res;
             if (!parse_target_variant(val, res)) {
@@ -1425,7 +1433,7 @@ bool PipelineParser::parse_action_target_offset_or_list(
     if (auto offset_opt = input.find(key); !offset_opt) {
         output = default_value;
     }
-    else if (offset_opt->is_array() && !offset_opt->is<std::array<int, 4>>()) {
+    else if (offset_opt->is_array() && !offset_opt->is<std::array<int, 4>>() && !offset_opt->is<std::array<int, 2>>()) {
         for (const auto& val : offset_opt->as_array()) {
             cv::Rect res;
             if (!parse_rect(val, res)) {
