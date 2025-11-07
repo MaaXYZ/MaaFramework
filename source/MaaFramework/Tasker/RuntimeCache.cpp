@@ -37,7 +37,7 @@ void RuntimeCache::set_latest_node(const std::string& name, MaaNodeId id)
 std::optional<MAA_TASK_NS::RecoResult> RuntimeCache::get_reco_result(MaaRecoId uid) const
 {
     if (uid == MaaInvalidId) {
-        LogWarn << "uid is invaild";
+        LogWarn << "uid is invalid";
         return std::nullopt;
     }
 
@@ -53,7 +53,7 @@ std::optional<MAA_TASK_NS::RecoResult> RuntimeCache::get_reco_result(MaaRecoId u
 void RuntimeCache::set_reco_detail(MaaRecoId uid, MAA_TASK_NS::RecoResult detail)
 {
     if (uid == MaaInvalidId) {
-        LogError << "uid is invaild";
+        LogError << "uid is invalid";
         return;
     }
 
@@ -65,7 +65,7 @@ void RuntimeCache::set_reco_detail(MaaRecoId uid, MAA_TASK_NS::RecoResult detail
 std::optional<MAA_TASK_NS::ActionResult> RuntimeCache::get_action_result(MaaActId uid) const
 {
     if (uid == MaaInvalidId) {
-        LogWarn << "uid is invaild";
+        LogWarn << "uid is invalid";
         return std::nullopt;
     }
 
@@ -81,7 +81,7 @@ std::optional<MAA_TASK_NS::ActionResult> RuntimeCache::get_action_result(MaaActI
 void RuntimeCache::set_action_detail(MaaActId uid, MAA_TASK_NS::ActionResult detail)
 {
     if (uid == MaaInvalidId) {
-        LogError << "uid is invaild";
+        LogError << "uid is invalid";
         return;
     }
 
@@ -93,7 +93,7 @@ void RuntimeCache::set_action_detail(MaaActId uid, MAA_TASK_NS::ActionResult det
 std::optional<MAA_TASK_NS::NodeDetail> RuntimeCache::get_node_detail(MaaNodeId uid) const
 {
     if (uid == MaaInvalidId) {
-        LogWarn << "uid is invaild";
+        LogWarn << "uid is invalid";
         return std::nullopt;
     }
 
@@ -109,7 +109,7 @@ std::optional<MAA_TASK_NS::NodeDetail> RuntimeCache::get_node_detail(MaaNodeId u
 void RuntimeCache::set_node_detail(MaaNodeId uid, MAA_TASK_NS::NodeDetail detail)
 {
     if (uid == MaaInvalidId) {
-        LogError << "uid is invaild";
+        LogError << "uid is invalid";
         return;
     }
 
@@ -121,7 +121,7 @@ void RuntimeCache::set_node_detail(MaaNodeId uid, MAA_TASK_NS::NodeDetail detail
 std::optional<MAA_TASK_NS::TaskDetail> RuntimeCache::get_task_detail(MaaTaskId uid) const
 {
     if (uid == MaaInvalidId) {
-        LogWarn << "uid is invaild";
+        LogWarn << "uid is invalid";
         return std::nullopt;
     }
 
@@ -137,7 +137,7 @@ std::optional<MAA_TASK_NS::TaskDetail> RuntimeCache::get_task_detail(MaaTaskId u
 void RuntimeCache::set_task_detail(MaaTaskId uid, MAA_TASK_NS::TaskDetail detail)
 {
     if (uid == MaaInvalidId) {
-        LogError << "uid is invaild";
+        LogError << "uid is invalid";
         return;
     }
 
