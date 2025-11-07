@@ -1069,7 +1069,7 @@
                     "title": "Labels Property",
                     "description": "标注，即每个分类的名字。可选。",
                     "$ref": "#/$defs/jsonStringList",
-                    "markdownDescription": "*list<string, >*\n\n标注，即每个分类的名字。可选。\n\n仅影响调试图片及日志等，若未填写则会填充 \"Unknown\" 。"
+                    "markdownDescription": "*list<string, >*\n\n标注，即每个分类的名字。可选。\n\n仅影响调试图片及日志等。若未填写，会自动从模型 metadata 中读取（支持从 `names`、`name`、`labels`、`class_names` 字段读取），一般无需手动设置。若模型 metadata 中也没有，则会填充 \"Unknown\" 。"
                 },
                 "model": {
                     "title": "Model Property",
