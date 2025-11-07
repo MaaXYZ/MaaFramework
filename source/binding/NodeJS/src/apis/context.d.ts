@@ -17,7 +17,7 @@ declare global {
              * 同步执行任务 / Synchronously execute task
              * @param entry 任务入口 / Task entry
              * @param pipeline_override 用于覆盖的 json / JSON for overriding
-             * @returns 任务详情，如果不存在则返回 null / Task detail, or null if not exists
+             * @returns 任务详情，执行失败则返回 null / Task detail, or null if execution failed
              */
             run_task(
                 entry: string,
@@ -32,7 +32,7 @@ declare global {
              * @param entry 任务名 / Task name
              * @param image 前序截图 / Previous screenshot
              * @param pipeline_override 用于覆盖的 json / JSON for overriding
-             * @returns 识别详情，如果不存在则返回 null / Recognition detail, or null if not exists
+             * @returns 识别详情，执行失败则返回 null / Recognition detail, or null if execution failed
              */
             run_recognition(
                 entry: string,
@@ -49,7 +49,7 @@ declare global {
              * @param box 前序识别位置 / Previous recognition position
              * @param reco_detail 前序识别详情 / Previous recognition details
              * @param pipeline_override 用于覆盖的 json / JSON for overriding
-             * @returns 节点详情，如果不存在则返回 null / Node detail, or null if not exists
+             * @returns 节点详情，执行失败则返回 null / Node detail, or null if execution failed
              */
             run_action(
                 entry: string,

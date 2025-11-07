@@ -41,7 +41,7 @@ class Context:
             pipeline_override: 用于覆盖的 json / JSON for overriding
 
         Returns:
-            Optional[TaskDetail]: 任务详情，如果不存在则返回 None / Task detail, or None if not exists
+            Optional[TaskDetail]: 任务详情，执行失败则返回 None / Task detail, or None if execution failed
         """
         task_id = int(
             Library.framework().MaaContextRunTask(
@@ -70,7 +70,7 @@ class Context:
             pipeline_override: 用于覆盖的 json / JSON for overriding
 
         Returns:
-            Optional[RecognitionDetail]: 识别详情，如果不存在则返回 None / Recognition detail, or None if not exists
+            Optional[RecognitionDetail]: 识别详情，执行失败则返回 None / Recognition detail, or None if execution failed
         """
         image_buffer = ImageBuffer()
         image_buffer.set(image)
@@ -105,7 +105,7 @@ class Context:
             pipeline_override: 用于覆盖的 json / JSON for overriding
 
         Returns:
-            Optional[NodeDetail]: 节点详情，如果不存在则返回 None / Node detail, or None if not exists
+            Optional[NodeDetail]: 节点详情，执行失败则返回 None / Node detail, or None if execution failed
         """
         rect = RectBuffer()
         rect.set(box)
