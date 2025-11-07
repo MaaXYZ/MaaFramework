@@ -118,6 +118,7 @@ class JDoNothing:
 class JClick:
     target: JTarget
     target_offset: JRect
+    contact: int = 0
 
 
 @dataclass
@@ -125,6 +126,7 @@ class JLongPress:
     target: JTarget
     target_offset: JRect
     duration: int
+    contact: int = 0
 
 
 @dataclass
@@ -137,6 +139,7 @@ class JSwipe:
     end_hold: List[int]
     duration: List[int]
     only_hover: bool
+    contact: int = 0
 
 
 @dataclass

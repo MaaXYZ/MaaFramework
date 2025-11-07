@@ -140,7 +140,7 @@ bool Actuator::click(const MAA_RES_NS::Action::ClickParam& param, const cv::Rect
     }
 
     cv::Point point = rand_point(get_target_rect(param.target, box));
-    return controller()->click({ .point = point });
+    return controller()->click({ .point = point, .contact = static_cast<int>(param.contact) });
 }
 
 bool Actuator::long_press(const MAA_RES_NS::Action::LongPressParam& param, const cv::Rect& box)
@@ -152,7 +152,7 @@ bool Actuator::long_press(const MAA_RES_NS::Action::LongPressParam& param, const
 
     cv::Point point = rand_point(get_target_rect(param.target, box));
 
-    return controller()->long_press({ .point = point, .duration = param.duration });
+    return controller()->long_press({ .point = point, .duration = param.duration, .contact = static_cast<int>(param.contact) });
 }
 
 bool Actuator::swipe(const MAA_RES_NS::Action::SwipeParam& param, const cv::Rect& box)
@@ -181,7 +181,8 @@ bool Actuator::swipe(const MAA_RES_NS::Action::SwipeParam& param, const cv::Rect
           .end_hold = param.end_hold,
           .duration = param.duration,
           .only_hover = param.only_hover,
-          .starting = param.starting });
+          .starting = param.starting,
+          .contact = static_cast<int>(param.contact) });
 }
 
 bool Actuator::multi_swipe(const MAA_RES_NS::Action::MultiSwipeParam& param, const cv::Rect& box)
@@ -211,7 +212,8 @@ bool Actuator::multi_swipe(const MAA_RES_NS::Action::MultiSwipeParam& param, con
               .end_hold = swipe.end_hold,
               .duration = swipe.duration,
               .only_hover = swipe.only_hover,
-              .starting = swipe.starting });
+              .starting = swipe.starting,
+              .contact = static_cast<int>(swipe.contact) });
     }
 
     return controller()->multi_swipe({ .swipes = std::move(swipes) });

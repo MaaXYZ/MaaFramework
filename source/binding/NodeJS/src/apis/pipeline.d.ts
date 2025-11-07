@@ -177,12 +177,14 @@ declare global {
         type ActionClick = {
             target?: true | NodeName | FlatRect
             target_offset?: FlatRect
+            contact?: number
         }
 
         type ActionLongPress = {
             target?: true | NodeName | FlatRect
             target_offset?: FlatRect
             duration?: number
+            contact?: number
         }
 
         type ActionSwipe = {
@@ -191,6 +193,7 @@ declare global {
             end?: true | NodeName | FlatRect
             end_offset?: FlatRect
             duration?: number
+            contact?: number
         }
 
         type ActionMultiSwipe<Mode> = RequiredIfStrict<
@@ -202,6 +205,7 @@ declare global {
                     end?: true | NodeName | FlatRect
                     end_offset?: FlatRect
                     duration?: number
+                    contact?: number
                 }[]
             },
             'swipes',

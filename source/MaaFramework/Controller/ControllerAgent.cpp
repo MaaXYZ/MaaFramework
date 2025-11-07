@@ -356,9 +356,9 @@ bool ControllerAgent::handle_click(const ClickParam& param)
 
     bool ret = true;
     if (control_unit_->get_features() & MaaControllerFeature_UseMouseDownAndUpInsteadOfClick) {
-        ret &= control_unit_->touch_down(0, point.x, point.y, 1);
+        ret &= control_unit_->touch_down(param.contact, point.x, point.y, 1);
         std::this_thread::sleep_for(std::chrono::milliseconds(20));
-        ret &= control_unit_->touch_up(0);
+        ret &= control_unit_->touch_up(param.contact);
     }
     else {
         ret &= control_unit_->click(point.x, point.y);
@@ -378,9 +378,9 @@ bool ControllerAgent::handle_long_press(const LongPressParam& param)
 
     bool ret = true;
     if (control_unit_->get_features() & MaaControllerFeature_UseMouseDownAndUpInsteadOfClick) {
-        ret &= control_unit_->touch_down(0, point.x, point.y, 1);
+        ret &= control_unit_->touch_down(param.contact, point.x, point.y, 1);
         std::this_thread::sleep_for(std::chrono::milliseconds(param.duration));
-        ret &= control_unit_->touch_up(0);
+        ret &= control_unit_->touch_up(param.contact);
     }
     else {
         LogWarn << "long press not supported, use click instead";
@@ -406,7 +406,7 @@ bool ControllerAgent::handle_swipe(const SwipeParam& param)
     bool ret = !param.end.empty();
 
     if (!param.only_hover && use_touch_down_up) {
-        ret &= control_unit_->touch_down(0, begin.x, begin.y, 1);
+        ret &= control_unit_->touch_down(param.contact, begin.x, begin.y, 1);
     }
 
     for (size_t i = 0; i < param.end.size(); ++i) {
@@ -431,13 +431,13 @@ bool ControllerAgent::handle_swipe(const SwipeParam& param)
                 std::this_thread::sleep_until(now + delay);
 
                 now = std::chrono::steady_clock::now();
-                ret &= control_unit_->touch_move(0, mx, my, 1);
+                ret &= control_unit_->touch_move(param.contact, mx, my, 1);
             }
 
             std::this_thread::sleep_until(now + delay);
 
             now = std::chrono::steady_clock::now();
-            ret &= control_unit_->touch_move(0, end.x, end.y, 1);
+            ret &= control_unit_->touch_move(param.contact, end.x, end.y, 1);
 
             std::this_thread::sleep_until(now + delay);
         }
@@ -451,7 +451,7 @@ bool ControllerAgent::handle_swipe(const SwipeParam& param)
     }
 
     if (!param.only_hover && use_touch_down_up) {
-        ret &= control_unit_->touch_up(0);
+        ret &= control_unit_->touch_up(param.contact);
     }
 
     return ret;
@@ -533,7 +533,7 @@ bool ControllerAgent::handle_multi_swipe(const MultiSwipeParam& param)
                 continue;
             }
 
-            int contact = static_cast<int>(i);
+            int contact = s.contact != 0 ? s.contact : static_cast<int>(i);
 
             if (i >= operating.size()) {
                 LogError << "Invalid contact index" << VAR(i) << VAR(operating.size());

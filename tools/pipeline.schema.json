@@ -1799,6 +1799,13 @@
                     "description": "在 `target` 的基础上额外移动再作为点击目标，四个值分别相加。可选，默认 [0, 0, 0, 0] 。",
                     "$ref": "#/$defs/jsonRect",
                     "markdownDescription": "*array<int, 4>*\n\n在 `target` 的基础上额外移动再作为点击目标，四个值分别相加。可选，默认 [0, 0, 0, 0] 。"
+                },
+                "contact": {
+                    "title": "Contact Property",
+                    "description": "触点编号，用于区分不同的触控点。可选，默认 0 。",
+                    "$ref": "#/$defs/jsonUInt32",
+                    "markdownDescription": "*uint*\n\n触点编号，用于区分不同的触控点。可选，默认 0 。\n\n- Adb 控制器：表示手指编号（0 为第一根手指，1 为第二根手指，以此类推）\n- Win32 控制器：表示鼠标按键编号（0 为左键，1 为右键，2 为中键，3 为 XBUTTON1，4 为 XBUTTON2）",
+                    "default": 0
                 }
             }
         },
@@ -1853,6 +1860,13 @@
                     "$ref": "#/$defs/jsonUInt32",
                     "markdownDescription": "*uint*\n\n长按持续时间，单位毫秒。可选，默认 1000 。",
                     "default": 1000
+                },
+                "contact": {
+                    "title": "Contact Property",
+                    "description": "触点编号，用于区分不同的触控点。可选，默认 0 。",
+                    "$ref": "#/$defs/jsonUInt32",
+                    "markdownDescription": "*uint*\n\n触点编号，用于区分不同的触控点。可选，默认 0 。\n\n- Adb 控制器：表示手指编号（0 为第一根手指，1 为第二根手指，以此类推）\n- Win32 控制器：表示鼠标按键编号（0 为左键，1 为右键，2 为中键，3 为 XBUTTON1，4 为 XBUTTON2）",
+                    "default": 0
                 }
             }
         },
@@ -1919,6 +1933,13 @@
                     "$ref": "#/$defs/jsonUInt32",
                     "markdownDescription": "*uint*\n\n滑动持续时间，单位毫秒。可选，默认 200 。",
                     "default": 200
+                },
+                "contact": {
+                    "title": "Contact Property",
+                    "description": "触点编号，用于区分不同的触控点。可选，默认 0 。",
+                    "$ref": "#/$defs/jsonUInt32",
+                    "markdownDescription": "*uint*\n\n触点编号，用于区分不同的触控点。可选，默认 0 。\n\n- Adb 控制器：表示手指编号（0 为第一根手指，1 为第二根手指，以此类推）\n- Win32 控制器：表示鼠标按键编号（0 为左键，1 为右键，2 为中键，3 为 XBUTTON1，4 为 XBUTTON2）",
+                    "default": 0
                 }
             }
         },
@@ -2871,6 +2892,15 @@
                 },
                 "contact": {
                     "anyOf": [
+                        {
+                            "$ref": "#/$defs/Click/properties/contact"
+                        },
+                        {
+                            "$ref": "#/$defs/LongPress/properties/contact"
+                        },
+                        {
+                            "$ref": "#/$defs/Swipe/properties/contact"
+                        },
                         {
                             "$ref": "#/$defs/Touch/properties/contact"
                         },

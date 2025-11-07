@@ -107,12 +107,14 @@ using Target = MAA_VISION_NS::Target;
 struct ClickParam
 {
     Target target;
+    uint contact = 0;
 };
 
 struct LongPressParam
 {
     Target target;
     uint duration = 1000;
+    uint contact = 0;
 };
 
 struct SwipeParam
@@ -126,6 +128,7 @@ struct SwipeParam
     bool only_hover = false;
 
     uint starting = 0; // only for MultiSwipe
+    uint contact = 0;
 };
 
 struct MultiSwipeParam

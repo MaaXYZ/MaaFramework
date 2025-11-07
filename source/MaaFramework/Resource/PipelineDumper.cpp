@@ -213,6 +213,7 @@ json::object PipelineDumper::dump(const PipelineData& pp)
         data.action.param = PipelineV2::JClick {
             .target = dump_target(param.target),
             .target_offset = dump_rect(param.target.offset),
+            .contact = param.contact,
         };
     } break;
 
@@ -222,6 +223,7 @@ json::object PipelineDumper::dump(const PipelineData& pp)
             .target = dump_target(param.target),
             .target_offset = dump_rect(param.target.offset),
             .duration = param.duration,
+            .contact = param.contact,
         };
     } break;
 
@@ -236,6 +238,7 @@ json::object PipelineDumper::dump(const PipelineData& pp)
             .end_hold = param.end_hold,
             .duration = param.duration,
             .only_hover = param.only_hover,
+            .contact = param.contact,
         };
     } break;
 
@@ -253,6 +256,7 @@ json::object PipelineDumper::dump(const PipelineData& pp)
                     .end_hold = s.end_hold,
                     .duration = s.duration,
                     .only_hover = s.only_hover,
+                    .contact = s.contact,
                 });
         }
         data.action.param = std::move(jswipes);
