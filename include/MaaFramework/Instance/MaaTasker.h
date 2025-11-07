@@ -84,6 +84,7 @@ extern "C"
 
     /**
      * @param[out] action
+     * @param[out] success
      * @param[out] detail_json
      */
     MAA_FRAMEWORK_API MaaBool MaaTaskerGetActionDetail(
@@ -91,6 +92,7 @@ extern "C"
         MaaActId action_id,
         /* out */ MaaStringBuffer* node_name,
         /* out */ MaaStringBuffer* action,
+        /* out */ MaaBool* success,
         /* out */ MaaStringBuffer* detail_json);
 
     /**

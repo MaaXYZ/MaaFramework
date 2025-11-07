@@ -265,12 +265,14 @@ std::optional<maajs::ValueType> TaskerImpl::action_detail(MaaActId id)
 {
     StringBuffer node_name;
     StringBuffer action;
+    MaaBool success = false;
     StringBuffer detail_json;
-    if (MaaTaskerGetActionDetail(tasker, id, node_name, action, detail_json)) {
+    if (MaaTaskerGetActionDetail(tasker, id, node_name, action, &success, detail_json)) {
         auto result = maajs::ObjectType::New(env);
 
         result["name"] = maajs::StringType::New(env, node_name.str());
         result["action"] = maajs::StringType::New(env, action.str());
+        result["success"] = maajs::BooleanType::New(env, success);
         result["detail"] = maajs::JsonParse(env, detail_json.str());
 
         return result;

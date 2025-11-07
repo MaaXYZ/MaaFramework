@@ -222,6 +222,7 @@ class Tasker:
     def get_action_detail(self, action_id: int) -> Optional[ActionDetail]:
         name = StringBuffer()
         action = StringBuffer()
+        c_success = MaaBool()
         detail_json = StringBuffer()
 
         ret = bool(
@@ -230,6 +231,7 @@ class Tasker:
                 MaaActId(action_id),
                 name._handle,
                 action._handle,
+                ctypes.pointer(c_success),
                 detail_json._handle,
             )
         )
@@ -245,6 +247,7 @@ class Tasker:
             action_id=action_id,
             name=name.get(),
             action=action_enum,
+            success=bool(c_success),
             result=parsed_result,
             raw_detail=raw_detail,
         )
@@ -527,6 +530,7 @@ class Tasker:
             MaaActId,
             MaaStringBufferHandle,
             MaaStringBufferHandle,
+            ctypes.POINTER(MaaBool),
             MaaStringBufferHandle,
         ]
 

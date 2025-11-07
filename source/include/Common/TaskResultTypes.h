@@ -27,6 +27,7 @@ struct ActionResult
     MaaActId action_id = MaaInvalidId;
     std::string name;
     std::string action;
+    bool success = false;
     json::value detail;
 };
 

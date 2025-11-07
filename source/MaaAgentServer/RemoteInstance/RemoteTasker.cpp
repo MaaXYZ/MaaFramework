@@ -265,6 +265,7 @@ std::optional<MAA_TASK_NS::ActionResult> RemoteTasker::get_action_result(MaaActI
     result.action_id = resp_opt->action_id;
     result.name = std::move(resp_opt->name);
     result.action = std::move(resp_opt->action);
+    result.success = resp_opt->success;
     result.detail = std::move(resp_opt->detail);
 
     return result;

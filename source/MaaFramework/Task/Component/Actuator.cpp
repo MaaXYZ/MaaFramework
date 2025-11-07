@@ -149,6 +149,7 @@ ActionResult Actuator::click(const MAA_RES_NS::Action::ClickParam& param, const 
         .action_id = MAA_VISION_NS::VisionBase::generate_uid(),
         .name = name,
         .action = "Click",
+        .success = ret,
         .detail = json::value(ctrl_param),
     };
 }
@@ -168,6 +169,7 @@ ActionResult Actuator::long_press(const MAA_RES_NS::Action::LongPressParam& para
         .action_id = MAA_VISION_NS::VisionBase::generate_uid(),
         .name = name,
         .action = "LongPress",
+        .success = ret,
         .detail = json::value(ctrl_param),
     };
 }
@@ -204,6 +206,7 @@ ActionResult Actuator::swipe(const MAA_RES_NS::Action::SwipeParam& param, const 
         .action_id = MAA_VISION_NS::VisionBase::generate_uid(),
         .name = name,
         .action = "Swipe",
+        .success = ret,
         .detail = json::value(ctrl_param),
     };
 }
@@ -245,6 +248,7 @@ ActionResult Actuator::multi_swipe(const MAA_RES_NS::Action::MultiSwipeParam& pa
         .action_id = MAA_VISION_NS::VisionBase::generate_uid(),
         .name = name,
         .action = "MultiSwipe",
+        .success = ret,
         .detail = json::value(ctrl_param),
     };
 }
@@ -263,6 +267,7 @@ ActionResult Actuator::click_key(const MAA_RES_NS::Action::ClickKeyParam& param,
         .action_id = MAA_VISION_NS::VisionBase::generate_uid(),
         .name = name,
         .action = "ClickKey",
+        .success = ret,
         .detail = json::value(ctrl_param),
     };
 }
@@ -281,6 +286,7 @@ ActionResult Actuator::long_press_key(const MAA_RES_NS::Action::LongPressKeyPara
         .action_id = MAA_VISION_NS::VisionBase::generate_uid(),
         .name = name,
         .action = "LongPressKey",
+        .success = ret,
         .detail = json::value(ctrl_param),
     };
 }
@@ -299,6 +305,7 @@ ActionResult Actuator::input_text(const MAA_RES_NS::Action::InputTextParam& para
         .action_id = MAA_VISION_NS::VisionBase::generate_uid(),
         .name = name,
         .action = "InputText",
+        .success = ret,
         .detail = json::value(ctrl_param),
     };
 }
@@ -377,6 +384,7 @@ ActionResult Actuator::start_app(const MAA_RES_NS::Action::AppParam& param, cons
         .action_id = MAA_VISION_NS::VisionBase::generate_uid(),
         .name = name,
         .action = "StartApp",
+        .success = ret,
         .detail = json::value(ctrl_param),
     };
 }
@@ -395,6 +403,7 @@ ActionResult Actuator::stop_app(const MAA_RES_NS::Action::AppParam& param, const
         .action_id = MAA_VISION_NS::VisionBase::generate_uid(),
         .name = name,
         .action = "StopApp",
+        .success = ret,
         .detail = json::value(ctrl_param),
     };
 }
@@ -425,6 +434,7 @@ ActionResult
         .action_id = MAA_VISION_NS::VisionBase::generate_uid(),
         .name = name,
         .action = "Command",
+        .success = ret,
         .detail = json::object(),
     };
 }
@@ -448,6 +458,7 @@ ActionResult
         .action_id = MAA_VISION_NS::VisionBase::generate_uid(),
         .name = name,
         .action = "Custom",
+        .success = ret,
         .detail = json::object(),
     };
 }
@@ -458,6 +469,7 @@ ActionResult Actuator::do_nothing(const std::string& name)
         .action_id = MAA_VISION_NS::VisionBase::generate_uid(),
         .name = name,
         .action = "DoNothing",
+        .success = true,
         .detail = json::object(),
     };
 }
@@ -471,6 +483,7 @@ ActionResult Actuator::stop_task(const std::string& name)
         .action_id = MAA_VISION_NS::VisionBase::generate_uid(),
         .name = name,
         .action = "StopTask",
+        .success = true,
         .detail = json::object(),
     };
 }

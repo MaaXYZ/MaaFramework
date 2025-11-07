@@ -298,6 +298,7 @@ MaaBool MaaTaskerGetActionDetail(
     MaaActId action_id,
     MaaStringBuffer* name,
     MaaStringBuffer* action,
+    MaaBool* success,
     MaaStringBuffer* detail_json)
 {
     if (!tasker) {
@@ -320,6 +321,10 @@ MaaBool MaaTaskerGetActionDetail(
     CheckNullAndWarn(action)
     {
         action->set(result.action);
+    }
+    CheckNullAndWarn(success)
+    {
+        *success = result.success;
     }
     CheckNullAndWarn(detail_json)
     {
