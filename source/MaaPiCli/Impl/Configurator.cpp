@@ -120,7 +120,7 @@ std::optional<RuntimeParam> Configurator::generate_runtime() const
         adb.config = (controller.adb.config | config_.adb.config).dumps();
         adb.agent_path = MaaNS::path_to_utf8_string(resource_dir_ / "MaaAgentBinary");
 
-        runtime.detail = std::move(adb);
+        runtime.controller_param = std::move(adb);
     } break;
 
     case InterfaceData::Controller::Type::Win32: {
@@ -137,7 +137,7 @@ std::optional<RuntimeParam> Configurator::generate_runtime() const
             win32.keyboard = controller.win32.input;
         }
 
-        runtime.detail = std::move(win32);
+        runtime.controller_param = std::move(win32);
     } break;
 
     default: {

@@ -202,7 +202,7 @@ struct RuntimeParam
         std::string identifier;
     };
 
-    std::variant<std::monostate, AdbParam, Win32Param> detail;
+    std::variant<std::monostate, AdbParam, Win32Param> controller_param;
     std::vector<std::filesystem::path> resource_path;
 
     std::vector<Task> task;

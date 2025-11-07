@@ -41,7 +41,7 @@ bool Runner::run(
     MaaTasker* tasker_handle = MaaTaskerCreate();
 
     MaaController* controller_handle = nullptr;
-    if (const auto* p_adb_param = std::get_if<RuntimeParam::AdbParam>(&param.detail)) {
+    if (const auto* p_adb_param = std::get_if<RuntimeParam::AdbParam>(&param.controller_param)) {
         controller_handle = MaaAdbControllerCreate(
             p_adb_param->adb_path.c_str(),
             p_adb_param->address.c_str(),
@@ -50,7 +50,7 @@ bool Runner::run(
             p_adb_param->config.c_str(),
             p_adb_param->agent_path.c_str());
     }
-    else if (const auto* p_win32_param = std::get_if<RuntimeParam::Win32Param>(&param.detail)) {
+    else if (const auto* p_win32_param = std::get_if<RuntimeParam::Win32Param>(&param.controller_param)) {
         controller_handle =
             MaaWin32ControllerCreate(p_win32_param->hwnd, p_win32_param->screencap, p_win32_param->mouse, p_win32_param->keyboard);
     }
