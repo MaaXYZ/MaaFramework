@@ -60,13 +60,16 @@ class Resource:
             Library.framework().MaaResourceDestroy(self._handle)
 
     def post_bundle(self, path: Union[pathlib.Path, str]) -> Job:
-        """加载资源 / Load resources from path
+        """异步加载资源 / Asynchronously load resources from path
+
+        这是一个异步操作，会立即返回一个 Job 对象
+        This is an asynchronous operation that immediately returns a Job object
 
         Args:
             path: 资源路径 / Resource path
 
         Returns:
-            Job: 作业对象 / Job object
+            Job: 作业对象，可通过 status/wait 查询状态 / Job object, can query status via status/wait
         """
         res_id = Library.framework().MaaResourcePostBundle(
             self._handle, str(path).encode()
@@ -94,12 +97,15 @@ class Resource:
     def override_next(self, name: str, next_list: List[str]) -> bool:
         """覆盖任务的 next 列表 / Override the next list of task
 
+        注意：此方法会直接设置 next 列表，即使节点不存在也会创建
+        Note: This method directly sets the next list, creating the node if it doesn't exist
+
         Args:
             name: 任务名 / Task name
             next_list: next 列表 / Next list
 
         Returns:
-            bool: 是否成功 / Whether successful
+            bool: 总是返回 True / Always returns True
         """
         list_buffer = StringListBuffer()
         list_buffer.set(next_list)
@@ -118,7 +124,7 @@ class Resource:
             image: 图片数据 / Image data
 
         Returns:
-            bool: 是否成功 / Whether successful
+            bool: 总是返回 True / Always returns True
         """
         image_buffer = ImageBuffer()
         image_buffer.set(image)
@@ -172,8 +178,11 @@ class Resource:
     def clear(self) -> bool:
         """清除已加载内容 / Clear loaded content
 
+        如果资源正在加载中，此方法会失败
+        This method will fail if resources are currently loading
+
         Returns:
-            bool: 是否成功 / Whether successful
+            bool: 成功返回 True，如果正在加载中则返回 False / Returns True on success, False if currently loading
         """
         return bool(Library.framework().MaaResourceClear(self._handle))
 

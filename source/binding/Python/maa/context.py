@@ -145,12 +145,15 @@ class Context:
     def override_next(self, name: str, next_list: List[str]) -> bool:
         """覆盖任务的 next 列表 / Override the next list of task
 
+        如果节点不存在，此方法会失败
+        This method will fail if the node does not exist
+
         Args:
             name: 任务名 / Task name
             next_list: next 列表 / Next list
 
         Returns:
-            bool: 是否成功 / Whether successful
+            bool: 成功返回 True，如果节点不存在则返回 False / Returns True on success, False if node does not exist
         """
         list_buffer = StringListBuffer()
         list_buffer.set(next_list)

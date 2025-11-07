@@ -41,23 +41,29 @@ class Controller:
             Library.framework().MaaControllerDestroy(self._handle)
 
     def post_connection(self) -> Job:
-        """连接设备 / Connect device
+        """异步连接设备 / Asynchronously connect device
+
+        这是一个异步操作，会立即返回一个 Job 对象
+        This is an asynchronous operation that immediately returns a Job object
 
         Returns:
-            Job: 作业对象 / Job object
+            Job: 作业对象，可通过 status/wait 查询状态 / Job object, can query status via status/wait
         """
         ctrl_id = Library.framework().MaaControllerPostConnection(self._handle)
         return self._gen_ctrl_job(ctrl_id)
 
     def post_click(self, x: int, y: int) -> Job:
-        """点击 / Click
+        """异步点击 / Asynchronously click
+
+        这是一个异步操作，会立即返回一个 Job 对象
+        This is an asynchronous operation that immediately returns a Job object
 
         Args:
             x: x 坐标 / x coordinate
             y: y 坐标 / y coordinate
 
         Returns:
-            Job: 作业对象 / Job object
+            Job: 作业对象，可通过 status/wait 查询状态 / Job object, can query status via status/wait
         """
         ctrl_id = Library.framework().MaaControllerPostClick(self._handle, x, y)
         return self._gen_ctrl_job(ctrl_id)

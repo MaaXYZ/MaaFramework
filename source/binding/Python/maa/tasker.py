@@ -118,14 +118,17 @@ class Tasker:
         return bool(Library.framework().MaaTaskerInited(self._handle))
 
     def post_task(self, entry: str, pipeline_override: Dict = {}) -> JobWithResult:
-        """执行任务 / Execute task
+        """异步执行任务 / Asynchronously execute task
+
+        这是一个异步操作，会立即返回一个 Job 对象
+        This is an asynchronous operation that immediately returns a Job object
 
         Args:
             entry: 任务入口 / Task entry
             pipeline_override: 用于覆盖的 json / JSON for overriding
 
         Returns:
-            JobWithResult: 任务作业对象 / Task job object
+            JobWithResult: 任务作业对象，可通过 status/wait 查询状态，通过 get() 获取结果 / Task job object, can query status via status/wait, get result via get()
         """
         taskid = Library.framework().MaaTaskerPostTask(
             self._handle,
@@ -143,10 +146,15 @@ class Tasker:
         return bool(Library.framework().MaaTaskerRunning(self._handle))
 
     def post_stop(self) -> Job:
-        """停止实例 / Stop instance
+        """异步停止实例 / Asynchronously stop instance
+
+        这是一个异步操作，会立即返回一个 Job 对象
+        停止操作会中断当前运行的任务，并停止资源加载和控制器操作
+        This is an asynchronous operation that immediately returns a Job object
+        The stop operation will interrupt the currently running task and stop resource loading and controller operations
 
         Returns:
-            Job: 作业对象 / Job object
+            Job: 作业对象，可通过 status/wait 查询状态 / Job object, can query status via status/wait
         """
         taskid = Library.framework().MaaTaskerPostStop(self._handle)
         return self._gen_task_job(taskid)
