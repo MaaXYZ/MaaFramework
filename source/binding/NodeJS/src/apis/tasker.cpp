@@ -261,16 +261,37 @@ std::optional<maajs::ValueType> TaskerImpl::recognition_detail(MaaRecoId id)
     }
 }
 
+std::optional<maajs::ValueType> TaskerImpl::action_detail(MaaActId id)
+{
+    StringBuffer node_name;
+    StringBuffer action;
+    StringBuffer detail_json;
+    if (MaaTaskerGetActionDetail(tasker, id, node_name, action, detail_json)) {
+        auto result = maajs::ObjectType::New(env);
+
+        result["name"] = maajs::StringType::New(env, node_name.str());
+        result["action"] = maajs::StringType::New(env, action.str());
+        result["detail"] = maajs::JsonParse(env, detail_json.str());
+
+        return result;
+    }
+    else {
+        return std::nullopt;
+    }
+}
+
 std::optional<maajs::ValueType> TaskerImpl::node_detail(MaaNodeId id)
 {
     StringBuffer node_name;
     MaaRecoId reco_id = MaaInvalidId;
+    MaaActId action_id = MaaInvalidId;
     MaaBool completed = false;
-    if (MaaTaskerGetNodeDetail(tasker, id, node_name, &reco_id, &completed)) {
+    if (MaaTaskerGetNodeDetail(tasker, id, node_name, &reco_id, &action_id, &completed)) {
         auto result = maajs::ObjectType::New(env);
 
         result["name"] = maajs::StringType::New(env, node_name.str());
         result["reco"] = reco_id == MaaInvalidId ? env.Null() : recognition_detail(reco_id).value_or(env.Null());
+        result["action"] = action_id == MaaInvalidId ? env.Null() : action_detail(action_id).value_or(env.Null());
         result["completed"] = maajs::BooleanType::New(env, completed);
 
         return result;

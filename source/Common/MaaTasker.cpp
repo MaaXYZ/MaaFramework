@@ -293,7 +293,49 @@ MaaBool MaaTaskerGetRecognitionDetail(
     return true;
 }
 
-MaaBool MaaTaskerGetNodeDetail(const MaaTasker* tasker, MaaNodeId node_id, MaaStringBuffer* name, MaaRecoId* reco_id, MaaBool* completed)
+MaaBool MaaTaskerGetActionDetail(
+    const MaaTasker* tasker,
+    MaaActId action_id,
+    MaaStringBuffer* name,
+    MaaStringBuffer* action,
+    MaaStringBuffer* detail_json)
+{
+    if (!tasker) {
+        LogError << "handle is null";
+        return false;
+    }
+
+    auto result_opt = tasker->get_action_result(action_id);
+    if (!result_opt) {
+        LogError << "failed to get_action_result" << VAR(action_id);
+        return false;
+    }
+
+    auto& result = *result_opt;
+
+    CheckNullAndWarn(name)
+    {
+        name->set(result.name);
+    }
+    CheckNullAndWarn(action)
+    {
+        action->set(result.action);
+    }
+    CheckNullAndWarn(detail_json)
+    {
+        detail_json->set(result.detail.to_string());
+    }
+
+    return true;
+}
+
+MaaBool MaaTaskerGetNodeDetail(
+    const MaaTasker* tasker,
+    MaaNodeId node_id,
+    MaaStringBuffer* name,
+    MaaRecoId* reco_id,
+    MaaActId* action_id,
+    MaaBool* completed)
 {
     if (!tasker) {
         LogError << "handle is null";
@@ -315,6 +357,10 @@ MaaBool MaaTaskerGetNodeDetail(const MaaTasker* tasker, MaaNodeId node_id, MaaSt
     CheckNullAndWarn(reco_id)
     {
         *reco_id = result.reco_id;
+    }
+    CheckNullAndWarn(action_id)
+    {
+        *action_id = result.action_id;
     }
     CheckNullAndWarn(completed)
     {

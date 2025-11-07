@@ -540,10 +540,11 @@ struct TaskerGetNodeDetailReverseResponse
     int64_t node_id = 0;
     std::string name;
     int64_t reco_id = 0;
+    int64_t action_id = 0;
     bool completed = false;
 
     MessageTypePlaceholder _TaskerGetNodeDetailReverseResponse = 1;
-    MEO_JSONIZATION(has_value, node_id, name, reco_id, completed, _TaskerGetNodeDetailReverseResponse);
+    MEO_JSONIZATION(has_value, node_id, name, reco_id, action_id, completed, _TaskerGetNodeDetailReverseResponse);
 };
 
 struct TaskerGetRecoResultReverseRequest
@@ -568,6 +569,27 @@ struct TaskerGetRecoResultReverseResponse
 
     MessageTypePlaceholder _TaskerGetRecoResultReverseResponse = 1;
     MEO_JSONIZATION(has_value, reco_id, name, algorithm, box, detail, raw, draws, _TaskerGetRecoResultReverseResponse);
+};
+
+struct TaskerGetActionResultReverseRequest
+{
+    std::string tasker_id;
+    int64_t action_id = 0;
+
+    MessageTypePlaceholder _TaskerGetActionResultReverseRequest = 1;
+    MEO_JSONIZATION(tasker_id, action_id, _TaskerGetActionResultReverseRequest);
+};
+
+struct TaskerGetActionResultReverseResponse
+{
+    bool has_value = false;
+    int64_t action_id = 0;
+    std::string name;
+    std::string action;
+    json::value detail;
+
+    MessageTypePlaceholder _TaskerGetActionResultReverseResponse = 1;
+    MEO_JSONIZATION(has_value, action_id, name, action, detail, _TaskerGetActionResultReverseResponse);
 };
 
 struct TaskerGetLatestNodeReverseRequest

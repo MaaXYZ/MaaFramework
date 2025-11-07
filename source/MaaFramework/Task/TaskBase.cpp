@@ -9,7 +9,6 @@
 #include "MaaUtils/Logger.h"
 #include "Resource/ResourceMgr.h"
 
-
 MAA_TASK_NS_BEGIN
 
 TaskBase::TaskBase(std::string entry, Tasker* tasker)
@@ -175,13 +174,14 @@ NodeDetail TaskBase::run_action(const RecoResult& reco)
     }
 
     Actuator actuator(tasker_, *context_);
-    bool ret = actuator.run(*reco.box, reco.reco_id, pipeline_data, entry_);
+    ActionResult action_result = actuator.run(*reco.box, reco.reco_id, pipeline_data, entry_);
 
     NodeDetail result {
         .node_id = generate_node_id(),
         .name = reco.name,
         .reco_id = reco.reco_id,
-        .completed = ret,
+        .action_id = action_result.action_id,
+        .completed = action_result.action_id != MaaInvalidId,
     };
 
     set_node_detail(result.node_id, result);

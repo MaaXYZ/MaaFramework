@@ -24,6 +24,7 @@ typedef MaaId MaaCtrlId;
 typedef MaaId MaaResId;
 typedef MaaId MaaTaskId;
 typedef MaaId MaaRecoId;
+typedef MaaId MaaActId;
 typedef MaaId MaaNodeId;
 typedef MaaId MaaSinkId;
 #define MaaInvalidId ((MaaId)0)

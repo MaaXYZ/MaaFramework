@@ -62,6 +62,34 @@ void RuntimeCache::set_reco_detail(MaaRecoId uid, MAA_TASK_NS::RecoResult detail
     reco_details_.insert_or_assign(uid, std::move(detail));
 }
 
+std::optional<MAA_TASK_NS::ActionResult> RuntimeCache::get_action_result(MaaActId uid) const
+{
+    if (uid == MaaInvalidId) {
+        LogWarn << "uid is invaild";
+        return std::nullopt;
+    }
+
+    std::shared_lock lock(action_details_mutex_);
+
+    auto it = action_details_.find(uid);
+    if (it == action_details_.end()) {
+        return std::nullopt;
+    }
+    return it->second;
+}
+
+void RuntimeCache::set_action_detail(MaaActId uid, MAA_TASK_NS::ActionResult detail)
+{
+    if (uid == MaaInvalidId) {
+        LogError << "uid is invaild";
+        return;
+    }
+
+    std::unique_lock lock(action_details_mutex_);
+
+    action_details_.insert_or_assign(uid, std::move(detail));
+}
+
 std::optional<MAA_TASK_NS::NodeDetail> RuntimeCache::get_node_detail(MaaNodeId uid) const
 {
     if (uid == MaaInvalidId) {
@@ -129,6 +157,10 @@ void RuntimeCache::clear()
     {
         std::unique_lock lock(reco_details_mutex_);
         reco_details_.clear();
+    }
+    {
+        std::unique_lock lock(action_details_mutex_);
+        action_details_.clear();
     }
     {
         std::unique_lock lock(node_details_mutex_);
