@@ -146,6 +146,9 @@ _✨ 基于图像识别的自动化黑盒测试框架 ✨_
 - [MAN](https://github.com/duorua/narutomobile) ![Pipeline](https://img.shields.io/badge/Pipeline-%23876f69?logo=paddypower&logoColor=%23FFFFFF) ![Python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white) ![license](https://img.shields.io/github/license/duorua/narutomobile) ![activity](https://img.shields.io/github/commit-activity/m/duorua/narutomobile?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/duorua/narutomobile?style=social) [![mirrorc](./docs/static/mirrorc-zh.svg)](https://mirrorchyan.com/zh/projects?rid=MAN)  
   火影忍者摸头村小助手。使用图像识别+模拟控制技术，解放双手！PC端与模拟器端同步支持，由 MaaFramework 强力驱动！
 
+- [MAA Star Resonance](https://github.com/26F-Studio/maa-star-resonance) ![Typescript](https://img.shields.io/badge/Typescript-8A2BE2?logo=typescript) ![license](https://img.shields.io/github/license/26F-Studio/maa-star-resonance) ![activity](https://img.shields.io/github/commit-activity/m/26F-Studio/maa-star-resonance?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/26F-Studio/maa-star-resonance?style=social) <br />
+  星痕共鸣小助手。使用 Electron + 文本图像识别 + ADB模拟控制 技术，解放双手！由 MaaFramework 和 Quasar 强力驱动！
+
 ## 生态共建
 
 MAA 正计划建设为一类项目，而非舟的单一软件。  
