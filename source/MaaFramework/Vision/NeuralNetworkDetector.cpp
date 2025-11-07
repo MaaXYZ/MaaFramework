@@ -1,6 +1,11 @@
 #include "NeuralNetworkDetector.h"
 
+#include <algorithm>
+#include <cctype>
+#include <map>
 #include <ranges>
+#include <regex>
+#include <sstream>
 
 #include <onnxruntime/onnxruntime_cxx_api.h>
 
@@ -35,17 +40,18 @@ void NeuralNetworkDetector::analyze()
 
     auto start_time = std::chrono::steady_clock::now();
 
-    auto results = detect();
+    auto labels = param_.labels.empty() ? parse_labels_from_metadata() : param_.labels;
+    auto results = detect(labels);
     add_results(std::move(results), param_.expected, param_.thresholds);
 
     cherry_pick();
 
     auto cost = duration_since(start_time);
     LogDebug << name_ << VAR(uid_) << VAR(all_results_) << VAR(filtered_results_) << VAR(best_result_) << VAR(cost) << VAR(param_.model)
-             << VAR(param_.labels) << VAR(param_.expected) << VAR(param_.thresholds);
+             << VAR(labels) << VAR(param_.expected) << VAR(param_.thresholds);
 }
 
-NeuralNetworkDetector::ResultsVec NeuralNetworkDetector::detect() const
+NeuralNetworkDetector::ResultsVec NeuralNetworkDetector::detect(const std::vector<std::string>& labels) const
 {
     if (!session_) {
         LogError << "OrtSession not loaded";
@@ -128,7 +134,7 @@ NeuralNetworkDetector::ResultsVec NeuralNetworkDetector::detect() const
 
             Result res;
             res.cls_index = j - kConfidenceIndex;
-            res.label = res.cls_index < param_.labels.size() ? param_.labels[res.cls_index] : std::format("Unknown_{}", res.cls_index);
+            res.label = res.cls_index < labels.size() ? labels[res.cls_index] : std::format("Unknown_{}", res.cls_index);
             res.box = box;
             res.score = score;
 
@@ -226,6 +232,96 @@ void NeuralNetworkDetector::sort_(ResultsVec& results) const
         LogError << "Not supported order by" << VAR(param_.order_by);
         break;
     }
+}
+
+std::vector<std::string> NeuralNetworkDetector::parse_labels_from_metadata() const
+{
+    if (!session_) {
+        return {};
+    }
+
+    Ort::AllocatorWithDefaultOptions allocator;
+    Ort::ModelMetadata metadata = session_->GetModelMetadata();
+
+    std::string names_str;
+
+    constexpr std::array<std::string_view, 4> possible_keys = { "names", "name", "labels", "class_names" };
+    for (const std::string_view& key : possible_keys) {
+        auto ptr = metadata.LookupCustomMetadataMapAllocated(key.data(), allocator);
+        if (!ptr) {
+            continue;
+        }
+        names_str = ptr.get();
+        break;
+    }
+
+    if (names_str.empty()) {
+        LogDebug << name_ << VAR(uid_) << "No metadata found with keys: names, name, labels, class_names";
+        return {};
+    }
+
+    LogDebug << name_ << VAR(uid_) << "Found metadata" << VAR(names_str);
+
+    // 解析字符串格式：{0: 'white_dog', 1: 'white_cat', 2: 'black_dog', 3: 'black_cat'}
+    // 支持单引号和双引号
+    std::vector<std::string> labels;
+
+    // 解析 Python 字典格式：{0: 'label1', 1: 'label2', ...}
+    // 正则表达式匹配：数字: 引号内的字符串
+    // 支持单引号和双引号，以及可能的空格
+    std::regex dict_pattern(R"((\d+)\s*:\s*['"]([^'"]+)['"])");
+    std::sregex_iterator iter(names_str.begin(), names_str.end(), dict_pattern);
+    std::sregex_iterator end;
+
+    std::map<int, std::string> label_map;
+    for (; iter != end; ++iter) {
+        const std::smatch& match = *iter;
+        if (match.size() < 3) {
+            continue; // 跳过不完整的匹配
+        }
+
+        const std::string& index_str = match[1].str();
+        if (index_str.empty()) {
+            continue;
+        }
+
+        // 检查是否所有字符都是数字
+        if (!std::ranges::all_of(index_str, [](char c) { return std::isdigit(static_cast<unsigned char>(c)); })) {
+            LogWarn << name_ << VAR(uid_) << "Invalid index format" << VAR(index_str);
+            continue;
+        }
+
+        int index = std::stoi(index_str);
+
+        const std::string& label = match[2].str();
+        if (label.empty()) {
+            continue; // 跳过空标签
+        }
+
+        label_map[index] = label;
+    }
+
+    if (label_map.empty()) {
+        LogWarn << name_ << VAR(uid_) << "Failed to parse metadata as Python dict format" << VAR(names_str);
+        return {};
+    }
+
+    // 找到最大索引，创建对应大小的向量
+    int max_index = label_map.rbegin()->first;
+    if (max_index < 0 || max_index > 10000) {
+        LogWarn << name_ << VAR(uid_) << "Invalid max_index" << VAR(max_index);
+        return {};
+    }
+
+    labels.resize(static_cast<size_t>(max_index + 1));
+    for (const auto& [index, label] : label_map) {
+        if (index >= 0 && static_cast<size_t>(index) < labels.size()) {
+            labels[static_cast<size_t>(index)] = label;
+        }
+    }
+
+    LogDebug << name_ << VAR(uid_) << "Parsed labels from metadata" << VAR(labels.size());
+    return labels;
 }
 
 MAA_VISION_NS_END
