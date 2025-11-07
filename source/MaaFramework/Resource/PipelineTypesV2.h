@@ -168,6 +168,23 @@ struct JMultiSwipe
     MEO_TOJSON(swipes);
 };
 
+struct JTouch
+{
+    uint32_t contact = 0;
+    JTarget target;
+    JRect target_offset {};
+    int32_t pressure = 0;
+
+    MEO_TOJSON(contact, target, target_offset, pressure);
+};
+
+struct JTouchUp
+{
+    uint32_t contact = 0;
+
+    MEO_TOJSON(contact);
+};
+
 struct JClickKey
 {
     std::vector<int> key;
@@ -181,6 +198,13 @@ struct JLongPressKey
     uint32_t duration = 0;
 
     MEO_TOJSON(key, duration);
+};
+
+struct JKey
+{
+    int key = 0;
+
+    MEO_TOJSON(key);
 };
 
 struct JInputText
@@ -234,8 +258,11 @@ using JActionParam = std::variant<
     JLongPress,
     JSwipe,
     JMultiSwipe,
+    JTouch,
+    JTouchUp,
     JClickKey,
     JLongPressKey,
+    JKey,
     JInputText,
     JStartApp,
     JStopApp,

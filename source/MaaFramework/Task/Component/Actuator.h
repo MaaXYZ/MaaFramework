@@ -32,8 +32,13 @@ private:
     bool long_press(const MAA_RES_NS::Action::LongPressParam& param, const cv::Rect& box);
     bool swipe(const MAA_RES_NS::Action::SwipeParam& param, const cv::Rect& box);
     bool multi_swipe(const MAA_RES_NS::Action::MultiSwipeParam& param, const cv::Rect& box);
+    bool touch_down(const MAA_RES_NS::Action::TouchParam& param, const cv::Rect& box);
+    bool touch_move(const MAA_RES_NS::Action::TouchParam& param, const cv::Rect& box);
+    bool touch_up(const MAA_RES_NS::Action::TouchUpParam& param);
     bool click_key(const MAA_RES_NS::Action::ClickKeyParam& param);
     bool long_press_key(const MAA_RES_NS::Action::LongPressKeyParam& param);
+    bool key_down(const MAA_RES_NS::Action::KeyParam& param);
+    bool key_up(const MAA_RES_NS::Action::KeyParam& param);
     bool input_text(const MAA_RES_NS::Action::InputTextParam& param);
 
     bool start_app(const MAA_RES_NS::Action::AppParam& param);

@@ -46,11 +46,26 @@ bool Actuator::run(const cv::Rect& reco_hit, MaaRecoId reco_id, const PipelineDa
     case Type::MultiSwipe:
         ret = multi_swipe(std::get<MultiSwipeParam>(pipeline_data.action_param), reco_hit);
         break;
+    case Type::TouchDown:
+        ret = touch_down(std::get<TouchParam>(pipeline_data.action_param), reco_hit);
+        break;
+    case Type::TouchMove:
+        ret = touch_move(std::get<TouchParam>(pipeline_data.action_param), reco_hit);
+        break;
+    case Type::TouchUp:
+        ret = touch_up(std::get<TouchUpParam>(pipeline_data.action_param));
+        break;
     case Type::ClickKey:
         ret = click_key(std::get<ClickKeyParam>(pipeline_data.action_param));
         break;
     case Type::LongPressKey:
         ret = long_press_key(std::get<LongPressKeyParam>(pipeline_data.action_param));
+        break;
+    case Type::KeyDown:
+        ret = key_down(std::get<KeyParam>(pipeline_data.action_param));
+        break;
+    case Type::KeyUp:
+        ret = key_up(std::get<KeyParam>(pipeline_data.action_param));
         break;
     case Type::InputText:
         ret = input_text(std::get<InputTextParam>(pipeline_data.action_param));
@@ -202,6 +217,38 @@ bool Actuator::multi_swipe(const MAA_RES_NS::Action::MultiSwipeParam& param, con
     return controller()->multi_swipe({ .swipes = std::move(swipes) });
 }
 
+bool Actuator::touch_down(const MAA_RES_NS::Action::TouchParam& param, const cv::Rect& box)
+{
+    if (!controller()) {
+        LogError << "Controller is null";
+        return false;
+    }
+
+    cv::Point point = rand_point(get_target_rect(param.target, box));
+    return controller()->touch_down({ .contact = static_cast<int>(param.contact), .point = point, .pressure = param.pressure });
+}
+
+bool Actuator::touch_move(const MAA_RES_NS::Action::TouchParam& param, const cv::Rect& box)
+{
+    if (!controller()) {
+        LogError << "Controller is null";
+        return false;
+    }
+
+    cv::Point point = rand_point(get_target_rect(param.target, box));
+    return controller()->touch_move({ .contact = static_cast<int>(param.contact), .point = point, .pressure = param.pressure });
+}
+
+bool Actuator::touch_up(const MAA_RES_NS::Action::TouchUpParam& param)
+{
+    if (!controller()) {
+        LogError << "Controller is null";
+        return false;
+    }
+
+    return controller()->touch_up({ .contact = static_cast<int>(param.contact) });
+}
+
 bool Actuator::click_key(const MAA_RES_NS::Action::ClickKeyParam& param)
 {
     if (!controller()) {
@@ -220,6 +267,26 @@ bool Actuator::long_press_key(const MAA_RES_NS::Action::LongPressKeyParam& param
     }
 
     return controller()->long_press_key({ .keycode = param.keys, .duration = param.duration });
+}
+
+bool Actuator::key_down(const MAA_RES_NS::Action::KeyParam& param)
+{
+    if (!controller()) {
+        LogError << "Controller is null";
+        return false;
+    }
+
+    return controller()->key_down({ .keycode = { param.key } });
+}
+
+bool Actuator::key_up(const MAA_RES_NS::Action::KeyParam& param)
+{
+    if (!controller()) {
+        LogError << "Controller is null";
+        return false;
+    }
+
+    return controller()->key_up({ .keycode = { param.key } });
 }
 
 bool Actuator::input_text(const MAA_RES_NS::Action::InputTextParam& param)

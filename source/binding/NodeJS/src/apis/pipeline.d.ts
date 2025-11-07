@@ -208,6 +208,25 @@ declare global {
             Mode
         >
 
+        type ActionTouch<Mode> = RequiredIfStrict<
+            {
+                contact?: number
+                target?: true | NodeName | FlatRect
+                target_offset?: FlatRect
+                pressure?: number
+            },
+            never,
+            Mode
+        >
+
+        type ActionTouchUp<Mode> = RequiredIfStrict<
+            {
+                contact?: number
+            },
+            never,
+            Mode
+        >
+
         type ActionClickKey<Mode> = RequiredIfStrict<
             {
                 key?: MaybeArray<number, Mode>
@@ -220,6 +239,14 @@ declare global {
             {
                 key?: number
                 duration?: number
+            },
+            'key',
+            Mode
+        >
+
+        type ActionSingleKey<Mode> = RequiredIfStrict<
+            {
+                key?: number
             },
             'key',
             Mode
@@ -301,9 +328,14 @@ declare global {
             | MixAct<'LongPress', ActionLongPress, Mode>
             | MixAct<'Swipe', ActionSwipe, Mode>
             | MixAct<'MultiSwipe', ActionMultiSwipe<Mode>, Mode>
+            | MixAct<'TouchDown', ActionTouch<Mode>, Mode>
+            | MixAct<'TouchMove', ActionTouch<Mode>, Mode>
+            | MixAct<'TouchUp', ActionTouchUp<Mode>, Mode>
             | MixAct<'Key', ActionClickKey<Mode>, Mode>
             | MixAct<'ClickKey', ActionClickKey<Mode>, Mode>
             | MixAct<'LongPressKey', ActionLongPressKey<Mode>, Mode>
+            | MixAct<'KeyDown', ActionSingleKey<Mode>, Mode>
+            | MixAct<'KeyUp', ActionSingleKey<Mode>, Mode>
             | MixAct<'InputText', ActionInputText<Mode>, Mode>
             | MixAct<'StartApp', ActionStartApp<Mode>, Mode>
             | MixAct<'StopApp', ActionStopApp<Mode>, Mode>

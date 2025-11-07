@@ -237,6 +237,24 @@ bool ControllerAgent::multi_swipe(MultiSwipeParam p)
     return wait(id) == MaaStatus_Succeeded;
 }
 
+bool ControllerAgent::touch_down(TouchParam p)
+{
+    auto id = post({ .type = Action::Type::touch_down, .param = std::move(p) });
+    return wait(id) == MaaStatus_Succeeded;
+}
+
+bool ControllerAgent::touch_move(TouchParam p)
+{
+    auto id = post({ .type = Action::Type::touch_move, .param = std::move(p) });
+    return wait(id) == MaaStatus_Succeeded;
+}
+
+bool ControllerAgent::touch_up(TouchParam p)
+{
+    auto id = post({ .type = Action::Type::touch_up, .param = std::move(p) });
+    return wait(id) == MaaStatus_Succeeded;
+}
+
 bool ControllerAgent::click_key(ClickKeyParam p)
 {
     auto id = post({ .type = Action::Type::click_key, .param = std::move(p) });
@@ -246,6 +264,18 @@ bool ControllerAgent::click_key(ClickKeyParam p)
 bool ControllerAgent::long_press_key(LongPressKeyParam p)
 {
     auto id = post({ .type = Action::Type::long_press_key, .param = std::move(p) });
+    return wait(id) == MaaStatus_Succeeded;
+}
+
+bool ControllerAgent::key_down(ClickKeyParam p)
+{
+    auto id = post({ .type = Action::Type::key_down, .param = std::move(p) });
+    return wait(id) == MaaStatus_Succeeded;
+}
+
+bool ControllerAgent::key_up(ClickKeyParam p)
+{
+    auto id = post({ .type = Action::Type::key_up, .param = std::move(p) });
     return wait(id) == MaaStatus_Succeeded;
 }
 

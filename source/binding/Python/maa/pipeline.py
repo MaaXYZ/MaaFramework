@@ -145,6 +145,19 @@ class JMultiSwipe:
 
 
 @dataclass
+class JTouch:
+    contact: int
+    target: JTarget
+    target_offset: JRect
+    pressure: int
+
+
+@dataclass
+class JTouchUp:
+    contact: int
+
+
+@dataclass
 class JClickKey:
     key: List[int]
 
@@ -153,6 +166,11 @@ class JClickKey:
 class JLongPressKey:
     key: List[int]
     duration: int
+
+
+@dataclass
+class JKey:
+    key: int
 
 
 @dataclass
@@ -197,8 +215,11 @@ JActionParam = Union[
     JLongPress,
     JSwipe,
     JMultiSwipe,
+    JTouch,
+    JTouchUp,
     JClickKey,
     JLongPressKey,
+    JKey,
     JInputText,
     JStartApp,
     JStopApp,
@@ -311,8 +332,13 @@ class JPipelineParser:
             "LongPress": JLongPress,
             "Swipe": JSwipe,
             "MultiSwipe": JMultiSwipe,
+            "TouchDown": JTouch,
+            "TouchMove": JTouch,
+            "TouchUp": JTouchUp,
             "ClickKey": JClickKey,
             "LongPressKey": JLongPressKey,
+            "KeyDown": JKey,
+            "KeyUp": JKey,
             "InputText": JInputText,
             "StartApp": JStartApp,
             "StopApp": JStopApp,
@@ -320,6 +346,12 @@ class JPipelineParser:
             "Command": JCommand,
             "Custom": JCustomAction,
         }
+
+        if param_type in {"KeyDown", "KeyUp"} and isinstance(param_data, dict):
+            if "key" not in param_data and "key_code" in param_data:
+                param_data = dict(param_data)
+                param_data["key"] = param_data["key_code"]
+
         return cls._parse_param(param_type, param_data, param_type_map, JDoNothing)
 
     @classmethod
