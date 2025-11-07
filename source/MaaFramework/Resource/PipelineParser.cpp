@@ -7,7 +7,6 @@
 #include "PipelineTypesV2.h"
 #include "Vision/VisionTypes.h"
 
-
 MAA_RES_NS_BEGIN
 
 template <typename OutT>
@@ -188,6 +187,11 @@ bool PipelineParser::parse_node(
 {
     LogDebug << VAR(name);
 
+    if (!input.is_object()) {
+        LogError << "input is not object" << VAR(input);
+        return false;
+    }
+
     PipelineData data;
     data.name = name;
 
@@ -273,6 +277,8 @@ bool PipelineParser::parse_node(
         LogError << "failed to get_and_check_value focus" << VAR(input);
         return false;
     }
+
+    data.raw = input.as_object() | default_value.raw;
 
     output = std::move(data);
 

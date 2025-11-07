@@ -280,6 +280,7 @@ struct JPipelineData
     JWaitFreezes pre_wait_freezes;
     JWaitFreezes post_wait_freezes;
     json::value focus;
+    json::object raw; // 原始 JSON 对象
 
     MEO_TOJSON(
         recognition,
@@ -296,7 +297,8 @@ struct JPipelineData
         post_delay,
         pre_wait_freezes,
         post_wait_freezes,
-        focus);
+        focus,
+        raw);
 };
 } // namespace PipelineV2
 

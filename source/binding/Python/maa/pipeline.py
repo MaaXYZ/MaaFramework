@@ -249,6 +249,7 @@ class JPipelineData:
     pre_wait_freezes: JWaitFreezes
     post_wait_freezes: JWaitFreezes
     focus: Any
+    raw: Dict  # 原始 JSON 对象
 
 
 class JPipelineParser:
@@ -371,4 +372,5 @@ class JPipelineParser:
             pre_wait_freezes=pre_wait_freezes,  # type: ignore
             post_wait_freezes=post_wait_freezes,  # type: ignore
             focus=data.get("focus"),
+            raw=data.get("raw"),  # 原始 JSON 对象
         )

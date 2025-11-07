@@ -4,7 +4,6 @@
 #include "MaaUtils/Logger.h"
 #include "PipelineTypesV2.h"
 
-
 MAA_RES_NS_BEGIN
 
 json::object PipelineDumper::dump(const PipelineData& pp)
@@ -253,8 +252,8 @@ json::object PipelineDumper::dump(const PipelineData& pp)
                     .end_offset = dump_rect_array(s.end_offset),
                     .end_hold = s.end_hold,
                     .duration = s.duration,
-                .only_hover = s.only_hover,
-            });
+                    .only_hover = s.only_hover,
+                });
         }
         data.action.param = std::move(jswipes);
     } break;
@@ -333,6 +332,8 @@ json::object PipelineDumper::dump(const PipelineData& pp)
 
     data.pre_wait_freezes = dump_wait_freezes(pp.pre_wait_freezes);
     data.post_wait_freezes = dump_wait_freezes(pp.post_wait_freezes);
+
+    data.raw = pp.raw; // 保存原始 JSON 对象
 
     return data.to_json().as_object();
 }
