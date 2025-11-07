@@ -25,6 +25,16 @@ class Resource:
         notification_handler: None = None,
         handle: Optional[MaaResourceHandle] = None,
     ):
+        """创建资源 / Create resource
+
+        Args:
+            notification_handler: 已废弃，请使用 add_sink 代替 / Deprecated, use add_sink instead
+            handle: 可选的外部句柄 / Optional external handle
+
+        Raises:
+            NotImplementedError: 如果提供了 notification_handler
+            RuntimeError: 如果创建失败
+        """
         if notification_handler:
             raise NotImplementedError(
                 "NotificationHandler is deprecated, use add_sink instead."
@@ -50,12 +60,28 @@ class Resource:
             Library.framework().MaaResourceDestroy(self._handle)
 
     def post_bundle(self, path: Union[pathlib.Path, str]) -> Job:
+        """加载资源 / Load resources from path
+
+        Args:
+            path: 资源路径 / Resource path
+
+        Returns:
+            Job: 作业对象 / Job object
+        """
         res_id = Library.framework().MaaResourcePostBundle(
             self._handle, str(path).encode()
         )
         return Job(res_id, self._status, self._wait)
 
     def override_pipeline(self, pipeline_override: Dict) -> bool:
+        """覆盖 pipeline / Override pipeline_override
+
+        Args:
+            pipeline_override: 用于覆盖的 json / JSON for overriding
+
+        Returns:
+            bool: 是否成功 / Whether successful
+        """
         pipeline_json = json.dumps(pipeline_override, ensure_ascii=False)
 
         return bool(
@@ -66,6 +92,15 @@ class Resource:
         )
 
     def override_next(self, name: str, next_list: List[str]) -> bool:
+        """覆盖任务的 next 列表 / Override the next list of task
+
+        Args:
+            name: 任务名 / Task name
+            next_list: next 列表 / Next list
+
+        Returns:
+            bool: 是否成功 / Whether successful
+        """
         list_buffer = StringListBuffer()
         list_buffer.set(next_list)
 
@@ -76,6 +111,15 @@ class Resource:
         )
 
     def override_image(self, image_name: str, image: numpy.ndarray) -> bool:
+        """覆盖图片 / Override the image corresponding to image_name
+
+        Args:
+            image_name: 图片名 / Image name
+            image: 图片数据 / Image data
+
+        Returns:
+            bool: 是否成功 / Whether successful
+        """
         image_buffer = ImageBuffer()
         image_buffer.set(image)
 
@@ -86,6 +130,14 @@ class Resource:
         )
 
     def get_node_data(self, name: str) -> Optional[Dict]:
+        """获取任务当前的定义 / Get the current definition of task
+
+        Args:
+            name: 任务名 / Task name
+
+        Returns:
+            Optional[Dict]: 任务定义字典，如果不存在则返回 None / Task definition dict, or None if not exists
+        """
         string_buffer = StringBuffer()
         if not Library.framework().MaaResourceGetNodeData(
             self._handle, name.encode(), string_buffer._handle
@@ -110,23 +162,59 @@ class Resource:
 
     @property
     def loaded(self) -> bool:
+        """判断是否加载正常 / Check if resources loaded normally
+
+        Returns:
+            bool: 是否已加载 / Whether loaded
+        """
         return bool(Library.framework().MaaResourceLoaded(self._handle))
 
     def clear(self) -> bool:
+        """清除已加载内容 / Clear loaded content
+
+        Returns:
+            bool: 是否成功 / Whether successful
+        """
         return bool(Library.framework().MaaResourceClear(self._handle))
 
     def use_cpu(self) -> bool:
+        """使用 CPU 进行推理 / Use CPU for inference
+
+        Returns:
+            bool: 是否成功 / Whether successful
+        """
         return self.set_inference(
             MaaInferenceExecutionProviderEnum.CPU, MaaInferenceDeviceEnum.CPU
         )
 
     def use_directml(self, device_id: int = MaaInferenceDeviceEnum.Auto) -> bool:
+        """使用 DirectML 进行推理 / Use DirectML for inference
+
+        Args:
+            device_id: 设备 id，默认为自动选择 / Device id, default is Auto
+
+        Returns:
+            bool: 是否成功 / Whether successful
+        """
         return self.set_inference(MaaInferenceExecutionProviderEnum.DirectML, device_id)
 
     def use_coreml(self, coreml_flag: int = MaaInferenceDeviceEnum.Auto) -> bool:
+        """使用 CoreML 进行推理 / Use CoreML for inference
+
+        Args:
+            coreml_flag: CoreML 标志，默认为自动选择 / CoreML flag, default is Auto
+
+        Returns:
+            bool: 是否成功 / Whether successful
+        """
         return self.set_inference(MaaInferenceExecutionProviderEnum.CoreML, coreml_flag)
 
     def use_auto_ep(self) -> bool:
+        """自动选择推理执行提供者 / Auto select inference execution provider
+
+        Returns:
+            bool: 是否成功 / Whether successful
+        """
         return self.set_inference(
             MaaInferenceExecutionProviderEnum.Auto, MaaInferenceDeviceEnum.Auto
         )
@@ -166,7 +254,15 @@ class Resource:
     def register_custom_recognition(
         self, name: str, recognition: "CustomRecognition"  # type: ignore
     ) -> bool:
+        """注册自定义识别器 / Register a custom recognizer
 
+        Args:
+            name: 名称 / Name
+            recognition: 自定义识别器 / Custom recognizer
+
+        Returns:
+            bool: 是否成功 / Whether successful
+        """
         # avoid gc
         self._custom_recognition_holder[name] = recognition
 
@@ -180,6 +276,14 @@ class Resource:
         )
 
     def unregister_custom_recognition(self, name: str) -> bool:
+        """移除自定义识别器 / Remove the custom recognizer
+
+        Args:
+            name: 名称 / Name
+
+        Returns:
+            bool: 是否成功 / Whether successful
+        """
         self._custom_recognition_holder.pop(name, None)
 
         return bool(
@@ -190,6 +294,11 @@ class Resource:
         )
 
     def clear_custom_recognition(self) -> bool:
+        """移除所有自定义识别器 / Remove all custom recognizers
+
+        Returns:
+            bool: 是否成功 / Whether successful
+        """
         self._custom_recognition_holder.clear()
 
         return bool(
@@ -207,6 +316,15 @@ class Resource:
         return wrapper_action
 
     def register_custom_action(self, name: str, action: "CustomAction") -> bool:  # type: ignore
+        """注册自定义操作 / Register a custom action
+
+        Args:
+            name: 名称 / Name
+            action: 自定义操作 / Custom action
+
+        Returns:
+            bool: 是否成功 / Whether successful
+        """
         # avoid gc
         self._custom_action_holder[name] = action
 
@@ -220,6 +338,14 @@ class Resource:
         )
 
     def unregister_custom_action(self, name: str) -> bool:
+        """移除自定义操作 / Remove the custom action
+
+        Args:
+            name: 名称 / Name
+
+        Returns:
+            bool: 是否成功 / Whether successful
+        """
         self._custom_action_holder.pop(name, None)
 
         return bool(
@@ -230,6 +356,11 @@ class Resource:
         )
 
     def clear_custom_action(self) -> bool:
+        """移除所有自定义操作 / Remove all custom actions
+
+        Returns:
+            bool: 是否成功 / Whether successful
+        """
         self._custom_action_holder.clear()
 
         return bool(
@@ -240,8 +371,13 @@ class Resource:
 
     @property
     def node_list(self) -> list[str]:
-        """
-        Returns a list of node names.
+        """获取任务列表 / Get task list
+
+        Returns:
+            list[str]: 任务名列表 / List of task names
+
+        Raises:
+            RuntimeError: 如果获取失败
         """
         buffer = StringListBuffer()
         if not Library.framework().MaaResourceGetNodeList(self._handle, buffer._handle):
@@ -250,6 +386,14 @@ class Resource:
 
     @property
     def hash(self) -> str:
+        """获取资源 hash / Get resource hash
+
+        Returns:
+            str: 资源 hash / Resource hash
+
+        Raises:
+            RuntimeError: 如果获取失败
+        """
         buffer = StringBuffer()
         if not Library.framework().MaaResourceGetHash(self._handle, buffer._handle):
             raise RuntimeError("Failed to get hash.")
@@ -258,6 +402,14 @@ class Resource:
     _sink_holder: Dict[int, "ResourceEventSink"] = {}
 
     def add_sink(self, sink: "ResourceEventSink") -> Optional[int]:
+        """添加资源事件监听器 / Add resource event listener
+
+        Args:
+            sink: 事件监听器 / Event sink
+
+        Returns:
+            Optional[int]: 监听器 id，失败返回 None / Listener id, or None if failed
+        """
         sink_id = int(
             Library.framework().MaaResourceAddSink(
                 self._handle, *EventSink._gen_c_param(sink)
@@ -270,10 +422,16 @@ class Resource:
         return sink_id
 
     def remove_sink(self, sink_id: int) -> None:
+        """移除资源事件监听器 / Remove resource event listener
+
+        Args:
+            sink_id: 监听器 id / Listener id
+        """
         Library.framework().MaaResourceRemoveSink(self._handle, sink_id)
         self._sink_holder.pop(sink_id)
 
     def clear_sinks(self) -> None:
+        """清除所有资源事件监听器 / Clear all resource event listeners"""
         Library.framework().MaaResourceClearSinks(self._handle)
 
     ### private ###
