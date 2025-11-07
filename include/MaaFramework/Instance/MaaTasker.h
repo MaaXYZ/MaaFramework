@@ -84,6 +84,7 @@ extern "C"
 
     /**
      * @param[out] action
+     * @param[out] box
      * @param[out] success
      * @param[out] detail_json
      */
@@ -92,6 +93,7 @@ extern "C"
         MaaActId action_id,
         /* out */ MaaStringBuffer* node_name,
         /* out */ MaaStringBuffer* action,
+        /* out */ MaaRect* box,
         /* out */ MaaBool* success,
         /* out */ MaaStringBuffer* detail_json);
 

@@ -586,11 +586,12 @@ struct TaskerGetActionResultReverseResponse
     int64_t action_id = 0;
     std::string name;
     std::string action;
+    cv::Rect box {};
     bool success = false;
     json::value detail;
 
     MessageTypePlaceholder _TaskerGetActionResultReverseResponse = 1;
-    MEO_JSONIZATION(has_value, action_id, name, action, success, detail, _TaskerGetActionResultReverseResponse);
+    MEO_JSONIZATION(has_value, action_id, name, action, box, success, detail, _TaskerGetActionResultReverseResponse);
 };
 
 struct TaskerGetLatestNodeReverseRequest

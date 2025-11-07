@@ -265,13 +265,15 @@ std::optional<maajs::ValueType> TaskerImpl::action_detail(MaaActId id)
 {
     StringBuffer node_name;
     StringBuffer action;
+    MaaRect box {};
     MaaBool success = false;
     StringBuffer detail_json;
-    if (MaaTaskerGetActionDetail(tasker, id, node_name, action, &success, detail_json)) {
+    if (MaaTaskerGetActionDetail(tasker, id, node_name, action, &box, &success, detail_json)) {
         auto result = maajs::ObjectType::New(env);
 
         result["name"] = maajs::StringType::New(env, node_name.str());
         result["action"] = maajs::StringType::New(env, action.str());
+        result["box"] = maajs::JSConvert<MaaRect>::to_value(env, box);
         result["success"] = maajs::BooleanType::New(env, success);
         result["detail"] = maajs::JsonParse(env, detail_json.str());
 

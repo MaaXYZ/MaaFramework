@@ -941,6 +941,7 @@ bool AgentClient::handle_tasker_get_action_result(const json::value& j)
         .action_id = detail.action_id,
         .name = detail.name,
         .action = detail.action,
+        .box = detail.box,
         .success = detail.success,
         .detail = detail.detail,
     };

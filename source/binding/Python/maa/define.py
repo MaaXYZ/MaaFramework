@@ -716,6 +716,7 @@ class ActionDetail:
     action_id: int
     name: str
     action: ActionEnum
+    box: Rect
     success: bool
     result: Optional[ActionResult]
     raw_detail: Dict

@@ -27,6 +27,7 @@ struct ActionResult
     MaaActId action_id = MaaInvalidId;
     std::string name;
     std::string action;
+    cv::Rect box {};
     bool success = false;
     json::value detail;
 };

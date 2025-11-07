@@ -298,6 +298,7 @@ MaaBool MaaTaskerGetActionDetail(
     MaaActId action_id,
     MaaStringBuffer* name,
     MaaStringBuffer* action,
+    MaaRect* box,
     MaaBool* success,
     MaaStringBuffer* detail_json)
 {
@@ -321,6 +322,13 @@ MaaBool MaaTaskerGetActionDetail(
     CheckNullAndWarn(action)
     {
         action->set(result.action);
+    }
+    CheckNullAndWarn(box)
+    {
+        box->x = result.box.x;
+        box->y = result.box.y;
+        box->width = result.box.width;
+        box->height = result.box.height;
     }
     CheckNullAndWarn(success)
     {
