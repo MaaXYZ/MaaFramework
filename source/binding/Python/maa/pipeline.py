@@ -347,11 +347,6 @@ class JPipelineParser:
             "Custom": JCustomAction,
         }
 
-        if param_type in {"KeyDown", "KeyUp"} and isinstance(param_data, dict):
-            if "key" not in param_data and "key_code" in param_data:
-                param_data = dict(param_data)
-                param_data["key"] = param_data["key_code"]
-
         return cls._parse_param(param_type, param_data, param_type_map, JDoNothing)
 
     @classmethod
