@@ -1,19 +1,9 @@
-/**
- * Pipeline 类型定义 / Pipeline type definitions
- * 
- * 此文件包含任务管道（Task Pipeline）的类型定义，用于定义识别、操作和任务配置
- * This file contains type definitions for Task Pipeline, used to define recognition, action, and task configuration
- */
 declare global {
     namespace maa {
-        /** 节点名称类型 / Node name type */
         type NodeName = string
 
-        /** 片段模式 / Fragment mode */
         type ModeFragment = 0
-        /** 严格模式 / Strict mode */
         type ModeStrict = 1
-        /** 转储模式 / Dump mode */
         type ModeDump = 2
 
         type RemoveIfDump<T, Mode> = Mode extends ModeDump ? never : T
@@ -347,19 +337,7 @@ declare global {
             focus?: unknown
         }
 
-        /**
-         * 任务类型（片段模式） / Task type (fragment mode)
-         * 
-         * 允许部分字段为数组或单个值
-         * Allows some fields to be arrays or single values
-         */
         type Task = Recognition<ModeFragment> & Action<ModeFragment> & General<ModeFragment>
-        /**
-         * 任务类型（严格模式） / Task type (strict mode)
-         * 
-         * 必需字段必须提供
-         * Required fields must be provided
-         */
         type StrictTask = Recognition<ModeStrict> & Action<ModeStrict> & General<ModeStrict>
 
         type RecursiveRequired<T> = T extends Record<string, unknown>
@@ -368,12 +346,6 @@ declare global {
               }
             : T
 
-        /**
-         * 任务类型（转储模式） / Task type (dump mode)
-         * 
-         * 所有字段都是必需的，用于获取完整的任务定义
-         * All fields are required, used to get complete task definition
-         */
         type DumpTask = RecursiveRequired<
             Recognition<ModeDump> & Action<ModeDump> & General<ModeDump>
         >
