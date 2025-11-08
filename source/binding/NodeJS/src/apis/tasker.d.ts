@@ -43,7 +43,6 @@ declare global {
         }
 
         type ActionDetail = {
-            action_id: number // ActId
             name: string
             action: string
             box: Rect
