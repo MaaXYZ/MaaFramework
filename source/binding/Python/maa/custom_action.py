@@ -20,7 +20,7 @@ class CustomAction(ABC):
         custom_action_name: str
         custom_action_param: str
         reco_detail: RecognitionDetail
-        box: List[int]
+        box: Rect
 
     @dataclass
     class RunResult:
