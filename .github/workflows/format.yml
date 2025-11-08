@@ -1,0 +1,35 @@
+name: Format Code
+
+on:
+    workflow_dispatch:
+
+jobs:
+    format:
+        runs-on: macos-latest
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v4
+              with:
+                  token: ${{ secrets.GITHUB_TOKEN }}
+                  fetch-depth: 0
+                  submodules: false
+
+            - name: Install clang-format
+              run: |
+                  brew install clang-format
+                  clang-format --version
+
+            - name: Format C++ files
+              run: |
+                  python3 tools/FormatCode/format_cpp.py --verbose
+
+            - name: Commit and push changes
+              uses: actions-js/push@master
+              with:
+                  github_token: ${{ secrets.GITHUB_TOKEN }}
+                  message: "styles: Format C++ files
+
+                      https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
+
+                      [skip changelog]"
+                  branch: ${{ github.ref }}
