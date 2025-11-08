@@ -472,10 +472,6 @@ class Rect:
     def __getitem__(self, key):
         return self.roi[key]
 
-    @property
-    def roi(self):
-        return list(self)
-
 
 RectType = Union[
     Rect,
