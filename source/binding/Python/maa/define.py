@@ -470,7 +470,7 @@ class Rect:
         yield self.h
 
     def __getitem__(self, key):
-        return self.roi[key]
+        return list(self)[key]
 
 
 RectType = Union[
