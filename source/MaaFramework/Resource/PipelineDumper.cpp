@@ -4,7 +4,6 @@
 #include "MaaUtils/Logger.h"
 #include "PipelineTypesV2.h"
 
-
 MAA_RES_NS_BEGIN
 
 json::object PipelineDumper::dump(const PipelineData& pp)
@@ -214,6 +213,7 @@ json::object PipelineDumper::dump(const PipelineData& pp)
         data.action.param = PipelineV2::JClick {
             .target = dump_target(param.target),
             .target_offset = dump_rect(param.target.offset),
+            .contact = param.contact,
         };
     } break;
 
@@ -223,6 +223,7 @@ json::object PipelineDumper::dump(const PipelineData& pp)
             .target = dump_target(param.target),
             .target_offset = dump_rect(param.target.offset),
             .duration = param.duration,
+            .contact = param.contact,
         };
     } break;
 
@@ -237,6 +238,7 @@ json::object PipelineDumper::dump(const PipelineData& pp)
             .end_hold = param.end_hold,
             .duration = param.duration,
             .only_hover = param.only_hover,
+            .contact = param.contact,
         };
     } break;
 
@@ -253,10 +255,29 @@ json::object PipelineDumper::dump(const PipelineData& pp)
                     .end_offset = dump_rect_array(s.end_offset),
                     .end_hold = s.end_hold,
                     .duration = s.duration,
-                .only_hover = s.only_hover,
-            });
+                    .only_hover = s.only_hover,
+                    .contact = s.contact,
+                });
         }
         data.action.param = std::move(jswipes);
+    } break;
+
+    case Action::Type::TouchDown:
+    case Action::Type::TouchMove: {
+        const auto& param = std::get<Action::TouchParam>(pp.action_param);
+        data.action.param = PipelineV2::JTouch {
+            .contact = param.contact,
+            .target = dump_target(param.target),
+            .target_offset = dump_rect(param.target.offset),
+            .pressure = param.pressure,
+        };
+    } break;
+
+    case Action::Type::TouchUp: {
+        const auto& param = std::get<Action::TouchUpParam>(pp.action_param);
+        data.action.param = PipelineV2::JTouchUp {
+            .contact = param.contact,
+        };
     } break;
 
     case Action::Type::ClickKey: {
@@ -271,6 +292,14 @@ json::object PipelineDumper::dump(const PipelineData& pp)
         data.action.param = PipelineV2::JLongPressKey {
             .key = param.keys,
             .duration = param.duration,
+        };
+    } break;
+
+    case Action::Type::KeyDown:
+    case Action::Type::KeyUp: {
+        const auto& param = std::get<Action::KeyParam>(pp.action_param);
+        data.action.param = PipelineV2::JKey {
+            .key = param.key,
         };
     } break;
 

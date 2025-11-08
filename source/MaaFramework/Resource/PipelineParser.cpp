@@ -7,7 +7,6 @@
 #include "PipelineTypesV2.h"
 #include "Vision/VisionTypes.h"
 
-
 MAA_RES_NS_BEGIN
 
 template <typename OutT>
@@ -978,6 +977,27 @@ bool PipelineParser::parse_action(
             default_single);
     } break;
 
+    case Type::TouchDown: {
+        auto default_param = default_mgr.get_action_param<TouchParam>(Type::TouchDown);
+        out_param = default_param;
+        return parse_touch(param_input, std::get<TouchParam>(out_param), same_type ? std::get<TouchParam>(parent_param) : default_param);
+    } break;
+
+    case Type::TouchMove: {
+        auto default_param = default_mgr.get_action_param<TouchParam>(Type::TouchMove);
+        out_param = default_param;
+        return parse_touch(param_input, std::get<TouchParam>(out_param), same_type ? std::get<TouchParam>(parent_param) : default_param);
+    } break;
+
+    case Type::TouchUp: {
+        auto default_param = default_mgr.get_action_param<TouchUpParam>(Type::TouchUp);
+        out_param = default_param;
+        return parse_touch_up(
+            param_input,
+            std::get<TouchUpParam>(out_param),
+            same_type ? std::get<TouchUpParam>(parent_param) : default_param);
+    } break;
+
     case Type::ClickKey: {
         auto default_param = default_mgr.get_action_param<ClickKeyParam>(Type::ClickKey);
         out_param = default_param;
@@ -985,6 +1005,18 @@ bool PipelineParser::parse_action(
             param_input,
             std::get<ClickKeyParam>(out_param),
             same_type ? std::get<ClickKeyParam>(parent_param) : default_param);
+    } break;
+
+    case Type::KeyDown: {
+        auto default_param = default_mgr.get_action_param<KeyParam>(Type::KeyDown);
+        out_param = default_param;
+        return parse_key_param(param_input, std::get<KeyParam>(out_param), same_type ? std::get<KeyParam>(parent_param) : default_param);
+    } break;
+
+    case Type::KeyUp: {
+        auto default_param = default_mgr.get_action_param<KeyParam>(Type::KeyUp);
+        out_param = default_param;
+        return parse_key_param(param_input, std::get<KeyParam>(out_param), same_type ? std::get<KeyParam>(parent_param) : default_param);
     } break;
 
     case Type::LongPressKey: {
@@ -1054,6 +1086,11 @@ bool PipelineParser::parse_click(const json::value& input, Action::ClickParam& o
         return false;
     }
 
+    if (!get_and_check_value(input, "contact", output.contact, default_value.contact)) {
+        LogError << "failed to get_and_check_value contact" << VAR(input);
+        return false;
+    }
+
     return true;
 }
 
@@ -1066,6 +1103,11 @@ bool PipelineParser::parse_long_press(const json::value& input, Action::LongPres
 
     if (!get_and_check_value(input, "duration", output.duration, default_value.duration)) {
         LogError << "failed to get_and_check_value duration" << VAR(input);
+        return false;
+    }
+
+    if (!get_and_check_value(input, "contact", output.contact, default_value.contact)) {
+        LogError << "failed to get_and_check_value contact" << VAR(input);
         return false;
     }
 
@@ -1115,6 +1157,11 @@ bool PipelineParser::parse_swipe(const json::value& input, Action::SwipeParam& o
         return false;
     }
 
+    if (!get_and_check_value(input, "contact", output.contact, default_value.contact)) {
+        LogError << "failed to get_and_check_value contact" << VAR(input);
+        return false;
+    }
+
     return true;
 }
 
@@ -1143,6 +1190,48 @@ bool PipelineParser::parse_multi_swipe(
         }
 
         output.swipes.emplace_back(std::move(res));
+    }
+
+    return true;
+}
+
+bool PipelineParser::parse_key_param(const json::value& input, Action::KeyParam& output, const Action::KeyParam& default_value)
+{
+    int key = default_value.key;
+    if (!get_multi_keys_and_check_value(input, { "key", "key_code" }, key, default_value.key)) {
+        LogError << "failed to get_multi_keys_and_check_value key" << VAR(input);
+        return false;
+    }
+
+    output.key = key;
+    return true;
+}
+
+bool PipelineParser::parse_touch(const json::value& input, Action::TouchParam& output, const Action::TouchParam& default_value)
+{
+    if (!get_and_check_value(input, "contact", output.contact, default_value.contact)) {
+        LogError << "failed to get_and_check_value contact" << VAR(input);
+        return false;
+    }
+
+    if (!parse_action_target(input, "target", output.target, default_value.target)) {
+        LogError << "failed to parse_action_target target" << VAR(input);
+        return false;
+    }
+
+    if (!get_and_check_value(input, "pressure", output.pressure, default_value.pressure)) {
+        LogError << "failed to get_and_check_value pressure" << VAR(input);
+        return false;
+    }
+
+    return true;
+}
+
+bool PipelineParser::parse_touch_up(const json::value& input, Action::TouchUpParam& output, const Action::TouchUpParam& default_value)
+{
+    if (!get_and_check_value(input, "contact", output.contact, default_value.contact)) {
+        LogError << "failed to get_and_check_value contact" << VAR(input);
+        return false;
     }
 
     return true;

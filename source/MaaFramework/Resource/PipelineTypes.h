@@ -86,11 +86,16 @@ enum class Type
     LongPress,
     Swipe,
     MultiSwipe,
+    TouchDown,
+    TouchMove,
+    TouchUp,
     ClickKey,
     LongPressKey,
     InputText,
     StartApp,
     StopApp,
+    KeyDown,
+    KeyUp,
     Command,
     Custom,
     StopTask,
@@ -102,12 +107,14 @@ using Target = MAA_VISION_NS::Target;
 struct ClickParam
 {
     Target target;
+    uint contact = 0;
 };
 
 struct LongPressParam
 {
     Target target;
     uint duration = 1000;
+    uint contact = 0;
 };
 
 struct SwipeParam
@@ -121,11 +128,29 @@ struct SwipeParam
     bool only_hover = false;
 
     uint starting = 0; // only for MultiSwipe
+    uint contact = 0;
 };
 
 struct MultiSwipeParam
 {
     std::vector<SwipeParam> swipes;
+};
+
+struct TouchParam
+{
+    uint contact = 0;
+    Target target;
+    int pressure = 0;
+};
+
+struct TouchUpParam
+{
+    uint contact = 0;
+};
+
+struct KeyParam
+{
+    int key = 0;
 };
 
 struct ClickKeyParam
@@ -169,6 +194,9 @@ using Param = std::variant<
     LongPressParam,
     SwipeParam,
     MultiSwipeParam,
+    TouchParam,
+    TouchUpParam,
+    KeyParam,
     ClickKeyParam,
     LongPressKeyParam,
     InputTextParam,
@@ -187,6 +215,12 @@ inline static const std::unordered_map<std::string, Type> kTypeMap = {
     { "longpress", Type::LongPress },
     { "MultiSwipe", Type::MultiSwipe },
     { "multiswipe", Type::MultiSwipe },
+    { "TouchDown", Type::TouchDown },
+    { "touchdown", Type::TouchDown },
+    { "TouchMove", Type::TouchMove },
+    { "touchmove", Type::TouchMove },
+    { "TouchUp", Type::TouchUp },
+    { "touchup", Type::TouchUp },
     { "Key", Type::ClickKey },
     { "key", Type::ClickKey },
     { "ClickKey", Type::ClickKey },
@@ -199,6 +233,10 @@ inline static const std::unordered_map<std::string, Type> kTypeMap = {
     { "startapp", Type::StartApp },
     { "StopApp", Type::StopApp },
     { "stopapp", Type::StopApp },
+    { "KeyDown", Type::KeyDown },
+    { "keydown", Type::KeyDown },
+    { "KeyUp", Type::KeyUp },
+    { "keyup", Type::KeyUp },
     { "Command", Type::Command },
     { "command", Type::Command },
     { "Custom", Type::Custom },
@@ -210,13 +248,15 @@ inline static const std::unordered_map<std::string, Type> kTypeMap = {
 };
 
 inline static const std::unordered_map<Type, std::string> kTypeNameMap = {
-    { Type::DoNothing, "DoNothing" },       { Type::Click, "Click" },
-    { Type::LongPress, "LongPress" },       { Type::Swipe, "Swipe" },
-    { Type::MultiSwipe, "MultiSwipe" },     { Type::ClickKey, "ClickKey" },
-    { Type::LongPressKey, "LongPressKey" }, { Type::InputText, "InputText" },
-    { Type::StartApp, "StartApp" },         { Type::StopApp, "StopApp" },
-    { Type::Command, "Command" },           { Type::Custom, "Custom" },
-    { Type::StopTask, "StopTask" },
+    { Type::DoNothing, "DoNothing" },   { Type::Click, "Click" },
+    { Type::LongPress, "LongPress" },   { Type::Swipe, "Swipe" },
+    { Type::MultiSwipe, "MultiSwipe" }, { Type::TouchDown, "TouchDown" },
+    { Type::TouchMove, "TouchMove" },   { Type::TouchUp, "TouchUp" },
+    { Type::ClickKey, "ClickKey" },     { Type::LongPressKey, "LongPressKey" },
+    { Type::InputText, "InputText" },   { Type::StartApp, "StartApp" },
+    { Type::StopApp, "StopApp" },       { Type::KeyDown, "KeyDown" },
+    { Type::KeyUp, "KeyUp" },           { Type::Command, "Command" },
+    { Type::Custom, "Custom" },         { Type::StopTask, "StopTask" },
 };
 } // namespace Action
 

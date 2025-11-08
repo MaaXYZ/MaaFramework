@@ -177,12 +177,14 @@ declare global {
         type ActionClick = {
             target?: true | NodeName | FlatRect
             target_offset?: FlatRect
+            contact?: number
         }
 
         type ActionLongPress = {
             target?: true | NodeName | FlatRect
             target_offset?: FlatRect
             duration?: number
+            contact?: number
         }
 
         type ActionSwipe = {
@@ -191,6 +193,7 @@ declare global {
             end?: true | NodeName | FlatRect
             end_offset?: FlatRect
             duration?: number
+            contact?: number
         }
 
         type ActionMultiSwipe<Mode> = RequiredIfStrict<
@@ -202,9 +205,29 @@ declare global {
                     end?: true | NodeName | FlatRect
                     end_offset?: FlatRect
                     duration?: number
+                    contact?: number
                 }[]
             },
             'swipes',
+            Mode
+        >
+
+        type ActionTouch<Mode> = RequiredIfStrict<
+            {
+                contact?: number
+                target?: true | NodeName | FlatRect
+                target_offset?: FlatRect
+                pressure?: number
+            },
+            never,
+            Mode
+        >
+
+        type ActionTouchUp<Mode> = RequiredIfStrict<
+            {
+                contact?: number
+            },
+            never,
             Mode
         >
 
@@ -220,6 +243,14 @@ declare global {
             {
                 key?: number
                 duration?: number
+            },
+            'key',
+            Mode
+        >
+
+        type ActionSingleKey<Mode> = RequiredIfStrict<
+            {
+                key?: number
             },
             'key',
             Mode
@@ -301,9 +332,14 @@ declare global {
             | MixAct<'LongPress', ActionLongPress, Mode>
             | MixAct<'Swipe', ActionSwipe, Mode>
             | MixAct<'MultiSwipe', ActionMultiSwipe<Mode>, Mode>
+            | MixAct<'TouchDown', ActionTouch<Mode>, Mode>
+            | MixAct<'TouchMove', ActionTouch<Mode>, Mode>
+            | MixAct<'TouchUp', ActionTouchUp<Mode>, Mode>
             | MixAct<'Key', ActionClickKey<Mode>, Mode>
             | MixAct<'ClickKey', ActionClickKey<Mode>, Mode>
             | MixAct<'LongPressKey', ActionLongPressKey<Mode>, Mode>
+            | MixAct<'KeyDown', ActionSingleKey<Mode>, Mode>
+            | MixAct<'KeyUp', ActionSingleKey<Mode>, Mode>
             | MixAct<'InputText', ActionInputText<Mode>, Mode>
             | MixAct<'StartApp', ActionStartApp<Mode>, Mode>
             | MixAct<'StopApp', ActionStopApp<Mode>, Mode>
