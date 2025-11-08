@@ -66,7 +66,7 @@
   <compound refid="MaaContext_8h" kind="file"><name>MaaContext.h</name>
     <member refid="MaaContext_8h_1ae55a7608008e1f51ce52614e3cae3a2d" kind="function"><name>MaaContextRunTask</name></member>
     <member refid="MaaContext_8h_1a0cf90816e1b498a66ade37ff12a4e6eb" kind="function"><name>MaaContextRunRecognition</name></member>
-    <member refid="MaaContext_8h_1a415581acd9270998661ff49a3f362a66" kind="function"><name>MaaContextRunAction</name></member>
+    <member refid="MaaContext_8h_1ad46ec2676c2e012a47d2274cc7d44d46" kind="function"><name>MaaContextRunAction</name></member>
     <member refid="MaaContext_8h_1a581b031a7dceedcf1ff6cec308895cce" kind="function"><name>MaaContextOverridePipeline</name></member>
     <member refid="MaaContext_8h_1a1ece7f4198230c43f226ab8f7923728d" kind="function"><name>MaaContextOverrideNext</name></member>
     <member refid="MaaContext_8h_1a6064c7441f9e387eb1f0cbfa6d1ea38d" kind="function"><name>MaaContextOverrideImage</name></member>

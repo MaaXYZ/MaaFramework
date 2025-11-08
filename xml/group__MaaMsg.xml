@@ -216,11 +216,11 @@
 <para>Message for the action of node. </para>
         </briefdescription>
         <detaileddescription>
-<para>details_json: { task_id: number, node_id: number, name: string, focus: any, } </para>
+<para>details_json: { task_id: number, node_id: number, action_id: number, name: string, focus: any, } </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="include/MaaFramework/MaaMsg.h" line="111" column="9" bodyfile="include/MaaFramework/MaaMsg.h" bodystart="111" bodyend="-1"/>
+        <location file="include/MaaFramework/MaaMsg.h" line="112" column="9" bodyfile="include/MaaFramework/MaaMsg.h" bodystart="112" bodyend="-1"/>
       </memberdef>
       <memberdef kind="define" id="group__MaaMsg_1ga464fd50ef2c65727300fa98b8f3fdc01" prot="public" static="no">
         <name>MaaMsg_Node_Action_Succeeded</name>
@@ -229,11 +229,11 @@
 <para>Message for the action of node. </para>
         </briefdescription>
         <detaileddescription>
-<para>details_json: { task_id: number, node_id: number, name: string, focus: any, } </para>
+<para>details_json: { task_id: number, node_id: number, action_id: number, name: string, focus: any, } </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="include/MaaFramework/MaaMsg.h" line="112" column="9" bodyfile="include/MaaFramework/MaaMsg.h" bodystart="112" bodyend="-1"/>
+        <location file="include/MaaFramework/MaaMsg.h" line="113" column="9" bodyfile="include/MaaFramework/MaaMsg.h" bodystart="113" bodyend="-1"/>
       </memberdef>
       <memberdef kind="define" id="group__MaaMsg_1gac2e7283ec9099d4826efa131aff46a8e" prot="public" static="no">
         <name>MaaMsg_Node_Action_Failed</name>
@@ -242,11 +242,11 @@
 <para>Message for the action of node. </para>
         </briefdescription>
         <detaileddescription>
-<para>details_json: { task_id: number, node_id: number, name: string, focus: any, } </para>
+<para>details_json: { task_id: number, node_id: number, action_id: number, name: string, focus: any, } </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="include/MaaFramework/MaaMsg.h" line="113" column="9" bodyfile="include/MaaFramework/MaaMsg.h" bodystart="113" bodyend="-1"/>
+        <location file="include/MaaFramework/MaaMsg.h" line="114" column="9" bodyfile="include/MaaFramework/MaaMsg.h" bodystart="114" bodyend="-1"/>
       </memberdef>
     </sectiondef>
     <briefdescription>
