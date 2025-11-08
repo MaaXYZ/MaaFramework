@@ -260,7 +260,7 @@ struct PipelineData
     WaitFreezesParam post_wait_freezes;
 
     json::value focus;
-    json::object raw; // 原始 JSON 对象，用于保存节点的原始配置
+    json::object attach; // 附加 JSON 对象，用于保存节点的附加配置
 };
 
 MAA_RES_NS_END

@@ -278,7 +278,10 @@ bool PipelineParser::parse_node(
         return false;
     }
 
-    data.raw = input.as_object() | default_value.raw;
+    if (auto attach_opt = input.find<json::object>("attach")) {
+        data.attach = *std::move(attach_opt);
+    }
+    data.attach |= default_value.attach;
 
     output = std::move(data);
 

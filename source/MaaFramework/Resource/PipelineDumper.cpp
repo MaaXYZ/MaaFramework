@@ -333,7 +333,7 @@ json::object PipelineDumper::dump(const PipelineData& pp)
     data.pre_wait_freezes = dump_wait_freezes(pp.pre_wait_freezes);
     data.post_wait_freezes = dump_wait_freezes(pp.post_wait_freezes);
 
-    data.raw = pp.raw; // 保存原始 JSON 对象
+    data.attach = pp.attach; // 保存附加 JSON 对象
 
     return data.to_json().as_object();
 }

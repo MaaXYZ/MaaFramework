@@ -335,7 +335,7 @@ declare global {
             pre_wait_freezes?: RemoveIfDump<number, Mode> | WaitFreeze
             post_wait_freezes?: RemoveIfDump<number, Mode> | WaitFreeze
             focus?: unknown
-            raw?: Record<string, unknown> // 原始 JSON 对象
+            attach?: Record<string, unknown> // 附加 JSON 对象
         }
 
         type Task = Recognition<ModeFragment> & Action<ModeFragment> & General<ModeFragment>
