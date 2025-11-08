@@ -533,6 +533,7 @@ class Tasker:
             MaaActId,
             MaaStringBufferHandle,
             MaaStringBufferHandle,
+            MaaRectHandle,
             ctypes.POINTER(MaaBool),
             MaaStringBufferHandle,
         ]
