@@ -16,6 +16,7 @@ MaaCtrlId = MaaId
 MaaResId = MaaId
 MaaTaskId = MaaId
 MaaRecoId = MaaId
+MaaActId = MaaId
 MaaNodeId = MaaId
 MaaSinkId = MaaId
 MaaInvalidId = MaaId(0)
@@ -433,6 +434,41 @@ class Status:
 
 
 @dataclass
+class Point:
+    x: int = 0
+    y: int = 0
+
+    def __add__(
+        self,
+        other: Union[
+            "Point",
+            Tuple[int, int],
+            List[int],
+        ],
+    ):
+        if (
+            isinstance(other, Point)
+            or isinstance(other, tuple)
+            or (isinstance(other, list) and len(other) == 2)
+        ):
+            x1, y1 = self
+            x2, y2 = other
+            return Point(
+                x1 + x2,
+                y1 + y2,
+            )
+
+        raise TypeError(f"Cannot add {type(other).__name__} to Point")
+
+    def __iter__(self):
+        yield self.x
+        yield self.y
+
+    def __getitem__(self, key):
+        return list(self)[key]
+
+
+@dataclass
 class Rect:
     x: int = 0
     y: int = 0
@@ -473,6 +509,13 @@ class Rect:
         return list(self)[key]
 
 
+PointType = Union[
+    Point,
+    List[int],
+    numpy.ndarray,
+    Tuple[int, int],
+]
+
 RectType = Union[
     Rect,
     List[int],
@@ -490,6 +533,22 @@ class AlgorithmEnum(StrEnum):
     NeuralNetworkClassify = "NeuralNetworkClassify"
     NeuralNetworkDetect = "NeuralNetworkDetect"
     Custom = "Custom"
+
+
+class ActionEnum(StrEnum):
+    DoNothing = "DoNothing"
+    Click = "Click"
+    LongPress = "LongPress"
+    Swipe = "Swipe"
+    MultiSwipe = "MultiSwipe"
+    ClickKey = "ClickKey"
+    LongPressKey = "LongPressKey"
+    InputText = "InputText"
+    StartApp = "StartApp"
+    StopApp = "StopApp"
+    Command = "Command"
+    Custom = "Custom"
+    StopTask = "StopTask"
 
 
 @dataclass
@@ -573,10 +632,98 @@ class RecognitionDetail:
 
 
 @dataclass
+class ClickActionResult:
+    point: Point
+
+
+@dataclass
+class LongPressActionResult:
+    point: Point
+    duration: int
+
+
+@dataclass
+class SwipeActionResult:
+    begin: Point
+    end: List[Point]
+    end_hold: List[int]
+    duration: List[int]
+    only_hover: bool
+    starting: int
+
+
+@dataclass
+class MultiSwipeActionResult:
+    swipes: List[SwipeActionResult]
+
+
+@dataclass
+class ClickKeyActionResult:
+    keycode: List[int]
+
+
+@dataclass
+class LongPressKeyActionResult:
+    keycode: List[int]
+    duration: int
+
+
+@dataclass
+class InputTextActionResult:
+    text: str
+
+
+@dataclass
+class AppActionResult:
+    package: str
+
+
+ActionResult = Union[
+    ClickActionResult,
+    LongPressActionResult,
+    SwipeActionResult,
+    MultiSwipeActionResult,
+    ClickKeyActionResult,
+    LongPressKeyActionResult,
+    InputTextActionResult,
+    AppActionResult,
+    None,
+]
+
+ActionResultDict = {
+    ActionEnum.DoNothing: None,
+    ActionEnum.Click: ClickActionResult,
+    ActionEnum.LongPress: LongPressActionResult,
+    ActionEnum.Swipe: SwipeActionResult,
+    ActionEnum.MultiSwipe: MultiSwipeActionResult,
+    ActionEnum.ClickKey: ClickKeyActionResult,
+    ActionEnum.LongPressKey: LongPressKeyActionResult,
+    ActionEnum.InputText: InputTextActionResult,
+    ActionEnum.StartApp: AppActionResult,
+    ActionEnum.StopApp: AppActionResult,
+    ActionEnum.Command: None,
+    ActionEnum.Custom: None,
+    ActionEnum.StopTask: None,
+}
+
+
+@dataclass
+class ActionDetail:
+    action_id: int
+    name: str
+    action: ActionEnum
+    box: Rect
+    success: bool
+    result: Optional[ActionResult]
+    raw_detail: Dict
+
+
+@dataclass
 class NodeDetail:
     node_id: int
     name: str
     recognition: RecognitionDetail
+    action: ActionDetail
     completed: bool
 
 

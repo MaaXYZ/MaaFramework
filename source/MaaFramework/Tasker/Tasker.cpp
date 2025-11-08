@@ -10,7 +10,6 @@
 #include "Task/EmptyTask.h"
 #include "Task/PipelineTask.h"
 
-
 MAA_NS_BEGIN
 
 Tasker::Tasker()
@@ -184,6 +183,11 @@ std::optional<MAA_TASK_NS::NodeDetail> Tasker::get_node_detail(MaaNodeId node_id
 std::optional<MAA_TASK_NS::RecoResult> Tasker::get_reco_result(MaaRecoId reco_id) const
 {
     return runtime_cache().get_reco_result(reco_id);
+}
+
+std::optional<MAA_TASK_NS::ActionResult> Tasker::get_action_result(MaaActId action_id) const
+{
+    return runtime_cache().get_action_result(action_id);
 }
 
 std::optional<MaaNodeId> Tasker::get_latest_node(const std::string& node_name) const

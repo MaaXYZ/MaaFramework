@@ -33,7 +33,7 @@ struct InterfaceData
             std::string window_regex;
 
             MaaWin32ScreencapMethod screencap = MaaWin32ScreencapMethod_DXGI_DesktopDup;
-            MaaWin32InputMethod input = MaaWin32InputMethod_None;   // 已废弃但保留兼容性
+            MaaWin32InputMethod input = MaaWin32InputMethod_None; // 已废弃但保留兼容性
             MaaWin32InputMethod mouse = MaaWin32InputMethod_Seize;
             MaaWin32InputMethod keyboard = MaaWin32InputMethod_Seize;
 

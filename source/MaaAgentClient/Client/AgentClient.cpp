@@ -260,6 +260,9 @@ bool AgentClient::handle_inserted_request(const json::value& j)
     else if (handle_tasker_get_reco_result(j)) {
         return true;
     }
+    else if (handle_tasker_get_action_result(j)) {
+        return true;
+    }
     else if (handle_tasker_get_latest_node(j)) {
         return true;
     }
@@ -873,6 +876,7 @@ bool AgentClient::handle_tasker_get_node_detail(const json::value& j)
         .node_id = detail.node_id,
         .name = detail.name,
         .reco_id = detail.reco_id,
+        .action_id = detail.action_id,
         .completed = detail.completed,
     };
     send(resp);
@@ -910,6 +914,36 @@ bool AgentClient::handle_tasker_get_reco_result(const json::value& j)
         .detail = detail.detail,
         .raw = send_image(detail.raw),
         .draws = std::move(draws),
+    };
+    send(resp);
+
+    return true;
+}
+
+bool AgentClient::handle_tasker_get_action_result(const json::value& j)
+{
+    if (!j.is<TaskerGetActionResultReverseRequest>()) {
+        return false;
+    }
+    const TaskerGetActionResultReverseRequest& req = j.as<TaskerGetActionResultReverseRequest>();
+    LogFunc << VAR(req) << VAR(ipc_addr_);
+
+    MaaTasker* tasker = query_tasker(req.tasker_id);
+    if (!tasker) {
+        LogError << "tasker not found" << VAR(req.tasker_id);
+        return false;
+    }
+    auto detail_opt = tasker->get_action_result(req.action_id);
+    const auto& detail = detail_opt.value_or(MAA_TASK_NS::ActionResult {});
+
+    TaskerGetActionResultReverseResponse resp {
+        .has_value = detail_opt.has_value(),
+        .action_id = detail.action_id,
+        .name = detail.name,
+        .action = detail.action,
+        .box = std::array<int32_t, 4> { detail.box.x, detail.box.y, detail.box.width, detail.box.height },
+        .success = detail.success,
+        .detail = detail.detail,
     };
     send(resp);
 

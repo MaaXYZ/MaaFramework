@@ -340,6 +340,42 @@ class Tasker:
             draw_images=draws.get(),
         )
 
+    def get_action_detail(self, action_id: int) -> Optional[ActionDetail]:
+        name = StringBuffer()
+        action = StringBuffer()
+        box = RectBuffer()
+        c_success = MaaBool()
+        detail_json = StringBuffer()
+
+        ret = bool(
+            Library.framework().MaaTaskerGetActionDetail(
+                self._handle,
+                MaaActId(action_id),
+                name._handle,
+                action._handle,
+                box._handle,
+                ctypes.pointer(c_success),
+                detail_json._handle,
+            )
+        )
+
+        if not ret:
+            return None
+
+        raw_detail = json.loads(detail_json.get())
+        action_enum: ActionEnum = ActionEnum(action.get())
+        parsed_result = Tasker._parse_action_raw_detail(action_enum, raw_detail)
+
+        return ActionDetail(
+            action_id=action_id,
+            name=name.get(),
+            action=action_enum,
+            box=box.get(),
+            success=bool(c_success),
+            result=parsed_result,
+            raw_detail=raw_detail,
+        )
+
     def get_node_detail(self, node_id: int) -> Optional[NodeDetail]:
         """获取节点信息 / Get node info
 
@@ -351,6 +387,7 @@ class Tasker:
         """
         name = StringBuffer()
         c_reco_id = MaaRecoId()
+        c_action_id = MaaActId()
         c_completed = MaaBool()
 
         ret = bool(
@@ -359,6 +396,7 @@ class Tasker:
                 MaaNodeId(node_id),
                 name._handle,
                 ctypes.pointer(c_reco_id),
+                ctypes.pointer(c_action_id),
                 ctypes.pointer(c_completed),
             )
         )
@@ -366,14 +404,22 @@ class Tasker:
         if not ret:
             return None
 
-        recognition = self.get_recognition_detail(int(c_reco_id.value))
-        if not recognition:
-            return None
+        recognition = (
+            self.get_recognition_detail(int(c_reco_id.value))
+            if c_reco_id.value != 0
+            else None
+        )
+        action = (
+            self.get_action_detail(int(c_action_id.value))
+            if c_action_id.value != 0
+            else None
+        )
 
         return NodeDetail(
             node_id=node_id,
             name=name.get(),
             recognition=recognition,
+            action=action,
             completed=bool(c_completed),
         )
 
@@ -562,6 +608,25 @@ class Tasker:
         return all_results, filterd_results, best_result
 
     @staticmethod
+    def _parse_action_raw_detail(
+        action: ActionEnum, raw_detail: Dict
+    ) -> Optional[ActionResult]:
+        if not raw_detail:
+            return None
+
+        ResultType = ActionResultDict[action]
+        if not ResultType:
+            return None
+
+        try:
+            # cv::Point 在 JSON 中是数组 [x, y]，不需要转换
+            # 直接使用 raw_detail 创建结果对象
+            return ResultType(**raw_detail)
+        except (TypeError, KeyError):
+            # 如果解析失败，返回 None
+            return None
+
+    @staticmethod
     def _set_api_properties():
         if Tasker._api_properties_initialized:
             return
@@ -647,12 +712,24 @@ class Tasker:
             MaaImageListBufferHandle,
         ]
 
+        Library.framework().MaaTaskerGetActionDetail.restype = MaaBool
+        Library.framework().MaaTaskerGetActionDetail.argtypes = [
+            MaaTaskerHandle,
+            MaaActId,
+            MaaStringBufferHandle,
+            MaaStringBufferHandle,
+            MaaRectHandle,
+            ctypes.POINTER(MaaBool),
+            MaaStringBufferHandle,
+        ]
+
         Library.framework().MaaTaskerGetNodeDetail.restype = MaaBool
         Library.framework().MaaTaskerGetNodeDetail.argtypes = [
             MaaTaskerHandle,
             MaaNodeId,
             MaaStringBufferHandle,
             ctypes.POINTER(MaaRecoId),
+            ctypes.POINTER(MaaActId),
             ctypes.POINTER(MaaBool),
         ]
 

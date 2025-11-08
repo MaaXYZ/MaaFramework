@@ -49,6 +49,7 @@ struct TaskerImpl : public maajs::NativeClassBase
     std::optional<maajs::ValueType> get_controller();
     void clear_cache();
     std::optional<maajs::ValueType> recognition_detail(MaaRecoId id);
+    std::optional<maajs::ValueType> action_detail(MaaActId id);
     std::optional<maajs::ValueType> node_detail(MaaNodeId id);
     std::optional<maajs::ValueType> task_detail(MaaTaskId id);
     std::optional<MaaNodeId> latest_node(std::string node_name);

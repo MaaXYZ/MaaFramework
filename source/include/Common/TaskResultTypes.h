@@ -22,11 +22,22 @@ struct RecoResult
     std::vector<cv::Mat> draws;
 };
 
+struct ActionResult
+{
+    MaaActId action_id = MaaInvalidId;
+    std::string name;
+    std::string action;
+    cv::Rect box {};
+    bool success = false;
+    json::value detail;
+};
+
 struct NodeDetail
 {
     MaaNodeId node_id = MaaInvalidId;
     std::string name;
     MaaRecoId reco_id = MaaInvalidId;
+    MaaActId action_id = MaaInvalidId;
     bool completed = false;
 };
 
