@@ -148,7 +148,7 @@ def main():
         root_dir = Path(args.root).resolve()
     else:
         # 默认使用脚本所在目录的父目录（项目根目录）
-        root_dir = Path(__file__).parent.parent.resolve()
+        root_dir = Path(__file__).parent.parent.parent.resolve()
 
     # 检查 .clang-format 文件是否存在
     clang_format_config = root_dir / ".clang-format"
