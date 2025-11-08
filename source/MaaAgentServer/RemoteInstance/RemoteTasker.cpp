@@ -265,7 +265,7 @@ std::optional<MAA_TASK_NS::ActionResult> RemoteTasker::get_action_result(MaaActI
     result.action_id = resp_opt->action_id;
     result.name = std::move(resp_opt->name);
     result.action = std::move(resp_opt->action);
-    result.box = resp_opt->box;
+    result.box = cv::Rect(resp_opt->box[0], resp_opt->box[1], resp_opt->box[2], resp_opt->box[3]);
     result.success = resp_opt->success;
     result.detail = std::move(resp_opt->detail);
 
@@ -290,7 +290,8 @@ std::optional<MaaNodeId> RemoteTasker::get_latest_node(const std::string& node_n
 
 MaaSinkId RemoteTasker::add_sink(MaaEventCallback callback, void* trans_arg)
 {
-    LogError << "Can NOT add sink for remote instance, use AgentServer.add_tasker_sink instead" << VAR_VOIDP(callback) << VAR_VOIDP(trans_arg);
+    LogError << "Can NOT add sink for remote instance, use AgentServer.add_tasker_sink instead" << VAR_VOIDP(callback)
+             << VAR_VOIDP(trans_arg);
     return MaaInvalidId;
 }
 

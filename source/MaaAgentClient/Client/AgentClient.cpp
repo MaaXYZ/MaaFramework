@@ -941,7 +941,7 @@ bool AgentClient::handle_tasker_get_action_result(const json::value& j)
         .action_id = detail.action_id,
         .name = detail.name,
         .action = detail.action,
-        .box = detail.box,
+        .box = std::array<int32_t, 4> { detail.box.x, detail.box.y, detail.box.width, detail.box.height },
         .success = detail.success,
         .detail = detail.detail,
     };

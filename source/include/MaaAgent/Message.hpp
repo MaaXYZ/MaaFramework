@@ -586,7 +586,7 @@ struct TaskerGetActionResultReverseResponse
     int64_t action_id = 0;
     std::string name;
     std::string action;
-    cv::Rect box {};
+    std::array<int32_t, 4> box {};
     bool success = false;
     json::value detail;
 
