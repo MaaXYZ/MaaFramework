@@ -53,6 +53,11 @@ MaaBool MaaToolkitAdbDeviceFindSpecified(const char* adb_path, MaaToolkitAdbDevi
         return false;
     }
 
+    if (!adb_path) {
+        LogError << "adb_path is null";
+        return false;
+    }
+
     auto devices = finder().find_specified(MAA_NS::path(adb_path));
     for (const auto& d : devices) {
         buffer->append(MAA_TOOLKIT_NS::AdbDeviceBuffer(d));

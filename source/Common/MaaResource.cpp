@@ -128,6 +128,11 @@ MaaResId MaaResourcePostBundle(MaaResource* res, const char* path)
         return MaaInvalidId;
     }
 
+    if (!path) {
+        LogError << "path is null";
+        return MaaInvalidId;
+    }
+
     return res->post_bundle(MAA_NS::path(path));
 }
 
@@ -139,6 +144,12 @@ MaaBool MaaResourceOverridePipeline(MaaResource* res, const char* pipeline_overr
         LogError << "handle is null";
         return false;
     }
+
+    if (!pipeline_override) {
+        LogError << "pipeline_override is null";
+        return false;
+    }
+
     auto ov_opt = json::parse(pipeline_override);
     if (!ov_opt) {
         LogError << "failed to parse" << VAR(pipeline_override);
@@ -161,6 +172,11 @@ MaaBool MaaResourceOverrideNext(MaaResource* res, const char* node_name, const M
         return false;
     }
 
+    if (!node_name) {
+        LogError << "node_name is null";
+        return false;
+    }
+
     std::vector<std::string> next;
 
     size_t size = next_list->size();
@@ -180,6 +196,11 @@ MaaBool MaaResourceOverrideImage(MaaResource* res, const char* image_name, const
         return false;
     }
 
+    if (!image_name) {
+        LogError << "image_name is null";
+        return false;
+    }
+
     const cv::Mat& mat = image->get();
 
     return res->override_image(image_name, mat);
@@ -191,6 +212,11 @@ MaaBool MaaResourceGetNodeData(MaaResource* res, const char* node_name, MaaStrin
 
     if (!res || !buffer) {
         LogError << "handle is null";
+        return false;
+    }
+
+    if (!node_name) {
+        LogError << "node_name is null";
         return false;
     }
 
