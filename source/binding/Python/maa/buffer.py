@@ -430,10 +430,8 @@ class RectBuffer:
             if len(value) != 4:
                 raise ValueError("value must have 4 elements")
             value = numpy.array(value, dtype=numpy.int32)
-        elif isinstance(value, Rect):
-            pass
         else:
-            raise TypeError("value must be a Rect, numpy.ndarray, tuple or list")
+            raise TypeError("value must be a List[int], numpy.ndarray or Tuple")
 
         return bool(
             Library.framework().MaaRectSet(
