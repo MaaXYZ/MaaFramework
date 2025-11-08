@@ -9,6 +9,11 @@ MaaBool MaaAgentServerStartUp(const char* identifier)
 {
     LogFunc << VAR(identifier);
 
+    if (!identifier) {
+        LogError << "identifier is null";
+        return false;
+    }
+
     return MAA_AGENT_SERVER_NS::AgentServer::get_instance().start_up(identifier);
 }
 

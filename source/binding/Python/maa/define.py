@@ -506,11 +506,7 @@ class Rect:
         yield self.h
 
     def __getitem__(self, key):
-        return self.roi[key]
-
-    @property
-    def roi(self):
-        return list(self)
+        return list(self)[key]
 
 
 PointType = Union[

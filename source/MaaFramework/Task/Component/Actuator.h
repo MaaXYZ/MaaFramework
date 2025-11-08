@@ -6,6 +6,7 @@
 
 #include "Common/Conf.h"
 #include "Common/MaaTypes.h"
+#include "Common/TaskResultTypes.h"
 #include "Controller/ControllerAgent.h"
 #include "Resource/PipelineTypes.h"
 #include "Task/Context.h"
@@ -32,8 +33,13 @@ private:
     ActionResult long_press(const MAA_RES_NS::Action::LongPressParam& param, const cv::Rect& box, const std::string& name);
     ActionResult swipe(const MAA_RES_NS::Action::SwipeParam& param, const cv::Rect& box, const std::string& name);
     ActionResult multi_swipe(const MAA_RES_NS::Action::MultiSwipeParam& param, const cv::Rect& box, const std::string& name);
+    ActionResult touch_down(const MAA_RES_NS::Action::TouchParam& param, const cv::Rect& box, const std::string& name);
+    ActionResult touch_move(const MAA_RES_NS::Action::TouchParam& param, const cv::Rect& box, const std::string& name);
+    ActionResult touch_up(const MAA_RES_NS::Action::TouchUpParam& param, const std::string& name);
     ActionResult click_key(const MAA_RES_NS::Action::ClickKeyParam& param, const std::string& name);
     ActionResult long_press_key(const MAA_RES_NS::Action::LongPressKeyParam& param, const std::string& name);
+    ActionResult key_down(const MAA_RES_NS::Action::KeyParam& param, const std::string& name);
+    ActionResult key_up(const MAA_RES_NS::Action::KeyParam& param, const std::string& name);
     ActionResult input_text(const MAA_RES_NS::Action::InputTextParam& param, const std::string& name);
 
     ActionResult start_app(const MAA_RES_NS::Action::AppParam& param, const std::string& name);

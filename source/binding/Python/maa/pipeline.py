@@ -118,6 +118,7 @@ class JDoNothing:
 class JClick:
     target: JTarget
     target_offset: JRect
+    contact: int = 0
 
 
 @dataclass
@@ -125,6 +126,7 @@ class JLongPress:
     target: JTarget
     target_offset: JRect
     duration: int
+    contact: int = 0
 
 
 @dataclass
@@ -137,11 +139,25 @@ class JSwipe:
     end_hold: List[int]
     duration: List[int]
     only_hover: bool
+    contact: int = 0
 
 
 @dataclass
 class JMultiSwipe:
     swipes: List[JSwipe]
+
+
+@dataclass
+class JTouch:
+    contact: int
+    target: JTarget
+    target_offset: JRect
+    pressure: int
+
+
+@dataclass
+class JTouchUp:
+    contact: int
 
 
 @dataclass
@@ -153,6 +169,11 @@ class JClickKey:
 class JLongPressKey:
     key: List[int]
     duration: int
+
+
+@dataclass
+class JKey:
+    key: int
 
 
 @dataclass
@@ -197,8 +218,11 @@ JActionParam = Union[
     JLongPress,
     JSwipe,
     JMultiSwipe,
+    JTouch,
+    JTouchUp,
     JClickKey,
     JLongPressKey,
+    JKey,
     JInputText,
     JStartApp,
     JStopApp,
@@ -249,6 +273,7 @@ class JPipelineData:
     pre_wait_freezes: JWaitFreezes
     post_wait_freezes: JWaitFreezes
     focus: Any
+    attach: Dict  # 附加 JSON 对象
 
 
 class JPipelineParser:
@@ -311,8 +336,13 @@ class JPipelineParser:
             "LongPress": JLongPress,
             "Swipe": JSwipe,
             "MultiSwipe": JMultiSwipe,
+            "TouchDown": JTouch,
+            "TouchMove": JTouch,
+            "TouchUp": JTouchUp,
             "ClickKey": JClickKey,
             "LongPressKey": JLongPressKey,
+            "KeyDown": JKey,
+            "KeyUp": JKey,
             "InputText": JInputText,
             "StartApp": JStartApp,
             "StopApp": JStopApp,
@@ -320,6 +350,7 @@ class JPipelineParser:
             "Command": JCommand,
             "Custom": JCustomAction,
         }
+
         return cls._parse_param(param_type, param_data, param_type_map, JDoNothing)
 
     @classmethod
@@ -371,4 +402,5 @@ class JPipelineParser:
             pre_wait_freezes=pre_wait_freezes,  # type: ignore
             post_wait_freezes=post_wait_freezes,  # type: ignore
             focus=data.get("focus"),
+            attach=data.get("attach"),  # 附加 JSON 对象
         )

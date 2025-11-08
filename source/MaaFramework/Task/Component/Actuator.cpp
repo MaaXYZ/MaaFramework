@@ -53,6 +53,15 @@ ActionResult Actuator::run(const cv::Rect& reco_hit, MaaRecoId reco_id, const Pi
         result = multi_swipe(std::get<MultiSwipeParam>(pipeline_data.action_param), reco_hit, pipeline_data.name);
         break;
 
+    case Type::TouchDown:
+        result = touch_down(std::get<TouchParam>(pipeline_data.action_param), reco_hit, pipeline_data.name);
+        break;
+    case Type::TouchMove:
+        result = touch_move(std::get<TouchParam>(pipeline_data.action_param), reco_hit, pipeline_data.name);
+        break;
+    case Type::TouchUp:
+        result = touch_up(std::get<TouchUpParam>(pipeline_data.action_param), pipeline_data.name);
+        break;
     case Type::ClickKey:
         result = click_key(std::get<ClickKeyParam>(pipeline_data.action_param), pipeline_data.name);
         break;
@@ -61,6 +70,12 @@ ActionResult Actuator::run(const cv::Rect& reco_hit, MaaRecoId reco_id, const Pi
         result = long_press_key(std::get<LongPressKeyParam>(pipeline_data.action_param), pipeline_data.name);
         break;
 
+    case Type::KeyDown:
+        result = key_down(std::get<KeyParam>(pipeline_data.action_param), pipeline_data.name);
+        break;
+    case Type::KeyUp:
+        result = key_up(std::get<KeyParam>(pipeline_data.action_param), pipeline_data.name);
+        break;
     case Type::InputText:
         result = input_text(std::get<InputTextParam>(pipeline_data.action_param), pipeline_data.name);
         break;
@@ -142,7 +157,7 @@ ActionResult Actuator::click(const MAA_RES_NS::Action::ClickParam& param, const 
     }
 
     cv::Point point = rand_point(get_target_rect(param.target, box));
-    MAA_CTRL_NS::ClickParam ctrl_param { .point = point };
+    MAA_CTRL_NS::ClickParam ctrl_param { .point = point, .contact = static_cast<int>(param.contact) };
     bool ret = controller()->click(ctrl_param);
 
     return ActionResult {
@@ -163,7 +178,7 @@ ActionResult Actuator::long_press(const MAA_RES_NS::Action::LongPressParam& para
     }
 
     cv::Point point = rand_point(get_target_rect(param.target, box));
-    MAA_CTRL_NS::LongPressParam ctrl_param { .point = point, .duration = param.duration };
+    MAA_CTRL_NS::LongPressParam ctrl_param { .point = point, .duration = param.duration, .contact = static_cast<int>(param.contact) };
     bool ret = controller()->long_press(ctrl_param);
 
     return ActionResult {
@@ -201,7 +216,8 @@ ActionResult Actuator::swipe(const MAA_RES_NS::Action::SwipeParam& param, const 
                                          .end_hold = param.end_hold,
                                          .duration = param.duration,
                                          .only_hover = param.only_hover,
-                                         .starting = param.starting };
+                                         .starting = param.starting,
+                                         .contact = static_cast<int>(param.contact) };
     bool ret = controller()->swipe(ctrl_param);
 
     return ActionResult {
@@ -241,7 +257,8 @@ ActionResult Actuator::multi_swipe(const MAA_RES_NS::Action::MultiSwipeParam& pa
               .end_hold = swipe.end_hold,
               .duration = swipe.duration,
               .only_hover = swipe.only_hover,
-              .starting = swipe.starting });
+              .starting = swipe.starting,
+              .contact = static_cast<int>(swipe.contact) });
     }
 
     MAA_CTRL_NS::MultiSwipeParam ctrl_param { .swipes = std::move(swipes) };
@@ -252,6 +269,68 @@ ActionResult Actuator::multi_swipe(const MAA_RES_NS::Action::MultiSwipeParam& pa
         .name = name,
         .action = "MultiSwipe",
         .box = box,
+        .success = ret,
+        .detail = json::value(ctrl_param),
+    };
+}
+
+ActionResult Actuator::touch_down(const MAA_RES_NS::Action::TouchParam& param, const cv::Rect& box, const std::string& name)
+{
+    if (!controller()) {
+        LogError << "Controller is null";
+        return {};
+    }
+
+    cv::Point point = rand_point(get_target_rect(param.target, box));
+    MAA_CTRL_NS::TouchParam ctrl_param { .contact = static_cast<int>(param.contact), .point = point, .pressure = param.pressure };
+    bool ret = controller()->touch_down(ctrl_param);
+
+    return ActionResult {
+        .action_id = MAA_VISION_NS::VisionBase::generate_uid(),
+        .name = name,
+        .action = "TouchDown",
+        .box = box,
+        .success = ret,
+        .detail = json::value(ctrl_param),
+    };
+}
+
+ActionResult Actuator::touch_move(const MAA_RES_NS::Action::TouchParam& param, const cv::Rect& box, const std::string& name)
+{
+    if (!controller()) {
+        LogError << "Controller is null";
+        return {};
+    }
+
+    cv::Point point = rand_point(get_target_rect(param.target, box));
+    MAA_CTRL_NS::TouchParam ctrl_param { .contact = static_cast<int>(param.contact), .point = point, .pressure = param.pressure };
+    bool ret = controller()->touch_move(ctrl_param);
+
+    return ActionResult {
+        .action_id = MAA_VISION_NS::VisionBase::generate_uid(),
+        .name = name,
+        .action = "TouchMove",
+        .box = box,
+        .success = ret,
+        .detail = json::value(ctrl_param),
+    };
+}
+
+ActionResult Actuator::touch_up(const MAA_RES_NS::Action::TouchUpParam& param, const std::string& name)
+{
+    if (!controller()) {
+        LogError << "Controller is null";
+        return {};
+    }
+
+    MAA_CTRL_NS::TouchParam ctrl_param { .contact = static_cast<int>(param.contact), .point = {}, .pressure = 0 };
+    bool ret = controller()->touch_up(ctrl_param);
+
+    return ActionResult {
+        .action_id = MAA_VISION_NS::VisionBase::generate_uid(),
+        .name = name,
+        .action = "TouchUp",
+        .box = cv::Rect {},
         .success = ret,
         .detail = json::value(ctrl_param),
     };
@@ -291,6 +370,46 @@ ActionResult Actuator::long_press_key(const MAA_RES_NS::Action::LongPressKeyPara
         .action_id = MAA_VISION_NS::VisionBase::generate_uid(),
         .name = name,
         .action = "LongPressKey",
+        .box = cv::Rect {},
+        .success = ret,
+        .detail = json::value(ctrl_param),
+    };
+}
+
+ActionResult Actuator::key_down(const MAA_RES_NS::Action::KeyParam& param, const std::string& name)
+{
+    if (!controller()) {
+        LogError << "Controller is null";
+        return {};
+    }
+
+    MAA_CTRL_NS::ClickKeyParam ctrl_param { .keycode = { param.key } };
+    bool ret = controller()->key_down(ctrl_param);
+
+    return ActionResult {
+        .action_id = MAA_VISION_NS::VisionBase::generate_uid(),
+        .name = name,
+        .action = "KeyDown",
+        .box = cv::Rect {},
+        .success = ret,
+        .detail = json::value(ctrl_param),
+    };
+}
+
+ActionResult Actuator::key_up(const MAA_RES_NS::Action::KeyParam& param, const std::string& name)
+{
+    if (!controller()) {
+        LogError << "Controller is null";
+        return {};
+    }
+
+    MAA_CTRL_NS::ClickKeyParam ctrl_param { .keycode = { param.key } };
+    bool ret = controller()->key_up(ctrl_param);
+
+    return ActionResult {
+        .action_id = MAA_VISION_NS::VisionBase::generate_uid(),
+        .name = name,
+        .action = "KeyUp",
         .box = cv::Rect {},
         .success = ret,
         .detail = json::value(ctrl_param),

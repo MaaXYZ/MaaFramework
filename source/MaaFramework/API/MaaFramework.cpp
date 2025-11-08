@@ -19,6 +19,21 @@ MaaController* MaaAdbControllerCreate(
 {
     LogFunc << VAR(adb_path) << VAR(address) << VAR(screencap_methods) << VAR(input_methods) << VAR(config) << VAR(agent_path);
 
+    if (!adb_path || !address) {
+        LogError << "adb_path or address is null";
+        return nullptr;
+    }
+
+    if (!config) {
+        LogError << "config is null";
+        return nullptr;
+    }
+
+    if (!agent_path) {
+        LogError << "agent_path is null";
+        return nullptr;
+    }
+
     auto control_unit =
         MAA_NS::AdbControlUnitLibraryHolder::create_control_unit(adb_path, address, screencap_methods, input_methods, config, agent_path);
 
@@ -82,6 +97,11 @@ MaaController* MaaCustomControllerCreate(MaaCustomControllerCallbacks* controlle
 MaaController* MaaDbgControllerCreate(const char* read_path, const char* write_path, MaaDbgControllerType type, const char* config)
 {
     LogFunc << VAR(read_path) << VAR(write_path) << VAR(type);
+
+    if (!read_path) {
+        LogError << "read_path is null";
+        return nullptr;
+    }
 
     std::ignore = write_path;
     std::ignore = config;
@@ -156,6 +176,11 @@ MaaBool MaaGlobalSetOption(MaaGlobalOption key, MaaOptionValue value, MaaOptionV
 MaaBool MaaGlobalLoadPlugin(const char* library_path)
 {
     LogFunc << VAR(library_path);
+
+    if (!library_path) {
+        LogError << "library_path is null";
+        return false;
+    }
 
     return MAA_GLOBAL_NS::PluginMgr::get_instance().load(MAA_NS::path(library_path));
 }

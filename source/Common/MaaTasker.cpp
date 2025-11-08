@@ -132,6 +132,16 @@ MaaTaskId MaaTaskerPostTask(MaaTasker* tasker, const char* entry, const char* pi
         return MaaInvalidId;
     }
 
+    if (!entry) {
+        LogError << "entry is null";
+        return MaaInvalidId;
+    }
+
+    if (!pipeline_override) {
+        LogError << "pipeline_override is null";
+        return MaaInvalidId;
+    }
+
     auto ov_opt = json::parse(pipeline_override);
     if (!ov_opt) {
         LogError << "failed to parse" << VAR(pipeline_override);
@@ -434,6 +444,11 @@ MaaBool MaaTaskerGetLatestNode(const MaaTasker* tasker, const char* node_name, M
 {
     if (!tasker) {
         LogError << "handle is null";
+        return false;
+    }
+
+    if (!node_name) {
+        LogError << "node_name is null";
         return false;
     }
 

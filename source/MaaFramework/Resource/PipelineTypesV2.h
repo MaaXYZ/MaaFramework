@@ -136,8 +136,9 @@ struct JClick
 {
     JTarget target;
     JRect target_offset {};
+    uint32_t contact = 0;
 
-    MEO_TOJSON(target, target_offset);
+    MEO_TOJSON(target, target_offset, contact);
 };
 
 struct JLongPress
@@ -145,7 +146,8 @@ struct JLongPress
     JTarget target;
     JRect target_offset {};
     uint32_t duration = 0;
-    MEO_TOJSON(target, target_offset, duration);
+    uint32_t contact = 0;
+    MEO_TOJSON(target, target_offset, duration, contact);
 };
 
 struct JSwipe
@@ -158,7 +160,8 @@ struct JSwipe
     std::vector<uint32_t> end_hold;
     std::vector<uint32_t> duration;
     bool only_hover = false;
-    MEO_TOJSON(starting, begin, begin_offset, end, end_offset, end_hold, duration, only_hover);
+    uint32_t contact = 0;
+    MEO_TOJSON(starting, begin, begin_offset, end, end_offset, end_hold, duration, only_hover, contact);
 };
 
 struct JMultiSwipe
@@ -166,6 +169,23 @@ struct JMultiSwipe
     std::vector<JSwipe> swipes;
 
     MEO_TOJSON(swipes);
+};
+
+struct JTouch
+{
+    uint32_t contact = 0;
+    JTarget target;
+    JRect target_offset {};
+    int32_t pressure = 0;
+
+    MEO_TOJSON(contact, target, target_offset, pressure);
+};
+
+struct JTouchUp
+{
+    uint32_t contact = 0;
+
+    MEO_TOJSON(contact);
 };
 
 struct JClickKey
@@ -181,6 +201,13 @@ struct JLongPressKey
     uint32_t duration = 0;
 
     MEO_TOJSON(key, duration);
+};
+
+struct JKey
+{
+    int key = 0;
+
+    MEO_TOJSON(key);
 };
 
 struct JInputText
@@ -234,8 +261,11 @@ using JActionParam = std::variant<
     JLongPress,
     JSwipe,
     JMultiSwipe,
+    JTouch,
+    JTouchUp,
     JClickKey,
     JLongPressKey,
+    JKey,
     JInputText,
     JStartApp,
     JStopApp,
@@ -280,6 +310,7 @@ struct JPipelineData
     JWaitFreezes pre_wait_freezes;
     JWaitFreezes post_wait_freezes;
     json::value focus;
+    json::object attach; // 附加 JSON 对象
 
     MEO_TOJSON(
         recognition,
@@ -296,7 +327,8 @@ struct JPipelineData
         post_delay,
         pre_wait_freezes,
         post_wait_freezes,
-        focus);
+        focus,
+        attach);
 };
 } // namespace PipelineV2
 

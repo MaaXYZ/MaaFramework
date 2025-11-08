@@ -31,6 +31,15 @@ class Toolkit:
 
     @staticmethod
     def init_option(user_path: Union[str, Path], default_config: Dict = {}) -> bool:
+        """从 user_path 中加载全局配置 / Load global config from user_path
+
+        Args:
+            user_path: 配置存储路径 / Config storage path
+            default_config: 默认配置 / Default config
+
+        Returns:
+            bool: 是否成功 / Whether successful
+        """
         Toolkit._set_api_properties()
 
         return bool(
@@ -44,6 +53,14 @@ class Toolkit:
     def find_adb_devices(
         specified_adb: Optional[Union[str, Path]] = None
     ) -> List[AdbDevice]:
+        """搜索所有已知安卓模拟器 / Search all known Android emulators
+
+        Args:
+            specified_adb: 可选，指定 adb 路径进行搜索 / Optional, search using specified adb path
+
+        Returns:
+            List[AdbDevice]: 设备列表 / Device list
+        """
         Toolkit._set_api_properties()
 
         list_handle = Library.toolkit().MaaToolkitAdbDeviceListCreate()
@@ -90,6 +107,11 @@ class Toolkit:
 
     @staticmethod
     def find_desktop_windows() -> List[DesktopWindow]:
+        """查询所有窗口信息 / Query all window info
+
+        Returns:
+            List[DesktopWindow]: 窗口列表 / Window list
+        """
         Toolkit._set_api_properties()
 
         list_handle = Library.toolkit().MaaToolkitDesktopWindowListCreate()
