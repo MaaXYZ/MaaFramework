@@ -1,5 +1,6 @@
 #pragma once
 
+#include "MaaFramework/MaaDef.h"
 #include "TaskBase.h"
 
 #include "Common/Conf.h"
@@ -18,7 +19,7 @@ public:
     virtual void post_stop() override {}
 
 public:
-    MaaNodeId run_with_param(const cv::Rect& box, const json::value& reco_detail);
+    MaaActId run_with_param(const cv::Rect& box, const json::value& reco_detail);
 };
 
 MAA_TASK_NS_END

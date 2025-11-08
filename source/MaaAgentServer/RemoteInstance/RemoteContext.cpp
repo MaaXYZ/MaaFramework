@@ -43,7 +43,7 @@ MaaRecoId RemoteContext::run_recognition(const std::string& entry, const json::v
     return resp_opt->reco_id;
 }
 
-MaaNodeId RemoteContext::run_action(
+MaaActId RemoteContext::run_action(
     const std::string& entry,
     const json::value& pipeline_override,
     const cv::Rect& box,
@@ -61,7 +61,7 @@ MaaNodeId RemoteContext::run_action(
     if (!resp_opt) {
         return MaaInvalidId;
     }
-    return resp_opt->node_id;
+    return resp_opt->action_id;
 }
 
 bool RemoteContext::override_pipeline(const json::value& pipeline_override)

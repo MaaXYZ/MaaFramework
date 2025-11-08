@@ -62,14 +62,14 @@ maajs::PromiseType ContextImpl::run_action(
     maajs::OptionalParam<maajs::ValueType> pipeline_override)
 {
     auto overr = maajs::JsonStringify(env, pipeline_override.value_or(maajs::ObjectType::New(env)));
-    auto worker = new maajs::AsyncWork<MaaNodeId>(env, [context = context, entry, box, reco_detail, overr]() {
+    auto worker = new maajs::AsyncWork<MaaActId>(env, [context = context, entry, box, reco_detail, overr]() {
         return MaaContextRunAction(context, entry.c_str(), overr.c_str(), &box, reco_detail.c_str());
     });
     worker->Queue();
 
     return maajs::PromiseThen(worker->Promise(), self.As<maajs::ObjectType>(), [](const maajs::CallbackInfo& info, maajs::ObjectType self) {
         auto tasker = self["tasker"].AsValue().As<maajs::ObjectType>();
-        return maajs::CallMemberHelper<maajs::ValueType>(tasker, "node_detail", maajs::JSConvert<MaaNodeId>::from_value(info[0]));
+        return maajs::CallMemberHelper<maajs::ValueType>(tasker, "action_detail", maajs::JSConvert<MaaActId>::from_value(info[0]));
     });
 }
 

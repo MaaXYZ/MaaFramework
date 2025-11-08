@@ -217,10 +217,10 @@ struct ContextRunActionReverseRequest
 
 struct ContextRunActionReverseResponse
 {
-    int64_t node_id = 0;
+    int64_t action_id = 0;
 
     MessageTypePlaceholder _ContextRunActionReverseResponse = 1;
-    MEO_JSONIZATION(node_id, _ContextRunActionReverseResponse);
+    MEO_JSONIZATION(action_id, _ContextRunActionReverseResponse);
 };
 
 struct ContextOverridePipelineReverseRequest

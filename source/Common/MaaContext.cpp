@@ -75,7 +75,7 @@ MaaRecoId MaaContextRunRecognition(MaaContext* context, const char* entry, const
     return context->run_recognition(entry, ov_opt->as_object(), mat);
 }
 
-MaaNodeId
+MaaActId
     MaaContextRunAction(MaaContext* context, const char* entry, const char* pipeline_override, const MaaRect* box, const char* reco_detail)
 {
     LogFunc << VAR_VOIDP(context) << VAR(entry) << VAR(pipeline_override) << VAR(box) << VAR(reco_detail);

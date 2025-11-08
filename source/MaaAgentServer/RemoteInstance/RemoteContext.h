@@ -19,7 +19,7 @@ public:
 
     virtual MaaTaskId run_task(const std::string& entry, const json::value& pipeline_override) override;
     virtual MaaRecoId run_recognition(const std::string& entry, const json::value& pipeline_override, const cv::Mat& image) override;
-    virtual MaaNodeId
+    virtual MaaActId
         run_action(const std::string& entry, const json::value& pipeline_override, const cv::Rect& box, const std::string& reco_detail)
             override;
     virtual bool override_pipeline(const json::value& pipeline_override) override;

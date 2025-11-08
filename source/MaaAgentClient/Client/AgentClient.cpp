@@ -435,11 +435,11 @@ bool AgentClient::handle_context_run_action(const json::value& j)
         return false;
     }
 
-    MaaNodeId node_id =
+    MaaActId act_id =
         context->run_action(req.entry, req.pipeline_override, cv::Rect { req.box[0], req.box[1], req.box[2], req.box[3] }, req.reco_detail);
 
     ContextRunActionReverseResponse resp {
-        .node_id = node_id,
+        .action_id = act_id,
     };
     send(resp);
 

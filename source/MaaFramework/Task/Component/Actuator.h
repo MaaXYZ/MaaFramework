@@ -1,5 +1,6 @@
 #pragma once
 
+#include <atomic>
 #include <random>
 
 #include <meojson/json.hpp>
@@ -27,6 +28,7 @@ public:
 private:
     static cv::Point rand_point(const cv::Rect& r);
     static std::mt19937 rand_engine_;
+    inline static std::atomic<MaaActId> s_global_action_id = 500'000'000;
 
 private:
     ActionResult click(const MAA_RES_NS::Action::ClickParam& param, const cv::Rect& box, const std::string& name);

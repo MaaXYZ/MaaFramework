@@ -92,7 +92,7 @@ class Context:
         box: RectType = (0, 0, 0, 0),
         reco_detail: str = "",
         pipeline_override: Dict = {},
-    ) -> Optional[NodeDetail]:
+    ) -> Optional[ActionDetail]:
         """同步执行操作逻辑 / Synchronously execute action logic
 
         不会执行后续 next
@@ -105,12 +105,12 @@ class Context:
             pipeline_override: 用于覆盖的 json / JSON for overriding
 
         Returns:
-            Optional[NodeDetail]: 节点详情，执行失败则返回 None / Node detail, or None if execution failed
+            Optional[ActionDetail]: 操作详情，执行失败则返回 None / Action detail, or None if execution failed
         """
         rect = RectBuffer()
         rect.set(box)
 
-        node_id = int(
+        act_id = int(
             Library.framework().MaaContextRunAction(
                 self._handle,
                 *Context._gen_post_param(entry, pipeline_override),
@@ -119,10 +119,10 @@ class Context:
             )
         )
 
-        if not node_id:
+        if not act_id:
             return None
 
-        return self.tasker.get_node_detail(node_id)
+        return self.tasker.get_action_detail(act_id)
 
     def override_pipeline(self, pipeline_override: Dict) -> bool:
         """覆盖 pipeline / Override pipeline_override
@@ -295,7 +295,7 @@ class Context:
             MaaImageBufferHandle,
         ]
 
-        Library.framework().MaaContextRunAction.restype = MaaNodeId
+        Library.framework().MaaContextRunAction.restype = MaaActId
         Library.framework().MaaContextRunAction.argtypes = [
             MaaContextHandle,
             ctypes.c_char_p,

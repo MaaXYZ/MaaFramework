@@ -24,7 +24,7 @@ extern "C"
     MAA_FRAMEWORK_API MaaRecoId
         MaaContextRunRecognition(MaaContext* context, const char* entry, const char* pipeline_override, const MaaImageBuffer* image);
 
-    MAA_FRAMEWORK_API MaaNodeId MaaContextRunAction(
+    MAA_FRAMEWORK_API MaaActId MaaContextRunAction(
         MaaContext* context,
         const char* entry,
         const char* pipeline_override,

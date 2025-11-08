@@ -17,7 +17,7 @@ bool ActionTask::run()
     return run_with_param({}, {}) != MaaInvalidId;
 }
 
-MaaNodeId ActionTask::run_with_param(const cv::Rect& box, const json::value& reco_detail)
+MaaActId ActionTask::run_with_param(const cv::Rect& box, const json::value& reco_detail)
 {
     LogFunc << VAR(entry_);
 
@@ -36,7 +36,7 @@ MaaNodeId ActionTask::run_with_param(const cv::Rect& box, const json::value& rec
 
     tasker_->runtime_cache().set_reco_detail(fake_reco.reco_id, fake_reco);
 
-    return run_action(fake_reco).node_id;
+    return run_action(fake_reco).action_id;
 }
 
 MAA_TASK_NS_END
