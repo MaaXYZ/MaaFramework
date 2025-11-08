@@ -46,6 +46,7 @@ var MaaDef_8h =
     [ "MaaResId", "MaaDef_8h.html#ac1f7514a514f2b5af32cabc02eedca85", null ],
     [ "MaaTaskId", "MaaDef_8h.html#a711b3db9be6db60ae4cb09e3629e42f0", null ],
     [ "MaaRecoId", "MaaDef_8h.html#a7519e6a8329a32c8e3058c20ec74cda8", null ],
+    [ "MaaActId", "MaaDef_8h.html#ac3229e974a0f5b3508f88d1b2196f526", null ],
     [ "MaaNodeId", "MaaDef_8h.html#aeedbbed1bc17d1ffd80ff719a71cfed5", null ],
     [ "MaaSinkId", "MaaDef_8h.html#aac4cf6870bfe8fef31ead507dcfb4251", null ],
     [ "MaaStringBuffer", "MaaDef_8h.html#a4010bb63df489fc09efb6ba9a1fc1c98", null ],

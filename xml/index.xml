@@ -156,7 +156,8 @@
     <member refid="MaaTasker_8h_1a077181e4d90b12a219ff49d092700a86" kind="function"><name>MaaTaskerGetController</name></member>
     <member refid="MaaTasker_8h_1aea0f684a6987fc963254f68870537925" kind="function"><name>MaaTaskerClearCache</name></member>
     <member refid="MaaTasker_8h_1aa0a412e5b5e08fb4f4e11de826700ff7" kind="function"><name>MaaTaskerGetRecognitionDetail</name></member>
-    <member refid="MaaTasker_8h_1a05840ce023c2f3ea43f3a1bf6c620301" kind="function"><name>MaaTaskerGetNodeDetail</name></member>
+    <member refid="MaaTasker_8h_1ad18ddb1160386ad45e2268b5fc655488" kind="function"><name>MaaTaskerGetActionDetail</name></member>
+    <member refid="MaaTasker_8h_1a2807a557aa5cac9d2bee6281ec22f836" kind="function"><name>MaaTaskerGetNodeDetail</name></member>
     <member refid="MaaTasker_8h_1ae4b85b9172caa12b04648a98e923390d" kind="function"><name>MaaTaskerGetTaskDetail</name></member>
     <member refid="MaaTasker_8h_1a5e00add0d572f3baaf90873443af08ec" kind="function"><name>MaaTaskerGetLatestNode</name></member>
   </compound>
@@ -251,6 +252,7 @@
     <member refid="MaaDef_8h_1ac1f7514a514f2b5af32cabc02eedca85" kind="typedef"><name>MaaResId</name></member>
     <member refid="MaaDef_8h_1a711b3db9be6db60ae4cb09e3629e42f0" kind="typedef"><name>MaaTaskId</name></member>
     <member refid="MaaDef_8h_1a7519e6a8329a32c8e3058c20ec74cda8" kind="typedef"><name>MaaRecoId</name></member>
+    <member refid="MaaDef_8h_1ac3229e974a0f5b3508f88d1b2196f526" kind="typedef"><name>MaaActId</name></member>
     <member refid="MaaDef_8h_1aeedbbed1bc17d1ffd80ff719a71cfed5" kind="typedef"><name>MaaNodeId</name></member>
     <member refid="MaaDef_8h_1aac4cf6870bfe8fef31ead507dcfb4251" kind="typedef"><name>MaaSinkId</name></member>
     <member refid="MaaDef_8h_1a4010bb63df489fc09efb6ba9a1fc1c98" kind="typedef"><name>MaaStringBuffer</name></member>

@@ -22,7 +22,8 @@ var MaaTasker_8h =
     [ "MaaTaskerGetController", "MaaTasker_8h.html#a077181e4d90b12a219ff49d092700a86", null ],
     [ "MaaTaskerClearCache", "MaaTasker_8h.html#aea0f684a6987fc963254f68870537925", null ],
     [ "MaaTaskerGetRecognitionDetail", "MaaTasker_8h.html#aa0a412e5b5e08fb4f4e11de826700ff7", null ],
-    [ "MaaTaskerGetNodeDetail", "MaaTasker_8h.html#a05840ce023c2f3ea43f3a1bf6c620301", null ],
+    [ "MaaTaskerGetActionDetail", "MaaTasker_8h.html#ad18ddb1160386ad45e2268b5fc655488", null ],
+    [ "MaaTaskerGetNodeDetail", "MaaTasker_8h.html#a2807a557aa5cac9d2bee6281ec22f836", null ],
     [ "MaaTaskerGetTaskDetail", "MaaTasker_8h.html#ae4b85b9172caa12b04648a98e923390d", null ],
     [ "MaaTaskerGetLatestNode", "MaaTasker_8h.html#a5e00add0d572f3baaf90873443af08ec", null ]
 ];

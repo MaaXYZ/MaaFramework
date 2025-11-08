@@ -1,5 +1,5 @@
 {
-	"Version": "(main) v5.0.0-beta.1",
+	"Version": "(main) v5.0.0-beta.2",
 	"Compounds": {
 		"MaaAgentClientAPI.h": {
 			"Location": "include/MaaAgentClient/MaaAgentClientAPI.h",
@@ -3393,6 +3393,61 @@
 						}
 					}
 				},
+				"MaaTaskerGetActionDetail": {
+					"Description": {
+						"Brief": "",
+						"Details": [],
+						"Deprecated": null
+					},
+					"Types": {
+						"MAA_FRAMEWORK_API": "",
+						"MaaBool": ""
+					},
+					"Parameters": {
+						"tasker": {
+							"Type": "const MaaTasker*",
+							"Description": "",
+							"Direction": 0,
+							"IsPointerToArray": null
+						},
+						"action_id": {
+							"Type": "MaaActId",
+							"Description": "",
+							"Direction": 0,
+							"IsPointerToArray": null
+						},
+						"node_name": {
+							"Type": "MaaStringBuffer*",
+							"Description": "",
+							"Direction": 0,
+							"IsPointerToArray": null
+						},
+						"action": {
+							"Type": "MaaStringBuffer*",
+							"Description": "",
+							"Direction": 2,
+							"IsPointerToArray": false
+						},
+						"box": {
+							"Type": "MaaRect*",
+							"Description": "",
+							"Direction": 2,
+							"IsPointerToArray": false
+						},
+						"success": {
+							"Type": "MaaBool*",
+							"Description": "",
+							"Direction": 2,
+							"IsPointerToArray": false
+						},
+						"detail_json": {
+							"Type": "MaaStringBuffer*",
+							"Description": "",
+							"Direction": 2,
+							"IsPointerToArray": false
+						}
+					}
+				},
 				"MaaTaskerGetNodeDetail": {
 					"Description": {
 						"Brief": "",
@@ -3424,6 +3479,12 @@
 						},
 						"reco_id": {
 							"Type": "MaaRecoId*",
+							"Description": "",
+							"Direction": 2,
+							"IsPointerToArray": false
+						},
+						"action_id": {
+							"Type": "MaaActId*",
 							"Description": "",
 							"Direction": 2,
 							"IsPointerToArray": false
@@ -3598,6 +3659,17 @@
 					"FunctionPointer": null
 				},
 				"MaaRecoId": {
+					"Type": {
+						"Description": {
+							"Brief": "",
+							"Details": [],
+							"Deprecated": null
+						},
+						"Define": "MaaId"
+					},
+					"FunctionPointer": null
+				},
+				"MaaActId": {
 					"Type": {
 						"Description": {
 							"Brief": "",
