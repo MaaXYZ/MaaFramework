@@ -410,13 +410,13 @@ class RectBuffer:
         if self._handle and self._own:
             Library.framework().MaaRectDestroy(self._handle)
 
-    def get(self) -> Rect:
+    def get(self) -> list[int]:
         x = Library.framework().MaaRectGetX(self._handle)
         y = Library.framework().MaaRectGetY(self._handle)
         w = Library.framework().MaaRectGetW(self._handle)
         h = Library.framework().MaaRectGetH(self._handle)
 
-        return Rect(x, y, w, h)
+        return [x, y, w, h]
 
     def set(self, value: RectType) -> bool:
         if isinstance(value, numpy.ndarray):
