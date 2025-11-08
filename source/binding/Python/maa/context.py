@@ -184,7 +184,7 @@ class Context:
         )
 
     def get_node_data(self, name: str) -> Optional[Dict]:
-        """获取任务当前的定义 / Get current definition of task
+        """获取任务当前的定义 / Get the current definition of task
 
         Args:
             name: 任务名 / Task name
