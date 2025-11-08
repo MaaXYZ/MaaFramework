@@ -15,6 +15,7 @@ export using ::MaaCtrlId;
 export using ::MaaResId;
 export using ::MaaTaskId;
 export using ::MaaRecoId;
+export using ::MaaActId;
 export using ::MaaNodeId;
 export constexpr auto _MaaInvalidId = MaaInvalidId;
 
