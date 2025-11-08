@@ -271,6 +271,7 @@ std::optional<maajs::ValueType> TaskerImpl::action_detail(MaaActId id)
     if (MaaTaskerGetActionDetail(tasker, id, node_name, action, &box, &success, detail_json)) {
         auto result = maajs::ObjectType::New(env);
 
+        result["action_id"] = maajs::NumberType::New(env, id);
         result["name"] = maajs::StringType::New(env, node_name.str());
         result["action"] = maajs::StringType::New(env, action.str());
         result["box"] = maajs::JSConvert<MaaRect>::to_value(env, box);

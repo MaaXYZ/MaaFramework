@@ -9,6 +9,7 @@ declare global {
         type NodeDetail = {
             name: string
             reco: RecoDetail | null
+            action: ActionDetail | null
             completed: boolean
         }
 
@@ -39,6 +40,15 @@ declare global {
         type RecoDetail = RecoDetailWithoutDraws & {
             raw: ArrayBuffer
             draws: ArrayBuffer[]
+        }
+
+        type ActionDetail = {
+            action_id: number // ActId
+            name: string
+            action: string
+            box: Rect
+            success: boolean
+            detail: unknown
         }
 
         type TaskerNotify = {
@@ -102,6 +112,7 @@ declare global {
             get controller(): Controller | null
             clear_cache(): void
             recognition_detail(id: RecoId): RecoDetail | null
+            action_detail(id: ActId): ActionDetail | null
             node_detail(id: NodeId): NodeDetail | null
             task_detail(id: TaskId): TaskDetail | null
             latest_node(node_name: string): NodeId | null
