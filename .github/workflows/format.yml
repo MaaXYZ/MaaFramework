@@ -1,4 +1,4 @@
-name: Format Code
+name: format code
 
 on:
     workflow_dispatch:
