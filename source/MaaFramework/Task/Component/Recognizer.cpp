@@ -13,7 +13,6 @@
 #include "Vision/TemplateMatcher.h"
 #include "Vision/VisionUtils.hpp"
 
-
 MAA_TASK_NS_BEGIN
 
 Recognizer::Recognizer(Tasker* tasker, Context& context, const cv::Mat& image_)

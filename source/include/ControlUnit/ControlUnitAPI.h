@@ -4,8 +4,8 @@
 #include <utility>
 
 #include "Common/Conf.h"
-#include "MaaUtils/NoWarningCVMat.hpp"
 #include "MaaFramework/MaaDef.h"
+#include "MaaUtils/NoWarningCVMat.hpp"
 
 MAA_CTRL_UNIT_NS_BEGIN
 

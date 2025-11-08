@@ -8,7 +8,6 @@
 #include "Manager/InputAgent.h"
 #include "Manager/ScreencapAgent.h"
 
-
 MAA_CTRL_UNIT_NS_BEGIN
 
 AdbControlUnitMgr::AdbControlUnitMgr(

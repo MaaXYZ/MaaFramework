@@ -9,7 +9,6 @@
 #include "MaaUtils/Logger.h"
 #include "RemoteInstance/RemoteContext.h"
 
-
 MAA_AGENT_SERVER_NS_BEGIN
 
 bool AgentServer::start_up(const std::string& identifier)

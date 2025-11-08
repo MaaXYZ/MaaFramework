@@ -10,7 +10,6 @@
 #include "MaaUtils/Platform.h"
 #include "PipelineDumper.h"
 
-
 MAA_RES_NS_BEGIN
 
 ResourceMgr::ResourceMgr()

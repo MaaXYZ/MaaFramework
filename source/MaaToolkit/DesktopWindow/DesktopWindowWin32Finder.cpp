@@ -25,11 +25,12 @@ std::vector<DesktopWindow> DesktopWindowWin32Finder::find_all() const
         std::wstring window_name(256, '\0');
         GetWindowTextW(hwnd, window_name.data(), static_cast<int>(window_name.size()));
 
-        windows.emplace_back(DesktopWindow {
-            .hwnd = hwnd,
-            .class_name = class_name,
-            .window_name = window_name,
-        });
+        windows.emplace_back(
+            DesktopWindow {
+                .hwnd = hwnd,
+                .class_name = class_name,
+                .window_name = window_name,
+            });
     }
 
 #ifdef MAA_DEBUG

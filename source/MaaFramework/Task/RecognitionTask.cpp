@@ -7,7 +7,6 @@
 #include "Resource/ResourceMgr.h"
 #include "Tasker/Tasker.h"
 
-
 MAA_TASK_NS_BEGIN
 
 bool RecognitionTask::run()

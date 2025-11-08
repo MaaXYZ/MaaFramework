@@ -245,7 +245,6 @@ void InputAgent::on_app_stopped(const std::string& intent)
     active_unit_->on_app_stopped(intent);
 }
 
-
 std::ostream& operator<<(std::ostream& os, InputAgent::Method m)
 {
     switch (m) {

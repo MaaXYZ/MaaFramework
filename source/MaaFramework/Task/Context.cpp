@@ -11,7 +11,6 @@
 #include "Resource/PipelineParser.h"
 #include "Tasker/Tasker.h"
 
-
 MAA_TASK_NS_BEGIN
 
 Context::Context(MaaTaskId id, Tasker* tasker, PrivateArg)

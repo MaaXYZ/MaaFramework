@@ -2,8 +2,8 @@
 
 #include <optional>
 
-#include "MaaUtils/NoWarningCVMat.hpp"
 #include "MaaFramework/MaaDef.h"
+#include "MaaUtils/NoWarningCVMat.hpp"
 
 #include "Common/Conf.h"
 

@@ -7,7 +7,6 @@
 #include "MaaUtils/Logger.h"
 #include "Task/Context.h"
 
-
 MAA_TASK_NS_BEGIN
 
 CustomRecognition::CustomRecognition(

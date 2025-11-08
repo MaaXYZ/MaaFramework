@@ -8,7 +8,6 @@
 #include "PipelineChecker.h"
 #include "PipelineParser.h"
 
-
 MAA_RES_NS_BEGIN
 
 bool PipelineResMgr::load(const std::filesystem::path& path, const DefaultPipelineMgr& default_mgr)

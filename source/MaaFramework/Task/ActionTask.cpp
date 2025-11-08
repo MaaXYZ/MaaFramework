@@ -8,7 +8,6 @@
 #include "Tasker/Tasker.h"
 #include "Vision/VisionBase.h"
 
-
 MAA_TASK_NS_BEGIN
 
 bool ActionTask::run()

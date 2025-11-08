@@ -4,7 +4,6 @@
 #include "MaaUtils/Encoding.h"
 #include "RemoteTasker.h"
 
-
 MAA_AGENT_SERVER_NS_BEGIN
 
 RemoteContext::RemoteContext(Transceiver& server, const std::string& context_id)

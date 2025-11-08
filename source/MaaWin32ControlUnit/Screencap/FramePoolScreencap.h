@@ -11,14 +11,13 @@
 #else                               // else of WDK_NTDDI_VERSION
 #define MAA_FRAMEPOOL_SCREENCAP_AVAILABLE 0
 #pragma message("Win32 FramePool needs Windows 10 SDK 10.0.22000.0 or higher")
-#endif                              // end of WDK_NTDDI_VERSION
-#endif                              // end of MAA_FRAMEPOOL_SCREENCAP_AVAILABLE
+#endif // end of WDK_NTDDI_VERSION
+#endif // end of MAA_FRAMEPOOL_SCREENCAP_AVAILABLE
 
-#include "Common/Conf.h"
 #include "Base/UnitBase.h"
+#include "Common/Conf.h"
 
 #if MAA_FRAMEPOOL_SCREENCAP_AVAILABLE
-
 
 #include "SafeDXGI.hpp"
 
@@ -72,7 +71,6 @@ MAA_CTRL_UNIT_NS_END
 
 #else
 
-
 MAA_CTRL_UNIT_NS_BEGIN
 
 #include "MaaUtils/SafeWindows.hpp"
@@ -81,6 +79,7 @@ class FramePoolScreencap : public ScreencapBase
 {
 public:
     FramePoolScreencap(HWND) {}
+
     virtual ~FramePoolScreencap() override = default;
 
 public: // from ScreencapBase

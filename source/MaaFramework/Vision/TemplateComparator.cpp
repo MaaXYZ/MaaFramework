@@ -78,5 +78,4 @@ bool TemplateComparator::comp_score(double s1, double s2) const
     return use_min_score_ ? s1 > s2 : s1 < s2;
 }
 
-
 MAA_VISION_NS_END

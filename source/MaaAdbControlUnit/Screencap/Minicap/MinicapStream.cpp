@@ -6,7 +6,6 @@
 #include "MaaUtils/NoWarningCV.hpp"
 #include "MinicapDef.h"
 
-
 MAA_CTRL_UNIT_NS_BEGIN
 
 MinicapStream::~MinicapStream()

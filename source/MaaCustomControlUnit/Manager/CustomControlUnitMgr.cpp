@@ -57,7 +57,6 @@ MaaControllerFeature CustomControlUnitMgr::get_features() const
     return features;
 }
 
-
 bool CustomControlUnitMgr::start_app(const std::string& intent)
 {
     LogFunc << VAR_VOIDP(controller_) << VAR_VOIDP(controller_->start_app) << VAR(intent);

@@ -48,11 +48,12 @@ bool AdbShellInput::swipe(int x1, int y1, int x2, int y2, int duration)
 {
     LogInfo << VAR(x1) << VAR(y1) << VAR(x2) << VAR(y2) << VAR(duration);
 
-    merge_replacement({ { "{X1}", std::to_string(x1) },
-                        { "{Y1}", std::to_string(y1) },
-                        { "{X2}", std::to_string(x2) },
-                        { "{Y2}", std::to_string(y2) },
-                        { "{DURATION}", duration ? std::to_string(duration) : std::string() } });
+    merge_replacement(
+        { { "{X1}", std::to_string(x1) },
+          { "{Y1}", std::to_string(y1) },
+          { "{X2}", std::to_string(x2) },
+          { "{Y2}", std::to_string(y2) },
+          { "{DURATION}", duration ? std::to_string(duration) : std::string() } });
 
     auto argv_opt = swipe_argv_.gen(argv_replace_);
     if (!argv_opt) {

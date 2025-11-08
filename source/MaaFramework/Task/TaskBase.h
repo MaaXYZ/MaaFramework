@@ -4,8 +4,8 @@
 
 #include <meojson/json.hpp>
 
-#include "Common/MaaTypes.h"
 #include "Common/Conf.h"
+#include "Common/MaaTypes.h"
 #include "Context.h"
 #include "Controller/ControllerAgent.h"
 #include "Resource/PipelineTypes.h"

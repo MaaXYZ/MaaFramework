@@ -560,7 +560,6 @@ int MuMuPlayerExtras::get_display_id()
     return display_id;
 }
 
-
 MAA_CTRL_UNIT_NS_END
 
 #endif

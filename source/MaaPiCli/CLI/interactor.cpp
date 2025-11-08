@@ -15,7 +15,6 @@
 #include "MaaUtils/Platform.h"
 #include "ProjectInterface/Runner.h"
 
-
 static bool s_eof = false;
 
 // return [1, size]

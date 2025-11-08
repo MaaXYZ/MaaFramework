@@ -20,7 +20,7 @@ std::optional<std::string> AdbCommand::shell(const std::string& cmd)
 {
     LogFunc << VAR(cmd);
 
-    merge_replacement({ { "{CMD}", cmd }});
+    merge_replacement({ { "{CMD}", cmd } });
 
     auto argv_opt = shell_argv.gen(argv_replace_);
     if (!argv_opt) {

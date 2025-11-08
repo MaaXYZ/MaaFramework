@@ -47,11 +47,10 @@ std::optional<cv::Mat> DesktopDupWindowScreencap::screencap()
 
     // 获取窗口客户区在屏幕上的位置
     RECT client_rect_screen = get_window_client_rect_screen();
-    if (client_rect_screen.left < 0 || client_rect_screen.top < 0 ||
-        client_rect_screen.right <= client_rect_screen.left ||
-        client_rect_screen.bottom <= client_rect_screen.top) {
-        LogError << "Invalid client rect" << VAR(client_rect_screen.left) << VAR(client_rect_screen.top)
-                 << VAR(client_rect_screen.right) << VAR(client_rect_screen.bottom);
+    if (client_rect_screen.left < 0 || client_rect_screen.top < 0 || client_rect_screen.right <= client_rect_screen.left
+        || client_rect_screen.bottom <= client_rect_screen.top) {
+        LogError << "Invalid client rect" << VAR(client_rect_screen.left) << VAR(client_rect_screen.top) << VAR(client_rect_screen.right)
+                 << VAR(client_rect_screen.bottom);
         return std::nullopt;
     }
 
@@ -59,10 +58,10 @@ std::optional<cv::Mat> DesktopDupWindowScreencap::screencap()
     int client_height = client_rect_screen.bottom - client_rect_screen.top;
 
     // 检查裁剪区域是否在图像范围内
-    if (client_rect_screen.left >= img->cols || client_rect_screen.top >= img->rows ||
-        client_rect_screen.right <= 0 || client_rect_screen.bottom <= 0) {
-        LogError << "Client rect out of bounds" << VAR(client_rect_screen.left) << VAR(client_rect_screen.top)
-                 << VAR(img->cols) << VAR(img->rows);
+    if (client_rect_screen.left >= img->cols || client_rect_screen.top >= img->rows || client_rect_screen.right <= 0
+        || client_rect_screen.bottom <= 0) {
+        LogError << "Client rect out of bounds" << VAR(client_rect_screen.left) << VAR(client_rect_screen.top) << VAR(img->cols)
+                 << VAR(img->rows);
         return std::nullopt;
     }
 

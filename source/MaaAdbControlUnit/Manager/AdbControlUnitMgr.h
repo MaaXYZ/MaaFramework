@@ -31,7 +31,6 @@ public:
     virtual ~AdbControlUnitMgr() override = default;
 
 public: // from ControlUnitAPI
-
     virtual bool connect() override;
 
     virtual bool request_uuid(/*out*/ std::string& uuid) override;

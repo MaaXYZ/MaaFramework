@@ -4,7 +4,6 @@
 #include "MaaUtils/Logger.h"
 #include "Server/AgentServer.h"
 
-
 MaaBool MaaAgentServerStartUp(const char* identifier)
 {
     LogFunc << VAR(identifier);
