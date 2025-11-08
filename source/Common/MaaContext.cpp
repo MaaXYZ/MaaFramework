@@ -14,6 +14,16 @@ MaaTaskId MaaContextRunTask(MaaContext* context, const char* entry, const char* 
         return MaaInvalidId;
     }
 
+    if (!entry) {
+        LogError << "entry is null";
+        return MaaInvalidId;
+    }
+
+    if (!pipeline_override) {
+        LogError << "pipeline_override is null";
+        return MaaInvalidId;
+    }
+
     auto ov_opt = json::parse(pipeline_override);
     if (!ov_opt) {
         LogError << "failed to parse" << VAR(pipeline_override);
@@ -33,6 +43,16 @@ MaaRecoId MaaContextRunRecognition(MaaContext* context, const char* entry, const
 
     if (!context || !image) {
         LogError << "handle is null";
+        return MaaInvalidId;
+    }
+
+    if (!entry) {
+        LogError << "entry is null";
+        return MaaInvalidId;
+    }
+
+    if (!pipeline_override) {
+        LogError << "pipeline_override is null";
         return MaaInvalidId;
     }
 
@@ -65,6 +85,21 @@ MaaNodeId
         return MaaInvalidId;
     }
 
+    if (!entry) {
+        LogError << "entry is null";
+        return MaaInvalidId;
+    }
+
+    if (!pipeline_override) {
+        LogError << "pipeline_override is null";
+        return MaaInvalidId;
+    }
+
+    if (!reco_detail) {
+        LogError << "reco_detail is null";
+        return MaaInvalidId;
+    }
+
     auto ov_opt = json::parse(pipeline_override);
     if (!ov_opt) {
         LogError << "failed to parse" << VAR(pipeline_override);
@@ -93,6 +128,12 @@ MaaBool MaaContextOverridePipeline(MaaContext* context, const char* pipeline_ove
         LogError << "handle is null";
         return false;
     }
+
+    if (!pipeline_override) {
+        LogError << "pipeline_override is null";
+        return false;
+    }
+
     auto ov_opt = json::parse(pipeline_override);
     if (!ov_opt) {
         LogError << "failed to parse" << VAR(pipeline_override);
@@ -115,6 +156,11 @@ MaaBool MaaContextOverrideNext(MaaContext* context, const char* node_name, const
         return false;
     }
 
+    if (!node_name) {
+        LogError << "node_name is null";
+        return false;
+    }
+
     std::vector<std::string> next;
 
     size_t size = next_list->size();
@@ -134,6 +180,11 @@ MaaBool MaaContextOverrideImage(MaaContext* context, const char* image_name, con
         return false;
     }
 
+    if (!image_name) {
+        LogError << "image_name is null";
+        return false;
+    }
+
     const cv::Mat& mat = image->get();
 
     return context->override_image(image_name, mat);
@@ -145,6 +196,11 @@ MaaBool MaaContextGetNodeData(MaaContext* context, const char* node_name, MaaStr
 
     if (!context || !buffer) {
         LogError << "handle is null";
+        return false;
+    }
+
+    if (!node_name) {
+        LogError << "node_name is null";
         return false;
     }
 
