@@ -478,7 +478,6 @@ class OCRResult(BoxAndScoreResult):
 class NeuralNetworkResult(BoxAndScoreResult):
     cls_index: int
     label: str
-    box: List[int]
     score: float
 
 
