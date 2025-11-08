@@ -432,53 +432,7 @@ class Status:
         return self._status == MaaStatusEnum.running
 
 
-@dataclass
-class Rect:
-    x: int = 0
-    y: int = 0
-    w: int = 0
-    h: int = 0
-
-    def __add__(
-        self,
-        other: Union[
-            "Rect",
-            Tuple[int, int, int, int],
-            List[int],
-        ],
-    ):
-        if (
-            isinstance(other, Rect)
-            or isinstance(other, tuple)
-            or (isinstance(other, list) and len(other) == 4)
-        ):
-            x1, y1, w1, h1 = self
-            x2, y2, w2, h2 = other
-            return Rect(
-                x1 + x2,
-                y1 + y2,
-                w1 + w2,
-                h1 + h2,
-            )
-
-        raise TypeError(f"Cannot add {type(other).__name__} to Rect")
-
-    def __iter__(self):
-        yield self.x
-        yield self.y
-        yield self.w
-        yield self.h
-
-    def __getitem__(self, key):
-        return self.roi[key]
-
-    @property
-    def roi(self):
-        return list(self)
-
-
 RectType = Union[
-    Rect,
     List[int],
     numpy.ndarray,
     Tuple[int, int, int, int],
@@ -498,7 +452,7 @@ class AlgorithmEnum(StrEnum):
 
 @dataclass
 class BoxAndScoreResult:
-    box: Rect
+    box: List[int]
     score: float
 
 
@@ -507,7 +461,7 @@ TemplateMatchResult = BoxAndScoreResult
 
 @dataclass
 class BoxAndCountResult:
-    box: Rect
+    box: List[int]
     count: int
 
 
@@ -524,7 +478,7 @@ class OCRResult(BoxAndScoreResult):
 class NeuralNetworkResult(BoxAndScoreResult):
     cls_index: int
     label: str
-    box: Rect
+    box: List[int]
     score: float
 
 
@@ -534,7 +488,7 @@ NeuralNetworkDetectResult = NeuralNetworkResult
 
 @dataclass
 class CustomRecognitionResult:
-    box: Rect
+    box: List[int]
     detail: Union[str, Dict]
 
 
@@ -565,7 +519,7 @@ class RecognitionDetail:
     reco_id: int
     name: str
     algorithm: AlgorithmEnum
-    box: Optional[Rect]
+    box: Optional[RectType]
 
     all_results: List[RecognitionResult]
     filterd_results: List[RecognitionResult]
