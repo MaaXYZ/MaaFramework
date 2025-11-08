@@ -19,7 +19,7 @@ const myReco: maa.CustomRecognitionCallback = async self => {
     }
 
     await self.context.run_task(entry, ppover)
-    await self.context.run_action(
+    const action_detail = await self.context.run_action(
         entry,
         {
             x: 114,
@@ -30,6 +30,7 @@ const myReco: maa.CustomRecognitionCallback = async self => {
         'RunAction Detail',
         ppover
     )
+    console.log('action_detail:', action_detail)
     const reco_detail = await self.context.run_recognition(entry, self.image, ppover)
     console.log('reco_detail:', reco_detail)
 

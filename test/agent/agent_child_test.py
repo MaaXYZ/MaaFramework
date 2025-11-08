@@ -61,7 +61,8 @@ class MyRecognition(CustomRecognition):
             }
         }
         context.run_task(entry, ppover)
-        context.run_action(entry, [114, 514, 191, 810], "RunAction Detail", ppover)
+        action_detail = context.run_action(entry, [114, 514, 191, 810], "RunAction Detail", ppover)
+        print(f"action_detail: {action_detail}")
         reco_detail = context.run_recognition(entry, argv.image, ppover)
         print(f"reco_detail: {reco_detail}")
 
