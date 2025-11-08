@@ -167,6 +167,7 @@ NodeDetail TaskBase::run_action(const RecoResult& reco)
         const json::value cb_detail {
             { "task_id", task_id() },
             { "node_id", 0 },
+            { "action_id", 0 },
             { "name", reco.name },
             { "focus", pipeline_data.focus },
         };
@@ -190,6 +191,7 @@ NodeDetail TaskBase::run_action(const RecoResult& reco)
         const json::value cb_detail {
             { "task_id", task_id() },
             { "node_id", result.node_id },
+            { "action_id", result.action_id },
             { "name", reco.name },
             { "focus", pipeline_data.focus },
         };

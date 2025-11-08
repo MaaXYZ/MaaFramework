@@ -104,6 +104,7 @@
  * details_json: {
  *     task_id: number,
  *     node_id: number,
+ *     action_id: number,
  *     name: string,
  *     focus: any,
  * }

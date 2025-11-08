@@ -22,6 +22,11 @@ ActionResult Actuator::run(const cv::Rect& reco_hit, MaaRecoId reco_id, const Pi
     using namespace MAA_RES_NS::Action;
     LogFunc << VAR(pipeline_data.name);
 
+    if (!tasker_) {
+        LogError << "tasker is null";
+        return {};
+    }
+
     if (pipeline_data.action_type == Type::Invalid) {
         LogDebug << "invalid action";
         return {};
@@ -104,10 +109,7 @@ ActionResult Actuator::run(const cv::Rect& reco_hit, MaaRecoId reco_id, const Pi
         return {};
     }
 
-    // 存储 action detail 到 cache
-    if (tasker_ && result.action_id != MaaInvalidId) {
-        tasker_->runtime_cache().set_action_detail(result.action_id, result);
-    }
+    tasker_->runtime_cache().set_action_detail(result.action_id, result);
 
     wait_freezes(pipeline_data.post_wait_freezes, reco_hit);
     sleep(pipeline_data.post_delay);

@@ -68,6 +68,7 @@ declare global {
                   msg: 'Action.Starting' | 'Action.Succeeded' | 'Action.Failed'
                   task_id: number // TaskId
                   node_id: number // NodeId
+                  action_id: number // ActId
                   name: string
                   focus: unknown
               }
