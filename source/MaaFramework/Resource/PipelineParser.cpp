@@ -187,6 +187,11 @@ bool PipelineParser::parse_node(
 {
     LogDebug << VAR(name);
 
+    if (!input.is_object()) {
+        LogError << "input is not object" << VAR(input);
+        return false;
+    }
+
     PipelineData data;
     data.name = name;
 
@@ -272,6 +277,11 @@ bool PipelineParser::parse_node(
         LogError << "failed to get_and_check_value focus" << VAR(input);
         return false;
     }
+
+    if (auto attach_opt = input.find<json::object>("attach")) {
+        data.attach = *std::move(attach_opt);
+    }
+    data.attach |= default_value.attach;
 
     output = std::move(data);
 

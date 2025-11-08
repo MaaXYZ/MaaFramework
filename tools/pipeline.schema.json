@@ -3643,6 +3643,14 @@
                     "description": "关注节点，会额外产生部分回调消息。可选，默认 null，不产生回调消息。",
                     "$ref": "#/$defs/jsonDefaultNull",
                     "markdownDescription": "*any*\n\n关注节点，会额外产生部分回调消息。可选，默认 null，不产生回调消息。\n\n详见 [节点通知](#节点通知)。"
+                },
+                "attach": {
+                    "title": "Attach Property",
+                    "description": "附加 JSON 对象，用于保存节点的附加配置。可选，默认空对象。该字段会与默认值中的 attach 进行字典合并（dict merge），而不是覆盖。",
+                    "type": "object",
+                    "default": {},
+                    "additionalProperties": true,
+                    "markdownDescription": "*object*\n\n附加 JSON 对象，用于保存节点的附加配置。可选，默认空对象。\n\n该字段可用于存储自定义的配置信息，这些信息不会影响节点的执行逻辑，但可以通过相关接口获取。\n\n**注意**：该字段会与默认值中的 `attach` 进行字典合并（dict merge），而不是覆盖。即节点中的 `attach` 会与默认值中的 `attach` 合并，相同键的值会被节点中的值覆盖，但其他键会保留。"
                 }
             }
         }
