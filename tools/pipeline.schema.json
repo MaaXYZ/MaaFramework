@@ -388,6 +388,18 @@
                 0
             ]
         },
+        "jsonPoint": {
+            "type": "array",
+            "items": {
+                "$ref": "#/$defs/jsonInt32"
+            },
+            "minItems": 2,
+            "maxItems": 2,
+            "default": [
+                0,
+                0
+            ]
+        },
         "jsonRoi": {
             "anyOf": [
                 {
@@ -410,7 +422,28 @@
                     "$ref": "#/$defs/jsonConstTrue"
                 },
                 {
+                    "$ref": "#/$defs/jsonPoint"
+                },
+                {
                     "$ref": "#/$defs/jsonRoi"
+                }
+            ],
+            "default": true
+        },
+        "jsonTargetList": {
+            "type": "array",
+            "items": {
+                "$ref": "#/$defs/jsonTarget"
+            },
+            "default": []
+        },
+        "jsonTargetOrList": {
+            "anyOf": [
+                {
+                    "$ref": "#/$defs/jsonTarget"
+                },
+                {
+                    "$ref": "#/$defs/jsonTargetList"
                 }
             ],
             "default": true
@@ -1792,7 +1825,7 @@
                     "title": "Target Property",
                     "description": "点击目标的位置。可选，默认 true 。",
                     "$ref": "#/$defs/jsonTarget",
-                    "markdownDescription": "*true* | *string* | *array<int, 4>*\n\n点击目标的位置。可选，默认 true 。\n\n- *true*: 目标为本节点中刚刚识别到的位置（即自身）。\n\n- *string*: 填写节点名，目标为之前执行过的某节点识别到的位置。\n\n- *array<int, 4>*: 目标为固定坐标区域内随机一点，[x, y, w, h]，若希望全屏可设为 [0, 0, 0, 0] 。"
+                    "markdownDescription": "*true* | *string* | *array<int, 2>* | *array<int, 4>*\n\n点击目标的位置。可选，默认 true 。\n\n- *true*: 目标为本节点中刚刚识别到的位置（即自身）。\n\n- *string*: 填写节点名，目标为之前执行过的某节点识别到的位置。\n\n- *array<int, 2>*: 固定坐标点 [x, y]。\n\n- *array<int, 4>*: 固定坐标区域 [x, y, w, h]，会在矩形内随机选取一点（越靠近中心概率越高，边缘概率相对较低），若希望全屏可设为 [0, 0, 0, 0] 。"
                 },
                 "target_offset": {
                     "title": "Target Offset Property",
@@ -1846,7 +1879,7 @@
                     "title": "Target Property",
                     "description": "长按目标的位置。可选，默认 true 。",
                     "$ref": "#/$defs/jsonTarget",
-                    "markdownDescription": "*true* | *string* | *array<int, 4>*\n\n长按目标的位置。可选，默认 true 。\n\n- *true*: 目标为本节点中刚刚识别到的位置（即自身）。\n\n- *string*: 填写节点名，目标为之前执行过的某节点识别到的位置。\n\n- *array<int, 4>*: 目标为固定坐标区域内随机一点，[x, y, w, h]，若希望全屏可设为 [0, 0, 0, 0] 。"
+                    "markdownDescription": "*true* | *string* | *array<int, 2>* | *array<int, 4>*\n\n长按目标的位置。可选，默认 true 。\n\n- *true*: 目标为本节点中刚刚识别到的位置（即自身）。\n\n- *string*: 填写节点名，目标为之前执行过的某节点识别到的位置。\n\n- *array<int, 2>*: 固定坐标点 [x, y]。\n\n- *array<int, 4>*: 固定坐标区域 [x, y, w, h]，会在矩形内随机选取一点（越靠近中心概率越高，边缘概率相对较低），若希望全屏可设为 [0, 0, 0, 0] 。"
                 },
                 "target_offset": {
                     "title": "Target Offset Property",
@@ -1907,7 +1940,7 @@
                     "title": "Begin Property",
                     "description": "滑动起点。可选，默认 true 。",
                     "$ref": "#/$defs/jsonTarget",
-                    "markdownDescription": "*true* | *string* | *array<int, 4>*\n\n滑动起点。可选，默认 true 。\n\n- *true*: 目标为本节点中刚刚识别到的位置（即自身）。\n\n- *string*: 填写节点名，目标为之前执行过的某节点识别到的位置。\n\n- *array<int, 4>*: 目标为固定坐标区域内随机一点，[x, y, w, h]，若希望全屏可设为 [0, 0, 0, 0] 。"
+                    "markdownDescription": "*true* | *string* | *array<int, 2>* | *array<int, 4>*\n\n滑动起点。可选，默认 true 。\n\n- *true*: 目标为本节点中刚刚识别到的位置（即自身）。\n\n- *string*: 填写节点名，目标为之前执行过的某节点识别到的位置。\n\n- *array<int, 2>*: 固定坐标点 [x, y]。\n\n- *array<int, 4>*: 固定坐标区域 [x, y, w, h]，会在矩形内随机选取一点（越靠近中心概率越高，边缘概率相对较低），若希望全屏可设为 [0, 0, 0, 0] 。"
                 },
                 "begin_offset": {
                     "title": "Begin Offset Property",
@@ -1918,8 +1951,8 @@
                 "end": {
                     "title": "End Property",
                     "description": "滑动终点。可选，默认 true 。",
-                    "$ref": "#/$defs/jsonTarget",
-                    "markdownDescription": "*true* | *string* | *array<int, 4>*\n\n滑动终点。可选，默认 true 。\n\n- *true*: 目标为本节点中刚刚识别到的位置（即自身）。\n\n- *string*: 填写节点名，目标为之前执行过的某节点识别到的位置。\n\n- *array<int, 4>*: 目标为固定坐标区域内随机一点，[x, y, w, h]，若希望全屏可设为 [0, 0, 0, 0] 。"
+                    "$ref": "#/$defs/jsonTargetOrList",
+                    "markdownDescription": "*true* | *string* | *array<int, 2>* | *array<int, 4>* | *list<true | string | array<int, 2> | array<int, 4>>*\n\n滑动终点。可选，默认 true 。\n\n- *true*: 目标为本节点中刚刚识别到的位置（即自身）。\n\n- *string*: 填写节点名，目标为之前执行过的某节点识别到的位置。\n\n- *array<int, 2>*: 固定坐标点 [x, y]。\n\n- *array<int, 4>*: 固定坐标区域 [x, y, w, h]，会在矩形内随机选取一点（越靠近中心概率越高，边缘概率相对较低），若希望全屏可设为 [0, 0, 0, 0] 。\n\n- *list<...>*: v4.5.x 版本新增支持，可配置滑动途径点，列表内各项不抬手连续滑动。"
                 },
                 "end_offset": {
                     "title": "End Offset Property",
@@ -2727,7 +2760,7 @@
                     "title": "Target Property",
                     "description": "目标的位置，会通过 `MaaCustomActionCallback`.`box` 传出。可选，默认 true 。",
                     "$ref": "#/$defs/jsonTarget",
-                    "markdownDescription": "*true* | *string* | *array<int, 4>*\n\n目标的位置，会通过 `MaaCustomActionCallback`.`box` 传出。可选，默认 true 。\n\n- *true*: 目标为本节点中刚刚识别到的位置（即自身）。\n\n- *string*: 填写节点名，目标为之前执行过的某节点识别到的位置。\n\n- *array<int, 4>*: 目标为固定坐标区域内随机一点，[x, y, w, h]，若希望全屏可设为 [0, 0, 0, 0] 。"
+                    "markdownDescription": "*true* | *string* | *array<int, 2>* | *array<int, 4>*\n\n目标的位置，会通过 `MaaCustomActionCallback`.`box` 传出。可选，默认 true 。\n\n- *true*: 目标为本节点中刚刚识别到的位置（即自身）。\n\n- *string*: 填写节点名，目标为之前执行过的某节点识别到的位置。\n\n- *array<int, 2>*: 固定坐标点 [x, y]。\n\n- *array<int, 4>*: 固定坐标区域 [x, y, w, h]，会在矩形内随机选取一点（越靠近中心概率越高，边缘概率相对较低），若希望全屏可设为 [0, 0, 0, 0] 。"
                 },
                 "target_offset": {
                     "title": "Target Offset Property",
@@ -3458,7 +3491,7 @@
                     "title": "Target Property",
                     "description": "等待目标的位置。可选，默认 true。",
                     "$ref": "#/$defs/jsonTarget",
-                    "markdownDescription": "*true* | *string* | *array<int, 4>*\n\n等待目标的位置。可选，默认 true。\n\n- *true*: 目标为本节点中刚刚识别到的位置（即自身）。\n\n- *string*: 填写节点名，目标为之前执行过的某节点识别到的位置。\n\n- *array<int, 4>*: 目标为固定坐标区域内随机一点，[x, y, w, h]，若希望全屏可设为 [0, 0, 0, 0] 。"
+                    "markdownDescription": "*true* | *string* | *array<int, 2>* | *array<int, 4>*\n\n等待目标的位置。可选，默认 true。\n\n- *true*: 目标为本节点中刚刚识别到的位置（即自身）。\n\n- *string*: 填写节点名，目标为之前执行过的某节点识别到的位置。\n\n- *array<int, 2>*: 固定坐标点 [x, y]。\n\n- *array<int, 4>*: 固定坐标区域 [x, y, w, h]，会在矩形内随机选取一点（越靠近中心概率越高，边缘概率相对较低），若希望全屏可设为 [0, 0, 0, 0] 。"
                 },
                 "target_offset": {
                     "title": "Target Offset Property",
