@@ -118,6 +118,11 @@ MaaCtrlId MaaControllerPostInputText(MaaController* ctrl, const char* text)
         return MaaInvalidId;
     }
 
+    if (!text) {
+        LogError << "text is null";
+        return MaaInvalidId;
+    }
+
     return ctrl->post_input_text(text);
 }
 
@@ -130,6 +135,11 @@ MaaCtrlId MaaControllerPostStartApp(MaaController* ctrl, const char* intent)
         return MaaInvalidId;
     }
 
+    if (!intent) {
+        LogError << "intent is null";
+        return MaaInvalidId;
+    }
+
     return ctrl->post_start_app(intent);
 }
 
@@ -139,6 +149,11 @@ MaaCtrlId MaaControllerPostStopApp(MaaController* ctrl, const char* intent)
 
     if (!ctrl) {
         LogError << "handle is null";
+        return MaaInvalidId;
+    }
+
+    if (!intent) {
+        LogError << "intent is null";
         return MaaInvalidId;
     }
 

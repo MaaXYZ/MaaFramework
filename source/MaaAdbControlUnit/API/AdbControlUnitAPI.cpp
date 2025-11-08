@@ -6,7 +6,6 @@
 #include "MaaUtils/Platform.h"
 #include "Manager/AdbControlUnitMgr.h"
 
-
 using MAA_NS::path;
 
 const char* MaaAdbControlUnitGetVersion()
@@ -27,6 +26,21 @@ MaaAdbControlUnitHandle MaaAdbControlUnitCreate(
     using namespace MAA_CTRL_UNIT_NS;
 
     LogFunc << VAR(adb_path) << VAR(adb_serial) << VAR(screencap_methods) << VAR(input_methods) << VAR(config) << VAR(agent_path);
+
+    if (!adb_path || !adb_serial) {
+        LogError << "adb_path or adb_serial is null";
+        return nullptr;
+    }
+
+    if (!config) {
+        LogError << "config is null";
+        return nullptr;
+    }
+
+    if (!agent_path) {
+        LogError << "agent_path is null";
+        return nullptr;
+    }
 
     auto json_opt = json::parse(config);
     if (!json_opt || !json_opt->is_object()) {
