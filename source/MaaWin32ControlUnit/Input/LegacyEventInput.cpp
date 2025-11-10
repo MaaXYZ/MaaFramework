@@ -11,7 +11,7 @@ MAA_CTRL_UNIT_NS_BEGIN
 
 void LegacyEventInput::ensure_foreground()
 {
-    ::MaaNS::CtrlUnitNs::ensure_foreground(hwnd_);
+    ::MaaNS::CtrlUnitNs::ensure_foreground_and_topmost(hwnd_);
 }
 
 MaaControllerFeature LegacyEventInput::get_features() const
