@@ -5,16 +5,13 @@
 #include "MaaUtils/Platform.h"
 #include "MaaUtils/SafeWindows.hpp"
 
+#include "InputUtils.h"
+
 MAA_CTRL_UNIT_NS_BEGIN
 
 void LegacyEventInput::ensure_foreground()
 {
-    if (hwnd_ == GetForegroundWindow()) {
-        return;
-    }
-    ShowWindow(hwnd_, SW_MINIMIZE);
-    ShowWindow(hwnd_, SW_RESTORE);
-    SetForegroundWindow(hwnd_);
+    ::MaaNS::CtrlUnitNs::ensure_foreground_and_topmost(hwnd_);
 }
 
 MaaControllerFeature LegacyEventInput::get_features() const
@@ -47,33 +44,13 @@ bool LegacyEventInput::touch_down(int contact, int x, int y, int pressure)
     SetCursorPos(point.x, point.y);
 
     // 使用旧的mouse_event API（已废弃，但某些情况下可能仍然有效）
-    DWORD flags = 0;
-    DWORD button_data = 0;
-
-    switch (contact) {
-    case 0:
-        flags = MOUSEEVENTF_LEFTDOWN;
-        break;
-    case 1:
-        flags = MOUSEEVENTF_RIGHTDOWN;
-        break;
-    case 2:
-        flags = MOUSEEVENTF_MIDDLEDOWN;
-        break;
-    case 3:
-        flags = MOUSEEVENTF_XDOWN;
-        button_data = XBUTTON1;
-        break;
-    case 4:
-        flags = MOUSEEVENTF_XDOWN;
-        button_data = XBUTTON2;
-        break;
-    default:
+    MouseEventFlags flags_info;
+    if (!contact_to_mouse_down_flags(contact, flags_info)) {
         LogError << "contact out of range" << VAR(contact);
         return false;
     }
 
-    mouse_event(flags, 0, 0, button_data, 0);
+    mouse_event(flags_info.flags, 0, 0, flags_info.button_data, 0);
 
     return true;
 }
@@ -103,33 +80,13 @@ bool LegacyEventInput::touch_up(int contact)
     }
     LogInfo << VAR(contact) << VAR(hwnd_);
 
-    DWORD flags = 0;
-    DWORD button_data = 0;
-
-    switch (contact) {
-    case 0:
-        flags = MOUSEEVENTF_LEFTUP;
-        break;
-    case 1:
-        flags = MOUSEEVENTF_RIGHTUP;
-        break;
-    case 2:
-        flags = MOUSEEVENTF_MIDDLEUP;
-        break;
-    case 3:
-        flags = MOUSEEVENTF_XUP;
-        button_data = XBUTTON1;
-        break;
-    case 4:
-        flags = MOUSEEVENTF_XUP;
-        button_data = XBUTTON2;
-        break;
-    default:
+    MouseEventFlags flags_info;
+    if (!contact_to_mouse_up_flags(contact, flags_info)) {
         LogError << "contact out of range" << VAR(contact);
         return false;
     }
 
-    mouse_event(flags, 0, 0, button_data, 0);
+    mouse_event(flags_info.flags, 0, 0, flags_info.button_data, 0);
 
     return true;
 }

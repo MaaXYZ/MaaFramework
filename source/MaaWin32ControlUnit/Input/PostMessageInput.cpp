@@ -5,7 +5,14 @@
 #include "MaaUtils/Platform.h"
 #include "MaaUtils/SafeWindows.hpp"
 
+#include "InputUtils.h"
+
 MAA_CTRL_UNIT_NS_BEGIN
+
+void PostMessageInput::ensure_foreground()
+{
+    ::MaaNS::CtrlUnitNs::ensure_foreground(hwnd_);
+}
 
 MaaControllerFeature PostMessageInput::get_features() const
 {
@@ -35,37 +42,20 @@ bool PostMessageInput::touch_down(int contact, int x, int y, int pressure)
         return false;
     }
 
-    UINT message = WM_LBUTTONDOWN;
-    WPARAM w_param = MK_LBUTTON;
+    ensure_foreground();
 
-    switch (contact) {
-    case 0:
-        message = WM_LBUTTONDOWN;
-        w_param = MK_LBUTTON;
-        break;
-    case 1:
-        message = WM_RBUTTONDOWN;
-        w_param = MK_RBUTTON;
-        break;
-    case 2:
-        message = WM_MBUTTONDOWN;
-        w_param = MK_MBUTTON;
-        break;
-    case 3:
-        message = WM_XBUTTONDOWN;
-        w_param = MAKEWPARAM(MK_XBUTTON1, XBUTTON1);
-        break;
-    case 4:
-        message = WM_XBUTTONDOWN;
-        w_param = MAKEWPARAM(MK_XBUTTON2, XBUTTON2);
-        break;
-    default:
+    touch_move(contact, x, y, pressure);
+
+    std::this_thread::sleep_for(std::chrono::milliseconds(10));
+
+    MouseMessageInfo msg_info;
+    if (!contact_to_mouse_down_message(contact, msg_info)) {
         LogError << "contact out of range" << VAR(contact);
         return false;
     }
 
     // PostMessage是异步的，不等待消息处理完成
-    PostMessage(hwnd_, message, w_param, MAKELPARAM(x, y));
+    PostMessage(hwnd_, msg_info.message, msg_info.w_param, MAKELPARAM(x, y));
     last_pos_ = { x, y };
 
     return true;
@@ -82,36 +72,13 @@ bool PostMessageInput::touch_move(int contact, int x, int y, int pressure)
         return false;
     }
 
-    UINT message = WM_MOUSEMOVE;
-    WPARAM w_param = MK_LBUTTON;
-
-    switch (contact) {
-    case 0:
-        message = WM_MOUSEMOVE;
-        w_param = MK_LBUTTON;
-        break;
-    case 1:
-        message = WM_MOUSEMOVE;
-        w_param = MK_RBUTTON;
-        break;
-    case 2:
-        message = WM_MOUSEMOVE;
-        w_param = MK_MBUTTON;
-        break;
-    case 3:
-        message = WM_MOUSEMOVE;
-        w_param = MK_XBUTTON1;
-        break;
-    case 4:
-        message = WM_MOUSEMOVE;
-        w_param = MK_XBUTTON2;
-        break;
-    default:
+    MouseMessageInfo msg_info;
+    if (!contact_to_mouse_move_message(contact, msg_info)) {
         LogError << "contact out of range" << VAR(contact);
         return false;
     }
 
-    PostMessage(hwnd_, message, w_param, MAKELPARAM(x, y));
+    PostMessage(hwnd_, msg_info.message, msg_info.w_param, MAKELPARAM(x, y));
     last_pos_ = { x, y };
 
     return true;
@@ -126,36 +93,15 @@ bool PostMessageInput::touch_up(int contact)
         return false;
     }
 
-    UINT message = WM_LBUTTONUP;
-    WPARAM w_param = 0;
+    ensure_foreground();
 
-    switch (contact) {
-    case 0:
-        message = WM_LBUTTONUP;
-        w_param = 0;
-        break;
-    case 1:
-        message = WM_RBUTTONUP;
-        w_param = 0;
-        break;
-    case 2:
-        message = WM_MBUTTONUP;
-        w_param = 0;
-        break;
-    case 3:
-        message = WM_XBUTTONUP;
-        w_param = MAKEWPARAM(0, XBUTTON1);
-        break;
-    case 4:
-        message = WM_XBUTTONUP;
-        w_param = MAKEWPARAM(0, XBUTTON2);
-        break;
-    default:
+    MouseMessageInfo msg_info;
+    if (!contact_to_mouse_up_message(contact, msg_info)) {
         LogError << "contact out of range" << VAR(contact);
         return false;
     }
 
-    PostMessage(hwnd_, message, w_param, MAKELPARAM(last_pos_.first, last_pos_.second));
+    PostMessage(hwnd_, msg_info.message, msg_info.w_param, MAKELPARAM(last_pos_.first, last_pos_.second));
 
     return true;
 }
@@ -175,6 +121,8 @@ bool PostMessageInput::input_text(const std::string& text)
         return false;
     }
 
+    ensure_foreground();
+
     // 文本输入仅发送 WM_CHAR，更符合 Win32 语义（WM_KEYDOWN/UP 由系统生成并经 TranslateMessage 转为 WM_CHAR）
     for (const auto ch : to_u16(text)) {
         PostMessageW(hwnd_, WM_CHAR, static_cast<WPARAM>(ch), 0);
@@ -190,9 +138,10 @@ bool PostMessageInput::key_down(int key)
         return false;
     }
 
+    ensure_foreground();
+
     // 构造更接近系统生成的 lParam：重复计数=1，扫描码填充
-    UINT sc = MapVirtualKeyW(static_cast<UINT>(key), MAPVK_VK_TO_VSC);
-    LPARAM lParam = 1 | (static_cast<LPARAM>(sc) << 16);
+    LPARAM lParam = make_keydown_lparam(key);
     PostMessageW(hwnd_, WM_KEYDOWN, static_cast<WPARAM>(key), lParam);
     return true;
 }
@@ -204,12 +153,11 @@ bool PostMessageInput::key_up(int key)
         return false;
     }
 
-    UINT sc = MapVirtualKeyW(static_cast<UINT>(key), MAPVK_VK_TO_VSC);
-    // 置位先前状态与转换状态位
-    LPARAM lParam = (1 | (static_cast<LPARAM>(sc) << 16) | (1 << 30) | (1 << 31));
+    ensure_foreground();
+
+    LPARAM lParam = make_keyup_lparam(key);
     PostMessageW(hwnd_, WM_KEYUP, static_cast<WPARAM>(key), lParam);
     return true;
 }
 
 MAA_CTRL_UNIT_NS_END
-

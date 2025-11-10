@@ -37,6 +37,8 @@ public: // from InputBase
     virtual bool key_up(int key) override;
 
 private:
+    void ensure_foreground();
+
     HWND hwnd_ = nullptr;
     std::pair<int, int> last_pos_;
 };
