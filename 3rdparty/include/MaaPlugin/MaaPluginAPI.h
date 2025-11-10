@@ -1,6 +1,6 @@
 #pragma once
 
-#include <stdint.h>
+#include <cstdint>
 
 #include "MaaPluginPort.h"
 
@@ -8,6 +8,8 @@
 extern "C"
 {
 #endif
+
+    MAA_PLUGIN_API const char* GetPluginVersion();
 
     MAA_PLUGIN_API uint32_t GetApiVersion();
 
