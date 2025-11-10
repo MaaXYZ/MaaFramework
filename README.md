@@ -149,6 +149,9 @@ _✨ 基于图像识别的自动化黑盒测试框架 ✨_
 - [MaaGakumasu](https://github.com/SuperWaterGod/MaaGakumasu) ![Pipeline](https://img.shields.io/badge/Pipeline-%23876f69?logo=paddypower&logoColor=%23FFFFFF) ![Python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white) ![license](https://img.shields.io/github/license/SuperWaterGod/MaaGakumasu) ![activity](https://img.shields.io/github/commit-activity/m/SuperWaterGod/MaaGakumasu?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/SuperWaterGod/MaaGakumasu?style=social) [![mirrorc](./docs/static/mirrorc-zh.svg)](https://mirrorchyan.com/zh/projects?source=maafw-badge)  
   学园偶像大师小助手。使用图像技术 + 模拟控制 + 深度学习，解放双手！由 MaaFramework 强力驱动！
 
+- [MaaStarResonance](https://github.com/233Official/MaaStarResonance) ![Pipeline](https://img.shields.io/badge/Pipeline-%23876f69?logo=paddypower&logoColor=%23FFFFFF) ![Python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white) ![license](https://img.shields.io/github/license/233Official/MaaStarResonance) ![activity](https://img.shields.io/github/commit-activity/m/233Official/MaaStarResonance?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/233Official/MaaStarResonance?style=social) [![mirrorc](./docs/static/mirrorc-zh.svg)](https://mirrorchyan.com/zh/projects?source=maafw-badge)  
+  星痕共鸣小助手。使用图像技术 + 模拟控制，解放双手！由 MaaFramework 强力驱动！
+
 ## 生态共建
 
 MAA 正计划建设为一类项目，而非舟的单一软件。  
