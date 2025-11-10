@@ -1,6 +1,6 @@
 import ctypes
 import json
-from typing import Any, Dict, Optional, Tuple, Union
+from typing import Any, Dict, Optional, Tuple
 
 import numpy
 

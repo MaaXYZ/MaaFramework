@@ -1,5 +1,5 @@
 import json
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from typing import Any, List, Tuple, Union, Dict
 
 # Type aliases to match C++ std::variant types
