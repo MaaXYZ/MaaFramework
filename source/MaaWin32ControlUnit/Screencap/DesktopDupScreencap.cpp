@@ -339,7 +339,7 @@ std::optional<cv::Mat> DesktopDupScreencap::screencap_impl()
     });
 
     if (!readable_texture_ && !init_texture(raw_texture)) {
-        LogError << "falied to init_texture";
+        LogError << "failed to init_texture";
         return std::nullopt;
     }
 
