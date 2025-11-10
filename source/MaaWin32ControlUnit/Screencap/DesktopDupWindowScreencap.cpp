@@ -20,39 +20,36 @@ std::optional<cv::Mat> DesktopDupWindowScreencap::screencap()
     }
     const cv::Mat& img = *opt_img;
 
-    // 获取窗口客户区在屏幕上的位置
+    // 获取窗口客户区在屏幕上的位置（相对于整个虚拟桌面）
     RECT client_rect_screen = get_window_client_rect_screen();
-    if (client_rect_screen.left < 0 || client_rect_screen.top < 0 || client_rect_screen.right <= client_rect_screen.left
-        || client_rect_screen.bottom <= client_rect_screen.top) {
+    if (client_rect_screen.right <= client_rect_screen.left || client_rect_screen.bottom <= client_rect_screen.top) {
         LogError << "Invalid client rect" << VAR(client_rect_screen.left) << VAR(client_rect_screen.top) << VAR(client_rect_screen.right)
                  << VAR(client_rect_screen.bottom);
         return std::nullopt;
     }
 
-    int client_width = client_rect_screen.right - client_rect_screen.left;
-    int client_height = client_rect_screen.bottom - client_rect_screen.top;
-
-    // 检查裁剪区域是否在图像范围内
-    if (client_rect_screen.left >= img.cols || client_rect_screen.top >= img.rows || client_rect_screen.right <= 0
-        || client_rect_screen.bottom <= 0) {
-        LogError << "Client rect out of bounds" << VAR(client_rect_screen.left) << VAR(client_rect_screen.top) << VAR(img.cols)
-                 << VAR(img.rows);
+    // 获取当前输出（显示器）的桌面坐标
+    RECT output_desktop = get_output_desktop_coordinates();
+    if (output_desktop.right <= output_desktop.left || output_desktop.bottom <= output_desktop.top) {
+        LogError << "Failed to get output desktop coordinates";
         return std::nullopt;
     }
 
-    // 计算裁剪区域（确保在图像范围内）
-    int crop_x = std::max(0, static_cast<int>(client_rect_screen.left));
-    int crop_y = std::max(0, static_cast<int>(client_rect_screen.top));
-    int crop_width = std::min(client_width, img.cols - crop_x);
-    int crop_height = std::min(client_height, img.rows - crop_y);
+    // 将窗口坐标转换为相对于该显示器的坐标
+    int client_width = client_rect_screen.right - client_rect_screen.left;
+    int client_height = client_rect_screen.bottom - client_rect_screen.top;
+    int crop_x = client_rect_screen.left - output_desktop.left;
+    int crop_y = client_rect_screen.top - output_desktop.top;
 
-    if (crop_width <= 0 || crop_height <= 0) {
-        LogError << "Invalid crop region" << VAR(crop_x) << VAR(crop_y) << VAR(crop_width) << VAR(crop_height);
+    // 检查裁剪区域是否在图像范围内
+    if (crop_x < 0 || crop_y < 0 || crop_x + client_width > img.cols || crop_y + client_height > img.rows) {
+        LogError << "Client rect out of bounds" << VAR(crop_x) << VAR(crop_y) << VAR(client_width) << VAR(client_height) << VAR(img.cols)
+                 << VAR(img.rows) << VAR(output_desktop.left) << VAR(output_desktop.top);
         return std::nullopt;
     }
 
     // 裁剪出窗口客户区
-    cv::Rect roi(crop_x, crop_y, crop_width, crop_height);
+    cv::Rect roi(crop_x, crop_y, client_width, client_height);
     cv::Mat cropped = img(roi);
 
     return cropped;
@@ -69,7 +66,7 @@ RECT DesktopDupWindowScreencap::get_window_client_rect_screen() const
         return result;
     }
 
-    // 将客户区左上角转换为屏幕坐标
+    // 将客户区左上角转换为屏幕坐标（相对于整个虚拟桌面）
     POINT client_top_left = { client_rect.left, client_rect.top };
     if (!ClientToScreen(hwnd_, &client_top_left)) {
         LogError << "ClientToScreen failed, error code: " << GetLastError();
@@ -82,6 +79,27 @@ RECT DesktopDupWindowScreencap::get_window_client_rect_screen() const
     result.right = client_top_left.x + (client_rect.right - client_rect.left);
     result.bottom = client_top_left.y + (client_rect.bottom - client_rect.top);
 
+    return result;
+}
+
+RECT DesktopDupWindowScreencap::get_output_desktop_coordinates() const
+{
+    RECT result = { 0 };
+
+    if (!dxgi_output_) {
+        LogError << "dxgi_output_ is nullptr";
+        return result;
+    }
+
+    DXGI_OUTPUT_DESC output_desc;
+    HRESULT ret = dxgi_output_->GetDesc(&output_desc);
+    if (FAILED(ret)) {
+        LogError << "GetDesc failed" << VAR(ret);
+        return result;
+    }
+
+    // DesktopCoordinates 是显示器在虚拟桌面中的位置
+    result = output_desc.DesktopCoordinates;
     return result;
 }
 

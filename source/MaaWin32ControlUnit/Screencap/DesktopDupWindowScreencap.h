@@ -23,6 +23,7 @@ public: // from ScreencapBase
 
 private:
     RECT get_window_client_rect_screen() const;
+    RECT get_output_desktop_coordinates() const;
 };
 
 MAA_CTRL_UNIT_NS_END

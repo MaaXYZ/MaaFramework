@@ -13,18 +13,31 @@ DesktopDupScreencap::~DesktopDupScreencap()
 
 std::optional<cv::Mat> DesktopDupScreencap::screencap()
 {
+    // 初始化 D3D 设备和 DXGI 工厂（只需要初始化一次）
     if (!d3d_device_) {
         if (!init()) {
-            LogError << "falied to init";
+            LogError << "failed to init_d3d_device";
             uninit();
             return std::nullopt;
         }
+    }
 
-        // 前几张图片是空的
-        while (auto opt = screencap_impl()) {
-            const auto& br = *(opt->end<cv::Vec4b>() - 1);
-            if (br[3] == 255) { // only check alpha
-                break;
+    // 确保输出匹配当前窗口所在的显示器（每次截图时检查，支持窗口移动）
+    if (!ensure_output_for_monitor()) {
+        LogError << "failed to ensure_output_for_monitor";
+        return std::nullopt;
+    }
+
+    // 如果输出刚初始化，前几张图片可能是空的，跳过
+    if (output_just_initialized_) {
+        for (int i = 0; i < 3; ++i) {
+            auto opt = screencap_impl();
+            if (opt) {
+                const auto& br = *(opt->end<cv::Vec4b>() - 1);
+                if (br[3] == 255) { // only check alpha
+                    output_just_initialized_ = false;
+                    break;
+                }
             }
             LogWarn << "blank image, continue";
         }
@@ -49,13 +62,42 @@ bool DesktopDupScreencap::init()
         return false;
     }
 
-    // 如果提供了窗口句柄，使用窗口所在的显示器；否则使用主显示器
+    return true;
+}
+
+bool DesktopDupScreencap::ensure_output_for_monitor()
+{
+    // 获取目标显示器
     HMONITOR target_monitor = nullptr;
     if (hwnd_) {
         target_monitor = MonitorFromWindow(hwnd_, MONITOR_DEFAULTTONEAREST);
         if (!target_monitor) {
             LogWarn << "MonitorFromWindow failed, falling back to primary monitor";
         }
+    }
+
+    // 如果显示器没有改变，且输出已初始化，则不需要重新初始化
+    if (target_monitor == current_monitor_ && dxgi_dup_) {
+        return true;
+    }
+
+    // 显示器改变了或首次初始化，需要重新设置输出
+    // 先释放旧的输出和纹理（因为分辨率可能改变了）
+    if (dxgi_dup_) {
+        dxgi_dup_->Release();
+        dxgi_dup_ = nullptr;
+    }
+    if (readable_texture_) {
+        readable_texture_->Release();
+        readable_texture_ = nullptr;
+    }
+    if (dxgi_output_) {
+        dxgi_output_->Release();
+        dxgi_output_ = nullptr;
+    }
+    if (dxgi_adapter_) {
+        dxgi_adapter_->Release();
+        dxgi_adapter_ = nullptr;
     }
 
     // 尝试根据显示器查找输出，如果失败则使用主显示器
@@ -68,11 +110,18 @@ bool DesktopDupScreencap::init()
         if (!init_primary_output()) {
             return false;
         }
+        current_monitor_ = nullptr; // 使用主显示器
+    }
+    else {
+        current_monitor_ = target_monitor;
     }
 
     if (!init_output_duplication()) {
         return false;
     }
+
+    // 标记输出刚初始化，需要跳过前几张空白图片
+    output_just_initialized_ = true;
 
     return true;
 }

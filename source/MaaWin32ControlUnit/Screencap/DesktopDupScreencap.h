@@ -37,6 +37,8 @@ protected:
     D3D11_TEXTURE2D_DESC texture_desc_ { 0 };
 
     HWND hwnd_ = nullptr;
+    HMONITOR current_monitor_ = nullptr;
+    bool output_just_initialized_ = false;
 
 private:
     bool init_d3d_device();
@@ -44,6 +46,7 @@ private:
     bool find_output_by_monitor(HMONITOR monitor);
     bool init_primary_output();
     bool init_output_duplication();
+    bool ensure_output_for_monitor();
 };
 
 MAA_CTRL_UNIT_NS_END
