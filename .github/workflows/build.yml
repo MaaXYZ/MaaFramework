@@ -556,13 +556,14 @@ jobs:
             - name: Commit and push changes
               uses: actions-js/push@master
               with:
-                  github_token: ${{ secrets.GITHUB_TOKEN }}
+                  rebase: true
+                  branch: ${{ github.ref }}
                   message: "chore: Update Submodule MaaUtils
 
                       https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
 
                       [skip changelog]"
-                  branch: ${{ github.ref }}
+                  github_token: ${{ secrets.GITHUB_TOKEN }}
 
     release:
         if: ${{ needs.meta.outputs.is_release == 'true' && github.repository_id == '632024122' }}
