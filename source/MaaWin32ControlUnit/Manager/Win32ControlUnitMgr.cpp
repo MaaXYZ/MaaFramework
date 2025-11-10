@@ -55,7 +55,7 @@ bool Win32ControlUnitMgr::connect()
         screencap_ = std::make_shared<FramePoolScreencap>(hwnd_);
         break;
     case MaaWin32ScreencapMethod_DXGI_DesktopDup:
-        screencap_ = std::make_shared<DesktopDupScreencap>();
+        screencap_ = std::make_shared<DesktopDupScreencap>(hwnd_);
         break;
     case MaaWin32ScreencapMethod_DXGI_DesktopDup_Window:
         screencap_ = std::make_shared<DesktopDupWindowScreencap>(hwnd_);

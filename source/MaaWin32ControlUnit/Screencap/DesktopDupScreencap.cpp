@@ -41,9 +41,45 @@ bool DesktopDupScreencap::init()
 {
     LogFunc;
 
-    HRESULT ret = S_OK;
+    if (!init_d3d_device()) {
+        return false;
+    }
 
-    ret = D3D11CreateDevice(
+    if (!init_dxgi_factory()) {
+        return false;
+    }
+
+    // 如果提供了窗口句柄，使用窗口所在的显示器；否则使用主显示器
+    HMONITOR target_monitor = nullptr;
+    if (hwnd_) {
+        target_monitor = MonitorFromWindow(hwnd_, MONITOR_DEFAULTTONEAREST);
+        if (!target_monitor) {
+            LogWarn << "MonitorFromWindow failed, falling back to primary monitor";
+        }
+    }
+
+    // 尝试根据显示器查找输出，如果失败则使用主显示器
+    bool found_output = false;
+    if (target_monitor) {
+        found_output = find_output_by_monitor(target_monitor);
+    }
+
+    if (!found_output) {
+        if (!init_primary_output()) {
+            return false;
+        }
+    }
+
+    if (!init_output_duplication()) {
+        return false;
+    }
+
+    return true;
+}
+
+bool DesktopDupScreencap::init_d3d_device()
+{
+    HRESULT ret = D3D11CreateDevice(
         nullptr,
         D3D_DRIVER_TYPE_HARDWARE,
         nullptr,
@@ -58,14 +94,78 @@ bool DesktopDupScreencap::init()
         LogError << "D3D11CreateDevice failed" << VAR(ret);
         return false;
     }
+    return true;
+}
 
-    ret = CreateDXGIFactory(__uuidof(IDXGIFactory), reinterpret_cast<void**>(&dxgi_factory_));
+bool DesktopDupScreencap::init_dxgi_factory()
+{
+    HRESULT ret = CreateDXGIFactory(__uuidof(IDXGIFactory), reinterpret_cast<void**>(&dxgi_factory_));
     if (FAILED(ret)) {
         LogError << "CreateDXGIFactory failed" << VAR(ret);
         return false;
     }
+    return true;
+}
 
-    ret = dxgi_factory_->EnumAdapters(0, &dxgi_adapter_);
+bool DesktopDupScreencap::find_output_by_monitor(HMONITOR monitor)
+{
+    HRESULT ret = S_OK;
+
+    // 遍历所有适配器，找到包含目标显示器的输出
+    for (UINT adapter_index = 0;; ++adapter_index) {
+        IDXGIAdapter* adapter = nullptr;
+        ret = dxgi_factory_->EnumAdapters(adapter_index, &adapter);
+        if (FAILED(ret)) {
+            // 没有更多适配器了
+            break;
+        }
+
+        // 使用 OnScopeLeave 确保 adapter 在作用域结束时被释放（除非被赋值给成员变量）
+        bool adapter_used = false;
+        OnScopeLeave([&]() {
+            if (!adapter_used && adapter) {
+                adapter->Release();
+            }
+        });
+
+        // 遍历该适配器的所有输出
+        for (UINT output_index = 0;; ++output_index) {
+            IDXGIOutput* output = nullptr;
+            ret = adapter->EnumOutputs(output_index, &output);
+            if (FAILED(ret)) {
+                // 没有更多输出了
+                break;
+            }
+
+            // 使用 OnScopeLeave 确保 output 在作用域结束时被释放（除非被赋值给成员变量）
+            bool output_used = false;
+            OnScopeLeave([&]() {
+                if (!output_used && output) {
+                    output->Release();
+                }
+            });
+
+            // 获取输出的描述信息
+            DXGI_OUTPUT_DESC output_desc;
+            ret = output->GetDesc(&output_desc);
+            if (SUCCEEDED(ret) && output_desc.Monitor == monitor) {
+                // 找到匹配的显示器
+                dxgi_adapter_ = adapter;
+                dxgi_output_ = reinterpret_cast<IDXGIOutput1*>(output);
+                adapter_used = true;
+                output_used = true;
+                LogInfo << "Found matching output for window monitor" << VAR(adapter_index) << VAR(output_index);
+                return true;
+            }
+        }
+    }
+
+    return false;
+}
+
+bool DesktopDupScreencap::init_primary_output()
+{
+    HRESULT ret = dxgi_factory_->EnumAdapters(0, &dxgi_adapter_);
     if (FAILED(ret)) {
         LogError << "EnumAdapters failed" << VAR(ret);
         return false;
@@ -77,12 +177,16 @@ bool DesktopDupScreencap::init()
         return false;
     }
 
-    ret = dxgi_output_->DuplicateOutput(d3d_device_, &dxgi_dup_);
+    return true;
+}
+
+bool DesktopDupScreencap::init_output_duplication()
+{
+    HRESULT ret = dxgi_output_->DuplicateOutput(d3d_device_, &dxgi_dup_);
     if (FAILED(ret)) {
         LogError << "DuplicateOutput failed" << VAR(ret);
         return false;
     }
-
     return true;
 }
 
