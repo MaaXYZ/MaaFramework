@@ -5,16 +5,13 @@
 #include "MaaUtils/Platform.h"
 #include "MaaUtils/SafeWindows.hpp"
 
+#include "InputUtils.h"
+
 MAA_CTRL_UNIT_NS_BEGIN
 
 void SeizeInput::ensure_foreground()
 {
-    if (hwnd_ == GetForegroundWindow()) {
-        return;
-    }
-    ShowWindow(hwnd_, SW_MINIMIZE);
-    ShowWindow(hwnd_, SW_RESTORE);
-    SetForegroundWindow(hwnd_);
+    ::MaaNS::CtrlUnitNs::ensure_foreground(hwnd_);
 }
 
 MaaControllerFeature SeizeInput::get_features() const
@@ -47,31 +44,16 @@ bool SeizeInput::touch_down(int contact, int x, int y, int pressure)
     SetCursorPos(point.x, point.y);
 
     INPUT input = {};
-
     input.type = INPUT_MOUSE;
 
-    switch (contact) {
-    case 0:
-        input.mi.dwFlags = MOUSEEVENTF_LEFTDOWN;
-        break;
-    case 1:
-        input.mi.dwFlags = MOUSEEVENTF_RIGHTDOWN;
-        break;
-    case 2:
-        input.mi.dwFlags = MOUSEEVENTF_MIDDLEDOWN;
-        break;
-    case 3:
-        input.mi.dwFlags = MOUSEEVENTF_XDOWN;
-        input.mi.mouseData = XBUTTON1;
-        break;
-    case 4:
-        input.mi.dwFlags = MOUSEEVENTF_XDOWN;
-        input.mi.mouseData = XBUTTON2;
-        break;
-    default:
+    MouseEventFlags flags_info;
+    if (!contact_to_mouse_down_flags(contact, flags_info)) {
         LogError << "contact out of range" << VAR(contact);
         return false;
     }
+
+    input.mi.dwFlags = flags_info.flags;
+    input.mi.mouseData = flags_info.button_data;
 
     SendInput(1, &input, sizeof(INPUT));
 
@@ -104,30 +86,16 @@ bool SeizeInput::touch_up(int contact)
     LogInfo << VAR(contact) << VAR(hwnd_);
 
     INPUT input = {};
-
     input.type = INPUT_MOUSE;
-    switch (contact) {
-    case 0:
-        input.mi.dwFlags = MOUSEEVENTF_LEFTUP;
-        break;
-    case 1:
-        input.mi.dwFlags = MOUSEEVENTF_RIGHTUP;
-        break;
-    case 2:
-        input.mi.dwFlags = MOUSEEVENTF_MIDDLEUP;
-        break;
-    case 3:
-        input.mi.dwFlags = MOUSEEVENTF_XUP;
-        input.mi.mouseData = XBUTTON1;
-        break;
-    case 4:
-        input.mi.dwFlags = MOUSEEVENTF_XUP;
-        input.mi.mouseData = XBUTTON2;
-        break;
-    default:
+
+    MouseEventFlags flags_info;
+    if (!contact_to_mouse_up_flags(contact, flags_info)) {
         LogError << "contact out of range" << VAR(contact);
         return false;
     }
+
+    input.mi.dwFlags = flags_info.flags;
+    input.mi.mouseData = flags_info.button_data;
 
     SendInput(1, &input, sizeof(INPUT));
 
