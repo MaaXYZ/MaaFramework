@@ -3,4 +3,5 @@
     <description>Native binaries of MaaFramework Embedded for win-x64.</description>
   </metadata>
   <files>
-    <file src="$root_path$\assets\MAA-win-x86_64\bin\**\*.dll*" target="runtimes\win-x64\native" />
+    <file src="buildTransitive/Maa.Framework.Runtime.win-x64.targets" target="buildTransitive" />
+    <file src="$root_path$\assets\MAA-win-x86_64\bin\**\*.dll*" target="bin" />

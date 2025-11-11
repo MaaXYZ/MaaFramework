@@ -3,4 +3,5 @@
     <description>Native binaries of MaaFramework Embedded for linux-x64.</description>
   </metadata>
   <files>
-    <file src="$root_path$\assets\MAA-linux-x86_64\bin\**\*.so*" target="runtimes\linux-x64\native" />
+    <file src="buildTransitive/Maa.Framework.Runtime.linux-x64.targets" target="buildTransitive" />
+    <file src="$root_path$\assets\MAA-linux-x86_64\bin\**\*.so*" target="bin" />

@@ -453,16 +453,7 @@ jobs:
             - name: Nuget Pack
               working-directory: tools/nupkgs
               shell: bash
-              run: |
-                  curl -sSOL https://raw.githubusercontent.com/MaaAssistantArknights/design/main/logo/maa-logo_128x128.png
-                  version=${{ needs.meta.outputs.version }}
-                  for NUSPEC in Maa.Framework.Runtime*.nuspec; do
-                    cat Head.nuspec $NUSPEC Tail.nuspec > temp && mv temp $NUSPEC
-
-                    nuget pack $NUSPEC \
-                      -Verbosity detailed \
-                      -Properties "version=${version//-post/};year=$(date +%Y);branch=$(git rev-parse --abbrev-ref HEAD);commit=$(git rev-parse HEAD);root_path=..\.."
-                  done
+              run: ./pack.sh ${{ needs.meta.outputs.version }}
 
             - uses: actions/upload-artifact@v4
               if: always()
