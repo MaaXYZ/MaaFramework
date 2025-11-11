@@ -110,18 +110,11 @@ jobs:
               run: |
                   cmake --install build --prefix install --config Debug
 
-            - id: latest-release
-              uses: pozetroninc/github-action-get-latest-release@master
-              with:
-                  repository: MaaXYZ/MaaPluginDemo
-                  token: ${{ secrets.GITHUB_TOKEN }}
-                  excludes: "draft"
-        
             - name: Download Plugin
               uses: robinraju/release-downloader@v1
               with:
                   repository: MaaXYZ/MaaPluginDemo
-                  tag: ${{ steps.latest-release.outputs.release }}
+                  tag: ${{ needs.meta.outputs.latest-plugin }}
                   fileName: "*win-${{ matrix.arch }}*"
                   out-file-path: "build/download_plugins"
                   extract: true
@@ -248,18 +241,11 @@ jobs:
               run: |
                   cmake --install build --prefix install --config Debug
 
-            - id: latest-release
-              uses: pozetroninc/github-action-get-latest-release@master
-              with:
-                  repository: MaaXYZ/MaaPluginDemo
-                  token: ${{ secrets.GITHUB_TOKEN }}
-                  excludes: "draft"
-        
             - name: Download Plugin
               uses: robinraju/release-downloader@v1
               with:
                   repository: MaaXYZ/MaaPluginDemo
-                  tag: ${{ steps.latest-release.outputs.release }}
+                  tag: ${{ needs.meta.outputs.latest-plugin }}
                   fileName: "*linux-${{ matrix.arch }}*"
                   out-file-path: "build/download_plugins"
                   extract: true
@@ -386,18 +372,11 @@ jobs:
               run: |
                   cmake --install build --prefix install --config Debug
 
-            - id: latest-release
-              uses: pozetroninc/github-action-get-latest-release@master
-              with:
-                  repository: MaaXYZ/MaaPluginDemo
-                  token: ${{ secrets.GITHUB_TOKEN }}
-                  excludes: "draft"
-        
             - name: Download Plugin
               uses: robinraju/release-downloader@v1
               with:
                   repository: MaaXYZ/MaaPluginDemo
-                  tag: ${{ steps.latest-release.outputs.release }}
+                  tag: ${{ needs.meta.outputs.latest-plugin }}
                   fileName: "*macos-${{ matrix.arch }}*"
                   out-file-path: "build/download_plugins"
                   extract: true
