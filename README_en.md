@@ -151,6 +151,9 @@ It offers low-code simplicity while maintaining high extensibility. The framewor
 -   [MaaGakumasu](https://github.com/SuperWaterGod/MaaGakumasu) ![Pipeline](https://img.shields.io/badge/Pipeline-%23876f69?logo=paddypower&logoColor=%23FFFFFF) ![Python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white) ![license](https://img.shields.io/github/license/SuperWaterGod/MaaGakumasu) ![activity](https://img.shields.io/github/commit-activity/m/SuperWaterGod/MaaGakumasu?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/SuperWaterGod/MaaGakumasu?style=social) [![mirrorc](./docs/static/mirrorc-zh.svg)](https://mirrorchyan.com/zh/projects?source=maafw-badge)  
     Assistant for Gakuen Idolmaster. Image recognition + simulation control + deep learning to free your hands! Powered by MaaFramework!
 
+-   [MaaStarResonance](https://github.com/233Official/MaaStarResonance) ![Pipeline](https://img.shields.io/badge/Pipeline-%23876f69?logo=paddypower&logoColor=%23FFFFFF) ![Python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white) ![license](https://img.shields.io/github/license/233Official/MaaStarResonance) ![activity](https://img.shields.io/github/commit-activity/m/233Official/MaaStarResonance?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/233Official/MaaStarResonance?style=social) [![mirrorc](./docs/static/mirrorc-zh.svg)](https://mirrorchyan.com/en/projects?source=maafw-badge)  
+    Assistant for StarResonance. Image recognition + simulation control to free your hands! Powered by MaaFramework!
+
 ## Eco-Building
 
 MAA is planned to be a category of projects rather than just a single piece of software.
