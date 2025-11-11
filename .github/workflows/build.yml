@@ -139,15 +139,22 @@ jobs:
 
                   cp -r LICENSE.md install
 
+            - id: latest-release
+              uses: pozetroninc/github-action-get-latest-release@master
+              with:
+                  repository: MaaXYZ/MaaPluginDemo
+                  token: ${{ secrets.GITHUB_TOKEN }}
+                  excludes: "draft"
+        
             - name: Download Plugin
               uses: robinraju/release-downloader@v1
               with:
                   repository: MaaXYZ/MaaPluginDemo
-                  latest: true
-                  prerelease: ${{ needs.meta.outputs.is_release != 'true' || needs.meta.outputs.is_pre_release == 'true' }}
+                  tag: ${{ steps.latest-release.outputs.release }}
                   fileName: "*win-${{ matrix.arch }}*"
                   out-file-path: "build/download_plugins"
                   extract: true
+                  token: ${{ secrets.GITHUB_TOKEN }}
 
             - name: Install Plugin
               shell: bash
@@ -237,15 +244,22 @@ jobs:
 
                   cp -r LICENSE.md install
 
+            - id: latest-release
+              uses: pozetroninc/github-action-get-latest-release@master
+              with:
+                  repository: MaaXYZ/MaaPluginDemo
+                  token: ${{ secrets.GITHUB_TOKEN }}
+                  excludes: "draft"
+        
             - name: Download Plugin
               uses: robinraju/release-downloader@v1
               with:
                   repository: MaaXYZ/MaaPluginDemo
-                  latest: true
-                  prerelease: ${{ needs.meta.outputs.is_release != 'true' || needs.meta.outputs.is_pre_release == 'true' }}
+                  tag: ${{ steps.latest-release.outputs.release }}
                   fileName: "*linux-${{ matrix.arch }}*"
                   out-file-path: "build/download_plugins"
                   extract: true
+                  token: ${{ secrets.GITHUB_TOKEN }}
 
             - name: Install Plugin
               shell: bash
@@ -333,15 +347,22 @@ jobs:
 
                   cp -r LICENSE.md install
 
+            - id: latest-release
+              uses: pozetroninc/github-action-get-latest-release@master
+              with:
+                  repository: MaaXYZ/MaaPluginDemo
+                  token: ${{ secrets.GITHUB_TOKEN }}
+                  excludes: "draft"
+        
             - name: Download Plugin
               uses: robinraju/release-downloader@v1
               with:
                   repository: MaaXYZ/MaaPluginDemo
-                  latest: true
-                  prerelease: ${{ needs.meta.outputs.is_release != 'true' || needs.meta.outputs.is_pre_release == 'true' }}
+                  tag: ${{ steps.latest-release.outputs.release }}
                   fileName: "*macos-${{ matrix.arch }}*"
                   out-file-path: "build/download_plugins"
                   extract: true
+                  token: ${{ secrets.GITHUB_TOKEN }}
 
             - name: Install Plugin
               shell: bash
@@ -418,15 +439,22 @@ jobs:
 
                   cp -r LICENSE.md install
 
+            - id: latest-release
+              uses: pozetroninc/github-action-get-latest-release@master
+              with:
+                  repository: MaaXYZ/MaaPluginDemo
+                  token: ${{ secrets.GITHUB_TOKEN }}
+                  excludes: "draft"
+        
             - name: Download Plugin
               uses: robinraju/release-downloader@v1
               with:
                   repository: MaaXYZ/MaaPluginDemo
-                  latest: true
-                  prerelease: ${{ needs.meta.outputs.is_release != 'true' || needs.meta.outputs.is_pre_release == 'true' }}
+                  tag: ${{ steps.latest-release.outputs.release }}
                   fileName: "*android-${{ matrix.arch }}*"
                   out-file-path: "build/download_plugins"
                   extract: true
+                  token: ${{ secrets.GITHUB_TOKEN }}
 
             - name: Install Plugin
               shell: bash
