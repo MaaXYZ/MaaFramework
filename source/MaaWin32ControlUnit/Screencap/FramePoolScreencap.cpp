@@ -83,8 +83,18 @@ std::optional<cv::Mat> FramePoolScreencap::screencap()
         return std::nullopt;
     }
 
-    int border_left = 2; // 这个 2 不知道是怎么来的，实测是 2，但不知道怎么获取到
+    int border_left = client_top_left.x - window_rect.left;
     int border_top = client_top_left.y - window_rect.top;
+
+    // 神秘小算法
+    // 检查 alpha 通道值，找到真正的边框位置
+    for (int i = 0; i < border_left; ++i) {
+        if (raw.at<cv::Vec4b>(border_top, i)[3] != 255) {
+            continue;
+        }
+        border_left = i;
+        break;
+    }
 
     // 获取客户区大小
     int client_width = client_rect.right - client_rect.left;
