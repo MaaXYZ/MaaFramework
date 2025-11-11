@@ -105,6 +105,19 @@ std::optional<cv::Mat> FramePoolScreencap::screencap()
     int client_width = client_rect.right - client_rect.left;
     int client_height = client_rect.bottom - client_rect.top;
 
+    if (client_width > raw.cols) {
+        client_width = raw.cols;
+    }
+    if (border_left + client_width > raw.cols) {
+        border_left = raw.cols - client_width;
+    }
+    if (client_height > raw.rows) {
+        client_height = raw.rows;
+    }
+    if (border_top + client_height > raw.rows) {
+        border_top = raw.rows - client_height;
+    }
+
     // 裁剪出客户区（去掉边框）
     cv::Rect client_roi(border_left, border_top, client_width, client_height);
     cv::Mat image = raw(client_roi);
