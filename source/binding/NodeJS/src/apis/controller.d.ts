@@ -1,6 +1,15 @@
 declare global {
     namespace maa {
-        type Point = [x: number, y: number]
+        type ClickParam = {
+            point: Point
+            contact: number
+        }
+
+        type LongPressParam = {
+            point: Point
+            duration: number
+            contact: number
+        }
 
         type SwipeParam = {
             begin: Point
@@ -9,7 +18,47 @@ declare global {
             duration: number[]
             only_hover: boolean
             starting: number
+            contact: number
         }
+
+        type MultiSwipeParam = {
+            swipes: SwipeParam[]
+        }
+
+        type TouchParam = {
+            contact: number
+            point: Point
+            pressure: number
+        }
+
+        type ClickKeyParam = {
+            keycode: number[]
+        }
+
+        type LongPressKeyParam = {
+            keycode: number[]
+            duration: number
+        }
+
+        type InputTextParam = {
+            text: string
+        }
+
+        type AppParam = {
+            package: string
+        }
+
+        type ActionParam =
+            | {}
+            | ClickParam
+            | LongPressParam
+            | SwipeParam
+            | MultiSwipeParam
+            | TouchParam
+            | ClickKeyParam
+            | LongPressKeyParam
+            | InputTextParam
+            | AppParam
 
         type ControllerNotify = {
             msg:
@@ -25,16 +74,11 @@ declare global {
               }
             | {
                   action: 'click'
-                  param: {
-                      point: Point
-                  }
+                  param: ClickParam
               }
             | {
                   action: 'long_press'
-                  param: {
-                      point: Point
-                      duration: number
-                  }
+                  param: LongPressParam
               }
             | {
                   action: 'swipe'
@@ -42,34 +86,23 @@ declare global {
               }
             | {
                   action: 'multi_swipe'
-                  param: SwipeParam[]
+                  param: MultiSwipeParam
               }
             | {
                   action: 'touch_down' | 'touch_move' | 'touch_up'
-                  param: {
-                      contact: number
-                      point: Point
-                      pressure: number
-                  }
+                  param: TouchParam
               }
             | {
                   action: 'click_key' | 'key_down' | 'key_up'
-                  param: {
-                      keycode: number[]
-                  }
+                  param: ClickKeyParam
               }
             | {
                   action: 'long_press_key'
-                  param: {
-                      keycode: number[]
-                      duration: number
-                  }
+                  param: LongPressKeyParam
               }
             | {
                   action: 'input_text'
-                  param: {
-                      text: string
-                  }
+                  param: InputTextParam
               }
             | {
                   action: 'screencap'
@@ -77,9 +110,7 @@ declare global {
               }
             | {
                   action: 'start_app' | 'stop_app'
-                  param: {
-                      package: string
-                  }
+                  param: AppParam
               }
         )
 

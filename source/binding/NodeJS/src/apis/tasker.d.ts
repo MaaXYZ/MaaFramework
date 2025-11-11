@@ -42,12 +42,14 @@ declare global {
             draws: ArrayBuffer[]
         }
 
+        type ActionDetailObject = ActionParam
+
         type ActionDetail = {
             name: string
             action: string
             box: Rect
             success: boolean
-            detail: unknown
+            detail: ActionDetailObject
         }
 
         type TaskerNotify = {
