@@ -18,10 +18,18 @@ declare global {
             ScreencapOrInputMethods
         >
         const Win32ScreencapMethod: Record<
-            'GDI' | 'FramePool' | 'DXGI_DesktopDup',
+            | 'GDI'
+            | 'FramePool'
+            | 'DXGI_DesktopDup'
+            | 'DXGI_DesktopDup_Window'
+            | 'PrintWindow'
+            | 'ScreenDC',
             ScreencapOrInputMethods
         >
-        const Win32InputMethod: Record<'Seize' | 'SendMessage', ScreencapOrInputMethods>
+        const Win32InputMethod: Record<
+            'Seize' | 'SendMessage' | 'PostMessage' | 'LegacyEvent' | 'PostThreadMessage',
+            ScreencapOrInputMethods
+        >
         const DbgControllerType: Record<'CarouselImage' | 'ReplayRecording', Uint64>
     }
 }
