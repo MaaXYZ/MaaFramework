@@ -27,6 +27,11 @@ std::optional<cv::Mat> FramePoolScreencap::screencap()
         }
     }
 
+    // 检查窗口大小是否变化，如果变化则重新创建 frame pool
+    if (!check_and_handle_size_changed()) {
+        return std::nullopt;
+    }
+
     std::unique_lock lock(frame_mutex_);
 
     constexpr size_t kTimeoutSec = 20;
@@ -195,11 +200,22 @@ bool FramePoolScreencap::init()
 
     cap_session_.StartCapture();
 
+    // 记录初始窗口大小
+    if (cap_item_) {
+        auto size = cap_item_.Size();
+        last_capture_size_.first = size.Width;
+        last_capture_size_.second = size.Height;
+    }
+
     return true;
 }
 
 void FramePoolScreencap::uninit()
 {
+    if (cap_session_) {
+        cap_session_.Close();
+        cap_session_ = nullptr;
+    }
     if (cap_frame_pool_ && frame_arrived_token_.value) {
         cap_frame_pool_.FrameArrived(frame_arrived_token_);
         frame_arrived_token_ = {};
@@ -209,6 +225,32 @@ void FramePoolScreencap::uninit()
     cap_session_ = nullptr;
     latest_frame_ = nullptr;
     texture_desc_ = { 0 };
+    last_capture_size_ = {};
+}
+
+bool FramePoolScreencap::check_and_handle_size_changed()
+{
+    if (!cap_item_) {
+        return true;
+    }
+
+    auto current_size = cap_item_.Size();
+    // 如果窗口大小没有变化，直接返回
+    if (current_size.Width == last_capture_size_.first && current_size.Height == last_capture_size_.second) {
+        return true;
+    }
+
+    LogInfo << "Window size changed, recreating frame pool" << VAR(current_size.Width) << VAR(current_size.Height)
+            << VAR(last_capture_size_.first) << VAR(last_capture_size_.second);
+
+    // 完全重新初始化以适应新的窗口大小
+    uninit();
+    if (!init()) {
+        LogError << "reinit failed after size change";
+        return false;
+    }
+
+    return true;
 }
 
 bool FramePoolScreencap::init_texture(winrt::com_ptr<ID3D11Texture2D> raw_texture)
