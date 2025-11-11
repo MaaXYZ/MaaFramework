@@ -165,11 +165,7 @@ NodeDetail TaskBase::run_action(const RecoResult& reco)
 
     if (debug_mode() || !pipeline_data.focus.is_null()) {
         const json::value cb_detail {
-            { "task_id", task_id() },
-            { "node_id", 0 },
-            { "action_id", 0 },
-            { "name", reco.name },
-            { "focus", pipeline_data.focus },
+            { "task_id", task_id() }, { "node_id", 0 }, { "action_id", 0 }, { "name", reco.name }, { "focus", pipeline_data.focus },
         };
         notify(MaaMsg_Node_Action_Starting, cb_detail);
     }
@@ -189,11 +185,8 @@ NodeDetail TaskBase::run_action(const RecoResult& reco)
 
     if (debug_mode() || !pipeline_data.focus.is_null()) {
         const json::value cb_detail {
-            { "task_id", task_id() },
-            { "node_id", result.node_id },
-            { "action_id", result.action_id },
-            { "name", reco.name },
-            { "focus", pipeline_data.focus },
+            { "task_id", task_id() }, { "node_id", result.node_id },    { "action_id", result.action_id },
+            { "name", reco.name },    { "focus", pipeline_data.focus },
         };
         notify(result.completed ? MaaMsg_Node_Action_Succeeded : MaaMsg_Node_Action_Failed, cb_detail);
     }
