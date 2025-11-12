@@ -37,12 +37,15 @@ protected:
     MAA_RES_NS::ResourceMgr* resource();
     MAA_CTRL_NS::ControllerAgent* controller();
 
-    RecoResult run_recognition(const cv::Mat& image, const PipelineData::NextList& list, const json::object& next_override = {});
+    RecoResult run_recognition(const cv::Mat& image, const PipelineData& data);
     NodeDetail run_action(const RecoResult& reco);
     cv::Mat screencap();
     MaaTaskId generate_node_id();
     void set_node_detail(int64_t node_id, NodeDetail detail);
     void set_task_detail(TaskDetail detail);
+
+    bool debug_mode() const;
+    void notify(std::string_view msg, const json::value detail);
 
 protected:
     const MaaTaskId task_id_ = ++s_global_task_id;
@@ -52,10 +55,6 @@ protected:
     std::string cur_node_;
 
     std::shared_ptr<Context> context_ = nullptr;
-
-private:
-    bool debug_mode() const;
-    void notify(std::string_view msg, const json::value detail);
 
 private:
     inline static std::atomic<MaaTaskId> s_global_task_id = 100'000'000;

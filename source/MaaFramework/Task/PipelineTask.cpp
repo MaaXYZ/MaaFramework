@@ -41,7 +41,7 @@ bool PipelineTask::run()
         PipelineData::NextList list = std::move(next);
         list.insert(list.end(), std::make_move_iterator(interrupt.begin()), std::make_move_iterator(interrupt.end()));
 
-        auto node_detail = run_reco_and_action(list, node);
+        auto node_detail = run_next(list, node);
 
         if (context_->need_to_stop()) {
             LogWarn << "need_to_stop" << VAR(node.name);
@@ -119,7 +119,7 @@ void PipelineTask::post_stop()
     context_->need_to_stop() = true;
 }
 
-NodeDetail PipelineTask::run_reco_and_action(const PipelineData::NextList& list, const PipelineData& pretask)
+NodeDetail PipelineTask::run_next(const PipelineData::NextList& list, const PipelineData& pretask)
 {
     if (!tasker_) {
         LogError << "tasker is null";
@@ -148,7 +148,7 @@ NodeDetail PipelineTask::run_reco_and_action(const PipelineData::NextList& list,
         current_clock = std::chrono::steady_clock::now();
         cv::Mat image = screencap();
 
-        reco = run_recognition(image, list, pretask.next_override);
+        reco = recognize_list(image, list, pretask.next_override);
         if (reco.box) { // hit
             break;
         }
@@ -169,6 +169,70 @@ NodeDetail PipelineTask::run_reco_and_action(const PipelineData::NextList& list,
 
     auto node_detail = run_action(reco);
     return node_detail;
+}
+
+RecoResult PipelineTask::recognize_list(const cv::Mat& image, const PipelineData::NextList& list, const json::object& next_override)
+{
+    LogFunc << VAR(cur_node_) << VAR(list);
+
+    if (!context_) {
+        LogError << "context is null";
+        return {};
+    }
+
+    if (image.empty()) {
+        LogError << "Image is empty";
+        return {};
+    }
+
+    auto node_opt = context_->get_pipeline_data(cur_node_);
+    if (!node_opt) {
+        LogError << "get_pipeline_data failed, node not exist" << VAR(cur_node_);
+        return {};
+    }
+
+    const auto& cur_node_data = *node_opt;
+
+    const json::value reco_list_cb_detail {
+        { "task_id", task_id() },
+        { "name", cur_node_ },
+        { "list", json::array(list) },
+        { "focus", cur_node_data.focus },
+    };
+
+    if (debug_mode() || !cur_node_data.focus.is_null()) {
+        notify(MaaMsg_Node_NextList_Starting, reco_list_cb_detail);
+    }
+
+    for (const auto& node : list) {
+        // 取最新的 context
+        auto node_context = context_->make_clone();
+        node_context->override_pipeline(next_override);
+        auto data_opt = node_context->get_pipeline_data(node);
+        if (!data_opt) {
+            LogError << "get_pipeline_data failed, node not exist" << VAR(node);
+            continue;
+        }
+        const auto& pipeline_data = *data_opt;
+
+        RecoResult result = run_recognition(image, pipeline_data);
+
+        if (!result.box) {
+            continue;
+        }
+
+        if (debug_mode() || !cur_node_data.focus.is_null()) {
+            notify(MaaMsg_Node_NextList_Succeeded, reco_list_cb_detail);
+        }
+
+        return result;
+    }
+
+    if (debug_mode() || !cur_node_data.focus.is_null()) {
+        notify(MaaMsg_Node_NextList_Failed, reco_list_cb_detail);
+    }
+
+    return {};
 }
 
 MAA_TASK_NS_END

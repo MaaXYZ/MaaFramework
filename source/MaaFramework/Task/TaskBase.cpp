@@ -57,94 +57,50 @@ MAA_CTRL_NS::ControllerAgent* TaskBase::controller()
     return tasker_ ? tasker_->controller() : nullptr;
 }
 
-RecoResult TaskBase::run_recognition(const cv::Mat& image, const PipelineData::NextList& list, const json::object& next_override)
+RecoResult TaskBase::run_recognition(const cv::Mat& image, const PipelineData& data)
 {
-    LogFunc << VAR(cur_node_) << VAR(list);
-
-    if (!context_) {
-        LogError << "context is null";
-        return {};
-    }
+    LogFunc << VAR(cur_node_) << VAR(data.name);
 
     if (image.empty()) {
         LogError << "Image is empty";
         return {};
     }
 
-    auto node_opt = context_->get_pipeline_data(cur_node_);
-    if (!node_opt) {
-        LogError << "get_pipeline_data failed, node not exist" << VAR(cur_node_);
+
+    if (!data.enabled) {
+        LogDebug << "node disabled" << data.name << VAR(data.enabled);
         return {};
     }
 
-    const json::value reco_list_cb_detail {
-        { "task_id", task_id() },
-        { "name", cur_node_ },
-        { "list", json::array(list) },
-        { "focus", node_opt->focus },
-    };
-    if (debug_mode() || !node_opt->focus.is_null()) {
-        notify(MaaMsg_Node_NextList_Starting, reco_list_cb_detail);
+    if (debug_mode() || !data.focus.is_null()) {
+        const json::value reco_cb_detail {
+            { "task_id", task_id() },
+            { "reco_id", 0 },
+            { "name", data.name },
+            { "focus", data.focus },
+        };
+        notify(MaaMsg_Node_Recognition_Starting, reco_cb_detail);
     }
 
-    auto list_context = context_->make_clone();
-    list_context->override_pipeline(next_override);
+    Recognizer recognizer(tasker_, *context_, image);
+    RecoResult result = recognizer.recognize(data);
 
-    Recognizer recognizer(tasker_, *list_context, image);
-
-    for (const auto& node : list) {
-        auto data_opt = list_context->get_pipeline_data(node);
-        if (!data_opt) {
-            LogError << "get_pipeline_data failed, node not exist" << VAR(node);
-            continue;
-        }
-        const auto& pipeline_data = *data_opt;
-
-        if (!pipeline_data.enabled) {
-            LogDebug << "node disabled" << node << VAR(pipeline_data.enabled);
-            continue;
-        }
-
-        if (debug_mode() || !pipeline_data.focus.is_null()) {
-            const json::value reco_cb_detail {
-                { "task_id", task_id() },
-                { "reco_id", 0 },
-                { "name", node },
-                { "focus", pipeline_data.focus },
-            };
-            notify(MaaMsg_Node_Recognition_Starting, reco_cb_detail);
-        }
-
-        RecoResult result = recognizer.recognize(pipeline_data);
-
-        if (debug_mode() || !pipeline_data.focus.is_null()) {
-            const json::value reco_cb_detail {
-                { "task_id", task_id() },
-                { "reco_id", result.reco_id },
-                { "name", node },
-                { "focus", pipeline_data.focus },
-            };
-            notify(result.box ? MaaMsg_Node_Recognition_Succeeded : MaaMsg_Node_Recognition_Failed, reco_cb_detail);
-        }
-
-        if (!result.box) {
-            continue;
-        }
-
-        LogInfo << "node hit" << VAR(result.name) << VAR(result.box);
-
-        if (debug_mode() || !node_opt->focus.is_null()) {
-            notify(MaaMsg_Node_NextList_Succeeded, reco_list_cb_detail);
-        }
-
-        return result;
+    if (debug_mode() || !data.focus.is_null()) {
+        const json::value reco_cb_detail {
+            { "task_id", task_id() },
+            { "reco_id", result.reco_id },
+            { "name", data.name },
+            { "focus", data.focus },
+        };
+        notify(result.box ? MaaMsg_Node_Recognition_Succeeded : MaaMsg_Node_Recognition_Failed, reco_cb_detail);
     }
 
-    if (debug_mode() || !node_opt->focus.is_null()) {
-        notify(MaaMsg_Node_NextList_Failed, reco_list_cb_detail);
+    if (!result.box) {
+        return {};
     }
 
-    return {};
+    LogInfo << "node hit" << VAR(result.name) << VAR(result.box);
+    return result;
 }
 
 NodeDetail TaskBase::run_action(const RecoResult& reco)
