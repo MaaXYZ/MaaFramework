@@ -310,7 +310,8 @@ struct JPipelineData
     JWaitFreezes pre_wait_freezes;
     JWaitFreezes post_wait_freezes;
     json::value focus;
-    json::object attach; // 附加 JSON 对象
+    json::object attach;
+    json::object next_override;
 
     MEO_TOJSON(
         recognition,
@@ -328,7 +329,8 @@ struct JPipelineData
         pre_wait_freezes,
         post_wait_freezes,
         focus,
-        attach);
+        attach,
+        next_override);
 };
 } // namespace PipelineV2
 

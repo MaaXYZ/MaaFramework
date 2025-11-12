@@ -278,6 +278,11 @@ bool PipelineParser::parse_node(
         return false;
     }
 
+    if (auto next_override_opt = input.find<json::object>("next_override")) {
+        data.next_override = *next_override_opt;
+    }
+    data.next_override |= default_value.next_override;
+
     if (auto attach_opt = input.find<json::object>("attach")) {
         data.attach = *std::move(attach_opt);
     }

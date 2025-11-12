@@ -3600,6 +3600,15 @@
                     "$ref": "#/$defs/jsonStringOrList",
                     "markdownDescription": "*string* | *list<string, >*\n\n接下来要执行的节点列表。可选，默认空。\n\n按顺序识别 next 中的每个节点，只执行第一个识别到的。"
                 },
+                "next_override": {
+                    "title": "Next Override Property",
+                    "description": "`next` 中节点的覆盖配置映射表。可选，默认空。",
+                    "type": "object",
+                    "additionalProperties": {
+                        "$ref": "#/$defs/Node"
+                    },
+                    "markdownDescription": "*object*\n\n`next` 中节点的覆盖配置映射表。可选，默认空。\n\n当执行 `next` 列表中的节点时，如果该节点名在 `next_override` 中存在，则会使用覆盖配置来临时修改该节点的配置，而节点本身的配置不受影响。\n\n```jsonc\n{\n    \"NodeA\": {\n        \"next\": [\"NodeB\", \"NodeC\"],\n        \"next_override\": {\n            \"NodeB\": {\n                \"is_sub\": true\n            }\n        }\n    }\n}\n```"
+                },
                 "interrupt": {
                     "title": "Interrupt Property",
                     "description": "`next` 中全部未识别到时的候补节点列表，会执行类似中断操作。可选，默认空。",
