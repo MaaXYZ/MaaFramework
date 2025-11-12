@@ -46,7 +46,7 @@ def main():
     if not all_windows:
         print("No window found.")
         exit()
-    # if can not controller the window, try running as administrator
+    # if can not control the window, try running as administrator
     # or use other screencap/input method
     controller = Win32Controller(
         hwnd=all_windows[0].hwnd,  # for demo, we just use the first Window
