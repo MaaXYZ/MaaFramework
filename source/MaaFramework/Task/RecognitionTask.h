@@ -13,10 +13,6 @@ public:
 
     virtual ~RecognitionTask() override = default;
 
-    virtual bool run() override;
-
-    virtual void post_stop() override {}
-
 public:
     MaaRecoId run_with_param(const cv::Mat& image);
 };

@@ -12,8 +12,6 @@
 #include "RuntimeCache.h"
 #include "Utils/EventDispatcher.hpp"
 
-#include "Common/Conf.h"
-
 MAA_TASK_NS_BEGIN
 class TaskBase;
 MAA_TASK_NS_END

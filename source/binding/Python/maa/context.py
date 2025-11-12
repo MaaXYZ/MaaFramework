@@ -382,7 +382,6 @@ class ContextEventSink(EventSink):
     @dataclass
     class NodeActionDetail:
         task_id: int
-        node_id: int
         action_id: int
         name: str
         focus: Any
@@ -422,7 +421,6 @@ class ContextEventSink(EventSink):
         elif msg.startswith("Node.Action"):
             detail = self.NodeActionDetail(
                 task_id=details["task_id"],
-                node_id=details["node_id"],
                 action_id=details["action_id"],
                 name=details["name"],
                 focus=details["focus"],

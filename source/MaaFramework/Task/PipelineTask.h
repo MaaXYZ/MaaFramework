@@ -17,7 +17,8 @@ public:
     virtual void post_stop() override;
 
 private:
-    NodeDetail run_reco_and_action(const PipelineData::NextList& list, const PipelineData& pretask);
+    NodeDetail run_next(const PipelineData::NextList& list, const PipelineData& pretask);
+    RecoResult recognize_list(const cv::Mat& image, const PipelineData::NextList& list);
 };
 
 MAA_TASK_NS_END

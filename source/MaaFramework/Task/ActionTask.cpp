@@ -10,13 +10,6 @@
 
 MAA_TASK_NS_BEGIN
 
-bool ActionTask::run()
-{
-    LogFunc << VAR(entry_);
-
-    return run_with_param({}, {}) != MaaInvalidId;
-}
-
 MaaActId ActionTask::run_with_param(const cv::Rect& box, const json::value& reco_detail)
 {
     LogFunc << VAR(entry_);
@@ -26,17 +19,27 @@ MaaActId ActionTask::run_with_param(const cv::Rect& box, const json::value& reco
         return MaaInvalidId;
     }
 
+    auto node_opt = context_->get_pipeline_data(entry_);
+    if (!node_opt) {
+        LogError << "get_pipeline_data failed, task not exist" << VAR(entry_);
+        return MaaInvalidId;
+    }
+
     RecoResult fake_reco {
-        .reco_id = MAA_VISION_NS::VisionBase::generate_uid(),
-        .name = entry_,
-        .algorithm = "DirectHit",
         .box = box,
         .detail = reco_detail,
     };
 
-    tasker_->runtime_cache().set_reco_detail(fake_reco.reco_id, fake_reco);
+    auto act = run_action(fake_reco, *node_opt);
 
-    return run_action(fake_reco).action_id;
+    NodeDetail result {
+        .node_id = generate_node_id(),
+        .name = entry_,
+        .action_id = act.action_id,
+    };
+    set_node_detail(result.node_id, result);
+
+    return act.action_id;
 }
 
 MAA_TASK_NS_END
