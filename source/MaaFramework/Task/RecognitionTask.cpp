@@ -23,8 +23,9 @@ MaaRecoId RecognitionTask::run_with_param(const cv::Mat& image)
         LogError << "get_pipeline_data failed, task not exist" << VAR(entry_);
         return MaaInvalidId;
     }
+    const auto& node = *node_opt;
 
-    auto reco = run_recognition(image, *node_opt);
+    auto reco = run_recognition(image, node);
 
     NodeDetail result {
         .node_id = generate_node_id(),
@@ -33,7 +34,7 @@ MaaRecoId RecognitionTask::run_with_param(const cv::Mat& image)
         .action_id = MaaInvalidId,
         .completed = reco.box.has_value(),
     };
-    set_node_detail(result.node_id, result);
+    set_node_detail(result.node_id, result, node.focus);
 
     return reco.reco_id;
 }

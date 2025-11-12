@@ -24,6 +24,7 @@ MaaActId ActionTask::run_with_param(const cv::Rect& box, const json::value& reco
         LogError << "get_pipeline_data failed, task not exist" << VAR(entry_);
         return MaaInvalidId;
     }
+    const auto& node = *node_opt;
 
     RecoResult fake_reco {
         .reco_id = MaaInvalidId,
@@ -31,16 +32,16 @@ MaaActId ActionTask::run_with_param(const cv::Rect& box, const json::value& reco
         .detail = reco_detail,
     };
 
-    auto act = run_action(fake_reco, *node_opt);
+    auto act = run_action(fake_reco, node);
 
     NodeDetail result {
         .node_id = generate_node_id(),
-        .name = entry_,
+        .name = node.name,
         .reco_id = fake_reco.reco_id,
         .action_id = act.action_id,
         .completed = act.success,
     };
-    set_node_detail(result.node_id, result);
+    set_node_detail(result.node_id, result, node.focus);
 
     return act.action_id;
 }
