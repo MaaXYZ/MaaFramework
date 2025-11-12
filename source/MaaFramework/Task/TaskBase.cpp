@@ -57,7 +57,7 @@ MAA_CTRL_NS::ControllerAgent* TaskBase::controller()
     return tasker_ ? tasker_->controller() : nullptr;
 }
 
-RecoResult TaskBase::run_recognition(const cv::Mat& image, const PipelineData::NextList& list)
+RecoResult TaskBase::run_recognition(const cv::Mat& image, const PipelineData::NextList& list, const json::object& next_override)
 {
     LogFunc << VAR(cur_node_) << VAR(list);
 
@@ -87,10 +87,13 @@ RecoResult TaskBase::run_recognition(const cv::Mat& image, const PipelineData::N
         notify(MaaMsg_Node_NextList_Starting, reco_list_cb_detail);
     }
 
-    Recognizer recognizer(tasker_, *context_, image);
+    auto list_context = context_->make_clone();
+    list_context->override_pipeline(next_override);
+
+    Recognizer recognizer(tasker_, *list_context, image);
 
     for (const auto& node : list) {
-        auto data_opt = context_->get_pipeline_data(node);
+        auto data_opt = list_context->get_pipeline_data(node);
         if (!data_opt) {
             LogError << "get_pipeline_data failed, node not exist" << VAR(node);
             continue;

@@ -37,7 +37,7 @@ protected:
     MAA_RES_NS::ResourceMgr* resource();
     MAA_CTRL_NS::ControllerAgent* controller();
 
-    RecoResult run_recognition(const cv::Mat& image, const PipelineData::NextList& list);
+    RecoResult run_recognition(const cv::Mat& image, const PipelineData::NextList& list, const json::object& next_override = {});
     NodeDetail run_action(const RecoResult& reco);
     cv::Mat screencap();
     MaaTaskId generate_node_id();

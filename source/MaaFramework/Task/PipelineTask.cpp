@@ -148,7 +148,7 @@ NodeDetail PipelineTask::run_reco_and_action(const PipelineData::NextList& list,
         current_clock = std::chrono::steady_clock::now();
         cv::Mat image = screencap();
 
-        reco = run_recognition(image, list);
+        reco = run_recognition(image, list, pretask.next_override);
         if (reco.box) { // hit
             break;
         }
