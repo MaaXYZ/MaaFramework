@@ -108,6 +108,11 @@ ActionResult TaskBase::run_action(const RecoResult& reco, const PipelineData& da
         return {};
     }
 
+    if (!reco.box) {
+        LogError << "reco box is nullopt";
+        return {};
+    }
+
     if (debug_mode() || !data.focus.is_null()) {
         const json::value cb_detail {
             { "task_id", task_id() },
