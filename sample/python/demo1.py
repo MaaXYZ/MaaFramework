@@ -139,7 +139,7 @@ class MyRecongition(CustomRecognition):
         new_context = context.clone()
         new_context.override_pipeline({"MyCustomOCR": {"roi": [100, 200, 300, 400]}})
         reco_detail = new_context.run_recognition("MyCustomOCR", argv.image)
-        if reco_detail:
+        if reco_detail and reco_detail.hit:
             # get result you want from reco_detail
             box = reco_detail.best_result.box
             context.tasker.controller.post_click(box[0], box[1]).wait()
