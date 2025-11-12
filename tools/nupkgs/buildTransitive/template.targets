@@ -5,34 +5,37 @@
     <MaaFrameworkPlatform Condition="'$(MaaFrameworkPlatform)' == ''">$(RuntimeIdentifiers)</MaaFrameworkPlatform>
   </PropertyGroup>
   <ItemGroup>
-    <_MaaFrameworkPlatforms KeepDuplicates="false" Include="$(MaaFrameworkPlatform)" />
+    <_MaaFrameworkPlatforms Condition="'@(_MaaFrameworkPlatforms)' == '' And '$(MaaFrameworkPlatform)' != ''" Include="$(MaaFrameworkPlatform)" />
+    <_MaaFrameworkPlatforms Condition="'$(MaaFrameworkPlatform)' == ''" Include="__RID__" />
   </ItemGroup>
-  <PropertyGroup>
-    <_CopyMaaFrameworkRuntime-__RID__ Condition="'$(MaaFrameworkPlatform)' == ''">true</_CopyMaaFrameworkRuntime-__RID__>
-    <_CopyMaaFrameworkRuntime-__RID__ Condition="'$(MaaFrameworkPlatform)' != ''">@(_MaaFrameworkPlatforms->AnyHaveMetadataValue('Identity', '__RID__'))</_CopyMaaFrameworkRuntime-__RID__>
-  </PropertyGroup>
-  <ItemGroup Condition="$(_CopyMaaFrameworkRuntime-__RID__)">
-    <_MaaFrameworkPlugins Rid="__RID__" KeepDuplicates="false" Include="$(MSBuildThisFileDirectory)..\bin\plugins\**" />
-    <_MaaFrameworkRuntime Rid="__RID__" KeepDuplicates="false" Include="$(MSBuildThisFileDirectory)..\bin\**"
-                                                                 Exclude="$(MSBuildThisFileDirectory)..\bin\plugins\**" />
+  <ItemGroup Condition="@(_MaaFrameworkPlatforms->AnyHaveMetadataValue('Identity', '__RID__'))">
+    <_MaaFrameworkPlugins KeepDuplicates="false" Include="$(MSBuildThisFileDirectory)..\bin\plugins\**">
+      <DestinationFolder>plugins\__RID__\</DestinationFolder>
+    </_MaaFrameworkPlugins>
+    <_MaaFrameworkRuntime KeepDuplicates="false" Include="$(MSBuildThisFileDirectory)..\bin\**"
+                                                 Exclude="@(_MaaFrameworkPlugins)">
+      <DestinationFolder>runtimes\__RID__\native\</DestinationFolder>
+    </_MaaFrameworkRuntime>
   </ItemGroup>
 
-  <Target Name="CopyMaaFrameworkRuntime-__RID__-FilesToOutputDirectory"
-          AfterTargets="CopyFilesToOutputDirectory"
-          Condition="$(_CopyMaaFrameworkRuntime-__RID__)">
-    <Message Text="[MaaFramework] Copying bin from $(MSBuildThisFileDirectory) to $(OutDir)..." />
-    <Copy SourceFiles="@(_MaaFrameworkPlugins->WithMetadataValue('Rid', '__RID__'))"
-          DestinationFiles="@(_MaaFrameworkPlugins->WithMetadataValue('Rid', '__RID__')->'$(OutDir)plugins\__RID__\%(RecursiveDir)%(Filename)%(Extension)')" />
-    <Copy SourceFiles="@(_MaaFrameworkRuntime->WithMetadataValue('Rid', '__RID__'))"
-          DestinationFiles="@(_MaaFrameworkRuntime->WithMetadataValue('Rid', '__RID__')->'$(OutDir)runtimes\__RID__\native\%(RecursiveDir)%(Filename)%(Extension)')" />
-  </Target>
-  <Target Name="CopyMaaFrameworkRuntime-__RID__-FilesToPublishDirectory"
-          AfterTargets="CopyFilesToPublishDirectory"
-          Condition="$(_CopyMaaFrameworkRuntime-__RID__)">
-    <Message Text="[MaaFramework] Copying bin from $(MSBuildThisFileDirectory) to $(PublishDir)..."/>
-    <Copy SourceFiles="@(_MaaFrameworkPlugins->WithMetadataValue('Rid', '__RID__'))"
-          DestinationFiles="@(_MaaFrameworkPlugins->WithMetadataValue('Rid', '__RID__')->'$(PublishDir)plugins\__RID__\%(RecursiveDir)%(Filename)%(Extension)')" />
-    <Copy SourceFiles="@(_MaaFrameworkRuntime->WithMetadataValue('Rid', '__RID__'))"
-          DestinationFiles="@(_MaaFrameworkRuntime->WithMetadataValue('Rid', '__RID__')->'$(PublishDir)runtimes\__RID__\native\%(RecursiveDir)%(Filename)%(Extension)')" />
+  <Target Name="CopyMaaFrameworkRuntimeFilesToOutput" AfterTargets="ResolveAssemblyReferences">
+    <ItemGroup>
+      <Content Include="@(_MaaFrameworkPlugins)">
+        <NuGetPackageId>__PID__</NuGetPackageId>
+        <Link>%(_MaaFrameworkPlugins.DestinationFolder)%(RecursiveDir)%(FileName)%(Extension)</Link>
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        <PublishState>Included</PublishState>
+        <Visible>false</Visible>
+        <Pack>false</Pack>
+      </Content>
+      <Content Include="@(_MaaFrameworkRuntime)">
+        <NuGetPackageId>__PID__</NuGetPackageId>
+        <Link>%(_MaaFrameworkRuntime.DestinationFolder)%(RecursiveDir)%(FileName)%(Extension)</Link>
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        <PublishState>Included</PublishState>
+        <Visible>false</Visible>
+        <Pack>false</Pack>
+      </Content>
+    </ItemGroup>
   </Target>
 </Project>
