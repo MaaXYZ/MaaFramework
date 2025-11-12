@@ -391,18 +391,6 @@ class ContextEventSink(EventSink):
     ):
         pass
 
-    @dataclass
-    class NodeEndDetail:
-        task_id: int
-        node_id: int
-        name: str
-        focus: Any
-
-    def on_node_end(
-        self, context: Context, noti_type: NotificationType, detail: NodeEndDetail
-    ):
-        pass
-
     def on_raw_notification(self, context: Context, msg: str, details: dict):
         pass
 
@@ -438,15 +426,6 @@ class ContextEventSink(EventSink):
                 focus=details["focus"],
             )
             self.on_node_action(context, noti_type, detail)
-
-        elif msg.startswith("Node.End"):
-            detail = self.NodeEndDetail(
-                task_id=details["task_id"],
-                node_id=details["node_id"],
-                name=details["name"],
-                focus=details["focus"],
-            )
-            self.on_node_end(context, noti_type, detail)
 
         else:
             self.on_unknown_notification(context, msg, details)

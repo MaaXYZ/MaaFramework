@@ -113,18 +113,4 @@
 #define MaaMsg_Node_Action_Failed ("Node.Action.Failed")
 /// @}
 
-/**
- * @{
- * @brief Message for the node.
- *
- * payload: {
- *     task_id: number,
- *     node_id: number,
- *     name: string,
- *     focus: any,
- * }
- */
-#define MaaMsg_Node_End_Succeeded ("Node.End.Succeeded")
-#define MaaMsg_Node_End_Failed ("Node.End.Failed")
-
 /** @} */

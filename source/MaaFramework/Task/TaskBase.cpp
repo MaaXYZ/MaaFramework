@@ -148,7 +148,7 @@ MaaTaskId TaskBase::generate_node_id()
     return ++s_global_node_id;
 }
 
-void TaskBase::set_node_detail(int64_t node_id, NodeDetail detail, const json::value& focus)
+void TaskBase::set_node_detail(int64_t node_id, NodeDetail detail)
 {
     if (!tasker_) {
         LogError << "tasker is null";
@@ -165,16 +165,6 @@ void TaskBase::set_node_detail(int64_t node_id, NodeDetail detail, const json::v
     task_detail.node_ids.emplace_back(node_id);
 
     set_task_detail(task_detail);
-
-    if (debug_mode() || !focus.is_null()) {
-        const json::value node_cb_detail {
-            { "task_id", task_id() },
-            { "node_id", node_id },
-            { "name", detail.name },
-            { "focus", focus },
-        };
-        notify(detail.completed ? MaaMsg_Node_End_Succeeded : MaaMsg_Node_End_Failed, node_cb_detail);
-    }
 }
 
 void TaskBase::set_task_detail(TaskDetail detail)

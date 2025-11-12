@@ -172,9 +172,8 @@ NodeDetail PipelineTask::run_next(const PipelineData::NextList& list, const Pipe
         LogError << "get_pipeline_data failed, node not exist" << VAR(reco.name);
         return {};
     }
-    auto& hit_node = *hit_opt;
 
-    auto act = run_action(reco, hit_node);
+    auto act = run_action(reco, *hit_opt);
 
     NodeDetail result {
         .node_id = generate_node_id(),
@@ -183,7 +182,7 @@ NodeDetail PipelineTask::run_next(const PipelineData::NextList& list, const Pipe
         .action_id = act.action_id,
         .completed = act.success,
     };
-    set_node_detail(result.node_id, result, hit_node.focus);
+    set_node_detail(result.node_id, result);
 
     return result;
 }

@@ -42,7 +42,7 @@ protected:
     ActionResult run_action(const RecoResult& reco, const PipelineData& data);
     cv::Mat screencap();
     MaaTaskId generate_node_id();
-    void set_node_detail(int64_t node_id, NodeDetail detail, const json::value& focus);
+    void set_node_detail(int64_t node_id, NodeDetail detail);
     void set_task_detail(TaskDetail detail);
 
     bool debug_mode() const;
