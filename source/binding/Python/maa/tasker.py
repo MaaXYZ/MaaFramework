@@ -331,6 +331,7 @@ class Tasker:
             reco_id=reco_id,
             name=name.get(),
             algorithm=algorithm,
+            hit=bool(hit),
             box=bool(hit) and box.get() or None,
             all_results=parsed_detail[0],
             filterd_results=parsed_detail[1],

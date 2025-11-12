@@ -620,6 +620,7 @@ class RecognitionDetail:
     reco_id: int
     name: str
     algorithm: AlgorithmEnum
+    hit: bool
     box: Optional[Rect]
 
     all_results: List[RecognitionResult]
