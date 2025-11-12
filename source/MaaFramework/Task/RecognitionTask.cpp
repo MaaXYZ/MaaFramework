@@ -30,6 +30,8 @@ MaaRecoId RecognitionTask::run_with_param(const cv::Mat& image)
         .node_id = generate_node_id(),
         .name = entry_,
         .reco_id = reco.reco_id,
+        .action_id = MaaInvalidId,
+        .completed = reco.box.has_value(),
     };
     set_node_detail(result.node_id, result);
 

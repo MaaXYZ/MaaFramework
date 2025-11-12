@@ -26,6 +26,7 @@ MaaActId ActionTask::run_with_param(const cv::Rect& box, const json::value& reco
     }
 
     RecoResult fake_reco {
+        .reco_id = MaaInvalidId,
         .box = box,
         .detail = reco_detail,
     };
@@ -35,7 +36,9 @@ MaaActId ActionTask::run_with_param(const cv::Rect& box, const json::value& reco
     NodeDetail result {
         .node_id = generate_node_id(),
         .name = entry_,
+        .reco_id = fake_reco.reco_id,
         .action_id = act.action_id,
+        .completed = act.success,
     };
     set_node_detail(result.node_id, result);
 
