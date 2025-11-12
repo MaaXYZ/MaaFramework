@@ -177,7 +177,7 @@ NodeDetail PipelineTask::run_next(const PipelineData::NextList& list, const Pipe
 
     NodeDetail result {
         .node_id = generate_node_id(),
-        .name = entry_,
+        .name = hit_opt->name,
         .reco_id = reco.reco_id,
         .action_id = act.action_id,
         .completed = act.success,
