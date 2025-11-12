@@ -14,10 +14,6 @@ public:
 
     virtual ~ActionTask() override = default;
 
-    virtual bool run() override;
-
-    virtual void post_stop() override {}
-
 public:
     MaaActId run_with_param(const cv::Rect& box, const json::value& reco_detail);
 };
