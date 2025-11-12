@@ -9,5 +9,6 @@
     <releaseNotes>Release notes are at https://github.com/MaaXYZ/MaaFramework/releases.</releaseNotes>
     <copyright>Copyright © 2021-$year$ MAA Team and Contributers. All rights reserved.</copyright>
     <tags>MAA native runtimes C++ computer-vision black-box-testing</tags>
+    <projectUrl>https://maafw.xyz/</projectUrl>
     <repository type="git" url="https://github.com/MaaXYZ/MaaFramework/"  branch="$branch$" commit="$commit$" />
     <readme>README.md</readme>
