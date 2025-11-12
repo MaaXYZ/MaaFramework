@@ -1,5 +1,5 @@
 {
-	"Version": "(main) v5.0.1",
+	"Version": "(main) v5.0.2",
 	"Compounds": {
 		"MaaAgentClientAPI.h": {
 			"Location": "include/MaaAgentClient/MaaAgentClientAPI.h",
@@ -6686,7 +6686,7 @@
 					"Description": {
 						"Brief": "Message for the action of node.",
 						"Details": [
-							"details_json: { task_id: number, node_id: number, action_id: number, name: string, focus: any, }"
+							"details_json: { task_id: number, action_id: number, name: string, focus: any, }"
 						],
 						"Deprecated": null
 					},
@@ -6696,7 +6696,7 @@
 					"Description": {
 						"Brief": "Message for the action of node.",
 						"Details": [
-							"details_json: { task_id: number, node_id: number, action_id: number, name: string, focus: any, }"
+							"details_json: { task_id: number, action_id: number, name: string, focus: any, }"
 						],
 						"Deprecated": null
 					},
@@ -6706,7 +6706,7 @@
 					"Description": {
 						"Brief": "Message for the action of node.",
 						"Details": [
-							"details_json: { task_id: number, node_id: number, action_id: number, name: string, focus: any, }"
+							"details_json: { task_id: number, action_id: number, name: string, focus: any, }"
 						],
 						"Deprecated": null
 					},
