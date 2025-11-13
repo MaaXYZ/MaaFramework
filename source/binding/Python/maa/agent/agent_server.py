@@ -93,7 +93,7 @@ class AgentServer:
 
         Library.agent_server().MaaAgentServerDetach()
 
-    _sink_holder: Dict[int, "EventSink"] = {}
+    _sink_holder: dict[int, "EventSink"] = {}
 
     @staticmethod
     def resource_sink():
