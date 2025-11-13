@@ -60,28 +60,34 @@ declare global {
             hash: string
         }
 
+        type TaskerContextNextListNotify = {
+            msg: 'NextList.Starting' | 'NextList.Succeeded' | 'NextList.Failed'
+            task_id: number // TaskId
+            name: string
+            list: string[]
+            focus: unknown
+        }
+
+        type TaskerContextRecognitionNotify = {
+            msg: 'Recognition.Starting' | 'Recognition.Succeeded' | 'Recognition.Failed'
+            task_id: number // TaskId
+            reco_id: number // RecoId
+            name: string
+            focus: unknown
+        }
+
+        type TaskerContextActionNotify = {
+            msg: 'Action.Starting' | 'Action.Succeeded' | 'Action.Failed'
+            task_id: number // TaskId
+            action_id: number // ActId
+            name: string
+            focus: unknown
+        }
+
         type TaskerContextNotify =
-            | {
-                  msg: 'NextList.Starting' | 'NextList.Succeeded' | 'NextList.Failed'
-                  task_id: number // TaskId
-                  name: string
-                  list: string[]
-                  focus: unknown
-              }
-            | {
-                  msg: 'Recognition.Starting' | 'Recognition.Succeeded' | 'Recognition.Failed'
-                  task_id: number // TaskId
-                  reco_id: number // RecoId
-                  name: string
-                  focus: unknown
-              }
-            | {
-                  msg: 'Action.Starting' | 'Action.Succeeded' | 'Action.Failed'
-                  task_id: number // TaskId
-                  action_id: number // ActId
-                  name: string
-                  focus: unknown
-              }
+            | TaskerContextNextListNotify
+            | TaskerContextRecognitionNotify
+            | TaskerContextActionNotify
 
         class TaskJob extends Job<TaskId, Tasker, TaskDetail> {}
 
