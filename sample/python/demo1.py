@@ -46,7 +46,7 @@ def main():
     if not all_windows:
         print("No window found.")
         exit()
-    # if can not controller the window, try running as administrator
+    # if can not control the window, try running as administrator
     # or use other screencap/input method
     controller = Win32Controller(
         hwnd=all_windows[0].hwnd,  # for demo, we just use the first Window
@@ -139,7 +139,7 @@ class MyRecongition(CustomRecognition):
         new_context = context.clone()
         new_context.override_pipeline({"MyCustomOCR": {"roi": [100, 200, 300, 400]}})
         reco_detail = new_context.run_recognition("MyCustomOCR", argv.image)
-        if reco_detail:
+        if reco_detail and reco_detail.hit:
             # get result you want from reco_detail
             box = reco_detail.best_result.box
             context.tasker.controller.post_click(box[0], box[1]).wait()

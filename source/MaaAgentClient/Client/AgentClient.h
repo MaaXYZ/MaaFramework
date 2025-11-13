@@ -17,7 +17,7 @@ class AgentClient
 public:
     AgentClient() = default;
     AgentClient(const std::string& identifier);
-    virtual ~AgentClient() override = default;
+    virtual ~AgentClient() override;
 
 public: // MaaAgentClient
     virtual std::string identifier() const override;

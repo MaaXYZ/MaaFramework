@@ -70,7 +70,11 @@ class Context:
             pipeline_override: 用于覆盖的 json / JSON for overriding
 
         Returns:
-            Optional[RecognitionDetail]: 识别详情，执行失败则返回 None / Recognition detail, or None if execution failed
+            Optional[RecognitionDetail]: 识别结果。无论是否命中，只要尝试进行了识别，就会返回；
+            请通过 RecognitionDetail.hit 判断是否命中。只在未能启动识别流程时（如 entry 不存在、node disabled、image 为空等），才可能返回 None。
+            Recognition detail. It always returns as long as recognition was attempted;
+            use RecognitionDetail.hit to determine hit. Only return None if the recognition process fails to start
+            (e.g., entry does not exist, node is disabled, image is empty).
         """
         image_buffer = ImageBuffer()
         image_buffer.set(image)
@@ -105,7 +109,11 @@ class Context:
             pipeline_override: 用于覆盖的 json / JSON for overriding
 
         Returns:
-            Optional[ActionDetail]: 操作详情，执行失败则返回 None / Action detail, or None if execution failed
+            Optional[ActionDetail]: 操作结果。无论动作是否成功，只要尝试执行了动作，就会返回；
+            请通过 ActionDetail.success 判断是否执行成功。只在未能启动动作流程时（如 entry 不存在、node disabled 等），才可能返回 None。
+            Action detail. It always returns as long as the action was attempted;
+            use ActionDetail.success to determine success. Only return None if the action flow fails to start
+            (e.g., entry does not exist, node is disabled, etc.).
         """
         rect = RectBuffer()
         rect.set(box)
@@ -382,7 +390,6 @@ class ContextEventSink(EventSink):
     @dataclass
     class NodeActionDetail:
         task_id: int
-        node_id: int
         action_id: int
         name: str
         focus: Any
@@ -422,7 +429,6 @@ class ContextEventSink(EventSink):
         elif msg.startswith("Node.Action"):
             detail = self.NodeActionDetail(
                 task_id=details["task_id"],
-                node_id=details["node_id"],
                 action_id=details["action_id"],
                 name=details["name"],
                 focus=details["focus"],

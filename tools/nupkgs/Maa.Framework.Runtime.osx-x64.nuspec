@@ -3,4 +3,5 @@
     <description>Native binaries of MaaFramework Embedded for osx-x64.</description>
   </metadata>
   <files>
-    <file src="$root_path$\assets\MAA-macos-x86_64\bin\**\*.dylib*" target="runtimes\osx-x64\native" />
+    <file src="buildTransitive/Maa.Framework.Runtime.osx-x64.targets" target="buildTransitive" />
+    <file src="$root_path$\assets\MAA-macos-x86_64\bin\**\*.dylib*" target="bin" />

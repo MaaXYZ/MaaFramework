@@ -22,13 +22,14 @@ public:
     TaskBase(std::string entry, Tasker* tasker, std::shared_ptr<Context> context);
     virtual ~TaskBase() = default;
 
-    virtual bool run() = 0;
-    virtual void post_stop() = 0;
+public:
+    virtual bool run() { return true; }
+
+    virtual void post_stop() {}
 
 public:
     bool override_pipeline(const json::value& pipeline_override);
 
-public:
     Tasker* tasker() const;
     MaaTaskId task_id() const;
     const std::string& entry() const;
@@ -38,7 +39,7 @@ protected:
     MAA_CTRL_NS::ControllerAgent* controller();
 
     RecoResult run_recognition(const cv::Mat& image, const PipelineData& data);
-    NodeDetail run_action(const RecoResult& reco);
+    ActionResult run_action(const RecoResult& reco, const PipelineData& data);
     cv::Mat screencap();
     MaaTaskId generate_node_id();
     void set_node_detail(int64_t node_id, NodeDetail detail);

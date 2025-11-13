@@ -235,8 +235,8 @@ std::optional<MAA_TASK_NS::RecoResult> RemoteTasker::get_reco_result(MaaRecoId r
     result.reco_id = resp_opt->reco_id;
     result.name = std::move(resp_opt->name);
     result.algorithm = std::move(resp_opt->algorithm);
-
-    result.box = cv::Rect(resp_opt->box[0], resp_opt->box[1], resp_opt->box[2], resp_opt->box[3]);
+    result.box =
+        resp_opt->hit ? std::make_optional(cv::Rect(resp_opt->box[0], resp_opt->box[1], resp_opt->box[2], resp_opt->box[3])) : std::nullopt;
     result.detail = std::move(resp_opt->detail);
     result.raw = server_.get_image_cache(resp_opt->raw);
     for (const auto& draw : resp_opt->draws) {

@@ -41,9 +41,6 @@ class OCRer
     , public RecoResultAPI<OCRerResult>
 {
 public:
-    using Cache = std::map<cv::Rect, ResultsVec, RectComparator>;
-
-public:
     OCRer(
         cv::Mat image,
         cv::Rect roi,
@@ -51,7 +48,6 @@ public:
         std::shared_ptr<fastdeploy::vision::ocr::DBDetector> deter,
         std::shared_ptr<fastdeploy::vision::ocr::Recognizer> recer,
         std::shared_ptr<fastdeploy::pipeline::PPOCRv3> ocrer,
-        Cache& cache,
         std::string name = "");
 
 private:
@@ -81,8 +77,6 @@ private:
     std::shared_ptr<fastdeploy::pipeline::PPOCRv3> ocrer_ = nullptr;
 
     inline static std::mutex s_predict_mutex_;
-
-    Cache& cache_;
 };
 
 MAA_VISION_NS_END

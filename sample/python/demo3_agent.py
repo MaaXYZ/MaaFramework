@@ -35,6 +35,10 @@ class MyRecongition(CustomRecognition):
             argv.image,
             pipeline_override={"MyCustomOCR": {"roi": [100, 100, 200, 300]}},
         )
+        if reco_detail and reco_detail.hit:
+            # get result you want from reco_detail
+            box = reco_detail.best_result.box
+            context.tasker.controller.post_click(box[0], box[1]).wait()
 
         # context is a reference, will override the pipeline for whole task
         context.override_pipeline({"MyCustomOCR": {"roi": [1, 1, 114, 514]}})

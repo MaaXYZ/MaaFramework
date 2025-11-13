@@ -198,7 +198,7 @@ class Tasker:
         """
         return bool(Library.framework().MaaTaskerClearCache(self._handle))
 
-    _sink_holder: Dict[int, "TaskerEventSink"] = {}
+    _sink_holder: Dict[int, "EventSink"] = {}
 
     def add_sink(self, sink: "TaskerEventSink") -> Optional[int]:
         """添加实例事件监听器 / Add instance event listener
@@ -331,6 +331,7 @@ class Tasker:
             reco_id=reco_id,
             name=name.get(),
             algorithm=algorithm,
+            hit=bool(hit),
             box=bool(hit) and box.get() or None,
             all_results=parsed_detail[0],
             filterd_results=parsed_detail[1],
