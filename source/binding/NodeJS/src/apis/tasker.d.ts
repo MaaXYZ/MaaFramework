@@ -53,7 +53,7 @@ declare global {
         }
 
         type TaskerNotify = {
-            msg: 'Task.Starting' | 'Task.Completed' | 'Task.Failed'
+            msg: 'Task.Starting' | 'Task.Succeeded' | 'Task.Failed'
             task_id: number // TaskId
             entry: string
             uuid: string
