@@ -2,7 +2,7 @@ import ctypes
 import json
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Dict, List, Union, Optional, Any
+from typing import Any
 
 from .define import *
 from .library import Library
@@ -15,7 +15,7 @@ class AdbDevice:
     address: str
     screencap_methods: int
     input_methods: int
-    config: Dict[str, Any]
+    config: dict[str, Any]
 
 
 @dataclass
@@ -30,7 +30,7 @@ class Toolkit:
     ### public ###
 
     @staticmethod
-    def init_option(user_path: Union[str, Path], default_config: Dict = {}) -> bool:
+    def init_option(user_path: str | Path, default_config: dict = {}) -> bool:
         """从 user_path 中加载全局配置 / Load global config from user_path
 
         Args:
@@ -51,8 +51,8 @@ class Toolkit:
 
     @staticmethod
     def find_adb_devices(
-        specified_adb: Optional[Union[str, Path]] = None
-    ) -> List[AdbDevice]:
+        specified_adb: str | Path | None = None
+    ) -> list[AdbDevice]:
         """搜索所有已知安卓模拟器 / Search all known Android emulators
 
         Args:
@@ -106,7 +106,7 @@ class Toolkit:
         return devices
 
     @staticmethod
-    def find_desktop_windows() -> List[DesktopWindow]:
+    def find_desktop_windows() -> list[DesktopWindow]:
         """查询所有窗口信息 / Query all window info
 
         Returns:

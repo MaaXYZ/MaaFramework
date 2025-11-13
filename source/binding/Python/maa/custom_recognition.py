@@ -34,7 +34,7 @@ class CustomRecognition(ABC):
         self,
         context: Context,
         argv: AnalyzeArg,
-    ) -> Union[AnalyzeResult, Optional[RectType]]:
+    ) -> AnalyzeResult | RectType | None:
         raise NotImplementedError
 
     @property
@@ -71,7 +71,7 @@ class CustomRecognition(ABC):
 
         image = ImageBuffer(c_image).get()
 
-        result: Union[CustomRecognition.AnalyzeResult, Optional[RectType]] = (
+        result: CustomRecognition.AnalyzeResult | RectType | None = (
             self.analyze(
                 context,
                 CustomRecognition.AnalyzeArg(

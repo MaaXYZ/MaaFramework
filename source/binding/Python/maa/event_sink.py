@@ -1,7 +1,6 @@
 import ctypes
 import json
 from abc import ABC
-from typing import Tuple
 from enum import IntEnum
 
 from .define import MaaEventCallback
@@ -41,19 +40,20 @@ class EventSink(ABC):
     @staticmethod
     def _gen_c_param(
         sink: "EventSink",
-    ) -> Tuple[MaaEventCallback, ctypes.c_void_p]:
+    ) -> tuple[MaaEventCallback, ctypes.c_void_p]:
         return sink.c_callback, sink.c_callback_arg
 
     @staticmethod
     def _notification_type(message: str) -> NotificationType:
-        if message.endswith(".Starting"):
-            return NotificationType.Starting
-        elif message.endswith(".Succeeded"):
-            return NotificationType.Succeeded
-        elif message.endswith(".Failed"):
-            return NotificationType.Failed
-        else:
-            return NotificationType.Unknown
+        match message:
+            case msg if msg.endswith(".Starting"):
+                return NotificationType.Starting
+            case msg if msg.endswith(".Succeeded"):
+                return NotificationType.Succeeded
+            case msg if msg.endswith(".Failed"):
+                return NotificationType.Failed
+            case _:
+                return NotificationType.Unknown
 
     @staticmethod
     @MaaEventCallback

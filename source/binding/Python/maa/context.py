@@ -1,6 +1,6 @@
 import ctypes
 import json
-from typing import Any, Dict, Optional, Tuple
+from typing import Any
 
 import numpy
 
@@ -31,9 +31,7 @@ class Context:
     def __del__(self):
         pass
 
-    def run_task(
-        self, entry: str, pipeline_override: Dict = {}
-    ) -> Optional[TaskDetail]:
+    def run_task(self, entry: str, pipeline_override: dict = {}) -> TaskDetail | None:
         """同步执行任务 / Synchronously execute task
 
         Args:
@@ -57,8 +55,8 @@ class Context:
         self,
         entry: str,
         image: numpy.ndarray,
-        pipeline_override: Dict = {},
-    ) -> Optional[RecognitionDetail]:
+        pipeline_override: dict = {},
+    ) -> RecognitionDetail | None:
         """同步执行识别逻辑 / Synchronously execute recognition logic
 
         不会执行后续操作, 不会执行后续 next
@@ -91,8 +89,8 @@ class Context:
         entry: str,
         box: RectType = (0, 0, 0, 0),
         reco_detail: str = "",
-        pipeline_override: Dict = {},
-    ) -> Optional[ActionDetail]:
+        pipeline_override: dict = {},
+    ) -> ActionDetail | None:
         """同步执行操作逻辑 / Synchronously execute action logic
 
         不会执行后续 next
@@ -124,7 +122,7 @@ class Context:
 
         return self.tasker.get_action_detail(act_id)
 
-    def override_pipeline(self, pipeline_override: Dict) -> bool:
+    def override_pipeline(self, pipeline_override: dict) -> bool:
         """覆盖 pipeline / Override pipeline_override
 
         Args:
@@ -142,7 +140,7 @@ class Context:
             )
         )
 
-    def override_next(self, name: str, next_list: List[str]) -> bool:
+    def override_next(self, name: str, next_list: list[str]) -> bool:
         """覆盖任务的 next 列表 / Override the next list of task
 
         如果节点不存在，此方法会失败
@@ -183,7 +181,7 @@ class Context:
             )
         )
 
-    def get_node_data(self, name: str) -> Optional[Dict]:
+    def get_node_data(self, name: str) -> dict | None:
         """获取任务当前的定义 / Get the current definition of task
 
         Args:
@@ -207,7 +205,7 @@ class Context:
         except json.JSONDecodeError:
             return None
 
-    def get_node_object(self, name: str) -> Optional[JPipelineData]:
+    def get_node_object(self, name: str) -> JPipelineData | None:
         node_data = self.get_node_data(name)
 
         if not node_data:
@@ -263,7 +261,7 @@ class Context:
         self._tasker = Tasker(handle=tasker_handle)
 
     @staticmethod
-    def _gen_post_param(entry: str, pipeline_override: Dict) -> Tuple[bytes, bytes]:
+    def _gen_post_param(entry: str, pipeline_override: dict) -> tuple[bytes, bytes]:
         pipeline_json = json.dumps(pipeline_override, ensure_ascii=False)
 
         return (
@@ -400,32 +398,30 @@ class ContextEventSink(EventSink):
         self.on_raw_notification(context, msg, details)
 
         noti_type = EventSink._notification_type(msg)
-        if msg.startswith("Node.NextList"):
-            detail = self.NodeNextListDetail(
-                task_id=details["task_id"],
-                name=details["name"],
-                next_list=details["list"],
-                focus=details["focus"],
-            )
-            self.on_node_next_list(context, noti_type, detail)
-
-        elif msg.startswith("Node.Recognition"):
-            detail = self.NodeRecognitionDetail(
-                task_id=details["task_id"],
-                reco_id=details["reco_id"],
-                name=details["name"],
-                focus=details["focus"],
-            )
-            self.on_node_recognition(context, noti_type, detail)
-
-        elif msg.startswith("Node.Action"):
-            detail = self.NodeActionDetail(
-                task_id=details["task_id"],
-                action_id=details["action_id"],
-                name=details["name"],
-                focus=details["focus"],
-            )
-            self.on_node_action(context, noti_type, detail)
-
-        else:
-            self.on_unknown_notification(context, msg, details)
+        match msg:
+            case msg if msg.startswith("Node.NextList"):
+                detail = self.NodeNextListDetail(
+                    task_id=details["task_id"],
+                    name=details["name"],
+                    next_list=details["list"],
+                    focus=details["focus"],
+                )
+                self.on_node_next_list(context, noti_type, detail)
+            case msg if msg.startswith("Node.Recognition"):
+                detail = self.NodeRecognitionDetail(
+                    task_id=details["task_id"],
+                    reco_id=details["reco_id"],
+                    name=details["name"],
+                    focus=details["focus"],
+                )
+                self.on_node_recognition(context, noti_type, detail)
+            case msg if msg.startswith("Node.Action"):
+                detail = self.NodeActionDetail(
+                    task_id=details["task_id"],
+                    action_id=details["action_id"],
+                    name=details["name"],
+                    focus=details["focus"],
+                )
+                self.on_node_action(context, noti_type, detail)
+            case _:
+                self.on_unknown_notification(context, msg, details)

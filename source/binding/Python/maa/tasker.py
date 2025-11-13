@@ -1,7 +1,6 @@
 import ctypes
 import json
 from pathlib import Path
-from typing import Dict, Optional, Union
 
 from .define import *
 from .library import Library
@@ -21,7 +20,7 @@ class Tasker:
     def __init__(
         self,
         notification_handler: None = None,
-        handle: Optional[MaaTaskerHandle] = None,
+        handle: MaaTaskerHandle | None = None,
     ):
         """创建实例 / Create instance
 
@@ -117,7 +116,7 @@ class Tasker:
         """
         return bool(Library.framework().MaaTaskerInited(self._handle))
 
-    def post_task(self, entry: str, pipeline_override: Dict = {}) -> JobWithResult:
+    def post_task(self, entry: str, pipeline_override: dict = {}) -> JobWithResult:
         """异步执行任务 / Asynchronously execute task
 
         这是一个异步操作，会立即返回一个 Job 对象
@@ -168,7 +167,7 @@ class Tasker:
         """
         return bool(Library.framework().MaaTaskerStopping(self._handle))
 
-    def get_latest_node(self, name: str) -> Optional[NodeDetail]:
+    def get_latest_node(self, name: str) -> NodeDetail | None:
         """获取任务的最新节点号 / Get latest node id for task
 
         Args:
@@ -198,9 +197,9 @@ class Tasker:
         """
         return bool(Library.framework().MaaTaskerClearCache(self._handle))
 
-    _sink_holder: Dict[int, "EventSink"] = {}
+    _sink_holder: dict[int, "EventSink"] = {}
 
-    def add_sink(self, sink: "TaskerEventSink") -> Optional[int]:
+    def add_sink(self, sink: "TaskerEventSink") -> int | None:
         """添加实例事件监听器 / Add instance event listener
 
         Args:
@@ -233,7 +232,7 @@ class Tasker:
         """清除所有实例事件监听器 / Clear all instance event listeners"""
         Library.framework().MaaTaskerClearSinks(self._handle)
 
-    def add_context_sink(self, sink: "ContextEventSink") -> Optional[int]:
+    def add_context_sink(self, sink: "ContextEventSink") -> int | None:
         """添加上下文事件监听器 / Add context event listener
 
         Args:
@@ -269,7 +268,7 @@ class Tasker:
     ### private ###
 
     @staticmethod
-    def _gen_post_param(entry: str, pipeline_override: Dict) -> Tuple[bytes, bytes]:
+    def _gen_post_param(entry: str, pipeline_override: dict) -> tuple[bytes, bytes]:
         pipeline_json = json.dumps(pipeline_override, ensure_ascii=False)
 
         return (
@@ -291,7 +290,7 @@ class Tasker:
     def _task_wait(self, id: int) -> ctypes.c_int32:
         return Library.framework().MaaTaskerWait(self._handle, id)
 
-    def get_recognition_detail(self, reco_id: int) -> Optional[RecognitionDetail]:
+    def get_recognition_detail(self, reco_id: int) -> RecognitionDetail | None:
         """获取识别信息 / Get recognition info
 
         Args:
@@ -341,7 +340,7 @@ class Tasker:
             draw_images=draws.get(),
         )
 
-    def get_action_detail(self, action_id: int) -> Optional[ActionDetail]:
+    def get_action_detail(self, action_id: int) -> ActionDetail | None:
         name = StringBuffer()
         action = StringBuffer()
         box = RectBuffer()
@@ -377,7 +376,7 @@ class Tasker:
             raw_detail=raw_detail,
         )
 
-    def get_node_detail(self, node_id: int) -> Optional[NodeDetail]:
+    def get_node_detail(self, node_id: int) -> NodeDetail | None:
         """获取节点信息 / Get node info
 
         Args:
@@ -424,7 +423,7 @@ class Tasker:
             completed=bool(c_completed),
         )
 
-    def get_task_detail(self, task_id: int) -> Optional[TaskDetail]:
+    def get_task_detail(self, task_id: int) -> TaskDetail | None:
         """获取任务信息 / Get task info
 
         Args:
@@ -473,7 +472,7 @@ class Tasker:
         )
 
     @staticmethod
-    def set_log_dir(path: Union[Path, str]) -> bool:
+    def set_log_dir(path: Path | str) -> bool:
         """设置日志路径 / Set the log path
 
         Args:
@@ -561,7 +560,7 @@ class Tasker:
         )
 
     @staticmethod
-    def load_plugin(path: Union[Path, str]) -> bool:
+    def load_plugin(path: Path | str) -> bool:
         """加载插件 / Load plugin
 
         可以使用完整路径或仅使用名称, 仅使用名称时会在系统目录和当前目录中搜索. 也可以递归搜索目录中的插件
@@ -583,7 +582,7 @@ class Tasker:
     _api_properties_initialized: bool = False
 
     @staticmethod
-    def _parse_recognition_raw_detail(algorithm: AlgorithmEnum, raw_detail: Dict):
+    def _parse_recognition_raw_detail(algorithm: AlgorithmEnum, raw_detail: dict):
         if not raw_detail:
             return [], [], None
 
@@ -591,9 +590,9 @@ class Tasker:
         if not ResultType:
             return [], [], None
 
-        all_results: List[RecognitionResult] = []
-        filterd_results: List[RecognitionResult] = []
-        best_result: Optional[RecognitionResult] = None
+        all_results: list[RecognitionResult] = []
+        filterd_results: list[RecognitionResult] = []
+        best_result: RecognitionResult | None = None
 
         raw_all_results = raw_detail.get("all", [])
         raw_filterd_results = raw_detail.get("filtered", [])
@@ -610,8 +609,8 @@ class Tasker:
 
     @staticmethod
     def _parse_action_raw_detail(
-        action: ActionEnum, raw_detail: Dict
-    ) -> Optional[ActionResult]:
+        action: ActionEnum, raw_detail: dict
+    ) -> ActionResult | None:
         if not raw_detail:
             return None
 
@@ -812,14 +811,14 @@ class TaskerEventSink(EventSink):
         self.on_raw_notification(tasker, msg, details)
 
         noti_type = EventSink._notification_type(msg)
-        if msg.startswith("Tasker.Task"):
-            detail = self.TaskerTaskDetail(
-                task_id=details["task_id"],
-                entry=details["entry"],
-                uuid=details["uuid"],
-                hash=details["hash"],
-            )
-            self.on_tasker_task(tasker, noti_type, detail)
-
-        else:
-            self.on_unknown_notification(tasker, msg, details)
+        match msg:
+            case msg if msg.startswith("Tasker.Task"):
+                detail = self.TaskerTaskDetail(
+                    task_id=details["task_id"],
+                    entry=details["entry"],
+                    uuid=details["uuid"],
+                    hash=details["hash"],
+                )
+                self.on_tasker_task(tasker, noti_type, detail)
+            case _:
+                self.on_unknown_notification(tasker, msg, details)

@@ -13,7 +13,7 @@ def main():
     if len(sys.argv) < 2:
         print("Usage: python agent_main.py <socket_id>")
         print("socket_id is provided by AgentIdentifier.")
-        exit(1)
+        sys.exit(1)
 
     socket_id = sys.argv[-1]
 

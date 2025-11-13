@@ -1,6 +1,5 @@
 import copy
 import ctypes
-from typing import List, Optional, Union
 
 import numpy
 
@@ -12,7 +11,7 @@ class StringBuffer:
     _handle: MaaStringBufferHandle
     _own: bool
 
-    def __init__(self, handle: Optional[MaaStringBufferHandle] = None):
+    def __init__(self, handle: MaaStringBufferHandle | None = None):
         self._set_api_properties()
 
         if handle:
@@ -34,7 +33,7 @@ class StringBuffer:
         sz = Library.framework().MaaStringBufferSize(self._handle)
         return ctypes.string_at(buff, sz).decode()
 
-    def set(self, value: Union[str, bytes]) -> bool:
+    def set(self, value: str | bytes) -> bool:
         if isinstance(value, str):
             value = value.encode()
         return bool(
@@ -92,7 +91,7 @@ class StringListBuffer:
     _handle: MaaStringListBufferHandle
     _own: bool
 
-    def __init__(self, handle: Optional[MaaStringListBufferHandle] = None):
+    def __init__(self, handle: MaaStringListBufferHandle | None = None):
         self._set_api_properties()
 
         if handle:
@@ -109,7 +108,7 @@ class StringListBuffer:
         if self._handle and self._own:
             Library.framework().MaaStringListBufferDestroy(self._handle)
 
-    def get(self) -> List[str]:
+    def get(self) -> list[str]:
         count = Library.framework().MaaStringListBufferSize(self._handle)
         result = []
         for i in range(count):
@@ -118,7 +117,7 @@ class StringListBuffer:
             result.append(s)
         return result
 
-    def set(self, value: List[str]) -> bool:
+    def set(self, value: list[str]) -> bool:
         self.clear()
         for s in value:
             if not self.append(s):
@@ -194,7 +193,7 @@ class ImageBuffer:
     _handle: MaaImageBufferHandle
     _own: bool
 
-    def __init__(self, c_handle: Optional[MaaImageBufferHandle] = None):
+    def __init__(self, c_handle: MaaImageBufferHandle | None = None):
         self._set_api_properties()
 
         if c_handle:
@@ -295,7 +294,7 @@ class ImageListBuffer:
     _handle: MaaImageListBufferHandle
     _own: bool
 
-    def __init__(self, c_handle: Optional[MaaImageListBufferHandle] = None):
+    def __init__(self, c_handle: MaaImageListBufferHandle | None = None):
         self._set_api_properties()
 
         if c_handle:
@@ -312,7 +311,7 @@ class ImageListBuffer:
         if self._handle and self._own:
             Library.framework().MaaImageListBufferDestroy(self._handle)
 
-    def get(self) -> List[numpy.ndarray]:
+    def get(self) -> list[numpy.ndarray]:
         count = Library.framework().MaaImageListBufferSize(self._handle)
         result = []
         for i in range(count):
@@ -321,7 +320,7 @@ class ImageListBuffer:
             result.append(img)
         return result
 
-    def set(self, value: List[numpy.ndarray]) -> bool:
+    def set(self, value: list[numpy.ndarray]) -> bool:
         self.clear()
         for img in value:
             if not self.append(img):
@@ -393,7 +392,7 @@ class RectBuffer:
     _handle: MaaRectHandle
     _own: bool
 
-    def __init__(self, c_handle: Optional[MaaRectHandle] = None):
+    def __init__(self, c_handle: MaaRectHandle | None = None):
         self._set_api_properties()
 
         if c_handle:

@@ -31,7 +31,7 @@ class CustomAction(ABC):
         self,
         context: Context,
         argv: RunArg,
-    ) -> Union[RunResult, bool]:
+    ) -> RunResult | bool:
         raise NotImplementedError
 
     @property
@@ -70,7 +70,7 @@ class CustomAction(ABC):
 
         box = RectBuffer(c_box).get()
 
-        result: Union[CustomAction.RunResult, bool] = self.run(
+        result: CustomAction.RunResult | bool = self.run(
             context,
             CustomAction.RunArg(
                 task_detail=task_detail,

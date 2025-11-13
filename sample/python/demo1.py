@@ -28,7 +28,7 @@ def main():
     adb_devices = Toolkit.find_adb_devices()
     if not adb_devices:
         print("No ADB device found.")
-        exit()
+        exit(1)
 
     # for demo, we just use the first device
     device = adb_devices[0]
@@ -45,7 +45,7 @@ def main():
     all_windows = Toolkit.find_desktop_windows()
     if not all_windows:
         print("No window found.")
-        exit()
+        exit(1)
     # if can not control the window, try running as administrator
     # or use other screencap/input method
     controller = Win32Controller(
@@ -83,7 +83,7 @@ def main():
 
     if not tasker.inited:
         print("Failed to init MAA.")
-        exit()
+        exit(1)
 
     # just an example, use it in json
     pipeline_override = {

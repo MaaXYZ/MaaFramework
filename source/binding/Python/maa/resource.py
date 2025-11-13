@@ -1,7 +1,6 @@
 import ctypes
 import pathlib
 import json
-from typing import Optional, Union, List, Dict
 from dataclasses import dataclass, field
 
 import numpy
@@ -23,7 +22,7 @@ class Resource:
     def __init__(
         self,
         notification_handler: None = None,
-        handle: Optional[MaaResourceHandle] = None,
+        handle: MaaResourceHandle | None = None,
     ):
         """创建资源 / Create resource
 
@@ -59,7 +58,7 @@ class Resource:
         if self._handle and self._own:
             Library.framework().MaaResourceDestroy(self._handle)
 
-    def post_bundle(self, path: Union[pathlib.Path, str]) -> Job:
+    def post_bundle(self, path: pathlib.Path | str) -> Job:
         """异步加载资源 / Asynchronously load resources from path
 
         这是一个异步操作，会立即返回一个 Job 对象
@@ -76,7 +75,7 @@ class Resource:
         )
         return Job(res_id, self._status, self._wait)
 
-    def override_pipeline(self, pipeline_override: Dict) -> bool:
+    def override_pipeline(self, pipeline_override: dict) -> bool:
         """覆盖 pipeline / Override pipeline_override
 
         Args:
@@ -94,7 +93,7 @@ class Resource:
             )
         )
 
-    def override_next(self, name: str, next_list: List[str]) -> bool:
+    def override_next(self, name: str, next_list: list[str]) -> bool:
         """覆盖任务的 next 列表 / Override the next list of task
 
         注意：此方法会直接设置 next 列表，即使节点不存在也会创建
@@ -135,7 +134,7 @@ class Resource:
             )
         )
 
-    def get_node_data(self, name: str) -> Optional[Dict]:
+    def get_node_data(self, name: str) -> dict | None:
         """获取任务当前的定义 / Get the current definition of task
 
         Args:
@@ -158,7 +157,7 @@ class Resource:
         except json.JSONDecodeError:
             return None
 
-    def get_node_object(self, name: str) -> Optional[JPipelineData]:
+    def get_node_object(self, name: str) -> JPipelineData | None:
         node_data = self.get_node_data(name)
 
         if not node_data:
@@ -408,9 +407,9 @@ class Resource:
             raise RuntimeError("Failed to get hash.")
         return buffer.get()
 
-    _sink_holder: Dict[int, "ResourceEventSink"] = {}
+    _sink_holder: dict[int, "ResourceEventSink"] = {}
 
-    def add_sink(self, sink: "ResourceEventSink") -> Optional[int]:
+    def add_sink(self, sink: "ResourceEventSink") -> int | None:
         """添加资源事件监听器 / Add resource event listener
 
         Args:
@@ -635,13 +634,13 @@ class ResourceEventSink(EventSink):
         self.on_raw_notification(resource, msg, details)
 
         noti_type = EventSink._notification_type(msg)
-        if msg.startswith("Resource.Loading"):
-            detail = self.ResourceLoadingDetail(
-                res_id=details["res_id"],
-                hash=details["hash"],
-                path=details["path"],
-            )
-            self.on_resource_loading(resource, noti_type, detail)
-
-        else:
-            self.on_unknown_notification(resource, msg, details)
+        match msg:
+            case msg if msg.startswith("Resource.Loading"):
+                detail = self.ResourceLoadingDetail(
+                    res_id=details["res_id"],
+                    hash=details["hash"],
+                    path=details["path"],
+                )
+                self.on_resource_loading(resource, noti_type, detail)
+            case _:
+                self.on_unknown_notification(resource, msg, details)

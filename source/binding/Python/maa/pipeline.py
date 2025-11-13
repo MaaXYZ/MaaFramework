@@ -1,10 +1,10 @@
 import json
 from dataclasses import dataclass
-from typing import Any, List, Tuple, Union, Dict
+from typing import Any
 
 # Type aliases to match C++ std::variant types
-JRect = Tuple[int, int, int, int]  # std::array<int, 4>
-JTarget = Union[bool, str, JRect]  # std::variant<bool, std::string, JRect>
+JRect = tuple[int, int, int, int]  # std::array<int, 4>
+JTarget = bool | str | JRect  # std::variant<bool, std::string, JRect>
 
 
 # Recognition parameter dataclasses (matching C++ JRecognitionParam variants)
@@ -17,8 +17,8 @@ class JDirectHit:
 class JTemplateMatch:
     roi: JTarget
     roi_offset: JRect
-    template: List[str]
-    threshold: List[float]
+    template: list[str]
+    threshold: list[float]
     order_by: str
     index: int
     method: int
@@ -29,7 +29,7 @@ class JTemplateMatch:
 class JFeatureMatch:
     roi: JTarget
     roi_offset: JRect
-    template: List[str]
+    template: list[str]
     detector: str
     order_by: str
     count: int
@@ -42,8 +42,8 @@ class JFeatureMatch:
 class JColorMatch:
     roi: JTarget
     roi_offset: JRect
-    lower: List[List[int]]
-    upper: List[List[int]]
+    lower: list[list[int]]
+    upper: list[list[int]]
     order_by: str
     method: int
     count: int
@@ -55,9 +55,9 @@ class JColorMatch:
 class JOCR:
     roi: JTarget
     roi_offset: JRect
-    expected: List[str]
+    expected: list[str]
     threshold: float
-    replace: List[List[str]]
+    replace: list[list[str]]
     order_by: str
     index: int
     only_rec: bool
@@ -68,9 +68,9 @@ class JOCR:
 class JNeuralNetworkClassify:
     roi: JTarget
     roi_offset: JRect
-    labels: List[str]
+    labels: list[str]
     model: str
-    expected: List[int]
+    expected: list[int]
     order_by: str
     index: int
 
@@ -79,10 +79,10 @@ class JNeuralNetworkClassify:
 class JNeuralNetworkDetect:
     roi: JTarget
     roi_offset: JRect
-    labels: List[str]
+    labels: list[str]
     model: str
-    expected: List[int]
-    threshold: List[float]
+    expected: list[int]
+    threshold: list[float]
     order_by: str
     index: int
 
@@ -96,16 +96,16 @@ class JCustomRecognition:
 
 
 # Recognition parameter union type
-JRecognitionParam = Union[
-    JDirectHit,
-    JTemplateMatch,
-    JFeatureMatch,
-    JColorMatch,
-    JOCR,
-    JNeuralNetworkClassify,
-    JNeuralNetworkDetect,
-    JCustomRecognition,
-]
+JRecognitionParam = (
+    JDirectHit
+    | JTemplateMatch
+    | JFeatureMatch
+    | JColorMatch
+    | JOCR
+    | JNeuralNetworkClassify
+    | JNeuralNetworkDetect
+    | JCustomRecognition
+)
 
 
 # Action parameter dataclasses (matching C++ JActionParam variants)
@@ -134,17 +134,17 @@ class JSwipe:
     starting: int
     begin: JTarget
     begin_offset: JRect
-    end: List[JTarget]
-    end_offset: List[JRect]
-    end_hold: List[int]
-    duration: List[int]
+    end: list[JTarget]
+    end_offset: list[JRect]
+    end_hold: list[int]
+    duration: list[int]
     only_hover: bool
     contact: int = 0
 
 
 @dataclass
 class JMultiSwipe:
-    swipes: List[JSwipe]
+    swipes: list[JSwipe]
 
 
 @dataclass
@@ -162,12 +162,12 @@ class JTouchUp:
 
 @dataclass
 class JClickKey:
-    key: List[int]
+    key: list[int]
 
 
 @dataclass
 class JLongPressKey:
-    key: List[int]
+    key: list[int]
     duration: int
 
 
@@ -199,7 +199,7 @@ class JStopTask:
 @dataclass
 class JCommand:
     exec: str
-    args: List[str]
+    args: list[str]
     detach: bool
 
 
@@ -212,24 +212,24 @@ class JCustomAction:
 
 
 # Action parameter union type
-JActionParam = Union[
-    JDoNothing,
-    JClick,
-    JLongPress,
-    JSwipe,
-    JMultiSwipe,
-    JTouch,
-    JTouchUp,
-    JClickKey,
-    JLongPressKey,
-    JKey,
-    JInputText,
-    JStartApp,
-    JStopApp,
-    JStopTask,
-    JCommand,
-    JCustomAction,
-]
+JActionParam = (
+    JDoNothing
+    | JClick
+    | JLongPress
+    | JSwipe
+    | JMultiSwipe
+    | JTouch
+    | JTouchUp
+    | JClickKey
+    | JLongPressKey
+    | JKey
+    | JInputText
+    | JStartApp
+    | JStopApp
+    | JStopTask
+    | JCommand
+    | JCustomAction
+)
 
 
 # Main pipeline dataclasses
@@ -260,12 +260,12 @@ class JWaitFreezes:
 class JPipelineData:
     recognition: JRecognition
     action: JAction
-    next: List[str]
-    interrupt: List[str]
+    next: list[str]
+    interrupt: list[str]
     is_sub: bool
     rate_limit: int
     timeout: int
-    on_error: List[str]
+    on_error: list[str]
     inverse: bool
     enabled: bool
     pre_delay: int
@@ -273,7 +273,7 @@ class JPipelineData:
     pre_wait_freezes: JWaitFreezes
     post_wait_freezes: JWaitFreezes
     focus: Any
-    attach: Dict  # 附加 JSON 对象
+    attach: dict  # 附加 JSON 对象
 
 
 class JPipelineParser:
@@ -354,7 +354,7 @@ class JPipelineParser:
         return cls._parse_param(param_type, param_data, param_type_map, JDoNothing)
 
     @classmethod
-    def parse_pipeline_data(cls, pipeline_data: Union[str, Dict]) -> JPipelineData:
+    def parse_pipeline_data(cls, pipeline_data: str | dict) -> JPipelineData:
         """Parse JSON string to JPipelineData dataclass with proper variant types."""
         if isinstance(pipeline_data, dict):
             data = pipeline_data

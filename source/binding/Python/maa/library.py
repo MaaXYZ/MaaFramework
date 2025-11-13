@@ -1,7 +1,6 @@
 import ctypes
 import pathlib
 import platform
-from typing import Optional
 
 from .define import *
 
@@ -9,10 +8,10 @@ from .define import *
 class Library:
     _is_agent_server: bool = False
 
-    _framework: Optional[ctypes.CDLL] = None
-    _toolkit: Optional[ctypes.CDLL] = None
-    _agent_client: Optional[ctypes.CDLL] = None
-    _agent_server: Optional[ctypes.CDLL] = None
+    _framework: ctypes.CDLL | None = None
+    _toolkit: ctypes.CDLL | None = None
+    _agent_client: ctypes.CDLL | None = None
+    _agent_server: ctypes.CDLL | None = None
     _lib_type = None
 
     @staticmethod

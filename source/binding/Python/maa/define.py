@@ -1,11 +1,9 @@
 import ctypes
 import platform
 from dataclasses import dataclass
-from enum import IntEnum
-from typing import List, Tuple, Union, Dict, Optional
+from enum import IntEnum, StrEnum
 
 import numpy
-from strenum import StrEnum  # For Python 3.9/3.10
 
 MaaBool = ctypes.c_uint8
 MaaSize = ctypes.c_size_t
@@ -404,17 +402,20 @@ class MaaCustomControllerCallbacks(ctypes.Structure):
 class Status:
     _status: MaaStatusEnum
 
-    def __init__(self, status: Union[MaaStatus, MaaStatusEnum, int]):
-        if isinstance(status, MaaStatus):
-            self._status = MaaStatusEnum(status.value)
-        elif isinstance(status, MaaStatusEnum):
-            self._status = status
-        else:
-            self._status = MaaStatusEnum(status)
+    def __init__(self, status: MaaStatus | MaaStatusEnum | int):
+        match status:
+            case s if isinstance(s, MaaStatus):
+                self._status = MaaStatusEnum(s.value)
+            case s if isinstance(s, MaaStatusEnum):
+                self._status = s
+            case s if isinstance(s, int):
+                self._status = MaaStatusEnum(s)
+            case _:
+                self._status = MaaStatusEnum(status)
 
     @property
     def done(self) -> bool:
-        return self._status in [MaaStatusEnum.succeeded, MaaStatusEnum.failed]
+        return self._status in {MaaStatusEnum.succeeded, MaaStatusEnum.failed}
 
     @property
     def succeeded(self) -> bool:
@@ -440,11 +441,7 @@ class Point:
 
     def __add__(
         self,
-        other: Union[
-            "Point",
-            Tuple[int, int],
-            List[int],
-        ],
+        other: "Point" | tuple[int, int] | list[int],
     ):
         if (
             isinstance(other, Point)
@@ -477,11 +474,7 @@ class Rect:
 
     def __add__(
         self,
-        other: Union[
-            "Rect",
-            Tuple[int, int, int, int],
-            List[int],
-        ],
+        other: "Rect" | tuple[int, int, int, int] | list[int],
     ):
         if (
             isinstance(other, Rect)
@@ -509,19 +502,9 @@ class Rect:
         return list(self)[key]
 
 
-PointType = Union[
-    Point,
-    List[int],
-    numpy.ndarray,
-    Tuple[int, int],
-]
+PointType = Point | list[int] | numpy.ndarray | tuple[int, int]
 
-RectType = Union[
-    Rect,
-    List[int],
-    numpy.ndarray,
-    Tuple[int, int, int, int],
-]
+RectType = Rect | list[int] | numpy.ndarray | tuple[int, int, int, int]
 
 
 class AlgorithmEnum(StrEnum):
@@ -590,18 +573,18 @@ NeuralNetworkDetectResult = NeuralNetworkResult
 @dataclass
 class CustomRecognitionResult:
     box: Rect
-    detail: Union[str, Dict]
+    detail: str | dict
 
 
-RecognitionResult = Union[
-    TemplateMatchResult,
-    FeatureMatchResult,
-    ColorMatchResult,
-    OCRResult,
-    NeuralNetworkClassifyResult,
-    NeuralNetworkDetectResult,
-    CustomRecognitionResult,
-]
+RecognitionResult = (
+    TemplateMatchResult
+    | FeatureMatchResult
+    | ColorMatchResult
+    | OCRResult
+    | NeuralNetworkClassifyResult
+    | NeuralNetworkDetectResult
+    | CustomRecognitionResult
+)
 
 AlgorithmResultDict = {
     AlgorithmEnum.DirectHit: None,
@@ -621,15 +604,15 @@ class RecognitionDetail:
     name: str
     algorithm: AlgorithmEnum
     hit: bool
-    box: Optional[Rect]
+    box: Rect | None
 
-    all_results: List[RecognitionResult]
-    filterd_results: List[RecognitionResult]
-    best_result: Optional[RecognitionResult]
+    all_results: list[RecognitionResult]
+    filterd_results: list[RecognitionResult]
+    best_result: RecognitionResult | None
 
-    raw_detail: Dict
+    raw_detail: dict
     raw_image: numpy.ndarray  # only valid in debug mode
-    draw_images: List[numpy.ndarray]  # only valid in debug mode
+    draw_images: list[numpy.ndarray]  # only valid in debug mode
 
 
 @dataclass
@@ -646,26 +629,26 @@ class LongPressActionResult:
 @dataclass
 class SwipeActionResult:
     begin: Point
-    end: List[Point]
-    end_hold: List[int]
-    duration: List[int]
+    end: list[Point]
+    end_hold: list[int]
+    duration: list[int]
     only_hover: bool
     starting: int
 
 
 @dataclass
 class MultiSwipeActionResult:
-    swipes: List[SwipeActionResult]
+    swipes: list[SwipeActionResult]
 
 
 @dataclass
 class ClickKeyActionResult:
-    keycode: List[int]
+    keycode: list[int]
 
 
 @dataclass
 class LongPressKeyActionResult:
-    keycode: List[int]
+    keycode: list[int]
     duration: int
 
 
@@ -679,17 +662,17 @@ class AppActionResult:
     package: str
 
 
-ActionResult = Union[
-    ClickActionResult,
-    LongPressActionResult,
-    SwipeActionResult,
-    MultiSwipeActionResult,
-    ClickKeyActionResult,
-    LongPressKeyActionResult,
-    InputTextActionResult,
-    AppActionResult,
-    None,
-]
+ActionResult = (
+    ClickActionResult
+    | LongPressActionResult
+    | SwipeActionResult
+    | MultiSwipeActionResult
+    | ClickKeyActionResult
+    | LongPressKeyActionResult
+    | InputTextActionResult
+    | AppActionResult
+    | None
+)
 
 ActionResultDict = {
     ActionEnum.DoNothing: None,
@@ -715,8 +698,8 @@ class ActionDetail:
     action: ActionEnum
     box: Rect
     success: bool
-    result: Optional[ActionResult]
-    raw_detail: Dict
+    result: ActionResult | None
+    raw_detail: dict
 
 
 @dataclass
@@ -732,7 +715,7 @@ class NodeDetail:
 class TaskDetail:
     task_id: int
     entry: str
-    nodes: List[NodeDetail]
+    nodes: list[NodeDetail]
     status: Status
 
 

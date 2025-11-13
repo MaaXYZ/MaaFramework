@@ -3,7 +3,7 @@ from abc import abstractmethod
 from ctypes import c_int32
 import os
 from pathlib import Path
-from typing import Any, Dict, Optional, Union
+from typing import Any
 
 from .buffer import ImageBuffer, StringBuffer
 from .event_sink import EventSink, NotificationType
@@ -25,7 +25,7 @@ class Controller:
 
     def __init__(
         self,
-        handle: Optional[MaaControllerHandle] = None,
+        handle: MaaControllerHandle | None = None,
     ):
         self._set_api_properties()
 
@@ -335,9 +335,9 @@ class Controller:
             )
         )
 
-    _sink_holder: Dict[int, "ControllerEventSink"] = {}
+    _sink_holder: dict[int, "ControllerEventSink"] = {}
 
-    def add_sink(self, sink: "ControllerEventSink") -> Optional[int]:
+    def add_sink(self, sink: "ControllerEventSink") -> int | None:
         """添加控制器事件监听器 / Add controller event listener
 
         Args:
@@ -546,12 +546,12 @@ class AdbController(Controller):
 
     def __init__(
         self,
-        adb_path: Union[str, Path],
+        adb_path: str | Path,
         address: str,
         screencap_methods: int = MaaAdbScreencapMethodEnum.Default,
         input_methods: int = MaaAdbInputMethodEnum.Default,
-        config: Dict[str, Any] = {},
-        agent_path: Union[str, Path] = AGENT_BINARY_PATH,
+        config: dict[str, Any] = {},
+        agent_path: str | Path = AGENT_BINARY_PATH,
         notification_handler: None = None,
     ):
         """创建 Adb 控制器 / Create Adb controller
@@ -607,7 +607,7 @@ class Win32Controller(Controller):
 
     def __init__(
         self,
-        hWnd: Union[ctypes.c_void_p, int, None],
+        hWnd: ctypes.c_void_p | int | None,
         screencap_method: int = MaaWin32ScreencapMethodEnum.DXGI_DesktopDup,
         mouse_method: int = MaaWin32InputMethodEnum.Seize,
         keyboard_method: int = MaaWin32InputMethodEnum.Seize,
@@ -659,10 +659,10 @@ class DbgController(Controller):
 
     def __init__(
         self,
-        read_path: Union[str, Path],
-        write_path: Union[str, Path],
+        read_path: str | Path,
+        write_path: str | Path,
         dbg_type: int,
-        config: Dict[str, Any] = {},
+        config: dict[str, Any] = {},
         notification_handler: None = None,
     ):
         """创建调试控制器 / Create debug controller
@@ -1119,14 +1119,14 @@ class ControllerEventSink(EventSink):
         self.on_raw_notification(controller, msg, details)
 
         noti_type = EventSink._notification_type(msg)
-        if msg.startswith("Controller.Action"):
-            detail = self.ControllerActionDetail(
-                ctrl_id=details["ctrl_id"],
-                uuid=details["uuid"],
-                action=details["action"],
-                param=details["param"],
-            )
-            self.on_controller_action(controller, noti_type, detail)
-
-        else:
-            self.on_unknown_notification(controller, msg, details)
+        match msg:
+            case msg if msg.startswith("Controller.Action"):
+                detail = self.ControllerActionDetail(
+                    ctrl_id=details["ctrl_id"],
+                    uuid=details["uuid"],
+                    action=details["action"],
+                    param=details["param"],
+                )
+                self.on_controller_action(controller, noti_type, detail)
+            case _:
+                self.on_unknown_notification(controller, msg, details)
