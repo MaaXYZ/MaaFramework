@@ -26,7 +26,7 @@ class CustomRecognition(ABC):
 
     @dataclass
     class AnalyzeResult:
-        box: Optional[RectType]
+        box: RectType | None
         detail: str
 
     @abstractmethod

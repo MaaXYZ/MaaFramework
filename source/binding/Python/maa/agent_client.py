@@ -11,7 +11,7 @@ from .buffer import StringBuffer
 class AgentClient:
     _handle: MaaAgentClientHandle
 
-    def __init__(self, identifier: Optional[str] = None):
+    def __init__(self, identifier: str | None = None):
         self._set_api_properties()
 
         if identifier:
@@ -30,7 +30,7 @@ class AgentClient:
             Library.agent_client().MaaAgentClientDestroy(self._handle)
 
     @property
-    def identifier(self) -> Optional[str]:
+    def identifier(self) -> str | None:
         id_buffer = StringBuffer()
         if not Library.agent_client().MaaAgentClientIdentifier(
             self._handle, id_buffer._handle
