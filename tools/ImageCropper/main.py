@@ -63,7 +63,7 @@ print("Usage: python3 main.py [device serial]\n"
 
 
 # 解析命令行参数
-def parse_args() -> Controller:
+def parse_args() -> Controller | None:
     global device_serial
     if len(sys.argv) > 1:
         device_serial = sys.argv[1]
@@ -172,7 +172,7 @@ def draw(rois: list[Roimage]) -> None:
 
 
 # 左键裁剪ROI区域
-crop_start: Roimage = None  # 相对 win_roimage ，正在裁剪的区域
+crop_start: Roimage | None = None  # 相对 win_roimage ，正在裁剪的区域
 crop_end = Roimage(0, 0, 0, 0, win_roimage).getRoiInRoot()
 
 
@@ -268,7 +268,7 @@ def readfile(file: str):
 
 
 # 截图
-def screenshot() -> np.ndarray:
+def screenshot() -> np.ndarray | None:
     if not controller:
         return None
     print("Screenshot in progress...")
@@ -279,7 +279,7 @@ def screenshot() -> np.ndarray:
 
 
 # 获取标准化的 Roimage
-def get_std_roimage() -> Roimage:
+def get_std_roimage() -> Roimage | None:
     global file_name
     if len(files):
         file_name = files.pop(0)
@@ -335,23 +335,23 @@ while True:
     key = cv2.waitKey(0) & 0xFF
     cropping = True
     # q Q esc
-    if key in [ord("q"), ord("Q"), 27]:
+    if key in {ord("q"), ord("Q"), 27}:
         cv2.destroyAllWindows()
-        exit()
+        exit(0)
     # 0
     if key == 48:
         cv2.setTrackbarPos('Scale', trackbars_name, 100)
         continue
     # 1 ~ 5
-    if key in range(49, 54):
+    if 49 <= key < 54:
         cv2.setTrackbarPos('Scale', trackbars_name, 100 + 15 * (key - 48))
         continue
     # 6 ~ 9
-    if key in range(54, 58):
+    if 54 <= key < 58:
         cv2.setTrackbarPos('Scale', trackbars_name, 100 - 15 * (58 - key))
         continue
     # z Z delete backspace
-    if key in [ord("z"), ord("Z"), 0, 8]:
+    if key in {ord("z"), ord("Z"), 0, 8}:
         if len(crop_list):
             crop_list.pop()
         continue
@@ -362,22 +362,22 @@ while True:
     connected = False
     mains = []
     # r R
-    if key in [ord("r"), ord("R")]:
+    if key in {ord("r"), ord("R")}:
         needSave = False
     # c C
-    elif key in [ord("c")]:
+    elif key == ord("c"):
         needSave = False
         needColorMatch = True
         connected = False
-    elif key in [ord("C")]:
+    elif key == ord("C"):
         needSave = False
         needColorMatch = True
         connected = True
     # f F
-    elif key in [ord("f"), ord("F")]:
+    elif key in {ord("f"), ord("F")}:
         crop_list.append(Roimage(0, 0, 0, 0, std_roimage))
     # s S enter
-    elif key not in [ord("s"), ord("S"), ord("\r"), ord("\n")]:
+    elif key not in {ord("s"), ord("S"), ord("\r"), ord("\n")}:
         continue
 
     for roi in crop_list:

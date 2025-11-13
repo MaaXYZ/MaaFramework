@@ -1,7 +1,7 @@
 import cv2
 import numpy as np
 
-def kmeansClusterColors(img, method: int = -1, K: int = 3, criteria = (cv2.TERM_CRITERIA_EPS + cv2.TERM_CRITERIA_MAX_ITER, 100, 0.2)) -> list:
+def kmeansClusterColors(img, method: int = -1, K: int = 3, criteria: tuple = (cv2.TERM_CRITERIA_EPS + cv2.TERM_CRITERIA_MAX_ITER, 100, 0.2)) -> list:
     '''
     将图片颜色类聚
     

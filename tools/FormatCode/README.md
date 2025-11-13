@@ -15,7 +15,7 @@
 
 ## 前置要求
 
-1. **Python 3.6+**
+1. **Python 3.12+**
 2. **clang-format**：需要安装 `clang-format` 并在系统 PATH 中可用
 
 ### 安装 clang-format

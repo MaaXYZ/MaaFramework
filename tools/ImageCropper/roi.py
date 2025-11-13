@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 # 描述符基类,用于类型检查
-class Typed(object):
+class Typed:
 
     def __init__(self, name, expected_type):
         self.name = name
@@ -33,8 +33,8 @@ def typeassert(**kwargs):
     return decorate
 
 @typeassert(width=(float, int), height=(float, int), x=(float, int), y=(float, int), zoom=(float, int))
-class Roi(object):
-    def __init__(self, width: float, height: float, x: float = 0 , y: float = 0, parent: Roi = None, zoom: float = 1) -> None:
+class Roi:
+    def __init__(self, width: float, height: float, x: float = 0 , y: float = 0, parent: Roi | None = None, zoom: float = 1) -> None:
         '''感兴趣区域
 
         相对于父 Roi，由宽、高、左上角顶点坐标所描述的一个感兴趣区域
@@ -193,7 +193,7 @@ class Roi(object):
         roi = self.getRoiFromParent()
         return self if self is roi else roi.getRoiInRoot()
     
-    def copy(self, parent: Roi = None, zoom: float = None) -> Roi:
+    def copy(self, parent: Roi | None = None, zoom: float | None = None) -> Roi:
         '''
         深复制 Roi
 

@@ -71,7 +71,7 @@ def format_file(file_path, clang_format_cmd="clang-format", dry_run=False):
         dry_run: 如果为 True，只检查格式而不修改文件
 
     Returns:
-        (success, message) 元组
+        tuple[bool, str]: (success, message) 元组
     """
     try:
         if dry_run:
