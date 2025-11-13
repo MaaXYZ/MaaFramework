@@ -9,13 +9,24 @@
 #include "resource.h"
 #include "tasker.h"
 
+template <size_t N>
+const char* RemovePrefix(const char* message, const char (&prefix)[N])
+{
+    if (!strncmp(message, prefix, N - 1)) {
+        return message + N - 1;
+    }
+    else {
+        return message;
+    }
+}
+
 void ResourceSink(void* resource, const char* message, const char* details_json, void* callback_arg)
 {
     auto ctx = reinterpret_cast<maajs::CallbackContext*>(callback_arg);
     ctx->Call<void>([=](maajs::FunctionType fn) {
         auto res = ResourceImpl::locate_object(fn.Env(), reinterpret_cast<MaaResource*>(resource));
         auto detail = maajs::JsonParse(fn.Env(), details_json).As<maajs::ObjectType>();
-        detail["msg"] = maajs::StringType::New(fn.Env(), message);
+        detail["msg"] = maajs::StringType::New(fn.Env(), RemovePrefix(message, "Resource."));
         return fn.Call(
             {
                 res,
@@ -30,7 +41,7 @@ void ControllerSink(void* controller, const char* message, const char* details_j
     ctx->Call<void>([=](maajs::FunctionType fn) {
         auto ctrl = ControllerImpl::locate_object(fn.Env(), reinterpret_cast<MaaController*>(controller));
         auto detail = maajs::JsonParse(fn.Env(), details_json).As<maajs::ObjectType>();
-        detail["msg"] = maajs::StringType::New(fn.Env(), message);
+        detail["msg"] = maajs::StringType::New(fn.Env(), RemovePrefix(message, "Controller."));
         return fn.Call(
             {
                 ctrl,
@@ -45,7 +56,7 @@ void TaskerSink(void* tasker, const char* message, const char* details_json, voi
     ctx->Call<void>([=](maajs::FunctionType fn) {
         auto tsk = TaskerImpl::locate_object(fn.Env(), reinterpret_cast<MaaTasker*>(tasker));
         auto detail = maajs::JsonParse(fn.Env(), details_json).As<maajs::ObjectType>();
-        detail["msg"] = maajs::StringType::New(fn.Env(), message);
+        detail["msg"] = maajs::StringType::New(fn.Env(), RemovePrefix(message, "Tasker."));
         return fn.Call(
             {
                 tsk,
@@ -60,7 +71,7 @@ void ContextSink(void* context, const char* message, const char* details_json, v
     ctx->Call<void>([=](maajs::FunctionType fn) {
         auto ctx = ContextImpl::locate_object(fn.Env(), reinterpret_cast<MaaContext*>(context));
         auto detail = maajs::JsonParse(fn.Env(), details_json).As<maajs::ObjectType>();
-        detail["msg"] = maajs::StringType::New(fn.Env(), message);
+        detail["msg"] = maajs::StringType::New(fn.Env(), RemovePrefix(message, "Node."));
         return fn.Call(
             {
                 ctx,
