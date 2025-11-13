@@ -190,7 +190,7 @@ RecoResult Recognizer::ocr(const MAA_VISION_NS::OCRerParam& param, const std::st
     auto reco_session = resource()->ocr_res().recer(param.model);
     auto ocr_session = resource()->ocr_res().ocrer(param.model);
 
-    OCRer analyzer(image_, roi, param, det_session, reco_session, ocr_session, ocr_cache_, name);
+    OCRer analyzer(image_, roi, param, det_session, reco_session, ocr_session, name);
 
     std::optional<cv::Rect> box = std::nullopt;
     if (analyzer.best_result()) {
