@@ -139,48 +139,57 @@ NodeDetail PipelineTask::run_next(const PipelineData::NextList& list, const Pipe
         return {};
     }
 
-    RecoResult reco;
-
     const auto start_clock = std::chrono::steady_clock::now();
     std::chrono::steady_clock::time_point current_clock;
 
-    while (true) {
+    while (!context_->need_to_stop()) {
         current_clock = std::chrono::steady_clock::now();
         cv::Mat image = screencap();
 
-        reco = recognize_list(image, list);
-        if (reco.box) { // hit
-            break;
-        }
+        RecoResult reco = recognize_list(image, list);
 
         if (context_->need_to_stop()) {
             LogWarn << "need_to_stop" << VAR(pretask.name);
+            break;
+        }
+
+        if (!reco.box) {
+            if (duration_since(start_clock) > pretask.reco_timeout) {
+                LogError << "Task timeout" << VAR(pretask.name) << VAR(duration_since(start_clock)) << VAR(pretask.reco_timeout)
+                         << VAR(list);
+                break;
+            }
+
+            LogDebug << "sleep_until" << VAR(pretask.rate_limit);
+            std::this_thread::sleep_until(current_clock + pretask.rate_limit);
+
+            continue;
+        }
+
+        std::string hit_name = reco.name;
+        auto hit_opt = context_->get_pipeline_data(hit_name);
+        if (!hit_opt) {
+            LogError << "get_pipeline_data failed, node not exist" << VAR(hit_name);
             return {};
         }
 
-        if (duration_since(start_clock) > pretask.reco_timeout) {
-            LogError << "Task timeout" << VAR(pretask.name) << VAR(duration_since(start_clock)) << VAR(pretask.reco_timeout) << VAR(list);
-            return {};
-        }
+        auto act = run_action(reco, *hit_opt);
 
-        LogDebug << "sleep_until" << VAR(pretask.rate_limit);
-        std::this_thread::sleep_until(current_clock + pretask.rate_limit);
+        NodeDetail result {
+            .node_id = generate_node_id(),
+            .name = hit_name,
+            .reco_id = reco.reco_id,
+            .action_id = act.action_id,
+            .completed = act.success,
+        };
+        set_node_detail(result.node_id, result);
+
+        return result;
     }
-
-    auto hit_opt = context_->get_pipeline_data(reco.name);
-    if (!hit_opt) {
-        LogError << "get_pipeline_data failed, node not exist" << VAR(reco.name);
-        return {};
-    }
-
-    auto act = run_action(reco, *hit_opt);
 
     NodeDetail result {
         .node_id = generate_node_id(),
-        .name = hit_opt->name,
-        .reco_id = reco.reco_id,
-        .action_id = act.action_id,
-        .completed = act.success,
+        .completed = false,
     };
     set_node_detail(result.node_id, result);
 
@@ -221,6 +230,11 @@ RecoResult PipelineTask::recognize_list(const cv::Mat& image, const PipelineData
     }
 
     for (const auto& node : list) {
+        if (context_->need_to_stop()) {
+            LogWarn << "need_to_stop";
+            break;
+        }
+
         auto node_opt = context_->get_pipeline_data(node);
         if (!node_opt) {
             LogError << "get_pipeline_data failed, node not exist" << VAR(node);
@@ -230,6 +244,10 @@ RecoResult PipelineTask::recognize_list(const cv::Mat& image, const PipelineData
 
         RecoResult result = run_recognition(image, pipeline_data);
 
+        if (context_->need_to_stop()) {
+            LogWarn << "need_to_stop";
+            break;
+        }
         if (!result.box) {
             continue;
         }
