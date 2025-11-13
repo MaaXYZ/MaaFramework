@@ -909,6 +909,7 @@ bool AgentClient::handle_tasker_get_reco_result(const json::value& j)
         .reco_id = detail.reco_id,
         .name = detail.name,
         .algorithm = detail.algorithm,
+        .hit = detail.box.has_value(),
         .box = detail.box ? std::array<int32_t, 4> { detail.box->x, detail.box->y, detail.box->width, detail.box->height }
                           : std::array<int32_t, 4> {},
         .detail = detail.detail,

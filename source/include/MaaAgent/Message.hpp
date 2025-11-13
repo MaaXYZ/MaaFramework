@@ -14,7 +14,7 @@ MAA_AGENT_NS_BEGIN
 // ReverseRequest: server -> client
 
 using MessageTypePlaceholder = int;
-inline static constexpr int kProtocolVersion = 4;
+inline static constexpr int kProtocolVersion = 5;
 
 struct StartUpRequest
 {
@@ -562,13 +562,14 @@ struct TaskerGetRecoResultReverseResponse
     int64_t reco_id = 0;
     std::string name;
     std::string algorithm;
+    bool hit = false;
     std::array<int32_t, 4> box {};
     json::value detail;
     std::string raw;
     std::vector<std::string> draws;
 
     MessageTypePlaceholder _TaskerGetRecoResultReverseResponse = 1;
-    MEO_JSONIZATION(has_value, reco_id, name, algorithm, box, detail, raw, draws, _TaskerGetRecoResultReverseResponse);
+    MEO_JSONIZATION(has_value, reco_id, name, algorithm, hit, box, detail, raw, draws, _TaskerGetRecoResultReverseResponse);
 };
 
 struct TaskerGetActionResultReverseRequest
