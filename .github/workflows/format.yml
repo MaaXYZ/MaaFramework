@@ -28,10 +28,11 @@ jobs:
             - name: Commit and push changes
               uses: actions-js/push@master
               with:
-                  github_token: ${{ secrets.GITHUB_TOKEN }}
+                  rebase: true
+                  branch: ${{ github.ref }}
                   message: "styles: Format C++ files
 
                       https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
 
                       [skip changelog]"
-                  branch: ${{ github.ref }}
+                  github_token: ${{ secrets.GITHUB_TOKEN }}
