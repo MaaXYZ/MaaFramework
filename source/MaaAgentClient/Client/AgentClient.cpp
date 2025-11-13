@@ -25,6 +25,16 @@ AgentClient::AgentClient(const std::string& identifier)
     LogInfo << VAR(identifier) << VAR(identifier_);
 }
 
+AgentClient::~AgentClient()
+{
+    LogFunc << VAR(ipc_addr_);
+
+    clear_custom_registration();
+    clear_controller_sink();
+    clear_resource_sink();
+    clear_tasker_sink();
+}
+
 std::string AgentClient::identifier() const
 {
     return identifier_;
