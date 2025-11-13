@@ -70,7 +70,11 @@ class Context:
             pipeline_override: 用于覆盖的 json / JSON for overriding
 
         Returns:
-            Optional[RecognitionDetail]: 识别详情，执行失败则返回 None / Recognition detail, or None if execution failed
+            Optional[RecognitionDetail]: 识别结果。无论是否命中，只要尝试进行了识别，就会返回；
+            请通过 RecognitionDetail.hit 判断是否命中。若底层执行失败（未能启动识别流程，entry不存在等），才可能返回 None。
+            Recognition detail. It always returns as long as recognition was attempted;
+            use RecognitionDetail.hit to determine hit. Only when the underlying call
+            fails to start recognition will it return None.
         """
         image_buffer = ImageBuffer()
         image_buffer.set(image)
@@ -105,7 +109,11 @@ class Context:
             pipeline_override: 用于覆盖的 json / JSON for overriding
 
         Returns:
-            Optional[ActionDetail]: 操作详情，执行失败则返回 None / Action detail, or None if execution failed
+            Optional[ActionDetail]: 操作结果。无论动作是否成功，只要尝试执行了动作，就会返回；
+            请通过 ActionDetail.success 判断是否执行成功。若底层执行失败（未能启动动作流程，entry不存在等），才可能返回 None。
+            Action detail. It always returns as long as the action was attempted;
+            use ActionDetail.success to determine success. Only when the underlying call
+            fails to start the action will it return None.
         """
         rect = RectBuffer()
         rect.set(box)
