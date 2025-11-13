@@ -2,10 +2,9 @@
 
 #include <optional>
 
-#include <meojson/json.hpp>
-
 #include "MaaFramework/MaaDef.h"
 #include "MaaUtils/NoWarningCVMat.hpp"
+#include "MaaUtils/JsonExt.hpp"
 
 #include "Common/Conf.h"
 
@@ -20,6 +19,8 @@ struct RecoResult
     json::value detail;
     cv::Mat raw;
     std::vector<cv::Mat> draws;
+
+    MEO_TOJSON(reco_id, name, algorithm, box, detail);
 };
 
 struct ActionResult
@@ -30,6 +31,8 @@ struct ActionResult
     cv::Rect box {};
     bool success = false;
     json::value detail;
+
+    MEO_TOJSON(action_id, name, action, box, success, detail);
 };
 
 struct NodeDetail
@@ -39,6 +42,8 @@ struct NodeDetail
     MaaRecoId reco_id = MaaInvalidId;
     MaaActId action_id = MaaInvalidId;
     bool completed = false;
+
+    MEO_TOJSON(node_id, name, reco_id, action_id, completed);
 };
 
 struct TaskDetail
@@ -47,6 +52,8 @@ struct TaskDetail
     std::string entry;
     std::vector<MaaNodeId> node_ids;
     MaaStatus status = MaaStatus_Invalid;
+
+    MEO_TOJSON(task_id, entry, node_ids, status);
 };
 
 MAA_TASK_NS_END

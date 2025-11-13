@@ -80,7 +80,9 @@ RecoResult Recognizer::recognize(const PipelineData& pipeline_data)
         result.box = result.box ? std::nullopt : std::make_optional<cv::Rect>();
     }
 
-    tasker_->runtime_cache().set_reco_detail(result.reco_id, result);
+    LogInfo << "reco" << VAR(result);
+    auto& rt_cache = tasker_->runtime_cache();
+    rt_cache.set_reco_detail(result.reco_id, result);
 
     save_draws(pipeline_data.name, result);
 

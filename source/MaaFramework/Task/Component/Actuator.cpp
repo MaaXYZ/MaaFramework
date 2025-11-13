@@ -109,7 +109,9 @@ ActionResult Actuator::run(const cv::Rect& reco_hit, MaaRecoId reco_id, const Pi
         return {};
     }
 
-    tasker_->runtime_cache().set_action_detail(result.action_id, result);
+    LogInfo << "action" << VAR(result);
+    auto& rt_cache = tasker_->runtime_cache();
+    rt_cache.set_action_detail(result.action_id, result);
 
     wait_freezes(pipeline_data.post_wait_freezes, reco_hit);
     sleep(pipeline_data.post_delay);

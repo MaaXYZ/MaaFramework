@@ -95,7 +95,7 @@ RecoResult TaskBase::run_recognition(const cv::Mat& image, const PipelineData& d
     }
 
     if (result.box) {
-        LogInfo << "node hit" << VAR(result.name) << VAR(result.box);
+        LogInfo << "reco hit" << VAR(result.name) << VAR(result.box);
     }
 
     return result;

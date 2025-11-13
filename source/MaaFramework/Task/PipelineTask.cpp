@@ -18,7 +18,7 @@ bool PipelineTask::run()
         return false;
     }
 
-    LogFunc << VAR(entry_);
+    LogFunc << VAR(entry_) << VAR(task_id_);
 
     std::stack<std::string> task_stack;
 
@@ -121,10 +121,6 @@ void PipelineTask::post_stop()
 
 NodeDetail PipelineTask::run_next(const PipelineData::NextList& list, const PipelineData& pretask)
 {
-    if (!tasker_) {
-        LogError << "tasker is null";
-        return {};
-    }
     if (!context_) {
         LogError << "context is null";
         return {};
@@ -140,10 +136,9 @@ NodeDetail PipelineTask::run_next(const PipelineData::NextList& list, const Pipe
     }
 
     const auto start_clock = std::chrono::steady_clock::now();
-    std::chrono::steady_clock::time_point current_clock;
 
     while (!context_->need_to_stop()) {
-        current_clock = std::chrono::steady_clock::now();
+        auto current_clock = std::chrono::steady_clock::now();
         cv::Mat image = screencap();
 
         RecoResult reco = recognize_list(image, list);
@@ -182,6 +177,7 @@ NodeDetail PipelineTask::run_next(const PipelineData::NextList& list, const Pipe
             .action_id = act.action_id,
             .completed = act.success,
         };
+        LogInfo << "PipelineTask node done" << VAR(result) << VAR(task_id_);
         set_node_detail(result.node_id, result);
 
         return result;
@@ -191,6 +187,7 @@ NodeDetail PipelineTask::run_next(const PipelineData::NextList& list, const Pipe
         .node_id = generate_node_id(),
         .completed = false,
     };
+    LogError << "PipelineTask bad next" << VAR(result) << VAR(task_id_);
     set_node_detail(result.node_id, result);
 
     return result;

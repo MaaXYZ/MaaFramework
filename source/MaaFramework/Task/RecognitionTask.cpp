@@ -11,7 +11,7 @@ MAA_TASK_NS_BEGIN
 
 MaaRecoId RecognitionTask::run_with_param(const cv::Mat& image)
 {
-    LogFunc << VAR(entry_);
+    LogFunc << VAR(entry_) << VAR(task_id_);
 
     if (!context_) {
         LogError << "context is null";
@@ -33,6 +33,7 @@ MaaRecoId RecognitionTask::run_with_param(const cv::Mat& image)
         .action_id = MaaInvalidId,
         .completed = reco.box.has_value(),
     };
+    LogInfo << "RecognitionTask node done" << VAR(result) << VAR(task_id_);
     set_node_detail(result.node_id, result);
 
     return reco.reco_id;

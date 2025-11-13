@@ -12,7 +12,7 @@ MAA_TASK_NS_BEGIN
 
 MaaActId ActionTask::run_with_param(const cv::Rect& box, const json::value& reco_detail)
 {
-    LogFunc << VAR(entry_);
+    LogFunc << VAR(entry_) << VAR(task_id_);
 
     if (!tasker_) {
         LogError << "tasker is null";
@@ -40,6 +40,7 @@ MaaActId ActionTask::run_with_param(const cv::Rect& box, const json::value& reco
         .action_id = act.action_id,
         .completed = act.success,
     };
+    LogInfo << "ActionTask node done" << VAR(result) << VAR(task_id_);
     set_node_detail(result.node_id, result);
 
     return act.action_id;
