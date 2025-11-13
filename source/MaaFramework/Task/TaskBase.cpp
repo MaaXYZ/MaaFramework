@@ -113,6 +113,11 @@ ActionResult TaskBase::run_action(const RecoResult& reco, const PipelineData& da
         return {};
     }
 
+    if (!data.enabled) {
+        LogDebug << "node disabled" << data.name << VAR(data.enabled);
+        return {};
+    }
+
     if (debug_mode() || !data.focus.is_null()) {
         const json::value cb_detail {
             { "task_id", task_id() },
