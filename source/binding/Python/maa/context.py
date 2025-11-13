@@ -71,10 +71,10 @@ class Context:
 
         Returns:
             Optional[RecognitionDetail]: 识别结果。无论是否命中，只要尝试进行了识别，就会返回；
-            请通过 RecognitionDetail.hit 判断是否命中。若底层执行失败（未能启动识别流程，entry不存在等），才可能返回 None。
+            请通过 RecognitionDetail.hit 判断是否命中。只在未能启动识别流程时（如 entry 不存在、node disabled、image 为空等），才可能返回 None。
             Recognition detail. It always returns as long as recognition was attempted;
-            use RecognitionDetail.hit to determine hit. Only when the underlying call
-            fails to start recognition will it return None.
+            use RecognitionDetail.hit to determine hit. Only return None if the recognition process fails to start
+            (e.g., entry does not exist, node is disabled, image is empty).
         """
         image_buffer = ImageBuffer()
         image_buffer.set(image)
@@ -110,10 +110,10 @@ class Context:
 
         Returns:
             Optional[ActionDetail]: 操作结果。无论动作是否成功，只要尝试执行了动作，就会返回；
-            请通过 ActionDetail.success 判断是否执行成功。若底层执行失败（未能启动动作流程，entry不存在等），才可能返回 None。
+            请通过 ActionDetail.success 判断是否执行成功。只在未能启动动作流程时（如 entry 不存在、node disabled 等），才可能返回 None。
             Action detail. It always returns as long as the action was attempted;
-            use ActionDetail.success to determine success. Only when the underlying call
-            fails to start the action will it return None.
+            use ActionDetail.success to determine success. Only return None if the action flow fails to start
+            (e.g., entry does not exist, node is disabled, etc.).
         """
         rect = RectBuffer()
         rect.set(box)
