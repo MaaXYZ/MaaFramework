@@ -290,6 +290,9 @@ struct PipelineData
     NextList next;
     NextList interrupt;
     NextList on_error;
+
+    json::object next_override;
+
     std::chrono::milliseconds rate_limit = std::chrono::milliseconds(1000);
     std::chrono::milliseconds reco_timeout = std::chrono::milliseconds(20 * 1000);
 
