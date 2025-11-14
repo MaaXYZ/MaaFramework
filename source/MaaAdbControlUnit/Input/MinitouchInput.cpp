@@ -26,7 +26,7 @@ bool MinitouchInput::parse(const json::value& config)
         return false;
     }
 
-    arch_list_ = jarch.as<std::vector<std::string>>();
+    arch_list_ = jarch.as_collection<std::string>();
 
     return invoke_app_->parse(config) && MtouchHelper::parse(config) && adb_shell_input_->parse(config);
 }
