@@ -47,6 +47,7 @@ def api_test():
 
     agent = AgentClient()
     agent.bind(resource)
+    agent.register_sink(resource, dbg_controller, tasker)
     socket_id = agent.identifier
 
     if not socket_id:

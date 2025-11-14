@@ -2,8 +2,8 @@
 
 #include <memory>
 
-#include "MaaUtils/LibraryHolder.h"
 #include "MaaFramework/Instance/MaaCustomController.h"
+#include "MaaUtils/LibraryHolder.h"
 #include "MaaUtils/Platform.h"
 
 #include "Common/Conf.h"
@@ -38,8 +38,11 @@ private:
 class Win32ControlUnitLibraryHolder : public LibraryHolder<Win32ControlUnitLibraryHolder>
 {
 public:
-    static std::shared_ptr<MAA_CTRL_UNIT_NS::Win32ControlUnitAPI>
-        create_control_unit(void* hWnd, MaaWin32ScreencapMethod screencap_method, MaaWin32InputMethod input_method);
+    static std::shared_ptr<MAA_CTRL_UNIT_NS::Win32ControlUnitAPI> create_control_unit(
+        void* hWnd,
+        MaaWin32ScreencapMethod screencap_method,
+        MaaWin32InputMethod mouse_method,
+        MaaWin32InputMethod keyboard_method);
 
 private:
     inline static const std::filesystem::path libname_ = MAA_NS::path("MaaWin32ControlUnit");

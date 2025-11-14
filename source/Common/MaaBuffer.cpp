@@ -242,7 +242,7 @@ int32_t MaaImageBufferChannels(const MaaImageBuffer* handle)
         return 0;
     }
 
-    return handle->channles();
+    return handle->channels();
 }
 
 int32_t MaaImageBufferType(const MaaImageBuffer* handle)

@@ -9,7 +9,6 @@
 #include "MaaUtils/Logger.h"
 #include "Message.hpp"
 
-
 #include "Common/Conf.h"
 
 MAA_AGENT_NS_BEGIN

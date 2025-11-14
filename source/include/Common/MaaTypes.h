@@ -19,6 +19,7 @@ public:
 
     virtual bool override_pipeline(const json::value& pipeline_override) = 0;
     virtual bool override_next(const std::string& node_name, const std::vector<std::string>& next) = 0;
+    virtual bool override_image(const std::string& image_name, const cv::Mat& image) = 0;
     virtual std::optional<json::object> get_node_data(const std::string& node_name) const = 0;
 };
 
@@ -119,6 +120,7 @@ public:
     virtual std::optional<MAA_TASK_NS::TaskDetail> get_task_detail(MaaTaskId task_id) const = 0;
     virtual std::optional<MAA_TASK_NS::NodeDetail> get_node_detail(MaaNodeId node_id) const = 0;
     virtual std::optional<MAA_TASK_NS::RecoResult> get_reco_result(MaaRecoId reco_id) const = 0;
+    virtual std::optional<MAA_TASK_NS::ActionResult> get_action_result(MaaActId action_id) const = 0;
     virtual std::optional<MaaNodeId> get_latest_node(const std::string& node_name) const = 0;
 
     virtual MaaSinkId add_context_sink(MaaEventCallback callback, void* trans_arg) = 0;
@@ -133,7 +135,7 @@ public:
 
     virtual MaaTaskId run_task(const std::string& entry, const json::value& pipeline_override) = 0;
     virtual MaaRecoId run_recognition(const std::string& entry, const json::value& pipeline_override, const cv::Mat& image) = 0;
-    virtual MaaNodeId
+    virtual MaaActId
         run_action(const std::string& entry, const json::value& pipeline_override, const cv::Rect& box, const std::string& reco_detail) = 0;
 
     virtual MaaContext* clone() const = 0;

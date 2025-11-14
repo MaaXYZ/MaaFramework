@@ -8,36 +8,42 @@
 #include "Tasker/Tasker.h"
 #include "Vision/VisionBase.h"
 
-
 MAA_TASK_NS_BEGIN
 
-bool ActionTask::run()
+MaaActId ActionTask::run_with_param(const cv::Rect& box, const json::value& reco_detail)
 {
-    LogFunc << VAR(entry_);
-
-    return run_with_param({}, {}) != MaaInvalidId;
-}
-
-MaaNodeId ActionTask::run_with_param(const cv::Rect& box, const json::value& reco_detail)
-{
-    LogFunc << VAR(entry_);
+    LogFunc << VAR(entry_) << VAR(task_id_);
 
     if (!tasker_) {
         LogError << "tasker is null";
         return MaaInvalidId;
     }
 
+    auto node_opt = context_->get_pipeline_data(entry_);
+    if (!node_opt) {
+        LogError << "get_pipeline_data failed, task not exist" << VAR(entry_);
+        return MaaInvalidId;
+    }
+
     RecoResult fake_reco {
-        .reco_id = MAA_VISION_NS::VisionBase::generate_uid(),
-        .name = entry_,
-        .algorithm = "DirectHit",
+        .reco_id = MaaInvalidId,
         .box = box,
         .detail = reco_detail,
     };
 
-    tasker_->runtime_cache().set_reco_detail(fake_reco.reco_id, fake_reco);
+    auto act = run_action(fake_reco, *node_opt);
 
-    return run_action(fake_reco).node_id;
+    NodeDetail result {
+        .node_id = generate_node_id(),
+        .name = entry_,
+        .reco_id = fake_reco.reco_id,
+        .action_id = act.action_id,
+        .completed = act.success,
+    };
+    LogInfo << "ActionTask node done" << VAR(result) << VAR(task_id_);
+    set_node_detail(result.node_id, result);
+
+    return act.action_id;
 }
 
 MAA_TASK_NS_END

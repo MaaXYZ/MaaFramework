@@ -5,7 +5,6 @@
 #include "MaaUtils/Platform.h"
 #include "MaaUtils/StringMisc.hpp"
 
-
 MAA_RES_NS_BEGIN
 
 bool PipelineChecker::check_all_validity(const PipelineDataMap& data_map)

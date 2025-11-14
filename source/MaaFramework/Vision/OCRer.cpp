@@ -23,14 +23,12 @@ OCRer::OCRer(
     std::shared_ptr<fastdeploy::vision::ocr::DBDetector> deter,
     std::shared_ptr<fastdeploy::vision::ocr::Recognizer> recer,
     std::shared_ptr<fastdeploy::pipeline::PPOCRv3> ocrer,
-    Cache& cache,
     std::string name)
     : VisionBase(std::move(image), std::move(roi), std::move(name))
     , param_(std::move(param))
     , deter_(std::move(deter))
     , recer_(std::move(recer))
     , ocrer_(std::move(ocrer))
-    , cache_(cache)
 {
     analyze();
 }
@@ -53,15 +51,8 @@ OCRer::ResultsVec OCRer::predict() const
 {
     ResultsVec results;
 
-    if (auto cache_it = cache_.find(roi_); cache_it != cache_.end()) {
-        LogDebug << "Hit OCR cache" << VAR(roi_);
-        results = cache_it->second;
-    }
-    else {
-        auto image_roi = image_with_roi();
-        results = param_.only_rec ? ResultsVec { predict_only_rec(image_roi) } : predict_det_and_rec(image_roi);
-        cache_.emplace(roi_, results);
-    }
+    auto image_roi = image_with_roi();
+    results = param_.only_rec ? ResultsVec { predict_only_rec(image_roi) } : predict_det_and_rec(image_roi);
 
     std::ranges::for_each(results, [&](auto& res) {
         res.box.x += roi_.x;

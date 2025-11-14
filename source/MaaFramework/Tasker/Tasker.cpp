@@ -189,6 +189,11 @@ std::optional<MAA_TASK_NS::RecoResult> Tasker::get_reco_result(MaaRecoId reco_id
     return runtime_cache().get_reco_result(reco_id);
 }
 
+std::optional<MAA_TASK_NS::ActionResult> Tasker::get_action_result(MaaActId action_id) const
+{
+    return runtime_cache().get_action_result(action_id);
+}
+
 std::optional<MaaNodeId> Tasker::get_latest_node(const std::string& node_name) const
 {
     return runtime_cache().get_latest_node(node_name);

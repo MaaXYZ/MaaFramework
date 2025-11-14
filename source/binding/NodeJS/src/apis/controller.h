@@ -86,7 +86,7 @@ struct AdbControllerImpl : public ControllerImpl
 };
 
 using Win32Device = std::tuple<uintptr_t, std::string, std::string>;
-using Win32ControllerCtorParam = std::tuple<uintptr_t, MaaWin32ScreencapMethod, MaaWin32InputMethod>;
+using Win32ControllerCtorParam = std::tuple<uintptr_t, MaaWin32ScreencapMethod, MaaWin32InputMethod, MaaWin32InputMethod>;
 
 struct Win32ControllerImpl : public ControllerImpl
 {
@@ -117,7 +117,13 @@ struct CustomControllerContext
     std::map<std::string, maajs::CallbackContext*> callbacks;
 
     ~CustomControllerContext();
-    void add_bind(maajs::EnvType env, std::string name, std::string func_name, int argc, std::shared_ptr<maajs::ObjectRefType> actor);
+    void add_bind(
+        maajs::EnvType env,
+        std::string name,
+        std::string func_name,
+        int argc,
+        std::shared_ptr<maajs::ObjectRefType> actor,
+        std::function<maajs::ValueType(maajs::EnvType)> fallback);
     void gc_mark(maajs::NativeMarkerFunc marker);
 };
 

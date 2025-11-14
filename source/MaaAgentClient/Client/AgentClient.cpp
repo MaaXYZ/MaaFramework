@@ -25,6 +25,16 @@ AgentClient::AgentClient(const std::string& identifier)
     LogInfo << VAR(identifier) << VAR(identifier_);
 }
 
+AgentClient::~AgentClient()
+{
+    LogFunc << VAR(ipc_addr_);
+
+    clear_custom_registration();
+    clear_controller_sink();
+    clear_resource_sink();
+    clear_tasker_sink();
+}
+
 std::string AgentClient::identifier() const
 {
     return identifier_;
@@ -189,6 +199,7 @@ bool AgentClient::handle_inserted_request(const json::value& j)
     if (handle_image_header(j)) {
         return true;
     }
+
     else if (handle_context_run_task(j)) {
         return true;
     }
@@ -204,6 +215,9 @@ bool AgentClient::handle_inserted_request(const json::value& j)
     else if (handle_context_override_next(j)) {
         return true;
     }
+    else if (handle_context_override_image(j)) {
+        return true;
+    }
     else if (handle_context_get_node_data(j)) {
         return true;
     }
@@ -216,6 +230,7 @@ bool AgentClient::handle_inserted_request(const json::value& j)
     else if (handle_context_tasker(j)) {
         return true;
     }
+
     else if (handle_tasker_inited(j)) {
         return true;
     }
@@ -255,9 +270,13 @@ bool AgentClient::handle_inserted_request(const json::value& j)
     else if (handle_tasker_get_reco_result(j)) {
         return true;
     }
+    else if (handle_tasker_get_action_result(j)) {
+        return true;
+    }
     else if (handle_tasker_get_latest_node(j)) {
         return true;
     }
+
     else if (handle_resource_post_bundle(j)) {
         return true;
     }
@@ -282,6 +301,9 @@ bool AgentClient::handle_inserted_request(const json::value& j)
     else if (handle_resource_override_next(j)) {
         return true;
     }
+    else if (handle_resource_override_image(j)) {
+        return true;
+    }
     else if (handle_resource_get_node_data(j)) {
         return true;
     }
@@ -291,6 +313,7 @@ bool AgentClient::handle_inserted_request(const json::value& j)
     else if (handle_resource_get_node_list(j)) {
         return true;
     }
+
     else if (handle_controller_post_connection(j)) {
         return true;
     }
@@ -346,6 +369,9 @@ bool AgentClient::handle_inserted_request(const json::value& j)
         return true;
     }
     else if (handle_controller_get_uuid(j)) {
+        return true;
+    }
+    else if (handle_event_response(j)) {
         return true;
     }
     else {
@@ -419,11 +445,11 @@ bool AgentClient::handle_context_run_action(const json::value& j)
         return false;
     }
 
-    MaaNodeId node_id =
+    MaaActId act_id =
         context->run_action(req.entry, req.pipeline_override, cv::Rect { req.box[0], req.box[1], req.box[2], req.box[3] }, req.reco_detail);
 
     ContextRunActionReverseResponse resp {
-        .node_id = node_id,
+        .action_id = act_id,
     };
     send(resp);
 
@@ -473,6 +499,32 @@ bool AgentClient::handle_context_override_next(const json::value& j)
     bool ret = context->override_next(req.node_name, req.next);
 
     ContextOverrideNextReverseResponse resp {
+        .ret = ret,
+    };
+    send(resp);
+
+    return true;
+}
+
+bool AgentClient::handle_context_override_image(const json::value& j)
+{
+    if (!j.is<ContextOverrideImageReverseRequest>()) {
+        return false;
+    }
+
+    const ContextOverrideImageReverseRequest& req = j.as<ContextOverrideImageReverseRequest>();
+    LogFunc << VAR(req) << VAR(ipc_addr_);
+
+    MaaContext* context = query_context(req.context_id);
+    if (!context) {
+        LogError << "context not found" << VAR(req.context_id);
+        return false;
+    }
+
+    cv::Mat image = get_image_cache(req.image);
+    bool ret = context->override_image(req.image_name, image);
+
+    ContextOverrideImageReverseResponse resp {
         .ret = ret,
     };
     send(resp);
@@ -834,6 +886,7 @@ bool AgentClient::handle_tasker_get_node_detail(const json::value& j)
         .node_id = detail.node_id,
         .name = detail.name,
         .reco_id = detail.reco_id,
+        .action_id = detail.action_id,
         .completed = detail.completed,
     };
     send(resp);
@@ -866,11 +919,42 @@ bool AgentClient::handle_tasker_get_reco_result(const json::value& j)
         .reco_id = detail.reco_id,
         .name = detail.name,
         .algorithm = detail.algorithm,
+        .hit = detail.box.has_value(),
         .box = detail.box ? std::array<int32_t, 4> { detail.box->x, detail.box->y, detail.box->width, detail.box->height }
                           : std::array<int32_t, 4> {},
         .detail = detail.detail,
         .raw = send_image(detail.raw),
         .draws = std::move(draws),
+    };
+    send(resp);
+
+    return true;
+}
+
+bool AgentClient::handle_tasker_get_action_result(const json::value& j)
+{
+    if (!j.is<TaskerGetActionResultReverseRequest>()) {
+        return false;
+    }
+    const TaskerGetActionResultReverseRequest& req = j.as<TaskerGetActionResultReverseRequest>();
+    LogFunc << VAR(req) << VAR(ipc_addr_);
+
+    MaaTasker* tasker = query_tasker(req.tasker_id);
+    if (!tasker) {
+        LogError << "tasker not found" << VAR(req.tasker_id);
+        return false;
+    }
+    auto detail_opt = tasker->get_action_result(req.action_id);
+    const auto& detail = detail_opt.value_or(MAA_TASK_NS::ActionResult {});
+
+    TaskerGetActionResultReverseResponse resp {
+        .has_value = detail_opt.has_value(),
+        .action_id = detail.action_id,
+        .name = detail.name,
+        .action = detail.action,
+        .box = std::array<int32_t, 4> { detail.box.x, detail.box.y, detail.box.width, detail.box.height },
+        .success = detail.success,
+        .detail = detail.detail,
     };
     send(resp);
 
@@ -1140,6 +1224,32 @@ bool AgentClient::handle_resource_override_next(const json::value& j)
     bool ret = resource->override_next(req.node_name, req.next);
 
     ResourceOverrideNextReverseResponse resp {
+        .ret = ret,
+    };
+    send(resp);
+
+    return true;
+}
+
+bool AgentClient::handle_resource_override_image(const json::value& j)
+{
+    if (!j.is<ResourceOverrideImageReverseRequest>()) {
+        return false;
+    }
+
+    const ResourceOverrideImageReverseRequest& req = j.as<ResourceOverrideImageReverseRequest>();
+    LogFunc << VAR(req) << VAR(ipc_addr_);
+
+    MaaResource* resource = query_resource(req.resource_id);
+    if (!resource) {
+        LogError << "resource not found" << VAR(req.resource_id);
+        return false;
+    }
+
+    cv::Mat image = get_image_cache(req.image);
+    bool ret = resource->override_image(req.image_name, image);
+
+    ResourceOverrideImageReverseResponse resp {
         .ret = ret,
     };
     send(resp);
@@ -1597,6 +1707,17 @@ bool AgentClient::handle_controller_get_uuid(const json::value& j)
     return true;
 }
 
+// FIXME: 不应该存在这个函数
+// 等 send_and_recv 支持在子线程中使用后，应该删除这个函数
+bool AgentClient::handle_event_response(const json::value& j)
+{
+    if (j.is<ResourceEventResponse>() || j.is<ControllerEventResponse>() || j.is<TaskerEventResponse>()) {
+        LogTrace << "handle event response" << VAR(j);
+        return true;
+    }
+    return false;
+}
+
 MaaBool AgentClient::reco_agent(
     MaaContext* context,
     MaaTaskId task_id,
@@ -1813,7 +1934,11 @@ void AgentClient::res_event_sink(void* handle, const char* message, const char* 
         .details = json::parse(details_json).value_or(json::value {}),
     };
 
-    std::ignore = pthis->send_and_recv<ResourceEventResponse>(req);
+    // FIXME: 应该用 send_and_recv 但是暂时用 send 代替
+    // 由于 sink 在 async_runner 的子线程中的，recv 会被其他线程抢掉。
+    // 一直接收不到 recv 导致卡死在这里
+    // std::ignore = pthis->send_and_recv<ControllerEventResponse>(req);
+    std::ignore = pthis->send(req);
 }
 
 void AgentClient::ctrl_event_sink(void* handle, const char* message, const char* details_json, void* trans_arg)
@@ -1842,7 +1967,11 @@ void AgentClient::ctrl_event_sink(void* handle, const char* message, const char*
         .details = json::parse(details_json).value_or(json::value {}),
     };
 
-    std::ignore = pthis->send_and_recv<ControllerEventResponse>(req);
+    // FIXME: 应该用 send_and_recv 但是暂时用 send 代替
+    // 由于 sink 在 async_runner 的子线程中的，recv 会被其他线程抢掉。
+    // 一直接收不到 recv 导致卡死在这里
+    // std::ignore = pthis->send_and_recv<ControllerEventResponse>(req);
+    std::ignore = pthis->send(req);
 }
 
 void AgentClient::tasker_event_sink(void* handle, const char* message, const char* details_json, void* trans_arg)
@@ -1871,7 +2000,11 @@ void AgentClient::tasker_event_sink(void* handle, const char* message, const cha
         .details = json::parse(details_json).value_or(json::value {}),
     };
 
-    std::ignore = pthis->send_and_recv<TaskerEventResponse>(req);
+    // FIXME: 应该用 send_and_recv 但是暂时用 send 代替
+    // 由于 sink 在 async_runner 的子线程中的，recv 会被其他线程抢掉。
+    // 一直接收不到 recv 导致卡死在这里
+    // std::ignore = pthis->send_and_recv<ControllerEventResponse>(req);
+    std::ignore = pthis->send(req);
 }
 
 void AgentClient::ctx_event_sink(void* handle, const char* message, const char* details_json, void* trans_arg)
@@ -1904,4 +2037,3 @@ void AgentClient::ctx_event_sink(void* handle, const char* message, const char* 
 }
 
 MAA_AGENT_CLIENT_NS_END
-

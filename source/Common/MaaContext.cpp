@@ -14,6 +14,16 @@ MaaTaskId MaaContextRunTask(MaaContext* context, const char* entry, const char* 
         return MaaInvalidId;
     }
 
+    if (!entry) {
+        LogError << "entry is null";
+        return MaaInvalidId;
+    }
+
+    if (!pipeline_override) {
+        LogError << "pipeline_override is null";
+        return MaaInvalidId;
+    }
+
     auto ov_opt = json::parse(pipeline_override);
     if (!ov_opt) {
         LogError << "failed to parse" << VAR(pipeline_override);
@@ -36,6 +46,16 @@ MaaRecoId MaaContextRunRecognition(MaaContext* context, const char* entry, const
         return MaaInvalidId;
     }
 
+    if (!entry) {
+        LogError << "entry is null";
+        return MaaInvalidId;
+    }
+
+    if (!pipeline_override) {
+        LogError << "pipeline_override is null";
+        return MaaInvalidId;
+    }
+
     auto ov_opt = json::parse(pipeline_override);
     if (!ov_opt) {
         LogError << "failed to parse" << VAR(pipeline_override);
@@ -55,13 +75,28 @@ MaaRecoId MaaContextRunRecognition(MaaContext* context, const char* entry, const
     return context->run_recognition(entry, ov_opt->as_object(), mat);
 }
 
-MaaNodeId
+MaaActId
     MaaContextRunAction(MaaContext* context, const char* entry, const char* pipeline_override, const MaaRect* box, const char* reco_detail)
 {
     LogFunc << VAR_VOIDP(context) << VAR(entry) << VAR(pipeline_override) << VAR(box) << VAR(reco_detail);
 
     if (!context) {
         LogError << "handle is null";
+        return MaaInvalidId;
+    }
+
+    if (!entry) {
+        LogError << "entry is null";
+        return MaaInvalidId;
+    }
+
+    if (!pipeline_override) {
+        LogError << "pipeline_override is null";
+        return MaaInvalidId;
+    }
+
+    if (!reco_detail) {
+        LogError << "reco_detail is null";
         return MaaInvalidId;
     }
 
@@ -93,6 +128,12 @@ MaaBool MaaContextOverridePipeline(MaaContext* context, const char* pipeline_ove
         LogError << "handle is null";
         return false;
     }
+
+    if (!pipeline_override) {
+        LogError << "pipeline_override is null";
+        return false;
+    }
+
     auto ov_opt = json::parse(pipeline_override);
     if (!ov_opt) {
         LogError << "failed to parse" << VAR(pipeline_override);
@@ -106,12 +147,17 @@ MaaBool MaaContextOverridePipeline(MaaContext* context, const char* pipeline_ove
     return context->override_pipeline(ov_opt->as_object());
 }
 
-MaaBool MaaContextOverrideNext(MaaContext* context, const char* name, const MaaStringListBuffer* next_list)
+MaaBool MaaContextOverrideNext(MaaContext* context, const char* node_name, const MaaStringListBuffer* next_list)
 {
-    LogFunc << VAR_VOIDP(context) << VAR(name);
+    LogFunc << VAR_VOIDP(context) << VAR(node_name);
 
     if (!context || !next_list) {
         LogError << "handle is null";
+        return false;
+    }
+
+    if (!node_name) {
+        LogError << "node_name is null";
         return false;
     }
 
@@ -122,7 +168,26 @@ MaaBool MaaContextOverrideNext(MaaContext* context, const char* name, const MaaS
         next.emplace_back(next_list->at(i).get());
     }
 
-    return context->override_next(name, next);
+    return context->override_next(node_name, next);
+}
+
+MaaBool MaaContextOverrideImage(MaaContext* context, const char* image_name, const MaaImageBuffer* image)
+{
+    LogFunc << VAR_VOIDP(context) << VAR(image_name);
+
+    if (!context || !image) {
+        LogError << "handle is null";
+        return false;
+    }
+
+    if (!image_name) {
+        LogError << "image_name is null";
+        return false;
+    }
+
+    const cv::Mat& mat = image->get();
+
+    return context->override_image(image_name, mat);
 }
 
 MaaBool MaaContextGetNodeData(MaaContext* context, const char* node_name, MaaStringBuffer* buffer)
@@ -131,6 +196,11 @@ MaaBool MaaContextGetNodeData(MaaContext* context, const char* node_name, MaaStr
 
     if (!context || !buffer) {
         LogError << "handle is null";
+        return false;
+    }
+
+    if (!node_name) {
+        LogError << "node_name is null";
         return false;
     }
 

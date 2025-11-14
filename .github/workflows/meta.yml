@@ -13,6 +13,8 @@ on:
                 value: ${{ jobs.set.outputs.version }}
             build_config:
                 value: ${{ jobs.set.outputs.build_config }}
+            latest-plugin:
+                value: ${{ jobs.set.outputs.latest-plugin }}
 jobs:
     set:
         runs-on: ubuntu-latest
@@ -58,12 +60,20 @@ jobs:
                   is_pre_release=$is_pre_release
                   build_config=$build_config" | tee -a "$GITHUB_OUTPUT"
 
+            - id: latest-plugin
+              uses: pozetroninc/github-action-get-latest-release@master
+              with:
+                  repository: MaaXYZ/MaaPluginDemo
+                  token: ${{ secrets.GITHUB_TOKEN }}
+                  excludes: "draft"
+
         outputs:
             is_release: ${{ steps.set.outputs.is_release }}
             is_pre_release: ${{ steps.set.outputs.is_pre_release }}
             tag: ${{ steps.set.outputs.tag }} # v<release version> | v<ci version>
             version: ${{ steps.set.outputs.version }} # <release version> | <ci version>+<build> e.g ↓
             build_config: ${{ steps.set.outputs.build_config }} # Release | RelWithDebInfo | Debug
+            latest-plugin: ${{ steps.latest-plugin.outputs.release }}
 
 
             # 主版本号.次版本号.修订号[-(alpha|beta|rc).预发布号]

@@ -13,7 +13,6 @@
 #include "Vision/TemplateMatcher.h"
 #include "Vision/VisionUtils.hpp"
 
-
 MAA_TASK_NS_BEGIN
 
 Recognizer::Recognizer(Tasker* tasker, Context& context, const cv::Mat& image_)
@@ -81,7 +80,9 @@ RecoResult Recognizer::recognize(const PipelineData& pipeline_data)
         result.box = result.box ? std::nullopt : std::make_optional<cv::Rect>();
     }
 
-    tasker_->runtime_cache().set_reco_detail(result.reco_id, result);
+    LogInfo << "reco" << VAR(result);
+    auto& rt_cache = tasker_->runtime_cache();
+    rt_cache.set_reco_detail(result.reco_id, result);
 
     save_draws(pipeline_data.name, result);
 
@@ -115,14 +116,9 @@ RecoResult Recognizer::template_match(const MAA_VISION_NS::TemplateMatcherParam&
 {
     using namespace MAA_VISION_NS;
 
-    if (!resource()) {
-        LogError << "Resource not bound";
-        return {};
-    }
-
     cv::Rect roi = get_roi(param.roi_target);
 
-    auto templs = resource()->template_res().images(param.template_);
+    auto templs = context_.get_images(param.template_);
     TemplateMatcher analyzer(image_, roi, param, templs, name);
 
     std::optional<cv::Rect> box = std::nullopt;
@@ -142,14 +138,9 @@ RecoResult Recognizer::feature_match(const MAA_VISION_NS::FeatureMatcherParam& p
 {
     using namespace MAA_VISION_NS;
 
-    if (!resource()) {
-        LogError << "Resource not bound";
-        return {};
-    }
-
     cv::Rect roi = get_roi(param.roi_target);
 
-    auto templs = resource()->template_res().images(param.template_);
+    auto templs = context_.get_images(param.template_);
     FeatureMatcher analyzer(image_, roi, param, templs, name);
 
     std::optional<cv::Rect> box = std::nullopt;
@@ -168,11 +159,6 @@ RecoResult Recognizer::feature_match(const MAA_VISION_NS::FeatureMatcherParam& p
 RecoResult Recognizer::color_match(const MAA_VISION_NS::ColorMatcherParam& param, const std::string& name)
 {
     using namespace MAA_VISION_NS;
-
-    if (!resource()) {
-        LogError << "Resource not bound";
-        return {};
-    }
 
     cv::Rect roi = get_roi(param.roi_target);
 
@@ -206,7 +192,7 @@ RecoResult Recognizer::ocr(const MAA_VISION_NS::OCRerParam& param, const std::st
     auto reco_session = resource()->ocr_res().recer(param.model);
     auto ocr_session = resource()->ocr_res().ocrer(param.model);
 
-    OCRer analyzer(image_, roi, param, det_session, reco_session, ocr_session, ocr_cache_, name);
+    OCRer analyzer(image_, roi, param, det_session, reco_session, ocr_session, name);
 
     std::optional<cv::Rect> box = std::nullopt;
     if (analyzer.best_result()) {
@@ -286,17 +272,13 @@ RecoResult Recognizer::custom_recognize(const MAA_VISION_NS::CustomRecognitionPa
     using namespace MAA_VISION_NS;
     std::ignore = name; // node name
 
-    if (!tasker_) {
-        LogError << "tasker_ is null";
-        return {};
-    }
-    if (!tasker_->resource()) {
+    if (!resource()) {
         LogError << "resource is null";
         return {};
     }
     cv::Rect roi = get_roi(param.roi_target);
 
-    auto session = tasker_->resource()->custom_recognition(param.name);
+    auto session = resource()->custom_recognition(param.name);
     CustomRecognition analyzer(image_, roi, param, session, context_, name);
 
     std::optional<cv::Rect> box = std::nullopt;

@@ -33,9 +33,11 @@ struct InterfaceData
             std::string window_regex;
 
             MaaWin32ScreencapMethod screencap = MaaWin32ScreencapMethod_DXGI_DesktopDup;
-            MaaWin32InputMethod input = MaaWin32InputMethod_Seize;
+            MaaWin32InputMethod input = MaaWin32InputMethod_None; // 已废弃但保留兼容性
+            MaaWin32InputMethod mouse = MaaWin32InputMethod_Seize;
+            MaaWin32InputMethod keyboard = MaaWin32InputMethod_Seize;
 
-            MEO_JSONIZATION(MEO_OPT class_regex, MEO_OPT window_regex, MEO_OPT screencap, MEO_OPT input);
+            MEO_JSONIZATION(MEO_OPT class_regex, MEO_OPT window_regex, MEO_OPT screencap, MEO_OPT input, MEO_OPT mouse, MEO_OPT keyboard);
         };
 
         inline static std::string kTypeAdb = "Adb";
@@ -182,7 +184,8 @@ struct RuntimeParam
     {
         void* hwnd = nullptr;
         MaaWin32ScreencapMethod screencap = MaaWin32ScreencapMethod_None;
-        MaaWin32InputMethod input = MaaWin32InputMethod_None;
+        MaaWin32InputMethod mouse = MaaWin32InputMethod_None;
+        MaaWin32InputMethod keyboard = MaaWin32InputMethod_None;
     };
 
     struct Task

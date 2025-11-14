@@ -12,7 +12,6 @@
 #include "MaaUtils/NoWarningCVMat.hpp"
 #include "Utils/EventDispatcher.hpp"
 
-
 #include "Common/Conf.h"
 
 MAA_RES_NS_BEGIN
@@ -24,16 +23,18 @@ MAA_CTRL_NS_BEGIN
 struct ClickParam
 {
     cv::Point point {};
+    int contact = 0;
 
-    MEO_TOJSON(point);
+    MEO_TOJSON(point, contact);
 };
 
 struct LongPressParam
 {
     cv::Point point {};
     uint duration = 0;
+    int contact = 0;
 
-    MEO_TOJSON(point, duration);
+    MEO_TOJSON(point, duration, contact);
 };
 
 struct SwipeParam
@@ -44,8 +45,9 @@ struct SwipeParam
     std::vector<uint> duration;
     bool only_hover = false;
     uint starting = 0;
+    int contact = 0;
 
-    MEO_TOJSON(starting, begin, end, end_hold, duration, only_hover);
+    MEO_TOJSON(starting, begin, end, end_hold, duration, only_hover, contact);
 };
 
 struct MultiSwipeParam
@@ -179,8 +181,14 @@ public: // for Actuator
     bool swipe(SwipeParam p);
     bool multi_swipe(MultiSwipeParam p);
 
+    bool touch_down(TouchParam p);
+    bool touch_move(TouchParam p);
+    bool touch_up(TouchParam p);
+
     bool click_key(ClickKeyParam p);
     bool long_press_key(LongPressKeyParam p);
+    bool key_down(ClickKeyParam p);
+    bool key_up(ClickKeyParam p);
 
     bool input_text(InputTextParam p);
     cv::Mat screencap();

@@ -3,7 +3,6 @@
 #include "MaaUtils/Logger.h"
 #include "Manager/CustomControlUnitMgr.h"
 
-
 const char* MaaCustomControlUnitGetVersion()
 {
 #pragma message("MaaCustomControlUnit MAA_VERSION: " MAA_VERSION)

@@ -87,6 +87,9 @@ private:
         Action::MultiSwipeParam& output,
         const Action::MultiSwipeParam& default_mluti,
         const Action::SwipeParam& default_single);
+    static bool parse_key_param(const json::value& input, Action::KeyParam& output, const Action::KeyParam& default_value);
+    static bool parse_touch(const json::value& input, Action::TouchParam& output, const Action::TouchParam& default_value);
+    static bool parse_touch_up(const json::value& input, Action::TouchUpParam& output, const Action::TouchUpParam& default_value);
     static bool parse_click_key(const json::value& input, Action::ClickKeyParam& output, const Action::ClickKeyParam& default_value);
     static bool
         parse_long_press_key(const json::value& input, Action::LongPressKeyParam& output, const Action::LongPressKeyParam& default_value);

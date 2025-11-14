@@ -4,8 +4,8 @@
 
 #include <meojson/json.hpp>
 
-#include "Common/MaaTypes.h"
 #include "Common/Conf.h"
+#include "Common/MaaTypes.h"
 #include "MaaAgent/Transceiver.h"
 
 MAA_AGENT_CLIENT_NS_BEGIN
@@ -17,7 +17,7 @@ class AgentClient
 public:
     AgentClient() = default;
     AgentClient(const std::string& identifier);
-    virtual ~AgentClient() override = default;
+    virtual ~AgentClient() override;
 
 public: // MaaAgentClient
     virtual std::string identifier() const override;
@@ -41,6 +41,7 @@ private:
     bool handle_context_run_action(const json::value& j);
     bool handle_context_override_pipeline(const json::value& j);
     bool handle_context_override_next(const json::value& j);
+    bool handle_context_override_image(const json::value& j);
     bool handle_context_get_node_data(const json::value& j);
     bool handle_context_clone(const json::value& j);
     bool handle_context_task_id(const json::value& j);
@@ -59,6 +60,7 @@ private:
     bool handle_tasker_get_task_detail(const json::value& j);
     bool handle_tasker_get_node_detail(const json::value& j);
     bool handle_tasker_get_reco_result(const json::value& j);
+    bool handle_tasker_get_action_result(const json::value& j);
     bool handle_tasker_get_latest_node(const json::value& j);
 
     bool handle_resource_post_bundle(const json::value& j);
@@ -69,6 +71,7 @@ private:
     bool handle_resource_clear(const json::value& j);
     bool handle_resource_override_pipeline(const json::value& j);
     bool handle_resource_override_next(const json::value& j);
+    bool handle_resource_override_image(const json::value& j);
     bool handle_resource_get_node_data(const json::value& j);
     bool handle_resource_get_hash(const json::value& j);
     bool handle_resource_get_node_list(const json::value& j);
@@ -92,6 +95,8 @@ private:
     bool handle_controller_running(const json::value& j);
     bool handle_controller_cached_image(const json::value& j);
     bool handle_controller_get_uuid(const json::value& j);
+
+    bool handle_event_response(const json::value& j);
 
 public:
     static MaaBool reco_agent(

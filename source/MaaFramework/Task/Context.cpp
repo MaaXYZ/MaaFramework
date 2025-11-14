@@ -11,7 +11,6 @@
 #include "Resource/PipelineParser.h"
 #include "Tasker/Tasker.h"
 
-
 MAA_TASK_NS_BEGIN
 
 Context::Context(MaaTaskId id, Tasker* tasker, PrivateArg)
@@ -48,6 +47,7 @@ Context::Context(const Context& other)
     , task_id_(other.task_id_)
     , tasker_(other.tasker_)
     , pipeline_override_(other.pipeline_override_)
+    , image_override_(other.image_override_)
 // don't copy clone_holder_
 {
     LogDebug << VAR(other.getptr());
@@ -101,7 +101,7 @@ MaaRecoId Context::run_recognition(const std::string& entry, const json::value& 
     return subtask.run_with_param(image);
 }
 
-MaaNodeId
+MaaActId
     Context::run_action(const std::string& entry, const json::value& pipeline_override, const cv::Rect& box, const std::string& reco_detail)
 {
     LogFunc << VAR(getptr()) << VAR(entry) << VAR(pipeline_override) << VAR(box) << VAR(reco_detail);
@@ -172,21 +172,27 @@ bool Context::override_pipeline_once(const json::object& pipeline_override, cons
     return true;
 }
 
-bool Context::override_next(const std::string& name, const std::vector<std::string>& next)
+bool Context::override_next(const std::string& node_name, const std::vector<std::string>& next)
 {
-    LogFunc << VAR(getptr()) << VAR(name) << VAR(next);
+    LogFunc << VAR(getptr()) << VAR(node_name) << VAR(next);
 
-    auto data_opt = get_pipeline_data(name);
+    auto data_opt = get_pipeline_data(node_name);
     if (!data_opt) {
-        LogError << "get_pipeline_data failed, task not exist" << VAR(name);
+        LogError << "get_pipeline_data failed, task not exist" << VAR(node_name);
         return false;
     }
 
     data_opt->next = next;
 
-    pipeline_override_.insert_or_assign(name, std::move(*data_opt));
+    pipeline_override_.insert_or_assign(node_name, std::move(*data_opt));
 
     return check_pipeline();
+}
+
+bool Context::override_image(const std::string& image_name, const cv::Mat& image)
+{
+    image_override_.insert_or_assign(image_name, image);
+    return true;
 }
 
 Context* Context::clone() const
@@ -243,6 +249,35 @@ std::optional<PipelineData> Context::get_pipeline_data(const std::string& node_n
 
     LogWarn << "task not found" << VAR(node_name);
     return std::nullopt;
+}
+
+std::vector<cv::Mat> Context::get_images(const std::vector<std::string>& names)
+{
+    if (!tasker_) {
+        LogError << "tasker is null";
+        return {};
+    }
+    auto* resource = tasker_->resource();
+    if (!resource) {
+        LogError << "resource not bound";
+        return {};
+    }
+
+    std::vector<cv::Mat> results;
+
+    for (const std::string& name : names) {
+        auto it = image_override_.find(name);
+        if (it != image_override_.end()) {
+            LogTrace << "image override" << VAR(name);
+            results.emplace_back(it->second);
+            continue;
+        }
+
+        auto imgs = resource->template_res().get_image(name);
+        results.insert(results.end(), std::make_move_iterator(imgs.begin()), std::make_move_iterator(imgs.end()));
+    }
+
+    return results;
 }
 
 bool& Context::need_to_stop()

@@ -24,7 +24,7 @@ extern "C"
     MAA_FRAMEWORK_API MaaRecoId
         MaaContextRunRecognition(MaaContext* context, const char* entry, const char* pipeline_override, const MaaImageBuffer* image);
 
-    MAA_FRAMEWORK_API MaaNodeId MaaContextRunAction(
+    MAA_FRAMEWORK_API MaaActId MaaContextRunAction(
         MaaContext* context,
         const char* entry,
         const char* pipeline_override,
@@ -34,6 +34,8 @@ extern "C"
     MAA_FRAMEWORK_API MaaBool MaaContextOverridePipeline(MaaContext* context, const char* pipeline_override);
 
     MAA_FRAMEWORK_API MaaBool MaaContextOverrideNext(MaaContext* context, const char* node_name, const MaaStringListBuffer* next_list);
+
+    MAA_FRAMEWORK_API MaaBool MaaContextOverrideImage(MaaContext* context, const char* image_name, const MaaImageBuffer* image);
 
     MAA_FRAMEWORK_API MaaBool MaaContextGetNodeData(MaaContext* context, const char* node_name, /* out */ MaaStringBuffer* buffer);
 

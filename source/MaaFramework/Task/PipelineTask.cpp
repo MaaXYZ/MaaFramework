@@ -9,7 +9,6 @@
 #include "Resource/ResourceMgr.h"
 #include "Tasker/Tasker.h"
 
-
 MAA_TASK_NS_BEGIN
 
 bool PipelineTask::run()
@@ -19,7 +18,7 @@ bool PipelineTask::run()
         return false;
     }
 
-    LogFunc << VAR(entry_);
+    LogFunc << VAR(entry_) << VAR(task_id_);
 
     std::stack<std::string> task_stack;
 
@@ -42,7 +41,7 @@ bool PipelineTask::run()
         PipelineData::NextList list = std::move(next);
         list.insert(list.end(), std::make_move_iterator(interrupt.begin()), std::make_move_iterator(interrupt.end()));
 
-        auto node_detail = run_reco_and_action(list, node);
+        auto node_detail = run_next(list, node);
 
         if (context_->need_to_stop()) {
             LogWarn << "need_to_stop" << VAR(node.name);
@@ -120,12 +119,8 @@ void PipelineTask::post_stop()
     context_->need_to_stop() = true;
 }
 
-NodeDetail PipelineTask::run_reco_and_action(const PipelineData::NextList& list, const PipelineData& pretask)
+NodeDetail PipelineTask::run_next(const PipelineData::NextList& list, const PipelineData& pretask)
 {
-    if (!tasker_) {
-        LogError << "tasker is null";
-        return {};
-    }
     if (!context_) {
         LogError << "context is null";
         return {};
@@ -140,36 +135,132 @@ NodeDetail PipelineTask::run_reco_and_action(const PipelineData::NextList& list,
         return {};
     }
 
-    RecoResult reco;
-
     const auto start_clock = std::chrono::steady_clock::now();
-    std::chrono::steady_clock::time_point current_clock;
 
-    while (true) {
-        current_clock = std::chrono::steady_clock::now();
+    while (!context_->need_to_stop()) {
+        auto current_clock = std::chrono::steady_clock::now();
         cv::Mat image = screencap();
 
-        reco = run_recognition(image, list);
-        if (reco.box) { // hit
-            break;
-        }
+        RecoResult reco = recognize_list(image, list);
 
         if (context_->need_to_stop()) {
             LogWarn << "need_to_stop" << VAR(pretask.name);
+            break;
+        }
+
+        if (!reco.box) {
+            if (duration_since(start_clock) > pretask.reco_timeout) {
+                LogError << "Task timeout" << VAR(pretask.name) << VAR(duration_since(start_clock)) << VAR(pretask.reco_timeout)
+                         << VAR(list);
+                break;
+            }
+
+            LogDebug << "sleep_until" << VAR(pretask.rate_limit);
+            std::this_thread::sleep_until(current_clock + pretask.rate_limit);
+
+            continue;
+        }
+
+        std::string hit_name = reco.name;
+        auto hit_opt = context_->get_pipeline_data(hit_name);
+        if (!hit_opt) {
+            LogError << "get_pipeline_data failed, node not exist" << VAR(hit_name);
             return {};
         }
 
-        if (duration_since(start_clock) > pretask.reco_timeout) {
-            LogError << "Task timeout" << VAR(pretask.name) << VAR(duration_since(start_clock)) << VAR(pretask.reco_timeout) << VAR(list);
-            return {};
-        }
+        auto act = run_action(reco, *hit_opt);
 
-        LogDebug << "sleep_until" << VAR(pretask.rate_limit);
-        std::this_thread::sleep_until(current_clock + pretask.rate_limit);
+        NodeDetail result {
+            .node_id = generate_node_id(),
+            .name = hit_name,
+            .reco_id = reco.reco_id,
+            .action_id = act.action_id,
+            .completed = act.success,
+        };
+        LogInfo << "PipelineTask node done" << VAR(result) << VAR(task_id_);
+        set_node_detail(result.node_id, result);
+
+        return result;
     }
 
-    auto node_detail = run_action(reco);
-    return node_detail;
+    NodeDetail result {
+        .node_id = generate_node_id(),
+        .completed = false,
+    };
+    LogError << "PipelineTask bad next" << VAR(result) << VAR(task_id_);
+    set_node_detail(result.node_id, result);
+
+    return result;
+}
+
+RecoResult PipelineTask::recognize_list(const cv::Mat& image, const PipelineData::NextList& list)
+{
+    LogFunc << VAR(cur_node_) << VAR(list);
+
+    if (!context_) {
+        LogError << "context is null";
+        return {};
+    }
+
+    if (image.empty()) {
+        LogError << "Image is empty";
+        return {};
+    }
+
+    auto cur_opt = context_->get_pipeline_data(cur_node_);
+    if (!cur_opt) {
+        LogError << "get_pipeline_data failed, node not exist" << VAR(cur_node_);
+        return {};
+    }
+
+    const auto& cur_node = *cur_opt;
+
+    const json::value reco_list_cb_detail {
+        { "task_id", task_id() },
+        { "name", cur_node_ },
+        { "list", json::array(list) },
+        { "focus", cur_node.focus },
+    };
+
+    if (debug_mode() || !cur_node.focus.is_null()) {
+        notify(MaaMsg_Node_NextList_Starting, reco_list_cb_detail);
+    }
+
+    for (const auto& node : list) {
+        if (context_->need_to_stop()) {
+            LogWarn << "need_to_stop";
+            break;
+        }
+
+        auto node_opt = context_->get_pipeline_data(node);
+        if (!node_opt) {
+            LogError << "get_pipeline_data failed, node not exist" << VAR(node);
+            continue;
+        }
+        const auto& pipeline_data = *node_opt;
+
+        RecoResult result = run_recognition(image, pipeline_data);
+
+        if (context_->need_to_stop()) {
+            LogWarn << "need_to_stop";
+            break;
+        }
+        if (!result.box) {
+            continue;
+        }
+
+        if (debug_mode() || !cur_node.focus.is_null()) {
+            notify(MaaMsg_Node_NextList_Succeeded, reco_list_cb_detail);
+        }
+
+        return result;
+    }
+
+    if (debug_mode() || !cur_node.focus.is_null()) {
+        notify(MaaMsg_Node_NextList_Failed, reco_list_cb_detail);
+    }
+
+    return {};
 }
 
 MAA_TASK_NS_END

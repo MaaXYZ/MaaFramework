@@ -15,6 +15,7 @@ export using ::MaaCtrlId;
 export using ::MaaResId;
 export using ::MaaTaskId;
 export using ::MaaRecoId;
+export using ::MaaActId;
 export using ::MaaNodeId;
 export constexpr auto _MaaInvalidId = MaaInvalidId;
 
@@ -179,6 +180,7 @@ export using ::MaaTaskerGetResource;
 export using ::MaaTaskerGetController;
 export using ::MaaTaskerClearCache;
 export using ::MaaTaskerGetRecognitionDetail;
+export using ::MaaTaskerGetActionDetail;
 export using ::MaaTaskerGetNodeDetail;
 export using ::MaaTaskerGetTaskDetail;
 export using ::MaaTaskerGetLatestNode;

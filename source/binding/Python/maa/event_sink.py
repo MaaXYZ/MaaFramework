@@ -1,9 +1,8 @@
 import ctypes
 import json
 from abc import ABC
-from typing import Optional, Tuple, Any
+from typing import Tuple
 from enum import IntEnum
-from dataclasses import dataclass
 
 from .define import MaaEventCallback
 

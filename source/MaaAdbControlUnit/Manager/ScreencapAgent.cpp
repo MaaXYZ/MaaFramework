@@ -15,7 +15,6 @@
 #include "Screencap/RawByNetcat.h"
 #include "Screencap/RawWithGzip.h"
 
-
 MAA_CTRL_UNIT_NS_BEGIN
 
 ScreencapAgent::ScreencapAgent(MaaAdbScreencapMethod methods, const std::filesystem::path& agent_path)

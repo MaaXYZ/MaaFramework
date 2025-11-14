@@ -16,6 +16,7 @@ MaaCtrlId = MaaId
 MaaResId = MaaId
 MaaTaskId = MaaId
 MaaRecoId = MaaId
+MaaActId = MaaId
 MaaNodeId = MaaId
 MaaSinkId = MaaId
 MaaInvalidId = MaaId(0)
@@ -215,6 +216,9 @@ class MaaWin32ScreencapMethodEnum(IntEnum):
     GDI = 1
     FramePool = 1 << 1
     DXGI_DesktopDup = 1 << 2
+    DXGI_DesktopDup_Window = 1 << 3
+    PrintWindow = 1 << 4
+    ScreenDC = 1 << 5
 
 
 MaaWin32InputMethod = ctypes.c_uint64
@@ -226,10 +230,23 @@ class MaaWin32InputMethodEnum(IntEnum):
 
     Seize = 1
     SendMessage = 1 << 1
+    PostMessage = 1 << 2
+    LegacyEvent = 1 << 3
+    PostThreadMessage = 1 << 4
 
 
 # No bitwise OR, just set it
 MaaDbgControllerType = ctypes.c_uint64
+
+MaaControllerFeature = ctypes.c_uint64
+
+
+# Use bitwise OR to set the features you need
+class MaaControllerFeatureEnum(IntEnum):
+    Null = 0
+
+    UseMouseDownAndUpInsteadOfClick = 1
+    UseKeyboardDownAndUpInsteadOfClick = 1 << 1
 
 
 class MaaDbgControllerTypeEnum(IntEnum):
@@ -289,6 +306,10 @@ class MaaCustomControllerCallbacks(ctypes.Structure):
         MaaBool,
         ctypes.c_void_p,
         MaaStringBufferHandle,
+    )
+    GetFeaturesFunc = FUNCTYPE(
+        MaaControllerFeature,
+        ctypes.c_void_p,
     )
     StartAppFunc = FUNCTYPE(
         MaaBool,
@@ -364,6 +385,7 @@ class MaaCustomControllerCallbacks(ctypes.Structure):
     _fields_ = [
         ("connect", ConnectFunc),
         ("request_uuid", RequestUuidFunc),
+        ("get_features", GetFeaturesFunc),
         ("start_app", StartAppFunc),
         ("stop_app", StopAppFunc),
         ("screencap", ScreencapFunc),
@@ -412,6 +434,41 @@ class Status:
 
 
 @dataclass
+class Point:
+    x: int = 0
+    y: int = 0
+
+    def __add__(
+        self,
+        other: Union[
+            "Point",
+            Tuple[int, int],
+            List[int],
+        ],
+    ):
+        if (
+            isinstance(other, Point)
+            or isinstance(other, tuple)
+            or (isinstance(other, list) and len(other) == 2)
+        ):
+            x1, y1 = self
+            x2, y2 = other
+            return Point(
+                x1 + x2,
+                y1 + y2,
+            )
+
+        raise TypeError(f"Cannot add {type(other).__name__} to Point")
+
+    def __iter__(self):
+        yield self.x
+        yield self.y
+
+    def __getitem__(self, key):
+        return list(self)[key]
+
+
+@dataclass
 class Rect:
     x: int = 0
     y: int = 0
@@ -449,12 +506,15 @@ class Rect:
         yield self.h
 
     def __getitem__(self, key):
-        return self.roi[key]
+        return list(self)[key]
 
-    @property
-    def roi(self):
-        return list(self)
 
+PointType = Union[
+    Point,
+    List[int],
+    numpy.ndarray,
+    Tuple[int, int],
+]
 
 RectType = Union[
     Rect,
@@ -473,6 +533,22 @@ class AlgorithmEnum(StrEnum):
     NeuralNetworkClassify = "NeuralNetworkClassify"
     NeuralNetworkDetect = "NeuralNetworkDetect"
     Custom = "Custom"
+
+
+class ActionEnum(StrEnum):
+    DoNothing = "DoNothing"
+    Click = "Click"
+    LongPress = "LongPress"
+    Swipe = "Swipe"
+    MultiSwipe = "MultiSwipe"
+    ClickKey = "ClickKey"
+    LongPressKey = "LongPressKey"
+    InputText = "InputText"
+    StartApp = "StartApp"
+    StopApp = "StopApp"
+    Command = "Command"
+    Custom = "Custom"
+    StopTask = "StopTask"
 
 
 @dataclass
@@ -544,6 +620,7 @@ class RecognitionDetail:
     reco_id: int
     name: str
     algorithm: AlgorithmEnum
+    hit: bool
     box: Optional[Rect]
 
     all_results: List[RecognitionResult]
@@ -556,10 +633,98 @@ class RecognitionDetail:
 
 
 @dataclass
+class ClickActionResult:
+    point: Point
+
+
+@dataclass
+class LongPressActionResult:
+    point: Point
+    duration: int
+
+
+@dataclass
+class SwipeActionResult:
+    begin: Point
+    end: List[Point]
+    end_hold: List[int]
+    duration: List[int]
+    only_hover: bool
+    starting: int
+
+
+@dataclass
+class MultiSwipeActionResult:
+    swipes: List[SwipeActionResult]
+
+
+@dataclass
+class ClickKeyActionResult:
+    keycode: List[int]
+
+
+@dataclass
+class LongPressKeyActionResult:
+    keycode: List[int]
+    duration: int
+
+
+@dataclass
+class InputTextActionResult:
+    text: str
+
+
+@dataclass
+class AppActionResult:
+    package: str
+
+
+ActionResult = Union[
+    ClickActionResult,
+    LongPressActionResult,
+    SwipeActionResult,
+    MultiSwipeActionResult,
+    ClickKeyActionResult,
+    LongPressKeyActionResult,
+    InputTextActionResult,
+    AppActionResult,
+    None,
+]
+
+ActionResultDict = {
+    ActionEnum.DoNothing: None,
+    ActionEnum.Click: ClickActionResult,
+    ActionEnum.LongPress: LongPressActionResult,
+    ActionEnum.Swipe: SwipeActionResult,
+    ActionEnum.MultiSwipe: MultiSwipeActionResult,
+    ActionEnum.ClickKey: ClickKeyActionResult,
+    ActionEnum.LongPressKey: LongPressKeyActionResult,
+    ActionEnum.InputText: InputTextActionResult,
+    ActionEnum.StartApp: AppActionResult,
+    ActionEnum.StopApp: AppActionResult,
+    ActionEnum.Command: None,
+    ActionEnum.Custom: None,
+    ActionEnum.StopTask: None,
+}
+
+
+@dataclass
+class ActionDetail:
+    action_id: int
+    name: str
+    action: ActionEnum
+    box: Rect
+    success: bool
+    result: Optional[ActionResult]
+    raw_detail: Dict
+
+
+@dataclass
 class NodeDetail:
     node_id: int
     name: str
     recognition: RecognitionDetail
+    action: ActionDetail
     completed: bool
 
 

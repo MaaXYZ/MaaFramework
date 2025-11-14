@@ -62,14 +62,14 @@ maajs::PromiseType ContextImpl::run_action(
     maajs::OptionalParam<maajs::ValueType> pipeline_override)
 {
     auto overr = maajs::JsonStringify(env, pipeline_override.value_or(maajs::ObjectType::New(env)));
-    auto worker = new maajs::AsyncWork<MaaNodeId>(env, [context = context, entry, box, reco_detail, overr]() {
+    auto worker = new maajs::AsyncWork<MaaActId>(env, [context = context, entry, box, reco_detail, overr]() {
         return MaaContextRunAction(context, entry.c_str(), overr.c_str(), &box, reco_detail.c_str());
     });
     worker->Queue();
 
     return maajs::PromiseThen(worker->Promise(), self.As<maajs::ObjectType>(), [](const maajs::CallbackInfo& info, maajs::ObjectType self) {
         auto tasker = self["tasker"].AsValue().As<maajs::ObjectType>();
-        return maajs::CallMemberHelper<maajs::ValueType>(tasker, "node_detail", maajs::JSConvert<MaaNodeId>::from_value(info[0]));
+        return maajs::CallMemberHelper<maajs::ValueType>(tasker, "action_detail", maajs::JSConvert<MaaActId>::from_value(info[0]));
     });
 }
 
@@ -92,6 +92,15 @@ void ContextImpl::override_next(std::string node_name, std::vector<std::string> 
     });
     if (!MaaContextOverrideNext(context, node_name.c_str(), buffer)) {
         throw maajs::MaaError { "Context override_next failed" };
+    }
+}
+
+void ContextImpl::override_image(std::string image_name, maajs::ArrayBufferType image)
+{
+    ImageBuffer buffer;
+    buffer.set(image);
+    if (!MaaContextOverrideImage(context, image_name.c_str(), buffer)) {
+        throw maajs::MaaError { "Context override_image failed" };
     }
 }
 
@@ -159,6 +168,7 @@ void ContextImpl::init_proto(maajs::ObjectType proto, maajs::FunctionType)
     MAA_BIND_FUNC(proto, "run_action", ContextImpl::run_action);
     MAA_BIND_FUNC(proto, "override_pipeline", ContextImpl::override_pipeline);
     MAA_BIND_FUNC(proto, "override_next", ContextImpl::override_next);
+    MAA_BIND_FUNC(proto, "override_image", ContextImpl::override_image);
     MAA_BIND_FUNC(proto, "get_node_data", ContextImpl::get_node_data);
     MAA_BIND_FUNC(proto, "get_node_data_parsed", ContextImpl::get_node_data_parsed);
     MAA_BIND_GETTER(proto, "task_id", ContextImpl::get_task_id);

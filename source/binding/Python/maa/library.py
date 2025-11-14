@@ -1,5 +1,4 @@
 import ctypes
-import ctypes.util
 import pathlib
 import platform
 from typing import Optional

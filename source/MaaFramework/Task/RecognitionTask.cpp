@@ -7,31 +7,33 @@
 #include "Resource/ResourceMgr.h"
 #include "Tasker/Tasker.h"
 
-
 MAA_TASK_NS_BEGIN
-
-bool RecognitionTask::run()
-{
-    return run_with_param(screencap()) != MaaInvalidId;
-}
 
 MaaRecoId RecognitionTask::run_with_param(const cv::Mat& image)
 {
-    LogFunc << VAR(entry_);
+    LogFunc << VAR(entry_) << VAR(task_id_);
 
-    PipelineData::NextList next_list = { entry_ };
-
-    auto reco = run_recognition(image, next_list);
-    if (!reco.box) {
-        LogDebug << "No reco result";
+    if (!context_) {
+        LogError << "context is null";
         return MaaInvalidId;
     }
 
+    auto node_opt = context_->get_pipeline_data(entry_);
+    if (!node_opt) {
+        LogError << "get_pipeline_data failed, task not exist" << VAR(entry_);
+        return MaaInvalidId;
+    }
+
+    auto reco = run_recognition(image, *node_opt);
+
     NodeDetail result {
         .node_id = generate_node_id(),
-        .name = reco.name,
+        .name = entry_,
         .reco_id = reco.reco_id,
+        .action_id = MaaInvalidId,
+        .completed = reco.box.has_value(),
     };
+    LogInfo << "RecognitionTask node done" << VAR(result) << VAR(task_id_);
     set_node_detail(result.node_id, result);
 
     return reco.reco_id;

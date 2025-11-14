@@ -58,6 +58,11 @@ bool CarouselImage::request_uuid(std::string& uuid)
     return true;
 }
 
+MaaControllerFeature CarouselImage::get_features() const
+{
+    return MaaControllerFeature_None;
+}
+
 bool CarouselImage::start_app(const std::string& intent)
 {
     std::ignore = intent;
@@ -103,11 +108,6 @@ bool CarouselImage::swipe(int x1, int y1, int x2, int y2, int duration)
     return true;
 }
 
-bool CarouselImage::is_touch_availabled() const
-{
-    return true;
-}
-
 bool CarouselImage::touch_down(int contact, int x, int y, int pressure)
 {
     std::ignore = contact;
@@ -143,11 +143,6 @@ bool CarouselImage::click_key(int key)
 bool CarouselImage::input_text(const std::string& text)
 {
     std::ignore = text;
-    return true;
-}
-
-bool CarouselImage::is_key_down_up_availabled() const
-{
     return true;
 }
 

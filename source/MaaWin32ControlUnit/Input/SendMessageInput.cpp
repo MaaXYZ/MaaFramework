@@ -5,7 +5,19 @@
 #include "MaaUtils/Platform.h"
 #include "MaaUtils/SafeWindows.hpp"
 
+#include "InputUtils.h"
+
 MAA_CTRL_UNIT_NS_BEGIN
+
+void SendMessageInput::ensure_foreground()
+{
+    ::MaaNS::CtrlUnitNs::ensure_foreground(hwnd_);
+}
+
+MaaControllerFeature SendMessageInput::get_features() const
+{
+    return MaaControllerFeature_UseMouseDownAndUpInsteadOfClick | MaaControllerFeature_UseKeyboardDownAndUpInsteadOfClick;
+}
 
 bool SendMessageInput::click(int x, int y)
 {
@@ -30,36 +42,20 @@ bool SendMessageInput::touch_down(int contact, int x, int y, int pressure)
         return false;
     }
 
-    UINT message = WM_LBUTTONDOWN;
-    WPARAM w_param = MK_LBUTTON;
+    ensure_foreground();
 
-    switch (contact) {
-    case 0:
-        message = WM_LBUTTONDOWN;
-        w_param = MK_LBUTTON;
-        break;
-    case 1:
-        message = WM_RBUTTONDOWN;
-        w_param = MK_RBUTTON;
-        break;
-    case 2:
-        message = WM_MBUTTONDOWN;
-        w_param = MK_MBUTTON;
-        break;
-    case 3:
-        message = WM_XBUTTONUP;
-        w_param = MK_XBUTTON1;
-        break;
-    case 4:
-        message = WM_XBUTTONUP;
-        w_param = MK_XBUTTON2;
-        break;
-    default:
+    touch_move(contact, x, y, pressure);
+
+    std::this_thread::sleep_for(std::chrono::milliseconds(10));
+
+    MouseMessageInfo msg_info;
+    if (!contact_to_mouse_down_message(contact, msg_info)) {
         LogError << "contact out of range" << VAR(contact);
         return false;
     }
 
-    SendMessage(hwnd_, message, w_param, MAKELPARAM(x, y));
+    SendMessage(hwnd_, msg_info.message, msg_info.w_param, MAKELPARAM(x, y));
+    last_pos_ = { x, y };
 
     return true;
 }
@@ -75,36 +71,14 @@ bool SendMessageInput::touch_move(int contact, int x, int y, int pressure)
         return false;
     }
 
-    UINT message = WM_MOUSEMOVE;
-    WPARAM w_param = MK_LBUTTON;
-
-    switch (contact) {
-    case 0:
-        message = WM_MOUSEMOVE;
-        w_param = MK_LBUTTON;
-        break;
-    case 1:
-        message = WM_MOUSEMOVE;
-        w_param = MK_RBUTTON;
-        break;
-    case 2:
-        message = WM_MOUSEMOVE;
-        w_param = MK_MBUTTON;
-        break;
-    case 3:
-        message = WM_MOUSEMOVE;
-        w_param = MK_XBUTTON1;
-        break;
-    case 4:
-        message = WM_MOUSEMOVE;
-        w_param = MK_XBUTTON2;
-        break;
-    default:
+    MouseMessageInfo msg_info;
+    if (!contact_to_mouse_move_message(contact, msg_info)) {
         LogError << "contact out of range" << VAR(contact);
         return false;
     }
 
-    SendMessage(hwnd_, message, w_param, MAKELPARAM(x, y));
+    SendMessage(hwnd_, msg_info.message, msg_info.w_param, MAKELPARAM(x, y));
+    last_pos_ = { x, y };
 
     return true;
 }
@@ -120,36 +94,15 @@ bool SendMessageInput::touch_up(int contact)
         return false;
     }
 
-    UINT message = WM_LBUTTONUP;
-    WPARAM w_param = MK_LBUTTON;
+    ensure_foreground();
 
-    switch (contact) {
-    case 0:
-        message = WM_LBUTTONUP;
-        w_param = MK_LBUTTON;
-        break;
-    case 1:
-        message = WM_RBUTTONUP;
-        w_param = MK_RBUTTON;
-        break;
-    case 2:
-        message = WM_MBUTTONUP;
-        w_param = MK_MBUTTON;
-        break;
-    case 3:
-        message = WM_XBUTTONUP;
-        w_param = MK_XBUTTON1;
-        break;
-    case 4:
-        message = WM_XBUTTONUP;
-        w_param = MK_XBUTTON2;
-        break;
-    default:
+    MouseMessageInfo msg_info;
+    if (!contact_to_mouse_up_message(contact, msg_info)) {
         LogError << "contact out of range" << VAR(contact);
         return false;
     }
 
-    SendMessage(hwnd_, WM_LBUTTONUP, w_param, 0);
+    SendMessage(hwnd_, msg_info.message, msg_info.w_param, MAKELPARAM(last_pos_.first, last_pos_.second));
 
     return true;
 }
@@ -169,10 +122,12 @@ bool SendMessageInput::input_text(const std::string& text)
         return false;
     }
 
+    ensure_foreground();
+
+    // 文本输入仅发送 WM_CHAR
     for (const auto ch : to_u16(text)) {
-        SendMessageW(hwnd_, WM_KEYDOWN, ch, 0);
-        SendMessageW(hwnd_, WM_CHAR, ch, 0);
-        SendMessageW(hwnd_, WM_KEYUP, ch, 0);
+        SendMessageW(hwnd_, WM_CHAR, static_cast<WPARAM>(ch), 0);
+        std::this_thread::sleep_for(std::chrono::milliseconds(10));
     }
     return true;
 }
@@ -184,7 +139,10 @@ bool SendMessageInput::key_down(int key)
         return false;
     }
 
-    SendMessageW(hwnd_, WM_KEYDOWN, key, 0);
+    ensure_foreground();
+
+    LPARAM lParam = make_keydown_lparam(key);
+    SendMessageW(hwnd_, WM_KEYDOWN, static_cast<WPARAM>(key), lParam);
     return true;
 }
 
@@ -195,7 +153,10 @@ bool SendMessageInput::key_up(int key)
         return false;
     }
 
-    SendMessageW(hwnd_, WM_KEYUP, key, 0);
+    ensure_foreground();
+
+    LPARAM lParam = make_keyup_lparam(key);
+    SendMessageW(hwnd_, WM_KEYUP, static_cast<WPARAM>(key), lParam);
     return true;
 }
 

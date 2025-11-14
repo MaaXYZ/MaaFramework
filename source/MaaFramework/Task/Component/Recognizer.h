@@ -2,8 +2,8 @@
 
 #include <meojson/json.hpp>
 
-#include "Common/MaaTypes.h"
 #include "Common/Conf.h"
+#include "Common/MaaTypes.h"
 #include "Resource/PipelineTypes.h"
 #include "Task/Context.h"
 #include "Tasker/Tasker.h"
@@ -13,9 +13,6 @@ MAA_TASK_NS_BEGIN
 
 class Recognizer
 {
-public:
-    using OcrCache = MAA_VISION_NS::OCRer::Cache;
-
 public:
     explicit Recognizer(Tasker* tasker, Context& context, const cv::Mat& image);
 
@@ -43,8 +40,6 @@ private:
     Tasker* tasker_ = nullptr;
     Context& context_;
     cv::Mat image_;
-
-    OcrCache ocr_cache_;
 };
 
 MAA_TASK_NS_END

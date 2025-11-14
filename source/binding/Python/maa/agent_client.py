@@ -3,6 +3,8 @@ import ctypes
 from .define import *
 from .library import Library
 from .resource import Resource
+from .controller import Controller
+from .tasker import Tasker
 from .buffer import StringBuffer
 
 
@@ -47,6 +49,30 @@ class AgentClient:
             )
         )
 
+    def register_sink(
+        self, resource: Resource, controller: Controller, tasker: Tasker
+    ) -> bool:
+        # avoid gc
+        self._sinks = [resource, controller, tasker]
+
+        return (
+            bool(
+                Library.agent_client().MaaAgentClientRegisterResourceSink(
+                    self._handle, resource._handle
+                )
+            )
+            and bool(
+                Library.agent_client().MaaAgentClientRegisterControllerSink(
+                    self._handle, controller._handle
+                )
+            )
+            and bool(
+                Library.agent_client().MaaAgentClientRegisterTaskerSink(
+                    self._handle, tasker._handle
+                )
+            )
+        )
+
     def connect(self) -> bool:
         return bool(Library.agent_client().MaaAgentClientConnect(self._handle))
 
@@ -62,7 +88,11 @@ class AgentClient:
         return bool(Library.agent_client().MaaAgentClientAlive(self._handle))
 
     def set_timeout(self, milliseconds: int) -> bool:
-        return bool(Library.agent_client().MaaAgentClientSetTimeout(self._handle, ctypes.c_int64(milliseconds)))
+        return bool(
+            Library.agent_client().MaaAgentClientSetTimeout(
+                self._handle, ctypes.c_int64(milliseconds)
+            )
+        )
 
     _api_properties_initialized: bool = False
 
@@ -94,6 +124,24 @@ class AgentClient:
         Library.agent_client().MaaAgentClientBindResource.argtypes = [
             MaaAgentClientHandle,
             MaaResourceHandle,
+        ]
+
+        Library.agent_client().MaaAgentClientRegisterResourceSink.restype = MaaBool
+        Library.agent_client().MaaAgentClientRegisterResourceSink.argtypes = [
+            MaaAgentClientHandle,
+            MaaResourceHandle,
+        ]
+
+        Library.agent_client().MaaAgentClientRegisterControllerSink.restype = MaaBool
+        Library.agent_client().MaaAgentClientRegisterControllerSink.argtypes = [
+            MaaAgentClientHandle,
+            MaaControllerHandle,
+        ]
+
+        Library.agent_client().MaaAgentClientRegisterTaskerSink.restype = MaaBool
+        Library.agent_client().MaaAgentClientRegisterTaskerSink.argtypes = [
+            MaaAgentClientHandle,
+            MaaTaskerHandle,
         ]
 
         Library.agent_client().MaaAgentClientConnect.restype = MaaBool

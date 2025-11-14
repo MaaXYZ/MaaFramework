@@ -24,6 +24,7 @@ typedef MaaId MaaCtrlId;
 typedef MaaId MaaResId;
 typedef MaaId MaaTaskId;
 typedef MaaId MaaRecoId;
+typedef MaaId MaaActId;
 typedef MaaId MaaNodeId;
 typedef MaaId MaaSinkId;
 #define MaaInvalidId ((MaaId)0)
@@ -252,6 +253,9 @@ typedef uint64_t MaaWin32ScreencapMethod;
 #define MaaWin32ScreencapMethod_GDI 1ULL
 #define MaaWin32ScreencapMethod_FramePool (1ULL << 1)
 #define MaaWin32ScreencapMethod_DXGI_DesktopDup (1ULL << 2)
+#define MaaWin32ScreencapMethod_DXGI_DesktopDup_Window (1ULL << 3)
+#define MaaWin32ScreencapMethod_PrintWindow (1ULL << 4)
+#define MaaWin32ScreencapMethod_ScreenDC (1ULL << 5)
 
 // MaaWin32InputMethod:
 /**
@@ -261,6 +265,9 @@ typedef uint64_t MaaWin32InputMethod;
 #define MaaWin32InputMethod_None 0ULL
 #define MaaWin32InputMethod_Seize 1ULL
 #define MaaWin32InputMethod_SendMessage (1ULL << 1)
+#define MaaWin32InputMethod_PostMessage (1ULL << 2)
+#define MaaWin32InputMethod_LegacyEvent (1ULL << 3)
+#define MaaWin32InputMethod_PostThreadMessage (1ULL << 4)
 
 // MaaDbgControllerType:
 /**
@@ -270,6 +277,11 @@ typedef uint64_t MaaDbgControllerType;
 #define MaaDbgControllerType_None 0
 #define MaaDbgControllerType_CarouselImage 1ULL
 #define MaaDbgControllerType_ReplayRecording (1ULL << 1)
+
+typedef uint64_t MaaControllerFeature;
+#define MaaControllerFeature_None 0
+#define MaaControllerFeature_UseMouseDownAndUpInsteadOfClick 1ULL
+#define MaaControllerFeature_UseKeyboardDownAndUpInsteadOfClick (1ULL << 1)
 
 typedef struct MaaRect
 {

@@ -9,6 +9,7 @@ declare global {
         type NodeDetail = {
             name: string
             reco: RecoDetail | null
+            action: ActionDetail | null
             completed: boolean
         }
 
@@ -41,36 +42,52 @@ declare global {
             draws: ArrayBuffer[]
         }
 
+        type ActionDetailObject = ActionParam
+
+        type ActionDetail = {
+            name: string
+            action: string
+            box: Rect
+            success: boolean
+            detail: ActionDetailObject
+        }
+
         type TaskerNotify = {
-            msg: 'Task.Started' | 'Task.Completed' | 'Task.Failed'
+            msg: 'Task.Starting' | 'Task.Succeeded' | 'Task.Failed'
             task_id: number // TaskId
             entry: string
             uuid: string
             hash: string
         }
 
+        type TaskerContextNextListNotify = {
+            msg: 'NextList.Starting' | 'NextList.Succeeded' | 'NextList.Failed'
+            task_id: number // TaskId
+            name: string
+            list: string[]
+            focus: unknown
+        }
+
+        type TaskerContextRecognitionNotify = {
+            msg: 'Recognition.Starting' | 'Recognition.Succeeded' | 'Recognition.Failed'
+            task_id: number // TaskId
+            reco_id: number // RecoId
+            name: string
+            focus: unknown
+        }
+
+        type TaskerContextActionNotify = {
+            msg: 'Action.Starting' | 'Action.Succeeded' | 'Action.Failed'
+            task_id: number // TaskId
+            action_id: number // ActId
+            name: string
+            focus: unknown
+        }
+
         type TaskerContextNotify =
-            | {
-                  msg: 'NextList.Starting' | 'NextList.Succeeded' | 'NextList.Failed'
-                  task_id: number // TaskId
-                  name: string
-                  list: string[]
-                  focus: unknown
-              }
-            | {
-                  msg: 'Recognition.Starting' | 'Recognition.Succeeded' | 'Recognition.Failed'
-                  task_id: number // TaskId
-                  reco_id: number // RecoId
-                  name: string
-                  focus: unknown
-              }
-            | {
-                  msg: 'Action.Starting' | 'Action.Succeeded' | 'Action.Failed'
-                  task_id: number // TaskId
-                  node_id: number // NodeId
-                  name: string
-                  focus: unknown
-              }
+            | TaskerContextNextListNotify
+            | TaskerContextRecognitionNotify
+            | TaskerContextActionNotify
 
         class TaskJob extends Job<TaskId, Tasker, TaskDetail> {}
 
@@ -101,6 +118,7 @@ declare global {
             get controller(): Controller | null
             clear_cache(): void
             recognition_detail(id: RecoId): RecoDetail | null
+            action_detail(id: ActId): ActionDetail | null
             node_detail(id: NodeId): NodeDetail | null
             task_detail(id: TaskId): TaskDetail | null
             latest_node(node_name: string): NodeId | null

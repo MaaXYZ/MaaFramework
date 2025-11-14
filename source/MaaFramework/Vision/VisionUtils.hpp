@@ -148,6 +148,9 @@ template <typename T>
 inline static T softmax(const T& input)
 {
     T output = input;
+    if (output.empty()) {
+        return output;
+    }
     float rowmax = *std::ranges::max_element(output);
     std::vector<float> y(output.size());
     float sum = 0.0f;

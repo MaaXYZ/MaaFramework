@@ -43,6 +43,11 @@ bool MaatouchInput::init()
     return invoke_and_read_info();
 }
 
+MaaControllerFeature MaatouchInput::get_features() const
+{
+    return MaaControllerFeature_UseMouseDownAndUpInsteadOfClick | MaaControllerFeature_UseKeyboardDownAndUpInsteadOfClick;
+}
+
 bool MaatouchInput::click_key(int key)
 {
     LogError << "deprecated" << VAR(key);

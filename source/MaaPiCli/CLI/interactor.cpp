@@ -15,7 +15,6 @@
 #include "MaaUtils/Platform.h"
 #include "ProjectInterface/Runner.h"
 
-
 static bool s_eof = false;
 
 // return [1, size]
@@ -272,6 +271,9 @@ bool Interactor::interact_once()
         mpause();
         break;
     case 7:
+        return false;
+    default:
+        LogError << "Invalid action" << VAR(action);
         return false;
     }
 
