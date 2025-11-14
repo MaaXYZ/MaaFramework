@@ -3,7 +3,7 @@ name: format code
 on:
     workflow_dispatch:
     schedule:
-        - cron: "0 0 * * *" # UTC
+        - cron: "0 23 * * *" # UTC
 
 jobs:
     format:
