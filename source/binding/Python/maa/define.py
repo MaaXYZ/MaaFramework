@@ -624,7 +624,7 @@ class RecognitionDetail:
     box: Optional[Rect]
 
     all_results: List[RecognitionResult]
-    filterd_results: List[RecognitionResult]
+    filtered_results: List[RecognitionResult]
     best_result: Optional[RecognitionResult]
 
     raw_detail: Dict

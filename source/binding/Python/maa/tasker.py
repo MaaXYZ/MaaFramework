@@ -334,7 +334,7 @@ class Tasker:
             hit=bool(hit),
             box=bool(hit) and box.get() or None,
             all_results=parsed_detail[0],
-            filterd_results=parsed_detail[1],
+            filtered_results=parsed_detail[1],
             best_result=parsed_detail[2],
             raw_detail=raw_detail,
             raw_image=raw.get(),
@@ -592,21 +592,21 @@ class Tasker:
             return [], [], None
 
         all_results: List[RecognitionResult] = []
-        filterd_results: List[RecognitionResult] = []
+        filtered_results: List[RecognitionResult] = []
         best_result: Optional[RecognitionResult] = None
 
         raw_all_results = raw_detail.get("all", [])
-        raw_filterd_results = raw_detail.get("filtered", [])
+        raw_filtered_results = raw_detail.get("filtered", [])
         raw_best_result = raw_detail.get("best", None)
 
         for raw_result in raw_all_results:
             all_results.append(ResultType(**raw_result))
-        for raw_result in raw_filterd_results:
-            filterd_results.append(ResultType(**raw_result))
+        for raw_result in raw_filtered_results:
+            filtered_results.append(ResultType(**raw_result))
         if raw_best_result:
             best_result = ResultType(**raw_best_result)
 
-        return all_results, filterd_results, best_result
+        return all_results, filtered_results, best_result
 
     @staticmethod
     def _parse_action_raw_detail(
