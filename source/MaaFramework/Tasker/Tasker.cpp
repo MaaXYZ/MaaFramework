@@ -27,11 +27,15 @@ Tasker::Tasker()
     }
 
     task_runner_ = std::make_unique<AsyncRunner<TaskPtr>>(std::bind(&Tasker::run_task, this, std::placeholders::_1, std::placeholders::_2));
+
+    notifier_.notify(this, MaaMsg_Tasker_Instance_Created);
 }
 
 Tasker::~Tasker()
 {
     LogFunc;
+
+    notifier_.notify(this, MaaMsg_Tasker_Instance_Destroying);
 
     if (task_runner_) {
         task_runner_->wait_all();
