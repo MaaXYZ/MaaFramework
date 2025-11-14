@@ -1,4 +1,5 @@
 import ctypes
+import json
 from dataclasses import dataclass
 from abc import ABC, abstractmethod
 
@@ -27,7 +28,7 @@ class CustomRecognition(ABC):
     @dataclass
     class AnalyzeResult:
         box: Optional[RectType]
-        detail: str
+        detail: dict
 
     @abstractmethod
     def analyze(
@@ -91,7 +92,7 @@ class CustomRecognition(ABC):
         if isinstance(result, CustomRecognition.AnalyzeResult):
             if result.box:
                 rect_buffer.set(result.box)
-            detail_buffer.set(result.detail)
+            detail_buffer.set(json.dumps(result.detail, ensure_ascii=False))
             return int(result.box is not None)
 
         # RectType
