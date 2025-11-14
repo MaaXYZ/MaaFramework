@@ -3,8 +3,8 @@
 #include <optional>
 
 #include "MaaFramework/MaaDef.h"
-#include "MaaUtils/NoWarningCVMat.hpp"
 #include "MaaUtils/JsonExt.hpp"
+#include "MaaUtils/NoWarningCVMat.hpp"
 
 #include "Common/Conf.h"
 
