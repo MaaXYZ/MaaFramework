@@ -154,6 +154,9 @@ It offers low-code simplicity while maintaining high extensibility. The framewor
 -   [MaaStarResonance](https://github.com/233Official/MaaStarResonance) ![Pipeline](https://img.shields.io/badge/Pipeline-%23876f69?logo=paddypower&logoColor=%23FFFFFF) ![Python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white) ![license](https://img.shields.io/github/license/233Official/MaaStarResonance) ![activity](https://img.shields.io/github/commit-activity/m/233Official/MaaStarResonance?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/233Official/MaaStarResonance?style=social) [![mirrorc](./docs/static/mirrorc-zh.svg)](https://mirrorchyan.com/en/projects?source=maafw-badge)  
     Assistant for StarResonance. Image recognition + simulation control to free your hands! Powered by MaaFramework!
 
+- [MAG](https://github.com/Kazaorus/MAG) ![Pipeline](https://img.shields.io/badge/Pipeline-%23876f69?logo=paddypower&logoColor=%23FFFFFF) ![Python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white) ![license](https://img.shields.io/github/license/Kazaorus/MAG)  ![activity](https://img.shields.io/github/commit-activity/m/Kazaorus/MAG?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/Kazaorus/MAG?style=social)
+    Assistant for Aether Gazer. Image recognition + simulation control to free your hands! Powered by MaaFramework!
+
 ## Eco-Building
 
 MAA is planned to be a category of projects rather than just a single piece of software.
