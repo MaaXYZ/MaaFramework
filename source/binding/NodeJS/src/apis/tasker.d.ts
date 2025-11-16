@@ -33,7 +33,7 @@ declare global {
             name: string
             algorithm: string
             hit: boolean
-            box: Rect
+            box: FlatRect
             detail: RecoDetailObject
         }
 
@@ -47,7 +47,7 @@ declare global {
         type ActionDetail = {
             name: string
             action: string
-            box: Rect
+            box: FlatRect
             success: boolean
             detail: ActionDetailObject
         }
