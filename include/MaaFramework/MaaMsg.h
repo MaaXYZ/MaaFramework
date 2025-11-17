@@ -80,6 +80,7 @@
 #define MaaMsg_Node_Node_Succeeded ("Node.Node.Succeeded")
 #define MaaMsg_Node_Node_Failed ("Node.Node.Failed")
 /// @}
+
 /**
  * @{
  * @brief Message for the next list of node.
