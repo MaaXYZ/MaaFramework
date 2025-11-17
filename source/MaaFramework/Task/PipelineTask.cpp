@@ -161,7 +161,7 @@ NodeDetail PipelineTask::run_next(const PipelineData::NextList& list, const Pipe
         auto current_clock = std::chrono::steady_clock::now();
         cv::Mat image = screencap();
 
-        RecoResult reco = recognize_list(image, list);
+        RecoResult reco = recognize_list(cur_node, image, list);
 
         if (context_->need_to_stop()) {
             LogWarn << "need_to_stop" << VAR(pretask.name);
@@ -226,7 +226,7 @@ NodeDetail PipelineTask::run_next(const PipelineData::NextList& list, const Pipe
     return result;
 }
 
-RecoResult PipelineTask::recognize_list(const cv::Mat& image, const PipelineData::NextList& list)
+RecoResult PipelineTask::recognize_list(const PipelineData& cur_node, const cv::Mat& image, const PipelineData::NextList& list)
 {
     LogFunc << VAR(cur_node_) << VAR(list);
 
@@ -239,14 +239,6 @@ RecoResult PipelineTask::recognize_list(const cv::Mat& image, const PipelineData
         LogError << "Image is empty";
         return {};
     }
-
-    auto cur_opt = context_->get_pipeline_data(cur_node_);
-    if (!cur_opt) {
-        LogError << "get_pipeline_data failed, node not exist" << VAR(cur_node_);
-        return {};
-    }
-
-    const auto& cur_node = *cur_opt;
 
     const json::value reco_list_cb_detail {
         { "task_id", task_id() },
