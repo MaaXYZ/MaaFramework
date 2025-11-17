@@ -76,9 +76,41 @@
  *     focus: any,
  * }
  */
-#define MaaMsg_Node_Node_Starting ("Node.Node.Starting")
-#define MaaMsg_Node_Node_Succeeded ("Node.Node.Succeeded")
-#define MaaMsg_Node_Node_Failed ("Node.Node.Failed")
+#define MaaMsg_Context_PipelineNode_Starting ("Context.PipelineNode.Starting")
+#define MaaMsg_Context_PipelineNode_Succeeded ("Context.PipelineNode.Succeeded")
+#define MaaMsg_Context_PipelineNode_Failed ("Context.PipelineNode.Failed")
+/// @}
+
+/**
+ * @{
+ * @brief Message for the node.
+ *
+ * details_json: {
+ *     task_id: number,
+ *     node_id: number
+ *     name: string,
+ *     focus: any,
+ * }
+ */
+#define MaaMsg_Context_RecognitionNode_Starting ("Context.RecognitionNode.Starting")
+#define MaaMsg_Context_RecognitionNode_Succeeded ("Context.RecognitionNode.Succeeded")
+#define MaaMsg_Context_RecognitionNode_Failed ("Context.RecognitionNode.Failed")
+/// @}
+
+/**
+ * @{
+ * @brief Message for the node.
+ *
+ * details_json: {
+ *     task_id: number,
+ *     node_id: number
+ *     name: string,
+ *     focus: any,
+ * }
+ */
+#define MaaMsg_Context_ActionNode_Starting ("Context.ActionNode.Starting")
+#define MaaMsg_Context_ActionNode_Succeeded ("Context.ActionNode.Succeeded")
+#define MaaMsg_Context_ActionNode_Failed ("Context.ActionNode.Failed")
 /// @}
 
 /**

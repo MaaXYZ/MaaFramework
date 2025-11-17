@@ -25,16 +25,31 @@ MaaActId ActionTask::run_with_param(const cv::Rect& box, const json::value& reco
         return MaaInvalidId;
     }
 
+    const auto& cur_node = *node_opt;
+
+    auto node_id = generate_node_id();
+
+    const json::value node_cb_detail {
+        { "task_id", task_id() },
+        { "node_id", node_id },
+        { "name", entry_ },
+        { "focus", cur_node.focus },
+    };
+
+    if (debug_mode() || !cur_node.focus.is_null()) {
+        notify(MaaMsg_Context_ActionNode_Starting, node_cb_detail);
+    }
+
     RecoResult fake_reco {
         .reco_id = MaaInvalidId,
         .box = box,
         .detail = reco_detail,
     };
 
-    auto act = run_action(fake_reco, *node_opt);
+    auto act = run_action(fake_reco, cur_node);
 
     NodeDetail result {
-        .node_id = generate_node_id(),
+        .node_id = node_id,
         .name = entry_,
         .reco_id = fake_reco.reco_id,
         .action_id = act.action_id,
@@ -42,6 +57,10 @@ MaaActId ActionTask::run_with_param(const cv::Rect& box, const json::value& reco
     };
     LogInfo << "ActionTask node done" << VAR(result) << VAR(task_id_);
     set_node_detail(result.node_id, result);
+
+    if (debug_mode() || !cur_node.focus.is_null()) {
+        notify(act.success ? MaaMsg_Context_ActionNode_Succeeded : MaaMsg_Context_ActionNode_Failed, node_cb_detail);
+    }
 
     return act.action_id;
 }
