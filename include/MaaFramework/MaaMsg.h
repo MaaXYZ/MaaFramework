@@ -67,6 +67,21 @@
 
 /**
  * @{
+ * @brief Message for the node.
+ *
+ * details_json: {
+ *     task_id: number,
+ *     node_id: number
+ *     name: string,
+ *     focus: any,
+ * }
+ */
+#define MaaMsg_Node_Node_Starting ("Node.Node.Starting")
+#define MaaMsg_Node_Node_Succeeded ("Node.Node.Succeeded")
+#define MaaMsg_Node_Node_Failed ("Node.Node.Failed")
+/// @}
+/**
+ * @{
  * @brief Message for the next list of node.
  *
  * details_json: {
