@@ -1,5 +1,6 @@
 #pragma once
 
+#include <array>
 #include <format>
 #include <optional>
 #include <string>
@@ -322,6 +323,35 @@ struct JSConvert<std::vector<Type>>
     {
         std::vector<ValueType> result;
         result.reserve(vals.size());
+        for (const auto& val : vals) {
+            result.push_back(JSConvert<Type>::to_value(env, val));
+        }
+        return MakeArray(env, result);
+    }
+};
+
+template <typename Type, size_t N>
+struct JSConvert<std::array<Type, N>>
+{
+    static std::string name() { return std::format("{}[{}]", JSConvert<Type>::name(), N); }
+
+    static std::array<Type, N> from_value(ValueType val)
+    {
+        if (val.IsArray() && val.As<ArrayType>().Length() == N) {
+            auto vals = GetArray(val.As<ArrayType>());
+            std::array<Type, N> result;
+            for (size_t i = 0; i < N; i++) {
+                result[i] = JSConvert<Type>::from_value(vals[i]);
+            }
+            return result;
+        }
+        throw MaaError { std::format("expect {}, got {}", name(), DumpValue(val)) };
+    }
+
+    static ValueType to_value(EnvType env, const std::array<Type, N>& vals)
+    {
+        std::vector<ValueType> result;
+        result.reserve(N);
         for (const auto& val : vals) {
             result.push_back(JSConvert<Type>::to_value(env, val));
         }

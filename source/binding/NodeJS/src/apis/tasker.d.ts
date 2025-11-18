@@ -14,7 +14,7 @@ declare global {
         }
 
         type RecoDetailEntry = {
-            box: maa.FlatRect
+            box: Rect
             score?: number // TemplateMatch
             count?: number // FeatureMatch | ColorMatch
             text?: string // OCR
@@ -33,7 +33,7 @@ declare global {
             name: string
             algorithm: string
             hit: boolean
-            box: FlatRect
+            box: Rect
             detail: RecoDetailObject
         }
 
@@ -47,7 +47,7 @@ declare global {
         type ActionDetail = {
             name: string
             action: string
-            box: FlatRect
+            box: Rect
             success: boolean
             detail: ActionDetailObject
         }

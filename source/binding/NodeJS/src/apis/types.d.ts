@@ -18,15 +18,8 @@ declare global {
 
         type ImageData = ArrayBuffer
 
-        type Rect = {
-            x: number
-            y: number
-            width: number
-            height: number
-        }
-
         type Point = [x: number, y: number]
-        type FlatRect = [x: number, y: number, width: number, height: number]
+        type Rect = [x: number, y: number, width: number, height: number]
 
         type MaybePromise<T> = T | Promise<T>
 

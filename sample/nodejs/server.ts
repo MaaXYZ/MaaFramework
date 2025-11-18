@@ -30,15 +30,7 @@ const my_reco: maa.CustomRecognitionCallback = async self => {
 
     self.context.override_next(self.task, ['TaskA', 'TaskB'])
 
-    return [
-        {
-            x: 0,
-            y: 0,
-            width: 100,
-            height: 100
-        },
-        'Hello World!'
-    ]
+    return [[0, 0, 100, 100], 'Hello World!']
 }
 
 async function main() {

@@ -31,8 +31,8 @@ declare global {
 
         type RecognitionTemplateMatch<Mode> = RequiredIfStrict<
             {
-                roi?: FlatRect | NodeName
-                roi_offset?: FlatRect
+                roi?: Rect | NodeName
+                roi_offset?: Rect
                 template?: MaybeArray<string, Mode>
                 threshold?: MaybeArray<number, Mode>
                 order_by?: OrderByMap['TemplateMatch']
@@ -46,8 +46,8 @@ declare global {
 
         type RecognitionFeatureMatch<Mode> = RequiredIfStrict<
             {
-                roi?: FlatRect | NodeName
-                roi_offset?: FlatRect
+                roi?: Rect | NodeName
+                roi_offset?: Rect
                 template?: MaybeArray<string, Mode>
                 count?: number
                 order_by?: OrderByMap['FeatureMatch']
@@ -61,8 +61,8 @@ declare global {
         >
 
         type RecognitionColorMatch<Mode> = {
-            roi?: FlatRect | NodeName
-            roi_offset?: FlatRect
+            roi?: Rect | NodeName
+            roi_offset?: Rect
         } & RequiredIfStrict<
             | {
                   method?: 4 | 40
@@ -85,8 +85,8 @@ declare global {
 
         type RecognitionOCR<Mode> = RequiredIfStrict<
             {
-                roi?: FlatRect | NodeName
-                roi_offset?: FlatRect
+                roi?: Rect | NodeName
+                roi_offset?: Rect
                 expected?: MaybeArray<string, Mode>
                 threshold?: MaybeArray<number, Mode>
                 replace?: MaybeArray<FixedArray<string, 2>, Mode>
@@ -101,8 +101,8 @@ declare global {
 
         type RecognitionNeuralNetworkClassify<Mode> = RequiredIfStrict<
             {
-                roi?: FlatRect | NodeName
-                roi_offset?: FlatRect
+                roi?: Rect | NodeName
+                roi_offset?: Rect
                 labels?: string[]
                 model?: string
                 expected?: MaybeArray<number, Mode>
@@ -115,8 +115,8 @@ declare global {
 
         type RecognitionNeuralNetworkDetect<Mode> = RequiredIfStrict<
             {
-                roi?: FlatRect | NodeName
-                roi_offset?: FlatRect
+                roi?: Rect | NodeName
+                roi_offset?: Rect
                 labels?: string[]
                 model?: string
                 expected?: MaybeArray<number, Mode>
@@ -130,8 +130,8 @@ declare global {
 
         type RecognitionCustom<Mode> = RequiredIfStrict<
             {
-                roi?: FlatRect | NodeName
-                roi_offset?: FlatRect
+                roi?: Rect | NodeName
+                roi_offset?: Rect
                 custom_recognition?: string
                 custom_recognition_param?: unknown
             },
@@ -175,23 +175,23 @@ declare global {
         type ActionDoNothing = {}
 
         type ActionClick = {
-            target?: true | NodeName | FlatRect
-            target_offset?: FlatRect
+            target?: true | NodeName | Rect
+            target_offset?: Rect
             contact?: number
         }
 
         type ActionLongPress = {
-            target?: true | NodeName | FlatRect
-            target_offset?: FlatRect
+            target?: true | NodeName | Rect
+            target_offset?: Rect
             duration?: number
             contact?: number
         }
 
         type ActionSwipe = {
-            begin?: true | NodeName | FlatRect
-            begin_offset?: FlatRect
-            end?: true | NodeName | FlatRect
-            end_offset?: FlatRect
+            begin?: true | NodeName | Rect
+            begin_offset?: Rect
+            end?: true | NodeName | Rect
+            end_offset?: Rect
             duration?: number
             contact?: number
         }
@@ -200,10 +200,10 @@ declare global {
             {
                 swipes?: {
                     starting?: number
-                    begin?: true | NodeName | FlatRect
-                    begin_offset?: FlatRect
-                    end?: true | NodeName | FlatRect
-                    end_offset?: FlatRect
+                    begin?: true | NodeName | Rect
+                    begin_offset?: Rect
+                    end?: true | NodeName | Rect
+                    end_offset?: Rect
                     duration?: number
                     contact?: number
                 }[]
@@ -215,8 +215,8 @@ declare global {
         type ActionTouch<Mode> = RequiredIfStrict<
             {
                 contact?: number
-                target?: true | NodeName | FlatRect
-                target_offset?: FlatRect
+                target?: true | NodeName | Rect
+                target_offset?: Rect
                 pressure?: number
             },
             never,
@@ -294,8 +294,8 @@ declare global {
 
         type ActionCustom<Mode> = RequiredIfStrict<
             {
-                target?: true | NodeName | FlatRect
-                target_offset?: FlatRect
+                target?: true | NodeName | Rect
+                target_offset?: Rect
                 custom_action?: string
                 custom_action_param?: unknown
             },
@@ -349,8 +349,8 @@ declare global {
 
         type WaitFreeze = {
             time?: number
-            target?: true | NodeName | FlatRect
-            target_offset?: FlatRect
+            target?: true | NodeName | Rect
+            target_offset?: Rect
             threshold?: number
             method?: 1 | 3 | 5
             rate_limit?: number
