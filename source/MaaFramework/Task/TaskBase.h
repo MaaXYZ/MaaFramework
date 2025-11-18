@@ -41,8 +41,8 @@ protected:
     RecoResult run_recognition(const cv::Mat& image, const PipelineData& data);
     ActionResult run_action(const RecoResult& reco, const PipelineData& data);
     cv::Mat screencap();
-    MaaTaskId generate_node_id();
-    void set_node_detail(int64_t node_id, NodeDetail detail);
+    MaaNodeId generate_node_id();
+    void set_node_detail(MaaNodeId node_id, NodeDetail detail);
     void set_task_detail(TaskDetail detail);
 
     bool debug_mode() const;
@@ -59,7 +59,7 @@ protected:
 
 private:
     inline static std::atomic<MaaTaskId> s_global_task_id = 100'000'000;
-    inline static std::atomic<MaaTaskId> s_global_node_id = 200'000'000;
+    inline static std::atomic<MaaNodeId> s_global_node_id = 200'000'000;
 };
 
 MAA_TASK_NS_END

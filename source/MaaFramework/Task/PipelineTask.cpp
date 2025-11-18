@@ -135,7 +135,27 @@ NodeDetail PipelineTask::run_next(const PipelineData::NextList& list, const Pipe
         return {};
     }
 
+    auto node_id = generate_node_id();
     const auto start_clock = std::chrono::steady_clock::now();
+
+    auto cur_opt = context_->get_pipeline_data(cur_node_);
+    if (!cur_opt) {
+        LogError << "get_pipeline_data failed, node not exist" << VAR(cur_node_);
+        return {};
+    }
+
+    const auto& cur_node = *cur_opt;
+
+    const json::value node_cb_detail {
+        { "task_id", task_id() },
+        { "node_id", node_id },
+        { "name", cur_node_ },
+        { "focus", cur_node.focus },
+    };
+
+    if (debug_mode() || !cur_node.focus.is_null()) {
+        notify(MaaMsg_Node_PipelineNode_Starting, node_cb_detail);
+    }
 
     while (!context_->need_to_stop()) {
         auto current_clock = std::chrono::steady_clock::now();
@@ -165,13 +185,18 @@ NodeDetail PipelineTask::run_next(const PipelineData::NextList& list, const Pipe
         auto hit_opt = context_->get_pipeline_data(hit_name);
         if (!hit_opt) {
             LogError << "get_pipeline_data failed, node not exist" << VAR(hit_name);
+
+            if (debug_mode() || !cur_node.focus.is_null()) {
+                notify(MaaMsg_Node_PipelineNode_Failed, node_cb_detail);
+            }
+
             return {};
         }
 
         auto act = run_action(reco, *hit_opt);
 
         NodeDetail result {
-            .node_id = generate_node_id(),
+            .node_id = node_id,
             .name = hit_name,
             .reco_id = reco.reco_id,
             .action_id = act.action_id,
@@ -180,15 +205,23 @@ NodeDetail PipelineTask::run_next(const PipelineData::NextList& list, const Pipe
         LogInfo << "PipelineTask node done" << VAR(result) << VAR(task_id_);
         set_node_detail(result.node_id, result);
 
+        if (debug_mode() || !cur_node.focus.is_null()) {
+            notify(act.success ? MaaMsg_Node_PipelineNode_Succeeded : MaaMsg_Node_PipelineNode_Failed, node_cb_detail);
+        }
+
         return result;
     }
 
     NodeDetail result {
-        .node_id = generate_node_id(),
+        .node_id = node_id,
         .completed = false,
     };
     LogError << "PipelineTask bad next" << VAR(result) << VAR(task_id_);
     set_node_detail(result.node_id, result);
+
+    if (debug_mode() || !cur_node.focus.is_null()) {
+        notify(MaaMsg_Node_PipelineNode_Failed, node_cb_detail);
+    }
 
     return result;
 }

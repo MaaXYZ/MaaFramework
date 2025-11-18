@@ -53,15 +53,39 @@ declare global {
         }
 
         type TaskerNotify = {
-            msg: 'Task.Starting' | 'Task.Succeeded' | 'Task.Failed'
+            msg: NotifyMessage<'Task'>
             task_id: number // TaskId
             entry: string
             uuid: string
             hash: string
         }
 
+        type TaskerContextPipelineNodeNotify = {
+            msg: NotifyMessage<'PipelineNode'>
+            task_id: number // TaskId
+            node_id: number // NodeId
+            name: string
+            focus: unknown
+        }
+
+        type TaskerContextRecognitionNodeNotify = {
+            msg: NotifyMessage<'RecognitionNode'>
+            task_id: number // TaskId
+            node_id: number // NodeId
+            name: string
+            focus: unknown
+        }
+
+        type TaskerContextActionNodeNotify = {
+            msg: NotifyMessage<'ActionNode'>
+            task_id: number // TaskId
+            node_id: number // NodeId
+            name: string
+            focus: unknown
+        }
+
         type TaskerContextNextListNotify = {
-            msg: 'NextList.Starting' | 'NextList.Succeeded' | 'NextList.Failed'
+            msg: NotifyMessage<'NextList'>
             task_id: number // TaskId
             name: string
             list: string[]
@@ -69,7 +93,7 @@ declare global {
         }
 
         type TaskerContextRecognitionNotify = {
-            msg: 'Recognition.Starting' | 'Recognition.Succeeded' | 'Recognition.Failed'
+            msg: NotifyMessage<'Recognition'>
             task_id: number // TaskId
             reco_id: number // RecoId
             name: string
@@ -77,7 +101,7 @@ declare global {
         }
 
         type TaskerContextActionNotify = {
-            msg: 'Action.Starting' | 'Action.Succeeded' | 'Action.Failed'
+            msg: NotifyMessage<'Action'>
             task_id: number // TaskId
             action_id: number // ActId
             name: string
@@ -85,6 +109,9 @@ declare global {
         }
 
         type TaskerContextNotify =
+            | TaskerContextPipelineNodeNotify
+            | TaskerContextRecognitionNodeNotify
+            | TaskerContextActionNodeNotify
             | TaskerContextNextListNotify
             | TaskerContextRecognitionNotify
             | TaskerContextActionNotify

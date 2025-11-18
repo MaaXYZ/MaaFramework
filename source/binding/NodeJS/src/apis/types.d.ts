@@ -30,6 +30,11 @@ declare global {
 
         type MaybePromise<T> = T | Promise<T>
 
+        type NotifyMessage<Category extends string> =
+            | `${Category}.Starting`
+            | `${Category}.Succeeded`
+            | `${Category}.Failed`
+
         interface CustomRecognitionSelf {
             context: Context
             id: TaskId

@@ -61,10 +61,7 @@ declare global {
             | AppParam
 
         type ControllerNotify = {
-            msg:
-                | 'Controller.Action.Starting'
-                | 'Controller.Action.Succeeded'
-                | 'Controller.Action.Failed'
+            msg: NotifyMessage<'Action'>
             ctrl_id: number // CtrlId
             uuid: string
         } & (
