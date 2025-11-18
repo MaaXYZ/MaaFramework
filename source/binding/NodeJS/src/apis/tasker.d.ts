@@ -53,39 +53,15 @@ declare global {
         }
 
         type TaskerNotify = {
-            msg: 'Task.Starting' | 'Task.Succeeded' | 'Task.Failed'
+            msg: NotifyMessage<'Task'>
             task_id: number // TaskId
             entry: string
             uuid: string
             hash: string
         }
 
-        type TaskerContextNextListNotify = {
-            msg: 'NextList.Starting' | 'NextList.Succeeded' | 'NextList.Failed'
-            task_id: number // TaskId
-            name: string
-            list: string[]
-            focus: unknown
-        }
-
-        type TaskerContextRecognitionNotify = {
-            msg: 'Recognition.Starting' | 'Recognition.Succeeded' | 'Recognition.Failed'
-            task_id: number // TaskId
-            reco_id: number // RecoId
-            name: string
-            focus: unknown
-        }
-
-        type TaskerContextActionNotify = {
-            msg: 'Action.Starting' | 'Action.Succeeded' | 'Action.Failed'
-            task_id: number // TaskId
-            action_id: number // ActId
-            name: string
-            focus: unknown
-        }
-
         type TaskerContextPipelineNodeNotify = {
-            msg: 'PipelineNode.Starting' | 'PipelineNode.Succeeded' | 'PipelineNode.Failed'
+            msg: NotifyMessage<'PipelineNode'>
             task_id: number // TaskId
             node_id: number // NodeId
             name: string
@@ -93,7 +69,7 @@ declare global {
         }
 
         type TaskerContextRecognitionNodeNotify = {
-            msg: 'RecognitionNode.Starting' | 'RecognitionNode.Succeeded' | 'RecognitionNode.Failed'
+            msg: NotifyMessage<'RecognitionNode'>
             task_id: number // TaskId
             node_id: number // NodeId
             name: string
@@ -101,20 +77,44 @@ declare global {
         }
 
         type TaskerContextActionNodeNotify = {
-            msg: 'ActionNode.Starting' | 'ActionNode.Succeeded' | 'ActionNode.Failed'
+            msg: NotifyMessage<'ActionNode'>
             task_id: number // TaskId
             node_id: number // NodeId
             name: string
             focus: unknown
         }
 
+        type TaskerContextNextListNotify = {
+            msg: NotifyMessage<'NextList'>
+            task_id: number // TaskId
+            name: string
+            list: string[]
+            focus: unknown
+        }
+
+        type TaskerContextRecognitionNotify = {
+            msg: NotifyMessage<'Recognition'>
+            task_id: number // TaskId
+            reco_id: number // RecoId
+            name: string
+            focus: unknown
+        }
+
+        type TaskerContextActionNotify = {
+            msg: NotifyMessage<'Action'>
+            task_id: number // TaskId
+            action_id: number // ActId
+            name: string
+            focus: unknown
+        }
+
         type TaskerContextNotify =
-            | TaskerContextNextListNotify
-            | TaskerContextRecognitionNotify
-            | TaskerContextActionNotify
             | TaskerContextPipelineNodeNotify
             | TaskerContextRecognitionNodeNotify
             | TaskerContextActionNodeNotify
+            | TaskerContextNextListNotify
+            | TaskerContextRecognitionNotify
+            | TaskerContextActionNotify
 
         class TaskJob extends Job<TaskId, Tasker, TaskDetail> {}
 
