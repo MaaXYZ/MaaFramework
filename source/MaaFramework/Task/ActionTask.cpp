@@ -37,7 +37,7 @@ MaaActId ActionTask::run_with_param(const cv::Rect& box, const json::value& reco
     };
 
     if (debug_mode() || !cur_node.focus.is_null()) {
-        notify(MaaMsg_Context_ActionNode_Starting, node_cb_detail);
+        notify(MaaMsg_Node_ActionNode_Starting, node_cb_detail);
     }
 
     RecoResult fake_reco {
@@ -59,7 +59,7 @@ MaaActId ActionTask::run_with_param(const cv::Rect& box, const json::value& reco
     set_node_detail(result.node_id, result);
 
     if (debug_mode() || !cur_node.focus.is_null()) {
-        notify(act.success ? MaaMsg_Context_ActionNode_Succeeded : MaaMsg_Context_ActionNode_Failed, node_cb_detail);
+        notify(act.success ? MaaMsg_Node_ActionNode_Succeeded : MaaMsg_Node_ActionNode_Failed, node_cb_detail);
     }
 
     return act.action_id;

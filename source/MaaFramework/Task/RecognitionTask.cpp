@@ -36,7 +36,7 @@ MaaRecoId RecognitionTask::run_with_param(const cv::Mat& image)
     };
 
     if (debug_mode() || !cur_node.focus.is_null()) {
-        notify(MaaMsg_Context_RecognitionNode_Starting, node_cb_detail);
+        notify(MaaMsg_Node_RecognitionNode_Starting, node_cb_detail);
     }
 
     auto reco = run_recognition(image, cur_node);
@@ -53,7 +53,7 @@ MaaRecoId RecognitionTask::run_with_param(const cv::Mat& image)
     set_node_detail(result.node_id, result);
 
     if (debug_mode() || !cur_node.focus.is_null()) {
-        notify(hit ? MaaMsg_Context_RecognitionNode_Succeeded : MaaMsg_Context_RecognitionNode_Failed, node_cb_detail);
+        notify(hit ? MaaMsg_Node_RecognitionNode_Succeeded : MaaMsg_Node_RecognitionNode_Failed, node_cb_detail);
     }
 
     return reco.reco_id;

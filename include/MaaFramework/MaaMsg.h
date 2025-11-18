@@ -76,9 +76,9 @@
  *     focus: any,
  * }
  */
-#define MaaMsg_Context_PipelineNode_Starting ("Context.PipelineNode.Starting")
-#define MaaMsg_Context_PipelineNode_Succeeded ("Context.PipelineNode.Succeeded")
-#define MaaMsg_Context_PipelineNode_Failed ("Context.PipelineNode.Failed")
+#define MaaMsg_Node_PipelineNode_Starting ("Node.PipelineNode.Starting")
+#define MaaMsg_Node_PipelineNode_Succeeded ("Node.PipelineNode.Succeeded")
+#define MaaMsg_Node_PipelineNode_Failed ("Node.PipelineNode.Failed")
 /// @}
 
 /**
@@ -92,9 +92,9 @@
  *     focus: any,
  * }
  */
-#define MaaMsg_Context_RecognitionNode_Starting ("Context.RecognitionNode.Starting")
-#define MaaMsg_Context_RecognitionNode_Succeeded ("Context.RecognitionNode.Succeeded")
-#define MaaMsg_Context_RecognitionNode_Failed ("Context.RecognitionNode.Failed")
+#define MaaMsg_Node_RecognitionNode_Starting ("Node.RecognitionNode.Starting")
+#define MaaMsg_Node_RecognitionNode_Succeeded ("Node.RecognitionNode.Succeeded")
+#define MaaMsg_Node_RecognitionNode_Failed ("Node.RecognitionNode.Failed")
 /// @}
 
 /**
@@ -108,9 +108,9 @@
  *     focus: any,
  * }
  */
-#define MaaMsg_Context_ActionNode_Starting ("Context.ActionNode.Starting")
-#define MaaMsg_Context_ActionNode_Succeeded ("Context.ActionNode.Succeeded")
-#define MaaMsg_Context_ActionNode_Failed ("Context.ActionNode.Failed")
+#define MaaMsg_Node_ActionNode_Starting ("Node.ActionNode.Starting")
+#define MaaMsg_Node_ActionNode_Succeeded ("Node.ActionNode.Succeeded")
+#define MaaMsg_Node_ActionNode_Failed ("Node.ActionNode.Failed")
 /// @}
 
 /**

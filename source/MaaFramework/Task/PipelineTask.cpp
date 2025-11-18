@@ -154,7 +154,7 @@ NodeDetail PipelineTask::run_next(const PipelineData::NextList& list, const Pipe
     };
 
     if (debug_mode() || !cur_node.focus.is_null()) {
-        notify(MaaMsg_Context_PipelineNode_Starting, node_cb_detail);
+        notify(MaaMsg_Node_PipelineNode_Starting, node_cb_detail);
     }
 
     while (!context_->need_to_stop()) {
@@ -187,7 +187,7 @@ NodeDetail PipelineTask::run_next(const PipelineData::NextList& list, const Pipe
             LogError << "get_pipeline_data failed, node not exist" << VAR(hit_name);
 
             if (debug_mode() || !cur_node.focus.is_null()) {
-                notify(MaaMsg_Context_PipelineNode_Failed, node_cb_detail);
+                notify(MaaMsg_Node_PipelineNode_Failed, node_cb_detail);
             }
 
             return {};
@@ -206,7 +206,7 @@ NodeDetail PipelineTask::run_next(const PipelineData::NextList& list, const Pipe
         set_node_detail(result.node_id, result);
 
         if (debug_mode() || !cur_node.focus.is_null()) {
-            notify(act.success ? MaaMsg_Context_PipelineNode_Succeeded : MaaMsg_Context_PipelineNode_Failed, node_cb_detail);
+            notify(act.success ? MaaMsg_Node_PipelineNode_Succeeded : MaaMsg_Node_PipelineNode_Failed, node_cb_detail);
         }
 
         return result;
@@ -220,7 +220,7 @@ NodeDetail PipelineTask::run_next(const PipelineData::NextList& list, const Pipe
     set_node_detail(result.node_id, result);
 
     if (debug_mode() || !cur_node.focus.is_null()) {
-        notify(MaaMsg_Context_PipelineNode_Failed, node_cb_detail);
+        notify(MaaMsg_Node_PipelineNode_Failed, node_cb_detail);
     }
 
     return result;
