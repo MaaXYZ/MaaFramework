@@ -18,7 +18,7 @@ public:
 
 private:
     NodeDetail run_next(const PipelineData::NextList& list, const PipelineData& pretask);
-    RecoResult recognize_list(const PipelineData& cur_node, const cv::Mat& image, const PipelineData::NextList& list);
+    RecoResult recognize_list(const cv::Mat& image, const PipelineData::NextList& list);
 };
 
 MAA_TASK_NS_END
