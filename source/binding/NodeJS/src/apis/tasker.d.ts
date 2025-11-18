@@ -84,10 +84,37 @@ declare global {
             focus: unknown
         }
 
+        type TaskerContextPipelineNodeNotify = {
+            msg: 'PipelineNode.Starting' | 'PipelineNode.Succeeded' | 'PipelineNode.Failed'
+            task_id: number // TaskId
+            node_id: number // NodeId
+            name: string
+            focus: unknown
+        }
+
+        type TaskerContextRecognitionNodeNotify = {
+            msg: 'RecognitionNode.Starting' | 'RecognitionNode.Succeeded' | 'RecognitionNode.Failed'
+            task_id: number // TaskId
+            node_id: number // NodeId
+            name: string
+            focus: unknown
+        }
+
+        type TaskerContextActionNodeNotify = {
+            msg: 'ActionNode.Starting' | 'ActionNode.Succeeded' | 'ActionNode.Failed'
+            task_id: number // TaskId
+            node_id: number // NodeId
+            name: string
+            focus: unknown
+        }
+
         type TaskerContextNotify =
             | TaskerContextNextListNotify
             | TaskerContextRecognitionNotify
             | TaskerContextActionNotify
+            | TaskerContextPipelineNodeNotify
+            | TaskerContextRecognitionNodeNotify
+            | TaskerContextActionNodeNotify
 
         class TaskJob extends Job<TaskId, Tasker, TaskDetail> {}
 

@@ -399,6 +399,51 @@ class ContextEventSink(EventSink):
     ):
         pass
 
+    @dataclass
+    class NodePipelineNodeDetail:
+        task_id: int
+        node_id: int
+        name: str
+        focus: Any
+
+    def on_node_pipeline_node(
+        self,
+        context: Context,
+        noti_type: NotificationType,
+        detail: NodePipelineNodeDetail,
+    ):
+        pass
+
+    @dataclass
+    class NodeRecognitionNodeDetail:
+        task_id: int
+        node_id: int
+        name: str
+        focus: Any
+
+    def on_node_recognition_node(
+        self,
+        context: Context,
+        noti_type: NotificationType,
+        detail: NodeRecognitionNodeDetail,
+    ):
+        pass
+
+    @dataclass
+    class NodeActionNodeDetail:
+        task_id: int
+        node_id: int
+        name: str
+        focus: Any
+
+    def on_node_action_node(
+        self,
+        context: Context,
+        noti_type: NotificationType,
+        detail: NodeActionNodeDetail,
+    ):
+        pass
+
     def on_raw_notification(self, context: Context, msg: str, details: dict):
         pass
 
@@ -416,6 +461,33 @@ class ContextEventSink(EventSink):
                 focus=details["focus"],
             )
             self.on_node_next_list(context, noti_type, detail)
+
+        elif msg.startswith("Node.PipelineNode"):
+            detail = self.NodePipelineNodeDetail(
+                task_id=details["task_id"],
+                node_id=details["node_id"],
+                name=details["name"],
+                focus=details["focus"],
+            )
+            self.on_node_pipeline_node(context, noti_type, detail)
+
+        elif msg.startswith("Node.RecognitionNode"):
+            detail = self.NodeRecognitionNodeDetail(
+                task_id=details["task_id"],
+                node_id=details["node_id"],
+                name=details["name"],
+                focus=details["focus"],
+            )
+            self.on_node_recognition_node(context, noti_type, detail)
+
+        elif msg.startswith("Node.ActionNode"):
+            detail = self.NodeActionNodeDetail(
+                task_id=details["task_id"],
+                node_id=details["node_id"],
+                name=details["name"],
+                focus=details["focus"],
+            )
+            self.on_node_action_node(context, noti_type, detail)
 
         elif msg.startswith("Node.Recognition"):
             detail = self.NodeRecognitionDetail(
