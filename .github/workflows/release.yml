@@ -1,0 +1,140 @@
+name: release
+
+on:
+    workflow_dispatch:
+        inputs:
+            tag:
+                description: "Tag to release (e.g., v1.0.0)"
+                required: true
+                type: string
+            run_id:
+                description: "Build workflow run ID to use for artifacts"
+                required: true
+                type: string
+
+concurrency:
+    group: ${{ github.workflow }}-${{ inputs.tag }}
+    cancel-in-progress: false
+
+jobs:
+    publish_nuget:
+        runs-on: ubuntu-latest
+        env:
+            NUGET_PACKAGE_SOURCE: https://api.nuget.org/v3/index.json
+        outputs:
+            failed: ${{ steps.publish.outputs.failed }}
+        steps:
+            - uses: dawidd6/action-download-artifact@v6
+              with:
+                  workflow: build.yml
+                  run_id: ${{ inputs.run_id }}
+                  name: MAA-nupkgs
+                  path: assets/MAA-nupkgs
+
+            - name: Publish Nupkgs
+              id: publish
+              run: |
+                  dotnet nuget push assets/MAA-nupkgs/*.nupkg \
+                    --api-key ${{ secrets.NuGetAPIKey }} \
+                    --source $NUGET_PACKAGE_SOURCE \
+                    --skip-duplicate \
+                    || (echo "failed=true" >> $GITHUB_OUTPUT && echo "::error::Failed to publish NuGet packages")
+
+    publish_pip:
+        runs-on: ubuntu-latest
+        outputs:
+            failed: ${{ steps.publish.outputs.failed }}
+        steps:
+            - uses: dawidd6/action-download-artifact@v6
+              with:
+                  workflow: build.yml
+                  run_id: ${{ inputs.run_id }}
+                  name: MAA-pip-pkgs
+                  path: assets/MAA-pip-pkgs
+
+            - name: Publish Pip Packages
+              id: publish
+              run: |
+                  pip install --upgrade twine packaging
+                  python -m twine upload \
+                    assets/MAA-pip-pkgs/*.whl \
+                    --username __token__\
+                    --password ${{ secrets.PYPI_TOKEN }} \
+                    --skip-existing \
+                    || (echo "failed=true" >> $GITHUB_OUTPUT && echo "::error::Failed to publish pip packages")
+
+    publish_nodejs:
+        runs-on: ubuntu-latest
+        outputs:
+            failed: ${{ steps.publish.outputs.failed }}
+        steps:
+            - uses: actions/checkout@v4
+
+            - uses: dawidd6/action-download-artifact@v6
+              with:
+                  workflow: build.yml
+                  run_id: ${{ inputs.run_id }}
+                  name: MAA-nodejs-package
+                  path: assets/MAA-nodejs-package
+
+            - uses: MaaXYZ/MaaFramework/.github/actions/publish_nodejs@main
+              id: publish
+              with:
+                  access: public
+                  token: ${{ secrets.NPM_TOKEN }}
+              continue-on-error: true
+
+    create_release:
+        needs: [publish_nuget, publish_pip, publish_nodejs]
+        runs-on: ubuntu-latest
+        steps:
+            - uses: dawidd6/action-download-artifact@v6
+              with:
+                  workflow: build.yml
+                  run_id: ${{ inputs.run_id }}
+                  path: assets
+
+            - name: Package artifacts
+              run: |
+                  cd assets
+                  for f in *; do
+                    if [[ "$f" == MAA-nupkgs ]] || [[ "$f" == MAA-pip-pkgs ]] || [[ "$f" == MAA-nodejs-package ]]; then
+                      continue
+                    fi
+                    (cd $f && zip -r ../$f-${{ inputs.tag }}.zip .)
+                  done
+
+            - uses: softprops/action-gh-release@v2
+              with:
+                  files: assets/*.zip
+                  tag_name: ${{ inputs.tag }}
+                  generate_release_notes: true
+
+    trigger_mirrorchyan:
+        needs: [create_release]
+        runs-on: ubuntu-latest
+        steps:
+            - name: Trigger MirrorChyanUploading
+              run: |
+                  gh workflow run --repo $GITHUB_REPOSITORY mirrorchyan
+                  gh workflow run --repo $GITHUB_REPOSITORY mirrorchyan_release_note
+              env:
+                  GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    create_issue_on_failure:
+        if: ${{ failure() }}
+        needs: [publish_nuget, publish_pip, publish_nodejs, create_release, trigger_mirrorchyan]
+        runs-on: ubuntu-latest
+        steps:
+            - name: Create issue if failed to release
+              uses: actions-cool/issues-helper@v3
+              with:
+                  actions: "create-issue"
+                  title: "${{ inputs.tag }} failed to release"
+                  body: |
+                      Please manually publish the following packages:
+                      ${{ needs.publish_nuget.outputs.failed && '- nuget @moomiji' || '' }}
+                      ${{ needs.publish_pip.outputs.failed && '- pip @MistEO' || '' }}
+                      ${{ needs.publish_nodejs.outputs.failed && '- nodejs @neko-para' || '' }}
+
+                      cc @MistEO
