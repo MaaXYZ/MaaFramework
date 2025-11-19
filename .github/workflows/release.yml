@@ -1,19 +1,23 @@
 name: release
 
 on:
+    workflow_run:
+        workflows: ["build"]
+        types:
+            - completed
     workflow_dispatch:
         inputs:
             tag:
                 description: "Tag to release (e.g., v1.0.0)"
-                required: true
+                required: false
                 type: string
             run_id:
                 description: "Build workflow run ID to use for artifacts"
-                required: true
+                required: false
                 type: string
 
 concurrency:
-    group: ${{ github.workflow }}-${{ inputs.tag }}
+    group: ${{ github.workflow }}-${{ github.event.workflow_run.id || inputs.run_id }}
     cancel-in-progress: false
 
 permissions:
@@ -22,19 +26,56 @@ permissions:
     issues: write
 
 jobs:
-    publish_nuget:
+    check_and_prepare:
         runs-on: ubuntu-latest
+        if: ${{ github.event.workflow_run.conclusion == 'success' || github.event_name == 'workflow_dispatch' }}
+        outputs:
+            run_id: ${{ steps.get_info.outputs.run_id }}
+            tag: ${{ steps.get_info.outputs.tag }}
+            should_release: ${{ steps.get_info.outputs.should_release }}
+        steps:
+            - uses: actions/checkout@v4
+
+            - name: Get workflow info
+              id: get_info
+              run: |
+                  if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
+                    run_id="${{ inputs.run_id }}"
+                    tag="${{ inputs.tag }}"
+                    should_release="true"
+                  else
+                    run_id="${{ github.event.workflow_run.id }}"
+                    # Get tag from workflow run
+                    tag=$(gh run view $run_id --json headBranch --jq '.headBranch')
+                    # Check if it's a release tag
+                    if [[ "$tag" =~ ^v[0-9]+\.[0-9]+\.[0-9]+ ]]; then
+                      should_release="true"
+                    else
+                      should_release="false"
+                    fi
+                  fi
+                  echo "run_id=$run_id" >> $GITHUB_OUTPUT
+                  echo "tag=$tag" >> $GITHUB_OUTPUT
+                  echo "should_release=$should_release" >> $GITHUB_OUTPUT
+              env:
+                  GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    publish_nuget:
+        needs: check_and_prepare
+        if: ${{ needs.check_and_prepare.outputs.should_release == 'true' }}
+        runs-on: ubuntu-latest
+        continue-on-error: true
         env:
             NUGET_PACKAGE_SOURCE: https://api.nuget.org/v3/index.json
-        outputs:
-            failed: ${{ steps.publish.outputs.failed }}
         steps:
             - uses: dawidd6/action-download-artifact@v6
               with:
                   workflow: build.yml
-                  run_id: ${{ inputs.run_id }}
+                  run_id: ${{ needs.check_and_prepare.outputs.run_id }}
                   name: MAA-nupkgs
                   path: assets/MAA-nupkgs
+                  check_artifacts: true
+                  if_no_artifact_found: fail
 
             - name: Publish Nupkgs
               id: publish
@@ -42,20 +83,22 @@ jobs:
                   dotnet nuget push assets/MAA-nupkgs/*.nupkg \
                     --api-key ${{ secrets.NuGetAPIKey }} \
                     --source $NUGET_PACKAGE_SOURCE \
-                    --skip-duplicate \
-                    || (echo "failed=true" >> $GITHUB_OUTPUT && echo "::error::Failed to publish NuGet packages")
+                    --skip-duplicate
 
     publish_pip:
+        needs: check_and_prepare
+        if: ${{ needs.check_and_prepare.outputs.should_release == 'true' }}
         runs-on: ubuntu-latest
-        outputs:
-            failed: ${{ steps.publish.outputs.failed }}
+        continue-on-error: true
         steps:
             - uses: dawidd6/action-download-artifact@v6
               with:
                   workflow: build.yml
-                  run_id: ${{ inputs.run_id }}
+                  run_id: ${{ needs.check_and_prepare.outputs.run_id }}
                   name: MAA-pip-pkgs
                   path: assets/MAA-pip-pkgs
+                  check_artifacts: true
+                  if_no_artifact_found: fail
 
             - name: Publish Pip Packages
               id: publish
@@ -65,39 +108,44 @@ jobs:
                     assets/MAA-pip-pkgs/*.whl \
                     --username __token__\
                     --password ${{ secrets.PYPI_TOKEN }} \
-                    --skip-existing \
-                    || (echo "failed=true" >> $GITHUB_OUTPUT && echo "::error::Failed to publish pip packages")
+                    --skip-existing
 
     publish_nodejs:
+        needs: check_and_prepare
+        if: ${{ needs.check_and_prepare.outputs.should_release == 'true' }}
         runs-on: ubuntu-latest
-        outputs:
-            failed: ${{ steps.publish.outputs.failed }}
+        continue-on-error: true
         steps:
             - uses: actions/checkout@v4
 
             - uses: dawidd6/action-download-artifact@v6
               with:
                   workflow: build.yml
-                  run_id: ${{ inputs.run_id }}
+                  run_id: ${{ needs.check_and_prepare.outputs.run_id }}
                   name: MAA-nodejs-package
                   path: assets/MAA-nodejs-package
+                  check_artifacts: true
+                  if_no_artifact_found: fail
 
             - uses: MaaXYZ/MaaFramework/.github/actions/publish_nodejs@main
               id: publish
               with:
                   access: public
                   token: ${{ secrets.NPM_TOKEN }}
-              continue-on-error: true
 
     create_release:
-        needs: [publish_nuget, publish_pip, publish_nodejs]
+        needs: [check_and_prepare, publish_nuget, publish_pip, publish_nodejs]
+        if: ${{ always() && needs.check_and_prepare.outputs.should_release == 'true' }}
         runs-on: ubuntu-latest
+        continue-on-error: true
         steps:
             - uses: dawidd6/action-download-artifact@v6
               with:
                   workflow: build.yml
-                  run_id: ${{ inputs.run_id }}
+                  run_id: ${{ needs.check_and_prepare.outputs.run_id }}
                   path: assets
+                  check_artifacts: true
+                  if_no_artifact_found: fail
 
             - name: Package artifacts
               run: |
@@ -106,18 +154,20 @@ jobs:
                     if [[ "$f" == MAA-nupkgs ]] || [[ "$f" == MAA-pip-pkgs ]] || [[ "$f" == MAA-nodejs-package ]]; then
                       continue
                     fi
-                    (cd $f && zip -r ../$f-${{ inputs.tag }}.zip .)
+                    (cd $f && zip -r ../$f-${{ needs.check_and_prepare.outputs.tag }}.zip .)
                   done
 
             - uses: softprops/action-gh-release@v2
               with:
                   files: assets/*.zip
-                  tag_name: ${{ inputs.tag }}
+                  tag_name: ${{ needs.check_and_prepare.outputs.tag }}
                   generate_release_notes: true
 
     trigger_mirrorchyan:
-        needs: [create_release]
+        needs: [check_and_prepare, create_release]
+        if: ${{ always() && needs.check_and_prepare.outputs.should_release == 'true' && needs.create_release.result == 'success' }}
         runs-on: ubuntu-latest
+        continue-on-error: true
         steps:
             - name: Trigger MirrorChyanUploading
               run: |
@@ -127,19 +177,69 @@ jobs:
                   GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
     create_issue_on_failure:
-        if: ${{ failure() }}
-        needs: [publish_nuget, publish_pip, publish_nodejs, create_release, trigger_mirrorchyan]
+        needs: [check_and_prepare, publish_nuget, publish_pip, publish_nodejs, create_release, trigger_mirrorchyan]
+        if: |
+            always() &&
+            needs.check_and_prepare.outputs.should_release == 'true' && (
+                needs.publish_nuget.result == 'failure' ||
+                needs.publish_pip.result == 'failure' ||
+                needs.publish_nodejs.result == 'failure' ||
+                needs.create_release.result == 'failure' ||
+                needs.trigger_mirrorchyan.result == 'failure'
+            )
         runs-on: ubuntu-latest
         steps:
-            - name: Create issue if failed to release
+            - name: Check if issue already exists
+              id: check_issue
+              run: |
+                  issue_title="${{ needs.check_and_prepare.outputs.tag }} failed to release"
+                  existing_issue=$(gh issue list --repo $GITHUB_REPOSITORY --search "in:title $issue_title" --state open --json number --jq '.[0].number')
+                  if [[ -n "$existing_issue" ]]; then
+                    echo "exists=true" >> $GITHUB_OUTPUT
+                    echo "issue_number=$existing_issue" >> $GITHUB_OUTPUT
+                  else
+                    echo "exists=false" >> $GITHUB_OUTPUT
+                  fi
+              env:
+                  GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+            - name: Create or update issue
+              if: steps.check_issue.outputs.exists == 'false'
               uses: actions-cool/issues-helper@v3
               with:
                   actions: "create-issue"
-                  title: "${{ inputs.tag }} failed to release"
+                  title: "${{ needs.check_and_prepare.outputs.tag }} failed to release"
                   body: |
+                      Release workflow failed for run ID: ${{ needs.check_and_prepare.outputs.run_id }}
+                      
                       Please manually publish the following packages:
-                      ${{ needs.publish_nuget.outputs.failed && '- nuget @moomiji' || '' }}
-                      ${{ needs.publish_pip.outputs.failed && '- pip @MistEO' || '' }}
-                      ${{ needs.publish_nodejs.outputs.failed && '- nodejs @neko-para' || '' }}
+                      ${{ needs.publish_nuget.result == 'failure' && '- nuget @moomiji' || '' }}
+                      ${{ needs.publish_pip.result == 'failure' && '- pip @MistEO' || '' }}
+                      ${{ needs.publish_nodejs.result == 'failure' && '- nodejs @neko-para' || '' }}
+                      
+                      Job results:
+                      - NuGet: ${{ needs.publish_nuget.result }}
+                      - Pip: ${{ needs.publish_pip.result }}
+                      - NodeJS: ${{ needs.publish_nodejs.result }}
+                      - Release: ${{ needs.create_release.result }}
+                      - MirrorChyan: ${{ needs.trigger_mirrorchyan.result }}
 
                       cc @MistEO
+
+    check_workflow_status:
+        needs: [check_and_prepare, publish_nuget, publish_pip, publish_nodejs, create_release, trigger_mirrorchyan]
+        if: |
+            always() &&
+            needs.check_and_prepare.outputs.should_release == 'true' && (
+                needs.publish_nuget.result == 'failure' ||
+                needs.publish_pip.result == 'failure' ||
+                needs.publish_nodejs.result == 'failure' ||
+                needs.create_release.result == 'failure' ||
+                needs.trigger_mirrorchyan.result == 'failure'
+            )
+        runs-on: ubuntu-latest
+        steps:
+            - name: Fail workflow if any job failed
+              run: |
+                  echo "One or more release jobs failed"
+                  exit 1
