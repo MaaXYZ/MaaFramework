@@ -7,6 +7,12 @@ on:
 
     workflow_dispatch:
 
+permissions:
+    contents: write  # For creating releases and pushing code
+    issues: write    # For creating issues on failure
+    actions: read    # For downloading artifacts
+    packages: write  # For publishing packages
+
 concurrency:
     group: ${{ github.workflow }}-${{ github.ref }}
     cancel-in-progress: false
