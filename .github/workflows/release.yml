@@ -7,6 +7,10 @@ on:
 
     workflow_dispatch:
 
+concurrency:
+    group: ${{ github.workflow }}-${{ github.ref }}
+    cancel-in-progress: false
+
 jobs:
     meta:
         uses: ./.github/workflows/meta.yml
