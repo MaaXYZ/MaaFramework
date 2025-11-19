@@ -16,6 +16,11 @@ concurrency:
     group: ${{ github.workflow }}-${{ inputs.tag }}
     cancel-in-progress: false
 
+permissions:
+    contents: write
+    actions: read
+    issues: write
+
 jobs:
     publish_nuget:
         runs-on: ubuntu-latest
