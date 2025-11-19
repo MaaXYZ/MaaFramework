@@ -1,47 +1,11 @@
-name: build
+name: release
 
 on:
     push:
-        branches:
-            - "**"
-        paths:
-            - ".github/workflows/build.yml"
-            - "3rdparty/**"
-            - "cmake/**"
-            - "include/**"
-            - "source/**"
-            - "CMakeLists.txt"
-            - "tools/pip_pack/**"
-
-    pull_request:
-        branches:
-            - "**"
-        paths:
-            - ".github/workflows/build.yml"
-            - "3rdparty/**"
-            - "cmake/**"
-            - "include/**"
-            - "source/**"
-            - "CMakeLists.txt"
-            - "tools/pip_pack/**"
+        tags:
+            - "v*"
 
     workflow_dispatch:
-        inputs:
-            build_config:
-                required: true
-                default: "RelWithDebInfo"
-                type: choice
-                options:
-                    - Debug
-                    - RelWithDebInfo
-                    - Release
-
-    repository_dispatch:
-        types: [MaaUtilsUpdated]
-
-concurrency:
-    group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}-${{ github.ref == 'refs/heads/main' && github.sha }}-${{ github.event_name == 'repository_dispatch' && github.event.action }}
-    cancel-in-progress: true
 
 jobs:
     meta:
@@ -122,12 +86,12 @@ jobs:
               run: |
                   cmake --preset "${{ matrix.arch == 'x86_64' && 'MSVC 2022' || 'MSVC 2022 ARM' }}" -DCMAKE_SYSTEM_VERSION="10.0.26100.0" -DMAADEPS_TRIPLET="maa-${{ matrix.arch == 'x86_64' && 'x64' || 'arm64' }}-windows" -DMAA_HASH_VERSION='${{ needs.meta.outputs.tag }}' -DWITH_NODEJS_BINDING=ON -DWITH_QUICKJS_BINDING=ON
 
-                  cmake --build build --preset "${{ matrix.arch == 'x86_64' && 'MSVC 2022' || 'MSVC 2022 ARM' }} - ${{ inputs.build_config || needs.meta.outputs.build_config }}" -j 16
+                  cmake --build build --preset "${{ matrix.arch == 'x86_64' && 'MSVC 2022' || 'MSVC 2022 ARM' }} - ${{ needs.meta.outputs.build_config }}" -j 16
 
             - name: Install
               shell: bash
               run: |
-                  cmake --install build --prefix install --config ${{ inputs.build_config || needs.meta.outputs.build_config }}
+                  cmake --install build --prefix install --config ${{ needs.meta.outputs.build_config }}
                   rm -rf install/bin/msvc-debug
 
                   cp -r docs install
@@ -221,12 +185,12 @@ jobs:
                     -DMAA_HASH_VERSION='${{ needs.meta.outputs.tag }}' \
                     -DWITH_NODEJS_BINDING=ON -DWITH_QUICKJS_BINDING=ON
 
-                  cmake --build build --preset 'NinjaMulti Linux ${{ matrix.arch == 'x86_64' && 'x64' || 'arm64' }} - ${{ inputs.build_config || needs.meta.outputs.build_config }}' -j 16
+                  cmake --build build --preset 'NinjaMulti Linux ${{ matrix.arch == 'x86_64' && 'x64' || 'arm64' }} - ${{ needs.meta.outputs.build_config }}' -j 16
 
             - name: Install
               shell: bash
               run: |
-                  cmake --install build --prefix install --config ${{ inputs.build_config || needs.meta.outputs.build_config }}
+                  cmake --install build --prefix install --config ${{ needs.meta.outputs.build_config }}
 
                   cp -r docs install
                   cp README*.md install
@@ -317,12 +281,12 @@ jobs:
                     -DWITH_NODEJS_BINDING=ON -DWITH_QUICKJS_BINDING=ON \
                     -DCMAKE_OSX_ARCHITECTURES='${{ matrix.arch == 'x86_64' && 'x86_64' || 'arm64' }}'
 
-                  cmake --build build --preset 'NinjaMulti - ${{ inputs.build_config || needs.meta.outputs.build_config }}' -j 16
+                  cmake --build build --preset 'NinjaMulti - ${{ needs.meta.outputs.build_config }}' -j 16
 
             - name: Install
               shell: bash
               run: |
-                  cmake --install build --prefix install --config ${{ inputs.build_config || needs.meta.outputs.build_config }}
+                  cmake --install build --prefix install --config ${{ needs.meta.outputs.build_config }}
 
                   cp -r docs install
                   cp README*.md install
@@ -402,12 +366,12 @@ jobs:
                     -DMAADEPS_TRIPLET='maa-${{ matrix.arch == 'x86_64' && 'x64' || 'arm64' }}-android' \
                     -DMAA_HASH_VERSION='${{ needs.meta.outputs.tag }}'
 
-                  cmake --build build --preset 'NinjaMulti - ${{ inputs.build_config || needs.meta.outputs.build_config }}' -j 16
+                  cmake --build build --preset 'NinjaMulti - ${{ needs.meta.outputs.build_config }}' -j 16
 
             - name: Install
               shell: bash
               run: |
-                  cmake --install build --prefix install --config ${{ inputs.build_config || needs.meta.outputs.build_config }}
+                  cmake --install build --prefix install --config ${{ needs.meta.outputs.build_config }}
 
                   cp -r docs install
                   cp README*.md install
@@ -518,8 +482,8 @@ jobs:
                   name: MAA-nodejs-package
                   path: "source/binding/NodeJS/release"
 
-    update_submodule:
-        if: ${{ github.event_name == 'repository_dispatch' && github.event.action == 'MaaUtilsUpdated' }}
+    release:
+        if: ${{ needs.meta.outputs.is_release == 'true' && github.repository_id == '632024122' }}
         needs:
             [
                 meta,
@@ -532,24 +496,74 @@ jobs:
                 nodejs_pack,
             ]
         runs-on: ubuntu-latest
+        env:
+            OUTPUT_PUBLISH_FAILED: 'echo "failed=true" >> $GITHUB_OUTPUT && echo "::error::Failed to publish packages"'
+            NUGET_PACKAGE_SOURCE: https://api.nuget.org/v3/index.json # https://apiint.nugettest.org/v3/index.json
+
         steps:
-            - name: Checkout repository
-              uses: actions/checkout@v5
+            - uses: actions/download-artifact@v4
               with:
-                  submodules: true
+                  path: assets
 
-            - name: Update submodules
+            - name: Publish Nupkgs
+              id: nuget
               run: |
-                  git submodule update --remote source/MaaUtils
+                  dotnet nuget push assets/MAA-nupkgs/*.nupkg \
+                    --api-key ${{ secrets.NuGetAPIKey }} \
+                    --source $NUGET_PACKAGE_SOURCE \
+                    || eval $OUTPUT_PUBLISH_FAILED
+                  rm -r assets/MAA-nupkgs
 
-            - name: Commit and push changes
-              uses: actions-js/push@master
+            - name: Publish Pip Packages
+              id: pip
+              run: |
+                  pip install --upgrade twine packaging
+                  python -m twine upload \
+                    assets/MAA-pip-pkgs/*.whl \
+                    --username __token__\
+                    --password ${{ secrets.PYPI_TOKEN }} \
+                    || eval $OUTPUT_PUBLISH_FAILED
+                  rm -r assets/MAA-pip-pkgs
+
+            - uses: MaaXYZ/MaaFramework/.github/actions/publish_nodejs@main
+              id: nodejs
               with:
-                  rebase: true
-                  branch: ${{ github.ref }}
-                  message: "chore: Update Submodule MaaUtils
+                  access: public
+                  token: ${{ secrets.NPM_TOKEN }}
+                  on_finished: rm -r assets/MAA-nodejs-package
+                  on_publish_failed: ${{ env.OUTPUT_PUBLISH_FAILED }}
+              continue-on-error: true
 
-                      https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
+            - run: |
+                  cd assets
+                  for f in *; do
+                    (cd $f && zip -r ../$f-${{ needs.meta.outputs.tag }}.zip .)
+                  done
 
-                      [skip changelog]"
-                  github_token: ${{ secrets.GITHUB_TOKEN }}
+            - uses: softprops/action-gh-release@v2
+              with:
+                  files: assets/*.zip
+                  tag_name: ${{ needs.meta.outputs.tag }}
+                  prerelease: ${{ needs.meta.outputs.is_pre_release == 'true' }}
+                  generate_release_notes: true
+
+            - name: Trigger MirrorChyanUploading
+              run: |
+                  gh workflow run --repo $GITHUB_REPOSITORY mirrorchyan
+                  gh workflow run --repo $GITHUB_REPOSITORY mirrorchyan_release_note
+              env:
+                  GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+            - name: Create issue if failed to release
+              if: failure() || steps.nuget.outputs.failed || steps.pip.outputs.failed || steps.nodejs.outputs.failed
+              uses: actions-cool/issues-helper@v3
+              with:
+                  actions: "create-issue"
+                  title: "${{ needs.meta.outputs.tag }} failed to release"
+                  body: |
+                      Please manually publish the following packages:
+                      ${{ steps.nuget.outputs.failed && '- nuget @moomiji' || '' }}
+                      ${{ steps.pip.outputs.failed && '- pip @MistEO' || '' }}
+                      ${{ steps.nodejs.outputs.failed && '- nodejs @neko-para' || '' }}
+
+                      cc @MistEO
