@@ -58,14 +58,11 @@ _✨ 基于图像识别的自动化黑盒测试框架 ✨_
 
 ### 通用 UI
 
-- [MFAWPF](https://github.com/SweetSmellFox/MFAWPF) ![csharp](https://img.shields.io/badge/C%23-239120?logo=csharp&logoColor=white) ![license](https://img.shields.io/github/license/SweetSmellFox/MFAWPF) ![activity](https://img.shields.io/github/commit-activity/m/SweetSmellFox/MFAWPF?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/SweetSmellFox/MFAWPF?style=social) [![mirrorc](./docs/static/mirrorc-zh.svg)](https://mirrorchyan.com/zh/projects?source=maafw-badge)  
-  基于 MAA 全新架构的 通用 GUI。由 MaaFramework 强力驱动！
+- [MFAAvalonia](https://github.com/SweetSmellFox/MFAAvalonia) ![csharp](https://img.shields.io/badge/C%23-239120?logo=csharp&logoColor=white) ![license](https://img.shields.io/github/license/SweetSmellFox/MFAAvalonia) ![activity](https://img.shields.io/github/commit-activity/m/SweetSmellFox/MFAAvalonia?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/SweetSmellFox/MFAAvalonia?style=social) [![mirrorc](./docs/static/mirrorc-zh.svg)](https://mirrorchyan.com/zh/projects?source=maafw-badge)  
+  基于 Avalonia 的 通用 GUI。由 MaaFramework 强力驱动！
 
 - [MFW-CFA](https://github.com/overflow65537/MFW-PyQt6) ![python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white) ![license](https://img.shields.io/github/license/overflow65537/MFW-PyQt6) ![activity](https://img.shields.io/github/commit-activity/m/overflow65537/MFW-PyQt6?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/overflow65537/MFW-PyQt6?style=social) [![mirrorc](./docs/static/mirrorc-zh.svg)](https://mirrorchyan.com/zh/projects?source=maafw-badge)  
   基于PySide6的通用GUI。由 MaaFramework 强力驱动！
-
-- [MFAAvalonia](https://github.com/SweetSmellFox/MFAAvalonia) ![csharp](https://img.shields.io/badge/C%23-239120?logo=csharp&logoColor=white) ![license](https://img.shields.io/github/license/SweetSmellFox/MFAAvalonia) ![activity](https://img.shields.io/github/commit-activity/m/SweetSmellFox/MFAAvalonia?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/SweetSmellFox/MFAAvalonia?style=social) [![mirrorc](./docs/static/mirrorc-zh.svg)](https://mirrorchyan.com/zh/projects?source=maafw-badge)  
-  基于 Avalonia 的 通用 GUI。由 MaaFramework 强力驱动！
 
 ### 开发工具
 

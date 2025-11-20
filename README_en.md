@@ -60,14 +60,11 @@ It offers low-code simplicity while maintaining high extensibility. The framewor
 
 ### Generic UI
 
-- [MFAWPF](https://github.com/SweetSmellFox/MFAWPF) ![csharp](https://img.shields.io/badge/C%23-239120?logo=csharp&logoColor=white) ![license](https://img.shields.io/github/license/SweetSmellFox/MFAWPF) ![activity](https://img.shields.io/github/commit-activity/m/SweetSmellFox/MFAWPF?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/SweetSmellFox/MFAWPF?style=social) [![mirrorc](./docs/static/mirrorc-en.svg)](https://mirrorchyan.com/en/projects?source=maafw-badge)  
-    A Universal GUI based on MAA's new architecture. Powered by MaaFramework.
+- [MFAAvalonia](https://github.com/SweetSmellFox/MFAAvalonia) ![csharp](https://img.shields.io/badge/C%23-239120?logo=csharp&logoColor=white) ![license](https://img.shields.io/github/license/SweetSmellFox/MFAAvalonia) ![activity](https://img.shields.io/github/commit-activity/m/SweetSmellFox/MFAAvalonia?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/SweetSmellFox/MFAAvalonia?style=social) [![mirrorc](./docs/static/mirrorc-en.svg)](https://mirrorchyan.com/en/projects?source=maafw-badge)  
+    A generic GUI based on Avalonia. Powered by MaaFramework!
 
 - [MFW-PyQt6](https://github.com/overflow65537/MFW-PyQt6) ![python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white) ![license](https://img.shields.io/github/license/overflow65537/MFW-PyQt6) ![activity](https://img.shields.io/github/commit-activity/m/overflow65537/MFW-PyQt6?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/overflow65537/MFW-PyQt6?style=social) [![mirrorc](./docs/static/mirrorc-en.svg)](https://mirrorchyan.com/en/projects?source=maafw-badge)  
     A generic GUI based on PyQt6. Powered by MaaFramework!
-
-- [MFAAvalonia](https://github.com/SweetSmellFox/MFAAvalonia) ![csharp](https://img.shields.io/badge/C%23-239120?logo=csharp&logoColor=white) ![license](https://img.shields.io/github/license/SweetSmellFox/MFAAvalonia) ![activity](https://img.shields.io/github/commit-activity/m/SweetSmellFox/MFAAvalonia?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/SweetSmellFox/MFAAvalonia?style=social) [![mirrorc](./docs/static/mirrorc-en.svg)](https://mirrorchyan.com/en/projects?source=maafw-badge)  
-    A generic GUI based on Avalonia. Powered by MaaFramework!
 
 ### Development Tool
 
