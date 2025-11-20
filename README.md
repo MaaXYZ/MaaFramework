@@ -83,17 +83,11 @@ _✨ 基于图像识别的自动化黑盒测试框架 ✨_
 - [M9A](https://github.com/MaaXYZ/M9A) ![Pipeline](https://img.shields.io/badge/Pipeline-%23876f69?logo=paddypower&logoColor=%23FFFFFF) ![python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white) ![license](https://img.shields.io/github/license/MaaXYZ/M9A) ![activity](https://img.shields.io/github/commit-activity/m/MaaXYZ/M9A?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/MaaXYZ/M9A?style=social) [![mirrorc](./docs/static/mirrorc-zh.svg)](https://mirrorchyan.com/zh/projects?source=maafw-badge) [![website](https://img.shields.io/badge/https://1999.fan-%234285F4)](https://1999.fan)  
   亿韭韭韭 小助手。图像技术 + 模拟控制，解放双手！由 MaaFramework 强力驱动！
 
-- [MAS](https://github.com/MaaXYZ/MaaAssistantSkland) ![Pipeline](https://img.shields.io/badge/Pipeline-%23876f69?logo=paddypower&logoColor=%23FFFFFF) ![license](https://img.shields.io/github/license/MaaXYZ/MaaAssistantSkland) ![activity](https://img.shields.io/github/commit-activity/m/MaaXYZ/MaaAssistantSkland?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/MaaXYZ/MaaAssistantSkland?style=social)  
-  森空岛 小助手。图像技术 + 模拟控制，解放双手！由 MaaFramework 强力驱动！
-
 - [MSBA](https://github.com/overflow65537/MAA_SnowBreak) ![Pipeline](https://img.shields.io/badge/Pipeline-%23876f69?logo=paddypower&logoColor=%23FFFFFF)![python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white) ![license](https://img.shields.io/github/license/overflow65537/MAA_SnowBreak) ![activity](https://img.shields.io/github/commit-activity/m/overflow65537/MAA_SnowBreak?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/overflow65537/MAA_SnowBreak?style=social) [![mirrorc](./docs/static/mirrorc-zh.svg)](https://mirrorchyan.com/zh/projects?source=maafw-badge)  
   尘白禁区 小助手。图像技术 + 模拟控制，解放双手！由 MaaFramework 强力驱动！
 
 - [MaaYYs](https://github.com/TanyaShue/MaaYYs) ![python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white) ![qt](https://img.shields.io/badge/Qt6-41CD52?logo=Qt&logoColor=white) ![license](https://img.shields.io/github/license/TanyaShue/MaaYYs) ![activity](https://img.shields.io/github/commit-activity/m/TanyaShue/MaaYYs?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/TanyaShue/MaaYYs?style=social) [![mirrorc](./docs/static/mirrorc-zh.svg)](https://mirrorchyan.com/zh/projects?source=maafw-badge)  
   阴阳师小助手。图像技术 + 模拟控制，当赛博屯屯鼠，自动日常，解放你的双手！由 MaaFramework 强力驱动！
-
-- [MRA](https://github.com/Saratoga-Official/MRA) ![Pipeline](https://img.shields.io/badge/Pipeline-%23876f69?logo=paddypower&logoColor=%23FFFFFF) ![license](https://img.shields.io/github/license/Saratoga-Official/MRA) ![activity](https://img.shields.io/github/commit-activity/m/Saratoga-Official/MRA?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/Saratoga-Official/MRA?style=social) [![mirrorc](./docs/static/mirrorc-zh.svg)](https://mirrorchyan.com/zh/projects?source=maafw-badge)  
-  战舰少女R 小助手。图像技术 + 模拟控制，解放双手！由 MaaFramework 强力驱动！
 
 - [MPA](https://github.com/overflow65537/MAA_Punish) ![Pipeline](https://img.shields.io/badge/Pipeline-%23876f69?logo=paddypower&logoColor=%23FFFFFF) ![python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white) ![license](https://img.shields.io/github/license/overflow65537/MAA_Punish) ![activity](https://img.shields.io/github/commit-activity/m/overflow65537/MAA_Punish?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/overflow65537/MAA_Punish?style=social) [![mirrorc](./docs/static/mirrorc-zh.svg)](https://mirrorchyan.com/zh/projects?source=maafw-badge)  
   战双帕弥什 小助手。图像技术 + 模拟控制，解放双手！由 玛丽的黑咖啡 2.0 强力驱动！
@@ -107,14 +101,8 @@ _✨ 基于图像识别的自动化黑盒测试框架 ✨_
 - [MaaGF2Exilium](https://github.com/DarkLingYun/MaaGF2Exilium) ![Pipeline](https://img.shields.io/badge/Pipeline-%23876f69?logo=paddypower&logoColor=%23FFFFFF) ![license](https://img.shields.io/github/license/DarkLingYun/MaaGF2Exilium) ![activity](https://img.shields.io/github/commit-activity/m/DarkLingYun/MaaGF2Exilium?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/DarkLingYun/MaaGF2Exilium?style=social) [![mirrorc](./docs/static/mirrorc-zh.svg)](https://mirrorchyan.com/zh/projects?source=maafw-badge)  
   少女前线2: 追放自动化助手。图像技术 + 模拟控制，解放双手！由 MaaFramework 强力驱动！
 
-- [MaaAshEchoes](https://github.com/moulai/MaaAshEchoes) ![Pipeline](https://img.shields.io/badge/Pipeline-%23876f69?logo=paddypower&logoColor=%23FFFFFF) ![license](https://img.shields.io/github/license/moulai/MaaAshEchoes) ![activity](https://img.shields.io/github/commit-activity/m/moulai/MaaAshEchoes?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/moulai/MaaAshEchoes?style=social) [![mirrorc](./docs/static/mirrorc-zh.svg)](https://mirrorchyan.com/zh/projects?source=maafw-badge)  
-  白荆回廊 小助手。图像技术 + 模拟控制，解放双手！由 MaaFramework 强力驱动！
-
 - [MaaXuexi](https://github.com/ravizhan/MaaXuexi) ![python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white) ![Pipeline](https://img.shields.io/badge/Pipeline-%23876f69?logo=paddypower&logoColor=%23FFFFFF) ![license](https://img.shields.io/github/license/ravizhan/MaaXuexi) ![activity](https://img.shields.io/github/commit-activity/m/ravizhan/MaaXuexi?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/ravizhan/MaaXuexi?style=social)  
   学习强国 自动化助手。图像技术 + 模拟控制，解放双手！由 MaaFramework 强力驱动！
-
-- [MACC](https://github.com/mxia9416/MACC) ![Pipeline](https://img.shields.io/badge/Pipeline-%23876f69?logo=paddypower&logoColor=%23FFFFFF) ![license](https://img.shields.io/github/license/mxia9416/MACC) ![activity](https://img.shields.io/github/commit-activity/m/mxia9416/MACC?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/mxia9416/MACC?style=social)  
-  无期迷途 小助手。图像技术 + 模拟控制，解放双手！由 MaaFramework 强力驱动！
 
 - [MAA_MHXY_MG](https://github.com/gitlihang/Maa_MHXY_MG) ![Pipeline](https://img.shields.io/badge/Pipeline-%23876f69?logo=paddypower&logoColor=%23FFFFFF) ![license](https://img.shields.io/github/license/gitlihang/Maa_MHXY_MG) ![activity](https://img.shields.io/github/commit-activity/m/gitlihang/Maa_MHXY_MG?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/gitlihang/Maa_MHXY_MG?style=social) [![mirrorc](./docs/static/mirrorc-zh.svg)](https://mirrorchyan.com/zh/projects?source=maafw-badge)    
   梦幻西游手游 小助手。图像技术 + 模拟控制，解放双手！由 MaaFramework 强力驱动！
