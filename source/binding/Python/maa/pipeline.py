@@ -274,6 +274,7 @@ class JPipelineData:
     post_wait_freezes: JWaitFreezes
     focus: Any
     attach: Dict  # 附加 JSON 对象
+    next_override: Dict  # next 覆盖配置映射表
 
 
 class JPipelineParser:
@@ -403,4 +404,5 @@ class JPipelineParser:
             post_wait_freezes=post_wait_freezes,  # type: ignore
             focus=data.get("focus"),
             attach=data.get("attach"),  # 附加 JSON 对象
+            next_override=data.get("next_override"),
         )

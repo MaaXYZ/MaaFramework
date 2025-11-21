@@ -21,6 +21,7 @@ json::object PipelineDumper::dump(const PipelineData& pp)
     data.pre_delay = pp.pre_delay.count();
     data.post_delay = pp.post_delay.count();
     data.focus = pp.focus;
+    data.next_override = pp.next_override;
 
     auto dump_rect = [](const cv::Rect& rect) -> PipelineV2::JRect {
         return { rect.x, rect.y, rect.width, rect.height };
