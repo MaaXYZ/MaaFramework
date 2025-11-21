@@ -21,13 +21,13 @@ bool MinicapBase::parse(const json::value& config)
     if (!jarch.all<std::string>()) {
         return false;
     }
-    arch_list_ = jarch.as_collection<std::string>();
+    arch_list_ = jarch.as<std::vector<std::string>>();
 
     static const json::array kDefaultSdk = {
         31, 29, 28, 27, 26, 25, 24, 23, 22, 21, 19, 18, 17, 16, 15, 14,
     };
     json::array jsdk = config.get("prebuilt", "minicap", "sdk", kDefaultSdk);
-    sdk_list_ = jsdk.as_collection<int>();
+    sdk_list_ = jsdk.as<std::vector<int>>();
 
     return binary_->parse(config) && library_->parse(config) && device_info_->parse(config);
 }
