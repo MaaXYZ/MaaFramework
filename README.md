@@ -139,6 +139,9 @@ _✨ 基于图像识别的自动化黑盒测试框架 ✨_
 
 - [MAG](https://github.com/Kazaorus/MAG) ![Pipeline](https://img.shields.io/badge/Pipeline-%23876f69?logo=paddypower&logoColor=%23FFFFFF) ![Python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white) ![license](https://img.shields.io/github/license/Kazaorus/MAG) ![activity](https://img.shields.io/github/commit-activity/m/Kazaorus/MAG?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/Kazaorus/MAG?style=social)  
   深空之眼小助手。使用图像技术 + 模拟控制，解放双手！由 MaaFramework 强力驱动！
+  
+- [MAAAE](https://github.com/NewWYoming/MAAAE) ![Pipeline](https://img.shields.io/badge/Pipeline-%23876f69?logo=paddypower&logoColor=%23FFFFFF) ![python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white) ![license](https://img.shields.io/github/license/NewWYoming/MAAAE) ![activity](https://img.shields.io/github/commit-activity/m/NewWYoming/MAAAE?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/NewWYoming/MAAAE?style=social)  
+  白荆回廊 小助手。图像技术 + 模拟控制，解放双手！由 MaaFramework 强力驱动！
 
 ## 生态共建
 

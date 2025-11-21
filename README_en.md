@@ -141,6 +141,9 @@ It offers low-code simplicity while maintaining high extensibility. The framewor
 
 - [MAG](https://github.com/Kazaorus/MAG) ![Pipeline](https://img.shields.io/badge/Pipeline-%23876f69?logo=paddypower&logoColor=%23FFFFFF) ![Python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white) ![license](https://img.shields.io/github/license/Kazaorus/MAG) ![activity](https://img.shields.io/github/commit-activity/m/Kazaorus/MAG?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/Kazaorus/MAG?style=social)  
     Assistant for Aether Gazer. Image recognition + simulation control to free your hands! Powered by MaaFramework!
+    
+- [MAAAE](https://github.com/NewWYoming/MAAAE) ![Pipeline](https://img.shields.io/badge/Pipeline-%23876f69?logo=paddypower&logoColor=%23FFFFFF) ![python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white) ![license](https://img.shields.io/github/license/NewWYoming/MAAAE) ![activity](https://img.shields.io/github/commit-activity/m/NewWYoming/MAAAE?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/NewWYoming/MAAAE?style=social)  
+    An assistant for Ash Echoes. Image technology + simulation control, freeing your hands! Powered by MaaFramework.
 
 ## Eco-Building
 
