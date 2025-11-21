@@ -10,8 +10,6 @@
     "icon": "$demo3.png", // 应用图标文件路径，相对于项目根目录。未设置时使用默认图标
     "mirrorchyan_rid": "demo3", // MirrorChyan资源包标识符，用于资源管理和分发
     "mirrorchyan_multiplatform": false, // 是否支持多平台，影响资源包的打包和分发策略
-    "auto_update_ui": false, // 是否支持独立更新UI。为false时仅跟随资源发布更新，用户界面不显示UI更新选项
-    "auto_update_maafw": false, // 是否支持独立更新MaaFramework。为false时仅跟随资源发布更新，用户界面不显示框架更新选项
     "github": "https://github.com/MAA1999/M9A", // 项目GitHub仓库地址，用于版本更新检查和问题反馈
     "version": "1.0.0", // 项目版本号，用于版本更新检查和Client显示
     "contact": "QQ群: 592974962；B站：https://bilibili/xxxx", // 联系方式信息，显示在"关于"页面。支持文件路径、URL或直接文本，内容支持Markdown格式，支持国际化
