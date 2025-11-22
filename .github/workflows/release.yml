@@ -33,6 +33,7 @@ jobs:
             run_id: ${{ steps.get_info.outputs.run_id }}
             tag: ${{ steps.get_info.outputs.tag }}
             should_release: ${{ steps.get_info.outputs.should_release }}
+            is_prerelease: ${{ steps.get_info.outputs.is_prerelease }}
         steps:
             - uses: actions/checkout@v4
 
@@ -46,7 +47,19 @@ jobs:
                   else
                     run_id="${{ github.event.workflow_run.id }}"
                     # Get tag from workflow run
-                    tag=$(gh run view $run_id --json headBranch --jq '.headBranch')
+                    # For tag pushes, headBranch may be null, so try headSha first
+                    head_branch=$(gh run view $run_id --json headBranch --jq '.headBranch // empty')
+                    head_sha=$(gh run view $run_id --json headSha --jq '.headSha')
+                    if [[ -n "$head_branch" && "$head_branch" =~ ^v[0-9]+\.[0-9]+\.[0-9]+ ]]; then
+                      tag="$head_branch"
+                    else
+                      # Try to get tag from commit SHA
+                      tag=$(git describe --tags --exact-match $head_sha 2>/dev/null || echo "")
+                      if [[ -z "$tag" ]]; then
+                        # Fallback to headBranch if available
+                        tag="$head_branch"
+                      fi
+                    fi
                     # Check if it's a release tag
                     if [[ "$tag" =~ ^v[0-9]+\.[0-9]+\.[0-9]+ ]]; then
                       should_release="true"
@@ -54,9 +67,16 @@ jobs:
                       should_release="false"
                     fi
                   fi
+                  # Check if it's a pre-release tag (contains alpha, beta, or rc)
+                  if [[ "$tag" =~ (alpha|beta|rc) ]]; then
+                    is_prerelease="true"
+                  else
+                    is_prerelease="false"
+                  fi
                   echo "run_id=$run_id" >> $GITHUB_OUTPUT
                   echo "tag=$tag" >> $GITHUB_OUTPUT
                   echo "should_release=$should_release" >> $GITHUB_OUTPUT
+                  echo "is_prerelease=$is_prerelease" >> $GITHUB_OUTPUT
               env:
                   GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -106,7 +126,7 @@ jobs:
                   pip install --upgrade twine packaging
                   python -m twine upload \
                     assets/MAA-pip-pkgs/*.whl \
-                    --username __token__\
+                    --username __token__ \
                     --password ${{ secrets.PYPI_TOKEN }} \
                     --skip-existing
 
@@ -162,6 +182,7 @@ jobs:
                   files: assets/*.zip
                   tag_name: ${{ needs.check_and_prepare.outputs.tag }}
                   generate_release_notes: true
+                  prerelease: ${{ needs.check_and_prepare.outputs.is_prerelease == 'true' }}
 
     trigger_mirrorchyan:
         needs: [check_and_prepare, create_release]
