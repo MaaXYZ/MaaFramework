@@ -20,15 +20,7 @@ struct RecoResult
     cv::Mat raw;
     std::vector<cv::Mat> draws;
 
-    // 不知道 MSVC 为什么会报这个 warning
-#ifdef _MSC_VER
-#pragma warning(push)
-#pragma warning(disable: 4702)
-#endif
     MEO_TOJSON(reco_id, name, algorithm, box, detail);
-#ifdef _MSC_VER
-#pragma warning(pop)
-#endif
 };
 
 struct ActionResult
