@@ -10,12 +10,6 @@
 
 MAA_TOOLKIT_NS_BEGIN
 
-std::ostream& operator<<(std::ostream& os, const AdbDeviceFinder::Emulator& emulator)
-{
-    os << VAR_RAW(emulator.name) << VAR_RAW(emulator.process);
-    return os;
-}
-
 std::vector<AdbDevice> AdbDeviceFinder::find() const
 {
     LogFunc;

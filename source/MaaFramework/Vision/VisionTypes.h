@@ -183,34 +183,6 @@ struct FeatureMatcherParam
     int result_index = 0;
 };
 
-inline std::ostream& operator<<(std::ostream& os, const ResultOrderBy& order_by)
-{
-    switch (order_by) {
-    case ResultOrderBy::Horizontal:
-        os << "Horizontal";
-        break;
-    case ResultOrderBy::Vertical:
-        os << "Vertical";
-        break;
-    case ResultOrderBy::Score:
-        os << "Score";
-        break;
-    case ResultOrderBy::Area:
-        os << "Area";
-        break;
-    case ResultOrderBy::Length:
-        os << "Length";
-        break;
-    case ResultOrderBy::Random:
-        os << "Random";
-        break;
-    case ResultOrderBy::Expected:
-        os << "Expected";
-        break;
-    }
-    return os;
-}
-
 struct RectComparator
 {
     bool operator()(const cv::Rect& lhs, const cv::Rect& rhs) const

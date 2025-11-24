@@ -133,8 +133,6 @@ struct Action
     Param param;
 };
 
-std::ostream& operator<<(std::ostream& os, const Action::Type& action);
-
 class ControllerAgent : public MaaController
 {
 public:

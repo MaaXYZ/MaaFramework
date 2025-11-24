@@ -7,6 +7,7 @@
 #include "API/MaaToolkitBufferTypes.hpp"
 #include "Common/Conf.h"
 #include "MaaUtils/Buffer/ListBuffer.hpp"
+#include "MaaUtils/JsonExt.hpp"
 #include "MaaUtils/Logger.h"
 #include "MaaUtils/Platform.h"
 
@@ -20,13 +21,9 @@ struct AdbDevice
     MaaAdbScreencapMethod screencap_methods = MaaAdbScreencapMethod_None;
     MaaAdbInputMethod input_methods = MaaAdbInputMethod_None;
     json::object config;
-};
 
-inline std::ostream& operator<<(std::ostream& os, const AdbDevice& device)
-{
-    return os << VAR_RAW(device.name) << VAR_RAW(device.adb_path) << VAR_RAW(device.serial) << VAR_RAW(device.screencap_methods)
-              << VAR_RAW(device.input_methods) << VAR_RAW(device.config);
-}
+    MEO_TOJSON(name, adb_path, serial, screencap_methods, input_methods, config);
+};
 
 class AdbDeviceBuffer : public MaaToolkitAdbDevice
 {

@@ -10,6 +10,7 @@
 #include "AdbDeviceBuffer.hpp"
 #include "Common/Conf.h"
 #include "MaaToolkit/MaaToolkitDef.h"
+#include "MaaUtils/JsonExt.hpp"
 #include "MaaUtils/Platform.h"
 
 MAA_TOOLKIT_NS_BEGIN
@@ -22,13 +23,17 @@ public:
         std::string keyword;
         std::vector<std::filesystem::path> adb_candidate_paths;
         std::vector<std::string> adb_common_serials;
+
+        MEO_TOJSON(keyword, adb_candidate_paths, adb_common_serials);
     };
 
     struct Emulator
     {
         std::string name;
         ProcessInfo process;
-        const EmulatorConstantData const_data;
+        EmulatorConstantData const_data;
+
+        MEO_TOJSON(name, process, const_data);
     };
 
 public:
@@ -57,7 +62,5 @@ private:
     std::optional<std::vector<AdbDevice>> devices_;
     std::unordered_map<std::string, EmulatorConstantData> const_data_;
 };
-
-std::ostream& operator<<(std::ostream& os, const AdbDeviceFinder::Emulator& emulator);
 
 MAA_TOOLKIT_NS_END

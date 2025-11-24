@@ -48,6 +48,4 @@ private:
     std::shared_ptr<ScreencapBase> active_unit_;
 };
 
-std::ostream& operator<<(std::ostream& os, ScreencapAgent::Method m);
-
 MAA_CTRL_UNIT_NS_END

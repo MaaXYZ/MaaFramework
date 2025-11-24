@@ -245,26 +245,4 @@ void InputAgent::on_app_stopped(const std::string& intent)
     active_unit_->on_app_stopped(intent);
 }
 
-std::ostream& operator<<(std::ostream& os, InputAgent::Method m)
-{
-    switch (m) {
-    case InputAgent::Method::UnknownYet:
-        os << "UnknownYet";
-        break;
-    case InputAgent::Method::AdbShell:
-        os << "AdbShell";
-        break;
-    case InputAgent::Method::MinitouchAndAdbKey:
-        os << "MinitouchAndAdbKey";
-        break;
-    case InputAgent::Method::Maatouch:
-        os << "Maatouch";
-        break;
-    case InputAgent::Method::MuMuPlayerExtras:
-        os << "MuMuPlayerExtras";
-        break;
-    }
-    return os;
-}
-
 MAA_CTRL_UNIT_NS_END

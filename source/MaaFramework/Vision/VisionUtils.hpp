@@ -259,10 +259,4 @@ inline cv::Mat create_mask(const cv::Mat& image, const cv::Rect& roi)
     return mask;
 }
 
-inline std::ostream& operator<<(std::ostream& os, const cv::Rect& rect)
-{
-    os << "Rect(" << rect.x << ", " << rect.y << ", " << rect.width << ", " << rect.height << ")";
-    return os;
-}
-
 MAA_VISION_NS_END

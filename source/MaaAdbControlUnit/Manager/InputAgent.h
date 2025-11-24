@@ -53,6 +53,4 @@ private:
     std::shared_ptr<InputBase> active_unit_;
 };
 
-std::ostream& operator<<(std::ostream& os, InputAgent::Method m);
-
 MAA_CTRL_UNIT_NS_END

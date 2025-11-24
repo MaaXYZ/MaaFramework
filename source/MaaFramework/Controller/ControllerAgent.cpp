@@ -779,12 +779,10 @@ bool ControllerAgent::run_action(typename AsyncRunner<Action>::Id id, Action act
         notify = focus_ids_.erase(id) > 0;
     }
 
-    std::stringstream ss;
-    ss << action.type;
     const json::value cb_detail = {
         { "ctrl_id", id },
         { "uuid", get_uuid() },
-        { "action", std::move(ss).str() },
+        { "action", action.type },
         { "param", action.param },
     };
 
@@ -1024,69 +1022,6 @@ bool ControllerAgent::set_image_use_raw_size(MaaOptionValue value, MaaOptionValu
     clear_target_image_size();
 
     return true;
-}
-
-std::ostream& operator<<(std::ostream& os, const Action::Type& action_type)
-{
-    switch (action_type) {
-    case Action::Type::connect:
-        os << "connect";
-        break;
-    case Action::Type::click:
-        os << "click";
-        break;
-    case Action::Type::long_press:
-        os << "long_press";
-        break;
-    case Action::Type::swipe:
-        os << "swipe";
-        break;
-    case Action::Type::multi_swipe:
-        os << "multi_swipe";
-        break;
-    case Action::Type::touch_down:
-        os << "touch_down";
-        break;
-    case Action::Type::touch_move:
-        os << "touch_move";
-        break;
-    case Action::Type::touch_up:
-        os << "touch_up";
-        break;
-    case Action::Type::click_key:
-        os << "click_key";
-        break;
-    case Action::Type::long_press_key:
-        os << "long_press_key";
-        break;
-    case Action::Type::key_down:
-        os << "key_down";
-        break;
-    case Action::Type::key_up:
-        os << "key_up";
-        break;
-    case Action::Type::input_text:
-        os << "input_text";
-        break;
-    case Action::Type::screencap:
-        os << "screencap";
-        break;
-    case Action::Type::start_app:
-        os << "start_app";
-        break;
-    case Action::Type::stop_app:
-        os << "stop_app";
-        break;
-
-    case Action::Type::invalid:
-        os << "invalid";
-        break;
-
-        // default:
-        //     os << "unknown action";
-        //     break;
-    }
-    return os;
 }
 
 MAA_CTRL_NS_END
