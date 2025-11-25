@@ -39,6 +39,10 @@ struct ContextImpl : public maajs::NativeClassBase
     MaaTaskId get_task_id();
     maajs::ValueType get_tasker();
     maajs::ValueType clone();
+    std::optional<std::string> get_checkpoint(std::string checkpoint_name);
+    void set_checkpoint(std::string checkpoint_name, std::string node_name);
+    std::optional<maajs::ValueType> get_all_checkpoints();
+    std::vector<std::string> make_jump_nodes(std::vector<std::string> jumpback_list);
 
     std::string to_string() override;
 
@@ -50,4 +54,3 @@ struct ContextImpl : public maajs::NativeClassBase
     static ContextImpl* ctor(const maajs::CallbackInfo& info);
     static void init_proto(maajs::ObjectType proto, maajs::FunctionType ctor);
 };
-

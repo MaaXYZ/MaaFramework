@@ -2,6 +2,7 @@
 
 #include "Common/MaaTypes.h"
 #include "MaaUtils/Buffer/ImageBuffer.hpp"
+#include "MaaUtils/Buffer/ListBuffer.hpp"
 #include "MaaUtils/Buffer/StringBuffer.hpp"
 #include "MaaUtils/Logger.h"
 
@@ -242,4 +243,95 @@ MaaContext* MaaContextClone(const MaaContext* context)
     }
 
     return context->clone();
+}
+
+MaaBool MaaContextGetCheckpoint(MaaContext* context, const char* checkpoint_name, MaaStringBuffer* buffer)
+{
+    LogFunc << VAR_VOIDP(context) << VAR(checkpoint_name);
+
+    if (!context || !buffer) {
+        LogError << "handle is null";
+        return false;
+    }
+
+    if (!checkpoint_name) {
+        LogError << "checkpoint_name is null";
+        return false;
+    }
+
+    auto result = context->get_checkpoint(checkpoint_name);
+    if (!result) {
+        return false;
+    }
+
+    buffer->set(*result);
+    return true;
+}
+
+void MaaContextSetCheckpoint(MaaContext* context, const char* checkpoint_name, const char* node_name)
+{
+    LogFunc << VAR_VOIDP(context) << VAR(checkpoint_name) << VAR(node_name);
+
+    if (!context) {
+        LogError << "handle is null";
+        return;
+    }
+
+    if (!checkpoint_name) {
+        LogError << "checkpoint_name is null";
+        return;
+    }
+
+    if (!node_name) {
+        LogError << "node_name is null";
+        return;
+    }
+
+    context->set_checkpoint(checkpoint_name, node_name);
+}
+
+MaaBool MaaContextGetAllCheckpoints(MaaContext* context, MaaStringBuffer* buffer)
+{
+    LogFunc << VAR_VOIDP(context);
+
+    if (!context || !buffer) {
+        LogError << "handle is null";
+        return false;
+    }
+
+    auto checkpoints = context->get_all_checkpoints();
+    json::object result;
+    for (const auto& [key, value] : checkpoints) {
+        result[key] = value;
+    }
+
+    buffer->set(result.dumps());
+    return true;
+}
+
+MaaBool MaaContextMakeJumpNodes(MaaContext* context, const MaaStringListBuffer* jumpback_list, MaaStringListBuffer* result)
+{
+    LogFunc << VAR_VOIDP(context);
+
+    if (!context || !jumpback_list || !result) {
+        LogError << "handle is null";
+        return false;
+    }
+
+    std::vector<std::string> jumpback;
+    size_t size = jumpback_list->size();
+    for (size_t i = 0; i < size; ++i) {
+        jumpback.emplace_back(jumpback_list->at(i).get());
+    }
+
+    auto jump_nodes = context->make_jump_nodes(jumpback);
+
+    result->clear();
+    for (const auto& node : jump_nodes) {
+        MAA_NS::StringBuffer buf;
+        buf.set(node);
+        result->append(buf);
+    }
+
+    return true;
 }

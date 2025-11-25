@@ -1,5 +1,6 @@
 #pragma once
 
+#include <map>
 #include <memory>
 #include <meojson/json.hpp>
 
@@ -48,6 +49,11 @@ public: // from MaaContextAPI
     virtual MaaTaskId task_id() const override;
     virtual Tasker* tasker() const override;
 
+    virtual std::optional<std::string> get_checkpoint(const std::string& checkpoint_name) const override;
+    virtual void set_checkpoint(const std::string& checkpoint_name, const std::string& node_name) override;
+    virtual std::map<std::string, std::string> get_all_checkpoints() const override;
+    virtual std::vector<std::string> make_jump_nodes(const std::vector<std::string>& jumpback_list) const override;
+
 public:
     std::optional<PipelineData> get_pipeline_data(const std::string& node_name) const;
     std::vector<cv::Mat> get_images(const std::vector<std::string>& names);
@@ -63,6 +69,7 @@ private:
 
     PipelineDataMap pipeline_override_;
     std::unordered_map<std::string, cv::Mat> image_override_;
+    std::map<std::string, std::string> checkpoints_;
 
 private:
     bool need_to_stop_ = false;
