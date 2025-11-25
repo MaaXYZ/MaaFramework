@@ -182,18 +182,9 @@ std::vector<std::string> PipelineParser::make_list_without_prefix(const std::vec
 {
     std::vector<std::string> output;
     for (const std::string& i : input) {
-        if (i.starts_with(PipelineData::kNodePrefix_Ignore)) {
-            continue;
-        }
-
         size_t pos = 0;
-        for (; pos < i.size(); ++pos) {
-            switch (i.at(pos)) {
-            case PipelineData::kNodePrefix_JumpBack:
-                continue;
-            default:
-                break;
-            }
+        if (i.starts_with(PipelineData::kNodePrefix_JumpBack)) {
+            pos = 1;
         }
         output.emplace_back(i.substr(pos));
     }

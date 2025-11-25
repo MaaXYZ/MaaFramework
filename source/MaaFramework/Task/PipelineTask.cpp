@@ -58,7 +58,7 @@ bool PipelineTask::run()
 
             // 如果 next 里有同名任务，返回值也一定是第一个。同名任务第一个匹配上了后面肯定也会匹配上（除非 Custom 写了一些什么逻辑）
             // 且 PipelineChecker::check_all_next_list 保证了 next + interrupt 中没有同名任务
-            auto pos = std::ranges::find(next, node_detail.name) - next.begin();
+            auto pos = std::ranges::find(pure_list, node_detail.name) - next.begin();
             bool jumpback = next.at(pos).starts_with(PipelineData::kNodePrefix_JumpBack);
             if (jumpback) { // for compatibility with v1.x
                 LogInfo << "push interrupt_stack:" << pre_node_name;
