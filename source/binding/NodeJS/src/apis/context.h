@@ -54,3 +54,4 @@ struct ContextImpl : public maajs::NativeClassBase
     static ContextImpl* ctor(const maajs::CallbackInfo& info);
     static void init_proto(maajs::ObjectType proto, maajs::FunctionType ctor);
 };
+
