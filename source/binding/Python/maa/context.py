@@ -1,6 +1,6 @@
 import ctypes
 import json
-from typing import Any, Dict, Optional, Tuple
+from typing import Any, Dict, List, Optional, Tuple
 
 import numpy
 
@@ -262,6 +262,85 @@ class Context:
 
         return Context(cloned_handle)
 
+    def get_checkpoint(self, checkpoint_name: str) -> Optional[str]:
+        """获取检查点对应的节点名 / Get the node name for a checkpoint
+
+        Args:
+            checkpoint_name: 检查点名 / Checkpoint name
+
+        Returns:
+            Optional[str]: 节点名，如果检查点不存在则返回 None / Node name, or None if checkpoint does not exist
+        """
+        string_buffer = StringBuffer()
+        if not Library.framework().MaaContextGetCheckpoint(
+            self._handle, checkpoint_name.encode(), string_buffer._handle
+        ):
+            return None
+
+        return string_buffer.get()
+
+    def set_checkpoint(self, checkpoint_name: str, node_name: str) -> None:
+        """设置检查点 / Set a checkpoint
+
+        Args:
+            checkpoint_name: 检查点名 / Checkpoint name
+            node_name: 节点名 / Node name
+        """
+        Library.framework().MaaContextSetCheckpoint(
+            self._handle, checkpoint_name.encode(), node_name.encode()
+        )
+
+    def get_all_checkpoints(self) -> Dict[str, str]:
+        """获取所有检查点 / Get all checkpoints
+
+        Returns:
+            Dict[str, str]: 检查点名到节点名的映射 / Mapping from checkpoint names to node names
+        """
+        string_buffer = StringBuffer()
+        if not Library.framework().MaaContextGetAllCheckpoints(
+            self._handle, string_buffer._handle
+        ):
+            return {}
+
+        data = string_buffer.get()
+        if not data:
+            return {}
+
+        try:
+            return json.loads(data)
+        except json.JSONDecodeError:
+            return {}
+
+    def make_jump_nodes(self, jumpback_list: List[str]) -> List[str]:
+        """根据 jumpback 列表生成跳转节点列表 / Make jump nodes from jumpback list
+
+        Args:
+            jumpback_list: jumpback 列表 / Jumpback list
+
+        Returns:
+            List[str]: 跳转节点列表 / Jump nodes list
+        """
+        input_buffer = StringListBuffer()
+        input_buffer.set(jumpback_list)
+
+        output_buffer = StringListBuffer()
+
+        if not Library.framework().MaaContextMakeJumpNodes(
+            self._handle, input_buffer._handle, output_buffer._handle
+        ):
+            return []
+
+        result = []
+        size = Library.framework().MaaStringListBufferSize(output_buffer._handle)
+        for i in range(size):
+            item = Library.framework().MaaStringListBufferAt(output_buffer._handle, i)
+            if item:
+                value = Library.framework().MaaStringBufferGet(item)
+                if value:
+                    result.append(value.decode())
+
+        return result
+
     ### private ###
 
     def _init_tasker(self):
@@ -352,6 +431,33 @@ class Context:
         Library.framework().MaaContextClone.restype = MaaContextHandle
         Library.framework().MaaContextClone.argtypes = [
             MaaContextHandle,
+        ]
+
+        Library.framework().MaaContextGetCheckpoint.restype = MaaBool
+        Library.framework().MaaContextGetCheckpoint.argtypes = [
+            MaaContextHandle,
+            ctypes.c_char_p,
+            MaaStringBufferHandle,
+        ]
+
+        Library.framework().MaaContextSetCheckpoint.restype = None
+        Library.framework().MaaContextSetCheckpoint.argtypes = [
+            MaaContextHandle,
+            ctypes.c_char_p,
+            ctypes.c_char_p,
+        ]
+
+        Library.framework().MaaContextGetAllCheckpoints.restype = MaaBool
+        Library.framework().MaaContextGetAllCheckpoints.argtypes = [
+            MaaContextHandle,
+            MaaStringBufferHandle,
+        ]
+
+        Library.framework().MaaContextMakeJumpNodes.restype = MaaBool
+        Library.framework().MaaContextMakeJumpNodes.argtypes = [
+            MaaContextHandle,
+            MaaStringListBufferHandle,
+            MaaStringListBufferHandle,
         ]
 
 

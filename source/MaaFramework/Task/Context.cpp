@@ -48,6 +48,7 @@ Context::Context(const Context& other)
     , tasker_(other.tasker_)
     , pipeline_override_(other.pipeline_override_)
     , image_override_(other.image_override_)
+    , checkpoints_(other.checkpoints_)
 // don't copy clone_holder_
 {
     LogDebug << VAR(other.getptr());
@@ -302,6 +303,41 @@ bool Context::check_pipeline() const
     all.merge(raw);
 
     return MAA_RES_NS::PipelineChecker::check_all_validity(all);
+}
+
+std::optional<std::string> Context::get_checkpoint(const std::string& checkpoint_name) const
+{
+    auto it = checkpoints_.find(checkpoint_name);
+    if (it != checkpoints_.end()) {
+        return it->second;
+    }
+    return std::nullopt;
+}
+
+void Context::set_checkpoint(const std::string& checkpoint_name, const std::string& node_name)
+{
+    LogInfo << "set checkpoint" << VAR(checkpoint_name) << VAR(node_name) << VAR(checkpoints_);
+    checkpoints_.insert_or_assign(checkpoint_name, node_name);
+}
+
+std::map<std::string, std::string> Context::get_all_checkpoints() const
+{
+    return checkpoints_;
+}
+
+std::vector<std::string> Context::make_jump_nodes(const std::vector<std::string>& jumpback_list) const
+{
+    std::vector<std::string> jump_nodes;
+    for (const std::string& jumpback : jumpback_list) {
+        auto it = checkpoints_.find(jumpback);
+        if (it != checkpoints_.end()) {
+            jump_nodes.emplace_back(it->second);
+        }
+        else {
+            LogWarn << "checkpoint not found" << VAR(jumpback) << VAR(checkpoints_);
+        }
+    }
+    return jump_nodes;
 }
 
 MAA_TASK_NS_END

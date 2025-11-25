@@ -45,6 +45,10 @@ extern "C"
 
     MAA_FRAMEWORK_API MaaContext* MaaContextClone(const MaaContext* context);
 
+    MAA_FRAMEWORK_API MaaBool MaaContextGetCheckpoint(MaaContext* context, const char* checkpoint_name, /* out */ MaaStringBuffer* buffer);
+
+    MAA_FRAMEWORK_API void MaaContextSetCheckpoint(MaaContext* context, const char* checkpoint_name, const char* node_name);
+
 #ifdef __cplusplus
 }
 #endif

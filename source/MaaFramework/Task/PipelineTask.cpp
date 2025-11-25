@@ -40,23 +40,7 @@ bool PipelineTask::run()
     PipelineData::NextList next = { entry_ };
     size_t interrupt_pos = SIZE_MAX;
 
-    std::map<std::string, std::string> all_checkpoints;
-
     bool error_handling = false;
-
-    auto make_jumpnodes = [&](const PipelineData& pd) {
-        std::vector<std::string> jump_nodes;
-        for (const std::string& jumpback : pd.jumpback) {
-            auto it = all_checkpoints.find(jumpback);
-            if (it != all_checkpoints.end()) {
-                jump_nodes.emplace_back(it->second);
-            }
-            else {
-                LogWarn << "checkpoint not found" << VAR(jumpback) << VAR(all_checkpoints);
-            }
-        }
-        return jump_nodes;
-    };
 
     while (!next.empty() && !context_->need_to_stop()) {
         cur_node_ = node.name;
@@ -79,8 +63,7 @@ bool PipelineTask::run()
             node = std::move(*hit_opt);
 
             for (const std::string& checkpoint : node.checkpoint) {
-                all_checkpoints.insert_or_assign(checkpoint, node.name);
-                LogInfo << "set checkpoint" << VAR(checkpoint) << VAR(node.name) << VAR(all_checkpoints);
+                context_->set_checkpoint(checkpoint, node.name);
             }
 
             // 如果 next 里有同名任务，返回值也一定是第一个。同名任务第一个匹配上了后面肯定也会匹配上（除非 Custom 写了一些什么逻辑）
@@ -95,7 +78,7 @@ bool PipelineTask::run()
 
             if (node_detail.completed) {
                 if (!node.jumpback.empty()) {
-                    auto jump_nodes = make_jumpnodes(node);
+                    auto jump_nodes = context_->make_jump_nodes(node.jumpback);
                     LogInfo << "jumpback to checkpoint" << VAR(node.name) << VAR(node.jumpback) << VAR(jump_nodes);
                     next = jump_nodes;
                 }
@@ -136,7 +119,7 @@ bool PipelineTask::run()
             interrupt_pos = SIZE_MAX;
 
             if (!node.jumpback.empty()) {
-                auto jump_nodes = make_jumpnodes(node);
+                auto jump_nodes = context_->make_jump_nodes(node.jumpback);
                 LogInfo << "jumpback to checkpoint" << VAR(node.name) << VAR(node.jumpback) << VAR(jump_nodes);
                 next = jump_nodes;
             }

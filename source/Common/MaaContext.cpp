@@ -2,6 +2,7 @@
 
 #include "Common/MaaTypes.h"
 #include "MaaUtils/Buffer/ImageBuffer.hpp"
+#include "MaaUtils/Buffer/ListBuffer.hpp"
 #include "MaaUtils/Buffer/StringBuffer.hpp"
 #include "MaaUtils/Logger.h"
 
@@ -242,4 +243,49 @@ MaaContext* MaaContextClone(const MaaContext* context)
     }
 
     return context->clone();
+}
+
+MaaBool MaaContextGetCheckpoint(MaaContext* context, const char* checkpoint_name, MaaStringBuffer* buffer)
+{
+    LogFunc << VAR_VOIDP(context) << VAR(checkpoint_name);
+
+    if (!context || !buffer) {
+        LogError << "handle is null";
+        return false;
+    }
+
+    if (!checkpoint_name) {
+        LogError << "checkpoint_name is null";
+        return false;
+    }
+
+    auto result = context->get_checkpoint(checkpoint_name);
+    if (!result) {
+        return false;
+    }
+
+    buffer->set(*result);
+    return true;
+}
+
+void MaaContextSetCheckpoint(MaaContext* context, const char* checkpoint_name, const char* node_name)
+{
+    LogFunc << VAR_VOIDP(context) << VAR(checkpoint_name) << VAR(node_name);
+
+    if (!context) {
+        LogError << "handle is null";
+        return;
+    }
+
+    if (!checkpoint_name) {
+        LogError << "checkpoint_name is null";
+        return;
+    }
+
+    if (!node_name) {
+        LogError << "node_name is null";
+        return;
+    }
+
+    context->set_checkpoint(checkpoint_name, node_name);
 }

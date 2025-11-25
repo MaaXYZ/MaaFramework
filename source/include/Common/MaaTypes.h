@@ -2,6 +2,7 @@
 
 #include <chrono>
 #include <filesystem>
+#include <map>
 #include <optional>
 #include <string>
 #include <vector>
@@ -142,6 +143,11 @@ public:
 
     virtual MaaTaskId task_id() const = 0;
     virtual MaaTasker* tasker() const = 0;
+
+    virtual std::optional<std::string> get_checkpoint(const std::string& checkpoint_name) const = 0;
+    virtual void set_checkpoint(const std::string& checkpoint_name, const std::string& node_name) = 0;
+    virtual std::map<std::string, std::string> get_all_checkpoints() const = 0;
+    virtual std::vector<std::string> make_jump_nodes(const std::vector<std::string>& jumpback_list) const = 0;
 };
 
 struct MaaAgentClient

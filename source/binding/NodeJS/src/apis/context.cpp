@@ -137,6 +137,50 @@ maajs::ValueType ContextImpl::clone()
     return locate_object(env, MaaContextClone(context));
 }
 
+std::optional<std::string> ContextImpl::get_checkpoint(std::string checkpoint_name)
+{
+    StringBuffer buffer;
+    if (!MaaContextGetCheckpoint(context, checkpoint_name.c_str(), buffer)) {
+        return std::nullopt;
+    }
+    return buffer.str();
+}
+
+void ContextImpl::set_checkpoint(std::string checkpoint_name, std::string node_name)
+{
+    MaaContextSetCheckpoint(context, checkpoint_name.c_str(), node_name.c_str());
+}
+
+std::optional<maajs::ValueType> ContextImpl::get_all_checkpoints()
+{
+    StringBuffer buffer;
+    if (!MaaContextGetAllCheckpoints(context, buffer)) {
+        return std::nullopt;
+    }
+    return maajs::JsonParse(env, buffer.str());
+}
+
+std::vector<std::string> ContextImpl::make_jump_nodes(std::vector<std::string> jumpback_list)
+{
+    StringListBuffer input;
+    input.set_vector(jumpback_list, [](auto str) {
+        StringBuffer buf;
+        buf.set(str);
+        return buf;
+    });
+
+    StringListBuffer output;
+    if (!MaaContextMakeJumpNodes(context, input, output)) {
+        return {};
+    }
+
+    std::vector<std::string> result;
+    for (size_t i = 0; i < output.size(); ++i) {
+        result.push_back(output.at(i).str());
+    }
+    return result;
+}
+
 std::string ContextImpl::to_string()
 {
     return std::format(" handle = {:#018x} ", reinterpret_cast<uintptr_t>(context));
@@ -174,6 +218,10 @@ void ContextImpl::init_proto(maajs::ObjectType proto, maajs::FunctionType)
     MAA_BIND_GETTER(proto, "task_id", ContextImpl::get_task_id);
     MAA_BIND_GETTER(proto, "tasker", ContextImpl::get_tasker);
     MAA_BIND_FUNC(proto, "clone", ContextImpl::clone);
+    MAA_BIND_FUNC(proto, "get_checkpoint", ContextImpl::get_checkpoint);
+    MAA_BIND_FUNC(proto, "set_checkpoint", ContextImpl::set_checkpoint);
+    MAA_BIND_FUNC(proto, "get_all_checkpoints", ContextImpl::get_all_checkpoints);
+    MAA_BIND_FUNC(proto, "make_jump_nodes", ContextImpl::make_jump_nodes);
 }
 
 maajs::ValueType load_context(maajs::EnvType env)

@@ -32,6 +32,11 @@ public:
     virtual MaaTaskId task_id() const override;
     virtual MaaTasker* tasker() const override;
 
+    virtual std::optional<std::string> get_checkpoint(const std::string& checkpoint_name) const override;
+    virtual void set_checkpoint(const std::string& checkpoint_name, const std::string& node_name) override;
+    virtual std::map<std::string, std::string> get_all_checkpoints() const override;
+    virtual std::vector<std::string> make_jump_nodes(const std::vector<std::string>& jumpback_list) const override;
+
 private:
     Transceiver& server_;
     std::string context_id_;

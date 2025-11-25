@@ -172,4 +172,57 @@ MaaTasker* RemoteContext::tasker() const
     return tasker_.get();
 }
 
+std::optional<std::string> RemoteContext::get_checkpoint(const std::string& checkpoint_name) const
+{
+    ContextGetCheckpointReverseRequest req {
+        .context_id = context_id_,
+        .checkpoint_name = checkpoint_name,
+    };
+
+    auto resp_opt = server_.send_and_recv<ContextGetCheckpointReverseResponse>(req);
+    if (!resp_opt || !resp_opt->has_value) {
+        return std::nullopt;
+    }
+    return resp_opt->node_name;
+}
+
+void RemoteContext::set_checkpoint(const std::string& checkpoint_name, const std::string& node_name)
+{
+    ContextSetCheckpointReverseRequest req {
+        .context_id = context_id_,
+        .checkpoint_name = checkpoint_name,
+        .node_name = node_name,
+    };
+
+    server_.send_and_recv<ContextSetCheckpointReverseResponse>(req);
+}
+
+std::map<std::string, std::string> RemoteContext::get_all_checkpoints() const
+{
+    ContextGetAllCheckpointsReverseRequest req {
+        .context_id = context_id_,
+    };
+
+    auto resp_opt = server_.send_and_recv<ContextGetAllCheckpointsReverseResponse>(req);
+    if (!resp_opt) {
+        return {};
+    }
+
+    return resp_opt->checkpoints;
+}
+
+std::vector<std::string> RemoteContext::make_jump_nodes(const std::vector<std::string>& jumpback_list) const
+{
+    ContextMakeJumpNodesReverseRequest req {
+        .context_id = context_id_,
+        .jumpback_list = jumpback_list,
+    };
+
+    auto resp_opt = server_.send_and_recv<ContextMakeJumpNodesReverseResponse>(req);
+    if (!resp_opt) {
+        return {};
+    }
+    return resp_opt->jump_nodes;
+}
+
 MAA_AGENT_SERVER_NS_END
