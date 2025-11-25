@@ -16,6 +16,9 @@ MAA_RES_NS_BEGIN
 class PipelineResMgr : public NonCopyable
 {
 public:
+    inline static constexpr char kFilePrefix_Ignore = '.';
+
+public:
     bool load(const std::filesystem::path& path, const DefaultPipelineMgr& default_mgr);
     void clear();
 

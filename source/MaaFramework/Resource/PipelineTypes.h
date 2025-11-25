@@ -274,7 +274,7 @@ struct WaitFreezesParam
 
 struct PipelineData
 {
-    inline static constexpr char kNodePrefix_Ignore = '.';
+    inline static constexpr char kNodePrefix_Ignore = '$';
     inline static constexpr char kNodePrefix_JumpBack = '*';
 
     std::string name;
