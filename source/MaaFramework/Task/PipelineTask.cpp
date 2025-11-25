@@ -51,6 +51,9 @@ bool PipelineTask::run()
             if (it != all_checkpoints.end()) {
                 jump_nodes.emplace_back(it->second);
             }
+            else {
+                LogWarn << "checkpoint not found" << VAR(jumpback) << VAR(all_checkpoints);
+            }
         }
         return jump_nodes;
     };
@@ -116,7 +119,7 @@ bool PipelineTask::run()
             LogInfo << "invalid node id, handle error" << VAR(node.name);
             error_handling = true;
             next = node.on_error;
-            interrupt_pos = next.size();
+            interrupt_pos = SIZE_MAX;
         }
 
         if (next.empty() && !interrupt_stack.empty()) {
