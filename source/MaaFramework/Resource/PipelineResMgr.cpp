@@ -58,11 +58,11 @@ bool PipelineResMgr::load_all_json(const std::filesystem::path& path, const Defa
             continue;
         }
         auto relative = std::filesystem::relative(entry_path, path);
-        for (const auto& part : relative) {
-            if (path_to_utf8_string(part).starts_with(PipelineData::kNodePrefix_Ignore)) {
-                LogWarn << "entry starts with . skip" << VAR(entry_path) << VAR(part);
-                continue;
-            }
+        if (std::ranges::any_of(relative, [](const auto& part) {
+                return path_to_utf8_string(part).starts_with(PipelineData::kNodePrefix_Ignore);
+            })) {
+            LogWarn << "entry path contains component starting with '.', skip" << VAR(entry_path);
+            continue;
         }
 
         auto ext = path_to_utf8_string(entry_path.extension());

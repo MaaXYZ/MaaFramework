@@ -260,12 +260,12 @@ class JWaitFreezes:
 class JPipelineData:
     recognition: JRecognition
     action: JAction
-    next: List[str]  # 按前缀处理过的节点列表（去除了 `.`, `*` 等前缀）
-    next_raw: List[str]  # 原始节点列表内容（保留前缀）
+    next: List[str]  # 去除 `*` 前缀后的节点列表
+    next_raw: List[str]  # 原始节点列表（保留 `*` 前缀）
     rate_limit: int
     timeout: int
-    on_error: List[str]  # 按前缀处理过的节点列表（去除了 `.`, `*` 等前缀）
-    on_error_raw: List[str]  # 原始节点列表内容（保留前缀）
+    on_error: List[str]  # 去除 `*` 前缀后的节点列表
+    on_error_raw: List[str]  # 原始节点列表（保留 `*` 前缀）
     inverse: bool
     enabled: bool
     pre_delay: int
@@ -389,12 +389,12 @@ class JPipelineParser:
         return JPipelineData(
             recognition=recognition,
             action=action,
-            next=data.get("next"),  # 按前缀处理过的节点列表
-            next_raw=data.get("next_raw"),  # 原始节点列表内容
+            next=data.get("next"),
+            next_raw=data.get("next_raw"),
             rate_limit=data.get("rate_limit"),
             timeout=data.get("timeout"),
-            on_error=data.get("on_error"),  # 按前缀处理过的节点列表
-            on_error_raw=data.get("on_error_raw"),  # 原始节点列表内容
+            on_error=data.get("on_error"),
+            on_error_raw=data.get("on_error_raw"),
             inverse=data.get("inverse"),
             enabled=data.get("enabled"),
             pre_delay=data.get("pre_delay"),

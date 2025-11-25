@@ -297,12 +297,12 @@ struct JPipelineData
 {
     JRecognition recognition;
     JAction action;
-    std::vector<std::string> next;     // 按前缀处理过的节点列表（去除了 `.`, `*` 等前缀）
-    std::vector<std::string> next_raw; // 原始节点列表内容（保留前缀）
+    std::vector<std::string> next;     // 去除 `*` 前缀后的节点列表
+    std::vector<std::string> next_raw; // 原始节点列表（保留 `*` 前缀）
     int64_t rate_limit = 0;
     int64_t timeout = 0;
-    std::vector<std::string> on_error;     // 按前缀处理过的节点列表（去除了 `.`, `*` 等前缀）
-    std::vector<std::string> on_error_raw; // 原始节点列表内容（保留前缀）
+    std::vector<std::string> on_error;     // 去除 `*` 前缀后的节点列表
+    std::vector<std::string> on_error_raw; // 原始节点列表（保留 `*` 前缀）
     bool inverse = false;
     bool enabled = false;
     int64_t pre_delay = 0;

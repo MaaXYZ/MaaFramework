@@ -208,6 +208,16 @@ bool PipelineParser::parse_node(
     PipelineData data;
     data.name = name;
 
+    // 检查已废弃的字段
+    if (input.exists("is_sub")) {
+        LogError << "is_sub is deprecated since v5.1, use `*` prefix in next list instead" << VAR(name);
+        return false;
+    }
+    if (input.exists("interrupt")) {
+        LogError << "interrupt is deprecated since v5.1, use `*` prefix in next list instead" << VAR(name);
+        return false;
+    }
+
     if (!get_and_check_value(input, "inverse", data.inverse, default_value.inverse)) {
         LogError << "failed to get_and_check_value inverse" << VAR(input);
         return false;
