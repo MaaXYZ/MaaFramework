@@ -3603,16 +3603,16 @@
                 "interrupt": {
                     "title": "Interrupt Property",
                     "deprecated": true,
-                    "description": "（已在 5.1 版本中废弃，推荐使用 节点前缀跳回功能 `*` 替代）",
+                    "description": "（已在 5.1 版本中废弃，推荐使用 节点前缀跳回功能 `[JumpBack]` 替代）",
                     "$ref": "#/$defs/jsonStringOrList",
-                    "markdownDescription": "*string* | *list<string, >*\n\n**（已在 5.1 版本中废弃，推荐使用 节点前缀跳回功能 `*` 替代）**"
+                    "markdownDescription": "*string* | *list<string, >*\n\n**（已在 5.1 版本中废弃，推荐使用 节点前缀跳回功能 `[JumpBack]` 替代）**"
                 },
                 "is_sub": {
                     "title": "Is Sub Property",
                     "deprecated": true,
-                    "description": "（已在 5.1 版本中废弃，推荐使用 节点前缀跳回功能 `*` 替代）",
+                    "description": "（已在 5.1 版本中废弃，推荐使用 节点前缀跳回功能 `[JumpBack]` 替代）",
                     "$ref": "#/$defs/jsonBooleanFalse",
-                    "markdownDescription": "*bool*\n\n**（已在 5.1 版本中废弃，推荐使用 节点前缀跳回功能 `*` 替代）**"
+                    "markdownDescription": "*bool*\n\n**（已在 5.1 版本中废弃，推荐使用 节点前缀跳回功能 `[JumpBack]` 替代）**"
                 },
                 "rate_limit": {
                     "title": "Rate Limit Property",

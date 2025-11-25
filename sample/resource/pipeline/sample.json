@@ -3,13 +3,13 @@
         "next": [
             "Click_Button",
             "Flag_NoButton",
-            "*Sub_StartUp"
+            "[JumpBack]Sub_StartUp"
         ]
     },
     "Sub_StartUp": {
         "next": [
             "Flag_InApp",
-            "*Sub_StartUp"
+            "[JumpBack]Sub_StartUp"
         ]
     },
     "Sub_StartApp": {

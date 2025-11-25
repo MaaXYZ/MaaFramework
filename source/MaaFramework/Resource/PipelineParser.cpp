@@ -184,7 +184,7 @@ std::vector<std::string> PipelineParser::make_list_without_prefix(const std::vec
     for (const std::string& i : input) {
         size_t pos = 0;
         if (i.starts_with(PipelineData::kNodePrefix_JumpBack)) {
-            pos = 1;
+            pos = PipelineData::kNodePrefix_JumpBack.size();
         }
         output.emplace_back(i.substr(pos));
     }
@@ -210,11 +210,11 @@ bool PipelineParser::parse_node(
 
     // 检查已废弃的字段
     if (input.exists("is_sub")) {
-        LogError << "is_sub is deprecated since v5.1, use `*` prefix in next list instead" << VAR(name);
+        LogError << "is_sub is deprecated since v5.1, use `[JumpBack]` prefix in next list instead" << VAR(name);
         return false;
     }
     if (input.exists("interrupt")) {
-        LogError << "interrupt is deprecated since v5.1, use `*` prefix in next list instead" << VAR(name);
+        LogError << "interrupt is deprecated since v5.1, use `[JumpBack]` prefix in next list instead" << VAR(name);
         return false;
     }
 

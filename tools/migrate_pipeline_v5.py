@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Pipeline JSON 迁移脚本 - 将旧版 is_sub/interrupt 转换为 v5.1 的 * 前缀格式
+Pipeline JSON 迁移脚本 - 将旧版 is_sub/interrupt 转换为 v5.1 的 [JumpBack] 前缀格式
 
 使用方法:
     python migrate_pipeline_v5.py <目录路径> [--dry-run] [--backup]
@@ -11,8 +11,8 @@ Pipeline JSON 迁移脚本 - 将旧版 is_sub/interrupt 转换为 v5.1 的 * 前
     --backup: 在修改前备份原文件（添加 .bak 后缀）
 
 转换规则:
-    1. interrupt 字段中的节点会被加上 `*` 前缀后合并到 next 字段
-    2. 所有 is_sub: true 的节点，在被其他节点的 next/on_error 引用时会被加上 `*` 前缀
+    1. interrupt 字段中的节点会被加上 `[JumpBack]` 前缀后合并到 next 字段
+    2. 所有 is_sub: true 的节点，在被其他节点的 next/on_error 引用时会被加上 `[JumpBack]` 前缀
     3. 删除 is_sub 和 interrupt 字段
 
 特性:
@@ -173,6 +173,9 @@ def collect_is_sub_nodes(data: dict) -> set:
     return is_sub_nodes
 
 
+JUMPBACK_PREFIX = "[JumpBack]"
+
+
 def add_prefix_to_nodes(nodes: list, prefix: str) -> list:
     """给节点列表中的所有节点添加前缀"""
     return [
@@ -232,20 +235,22 @@ def migrate_node(
             # 1. 给 next 中引用 is_sub 节点的情况添加前缀
             if is_sub_nodes:
                 new_next_list = add_prefix_to_specific_nodes(
-                    next_list, is_sub_nodes, "*"
+                    next_list, is_sub_nodes, JUMPBACK_PREFIX
                 )
                 if next_list != new_next_list:
                     changes.append(
-                        f"  - next 中的 is_sub 节点加 * 前缀: {next_list} -> {new_next_list}"
+                        f"  - next 中的 is_sub 节点加 [JumpBack] 前缀: {next_list} -> {new_next_list}"
                     )
                     next_list = new_next_list
 
-            # 2. 合并 interrupt 到 next（带 * 前缀）
+            # 2. 合并 interrupt 到 next（带 [JumpBack] 前缀）
             if interrupt_list:
-                prefixed_interrupt = add_prefix_to_nodes(interrupt_list, "*")
+                prefixed_interrupt = add_prefix_to_nodes(
+                    interrupt_list, JUMPBACK_PREFIX
+                )
                 next_list.extend(prefixed_interrupt)
                 changes.append(
-                    f"  - interrupt {interrupt_list} -> 合并到 next (加 * 前缀): {prefixed_interrupt}"
+                    f"  - interrupt {interrupt_list} -> 合并到 next (加 [JumpBack] 前缀): {prefixed_interrupt}"
                 )
 
             if next_list:
@@ -258,11 +263,11 @@ def migrate_node(
             on_error_list = ensure_list(value)
             if is_sub_nodes:
                 new_on_error_list = add_prefix_to_specific_nodes(
-                    on_error_list, is_sub_nodes, "*"
+                    on_error_list, is_sub_nodes, JUMPBACK_PREFIX
                 )
                 if on_error_list != new_on_error_list:
                     changes.append(
-                        f"  - on_error 中的 is_sub 节点加 * 前缀: {on_error_list} -> {new_on_error_list}"
+                        f"  - on_error 中的 is_sub 节点加 [JumpBack] 前缀: {on_error_list} -> {new_on_error_list}"
                     )
                     on_error_list = new_on_error_list
             result[key] = (
@@ -276,10 +281,10 @@ def migrate_node(
 
     # 如果原来没有 next 字段但有 interrupt，需要创建 next 字段
     if has_interrupt and interrupt_list and "next" not in result:
-        prefixed_interrupt = add_prefix_to_nodes(interrupt_list, "*")
+        prefixed_interrupt = add_prefix_to_nodes(interrupt_list, JUMPBACK_PREFIX)
         result["next"] = list_to_value(prefixed_interrupt, keep_array=True)
         changes.append(
-            f"  - interrupt {interrupt_list} -> 新建 next (加 * 前缀): {prefixed_interrupt}"
+            f"  - interrupt {interrupt_list} -> 新建 next (加 [JumpBack] 前缀): {prefixed_interrupt}"
         )
 
     return result, changes
@@ -366,7 +371,7 @@ def find_pipeline_files(directory: Path) -> list:
 
 def main():
     parser = argparse.ArgumentParser(
-        description="将旧版 pipeline JSON 的 is_sub/interrupt 转换为 v5.1 的 * 前缀格式"
+        description="将旧版 pipeline JSON 的 is_sub/interrupt 转换为 v5.1 的 [JumpBack] 前缀格式"
     )
     parser.add_argument("directory", help="包含 pipeline JSON 文件的目录路径")
     parser.add_argument(

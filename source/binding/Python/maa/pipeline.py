@@ -260,12 +260,12 @@ class JWaitFreezes:
 class JPipelineData:
     recognition: JRecognition
     action: JAction
-    next: List[str]  # 去除 `*` 前缀后的节点列表
-    next_raw: List[str]  # 原始节点列表（保留 `*` 前缀）
+    next: List[str]  # 去除 `[JumpBack]` 前缀后的节点列表
+    next_raw: List[str]  # 原始节点列表（保留 `[JumpBack]` 前缀）
     rate_limit: int
     timeout: int
-    on_error: List[str]  # 去除 `*` 前缀后的节点列表
-    on_error_raw: List[str]  # 原始节点列表（保留 `*` 前缀）
+    on_error: List[str]  # 去除 `[JumpBack]` 前缀后的节点列表
+    on_error_raw: List[str]  # 原始节点列表（保留 `[JumpBack]` 前缀）
     inverse: bool
     enabled: bool
     pre_delay: int
