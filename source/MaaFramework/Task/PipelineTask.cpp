@@ -70,7 +70,6 @@ bool PipelineTask::run()
                 LogInfo << "push interrupt_stack:" << pre_node_name;
                 interrupt_stack.emplace(pre_node_name);
             }
-            interrupt_pos = SIZE_MAX;
 
             if (node_detail.completed) {
                 next = node.next + node.interrupt;
@@ -106,7 +105,6 @@ bool PipelineTask::run()
                 return false;
             }
             node = std::move(*top_opt);
-            interrupt_pos = SIZE_MAX;
 
             next = node.next + node.interrupt;
             interrupt_pos = node.next.size();
