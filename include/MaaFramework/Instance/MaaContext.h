@@ -49,11 +49,6 @@ extern "C"
 
     MAA_FRAMEWORK_API void MaaContextSetCheckpoint(MaaContext* context, const char* checkpoint_name, const char* node_name);
 
-    MAA_FRAMEWORK_API MaaBool MaaContextGetAllCheckpoints(MaaContext* context, /* out */ MaaStringBuffer* buffer);
-
-    MAA_FRAMEWORK_API MaaBool
-        MaaContextMakeJumpNodes(MaaContext* context, const MaaStringListBuffer* jumpback_list, /* out */ MaaStringListBuffer* result);
-
 #ifdef __cplusplus
 }
 #endif

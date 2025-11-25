@@ -386,7 +386,7 @@ struct ContextGetAllCheckpointsReverseRequest
 
 struct ContextGetAllCheckpointsReverseResponse
 {
-    json::object checkpoints;
+    std::map<std::string, std::string> checkpoints;
 
     MessageTypePlaceholder _ContextGetAllCheckpointsReverseResponse = 1;
     MEO_JSONIZATION(checkpoints, _ContextGetAllCheckpointsReverseResponse);

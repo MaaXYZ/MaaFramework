@@ -708,14 +708,8 @@ bool AgentClient::handle_context_get_all_checkpoints(const json::value& j)
         return false;
     }
 
-    auto checkpoints = context->get_all_checkpoints();
-    json::object checkpoints_json;
-    for (const auto& [key, value] : checkpoints) {
-        checkpoints_json[key] = value;
-    }
-
     ContextGetAllCheckpointsReverseResponse resp {
-        .checkpoints = std::move(checkpoints_json),
+        .checkpoints = context->get_all_checkpoints(),
     };
     send(resp);
 

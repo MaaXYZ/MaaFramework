@@ -208,13 +208,7 @@ std::map<std::string, std::string> RemoteContext::get_all_checkpoints() const
         return {};
     }
 
-    std::map<std::string, std::string> result;
-    for (const auto& [key, value] : resp_opt->checkpoints) {
-        if (value.is_string()) {
-            result[key] = value.as_string();
-        }
-    }
-    return result;
+    return resp_opt->checkpoints;
 }
 
 std::vector<std::string> RemoteContext::make_jump_nodes(const std::vector<std::string>& jumpback_list) const
