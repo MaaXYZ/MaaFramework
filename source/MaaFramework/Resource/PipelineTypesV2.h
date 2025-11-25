@@ -297,12 +297,12 @@ struct JPipelineData
 {
     JRecognition recognition;
     JAction action;
-    std::vector<std::string> next;
-    std::vector<std::string> interrupt;
-    bool is_sub = false;
+    std::vector<std::string> next;     // 按前缀处理过的节点列表（去除了 `.`, `*` 等前缀）
+    std::vector<std::string> next_raw; // 原始节点列表内容（保留前缀）
     int64_t rate_limit = 0;
     int64_t timeout = 0;
-    std::vector<std::string> on_error;
+    std::vector<std::string> on_error;     // 按前缀处理过的节点列表（去除了 `.`, `*` 等前缀）
+    std::vector<std::string> on_error_raw; // 原始节点列表内容（保留前缀）
     bool inverse = false;
     bool enabled = false;
     int64_t pre_delay = 0;
@@ -310,17 +310,17 @@ struct JPipelineData
     JWaitFreezes pre_wait_freezes;
     JWaitFreezes post_wait_freezes;
     json::value focus;
-    json::object attach; // 附加 JSON 对象
+    json::object attach;
 
     MEO_TOJSON(
         recognition,
         action,
         next,
-        interrupt,
-        is_sub,
+        next_raw,
         rate_limit,
         timeout,
         on_error,
+        on_error_raw,
         inverse,
         enabled,
         pre_delay,

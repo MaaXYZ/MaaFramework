@@ -274,10 +274,10 @@ struct WaitFreezesParam
 
 struct PipelineData
 {
-    using NextList = std::vector<std::string>;
+    inline static constexpr char kNodePrefix_Ignore = '.';
+    inline static constexpr char kNodePrefix_JumpBack = '*';
 
     std::string name;
-    bool is_sub = false; // for compatibility with 1.x
     bool enabled = true;
 
     Recognition::Type reco_type = Recognition::Type::DirectHit;
@@ -287,9 +287,8 @@ struct PipelineData
     Action::Type action_type = Action::Type::DoNothing;
     Action::Param action_param;
 
-    NextList next;
-    NextList interrupt;
-    NextList on_error;
+    std::vector<std::string> next;
+    std::vector<std::string> on_error;
     std::chrono::milliseconds rate_limit = std::chrono::milliseconds(1000);
     std::chrono::milliseconds reco_timeout = std::chrono::milliseconds(20 * 1000);
 
@@ -300,7 +299,7 @@ struct PipelineData
     WaitFreezesParam post_wait_freezes;
 
     json::value focus;
-    json::object attach; // 附加 JSON 对象，用于保存节点的附加配置
+    json::object attach;
 };
 
 MAA_RES_NS_END

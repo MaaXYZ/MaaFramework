@@ -358,12 +358,12 @@ declare global {
         }
 
         type General<Mode> = {
-            next?: MaybeArray<NodeName, Mode>
-            interrupt?: MaybeArray<NodeName, Mode>
-            is_sub?: boolean
+            next?: MaybeArray<NodeName, Mode> // 按前缀处理过的节点列表（去除了 `.`, `*` 等前缀）
+            next_raw?: MaybeArray<NodeName, Mode> // 原始节点列表内容（保留前缀）
             rate_limit?: number
             timeout?: number
-            on_error?: MaybeArray<string, Mode>
+            on_error?: MaybeArray<string, Mode> // 按前缀处理过的节点列表（去除了 `.`, `*` 等前缀）
+            on_error_raw?: MaybeArray<string, Mode> // 原始节点列表内容（保留前缀）
             inverse?: boolean
             enabled?: boolean
             pre_delay?: boolean

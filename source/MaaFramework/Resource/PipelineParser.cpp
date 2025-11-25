@@ -178,6 +178,28 @@ bool get_and_check_array_or_2darray(
     return !output.empty();
 }
 
+std::vector<std::string> PipelineParser::make_list_without_prefix(const std::vector<std::string>& input)
+{
+    std::vector<std::string> output;
+    for (const std::string& i : input) {
+        if (i.starts_with(PipelineData::kNodePrefix_Ignore)) {
+            continue;
+        }
+
+        size_t pos = 0;
+        for (; pos < i.size(); ++pos) {
+            switch (i.at(pos)) {
+            case PipelineData::kNodePrefix_JumpBack:
+                continue;
+            default:
+                break;
+            }
+        }
+        output.emplace_back(i.substr(pos));
+    }
+    return output;
+}
+
 bool PipelineParser::parse_node(
     const std::string& name,
     const json::value& input,
@@ -194,11 +216,6 @@ bool PipelineParser::parse_node(
 
     PipelineData data;
     data.name = name;
-
-    if (!get_and_check_value(input, "is_sub", data.is_sub, default_value.is_sub)) {
-        LogError << "failed to get_and_check_value is_sub" << VAR(input);
-        return false;
-    }
 
     if (!get_and_check_value(input, "inverse", data.inverse, default_value.inverse)) {
         LogError << "failed to get_and_check_value inverse" << VAR(input);
@@ -222,11 +239,6 @@ bool PipelineParser::parse_node(
 
     if (!get_and_check_value_or_array(input, "next", data.next, default_value.next)) {
         LogError << "failed to get_and_check_value_or_array next" << VAR(input);
-        return false;
-    }
-
-    if (!get_and_check_value_or_array(input, "interrupt", data.interrupt, default_value.interrupt)) {
-        LogError << "failed to get_and_check_value_or_array interrupt" << VAR(input);
         return false;
     }
 

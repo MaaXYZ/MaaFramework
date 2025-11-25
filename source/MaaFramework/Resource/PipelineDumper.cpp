@@ -2,6 +2,7 @@
 
 #include "MaaUtils/Encoding.h"
 #include "MaaUtils/Logger.h"
+#include "PipelineParser.h"
 #include "PipelineTypesV2.h"
 
 MAA_RES_NS_BEGIN
@@ -10,12 +11,16 @@ json::object PipelineDumper::dump(const PipelineData& pp)
 {
     PipelineV2::JPipelineData data;
 
-    data.next = pp.next;
-    data.interrupt = pp.interrupt;
-    data.is_sub = pp.is_sub;
+    // next: 按前缀处理过的节点列表（去除了 `.`, `*` 等前缀）
+    data.next = PipelineParser::make_list_without_prefix(pp.next);
+    // next_raw: 原始节点列表内容（保留前缀）
+    data.next_raw = pp.next;
     data.rate_limit = pp.rate_limit.count();
     data.timeout = pp.reco_timeout.count();
-    data.on_error = pp.on_error;
+    // on_error: 按前缀处理过的节点列表（去除了 `.`, `*` 等前缀）
+    data.on_error = PipelineParser::make_list_without_prefix(pp.on_error);
+    // on_error_raw: 原始节点列表内容（保留前缀）
+    data.on_error_raw = pp.on_error;
     data.inverse = pp.inverse;
     data.enabled = pp.enabled;
     data.pre_delay = pp.pre_delay.count();
