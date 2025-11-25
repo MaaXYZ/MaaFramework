@@ -3598,7 +3598,7 @@
                     "title": "Next Property",
                     "description": "接下来要执行的节点列表。可选，默认空。",
                     "$ref": "#/$defs/jsonStringOrList",
-                    "markdownDescription": "*string* | *list<string, >*\n\n接下来要执行的节点列表。可选，默认空。\n\n按顺序识别 next 中的每个节点，只执行第一个识别到的。\n\n💡 v5.1 版本起新增节点前缀功能\n\n- `.` 忽略节点，视为不存在\n  例如 A: { next: [ \".B\", \"C\" ]}，则在此列表中忽略 \"B\", 等同于 A: { next: [ \"C\" ]}\n- `*` 跳回功能\n  若命中该节点，在后续节点全部执行完成后，重新跳转到该节点来再次尝试识别。\n  例如: A: { next: [B, C, *D, E] }\n  当 B, C 未识别到而识别到 D 时，会去完整的执行 D 及 D.next。但当 D 的流水线完全执行完毕后。会再次回到节点 A，继续尝试识别 B, C, D, E 。\n  该字段多用于异常处理，例如 D 是识别 "网络断开提示框"，在点击确认并等待网络连接成功后，继续之前的节点流程。\n  （类似老版本 `is_sub`，区别在于仅在当前 next 中该节点是 `is_sub` 的。）"
+                    "markdownDescription": "*string* | *list<string, >*\n\n接下来要执行的节点列表。可选，默认空。\n\n按顺序识别 next 中的每个节点，只执行第一个识别到的。\n\n💡 v5.1 版本起新增节点前缀功能，详情参见文档。"
                 },
                 "interrupt": {
                     "title": "Interrupt Property",
@@ -3632,7 +3632,7 @@
                     "title": "On Error Property",
                     "description": "当识别超时，或动作执行失败后，接下来会执行该列表中的节点。可选，默认空。",
                     "$ref": "#/$defs/jsonStringOrList",
-                    "markdownDescription": "*string* | *list<string, >*\n\n当识别超时，或动作执行失败后，接下来会执行该列表中的节点。可选，默认空。\n\n💡 支持与 `next` 相同的节点前缀功能（`.` 忽略、`*` 跳回）。"
+                    "markdownDescription": "*string* | *list<string, >*\n\n当识别超时，或动作执行失败后，接下来会执行该列表中的节点。可选，默认空。\n\n💡 支持与 `next` 相同的节点前缀功能，详情参见文档。"
                 },
                 "inverse": {
                     "title": "Inverse Property",
