@@ -3618,14 +3618,14 @@
                     "description": "识别速率限制，单位毫秒。可选，默认 1000 。",
                     "$ref": "#/$defs/jsonNInt64",
                     "default": 1000,
-                    "markdownDescription": "*uint*\n\n识别速率限制，单位毫秒。可选，默认 1000 。\n\n每轮识别 `next` + `interrupt` 最低消耗 `rate_limit` 毫秒，不足的时间将会 sleep 等待。"
+                    "markdownDescription": "*uint*\n\n识别速率限制，单位毫秒。可选，默认 1000 。\n\n每轮识别最低消耗 `rate_limit` 毫秒，不足的时间将会 sleep 等待。"
                 },
                 "timeout": {
                     "title": "Timeout Property",
-                    "description": "`next` + `interrupt` 识别超时时间，毫秒。可选，默认 20 * 1000 。",
+                    "description": "识别超时时间，毫秒。可选，默认 20 * 1000 。",
                     "$ref": "#/$defs/jsonNInt64",
                     "default": 20000,
-                    "markdownDescription": "*uint*\n\n`next` + `interrupt` 识别超时时间，毫秒。可选，默认 20 * 1000 。\n\n具体逻辑为 `while(!timeout) { foreach(next + interrupt); sleep_until(rate_limit); }` 。"
+                    "markdownDescription": "*uint*\n\n识别超时时间，毫秒。可选，默认 20 * 1000 。\n\n具体逻辑为 `while(!timeout) { foreach(next + interrupt); sleep_until(rate_limit); }` 。"
                 },
                 "on_error": {
                     "title": "On Error Property",
