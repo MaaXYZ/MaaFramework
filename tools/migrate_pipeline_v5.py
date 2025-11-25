@@ -143,10 +143,22 @@ def ensure_list(value: str | list | None) -> list:
     return list(value)
 
 
-def list_to_value(lst: list) -> str | list | None:
-    """将列表转换回原始格式（单元素返回字符串，空列表返回 None）"""
+def list_to_value(lst: list, keep_array: bool = False) -> str | list | None:
+    """
+    将列表转换回原始格式
+
+    Args:
+        lst: 要转换的列表
+        keep_array: 是否始终保持数组格式（即使只有一个元素）
+
+    Returns:
+        如果 keep_array=True，返回列表或 None
+        如果 keep_array=False，单元素返回字符串，空列表返回 None
+    """
     if not lst:
         return None
+    if keep_array:
+        return lst
     if len(lst) == 1:
         return lst[0]
     return lst
@@ -237,7 +249,7 @@ def migrate_node(
                 )
 
             if next_list:
-                result[key] = list_to_value(next_list)
+                result[key] = list_to_value(next_list, keep_array=True)
             elif value is not None:
                 # 原来有 next 字段但现在为空，保留空列表
                 result[key] = value
@@ -253,7 +265,11 @@ def migrate_node(
                         f"  - on_error 中的 is_sub 节点加 * 前缀: {on_error_list} -> {new_on_error_list}"
                     )
                     on_error_list = new_on_error_list
-            result[key] = list_to_value(on_error_list) if on_error_list else value
+            result[key] = (
+                list_to_value(on_error_list, keep_array=True)
+                if on_error_list
+                else value
+            )
         else:
             # 其他字段直接复制
             result[key] = value
@@ -261,7 +277,7 @@ def migrate_node(
     # 如果原来没有 next 字段但有 interrupt，需要创建 next 字段
     if has_interrupt and interrupt_list and "next" not in result:
         prefixed_interrupt = add_prefix_to_nodes(interrupt_list, "*")
-        result["next"] = list_to_value(prefixed_interrupt)
+        result["next"] = list_to_value(prefixed_interrupt, keep_array=True)
         changes.append(
             f"  - interrupt {interrupt_list} -> 新建 next (加 * 前缀): {prefixed_interrupt}"
         )
