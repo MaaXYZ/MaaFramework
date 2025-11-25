@@ -230,6 +230,18 @@ bool AgentClient::handle_inserted_request(const json::value& j)
     else if (handle_context_tasker(j)) {
         return true;
     }
+    else if (handle_context_get_checkpoint(j)) {
+        return true;
+    }
+    else if (handle_context_set_checkpoint(j)) {
+        return true;
+    }
+    else if (handle_context_get_all_checkpoints(j)) {
+        return true;
+    }
+    else if (handle_context_make_jump_nodes(j)) {
+        return true;
+    }
 
     else if (handle_tasker_inited(j)) {
         return true;
@@ -629,6 +641,109 @@ bool AgentClient::handle_context_tasker(const json::value& j)
         .tasker_id = tasker_id(tasker),
     };
     send(resp);
+    return true;
+}
+
+bool AgentClient::handle_context_get_checkpoint(const json::value& j)
+{
+    if (!j.is<ContextGetCheckpointReverseRequest>()) {
+        return false;
+    }
+
+    const ContextGetCheckpointReverseRequest& req = j.as<ContextGetCheckpointReverseRequest>();
+    LogFunc << VAR(req) << VAR(ipc_addr_);
+
+    MaaContext* context = query_context(req.context_id);
+    if (!context) {
+        LogError << "context not found" << VAR(req.context_id);
+        return false;
+    }
+
+    auto opt = context->get_checkpoint(req.checkpoint_name);
+
+    ContextGetCheckpointReverseResponse resp {
+        .has_value = opt.has_value(),
+        .node_name = opt.value_or(std::string {}),
+    };
+    send(resp);
+
+    return true;
+}
+
+bool AgentClient::handle_context_set_checkpoint(const json::value& j)
+{
+    if (!j.is<ContextSetCheckpointReverseRequest>()) {
+        return false;
+    }
+
+    const ContextSetCheckpointReverseRequest& req = j.as<ContextSetCheckpointReverseRequest>();
+    LogFunc << VAR(req) << VAR(ipc_addr_);
+
+    MaaContext* context = query_context(req.context_id);
+    if (!context) {
+        LogError << "context not found" << VAR(req.context_id);
+        return false;
+    }
+
+    context->set_checkpoint(req.checkpoint_name, req.node_name);
+
+    ContextSetCheckpointReverseResponse resp {};
+    send(resp);
+
+    return true;
+}
+
+bool AgentClient::handle_context_get_all_checkpoints(const json::value& j)
+{
+    if (!j.is<ContextGetAllCheckpointsReverseRequest>()) {
+        return false;
+    }
+
+    const ContextGetAllCheckpointsReverseRequest& req = j.as<ContextGetAllCheckpointsReverseRequest>();
+    LogFunc << VAR(req) << VAR(ipc_addr_);
+
+    MaaContext* context = query_context(req.context_id);
+    if (!context) {
+        LogError << "context not found" << VAR(req.context_id);
+        return false;
+    }
+
+    auto checkpoints = context->get_all_checkpoints();
+    json::object checkpoints_json;
+    for (const auto& [key, value] : checkpoints) {
+        checkpoints_json[key] = value;
+    }
+
+    ContextGetAllCheckpointsReverseResponse resp {
+        .checkpoints = std::move(checkpoints_json),
+    };
+    send(resp);
+
+    return true;
+}
+
+bool AgentClient::handle_context_make_jump_nodes(const json::value& j)
+{
+    if (!j.is<ContextMakeJumpNodesReverseRequest>()) {
+        return false;
+    }
+
+    const ContextMakeJumpNodesReverseRequest& req = j.as<ContextMakeJumpNodesReverseRequest>();
+    LogFunc << VAR(req) << VAR(ipc_addr_);
+
+    MaaContext* context = query_context(req.context_id);
+    if (!context) {
+        LogError << "context not found" << VAR(req.context_id);
+        return false;
+    }
+
+    auto jump_nodes = context->make_jump_nodes(req.jumpback_list);
+
+    ContextMakeJumpNodesReverseResponse resp {
+        .jump_nodes = std::move(jump_nodes),
+    };
+    send(resp);
+
     return true;
 }
 

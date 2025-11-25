@@ -342,6 +342,73 @@ struct ContextTaskerReverseResponse
     MEO_JSONIZATION(tasker_id, _ContextTaskerReverseResponse);
 };
 
+struct ContextGetCheckpointReverseRequest
+{
+    std::string context_id;
+    std::string checkpoint_name;
+
+    MessageTypePlaceholder _ContextGetCheckpointReverseRequest = 1;
+    MEO_JSONIZATION(context_id, checkpoint_name, _ContextGetCheckpointReverseRequest);
+};
+
+struct ContextGetCheckpointReverseResponse
+{
+    bool has_value = false;
+    std::string node_name;
+
+    MessageTypePlaceholder _ContextGetCheckpointReverseResponse = 1;
+    MEO_JSONIZATION(has_value, node_name, _ContextGetCheckpointReverseResponse);
+};
+
+struct ContextSetCheckpointReverseRequest
+{
+    std::string context_id;
+    std::string checkpoint_name;
+    std::string node_name;
+
+    MessageTypePlaceholder _ContextSetCheckpointReverseRequest = 1;
+    MEO_JSONIZATION(context_id, checkpoint_name, node_name, _ContextSetCheckpointReverseRequest);
+};
+
+struct ContextSetCheckpointReverseResponse
+{
+    MessageTypePlaceholder _ContextSetCheckpointReverseResponse = 1;
+    MEO_JSONIZATION(_ContextSetCheckpointReverseResponse);
+};
+
+struct ContextGetAllCheckpointsReverseRequest
+{
+    std::string context_id;
+
+    MessageTypePlaceholder _ContextGetAllCheckpointsReverseRequest = 1;
+    MEO_JSONIZATION(context_id, _ContextGetAllCheckpointsReverseRequest);
+};
+
+struct ContextGetAllCheckpointsReverseResponse
+{
+    json::object checkpoints;
+
+    MessageTypePlaceholder _ContextGetAllCheckpointsReverseResponse = 1;
+    MEO_JSONIZATION(checkpoints, _ContextGetAllCheckpointsReverseResponse);
+};
+
+struct ContextMakeJumpNodesReverseRequest
+{
+    std::string context_id;
+    std::vector<std::string> jumpback_list;
+
+    MessageTypePlaceholder _ContextMakeJumpNodesReverseRequest = 1;
+    MEO_JSONIZATION(context_id, jumpback_list, _ContextMakeJumpNodesReverseRequest);
+};
+
+struct ContextMakeJumpNodesReverseResponse
+{
+    std::vector<std::string> jump_nodes;
+
+    MessageTypePlaceholder _ContextMakeJumpNodesReverseResponse = 1;
+    MEO_JSONIZATION(jump_nodes, _ContextMakeJumpNodesReverseResponse);
+};
+
 struct TaskerInitedReverseRequest
 {
     std::string tasker_id;

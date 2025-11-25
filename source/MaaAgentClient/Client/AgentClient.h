@@ -46,6 +46,10 @@ private:
     bool handle_context_clone(const json::value& j);
     bool handle_context_task_id(const json::value& j);
     bool handle_context_tasker(const json::value& j);
+    bool handle_context_get_checkpoint(const json::value& j);
+    bool handle_context_set_checkpoint(const json::value& j);
+    bool handle_context_get_all_checkpoints(const json::value& j);
+    bool handle_context_make_jump_nodes(const json::value& j);
 
     bool handle_tasker_inited(const json::value& j);
     bool handle_tasker_post_task(const json::value& j);
