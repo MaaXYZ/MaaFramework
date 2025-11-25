@@ -11,6 +11,8 @@ json::object PipelineDumper::dump(const PipelineData& pp)
     PipelineV2::JPipelineData data;
 
     data.next = pp.next;
+    data.checkpoint = pp.checkpoint;
+    data.jumpback = pp.jumpback;
     data.interrupt = pp.interrupt;
     data.is_sub = pp.is_sub;
     data.rate_limit = pp.rate_limit.count();

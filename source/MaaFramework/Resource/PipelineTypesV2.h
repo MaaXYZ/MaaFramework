@@ -298,6 +298,8 @@ struct JPipelineData
     JRecognition recognition;
     JAction action;
     std::vector<std::string> next;
+    std::vector<std::string> checkpoint;
+    std::vector<std::string> jumpback;
     std::vector<std::string> interrupt;
     bool is_sub = false;
     int64_t rate_limit = 0;
@@ -316,6 +318,8 @@ struct JPipelineData
         recognition,
         action,
         next,
+        checkpoint,
+        jumpback,
         interrupt,
         is_sub,
         rate_limit,

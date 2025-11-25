@@ -359,6 +359,8 @@ declare global {
 
         type General<Mode> = {
             next?: MaybeArray<NodeName, Mode>
+            checkpoint?: MaybeArray<string, Mode>
+            jumpback?: MaybeArray<string, Mode>
             interrupt?: MaybeArray<NodeName, Mode>
             is_sub?: boolean
             rate_limit?: number

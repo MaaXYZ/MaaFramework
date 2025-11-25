@@ -288,6 +288,8 @@ struct PipelineData
     Action::Param action_param;
 
     NextList next;
+    NextList checkpoint;
+    NextList jumpback;
     NextList interrupt;
     NextList on_error;
     std::chrono::milliseconds rate_limit = std::chrono::milliseconds(1000);

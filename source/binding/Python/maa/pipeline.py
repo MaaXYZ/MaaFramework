@@ -261,6 +261,8 @@ class JPipelineData:
     recognition: JRecognition
     action: JAction
     next: List[str]
+    checkpoint: List[str]
+    jumpback: List[str]
     interrupt: List[str]
     is_sub: bool
     rate_limit: int
@@ -390,6 +392,8 @@ class JPipelineParser:
             recognition=recognition,
             action=action,
             next=data.get("next"),
+            checkpoint=data.get("checkpoint"),
+            jumpback=data.get("jumpback"),
             interrupt=data.get("interrupt"),
             is_sub=data.get("is_sub"),
             rate_limit=data.get("rate_limit"),

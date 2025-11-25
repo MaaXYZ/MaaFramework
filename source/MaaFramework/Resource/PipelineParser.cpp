@@ -225,6 +225,16 @@ bool PipelineParser::parse_node(
         return false;
     }
 
+    if (!get_and_check_value_or_array(input, "checkpoint", data.checkpoint, default_value.checkpoint)) {
+        LogError << "failed to get_and_check_value_or_array checkpoint" << VAR(input);
+        return false;
+    }
+
+    if (!get_and_check_value_or_array(input, "jumpback", data.jumpback, default_value.jumpback)) {
+        LogError << "failed to get_and_check_value_or_array jumpback" << VAR(input);
+        return false;
+    }
+
     if (!get_and_check_value_or_array(input, "interrupt", data.interrupt, default_value.interrupt)) {
         LogError << "failed to get_and_check_value_or_array interrupt" << VAR(input);
         return false;

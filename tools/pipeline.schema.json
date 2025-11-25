@@ -3600,18 +3600,31 @@
                     "$ref": "#/$defs/jsonStringOrList",
                     "markdownDescription": "*string* | *list<string, >*\n\n接下来要执行的节点列表。可选，默认空。\n\n按顺序识别 next 中的每个节点，只执行第一个识别到的。"
                 },
+                "checkpoint": {
+                    "title": "Checkpoint Property",
+                    "description": "标记当前节点为指定名称的检查点。可选，默认空。",
+                    "$ref": "#/$defs/jsonStringOrList",
+                    "markdownDescription": "*string* | *list<string, >*\\n\\n标记当前节点为指定名称的检查点。可选，默认空。\\n\\n检查点用于配合 jumpback 字段实现跳转。当某个节点被成功识别和执行后，如果它的 checkpoint 字段非空，则会将该节点与检查点名称关联起来，后续节点可以通过 jumpback 跳转回来。\\n\\n单个节点可关联多个 checkpoint 名称（数组）；不同节点可使用同一 checkpoint 名称，后执行的会覆盖掉之前的；注意 checkpoint 是 task 级的，不同 task 间不共享。"
+                },
+                "jumpback": {
+                    "title": "Jumpback Property",
+                    "description": "成功执行当前节点后，优先跳转到指定检查点名称对应的节点。可选，默认空。",
+                    "$ref": "#/$defs/jsonStringOrList",
+                    "markdownDescription": "*string* | *list<string, >*\\n\\n成功执行当前节点后，优先跳转到指定检查点名称对应的节点。可选，默认空。\\n\\n与 next 逻辑一致，按顺序识别 jumpback 中的每个节点，只执行第一个识别到的。若某个 checkpoint 未记录，则会被忽略。注意 checkpoint 是 task 级的，不同 task 间不共享。\\n\\njumpback 非空时，next 和 interrupt 不生效。"
+                },
                 "interrupt": {
                     "title": "Interrupt Property",
                     "description": "`next` 中全部未识别到时的候补节点列表，会执行类似中断操作。可选，默认空。",
                     "$ref": "#/$defs/jsonStringOrList",
-                    "markdownDescription": "*string* | *list<string, >*\n\n`next` 中全部未识别到时的候补节点列表，会执行类似中断操作。可选，默认空。\n\n若 `next` 中的节点全部未识别到，则会按序识别该中断列表中的每个节点，并执行第一个识别到的。在后续节点全部执行完成后，重新跳转到该节点来再次尝试识别。\n\n例如: A: { next: [B, C], interrupt: [D, E] }\n\n当 B, C 未识别到而识别到 D 时，会去完整的执行 D 及 D.next。但当 D 的流水线完全执行完毕后。会再次回到节点 A，继续尝试识别 B, C, D, E 。\n\n该字段多用于异常处理，例如 D 是识别 “网络断开提示框”，在点击确认并等待网络连接成功后，继续之前的节点流程。"
+                    "markdownDescription": "*string* | *list<string, >*\\n\\n**（已在 5.x 版本中废弃，但保留兼容性，推荐使用 `checkpoint` + `jumpback` 替代）**\\n\\n`next` 中全部未识别到时的候补节点列表，会执行类似中断操作。可选，默认空。\\n\\n若 `next` 中的节点全部未识别到，则会按序识别该中断列表中的每个节点，并执行第一个识别到的。在后续节点全部执行完成后，重新跳转到该节点来再次尝试识别。\\n\\n例如: A: { next: [B, C], interrupt: [D, E] }\\n\\n当 B, C 未识别到而识别到 D 时，会去完整的执行 D 及 D.next。但当 D 的流水线完全执行完毕后。会再次回到节点 A，继续尝试识别 B, C, D, E 。\\n\\n该字段多用于异常处理，例如 D 是识别 \"网络断开提示框\"，在点击确认并等待网络连接成功后，继续之前的节点流程。",
+                    "deprecated": true
                 },
                 "is_sub": {
                     "title": "Is Sub Property",
                     "deprecated": true,
                     "description": "是否是子节点。可选，默认 false 。",
                     "$ref": "#/$defs/jsonBooleanFalse",
-                    "markdownDescription": "*bool*\n\n**（已在 2.x 版本中废弃，但保留兼容性，推荐使用 `interrupt` 替代）**\n\n是否是子节点。可选，默认 false 。\n\n如果是子节点，执行完本节点（及后续 next 等）后，会返回来再次识别本节点 **所在的** next 列表。\n\n例如：A.next = [B, Sub_C, D]，这里的 Sub_C.is_sub = true，\n\n若匹配上了 Sub_C，在完整执行完 Sub_C 及后续节点后，会返回来再次识别 [B, Sub_C, D] 并执行命中项及后续节点。"
+                    "markdownDescription": "*bool*\\n\\n**（已在 2.x 版本中废弃，但保留兼容性，推荐使用 `checkpoint` + `jumpback` 替代）**\\n\\n是否是子节点。可选，默认 false 。\\n\\n如果是子节点，执行完本节点（及后续 next 等）后，会返回来再次识别本节点 **所在的** next 列表。\\n\\n例如：A.next = [B, Sub_C, D]，这里的 Sub_C.is_sub = true，\\n\\n若匹配上了 Sub_C，在完整执行完 Sub_C 及后续节点后，会返回来再次识别 [B, Sub_C, D] 并执行命中项及后续节点。"
                 },
                 "rate_limit": {
                     "title": "Rate Limit Property",
@@ -3625,7 +3638,7 @@
                     "description": "`next` + `interrupt` 识别超时时间，毫秒。可选，默认 20 * 1000 。",
                     "$ref": "#/$defs/jsonNInt64",
                     "default": 20000,
-                    "markdownDescription": "*uint*\n\n`next` + `interrupt` 识别超时时间，毫秒。可选，默认 20 * 1000 。\n\n具体逻辑为 `while(!timeout) { foreach(next + interrupt); sleep_until(rate_limit); }` 。"
+                    "markdownDescription": "*uint*\\n\\n`next` + `interrupt` 识别超时时间，毫秒。可选，默认 20 * 1000 。\\n\\n具体逻辑为 `while(!timeout) { foreach(jumpback + next + interrupt); sleep_until(rate_limit); }` 。"
                 },
                 "on_error": {
                     "title": "On Error Property",
