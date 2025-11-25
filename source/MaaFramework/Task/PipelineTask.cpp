@@ -12,7 +12,7 @@
 MAA_TASK_NS_BEGIN
 
 template <typename T>
-std::vector<T> operator+(const std::vector<T>& lhs, const std::vector<T>& rhs)
+std::vector<T> operator+(std::vector<T> lhs, const std::vector<T>& rhs)
 {
     lhs.insert(lhs.end(), rhs.begin(), rhs.end());
     return lhs;
@@ -72,40 +72,40 @@ bool PipelineTask::run()
                 LogError << "get_pipeline_data failed, task not exist" << VAR(node_detail.name);
                 return false;
             }
-            PipelineData hit_node = std::move(*hit_opt);
+            std::string pre_node_name = node.name;
+            node = std::move(*hit_opt);
 
-            for (const std::string& checkpoint : hit_node.checkpoint) {
-                all_checkpoints.insert_or_assign(checkpoint, hit_node.name);
-                LogInfo << "set checkpoint" << VAR(checkpoint) << VAR(hit_node.name) << VAR(all_checkpoints);
+            for (const std::string& checkpoint : node.checkpoint) {
+                all_checkpoints.insert_or_assign(checkpoint, node.name);
+                LogInfo << "set checkpoint" << VAR(checkpoint) << VAR(node.name) << VAR(all_checkpoints);
             }
 
             // 如果 next 里有同名任务，返回值也一定是第一个。同名任务第一个匹配上了后面肯定也会匹配上（除非 Custom 写了一些什么逻辑）
             // 且 PipelineChecker::check_all_next_list 保证了 next + interrupt 中没有同名任务
             auto pos = std::ranges::find(next, node_detail.name) - next.begin();
             bool is_interrupt = static_cast<size_t>(pos) >= interrupt_pos;
-            if (is_interrupt || hit_node.is_sub) { // for compatibility with v1.x
-                LogInfo << "push interrupt_stack:" << node.name;
-                interrupt_stack.emplace(node.name);
+            if (is_interrupt || node.is_sub) { // for compatibility with v1.x
+                LogInfo << "push interrupt_stack:" << pre_node_name;
+                interrupt_stack.emplace(pre_node_name);
             }
+            interrupt_pos = SIZE_MAX;
 
             if (node_detail.completed) {
-                if (!hit_node.jumpback.empty()) {
-                    auto jump_nodes = make_jumpnodes(hit_node);
-                    LogInfo << "jumpback to checkpoint" << VAR(hit_node.name) << VAR(hit_node.jumpback) << VAR(jump_nodes);
+                if (!node.jumpback.empty()) {
+                    auto jump_nodes = make_jumpnodes(node);
+                    LogInfo << "jumpback to checkpoint" << VAR(node.name) << VAR(node.jumpback) << VAR(jump_nodes);
                     next = jump_nodes;
                 }
                 else {
-                    next = hit_node.next + hit_node.interrupt;
-                    interrupt_pos = hit_node.next.size();
+                    next = node.next + node.interrupt;
+                    interrupt_pos = node.next.size();
                 }
             }
             else { // 动作执行失败了
                 LogWarn << "node not completed, handle error" << VAR(node_detail.name);
                 error_handling = true;
-                next = hit_node.on_error;
-                interrupt_pos = SIZE_MAX;
+                next = node.on_error;
             }
-            node = std::move(hit_node);
         }
         else if (error_handling) {
             LogError << "error handling loop detected" << VAR(node.name);
@@ -130,6 +130,7 @@ bool PipelineTask::run()
                 return false;
             }
             node = std::move(*top_opt);
+            interrupt_pos = SIZE_MAX;
 
             if (!node.jumpback.empty()) {
                 auto jump_nodes = make_jumpnodes(node);
