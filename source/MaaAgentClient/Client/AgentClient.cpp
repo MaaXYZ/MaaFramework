@@ -204,7 +204,7 @@ std::vector<std::string> AgentClient::get_custom_action_list() const
 
 bool AgentClient::handle_inserted_request(const json::value& j)
 {
-    LogFunc << VAR(j) << VAR(ipc_addr_);
+    // LogFunc << VAR(j) << VAR(ipc_addr_);
 
     if (handle_image_header(j)) {
         return true;

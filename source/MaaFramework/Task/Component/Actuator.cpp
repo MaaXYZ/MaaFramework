@@ -680,7 +680,7 @@ void Actuator::sleep(unsigned ms) const
 
 void Actuator::sleep(std::chrono::milliseconds ms) const
 {
-    LogFunc << ms;
+    LogDebug << ms;
 
     std::this_thread::sleep_for(ms);
 }
