@@ -1418,6 +1418,8 @@ bool PipelineParser::parse_next(
 
 bool PipelineParser::parse_next(const json::value& input, std::vector<NodeAttr>& output)
 {
+    output.clear();
+
     if (input.is_array()) {
         for (const auto& val : input.as_array()) {
             NodeAttr res;
