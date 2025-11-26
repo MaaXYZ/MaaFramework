@@ -309,6 +309,7 @@ struct JPipelineData
     int64_t post_delay = 0;
     JWaitFreezes pre_wait_freezes;
     JWaitFreezes post_wait_freezes;
+    uint32_t max_hit = 0;
     json::value focus;
     json::object attach; // 附加 JSON 对象
 
@@ -327,6 +328,7 @@ struct JPipelineData
         post_delay,
         pre_wait_freezes,
         post_wait_freezes,
+        max_hit,
         focus,
         attach);
 };

@@ -54,6 +54,9 @@ public:
 
     bool& need_to_stop();
 
+    uint get_hit_count(const std::string& node_name) const;
+    void increment_hit_count(const std::string& node_name);
+
 private:
     bool override_pipeline_once(const json::object& pipeline_override, const MAA_RES_NS::DefaultPipelineMgr& default_mgr);
     bool check_pipeline() const;
@@ -66,6 +69,8 @@ private:
 
 private:
     bool need_to_stop_ = false;
+
+    std::unordered_map<std::string, uint> hit_count_;
 
     mutable std::vector<std::shared_ptr<Context>> clone_holder_;
 };

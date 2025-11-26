@@ -272,6 +272,7 @@ class JPipelineData:
     post_delay: int
     pre_wait_freezes: JWaitFreezes
     post_wait_freezes: JWaitFreezes
+    max_hit: int
     focus: Any
     attach: Dict  # 附加 JSON 对象
 
@@ -401,6 +402,7 @@ class JPipelineParser:
             post_delay=data.get("post_delay"),
             pre_wait_freezes=pre_wait_freezes,  # type: ignore
             post_wait_freezes=post_wait_freezes,  # type: ignore
+            max_hit=data.get("max_hit"),
             focus=data.get("focus"),
             attach=data.get("attach"),  # 附加 JSON 对象
         )
