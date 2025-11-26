@@ -251,4 +251,14 @@ bool Win32ControlUnitMgr::key_up(int key)
     return keyboard_->key_up(key);
 }
 
+bool Win32ControlUnitMgr::scroll(int x, int y, int dx, int dy, int duration)
+{
+    if (!mouse_) {
+        LogError << "mouse_ is null";
+        return false;
+    }
+
+    return mouse_->scroll(x, y, dx, dy, duration);
+}
+
 MAA_CTRL_UNIT_NS_END

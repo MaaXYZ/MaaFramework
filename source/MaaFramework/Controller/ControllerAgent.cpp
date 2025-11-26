@@ -141,6 +141,13 @@ MaaCtrlId ControllerAgent::post_key_up(int keycode)
     return focus_id(id);
 }
 
+MaaCtrlId ControllerAgent::post_scroll(int x, int y, int dx, int dy, int duration)
+{
+    ScrollParam p { .point = { x, y }, .dx = dx, .dy = dy, .duration = static_cast<uint>(duration) };
+    auto id = post({ .type = Action::Type::scroll, .param = std::move(p) });
+    return focus_id(id);
+}
+
 MaaStatus ControllerAgent::status(MaaCtrlId ctrl_id) const
 {
     if (!action_runner_) {
@@ -304,6 +311,12 @@ bool ControllerAgent::start_app(AppParam p)
 bool ControllerAgent::stop_app(AppParam p)
 {
     auto id = post({ .type = Action::Type::stop_app, .param = std::move(p) });
+    return wait(id) == MaaStatus_Succeeded;
+}
+
+bool ControllerAgent::scroll(ScrollParam p)
+{
+    auto id = post({ .type = Action::Type::scroll, .param = std::move(p) });
     return wait(id) == MaaStatus_Succeeded;
 }
 
@@ -754,6 +767,19 @@ bool ControllerAgent::handle_key_up(const ClickKeyParam& param)
     return ret;
 }
 
+bool ControllerAgent::handle_scroll(const ScrollParam& param)
+{
+    if (!control_unit_) {
+        LogError << "control_unit_ is nullptr";
+        return false;
+    }
+
+    cv::Point point = preproc_touch_point(param.point);
+    bool ret = control_unit_->scroll(point.x, point.y, param.dx, param.dy, param.duration);
+
+    return ret;
+}
+
 bool ControllerAgent::check_stop()
 {
     if (!need_to_stop_) {
@@ -847,6 +873,10 @@ bool ControllerAgent::run_action(typename AsyncRunner<Action>::Id id, Action act
         break;
     case Action::Type::stop_app:
         ret = handle_stop_app(std::get<AppParam>(action.param));
+        break;
+
+    case Action::Type::scroll:
+        ret = handle_scroll(std::get<ScrollParam>(action.param));
         break;
 
     default:

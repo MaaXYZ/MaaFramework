@@ -72,6 +72,15 @@ struct Record
         cv::Mat image;
     };
 
+    struct ScrollParam
+    {
+        int x = 0;
+        int y = 0;
+        int dx = 0;
+        int dy = 0;
+        int duration = 0;
+    };
+
     using Param = std::variant<
         std::monostate,
         ConnectParam,
@@ -82,7 +91,8 @@ struct Record
         ClickKeyParam,
         InputTextParam,
         AppParam,
-        ScreencapParam>;
+        ScreencapParam,
+        ScrollParam>;
 
     struct Action
     {
@@ -103,6 +113,7 @@ struct Record
             stop_app,
             key_down,
             key_up,
+            scroll,
         } type = Type::invalid;
 
         Param param;
@@ -166,6 +177,9 @@ inline std::ostream& operator<<(std::ostream& os, Record::Action::Type type)
         break;
     case Record::Action::Type::key_up:
         os << "key_up";
+        break;
+    case Record::Action::Type::scroll:
+        os << "scroll";
         break;
     default:
         os << "Unknown Record::Action::Type" << static_cast<int>(type);

@@ -382,6 +382,15 @@ class MaaCustomControllerCallbacks(ctypes.Structure):
         ctypes.c_int32,
         ctypes.c_void_p,
     )
+    ScrollFunc = FUNCTYPE(
+        MaaBool,
+        ctypes.c_int32,
+        ctypes.c_int32,
+        ctypes.c_int32,
+        ctypes.c_int32,
+        ctypes.c_int32,
+        ctypes.c_void_p,
+    )
     _fields_ = [
         ("connect", ConnectFunc),
         ("request_uuid", RequestUuidFunc),
@@ -398,6 +407,7 @@ class MaaCustomControllerCallbacks(ctypes.Structure):
         ("input_text", InputTextFunc),
         ("key_down", KeyDownFunc),
         ("key_up", KeyUpFunc),
+        ("scroll", ScrollFunc),
     ]
 
 

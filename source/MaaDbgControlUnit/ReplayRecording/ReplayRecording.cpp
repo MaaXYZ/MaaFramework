@@ -388,6 +388,33 @@ bool ReplayRecording::key_up(int key)
     return record.success;
 }
 
+bool ReplayRecording::scroll(int x, int y, int dx, int dy, int duration)
+{
+    LogInfo << VAR(x) << VAR(y) << VAR(dx) << VAR(dy) << VAR(duration);
+
+    if (record_index_ >= recording_.records.size()) {
+        LogError << "record index out of range" << VAR(record_index_) << VAR(recording_.records.size());
+        return false;
+    }
+
+    const Record& record = recording_.records.at(record_index_);
+    if (record.action.type != Record::Action::Type::scroll) {
+        LogError << "record type is not scroll" << VAR(record.action.type) << VAR(record.raw_data);
+        return false;
+    }
+
+    // TODO: 现在滚动的点是随机区域，没法直接检查
+    // auto param = std::get<Record::ScrollParam>(record.action.param);
+    // if (param.x != x || param.y != y || param.dx != dx || param.dy != dy || param.duration != duration) {
+    //     LogError << "record scroll is not match" << VAR(record.raw_data);
+    //     return false;
+    // }
+
+    sleep(record.cost);
+    ++record_index_;
+    return record.success;
+}
+
 void ReplayRecording::sleep(int ms)
 {
     LogDebug << VAR(ms);

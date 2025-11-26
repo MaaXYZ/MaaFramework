@@ -220,6 +220,26 @@ class Controller:
         ctrl_id = Library.framework().MaaControllerPostTouchUp(self._handle, contact)
         return self._gen_ctrl_job(ctrl_id)
 
+    def post_scroll(
+        self, x: int, y: int, dx: int, dy: int, duration: int = 200
+    ) -> Job:
+        """滚动 / Scroll
+
+        Args:
+            x: 滚动位置 x 坐标 / Scroll position x coordinate
+            y: 滚动位置 y 坐标 / Scroll position y coordinate
+            dx: 水平滚动距离，正值向右滚动，负值向左滚动 / Horizontal scroll distance, positive for right, negative for left
+            dy: 垂直滚动距离，正值向下滚动，负值向上滚动 / Vertical scroll distance, positive for down, negative for up
+            duration: 滚动持续时间(毫秒) / Scroll duration in milliseconds
+
+        Returns:
+            Job: 作业对象 / Job object
+        """
+        ctrl_id = Library.framework().MaaControllerPostScroll(
+            self._handle, x, y, dx, dy, duration
+        )
+        return self._gen_ctrl_job(ctrl_id)
+
     def post_screencap(self) -> JobWithResult:
         """截图 / Screenshot
 
@@ -489,6 +509,17 @@ class Controller:
             MaaControllerHandle,
             c_int32,
         ]
+
+        Library.framework().MaaControllerPostScroll.restype = MaaCtrlId
+        Library.framework().MaaControllerPostScroll.argtypes = [
+            MaaControllerHandle,
+            c_int32,
+            c_int32,
+            c_int32,
+            c_int32,
+            c_int32,
+        ]
+
         Library.framework().MaaControllerStatus.restype = MaaStatus
         Library.framework().MaaControllerStatus.argtypes = [
             MaaControllerHandle,
@@ -738,6 +769,7 @@ class CustomController(Controller):
             CustomController._c_input_text_agent,
             CustomController._c_key_down_agent,
             CustomController._c_key_up_agent,
+            CustomController._c_scroll_agent,
         )
 
         self._handle = Library.framework().MaaCustomControllerCreate(
@@ -825,6 +857,10 @@ class CustomController(Controller):
 
     @abstractmethod
     def key_up(self, keycode: int) -> bool:
+        raise NotImplementedError
+
+    @abstractmethod
+    def scroll(self, x: int, y: int, dx: int, dy: int, duration: int) -> bool:
         raise NotImplementedError
 
     @staticmethod
@@ -1084,6 +1120,26 @@ class CustomController(Controller):
         ).value
 
         return int(self.input_text(c_text.decode()))
+
+    @staticmethod
+    @MaaCustomControllerCallbacks.ScrollFunc
+    def _c_scroll_agent(
+        c_x: ctypes.c_int32,
+        c_y: ctypes.c_int32,
+        c_dx: ctypes.c_int32,
+        c_dy: ctypes.c_int32,
+        c_duration: ctypes.c_int32,
+        trans_arg: ctypes.c_void_p,
+    ) -> int:
+        if not trans_arg:
+            return int(False)
+
+        self: CustomController = ctypes.cast(
+            trans_arg,
+            ctypes.py_object,
+        ).value
+
+        return int(self.scroll(int(c_x), int(c_y), int(c_dx), int(c_dy), int(c_duration)))
 
     def _set_custom_api_properties(self):
         Library.framework().MaaCustomControllerCreate.restype = MaaControllerHandle

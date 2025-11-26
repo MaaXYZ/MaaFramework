@@ -176,4 +176,38 @@ bool SeizeInput::key_up(int key)
     return true;
 }
 
+bool SeizeInput::scroll(int x, int y, int dx, int dy, int duration)
+{
+    std::ignore = duration;
+
+    POINT point = { x, y };
+
+    if (hwnd_) {
+        ensure_foreground();
+        ClientToScreen(hwnd_, &point);
+    }
+    LogInfo << VAR(x) << VAR(y) << VAR(dx) << VAR(dy) << VAR(point.x) << VAR(point.y) << VAR_VOIDP(hwnd_);
+
+    SetCursorPos(point.x, point.y);
+
+    INPUT input = {};
+    input.type = INPUT_MOUSE;
+
+    // Handle vertical scroll (dy)
+    if (dy != 0) {
+        input.mi.dwFlags = MOUSEEVENTF_WHEEL;
+        input.mi.mouseData = static_cast<DWORD>(dy);
+        SendInput(1, &input, sizeof(INPUT));
+    }
+
+    // Handle horizontal scroll (dx)
+    if (dx != 0) {
+        input.mi.dwFlags = MOUSEEVENTF_HWHEEL;
+        input.mi.mouseData = static_cast<DWORD>(dx);
+        SendInput(1, &input, sizeof(INPUT));
+    }
+
+    return true;
+}
+
 MAA_CTRL_UNIT_NS_END

@@ -142,5 +142,32 @@ bool LegacyEventInput::key_up(int key)
     return true;
 }
 
+bool LegacyEventInput::scroll(int x, int y, int dx, int dy, int duration)
+{
+    std::ignore = duration;
+
+    POINT point = { x, y };
+
+    if (hwnd_) {
+        ensure_foreground();
+        ClientToScreen(hwnd_, &point);
+    }
+    LogInfo << VAR(x) << VAR(y) << VAR(dx) << VAR(dy) << VAR(point.x) << VAR(point.y) << VAR_VOIDP(hwnd_);
+
+    SetCursorPos(point.x, point.y);
+
+    // Handle vertical scroll (dy)
+    if (dy != 0) {
+        mouse_event(MOUSEEVENTF_WHEEL, 0, 0, static_cast<DWORD>(dy), 0);
+    }
+
+    // Handle horizontal scroll (dx)
+    if (dx != 0) {
+        mouse_event(MOUSEEVENTF_HWHEEL, 0, 0, static_cast<DWORD>(dx), 0);
+    }
+
+    return true;
+}
+
 MAA_CTRL_UNIT_NS_END
 

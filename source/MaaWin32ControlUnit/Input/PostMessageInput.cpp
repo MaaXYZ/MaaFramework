@@ -160,4 +160,32 @@ bool PostMessageInput::key_up(int key)
     return true;
 }
 
+bool PostMessageInput::scroll(int x, int y, int dx, int dy, int duration)
+{
+    std::ignore = duration;
+
+    LogInfo << VAR(x) << VAR(y) << VAR(dx) << VAR(dy);
+
+    if (!hwnd_) {
+        LogError << "hwnd_ is nullptr";
+        return false;
+    }
+
+    ensure_foreground();
+
+    // Handle vertical scroll (dy)
+    if (dy != 0) {
+        WPARAM wParam = MAKEWPARAM(0, static_cast<short>(dy));
+        PostMessage(hwnd_, WM_MOUSEWHEEL, wParam, MAKELPARAM(x, y));
+    }
+
+    // Handle horizontal scroll (dx)
+    if (dx != 0) {
+        WPARAM wParam = MAKEWPARAM(0, static_cast<short>(dx));
+        PostMessage(hwnd_, WM_MOUSEHWHEEL, wParam, MAKELPARAM(x, y));
+    }
+
+    return true;
+}
+
 MAA_CTRL_UNIT_NS_END

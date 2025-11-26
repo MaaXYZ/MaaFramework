@@ -84,6 +84,8 @@ public:
     virtual MaaCtrlId post_key_down(int keycode) = 0;
     virtual MaaCtrlId post_key_up(int keycode) = 0;
 
+    virtual MaaCtrlId post_scroll(int x, int y, int dx, int dy, int duration) = 0;
+
     virtual MaaStatus status(MaaCtrlId ctrl_id) const = 0;
     virtual MaaStatus wait(MaaCtrlId ctrl_id) const = 0;
     virtual bool connected() const = 0;

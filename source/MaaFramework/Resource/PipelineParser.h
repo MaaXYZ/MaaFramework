@@ -95,6 +95,7 @@ private:
         parse_long_press_key(const json::value& input, Action::LongPressKeyParam& output, const Action::LongPressKeyParam& default_value);
     static bool parse_input_text(const json::value& input, Action::InputTextParam& output, const Action::InputTextParam& default_value);
     static bool parse_app_info(const json::value& input, Action::AppParam& output, const Action::AppParam& default_value);
+    static bool parse_scroll(const json::value& input, Action::ScrollParam& output, const Action::ScrollParam& default_value);
     static bool parse_command_param(const json::value& input, Action::CommandParam& output, const Action::CommandParam& default_value);
     static bool parse_custom_action_param(const json::value& input, Action::CustomParam& output, const Action::CustomParam& default_value);
 

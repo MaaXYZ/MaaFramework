@@ -97,6 +97,8 @@ public:
 
     virtual bool key_down(int key) = 0;
     virtual bool key_up(int key) = 0;
+
+    virtual bool scroll(int x, int y, int dx, int dy, int duration) = 0;
 };
 
 MAA_CTRL_UNIT_NS_END

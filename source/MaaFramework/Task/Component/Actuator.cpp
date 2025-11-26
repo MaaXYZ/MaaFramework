@@ -92,6 +92,10 @@ ActionResult Actuator::run(const cv::Rect& reco_hit, MaaRecoId reco_id, const Pi
         result = stop_app(std::get<AppParam>(pipeline_data.action_param), pipeline_data.name);
         break;
 
+    case Type::Scroll:
+        result = scroll(std::get<ScrollParam>(pipeline_data.action_param), reco_hit, pipeline_data.name);
+        break;
+
     case Type::Command:
         result = command(std::get<CommandParam>(pipeline_data.action_param), reco_hit, pipeline_data.name, entry);
         break;
@@ -434,6 +438,27 @@ ActionResult Actuator::input_text(const MAA_RES_NS::Action::InputTextParam& para
         .name = name,
         .action = "InputText",
         .box = cv::Rect {},
+        .success = ret,
+        .detail = json::value(ctrl_param),
+    };
+}
+
+ActionResult Actuator::scroll(const MAA_RES_NS::Action::ScrollParam& param, const cv::Rect& box, const std::string& name)
+{
+    if (!controller()) {
+        LogError << "Controller is null";
+        return {};
+    }
+
+    cv::Point point = rand_point(get_target_rect(param.target, box));
+    MAA_CTRL_NS::ScrollParam ctrl_param { .point = point, .dx = param.dx, .dy = param.dy, .duration = param.duration };
+    bool ret = controller()->scroll(ctrl_param);
+
+    return ActionResult {
+        .action_id = ++s_global_action_id,
+        .name = name,
+        .action = "Scroll",
+        .box = box,
         .success = ret,
         .detail = json::value(ctrl_param),
     };

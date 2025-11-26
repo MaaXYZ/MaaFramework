@@ -215,6 +215,16 @@ bool InputAgent::key_up(int key)
     return active_unit_->key_up(key);
 }
 
+bool InputAgent::scroll(int x, int y, int dx, int dy, int duration)
+{
+    if (!active_unit_) {
+        LogError << "No available input method" << VAR(active_unit_);
+        return false;
+    }
+
+    return active_unit_->scroll(x, y, dx, dy, duration);
+}
+
 void InputAgent::on_image_resolution_changed(const std::pair<int, int>& pre, const std::pair<int, int>& cur)
 {
     if (!active_unit_) {

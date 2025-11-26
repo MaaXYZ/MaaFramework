@@ -43,6 +43,8 @@ public: // from InputBase
     virtual bool key_down(int key) override;
     virtual bool key_up(int key) override;
 
+    virtual bool scroll(int x, int y, int dx, int dy, int duration) override;
+
 public: // from ControlUnitSink
     virtual void on_image_resolution_changed(const std::pair<int, int>& pre, const std::pair<int, int>& cur) override;
     virtual void on_app_started(const std::string& intent) override;

@@ -237,6 +237,16 @@ bool AdbControlUnitMgr::key_up(int key)
     return input_->key_up(key);
 }
 
+bool AdbControlUnitMgr::scroll(int x, int y, int dx, int dy, int duration)
+{
+    if (!input_) {
+        LogError << "input_ is null";
+        return false;
+    }
+
+    return input_->scroll(x, y, dx, dy, duration);
+}
+
 bool AdbControlUnitMgr::find_device(std::vector<std::string>& devices)
 {
     auto opt = device_list_.request_devices();

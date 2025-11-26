@@ -32,6 +32,11 @@ public: // from InputBase
     virtual bool click_key(int key) override = 0;
     virtual bool input_text(const std::string& text) override = 0;
 
+    virtual bool key_down(int key) override = 0;
+    virtual bool key_up(int key) override = 0;
+
+    virtual bool scroll(int x, int y, int dx, int dy, int duration) override;
+
 protected:
     bool read_info();
 

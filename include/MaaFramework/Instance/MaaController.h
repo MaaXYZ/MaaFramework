@@ -88,6 +88,20 @@ extern "C"
 
     MAA_FRAMEWORK_API MaaCtrlId MaaControllerPostScreencap(MaaController* ctrl);
 
+    /**
+     * @brief Post a scroll action to the controller.
+     *
+     * @param ctrl The controller handle.
+     * @param x The x coordinate of the scroll position.
+     * @param y The y coordinate of the scroll position.
+     * @param dx The horizontal scroll delta. Positive values scroll right, negative values scroll left.
+     * @param dy The vertical scroll delta. Positive values scroll down, negative values scroll up.
+     * @param duration The duration of the scroll action in milliseconds. For adb controller, this is the swipe duration.
+     * @return The control id of the scroll action.
+     */
+    MAA_FRAMEWORK_API MaaCtrlId
+        MaaControllerPostScroll(MaaController* ctrl, int32_t x, int32_t y, int32_t dx, int32_t dy, int32_t duration);
+
     MAA_FRAMEWORK_API MaaStatus MaaControllerStatus(const MaaController* ctrl, MaaCtrlId id);
 
     MAA_FRAMEWORK_API MaaStatus MaaControllerWait(const MaaController* ctrl, MaaCtrlId id);

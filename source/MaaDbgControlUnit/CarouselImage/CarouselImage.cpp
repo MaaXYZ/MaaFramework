@@ -158,4 +158,14 @@ bool CarouselImage::key_up(int key)
     return true;
 }
 
+bool CarouselImage::scroll(int x, int y, int dx, int dy, int duration)
+{
+    std::ignore = x;
+    std::ignore = y;
+    std::ignore = dx;
+    std::ignore = dy;
+    std::ignore = duration;
+    return true;
+}
+
 MAA_CTRL_UNIT_NS_END

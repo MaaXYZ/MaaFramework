@@ -95,6 +95,16 @@ struct AppParam
     MEO_TOJSON(package);
 };
 
+struct ScrollParam
+{
+    cv::Point point {};
+    int dx = 0;
+    int dy = 0;
+    uint duration = 200;
+
+    MEO_TOJSON(point, dx, dy, duration);
+};
+
 using Param = std::variant<
     std::monostate,
     ClickParam,
@@ -105,7 +115,8 @@ using Param = std::variant<
     ClickKeyParam,
     LongPressKeyParam,
     InputTextParam,
-    AppParam>;
+    AppParam,
+    ScrollParam>;
 
 struct Action
 {
@@ -128,6 +139,7 @@ struct Action
         stop_app,
         key_down,
         key_up,
+        scroll,
     } type = Type::invalid;
 
     Param param;
@@ -157,6 +169,8 @@ public: // MaaController
 
     virtual MaaCtrlId post_key_down(int keycode) override;
     virtual MaaCtrlId post_key_up(int keycode) override;
+
+    virtual MaaCtrlId post_scroll(int x, int y, int dx, int dy, int duration) override;
 
     virtual MaaStatus status(MaaCtrlId ctrl_id) const override;
     virtual MaaStatus wait(MaaCtrlId ctrl_id) const override;
@@ -194,6 +208,8 @@ public: // for Actuator
     bool start_app(AppParam p);
     bool stop_app(AppParam p);
 
+    bool scroll(ScrollParam p);
+
 private:
     bool handle_connect();
     bool handle_click(const ClickParam& param);
@@ -211,6 +227,7 @@ private:
     bool handle_stop_app(const AppParam& param);
     bool handle_key_down(const ClickKeyParam& param);
     bool handle_key_up(const ClickKeyParam& param);
+    bool handle_scroll(const ScrollParam& param);
 
     MaaCtrlId post(Action action);
     MaaCtrlId focus_id(MaaCtrlId id);
