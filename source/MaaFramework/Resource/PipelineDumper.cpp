@@ -12,12 +12,19 @@ std::vector<std::string> PipelineDumper::make_next_raw_list(const std::vector<No
     std::vector<std::string> result;
     result.reserve(nodes.size());
     for (const auto& node : nodes) {
+        std::string raw;
+
+        // 按需添加各种属性前缀
         if (node.jump_back) {
-            result.emplace_back(std::string(PipelineData::kNodeAttr_JumpBack) + node.name);
+            raw += PipelineData::kNodeAttr_JumpBack;
         }
-        else {
-            result.emplace_back(node.name);
-        }
+        // 未来可以在这里添加其他属性
+        // if (node.once) {
+        //     raw += PipelineData::kNodeAttr_Once;
+        // }
+
+        raw += node.name;
+        result.emplace_back(std::move(raw));
     }
     return result;
 }

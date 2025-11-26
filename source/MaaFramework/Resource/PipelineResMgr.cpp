@@ -153,7 +153,7 @@ bool PipelineResMgr::parse_and_override_once(
             return false;
         }
         if (key.starts_with(PipelineData::kNodePrefix_Ignore)) {
-            LogInfo << "key starts with '.', skip" << VAR(key);
+            LogInfo << "key starts with '$', skip" << VAR(key);
             continue;
         }
         if (existing_keys.contains(key)) {
