@@ -219,7 +219,8 @@ NodeDetail PipelineTask::run_next(const std::vector<MAA_RES_NS::NodeWithAttr>& n
 RecoResult PipelineTask::recognize_list(const cv::Mat& image, const std::vector<MAA_RES_NS::NodeWithAttr>& list)
 {
     std::vector<std::string> raw_list = MAA_RES_NS::PipelineDumper::make_next_raw_list(list);
-    
+    std::vector<std::string> list_without_attr = MAA_RES_NS::PipelineDumper::make_next_list_without_attr(list);
+
     LogFunc << VAR(cur_node_) << VAR(raw_list);
 
     if (!context_) {
@@ -240,11 +241,8 @@ RecoResult PipelineTask::recognize_list(const cv::Mat& image, const std::vector<
 
     const auto& cur_node = *cur_opt;
 
-
     const json::value reco_list_cb_detail {
-        { "task_id", task_id() },
-        { "name", cur_node_ },
-        { "list", raw_list },
+        { "task_id", task_id() },    { "name", cur_node_ }, { "list", raw_list }, { "list_without_attr", list_without_attr },
         { "focus", cur_node.focus },
     };
 

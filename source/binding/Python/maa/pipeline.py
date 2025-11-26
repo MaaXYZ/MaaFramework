@@ -261,9 +261,11 @@ class JPipelineData:
     recognition: JRecognition
     action: JAction
     next: List[str]
+    next_without_attr: List[str]
     rate_limit: int
     timeout: int
     on_error: List[str]
+    on_error_without_attr: List[str]
     inverse: bool
     enabled: bool
     pre_delay: int
@@ -388,9 +390,11 @@ class JPipelineParser:
             recognition=recognition,
             action=action,
             next=data.get("next"),
+            next_without_attr=data.get("next_without_attr"),
             rate_limit=data.get("rate_limit"),
             timeout=data.get("timeout"),
             on_error=data.get("on_error"),
+            on_error_without_attr=data.get("on_error_without_attr"),
             inverse=data.get("inverse"),
             enabled=data.get("enabled"),
             pre_delay=data.get("pre_delay"),

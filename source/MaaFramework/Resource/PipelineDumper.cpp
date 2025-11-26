@@ -29,14 +29,26 @@ std::vector<std::string> PipelineDumper::make_next_raw_list(const std::vector<No
     return result;
 }
 
+std::vector<std::string> PipelineDumper::make_next_list_without_attr(const std::vector<NodeWithAttr>& nodes)
+{
+    std::vector<std::string> result;
+    result.reserve(nodes.size());
+    for (const auto& node : nodes) {
+        result.emplace_back(node.name);
+    }
+    return result;
+}
+
 json::object PipelineDumper::dump(const PipelineData& pp)
 {
     PipelineV2::JPipelineData data;
 
     data.next = make_next_raw_list(pp.next);
+    data.next_without_attr = make_next_list_without_attr(pp.next);
     data.rate_limit = pp.rate_limit.count();
     data.timeout = pp.reco_timeout.count();
     data.on_error = make_next_raw_list(pp.on_error);
+    data.on_error_without_attr = make_next_list_without_attr(pp.on_error);
     data.inverse = pp.inverse;
     data.enabled = pp.enabled;
     data.pre_delay = pp.pre_delay.count();
