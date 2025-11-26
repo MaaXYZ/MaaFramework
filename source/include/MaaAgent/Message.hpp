@@ -815,6 +815,38 @@ struct ResourceGetNodeListReverseResponse
     MEO_JSONIZATION(node_list, _ResourceGetNodeListReverseResponse);
 };
 
+struct ResourceGetCustomRecognitionListReverseRequest
+{
+    std::string resource_id;
+
+    MessageTypePlaceholder _ResourceGetCustomRecognitionListReverseRequest = 1;
+    MEO_JSONIZATION(resource_id, _ResourceGetCustomRecognitionListReverseRequest);
+};
+
+struct ResourceGetCustomRecognitionListReverseResponse
+{
+    std::vector<std::string> custom_recognition_list;
+
+    MessageTypePlaceholder _ResourceGetCustomRecognitionListReverseResponse = 1;
+    MEO_JSONIZATION(custom_recognition_list, _ResourceGetCustomRecognitionListReverseResponse);
+};
+
+struct ResourceGetCustomActionListReverseRequest
+{
+    std::string resource_id;
+
+    MessageTypePlaceholder _ResourceGetCustomActionListReverseRequest = 1;
+    MEO_JSONIZATION(resource_id, _ResourceGetCustomActionListReverseRequest);
+};
+
+struct ResourceGetCustomActionListReverseResponse
+{
+    std::vector<std::string> custom_action_list;
+
+    MessageTypePlaceholder _ResourceGetCustomActionListReverseResponse = 1;
+    MEO_JSONIZATION(custom_action_list, _ResourceGetCustomActionListReverseResponse);
+};
+
 struct ControllerPostConnectionReverseRequest
 {
     std::string controller_id;

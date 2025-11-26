@@ -77,6 +77,8 @@ private:
     bool handle_resource_get_node_data(const json::value& j);
     bool handle_resource_get_hash(const json::value& j);
     bool handle_resource_get_node_list(const json::value& j);
+    bool handle_resource_get_custom_recognition_list(const json::value& j);
+    bool handle_resource_get_custom_action_list(const json::value& j);
 
     bool handle_controller_post_connection(const json::value& j);
     bool handle_controller_post_click(const json::value& j);
