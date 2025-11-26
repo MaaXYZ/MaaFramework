@@ -1,4 +1,5 @@
 #include "loader.h"
+#include "resource.h"
 
 #include <MaaFramework/MaaAPI.h>
 #include <MaaToolkit/MaaToolkitAPI.h>
@@ -79,6 +80,51 @@ void config_init_option(std::string user_path, maajs::OptionalParam<std::string>
     }
 }
 
+void pi_load(std::string interface_path)
+{
+    if (!MaaToolkitProjectInterfaceLoad(interface_path.c_str())) {
+        throw maajs::MaaError { "ProjectInterface load failed" };
+    }
+}
+
+bool pi_loaded()
+{
+    return MaaToolkitProjectInterfaceLoaded();
+}
+
+void pi_bind_resource(maajs::ValueType resource)
+{
+    auto* impl = maajs::native_class_unwrap<ResourceImpl>(resource);
+    if (!impl || !impl->resource) {
+        throw maajs::MaaError { "ProjectInterface bind_resource failed: invalid resource" };
+    }
+    if (!MaaToolkitProjectInterfaceBindResource(impl->resource)) {
+        throw maajs::MaaError { "ProjectInterface bind_resource failed" };
+    }
+}
+
+void pi_start_agent()
+{
+    if (!MaaToolkitProjectInterfaceStartAgent()) {
+        throw maajs::MaaError { "ProjectInterface start_agent failed" };
+    }
+}
+
+void pi_stop_agent()
+{
+    MaaToolkitProjectInterfaceStopAgent();
+}
+
+bool pi_agent_running()
+{
+    return MaaToolkitProjectInterfaceAgentRunning();
+}
+
+bool pi_agent_connected()
+{
+    return MaaToolkitProjectInterfaceAgentConnected();
+}
+
 maajs::ObjectType load_global(maajs::EnvType env)
 {
     auto globalObject = maajs::ObjectType::New(env);
@@ -90,6 +136,13 @@ maajs::ObjectType load_global(maajs::EnvType env)
     MAA_BIND_SETTER(globalObject, "stdout_level", set_stdout_level);
     MAA_BIND_SETTER(globalObject, "debug_mode", set_debug_mode);
     MAA_BIND_FUNC(globalObject, "config_init_option", config_init_option);
+    MAA_BIND_FUNC(globalObject, "pi_load", pi_load);
+    MAA_BIND_GETTER(globalObject, "pi_loaded", pi_loaded);
+    MAA_BIND_FUNC(globalObject, "pi_bind_resource", pi_bind_resource);
+    MAA_BIND_FUNC(globalObject, "pi_start_agent", pi_start_agent);
+    MAA_BIND_FUNC(globalObject, "pi_stop_agent", pi_stop_agent);
+    MAA_BIND_GETTER(globalObject, "pi_agent_running", pi_agent_running);
+    MAA_BIND_GETTER(globalObject, "pi_agent_connected", pi_agent_connected);
 
     return globalObject;
 }
