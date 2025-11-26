@@ -20,7 +20,7 @@ Actuator::Actuator(Tasker* tasker, Context& context)
 ActionResult Actuator::run(const cv::Rect& reco_hit, MaaRecoId reco_id, const PipelineData& pipeline_data, const std::string& entry)
 {
     using namespace MAA_RES_NS::Action;
-    LogFunc << VAR(pipeline_data.name);
+    LogTrace << VAR(pipeline_data.name);
 
     if (!tasker_) {
         LogError << "tasker is null";
@@ -451,8 +451,8 @@ void Actuator::wait_freezes(const MAA_RES_NS::WaitFreezesParam& param, const cv:
     }
     using namespace MAA_VISION_NS;
 
-    LogFunc << "Wait freezes:" << VAR(param.time) << VAR(param.rate_limit) << VAR(param.timeout) << VAR(param.threshold)
-            << VAR(param.method);
+    LogTrace << "Wait freezes:" << VAR(param.time) << VAR(param.rate_limit) << VAR(param.timeout) << VAR(param.threshold)
+             << VAR(param.method);
 
     auto rate_limit = std::min(param.rate_limit, param.time);
 

@@ -309,7 +309,7 @@ bool ControllerAgent::stop_app(AppParam p)
 
 MaaCtrlId ControllerAgent::post(Action action)
 {
-    LogInfo << VAR(action.type) << VAR(action.param);
+    // LogInfo << VAR(action.type) << VAR(action.param);
 
     if (!check_stop()) {
         return MaaInvalidId;

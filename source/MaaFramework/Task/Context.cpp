@@ -56,7 +56,7 @@ Context::Context(const Context& other)
 
 MaaTaskId Context::run_task(const std::string& entry, const json::value& pipeline_override)
 {
-    LogFunc << VAR(getptr()) << VAR(entry) << VAR(pipeline_override);
+    LogTrace << VAR(getptr()) << VAR(entry) << VAR(pipeline_override);
 
     if (!tasker_) {
         LogError << "tasker is null";
@@ -91,7 +91,7 @@ MaaTaskId Context::run_task(const std::string& entry, const json::value& pipelin
 
 MaaRecoId Context::run_recognition(const std::string& entry, const json::value& pipeline_override, const cv::Mat& image)
 {
-    LogFunc << VAR(getptr()) << VAR(entry) << VAR(pipeline_override);
+    LogTrace << VAR(getptr()) << VAR(entry) << VAR(pipeline_override);
 
     RecognitionTask subtask(entry, tasker_, make_clone());
     bool ov = subtask.override_pipeline(pipeline_override);
@@ -105,7 +105,7 @@ MaaRecoId Context::run_recognition(const std::string& entry, const json::value& 
 MaaActId
     Context::run_action(const std::string& entry, const json::value& pipeline_override, const cv::Rect& box, const std::string& reco_detail)
 {
-    LogFunc << VAR(getptr()) << VAR(entry) << VAR(pipeline_override) << VAR(box) << VAR(reco_detail);
+    LogTrace << VAR(getptr()) << VAR(entry) << VAR(pipeline_override) << VAR(box) << VAR(reco_detail);
 
     ActionTask subtask(entry, tasker_, make_clone());
     bool ov = subtask.override_pipeline(pipeline_override);
@@ -119,7 +119,7 @@ MaaActId
 
 bool Context::override_pipeline(const json::value& pipeline_override)
 {
-    LogFunc << VAR(getptr()) << VAR(pipeline_override);
+    LogTrace << VAR(getptr()) << VAR(pipeline_override);
 
     if (!tasker_) {
         LogError << "tasker is null";
@@ -156,7 +156,7 @@ bool Context::override_pipeline(const json::value& pipeline_override)
 
 bool Context::override_pipeline_once(const json::object& pipeline_override, const MAA_RES_NS::DefaultPipelineMgr& default_mgr)
 {
-    LogFunc << VAR(getptr()) << VAR(pipeline_override);
+    // LogTrace << VAR(getptr()) << VAR(pipeline_override);
 
     for (const auto& [key, value] : pipeline_override) {
         PipelineData result;
@@ -175,7 +175,7 @@ bool Context::override_pipeline_once(const json::object& pipeline_override, cons
 
 bool Context::override_next(const std::string& node_name, const std::vector<std::string>& next)
 {
-    LogFunc << VAR(getptr()) << VAR(node_name) << VAR(next);
+    LogTrace << VAR(getptr()) << VAR(node_name) << VAR(next);
 
     auto data_opt = get_pipeline_data(node_name);
     if (!data_opt) {

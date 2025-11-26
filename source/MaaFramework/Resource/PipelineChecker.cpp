@@ -9,8 +9,6 @@ MAA_RES_NS_BEGIN
 
 bool PipelineChecker::check_all_validity(const PipelineDataMap& data_map)
 {
-    LogFunc;
-
     bool ret = check_all_next_list(data_map);
     ret &= check_all_regex(data_map);
 
@@ -19,8 +17,6 @@ bool PipelineChecker::check_all_validity(const PipelineDataMap& data_map)
 
 bool PipelineChecker::check_all_next_list(const PipelineDataMap& data_map)
 {
-    LogFunc;
-
     for (const auto& [name, pipeline_data] : data_map) {
         if (!check_next_list(pipeline_data.next, data_map)) {
             LogError << "check_next_list next failed" << VAR(name) << VAR(pipeline_data.next);
@@ -51,8 +47,6 @@ bool PipelineChecker::check_all_next_list(const PipelineDataMap& data_map)
 
 bool PipelineChecker::check_all_regex(const PipelineDataMap& data_map)
 {
-    LogFunc;
-
     for (const auto& [name, pipeline_data] : data_map) {
         if (pipeline_data.reco_type != Recognition::Type::OCR) {
             continue;
