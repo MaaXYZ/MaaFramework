@@ -297,12 +297,10 @@ struct JPipelineData
 {
     JRecognition recognition;
     JAction action;
-    std::vector<std::string> next;
-    std::vector<std::string> next_without_attr;
+    std::vector<NodeAttr> next;
     int64_t rate_limit = 0;
     int64_t timeout = 0;
-    std::vector<std::string> on_error;
-    std::vector<std::string> on_error_without_attr;
+    std::vector<NodeAttr> on_error;
     bool inverse = false;
     bool enabled = false;
     int64_t pre_delay = 0;
@@ -316,11 +314,9 @@ struct JPipelineData
         recognition,
         action,
         next,
-        next_without_attr,
         rate_limit,
         timeout,
         on_error,
-        on_error_without_attr,
         inverse,
         enabled,
         pre_delay,

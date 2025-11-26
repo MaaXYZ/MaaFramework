@@ -272,12 +272,12 @@ struct WaitFreezesParam
     std::chrono::milliseconds timeout = std::chrono::milliseconds(20 * 1000);
 };
 
-struct NodeWithAttr
+struct NodeAttr
 {
     std::string name;
     bool jump_back = false;
 
-    MEO_TOJSON(name, jump_back);
+    MEO_JSONIZATION(name, jump_back);
 };
 
 struct PipelineData
@@ -295,8 +295,8 @@ struct PipelineData
     Action::Type action_type = Action::Type::DoNothing;
     Action::Param action_param;
 
-    std::vector<NodeWithAttr> next;
-    std::vector<NodeWithAttr> on_error;
+    std::vector<NodeAttr> next;
+    std::vector<NodeAttr> on_error;
     std::chrono::milliseconds rate_limit = std::chrono::milliseconds(1000);
     std::chrono::milliseconds reco_timeout = std::chrono::milliseconds(20 * 1000);
 

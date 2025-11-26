@@ -18,9 +18,6 @@ class PipelineParser
 public:
     PipelineParser() = delete;
 
-    static bool parse_node_with_attr(const std::string& raw, NodeWithAttr& output);
-    static bool parse_next(const std::vector<std::string>& raw_list, std::vector<NodeWithAttr>& output);
-
     static bool parse_node(
         const std::string& name,
         const json::value& input,
@@ -43,6 +40,8 @@ public:
         const Action::Type& parent_type,
         const Action::Param& parent_param,
         const DefaultPipelineMgr& default_mgr);
+
+    static bool parse_next(const json::value& input, std::vector<NodeAttr>& output);
 
 private:
     static bool parse_template_matcher_param(
@@ -122,6 +121,14 @@ private:
         const std::string& key,
         std::vector<cv::Rect>& output,
         const std::vector<cv::Rect>& default_value);
+
+    static bool parse_next(
+        const json::value& input,
+        const std::string& key,
+        std::vector<NodeAttr>& output,
+        const std::vector<NodeAttr>& default_next);
+    static bool parse_node_in_next(const json::value& input, NodeAttr& output);
+    static bool parse_node_string_in_next(const std::string& raw, NodeAttr& output);
 };
 
 MAA_RES_NS_END

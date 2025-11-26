@@ -246,6 +246,12 @@ class JAction:
 
 
 @dataclass
+class JNodeAttr:
+    name: str
+    jump_back: bool
+
+
+@dataclass
 class JWaitFreezes:
     time: int
     target: JTarget
@@ -260,12 +266,10 @@ class JWaitFreezes:
 class JPipelineData:
     recognition: JRecognition
     action: JAction
-    next: List[str]
-    next_without_attr: List[str]
+    next: List[JNodeAttr]
     rate_limit: int
     timeout: int
-    on_error: List[str]
-    on_error_without_attr: List[str]
+    on_error: List[JNodeAttr]
     inverse: bool
     enabled: bool
     pre_delay: int
@@ -389,12 +393,10 @@ class JPipelineParser:
         return JPipelineData(
             recognition=recognition,
             action=action,
-            next=data.get("next"),
-            next_without_attr=data.get("next_without_attr"),
+            next=cls._parse_node_attr_list(data.get("next")),
             rate_limit=data.get("rate_limit"),
             timeout=data.get("timeout"),
-            on_error=data.get("on_error"),
-            on_error_without_attr=data.get("on_error_without_attr"),
+            on_error=cls._parse_node_attr_list(data.get("on_error")),
             inverse=data.get("inverse"),
             enabled=data.get("enabled"),
             pre_delay=data.get("pre_delay"),
@@ -404,3 +406,14 @@ class JPipelineParser:
             focus=data.get("focus"),
             attach=data.get("attach"),  # 附加 JSON 对象
         )
+
+    @staticmethod
+    def _parse_node_attr_list(data: List[dict]) -> List[JNodeAttr]:
+        """Convert list of dicts to list of JNodeAttr."""
+        return [
+            JNodeAttr(
+                name=item.get("name"),
+                jump_back=item.get("jump_back"),
+            )
+            for item in data
+        ]

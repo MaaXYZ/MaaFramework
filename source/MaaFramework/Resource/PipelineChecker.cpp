@@ -55,7 +55,7 @@ bool PipelineChecker::check_all_regex(const PipelineDataMap& data_map)
     return true;
 }
 
-bool PipelineChecker::check_next_list(const std::vector<NodeWithAttr>& next_list, const PipelineDataMap& data_map)
+bool PipelineChecker::check_next_list(const std::vector<NodeAttr>& next_list, const PipelineDataMap& data_map)
 {
     for (const auto& node : next_list) {
         if (!data_map.contains(node.name)) {

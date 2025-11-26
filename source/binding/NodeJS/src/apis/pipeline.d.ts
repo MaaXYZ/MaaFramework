@@ -347,6 +347,11 @@ declare global {
             | MixAct<'Command', ActionCommand<Mode>, Mode>
             | MixAct<'Custom', ActionCustom<Mode>, Mode>
 
+        type NodeAttr = {
+            name: string
+            jump_back: boolean
+        }
+
         type WaitFreeze = {
             time?: number
             target?: true | NodeName | Rect
@@ -358,12 +363,10 @@ declare global {
         }
 
         type General<Mode> = {
-            next?: MaybeArray<NodeName, Mode>
-            next_without_attr?: MaybeArray<NodeName, Mode>
+            next?: MaybeArray<NodeAttr, Mode>
             rate_limit?: number
             timeout?: number
-            on_error?: MaybeArray<string, Mode>
-            on_error_without_attr?: MaybeArray<string, Mode>
+            on_error?: MaybeArray<NodeAttr, Mode>
             inverse?: boolean
             enabled?: boolean
             pre_delay?: boolean

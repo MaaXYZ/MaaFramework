@@ -5,7 +5,7 @@
 #include "Common/Conf.h"
 
 MAA_RES_NS_BEGIN
-struct NodeWithAttr;
+struct NodeAttr;
 MAA_RES_NS_END
 
 MAA_TASK_NS_BEGIN
@@ -21,8 +21,8 @@ public:
     virtual void post_stop() override;
 
 private:
-    NodeDetail run_next(const std::vector<MAA_RES_NS::NodeWithAttr>& next, const PipelineData& pretask);
-    RecoResult recognize_list(const cv::Mat& image, const std::vector<MAA_RES_NS::NodeWithAttr>& list);
+    NodeDetail run_next(const std::vector<MAA_RES_NS::NodeAttr>& next, const PipelineData& pretask);
+    RecoResult recognize_list(const cv::Mat& image, const std::vector<MAA_RES_NS::NodeAttr>& list);
 };
 
 MAA_TASK_NS_END

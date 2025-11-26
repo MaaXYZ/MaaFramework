@@ -32,7 +32,7 @@ bool PipelineTask::run()
     }
 
     PipelineData node = std::move(*begin_opt);
-    std::vector<MAA_RES_NS::NodeWithAttr> next = { { .name = entry_ } };
+    std::vector<MAA_RES_NS::NodeAttr> next = { { .name = entry_ } };
 
     bool error_handling = false;
 
@@ -56,7 +56,7 @@ bool PipelineTask::run()
             std::string pre_node_name = node.name;
             node = std::move(*hit_opt);
 
-            auto it = std::ranges::find_if(next, [&](const MAA_RES_NS::NodeWithAttr& n) { return n.name == node_detail.name; });
+            auto it = std::ranges::find_if(next, [&](const MAA_RES_NS::NodeAttr& n) { return n.name == node_detail.name; });
             if (it != next.end() && it->jump_back) {
                 LogInfo << "push interrupt_stack:" << pre_node_name;
                 interrupt_stack.emplace(pre_node_name);
@@ -109,20 +109,19 @@ void PipelineTask::post_stop()
     context_->need_to_stop() = true;
 }
 
-NodeDetail PipelineTask::run_next(const std::vector<MAA_RES_NS::NodeWithAttr>& next, const PipelineData& pretask)
+NodeDetail PipelineTask::run_next(const std::vector<MAA_RES_NS::NodeAttr>& next, const PipelineData& pretask)
 {
     if (!context_) {
         LogError << "context is null";
         return {};
     }
 
-    bool valid = std::ranges::any_of(next, [&](const MAA_RES_NS::NodeWithAttr& node) {
+    bool valid = std::ranges::any_of(next, [&](const MAA_RES_NS::NodeAttr& node) {
         auto data_opt = context_->get_pipeline_data(node.name);
         return data_opt && data_opt->enabled;
     });
     if (!valid) {
-        auto next_raw = MAA_RES_NS::PipelineDumper::make_next_raw_list(next);
-        LogInfo << "no valid/enabled node in next" << VAR(next_raw);
+        LogInfo << "no valid/enabled node in next" << VAR(next);
         return {};
     }
 
@@ -216,12 +215,9 @@ NodeDetail PipelineTask::run_next(const std::vector<MAA_RES_NS::NodeWithAttr>& n
     return result;
 }
 
-RecoResult PipelineTask::recognize_list(const cv::Mat& image, const std::vector<MAA_RES_NS::NodeWithAttr>& list)
+RecoResult PipelineTask::recognize_list(const cv::Mat& image, const std::vector<MAA_RES_NS::NodeAttr>& list)
 {
-    std::vector<std::string> raw_list = MAA_RES_NS::PipelineDumper::make_next_raw_list(list);
-    std::vector<std::string> list_without_attr = MAA_RES_NS::PipelineDumper::make_next_list_without_attr(list);
-
-    LogFunc << VAR(cur_node_) << VAR(raw_list);
+    LogFunc << VAR(cur_node_) << VAR(list);
 
     if (!context_) {
         LogError << "context is null";
@@ -242,7 +238,9 @@ RecoResult PipelineTask::recognize_list(const cv::Mat& image, const std::vector<
     const auto& cur_node = *cur_opt;
 
     const json::value reco_list_cb_detail {
-        { "task_id", task_id() },    { "name", cur_node_ }, { "list", raw_list }, { "list_without_attr", list_without_attr },
+        { "task_id", task_id() },
+        { "name", cur_node_ },
+        { "list", list },
         { "focus", cur_node.focus },
     };
 
