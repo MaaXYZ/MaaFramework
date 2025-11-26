@@ -71,6 +71,15 @@ RecoResult TaskBase::run_recognition(const cv::Mat& image, const PipelineData& d
         return {};
     }
 
+    // Check max_hit limit
+    if (context_) {
+        uint current_hit = context_->get_hit_count(data.name);
+        if (current_hit >= data.max_hit) {
+            LogDebug << "max_hit reached" << VAR(data.name) << VAR(current_hit) << VAR(data.max_hit);
+            return {};
+        }
+    }
+
     if (debug_mode() || !data.focus.is_null()) {
         const json::value reco_cb_detail {
             { "task_id", task_id() },
@@ -96,6 +105,10 @@ RecoResult TaskBase::run_recognition(const cv::Mat& image, const PipelineData& d
 
     if (result.box) {
         LogInfo << "reco hit" << VAR(result.name) << VAR(result.box);
+        // Increment hit count on successful recognition
+        if (context_) {
+            context_->increment_hit_count(data.name);
+        }
     }
 
     return result;

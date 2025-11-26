@@ -1,6 +1,7 @@
 #pragma once
 
 #include <chrono>
+#include <limits>
 #include <memory>
 #include <string>
 #include <unordered_map>
@@ -298,6 +299,8 @@ struct PipelineData
 
     WaitFreezesParam pre_wait_freezes;
     WaitFreezesParam post_wait_freezes;
+
+    uint max_hit = std::numeric_limits<uint>::max();
 
     json::value focus;
     json::object attach; // 附加 JSON 对象，用于保存节点的附加配置

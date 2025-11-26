@@ -273,6 +273,11 @@ bool PipelineParser::parse_node(
         return false;
     }
 
+    if (!get_and_check_value(input, "max_hit", data.max_hit, default_value.max_hit)) {
+        LogError << "failed to get_and_check_value max_hit" << VAR(input);
+        return false;
+    }
+
     if (!get_and_check_value(input, "focus", data.focus, default_value.focus)) {
         LogError << "failed to get_and_check_value focus" << VAR(input);
         return false;

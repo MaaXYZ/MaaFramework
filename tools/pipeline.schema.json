@@ -3645,6 +3645,12 @@
                     "$ref": "#/$defs/jsonBooleanTrue",
                     "markdownDescription": "*bool*\n\n是否启用该 node。可选，默认 true 。\n\n若为 false，其他 node 的 next 列表中的该 node 会被跳过，既不会被识别也不会被执行。"
                 },
+                "max_hit": {
+                    "title": "Max Hit Property",
+                    "description": "该节点最多可被识别成功多少次。可选，默认 UINT_MAX ，即无限制。",
+                    "$ref": "#/$defs/jsonUInt32",
+                    "markdownDescription": "*uint*\n\n该节点最多可被识别成功多少次。可选，默认 UINT_MAX ，即无限制。\n\n若超过该次数，该节点将直接返回识别失败，不再执行任何识别操作。"
+                },
                 "pre_delay": {
                     "title": "Pre Delay Property",
                     "description": "识别到 到 执行动作前 的延迟，毫秒。可选，默认 200 。",

@@ -48,6 +48,7 @@ Context::Context(const Context& other)
     , tasker_(other.tasker_)
     , pipeline_override_(other.pipeline_override_)
     , image_override_(other.image_override_)
+    , hit_count_(other.hit_count_)
 // don't copy clone_holder_
 {
     LogDebug << VAR(other.getptr());
@@ -283,6 +284,20 @@ std::vector<cv::Mat> Context::get_images(const std::vector<std::string>& names)
 bool& Context::need_to_stop()
 {
     return need_to_stop_;
+}
+
+uint Context::get_hit_count(const std::string& node_name) const
+{
+    auto it = hit_count_.find(node_name);
+    if (it != hit_count_.end()) {
+        return it->second;
+    }
+    return 0;
+}
+
+void Context::increment_hit_count(const std::string& node_name)
+{
+    hit_count_[node_name]++;
 }
 
 bool Context::check_pipeline() const

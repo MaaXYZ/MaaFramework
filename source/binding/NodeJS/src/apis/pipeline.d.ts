@@ -366,6 +366,7 @@ declare global {
             on_error?: MaybeArray<string, Mode>
             inverse?: boolean
             enabled?: boolean
+            max_hit?: number
             pre_delay?: boolean
             post_delay?: boolean
             pre_wait_freezes?: RemoveIfDump<number, Mode> | WaitFreeze
