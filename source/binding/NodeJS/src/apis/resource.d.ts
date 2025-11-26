@@ -39,6 +39,8 @@ declare global {
             get loaded(): boolean
             get hash(): string | null
             get node_list(): string[] | null
+            get custom_recognition_list(): string[] | null
+            get custom_action_list(): string[] | null
         }
     }
 }

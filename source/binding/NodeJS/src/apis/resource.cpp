@@ -298,6 +298,26 @@ std::optional<std::vector<std::string>> ResourceImpl::get_node_list()
     return buffer.as_vector([](StringBufferRefer buf) { return buf.str(); });
 }
 
+std::optional<std::vector<std::string>> ResourceImpl::get_custom_recognition_list()
+{
+    StringListBuffer buffer;
+    if (!MaaResourceGetCustomRecognitionList(resource, buffer)) {
+        return std::nullopt;
+    }
+
+    return buffer.as_vector([](StringBufferRefer buf) { return buf.str(); });
+}
+
+std::optional<std::vector<std::string>> ResourceImpl::get_custom_action_list()
+{
+    StringListBuffer buffer;
+    if (!MaaResourceGetCustomActionList(resource, buffer)) {
+        return std::nullopt;
+    }
+
+    return buffer.as_vector([](StringBufferRefer buf) { return buf.str(); });
+}
+
 std::string ResourceImpl::to_string()
 {
     return std::format(" handle = {:#018x}, {} ", reinterpret_cast<uintptr_t>(resource), own ? "owned" : "rented");
@@ -371,6 +391,8 @@ void ResourceImpl::init_proto(maajs::ObjectType proto, maajs::FunctionType)
     MAA_BIND_GETTER(proto, "loaded", ResourceImpl::get_loaded);
     MAA_BIND_GETTER(proto, "hash", ResourceImpl::get_hash);
     MAA_BIND_GETTER(proto, "node_list", ResourceImpl::get_node_list);
+    MAA_BIND_GETTER(proto, "custom_recognition_list", ResourceImpl::get_custom_recognition_list);
+    MAA_BIND_GETTER(proto, "custom_action_list", ResourceImpl::get_custom_action_list);
 }
 
 maajs::ValueType load_resource(maajs::EnvType env)

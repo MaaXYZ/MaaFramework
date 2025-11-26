@@ -25,6 +25,9 @@ extern "C"
     MAA_AGENT_CLIENT_API MaaBool MaaAgentClientAlive(MaaAgentClient* client);
     MAA_AGENT_CLIENT_API MaaBool MaaAgentClientSetTimeout(MaaAgentClient* client, int64_t milliseconds);
 
+    MAA_AGENT_CLIENT_API MaaBool MaaAgentClientGetCustomRecognitionList(MaaAgentClient* client, /* out */ MaaStringListBuffer* buffer);
+    MAA_AGENT_CLIENT_API MaaBool MaaAgentClientGetCustomActionList(MaaAgentClient* client, /* out */ MaaStringListBuffer* buffer);
+
     MAA_DEPRECATED MAA_AGENT_CLIENT_API MaaAgentClient* MaaAgentClientCreate();
     MAA_DEPRECATED MAA_AGENT_CLIENT_API MaaBool MaaAgentClientCreateSocket(MaaAgentClient* client, MaaStringBuffer* identifier);
 

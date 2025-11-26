@@ -59,6 +59,8 @@ public:
 
     virtual std::string get_hash() const = 0;
     virtual std::vector<std::string> get_node_list() const = 0;
+    virtual std::vector<std::string> get_custom_recognition_list() const = 0;
+    virtual std::vector<std::string> get_custom_action_list() const = 0;
 };
 
 struct MaaController : public IMaaEventDispatcher
@@ -160,4 +162,6 @@ public:
     virtual bool connected() = 0;
     virtual bool alive() = 0;
     virtual void set_timeout(const std::chrono::milliseconds& timeout) = 0;
+    virtual std::vector<std::string> get_custom_recognition_list() const = 0;
+    virtual std::vector<std::string> get_custom_action_list() const = 0;
 };

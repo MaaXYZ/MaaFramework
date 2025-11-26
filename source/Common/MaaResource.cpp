@@ -324,3 +324,39 @@ MaaBool MaaResourceGetNodeList(const MaaResource* res, /* out */ MaaStringListBu
 
     return true;
 }
+
+MaaBool MaaResourceGetCustomRecognitionList(const MaaResource* res, /* out */ MaaStringListBuffer* buffer)
+{
+    if (!res || !buffer) {
+        LogError << "handle is null";
+        return false;
+    }
+
+    auto list = res->get_custom_recognition_list();
+
+    buffer->clear();
+
+    for (const auto& name : list) {
+        buffer->append(MaaNS::StringBuffer(name));
+    }
+
+    return true;
+}
+
+MaaBool MaaResourceGetCustomActionList(const MaaResource* res, /* out */ MaaStringListBuffer* buffer)
+{
+    if (!res || !buffer) {
+        LogError << "handle is null";
+        return false;
+    }
+
+    auto list = res->get_custom_action_list();
+
+    buffer->clear();
+
+    for (const auto& name : list) {
+        buffer->append(MaaNS::StringBuffer(name));
+    }
+
+    return true;
+}

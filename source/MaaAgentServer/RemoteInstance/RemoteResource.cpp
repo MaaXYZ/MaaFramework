@@ -207,6 +207,30 @@ std::vector<std::string> RemoteResource::get_node_list() const
     return resp_opt->node_list;
 }
 
+std::vector<std::string> RemoteResource::get_custom_recognition_list() const
+{
+    ResourceGetCustomRecognitionListReverseRequest req {
+        .resource_id = resource_id_,
+    };
+    auto resp_opt = server_.send_and_recv<ResourceGetCustomRecognitionListReverseResponse>(req);
+    if (!resp_opt) {
+        return {};
+    }
+    return resp_opt->custom_recognition_list;
+}
+
+std::vector<std::string> RemoteResource::get_custom_action_list() const
+{
+    ResourceGetCustomActionListReverseRequest req {
+        .resource_id = resource_id_,
+    };
+    auto resp_opt = server_.send_and_recv<ResourceGetCustomActionListReverseResponse>(req);
+    if (!resp_opt) {
+        return {};
+    }
+    return resp_opt->custom_action_list;
+}
+
 MaaSinkId RemoteResource::add_sink(MaaEventCallback callback, void* trans_arg)
 {
     LogError << "Can NOT add sink for remote instance, use AgentServer.add_resource_sink instead" << VAR_VOIDP(callback)
