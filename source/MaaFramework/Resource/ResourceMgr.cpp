@@ -9,6 +9,7 @@
 #include "MaaUtils/Logger.h"
 #include "MaaUtils/Platform.h"
 #include "PipelineDumper.h"
+#include "PipelineParser.h"
 
 MAA_RES_NS_BEGIN
 
@@ -208,7 +209,12 @@ bool ResourceMgr::override_pipeline(const json::value& pipeline_override)
 bool ResourceMgr::override_next(const std::string& node_name, const std::vector<std::string>& next)
 {
     LogFunc << VAR(node_name) << VAR(next);
-    pipeline_res_.get_pipeline_data_map()[node_name].next = next;
+
+    if (!PipelineParser::parse_next(next, pipeline_res_.get_pipeline_data_map()[node_name].next)) {
+        LogError << "failed to parse_next" << VAR(next);
+        return false;
+    }
+
     return true;
 }
 

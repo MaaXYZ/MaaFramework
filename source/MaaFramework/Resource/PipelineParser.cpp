@@ -178,17 +178,53 @@ bool get_and_check_array_or_2darray(
     return !output.empty();
 }
 
-std::vector<std::string> PipelineParser::make_list_without_prefix(const std::vector<std::string>& input)
+bool PipelineParser::parse_node_with_attr(const std::string& raw, NodeWithAttr& output)
 {
-    std::vector<std::string> output;
-    for (const std::string& i : input) {
-        size_t pos = 0;
-        if (i.starts_with(PipelineData::kNodePrefix_JumpBack)) {
-            pos = PipelineData::kNodePrefix_JumpBack.size();
+    std::string remaining = raw;
+
+    // 属性必须放在节点名前面，格式: [Attr1][Attr2]NodeName
+    while (remaining.starts_with('[')) {
+        auto end_pos = remaining.find(']');
+        if (end_pos == std::string::npos) {
+            LogError << "Invalid node attribute format, missing ']'" << VAR(raw);
+            return false;
         }
-        output.emplace_back(i.substr(pos));
+
+        std::string attr = remaining.substr(0, end_pos + 1);
+
+        if (attr == PipelineData::kNodeAttr_JumpBack) {
+            output.jump_back = true;
+        }
+        // 未来可以在这里添加其他属性的解析
+        // else if (attr == PipelineData::kNodeAttr_Once) {
+        //     output.once = true;
+        // }
+
+        remaining = remaining.substr(end_pos + 1);
     }
-    return output;
+
+    if (remaining.empty()) {
+        LogError << "Invalid node format, missing node name" << VAR(raw);
+        return false;
+    }
+
+    output.name = remaining;
+    return true;
+}
+
+bool PipelineParser::parse_next(const std::vector<std::string>& raw_list, std::vector<NodeWithAttr>& output)
+{
+    output.clear();
+    output.reserve(raw_list.size());
+    for (const auto& raw : raw_list) {
+        NodeWithAttr node;
+        if (!parse_node_with_attr(raw, node)) {
+            LogError << "failed to parse_node_with_attr" << VAR(raw);
+            return false;
+        }
+        output.emplace_back(std::move(node));
+    }
+    return true;
 }
 
 bool PipelineParser::parse_node(
@@ -238,13 +274,29 @@ bool PipelineParser::parse_node(
         return false;
     }
 
-    if (!get_and_check_value_or_array(input, "next", data.next, default_value.next)) {
+    std::vector<std::string> next_raw;
+    if (!get_and_check_value_or_array(input, "next", next_raw, {})) {
         LogError << "failed to get_and_check_value_or_array next" << VAR(input);
         return false;
     }
+    if (next_raw.empty()) {
+        data.next = default_value.next;
+    }
+    else if (!parse_next(next_raw, data.next)) {
+        LogError << "failed to parse_next" << VAR(input);
+        return false;
+    }
 
-    if (!get_and_check_value_or_array(input, "on_error", data.on_error, default_value.on_error)) {
+    std::vector<std::string> on_error_raw;
+    if (!get_and_check_value_or_array(input, "on_error", on_error_raw, {})) {
         LogError << "failed to get_and_check_value_or_array on_error" << VAR(input);
+        return false;
+    }
+    if (on_error_raw.empty()) {
+        data.on_error = default_value.on_error;
+    }
+    else if (!parse_next(on_error_raw, data.on_error)) {
+        LogError << "failed to parse_next on_error" << VAR(input);
         return false;
     }
 

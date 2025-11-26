@@ -358,12 +358,10 @@ declare global {
         }
 
         type General<Mode> = {
-            next?: MaybeArray<NodeName, Mode> // 去除 `[JumpBack]` 前缀后的节点列表
-            next_raw?: MaybeArray<NodeName, Mode> // 原始节点列表（保留 `[JumpBack]` 前缀）
+            next?: MaybeArray<NodeName, Mode>
             rate_limit?: number
             timeout?: number
-            on_error?: MaybeArray<string, Mode> // 去除 `[JumpBack]` 前缀后的节点列表
-            on_error_raw?: MaybeArray<string, Mode> // 原始节点列表（保留 `[JumpBack]` 前缀）
+            on_error?: MaybeArray<string, Mode>
             inverse?: boolean
             enabled?: boolean
             pre_delay?: boolean
@@ -371,7 +369,7 @@ declare global {
             pre_wait_freezes?: RemoveIfDump<number, Mode> | WaitFreeze
             post_wait_freezes?: RemoveIfDump<number, Mode> | WaitFreeze
             focus?: unknown
-            attach?: Record<string, unknown> // 附加 JSON 对象
+            attach?: Record<string, unknown>
         }
 
         type Task = Recognition<ModeFragment> & Action<ModeFragment> & General<ModeFragment>

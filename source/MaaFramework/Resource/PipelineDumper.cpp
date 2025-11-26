@@ -7,20 +7,29 @@
 
 MAA_RES_NS_BEGIN
 
+std::vector<std::string> PipelineDumper::make_next_raw_list(const std::vector<NodeWithAttr>& nodes)
+{
+    std::vector<std::string> result;
+    result.reserve(nodes.size());
+    for (const auto& node : nodes) {
+        if (node.jump_back) {
+            result.emplace_back(std::string(PipelineData::kNodeAttr_JumpBack) + node.name);
+        }
+        else {
+            result.emplace_back(node.name);
+        }
+    }
+    return result;
+}
+
 json::object PipelineDumper::dump(const PipelineData& pp)
 {
     PipelineV2::JPipelineData data;
 
-    // next: 去除前缀后的节点列表
-    data.next = PipelineParser::make_list_without_prefix(pp.next);
-    // next_raw: 原始节点列表（保留 `[JumpBack]` 前缀）
-    data.next_raw = pp.next;
+    data.next = make_next_raw_list(pp.next);
     data.rate_limit = pp.rate_limit.count();
     data.timeout = pp.reco_timeout.count();
-    // on_error: 去除前缀后的节点列表
-    data.on_error = PipelineParser::make_list_without_prefix(pp.on_error);
-    // on_error_raw: 原始节点列表（保留 `[JumpBack]` 前缀）
-    data.on_error_raw = pp.on_error;
+    data.on_error = make_next_raw_list(pp.on_error);
     data.inverse = pp.inverse;
     data.enabled = pp.enabled;
     data.pre_delay = pp.pre_delay.count();

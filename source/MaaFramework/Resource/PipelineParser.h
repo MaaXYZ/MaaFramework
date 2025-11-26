@@ -18,7 +18,8 @@ class PipelineParser
 public:
     PipelineParser() = delete;
 
-    static std::vector<std::string> make_list_without_prefix(const std::vector<std::string>& input);
+    static bool parse_node_with_attr(const std::string& raw, NodeWithAttr& output);
+    static bool parse_next(const std::vector<std::string>& raw_list, std::vector<NodeWithAttr>& output);
 
     static bool parse_node(
         const std::string& name,

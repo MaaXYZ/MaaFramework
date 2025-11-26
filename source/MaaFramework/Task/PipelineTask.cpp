@@ -6,6 +6,7 @@
 #include "MaaFramework/MaaMsg.h"
 #include "MaaUtils/JsonExt.hpp"
 #include "MaaUtils/Logger.h"
+#include "Resource/PipelineDumper.h"
 #include "Resource/PipelineParser.h"
 #include "Resource/ResourceMgr.h"
 #include "Tasker/Tasker.h"
@@ -31,14 +32,13 @@ bool PipelineTask::run()
     }
 
     PipelineData node = std::move(*begin_opt);
-    std::vector<std::string> next = { entry_ };
+    std::vector<MAA_RES_NS::NodeWithAttr> next = { { .name = entry_ } };
 
     bool error_handling = false;
 
     while (!next.empty() && !context_->need_to_stop()) {
         cur_node_ = node.name;
-        auto pure_list = MAA_RES_NS::PipelineParser::make_list_without_prefix(next);
-        auto node_detail = run_next(pure_list, node);
+        auto node_detail = run_next(next, node);
 
         if (context_->need_to_stop()) {
             LogWarn << "need_to_stop" << VAR(node.name);
@@ -56,11 +56,8 @@ bool PipelineTask::run()
             std::string pre_node_name = node.name;
             node = std::move(*hit_opt);
 
-            // 如果 next 里有同名任务，返回值也一定是第一个。同名任务第一个匹配上了后面肯定也会匹配上（除非 Custom 写了一些什么逻辑）
-            // 且 PipelineChecker::check_all_next_list 保证了 next + interrupt 中没有同名任务
-            auto pos = std::ranges::find(pure_list, node_detail.name) - pure_list.begin();
-            bool jumpback = next.at(pos).starts_with(PipelineData::kNodePrefix_JumpBack);
-            if (jumpback) { // for compatibility with v1.x
+            auto it = std::ranges::find_if(next, [&](const MAA_RES_NS::NodeWithAttr& n) { return n.name == node_detail.name; });
+            if (it != next.end() && it->jump_back) {
                 LogInfo << "push interrupt_stack:" << pre_node_name;
                 interrupt_stack.emplace(pre_node_name);
             }
@@ -112,19 +109,19 @@ void PipelineTask::post_stop()
     context_->need_to_stop() = true;
 }
 
-NodeDetail PipelineTask::run_next(const std::vector<std::string>& next, const PipelineData& pretask)
+NodeDetail PipelineTask::run_next(const std::vector<MAA_RES_NS::NodeWithAttr>& next, const PipelineData& pretask)
 {
     if (!context_) {
         LogError << "context is null";
         return {};
     }
 
-    bool valid = std::ranges::any_of(next, [&](const std::string& name) {
-        auto data_opt = context_->get_pipeline_data(name);
+    bool valid = std::ranges::any_of(next, [&](const MAA_RES_NS::NodeWithAttr& node) {
+        auto data_opt = context_->get_pipeline_data(node.name);
         return data_opt && data_opt->enabled;
     });
     if (!valid) {
-        LogInfo << "no valid/enabled node in next" << VAR(next);
+        LogInfo << "no valid/enabled node in next";
         return {};
     }
 
@@ -163,8 +160,7 @@ NodeDetail PipelineTask::run_next(const std::vector<std::string>& next, const Pi
 
         if (!reco.box) {
             if (duration_since(start_clock) > pretask.reco_timeout) {
-                LogError << "Task timeout" << VAR(pretask.name) << VAR(duration_since(start_clock)) << VAR(pretask.reco_timeout)
-                         << VAR(next);
+                LogError << "Task timeout" << VAR(pretask.name) << VAR(duration_since(start_clock)) << VAR(pretask.reco_timeout);
                 break;
             }
 
@@ -219,9 +215,9 @@ NodeDetail PipelineTask::run_next(const std::vector<std::string>& next, const Pi
     return result;
 }
 
-RecoResult PipelineTask::recognize_list(const cv::Mat& image, const std::vector<std::string>& list)
+RecoResult PipelineTask::recognize_list(const cv::Mat& image, const std::vector<MAA_RES_NS::NodeWithAttr>& list)
 {
-    LogFunc << VAR(cur_node_) << VAR(list);
+    LogFunc << VAR(cur_node_);
 
     if (!context_) {
         LogError << "context is null";
@@ -241,10 +237,12 @@ RecoResult PipelineTask::recognize_list(const cv::Mat& image, const std::vector<
 
     const auto& cur_node = *cur_opt;
 
+    std::vector<std::string> raw_list = MAA_RES_NS::PipelineDumper::make_next_raw_list(list);
+
     const json::value reco_list_cb_detail {
         { "task_id", task_id() },
         { "name", cur_node_ },
-        { "list", json::array(list) },
+        { "list", raw_list },
         { "focus", cur_node.focus },
     };
 
@@ -258,9 +256,9 @@ RecoResult PipelineTask::recognize_list(const cv::Mat& image, const std::vector<
             break;
         }
 
-        auto node_opt = context_->get_pipeline_data(node);
+        auto node_opt = context_->get_pipeline_data(node.name);
         if (!node_opt) {
-            LogError << "get_pipeline_data failed, node not exist" << VAR(node);
+            LogError << "get_pipeline_data failed, node not exist" << VAR(node.name);
             continue;
         }
         const auto& pipeline_data = *node_opt;

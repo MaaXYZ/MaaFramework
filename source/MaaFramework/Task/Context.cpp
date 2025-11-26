@@ -182,7 +182,10 @@ bool Context::override_next(const std::string& node_name, const std::vector<std:
         return false;
     }
 
-    data_opt->next = next;
+    if (!MAA_RES_NS::PipelineParser::parse_next(next, data_opt->next)) {
+        LogError << "failed to parse_next" << VAR(next);
+        return false;
+    }
 
     pipeline_override_.insert_or_assign(node_name, std::move(*data_opt));
 

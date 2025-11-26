@@ -55,11 +55,11 @@ bool PipelineChecker::check_all_regex(const PipelineDataMap& data_map)
     return true;
 }
 
-bool PipelineChecker::check_next_list(const std::vector<std::string>& next_list, const PipelineDataMap& data_map)
+bool PipelineChecker::check_next_list(const std::vector<NodeWithAttr>& next_list, const PipelineDataMap& data_map)
 {
-    for (const auto& node : PipelineParser::make_list_without_prefix(next_list)) {
-        if (!data_map.contains(node)) {
-            LogError << "Invalid next node name" << VAR(node);
+    for (const auto& node : next_list) {
+        if (!data_map.contains(node.name)) {
+            LogError << "Invalid next node name" << VAR(node.name);
             return false;
         }
     }

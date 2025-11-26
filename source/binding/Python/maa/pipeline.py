@@ -260,12 +260,10 @@ class JWaitFreezes:
 class JPipelineData:
     recognition: JRecognition
     action: JAction
-    next: List[str]  # 去除 `[JumpBack]` 前缀后的节点列表
-    next_raw: List[str]  # 原始节点列表（保留 `[JumpBack]` 前缀）
+    next: List[str]
     rate_limit: int
     timeout: int
-    on_error: List[str]  # 去除 `[JumpBack]` 前缀后的节点列表
-    on_error_raw: List[str]  # 原始节点列表（保留 `[JumpBack]` 前缀）
+    on_error: List[str]
     inverse: bool
     enabled: bool
     pre_delay: int
@@ -273,7 +271,7 @@ class JPipelineData:
     pre_wait_freezes: JWaitFreezes
     post_wait_freezes: JWaitFreezes
     focus: Any
-    attach: Dict  # 附加 JSON 对象
+    attach: Dict
 
 
 class JPipelineParser:
@@ -390,11 +388,9 @@ class JPipelineParser:
             recognition=recognition,
             action=action,
             next=data.get("next"),
-            next_raw=data.get("next_raw"),
             rate_limit=data.get("rate_limit"),
             timeout=data.get("timeout"),
             on_error=data.get("on_error"),
-            on_error_raw=data.get("on_error_raw"),
             inverse=data.get("inverse"),
             enabled=data.get("enabled"),
             pre_delay=data.get("pre_delay"),
