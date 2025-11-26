@@ -121,7 +121,8 @@ NodeDetail PipelineTask::run_next(const std::vector<MAA_RES_NS::NodeWithAttr>& n
         return data_opt && data_opt->enabled;
     });
     if (!valid) {
-        LogInfo << "no valid/enabled node in next";
+        auto next_raw = MAA_RES_NS::PipelineDumper::make_next_raw_list(next);
+        LogInfo << "no valid/enabled node in next" << VAR(next_raw);
         return {};
     }
 
@@ -217,7 +218,9 @@ NodeDetail PipelineTask::run_next(const std::vector<MAA_RES_NS::NodeWithAttr>& n
 
 RecoResult PipelineTask::recognize_list(const cv::Mat& image, const std::vector<MAA_RES_NS::NodeWithAttr>& list)
 {
-    LogFunc << VAR(cur_node_);
+    std::vector<std::string> raw_list = MAA_RES_NS::PipelineDumper::make_next_raw_list(list);
+    
+    LogFunc << VAR(cur_node_) << VAR(raw_list);
 
     if (!context_) {
         LogError << "context is null";
@@ -237,7 +240,6 @@ RecoResult PipelineTask::recognize_list(const cv::Mat& image, const std::vector<
 
     const auto& cur_node = *cur_opt;
 
-    std::vector<std::string> raw_list = MAA_RES_NS::PipelineDumper::make_next_raw_list(list);
 
     const json::value reco_list_cb_detail {
         { "task_id", task_id() },

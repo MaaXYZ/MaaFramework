@@ -199,6 +199,9 @@ bool PipelineParser::parse_node_with_attr(const std::string& raw, NodeWithAttr& 
         // else if (attr == PipelineData::kNodeAttr_Once) {
         //     output.once = true;
         // }
+        else {
+            LogWarn << "Unrecognized node attribute" << VAR(attr) << VAR(raw);
+        }
 
         remaining = remaining.substr(end_pos + 1);
     }
