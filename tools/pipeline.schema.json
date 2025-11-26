@@ -305,6 +305,57 @@
             ],
             "default": []
         },
+        "NodeAttr": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "string",
+                    "description": "节点名称"
+                },
+                "jump_back": {
+                    "type": "boolean",
+                    "description": "是否在执行完成后跳回父节点",
+                    "default": false
+                }
+            },
+            "required": [
+                "name"
+            ],
+            "additionalProperties": false
+        },
+        "jsonNodeItem": {
+            "anyOf": [
+                {
+                    "type": "string",
+                    "description": "节点名称，可带前缀如 [JumpBack]NodeName"
+                },
+                {
+                    "$ref": "#/$defs/NodeAttr"
+                }
+            ]
+        },
+        "jsonNodeList": {
+            "type": "array",
+            "items": {
+                "$ref": "#/$defs/jsonNodeItem"
+            },
+            "default": []
+        },
+        "jsonNodeOrList": {
+            "anyOf": [
+                {
+                    "type": "string",
+                    "description": "节点名称，可带前缀如 [JumpBack]NodeName"
+                },
+                {
+                    "$ref": "#/$defs/NodeAttr"
+                },
+                {
+                    "$ref": "#/$defs/jsonNodeList"
+                }
+            ],
+            "default": []
+        },
         "jsonRegexList": {
             "type": "array",
             "items": {
@@ -3597,8 +3648,8 @@
                 "next": {
                     "title": "Next Property",
                     "description": "接下来要执行的节点列表。可选，默认空。",
-                    "$ref": "#/$defs/jsonStringOrList",
-                    "markdownDescription": "*string* | *list<string, >*\n\n接下来要执行的节点列表。可选，默认空。\n\n按顺序识别 next 中的每个节点，只执行第一个识别到的。\n\n💡 v5.1 版本起新增节点前缀功能，详情参见文档。"
+                    "$ref": "#/$defs/jsonNodeOrList",
+                    "markdownDescription": "*string* | *NodeAttr* | *list<string | NodeAttr, >*\n\n接下来要执行的节点列表。可选，默认空。\n\n按顺序识别 next 中的每个节点，只执行第一个识别到的。\n\n💡 v5.1 版本起新增支持带属性节点、NodeAttr 形式对象，或两者结合的异质数组。详情参见文档中的「节点属性」章节。"
                 },
                 "interrupt": {
                     "title": "Interrupt Property",
@@ -3631,8 +3682,8 @@
                 "on_error": {
                     "title": "On Error Property",
                     "description": "当识别超时，或动作执行失败后，接下来会执行该列表中的节点。可选，默认空。",
-                    "$ref": "#/$defs/jsonStringOrList",
-                    "markdownDescription": "*string* | *list<string, >*\n\n当识别超时，或动作执行失败后，接下来会执行该列表中的节点。可选，默认空。\n\n💡 支持与 `next` 相同的节点前缀功能，详情参见文档。"
+                    "$ref": "#/$defs/jsonNodeOrList",
+                    "markdownDescription": "*string* | *NodeAttr* | *list<string | NodeAttr, >*\n\n当识别超时，或动作执行失败后，接下来会执行该列表中的节点。可选，默认空。\n\n💡 v5.1 版本起新增支持带属性节点、NodeAttr 形式对象，或两者结合的异质数组。详情参见文档中的「节点属性」章节。"
                 },
                 "inverse": {
                     "title": "Inverse Property",
