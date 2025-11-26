@@ -119,6 +119,26 @@ std::vector<std::string> ResourceMgr::get_node_list() const
     return pipeline_res_.get_node_list();
 }
 
+std::vector<std::string> ResourceMgr::get_custom_recognition_list() const
+{
+    std::vector<std::string> result;
+    result.reserve(custom_recognition_sessions_.size());
+    for (const auto& [name, _] : custom_recognition_sessions_) {
+        result.emplace_back(name);
+    }
+    return result;
+}
+
+std::vector<std::string> ResourceMgr::get_custom_action_list() const
+{
+    std::vector<std::string> result;
+    result.reserve(custom_action_sessions_.size());
+    for (const auto& [name, _] : custom_action_sessions_) {
+        result.emplace_back(name);
+    }
+    return result;
+}
+
 MaaSinkId ResourceMgr::add_sink(MaaEventCallback callback, void* trans_arg)
 {
     return notifier_.add_sink(callback, trans_arg);

@@ -14,6 +14,8 @@ declare global {
             get connected(): boolean
             get alive(): boolean
             set timeout(ms: Uint64)
+            get custom_recognition_list(): string[] | null
+            get custom_action_list(): string[] | null
         }
     }
 }

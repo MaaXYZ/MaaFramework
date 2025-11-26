@@ -192,6 +192,16 @@ void AgentClient::set_timeout(const std::chrono::milliseconds& timeout)
     Transceiver::set_timeout(timeout);
 }
 
+std::vector<std::string> AgentClient::get_custom_recognition_list() const
+{
+    return registered_recognitions_;
+}
+
+std::vector<std::string> AgentClient::get_custom_action_list() const
+{
+    return registered_actions_;
+}
+
 bool AgentClient::handle_inserted_request(const json::value& j)
 {
     LogFunc << VAR(j) << VAR(ipc_addr_);

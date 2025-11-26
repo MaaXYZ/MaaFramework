@@ -44,6 +44,8 @@ struct ResourceImpl : public maajs::NativeClassBase
     bool get_loaded();
     std::optional<std::string> get_hash();
     std::optional<std::vector<std::string>> get_node_list();
+    std::optional<std::vector<std::string>> get_custom_recognition_list();
+    std::optional<std::vector<std::string>> get_custom_action_list();
 
     std::string to_string() override;
 
