@@ -257,11 +257,11 @@
 <para>Message for the next list of node. </para>
         </briefdescription>
         <detaileddescription>
-<para>details_json: { task_id: number, name: string, list: string[], focus: any, } </para>
+<para>details_json: { task_id: number, name: string, list: [ { &quot;name&quot;: string, &quot;jump_back&quot;: boolean, &quot;anchor&quot;: boolean, }, ... ], focus: any, } </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="include/MaaFramework/MaaMsg.h" line="127" column="9" bodyfile="include/MaaFramework/MaaMsg.h" bodystart="127" bodyend="-1"/>
+        <location file="include/MaaFramework/MaaMsg.h" line="134" column="9" bodyfile="include/MaaFramework/MaaMsg.h" bodystart="134" bodyend="-1"/>
       </memberdef>
       <memberdef kind="define" id="group__MaaMsg_1ga6094d3a6ed79e17fdd55ca61b9a09ae3" prot="public" static="no">
         <name>MaaMsg_Node_NextList_Succeeded</name>
@@ -270,11 +270,11 @@
 <para>Message for the next list of node. </para>
         </briefdescription>
         <detaileddescription>
-<para>details_json: { task_id: number, name: string, list: string[], focus: any, } </para>
+<para>details_json: { task_id: number, name: string, list: [ { &quot;name&quot;: string, &quot;jump_back&quot;: boolean, &quot;anchor&quot;: boolean, }, ... ], focus: any, } </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="include/MaaFramework/MaaMsg.h" line="128" column="9" bodyfile="include/MaaFramework/MaaMsg.h" bodystart="128" bodyend="-1"/>
+        <location file="include/MaaFramework/MaaMsg.h" line="135" column="9" bodyfile="include/MaaFramework/MaaMsg.h" bodystart="135" bodyend="-1"/>
       </memberdef>
       <memberdef kind="define" id="group__MaaMsg_1gad5d54760f4862350701ad402631d3a12" prot="public" static="no">
         <name>MaaMsg_Node_NextList_Failed</name>
@@ -283,11 +283,11 @@
 <para>Message for the next list of node. </para>
         </briefdescription>
         <detaileddescription>
-<para>details_json: { task_id: number, name: string, list: string[], focus: any, } </para>
+<para>details_json: { task_id: number, name: string, list: [ { &quot;name&quot;: string, &quot;jump_back&quot;: boolean, &quot;anchor&quot;: boolean, }, ... ], focus: any, } </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="include/MaaFramework/MaaMsg.h" line="129" column="9" bodyfile="include/MaaFramework/MaaMsg.h" bodystart="129" bodyend="-1"/>
+        <location file="include/MaaFramework/MaaMsg.h" line="136" column="9" bodyfile="include/MaaFramework/MaaMsg.h" bodystart="136" bodyend="-1"/>
       </memberdef>
     </sectiondef>
     <sectiondef kind="user-defined">
@@ -302,7 +302,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="include/MaaFramework/MaaMsg.h" line="143" column="9" bodyfile="include/MaaFramework/MaaMsg.h" bodystart="143" bodyend="-1"/>
+        <location file="include/MaaFramework/MaaMsg.h" line="150" column="9" bodyfile="include/MaaFramework/MaaMsg.h" bodystart="150" bodyend="-1"/>
       </memberdef>
       <memberdef kind="define" id="group__MaaMsg_1gaacf32fea61ca2750f2966834d8374cb7" prot="public" static="no">
         <name>MaaMsg_Node_Recognition_Succeeded</name>
@@ -315,7 +315,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="include/MaaFramework/MaaMsg.h" line="144" column="9" bodyfile="include/MaaFramework/MaaMsg.h" bodystart="144" bodyend="-1"/>
+        <location file="include/MaaFramework/MaaMsg.h" line="151" column="9" bodyfile="include/MaaFramework/MaaMsg.h" bodystart="151" bodyend="-1"/>
       </memberdef>
       <memberdef kind="define" id="group__MaaMsg_1ga633065c435e4278004bfc867cdb28e16" prot="public" static="no">
         <name>MaaMsg_Node_Recognition_Failed</name>
@@ -328,7 +328,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="include/MaaFramework/MaaMsg.h" line="145" column="9" bodyfile="include/MaaFramework/MaaMsg.h" bodystart="145" bodyend="-1"/>
+        <location file="include/MaaFramework/MaaMsg.h" line="152" column="9" bodyfile="include/MaaFramework/MaaMsg.h" bodystart="152" bodyend="-1"/>
       </memberdef>
     </sectiondef>
     <sectiondef kind="user-defined">
@@ -343,7 +343,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="include/MaaFramework/MaaMsg.h" line="159" column="9" bodyfile="include/MaaFramework/MaaMsg.h" bodystart="159" bodyend="-1"/>
+        <location file="include/MaaFramework/MaaMsg.h" line="166" column="9" bodyfile="include/MaaFramework/MaaMsg.h" bodystart="166" bodyend="-1"/>
       </memberdef>
       <memberdef kind="define" id="group__MaaMsg_1ga464fd50ef2c65727300fa98b8f3fdc01" prot="public" static="no">
         <name>MaaMsg_Node_Action_Succeeded</name>
@@ -356,7 +356,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="include/MaaFramework/MaaMsg.h" line="160" column="9" bodyfile="include/MaaFramework/MaaMsg.h" bodystart="160" bodyend="-1"/>
+        <location file="include/MaaFramework/MaaMsg.h" line="167" column="9" bodyfile="include/MaaFramework/MaaMsg.h" bodystart="167" bodyend="-1"/>
       </memberdef>
       <memberdef kind="define" id="group__MaaMsg_1gac2e7283ec9099d4826efa131aff46a8e" prot="public" static="no">
         <name>MaaMsg_Node_Action_Failed</name>
@@ -369,7 +369,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="include/MaaFramework/MaaMsg.h" line="161" column="9" bodyfile="include/MaaFramework/MaaMsg.h" bodystart="161" bodyend="-1"/>
+        <location file="include/MaaFramework/MaaMsg.h" line="168" column="9" bodyfile="include/MaaFramework/MaaMsg.h" bodystart="168" bodyend="-1"/>
       </memberdef>
     </sectiondef>
     <briefdescription>

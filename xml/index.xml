@@ -16,6 +16,7 @@
     <member refid="structMaaCustomControllerCallbacks_1add383d0ce3995532bfe0db9d008b6f7e" kind="variable"><name>input_text</name></member>
     <member refid="structMaaCustomControllerCallbacks_1a46da9230073fb4ac1ccc7b8c28d87467" kind="variable"><name>key_down</name></member>
     <member refid="structMaaCustomControllerCallbacks_1a99d5b6c3270039db39a1f5cdeb27b269" kind="variable"><name>key_up</name></member>
+    <member refid="structMaaCustomControllerCallbacks_1ae2381df699964f6e95fe89ad2fc22e38" kind="variable"><name>scroll</name></member>
   </compound>
   <compound refid="structMaaRect" kind="struct"><name>MaaRect</name>
     <member refid="structMaaRect_1a5cf5c0bb6cb3244ea7364e0e14ccf439" kind="variable"><name>x</name></member>
@@ -76,6 +77,10 @@
     <member refid="MaaContext_8h_1abecb5883a59f9a8037982bb1cbc3ff43" kind="function"><name>MaaContextGetTaskId</name></member>
     <member refid="MaaContext_8h_1a646adf1aa6a50e61fd06c173b72fab1f" kind="function"><name>MaaContextGetTasker</name></member>
     <member refid="MaaContext_8h_1a681fba1bb60a679d6e35df345e663d72" kind="function"><name>MaaContextClone</name></member>
+    <member refid="MaaContext_8h_1a6b81fa90c844b13dee6dd7c5e532ba80" kind="function"><name>MaaContextSetAnchor</name></member>
+    <member refid="MaaContext_8h_1a835f6dbcf3a39954ed4938d5d5a52d15" kind="function"><name>MaaContextGetAnchor</name></member>
+    <member refid="MaaContext_8h_1af0c8334fc52f04f0bc6be18f0b0da63a" kind="function"><name>MaaContextGetHitCount</name></member>
+    <member refid="MaaContext_8h_1afc659de91e6d81ead8cc39e09b7b9f4c" kind="function"><name>MaaContextClearHitCount</name></member>
   </compound>
   <compound refid="MaaController_8h" kind="file"><name>MaaController.h</name>
     <member refid="MaaController_8h_1a22203468df2e11d45892a524d48404a4" kind="typedef"><name>MaaCustomControllerCallbacks</name></member>
@@ -101,6 +106,7 @@
     <member refid="MaaController_8h_1ab879179f0c655d61c684d20132cc7c98" kind="function"><name>MaaControllerPostKeyDown</name></member>
     <member refid="MaaController_8h_1afb7c57e77010237effcfe2f638e0bd79" kind="function"><name>MaaControllerPostKeyUp</name></member>
     <member refid="MaaController_8h_1ad65392ee4028a2d8ba74d2fab960fb50" kind="function"><name>MaaControllerPostScreencap</name></member>
+    <member refid="MaaController_8h_1ab5b9b134755f4381cb4e5e99f21732b1" kind="function"><name>MaaControllerPostScroll</name></member>
     <member refid="MaaController_8h_1afb8528c818e4fd03c7493b7b013474ed" kind="function"><name>MaaControllerStatus</name></member>
     <member refid="MaaController_8h_1a67674de1a9a97550510068d7c9a5abd1" kind="function"><name>MaaControllerWait</name></member>
     <member refid="MaaController_8h_1a0066bfa64a73b16f82a5060bdef72982" kind="function"><name>MaaControllerConnected</name></member>
@@ -227,6 +233,7 @@
     <member refid="MaaDef_8h_1ad09e62ec1fd03dadaf5fb009026c38eeaaf9faa9621c830f79ba687467a3d9c5a" kind="enumvalue"><name>MaaGlobalOption_SaveDraw</name></member>
     <member refid="MaaDef_8h_1ad09e62ec1fd03dadaf5fb009026c38eea58ba5999f483b497af3eac6d327d53e6" kind="enumvalue"><name>MaaGlobalOption_StdoutLevel</name></member>
     <member refid="MaaDef_8h_1ad09e62ec1fd03dadaf5fb009026c38eea85acfc5fc6cdca745d0eb2a090c05c5f" kind="enumvalue"><name>MaaGlobalOption_DebugMode</name></member>
+    <member refid="MaaDef_8h_1ad09e62ec1fd03dadaf5fb009026c38eea34d392a2384c7cc6d0a75112952f5edf" kind="enumvalue"><name>MaaGlobalOption_SaveOnError</name></member>
     <member refid="MaaDef_8h_1a70d2d23982bb9114d93ce5e811288679" kind="enum"><name>MaaInferenceDeviceEnum</name></member>
     <member refid="MaaDef_8h_1a70d2d23982bb9114d93ce5e811288679ae4eb278e6b02b9b25afa7261d0b5c70e" kind="enumvalue"><name>MaaInferenceDevice_CPU</name></member>
     <member refid="MaaDef_8h_1a70d2d23982bb9114d93ce5e811288679a335e0821f21a444ed2bbb45f61df4e1b" kind="enumvalue"><name>MaaInferenceDevice_Auto</name></member>

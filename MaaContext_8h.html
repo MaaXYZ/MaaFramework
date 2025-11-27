@@ -126,6 +126,14 @@ Functions</h2></td></tr>
 <tr class="separator:a646adf1aa6a50e61fd06c173b72fab1f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a681fba1bb60a679d6e35df345e663d72" id="r_a681fba1bb60a679d6e35df345e663d72"><td class="memItemLeft" align="right" valign="top"><a class="el" href="MaaPort_8h.html#a67006334d91d228121dbba7a8bf8fe05">MAA_FRAMEWORK_API</a> <a class="el" href="MaaDef_8h.html#ad2101e87aad0f5d03b8136943daee40e">MaaContext</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="MaaContext_8h.html#a681fba1bb60a679d6e35df345e663d72">MaaContextClone</a> (const <a class="el" href="MaaDef_8h.html#ad2101e87aad0f5d03b8136943daee40e">MaaContext</a> *context)</td></tr>
 <tr class="separator:a681fba1bb60a679d6e35df345e663d72"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6b81fa90c844b13dee6dd7c5e532ba80" id="r_a6b81fa90c844b13dee6dd7c5e532ba80"><td class="memItemLeft" align="right" valign="top"><a class="el" href="MaaPort_8h.html#a67006334d91d228121dbba7a8bf8fe05">MAA_FRAMEWORK_API</a> <a class="el" href="MaaDef_8h.html#a2f7289f2a8e07f48c6261b52a120cdf6">MaaBool</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="MaaContext_8h.html#a6b81fa90c844b13dee6dd7c5e532ba80">MaaContextSetAnchor</a> (<a class="el" href="MaaDef_8h.html#ad2101e87aad0f5d03b8136943daee40e">MaaContext</a> *context, const char *anchor_name, const char *node_name)</td></tr>
+<tr class="separator:a6b81fa90c844b13dee6dd7c5e532ba80"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a835f6dbcf3a39954ed4938d5d5a52d15" id="r_a835f6dbcf3a39954ed4938d5d5a52d15"><td class="memItemLeft" align="right" valign="top"><a class="el" href="MaaPort_8h.html#a67006334d91d228121dbba7a8bf8fe05">MAA_FRAMEWORK_API</a> <a class="el" href="MaaDef_8h.html#a2f7289f2a8e07f48c6261b52a120cdf6">MaaBool</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="MaaContext_8h.html#a835f6dbcf3a39954ed4938d5d5a52d15">MaaContextGetAnchor</a> (<a class="el" href="MaaDef_8h.html#ad2101e87aad0f5d03b8136943daee40e">MaaContext</a> *context, const char *anchor_name, <a class="el" href="MaaDef_8h.html#a4010bb63df489fc09efb6ba9a1fc1c98">MaaStringBuffer</a> *buffer)</td></tr>
+<tr class="separator:a835f6dbcf3a39954ed4938d5d5a52d15"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af0c8334fc52f04f0bc6be18f0b0da63a" id="r_af0c8334fc52f04f0bc6be18f0b0da63a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="MaaPort_8h.html#a67006334d91d228121dbba7a8bf8fe05">MAA_FRAMEWORK_API</a> <a class="el" href="MaaDef_8h.html#a2f7289f2a8e07f48c6261b52a120cdf6">MaaBool</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="MaaContext_8h.html#af0c8334fc52f04f0bc6be18f0b0da63a">MaaContextGetHitCount</a> (<a class="el" href="MaaDef_8h.html#ad2101e87aad0f5d03b8136943daee40e">MaaContext</a> *context, const char *node_name, <a class="el" href="MaaDef_8h.html#a72a89077c419a0fe586d68bde004d856">MaaSize</a> *count)</td></tr>
+<tr class="separator:af0c8334fc52f04f0bc6be18f0b0da63a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afc659de91e6d81ead8cc39e09b7b9f4c" id="r_afc659de91e6d81ead8cc39e09b7b9f4c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="MaaPort_8h.html#a67006334d91d228121dbba7a8bf8fe05">MAA_FRAMEWORK_API</a> <a class="el" href="MaaDef_8h.html#a2f7289f2a8e07f48c6261b52a120cdf6">MaaBool</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="MaaContext_8h.html#afc659de91e6d81ead8cc39e09b7b9f4c">MaaContextClearHitCount</a> (<a class="el" href="MaaDef_8h.html#ad2101e87aad0f5d03b8136943daee40e">MaaContext</a> *context, const char *node_name)</td></tr>
+<tr class="separator:afc659de91e6d81ead8cc39e09b7b9f4c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Context is a context for running tasks, recognitions, actions, and other operations. </p>
@@ -430,6 +438,136 @@ Functions</h2></td></tr>
           <td class="paramtype">const <a class="el" href="MaaDef_8h.html#ad2101e87aad0f5d03b8136943daee40e">MaaContext</a> *&#160;</td>
           <td class="paramname"><em>context</em></td><td>)</td>
           <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a6b81fa90c844b13dee6dd7c5e532ba80" name="a6b81fa90c844b13dee6dd7c5e532ba80"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6b81fa90c844b13dee6dd7c5e532ba80">&#9670;&#160;</a></span>MaaContextSetAnchor()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="MaaPort_8h.html#a67006334d91d228121dbba7a8bf8fe05">MAA_FRAMEWORK_API</a> <a class="el" href="MaaDef_8h.html#a2f7289f2a8e07f48c6261b52a120cdf6">MaaBool</a> MaaContextSetAnchor </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="MaaDef_8h.html#ad2101e87aad0f5d03b8136943daee40e">MaaContext</a> *&#160;</td>
+          <td class="paramname"><em>context</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const char *&#160;</td>
+          <td class="paramname"><em>anchor_name</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const char *&#160;</td>
+          <td class="paramname"><em>node_name</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a835f6dbcf3a39954ed4938d5d5a52d15" name="a835f6dbcf3a39954ed4938d5d5a52d15"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a835f6dbcf3a39954ed4938d5d5a52d15">&#9670;&#160;</a></span>MaaContextGetAnchor()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="MaaPort_8h.html#a67006334d91d228121dbba7a8bf8fe05">MAA_FRAMEWORK_API</a> <a class="el" href="MaaDef_8h.html#a2f7289f2a8e07f48c6261b52a120cdf6">MaaBool</a> MaaContextGetAnchor </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="MaaDef_8h.html#ad2101e87aad0f5d03b8136943daee40e">MaaContext</a> *&#160;</td>
+          <td class="paramname"><em>context</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const char *&#160;</td>
+          <td class="paramname"><em>anchor_name</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="MaaDef_8h.html#a4010bb63df489fc09efb6ba9a1fc1c98">MaaStringBuffer</a> *&#160;</td>
+          <td class="paramname"><em>buffer</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="af0c8334fc52f04f0bc6be18f0b0da63a" name="af0c8334fc52f04f0bc6be18f0b0da63a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af0c8334fc52f04f0bc6be18f0b0da63a">&#9670;&#160;</a></span>MaaContextGetHitCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="MaaPort_8h.html#a67006334d91d228121dbba7a8bf8fe05">MAA_FRAMEWORK_API</a> <a class="el" href="MaaDef_8h.html#a2f7289f2a8e07f48c6261b52a120cdf6">MaaBool</a> MaaContextGetHitCount </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="MaaDef_8h.html#ad2101e87aad0f5d03b8136943daee40e">MaaContext</a> *&#160;</td>
+          <td class="paramname"><em>context</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const char *&#160;</td>
+          <td class="paramname"><em>node_name</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="MaaDef_8h.html#a72a89077c419a0fe586d68bde004d856">MaaSize</a> *&#160;</td>
+          <td class="paramname"><em>count</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="afc659de91e6d81ead8cc39e09b7b9f4c" name="afc659de91e6d81ead8cc39e09b7b9f4c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afc659de91e6d81ead8cc39e09b7b9f4c">&#9670;&#160;</a></span>MaaContextClearHitCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="MaaPort_8h.html#a67006334d91d228121dbba7a8bf8fe05">MAA_FRAMEWORK_API</a> <a class="el" href="MaaDef_8h.html#a2f7289f2a8e07f48c6261b52a120cdf6">MaaBool</a> MaaContextClearHitCount </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="MaaDef_8h.html#ad2101e87aad0f5d03b8136943daee40e">MaaContext</a> *&#160;</td>
+          <td class="paramname"><em>context</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const char *&#160;</td>
+          <td class="paramname"><em>node_name</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
         </tr>
       </table>
 </div><div class="memdoc">

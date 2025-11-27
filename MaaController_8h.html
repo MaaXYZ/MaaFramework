@@ -156,6 +156,9 @@ Functions</h2></td></tr>
 <tr class="separator:afb7c57e77010237effcfe2f638e0bd79"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad65392ee4028a2d8ba74d2fab960fb50" id="r_ad65392ee4028a2d8ba74d2fab960fb50"><td class="memItemLeft" align="right" valign="top"><a class="el" href="MaaPort_8h.html#a67006334d91d228121dbba7a8bf8fe05">MAA_FRAMEWORK_API</a> <a class="el" href="MaaDef_8h.html#aea6a27f8f45b661fda5c19b6062b656e">MaaCtrlId</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="MaaController_8h.html#ad65392ee4028a2d8ba74d2fab960fb50">MaaControllerPostScreencap</a> (<a class="el" href="MaaDef_8h.html#aa6c9c6967753196880a2a7f778fbb706">MaaController</a> *ctrl)</td></tr>
 <tr class="separator:ad65392ee4028a2d8ba74d2fab960fb50"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab5b9b134755f4381cb4e5e99f21732b1" id="r_ab5b9b134755f4381cb4e5e99f21732b1"><td class="memItemLeft" align="right" valign="top"><a class="el" href="MaaPort_8h.html#a67006334d91d228121dbba7a8bf8fe05">MAA_FRAMEWORK_API</a> <a class="el" href="MaaDef_8h.html#aea6a27f8f45b661fda5c19b6062b656e">MaaCtrlId</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="MaaController_8h.html#ab5b9b134755f4381cb4e5e99f21732b1">MaaControllerPostScroll</a> (<a class="el" href="MaaDef_8h.html#aa6c9c6967753196880a2a7f778fbb706">MaaController</a> *ctrl, int32_t dx, int32_t dy)</td></tr>
+<tr class="memdesc:ab5b9b134755f4381cb4e5e99f21732b1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Post a scroll action to the controller.  <br /></td></tr>
+<tr class="separator:ab5b9b134755f4381cb4e5e99f21732b1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:afb8528c818e4fd03c7493b7b013474ed" id="r_afb8528c818e4fd03c7493b7b013474ed"><td class="memItemLeft" align="right" valign="top"><a class="el" href="MaaPort_8h.html#a67006334d91d228121dbba7a8bf8fe05">MAA_FRAMEWORK_API</a> <a class="el" href="MaaDef_8h.html#ada00e4de6b9b4dcae75ed50f4bcaeef5">MaaStatus</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="MaaController_8h.html#afb8528c818e4fd03c7493b7b013474ed">MaaControllerStatus</a> (const <a class="el" href="MaaDef_8h.html#aa6c9c6967753196880a2a7f778fbb706">MaaController</a> *ctrl, <a class="el" href="MaaDef_8h.html#aea6a27f8f45b661fda5c19b6062b656e">MaaCtrlId</a> id)</td></tr>
 <tr class="separator:afb8528c818e4fd03c7493b7b013474ed"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a67674de1a9a97550510068d7c9a5abd1" id="r_a67674de1a9a97550510068d7c9a5abd1"><td class="memItemLeft" align="right" valign="top"><a class="el" href="MaaPort_8h.html#a67006334d91d228121dbba7a8bf8fe05">MAA_FRAMEWORK_API</a> <a class="el" href="MaaDef_8h.html#ada00e4de6b9b4dcae75ed50f4bcaeef5">MaaStatus</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="MaaController_8h.html#a67674de1a9a97550510068d7c9a5abd1">MaaControllerWait</a> (const <a class="el" href="MaaDef_8h.html#aa6c9c6967753196880a2a7f778fbb706">MaaController</a> *ctrl, <a class="el" href="MaaDef_8h.html#aea6a27f8f45b661fda5c19b6062b656e">MaaCtrlId</a> id)</td></tr>
@@ -906,6 +909,52 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+</div>
+</div>
+<a id="ab5b9b134755f4381cb4e5e99f21732b1" name="ab5b9b134755f4381cb4e5e99f21732b1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab5b9b134755f4381cb4e5e99f21732b1">&#9670;&#160;</a></span>MaaControllerPostScroll()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="MaaPort_8h.html#a67006334d91d228121dbba7a8bf8fe05">MAA_FRAMEWORK_API</a> <a class="el" href="MaaDef_8h.html#aea6a27f8f45b661fda5c19b6062b656e">MaaCtrlId</a> MaaControllerPostScroll </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="MaaDef_8h.html#aa6c9c6967753196880a2a7f778fbb706">MaaController</a> *&#160;</td>
+          <td class="paramname"><em>ctrl</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int32_t&#160;</td>
+          <td class="paramname"><em>dx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int32_t&#160;</td>
+          <td class="paramname"><em>dy</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Post a scroll action to the controller. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">ctrl</td><td>The controller handle. </td></tr>
+    <tr><td class="paramname">dx</td><td>The horizontal scroll delta. Positive values scroll right, negative values scroll left. </td></tr>
+    <tr><td class="paramname">dy</td><td>The vertical scroll delta. Positive values scroll down, negative values scroll up. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>The control id of the scroll action.</dd></dl>
+<dl class="section note"><dt>Note</dt><dd>Not all controllers support scroll. If not supported, the action will fail. </dd></dl>
 
 </div>
 </div>

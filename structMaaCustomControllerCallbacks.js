@@ -14,5 +14,6 @@ var structMaaCustomControllerCallbacks =
     [ "click_key", "structMaaCustomControllerCallbacks.html#a2df5a214e13e5d9542d3458016c5f51c", null ],
     [ "input_text", "structMaaCustomControllerCallbacks.html#add383d0ce3995532bfe0db9d008b6f7e", null ],
     [ "key_down", "structMaaCustomControllerCallbacks.html#a46da9230073fb4ac1ccc7b8c28d87467", null ],
-    [ "key_up", "structMaaCustomControllerCallbacks.html#a99d5b6c3270039db39a1f5cdeb27b269", null ]
+    [ "key_up", "structMaaCustomControllerCallbacks.html#a99d5b6c3270039db39a1f5cdeb27b269", null ],
+    [ "scroll", "structMaaCustomControllerCallbacks.html#ae2381df699964f6e95fe89ad2fc22e38", null ]
 ];

@@ -23,6 +23,7 @@ var MaaController_8h =
     [ "MaaControllerPostKeyDown", "MaaController_8h.html#ab879179f0c655d61c684d20132cc7c98", null ],
     [ "MaaControllerPostKeyUp", "MaaController_8h.html#afb7c57e77010237effcfe2f638e0bd79", null ],
     [ "MaaControllerPostScreencap", "MaaController_8h.html#ad65392ee4028a2d8ba74d2fab960fb50", null ],
+    [ "MaaControllerPostScroll", "MaaController_8h.html#ab5b9b134755f4381cb4e5e99f21732b1", null ],
     [ "MaaControllerStatus", "MaaController_8h.html#afb8528c818e4fd03c7493b7b013474ed", null ],
     [ "MaaControllerWait", "MaaController_8h.html#a67674de1a9a97550510068d7c9a5abd1", null ],
     [ "MaaControllerConnected", "MaaController_8h.html#a0066bfa64a73b16f82a5060bdef72982", null ],
