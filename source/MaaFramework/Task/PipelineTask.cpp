@@ -71,16 +71,16 @@ bool PipelineTask::run()
                 next = node.next;
             }
             else { // 动作执行失败了
-                LogWarn << "node not completed, handle error" << VAR(node_detail.name);
+                LogWarn << "node not completed, handle error" << VAR(node.name);
                 error_handling = true;
                 next = node.on_error;
-                save_on_error(node_detail.name);
+                save_on_error(node.name);
             }
         }
         else if (error_handling) {
             LogError << "error handling loop detected" << VAR(node.name);
             next.clear();
-            save_on_error(node_detail.name);
+            save_on_error(node.name);
         }
         else {
             LogInfo << "invalid node id, handle error" << VAR(node.name);
