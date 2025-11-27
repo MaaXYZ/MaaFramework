@@ -2,6 +2,7 @@
 
 #include "MaaUtils/Encoding.h"
 #include "MaaUtils/Logger.h"
+#include "PipelineParser.h"
 #include "PipelineTypesV2.h"
 
 MAA_RES_NS_BEGIN
@@ -11,8 +12,6 @@ json::object PipelineDumper::dump(const PipelineData& pp)
     PipelineV2::JPipelineData data;
 
     data.next = pp.next;
-    data.interrupt = pp.interrupt;
-    data.is_sub = pp.is_sub;
     data.rate_limit = pp.rate_limit.count();
     data.timeout = pp.reco_timeout.count();
     data.on_error = pp.on_error;

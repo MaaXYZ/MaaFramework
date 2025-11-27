@@ -297,12 +297,10 @@ struct JPipelineData
 {
     JRecognition recognition;
     JAction action;
-    std::vector<std::string> next;
-    std::vector<std::string> interrupt;
-    bool is_sub = false;
+    std::vector<NodeAttr> next;
     int64_t rate_limit = 0;
     int64_t timeout = 0;
-    std::vector<std::string> on_error;
+    std::vector<NodeAttr> on_error;
     bool inverse = false;
     bool enabled = false;
     int64_t pre_delay = 0;
@@ -311,14 +309,12 @@ struct JPipelineData
     JWaitFreezes post_wait_freezes;
     uint32_t max_hit = 0;
     json::value focus;
-    json::object attach; // 附加 JSON 对象
+    json::object attach;
 
     MEO_TOJSON(
         recognition,
         action,
         next,
-        interrupt,
-        is_sub,
         rate_limit,
         timeout,
         on_error,

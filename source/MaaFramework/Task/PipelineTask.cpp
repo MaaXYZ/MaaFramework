@@ -6,17 +6,12 @@
 #include "MaaFramework/MaaMsg.h"
 #include "MaaUtils/JsonExt.hpp"
 #include "MaaUtils/Logger.h"
+#include "Resource/PipelineDumper.h"
+#include "Resource/PipelineParser.h"
 #include "Resource/ResourceMgr.h"
 #include "Tasker/Tasker.h"
 
 MAA_TASK_NS_BEGIN
-
-template <typename T>
-std::vector<T> operator+(std::vector<T> lhs, const std::vector<T>& rhs)
-{
-    lhs.insert(lhs.end(), rhs.begin(), rhs.end());
-    return lhs;
-}
 
 bool PipelineTask::run()
 {
@@ -37,8 +32,7 @@ bool PipelineTask::run()
     }
 
     PipelineData node = std::move(*begin_opt);
-    PipelineData::NextList next = { entry_ };
-    size_t interrupt_pos = SIZE_MAX;
+    std::vector<MAA_RES_NS::NodeAttr> next = { { .name = entry_ } };
 
     bool error_handling = false;
 
@@ -62,36 +56,29 @@ bool PipelineTask::run()
             std::string pre_node_name = node.name;
             node = std::move(*hit_opt);
 
-            // 如果 next 里有同名任务，返回值也一定是第一个。同名任务第一个匹配上了后面肯定也会匹配上（除非 Custom 写了一些什么逻辑）
-            // 且 PipelineChecker::check_all_next_list 保证了 next + interrupt 中没有同名任务
-            auto pos = std::ranges::find(next, node_detail.name) - next.begin();
-            bool is_interrupt = static_cast<size_t>(pos) >= interrupt_pos;
-            if (is_interrupt || node.is_sub) { // for compatibility with v1.x
+            auto it = std::ranges::find_if(next, [&](const MAA_RES_NS::NodeAttr& n) { return n.name == node_detail.name; });
+            if (it != next.end() && it->jump_back) {
                 LogInfo << "push interrupt_stack:" << pre_node_name;
                 interrupt_stack.emplace(pre_node_name);
             }
 
             if (node_detail.completed) {
-                next = node.next + node.interrupt;
-                interrupt_pos = node.next.size();
+                next = node.next;
             }
             else { // 动作执行失败了
                 LogWarn << "node not completed, handle error" << VAR(node_detail.name);
                 error_handling = true;
                 next = node.on_error;
-                interrupt_pos = SIZE_MAX;
             }
         }
         else if (error_handling) {
             LogError << "error handling loop detected" << VAR(node.name);
             next.clear();
-            interrupt_pos = SIZE_MAX;
         }
         else {
             LogInfo << "invalid node id, handle error" << VAR(node.name);
             error_handling = true;
             next = node.on_error;
-            interrupt_pos = SIZE_MAX;
         }
 
         if (next.empty() && !interrupt_stack.empty()) {
@@ -106,8 +93,7 @@ bool PipelineTask::run()
             }
             node = std::move(*top_opt);
 
-            next = node.next + node.interrupt;
-            interrupt_pos = node.next.size();
+            next = node.next;
         }
     }
 
@@ -123,19 +109,19 @@ void PipelineTask::post_stop()
     context_->need_to_stop() = true;
 }
 
-NodeDetail PipelineTask::run_next(const PipelineData::NextList& list, const PipelineData& pretask)
+NodeDetail PipelineTask::run_next(const std::vector<MAA_RES_NS::NodeAttr>& next, const PipelineData& pretask)
 {
     if (!context_) {
         LogError << "context is null";
         return {};
     }
 
-    bool valid = std::ranges::any_of(list, [&](const std::string& name) {
-        auto data_opt = context_->get_pipeline_data(name);
+    bool valid = std::ranges::any_of(next, [&](const MAA_RES_NS::NodeAttr& node) {
+        auto data_opt = context_->get_pipeline_data(node.name);
         return data_opt && data_opt->enabled;
     });
     if (!valid) {
-        LogInfo << "no valid/enabled node in list" << VAR(list);
+        LogInfo << "no valid/enabled node in next" << VAR(next);
         return {};
     }
 
@@ -165,7 +151,7 @@ NodeDetail PipelineTask::run_next(const PipelineData::NextList& list, const Pipe
         auto current_clock = std::chrono::steady_clock::now();
         cv::Mat image = screencap();
 
-        RecoResult reco = recognize_list(image, list);
+        RecoResult reco = recognize_list(image, next);
 
         if (context_->need_to_stop()) {
             LogWarn << "need_to_stop" << VAR(pretask.name);
@@ -174,8 +160,7 @@ NodeDetail PipelineTask::run_next(const PipelineData::NextList& list, const Pipe
 
         if (!reco.box) {
             if (duration_since(start_clock) > pretask.reco_timeout) {
-                LogError << "Task timeout" << VAR(pretask.name) << VAR(duration_since(start_clock)) << VAR(pretask.reco_timeout)
-                         << VAR(list);
+                LogError << "Task timeout" << VAR(pretask.name) << VAR(duration_since(start_clock)) << VAR(pretask.reco_timeout);
                 break;
             }
 
@@ -230,7 +215,7 @@ NodeDetail PipelineTask::run_next(const PipelineData::NextList& list, const Pipe
     return result;
 }
 
-RecoResult PipelineTask::recognize_list(const cv::Mat& image, const PipelineData::NextList& list)
+RecoResult PipelineTask::recognize_list(const cv::Mat& image, const std::vector<MAA_RES_NS::NodeAttr>& list)
 {
     LogFunc << VAR(cur_node_) << VAR(list);
 
@@ -255,7 +240,7 @@ RecoResult PipelineTask::recognize_list(const cv::Mat& image, const PipelineData
     const json::value reco_list_cb_detail {
         { "task_id", task_id() },
         { "name", cur_node_ },
-        { "list", json::array(list) },
+        { "list", list },
         { "focus", cur_node.focus },
     };
 
@@ -269,9 +254,9 @@ RecoResult PipelineTask::recognize_list(const cv::Mat& image, const PipelineData
             break;
         }
 
-        auto node_opt = context_->get_pipeline_data(node);
+        auto node_opt = context_->get_pipeline_data(node.name);
         if (!node_opt) {
-            LogError << "get_pipeline_data failed, node not exist" << VAR(node);
+            LogError << "get_pipeline_data failed, node not exist" << VAR(node.name);
             continue;
         }
         const auto& pipeline_data = *node_opt;

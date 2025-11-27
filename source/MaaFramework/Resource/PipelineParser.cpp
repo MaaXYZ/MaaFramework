@@ -195,8 +195,13 @@ bool PipelineParser::parse_node(
     PipelineData data;
     data.name = name;
 
-    if (!get_and_check_value(input, "is_sub", data.is_sub, default_value.is_sub)) {
-        LogError << "failed to get_and_check_value is_sub" << VAR(input);
+    // 检查已废弃的字段
+    if (input.exists("is_sub")) {
+        LogError << "is_sub is deprecated since v5.1, use `[JumpBack]` prefix in next list instead" << VAR(name);
+        return false;
+    }
+    if (input.exists("interrupt")) {
+        LogError << "interrupt is deprecated since v5.1, use `[JumpBack]` prefix in next list instead" << VAR(name);
         return false;
     }
 
@@ -220,18 +225,13 @@ bool PipelineParser::parse_node(
         return false;
     }
 
-    if (!get_and_check_value_or_array(input, "next", data.next, default_value.next)) {
-        LogError << "failed to get_and_check_value_or_array next" << VAR(input);
+    if (!parse_next(input, "next", data.next, default_value.next)) {
+        LogError << "failed to parse_next" << VAR(input);
         return false;
     }
 
-    if (!get_and_check_value_or_array(input, "interrupt", data.interrupt, default_value.interrupt)) {
-        LogError << "failed to get_and_check_value_or_array interrupt" << VAR(input);
-        return false;
-    }
-
-    if (!get_and_check_value_or_array(input, "on_error", data.on_error, default_value.on_error)) {
-        LogError << "failed to get_and_check_value_or_array on_error" << VAR(input);
+    if (!parse_next(input, "on_error", data.on_error, default_value.on_error)) {
+        LogError << "failed to parse on_error" << VAR(input);
         return false;
     }
 
@@ -1406,6 +1406,47 @@ bool PipelineParser::parse_wait_freezes_param(
     }
 }
 
+bool PipelineParser::parse_next(
+    const json::value& input,
+    const std::string& key,
+    std::vector<NodeAttr>& output,
+    const std::vector<NodeAttr>& default_next)
+{
+    auto next_opt = input.find(key);
+    if (!next_opt) {
+        output = default_next;
+        return true;
+    }
+
+    return parse_next(*next_opt, output);
+}
+
+bool PipelineParser::parse_next(const json::value& input, std::vector<NodeAttr>& output)
+{
+    output.clear();
+
+    if (input.is_array()) {
+        for (const auto& val : input.as_array()) {
+            NodeAttr res;
+            if (!parse_node_in_next(val, res)) {
+                LogError << "failed to parse_node_in_next" << VAR(val);
+                return false;
+            }
+            output.emplace_back(std::move(res));
+        }
+    }
+    else {
+        NodeAttr res;
+        if (!parse_node_in_next(input, res)) {
+            LogError << "failed to parse_node_in_next" << VAR(input);
+            return false;
+        }
+        output.emplace_back(std::move(res));
+    }
+
+    return true;
+}
+
 bool PipelineParser::parse_rect(const json::value& input_rect, cv::Rect& output)
 {
     if (!input_rect.is_array()) {
@@ -1557,6 +1598,58 @@ bool PipelineParser::parse_action_target_offset_or_list(
         output.emplace_back(std::move(res));
     }
 
+    return true;
+}
+
+bool PipelineParser::parse_node_in_next(const json::value& input, NodeAttr& output)
+{
+    if (input.is_string()) {
+        return parse_node_string_in_next(input.as_string(), output);
+    }
+    else if (input.is<NodeAttr>()) {
+        output = input.as<NodeAttr>();
+        return true;
+    }
+    else {
+        LogError << "next node type error" << VAR(input);
+        return false;
+    }
+}
+
+bool PipelineParser::parse_node_string_in_next(const std::string& raw, NodeAttr& output)
+{
+    std::string remaining = raw;
+
+    // 属性必须放在节点名前面，格式: [Attr1][Attr2]NodeName
+    while (remaining.starts_with('[')) {
+        auto end_pos = remaining.find(']');
+        if (end_pos == std::string::npos) {
+            LogError << "Invalid node attribute format, missing ']'" << VAR(raw);
+            return false;
+        }
+
+        std::string attr = remaining.substr(0, end_pos + 1);
+
+        if (attr == PipelineData::kNodeAttr_JumpBack) {
+            output.jump_back = true;
+        }
+        // 未来可以在这里添加其他属性的解析
+        // else if (attr == PipelineData::kNodeAttr_Once) {
+        //     output.once = true;
+        // }
+        else {
+            LogWarn << "Unrecognized node attribute" << VAR(attr) << VAR(raw);
+        }
+
+        remaining = remaining.substr(end_pos + 1);
+    }
+
+    if (remaining.empty()) {
+        LogError << "Invalid node format, missing node name" << VAR(raw);
+        return false;
+    }
+
+    output.name = remaining;
     return true;
 }
 
