@@ -1313,11 +1313,6 @@ bool PipelineParser::parse_app_info(const json::value& input, Action::AppParam& 
 
 bool PipelineParser::parse_scroll(const json::value& input, Action::ScrollParam& output, const Action::ScrollParam& default_value)
 {
-    if (!parse_action_target(input, "target", output.target, default_value.target)) {
-        LogError << "failed to parse_action_target" << VAR(input);
-        return false;
-    }
-
     if (!get_and_check_value(input, "dx", output.dx, default_value.dx)) {
         LogError << "failed to get_and_check_value dx" << VAR(input);
         return false;
@@ -1325,11 +1320,6 @@ bool PipelineParser::parse_scroll(const json::value& input, Action::ScrollParam&
 
     if (!get_and_check_value(input, "dy", output.dy, default_value.dy)) {
         LogError << "failed to get_and_check_value dy" << VAR(input);
-        return false;
-    }
-
-    if (!get_and_check_value(input, "duration", output.duration, default_value.duration)) {
-        LogError << "failed to get_and_check_value duration" << VAR(input);
         return false;
     }
 

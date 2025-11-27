@@ -220,16 +220,16 @@ MaaCtrlId MaaControllerPostKeyUp(MaaController* ctrl, int32_t keycode)
     return ctrl->post_key_up(keycode);
 }
 
-MaaCtrlId MaaControllerPostScroll(MaaController* ctrl, int32_t x, int32_t y, int32_t dx, int32_t dy, int32_t duration)
+MaaCtrlId MaaControllerPostScroll(MaaController* ctrl, int32_t dx, int32_t dy)
 {
-    LogFunc << VAR_VOIDP(ctrl) << VAR(x) << VAR(y) << VAR(dx) << VAR(dy) << VAR(duration);
+    LogFunc << VAR_VOIDP(ctrl) << VAR(dx) << VAR(dy);
 
     if (!ctrl) {
         LogError << "handle is null";
         return MaaInvalidId;
     }
 
-    return ctrl->post_scroll(x, y, dx, dy, duration);
+    return ctrl->post_scroll(dx, dy);
 }
 
 MaaCtrlId MaaControllerPostScreencap(MaaController* ctrl)

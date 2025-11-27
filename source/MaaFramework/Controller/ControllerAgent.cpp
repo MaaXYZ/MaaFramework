@@ -141,9 +141,9 @@ MaaCtrlId ControllerAgent::post_key_up(int keycode)
     return focus_id(id);
 }
 
-MaaCtrlId ControllerAgent::post_scroll(int x, int y, int dx, int dy, int duration)
+MaaCtrlId ControllerAgent::post_scroll(int dx, int dy)
 {
-    ScrollParam p { .point = { x, y }, .dx = dx, .dy = dy, .duration = static_cast<uint>(duration) };
+    ScrollParam p { .dx = dx, .dy = dy };
     auto id = post({ .type = Action::Type::scroll, .param = std::move(p) });
     return focus_id(id);
 }
@@ -774,9 +774,7 @@ bool ControllerAgent::handle_scroll(const ScrollParam& param)
         return false;
     }
 
-    cv::Point point = preproc_touch_point(param.point);
-    bool ret = control_unit_->scroll(point.x, point.y, param.dx, param.dy, param.duration);
-
+    bool ret = control_unit_->scroll(param.dx, param.dy);
     return ret;
 }
 

@@ -54,7 +54,7 @@ public: // from ControlUnitAPI
     virtual bool key_down(int key) override;
     virtual bool key_up(int key) override;
 
-    virtual bool scroll(int x, int y, int dx, int dy, int duration) override;
+    virtual bool scroll(int dx, int dy) override;
 
 public:
     virtual bool find_device(/*out*/ std::vector<std::string>& devices) override;

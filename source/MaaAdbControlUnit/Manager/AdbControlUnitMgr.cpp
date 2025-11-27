@@ -237,14 +237,10 @@ bool AdbControlUnitMgr::key_up(int key)
     return input_->key_up(key);
 }
 
-bool AdbControlUnitMgr::scroll(int x, int y, int dx, int dy, int duration)
+bool AdbControlUnitMgr::scroll(int dx, int dy)
 {
-    if (!input_) {
-        LogError << "input_ is null";
-        return false;
-    }
-
-    return input_->scroll(x, y, dx, dy, duration);
+    LogError << "Scroll is not supported on Adb controller" << VAR(dx) << VAR(dy);
+    return false;
 }
 
 bool AdbControlUnitMgr::find_device(std::vector<std::string>& devices)

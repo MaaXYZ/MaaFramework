@@ -49,8 +49,7 @@ struct ControllerImpl : public maajs::NativeClassBase
     maajs::ValueType post_touch_up(maajs::ValueType self, maajs::EnvType env, int32_t contact);
     maajs::ValueType post_key_down(maajs::ValueType self, maajs::EnvType env, int32_t keycode);
     maajs::ValueType post_key_up(maajs::ValueType self, maajs::EnvType env, int32_t keycode);
-    maajs::ValueType
-        post_scroll(maajs::ValueType self, maajs::EnvType env, int32_t x, int32_t y, int32_t dx, int32_t dy, int32_t duration);
+    maajs::ValueType post_scroll(maajs::ValueType self, maajs::EnvType env, int32_t dx, int32_t dy);
     maajs::ValueType post_screencap(maajs::ValueType self, maajs::EnvType env);
     MaaStatus status(MaaCtrlId id);
     maajs::PromiseType wait(MaaCtrlId id);

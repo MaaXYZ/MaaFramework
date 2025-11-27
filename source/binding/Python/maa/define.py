@@ -386,9 +386,6 @@ class MaaCustomControllerCallbacks(ctypes.Structure):
         MaaBool,
         ctypes.c_int32,
         ctypes.c_int32,
-        ctypes.c_int32,
-        ctypes.c_int32,
-        ctypes.c_int32,
         ctypes.c_void_p,
     )
     _fields_ = [

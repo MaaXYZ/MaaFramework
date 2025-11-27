@@ -74,11 +74,8 @@ struct Record
 
     struct ScrollParam
     {
-        int x = 0;
-        int y = 0;
         int dx = 0;
         int dy = 0;
-        int duration = 0;
     };
 
     using Param = std::variant<

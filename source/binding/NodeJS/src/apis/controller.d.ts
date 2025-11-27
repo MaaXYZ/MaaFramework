@@ -49,9 +49,8 @@ declare global {
         }
 
         type ScrollParam = {
-            point: Point
-            delta: Point
-            duration: number
+            dx: number
+            dy: number
         }
 
         type ActionParam =
@@ -166,13 +165,7 @@ declare global {
             post_touch_up(contact: number): Job<CtrlId, Controller>
             post_key_down(keycode: number): Job<CtrlId, Controller>
             post_key_up(keycode: number): Job<CtrlId, Controller>
-            post_scroll(
-                x: number,
-                y: number,
-                dx: number,
-                dy: number,
-                duration: number,
-            ): Job<CtrlId, Controller>
+            post_scroll(dx: number, dy: number): Job<CtrlId, Controller>
             post_screencap(): ImageJob
             override_pipeline(pipeline: Record<string, unknown> | Record<string, unknown>[]): void
             override_next(node_name: string, next_list: string[]): void
@@ -263,13 +256,7 @@ declare global {
             input_text?(text: string): maa.MaybePromise<boolean>
             key_down?(keycode: number): maa.MaybePromise<boolean>
             key_up?(keycode: number): maa.MaybePromise<boolean>
-            scroll?(
-                x: number,
-                y: number,
-                dx: number,
-                dy: number,
-                duration: number,
-            ): maa.MaybePromise<boolean>
+            scroll?(dx: number, dy: number): maa.MaybePromise<boolean>
         }
 
         class CustomController extends Controller {

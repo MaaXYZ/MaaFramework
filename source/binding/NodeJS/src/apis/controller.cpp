@@ -195,10 +195,9 @@ maajs::ValueType ControllerImpl::post_key_up(maajs::ValueType self, maajs::EnvTy
     return maajs::CallCtorHelper(ExtContext::get(env)->jobCtor, self, id);
 }
 
-maajs::ValueType
-    ControllerImpl::post_scroll(maajs::ValueType self, maajs::EnvType, int32_t x, int32_t y, int32_t dx, int32_t dy, int32_t duration)
+maajs::ValueType ControllerImpl::post_scroll(maajs::ValueType self, maajs::EnvType, int32_t dx, int32_t dy)
 {
-    auto id = MaaControllerPostScroll(controller, x, y, dx, dy, duration);
+    auto id = MaaControllerPostScroll(controller, dx, dy);
     return maajs::CallCtorHelper(ExtContext::get(env)->jobCtor, self, id);
 }
 
@@ -565,7 +564,7 @@ CustomControllerImpl* CustomControllerImpl::ctor(const maajs::CallbackInfo& info
     context->add_bind(info.Env(), "input_text", "CustomInputText", 1, actor, ret_false);
     context->add_bind(info.Env(), "key_down", "CustomKeyDown", 1, actor, ret_false);
     context->add_bind(info.Env(), "key_up", "CustomKeyUp", 1, actor, ret_false);
-    context->add_bind(info.Env(), "scroll", "CustomScroll", 5, actor, ret_false);
+    context->add_bind(info.Env(), "scroll", "CustomScroll", 2, actor, ret_false);
 
     auto impl = new CustomControllerImpl(ctrl, true);
     impl->actor = actor;

@@ -125,17 +125,10 @@ bool AdbShellInput::key_up(int key)
     return false;
 }
 
-bool AdbShellInput::scroll(int x, int y, int dx, int dy, int duration)
+bool AdbShellInput::scroll(int dx, int dy)
 {
-    // For AdbShell, simulate scroll using swipe
-    LogInfo << VAR(x) << VAR(y) << VAR(dx) << VAR(dy) << VAR(duration);
-
-    // Scale the delta values to reasonable pixel distances
-    constexpr int kScrollScale = 10;
-    int x2 = x + dx * kScrollScale;
-    int y2 = y + dy * kScrollScale;
-
-    return swipe(x, y, x2, y2, duration);
+    LogError << "Scroll is not supported on Adb controller" << VAR(dx) << VAR(dy);
+    return false;
 }
 
 MAA_CTRL_UNIT_NS_END

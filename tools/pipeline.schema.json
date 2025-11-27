@@ -2278,36 +2278,19 @@
         "Scroll": {
             "type": "object",
             "properties": {
-                "target": {
-                    "title": "Scroll Target Property",
-                    "description": "滚动目标的位置。可选，默认 true 。",
-                    "$ref": "#/$defs/Click/properties/target",
-                    "markdownDescription": "*true* | *string* | *array<int, 2>* | *array<int, 4>*\n\n滚动目标的位置。可选，默认 true 。\n\n- Adb 控制器：在该位置执行滑动来模拟滚动\n- Win32 控制器：移动鼠标到该位置后发送滚轮事件"
+                "dx": {
+                    "title": "Scroll Dx Property",
+                    "description": "水平滚动距离，正值向右滚动，负值向左滚动。可选，默认 0。",
+                    "type": "integer",
+                    "default": 0,
+                    "markdownDescription": "*int*\n\n水平滚动距离，正值向右滚动，负值向左滚动。可选，默认 0。"
                 },
-                "target_offset": {
-                    "title": "Scroll Target Offset Property",
-                    "description": "在 target 的基础上额外移动再作为滚动目标，四个值分别相加。可选，默认 [0, 0, 0, 0]。",
-                    "$ref": "#/$defs/jsonOffset",
-                    "markdownDescription": "*array<int, 4>*\n\n在 `target` 的基础上额外移动再作为滚动目标，四个值分别相加。可选，默认 [0, 0, 0, 0]。"
-                },
-                "scroll_delta": {
-                    "title": "Scroll Delta Property",
-                    "description": "滚动距离 [dx, dy]。可选，默认 [0, 0]。dx: 水平滚动距离，正值向右滚动，负值向左滚动。dy: 垂直滚动距离，正值向下滚动，负值向上滚动。",
-                    "type": "array",
-                    "items": {
-                        "type": "integer"
-                    },
-                    "minItems": 2,
-                    "maxItems": 2,
-                    "default": [0, 0],
-                    "markdownDescription": "*array<int, 2>*\n\n滚动距离 `[dx, dy]`。可选，默认 [0, 0]。\n\n- `dx`: 水平滚动距离，正值向右滚动，负值向左滚动\n- `dy`: 垂直滚动距离，正值向下滚动，负值向上滚动\n- Adb 控制器：会使用滑动来模拟滚动效果\n- Win32 控制器：对应鼠标滚轮事件的 `WHEEL_DELTA` 值"
-                },
-                "duration": {
-                    "title": "Scroll Duration Property",
-                    "description": "滚动持续时间，单位毫秒。可选，默认 200。",
-                    "$ref": "#/$defs/jsonUInt32",
-                    "default": 200,
-                    "markdownDescription": "*uint*\n\n滚动持续时间，单位毫秒。可选，默认 200。\n\n- Adb 控制器：滑动模拟滚动时的滑动时长\n- Win32 控制器：滚动后的等待时间"
+                "dy": {
+                    "title": "Scroll Dy Property",
+                    "description": "垂直滚动距离，正值向下滚动，负值向上滚动。可选，默认 0。",
+                    "type": "integer",
+                    "default": 0,
+                    "markdownDescription": "*int*\n\n垂直滚动距离，正值向下滚动，负值向上滚动。可选，默认 0。"
                 }
             }
         },
@@ -3276,14 +3259,15 @@
                 },
                 {
                     "label": "ScrollV1",
-                    "body": "^ \"Scroll\",\n\"scroll_delta\": [0, 0]"
+                    "body": "^ \"Scroll\",\n\"dx\": 0,\n\"dy\": 0"
                 },
                 {
                     "label": "ScrollV2",
                     "body": {
                         "type": "Scroll",
                         "param": {
-                            "scroll_delta": [0, 0]
+                            "dx": 0,
+                            "dy": 0
                         }
                     }
                 },

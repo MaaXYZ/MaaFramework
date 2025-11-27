@@ -35,7 +35,7 @@ public: // from InputBase
     virtual bool key_down(int key) override = 0;
     virtual bool key_up(int key) override = 0;
 
-    virtual bool scroll(int x, int y, int dx, int dy, int duration) override;
+    virtual bool scroll(int dx, int dy) override;
 
 protected:
     bool read_info();

@@ -97,12 +97,10 @@ struct AppParam
 
 struct ScrollParam
 {
-    cv::Point point {};
     int dx = 0;
     int dy = 0;
-    uint duration = 200;
 
-    MEO_TOJSON(point, dx, dy, duration);
+    MEO_TOJSON(dx, dy);
 };
 
 using Param = std::variant<
@@ -170,7 +168,7 @@ public: // MaaController
     virtual MaaCtrlId post_key_down(int keycode) override;
     virtual MaaCtrlId post_key_up(int keycode) override;
 
-    virtual MaaCtrlId post_scroll(int x, int y, int dx, int dy, int duration) override;
+    virtual MaaCtrlId post_scroll(int dx, int dy) override;
 
     virtual MaaStatus status(MaaCtrlId ctrl_id) const override;
     virtual MaaStatus wait(MaaCtrlId ctrl_id) const override;

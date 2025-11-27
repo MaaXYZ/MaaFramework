@@ -220,24 +220,20 @@ class Controller:
         ctrl_id = Library.framework().MaaControllerPostTouchUp(self._handle, contact)
         return self._gen_ctrl_job(ctrl_id)
 
-    def post_scroll(
-        self, x: int, y: int, dx: int, dy: int, duration: int = 200
-    ) -> Job:
+    def post_scroll(self, dx: int, dy: int) -> Job:
         """滚动 / Scroll
 
         Args:
-            x: 滚动位置 x 坐标 / Scroll position x coordinate
-            y: 滚动位置 y 坐标 / Scroll position y coordinate
             dx: 水平滚动距离，正值向右滚动，负值向左滚动 / Horizontal scroll distance, positive for right, negative for left
             dy: 垂直滚动距离，正值向下滚动，负值向上滚动 / Vertical scroll distance, positive for down, negative for up
-            duration: 滚动持续时间(毫秒) / Scroll duration in milliseconds
 
         Returns:
             Job: 作业对象 / Job object
+
+        Note:
+            不是所有控制器都支持滚动操作 / Not all controllers support scroll operation
         """
-        ctrl_id = Library.framework().MaaControllerPostScroll(
-            self._handle, x, y, dx, dy, duration
-        )
+        ctrl_id = Library.framework().MaaControllerPostScroll(self._handle, dx, dy)
         return self._gen_ctrl_job(ctrl_id)
 
     def post_screencap(self) -> JobWithResult:

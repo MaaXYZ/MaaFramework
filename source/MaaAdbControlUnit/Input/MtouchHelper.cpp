@@ -1,11 +1,9 @@
 #include "MtouchHelper.h"
 
 #include <array>
-#include <chrono>
 #include <cmath>
 #include <format>
 #include <ranges>
-#include <thread>
 
 #include "MaaUtils/Logger.h"
 
@@ -165,34 +163,10 @@ bool MtouchHelper::parse(const json::value& config)
     return device_info_->parse(config);
 }
 
-bool MtouchHelper::scroll(int x, int y, int dx, int dy, int duration)
+bool MtouchHelper::scroll(int dx, int dy)
 {
-    // For Adb, simulate scroll using swipe
-    LogInfo << type_name() << VAR(x) << VAR(y) << VAR(dx) << VAR(dy) << VAR(duration);
-
-    // Scale the delta values to reasonable pixel distances
-    constexpr int kScrollScale = 10;
-    int x2 = x + dx * kScrollScale;
-    int y2 = y + dy * kScrollScale;
-
-    // Perform touch operations to simulate scroll
-    if (!touch_down(0, x, y, 1)) {
-        return false;
-    }
-
-    // Move in steps for smoother scrolling
-    constexpr int kSteps = 10;
-    for (int i = 1; i <= kSteps; ++i) {
-        int current_x = x + (x2 - x) * i / kSteps;
-        int current_y = y + (y2 - y) * i / kSteps;
-        if (!touch_move(0, current_x, current_y, 1)) {
-            touch_up(0);
-            return false;
-        }
-        std::this_thread::sleep_for(std::chrono::milliseconds(duration / kSteps));
-    }
-
-    return touch_up(0);
+    LogError << "Scroll is not supported on Adb controller" << VAR(dx) << VAR(dy);
+    return false;
 }
 
 MAA_CTRL_UNIT_NS_END

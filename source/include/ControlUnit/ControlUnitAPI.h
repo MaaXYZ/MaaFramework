@@ -37,7 +37,7 @@ public:
     virtual bool key_down(int key) = 0;
     virtual bool key_up(int key) = 0;
 
-    virtual bool scroll(int x, int y, int dx, int dy, int duration) = 0;
+    virtual bool scroll(int dx, int dy) = 0;
 };
 
 class AdbControlUnitAPI : public ControlUnitAPI

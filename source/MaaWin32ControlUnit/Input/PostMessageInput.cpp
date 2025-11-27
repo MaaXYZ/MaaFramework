@@ -160,11 +160,9 @@ bool PostMessageInput::key_up(int key)
     return true;
 }
 
-bool PostMessageInput::scroll(int x, int y, int dx, int dy, int duration)
+bool PostMessageInput::scroll(int dx, int dy)
 {
-    std::ignore = duration;
-
-    LogInfo << VAR(x) << VAR(y) << VAR(dx) << VAR(dy);
+    LogInfo << VAR(dx) << VAR(dy);
 
     if (!hwnd_) {
         LogError << "hwnd_ is nullptr";
@@ -173,16 +171,18 @@ bool PostMessageInput::scroll(int x, int y, int dx, int dy, int duration)
 
     ensure_foreground();
 
-    // Handle vertical scroll (dy)
+    POINT pt;
+    GetCursorPos(&pt);
+    ScreenToClient(hwnd_, &pt);
+
     if (dy != 0) {
         WPARAM wParam = MAKEWPARAM(0, static_cast<short>(dy));
-        PostMessage(hwnd_, WM_MOUSEWHEEL, wParam, MAKELPARAM(x, y));
+        PostMessage(hwnd_, WM_MOUSEWHEEL, wParam, MAKELPARAM(pt.x, pt.y));
     }
 
-    // Handle horizontal scroll (dx)
     if (dx != 0) {
         WPARAM wParam = MAKEWPARAM(0, static_cast<short>(dx));
-        PostMessage(hwnd_, WM_MOUSEHWHEEL, wParam, MAKELPARAM(x, y));
+        PostMessage(hwnd_, WM_MOUSEHWHEEL, wParam, MAKELPARAM(pt.x, pt.y));
     }
 
     return true;
