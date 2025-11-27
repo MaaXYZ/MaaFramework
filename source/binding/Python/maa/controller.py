@@ -856,7 +856,7 @@ class CustomController(Controller):
         raise NotImplementedError
 
     @abstractmethod
-    def scroll(self, x: int, y: int, dx: int, dy: int, duration: int) -> bool:
+    def scroll(self, dx: int, dy: int) -> bool:
         raise NotImplementedError
 
     @staticmethod
@@ -1120,11 +1120,8 @@ class CustomController(Controller):
     @staticmethod
     @MaaCustomControllerCallbacks.ScrollFunc
     def _c_scroll_agent(
-        c_x: ctypes.c_int32,
-        c_y: ctypes.c_int32,
         c_dx: ctypes.c_int32,
         c_dy: ctypes.c_int32,
-        c_duration: ctypes.c_int32,
         trans_arg: ctypes.c_void_p,
     ) -> int:
         if not trans_arg:
@@ -1135,7 +1132,7 @@ class CustomController(Controller):
             ctypes.py_object,
         ).value
 
-        return int(self.scroll(int(c_x), int(c_y), int(c_dx), int(c_dy), int(c_duration)))
+        return int(self.scroll(int(c_dx), int(c_dy)))
 
     def _set_custom_api_properties(self):
         Library.framework().MaaCustomControllerCreate.restype = MaaControllerHandle
