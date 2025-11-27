@@ -260,11 +260,20 @@ def rebuild_json_with_comments(
                 if orig_next != new_next:
                     if "next" in original_node_data:
                         # 替换现有的 next 字段
-                        # 先找到字段所在行，获取缩进（只匹配空格和制表符，不匹配换行符）
+                        # 先找到字段所在行，获取缩进（支持字符串和数组两种格式）
+                        # 尝试匹配数组格式：`"next": [...]`
                         next_line_match = re.search(
                             r'([ \t]*)"next"\s*:\s*\[[^\]]*\](,?)(\s*//[^\n]*)?',
                             modified_node_text,
                         )
+
+                        # 如果没匹配到数组格式，尝试匹配字符串格式：`"next": "..."`
+                        if not next_line_match:
+                            next_line_match = re.search(
+                                r'([ \t]*)"next"\s*:\s*"[^"]*"(,?)(\s*//[^\n]*)?',
+                                modified_node_text,
+                            )
+
                         if next_line_match:
                             field_indent = next_line_match.group(1)
                             trailing_comma = next_line_match.group(2)
@@ -322,11 +331,20 @@ def rebuild_json_with_comments(
                 new_on_error = migrated_node_data["on_error"]
 
                 if orig_on_error != new_on_error:
-                    # 查找 on_error 字段（只匹配空格和制表符，不匹配换行符）
+                    # 查找 on_error 字段（支持字符串和数组两种格式）
+                    # 尝试匹配数组格式
                     on_error_match = re.search(
                         r'([ \t]*)"on_error"\s*:\s*\[[^\]]*\](,?)(\s*//[^\n]*)?',
                         modified_node_text,
                     )
+
+                    # 如果没匹配到数组格式，尝试匹配字符串格式
+                    if not on_error_match:
+                        on_error_match = re.search(
+                            r'([ \t]*)"on_error"\s*:\s*"[^"]*"(,?)(\s*//[^\n]*)?',
+                            modified_node_text,
+                        )
+
                     if on_error_match:
                         field_indent = on_error_match.group(1)
                         trailing_comma = on_error_match.group(2)
