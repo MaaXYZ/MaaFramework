@@ -13,12 +13,14 @@ Pipeline JSON 迁移脚本 - 将旧版 is_sub/interrupt 转换为 v5.1 的 [Jump
 转换规则:
     1. interrupt 字段中的节点会被加上 `[JumpBack]` 前缀后合并到 next 字段
     2. 所有 is_sub: true 的节点，在被其他节点的 next/on_error 引用时会被加上 `[JumpBack]` 前缀
+       （支持跨文件引用：会先扫描所有文件收集全局 is_sub 节点）
     3. 删除 is_sub 和 interrupt 字段
 
 特性:
     - 支持 JSONC（带注释的 JSON，包括 // 和 /* */ 两种注释）
     - 保持 JSON 字段顺序不变
     - 保持原文件的缩进风格
+    - 支持跨文件节点引用
 """
 
 import re
@@ -291,10 +293,19 @@ def migrate_node(
 
 
 def migrate_pipeline_file(
-    file_path: Path, dry_run: bool = False, backup: bool = False
+    file_path: Path,
+    global_is_sub_nodes: set,
+    dry_run: bool = False,
+    backup: bool = False,
 ) -> tuple[bool, list]:
     """
     迁移单个 pipeline JSON 文件
+
+    Args:
+        file_path: 文件路径
+        global_is_sub_nodes: 全局的 is_sub 节点集合（跨所有文件收集）
+        dry_run: 是否为试运行模式
+        backup: 是否备份原文件
 
     返回: (是否有更改, 更改日志列表)
     """
@@ -313,17 +324,17 @@ def migrate_pipeline_file(
     if not isinstance(data, dict):
         return False, ["文件内容不是 JSON 对象"]
 
-    # 第一遍：收集所有 is_sub 节点
-    is_sub_nodes = collect_is_sub_nodes(data)
-    if is_sub_nodes:
-        all_changes.append(f"发现 is_sub 节点: {is_sub_nodes}")
+    # 检查本文件中定义的 is_sub 节点
+    local_is_sub_nodes = collect_is_sub_nodes(data)
+    if local_is_sub_nodes:
+        all_changes.append(f"本文件定义的 is_sub 节点: {local_is_sub_nodes}")
 
-    # 第二遍：迁移所有节点，保持顺序
+    # 迁移所有节点，使用全局 is_sub 节点集合
     migrated_data = OrderedDict()
     has_changes = False
 
     for node_name, node_data in data.items():
-        migrated_node, changes = migrate_node(node_name, node_data, is_sub_nodes)
+        migrated_node, changes = migrate_node(node_name, node_data, global_is_sub_nodes)
         migrated_data[node_name] = migrated_node
 
         if changes:
@@ -369,6 +380,34 @@ def find_pipeline_files(directory: Path) -> list:
     return json_files
 
 
+def collect_all_is_sub_nodes(json_files: list) -> set:
+    """
+    扫描所有 JSON 文件，收集全局的 is_sub 节点集合
+
+    Args:
+        json_files: JSON 文件路径列表
+
+    Returns:
+        所有 is_sub: true 的节点名称集合
+    """
+    global_is_sub_nodes = set()
+
+    for json_file in json_files:
+        try:
+            with open(json_file, "r", encoding="utf-8") as f:
+                content = f.read()
+                data = parse_jsonc(content)
+
+            if isinstance(data, dict):
+                is_sub_nodes = collect_is_sub_nodes(data)
+                global_is_sub_nodes.update(is_sub_nodes)
+        except Exception as e:
+            print(f"警告: 扫描文件 {json_file} 时出错: {e}")
+            continue
+
+    return global_is_sub_nodes
+
+
 def main():
     parser = argparse.ArgumentParser(
         description="将旧版 pipeline JSON 的 is_sub/interrupt 转换为 v5.1 的 [JumpBack] 前缀格式"
@@ -397,11 +436,24 @@ def main():
         sys.exit(0)
 
     print(f"找到 {len(json_files)} 个 JSON 文件")
+
+    # 第一遍：收集全局的 is_sub 节点
+    print("正在扫描所有文件，收集 is_sub 节点...")
+    global_is_sub_nodes = collect_all_is_sub_nodes(json_files)
+
+    if global_is_sub_nodes:
+        print(
+            f"发现 {len(global_is_sub_nodes)} 个全局 is_sub 节点: {sorted(global_is_sub_nodes)}"
+        )
+    else:
+        print("未发现任何 is_sub 节点")
+
     if args.dry_run:
         print("【DRY RUN 模式 - 不会实际修改文件】\n")
 
     modified_count = 0
 
+    # 第二遍：使用全局 is_sub 节点集合迁移所有文件
     for json_file in json_files:
         relative_path = (
             json_file.relative_to(directory)
@@ -410,7 +462,7 @@ def main():
         )
 
         has_changes, changes = migrate_pipeline_file(
-            json_file, args.dry_run, args.backup
+            json_file, global_is_sub_nodes, args.dry_run, args.backup
         )
 
         if has_changes:
