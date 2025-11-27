@@ -3656,14 +3656,14 @@
                     "deprecated": true,
                     "description": "（已在 5.1 版本中废弃，推荐使用 节点前缀跳回功能 `[JumpBack]` 替代）",
                     "$ref": "#/$defs/jsonStringOrList",
-                    "markdownDescription": "*string* | *list<string, >*\n\n**（已在 5.1 版本中废弃，推荐使用 节点前缀跳回功能 `[JumpBack]` 替代）**"
+                    "markdownDescription": "*string* | *list<string, >*\n\n**（已在 5.1 版本中废弃，推荐使用 节点前缀跳回功能 `[JumpBack]` 替代）**\n\n我们提供了 [迁移脚本](https://github.com/MaaXYZ/MaaFramework/blob/main/tools/migrate_pipeline_v5.py)，可帮助您无损地将 Pipeline 自动转换为新风格~"
                 },
                 "is_sub": {
                     "title": "Is Sub Property",
                     "deprecated": true,
                     "description": "（已在 5.1 版本中废弃，推荐使用 节点前缀跳回功能 `[JumpBack]` 替代）",
                     "$ref": "#/$defs/jsonBooleanFalse",
-                    "markdownDescription": "*bool*\n\n**（已在 5.1 版本中废弃，推荐使用 节点前缀跳回功能 `[JumpBack]` 替代）**"
+                    "markdownDescription": "*bool*\n\n**（已在 5.1 版本中废弃，推荐使用 节点前缀跳回功能 `[JumpBack]` 替代）**\n\n我们提供了 [迁移脚本](https://github.com/MaaXYZ/MaaFramework/blob/main/tools/migrate_pipeline_v5.py)，可帮助您无损地将 Pipeline 自动转换为新风格~"
                 },
                 "rate_limit": {
                     "title": "Rate Limit Property",

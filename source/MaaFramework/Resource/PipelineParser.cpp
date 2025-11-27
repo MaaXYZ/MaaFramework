@@ -197,11 +197,26 @@ bool PipelineParser::parse_node(
 
     // 检查已废弃的字段
     if (input.exists("is_sub")) {
-        LogError << "is_sub is deprecated since v5.1, use `[JumpBack]` prefix in next list instead" << VAR(name);
+        LogError << "is_sub is deprecated since v5.1, in version 5.1, use `[JumpBack]` instead, please refer to the document for details."
+                 << VAR(name);
+        LogError << "We provide a migration script (https://github.com/MaaXYZ/MaaFramework/blob/main/tools/migrate_pipeline_v5.py) to "
+                    "help you automatically convert your pipeline to the new style without loss of quality.";
+
+        LogError << "is_sub 已在 5.1 版本中废弃，推荐使用 `[JumpBack]` 替代，详情请参考文档" << VAR(name);
+        LogError << "我们提供了一个迁移脚本 (https://github.com/MaaXYZ/MaaFramework/blob/main/tools/migrate_pipeline_v5.py)， "
+                    "可帮助您无损地将 Pipeline 自动转换为新风格~";
         return false;
     }
     if (input.exists("interrupt")) {
-        LogError << "interrupt is deprecated since v5.1, use `[JumpBack]` prefix in next list instead" << VAR(name);
+        LogError
+            << "interrupt is deprecated since v5.1, in version 5.1, use `[JumpBack]` instead, please refer to the document for details."
+            << VAR(name);
+        LogError << "We provide a migration script (https://github.com/MaaXYZ/MaaFramework/blob/main/tools/migrate_pipeline_v5.py) to "
+                    "help you automatically convert your pipeline to the new style without loss of quality.";
+
+        LogError << "interrupt 已在 5.1 版本中废弃，推荐使用 `[JumpBack]` 替代，详情请参考文档" << VAR(name);
+        LogError << "我们提供了一个迁移脚本 (https://github.com/MaaXYZ/MaaFramework/blob/main/tools/migrate_pipeline_v5.py)， "
+                    "可帮助您无损地将 Pipeline 自动转换为新风格~";
         return false;
     }
 
