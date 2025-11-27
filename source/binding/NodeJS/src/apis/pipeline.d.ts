@@ -350,6 +350,7 @@ declare global {
         type NodeAttr = {
             name: string
             jump_back: boolean
+            is_anchor: boolean
         }
 
         type WaitFreeze = {
@@ -375,6 +376,7 @@ declare global {
             pre_wait_freezes?: RemoveIfDump<number, Mode> | WaitFreeze
             post_wait_freezes?: RemoveIfDump<number, Mode> | WaitFreeze
             focus?: unknown
+            anchor?: string
             attach?: Record<string, unknown>
         }
 

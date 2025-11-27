@@ -49,6 +49,7 @@ Context::Context(const Context& other)
     , pipeline_override_(other.pipeline_override_)
     , image_override_(other.image_override_)
     , hit_count_(other.hit_count_)
+    , anchors_(other.anchors_)
 // don't copy clone_holder_
 {
     LogDebug << VAR(other.getptr());
@@ -255,6 +256,20 @@ std::optional<PipelineData> Context::get_pipeline_data(const std::string& node_n
     return std::nullopt;
 }
 
+std::optional<PipelineData> Context::get_pipeline_data(const MAA_RES_NS::NodeAttr& node_attr) const
+{
+    std::string node_name = node_attr.name;
+    if (node_attr.is_anchor) {
+        auto anchor_node = get_anchor(node_attr.name);
+        if (!anchor_node) {
+            LogDebug << "anchor not set" << VAR(node_attr.name);
+            return std::nullopt;
+        }
+        node_name = *anchor_node;
+    }
+    return get_pipeline_data(node_name);
+}
+
 std::vector<cv::Mat> Context::get_images(const std::vector<std::string>& names)
 {
     if (!tasker_) {
@@ -301,6 +316,21 @@ uint Context::get_hit_count(const std::string& node_name) const
 void Context::increment_hit_count(const std::string& node_name)
 {
     hit_count_[node_name]++;
+}
+
+void Context::set_anchor(const std::string& anchor_name, const std::string& node_name)
+{
+    LogDebug << VAR(anchor_name) << VAR(node_name);
+    anchors_[anchor_name] = node_name;
+}
+
+std::optional<std::string> Context::get_anchor(const std::string& anchor_name) const
+{
+    auto it = anchors_.find(anchor_name);
+    if (it != anchors_.end()) {
+        return it->second;
+    }
+    return std::nullopt;
 }
 
 bool Context::check_pipeline() const

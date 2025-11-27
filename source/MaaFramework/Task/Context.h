@@ -50,12 +50,16 @@ public: // from MaaContextAPI
 
 public:
     std::optional<PipelineData> get_pipeline_data(const std::string& node_name) const;
+    std::optional<PipelineData> get_pipeline_data(const MAA_RES_NS::NodeAttr& node_attr) const;
     std::vector<cv::Mat> get_images(const std::vector<std::string>& names);
 
     bool& need_to_stop();
 
     uint get_hit_count(const std::string& node_name) const;
     void increment_hit_count(const std::string& node_name);
+
+    void set_anchor(const std::string& anchor_name, const std::string& node_name);
+    std::optional<std::string> get_anchor(const std::string& anchor_name) const;
 
 private:
     bool override_pipeline_once(const json::object& pipeline_override, const MAA_RES_NS::DefaultPipelineMgr& default_mgr);
@@ -71,6 +75,7 @@ private:
     bool need_to_stop_ = false;
 
     std::unordered_map<std::string, uint> hit_count_;
+    std::unordered_map<std::string, std::string> anchors_;
 
     mutable std::vector<std::shared_ptr<Context>> clone_holder_;
 };

@@ -283,6 +283,11 @@ bool PipelineParser::parse_node(
         return false;
     }
 
+    if (!get_and_check_value(input, "anchor", data.anchor, default_value.anchor)) {
+        LogError << "failed to get_and_check_value anchor" << VAR(input);
+        return false;
+    }
+
     if (auto attach_opt = input.find<json::object>("attach")) {
         data.attach = *std::move(attach_opt);
     }
@@ -1633,10 +1638,9 @@ bool PipelineParser::parse_node_string_in_next(const std::string& raw, NodeAttr&
         if (attr == PipelineData::kNodeAttr_JumpBack) {
             output.jump_back = true;
         }
-        // 未来可以在这里添加其他属性的解析
-        // else if (attr == PipelineData::kNodeAttr_Once) {
-        //     output.once = true;
-        // }
+        else if (attr == PipelineData::kNodeAttr_Anchor) {
+            output.is_anchor = true;
+        }
         else {
             LogWarn << "Unrecognized node attribute" << VAR(attr) << VAR(raw);
         }
@@ -1645,7 +1649,7 @@ bool PipelineParser::parse_node_string_in_next(const std::string& raw, NodeAttr&
     }
 
     if (remaining.empty()) {
-        LogError << "Invalid node format, missing node name" << VAR(raw);
+        LogError << "Invalid node format, missing node name or anchor name" << VAR(raw);
         return false;
     }
 

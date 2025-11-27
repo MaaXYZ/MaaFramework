@@ -249,6 +249,7 @@ class JAction:
 class JNodeAttr:
     name: str
     jump_back: bool
+    is_anchor: bool
 
 
 @dataclass
@@ -278,6 +279,7 @@ class JPipelineData:
     post_wait_freezes: JWaitFreezes
     max_hit: int
     focus: Any
+    anchor: str
     attach: Dict
 
 
@@ -406,7 +408,8 @@ class JPipelineParser:
             post_wait_freezes=post_wait_freezes,  # type: ignore
             max_hit=data.get("max_hit"),
             focus=data.get("focus"),
-            attach=data.get("attach"),  # 附加 JSON 对象
+            anchor=data.get("anchor"),
+            attach=data.get("attach"),
         )
 
     @staticmethod
@@ -416,6 +419,7 @@ class JPipelineParser:
             JNodeAttr(
                 name=item.get("name"),
                 jump_back=item.get("jump_back"),
+                is_anchor=item.get("is_anchor"),
             )
             for item in data
         ]

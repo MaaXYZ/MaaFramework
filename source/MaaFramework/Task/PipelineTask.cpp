@@ -56,7 +56,10 @@ bool PipelineTask::run()
             std::string pre_node_name = node.name;
             node = std::move(*hit_opt);
 
-            auto it = std::ranges::find_if(next, [&](const MAA_RES_NS::NodeAttr& n) { return n.name == node_detail.name; });
+            auto it = std::ranges::find_if(next, [&](const MAA_RES_NS::NodeAttr& n) {
+                auto data_opt = context_->get_pipeline_data(n);
+                return data_opt && data_opt->name == node_detail.name;
+            });
             if (it != next.end() && it->jump_back) {
                 LogInfo << "push interrupt_stack:" << pre_node_name;
                 interrupt_stack.emplace(pre_node_name);
@@ -117,7 +120,7 @@ NodeDetail PipelineTask::run_next(const std::vector<MAA_RES_NS::NodeAttr>& next,
     }
 
     bool valid = std::ranges::any_of(next, [&](const MAA_RES_NS::NodeAttr& node) {
-        auto data_opt = context_->get_pipeline_data(node.name);
+        auto data_opt = context_->get_pipeline_data(node);
         return data_opt && data_opt->enabled;
     });
     if (!valid) {
@@ -183,6 +186,10 @@ NodeDetail PipelineTask::run_next(const std::vector<MAA_RES_NS::NodeAttr>& next,
         }
 
         auto act = run_action(reco, *hit_opt);
+
+        if (!hit_opt->anchor.empty()) {
+            context_->set_anchor(hit_opt->anchor, hit_name);
+        }
 
         NodeDetail result {
             .node_id = node_id,
@@ -254,9 +261,8 @@ RecoResult PipelineTask::recognize_list(const cv::Mat& image, const std::vector<
             break;
         }
 
-        auto node_opt = context_->get_pipeline_data(node.name);
+        auto node_opt = context_->get_pipeline_data(node);
         if (!node_opt) {
-            LogError << "get_pipeline_data failed, node not exist" << VAR(node.name);
             continue;
         }
         const auto& pipeline_data = *node_opt;
