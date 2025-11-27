@@ -316,6 +316,11 @@
                     "type": "boolean",
                     "description": "是否在执行完成后跳回父节点",
                     "default": false
+                },
+                "anchor": {
+                    "type": "boolean",
+                    "description": "锚点名称而非节点名称",
+                    "default": false
                 }
             },
             "required": [
