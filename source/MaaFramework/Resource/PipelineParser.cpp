@@ -1090,10 +1090,7 @@ bool PipelineParser::parse_action(
     case Type::Scroll: {
         auto default_param = default_mgr.get_action_param<ScrollParam>(Type::Scroll);
         out_param = default_param;
-        return parse_scroll(
-            param_input,
-            std::get<ScrollParam>(out_param),
-            same_type ? std::get<ScrollParam>(parent_param) : default_param);
+        return parse_scroll(param_input, std::get<ScrollParam>(out_param), same_type ? std::get<ScrollParam>(parent_param) : default_param);
     } break;
 
     case Type::Command: {
