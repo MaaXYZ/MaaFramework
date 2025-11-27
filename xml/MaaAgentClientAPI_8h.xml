@@ -261,6 +261,48 @@
         </inbodydescription>
         <location file="include/MaaAgentClient/MaaAgentClientAPI.h" line="26" column="34" declfile="include/MaaAgentClient/MaaAgentClientAPI.h" declline="26" declcolumn="34"/>
       </memberdef>
+      <memberdef kind="function" id="MaaAgentClientAPI_8h_1a8612a5b332bc50077d5a36c3d9ef3f2f" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="MaaPort_8h_1a8531b324af2e8db59debbd708e028c3c" kindref="member">MAA_AGENT_CLIENT_API</ref> <ref refid="MaaDef_8h_1a2f7289f2a8e07f48c6261b52a120cdf6" kindref="member">MaaBool</ref></type>
+        <definition>MAA_AGENT_CLIENT_API MaaBool MaaAgentClientGetCustomRecognitionList</definition>
+        <argsstring>(MaaAgentClient *client, MaaStringListBuffer *buffer)</argsstring>
+        <name>MaaAgentClientGetCustomRecognitionList</name>
+        <param>
+          <type><ref refid="MaaAgentClientDef_8h_1afa360933632739d3de64403ea9add40c" kindref="member">MaaAgentClient</ref> *</type>
+          <declname>client</declname>
+        </param>
+        <param>
+          <type><ref refid="MaaDef_8h_1a7668a404d5063ffc525180d3e144999f" kindref="member">MaaStringListBuffer</ref> *</type>
+          <declname>buffer</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaAgentClient/MaaAgentClientAPI.h" line="28" column="34" declfile="include/MaaAgentClient/MaaAgentClientAPI.h" declline="28" declcolumn="34"/>
+      </memberdef>
+      <memberdef kind="function" id="MaaAgentClientAPI_8h_1afbe5d51d666a7c5a6c29c8d72d7c5f21" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="MaaPort_8h_1a8531b324af2e8db59debbd708e028c3c" kindref="member">MAA_AGENT_CLIENT_API</ref> <ref refid="MaaDef_8h_1a2f7289f2a8e07f48c6261b52a120cdf6" kindref="member">MaaBool</ref></type>
+        <definition>MAA_AGENT_CLIENT_API MaaBool MaaAgentClientGetCustomActionList</definition>
+        <argsstring>(MaaAgentClient *client, MaaStringListBuffer *buffer)</argsstring>
+        <name>MaaAgentClientGetCustomActionList</name>
+        <param>
+          <type><ref refid="MaaAgentClientDef_8h_1afa360933632739d3de64403ea9add40c" kindref="member">MaaAgentClient</ref> *</type>
+          <declname>client</declname>
+        </param>
+        <param>
+          <type><ref refid="MaaDef_8h_1a7668a404d5063ffc525180d3e144999f" kindref="member">MaaStringListBuffer</ref> *</type>
+          <declname>buffer</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaAgentClient/MaaAgentClientAPI.h" line="29" column="34" declfile="include/MaaAgentClient/MaaAgentClientAPI.h" declline="29" declcolumn="34"/>
+      </memberdef>
       <memberdef kind="function" id="MaaAgentClientAPI_8h_1a884adbc9d05ac3a4bb38adbe79453396" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="MaaPort_8h_1aea94eb63afa29e65c59844ec3f57d691" kindref="member">MAA_DEPRECATED</ref> <ref refid="MaaPort_8h_1a8531b324af2e8db59debbd708e028c3c" kindref="member">MAA_AGENT_CLIENT_API</ref> <ref refid="MaaAgentClientDef_8h_1afa360933632739d3de64403ea9add40c" kindref="member">MaaAgentClient</ref> *</type>
         <definition>MAA_DEPRECATED MAA_AGENT_CLIENT_API MaaAgentClient * MaaAgentClientCreate</definition>
@@ -272,7 +314,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="include/MaaAgentClient/MaaAgentClientAPI.h" line="28" column="56" declfile="include/MaaAgentClient/MaaAgentClientAPI.h" declline="28" declcolumn="56"/>
+        <location file="include/MaaAgentClient/MaaAgentClientAPI.h" line="31" column="56" declfile="include/MaaAgentClient/MaaAgentClientAPI.h" declline="31" declcolumn="56"/>
       </memberdef>
       <memberdef kind="function" id="MaaAgentClientAPI_8h_1aadaf068b2df061deeec5aa2ad02577b9" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="MaaPort_8h_1aea94eb63afa29e65c59844ec3f57d691" kindref="member">MAA_DEPRECATED</ref> <ref refid="MaaPort_8h_1a8531b324af2e8db59debbd708e028c3c" kindref="member">MAA_AGENT_CLIENT_API</ref> <ref refid="MaaDef_8h_1a2f7289f2a8e07f48c6261b52a120cdf6" kindref="member">MaaBool</ref></type>
@@ -293,7 +335,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="include/MaaAgentClient/MaaAgentClientAPI.h" line="29" column="49" declfile="include/MaaAgentClient/MaaAgentClientAPI.h" declline="29" declcolumn="49"/>
+        <location file="include/MaaAgentClient/MaaAgentClientAPI.h" line="32" column="49" declfile="include/MaaAgentClient/MaaAgentClientAPI.h" declline="32" declcolumn="49"/>
       </memberdef>
     </sectiondef>
     <briefdescription>

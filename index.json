@@ -1,5 +1,5 @@
 {
-	"Version": "(main) v5.0.5",
+	"Version": "(main) v5.1.0-beta.1",
 	"Compounds": {
 		"MaaAgentClientAPI.h": {
 			"Location": "include/MaaAgentClient/MaaAgentClientAPI.h",
@@ -264,6 +264,56 @@
 						},
 						"milliseconds": {
 							"Type": "int64_t",
+							"Description": "",
+							"Direction": 0,
+							"IsPointerToArray": null
+						}
+					}
+				},
+				"MaaAgentClientGetCustomRecognitionList": {
+					"Description": {
+						"Brief": "",
+						"Details": [],
+						"Deprecated": null
+					},
+					"Types": {
+						"MAA_AGENT_CLIENT_API": "",
+						"MaaBool": ""
+					},
+					"Parameters": {
+						"client": {
+							"Type": "MaaAgentClient*",
+							"Description": "",
+							"Direction": 0,
+							"IsPointerToArray": null
+						},
+						"buffer": {
+							"Type": "MaaStringListBuffer*",
+							"Description": "",
+							"Direction": 0,
+							"IsPointerToArray": null
+						}
+					}
+				},
+				"MaaAgentClientGetCustomActionList": {
+					"Description": {
+						"Brief": "",
+						"Details": [],
+						"Deprecated": null
+					},
+					"Types": {
+						"MAA_AGENT_CLIENT_API": "",
+						"MaaBool": ""
+					},
+					"Parameters": {
+						"client": {
+							"Type": "MaaAgentClient*",
+							"Description": "",
+							"Direction": 0,
+							"IsPointerToArray": null
+						},
+						"buffer": {
+							"Type": "MaaStringListBuffer*",
 							"Description": "",
 							"Direction": 0,
 							"IsPointerToArray": null
@@ -2811,6 +2861,56 @@
 					}
 				},
 				"MaaResourceGetNodeList": {
+					"Description": {
+						"Brief": "",
+						"Details": [],
+						"Deprecated": null
+					},
+					"Types": {
+						"MAA_FRAMEWORK_API": "",
+						"MaaBool": ""
+					},
+					"Parameters": {
+						"res": {
+							"Type": "const MaaResource*",
+							"Description": "",
+							"Direction": 0,
+							"IsPointerToArray": null
+						},
+						"buffer": {
+							"Type": "MaaStringListBuffer*",
+							"Description": "",
+							"Direction": 0,
+							"IsPointerToArray": null
+						}
+					}
+				},
+				"MaaResourceGetCustomRecognitionList": {
+					"Description": {
+						"Brief": "",
+						"Details": [],
+						"Deprecated": null
+					},
+					"Types": {
+						"MAA_FRAMEWORK_API": "",
+						"MaaBool": ""
+					},
+					"Parameters": {
+						"res": {
+							"Type": "const MaaResource*",
+							"Description": "",
+							"Direction": 0,
+							"IsPointerToArray": null
+						},
+						"buffer": {
+							"Type": "MaaStringListBuffer*",
+							"Description": "",
+							"Direction": 0,
+							"IsPointerToArray": null
+						}
+					}
+				},
+				"MaaResourceGetCustomActionList": {
 					"Description": {
 						"Brief": "",
 						"Details": [],

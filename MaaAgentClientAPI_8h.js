@@ -12,6 +12,8 @@ var MaaAgentClientAPI_8h =
     [ "MaaAgentClientConnected", "MaaAgentClientAPI_8h.html#afd0af277e6592e0608af78dd9b64dd68", null ],
     [ "MaaAgentClientAlive", "MaaAgentClientAPI_8h.html#ac01c5ed446b67598f52652605462f888", null ],
     [ "MaaAgentClientSetTimeout", "MaaAgentClientAPI_8h.html#a866d66d4d0305998662d93c6086068df", null ],
+    [ "MaaAgentClientGetCustomRecognitionList", "MaaAgentClientAPI_8h.html#a8612a5b332bc50077d5a36c3d9ef3f2f", null ],
+    [ "MaaAgentClientGetCustomActionList", "MaaAgentClientAPI_8h.html#afbe5d51d666a7c5a6c29c8d72d7c5f21", null ],
     [ "MaaAgentClientCreate", "MaaAgentClientAPI_8h.html#a884adbc9d05ac3a4bb38adbe79453396", null ],
     [ "MaaAgentClientCreateSocket", "MaaAgentClientAPI_8h.html#aadaf068b2df061deeec5aa2ad02577b9", null ]
 ];

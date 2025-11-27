@@ -1,5 +1,7 @@
 var NAVTREEINDEX1 =
 {
+"MaaDef_8h.html#af8447ae4ab37f4c740d287a6697d2b72":[3,0,0,2,4,58],
+"MaaDef_8h.html#afbfcb148e25ffa976ca826da7b6e6c8c":[3,0,0,2,4,25],
 "MaaDef_8h_source.html":[3,0,0,2,4],
 "MaaGlobal_8h.html":[3,0,0,2,0,0],
 "MaaGlobal_8h.html#a0f846923ddbabcfb0343eeabd88ccb94":[3,0,0,2,0,0,2],
@@ -22,8 +24,10 @@ var NAVTREEINDEX1 =
 "MaaPort_8h_source.html":[3,0,0,2,6],
 "MaaResource_8h.html":[3,0,0,2,1,3],
 "MaaResource_8h.html#a08043e4ee98ab14cc8c731cd5d98c064":[3,0,0,2,1,3,11],
+"MaaResource_8h.html#a1046bba51b717e5b6f69e673c10141d1":[3,0,0,2,1,3,23],
 "MaaResource_8h.html#a11fd94300f47dd638d5bc8cee8dbc63b":[3,0,0,2,1,3,19],
 "MaaResource_8h.html#a1310b4983c90e6fe58ed41a43661f947":[3,0,0,2,1,3,14],
+"MaaResource_8h.html#a131e370cac4c849c1d7a28f58491a9a9":[3,0,0,2,1,3,24],
 "MaaResource_8h.html#a245abf490b3967003e4645f7bb2f2a32":[3,0,0,2,1,3,16],
 "MaaResource_8h.html#a29d01b1290d07ef263e29b80c3b6d843":[3,0,0,2,1,3,7],
 "MaaResource_8h.html#a2c9731b5a32da11f25ae57ea8ce5373e":[3,0,0,2,1,3,1],
