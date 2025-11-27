@@ -1192,7 +1192,7 @@
                         "Random",
                         "Expected"
                     ],
-                    "markdownDescription": "*string*\n\n结果排序方式。可选，默认 `Horizontal` 。\n\n可选的值：`Horizontal` | `Vertical` | `Score` | `Area` | `Random` | `Expected` 。\n\n可结合 `index` 字段使用。\n\n`Expected` 会按照结果的 `cls_index` 在 `expected` 数组中的位置排序，位置越靠前则排序越靠前，不在 `expected` 中的结果排在最后。",
+                    "markdownDescription": "*string*\n\n结果排序方式。可选，默认 `Horizontal` 。\n\n可选的值：`Horizontal` | `Vertical` | `Score` | `Area` | `Random` | `Expected` 。\n\n可结合 `index` 字段使用。",
                     "default": "Horizontal"
                 },
                 "index": {
