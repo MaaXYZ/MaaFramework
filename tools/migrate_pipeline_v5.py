@@ -118,6 +118,45 @@ def detect_indent(text: str) -> str:
     return "    "  # 默认 4 空格
 
 
+def format_array_value(value: list, indent: str = "    ", base_indent: str = "") -> str:
+    """
+    格式化数组值为多行或单行格式
+
+    Args:
+        value: 数组值
+        indent: 缩进字符串
+        base_indent: 当前字段的基础缩进
+
+    Returns:
+        格式化后的数组字符串（不含字段名）
+    """
+    import json
+
+    if not value:
+        return "[]"
+
+    # 判断是否需要多行格式
+    # 条件：超过2个元素，或单行总长度超过80字符
+    json_str = json.dumps(value, ensure_ascii=False)
+    should_multiline = len(value) > 2 or len(json_str) > 80
+
+    if should_multiline:
+        # 多行格式（紧凑风格）
+        lines = [
+            f"{base_indent}{indent}{json.dumps(item, ensure_ascii=False)}"
+            for item in value
+        ]
+        # 为非最后一个元素添加逗号
+        for i in range(len(lines) - 1):
+            lines[i] += ","
+
+        result = "[\n" + "\n".join(lines) + f"\n{base_indent}]"
+        return result
+    else:
+        # 单行格式
+        return json_str
+
+
 def rebuild_json_with_comments(
     original_text: str, original_data: dict, migrated_data: dict, indent: str = "    "
 ) -> str:
@@ -192,21 +231,23 @@ def rebuild_json_with_comments(
             node_text = result_text[node_start_pos:node_end_pos]
             modified_node_text = node_text
 
-            # 1. 删除 is_sub 字段
+            # 1. 删除 is_sub 字段（删除整行，包括前导空白和换行符）
             if "is_sub" in original_node_data and "is_sub" not in migrated_node_data:
+                # 匹配整行：可选的前导空白 + 字段定义 + 可选注释 + 换行符
                 modified_node_text = re.sub(
-                    r'\n\s*"is_sub"\s*:\s*[^,\n]+,?\s*(?://[^\n]*)?',
+                    r'[ \t]*"is_sub"\s*:\s*[^,\n]+,?\s*(?://[^\n]*)?\r?\n',
                     "",
                     modified_node_text,
                 )
 
-            # 2. 删除 interrupt 字段
+            # 2. 删除 interrupt 字段（删除整行，包括前导空白和换行符）
             if (
                 "interrupt" in original_node_data
                 and "interrupt" not in migrated_node_data
             ):
+                # 匹配整行：可选的前导空白 + 字段定义 + 可选注释 + 换行符
                 modified_node_text = re.sub(
-                    r'\n\s*"interrupt"\s*:\s*\[[^\]]*\],?\s*(?://[^\n]*)?',
+                    r'[ \t]*"interrupt"\s*:\s*\[[^\]]*\],?\s*(?://[^\n]*)?\r?\n',
                     "",
                     modified_node_text,
                 )
@@ -217,18 +258,37 @@ def rebuild_json_with_comments(
                 new_next = migrated_node_data["next"]
 
                 if orig_next != new_next:
-                    new_next_str = json.dumps(new_next, ensure_ascii=False)
-
                     if "next" in original_node_data:
                         # 替换现有的 next 字段
-                        def replace_next(m):
-                            return f'{m.group(1)}"next": {new_next_str}{m.group(2)}{m.group(3) or ""}'
-
-                        modified_node_text = re.sub(
-                            r'(\s*)"next"\s*:\s*\[[^\]]*\](,?)(\s*//[^\n]*)?',
-                            replace_next,
+                        # 先找到字段所在行，获取缩进（只匹配空格和制表符，不匹配换行符）
+                        next_line_match = re.search(
+                            r'([ \t]*)"next"\s*:\s*\[[^\]]*\](,?)(\s*//[^\n]*)?',
                             modified_node_text,
                         )
+                        if next_line_match:
+                            field_indent = next_line_match.group(1)
+                            trailing_comma = next_line_match.group(2)
+                            inline_comment = next_line_match.group(3) or ""
+
+                            # 生成格式化的数组值
+                            new_next_str = format_array_value(
+                                new_next, indent, field_indent
+                            )
+
+                            # 构建新的字段文本
+                            if "\n" in new_next_str:
+                                # 多行格式
+                                new_field = f'{field_indent}"next": {new_next_str}{trailing_comma}{inline_comment}'
+                            else:
+                                # 单行格式
+                                new_field = f'{field_indent}"next": {new_next_str}{trailing_comma}{inline_comment}'
+
+                            # 替换
+                            modified_node_text = (
+                                modified_node_text[: next_line_match.start()]
+                                + new_field
+                                + modified_node_text[next_line_match.end() :]
+                            )
                     else:
                         # 添加新的 next 字段
                         header_match = re.search(
@@ -238,7 +298,18 @@ def rebuild_json_with_comments(
                         if header_match:
                             insert_pos = header_match.end() - len(header_match.group(2))
                             field_indent = header_match.group(2)
-                            new_field = f'{field_indent}"next": {new_next_str},\n'
+
+                            # 生成格式化的数组值
+                            new_next_str = format_array_value(
+                                new_next, indent, field_indent
+                            )
+
+                            # 构建新字段
+                            if "\n" in new_next_str:
+                                new_field = f'{field_indent}"next": {new_next_str},\n'
+                            else:
+                                new_field = f'{field_indent}"next": {new_next_str},\n'
+
                             modified_node_text = (
                                 modified_node_text[:insert_pos]
                                 + new_field
@@ -251,22 +322,42 @@ def rebuild_json_with_comments(
                 new_on_error = migrated_node_data["on_error"]
 
                 if orig_on_error != new_on_error:
-                    new_on_error_str = json.dumps(new_on_error, ensure_ascii=False)
-
-                    def replace_on_error(m):
-                        return f'{m.group(1)}"on_error": {new_on_error_str}{m.group(2)}{m.group(3) or ""}'
-
-                    modified_node_text = re.sub(
-                        r'(\s*)"on_error"\s*:\s*\[[^\]]*\](,?)(\s*//[^\n]*)?',
-                        replace_on_error,
+                    # 查找 on_error 字段（只匹配空格和制表符，不匹配换行符）
+                    on_error_match = re.search(
+                        r'([ \t]*)"on_error"\s*:\s*\[[^\]]*\](,?)(\s*//[^\n]*)?',
                         modified_node_text,
                     )
+                    if on_error_match:
+                        field_indent = on_error_match.group(1)
+                        trailing_comma = on_error_match.group(2)
+                        inline_comment = on_error_match.group(3) or ""
+
+                        # 生成格式化的数组值
+                        new_on_error_str = format_array_value(
+                            new_on_error, indent, field_indent
+                        )
+
+                        # 构建新的字段文本
+                        if "\n" in new_on_error_str:
+                            new_field = f'{field_indent}"on_error": {new_on_error_str}{trailing_comma}{inline_comment}'
+                        else:
+                            new_field = f'{field_indent}"on_error": {new_on_error_str}{trailing_comma}{inline_comment}'
+
+                        # 替换
+                        modified_node_text = (
+                            modified_node_text[: on_error_match.start()]
+                            + new_field
+                            + modified_node_text[on_error_match.end() :]
+                        )
 
             # 替换文本中的节点
             if modified_node_text != node_text:
+                # 清理多余的连续空行（最多保留一个）
+                cleaned_text = re.sub(r"\n{3,}", "\n\n", modified_node_text)
+
                 result_text = (
                     result_text[:node_start_pos]
-                    + modified_node_text
+                    + cleaned_text
                     + result_text[node_end_pos:]
                 )
 
@@ -500,7 +591,7 @@ def migrate_pipeline_file(
             f.write(result_text)
             if not result_text.endswith("\n"):
                 f.write("\n")
-        all_changes.append("文件已更新（保留注释）")
+        all_changes.append("文件已更新（保留注释并格式化）")
 
     return True, all_changes
 
