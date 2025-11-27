@@ -19,7 +19,7 @@
     "agent": {
         "child_exec": "python",
         "child_args": [
-            "sample/python/demo3_agent.py" // 子进程参数。支持相对路径（相对于interface.json所在目录）或使用{PROJECT_DIR}占位符
+            "sample/python/demo3_agent.py" // 子进程参数。支持相对路径（相对于interface.json所在目录）
         ]
     },
     "controller": [
