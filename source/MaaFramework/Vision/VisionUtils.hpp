@@ -107,27 +107,57 @@ inline static void sort_by_expected_index_(ResultsVec& results, const std::vecto
 template <typename ResultsVec>
 inline static void sort_by_expected_regex_(ResultsVec& results, const std::vector<std::wstring>& expected)
 {
-    // 对于每个结果，找到它匹配的第一个正则表达式在 expected 数组中的位置
-    auto get_match_index = [&expected](const std::wstring& text) -> size_t {
-        for (size_t i = 0; i < expected.size(); ++i) {
-            if (std::regex_search(text, std::wregex(expected[i]))) {
-                return i + 1; // 返回 1-based 索引，0 表示未匹配
+    if (results.empty() || expected.empty()) {
+        return;
+    }
+
+    // 预编译所有正则表达式，避免在排序过程中重复构造
+    // 同时记录原始索引，以便处理无效模式
+    std::vector<std::pair<std::wregex, size_t>> patterns; // (regex, original_index)
+    patterns.reserve(expected.size());
+    for (size_t i = 0; i < expected.size(); ++i) {
+        try {
+            patterns.emplace_back(std::wregex(expected[i]), i);
+        }
+        catch (const std::regex_error& e) {
+            LogWarn << "Invalid regex pattern at index" << i << VAR(e.what());
+            // 跳过无效的正则表达式，继续处理其他模式
+        }
+    }
+
+    if (patterns.empty()) {
+        return;
+    }
+
+    // 预先计算所有结果的匹配索引：(match_index, original_index)
+    std::vector<std::pair<size_t, size_t>> indexed_results;
+    indexed_results.reserve(results.size());
+
+    for (size_t i = 0; i < results.size(); ++i) {
+        size_t match_idx = 0;
+        for (const auto& [regex, orig_pattern_idx] : patterns) {
+            if (std::regex_search(results[i].text, regex)) {
+                match_idx = orig_pattern_idx + 1; // 1-based 索引，0 表示未匹配
+                break;
             }
         }
-        return 0; // 未匹配到任何 expected
-    };
+        indexed_results.emplace_back(match_idx, i);
+    }
 
-    std::ranges::sort(results, [&get_match_index](const auto& lhs, const auto& rhs) -> bool {
-        size_t lvalue = get_match_index(lhs.text);
-        size_t rvalue = get_match_index(rhs.text);
-        if (lvalue == 0) {
-            return false; // 未匹配的排在最后
-        }
-        else if (rvalue == 0) {
-            return true;
-        }
-        return lvalue < rvalue;
+    // 按匹配索引排序，未匹配的排在最后
+    std::ranges::sort(indexed_results, [](const auto& a, const auto& b) -> bool {
+        if (a.first == 0) return false;
+        if (b.first == 0) return true;
+        return a.first < b.first;
     });
+
+    // 根据排序后的索引重排结果
+    ResultsVec sorted_results;
+    sorted_results.reserve(results.size());
+    for (const auto& [match_idx, orig_idx] : indexed_results) {
+        sorted_results.push_back(std::move(results[orig_idx]));
+    }
+    results = std::move(sorted_results);
 }
 
 inline static std::optional<size_t> pythonic_index(size_t total, int index)
