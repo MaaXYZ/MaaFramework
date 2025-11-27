@@ -319,7 +319,7 @@
                 },
                 "anchor": {
                     "type": "boolean",
-                    "description": "锚点名称而非节点名称",
+                    "description": "是否是锚点名称而非节点名称",
                     "default": false
                 }
             },
