@@ -19,7 +19,7 @@
     "agent": {
         "child_exec": "python",
         "child_args": [
-            "sample/python/demo3_agent.py" // 子进程参数。{PROJECT_DIR}可选，不使用时则为固定字符串
+            "sample/python/demo3_agent.py" // 子进程参数。支持相对路径（相对于interface.json所在目录）或使用{PROJECT_DIR}占位符
         ]
     },
     "controller": [
@@ -50,7 +50,7 @@
             "description": "官服资源", // 资源详细描述。支持文件路径、URL或直接文本，内容支持Markdown格式，支持国际化
             "icon": "official.png", // 资源图标文件路径，相对于项目根目录
             "path": [
-                "{PROJECT_DIR}/resource" // 资源路径。{PROJECT_DIR}占位符会被替换为interface.json所在目录的实际路径
+                "resource" // 资源路径，相对于interface.json所在目录
             ],
             "controller": [
                 "Android"
@@ -60,8 +60,8 @@
             "name": "Bilibili",
             "label": "$B站资源", // 显示名称，支持国际化。优先显示label，未设置时显示name
             "path": [
-                "{PROJECT_DIR}/resource",
-                "resource_bilibili" // 相对路径，相对于interface.json所在目录（当前工作目录）
+                "resource",
+                "resource_bilibili" // 资源路径，相对于interface.json所在目录
             ]
         }
     ],
