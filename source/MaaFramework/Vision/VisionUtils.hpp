@@ -78,7 +78,6 @@ inline static void sort_by_required_(ResultsVec& results, const std::vector<std:
     });
 }
 
-// 按 expected 中的 cls_index 顺序排序（用于 NeuralNetworkClassifier 和 NeuralNetworkDetector）
 template <typename ResultsVec>
 inline static void sort_by_expected_index_(ResultsVec& results, const std::vector<int>& expected)
 {
@@ -86,27 +85,29 @@ inline static void sort_by_expected_index_(ResultsVec& results, const std::vecto
         return;
     }
 
-    // 构建 cls_index 到 expected 数组位置的映射
     std::unordered_map<size_t, size_t> index_cache;
     for (size_t i = 0; i != expected.size(); ++i) {
-        index_cache.emplace(static_cast<size_t>(expected.at(i)), i + 1);
+        index_cache.emplace(static_cast<size_t>(expected[i]), i + 1);
     }
 
-    // 直接排序，未匹配的排在最后
     std::ranges::sort(results, [&index_cache](const auto& lhs, const auto& rhs) -> bool {
-        size_t lvalue = index_cache[lhs.cls_index];
-        size_t rvalue = index_cache[rhs.cls_index];
-        if (lvalue == 0) {
-            return false;
+        auto l_it = index_cache.find(lhs.cls_index);
+        auto r_it = index_cache.find(rhs.cls_index);
+
+        bool l_matched = (l_it != index_cache.end());
+        bool r_matched = (r_it != index_cache.end());
+
+        if (!l_matched) {
+            return false; // 未匹配的排后面
         }
-        if (rvalue == 0) {
-            return true;
+        if (!r_matched) {
+            return true; // 已匹配的排前面
         }
-        return lvalue < rvalue;
+
+        return l_it->second < r_it->second; // 按预期顺序排序
     });
 }
 
-// 按 expected 正则表达式数组中的匹配顺序排序（用于 OCR）
 template <typename ResultsVec>
 inline static void sort_by_expected_regex_(ResultsVec& results, const std::vector<std::wstring>& expected)
 {
@@ -114,7 +115,6 @@ inline static void sort_by_expected_regex_(ResultsVec& results, const std::vecto
         return;
     }
 
-    // 预编译所有正则表达式，避免在排序过程中重复构造
     std::vector<std::wregex> patterns;
     patterns.reserve(expected.size());
     for (const auto& pattern : expected) {
@@ -122,30 +122,35 @@ inline static void sort_by_expected_regex_(ResultsVec& results, const std::vecto
     }
 
     // 预先计算所有结果的匹配索引 (1-based，0 表示未匹配)
-    // 必须预计算，避免在排序比较器中重复进行 O(n log n × m) 次正则匹配
-    std::vector<size_t> match_indices(results.size(), 0);
-    for (size_t i = 0; i < results.size(); ++i) {
+    std::vector<size_t> match_indices;
+    match_indices.reserve(results.size());
+
+    for (const auto& result : results) {
+        size_t match_index = 0;
         for (size_t j = 0; j < patterns.size(); ++j) {
-            if (std::regex_search(results[i].text, patterns[j])) {
-                match_indices[i] = j + 1;
+            if (std::regex_search(result.text, patterns[j])) {
+                match_index = j + 1;
                 break;
             }
         }
+        match_indices.push_back(match_index);
     }
 
-    // 创建排列索引
+    // 创建排列索引并排序
     std::vector<size_t> order(results.size());
     std::iota(order.begin(), order.end(), 0);
 
-    // 按匹配索引排序，未匹配的排在最后
     std::ranges::sort(order, [&match_indices](size_t a, size_t b) -> bool {
-        if (match_indices[a] == 0) {
-            return false;
+        const size_t a_match = match_indices[a];
+        const size_t b_match = match_indices[b];
+
+        if (a_match == 0) {
+            return false; // a 未匹配，排后面
         }
-        if (match_indices[b] == 0) {
-            return true;
+        if (b_match == 0) {
+            return true;          // b 未匹配，a 排前面
         }
-        return match_indices[a] < match_indices[b];
+        return a_match < b_match; // 按匹配顺序排序
     });
 
     // 根据排序后的索引重排结果
