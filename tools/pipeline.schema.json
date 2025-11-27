@@ -965,9 +965,10 @@
                         "Vertical",
                         "Area",
                         "Length",
-                        "Random"
+                        "Random",
+                        "Expected"
                     ],
-                    "markdownDescription": "*string*\n\n结果排序方式。可选，默认 `Horizontal`。\n\n可选的值：`Horizontal` | `Vertical` | `Area` | `Length` | `Random` 。\n\n可结合 `index` 字段使用。",
+                    "markdownDescription": "*string*\n\n结果排序方式。可选，默认 `Horizontal`。\n\n可选的值：`Horizontal` | `Vertical` | `Area` | `Length` | `Random` | `Expected` 。\n\n可结合 `index` 字段使用。",
                     "default": "Horizontal"
                 },
                 "index": {
@@ -1071,9 +1072,10 @@
                         "Horizontal",
                         "Vertical",
                         "Score",
-                        "Random"
+                        "Random",
+                        "Expected"
                     ],
-                    "markdownDescription": "*string*\n\n结果排序方式。可选，默认 `Horizontal` 。\n\n可选的值：`Horizontal` | `Vertical` | `Score` | `Random` 。\n\n可结合 `index` 字段使用。",
+                    "markdownDescription": "*string*\n\n结果排序方式。可选，默认 `Horizontal` 。\n\n可选的值：`Horizontal` | `Vertical` | `Score` | `Random` | `Expected` 。\n\n可结合 `index` 字段使用。",
                     "default": "Horizontal"
                 },
                 "index": {
@@ -1187,9 +1189,10 @@
                         "Vertical",
                         "Score",
                         "Area",
-                        "Random"
+                        "Random",
+                        "Expected"
                     ],
-                    "markdownDescription": "*string*\n\n结果排序方式。可选，默认 `Horizontal` 。\n\n可选的值：`Horizontal` | `Vertical` | `Score` | `Area` | `Random` 。\n\n可结合 `index` 字段使用。",
+                    "markdownDescription": "*string*\n\n结果排序方式。可选，默认 `Horizontal` 。\n\n可选的值：`Horizontal` | `Vertical` | `Score` | `Area` | `Random` | `Expected` 。\n\n可结合 `index` 字段使用。",
                     "default": "Horizontal"
                 },
                 "index": {

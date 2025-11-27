@@ -1,7 +1,9 @@
 #pragma once
 
+#include <numeric>
 #include <random>
 #include <ranges>
+#include <regex>
 
 #include "Common/Conf.h"
 #include "MaaUtils/Logger.h"
@@ -74,6 +76,90 @@ inline static void sort_by_required_(ResultsVec& results, const std::vector<std:
         }
         return lvalue < rvalue;
     });
+}
+
+template <typename ResultsVec>
+inline static void sort_by_expected_index_(ResultsVec& results, const std::vector<int>& expected)
+{
+    if (results.empty() || expected.empty()) {
+        return;
+    }
+
+    std::unordered_map<size_t, size_t> index_cache;
+    for (size_t i = 0; i != expected.size(); ++i) {
+        index_cache.emplace(static_cast<size_t>(expected[i]), i + 1);
+    }
+
+    std::ranges::sort(results, [&index_cache](const auto& lhs, const auto& rhs) -> bool {
+        auto l_it = index_cache.find(lhs.cls_index);
+        auto r_it = index_cache.find(rhs.cls_index);
+
+        bool l_matched = (l_it != index_cache.end());
+        bool r_matched = (r_it != index_cache.end());
+
+        if (!l_matched) {
+            return false; // 未匹配的排后面
+        }
+        if (!r_matched) {
+            return true; // 已匹配的排前面
+        }
+
+        return l_it->second < r_it->second; // 按预期顺序排序
+    });
+}
+
+template <typename ResultsVec>
+inline static void sort_by_expected_regex_(ResultsVec& results, const std::vector<std::wstring>& expected)
+{
+    if (results.empty() || expected.empty()) {
+        return;
+    }
+
+    std::vector<std::wregex> patterns;
+    patterns.reserve(expected.size());
+    for (const auto& pattern : expected) {
+        patterns.emplace_back(pattern);
+    }
+
+    // 预先计算所有结果的匹配索引 (1-based，0 表示未匹配)
+    std::vector<size_t> match_indices;
+    match_indices.reserve(results.size());
+
+    for (const auto& result : results) {
+        size_t match_index = 0;
+        for (size_t j = 0; j < patterns.size(); ++j) {
+            if (std::regex_search(result.text, patterns[j])) {
+                match_index = j + 1;
+                break;
+            }
+        }
+        match_indices.push_back(match_index);
+    }
+
+    // 创建排列索引并排序
+    std::vector<size_t> order(results.size());
+    std::iota(order.begin(), order.end(), 0);
+
+    std::ranges::sort(order, [&match_indices](size_t a, size_t b) -> bool {
+        const size_t a_match = match_indices[a];
+        const size_t b_match = match_indices[b];
+
+        if (a_match == 0) {
+            return false; // a 未匹配，排后面
+        }
+        if (b_match == 0) {
+            return true;          // b 未匹配，a 排前面
+        }
+        return a_match < b_match; // 按匹配顺序排序
+    });
+
+    // 根据排序后的索引重排结果
+    ResultsVec sorted_results;
+    sorted_results.reserve(results.size());
+    for (size_t idx : order) {
+        sorted_results.push_back(std::move(results[idx]));
+    }
+    results = std::move(sorted_results);
 }
 
 inline static std::optional<size_t> pythonic_index(size_t total, int index)

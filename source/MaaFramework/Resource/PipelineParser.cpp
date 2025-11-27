@@ -583,6 +583,7 @@ bool PipelineParser::parse_ocrer_param(
                 MAA_VISION_NS::ResultOrderBy::Area,
                 MAA_VISION_NS::ResultOrderBy::Length,
                 MAA_VISION_NS::ResultOrderBy::Random,
+                MAA_VISION_NS::ResultOrderBy::Expected,
             })) {
         LogError << "failed to parse_order_of_result" << VAR(input);
         return false;
@@ -696,6 +697,7 @@ bool PipelineParser::parse_nn_classifier_param(
                 MAA_VISION_NS::ResultOrderBy::Vertical,
                 MAA_VISION_NS::ResultOrderBy::Score,
                 MAA_VISION_NS::ResultOrderBy::Random,
+                MAA_VISION_NS::ResultOrderBy::Expected,
             })) {
         LogError << "failed to parse_order_of_result" << VAR(input);
         return false;
@@ -738,6 +740,7 @@ bool PipelineParser::parse_nn_detector_param(
                 MAA_VISION_NS::ResultOrderBy::Score,
                 MAA_VISION_NS::ResultOrderBy::Area,
                 MAA_VISION_NS::ResultOrderBy::Random,
+                MAA_VISION_NS::ResultOrderBy::Expected,
             })) {
         LogError << "failed to parse_order_of_result" << VAR(input);
         return false;
