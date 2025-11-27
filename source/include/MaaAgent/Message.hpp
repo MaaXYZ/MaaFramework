@@ -1019,6 +1019,24 @@ struct ControllerPostKeyUpReverseResponse
     MEO_JSONIZATION(ctrl_id, _ControllerPostKeyUpReverseResponse);
 };
 
+struct ControllerPostScrollReverseRequest
+{
+    std::string controller_id;
+    int32_t dx = 0;
+    int32_t dy = 0;
+
+    MessageTypePlaceholder _ControllerPostScrollReverseRequest = 1;
+    MEO_JSONIZATION(controller_id, dx, dy, _ControllerPostScrollReverseRequest);
+};
+
+struct ControllerPostScrollReverseResponse
+{
+    int64_t ctrl_id = 0;
+
+    MessageTypePlaceholder _ControllerPostScrollReverseResponse = 1;
+    MEO_JSONIZATION(ctrl_id, _ControllerPostScrollReverseResponse);
+};
+
 struct ControllerPostInputTextReverseRequest
 {
     std::string controller_id;

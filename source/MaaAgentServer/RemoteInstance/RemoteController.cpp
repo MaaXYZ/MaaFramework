@@ -196,6 +196,20 @@ MaaCtrlId RemoteController::post_key_up(int keycode)
     return resp_opt->ctrl_id;
 }
 
+MaaCtrlId RemoteController::post_scroll(int dx, int dy)
+{
+    ControllerPostScrollReverseRequest req {
+        .controller_id = controller_id_,
+        .dx = dx,
+        .dy = dy,
+    };
+    auto resp_opt = server_.send_and_recv<ControllerPostScrollReverseResponse>(req);
+    if (!resp_opt) {
+        return MaaInvalidId;
+    }
+    return resp_opt->ctrl_id;
+}
+
 MaaStatus RemoteController::status(MaaCtrlId ctrl_id) const
 {
     ControllerStatusReverseRequest req {

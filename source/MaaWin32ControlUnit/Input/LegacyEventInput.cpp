@@ -142,5 +142,24 @@ bool LegacyEventInput::key_up(int key)
     return true;
 }
 
+bool LegacyEventInput::scroll(int dx, int dy)
+{
+    LogInfo << VAR(dx) << VAR(dy);
+
+    if (hwnd_) {
+        ensure_foreground();
+    }
+
+    if (dy != 0) {
+        mouse_event(MOUSEEVENTF_WHEEL, 0, 0, static_cast<DWORD>(dy), 0);
+    }
+
+    if (dx != 0) {
+        mouse_event(MOUSEEVENTF_HWHEEL, 0, 0, static_cast<DWORD>(dx), 0);
+    }
+
+    return true;
+}
+
 MAA_CTRL_UNIT_NS_END
 

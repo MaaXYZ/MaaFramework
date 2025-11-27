@@ -2280,6 +2280,55 @@
                 }
             }
         },
+        "Scroll": {
+            "type": "object",
+            "properties": {
+                "dx": {
+                    "title": "Scroll Dx Property",
+                    "description": "水平滚动距离，正值向右滚动，负值向左滚动。可选，默认 0。",
+                    "type": "integer",
+                    "default": 0,
+                    "markdownDescription": "*int*\n\n水平滚动距离，正值向右滚动，负值向左滚动。可选，默认 0。"
+                },
+                "dy": {
+                    "title": "Scroll Dy Property",
+                    "description": "垂直滚动距离，正值向下滚动，负值向上滚动。可选，默认 0。",
+                    "type": "integer",
+                    "default": 0,
+                    "markdownDescription": "*int*\n\n垂直滚动距离，正值向下滚动，负值向上滚动。可选，默认 0。"
+                }
+            }
+        },
+        "ScrollV1": {
+            "properties": {
+                "action": {
+                    "const": "Scroll"
+                }
+            },
+            "allOf": [
+                {
+                    "$ref": "#/$defs/Scroll"
+                }
+            ]
+        },
+        "ScrollV2": {
+            "properties": {
+                "type": {
+                    "const": "Scroll"
+                },
+                "param": {
+                    "unevaluatedProperties": false,
+                    "allOf": [
+                        {
+                            "$ref": "#/$defs/Scroll"
+                        },
+                        {
+                            "$ref": "#/$defs/jsonComments"
+                        }
+                    ]
+                }
+            }
+        },
         "KeyDown": {
             "type": "object",
             "properties": {
@@ -2933,6 +2982,7 @@
                 "TouchDown",
                 "TouchMove",
                 "TouchUp",
+                "Scroll",
                 "ClickKey",
                 "LongPressKey",
                 "KeyDown",
@@ -3213,6 +3263,20 @@
                     }
                 },
                 {
+                    "label": "ScrollV1",
+                    "body": "^ \"Scroll\",\n\"dx\": 0,\n\"dy\": 0"
+                },
+                {
+                    "label": "ScrollV2",
+                    "body": {
+                        "type": "Scroll",
+                        "param": {
+                            "dx": 0,
+                            "dy": 0
+                        }
+                    }
+                },
+                {
                     "label": "ClickKeyV1",
                     "body": "^ \"ClickKey\",\n\"key\": []"
                 },
@@ -3384,6 +3448,9 @@
                     "$ref": "#/$defs/TouchUpV1"
                 },
                 {
+                    "$ref": "#/$defs/ScrollV1"
+                },
+                {
                     "$ref": "#/$defs/ClickKeyV1"
                 },
                 {
@@ -3460,6 +3527,9 @@
                         },
                         {
                             "$ref": "#/$defs/TouchUpV2"
+                        },
+                        {
+                            "$ref": "#/$defs/ScrollV2"
                         },
                         {
                             "$ref": "#/$defs/ClickKeyV2"

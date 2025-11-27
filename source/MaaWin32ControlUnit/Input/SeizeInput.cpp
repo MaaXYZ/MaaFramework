@@ -176,4 +176,30 @@ bool SeizeInput::key_up(int key)
     return true;
 }
 
+bool SeizeInput::scroll(int dx, int dy)
+{
+    LogInfo << VAR(dx) << VAR(dy);
+
+    if (hwnd_) {
+        ensure_foreground();
+    }
+
+    INPUT input = {};
+    input.type = INPUT_MOUSE;
+
+    if (dy != 0) {
+        input.mi.dwFlags = MOUSEEVENTF_WHEEL;
+        input.mi.mouseData = static_cast<DWORD>(dy);
+        SendInput(1, &input, sizeof(INPUT));
+    }
+
+    if (dx != 0) {
+        input.mi.dwFlags = MOUSEEVENTF_HWHEEL;
+        input.mi.mouseData = static_cast<DWORD>(dx);
+        SendInput(1, &input, sizeof(INPUT));
+    }
+
+    return true;
+}
+
 MAA_CTRL_UNIT_NS_END

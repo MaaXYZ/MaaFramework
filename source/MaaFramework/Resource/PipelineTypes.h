@@ -97,6 +97,7 @@ enum class Type
     StopApp,
     KeyDown,
     KeyUp,
+    Scroll,
     Command,
     Custom,
     StopTask,
@@ -175,6 +176,12 @@ struct AppParam
     std::string package;
 };
 
+struct ScrollParam
+{
+    int dx = 0;
+    int dy = 0;
+};
+
 struct CommandParam
 {
     std::string exec;
@@ -202,6 +209,7 @@ using Param = std::variant<
     LongPressKeyParam,
     InputTextParam,
     AppParam,
+    ScrollParam,
     CommandParam,
     CustomParam>;
 
@@ -238,6 +246,8 @@ inline static const std::unordered_map<std::string, Type> kTypeMap = {
     { "keydown", Type::KeyDown },
     { "KeyUp", Type::KeyUp },
     { "keyup", Type::KeyUp },
+    { "Scroll", Type::Scroll },
+    { "scroll", Type::Scroll },
     { "Command", Type::Command },
     { "command", Type::Command },
     { "Custom", Type::Custom },
@@ -256,8 +266,9 @@ inline static const std::unordered_map<Type, std::string> kTypeNameMap = {
     { Type::ClickKey, "ClickKey" },     { Type::LongPressKey, "LongPressKey" },
     { Type::InputText, "InputText" },   { Type::StartApp, "StartApp" },
     { Type::StopApp, "StopApp" },       { Type::KeyDown, "KeyDown" },
-    { Type::KeyUp, "KeyUp" },           { Type::Command, "Command" },
-    { Type::Custom, "Custom" },         { Type::StopTask, "StopTask" },
+    { Type::KeyUp, "KeyUp" },           { Type::Scroll, "Scroll" },
+    { Type::Command, "Command" },       { Type::Custom, "Custom" },
+    { Type::StopTask, "StopTask" },
 };
 } // namespace Action
 

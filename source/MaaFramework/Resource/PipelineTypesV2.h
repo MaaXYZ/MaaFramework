@@ -236,6 +236,14 @@ struct JStopTask
     json::value to_json() const { return json::object(); }
 };
 
+struct JScroll
+{
+    int dx = 0;
+    int dy = 0;
+
+    MEO_TOJSON(dx, dy);
+};
+
 struct JCommand
 {
     std::string exec;
@@ -269,6 +277,7 @@ using JActionParam = std::variant<
     JInputText,
     JStartApp,
     JStopApp,
+    JScroll,
     JCommand,
     JCustomAction>;
 

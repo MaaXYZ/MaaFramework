@@ -35,6 +35,8 @@ public: // from InputBase
     virtual bool key_down(int key) override;
     virtual bool key_up(int key) override;
 
+    virtual bool scroll(int dx, int dy) override;
+
 private:
     HWND hwnd_ = nullptr;
     void ensure_foreground();

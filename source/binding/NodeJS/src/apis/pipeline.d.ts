@@ -282,6 +282,11 @@ declare global {
 
         type ActionStopTask = {}
 
+        type ActionScroll = {
+            dx?: number
+            dy?: number
+        }
+
         type ActionCommand<Mode> = RequiredIfStrict<
             {
                 exec?: string
@@ -344,6 +349,7 @@ declare global {
             | MixAct<'StartApp', ActionStartApp<Mode>, Mode>
             | MixAct<'StopApp', ActionStopApp<Mode>, Mode>
             | MixAct<'StopTask', ActionStopTask, Mode>
+            | MixAct<'Scroll', ActionScroll, Mode>
             | MixAct<'Command', ActionCommand<Mode>, Mode>
             | MixAct<'Custom', ActionCustom<Mode>, Mode>
 

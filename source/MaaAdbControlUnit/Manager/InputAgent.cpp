@@ -215,6 +215,12 @@ bool InputAgent::key_up(int key)
     return active_unit_->key_up(key);
 }
 
+bool InputAgent::scroll(int dx, int dy)
+{
+    LogError << "Scroll is not supported on Adb controller" << VAR(dx) << VAR(dy);
+    return false;
+}
+
 void InputAgent::on_image_resolution_changed(const std::pair<int, int>& pre, const std::pair<int, int>& cur)
 {
     if (!active_unit_) {

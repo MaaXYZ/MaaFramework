@@ -388,6 +388,26 @@ bool ReplayRecording::key_up(int key)
     return record.success;
 }
 
+bool ReplayRecording::scroll(int dx, int dy)
+{
+    LogInfo << VAR(dx) << VAR(dy);
+
+    if (record_index_ >= recording_.records.size()) {
+        LogError << "record index out of range" << VAR(record_index_) << VAR(recording_.records.size());
+        return false;
+    }
+
+    const Record& record = recording_.records.at(record_index_);
+    if (record.action.type != Record::Action::Type::scroll) {
+        LogError << "record type is not scroll" << VAR(record.action.type) << VAR(record.raw_data);
+        return false;
+    }
+
+    sleep(record.cost);
+    ++record_index_;
+    return record.success;
+}
+
 void ReplayRecording::sleep(int ms)
 {
     LogDebug << VAR(ms);

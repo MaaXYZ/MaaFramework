@@ -1084,6 +1084,15 @@ bool PipelineParser::parse_action(
         return parse_app_info(param_input, std::get<AppParam>(out_param), same_type ? std::get<AppParam>(parent_param) : default_param);
     } break;
 
+    case Type::Scroll: {
+        auto default_param = default_mgr.get_action_param<ScrollParam>(Type::Scroll);
+        out_param = default_param;
+        return parse_scroll(
+            param_input,
+            std::get<ScrollParam>(out_param),
+            same_type ? std::get<ScrollParam>(parent_param) : default_param);
+    } break;
+
     case Type::Command: {
         auto default_param = default_mgr.get_action_param<CommandParam>(Type::Command);
         out_param = default_param;
@@ -1316,6 +1325,21 @@ bool PipelineParser::parse_app_info(const json::value& input, Action::AppParam& 
 {
     if (!get_and_check_value(input, "package", output.package, default_value.package)) {
         LogError << "failed to get_and_check_value activity" << VAR(input);
+        return false;
+    }
+
+    return true;
+}
+
+bool PipelineParser::parse_scroll(const json::value& input, Action::ScrollParam& output, const Action::ScrollParam& default_value)
+{
+    if (!get_and_check_value(input, "dx", output.dx, default_value.dx)) {
+        LogError << "failed to get_and_check_value dx" << VAR(input);
+        return false;
+    }
+
+    if (!get_and_check_value(input, "dy", output.dy, default_value.dy)) {
+        LogError << "failed to get_and_check_value dy" << VAR(input);
         return false;
     }
 

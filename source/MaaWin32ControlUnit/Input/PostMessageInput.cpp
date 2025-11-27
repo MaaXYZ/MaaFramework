@@ -160,4 +160,28 @@ bool PostMessageInput::key_up(int key)
     return true;
 }
 
+bool PostMessageInput::scroll(int dx, int dy)
+{
+    LogInfo << VAR(dx) << VAR(dy);
+
+    if (!hwnd_) {
+        LogError << "hwnd_ is nullptr";
+        return false;
+    }
+
+    ensure_foreground();
+
+    if (dy != 0) {
+        WPARAM wParam = MAKEWPARAM(0, static_cast<short>(dy));
+        PostMessage(hwnd_, WM_MOUSEWHEEL, wParam, MAKELPARAM(last_pos_.first, last_pos_.second));
+    }
+
+    if (dx != 0) {
+        WPARAM wParam = MAKEWPARAM(0, static_cast<short>(dx));
+        PostMessage(hwnd_, WM_MOUSEHWHEEL, wParam, MAKELPARAM(last_pos_.first, last_pos_.second));
+    }
+
+    return true;
+}
+
 MAA_CTRL_UNIT_NS_END

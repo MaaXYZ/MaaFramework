@@ -88,6 +88,18 @@ extern "C"
 
     MAA_FRAMEWORK_API MaaCtrlId MaaControllerPostScreencap(MaaController* ctrl);
 
+    /**
+     * @brief Post a scroll action to the controller.
+     *
+     * @param ctrl The controller handle.
+     * @param dx The horizontal scroll delta. Positive values scroll right, negative values scroll left.
+     * @param dy The vertical scroll delta. Positive values scroll down, negative values scroll up.
+     * @return The control id of the scroll action.
+     *
+     * @note Not all controllers support scroll. If not supported, the action will fail.
+     */
+    MAA_FRAMEWORK_API MaaCtrlId MaaControllerPostScroll(MaaController* ctrl, int32_t dx, int32_t dy);
+
     MAA_FRAMEWORK_API MaaStatus MaaControllerStatus(const MaaController* ctrl, MaaCtrlId id);
 
     MAA_FRAMEWORK_API MaaStatus MaaControllerWait(const MaaController* ctrl, MaaCtrlId id);
