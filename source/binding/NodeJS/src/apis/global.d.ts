@@ -5,6 +5,7 @@ declare global {
             get version(): string
             set log_dir(value: string)
             set save_draw(value: boolean)
+            set save_on_error(value: boolean)
             set stdout_level(
                 value: 'Off' | 'Fatal' | 'Error' | 'Warn' | 'Info' | 'Debug' | 'Trace' | 'All',
             )

@@ -91,6 +91,11 @@ class MaaGlobalOptionEnum(IntEnum):
     # value: bool, eg: true; val_size: sizeof(bool)
     DebugMode = 6
 
+    # Whether to save screenshot on error
+    #
+    # value: bool, eg: true; val_size: sizeof(bool)
+    SaveOnError = 7
+
 
 class MaaCtrlOptionEnum(IntEnum):
     Invalid = 0

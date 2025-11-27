@@ -561,6 +561,25 @@ class Tasker:
         )
 
     @staticmethod
+    def set_save_on_error(save_on_error: bool) -> bool:
+        """设置是否在错误时保存截图到日志路径/on_error中 / Set whether to save screenshot on error to log path/on_error
+
+        Args:
+            save_on_error: 是否保存 / Whether to save
+
+        Returns:
+            bool: 是否成功 / Whether successful
+        """
+        cbool = ctypes.c_bool(save_on_error)
+        return bool(
+            Library.framework().MaaGlobalSetOption(
+                MaaOption(MaaGlobalOptionEnum.SaveOnError),
+                ctypes.pointer(cbool),
+                ctypes.sizeof(ctypes.c_bool),
+            )
+        )
+
+    @staticmethod
     def load_plugin(path: Union[Path, str]) -> bool:
         """加载插件 / Load plugin
 

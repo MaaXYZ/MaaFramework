@@ -18,6 +18,8 @@ bool OptionMgr::set_option(MaaGlobalOption key, MaaOptionValue value, MaaOptionV
         return set_stdout_level(value, val_size);
     case MaaGlobalOption_DebugMode:
         return set_debug_mode(value, val_size);
+    case MaaGlobalOption_SaveOnError:
+        return set_save_on_error(value, val_size);
     default:
         LogError << "Unknown key" << VAR(key) << VAR(value);
         return false;
@@ -84,6 +86,22 @@ bool OptionMgr::set_debug_mode(MaaOptionValue value, MaaOptionValueSize val_size
     debug_mode_ = *reinterpret_cast<const bool*>(value);
 
     LogInfo << "Set debug message" << VAR(debug_mode_);
+
+    return true;
+}
+
+bool OptionMgr::set_save_on_error(MaaOptionValue value, MaaOptionValueSize val_size)
+{
+    LogFunc;
+
+    if (val_size != sizeof(bool)) {
+        LogError << "Invalid value size" << VAR(val_size);
+        return false;
+    }
+
+    save_on_error_ = *reinterpret_cast<const bool*>(value);
+
+    LogInfo << "Set save on error" << VAR(save_on_error_);
 
     return true;
 }

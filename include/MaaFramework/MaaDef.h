@@ -108,6 +108,11 @@ enum MaaGlobalOptionEnum
     ///
     /// value: bool, eg: true; val_size: sizeof(bool)
     MaaGlobalOption_DebugMode = 6,
+
+    /// Whether to save screenshot on error
+    ///
+    /// value: bool, eg: true; val_size: sizeof(bool)
+    MaaGlobalOption_SaveOnError = 7,
 };
 
 typedef MaaOption MaaResOption;

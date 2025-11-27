@@ -3,7 +3,9 @@
 #include <stack>
 
 #include "Controller/ControllerAgent.h"
+#include "Global/OptionMgr.h"
 #include "MaaFramework/MaaMsg.h"
+#include "MaaUtils/ImageIo.h"
 #include "MaaUtils/JsonExt.hpp"
 #include "MaaUtils/Logger.h"
 #include "Resource/PipelineDumper.h"
@@ -69,19 +71,22 @@ bool PipelineTask::run()
                 next = node.next;
             }
             else { // 动作执行失败了
-                LogWarn << "node not completed, handle error" << VAR(node_detail.name);
+                LogWarn << "node not completed, handle error" << VAR(node.name);
                 error_handling = true;
                 next = node.on_error;
+                save_on_error(node.name);
             }
         }
         else if (error_handling) {
             LogError << "error handling loop detected" << VAR(node.name);
             next.clear();
+            save_on_error(node.name);
         }
         else {
             LogInfo << "invalid node id, handle error" << VAR(node.name);
             error_handling = true;
             next = node.on_error;
+            save_on_error(node.name);
         }
 
         if (next.empty() && !jumpback_stack.empty()) {
@@ -290,6 +295,31 @@ RecoResult PipelineTask::recognize_list(const cv::Mat& image, const std::vector<
     }
 
     return {};
+}
+
+void PipelineTask::save_on_error(const std::string& node_name)
+{
+    const auto& option = MAA_GLOBAL_NS::OptionMgr::get_instance();
+
+    if (!option.save_on_error()) {
+        return;
+    }
+
+    if (!controller()) {
+        LogError << "controller is null";
+        return;
+    }
+
+    auto image = controller()->cached_image();
+    if (image.empty()) {
+        LogError << "cached_image is empty";
+        return;
+    }
+
+    std::string filename = std::format("{}_{}.png", node_name, format_now_for_filename());
+    auto filepath = option.log_dir() / "on_error" / path(filename);
+    imwrite(filepath, image);
+    LogInfo << "save on error to" << filepath;
 }
 
 MAA_TASK_NS_END
