@@ -1,5 +1,6 @@
 import ctypes
 import json
+from dataclasses import dataclass
 from typing import Any, Dict, Optional, Tuple
 
 import numpy
@@ -366,7 +367,7 @@ class ContextEventSink(EventSink):
     class NodeNextListDetail:
         task_id: int
         name: str
-        next_list: list[NextListItem]
+        next_list: list["ContextEventSink.NextListItem"]
         focus: Any
 
     def on_node_next_list(
