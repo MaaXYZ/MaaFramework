@@ -18,9 +18,20 @@ Pipeline JSON 迁移脚本 - 将旧版 is_sub/interrupt 转换为 v5.1 的 [Jump
 
 特性:
     - 支持 JSONC（带注释的 JSON，包括 // 和 /* */ 两种注释）
+    - **保留原文件中的所有注释**
     - 保持 JSON 字段顺序不变
     - 保持原文件的缩进风格
     - 支持跨文件节点引用
+
+示例:
+    # 预览更改（不实际修改文件）
+    python migrate_pipeline_v5.py ./pipeline --dry-run
+
+    # 执行迁移并备份原文件
+    python migrate_pipeline_v5.py ./pipeline --backup
+
+    # 直接执行迁移
+    python migrate_pipeline_v5.py ./pipeline
 """
 
 import re
@@ -33,10 +44,10 @@ from typing import Any
 from collections import OrderedDict
 
 
-def remove_jsonc_comments(text: str) -> str:
+def remove_jsonc_comments_for_parsing(text: str) -> str:
     """
-    移除 JSONC 文件中的注释（支持 // 和 /* */ 两种注释）
-    同时保留字符串内的内容不受影响
+    移除 JSONC 文件中的注释用于解析，但保留原文本用于重建
+    支持 // 和 /* */ 两种注释
     """
     result = []
     i = 0
@@ -44,15 +55,12 @@ def remove_jsonc_comments(text: str) -> str:
     string_char = None
 
     while i < len(text):
-        # 处理字符串内容
         if in_string:
             if text[i] == "\\" and i + 1 < len(text):
-                # 转义字符，跳过下一个字符
                 result.append(text[i : i + 2])
                 i += 2
                 continue
             elif text[i] == string_char:
-                # 字符串结束
                 in_string = False
                 string_char = None
                 result.append(text[i])
@@ -63,7 +71,6 @@ def remove_jsonc_comments(text: str) -> str:
                 i += 1
                 continue
 
-        # 检查字符串开始
         if text[i] in ('"', "'"):
             in_string = True
             string_char = text[i]
@@ -73,7 +80,6 @@ def remove_jsonc_comments(text: str) -> str:
 
         # 检查单行注释 //
         if text[i : i + 2] == "//":
-            # 跳过到行尾
             while i < len(text) and text[i] != "\n":
                 i += 1
             continue
@@ -83,7 +89,7 @@ def remove_jsonc_comments(text: str) -> str:
             i += 2
             while i < len(text) and text[i : i + 2] != "*/":
                 i += 1
-            i += 2  # 跳过 */
+            i += 2
             continue
 
         result.append(text[i])
@@ -96,7 +102,7 @@ def parse_jsonc(text: str) -> Any:
     """解析 JSONC 文件内容，返回 OrderedDict 以保持字段顺序"""
     import json
 
-    clean_text = remove_jsonc_comments(text)
+    clean_text = remove_jsonc_comments_for_parsing(text)
     return json.loads(clean_text, object_pairs_hook=OrderedDict)
 
 
@@ -112,28 +118,162 @@ def detect_indent(text: str) -> str:
     return "    "  # 默认 4 空格
 
 
-def dump_json_ordered(data: Any, indent: str = "    ") -> str:
+def rebuild_json_with_comments(
+    original_text: str, original_data: dict, migrated_data: dict, indent: str = "    "
+) -> str:
     """
-    将数据序列化为 JSON 字符串，保持字段顺序
+    基于原始文本和迁移后的数据重建 JSON，保留注释
+
+    使用更精确的方式在原文本上进行替换操作
     """
     import json
 
-    def convert_to_serializable(obj):
-        if isinstance(obj, OrderedDict):
-            return {k: convert_to_serializable(v) for k, v in obj.items()}
-        elif isinstance(obj, dict):
-            return {k: convert_to_serializable(v) for k, v in obj.items()}
-        elif isinstance(obj, list):
-            return [convert_to_serializable(item) for item in obj]
-        else:
-            return obj
+    result_text = original_text
 
-    serializable_data = convert_to_serializable(data)
+    # 遍历所有节点，应用修改
+    for node_name, migrated_node_data in migrated_data.items():
+        if not isinstance(migrated_node_data, dict):
+            continue
 
-    # 计算缩进空格数
-    indent_size = len(indent.replace("\t", "    "))
+        original_node_data = original_data.get(node_name, {})
+        if not isinstance(original_node_data, dict):
+            continue
 
-    return json.dumps(serializable_data, ensure_ascii=False, indent=indent_size)
+        # 首先提取该节点的文本范围
+        node_start_pattern = rf'("{re.escape(node_name)}"\s*:\s*\{{)'
+        node_matches = list(re.finditer(node_start_pattern, result_text))
+
+        if not node_matches:
+            continue
+
+        # 找到节点范围（从节点开始到节点结束}）
+        for match in node_matches:
+            node_start_pos = match.start()
+
+            # 找到对应的结束括号
+            brace_count = 0
+            i = match.end()
+            node_end_pos = -1
+            in_string = False
+            escape_next = False
+
+            while i < len(result_text):
+                char = result_text[i]
+
+                if escape_next:
+                    escape_next = False
+                    i += 1
+                    continue
+
+                if char == "\\":
+                    escape_next = True
+                    i += 1
+                    continue
+
+                if char == '"' and not in_string:
+                    in_string = True
+                elif char == '"' and in_string:
+                    in_string = False
+                elif not in_string:
+                    if char == "{":
+                        brace_count += 1
+                    elif char == "}":
+                        if brace_count == 0:
+                            node_end_pos = i + 1
+                            break
+                        brace_count -= 1
+
+                i += 1
+
+            if node_end_pos == -1:
+                continue
+
+            # 提取节点文本
+            node_text = result_text[node_start_pos:node_end_pos]
+            modified_node_text = node_text
+
+            # 1. 删除 is_sub 字段
+            if "is_sub" in original_node_data and "is_sub" not in migrated_node_data:
+                modified_node_text = re.sub(
+                    r'\n\s*"is_sub"\s*:\s*[^,\n]+,?\s*(?://[^\n]*)?',
+                    "",
+                    modified_node_text,
+                )
+
+            # 2. 删除 interrupt 字段
+            if (
+                "interrupt" in original_node_data
+                and "interrupt" not in migrated_node_data
+            ):
+                modified_node_text = re.sub(
+                    r'\n\s*"interrupt"\s*:\s*\[[^\]]*\],?\s*(?://[^\n]*)?',
+                    "",
+                    modified_node_text,
+                )
+
+            # 3. 更新 next 字段
+            if "next" in migrated_node_data:
+                orig_next = original_node_data.get("next")
+                new_next = migrated_node_data["next"]
+
+                if orig_next != new_next:
+                    new_next_str = json.dumps(new_next, ensure_ascii=False)
+
+                    if "next" in original_node_data:
+                        # 替换现有的 next 字段
+                        def replace_next(m):
+                            return f'{m.group(1)}"next": {new_next_str}{m.group(2)}{m.group(3) or ""}'
+
+                        modified_node_text = re.sub(
+                            r'(\s*)"next"\s*:\s*\[[^\]]*\](,?)(\s*//[^\n]*)?',
+                            replace_next,
+                            modified_node_text,
+                        )
+                    else:
+                        # 添加新的 next 字段
+                        header_match = re.search(
+                            rf'("{re.escape(node_name)}"\s*:\s*\{{\s*(?://[^\n]*)?\n)(\s+)',
+                            modified_node_text,
+                        )
+                        if header_match:
+                            insert_pos = header_match.end() - len(header_match.group(2))
+                            field_indent = header_match.group(2)
+                            new_field = f'{field_indent}"next": {new_next_str},\n'
+                            modified_node_text = (
+                                modified_node_text[:insert_pos]
+                                + new_field
+                                + modified_node_text[insert_pos:]
+                            )
+
+            # 4. 更新 on_error 字段
+            if "on_error" in migrated_node_data:
+                orig_on_error = original_node_data.get("on_error")
+                new_on_error = migrated_node_data["on_error"]
+
+                if orig_on_error != new_on_error:
+                    new_on_error_str = json.dumps(new_on_error, ensure_ascii=False)
+
+                    def replace_on_error(m):
+                        return f'{m.group(1)}"on_error": {new_on_error_str}{m.group(2)}{m.group(3) or ""}'
+
+                    modified_node_text = re.sub(
+                        r'(\s*)"on_error"\s*:\s*\[[^\]]*\](,?)(\s*//[^\n]*)?',
+                        replace_on_error,
+                        modified_node_text,
+                    )
+
+            # 替换文本中的节点
+            if modified_node_text != node_text:
+                result_text = (
+                    result_text[:node_start_pos]
+                    + modified_node_text
+                    + result_text[node_end_pos:]
+                )
+
+            # 只处理第一个匹配
+            break
+
+    return result_text
 
 
 def ensure_list(value: str | list | None) -> list:
@@ -352,12 +492,15 @@ def migrate_pipeline_file(
             shutil.copy2(file_path, backup_path)
             all_changes.append(f"已备份到: {backup_path}")
 
-        # 写入迁移后的数据，保持原文件的缩进风格
+        # 使用保留注释的方式写入迁移后的数据
         with open(file_path, "w", encoding="utf-8", newline="\n") as f:
-            json_str = dump_json_ordered(migrated_data, original_indent)
-            f.write(json_str)
-            f.write("\n")  # 文件末尾添加换行
-        all_changes.append("文件已更新")
+            result_text = rebuild_json_with_comments(
+                content, data, migrated_data, original_indent
+            )
+            f.write(result_text)
+            if not result_text.endswith("\n"):
+                f.write("\n")
+        all_changes.append("文件已更新（保留注释）")
 
     return True, all_changes
 
