@@ -228,6 +228,9 @@ void NeuralNetworkDetector::sort_(ResultsVec& results) const
     case ResultOrderBy::Random:
         sort_by_random_(results);
         break;
+    case ResultOrderBy::Expected:
+        sort_by_expected_index_(results, param_.expected);
+        break;
     default:
         LogError << "Not supported order by" << VAR(param_.order_by);
         break;

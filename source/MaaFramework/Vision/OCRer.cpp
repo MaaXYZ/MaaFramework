@@ -245,6 +245,9 @@ void OCRer::sort_(ResultsVec& results) const
     case ResultOrderBy::Length:
         std::ranges::sort(results, [](const auto& lhs, const auto& rhs) -> bool { return lhs.text.size() > rhs.text.size(); });
         break;
+    case ResultOrderBy::Expected:
+        sort_by_expected_regex_(results, param_.expected);
+        break;
 
     default:
         LogError << "Not supported order by" << VAR(param_.order_by);

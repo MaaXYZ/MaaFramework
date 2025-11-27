@@ -22,9 +22,9 @@ declare global {
             TemplateMatch: 'Horizontal' | 'Vertical' | 'Score' | 'Random'
             FeatureMatch: 'Horizontal' | 'Vertical' | 'Score' | 'Area' | 'Random'
             ColorMatch: 'Horizontal' | 'Vertical' | 'Score' | 'Area' | 'Random'
-            OCR: 'Horizontal' | 'Vertical' | 'Area' | 'Length' | 'Random'
-            NeuralNetworkClassify: 'Horizontal' | 'Vertical' | 'Score' | 'Random'
-            NeuralNetworkDetect: 'Horizontal' | 'Vertical' | 'Score' | 'Area' | 'Random'
+            OCR: 'Horizontal' | 'Vertical' | 'Area' | 'Length' | 'Random' | 'Expected'
+            NeuralNetworkClassify: 'Horizontal' | 'Vertical' | 'Score' | 'Random' | 'Expected'
+            NeuralNetworkDetect: 'Horizontal' | 'Vertical' | 'Score' | 'Area' | 'Random' | 'Expected'
         }
 
         type RecognitionDirectHit = {}

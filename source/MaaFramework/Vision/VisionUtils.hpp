@@ -2,6 +2,7 @@
 
 #include <random>
 #include <ranges>
+#include <regex>
 
 #include "Common/Conf.h"
 #include "MaaUtils/Logger.h"
@@ -68,6 +69,59 @@ inline static void sort_by_required_(ResultsVec& results, const std::vector<std:
         size_t rvalue = req_cache[rhs.text];
         if (lvalue == 0) {
             return false;
+        }
+        else if (rvalue == 0) {
+            return true;
+        }
+        return lvalue < rvalue;
+    });
+}
+
+// 按 expected 中的 cls_index 顺序排序（用于 NeuralNetworkClassifier 和 NeuralNetworkDetector）
+template <typename ResultsVec>
+inline static void sort_by_expected_index_(ResultsVec& results, const std::vector<int>& expected)
+{
+    // 构建 cls_index 到 expected 数组位置的映射
+    std::unordered_map<size_t, size_t> index_cache;
+    for (size_t i = 0; i != expected.size(); ++i) {
+        index_cache.emplace(static_cast<size_t>(expected.at(i)), i + 1);
+    }
+
+    // 不在 expected 中的将被排在最后
+    std::ranges::sort(results, [&index_cache](const auto& lhs, const auto& rhs) -> bool {
+        auto lit = index_cache.find(lhs.cls_index);
+        auto rit = index_cache.find(rhs.cls_index);
+        size_t lvalue = lit != index_cache.end() ? lit->second : 0;
+        size_t rvalue = rit != index_cache.end() ? rit->second : 0;
+        if (lvalue == 0) {
+            return false;
+        }
+        else if (rvalue == 0) {
+            return true;
+        }
+        return lvalue < rvalue;
+    });
+}
+
+// 按 expected 正则表达式数组中的匹配顺序排序（用于 OCR）
+template <typename ResultsVec>
+inline static void sort_by_expected_regex_(ResultsVec& results, const std::vector<std::wstring>& expected)
+{
+    // 对于每个结果，找到它匹配的第一个正则表达式在 expected 数组中的位置
+    auto get_match_index = [&expected](const std::wstring& text) -> size_t {
+        for (size_t i = 0; i < expected.size(); ++i) {
+            if (std::regex_search(text, std::wregex(expected[i]))) {
+                return i + 1; // 返回 1-based 索引，0 表示未匹配
+            }
+        }
+        return 0; // 未匹配到任何 expected
+    };
+
+    std::ranges::sort(results, [&get_match_index](const auto& lhs, const auto& rhs) -> bool {
+        size_t lvalue = get_match_index(lhs.text);
+        size_t rvalue = get_match_index(rhs.text);
+        if (lvalue == 0) {
+            return false; // 未匹配的排在最后
         }
         else if (rvalue == 0) {
             return true;
