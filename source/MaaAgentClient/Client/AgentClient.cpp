@@ -369,6 +369,9 @@ bool AgentClient::handle_inserted_request(const json::value& j)
     else if (handle_controller_post_key_up(j)) {
         return true;
     }
+    else if (handle_controller_post_scroll(j)) {
+        return true;
+    }
     else if (handle_controller_status(j)) {
         return true;
     }
@@ -1645,6 +1648,26 @@ bool AgentClient::handle_controller_post_key_up(const json::value& j)
     }
     MaaCtrlId ctrl_id = controller->post_key_up(req.keycode);
     ControllerPostKeyUpReverseResponse resp {
+        .ctrl_id = ctrl_id,
+    };
+    send(resp);
+    return true;
+}
+
+bool AgentClient::handle_controller_post_scroll(const json::value& j)
+{
+    if (!j.is<ControllerPostScrollReverseRequest>()) {
+        return false;
+    }
+    const ControllerPostScrollReverseRequest& req = j.as<ControllerPostScrollReverseRequest>();
+    LogFunc << VAR(req) << VAR(ipc_addr_);
+    MaaController* controller = query_controller(req.controller_id);
+    if (!controller) {
+        LogError << "controller not found" << VAR(req.controller_id);
+        return false;
+    }
+    MaaCtrlId ctrl_id = controller->post_scroll(req.dx, req.dy);
+    ControllerPostScrollReverseResponse resp {
         .ctrl_id = ctrl_id,
     };
     send(resp);
