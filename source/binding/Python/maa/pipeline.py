@@ -271,7 +271,7 @@ class JPipelineData:
     rate_limit: int
     timeout: int
     on_error: List[JNodeAttr]
-    anchor: str
+    anchor: List[str]
     inverse: bool
     enabled: bool
     pre_delay: int

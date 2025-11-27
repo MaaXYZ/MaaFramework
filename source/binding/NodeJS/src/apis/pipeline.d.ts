@@ -368,7 +368,7 @@ declare global {
             rate_limit?: number
             timeout?: number
             on_error?: MaybeArray<NodeAttr, Mode>
-            anchor?: string
+            anchor?: MaybeArray<string, Mode>
             inverse?: boolean
             enabled?: boolean
             max_hit?: number

@@ -3693,9 +3693,8 @@
                 "anchor": {
                     "title": "Anchor Property",
                     "description": "锚点名称。可选，默认空。",
-                    "type": "string",
-                    "default": "",
-                    "markdownDescription": "*string*\n\n锚点名称。可选，默认空。\n\n当节点执行成功后，会将该锚点名设置为当前节点。多个节点可设置同一个锚点名，后执行的会覆盖先执行的。\n\n在 `next` 或 `on_error` 中可通过 `[Anchor]` 属性引用该锚点，运行时会解析为最后设置该锚点的节点。\n\n详见文档中的「节点属性」章节。"
+                    "$ref": "#/$defs/jsonStringOrList",
+                    "markdownDescription": "*string* | *list<string, >*\n\n锚点名称。可选，默认空。\n\n当节点执行成功后，会将该锚点名设置为当前节点。多个节点可设置同一个锚点名，后执行的会覆盖先执行的。\n\n在 `next` 或 `on_error` 中可通过 `[Anchor]` 属性引用该锚点，运行时会解析为最后设置该锚点的节点。\n\n详见文档中的「节点属性」章节。"
                 },
                 "inverse": {
                     "title": "Inverse Property",

@@ -250,8 +250,8 @@ bool PipelineParser::parse_node(
         return false;
     }
 
-    if (!get_and_check_value(input, "anchor", data.anchor, default_value.anchor)) {
-        LogError << "failed to get_and_check_value anchor" << VAR(input);
+    if (!get_and_check_value_or_array(input, "anchor", data.anchor, default_value.anchor)) {
+        LogError << "failed to get_and_check_value_or_array anchor" << VAR(input);
         return false;
     }
 

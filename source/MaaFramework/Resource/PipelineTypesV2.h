@@ -301,7 +301,7 @@ struct JPipelineData
     int64_t rate_limit = 0;
     int64_t timeout = 0;
     std::vector<NodeAttr> on_error;
-    std::string anchor;
+    std::vector<std::string> anchor;
     bool inverse = false;
     bool enabled = false;
     int64_t pre_delay = 0;
