@@ -358,10 +358,15 @@ class Context:
 class ContextEventSink(EventSink):
 
     @dataclass
+    class NextListItem:
+        name: str
+        jump_back: bool
+
+    @dataclass
     class NodeNextListDetail:
         task_id: int
         name: str
-        next_list: list[str]
+        next_list: list[NextListItem]
         focus: Any
 
     def on_node_next_list(
@@ -454,10 +459,14 @@ class ContextEventSink(EventSink):
 
         noti_type = EventSink._notification_type(msg)
         if msg.startswith("Node.NextList"):
+            next_list = [
+                self.NextListItem(name=item["name"], jump_back=item["jump_back"])
+                for item in details["list"]
+            ]
             detail = self.NodeNextListDetail(
                 task_id=details["task_id"],
                 name=details["name"],
-                next_list=details["list"],
+                next_list=next_list,
                 focus=details["focus"],
             )
             self.on_node_next_list(context, noti_type, detail)

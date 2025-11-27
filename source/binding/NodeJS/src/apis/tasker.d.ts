@@ -88,7 +88,7 @@ declare global {
             msg: NotifyMessage<'NextList'>
             task_id: number // TaskId
             name: string
-            list: string[]
+            list: { name: string; jump_back: boolean }[]
             focus: unknown
         }
 
