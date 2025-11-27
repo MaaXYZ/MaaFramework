@@ -318,6 +318,11 @@ void Context::increment_hit_count(const std::string& node_name)
     hit_count_[node_name]++;
 }
 
+void Context::clear_hit_count(const std::string& node_name)
+{
+    hit_count_.erase(node_name);
+}
+
 void Context::set_anchor(const std::string& anchor_name, const std::string& node_name)
 {
     LogDebug << VAR(anchor_name) << VAR(node_name);

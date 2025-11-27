@@ -55,11 +55,12 @@ public:
 
     bool& need_to_stop();
 
-    uint get_hit_count(const std::string& node_name) const;
+    virtual uint get_hit_count(const std::string& node_name) const override;
     void increment_hit_count(const std::string& node_name);
+    virtual void clear_hit_count(const std::string& node_name) override;
 
-    void set_anchor(const std::string& anchor_name, const std::string& node_name);
-    std::optional<std::string> get_anchor(const std::string& anchor_name) const;
+    virtual void set_anchor(const std::string& anchor_name, const std::string& node_name) override;
+    virtual std::optional<std::string> get_anchor(const std::string& anchor_name) const override;
 
 private:
     bool override_pipeline_once(const json::object& pipeline_override, const MAA_RES_NS::DefaultPipelineMgr& default_mgr);

@@ -48,6 +48,10 @@ private:
     bool handle_context_clone(const json::value& j);
     bool handle_context_task_id(const json::value& j);
     bool handle_context_tasker(const json::value& j);
+    bool handle_context_set_anchor(const json::value& j);
+    bool handle_context_get_anchor(const json::value& j);
+    bool handle_context_get_hit_count(const json::value& j);
+    bool handle_context_clear_hit_count(const json::value& j);
 
     bool handle_tasker_inited(const json::value& j);
     bool handle_tasker_post_task(const json::value& j);

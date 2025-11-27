@@ -342,6 +342,72 @@ struct ContextTaskerReverseResponse
     MEO_JSONIZATION(tasker_id, _ContextTaskerReverseResponse);
 };
 
+struct ContextSetAnchorReverseRequest
+{
+    std::string context_id;
+    std::string anchor_name;
+    std::string node_name;
+
+    MessageTypePlaceholder _ContextSetAnchorReverseRequest = 1;
+    MEO_JSONIZATION(context_id, anchor_name, node_name, _ContextSetAnchorReverseRequest);
+};
+
+struct ContextSetAnchorReverseResponse
+{
+    MessageTypePlaceholder _ContextSetAnchorReverseResponse = 1;
+    MEO_JSONIZATION(_ContextSetAnchorReverseResponse);
+};
+
+struct ContextGetAnchorReverseRequest
+{
+    std::string context_id;
+    std::string anchor_name;
+
+    MessageTypePlaceholder _ContextGetAnchorReverseRequest = 1;
+    MEO_JSONIZATION(context_id, anchor_name, _ContextGetAnchorReverseRequest);
+};
+
+struct ContextGetAnchorReverseResponse
+{
+    bool has_value = false;
+    std::string node_name;
+
+    MessageTypePlaceholder _ContextGetAnchorReverseResponse = 1;
+    MEO_JSONIZATION(has_value, node_name, _ContextGetAnchorReverseResponse);
+};
+
+struct ContextGetHitCountReverseRequest
+{
+    std::string context_id;
+    std::string node_name;
+
+    MessageTypePlaceholder _ContextGetHitCountReverseRequest = 1;
+    MEO_JSONIZATION(context_id, node_name, _ContextGetHitCountReverseRequest);
+};
+
+struct ContextGetHitCountReverseResponse
+{
+    uint64_t count = 0;
+
+    MessageTypePlaceholder _ContextGetHitCountReverseResponse = 1;
+    MEO_JSONIZATION(count, _ContextGetHitCountReverseResponse);
+};
+
+struct ContextClearHitCountReverseRequest
+{
+    std::string context_id;
+    std::string node_name;
+
+    MessageTypePlaceholder _ContextClearHitCountReverseRequest = 1;
+    MEO_JSONIZATION(context_id, node_name, _ContextClearHitCountReverseRequest);
+};
+
+struct ContextClearHitCountReverseResponse
+{
+    MessageTypePlaceholder _ContextClearHitCountReverseResponse = 1;
+    MEO_JSONIZATION(_ContextClearHitCountReverseResponse);
+};
+
 struct TaskerInitedReverseRequest
 {
     std::string tasker_id;

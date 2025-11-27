@@ -240,6 +240,18 @@ bool AgentClient::handle_inserted_request(const json::value& j)
     else if (handle_context_tasker(j)) {
         return true;
     }
+    else if (handle_context_set_anchor(j)) {
+        return true;
+    }
+    else if (handle_context_get_anchor(j)) {
+        return true;
+    }
+    else if (handle_context_get_hit_count(j)) {
+        return true;
+    }
+    else if (handle_context_clear_hit_count(j)) {
+        return true;
+    }
 
     else if (handle_tasker_inited(j)) {
         return true;
@@ -644,6 +656,99 @@ bool AgentClient::handle_context_tasker(const json::value& j)
     ContextTaskerReverseResponse resp {
         .tasker_id = tasker_id(tasker),
     };
+    send(resp);
+    return true;
+}
+
+bool AgentClient::handle_context_set_anchor(const json::value& j)
+{
+    if (!j.is<ContextSetAnchorReverseRequest>()) {
+        return false;
+    }
+
+    const ContextSetAnchorReverseRequest& req = j.as<ContextSetAnchorReverseRequest>();
+    LogFunc << VAR(req) << VAR(ipc_addr_);
+
+    MaaContext* context = query_context(req.context_id);
+    if (!context) {
+        LogError << "context not found" << VAR(req.context_id);
+        return false;
+    }
+
+    context->set_anchor(req.anchor_name, req.node_name);
+
+    ContextSetAnchorReverseResponse resp {};
+    send(resp);
+    return true;
+}
+
+bool AgentClient::handle_context_get_anchor(const json::value& j)
+{
+    if (!j.is<ContextGetAnchorReverseRequest>()) {
+        return false;
+    }
+
+    const ContextGetAnchorReverseRequest& req = j.as<ContextGetAnchorReverseRequest>();
+    LogFunc << VAR(req) << VAR(ipc_addr_);
+
+    MaaContext* context = query_context(req.context_id);
+    if (!context) {
+        LogError << "context not found" << VAR(req.context_id);
+        return false;
+    }
+
+    auto opt = context->get_anchor(req.anchor_name);
+
+    ContextGetAnchorReverseResponse resp {
+        .has_value = opt.has_value(),
+        .node_name = opt.value_or(""),
+    };
+    send(resp);
+    return true;
+}
+
+bool AgentClient::handle_context_get_hit_count(const json::value& j)
+{
+    if (!j.is<ContextGetHitCountReverseRequest>()) {
+        return false;
+    }
+
+    const ContextGetHitCountReverseRequest& req = j.as<ContextGetHitCountReverseRequest>();
+    LogFunc << VAR(req) << VAR(ipc_addr_);
+
+    MaaContext* context = query_context(req.context_id);
+    if (!context) {
+        LogError << "context not found" << VAR(req.context_id);
+        return false;
+    }
+
+    uint count = context->get_hit_count(req.node_name);
+
+    ContextGetHitCountReverseResponse resp {
+        .count = count,
+    };
+    send(resp);
+    return true;
+}
+
+bool AgentClient::handle_context_clear_hit_count(const json::value& j)
+{
+    if (!j.is<ContextClearHitCountReverseRequest>()) {
+        return false;
+    }
+
+    const ContextClearHitCountReverseRequest& req = j.as<ContextClearHitCountReverseRequest>();
+    LogFunc << VAR(req) << VAR(ipc_addr_);
+
+    MaaContext* context = query_context(req.context_id);
+    if (!context) {
+        LogError << "context not found" << VAR(req.context_id);
+        return false;
+    }
+
+    context->clear_hit_count(req.node_name);
+
+    ContextClearHitCountReverseResponse resp {};
     send(resp);
     return true;
 }
