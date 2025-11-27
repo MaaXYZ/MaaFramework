@@ -277,16 +277,19 @@ struct NodeAttr
 {
     std::string name;
     bool jump_back = false;
+    bool is_anchor = false;
 
-    MEO_JSONIZATION(name, jump_back);
+    MEO_JSONIZATION(name, jump_back, is_anchor);
 };
 
 struct PipelineData
 {
     inline static constexpr std::string_view kNodePrefix_Ignore = "$";
     inline static constexpr std::string_view kNodeAttr_JumpBack = "[JumpBack]";
+    inline static constexpr std::string_view kNodeAttr_Anchor = "[Anchor]";
 
     std::string name;
+    std::string anchor;
     bool enabled = true;
 
     Recognition::Type reco_type = Recognition::Type::DirectHit;

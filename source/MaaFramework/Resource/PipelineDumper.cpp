@@ -363,8 +363,8 @@ json::object PipelineDumper::dump(const PipelineData& pp)
     data.post_wait_freezes = dump_wait_freezes(pp.post_wait_freezes);
 
     data.max_hit = pp.max_hit;
-
-    data.attach = pp.attach; // 保存附加 JSON 对象
+    data.anchor = pp.anchor;
+    data.attach = pp.attach;
 
     return data.to_json().as_object();
 }

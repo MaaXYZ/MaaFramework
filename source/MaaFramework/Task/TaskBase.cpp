@@ -61,6 +61,11 @@ RecoResult TaskBase::run_recognition(const cv::Mat& image, const PipelineData& d
 {
     LogFunc << VAR(cur_node_) << VAR(data.name);
 
+    if (!context_) {
+        LogError << "context is null";
+        return {};
+    }
+
     if (image.empty()) {
         LogError << "Image is empty";
         return {};
@@ -71,13 +76,10 @@ RecoResult TaskBase::run_recognition(const cv::Mat& image, const PipelineData& d
         return {};
     }
 
-    // Check max_hit limit
-    if (context_) {
-        uint current_hit = context_->get_hit_count(data.name);
-        if (current_hit >= data.max_hit) {
-            LogDebug << "max_hit reached" << VAR(data.name) << VAR(current_hit) << VAR(data.max_hit);
-            return {};
-        }
+    uint current_hit = context_->get_hit_count(data.name);
+    if (current_hit >= data.max_hit) {
+        LogDebug << "max_hit reached" << VAR(data.name) << VAR(current_hit) << VAR(data.max_hit);
+        return {};
     }
 
     if (debug_mode() || !data.focus.is_null()) {
@@ -105,10 +107,7 @@ RecoResult TaskBase::run_recognition(const cv::Mat& image, const PipelineData& d
 
     if (result.box) {
         LogInfo << "reco hit" << VAR(result.name) << VAR(result.box);
-        // Increment hit count on successful recognition
-        if (context_) {
-            context_->increment_hit_count(data.name);
-        }
+        context_->increment_hit_count(data.name);
     }
 
     return result;

@@ -309,6 +309,7 @@ struct JPipelineData
     JWaitFreezes post_wait_freezes;
     uint32_t max_hit = 0;
     json::value focus;
+    std::string anchor;
     json::object attach;
 
     MEO_TOJSON(
@@ -326,6 +327,7 @@ struct JPipelineData
         post_wait_freezes,
         max_hit,
         focus,
+        anchor,
         attach);
 };
 } // namespace PipelineV2

@@ -144,6 +144,11 @@ public:
 
     virtual MaaTaskId task_id() const = 0;
     virtual MaaTasker* tasker() const = 0;
+
+    virtual void set_anchor(const std::string& anchor_name, const std::string& node_name) = 0;
+    virtual std::optional<std::string> get_anchor(const std::string& anchor_name) const = 0;
+    virtual uint get_hit_count(const std::string& node_name) const = 0;
+    virtual void clear_hit_count(const std::string& node_name) = 0;
 };
 
 struct MaaAgentClient

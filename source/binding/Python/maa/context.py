@@ -263,6 +263,70 @@ class Context:
 
         return Context(cloned_handle)
 
+    def set_anchor(self, anchor_name: str, node_name: str) -> bool:
+        """设置锚点 / Set anchor
+
+        Args:
+            anchor_name: 锚点名称 / Anchor name
+            node_name: 节点名称 / Node name
+
+        Returns:
+            bool: 是否成功 / Whether successful
+        """
+        return bool(
+            Library.framework().MaaContextSetAnchor(
+                self._handle, anchor_name.encode(), node_name.encode()
+            )
+        )
+
+    def get_anchor(self, anchor_name: str) -> Optional[str]:
+        """获取锚点对应的节点名 / Get node name for anchor
+
+        Args:
+            anchor_name: 锚点名称 / Anchor name
+
+        Returns:
+            Optional[str]: 节点名称，如果不存在则返回 None / Node name, or None if not exists
+        """
+        string_buffer = StringBuffer()
+        if not Library.framework().MaaContextGetAnchor(
+            self._handle, anchor_name.encode(), string_buffer._handle
+        ):
+            return None
+
+        return string_buffer.get()
+
+    def get_hit_count(self, node_name: str) -> int:
+        """获取节点命中计数 / Get hit count for node
+
+        Args:
+            node_name: 节点名称 / Node name
+
+        Returns:
+            int: 命中计数 / Hit count
+        """
+        count = ctypes.c_uint64()
+        if not Library.framework().MaaContextGetHitCount(
+            self._handle, node_name.encode(), ctypes.byref(count)
+        ):
+            return 0
+        return count.value
+
+    def clear_hit_count(self, node_name: str) -> bool:
+        """清除节点命中计数 / Clear hit count for node
+
+        Args:
+            node_name: 节点名称 / Node name
+
+        Returns:
+            bool: 是否成功 / Whether successful
+        """
+        return bool(
+            Library.framework().MaaContextClearHitCount(
+                self._handle, node_name.encode()
+            )
+        )
+
     ### private ###
 
     def _init_tasker(self):
@@ -353,6 +417,33 @@ class Context:
         Library.framework().MaaContextClone.restype = MaaContextHandle
         Library.framework().MaaContextClone.argtypes = [
             MaaContextHandle,
+        ]
+
+        Library.framework().MaaContextSetAnchor.restype = MaaBool
+        Library.framework().MaaContextSetAnchor.argtypes = [
+            MaaContextHandle,
+            ctypes.c_char_p,
+            ctypes.c_char_p,
+        ]
+
+        Library.framework().MaaContextGetAnchor.restype = MaaBool
+        Library.framework().MaaContextGetAnchor.argtypes = [
+            MaaContextHandle,
+            ctypes.c_char_p,
+            MaaStringBufferHandle,
+        ]
+
+        Library.framework().MaaContextGetHitCount.restype = MaaBool
+        Library.framework().MaaContextGetHitCount.argtypes = [
+            MaaContextHandle,
+            ctypes.c_char_p,
+            ctypes.POINTER(ctypes.c_uint64),
+        ]
+
+        Library.framework().MaaContextClearHitCount.restype = MaaBool
+        Library.framework().MaaContextClearHitCount.argtypes = [
+            MaaContextHandle,
+            ctypes.c_char_p,
         ]
 
 

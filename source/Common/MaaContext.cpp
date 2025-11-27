@@ -243,3 +243,80 @@ MaaContext* MaaContextClone(const MaaContext* context)
 
     return context->clone();
 }
+
+MaaBool MaaContextSetAnchor(MaaContext* context, const char* anchor_name, const char* node_name)
+{
+    LogFunc << VAR_VOIDP(context) << VAR(anchor_name) << VAR(node_name);
+
+    if (!context) {
+        LogError << "handle is null";
+        return false;
+    }
+
+    if (!anchor_name || !node_name) {
+        LogError << "anchor_name or node_name is null";
+        return false;
+    }
+
+    context->set_anchor(anchor_name, node_name);
+    return true;
+}
+
+MaaBool MaaContextGetAnchor(MaaContext* context, const char* anchor_name, MaaStringBuffer* buffer)
+{
+    LogFunc << VAR_VOIDP(context) << VAR(anchor_name);
+
+    if (!context || !buffer) {
+        LogError << "handle is null";
+        return false;
+    }
+
+    if (!anchor_name) {
+        LogError << "anchor_name is null";
+        return false;
+    }
+
+    auto opt = context->get_anchor(anchor_name);
+    if (!opt) {
+        return false;
+    }
+
+    buffer->set(*opt);
+    return true;
+}
+
+MaaBool MaaContextGetHitCount(MaaContext* context, const char* node_name, MaaSize* count)
+{
+    LogFunc << VAR_VOIDP(context) << VAR(node_name);
+
+    if (!context || !count) {
+        LogError << "handle is null";
+        return false;
+    }
+
+    if (!node_name) {
+        LogError << "node_name is null";
+        return false;
+    }
+
+    *count = context->get_hit_count(node_name);
+    return true;
+}
+
+MaaBool MaaContextClearHitCount(MaaContext* context, const char* node_name)
+{
+    LogFunc << VAR_VOIDP(context) << VAR(node_name);
+
+    if (!context) {
+        LogError << "handle is null";
+        return false;
+    }
+
+    if (!node_name) {
+        LogError << "node_name is null";
+        return false;
+    }
+
+    context->clear_hit_count(node_name);
+    return true;
+}

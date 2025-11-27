@@ -124,6 +124,7 @@
  *       {
  *         "name": string,
  *         "jump_back": boolean,
+ *         "is_anchor": boolean,
  *       },
  *       ...
  *     ],
