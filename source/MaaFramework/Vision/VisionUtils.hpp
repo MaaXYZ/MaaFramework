@@ -116,13 +116,7 @@ inline static void sort_by_expected_regex_(ResultsVec& results, const std::vecto
     std::vector<std::pair<std::wregex, size_t>> patterns; // (regex, original_index)
     patterns.reserve(expected.size());
     for (size_t i = 0; i < expected.size(); ++i) {
-        try {
-            patterns.emplace_back(std::wregex(expected[i]), i);
-        }
-        catch (const std::regex_error& e) {
-            LogWarn << "Invalid regex pattern at index" << i << VAR(e.what());
-            // 跳过无效的正则表达式，继续处理其他模式
-        }
+        patterns.emplace_back(std::wregex(expected[i]), i);
     }
 
     if (patterns.empty()) {
@@ -146,8 +140,12 @@ inline static void sort_by_expected_regex_(ResultsVec& results, const std::vecto
 
     // 按匹配索引排序，未匹配的排在最后
     std::ranges::sort(indexed_results, [](const auto& a, const auto& b) -> bool {
-        if (a.first == 0) return false;
-        if (b.first == 0) return true;
+        if (a.first == 0) {
+            return false;
+        }
+        if (b.first == 0) {
+            return true;
+        }
         return a.first < b.first;
     });
 
