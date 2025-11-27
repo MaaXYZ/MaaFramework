@@ -178,17 +178,14 @@ bool PostThreadMessageInput::scroll(int dx, int dy)
 
     ensure_foreground();
 
-    POINT pt;
-    GetCursorPos(&pt);
-
     if (dy != 0) {
         WPARAM wParam = MAKEWPARAM(0, static_cast<short>(dy));
-        PostThreadMessage(thread_id_, WM_MOUSEWHEEL, wParam, MAKELPARAM(pt.x, pt.y));
+        PostThreadMessage(thread_id_, WM_MOUSEWHEEL, wParam, MAKELPARAM(last_pos_.first, last_pos_.second));
     }
 
     if (dx != 0) {
         WPARAM wParam = MAKEWPARAM(0, static_cast<short>(dx));
-        PostThreadMessage(thread_id_, WM_MOUSEHWHEEL, wParam, MAKELPARAM(pt.x, pt.y));
+        PostThreadMessage(thread_id_, WM_MOUSEHWHEEL, wParam, MAKELPARAM(last_pos_.first, last_pos_.second));
     }
 
     return true;

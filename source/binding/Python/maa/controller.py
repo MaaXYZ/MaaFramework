@@ -511,9 +511,6 @@ class Controller:
             MaaControllerHandle,
             c_int32,
             c_int32,
-            c_int32,
-            c_int32,
-            c_int32,
         ]
 
         Library.framework().MaaControllerStatus.restype = MaaStatus
@@ -566,6 +563,7 @@ class AdbController(Controller):
     截图方式和输入方式会在启动时进行测速, 选择最快的方案
     Screenshot and input methods will be speed tested at startup, selecting the fastest option
     """
+
     AGENT_BINARY_PATH = os.path.join(
         os.path.dirname(__file__),
         "../MaaAgentBinary",
@@ -791,9 +789,12 @@ class CustomController(Controller):
     @abstractmethod
     def request_uuid(self) -> str:
         raise NotImplementedError
-    
+
     def get_features(self) -> int:
-        return MaaControllerFeatureEnum.UseMouseDownAndUpInsteadOfClick | MaaControllerFeatureEnum.UseKeyboardDownAndUpInsteadOfClick
+        return (
+            MaaControllerFeatureEnum.UseMouseDownAndUpInsteadOfClick
+            | MaaControllerFeatureEnum.UseKeyboardDownAndUpInsteadOfClick
+        )
 
     @abstractmethod
     def start_app(self, intent: str) -> bool:

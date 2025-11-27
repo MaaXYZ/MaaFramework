@@ -171,18 +171,14 @@ bool PostMessageInput::scroll(int dx, int dy)
 
     ensure_foreground();
 
-    POINT pt;
-    GetCursorPos(&pt);
-    ScreenToClient(hwnd_, &pt);
-
     if (dy != 0) {
         WPARAM wParam = MAKEWPARAM(0, static_cast<short>(dy));
-        PostMessage(hwnd_, WM_MOUSEWHEEL, wParam, MAKELPARAM(pt.x, pt.y));
+        PostMessage(hwnd_, WM_MOUSEWHEEL, wParam, MAKELPARAM(last_pos_.first, last_pos_.second));
     }
 
     if (dx != 0) {
         WPARAM wParam = MAKEWPARAM(0, static_cast<short>(dx));
-        PostMessage(hwnd_, WM_MOUSEHWHEEL, wParam, MAKELPARAM(pt.x, pt.y));
+        PostMessage(hwnd_, WM_MOUSEHWHEEL, wParam, MAKELPARAM(last_pos_.first, last_pos_.second));
     }
 
     return true;

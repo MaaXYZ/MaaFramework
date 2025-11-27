@@ -197,6 +197,12 @@ class JStopTask:
 
 
 @dataclass
+class JScroll:
+    dx: int = 0
+    dy: int = 0
+
+
+@dataclass
 class JCommand:
     exec: str
     args: List[str]
@@ -227,6 +233,7 @@ JActionParam = Union[
     JStartApp,
     JStopApp,
     JStopTask,
+    JScroll,
     JCommand,
     JCustomAction,
 ]
@@ -352,6 +359,7 @@ class JPipelineParser:
             "StartApp": JStartApp,
             "StopApp": JStopApp,
             "StopTask": JStopTask,
+            "Scroll": JScroll,
             "Command": JCommand,
             "Custom": JCustomAction,
         }
