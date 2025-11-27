@@ -48,6 +48,7 @@ Context::Context(const Context& other)
     , tasker_(other.tasker_)
     , pipeline_override_(other.pipeline_override_)
     , image_override_(other.image_override_)
+    , hit_count_(other.hit_count_)
 // don't copy clone_holder_
 {
     LogDebug << VAR(other.getptr());
@@ -55,7 +56,7 @@ Context::Context(const Context& other)
 
 MaaTaskId Context::run_task(const std::string& entry, const json::value& pipeline_override)
 {
-    LogFunc << VAR(getptr()) << VAR(entry) << VAR(pipeline_override);
+    LogTrace << VAR(getptr()) << VAR(entry) << VAR(pipeline_override);
 
     if (!tasker_) {
         LogError << "tasker is null";
@@ -90,7 +91,7 @@ MaaTaskId Context::run_task(const std::string& entry, const json::value& pipelin
 
 MaaRecoId Context::run_recognition(const std::string& entry, const json::value& pipeline_override, const cv::Mat& image)
 {
-    LogFunc << VAR(getptr()) << VAR(entry) << VAR(pipeline_override);
+    LogTrace << VAR(getptr()) << VAR(entry) << VAR(pipeline_override);
 
     RecognitionTask subtask(entry, tasker_, make_clone());
     bool ov = subtask.override_pipeline(pipeline_override);
@@ -104,7 +105,7 @@ MaaRecoId Context::run_recognition(const std::string& entry, const json::value& 
 MaaActId
     Context::run_action(const std::string& entry, const json::value& pipeline_override, const cv::Rect& box, const std::string& reco_detail)
 {
-    LogFunc << VAR(getptr()) << VAR(entry) << VAR(pipeline_override) << VAR(box) << VAR(reco_detail);
+    LogTrace << VAR(getptr()) << VAR(entry) << VAR(pipeline_override) << VAR(box) << VAR(reco_detail);
 
     ActionTask subtask(entry, tasker_, make_clone());
     bool ov = subtask.override_pipeline(pipeline_override);
@@ -118,7 +119,7 @@ MaaActId
 
 bool Context::override_pipeline(const json::value& pipeline_override)
 {
-    LogFunc << VAR(getptr()) << VAR(pipeline_override);
+    LogTrace << VAR(getptr()) << VAR(pipeline_override);
 
     if (!tasker_) {
         LogError << "tasker is null";
@@ -155,7 +156,7 @@ bool Context::override_pipeline(const json::value& pipeline_override)
 
 bool Context::override_pipeline_once(const json::object& pipeline_override, const MAA_RES_NS::DefaultPipelineMgr& default_mgr)
 {
-    LogFunc << VAR(getptr()) << VAR(pipeline_override);
+    // LogTrace << VAR(getptr()) << VAR(pipeline_override);
 
     for (const auto& [key, value] : pipeline_override) {
         PipelineData result;
@@ -174,7 +175,7 @@ bool Context::override_pipeline_once(const json::object& pipeline_override, cons
 
 bool Context::override_next(const std::string& node_name, const std::vector<std::string>& next)
 {
-    LogFunc << VAR(getptr()) << VAR(node_name) << VAR(next);
+    LogTrace << VAR(getptr()) << VAR(node_name) << VAR(next);
 
     auto data_opt = get_pipeline_data(node_name);
     if (!data_opt) {
@@ -182,7 +183,10 @@ bool Context::override_next(const std::string& node_name, const std::vector<std:
         return false;
     }
 
-    data_opt->next = next;
+    if (!MAA_RES_NS::PipelineParser::parse_next(next, data_opt->next)) {
+        LogError << "failed to parse_next" << VAR(next);
+        return false;
+    }
 
     pipeline_override_.insert_or_assign(node_name, std::move(*data_opt));
 
@@ -283,6 +287,20 @@ std::vector<cv::Mat> Context::get_images(const std::vector<std::string>& names)
 bool& Context::need_to_stop()
 {
     return need_to_stop_;
+}
+
+uint Context::get_hit_count(const std::string& node_name) const
+{
+    auto it = hit_count_.find(node_name);
+    if (it != hit_count_.end()) {
+        return it->second;
+    }
+    return 0;
+}
+
+void Context::increment_hit_count(const std::string& node_name)
+{
+    hit_count_[node_name]++;
 }
 
 bool Context::check_pipeline() const

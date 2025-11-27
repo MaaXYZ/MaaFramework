@@ -1,11 +1,12 @@
 import ctypes
+from typing import List
 
 from .define import *
 from .library import Library
 from .resource import Resource
 from .controller import Controller
 from .tasker import Tasker
-from .buffer import StringBuffer
+from .buffer import StringBuffer, StringListBuffer
 
 
 class AgentClient:
@@ -94,6 +95,40 @@ class AgentClient:
             )
         )
 
+    @property
+    def custom_recognition_list(self) -> List[str]:
+        """获取已注册的自定义识别器列表 / Get registered custom recognizer list
+
+        Returns:
+            list[str]: 自定义识别器名列表 / List of custom recognizer names
+
+        Raises:
+            RuntimeError: 如果获取失败
+        """
+        buffer = StringListBuffer()
+        if not Library.agent_client().MaaAgentClientGetCustomRecognitionList(
+            self._handle, buffer._handle
+        ):
+            raise RuntimeError("Failed to get custom recognition list.")
+        return buffer.get()
+
+    @property
+    def custom_action_list(self) -> List[str]:
+        """获取已注册的自定义操作列表 / Get registered custom action list
+
+        Returns:
+            list[str]: 自定义操作名列表 / List of custom action names
+
+        Raises:
+            RuntimeError: 如果获取失败
+        """
+        buffer = StringListBuffer()
+        if not Library.agent_client().MaaAgentClientGetCustomActionList(
+            self._handle, buffer._handle
+        ):
+            raise RuntimeError("Failed to get custom action list.")
+        return buffer.get()
+
     _api_properties_initialized: bool = False
 
     @staticmethod
@@ -168,4 +203,16 @@ class AgentClient:
         Library.agent_client().MaaAgentClientSetTimeout.argtypes = [
             MaaAgentClientHandle,
             ctypes.c_int64,
+        ]
+
+        Library.agent_client().MaaAgentClientGetCustomRecognitionList.restype = MaaBool
+        Library.agent_client().MaaAgentClientGetCustomRecognitionList.argtypes = [
+            MaaAgentClientHandle,
+            MaaStringListBufferHandle,
+        ]
+
+        Library.agent_client().MaaAgentClientGetCustomActionList.restype = MaaBool
+        Library.agent_client().MaaAgentClientGetCustomActionList.argtypes = [
+            MaaAgentClientHandle,
+            MaaStringListBufferHandle,
         ]

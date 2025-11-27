@@ -31,6 +31,8 @@ public: // MaaAgentClient
     virtual bool connected() override;
     virtual bool alive() override;
     virtual void set_timeout(const std::chrono::milliseconds& timeout) override;
+    virtual std::vector<std::string> get_custom_recognition_list() const override;
+    virtual std::vector<std::string> get_custom_action_list() const override;
 
 private: // Transceiver
     virtual bool handle_inserted_request(const json::value& j) override;
@@ -75,6 +77,8 @@ private:
     bool handle_resource_get_node_data(const json::value& j);
     bool handle_resource_get_hash(const json::value& j);
     bool handle_resource_get_node_list(const json::value& j);
+    bool handle_resource_get_custom_recognition_list(const json::value& j);
+    bool handle_resource_get_custom_action_list(const json::value& j);
 
     bool handle_controller_post_connection(const json::value& j);
     bool handle_controller_post_click(const json::value& j);

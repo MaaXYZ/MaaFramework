@@ -347,6 +347,11 @@ declare global {
             | MixAct<'Command', ActionCommand<Mode>, Mode>
             | MixAct<'Custom', ActionCustom<Mode>, Mode>
 
+        type NodeAttr = {
+            name: string
+            jump_back: boolean
+        }
+
         type WaitFreeze = {
             time?: number
             target?: true | NodeName | Rect
@@ -358,20 +363,19 @@ declare global {
         }
 
         type General<Mode> = {
-            next?: MaybeArray<NodeName, Mode>
-            interrupt?: MaybeArray<NodeName, Mode>
-            is_sub?: boolean
+            next?: MaybeArray<NodeAttr, Mode>
             rate_limit?: number
             timeout?: number
-            on_error?: MaybeArray<string, Mode>
+            on_error?: MaybeArray<NodeAttr, Mode>
             inverse?: boolean
             enabled?: boolean
+            max_hit?: number
             pre_delay?: boolean
             post_delay?: boolean
             pre_wait_freezes?: RemoveIfDump<number, Mode> | WaitFreeze
             post_wait_freezes?: RemoveIfDump<number, Mode> | WaitFreeze
             focus?: unknown
-            attach?: Record<string, unknown> // 附加 JSON 对象
+            attach?: Record<string, unknown>
         }
 
         type Task = Recognition<ModeFragment> & Action<ModeFragment> & General<ModeFragment>

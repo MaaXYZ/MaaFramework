@@ -246,6 +246,12 @@ class JAction:
 
 
 @dataclass
+class JNodeAttr:
+    name: str
+    jump_back: bool
+
+
+@dataclass
 class JWaitFreezes:
     time: int
     target: JTarget
@@ -260,20 +266,19 @@ class JWaitFreezes:
 class JPipelineData:
     recognition: JRecognition
     action: JAction
-    next: List[str]
-    interrupt: List[str]
-    is_sub: bool
+    next: List[JNodeAttr]
     rate_limit: int
     timeout: int
-    on_error: List[str]
+    on_error: List[JNodeAttr]
     inverse: bool
     enabled: bool
     pre_delay: int
     post_delay: int
     pre_wait_freezes: JWaitFreezes
     post_wait_freezes: JWaitFreezes
+    max_hit: int
     focus: Any
-    attach: Dict  # 附加 JSON 对象
+    attach: Dict
 
 
 class JPipelineParser:
@@ -389,18 +394,28 @@ class JPipelineParser:
         return JPipelineData(
             recognition=recognition,
             action=action,
-            next=data.get("next"),
-            interrupt=data.get("interrupt"),
-            is_sub=data.get("is_sub"),
+            next=cls._parse_node_attr_list(data.get("next")),
             rate_limit=data.get("rate_limit"),
             timeout=data.get("timeout"),
-            on_error=data.get("on_error"),
+            on_error=cls._parse_node_attr_list(data.get("on_error")),
             inverse=data.get("inverse"),
             enabled=data.get("enabled"),
             pre_delay=data.get("pre_delay"),
             post_delay=data.get("post_delay"),
             pre_wait_freezes=pre_wait_freezes,  # type: ignore
             post_wait_freezes=post_wait_freezes,  # type: ignore
+            max_hit=data.get("max_hit"),
             focus=data.get("focus"),
             attach=data.get("attach"),  # 附加 JSON 对象
         )
+
+    @staticmethod
+    def _parse_node_attr_list(data: List[dict]) -> List[JNodeAttr]:
+        """Convert list of dicts to list of JNodeAttr."""
+        return [
+            JNodeAttr(
+                name=item.get("name"),
+                jump_back=item.get("jump_back"),
+            )
+            for item in data
+        ]

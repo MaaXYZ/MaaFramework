@@ -9,6 +9,7 @@
 #include "MaaUtils/Logger.h"
 #include "MaaUtils/Platform.h"
 #include "PipelineDumper.h"
+#include "PipelineParser.h"
 
 MAA_RES_NS_BEGIN
 
@@ -119,6 +120,26 @@ std::vector<std::string> ResourceMgr::get_node_list() const
     return pipeline_res_.get_node_list();
 }
 
+std::vector<std::string> ResourceMgr::get_custom_recognition_list() const
+{
+    std::vector<std::string> result;
+    result.reserve(custom_recognition_sessions_.size());
+    for (const auto& [name, _] : custom_recognition_sessions_) {
+        result.emplace_back(name);
+    }
+    return result;
+}
+
+std::vector<std::string> ResourceMgr::get_custom_action_list() const
+{
+    std::vector<std::string> result;
+    result.reserve(custom_action_sessions_.size());
+    for (const auto& [name, _] : custom_action_sessions_) {
+        result.emplace_back(name);
+    }
+    return result;
+}
+
 MaaSinkId ResourceMgr::add_sink(MaaEventCallback callback, void* trans_arg)
 {
     return notifier_.add_sink(callback, trans_arg);
@@ -208,7 +229,12 @@ bool ResourceMgr::override_pipeline(const json::value& pipeline_override)
 bool ResourceMgr::override_next(const std::string& node_name, const std::vector<std::string>& next)
 {
     LogFunc << VAR(node_name) << VAR(next);
-    pipeline_res_.get_pipeline_data_map()[node_name].next = next;
+
+    if (!PipelineParser::parse_next(next, pipeline_res_.get_pipeline_data_map()[node_name].next)) {
+        LogError << "failed to parse_next" << VAR(next);
+        return false;
+    }
+
     return true;
 }
 

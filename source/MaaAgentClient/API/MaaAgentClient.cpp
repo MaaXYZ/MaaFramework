@@ -1,6 +1,7 @@
 #include "MaaAgentClient/MaaAgentClientAPI.h"
 
 #include "Client/AgentClient.h"
+#include "MaaUtils/Buffer/ListBuffer.hpp"
 #include "MaaUtils/Buffer/StringBuffer.hpp"
 #include "MaaUtils/Logger.h"
 #include "MaaUtils/Platform.h"
@@ -168,5 +169,45 @@ MaaBool MaaAgentClientSetTimeout(MaaAgentClient* client, int64_t milliseconds)
 
     std::chrono::milliseconds timeout = milliseconds < 0 ? std::chrono::milliseconds::max() : std::chrono::milliseconds(milliseconds);
     client->set_timeout(timeout);
+    return true;
+}
+
+MaaBool MaaAgentClientGetCustomRecognitionList(MaaAgentClient* client, /* out */ MaaStringListBuffer* buffer)
+{
+    LogFunc << VAR_VOIDP(client) << VAR_VOIDP(buffer);
+
+    if (!client || !buffer) {
+        LogError << "handle is null";
+        return false;
+    }
+
+    auto list = client->get_custom_recognition_list();
+
+    buffer->clear();
+
+    for (const auto& name : list) {
+        buffer->append(MaaNS::StringBuffer(name));
+    }
+
+    return true;
+}
+
+MaaBool MaaAgentClientGetCustomActionList(MaaAgentClient* client, /* out */ MaaStringListBuffer* buffer)
+{
+    LogFunc << VAR_VOIDP(client) << VAR_VOIDP(buffer);
+
+    if (!client || !buffer) {
+        LogError << "handle is null";
+        return false;
+    }
+
+    auto list = client->get_custom_action_list();
+
+    buffer->clear();
+
+    for (const auto& name : list) {
+        buffer->append(MaaNS::StringBuffer(name));
+    }
+
     return true;
 }

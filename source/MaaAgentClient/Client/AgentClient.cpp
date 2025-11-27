@@ -192,9 +192,19 @@ void AgentClient::set_timeout(const std::chrono::milliseconds& timeout)
     Transceiver::set_timeout(timeout);
 }
 
+std::vector<std::string> AgentClient::get_custom_recognition_list() const
+{
+    return registered_recognitions_;
+}
+
+std::vector<std::string> AgentClient::get_custom_action_list() const
+{
+    return registered_actions_;
+}
+
 bool AgentClient::handle_inserted_request(const json::value& j)
 {
-    LogFunc << VAR(j) << VAR(ipc_addr_);
+    // LogFunc << VAR(j) << VAR(ipc_addr_);
 
     if (handle_image_header(j)) {
         return true;
@@ -311,6 +321,12 @@ bool AgentClient::handle_inserted_request(const json::value& j)
         return true;
     }
     else if (handle_resource_get_node_list(j)) {
+        return true;
+    }
+    else if (handle_resource_get_custom_recognition_list(j)) {
+        return true;
+    }
+    else if (handle_resource_get_custom_action_list(j)) {
         return true;
     }
 
@@ -1321,6 +1337,54 @@ bool AgentClient::handle_resource_get_node_list(const json::value& j)
     auto node_list = resource->get_node_list();
     ResourceGetNodeListReverseResponse resp {
         .node_list = std::move(node_list),
+    };
+    send(resp);
+
+    return true;
+}
+
+bool AgentClient::handle_resource_get_custom_recognition_list(const json::value& j)
+{
+    if (!j.is<ResourceGetCustomRecognitionListReverseRequest>()) {
+        return false;
+    }
+
+    const ResourceGetCustomRecognitionListReverseRequest& req = j.as<ResourceGetCustomRecognitionListReverseRequest>();
+    LogFunc << VAR(req) << VAR(ipc_addr_);
+
+    MaaResource* resource = query_resource(req.resource_id);
+    if (!resource) {
+        LogError << "resource not found" << VAR(req.resource_id);
+        return false;
+    }
+
+    auto custom_recognition_list = resource->get_custom_recognition_list();
+    ResourceGetCustomRecognitionListReverseResponse resp {
+        .custom_recognition_list = std::move(custom_recognition_list),
+    };
+    send(resp);
+
+    return true;
+}
+
+bool AgentClient::handle_resource_get_custom_action_list(const json::value& j)
+{
+    if (!j.is<ResourceGetCustomActionListReverseRequest>()) {
+        return false;
+    }
+
+    const ResourceGetCustomActionListReverseRequest& req = j.as<ResourceGetCustomActionListReverseRequest>();
+    LogFunc << VAR(req) << VAR(ipc_addr_);
+
+    MaaResource* resource = query_resource(req.resource_id);
+    if (!resource) {
+        LogError << "resource not found" << VAR(req.resource_id);
+        return false;
+    }
+
+    auto custom_action_list = resource->get_custom_action_list();
+    ResourceGetCustomActionListReverseResponse resp {
+        .custom_action_list = std::move(custom_action_list),
     };
     send(resp);
 

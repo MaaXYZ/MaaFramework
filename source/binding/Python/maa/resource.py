@@ -394,6 +394,40 @@ class Resource:
         return buffer.get()
 
     @property
+    def custom_recognition_list(self) -> list[str]:
+        """获取已注册的自定义识别器列表 / Get registered custom recognizer list
+
+        Returns:
+            list[str]: 自定义识别器名列表 / List of custom recognizer names
+
+        Raises:
+            RuntimeError: 如果获取失败
+        """
+        buffer = StringListBuffer()
+        if not Library.framework().MaaResourceGetCustomRecognitionList(
+            self._handle, buffer._handle
+        ):
+            raise RuntimeError("Failed to get custom recognition list.")
+        return buffer.get()
+
+    @property
+    def custom_action_list(self) -> list[str]:
+        """获取已注册的自定义操作列表 / Get registered custom action list
+
+        Returns:
+            list[str]: 自定义操作名列表 / List of custom action names
+
+        Raises:
+            RuntimeError: 如果获取失败
+        """
+        buffer = StringListBuffer()
+        if not Library.framework().MaaResourceGetCustomActionList(
+            self._handle, buffer._handle
+        ):
+            raise RuntimeError("Failed to get custom action list.")
+        return buffer.get()
+
+    @property
     def hash(self) -> str:
         """获取资源 hash / Get resource hash
 
@@ -589,6 +623,18 @@ class Resource:
 
         Library.framework().MaaResourceGetNodeList.restype = MaaBool
         Library.framework().MaaResourceGetNodeList.argtypes = [
+            MaaResourceHandle,
+            MaaStringListBufferHandle,
+        ]
+
+        Library.framework().MaaResourceGetCustomRecognitionList.restype = MaaBool
+        Library.framework().MaaResourceGetCustomRecognitionList.argtypes = [
+            MaaResourceHandle,
+            MaaStringListBufferHandle,
+        ]
+
+        Library.framework().MaaResourceGetCustomActionList.restype = MaaBool
+        Library.framework().MaaResourceGetCustomActionList.argtypes = [
             MaaResourceHandle,
             MaaStringListBufferHandle,
         ]
