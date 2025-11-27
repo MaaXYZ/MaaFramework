@@ -3685,6 +3685,13 @@
                     "$ref": "#/$defs/jsonNodeOrList",
                     "markdownDescription": "*string* | *NodeAttr* | *list<string | NodeAttr, >*\n\n当识别超时，或动作执行失败后，接下来会执行该列表中的节点。可选，默认空。\n\n💡 v5.1 版本起新增支持带属性节点、NodeAttr 形式对象，或两者结合的异质数组。详情参见文档中的「节点属性」章节。"
                 },
+                "anchor": {
+                    "title": "Anchor Property",
+                    "description": "锚点名称。可选，默认空。",
+                    "type": "string",
+                    "default": "",
+                    "markdownDescription": "*string*\n\n锚点名称。可选，默认空。\n\n当节点执行成功后，会将该锚点名设置为当前节点。多个节点可设置同一个锚点名，后执行的会覆盖先执行的。\n\n在 `next` 或 `on_error` 中可通过 `[Anchor]` 属性引用该锚点，运行时会解析为最后设置该锚点的节点。\n\n详见文档中的「节点属性」章节。"
+                },
                 "inverse": {
                     "title": "Inverse Property",
                     "description": "反转识别结果，识别到了当做没识别到，没识别到的当做识别到了。可选，默认 false 。",

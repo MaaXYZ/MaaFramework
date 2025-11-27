@@ -271,6 +271,7 @@ class JPipelineData:
     rate_limit: int
     timeout: int
     on_error: List[JNodeAttr]
+    anchor: str
     inverse: bool
     enabled: bool
     pre_delay: int
@@ -279,7 +280,6 @@ class JPipelineData:
     post_wait_freezes: JWaitFreezes
     max_hit: int
     focus: Any
-    anchor: str
     attach: Dict
 
 
@@ -400,6 +400,7 @@ class JPipelineParser:
             rate_limit=data.get("rate_limit"),
             timeout=data.get("timeout"),
             on_error=cls._parse_node_attr_list(data.get("on_error")),
+            anchor=data.get("anchor"),
             inverse=data.get("inverse"),
             enabled=data.get("enabled"),
             pre_delay=data.get("pre_delay"),
@@ -408,7 +409,6 @@ class JPipelineParser:
             post_wait_freezes=post_wait_freezes,  # type: ignore
             max_hit=data.get("max_hit"),
             focus=data.get("focus"),
-            anchor=data.get("anchor"),
             attach=data.get("attach"),
         )
 

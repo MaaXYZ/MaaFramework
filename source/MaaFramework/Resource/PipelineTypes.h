@@ -289,7 +289,6 @@ struct PipelineData
     inline static constexpr std::string_view kNodeAttr_Anchor = "[Anchor]";
 
     std::string name;
-    std::string anchor;
     bool enabled = true;
 
     Recognition::Type reco_type = Recognition::Type::DirectHit;
@@ -301,6 +300,7 @@ struct PipelineData
 
     std::vector<NodeAttr> next;
     std::vector<NodeAttr> on_error;
+    std::string anchor;
     std::chrono::milliseconds rate_limit = std::chrono::milliseconds(1000);
     std::chrono::milliseconds reco_timeout = std::chrono::milliseconds(20 * 1000);
 

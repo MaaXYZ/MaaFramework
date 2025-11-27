@@ -368,6 +368,7 @@ declare global {
             rate_limit?: number
             timeout?: number
             on_error?: MaybeArray<NodeAttr, Mode>
+            anchor?: string
             inverse?: boolean
             enabled?: boolean
             max_hit?: number
@@ -376,7 +377,6 @@ declare global {
             pre_wait_freezes?: RemoveIfDump<number, Mode> | WaitFreeze
             post_wait_freezes?: RemoveIfDump<number, Mode> | WaitFreeze
             focus?: unknown
-            anchor?: string
             attach?: Record<string, unknown>
         }
 

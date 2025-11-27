@@ -250,6 +250,11 @@ bool PipelineParser::parse_node(
         return false;
     }
 
+    if (!get_and_check_value(input, "anchor", data.anchor, default_value.anchor)) {
+        LogError << "failed to get_and_check_value anchor" << VAR(input);
+        return false;
+    }
+
     auto rate_limit = default_value.rate_limit.count();
     if (!get_and_check_value(input, "rate_limit", rate_limit, rate_limit)) {
         LogError << "failed to get_and_check_value rate_limit" << VAR(input);
@@ -295,11 +300,6 @@ bool PipelineParser::parse_node(
 
     if (!get_and_check_value(input, "focus", data.focus, default_value.focus)) {
         LogError << "failed to get_and_check_value focus" << VAR(input);
-        return false;
-    }
-
-    if (!get_and_check_value(input, "anchor", data.anchor, default_value.anchor)) {
-        LogError << "failed to get_and_check_value anchor" << VAR(input);
         return false;
     }
 

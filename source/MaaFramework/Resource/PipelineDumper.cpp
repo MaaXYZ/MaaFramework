@@ -15,6 +15,7 @@ json::object PipelineDumper::dump(const PipelineData& pp)
     data.rate_limit = pp.rate_limit.count();
     data.timeout = pp.reco_timeout.count();
     data.on_error = pp.on_error;
+    data.anchor = pp.anchor;
     data.inverse = pp.inverse;
     data.enabled = pp.enabled;
     data.pre_delay = pp.pre_delay.count();
@@ -363,7 +364,6 @@ json::object PipelineDumper::dump(const PipelineData& pp)
     data.post_wait_freezes = dump_wait_freezes(pp.post_wait_freezes);
 
     data.max_hit = pp.max_hit;
-    data.anchor = pp.anchor;
     data.attach = pp.attach;
 
     return data.to_json().as_object();
