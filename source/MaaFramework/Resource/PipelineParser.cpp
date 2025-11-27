@@ -1654,7 +1654,7 @@ bool PipelineParser::parse_node_string_in_next(const std::string& raw, NodeAttr&
             output.jump_back = true;
         }
         else if (attr == PipelineData::kNodeAttr_Anchor) {
-            output.is_anchor = true;
+            output.anchor = true;
         }
         else {
             LogWarn << "Unrecognized node attribute" << VAR(attr) << VAR(raw);

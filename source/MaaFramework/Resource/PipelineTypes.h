@@ -277,9 +277,9 @@ struct NodeAttr
 {
     std::string name;
     bool jump_back = false;
-    bool is_anchor = false;
+    bool anchor = false;
 
-    MEO_JSONIZATION(name, jump_back, is_anchor);
+    MEO_JSONIZATION(name, jump_back, anchor);
 };
 
 struct PipelineData

@@ -249,7 +249,7 @@ class JAction:
 class JNodeAttr:
     name: str
     jump_back: bool
-    is_anchor: bool
+    anchor: bool
 
 
 @dataclass
@@ -419,7 +419,7 @@ class JPipelineParser:
             JNodeAttr(
                 name=item.get("name"),
                 jump_back=item.get("jump_back"),
-                is_anchor=item.get("is_anchor"),
+                anchor=item.get("anchor"),
             )
             for item in data
         ]

@@ -259,7 +259,7 @@ std::optional<PipelineData> Context::get_pipeline_data(const std::string& node_n
 std::optional<PipelineData> Context::get_pipeline_data(const MAA_RES_NS::NodeAttr& node_attr) const
 {
     std::string node_name = node_attr.name;
-    if (node_attr.is_anchor) {
+    if (node_attr.anchor) {
         auto anchor_node = get_anchor(node_attr.name);
         if (!anchor_node) {
             LogDebug << "anchor not set" << VAR(node_attr.name);

@@ -350,7 +350,7 @@ declare global {
         type NodeAttr = {
             name: string
             jump_back: boolean
-            is_anchor: boolean
+            anchor: boolean
         }
 
         type WaitFreeze = {
