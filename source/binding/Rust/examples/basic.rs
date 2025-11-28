@@ -1,11 +1,10 @@
 use maa_framework::*;
-use serde_json::json;
 use std::path::PathBuf;
 
 fn main() -> Result<()> {
     // 设置库路径
     let lib_path = std::env::var("MAA_LIB_PATH").unwrap_or_else(|_| ".".to_string());
-    
+
     #[cfg(target_os = "windows")]
     {
         load_library(format!("{}/MaaFramework.dll", lib_path))?;
@@ -26,7 +25,7 @@ fn main() -> Result<()> {
     println!("MaaFramework 版本: {}", version());
 
     // 设置日志
-    set_log_dir("./log");
+    set_log_dir("./log")?;
     set_stdout_level(LoggingLevel::Info);
 
     // 查找 ADB 设备
@@ -48,7 +47,8 @@ fn main() -> Result<()> {
     println!("\n使用设备: {}", device.name);
 
     // 创建控制器
-    let agent_path = std::env::var("MAA_AGENT_PATH").unwrap_or_else(|_| "MaaAgentBinary".to_string());
+    let agent_path =
+        std::env::var("MAA_AGENT_PATH").unwrap_or_else(|_| "MaaAgentBinary".to_string());
     let controller = AdbController::new(
         &device.adb_path,
         &device.address,
@@ -60,7 +60,7 @@ fn main() -> Result<()> {
 
     // 连接设备
     println!("正在连接设备...");
-    let job = controller.post_connection();
+    let job = controller.post_connection()?;
     job.wait();
 
     if !controller.connected() {
@@ -71,7 +71,7 @@ fn main() -> Result<()> {
 
     // 截图测试
     println!("\n正在截图...");
-    controller.post_screencap().wait();
+    controller.post_screencap()?.wait();
     let image = controller.cached_image()?;
     println!("截图尺寸: {}x{}", image.width(), image.height());
 
@@ -83,7 +83,7 @@ fn main() -> Result<()> {
     if let Some(path) = resource_path {
         if path.exists() {
             println!("\n正在加载资源: {:?}", path);
-            let job = resource.post_bundle(&path);
+            let job = resource.post_bundle(&path)?;
             job.wait();
 
             if resource.loaded() {
@@ -117,4 +117,3 @@ fn main() -> Result<()> {
     println!("\n示例完成!");
     Ok(())
 }
-

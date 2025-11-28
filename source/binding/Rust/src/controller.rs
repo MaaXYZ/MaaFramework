@@ -7,6 +7,12 @@ use serde_json::Value;
 use std::ffi::CString;
 use std::path::Path;
 
+/// Controller manages device input/output operations.
+///
+/// # Thread Safety
+/// The underlying MaaController handle is designed to be thread-safe by the C API.
+/// Multiple threads can submit operations, but the operations are queued and
+/// executed sequentially by the controller.
 pub struct Controller {
     handle: MaaControllerHandle,
     own: bool,
@@ -21,77 +27,111 @@ impl Controller {
         self.handle
     }
 
-    pub fn post_connection(&self) -> CtrlJob {
+    pub fn post_connection(&self) -> Result<CtrlJob> {
         let id = ffi::maa_controller_post_connection(self.handle);
-        CtrlJob::new(id, self.handle)
+        if id == MAA_INVALID_ID {
+            return Err(MaaError::OperationFailed("post_connection"));
+        }
+        Ok(CtrlJob::new(id, self.handle))
     }
 
-    pub fn post_click(&self, x: i32, y: i32) -> CtrlJob {
+    pub fn post_click(&self, x: i32, y: i32) -> Result<CtrlJob> {
         let id = ffi::maa_controller_post_click(self.handle, x, y);
-        CtrlJob::new(id, self.handle)
+        if id == MAA_INVALID_ID {
+            return Err(MaaError::OperationFailed("post_click"));
+        }
+        Ok(CtrlJob::new(id, self.handle))
     }
 
-    pub fn post_swipe(&self, x1: i32, y1: i32, x2: i32, y2: i32, duration: i32) -> CtrlJob {
+    pub fn post_swipe(&self, x1: i32, y1: i32, x2: i32, y2: i32, duration: i32) -> Result<CtrlJob> {
         let id = ffi::maa_controller_post_swipe(self.handle, x1, y1, x2, y2, duration);
-        CtrlJob::new(id, self.handle)
+        if id == MAA_INVALID_ID {
+            return Err(MaaError::OperationFailed("post_swipe"));
+        }
+        Ok(CtrlJob::new(id, self.handle))
     }
 
-    pub fn post_click_key(&self, key: i32) -> CtrlJob {
+    pub fn post_click_key(&self, key: i32) -> Result<CtrlJob> {
         let id = ffi::maa_controller_post_click_key(self.handle, key);
-        CtrlJob::new(id, self.handle)
+        if id == MAA_INVALID_ID {
+            return Err(MaaError::OperationFailed("post_click_key"));
+        }
+        Ok(CtrlJob::new(id, self.handle))
     }
 
-    pub fn post_key_down(&self, key: i32) -> CtrlJob {
+    pub fn post_key_down(&self, key: i32) -> Result<CtrlJob> {
         let id = ffi::maa_controller_post_key_down(self.handle, key);
-        CtrlJob::new(id, self.handle)
+        if id == MAA_INVALID_ID {
+            return Err(MaaError::OperationFailed("post_key_down"));
+        }
+        Ok(CtrlJob::new(id, self.handle))
     }
 
-    pub fn post_key_up(&self, key: i32) -> CtrlJob {
+    pub fn post_key_up(&self, key: i32) -> Result<CtrlJob> {
         let id = ffi::maa_controller_post_key_up(self.handle, key);
-        CtrlJob::new(id, self.handle)
+        if id == MAA_INVALID_ID {
+            return Err(MaaError::OperationFailed("post_key_up"));
+        }
+        Ok(CtrlJob::new(id, self.handle))
     }
 
     pub fn post_input_text(&self, text: &str) -> Result<CtrlJob> {
         let cstr = CString::new(text).map_err(|e| MaaError::BufferError(e.to_string()))?;
         let id = ffi::maa_controller_post_input_text(self.handle, cstr.as_ptr());
+        if id == MAA_INVALID_ID {
+            return Err(MaaError::OperationFailed("post_input_text"));
+        }
         Ok(CtrlJob::new(id, self.handle))
     }
 
     pub fn post_start_app(&self, intent: &str) -> Result<CtrlJob> {
         let cstr = CString::new(intent).map_err(|e| MaaError::BufferError(e.to_string()))?;
         let id = ffi::maa_controller_post_start_app(self.handle, cstr.as_ptr());
+        if id == MAA_INVALID_ID {
+            return Err(MaaError::OperationFailed("post_start_app"));
+        }
         Ok(CtrlJob::new(id, self.handle))
     }
 
     pub fn post_stop_app(&self, intent: &str) -> Result<CtrlJob> {
         let cstr = CString::new(intent).map_err(|e| MaaError::BufferError(e.to_string()))?;
         let id = ffi::maa_controller_post_stop_app(self.handle, cstr.as_ptr());
+        if id == MAA_INVALID_ID {
+            return Err(MaaError::OperationFailed("post_stop_app"));
+        }
         Ok(CtrlJob::new(id, self.handle))
     }
 
-    pub fn post_touch_down(&self, contact: i32, x: i32, y: i32, pressure: i32) -> CtrlJob {
+    pub fn post_touch_down(&self, contact: i32, x: i32, y: i32, pressure: i32) -> Result<CtrlJob> {
         let id = ffi::maa_controller_post_touch_down(self.handle, contact, x, y, pressure);
-        CtrlJob::new(id, self.handle)
+        if id == MAA_INVALID_ID {
+            return Err(MaaError::OperationFailed("post_touch_down"));
+        }
+        Ok(CtrlJob::new(id, self.handle))
     }
 
-    pub fn post_touch_move(&self, contact: i32, x: i32, y: i32, pressure: i32) -> CtrlJob {
+    pub fn post_touch_move(&self, contact: i32, x: i32, y: i32, pressure: i32) -> Result<CtrlJob> {
         let id = ffi::maa_controller_post_touch_move(self.handle, contact, x, y, pressure);
-        CtrlJob::new(id, self.handle)
+        if id == MAA_INVALID_ID {
+            return Err(MaaError::OperationFailed("post_touch_move"));
+        }
+        Ok(CtrlJob::new(id, self.handle))
     }
 
-    pub fn post_touch_up(&self, contact: i32) -> CtrlJob {
+    pub fn post_touch_up(&self, contact: i32) -> Result<CtrlJob> {
         let id = ffi::maa_controller_post_touch_up(self.handle, contact);
-        CtrlJob::new(id, self.handle)
+        if id == MAA_INVALID_ID {
+            return Err(MaaError::OperationFailed("post_touch_up"));
+        }
+        Ok(CtrlJob::new(id, self.handle))
     }
 
-    pub fn post_screencap(&self) -> CtrlJob {
+    pub fn post_screencap(&self) -> Result<CtrlJob> {
         let id = ffi::maa_controller_post_screencap(self.handle);
-        CtrlJob::new(id, self.handle)
-    }
-
-    pub fn post_scroll(&self, dx: i32, dy: i32) -> CtrlJob {
-        let id = ffi::maa_controller_post_scroll(self.handle, dx, dy);
-        CtrlJob::new(id, self.handle)
+        if id == MAA_INVALID_ID {
+            return Err(MaaError::OperationFailed("post_screencap"));
+        }
+        Ok(CtrlJob::new(id, self.handle))
     }
 
     pub fn connected(&self) -> bool {
@@ -151,6 +191,9 @@ impl Drop for Controller {
     }
 }
 
+// SAFETY: MaaController is documented as thread-safe by the MaaFramework C API.
+// The underlying handle can be safely shared across threads.
+// Operations are queued and executed sequentially by the controller.
 unsafe impl Send for Controller {}
 unsafe impl Sync for Controller {}
 
@@ -311,4 +354,3 @@ impl std::ops::DerefMut for DbgController {
         &mut self.inner
     }
 }
-

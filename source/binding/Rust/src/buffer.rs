@@ -24,6 +24,12 @@ impl StringBuffer {
         self.handle
     }
 
+    /// Transfer ownership to caller, preventing Rust from destroying the buffer
+    pub fn into_raw(mut self) -> MaaStringBufferHandle {
+        self.own = false;
+        self.handle
+    }
+
     pub fn get(&self) -> Result<String> {
         let ptr = ffi::maa_string_buffer_get(self.handle);
         if ptr.is_null() {
@@ -175,6 +181,9 @@ impl Drop for RectBuffer {
 
 pub struct StringListBuffer {
     handle: MaaStringListBufferHandle,
+    // Keep track of child buffers whose ownership was transferred to the C list
+    // The C API's StringListBuffer takes ownership of appended StringBuffers
+    // so we don't need to track them here - just don't destroy them in Rust
 }
 
 impl StringListBuffer {
@@ -210,6 +219,9 @@ impl StringListBuffer {
             if ffi::maa_string_list_buffer_append(self.handle, str_buf.handle()) == 0 {
                 return Ok(false);
             }
+            // Transfer ownership to the C list - don't let Rust destroy this buffer
+            // The C StringListBuffer takes ownership of appended buffers
+            str_buf.into_raw();
         }
         Ok(true)
     }
@@ -272,4 +284,3 @@ impl Drop for ImageListBuffer {
         }
     }
 }
-

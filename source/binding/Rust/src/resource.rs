@@ -1,20 +1,21 @@
 use crate::buffer::{ImageBuffer, StringBuffer, StringListBuffer};
-use crate::custom::{CustomAction, CustomRecognition};
 use crate::define::*;
 use crate::error::{MaaError, Result};
 use crate::ffi;
 use crate::job::ResJob;
 use serde_json::Value;
-use std::collections::HashMap;
 use std::ffi::CString;
 use std::path::Path;
-use std::sync::Arc;
 
+/// Resource manages pipeline definitions and custom recognizers/actions.
+///
+/// # Thread Safety
+/// The underlying MaaResource handle is designed to be thread-safe by the C API.
+/// Multiple threads can read from the same Resource, but concurrent modifications
+/// should be synchronized by the caller.
 pub struct Resource {
     handle: MaaResourceHandle,
     own: bool,
-    custom_recognitions: HashMap<String, Arc<dyn CustomRecognition>>,
-    custom_actions: HashMap<String, Arc<dyn CustomAction>>,
 }
 
 impl Resource {
@@ -23,32 +24,26 @@ impl Resource {
         if handle.is_null() {
             return Err(MaaError::CreateFailed("Resource"));
         }
-        Ok(Self {
-            handle,
-            own: true,
-            custom_recognitions: HashMap::new(),
-            custom_actions: HashMap::new(),
-        })
+        Ok(Self { handle, own: true })
     }
 
     pub(crate) fn from_handle(handle: MaaResourceHandle) -> Self {
-        Self {
-            handle,
-            own: false,
-            custom_recognitions: HashMap::new(),
-            custom_actions: HashMap::new(),
-        }
+        Self { handle, own: false }
     }
 
     pub fn handle(&self) -> MaaResourceHandle {
         self.handle
     }
 
-    pub fn post_bundle(&self, path: impl AsRef<Path>) -> ResJob {
+    pub fn post_bundle(&self, path: impl AsRef<Path>) -> Result<ResJob> {
         let path_str = path.as_ref().to_string_lossy();
-        let cstr = CString::new(path_str.as_ref()).unwrap();
+        let cstr =
+            CString::new(path_str.as_ref()).map_err(|e| MaaError::BufferError(e.to_string()))?;
         let id = ffi::maa_resource_post_bundle(self.handle, cstr.as_ptr());
-        ResJob::new(id, self.handle)
+        if id == MAA_INVALID_ID {
+            return Err(MaaError::OperationFailed("post_bundle"));
+        }
+        Ok(ResJob::new(id, self.handle))
     }
 
     pub fn override_pipeline(&self, pipeline: &Value) -> Result<bool> {
@@ -97,38 +92,38 @@ impl Resource {
     }
 
     pub fn use_cpu(&self) -> bool {
-        self.set_inference(InferenceExecutionProvider::Cpu, InferenceDevice::Cpu)
+        self.set_inference_raw(
+            InferenceExecutionProvider::Cpu as i32,
+            InferenceDevice::Cpu as i32,
+        )
     }
 
     pub fn use_directml(&self, device_id: i32) -> bool {
-        self.set_inference(InferenceExecutionProvider::DirectMl, unsafe {
-            std::mem::transmute(device_id)
-        })
+        self.set_inference_raw(InferenceExecutionProvider::DirectMl as i32, device_id)
     }
 
     pub fn use_coreml(&self, coreml_flag: i32) -> bool {
-        self.set_inference(InferenceExecutionProvider::CoreMl, unsafe {
-            std::mem::transmute(coreml_flag)
-        })
+        self.set_inference_raw(InferenceExecutionProvider::CoreMl as i32, coreml_flag)
     }
 
     pub fn use_auto_ep(&self) -> bool {
-        self.set_inference(InferenceExecutionProvider::Auto, InferenceDevice::Auto)
+        self.set_inference_raw(
+            InferenceExecutionProvider::Auto as i32,
+            InferenceDevice::Auto as i32,
+        )
     }
 
-    fn set_inference(&self, ep: InferenceExecutionProvider, device: InferenceDevice) -> bool {
-        let ep_val = ep as i32;
-        let device_val = device as i32;
+    fn set_inference_raw(&self, ep: i32, device: i32) -> bool {
         let ep_ret = ffi::maa_resource_set_option(
             self.handle,
             ResOption::InferenceExecutionProvider as i32,
-            &ep_val as *const i32 as *mut std::ffi::c_void,
+            &ep as *const i32 as *mut std::ffi::c_void,
             std::mem::size_of::<i32>() as u64,
         );
         let device_ret = ffi::maa_resource_set_option(
             self.handle,
             ResOption::InferenceDevice as i32,
-            &device_val as *const i32 as *mut std::ffi::c_void,
+            &device as *const i32 as *mut std::ffi::c_void,
             std::mem::size_of::<i32>() as u64,
         );
         ep_ret != 0 && device_ret != 0
@@ -175,6 +170,8 @@ impl Drop for Resource {
     }
 }
 
+// SAFETY: MaaResource is documented as thread-safe by the MaaFramework C API.
+// The underlying handle can be safely shared across threads.
+// Users should still synchronize concurrent modifications at a higher level.
 unsafe impl Send for Resource {}
 unsafe impl Sync for Resource {}
-

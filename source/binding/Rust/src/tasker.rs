@@ -47,6 +47,12 @@ pub struct TaskDetail {
     pub status: Status,
 }
 
+/// Tasker coordinates task execution by binding Resource and Controller.
+///
+/// # Thread Safety
+/// The underlying MaaTasker handle is designed to be thread-safe by the C API.
+/// Multiple threads can query task status, but task submission and binding
+/// operations should be coordinated by the caller.
 pub struct Tasker {
     handle: MaaTaskerHandle,
     own: bool,
@@ -81,24 +87,45 @@ impl Tasker {
         self.handle
     }
 
+    /// Bind both resource and controller to this tasker.
+    /// Only stores the holders if both bindings succeed.
     pub fn bind(&mut self, resource: Resource, controller: Controller) -> bool {
         let res_ret = ffi::maa_tasker_bind_resource(self.handle, resource.handle());
         let ctrl_ret = ffi::maa_tasker_bind_controller(self.handle, controller.handle());
-        self._resource_holder = Some(resource);
-        self._controller_holder = Some(controller);
-        res_ret != 0 && ctrl_ret != 0
+        let ok = res_ret != 0 && ctrl_ret != 0;
+
+        if ok {
+            self._resource_holder = Some(resource);
+            self._controller_holder = Some(controller);
+        }
+
+        ok
     }
 
+    /// Bind resource to this tasker.
+    /// Only stores the holder if binding succeeds.
     pub fn bind_resource(&mut self, resource: Resource) -> bool {
         let ret = ffi::maa_tasker_bind_resource(self.handle, resource.handle());
-        self._resource_holder = Some(resource);
-        ret != 0
+        let ok = ret != 0;
+
+        if ok {
+            self._resource_holder = Some(resource);
+        }
+
+        ok
     }
 
+    /// Bind controller to this tasker.
+    /// Only stores the holder if binding succeeds.
     pub fn bind_controller(&mut self, controller: Controller) -> bool {
         let ret = ffi::maa_tasker_bind_controller(self.handle, controller.handle());
-        self._controller_holder = Some(controller);
-        ret != 0
+        let ok = ret != 0;
+
+        if ok {
+            self._controller_holder = Some(controller);
+        }
+
+        ok
     }
 
     pub fn resource(&self) -> Option<Resource> {
@@ -131,6 +158,11 @@ impl Tasker {
 
         let id =
             ffi::maa_tasker_post_task(self.handle, entry_cstr.as_ptr(), override_cstr.as_ptr());
+
+        if id == MAA_INVALID_ID {
+            return Err(MaaError::TaskFailed);
+        }
+
         Ok(TaskJob::new(id, self.handle))
     }
 
@@ -138,9 +170,12 @@ impl Tasker {
         ffi::maa_tasker_running(self.handle) != 0
     }
 
-    pub fn post_stop(&self) -> TaskJob {
+    pub fn post_stop(&self) -> Result<TaskJob> {
         let id = ffi::maa_tasker_post_stop(self.handle);
-        TaskJob::new(id, self.handle)
+        if id == MAA_INVALID_ID {
+            return Err(MaaError::OperationFailed("post_stop"));
+        }
+        Ok(TaskJob::new(id, self.handle))
     }
 
     pub fn stopping(&self) -> bool {
@@ -352,18 +387,23 @@ impl Drop for Tasker {
     }
 }
 
+// SAFETY: MaaTasker is documented as thread-safe by the MaaFramework C API.
+// The underlying handle can be safely shared across threads for status queries.
+// Task submission and binding should be coordinated by the caller.
 unsafe impl Send for Tasker {}
 unsafe impl Sync for Tasker {}
 
 // Global options
-pub fn set_log_dir(path: impl AsRef<std::path::Path>) -> bool {
+
+pub fn set_log_dir(path: impl AsRef<std::path::Path>) -> Result<bool> {
     let path_str = path.as_ref().to_string_lossy();
-    let cstr = CString::new(path_str.as_ref()).unwrap();
-    ffi::maa_global_set_option(
+    let cstr =
+        CString::new(path_str.as_ref()).map_err(|e| MaaError::BufferError(e.to_string()))?;
+    Ok(ffi::maa_global_set_option(
         GlobalOption::LogDir as i32,
         cstr.as_ptr() as *mut std::ffi::c_void,
         path_str.len() as u64,
-    ) != 0
+    ) != 0)
 }
 
 pub fn set_save_draw(save: bool) -> bool {
@@ -393,10 +433,11 @@ pub fn set_debug_mode(debug: bool) -> bool {
     ) != 0
 }
 
-pub fn load_plugin(path: impl AsRef<std::path::Path>) -> bool {
+pub fn load_plugin(path: impl AsRef<std::path::Path>) -> Result<bool> {
     let path_str = path.as_ref().to_string_lossy();
-    let cstr = CString::new(path_str.as_ref()).unwrap();
-    ffi::maa_global_load_plugin(cstr.as_ptr()) != 0
+    let cstr =
+        CString::new(path_str.as_ref()).map_err(|e| MaaError::BufferError(e.to_string()))?;
+    Ok(ffi::maa_global_load_plugin(cstr.as_ptr()) != 0)
 }
 
 pub fn version() -> String {
@@ -407,4 +448,3 @@ pub fn version() -> String {
     let cstr = unsafe { std::ffi::CStr::from_ptr(ptr) };
     cstr.to_string_lossy().into_owned()
 }
-

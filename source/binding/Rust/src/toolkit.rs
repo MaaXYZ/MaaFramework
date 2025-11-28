@@ -15,6 +15,12 @@ pub struct AdbDevice {
     pub config: Value,
 }
 
+/// Represents a desktop window handle and its properties.
+///
+/// # Thread Safety
+/// The hwnd is a raw pointer to a window handle. While the pointer itself
+/// can be sent across threads, actual window operations may have thread
+/// affinity requirements depending on the platform.
 #[derive(Debug, Clone)]
 pub struct DesktopWindow {
     pub hwnd: *mut c_void,
@@ -22,6 +28,8 @@ pub struct DesktopWindow {
     pub window_name: String,
 }
 
+// SAFETY: The hwnd is just an opaque handle identifier.
+// Actual window operations should respect platform threading rules.
 unsafe impl Send for DesktopWindow {}
 unsafe impl Sync for DesktopWindow {}
 
@@ -43,19 +51,34 @@ impl Toolkit {
         Self::find_adb_devices_impl(None)
     }
 
-    pub fn find_adb_devices_specified(adb_path: impl AsRef<Path>) -> Vec<AdbDevice> {
-        Self::find_adb_devices_impl(Some(adb_path.as_ref()))
+    pub fn find_adb_devices_specified(adb_path: impl AsRef<Path>) -> Result<Vec<AdbDevice>> {
+        let path_str = adb_path.as_ref().to_string_lossy();
+        let path_cstr =
+            CString::new(path_str.as_ref()).map_err(|e| MaaError::BufferError(e.to_string()))?;
+        Ok(Self::find_adb_devices_impl_cstr(Some(&path_cstr)))
     }
 
     fn find_adb_devices_impl(specified_adb: Option<&Path>) -> Vec<AdbDevice> {
+        let cstr = specified_adb.and_then(|p| {
+            let path_str = p.to_string_lossy();
+            CString::new(path_str.as_ref()).ok()
+        });
+        Self::find_adb_devices_impl_cstr(cstr.as_ref())
+    }
+
+    fn find_adb_devices_impl_cstr(specified_adb: Option<&CString>) -> Vec<AdbDevice> {
         let list_handle = ffi::maa_toolkit_adb_device_list_create();
 
-        if let Some(adb_path) = specified_adb {
-            let path_str = adb_path.to_string_lossy();
-            let path_cstr = CString::new(path_str.as_ref()).unwrap();
-            ffi::maa_toolkit_adb_device_find_specified(path_cstr.as_ptr(), list_handle);
+        let ok = if let Some(path_cstr) = specified_adb {
+            ffi::maa_toolkit_adb_device_find_specified(path_cstr.as_ptr(), list_handle)
         } else {
-            ffi::maa_toolkit_adb_device_find(list_handle);
+            ffi::maa_toolkit_adb_device_find(list_handle)
+        };
+
+        // If discovery failed, clean up and return empty
+        if ok == 0 {
+            ffi::maa_toolkit_adb_device_list_destroy(list_handle);
+            return Vec::new();
         }
 
         let count = ffi::maa_toolkit_adb_device_list_size(list_handle);
@@ -123,7 +146,13 @@ impl Toolkit {
 
     pub fn find_desktop_windows() -> Vec<DesktopWindow> {
         let list_handle = ffi::maa_toolkit_desktop_window_list_create();
-        ffi::maa_toolkit_desktop_window_find_all(list_handle);
+        let ok = ffi::maa_toolkit_desktop_window_find_all(list_handle);
+
+        // If discovery failed, clean up and return empty
+        if ok == 0 {
+            ffi::maa_toolkit_desktop_window_list_destroy(list_handle);
+            return Vec::new();
+        }
 
         let count = ffi::maa_toolkit_desktop_window_list_size(list_handle);
         let mut windows = Vec::with_capacity(count as usize);
@@ -162,4 +191,3 @@ impl Toolkit {
         windows
     }
 }
-
