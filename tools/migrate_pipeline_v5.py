@@ -204,8 +204,6 @@ def rebuild_json_with_comments(
 
     使用更精确的方式在原文本上进行替换操作
     """
-    import json
-
     result_text = original_text
 
     # 遍历所有节点，应用修改
@@ -484,9 +482,7 @@ def add_prefix_to_specific_nodes(nodes: list, target_nodes: set, prefix: str) ->
     return result
 
 
-def migrate_node(
-    node_name: str, node_data: dict, is_sub_nodes: set
-) -> tuple[dict, list]:
+def migrate_node(node_data: dict, is_sub_nodes: set) -> tuple[dict, list]:
     """
     迁移单个节点的配置，保持字段顺序
 
@@ -503,7 +499,6 @@ def migrate_node(
     # 收集需要处理的数据
     interrupt_list = []
     has_interrupt = "interrupt" in node_data
-    has_is_sub = "is_sub" in node_data
 
     if has_interrupt:
         interrupt_list = ensure_list(node_data.get("interrupt"))
@@ -511,12 +506,12 @@ def migrate_node(
     # 按原始顺序遍历字段
     for key, value in node_data.items():
         if key == "interrupt":
-            # 跳过 interrupt 字段，稍后处理
+            # 跳过 interrupt 字段
+            changes.append(f"  - 删除 interrupt: {value}")
             continue
         elif key == "is_sub":
             # 跳过 is_sub 字段
-            is_sub_value = value
-            changes.append(f"  - 删除 is_sub: {is_sub_value}")
+            changes.append(f"  - 删除 is_sub: {value}")
             continue
         elif key == "next":
             # 处理 next 字段
@@ -622,7 +617,7 @@ def migrate_pipeline_file(
     has_changes = False
 
     for node_name, node_data in data.items():
-        migrated_node, changes = migrate_node(node_name, node_data, global_is_sub_nodes)
+        migrated_node, changes = migrate_node(node_data, global_is_sub_nodes)
         migrated_data[node_name] = migrated_node
 
         if changes:
