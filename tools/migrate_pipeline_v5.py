@@ -665,7 +665,7 @@ def find_pipeline_files(directory: Path) -> list:
             # 排除以 . 开头的文件
             if file.startswith("."):
                 continue
-            if file.lower().endswith(".json"):
+            if file.lower().endswith(".json") or file.lower().endswith(".jsonc"):
                 json_files.append(Path(root) / file)
 
     return json_files
