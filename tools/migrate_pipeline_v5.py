@@ -283,8 +283,15 @@ def rebuild_json_with_comments(
                 and "interrupt" not in migrated_node_data
             ):
                 # 匹配整行：可选的前导空白 + 字段定义 + 可选注释 + 换行符
+                # 先尝试匹配数组格式 interrupt: [...]
                 modified_node_text = re.sub(
                     r'[ \t]*"interrupt"\s*:\s*\[[^\]]*\],?\s*(?://[^\n]*)?\r?\n',
+                    "",
+                    modified_node_text,
+                )
+                # 再尝试匹配字符串格式 interrupt: "..."
+                modified_node_text = re.sub(
+                    r'[ \t]*"interrupt"\s*:\s*"[^"]*",?\s*(?://[^\n]*)?\r?\n',
                     "",
                     modified_node_text,
                 )
