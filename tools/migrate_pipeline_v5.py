@@ -98,11 +98,50 @@ def remove_jsonc_comments_for_parsing(text: str) -> str:
     return "".join(result)
 
 
+def remove_trailing_commas(text: str) -> str:
+    """移除 JSON 中的尾逗号（在 ] 或 } 之前的逗号）"""
+    result = []
+    i = 0
+    in_string = False
+
+    while i < len(text):
+        if in_string:
+            if text[i] == "\\" and i + 1 < len(text):
+                result.append(text[i : i + 2])
+                i += 2
+                continue
+            elif text[i] == '"':
+                in_string = False
+            result.append(text[i])
+            i += 1
+            continue
+
+        if text[i] == '"':
+            in_string = True
+            result.append(text[i])
+            i += 1
+            continue
+
+        if text[i] == ",":
+            j = i + 1
+            while j < len(text) and text[j] in " \t\n\r":
+                j += 1
+            if j < len(text) and text[j] in "]}":
+                i += 1
+                continue
+
+        result.append(text[i])
+        i += 1
+
+    return "".join(result)
+
+
 def parse_jsonc(text: str) -> Any:
     """解析 JSONC 文件内容，返回 OrderedDict 以保持字段顺序"""
     import json
 
     clean_text = remove_jsonc_comments_for_parsing(text)
+    clean_text = remove_trailing_commas(clean_text)
     return json.loads(clean_text, object_pairs_hook=OrderedDict)
 
 
