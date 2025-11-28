@@ -10,7 +10,7 @@ from .buffer import ImageBuffer, RectBuffer, StringBuffer, StringListBuffer
 from .define import *
 from .library import Library
 from .tasker import Tasker
-from .pipeline import JPipelineData, JPipelineParser
+from .pipeline import JPipelineData, JPipelineParser, JNodeAttr
 from .job import JobWithResult
 
 
@@ -448,17 +448,11 @@ class Context:
 
 
 class ContextEventSink(EventSink):
-
-    @dataclass
-    class NextListItem:
-        name: str
-        jump_back: bool
-
     @dataclass
     class NodeNextListDetail:
         task_id: int
         name: str
-        next_list: list["ContextEventSink.NextListItem"]
+        next_list: list[JNodeAttr]
         focus: Any
 
     def on_node_next_list(
@@ -551,10 +545,7 @@ class ContextEventSink(EventSink):
 
         noti_type = EventSink._notification_type(msg)
         if msg.startswith("Node.NextList"):
-            next_list = [
-                self.NextListItem(name=item["name"], jump_back=item["jump_back"])
-                for item in details["list"]
-            ]
+            next_list = JPipelineParser._parse_node_attr_list(details["list"])
             detail = self.NodeNextListDetail(
                 task_id=details["task_id"],
                 name=details["name"],
