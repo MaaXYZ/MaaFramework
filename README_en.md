@@ -144,6 +144,9 @@ It offers low-code simplicity while maintaining high extensibility. The framewor
     
 - [MAAAE](https://github.com/NewWYoming/MAAAE) ![Pipeline](https://img.shields.io/badge/Pipeline-%23876f69?logo=paddypower&logoColor=%23FFFFFF) ![python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white) ![license](https://img.shields.io/github/license/NewWYoming/MAAAE) ![activity](https://img.shields.io/github/commit-activity/m/NewWYoming/MAAAE?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/NewWYoming/MAAAE?style=social)  
     An assistant for Ash Echoes. Image technology + simulation control, freeing your hands! Powered by MaaFramework.
+  
+- [MBCCtools](https://github.com/quietlysnow/MBCCtools) ![Pipeline](https://img.shields.io/badge/Pipeline-%23876f69?logo=paddypower&logoColor=%23FFFFFF) ![license](https://img.shields.io/github/license/quietlysnow/MBCCtools) ![activity](https://img.shields.io/github/commit-activity/m/quietlysnow/MBCCtools?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/quietlysnow/MBCCtools?style=social)  
+  Assistant for Path to Nowhere. Image recognition + simulation control to free your hands! Powered by MaaFramework!
 
 ## Eco-Building
 
