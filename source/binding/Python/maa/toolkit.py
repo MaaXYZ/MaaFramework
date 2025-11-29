@@ -6,6 +6,7 @@ from typing import Dict, List, Union, Optional, Any
 
 from .define import *
 from .library import Library
+from .resource import Resource
 
 
 @dataclass
@@ -51,7 +52,7 @@ class Toolkit:
 
     @staticmethod
     def find_adb_devices(
-        specified_adb: Optional[Union[str, Path]] = None
+        specified_adb: Optional[Union[str, Path]] = None,
     ) -> List[AdbDevice]:
         """搜索所有已知安卓模拟器 / Search all known Android emulators
 
@@ -141,6 +142,91 @@ class Toolkit:
 
         Library.toolkit().MaaToolkitDesktopWindowListDestroy(list_handle)
         return windows
+
+    @staticmethod
+    def pi_load(interface_path: Union[str, Path]) -> bool:
+        """加载 interface.json 并读取 agent 配置 / Load interface.json and read agent config
+
+        Args:
+            interface_path: interface.json 文件路径 / Path to interface.json
+
+        Returns:
+            bool: 是否成功 / Whether successful
+        """
+        Toolkit._set_api_properties()
+
+        return bool(
+            Library.toolkit().MaaToolkitProjectInterfaceLoad(
+                str(interface_path).encode()
+            )
+        )
+
+    @staticmethod
+    def pi_loaded() -> bool:
+        """判断 interface.json 是否已加载 / Check if interface.json is loaded
+
+        Returns:
+            bool: 是否已加载 / Whether loaded
+        """
+        Toolkit._set_api_properties()
+
+        return bool(Library.toolkit().MaaToolkitProjectInterfaceLoaded())
+
+    @staticmethod
+    def pi_bind_resource(resource: Resource) -> bool:
+        """为 Agent 绑定资源 / Bind resource for Agent
+
+        Args:
+            resource: 资源 / Resource
+
+        Returns:
+            bool: 是否成功 / Whether successful
+        """
+        Toolkit._set_api_properties()
+
+        return bool(
+            Library.toolkit().MaaToolkitProjectInterfaceBindResource(resource._handle)
+        )
+
+    @staticmethod
+    def pi_start_agent() -> bool:
+        """启动 Agent / Start Agent
+
+        Returns:
+            bool: 是否成功 / Whether successful
+        """
+        Toolkit._set_api_properties()
+
+        return bool(Library.toolkit().MaaToolkitProjectInterfaceStartAgent())
+
+    @staticmethod
+    def pi_stop_agent() -> None:
+        """停止 Agent / Stop Agent"""
+        Toolkit._set_api_properties()
+
+        Library.toolkit().MaaToolkitProjectInterfaceStopAgent()
+
+    @staticmethod
+    def pi_agent_running() -> bool:
+        """判断 Agent 是否正在运行 / Check if Agent is running
+
+        Returns:
+            bool: 是否正在运行 / Whether running
+        """
+        Toolkit._set_api_properties()
+
+        return bool(Library.toolkit().MaaToolkitProjectInterfaceAgentRunning())
+
+    @staticmethod
+    def pi_agent_connected() -> bool:
+        """判断 Agent 是否已连接 / Check if Agent is connected
+
+        Returns:
+            bool: 是否已连接 / Whether connected
+        """
+        Toolkit._set_api_properties()
+
+        return bool(Library.toolkit().MaaToolkitProjectInterfaceAgentConnected())
 
     ### private ###
 
@@ -264,3 +350,26 @@ class Toolkit:
         Library.toolkit().MaaToolkitDesktopWindowGetWindowName.argtypes = [
             MaaToolkitDesktopWindowHandle
         ]
+
+        Library.toolkit().MaaToolkitProjectInterfaceLoad.restype = MaaBool
+        Library.toolkit().MaaToolkitProjectInterfaceLoad.argtypes = [ctypes.c_char_p]
+
+        Library.toolkit().MaaToolkitProjectInterfaceLoaded.restype = MaaBool
+        Library.toolkit().MaaToolkitProjectInterfaceLoaded.argtypes = []
+
+        Library.toolkit().MaaToolkitProjectInterfaceBindResource.restype = MaaBool
+        Library.toolkit().MaaToolkitProjectInterfaceBindResource.argtypes = [
+            MaaResourceHandle
+        ]
+
+        Library.toolkit().MaaToolkitProjectInterfaceStartAgent.restype = MaaBool
+        Library.toolkit().MaaToolkitProjectInterfaceStartAgent.argtypes = []
+
+        Library.toolkit().MaaToolkitProjectInterfaceStopAgent.restype = None
+        Library.toolkit().MaaToolkitProjectInterfaceStopAgent.argtypes = []
+
+        Library.toolkit().MaaToolkitProjectInterfaceAgentRunning.restype = MaaBool
+        Library.toolkit().MaaToolkitProjectInterfaceAgentRunning.argtypes = []
+
+        Library.toolkit().MaaToolkitProjectInterfaceAgentConnected.restype = MaaBool
+        Library.toolkit().MaaToolkitProjectInterfaceAgentConnected.argtypes = []
