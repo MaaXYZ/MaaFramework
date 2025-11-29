@@ -175,9 +175,9 @@ def format_array_value(value: list, indent: str = "    ", base_indent: str = "")
         return "[]"
 
     # 判断是否需要多行格式
-    # 条件：超过2个元素，或单行总长度超过80字符
+    # 条件：超过1个元素，或单行总长度超过80字符
     json_str = json.dumps(value, ensure_ascii=False)
-    should_multiline = len(value) > 2 or len(json_str) > 80
+    should_multiline = len(value) > 1 or len(json_str) > 80
 
     if should_multiline:
         # 多行格式（紧凑风格）
@@ -270,10 +270,16 @@ def rebuild_json_with_comments(
 
             # 1. 删除 is_sub 字段（删除整行，包括前导空白和换行符）
             if "is_sub" in original_node_data and "is_sub" not in migrated_node_data:
-                # 匹配整行：可选的前导空白 + 字段定义 + 可选注释 + 换行符
+                # 情况1: 有尾逗号（不是最后一个字段）
                 modified_node_text = re.sub(
-                    r'[ \t]*"is_sub"\s*:\s*[^,\n]+,?\s*(?://[^\n]*)?\r?\n',
+                    r'[ \t]*"is_sub"\s*:\s*[^,\n]+,\s*(?://[^\n]*)?\r?\n',
                     "",
+                    modified_node_text,
+                )
+                # 情况2: 没有尾逗号（是最后一个字段），需要同时删除前一行的逗号
+                modified_node_text = re.sub(
+                    r',(\s*(?://[^\n]*)?\r?\n)[ \t]*"is_sub"\s*:\s*[^,\n]+\s*(?://[^\n]*)?\r?\n',
+                    r"\1",
                     modified_node_text,
                 )
 
@@ -282,17 +288,31 @@ def rebuild_json_with_comments(
                 "interrupt" in original_node_data
                 and "interrupt" not in migrated_node_data
             ):
-                # 匹配整行：可选的前导空白 + 字段定义 + 可选注释 + 换行符
-                # 先尝试匹配数组格式 interrupt: [...]
+                # 数组格式 interrupt: [...] （支持多行数组）
+                # 情况1: 有尾逗号（不是最后一个字段）
                 modified_node_text = re.sub(
-                    r'[ \t]*"interrupt"\s*:\s*\[[^\]]*\],?\s*(?://[^\n]*)?\r?\n',
+                    r'[ \t]*"interrupt"\s*:\s*\[[\s\S]*?\],\s*(?://[^\n]*)?\r?\n',
                     "",
                     modified_node_text,
                 )
-                # 再尝试匹配字符串格式 interrupt: "..."
+                # 情况2: 没有尾逗号（是最后一个字段），需要同时删除前一行的逗号
                 modified_node_text = re.sub(
-                    r'[ \t]*"interrupt"\s*:\s*"[^"]*",?\s*(?://[^\n]*)?\r?\n',
+                    r',(\s*(?://[^\n]*)?\r?\n)[ \t]*"interrupt"\s*:\s*\[[\s\S]*?\]\s*(?://[^\n]*)?\r?\n',
+                    r"\1",
+                    modified_node_text,
+                )
+
+                # 字符串格式 interrupt: "..."
+                # 情况1: 有尾逗号（不是最后一个字段）
+                modified_node_text = re.sub(
+                    r'[ \t]*"interrupt"\s*:\s*"[^"]*",\s*(?://[^\n]*)?\r?\n',
                     "",
+                    modified_node_text,
+                )
+                # 情况2: 没有尾逗号（是最后一个字段），需要同时删除前一行的逗号
+                modified_node_text = re.sub(
+                    r',(\s*(?://[^\n]*)?\r?\n)[ \t]*"interrupt"\s*:\s*"[^"]*"\s*(?://[^\n]*)?\r?\n',
+                    r"\1",
                     modified_node_text,
                 )
 
