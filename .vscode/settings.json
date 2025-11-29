@@ -11,6 +11,12 @@
                 "/sample/interface.json"
             ],
             "url": "/tools/interface.schema.json"
+        },{
+            "fileMatch": [
+                "/sample/interface_v2.json",
+                "/sample/interface_v2.jsonc"
+            ],
+            "url": "/tools/interface_v2.schema.json"
         }
     ],
     "[json]": {
