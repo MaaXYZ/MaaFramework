@@ -52,7 +52,9 @@
                     "description": "在选项激活时生效的 pipeline 配置覆盖"
                 }
             },
-            "required": ["name"],
+            "required": [
+                "name"
+            ],
             "additionalProperties": false
         },
         "inputItem": {
@@ -83,7 +85,11 @@
                     "type": "string",
                     "title": "Pipeline 数据类型",
                     "description": "输入字段在 pipeline_override 中的数据类型，用于类型转换",
-                    "enum": ["string", "int", "bool"]
+                    "enum": [
+                        "string",
+                        "int",
+                        "bool"
+                    ]
                 },
                 "verify": {
                     "type": "string",
@@ -96,7 +102,9 @@
                     "description": "正则校验用户输入错误时显示的信息"
                 }
             },
-            "required": ["name"],
+            "required": [
+                "name"
+            ],
             "additionalProperties": false
         },
         "optionDefinition": {
@@ -107,7 +115,11 @@
                     "type": "string",
                     "title": "配置项类型",
                     "description": "select: 下拉选项框; input: 用户输入框; switch: 选择框(Yes or No)",
-                    "enum": ["select", "input", "switch"],
+                    "enum": [
+                        "select",
+                        "input",
+                        "switch"
+                    ],
                     "default": "select"
                 },
                 "label": {
@@ -181,7 +193,10 @@
                 "type": {
                     "type": "string",
                     "title": "控制器类型",
-                    "enum": ["Adb", "Win32"]
+                    "enum": [
+                        "Adb",
+                        "Win32"
+                    ]
                 },
                 "display_short_side": {
                     "type": "number",
@@ -262,7 +277,10 @@
                     "additionalProperties": false
                 }
             },
-            "required": ["name", "type"],
+            "required": [
+                "name",
+                "type"
+            ],
             "additionalProperties": false
         },
         "resourceItem": {
@@ -306,7 +324,10 @@
                     }
                 }
             },
-            "required": ["name", "path"],
+            "required": [
+                "name",
+                "path"
+            ],
             "additionalProperties": false
         },
         "taskItem": {
@@ -366,7 +387,10 @@
                     }
                 }
             },
-            "required": ["name", "entry"],
+            "required": [
+                "name",
+                "entry"
+            ],
             "additionalProperties": false
         },
         "agentConfig": {
@@ -393,7 +417,9 @@
                     "description": "被用来创建一个通信套接字。填写则会被使用，否则自动创建"
                 }
             },
-            "required": ["child_exec"],
+            "required": [
+                "child_exec"
+            ],
             "additionalProperties": false
         }
     },
@@ -462,12 +488,12 @@
         "contact": {
             "$ref": "#/definitions/i18nString",
             "title": "联系方式",
-            "description": "显示在"关于"页面。支持文件路径、URL或直接文本，内容支持Markdown格式"
+            "description": "显示在“关于”页面。支持文件路径、URL或直接文本，内容支持Markdown格式"
         },
         "license": {
             "$ref": "#/definitions/i18nString",
             "title": "许可证信息",
-            "description": "显示在"关于"页面。支持文件路径、URL或直接文本，内容支持Markdown格式"
+            "description": "显示在“关于”页面。支持文件路径、URL或直接文本，内容支持Markdown格式"
         },
         "welcome": {
             "$ref": "#/definitions/i18nString",
@@ -477,7 +503,7 @@
         "description": {
             "$ref": "#/definitions/i18nString",
             "title": "项目描述",
-            "description": "显示在"关于"页面。支持文件路径、URL或直接文本，内容支持Markdown格式"
+            "description": "显示在“关于”页面。支持文件路径、URL或直接文本，内容支持Markdown格式"
         },
         "controller": {
             "type": "array",
@@ -515,7 +541,12 @@
             }
         }
     },
-    "required": ["interface_version", "name", "controller", "resource", "task"],
+    "required": [
+        "interface_version",
+        "name",
+        "controller",
+        "resource",
+        "task"
+    ],
     "additionalProperties": false
 }
-
