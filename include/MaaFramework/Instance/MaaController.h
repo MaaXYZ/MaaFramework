@@ -40,6 +40,19 @@ extern "C"
     MAA_FRAMEWORK_API MaaController*
         MaaDbgControllerCreate(const char* read_path, const char* write_path, MaaDbgControllerType type, const char* config);
 
+    /**
+     * @brief Create an Android native controller.
+     *
+     * This controller uses Android's native APIs for screenshots and input injection.
+     * It runs directly on the Android device without requiring adb.
+     *
+     * @return MaaController* The created controller handle, or nullptr on failure.
+     *
+     * @note This controller only works when MaaFramework is running on Android.
+     * @note Requires appropriate permissions (INJECT_EVENTS for input, CAPTURE_VIDEO_OUTPUT for screencap).
+     */
+    MAA_FRAMEWORK_API MaaController* MaaAndroidNativeControllerCreate();
+
     MAA_FRAMEWORK_API void MaaControllerDestroy(MaaController* ctrl);
 
     MAA_FRAMEWORK_API MaaSinkId MaaControllerAddSink(MaaController* ctrl, MaaEventCallback sink, void* trans_arg);

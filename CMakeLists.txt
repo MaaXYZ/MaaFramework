@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.28)
 
 project(MaaFw)
 
-set(CMAKE_CXX_SCAN_FOR_MODULES  OFF)
+set(CMAKE_CXX_SCAN_FOR_MODULES OFF)
 
 include(source/MaaUtils/MaaUtils.cmake)
 
@@ -10,6 +10,14 @@ option(WITH_ADB_CONTROLLER "build with adb controller" ON)
 option(WITH_WIN32_CONTROLLER "build with win32 controller" ON)
 option(WITH_DBG_CONTROLLER "build with debugging controller" OFF)
 option(WITH_CUSTOM_CONTROLLER "build with custom controller" ON)
+
+# Android Native Controller 只在 Android 平台可用
+if(ANDROID)
+    option(WITH_ANDROID_NATIVE_CONTROLLER "build with android native controller" ON)
+else()
+    set(WITH_ANDROID_NATIVE_CONTROLLER OFF CACHE BOOL "build with android native controller" FORCE)
+endif()
+
 option(WITH_NODEJS_BINDING "build with nodejs binding" OFF)
 option(WITH_QUICKJS_BINDING "build with quickjs binding" OFF)
 option(WITH_MAA_AGENT "build with MaaAgent" ON)

@@ -116,6 +116,28 @@ MaaController* MaaDbgControllerCreate(const char* read_path, const char* write_p
     return new MAA_CTRL_NS::ControllerAgent(std::move(control_unit));
 }
 
+MaaController* MaaAndroidNativeControllerCreate()
+{
+    LogFunc;
+
+#ifndef __ANDROID__
+
+    LogError << "This API" << __FUNCTION__ << "is only available on Android";
+    return nullptr;
+
+#else
+
+    auto control_unit = MAA_NS::AndroidNativeControlUnitLibraryHolder::create_control_unit();
+
+    if (!control_unit) {
+        LogError << "Failed to create control unit";
+        return nullptr;
+    }
+
+    return new MAA_CTRL_NS::ControllerAgent(std::move(control_unit));
+#endif
+}
+
 void MaaControllerDestroy(MaaController* ctrl)
 {
     LogFunc << VAR_VOIDP(ctrl);

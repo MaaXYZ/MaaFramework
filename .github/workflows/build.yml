@@ -402,7 +402,8 @@ jobs:
                     -DANDROID_ABI=${{ matrix.arch == 'x86_64' && 'x86_64' || 'arm64-v8a' }} \
                     -DANDROID_PLATFORM=android-23 \
                     -DMAADEPS_TRIPLET='maa-${{ matrix.arch == 'x86_64' && 'x64' || 'arm64' }}-android' \
-                    -DMAA_HASH_VERSION='${{ needs.meta.outputs.tag }}'
+                    -DMAA_HASH_VERSION='${{ needs.meta.outputs.tag }}' \
+                    -DWITH_ANDROID_NATIVE_CONTROLLER=ON
 
                   cmake --build build --preset 'NinjaMulti - ${{ inputs.build_config || needs.meta.outputs.build_config }}' -j 16
 
