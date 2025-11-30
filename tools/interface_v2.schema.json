@@ -140,7 +140,7 @@
                 "cases": {
                     "type": "array",
                     "title": "可选项列表",
-                    "description": "仅在 type 为 select/switch 时使用。注意 switch 类型仅支持两个 cases",
+                    "description": "在 type 为 select/switch 时使用",
                     "items": {
                         "$ref": "#/definitions/caseItem"
                     }
@@ -148,7 +148,7 @@
                 "inputs": {
                     "type": "array",
                     "title": "输入配置",
-                    "description": "仅在 type 为 input 时使用，定义用户可输入的字段",
+                    "description": "在 type 为 input 时使用，定义用户可输入的字段",
                     "items": {
                         "$ref": "#/definitions/inputItem"
                     }
@@ -164,7 +164,104 @@
                     "description": "默认选项名称，仅在 type 为 select 时使用"
                 }
             },
-            "additionalProperties": false
+            "additionalProperties": false,
+            "oneOf": [
+                {
+                    "title": "inputOption",
+                    "type": "object",
+                    "properties": {
+                        "type": {
+                            "const": "input"
+                        },
+                        "label": {
+                            "$ref": "#/definitions/i18nString"
+                        },
+                        "description": {
+                            "$ref": "#/definitions/i18nString"
+                        },
+                        "icon": {
+                            "$ref": "#/definitions/i18nString"
+                        },
+                        "inputs": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/inputItem"
+                            }
+                        },
+                        "pipeline_override": {
+                            "$ref": "#/definitions/pipelineOverride"
+                        }
+                    },
+                    "required": [
+                        "type",
+                        "inputs"
+                    ],
+                    "additionalProperties": false
+                },
+                {
+                    "title": "selectOption",
+                    "type": "object",
+                    "properties": {
+                        "type": {
+                            "const": "select"
+                        },
+                        "label": {
+                            "$ref": "#/definitions/i18nString"
+                        },
+                        "description": {
+                            "$ref": "#/definitions/i18nString"
+                        },
+                        "icon": {
+                            "$ref": "#/definitions/i18nString"
+                        },
+                        "cases": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/caseItem"
+                            }
+                        },
+                        "default_case": {
+                            "type": "string"
+                        }
+                    },
+                    "required": [
+                        "type",
+                        "cases"
+                    ],
+                    "additionalProperties": false
+                },
+                {
+                    "title": "switchOption",
+                    "type": "object",
+                    "properties": {
+                        "type": {
+                            "const": "switch"
+                        },
+                        "label": {
+                            "$ref": "#/definitions/i18nString"
+                        },
+                        "description": {
+                            "$ref": "#/definitions/i18nString"
+                        },
+                        "icon": {
+                            "$ref": "#/definitions/i18nString"
+                        },
+                        "cases": {
+                            "type": "array",
+                            "minItems": 2,
+                            "maxItems": 2,
+                            "items": {
+                                "$ref": "#/definitions/caseItem"
+                            }
+                        }
+                    },
+                    "required": [
+                        "type",
+                        "cases"
+                    ],
+                    "additionalProperties": false
+                }
+            ]
         },
         "controllerItem": {
             "type": "object",
