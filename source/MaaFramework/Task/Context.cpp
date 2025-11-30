@@ -138,7 +138,7 @@ bool Context::override_pipeline(const json::value& pipeline_override)
         ret = override_pipeline_once(pipeline_override.as_object(), default_mgr);
     }
     else if (pipeline_override.is_array()) {
-        ret = !pipeline_override.empty();
+        ret = true;
         for (const auto& val : pipeline_override.as_array()) {
             if (!val.is_object()) {
                 LogError << "input is not json array of object" << VAR(pipeline_override);
