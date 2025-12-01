@@ -338,7 +338,9 @@
                                 "LegacyEvent",
                                 "PostThreadMessage",
                                 "SendMessageWithCursorPos",
-                                "PostMessageWithCursorPos"
+                                "PostMessageWithCursorPos",
+                                "SendMessageWithCursorPosAndBlockInput",
+                                "PostMessageWithCursorPosAndBlockInput"
                             ]
                         },
                         "keyboard": {
@@ -352,7 +354,9 @@
                                 "LegacyEvent",
                                 "PostThreadMessage",
                                 "SendMessageWithCursorPos",
-                                "PostMessageWithCursorPos"
+                                "PostMessageWithCursorPos",
+                                "SendMessageWithCursorPosAndBlockInput",
+                                "PostMessageWithCursorPosAndBlockInput"
                             ]
                         },
                         "screencap": {
