@@ -238,7 +238,7 @@ _Please note that you only need to read this chapter if you are ready to develop
 - ~~[thrift](https://github.com/apache/thrift)~~  
     ~~Apache Thrift~~
 
-### 思路灵感
+### Inspiration
 
 - [MaaAssistantArknights](https://github.com/MaaAssistantArknights/MaaAssistantArknights)  
   《明日方舟》小助手，全日常一键长草！| A one-click tool for the daily tasks of Arknights, supporting all clients.  
