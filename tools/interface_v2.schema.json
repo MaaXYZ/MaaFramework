@@ -364,11 +364,6 @@
                             "type": "string",
                             "title": "截图方式",
                             "description": "Win32 控制器的截图方式"
-                        },
-                        "input": {
-                            "type": "integer",
-                            "title": "输入方式",
-                            "description": "Win32 输入方式值。1: Seize, 2: SendMessage, 4: PostMessage, 8: LegacyEvent, 16: PostThreadMessage"
                         }
                     },
                     "additionalProperties": false
