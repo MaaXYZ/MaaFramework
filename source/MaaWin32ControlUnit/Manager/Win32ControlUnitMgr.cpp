@@ -5,9 +5,11 @@
 
 #include "Input/LegacyEventInput.h"
 #include "Input/PostMessageInput.h"
+#include "Input/PostMessageWithCursorPosInput.h"
 #include "Input/PostThreadMessageInput.h"
 #include "Input/SeizeInput.h"
 #include "Input/SendMessageInput.h"
+#include "Input/SendMessageWithCursorPosInput.h"
 #include "Screencap/DesktopDupScreencap.h"
 #include "Screencap/DesktopDupWindowScreencap.h"
 #include "Screencap/FramePoolScreencap.h"
@@ -84,6 +86,10 @@ bool Win32ControlUnitMgr::connect()
             return std::make_shared<LegacyEventInput>(hwnd_);
         case MaaWin32InputMethod_PostThreadMessage:
             return std::make_shared<PostThreadMessageInput>(hwnd_);
+        case MaaWin32InputMethod_SendMessageWithCursorPos:
+            return std::make_shared<SendMessageWithCursorPosInput>(hwnd_);
+        case MaaWin32InputMethod_PostMessageWithCursorPos:
+            return std::make_shared<PostMessageWithCursorPosInput>(hwnd_);
         default:
             LogError << "Unknown input method: " << static_cast<int>(method);
             return nullptr;
