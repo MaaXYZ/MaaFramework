@@ -236,6 +236,15 @@ _请留意，仅当您准备开发 MaaFramework 本身时，才需要阅读本�
 - ~~[thrift](https://github.com/apache/thrift)~~  
   ~~Apache Thrift~~
 
+### 思路灵感
+
+- [MaaAssistantArknights](https://github.com/MaaAssistantArknights/MaaAssistantArknights)  
+  《明日方舟》小助手，全日常一键长草！| A one-click tool for the daily tasks of Arknights, supporting all clients.  
+  MaaFramework 参考了 MAA 中 ADB 控制器部分实现思路，但未使用其任何源代码，本项目基于全新的 C++ 实现。
+- [ok-script](https://github.com/ok-oldking/ok-script)  
+  全新Python游戏自动化框架(支持Windows和模拟器)  
+  MaaFramework 参考了 ok-script 中 Win32 控制器部分实现思路，但未使用其任何源代码，本项目基于全新的 C++ 实现。
+
 ### 开发者
 
 感谢以下开发者对 MaaFramework 作出的贡献：
