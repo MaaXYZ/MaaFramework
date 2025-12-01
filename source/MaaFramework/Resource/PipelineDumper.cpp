@@ -111,7 +111,7 @@ json::object PipelineDumper::dump(const PipelineData& pp)
             .index = param.result_index,
             .green_mask = param.green_mask,
             .detector = kDetectorNameMap.at(param.detector),
-            .ratio = param.distance_ratio,
+            .ratio = param.ratio,
         };
     } break;
 

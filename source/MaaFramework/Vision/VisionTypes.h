@@ -166,7 +166,7 @@ struct FeatureMatcherParam
 
     inline static constexpr Detector kDefaultDetector = Detector::SIFT;
     // inline static constexpr Matcher kDefaultMatcher = Matcher::FLANN;
-    inline static constexpr double kDefaultDistanceRatio = 0.6;
+    inline static constexpr double kDefaultkDefaultRatio = 0.6;
     inline static constexpr int kDefaultCount = 4;
 
     Target roi_target;
@@ -176,7 +176,7 @@ struct FeatureMatcherParam
     Detector detector = kDefaultDetector;
     // Matcher matcher = kDefaultMatcher;
 
-    double distance_ratio = kDefaultDistanceRatio;
+    double ratio = kDefaultkDefaultRatio;
     int count = kDefaultCount;
 
     ResultOrderBy order_by = ResultOrderBy::Horizontal;

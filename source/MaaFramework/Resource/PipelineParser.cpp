@@ -548,8 +548,8 @@ bool PipelineParser::parse_feature_matcher_param(
     //     return false;
     // }
 
-    if (!get_and_check_value(input, "distance_ratio", output.distance_ratio, default_value.distance_ratio)) {
-        LogError << "failed to get_and_check_value distance_ratio" << VAR(input);
+    if (!get_and_check_value(input, "ratio", output.ratio, default_value.ratio)) {
+        LogError << "failed to get_and_check_value ratio" << VAR(input);
         return false;
     }
 
