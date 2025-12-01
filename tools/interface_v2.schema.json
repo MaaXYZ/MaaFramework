@@ -312,29 +312,6 @@
                     "description": "是否使用原始分辨率进行截图，不进行缩放。与缩放分辨率设置互斥",
                     "default": false
                 },
-                "adb": {
-                    "type": "object",
-                    "title": "ADB 控制器配置",
-                    "description": "Adb 控制器的具体配置",
-                    "properties": {
-                        "input": {
-                            "type": "integer",
-                            "title": "输入方式",
-                            "description": "按位或合并的输入方式值。1: AdbShell, 2: MinitouchAndAdbKey, 4: Maatouch, 8: EmulatorExtras"
-                        },
-                        "screencap": {
-                            "type": "integer",
-                            "title": "截图方式",
-                            "description": "按位或合并的截图方式值。1: EncodeToFileAndPull, 2: Encode, 4: RawWithGzip, 8: RawByNetcat, 16: MinicapDirect, 32: MinicapStream, 64: EmulatorExtras"
-                        },
-                        "config": {
-                            "type": "object",
-                            "title": "额外配置",
-                            "description": "覆盖控制器的部分默认逻辑，通常用于 EmulatorExtras 多开场景"
-                        }
-                    },
-                    "additionalProperties": false
-                },
                 "win32": {
                     "type": "object",
                     "title": "Win32 控制器配置",
@@ -343,27 +320,49 @@
                         "class_regex": {
                             "type": "string",
                             "title": "窗口类名正则",
-                            "description": "Win32 控制器搜索窗口类名使用的正则表达式"
+                            "description": "可选。Win32 控制器搜索窗口类名使用的正则表达式"
                         },
                         "window_regex": {
                             "type": "string",
                             "title": "窗口标题正则",
-                            "description": "Win32 控制器搜索窗口标题使用的正则表达式"
+                            "description": "可选。Win32 控制器搜索窗口标题使用的正则表达式"
                         },
                         "mouse": {
                             "type": "string",
                             "title": "鼠标控制方式",
-                            "description": "Win32 控制器的鼠标控制方式"
+                            "description": "可选。Win32 控制器的鼠标控制方式，不提供则使用默认",
+                            "enum": [
+                                "Seize",
+                                "SendMessage",
+                                "PostMessage",
+                                "LegacyEvent",
+                                "PostThreadMessage"
+                            ]
                         },
                         "keyboard": {
                             "type": "string",
                             "title": "键盘控制方式",
-                            "description": "Win32 控制器的键盘控制方式"
+                            "description": "可选。Win32 控制器的键盘控制方式，不提供则使用默认",
+                            "enum": [
+                                "Seize",
+                                "SendMessage",
+                                "PostMessage",
+                                "LegacyEvent",
+                                "PostThreadMessage"
+                            ]
                         },
                         "screencap": {
                             "type": "string",
                             "title": "截图方式",
-                            "description": "Win32 控制器的截图方式"
+                            "description": "可选。Win32 控制器的截图方式，不提供则使用默认",
+                            "enum": [
+                                "GDI",
+                                "FramePool",
+                                "DXGI_DesktopDup",
+                                "DXGI_DesktopDup_Window",
+                                "PrintWindow",
+                                "ScreenDC"
+                            ]
                         }
                     },
                     "additionalProperties": false
