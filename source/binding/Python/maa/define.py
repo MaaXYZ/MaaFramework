@@ -238,6 +238,8 @@ class MaaWin32InputMethodEnum(IntEnum):
     PostMessage = 1 << 2
     LegacyEvent = 1 << 3
     PostThreadMessage = 1 << 4
+    SendMessageWithCursorPos = 1 << 5
+    PostMessageWithCursorPos = 1 << 6
 
 
 # No bitwise OR, just set it

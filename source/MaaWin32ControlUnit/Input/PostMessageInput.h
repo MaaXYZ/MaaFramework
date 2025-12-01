@@ -38,7 +38,7 @@ public: // from InputBase
 
     virtual bool scroll(int dx, int dy) override;
 
-private:
+protected:
     void ensure_foreground();
 
     HWND hwnd_ = nullptr;
