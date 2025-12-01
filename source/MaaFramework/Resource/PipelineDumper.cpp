@@ -324,6 +324,11 @@ json::object PipelineDumper::dump(const PipelineData& pp)
         };
     } break;
 
+    case Action::Type::StopTask: {
+        data.action.param = PipelineV2::JStopTask {};
+        break;
+    }
+
     case Action::Type::Command: {
         const auto& param = std::get<Action::CommandParam>(pp.action_param);
         data.action.param = PipelineV2::JCommand {
