@@ -52,6 +52,9 @@ bool PipelineChecker::check_all_regex(const PipelineDataMap& data_map)
 bool PipelineChecker::check_next_list(const std::vector<NodeAttr>& next_list, const PipelineDataMap& data_map)
 {
     for (const auto& node : next_list) {
+        if (node.anchor) {
+            continue;
+        }
         if (!data_map.contains(node.name)) {
             LogError << "Invalid next node name" << VAR(node.name);
             return false;
