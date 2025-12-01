@@ -17,6 +17,10 @@ public:
 
     virtual MaaResId post_bundle(const std::filesystem::path& path) override;
 
+    virtual MaaRecoId post_recognition(const cv::Mat& image, const std::string& type, const json::value& param) override;
+    virtual MaaStatus reco_status(MaaRecoId reco_id) const override;
+    virtual MaaStatus reco_wait(MaaRecoId reco_id) const override;
+
     virtual MaaStatus status(MaaResId res_id) const override;
     virtual MaaStatus wait(MaaResId res_id) const override;
     virtual bool valid() const override;
@@ -39,6 +43,9 @@ public:
     virtual std::vector<std::string> get_node_list() const override;
     virtual std::vector<std::string> get_custom_recognition_list() const override;
     virtual std::vector<std::string> get_custom_action_list() const override;
+
+    virtual std::optional<MAA_TASK_NS::RecoResult> get_reco_result(MaaRecoId reco_id) const override;
+    virtual void set_reco_detail(MaaRecoId reco_id, MAA_TASK_NS::RecoResult detail) override;
 
     virtual MaaSinkId add_sink(MaaEventCallback callback, void* trans_arg) override;
     virtual void remove_sink(MaaSinkId sink_id) override;

@@ -10,6 +10,7 @@
 #include "MaaUtils/Platform.h"
 #include "PipelineDumper.h"
 #include "PipelineParser.h"
+#include "ResourceRecognizer.h"
 
 MAA_RES_NS_BEGIN
 
@@ -26,6 +27,9 @@ ResourceMgr::ResourceMgr()
 
     res_loader_ = std::make_unique<AsyncRunner<std::filesystem::path>>(
         std::bind(&ResourceMgr::run_load, this, std::placeholders::_1, std::placeholders::_2));
+
+    reco_runner_ = std::make_unique<AsyncRunner<RecognitionItem>>(
+        std::bind(&ResourceMgr::run_recognition, this, std::placeholders::_1, std::placeholders::_2));
 }
 
 ResourceMgr::~ResourceMgr()
@@ -34,6 +38,9 @@ ResourceMgr::~ResourceMgr()
 
     if (res_loader_) {
         res_loader_->wait_all();
+    }
+    if (reco_runner_) {
+        reco_runner_->wait_all();
     }
 }
 
@@ -71,6 +78,125 @@ MaaResId ResourceMgr::post_bundle(const std::filesystem::path& path)
     }
 
     return res_loader_->post(path);
+}
+
+MaaRecoId ResourceMgr::post_recognition(const cv::Mat& image, const std::string& type, const json::value& param)
+{
+    LogInfo << VAR(type) << VAR(param);
+
+    if (!valid()) {
+        LogError << "resource not valid";
+        return MaaInvalidId;
+    }
+
+    if (image.empty()) {
+        LogError << "image is empty";
+        return MaaInvalidId;
+    }
+
+    if (!reco_runner_) {
+        LogError << "reco_runner_ is nullptr";
+        return MaaInvalidId;
+    }
+
+    // Parse type string to Recognition::Type
+    auto type_it = Recognition::kTypeMap.find(type);
+    if (type_it == Recognition::kTypeMap.end()) {
+        LogError << "Unknown recognition type" << VAR(type);
+        return MaaInvalidId;
+    }
+
+    Recognition::Type reco_type = type_it->second;
+
+    // DirectHit and Custom are not supported in Resource context
+    if (reco_type == Recognition::Type::Invalid || reco_type == Recognition::Type::DirectHit || reco_type == Recognition::Type::Custom) {
+        LogError << "Unsupported recognition type for Resource" << VAR(type);
+        return MaaInvalidId;
+    }
+
+    // Parse param based on type
+    Recognition::Param reco_param;
+    bool parse_ok = false;
+
+    switch (reco_type) {
+    case Recognition::Type::TemplateMatch: {
+        MAA_VISION_NS::TemplateMatcherParam p;
+        parse_ok = PipelineParser::parse_template_matcher_param(param, p, {});
+        if (parse_ok) {
+            reco_param = std::move(p);
+        }
+    } break;
+    case Recognition::Type::FeatureMatch: {
+        MAA_VISION_NS::FeatureMatcherParam p;
+        parse_ok = PipelineParser::parse_feature_matcher_param(param, p, {});
+        if (parse_ok) {
+            reco_param = std::move(p);
+        }
+    } break;
+    case Recognition::Type::ColorMatch: {
+        MAA_VISION_NS::ColorMatcherParam p;
+        parse_ok = PipelineParser::parse_color_matcher_param(param, p, {});
+        if (parse_ok) {
+            reco_param = std::move(p);
+        }
+    } break;
+    case Recognition::Type::OCR: {
+        MAA_VISION_NS::OCRerParam p;
+        parse_ok = PipelineParser::parse_ocrer_param(param, p, {});
+        if (parse_ok) {
+            reco_param = std::move(p);
+        }
+    } break;
+    case Recognition::Type::NeuralNetworkClassify: {
+        MAA_VISION_NS::NeuralNetworkClassifierParam p;
+        parse_ok = PipelineParser::parse_nn_classifier_param(param, p, {});
+        if (parse_ok) {
+            reco_param = std::move(p);
+        }
+    } break;
+    case Recognition::Type::NeuralNetworkDetect: {
+        MAA_VISION_NS::NeuralNetworkDetectorParam p;
+        parse_ok = PipelineParser::parse_nn_detector_param(param, p, {});
+        if (parse_ok) {
+            reco_param = std::move(p);
+        }
+    } break;
+    default:
+        LogError << "Unsupported recognition type" << VAR(type);
+        return MaaInvalidId;
+    }
+
+    if (!parse_ok) {
+        LogError << "Failed to parse recognition param" << VAR(type) << VAR(param);
+        return MaaInvalidId;
+    }
+
+    RecognitionItem item {
+        .image = image.clone(),
+        .type = reco_type,
+        .param = std::move(reco_param),
+    };
+
+    return reco_runner_->post(std::move(item));
+}
+
+MaaStatus ResourceMgr::reco_status(MaaRecoId reco_id) const
+{
+    if (!reco_runner_) {
+        LogError << "reco_runner_ is nullptr";
+        return MaaStatus_Invalid;
+    }
+    return static_cast<MaaStatus>(reco_runner_->status(reco_id));
+}
+
+MaaStatus ResourceMgr::reco_wait(MaaRecoId reco_id) const
+{
+    if (!reco_runner_) {
+        LogError << "reco_runner_ is nullptr";
+        return MaaStatus_Invalid;
+    }
+    reco_runner_->wait(reco_id);
+    return reco_status(reco_id);
 }
 
 MaaStatus ResourceMgr::status(MaaResId res_id) const
@@ -643,6 +769,30 @@ bool ResourceMgr::check_stop()
 
     need_to_stop_ = false;
     return true;
+}
+
+bool ResourceMgr::run_recognition(typename AsyncRunner<RecognitionItem>::Id id, RecognitionItem item)
+{
+    LogFunc << VAR(id) << VAR(static_cast<int>(item.type));
+
+    ResourceRecognizer recognizer(this, item.image);
+    auto result = recognizer.recognize(item.type, item.param);
+
+    // Store the recognition result with the task id as key
+    result.reco_id = id;
+    reco_cache_.set_reco_detail(id, std::move(result));
+
+    return true;
+}
+
+std::optional<MAA_TASK_NS::RecoResult> ResourceMgr::get_reco_result(MaaRecoId reco_id) const
+{
+    return reco_cache_.get_reco_result(reco_id);
+}
+
+void ResourceMgr::set_reco_detail(MaaRecoId reco_id, MAA_TASK_NS::RecoResult detail)
+{
+    reco_cache_.set_reco_detail(reco_id, std::move(detail));
 }
 
 MAA_RES_NS_END

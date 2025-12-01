@@ -45,6 +45,22 @@ extern "C"
 
     MAA_FRAMEWORK_API MaaResId MaaResourcePostBundle(MaaResource* res, const char* path);
 
+    /**
+     * @brief Post a recognition task to the resource.
+     * @param res The resource handle.
+     * @param image The image to recognize.
+     * @param type The recognition type: "TemplateMatch", "FeatureMatch", "ColorMatch", "OCR", "NeuralNetworkClassify",
+     * "NeuralNetworkDetect"
+     * @param param The JSON parameter string for the recognition.
+     * @return The recognition id, or MaaInvalidId on failure.
+     */
+    MAA_FRAMEWORK_API MaaRecoId
+        MaaResourcePostRecognition(MaaResource* res, const MaaImageBuffer* image, const char* type, const char* param);
+
+    MAA_FRAMEWORK_API MaaStatus MaaResourceRecoStatus(const MaaResource* res, MaaRecoId reco_id);
+
+    MAA_FRAMEWORK_API MaaStatus MaaResourceRecoWait(const MaaResource* res, MaaRecoId reco_id);
+
     MAA_FRAMEWORK_API MaaBool MaaResourceOverridePipeline(MaaResource* res, const char* pipeline_override);
 
     MAA_FRAMEWORK_API MaaBool MaaResourceOverrideNext(MaaResource* res, const char* node_name, const MaaStringListBuffer* next_list);
@@ -70,6 +86,14 @@ extern "C"
     MAA_FRAMEWORK_API MaaBool MaaResourceGetCustomRecognitionList(const MaaResource* res, /* out */ MaaStringListBuffer* buffer);
 
     MAA_FRAMEWORK_API MaaBool MaaResourceGetCustomActionList(const MaaResource* res, /* out */ MaaStringListBuffer* buffer);
+
+    MAA_FRAMEWORK_API MaaBool MaaResourceGetRecoDetail(
+        const MaaResource* res,
+        MaaRecoId reco_id,
+        /* out */ MaaStringBuffer* name,
+        /* out */ MaaBool* hit,
+        /* out */ MaaRect* hit_box,
+        /* out */ MaaStringBuffer* detail_json);
 
 #ifdef __cplusplus
 }

@@ -43,7 +43,7 @@ public:
 
     static bool parse_next(const json::value& input, std::vector<NodeAttr>& output);
 
-private:
+    // Recognition param parsers - public for direct use by Resource recognition
     static bool parse_template_matcher_param(
         const json::value& input,
         MAA_VISION_NS::TemplateMatcherParam& output,
@@ -54,10 +54,6 @@ private:
         const MAA_VISION_NS::FeatureMatcherParam& default_value);
     static bool
         parse_ocrer_param(const json::value& input, MAA_VISION_NS::OCRerParam& output, const MAA_VISION_NS::OCRerParam& default_value);
-    static bool parse_custom_recognition_param(
-        const json::value& input,
-        MAA_VISION_NS::CustomRecognitionParam& output,
-        const MAA_VISION_NS::CustomRecognitionParam& default_value);
     static bool parse_nn_classifier_param(
         const json::value& input,
         MAA_VISION_NS::NeuralNetworkClassifierParam& output,
@@ -72,6 +68,12 @@ private:
         const MAA_VISION_NS::ColorMatcherParam& default_value);
 
     static bool parse_roi_target(const json::value& input, MAA_VISION_NS::Target& output, const MAA_VISION_NS::Target& default_value);
+
+private:
+    static bool parse_custom_recognition_param(
+        const json::value& input,
+        MAA_VISION_NS::CustomRecognitionParam& output,
+        const MAA_VISION_NS::CustomRecognitionParam& default_value);
 
     static bool parse_order_of_result(
         const json::value& input,

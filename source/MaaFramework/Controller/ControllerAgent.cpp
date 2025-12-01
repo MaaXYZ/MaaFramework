@@ -189,6 +189,22 @@ std::string ControllerAgent::get_uuid()
     return uuid_cache_;
 }
 
+std::optional<MAA_TASK_NS::ActionResult> ControllerAgent::get_action_result(MaaActId action_id) const
+{
+    std::shared_lock lock(action_details_mutex_);
+    auto it = action_details_.find(action_id);
+    if (it == action_details_.end()) {
+        return std::nullopt;
+    }
+    return it->second;
+}
+
+void ControllerAgent::set_action_detail(MaaActId action_id, MAA_TASK_NS::ActionResult detail)
+{
+    std::unique_lock lock(action_details_mutex_);
+    action_details_[action_id] = std::move(detail);
+}
+
 MaaSinkId ControllerAgent::add_sink(MaaEventCallback callback, void* trans_arg)
 {
     return notifier_.add_sink(callback, trans_arg);

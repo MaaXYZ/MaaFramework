@@ -360,3 +360,84 @@ MaaBool MaaResourceGetCustomActionList(const MaaResource* res, /* out */ MaaStri
 
     return true;
 }
+
+MaaRecoId MaaResourcePostRecognition(MaaResource* res, const MaaImageBuffer* image, const char* type, const char* param)
+{
+    LogFunc << VAR_VOIDP(res) << VAR(type) << VAR(param);
+
+    if (!res || !image || !type || !param) {
+        LogError << "handle is null";
+        return MaaInvalidId;
+    }
+
+    auto param_opt = json::parse(param);
+    if (!param_opt || !param_opt->is_object()) {
+        LogError << "failed to parse param" << VAR(param);
+        return MaaInvalidId;
+    }
+
+    return res->post_recognition(image->get(), type, *param_opt);
+}
+
+MaaStatus MaaResourceRecoStatus(const MaaResource* res, MaaRecoId reco_id)
+{
+    if (!res) {
+        LogError << "handle is null";
+        return MaaStatus_Invalid;
+    }
+
+    return res->reco_status(reco_id);
+}
+
+MaaStatus MaaResourceRecoWait(const MaaResource* res, MaaRecoId reco_id)
+{
+    if (!res) {
+        LogError << "handle is null";
+        return MaaStatus_Invalid;
+    }
+
+    return res->reco_wait(reco_id);
+}
+
+MaaBool MaaResourceGetRecoDetail(
+    const MaaResource* res,
+    MaaRecoId reco_id,
+    /* out */ MaaStringBuffer* name,
+    /* out */ MaaBool* hit,
+    /* out */ MaaRect* hit_box,
+    /* out */ MaaStringBuffer* detail_json)
+{
+    if (!res) {
+        LogError << "handle is null";
+        return false;
+    }
+
+    auto result_opt = res->get_reco_result(reco_id);
+    if (!result_opt) {
+        LogError << "failed to get reco result" << VAR(reco_id);
+        return false;
+    }
+
+    const auto& result = *result_opt;
+
+    if (name) {
+        name->set(result.name);
+    }
+
+    if (hit) {
+        *hit = result.box.has_value();
+    }
+
+    if (hit_box && result.box) {
+        hit_box->x = result.box->x;
+        hit_box->y = result.box->y;
+        hit_box->width = result.box->width;
+        hit_box->height = result.box->height;
+    }
+
+    if (detail_json) {
+        detail_json->set(result.detail.dumps());
+    }
+
+    return true;
+}

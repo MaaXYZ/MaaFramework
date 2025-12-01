@@ -1,12 +1,15 @@
 #pragma once
 
+#include <map>
 #include <memory>
 #include <mutex>
 #include <set>
+#include <shared_mutex>
 #include <variant>
 
 #include "Base/AsyncRunner.hpp"
 #include "Common/MaaTypes.h"
+#include "Common/TaskResultTypes.h"
 #include "ControlUnit/ControlUnitAPI.h"
 #include "MaaUtils/JsonExt.hpp"
 #include "MaaUtils/NoWarningCVMat.hpp"
@@ -178,12 +181,16 @@ public: // MaaController
     virtual cv::Mat cached_image() const override;
     virtual std::string get_uuid() override;
 
+    virtual std::optional<MAA_TASK_NS::ActionResult> get_action_result(MaaActId action_id) const override;
+
     virtual MaaSinkId add_sink(MaaEventCallback callback, void* trans_arg) override;
     virtual void remove_sink(MaaSinkId sink_id) override;
     virtual void clear_sinks() override;
 
 public: // for Actuator
     void post_stop();
+
+    void set_action_detail(MaaActId action_id, MAA_TASK_NS::ActionResult detail);
 
     bool click(ClickParam p);
     bool long_press(LongPressParam p);
@@ -269,6 +276,9 @@ private:
     std::set<AsyncRunner<Action>::Id> focus_ids_;
     std::mutex focus_ids_mutex_;
     std::unique_ptr<AsyncRunner<Action>> action_runner_ = nullptr;
+
+    std::map<MaaActId, MAA_TASK_NS::ActionResult> action_details_;
+    mutable std::shared_mutex action_details_mutex_;
 };
 
 MAA_CTRL_NS_END

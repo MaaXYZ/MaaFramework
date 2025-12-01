@@ -1,6 +1,7 @@
 #pragma once
 
 #include <atomic>
+#include <variant>
 
 #include "Base/AsyncRunner.hpp"
 #include "Common/MaaTypes.h"
@@ -9,8 +10,11 @@
 #include "OCRResMgr.h"
 #include "ONNXResMgr.h"
 #include "PipelineResMgr.h"
+#include "PipelineTypes.h"
+#include "Tasker/RuntimeCache.h"
 #include "TemplateResMgr.h"
 #include "Utils/EventDispatcher.hpp"
+#include "Vision/VisionTypes.h"
 
 #include "Common/Conf.h"
 
@@ -28,6 +32,14 @@ struct CustomActionSession
     void* trans_arg = nullptr;
 };
 
+// Recognition item for async processing
+struct RecognitionItem
+{
+    cv::Mat image;
+    Recognition::Type type = Recognition::Type::Invalid;
+    Recognition::Param param;
+};
+
 class ResourceMgr : public MaaResource
 {
 public:
@@ -38,6 +50,12 @@ public: // MaaResource
     virtual bool set_option(MaaResOption key, MaaOptionValue value, MaaOptionValueSize val_size) override;
 
     virtual MaaResId post_bundle(const std::filesystem::path& path) override;
+
+    // Unified Recognition API
+    virtual MaaRecoId post_recognition(const cv::Mat& image, const std::string& type, const json::value& param) override;
+
+    virtual MaaStatus reco_status(MaaRecoId reco_id) const override;
+    virtual MaaStatus reco_wait(MaaRecoId reco_id) const override;
 
     virtual MaaStatus status(MaaResId res_id) const override;
     virtual MaaStatus wait(MaaResId res_id) const override;
@@ -61,6 +79,9 @@ public: // MaaResource
     virtual std::vector<std::string> get_node_list() const override;
     virtual std::vector<std::string> get_custom_recognition_list() const override;
     virtual std::vector<std::string> get_custom_action_list() const override;
+
+    virtual std::optional<MAA_TASK_NS::RecoResult> get_reco_result(MaaRecoId reco_id) const override;
+    virtual void set_reco_detail(MaaRecoId reco_id, MAA_TASK_NS::RecoResult detail) override;
 
     virtual MaaSinkId add_sink(MaaEventCallback callback, void* trans_arg) override;
     virtual void remove_sink(MaaSinkId sink_id) override;
@@ -110,6 +131,8 @@ private:
     bool load(const std::filesystem::path& path);
     bool check_stop();
 
+    bool run_recognition(typename AsyncRunner<RecognitionItem>::Id id, RecognitionItem item);
+
 private:
     bool need_to_stop_ = false;
 
@@ -129,6 +152,8 @@ private:
     std::atomic_bool valid_ = true;
 
     std::unique_ptr<AsyncRunner<std::filesystem::path>> res_loader_ = nullptr;
+    std::unique_ptr<AsyncRunner<RecognitionItem>> reco_runner_ = nullptr;
+    RuntimeCache reco_cache_;
     EventDispatcher notifier_;
 
     MaaInferenceDevice inference_device_ = MaaInferenceDevice_Auto;

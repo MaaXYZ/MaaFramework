@@ -44,6 +44,13 @@ public:
 
     virtual MaaResId post_bundle(const std::filesystem::path& path) = 0;
 
+    // Recognition API - takes recognition type string and JSON param
+    // type: "TemplateMatch", "FeatureMatch", "ColorMatch", "OCR", "NeuralNetworkClassify", "NeuralNetworkDetect"
+    virtual MaaRecoId post_recognition(const cv::Mat& image, const std::string& type, const json::value& param) = 0;
+
+    virtual MaaStatus reco_status(MaaRecoId reco_id) const = 0;
+    virtual MaaStatus reco_wait(MaaRecoId reco_id) const = 0;
+
     virtual MaaStatus status(MaaResId res_id) const = 0;
     virtual MaaStatus wait(MaaResId res_id) const = 0;
     virtual bool valid() const = 0;
@@ -61,6 +68,9 @@ public:
     virtual std::vector<std::string> get_node_list() const = 0;
     virtual std::vector<std::string> get_custom_recognition_list() const = 0;
     virtual std::vector<std::string> get_custom_action_list() const = 0;
+
+    virtual std::optional<MAA_TASK_NS::RecoResult> get_reco_result(MaaRecoId reco_id) const = 0;
+    virtual void set_reco_detail(MaaRecoId reco_id, MAA_TASK_NS::RecoResult detail) = 0;
 };
 
 struct MaaController : public IMaaEventDispatcher
@@ -95,6 +105,8 @@ public:
 
     virtual cv::Mat cached_image() const = 0;
     virtual std::string get_uuid() = 0;
+
+    virtual std::optional<MAA_TASK_NS::ActionResult> get_action_result(MaaActId action_id) const = 0;
 };
 
 struct MaaTasker : public IMaaEventDispatcher
@@ -123,8 +135,6 @@ public:
     virtual void clear_cache() = 0;
     virtual std::optional<MAA_TASK_NS::TaskDetail> get_task_detail(MaaTaskId task_id) const = 0;
     virtual std::optional<MAA_TASK_NS::NodeDetail> get_node_detail(MaaNodeId node_id) const = 0;
-    virtual std::optional<MAA_TASK_NS::RecoResult> get_reco_result(MaaRecoId reco_id) const = 0;
-    virtual std::optional<MAA_TASK_NS::ActionResult> get_action_result(MaaActId action_id) const = 0;
     virtual std::optional<MaaNodeId> get_latest_node(const std::string& node_name) const = 0;
 
     virtual MaaSinkId add_context_sink(MaaEventCallback callback, void* trans_arg) = 0;

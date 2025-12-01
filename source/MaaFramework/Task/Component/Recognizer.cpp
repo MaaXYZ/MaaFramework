@@ -81,8 +81,10 @@ RecoResult Recognizer::recognize(const PipelineData& pipeline_data)
     }
 
     LogInfo << "reco" << VAR(result);
-    auto& rt_cache = tasker_->runtime_cache();
-    rt_cache.set_reco_detail(result.reco_id, result);
+    auto* res = tasker_->resource();
+    if (res) {
+        res->set_reco_detail(result.reco_id, result);
+    }
 
     save_draws(pipeline_data.name, result);
 
