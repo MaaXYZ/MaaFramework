@@ -338,6 +338,14 @@ json::object PipelineDumper::dump(const PipelineData& pp)
         };
     } break;
 
+    case Action::Type::Scroll: {
+        const auto& param = std::get<Action::ScrollParam>(pp.action_param);
+        data.action.param = PipelineV2::JScroll {
+            .dx = param.dx,
+            .dy = param.dy,
+        };
+    } break;
+
     case Action::Type::Custom: {
         const auto& param = std::get<Action::CustomParam>(pp.action_param);
         data.action.param = PipelineV2::JCustomAction {
