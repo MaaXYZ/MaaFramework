@@ -15,7 +15,7 @@ TaskBase::TaskBase(std::string entry, Tasker* tasker)
     : tasker_(tasker)
     , entry_(std::move(entry))
     , cur_node_(entry_)
-    , context_(Context::create(this, tasker))
+    , context_(Context::create(task_id_, tasker))
 {
 }
 

@@ -11,8 +11,6 @@
 
 MAA_TASK_NS_BEGIN
 
-class TaskBase;
-
 struct TaskState
 {
     std::unordered_map<std::string, unsigned int> hit_count;
@@ -29,12 +27,12 @@ private:
     };
 
 public:
-    static std::shared_ptr<Context> create(TaskBase* task, Tasker* tasker);
+    static std::shared_ptr<Context> create(MaaTaskId id, Tasker* tasker);
     std::shared_ptr<Context> getptr();
     std::shared_ptr<const Context> getptr() const;
     std::shared_ptr<Context> make_clone() const;
 
-    Context(TaskBase* task, Tasker* tasker, PrivateArg);
+    Context(MaaTaskId id, Tasker* tasker, PrivateArg);
     Context(const Context& other);
     Context(Context&& other) = default;
 
@@ -74,7 +72,7 @@ private:
     bool override_pipeline_once(const json::object& pipeline_override, const MAA_RES_NS::DefaultPipelineMgr& default_mgr);
     bool check_pipeline() const;
 
-    TaskBase* task_ = nullptr;
+    MaaTaskId task_id_ = 0;
     Tasker* tasker_ = nullptr;
 
     // context level

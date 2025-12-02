@@ -9,24 +9,23 @@
 #include "Resource/PipelineChecker.h"
 #include "Resource/PipelineDumper.h"
 #include "Resource/PipelineParser.h"
-#include "TaskBase.h"
 #include "Tasker/Tasker.h"
 
 MAA_TASK_NS_BEGIN
 
-Context::Context(TaskBase* task, Tasker* tasker, PrivateArg)
-    : task_(task)
+Context::Context(MaaTaskId id, Tasker* tasker, PrivateArg)
+    : task_id_(id)
     , tasker_(tasker)
     , task_state_(std::make_shared<TaskState>())
 {
-    LogDebug << VAR_VOIDP(task) << VAR_VOIDP(tasker);
+    LogDebug << VAR(id) << VAR_VOIDP(tasker);
 }
 
-std::shared_ptr<Context> Context::create(TaskBase* task, Tasker* tasker)
+std::shared_ptr<Context> Context::create(MaaTaskId id, Tasker* tasker)
 {
-    LogDebug << VAR_VOIDP(task) << VAR_VOIDP(tasker);
+    LogDebug << VAR(id) << VAR_VOIDP(tasker);
 
-    return std::make_shared<Context>(task, tasker, PrivateArg {});
+    return std::make_shared<Context>(id, tasker, PrivateArg {});
 }
 
 std::shared_ptr<Context> Context::getptr()
@@ -46,7 +45,7 @@ std::shared_ptr<Context> Context::make_clone() const
 
 Context::Context(const Context& other)
     : std::enable_shared_from_this<Context>(other)
-    , task_(other.task_)
+    , task_id_(other.task_id_)
     , tasker_(other.tasker_)
     , pipeline_override_(other.pipeline_override_)
     , image_override_(other.image_override_)
@@ -221,7 +220,7 @@ std::optional<json::object> Context::get_node_data(const std::string& node_name)
 
 MaaTaskId Context::task_id() const
 {
-    return task_ ? task_->task_id() : MaaInvalidId;
+    return task_id_;
 }
 
 Tasker* Context::tasker() const
