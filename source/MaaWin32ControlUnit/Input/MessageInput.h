@@ -15,8 +15,9 @@ class MessageInput : public InputBase
 public:
     enum class Mode
     {
+        Invalid,
+        SendMessage,
         PostMessage,
-        SendMessage
     };
 
     MessageInput(HWND hwnd, Mode mode, bool with_cursor_pos = false, bool block_input = false)
@@ -48,7 +49,7 @@ public: // from InputBase
 
     virtual bool scroll(int dx, int dy) override;
 
-protected:
+private:
     void ensure_foreground();
     bool send_or_post_w(UINT message, WPARAM wParam, LPARAM lParam);
 
@@ -58,10 +59,10 @@ protected:
     void restore_cursor_pos();
     void set_cursor_to_client_pos(int x, int y);
 
-    HWND hwnd_ = nullptr;
-    Mode mode_;
-    bool with_cursor_pos_;
-    bool block_input_;
+    const HWND hwnd_ = nullptr;
+    const Mode mode_ = Mode::Invalid;
+    const bool with_cursor_pos_ = false;
+    const bool block_input_ = false;
 
     std::pair<int, int> last_pos_;
     POINT saved_cursor_pos_ = { 0, 0 };
