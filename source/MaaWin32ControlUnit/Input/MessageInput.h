@@ -9,15 +9,24 @@
 
 MAA_CTRL_UNIT_NS_BEGIN
 
-class PostMessageInput : public InputBase
+class MessageInput : public InputBase
 {
 public:
-    PostMessageInput(HWND hwnd)
+    enum class Mode
+    {
+        PostMessage,
+        SendMessage
+    };
+
+    MessageInput(HWND hwnd, Mode mode, bool with_cursor_pos = false, bool block_input = false)
         : hwnd_(hwnd)
+        , mode_(mode)
+        , with_cursor_pos_(with_cursor_pos)
+        , block_input_(block_input)
     {
     }
 
-    virtual ~PostMessageInput() override = default;
+    virtual ~MessageInput() override;
 
 public: // from InputBase
     virtual MaaControllerFeature get_features() const override;
@@ -40,10 +49,23 @@ public: // from InputBase
 
 protected:
     void ensure_foreground();
+    void send_or_post(UINT message, WPARAM wParam, LPARAM lParam);
+    void send_or_post_w(UINT message, WPARAM wParam, LPARAM lParam);
+
+    // helpers for with_cursor_pos
+    POINT client_to_screen(int x, int y);
+    void save_cursor_pos();
+    void restore_cursor_pos();
+    void set_cursor_to_client_pos(int x, int y);
 
     HWND hwnd_ = nullptr;
+    Mode mode_;
+    bool with_cursor_pos_;
+    bool block_input_;
+
     std::pair<int, int> last_pos_;
+    POINT saved_cursor_pos_ = { 0, 0 };
+    bool cursor_pos_saved_ = false;
 };
 
 MAA_CTRL_UNIT_NS_END
-
