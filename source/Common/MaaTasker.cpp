@@ -1,5 +1,8 @@
 #include "MaaFramework/Instance/MaaTasker.h"
 
+#include "MaaFramework/Instance/MaaController.h"
+#include "MaaFramework/Instance/MaaResource.h"
+
 #include "Common/MaaTypes.h"
 #include "MaaUtils/Buffer/ImageBuffer.hpp"
 #include "MaaUtils/Buffer/StringBuffer.hpp"
@@ -259,54 +262,7 @@ MaaBool MaaTaskerGetRecognitionDetail(
     }
 
     auto* res = tasker->resource();
-    if (!res) {
-        LogError << "resource is null";
-        return false;
-    }
-
-    auto result_opt = res->get_reco_result(reco_id);
-    if (!result_opt) {
-        LogError << "failed to get_reco_result" << VAR(reco_id);
-        return false;
-    }
-
-    auto& result = *result_opt;
-
-    CheckNullAndWarn(name)
-    {
-        name->set(result.name);
-    }
-    CheckNullAndWarn(algorithm)
-    {
-        algorithm->set(result.algorithm);
-    }
-    CheckNullAndWarn(hit)
-    {
-        *hit = result.box.has_value();
-    }
-    CheckNullAndWarn(box) if (result.box)
-    {
-        box->x = result.box->x;
-        box->y = result.box->y;
-        box->width = result.box->width;
-        box->height = result.box->height;
-    }
-    CheckNullAndWarn(detail_json)
-    {
-        detail_json->set(result.detail.to_string());
-    }
-    CheckNullAndWarn(raw)
-    {
-        raw->set(result.raw);
-    }
-    CheckNullAndWarn(draws)
-    {
-        for (auto& d : result.draws) {
-            draws->append(MAA_NS::ImageBuffer(d));
-        }
-    }
-
-    return true;
+    return MaaResourceGetRecognitionDetail(res, reco_id, name, algorithm, hit, box, detail_json, raw, draws);
 }
 
 MaaBool MaaTaskerGetActionDetail(
@@ -324,44 +280,7 @@ MaaBool MaaTaskerGetActionDetail(
     }
 
     auto* ctrl = tasker->controller();
-    if (!ctrl) {
-        LogError << "controller is null";
-        return false;
-    }
-
-    auto result_opt = ctrl->get_action_result(action_id);
-    if (!result_opt) {
-        LogError << "failed to get_action_result" << VAR(action_id);
-        return false;
-    }
-
-    auto& result = *result_opt;
-
-    CheckNullAndWarn(name)
-    {
-        name->set(result.name);
-    }
-    CheckNullAndWarn(action)
-    {
-        action->set(result.action);
-    }
-    CheckNullAndWarn(box)
-    {
-        box->x = result.box.x;
-        box->y = result.box.y;
-        box->width = result.box.width;
-        box->height = result.box.height;
-    }
-    CheckNullAndWarn(success)
-    {
-        *success = result.success;
-    }
-    CheckNullAndWarn(detail_json)
-    {
-        detail_json->set(result.detail.to_string());
-    }
-
-    return true;
+    return MaaControllerGetActionDetail(ctrl, action_id, name, action, box, success, detail_json);
 }
 
 MaaBool MaaTaskerGetNodeDetail(
