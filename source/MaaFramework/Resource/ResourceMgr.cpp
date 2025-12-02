@@ -10,6 +10,7 @@
 #include "MaaUtils/Platform.h"
 #include "PipelineDumper.h"
 #include "PipelineParser.h"
+#include "RecoJob.h"
 
 MAA_RES_NS_BEGIN
 
@@ -26,6 +27,8 @@ ResourceMgr::ResourceMgr()
 
     res_loader_ = std::make_unique<AsyncRunner<std::filesystem::path>>(
         std::bind(&ResourceMgr::run_load, this, std::placeholders::_1, std::placeholders::_2));
+    recognition_runner_ = std::make_unique<AsyncRunner<RecoJob>>(
+        std::bind(&ResourceMgr::run_recognition, this, std::placeholders::_1, std::placeholders::_2));
 }
 
 ResourceMgr::~ResourceMgr()
@@ -34,6 +37,9 @@ ResourceMgr::~ResourceMgr()
 
     if (res_loader_) {
         res_loader_->wait_all();
+    }
+    if (recognition_runner_) {
+        recognition_runner_->wait_all();
     }
 }
 
@@ -652,6 +658,55 @@ bool ResourceMgr::check_stop()
     }
 
     need_to_stop_ = false;
+    return true;
+}
+
+MaaRecoId ResourceMgr::post_recognition(const cv::Mat& image, const PipelineData& pipeline_data)
+{
+    return post_recognition(image, pipeline_data, nullptr);
+}
+
+MaaRecoId ResourceMgr::post_recognition(const cv::Mat& image, const PipelineData& pipeline_data, std::shared_ptr<MAA_TASK_NS::Context> context)
+{
+    MaaRecoId reco_id = generate_reco_id();
+    RecoJob job(reco_id, pipeline_data, std::move(context), image);
+
+    auto runner_id = recognition_runner_->post(std::move(job));
+
+    {
+        std::unique_lock lock(reco_id_mutex_);
+        reco_id_to_runner_id_[reco_id] = runner_id;
+    }
+
+    return reco_id;
+}
+
+std::optional<MAA_TASK_NS::RecoResult> ResourceMgr::recognition_wait(MaaRecoId reco_id)
+{
+    typename AsyncRunner<RecoJob>::Id runner_id;
+    {
+        std::shared_lock lock(reco_id_mutex_);
+        auto it = reco_id_to_runner_id_.find(reco_id);
+        if (it == reco_id_to_runner_id_.end()) {
+            return std::nullopt;
+        }
+        runner_id = it->second;
+    }
+    recognition_runner_->wait(runner_id);
+    return reco_cache_.get_reco_result(reco_id);
+}
+
+MaaRecoId ResourceMgr::generate_reco_id()
+{
+    return ++s_reco_id_;
+}
+
+bool ResourceMgr::run_recognition(typename AsyncRunner<RecoJob>::Id id, RecoJob job)
+{
+    std::ignore = id;
+
+    job.run(this);
+
     return true;
 }
 

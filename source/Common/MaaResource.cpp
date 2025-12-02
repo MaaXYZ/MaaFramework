@@ -443,3 +443,36 @@ MaaBool MaaResourceClearRecoCache(MaaResource* res)
     res->clear_reco_cache();
     return true;
 }
+
+MaaRecoId MaaResourcePostRecognition(MaaResource* res, const MaaImageBuffer* image, const char* node_name)
+{
+    LogFunc << VAR_VOIDP(res) << VAR(node_name);
+
+    if (!res || !image || !node_name) {
+        LogError << "handle is null";
+        return MaaInvalidId;
+    }
+
+    auto data_opt = res->get_node_data(node_name);
+    if (!data_opt) {
+        LogError << "node not found" << VAR(node_name);
+        return MaaInvalidId;
+    }
+
+    // TODO: parse pipeline data from json
+    LogError << "not implemented yet";
+    return MaaInvalidId;
+}
+
+MaaBool MaaResourceWaitRecognition(MaaResource* res, MaaRecoId reco_id)
+{
+    LogFunc << VAR_VOIDP(res) << VAR(reco_id);
+
+    if (!res) {
+        LogError << "handle is null";
+        return false;
+    }
+
+    auto result = res->recognition_wait(reco_id);
+    return result.has_value();
+}

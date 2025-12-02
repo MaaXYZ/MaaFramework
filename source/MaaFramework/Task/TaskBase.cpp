@@ -1,7 +1,7 @@
 #include "TaskBase.h"
 
 #include "Component/Actuator.h"
-#include "Component/Recognizer.h"
+#include "Resource/RecoJob.h"
 #include "Controller/ControllerAgent.h"
 #include "Global/OptionMgr.h"
 #include "MaaFramework/MaaMsg.h"
@@ -82,18 +82,19 @@ RecoResult TaskBase::run_recognition(const cv::Mat& image, const PipelineData& d
         return {};
     }
 
+    MaaRecoId reco_id = resource()->post_recognition(image, data, context_);
+
     if (debug_mode() || !data.focus.is_null()) {
         const json::value reco_cb_detail {
             { "task_id", task_id() },
-            { "reco_id", 0 },
+            { "reco_id", reco_id },
             { "name", data.name },
             { "focus", data.focus },
         };
         notify(MaaMsg_Node_Recognition_Starting, reco_cb_detail);
     }
 
-    Recognizer recognizer(tasker_, *context_, image);
-    RecoResult result = recognizer.recognize(data);
+    RecoResult result = resource()->recognition_wait(reco_id).value_or(RecoResult {});
 
     if (debug_mode() || !data.focus.is_null()) {
         const json::value reco_cb_detail {

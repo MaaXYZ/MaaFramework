@@ -5,7 +5,7 @@
 #include "ActionTask.h"
 #include "MaaUtils/Logger.h"
 #include "PipelineTask.h"
-#include "RecognitionTask.h"
+#include "RecoOnlyTask.h"
 #include "Resource/PipelineChecker.h"
 #include "Resource/PipelineDumper.h"
 #include "Resource/PipelineParser.h"
@@ -94,7 +94,7 @@ MaaRecoId Context::run_recognition(const std::string& entry, const json::value& 
 {
     LogTrace << VAR(getptr()) << VAR(entry) << VAR(pipeline_override);
 
-    RecognitionTask subtask(entry, tasker_, make_clone());
+    RecoOnlyTask subtask(entry, tasker_, make_clone());
     bool ov = subtask.override_pipeline(pipeline_override);
     if (!ov) {
         LogError << "failed to override_pipeline" << VAR(entry) << VAR(pipeline_override);

@@ -6,15 +6,16 @@
 
 MAA_TASK_NS_BEGIN
 
-class RecognitionTask : public TaskBase
+class RecoOnlyTask : public TaskBase
 {
 public:
     using TaskBase::TaskBase;
 
-    virtual ~RecognitionTask() override = default;
+    virtual ~RecoOnlyTask() override = default;
 
 public:
     MaaRecoId run_with_param(const cv::Mat& image);
 };
 
 MAA_TASK_NS_END
+

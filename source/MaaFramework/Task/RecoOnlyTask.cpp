@@ -1,4 +1,4 @@
-#include "RecognitionTask.h"
+#include "RecoOnlyTask.h"
 
 #include "Controller/ControllerAgent.h"
 #include "MaaFramework/MaaMsg.h"
@@ -9,7 +9,7 @@
 
 MAA_TASK_NS_BEGIN
 
-MaaRecoId RecognitionTask::run_with_param(const cv::Mat& image)
+MaaRecoId RecoOnlyTask::run_with_param(const cv::Mat& image)
 {
     LogFunc << VAR(entry_) << VAR(task_id_);
 
@@ -49,7 +49,7 @@ MaaRecoId RecognitionTask::run_with_param(const cv::Mat& image)
         .action_id = MaaInvalidId,
         .completed = hit,
     };
-    LogInfo << "RecognitionTask node done" << VAR(result) << VAR(task_id_);
+    LogInfo << "RecoOnlyTask node done" << VAR(result) << VAR(task_id_);
     set_node_detail(result.node_id, result);
 
     if (debug_mode() || !cur_node.focus.is_null()) {
@@ -60,3 +60,4 @@ MaaRecoId RecognitionTask::run_with_param(const cv::Mat& image)
 }
 
 MAA_TASK_NS_END
+

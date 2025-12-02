@@ -1,6 +1,7 @@
 #pragma once
 
 #include <atomic>
+#include <shared_mutex>
 
 #include "Base/AsyncRunner.hpp"
 #include "Common/MaaTypes.h"
@@ -10,6 +11,7 @@
 #include "ONNXResMgr.h"
 #include "PipelineResMgr.h"
 #include "RecoCache.h"
+#include "RecoJob.h"
 #include "TemplateResMgr.h"
 #include "Utils/EventDispatcher.hpp"
 
@@ -101,6 +103,14 @@ public:
 
     const RecoCache& reco_cache() const { return reco_cache_; }
 
+    virtual MaaRecoId post_recognition(const cv::Mat& image, const PipelineData& pipeline_data) override;
+    MaaRecoId post_recognition(const cv::Mat& image, const PipelineData& pipeline_data, std::shared_ptr<MAA_TASK_NS::Context> context);
+    virtual std::optional<MAA_TASK_NS::RecoResult> recognition_wait(MaaRecoId reco_id) override;
+    static MaaRecoId generate_reco_id();
+
+private:
+    bool run_recognition(typename AsyncRunner<RecoJob>::Id id, RecoJob job);
+
 private:
     static const std::unordered_set<MaaInferenceExecutionProvider>& available_providers();
 
@@ -139,6 +149,10 @@ private:
     std::atomic_bool valid_ = true;
 
     std::unique_ptr<AsyncRunner<std::filesystem::path>> res_loader_ = nullptr;
+    std::unique_ptr<AsyncRunner<RecoJob>> recognition_runner_ = nullptr;
+    std::map<MaaRecoId, typename AsyncRunner<RecoJob>::Id> reco_id_to_runner_id_;
+    mutable std::shared_mutex reco_id_mutex_;
+    inline static std::atomic<MaaRecoId> s_reco_id_ = 300'000'000;
     EventDispatcher notifier_;
 
     MaaInferenceDevice inference_device_ = MaaInferenceDevice_Auto;

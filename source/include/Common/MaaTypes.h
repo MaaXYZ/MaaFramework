@@ -2,15 +2,21 @@
 
 #include <chrono>
 #include <filesystem>
+#include <memory>
 #include <optional>
 #include <string>
 #include <vector>
 
 #include <meojson/json.hpp>
 
+#include "Common/Conf.h"
 #include "Common/TaskResultTypes.h"
 #include "MaaFramework/MaaDef.h"
 #include "MaaUtils/NoWarningCVMat.hpp"
+
+MAA_RES_NS_BEGIN
+struct PipelineData;
+MAA_RES_NS_END
 
 struct IMaaPipeline
 {
@@ -64,6 +70,9 @@ public:
 
     virtual std::optional<MAA_TASK_NS::RecoResult> get_reco_result(MaaRecoId reco_id) const = 0;
     virtual void clear_reco_cache() = 0;
+
+    virtual MaaRecoId post_recognition(const cv::Mat& image, const MAA_RES_NS::PipelineData& pipeline_data) = 0;
+    virtual std::optional<MAA_TASK_NS::RecoResult> recognition_wait(MaaRecoId reco_id) = 0;
 };
 
 struct MaaController : public IMaaEventDispatcher

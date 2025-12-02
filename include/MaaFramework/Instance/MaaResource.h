@@ -88,6 +88,10 @@ extern "C"
 
     MAA_FRAMEWORK_API MaaBool MaaResourceClearRecoCache(MaaResource* res);
 
+    MAA_FRAMEWORK_API MaaRecoId MaaResourcePostRecognition(MaaResource* res, const MaaImageBuffer* image, const char* node_name);
+
+    MAA_FRAMEWORK_API MaaBool MaaResourceWaitRecognition(MaaResource* res, MaaRecoId reco_id);
+
 #ifdef __cplusplus
 }
 #endif
