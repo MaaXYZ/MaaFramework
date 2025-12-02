@@ -155,14 +155,14 @@ std::optional<std::string> ContextImpl::get_anchor(std::string anchor_name)
     }
 }
 
-uint32_t ContextImpl::get_hit_count(std::string node_name)
+int32_t ContextImpl::get_hit_count(std::string node_name)
 {
     MaaSize count = 0;
     if (!MaaContextGetHitCount(context, node_name.c_str(), &count)) {
         throw maajs::MaaError { "Context get_hit_count failed" };
     }
-    // uint32应该够了
-    return static_cast<uint32_t>(count);
+    // int32应该够了
+    return static_cast<int32_t>(count);
 }
 
 void ContextImpl::clear_hit_count(std::string node_name)
