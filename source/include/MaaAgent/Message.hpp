@@ -913,6 +913,45 @@ struct ResourceGetCustomActionListReverseResponse
     MEO_JSONIZATION(custom_action_list, _ResourceGetCustomActionListReverseResponse);
 };
 
+struct ResourceGetRecoResultReverseRequest
+{
+    std::string resource_id;
+    int64_t reco_id = 0;
+
+    MessageTypePlaceholder _ResourceGetRecoResultReverseRequest = 1;
+    MEO_JSONIZATION(resource_id, reco_id, _ResourceGetRecoResultReverseRequest);
+};
+
+struct ResourceGetRecoResultReverseResponse
+{
+    bool has_value = false;
+    int64_t reco_id = 0;
+    std::string name;
+    std::string algorithm;
+    bool hit = false;
+    std::array<int32_t, 4> box {};
+    json::value detail;
+    std::string raw;
+    std::vector<std::string> draws;
+
+    MessageTypePlaceholder _ResourceGetRecoResultReverseResponse = 1;
+    MEO_JSONIZATION(has_value, reco_id, name, algorithm, hit, box, detail, raw, draws, _ResourceGetRecoResultReverseResponse);
+};
+
+struct ResourceClearRecoCacheReverseRequest
+{
+    std::string resource_id;
+
+    MessageTypePlaceholder _ResourceClearRecoCacheReverseRequest = 1;
+    MEO_JSONIZATION(resource_id, _ResourceClearRecoCacheReverseRequest);
+};
+
+struct ResourceClearRecoCacheReverseResponse
+{
+    MessageTypePlaceholder _ResourceClearRecoCacheReverseResponse = 1;
+    MEO_JSONIZATION(_ResourceClearRecoCacheReverseResponse);
+};
+
 struct ControllerPostConnectionReverseRequest
 {
     std::string controller_id;
@@ -1257,6 +1296,43 @@ struct ControllerGetUuidReverseResponse
 
     MessageTypePlaceholder _ControllerGetUuidReverseResponse = 1;
     MEO_JSONIZATION(uuid, _ControllerGetUuidReverseResponse);
+};
+
+struct ControllerGetActionResultReverseRequest
+{
+    std::string controller_id;
+    int64_t action_id = 0;
+
+    MessageTypePlaceholder _ControllerGetActionResultReverseRequest = 1;
+    MEO_JSONIZATION(controller_id, action_id, _ControllerGetActionResultReverseRequest);
+};
+
+struct ControllerGetActionResultReverseResponse
+{
+    bool has_value = false;
+    int64_t action_id = 0;
+    std::string name;
+    std::string action;
+    std::array<int32_t, 4> box {};
+    bool success = false;
+    json::value detail;
+
+    MessageTypePlaceholder _ControllerGetActionResultReverseResponse = 1;
+    MEO_JSONIZATION(has_value, action_id, name, action, box, success, detail, _ControllerGetActionResultReverseResponse);
+};
+
+struct ControllerClearActionCacheReverseRequest
+{
+    std::string controller_id;
+
+    MessageTypePlaceholder _ControllerClearActionCacheReverseRequest = 1;
+    MEO_JSONIZATION(controller_id, _ControllerClearActionCacheReverseRequest);
+};
+
+struct ControllerClearActionCacheReverseResponse
+{
+    MessageTypePlaceholder _ControllerClearActionCacheReverseResponse = 1;
+    MEO_JSONIZATION(_ControllerClearActionCacheReverseResponse);
 };
 
 struct ImageHeader

@@ -41,6 +41,18 @@ declare global {
             get node_list(): string[] | null
             get custom_recognition_list(): string[] | null
             get custom_action_list(): string[] | null
+            get_recognition_detail(reco_id: RecoId): RecognitionDetail | null
+            clear_reco_cache(): void
+        }
+
+        type RecognitionDetail = {
+            node_name: string
+            algorithm: string
+            hit: boolean
+            box: Rect
+            detail: unknown
+            raw: ImageData | null
+            draws: ImageData[] | null
         }
     }
 }

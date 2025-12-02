@@ -71,6 +71,23 @@ extern "C"
 
     MAA_FRAMEWORK_API MaaBool MaaResourceGetCustomActionList(const MaaResource* res, /* out */ MaaStringListBuffer* buffer);
 
+    /**
+     * @param[out] hit
+     */
+    MAA_FRAMEWORK_API MaaBool MaaResourceGetRecognitionDetail(
+        const MaaResource* res,
+        MaaRecoId reco_id,
+        /* out */ MaaStringBuffer* node_name,
+        /* out */ MaaStringBuffer* algorithm,
+        /* out */ MaaBool* hit,
+        /* out */ MaaRect* box,
+        /* out */ MaaStringBuffer* detail_json,
+        /* out */ MaaImageBuffer* raw,      // only valid in debug mode
+        /* out */ MaaImageListBuffer* draws // only valid in debug mode
+    );
+
+    MAA_FRAMEWORK_API MaaBool MaaResourceClearRecoCache(MaaResource* res);
+
 #ifdef __cplusplus
 }
 #endif

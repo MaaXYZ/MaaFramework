@@ -442,6 +442,81 @@ class Resource:
             raise RuntimeError("Failed to get hash.")
         return buffer.get()
 
+    def get_recognition_detail(
+        self, reco_id: int
+    ) -> Optional[Dict]:
+        """获取识别详情 / Get recognition detail
+
+        Args:
+            reco_id: 识别 id / Recognition id
+
+        Returns:
+            Optional[Dict]: 识别详情，包含 node_name, algorithm, hit, box, detail, raw, draws / Recognition detail
+        """
+        node_name_buffer = StringBuffer()
+        algorithm_buffer = StringBuffer()
+        hit = MaaBool()
+        box = MaaRect()
+        detail_json_buffer = StringBuffer()
+        raw_buffer = ImageBuffer()
+        draws_buffer = ImageListBuffer()
+
+        if not Library.framework().MaaResourceGetRecognitionDetail(
+            self._handle,
+            reco_id,
+            node_name_buffer._handle,
+            algorithm_buffer._handle,
+            ctypes.pointer(hit),
+            ctypes.pointer(box),
+            detail_json_buffer._handle,
+            raw_buffer._handle,
+            draws_buffer._handle,
+        ):
+            return None
+
+        raw_image = None
+        try:
+            raw_image = raw_buffer.get()
+        except RuntimeError:
+            pass
+
+        draws_images = None
+        try:
+            draws_images = draws_buffer.get()
+        except RuntimeError:
+            pass
+
+        detail_str = detail_json_buffer.get()
+        detail = None
+        if detail_str:
+            try:
+                detail = json.loads(detail_str)
+            except json.JSONDecodeError:
+                detail = detail_str
+
+        return {
+            "node_name": node_name_buffer.get(),
+            "algorithm": algorithm_buffer.get(),
+            "hit": bool(hit.value),
+            "box": {
+                "x": box.x,
+                "y": box.y,
+                "width": box.width,
+                "height": box.height,
+            },
+            "detail": detail,
+            "raw": raw_image,
+            "draws": draws_images,
+        }
+
+    def clear_reco_cache(self) -> bool:
+        """清除识别缓存 / Clear recognition cache
+
+        Returns:
+            bool: 是否成功 / Whether successful
+        """
+        return bool(Library.framework().MaaResourceClearRecoCache(self._handle))
+
     _sink_holder: Dict[int, "ResourceEventSink"] = {}
 
     def add_sink(self, sink: "ResourceEventSink") -> Optional[int]:
@@ -654,6 +729,22 @@ class Resource:
 
         Library.framework().MaaResourceClearSinks.restype = None
         Library.framework().MaaResourceClearSinks.argtypes = [MaaResourceHandle]
+
+        Library.framework().MaaResourceGetRecognitionDetail.restype = MaaBool
+        Library.framework().MaaResourceGetRecognitionDetail.argtypes = [
+            MaaResourceHandle,
+            MaaRecoId,
+            MaaStringBufferHandle,
+            MaaStringBufferHandle,
+            ctypes.POINTER(MaaBool),
+            ctypes.POINTER(MaaRect),
+            MaaStringBufferHandle,
+            MaaImageBufferHandle,
+            MaaImageListBufferHandle,
+        ]
+
+        Library.framework().MaaResourceClearRecoCache.restype = MaaBool
+        Library.framework().MaaResourceClearRecoCache.argtypes = [MaaResourceHandle]
 
 
 class ResourceEventSink(EventSink):

@@ -189,6 +189,16 @@ std::string ControllerAgent::get_uuid()
     return uuid_cache_;
 }
 
+std::optional<MAA_TASK_NS::ActionResult> ControllerAgent::get_action_result(MaaActId action_id) const
+{
+    return action_cache_.get_action_result(action_id);
+}
+
+void ControllerAgent::clear_action_cache()
+{
+    action_cache_.clear();
+}
+
 MaaSinkId ControllerAgent::add_sink(MaaEventCallback callback, void* trans_arg)
 {
     return notifier_.add_sink(callback, trans_arg);

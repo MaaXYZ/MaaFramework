@@ -311,3 +311,73 @@ MaaBool MaaControllerGetUuid(MaaController* ctrl, MaaStringBuffer* buffer)
     buffer->set(std::move(uuid));
     return true;
 }
+
+#define CheckNullAndWarn(var)                        \
+    if (!var) {                                      \
+        LogWarn << #var << "is null, no assignment"; \
+    }                                                \
+    else
+
+MaaBool MaaControllerGetActionDetail(
+    const MaaController* ctrl,
+    MaaActId action_id,
+    MaaStringBuffer* name,
+    MaaStringBuffer* action,
+    MaaRect* box,
+    MaaBool* success,
+    MaaStringBuffer* detail_json)
+{
+    if (!ctrl) {
+        LogError << "handle is null";
+        return false;
+    }
+
+    auto result_opt = ctrl->get_action_result(action_id);
+    if (!result_opt) {
+        LogError << "failed to get_action_result" << VAR(action_id);
+        return false;
+    }
+
+    auto& result = *result_opt;
+
+    CheckNullAndWarn(name)
+    {
+        name->set(result.name);
+    }
+    CheckNullAndWarn(action)
+    {
+        action->set(result.action);
+    }
+    CheckNullAndWarn(box)
+    {
+        box->x = result.box.x;
+        box->y = result.box.y;
+        box->width = result.box.width;
+        box->height = result.box.height;
+    }
+    CheckNullAndWarn(success)
+    {
+        *success = result.success;
+    }
+    CheckNullAndWarn(detail_json)
+    {
+        detail_json->set(result.detail.to_string());
+    }
+
+    return true;
+}
+
+#undef CheckNullAndWarn
+
+MaaBool MaaControllerClearActionCache(MaaController* ctrl)
+{
+    LogFunc << VAR_VOIDP(ctrl);
+
+    if (!ctrl) {
+        LogError << "handle is null";
+        return false;
+    }
+
+    ctrl->clear_action_cache();
+    return true;
+}

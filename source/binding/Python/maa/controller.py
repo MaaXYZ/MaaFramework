@@ -291,6 +291,61 @@ class Controller:
             raise RuntimeError("Failed to get UUID.")
         return buffer.get()
 
+    def get_action_detail(self, action_id: int) -> Optional[Dict[str, Any]]:
+        """获取操作详情 / Get action detail
+
+        Args:
+            action_id: 操作 id / Action id
+
+        Returns:
+            Optional[Dict]: 操作详情，包含 node_name, action, box, success, detail / Action detail
+        """
+        node_name_buffer = StringBuffer()
+        action_buffer = StringBuffer()
+        box = MaaRect()
+        success = MaaBool()
+        detail_json_buffer = StringBuffer()
+
+        if not Library.framework().MaaControllerGetActionDetail(
+            self._handle,
+            action_id,
+            node_name_buffer._handle,
+            action_buffer._handle,
+            ctypes.pointer(box),
+            ctypes.pointer(success),
+            detail_json_buffer._handle,
+        ):
+            return None
+
+        detail_str = detail_json_buffer.get()
+        detail = None
+        if detail_str:
+            try:
+                detail = json.loads(detail_str)
+            except json.JSONDecodeError:
+                detail = detail_str
+
+        return {
+            "node_name": node_name_buffer.get(),
+            "action": action_buffer.get(),
+            "box": {
+                "x": box.x,
+                "y": box.y,
+                "width": box.width,
+                "height": box.height,
+            },
+            "success": bool(success.value),
+            "detail": detail,
+        }
+
+    def clear_action_cache(self) -> bool:
+        """清除操作缓存 / Clear action cache
+
+        Returns:
+            bool: 是否成功 / Whether successful
+        """
+        return bool(Library.framework().MaaControllerClearActionCache(self._handle))
+
     def set_screenshot_target_long_side(self, long_side: int) -> bool:
         """设置截图缩放长边到指定长度 / Set screenshot scaling long side to specified length
 
@@ -555,6 +610,20 @@ class Controller:
 
         Library.framework().MaaControllerClearSinks.restype = None
         Library.framework().MaaControllerClearSinks.argtypes = [MaaControllerHandle]
+
+        Library.framework().MaaControllerGetActionDetail.restype = MaaBool
+        Library.framework().MaaControllerGetActionDetail.argtypes = [
+            MaaControllerHandle,
+            MaaActId,
+            MaaStringBufferHandle,
+            MaaStringBufferHandle,
+            ctypes.POINTER(MaaRect),
+            ctypes.POINTER(MaaBool),
+            MaaStringBufferHandle,
+        ]
+
+        Library.framework().MaaControllerClearActionCache.restype = MaaBool
+        Library.framework().MaaControllerClearActionCache.argtypes = [MaaControllerHandle]
 
 
 class AdbController(Controller):

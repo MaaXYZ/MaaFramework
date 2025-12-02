@@ -41,6 +41,9 @@ public:
     virtual cv::Mat cached_image() const override;
     virtual std::string get_uuid() override;
 
+    virtual std::optional<MAA_TASK_NS::ActionResult> get_action_result(MaaActId action_id) const override;
+    virtual void clear_action_cache() override;
+
     virtual MaaSinkId add_sink(MaaEventCallback callback, void* trans_arg) override;
     virtual void remove_sink(MaaSinkId sink_id) override;
     virtual void clear_sinks() override;

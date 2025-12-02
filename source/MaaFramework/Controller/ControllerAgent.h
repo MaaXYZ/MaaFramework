@@ -5,6 +5,7 @@
 #include <set>
 #include <variant>
 
+#include "ActionCache.h"
 #include "Base/AsyncRunner.hpp"
 #include "Common/MaaTypes.h"
 #include "ControlUnit/ControlUnitAPI.h"
@@ -178,6 +179,9 @@ public: // MaaController
     virtual cv::Mat cached_image() const override;
     virtual std::string get_uuid() override;
 
+    virtual std::optional<MAA_TASK_NS::ActionResult> get_action_result(MaaActId action_id) const override;
+    virtual void clear_action_cache() override;
+
     virtual MaaSinkId add_sink(MaaEventCallback callback, void* trans_arg) override;
     virtual void remove_sink(MaaSinkId sink_id) override;
     virtual void clear_sinks() override;
@@ -207,6 +211,10 @@ public: // for Actuator
     bool stop_app(AppParam p);
 
     bool scroll(ScrollParam p);
+
+    ActionCache& action_cache() { return action_cache_; }
+
+    const ActionCache& action_cache() const { return action_cache_; }
 
 private:
     bool handle_connect();
@@ -269,6 +277,8 @@ private:
     std::set<AsyncRunner<Action>::Id> focus_ids_;
     std::mutex focus_ids_mutex_;
     std::unique_ptr<AsyncRunner<Action>> action_runner_ = nullptr;
+
+    ActionCache action_cache_;
 };
 
 MAA_CTRL_NS_END

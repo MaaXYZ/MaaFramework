@@ -1,6 +1,7 @@
 #include "MaaFramework/MaaAPI.h"
 
 #include "Common/MaaTypes.h"
+#include "MaaUtils/Buffer/ImageBuffer.hpp"
 #include "MaaUtils/Buffer/StringBuffer.hpp"
 #include "MaaUtils/Logger.h"
 #include "MaaUtils/Platform.h"
@@ -358,5 +359,87 @@ MaaBool MaaResourceGetCustomActionList(const MaaResource* res, /* out */ MaaStri
         buffer->append(MaaNS::StringBuffer(name));
     }
 
+    return true;
+}
+
+#define CheckNullAndWarn(var)                        \
+    if (!var) {                                      \
+        LogWarn << #var << "is null, no assignment"; \
+    }                                                \
+    else
+
+MaaBool MaaResourceGetRecognitionDetail(
+    const MaaResource* res,
+    MaaRecoId reco_id,
+    MaaStringBuffer* name,
+    MaaStringBuffer* algorithm,
+    MaaBool* hit,
+    MaaRect* box,
+    MaaStringBuffer* detail_json,
+    MaaImageBuffer* raw,
+    MaaImageListBuffer* draws)
+{
+    if (!res) {
+        LogError << "handle is null";
+        return false;
+    }
+
+    auto result_opt = res->get_reco_result(reco_id);
+    if (!result_opt) {
+        LogError << "failed to get_reco_result" << VAR(reco_id);
+        return false;
+    }
+
+    auto& result = *result_opt;
+
+    CheckNullAndWarn(name)
+    {
+        name->set(result.name);
+    }
+    CheckNullAndWarn(algorithm)
+    {
+        algorithm->set(result.algorithm);
+    }
+    CheckNullAndWarn(hit)
+    {
+        *hit = result.box.has_value();
+    }
+    CheckNullAndWarn(box) if (result.box)
+    {
+        box->x = result.box->x;
+        box->y = result.box->y;
+        box->width = result.box->width;
+        box->height = result.box->height;
+    }
+    CheckNullAndWarn(detail_json)
+    {
+        detail_json->set(result.detail.to_string());
+    }
+    CheckNullAndWarn(raw)
+    {
+        raw->set(result.raw);
+    }
+    CheckNullAndWarn(draws)
+    {
+        for (auto& d : result.draws) {
+            draws->append(MAA_NS::ImageBuffer(d));
+        }
+    }
+
+    return true;
+}
+
+#undef CheckNullAndWarn
+
+MaaBool MaaResourceClearRecoCache(MaaResource* res)
+{
+    LogFunc << VAR_VOIDP(res);
+
+    if (!res) {
+        LogError << "handle is null";
+        return false;
+    }
+
+    res->clear_reco_cache();
     return true;
 }

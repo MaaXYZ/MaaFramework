@@ -140,6 +140,16 @@ std::vector<std::string> ResourceMgr::get_custom_action_list() const
     return result;
 }
 
+std::optional<MAA_TASK_NS::RecoResult> ResourceMgr::get_reco_result(MaaRecoId reco_id) const
+{
+    return reco_cache_.get_reco_result(reco_id);
+}
+
+void ResourceMgr::clear_reco_cache()
+{
+    reco_cache_.clear();
+}
+
 MaaSinkId ResourceMgr::add_sink(MaaEventCallback callback, void* trans_arg)
 {
     return notifier_.add_sink(callback, trans_arg);

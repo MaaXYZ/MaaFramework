@@ -10,7 +10,7 @@
 #include "Controller/ControllerAgent.h"
 #include "Resource/PipelineTypes.h"
 #include "Resource/ResourceMgr.h"
-#include "Tasker/RuntimeCache.h"
+#include "Tasker/TaskerCache.h"
 #include "Tasker/Tasker.h"
 
 MAA_TASK_NS_BEGIN

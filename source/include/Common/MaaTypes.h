@@ -61,6 +61,9 @@ public:
     virtual std::vector<std::string> get_node_list() const = 0;
     virtual std::vector<std::string> get_custom_recognition_list() const = 0;
     virtual std::vector<std::string> get_custom_action_list() const = 0;
+
+    virtual std::optional<MAA_TASK_NS::RecoResult> get_reco_result(MaaRecoId reco_id) const = 0;
+    virtual void clear_reco_cache() = 0;
 };
 
 struct MaaController : public IMaaEventDispatcher
@@ -95,6 +98,9 @@ public:
 
     virtual cv::Mat cached_image() const = 0;
     virtual std::string get_uuid() = 0;
+
+    virtual std::optional<MAA_TASK_NS::ActionResult> get_action_result(MaaActId action_id) const = 0;
+    virtual void clear_action_cache() = 0;
 };
 
 struct MaaTasker : public IMaaEventDispatcher
@@ -123,8 +129,6 @@ public:
     virtual void clear_cache() = 0;
     virtual std::optional<MAA_TASK_NS::TaskDetail> get_task_detail(MaaTaskId task_id) const = 0;
     virtual std::optional<MAA_TASK_NS::NodeDetail> get_node_detail(MaaNodeId node_id) const = 0;
-    virtual std::optional<MAA_TASK_NS::RecoResult> get_reco_result(MaaRecoId reco_id) const = 0;
-    virtual std::optional<MAA_TASK_NS::ActionResult> get_action_result(MaaActId action_id) const = 0;
     virtual std::optional<MaaNodeId> get_latest_node(const std::string& node_name) const = 0;
 
     virtual MaaSinkId add_context_sink(MaaEventCallback callback, void* trans_arg) = 0;

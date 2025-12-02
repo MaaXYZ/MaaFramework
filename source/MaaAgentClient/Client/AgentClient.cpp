@@ -289,12 +289,6 @@ bool AgentClient::handle_inserted_request(const json::value& j)
     else if (handle_tasker_get_node_detail(j)) {
         return true;
     }
-    else if (handle_tasker_get_reco_result(j)) {
-        return true;
-    }
-    else if (handle_tasker_get_action_result(j)) {
-        return true;
-    }
     else if (handle_tasker_get_latest_node(j)) {
         return true;
     }
@@ -339,6 +333,12 @@ bool AgentClient::handle_inserted_request(const json::value& j)
         return true;
     }
     else if (handle_resource_get_custom_action_list(j)) {
+        return true;
+    }
+    else if (handle_resource_get_reco_result(j)) {
+        return true;
+    }
+    else if (handle_resource_clear_reco_cache(j)) {
         return true;
     }
 
@@ -400,6 +400,12 @@ bool AgentClient::handle_inserted_request(const json::value& j)
         return true;
     }
     else if (handle_controller_get_uuid(j)) {
+        return true;
+    }
+    else if (handle_controller_get_action_result(j)) {
+        return true;
+    }
+    else if (handle_controller_clear_action_cache(j)) {
         return true;
     }
     else if (handle_event_response(j)) {
@@ -1018,73 +1024,6 @@ bool AgentClient::handle_tasker_get_node_detail(const json::value& j)
     return true;
 }
 
-bool AgentClient::handle_tasker_get_reco_result(const json::value& j)
-{
-    if (!j.is<TaskerGetRecoResultReverseRequest>()) {
-        return false;
-    }
-    const TaskerGetRecoResultReverseRequest& req = j.as<TaskerGetRecoResultReverseRequest>();
-    LogFunc << VAR(req) << VAR(ipc_addr_);
-    MaaTasker* tasker = query_tasker(req.tasker_id);
-    if (!tasker) {
-        LogError << "tasker not found" << VAR(req.tasker_id);
-        return false;
-    }
-    auto detail_opt = tasker->get_reco_result(req.reco_id);
-    const auto& detail = detail_opt.value_or(MAA_TASK_NS::RecoResult {});
-
-    std::vector<std::string> draws;
-    for (const auto& draw : detail.draws) {
-        draws.emplace_back(send_image(draw));
-    }
-
-    TaskerGetRecoResultReverseResponse resp {
-        .has_value = detail_opt.has_value(),
-        .reco_id = detail.reco_id,
-        .name = detail.name,
-        .algorithm = detail.algorithm,
-        .hit = detail.box.has_value(),
-        .box = detail.box ? std::array<int32_t, 4> { detail.box->x, detail.box->y, detail.box->width, detail.box->height }
-                          : std::array<int32_t, 4> {},
-        .detail = detail.detail,
-        .raw = send_image(detail.raw),
-        .draws = std::move(draws),
-    };
-    send(resp);
-
-    return true;
-}
-
-bool AgentClient::handle_tasker_get_action_result(const json::value& j)
-{
-    if (!j.is<TaskerGetActionResultReverseRequest>()) {
-        return false;
-    }
-    const TaskerGetActionResultReverseRequest& req = j.as<TaskerGetActionResultReverseRequest>();
-    LogFunc << VAR(req) << VAR(ipc_addr_);
-
-    MaaTasker* tasker = query_tasker(req.tasker_id);
-    if (!tasker) {
-        LogError << "tasker not found" << VAR(req.tasker_id);
-        return false;
-    }
-    auto detail_opt = tasker->get_action_result(req.action_id);
-    const auto& detail = detail_opt.value_or(MAA_TASK_NS::ActionResult {});
-
-    TaskerGetActionResultReverseResponse resp {
-        .has_value = detail_opt.has_value(),
-        .action_id = detail.action_id,
-        .name = detail.name,
-        .action = detail.action,
-        .box = std::array<int32_t, 4> { detail.box.x, detail.box.y, detail.box.width, detail.box.height },
-        .success = detail.success,
-        .detail = detail.detail,
-    };
-    send(resp);
-
-    return true;
-}
-
 bool AgentClient::handle_tasker_get_latest_node(const json::value& j)
 {
     if (!j.is<TaskerGetLatestNodeReverseRequest>()) {
@@ -1499,6 +1438,66 @@ bool AgentClient::handle_resource_get_custom_action_list(const json::value& j)
     return true;
 }
 
+bool AgentClient::handle_resource_get_reco_result(const json::value& j)
+{
+    if (!j.is<ResourceGetRecoResultReverseRequest>()) {
+        return false;
+    }
+    const ResourceGetRecoResultReverseRequest& req = j.as<ResourceGetRecoResultReverseRequest>();
+    LogFunc << VAR(req) << VAR(ipc_addr_);
+
+    MaaResource* resource = query_resource(req.resource_id);
+    if (!resource) {
+        LogError << "resource not found" << VAR(req.resource_id);
+        return false;
+    }
+
+    auto detail_opt = resource->get_reco_result(req.reco_id);
+    const auto& detail = detail_opt.value_or(MAA_TASK_NS::RecoResult {});
+
+    std::vector<std::string> draws;
+    for (const auto& draw : detail.draws) {
+        draws.emplace_back(send_image(draw));
+    }
+
+    ResourceGetRecoResultReverseResponse resp {
+        .has_value = detail_opt.has_value(),
+        .reco_id = detail.reco_id,
+        .name = detail.name,
+        .algorithm = detail.algorithm,
+        .hit = detail.box.has_value(),
+        .box = detail.box ? std::array<int32_t, 4> { detail.box->x, detail.box->y, detail.box->width, detail.box->height }
+                          : std::array<int32_t, 4> {},
+        .detail = detail.detail,
+        .raw = send_image(detail.raw),
+        .draws = std::move(draws),
+    };
+    send(resp);
+
+    return true;
+}
+
+bool AgentClient::handle_resource_clear_reco_cache(const json::value& j)
+{
+    if (!j.is<ResourceClearRecoCacheReverseRequest>()) {
+        return false;
+    }
+    const ResourceClearRecoCacheReverseRequest& req = j.as<ResourceClearRecoCacheReverseRequest>();
+    LogFunc << VAR(req) << VAR(ipc_addr_);
+
+    MaaResource* resource = query_resource(req.resource_id);
+    if (!resource) {
+        LogError << "resource not found" << VAR(req.resource_id);
+        return false;
+    }
+
+    resource->clear_reco_cache();
+    ResourceClearRecoCacheReverseResponse resp {};
+    send(resp);
+
+    return true;
+}
+
 bool AgentClient::handle_controller_post_connection(const json::value& j)
 {
     if (!j.is<ControllerPostConnectionReverseRequest>()) {
@@ -1896,6 +1895,58 @@ bool AgentClient::handle_controller_get_uuid(const json::value& j)
         .uuid = uuid,
     };
     send(resp);
+    return true;
+}
+
+bool AgentClient::handle_controller_get_action_result(const json::value& j)
+{
+    if (!j.is<ControllerGetActionResultReverseRequest>()) {
+        return false;
+    }
+    const ControllerGetActionResultReverseRequest& req = j.as<ControllerGetActionResultReverseRequest>();
+    LogFunc << VAR(req) << VAR(ipc_addr_);
+
+    MaaController* controller = query_controller(req.controller_id);
+    if (!controller) {
+        LogError << "controller not found" << VAR(req.controller_id);
+        return false;
+    }
+
+    auto detail_opt = controller->get_action_result(req.action_id);
+    const auto& detail = detail_opt.value_or(MAA_TASK_NS::ActionResult {});
+
+    ControllerGetActionResultReverseResponse resp {
+        .has_value = detail_opt.has_value(),
+        .action_id = detail.action_id,
+        .name = detail.name,
+        .action = detail.action,
+        .box = std::array<int32_t, 4> { detail.box.x, detail.box.y, detail.box.width, detail.box.height },
+        .success = detail.success,
+        .detail = detail.detail,
+    };
+    send(resp);
+
+    return true;
+}
+
+bool AgentClient::handle_controller_clear_action_cache(const json::value& j)
+{
+    if (!j.is<ControllerClearActionCacheReverseRequest>()) {
+        return false;
+    }
+    const ControllerClearActionCacheReverseRequest& req = j.as<ControllerClearActionCacheReverseRequest>();
+    LogFunc << VAR(req) << VAR(ipc_addr_);
+
+    MaaController* controller = query_controller(req.controller_id);
+    if (!controller) {
+        LogError << "controller not found" << VAR(req.controller_id);
+        return false;
+    }
+
+    controller->clear_action_cache();
+    ControllerClearActionCacheReverseResponse resp {};
+    send(resp);
+
     return true;
 }
 

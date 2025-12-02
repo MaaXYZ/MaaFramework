@@ -258,7 +258,13 @@ MaaBool MaaTaskerGetRecognitionDetail(
         return false;
     }
 
-    auto result_opt = tasker->get_reco_result(reco_id);
+    auto* res = tasker->resource();
+    if (!res) {
+        LogError << "resource is null";
+        return false;
+    }
+
+    auto result_opt = res->get_reco_result(reco_id);
     if (!result_opt) {
         LogError << "failed to get_reco_result" << VAR(reco_id);
         return false;
@@ -317,7 +323,13 @@ MaaBool MaaTaskerGetActionDetail(
         return false;
     }
 
-    auto result_opt = tasker->get_action_result(action_id);
+    auto* ctrl = tasker->controller();
+    if (!ctrl) {
+        LogError << "controller is null";
+        return false;
+    }
+
+    auto result_opt = ctrl->get_action_result(action_id);
     if (!result_opt) {
         LogError << "failed to get_action_result" << VAR(action_id);
         return false;

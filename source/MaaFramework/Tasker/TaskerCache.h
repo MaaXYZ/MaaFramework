@@ -6,23 +6,16 @@
 #include <string>
 
 #include "Common/TaskResultTypes.h"
-#include "MaaUtils/NoWarningCVMat.hpp"
 
 #include "Common/Conf.h"
 
 MAA_NS_BEGIN
 
-class RuntimeCache
+class TaskerCache
 {
 public:
     std::optional<MaaNodeId> get_latest_node(const std::string& name) const;
     void set_latest_node(const std::string& name, MaaNodeId id);
-
-    std::optional<MAA_TASK_NS::RecoResult> get_reco_result(MaaRecoId uid) const;
-    void set_reco_detail(MaaRecoId uid, MAA_TASK_NS::RecoResult);
-
-    std::optional<MAA_TASK_NS::ActionResult> get_action_result(MaaActId uid) const;
-    void set_action_detail(MaaActId uid, MAA_TASK_NS::ActionResult);
 
     std::optional<MAA_TASK_NS::NodeDetail> get_node_detail(MaaNodeId uid) const;
     void set_node_detail(MaaNodeId uid, MAA_TASK_NS::NodeDetail detail);
@@ -35,12 +28,6 @@ public:
 private:
     std::map<std::string, MaaNodeId> latest_nodes_;
     mutable std::shared_mutex latest_nodes_mutex_;
-
-    std::map<MaaRecoId, MAA_TASK_NS::RecoResult> reco_details_;
-    mutable std::shared_mutex reco_details_mutex_;
-
-    std::map<MaaActId, MAA_TASK_NS::ActionResult> action_details_;
-    mutable std::shared_mutex action_details_mutex_;
 
     std::map<MaaNodeId, MAA_TASK_NS::NodeDetail> node_details_;
     mutable std::shared_mutex node_details_mutex_;

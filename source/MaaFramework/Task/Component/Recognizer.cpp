@@ -81,8 +81,9 @@ RecoResult Recognizer::recognize(const PipelineData& pipeline_data)
     }
 
     LogInfo << "reco" << VAR(result);
-    auto& rt_cache = tasker_->runtime_cache();
-    rt_cache.set_reco_detail(result.reco_id, result);
+    if (resource()) {
+        resource()->reco_cache().set_reco_detail(result.reco_id, result);
+    }
 
     save_draws(pipeline_data.name, result);
 
@@ -310,11 +311,12 @@ cv::Rect Recognizer::get_roi(const MAA_VISION_NS::Target& roi)
         return {};
 
     case Target::Type::PreTask: {
-        auto& cache = tasker_->runtime_cache();
+        auto& tasker_cache = tasker_->tasker_cache();
         std::string name = std::get<std::string>(roi.param);
-        MaaNodeId node_id = cache.get_latest_node(name).value_or(MaaInvalidId);
-        NodeDetail node_detail = cache.get_node_detail(node_id).value_or(NodeDetail {});
-        RecoResult reco_result = cache.get_reco_result(node_detail.reco_id).value_or(RecoResult {});
+        MaaNodeId node_id = tasker_cache.get_latest_node(name).value_or(MaaInvalidId);
+        NodeDetail node_detail = tasker_cache.get_node_detail(node_id).value_or(NodeDetail {});
+        RecoResult reco_result = resource() ? resource()->reco_cache().get_reco_result(node_detail.reco_id).value_or(RecoResult {})
+                                            : RecoResult {};
         raw = reco_result.box.value_or(cv::Rect {});
         LogDebug << "pre task" << VAR(name) << VAR(raw);
     } break;

@@ -112,6 +112,23 @@ extern "C"
 
     MAA_DEPRECATED MAA_FRAMEWORK_API MaaCtrlId MaaControllerPostPressKey(MaaController* ctrl, int32_t keycode);
 
+    /**
+     * @param[out] action
+     * @param[out] box
+     * @param[out] success
+     * @param[out] detail_json
+     */
+    MAA_FRAMEWORK_API MaaBool MaaControllerGetActionDetail(
+        const MaaController* ctrl,
+        MaaActId action_id,
+        /* out */ MaaStringBuffer* node_name,
+        /* out */ MaaStringBuffer* action,
+        /* out */ MaaRect* box,
+        /* out */ MaaBool* success,
+        /* out */ MaaStringBuffer* detail_json);
+
+    MAA_FRAMEWORK_API MaaBool MaaControllerClearActionCache(MaaController* ctrl);
+
 #ifdef __cplusplus
 }
 #endif

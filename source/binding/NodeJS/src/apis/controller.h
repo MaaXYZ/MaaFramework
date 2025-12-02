@@ -56,6 +56,8 @@ struct ControllerImpl : public maajs::NativeClassBase
     bool get_connected();
     std::optional<maajs::ArrayBufferType> get_cached_image();
     std::optional<std::string> get_uuid();
+    std::optional<maajs::ValueType> get_action_detail(MaaActId action_id);
+    void clear_action_cache();
 
     std::string to_string() override;
 

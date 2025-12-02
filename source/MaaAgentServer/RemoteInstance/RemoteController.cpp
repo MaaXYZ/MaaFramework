@@ -285,6 +285,41 @@ std::string RemoteController::get_uuid()
     return resp_opt->uuid;
 }
 
+std::optional<MAA_TASK_NS::ActionResult> RemoteController::get_action_result(MaaActId action_id) const
+{
+    ControllerGetActionResultReverseRequest req {
+        .controller_id = controller_id_,
+        .action_id = action_id,
+    };
+
+    auto resp_opt = server_.send_and_recv<ControllerGetActionResultReverseResponse>(req);
+    if (!resp_opt) {
+        return std::nullopt;
+    }
+
+    if (!resp_opt->has_value) {
+        return std::nullopt;
+    }
+
+    MAA_TASK_NS::ActionResult result;
+    result.action_id = resp_opt->action_id;
+    result.name = std::move(resp_opt->name);
+    result.action = std::move(resp_opt->action);
+    result.box = cv::Rect(resp_opt->box[0], resp_opt->box[1], resp_opt->box[2], resp_opt->box[3]);
+    result.success = resp_opt->success;
+    result.detail = std::move(resp_opt->detail);
+
+    return result;
+}
+
+void RemoteController::clear_action_cache()
+{
+    ControllerClearActionCacheReverseRequest req {
+        .controller_id = controller_id_,
+    };
+    server_.send_and_recv<ControllerClearActionCacheReverseResponse>(req);
+}
+
 MaaSinkId RemoteController::add_sink(MaaEventCallback callback, void* trans_arg)
 {
     LogError << "Can NOT add sink for remote instance, use AgentServer.add_controller_sink instead" << VAR_VOIDP(callback)

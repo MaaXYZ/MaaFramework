@@ -65,8 +65,6 @@ private:
     bool handle_tasker_clear_cache(const json::value& j);
     bool handle_tasker_get_task_detail(const json::value& j);
     bool handle_tasker_get_node_detail(const json::value& j);
-    bool handle_tasker_get_reco_result(const json::value& j);
-    bool handle_tasker_get_action_result(const json::value& j);
     bool handle_tasker_get_latest_node(const json::value& j);
 
     bool handle_resource_post_bundle(const json::value& j);
@@ -83,6 +81,8 @@ private:
     bool handle_resource_get_node_list(const json::value& j);
     bool handle_resource_get_custom_recognition_list(const json::value& j);
     bool handle_resource_get_custom_action_list(const json::value& j);
+    bool handle_resource_get_reco_result(const json::value& j);
+    bool handle_resource_clear_reco_cache(const json::value& j);
 
     bool handle_controller_post_connection(const json::value& j);
     bool handle_controller_post_click(const json::value& j);
@@ -104,6 +104,8 @@ private:
     bool handle_controller_running(const json::value& j);
     bool handle_controller_cached_image(const json::value& j);
     bool handle_controller_get_uuid(const json::value& j);
+    bool handle_controller_get_action_result(const json::value& j);
+    bool handle_controller_clear_action_cache(const json::value& j);
 
     bool handle_event_response(const json::value& j);
 

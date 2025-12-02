@@ -318,6 +318,77 @@ std::optional<std::vector<std::string>> ResourceImpl::get_custom_action_list()
     return buffer.as_vector([](StringBufferRefer buf) { return buf.str(); });
 }
 
+std::optional<maajs::ValueType> ResourceImpl::get_recognition_detail(MaaRecoId reco_id)
+{
+    StringBuffer node_name_buf;
+    StringBuffer algorithm_buf;
+    MaaBool hit = false;
+    MaaRect box {};
+    StringBuffer detail_json_buf;
+    ImageBuffer raw_buf;
+    ImageListBuffer draws_buf;
+
+    if (!MaaResourceGetRecognitionDetail(
+            resource,
+            reco_id,
+            node_name_buf,
+            algorithm_buf,
+            &hit,
+            &box,
+            detail_json_buf,
+            raw_buf,
+            draws_buf)) {
+        return std::nullopt;
+    }
+
+    auto obj = maajs::ObjectType::New(env);
+    obj.Set("node_name", node_name_buf.str());
+    obj.Set("algorithm", algorithm_buf.str());
+    obj.Set("hit", static_cast<bool>(hit));
+
+    auto box_obj = maajs::ObjectType::New(env);
+    box_obj.Set("x", box.x);
+    box_obj.Set("y", box.y);
+    box_obj.Set("width", box.width);
+    box_obj.Set("height", box.height);
+    obj.Set("box", box_obj);
+
+    auto detail_str = detail_json_buf.str();
+    if (!detail_str.empty()) {
+        obj.Set("detail", maajs::JsonParse(env, detail_str));
+    }
+    else {
+        obj.Set("detail", env.Null());
+    }
+
+    if (raw_buf.size() > 0) {
+        obj.Set("raw", raw_buf.data(env));
+    }
+    else {
+        obj.Set("raw", env.Null());
+    }
+
+    auto draws_size = draws_buf.size();
+    if (draws_size > 0) {
+        auto draws_arr = maajs::ArrayType::New(env, draws_size);
+        for (size_t i = 0; i < draws_size; i++) {
+            auto draw = draws_buf.at(i);
+            draws_arr.Set(static_cast<uint32_t>(i), draw.data(env));
+        }
+        obj.Set("draws", draws_arr);
+    }
+    else {
+        obj.Set("draws", env.Null());
+    }
+
+    return obj;
+}
+
+void ResourceImpl::clear_reco_cache()
+{
+    MaaResourceClearRecoCache(resource);
+}
+
 std::string ResourceImpl::to_string()
 {
     return std::format(" handle = {:#018x}, {} ", reinterpret_cast<uintptr_t>(resource), own ? "owned" : "rented");
@@ -393,6 +464,8 @@ void ResourceImpl::init_proto(maajs::ObjectType proto, maajs::FunctionType)
     MAA_BIND_GETTER(proto, "node_list", ResourceImpl::get_node_list);
     MAA_BIND_GETTER(proto, "custom_recognition_list", ResourceImpl::get_custom_recognition_list);
     MAA_BIND_GETTER(proto, "custom_action_list", ResourceImpl::get_custom_action_list);
+    MAA_BIND_FUNC(proto, "get_recognition_detail", ResourceImpl::get_recognition_detail);
+    MAA_BIND_FUNC(proto, "clear_reco_cache", ResourceImpl::clear_reco_cache);
 }
 
 maajs::ValueType load_resource(maajs::EnvType env)

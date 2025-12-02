@@ -1,4 +1,4 @@
-#include "RuntimeCache.h"
+#include "Tasker.h"
 
 #include <ranges>
 
@@ -167,42 +167,39 @@ void Tasker::clear_cache()
         task_id_mapping_.clear();
     }
 
-    runtime_cache().clear();
+    tasker_cache().clear();
+
+    if (resource_) {
+        resource_->reco_cache().clear();
+    }
+    if (controller_) {
+        controller_->action_cache().clear();
+    }
 }
 
 std::optional<MAA_TASK_NS::TaskDetail> Tasker::get_task_detail(MaaTaskId task_id) const
 {
-    return runtime_cache().get_task_detail(task_id);
+    return tasker_cache().get_task_detail(task_id);
 }
 
 std::optional<MAA_TASK_NS::NodeDetail> Tasker::get_node_detail(MaaNodeId node_id) const
 {
-    return runtime_cache().get_node_detail(node_id);
-}
-
-std::optional<MAA_TASK_NS::RecoResult> Tasker::get_reco_result(MaaRecoId reco_id) const
-{
-    return runtime_cache().get_reco_result(reco_id);
-}
-
-std::optional<MAA_TASK_NS::ActionResult> Tasker::get_action_result(MaaActId action_id) const
-{
-    return runtime_cache().get_action_result(action_id);
+    return tasker_cache().get_node_detail(node_id);
 }
 
 std::optional<MaaNodeId> Tasker::get_latest_node(const std::string& node_name) const
 {
-    return runtime_cache().get_latest_node(node_name);
+    return tasker_cache().get_latest_node(node_name);
 }
 
-RuntimeCache& Tasker::runtime_cache()
+TaskerCache& Tasker::tasker_cache()
 {
-    return runtime_cache_;
+    return tasker_cache_;
 }
 
-const RuntimeCache& Tasker::runtime_cache() const
+const TaskerCache& Tasker::tasker_cache() const
 {
-    return runtime_cache_;
+    return tasker_cache_;
 }
 
 MaaSinkId Tasker::add_sink(MaaEventCallback callback, void* trans_arg)
@@ -256,7 +253,7 @@ MaaTaskId Tasker::post_task(TaskPtr task_ptr, const json::value& pipeline_overri
         return MaaInvalidId;
     }
 
-    runtime_cache_.set_task_detail(
+    tasker_cache_.set_task_detail(
         task_id,
         MAA_TASK_NS::TaskDetail { .task_id = task_id, .entry = task_ptr->entry(), .status = MaaStatus_Pending });
 
@@ -301,9 +298,9 @@ bool Tasker::run_task(RunnerId runner_id, TaskPtr task_ptr)
 
     {
         // value_or 的默认值用于在 post 之后调用方手动 clear cache 了的情况
-        auto task_detail = runtime_cache_.get_task_detail(task_id).value_or(MAA_TASK_NS::TaskDetail { .task_id = task_id, .entry = entry });
+        auto task_detail = tasker_cache_.get_task_detail(task_id).value_or(MAA_TASK_NS::TaskDetail { .task_id = task_id, .entry = entry });
         task_detail.status = MaaStatus_Running;
-        runtime_cache_.set_task_detail(task_id, std::move(task_detail));
+        tasker_cache_.set_task_detail(task_id, std::move(task_detail));
     }
     notifier_.notify(this, MaaMsg_Tasker_Task_Starting, cb_detail);
 
@@ -312,9 +309,9 @@ bool Tasker::run_task(RunnerId runner_id, TaskPtr task_ptr)
     LogInfo << "task end:" << VAR(cb_detail) << VAR(ret);
     {
         // value_or 的默认值用于 run 到一半调用方手动 clear cache 了的情况
-        auto task_detail = runtime_cache_.get_task_detail(task_id).value_or(MAA_TASK_NS::TaskDetail { .task_id = task_id, .entry = entry });
+        auto task_detail = tasker_cache_.get_task_detail(task_id).value_or(MAA_TASK_NS::TaskDetail { .task_id = task_id, .entry = entry });
         task_detail.status = ret ? MaaStatus_Succeeded : MaaStatus_Failed;
-        runtime_cache_.set_task_detail(task_id, std::move(task_detail));
+        tasker_cache_.set_task_detail(task_id, std::move(task_detail));
     }
     notifier_.notify(this, ret ? MaaMsg_Tasker_Task_Succeeded : MaaMsg_Tasker_Task_Failed, cb_detail);
 

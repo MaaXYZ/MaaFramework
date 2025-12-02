@@ -242,6 +242,54 @@ std::optional<std::string> ControllerImpl::get_uuid()
     return buf.str();
 }
 
+std::optional<maajs::ValueType> ControllerImpl::get_action_detail(MaaActId action_id)
+{
+    StringBuffer node_name_buf;
+    StringBuffer action_buf;
+    MaaRect box {};
+    MaaBool success = false;
+    StringBuffer detail_json_buf;
+
+    if (!MaaControllerGetActionDetail(
+            controller,
+            action_id,
+            node_name_buf,
+            action_buf,
+            &box,
+            &success,
+            detail_json_buf)) {
+        return std::nullopt;
+    }
+
+    auto obj = maajs::ObjectType::New(env);
+    obj.Set("node_name", node_name_buf.str());
+    obj.Set("action", action_buf.str());
+
+    auto box_obj = maajs::ObjectType::New(env);
+    box_obj.Set("x", box.x);
+    box_obj.Set("y", box.y);
+    box_obj.Set("width", box.width);
+    box_obj.Set("height", box.height);
+    obj.Set("box", box_obj);
+
+    obj.Set("success", static_cast<bool>(success));
+
+    auto detail_str = detail_json_buf.str();
+    if (!detail_str.empty()) {
+        obj.Set("detail", maajs::JsonParse(env, detail_str));
+    }
+    else {
+        obj.Set("detail", env.Null());
+    }
+
+    return obj;
+}
+
+void ControllerImpl::clear_action_cache()
+{
+    MaaControllerClearActionCache(controller);
+}
+
 std::string ControllerImpl::to_string()
 {
     return std::format(" handle = {:#018x}, {} ", reinterpret_cast<uintptr_t>(controller), own ? "owned" : "rented");
@@ -311,6 +359,8 @@ void ControllerImpl::init_proto(maajs::ObjectType proto, maajs::FunctionType)
     MAA_BIND_GETTER(proto, "connected", ControllerImpl::get_connected);
     MAA_BIND_GETTER(proto, "cached_image", ControllerImpl::get_cached_image);
     MAA_BIND_GETTER(proto, "uuid", ControllerImpl::get_uuid);
+    MAA_BIND_FUNC(proto, "get_action_detail", ControllerImpl::get_action_detail);
+    MAA_BIND_FUNC(proto, "clear_action_cache", ControllerImpl::clear_action_cache);
 }
 
 maajs::ValueType load_controller(maajs::EnvType env)

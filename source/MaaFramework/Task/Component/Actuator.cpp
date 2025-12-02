@@ -114,8 +114,9 @@ ActionResult Actuator::run(const cv::Rect& reco_hit, MaaRecoId reco_id, const Pi
     }
 
     LogInfo << "action" << VAR(result);
-    auto& rt_cache = tasker_->runtime_cache();
-    rt_cache.set_action_detail(result.action_id, result);
+    if (controller()) {
+        controller()->action_cache().set_action_detail(result.action_id, result);
+    }
 
     wait_freezes(pipeline_data.post_wait_freezes, reco_hit);
     sleep(pipeline_data.post_delay);
@@ -666,11 +667,12 @@ cv::Rect Actuator::get_target_rect(const MAA_RES_NS::Action::Target target, cons
         raw = box;
         break;
     case Target::Type::PreTask: {
-        auto& cache = tasker_->runtime_cache();
+        auto& tasker_cache = tasker_->tasker_cache();
         std::string name = std::get<std::string>(target.param);
-        MaaNodeId node_id = cache.get_latest_node(name).value_or(MaaInvalidId);
-        NodeDetail node_detail = cache.get_node_detail(node_id).value_or(NodeDetail {});
-        RecoResult reco_result = cache.get_reco_result(node_detail.reco_id).value_or(RecoResult {});
+        MaaNodeId node_id = tasker_cache.get_latest_node(name).value_or(MaaInvalidId);
+        NodeDetail node_detail = tasker_cache.get_node_detail(node_id).value_or(NodeDetail {});
+        auto* res = tasker_->resource();
+        RecoResult reco_result = res ? res->reco_cache().get_reco_result(node_detail.reco_id).value_or(RecoResult {}) : RecoResult {};
         raw = reco_result.box.value_or(cv::Rect {});
         LogDebug << "pre task" << VAR(name) << VAR(raw);
     } break;

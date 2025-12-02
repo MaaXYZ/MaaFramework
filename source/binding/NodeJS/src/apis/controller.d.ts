@@ -177,6 +177,16 @@ declare global {
             get connected(): boolean
             get cached_image(): ImageData | null
             get uuid(): string | null
+            get_action_detail(action_id: ActId): ActionDetail | null
+            clear_action_cache(): void
+        }
+
+        type ActionDetail = {
+            node_name: string
+            action: string
+            box: Rect
+            success: boolean
+            detail: unknown
         }
 
         type AdbDevice = [

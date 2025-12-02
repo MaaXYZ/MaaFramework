@@ -71,20 +71,20 @@ MaaTaskId Context::run_task(const std::string& entry, const json::value& pipelin
         return MaaInvalidId;
     }
 
-    auto& runtime_cache = tasker_->runtime_cache();
+    auto& tasker_cache = tasker_->tasker_cache();
 
     // context 的子任务没有 Pending 状态，直接就是 Running
-    runtime_cache.set_task_detail(
+    tasker_cache.set_task_detail(
         subtask.task_id(),
         MAA_TASK_NS::TaskDetail { .task_id = subtask.task_id(), .entry = subtask.entry(), .status = MaaStatus_Running });
 
     bool ret = subtask.run();
 
     {
-        auto task_detail = runtime_cache.get_task_detail(subtask.task_id())
+        auto task_detail = tasker_cache.get_task_detail(subtask.task_id())
                                .value_or(MAA_TASK_NS::TaskDetail { .task_id = subtask.task_id(), .entry = entry });
         task_detail.status = ret ? MaaStatus_Succeeded : MaaStatus_Failed;
-        runtime_cache.set_task_detail(subtask.task_id(), std::move(task_detail));
+        tasker_cache.set_task_detail(subtask.task_id(), std::move(task_detail));
     }
 
     return subtask.task_id();

@@ -40,6 +40,9 @@ public:
     virtual std::vector<std::string> get_custom_recognition_list() const override;
     virtual std::vector<std::string> get_custom_action_list() const override;
 
+    virtual std::optional<MAA_TASK_NS::RecoResult> get_reco_result(MaaRecoId reco_id) const override;
+    virtual void clear_reco_cache() override;
+
     virtual MaaSinkId add_sink(MaaEventCallback callback, void* trans_arg) override;
     virtual void remove_sink(MaaSinkId sink_id) override;
     virtual void clear_sinks() override;

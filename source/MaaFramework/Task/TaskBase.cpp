@@ -177,7 +177,7 @@ void TaskBase::set_node_detail(MaaNodeId node_id, NodeDetail detail)
         return;
     }
 
-    auto& cache = tasker_->runtime_cache();
+    auto& cache = tasker_->tasker_cache();
     cache.set_node_detail(node_id, detail);
     cache.set_latest_node(detail.name, node_id);
 
@@ -196,7 +196,7 @@ void TaskBase::set_task_detail(TaskDetail detail)
         return;
     }
 
-    auto& cache = tasker_->runtime_cache();
+    auto& cache = tasker_->tasker_cache();
     cache.set_task_detail(task_id_, detail);
 }
 

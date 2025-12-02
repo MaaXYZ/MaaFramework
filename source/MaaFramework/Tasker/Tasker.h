@@ -9,7 +9,7 @@
 #include "Common/MaaTypes.h"
 #include "Controller/ControllerAgent.h"
 #include "Resource/ResourceMgr.h"
-#include "RuntimeCache.h"
+#include "TaskerCache.h"
 #include "Utils/EventDispatcher.hpp"
 
 MAA_TASK_NS_BEGIN
@@ -45,8 +45,6 @@ public:
     virtual void clear_cache() override;
     virtual std::optional<MAA_TASK_NS::TaskDetail> get_task_detail(MaaTaskId task_id) const override;
     virtual std::optional<MAA_TASK_NS::NodeDetail> get_node_detail(MaaNodeId node_id) const override;
-    virtual std::optional<MAA_TASK_NS::RecoResult> get_reco_result(MaaRecoId reco_id) const override;
-    virtual std::optional<MAA_TASK_NS::ActionResult> get_action_result(MaaActId action_id) const override;
     virtual std::optional<MaaNodeId> get_latest_node(const std::string& node_name) const override;
 
     virtual MaaSinkId add_sink(MaaEventCallback callback, void* trans_arg) override;
@@ -58,8 +56,8 @@ public:
     virtual void clear_context_sinks() override;
 
 public:
-    RuntimeCache& runtime_cache();
-    const RuntimeCache& runtime_cache() const;
+    TaskerCache& tasker_cache();
+    const TaskerCache& tasker_cache() const;
 
     void context_notify(MaaContext* context, std::string_view msg, const json::value& details);
 
@@ -88,7 +86,7 @@ private:
 
     TaskPtr running_task_ = nullptr;
 
-    RuntimeCache runtime_cache_;
+    TaskerCache tasker_cache_;
 };
 
 MAA_NS_END

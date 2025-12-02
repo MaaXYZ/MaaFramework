@@ -9,6 +9,7 @@
 #include "OCRResMgr.h"
 #include "ONNXResMgr.h"
 #include "PipelineResMgr.h"
+#include "RecoCache.h"
 #include "TemplateResMgr.h"
 #include "Utils/EventDispatcher.hpp"
 
@@ -62,6 +63,9 @@ public: // MaaResource
     virtual std::vector<std::string> get_custom_recognition_list() const override;
     virtual std::vector<std::string> get_custom_action_list() const override;
 
+    virtual std::optional<MAA_TASK_NS::RecoResult> get_reco_result(MaaRecoId reco_id) const override;
+    virtual void clear_reco_cache() override;
+
     virtual MaaSinkId add_sink(MaaEventCallback callback, void* trans_arg) override;
     virtual void remove_sink(MaaSinkId sink_id) override;
     virtual void clear_sinks() override;
@@ -93,6 +97,10 @@ public:
     CustomRecognitionSession custom_recognition(const std::string& name) const;
     CustomActionSession custom_action(const std::string& name) const;
 
+    RecoCache& reco_cache() { return reco_cache_; }
+
+    const RecoCache& reco_cache() const { return reco_cache_; }
+
 private:
     static const std::unordered_set<MaaInferenceExecutionProvider>& available_providers();
 
@@ -122,6 +130,8 @@ private:
 
     std::unordered_map<std::string, CustomRecognitionSession> custom_recognition_sessions_;
     std::unordered_map<std::string, CustomActionSession> custom_action_sessions_;
+
+    RecoCache reco_cache_;
 
 private:
     std::vector<std::filesystem::path> paths_;

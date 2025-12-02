@@ -231,6 +231,44 @@ std::vector<std::string> RemoteResource::get_custom_action_list() const
     return resp_opt->custom_action_list;
 }
 
+std::optional<MAA_TASK_NS::RecoResult> RemoteResource::get_reco_result(MaaRecoId reco_id) const
+{
+    ResourceGetRecoResultReverseRequest req {
+        .resource_id = resource_id_,
+        .reco_id = reco_id,
+    };
+
+    auto resp_opt = server_.send_and_recv<ResourceGetRecoResultReverseResponse>(req);
+    if (!resp_opt) {
+        return std::nullopt;
+    }
+
+    if (!resp_opt->has_value) {
+        return std::nullopt;
+    }
+
+    MAA_TASK_NS::RecoResult result;
+    result.reco_id = resp_opt->reco_id;
+    result.name = std::move(resp_opt->name);
+    result.algorithm = std::move(resp_opt->algorithm);
+    result.box =
+        resp_opt->hit ? std::make_optional(cv::Rect(resp_opt->box[0], resp_opt->box[1], resp_opt->box[2], resp_opt->box[3])) : std::nullopt;
+    result.detail = std::move(resp_opt->detail);
+    result.raw = server_.get_image_cache(resp_opt->raw);
+    for (const auto& draw : resp_opt->draws) {
+        result.draws.emplace_back(server_.get_image_cache(draw));
+    }
+    return result;
+}
+
+void RemoteResource::clear_reco_cache()
+{
+    ResourceClearRecoCacheReverseRequest req {
+        .resource_id = resource_id_,
+    };
+    server_.send_and_recv<ResourceClearRecoCacheReverseResponse>(req);
+}
+
 MaaSinkId RemoteResource::add_sink(MaaEventCallback callback, void* trans_arg)
 {
     LogError << "Can NOT add sink for remote instance, use AgentServer.add_resource_sink instead" << VAR_VOIDP(callback)
