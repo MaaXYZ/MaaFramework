@@ -39,6 +39,10 @@ struct ContextImpl : public maajs::NativeClassBase
     MaaTaskId get_task_id();
     maajs::ValueType get_tasker();
     maajs::ValueType clone();
+    void set_anchor(std::string anchor_name, std::string node_name);
+    std::optional<std::string> get_anchor(std::string anchor_name);
+    uint32_t get_hit_count(std::string node_name);
+    void clear_hit_count(std::string node_name);
 
     std::string to_string() override;
 

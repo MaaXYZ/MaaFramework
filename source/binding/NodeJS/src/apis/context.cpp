@@ -137,6 +137,41 @@ maajs::ValueType ContextImpl::clone()
     return locate_object(env, MaaContextClone(context));
 }
 
+void ContextImpl::set_anchor(std::string anchor_name, std::string node_name)
+{
+    if (!MaaContextSetAnchor(context, anchor_name.c_str(), node_name.c_str())) {
+        throw maajs::MaaError { "Context set_anchor failed" };
+    }
+}
+
+std::optional<std::string> ContextImpl::get_anchor(std::string anchor_name)
+{
+    StringBuffer buf;
+    if (MaaContextGetAnchor(context, anchor_name.c_str(), buf)) {
+        return buf.str();
+    }
+    else {
+        return std::nullopt;
+    }
+}
+
+uint32_t ContextImpl::get_hit_count(std::string node_name)
+{
+    MaaSize count = 0;
+    if (!MaaContextGetHitCount(context, node_name.c_str(), &count)) {
+        throw maajs::MaaError { "Context get_hit_count failed" };
+    }
+    // uint32应该够了
+    return static_cast<uint32_t>(count);
+}
+
+void ContextImpl::clear_hit_count(std::string node_name)
+{
+    if (!MaaContextClearHitCount(context, node_name.c_str())) {
+        throw maajs::MaaError { "Context clear_hit_count failed" };
+    }
+}
+
 std::string ContextImpl::to_string()
 {
     return std::format(" handle = {:#018x} ", reinterpret_cast<uintptr_t>(context));
@@ -174,6 +209,10 @@ void ContextImpl::init_proto(maajs::ObjectType proto, maajs::FunctionType)
     MAA_BIND_GETTER(proto, "task_id", ContextImpl::get_task_id);
     MAA_BIND_GETTER(proto, "tasker", ContextImpl::get_tasker);
     MAA_BIND_FUNC(proto, "clone", ContextImpl::clone);
+    MAA_BIND_FUNC(proto, "set_anchor", ContextImpl::set_anchor);
+    MAA_BIND_FUNC(proto, "get_anchor", ContextImpl::get_anchor);
+    MAA_BIND_FUNC(proto, "get_hit_count", ContextImpl::get_hit_count);
+    MAA_BIND_FUNC(proto, "clear_hit_count", ContextImpl::clear_hit_count);
 }
 
 maajs::ValueType load_context(maajs::EnvType env)
