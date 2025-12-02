@@ -11,6 +11,14 @@
 
 MAA_TASK_NS_BEGIN
 
+class TaskBase;
+
+struct TaskState
+{
+    std::unordered_map<std::string, unsigned int> hit_count;
+    std::unordered_map<std::string, std::string> anchors;
+};
+
 class Context
     : public MaaContext
     , public std::enable_shared_from_this<Context>
@@ -21,12 +29,12 @@ private:
     };
 
 public:
-    static std::shared_ptr<Context> create(MaaTaskId id, Tasker* tasker);
+    static std::shared_ptr<Context> create(TaskBase* task, Tasker* tasker);
     std::shared_ptr<Context> getptr();
     std::shared_ptr<const Context> getptr() const;
     std::shared_ptr<Context> make_clone() const;
 
-    Context(MaaTaskId id, Tasker* tasker, PrivateArg);
+    Context(TaskBase* task, Tasker* tasker, PrivateArg);
     Context(const Context& other);
     Context(Context&& other) = default;
 
@@ -66,17 +74,18 @@ private:
     bool override_pipeline_once(const json::object& pipeline_override, const MAA_RES_NS::DefaultPipelineMgr& default_mgr);
     bool check_pipeline() const;
 
-    MaaTaskId task_id_ = 0;
+    TaskBase* task_ = nullptr;
     Tasker* tasker_ = nullptr;
 
+    // context level
     PipelineDataMap pipeline_override_;
     std::unordered_map<std::string, cv::Mat> image_override_;
 
+    // task level
+    std::shared_ptr<TaskState> task_state_ = nullptr;
+
 private:
     bool need_to_stop_ = false;
-
-    std::unordered_map<std::string, uint> hit_count_;
-    std::unordered_map<std::string, std::string> anchors_;
 
     mutable std::vector<std::shared_ptr<Context>> clone_holder_;
 };

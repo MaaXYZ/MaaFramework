@@ -9,22 +9,24 @@
 #include "Resource/PipelineChecker.h"
 #include "Resource/PipelineDumper.h"
 #include "Resource/PipelineParser.h"
+#include "TaskBase.h"
 #include "Tasker/Tasker.h"
 
 MAA_TASK_NS_BEGIN
 
-Context::Context(MaaTaskId id, Tasker* tasker, PrivateArg)
-    : task_id_(id)
+Context::Context(TaskBase* task, Tasker* tasker, PrivateArg)
+    : task_(task)
     , tasker_(tasker)
+    , task_state_(std::make_shared<TaskState>())
 {
-    LogDebug << VAR(id) << VAR_VOIDP(tasker);
+    LogDebug << VAR_VOIDP(task) << VAR_VOIDP(tasker);
 }
 
-std::shared_ptr<Context> Context::create(MaaTaskId id, Tasker* tasker)
+std::shared_ptr<Context> Context::create(TaskBase* task, Tasker* tasker)
 {
-    LogDebug << VAR(id) << VAR_VOIDP(tasker);
+    LogDebug << VAR_VOIDP(task) << VAR_VOIDP(tasker);
 
-    return std::make_shared<Context>(id, tasker, PrivateArg {});
+    return std::make_shared<Context>(task, tasker, PrivateArg {});
 }
 
 std::shared_ptr<Context> Context::getptr()
@@ -44,12 +46,11 @@ std::shared_ptr<Context> Context::make_clone() const
 
 Context::Context(const Context& other)
     : std::enable_shared_from_this<Context>(other)
-    , task_id_(other.task_id_)
+    , task_(other.task_)
     , tasker_(other.tasker_)
     , pipeline_override_(other.pipeline_override_)
     , image_override_(other.image_override_)
-    , hit_count_(other.hit_count_)
-    , anchors_(other.anchors_)
+    , task_state_(other.task_state_)
 // don't copy clone_holder_
 {
     LogDebug << VAR(other.getptr());
@@ -220,7 +221,7 @@ std::optional<json::object> Context::get_node_data(const std::string& node_name)
 
 MaaTaskId Context::task_id() const
 {
-    return task_id_;
+    return task_ ? task_->task_id() : MaaInvalidId;
 }
 
 Tasker* Context::tasker() const
@@ -306,8 +307,8 @@ bool& Context::need_to_stop()
 
 uint Context::get_hit_count(const std::string& node_name) const
 {
-    auto it = hit_count_.find(node_name);
-    if (it != hit_count_.end()) {
+    auto it = task_state_->hit_count.find(node_name);
+    if (it != task_state_->hit_count.end()) {
         return it->second;
     }
     return 0;
@@ -315,24 +316,24 @@ uint Context::get_hit_count(const std::string& node_name) const
 
 void Context::increment_hit_count(const std::string& node_name)
 {
-    hit_count_[node_name]++;
+    task_state_->hit_count[node_name]++;
 }
 
 void Context::clear_hit_count(const std::string& node_name)
 {
-    hit_count_.erase(node_name);
+    task_state_->hit_count.erase(node_name);
 }
 
 void Context::set_anchor(const std::string& anchor_name, const std::string& node_name)
 {
     LogDebug << VAR(anchor_name) << VAR(node_name);
-    anchors_[anchor_name] = node_name;
+    task_state_->anchors[anchor_name] = node_name;
 }
 
 std::optional<std::string> Context::get_anchor(const std::string& anchor_name) const
 {
-    auto it = anchors_.find(anchor_name);
-    if (it != anchors_.end()) {
+    auto it = task_state_->anchors.find(anchor_name);
+    if (it != task_state_->anchors.end()) {
         return it->second;
     }
     return std::nullopt;
