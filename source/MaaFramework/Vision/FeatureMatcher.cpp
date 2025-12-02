@@ -43,7 +43,7 @@ void FeatureMatcher::analyze()
 
     auto cost = duration_since(start_time);
     LogDebug << name_ << VAR(uid_) << VAR(all_results_) << VAR(filtered_results_) << VAR(best_result_) << VAR(cost) << VAR(param_.template_)
-             << VAR(templates_.size()) << VAR(param_.green_mask) << VAR(param_.distance_ratio) << VAR(param_.count);
+             << VAR(templates_.size()) << VAR(param_.green_mask) << VAR(param_.ratio) << VAR(param_.count);
 }
 
 FeatureMatcher::ResultsVec
@@ -161,7 +161,7 @@ FeatureMatcher::ResultsVec FeatureMatcher::feature_postproc(
             continue;
         }
 
-        double threshold = param_.distance_ratio * point[1].distance;
+        double threshold = param_.ratio * point[1].distance;
         if (point[0].distance > threshold) {
             continue;
         }
@@ -169,7 +169,7 @@ FeatureMatcher::ResultsVec FeatureMatcher::feature_postproc(
         obj.emplace_back(keypoints_1[point[0].trainIdx].pt);
         scene.emplace_back(keypoints_2[point[0].queryIdx].pt);
     }
-    LogDebug << name_ << VAR(uid_) << "Match:" << VAR(good_matches.size()) << VAR(match_points.size()) << VAR(param_.distance_ratio);
+    LogDebug << name_ << VAR(uid_) << "Match:" << VAR(good_matches.size()) << VAR(match_points.size()) << VAR(param_.ratio);
 
     const std::array<cv::Point2d, 4> obj_corners = {
         cv::Point2d(0, 0),

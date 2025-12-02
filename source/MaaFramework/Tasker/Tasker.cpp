@@ -270,6 +270,10 @@ MaaTaskId Tasker::post_task(TaskPtr task_ptr, const json::value& pipeline_overri
 
 bool Tasker::run_task(RunnerId runner_id, TaskPtr task_ptr)
 {
+    if (!need_to_stop_) {
+        MAA_LOG_NS::Logger::get_instance().flush();
+    }
+
     LogFunc << VAR(runner_id) << VAR(task_ptr);
 
     if (!task_ptr) {
@@ -315,8 +319,6 @@ bool Tasker::run_task(RunnerId runner_id, TaskPtr task_ptr)
     notifier_.notify(this, ret ? MaaMsg_Tasker_Task_Succeeded : MaaMsg_Tasker_Task_Failed, cb_detail);
 
     running_task_ = nullptr;
-
-    MAA_LOG_NS::Logger::get_instance().flush();
 
     return ret;
 }

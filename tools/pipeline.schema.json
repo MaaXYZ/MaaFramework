@@ -2525,7 +2525,7 @@
                     "title": "LongPressKey Property",
                     "description": "要按的键，仅支持对应控制器的虚拟按键码。必选。",
                     "$ref": "#/$defs/jsonInt32OrList",
-                    "markdownDescription": "*int*\n\n要按的键，仅支持对应控制器的虚拟按键码。必选。\n\n- [Adb 控制器](https://developer.android.com/reference/android/view/KeyEvent)\n\n- [Win32 控制器](https://learn.microsoft.com/en-us/windows/win32/inputdev/virtual-key-codes)"
+                    "markdownDescription": "*int* | *list<int, >*\n\n要按的键，仅支持对应控制器的虚拟按键码。必选。\n\n- [Adb 控制器](https://developer.android.com/reference/android/view/KeyEvent)\n\n- [Win32 控制器](https://learn.microsoft.com/en-us/windows/win32/inputdev/virtual-key-codes)"
                 },
                 "duration": {
                     "title": "Duration Property",

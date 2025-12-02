@@ -290,7 +290,7 @@ struct NodeAttr
     bool jump_back = false;
     bool anchor = false;
 
-    MEO_JSONIZATION(name, jump_back, anchor);
+    MEO_JSONIZATION(name, MEO_OPT jump_back, MEO_OPT anchor);
 };
 
 struct PipelineData

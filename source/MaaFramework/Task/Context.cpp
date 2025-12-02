@@ -16,6 +16,7 @@ MAA_TASK_NS_BEGIN
 Context::Context(MaaTaskId id, Tasker* tasker, PrivateArg)
     : task_id_(id)
     , tasker_(tasker)
+    , task_state_(std::make_shared<TaskState>())
 {
     LogDebug << VAR(id) << VAR_VOIDP(tasker);
 }
@@ -48,8 +49,7 @@ Context::Context(const Context& other)
     , tasker_(other.tasker_)
     , pipeline_override_(other.pipeline_override_)
     , image_override_(other.image_override_)
-    , hit_count_(other.hit_count_)
-    , anchors_(other.anchors_)
+    , task_state_(other.task_state_)
 // don't copy clone_holder_
 {
     LogDebug << VAR(other.getptr());
@@ -138,7 +138,7 @@ bool Context::override_pipeline(const json::value& pipeline_override)
         ret = override_pipeline_once(pipeline_override.as_object(), default_mgr);
     }
     else if (pipeline_override.is_array()) {
-        ret = !pipeline_override.empty();
+        ret = true;
         for (const auto& val : pipeline_override.as_array()) {
             if (!val.is_object()) {
                 LogError << "input is not json array of object" << VAR(pipeline_override);
@@ -306,8 +306,8 @@ bool& Context::need_to_stop()
 
 uint Context::get_hit_count(const std::string& node_name) const
 {
-    auto it = hit_count_.find(node_name);
-    if (it != hit_count_.end()) {
+    auto it = task_state_->hit_count.find(node_name);
+    if (it != task_state_->hit_count.end()) {
         return it->second;
     }
     return 0;
@@ -315,24 +315,24 @@ uint Context::get_hit_count(const std::string& node_name) const
 
 void Context::increment_hit_count(const std::string& node_name)
 {
-    hit_count_[node_name]++;
+    task_state_->hit_count[node_name]++;
 }
 
 void Context::clear_hit_count(const std::string& node_name)
 {
-    hit_count_.erase(node_name);
+    task_state_->hit_count.erase(node_name);
 }
 
 void Context::set_anchor(const std::string& anchor_name, const std::string& node_name)
 {
     LogDebug << VAR(anchor_name) << VAR(node_name);
-    anchors_[anchor_name] = node_name;
+    task_state_->anchors[anchor_name] = node_name;
 }
 
 std::optional<std::string> Context::get_anchor(const std::string& anchor_name) const
 {
-    auto it = anchors_.find(anchor_name);
-    if (it != anchors_.end()) {
+    auto it = task_state_->anchors.find(anchor_name);
+    if (it != task_state_->anchors.end()) {
         return it->second;
     }
     return std::nullopt;

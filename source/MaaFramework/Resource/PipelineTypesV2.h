@@ -277,6 +277,7 @@ using JActionParam = std::variant<
     JInputText,
     JStartApp,
     JStopApp,
+    JStopTask,
     JScroll,
     JCommand,
     JCustomAction>;

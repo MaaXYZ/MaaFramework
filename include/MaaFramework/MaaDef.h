@@ -273,6 +273,8 @@ typedef uint64_t MaaWin32InputMethod;
 #define MaaWin32InputMethod_PostMessage (1ULL << 2)
 #define MaaWin32InputMethod_LegacyEvent (1ULL << 3)
 #define MaaWin32InputMethod_PostThreadMessage (1ULL << 4)
+#define MaaWin32InputMethod_SendMessageWithCursorPos (1ULL << 5)
+#define MaaWin32InputMethod_PostMessageWithCursorPos (1ULL << 6)
 
 // MaaDbgControllerType:
 /**

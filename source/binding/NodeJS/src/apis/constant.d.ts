@@ -27,7 +27,13 @@ declare global {
             ScreencapOrInputMethods
         >
         const Win32InputMethod: Record<
-            'Seize' | 'SendMessage' | 'PostMessage' | 'LegacyEvent' | 'PostThreadMessage',
+            | 'Seize'
+            | 'SendMessage'
+            | 'PostMessage'
+            | 'LegacyEvent'
+            | 'PostThreadMessage'
+            | 'SendMessageWithCursorPos'
+            | 'PostMessageWithCursorPos',
             ScreencapOrInputMethods
         >
         const DbgControllerType: Record<'CarouselImage' | 'ReplayRecording', Uint64>

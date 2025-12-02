@@ -111,7 +111,7 @@ json::object PipelineDumper::dump(const PipelineData& pp)
             .index = param.result_index,
             .green_mask = param.green_mask,
             .detector = kDetectorNameMap.at(param.detector),
-            .ratio = param.distance_ratio,
+            .ratio = param.ratio,
         };
     } break;
 
@@ -324,12 +324,25 @@ json::object PipelineDumper::dump(const PipelineData& pp)
         };
     } break;
 
+    case Action::Type::StopTask: {
+        data.action.param = PipelineV2::JStopTask {};
+        break;
+    }
+
     case Action::Type::Command: {
         const auto& param = std::get<Action::CommandParam>(pp.action_param);
         data.action.param = PipelineV2::JCommand {
             .exec = param.exec,
             .args = param.args,
             .detach = param.detach,
+        };
+    } break;
+
+    case Action::Type::Scroll: {
+        const auto& param = std::get<Action::ScrollParam>(pp.action_param);
+        data.action.param = PipelineV2::JScroll {
+            .dx = param.dx,
+            .dy = param.dy,
         };
     } break;
 
