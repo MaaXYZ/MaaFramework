@@ -84,12 +84,8 @@ bool Win32ControlUnitMgr::connect()
         case MaaWin32InputMethod_PostThreadMessage:
             return std::make_shared<PostThreadMessageInput>(hwnd_);
         case MaaWin32InputMethod_SendMessageWithCursorPos:
-            return std::make_shared<MessageInput>(hwnd_, MessageInput::Mode::SendMessage, true, false);
-        case MaaWin32InputMethod_PostMessageWithCursorPos:
-            return std::make_shared<MessageInput>(hwnd_, MessageInput::Mode::PostMessage, true, false);
-        case MaaWin32InputMethod_SendMessageWithCursorPosAndBlockInput:
             return std::make_shared<MessageInput>(hwnd_, MessageInput::Mode::SendMessage, true, true);
-        case MaaWin32InputMethod_PostMessageWithCursorPosAndBlockInput:
+        case MaaWin32InputMethod_PostMessageWithCursorPos:
             return std::make_shared<MessageInput>(hwnd_, MessageInput::Mode::PostMessage, true, true);
         default:
             LogError << "Unknown input method: " << static_cast<int>(method);
