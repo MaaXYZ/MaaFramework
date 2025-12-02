@@ -15,7 +15,6 @@ class MessageInput : public InputBase
 public:
     enum class Mode
     {
-        Invalid,
         SendMessage,
         PostMessage,
     };
@@ -60,7 +59,7 @@ private:
     void set_cursor_to_client_pos(int x, int y);
 
     const HWND hwnd_ = nullptr;
-    const Mode mode_ = Mode::Invalid;
+    const Mode mode_ = Mode::SendMessage;
     const bool with_cursor_pos_ = false;
     const bool block_input_ = false;
 
