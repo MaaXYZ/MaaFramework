@@ -258,15 +258,24 @@ bool MessageInput::scroll(int dx, int dy)
 
     ensure_foreground();
 
-    // RAII guards for BlockInput and cursor position
+    // RAII guard for BlockInput
     BlockInputGuard block_guard(block_input_);
-    ScopedCursorPosition cursor_guard(hwnd_, with_cursor_pos_, last_pos_.first, last_pos_.second);
+
+    if (with_cursor_pos_) {
+        // 保存当前光标位置
+        save_cursor_pos();
+        // 移动光标到上次记录的位置
+        set_cursor_to_client_pos(last_pos_.first, last_pos_.second);
+    }
 
     std::this_thread::sleep_for(std::chrono::milliseconds(10));
 
     if (dy != 0) {
         WPARAM wParam = MAKEWPARAM(0, static_cast<short>(dy));
         if (!send_or_post_w(WM_MOUSEWHEEL, wParam, MAKELPARAM(last_pos_.first, last_pos_.second))) {
+            if (with_cursor_pos_) {
+                restore_cursor_pos();
+            }
             return false;
         }
     }
@@ -274,8 +283,17 @@ bool MessageInput::scroll(int dx, int dy)
     if (dx != 0) {
         WPARAM wParam = MAKEWPARAM(0, static_cast<short>(dx));
         if (!send_or_post_w(WM_MOUSEHWHEEL, wParam, MAKELPARAM(last_pos_.first, last_pos_.second))) {
+            if (with_cursor_pos_) {
+                restore_cursor_pos();
+            }
             return false;
         }
+    }
+
+    if (with_cursor_pos_) {
+        std::this_thread::sleep_for(std::chrono::milliseconds(10));
+        // 恢复光标位置
+        restore_cursor_pos();
     }
 
     return true;

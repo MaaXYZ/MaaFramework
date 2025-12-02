@@ -91,39 +91,6 @@ private:
     private:
         const bool should_block_ = false;
     };
-
-    // RAII helper for cursor position management (for scroll operations)
-    class ScopedCursorPosition : public NonCopyable
-    {
-    public:
-        ScopedCursorPosition(HWND hwnd, bool should_manage, int client_x, int client_y)
-            : should_manage_(should_manage)
-        {
-            if (should_manage_) {
-                // 保存当前光标位置
-                GetCursorPos(&saved_pos_);
-
-                // 移动光标到目标位置（客户区坐标转屏幕坐标）
-                POINT screen_pos = { client_x, client_y };
-                if (hwnd) {
-                    ClientToScreen(hwnd, &screen_pos);
-                }
-                SetCursorPos(screen_pos.x, screen_pos.y);
-            }
-        }
-
-        ~ScopedCursorPosition()
-        {
-            if (should_manage_) {
-                // 恢复光标位置
-                SetCursorPos(saved_pos_.x, saved_pos_.y);
-            }
-        }
-
-    private:
-        const bool should_manage_ = false;
-        POINT saved_pos_ = { 0, 0 };
-    };
 };
 
 MAA_CTRL_UNIT_NS_END
