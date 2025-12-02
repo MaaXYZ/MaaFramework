@@ -617,7 +617,7 @@ class Controller:
             MaaActId,
             MaaStringBufferHandle,
             MaaStringBufferHandle,
-            ctypes.POINTER(MaaRect),
+            MaaRectHandle,
             ctypes.POINTER(MaaBool),
             MaaStringBufferHandle,
         ]

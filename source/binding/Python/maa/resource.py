@@ -737,7 +737,7 @@ class Resource:
             MaaStringBufferHandle,
             MaaStringBufferHandle,
             ctypes.POINTER(MaaBool),
-            ctypes.POINTER(MaaRect),
+            MaaRectHandle,
             MaaStringBufferHandle,
             MaaImageBufferHandle,
             MaaImageListBufferHandle,
