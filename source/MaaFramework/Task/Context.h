@@ -11,6 +11,12 @@
 
 MAA_TASK_NS_BEGIN
 
+struct TaskState
+{
+    std::unordered_map<std::string, unsigned int> hit_count;
+    std::unordered_map<std::string, std::string> anchors;
+};
+
 class Context
     : public MaaContext
     , public std::enable_shared_from_this<Context>
@@ -69,14 +75,15 @@ private:
     MaaTaskId task_id_ = 0;
     Tasker* tasker_ = nullptr;
 
+    // context level
     PipelineDataMap pipeline_override_;
     std::unordered_map<std::string, cv::Mat> image_override_;
 
+    // task level
+    std::shared_ptr<TaskState> task_state_ = nullptr;
+
 private:
     bool need_to_stop_ = false;
-
-    std::unordered_map<std::string, uint> hit_count_;
-    std::unordered_map<std::string, std::string> anchors_;
 
     mutable std::vector<std::shared_ptr<Context>> clone_holder_;
 };
