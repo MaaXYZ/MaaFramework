@@ -342,43 +342,43 @@ std::optional<maajs::ValueType> ResourceImpl::get_recognition_detail(MaaRecoId r
     }
 
     auto obj = maajs::ObjectType::New(env);
-    obj.Set("node_name", node_name_buf.str());
-    obj.Set("algorithm", algorithm_buf.str());
-    obj.Set("hit", static_cast<bool>(hit));
+    obj["node_name"] = maajs::StringType::New(env, node_name_buf.str());
+    obj["algorithm"] = maajs::StringType::New(env, algorithm_buf.str());
+    obj["hit"] = maajs::BooleanType::New(env, static_cast<bool>(hit));
 
     auto box_obj = maajs::ObjectType::New(env);
-    box_obj.Set("x", box.x);
-    box_obj.Set("y", box.y);
-    box_obj.Set("width", box.width);
-    box_obj.Set("height", box.height);
-    obj.Set("box", box_obj);
+    box_obj["x"] = maajs::NumberType::New(env, box.x);
+    box_obj["y"] = maajs::NumberType::New(env, box.y);
+    box_obj["width"] = maajs::NumberType::New(env, box.width);
+    box_obj["height"] = maajs::NumberType::New(env, box.height);
+    obj["box"] = box_obj;
 
     auto detail_str = detail_json_buf.str();
     if (!detail_str.empty()) {
-        obj.Set("detail", maajs::JsonParse(env, detail_str));
+        obj["detail"] = maajs::JsonParse(env, detail_str);
     }
     else {
-        obj.Set("detail", env.Null());
+        obj["detail"] = env.Null();
     }
 
     if (raw_buf.size() > 0) {
-        obj.Set("raw", raw_buf.data(env));
+        obj["raw"] = raw_buf.data(env);
     }
     else {
-        obj.Set("raw", env.Null());
+        obj["raw"] = env.Null();
     }
 
     auto draws_size = draws_buf.size();
     if (draws_size > 0) {
-        auto draws_arr = maajs::ArrayType::New(env, draws_size);
+        std::vector<maajs::ValueType> draws_vec;
         for (size_t i = 0; i < draws_size; i++) {
             auto draw = draws_buf.at(i);
-            draws_arr.Set(static_cast<uint32_t>(i), draw.data(env));
+            draws_vec.push_back(draw.data(env));
         }
-        obj.Set("draws", draws_arr);
+        obj["draws"] = maajs::MakeArray(env, draws_vec);
     }
     else {
-        obj.Set("draws", env.Null());
+        obj["draws"] = env.Null();
     }
 
     return obj;

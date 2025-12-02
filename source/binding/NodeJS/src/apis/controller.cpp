@@ -262,24 +262,24 @@ std::optional<maajs::ValueType> ControllerImpl::get_action_detail(MaaActId actio
     }
 
     auto obj = maajs::ObjectType::New(env);
-    obj.Set("node_name", node_name_buf.str());
-    obj.Set("action", action_buf.str());
+    obj["node_name"] = maajs::StringType::New(env, node_name_buf.str());
+    obj["action"] = maajs::StringType::New(env, action_buf.str());
 
     auto box_obj = maajs::ObjectType::New(env);
-    box_obj.Set("x", box.x);
-    box_obj.Set("y", box.y);
-    box_obj.Set("width", box.width);
-    box_obj.Set("height", box.height);
-    obj.Set("box", box_obj);
+    box_obj["x"] = maajs::NumberType::New(env, box.x);
+    box_obj["y"] = maajs::NumberType::New(env, box.y);
+    box_obj["width"] = maajs::NumberType::New(env, box.width);
+    box_obj["height"] = maajs::NumberType::New(env, box.height);
+    obj["box"] = box_obj;
 
-    obj.Set("success", static_cast<bool>(success));
+    obj["success"] = maajs::BooleanType::New(env, static_cast<bool>(success));
 
     auto detail_str = detail_json_buf.str();
     if (!detail_str.empty()) {
-        obj.Set("detail", maajs::JsonParse(env, detail_str));
+        obj["detail"] = maajs::JsonParse(env, detail_str);
     }
     else {
-        obj.Set("detail", env.Null());
+        obj["detail"] = env.Null();
     }
 
     return obj;
