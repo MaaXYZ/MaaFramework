@@ -361,7 +361,7 @@ std::optional<maajs::ValueType> ResourceImpl::get_recognition_detail(MaaRecoId r
         obj["detail"] = env.Null();
     }
 
-    if (raw_buf.size() > 0) {
+    if (MaaImageBufferGetEncodedSize(raw_buf) > 0) {
         obj["raw"] = raw_buf.data(env);
     }
     else {
