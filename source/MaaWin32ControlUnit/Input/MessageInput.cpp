@@ -9,36 +9,29 @@
 
 MAA_CTRL_UNIT_NS_BEGIN
 
-MessageInput::~MessageInput()
-{
-    if (block_input_) {
-        BlockInput(FALSE);
-    }
-}
-
 void MessageInput::ensure_foreground()
 {
     ::MaaNS::CtrlUnitNs::ensure_foreground(hwnd_);
 }
 
-void MessageInput::send_or_post(UINT message, WPARAM wParam, LPARAM lParam)
+bool MessageInput::send_or_post_w(UINT message, WPARAM wParam, LPARAM lParam)
 {
-    if (mode_ == Mode::PostMessage) {
-        PostMessage(hwnd_, message, wParam, lParam);
-    }
-    else {
-        SendMessage(hwnd_, message, wParam, lParam);
-    }
-}
+    bool success = false;
 
-void MessageInput::send_or_post_w(UINT message, WPARAM wParam, LPARAM lParam)
-{
     if (mode_ == Mode::PostMessage) {
-        PostMessageW(hwnd_, message, wParam, lParam);
+        success = PostMessageW(hwnd_, message, wParam, lParam) != 0;
     }
     else {
         SendMessageW(hwnd_, message, wParam, lParam);
+        success = true; // SendMessage 总是返回，除非窗口句柄无效
     }
+
+    if (!success) {
+        DWORD error = GetLastError();
+        LogError << "Failed to" << mode_ << VAR(message) << VAR(wParam) << VAR(lParam) << VAR(error);
+    }
+
+    return success;
 }
 
 POINT MessageInput::client_to_screen(int x, int y)
@@ -100,37 +93,16 @@ bool MessageInput::touch_down(int contact, int x, int y, int pressure)
 
     ensure_foreground();
 
-    if (block_input_) {
-        BlockInput(TRUE);
-    }
+    // RAII guard for BlockInput
+    BlockInputGuard block_guard(block_input_);
 
+    // 如果需要管理光标位置，保存当前位置并移动到目标位置
     if (with_cursor_pos_) {
-        // 保存当前光标位置
         save_cursor_pos();
-        // 移动光标到目标位置
         set_cursor_to_client_pos(x, y);
     }
 
-    // touch_move will use send_or_post and handle logic
-    // but we call touch_move implementation logic directly or just use the code here?
-    // touch_move in this class also checks flags? Yes.
-    // However, existing code calls touch_move(contact, x, y, pressure) inside touch_down.
-    // If I call touch_move here, it might re-set cursor pos.
-    // In PostMessageInput:
-    /*
-    touch_move(contact, x, y, pressure);
-    std::this_thread::sleep_for(std::chrono::milliseconds(10));
-    ...
-    */
-    // Let's replicate logic but be careful about double actions.
-    // For MessageInput, touch_move just sends message.
-    // For WithCursorPos, touch_move also sets cursor.
-    // Setting cursor twice is fine.
-
-    // But wait, in PostMessageInput::touch_down, it calls touch_move FIRST, then sleeps, then sends DOWN message.
-    // touch_move sends MOVE message.
-    // So order is: MOVE -> SLEEP -> DOWN.
-
+    // 先发送 MOVE 消息
     touch_move(contact, x, y, pressure);
 
     std::this_thread::sleep_for(std::chrono::milliseconds(10));
@@ -138,16 +110,21 @@ bool MessageInput::touch_down(int contact, int x, int y, int pressure)
     MouseMessageInfo msg_info;
     if (!contact_to_mouse_down_message(contact, msg_info)) {
         LogError << "contact out of range" << VAR(contact);
+        // 错误时恢复光标位置
         if (with_cursor_pos_) {
             restore_cursor_pos();
-        }
-        if (block_input_) {
-            BlockInput(FALSE);
         }
         return false;
     }
 
-    send_or_post(msg_info.message, msg_info.w_param, MAKELPARAM(x, y));
+    if (!send_or_post_w(msg_info.message, msg_info.w_param, MAKELPARAM(x, y))) {
+        // 错误时恢复光标位置
+        if (with_cursor_pos_) {
+            restore_cursor_pos();
+        }
+        return false;
+    }
+
     last_pos_ = { x, y };
 
     return true;
@@ -175,7 +152,10 @@ bool MessageInput::touch_move(int contact, int x, int y, int pressure)
         return false;
     }
 
-    send_or_post(msg_info.message, msg_info.w_param, MAKELPARAM(x, y));
+    if (!send_or_post_w(msg_info.message, msg_info.w_param, MAKELPARAM(x, y))) {
+        return false;
+    }
+
     last_pos_ = { x, y };
 
     return true;
@@ -192,22 +172,23 @@ bool MessageInput::touch_up(int contact)
 
     ensure_foreground();
 
+    // RAII guard for BlockInput
+    BlockInputGuard block_guard(block_input_);
+
     MouseMessageInfo msg_info;
     if (!contact_to_mouse_up_message(contact, msg_info)) {
         LogError << "contact out of range" << VAR(contact);
         return false;
     }
 
-    send_or_post(msg_info.message, msg_info.w_param, MAKELPARAM(last_pos_.first, last_pos_.second));
-
-    if (with_cursor_pos_) {
-        // 恢复光标位置
-        std::this_thread::sleep_for(std::chrono::milliseconds(10));
-        restore_cursor_pos();
+    if (!send_or_post_w(msg_info.message, msg_info.w_param, MAKELPARAM(last_pos_.first, last_pos_.second))) {
+        return false;
     }
 
-    if (block_input_) {
-        BlockInput(FALSE);
+    // touch_up 时恢复光标位置（与 touch_down 配对）
+    if (with_cursor_pos_) {
+        std::this_thread::sleep_for(std::chrono::milliseconds(10));
+        restore_cursor_pos();
     }
 
     return true;
@@ -232,7 +213,9 @@ bool MessageInput::input_text(const std::string& text)
 
     // 文本输入仅发送 WM_CHAR
     for (const auto ch : to_u16(text)) {
-        send_or_post_w(WM_CHAR, static_cast<WPARAM>(ch), 0);
+        if (!send_or_post_w(WM_CHAR, static_cast<WPARAM>(ch), 0)) {
+            return false;
+        }
         std::this_thread::sleep_for(std::chrono::milliseconds(10));
     }
     return true;
@@ -248,8 +231,7 @@ bool MessageInput::key_down(int key)
     ensure_foreground();
 
     LPARAM lParam = make_keydown_lparam(key);
-    send_or_post_w(WM_KEYDOWN, static_cast<WPARAM>(key), lParam);
-    return true;
+    return send_or_post_w(WM_KEYDOWN, static_cast<WPARAM>(key), lParam);
 }
 
 bool MessageInput::key_up(int key)
@@ -262,8 +244,7 @@ bool MessageInput::key_up(int key)
     ensure_foreground();
 
     LPARAM lParam = make_keyup_lparam(key);
-    send_or_post_w(WM_KEYUP, static_cast<WPARAM>(key), lParam);
-    return true;
+    return send_or_post_w(WM_KEYUP, static_cast<WPARAM>(key), lParam);
 }
 
 bool MessageInput::scroll(int dx, int dy)
@@ -277,37 +258,24 @@ bool MessageInput::scroll(int dx, int dy)
 
     ensure_foreground();
 
-    if (block_input_) {
-        BlockInput(TRUE);
-    }
-
-    if (with_cursor_pos_) {
-        // 保存当前光标位置
-        save_cursor_pos();
-        // 移动光标到上次记录的位置
-        set_cursor_to_client_pos(last_pos_.first, last_pos_.second);
-    }
+    // RAII guards for BlockInput and cursor position
+    BlockInputGuard block_guard(block_input_);
+    ScopedCursorPosition cursor_guard(hwnd_, with_cursor_pos_, last_pos_.first, last_pos_.second);
 
     std::this_thread::sleep_for(std::chrono::milliseconds(10));
 
     if (dy != 0) {
         WPARAM wParam = MAKEWPARAM(0, static_cast<short>(dy));
-        send_or_post(WM_MOUSEWHEEL, wParam, MAKELPARAM(last_pos_.first, last_pos_.second));
+        if (!send_or_post_w(WM_MOUSEWHEEL, wParam, MAKELPARAM(last_pos_.first, last_pos_.second))) {
+            return false;
+        }
     }
 
     if (dx != 0) {
         WPARAM wParam = MAKEWPARAM(0, static_cast<short>(dx));
-        send_or_post(WM_MOUSEHWHEEL, wParam, MAKELPARAM(last_pos_.first, last_pos_.second));
-    }
-
-    if (with_cursor_pos_) {
-        std::this_thread::sleep_for(std::chrono::milliseconds(10));
-        // 恢复光标位置
-        restore_cursor_pos();
-    }
-
-    if (block_input_) {
-        BlockInput(FALSE);
+        if (!send_or_post_w(WM_MOUSEHWHEEL, wParam, MAKELPARAM(last_pos_.first, last_pos_.second))) {
+            return false;
+        }
     }
 
     return true;
