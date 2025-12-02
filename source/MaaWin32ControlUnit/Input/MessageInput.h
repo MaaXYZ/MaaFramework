@@ -3,7 +3,6 @@
 #include "ControlUnit/ControlUnitAPI.h"
 
 #include "Base/UnitBase.h"
-#include "MaaUtils/NonCopyable.hpp"
 #include "MaaUtils/SafeWindows.hpp"
 
 #include "Common/Conf.h"
@@ -27,7 +26,7 @@ public:
     {
     }
 
-    virtual ~MessageInput() override = default;
+    virtual ~MessageInput() override;
 
 public: // from InputBase
     virtual MaaControllerFeature get_features() const override;
@@ -66,30 +65,6 @@ private:
     std::pair<int, int> last_pos_;
     POINT saved_cursor_pos_ = { 0, 0 };
     bool cursor_pos_saved_ = false;
-
-private:
-    // RAII helper for BlockInput
-    class BlockInputGuard : public NonCopyable
-    {
-    public:
-        explicit BlockInputGuard(bool should_block)
-            : should_block_(should_block)
-        {
-            if (should_block_) {
-                BlockInput(TRUE);
-            }
-        }
-
-        ~BlockInputGuard()
-        {
-            if (should_block_) {
-                BlockInput(FALSE);
-            }
-        }
-
-    private:
-        const bool should_block_ = false;
-    };
 };
 
 MAA_CTRL_UNIT_NS_END

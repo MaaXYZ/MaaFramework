@@ -9,6 +9,13 @@
 
 MAA_CTRL_UNIT_NS_BEGIN
 
+MessageInput::~MessageInput()
+{
+    if (block_input_) {
+        BlockInput(FALSE);
+    }
+}
+
 void MessageInput::ensure_foreground()
 {
     ::MaaNS::CtrlUnitNs::ensure_foreground(hwnd_);
@@ -93,8 +100,9 @@ bool MessageInput::touch_down(int contact, int x, int y, int pressure)
 
     ensure_foreground();
 
-    // RAII guard for BlockInput
-    BlockInputGuard block_guard(block_input_);
+    if (block_input_) {
+        BlockInput(TRUE);
+    }
 
     // 如果需要管理光标位置，保存当前位置并移动到目标位置
     if (with_cursor_pos_) {
@@ -172,8 +180,11 @@ bool MessageInput::touch_up(int contact)
 
     ensure_foreground();
 
-    // RAII guard for BlockInput
-    BlockInputGuard block_guard(block_input_);
+    OnScopeLeave([this]() {
+        if (block_input_) {
+            BlockInput(FALSE);
+        }
+    });
 
     MouseMessageInfo msg_info;
     if (!contact_to_mouse_up_message(contact, msg_info)) {
@@ -258,8 +269,15 @@ bool MessageInput::scroll(int dx, int dy)
 
     ensure_foreground();
 
-    // RAII guard for BlockInput
-    BlockInputGuard block_guard(block_input_);
+    if (block_input_) {
+        BlockInput(TRUE);
+    }
+
+    OnScopeLeave([this]() {
+        if (block_input_) {
+            BlockInput(FALSE);
+        }
+    });
 
     if (with_cursor_pos_) {
         // 保存当前光标位置
