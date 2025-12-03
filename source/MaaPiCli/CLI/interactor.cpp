@@ -621,20 +621,31 @@ void Interactor::add_task()
                 }
                 std::string case0_name = get_display_name(opt.cases[0].name, opt.cases[0].label);
                 std::string case1_name = get_display_name(opt.cases[1].name, opt.cases[1].label);
-                std::cout << "\t1. " << MAA_NS::utf8_to_crt(case0_name) << "\n";
-                std::cout << "\t2. " << MAA_NS::utf8_to_crt(case1_name) << "\n";
+                std::cout << "\t" << MAA_NS::utf8_to_crt(case0_name) << "\n";
+                std::cout << "\t" << MAA_NS::utf8_to_crt(case1_name) << "\n";
                 std::cout << "\nInput Y/N [Y]: ";
 
                 std::cin.sync();
                 std::string buffer;
                 std::getline(std::cin, buffer);
 
-                if (buffer.empty() || buffer == "Y" || buffer == "y" || buffer == "yes" || buffer == "Yes") {
-                    config_opt.value = opt.cases[0].name;
-                }
-                else {
-                    config_opt.value = opt.cases[1].name;
-                }
+                static const std::unordered_set<std::string> yes_names = { "Yes", "yes", "Y", "y" };
+                bool is_yes = yes_names.contains(buffer);
+
+                // 查找匹配 Yes/No 的 case
+                auto find_case = [&](bool find_yes) -> const std::string& {
+                    for (const auto& case_item : opt.cases) {
+                        bool is_yes_case = yes_names.contains(case_item.name);
+                        if (find_yes == is_yes_case) {
+                            return case_item.name;
+                        }
+                    }
+                    // fallback: 如果没找到匹配的，使用原来的逻辑
+                    LogWarn << "No matching Yes/No case found, using fallback" << VAR(find_yes);
+                    return find_yes ? opt.cases[0].name : opt.cases[1].name;
+                };
+
+                config_opt.value = find_case(is_yes);
                 std::cout << "\n";
             } break;
 
