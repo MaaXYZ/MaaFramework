@@ -50,7 +50,7 @@ std::optional<InterfaceData> Parser::parse_interface(const json::value& json)
     // check controller type
     for (auto& ctrl : data.controller) {
         if (ctrl.type == InterfaceData::Controller::Type::Invalid) {
-            LogError << "Invalid Controller Type";
+            LogError << "Invalid Controller Type" << VAR(ctrl.type);
             return std::nullopt;
         }
     }

@@ -134,7 +134,7 @@ std::optional<RuntimeParam> Configurator::generate_runtime() const
     } break;
 
     default: {
-        LogError << "Unknown controller type";
+        LogError << "Unknown controller type" << VAR(controller.type);
         return std::nullopt;
     }
     }

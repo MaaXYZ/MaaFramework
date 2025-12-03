@@ -194,7 +194,7 @@ void Interactor::print_config() const
         }
         break;
     default:
-        LogError << "Unknown controller type";
+        LogError << "Unknown controller type" << VAR(config_.configuration().controller.type);
         break;
     }
 
@@ -311,7 +311,7 @@ void Interactor::select_controller()
         select_win32_hwnd(controller.win32);
         break;
     default:
-        LogError << "Unknown controller type";
+        LogError << "Unknown controller type" << VAR(controller.type);
         break;
     }
 }
