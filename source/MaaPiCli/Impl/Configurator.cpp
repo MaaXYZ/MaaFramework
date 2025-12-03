@@ -287,8 +287,8 @@ void Configurator::load_translations()
     // 2. 语言前缀匹配 (例如 zh_cn 匹配 zh)
     else if (auto pos = sys_lang.find('_'); pos != std::string::npos) {
         std::string lang_prefix = sys_lang.substr(0, pos);
-        if (auto it = data_.languages.find(lang_prefix); it != data_.languages.end()) {
-            translation_file = it->second;
+        if (auto prefix_it = data_.languages.find(lang_prefix); prefix_it != data_.languages.end()) {
+            translation_file = prefix_it->second;
         }
     }
     // 3. 尝试匹配任何以系统语言开头的语言
