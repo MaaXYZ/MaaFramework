@@ -137,6 +137,7 @@ struct InterfaceData
     };
 
     int interface_version = 2;
+    std::unordered_map<std::string, std::string> languages; // 语言代码 -> 翻译文件路径
     std::string name;
     std::string label;
     std::string title;
@@ -155,6 +156,7 @@ struct InterfaceData
 
     MEO_JSONIZATION(
         interface_version,
+        MEO_OPT languages,
         MEO_OPT name,
         MEO_OPT label,
         MEO_OPT title,

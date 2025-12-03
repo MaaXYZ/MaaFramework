@@ -33,6 +33,10 @@ bool Configurator::load(const std::filesystem::path& resource_dir, const std::fi
     }
 
     resource_dir_ = resource_dir;
+
+    // 加载翻译文件
+    load_translations();
+
     return true;
 }
 
@@ -226,6 +230,126 @@ std::optional<RuntimeParam::Task> Configurator::generate_runtime_task(const Conf
     }
 
     return runtime_task;
+}
+
+std::string Configurator::detect_system_language() const
+{
+    // 尝试获取系统语言
+    std::string lang;
+
+#ifdef _WIN32
+    // Windows: 使用 GetUserDefaultLocaleName
+    wchar_t locale_name[LOCALE_NAME_MAX_LENGTH];
+    if (GetUserDefaultLocaleName(locale_name, LOCALE_NAME_MAX_LENGTH) > 0) {
+        lang = MaaNS::from_u16(locale_name);
+    }
+#else
+    // Unix-like: 使用环境变量
+    if (const char* lc_all = std::getenv("LC_ALL"); lc_all && *lc_all) {
+        lang = lc_all;
+    }
+    else if (const char* lc_messages = std::getenv("LC_MESSAGES"); lc_messages && *lc_messages) {
+        lang = lc_messages;
+    }
+    else if (const char* language = std::getenv("LANG"); language && *language) {
+        lang = language;
+    }
+#endif
+
+    // 转换为小写并替换 - 为 _
+    std::transform(lang.begin(), lang.end(), lang.begin(), [](unsigned char c) { return std::tolower(c); });
+    std::replace(lang.begin(), lang.end(), '-', '_');
+
+    // 提取语言代码 (例如 zh_cn.utf-8 -> zh_cn)
+    if (auto pos = lang.find('.'); pos != std::string::npos) {
+        lang = lang.substr(0, pos);
+    }
+
+    return lang;
+}
+
+void Configurator::load_translations()
+{
+    if (data_.languages.empty()) {
+        return;
+    }
+
+    std::string sys_lang = detect_system_language();
+    LogInfo << "System language:" << sys_lang;
+
+    // 查找匹配的语言文件
+    std::string translation_file;
+
+    // 1. 精确匹配 (例如 zh_cn)
+    if (auto it = data_.languages.find(sys_lang); it != data_.languages.end()) {
+        translation_file = it->second;
+    }
+    // 2. 语言前缀匹配 (例如 zh_cn 匹配 zh)
+    else if (auto pos = sys_lang.find('_'); pos != std::string::npos) {
+        std::string lang_prefix = sys_lang.substr(0, pos);
+        if (auto it = data_.languages.find(lang_prefix); it != data_.languages.end()) {
+            translation_file = it->second;
+        }
+    }
+    // 3. 尝试匹配任何以系统语言开头的语言
+    if (translation_file.empty()) {
+        for (const auto& [lang_code, file] : data_.languages) {
+            if (lang_code.starts_with(sys_lang.substr(0, 2))) {
+                translation_file = file;
+                break;
+            }
+        }
+    }
+
+    if (translation_file.empty()) {
+        LogInfo << "No matching translation file found for language:" << sys_lang;
+        return;
+    }
+
+    // 加载翻译文件
+    auto translation_path = resource_dir_ / translation_file;
+    LogInfo << "Loading translation file:" << translation_path;
+
+    std::ifstream ifs(translation_path);
+    if (!ifs.is_open()) {
+        LogWarn << "Failed to open translation file:" << translation_path;
+        return;
+    }
+
+    std::stringstream buffer;
+    buffer << ifs.rdbuf();
+    auto json_opt = json::parse(buffer.str());
+    if (!json_opt || !json_opt->is_object()) {
+        LogWarn << "Failed to parse translation file:" << translation_path;
+        return;
+    }
+
+    for (const auto& [key, value] : json_opt->as_object()) {
+        if (value.is_string()) {
+            translations_[key] = value.as_string();
+        }
+    }
+
+    LogInfo << "Loaded" << translations_.size() << "translations";
+}
+
+std::string Configurator::translate(const std::string& text) const
+{
+    if (text.empty()) {
+        return text;
+    }
+
+    // 如果文本以 $ 开头，则从翻译表中查找
+    if (text[0] == '$') {
+        std::string key = text.substr(1); // 去掉 $ 前缀
+        if (auto it = translations_.find(key); it != translations_.end()) {
+            return it->second;
+        }
+        // 如果没找到翻译，返回去掉 $ 的原文
+        return key;
+    }
+
+    return text;
 }
 
 MAA_PROJECT_INTERFACE_NS_END
