@@ -52,7 +52,7 @@ jobs:
                     version=${tag#v}+${commit_hash}.$(date +%Y%m%d)
                   fi
 
-                  build_config="Release"
+                  build_config="RelWithDebInfo"
 
                   echo "tag=$tag
                   version=$version
