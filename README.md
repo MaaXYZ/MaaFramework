@@ -145,6 +145,9 @@ _✨ 基于图像识别的自动化黑盒测试框架 ✨_
 
 - [MBCCtools](https://github.com/quietlysnow/MBCCtools) ![Pipeline](https://img.shields.io/badge/Pipeline-%23876f69?logo=paddypower&logoColor=%23FFFFFF) ![license](https://img.shields.io/github/license/quietlysnow/MBCCtools) ![activity](https://img.shields.io/github/commit-activity/m/quietlysnow/MBCCtools?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/quietlysnow/MBCCtools?style=social)  
   无期迷途 小助手。图像技术 + 模拟控制，解放双手！由 MaaFramework 强力驱动！
+
+- [MaaEOV](https://github.com/Tigerisu/MaaEOV) ![Pipeline](https://img.shields.io/badge/Pipeline-%23876f69?logo=paddypower&logoColor=%23FFFFFF) ![license](https://img.shields.io/github/license/Tigerisu/MaaEOV) ![activity](https://img.shields.io/github/commit-activity/m/Tigerisu/MaaEOV?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/Tigerisu/MaaEOV?style=social)  
+  异象回声 小助手。图像技术 + 模拟控制，解放双手！由 MaaFramework 强力驱动！
   
 ## 生态共建
 

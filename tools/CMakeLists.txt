@@ -6,5 +6,4 @@ install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/pipeline.schema.json DESTINATION tools
 install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/custom.action.schema.json DESTINATION tools)
 install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/custom.recognition.schema.json DESTINATION tools)
 install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/interface.schema.json DESTINATION tools)
-install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/interface_v2.schema.json DESTINATION tools)
 install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/interface_config.schema.json DESTINATION tools)

@@ -28,10 +28,10 @@ declare global {
             get task_id(): TaskId
             get tasker(): Tasker
             clone(): Context
-            set_anchor(anchor_name: string, node_name: string): boolean
+            set_anchor(anchor_name: string, node_name: string): void
             get_anchor(anchor_name: string): string | null
             get_hit_count(node_name: string): number
-            clear_hit_count(node_name: string): boolean
+            clear_hit_count(node_name: string): void
         }
     }
 }
