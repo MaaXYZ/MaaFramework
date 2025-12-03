@@ -33,7 +33,8 @@ private:
     void move_task();
 
     // Process option and its nested sub-options recursively
-    void process_option(
+    // Returns false if option processing failed (e.g., option not found, invalid configuration)
+    bool process_option(
         const std::string& option_name,
         const std::string& task_display_name,
         std::vector<MAA_PROJECT_INTERFACE_NS::Configuration::Option>& config_options);

@@ -607,11 +607,18 @@ void Interactor::add_task()
         std::string task_display_name = get_display_name(data_task.name, data_task.label);
 
         std::vector<Configuration::Option> config_options;
+        bool all_options_ok = true;
         for (const auto& option_name : data_task.option) {
-            process_option(option_name, task_display_name, config_options);
+            if (!process_option(option_name, task_display_name, config_options)) {
+                LogWarn << "Failed to process option, skipping task" << VAR(data_task.name) << VAR(option_name);
+                all_options_ok = false;
+                break;
+            }
         }
 
-        config_.configuration().task.emplace_back(Configuration::Task { .name = data_task.name, .option = std::move(config_options) });
+        if (all_options_ok) {
+            config_.configuration().task.emplace_back(Configuration::Task { .name = data_task.name, .option = std::move(config_options) });
+        }
     }
 }
 
@@ -637,12 +644,19 @@ void Interactor::add_default_tasks()
 
         // Process options for this task
         std::vector<Configuration::Option> config_options;
+        bool all_options_ok = true;
         for (const auto& option_name : task.option) {
-            process_option(option_name, task_display_name, config_options);
+            if (!process_option(option_name, task_display_name, config_options)) {
+                LogWarn << "Failed to process option for default task, skipping" << VAR(task.name) << VAR(option_name);
+                all_options_ok = false;
+                break;
+            }
         }
 
-        config_.configuration().task.emplace_back(Configuration::Task { .name = task.name, .option = std::move(config_options) });
-        std::cout << "Auto-added default task: " << MAA_NS::utf8_to_crt(task_display_name) << "\n";
+        if (all_options_ok) {
+            config_.configuration().task.emplace_back(Configuration::Task { .name = task.name, .option = std::move(config_options) });
+            std::cout << "Auto-added default task: " << MAA_NS::utf8_to_crt(task_display_name) << "\n";
+        }
     }
 
     if (!config_.configuration().task.empty()) {
@@ -650,7 +664,7 @@ void Interactor::add_default_tasks()
     }
 }
 
-void Interactor::process_option(
+bool Interactor::process_option(
     const std::string& option_name,
     const std::string& task_display_name,
     std::vector<MAA_PROJECT_INTERFACE_NS::Configuration::Option>& config_options)
@@ -659,7 +673,7 @@ void Interactor::process_option(
 
     if (!config_.interface_data().option.contains(option_name)) {
         LogError << "Option not found" << VAR(option_name);
-        return;
+        return false;
     }
 
     const auto& opt = config_.interface_data().option.at(option_name);
@@ -707,6 +721,11 @@ void Interactor::process_option(
     } break;
 
     case InterfaceData::Option::Type::Switch: {
+        // Switch 类型必须有恰好两个 cases
+        if (opt.cases.size() < 2) {
+            LogError << "Switch option must have at least 2 cases" << VAR(option_name) << VAR(opt.cases.size());
+            return false;
+        }
         std::cout << MAA_NS::utf8_to_crt(std::format("\n\n## Switch option \"{}\" for \"{}\" ##\n\n", opt_display_name, task_display_name));
         if (!opt.description.empty()) {
             std::string desc_text = read_text_content(opt.description);
@@ -722,7 +741,8 @@ void Interactor::process_option(
         std::string buffer;
         std::getline(std::cin, buffer);
 
-        static const std::unordered_set<std::string> yes_names = { "Yes", "yes", "Y", "y" };
+        // 空输入默认为 Yes（与提示 [Y] 一致）
+        static const std::unordered_set<std::string> yes_names = { "Yes", "yes", "Y", "y", "" };
         bool is_yes = yes_names.contains(buffer);
 
         // Find matching Yes/No case
@@ -791,9 +811,13 @@ void Interactor::process_option(
     // Process nested sub-options if the selected case has any
     if (selected_case && !selected_case->option.empty()) {
         for (const auto& sub_option_name : selected_case->option) {
-            process_option(sub_option_name, task_display_name, config_options);
+            if (!process_option(sub_option_name, task_display_name, config_options)) {
+                return false;
+            }
         }
     }
+
+    return true;
 }
 
 void Interactor::edit_task()

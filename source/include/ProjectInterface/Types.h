@@ -276,7 +276,6 @@ struct RuntimeParam
     std::vector<std::filesystem::path> resource_path;
 
     std::vector<Task> task;
-    int32_t gpu = MaaInferenceDevice_Auto;
 
     std::optional<Agent> agent;
     DisplayConfig display_config;

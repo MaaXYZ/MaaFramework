@@ -282,6 +282,9 @@ std::optional<RuntimeParam::Task> Configurator::generate_runtime_task(const Conf
             if (auto parsed = json::parse(override_str)) {
                 runtime_task.pipeline_override.emplace(parsed->as_object());
             }
+            else {
+                LogWarn << "Failed to parse pipeline override JSON for input option" << VAR(config_option.name) << VAR(override_str);
+            }
         } break;
         }
     }
@@ -348,10 +351,12 @@ void Configurator::load_translations()
             translation_file = prefix_it->second;
         }
     }
-    // 3. 尝试匹配任何以系统语言开头的语言
-    if (translation_file.empty()) {
+    // 3. 尝试匹配任何以系统语言开头的语言（仅当 sys_lang 非空时）
+    // 注意：starts_with("") 会匹配任何字符串，所以必须检查 sys_lang 是否为空
+    if (translation_file.empty() && sys_lang.size() >= 2) {
+        std::string lang_prefix = sys_lang.substr(0, 2);
         for (const auto& [lang_code, file] : data_.languages) {
-            if (lang_code.starts_with(sys_lang.substr(0, 2))) {
+            if (lang_code.starts_with(lang_prefix)) {
                 translation_file = file;
                 break;
             }
