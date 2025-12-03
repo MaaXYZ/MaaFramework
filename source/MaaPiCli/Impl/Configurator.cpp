@@ -1,6 +1,7 @@
 #include "ProjectInterface/Configurator.h"
 
 #include <ranges>
+#include <unordered_map>
 
 #include "MaaUtils/Logger.h"
 #include "MaaUtils/Platform.h"
@@ -8,6 +9,44 @@
 #include "ProjectInterface/Parser.h"
 
 MAA_PROJECT_INTERFACE_NS_BEGIN
+
+namespace
+{
+MaaWin32ScreencapMethod parse_win32_screencap_method(const std::string& method)
+{
+    static const std::unordered_map<std::string, MaaWin32ScreencapMethod> mapping = {
+        { "GDI", MaaWin32ScreencapMethod_GDI },
+        { "FramePool", MaaWin32ScreencapMethod_FramePool },
+        { "DXGI_DesktopDup", MaaWin32ScreencapMethod_DXGI_DesktopDup },
+        { "DXGI_DesktopDup_Window", MaaWin32ScreencapMethod_DXGI_DesktopDup_Window },
+        { "PrintWindow", MaaWin32ScreencapMethod_PrintWindow },
+        { "ScreenDC", MaaWin32ScreencapMethod_ScreenDC },
+    };
+
+    if (auto it = mapping.find(method); it != mapping.end()) {
+        return it->second;
+    }
+    return MaaWin32ScreencapMethod_None;
+}
+
+MaaWin32InputMethod parse_win32_input_method(const std::string& method)
+{
+    static const std::unordered_map<std::string, MaaWin32InputMethod> mapping = {
+        { "Seize", MaaWin32InputMethod_Seize },
+        { "SendMessage", MaaWin32InputMethod_SendMessage },
+        { "PostMessage", MaaWin32InputMethod_PostMessage },
+        { "LegacyEvent", MaaWin32InputMethod_LegacyEvent },
+        { "PostThreadMessage", MaaWin32InputMethod_PostThreadMessage },
+        { "SendMessageWithCursorPos", MaaWin32InputMethod_SendMessageWithCursorPos },
+        { "PostMessageWithCursorPos", MaaWin32InputMethod_PostMessageWithCursorPos },
+    };
+
+    if (auto it = mapping.find(method); it != mapping.end()) {
+        return it->second;
+    }
+    return MaaWin32InputMethod_None;
+}
+} // namespace
 
 bool Configurator::load(const std::filesystem::path& resource_dir, const std::filesystem::path& user_dir)
 {
@@ -129,10 +168,28 @@ std::optional<RuntimeParam> Configurator::generate_runtime() const
         RuntimeParam::Win32Param win32;
 
         win32.hwnd = config_.win32.hwnd;
-        // v2: use default if not specified
-        win32.screencap = MaaWin32ScreencapMethod_DXGI_DesktopDup;
-        win32.mouse = MaaWin32InputMethod_Seize;
-        win32.keyboard = MaaWin32InputMethod_Seize;
+
+        // v2: parse from config, use default if not specified or invalid
+        if (!controller.win32.screencap.empty()) {
+            win32.screencap = parse_win32_screencap_method(controller.win32.screencap);
+        }
+        if (win32.screencap == MaaWin32ScreencapMethod_None) {
+            win32.screencap = MaaWin32ScreencapMethod_DXGI_DesktopDup;
+        }
+
+        if (!controller.win32.mouse.empty()) {
+            win32.mouse = parse_win32_input_method(controller.win32.mouse);
+        }
+        if (win32.mouse == MaaWin32InputMethod_None) {
+            win32.mouse = MaaWin32InputMethod_Seize;
+        }
+
+        if (!controller.win32.keyboard.empty()) {
+            win32.keyboard = parse_win32_input_method(controller.win32.keyboard);
+        }
+        if (win32.keyboard == MaaWin32InputMethod_None) {
+            win32.keyboard = MaaWin32InputMethod_Seize;
+        }
 
         runtime.controller_param = std::move(win32);
     } break;

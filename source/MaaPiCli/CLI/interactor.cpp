@@ -213,7 +213,14 @@ void Interactor::interact_for_first_time_use()
     welcome();
     select_controller();
     select_resource();
-    add_task();
+
+    // Auto-add tasks with default_check=true
+    add_default_tasks();
+
+    // If no default tasks were added, let user select manually
+    if (config_.configuration().task.empty()) {
+        add_task();
+    }
 }
 
 void Interactor::welcome() const
@@ -512,17 +519,32 @@ void Interactor::select_resource()
     using namespace MAA_PROJECT_INTERFACE_NS;
 
     const auto& all_resources = config_.interface_data().resource;
+    const auto& current_controller = config_.configuration().controller.name;
 
     if (all_resources.empty()) {
         LogError << "Resource is empty";
         return;
     }
 
+    // Filter resources by current controller
+    std::vector<const InterfaceData::Resource*> available_resources;
+    for (const auto& res : all_resources) {
+        // If controller list is empty, resource supports all controllers
+        if (res.controller.empty() || std::ranges::find(res.controller, current_controller) != res.controller.end()) {
+            available_resources.push_back(&res);
+        }
+    }
+
+    if (available_resources.empty()) {
+        LogError << "No resource available for controller" << VAR(current_controller);
+        return;
+    }
+
     int index = 0;
-    if (all_resources.size() != 1) {
+    if (available_resources.size() != 1) {
         std::cout << "### Select resource ###\n\n";
-        for (size_t i = 0; i < all_resources.size(); ++i) {
-            const auto& res = all_resources[i];
+        for (size_t i = 0; i < available_resources.size(); ++i) {
+            const auto& res = *available_resources[i];
             std::string display_name = get_display_name(res.name, res.label);
             std::cout << MAA_NS::utf8_to_crt(std::format("\t{}. {}\n", i + 1, display_name));
             if (!res.description.empty()) {
@@ -531,12 +553,12 @@ void Interactor::select_resource()
             }
         }
         std::cout << "\n";
-        index = input(all_resources.size()) - 1;
+        index = input(available_resources.size()) - 1;
     }
     else {
         index = 0;
     }
-    const auto& resource = all_resources[index];
+    const auto& resource = *available_resources[index];
 
     config_.configuration().resource = resource.name;
 }
@@ -546,15 +568,30 @@ void Interactor::add_task()
     using namespace MAA_PROJECT_INTERFACE_NS;
 
     const auto& all_data_tasks = config_.interface_data().task;
+    const auto& current_resource = config_.configuration().resource;
 
     if (all_data_tasks.empty()) {
         LogError << "Task is empty";
         return;
     }
 
+    // Filter tasks by current resource
+    std::vector<const InterfaceData::Task*> available_tasks;
+    for (const auto& task : all_data_tasks) {
+        // If resource list is empty, task supports all resources
+        if (task.resource.empty() || std::ranges::find(task.resource, current_resource) != task.resource.end()) {
+            available_tasks.push_back(&task);
+        }
+    }
+
+    if (available_tasks.empty()) {
+        LogError << "No task available for resource" << VAR(current_resource);
+        return;
+    }
+
     std::cout << "### Add task ###\n\n";
-    for (size_t i = 0; i < all_data_tasks.size(); ++i) {
-        const auto& task = all_data_tasks[i];
+    for (size_t i = 0; i < available_tasks.size(); ++i) {
+        const auto& task = *available_tasks[i];
         std::string display_name = get_display_name(task.name, task.label);
         std::cout << MAA_NS::utf8_to_crt(std::format("\t{}. {}\n", i + 1, display_name));
         if (!task.description.empty()) {
@@ -563,140 +600,199 @@ void Interactor::add_task()
         }
     }
     std::cout << "\n";
-    auto input_indexes = input_multi(all_data_tasks.size());
+    auto input_indexes = input_multi(available_tasks.size());
 
     for (int index : input_indexes) {
-        const auto& data_task = all_data_tasks[index - 1];
+        const auto& data_task = *available_tasks[index - 1];
+        std::string task_display_name = get_display_name(data_task.name, data_task.label);
 
         std::vector<Configuration::Option> config_options;
         for (const auto& option_name : data_task.option) {
-            if (!config_.interface_data().option.contains(option_name)) {
-                LogError << "Option not found" << VAR(option_name);
-                return;
-            }
-
-            const auto& opt = config_.interface_data().option.at(option_name);
-
-            Configuration::Option config_opt;
-            config_opt.name = option_name;
-
-            // 获取 option 的显示名称
-            std::string opt_display_name = get_display_name(option_name, opt.label);
-            std::string task_display_name = get_display_name(data_task.name, data_task.label);
-
-            switch (opt.type) {
-            case InterfaceData::Option::Type::Select: {
-                if (!opt.default_case.empty()) {
-                    config_opt.value = opt.default_case;
-                }
-                else {
-                    std::cout << MAA_NS::utf8_to_crt(
-                        std::format("\n\n## Select option \"{}\" for \"{}\" ##\n\n", opt_display_name, task_display_name));
-                    if (!opt.description.empty()) {
-                        std::string desc_text = read_text_content(opt.description);
-                        std::cout << MAA_NS::utf8_to_crt(desc_text) << "\n\n";
-                    }
-                    for (size_t i = 0; i < opt.cases.size(); ++i) {
-                        const auto& case_item = opt.cases[i];
-                        std::string case_display_name = get_display_name(case_item.name, case_item.label);
-                        std::cout << MAA_NS::utf8_to_crt(std::format("\t{}. {}\n", i + 1, case_display_name));
-                        if (!case_item.description.empty()) {
-                            std::string case_desc = read_text_content(case_item.description);
-                            std::cout << "\t   " << MAA_NS::utf8_to_crt(case_desc) << "\n";
-                        }
-                    }
-                    std::cout << "\n";
-
-                    int case_index = input(opt.cases.size()) - 1;
-                    config_opt.value = opt.cases[case_index].name;
-                }
-            } break;
-
-            case InterfaceData::Option::Type::Switch: {
-                std::cout << MAA_NS::utf8_to_crt(
-                    std::format("\n\n## Switch option \"{}\" for \"{}\" ##\n\n", opt_display_name, task_display_name));
-                if (!opt.description.empty()) {
-                    std::string desc_text = read_text_content(opt.description);
-                    std::cout << MAA_NS::utf8_to_crt(desc_text) << "\n\n";
-                }
-                std::string case0_name = get_display_name(opt.cases[0].name, opt.cases[0].label);
-                std::string case1_name = get_display_name(opt.cases[1].name, opt.cases[1].label);
-                std::cout << "\t" << MAA_NS::utf8_to_crt(case0_name) << "\n";
-                std::cout << "\t" << MAA_NS::utf8_to_crt(case1_name) << "\n";
-                std::cout << "\nInput Y/N [Y]: ";
-
-                std::cin.sync();
-                std::string buffer;
-                std::getline(std::cin, buffer);
-
-                static const std::unordered_set<std::string> yes_names = { "Yes", "yes", "Y", "y" };
-                bool is_yes = yes_names.contains(buffer);
-
-                // 查找匹配 Yes/No 的 case
-                auto find_case = [&](bool find_yes) -> const std::string& {
-                    for (const auto& case_item : opt.cases) {
-                        bool is_yes_case = yes_names.contains(case_item.name);
-                        if (find_yes == is_yes_case) {
-                            return case_item.name;
-                        }
-                    }
-                    // fallback: 如果没找到匹配的，使用原来的逻辑
-                    LogWarn << "No matching Yes/No case found, using fallback" << VAR(find_yes);
-                    return find_yes ? opt.cases[0].name : opt.cases[1].name;
-                };
-
-                config_opt.value = find_case(is_yes);
-                std::cout << "\n";
-            } break;
-
-            case InterfaceData::Option::Type::Input: {
-                std::cout << MAA_NS::utf8_to_crt(
-                    std::format("\n\n## Input option \"{}\" for \"{}\" ##\n\n", opt_display_name, task_display_name));
-                if (!opt.description.empty()) {
-                    std::string desc_text = read_text_content(opt.description);
-                    std::cout << MAA_NS::utf8_to_crt(desc_text) << "\n\n";
-                }
-
-                for (const auto& input_def : opt.inputs) {
-                    std::string default_val = input_def.default_;
-                    std::string input_display_name = get_display_name(input_def.name, input_def.label);
-                    if (!input_def.description.empty()) {
-                        std::string input_desc = read_text_content(input_def.description);
-                        std::cout << MAA_NS::utf8_to_crt(input_desc) << "\n";
-                    }
-                    std::cout << MAA_NS::utf8_to_crt(std::format("{} [{}]: ", input_display_name, default_val));
-
-                    std::cin.sync();
-                    std::string buffer;
-                    std::getline(std::cin, buffer);
-
-                    std::string value = buffer.empty() ? default_val : buffer;
-
-                    // Validate with regex if provided
-                    if (!input_def.verify.empty()) {
-                        if (auto pattern = MAA_NS::regex_valid(MAA_NS::to_u16(input_def.verify))) {
-                            auto value_u16 = MAA_NS::to_u16(value);
-                            while (!std::regex_match(value_u16, *pattern)) {
-                                std::string error_msg =
-                                    input_def.pattern_msg.empty() ? "Invalid input, please retry: " : input_def.pattern_msg + ": ";
-                                std::cout << MAA_NS::utf8_to_crt(error_msg);
-                                std::getline(std::cin, buffer);
-                                value = buffer.empty() ? default_val : buffer;
-                                value_u16 = MAA_NS::to_u16(value);
-                            }
-                        }
-                    }
-
-                    config_opt.inputs[input_def.name] = value;
-                }
-                std::cout << "\n";
-            } break;
-            }
-
-            config_options.emplace_back(std::move(config_opt));
+            process_option(option_name, task_display_name, config_options);
         }
 
         config_.configuration().task.emplace_back(Configuration::Task { .name = data_task.name, .option = std::move(config_options) });
+    }
+}
+
+void Interactor::add_default_tasks()
+{
+    using namespace MAA_PROJECT_INTERFACE_NS;
+
+    const auto& all_data_tasks = config_.interface_data().task;
+    const auto& current_resource = config_.configuration().resource;
+
+    for (const auto& task : all_data_tasks) {
+        // Skip tasks without default_check
+        if (!task.default_check) {
+            continue;
+        }
+
+        // Check if task supports current resource
+        if (!task.resource.empty() && std::ranges::find(task.resource, current_resource) == task.resource.end()) {
+            continue;
+        }
+
+        std::string task_display_name = get_display_name(task.name, task.label);
+
+        // Process options for this task
+        std::vector<Configuration::Option> config_options;
+        for (const auto& option_name : task.option) {
+            process_option(option_name, task_display_name, config_options);
+        }
+
+        config_.configuration().task.emplace_back(Configuration::Task { .name = task.name, .option = std::move(config_options) });
+        std::cout << "Auto-added default task: " << MAA_NS::utf8_to_crt(task_display_name) << "\n";
+    }
+
+    if (!config_.configuration().task.empty()) {
+        std::cout << "\n";
+    }
+}
+
+void Interactor::process_option(
+    const std::string& option_name,
+    const std::string& task_display_name,
+    std::vector<MAA_PROJECT_INTERFACE_NS::Configuration::Option>& config_options)
+{
+    using namespace MAA_PROJECT_INTERFACE_NS;
+
+    if (!config_.interface_data().option.contains(option_name)) {
+        LogError << "Option not found" << VAR(option_name);
+        return;
+    }
+
+    const auto& opt = config_.interface_data().option.at(option_name);
+
+    Configuration::Option config_opt;
+    config_opt.name = option_name;
+
+    std::string opt_display_name = get_display_name(option_name, opt.label);
+
+    // Selected case for processing sub-options
+    const InterfaceData::Option::Case* selected_case = nullptr;
+
+    switch (opt.type) {
+    case InterfaceData::Option::Type::Select: {
+        if (!opt.default_case.empty()) {
+            config_opt.value = opt.default_case;
+            // Find the selected case for sub-options
+            auto case_iter = std::ranges::find(opt.cases, opt.default_case, std::mem_fn(&InterfaceData::Option::Case::name));
+            if (case_iter != opt.cases.end()) {
+                selected_case = &(*case_iter);
+            }
+        }
+        else {
+            std::cout << MAA_NS::utf8_to_crt(
+                std::format("\n\n## Select option \"{}\" for \"{}\" ##\n\n", opt_display_name, task_display_name));
+            if (!opt.description.empty()) {
+                std::string desc_text = read_text_content(opt.description);
+                std::cout << MAA_NS::utf8_to_crt(desc_text) << "\n\n";
+            }
+            for (size_t i = 0; i < opt.cases.size(); ++i) {
+                const auto& case_item = opt.cases[i];
+                std::string case_display_name = get_display_name(case_item.name, case_item.label);
+                std::cout << MAA_NS::utf8_to_crt(std::format("\t{}. {}\n", i + 1, case_display_name));
+                if (!case_item.description.empty()) {
+                    std::string case_desc = read_text_content(case_item.description);
+                    std::cout << "\t   " << MAA_NS::utf8_to_crt(case_desc) << "\n";
+                }
+            }
+            std::cout << "\n";
+
+            int case_index = input(opt.cases.size()) - 1;
+            config_opt.value = opt.cases[case_index].name;
+            selected_case = &opt.cases[case_index];
+        }
+    } break;
+
+    case InterfaceData::Option::Type::Switch: {
+        std::cout << MAA_NS::utf8_to_crt(std::format("\n\n## Switch option \"{}\" for \"{}\" ##\n\n", opt_display_name, task_display_name));
+        if (!opt.description.empty()) {
+            std::string desc_text = read_text_content(opt.description);
+            std::cout << MAA_NS::utf8_to_crt(desc_text) << "\n\n";
+        }
+        std::string case0_name = get_display_name(opt.cases[0].name, opt.cases[0].label);
+        std::string case1_name = get_display_name(opt.cases[1].name, opt.cases[1].label);
+        std::cout << "\t" << MAA_NS::utf8_to_crt(case0_name) << "\n";
+        std::cout << "\t" << MAA_NS::utf8_to_crt(case1_name) << "\n";
+        std::cout << "\nInput Y/N [Y]: ";
+
+        std::cin.sync();
+        std::string buffer;
+        std::getline(std::cin, buffer);
+
+        static const std::unordered_set<std::string> yes_names = { "Yes", "yes", "Y", "y" };
+        bool is_yes = yes_names.contains(buffer);
+
+        // Find matching Yes/No case
+        auto find_case = [&](bool find_yes) -> const InterfaceData::Option::Case* {
+            for (const auto& case_item : opt.cases) {
+                bool is_yes_case = yes_names.contains(case_item.name);
+                if (find_yes == is_yes_case) {
+                    return &case_item;
+                }
+            }
+            // Fallback
+            LogWarn << "No matching Yes/No case found, using fallback" << VAR(find_yes);
+            return find_yes ? &opt.cases[0] : &opt.cases[1];
+        };
+
+        selected_case = find_case(is_yes);
+        config_opt.value = selected_case->name;
+        std::cout << "\n";
+    } break;
+
+    case InterfaceData::Option::Type::Input: {
+        std::cout << MAA_NS::utf8_to_crt(std::format("\n\n## Input option \"{}\" for \"{}\" ##\n\n", opt_display_name, task_display_name));
+        if (!opt.description.empty()) {
+            std::string desc_text = read_text_content(opt.description);
+            std::cout << MAA_NS::utf8_to_crt(desc_text) << "\n\n";
+        }
+
+        for (const auto& input_def : opt.inputs) {
+            std::string default_val = input_def.default_;
+            std::string input_display_name = get_display_name(input_def.name, input_def.label);
+            if (!input_def.description.empty()) {
+                std::string input_desc = read_text_content(input_def.description);
+                std::cout << MAA_NS::utf8_to_crt(input_desc) << "\n";
+            }
+            std::cout << MAA_NS::utf8_to_crt(std::format("{} [{}]: ", input_display_name, default_val));
+
+            std::cin.sync();
+            std::string buffer;
+            std::getline(std::cin, buffer);
+
+            std::string value = buffer.empty() ? default_val : buffer;
+
+            // Validate with regex if provided
+            if (!input_def.verify.empty()) {
+                if (auto pattern = MAA_NS::regex_valid(MAA_NS::to_u16(input_def.verify))) {
+                    auto value_u16 = MAA_NS::to_u16(value);
+                    while (!std::regex_match(value_u16, *pattern)) {
+                        std::string error_msg =
+                            input_def.pattern_msg.empty() ? "Invalid input, please retry: " : input_def.pattern_msg + ": ";
+                        std::cout << MAA_NS::utf8_to_crt(error_msg);
+                        std::getline(std::cin, buffer);
+                        value = buffer.empty() ? default_val : buffer;
+                        value_u16 = MAA_NS::to_u16(value);
+                    }
+                }
+            }
+
+            config_opt.inputs[input_def.name] = value;
+        }
+        std::cout << "\n";
+    } break;
+    }
+
+    config_options.emplace_back(std::move(config_opt));
+
+    // Process nested sub-options if the selected case has any
+    if (selected_case && !selected_case->option.empty()) {
+        for (const auto& sub_option_name : selected_case->option) {
+            process_option(sub_option_name, task_display_name, config_options);
+        }
     }
 }
 

@@ -27,9 +27,16 @@ private:
 
     void select_resource();
     void add_task();
+    void add_default_tasks();
     void edit_task();
     void delete_task();
     void move_task();
+
+    // Process option and its nested sub-options recursively
+    void process_option(
+        const std::string& option_name,
+        const std::string& task_display_name,
+        std::vector<MAA_PROJECT_INTERFACE_NS::Configuration::Option>& config_options);
 
     void print_config_tasks(bool with_index = true) const;
 
