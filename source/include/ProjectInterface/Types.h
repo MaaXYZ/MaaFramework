@@ -48,7 +48,15 @@ struct InterfaceData
 
         Win32Config win32;
 
-        MEO_JSONIZATION(name, MEO_OPT label, MEO_OPT description, type, MEO_OPT display_short_side, MEO_OPT display_long_side, MEO_OPT display_raw, MEO_OPT win32);
+        MEO_JSONIZATION(
+            name,
+            MEO_OPT label,
+            MEO_OPT description,
+            type,
+            MEO_OPT display_short_side,
+            MEO_OPT display_long_side,
+            MEO_OPT display_raw,
+            MEO_OPT win32);
     };
 
     struct Resource
@@ -73,7 +81,15 @@ struct InterfaceData
         std::vector<std::string> option;
         std::vector<std::string> resource; // 支持的资源包列表
 
-        MEO_JSONIZATION(name, MEO_OPT label, MEO_OPT description, entry, MEO_OPT default_check, MEO_OPT pipeline_override, MEO_OPT option, MEO_OPT resource);
+        MEO_JSONIZATION(
+            name,
+            MEO_OPT label,
+            MEO_OPT description,
+            entry,
+            MEO_OPT default_check,
+            MEO_OPT pipeline_override,
+            MEO_OPT option,
+            MEO_OPT resource);
     };
 
     struct Option
@@ -113,7 +129,14 @@ struct InterfaceData
             std::string verify;      // regex
             std::string pattern_msg; // 验证失败提示
 
-            MEO_JSONIZATION(name, MEO_OPT label, MEO_OPT description, MEO_OPT MEO_KEY("default") default_, MEO_OPT pipeline_type, MEO_OPT verify, MEO_OPT pattern_msg);
+            MEO_JSONIZATION(
+                name,
+                MEO_OPT label,
+                MEO_OPT description,
+                MEO_OPT MEO_KEY("default") default_,
+                MEO_OPT pipeline_type,
+                MEO_OPT verify,
+                MEO_OPT pattern_msg);
         };
 
         Type type = Type::Select;
@@ -124,7 +147,14 @@ struct InterfaceData
         json::object pipeline_override; // for input type
         std::string default_case;       // case.name
 
-        MEO_JSONIZATION(MEO_OPT type, MEO_OPT label, MEO_OPT description, MEO_OPT cases, MEO_OPT inputs, MEO_OPT pipeline_override, MEO_OPT default_case);
+        MEO_JSONIZATION(
+            MEO_OPT type,
+            MEO_OPT label,
+            MEO_OPT description,
+            MEO_OPT cases,
+            MEO_OPT inputs,
+            MEO_OPT pipeline_override,
+            MEO_OPT default_case);
     };
 
     struct Agent
@@ -196,11 +226,14 @@ struct Configuration
 
     struct AdbConfig
     {
+        std::string name;
         std::string adb_path;
         std::string address;
+        MaaAdbInputMethod input = MaaAdbInputMethod_Default;
+        MaaAdbScreencapMethod screencap = MaaAdbScreencapMethod_Default;
         json::object config;
 
-        MEO_JSONIZATION(adb_path, address, config);
+        MEO_JSONIZATION(MEO_OPT name, adb_path, address, MEO_OPT input, MEO_OPT screencap, MEO_OPT config);
     };
 
     struct Option

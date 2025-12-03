@@ -426,6 +426,8 @@ void Interactor::select_adb_auto_detect()
 
     adb_config.adb_path = MaaToolkitAdbDeviceGetAdbPath(device_handle);
     adb_config.address = MaaToolkitAdbDeviceGetAddress(device_handle);
+    adb_config.input = MaaToolkitAdbDeviceGetInputMethods(device_handle);
+    adb_config.screencap = MaaToolkitAdbDeviceGetScreencapMethods(device_handle);
     adb_config.config = json::parse(MaaToolkitAdbDeviceGetConfig(device_handle)).value_or(json::object()).as_object();
 }
 
