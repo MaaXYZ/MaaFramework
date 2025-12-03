@@ -107,6 +107,8 @@ bool Transceiver::send(const json::value& j)
 {
     // LogTrace << VAR(j.to_string()) << VAR(ipc_addr_);
 
+    std::unique_lock lock(send_mutex_);
+
     if (!poll(zmq_pollitem_send_)) {
         LogError << "send canceled";
         return false;
