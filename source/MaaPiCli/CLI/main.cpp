@@ -61,7 +61,7 @@ int main(int argc, char** argv)
 
     MaaToolkitConfigInitOption(user_path.c_str(), "{}");
 
-    Interactor interactor(user_path, {}, {});
+    Interactor interactor(user_path);
 
     if (!interactor.load(resource_path)) {
         return -1;

@@ -1,15 +1,11 @@
 #pragma once
 
-#include "MaaFramework/MaaDef.h"
 #include "ProjectInterface/Configurator.h"
 
 class Interactor
 {
 public:
-    Interactor(
-        std::filesystem::path user_path,
-        std::map<std::string, MAA_PROJECT_INTERFACE_NS::CustomRecognitionSession> custom_recognitions,
-        std::map<std::string, MAA_PROJECT_INTERFACE_NS::CustomActionSession> custom_actions);
+    explicit Interactor(std::filesystem::path user_path);
 
     bool load(const std::filesystem::path& resource_path);
     void print_config() const;
@@ -46,6 +42,4 @@ private:
 private:
     MAA_PROJECT_INTERFACE_NS::Configurator config_;
     std::filesystem::path user_path_;
-    std::map<std::string, MAA_PROJECT_INTERFACE_NS::CustomRecognitionSession> custom_recognitions_;
-    std::map<std::string, MAA_PROJECT_INTERFACE_NS::CustomActionSession> custom_actions_;
 };

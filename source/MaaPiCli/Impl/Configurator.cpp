@@ -67,8 +67,6 @@ void Configurator::save(const std::filesystem::path& user_dir)
 
 std::optional<RuntimeParam> Configurator::generate_runtime() const
 {
-    constexpr std::string_view kProjectDir = "{PROJECT_DIR}";
-
     RuntimeParam runtime;
 
     auto resource_iter = std::ranges::find_if(data_.resource, [&](const auto& resource) { return resource.name == config_.resource; });
@@ -78,10 +76,9 @@ std::optional<RuntimeParam> Configurator::generate_runtime() const
         return std::nullopt;
     }
 
-    std::string resource_dir = MaaNS::path_to_utf8_string(resource_dir_);
     for (const auto& path_string : resource_iter->path) {
-        auto dst = MaaNS::string_replace_all(path_string, kProjectDir, resource_dir);
-        runtime.resource_path.emplace_back(MaaNS::path(dst));
+        // v2: relative path from interface.json directory
+        runtime.resource_path.emplace_back(resource_dir_ / MaaNS::path(path_string));
     }
     if (runtime.resource_path.empty()) {
         LogWarn << "No resource to load";
@@ -109,15 +106,16 @@ std::optional<RuntimeParam> Configurator::generate_runtime() const
     }
     auto& controller = *controller_iter;
 
-    switch (controller.type_enum) {
+    switch (controller.type) {
     case InterfaceData::Controller::Type::Adb: {
         RuntimeParam::AdbParam adb;
 
         adb.adb_path = config_.adb.adb_path;
         adb.address = config_.adb.address;
-        adb.screencap = controller.adb.screencap;
-        adb.input = controller.adb.input;
-        adb.config = (controller.adb.config | config_.adb.config).dumps();
+        // v2: screencap/input auto-detected by framework
+        adb.screencap = MaaAdbScreencapMethod_Default;
+        adb.input = MaaAdbInputMethod_Default;
+        adb.config = config_.adb.config.dumps();
         adb.agent_path = MaaNS::path_to_utf8_string(resource_dir_ / "MaaAgentBinary");
 
         runtime.controller_param = std::move(adb);
@@ -127,37 +125,27 @@ std::optional<RuntimeParam> Configurator::generate_runtime() const
         RuntimeParam::Win32Param win32;
 
         win32.hwnd = config_.win32.hwnd;
-        win32.screencap = controller.win32.screencap;
-        if (controller.win32.input == MaaWin32InputMethod_None) {
-            win32.mouse = controller.win32.mouse;
-            win32.keyboard = controller.win32.keyboard;
-        }
-        else {
-            win32.mouse = controller.win32.input;
-            win32.keyboard = controller.win32.input;
-        }
+        // v2: use default if not specified
+        win32.screencap = MaaWin32ScreencapMethod_DXGI_DesktopDup;
+        win32.mouse = MaaWin32InputMethod_Seize;
+        win32.keyboard = MaaWin32InputMethod_Seize;
 
         runtime.controller_param = std::move(win32);
     } break;
 
     default: {
-        LogError << "Unknown controller type" << controller.type;
+        LogError << "Unknown controller type";
         return std::nullopt;
     }
     }
 
-    runtime.gpu = config_.gpu;
-
     if (!data_.agent.child_exec.empty()) {
         RuntimeParam::Agent agent;
 
-        agent.child_exec = MaaNS::path(MaaNS::string_replace_all(data_.agent.child_exec, kProjectDir, resource_dir));
+        // v2: relative path from interface.json directory
+        agent.child_exec = resource_dir_ / MaaNS::path(data_.agent.child_exec);
+        agent.child_args = data_.agent.child_args;
         agent.identifier = data_.agent.identifier;
-
-        for (const auto& arg : data_.agent.child_args) {
-            auto dst = MaaNS::string_replace_all(arg, kProjectDir, resource_dir);
-            agent.child_args.emplace_back(std::move(dst));
-        }
 
         runtime.agent = std::move(agent);
     }
@@ -178,24 +166,58 @@ std::optional<RuntimeParam::Task> Configurator::generate_runtime_task(const Conf
                                       .entry = data_task.entry,
                                       .pipeline_override = json::array { data_task.pipeline_override } };
 
-    for (const auto& [config_option, config_option_value] : config_task.option) {
-        auto data_option_iter =
-            std::ranges::find_if(data_.option, [&](const auto& data_option_pair) { return data_option_pair.first == config_option; });
+    for (const auto& config_option : config_task.option) {
+        auto data_option_iter = data_.option.find(config_option.name);
         if (data_option_iter == data_.option.end()) {
-            LogWarn << "option not found" << VAR(config_option);
+            LogWarn << "option not found" << VAR(config_option.name);
             continue;
         }
         const auto& data_option = data_option_iter->second;
 
-        auto data_case_iter =
-            std::ranges::find_if(data_option.cases, [&](const auto& data_case) { return data_case.name == config_option_value; });
-        if (data_case_iter == data_option.cases.end()) {
-            LogWarn << "case not found" << VAR(config_option_value);
-            continue;
-        }
-        const auto& data_case = *data_case_iter;
+        switch (data_option.type) {
+        case InterfaceData::Option::Type::Select:
+        case InterfaceData::Option::Type::Switch: {
+            auto data_case_iter =
+                std::ranges::find_if(data_option.cases, [&](const auto& data_case) { return data_case.name == config_option.value; });
+            if (data_case_iter == data_option.cases.end()) {
+                LogWarn << "case not found" << VAR(config_option.value);
+                continue;
+            }
+            runtime_task.pipeline_override.emplace(data_case_iter->pipeline_override);
+        } break;
 
-        runtime_task.pipeline_override.emplace(data_case.pipeline_override);
+        case InterfaceData::Option::Type::Input: {
+            // Replace placeholders in pipeline_override with input values
+            std::string override_str = data_option.pipeline_override.dumps();
+            for (const auto& input_def : data_option.inputs) {
+                std::string placeholder = "{" + input_def.name + "}";
+                std::string value;
+                if (auto it = config_option.inputs.find(input_def.name); it != config_option.inputs.end()) {
+                    value = it->second;
+                }
+                else {
+                    value = input_def.default_;
+                }
+
+                // Replace based on pipeline_type
+                switch (input_def.pipeline_type) {
+                case InterfaceData::Option::Input::PipelineType::String:
+                    override_str = MaaNS::string_replace_all(override_str, "\"" + placeholder + "\"", "\"" + value + "\"");
+                    override_str = MaaNS::string_replace_all(override_str, placeholder, value);
+                    break;
+                case InterfaceData::Option::Input::PipelineType::Int:
+                case InterfaceData::Option::Input::PipelineType::Bool:
+                    // For int/bool, replace the quoted placeholder with unquoted value
+                    override_str = MaaNS::string_replace_all(override_str, "\"" + placeholder + "\"", value);
+                    override_str = MaaNS::string_replace_all(override_str, placeholder, value);
+                    break;
+                }
+            }
+            if (auto parsed = json::parse(override_str)) {
+                runtime_task.pipeline_override.emplace(parsed->as_object());
+            }
+        } break;
+        }
     }
 
     return runtime_task;

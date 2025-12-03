@@ -106,13 +106,8 @@ void clear_screen()
 #endif
 }
 
-Interactor::Interactor(
-    std::filesystem::path user_path,
-    std::map<std::string, MAA_PROJECT_INTERFACE_NS::CustomRecognitionSession> custom_recognitions,
-    std::map<std::string, MAA_PROJECT_INTERFACE_NS::CustomActionSession> custom_actions)
+Interactor::Interactor(std::filesystem::path user_path)
     : user_path_(std::move(user_path))
-    , custom_recognitions_(std::move(custom_recognitions))
-    , custom_actions_(std::move(custom_actions))
 {
     LogDebug << VAR(user_path_);
 }
@@ -164,7 +159,7 @@ bool Interactor::run()
         return false;
     }
 
-    bool ret = MAA_PROJECT_INTERFACE_NS::Runner::run(runtime.value(), custom_recognitions_, custom_actions_);
+    bool ret = MAA_PROJECT_INTERFACE_NS::Runner::run(runtime.value());
 
     if (!ret) {
         std::cout << "### Failed to run tasks ###\n\n";
@@ -188,7 +183,7 @@ void Interactor::print_config() const
     std::cout << "Controller:\n\n";
     std::cout << "\t" << MAA_NS::utf8_to_crt(config_.configuration().controller.name) << "\n";
 
-    switch (config_.configuration().controller.type_enum) {
+    switch (config_.configuration().controller.type) {
     case InterfaceData::Controller::Type::Adb:
         std::cout << MAA_NS::utf8_to_crt(
             std::format("\t\t{}\n\t\t{}\n", config_.configuration().adb.adb_path, config_.configuration().adb.address));
@@ -222,11 +217,11 @@ void Interactor::interact_for_first_time_use()
 
 void Interactor::welcome() const
 {
-    if (config_.interface_data().message.empty()) {
+    if (config_.interface_data().welcome.empty()) {
         std::cout << "Welcome to use Maa Project Interface CLI!\n";
     }
     else {
-        std::cout << MAA_NS::utf8_to_crt(config_.interface_data().message) << "\n";
+        std::cout << MAA_NS::utf8_to_crt(config_.interface_data().welcome) << "\n";
     }
     std::cout << "MaaFramework: " << MAA_VERSION << "\n\n";
 
@@ -306,17 +301,17 @@ void Interactor::select_controller()
 
     config_.configuration().controller.name = controller.name;
 
-    switch (controller.type_enum) {
+    switch (controller.type) {
     case InterfaceData::Controller::Type::Adb:
-        config_.configuration().controller.type_enum = InterfaceData::Controller::Type::Adb;
+        config_.configuration().controller.type = InterfaceData::Controller::Type::Adb;
         select_adb();
         break;
     case InterfaceData::Controller::Type::Win32:
-        config_.configuration().controller.type_enum = InterfaceData::Controller::Type::Win32;
+        config_.configuration().controller.type = InterfaceData::Controller::Type::Win32;
         select_win32_hwnd(controller.win32);
         break;
     default:
-        LogError << "Unknown controller type" << VAR(controller.type);
+        LogError << "Unknown controller type";
         break;
     }
 }
@@ -418,14 +413,12 @@ bool Interactor::select_win32_hwnd(const MAA_PROJECT_INTERFACE_NS::InterfaceData
 
     size_t list_size = MaaToolkitDesktopWindowListSize(list_handle);
 
-    auto class_u16 = MAA_NS::to_u16(win32_config.class_regex);
-    auto window_u16 = MAA_NS::to_u16(win32_config.window_regex);
-    if (!MAA_NS::regex_valid(class_u16) || !MAA_NS::regex_valid(window_u16)) {
-        LogError << "regex is invalid" << VAR(class_u16) << VAR(window_u16);
+    auto class_regex = MAA_NS::regex_valid(MAA_NS::to_u16(win32_config.class_regex));
+    auto window_regex = MAA_NS::regex_valid(MAA_NS::to_u16(win32_config.window_regex));
+    if (!class_regex || !window_regex) {
+        LogError << "regex is invalid" << VAR(win32_config.class_regex) << VAR(win32_config.window_regex);
         return false;
     }
-    std::wregex class_regex(class_u16);
-    std::wregex window_regex(window_u16);
 
     std::vector<Configuration::Win32Config> matched_config;
     for (size_t i = 0; i < list_size; ++i) {
@@ -438,8 +431,8 @@ bool Interactor::select_win32_hwnd(const MAA_PROJECT_INTERFACE_NS::InterfaceData
 
         std::wsmatch class_match;
         std::wsmatch window_match;
-        if (std::regex_search(rt_config.class_name, class_match, class_regex)
-            && std::regex_search(rt_config.window_name, window_match, window_regex)) {
+        if (std::regex_search(rt_config.class_name, class_match, *class_regex)
+            && std::regex_search(rt_config.window_name, window_match, *window_regex)) {
             matched_config.emplace_back(std::move(rt_config));
         }
     }
@@ -524,18 +517,79 @@ void Interactor::add_task()
 
             const auto& opt = config_.interface_data().option.at(option_name);
 
-            if (!opt.default_case.empty()) {
-                config_options.emplace_back(Configuration::Option { option_name, opt.default_case });
-                continue;
-            }
-            std::cout << MAA_NS::utf8_to_crt(std::format("\n\n## Input option of \"{}\" for \"{}\" ##\n\n", option_name, data_task.name));
-            for (size_t i = 0; i < opt.cases.size(); ++i) {
-                std::cout << MAA_NS::utf8_to_crt(std::format("\t{}. {}\n", i + 1, opt.cases[i].name));
-            }
-            std::cout << "\n";
+            Configuration::Option config_opt;
+            config_opt.name = option_name;
 
-            int case_index = input(opt.cases.size()) - 1;
-            config_options.emplace_back(Configuration::Option { option_name, opt.cases[case_index].name });
+            switch (opt.type) {
+            case InterfaceData::Option::Type::Select: {
+                if (!opt.default_case.empty()) {
+                    config_opt.value = opt.default_case;
+                }
+                else {
+                    std::cout << MAA_NS::utf8_to_crt(
+                        std::format("\n\n## Select option \"{}\" for \"{}\" ##\n\n", option_name, data_task.name));
+                    for (size_t i = 0; i < opt.cases.size(); ++i) {
+                        std::cout << MAA_NS::utf8_to_crt(std::format("\t{}. {}\n", i + 1, opt.cases[i].name));
+                    }
+                    std::cout << "\n";
+
+                    int case_index = input(opt.cases.size()) - 1;
+                    config_opt.value = opt.cases[case_index].name;
+                }
+            } break;
+
+            case InterfaceData::Option::Type::Switch: {
+                std::cout << MAA_NS::utf8_to_crt(std::format("\n\n## Switch option \"{}\" for \"{}\" ##\n\n", option_name, data_task.name));
+                std::cout << "\t1. " << MAA_NS::utf8_to_crt(opt.cases[0].name) << "\n";
+                std::cout << "\t2. " << MAA_NS::utf8_to_crt(opt.cases[1].name) << "\n";
+                std::cout << "\nInput Y/N [Y]: ";
+
+                std::cin.sync();
+                std::string buffer;
+                std::getline(std::cin, buffer);
+
+                if (buffer.empty() || buffer == "Y" || buffer == "y" || buffer == "yes" || buffer == "Yes") {
+                    config_opt.value = opt.cases[0].name;
+                }
+                else {
+                    config_opt.value = opt.cases[1].name;
+                }
+                std::cout << "\n";
+            } break;
+
+            case InterfaceData::Option::Type::Input: {
+                std::cout << MAA_NS::utf8_to_crt(std::format("\n\n## Input option \"{}\" for \"{}\" ##\n\n", option_name, data_task.name));
+
+                for (const auto& input_def : opt.inputs) {
+                    std::string default_val = input_def.default_;
+                    std::cout << MAA_NS::utf8_to_crt(std::format("{} [{}]: ", input_def.name, default_val));
+
+                    std::cin.sync();
+                    std::string buffer;
+                    std::getline(std::cin, buffer);
+
+                    std::string value = buffer.empty() ? default_val : buffer;
+
+                    // Validate with regex if provided
+                    if (!input_def.verify.empty()) {
+                        if (auto pattern = MAA_NS::regex_valid(MAA_NS::to_u16(input_def.verify))) {
+                            auto value_u16 = MAA_NS::to_u16(value);
+                            while (!std::regex_match(value_u16, *pattern)) {
+                                std::cout << "Invalid input, please retry: ";
+                                std::getline(std::cin, buffer);
+                                value = buffer.empty() ? default_val : buffer;
+                                value_u16 = MAA_NS::to_u16(value);
+                            }
+                        }
+                    }
+
+                    config_opt.inputs[input_def.name] = value;
+                }
+                std::cout << "\n";
+            } break;
+            }
+
+            config_options.emplace_back(std::move(config_opt));
         }
 
         config_.configuration().task.emplace_back(Configuration::Task { .name = data_task.name, .option = std::move(config_options) });
@@ -607,8 +661,16 @@ void Interactor::print_config_tasks(bool with_index) const
             std::cout << MAA_NS::utf8_to_crt(std::format("\t- {}\n", task.name));
         }
 
-        for (const auto& [key, value] : task.option) {
-            std::cout << "\t\t- " << MAA_NS::utf8_to_crt(key) << ": " << MAA_NS::utf8_to_crt(value) << "\n";
+        for (const auto& opt : task.option) {
+            if (!opt.value.empty()) {
+                std::cout << "\t\t- " << MAA_NS::utf8_to_crt(opt.name) << ": " << MAA_NS::utf8_to_crt(opt.value) << "\n";
+            }
+            else if (!opt.inputs.empty()) {
+                std::cout << "\t\t- " << MAA_NS::utf8_to_crt(opt.name) << ":\n";
+                for (const auto& [key, val] : opt.inputs) {
+                    std::cout << "\t\t\t" << MAA_NS::utf8_to_crt(key) << ": " << MAA_NS::utf8_to_crt(val) << "\n";
+                }
+            }
         }
     }
     std::cout << "\n";
@@ -618,7 +680,7 @@ bool Interactor::check_validity()
 {
     using namespace MAA_PROJECT_INTERFACE_NS;
 
-    if (config_.configuration().controller.type_enum == InterfaceData::Controller::Type::Win32
+    if (config_.configuration().controller.type == InterfaceData::Controller::Type::Win32
         && config_.configuration().win32.hwnd == nullptr) {
         auto& name = config_.configuration().controller.name;
         auto controller_iter = std::ranges::find(config_.interface_data().controller, name, std::mem_fn(&InterfaceData::Controller::name));
