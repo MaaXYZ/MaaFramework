@@ -1,5 +1,6 @@
 #pragma once
 
+#include <mutex>
 #include <optional>
 
 #include <meojson/json.hpp>
@@ -88,6 +89,7 @@ private:
     inline static int64_t s_req_id_ = 0;
     bool is_bound_ = false;
 
+    std::mutex send_mutex_;
     zmq::pollitem_t zmq_pollitem_send_ {};
     zmq::pollitem_t zmq_pollitem_recv_ {};
     std::chrono::milliseconds timeout_ = std::chrono::milliseconds::max();
