@@ -29,6 +29,8 @@ public:
 
     bool is_first_time_use() const { return first_time_use_; }
 
+    const auto& resource_dir() const { return resource_dir_; }
+
 private:
     std::optional<RuntimeParam::Task> generate_runtime_task(const Configuration::Task& config_task) const;
 

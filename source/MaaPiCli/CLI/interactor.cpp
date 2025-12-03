@@ -2,6 +2,7 @@
 
 #include <algorithm>
 #include <format>
+#include <fstream>
 #include <functional>
 #include <ranges>
 #include <regex>
@@ -16,6 +17,32 @@
 #include "ProjectInterface/Runner.h"
 
 static bool s_eof = false;
+
+// 获取显示名称：优先使用 label，否则使用 name
+static std::string get_display_name(const std::string& name, const std::string& label)
+{
+    return label.empty() ? name : label;
+}
+
+// 读取文本内容：如果是文件路径则读取文件，否则直接返回
+static std::string read_text_content(const std::string& text, const std::filesystem::path& base_dir)
+{
+    if (text.empty()) {
+        return {};
+    }
+    // 尝试作为文件路径读取
+    auto file_path = base_dir / text;
+    if (std::filesystem::exists(file_path)) {
+        std::ifstream ifs(file_path);
+        if (ifs.is_open()) {
+            std::stringstream buffer;
+            buffer << ifs.rdbuf();
+            return buffer.str();
+        }
+    }
+    // 不是文件，直接返回文本
+    return text;
+}
 
 // return [1, size]
 std::vector<int> input_multi_impl(size_t size, std::string_view prompt)
@@ -217,15 +244,55 @@ void Interactor::interact_for_first_time_use()
 
 void Interactor::welcome() const
 {
-    if (config_.interface_data().welcome.empty()) {
-        std::cout << "Welcome to use Maa Project Interface CLI!\n";
+    using namespace MAA_PROJECT_INTERFACE_NS;
+
+    const auto& data = config_.interface_data();
+    const auto& base_dir = config_.resource_dir();
+
+    // 显示标题或项目名称
+    if (!data.title.empty()) {
+        std::cout << MAA_NS::utf8_to_crt(data.title) << "\n";
     }
     else {
-        std::cout << MAA_NS::utf8_to_crt(config_.interface_data().welcome) << "\n";
+        std::string display_name = get_display_name(data.name, data.label);
+        if (!display_name.empty()) {
+            std::cout << MAA_NS::utf8_to_crt(display_name);
+            if (!data.version.empty()) {
+                std::cout << " v" << MAA_NS::utf8_to_crt(data.version);
+            }
+            std::cout << "\n";
+        }
     }
     std::cout << "MaaFramework: " << MAA_VERSION << "\n\n";
 
-    std::cout << "Version: " << MAA_NS::utf8_to_crt(config_.interface_data().version) << "\n\n";
+    // 显示欢迎信息
+    if (!data.welcome.empty()) {
+        std::string welcome_text = read_text_content(data.welcome, base_dir);
+        std::cout << MAA_NS::utf8_to_crt(welcome_text) << "\n\n";
+    }
+
+    // 显示项目描述
+    if (!data.description.empty()) {
+        std::string desc_text = read_text_content(data.description, base_dir);
+        std::cout << "Description: " << MAA_NS::utf8_to_crt(desc_text) << "\n\n";
+    }
+
+    // 显示 GitHub 地址
+    if (!data.github.empty()) {
+        std::cout << "GitHub: " << MAA_NS::utf8_to_crt(data.github) << "\n\n";
+    }
+
+    // 显示联系方式
+    if (!data.contact.empty()) {
+        std::string contact_text = read_text_content(data.contact, base_dir);
+        std::cout << "Contact: " << MAA_NS::utf8_to_crt(contact_text) << "\n\n";
+    }
+
+    // 显示许可证信息
+    if (!data.license.empty()) {
+        std::string license_text = read_text_content(data.license, base_dir);
+        std::cout << "License: " << MAA_NS::utf8_to_crt(license_text) << "\n\n";
+    }
 }
 
 bool Interactor::interact_once()
@@ -280,6 +347,8 @@ void Interactor::select_controller()
     using namespace MAA_PROJECT_INTERFACE_NS;
 
     const auto& all_controllers = config_.interface_data().controller;
+    const auto& base_dir = config_.resource_dir();
+
     if (all_controllers.empty()) {
         LogError << "Controller is empty";
         return;
@@ -289,7 +358,13 @@ void Interactor::select_controller()
     if (all_controllers.size() != 1) {
         std::cout << "### Select controller ###\n\n";
         for (size_t i = 0; i < all_controllers.size(); ++i) {
-            std::cout << MAA_NS::utf8_to_crt(std::format("\t{}. {}\n", i + 1, all_controllers[i].name));
+            const auto& ctrl = all_controllers[i];
+            std::string display_name = get_display_name(ctrl.name, ctrl.label);
+            std::cout << MAA_NS::utf8_to_crt(std::format("\t{}. {}\n", i + 1, display_name));
+            if (!ctrl.description.empty()) {
+                std::string desc_text = read_text_content(ctrl.description, base_dir);
+                std::cout << "\t   " << MAA_NS::utf8_to_crt(desc_text) << "\n";
+            }
         }
         std::cout << "\n";
         index = input(all_controllers.size()) - 1;
@@ -466,6 +541,8 @@ void Interactor::select_resource()
     using namespace MAA_PROJECT_INTERFACE_NS;
 
     const auto& all_resources = config_.interface_data().resource;
+    const auto& base_dir = config_.resource_dir();
+
     if (all_resources.empty()) {
         LogError << "Resource is empty";
         return;
@@ -475,7 +552,13 @@ void Interactor::select_resource()
     if (all_resources.size() != 1) {
         std::cout << "### Select resource ###\n\n";
         for (size_t i = 0; i < all_resources.size(); ++i) {
-            std::cout << MAA_NS::utf8_to_crt(std::format("\t{}. {}\n", i + 1, all_resources[i].name));
+            const auto& res = all_resources[i];
+            std::string display_name = get_display_name(res.name, res.label);
+            std::cout << MAA_NS::utf8_to_crt(std::format("\t{}. {}\n", i + 1, display_name));
+            if (!res.description.empty()) {
+                std::string desc_text = read_text_content(res.description, base_dir);
+                std::cout << "\t   " << MAA_NS::utf8_to_crt(desc_text) << "\n";
+            }
         }
         std::cout << "\n";
         index = input(all_resources.size()) - 1;
@@ -493,6 +576,8 @@ void Interactor::add_task()
     using namespace MAA_PROJECT_INTERFACE_NS;
 
     const auto& all_data_tasks = config_.interface_data().task;
+    const auto& base_dir = config_.resource_dir();
+
     if (all_data_tasks.empty()) {
         LogError << "Task is empty";
         return;
@@ -500,7 +585,13 @@ void Interactor::add_task()
 
     std::cout << "### Add task ###\n\n";
     for (size_t i = 0; i < all_data_tasks.size(); ++i) {
-        std::cout << MAA_NS::utf8_to_crt(std::format("\t{}. {}\n", i + 1, all_data_tasks[i].name));
+        const auto& task = all_data_tasks[i];
+        std::string display_name = get_display_name(task.name, task.label);
+        std::cout << MAA_NS::utf8_to_crt(std::format("\t{}. {}\n", i + 1, display_name));
+        if (!task.description.empty()) {
+            std::string desc_text = read_text_content(task.description, base_dir);
+            std::cout << "\t   " << MAA_NS::utf8_to_crt(desc_text) << "\n";
+        }
     }
     std::cout << "\n";
     auto input_indexes = input_multi(all_data_tasks.size());
@@ -520,6 +611,10 @@ void Interactor::add_task()
             Configuration::Option config_opt;
             config_opt.name = option_name;
 
+            // 获取 option 的显示名称
+            std::string opt_display_name = get_display_name(option_name, opt.label);
+            std::string task_display_name = get_display_name(data_task.name, data_task.label);
+
             switch (opt.type) {
             case InterfaceData::Option::Type::Select: {
                 if (!opt.default_case.empty()) {
@@ -527,9 +622,19 @@ void Interactor::add_task()
                 }
                 else {
                     std::cout << MAA_NS::utf8_to_crt(
-                        std::format("\n\n## Select option \"{}\" for \"{}\" ##\n\n", option_name, data_task.name));
+                        std::format("\n\n## Select option \"{}\" for \"{}\" ##\n\n", opt_display_name, task_display_name));
+                    if (!opt.description.empty()) {
+                        std::string desc_text = read_text_content(opt.description, base_dir);
+                        std::cout << MAA_NS::utf8_to_crt(desc_text) << "\n\n";
+                    }
                     for (size_t i = 0; i < opt.cases.size(); ++i) {
-                        std::cout << MAA_NS::utf8_to_crt(std::format("\t{}. {}\n", i + 1, opt.cases[i].name));
+                        const auto& case_item = opt.cases[i];
+                        std::string case_display_name = get_display_name(case_item.name, case_item.label);
+                        std::cout << MAA_NS::utf8_to_crt(std::format("\t{}. {}\n", i + 1, case_display_name));
+                        if (!case_item.description.empty()) {
+                            std::string case_desc = read_text_content(case_item.description, base_dir);
+                            std::cout << "\t   " << MAA_NS::utf8_to_crt(case_desc) << "\n";
+                        }
                     }
                     std::cout << "\n";
 
@@ -539,9 +644,15 @@ void Interactor::add_task()
             } break;
 
             case InterfaceData::Option::Type::Switch: {
-                std::cout << MAA_NS::utf8_to_crt(std::format("\n\n## Switch option \"{}\" for \"{}\" ##\n\n", option_name, data_task.name));
-                std::cout << "\t1. " << MAA_NS::utf8_to_crt(opt.cases[0].name) << "\n";
-                std::cout << "\t2. " << MAA_NS::utf8_to_crt(opt.cases[1].name) << "\n";
+                std::cout << MAA_NS::utf8_to_crt(std::format("\n\n## Switch option \"{}\" for \"{}\" ##\n\n", opt_display_name, task_display_name));
+                if (!opt.description.empty()) {
+                    std::string desc_text = read_text_content(opt.description, base_dir);
+                    std::cout << MAA_NS::utf8_to_crt(desc_text) << "\n\n";
+                }
+                std::string case0_name = get_display_name(opt.cases[0].name, opt.cases[0].label);
+                std::string case1_name = get_display_name(opt.cases[1].name, opt.cases[1].label);
+                std::cout << "\t1. " << MAA_NS::utf8_to_crt(case0_name) << "\n";
+                std::cout << "\t2. " << MAA_NS::utf8_to_crt(case1_name) << "\n";
                 std::cout << "\nInput Y/N [Y]: ";
 
                 std::cin.sync();
@@ -558,11 +669,20 @@ void Interactor::add_task()
             } break;
 
             case InterfaceData::Option::Type::Input: {
-                std::cout << MAA_NS::utf8_to_crt(std::format("\n\n## Input option \"{}\" for \"{}\" ##\n\n", option_name, data_task.name));
+                std::cout << MAA_NS::utf8_to_crt(std::format("\n\n## Input option \"{}\" for \"{}\" ##\n\n", opt_display_name, task_display_name));
+                if (!opt.description.empty()) {
+                    std::string desc_text = read_text_content(opt.description, base_dir);
+                    std::cout << MAA_NS::utf8_to_crt(desc_text) << "\n\n";
+                }
 
                 for (const auto& input_def : opt.inputs) {
                     std::string default_val = input_def.default_;
-                    std::cout << MAA_NS::utf8_to_crt(std::format("{} [{}]: ", input_def.name, default_val));
+                    std::string input_display_name = get_display_name(input_def.name, input_def.label);
+                    if (!input_def.description.empty()) {
+                        std::string input_desc = read_text_content(input_def.description, base_dir);
+                        std::cout << MAA_NS::utf8_to_crt(input_desc) << "\n";
+                    }
+                    std::cout << MAA_NS::utf8_to_crt(std::format("{} [{}]: ", input_display_name, default_val));
 
                     std::cin.sync();
                     std::string buffer;
@@ -575,7 +695,8 @@ void Interactor::add_task()
                         if (auto pattern = MAA_NS::regex_valid(MAA_NS::to_u16(input_def.verify))) {
                             auto value_u16 = MAA_NS::to_u16(value);
                             while (!std::regex_match(value_u16, *pattern)) {
-                                std::cout << "Invalid input, please retry: ";
+                                std::string error_msg = input_def.pattern_msg.empty() ? "Invalid input, please retry: " : input_def.pattern_msg + ": ";
+                                std::cout << MAA_NS::utf8_to_crt(error_msg);
                                 std::getline(std::cin, buffer);
                                 value = buffer.empty() ? default_val : buffer;
                                 value_u16 = MAA_NS::to_u16(value);

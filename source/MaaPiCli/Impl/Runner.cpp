@@ -64,6 +64,25 @@ bool Runner::run(const RuntimeParam& param)
         MaaControllerDestroy(controller_handle);
     });
 
+    // 设置分辨率选项
+    if (param.display_config.raw) {
+        MaaBool raw = true;
+        MaaControllerSetOption(controller_handle, MaaCtrlOption_ScreenshotUseRawSize, &raw, sizeof(raw));
+    }
+    else if (param.display_config.long_side.has_value()) {
+        int long_side = param.display_config.long_side.value();
+        MaaControllerSetOption(controller_handle, MaaCtrlOption_ScreenshotTargetLongSide, &long_side, sizeof(long_side));
+    }
+    else if (param.display_config.short_side.has_value()) {
+        int short_side = param.display_config.short_side.value();
+        MaaControllerSetOption(controller_handle, MaaCtrlOption_ScreenshotTargetShortSide, &short_side, sizeof(short_side));
+    }
+    // 如果都没设置，使用默认值 720
+    else {
+        int short_side = 720;
+        MaaControllerSetOption(controller_handle, MaaCtrlOption_ScreenshotTargetShortSide, &short_side, sizeof(short_side));
+    }
+
     MaaId cid = controller_handle->post_connection();
     MaaId rid = 0;
     for (const auto& path : param.resource_path) {

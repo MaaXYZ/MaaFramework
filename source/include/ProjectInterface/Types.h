@@ -37,29 +37,43 @@ struct InterfaceData
         };
 
         std::string name;
+        std::string label;
+        std::string description;
         Type type = Type::Adb;
+
+        // 分辨率设置，三者互斥
+        std::optional<int> display_short_side; // 默认720
+        std::optional<int> display_long_side;
+        bool display_raw = false;
 
         Win32Config win32;
 
-        MEO_JSONIZATION(name, type, MEO_OPT win32);
+        MEO_JSONIZATION(name, MEO_OPT label, MEO_OPT description, type, MEO_OPT display_short_side, MEO_OPT display_long_side, MEO_OPT display_raw, MEO_OPT win32);
     };
 
     struct Resource
     {
         std::string name;
+        std::string label;
+        std::string description;
         std::vector<std::string> path;
+        std::vector<std::string> controller; // 支持的控制器列表
 
-        MEO_JSONIZATION(name, path);
+        MEO_JSONIZATION(name, MEO_OPT label, MEO_OPT description, path, MEO_OPT controller);
     };
 
     struct Task
     {
         std::string name;
+        std::string label;
+        std::string description;
         std::string entry;
+        bool default_check = false;
         json::object pipeline_override;
         std::vector<std::string> option;
+        std::vector<std::string> resource; // 支持的资源包列表
 
-        MEO_JSONIZATION(name, entry, MEO_OPT pipeline_override, MEO_OPT option);
+        MEO_JSONIZATION(name, MEO_OPT label, MEO_OPT description, entry, MEO_OPT default_check, MEO_OPT pipeline_override, MEO_OPT option, MEO_OPT resource);
     };
 
     struct Option
@@ -74,10 +88,12 @@ struct InterfaceData
         struct Case
         {
             std::string name;
+            std::string label;
+            std::string description;
             json::object pipeline_override;
             std::vector<std::string> option; // 子选项
 
-            MEO_JSONIZATION(name, MEO_OPT pipeline_override, MEO_OPT option);
+            MEO_JSONIZATION(name, MEO_OPT label, MEO_OPT description, MEO_OPT pipeline_override, MEO_OPT option);
         };
 
         struct Input
@@ -90,20 +106,25 @@ struct InterfaceData
             };
 
             std::string name;
+            std::string label;
+            std::string description;
             std::string default_;
             PipelineType pipeline_type = PipelineType::String;
-            std::string verify; // regex
+            std::string verify;      // regex
+            std::string pattern_msg; // 验证失败提示
 
-            MEO_JSONIZATION(name, MEO_OPT MEO_KEY("default") default_, MEO_OPT pipeline_type, MEO_OPT verify);
+            MEO_JSONIZATION(name, MEO_OPT label, MEO_OPT description, MEO_OPT MEO_KEY("default") default_, MEO_OPT pipeline_type, MEO_OPT verify, MEO_OPT pattern_msg);
         };
 
         Type type = Type::Select;
+        std::string label;
+        std::string description;
         std::vector<Case> cases;
         std::vector<Input> inputs;
         json::object pipeline_override; // for input type
         std::string default_case;       // case.name
 
-        MEO_JSONIZATION(MEO_OPT type, MEO_OPT cases, MEO_OPT inputs, MEO_OPT pipeline_override, MEO_OPT default_case);
+        MEO_JSONIZATION(MEO_OPT type, MEO_OPT label, MEO_OPT description, MEO_OPT cases, MEO_OPT inputs, MEO_OPT pipeline_override, MEO_OPT default_case);
     };
 
     struct Agent
@@ -117,8 +138,14 @@ struct InterfaceData
 
     int interface_version = 2;
     std::string name;
+    std::string label;
+    std::string title;
     std::string version;
     std::string welcome;
+    std::string description;
+    std::string contact;
+    std::string license;
+    std::string github;
 
     std::vector<Controller> controller;
     std::vector<Resource> resource;
@@ -129,8 +156,14 @@ struct InterfaceData
     MEO_JSONIZATION(
         interface_version,
         MEO_OPT name,
+        MEO_OPT label,
+        MEO_OPT title,
         MEO_OPT version,
         MEO_OPT welcome,
+        MEO_OPT description,
+        MEO_OPT contact,
+        MEO_OPT license,
+        MEO_OPT github,
         controller,
         resource,
         task,
@@ -197,6 +230,14 @@ struct Configuration
 
 struct RuntimeParam
 {
+    // 分辨率设置，三者互斥
+    struct DisplayConfig
+    {
+        std::optional<int> short_side; // 默认720
+        std::optional<int> long_side;
+        bool raw = false;
+    };
+
     struct AdbParam
     {
         std::string adb_path;
@@ -236,6 +277,7 @@ struct RuntimeParam
     int32_t gpu = MaaInferenceDevice_Auto;
 
     std::optional<Agent> agent;
+    DisplayConfig display_config;
 };
 
 MAA_PROJECT_INTERFACE_NS_END
