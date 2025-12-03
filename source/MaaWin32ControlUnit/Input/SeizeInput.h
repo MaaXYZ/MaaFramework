@@ -12,12 +12,13 @@ MAA_CTRL_UNIT_NS_BEGIN
 class SeizeInput : public InputBase
 {
 public:
-    SeizeInput(HWND hwnd)
+    SeizeInput(HWND hwnd, bool block_input = false)
         : hwnd_(hwnd)
+        , block_input_(block_input)
     {
     }
 
-    virtual ~SeizeInput() override = default;
+    virtual ~SeizeInput() override;
 
 public: // from InputBase
     virtual MaaControllerFeature get_features() const override;
@@ -38,8 +39,10 @@ public: // from InputBase
     virtual bool scroll(int dx, int dy) override;
 
 private:
-    HWND hwnd_ = nullptr;
     void ensure_foreground();
+
+    HWND hwnd_ = nullptr;
+    const bool block_input_ = false;
 };
 
 MAA_CTRL_UNIT_NS_END

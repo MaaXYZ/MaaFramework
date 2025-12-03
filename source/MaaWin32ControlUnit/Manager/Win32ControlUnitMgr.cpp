@@ -74,13 +74,13 @@ bool Win32ControlUnitMgr::connect()
     auto make_input = [&](MaaWin32InputMethod method) -> std::shared_ptr<InputBase> {
         switch (method) {
         case MaaWin32InputMethod_Seize:
-            return std::make_shared<SeizeInput>(hwnd_);
+            return std::make_shared<SeizeInput>(hwnd_, true);
         case MaaWin32InputMethod_SendMessage:
             return std::make_shared<MessageInput>(hwnd_, MessageInput::Mode::SendMessage, false, false);
         case MaaWin32InputMethod_PostMessage:
             return std::make_shared<MessageInput>(hwnd_, MessageInput::Mode::PostMessage, false, false);
         case MaaWin32InputMethod_LegacyEvent:
-            return std::make_shared<LegacyEventInput>(hwnd_);
+            return std::make_shared<LegacyEventInput>(hwnd_, true);
         case MaaWin32InputMethod_PostThreadMessage:
             return std::make_shared<PostThreadMessageInput>(hwnd_);
         case MaaWin32InputMethod_SendMessageWithCursorPos:
