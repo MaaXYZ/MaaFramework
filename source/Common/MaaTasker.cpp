@@ -181,7 +181,7 @@ MaaTaskId MaaTaskerPostRecognition(MaaTasker* tasker, const MaaImageBuffer* imag
 
 MaaTaskId MaaTaskerPostAction(MaaTasker* tasker, const MaaRect* box, const char* reco_detail, const char* action_data)
 {
-    LogFunc << VAR_VOIDP(tasker) << VAR_VOIDP(box) << VAR(reco_detail) << VAR(action_data);
+    LogFunc << VAR_VOIDP(tasker) << VAR(reco_detail) << VAR(action_data);
 
     if (!tasker) {
         LogError << "handle is null";
