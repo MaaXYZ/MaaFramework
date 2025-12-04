@@ -231,7 +231,7 @@ void Interactor::welcome() const
 
     // 显示标题或项目名称
     if (!data.title.empty()) {
-        std::cout << MAA_NS::utf8_to_crt(config_.translate(data.title)) << "\n";
+        std::cout << MAA_NS::utf8_to_crt(config_.translate(data.title)) << "\n\n";
     }
     else {
         std::string display_name = get_display_name(data.name, data.label);
@@ -240,7 +240,7 @@ void Interactor::welcome() const
             if (!data.version.empty()) {
                 std::cout << " v" << MAA_NS::utf8_to_crt(data.version);
             }
-            std::cout << "\n";
+            std::cout << "\n\n";
         }
     }
 
