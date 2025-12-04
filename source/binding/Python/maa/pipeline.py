@@ -337,8 +337,8 @@ class JPipelineParser:
 
     @classmethod
     def _parse_param(
-        cls, param_type: str, param_data: dict, param_type_map: dict, default_class
-    ):
+        cls, param_type: JRecognitionType | JActionType, param_data: dict, param_type_map: dict, default_class
+    ) -> JRecognitionParam | JActionParam:
         """Generic function to parse parameters based on type map."""
         param_class = param_type_map.get(param_type)
         if not param_class:
@@ -357,7 +357,7 @@ class JPipelineParser:
 
     @classmethod
     def _parse_recognition_param(
-        cls, param_type: str, param_data: dict
+        cls, param_type: JRecognitionType, param_data: dict
     ) -> JRecognitionParam:
         """Convert dict to appropriate JRecognitionParam variant based on type."""
         param_type_map = {
@@ -373,7 +373,7 @@ class JPipelineParser:
         return cls._parse_param(param_type, param_data, param_type_map, JDirectHit)
 
     @classmethod
-    def _parse_action_param(cls, param_type: str, param_data: dict) -> JActionParam:
+    def _parse_action_param(cls, param_type: JActionType, param_data: dict) -> JActionParam:
         """Convert dict to appropriate JActionParam variant based on type."""
         param_type_map = {
             JActionType.DoNothing: JDoNothing,
@@ -414,19 +414,19 @@ class JPipelineParser:
 
         # Convert recognition
         recognition_data: dict = data.get("recognition")
-        recognition_type: str = recognition_data.get("type")
+        recognition_type: JRecognitionType = JRecognitionType(recognition_data.get("type"))
         recognition_param_data: dict = recognition_data.get("param")
         recognition_param = cls._parse_recognition_param(
             recognition_type, recognition_param_data
         )
-        recognition = JRecognition(type=JRecognitionType(recognition_type), param=recognition_param)
+        recognition = JRecognition(type=recognition_type, param=recognition_param)
 
         # Convert action
         action_data: dict = data.get("action")
-        action_type: str = action_data.get("type")
+        action_type: JActionType = JActionType(action_data.get("type"))
         action_param_data = action_data.get("param")
         action_param = cls._parse_action_param(action_type, action_param_data)
-        action = JAction(type=JActionType(action_type), param=action_param)
+        action = JAction(type=action_type, param=action_param)
 
         pre_wait_freezes = cls._parse_wait_freezes(data.get("pre_wait_freezes"))  # type: ignore
         post_wait_freezes = cls._parse_wait_freezes(data.get("post_wait_freezes"))  # type: ignore
