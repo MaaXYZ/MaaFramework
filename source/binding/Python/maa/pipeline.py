@@ -1,11 +1,42 @@
 import json
 from dataclasses import dataclass
 from typing import Any, List, Tuple, Union, Dict
-
+from strenum import StrEnum
 # Type aliases to match C++ std::variant types
 JRect = Tuple[int, int, int, int]  # std::array<int, 4>
 JTarget = Union[bool, str, JRect]  # std::variant<bool, std::string, JRect>
 
+# strenum
+class JRecognitionType(StrEnum):
+    DirectHit = "DirectHit"
+    TemplateMatch = "TemplateMatch"
+    FeatureMatch = "FeatureMatch"
+    ColorMatch = "ColorMatch"
+    OCR = "OCR"
+    NeuralNetworkClassify = "NeuralNetworkClassify"
+    NeuralNetworkDetect = "NeuralNetworkDetect"
+    Custom = "Custom"
+
+class JActionType(StrEnum):
+    DoNothing = "DoNothing"
+    Click = "Click"
+    LongPress = "LongPress"
+    Swipe = "Swipe"
+    MultiSwipe = "MultiSwipe"
+    TouchDown = "TouchDown"
+    TouchMove = "TouchMove"
+    TouchUp = "TouchUp"
+    ClickKey = "ClickKey"
+    LongPressKey = "LongPressKey"
+    KeyDown = "KeyDown"
+    KeyUp = "KeyUp"
+    InputText = "InputText"
+    StartApp = "StartApp"
+    StopApp = "StopApp"
+    StopTask = "StopTask"
+    Scroll = "Scroll"
+    Command = "Command"
+    Custom = "Custom"
 
 # Recognition parameter dataclasses (matching C++ JRecognitionParam variants)
 @dataclass
@@ -242,13 +273,13 @@ JActionParam = Union[
 # Main pipeline dataclasses
 @dataclass
 class JRecognition:
-    type: str
+    type: JRecognitionType
     param: JRecognitionParam
 
 
 @dataclass
 class JAction:
-    type: str
+    type: JActionType
     param: JActionParam
 
 
@@ -330,14 +361,14 @@ class JPipelineParser:
     ) -> JRecognitionParam:
         """Convert dict to appropriate JRecognitionParam variant based on type."""
         param_type_map = {
-            "DirectHit": JDirectHit,
-            "TemplateMatch": JTemplateMatch,
-            "FeatureMatch": JFeatureMatch,
-            "ColorMatch": JColorMatch,
-            "OCR": JOCR,
-            "NeuralNetworkClassify": JNeuralNetworkClassify,
-            "NeuralNetworkDetect": JNeuralNetworkDetect,
-            "Custom": JCustomRecognition,
+            JRecognitionType.DirectHit: JDirectHit,
+            JRecognitionType.TemplateMatch: JTemplateMatch,
+            JRecognitionType.FeatureMatch: JFeatureMatch,
+            JRecognitionType.ColorMatch: JColorMatch,
+            JRecognitionType.OCR: JOCR,
+            JRecognitionType.NeuralNetworkClassify: JNeuralNetworkClassify,
+            JRecognitionType.NeuralNetworkDetect: JNeuralNetworkDetect,
+            JRecognitionType.Custom: JCustomRecognition,
         }
         return cls._parse_param(param_type, param_data, param_type_map, JDirectHit)
 
@@ -345,25 +376,25 @@ class JPipelineParser:
     def _parse_action_param(cls, param_type: str, param_data: dict) -> JActionParam:
         """Convert dict to appropriate JActionParam variant based on type."""
         param_type_map = {
-            "DoNothing": JDoNothing,
-            "Click": JClick,
-            "LongPress": JLongPress,
-            "Swipe": JSwipe,
-            "MultiSwipe": JMultiSwipe,
-            "TouchDown": JTouch,
-            "TouchMove": JTouch,
-            "TouchUp": JTouchUp,
-            "ClickKey": JClickKey,
-            "LongPressKey": JLongPressKey,
-            "KeyDown": JKey,
-            "KeyUp": JKey,
-            "InputText": JInputText,
-            "StartApp": JStartApp,
-            "StopApp": JStopApp,
-            "StopTask": JStopTask,
-            "Scroll": JScroll,
-            "Command": JCommand,
-            "Custom": JCustomAction,
+            JActionType.DoNothing: JDoNothing,
+            JActionType.Click: JClick,
+            JActionType.LongPress: JLongPress,
+            JActionType.Swipe: JSwipe,
+            JActionType.MultiSwipe: JMultiSwipe,
+            JActionType.TouchDown: JTouch,
+            JActionType.TouchMove: JTouch,
+            JActionType.TouchUp: JTouchUp,
+            JActionType.ClickKey: JClickKey,
+            JActionType.LongPressKey: JLongPressKey,
+            JActionType.KeyDown: JKey,
+            JActionType.KeyUp: JKey,
+            JActionType.InputText: JInputText,
+            JActionType.StartApp: JStartApp,
+            JActionType.StopApp: JStopApp,
+            JActionType.StopTask: JStopTask,
+            JActionType.Scroll: JScroll,
+            JActionType.Command: JCommand,
+            JActionType.Custom: JCustomAction,
         }
 
         return cls._parse_param(param_type, param_data, param_type_map, JDoNothing)
@@ -388,14 +419,14 @@ class JPipelineParser:
         recognition_param = cls._parse_recognition_param(
             recognition_type, recognition_param_data
         )
-        recognition = JRecognition(type=recognition_type, param=recognition_param)
+        recognition = JRecognition(type=JRecognitionType(recognition_type), param=recognition_param)
 
         # Convert action
         action_data: dict = data.get("action")
         action_type: str = action_data.get("type")
         action_param_data = action_data.get("param")
         action_param = cls._parse_action_param(action_type, action_param_data)
-        action = JAction(type=action_type, param=action_param)
+        action = JAction(type=JActionType(action_type), param=action_param)
 
         pre_wait_freezes = cls._parse_wait_freezes(data.get("pre_wait_freezes"))  # type: ignore
         post_wait_freezes = cls._parse_wait_freezes(data.get("post_wait_freezes"))  # type: ignore

@@ -12,6 +12,7 @@ from .job import Job, JobWithResult
 from .event_sink import EventSink, NotificationType
 from .resource import Resource
 from .controller import Controller
+from .pipeline import JRecognitionParam, JActionParam, JRecognitionType, JActionType
 
 
 class Tasker:
@@ -139,7 +140,7 @@ class Tasker:
         return self._gen_task_job(taskid)
 
     def post_recognition(
-        self, reco_type: str, reco_param: Dict, image: numpy.ndarray
+        self, reco_type: JRecognitionType, reco_param: JRecognitionParam, image: numpy.ndarray
     ) -> JobWithResult:
         """异步执行识别 / Asynchronously execute recognition
 
@@ -163,7 +164,7 @@ class Tasker:
         return self._gen_task_job(taskid)
 
     def post_action(
-        self, action_type: str, action_param: Dict, box: Rect, reco_detail: str
+        self, action_type: JActionType, action_param: JActionParam, box: Rect = (0, 0, 0, 0), reco_detail: str = ""
     ) -> JobWithResult:
         """异步执行操作 / Asynchronously execute action
 
