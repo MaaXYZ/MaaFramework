@@ -1,6 +1,6 @@
 import json
-from dataclasses import dataclass
-from typing import Any, List, Tuple, Union, Dict
+from dataclasses import dataclass, field
+from typing import Any, List, Optional, Tuple, Union, Dict
 from strenum import StrEnum
 # Type aliases to match C++ std::variant types
 JRect = Tuple[int, int, int, int]  # std::array<int, 4>
@@ -46,84 +46,84 @@ class JDirectHit:
 
 @dataclass
 class JTemplateMatch:
-    roi: JTarget
-    roi_offset: JRect
-    template: List[str]
-    threshold: List[float]
-    order_by: str
-    index: int
-    method: int
-    green_mask: bool
+    template: List[str]  # 必选
+    roi: JTarget = (0, 0, 0, 0)
+    roi_offset: JRect = (0, 0, 0, 0)
+    threshold: List[float] = field(default_factory=lambda: [0.7])
+    order_by: str = "Horizontal"
+    index: int = 0
+    method: int = 5
+    green_mask: bool = False
 
 
 @dataclass
 class JFeatureMatch:
-    roi: JTarget
-    roi_offset: JRect
-    template: List[str]
-    detector: str
-    order_by: str
-    count: int
-    index: int
-    green_mask: bool
-    ratio: float
+    template: List[str]  # 必选
+    roi: JTarget = (0, 0, 0, 0)
+    roi_offset: JRect = (0, 0, 0, 0)
+    detector: str = "SIFT"
+    order_by: str = "Horizontal"
+    count: int = 4
+    index: int = 0
+    green_mask: bool = False
+    ratio: float = 0.6
 
 
 @dataclass
 class JColorMatch:
-    roi: JTarget
-    roi_offset: JRect
-    lower: List[List[int]]
-    upper: List[List[int]]
-    order_by: str
-    method: int
-    count: int
-    index: int
-    connected: bool
+    lower: List[List[int]]  # 必选
+    upper: List[List[int]]  # 必选
+    roi: JTarget = (0, 0, 0, 0)
+    roi_offset: JRect = (0, 0, 0, 0)
+    order_by: str = "Horizontal"
+    method: int = 4  # RGB
+    count: int = 1
+    index: int = 0
+    connected: bool = False
 
 
 @dataclass
 class JOCR:
-    roi: JTarget
-    roi_offset: JRect
-    expected: List[str]
-    threshold: float
-    replace: List[List[str]]
-    order_by: str
-    index: int
-    only_rec: bool
-    model: str
+    expected: List[str] = field(default_factory=list)
+    roi: JTarget = (0, 0, 0, 0)
+    roi_offset: JRect = (0, 0, 0, 0)
+    threshold: float = 0.3
+    replace: List[List[str]] = field(default_factory=list)
+    order_by: str = "Horizontal"
+    index: int = 0
+    only_rec: bool = False
+    model: str = ""
 
 
 @dataclass
 class JNeuralNetworkClassify:
-    roi: JTarget
-    roi_offset: JRect
-    labels: List[str]
-    model: str
-    expected: List[int]
-    order_by: str
-    index: int
+    model: str  # 必选
+    expected: List[int] = field(default_factory=list)
+    roi: JTarget = (0, 0, 0, 0)
+    roi_offset: JRect = (0, 0, 0, 0)
+    labels: List[str] = field(default_factory=list)
+    order_by: str = "Horizontal"
+    index: int = 0
 
 
 @dataclass
 class JNeuralNetworkDetect:
-    roi: JTarget
-    roi_offset: JRect
-    labels: List[str]
-    model: str
-    expected: List[int]
-    threshold: List[float]
-    order_by: str
-    index: int
+    model: str  # 必选
+    expected: List[int] = field(default_factory=list)
+    roi: JTarget = (0, 0, 0, 0)
+    roi_offset: JRect = (0, 0, 0, 0)
+    labels: List[str] = field(default_factory=list)
+    threshold: List[float] = field(default_factory=lambda: [0.3])
+    order_by: str = "Horizontal"
+    index: int = 0
 
 
 @dataclass
 class JCustomRecognition:
-    roi: JTarget
-    roi_offset: JRect
-    custom_recognition: str
-    custom_recognition_param: Any
+    custom_recognition: str  # 必选
+    roi: JTarget = (0, 0, 0, 0)
+    roi_offset: JRect = (0, 0, 0, 0)
+    custom_recognition_param: Any = None
 
 
 # Recognition parameter union type
@@ -147,29 +147,29 @@ class JDoNothing:
 
 @dataclass
 class JClick:
-    target: JTarget
-    target_offset: JRect
+    target: JTarget = True
+    target_offset: JRect = (0, 0, 0, 0)
     contact: int = 0
 
 
 @dataclass
 class JLongPress:
-    target: JTarget
-    target_offset: JRect
-    duration: int
+    target: JTarget = True
+    target_offset: JRect = (0, 0, 0, 0)
+    duration: int = 1000
     contact: int = 0
 
 
 @dataclass
 class JSwipe:
-    starting: int
-    begin: JTarget
-    begin_offset: JRect
-    end: List[JTarget]
-    end_offset: List[JRect]
-    end_hold: List[int]
-    duration: List[int]
-    only_hover: bool
+    starting: int = 0  # MultiSwipe 中使用
+    begin: JTarget = True
+    begin_offset: JRect = (0, 0, 0, 0)
+    end: List[JTarget] = field(default_factory=lambda: [True])
+    end_offset: List[JRect] = field(default_factory=lambda: [(0, 0, 0, 0)])
+    end_hold: List[int] = field(default_factory=lambda: [0])
+    duration: List[int] = field(default_factory=lambda: [200])
+    only_hover: bool = False
     contact: int = 0
 
 
@@ -180,15 +180,15 @@ class JMultiSwipe:
 
 @dataclass
 class JTouch:
-    contact: int
-    target: JTarget
-    target_offset: JRect
-    pressure: int
+    contact: int = 0
+    target: JTarget = True
+    target_offset: JRect = (0, 0, 0, 0)
+    pressure: int = 0
 
 
 @dataclass
 class JTouchUp:
-    contact: int
+    contact: int = 0
 
 
 @dataclass
@@ -198,8 +198,8 @@ class JClickKey:
 
 @dataclass
 class JLongPressKey:
-    key: List[int]
-    duration: int
+    key: List[int]  # 必选
+    duration: int = 1000
 
 
 @dataclass
@@ -235,17 +235,17 @@ class JScroll:
 
 @dataclass
 class JCommand:
-    exec: str
-    args: List[str]
-    detach: bool
+    exec: str  # 必选
+    args: List[str] = field(default_factory=list)
+    detach: bool = False
 
 
 @dataclass
 class JCustomAction:
-    target: JTarget
-    custom_action: str
-    custom_action_param: Any
-    target_offset: JRect
+    custom_action: str  # 必选
+    target: JTarget = True
+    custom_action_param: Any = None
+    target_offset: JRect = (0, 0, 0, 0)
 
 
 # Action parameter union type
@@ -285,40 +285,40 @@ class JAction:
 
 @dataclass
 class JNodeAttr:
-    name: str
-    jump_back: bool
-    anchor: bool
+    name: str  # 必选
+    jump_back: bool = False
+    anchor: bool = False
 
 
 @dataclass
 class JWaitFreezes:
-    time: int
-    target: JTarget
-    target_offset: JRect
-    threshold: float
-    method: int
-    rate_limit: int
-    timeout: int
+    time: int = 1
+    target: JTarget = True
+    target_offset: JRect = (0, 0, 0, 0)
+    threshold: float = 0.95
+    method: int = 5
+    rate_limit: int = 1000
+    timeout: int = 20000
 
 
 @dataclass
 class JPipelineData:
-    recognition: JRecognition
-    action: JAction
-    next: List[JNodeAttr]
-    rate_limit: int
-    timeout: int
-    on_error: List[JNodeAttr]
-    anchor: List[str]
-    inverse: bool
-    enabled: bool
-    pre_delay: int
-    post_delay: int
-    pre_wait_freezes: JWaitFreezes
-    post_wait_freezes: JWaitFreezes
-    max_hit: int
-    focus: Any
-    attach: Dict
+    recognition: JRecognition  # 必选
+    action: JAction  # 必选
+    next: List[JNodeAttr] = field(default_factory=list)
+    rate_limit: int = 1000
+    timeout: int = 20000
+    on_error: List[JNodeAttr] = field(default_factory=list)
+    anchor: List[str] = field(default_factory=list)
+    inverse: bool = False
+    enabled: bool = True
+    pre_delay: int = 200
+    post_delay: int = 200
+    pre_wait_freezes: Optional[JWaitFreezes] = None
+    post_wait_freezes: Optional[JWaitFreezes] = None
+    max_hit: int = 4294967295  # UINT_MAX
+    focus: Any = None
+    attach: Dict = field(default_factory=dict)
 
 
 class JPipelineParser:
@@ -457,8 +457,8 @@ class JPipelineParser:
         return [
             JNodeAttr(
                 name=item.get("name"),
-                jump_back=item.get("jump_back"),
-                anchor=item.get("anchor"),
+                jump_back=item.get("jump_back", False),
+                anchor=item.get("anchor", False),
             )
             for item in data
         ]
