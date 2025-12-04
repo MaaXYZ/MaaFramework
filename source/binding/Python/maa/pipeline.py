@@ -337,8 +337,8 @@ class JPipelineParser:
 
     @classmethod
     def _parse_param(
-        cls, param_type: JRecognitionType | JActionType, param_data: dict, param_type_map: dict, default_class
-    ) -> JRecognitionParam | JActionParam:
+        cls, param_type: Union[JRecognitionType, JActionType], param_data: dict, param_type_map: dict, default_class
+    ) -> Union[JRecognitionParam, JActionParam]:
         """Generic function to parse parameters based on type map."""
         param_class = param_type_map.get(param_type)
         if not param_class:
