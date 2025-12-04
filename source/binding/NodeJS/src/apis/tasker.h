@@ -37,8 +37,17 @@ struct TaskerImpl : public maajs::NativeClassBase
     void remove_context_sink(MaaSinkId id);
     void clear_context_sinks();
     maajs::ValueType post_task(maajs::ValueType self, maajs::EnvType env, std::string entry, maajs::OptionalParam<maajs::ValueType> param);
-    maajs::ValueType post_recognition(maajs::ValueType self, maajs::EnvType env, maajs::ValueType image, maajs::OptionalParam<maajs::ValueType> param);
-    maajs::ValueType post_action(maajs::ValueType self, maajs::EnvType env, maajs::ValueType box, std::string reco_detail, maajs::OptionalParam<maajs::ValueType> param);
+    maajs::ValueType post_recognition(
+        maajs::ValueType self,
+        maajs::EnvType env,
+        maajs::ArrayBufferType image,
+        maajs::OptionalParam<maajs::ValueType> param);
+    maajs::ValueType post_action(
+        maajs::ValueType self,
+        maajs::EnvType env,
+        MaaRect box,
+        std::string reco_detail,
+        maajs::OptionalParam<maajs::ValueType> param);
     maajs::ValueType post_stop(maajs::ValueType self, maajs::EnvType env);
     MaaStatus status(MaaResId id);
     maajs::PromiseType wait(MaaResId id);
