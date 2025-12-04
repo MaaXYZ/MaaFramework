@@ -1,4 +1,5 @@
 import ctypes
+import dataclasses
 import json
 from pathlib import Path
 from typing import Dict, Optional, Union
@@ -154,7 +155,7 @@ class Tasker:
         """
         img_buffer = ImageBuffer()
         img_buffer.set(image)
-        reco_param_json = json.dumps(reco_param, ensure_ascii=False)
+        reco_param_json = json.dumps(dataclasses.asdict(reco_param), ensure_ascii=False)
         taskid = Library.framework().MaaTaskerPostRecognition(
             self._handle,
             reco_type.encode(),
@@ -179,7 +180,7 @@ class Tasker:
         """
         rect_buffer = RectBuffer()
         rect_buffer.set(box)
-        action_param_json = json.dumps(action_param, ensure_ascii=False)
+        action_param_json = json.dumps(dataclasses.asdict(action_param), ensure_ascii=False)
         taskid = Library.framework().MaaTaskerPostAction(
             self._handle,
             action_type.encode(),
