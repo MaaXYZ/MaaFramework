@@ -52,8 +52,14 @@ extern "C"
 
     MAA_FRAMEWORK_API MaaTaskId MaaTaskerPostTask(MaaTasker* tasker, const char* entry, const char* pipeline_override);
 
+    /**
+     * @param recognition_data Pipeline Node object json
+     */
     MAA_FRAMEWORK_API MaaTaskId MaaTaskerPostRecognition(MaaTasker* tasker, const MaaImageBuffer* image, const char* recognition_data);
 
+    /**
+     * @param action_data Pipeline Node object json
+     */
     MAA_FRAMEWORK_API MaaTaskId MaaTaskerPostAction(MaaTasker* tasker, const MaaRect* box, const char* reco_detail, const char* action_data);
 
     MAA_FRAMEWORK_API MaaStatus MaaTaskerStatus(const MaaTasker* tasker, MaaTaskId id);

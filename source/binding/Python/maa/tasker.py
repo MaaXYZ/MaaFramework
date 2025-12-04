@@ -145,7 +145,7 @@ class Tasker:
 
         Args:
             image: 前序截图 / Previous screenshot
-            recognition_data: 识别配置 json / Recognition config JSON
+            recognition_data: Pipeline Node object / Pipeline 节点对象
 
         Returns:
             JobWithResult: 任务作业对象 / Task job object
@@ -168,7 +168,7 @@ class Tasker:
         Args:
             box: 前序识别位置 / Previous recognition position
             reco_detail: 前序识别详情 / Previous recognition details
-            action_data: 操作配置 json / Action config JSON
+            action_data: Pipeline 节点对象 / Pipeline Node object
 
         Returns:
             JobWithResult: 任务作业对象 / Task job object
