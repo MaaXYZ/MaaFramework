@@ -97,32 +97,42 @@ MaaTaskId Tasker::post_task(const std::string& entry, const json::value& pipelin
     return post_task(std::move(task_ptr), pipeline_override);
 }
 
-MaaTaskId Tasker::post_recognition(const cv::Mat& image, const json::value& recognition_data)
+MaaTaskId Tasker::post_recognition(const std::string& reco_type, const json::value& reco_param, const cv::Mat& image)
 {
-    LogInfo << VAR(image) << VAR(recognition_data);
+    LogInfo << VAR(reco_type) << VAR(reco_param) << VAR(image);
 
     if (!check_stop()) {
         return MaaInvalidId;
     }
 
-    std::string entry = std::format("recognition/{}/{}", make_uuid(), recognition_data.dumps());
+    std::string entry = std::format("recognition/{}", make_uuid());
+
+    json::value pipeline_override;
+    pipeline_override[entry]["recognition"] = { { "type", reco_type }, { "param", reco_param } };
 
     auto task_ptr = std::make_shared<MAA_TASK_NS::RecognitionTask>(image, entry, this);
-    return post_task(std::move(task_ptr), { { entry, recognition_data } });
+    return post_task(std::move(task_ptr), pipeline_override);
 }
 
-MaaTaskId Tasker::post_action(const cv::Rect& box, const std::string& reco_detail, const json::value& action_data)
+MaaTaskId Tasker::post_action(
+    const std::string& action_type,
+    const json::value& action_param,
+    const cv::Rect& box,
+    const std::string& reco_detail)
 {
-    LogInfo << VAR(box) << VAR(reco_detail) << VAR(action_data);
+    LogInfo << VAR(action_type) << VAR(action_param) << VAR(box) << VAR(reco_detail);
 
     if (!check_stop()) {
         return MaaInvalidId;
     }
 
-    std::string entry = std::format("action/{}/{}", make_uuid(), action_data.dumps());
+    std::string entry = std::format("action/{}", make_uuid());
+
+    json::value pipeline_override;
+    pipeline_override[entry]["action"] = { { "type", action_type }, { "param", action_param } };
 
     auto task_ptr = std::make_shared<MAA_TASK_NS::ActionTask>(box, reco_detail, entry, this);
-    return post_task(std::move(task_ptr), { { entry, action_data } });
+    return post_task(std::move(task_ptr), pipeline_override);
 }
 
 MaaStatus Tasker::status(MaaTaskId task_id) const

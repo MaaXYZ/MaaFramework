@@ -139,48 +139,52 @@ class Tasker:
         return self._gen_task_job(taskid)
 
     def post_recognition(
-        self, image: numpy.ndarray, recognition_data: Dict = {}
+        self, reco_type: str, reco_param: Dict, image: numpy.ndarray
     ) -> JobWithResult:
         """异步执行识别 / Asynchronously execute recognition
 
         Args:
+            reco_type: 识别类型 / Recognition type
+            reco_param: 识别参数 / Recognition parameters
             image: 前序截图 / Previous screenshot
-            recognition_data: Pipeline Node object / Pipeline 节点对象
 
         Returns:
             JobWithResult: 任务作业对象 / Task job object
         """
         img_buffer = ImageBuffer()
         img_buffer.set(image)
-        recognition_json = json.dumps(recognition_data, ensure_ascii=False)
+        reco_param_json = json.dumps(reco_param, ensure_ascii=False)
         taskid = Library.framework().MaaTaskerPostRecognition(
             self._handle,
+            reco_type.encode(),
+            reco_param_json.encode(),
             img_buffer._handle,
-            recognition_json.encode(),
         )
         return self._gen_task_job(taskid)
 
     def post_action(
-        self, box: Rect, reco_detail: str, action_data: Dict = {}
+        self, action_type: str, action_param: Dict, box: Rect, reco_detail: str
     ) -> JobWithResult:
         """异步执行操作 / Asynchronously execute action
 
         Args:
+            action_type: 操作类型 / Action type
+            action_param: 操作参数 / Action parameters
             box: 前序识别位置 / Previous recognition position
             reco_detail: 前序识别详情 / Previous recognition details
-            action_data: Pipeline 节点对象 / Pipeline Node object
 
         Returns:
             JobWithResult: 任务作业对象 / Task job object
         """
         rect_buffer = RectBuffer()
         rect_buffer.set(box)
-        action_json = json.dumps(action_data, ensure_ascii=False)
+        action_param_json = json.dumps(action_param, ensure_ascii=False)
         taskid = Library.framework().MaaTaskerPostAction(
             self._handle,
+            action_type.encode(),
+            action_param_json.encode(),
             rect_buffer._handle,
             reco_detail.encode(),
-            action_json.encode(),
         )
         return self._gen_task_job(taskid)
 
@@ -743,15 +747,17 @@ class Tasker:
         Library.framework().MaaTaskerPostRecognition.restype = MaaId
         Library.framework().MaaTaskerPostRecognition.argtypes = [
             MaaTaskerHandle,
-            MaaImageBufferHandle,
             ctypes.c_char_p,
+            ctypes.c_char_p,
+            MaaImageBufferHandle,
         ]
 
         Library.framework().MaaTaskerPostAction.restype = MaaId
         Library.framework().MaaTaskerPostAction.argtypes = [
             MaaTaskerHandle,
-            MaaRectHandle,
             ctypes.c_char_p,
+            ctypes.c_char_p,
+            MaaRectHandle,
             ctypes.c_char_p,
         ]
 

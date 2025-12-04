@@ -822,7 +822,7 @@ bool AgentClient::handle_tasker_post_recognition(const json::value& j)
         return false;
     }
 
-    MaaTaskId task_id = tasker->post_recognition(get_image_cache(req.image), req.recognition_data);
+    MaaTaskId task_id = tasker->post_recognition(req.reco_type, req.reco_param, get_image_cache(req.image));
 
     TaskerPostRecognitionReverseResponse resp {
         .task_id = task_id,
@@ -846,9 +846,10 @@ bool AgentClient::handle_tasker_post_action(const json::value& j)
     }
 
     MaaTaskId task_id = tasker->post_action(
+        req.action_type,
+        req.action_param,
         cv::Rect { req.box[0], req.box[1], req.box[2], req.box[3] },
-        req.reco_detail,
-        req.action_data);
+        req.reco_detail);
 
     TaskerPostActionReverseResponse resp {
         .task_id = task_id,

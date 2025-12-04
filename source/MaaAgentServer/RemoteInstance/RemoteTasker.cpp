@@ -60,12 +60,13 @@ MaaTaskId RemoteTasker::post_task(const std::string& entry, const json::value& p
     return resp_opt->task_id;
 }
 
-MaaTaskId RemoteTasker::post_recognition(const cv::Mat& image, const json::value& recognition_data)
+MaaTaskId RemoteTasker::post_recognition(const std::string& reco_type, const json::value& reco_param, const cv::Mat& image)
 {
     TaskerPostRecognitionReverseRequest req {
         .tasker_id = tasker_id_,
+        .reco_type = reco_type,
+        .reco_param = reco_param,
         .image = server_.send_image(image),
-        .recognition_data = recognition_data,
     };
 
     auto resp_opt = server_.send_and_recv<TaskerPostRecognitionReverseResponse>(req);
@@ -76,13 +77,18 @@ MaaTaskId RemoteTasker::post_recognition(const cv::Mat& image, const json::value
     return resp_opt->task_id;
 }
 
-MaaTaskId RemoteTasker::post_action(const cv::Rect& box, const std::string& reco_detail, const json::value& action_data)
+MaaTaskId RemoteTasker::post_action(
+    const std::string& action_type,
+    const json::value& action_param,
+    const cv::Rect& box,
+    const std::string& reco_detail)
 {
     TaskerPostActionReverseRequest req {
         .tasker_id = tasker_id_,
+        .action_type = action_type,
+        .action_param = action_param,
         .box = { box.x, box.y, box.width, box.height },
         .reco_detail = reco_detail,
-        .action_data = action_data,
     };
 
     auto resp_opt = server_.send_and_recv<TaskerPostActionReverseResponse>(req);
