@@ -948,8 +948,9 @@ std::string Interactor::read_text_content(const std::string& text) const
     std::string translated = config_.translate(text);
 
     // 尝试作为文件路径读取
-    auto file_path = config_.resource_dir() / translated;
-    if (std::filesystem::exists(file_path)) {
+    auto file_path = config_.resource_dir() / MAA_NS::path(translated);
+    constexpr size_t kMaxPath = 255;
+    if (MAA_NS::path_to_utf8_string(file_path).size() < kMaxPath && std::filesystem::exists(file_path)) {
         std::ifstream ifs(file_path);
         if (ifs.is_open()) {
             std::stringstream buffer;
