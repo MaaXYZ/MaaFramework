@@ -258,9 +258,8 @@ struct Configuration
     Win32Config win32;
     std::string resource;
     std::vector<Task> task;
-    int32_t gpu = MaaInferenceDevice_Auto;
 
-    MEO_JSONIZATION(controller, MEO_OPT adb, MEO_OPT win32, resource, task, MEO_OPT gpu);
+    MEO_JSONIZATION(controller, MEO_OPT adb, MEO_OPT win32, resource, task);
 };
 
 struct RuntimeParam
