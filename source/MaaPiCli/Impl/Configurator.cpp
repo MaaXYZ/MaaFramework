@@ -207,10 +207,10 @@ std::optional<RuntimeParam> Configurator::generate_runtime() const
     if (!data_.agent.child_exec.empty()) {
         RuntimeParam::Agent agent;
 
-        // v2: relative path from interface.json directory
-        agent.child_exec = resource_dir_ / MaaNS::path(data_.agent.child_exec);
+        agent.child_exec = MaaNS::path(data_.agent.child_exec);
         agent.child_args = data_.agent.child_args;
         agent.identifier = data_.agent.identifier;
+        agent.cwd = resource_dir_;
 
         runtime.agent = std::move(agent);
     }
