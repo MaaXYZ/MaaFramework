@@ -218,19 +218,37 @@ int AdbDeviceWin32Finder::get_mumu_index(const std::string& adb_serial)
 
 int AdbDeviceWin32Finder::get_ld_index(const std::string& adb_serial)
 {
+    // 127.0.0.1:5555
+    auto pos = adb_serial.find(':');
+    if (pos != std::string::npos && adb_serial.substr(0, pos) == "127.0.0.1") {
+        constexpr int base_adb_port = 5555;
+        std::string port_str = adb_serial.substr(pos + 1);
+        if (port_str.empty() || !std::ranges::all_of(port_str, [](char c) { return std::isdigit(c); })) {
+            LogError << "Invalid adb port" << VAR(port_str);
+            return 0;
+        }
+        int port = std::stoi(port_str);
+        int index = (port - base_adb_port) / 2;
+        LogInfo << VAR(port_str) << VAR(port) << VAR(index);
+        return index;
+    }
+
+    // emulator-5554
     auto sp = string_split(adb_serial, '-');
     if (sp.size() != 2) {
+        LogError << "Address is invalid or unsupported" << VAR(adb_serial);
         return 0;
     }
 
     auto& str_port = sp.at(1);
     if (str_port.empty() || !std::ranges::all_of(str_port, [](auto c) { return std::isdigit(c); })) {
+        LogError << "Invalid emulator port" << VAR(str_port);
         return 0;
     }
 
     int port = std::stoi(str_port);
     int index = (port - 5554) / 2;
-
+    LogInfo << VAR(str_port) << VAR(port) << VAR(index);
     return index;
 }
 
