@@ -1,6 +1,13 @@
 import os
 from pathlib import Path
 import sys
+import io
+
+# Fix encoding issues on Windows (cp1252 cannot encode some Unicode characters)
+if sys.stdout.encoding != 'utf-8':
+    sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8', errors='replace')
+if sys.stderr.encoding != 'utf-8':
+    sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding='utf-8', errors='replace')
 
 if len(sys.argv) < 4:
     print("Call agent_main_test.py instead of this file.")
