@@ -2,6 +2,7 @@
 
 #include <filesystem>
 #include <ranges>
+#include <unordered_set>
 
 #include "ControlUnit/ControlUnitAPI.h"
 #include "LibraryHolder/ControlUnit.h"
@@ -41,6 +42,19 @@ std::vector<AdbDevice> AdbDeviceFinder::find() const
     if (std::filesystem::exists(env_adb)) {
         auto env_adb_devices = find_specified(env_adb);
         result.insert(result.end(), std::make_move_iterator(env_adb_devices.begin()), std::make_move_iterator(env_adb_devices.end()));
+    }
+
+    // Deduplicate devices by name, adb_path and serial
+    {
+        std::unordered_set<std::string> seen;
+        std::vector<AdbDevice> deduped;
+        for (auto& dev : result) {
+            std::string key = dev.name + "|" + dev.adb_path.string() + "|" + dev.serial;
+            if (seen.insert(key).second) {
+                deduped.emplace_back(std::move(dev));
+            }
+        }
+        result = std::move(deduped);
     }
 
     LogInfo << VAR(result);
