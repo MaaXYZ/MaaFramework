@@ -151,6 +151,68 @@ MaaTaskId MaaTaskerPostTask(MaaTasker* tasker, const char* entry, const char* pi
     return tasker->post_task(entry, *ov_opt);
 }
 
+MaaTaskId MaaTaskerPostRecognition(MaaTasker* tasker, const MaaImageBuffer* image, const char* recognition_data)
+{
+    LogFunc << VAR_VOIDP(tasker) << VAR_VOIDP(image) << VAR(recognition_data);
+
+    if (!tasker) {
+        LogError << "handle is null";
+        return MaaInvalidId;
+    }
+
+    if (!image) {
+        LogError << "image is null";
+        return MaaInvalidId;
+    }
+
+    if (!recognition_data) {
+        LogError << "recognition_data is null";
+        return MaaInvalidId;
+    }
+
+    auto data_opt = json::parse(recognition_data);
+    if (!data_opt) {
+        LogError << "failed to parse" << VAR(recognition_data);
+        return MaaInvalidId;
+    }
+
+    return tasker->post_recognition(image->get(), *data_opt);
+}
+
+MaaTaskId MaaTaskerPostAction(MaaTasker* tasker, const MaaRect* box, const char* reco_detail, const char* action_data)
+{
+    LogFunc << VAR_VOIDP(tasker) << VAR_VOIDP(box) << VAR(reco_detail) << VAR(action_data);
+
+    if (!tasker) {
+        LogError << "handle is null";
+        return MaaInvalidId;
+    }
+
+    if (!box) {
+        LogError << "box is null";
+        return MaaInvalidId;
+    }
+
+    if (!reco_detail) {
+        LogError << "reco_detail is null";
+        return MaaInvalidId;
+    }
+
+    if (!action_data) {
+        LogError << "action_data is null";
+        return MaaInvalidId;
+    }
+
+    auto data_opt = json::parse(action_data);
+    if (!data_opt) {
+        LogError << "failed to parse" << VAR(action_data);
+        return MaaInvalidId;
+    }
+
+    cv::Rect cv_box { box->x, box->y, box->width, box->height };
+    return tasker->post_action(cv_box, reco_detail, *data_opt);
+}
+
 MaaStatus MaaTaskerStatus(const MaaTasker* tasker, MaaTaskId id)
 {
     // LogFunc << VAR_VOIDP(tasker) << VAR(id);

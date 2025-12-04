@@ -60,6 +60,39 @@ MaaTaskId RemoteTasker::post_task(const std::string& entry, const json::value& p
     return resp_opt->task_id;
 }
 
+MaaTaskId RemoteTasker::post_recognition(const cv::Mat& image, const json::value& recognition_data)
+{
+    TaskerPostRecognitionReverseRequest req {
+        .tasker_id = tasker_id_,
+        .image = server_.send_image(image),
+        .recognition_data = recognition_data,
+    };
+
+    auto resp_opt = server_.send_and_recv<TaskerPostRecognitionReverseResponse>(req);
+    if (!resp_opt) {
+        return MaaInvalidId;
+    }
+
+    return resp_opt->task_id;
+}
+
+MaaTaskId RemoteTasker::post_action(const cv::Rect& box, const std::string& reco_detail, const json::value& action_data)
+{
+    TaskerPostActionReverseRequest req {
+        .tasker_id = tasker_id_,
+        .box = { box.x, box.y, box.width, box.height },
+        .reco_detail = reco_detail,
+        .action_data = action_data,
+    };
+
+    auto resp_opt = server_.send_and_recv<TaskerPostActionReverseResponse>(req);
+    if (!resp_opt) {
+        return MaaInvalidId;
+    }
+
+    return resp_opt->task_id;
+}
+
 MaaStatus RemoteTasker::status(MaaTaskId task_id) const
 {
     TaskerStatusReverseRequest req {

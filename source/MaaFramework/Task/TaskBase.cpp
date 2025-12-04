@@ -11,19 +11,11 @@
 
 MAA_TASK_NS_BEGIN
 
-TaskBase::TaskBase(std::string entry, Tasker* tasker)
-    : tasker_(tasker)
-    , entry_(std::move(entry))
-    , cur_node_(entry_)
-    , context_(Context::create(task_id_, tasker))
-{
-}
-
 TaskBase::TaskBase(std::string entry, Tasker* tasker, std::shared_ptr<Context> context)
     : tasker_(tasker)
     , entry_(std::move(entry))
     , cur_node_(entry_)
-    , context_(std::move(context))
+    , context_(context ? std::move(context) : Context::create(task_id_, tasker))
 {
 }
 

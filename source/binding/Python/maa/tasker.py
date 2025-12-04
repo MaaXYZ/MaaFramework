@@ -3,6 +3,8 @@ import json
 from pathlib import Path
 from typing import Dict, Optional, Union
 
+import numpy
+
 from .define import *
 from .library import Library
 from .buffer import ImageListBuffer, RectBuffer, StringBuffer, ImageBuffer
@@ -133,6 +135,52 @@ class Tasker:
         taskid = Library.framework().MaaTaskerPostTask(
             self._handle,
             *Tasker._gen_post_param(entry, pipeline_override),
+        )
+        return self._gen_task_job(taskid)
+
+    def post_recognition(
+        self, image: numpy.ndarray, recognition_data: Dict = {}
+    ) -> JobWithResult:
+        """异步执行识别 / Asynchronously execute recognition
+
+        Args:
+            image: 前序截图 / Previous screenshot
+            recognition_data: 识别配置 json / Recognition config JSON
+
+        Returns:
+            JobWithResult: 任务作业对象 / Task job object
+        """
+        img_buffer = ImageBuffer()
+        img_buffer.set(image)
+        recognition_json = json.dumps(recognition_data, ensure_ascii=False)
+        taskid = Library.framework().MaaTaskerPostRecognition(
+            self._handle,
+            img_buffer._handle,
+            recognition_json.encode(),
+        )
+        return self._gen_task_job(taskid)
+
+    def post_action(
+        self, box: Rect, reco_detail: str, action_data: Dict = {}
+    ) -> JobWithResult:
+        """异步执行操作 / Asynchronously execute action
+
+        Args:
+            box: 前序识别位置 / Previous recognition position
+            reco_detail: 前序识别详情 / Previous recognition details
+            action_data: 操作配置 json / Action config JSON
+
+        Returns:
+            JobWithResult: 任务作业对象 / Task job object
+        """
+        rect_buffer = RectBuffer()
+        rect_buffer.set(box)
+        action_json = json.dumps(action_data, ensure_ascii=False)
+        taskid = Library.framework().MaaTaskerPostAction(
+            self._handle,
+            rect_buffer._handle,
+            reco_detail.encode(),
+            action_json.encode(),
         )
         return self._gen_task_job(taskid)
 
@@ -688,6 +736,21 @@ class Tasker:
         Library.framework().MaaTaskerPostTask.restype = MaaId
         Library.framework().MaaTaskerPostTask.argtypes = [
             MaaTaskerHandle,
+            ctypes.c_char_p,
+            ctypes.c_char_p,
+        ]
+
+        Library.framework().MaaTaskerPostRecognition.restype = MaaId
+        Library.framework().MaaTaskerPostRecognition.argtypes = [
+            MaaTaskerHandle,
+            MaaImageBufferHandle,
+            ctypes.c_char_p,
+        ]
+
+        Library.framework().MaaTaskerPostAction.restype = MaaId
+        Library.framework().MaaTaskerPostAction.argtypes = [
+            MaaTaskerHandle,
+            MaaRectHandle,
             ctypes.c_char_p,
             ctypes.c_char_p,
         ]

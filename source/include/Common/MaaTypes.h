@@ -109,6 +109,8 @@ public:
     virtual bool set_option(MaaTaskerOption key, MaaOptionValue value, MaaOptionValueSize val_size) = 0;
 
     virtual MaaTaskId post_task(const std::string& entry, const json::value& pipeline_override) = 0;
+    virtual MaaTaskId post_recognition(const cv::Mat& image, const json::value& recognition_data) = 0;
+    virtual MaaTaskId post_action(const cv::Rect& box, const std::string& reco_detail, const json::value& action_data) = 0;
 
     virtual MaaStatus status(MaaTaskId task_id) const = 0;
     virtual MaaStatus wait(MaaTaskId task_id) const = 0;

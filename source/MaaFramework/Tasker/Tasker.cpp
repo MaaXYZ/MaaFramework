@@ -6,9 +6,12 @@
 #include "Global/PluginMgr.h"
 #include "MaaFramework/MaaMsg.h"
 #include "MaaUtils/Logger.h"
+#include "MaaUtils/Uuid.h"
 #include "Resource/ResourceMgr.h"
+#include "Task/ActionTask.h"
 #include "Task/EmptyTask.h"
 #include "Task/PipelineTask.h"
+#include "Task/RecognitionTask.h"
 
 MAA_NS_BEGIN
 
@@ -92,6 +95,34 @@ MaaTaskId Tasker::post_task(const std::string& entry, const json::value& pipelin
 
     auto task_ptr = std::make_shared<MAA_TASK_NS::PipelineTask>(entry, this);
     return post_task(std::move(task_ptr), pipeline_override);
+}
+
+MaaTaskId Tasker::post_recognition(const cv::Mat& image, const json::value& recognition_data)
+{
+    LogInfo << VAR(image) << VAR(recognition_data);
+
+    if (!check_stop()) {
+        return MaaInvalidId;
+    }
+
+    std::string entry = std::format("recognition/{}/{}", make_uuid(), recognition_data.dumps());
+
+    auto task_ptr = std::make_shared<MAA_TASK_NS::RecognitionTask>(image, entry, this);
+    return post_task(std::move(task_ptr), { { entry, recognition_data } });
+}
+
+MaaTaskId Tasker::post_action(const cv::Rect& box, const std::string& reco_detail, const json::value& action_data)
+{
+    LogInfo << VAR(box) << VAR(reco_detail) << VAR(action_data);
+
+    if (!check_stop()) {
+        return MaaInvalidId;
+    }
+
+    std::string entry = std::format("action/{}/{}", make_uuid(), action_data.dumps());
+
+    auto task_ptr = std::make_shared<MAA_TASK_NS::ActionTask>(box, reco_detail, entry, this);
+    return post_task(std::move(task_ptr), { { entry, action_data } });
 }
 
 MaaStatus Tasker::status(MaaTaskId task_id) const
