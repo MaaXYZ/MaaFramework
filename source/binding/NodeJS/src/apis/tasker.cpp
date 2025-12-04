@@ -146,7 +146,7 @@ maajs::ValueType
 maajs::ValueType TaskerImpl::post_recognition(maajs::ValueType self, maajs::EnvType, maajs::ValueType image, maajs::OptionalParam<maajs::ValueType> param)
 {
     ImageBuffer img;
-    img.set_from_value(env, image);
+    img.set(env, image);
     auto id = MaaTaskerPostRecognition(tasker, img, maajs::JsonStringify(env, param.value_or(maajs::ObjectType::New(env))).c_str());
     return maajs::CallCtorHelper(ExtContext::get(env)->taskJobCtor, self, id);
 }
