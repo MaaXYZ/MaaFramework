@@ -153,7 +153,7 @@ MaaTaskId MaaTaskerPostTask(MaaTasker* tasker, const char* entry, const char* pi
 
 MaaTaskId MaaTaskerPostRecognition(MaaTasker* tasker, const MaaImageBuffer* image, const char* recognition_data)
 {
-    LogFunc << VAR_VOIDP(tasker) << VAR_VOIDP(image) << VAR(recognition_data);
+    LogFunc << VAR_VOIDP(tasker) << VAR(recognition_data);
 
     if (!tasker) {
         LogError << "handle is null";
