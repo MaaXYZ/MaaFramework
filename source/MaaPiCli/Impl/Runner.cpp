@@ -33,10 +33,7 @@ std::vector<std::string> conv_args(const std::vector<std::string>& args)
 }
 #endif
 
-bool Runner::run(
-    const RuntimeParam& param,
-    const std::map<std::string, CustomRecognitionSession>& custom_recognitions,
-    const std::map<std::string, CustomActionSession>& custom_actions)
+bool Runner::run(const RuntimeParam& param)
 {
     MaaTasker* tasker_handle = MaaTaskerCreate();
 
@@ -60,7 +57,6 @@ bool Runner::run(
     }
 
     MaaResource* resource_handle = MaaResourceCreate();
-    resource_handle->set_option(MaaResOption_InferenceDevice, const_cast<int32_t*>(&param.gpu), sizeof(int32_t));
 
     OnScopeLeave([&]() {
         MaaTaskerDestroy(tasker_handle);
@@ -68,16 +64,29 @@ bool Runner::run(
         MaaControllerDestroy(controller_handle);
     });
 
+    // 设置分辨率选项
+    if (param.display_config.raw) {
+        MaaBool raw = true;
+        MaaControllerSetOption(controller_handle, MaaCtrlOption_ScreenshotUseRawSize, &raw, sizeof(raw));
+    }
+    else if (param.display_config.long_side.has_value()) {
+        int long_side = param.display_config.long_side.value();
+        MaaControllerSetOption(controller_handle, MaaCtrlOption_ScreenshotTargetLongSide, &long_side, sizeof(long_side));
+    }
+    else if (param.display_config.short_side.has_value()) {
+        int short_side = param.display_config.short_side.value();
+        MaaControllerSetOption(controller_handle, MaaCtrlOption_ScreenshotTargetShortSide, &short_side, sizeof(short_side));
+    }
+    // 如果都没设置，使用默认值 720
+    else {
+        int short_side = 720;
+        MaaControllerSetOption(controller_handle, MaaCtrlOption_ScreenshotTargetShortSide, &short_side, sizeof(short_side));
+    }
+
     MaaId cid = controller_handle->post_connection();
     MaaId rid = 0;
     for (const auto& path : param.resource_path) {
         rid = resource_handle->post_bundle(path);
-    }
-    for (const auto& [name, reco] : custom_recognitions) {
-        resource_handle->register_custom_recognition(name, reco.recognition, reco.trans_arg);
-    }
-    for (const auto& [name, act] : custom_actions) {
-        resource_handle->register_custom_action(name, act.action, act.trans_arg);
     }
 
     tasker_handle->bind_controller(controller_handle);

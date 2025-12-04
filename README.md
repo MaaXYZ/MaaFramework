@@ -46,13 +46,13 @@ _✨ 基于图像识别的自动化黑盒测试框架 ✨_
 ## 即刻开始
 
 > [!TIP]
-> 访问我们的 [官网](https://maafw.xyz/) 以获得更优秀的文档阅读体验。
-> 
+> 访问我们的 [官网](https://maafw.xyz/) 以获得更优秀的文档阅读体验。  
 > 找不到相关文档？试试问 [AI](https://deepwiki.com/MaaXYZ/MaaFramework) ！
 
-- [快速开始](docs/zh_cn/1.1-快速开始.md)
-- [集成文档](docs/zh_cn/2.1-集成文档.md)
-- [Pipeline 协议](docs/zh_cn/3.1-任务流水线协议.md)
+- [快速开始](docs/zh_cn/1.1-快速开始.md) & [术语解释](docs/zh_cn/1.2-术语解释.md)
+- [代码集成](docs/zh_cn/2.1-集成文档.md) & [API](docs/zh_cn/2.2-集成接口一览.md)
+- [Pipeline 低代码协议](docs/zh_cn/3.1-任务流水线协议.md)
+- [项目接口 PI 协议](docs/zh_cn/3.3-ProjectInterfaceV2协议.md)
 
 ## 社区项目
 

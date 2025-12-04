@@ -36,10 +36,14 @@
         {
             "name": "Windows",
             "label": "$电脑端", // 显示名称，支持国际化。所有具有name字段的对象都应添加label字段
+            "description": "通过 Win32 API 连接 Windows 应用程序",
             "type": "Win32",
             "win32": {
                 "class_regex": ".*",
-                "window_regex": "Visual Studio"
+                "window_regex": "Visual Studio",
+                "screencap": "DXGI_DesktopDup", // 截图方式。可选：GDI, FramePool, DXGI_DesktopDup, DXGI_DesktopDup_Window, PrintWindow, ScreenDC
+                "mouse": "Seize", // 鼠标控制方式。可选：Seize, SendMessage, PostMessage, LegacyEvent, PostThreadMessage, SendMessageWithCursorPos, PostMessageWithCursorPos
+                "keyboard": "Seize" // 键盘控制方式。可选：Seize, SendMessage, PostMessage, LegacyEvent, PostThreadMessage, SendMessageWithCursorPos, PostMessageWithCursorPos
             }
         }
     ],
@@ -249,6 +253,9 @@
             ]
         },
         "刷完全部体力": {
+            "type": "switch", // switch类型，Yes or No 二选一
+            "label": "$刷完全部体力",
+            "description": "是否刷完全部体力",
             "cases": [
                 {
                     "name": "Yes",
@@ -265,6 +272,66 @@
                     "pipeline_override": {
                         "AllIn": {
                             "enabled": false
+                        }
+                    }
+                }
+            ]
+        },
+        "使用理智药": {
+            "type": "switch", // switch类型示例
+            "label": "$使用理智药",
+            "description": "体力不足时是否使用理智药",
+            "cases": [
+                {
+                    "name": "Yes",
+                    "label": "$使用",
+                    "pipeline_override": {
+                        "UseSanityPotion": {
+                            "enabled": true
+                        }
+                    }
+                },
+                {
+                    "name": "No",
+                    "label": "$不使用",
+                    "pipeline_override": {
+                        "UseSanityPotion": {
+                            "enabled": false
+                        }
+                    }
+                }
+            ]
+        },
+        "刷完xxx": {
+            "type": "select", // 子配置项示例
+            "label": "$刷完后操作",
+            "description": "刷完关卡后执行的操作",
+            "default_case": "返回主界面",
+            "cases": [
+                {
+                    "name": "返回主界面",
+                    "label": "$返回主界面",
+                    "pipeline_override": {
+                        "AfterFarming": {
+                            "next": "ReturnToMainMenu"
+                        }
+                    }
+                },
+                {
+                    "name": "继续战斗",
+                    "label": "$继续战斗",
+                    "pipeline_override": {
+                        "AfterFarming": {
+                            "next": "ContinueBattle"
+                        }
+                    }
+                },
+                {
+                    "name": "退出游戏",
+                    "label": "$退出游戏",
+                    "pipeline_override": {
+                        "AfterFarming": {
+                            "next": "ExitGame"
                         }
                     }
                 }
