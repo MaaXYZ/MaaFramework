@@ -49,12 +49,13 @@ It offers low-code simplicity while maintaining high extensibility. The framewor
 ## Get Started
 
 > [!TIP]
-> Visit our [website](https://maafw.xyz/) for a better documentation experience.
+> Visit our [website](https://maafw.xyz/) for a better documentation experience.  
 > Can't find the relevant documents? Try asking [AI](https://deepwiki.com/MaaXYZ/MaaFramework) ！
 
-- [Quick Start](docs/en_us/1.1-QuickStarted.md)
-- [Integration](docs/en_us/2.1-Integration.md)
-- [Pipeline Protocol](docs/en_us/3.1-PipelineProtocol.md)
+- [Quick Start](docs/en_us/1.1-QuickStarted.md) & [Terms](docs/en_us/1.2-ExplanationOfTerms.md)
+- [Integration](docs/en_us/2.1-Integration.md) & [API](docs/en_us/2.2-IntegratedInterfaceOverview.md)
+- [Pipeline Low-code Protocol](docs/en_us/3.1-PipelineProtocol.md)
+- [Project Interface Protocol](docs/en_us/3.3-ProjectInterfaceV2.md)
 
 ## Community Project
 
