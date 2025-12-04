@@ -188,17 +188,31 @@ int AdbDeviceWin32Finder::get_mumu_index(const std::string& adb_serial)
 {
     auto sp = string_split(adb_serial, ':');
     if (sp.size() != 2) {
+        LogError << "Invalid address format" << VAR(adb_serial);
         return 0;
     }
 
     auto& str_port = sp.at(1);
     if (str_port.empty() || !std::ranges::all_of(str_port, [](auto c) { return std::isdigit(c); })) {
+        LogError << "Invalid port" << VAR(str_port);
         return 0;
     }
 
     int port = std::stoi(str_port);
-    int index = (port - 16384) / 32;
+    int index = 0;
 
+    if (port >= 16384) {
+        index = (port - 16384) / 32;
+    }
+    else if (port == 7555) {
+        index = 0;
+        LogWarn << "Port 7555 is deprecated for MuMu6, please use 16384 or above.";
+    }
+    else if (port >= 5555) {
+        index = (port - 5555) / 2;
+    }
+
+    LogInfo << VAR(str_port) << VAR(port) << VAR(index);
     return index;
 }
 
