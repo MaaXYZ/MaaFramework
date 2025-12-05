@@ -78,17 +78,6 @@ std::vector<AdbDevice> AdbDeviceFinder::find_specified(const std::filesystem::pa
     return result;
 }
 
-std::vector<AdbDevice> AdbDeviceFinder::find_by_emulator_tool(const Emulator& emulator) const
-{
-    std::ignore = emulator;
-    return {};
-}
-
-void AdbDeviceFinder::set_emulator_const_data(std::unordered_map<std::string, EmulatorConstantData> data)
-{
-    const_data_ = std::move(data);
-}
-
 std::vector<std::string> AdbDeviceFinder::find_serials_by_adb_command(const std::filesystem::path& adb_path) const
 {
     LogFunc << VAR(adb_path);
@@ -193,11 +182,14 @@ std::vector<AdbDeviceFinder::Emulator> AdbDeviceFinder::find_emulators() const
     std::unordered_set<std::filesystem::path> seen_process_paths;
 
     auto all_processes = list_processes();
+
+    const auto& emu_constant = get_emulator_const_data();
+
     for (const auto& process : all_processes) {
-        auto find_it = std::ranges::find_if(const_data_, [&process](const auto& pair) -> bool {
+        auto find_it = std::ranges::find_if(emu_constant, [&process](const auto& pair) -> bool {
             return process.name.find(pair.second.keyword) != std::string::npos;
         });
-        if (find_it == const_data_.cend()) {
+        if (find_it == emu_constant.cend()) {
             continue;
         }
 
