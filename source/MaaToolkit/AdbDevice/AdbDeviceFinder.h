@@ -27,13 +27,15 @@ public:
         MEO_TOJSON(keyword, adb_candidate_paths, adb_common_serials);
     };
 
+    using EmulatorConstDataMap = std::unordered_map<std::string, EmulatorConstantData>;
+
     struct Emulator
     {
         std::string name;
         std::filesystem::path process_path;
         std::filesystem::path adb_path;
 
-        MEO_TOJSON(name, adb_path);
+        MEO_TOJSON(name, process_path, adb_path);
     };
 
 public:
@@ -44,11 +46,11 @@ public:
     std::vector<AdbDevice> find_specified(const std::filesystem::path& adb_path) const;
 
 protected:
-    virtual std::vector<AdbDevice> find_by_emulator_tool(const Emulator& emulator) const;
+    virtual const EmulatorConstDataMap& get_emulator_const_data() const { return kEmptyEmulatorConstDataMap; }
+
+    virtual std::vector<AdbDevice> find_by_emulator_tool(const Emulator&) const { return {}; }
 
 protected:
-    void set_emulator_const_data(std::unordered_map<std::string, EmulatorConstantData> data);
-
     std::vector<std::string> find_serials_by_adb_command(const std::filesystem::path& adb_path) const;
     std::optional<AdbDevice> try_device(const std::filesystem::path& adb_path, const std::string& serial) const;
 
@@ -56,7 +58,7 @@ protected:
     std::filesystem::path get_emulator_adb_path(const EmulatorConstantData& emulator, os_pid pid) const;
 
 private:
-    std::unordered_map<std::string, EmulatorConstantData> const_data_;
+    inline static const EmulatorConstDataMap kEmptyEmulatorConstDataMap;
 };
 
 MAA_TOOLKIT_NS_END

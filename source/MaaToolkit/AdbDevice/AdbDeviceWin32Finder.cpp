@@ -11,9 +11,9 @@ MAA_TOOLKIT_NS_BEGIN
 
 using namespace path_literals;
 
-AdbDeviceWin32Finder::AdbDeviceWin32Finder()
+const AdbDeviceFinder::EmulatorConstDataMap& AdbDeviceWin32Finder::get_emulator_const_data() const
 {
-    std::unordered_map<std::string, EmulatorConstantData> emulators = {
+    static const EmulatorConstDataMap kConstData {
         { "BlueStacks",
           { .keyword = "HD-Player",
             .adb_candidate_paths = { "HD-Adb.exe"_path, "Engine\\ProgramFiles\\HD-Adb.exe"_path },
@@ -56,7 +56,7 @@ AdbDeviceWin32Finder::AdbDeviceWin32Finder()
             .adb_common_serials = { "emulator-5554", "127.0.0.1:5555" } } },
     };
 
-    set_emulator_const_data(std::move(emulators));
+    return kConstData;
 }
 
 std::vector<AdbDevice> AdbDeviceWin32Finder::find_by_emulator_tool(const Emulator& emulator) const
