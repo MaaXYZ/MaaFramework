@@ -229,6 +229,10 @@ class ImageBuffer:
         if not isinstance(value, numpy.ndarray):
             raise TypeError("value must be a numpy.ndarray")
 
+        # 确保数组是 C-contiguous 的，避免切片视图导致的内存不连续问题
+        if not value.flags['C_CONTIGUOUS']:
+            value = numpy.ascontiguousarray(value)
+
         return bool(
             Library.framework().MaaImageBufferSetRawData(
                 self._handle,
