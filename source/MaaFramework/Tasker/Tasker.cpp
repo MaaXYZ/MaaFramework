@@ -6,9 +6,12 @@
 #include "Global/PluginMgr.h"
 #include "MaaFramework/MaaMsg.h"
 #include "MaaUtils/Logger.h"
+#include "MaaUtils/Uuid.h"
 #include "Resource/ResourceMgr.h"
+#include "Task/ActionTask.h"
 #include "Task/EmptyTask.h"
 #include "Task/PipelineTask.h"
+#include "Task/RecognitionTask.h"
 
 MAA_NS_BEGIN
 
@@ -91,6 +94,44 @@ MaaTaskId Tasker::post_task(const std::string& entry, const json::value& pipelin
     }
 
     auto task_ptr = std::make_shared<MAA_TASK_NS::PipelineTask>(entry, this);
+    return post_task(std::move(task_ptr), pipeline_override);
+}
+
+MaaTaskId Tasker::post_recognition(const std::string& reco_type, const json::value& reco_param, const cv::Mat& image)
+{
+    LogInfo << VAR(reco_type) << VAR(reco_param) << VAR(image);
+
+    if (!check_stop()) {
+        return MaaInvalidId;
+    }
+
+    std::string entry = std::format("recognition/{}", make_uuid());
+
+    json::value pipeline_override;
+    pipeline_override[entry]["recognition"] = { { "type", reco_type }, { "param", reco_param } };
+
+    auto task_ptr = std::make_shared<MAA_TASK_NS::RecognitionTask>(image, entry, this);
+    return post_task(std::move(task_ptr), pipeline_override);
+}
+
+MaaTaskId Tasker::post_action(
+    const std::string& action_type,
+    const json::value& action_param,
+    const cv::Rect& box,
+    const std::string& reco_detail)
+{
+    LogInfo << VAR(action_type) << VAR(action_param) << VAR(box) << VAR(reco_detail);
+
+    if (!check_stop()) {
+        return MaaInvalidId;
+    }
+
+    std::string entry = std::format("action/{}", make_uuid());
+
+    json::value pipeline_override;
+    pipeline_override[entry]["action"] = { { "type", action_type }, { "param", action_param } };
+
+    auto task_ptr = std::make_shared<MAA_TASK_NS::ActionTask>(box, reco_detail, entry, this);
     return post_task(std::move(task_ptr), pipeline_override);
 }
 

@@ -94,13 +94,13 @@ MaaRecoId Context::run_recognition(const std::string& entry, const json::value& 
 {
     LogTrace << VAR(getptr()) << VAR(entry) << VAR(pipeline_override);
 
-    RecognitionTask subtask(entry, tasker_, make_clone());
+    RecognitionTask subtask(image, entry, tasker_, make_clone());
     bool ov = subtask.override_pipeline(pipeline_override);
     if (!ov) {
         LogError << "failed to override_pipeline" << VAR(entry) << VAR(pipeline_override);
         return MaaInvalidId;
     }
-    return subtask.run_with_param(image);
+    return subtask.run_impl();
 }
 
 MaaActId
@@ -108,14 +108,13 @@ MaaActId
 {
     LogTrace << VAR(getptr()) << VAR(entry) << VAR(pipeline_override) << VAR(box) << VAR(reco_detail);
 
-    ActionTask subtask(entry, tasker_, make_clone());
+    ActionTask subtask(box, reco_detail, entry, tasker_, make_clone());
     bool ov = subtask.override_pipeline(pipeline_override);
     if (!ov) {
         LogError << "failed to override_pipeline" << VAR(entry) << VAR(pipeline_override);
         return MaaInvalidId;
     }
-    json::value j_detail = json::parse(reco_detail).value_or(reco_detail);
-    return subtask.run_with_param(box, j_detail);
+    return subtask.run_impl();
 }
 
 bool Context::override_pipeline(const json::value& pipeline_override)

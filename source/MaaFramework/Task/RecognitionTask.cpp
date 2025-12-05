@@ -9,7 +9,18 @@
 
 MAA_TASK_NS_BEGIN
 
-MaaRecoId RecognitionTask::run_with_param(const cv::Mat& image)
+RecognitionTask::RecognitionTask(const cv::Mat& image, std::string entry, Tasker* tasker, std::shared_ptr<Context> context)
+    : TaskBase(std::move(entry), tasker, std::move(context))
+    , image_(image)
+{
+}
+
+bool RecognitionTask::run()
+{
+    return run_impl() != MaaInvalidId;
+}
+
+MaaRecoId RecognitionTask::run_impl()
 {
     LogFunc << VAR(entry_) << VAR(task_id_);
 
@@ -39,7 +50,7 @@ MaaRecoId RecognitionTask::run_with_param(const cv::Mat& image)
         notify(MaaMsg_Node_RecognitionNode_Starting, node_cb_detail);
     }
 
-    auto reco = run_recognition(image, cur_node);
+    auto reco = run_recognition(image_, cur_node);
 
     bool hit = reco.box.has_value();
     NodeDetail result {

@@ -442,6 +442,45 @@ struct TaskerPostTaskReverseResponse
     MEO_JSONIZATION(task_id, _TaskerPostTaskReverseResponse);
 };
 
+struct TaskerPostRecognitionReverseRequest
+{
+    std::string tasker_id;
+    std::string reco_type;
+    json::value reco_param;
+    std::string image;
+
+    MessageTypePlaceholder _TaskerPostRecognitionReverseRequest = 1;
+    MEO_JSONIZATION(tasker_id, reco_type, reco_param, image, _TaskerPostRecognitionReverseRequest);
+};
+
+struct TaskerPostRecognitionReverseResponse
+{
+    int64_t task_id = 0;
+
+    MessageTypePlaceholder _TaskerPostRecognitionReverseResponse = 1;
+    MEO_JSONIZATION(task_id, _TaskerPostRecognitionReverseResponse);
+};
+
+struct TaskerPostActionReverseRequest
+{
+    std::string tasker_id;
+    std::string action_type;
+    json::value action_param;
+    std::array<int32_t, 4> box {};
+    std::string reco_detail;
+
+    MessageTypePlaceholder _TaskerPostActionReverseRequest = 1;
+    MEO_JSONIZATION(tasker_id, action_type, action_param, box, reco_detail, _TaskerPostActionReverseRequest);
+};
+
+struct TaskerPostActionReverseResponse
+{
+    int64_t task_id = 0;
+
+    MessageTypePlaceholder _TaskerPostActionReverseResponse = 1;
+    MEO_JSONIZATION(task_id, _TaskerPostActionReverseResponse);
+};
+
 struct TaskerStatusReverseRequest
 {
     std::string tasker_id;

@@ -18,8 +18,7 @@ MAA_TASK_NS_BEGIN
 class TaskBase
 {
 public:
-    TaskBase(std::string entry, Tasker* tasker);
-    TaskBase(std::string entry, Tasker* tasker, std::shared_ptr<Context> context);
+    TaskBase(std::string entry, Tasker* tasker, std::shared_ptr<Context> context = nullptr);
     virtual ~TaskBase() = default;
 
 public:

@@ -259,6 +259,12 @@ bool AgentClient::handle_inserted_request(const json::value& j)
     else if (handle_tasker_post_task(j)) {
         return true;
     }
+    else if (handle_tasker_post_recognition(j)) {
+        return true;
+    }
+    else if (handle_tasker_post_action(j)) {
+        return true;
+    }
     else if (handle_tasker_status(j)) {
         return true;
     }
@@ -796,6 +802,56 @@ bool AgentClient::handle_tasker_post_task(const json::value& j)
     MaaTaskId task_id = tasker->post_task(req.entry, req.pipeline_override);
 
     TaskerPostTaskReverseResponse resp {
+        .task_id = task_id,
+    };
+    send(resp);
+    return true;
+}
+
+bool AgentClient::handle_tasker_post_recognition(const json::value& j)
+{
+    if (!j.is<TaskerPostRecognitionReverseRequest>()) {
+        return false;
+    }
+    const TaskerPostRecognitionReverseRequest& req = j.as<TaskerPostRecognitionReverseRequest>();
+    LogFunc << VAR(req) << VAR(ipc_addr_);
+
+    MaaTasker* tasker = query_tasker(req.tasker_id);
+    if (!tasker) {
+        LogError << "tasker not found" << VAR(req.tasker_id);
+        return false;
+    }
+
+    MaaTaskId task_id = tasker->post_recognition(req.reco_type, req.reco_param, get_image_cache(req.image));
+
+    TaskerPostRecognitionReverseResponse resp {
+        .task_id = task_id,
+    };
+    send(resp);
+    return true;
+}
+
+bool AgentClient::handle_tasker_post_action(const json::value& j)
+{
+    if (!j.is<TaskerPostActionReverseRequest>()) {
+        return false;
+    }
+    const TaskerPostActionReverseRequest& req = j.as<TaskerPostActionReverseRequest>();
+    LogFunc << VAR(req) << VAR(ipc_addr_);
+
+    MaaTasker* tasker = query_tasker(req.tasker_id);
+    if (!tasker) {
+        LogError << "tasker not found" << VAR(req.tasker_id);
+        return false;
+    }
+
+    MaaTaskId task_id = tasker->post_action(
+        req.action_type,
+        req.action_param,
+        cv::Rect { req.box[0], req.box[1], req.box[2], req.box[3] },
+        req.reco_detail);
+
+    TaskerPostActionReverseResponse resp {
         .task_id = task_id,
     };
     send(resp);
