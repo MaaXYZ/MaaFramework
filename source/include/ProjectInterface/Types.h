@@ -229,11 +229,8 @@ struct Configuration
         std::string name;
         std::string adb_path;
         std::string address;
-        MaaAdbInputMethod input = MaaAdbInputMethod_Default;
-        MaaAdbScreencapMethod screencap = MaaAdbScreencapMethod_Default;
-        json::object config;
 
-        MEO_JSONIZATION(MEO_OPT name, adb_path, address, MEO_OPT input, MEO_OPT screencap, MEO_OPT config);
+        MEO_JSONIZATION(name, adb_path, address);
     };
 
     struct Option
@@ -274,6 +271,7 @@ struct RuntimeParam
 
     struct AdbParam
     {
+        std::string name;
         std::string adb_path;
         std::string address;
         MaaAdbScreencapMethod screencap = MaaAdbScreencapMethod_None;

@@ -157,7 +157,7 @@ std::optional<AdbDevice> AdbDeviceFinder::try_device(const std::filesystem::path
     }
 
     AdbDevice device;
-    device.name = std::format("{} {}", path_to_utf8_string(adb_path), serial);
+    device.name = std::format("{}<{}", path_to_utf8_string(adb_path), serial);
     device.adb_path = adb_path;
     device.serial = serial;
     device.screencap_methods = MaaAdbScreencapMethod_Default;

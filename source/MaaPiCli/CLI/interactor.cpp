@@ -424,11 +424,9 @@ void Interactor::select_adb_auto_detect()
 
     auto device_handle = MaaToolkitAdbDeviceListAt(list_handle, index);
 
+    adb_config.name = MaaToolkitAdbDeviceGetName(device_handle);
     adb_config.adb_path = MaaToolkitAdbDeviceGetAdbPath(device_handle);
     adb_config.address = MaaToolkitAdbDeviceGetAddress(device_handle);
-    adb_config.input = MaaToolkitAdbDeviceGetInputMethods(device_handle);
-    adb_config.screencap = MaaToolkitAdbDeviceGetScreencapMethods(device_handle);
-    adb_config.config = json::parse(MaaToolkitAdbDeviceGetConfig(device_handle)).value_or(json::object()).as_object();
 }
 
 void Interactor::select_adb_manual_input()
@@ -446,6 +444,8 @@ void Interactor::select_adb_manual_input()
     std::getline(std::cin, adb_address);
     config_.configuration().adb.address = adb_address;
     std::cout << "\n";
+
+    config_.configuration().adb.name = std::format("{}<{}", adb_path, adb_address);
 }
 
 std::string Interactor::format_win32_config(const MAA_PROJECT_INTERFACE_NS::Configuration::Win32Config& win32_config)

@@ -153,11 +153,9 @@ std::optional<RuntimeParam> Configurator::generate_runtime() const
     case InterfaceData::Controller::Type::Adb: {
         RuntimeParam::AdbParam adb;
 
+        adb.name = config_.adb.name;
         adb.adb_path = config_.adb.adb_path;
         adb.address = config_.adb.address;
-        adb.screencap = config_.adb.screencap;
-        adb.input = config_.adb.input;
-        adb.config = config_.adb.config.dumps();
         adb.agent_path = MaaNS::path_to_utf8_string(resource_dir_ / "MaaAgentBinary");
 
         runtime.controller_param = std::move(adb);
