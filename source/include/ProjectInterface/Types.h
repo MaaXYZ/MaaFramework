@@ -302,6 +302,7 @@ struct RuntimeParam
         std::filesystem::path child_exec;
         std::vector<std::string> child_args;
         std::string identifier;
+        std::filesystem::path cwd;
     };
 
     std::variant<std::monostate, AdbParam, Win32Param> controller_param;

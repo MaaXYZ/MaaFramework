@@ -151,6 +151,79 @@ MaaTaskId MaaTaskerPostTask(MaaTasker* tasker, const char* entry, const char* pi
     return tasker->post_task(entry, *ov_opt);
 }
 
+MaaTaskId MaaTaskerPostRecognition(MaaTasker* tasker, const char* reco_type, const char* reco_param, const MaaImageBuffer* image)
+{
+    LogFunc << VAR_VOIDP(tasker) << VAR(reco_type) << VAR(reco_param);
+
+    if (!tasker) {
+        LogError << "handle is null";
+        return MaaInvalidId;
+    }
+
+    if (!reco_type) {
+        LogError << "reco_type is null";
+        return MaaInvalidId;
+    }
+
+    if (!reco_param) {
+        LogError << "reco_param is null";
+        return MaaInvalidId;
+    }
+
+    if (!image) {
+        LogError << "image is null";
+        return MaaInvalidId;
+    }
+
+    auto param_opt = json::parse(reco_param);
+    if (!param_opt) {
+        LogError << "failed to parse" << VAR(reco_param);
+        return MaaInvalidId;
+    }
+
+    return tasker->post_recognition(reco_type, *param_opt, image->get());
+}
+
+MaaTaskId
+    MaaTaskerPostAction(MaaTasker* tasker, const char* action_type, const char* action_param, const MaaRect* box, const char* reco_detail)
+{
+    LogFunc << VAR_VOIDP(tasker) << VAR(action_type) << VAR(action_param) << VAR(reco_detail);
+
+    if (!tasker) {
+        LogError << "handle is null";
+        return MaaInvalidId;
+    }
+
+    if (!action_type) {
+        LogError << "action_type is null";
+        return MaaInvalidId;
+    }
+
+    if (!action_param) {
+        LogError << "action_param is null";
+        return MaaInvalidId;
+    }
+
+    if (!box) {
+        LogError << "box is null";
+        return MaaInvalidId;
+    }
+
+    if (!reco_detail) {
+        LogError << "reco_detail is null";
+        return MaaInvalidId;
+    }
+
+    auto param_opt = json::parse(action_param);
+    if (!param_opt) {
+        LogError << "failed to parse" << VAR(action_param);
+        return MaaInvalidId;
+    }
+
+    cv::Rect cv_box { box->x, box->y, box->width, box->height };
+    return tasker->post_action(action_type, *param_opt, cv_box, reco_detail);
+}
+
 MaaStatus MaaTaskerStatus(const MaaTasker* tasker, MaaTaskId id)
 {
     // LogFunc << VAR_VOIDP(tasker) << VAR(id);

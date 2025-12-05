@@ -122,7 +122,7 @@ bool Runner::run(const RuntimeParam& param)
         auto os_args = conv_args(args);
 
         LogInfo << "Start Agent" << VAR(exec) << VAR(os_args);
-        agent_child = boost::process::child(exec, os_args);
+        agent_child = boost::process::child(exec, os_args, boost::process::start_dir = param.agent->cwd);
 
         bool connected = MaaAgentClientConnect(agent);
         if (!connected) {
