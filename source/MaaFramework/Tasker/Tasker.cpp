@@ -105,7 +105,7 @@ MaaTaskId Tasker::post_recognition(const std::string& reco_type, const json::val
         return MaaInvalidId;
     }
 
-    std::string entry = std::format("recognition/{}", make_uuid());
+    std::string entry = std::format("recognition/{}/{}", reco_type, make_uuid());
 
     json::value pipeline_override;
     pipeline_override[entry]["recognition"] = { { "type", reco_type }, { "param", reco_param } };
@@ -126,7 +126,7 @@ MaaTaskId Tasker::post_action(
         return MaaInvalidId;
     }
 
-    std::string entry = std::format("action/{}", make_uuid());
+    std::string entry = std::format("action/{}/{}", action_type, make_uuid());
 
     json::value pipeline_override;
     pipeline_override[entry]["action"] = { { "type", action_type }, { "param", action_param } };
