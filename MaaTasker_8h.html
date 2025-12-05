@@ -132,6 +132,10 @@ Functions</h2></td></tr>
 <tr class="separator:a9bfec9b2b1f8dfd473f0cb1d0c725c65"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af90ff982cb18515afcdcaf943247a406" id="r_af90ff982cb18515afcdcaf943247a406"><td class="memItemLeft" align="right" valign="top"><a class="el" href="MaaPort_8h.html#a67006334d91d228121dbba7a8bf8fe05">MAA_FRAMEWORK_API</a> <a class="el" href="MaaDef_8h.html#a711b3db9be6db60ae4cb09e3629e42f0">MaaTaskId</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="MaaTasker_8h.html#af90ff982cb18515afcdcaf943247a406">MaaTaskerPostTask</a> (<a class="el" href="MaaDef_8h.html#a8c41e8466c5da06f230f729c29bdac8a">MaaTasker</a> *tasker, const char *entry, const char *pipeline_override)</td></tr>
 <tr class="separator:af90ff982cb18515afcdcaf943247a406"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a456db4003863960adb50e5c8ef5dd4ec" id="r_a456db4003863960adb50e5c8ef5dd4ec"><td class="memItemLeft" align="right" valign="top"><a class="el" href="MaaPort_8h.html#a67006334d91d228121dbba7a8bf8fe05">MAA_FRAMEWORK_API</a> <a class="el" href="MaaDef_8h.html#a711b3db9be6db60ae4cb09e3629e42f0">MaaTaskId</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="MaaTasker_8h.html#a456db4003863960adb50e5c8ef5dd4ec">MaaTaskerPostRecognition</a> (<a class="el" href="MaaDef_8h.html#a8c41e8466c5da06f230f729c29bdac8a">MaaTasker</a> *tasker, const char *reco_type, const char *reco_param, const <a class="el" href="MaaDef_8h.html#a0a52c8503deca448e71a407cdb14d259">MaaImageBuffer</a> *image)</td></tr>
+<tr class="separator:a456db4003863960adb50e5c8ef5dd4ec"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a764d15d4825e8b7c42da8bec00749632" id="r_a764d15d4825e8b7c42da8bec00749632"><td class="memItemLeft" align="right" valign="top"><a class="el" href="MaaPort_8h.html#a67006334d91d228121dbba7a8bf8fe05">MAA_FRAMEWORK_API</a> <a class="el" href="MaaDef_8h.html#a711b3db9be6db60ae4cb09e3629e42f0">MaaTaskId</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="MaaTasker_8h.html#a764d15d4825e8b7c42da8bec00749632">MaaTaskerPostAction</a> (<a class="el" href="MaaDef_8h.html#a8c41e8466c5da06f230f729c29bdac8a">MaaTasker</a> *tasker, const char *action_type, const char *action_param, const <a class="el" href="structMaaRect.html">MaaRect</a> *box, const char *reco_detail)</td></tr>
+<tr class="separator:a764d15d4825e8b7c42da8bec00749632"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af4d3fd63071f1ba922bd90f226d1001d" id="r_af4d3fd63071f1ba922bd90f226d1001d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="MaaPort_8h.html#a67006334d91d228121dbba7a8bf8fe05">MAA_FRAMEWORK_API</a> <a class="el" href="MaaDef_8h.html#ada00e4de6b9b4dcae75ed50f4bcaeef5">MaaStatus</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="MaaTasker_8h.html#af4d3fd63071f1ba922bd90f226d1001d">MaaTaskerStatus</a> (const <a class="el" href="MaaDef_8h.html#a8c41e8466c5da06f230f729c29bdac8a">MaaTasker</a> *tasker, <a class="el" href="MaaDef_8h.html#a711b3db9be6db60ae4cb09e3629e42f0">MaaTaskId</a> id)</td></tr>
 <tr class="separator:af4d3fd63071f1ba922bd90f226d1001d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a43e82561559f1307b50f2cc08565f69b" id="r_a43e82561559f1307b50f2cc08565f69b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="MaaPort_8h.html#a67006334d91d228121dbba7a8bf8fe05">MAA_FRAMEWORK_API</a> <a class="el" href="MaaDef_8h.html#ada00e4de6b9b4dcae75ed50f4bcaeef5">MaaStatus</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="MaaTasker_8h.html#a43e82561559f1307b50f2cc08565f69b">MaaTaskerWait</a> (const <a class="el" href="MaaDef_8h.html#a8c41e8466c5da06f230f729c29bdac8a">MaaTasker</a> *tasker, <a class="el" href="MaaDef_8h.html#a711b3db9be6db60ae4cb09e3629e42f0">MaaTaskId</a> id)</td></tr>
@@ -516,6 +520,109 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+</div>
+</div>
+<a id="a456db4003863960adb50e5c8ef5dd4ec" name="a456db4003863960adb50e5c8ef5dd4ec"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a456db4003863960adb50e5c8ef5dd4ec">&#9670;&#160;</a></span>MaaTaskerPostRecognition()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="MaaPort_8h.html#a67006334d91d228121dbba7a8bf8fe05">MAA_FRAMEWORK_API</a> <a class="el" href="MaaDef_8h.html#a711b3db9be6db60ae4cb09e3629e42f0">MaaTaskId</a> MaaTaskerPostRecognition </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="MaaDef_8h.html#a8c41e8466c5da06f230f729c29bdac8a">MaaTasker</a> *&#160;</td>
+          <td class="paramname"><em>tasker</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const char *&#160;</td>
+          <td class="paramname"><em>reco_type</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const char *&#160;</td>
+          <td class="paramname"><em>reco_param</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="MaaDef_8h.html#a0a52c8503deca448e71a407cdb14d259">MaaImageBuffer</a> *&#160;</td>
+          <td class="paramname"><em>image</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">reco_type</td><td>Recognition type string </td></tr>
+    <tr><td class="paramname">reco_param</td><td>Recognition parameters json </td></tr>
+    <tr><td class="paramname">image</td><td>Previous screenshot </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a764d15d4825e8b7c42da8bec00749632" name="a764d15d4825e8b7c42da8bec00749632"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a764d15d4825e8b7c42da8bec00749632">&#9670;&#160;</a></span>MaaTaskerPostAction()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="MaaPort_8h.html#a67006334d91d228121dbba7a8bf8fe05">MAA_FRAMEWORK_API</a> <a class="el" href="MaaDef_8h.html#a711b3db9be6db60ae4cb09e3629e42f0">MaaTaskId</a> MaaTaskerPostAction </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="MaaDef_8h.html#a8c41e8466c5da06f230f729c29bdac8a">MaaTasker</a> *&#160;</td>
+          <td class="paramname"><em>tasker</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const char *&#160;</td>
+          <td class="paramname"><em>action_type</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const char *&#160;</td>
+          <td class="paramname"><em>action_param</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structMaaRect.html">MaaRect</a> *&#160;</td>
+          <td class="paramname"><em>box</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const char *&#160;</td>
+          <td class="paramname"><em>reco_detail</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">action_type</td><td>Action type string </td></tr>
+    <tr><td class="paramname">action_param</td><td>Action parameters json </td></tr>
+    <tr><td class="paramname">box</td><td>Previous recognition position </td></tr>
+    <tr><td class="paramname">reco_detail</td><td>Previous recognition details </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -998,7 +1105,7 @@ Functions</h2></td></tr>
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="dir_d44c64559bbebec7f509842c48db8b23.html">include</a></li><li class="navelem"><a class="el" href="dir_370cd1367c21b1a87c5c9c6803b8d0b9.html">MaaFramework</a></li><li class="navelem"><a class="el" href="dir_0debf1eee29073ebb629a4e1dfd2a5f6.html">Instance</a></li><li class="navelem"><a class="el" href="MaaTasker_8h.html">MaaTasker.h</a></li>
-    <li class="footer">Generated on Thu Dec 4 2025 for MaaFramework by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.8 </li>
+    <li class="footer">Generated on Fri Dec 5 2025 for MaaFramework by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.8 </li>
   </ul>
 </div>
 </body>

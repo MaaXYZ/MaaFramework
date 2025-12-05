@@ -157,6 +157,8 @@
     <member refid="MaaTasker_8h_1a9979e64533deaf3d002cbd08338bb426" kind="function"><name>MaaTaskerBindController</name></member>
     <member refid="MaaTasker_8h_1a9bfec9b2b1f8dfd473f0cb1d0c725c65" kind="function"><name>MaaTaskerInited</name></member>
     <member refid="MaaTasker_8h_1af90ff982cb18515afcdcaf943247a406" kind="function"><name>MaaTaskerPostTask</name></member>
+    <member refid="MaaTasker_8h_1a456db4003863960adb50e5c8ef5dd4ec" kind="function"><name>MaaTaskerPostRecognition</name></member>
+    <member refid="MaaTasker_8h_1a764d15d4825e8b7c42da8bec00749632" kind="function"><name>MaaTaskerPostAction</name></member>
     <member refid="MaaTasker_8h_1af4d3fd63071f1ba922bd90f226d1001d" kind="function"><name>MaaTaskerStatus</name></member>
     <member refid="MaaTasker_8h_1a43e82561559f1307b50f2cc08565f69b" kind="function"><name>MaaTaskerWait</name></member>
     <member refid="MaaTasker_8h_1a8946c572b50a0e298a31092496b89475" kind="function"><name>MaaTaskerRunning</name></member>
