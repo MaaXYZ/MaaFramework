@@ -43,7 +43,7 @@ std::vector<int> input_multi_impl(size_t size, std::string_view prompt)
             continue;
         }
 
-        if (!std::ranges::all_of(buffer, [](char c) { return std::isdigit(c) || std::isspace(c); })) {
+        if (!std::ranges::all_of(buffer, [](unsigned char c) { return std::isdigit(c) || std::isspace(c); })) {
             fail();
             continue;
         }

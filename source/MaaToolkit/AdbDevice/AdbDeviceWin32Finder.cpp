@@ -77,6 +77,11 @@ std::vector<AdbDevice> AdbDeviceWin32Finder::find_mumu_devices(const Emulator& e
 {
     LogFunc << VAR(emulator.name);
 
+    if (emulator.adb_path.empty() || !std::filesystem::exists(emulator.adb_path)) {
+        LogWarn << "adb_path is empty or does not exist" << VAR(emulator.adb_path);
+        return {};
+    }
+
     std::filesystem::path mumu_mgr_path = emulator.adb_path.parent_path() / "MuMuManager.exe";
     if (!std::filesystem::exists(mumu_mgr_path)) {
         LogWarn << "MuMuManager not found" << VAR(mumu_mgr_path);
@@ -126,13 +131,6 @@ std::vector<AdbDevice> AdbDeviceWin32Finder::find_mumu_devices(const Emulator& e
         return {};
     }
 
-    auto get_serial = [](const json::value& obj) -> std::optional<MumuInfo> {
-        if (!obj.is<MumuInfo>()) {
-            return std::nullopt;
-        }
-        return obj.as<MumuInfo>();
-    };
-
     std::filesystem::path dir;
     if (emulator.name == "MuMuPlayer12 v5") {
         // MuMuPlayer12 v5: C:\Program Files\Netease\MuMuPlayer-12.0\nx_device\12.0\shell\MuMuNxDevice.exe
@@ -154,7 +152,7 @@ std::vector<AdbDevice> AdbDeviceWin32Finder::find_mumu_devices(const Emulator& e
         device.input_methods = MaaAdbInputMethod_Default | MaaAdbInputMethod_EmulatorExtras;
 
         int index = 0;
-        if (std::ranges::all_of(i.index, [](auto c) { return std::isdigit(c); })) {
+        if (std::ranges::all_of(i.index, [](unsigned char c) { return std::isdigit(c); })) {
             index = std::stoi(i.index);
         }
         else {
@@ -178,6 +176,11 @@ std::vector<AdbDevice> AdbDeviceWin32Finder::find_mumu_devices(const Emulator& e
 std::vector<AdbDevice> AdbDeviceWin32Finder::find_ld_devices(const Emulator& emulator) const
 {
     LogFunc << VAR(emulator.name);
+
+    if (emulator.adb_path.empty() || !std::filesystem::exists(emulator.adb_path)) {
+        LogWarn << "adb_path is empty or does not exist" << VAR(emulator.adb_path);
+        return {};
+    }
 
     // E:\Program Files\leidian\LDPlayer9\dnplayer.exe
     auto dir = emulator.process_path.parent_path();
@@ -216,8 +219,8 @@ std::vector<AdbDevice> AdbDeviceWin32Finder::find_ld_devices(const Emulator& emu
 
         int index = 0;
         int vbox_pid = 0;
-        if (std::ranges::all_of(fields[0], [](auto c) { return std::isdigit(c); })
-            && std::ranges::all_of(fields[6], [](auto c) { return std::isdigit(c); })) {
+        if (std::ranges::all_of(fields[0], [](unsigned char c) { return std::isdigit(c); })
+            && std::ranges::all_of(fields[6], [](unsigned char c) { return std::isdigit(c); })) {
             index = std::stoi(fields[0]);
             vbox_pid = std::stoi(fields[6]);
         }

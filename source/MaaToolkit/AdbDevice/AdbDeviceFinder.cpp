@@ -30,6 +30,11 @@ std::vector<AdbDevice> AdbDeviceFinder::find() const
             continue;
         }
 
+        if (e.adb_path.empty() || !std::filesystem::exists(e.adb_path)) {
+            LogWarn << "adb_path is empty or does not exist" << VAR(e.adb_path);
+            continue;
+        }
+
         res = find_specified(e.adb_path);
         for (auto& dev : res) {
             if (accurate_serials.count(dev.serial)) {
@@ -185,7 +190,7 @@ std::vector<AdbDeviceFinder::Emulator> AdbDeviceFinder::find_emulators() const
     LogFunc;
 
     std::vector<Emulator> result;
-    std::unordered_set<std::string> seen_keywords;
+    std::unordered_set<std::filesystem::path> seen_process_paths;
 
     auto all_processes = list_processes();
     for (const auto& process : all_processes) {
@@ -196,13 +201,13 @@ std::vector<AdbDeviceFinder::Emulator> AdbDeviceFinder::find_emulators() const
             continue;
         }
 
-        // Deduplicate by keyword
-        if (!seen_keywords.insert(find_it->second.keyword).second) {
+        auto process_path = get_process_path(process.pid);
+        if (!process_path) {
             continue;
         }
 
-        auto process_path = get_process_path(process.pid);
-        if (!process_path) {
+        // Deduplicate by process_path to distinguish multiple instances or installations
+        if (!seen_process_paths.insert(*process_path).second) {
             continue;
         }
 
