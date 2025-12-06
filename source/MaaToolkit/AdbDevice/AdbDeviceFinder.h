@@ -3,6 +3,7 @@
 #include <filesystem>
 #include <string>
 #include <unordered_map>
+#include <unordered_set>
 #include <vector>
 
 #include <meojson/json.hpp>
@@ -43,7 +44,10 @@ public:
 
 public:
     std::vector<AdbDevice> find() const;
-    std::vector<AdbDevice> find_specified(const std::filesystem::path& adb_path, const Emulator& emulator = {}) const;
+    std::vector<AdbDevice> find_specified(
+        const std::filesystem::path& adb_path,
+        const std::unordered_set<std::string>& exclude_serials = {},
+        const Emulator& emulator = {}) const;
 
 protected:
     virtual const EmulatorConstDataMap& get_emulator_const_data() const { return kEmptyEmulatorConstDataMap; }

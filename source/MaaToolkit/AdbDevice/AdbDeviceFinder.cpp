@@ -35,7 +35,7 @@ std::vector<AdbDevice> AdbDeviceFinder::find() const
             continue;
         }
 
-        res = find_specified(e.adb_path, e);
+        res = find_specified(e.adb_path, accurate_serials, e);
         for (auto& dev : res) {
             if (accurate_serials.count(dev.serial)) {
                 continue;
@@ -45,7 +45,7 @@ std::vector<AdbDevice> AdbDeviceFinder::find() const
     }
 
     if (auto env_adb = boost::process::search_path("adb"); std::filesystem::exists(env_adb)) {
-        auto res = find_specified(env_adb);
+        auto res = find_specified(env_adb, accurate_serials);
         for (auto& dev : res) {
             if (accurate_serials.count(dev.serial)) {
                 continue;
@@ -58,7 +58,10 @@ std::vector<AdbDevice> AdbDeviceFinder::find() const
     return result;
 }
 
-std::vector<AdbDevice> AdbDeviceFinder::find_specified(const std::filesystem::path& adb_path, const Emulator& emulator) const
+std::vector<AdbDevice> AdbDeviceFinder::find_specified(
+    const std::filesystem::path& adb_path,
+    const std::unordered_set<std::string>& exclude_serials,
+    const Emulator& emulator) const
 {
     LogFunc << VAR(adb_path);
 
@@ -67,6 +70,10 @@ std::vector<AdbDevice> AdbDeviceFinder::find_specified(const std::filesystem::pa
     auto serials = find_serials_by_adb_command(adb_path);
 
     for (const std::string& ser : serials) {
+        if (exclude_serials.count(ser)) {
+            LogInfo << "skip excluded serial" << VAR(ser);
+            continue;
+        }
         auto res_opt = try_device(adb_path, ser, emulator);
         if (!res_opt) {
             continue;
