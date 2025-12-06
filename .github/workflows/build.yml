@@ -169,15 +169,9 @@ jobs:
             fail-fast: false
 
         steps:
-            # maybe should explicitly update some pkg instead of all?
-            - name: Update system
-              run: |
-                  sudo apt-get update -y
-                  sudo apt-get remove -y --purge firefox
-                  sudo apt-get upgrade -y
-
             - name: Install dep
               run: |
+                  sudo apt-get update -y
                   sudo apt-get install -y ninja-build cmake ccache
 
             - uses: pnpm/action-setup@v4
@@ -377,12 +371,7 @@ jobs:
             - name: Install Packages
               run: |
                   sudo apt-get update -y
-                  sudo apt-get install -y ninja-build python3-pyelftools elfutils patchelf nasm
-
-            - uses: nttld/setup-ndk@v1
-              id: setup-ndk
-              with:
-                  ndk-version: r27c
+                  sudo apt-get install -y ninja-build cmake ccache
 
             - name: Set up JDK 17
               uses: actions/setup-java@v4
@@ -392,6 +381,17 @@ jobs:
 
             - name: Setup Gradle
               uses: gradle/actions/setup-gradle@v4
+              with:
+                  gradle-version: '8.5'
+
+            - name: Build Kotlin Library
+              working-directory: source/MaaAndroidControlUnit/java
+              run: gradle assembleRelease
+
+            - uses: nttld/setup-ndk@v1
+              id: setup-ndk
+              with:
+                  ndk-version: r27c
 
             - name: Setup ccache
               uses: Chocobo1/setup-ccache-action@v1
@@ -414,12 +414,6 @@ jobs:
                     -DMAA_HASH_VERSION='${{ needs.meta.outputs.tag }}'
 
                   cmake --build build --preset 'NinjaMulti - ${{ inputs.build_config || needs.meta.outputs.build_config }}' -j 16
-
-            - name: Build Kotlin Library
-              working-directory: source/MaaAndroidControlUnit/java
-              run: |
-                  gradle wrapper
-                  ./gradlew assembleRelease
 
             - name: Install
               shell: bash
