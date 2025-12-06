@@ -77,6 +77,7 @@ class MaaAccessibilityService : AccessibilityService() {
         }
     }
 
+    @Suppress("UNUSED_PARAMETER")
     fun stopApp(intentUri: String): Boolean {
         // Best effort: bring home
         performGlobalAction(GLOBAL_ACTION_HOME)
@@ -139,7 +140,7 @@ class MaaAccessibilityService : AccessibilityService() {
                     val bmp = Bitmap.wrapHardwareBuffer(hw, result.colorSpace)
                     val copy = bmp?.copy(Bitmap.Config.ARGB_8888, false)
                     bmp?.recycle()
-                    hw?.close()
+                    hw.close()
                     future.complete(copy)
                 }
                 override fun onFailure(errorCode: Int) {
