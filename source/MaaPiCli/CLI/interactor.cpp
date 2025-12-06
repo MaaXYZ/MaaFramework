@@ -445,7 +445,7 @@ void Interactor::select_adb_manual_input()
     config_.configuration().adb.address = adb_address;
     std::cout << "\n";
 
-    config_.configuration().adb.name = std::format("{}<{}", adb_path, adb_address);
+    config_.configuration().adb.name = std::format("{}-{}", adb_path, adb_address);
 }
 
 std::string Interactor::format_win32_config(const MAA_PROJECT_INTERFACE_NS::Configuration::Win32Config& win32_config)

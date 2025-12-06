@@ -37,14 +37,14 @@ const AdbDeviceFinder::EmulatorConstDataMap& AdbDeviceWin32Finder::get_emulator_
 
         { "MuMuPlayer12",
           {
-              .keyword = "MuMuPlayer.exe",
+              .keyword = "MuMuPlayer",
               .adb_candidate_paths = { "vmonitor\\bin\\adb_server.exe"_path,
                                        "MuMu\\emulator\\nemu\\vmonitor\\bin\\adb_server.exe"_path,
                                        "adb.exe"_path },
           } },
         { "MuMuPlayer12 v5",
           {
-              .keyword = "MuMuNxDevice.exe",
+              .keyword = "MuMuNxDevice",
               .adb_candidate_paths = { "..\\..\\..\\nx_main\\adb.exe"_path, "adb.exe"_path },
           } },
 
@@ -144,7 +144,7 @@ std::vector<AdbDevice> AdbDeviceWin32Finder::find_mumu_devices(const Emulator& e
     std::vector<AdbDevice> result;
     for (const MumuInfo& i : info) {
         AdbDevice device;
-        device.name = i.name;
+        device.name = std::format("{}-{}", emulator.name, i.name);
         device.adb_path = emulator.adb_path;
         device.serial = std::format("{}:{}", i.adb_host_ip, i.adb_port);
 
@@ -185,17 +185,17 @@ std::vector<AdbDevice> AdbDeviceWin32Finder::find_ld_devices(const Emulator& emu
     // E:\Program Files\leidian\LDPlayer9\dnplayer.exe
     auto dir = emulator.process_path.parent_path();
 
-    std::filesystem::path dnconsole_path = dir / "ldconsole.exe";
-    if (!std::filesystem::exists(dnconsole_path)) {
-        LogWarn << "ldconsole.exe not found" << VAR(dnconsole_path);
+    std::filesystem::path ldconsole_path = dir / "ldconsole.exe";
+    if (!std::filesystem::exists(ldconsole_path)) {
+        LogWarn << "ldconsole.exe not found" << VAR(ldconsole_path);
         return {};
     }
 
-    static const std::vector<std::string> dnconsole_args = { "list2" };
-    ChildPipeIOStream ios(dnconsole_path, dnconsole_args);
+    static const std::vector<std::string> ldconsole_args = { "list2" };
+    ChildPipeIOStream ios(ldconsole_path, ldconsole_args);
     std::string raw = ios.read();
     std::string output = crt_to_utf8(raw);
-    LogDebug << VAR(dnconsole_path) << VAR(dnconsole_args) << VAR(raw) << VAR(output);
+    LogDebug << VAR(ldconsole_path) << VAR(ldconsole_args) << VAR(raw) << VAR(output);
 
     // list2 output format:
     // 索引,标题,顶层窗口句柄,绑定窗口句柄,是否进入android,进程PID,VBox进程PID
@@ -238,7 +238,7 @@ std::vector<AdbDevice> AdbDeviceWin32Finder::find_ld_devices(const Emulator& emu
         std::string serial = std::format("emulator-{}", 5554 + index * 2);
 
         AdbDevice device;
-        device.name = fields[1];
+        device.name = std::format("{}-{}", emulator.name, fields[1]);
         device.adb_path = emulator.adb_path;
         device.serial = serial;
 

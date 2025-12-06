@@ -43,7 +43,7 @@ public:
 
 public:
     std::vector<AdbDevice> find() const;
-    std::vector<AdbDevice> find_specified(const std::filesystem::path& adb_path) const;
+    std::vector<AdbDevice> find_specified(const std::filesystem::path& adb_path, const Emulator& emulator = {}) const;
 
 protected:
     virtual const EmulatorConstDataMap& get_emulator_const_data() const { return kEmptyEmulatorConstDataMap; }
@@ -52,7 +52,7 @@ protected:
 
 protected:
     std::vector<std::string> find_serials_by_adb_command(const std::filesystem::path& adb_path) const;
-    std::optional<AdbDevice> try_device(const std::filesystem::path& adb_path, const std::string& serial) const;
+    std::optional<AdbDevice> try_device(const std::filesystem::path& adb_path, const std::string& serial, const Emulator& emulator) const;
 
     std::vector<Emulator> find_emulators() const;
     std::filesystem::path get_emulator_adb_path(const EmulatorConstantData& emulator, os_pid pid) const;
