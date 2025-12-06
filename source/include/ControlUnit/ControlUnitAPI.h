@@ -2,6 +2,7 @@
 
 #include <string>
 #include <utility>
+#include <vector>
 
 #include "Common/Conf.h"
 #include "MaaFramework/MaaDef.h"
@@ -49,6 +50,12 @@ public:
     virtual bool shell(const std::string& cmd, std::string& output) = 0;
 };
 
+class AndroidControlUnitAPI : public ControlUnitAPI
+{
+public:
+    virtual ~AndroidControlUnitAPI() = default;
+};
+
 class Win32ControlUnitAPI : public ControlUnitAPI
 {
 public:
@@ -59,5 +66,6 @@ MAA_CTRL_UNIT_NS_END
 
 using MaaControlUnitHandle = MAA_CTRL_UNIT_NS::ControlUnitAPI*;
 using MaaAdbControlUnitHandle = MAA_CTRL_UNIT_NS::AdbControlUnitAPI*;
+using MaaAndroidControlUnitHandle = MAA_CTRL_UNIT_NS::AndroidControlUnitAPI*;
 using MaaWin32ControlUnitHandle = MAA_CTRL_UNIT_NS::Win32ControlUnitAPI*;
 using MaaCustomControlUnitHandle = MAA_CTRL_UNIT_NS::ControlUnitAPI*;

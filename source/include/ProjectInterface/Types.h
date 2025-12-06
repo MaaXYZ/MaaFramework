@@ -33,6 +33,7 @@ struct InterfaceData
         {
             Invalid,
             Adb,
+            Android,
             Win32,
         };
 
