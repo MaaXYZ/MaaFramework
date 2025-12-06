@@ -148,7 +148,10 @@ _✨ 基于图像识别的自动化黑盒测试框架 ✨_
 
 - [MaaEOV](https://github.com/Tigerisu/MaaEOV) ![Pipeline](https://img.shields.io/badge/Pipeline-%23876f69?logo=paddypower&logoColor=%23FFFFFF) ![license](https://img.shields.io/github/license/Tigerisu/MaaEOV) ![activity](https://img.shields.io/github/commit-activity/m/Tigerisu/MaaEOV?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/Tigerisu/MaaEOV?style=social)  
   异象回声 小助手。图像技术 + 模拟控制，解放双手！由 MaaFramework 强力驱动！
-  
+
+- [MAA Star Resonance](https://github.com/26F-Studio/maa-star-resonance) ![Typescript](https://img.shields.io/badge/Typescript-8A2BE2?logo=typescript) ![license](https://img.shields.io/github/license/26F-Studio/maa-star-resonance) ![activity](https://img.shields.io/github/commit-activity/m/26F-Studio/maa-star-resonance?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/26F-Studio/maa-star-resonance?style=social)  
+  星痕共鸣小助手。使用 Electron + 文本图像识别 + ADB模拟控制 技术，解放双手！由 MaaFramework 和 Quasar 强力驱动！
+
 ## 生态共建
 
 MAA 正计划建设为一类项目，而非舟的单一软件。  
