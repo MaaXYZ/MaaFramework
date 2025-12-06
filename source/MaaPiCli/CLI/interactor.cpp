@@ -194,6 +194,9 @@ void Interactor::print_config() const
             std::cout << MAA_NS::utf8_to_crt(std::format("\t\t{}\n", format_win32_config(config_.configuration().win32)));
         }
         break;
+    case InterfaceData::Controller::Type::Android:
+        std::cout << "\t\tNative Android Controller\n";
+        break;
     default:
         LogError << "Unknown controller type" << VAR(config_.configuration().controller.type);
         break;
@@ -362,6 +365,11 @@ void Interactor::select_controller()
     case InterfaceData::Controller::Type::Win32:
         config_.configuration().controller.type = InterfaceData::Controller::Type::Win32;
         select_win32_hwnd(controller.win32);
+        break;
+    case InterfaceData::Controller::Type::Android:
+        config_.configuration().controller.type = InterfaceData::Controller::Type::Android;
+        // Android controller does not require additional configuration
+        std::cout << "Using Native Android Controller\n\n";
         break;
     default:
         LogError << "Unknown controller type" << VAR(controller.type);
