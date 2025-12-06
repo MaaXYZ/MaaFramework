@@ -3,12 +3,14 @@ package com.maa.framework.nativectrl
 import android.accessibilityservice.AccessibilityService
 import android.accessibilityservice.GestureDescription
 import android.accessibilityservice.GestureDescription.StrokeDescription
+import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.Path
 import android.os.Build
 import android.os.Bundle
 import android.util.DisplayMetrics
 import android.view.Display
+import android.view.WindowManager
 import android.view.accessibility.AccessibilityEvent
 import android.view.accessibility.AccessibilityNodeInfo
 import android.view.KeyEvent
@@ -22,6 +24,10 @@ class MaaAccessibilityService : AccessibilityService() {
     
     private var cachedScreenWidth = 0
     private var cachedScreenHeight = 0
+    
+    private val windowMgr: WindowManager by lazy {
+        getSystemService(Context.WINDOW_SERVICE) as WindowManager
+    }
 
     override fun onServiceConnected() {
         super.onServiceConnected()
@@ -45,7 +51,7 @@ class MaaAccessibilityService : AccessibilityService() {
     private fun updateScreenSize() {
         val metrics = DisplayMetrics()
         @Suppress("DEPRECATION")
-        windowManager.defaultDisplay.getRealMetrics(metrics)
+        windowMgr.defaultDisplay.getRealMetrics(metrics)
         cachedScreenWidth = metrics.widthPixels
         cachedScreenHeight = metrics.heightPixels
     }
@@ -94,7 +100,7 @@ class MaaAccessibilityService : AccessibilityService() {
     fun scroll(dx: Int, dy: Int): Boolean {
         val metrics = DisplayMetrics()
         @Suppress("DEPRECATION")
-        windowManager.defaultDisplay.getRealMetrics(metrics)
+        windowMgr.defaultDisplay.getRealMetrics(metrics)
         val startX = (metrics.widthPixels / 2f + dx * 0.25f)
         val startY = (metrics.heightPixels / 2f + dy * 0.25f)
         val endX = startX - dx
@@ -126,18 +132,21 @@ class MaaAccessibilityService : AccessibilityService() {
     fun screencap(): Bitmap? {
         if (Build.VERSION.SDK_INT < 33) return null
         val future = CompletableFuture<Bitmap?>()
-        takeScreenshot(Display.DEFAULT_DISPLAY, mainExecutor) { result ->
-            if (result == null) {
-                future.complete(null)
-                return@takeScreenshot
+        takeScreenshot(Display.DEFAULT_DISPLAY, mainExecutor, 
+            object : TakeScreenshotCallback {
+                override fun onSuccess(result: ScreenshotResult) {
+                    val hw = result.hardwareBuffer
+                    val bmp = Bitmap.wrapHardwareBuffer(hw, result.colorSpace)
+                    val copy = bmp?.copy(Bitmap.Config.ARGB_8888, false)
+                    bmp?.recycle()
+                    hw?.close()
+                    future.complete(copy)
+                }
+                override fun onFailure(errorCode: Int) {
+                    future.complete(null)
+                }
             }
-            val hw = result.hardwareBuffer
-            val bmp = Bitmap.wrapHardwareBuffer(hw, result.colorSpace)
-            val copy = bmp?.copy(Bitmap.Config.ARGB_8888, false)
-            bmp?.recycle()
-            hw?.close()
-            future.complete(copy)
-        }
+        )
         return try {
             future.get(1200, TimeUnit.MILLISECONDS)
         } catch (_: Exception) {

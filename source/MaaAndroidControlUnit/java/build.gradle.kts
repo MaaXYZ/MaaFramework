@@ -34,6 +34,7 @@ android {
             java.srcDirs("com")
             kotlin.srcDirs("com")
             manifest.srcFile("AndroidManifest.xml")
+            res.srcDirs("res")
         }
     }
 }
