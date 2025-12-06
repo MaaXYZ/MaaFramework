@@ -249,6 +249,27 @@ typedef uint64_t MaaAdbInputMethod;
 #define MaaAdbInputMethod_All (~MaaAdbInputMethod_None)
 #define MaaAdbInputMethod_Default (MaaAdbInputMethod_All & (~MaaAdbInputMethod_EmulatorExtras))
 
+// MaaAndroidScreencapMethod:
+/**
+ * Use bitwise OR to set the method you need, MaaFramework will test their availability.
+ */
+typedef uint64_t MaaAndroidScreencapMethod;
+#define MaaAndroidScreencapMethod_None 0ULL
+/// API 33+ AccessibilityService.takeScreenshot
+#define MaaAndroidScreencapMethod_AccessibilityScreenshot 1ULL
+/// MediaProjection VirtualDisplay capture (requires user consent)
+#define MaaAndroidScreencapMethod_MediaProjection (1ULL << 1)
+#define MaaAndroidScreencapMethod_All (~MaaAndroidScreencapMethod_None)
+#define MaaAndroidScreencapMethod_Default (MaaAndroidScreencapMethod_AccessibilityScreenshot | MaaAndroidScreencapMethod_MediaProjection)
+
+// MaaAndroidInputMethod:
+/**
+ * Use bitwise OR to set the method you need.
+ */
+typedef uint64_t MaaAndroidInputMethod;
+#define MaaAndroidInputMethod_None 0ULL
+#define MaaAndroidInputMethod_Accessibility 1ULL
+
 // MaaWin32ScreencapMethod:
 /**
  * No bitwise OR, just set it
