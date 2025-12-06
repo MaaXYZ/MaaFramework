@@ -47,7 +47,8 @@ jclass AndroidControlUnitMgr::bridge_class()
         return nullptr;
     }
     jclass local = env->FindClass("com/maa/framework/nativectrl/NativeBridge");
-    if (!local) {
+    if (env->ExceptionCheck() || !local) {
+        env->ExceptionClear();
         LogError << "NativeBridge class not found";
         return nullptr;
     }
@@ -71,9 +72,14 @@ bool AndroidControlUnitMgr::call_bool(const char* name, const char* sig, Callabl
     jmethodID mid = env->GetStaticMethodID(cls, name, sig);
     if (!mid) {
         LogError << "Method not found" << name;
+        env->ExceptionClear();
         return false;
     }
     jboolean ok = caller(env, cls, mid);
+    if (env->ExceptionCheck()) {
+        env->ExceptionClear();
+        return false;
+    }
     return ok == JNI_TRUE;
 }
 
@@ -94,10 +100,15 @@ bool AndroidControlUnitMgr::connect()
     jmethodID init_mid = env->GetStaticMethodID(cls, "init", "(JJ)Z");
     if (!init_mid) {
         LogError << "Method init not found";
+        env->ExceptionClear();
         return false;
     }
     jboolean init_ok =
         env->CallStaticBooleanMethod(cls, init_mid, static_cast<jlong>(screencap_methods_), static_cast<jlong>(input_methods_));
+    if (env->ExceptionCheck()) {
+        env->ExceptionClear();
+        return false;
+    }
     if (!init_ok) {
         LogError << "init failed";
         return false;
@@ -121,9 +132,14 @@ bool AndroidControlUnitMgr::request_uuid(/*out*/ std::string& uuid)
     jmethodID mid = env->GetStaticMethodID(cls, "requestUuid", "()Ljava/lang/String;");
     if (!mid) {
         LogError << "Method requestUuid not found";
+        env->ExceptionClear();
         return false;
     }
     auto str = static_cast<jstring>(env->CallStaticObjectMethod(cls, mid));
+    if (env->ExceptionCheck()) {
+        env->ExceptionClear();
+        return false;
+    }
     if (!str) {
         return false;
     }
@@ -175,28 +191,47 @@ bool AndroidControlUnitMgr::screencap(/*out*/ cv::Mat& image)
     jmethodID mid = env->GetStaticMethodID(cls, "screencap", "()Landroid/graphics/Bitmap;");
     if (!mid) {
         LogError << "Method screencap not found";
+        env->ExceptionClear();
         return false;
     }
     jobject bmp = env->CallStaticObjectMethod(cls, mid);
+    if (env->ExceptionCheck()) {
+        env->ExceptionClear();
+        return false;
+    }
     if (!bmp) {
         return false;
     }
 
+    // Helper lambda to recycle bitmap and delete local ref
+    auto cleanup_bitmap = [env](jobject bitmap) {
+        // Call Bitmap.recycle() to release native memory
+        jclass bitmap_class = env->GetObjectClass(bitmap);
+        if (bitmap_class) {
+            jmethodID recycle_mid = env->GetMethodID(bitmap_class, "recycle", "()V");
+            if (recycle_mid) {
+                env->CallVoidMethod(bitmap, recycle_mid);
+            }
+            env->DeleteLocalRef(bitmap_class);
+        }
+        env->DeleteLocalRef(bitmap);
+    };
+
     AndroidBitmapInfo info {};
     if (AndroidBitmap_getInfo(env, bmp, &info) != ANDROID_BITMAP_RESULT_SUCCESS) {
-        env->DeleteLocalRef(bmp);
+        cleanup_bitmap(bmp);
         return false;
     }
 
     if (info.format != ANDROID_BITMAP_FORMAT_RGBA_8888 && info.format != ANDROID_BITMAP_FORMAT_RGB_565) {
         LogError << "Unsupported bitmap format" << info.format;
-        env->DeleteLocalRef(bmp);
+        cleanup_bitmap(bmp);
         return false;
     }
 
     void* pixels = nullptr;
     if (AndroidBitmap_lockPixels(env, bmp, &pixels) != ANDROID_BITMAP_RESULT_SUCCESS || !pixels) {
-        env->DeleteLocalRef(bmp);
+        cleanup_bitmap(bmp);
         return false;
     }
 
@@ -228,7 +263,7 @@ bool AndroidControlUnitMgr::screencap(/*out*/ cv::Mat& image)
     }
 
     AndroidBitmap_unlockPixels(env, bmp);
-    env->DeleteLocalRef(bmp);
+    cleanup_bitmap(bmp);
     return true;
 }
 

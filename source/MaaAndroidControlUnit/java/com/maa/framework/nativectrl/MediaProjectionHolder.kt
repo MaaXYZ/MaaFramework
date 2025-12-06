@@ -73,27 +73,37 @@ class MediaProjectionHolder(
     fun capture(): Bitmap? {
         val reader = imageReader ?: return null
         
-        val imageRef = AtomicReference<Image?>()
-        val latch = CountDownLatch(1)
-
-        // Set up listener for next image
-        reader.setOnImageAvailableListener({ ir ->
-            try {
-                imageRef.set(ir.acquireLatestImage())
-            } catch (_: Exception) {
-            } finally {
-                latch.countDown()
-            }
-        }, handler)
-
-        // Wait for image
-        if (!latch.await(500, TimeUnit.MILLISECONDS)) {
-            reader.setOnImageAvailableListener(null, null)
-            return null
+        // 首先尝试获取已有的图像
+        var image: Image? = try {
+            reader.acquireLatestImage()
+        } catch (_: Exception) {
+            null
         }
-        reader.setOnImageAvailableListener(null, null)
+        
+        // 如果没有现成的图像，等待下一帧
+        if (image == null) {
+            val imageRef = AtomicReference<Image?>()
+            val latch = CountDownLatch(1)
 
-        val image = imageRef.get() ?: return null
+            reader.setOnImageAvailableListener({ ir ->
+                try {
+                    imageRef.set(ir.acquireLatestImage())
+                } catch (_: Exception) {
+                } finally {
+                    latch.countDown()
+                }
+            }, handler)
+
+            if (!latch.await(500, TimeUnit.MILLISECONDS)) {
+                reader.setOnImageAvailableListener(null, null)
+                return null
+            }
+            reader.setOnImageAvailableListener(null, null)
+            
+            image = imageRef.get()
+        }
+        
+        if (image == null) return null
         
         return try {
             imageToBitmap(image)
@@ -118,7 +128,9 @@ class MediaProjectionHolder(
 
         // Crop if needed
         return if (rowPadding > 0) {
-            Bitmap.createBitmap(bitmap, 0, 0, image.width, image.height)
+            val cropped = Bitmap.createBitmap(bitmap, 0, 0, image.width, image.height)
+            bitmap.recycle() // 回收原始 bitmap 避免内存泄漏
+            cropped
         } else {
             bitmap
         }

@@ -124,10 +124,18 @@ class MaaAccessibilityService : AccessibilityService() {
     }
 
     fun inputText(text: String): Boolean {
-        val node = rootInActiveWindow?.findFocus(AccessibilityNodeInfo.FOCUS_INPUT) ?: return false
+        val root = rootInActiveWindow ?: return false
+        val node = root.findFocus(AccessibilityNodeInfo.FOCUS_INPUT)
+        if (node == null) {
+            root.recycle()
+            return false
+        }
         val args = Bundle()
         args.putCharSequence(AccessibilityNodeInfo.ACTION_ARGUMENT_SET_TEXT_CHARSEQUENCE, text)
-        return node.performAction(AccessibilityNodeInfo.ACTION_SET_TEXT, args)
+        val result = node.performAction(AccessibilityNodeInfo.ACTION_SET_TEXT, args)
+        node.recycle()
+        root.recycle()
+        return result
     }
 
     fun screencap(): Bitmap? {
