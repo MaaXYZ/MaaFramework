@@ -9,7 +9,6 @@
 #include <meojson/json.hpp>
 
 #include "ControlUnit/AndroidControlUnitAPI.h"
-#include "MaaUtils/Dispatcher.hpp"
 
 #include "Common/Conf.h"
 
@@ -17,7 +16,6 @@ MAA_CTRL_UNIT_NS_BEGIN
 
 class AndroidControlUnitMgr
     : public AndroidControlUnitAPI
-    , public Dispatcher<ControlUnitSink>
 {
 public:
     AndroidControlUnitMgr(MaaAndroidScreencapMethod screencap_methods, MaaAndroidInputMethod input_methods);
