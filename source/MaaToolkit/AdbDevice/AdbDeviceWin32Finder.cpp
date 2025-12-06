@@ -194,7 +194,7 @@ std::vector<AdbDevice> AdbDeviceWin32Finder::find_ld_devices(const Emulator& emu
     static const std::vector<std::string> ldconsole_args = { "list2" };
     ChildPipeIOStream ios(ldconsole_path, ldconsole_args);
     std::string raw = ios.read();
-    std::string output = crt_to_utf8(raw);
+    std::string output = gbk_to_utf8(raw);
     LogDebug << VAR(ldconsole_path) << VAR(ldconsole_args) << VAR(raw) << VAR(output);
 
     // list2 output format:
