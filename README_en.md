@@ -142,7 +142,7 @@ It offers low-code simplicity while maintaining high extensibility. The framewor
 
 - [MAG](https://github.com/Kazaorus/MAG) ![Pipeline](https://img.shields.io/badge/Pipeline-%23876f69?logo=paddypower&logoColor=%23FFFFFF) ![Python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white) ![license](https://img.shields.io/github/license/Kazaorus/MAG) ![activity](https://img.shields.io/github/commit-activity/m/Kazaorus/MAG?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/Kazaorus/MAG?style=social)  
     Assistant for Aether Gazer. Image recognition + simulation control to free your hands! Powered by MaaFramework!
-    
+
 - [MAAAE](https://github.com/NewWYoming/MAAAE) ![Pipeline](https://img.shields.io/badge/Pipeline-%23876f69?logo=paddypower&logoColor=%23FFFFFF) ![python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white) ![license](https://img.shields.io/github/license/NewWYoming/MAAAE) ![activity](https://img.shields.io/github/commit-activity/m/NewWYoming/MAAAE?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/NewWYoming/MAAAE?style=social)  
     An assistant for Ash Echoes. Image technology + simulation control, freeing your hands! Powered by MaaFramework.
   
@@ -150,7 +150,7 @@ It offers low-code simplicity while maintaining high extensibility. The framewor
   Assistant for Path to Nowhere. Image recognition + simulation control to free your hands! Powered by MaaFramework!
 
 - [MaaEOV](https://github.com/Tigerisu/MaaEOV) ![Pipeline](https://img.shields.io/badge/Pipeline-%23876f69?logo=paddypower&logoColor=%23FFFFFF) ![license](https://img.shields.io/github/license/Tigerisu/MaaEOV) ![activity](https://img.shields.io/github/commit-activity/m/Tigerisu/MaaEOV?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/Tigerisu/MaaEOV?style=social)  
-  Assistant for *Echoes Of Vision*. Image recognition + simulation control to free your hands! Powered by MaaFramework!
+  Assistant for _Echoes Of Vision_. Image recognition + simulation control to free your hands! Powered by MaaFramework!
 
 - [MAA Star Resonance](https://github.com/26F-Studio/maa-star-resonance) ![Typescript](https://img.shields.io/badge/Typescript-8A2BE2?logo=typescript) ![license](https://img.shields.io/github/license/26F-Studio/maa-star-resonance) ![activity](https://img.shields.io/github/commit-activity/m/26F-Studio/maa-star-resonance?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/26F-Studio/maa-star-resonance?style=social)  
   A helper for Star Resonance. Using Electron + text image recognition + ADB simulation control technology, freeing your hands! Powered by MaaFramework and Quasar.
@@ -262,7 +262,7 @@ Thanks to the following developers for their contributions to MaaFramework:
 
 ## Discussion
 
-- QQ Group: 595990173
+Developers are welcome to join the official QQ group (595990173) for integration and development discussions. The group is reserved for engineering topics; product-usage support is not provided, and off-topic or spam accounts may be removed to keep the channel focused.
 
 ## Sponsor
 
