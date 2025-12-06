@@ -1,4 +1,6 @@
 {
+    // 本文件为 PI V2 协议示例，更多详情请参考文档
+    // https://github.com/MaaXYZ/MaaFramework/blob/main/docs/zh_cn/3.3-ProjectInterfaceV2%E5%8D%8F%E8%AE%AE.md
     "interface_version": 2, // ProjectInterface 协议版本号，当前为 2，固定且必须设置
     "languages": { // 多语言支持配置，键为语言代码，值为对应的翻译文件路径
         "zh_cn": "interface_zh.json",
