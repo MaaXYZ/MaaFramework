@@ -262,7 +262,8 @@ Thanks to the following developers for their contributions to MaaFramework:
 
 ## Discussion
 
-- QQ Group: 595990173
+You're welcome to join the official developer QQ group (595990173) to discuss integration and development topics.
+The group is for developers; product-usage support isn't provided, and off-topic members may be removed to keep the discussion focused.
 
 ## Sponsor
 

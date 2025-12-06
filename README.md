@@ -257,9 +257,10 @@ _请留意，仅当您准备开发 MaaFramework 本身时，才需要阅读本�
 
 [![贡献者](https://contrib.rocks/image?repo=MaaXYZ/MaaFramework&max=1000)](https://github.com/MaaXYZ/MaaFramework/graphs/contributors)
 
-## 讨论
+## 沟通交流
 
-- 集成/开发交流 QQ 群: 595990173
+欢迎加入官方 QQ 群（595990173），交流集成与开发经验。
+本群面向开发者讨论集成/开发问题，不提供日常使用支持；与主题无关的成员可能会被移除，以保持讨论质量。
 
 ## 赞助
 
