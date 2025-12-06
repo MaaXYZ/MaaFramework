@@ -356,7 +356,7 @@ jobs:
 
     android:
         needs: meta
-        runs-on: ubuntu-latest
+        runs-on: macos-latest
         strategy:
             matrix:
                 include:
@@ -374,10 +374,9 @@ jobs:
               run: |
                   git submodule update --remote source/MaaUtils
 
-            - name: Install Packages
+            - name: Install dep
               run: |
-                  sudo apt-get update -y
-                  sudo apt-get install -y ninja-build python3-pyelftools elfutils patchelf nasm
+                  brew install ninja ccache nasm
 
             - uses: nttld/setup-ndk@v1
               id: setup-ndk
