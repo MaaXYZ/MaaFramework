@@ -152,6 +152,9 @@ It offers low-code simplicity while maintaining high extensibility. The framewor
 - [MaaEOV](https://github.com/Tigerisu/MaaEOV) ![Pipeline](https://img.shields.io/badge/Pipeline-%23876f69?logo=paddypower&logoColor=%23FFFFFF) ![license](https://img.shields.io/github/license/Tigerisu/MaaEOV) ![activity](https://img.shields.io/github/commit-activity/m/Tigerisu/MaaEOV?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/Tigerisu/MaaEOV?style=social)  
   Assistant for *Echoes Of Vision*. Image recognition + simulation control to free your hands! Powered by MaaFramework!
 
+- [MAA Star Resonance](https://github.com/26F-Studio/maa-star-resonance) ![Typescript](https://img.shields.io/badge/Typescript-8A2BE2?logo=typescript) ![license](https://img.shields.io/github/license/26F-Studio/maa-star-resonance) ![activity](https://img.shields.io/github/commit-activity/m/26F-Studio/maa-star-resonance?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/26F-Studio/maa-star-resonance?style=social)  
+  A helper for Star Resonance. Using Electron + text image recognition + ADB simulation control technology, freeing your hands! Powered by MaaFramework and Quasar.
+
 ## Eco-Building
 
 MAA is planned to be a category of projects rather than just a single piece of software.
