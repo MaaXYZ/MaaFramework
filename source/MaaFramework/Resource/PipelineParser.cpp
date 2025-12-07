@@ -1354,8 +1354,9 @@ bool PipelineParser::parse_scroll(const json::value& input, Action::ScrollParam&
 
 bool PipelineParser::parse_shell(const json::value& input, Action::ShellParam& output, const Action::ShellParam& default_value)
 {
-    // Note: Shell command is passed directly to adb shell
-    // Pipeline authors should ensure commands are from trusted sources
+    // SECURITY NOTE: Shell commands are executed directly via adb shell without validation
+    // Pipeline files should ONLY be from trusted sources
+    // Do NOT accept shell commands from untrusted user input
     if (!get_and_check_value(input, "cmd", output.cmd, default_value.cmd)) {
         LogError << "failed to get_and_check_value cmd" << VAR(input);
         return false;
