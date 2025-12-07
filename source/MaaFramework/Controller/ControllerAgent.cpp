@@ -149,9 +149,9 @@ MaaCtrlId ControllerAgent::post_scroll(int dx, int dy)
     return focus_id(id);
 }
 
-MaaCtrlId ControllerAgent::post_shell(const std::string& cmd, MaaStringBuffer* buffer)
+MaaCtrlId ControllerAgent::post_shell(const std::string& cmd)
 {
-    ShellParam p { .cmd = cmd, .buffer = buffer };
+    ShellParam p { .cmd = cmd };
     auto id = post({ .type = Action::Type::shell, .param = std::move(p) });
     return focus_id(id);
 }
@@ -187,6 +187,12 @@ bool ControllerAgent::connected() const
 cv::Mat ControllerAgent::cached_image() const
 {
     return image_;
+}
+
+std::string ControllerAgent::cached_shell_output() const
+{
+    std::unique_lock<std::mutex> lock(shell_output_mutex_);
+    return shell_output_;
 }
 
 std::string ControllerAgent::get_uuid()
@@ -330,12 +336,11 @@ bool ControllerAgent::scroll(ScrollParam p)
 
 bool ControllerAgent::shell(const std::string& cmd, std::string& output)
 {
-    MAA_NS::StringBuffer buffer;
-    ShellParam p { .cmd = cmd, .buffer = &buffer };
+    ShellParam p { .cmd = cmd };
     auto id = post({ .type = Action::Type::shell, .param = std::move(p) });
     bool ret = wait(id) == MaaStatus_Succeeded;
     if (ret) {
-        output = buffer.get();
+        output = cached_shell_output();
     }
     return ret;
 }
@@ -805,21 +810,17 @@ bool ControllerAgent::handle_shell(const ShellParam& param)
         return false;
     }
 
-    auto adb_unit = dynamic_cast<MAA_CTRL_UNIT_NS::AdbControlUnitAPI*>(control_unit_.get());
+    auto adb_unit = std::dynamic_pointer_cast<MAA_CTRL_UNIT_NS::AdbControlUnitAPI>(control_unit_);
     if (!adb_unit) {
         LogError << "Shell commands are only supported for ADB controllers. Current controller type does not support shell execution.";
-        return false;
-    }
-
-    if (!param.buffer) {
-        LogError << "Output buffer is null";
         return false;
     }
 
     std::string output;
     bool ret = adb_unit->shell(param.cmd, output);
     if (ret) {
-        param.buffer->set(std::move(output));
+        std::unique_lock<std::mutex> lock(shell_output_mutex_);
+        shell_output_ = std::move(output);
     }
 
     return ret;

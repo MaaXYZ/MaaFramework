@@ -491,7 +491,7 @@ ActionResult Actuator::shell(const MAA_RES_NS::Action::ShellParam& param, const 
         LogTrace << "Shell output:" << output;
     }
     
-    json::object detail { { "cmd", param.cmd }, { "success", ret } };
+    json::object detail { { "cmd", param.cmd }, { "success", ret }, { "output", output } };
 
     return ActionResult {
         .action_id = ++s_global_action_id,

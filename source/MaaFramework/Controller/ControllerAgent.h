@@ -106,7 +106,6 @@ struct ScrollParam
 struct ShellParam
 {
     std::string cmd;
-    MaaStringBuffer* buffer = nullptr;
 
     MEO_TOJSON(cmd);
 };
@@ -180,7 +179,7 @@ public: // MaaController
 
     virtual MaaCtrlId post_scroll(int dx, int dy) override;
 
-    virtual MaaCtrlId post_shell(const std::string& cmd, MaaStringBuffer* buffer) override;
+    virtual MaaCtrlId post_shell(const std::string& cmd) override;
 
     virtual MaaStatus status(MaaCtrlId ctrl_id) const override;
     virtual MaaStatus wait(MaaCtrlId ctrl_id) const override;
@@ -188,6 +187,7 @@ public: // MaaController
     virtual bool running() const override;
 
     virtual cv::Mat cached_image() const override;
+    virtual std::string cached_shell_output() const;
     virtual std::string get_uuid() override;
 
     virtual MaaSinkId add_sink(MaaEventCallback callback, void* trans_arg) override;
@@ -269,6 +269,8 @@ private:
     bool connected_ = false;
     std::mutex image_mutex_;
     cv::Mat image_;
+    std::mutex shell_output_mutex_;
+    std::string shell_output_;
 
     bool image_use_raw_size_ = false;
     int image_target_long_side_ = 0;
