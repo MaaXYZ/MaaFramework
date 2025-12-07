@@ -293,7 +293,15 @@ declare global {
                 args?: string[]
                 detach?: boolean
             },
-            'exec',
+            Mode
+        >
+
+        type ActionShell<Mode> = RequiredIfStrict<
+            {
+                cmd?: string
+                timeout?: number
+            },
+            'cmd',
             Mode
         >
 
@@ -348,9 +356,10 @@ declare global {
             | MixAct<'InputText', ActionInputText<Mode>, Mode>
             | MixAct<'StartApp', ActionStartApp<Mode>, Mode>
             | MixAct<'StopApp', ActionStopApp<Mode>, Mode>
-            | MixAct<'StopTask', ActionStopTask, Mode>
             | MixAct<'Scroll', ActionScroll, Mode>
+            | MixAct<'StopTask', ActionStopTask, Mode>
             | MixAct<'Command', ActionCommand<Mode>, Mode>
+            | MixAct<'Shell', ActionShell<Mode>, Mode>
             | MixAct<'Custom', ActionCustom<Mode>, Mode>
 
         type NodeAttr = {

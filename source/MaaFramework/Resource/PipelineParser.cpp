@@ -1093,6 +1093,10 @@ bool PipelineParser::parse_action(
         return parse_scroll(param_input, std::get<ScrollParam>(out_param), same_type ? std::get<ScrollParam>(parent_param) : default_param);
     } break;
 
+    case Type::StopTask:
+        out_param = {};
+        return true;
+
     case Type::Command: {
         auto default_param = default_mgr.get_action_param<CommandParam>(Type::Command);
         out_param = default_param;
@@ -1100,6 +1104,12 @@ bool PipelineParser::parse_action(
             param_input,
             std::get<CommandParam>(out_param),
             same_type ? std::get<CommandParam>(parent_param) : default_param);
+    } break;
+
+    case Type::Shell: {
+        auto default_param = default_mgr.get_action_param<ShellParam>(Type::Shell);
+        out_param = default_param;
+        return parse_shell(param_input, std::get<ShellParam>(out_param), same_type ? std::get<ShellParam>(parent_param) : default_param);
     } break;
 
     case Type::Custom: {
@@ -1110,10 +1120,6 @@ bool PipelineParser::parse_action(
             std::get<CustomParam>(out_param),
             same_type ? std::get<CustomParam>(parent_param) : default_param);
     } break;
-
-    case Type::StopTask:
-        out_param = {};
-        return true;
 
     default:
         LogError << "unknown act type" << VAR(static_cast<int>(out_type));
@@ -1340,6 +1346,21 @@ bool PipelineParser::parse_scroll(const json::value& input, Action::ScrollParam&
 
     if (!get_and_check_value(input, "dy", output.dy, default_value.dy)) {
         LogError << "failed to get_and_check_value dy" << VAR(input);
+        return false;
+    }
+
+    return true;
+}
+
+bool PipelineParser::parse_shell(const json::value& input, Action::ShellParam& output, const Action::ShellParam& default_value)
+{
+    if (!get_and_check_value(input, "cmd", output.cmd, default_value.cmd)) {
+        LogError << "failed to get_and_check_value cmd" << VAR(input);
+        return false;
+    }
+
+    if (!get_and_check_value(input, "timeout", output.timeout, default_value.timeout)) {
+        LogError << "failed to get_and_check_value timeout" << VAR(input);
         return false;
     }
 

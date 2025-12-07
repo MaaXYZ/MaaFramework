@@ -324,6 +324,14 @@ json::object PipelineDumper::dump(const PipelineData& pp)
         };
     } break;
 
+    case Action::Type::Scroll: {
+        const auto& param = std::get<Action::ScrollParam>(pp.action_param);
+        data.action.param = PipelineV2::JScroll {
+            .dx = param.dx,
+            .dy = param.dy,
+        };
+    } break;
+
     case Action::Type::StopTask: {
         data.action.param = PipelineV2::JStopTask {};
         break;
@@ -338,11 +346,11 @@ json::object PipelineDumper::dump(const PipelineData& pp)
         };
     } break;
 
-    case Action::Type::Scroll: {
-        const auto& param = std::get<Action::ScrollParam>(pp.action_param);
-        data.action.param = PipelineV2::JScroll {
-            .dx = param.dx,
-            .dy = param.dy,
+    case Action::Type::Shell: {
+        const auto& param = std::get<Action::ShellParam>(pp.action_param);
+        data.action.param = PipelineV2::JShell {
+            .cmd = param.cmd,
+            .timeout = param.timeout,
         };
     } break;
 

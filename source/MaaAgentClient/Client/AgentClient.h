@@ -94,6 +94,7 @@ private:
     bool handle_controller_post_start_app(const json::value& j);
     bool handle_controller_post_stop_app(const json::value& j);
     bool handle_controller_post_screencap(const json::value& j);
+    bool handle_controller_post_shell(const json::value& j);
     bool handle_controller_post_touch_down(const json::value& j);
     bool handle_controller_post_touch_move(const json::value& j);
     bool handle_controller_post_touch_up(const json::value& j);
@@ -105,6 +106,7 @@ private:
     bool handle_controller_connected(const json::value& j);
     bool handle_controller_running(const json::value& j);
     bool handle_controller_cached_image(const json::value& j);
+    bool handle_controller_get_shell_output(const json::value& j);
     bool handle_controller_get_uuid(const json::value& j);
 
     bool handle_event_response(const json::value& j);

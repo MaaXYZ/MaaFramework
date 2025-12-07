@@ -253,6 +253,14 @@ struct JCommand
     MEO_TOJSON(exec, args, detach);
 };
 
+struct JShell
+{
+    std::string cmd;
+    int64_t timeout = 20000;
+
+    MEO_TOJSON(cmd, timeout);
+};
+
 struct JCustomAction
 {
     JTarget target;
@@ -277,9 +285,10 @@ using JActionParam = std::variant<
     JInputText,
     JStartApp,
     JStopApp,
-    JStopTask,
     JScroll,
+    JStopTask,
     JCommand,
+    JShell,
     JCustomAction>;
 
 struct JAction

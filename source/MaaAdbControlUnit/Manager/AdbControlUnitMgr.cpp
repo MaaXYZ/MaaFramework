@@ -255,9 +255,9 @@ bool AdbControlUnitMgr::find_device(std::vector<std::string>& devices)
     return true;
 }
 
-bool AdbControlUnitMgr::shell(const std::string& cmd, std::string& output)
+bool AdbControlUnitMgr::shell(const std::string& cmd, std::string& output, std::chrono::milliseconds timeout)
 {
-    auto opt = adb_command_.shell(cmd);
+    auto opt = adb_command_.shell(cmd, timeout);
     if (!opt) {
         LogError << "failed to adb shell" << VAR(cmd);
         return false;

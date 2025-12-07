@@ -2861,6 +2861,62 @@
                 }
             }
         },
+        "Shell": {
+            "type": "object",
+            "properties": {
+                "cmd": {
+                    "title": "Shell Command Property",
+                    "description": "要执行的 shell 命令。必选。仅对 ADB 控制器有效。",
+                    "type": "string",
+                    "markdownDescription": "*string*\n\n要执行的 shell 命令。必选。\n\n例如 `getprop ro.build.version.sdk` 或 `settings put global animator_duration_scale 0`。\n\n> 注意：此动作仅对 ADB 控制器有效。"
+                },
+                "timeout": {
+                    "title": "Timeout Property",
+                    "description": "超时时间（毫秒）。可选，默认 20000 (20秒)。",
+                    "type": "integer",
+                    "default": 20000,
+                    "markdownDescription": "*int*\n\n超时时间（毫秒）。可选，默认 20000 (20秒)。"
+                }
+            },
+            "required": [
+                "cmd"
+            ]
+        },
+        "ShellV1": {
+            "properties": {
+                "action": {
+                    "const": "Shell"
+                }
+            },
+            "allOf": [
+                {
+                    "$ref": "#/$defs/Shell"
+                }
+            ]
+        },
+        "ShellV2": {
+            "properties": {
+                "type": {
+                    "const": "Shell"
+                },
+                "param": {
+                    "unevaluatedProperties": false,
+                    "allOf": [
+                        {
+                            "$ref": "#/$defs/Shell"
+                        },
+                        {
+                            "$ref": "#/$defs/jsonComments"
+                        }
+                    ]
+                }
+            },
+            "dependentSchemas": {
+                "type": {
+                    "$ref": "#/$defs/TypeWithDependent"
+                }
+            }
+        },
         "CustomAction": {
             "type": "object",
             "properties": {
@@ -3402,6 +3458,19 @@
                     }
                 },
                 {
+                    "label": "ShellV1",
+                    "body": "^ \"Shell\",\n\"cmd\": \"\""
+                },
+                {
+                    "label": "ShellV2",
+                    "body": {
+                        "type": "Shell",
+                        "param": {
+                            "cmd": ""
+                        }
+                    }
+                },
+                {
                     "label": "CustomActionV1",
                     "body": "^ \"Custom\",\n\"custom_action\": \"\""
                 },
@@ -3479,6 +3548,9 @@
                 },
                 {
                     "$ref": "#/$defs/CommandV1"
+                },
+                {
+                    "$ref": "#/$defs/ShellV1"
                 },
                 {
                     "$ref": "#/$defs/CustomActionV1"
@@ -3560,6 +3632,9 @@
                         },
                         {
                             "$ref": "#/$defs/CommandV2"
+                        },
+                        {
+                            "$ref": "#/$defs/ShellV2"
                         },
                         {
                             "$ref": "#/$defs/CustomActionV2"

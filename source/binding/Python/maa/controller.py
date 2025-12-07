@@ -267,6 +267,43 @@ class Controller:
             raise RuntimeError("Failed to get cached image.")
         return image_buffer.get()
 
+    def post_shell(self, cmd: str, timeout: int = 20000) -> JobWithResult:
+        """执行 shell 命令 (仅 ADB 控制器) / Execute shell command (ADB only)
+
+        Args:
+            cmd: shell 命令 / shell command
+            timeout: 超时时间（毫秒），默认 20000 / Timeout in milliseconds, default 20000
+
+        Returns:
+            JobWithResult: 作业对象，可通过 result 获取命令输出 / Job object, can get output via result
+        """
+        ctrl_id = Library.framework().MaaControllerPostShell(
+            self._handle, cmd.encode("utf-8"), timeout
+        )
+        return JobWithResult(
+            ctrl_id,
+            self._status,
+            self._wait,
+            self._get_shell_output,
+        )
+
+    @property
+    def shell_output(self) -> str:
+        """获取最近一次 shell 命令输出 / Get the latest shell command output
+
+        Returns:
+            str: shell 命令输出 / shell command output
+
+        Raises:
+            RuntimeError: 如果获取失败
+        """
+        string_buffer = StringBuffer()
+        if not Library.framework().MaaControllerGetShellOutput(
+            self._handle, string_buffer._handle
+        ):
+            raise RuntimeError("Failed to get shell output.")
+        return string_buffer.get()
+
     @property
     def connected(self) -> bool:
         """判断是否已连接 / Check if connected
@@ -396,6 +433,9 @@ class Controller:
 
     def _get_screencap(self, _: int) -> numpy.ndarray:
         return self.cached_image
+
+    def _get_shell_output(self, _: int) -> str:
+        return self.shell_output
 
     def _gen_ctrl_job(self, ctrlid: MaaCtrlId) -> Job:
         return Job(
