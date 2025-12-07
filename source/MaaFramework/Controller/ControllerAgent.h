@@ -188,7 +188,7 @@ public: // MaaController
     virtual bool running() const override;
 
     virtual cv::Mat cached_image() const override;
-    virtual std::string cached_shell_output() const;
+    virtual std::string cached_shell_output() const override;
     virtual std::string get_uuid() override;
 
     virtual MaaSinkId add_sink(MaaEventCallback callback, void* trans_arg) override;
@@ -268,9 +268,9 @@ private:
     EventDispatcher notifier_;
 
     bool connected_ = false;
-    std::mutex image_mutex_;
+    mutable std::mutex image_mutex_;
     cv::Mat image_;
-    std::mutex shell_output_mutex_;
+    mutable std::mutex shell_output_mutex_;
     std::string shell_output_;
 
     bool image_use_raw_size_ = false;

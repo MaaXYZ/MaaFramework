@@ -185,12 +185,13 @@ bool ControllerAgent::connected() const
 
 cv::Mat ControllerAgent::cached_image() const
 {
+    std::unique_lock lock(image_mutex_);
     return image_;
 }
 
 std::string ControllerAgent::cached_shell_output() const
 {
-    std::unique_lock<std::mutex> lock(shell_output_mutex_);
+    std::unique_lock lock(shell_output_mutex_);
     return shell_output_;
 }
 
@@ -818,7 +819,7 @@ bool ControllerAgent::handle_shell(const ShellParam& param)
     std::string output;
     bool ret = adb_unit->shell(param.cmd, output, std::chrono::milliseconds(param.timeout));
     if (ret) {
-        std::unique_lock<std::mutex> lock(shell_output_mutex_);
+        std::unique_lock lock(shell_output_mutex_);
         shell_output_ = std::move(output);
     }
 
