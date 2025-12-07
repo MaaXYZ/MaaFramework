@@ -167,6 +167,7 @@ declare global {
             post_key_up(keycode: number): Job<CtrlId, Controller>
             post_scroll(dx: number, dy: number): Job<CtrlId, Controller>
             post_screencap(): ImageJob
+            post_shell(cmd: string): StringJob
             override_pipeline(pipeline: Record<string, unknown> | Record<string, unknown>[]): void
             override_next(node_name: string, next_list: string[]): void
             get_node_data(node_name: string): string | null
@@ -176,6 +177,7 @@ declare global {
             wait(id: CtrlId): Promise<Status>
             get connected(): boolean
             get cached_image(): ImageData | null
+            get shell_output(): string | null
             get uuid(): string | null
         }
 

@@ -51,10 +51,12 @@ struct ControllerImpl : public maajs::NativeClassBase
     maajs::ValueType post_key_up(maajs::ValueType self, maajs::EnvType env, int32_t keycode);
     maajs::ValueType post_scroll(maajs::ValueType self, maajs::EnvType env, int32_t dx, int32_t dy);
     maajs::ValueType post_screencap(maajs::ValueType self, maajs::EnvType env);
+    maajs::ValueType post_shell(maajs::ValueType self, std::string cmd);
     MaaStatus status(MaaCtrlId id);
     maajs::PromiseType wait(MaaCtrlId id);
     bool get_connected();
     std::optional<maajs::ArrayBufferType> get_cached_image();
+    std::optional<std::string> get_shell_output();
     std::optional<std::string> get_uuid();
 
     std::string to_string() override;
