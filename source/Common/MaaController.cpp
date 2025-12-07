@@ -258,8 +258,7 @@ MaaBool MaaControllerGetShellOutput(const MaaController* ctrl, MaaStringBuffer* 
 
     auto output = ctrl->cached_shell_output();
     if (output.empty()) {
-        LogError << "shell output is empty";
-        return false;
+        LogWarn << "shell output is empty";
     }
 
     buffer->set(std::move(output));
