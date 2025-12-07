@@ -103,6 +103,14 @@ struct ScrollParam
     MEO_TOJSON(dx, dy);
 };
 
+struct ShellParam
+{
+    std::string cmd;
+    MaaStringBuffer* buffer = nullptr;
+
+    MEO_TOJSON(cmd);
+};
+
 using Param = std::variant<
     std::monostate,
     ClickParam,
@@ -114,7 +122,8 @@ using Param = std::variant<
     LongPressKeyParam,
     InputTextParam,
     AppParam,
-    ScrollParam>;
+    ScrollParam,
+    ShellParam>;
 
 struct Action
 {
@@ -138,6 +147,7 @@ struct Action
         key_down,
         key_up,
         scroll,
+        shell,
     } type = Type::invalid;
 
     Param param;
@@ -169,6 +179,8 @@ public: // MaaController
     virtual MaaCtrlId post_key_up(int keycode) override;
 
     virtual MaaCtrlId post_scroll(int dx, int dy) override;
+
+    virtual MaaCtrlId post_shell(const std::string& cmd, MaaStringBuffer* buffer) override;
 
     virtual MaaStatus status(MaaCtrlId ctrl_id) const override;
     virtual MaaStatus wait(MaaCtrlId ctrl_id) const override;
@@ -226,6 +238,7 @@ private:
     bool handle_key_down(const ClickKeyParam& param);
     bool handle_key_up(const ClickKeyParam& param);
     bool handle_scroll(const ScrollParam& param);
+    bool handle_shell(const ShellParam& param);
 
     MaaCtrlId post(Action action);
     MaaCtrlId focus_id(MaaCtrlId id);

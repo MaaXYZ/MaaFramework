@@ -98,6 +98,7 @@ enum class Type
     KeyDown,
     KeyUp,
     Scroll,
+    Shell,
     Command,
     Custom,
     StopTask,
@@ -182,6 +183,11 @@ struct ScrollParam
     int dy = 0;
 };
 
+struct ShellParam
+{
+    std::string cmd;
+};
+
 struct CommandParam
 {
     std::string exec;
@@ -210,6 +216,7 @@ using Param = std::variant<
     InputTextParam,
     AppParam,
     ScrollParam,
+    ShellParam,
     CommandParam,
     CustomParam>;
 
@@ -248,6 +255,8 @@ inline static const std::unordered_map<std::string, Type> kTypeMap = {
     { "keyup", Type::KeyUp },
     { "Scroll", Type::Scroll },
     { "scroll", Type::Scroll },
+    { "Shell", Type::Shell },
+    { "shell", Type::Shell },
     { "Command", Type::Command },
     { "command", Type::Command },
     { "Custom", Type::Custom },
@@ -267,8 +276,8 @@ inline static const std::unordered_map<Type, std::string> kTypeNameMap = {
     { Type::InputText, "InputText" },   { Type::StartApp, "StartApp" },
     { Type::StopApp, "StopApp" },       { Type::KeyDown, "KeyDown" },
     { Type::KeyUp, "KeyUp" },           { Type::Scroll, "Scroll" },
-    { Type::Command, "Command" },       { Type::Custom, "Custom" },
-    { Type::StopTask, "StopTask" },
+    { Type::Shell, "Shell" },           { Type::Command, "Command" },
+    { Type::Custom, "Custom" },         { Type::StopTask, "StopTask" },
 };
 } // namespace Action
 

@@ -96,6 +96,10 @@ ActionResult Actuator::run(const cv::Rect& reco_hit, MaaRecoId reco_id, const Pi
         result = scroll(std::get<ScrollParam>(pipeline_data.action_param), pipeline_data.name);
         break;
 
+    case Type::Shell:
+        result = shell(std::get<ShellParam>(pipeline_data.action_param), pipeline_data.name);
+        break;
+
     case Type::Command:
         result = command(std::get<CommandParam>(pipeline_data.action_param), reco_hit, pipeline_data.name, entry);
         break;
@@ -460,6 +464,27 @@ ActionResult Actuator::scroll(const MAA_RES_NS::Action::ScrollParam& param, cons
         .box = cv::Rect {},
         .success = ret,
         .detail = json::value(ctrl_param),
+    };
+}
+
+ActionResult Actuator::shell(const MAA_RES_NS::Action::ShellParam& param, const std::string& name)
+{
+    if (!controller()) {
+        LogError << "Controller is null";
+        return {};
+    }
+
+    // Note: Shell action in pipeline doesn't need to store output
+    // The output will be handled internally by the controller
+    json::object detail { { "cmd", param.cmd } };
+
+    return ActionResult {
+        .action_id = ++s_global_action_id,
+        .name = name,
+        .action = "Shell",
+        .box = cv::Rect {},
+        .success = true,  // Pipeline shell action always succeeds for now
+        .detail = json::value(detail),
     };
 }
 

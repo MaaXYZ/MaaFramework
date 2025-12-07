@@ -88,6 +88,8 @@ public:
 
     virtual MaaCtrlId post_scroll(int dx, int dy) = 0;
 
+    virtual MaaCtrlId post_shell(const std::string& cmd, MaaStringBuffer* buffer) = 0;
+
     virtual MaaStatus status(MaaCtrlId ctrl_id) const = 0;
     virtual MaaStatus wait(MaaCtrlId ctrl_id) const = 0;
     virtual bool connected() const = 0;

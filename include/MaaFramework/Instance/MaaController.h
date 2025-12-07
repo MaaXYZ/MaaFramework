@@ -100,6 +100,18 @@ extern "C"
      */
     MAA_FRAMEWORK_API MaaCtrlId MaaControllerPostScroll(MaaController* ctrl, int32_t dx, int32_t dy);
 
+    /**
+     * @brief Post a shell command to the controller.
+     *
+     * @param ctrl The controller handle.
+     * @param cmd The shell command to execute.
+     * @param buffer The output buffer to store the command result.
+     * @return The control id of the shell action.
+     *
+     * @note This is only valid for ADB controllers. If the controller is not an ADB controller, the action will fail.
+     */
+    MAA_FRAMEWORK_API MaaCtrlId MaaControllerPostShell(MaaController* ctrl, const char* cmd, /* out */ MaaStringBuffer* buffer);
+
     MAA_FRAMEWORK_API MaaStatus MaaControllerStatus(const MaaController* ctrl, MaaCtrlId id);
 
     MAA_FRAMEWORK_API MaaStatus MaaControllerWait(const MaaController* ctrl, MaaCtrlId id);

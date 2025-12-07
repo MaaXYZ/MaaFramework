@@ -148,6 +148,13 @@ MaaCtrlId ControllerAgent::post_scroll(int dx, int dy)
     return focus_id(id);
 }
 
+MaaCtrlId ControllerAgent::post_shell(const std::string& cmd, MaaStringBuffer* buffer)
+{
+    ShellParam p { .cmd = cmd, .buffer = buffer };
+    auto id = post({ .type = Action::Type::shell, .param = std::move(p) });
+    return focus_id(id);
+}
+
 MaaStatus ControllerAgent::status(MaaCtrlId ctrl_id) const
 {
     if (!action_runner_) {
@@ -778,6 +785,33 @@ bool ControllerAgent::handle_scroll(const ScrollParam& param)
     return ret;
 }
 
+bool ControllerAgent::handle_shell(const ShellParam& param)
+{
+    if (!control_unit_) {
+        LogError << "control_unit_ is nullptr";
+        return false;
+    }
+
+    auto adb_unit = dynamic_cast<MAA_CTRL_UNIT_NS::AdbControlUnitAPI*>(control_unit_.get());
+    if (!adb_unit) {
+        LogError << "control_unit_ is not AdbControlUnitAPI, shell is only valid for ADB controllers";
+        return false;
+    }
+
+    if (!param.buffer) {
+        LogError << "buffer is nullptr";
+        return false;
+    }
+
+    std::string output;
+    bool ret = adb_unit->shell(param.cmd, output);
+    if (ret) {
+        param.buffer->set(std::move(output));
+    }
+
+    return ret;
+}
+
 bool ControllerAgent::check_stop()
 {
     if (!need_to_stop_) {
@@ -875,6 +909,10 @@ bool ControllerAgent::run_action(typename AsyncRunner<Action>::Id id, Action act
 
     case Action::Type::scroll:
         ret = handle_scroll(std::get<ScrollParam>(action.param));
+        break;
+
+    case Action::Type::shell:
+        ret = handle_shell(std::get<ShellParam>(action.param));
         break;
 
     default:
