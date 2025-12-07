@@ -2,6 +2,7 @@
 
 #include <string>
 #include <utility>
+#include <chrono>
 
 #include "Common/Conf.h"
 #include "MaaFramework/MaaDef.h"

@@ -111,7 +111,7 @@ extern "C"
      * @note This is only valid for ADB controllers. If the controller is not an ADB controller, the action will fail.
      * @see MaaControllerGetShellOutput
      */
-    MAA_FRAMEWORK_API MaaCtrlId MaaControllerPostShell(MaaController* ctrl, const char* cmd, int64_t timeout MAA_DEFAULT_ARG(20000));
+    MAA_FRAMEWORK_API MaaCtrlId MaaControllerPostShell(MaaController* ctrl, const char* cmd, int64_t timeout);
 
     /**
      * @brief Get the cached shell command output.

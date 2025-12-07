@@ -18,7 +18,7 @@ bool AdbCommand::parse(const json::value& config)
 
 std::optional<std::string> AdbCommand::shell(const std::string& cmd, std::chrono::milliseconds timeout)
 {
-    LogFunc << VAR(cmd) << VAR(timeout.count());
+    LogFunc << VAR(cmd) << VAR(timeout);
 
     merge_replacement({ { "{CMD}", cmd } });
 
@@ -27,7 +27,7 @@ std::optional<std::string> AdbCommand::shell(const std::string& cmd, std::chrono
         return std::nullopt;
     }
 
-    return startup_and_read_pipe(*argv_opt, std::chrono::duration_cast<std::chrono::seconds>(timeout));
+    return startup_and_read_pipe(*argv_opt, timeout);
 }
 
 MAA_CTRL_UNIT_NS_END
