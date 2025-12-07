@@ -207,12 +207,6 @@ maajs::ValueType ControllerImpl::post_screencap(maajs::ValueType self, maajs::En
     return maajs::CallCtorHelper(ExtContext::get(env)->imageJobCtor, self, id);
 }
 
-maajs::ValueType ControllerImpl::post_shell(maajs::ValueType self, std::string cmd, int64_t timeout)
-{
-    auto id = MaaControllerPostShell(controller, cmd.c_str(), timeout);
-    return maajs::CallCtorHelper(ExtContext::get(env)->stringJobCtor, self, id);
-}
-
 MaaStatus ControllerImpl::status(MaaCtrlId id)
 {
     return MaaControllerStatus(controller, id);
@@ -237,15 +231,6 @@ std::optional<maajs::ArrayBufferType> ControllerImpl::get_cached_image()
         return std::nullopt;
     }
     return buf.data(env);
-}
-
-std::optional<std::string> ControllerImpl::get_shell_output()
-{
-    StringBuffer buf;
-    if (!MaaControllerGetShellOutput(controller, buf)) {
-        return std::nullopt;
-    }
-    return buf.str();
 }
 
 std::optional<std::string> ControllerImpl::get_uuid()
@@ -321,12 +306,10 @@ void ControllerImpl::init_proto(maajs::ObjectType proto, maajs::FunctionType)
     MAA_BIND_FUNC(proto, "post_key_up", ControllerImpl::post_key_up);
     MAA_BIND_FUNC(proto, "post_scroll", ControllerImpl::post_scroll);
     MAA_BIND_FUNC(proto, "post_screencap", ControllerImpl::post_screencap);
-    MAA_BIND_FUNC(proto, "post_shell", ControllerImpl::post_shell);
     MAA_BIND_FUNC(proto, "status", ControllerImpl::status);
     MAA_BIND_FUNC(proto, "wait", ControllerImpl::wait);
     MAA_BIND_GETTER(proto, "connected", ControllerImpl::get_connected);
     MAA_BIND_GETTER(proto, "cached_image", ControllerImpl::get_cached_image);
-    MAA_BIND_GETTER(proto, "shell_output", ControllerImpl::get_shell_output);
     MAA_BIND_GETTER(proto, "uuid", ControllerImpl::get_uuid);
 }
 
