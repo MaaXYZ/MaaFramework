@@ -1,8 +1,8 @@
 #pragma once
 
+#include <chrono>
 #include <string>
 #include <utility>
-#include <chrono>
 
 #include "Common/Conf.h"
 #include "MaaFramework/MaaDef.h"
@@ -47,7 +47,8 @@ public:
     virtual ~AdbControlUnitAPI() = default;
 
     virtual bool find_device(/*out*/ std::vector<std::string>& devices) = 0;
-    virtual bool shell(const std::string& cmd, std::string& output, std::chrono::milliseconds timeout = std::chrono::milliseconds(20000)) = 0;
+    virtual bool
+        shell(const std::string& cmd, std::string& output, std::chrono::milliseconds timeout = std::chrono::milliseconds(20000)) = 0;
 };
 
 class Win32ControlUnitAPI : public ControlUnitAPI
