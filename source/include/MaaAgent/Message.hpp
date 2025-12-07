@@ -1143,6 +1143,23 @@ struct ControllerPostScreencapReverseResponse
     MEO_JSONIZATION(ctrl_id, _ControllerPostScreencapReverseResponse);
 };
 
+struct ControllerPostShellReverseRequest
+{
+    std::string controller_id;
+    std::string cmd;
+
+    MessageTypePlaceholder _ControllerPostShellReverseRequest = 1;
+    MEO_JSONIZATION(controller_id, cmd, _ControllerPostShellReverseRequest);
+};
+
+struct ControllerPostShellReverseResponse
+{
+    int64_t ctrl_id = 0;
+
+    MessageTypePlaceholder _ControllerPostShellReverseResponse = 1;
+    MEO_JSONIZATION(ctrl_id, _ControllerPostShellReverseResponse);
+};
+
 struct ControllerPostTouchDownReverseRequest
 {
     std::string controller_id;
@@ -1280,6 +1297,22 @@ struct ControllerCachedImageReverseResponse
 
     MessageTypePlaceholder _ControllerCachedImageReverseResponse = 1;
     MEO_JSONIZATION(image, _ControllerCachedImageReverseResponse);
+};
+
+struct ControllerGetShellOutputReverseRequest
+{
+    std::string controller_id;
+
+    MessageTypePlaceholder _ControllerGetShellOutputReverseRequest = 1;
+    MEO_JSONIZATION(controller_id, _ControllerGetShellOutputReverseRequest);
+};
+
+struct ControllerGetShellOutputReverseResponse
+{
+    std::string output;
+
+    MessageTypePlaceholder _ControllerGetShellOutputReverseResponse = 1;
+    MEO_JSONIZATION(output, _ControllerGetShellOutputReverseResponse);
 };
 
 struct ControllerGetUuidReverseRequest

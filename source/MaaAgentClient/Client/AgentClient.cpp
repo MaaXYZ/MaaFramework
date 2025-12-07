@@ -372,6 +372,9 @@ bool AgentClient::handle_inserted_request(const json::value& j)
     else if (handle_controller_post_screencap(j)) {
         return true;
     }
+    else if (handle_controller_post_shell(j)) {
+        return true;
+    }
     else if (handle_controller_post_touch_down(j)) {
         return true;
     }
@@ -403,6 +406,9 @@ bool AgentClient::handle_inserted_request(const json::value& j)
         return true;
     }
     else if (handle_controller_cached_image(j)) {
+        return true;
+    }
+    else if (handle_controller_get_shell_output(j)) {
         return true;
     }
     else if (handle_controller_get_uuid(j)) {
@@ -1715,6 +1721,26 @@ bool AgentClient::handle_controller_post_screencap(const json::value& j)
     return true;
 }
 
+bool AgentClient::handle_controller_post_shell(const json::value& j)
+{
+    if (!j.is<ControllerPostShellReverseRequest>()) {
+        return false;
+    }
+    const ControllerPostShellReverseRequest& req = j.as<ControllerPostShellReverseRequest>();
+    LogFunc << VAR(req) << VAR(ipc_addr_);
+    MaaController* controller = query_controller(req.controller_id);
+    if (!controller) {
+        LogError << "controller not found" << VAR(req.controller_id);
+        return false;
+    }
+    MaaCtrlId ctrl_id = controller->post_shell(req.cmd);
+    ControllerPostShellReverseResponse resp {
+        .ctrl_id = ctrl_id,
+    };
+    send(resp);
+    return true;
+}
+
 bool AgentClient::handle_controller_post_touch_down(const json::value& j)
 {
     if (!j.is<ControllerPostTouchDownReverseRequest>()) {
@@ -1930,6 +1956,26 @@ bool AgentClient::handle_controller_cached_image(const json::value& j)
     auto image = controller->cached_image();
     ControllerCachedImageReverseResponse resp {
         .image = send_image(image),
+    };
+    send(resp);
+    return true;
+}
+
+bool AgentClient::handle_controller_get_shell_output(const json::value& j)
+{
+    if (!j.is<ControllerGetShellOutputReverseRequest>()) {
+        return false;
+    }
+    const ControllerGetShellOutputReverseRequest& req = j.as<ControllerGetShellOutputReverseRequest>();
+    LogFunc << VAR(req) << VAR(ipc_addr_);
+    MaaController* controller = query_controller(req.controller_id);
+    if (!controller) {
+        LogError << "controller not found" << VAR(req.controller_id);
+        return false;
+    }
+    std::string output = controller->cached_shell_output();
+    ControllerGetShellOutputReverseResponse resp {
+        .output = output,
     };
     send(resp);
     return true;

@@ -474,18 +474,9 @@ ActionResult Actuator::shell(const MAA_RES_NS::Action::ShellParam& param, const 
         return {};
     }
 
-    // Pipeline Shell actions execute commands but don't store output in pipeline context
-    // Output is logged at debug/trace levels for troubleshooting
-    // 
-    // IMPORTANT: Use this for commands with side effects (setprop, settings, mkdir, etc.)
-    // For commands that need output, use the C API MaaControllerPostShell instead
-    // 
-    // SECURITY: Shell commands execute via adb shell with full permissions
-    // Only use commands from trusted pipeline sources
     std::string output;
     bool ret = controller()->shell(param.cmd, output);
     
-    // Use debug level for output to avoid exposing sensitive information in production logs
     LogDebug << "Shell command executed" << VAR(param.cmd) << VAR(ret);
     if (!output.empty()) {
         LogTrace << "Shell output:" << output;
