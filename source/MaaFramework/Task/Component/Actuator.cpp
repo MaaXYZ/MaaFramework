@@ -96,20 +96,20 @@ ActionResult Actuator::run(const cv::Rect& reco_hit, MaaRecoId reco_id, const Pi
         result = scroll(std::get<ScrollParam>(pipeline_data.action_param), pipeline_data.name);
         break;
 
-    case Type::Shell:
-        result = shell(std::get<ShellParam>(pipeline_data.action_param), pipeline_data.name);
+    case Type::StopTask:
+        result = stop_task(pipeline_data.name);
         break;
 
     case Type::Command:
         result = command(std::get<CommandParam>(pipeline_data.action_param), reco_hit, pipeline_data.name, entry);
         break;
 
-    case Type::Custom:
-        result = custom_action(std::get<CustomParam>(pipeline_data.action_param), reco_hit, reco_id, pipeline_data.name);
+    case Type::Shell:
+        result = shell(std::get<ShellParam>(pipeline_data.action_param), pipeline_data.name);
         break;
 
-    case Type::StopTask:
-        result = stop_task(pipeline_data.name);
+    case Type::Custom:
+        result = custom_action(std::get<CustomParam>(pipeline_data.action_param), reco_hit, reco_id, pipeline_data.name);
         break;
 
     default:

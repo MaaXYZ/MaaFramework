@@ -560,9 +560,10 @@ class ActionEnum(StrEnum):
     InputText = "InputText"
     StartApp = "StartApp"
     StopApp = "StopApp"
-    Command = "Command"
-    Custom = "Custom"
     StopTask = "StopTask"
+    Command = "Command"
+    Shell = "Shell"
+    Custom = "Custom"
 
 
 @dataclass
@@ -716,9 +717,10 @@ ActionResultDict = {
     ActionEnum.InputText: InputTextActionResult,
     ActionEnum.StartApp: AppActionResult,
     ActionEnum.StopApp: AppActionResult,
-    ActionEnum.Command: None,
-    ActionEnum.Custom: None,
     ActionEnum.StopTask: None,
+    ActionEnum.Command: None,
+    ActionEnum.Shell: None,
+    ActionEnum.Custom: None,
 }
 
 

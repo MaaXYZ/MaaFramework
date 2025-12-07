@@ -98,10 +98,10 @@ enum class Type
     KeyDown,
     KeyUp,
     Scroll,
-    Shell,
-    Command,
-    Custom,
     StopTask,
+    Command,
+    Shell,
+    Custom,
 };
 
 using TargetObj = MAA_VISION_NS::TargetObj;
@@ -277,8 +277,8 @@ inline static const std::unordered_map<Type, std::string> kTypeNameMap = {
     { Type::InputText, "InputText" },   { Type::StartApp, "StartApp" },
     { Type::StopApp, "StopApp" },       { Type::KeyDown, "KeyDown" },
     { Type::KeyUp, "KeyUp" },           { Type::Scroll, "Scroll" },
-    { Type::Shell, "Shell" },           { Type::Command, "Command" },
-    { Type::Custom, "Custom" },         { Type::StopTask, "StopTask" },
+    { Type::StopTask, "StopTask" },     { Type::Command, "Command" },
+    { Type::Shell, "Shell" },           { Type::Custom, "Custom" },
 };
 } // namespace Action
 

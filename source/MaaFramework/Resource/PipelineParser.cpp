@@ -1093,11 +1093,9 @@ bool PipelineParser::parse_action(
         return parse_scroll(param_input, std::get<ScrollParam>(out_param), same_type ? std::get<ScrollParam>(parent_param) : default_param);
     } break;
 
-    case Type::Shell: {
-        auto default_param = default_mgr.get_action_param<ShellParam>(Type::Shell);
-        out_param = default_param;
-        return parse_shell(param_input, std::get<ShellParam>(out_param), same_type ? std::get<ShellParam>(parent_param) : default_param);
-    } break;
+    case Type::StopTask:
+        out_param = {};
+        return true;
 
     case Type::Command: {
         auto default_param = default_mgr.get_action_param<CommandParam>(Type::Command);
@@ -1108,6 +1106,12 @@ bool PipelineParser::parse_action(
             same_type ? std::get<CommandParam>(parent_param) : default_param);
     } break;
 
+    case Type::Shell: {
+        auto default_param = default_mgr.get_action_param<ShellParam>(Type::Shell);
+        out_param = default_param;
+        return parse_shell(param_input, std::get<ShellParam>(out_param), same_type ? std::get<ShellParam>(parent_param) : default_param);
+    } break;
+
     case Type::Custom: {
         auto default_param = default_mgr.get_action_param<CustomParam>(Type::Custom);
         out_param = default_param;
@@ -1116,10 +1120,6 @@ bool PipelineParser::parse_action(
             std::get<CustomParam>(out_param),
             same_type ? std::get<CustomParam>(parent_param) : default_param);
     } break;
-
-    case Type::StopTask:
-        out_param = {};
-        return true;
 
     default:
         LogError << "unknown act type" << VAR(static_cast<int>(out_type));
