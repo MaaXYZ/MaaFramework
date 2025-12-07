@@ -3,6 +3,7 @@
 #include "Global/OptionMgr.h"
 #include "Global/PluginMgr.h"
 #include "MaaFramework/MaaMsg.h"
+#include "MaaUtils/Buffer/StringBuffer.hpp"
 #include "MaaUtils/ImageIo.h"
 #include "MaaUtils/NoWarningCV.hpp"
 #include "Resource/ResourceMgr.h"
@@ -325,6 +326,18 @@ bool ControllerAgent::scroll(ScrollParam p)
 {
     auto id = post({ .type = Action::Type::scroll, .param = std::move(p) });
     return wait(id) == MaaStatus_Succeeded;
+}
+
+bool ControllerAgent::shell(const std::string& cmd, std::string& output)
+{
+    MAA_NS::StringBuffer buffer;
+    ShellParam p { .cmd = cmd, .buffer = &buffer };
+    auto id = post({ .type = Action::Type::shell, .param = std::move(p) });
+    bool ret = wait(id) == MaaStatus_Succeeded;
+    if (ret) {
+        output = buffer.get();
+    }
+    return ret;
 }
 
 MaaCtrlId ControllerAgent::post(Action action)

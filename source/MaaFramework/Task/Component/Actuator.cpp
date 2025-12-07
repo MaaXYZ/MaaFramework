@@ -474,21 +474,22 @@ ActionResult Actuator::shell(const MAA_RES_NS::Action::ShellParam& param, const 
         return {};
     }
 
-    // For pipeline Shell actions, we execute the command but don't return output
-    // This is useful for shell commands that have side effects (e.g., setting properties)
-    // The output would need to be retrieved via the direct API call MaaControllerPostShell
-    LogInfo << "Executing shell command (output not captured in pipeline):" << VAR(param.cmd);
+    // For pipeline Shell actions, execute the command but don't store output in pipeline context
+    // This is useful for shell commands that have side effects (e.g., setting device properties)
+    // The output is discarded - use MaaControllerPostShell API if output is needed
+    std::string output;
+    bool ret = controller()->shell(param.cmd, output);
+    
+    LogInfo << "Executed shell command" << VAR(param.cmd) << VAR(ret) << VAR(output);
     
     json::object detail { { "cmd", param.cmd } };
 
-    // Note: Pipeline shell actions execute for side effects only
-    // Output is not captured - use MaaControllerPostShell API for commands that need output
     return ActionResult {
         .action_id = ++s_global_action_id,
         .name = name,
         .action = "Shell",
         .box = cv::Rect {},
-        .success = true,  // Pipeline shell action logs but doesn't execute
+        .success = ret,
         .detail = json::value(detail),
     };
 }

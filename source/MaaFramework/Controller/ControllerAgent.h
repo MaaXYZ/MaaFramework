@@ -219,6 +219,7 @@ public: // for Actuator
     bool stop_app(AppParam p);
 
     bool scroll(ScrollParam p);
+    bool shell(const std::string& cmd, std::string& output);
 
 private:
     bool handle_connect();
