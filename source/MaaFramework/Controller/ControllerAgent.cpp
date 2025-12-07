@@ -3,7 +3,6 @@
 #include "Global/OptionMgr.h"
 #include "Global/PluginMgr.h"
 #include "MaaFramework/MaaMsg.h"
-#include "MaaUtils/Buffer/StringBuffer.hpp"
 #include "MaaUtils/ImageIo.h"
 #include "MaaUtils/NoWarningCV.hpp"
 #include "Resource/ResourceMgr.h"
