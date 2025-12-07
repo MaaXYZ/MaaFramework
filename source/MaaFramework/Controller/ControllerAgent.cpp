@@ -807,12 +807,12 @@ bool ControllerAgent::handle_shell(const ShellParam& param)
 
     auto adb_unit = dynamic_cast<MAA_CTRL_UNIT_NS::AdbControlUnitAPI*>(control_unit_.get());
     if (!adb_unit) {
-        LogError << "control_unit_ is not AdbControlUnitAPI, shell is only valid for ADB controllers";
+        LogError << "Shell commands are only supported for ADB controllers. Current controller type does not support shell execution.";
         return false;
     }
 
     if (!param.buffer) {
-        LogError << "buffer is nullptr";
+        LogError << "Output buffer is null";
         return false;
     }
 

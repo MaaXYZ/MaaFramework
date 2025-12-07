@@ -242,12 +242,12 @@ MaaCtrlId MaaControllerPostShell(MaaController* ctrl, const char* cmd, MaaString
     }
 
     if (!cmd) {
-        LogError << "cmd is null";
+        LogError << "Shell command parameter cannot be null";
         return MaaInvalidId;
     }
 
     if (!buffer) {
-        LogError << "buffer is null";
+        LogError << "Output buffer parameter cannot be null";
         return MaaInvalidId;
     }
 
