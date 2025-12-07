@@ -1,9 +1,6 @@
 name: publish nodejs package
 description: publish nodejs package
 inputs:
-    token:
-        description: The NPM access token to use when publishing
-        required: true
     access:
         description: >
             Determines whether the published package should be publicly visible,
@@ -26,6 +23,9 @@ outputs:
 runs:
     using: "composite"
     steps:
+        - uses: actions/setup-node@v5
+          with:
+              node-version: "24"
         - uses: JS-DevTools/npm-publish@v3
           id: nodejs
           with:
