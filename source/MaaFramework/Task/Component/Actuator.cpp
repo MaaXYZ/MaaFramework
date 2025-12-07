@@ -475,7 +475,7 @@ ActionResult Actuator::shell(const MAA_RES_NS::Action::ShellParam& param, const 
     }
 
     // Pipeline Shell actions execute commands but don't store output in pipeline context
-    // Output is logged for debugging but not accessible via pipeline variables
+    // Output is logged at debug/trace levels for troubleshooting
     // For commands where output is needed, use the C API MaaControllerPostShell instead
     std::string output;
     bool ret = controller()->shell(param.cmd, output);
