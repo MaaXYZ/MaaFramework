@@ -186,7 +186,7 @@ bool ControllerAgent::connected() const
 cv::Mat ControllerAgent::cached_image() const
 {
     std::unique_lock lock(image_mutex_);
-    return image_;
+    return image_.clone();
 }
 
 std::string ControllerAgent::cached_shell_output() const
@@ -963,6 +963,7 @@ cv::Point ControllerAgent::preproc_touch_point(const cv::Point& p)
 bool ControllerAgent::postproc_screenshot(const cv::Mat& raw)
 {
     if (raw.empty()) {
+        std::unique_lock lock(image_mutex_);
         image_ = cv::Mat();
         LogError << "Empty screenshot";
         return false;
@@ -975,12 +976,14 @@ bool ControllerAgent::postproc_screenshot(const cv::Mat& raw)
         image_raw_height_ = raw.rows;
 
         if (!calc_target_image_size()) {
+            std::unique_lock lock(image_mutex_);
             image_ = cv::Mat();
             LogError << "Invalid target image size";
             return false;
         }
     }
 
+    std::unique_lock lock(image_mutex_);
     cv::resize(raw, image_, { image_target_width_, image_target_height_ });
     return !image_.empty();
 }
