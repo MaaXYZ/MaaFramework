@@ -105,12 +105,13 @@ extern "C"
      *
      * @param ctrl The controller handle.
      * @param cmd The shell command to execute.
+     * @param timeout Timeout in milliseconds. Default is 20000 (20 seconds).
      * @return The control id of the shell action.
      *
      * @note This is only valid for ADB controllers. If the controller is not an ADB controller, the action will fail.
      * @see MaaControllerGetShellOutput
      */
-    MAA_FRAMEWORK_API MaaCtrlId MaaControllerPostShell(MaaController* ctrl, const char* cmd);
+    MAA_FRAMEWORK_API MaaCtrlId MaaControllerPostShell(MaaController* ctrl, const char* cmd, int64_t timeout MAA_DEFAULT_ARG(20000));
 
     /**
      * @brief Get the cached shell command output.

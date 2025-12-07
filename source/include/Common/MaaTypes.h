@@ -88,7 +88,7 @@ public:
 
     virtual MaaCtrlId post_scroll(int dx, int dy) = 0;
 
-    virtual MaaCtrlId post_shell(const std::string& cmd) = 0;
+    virtual MaaCtrlId post_shell(const std::string& cmd, int64_t timeout = 20000) = 0;
 
     virtual MaaStatus status(MaaCtrlId ctrl_id) const = 0;
     virtual MaaStatus wait(MaaCtrlId ctrl_id) const = 0;

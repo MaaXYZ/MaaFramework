@@ -148,9 +148,9 @@ MaaCtrlId ControllerAgent::post_scroll(int dx, int dy)
     return focus_id(id);
 }
 
-MaaCtrlId ControllerAgent::post_shell(const std::string& cmd)
+MaaCtrlId ControllerAgent::post_shell(const std::string& cmd, int64_t timeout)
 {
-    ShellParam p { .cmd = cmd };
+    ShellParam p { .cmd = cmd, .timeout = timeout };
     auto id = post({ .type = Action::Type::shell, .param = std::move(p) });
     return focus_id(id);
 }
@@ -333,9 +333,9 @@ bool ControllerAgent::scroll(ScrollParam p)
     return wait(id) == MaaStatus_Succeeded;
 }
 
-bool ControllerAgent::shell(const std::string& cmd, std::string& output)
+bool ControllerAgent::shell(const std::string& cmd, std::string& output, int64_t timeout)
 {
-    ShellParam p { .cmd = cmd };
+    ShellParam p { .cmd = cmd, .timeout = timeout };
     auto id = post({ .type = Action::Type::shell, .param = std::move(p) });
     bool ret = wait(id) == MaaStatus_Succeeded;
     if (ret) {
@@ -816,7 +816,7 @@ bool ControllerAgent::handle_shell(const ShellParam& param)
     }
 
     std::string output;
-    bool ret = adb_unit->shell(param.cmd, output);
+    bool ret = adb_unit->shell(param.cmd, output, std::chrono::milliseconds(param.timeout));
     if (ret) {
         std::unique_lock<std::mutex> lock(shell_output_mutex_);
         shell_output_ = std::move(output);

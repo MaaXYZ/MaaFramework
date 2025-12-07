@@ -1733,7 +1733,7 @@ bool AgentClient::handle_controller_post_shell(const json::value& j)
         LogError << "controller not found" << VAR(req.controller_id);
         return false;
     }
-    MaaCtrlId ctrl_id = controller->post_shell(req.cmd);
+    MaaCtrlId ctrl_id = controller->post_shell(req.cmd, req.timeout);
     ControllerPostShellReverseResponse resp {
         .ctrl_id = ctrl_id,
     };

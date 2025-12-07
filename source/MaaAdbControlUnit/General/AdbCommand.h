@@ -15,7 +15,7 @@ public: // from UnitBase
     virtual bool parse(const json::value& config) override;
 
 public:
-    std::optional<std::string> shell(const std::string& cmd);
+    std::optional<std::string> shell(const std::string& cmd, std::chrono::milliseconds timeout = std::chrono::milliseconds(20000));
 
 private:
     ProcessArgvGenerator shell_argv;

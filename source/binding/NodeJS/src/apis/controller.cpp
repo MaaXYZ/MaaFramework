@@ -207,9 +207,9 @@ maajs::ValueType ControllerImpl::post_screencap(maajs::ValueType self, maajs::En
     return maajs::CallCtorHelper(ExtContext::get(env)->imageJobCtor, self, id);
 }
 
-maajs::ValueType ControllerImpl::post_shell(maajs::ValueType self, std::string cmd)
+maajs::ValueType ControllerImpl::post_shell(maajs::ValueType self, std::string cmd, int64_t timeout)
 {
-    auto id = MaaControllerPostShell(controller, cmd.c_str());
+    auto id = MaaControllerPostShell(controller, cmd.c_str(), timeout);
     return maajs::CallCtorHelper(ExtContext::get(env)->stringJobCtor, self, id);
 }
 

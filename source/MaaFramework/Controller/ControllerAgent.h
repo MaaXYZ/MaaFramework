@@ -106,8 +106,9 @@ struct ScrollParam
 struct ShellParam
 {
     std::string cmd;
+    int64_t timeout = 20000;
 
-    MEO_TOJSON(cmd);
+    MEO_TOJSON(cmd, timeout);
 };
 
 using Param = std::variant<
@@ -179,7 +180,7 @@ public: // MaaController
 
     virtual MaaCtrlId post_scroll(int dx, int dy) override;
 
-    virtual MaaCtrlId post_shell(const std::string& cmd) override;
+    virtual MaaCtrlId post_shell(const std::string& cmd, int64_t timeout = 20000) override;
 
     virtual MaaStatus status(MaaCtrlId ctrl_id) const override;
     virtual MaaStatus wait(MaaCtrlId ctrl_id) const override;
@@ -219,7 +220,7 @@ public: // for Actuator
     bool stop_app(AppParam p);
 
     bool scroll(ScrollParam p);
-    bool shell(const std::string& cmd, std::string& output);
+    bool shell(const std::string& cmd, std::string& output, int64_t timeout = 20000);
 
 private:
     bool handle_connect();

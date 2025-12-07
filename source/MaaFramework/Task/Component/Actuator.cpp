@@ -475,14 +475,14 @@ ActionResult Actuator::shell(const MAA_RES_NS::Action::ShellParam& param, const 
     }
 
     std::string output;
-    bool ret = controller()->shell(param.cmd, output);
+    bool ret = controller()->shell(param.cmd, output, param.timeout);
     
-    LogDebug << "Shell command executed" << VAR(param.cmd) << VAR(ret);
+    LogDebug << "Shell command executed" << VAR(param.cmd) << VAR(param.timeout) << VAR(ret);
     if (!output.empty()) {
         LogTrace << "Shell output:" << output;
     }
     
-    json::object detail { { "cmd", param.cmd }, { "success", ret }, { "output", output } };
+    json::object detail { { "cmd", param.cmd }, { "timeout", param.timeout }, { "success", ret }, { "output", output } };
 
     return ActionResult {
         .action_id = ++s_global_action_id,

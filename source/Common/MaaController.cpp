@@ -232,9 +232,9 @@ MaaCtrlId MaaControllerPostScroll(MaaController* ctrl, int32_t dx, int32_t dy)
     return ctrl->post_scroll(dx, dy);
 }
 
-MaaCtrlId MaaControllerPostShell(MaaController* ctrl, const char* cmd)
+MaaCtrlId MaaControllerPostShell(MaaController* ctrl, const char* cmd, int64_t timeout)
 {
-    LogFunc << VAR_VOIDP(ctrl) << VAR(cmd);
+    LogFunc << VAR_VOIDP(ctrl) << VAR(cmd) << VAR(timeout);
 
     if (!ctrl) {
         LogError << "handle is null";
@@ -246,7 +246,7 @@ MaaCtrlId MaaControllerPostShell(MaaController* ctrl, const char* cmd)
         return MaaInvalidId;
     }
 
-    return ctrl->post_shell(cmd);
+    return ctrl->post_shell(cmd, timeout);
 }
 
 MaaBool MaaControllerGetShellOutput(const MaaController* ctrl, MaaStringBuffer* buffer)

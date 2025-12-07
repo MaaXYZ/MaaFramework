@@ -1147,9 +1147,10 @@ struct ControllerPostShellReverseRequest
 {
     std::string controller_id;
     std::string cmd;
+    int64_t timeout = 20000;
 
     MessageTypePlaceholder _ControllerPostShellReverseRequest = 1;
-    MEO_JSONIZATION(controller_id, cmd, _ControllerPostShellReverseRequest);
+    MEO_JSONIZATION(controller_id, cmd, timeout, _ControllerPostShellReverseRequest);
 };
 
 struct ControllerPostShellReverseResponse
