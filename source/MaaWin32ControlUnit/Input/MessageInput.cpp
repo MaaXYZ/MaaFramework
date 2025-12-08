@@ -264,7 +264,7 @@ bool MessageInput::key_up(int key)
 
 bool MessageInput::scroll(int dx, int dy)
 {
-    LogInfo << VAR(mode_) << VAR(with_cursor_pos_) << VAR(dx) << VAR(dy);ith_cursor_pos_) << VAR(dx) << VAR(dy);
+    LogInfo << VAR(mode_) << VAR(with_cursor_pos_) << VAR(dx) << VAR(dy);
 
     if (!hwnd_) {
         LogError << VAR(mode_) << VAR(with_cursor_pos_) << "hwnd_ is nullptr";
