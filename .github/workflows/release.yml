@@ -1,0 +1,142 @@
+name: release
+
+on:
+    workflow_dispatch:
+        inputs:
+            tag:
+                required: true
+                type: string
+                description: "Release tag (e.g., v1.0.0)"
+            is_pre_release:
+                required: true
+                type: boolean
+                description: "Is this a pre-release?"
+            run_id:
+                required: true
+                type: string
+                description: "Build workflow run ID to download artifacts from"
+
+concurrency:
+    group: ${{ github.workflow }}-${{ github.ref }}-release-${{ inputs.run_id}}
+    cancel-in-progress: true
+
+jobs:
+    publish_nuget:
+        runs-on: ubuntu-latest
+        outputs:
+            failed: ${{ steps.publish.outputs.failed }}
+        env:
+            NUGET_PACKAGE_SOURCE: https://api.nuget.org/v3/index.json # https://apiint.nugettest.org/v3/index.json
+        steps:
+            - uses: actions/download-artifact@v4
+              with:
+                  path: assets
+                  run-id: ${{ inputs.run_id }}
+                  github-token: ${{ secrets.GITHUB_TOKEN }}
+
+            - name: Publish Nupkgs
+              id: publish
+              run: |
+                  dotnet nuget push assets/MAA-nupkgs/*.nupkg \
+                    --api-key ${{ secrets.NuGetAPIKey }} \
+                    --source $NUGET_PACKAGE_SOURCE \
+                    || (echo "failed=true" >> $GITHUB_OUTPUT && echo "::error::Failed to publish NuGet packages")
+
+    publish_pip:
+        runs-on: ubuntu-latest
+        outputs:
+            failed: ${{ steps.publish.outputs.failed }}
+        steps:
+            - uses: actions/download-artifact@v4
+              with:
+                  path: assets
+                  run-id: ${{ inputs.run_id }}
+                  github-token: ${{ secrets.GITHUB_TOKEN }}
+
+            - name: Publish Pip Packages
+              id: publish
+              run: |
+                  pip install --upgrade twine packaging
+                  python -m twine upload \
+                    assets/MAA-pip-pkgs/*.whl \
+                    --username __token__\
+                    --password ${{ secrets.PYPI_TOKEN }} \
+                    || (echo "failed=true" >> $GITHUB_OUTPUT && echo "::error::Failed to publish pip packages")
+
+    publish_nodejs:
+        runs-on: ubuntu-latest
+        outputs:
+            failed: ${{ steps.publish.outputs.failed }}
+        steps:
+            - uses: actions/checkout@v4
+
+            - uses: actions/download-artifact@v4
+              with:
+                  path: assets
+                  run-id: ${{ inputs.run_id }}
+                  github-token: ${{ secrets.GITHUB_TOKEN }}
+
+            - uses: MaaXYZ/MaaFramework/.github/actions/publish_nodejs@main
+              id: publish
+              with:
+                  access: public
+                  on_finished: echo "Finished publishing nodejs package"
+                  on_publish_failed: echo "failed=true" >> $GITHUB_OUTPUT && echo "::error::Failed to publish nodejs packages"
+              continue-on-error: true
+
+    github_release:
+        needs: [publish_nuget, publish_pip, publish_nodejs]
+        if: ${{ always() }}
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v4
+
+            - uses: actions/download-artifact@v4
+              with:
+                  path: assets
+                  run-id: ${{ inputs.run_id }}
+                  github-token: ${{ secrets.GITHUB_TOKEN }}
+
+            - name: Cleanup package artifacts
+              run: |
+                  rm -rf assets/MAA-nupkgs
+                  rm -rf assets/MAA-pip-pkgs
+                  rm -rf assets/MAA-nodejs-package
+
+            - name: Zip artifacts
+              run: |
+                  cd assets
+                  for f in *; do
+                    (cd $f && zip -r ../$f-${{ inputs.tag }}.zip .)
+                  done
+
+            - uses: softprops/action-gh-release@v2
+              with:
+                  files: assets/*.zip
+                  tag_name: ${{ inputs.tag }}
+                  prerelease: ${{ inputs.is_pre_release }}
+                  generate_release_notes: true
+
+            - name: Trigger MirrorChyanUploading
+              run: |
+                  gh workflow run --repo $GITHUB_REPOSITORY mirrorchyan.yml
+                  gh workflow run --repo $GITHUB_REPOSITORY mirrorchyan_release_note.yml
+              env:
+                  GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    create_issue_on_failure:
+        needs: [publish_nuget, publish_pip, publish_nodejs]
+        if: ${{ always() && (failure() || needs.publish_nuget.outputs.failed || needs.publish_pip.outputs.failed || needs.publish_nodejs.outputs.failed) }}
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions-cool/issues-helper@v3
+              with:
+                  actions: "create-issue"
+                  title: "${{ inputs.tag }} failed to release"
+                  body: |
+                      Please manually publish the following packages:
+                      ${{ needs.publish_nuget.outputs.failed && '- nuget @moomiji' || '' }}
+                      ${{ needs.publish_pip.outputs.failed && '- pip @MistEO' || '' }}
+                      ${{ needs.publish_nodejs.outputs.failed && '- nodejs @neko-para' || '' }}
+
+                      cc @MistEO
