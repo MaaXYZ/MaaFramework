@@ -128,6 +128,52 @@ MaaFramework/
 - 使用 clang-format 格式化代码
 - 头文件使用 `#pragma once`
 
+#### 控制流与嵌套
+
+采用 **Guard Clauses（守卫语句）** 模式，通过前置条件检查和早返回降低代码嵌套层级：
+
+- **前置条件优先检查**：在函数入口处验证参数有效性、资源可用性等前置条件，不满足时立即返回，避免将主逻辑包裹在深层条件块中
+- **异常路径早返回**：错误处理、边界情况应尽早处理并返回，使主逻辑保持在最外层
+- **避免 else 分支嵌套**：当 if 分支以 return 结束时，后续逻辑无需包裹在 else 中
+
+```cpp
+// ✅ 推荐：Guard Clauses 模式
+bool process(Resource* res, const Input& input)
+{
+    if (!res) {
+        LogError << "resource is null";
+        return false;
+    }
+    if (!input.is_valid()) {
+        LogError << "invalid input";
+        return false;
+    }
+
+    // 主逻辑在最外层，无额外嵌套
+    auto result = res->do_work(input);
+    return result.success;
+}
+
+// ❌ 避免：深层嵌套
+bool process(Resource* res, const Input& input)
+{
+    if (res) {
+        if (input.is_valid()) {
+            auto result = res->do_work(input);
+            return result.success;
+        }
+        else {
+            LogError << "invalid input";
+            return false;
+        }
+    }
+    else {
+        LogError << "resource is null";
+        return false;
+    }
+}
+```
+
 ### 注释规范
 
 - **避免**在简单、自解释的代码上添加注释（如直观的变量命名、简单的 getter/setter、标准库调用）
