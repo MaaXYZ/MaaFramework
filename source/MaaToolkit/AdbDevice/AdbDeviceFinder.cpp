@@ -165,7 +165,7 @@ std::optional<AdbDevice>
     }
 
     AdbDevice device;
-    device.name = std::format("{}-{}", emulator.name.empty() ? path_to_utf8_string(adb_path) : emulator.name, serial);
+    device.name = std::format("{}-{}", serial, emulator.name.empty() ? path_to_utf8_string(adb_path) : emulator.name);
     device.adb_path = adb_path;
     device.serial = serial;
     device.screencap_methods = MaaAdbScreencapMethod_Default;

@@ -144,7 +144,7 @@ std::vector<AdbDevice> AdbDeviceWin32Finder::find_mumu_devices(const Emulator& e
     std::vector<AdbDevice> result;
     for (const MumuInfo& i : info) {
         AdbDevice device;
-        device.name = std::format("{}-{}", emulator.name, i.name);
+        device.name = std::format("{}-{}", i.name, emulator.name);
         device.adb_path = emulator.adb_path;
         device.serial = std::format("{}:{}", i.adb_host_ip, i.adb_port);
 
@@ -238,7 +238,7 @@ std::vector<AdbDevice> AdbDeviceWin32Finder::find_ld_devices(const Emulator& emu
         std::string serial = std::format("emulator-{}", 5554 + index * 2);
 
         AdbDevice device;
-        device.name = std::format("{}-{}", emulator.name, fields[1]);
+        device.name = std::format("{}-{}", fields[1], emulator.name);
         device.adb_path = emulator.adb_path;
         device.serial = serial;
 
