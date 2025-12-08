@@ -608,7 +608,7 @@ bool ResourceMgr::load(const std::filesystem::path& path)
         to_load = true;
         ret &= default_pipeline_.load(p);
     }
-    
+
     if (auto p = path / "pipeline"_path; std::filesystem::exists(p)) {
         to_load = true;
         ret &= pipeline_res_.load(p, default_pipeline_);
