@@ -602,20 +602,21 @@
                     "enum": [
                         1,
                         3,
-                        5
+                        5,
+                        10001
                     ],
-                    "markdownDescription": "*int*\n\n模板匹配算法，即 cv::TemplateMatchModes。可选，默认 5 。\n\n详情请参考 [OpenCV 官方文档](https://docs.opencv.org/4.x/df/dfb/group__imgproc__object.html)。\n\n| method | 算法名称 | 匹配规则 | 速度 | 颜色敏感度 | 光照鲁棒性 | 适用场景 |\n|--------|---------|---------|------|-----------|-----------|----------|\n| 1 | TM_SQDIFF_NORMED | 分越**低**越匹配 | 快 | 敏感 | 差 | 精确匹配，阈值易设定 |\n| 3 | TM_CCORR_NORMED | 分越高越匹配 | 中等 | 敏感 | 中 | 模板较亮时效果好 |\n| 5 | TM_CCOEFF_NORMED | 分越高越匹配 | 较慢 | 不敏感 | 好 | **推荐**，阈值易设定 |",
+                    "markdownDescription": "*int*\n\n模板匹配算法，即 cv::TemplateMatchModes。可选，默认 5 。\n\n详情请参考 [OpenCV 官方文档](https://docs.opencv.org/4.x/df/dfb/group__imgproc__object.html)。\n\n*10001 为 TM_SQDIFF_NORMED 的反转版本，分数越高越匹配（与原版相反）。*\n\n| method | 算法名称 | 速度 | 颜色敏感度 | 光照鲁棒性 | 适用场景 |\n|--------|---------|------|-----------|-----------|----------|\n| 10001 | TM_SQDIFF_NORMED | 快 | 敏感 | 差 | 精确匹配，阈值易设定 |\n| 3 | TM_CCORR_NORMED | 中等 | 敏感 | 中 | 模板较亮时效果好 |\n| 5 | TM_CCOEFF_NORMED | 较慢 | 不敏感 | 好 | **推荐**，阈值易设定 |",
                     "defaultSnippets": [
                         {
-                            "label": "SQDIFF",
-                            "body": 1
+                            "label": "SQDIFF_NORMED_INVERTED",
+                            "body": 10001
                         },
                         {
-                            "label": "CCORR",
+                            "label": "CCORR_NORMED",
                             "body": 3
                         },
                         {
-                            "label": "CCOEFF",
+                            "label": "CCOEFF_NORMED",
                             "body": 5
                         }
                     ],

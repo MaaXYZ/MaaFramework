@@ -47,8 +47,20 @@ TemplateMatcher::ResultsVec TemplateMatcher::template_match(const cv::Mat& templ
         return {};
     }
 
+    bool invert_score = false;
+
+    int method = param_.method;
+    if (method >= TemplateMatcherParam::kMethodInvertBase) {
+        invert_score = true;
+        method -= TemplateMatcherParam::kMethodInvertBase;
+    }
+
     cv::Mat matched;
-    cv::matchTemplate(image, templ, matched, param_.method, create_mask(templ, param_.green_mask));
+    cv::matchTemplate(image, templ, matched, method, create_mask(templ, param_.green_mask));
+
+    if (invert_score) {
+        matched = 1.0f - matched;
+    }
 
     ResultsVec raw_results;
     Result closest_result;

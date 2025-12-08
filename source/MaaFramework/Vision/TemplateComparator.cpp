@@ -57,8 +57,18 @@ void TemplateComparator::cherry_pick()
 
 double TemplateComparator::comp(const cv::Mat& lhs, const cv::Mat& rhs, int method)
 {
+    bool invert_score = false;
+    if (method >= TemplateMatcherParam::kMethodInvertBase) {
+        invert_score = true;
+        method -= TemplateMatcherParam::kMethodInvertBase;
+    }
+
     cv::Mat matched;
     cv::matchTemplate(lhs, rhs, matched, method);
+
+    if (invert_score) {
+        matched = 1.0f - matched;
+    }
 
     double min_val = 0.0, max_val = 0.0;
     cv::Point min_loc {}, max_loc {};
