@@ -64,6 +64,9 @@ TemplateMatcher::ResultsVec TemplateMatcher::template_match(const cv::Mat& templ
 
     ResultsVec raw_results;
     Result closest_result;
+    if (use_min_score_) {
+        closest_result.score = std::numeric_limits<float>::max();
+    }
     for (int col = 0; col < matched.cols; ++col) {
         for (int row = 0; row < matched.rows; ++row) {
             float score = matched.at<float>(row, col);
