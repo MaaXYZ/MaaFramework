@@ -29,7 +29,7 @@ on:
 
     workflow_dispatch:
         inputs:
-            build_config:
+            build-config:
                 required: true
                 default: "RelWithDebInfo"
                 type: choice
@@ -48,6 +48,9 @@ concurrency:
 jobs:
     meta:
         uses: ./.github/workflows/meta.yml
+        with:
+            build-config: ${{ inputs.build-config }}
+
 
     windows:
         needs: meta
@@ -124,12 +127,12 @@ jobs:
               run: |
                   cmake --preset "${{ matrix.arch == 'x86_64' && 'MSVC 2022' || 'MSVC 2022 ARM' }}" -DCMAKE_SYSTEM_VERSION="10.0.26100.0" -DMAADEPS_TRIPLET="maa-${{ matrix.arch == 'x86_64' && 'x64' || 'arm64' }}-windows" -DMAA_HASH_VERSION='${{ needs.meta.outputs.tag }}' -DWITH_NODEJS_BINDING=ON -DWITH_QUICKJS_BINDING=ON
 
-                  cmake --build build --preset "${{ matrix.arch == 'x86_64' && 'MSVC 2022' || 'MSVC 2022 ARM' }} - ${{ inputs.build_config || needs.meta.outputs.build_config }}" -j 16
+                  cmake --build build --preset "${{ matrix.arch == 'x86_64' && 'MSVC 2022' || 'MSVC 2022 ARM' }} - ${{ needs.meta.outputs.build-config }}" -j 16
 
             - name: Install
               shell: bash
               run: |
-                  cmake --install build --prefix install --config ${{ inputs.build_config || needs.meta.outputs.build_config }}
+                  cmake --install build --prefix install --config ${{ needs.meta.outputs.build-config }}
                   rm -rf install/bin/msvc-debug
 
                   cp -r docs install
@@ -223,12 +226,12 @@ jobs:
                     -DMAA_HASH_VERSION='${{ needs.meta.outputs.tag }}' \
                     -DWITH_NODEJS_BINDING=ON -DWITH_QUICKJS_BINDING=ON
 
-                  cmake --build build --preset 'NinjaMulti Linux ${{ matrix.arch == 'x86_64' && 'x64' || 'arm64' }} - ${{ inputs.build_config || needs.meta.outputs.build_config }}' -j 16
+                  cmake --build build --preset 'NinjaMulti Linux ${{ matrix.arch == 'x86_64' && 'x64' || 'arm64' }} - ${{ needs.meta.outputs.build-config }}' -j 16
 
             - name: Install
               shell: bash
               run: |
-                  cmake --install build --prefix install --config ${{ inputs.build_config || needs.meta.outputs.build_config }}
+                  cmake --install build --prefix install --config ${{ needs.meta.outputs.build-config }}
 
                   cp -r docs install
                   cp README*.md install
@@ -319,12 +322,12 @@ jobs:
                     -DWITH_NODEJS_BINDING=ON -DWITH_QUICKJS_BINDING=ON \
                     -DCMAKE_OSX_ARCHITECTURES='${{ matrix.arch == 'x86_64' && 'x86_64' || 'arm64' }}'
 
-                  cmake --build build --preset 'NinjaMulti - ${{ inputs.build_config || needs.meta.outputs.build_config }}' -j 16
+                  cmake --build build --preset 'NinjaMulti - ${{ needs.meta.outputs.build-config }}' -j 16
 
             - name: Install
               shell: bash
               run: |
-                  cmake --install build --prefix install --config ${{ inputs.build_config || needs.meta.outputs.build_config }}
+                  cmake --install build --prefix install --config ${{ needs.meta.outputs.build-config }}
 
                   cp -r docs install
                   cp README*.md install
@@ -404,12 +407,12 @@ jobs:
                     -DMAADEPS_TRIPLET='maa-${{ matrix.arch == 'x86_64' && 'x64' || 'arm64' }}-android' \
                     -DMAA_HASH_VERSION='${{ needs.meta.outputs.tag }}'
 
-                  cmake --build build --preset 'NinjaMulti - ${{ inputs.build_config || needs.meta.outputs.build_config }}' -j 16
+                  cmake --build build --preset 'NinjaMulti - ${{ needs.meta.outputs.build-config }}' -j 16
 
             - name: Install
               shell: bash
               run: |
-                  cmake --install build --prefix install --config ${{ inputs.build_config || needs.meta.outputs.build_config }}
+                  cmake --install build --prefix install --config ${{ needs.meta.outputs.build-config }}
 
                   cp -r docs install
                   cp README*.md install
