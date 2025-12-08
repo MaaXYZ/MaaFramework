@@ -567,9 +567,6 @@ jobs:
         env:
             OUTPUT_PUBLISH_FAILED: 'echo "failed=true" >> $GITHUB_OUTPUT && echo "::error::Failed to publish packages"'
             NUGET_PACKAGE_SOURCE: https://api.nuget.org/v3/index.json # https://apiint.nugettest.org/v3/index.json
-        permissions:
-            contents: read
-            id-token: write 
         steps:
             - uses: actions/download-artifact@v4
               with:
