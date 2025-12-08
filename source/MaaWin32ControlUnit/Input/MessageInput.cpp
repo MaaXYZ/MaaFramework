@@ -77,19 +77,19 @@ MaaControllerFeature MessageInput::get_features() const
 
 bool MessageInput::click(int x, int y)
 {
-    LogError << "deprecated" << VAR(x) << VAR(y);
+    LogError << "deprecated" << VAR(mode_) << VAR(with_cursor_pos_) << VAR(x) << VAR(y);
     return false;
 }
 
 bool MessageInput::swipe(int x1, int y1, int x2, int y2, int duration)
 {
-    LogError << "deprecated" << VAR(x1) << VAR(y1) << VAR(x2) << VAR(y2) << VAR(duration);
+    LogError << "deprecated" << VAR(mode_) << VAR(with_cursor_pos_) << VAR(x1) << VAR(y1) << VAR(x2) << VAR(y2) << VAR(duration);
     return false;
 }
 
 bool MessageInput::touch_down(int contact, int x, int y, int pressure)
 {
-    LogInfo << VAR(contact) << VAR(x) << VAR(y) << VAR(pressure);
+    LogInfo << VAR(mode_) << VAR(with_cursor_pos_) << VAR(contact) << VAR(x) << VAR(y) << VAR(pressure);
 
     std::ignore = pressure;
 
@@ -117,7 +117,7 @@ bool MessageInput::touch_down(int contact, int x, int y, int pressure)
 
     MouseMessageInfo msg_info;
     if (!contact_to_mouse_down_message(contact, msg_info)) {
-        LogError << "contact out of range" << VAR(contact);
+        LogError << VAR(mode_) << VAR(with_cursor_pos_) << "contact out of range" << VAR(contact);
         // 错误时恢复光标位置
         if (with_cursor_pos_) {
             restore_cursor_pos();
@@ -156,7 +156,7 @@ bool MessageInput::touch_move(int contact, int x, int y, int pressure)
 
     MouseMessageInfo msg_info;
     if (!contact_to_mouse_move_message(contact, msg_info)) {
-        LogError << "contact out of range" << VAR(contact);
+        LogError << VAR(mode_) << VAR(with_cursor_pos_) << "contact out of range" << VAR(contact);
         return false;
     }
 
@@ -171,10 +171,10 @@ bool MessageInput::touch_move(int contact, int x, int y, int pressure)
 
 bool MessageInput::touch_up(int contact)
 {
-    LogInfo << VAR(contact);
+    LogInfo << VAR(mode_) << VAR(with_cursor_pos_) << VAR(contact);
 
     if (!hwnd_) {
-        LogError << "hwnd_ is nullptr";
+        LogError << VAR(mode_) << VAR(with_cursor_pos_) << "hwnd_ is nullptr";
         return false;
     }
 
@@ -188,7 +188,7 @@ bool MessageInput::touch_up(int contact)
 
     MouseMessageInfo msg_info;
     if (!contact_to_mouse_up_message(contact, msg_info)) {
-        LogError << "contact out of range" << VAR(contact);
+        LogError << VAR(mode_) << VAR(with_cursor_pos_) << "contact out of range" << VAR(contact);
         return false;
     }
 
@@ -207,16 +207,16 @@ bool MessageInput::touch_up(int contact)
 
 bool MessageInput::click_key(int key)
 {
-    LogError << "deprecated" << VAR(key);
+    LogError << "deprecated" << VAR(mode_) << VAR(with_cursor_pos_) << VAR(key);
     return false;
 }
 
 bool MessageInput::input_text(const std::string& text)
 {
-    LogInfo << VAR(text);
+    LogInfo << VAR(mode_) << VAR(with_cursor_pos_) << VAR(text);
 
     if (!hwnd_) {
-        LogError << "hwnd_ is nullptr";
+        LogError << VAR(mode_) << VAR(with_cursor_pos_) << "hwnd_ is nullptr";
         return false;
     }
 
@@ -234,8 +234,10 @@ bool MessageInput::input_text(const std::string& text)
 
 bool MessageInput::key_down(int key)
 {
+    LogInfo << VAR(mode_) << VAR(key);
+
     if (!hwnd_) {
-        LogError << "hwnd_ is nullptr";
+        LogError << VAR(mode_) << VAR(with_cursor_pos_) << "hwnd_ is nullptr";
         return false;
     }
 
@@ -247,8 +249,10 @@ bool MessageInput::key_down(int key)
 
 bool MessageInput::key_up(int key)
 {
+    LogInfo << VAR(mode_) << VAR(key);
+
     if (!hwnd_) {
-        LogError << "hwnd_ is nullptr";
+        LogError << VAR(mode_) << VAR(with_cursor_pos_) << "hwnd_ is nullptr";
         return false;
     }
 
@@ -260,10 +264,10 @@ bool MessageInput::key_up(int key)
 
 bool MessageInput::scroll(int dx, int dy)
 {
-    LogInfo << VAR(dx) << VAR(dy);
+    LogInfo << VAR(mode_) << VAR(with_cursor_pos_) << VAR(dx) << VAR(dy);ith_cursor_pos_) << VAR(dx) << VAR(dy);
 
     if (!hwnd_) {
-        LogError << "hwnd_ is nullptr";
+        LogError << VAR(mode_) << VAR(with_cursor_pos_) << "hwnd_ is nullptr";
         return false;
     }
 
