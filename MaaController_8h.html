@@ -159,6 +159,12 @@ Functions</h2></td></tr>
 <tr class="memitem:ab5b9b134755f4381cb4e5e99f21732b1" id="r_ab5b9b134755f4381cb4e5e99f21732b1"><td class="memItemLeft" align="right" valign="top"><a class="el" href="MaaPort_8h.html#a67006334d91d228121dbba7a8bf8fe05">MAA_FRAMEWORK_API</a> <a class="el" href="MaaDef_8h.html#aea6a27f8f45b661fda5c19b6062b656e">MaaCtrlId</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="MaaController_8h.html#ab5b9b134755f4381cb4e5e99f21732b1">MaaControllerPostScroll</a> (<a class="el" href="MaaDef_8h.html#aa6c9c6967753196880a2a7f778fbb706">MaaController</a> *ctrl, int32_t dx, int32_t dy)</td></tr>
 <tr class="memdesc:ab5b9b134755f4381cb4e5e99f21732b1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Post a scroll action to the controller.  <br /></td></tr>
 <tr class="separator:ab5b9b134755f4381cb4e5e99f21732b1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3f16bddc42e950694efd7da2fa51cb9f" id="r_a3f16bddc42e950694efd7da2fa51cb9f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="MaaPort_8h.html#a67006334d91d228121dbba7a8bf8fe05">MAA_FRAMEWORK_API</a> <a class="el" href="MaaDef_8h.html#aea6a27f8f45b661fda5c19b6062b656e">MaaCtrlId</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="MaaController_8h.html#a3f16bddc42e950694efd7da2fa51cb9f">MaaControllerPostShell</a> (<a class="el" href="MaaDef_8h.html#aa6c9c6967753196880a2a7f778fbb706">MaaController</a> *ctrl, const char *cmd, int64_t timeout)</td></tr>
+<tr class="memdesc:a3f16bddc42e950694efd7da2fa51cb9f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Post a shell command to the controller.  <br /></td></tr>
+<tr class="separator:a3f16bddc42e950694efd7da2fa51cb9f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a92255bcc65b61750e01fa07bcd8d17e0" id="r_a92255bcc65b61750e01fa07bcd8d17e0"><td class="memItemLeft" align="right" valign="top"><a class="el" href="MaaPort_8h.html#a67006334d91d228121dbba7a8bf8fe05">MAA_FRAMEWORK_API</a> <a class="el" href="MaaDef_8h.html#a2f7289f2a8e07f48c6261b52a120cdf6">MaaBool</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="MaaController_8h.html#a92255bcc65b61750e01fa07bcd8d17e0">MaaControllerGetShellOutput</a> (const <a class="el" href="MaaDef_8h.html#aa6c9c6967753196880a2a7f778fbb706">MaaController</a> *ctrl, <a class="el" href="MaaDef_8h.html#a4010bb63df489fc09efb6ba9a1fc1c98">MaaStringBuffer</a> *buffer)</td></tr>
+<tr class="memdesc:a92255bcc65b61750e01fa07bcd8d17e0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the cached shell command output.  <br /></td></tr>
+<tr class="separator:a92255bcc65b61750e01fa07bcd8d17e0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:afb8528c818e4fd03c7493b7b013474ed" id="r_afb8528c818e4fd03c7493b7b013474ed"><td class="memItemLeft" align="right" valign="top"><a class="el" href="MaaPort_8h.html#a67006334d91d228121dbba7a8bf8fe05">MAA_FRAMEWORK_API</a> <a class="el" href="MaaDef_8h.html#ada00e4de6b9b4dcae75ed50f4bcaeef5">MaaStatus</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="MaaController_8h.html#afb8528c818e4fd03c7493b7b013474ed">MaaControllerStatus</a> (const <a class="el" href="MaaDef_8h.html#aa6c9c6967753196880a2a7f778fbb706">MaaController</a> *ctrl, <a class="el" href="MaaDef_8h.html#aea6a27f8f45b661fda5c19b6062b656e">MaaCtrlId</a> id)</td></tr>
 <tr class="separator:afb8528c818e4fd03c7493b7b013474ed"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a67674de1a9a97550510068d7c9a5abd1" id="r_a67674de1a9a97550510068d7c9a5abd1"><td class="memItemLeft" align="right" valign="top"><a class="el" href="MaaPort_8h.html#a67006334d91d228121dbba7a8bf8fe05">MAA_FRAMEWORK_API</a> <a class="el" href="MaaDef_8h.html#ada00e4de6b9b4dcae75ed50f4bcaeef5">MaaStatus</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="MaaController_8h.html#a67674de1a9a97550510068d7c9a5abd1">MaaControllerWait</a> (const <a class="el" href="MaaDef_8h.html#aa6c9c6967753196880a2a7f778fbb706">MaaController</a> *ctrl, <a class="el" href="MaaDef_8h.html#aea6a27f8f45b661fda5c19b6062b656e">MaaCtrlId</a> id)</td></tr>
@@ -958,6 +964,92 @@ Functions</h2></td></tr>
 
 </div>
 </div>
+<a id="a3f16bddc42e950694efd7da2fa51cb9f" name="a3f16bddc42e950694efd7da2fa51cb9f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3f16bddc42e950694efd7da2fa51cb9f">&#9670;&#160;</a></span>MaaControllerPostShell()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="MaaPort_8h.html#a67006334d91d228121dbba7a8bf8fe05">MAA_FRAMEWORK_API</a> <a class="el" href="MaaDef_8h.html#aea6a27f8f45b661fda5c19b6062b656e">MaaCtrlId</a> MaaControllerPostShell </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="MaaDef_8h.html#aa6c9c6967753196880a2a7f778fbb706">MaaController</a> *&#160;</td>
+          <td class="paramname"><em>ctrl</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const char *&#160;</td>
+          <td class="paramname"><em>cmd</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int64_t&#160;</td>
+          <td class="paramname"><em>timeout</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Post a shell command to the controller. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">ctrl</td><td>The controller handle. </td></tr>
+    <tr><td class="paramname">cmd</td><td>The shell command to execute. </td></tr>
+    <tr><td class="paramname">timeout</td><td>Timeout in milliseconds. Default is 20000 (20 seconds). </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>The control id of the shell action.</dd></dl>
+<dl class="section note"><dt>Note</dt><dd>This is only valid for ADB controllers. If the controller is not an ADB controller, the action will fail. </dd></dl>
+<dl class="section see"><dt>See also</dt><dd><a class="el" href="MaaController_8h.html#a92255bcc65b61750e01fa07bcd8d17e0" title="Get the cached shell command output.">MaaControllerGetShellOutput</a> </dd></dl>
+
+</div>
+</div>
+<a id="a92255bcc65b61750e01fa07bcd8d17e0" name="a92255bcc65b61750e01fa07bcd8d17e0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a92255bcc65b61750e01fa07bcd8d17e0">&#9670;&#160;</a></span>MaaControllerGetShellOutput()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="MaaPort_8h.html#a67006334d91d228121dbba7a8bf8fe05">MAA_FRAMEWORK_API</a> <a class="el" href="MaaDef_8h.html#a2f7289f2a8e07f48c6261b52a120cdf6">MaaBool</a> MaaControllerGetShellOutput </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="MaaDef_8h.html#aa6c9c6967753196880a2a7f778fbb706">MaaController</a> *&#160;</td>
+          <td class="paramname"><em>ctrl</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="MaaDef_8h.html#a4010bb63df489fc09efb6ba9a1fc1c98">MaaStringBuffer</a> *&#160;</td>
+          <td class="paramname"><em>buffer</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Get the cached shell command output. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">ctrl</td><td>The controller handle. </td></tr>
+    <tr><td class="paramname">buffer</td><td>The output buffer to store the command result. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>true if the output is available, false otherwise.</dd></dl>
+<dl class="section note"><dt>Note</dt><dd>This returns the output from the most recent shell command execution. </dd></dl>
+
+</div>
+</div>
 <a id="afb8528c818e4fd03c7493b7b013474ed" name="afb8528c818e4fd03c7493b7b013474ed"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#afb8528c818e4fd03c7493b7b013474ed">&#9670;&#160;</a></span>MaaControllerStatus()</h2>
 
@@ -1122,7 +1214,7 @@ Functions</h2></td></tr>
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="dir_d44c64559bbebec7f509842c48db8b23.html">include</a></li><li class="navelem"><a class="el" href="dir_370cd1367c21b1a87c5c9c6803b8d0b9.html">MaaFramework</a></li><li class="navelem"><a class="el" href="dir_0debf1eee29073ebb629a4e1dfd2a5f6.html">Instance</a></li><li class="navelem"><a class="el" href="MaaController_8h.html">MaaController.h</a></li>
-    <li class="footer">Generated on Sat Dec 6 2025 for MaaFramework by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.8 </li>
+    <li class="footer">Generated on Mon Dec 8 2025 for MaaFramework by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.8 </li>
   </ul>
 </div>
 </body>
