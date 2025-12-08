@@ -10,7 +10,7 @@ MAA_VISION_NS_BEGIN
 TemplateMatcher::TemplateMatcher(cv::Mat image, cv::Rect roi, TemplateMatcherParam param, std::vector<cv::Mat> templates, std::string name)
     : VisionBase(std::move(image), std::move(roi), std::move(name))
     , param_(std::move(param))
-    , use_min_score_(param_.method == cv::TemplateMatchModes::TM_SQDIFF || param_.method == cv::TemplateMatchModes::TM_SQDIFF_NORMED)
+    , low_score_better_(param_.method == cv::TemplateMatchModes::TM_SQDIFF || param_.method == cv::TemplateMatchModes::TM_SQDIFF_NORMED)
     , templates_(std::move(templates))
 {
     analyze();
@@ -64,7 +64,7 @@ TemplateMatcher::ResultsVec TemplateMatcher::template_match(const cv::Mat& templ
 
     ResultsVec raw_results;
     Result closest_result;
-    if (use_min_score_) {
+    if (low_score_better_) {
         closest_result.score = std::numeric_limits<float>::max();
     }
     for (int col = 0; col < matched.cols; ++col) {
@@ -95,7 +95,7 @@ TemplateMatcher::ResultsVec TemplateMatcher::template_match(const cv::Mat& templ
         raw_results.emplace_back(closest_result);
     }
 
-    auto nms_results = NMS(std::move(raw_results), 0.7, !use_min_score_);
+    auto nms_results = NMS(std::move(raw_results), 0.7, !low_score_better_);
 
     if (debug_draw_) {
         auto draw = draw_result(templ, nms_results);
@@ -157,7 +157,7 @@ void TemplateMatcher::sort_(ResultsVec& results) const
         sort_by_vertical_(results);
         break;
     case ResultOrderBy::Score:
-        sort_by_score_(results);
+        sort_by_score_(results, low_score_better_);
         break;
     case ResultOrderBy::Area:
         sort_by_area_(results);
@@ -173,7 +173,7 @@ void TemplateMatcher::sort_(ResultsVec& results) const
 
 bool TemplateMatcher::comp_score(double s1, double s2) const
 {
-    return use_min_score_ ? s1 > s2 : s1 < s2;
+    return low_score_better_ ? s1 > s2 : s1 < s2;
 }
 
 MAA_VISION_NS_END

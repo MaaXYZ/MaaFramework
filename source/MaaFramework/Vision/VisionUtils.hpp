@@ -32,9 +32,14 @@ inline static void sort_by_vertical_(ResultsVec& results)
 }
 
 template <typename ResultsVec>
-inline static void sort_by_score_(ResultsVec& results)
+inline static void sort_by_score_(ResultsVec& results, bool reverse = false)
 {
-    std::ranges::sort(results, std::greater {}, std::mem_fn(&ResultsVec::value_type::score));
+    if (reverse) {
+        std::ranges::sort(results, std::less {}, std::mem_fn(&ResultsVec::value_type::score));
+    }
+    else {
+        std::ranges::sort(results, std::greater {}, std::mem_fn(&ResultsVec::value_type::score));
+    }
 }
 
 template <typename ResultsVec>
@@ -175,14 +180,14 @@ inline static std::optional<size_t> pythonic_index(size_t total, int index)
 
 // Non-Maximum Suppression
 template <typename ResultsVec>
-inline static ResultsVec NMS(ResultsVec results, double threshold = 0.7, bool max_val = true)
+inline static ResultsVec NMS(ResultsVec results, double threshold = 0.7, bool greater = true)
 {
-    std::ranges::sort(results, [&](const auto& a, const auto& b) { return max_val ? (a.score > b.score) : (a.score < b.score); });
+    std::ranges::sort(results, [&](const auto& a, const auto& b) { return greater ? (a.score > b.score) : (a.score < b.score); });
 
     ResultsVec nms_results;
     for (size_t i = 0; i < results.size(); ++i) {
         const auto& res1 = results[i];
-        if ((max_val && res1.score < 0.1f) || (!max_val && res1.score > 0.9f)) {
+        if ((greater && res1.score < 0.1f) || (!greater && res1.score > 0.9f)) {
             continue;
         }
         auto res1_box = res1.box;
@@ -190,12 +195,12 @@ inline static ResultsVec NMS(ResultsVec results, double threshold = 0.7, bool ma
 
         for (size_t j = i + 1; j < results.size(); ++j) {
             auto& res2 = results[j];
-            if ((max_val && res2.score < 0.1f) || (!max_val && res2.score > 0.9f)) {
+            if ((greater && res2.score < 0.1f) || (!greater && res2.score > 0.9f)) {
                 continue;
             }
             int iou_area = (res1_box & res2.box).area();
             if (iou_area >= threshold * res2.box.area()) {
-                res2.score = max_val ? 0 : 1;
+                res2.score = greater ? 0 : 1;
             }
         }
     }
