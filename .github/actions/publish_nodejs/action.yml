@@ -6,9 +6,6 @@ inputs:
             Determines whether the published package should be publicly visible,
             or restricted to members of your NPM organization.
         required: false
-    dry-run:
-        description: Run npm with the --dry-run flag to avoid actually publishing anything.
-        required: false
     on_finished:
         description: Run a bash on finished.
         required: false
@@ -26,49 +23,38 @@ runs:
         - uses: actions/setup-node@v5
           with:
               node-version: "24"
-        - uses: JS-DevTools/npm-publish@v3
-          id: nodejs
-          with:
-              package: assets/MAA-nodejs-package/maa-node
-              token: ${{ inputs.token }}
-              access: ${{ inputs.access }}
-              dry-run: ${{ inputs.dry-run }}
-        - uses: JS-DevTools/npm-publish@v3
-          with:
-              package: assets/MAA-nodejs-package/maa-node-win32-x64
-              token: ${{ inputs.token }}
-              access: ${{ inputs.access }}
-              dry-run: ${{ inputs.dry-run }}
-        - uses: JS-DevTools/npm-publish@v3
-          with:
-              package: assets/MAA-nodejs-package/maa-node-win32-arm64
-              token: ${{ inputs.token }}
-              access: ${{ inputs.access }}
-              dry-run: ${{ inputs.dry-run }}
-        - uses: JS-DevTools/npm-publish@v3
-          with:
-              package: assets/MAA-nodejs-package/maa-node-linux-x64
-              token: ${{ inputs.token }}
-              access: ${{ inputs.access }}
-              dry-run: ${{ inputs.dry-run }}
-        - uses: JS-DevTools/npm-publish@v3
-          with:
-              package: assets/MAA-nodejs-package/maa-node-linux-arm64
-              token: ${{ inputs.token }}
-              access: ${{ inputs.access }}
-              dry-run: ${{ inputs.dry-run }}
-        - uses: JS-DevTools/npm-publish@v3
-          with:
-              package: assets/MAA-nodejs-package/maa-node-darwin-x64
-              token: ${{ inputs.token }}
-              access: ${{ inputs.access }}
-              dry-run: ${{ inputs.dry-run }}
-        - uses: JS-DevTools/npm-publish@v3
-          with:
-              package: assets/MAA-nodejs-package/maa-node-darwin-arm64
-              token: ${{ inputs.token }}
-              access: ${{ inputs.access }}
-              dry-run: ${{ inputs.dry-run }}
+
+        - name: Publish
+          shell: bash
+          run: |
+              cd assets/MAA-nodejs-package/maa-node
+              npm publish --access public
+              cd -
+
+              cd assets/MAA-nodejs-package/maa-node-win32-x64
+              npm publish --access public
+              cd -
+
+              cd assets/MAA-nodejs-package/maa-node-win32-arm64
+              npm publish --access public
+              cd -
+
+              cd assets/MAA-nodejs-package/maa-node-linux-x64
+              npm publish --access public
+              cd -
+
+              cd assets/MAA-nodejs-package/maa-node-linux-arm64
+              npm publish --access public
+              cd -
+
+              cd assets/MAA-nodejs-package/maa-node-darwin-x64
+              npm publish --access public
+              cd -
+
+              cd assets/MAA-nodejs-package/maa-node-darwin-arm64
+              npm publish --access public
+              cd -
+
         - name: Finished
           if: always()
           shell: bash
