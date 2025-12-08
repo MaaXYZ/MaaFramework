@@ -326,10 +326,11 @@ cmake --install build --prefix install
 
 - [ ] 在 `include/` 中添加 C API 声明
 - [ ] 在 `source/` 中实现功能
+- [ ] 更新 MaaAgent（如涉及 Context/Tasker/Resource/Controller 接口）
 - [ ] 更新 Python/NodeJS 绑定
 - [ ] 更新 Pipeline Schema（如涉及）
 - [ ] 添加/更新中英文文档
-- [ ] 更新 MaaMsg.h（如有新消息）
+- [ ] 更新 MaaMsg.h 及绑定层消息解析代码（如有新消息）
 
 > **注意**：如没有特别说明，不需要更新测试用例。
 
@@ -339,20 +340,33 @@ cmake --install build --prefix install
 
 1. 在 `source/MaaFramework/Vision/` 添加算法实现
 2. 在 `source/MaaFramework/Task/Component/Recognizer.cpp` 注册算法
-3. 在 `source/MaaFramework/Resource/PipelineTypes.h` 添加类型定义
+3. 在 `source/MaaFramework/Resource/PipelineParser.cpp` 添加解析逻辑
 4. 在 `source/MaaFramework/Resource/PipelineDumper.cpp` 添加序列化逻辑
-5. 更新 Python/NodeJS 绑定中的 `get_recognition_detail` 解析逻辑（如有新的结果格式）
+5. 更新 Python 绑定中的 `get_node_object` 解析逻辑（如有新的结果格式）
 6. 更新 `tools/pipeline.schema.json`
 7. 更新中英文文档 `docs/*/3.1-*`
+
+> **说明**：Python 绑定的 `get_node_object` 数据来源于 `PipelineDumper` 序列化的 JSON，而非原始 Pipeline JSON。
 
 ### 添加新的动作类型
 
 1. 在 `source/MaaFramework/Task/Component/Actuator.cpp` 实现动作
-2. 在 `source/MaaFramework/Resource/PipelineTypes.h` 添加类型定义
+2. 在 `source/MaaFramework/Resource/PipelineParser.cpp` 添加解析逻辑
 3. 在 `source/MaaFramework/Resource/PipelineDumper.cpp` 添加序列化逻辑
-4. 更新 Python/NodeJS 绑定中的 `get_action_detail` 解析逻辑（如有新的结果格式）
+4. 更新 Python 绑定中的 `get_node_object` 解析逻辑（如有新的结果格式）
 5. 更新 `tools/pipeline.schema.json`
 6. 更新中英文文档
+
+> **说明**：Python 绑定的 `get_node_object` 数据来源于 `PipelineDumper` 序列化的 JSON，而非原始 Pipeline JSON。
+
+### 修改回调消息（MaaMsg）
+
+当修改或新增回调消息时：
+
+1. 在 `include/MaaFramework/MaaMsg.h` 添加/修改消息定义
+2. 在相应的 C++ 代码中发送该消息
+3. 更新 Python 绑定中的消息解析代码（`source/binding/Python/maa/` 下的 `event_sink.py`、`tasker.py` 等）
+4. 更新中英文回调协议文档 `docs/*/2.3-*`
 
 ### 添加新的语言绑定
 
@@ -363,6 +377,20 @@ cmake --install build --prefix install
 3. Buffer 类型内部处理，不暴露给用户
 4. 提供与 Python 示例等效的 sample 代码
 5. 更新中英文集成文档 `docs/*/2.1-*`
+
+### 新增 Context/Tasker/Resource/Controller 接口
+
+当为核心对象添加新接口时，需同步更新 MaaAgent 以支持跨进程调用：
+
+1. 在 `source/MaaAgentClient/Client/AgentClient.h` 添加 `handle_<module>_<action>` 方法声明
+2. 在 `source/MaaAgentClient/Client/AgentClient.cpp` 实现该方法
+3. 在 `source/MaaAgentServer/RemoteInstance/Remote<Module>.h` 添加对应方法声明
+4. 在 `source/MaaAgentServer/RemoteInstance/Remote<Module>.cpp` 实现远程调用逻辑
+
+**Agent 架构说明**：
+
+- **AgentClient**：运行在主程序中，将 Custom 请求转发到 Server，并处理 Server 的远程调用
+- **AgentServer**：运行在用户进程中，注册自定义识别器/动作，通过 Remote* 类代理访问主程序实例
 
 ## 调试技巧
 
