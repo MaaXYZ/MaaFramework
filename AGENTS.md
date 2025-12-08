@@ -6,11 +6,7 @@
 
 ## 项目概述
 
-**MaaFramework** 是一个基于图像识别技术的自动化黑盒测试框架，使用 C++20 编写，提供 C 语言 API 供各语言绑定调用。
-
-- **定位**：既支持通过 JSON 配置任务流水线（Pipeline）的低代码开发，也提供完整的集成接口供深度定制
-- **平台支持**：Windows、Linux、macOS、Android
-- **开源协议**：LGPL-3.0
+**MaaFramework** 是一个基于图像识别技术的自动化黑盒测试框架，使用 C++20 编写，提供 C 语言 API 供各语言绑定调用。既支持通过 JSON 配置任务流水线（Pipeline）的低代码开发，也提供完整的集成接口供深度定制。
 
 ## 目录结构
 
@@ -91,37 +87,6 @@ MaaFramework/
 
 ## Pipeline 协议
 
-### 基本格式
-
-Pipeline 使用 JSON 格式，支持 v1 和 v2 两种写法：
-
-```jsonc
-// v1 格式
-{
-    "NodeName": {
-        "recognition": "OCR",       // 识别算法
-        "expected": "开始",          // 期望文本
-        "action": "Click",          // 执行动作
-        "next": ["NextNode1", "NextNode2"]  // 后继节点
-    }
-}
-
-// v2 格式
-{
-    "NodeName": {
-        "recognition": {
-            "type": "TemplateMatch",
-            "param": { "template": "image.png" }
-        },
-        "action": {
-            "type": "Click",
-            "param": { "target": [100, 100, 50, 50] }
-        },
-        "next": ["NextNode"]
-    }
-}
-```
-
 ### 识别算法类型
 
 | 类型 | 说明 | 关键参数 |
@@ -153,138 +118,7 @@ Pipeline 使用 JSON 格式，支持 v1 和 v2 两种写法：
 
 ### 节点属性
 
-v5.1+ 支持在 `next` 列表中使用节点属性：
-
-```jsonc
-{
-    "A": {
-        "next": [
-            "B",
-            "[JumpBack]C",           // 执行完 C 链后返回 A 继续识别
-            { "name": "D", "anchor": true }  // 锚点引用
-        ]
-    }
-}
-```
-
-## 语言绑定规范
-
-### 标准化接口设计原则
-
-1. **对象化封装**：MaaTasker、MaaResource、MaaController 设计为 OOP 接口
-2. **异步任务封装**：返回 Job 类而非原始 ID，提供 `wait()`, `status()`, `get()` 方法
-3. **查询 ID 封装**：MaaRecoId、MaaNodeId 等封装为 Detail 结构体
-4. **回调封装**：CustomAction、CustomRecognition 包装为虚基类
-5. **Buffer 隐藏**：StringBuffer、ImageBuffer 内部使用，不暴露给用户
-6. **独立接口**：SetOption 中的枚举拆分为独立方法
-
-### Python 绑定示例（完整集成接口）
-
-```python
-from maa.tasker import Tasker
-from maa.resource import Resource
-from maa.controller import AdbController
-
-# 创建并初始化
-resource = Resource()
-resource.post_bundle("./resource").wait()
-
-controller = AdbController(adb_path, address)
-controller.post_connection().wait()
-
-tasker = Tasker()
-tasker.bind(resource, controller)
-
-# 方式一：执行 Pipeline 任务（低代码）
-job = tasker.post_task("MyTask")
-job.wait()
-result = job.get()  # 返回 TaskDetail
-
-# 方式二：直接调用控制器接口（完整集成）
-controller.post_click(100, 200).wait()
-image = controller.post_screencap().wait().get()
-```
-
-### 自定义扩展（Agent 模式）
-
-```python
-from maa.agent.agent_server import AgentServer
-
-@AgentServer.custom_recognition("MyReco")
-class MyRecognition:
-    def analyze(self, ctx, image, node_name, param):
-        # 返回识别结果 (box, detail) 或 None
-        return (10, 10, 100, 100), "detail_info"
-
-@AgentServer.custom_action("MyAction")
-class MyAction:
-    def run(self, ctx, node_name, param, box, reco_detail):
-        ctx.controller.post_click(100, 100).wait()
-        ctx.override_next(["NodeA", "NodeB"])
-        return True
-
-AgentServer.start_up(socket_id)
-```
-
-## 回调协议
-
-### 消息格式
-
-```cpp
-void callback(void* handle, const char* message, const char* details_json, void* trans_arg);
-```
-
-### 消息类型
-
-| 消息 | 触发时机 | 关键字段 |
-|------|----------|----------|
-| `Resource.Loading.*` | 资源加载 | `res_id`, `path`, `hash` |
-| `Controller.Action.*` | 控制器动作 | `ctrl_id`, `action`, `param` |
-| `Tasker.Task.*` | 任务执行 | `task_id`, `entry` |
-| `Node.Recognition.*` | 节点识别 | `task_id`, `reco_id`, `name` |
-| `Node.Action.*` | 节点动作 | `task_id`, `action_id`, `name` |
-| `Node.NextList.*` | 识别后继列表 | `task_id`, `name`, `list` |
-
-### focus 机制
-
-在 Pipeline 节点中设置 `focus` 字段，可触发额外回调：
-
-```jsonc
-{
-    "NodeA": {
-        "focus": {
-            "Node.Recognition.Succeeded": "{name} 识别成功",
-            "Node.Action.Starting": "开始执行 {name}"
-        }
-    }
-}
-```
-
-## 构建与开发
-
-### 环境要求
-
-- Git、Python 3、CMake 3.24+
-- Windows: MSVC 2022
-- Linux/macOS: Ninja + g++/clang
-
-### 构建步骤
-
-```bash
-# 1. 克隆仓库（含子模块）
-git clone --recurse-submodules https://github.com/MaaXYZ/MaaFramework.git
-
-# 2. 下载预编译依赖
-python3 tools/maadeps-download.py
-
-# 3. 配置 CMake
-cmake --preset "MSVC 2022"   # Windows
-cmake --preset "NinjaMulti"  # Linux/macOS
-
-# 4. 构建
-cmake --build build --config Release
-cmake --install build --prefix install
-```
+支持在 `next` 列表中使用节点属性，如有需要请阅读 [节点属性章节](docs/zh_cn/3.1-任务流水线协议.md#节点属性)
 
 ## 开发规范
 
@@ -368,16 +202,6 @@ cmake --install build --prefix install
 3. 更新 Python 绑定中的消息解析代码（`source/binding/Python/maa/` 下的 `event_sink.py`、`tasker.py` 等）
 4. 更新中英文回调协议文档 `docs/*/2.3-*`
 
-### 添加新的语言绑定
-
-参考 `docs/*/4.2-*` 标准化接口设计文档，确保：
-
-1. 对象化封装所有核心类型
-2. 异步 ID 封装为 Job 类
-3. Buffer 类型内部处理，不暴露给用户
-4. 提供与 Python 示例等效的 sample 代码
-5. 更新中英文集成文档 `docs/*/2.1-*`
-
 ### 新增 Context/Tasker/Resource/Controller 接口
 
 当为核心对象添加新接口时，需同步更新 MaaAgent 以支持跨进程调用：
@@ -391,28 +215,6 @@ cmake --install build --prefix install
 
 - **AgentClient**：运行在主程序中，将 Custom 请求转发到 Server，并处理 Server 的远程调用
 - **AgentServer**：运行在用户进程中，注册自定义识别器/动作，通过 Remote* 类代理访问主程序实例
-
-## 调试技巧
-
-### 日志配置
-
-```python
-Tasker.set_log_dir("./logs")
-Tasker.set_stdout_level(LoggingLevelEnum.All)
-Tasker.set_debug_mode(True)
-Tasker.set_save_draw(True)
-```
-
-### maa_option.json
-
-```json
-{
-    "logging": true,
-    "save_draw": true,
-    "stdout_level": 7,
-    "save_on_error": true
-}
-```
 
 ## 参考资源
 
