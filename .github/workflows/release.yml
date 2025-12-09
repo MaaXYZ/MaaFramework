@@ -26,12 +26,6 @@ concurrency:
     group: ${{ github.workflow }}-${{ inputs.run-id }}
     cancel-in-progress: false
 
-permissions:
-    contents: write
-    actions: read
-    issues: write
-    id-token: write # required to use OIDC
-
 jobs:
     meta:
         uses: ./.github/workflows/meta.yml
@@ -42,6 +36,8 @@ jobs:
         if: ${{ inputs.only-publish == 'NuGet.org' || inputs.only-publish == '' }}
         runs-on: ubuntu-latest
         continue-on-error: true
+        permissions:
+            id-token: write
         env:
             NUGET_PACKAGE_SOURCE: https://api.nuget.org/v3/index.json
         steps:
@@ -66,6 +62,8 @@ jobs:
         if: ${{ inputs.only-publish == 'PyPI.org' || inputs.only-publish == '' }}
         runs-on: ubuntu-latest
         continue-on-error: true
+        permissions:
+            id-token: write
         steps:
             - uses: dawidd6/action-download-artifact@v6
               with:
@@ -90,6 +88,8 @@ jobs:
         if: ${{ inputs.only-publish == 'npmjs.com' || inputs.only-publish == '' }}
         runs-on: ubuntu-latest
         continue-on-error: true
+        permissions:
+            id-token: write
         steps:
             - uses: dawidd6/action-download-artifact@v6
               with:
@@ -122,6 +122,8 @@ jobs:
     release:
         needs: [meta, nuget, pip, nodejs, mirrorchyan]
         runs-on: ubuntu-latest
+        permissions:
+            contents: write
         steps:
             - uses: dawidd6/action-download-artifact@v6
               with:
