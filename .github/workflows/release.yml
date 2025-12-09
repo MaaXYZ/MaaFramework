@@ -203,4 +203,3 @@ jobs:
                   actions: "create-comment"
                   issue-number: ${{ fromJSON(steps.find-issues.outputs.issues)[0].number }}
                   body: ${{ env.ISSUE_BODY }}
-

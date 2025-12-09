@@ -29,6 +29,13 @@ void set_save_draw(bool value)
     }
 }
 
+void set_save_on_error(bool value)
+{
+    if (!MaaGlobalSetOption(MaaGlobalOption_SaveOnError, &value, sizeof(value))) {
+        throw maajs::MaaError { "Global set save_on_error failed" };
+    }
+}
+
 void set_stdout_level(std::string level)
 {
     int32_t value = 0;
@@ -87,6 +94,7 @@ maajs::ObjectType load_global(maajs::EnvType env)
     MAA_BIND_GETTER(globalObject, "version", version);
     MAA_BIND_SETTER(globalObject, "log_dir", set_log_dir);
     MAA_BIND_SETTER(globalObject, "save_draw", set_save_draw);
+    MAA_BIND_SETTER(globalObject, "save_on_error", set_save_on_error);
     MAA_BIND_SETTER(globalObject, "stdout_level", set_stdout_level);
     MAA_BIND_SETTER(globalObject, "debug_mode", set_debug_mode);
     MAA_BIND_FUNC(globalObject, "config_init_option", config_init_option);

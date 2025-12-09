@@ -238,38 +238,4 @@ std::shared_ptr<ScreencapBase> ScreencapAgent::speed_test()
     return units_[fastest];
 }
 
-std::ostream& operator<<(std::ostream& os, ScreencapAgent::Method m)
-{
-    switch (m) {
-    case ScreencapAgent::Method::UnknownYet:
-        os << "UnknownYet";
-        break;
-    case ScreencapAgent::Method::RawByNetcat:
-        os << "RawByNetcat";
-        break;
-    case ScreencapAgent::Method::RawWithGzip:
-        os << "RawWithGzip";
-        break;
-    case ScreencapAgent::Method::Encode:
-        os << "Encode";
-        break;
-    case ScreencapAgent::Method::EncodeToFileAndPull:
-        os << "EncodeToFileAndPull";
-        break;
-    case ScreencapAgent::Method::MinicapDirect:
-        os << "MinicapDirect";
-        break;
-    case ScreencapAgent::Method::MinicapStream:
-        os << "MinicapStream";
-        break;
-    case ScreencapAgent::Method::MuMuPlayerExtras:
-        os << "MuMuPlayerExtras";
-        break;
-    case ScreencapAgent::Method::LDPlayerExtras:
-        os << "LDPlayerExtras";
-        break;
-    }
-    return os;
-}
-
 MAA_CTRL_UNIT_NS_END

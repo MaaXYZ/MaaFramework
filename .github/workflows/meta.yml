@@ -10,7 +10,7 @@ on:
             build-config:
                 description: "Build configuration to use. options: `Release` `RelWithDebInfo` `Debug`"
                 required: false
-                default: "Release"
+                default: "RelWithDebInfo"
                 type: string
         outputs:
             is-release:

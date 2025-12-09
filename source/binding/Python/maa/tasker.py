@@ -1,7 +1,10 @@
 import ctypes
+import dataclasses
 import json
 from pathlib import Path
 from typing import Dict, Optional, Union
+
+import numpy
 
 from .define import *
 from .library import Library
@@ -10,6 +13,7 @@ from .job import Job, JobWithResult
 from .event_sink import EventSink, NotificationType
 from .resource import Resource
 from .controller import Controller
+from .pipeline import JRecognitionParam, JActionParam, JRecognitionType, JActionType
 
 
 class Tasker:
@@ -133,6 +137,56 @@ class Tasker:
         taskid = Library.framework().MaaTaskerPostTask(
             self._handle,
             *Tasker._gen_post_param(entry, pipeline_override),
+        )
+        return self._gen_task_job(taskid)
+
+    def post_recognition(
+        self, reco_type: JRecognitionType, reco_param: JRecognitionParam, image: numpy.ndarray
+    ) -> JobWithResult:
+        """异步执行识别 / Asynchronously execute recognition
+
+        Args:
+            reco_type: 识别类型 / Recognition type
+            reco_param: 识别参数 / Recognition parameters
+            image: 前序截图 / Previous screenshot
+
+        Returns:
+            JobWithResult: 任务作业对象 / Task job object
+        """
+        img_buffer = ImageBuffer()
+        img_buffer.set(image)
+        reco_param_json = json.dumps(dataclasses.asdict(reco_param), ensure_ascii=False)
+        taskid = Library.framework().MaaTaskerPostRecognition(
+            self._handle,
+            reco_type.encode(),
+            reco_param_json.encode(),
+            img_buffer._handle,
+        )
+        return self._gen_task_job(taskid)
+
+    def post_action(
+        self, action_type: JActionType, action_param: JActionParam, box: Rect = (0, 0, 0, 0), reco_detail: str = ""
+    ) -> JobWithResult:
+        """异步执行操作 / Asynchronously execute action
+
+        Args:
+            action_type: 操作类型 / Action type
+            action_param: 操作参数 / Action parameters
+            box: 前序识别位置 / Previous recognition position
+            reco_detail: 前序识别详情 / Previous recognition details
+
+        Returns:
+            JobWithResult: 任务作业对象 / Task job object
+        """
+        rect_buffer = RectBuffer()
+        rect_buffer.set(box)
+        action_param_json = json.dumps(dataclasses.asdict(action_param), ensure_ascii=False)
+        taskid = Library.framework().MaaTaskerPostAction(
+            self._handle,
+            action_type.encode(),
+            action_param_json.encode(),
+            rect_buffer._handle,
+            reco_detail.encode(),
         )
         return self._gen_task_job(taskid)
 
@@ -561,6 +615,25 @@ class Tasker:
         )
 
     @staticmethod
+    def set_save_on_error(save_on_error: bool) -> bool:
+        """设置是否在错误时保存截图到日志路径/on_error中 / Set whether to save screenshot on error to log path/on_error
+
+        Args:
+            save_on_error: 是否保存 / Whether to save
+
+        Returns:
+            bool: 是否成功 / Whether successful
+        """
+        cbool = ctypes.c_bool(save_on_error)
+        return bool(
+            Library.framework().MaaGlobalSetOption(
+                MaaOption(MaaGlobalOptionEnum.SaveOnError),
+                ctypes.pointer(cbool),
+                ctypes.sizeof(ctypes.c_bool),
+            )
+        )
+
+    @staticmethod
     def load_plugin(path: Union[Path, str]) -> bool:
         """加载插件 / Load plugin
 
@@ -670,6 +743,23 @@ class Tasker:
         Library.framework().MaaTaskerPostTask.argtypes = [
             MaaTaskerHandle,
             ctypes.c_char_p,
+            ctypes.c_char_p,
+        ]
+
+        Library.framework().MaaTaskerPostRecognition.restype = MaaId
+        Library.framework().MaaTaskerPostRecognition.argtypes = [
+            MaaTaskerHandle,
+            ctypes.c_char_p,
+            ctypes.c_char_p,
+            MaaImageBufferHandle,
+        ]
+
+        Library.framework().MaaTaskerPostAction.restype = MaaId
+        Library.framework().MaaTaskerPostAction.argtypes = [
+            MaaTaskerHandle,
+            ctypes.c_char_p,
+            ctypes.c_char_p,
+            MaaRectHandle,
             ctypes.c_char_p,
         ]
 

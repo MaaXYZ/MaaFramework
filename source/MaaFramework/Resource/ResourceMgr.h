@@ -59,6 +59,8 @@ public: // MaaResource
 
     virtual std::string get_hash() const override;
     virtual std::vector<std::string> get_node_list() const override;
+    virtual std::vector<std::string> get_custom_recognition_list() const override;
+    virtual std::vector<std::string> get_custom_action_list() const override;
 
     virtual MaaSinkId add_sink(MaaEventCallback callback, void* trans_arg) override;
     virtual void remove_sink(MaaSinkId sink_id) override;

@@ -12,12 +12,13 @@ MAA_CTRL_UNIT_NS_BEGIN
 class LegacyEventInput : public InputBase
 {
 public:
-    LegacyEventInput(HWND hwnd)
+    LegacyEventInput(HWND hwnd, bool block_input = false)
         : hwnd_(hwnd)
+        , block_input_(block_input)
     {
     }
 
-    virtual ~LegacyEventInput() override = default;
+    virtual ~LegacyEventInput() override;
 
 public: // from InputBase
     virtual MaaControllerFeature get_features() const override;
@@ -36,9 +37,13 @@ public: // from InputBase
     virtual bool key_down(int key) override;
     virtual bool key_up(int key) override;
 
+    virtual bool scroll(int dx, int dy) override;
+
 private:
     void ensure_foreground();
+
     HWND hwnd_ = nullptr;
+    const bool block_input_ = false;
 };
 
 MAA_CTRL_UNIT_NS_END

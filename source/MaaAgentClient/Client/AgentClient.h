@@ -31,6 +31,8 @@ public: // MaaAgentClient
     virtual bool connected() override;
     virtual bool alive() override;
     virtual void set_timeout(const std::chrono::milliseconds& timeout) override;
+    virtual std::vector<std::string> get_custom_recognition_list() const override;
+    virtual std::vector<std::string> get_custom_action_list() const override;
 
 private: // Transceiver
     virtual bool handle_inserted_request(const json::value& j) override;
@@ -46,9 +48,15 @@ private:
     bool handle_context_clone(const json::value& j);
     bool handle_context_task_id(const json::value& j);
     bool handle_context_tasker(const json::value& j);
+    bool handle_context_set_anchor(const json::value& j);
+    bool handle_context_get_anchor(const json::value& j);
+    bool handle_context_get_hit_count(const json::value& j);
+    bool handle_context_clear_hit_count(const json::value& j);
 
     bool handle_tasker_inited(const json::value& j);
     bool handle_tasker_post_task(const json::value& j);
+    bool handle_tasker_post_recognition(const json::value& j);
+    bool handle_tasker_post_action(const json::value& j);
     bool handle_tasker_status(const json::value& j);
     bool handle_tasker_wait(const json::value& j);
     bool handle_tasker_running(const json::value& j);
@@ -75,6 +83,8 @@ private:
     bool handle_resource_get_node_data(const json::value& j);
     bool handle_resource_get_hash(const json::value& j);
     bool handle_resource_get_node_list(const json::value& j);
+    bool handle_resource_get_custom_recognition_list(const json::value& j);
+    bool handle_resource_get_custom_action_list(const json::value& j);
 
     bool handle_controller_post_connection(const json::value& j);
     bool handle_controller_post_click(const json::value& j);
@@ -84,16 +94,19 @@ private:
     bool handle_controller_post_start_app(const json::value& j);
     bool handle_controller_post_stop_app(const json::value& j);
     bool handle_controller_post_screencap(const json::value& j);
+    bool handle_controller_post_shell(const json::value& j);
     bool handle_controller_post_touch_down(const json::value& j);
     bool handle_controller_post_touch_move(const json::value& j);
     bool handle_controller_post_touch_up(const json::value& j);
     bool handle_controller_post_key_down(const json::value& j);
     bool handle_controller_post_key_up(const json::value& j);
+    bool handle_controller_post_scroll(const json::value& j);
     bool handle_controller_status(const json::value& j);
     bool handle_controller_wait(const json::value& j);
     bool handle_controller_connected(const json::value& j);
     bool handle_controller_running(const json::value& j);
     bool handle_controller_cached_image(const json::value& j);
+    bool handle_controller_get_shell_output(const json::value& j);
     bool handle_controller_get_uuid(const json::value& j);
 
     bool handle_event_response(const json::value& j);

@@ -20,7 +20,7 @@ Actuator::Actuator(Tasker* tasker, Context& context)
 ActionResult Actuator::run(const cv::Rect& reco_hit, MaaRecoId reco_id, const PipelineData& pipeline_data, const std::string& entry)
 {
     using namespace MAA_RES_NS::Action;
-    LogFunc << VAR(pipeline_data.name);
+    LogTrace << VAR(pipeline_data.name);
 
     if (!tasker_) {
         LogError << "tasker is null";
@@ -92,16 +92,24 @@ ActionResult Actuator::run(const cv::Rect& reco_hit, MaaRecoId reco_id, const Pi
         result = stop_app(std::get<AppParam>(pipeline_data.action_param), pipeline_data.name);
         break;
 
-    case Type::Command:
-        result = command(std::get<CommandParam>(pipeline_data.action_param), reco_hit, pipeline_data.name, entry);
-        break;
-
-    case Type::Custom:
-        result = custom_action(std::get<CustomParam>(pipeline_data.action_param), reco_hit, reco_id, pipeline_data.name);
+    case Type::Scroll:
+        result = scroll(std::get<ScrollParam>(pipeline_data.action_param), pipeline_data.name);
         break;
 
     case Type::StopTask:
         result = stop_task(pipeline_data.name);
+        break;
+
+    case Type::Command:
+        result = command(std::get<CommandParam>(pipeline_data.action_param), reco_hit, pipeline_data.name, entry);
+        break;
+
+    case Type::Shell:
+        result = shell(std::get<ShellParam>(pipeline_data.action_param), pipeline_data.name);
+        break;
+
+    case Type::Custom:
+        result = custom_action(std::get<CustomParam>(pipeline_data.action_param), reco_hit, reco_id, pipeline_data.name);
         break;
 
     default:
@@ -439,6 +447,53 @@ ActionResult Actuator::input_text(const MAA_RES_NS::Action::InputTextParam& para
     };
 }
 
+ActionResult Actuator::scroll(const MAA_RES_NS::Action::ScrollParam& param, const std::string& name)
+{
+    if (!controller()) {
+        LogError << "Controller is null";
+        return {};
+    }
+
+    MAA_CTRL_NS::ScrollParam ctrl_param { .dx = param.dx, .dy = param.dy };
+    bool ret = controller()->scroll(ctrl_param);
+
+    return ActionResult {
+        .action_id = ++s_global_action_id,
+        .name = name,
+        .action = "Scroll",
+        .box = cv::Rect {},
+        .success = ret,
+        .detail = json::value(ctrl_param),
+    };
+}
+
+ActionResult Actuator::shell(const MAA_RES_NS::Action::ShellParam& param, const std::string& name)
+{
+    if (!controller()) {
+        LogError << "Controller is null";
+        return {};
+    }
+
+    std::string output;
+    bool ret = controller()->shell(param.cmd, output, param.timeout);
+
+    LogDebug << "Shell command executed" << VAR(param.cmd) << VAR(param.timeout) << VAR(ret);
+    if (!output.empty()) {
+        LogTrace << "Shell output:" << output;
+    }
+
+    json::object detail { { "cmd", param.cmd }, { "timeout", param.timeout }, { "success", ret }, { "output", output } };
+
+    return ActionResult {
+        .action_id = ++s_global_action_id,
+        .name = name,
+        .action = "Shell",
+        .box = cv::Rect {},
+        .success = ret,
+        .detail = json::value(detail),
+    };
+}
+
 void Actuator::wait_freezes(const MAA_RES_NS::WaitFreezesParam& param, const cv::Rect& box)
 {
     if (param.time <= std::chrono::milliseconds(0)) {
@@ -451,8 +506,8 @@ void Actuator::wait_freezes(const MAA_RES_NS::WaitFreezesParam& param, const cv:
     }
     using namespace MAA_VISION_NS;
 
-    LogFunc << "Wait freezes:" << VAR(param.time) << VAR(param.rate_limit) << VAR(param.timeout) << VAR(param.threshold)
-            << VAR(param.method);
+    LogTrace << "Wait freezes:" << VAR(param.time) << VAR(param.rate_limit) << VAR(param.timeout) << VAR(param.threshold)
+             << VAR(param.method);
 
     auto rate_limit = std::min(param.rate_limit, param.time);
 
@@ -680,7 +735,7 @@ void Actuator::sleep(unsigned ms) const
 
 void Actuator::sleep(std::chrono::milliseconds ms) const
 {
-    LogFunc << ms;
+    LogDebug << ms;
 
     std::this_thread::sleep_for(ms);
 }

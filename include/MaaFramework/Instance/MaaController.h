@@ -88,6 +88,42 @@ extern "C"
 
     MAA_FRAMEWORK_API MaaCtrlId MaaControllerPostScreencap(MaaController* ctrl);
 
+    /**
+     * @brief Post a scroll action to the controller.
+     *
+     * @param ctrl The controller handle.
+     * @param dx The horizontal scroll delta. Positive values scroll right, negative values scroll left.
+     * @param dy The vertical scroll delta. Positive values scroll down, negative values scroll up.
+     * @return The control id of the scroll action.
+     *
+     * @note Not all controllers support scroll. If not supported, the action will fail.
+     */
+    MAA_FRAMEWORK_API MaaCtrlId MaaControllerPostScroll(MaaController* ctrl, int32_t dx, int32_t dy);
+
+    /**
+     * @brief Post a shell command to the controller.
+     *
+     * @param ctrl The controller handle.
+     * @param cmd The shell command to execute.
+     * @param timeout Timeout in milliseconds. Default is 20000 (20 seconds).
+     * @return The control id of the shell action.
+     *
+     * @note This is only valid for ADB controllers. If the controller is not an ADB controller, the action will fail.
+     * @see MaaControllerGetShellOutput
+     */
+    MAA_FRAMEWORK_API MaaCtrlId MaaControllerPostShell(MaaController* ctrl, const char* cmd, int64_t timeout);
+
+    /**
+     * @brief Get the cached shell command output.
+     *
+     * @param ctrl The controller handle.
+     * @param buffer The output buffer to store the command result.
+     * @return true if the output is available, false otherwise.
+     *
+     * @note This returns the output from the most recent shell command execution.
+     */
+    MAA_FRAMEWORK_API MaaBool MaaControllerGetShellOutput(const MaaController* ctrl, /* out */ MaaStringBuffer* buffer);
+
     MAA_FRAMEWORK_API MaaStatus MaaControllerStatus(const MaaController* ctrl, MaaCtrlId id);
 
     MAA_FRAMEWORK_API MaaStatus MaaControllerWait(const MaaController* ctrl, MaaCtrlId id);

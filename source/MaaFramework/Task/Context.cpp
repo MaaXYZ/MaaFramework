@@ -16,6 +16,7 @@ MAA_TASK_NS_BEGIN
 Context::Context(MaaTaskId id, Tasker* tasker, PrivateArg)
     : task_id_(id)
     , tasker_(tasker)
+    , task_state_(std::make_shared<TaskState>())
 {
     LogDebug << VAR(id) << VAR_VOIDP(tasker);
 }
@@ -48,6 +49,7 @@ Context::Context(const Context& other)
     , tasker_(other.tasker_)
     , pipeline_override_(other.pipeline_override_)
     , image_override_(other.image_override_)
+    , task_state_(other.task_state_)
 // don't copy clone_holder_
 {
     LogDebug << VAR(other.getptr());
@@ -55,7 +57,7 @@ Context::Context(const Context& other)
 
 MaaTaskId Context::run_task(const std::string& entry, const json::value& pipeline_override)
 {
-    LogFunc << VAR(getptr()) << VAR(entry) << VAR(pipeline_override);
+    LogTrace << VAR(getptr()) << VAR(entry) << VAR(pipeline_override);
 
     if (!tasker_) {
         LogError << "tasker is null";
@@ -90,35 +92,34 @@ MaaTaskId Context::run_task(const std::string& entry, const json::value& pipelin
 
 MaaRecoId Context::run_recognition(const std::string& entry, const json::value& pipeline_override, const cv::Mat& image)
 {
-    LogFunc << VAR(getptr()) << VAR(entry) << VAR(pipeline_override);
+    LogTrace << VAR(getptr()) << VAR(entry) << VAR(pipeline_override);
 
-    RecognitionTask subtask(entry, tasker_, make_clone());
+    RecognitionTask subtask(image, entry, tasker_, make_clone());
     bool ov = subtask.override_pipeline(pipeline_override);
     if (!ov) {
         LogError << "failed to override_pipeline" << VAR(entry) << VAR(pipeline_override);
         return MaaInvalidId;
     }
-    return subtask.run_with_param(image);
+    return subtask.run_impl();
 }
 
 MaaActId
     Context::run_action(const std::string& entry, const json::value& pipeline_override, const cv::Rect& box, const std::string& reco_detail)
 {
-    LogFunc << VAR(getptr()) << VAR(entry) << VAR(pipeline_override) << VAR(box) << VAR(reco_detail);
+    LogTrace << VAR(getptr()) << VAR(entry) << VAR(pipeline_override) << VAR(box) << VAR(reco_detail);
 
-    ActionTask subtask(entry, tasker_, make_clone());
+    ActionTask subtask(box, reco_detail, entry, tasker_, make_clone());
     bool ov = subtask.override_pipeline(pipeline_override);
     if (!ov) {
         LogError << "failed to override_pipeline" << VAR(entry) << VAR(pipeline_override);
         return MaaInvalidId;
     }
-    json::value j_detail = json::parse(reco_detail).value_or(reco_detail);
-    return subtask.run_with_param(box, j_detail);
+    return subtask.run_impl();
 }
 
 bool Context::override_pipeline(const json::value& pipeline_override)
 {
-    LogFunc << VAR(getptr()) << VAR(pipeline_override);
+    LogTrace << VAR(getptr()) << VAR(pipeline_override);
 
     if (!tasker_) {
         LogError << "tasker is null";
@@ -136,7 +137,7 @@ bool Context::override_pipeline(const json::value& pipeline_override)
         ret = override_pipeline_once(pipeline_override.as_object(), default_mgr);
     }
     else if (pipeline_override.is_array()) {
-        ret = !pipeline_override.empty();
+        ret = true;
         for (const auto& val : pipeline_override.as_array()) {
             if (!val.is_object()) {
                 LogError << "input is not json array of object" << VAR(pipeline_override);
@@ -155,7 +156,7 @@ bool Context::override_pipeline(const json::value& pipeline_override)
 
 bool Context::override_pipeline_once(const json::object& pipeline_override, const MAA_RES_NS::DefaultPipelineMgr& default_mgr)
 {
-    LogFunc << VAR(getptr()) << VAR(pipeline_override);
+    // LogTrace << VAR(getptr()) << VAR(pipeline_override);
 
     for (const auto& [key, value] : pipeline_override) {
         PipelineData result;
@@ -174,7 +175,7 @@ bool Context::override_pipeline_once(const json::object& pipeline_override, cons
 
 bool Context::override_next(const std::string& node_name, const std::vector<std::string>& next)
 {
-    LogFunc << VAR(getptr()) << VAR(node_name) << VAR(next);
+    LogTrace << VAR(getptr()) << VAR(node_name) << VAR(next);
 
     auto data_opt = get_pipeline_data(node_name);
     if (!data_opt) {
@@ -182,7 +183,10 @@ bool Context::override_next(const std::string& node_name, const std::vector<std:
         return false;
     }
 
-    data_opt->next = next;
+    if (!MAA_RES_NS::PipelineParser::parse_next(next, data_opt->next)) {
+        LogError << "failed to parse_next" << VAR(next);
+        return false;
+    }
 
     pipeline_override_.insert_or_assign(node_name, std::move(*data_opt));
 
@@ -251,6 +255,20 @@ std::optional<PipelineData> Context::get_pipeline_data(const std::string& node_n
     return std::nullopt;
 }
 
+std::optional<PipelineData> Context::get_pipeline_data(const MAA_RES_NS::NodeAttr& node_attr) const
+{
+    std::string node_name = node_attr.name;
+    if (node_attr.anchor) {
+        auto anchor_node = get_anchor(node_attr.name);
+        if (!anchor_node) {
+            LogDebug << "anchor not set" << VAR(node_attr.name);
+            return std::nullopt;
+        }
+        node_name = *anchor_node;
+    }
+    return get_pipeline_data(node_name);
+}
+
 std::vector<cv::Mat> Context::get_images(const std::vector<std::string>& names)
 {
     if (!tasker_) {
@@ -283,6 +301,40 @@ std::vector<cv::Mat> Context::get_images(const std::vector<std::string>& names)
 bool& Context::need_to_stop()
 {
     return need_to_stop_;
+}
+
+uint Context::get_hit_count(const std::string& node_name) const
+{
+    auto it = task_state_->hit_count.find(node_name);
+    if (it != task_state_->hit_count.end()) {
+        return it->second;
+    }
+    return 0;
+}
+
+void Context::increment_hit_count(const std::string& node_name)
+{
+    task_state_->hit_count[node_name]++;
+}
+
+void Context::clear_hit_count(const std::string& node_name)
+{
+    task_state_->hit_count.erase(node_name);
+}
+
+void Context::set_anchor(const std::string& anchor_name, const std::string& node_name)
+{
+    LogDebug << VAR(anchor_name) << VAR(node_name);
+    task_state_->anchors[anchor_name] = node_name;
+}
+
+std::optional<std::string> Context::get_anchor(const std::string& anchor_name) const
+{
+    auto it = task_state_->anchors.find(anchor_name);
+    if (it != task_state_->anchors.end()) {
+        return it->second;
+    }
+    return std::nullopt;
 }
 
 bool Context::check_pipeline() const

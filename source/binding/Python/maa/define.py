@@ -91,6 +91,11 @@ class MaaGlobalOptionEnum(IntEnum):
     # value: bool, eg: true; val_size: sizeof(bool)
     DebugMode = 6
 
+    # Whether to save screenshot on error
+    #
+    # value: bool, eg: true; val_size: sizeof(bool)
+    SaveOnError = 7
+
 
 class MaaCtrlOptionEnum(IntEnum):
     Invalid = 0
@@ -233,6 +238,8 @@ class MaaWin32InputMethodEnum(IntEnum):
     PostMessage = 1 << 2
     LegacyEvent = 1 << 3
     PostThreadMessage = 1 << 4
+    SendMessageWithCursorPos = 1 << 5
+    PostMessageWithCursorPos = 1 << 6
 
 
 # No bitwise OR, just set it
@@ -382,6 +389,12 @@ class MaaCustomControllerCallbacks(ctypes.Structure):
         ctypes.c_int32,
         ctypes.c_void_p,
     )
+    ScrollFunc = FUNCTYPE(
+        MaaBool,
+        ctypes.c_int32,
+        ctypes.c_int32,
+        ctypes.c_void_p,
+    )
     _fields_ = [
         ("connect", ConnectFunc),
         ("request_uuid", RequestUuidFunc),
@@ -398,6 +411,7 @@ class MaaCustomControllerCallbacks(ctypes.Structure):
         ("input_text", InputTextFunc),
         ("key_down", KeyDownFunc),
         ("key_up", KeyUpFunc),
+        ("scroll", ScrollFunc),
     ]
 
 
@@ -546,9 +560,10 @@ class ActionEnum(StrEnum):
     InputText = "InputText"
     StartApp = "StartApp"
     StopApp = "StopApp"
-    Command = "Command"
-    Custom = "Custom"
     StopTask = "StopTask"
+    Command = "Command"
+    Shell = "Shell"
+    Custom = "Custom"
 
 
 @dataclass
@@ -702,9 +717,10 @@ ActionResultDict = {
     ActionEnum.InputText: InputTextActionResult,
     ActionEnum.StartApp: AppActionResult,
     ActionEnum.StopApp: AppActionResult,
-    ActionEnum.Command: None,
-    ActionEnum.Custom: None,
     ActionEnum.StopTask: None,
+    ActionEnum.Command: None,
+    ActionEnum.Shell: None,
+    ActionEnum.Custom: None,
 }
 
 

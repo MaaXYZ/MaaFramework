@@ -9,6 +9,13 @@
 
 MAA_CTRL_UNIT_NS_BEGIN
 
+LegacyEventInput::~LegacyEventInput()
+{
+    if (block_input_) {
+        BlockInput(FALSE);
+    }
+}
+
 void LegacyEventInput::ensure_foreground()
 {
     ::MaaNS::CtrlUnitNs::ensure_foreground_and_topmost(hwnd_);
@@ -40,6 +47,10 @@ bool LegacyEventInput::touch_down(int contact, int x, int y, int pressure)
         ClientToScreen(hwnd_, &point);
     }
     LogInfo << VAR(contact) << VAR(x) << VAR(y) << VAR(pressure) << VAR(point.x) << VAR(point.y) << VAR_VOIDP(hwnd_);
+
+    if (block_input_) {
+        BlockInput(TRUE);
+    }
 
     SetCursorPos(point.x, point.y);
 
@@ -80,6 +91,12 @@ bool LegacyEventInput::touch_up(int contact)
     }
     LogInfo << VAR(contact) << VAR(hwnd_);
 
+    OnScopeLeave([this]() {
+        if (block_input_) {
+            BlockInput(FALSE);
+        }
+    });
+
     MouseEventFlags flags_info;
     if (!contact_to_mouse_up_flags(contact, flags_info)) {
         LogError << "contact out of range" << VAR(contact);
@@ -106,6 +123,16 @@ bool LegacyEventInput::input_text(const std::string& text)
     auto u16_text = to_u16(text);
     LogInfo << VAR(text) << VAR(u16_text) << VAR(hwnd_);
 
+    if (block_input_) {
+        BlockInput(TRUE);
+    }
+
+    OnScopeLeave([this]() {
+        if (block_input_) {
+            BlockInput(FALSE);
+        }
+    });
+
     // 使用旧的keybd_event API（已废弃，但某些情况下可能仍然有效）
     for (const auto ch : u16_text) {
         // keybd_event不支持Unicode，只能发送虚拟键码
@@ -125,6 +152,10 @@ bool LegacyEventInput::key_down(int key)
     }
     LogInfo << VAR(key) << VAR(hwnd_);
 
+    if (block_input_) {
+        BlockInput(TRUE);
+    }
+
     keybd_event(static_cast<BYTE>(key), 0, 0, 0);
 
     return true;
@@ -137,7 +168,42 @@ bool LegacyEventInput::key_up(int key)
     }
     LogInfo << VAR(key) << VAR(hwnd_);
 
+    OnScopeLeave([this]() {
+        if (block_input_) {
+            BlockInput(FALSE);
+        }
+    });
+
     keybd_event(static_cast<BYTE>(key), 0, KEYEVENTF_KEYUP, 0);
+
+    return true;
+}
+
+bool LegacyEventInput::scroll(int dx, int dy)
+{
+    LogInfo << VAR(dx) << VAR(dy);
+
+    if (hwnd_) {
+        ensure_foreground();
+    }
+
+    if (block_input_) {
+        BlockInput(TRUE);
+    }
+
+    OnScopeLeave([this]() {
+        if (block_input_) {
+            BlockInput(FALSE);
+        }
+    });
+
+    if (dy != 0) {
+        mouse_event(MOUSEEVENTF_WHEEL, 0, 0, static_cast<DWORD>(dy), 0);
+    }
+
+    if (dx != 0) {
+        mouse_event(MOUSEEVENTF_HWHEEL, 0, 0, static_cast<DWORD>(dx), 0);
+    }
 
     return true;
 }

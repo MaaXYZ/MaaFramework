@@ -26,6 +26,8 @@ public:
 
     bool debug_mode() const { return debug_mode_; }
 
+    bool save_on_error() const { return save_on_error_; }
+
 private:
     OptionMgr() = default;
 
@@ -34,11 +36,13 @@ private:
     bool set_save_draw(MaaOptionValue value, MaaOptionValueSize val_size);
     bool set_stdout_level(MaaOptionValue value, MaaOptionValueSize val_size);
     bool set_debug_mode(MaaOptionValue value, MaaOptionValueSize val_size);
+    bool set_save_on_error(MaaOptionValue value, MaaOptionValueSize val_size);
 
 private:
     std::filesystem::path log_dir_;
     bool save_draw_ = false;
     bool debug_mode_ = false;
+    bool save_on_error_ = false;
 };
 
 MAA_GLOBAL_NS_END

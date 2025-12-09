@@ -2,6 +2,7 @@
 
 #include "MaaUtils/Encoding.h"
 #include "MaaUtils/Logger.h"
+#include "PipelineParser.h"
 #include "PipelineTypesV2.h"
 
 MAA_RES_NS_BEGIN
@@ -11,11 +12,10 @@ json::object PipelineDumper::dump(const PipelineData& pp)
     PipelineV2::JPipelineData data;
 
     data.next = pp.next;
-    data.interrupt = pp.interrupt;
-    data.is_sub = pp.is_sub;
     data.rate_limit = pp.rate_limit.count();
     data.timeout = pp.reco_timeout.count();
     data.on_error = pp.on_error;
+    data.anchor = pp.anchor;
     data.inverse = pp.inverse;
     data.enabled = pp.enabled;
     data.pre_delay = pp.pre_delay.count();
@@ -111,7 +111,7 @@ json::object PipelineDumper::dump(const PipelineData& pp)
             .index = param.result_index,
             .green_mask = param.green_mask,
             .detector = kDetectorNameMap.at(param.detector),
-            .ratio = param.distance_ratio,
+            .ratio = param.ratio,
         };
     } break;
 
@@ -324,12 +324,33 @@ json::object PipelineDumper::dump(const PipelineData& pp)
         };
     } break;
 
+    case Action::Type::Scroll: {
+        const auto& param = std::get<Action::ScrollParam>(pp.action_param);
+        data.action.param = PipelineV2::JScroll {
+            .dx = param.dx,
+            .dy = param.dy,
+        };
+    } break;
+
+    case Action::Type::StopTask: {
+        data.action.param = PipelineV2::JStopTask {};
+        break;
+    }
+
     case Action::Type::Command: {
         const auto& param = std::get<Action::CommandParam>(pp.action_param);
         data.action.param = PipelineV2::JCommand {
             .exec = param.exec,
             .args = param.args,
             .detach = param.detach,
+        };
+    } break;
+
+    case Action::Type::Shell: {
+        const auto& param = std::get<Action::ShellParam>(pp.action_param);
+        data.action.param = PipelineV2::JShell {
+            .cmd = param.cmd,
+            .timeout = param.timeout,
         };
     } break;
 
@@ -363,7 +384,8 @@ json::object PipelineDumper::dump(const PipelineData& pp)
     data.pre_wait_freezes = dump_wait_freezes(pp.pre_wait_freezes);
     data.post_wait_freezes = dump_wait_freezes(pp.post_wait_freezes);
 
-    data.attach = pp.attach; // 保存附加 JSON 对象
+    data.max_hit = pp.max_hit;
+    data.attach = pp.attach;
 
     return data.to_json().as_object();
 }

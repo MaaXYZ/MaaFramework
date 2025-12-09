@@ -141,6 +141,20 @@ MaaCtrlId ControllerAgent::post_key_up(int keycode)
     return focus_id(id);
 }
 
+MaaCtrlId ControllerAgent::post_scroll(int dx, int dy)
+{
+    ScrollParam p { .dx = dx, .dy = dy };
+    auto id = post({ .type = Action::Type::scroll, .param = std::move(p) });
+    return focus_id(id);
+}
+
+MaaCtrlId ControllerAgent::post_shell(const std::string& cmd, int64_t timeout)
+{
+    ShellParam p { .cmd = cmd, .timeout = timeout };
+    auto id = post({ .type = Action::Type::shell, .param = std::move(p) });
+    return focus_id(id);
+}
+
 MaaStatus ControllerAgent::status(MaaCtrlId ctrl_id) const
 {
     if (!action_runner_) {
@@ -171,7 +185,14 @@ bool ControllerAgent::connected() const
 
 cv::Mat ControllerAgent::cached_image() const
 {
-    return image_;
+    std::unique_lock lock(image_mutex_);
+    return image_.clone();
+}
+
+std::string ControllerAgent::cached_shell_output() const
+{
+    std::unique_lock lock(shell_output_mutex_);
+    return shell_output_;
 }
 
 std::string ControllerAgent::get_uuid()
@@ -287,12 +308,11 @@ bool ControllerAgent::input_text(InputTextParam p)
 
 cv::Mat ControllerAgent::screencap()
 {
-    std::unique_lock lock(image_mutex_);
     auto id = post({ .type = Action::Type::screencap });
     if (wait(id) != MaaStatus_Succeeded) {
         return {};
     }
-    return image_.clone();
+    return cached_image();
 }
 
 bool ControllerAgent::start_app(AppParam p)
@@ -307,9 +327,26 @@ bool ControllerAgent::stop_app(AppParam p)
     return wait(id) == MaaStatus_Succeeded;
 }
 
+bool ControllerAgent::scroll(ScrollParam p)
+{
+    auto id = post({ .type = Action::Type::scroll, .param = std::move(p) });
+    return wait(id) == MaaStatus_Succeeded;
+}
+
+bool ControllerAgent::shell(const std::string& cmd, std::string& output, int64_t timeout)
+{
+    ShellParam p { .cmd = cmd, .timeout = timeout };
+    auto id = post({ .type = Action::Type::shell, .param = std::move(p) });
+    bool ret = wait(id) == MaaStatus_Succeeded;
+    if (ret) {
+        output = cached_shell_output();
+    }
+    return ret;
+}
+
 MaaCtrlId ControllerAgent::post(Action action)
 {
-    LogInfo << VAR(action.type) << VAR(action.param);
+    // LogInfo << VAR(action.type) << VAR(action.param);
 
     if (!check_stop()) {
         return MaaInvalidId;
@@ -754,6 +791,40 @@ bool ControllerAgent::handle_key_up(const ClickKeyParam& param)
     return ret;
 }
 
+bool ControllerAgent::handle_scroll(const ScrollParam& param)
+{
+    if (!control_unit_) {
+        LogError << "control_unit_ is nullptr";
+        return false;
+    }
+
+    bool ret = control_unit_->scroll(param.dx, param.dy);
+    return ret;
+}
+
+bool ControllerAgent::handle_shell(const ShellParam& param)
+{
+    if (!control_unit_) {
+        LogError << "control_unit_ is nullptr";
+        return false;
+    }
+
+    auto adb_unit = std::dynamic_pointer_cast<MAA_CTRL_UNIT_NS::AdbControlUnitAPI>(control_unit_);
+    if (!adb_unit) {
+        LogError << "Shell commands are only supported for ADB controllers. Current controller type does not support shell execution.";
+        return false;
+    }
+
+    std::string output;
+    bool ret = adb_unit->shell(param.cmd, output, std::chrono::milliseconds(param.timeout));
+    if (ret) {
+        std::unique_lock lock(shell_output_mutex_);
+        shell_output_ = std::move(output);
+    }
+
+    return ret;
+}
+
 bool ControllerAgent::check_stop()
 {
     if (!need_to_stop_) {
@@ -779,12 +850,10 @@ bool ControllerAgent::run_action(typename AsyncRunner<Action>::Id id, Action act
         notify = focus_ids_.erase(id) > 0;
     }
 
-    std::stringstream ss;
-    ss << action.type;
     const json::value cb_detail = {
         { "ctrl_id", id },
         { "uuid", get_uuid() },
-        { "action", std::move(ss).str() },
+        { "action", action.type },
         { "param", action.param },
     };
 
@@ -849,6 +918,14 @@ bool ControllerAgent::run_action(typename AsyncRunner<Action>::Id id, Action act
         break;
     case Action::Type::stop_app:
         ret = handle_stop_app(std::get<AppParam>(action.param));
+        break;
+
+    case Action::Type::scroll:
+        ret = handle_scroll(std::get<ScrollParam>(action.param));
+        break;
+
+    case Action::Type::shell:
+        ret = handle_shell(std::get<ShellParam>(action.param));
         break;
 
     default:
@@ -1024,69 +1101,6 @@ bool ControllerAgent::set_image_use_raw_size(MaaOptionValue value, MaaOptionValu
     clear_target_image_size();
 
     return true;
-}
-
-std::ostream& operator<<(std::ostream& os, const Action::Type& action_type)
-{
-    switch (action_type) {
-    case Action::Type::connect:
-        os << "connect";
-        break;
-    case Action::Type::click:
-        os << "click";
-        break;
-    case Action::Type::long_press:
-        os << "long_press";
-        break;
-    case Action::Type::swipe:
-        os << "swipe";
-        break;
-    case Action::Type::multi_swipe:
-        os << "multi_swipe";
-        break;
-    case Action::Type::touch_down:
-        os << "touch_down";
-        break;
-    case Action::Type::touch_move:
-        os << "touch_move";
-        break;
-    case Action::Type::touch_up:
-        os << "touch_up";
-        break;
-    case Action::Type::click_key:
-        os << "click_key";
-        break;
-    case Action::Type::long_press_key:
-        os << "long_press_key";
-        break;
-    case Action::Type::key_down:
-        os << "key_down";
-        break;
-    case Action::Type::key_up:
-        os << "key_up";
-        break;
-    case Action::Type::input_text:
-        os << "input_text";
-        break;
-    case Action::Type::screencap:
-        os << "screencap";
-        break;
-    case Action::Type::start_app:
-        os << "start_app";
-        break;
-    case Action::Type::stop_app:
-        os << "stop_app";
-        break;
-
-    case Action::Type::invalid:
-        os << "invalid";
-        break;
-
-        // default:
-        //     os << "unknown action";
-        //     break;
-    }
-    return os;
 }
 
 MAA_CTRL_NS_END

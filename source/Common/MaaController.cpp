@@ -220,6 +220,51 @@ MaaCtrlId MaaControllerPostKeyUp(MaaController* ctrl, int32_t keycode)
     return ctrl->post_key_up(keycode);
 }
 
+MaaCtrlId MaaControllerPostScroll(MaaController* ctrl, int32_t dx, int32_t dy)
+{
+    LogFunc << VAR_VOIDP(ctrl) << VAR(dx) << VAR(dy);
+
+    if (!ctrl) {
+        LogError << "handle is null";
+        return MaaInvalidId;
+    }
+
+    return ctrl->post_scroll(dx, dy);
+}
+
+MaaCtrlId MaaControllerPostShell(MaaController* ctrl, const char* cmd, int64_t timeout)
+{
+    LogFunc << VAR_VOIDP(ctrl) << VAR(cmd) << VAR(timeout);
+
+    if (!ctrl) {
+        LogError << "handle is null";
+        return MaaInvalidId;
+    }
+
+    if (!cmd) {
+        LogError << "Shell command parameter cannot be null";
+        return MaaInvalidId;
+    }
+
+    return ctrl->post_shell(cmd, timeout);
+}
+
+MaaBool MaaControllerGetShellOutput(const MaaController* ctrl, MaaStringBuffer* buffer)
+{
+    if (!ctrl || !buffer) {
+        LogError << "handle is null";
+        return false;
+    }
+
+    auto output = ctrl->cached_shell_output();
+    if (output.empty()) {
+        LogWarn << "shell output is empty";
+    }
+
+    buffer->set(std::move(output));
+    return true;
+}
+
 MaaCtrlId MaaControllerPostScreencap(MaaController* ctrl)
 {
     LogFunc << VAR_VOIDP(ctrl);

@@ -120,7 +120,14 @@
  * details_json: {
  *     task_id: number,
  *     name: string,
- *     list: string[],
+ *     list: [
+ *       {
+ *         "name": string,
+ *         "jump_back": boolean,
+ *         "anchor": boolean,
+ *       },
+ *       ...
+ *     ],
  *     focus: any,
  * }
  */

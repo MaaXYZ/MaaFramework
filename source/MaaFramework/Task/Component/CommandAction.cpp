@@ -74,7 +74,7 @@ bool CommandAction::run(const MAA_RES_NS::Action::CommandParam& command, const R
     }
 
     LogInfo << VAR(exec) << VAR(args);
-    boost::process::child child(exec, args);
+    boost::process::child child(exec, args, boost::process::start_dir = exec.parent_path());
 
     if (!child.joinable()) {
         LogError << "child is not joinable";

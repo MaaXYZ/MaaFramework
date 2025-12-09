@@ -32,6 +32,11 @@ public:
     virtual MaaTaskId task_id() const override;
     virtual MaaTasker* tasker() const override;
 
+    virtual void set_anchor(const std::string& anchor_name, const std::string& node_name) override;
+    virtual std::optional<std::string> get_anchor(const std::string& anchor_name) const override;
+    virtual uint get_hit_count(const std::string& node_name) const override;
+    virtual void clear_hit_count(const std::string& node_name) override;
+
 private:
     Transceiver& server_;
     std::string context_id_;

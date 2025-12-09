@@ -10,7 +10,7 @@ TemplateComparator::TemplateComparator(cv::Mat lhs, cv::Mat rhs, cv::Rect roi, T
     : VisionBase(std::move(lhs), std::move(roi), std::move(name))
     , rhs_image_(std::move(rhs))
     , param_(std::move(param))
-    , use_min_score_(param_.method == cv::TemplateMatchModes::TM_SQDIFF || param_.method == cv::TemplateMatchModes::TM_SQDIFF_NORMED)
+    , low_score_better_(param_.method == cv::TemplateMatchModes::TM_SQDIFF || param_.method == cv::TemplateMatchModes::TM_SQDIFF_NORMED)
 {
     analyze();
 }
@@ -47,8 +47,8 @@ void TemplateComparator::add_results(ResultsVec results, double threshold)
 
 void TemplateComparator::cherry_pick()
 {
-    sort_by_score_(all_results_);
-    sort_by_score_(filtered_results_);
+    sort_by_score_(all_results_, low_score_better_);
+    sort_by_score_(filtered_results_, low_score_better_);
 
     if (!filtered_results_.empty()) {
         best_result_ = filtered_results_.front();
@@ -57,17 +57,27 @@ void TemplateComparator::cherry_pick()
 
 double TemplateComparator::comp(const cv::Mat& lhs, const cv::Mat& rhs, int method)
 {
+    bool invert_score = false;
+    if (method >= TemplateMatcherParam::kMethodInvertBase) {
+        invert_score = true;
+        method -= TemplateMatcherParam::kMethodInvertBase;
+    }
+
     cv::Mat matched;
     cv::matchTemplate(lhs, rhs, matched, method);
+
+    if (invert_score) {
+        matched = 1.0f - matched;
+    }
 
     double min_val = 0.0, max_val = 0.0;
     cv::Point min_loc {}, max_loc {};
     cv::minMaxLoc(matched, &min_val, &max_val, &min_loc, &max_loc);
 
-    double val = use_min_score_ ? min_val : max_val;
+    double val = low_score_better_ ? min_val : max_val;
 
     if (std::isnan(val) || std::isinf(val)) {
-        val = 0;
+        val = low_score_better_ ? std::numeric_limits<double>::max() : 0;
     }
 
     return val;
@@ -75,7 +85,7 @@ double TemplateComparator::comp(const cv::Mat& lhs, const cv::Mat& rhs, int meth
 
 bool TemplateComparator::comp_score(double s1, double s2) const
 {
-    return use_min_score_ ? s1 > s2 : s1 < s2;
+    return low_score_better_ ? s1 > s2 : s1 < s2;
 }
 
 MAA_VISION_NS_END

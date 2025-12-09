@@ -4,10 +4,9 @@
 #include "MaaUtils/Logger.h"
 
 #include "Input/LegacyEventInput.h"
-#include "Input/PostMessageInput.h"
+#include "Input/MessageInput.h"
 #include "Input/PostThreadMessageInput.h"
 #include "Input/SeizeInput.h"
-#include "Input/SendMessageInput.h"
 #include "Screencap/DesktopDupScreencap.h"
 #include "Screencap/DesktopDupWindowScreencap.h"
 #include "Screencap/FramePoolScreencap.h"
@@ -75,15 +74,19 @@ bool Win32ControlUnitMgr::connect()
     auto make_input = [&](MaaWin32InputMethod method) -> std::shared_ptr<InputBase> {
         switch (method) {
         case MaaWin32InputMethod_Seize:
-            return std::make_shared<SeizeInput>(hwnd_);
+            return std::make_shared<SeizeInput>(hwnd_, true);
         case MaaWin32InputMethod_SendMessage:
-            return std::make_shared<SendMessageInput>(hwnd_);
+            return std::make_shared<MessageInput>(hwnd_, MessageInput::Mode::SendMessage, false, false);
         case MaaWin32InputMethod_PostMessage:
-            return std::make_shared<PostMessageInput>(hwnd_);
+            return std::make_shared<MessageInput>(hwnd_, MessageInput::Mode::PostMessage, false, false);
         case MaaWin32InputMethod_LegacyEvent:
-            return std::make_shared<LegacyEventInput>(hwnd_);
+            return std::make_shared<LegacyEventInput>(hwnd_, true);
         case MaaWin32InputMethod_PostThreadMessage:
             return std::make_shared<PostThreadMessageInput>(hwnd_);
+        case MaaWin32InputMethod_SendMessageWithCursorPos:
+            return std::make_shared<MessageInput>(hwnd_, MessageInput::Mode::SendMessage, true, true);
+        case MaaWin32InputMethod_PostMessageWithCursorPos:
+            return std::make_shared<MessageInput>(hwnd_, MessageInput::Mode::PostMessage, true, true);
         default:
             LogError << "Unknown input method: " << static_cast<int>(method);
             return nullptr;
@@ -249,6 +252,16 @@ bool Win32ControlUnitMgr::key_up(int key)
     }
 
     return keyboard_->key_up(key);
+}
+
+bool Win32ControlUnitMgr::scroll(int dx, int dy)
+{
+    if (!mouse_) {
+        LogError << "mouse_ is null";
+        return false;
+    }
+
+    return mouse_->scroll(dx, dy);
 }
 
 MAA_CTRL_UNIT_NS_END

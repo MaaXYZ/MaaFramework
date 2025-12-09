@@ -172,4 +172,53 @@ MaaTasker* RemoteContext::tasker() const
     return tasker_.get();
 }
 
+void RemoteContext::set_anchor(const std::string& anchor_name, const std::string& node_name)
+{
+    ContextSetAnchorReverseRequest req {
+        .context_id = context_id_,
+        .anchor_name = anchor_name,
+        .node_name = node_name,
+    };
+
+    server_.send_and_recv<ContextSetAnchorReverseResponse>(req);
+}
+
+std::optional<std::string> RemoteContext::get_anchor(const std::string& anchor_name) const
+{
+    ContextGetAnchorReverseRequest req {
+        .context_id = context_id_,
+        .anchor_name = anchor_name,
+    };
+
+    auto resp_opt = server_.send_and_recv<ContextGetAnchorReverseResponse>(req);
+    if (!resp_opt || !resp_opt->has_value) {
+        return std::nullopt;
+    }
+    return resp_opt->node_name;
+}
+
+uint RemoteContext::get_hit_count(const std::string& node_name) const
+{
+    ContextGetHitCountReverseRequest req {
+        .context_id = context_id_,
+        .node_name = node_name,
+    };
+
+    auto resp_opt = server_.send_and_recv<ContextGetHitCountReverseResponse>(req);
+    if (!resp_opt) {
+        return 0;
+    }
+    return static_cast<uint>(resp_opt->count);
+}
+
+void RemoteContext::clear_hit_count(const std::string& node_name)
+{
+    ContextClearHitCountReverseRequest req {
+        .context_id = context_id_,
+        .node_name = node_name,
+    };
+
+    server_.send_and_recv<ContextClearHitCountReverseResponse>(req);
+}
+
 MAA_AGENT_SERVER_NS_END

@@ -195,8 +195,28 @@ bool PipelineParser::parse_node(
     PipelineData data;
     data.name = name;
 
-    if (!get_and_check_value(input, "is_sub", data.is_sub, default_value.is_sub)) {
-        LogError << "failed to get_and_check_value is_sub" << VAR(input);
+    // 检查已废弃的字段
+    if (input.exists("is_sub")) {
+        LogError << "is_sub is deprecated since v5.1, in version 5.1, use `[JumpBack]` instead, please refer to the document for details."
+                 << VAR(name);
+        LogError << "We provide a migration script (https://github.com/MaaXYZ/MaaFramework/blob/main/tools/migrate_pipeline_v5.py) to "
+                    "help you automatically convert your pipeline to the new style without loss of quality.";
+
+        LogError << "is_sub 已在 5.1 版本中废弃，推荐使用 `[JumpBack]` 替代，详情请参考文档" << VAR(name);
+        LogError << "我们提供了一个迁移脚本 (https://github.com/MaaXYZ/MaaFramework/blob/main/tools/migrate_pipeline_v5.py)， "
+                    "可帮助您无损地将 Pipeline 自动转换为新风格~";
+        return false;
+    }
+    if (input.exists("interrupt")) {
+        LogError
+            << "interrupt is deprecated since v5.1, in version 5.1, use `[JumpBack]` instead, please refer to the document for details."
+            << VAR(name);
+        LogError << "We provide a migration script (https://github.com/MaaXYZ/MaaFramework/blob/main/tools/migrate_pipeline_v5.py) to "
+                    "help you automatically convert your pipeline to the new style without loss of quality.";
+
+        LogError << "interrupt 已在 5.1 版本中废弃，推荐使用 `[JumpBack]` 替代，详情请参考文档" << VAR(name);
+        LogError << "我们提供了一个迁移脚本 (https://github.com/MaaXYZ/MaaFramework/blob/main/tools/migrate_pipeline_v5.py)， "
+                    "可帮助您无损地将 Pipeline 自动转换为新风格~";
         return false;
     }
 
@@ -220,18 +240,18 @@ bool PipelineParser::parse_node(
         return false;
     }
 
-    if (!get_and_check_value_or_array(input, "next", data.next, default_value.next)) {
-        LogError << "failed to get_and_check_value_or_array next" << VAR(input);
+    if (!parse_next(input, "next", data.next, default_value.next)) {
+        LogError << "failed to parse_next" << VAR(input);
         return false;
     }
 
-    if (!get_and_check_value_or_array(input, "interrupt", data.interrupt, default_value.interrupt)) {
-        LogError << "failed to get_and_check_value_or_array interrupt" << VAR(input);
+    if (!parse_next(input, "on_error", data.on_error, default_value.on_error)) {
+        LogError << "failed to parse on_error" << VAR(input);
         return false;
     }
 
-    if (!get_and_check_value_or_array(input, "on_error", data.on_error, default_value.on_error)) {
-        LogError << "failed to get_and_check_value_or_array on_error" << VAR(input);
+    if (!get_and_check_value_or_array(input, "anchor", data.anchor, default_value.anchor)) {
+        LogError << "failed to get_and_check_value_or_array anchor" << VAR(input);
         return false;
     }
 
@@ -273,15 +293,20 @@ bool PipelineParser::parse_node(
         return false;
     }
 
+    if (!get_and_check_value(input, "max_hit", data.max_hit, default_value.max_hit)) {
+        LogError << "failed to get_and_check_value max_hit" << VAR(input);
+        return false;
+    }
+
     if (!get_and_check_value(input, "focus", data.focus, default_value.focus)) {
         LogError << "failed to get_and_check_value focus" << VAR(input);
         return false;
     }
 
+    data.attach = default_value.attach;
     if (auto attach_opt = input.find<json::object>("attach")) {
-        data.attach = *std::move(attach_opt);
+        data.attach |= *std::move(attach_opt);
     }
-    data.attach |= default_value.attach;
 
     output = std::move(data);
 
@@ -523,8 +548,8 @@ bool PipelineParser::parse_feature_matcher_param(
     //     return false;
     // }
 
-    if (!get_and_check_value(input, "distance_ratio", output.distance_ratio, default_value.distance_ratio)) {
-        LogError << "failed to get_and_check_value distance_ratio" << VAR(input);
+    if (!get_and_check_value(input, "ratio", output.ratio, default_value.ratio)) {
+        LogError << "failed to get_and_check_value ratio" << VAR(input);
         return false;
     }
 
@@ -558,6 +583,7 @@ bool PipelineParser::parse_ocrer_param(
                 MAA_VISION_NS::ResultOrderBy::Area,
                 MAA_VISION_NS::ResultOrderBy::Length,
                 MAA_VISION_NS::ResultOrderBy::Random,
+                MAA_VISION_NS::ResultOrderBy::Expected,
             })) {
         LogError << "failed to parse_order_of_result" << VAR(input);
         return false;
@@ -671,6 +697,7 @@ bool PipelineParser::parse_nn_classifier_param(
                 MAA_VISION_NS::ResultOrderBy::Vertical,
                 MAA_VISION_NS::ResultOrderBy::Score,
                 MAA_VISION_NS::ResultOrderBy::Random,
+                MAA_VISION_NS::ResultOrderBy::Expected,
             })) {
         LogError << "failed to parse_order_of_result" << VAR(input);
         return false;
@@ -713,6 +740,7 @@ bool PipelineParser::parse_nn_detector_param(
                 MAA_VISION_NS::ResultOrderBy::Score,
                 MAA_VISION_NS::ResultOrderBy::Area,
                 MAA_VISION_NS::ResultOrderBy::Random,
+                MAA_VISION_NS::ResultOrderBy::Expected,
             })) {
         LogError << "failed to parse_order_of_result" << VAR(input);
         return false;
@@ -1059,6 +1087,16 @@ bool PipelineParser::parse_action(
         return parse_app_info(param_input, std::get<AppParam>(out_param), same_type ? std::get<AppParam>(parent_param) : default_param);
     } break;
 
+    case Type::Scroll: {
+        auto default_param = default_mgr.get_action_param<ScrollParam>(Type::Scroll);
+        out_param = default_param;
+        return parse_scroll(param_input, std::get<ScrollParam>(out_param), same_type ? std::get<ScrollParam>(parent_param) : default_param);
+    } break;
+
+    case Type::StopTask:
+        out_param = {};
+        return true;
+
     case Type::Command: {
         auto default_param = default_mgr.get_action_param<CommandParam>(Type::Command);
         out_param = default_param;
@@ -1066,6 +1104,12 @@ bool PipelineParser::parse_action(
             param_input,
             std::get<CommandParam>(out_param),
             same_type ? std::get<CommandParam>(parent_param) : default_param);
+    } break;
+
+    case Type::Shell: {
+        auto default_param = default_mgr.get_action_param<ShellParam>(Type::Shell);
+        out_param = default_param;
+        return parse_shell(param_input, std::get<ShellParam>(out_param), same_type ? std::get<ShellParam>(parent_param) : default_param);
     } break;
 
     case Type::Custom: {
@@ -1076,10 +1120,6 @@ bool PipelineParser::parse_action(
             std::get<CustomParam>(out_param),
             same_type ? std::get<CustomParam>(parent_param) : default_param);
     } break;
-
-    case Type::StopTask:
-        out_param = {};
-        return true;
 
     default:
         LogError << "unknown act type" << VAR(static_cast<int>(out_type));
@@ -1297,6 +1337,36 @@ bool PipelineParser::parse_app_info(const json::value& input, Action::AppParam& 
     return true;
 }
 
+bool PipelineParser::parse_scroll(const json::value& input, Action::ScrollParam& output, const Action::ScrollParam& default_value)
+{
+    if (!get_and_check_value(input, "dx", output.dx, default_value.dx)) {
+        LogError << "failed to get_and_check_value dx" << VAR(input);
+        return false;
+    }
+
+    if (!get_and_check_value(input, "dy", output.dy, default_value.dy)) {
+        LogError << "failed to get_and_check_value dy" << VAR(input);
+        return false;
+    }
+
+    return true;
+}
+
+bool PipelineParser::parse_shell(const json::value& input, Action::ShellParam& output, const Action::ShellParam& default_value)
+{
+    if (!get_and_check_value(input, "cmd", output.cmd, default_value.cmd)) {
+        LogError << "failed to get_and_check_value cmd" << VAR(input);
+        return false;
+    }
+
+    if (!get_and_check_value(input, "timeout", output.timeout, default_value.timeout)) {
+        LogError << "failed to get_and_check_value timeout" << VAR(input);
+        return false;
+    }
+
+    return true;
+}
+
 bool PipelineParser::parse_command_param(const json::value& input, Action::CommandParam& output, const Action::CommandParam& default_value)
 {
     if (!get_and_check_value(input, "exec", output.exec, default_value.exec)) {
@@ -1399,6 +1469,47 @@ bool PipelineParser::parse_wait_freezes_param(
         LogError << "invalid wait_freezes_param" << VAR(field);
         return false;
     }
+}
+
+bool PipelineParser::parse_next(
+    const json::value& input,
+    const std::string& key,
+    std::vector<NodeAttr>& output,
+    const std::vector<NodeAttr>& default_next)
+{
+    auto next_opt = input.find(key);
+    if (!next_opt) {
+        output = default_next;
+        return true;
+    }
+
+    return parse_next(*next_opt, output);
+}
+
+bool PipelineParser::parse_next(const json::value& input, std::vector<NodeAttr>& output)
+{
+    output.clear();
+
+    if (input.is_array()) {
+        for (const auto& val : input.as_array()) {
+            NodeAttr res;
+            if (!parse_node_in_next(val, res)) {
+                LogError << "failed to parse_node_in_next" << VAR(val);
+                return false;
+            }
+            output.emplace_back(std::move(res));
+        }
+    }
+    else {
+        NodeAttr res;
+        if (!parse_node_in_next(input, res)) {
+            LogError << "failed to parse_node_in_next" << VAR(input);
+            return false;
+        }
+        output.emplace_back(std::move(res));
+    }
+
+    return true;
 }
 
 bool PipelineParser::parse_rect(const json::value& input_rect, cv::Rect& output)
@@ -1552,6 +1663,57 @@ bool PipelineParser::parse_action_target_offset_or_list(
         output.emplace_back(std::move(res));
     }
 
+    return true;
+}
+
+bool PipelineParser::parse_node_in_next(const json::value& input, NodeAttr& output)
+{
+    if (input.is_string()) {
+        return parse_node_string_in_next(input.as_string(), output);
+    }
+    else if (input.is<NodeAttr>()) {
+        output = input.as<NodeAttr>();
+        return true;
+    }
+    else {
+        LogError << "next node type error" << VAR(input);
+        return false;
+    }
+}
+
+bool PipelineParser::parse_node_string_in_next(const std::string& raw, NodeAttr& output)
+{
+    std::string remaining = raw;
+
+    // 属性必须放在节点名前面，格式: [Attr1][Attr2]NodeName
+    while (remaining.starts_with('[')) {
+        auto end_pos = remaining.find(']');
+        if (end_pos == std::string::npos) {
+            LogError << "Invalid node attribute format, missing ']'" << VAR(raw);
+            return false;
+        }
+
+        std::string attr = remaining.substr(0, end_pos + 1);
+
+        if (attr == PipelineData::kNodeAttr_JumpBack) {
+            output.jump_back = true;
+        }
+        else if (attr == PipelineData::kNodeAttr_Anchor) {
+            output.anchor = true;
+        }
+        else {
+            LogWarn << "Unrecognized node attribute" << VAR(attr) << VAR(raw);
+        }
+
+        remaining = remaining.substr(end_pos + 1);
+    }
+
+    if (remaining.empty()) {
+        LogError << "Invalid node format, missing node name or anchor name" << VAR(raw);
+        return false;
+    }
+
+    output.name = remaining;
     return true;
 }
 

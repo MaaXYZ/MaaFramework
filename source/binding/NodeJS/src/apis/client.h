@@ -4,6 +4,7 @@
 #include <optional>
 #include <string>
 #include <tuple>
+#include <vector>
 
 #include <MaaAgentClient/MaaAgentClientAPI.h>
 #include <MaaFramework/MaaAPI.h>
@@ -31,6 +32,8 @@ struct ClientImpl : public maajs::NativeClassBase
     bool get_connected();
     bool get_alive();
     void set_timeout(uint64_t ms);
+    std::optional<std::vector<std::string>> get_custom_recognition_list();
+    std::optional<std::vector<std::string>> get_custom_action_list();
 
     std::string to_string() override;
 

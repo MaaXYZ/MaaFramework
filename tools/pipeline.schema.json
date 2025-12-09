@@ -305,6 +305,62 @@
             ],
             "default": []
         },
+        "NodeAttr": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "string",
+                    "description": "节点名称"
+                },
+                "jump_back": {
+                    "type": "boolean",
+                    "description": "是否在执行完成后跳回父节点",
+                    "default": false
+                },
+                "anchor": {
+                    "type": "boolean",
+                    "description": "是否是锚点名称而非节点名称",
+                    "default": false
+                }
+            },
+            "required": [
+                "name"
+            ],
+            "additionalProperties": false
+        },
+        "jsonNodeItem": {
+            "anyOf": [
+                {
+                    "type": "string",
+                    "description": "节点名称，可带前缀如 [JumpBack]NodeName"
+                },
+                {
+                    "$ref": "#/$defs/NodeAttr"
+                }
+            ]
+        },
+        "jsonNodeList": {
+            "type": "array",
+            "items": {
+                "$ref": "#/$defs/jsonNodeItem"
+            },
+            "default": []
+        },
+        "jsonNodeOrList": {
+            "anyOf": [
+                {
+                    "type": "string",
+                    "description": "节点名称，可带前缀如 [JumpBack]NodeName"
+                },
+                {
+                    "$ref": "#/$defs/NodeAttr"
+                },
+                {
+                    "$ref": "#/$defs/jsonNodeList"
+                }
+            ],
+            "default": []
+        },
         "jsonRegexList": {
             "type": "array",
             "items": {
@@ -546,20 +602,21 @@
                     "enum": [
                         1,
                         3,
-                        5
+                        5,
+                        10001
                     ],
-                    "markdownDescription": "*int*\n\n模板匹配算法，即 cv::TemplateMatchModes。可选，默认 5 。\n\n仅支持 1、3、5，可简单理解为越大的越精确，但也会更慢。\n\n详情请参考 [OpenCV 官方文档](https://docs.opencv.org/4.x/df/dfb/group__imgproc__object.html)。",
+                    "markdownDescription": "*int*\n\n模板匹配算法，即 cv::TemplateMatchModes。可选，默认 5 。\n\n详情请参考 [OpenCV 官方文档](https://docs.opencv.org/4.x/df/dfb/group__imgproc__object.html)。\n\n*10001 为 TM_SQDIFF_NORMED 的反转版本，分数越高越匹配（与原版相反）。*\n\n| method | 算法名称 | 速度 | 颜色敏感度 | 光照鲁棒性 | 适用场景 |\n|--------|---------|------|-----------|-----------|----------|\n| 10001 | TM_SQDIFF_NORMED | 快 | 敏感 | 差 | 精确匹配，阈值易设定 |\n| 3 | TM_CCORR_NORMED | 中等 | 敏感 | 中 | 模板较亮时效果好 |\n| 5 | TM_CCOEFF_NORMED | 较慢 | 不敏感 | 好 | **推荐**，阈值易设定 |",
                     "defaultSnippets": [
                         {
-                            "label": "SQDIFF",
-                            "body": 1
+                            "label": "SQDIFF_NORMED_INVERTED",
+                            "body": 10001
                         },
                         {
-                            "label": "CCORR",
+                            "label": "CCORR_NORMED",
                             "body": 3
                         },
                         {
-                            "label": "CCOEFF",
+                            "label": "CCOEFF_NORMED",
                             "body": 5
                         }
                     ],
@@ -569,7 +626,7 @@
                     "title": "Green Mask Property",
                     "description": "是否进行绿色掩码。可选，默认 false 。",
                     "$ref": "#/$defs/jsonBooleanFalse",
-                    "markdownDescription": "*bool*\n\n是否进行绿色掩码。可选，默认 false 。\n\n若为 true，可以将图片中不希望匹配的部分涂绿 RGB: (0, 255, 0)，则不对绿色部分进行匹配。"
+                    "markdownDescription": "*bool*\n\n是否进行绿色掩码。可选，默认 false 。\n\n若为 true，可以将图片中不希望匹配的部分涂绿 RGB: (0, 255, 0)，则不对绿色部分进行匹配。\n\n注意：算法本身具有较强鲁棒性，常规背景变化通常无需使用此功能。若确需使用，应仅遮盖干扰区域，避免过度涂抹导致主体边缘特征丢失。"
                 }
             },
             "anyOf": [
@@ -633,7 +690,7 @@
                     "title": "Template Property",
                     "description": "模板图片路径，需要 `image` 文件夹的相对路径。必选。",
                     "$ref": "#/$defs/jsonStringOrList",
-                    "markdownDescription": "*string* | *list<string, >*\n\n模板图片路径，需要 `image` 文件夹的相对路径。必选。\n\n支持填写文件夹路径，将递归加载其中所有图片文件。"
+                    "markdownDescription": "*string* | *list<string, >*\n\n模板图片路径，需要 `image` 文件夹的相对路径。必选。\n\n支持填写文件夹路径，将递归加载其中所有图片文件。\n\n注意事项：\n- 模板图片不宜过小，建议至少 64x64 像素，否则特征点过少可能导致匹配失败或误匹配。\n- 模板应包含足够的纹理细节（如边缘、角点），纯色或渐变区域特征点稀少。\n- 避免模板中包含大量重复纹理（如格子、条纹），可能导致特征点匹配混乱。"
                 },
                 "count": {
                     "title": "Count Property",
@@ -665,7 +722,7 @@
                     "title": "Green Mask Property",
                     "description": "是否进行绿色掩码。可选，默认 false 。",
                     "$ref": "#/$defs/jsonBooleanFalse",
-                    "markdownDescription": "*bool*\n\n是否进行绿色掩码。可选，默认 false 。\n\n若为 true，可以将图片中不希望匹配的部分涂绿 RGB: (0, 255, 0)，则不对绿色部分进行匹配。"
+                    "markdownDescription": "*bool*\n\n是否进行绿色掩码。可选，默认 false 。\n\n若为 true，可以将图片中不希望匹配的部分涂绿 RGB: (0, 255, 0)，则不对绿色部分进行匹配。\n\n注意：算法本身具有较强的鲁棒性，一般背景变化无需使用此功能。若确需使用，应仅遮盖干扰区域，避免过度涂抹导致主体边缘特征丢失。"
                 },
                 "detector": {
                     "title": "Detector Property",
@@ -677,7 +734,7 @@
                         "KAZE",
                         "AKAZE"
                     ],
-                    "markdownDescription": "*string*\n\n特征检测器。可选，默认 `SIFT` 。\n\n目前支持以下算法：\n\n  - SIFT\n\n计算复杂度高，具有尺度不变性、旋转不变性。效果最好。\n\n- KAZE\n\n适用于2D和3D图像，具有尺度不变性、旋转不变性。\n\n- AKAZE\n\n计算速度较快，具有尺度不变性、旋转不变性。\n\n- BRISK\n\n计算速度非常快，具有尺度不变性、旋转不变性。\n\n- ORB\n\n计算速度非常快，具有旋转不变性。但不具有尺度不变性。\n\n各算法特点详情可自行进一步查询。",
+                    "markdownDescription": "*string*\n\n特征检测器。可选，默认 `SIFT` 。\n\n| 检测器 | 速度 | 尺度不变性 | 旋转不变性 | 精度 | 适用场景 |\n|--------|------|-----------|-----------|------|----------|\n| SIFT | 慢 | 有 | 有 | 最高 | **推荐**，对精度要求高的场景 |\n| KAZE | 较慢 | 有 | 有 | 高 | 2D/3D 图像，边缘保持好 |\n| AKAZE | 中等 | 有 | 有 | 较高 | 速度与精度平衡 |\n| BRISK | 快 | 有 | 有 | 中等 | 实时性要求高的场景 |\n| ORB | 最快 | **无** | 有 | 较低 | 模板与目标尺寸一致时使用 |",
                     "default": "SIFT"
                 },
                 "ratio": {
@@ -909,9 +966,10 @@
                         "Vertical",
                         "Area",
                         "Length",
-                        "Random"
+                        "Random",
+                        "Expected"
                     ],
-                    "markdownDescription": "*string*\n\n结果排序方式。可选，默认 `Horizontal`。\n\n可选的值：`Horizontal` | `Vertical` | `Area` | `Length` | `Random` 。\n\n可结合 `index` 字段使用。",
+                    "markdownDescription": "*string*\n\n结果排序方式。可选，默认 `Horizontal`。\n\n可选的值：`Horizontal` | `Vertical` | `Area` | `Length` | `Random` | `Expected` 。\n\n可结合 `index` 字段使用。",
                     "default": "Horizontal"
                 },
                 "index": {
@@ -1015,9 +1073,10 @@
                         "Horizontal",
                         "Vertical",
                         "Score",
-                        "Random"
+                        "Random",
+                        "Expected"
                     ],
-                    "markdownDescription": "*string*\n\n结果排序方式。可选，默认 `Horizontal` 。\n\n可选的值：`Horizontal` | `Vertical` | `Score` | `Random` 。\n\n可结合 `index` 字段使用。",
+                    "markdownDescription": "*string*\n\n结果排序方式。可选，默认 `Horizontal` 。\n\n可选的值：`Horizontal` | `Vertical` | `Score` | `Random` | `Expected` 。\n\n可结合 `index` 字段使用。",
                     "default": "Horizontal"
                 },
                 "index": {
@@ -1131,9 +1190,10 @@
                         "Vertical",
                         "Score",
                         "Area",
-                        "Random"
+                        "Random",
+                        "Expected"
                     ],
-                    "markdownDescription": "*string*\n\n结果排序方式。可选，默认 `Horizontal` 。\n\n可选的值：`Horizontal` | `Vertical` | `Score` | `Area` | `Random` 。\n\n可结合 `index` 字段使用。",
+                    "markdownDescription": "*string*\n\n结果排序方式。可选，默认 `Horizontal` 。\n\n可选的值：`Horizontal` | `Vertical` | `Score` | `Area` | `Random` | `Expected` 。\n\n可结合 `index` 字段使用。",
                     "default": "Horizontal"
                 },
                 "index": {
@@ -2224,6 +2284,55 @@
                 }
             }
         },
+        "Scroll": {
+            "type": "object",
+            "properties": {
+                "dx": {
+                    "title": "Scroll Dx Property",
+                    "description": "水平滚动距离，正值向右滚动，负值向左滚动。可选，默认 0。",
+                    "type": "integer",
+                    "default": 0,
+                    "markdownDescription": "*int*\n\n水平滚动距离，正值向右滚动，负值向左滚动。可选，默认 0。"
+                },
+                "dy": {
+                    "title": "Scroll Dy Property",
+                    "description": "垂直滚动距离，正值向下滚动，负值向上滚动。可选，默认 0。",
+                    "type": "integer",
+                    "default": 0,
+                    "markdownDescription": "*int*\n\n垂直滚动距离，正值向下滚动，负值向上滚动。可选，默认 0。"
+                }
+            }
+        },
+        "ScrollV1": {
+            "properties": {
+                "action": {
+                    "const": "Scroll"
+                }
+            },
+            "allOf": [
+                {
+                    "$ref": "#/$defs/Scroll"
+                }
+            ]
+        },
+        "ScrollV2": {
+            "properties": {
+                "type": {
+                    "const": "Scroll"
+                },
+                "param": {
+                    "unevaluatedProperties": false,
+                    "allOf": [
+                        {
+                            "$ref": "#/$defs/Scroll"
+                        },
+                        {
+                            "$ref": "#/$defs/jsonComments"
+                        }
+                    ]
+                }
+            }
+        },
         "KeyDown": {
             "type": "object",
             "properties": {
@@ -2417,7 +2526,7 @@
                     "title": "LongPressKey Property",
                     "description": "要按的键，仅支持对应控制器的虚拟按键码。必选。",
                     "$ref": "#/$defs/jsonInt32OrList",
-                    "markdownDescription": "*int*\n\n要按的键，仅支持对应控制器的虚拟按键码。必选。\n\n- [Adb 控制器](https://developer.android.com/reference/android/view/KeyEvent)\n\n- [Win32 控制器](https://learn.microsoft.com/en-us/windows/win32/inputdev/virtual-key-codes)"
+                    "markdownDescription": "*int* | *list<int, >*\n\n要按的键，仅支持对应控制器的虚拟按键码。必选。\n\n- [Adb 控制器](https://developer.android.com/reference/android/view/KeyEvent)\n\n- [Win32 控制器](https://learn.microsoft.com/en-us/windows/win32/inputdev/virtual-key-codes)"
                 },
                 "duration": {
                     "title": "Duration Property",
@@ -2753,6 +2862,62 @@
                 }
             }
         },
+        "Shell": {
+            "type": "object",
+            "properties": {
+                "cmd": {
+                    "title": "Shell Command Property",
+                    "description": "要执行的 shell 命令。必选。仅对 ADB 控制器有效。",
+                    "type": "string",
+                    "markdownDescription": "*string*\n\n要执行的 shell 命令。必选。\n\n例如 `getprop ro.build.version.sdk` 或 `settings put global animator_duration_scale 0`。\n\n> 注意：此动作仅对 ADB 控制器有效。"
+                },
+                "timeout": {
+                    "title": "Timeout Property",
+                    "description": "超时时间（毫秒）。可选，默认 20000 (20秒)。",
+                    "type": "integer",
+                    "default": 20000,
+                    "markdownDescription": "*int*\n\n超时时间（毫秒）。可选，默认 20000 (20秒)。"
+                }
+            },
+            "required": [
+                "cmd"
+            ]
+        },
+        "ShellV1": {
+            "properties": {
+                "action": {
+                    "const": "Shell"
+                }
+            },
+            "allOf": [
+                {
+                    "$ref": "#/$defs/Shell"
+                }
+            ]
+        },
+        "ShellV2": {
+            "properties": {
+                "type": {
+                    "const": "Shell"
+                },
+                "param": {
+                    "unevaluatedProperties": false,
+                    "allOf": [
+                        {
+                            "$ref": "#/$defs/Shell"
+                        },
+                        {
+                            "$ref": "#/$defs/jsonComments"
+                        }
+                    ]
+                }
+            },
+            "dependentSchemas": {
+                "type": {
+                    "$ref": "#/$defs/TypeWithDependent"
+                }
+            }
+        },
         "CustomAction": {
             "type": "object",
             "properties": {
@@ -2877,6 +3042,7 @@
                 "TouchDown",
                 "TouchMove",
                 "TouchUp",
+                "Scroll",
                 "ClickKey",
                 "LongPressKey",
                 "KeyDown",
@@ -3157,6 +3323,20 @@
                     }
                 },
                 {
+                    "label": "ScrollV1",
+                    "body": "^ \"Scroll\",\n\"dx\": 0,\n\"dy\": 0"
+                },
+                {
+                    "label": "ScrollV2",
+                    "body": {
+                        "type": "Scroll",
+                        "param": {
+                            "dx": 0,
+                            "dy": 0
+                        }
+                    }
+                },
+                {
                     "label": "ClickKeyV1",
                     "body": "^ \"ClickKey\",\n\"key\": []"
                 },
@@ -3279,6 +3459,19 @@
                     }
                 },
                 {
+                    "label": "ShellV1",
+                    "body": "^ \"Shell\",\n\"cmd\": \"\""
+                },
+                {
+                    "label": "ShellV2",
+                    "body": {
+                        "type": "Shell",
+                        "param": {
+                            "cmd": ""
+                        }
+                    }
+                },
+                {
                     "label": "CustomActionV1",
                     "body": "^ \"Custom\",\n\"custom_action\": \"\""
                 },
@@ -3328,6 +3521,9 @@
                     "$ref": "#/$defs/TouchUpV1"
                 },
                 {
+                    "$ref": "#/$defs/ScrollV1"
+                },
+                {
                     "$ref": "#/$defs/ClickKeyV1"
                 },
                 {
@@ -3353,6 +3549,9 @@
                 },
                 {
                     "$ref": "#/$defs/CommandV1"
+                },
+                {
+                    "$ref": "#/$defs/ShellV1"
                 },
                 {
                     "$ref": "#/$defs/CustomActionV1"
@@ -3406,6 +3605,9 @@
                             "$ref": "#/$defs/TouchUpV2"
                         },
                         {
+                            "$ref": "#/$defs/ScrollV2"
+                        },
+                        {
                             "$ref": "#/$defs/ClickKeyV2"
                         },
                         {
@@ -3431,6 +3633,9 @@
                         },
                         {
                             "$ref": "#/$defs/CommandV2"
+                        },
+                        {
+                            "$ref": "#/$defs/ShellV2"
                         },
                         {
                             "$ref": "#/$defs/CustomActionV2"
@@ -3597,41 +3802,48 @@
                 "next": {
                     "title": "Next Property",
                     "description": "接下来要执行的节点列表。可选，默认空。",
-                    "$ref": "#/$defs/jsonStringOrList",
-                    "markdownDescription": "*string* | *list<string, >*\n\n接下来要执行的节点列表。可选，默认空。\n\n按顺序识别 next 中的每个节点，只执行第一个识别到的。"
+                    "$ref": "#/$defs/jsonNodeOrList",
+                    "markdownDescription": "*string* | *NodeAttr* | *list<string | NodeAttr, >*\n\n接下来要执行的节点列表。可选，默认空。\n\n按顺序识别 next 中的每个节点，只执行第一个识别到的。\n\n💡 v5.1 版本起新增支持带属性节点、NodeAttr 形式对象，或两者结合的异质数组。详情参见文档中的「节点属性」章节。"
                 },
                 "interrupt": {
                     "title": "Interrupt Property",
-                    "description": "`next` 中全部未识别到时的候补节点列表，会执行类似中断操作。可选，默认空。",
+                    "deprecated": true,
+                    "description": "（已在 5.1 版本中废弃，推荐使用 节点前缀跳回功能 `[JumpBack]` 替代）",
                     "$ref": "#/$defs/jsonStringOrList",
-                    "markdownDescription": "*string* | *list<string, >*\n\n`next` 中全部未识别到时的候补节点列表，会执行类似中断操作。可选，默认空。\n\n若 `next` 中的节点全部未识别到，则会按序识别该中断列表中的每个节点，并执行第一个识别到的。在后续节点全部执行完成后，重新跳转到该节点来再次尝试识别。\n\n例如: A: { next: [B, C], interrupt: [D, E] }\n\n当 B, C 未识别到而识别到 D 时，会去完整的执行 D 及 D.next。但当 D 的流水线完全执行完毕后。会再次回到节点 A，继续尝试识别 B, C, D, E 。\n\n该字段多用于异常处理，例如 D 是识别 “网络断开提示框”，在点击确认并等待网络连接成功后，继续之前的节点流程。"
+                    "markdownDescription": "*string* | *list<string, >*\n\n**（已在 5.1 版本中废弃，推荐使用 节点前缀跳回功能 `[JumpBack]` 替代）**\n\n我们提供了 [迁移脚本](https://github.com/MaaXYZ/MaaFramework/blob/main/tools/migrate_pipeline_v5.py)，可帮助您无损地将 Pipeline 自动转换为新风格~"
                 },
                 "is_sub": {
                     "title": "Is Sub Property",
                     "deprecated": true,
-                    "description": "是否是子节点。可选，默认 false 。",
+                    "description": "（已在 5.1 版本中废弃，推荐使用 节点前缀跳回功能 `[JumpBack]` 替代）",
                     "$ref": "#/$defs/jsonBooleanFalse",
-                    "markdownDescription": "*bool*\n\n**（已在 2.x 版本中废弃，但保留兼容性，推荐使用 `interrupt` 替代）**\n\n是否是子节点。可选，默认 false 。\n\n如果是子节点，执行完本节点（及后续 next 等）后，会返回来再次识别本节点 **所在的** next 列表。\n\n例如：A.next = [B, Sub_C, D]，这里的 Sub_C.is_sub = true，\n\n若匹配上了 Sub_C，在完整执行完 Sub_C 及后续节点后，会返回来再次识别 [B, Sub_C, D] 并执行命中项及后续节点。"
+                    "markdownDescription": "*bool*\n\n**（已在 5.1 版本中废弃，推荐使用 节点前缀跳回功能 `[JumpBack]` 替代）**\n\n我们提供了 [迁移脚本](https://github.com/MaaXYZ/MaaFramework/blob/main/tools/migrate_pipeline_v5.py)，可帮助您无损地将 Pipeline 自动转换为新风格~"
                 },
                 "rate_limit": {
                     "title": "Rate Limit Property",
                     "description": "识别速率限制，单位毫秒。可选，默认 1000 。",
                     "$ref": "#/$defs/jsonNInt64",
                     "default": 1000,
-                    "markdownDescription": "*uint*\n\n识别速率限制，单位毫秒。可选，默认 1000 。\n\n每轮识别 `next` + `interrupt` 最低消耗 `rate_limit` 毫秒，不足的时间将会 sleep 等待。"
+                    "markdownDescription": "*uint*\n\n识别速率限制，单位毫秒。可选，默认 1000 。\n\n每轮识别最低消耗 `rate_limit` 毫秒，不足的时间将会 sleep 等待。"
                 },
                 "timeout": {
                     "title": "Timeout Property",
-                    "description": "`next` + `interrupt` 识别超时时间，毫秒。可选，默认 20 * 1000 。",
+                    "description": "识别超时时间，毫秒。可选，默认 20 * 1000 。",
                     "$ref": "#/$defs/jsonNInt64",
                     "default": 20000,
-                    "markdownDescription": "*uint*\n\n`next` + `interrupt` 识别超时时间，毫秒。可选，默认 20 * 1000 。\n\n具体逻辑为 `while(!timeout) { foreach(next + interrupt); sleep_until(rate_limit); }` 。"
+                    "markdownDescription": "*uint*\n\n识别超时时间，毫秒。可选，默认 20 * 1000 。\n\n具体逻辑为 `while(!timeout) { foreach(next); sleep_until(rate_limit); }` 。"
                 },
                 "on_error": {
                     "title": "On Error Property",
                     "description": "当识别超时，或动作执行失败后，接下来会执行该列表中的节点。可选，默认空。",
+                    "$ref": "#/$defs/jsonNodeOrList",
+                    "markdownDescription": "*string* | *NodeAttr* | *list<string | NodeAttr, >*\n\n当识别超时，或动作执行失败后，接下来会执行该列表中的节点。可选，默认空。\n\n💡 v5.1 版本起新增支持带属性节点、NodeAttr 形式对象，或两者结合的异质数组。详情参见文档中的「节点属性」章节。"
+                },
+                "anchor": {
+                    "title": "Anchor Property",
+                    "description": "锚点名称。可选，默认空。",
                     "$ref": "#/$defs/jsonStringOrList",
-                    "markdownDescription": "*string* | *list<string, >*\n\n当识别超时，或动作执行失败后，接下来会执行该列表中的节点。可选，默认空。"
+                    "markdownDescription": "*string* | *list<string, >*\n\n锚点名称。可选，默认空。\n\n当节点执行成功后，会将该锚点名设置为当前节点。多个节点可设置同一个锚点名，后执行的会覆盖先执行的。\n\n在 `next` 或 `on_error` 中可通过 `[Anchor]` 属性引用该锚点，运行时会解析为最后设置该锚点的节点。\n\n详见文档中的「节点属性」章节。"
                 },
                 "inverse": {
                     "title": "Inverse Property",
@@ -3644,6 +3856,12 @@
                     "description": "是否启用该 node。可选，默认 true 。",
                     "$ref": "#/$defs/jsonBooleanTrue",
                     "markdownDescription": "*bool*\n\n是否启用该 node。可选，默认 true 。\n\n若为 false，其他 node 的 next 列表中的该 node 会被跳过，既不会被识别也不会被执行。"
+                },
+                "max_hit": {
+                    "title": "Max Hit Property",
+                    "description": "该节点最多可被识别成功多少次。可选，默认 UINT_MAX ，即无限制。",
+                    "$ref": "#/$defs/jsonUInt32",
+                    "markdownDescription": "*uint*\n\n该节点最多可被识别成功多少次。可选，默认 UINT_MAX ，即无限制。\n\n若超过该次数，其他 node 的 next 列表中的该 node 会被跳过，既不会被识别也不会被执行。"
                 },
                 "pre_delay": {
                     "title": "Pre Delay Property",

@@ -236,6 +236,14 @@ struct JStopTask
     json::value to_json() const { return json::object(); }
 };
 
+struct JScroll
+{
+    int dx = 0;
+    int dy = 0;
+
+    MEO_TOJSON(dx, dy);
+};
+
 struct JCommand
 {
     std::string exec;
@@ -243,6 +251,14 @@ struct JCommand
     bool detach = false;
 
     MEO_TOJSON(exec, args, detach);
+};
+
+struct JShell
+{
+    std::string cmd;
+    int64_t timeout = 20000;
+
+    MEO_TOJSON(cmd, timeout);
 };
 
 struct JCustomAction
@@ -269,7 +285,10 @@ using JActionParam = std::variant<
     JInputText,
     JStartApp,
     JStopApp,
+    JScroll,
+    JStopTask,
     JCommand,
+    JShell,
     JCustomAction>;
 
 struct JAction
@@ -297,36 +316,36 @@ struct JPipelineData
 {
     JRecognition recognition;
     JAction action;
-    std::vector<std::string> next;
-    std::vector<std::string> interrupt;
-    bool is_sub = false;
+    std::vector<NodeAttr> next;
     int64_t rate_limit = 0;
     int64_t timeout = 0;
-    std::vector<std::string> on_error;
+    std::vector<NodeAttr> on_error;
+    std::vector<std::string> anchor;
     bool inverse = false;
     bool enabled = false;
     int64_t pre_delay = 0;
     int64_t post_delay = 0;
     JWaitFreezes pre_wait_freezes;
     JWaitFreezes post_wait_freezes;
+    uint32_t max_hit = 0;
     json::value focus;
-    json::object attach; // 附加 JSON 对象
+    json::object attach;
 
     MEO_TOJSON(
         recognition,
         action,
         next,
-        interrupt,
-        is_sub,
         rate_limit,
         timeout,
         on_error,
+        anchor,
         inverse,
         enabled,
         pre_delay,
         post_delay,
         pre_wait_freezes,
         post_wait_freezes,
+        max_hit,
         focus,
         attach);
 };

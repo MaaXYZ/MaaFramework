@@ -11,6 +11,12 @@
 
 MAA_TASK_NS_BEGIN
 
+struct TaskState
+{
+    std::unordered_map<std::string, unsigned int> hit_count;
+    std::unordered_map<std::string, std::string> anchors;
+};
+
 class Context
     : public MaaContext
     , public std::enable_shared_from_this<Context>
@@ -50,9 +56,17 @@ public: // from MaaContextAPI
 
 public:
     std::optional<PipelineData> get_pipeline_data(const std::string& node_name) const;
+    std::optional<PipelineData> get_pipeline_data(const MAA_RES_NS::NodeAttr& node_attr) const;
     std::vector<cv::Mat> get_images(const std::vector<std::string>& names);
 
     bool& need_to_stop();
+
+    virtual uint get_hit_count(const std::string& node_name) const override;
+    void increment_hit_count(const std::string& node_name);
+    virtual void clear_hit_count(const std::string& node_name) override;
+
+    virtual void set_anchor(const std::string& anchor_name, const std::string& node_name) override;
+    virtual std::optional<std::string> get_anchor(const std::string& anchor_name) const override;
 
 private:
     bool override_pipeline_once(const json::object& pipeline_override, const MAA_RES_NS::DefaultPipelineMgr& default_mgr);
@@ -61,8 +75,12 @@ private:
     MaaTaskId task_id_ = 0;
     Tasker* tasker_ = nullptr;
 
+    // context level
     PipelineDataMap pipeline_override_;
     std::unordered_map<std::string, cv::Mat> image_override_;
+
+    // task level
+    std::shared_ptr<TaskState> task_state_ = nullptr;
 
 private:
     bool need_to_stop_ = false;

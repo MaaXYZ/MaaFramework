@@ -27,10 +27,49 @@ declare global {
             ScreencapOrInputMethods
         >
         const Win32InputMethod: Record<
-            'Seize' | 'SendMessage' | 'PostMessage' | 'LegacyEvent' | 'PostThreadMessage',
+            | 'Seize'
+            | 'SendMessage'
+            | 'PostMessage'
+            | 'LegacyEvent'
+            | 'PostThreadMessage'
+            | 'SendMessageWithCursorPos'
+            | 'PostMessageWithCursorPos',
             ScreencapOrInputMethods
         >
         const DbgControllerType: Record<'CarouselImage' | 'ReplayRecording', Uint64>
+        const RecognitionType: Record<
+            | 'DirectHit'
+            | 'TemplateMatch'
+            | 'FeatureMatch'
+            | 'ColorMatch'
+            | 'OCR'
+            | 'NeuralNetworkClassify'
+            | 'NeuralNetworkDetect'
+            | 'Custom',
+            string
+        >
+        const ActionType: Record<
+            | 'DoNothing'
+            | 'Click'
+            | 'LongPress'
+            | 'Swipe'
+            | 'MultiSwipe'
+            | 'TouchDown'
+            | 'TouchMove'
+            | 'TouchUp'
+            | 'ClickKey'
+            | 'LongPressKey'
+            | 'KeyDown'
+            | 'KeyUp'
+            | 'InputText'
+            | 'StartApp'
+            | 'StopApp'
+            | 'StopTask'
+            | 'Scroll'
+            | 'Command'
+            | 'Custom',
+            string
+        >
     }
 }
 export {}

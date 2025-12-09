@@ -11,19 +11,11 @@
 
 MAA_TASK_NS_BEGIN
 
-TaskBase::TaskBase(std::string entry, Tasker* tasker)
-    : tasker_(tasker)
-    , entry_(std::move(entry))
-    , cur_node_(entry_)
-    , context_(Context::create(task_id_, tasker))
-{
-}
-
 TaskBase::TaskBase(std::string entry, Tasker* tasker, std::shared_ptr<Context> context)
     : tasker_(tasker)
     , entry_(std::move(entry))
     , cur_node_(entry_)
-    , context_(std::move(context))
+    , context_(context ? std::move(context) : Context::create(task_id_, tasker))
 {
 }
 
@@ -61,6 +53,11 @@ RecoResult TaskBase::run_recognition(const cv::Mat& image, const PipelineData& d
 {
     LogFunc << VAR(cur_node_) << VAR(data.name);
 
+    if (!context_) {
+        LogError << "context is null";
+        return {};
+    }
+
     if (image.empty()) {
         LogError << "Image is empty";
         return {};
@@ -68,6 +65,12 @@ RecoResult TaskBase::run_recognition(const cv::Mat& image, const PipelineData& d
 
     if (!data.enabled) {
         LogDebug << "node disabled" << data.name << VAR(data.enabled);
+        return {};
+    }
+
+    uint current_hit = context_->get_hit_count(data.name);
+    if (current_hit >= data.max_hit) {
+        LogDebug << "max_hit reached" << VAR(data.name) << VAR(current_hit) << VAR(data.max_hit);
         return {};
     }
 
@@ -96,6 +99,7 @@ RecoResult TaskBase::run_recognition(const cv::Mat& image, const PipelineData& d
 
     if (result.box) {
         LogInfo << "reco hit" << VAR(result.name) << VAR(result.box);
+        context_->increment_hit_count(data.name);
     }
 
     return result;

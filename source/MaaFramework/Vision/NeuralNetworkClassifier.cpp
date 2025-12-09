@@ -97,9 +97,15 @@ NeuralNetworkClassifier::Result NeuralNetworkClassifier::classify() const
 
 void NeuralNetworkClassifier::add_results(ResultsVec results, const std::vector<int>& expected)
 {
-    std::ranges::copy_if(results, std::back_inserter(filtered_results_), [&](const auto& res) {
-        return std::ranges::find(expected, res.cls_index) != expected.end();
-    });
+    if (expected.empty()) {
+        // expected 为空时，所有结果均可用
+        merge_vector_(filtered_results_, results);
+    }
+    else {
+        std::ranges::copy_if(results, std::back_inserter(filtered_results_), [&](const auto& res) {
+            return std::ranges::find(expected, res.cls_index) != expected.end();
+        });
+    }
 
     merge_vector_(all_results_, std::move(results));
 }
@@ -143,6 +149,9 @@ void NeuralNetworkClassifier::sort_(ResultsVec& results) const
         break;
     case ResultOrderBy::Random:
         sort_by_random_(results);
+        break;
+    case ResultOrderBy::Expected:
+        sort_by_expected_index_(results, param_.expected);
         break;
     default:
         LogError << "Not supported order by" << VAR(param_.order_by);

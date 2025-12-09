@@ -44,6 +44,8 @@ public: // from InputBase
     virtual bool key_down(int key) override;
     virtual bool key_up(int key) override;
 
+    virtual bool scroll(int dx, int dy) override;
+
 public: // from ControlUnitSink
     virtual void on_app_started(const std::string& intent) override;
     virtual void on_app_stopped(const std::string& intent) override;

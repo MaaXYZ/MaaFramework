@@ -9,6 +9,13 @@
 
 MAA_CTRL_UNIT_NS_BEGIN
 
+SeizeInput::~SeizeInput()
+{
+    if (block_input_) {
+        BlockInput(FALSE);
+    }
+}
+
 void SeizeInput::ensure_foreground()
 {
     ::MaaNS::CtrlUnitNs::ensure_foreground_and_topmost(hwnd_);
@@ -40,6 +47,10 @@ bool SeizeInput::touch_down(int contact, int x, int y, int pressure)
         ClientToScreen(hwnd_, &point);
     }
     LogInfo << VAR(contact) << VAR(x) << VAR(y) << VAR(pressure) << VAR(point.x) << VAR(point.y) << VAR_VOIDP(hwnd_);
+
+    if (block_input_) {
+        BlockInput(TRUE);
+    }
 
     SetCursorPos(point.x, point.y);
 
@@ -85,6 +96,12 @@ bool SeizeInput::touch_up(int contact)
     }
     LogInfo << VAR(contact) << VAR(hwnd_);
 
+    OnScopeLeave([this]() {
+        if (block_input_) {
+            BlockInput(FALSE);
+        }
+    });
+
     INPUT input = {};
     input.type = INPUT_MOUSE;
 
@@ -117,6 +134,16 @@ bool SeizeInput::input_text(const std::string& text)
     auto u16_text = to_u16(text);
     LogInfo << VAR(text) << VAR(u16_text) << VAR(hwnd_);
 
+    if (block_input_) {
+        BlockInput(TRUE);
+    }
+
+    OnScopeLeave([this]() {
+        if (block_input_) {
+            BlockInput(FALSE);
+        }
+    });
+
     std::vector<INPUT> input_vec;
 
     for (const auto ch : u16_text) {
@@ -148,6 +175,10 @@ bool SeizeInput::key_down(int key)
     }
     LogInfo << VAR(key) << VAR(hwnd_);
 
+    if (block_input_) {
+        BlockInput(TRUE);
+    }
+
     INPUT inputs[1] = {};
 
     inputs[0].type = INPUT_KEYBOARD;
@@ -165,6 +196,12 @@ bool SeizeInput::key_up(int key)
     }
     LogInfo << VAR(key) << VAR(hwnd_);
 
+    OnScopeLeave([this]() {
+        if (block_input_) {
+            BlockInput(FALSE);
+        }
+    });
+
     INPUT inputs[1] = {};
 
     inputs[0].type = INPUT_KEYBOARD;
@@ -172,6 +209,42 @@ bool SeizeInput::key_up(int key)
     inputs[0].ki.dwFlags = KEYEVENTF_KEYUP;
 
     SendInput(ARRAYSIZE(inputs), inputs, sizeof(INPUT));
+
+    return true;
+}
+
+bool SeizeInput::scroll(int dx, int dy)
+{
+    LogInfo << VAR(dx) << VAR(dy);
+
+    if (hwnd_) {
+        ensure_foreground();
+    }
+
+    if (block_input_) {
+        BlockInput(TRUE);
+    }
+
+    OnScopeLeave([this]() {
+        if (block_input_) {
+            BlockInput(FALSE);
+        }
+    });
+
+    INPUT input = {};
+    input.type = INPUT_MOUSE;
+
+    if (dy != 0) {
+        input.mi.dwFlags = MOUSEEVENTF_WHEEL;
+        input.mi.mouseData = static_cast<DWORD>(dy);
+        SendInput(1, &input, sizeof(INPUT));
+    }
+
+    if (dx != 0) {
+        input.mi.dwFlags = MOUSEEVENTF_HWHEEL;
+        input.mi.mouseData = static_cast<DWORD>(dx);
+        SendInput(1, &input, sizeof(INPUT));
+    }
 
     return true;
 }

@@ -45,6 +45,11 @@ extern "C"
 
     MAA_FRAMEWORK_API MaaContext* MaaContextClone(const MaaContext* context);
 
+    MAA_FRAMEWORK_API MaaBool MaaContextSetAnchor(MaaContext* context, const char* anchor_name, const char* node_name);
+    MAA_FRAMEWORK_API MaaBool MaaContextGetAnchor(MaaContext* context, const char* anchor_name, /* out */ MaaStringBuffer* buffer);
+    MAA_FRAMEWORK_API MaaBool MaaContextGetHitCount(MaaContext* context, const char* node_name, /* out */ MaaSize* count);
+    MAA_FRAMEWORK_API MaaBool MaaContextClearHitCount(MaaContext* context, const char* node_name);
+
 #ifdef __cplusplus
 }
 #endif

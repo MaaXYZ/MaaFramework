@@ -125,4 +125,10 @@ bool AdbShellInput::key_up(int key)
     return false;
 }
 
+bool AdbShellInput::scroll(int dx, int dy)
+{
+    LogError << "Scroll is not supported on Adb controller" << VAR(dx) << VAR(dy);
+    return false;
+}
+
 MAA_CTRL_UNIT_NS_END

@@ -220,6 +220,22 @@ class Controller:
         ctrl_id = Library.framework().MaaControllerPostTouchUp(self._handle, contact)
         return self._gen_ctrl_job(ctrl_id)
 
+    def post_scroll(self, dx: int, dy: int) -> Job:
+        """滚动 / Scroll
+
+        Args:
+            dx: 水平滚动距离，正值向右滚动，负值向左滚动 / Horizontal scroll distance, positive for right, negative for left
+            dy: 垂直滚动距离，正值向下滚动，负值向上滚动 / Vertical scroll distance, positive for down, negative for up
+
+        Returns:
+            Job: 作业对象 / Job object
+
+        Note:
+            不是所有控制器都支持滚动操作 / Not all controllers support scroll operation
+        """
+        ctrl_id = Library.framework().MaaControllerPostScroll(self._handle, dx, dy)
+        return self._gen_ctrl_job(ctrl_id)
+
     def post_screencap(self) -> JobWithResult:
         """截图 / Screenshot
 
@@ -250,6 +266,43 @@ class Controller:
         ):
             raise RuntimeError("Failed to get cached image.")
         return image_buffer.get()
+
+    def post_shell(self, cmd: str, timeout: int = 20000) -> JobWithResult:
+        """执行 shell 命令 (仅 ADB 控制器) / Execute shell command (ADB only)
+
+        Args:
+            cmd: shell 命令 / shell command
+            timeout: 超时时间（毫秒），默认 20000 / Timeout in milliseconds, default 20000
+
+        Returns:
+            JobWithResult: 作业对象，可通过 result 获取命令输出 / Job object, can get output via result
+        """
+        ctrl_id = Library.framework().MaaControllerPostShell(
+            self._handle, cmd.encode("utf-8"), timeout
+        )
+        return JobWithResult(
+            ctrl_id,
+            self._status,
+            self._wait,
+            self._get_shell_output,
+        )
+
+    @property
+    def shell_output(self) -> str:
+        """获取最近一次 shell 命令输出 / Get the latest shell command output
+
+        Returns:
+            str: shell 命令输出 / shell command output
+
+        Raises:
+            RuntimeError: 如果获取失败
+        """
+        string_buffer = StringBuffer()
+        if not Library.framework().MaaControllerGetShellOutput(
+            self._handle, string_buffer._handle
+        ):
+            raise RuntimeError("Failed to get shell output.")
+        return string_buffer.get()
 
     @property
     def connected(self) -> bool:
@@ -381,6 +434,9 @@ class Controller:
     def _get_screencap(self, _: int) -> numpy.ndarray:
         return self.cached_image
 
+    def _get_shell_output(self, _: int) -> str:
+        return self.shell_output
+
     def _gen_ctrl_job(self, ctrlid: MaaCtrlId) -> Job:
         return Job(
             ctrlid,
@@ -489,6 +545,14 @@ class Controller:
             MaaControllerHandle,
             c_int32,
         ]
+
+        Library.framework().MaaControllerPostScroll.restype = MaaCtrlId
+        Library.framework().MaaControllerPostScroll.argtypes = [
+            MaaControllerHandle,
+            c_int32,
+            c_int32,
+        ]
+
         Library.framework().MaaControllerStatus.restype = MaaStatus
         Library.framework().MaaControllerStatus.argtypes = [
             MaaControllerHandle,
@@ -539,6 +603,7 @@ class AdbController(Controller):
     截图方式和输入方式会在启动时进行测速, 选择最快的方案
     Screenshot and input methods will be speed tested at startup, selecting the fastest option
     """
+
     AGENT_BINARY_PATH = os.path.join(
         os.path.dirname(__file__),
         "../MaaAgentBinary",
@@ -738,6 +803,7 @@ class CustomController(Controller):
             CustomController._c_input_text_agent,
             CustomController._c_key_down_agent,
             CustomController._c_key_up_agent,
+            CustomController._c_scroll_agent,
         )
 
         self._handle = Library.framework().MaaCustomControllerCreate(
@@ -763,9 +829,12 @@ class CustomController(Controller):
     @abstractmethod
     def request_uuid(self) -> str:
         raise NotImplementedError
-    
+
     def get_features(self) -> int:
-        return MaaControllerFeatureEnum.UseMouseDownAndUpInsteadOfClick | MaaControllerFeatureEnum.UseKeyboardDownAndUpInsteadOfClick
+        return (
+            MaaControllerFeatureEnum.UseMouseDownAndUpInsteadOfClick
+            | MaaControllerFeatureEnum.UseKeyboardDownAndUpInsteadOfClick
+        )
 
     @abstractmethod
     def start_app(self, intent: str) -> bool:
@@ -825,6 +894,10 @@ class CustomController(Controller):
 
     @abstractmethod
     def key_up(self, keycode: int) -> bool:
+        raise NotImplementedError
+
+    @abstractmethod
+    def scroll(self, dx: int, dy: int) -> bool:
         raise NotImplementedError
 
     @staticmethod
@@ -1084,6 +1157,23 @@ class CustomController(Controller):
         ).value
 
         return int(self.input_text(c_text.decode()))
+
+    @staticmethod
+    @MaaCustomControllerCallbacks.ScrollFunc
+    def _c_scroll_agent(
+        c_dx: ctypes.c_int32,
+        c_dy: ctypes.c_int32,
+        trans_arg: ctypes.c_void_p,
+    ) -> int:
+        if not trans_arg:
+            return int(False)
+
+        self: CustomController = ctypes.cast(
+            trans_arg,
+            ctypes.py_object,
+        ).value
+
+        return int(self.scroll(int(c_dx), int(c_dy)))
 
     def _set_custom_api_properties(self):
         Library.framework().MaaCustomControllerCreate.restype = MaaControllerHandle

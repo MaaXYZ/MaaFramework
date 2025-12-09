@@ -42,7 +42,7 @@ private:
 
 private:
     const TemplateMatcherParam param_;
-    const bool use_min_score_ = false;
+    const bool low_score_better_ = false;
     const std::vector<cv::Mat> templates_;
 };
 

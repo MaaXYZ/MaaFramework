@@ -31,12 +31,17 @@ public:
     virtual MaaCtrlId post_key_down(int keycode) override;
     virtual MaaCtrlId post_key_up(int keycode) override;
 
+    virtual MaaCtrlId post_scroll(int dx, int dy) override;
+
+    virtual MaaCtrlId post_shell(const std::string& cmd, int64_t timeout = 20000) override;
+
     virtual MaaStatus status(MaaCtrlId ctrl_id) const override;
     virtual MaaStatus wait(MaaCtrlId ctrl_id) const override;
     virtual bool connected() const override;
     virtual bool running() const override;
 
     virtual cv::Mat cached_image() const override;
+    virtual std::string cached_shell_output() const override;
     virtual std::string get_uuid() override;
 
     virtual MaaSinkId add_sink(MaaEventCallback callback, void* trans_arg) override;

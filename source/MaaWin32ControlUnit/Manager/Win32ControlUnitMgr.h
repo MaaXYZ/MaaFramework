@@ -45,6 +45,8 @@ public: // from ControlUnitAPI
     virtual bool key_down(int key) override;
     virtual bool key_up(int key) override;
 
+    virtual bool scroll(int dx, int dy) override;
+
 private:
     HWND hwnd_ = nullptr;
     MaaWin32ScreencapMethod screencap_method_ = MaaWin32ScreencapMethod_None;

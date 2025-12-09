@@ -22,9 +22,9 @@ declare global {
             TemplateMatch: 'Horizontal' | 'Vertical' | 'Score' | 'Random'
             FeatureMatch: 'Horizontal' | 'Vertical' | 'Score' | 'Area' | 'Random'
             ColorMatch: 'Horizontal' | 'Vertical' | 'Score' | 'Area' | 'Random'
-            OCR: 'Horizontal' | 'Vertical' | 'Area' | 'Length' | 'Random'
-            NeuralNetworkClassify: 'Horizontal' | 'Vertical' | 'Score' | 'Random'
-            NeuralNetworkDetect: 'Horizontal' | 'Vertical' | 'Score' | 'Area' | 'Random'
+            OCR: 'Horizontal' | 'Vertical' | 'Area' | 'Length' | 'Random' | 'Expected'
+            NeuralNetworkClassify: 'Horizontal' | 'Vertical' | 'Score' | 'Random' | 'Expected'
+            NeuralNetworkDetect: 'Horizontal' | 'Vertical' | 'Score' | 'Area' | 'Random' | 'Expected'
         }
 
         type RecognitionDirectHit = {}
@@ -282,13 +282,26 @@ declare global {
 
         type ActionStopTask = {}
 
+        type ActionScroll = {
+            dx?: number
+            dy?: number
+        }
+
         type ActionCommand<Mode> = RequiredIfStrict<
             {
                 exec?: string
                 args?: string[]
                 detach?: boolean
             },
-            'exec',
+            Mode
+        >
+
+        type ActionShell<Mode> = RequiredIfStrict<
+            {
+                cmd?: string
+                timeout?: number
+            },
+            'cmd',
             Mode
         >
 
@@ -343,9 +356,17 @@ declare global {
             | MixAct<'InputText', ActionInputText<Mode>, Mode>
             | MixAct<'StartApp', ActionStartApp<Mode>, Mode>
             | MixAct<'StopApp', ActionStopApp<Mode>, Mode>
+            | MixAct<'Scroll', ActionScroll, Mode>
             | MixAct<'StopTask', ActionStopTask, Mode>
             | MixAct<'Command', ActionCommand<Mode>, Mode>
+            | MixAct<'Shell', ActionShell<Mode>, Mode>
             | MixAct<'Custom', ActionCustom<Mode>, Mode>
+
+        type NodeAttr = {
+            name: string
+            jump_back: boolean
+            anchor: boolean
+        }
 
         type WaitFreeze = {
             time?: number
@@ -358,20 +379,20 @@ declare global {
         }
 
         type General<Mode> = {
-            next?: MaybeArray<NodeName, Mode>
-            interrupt?: MaybeArray<NodeName, Mode>
-            is_sub?: boolean
+            next?: MaybeArray<NodeAttr, Mode>
             rate_limit?: number
             timeout?: number
-            on_error?: MaybeArray<string, Mode>
+            on_error?: MaybeArray<NodeAttr, Mode>
+            anchor?: MaybeArray<string, Mode>
             inverse?: boolean
             enabled?: boolean
+            max_hit?: number
             pre_delay?: boolean
             post_delay?: boolean
             pre_wait_freezes?: RemoveIfDump<number, Mode> | WaitFreeze
             post_wait_freezes?: RemoveIfDump<number, Mode> | WaitFreeze
             focus?: unknown
-            attach?: Record<string, unknown> // 附加 JSON 对象
+            attach?: Record<string, unknown>
         }
 
         type Task = Recognition<ModeFragment> & Action<ModeFragment> & General<ModeFragment>

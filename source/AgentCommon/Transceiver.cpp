@@ -72,6 +72,7 @@ void Transceiver::uninit_socket()
 
 bool Transceiver::alive()
 {
+    std::unique_lock lock(socket_mutex_);
     return zmq_sock_.handle() != nullptr && zmq::detail::poll(&zmq_pollitem_send_, 1, 0);
 }
 
@@ -105,7 +106,9 @@ bool Transceiver::poll(zmq::pollitem_t& pollitem)
 
 bool Transceiver::send(const json::value& j)
 {
-    LogTrace << VAR(j.to_string()) << VAR(ipc_addr_);
+    // LogTrace << VAR(j.to_string()) << VAR(ipc_addr_);
+
+    std::unique_lock lock(socket_mutex_);
 
     if (!poll(zmq_pollitem_send_)) {
         LogError << "send canceled";
@@ -125,6 +128,8 @@ bool Transceiver::send(const json::value& j)
 
 std::optional<json::value> Transceiver::recv()
 {
+    std::unique_lock lock(socket_mutex_);
+
     if (!poll(zmq_pollitem_recv_)) {
         LogError << "recv canceled";
         return std::nullopt;
@@ -145,7 +150,7 @@ std::optional<json::value> Transceiver::recv()
         return std::nullopt;
     }
     auto j = *std::move(jopt);
-    LogTrace << VAR(j.to_string()) << VAR(ipc_addr_);
+    // LogTrace << VAR(j.to_string()) << VAR(ipc_addr_);
 
     return j;
 }
@@ -157,6 +162,8 @@ std::string Transceiver::send_image(const cv::Mat& mat)
         return {};
     }
 
+    std::unique_lock lock(socket_mutex_);
+
     ImageHeader header {
         .uuid = make_uuid(),
         .rows = mat.rows,
@@ -165,14 +172,22 @@ std::string Transceiver::send_image(const cv::Mat& mat)
         .size = mat.total() * mat.elemSize(),
     };
 
-    bool sent = send(header);
+    // send header
+    if (!poll(zmq_pollitem_send_)) {
+        LogError << "send header canceled";
+        return {};
+    }
+    std::string jstr = json::value(header).dumps();
+    zmq::message_t header_msg(jstr.data(), jstr.size());
+    bool sent = zmq_sock_.send(std::move(header_msg), zmq::send_flags::dontwait).has_value();
     if (!sent) {
         LogError << "failed to send header" << VAR(header) << VAR(ipc_addr_);
         return {};
     }
 
-    zmq::message_t msg(mat.data, mat.total() * mat.elemSize());
-    sent = zmq_sock_.send(msg, zmq::send_flags::none).has_value();
+    // send image data
+    zmq::message_t img_msg(mat.data, mat.total() * mat.elemSize());
+    sent = zmq_sock_.send(img_msg, zmq::send_flags::none).has_value();
     if (!sent) {
         LogError << "failed to send msg" << VAR(ipc_addr_);
         return {};
@@ -202,6 +217,8 @@ cv::Mat Transceiver::get_image_cache(const std::string& uuid)
 void Transceiver::handle_image(const ImageHeader& header)
 {
     LogFunc << VAR(header);
+
+    std::unique_lock lock(socket_mutex_);
 
     zmq::message_t msg;
     auto size_opt = zmq_sock_.recv(msg);

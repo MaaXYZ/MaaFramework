@@ -44,9 +44,9 @@ enum class ResultOrderBy
     Vertical,
     Score,
     Area,
-    Length,   // for OCR
+    Length, // for OCR
     Random,
-    Expected, // TODO
+    Expected,
 };
 
 struct DirectHitParam
@@ -57,6 +57,7 @@ struct TemplateMatcherParam
 {
     inline static constexpr double kDefaultThreshold = 0.7;
     inline static constexpr int kDefaultMethod = 5; // cv::TM_CCOEFF_NORMED
+    inline static constexpr int kMethodInvertBase = 10000;
 
     Target roi_target;
     std::vector<std::string> template_;
@@ -166,7 +167,7 @@ struct FeatureMatcherParam
 
     inline static constexpr Detector kDefaultDetector = Detector::SIFT;
     // inline static constexpr Matcher kDefaultMatcher = Matcher::FLANN;
-    inline static constexpr double kDefaultDistanceRatio = 0.6;
+    inline static constexpr double kDefaultkDefaultRatio = 0.6;
     inline static constexpr int kDefaultCount = 4;
 
     Target roi_target;
@@ -176,40 +177,12 @@ struct FeatureMatcherParam
     Detector detector = kDefaultDetector;
     // Matcher matcher = kDefaultMatcher;
 
-    double distance_ratio = kDefaultDistanceRatio;
+    double ratio = kDefaultkDefaultRatio;
     int count = kDefaultCount;
 
     ResultOrderBy order_by = ResultOrderBy::Horizontal;
     int result_index = 0;
 };
-
-inline std::ostream& operator<<(std::ostream& os, const ResultOrderBy& order_by)
-{
-    switch (order_by) {
-    case ResultOrderBy::Horizontal:
-        os << "Horizontal";
-        break;
-    case ResultOrderBy::Vertical:
-        os << "Vertical";
-        break;
-    case ResultOrderBy::Score:
-        os << "Score";
-        break;
-    case ResultOrderBy::Area:
-        os << "Area";
-        break;
-    case ResultOrderBy::Length:
-        os << "Length";
-        break;
-    case ResultOrderBy::Random:
-        os << "Random";
-        break;
-    case ResultOrderBy::Expected:
-        os << "Expected";
-        break;
-    }
-    return os;
-}
 
 struct RectComparator
 {

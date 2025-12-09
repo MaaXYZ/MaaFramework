@@ -154,6 +154,16 @@ NeuralNetworkDetector::ResultsVec NeuralNetworkDetector::detect(const std::vecto
 
 void NeuralNetworkDetector::add_results(ResultsVec results, const std::vector<int>& expected, const std::vector<double>& thresholds)
 {
+    if (expected.empty()) {
+        // expected 为空时，所有结果均可用，但仍需满足默认阈值
+        double default_threshold = thresholds.empty() ? NeuralNetworkDetectorParam::kDefaultThreshold : thresholds.front();
+        std::ranges::copy_if(results, std::back_inserter(filtered_results_), [&](const auto& res) {
+            return res.score >= default_threshold;
+        });
+        merge_vector_(all_results_, std::move(results));
+        return;
+    }
+
     if (expected.size() != thresholds.size()) {
         LogError << name_ << VAR(uid_) << "expected.size() != thresholds.size()" << VAR(expected) << VAR(thresholds);
         return;
@@ -227,6 +237,9 @@ void NeuralNetworkDetector::sort_(ResultsVec& results) const
         break;
     case ResultOrderBy::Random:
         sort_by_random_(results);
+        break;
+    case ResultOrderBy::Expected:
+        sort_by_expected_index_(results, param_.expected);
         break;
     default:
         LogError << "Not supported order by" << VAR(param_.order_by);

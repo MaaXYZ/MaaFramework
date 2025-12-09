@@ -208,4 +208,16 @@ bool CustomControlUnitMgr::key_up(int key)
     return controller_->key_up(key, controller_arg_);
 }
 
+bool CustomControlUnitMgr::scroll(int dx, int dy)
+{
+    LogFunc << VAR_VOIDP(controller_) << VAR_VOIDP(controller_->scroll) << VAR(dx) << VAR(dy);
+
+    if (!controller_ || !controller_->scroll) {
+        LogError << "controller_ or controller_->scroll is nullptr";
+        return false;
+    }
+
+    return controller_->scroll(dx, dy, controller_arg_);
+}
+
 MAA_CTRL_UNIT_NS_END

@@ -10,7 +10,24 @@
 
 MAA_TASK_NS_BEGIN
 
-MaaActId ActionTask::run_with_param(const cv::Rect& box, const json::value& reco_detail)
+ActionTask::ActionTask(
+    const cv::Rect& box,
+    const std::string& reco_detail,
+    std::string entry,
+    Tasker* tasker,
+    std::shared_ptr<Context> context)
+    : TaskBase(std::move(entry), tasker, std::move(context))
+    , box_(box)
+    , reco_detail_(json::parse(reco_detail).value_or(reco_detail))
+{
+}
+
+bool ActionTask::run()
+{
+    return run_impl() != MaaInvalidId;
+}
+
+MaaActId ActionTask::run_impl()
 {
     LogFunc << VAR(entry_) << VAR(task_id_);
 
@@ -42,8 +59,8 @@ MaaActId ActionTask::run_with_param(const cv::Rect& box, const json::value& reco
 
     RecoResult fake_reco {
         .reco_id = MaaInvalidId,
-        .box = box,
-        .detail = reco_detail,
+        .box = box_,
+        .detail = reco_detail_,
     };
 
     auto act = run_action(fake_reco, cur_node);

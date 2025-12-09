@@ -1,6 +1,7 @@
 #pragma once
 
 #include <chrono>
+#include <limits>
 #include <memory>
 #include <string>
 #include <unordered_map>
@@ -96,9 +97,11 @@ enum class Type
     StopApp,
     KeyDown,
     KeyUp,
-    Command,
-    Custom,
+    Scroll,
     StopTask,
+    Command,
+    Shell,
+    Custom,
 };
 
 using TargetObj = MAA_VISION_NS::TargetObj;
@@ -174,6 +177,18 @@ struct AppParam
     std::string package;
 };
 
+struct ScrollParam
+{
+    int dx = 0;
+    int dy = 0;
+};
+
+struct ShellParam
+{
+    std::string cmd;
+    int64_t timeout = 20000;
+};
+
 struct CommandParam
 {
     std::string exec;
@@ -201,6 +216,8 @@ using Param = std::variant<
     LongPressKeyParam,
     InputTextParam,
     AppParam,
+    ScrollParam,
+    ShellParam,
     CommandParam,
     CustomParam>;
 
@@ -237,6 +254,10 @@ inline static const std::unordered_map<std::string, Type> kTypeMap = {
     { "keydown", Type::KeyDown },
     { "KeyUp", Type::KeyUp },
     { "keyup", Type::KeyUp },
+    { "Scroll", Type::Scroll },
+    { "scroll", Type::Scroll },
+    { "Shell", Type::Shell },
+    { "shell", Type::Shell },
     { "Command", Type::Command },
     { "command", Type::Command },
     { "Custom", Type::Custom },
@@ -255,8 +276,9 @@ inline static const std::unordered_map<Type, std::string> kTypeNameMap = {
     { Type::ClickKey, "ClickKey" },     { Type::LongPressKey, "LongPressKey" },
     { Type::InputText, "InputText" },   { Type::StartApp, "StartApp" },
     { Type::StopApp, "StopApp" },       { Type::KeyDown, "KeyDown" },
-    { Type::KeyUp, "KeyUp" },           { Type::Command, "Command" },
-    { Type::Custom, "Custom" },         { Type::StopTask, "StopTask" },
+    { Type::KeyUp, "KeyUp" },           { Type::Scroll, "Scroll" },
+    { Type::StopTask, "StopTask" },     { Type::Command, "Command" },
+    { Type::Shell, "Shell" },           { Type::Custom, "Custom" },
 };
 } // namespace Action
 
@@ -272,12 +294,22 @@ struct WaitFreezesParam
     std::chrono::milliseconds timeout = std::chrono::milliseconds(20 * 1000);
 };
 
+struct NodeAttr
+{
+    std::string name;
+    bool jump_back = false;
+    bool anchor = false;
+
+    MEO_JSONIZATION(name, MEO_OPT jump_back, MEO_OPT anchor);
+};
+
 struct PipelineData
 {
-    using NextList = std::vector<std::string>;
+    inline static constexpr std::string_view kNodePrefix_Ignore = "$";
+    inline static constexpr std::string_view kNodeAttr_JumpBack = "[JumpBack]";
+    inline static constexpr std::string_view kNodeAttr_Anchor = "[Anchor]";
 
     std::string name;
-    bool is_sub = false; // for compatibility with 1.x
     bool enabled = true;
 
     Recognition::Type reco_type = Recognition::Type::DirectHit;
@@ -287,9 +319,9 @@ struct PipelineData
     Action::Type action_type = Action::Type::DoNothing;
     Action::Param action_param;
 
-    NextList next;
-    NextList interrupt;
-    NextList on_error;
+    std::vector<NodeAttr> next;
+    std::vector<NodeAttr> on_error;
+    std::vector<std::string> anchor;
     std::chrono::milliseconds rate_limit = std::chrono::milliseconds(1000);
     std::chrono::milliseconds reco_timeout = std::chrono::milliseconds(20 * 1000);
 
@@ -299,8 +331,10 @@ struct PipelineData
     WaitFreezesParam pre_wait_freezes;
     WaitFreezesParam post_wait_freezes;
 
+    uint max_hit = std::numeric_limits<uint>::max();
+
     json::value focus;
-    json::object attach; // 附加 JSON 对象，用于保存节点的附加配置
+    json::object attach;
 };
 
 MAA_RES_NS_END

@@ -33,7 +33,8 @@ protected:
         const json::array& default_argv,
         /*out*/ ProcessArgvGenerator& argv);
 
-    std::optional<std::string> startup_and_read_pipe(const ProcessArgv& argv, std::chrono::seconds timeout = std::chrono::seconds(20));
+    std::optional<std::string>
+        startup_and_read_pipe(const ProcessArgv& argv, std::chrono::milliseconds timeout = std::chrono::milliseconds(20000));
 
 protected:
     std::vector<std::shared_ptr<UnitBase>> children_;
@@ -97,6 +98,8 @@ public:
 
     virtual bool key_down(int key) = 0;
     virtual bool key_up(int key) = 0;
+
+    virtual bool scroll(int dx, int dy) = 0;
 };
 
 MAA_CTRL_UNIT_NS_END

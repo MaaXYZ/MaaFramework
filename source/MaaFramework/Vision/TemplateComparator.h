@@ -35,7 +35,7 @@ private:
 private:
     const cv::Mat rhs_image_ = {};
     const TemplateComparatorParam param_;
-    const bool use_min_score_ = false;
+    const bool low_score_better_ = false;
 };
 
 MAA_VISION_NS_END

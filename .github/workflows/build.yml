@@ -172,15 +172,9 @@ jobs:
             fail-fast: false
 
         steps:
-            # maybe should explicitly update some pkg instead of all?
-            - name: Update system
-              run: |
-                  sudo apt-get update -y
-                  sudo apt-get remove -y --purge firefox
-                  sudo apt-get upgrade -y
-
             - name: Install dep
               run: |
+                  sudo apt-get update -y
                   sudo apt-get install -y ninja-build cmake ccache
 
             - uses: pnpm/action-setup@v4
@@ -377,10 +371,10 @@ jobs:
               run: |
                   git submodule update --remote source/MaaUtils
 
-            - name: Install Packages
+            - name: Install dep
               run: |
                   sudo apt-get update -y
-                  sudo apt-get install -y ninja-build python3-pyelftools elfutils patchelf nasm
+                  sudo apt-get install -y ninja-build cmake ccache
 
             - uses: nttld/setup-ndk@v1
               id: setup-ndk
