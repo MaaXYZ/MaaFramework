@@ -67,6 +67,9 @@ jobs:
         runs-on: ubuntu-latest
         outputs:
             failed: ${{ steps.publish.outputs.failed }}
+        permissions:
+            contents: read
+            id-token: write
         steps:
             - uses: actions/checkout@v4
 
