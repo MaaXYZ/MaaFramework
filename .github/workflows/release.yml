@@ -11,11 +11,13 @@ on:
                 description: "Only publish packages to"
                 required: false
                 type: choice
+                default: All
                 options:
                     - npmjs.com
                     - NuGet.org
                     - PyPI.org
-                    - mirrorchyan
+                    - MirrorChyan
+                    - All
             dry-run:
                 description: "Use dry-run"
                 required: false
@@ -33,7 +35,7 @@ jobs:
             reuse-from-run-id: ${{ inputs.run-id }}
 
     nuget:
-        if: ${{ inputs.only-publish == 'NuGet.org' || inputs.only-publish == '' }}
+        if: ${{ inputs.only-publish == 'NuGet.org' || inputs.only-publish == 'All' }}
         runs-on: ubuntu-latest
         continue-on-error: true
         permissions:
@@ -58,7 +60,7 @@ jobs:
                     --skip-duplicate
 
     pip:
-        if: ${{ inputs.only-publish == 'PyPI.org' || inputs.only-publish == '' }}
+        if: ${{ inputs.only-publish == 'PyPI.org' || inputs.only-publish == 'All' }}
         runs-on: ubuntu-latest
         continue-on-error: true
         permissions:
@@ -87,12 +89,16 @@ jobs:
                     --skip-existing
 
     nodejs:
-        if: ${{ inputs.only-publish == 'npmjs.com' || inputs.only-publish == '' }}
+        if: ${{ inputs.only-publish == 'npmjs.com' || inputs.only-publish == 'All' }}
         runs-on: ubuntu-latest
         continue-on-error: true
         permissions:
             id-token: write
         steps:
+            - uses: actions/checkout@v4
+              with:
+                  fetch-depth: 0
+
             - uses: dawidd6/action-download-artifact@v6
               with:
                   workflow: build.yml
@@ -111,7 +117,7 @@ jobs:
 
     mirrorchyan:
         needs: meta
-        if: ${{ inputs.only-publish == 'mirrorchyan' || inputs.only-publish == '' }}
+        if: ${{ inputs.only-publish == 'MirrorChyan' || inputs.only-publish == 'All' }}
         runs-on: ubuntu-latest
         continue-on-error: true
         steps:
