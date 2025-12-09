@@ -39,8 +39,16 @@ static std::string temp_directory()
     auto path = std::filesystem::temp_directory_path();
 
 #ifdef _WIN32
-    // ZeroMQ IPC 在 Windows 上不支持 Unicode 路径，需要转换为短路径
     auto wpath = path.native();
+
+    bool has_non_ascii = std::ranges::any_of(wpath, [](wchar_t c) { return c > 127; });
+    if (!has_non_ascii) {
+        return path_to_utf8_string(path);
+    }
+
+    // ZeroMQ IPC 在 Windows 上不支持 Unicode 路径，需要转换为短路径
+    LogWarn << "Path contains non-ASCII characters, converting to short path" << VAR(path);
+
     DWORD len = GetShortPathNameW(wpath.c_str(), nullptr, 0);
     if (len > 0) {
         std::wstring short_path(len, L'\0');
@@ -52,7 +60,9 @@ static std::string temp_directory()
             return result;
         }
     }
-    LogWarn << "Failed to get short path, using original path";
+
+    // 正常应该走不到这里，以后如果遇到了可以考虑拉到 C:/Temp 等位置
+    LogError << "Failed to get short path, using original path" << VAR(path) << VAR(GetLastError());
 #endif
 
     return path_to_utf8_string(path);
