@@ -12,7 +12,7 @@ on:
                 description: "Build workflow run ID"
                 required: true
                 type: string
-            only-publish:
+            only-publish-to:
                 description: "Only publish packages to"
                 required: false
                 type: choice
@@ -28,7 +28,7 @@ on:
                 required: false
                 type: string
 
-run-name: ${{ inputs.run-name }}
+run-name: "${{ inputs.run-name }} Release | Publish ${{ inputs.only-publish-to }} ${{inputs.dry-run && '| Dry Run ' || ''}}| Build from #${{ github.run_id }}"
 concurrency:
     group: ${{ github.workflow }}-${{ inputs.run-id }}
     cancel-in-progress: false
@@ -40,7 +40,7 @@ jobs:
             reuse-from-run-id: ${{ inputs.run-id }}
 
     nuget:
-        if: ${{ inputs.only-publish == 'NuGet.org' || inputs.only-publish == 'All' }}
+        if: ${{ inputs.only-publish-to == 'NuGet.org' || inputs.only-publish-to == 'All' }}
         runs-on: ubuntu-latest
         continue-on-error: true
         outputs:
@@ -76,7 +76,7 @@ jobs:
                     --skip-duplicate
 
     pip:
-        if: ${{ inputs.only-publish == 'PyPI.org' || inputs.only-publish == 'All' }}
+        if: ${{ inputs.only-publish-to == 'PyPI.org' || inputs.only-publish-to == 'All' }}
         runs-on: ubuntu-latest
         continue-on-error: true
         outputs:
@@ -105,7 +105,7 @@ jobs:
                     --skip-existing
 
     nodejs:
-        if: ${{ inputs.only-publish == 'npmjs.com' || inputs.only-publish == 'All' }}
+        if: ${{ inputs.only-publish-to == 'npmjs.com' || inputs.only-publish-to == 'All' }}
         runs-on: ubuntu-latest
         continue-on-error: true
         outputs:
@@ -135,7 +135,7 @@ jobs:
 
     mirrorchyan:
         needs: meta
-        if: ${{ inputs.only-publish == 'MirrorChyan' || inputs.only-publish == 'All' }}
+        if: ${{ inputs.only-publish-to == 'MirrorChyan' || inputs.only-publish-to == 'All' }}
         runs-on: ubuntu-latest
         continue-on-error: true
         outputs:
