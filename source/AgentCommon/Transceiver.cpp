@@ -41,13 +41,13 @@ static std::string temp_directory()
 #ifdef _WIN32
     auto wpath = path.native();
 
-    bool all_ascii = std::ranges::all_of(wpath, [](wchar_t ch) { return ch >= 0 && ch < 128; });
+    bool all_ascii = std::ranges::all_of(wpath, [](wchar_t ch) { return ch < 128; });
     if (all_ascii) {
         return path_to_utf8_string(path);
     }
 
     // ZeroMQ IPC 在 Windows 上不支持 Unicode 路径，需要转换为短路径
-    LogWarn << "Path contains non-ASCII characters, converting to short path" << VAR(path) << VAR(all_ascii);
+    LogWarn << "Path contains non-ASCII characters, converting to short path" << VAR(path);
 
     DWORD len = GetShortPathNameW(wpath.c_str(), nullptr, 0);
     if (len > 0) {
