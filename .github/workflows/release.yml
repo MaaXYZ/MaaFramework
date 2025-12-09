@@ -3,6 +3,11 @@ name: release
 on:
     workflow_dispatch:
         inputs:
+            dry-run:
+                description: "Use dry-run"
+                required: false
+                type: boolean
+                default: false
             run-id:
                 description: "Build workflow run ID"
                 required: true
@@ -18,11 +23,6 @@ on:
                     - PyPI.org
                     - MirrorChyan
                     - All
-            dry-run:
-                description: "Use dry-run"
-                required: false
-                type: boolean
-                default: false
             run-name:
                 description: "Run name"
                 required: false
