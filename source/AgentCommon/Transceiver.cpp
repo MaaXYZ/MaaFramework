@@ -39,30 +39,13 @@ static std::string temp_directory()
     auto path = std::filesystem::temp_directory_path();
 
 #ifdef _WIN32
-    auto wpath = path.native();
-
-    bool all_ascii = std::ranges::all_of(wpath, [](wchar_t ch) { return ch < 128; });
-    if (all_ascii) {
-        return path_to_utf8_string(path);
-    }
-
-    // ZeroMQ IPC 在 Windows 上不支持 Unicode 路径，需要转换为短路径
-    LogWarn << "Path contains non-ASCII characters, converting to short path" << VAR(path);
-
-    DWORD len = GetShortPathNameW(wpath.c_str(), nullptr, 0);
-    if (len > 0) {
-        std::wstring short_path(len, L'\0');
-        DWORD written = GetShortPathNameW(wpath.c_str(), short_path.data(), len);
-        if (written > 0 && written < len) {
-            short_path.resize(written);
-            std::string result = from_osstring(short_path);
-            string_replace_all_(result, "\\", "/");
-            return result;
+    // ZeroMQ IPC 在 Windows 上不支持 Unicode 路径，拉💩
+    if (GetACP() != CP_UTF8 && std::ranges::any_of(path.native(), [](wchar_t ch) { return ch > 127; })) {
+        path = MaaNS::path("C:/Temp");
+        if (!std::filesystem::exists(path)) {
+            std::filesystem::create_directories(path);
         }
     }
-
-    // 正常应该走不到这里，以后如果遇到了可以考虑拉到 C:/Temp 等位置
-    LogError << "Failed to get short path, using original path" << VAR(path) << VAR(GetLastError());
 #endif
 
     return path_to_utf8_string(path);
@@ -72,9 +55,9 @@ void Transceiver::init_socket(const std::string& identifier, bool bind)
 {
     static auto kTempDir = temp_directory();
 
-    constexpr std::string_view kAddrFormat = "ipc://{}/maafw-agent-{}.sock";
-
-    ipc_addr_ = std::format(kAddrFormat, kTempDir, identifier);
+    std::string path = std::format("{}/maafw-agent-{}.sock", kTempDir, identifier);
+    ipc_addr_ = std::format("ipc://{}", path);
+    ipc_path_ = MaaNS::path(path);
 
     LogInfo << VAR(ipc_addr_) << VAR(identifier);
 
@@ -108,6 +91,11 @@ void Transceiver::uninit_socket()
 
     zmq_sock_.close();
     zmq_ctx_.close();
+
+    if (is_bound_) {
+        std::error_code ec;
+        std::filesystem::remove(ipc_path_, ec);
+    }
 }
 
 bool Transceiver::alive()
