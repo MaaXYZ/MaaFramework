@@ -4,11 +4,11 @@ on:
     workflow_dispatch:
         inputs:
             run-id:
-                description: "Build workflow run ID to use for artifacts"
+                description: "Build workflow run ID."
                 required: true
                 type: string
             only-publish:
-                description: Only publish packages to the chosen package repository
+                description: "Only publish packages to"
                 required: false
                 type: choice
                 options:
@@ -17,7 +17,7 @@ on:
                     - PyPI.org
                     - mirrorchyan
             dry-run:
-                description: Avoid actually publishing anything.
+                description: "Use dry-run"
                 required: false
                 type: boolean
                 default: false
@@ -39,7 +39,7 @@ jobs:
         permissions:
             id-token: write
         env:
-            NUGET_PACKAGE_SOURCE: https://api.nuget.org/v3/index.json
+            NUGET_PACKAGE_SOURCE: ${{ inputs.dry-run && 'https://apiint.nugettest.org/v3/index.json' || 'https://api.nuget.org/v3/index.json' }}
         steps:
             - uses: dawidd6/action-download-artifact@v6
               with:
@@ -63,6 +63,8 @@ jobs:
         continue-on-error: true
         permissions:
             id-token: write
+        env:
+            PYPI_REPOSITORY_URL: ${{ inputs.dry-run && 'https://test.pypi.org/legacy/' || 'https://upload.pypi.org/legacy/' }}
         steps:
             - uses: dawidd6/action-download-artifact@v6
               with:
@@ -79,6 +81,7 @@ jobs:
                   pip install --upgrade twine packaging
                   python -m twine upload \
                     assets/pkgs-pip/*.whl \
+                    --repository-url $PYPI_REPOSITORY_URL \
                     --username __token__ \
                     --password ${{ secrets.PYPI_TOKEN }} \
                     --skip-existing
@@ -99,11 +102,12 @@ jobs:
                   check_artifacts: true
                   if_no_artifact_found: fail
 
-            - uses: MaaXYZ/MaaFramework/.github/actions/publish_nodejs@main
+            - uses: ./.github/actions/publish_nodejs
               id: publish
               with:
                   access: public
                   path: assets/pkgs-nodejs
+                  dry-run: ${{ inputs.dry-run }}
 
     mirrorchyan:
         needs: meta
@@ -115,10 +119,15 @@ jobs:
               env:
                   GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
               run: |
+                  if [ "${{ inputs.dry-run }}" = "true" ]; then
+                    echo "Dry run mode, skipping MirrorChyan upload."
+                    exit 0
+                  fi
+
                   gh workflow run --repo $GITHUB_REPOSITORY mirrorchyan.yml -f tag=${{ needs.meta.outputs.tag }}
                   gh workflow run --repo $GITHUB_REPOSITORY mirrorchyan_release_note.yml -f tag=${{ needs.meta.outputs.tag }}
 
-    release:
+    github:
         needs: [meta, nuget, pip, nodejs, mirrorchyan]
         runs-on: ubuntu-latest
         permissions:
@@ -143,19 +152,19 @@ jobs:
             - uses: softprops/action-gh-release@v2
               with:
                   files: assets/*.zip
-                  tag_name: ${{ needs.meta.outputs.tag }}
+                  tag_name: ${{ inputs.dry-run && 'v0.0.0' || needs.meta.outputs.tag }}
                   prerelease: ${{ needs.meta.outputs.is-prerelease == 'true' }}
                   generate_release_notes: true
 
     create_issue_on_failure:
-        needs: [meta, nuget, pip, nodejs, mirrorchyan, release]
+        needs: [meta, nuget, pip, nodejs, mirrorchyan, github]
         runs-on: ubuntu-latest
         if: always() && (
                 needs.nuget.result == 'failure' ||
                 needs.pip.result == 'failure' ||
                 needs.nodejs.result == 'failure' ||
                 needs.mirrorchyan.result == 'failure' ||
-                needs.release.result == 'failure'
+                needs.github.result == 'failure'
             )
         env:
             ISSUE_TITLE: "${{ needs.meta.outputs.tag }} failed to release"
@@ -173,7 +182,7 @@ jobs:
                 - pip: ${{ needs.pip.result }}
                 - nodejs: ${{ needs.nodejs.result }}
                 - mirrorchyan: ${{ needs.mirrorchyan.result }}
-                - release: ${{ needs.release.result }}
+                - github: ${{ needs.github.result }}
 
                 cc @MistEO
         steps:
