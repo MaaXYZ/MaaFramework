@@ -44,8 +44,9 @@ static std::string temp_directory_path()
     DWORD len = GetShortPathNameW(wpath.c_str(), nullptr, 0);
     if (len > 0) {
         std::wstring short_path(len, L'\0');
-        if (GetShortPathNameW(wpath.c_str(), short_path.data(), len) > 0) {
-            short_path.resize(short_path.size() - 1); // remove null terminator
+        DWORD written = GetShortPathNameW(wpath.c_str(), short_path.data(), len);
+        if (written > 0 && written < len) {
+            short_path.resize(written);
             std::string result = from_osstring(short_path);
             string_replace_all_(result, "\\", "/");
             return result;
