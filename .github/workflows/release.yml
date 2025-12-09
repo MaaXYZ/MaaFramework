@@ -41,8 +41,8 @@ jobs:
 
     nuget:
         if: ${{ inputs.only-publish-to == 'NuGet.org' || inputs.only-publish-to == 'All' }}
+        continue-on-error: ${{ inputs.only-publish-to == 'All' }}
         runs-on: ubuntu-latest
-        continue-on-error: true
         outputs:
             result: ${{ steps.publish.outcome }}
         permissions:
@@ -77,8 +77,8 @@ jobs:
 
     pip:
         if: ${{ inputs.only-publish-to == 'PyPI.org' || inputs.only-publish-to == 'All' }}
+        continue-on-error: ${{ inputs.only-publish-to == 'All' }}
         runs-on: ubuntu-latest
-        continue-on-error: true
         outputs:
             result: ${{ steps.publish.outcome }}
         permissions:
@@ -106,8 +106,8 @@ jobs:
 
     nodejs:
         if: ${{ inputs.only-publish-to == 'npmjs.com' || inputs.only-publish-to == 'All' }}
+        continue-on-error: ${{ inputs.only-publish-to == 'All' }}
         runs-on: ubuntu-latest
-        continue-on-error: true
         outputs:
             result: ${{ steps.publish.outcome }}
         permissions:
@@ -137,8 +137,8 @@ jobs:
     mirrorchyan:
         needs: meta
         if: ${{ inputs.only-publish-to == 'MirrorChyan' || inputs.only-publish-to == 'All' }}
+        continue-on-error: ${{ inputs.only-publish-to == 'All' }}
         runs-on: ubuntu-latest
-        continue-on-error: true
         outputs:
             result: ${{ steps.publish.outcome }}
         steps:
@@ -157,8 +157,8 @@ jobs:
 
     github:
         needs: [meta, nuget, pip, nodejs, mirrorchyan]
+        continue-on-error: ${{ inputs.only-publish-to == 'All' }}
         runs-on: ubuntu-latest
-        continue-on-error: true
         outputs:
             result: ${{ steps.publish.outcome }}
         permissions:
