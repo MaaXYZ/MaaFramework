@@ -5,6 +5,10 @@
         ".": "./MaaNode.node",
         "./server": "./MaaNodeServer.node"
     },
+    "repository": {
+        "type": "git",
+        "url": "git://github.com/MaaXYZ/MaaFramework.git"
+    },
     "scripts": {},
     "os": [
         "win32"
