@@ -573,4 +573,5 @@ jobs:
                   GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
               run: |
                   gh workflow run --repo $GITHUB_REPOSITORY release.yml \
-                    -f run-id="${{ github.run_id }}"
+                    -f run-id="${{ github.run_id }}" \
+                    -f run-name="${{ needs.meta.outputs.tag }} Release - Build #${{ github.run_id }}" \

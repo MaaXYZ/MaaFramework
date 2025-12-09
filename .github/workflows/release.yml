@@ -4,7 +4,7 @@ on:
     workflow_dispatch:
         inputs:
             run-id:
-                description: "Build workflow run ID."
+                description: "Build workflow run ID"
                 required: true
                 type: string
             only-publish:
@@ -23,7 +23,12 @@ on:
                 required: false
                 type: boolean
                 default: false
+            run-name:
+                description: "Run name"
+                required: false
+                type: string
 
+run-name: ${{ inputs.run-name }}
 concurrency:
     group: ${{ github.workflow }}-${{ inputs.run-id }}
     cancel-in-progress: false
@@ -188,20 +193,23 @@ jobs:
         env:
             ISSUE_TITLE: "${{ needs.meta.outputs.tag }} failed to release"
             ISSUE_BODY: |
-                A new release attempt for tag ${{ needs.meta.outputs.tag }} failed. Please check and retry publishing the packages listed below if needed:
+                A new release attempt for tag ${{ needs.meta.outputs.tag }} failed.
+                
                 ${{ needs.nuget.outputs.result != 'success' && '- nuget @moomiji' || '' }}
                 ${{ needs.pip.outputs.result != 'success' && '- pip @MistEO' || '' }}
                 ${{ needs.nodejs.outputs.result != 'success' && '- nodejs @neko-para' || '' }}
                 ${{ needs.mirrorchyan.outputs.result != 'success' && '- mirrorchyan @MistEO' || '' }}
                 
-                Release run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
-                Build run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ inputs.run-id }}
-                Job results:
-                - nuget: ${{ needs.nuget.outputs.result }}
-                - pip: ${{ needs.pip.outputs.result }}
-                - nodejs: ${{ needs.nodejs.outputs.result }}
-                - mirrorchyan: ${{ needs.mirrorchyan.outputs.result }}
-                - github: ${{ needs.github.outputs.result }}
+                Release run: [${{ github.run_id }}](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})
+                Build   run: [${{ inputs.run-id }}](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ inputs.run-id }})
+                
+                | Job | Result |
+                | --- | ------ |
+                | nuget | ${{ needs.nuget.outputs.result }} |
+                | pip | ${{ needs.pip.outputs.result }} |
+                | nodejs | ${{ needs.nodejs.outputs.result }} |
+                | mirrorchyan | ${{ needs.mirrorchyan.outputs.result }} |
+                | github | ${{ needs.github.outputs.result }} |
 
                 cc @MistEO
         steps:
