@@ -82,6 +82,7 @@ protected:
     zmq::socket_t zmq_sock_;
 
     std::string ipc_addr_;
+    std::filesystem::path ipc_path_;
 
     std::map<std::string /* uuid */, cv::Mat> recved_images_;
 

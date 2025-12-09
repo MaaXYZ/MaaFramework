@@ -55,7 +55,8 @@ std::optional<cv::Mat> ScreencapEncodeToFileAndPull::screencap()
     }
 
     auto image = imread(dst_path);
-    std::filesystem::remove(dst_path);
+    std::error_code ec;
+    std::filesystem::remove(dst_path, ec);
 
     if (image.empty()) {
         LogError << "Failed to read image from" << dst_path;
