@@ -38,6 +38,8 @@ jobs:
         if: ${{ inputs.only-publish == 'NuGet.org' || inputs.only-publish == 'All' }}
         runs-on: ubuntu-latest
         continue-on-error: true
+        outputs:
+            result: ${{ steps.publish.outcome }}
         permissions:
             id-token: write
         env:
@@ -63,6 +65,8 @@ jobs:
         if: ${{ inputs.only-publish == 'PyPI.org' || inputs.only-publish == 'All' }}
         runs-on: ubuntu-latest
         continue-on-error: true
+        outputs:
+            result: ${{ steps.publish.outcome }}
         permissions:
             id-token: write
         env:
@@ -92,6 +96,8 @@ jobs:
         if: ${{ inputs.only-publish == 'npmjs.com' || inputs.only-publish == 'All' }}
         runs-on: ubuntu-latest
         continue-on-error: true
+        outputs:
+            result: ${{ steps.publish.outcome }}
         permissions:
             id-token: write
         steps:
@@ -120,8 +126,11 @@ jobs:
         if: ${{ inputs.only-publish == 'MirrorChyan' || inputs.only-publish == 'All' }}
         runs-on: ubuntu-latest
         continue-on-error: true
+        outputs:
+            result: ${{ steps.publish.outcome }}
         steps:
             - name: Trigger MirrorChyanUploading
+              id: publish
               env:
                   GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
               run: |
@@ -136,6 +145,9 @@ jobs:
     github:
         needs: [meta, nuget, pip, nodejs, mirrorchyan]
         runs-on: ubuntu-latest
+        continue-on-error: true
+        outputs:
+            result: ${{ steps.publish.outcome }}
         permissions:
             contents: write
         steps:
@@ -155,7 +167,8 @@ jobs:
                     (cd $f && zip -r ../$f-${{ needs.meta.outputs.tag }}.zip .)
                   done
 
-            - uses: softprops/action-gh-release@v2
+            - id: publish
+              uses: softprops/action-gh-release@v2
               with:
                   files: assets/*.zip
                   tag_name: ${{ inputs.dry-run && 'v0.0.0' || needs.meta.outputs.tag }}
@@ -166,29 +179,29 @@ jobs:
         needs: [meta, nuget, pip, nodejs, mirrorchyan, github]
         runs-on: ubuntu-latest
         if: always() && (
-                needs.nuget.result == 'failure' ||
-                needs.pip.result == 'failure' ||
-                needs.nodejs.result == 'failure' ||
-                needs.mirrorchyan.result == 'failure' ||
-                needs.github.result == 'failure'
+                needs.nuget.outputs.result != 'success' ||
+                needs.pip.outputs.result != 'success' ||
+                needs.nodejs.outputs.result != 'success' ||
+                needs.mirrorchyan.outputs.result != 'success' ||
+                needs.github.outputs.result != 'success'
             )
         env:
             ISSUE_TITLE: "${{ needs.meta.outputs.tag }} failed to release"
             ISSUE_BODY: |
                 A new release attempt for tag ${{ needs.meta.outputs.tag }} failed. Please check and retry publishing the packages listed below if needed:
-                ${{ needs.nuget.result == 'failure' && '- nuget @moomiji' || '' }}
-                ${{ needs.pip.result == 'failure' && '- pip @MistEO' || '' }}
-                ${{ needs.nodejs.result == 'failure' && '- nodejs @neko-para' || '' }}
-                ${{ needs.mirrorchyan.result == 'failure' && '- mirrorchyan @MistEO' || '' }}
+                ${{ needs.nuget.outputs.result != 'success' && '- nuget @moomiji' || '' }}
+                ${{ needs.pip.outputs.result != 'success' && '- pip @MistEO' || '' }}
+                ${{ needs.nodejs.outputs.result != 'success' && '- nodejs @neko-para' || '' }}
+                ${{ needs.mirrorchyan.outputs.result != 'success' && '- mirrorchyan @MistEO' || '' }}
                 
                 Release run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
                 Build run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ inputs.run-id }}
                 Job results:
-                - nuget: ${{ needs.nuget.result }}
-                - pip: ${{ needs.pip.result }}
-                - nodejs: ${{ needs.nodejs.result }}
-                - mirrorchyan: ${{ needs.mirrorchyan.result }}
-                - github: ${{ needs.github.result }}
+                - nuget: ${{ needs.nuget.outputs.result }}
+                - pip: ${{ needs.pip.outputs.result }}
+                - nodejs: ${{ needs.nodejs.outputs.result }}
+                - mirrorchyan: ${{ needs.mirrorchyan.outputs.result }}
+                - github: ${{ needs.github.outputs.result }}
 
                 cc @MistEO
         steps:
@@ -212,7 +225,7 @@ jobs:
               with:
                   actions: "open-issue"
                   issue-number: ${{ fromJSON(steps.find-issues.outputs.issues)[0].number }}
-            - name: Add comment to existing issue
+            - name: Add comment
               if: ${{ fromJSON(steps.find-issues.outputs.issues)[0] != null }}
               uses: actions-cool/issues-helper@v3
               with:
