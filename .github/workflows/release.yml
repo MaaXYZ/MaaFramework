@@ -49,6 +49,7 @@ jobs:
             id-token: write
         env:
             NUGET_PACKAGE_SOURCE: ${{ inputs.dry-run && 'https://apiint.nugettest.org/v3/index.json' || 'https://api.nuget.org/v3/index.json' }}
+            NUGET_AUDIENCE: ${{ inputs.dry-run && 'https://int.nugettest.org' || 'https://www.nuget.org' }}
         steps:
             - uses: dawidd6/action-download-artifact@v6
               with:
@@ -59,10 +60,18 @@ jobs:
                   check_artifacts: true
                   if_no_artifact_found: fail
 
+            - id: login
+              uses: NuGet/login@v1
+              with:
+                user: moomiji
+                token-service-url: ${{ env.NUGET_AUDIENCE }}/api/v2/token
+                audience: ${{ env.NUGET_AUDIENCE }}
+
             - name: Publish NuGet
               id: publish
               run: |
-                  dotnet nuget push assets/pkgs-nuget/*.nupkg \
+                  dotnet nuget push assets/pkgs-nuget/*.nupkg
+                    --api-key ${{steps.login.outputs.NUGET_API_KEY}} \
                     --source $NUGET_PACKAGE_SOURCE \
                     --skip-duplicate
 
@@ -75,7 +84,7 @@ jobs:
         permissions:
             id-token: write
         env:
-            PYPI_REPOSITORY_URL: ${{ inputs.dry-run && 'https://test.pypi.org/legacy/' || 'https://upload.pypi.org/legacy/' }}
+            PYPI_REPOSITORY: ${{ inputs.dry-run && 'testpypi' || 'pypi' }}
         steps:
             - uses: dawidd6/action-download-artifact@v6
               with:
@@ -91,10 +100,9 @@ jobs:
               run: |
                   pip install --upgrade twine packaging
                   python -m twine upload \
+                  twine upload --repository testpypi dist/*
                     assets/pkgs-pip/*.whl \
-                    --repository-url $PYPI_REPOSITORY_URL \
-                    --username __token__ \
-                    --password ${{ secrets.PYPI_TOKEN }} \
+                    --repository $PYPI_REPOSITORY \
                     --skip-existing
 
     nodejs:
@@ -160,6 +168,7 @@ jobs:
               with:
                   workflow: build.yml
                   run_id: ${{ inputs.run-id }}
+                  name_is_regexp: true
                   name: MAA-*
                   path: assets
                   check_artifacts: true
