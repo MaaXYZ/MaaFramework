@@ -192,7 +192,7 @@ jobs:
     create_issue_on_failure:
         needs: [meta, nuget, pip, nodejs, mirrorchyan, github]
         runs-on: ubuntu-latest
-        if: always() && (
+        if: success() && (
                 needs.nuget.outputs.result != 'success' ||
                 needs.pip.outputs.result != 'success' ||
                 needs.nodejs.outputs.result != 'success' ||
@@ -204,10 +204,10 @@ jobs:
             ISSUE_BODY: |
                 A new release attempt for tag ${{ needs.meta.outputs.tag }} failed.
 
-                ${{ needs.nuget.outputs.result != 'success' && '- nuget @moomiji' || '' }}
-                ${{ needs.pip.outputs.result != 'success' && '- pip @MistEO' || '' }}
-                ${{ needs.nodejs.outputs.result != 'success' && '- nodejs @neko-para' || '' }}
-                ${{ needs.mirrorchyan.outputs.result != 'success' && '- mirrorchyan @MistEO' || '' }}
+                ${{ needs.nuget.outputs.result != 'success'         && '- nuget @moomiji' || '' }}
+                ${{ needs.pip.outputs.result != 'success'           && '- pip @MistEO' || '' }}
+                ${{ needs.nodejs.outputs.result != 'success'        && '- nodejs @neko-para' || '' }}
+                ${{ needs.mirrorchyan.outputs.result != 'success'   && '- mirrorchyan @MistEO' || '' }}
 
                 Release run: [${{ github.run_id }}](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})
 
