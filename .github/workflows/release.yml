@@ -28,7 +28,7 @@ on:
                 required: false
                 type: string
 
-run-name: "${{ inputs.run-name }} Release | Publish ${{ inputs.only-publish-to }} ${{inputs.dry-run && '| Dry Run ' || ''}}| Build from #${{ github.run_id }}"
+run-name: "${{ inputs.run-name }} Release | ${{ inputs.only-publish-to }} ${{inputs.dry-run && '| Dry Run ' || ''}}| Build from #${{ github.run_id }}"
 concurrency:
     group: ${{ github.workflow }}-${{ inputs.run-id }}
     cancel-in-progress: false
@@ -186,7 +186,7 @@ jobs:
                   files: assets/*.zip
                   tag_name: ${{ inputs.dry-run && 'v0.0.0' || needs.meta.outputs.tag }}
                   prerelease: ${{ needs.meta.outputs.is-prerelease == 'true' }}
-                  generate_release_notes: true
+                  generate_release_notes: ${{ !inputs.dry-run }}
 
     create_issue_on_failure:
         needs: [meta, nuget, pip, nodejs, mirrorchyan, github]
