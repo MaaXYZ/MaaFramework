@@ -193,21 +193,22 @@ jobs:
         needs: [meta, nuget, pip, nodejs, mirrorchyan, github]
         runs-on: ubuntu-latest
         if: always() && (
-                needs.nuget.outputs.result != 'success' ||
-                needs.pip.outputs.result != 'success' ||
-                needs.nodejs.outputs.result != 'success' ||
-                needs.mirrorchyan.outputs.result != 'success' ||
-                needs.github.outputs.result != 'success'
+                (needs.nuget.outputs.result         && needs.nuget.outputs.result != 'success')         ||
+                (needs.pip.outputs.result           && needs.pip.outputs.result != 'success')           ||
+                (needs.nodejs.outputs.result        && needs.nodejs.outputs.result != 'success')        ||
+                (needs.mirrorchyan.outputs.result   && needs.mirrorchyan.outputs.result != 'success')   ||
+                (needs.github.outputs.result        && needs.github.outputs.result != 'success')
             )
         env:
             ISSUE_TITLE: "${{ needs.meta.outputs.tag }} failed to release"
             ISSUE_BODY: |
                 A new release attempt for tag ${{ needs.meta.outputs.tag }} failed.
 
-                ${{ needs.nuget.outputs.result != 'success' && '- nuget @moomiji' || '' }}
-                ${{ needs.pip.outputs.result != 'success' && '- pip @MistEO' || '' }}
-                ${{ needs.nodejs.outputs.result != 'success' && '- nodejs @neko-para' || '' }}
-                ${{ needs.mirrorchyan.outputs.result != 'success' && '- mirrorchyan @MistEO' || '' }}
+                ${{ needs.nuget.outputs.result          && needs.nuget.outputs.result != 'success'          && '- nuget @moomiji'       || '' }}
+                ${{ needs.pip.outputs.result            && needs.pip.outputs.result != 'success'            && '- pip @MistEO'          || '' }}
+                ${{ needs.nodejs.outputs.result         && needs.nodejs.outputs.result != 'success'         && '- nodejs @neko-para'    || '' }}
+                ${{ needs.mirrorchyan.outputs.result    && needs.mirrorchyan.outputs.result != 'success'    && '- mirrorchyan @MistEO'  || '' }}
+                ${{ needs.github.outputs.result         && needs.github.outputs.result != 'success'         && '- github release'       || '' }}
 
                 Release run: [${{ github.run_id }}](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})
 
