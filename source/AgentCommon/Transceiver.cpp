@@ -2,7 +2,12 @@
 
 #include <format>
 
+#ifdef _WIN32
+#include "MaaUtils/SafeWindows.hpp"
+#endif
+
 #include "MaaUtils/Platform.h"
+#include "MaaUtils/StringMisc.hpp"
 #include "MaaUtils/Uuid.h"
 
 MAA_AGENT_NS_BEGIN
@@ -29,12 +34,36 @@ bool Transceiver::handle_image_header(const json::value& j)
     return true;
 }
 
+static std::string temp_directory_path()
+{
+    auto path = std::filesystem::temp_directory_path();
+
+#ifdef _WIN32
+    // ZeroMQ IPC 在 Windows 上不支持 Unicode 路径，需要转换为短路径
+    auto wpath = path.native();
+    DWORD len = GetShortPathNameW(wpath.c_str(), nullptr, 0);
+    if (len > 0) {
+        std::wstring short_path(len, L'\0');
+        if (GetShortPathNameW(wpath.c_str(), short_path.data(), len) > 0) {
+            short_path.resize(short_path.size() - 1); // remove null terminator
+            std::string result = from_osstring(short_path);
+            string_replace_all_(result, "\\", "/");
+            return result;
+        }
+    }
+    LogWarn << "Failed to get short path, using original path";
+#endif
+
+    return path_to_utf8_string(path);
+}
+
 void Transceiver::init_socket(const std::string& identifier, bool bind)
 {
-    static auto kTempDir = std::filesystem::temp_directory_path();
+    static auto kTempDir = temp_directory_path();
+
     constexpr std::string_view kAddrFormat = "ipc://{}/maafw-agent-{}.sock";
 
-    ipc_addr_ = std::format(kAddrFormat, path_to_utf8_string(kTempDir), identifier);
+    ipc_addr_ = std::format(kAddrFormat, kTempDir, identifier);
 
     LogInfo << VAR(ipc_addr_) << VAR(identifier);
 
