@@ -30,6 +30,9 @@ outputs:
 runs:
     using: "composite"
     steps:
+        - uses: actions/setup-node@v5
+          with:
+              node-version: "24"
         - uses: JS-DevTools/npm-publish@v4
           id: nodejs
           with:
