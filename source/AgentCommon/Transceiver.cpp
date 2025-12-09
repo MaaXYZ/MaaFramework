@@ -92,10 +92,8 @@ void Transceiver::uninit_socket()
     zmq_sock_.close();
     zmq_ctx_.close();
 
-    if (is_bound_) {
-        std::error_code ec;
-        std::filesystem::remove(ipc_path_, ec);
-    }
+    std::error_code ec;
+    std::filesystem::remove(ipc_path_, ec);
 }
 
 bool Transceiver::alive()
