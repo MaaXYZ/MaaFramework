@@ -15,6 +15,26 @@ on:
                 required: true
                 type: string
                 description: "Build workflow run ID to download artifacts from"
+            publish_nuget:
+                required: false
+                type: boolean
+                default: true
+                description: "Publish NuGet packages"
+            publish_pip:
+                required: false
+                type: boolean
+                default: true
+                description: "Publish pip packages"
+            publish_nodejs:
+                required: false
+                type: boolean
+                default: true
+                description: "Publish Node.js packages"
+            github_release:
+                required: false
+                type: boolean
+                default: true
+                description: "Create GitHub release"
 
 concurrency:
     group: ${{ github.workflow }}-${{ inputs.tag }}
@@ -22,6 +42,7 @@ concurrency:
 
 jobs:
     publish_nuget:
+        if: ${{ inputs.publish_nuget != false }}
         runs-on: ubuntu-latest
         outputs:
             failed: ${{ steps.publish.outputs.failed }}
@@ -43,6 +64,7 @@ jobs:
                     || (echo "failed=true" >> $GITHUB_OUTPUT && echo "::error::Failed to publish NuGet packages")
 
     publish_pip:
+        if: ${{ inputs.publish_pip != false }}
         runs-on: ubuntu-latest
         outputs:
             failed: ${{ steps.publish.outputs.failed }}
@@ -64,6 +86,7 @@ jobs:
                     || (echo "failed=true" >> $GITHUB_OUTPUT && echo "::error::Failed to publish pip packages")
 
     publish_nodejs:
+        if: ${{ inputs.publish_nodejs != false }}
         runs-on: ubuntu-latest
         outputs:
             failed: ${{ steps.publish.outputs.failed }}
@@ -88,6 +111,7 @@ jobs:
               continue-on-error: true
 
     github_release:
+        if: ${{ inputs.github_release != false }}
         runs-on: ubuntu-latest
         steps:
             - uses: actions/checkout@v4
@@ -127,7 +151,7 @@ jobs:
 
     create_issue_on_failure:
         needs: [publish_nuget, publish_pip, publish_nodejs]
-        if: ${{ always() && (failure() || needs.publish_nuget.outputs.failed || needs.publish_pip.outputs.failed || needs.publish_nodejs.outputs.failed) }}
+        if: ${{ always() && (needs.publish_nuget.result == 'failure' || (needs.publish_nuget.result != 'skipped' && needs.publish_nuget.outputs.failed) || needs.publish_pip.result == 'failure' || (needs.publish_pip.result != 'skipped' && needs.publish_pip.outputs.failed) || needs.publish_nodejs.result == 'failure' || (needs.publish_nodejs.result != 'skipped' && needs.publish_nodejs.outputs.failed)) }}
         runs-on: ubuntu-latest
         steps:
             - uses: actions-cool/issues-helper@v3
@@ -136,8 +160,8 @@ jobs:
                   title: "${{ inputs.tag }} failed to release"
                   body: |
                       Please manually publish the following packages:
-                      ${{ needs.publish_nuget.outputs.failed && '- nuget @moomiji' || '' }}
-                      ${{ needs.publish_pip.outputs.failed && '- pip @MistEO' || '' }}
-                      ${{ needs.publish_nodejs.outputs.failed && '- nodejs @neko-para' || '' }}
+                      ${{ needs.publish_nuget.result != 'skipped' && (needs.publish_nuget.result == 'failure' || needs.publish_nuget.outputs.failed) && '- nuget @moomiji' || '' }}
+                      ${{ needs.publish_pip.result != 'skipped' && (needs.publish_pip.result == 'failure' || needs.publish_pip.outputs.failed) && '- pip @MistEO' || '' }}
+                      ${{ needs.publish_nodejs.result != 'skipped' && (needs.publish_nodejs.result == 'failure' || needs.publish_nodejs.outputs.failed) && '- nodejs @neko-para' || '' }}
 
                       cc @MistEO
