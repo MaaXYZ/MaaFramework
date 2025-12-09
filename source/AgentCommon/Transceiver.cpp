@@ -34,7 +34,7 @@ bool Transceiver::handle_image_header(const json::value& j)
     return true;
 }
 
-static std::string temp_directory_path()
+static std::string temp_directory()
 {
     auto path = std::filesystem::temp_directory_path();
 
@@ -60,7 +60,7 @@ static std::string temp_directory_path()
 
 void Transceiver::init_socket(const std::string& identifier, bool bind)
 {
-    static auto kTempDir = temp_directory_path();
+    static auto kTempDir = temp_directory();
 
     constexpr std::string_view kAddrFormat = "ipc://{}/maafw-agent-{}.sock";
 
