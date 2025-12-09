@@ -21,7 +21,8 @@ TempFileHolder::~TempFileHolder()
             continue;
         }
         LogTrace << "remove" << VAR(p);
-        std::filesystem::remove(p);
+        std::error_code ec;
+        std::filesystem::remove(p, ec);
     }
 }
 
