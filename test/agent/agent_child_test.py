@@ -144,7 +144,7 @@ class MyTaskerSink(TaskerEventSink):
 
 
 @AgentServer.context_sink()
-class MyResSink(ContextEventSink):
+class MyCtxSink(ContextEventSink):
     def on_raw_notification(self, context, msg: str, details: dict):
         print(f"context: {context}, msg: {msg}, details: {details} ")
 
