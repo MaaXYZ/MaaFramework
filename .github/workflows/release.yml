@@ -202,15 +202,16 @@ jobs:
             ISSUE_TITLE: "${{ needs.meta.outputs.tag }} failed to release"
             ISSUE_BODY: |
                 A new release attempt for tag ${{ needs.meta.outputs.tag }} failed.
-                
+
                 ${{ needs.nuget.outputs.result != 'success' && '- nuget @moomiji' || '' }}
                 ${{ needs.pip.outputs.result != 'success' && '- pip @MistEO' || '' }}
                 ${{ needs.nodejs.outputs.result != 'success' && '- nodejs @neko-para' || '' }}
                 ${{ needs.mirrorchyan.outputs.result != 'success' && '- mirrorchyan @MistEO' || '' }}
-                
+
                 Release run: [${{ github.run_id }}](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})
+
                 Build   run: [${{ inputs.run-id }}](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ inputs.run-id }})
-                
+
                 | Job | Result |
                 | --- | ------ |
                 | nuget | ${{ needs.nuget.outputs.result }} |
