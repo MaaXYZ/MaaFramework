@@ -17,7 +17,7 @@ on:
                 description: "Build workflow run ID to download artifacts from"
 
 concurrency:
-    group: ${{ github.workflow }}-${{ github.ref }}-release-${{ inputs.run_id}}
+    group: ${{ github.workflow }}-${{ inputs.tag }}
     cancel-in-progress: true
 
 jobs:
