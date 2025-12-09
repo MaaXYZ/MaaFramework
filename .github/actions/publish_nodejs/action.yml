@@ -13,6 +13,10 @@ inputs:
         description: The path to the package directory.
         required: false
         default: "."
+    tag:
+        description: The tag to use when publishing the package.
+        required: false
+        default: "latest"
     dry-run:
         description: Run npm with the --dry-run flag to avoid actually publishing anything.
         required: false
@@ -37,42 +41,49 @@ runs:
           id: nodejs
           with:
               package: ${{ inputs.path }}/maa-node
+              tag: ${{ inputs.tag }}
               token: ${{ inputs.token }}
               access: ${{ inputs.access }}
               dry-run: ${{ inputs.dry-run }}
         - uses: JS-DevTools/npm-publish@v4
           with:
               package: ${{ inputs.path }}/maa-node-win32-x64
+              tag: ${{ inputs.tag }}
               token: ${{ inputs.token }}
               access: ${{ inputs.access }}
               dry-run: ${{ inputs.dry-run }}
         - uses: JS-DevTools/npm-publish@v4
           with:
               package: ${{ inputs.path }}/maa-node-win32-arm64
+              tag: ${{ inputs.tag }}
               token: ${{ inputs.token }}
               access: ${{ inputs.access }}
               dry-run: ${{ inputs.dry-run }}
         - uses: JS-DevTools/npm-publish@v4
           with:
               package: ${{ inputs.path }}/maa-node-linux-x64
+              tag: ${{ inputs.tag }}
               token: ${{ inputs.token }}
               access: ${{ inputs.access }}
               dry-run: ${{ inputs.dry-run }}
         - uses: JS-DevTools/npm-publish@v4
           with:
               package: ${{ inputs.path }}/maa-node-linux-arm64
+              tag: ${{ inputs.tag }}
               token: ${{ inputs.token }}
               access: ${{ inputs.access }}
               dry-run: ${{ inputs.dry-run }}
         - uses: JS-DevTools/npm-publish@v4
           with:
               package: ${{ inputs.path }}/maa-node-darwin-x64
+              tag: ${{ inputs.tag }}
               token: ${{ inputs.token }}
               access: ${{ inputs.access }}
               dry-run: ${{ inputs.dry-run }}
         - uses: JS-DevTools/npm-publish@v4
           with:
               package: ${{ inputs.path }}/maa-node-darwin-arm64
+              tag: ${{ inputs.tag }}
               token: ${{ inputs.token }}
               access: ${{ inputs.access }}
               dry-run: ${{ inputs.dry-run }}
