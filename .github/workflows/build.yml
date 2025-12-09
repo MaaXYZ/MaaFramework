@@ -461,7 +461,7 @@ jobs:
             - uses: actions/upload-artifact@v4
               if: always()
               with:
-                  name: MAA-nupkgs
+                  name: pkgs-nuget
                   path: "tools/nupkgs/*.nupkg"
 
     pip_pack:
@@ -482,7 +482,7 @@ jobs:
             - uses: actions/upload-artifact@v4
               if: always()
               with:
-                  name: MAA-pip-pkgs
+                  name: pkgs-pip
                   path: "pip_pack/wheel/*.whl"
 
     nodejs_pack:
@@ -520,7 +520,7 @@ jobs:
 
             - uses: actions/upload-artifact@v4
               with:
-                  name: MAA-nodejs-package
+                  name: pkgs-nodejs
                   path: "source/binding/NodeJS/release"
 
     update_submodule:
@@ -559,4 +559,24 @@ jobs:
                       [skip changelog]"
                   github_token: ${{ secrets.GITHUB_TOKEN }}
 
-
+    trigger_release:
+        if: ${{ needs.meta.outputs.is-release == 'true' && github.repository_id == '632024122' }}
+        needs:
+            [
+                meta,
+                windows,
+                ubuntu,
+                macos,
+                android,
+                nuget_pack,
+                pip_pack,
+                nodejs_pack,
+            ]
+        runs-on: ubuntu-latest
+        steps:
+            - name: Trigger release workflow
+              env:
+                  GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+              run: |
+                  gh workflow run --repo $GITHUB_REPOSITORY release.yml \
+                    -f run-id="${{ github.run_id }}"
