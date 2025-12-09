@@ -600,13 +600,13 @@ bool ResourceMgr::load(const std::filesystem::path& path)
 
     bool to_load = false;
     bool ret = true;
-    if (auto p = path / "default_pipeline.jsonc"_path; std::filesystem::exists(p)) {
+    if (auto jc_path = path / "default_pipeline.jsonc"_path; std::filesystem::exists(jc_path)) {
         to_load = true;
-        ret &= default_pipeline_.load(p);
+        ret &= default_pipeline_.load(jc_path);
     }
-    else if (auto p = path / "default_pipeline.json"_path; std::filesystem::exists(p)) {
+    else if (auto j_path = path / "default_pipeline.json"_path; std::filesystem::exists(j_path)) {
         to_load = true;
-        ret &= default_pipeline_.load(p);
+        ret &= default_pipeline_.load(j_path);
     }
 
     if (auto p = path / "pipeline"_path; std::filesystem::exists(p)) {
