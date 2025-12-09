@@ -88,8 +88,6 @@ jobs:
               continue-on-error: true
 
     github_release:
-        needs: [publish_nuget, publish_pip, publish_nodejs]
-        if: ${{ always() }}
         runs-on: ubuntu-latest
         steps:
             - uses: actions/checkout@v4
@@ -122,8 +120,8 @@ jobs:
 
             - name: Trigger MirrorChyanUploading
               run: |
-                  gh workflow run --repo $GITHUB_REPOSITORY mirrorchyan.yml
-                  gh workflow run --repo $GITHUB_REPOSITORY mirrorchyan_release_note.yml
+                  gh workflow run --repo $GITHUB_REPOSITORY mirrorchyan.yml -f tag=${{ inputs.tag }}
+                  gh workflow run --repo $GITHUB_REPOSITORY mirrorchyan_release_note.yml -f tag=${{ inputs.tag }}
               env:
                   GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 

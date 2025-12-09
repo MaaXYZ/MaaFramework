@@ -1,11 +1,18 @@
 name: mirrorchyan
 
 on:
-    workflow_dispatch:
+  workflow_dispatch:
+    inputs:
+        tag:
+            default: ''
+            required: false
+#   release:
+#     types: [released]
 
 jobs:
     mirrorchyan:
         runs-on: macos-latest
+        if: ${{ github.repository_owner == 'MaaXYZ' }}
         strategy:
             fail-fast: false
             matrix:
@@ -19,6 +26,7 @@ jobs:
                   filetype: latest-release
                   filename: "MAA-${{ matrix.os }}-${{ matrix.arch }}-*.zip"
                   mirrorchyan_rid: MaaFramework
+                  tag: ${{ inputs.tag }}
 
                   owner: MaaXYZ
                   repo: MaaFramework
