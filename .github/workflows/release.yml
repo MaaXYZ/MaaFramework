@@ -111,6 +111,7 @@ jobs:
         outputs:
             result: ${{ steps.publish.outcome }}
         permissions:
+            contents: read
             id-token: write
         steps:
             - uses: actions/checkout@v4
