@@ -70,9 +70,9 @@ jobs:
             - name: Publish NuGet
               id: publish
               run: |
-                  dotnet nuget push assets/pkgs-nuget/*.nupkg
+                  dotnet nuget push assets/pkgs-nuget/*.nupkg \
                     --api-key ${{steps.login.outputs.NUGET_API_KEY}} \
-                    --source $NUGET_PACKAGE_SOURCE \
+                    --source ${{ env.NUGET_PACKAGE_SOURCE }} \
                     --skip-duplicate
 
     pip:
@@ -100,9 +100,8 @@ jobs:
               run: |
                   pip install --upgrade twine packaging
                   python -m twine upload \
-                  twine upload --repository testpypi dist/*
                     assets/pkgs-pip/*.whl \
-                    --repository $PYPI_REPOSITORY \
+                    --repository ${{ env.PYPI_REPOSITORY }} \
                     --skip-existing
 
     nodejs:
@@ -152,8 +151,8 @@ jobs:
                     exit 0
                   fi
 
-                  gh workflow run --repo $GITHUB_REPOSITORY mirrorchyan.yml -f tag=${{ needs.meta.outputs.tag }}
-                  gh workflow run --repo $GITHUB_REPOSITORY mirrorchyan_release_note.yml -f tag=${{ needs.meta.outputs.tag }}
+                  gh workflow run --repo ${{ github.repository }} mirrorchyan.yml -f tag=${{ needs.meta.outputs.tag }}
+                  gh workflow run --repo ${{ github.repository }} mirrorchyan_release_note.yml -f tag=${{ needs.meta.outputs.tag }}
 
     github:
         needs: [meta, nuget, pip, nodejs, mirrorchyan]
