@@ -28,7 +28,7 @@ on:
                 required: false
                 type: string
 
-run-name: "${{ inputs.run-name }} Release | ${{ inputs.only-publish-to }} ${{inputs.dry-run && '| Dry Run ' || ''}}| Build from #${{ github.run_id }}"
+run-name: "${{ inputs.run-name }} Release | ${{ inputs.only-publish-to }} ${{inputs.dry-run && '| Dry Run ' || ''}}| Build from #${{ inputs.run-id }}"
 concurrency:
     group: ${{ github.workflow }}-${{ inputs.run-id }}
     cancel-in-progress: false
