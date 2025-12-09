@@ -54,7 +54,6 @@ jobs:
               id: publish
               run: |
                   dotnet nuget push assets/pkgs-nuget/*.nupkg \
-                    --api-key ${{ secrets.NuGetAPIKey }} \
                     --source $NUGET_PACKAGE_SOURCE \
                     --skip-duplicate
 
