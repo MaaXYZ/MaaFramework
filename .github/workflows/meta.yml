@@ -49,7 +49,7 @@ jobs:
               env:
                   GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
               run: |
-                  // 如果有 inputs.run_id 从 run_id 获取 meta 的输出
+                  # 如果有 inputs.run_id 从 run_id 获取 meta 的输出
                   run_id="${{ inputs.reuse-from-run-id }}"
                   if [[ -n "$run_id" ]] && gh run download $run_id --repo $GITHUB_REPOSITORY --name meta; then
                     echo "Reusing meta outputs from run ID: $run_id"
@@ -57,7 +57,7 @@ jobs:
                     exit 0
                   fi
 
-                  // 构建 meta 信息
+                  # 构建 meta 信息
                   is_release=${{ startsWith(github.ref, 'refs/tags/v') }}
                   is_pre_release=${{ contains(github.ref, '-alpha.') || contains(github.ref, '-beta.') || contains(github.ref, '-rc.') }}
                   commit_hash=$(git rev-parse --short HEAD)
