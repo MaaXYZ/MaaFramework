@@ -31,7 +31,6 @@ on:
         inputs:
             build-config:
                 required: true
-                default: "RelWithDebInfo"
                 type: choice
                 options:
                     - Debug
@@ -49,7 +48,7 @@ jobs:
     meta:
         uses: ./.github/workflows/meta.yml
         with:
-            build-config: ${{ inputs.build-config }}
+            build-config: ${{ inputs.build-config || 'RelWithDebInfo' }}
 
 
     windows:
