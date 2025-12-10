@@ -132,15 +132,6 @@ jobs:
                   access: public
                   path: assets/pkgs-nodejs
                   dry-run: ${{ inputs.dry-run }}
-            
-            - run: |
-                npm unpublish @maaxyz/maa-node@5.2.2-post.12-ci.20059879739
-                npm unpublish @maaxyz/maa-node-win32-x64@5.2.2-post.12-ci.20059879739
-                npm unpublish @maaxyz/maa-node-win32-arm64@5.2.2-post.12-ci.20059879739
-                npm unpublish @maaxyz/maa-node-linux-x64@5.2.2-post.12-ci.20059879739
-                npm unpublish @maaxyz/maa-node-linux-arm64@5.2.2-post.12-ci.20059879739
-                npm unpublish @maaxyz/maa-node-darwin-x64@5.2.2-post.12-ci.20059879739
-                npm unpublish @maaxyz/maa-node-darwin-arm64@5.2.2-post.12-ci.20059879739
 
     mirrorchyan:
         needs: meta
