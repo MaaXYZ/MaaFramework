@@ -29,7 +29,7 @@ on:
 
     workflow_dispatch:
         inputs:
-            build_config:
+            build-config:
                 required: true
                 default: "RelWithDebInfo"
                 type: choice
@@ -48,6 +48,9 @@ concurrency:
 jobs:
     meta:
         uses: ./.github/workflows/meta.yml
+        with:
+            build-config: ${{ inputs.build-config || 'RelWithDebInfo' }}
+
 
     windows:
         needs: meta
@@ -124,12 +127,12 @@ jobs:
               run: |
                   cmake --preset "${{ matrix.arch == 'x86_64' && 'MSVC 2022' || 'MSVC 2022 ARM' }}" -DCMAKE_SYSTEM_VERSION="10.0.26100.0" -DMAADEPS_TRIPLET="maa-${{ matrix.arch == 'x86_64' && 'x64' || 'arm64' }}-windows" -DMAA_HASH_VERSION='${{ needs.meta.outputs.tag }}' -DWITH_NODEJS_BINDING=ON -DWITH_QUICKJS_BINDING=ON
 
-                  cmake --build build --preset "${{ matrix.arch == 'x86_64' && 'MSVC 2022' || 'MSVC 2022 ARM' }} - ${{ inputs.build_config || needs.meta.outputs.build_config }}" -j 16
+                  cmake --build build --preset "${{ matrix.arch == 'x86_64' && 'MSVC 2022' || 'MSVC 2022 ARM' }} - ${{ needs.meta.outputs.build-config }}" -j 16
 
             - name: Install
               shell: bash
               run: |
-                  cmake --install build --prefix install --config ${{ inputs.build_config || needs.meta.outputs.build_config }}
+                  cmake --install build --prefix install --config ${{ needs.meta.outputs.build-config }}
                   rm -rf install/bin/msvc-debug
 
                   cp -r docs install
@@ -217,12 +220,12 @@ jobs:
                     -DMAA_HASH_VERSION='${{ needs.meta.outputs.tag }}' \
                     -DWITH_NODEJS_BINDING=ON -DWITH_QUICKJS_BINDING=ON
 
-                  cmake --build build --preset 'NinjaMulti Linux ${{ matrix.arch == 'x86_64' && 'x64' || 'arm64' }} - ${{ inputs.build_config || needs.meta.outputs.build_config }}' -j 16
+                  cmake --build build --preset 'NinjaMulti Linux ${{ matrix.arch == 'x86_64' && 'x64' || 'arm64' }} - ${{ needs.meta.outputs.build-config }}' -j 16
 
             - name: Install
               shell: bash
               run: |
-                  cmake --install build --prefix install --config ${{ inputs.build_config || needs.meta.outputs.build_config }}
+                  cmake --install build --prefix install --config ${{ needs.meta.outputs.build-config }}
 
                   cp -r docs install
                   cp README*.md install
@@ -313,12 +316,12 @@ jobs:
                     -DWITH_NODEJS_BINDING=ON -DWITH_QUICKJS_BINDING=ON \
                     -DCMAKE_OSX_ARCHITECTURES='${{ matrix.arch == 'x86_64' && 'x86_64' || 'arm64' }}'
 
-                  cmake --build build --preset 'NinjaMulti - ${{ inputs.build_config || needs.meta.outputs.build_config }}' -j 16
+                  cmake --build build --preset 'NinjaMulti - ${{ needs.meta.outputs.build-config }}' -j 16
 
             - name: Install
               shell: bash
               run: |
-                  cmake --install build --prefix install --config ${{ inputs.build_config || needs.meta.outputs.build_config }}
+                  cmake --install build --prefix install --config ${{ needs.meta.outputs.build-config }}
 
                   cp -r docs install
                   cp README*.md install
@@ -398,12 +401,12 @@ jobs:
                     -DMAADEPS_TRIPLET='maa-${{ matrix.arch == 'x86_64' && 'x64' || 'arm64' }}-android' \
                     -DMAA_HASH_VERSION='${{ needs.meta.outputs.tag }}'
 
-                  cmake --build build --preset 'NinjaMulti - ${{ inputs.build_config || needs.meta.outputs.build_config }}' -j 16
+                  cmake --build build --preset 'NinjaMulti - ${{ needs.meta.outputs.build-config }}' -j 16
 
             - name: Install
               shell: bash
               run: |
-                  cmake --install build --prefix install --config ${{ inputs.build_config || needs.meta.outputs.build_config }}
+                  cmake --install build --prefix install --config ${{ needs.meta.outputs.build-config }}
 
                   cp -r docs install
                   cp README*.md install
@@ -452,7 +455,7 @@ jobs:
             - uses: actions/upload-artifact@v4
               if: always()
               with:
-                  name: MAA-nupkgs
+                  name: pkgs-nuget
                   path: "tools/nupkgs/*.nupkg"
 
     pip_pack:
@@ -473,7 +476,7 @@ jobs:
             - uses: actions/upload-artifact@v4
               if: always()
               with:
-                  name: MAA-pip-pkgs
+                  name: pkgs-pip
                   path: "pip_pack/wheel/*.whl"
 
     nodejs_pack:
@@ -511,7 +514,7 @@ jobs:
 
             - uses: actions/upload-artifact@v4
               with:
-                  name: MAA-nodejs-package
+                  name: pkgs-nodejs
                   path: "source/binding/NodeJS/release"
 
     update_submodule:
@@ -551,7 +554,7 @@ jobs:
                   github_token: ${{ secrets.GITHUB_TOKEN }}
 
     trigger_release:
-        if: ${{ needs.meta.outputs.is_release == 'true' && github.repository_id == '632024122' }}
+        if: ${{ needs.meta.outputs.is-release == 'true' && github.repository_id == '632024122' }}
         needs:
             [
                 meta,
@@ -566,10 +569,9 @@ jobs:
         runs-on: ubuntu-latest
         steps:
             - name: Trigger release workflow
-              run: |
-                  gh workflow run --repo $GITHUB_REPOSITORY release.yml \
-                    -f tag="${{ needs.meta.outputs.tag }}" \
-                    -f is_pre_release="${{ needs.meta.outputs.is_pre_release }}" \
-                    -f run_id="${{ github.run_id }}"
               env:
                   GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+              run: |
+                  gh workflow run --repo $GITHUB_REPOSITORY release.yml \
+                    -f run-id="${{ github.run_id }}" \
+                    -f run-name="${{ needs.meta.outputs.tag }}" \

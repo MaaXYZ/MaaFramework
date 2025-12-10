@@ -263,6 +263,10 @@ bool process(Resource* res, const Input& input)
 - **AgentClient**：运行在主程序中，将 Custom 请求转发到 Server，并处理 Server 的远程调用
 - **AgentServer**：运行在用户进程中，注册自定义识别器/动作，通过 Remote* 类代理访问主程序实例
 
+### 修改 workflows 和 actions
+
+修改 workflows 和 actions 后如果不会自动触发 workflow ，请提醒我 dry run 相关的所有 workflows。
+
 ## 参考资源
 
 - [快速开始](docs/zh_cn/1.1-快速开始.md)
