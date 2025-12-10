@@ -51,10 +51,16 @@ jobs:
               run: |
                   # 如果有 inputs.run_id 从 run_id 获取 meta 的输出
                   run_id="${{ inputs.reuse-from-run-id }}"
-                  if [[ -n "$run_id" ]] && gh run download $run_id --repo $GITHUB_REPOSITORY --name meta; then
-                    echo "Reusing meta outputs from run ID: $run_id"
-                    cat "$META_OUTPUT" | tee -a "$GITHUB_OUTPUT"
-                    exit 0
+                  if [[ -n "$run_id" ]] && gh run download $run_id --repo ${{ github.repository }} --name meta; then
+                    if [[ -f "$META_OUTPUT" ]]; then
+                        echo "Reusing meta outputs from run ID: $run_id"
+                        cat "$META_OUTPUT" | tee -a "$GITHUB_OUTPUT"
+                        exit 0
+                      else
+                        echo "Expected meta output file not found at: $META_OUTPUT" >&2
+                        echo "Make sure the 'meta' artifact contains this file path." >&2
+                        exit 1
+                      fi
                   fi
 
                   # 构建 meta 信息
