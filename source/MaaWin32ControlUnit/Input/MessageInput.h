@@ -51,11 +51,13 @@ private:
     void ensure_foreground();
     bool send_or_post_w(UINT message, WPARAM wParam, LPARAM lParam);
 
+    // 准备鼠标位置：with_cursor_pos_ 模式下移动真实光标，返回 lParam
+    LPARAM prepare_mouse_position(int x, int y);
+
     // helpers for with_cursor_pos
     POINT client_to_screen(int x, int y);
     void save_cursor_pos();
     void restore_cursor_pos();
-    void set_cursor_to_client_pos(int x, int y);
 
     const HWND hwnd_ = nullptr;
     const Mode mode_ = Mode::SendMessage;

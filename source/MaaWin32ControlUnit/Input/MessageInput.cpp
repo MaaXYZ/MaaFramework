@@ -64,10 +64,15 @@ void MessageInput::restore_cursor_pos()
     }
 }
 
-void MessageInput::set_cursor_to_client_pos(int x, int y)
+LPARAM MessageInput::prepare_mouse_position(int x, int y)
 {
-    POINT screen_pos = client_to_screen(x, y);
-    SetCursorPos(screen_pos.x, screen_pos.y);
+    if (with_cursor_pos_) {
+        // Genshin 模式：移动真实光标到目标位置
+        POINT screen_pos = client_to_screen(x, y);
+        SetCursorPos(screen_pos.x, screen_pos.y);
+        std::this_thread::sleep_for(std::chrono::milliseconds(1));
+    }
+    return MAKELPARAM(x, y);
 }
 
 MaaControllerFeature MessageInput::get_features() const
@@ -98,35 +103,42 @@ bool MessageInput::touch_down(int contact, int x, int y, int pressure)
         return false;
     }
 
+    MouseMessageInfo move_info;
+    if (!contact_to_mouse_move_message(contact, move_info)) {
+        LogError << VAR(mode_) << VAR(with_cursor_pos_) << "contact out of range" << VAR(contact);
+        return false;
+    }
+
+    MouseMessageInfo down_info;
+    if (!contact_to_mouse_down_message(contact, down_info)) {
+        LogError << VAR(mode_) << VAR(with_cursor_pos_) << "contact out of range" << VAR(contact);
+        return false;
+    }
+
     ensure_foreground();
 
     if (block_input_) {
         BlockInput(TRUE);
     }
 
-    // 如果需要管理光标位置，保存当前位置并移动到目标位置
     if (with_cursor_pos_) {
         save_cursor_pos();
-        set_cursor_to_client_pos(x, y);
     }
 
-    // 先发送 MOVE 消息
-    touch_move(contact, x, y, pressure);
+    // 准备位置（with_cursor_pos_ 模式下会移动光标）并发送 MOVE 消息
+    LPARAM lParam = prepare_mouse_position(x, y);
 
-    std::this_thread::sleep_for(std::chrono::milliseconds(10));
-
-    MouseMessageInfo msg_info;
-    if (!contact_to_mouse_down_message(contact, msg_info)) {
-        LogError << VAR(mode_) << VAR(with_cursor_pos_) << "contact out of range" << VAR(contact);
-        // 错误时恢复光标位置
+    if (!send_or_post_w(move_info.message, move_info.w_param, lParam)) {
         if (with_cursor_pos_) {
             restore_cursor_pos();
         }
         return false;
     }
 
-    if (!send_or_post_w(msg_info.message, msg_info.w_param, MAKELPARAM(x, y))) {
-        // 错误时恢复光标位置
+    std::this_thread::sleep_for(std::chrono::milliseconds(10));
+
+    // 发送 DOWN 消息
+    if (!send_or_post_w(down_info.message, down_info.w_param, lParam)) {
         if (with_cursor_pos_) {
             restore_cursor_pos();
         }
@@ -149,18 +161,16 @@ bool MessageInput::touch_move(int contact, int x, int y, int pressure)
         return false;
     }
 
-    if (with_cursor_pos_) {
-        // 移动光标到目标位置
-        set_cursor_to_client_pos(x, y);
-    }
-
     MouseMessageInfo msg_info;
     if (!contact_to_mouse_move_message(contact, msg_info)) {
         LogError << VAR(mode_) << VAR(with_cursor_pos_) << "contact out of range" << VAR(contact);
         return false;
     }
 
-    if (!send_or_post_w(msg_info.message, msg_info.w_param, MAKELPARAM(x, y))) {
+    // 准备位置（with_cursor_pos_ 模式下会移动光标）并发送 MOVE 消息
+    LPARAM lParam = prepare_mouse_position(x, y);
+
+    if (!send_or_post_w(msg_info.message, msg_info.w_param, lParam)) {
         return false;
     }
 
@@ -284,10 +294,10 @@ bool MessageInput::scroll(int dx, int dy)
     });
 
     if (with_cursor_pos_) {
-        // 保存当前光标位置
+        // 保存当前光标位置，并移动到上次记录的位置
         save_cursor_pos();
-        // 移动光标到上次记录的位置
-        set_cursor_to_client_pos(last_pos_.first, last_pos_.second);
+        POINT screen_pos = client_to_screen(last_pos_.first, last_pos_.second);
+        SetCursorPos(screen_pos.x, screen_pos.y);
     }
 
     std::this_thread::sleep_for(std::chrono::milliseconds(10));

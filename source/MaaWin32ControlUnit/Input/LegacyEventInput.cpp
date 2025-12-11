@@ -79,7 +79,15 @@ bool LegacyEventInput::touch_move(int contact, int x, int y, int pressure)
     }
     // LogInfo << VAR(contact) << VAR(x) << VAR(y) << VAR(pressure) << VAR(point.x) << VAR(point.y) << VAR_VOIDP(hwnd_);
 
-    SetCursorPos(point.x, point.y);
+    // 使用 mouse_event + MOUSEEVENTF_MOVE + MOUSEEVENTF_ABSOLUTE 移动光标
+    // 需要将屏幕坐标转换为 0-65535 范围的归一化坐标
+    int screen_width = GetSystemMetrics(SM_CXSCREEN);
+    int screen_height = GetSystemMetrics(SM_CYSCREEN);
+
+    DWORD norm_x = static_cast<DWORD>((point.x * 65535) / screen_width);
+    DWORD norm_y = static_cast<DWORD>((point.y * 65535) / screen_height);
+
+    mouse_event(MOUSEEVENTF_MOVE | MOUSEEVENTF_ABSOLUTE, norm_x, norm_y, 0, 0);
 
     return true;
 }
