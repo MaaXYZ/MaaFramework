@@ -168,7 +168,7 @@ jobs:
                   generate_release_notes: ${{ !inputs.dry-run }}
 
     mirrorchyan:
-        needs: github
+        needs: [meta, github]
         if: ${{ inputs.only-publish-to == 'MirrorChyan' || inputs.only-publish-to == 'All' }}
         continue-on-error: ${{ inputs.only-publish-to == 'All' }}
         runs-on: ubuntu-latest
