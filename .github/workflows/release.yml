@@ -133,29 +133,8 @@ jobs:
                   path: assets/pkgs-nodejs
                   dry-run: ${{ inputs.dry-run }}
 
-    mirrorchyan:
-        needs: meta
-        if: ${{ inputs.only-publish-to == 'MirrorChyan' || inputs.only-publish-to == 'All' }}
-        continue-on-error: ${{ inputs.only-publish-to == 'All' }}
-        runs-on: ubuntu-latest
-        outputs:
-            result: ${{ steps.publish.outcome }}
-        steps:
-            - name: Trigger MirrorChyanUploading
-              id: publish
-              env:
-                  GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-              run: |
-                  if [ "${{ inputs.dry-run }}" = "true" ]; then
-                    echo "Dry run mode, skipping MirrorChyan upload."
-                    exit 0
-                  fi
-
-                  gh workflow run --repo ${{ github.repository }} mirrorchyan.yml -f tag=${{ needs.meta.outputs.tag }}
-                  gh workflow run --repo ${{ github.repository }} mirrorchyan_release_note.yml -f tag=${{ needs.meta.outputs.tag }}
-
     github:
-        needs: [meta, nuget, pip, nodejs, mirrorchyan]
+        needs: [meta]
         continue-on-error: ${{ inputs.only-publish-to == 'All' }}
         runs-on: ubuntu-latest
         outputs:
@@ -187,6 +166,27 @@ jobs:
                   tag_name: ${{ inputs.dry-run && 'v0.0.0' || needs.meta.outputs.tag }}
                   prerelease: ${{ needs.meta.outputs.is-prerelease == 'true' }}
                   generate_release_notes: ${{ !inputs.dry-run }}
+
+    mirrorchyan:
+        needs: github
+        if: ${{ inputs.only-publish-to == 'MirrorChyan' || inputs.only-publish-to == 'All' }}
+        continue-on-error: ${{ inputs.only-publish-to == 'All' }}
+        runs-on: ubuntu-latest
+        outputs:
+            result: ${{ steps.publish.outcome }}
+        steps:
+            - name: Trigger MirrorChyanUploading
+              id: publish
+              env:
+                  GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+              run: |
+                  if [ "${{ inputs.dry-run }}" = "true" ]; then
+                    echo "Dry run mode, skipping MirrorChyan upload."
+                    exit 0
+                  fi
+
+                  gh workflow run --repo ${{ github.repository }} mirrorchyan.yml -f tag=${{ needs.meta.outputs.tag }}
+                  gh workflow run --repo ${{ github.repository }} mirrorchyan_release_note.yml -f tag=${{ needs.meta.outputs.tag }}
 
     create_issue_on_failure:
         needs: [meta, nuget, pip, nodejs, mirrorchyan, github]
