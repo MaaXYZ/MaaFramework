@@ -121,7 +121,8 @@ declare global {
             | 'LegacyEvent'
             | 'PostThreadMessage'
             | 'SendMessageWithCursorPos'
-            | 'PostMessageWithCursorPos',
+            | 'PostMessageWithCursorPos'
+            | 'Gamepad',
             ScreencapOrInputMethods
         >
         const DbgControllerType: Record<'CarouselImage' | 'ReplayRecording', Uint64>
