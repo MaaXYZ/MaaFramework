@@ -34,6 +34,7 @@ concurrency:
     group: ${{ github.workflow }}-${{ inputs.run-id }}
     cancel-in-progress: false
 
+# 注意：如果 only-publish-to 是 All，则所有 jobs 的状态都必须是成功，All 的状态由 create_issue 判断
 jobs:
     meta:
         uses: ./.github/workflows/meta.yml
@@ -171,7 +172,10 @@ jobs:
 
     mirrorchyan:
         needs: [meta, github]
-        if: ${{ always() && needs.meta.result == 'success' && (inputs.only-publish-to == 'MirrorChyan' || inputs.only-publish-to == 'All') }}
+        if: always() && needs.meta.result == 'success' && (
+                inputs.only-publish-to == 'MirrorChyan' ||
+                inputs.only-publish-to == 'All'
+            )
         continue-on-error: ${{ inputs.only-publish-to == 'All' }}
         runs-on: ubuntu-latest
         outputs:
@@ -179,6 +183,8 @@ jobs:
         steps:
             - name: Trigger MirrorChyanUploading
               id: publish
+              if: inputs.only-publish-to == 'MirrorChyan' ||
+                ( inputs.only-publish-to == 'All' && needs.github.outputs.result == 'success' ) 
               env:
                   GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
               run: |
