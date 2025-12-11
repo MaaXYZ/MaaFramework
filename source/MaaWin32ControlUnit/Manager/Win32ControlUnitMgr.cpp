@@ -31,6 +31,18 @@ Win32ControlUnitMgr::Win32ControlUnitMgr(
 
 bool Win32ControlUnitMgr::connect()
 {
+#ifndef MAA_WIN32_COMPATIBLE
+    // 设置 Per-Monitor DPI Aware V2，确保 GetClientRect/GetWindowRect 等 API 返回物理像素。
+    // 修复高 DPI 缩放下 PrintWindow/FramePool 等截图方式只能截取部分区域的问题。
+    auto prev_ctx = SetThreadDpiAwarenessContext(DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2);
+    if (prev_ctx) {
+        LogInfo << "SetThreadDpiAwarenessContext to PER_MONITOR_AWARE_V2 success" << VAR_VOIDP(prev_ctx);
+    }
+    else {
+        LogWarn << "SetThreadDpiAwarenessContext failed, error:" << GetLastError();
+    }
+#endif
+
     if (hwnd_) {
         if (!IsWindow(hwnd_)) {
             LogError << "hwnd_ is invalid";
