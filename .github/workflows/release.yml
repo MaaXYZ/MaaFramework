@@ -21,6 +21,7 @@ on:
                     - npmjs.com
                     - NuGet.org
                     - PyPI.org
+                    - GitHub
                     - MirrorChyan
                     - All
             run-name:
@@ -135,6 +136,7 @@ jobs:
 
     github:
         needs: [meta]
+        if: ${{ inputs.only-publish-to == 'GitHub' || inputs.only-publish-to == 'All' }}
         continue-on-error: ${{ inputs.only-publish-to == 'All' }}
         runs-on: ubuntu-latest
         outputs:
@@ -169,7 +171,7 @@ jobs:
 
     mirrorchyan:
         needs: [meta, github]
-        if: ${{ inputs.only-publish-to == 'MirrorChyan' || inputs.only-publish-to == 'All' }}
+        if: ${{ always() && needs.meta.result == 'success' && (inputs.only-publish-to == 'MirrorChyan' || inputs.only-publish-to == 'All') }}
         continue-on-error: ${{ inputs.only-publish-to == 'All' }}
         runs-on: ubuntu-latest
         outputs:
