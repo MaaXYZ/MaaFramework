@@ -232,6 +232,7 @@ class Controller:
 
         Note:
             不是所有控制器都支持滚动操作 / Not all controllers support scroll operation
+            建议使用 120 的整数倍（WHEEL_DELTA）以获得最佳兼容性 / Using multiples of 120 (WHEEL_DELTA) is recommended
         """
         ctrl_id = Library.framework().MaaControllerPostScroll(self._handle, dx, dy)
         return self._gen_ctrl_job(ctrl_id)

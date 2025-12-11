@@ -165,6 +165,9 @@ declare global {
             post_touch_up(contact: number): Job<CtrlId, Controller>
             post_key_down(keycode: number): Job<CtrlId, Controller>
             post_key_up(keycode: number): Job<CtrlId, Controller>
+            /**
+             * Post a scroll action. Using multiples of 120 (WHEEL_DELTA) is recommended for best compatibility.
+             */
             post_scroll(dx: number, dy: number): Job<CtrlId, Controller>
             post_screencap(): ImageJob
             override_pipeline(pipeline: Record<string, unknown> | Record<string, unknown>[]): void

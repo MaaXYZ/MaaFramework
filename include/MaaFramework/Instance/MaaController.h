@@ -97,6 +97,8 @@ extern "C"
      * @return The control id of the scroll action.
      *
      * @note Not all controllers support scroll. If not supported, the action will fail.
+     * @note The dx/dy values are sent directly as scroll increments. Using multiples of 120 (WHEEL_DELTA) is
+     * recommended for best compatibility.
      */
     MAA_FRAMEWORK_API MaaCtrlId MaaControllerPostScroll(MaaController* ctrl, int32_t dx, int32_t dy);
 
