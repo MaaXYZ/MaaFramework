@@ -46,21 +46,21 @@ private:
     bool send_state();
 
     HMODULE vigem_module_ = nullptr;
-    PVIGEM_CLIENT client_ = nullptr;
-    PVIGEM_TARGET pad_ = nullptr;
-    XUSB_REPORT report_ = {};
+    vigem::PVIGEM_CLIENT client_ = nullptr;
+    vigem::PVIGEM_TARGET pad_ = nullptr;
+    vigem::XUSB_REPORT report_ = {};
     bool inited_ = false;
 
     // Function pointers
-    PFN_vigem_alloc fn_alloc_ = nullptr;
-    PFN_vigem_free fn_free_ = nullptr;
-    PFN_vigem_connect fn_connect_ = nullptr;
-    PFN_vigem_disconnect fn_disconnect_ = nullptr;
-    PFN_vigem_target_x360_alloc fn_target_x360_alloc_ = nullptr;
-    PFN_vigem_target_free fn_target_free_ = nullptr;
-    PFN_vigem_target_add fn_target_add_ = nullptr;
-    PFN_vigem_target_remove fn_target_remove_ = nullptr;
-    PFN_vigem_target_x360_update fn_target_x360_update_ = nullptr;
+    vigem::PFN_vigem_alloc fn_alloc_ = nullptr;
+    vigem::PFN_vigem_free fn_free_ = nullptr;
+    vigem::PFN_vigem_connect fn_connect_ = nullptr;
+    vigem::PFN_vigem_disconnect fn_disconnect_ = nullptr;
+    vigem::PFN_vigem_target_x360_alloc fn_target_x360_alloc_ = nullptr;
+    vigem::PFN_vigem_target_free fn_target_free_ = nullptr;
+    vigem::PFN_vigem_target_add fn_target_add_ = nullptr;
+    vigem::PFN_vigem_target_remove fn_target_remove_ = nullptr;
+    vigem::PFN_vigem_target_x360_update fn_target_x360_update_ = nullptr;
 };
 
 MAA_CTRL_UNIT_NS_END

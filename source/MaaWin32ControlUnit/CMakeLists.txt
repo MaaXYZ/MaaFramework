@@ -6,7 +6,7 @@ add_library(MaaWin32ControlUnit SHARED ${maa_win32_control_unit_src} ${maa_win32
 target_include_directories(MaaWin32ControlUnit
     PRIVATE ${CMAKE_CURRENT_SOURCE_DIR} ${MAA_PRIVATE_INC} ${MAA_PUBLIC_INC})
 
-target_link_libraries(MaaWin32ControlUnit PRIVATE MaaUtils ${OpenCV_LIBS} ZLIB::ZLIB Boost::system)
+target_link_libraries(MaaWin32ControlUnit PRIVATE HeaderOnlyLibraries MaaUtils ${OpenCV_LIBS} ZLIB::ZLIB Boost::system)
 target_link_libraries(MaaWin32ControlUnit PRIVATE d3d11 dxgi runtimeobject)
 
 target_compile_definitions(MaaWin32ControlUnit PRIVATE MAA_CONTROL_UNIT_EXPORTS)

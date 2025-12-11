@@ -25,15 +25,16 @@ bool GamepadInput::load_vigem()
         return false;
     }
 
-    fn_alloc_ = reinterpret_cast<PFN_vigem_alloc>(GetProcAddress(vigem_module_, "vigem_alloc"));
-    fn_free_ = reinterpret_cast<PFN_vigem_free>(GetProcAddress(vigem_module_, "vigem_free"));
-    fn_connect_ = reinterpret_cast<PFN_vigem_connect>(GetProcAddress(vigem_module_, "vigem_connect"));
-    fn_disconnect_ = reinterpret_cast<PFN_vigem_disconnect>(GetProcAddress(vigem_module_, "vigem_disconnect"));
-    fn_target_x360_alloc_ = reinterpret_cast<PFN_vigem_target_x360_alloc>(GetProcAddress(vigem_module_, "vigem_target_x360_alloc"));
-    fn_target_free_ = reinterpret_cast<PFN_vigem_target_free>(GetProcAddress(vigem_module_, "vigem_target_free"));
-    fn_target_add_ = reinterpret_cast<PFN_vigem_target_add>(GetProcAddress(vigem_module_, "vigem_target_add"));
-    fn_target_remove_ = reinterpret_cast<PFN_vigem_target_remove>(GetProcAddress(vigem_module_, "vigem_target_remove"));
-    fn_target_x360_update_ = reinterpret_cast<PFN_vigem_target_x360_update>(GetProcAddress(vigem_module_, "vigem_target_x360_update"));
+    fn_alloc_ = reinterpret_cast<vigem::PFN_vigem_alloc>(GetProcAddress(vigem_module_, "vigem_alloc"));
+    fn_free_ = reinterpret_cast<vigem::PFN_vigem_free>(GetProcAddress(vigem_module_, "vigem_free"));
+    fn_connect_ = reinterpret_cast<vigem::PFN_vigem_connect>(GetProcAddress(vigem_module_, "vigem_connect"));
+    fn_disconnect_ = reinterpret_cast<vigem::PFN_vigem_disconnect>(GetProcAddress(vigem_module_, "vigem_disconnect"));
+    fn_target_x360_alloc_ = reinterpret_cast<vigem::PFN_vigem_target_x360_alloc>(GetProcAddress(vigem_module_, "vigem_target_x360_alloc"));
+    fn_target_free_ = reinterpret_cast<vigem::PFN_vigem_target_free>(GetProcAddress(vigem_module_, "vigem_target_free"));
+    fn_target_add_ = reinterpret_cast<vigem::PFN_vigem_target_add>(GetProcAddress(vigem_module_, "vigem_target_add"));
+    fn_target_remove_ = reinterpret_cast<vigem::PFN_vigem_target_remove>(GetProcAddress(vigem_module_, "vigem_target_remove"));
+    fn_target_x360_update_ =
+        reinterpret_cast<vigem::PFN_vigem_target_x360_update>(GetProcAddress(vigem_module_, "vigem_target_x360_update"));
 
     if (!fn_alloc_ || !fn_free_ || !fn_connect_ || !fn_disconnect_ || !fn_target_x360_alloc_ || !fn_target_free_ || !fn_target_add_
         || !fn_target_remove_ || !fn_target_x360_update_) {
@@ -76,8 +77,8 @@ bool GamepadInput::init_gamepad()
         return false;
     }
 
-    VIGEM_ERROR ret = fn_connect_(client_);
-    if (!VIGEM_SUCCESS(ret)) {
+    vigem::VIGEM_ERROR ret = fn_connect_(client_);
+    if (!vigem::VIGEM_SUCCESS(ret)) {
         LogError << "vigem_connect failed, please install ViGEmBus driver" << VAR(static_cast<int>(ret));
         fn_free_(client_);
         client_ = nullptr;
@@ -94,7 +95,7 @@ bool GamepadInput::init_gamepad()
     }
 
     ret = fn_target_add_(client_, pad_);
-    if (!VIGEM_SUCCESS(ret)) {
+    if (!vigem::VIGEM_SUCCESS(ret)) {
         LogError << "vigem_target_add failed" << VAR(static_cast<int>(ret));
         fn_target_free_(pad_);
         pad_ = nullptr;
@@ -104,7 +105,6 @@ bool GamepadInput::init_gamepad()
         return false;
     }
 
-    XUSB_REPORT_INIT(&report_);
     LogInfo << "ViGEm virtual Xbox 360 gamepad initialized";
     return true;
 }
@@ -292,8 +292,8 @@ bool GamepadInput::send_state()
         return false;
     }
 
-    VIGEM_ERROR ret = fn_target_x360_update_(client_, pad_, report_);
-    if (!VIGEM_SUCCESS(ret)) {
+    vigem::VIGEM_ERROR ret = fn_target_x360_update_(client_, pad_, report_);
+    if (!vigem::VIGEM_SUCCESS(ret)) {
         LogError << "vigem_target_x360_update failed" << VAR(static_cast<int>(ret));
         return false;
     }
