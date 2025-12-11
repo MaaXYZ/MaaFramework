@@ -21,6 +21,7 @@ on:
                     - npmjs.com
                     - NuGet.org
                     - PyPI.org
+                    - GitHub
                     - MirrorChyan
                     - All
             run-name:
@@ -33,6 +34,7 @@ concurrency:
     group: ${{ github.workflow }}-${{ inputs.run-id }}
     cancel-in-progress: false
 
+# 注意：如果 only-publish-to 是 All，则所有 jobs 的状态都必须是成功，All 的状态由 create_issue 判断
 jobs:
     meta:
         uses: ./.github/workflows/meta.yml
@@ -75,35 +77,6 @@ jobs:
                     --source ${{ env.NUGET_PACKAGE_SOURCE }} \
                     --skip-duplicate
 
-    pip:
-        if: ${{ inputs.only-publish-to == 'PyPI.org' || inputs.only-publish-to == 'All' }}
-        continue-on-error: ${{ inputs.only-publish-to == 'All' }}
-        runs-on: ubuntu-latest
-        outputs:
-            result: ${{ steps.publish.outcome }}
-        permissions:
-            id-token: write
-        env:
-            PYPI_REPOSITORY: ${{ inputs.dry-run && 'testpypi' || 'pypi' }}
-        steps:
-            - uses: dawidd6/action-download-artifact@v6
-              with:
-                  workflow: build.yml
-                  run_id: ${{ inputs.run-id }}
-                  name: pkgs-pip
-                  path: assets/pkgs-pip
-                  check_artifacts: true
-                  if_no_artifact_found: fail
-
-            - name: Publish Pip Packages
-              id: publish
-              run: |
-                  pip install --upgrade twine packaging
-                  python -m twine upload \
-                    assets/pkgs-pip/*.whl \
-                    --repository ${{ env.PYPI_REPOSITORY }} \
-                    --skip-existing
-
     nodejs:
         if: ${{ inputs.only-publish-to == 'npmjs.com' || inputs.only-publish-to == 'All' }}
         continue-on-error: ${{ inputs.only-publish-to == 'All' }}
@@ -133,8 +106,38 @@ jobs:
                   path: assets/pkgs-nodejs
                   dry-run: ${{ inputs.dry-run }}
 
+    pip:
+        if: ${{ inputs.only-publish-to == 'PyPI.org' || inputs.only-publish-to == 'All' }}
+        continue-on-error: ${{ inputs.only-publish-to == 'All' }}
+        runs-on: ubuntu-latest
+        outputs:
+            result: ${{ steps.publish.outcome }}
+        permissions:
+            id-token: write
+        env:
+            PYPI_REPOSITORY: ${{ inputs.dry-run && 'testpypi' || 'pypi' }}
+        steps:
+            - uses: dawidd6/action-download-artifact@v6
+              with:
+                  workflow: build.yml
+                  run_id: ${{ inputs.run-id }}
+                  name: pkgs-pip
+                  path: assets/pkgs-pip
+                  check_artifacts: true
+                  if_no_artifact_found: fail
+
+            - name: Publish Pip Packages
+              id: publish
+              run: |
+                  pip install --upgrade twine packaging
+                  python -m twine upload \
+                    assets/pkgs-pip/*.whl \
+                    --repository ${{ env.PYPI_REPOSITORY }} \
+                    --skip-existing
+
     github:
         needs: [meta]
+        if: ${{ inputs.only-publish-to == 'GitHub' || inputs.only-publish-to == 'All' }}
         continue-on-error: ${{ inputs.only-publish-to == 'All' }}
         runs-on: ubuntu-latest
         outputs:
@@ -168,8 +171,11 @@ jobs:
                   generate_release_notes: ${{ !inputs.dry-run }}
 
     mirrorchyan:
-        needs: github
-        if: ${{ inputs.only-publish-to == 'MirrorChyan' || inputs.only-publish-to == 'All' }}
+        needs: [meta, github]
+        if: always() && needs.meta.result == 'success' && (
+                inputs.only-publish-to == 'MirrorChyan' ||
+                inputs.only-publish-to == 'All'
+            )
         continue-on-error: ${{ inputs.only-publish-to == 'All' }}
         runs-on: ubuntu-latest
         outputs:
@@ -177,6 +183,8 @@ jobs:
         steps:
             - name: Trigger MirrorChyanUploading
               id: publish
+              if: inputs.only-publish-to == 'MirrorChyan' ||
+                ( inputs.only-publish-to == 'All' && needs.github.outputs.result == 'success' ) 
               env:
                   GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
               run: |
@@ -188,25 +196,26 @@ jobs:
                   gh workflow run --repo ${{ github.repository }} mirrorchyan.yml -f tag=${{ needs.meta.outputs.tag }}
                   gh workflow run --repo ${{ github.repository }} mirrorchyan_release_note.yml -f tag=${{ needs.meta.outputs.tag }}
 
-    create_issue_on_failure:
-        needs: [meta, nuget, pip, nodejs, mirrorchyan, github]
+    create_issue:
+        needs: [meta, nuget, nodejs, pip, github, mirrorchyan]
         runs-on: ubuntu-latest
         if: success() && (
-                needs.nuget.outputs.result != 'success' ||
-                needs.pip.outputs.result != 'success' ||
+                needs.nuget.outputs.result != 'success'  ||
                 needs.nodejs.outputs.result != 'success' ||
-                needs.mirrorchyan.outputs.result != 'success' ||
-                needs.github.outputs.result != 'success'
+                needs.pip.outputs.result != 'success'    ||
+                needs.github.outputs.result != 'success' ||
+                needs.mirrorchyan.outputs.result != 'success'
             )
         env:
             ISSUE_TITLE: "${{ needs.meta.outputs.tag }} failed to release"
             ISSUE_BODY: |
                 A new release attempt for tag ${{ needs.meta.outputs.tag }} failed.
 
-                ${{ needs.nuget.outputs.result != 'success'         && '- nuget @moomiji' || '' }}
-                ${{ needs.pip.outputs.result != 'success'           && '- pip @MistEO' || '' }}
-                ${{ needs.nodejs.outputs.result != 'success'        && '- nodejs @neko-para' || '' }}
-                ${{ needs.mirrorchyan.outputs.result != 'success'   && '- mirrorchyan @MistEO' || '' }}
+                ${{ needs.nuget.outputs.result != 'success'         && '- nuget         @moomiji'   || '' }}
+                ${{ needs.nodejs.outputs.result != 'success'        && '- nodejs        @neko-para' || '' }}
+                ${{ needs.pip.outputs.result != 'success'           && '- pip           @MistEO'    || '' }}
+                ${{ needs.github.outputs.result != 'success'        && '- github        @MistEO'    || '' }}
+                ${{ needs.mirrorchyan.outputs.result != 'success'   && '- mirrorchyan   @MistEO'    || '' }}
 
                 Release run: [${{ github.run_id }}](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})
 
@@ -215,8 +224,8 @@ jobs:
                 | Job | Result |
                 | --- | ------ |
                 | nuget | ${{ needs.nuget.outputs.result }} |
-                | pip | ${{ needs.pip.outputs.result }} |
                 | nodejs | ${{ needs.nodejs.outputs.result }} |
+                | pip | ${{ needs.pip.outputs.result }} |
                 | mirrorchyan | ${{ needs.mirrorchyan.outputs.result }} |
                 | github | ${{ needs.github.outputs.result }} |
 
