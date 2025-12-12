@@ -79,7 +79,7 @@ _✨ 基于图像识别的自动化黑盒测试框架 ✨_
   基于 react-flow 的 MaaFramework Pipeline 工作流式可视化编辑器，使用“无代码”流程图构建您的 Pipeline！
 
 - [MaaInspector](https://github.com/TanyaShue/MaaInspector) ![Typescript](https://img.shields.io/badge/Typescript-8A2BE2?logo=typescript) ![activity](https://img.shields.io/github/commit-activity/m/TanyaShue/MaaInspector?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/TanyaShue/MaaInspector?style=social)  
-  基于 vue-flow 的可视化编辑器，集成节点预览,编辑,调试于一体的简单好用的MaaFramework Pipeline 编辑器
+  基于 vue-flow 的可视化编辑器，集成节点预览,编辑,调试于一体的简单好用的 MaaFramework Pipeline 编辑器
 
 ### 应用程序
 
