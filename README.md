@@ -81,6 +81,9 @@ _✨ 基于图像识别的自动化黑盒测试框架 ✨_
 - [MaaInspector](https://github.com/TanyaShue/MaaInspector) ![Typescript](https://img.shields.io/badge/Typescript-8A2BE2?logo=typescript) ![activity](https://img.shields.io/github/commit-activity/m/TanyaShue/MaaInspector?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/TanyaShue/MaaInspector?style=social)  
   基于 vue-flow 的可视化编辑器，集成节点预览,编辑,调试于一体的简单好用的 MaaFramework Pipeline 编辑器
 
+- [MaaMCP](https://github.com/MaaXYZ/MaaMCP) ![python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white) ![license](https://img.shields.io/github/license/MaaXYZ/MaaMCP) ![activity](https://img.shields.io/github/commit-activity/m/MaaXYZ/MaaMCP?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/MaaXYZ/MaaMCP?style=social) [![pypi](https://img.shields.io/badge/PyPI-3776AB?logo=pypi&logoColor=white)](https://pypi.org/project/maa-mcp)  
+  基于 MaaFramework 的 MCP 服务器 为 AI 助手提供 Android 设备和 Windows 桌面自动化能力
+
 ### 应用程序
 
 - [M9A](https://github.com/MaaXYZ/M9A) ![Pipeline](https://img.shields.io/badge/Pipeline-%23876f69?logo=paddypower&logoColor=%23FFFFFF) ![python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white) ![license](https://img.shields.io/github/license/MaaXYZ/M9A) ![activity](https://img.shields.io/github/commit-activity/m/MaaXYZ/M9A?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/MaaXYZ/M9A?style=social) [![mirrorc](./docs/static/mirrorc-zh.svg)](https://mirrorchyan.com/zh/projects?source=maafw-badge) [![website](https://img.shields.io/badge/https://1999.fan-%234285F4)](https://1999.fan)  

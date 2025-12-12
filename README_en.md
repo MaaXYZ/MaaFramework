@@ -84,6 +84,9 @@ It offers low-code simplicity while maintaining high extensibility. The framewor
 - [MaaInspector](https://github.com/TanyaShue/MaaInspector) ![Typescript](https://img.shields.io/badge/Typescript-8A2BE2?logo=typescript) ![activity](https://img.shields.io/github/commit-activity/m/TanyaShue/MaaInspector?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/TanyaShue/MaaInspector?style=social)  
   A visual editor based on vue-flow — a simple and user-friendly MaaFramework Pipeline Editor that integrates node preview, editing, and debugging all in one.  
 
+- [MaaMCP](https://github.com/MaaXYZ/MaaMCP) ![python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white) ![license](https://img.shields.io/github/license/MaaXYZ/MaaMCP) ![activity](https://img.shields.io/github/commit-activity/m/MaaXYZ/MaaMCP?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/MaaXYZ/MaaMCP?style=social) [![pypi](https://img.shields.io/badge/PyPI-3776AB?logo=pypi&logoColor=white)](https://pypi.org/project/maa-mcp)  
+  A MCP server, based on MaaFramework, provides AI assistants with automation capabilities for Android devices and Windows desktops.
+
 ### Application
 
 - [M9A](https://github.com/MaaXYZ/M9A) ![Pipeline](https://img.shields.io/badge/Pipeline-%23876f69?logo=paddypower&logoColor=%23FFFFFF) ![python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white) ![license](https://img.shields.io/github/license/MaaXYZ/M9A) ![activity](https://img.shields.io/github/commit-activity/m/MaaXYZ/M9A?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/MaaXYZ/M9A?style=social) [![mirrorc](./docs/static/mirrorc-en.svg)](https://mirrorchyan.com/en/projects?source=maafw-badge) [![website](https://img.shields.io/badge/https://1999.fan-%234285F4)](https://1999.fan)  
