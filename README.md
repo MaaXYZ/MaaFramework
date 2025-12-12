@@ -78,6 +78,9 @@ _✨ 基于图像识别的自动化黑盒测试框架 ✨_
 - [MaaPipelineEditor](https://github.com/kqcoxn/MaaPipelineEditor) ![Typescript](https://img.shields.io/badge/Typescript-8A2BE2?logo=typescript) ![activity](https://img.shields.io/github/commit-activity/m/kqcoxn/MaaPipelineEditor?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/kqcoxn/MaaPipelineEditor?style=social)  
   基于 react-flow 的 MaaFramework Pipeline 工作流式可视化编辑器，使用“无代码”流程图构建您的 Pipeline！
 
+- [MaaInspector](https://github.com/TanyaShue/MaaInspector) ![Typescript](https://img.shields.io/badge/Typescript-8A2BE2?logo=typescript) ![activity](https://img.shields.io/github/commit-activity/m/TanyaShue/MaaInspector?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/TanyaShue/MaaInspector?style=social)  
+  基于 vue-flow 的可视化编辑器，集成节点预览,编辑,调试于一体的简单好用的 MaaFramework Pipeline 编辑器
+
 ### 应用程序
 
 - [M9A](https://github.com/MaaXYZ/M9A) ![Pipeline](https://img.shields.io/badge/Pipeline-%23876f69?logo=paddypower&logoColor=%23FFFFFF) ![python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white) ![license](https://img.shields.io/github/license/MaaXYZ/M9A) ![activity](https://img.shields.io/github/commit-activity/m/MaaXYZ/M9A?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/MaaXYZ/M9A?style=social) [![mirrorc](./docs/static/mirrorc-zh.svg)](https://mirrorchyan.com/zh/projects?source=maafw-badge) [![website](https://img.shields.io/badge/https://1999.fan-%234285F4)](https://1999.fan)  
