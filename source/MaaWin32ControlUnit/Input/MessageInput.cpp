@@ -75,6 +75,20 @@ LPARAM MessageInput::prepare_mouse_position(int x, int y)
     return MAKELPARAM(x, y);
 }
 
+std::pair<int, int> MessageInput::get_target_pos() const
+{
+    if (last_pos_set_) {
+        return last_pos_;
+    }
+
+    // 未设置时返回窗口客户区中心
+    RECT rect = {};
+    if (hwnd_ && GetClientRect(hwnd_, &rect)) {
+        return { (rect.right - rect.left) / 2, (rect.bottom - rect.top) / 2 };
+    }
+    return { 0, 0 };
+}
+
 MaaControllerFeature MessageInput::get_features() const
 {
     return MaaControllerFeature_UseMouseDownAndUpInsteadOfClick | MaaControllerFeature_UseKeyboardDownAndUpInsteadOfClick;
@@ -146,6 +160,7 @@ bool MessageInput::touch_down(int contact, int x, int y, int pressure)
     }
 
     last_pos_ = { x, y };
+    last_pos_set_ = true;
 
     return true;
 }
@@ -175,6 +190,7 @@ bool MessageInput::touch_move(int contact, int x, int y, int pressure)
     }
 
     last_pos_ = { x, y };
+    last_pos_set_ = true;
 
     return true;
 }
@@ -202,7 +218,8 @@ bool MessageInput::touch_up(int contact)
         return false;
     }
 
-    if (!send_or_post_w(msg_info.message, msg_info.w_param, MAKELPARAM(last_pos_.first, last_pos_.second))) {
+    auto target_pos = get_target_pos();
+    if (!send_or_post_w(msg_info.message, msg_info.w_param, MAKELPARAM(target_pos.first, target_pos.second))) {
         return false;
     }
 
@@ -293,18 +310,24 @@ bool MessageInput::scroll(int dx, int dy)
         }
     });
 
+    auto target_pos = get_target_pos();
+
     if (with_cursor_pos_) {
         // 保存当前光标位置，并移动到上次记录的位置
         save_cursor_pos();
-        POINT screen_pos = client_to_screen(last_pos_.first, last_pos_.second);
+        POINT screen_pos = client_to_screen(target_pos.first, target_pos.second);
         SetCursorPos(screen_pos.x, screen_pos.y);
     }
 
     std::this_thread::sleep_for(std::chrono::milliseconds(10));
 
+    // WM_MOUSEWHEEL 的 lParam 应为屏幕坐标
+    POINT screen_pos = client_to_screen(target_pos.first, target_pos.second);
+    LPARAM lParam = MAKELPARAM(screen_pos.x, screen_pos.y);
+
     if (dy != 0) {
         WPARAM wParam = MAKEWPARAM(0, static_cast<short>(dy));
-        if (!send_or_post_w(WM_MOUSEWHEEL, wParam, MAKELPARAM(last_pos_.first, last_pos_.second))) {
+        if (!send_or_post_w(WM_MOUSEWHEEL, wParam, lParam)) {
             if (with_cursor_pos_) {
                 restore_cursor_pos();
             }
@@ -314,7 +337,7 @@ bool MessageInput::scroll(int dx, int dy)
 
     if (dx != 0) {
         WPARAM wParam = MAKEWPARAM(0, static_cast<short>(dx));
-        if (!send_or_post_w(WM_MOUSEHWHEEL, wParam, MAKELPARAM(last_pos_.first, last_pos_.second))) {
+        if (!send_or_post_w(WM_MOUSEHWHEEL, wParam, lParam)) {
             if (with_cursor_pos_) {
                 restore_cursor_pos();
             }
