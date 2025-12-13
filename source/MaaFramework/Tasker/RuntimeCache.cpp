@@ -2,6 +2,7 @@
 
 #include <mutex>
 
+#include "Global/OptionMgr.h"
 #include "MaaUtils/Logger.h"
 
 MAA_NS_BEGIN
@@ -47,7 +48,16 @@ std::optional<MAA_TASK_NS::RecoResult> RuntimeCache::get_reco_result(MaaRecoId u
     if (it == reco_details_.end()) {
         return std::nullopt;
     }
-    return it->second;
+
+    MAA_TASK_NS::RecoResult result = it->second;
+
+    auto cache_it = reco_image_cache_.find(uid);
+    if (cache_it != reco_image_cache_.end()) {
+        result.raw = cache_it->second.raw;
+        result.draws = cache_it->second.draws;
+    }
+
+    return result;
 }
 
 void RuntimeCache::set_reco_detail(MaaRecoId uid, MAA_TASK_NS::RecoResult detail)
@@ -59,7 +69,29 @@ void RuntimeCache::set_reco_detail(MaaRecoId uid, MAA_TASK_NS::RecoResult detail
 
     std::unique_lock lock(reco_details_mutex_);
 
+    size_t limit = MAA_GLOBAL_NS::OptionMgr::get_instance().reco_image_cache_limit();
+
+    // limit > 0 means caching is enabled
+    if (limit > 0) {
+        evict_reco_image_cache_if_needed(limit);
+
+        reco_image_cache_.insert_or_assign(uid, RecoImageCache { std::move(detail.raw), std::move(detail.draws) });
+        reco_image_order_.push_back(uid);
+    }
+
+    detail.raw.clear();
+    detail.draws.clear();
+
     reco_details_.insert_or_assign(uid, std::move(detail));
+}
+
+void RuntimeCache::evict_reco_image_cache_if_needed(size_t limit)
+{
+    while (reco_image_cache_.size() >= limit && !reco_image_order_.empty()) {
+        MaaRecoId oldest = reco_image_order_.front();
+        reco_image_order_.pop_front();
+        reco_image_cache_.erase(oldest);
+    }
 }
 
 std::optional<MAA_TASK_NS::ActionResult> RuntimeCache::get_action_result(MaaActId uid) const
@@ -157,6 +189,8 @@ void RuntimeCache::clear()
     {
         std::unique_lock lock(reco_details_mutex_);
         reco_details_.clear();
+        reco_image_cache_.clear();
+        reco_image_order_.clear();
     }
     {
         std::unique_lock lock(action_details_mutex_);

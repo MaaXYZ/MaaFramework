@@ -304,13 +304,9 @@ MaaBool MaaImageBufferSetEncoded(MaaImageBuffer* handle, MaaImageEncodedData dat
         return true;
     }
 
-    cv::Mat img = cv::imdecode({ data, static_cast<int>(size) }, cv::IMREAD_COLOR);
-    if (img.empty()) {
-        LogError << "img is empty" << VAR_VOIDP(data) << VAR(size);
-        return false;
-    }
+    ImageEncodedBuffer buffer(data, data + size);
+    handle->set(std::move(buffer));
 
-    handle->set(img);
     return true;
 }
 

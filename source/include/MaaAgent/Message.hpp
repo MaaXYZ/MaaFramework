@@ -14,7 +14,7 @@ MAA_AGENT_NS_BEGIN
 // ReverseRequest: server -> client
 
 using MessageTypePlaceholder = int;
-inline static constexpr int kProtocolVersion = 5;
+inline static constexpr int kProtocolVersion = 6;
 
 struct StartUpRequest
 {
@@ -1344,6 +1344,16 @@ struct ImageHeader
     MessageTypePlaceholder _ImageHeader = 1;
 
     MEO_JSONIZATION(uuid, rows, cols, type, size, _ImageHeader);
+};
+
+struct ImageEncodedHeader
+{
+    std::string uuid;
+    size_t size = 0;
+
+    MessageTypePlaceholder _ImageEncodedHeader = 1;
+
+    MEO_JSONIZATION(uuid, size, _ImageEncodedHeader);
 };
 
 MAA_AGENT_NS_END

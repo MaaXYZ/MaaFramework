@@ -34,6 +34,21 @@ bool Transceiver::handle_image_header(const json::value& j)
     return true;
 }
 
+bool Transceiver::handle_image_encoded_header(const json::value& j)
+{
+    if (!j.is<ImageEncodedHeader>()) {
+        return false;
+    }
+
+    const ImageEncodedHeader& header = j.as<ImageEncodedHeader>();
+
+    LogTrace << VAR(header) << VAR(ipc_addr_);
+
+    handle_image_encoded(header);
+
+    return true;
+}
+
 static std::string temp_directory()
 {
     auto path = std::filesystem::temp_directory_path();
@@ -221,6 +236,43 @@ std::string Transceiver::send_image(const cv::Mat& mat)
     return header.uuid;
 }
 
+std::string Transceiver::send_image_encoded(const ImageEncodedBuffer& encoded_data)
+{
+    if (encoded_data.empty()) {
+        LogWarn << "empty encoded data" << VAR(ipc_addr_);
+        return {};
+    }
+
+    std::unique_lock lock(socket_mutex_);
+
+    ImageEncodedHeader header {
+        .uuid = make_uuid(),
+        .size = encoded_data.size(),
+    };
+
+    // send header
+    if (!poll(zmq_pollitem_send_)) {
+        LogError << "send encoded header canceled";
+        return {};
+    }
+    std::string jstr = json::value(header).dumps();
+    zmq::message_t header_msg(jstr.data(), jstr.size());
+    bool sent = zmq_sock_.send(std::move(header_msg), zmq::send_flags::dontwait).has_value();
+    if (!sent) {
+        LogError << "failed to send encoded header" << VAR(header) << VAR(ipc_addr_);
+        return {};
+    }
+
+    // send encoded image data
+    zmq::message_t img_msg(encoded_data.data(), encoded_data.size());
+    sent = zmq_sock_.send(img_msg, zmq::send_flags::none).has_value();
+    if (!sent) {
+        LogError << "failed to send encoded image data" << VAR(ipc_addr_);
+        return {};
+    }
+    return header.uuid;
+}
+
 cv::Mat Transceiver::get_image_cache(const std::string& uuid)
 {
     if (uuid.empty()) {
@@ -238,6 +290,25 @@ cv::Mat Transceiver::get_image_cache(const std::string& uuid)
     recved_images_.erase(it);
 
     return image;
+}
+
+Transceiver::ImageEncodedBuffer Transceiver::get_image_encoded_cache(const std::string& uuid)
+{
+    if (uuid.empty()) {
+        LogWarn << "empty uuid" << VAR(ipc_addr_);
+        return {};
+    }
+
+    auto it = recved_images_encoded_.find(uuid);
+    if (it == recved_images_encoded_.end()) {
+        LogError << "encoded image not found" << VAR(uuid) << VAR(ipc_addr_);
+        return {};
+    }
+
+    ImageEncodedBuffer encoded_data = std::move(it->second);
+    recved_images_encoded_.erase(it);
+
+    return encoded_data;
 }
 
 void Transceiver::handle_image(const ImageHeader& header)
@@ -260,6 +331,28 @@ void Transceiver::handle_image(const ImageHeader& header)
 
     cv::Mat image = cv::Mat(header.rows, header.cols, header.type, msg.data()).clone();
     recved_images_.insert_or_assign(header.uuid, std::move(image));
+}
+
+void Transceiver::handle_image_encoded(const ImageEncodedHeader& header)
+{
+    LogFunc << VAR(header);
+
+    std::unique_lock lock(socket_mutex_);
+
+    zmq::message_t msg;
+    auto size_opt = zmq_sock_.recv(msg);
+    if (!size_opt || *size_opt == 0) {
+        LogError << "failed to recv encoded image data" << VAR(ipc_addr_);
+        return;
+    }
+
+    if (header.size != msg.size()) {
+        LogError << "encoded size mismatch" << VAR(header.size) << VAR(msg.size());
+        return;
+    }
+
+    ImageEncodedBuffer encoded_data(static_cast<const uint8_t*>(msg.data()), static_cast<const uint8_t*>(msg.data()) + msg.size());
+    recved_images_encoded_.insert_or_assign(header.uuid, std::move(encoded_data));
 }
 
 MAA_AGENT_NS_END

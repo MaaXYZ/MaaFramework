@@ -209,6 +209,9 @@ bool AgentClient::handle_inserted_request(const json::value& j)
     if (handle_image_header(j)) {
         return true;
     }
+    else if (handle_image_encoded_header(j)) {
+        return true;
+    }
 
     else if (handle_context_run_task(j)) {
         return true;
@@ -1097,7 +1100,7 @@ bool AgentClient::handle_tasker_get_reco_result(const json::value& j)
 
     std::vector<std::string> draws;
     for (const auto& draw : detail.draws) {
-        draws.emplace_back(send_image(draw));
+        draws.emplace_back(send_image_encoded(draw));
     }
 
     TaskerGetRecoResultReverseResponse resp {
@@ -1109,7 +1112,7 @@ bool AgentClient::handle_tasker_get_reco_result(const json::value& j)
         .box = detail.box ? std::array<int32_t, 4> { detail.box->x, detail.box->y, detail.box->width, detail.box->height }
                           : std::array<int32_t, 4> {},
         .detail = detail.detail,
-        .raw = send_image(detail.raw),
+        .raw = send_image_encoded(detail.raw),
         .draws = std::move(draws),
     };
     send(resp);

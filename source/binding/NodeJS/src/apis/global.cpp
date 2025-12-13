@@ -79,6 +79,20 @@ void set_debug_mode(bool value)
     }
 }
 
+void set_draw_quality(int value)
+{
+    if (!MaaGlobalSetOption(MaaGlobalOption_DrawQuality, &value, sizeof(value))) {
+        throw maajs::MaaError { "Global set draw_quality failed" };
+    }
+}
+
+void set_reco_image_cache_limit(size_t value)
+{
+    if (!MaaGlobalSetOption(MaaGlobalOption_RecoImageCacheLimit, &value, sizeof(value))) {
+        throw maajs::MaaError { "Global set reco_image_cache_limit failed" };
+    }
+}
+
 void config_init_option(std::string user_path, maajs::OptionalParam<std::string> default_json)
 {
     if (!MaaToolkitConfigInitOption(user_path.c_str(), default_json.value_or("{}").c_str())) {
@@ -97,6 +111,8 @@ maajs::ObjectType load_global(maajs::EnvType env)
     MAA_BIND_SETTER(globalObject, "save_on_error", set_save_on_error);
     MAA_BIND_SETTER(globalObject, "stdout_level", set_stdout_level);
     MAA_BIND_SETTER(globalObject, "debug_mode", set_debug_mode);
+    MAA_BIND_SETTER(globalObject, "draw_quality", set_draw_quality);
+    MAA_BIND_SETTER(globalObject, "reco_image_cache_limit", set_reco_image_cache_limit);
     MAA_BIND_FUNC(globalObject, "config_init_option", config_init_option);
 
     return globalObject;

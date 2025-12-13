@@ -37,7 +37,16 @@ cv::Mat VisionBase::draw_roi(const cv::Mat& base) const
 
 void VisionBase::handle_draw(const cv::Mat& draw) const
 {
-    draws_.emplace_back(draw);
+    const auto& option = MAA_GLOBAL_NS::OptionMgr::get_instance();
+    int quality = option.draw_quality();
+
+    ImageEncodedBuffer jpg;
+    if (!cv::imencode(".jpg", draw, jpg, { cv::IMWRITE_JPEG_QUALITY, quality })) {
+        LogError << "Failed to encode draw image" << VAR(name_);
+        return;
+    }
+
+    draws_.emplace_back(std::move(jpg));
 }
 
 void VisionBase::init_draw()

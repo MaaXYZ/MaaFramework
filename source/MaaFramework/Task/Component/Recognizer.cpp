@@ -73,7 +73,10 @@ RecoResult Recognizer::recognize(const PipelineData& pipeline_data)
 
     if (debug_mode()) {
         // 图太大了，不能无条件存
-        result.raw = image_;
+        ImageEncodedBuffer png;
+        cv::imencode(".png", image_, png);
+
+        result.raw = std::move(png);
     }
     if (pipeline_data.inverse) {
         LogDebug << "pipeline_data.inverse is true, reverse the result" << VAR(pipeline_data.name) << VAR(result.box);
@@ -341,10 +344,14 @@ void Recognizer::save_draws(const std::string& node_name, const RecoResult& resu
 
     auto dir = option.log_dir() / "vision";
 
+    std::filesystem::create_directories(dir);
+
     for (const auto& draw : result.draws) {
-        std::string filename = std::format("{}_{}_{}.png", node_name, result.reco_id, format_now_for_filename());
+        std::string filename = std::format("{}_{}_{}.jpg", node_name, result.reco_id, format_now_for_filename());
         auto filepath = dir / path(filename);
-        imwrite(filepath, draw);
+
+        std::ofstream of(filepath, std::ios::out | std::ios::binary);
+        of.write(reinterpret_cast<const char*>(draw.data()), draw.size());
         LogDebug << "save draw to" << filepath;
     }
 }

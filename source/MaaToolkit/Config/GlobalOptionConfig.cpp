@@ -77,6 +77,8 @@ bool GlobalOptionConfig::apply_option()
 
     ret &= MaaGlobalSetOption(MaaGlobalOption_StdoutLevel, &option_.stdout_level, sizeof(option_.stdout_level));
 
+    ret &= MaaGlobalSetOption(MaaGlobalOption_DrawQuality, &option_.draw_quality, sizeof(option_.draw_quality));
+
     bool bret = ret;
     LogDebug << VAR(bret);
     return bret;
