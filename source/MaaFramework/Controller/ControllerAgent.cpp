@@ -980,7 +980,7 @@ bool ControllerAgent::postproc_screenshot(const cv::Mat& raw)
         }
     }
 
-    cv::resize(raw, image_, { image_target_width_, image_target_height_ });
+    cv::resize(raw, image_, { image_target_width_, image_target_height_ }, 0, 0, cv::INTER_AREA);
     return !image_.empty();
 }
 
