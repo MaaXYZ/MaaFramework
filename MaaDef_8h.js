@@ -104,9 +104,7 @@ var MaaDef_8h =
       [ "MaaGlobalOption_SaveDraw", "MaaDef_8h.html#ad09e62ec1fd03dadaf5fb009026c38eeaaf9faa9621c830f79ba687467a3d9c5a", null ],
       [ "MaaGlobalOption_StdoutLevel", "MaaDef_8h.html#ad09e62ec1fd03dadaf5fb009026c38eea58ba5999f483b497af3eac6d327d53e6", null ],
       [ "MaaGlobalOption_DebugMode", "MaaDef_8h.html#ad09e62ec1fd03dadaf5fb009026c38eea85acfc5fc6cdca745d0eb2a090c05c5f", null ],
-      [ "MaaGlobalOption_SaveOnError", "MaaDef_8h.html#ad09e62ec1fd03dadaf5fb009026c38eea34d392a2384c7cc6d0a75112952f5edf", null ],
-      [ "MaaGlobalOption_DrawQuality", "MaaDef_8h.html#ad09e62ec1fd03dadaf5fb009026c38eeaa0b82e4c6b2048977eb87578ab41bc5a", null ],
-      [ "MaaGlobalOption_RecoImageCacheLimit", "MaaDef_8h.html#ad09e62ec1fd03dadaf5fb009026c38eead004c29c045174fe392e0484fc2f9f39", null ]
+      [ "MaaGlobalOption_SaveOnError", "MaaDef_8h.html#ad09e62ec1fd03dadaf5fb009026c38eea34d392a2384c7cc6d0a75112952f5edf", null ]
     ] ],
     [ "MaaInferenceDeviceEnum", "MaaDef_8h.html#a70d2d23982bb9114d93ce5e811288679", [
       [ "MaaInferenceDevice_CPU", "MaaDef_8h.html#a70d2d23982bb9114d93ce5e811288679ae4eb278e6b02b9b25afa7261d0b5c70e", null ],
