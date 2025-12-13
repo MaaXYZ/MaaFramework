@@ -59,12 +59,16 @@ private:
     void save_cursor_pos();
     void restore_cursor_pos();
 
+    // 获取 last_pos_，若未设置则返回窗口客户区中心坐标
+    std::pair<int, int> get_target_pos() const;
+
     const HWND hwnd_ = nullptr;
     const Mode mode_ = Mode::SendMessage;
     const bool with_cursor_pos_ = false;
     const bool block_input_ = false;
 
     std::pair<int, int> last_pos_;
+    bool last_pos_set_ = false;
     POINT saved_cursor_pos_ = { 0, 0 };
     bool cursor_pos_saved_ = false;
 };
