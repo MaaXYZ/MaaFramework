@@ -45,6 +45,29 @@ MaaController* MaaAdbControllerCreate(
     return new MAA_CTRL_NS::ControllerAgent(std::move(control_unit));
 }
 
+MaaController* MaaAndroidControllerCreate(
+    MaaAndroidScreencapMethod screencap_methods,
+    MaaAndroidInputMethod input_methods)
+{
+    LogFunc << VAR(screencap_methods) << VAR(input_methods);
+
+#ifndef __ANDROID__
+    LogError << "This API" << __FUNCTION__ << "is only available on Android";
+    std::ignore = screencap_methods;
+    std::ignore = input_methods;
+    return nullptr;
+#else
+    auto control_unit = MAA_NS::AndroidControlUnitLibraryHolder::create_control_unit(screencap_methods, input_methods);
+
+    if (!control_unit) {
+        LogError << "Failed to create control unit";
+        return nullptr;
+    }
+
+    return new MAA_CTRL_NS::ControllerAgent(std::move(control_unit));
+#endif
+}
+
 MaaController* MaaWin32ControllerCreate(
     void* hWnd,
     MaaWin32ScreencapMethod screencap_method,

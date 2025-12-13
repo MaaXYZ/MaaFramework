@@ -76,6 +76,19 @@ export constexpr auto _MaaAdbInputMethod_None = MaaAdbInputMethod_None;
 export constexpr auto _MaaAdbInputMethod_All = MaaAdbInputMethod_All;
 export constexpr auto _MaaAdbInputMethod_Default = MaaAdbInputMethod_Default;
 
+export using ::MaaAndroidScreencapMethod;
+export constexpr auto _MaaAndroidScreencapMethod_None = MaaAndroidScreencapMethod_None;
+export constexpr auto _MaaAndroidScreencapMethod_AccessibilityScreenshot = MaaAndroidScreencapMethod_AccessibilityScreenshot;
+export constexpr auto _MaaAndroidScreencapMethod_MediaProjection = MaaAndroidScreencapMethod_MediaProjection;
+export constexpr auto _MaaAndroidScreencapMethod_All = MaaAndroidScreencapMethod_All;
+export constexpr auto _MaaAndroidScreencapMethod_Default = MaaAndroidScreencapMethod_Default;
+
+export using ::MaaAndroidInputMethod;
+export constexpr auto _MaaAndroidInputMethod_None = MaaAndroidInputMethod_None;
+export constexpr auto _MaaAndroidInputMethod_Accessibility = MaaAndroidInputMethod_Accessibility;
+export constexpr auto _MaaAndroidInputMethod_All = MaaAndroidInputMethod_All;
+export constexpr auto _MaaAndroidInputMethod_Default = MaaAndroidInputMethod_Default;
+
 export using ::MaaWin32ScreencapMethod;
 export constexpr auto _MaaWin32ScreencapMethod_None = MaaWin32ScreencapMethod_None;
 export constexpr auto _MaaWin32ScreencapMethod_GDI = MaaWin32ScreencapMethod_GDI;
@@ -113,6 +126,7 @@ export using ::MaaContextClone;
 
 export using ::MaaCustomControllerCallbacks;
 export using ::MaaAdbControllerCreate;
+export using ::MaaAndroidControllerCreate;
 export using ::MaaWin32ControllerCreate;
 export using ::MaaCustomControllerCreate;
 export using ::MaaDbgControllerCreate;

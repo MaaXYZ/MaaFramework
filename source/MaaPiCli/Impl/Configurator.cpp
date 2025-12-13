@@ -191,6 +191,15 @@ std::optional<RuntimeParam> Configurator::generate_runtime() const
         runtime.controller_param = std::move(win32);
     } break;
 
+    case InterfaceData::Controller::Type::Android: {
+        RuntimeParam::AndroidParam android;
+        // Use default screencap and input methods
+        android.screencap = MaaAndroidScreencapMethod_Default;
+        android.input = MaaAndroidInputMethod_Accessibility;
+
+        runtime.controller_param = std::move(android);
+    } break;
+
     default: {
         LogError << "Unknown controller type" << VAR(controller.type);
         return std::nullopt;

@@ -33,6 +33,7 @@ struct InterfaceData
         {
             Invalid,
             Adb,
+            Android,
             Win32,
         };
 
@@ -288,6 +289,12 @@ struct RuntimeParam
         MaaWin32InputMethod keyboard = MaaWin32InputMethod_None;
     };
 
+    struct AndroidParam
+    {
+        MaaAndroidScreencapMethod screencap = MaaAndroidScreencapMethod_Default;
+        MaaAndroidInputMethod input = MaaAndroidInputMethod_Accessibility;
+    };
+
     struct Task
     {
         std::string name;
@@ -303,7 +310,7 @@ struct RuntimeParam
         std::filesystem::path cwd;
     };
 
-    std::variant<std::monostate, AdbParam, Win32Param> controller_param;
+    std::variant<std::monostate, AdbParam, Win32Param, AndroidParam> controller_param;
     std::vector<std::filesystem::path> resource_path;
 
     std::vector<Task> task;

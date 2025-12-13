@@ -20,6 +20,10 @@ if(WITH_ADB_CONTROLLER)
     add_dependencies(MaaFramework MaaAdbControlUnit)
 endif()
 
+if(WITH_ANDROID_CONTROLLER)
+    add_dependencies(MaaFramework MaaAndroidControlUnit)
+endif()
+
 if(WITH_WIN32_CONTROLLER)
     add_dependencies(MaaFramework MaaWin32ControlUnit)
 endif()
