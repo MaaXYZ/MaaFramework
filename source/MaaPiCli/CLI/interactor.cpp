@@ -748,6 +748,11 @@ bool Interactor::process_option(
             std::cin.sync();
             std::getline(std::cin, buffer);
 
+            if (std::cin.eof()) {
+                s_eof = true;
+                return false;
+            }
+
             if (yes_names.contains(buffer)) {
                 is_yes = true;
                 break;
