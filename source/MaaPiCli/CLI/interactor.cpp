@@ -737,15 +737,29 @@ bool Interactor::process_option(
         std::string case1_name = get_display_name(opt.cases[1].name, opt.cases[1].label);
         std::cout << "\t" << MAA_NS::utf8_to_crt(case0_name) << "\n";
         std::cout << "\t" << MAA_NS::utf8_to_crt(case1_name) << "\n";
-        std::cout << "\nInput Y/N [Y]: ";
+        std::cout << "\nInput Y/N: ";
 
-        std::cin.sync();
+        static const std::unordered_set<std::string> yes_names = { "Yes", "yes", "Y", "y" };
+        static const std::unordered_set<std::string> no_names = { "No", "no", "N", "n" };
+
         std::string buffer;
-        std::getline(std::cin, buffer);
+        bool is_yes = false;
+        while (true) {
+            std::cin.sync();
+            std::getline(std::cin, buffer);
 
-        // 空输入默认为 Yes（与提示 [Y] 一致）
-        static const std::unordered_set<std::string> yes_names = { "Yes", "yes", "Y", "y", "" };
-        bool is_yes = yes_names.contains(buffer);
+            if (yes_names.contains(buffer)) {
+                is_yes = true;
+                break;
+            }
+            else if (no_names.contains(buffer)) {
+                is_yes = false;
+                break;
+            }
+            else {
+                std::cout << "Invalid input, please input Y/N: ";
+            }
+        }
 
         // Find matching Yes/No case
         auto find_case = [&](bool find_yes) -> const InterfaceData::Option::Case* {
