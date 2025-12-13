@@ -324,6 +324,10 @@ Enumerations</h2></td></tr>
 &#160;&#160;<a class="el" href="MaaDef_8h.html#ad09e62ec1fd03dadaf5fb009026c38eea85acfc5fc6cdca745d0eb2a090c05c5f">MaaGlobalOption_DebugMode</a> = 6
 , <br />
 &#160;&#160;<a class="el" href="MaaDef_8h.html#ad09e62ec1fd03dadaf5fb009026c38eea34d392a2384c7cc6d0a75112952f5edf">MaaGlobalOption_SaveOnError</a> = 7
+, <br />
+&#160;&#160;<a class="el" href="MaaDef_8h.html#ad09e62ec1fd03dadaf5fb009026c38eeaa0b82e4c6b2048977eb87578ab41bc5a">MaaGlobalOption_DrawQuality</a> = 8
+, <br />
+&#160;&#160;<a class="el" href="MaaDef_8h.html#ad09e62ec1fd03dadaf5fb009026c38eead004c29c045174fe392e0484fc2f9f39">MaaGlobalOption_RecoImageCacheLimit</a> = 9
 <br />
  }</td></tr>
 <tr class="separator:ad09e62ec1fd03dadaf5fb009026c38ee"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -548,8 +552,8 @@ Enumerations</h2></td></tr>
 </div><div class="memdoc">
 <b>Value:</b><div class="fragment"><div class="line">    (<a class="code hl_define" href="MaaDef_8h.html#a004b0d855740e5d3894fd14d9e47d080">MaaAdbScreencapMethod_All</a> &amp; (~MaaAdbScreencapMethod_RawByNetcat) &amp; (~<a class="code hl_define" href="MaaDef_8h.html#a594d59b13a02d41b6a335e0f6575fca2">MaaAdbScreencapMethod_MinicapDirect</a>) \</div>
 <div class="line">     &amp; (~MaaAdbScreencapMethod_MinicapStream))</div>
-<div class="ttc" id="aMaaDef_8h_html_a004b0d855740e5d3894fd14d9e47d080"><div class="ttname"><a href="MaaDef_8h.html#a004b0d855740e5d3894fd14d9e47d080">MaaAdbScreencapMethod_All</a></div><div class="ttdeci">#define MaaAdbScreencapMethod_All</div><div class="ttdef"><b>Definition</b> MaaDef.h:232</div></div>
-<div class="ttc" id="aMaaDef_8h_html_a594d59b13a02d41b6a335e0f6575fca2"><div class="ttname"><a href="MaaDef_8h.html#a594d59b13a02d41b6a335e0f6575fca2">MaaAdbScreencapMethod_MinicapDirect</a></div><div class="ttdeci">#define MaaAdbScreencapMethod_MinicapDirect</div><div class="ttdef"><b>Definition</b> MaaDef.h:227</div></div>
+<div class="ttc" id="aMaaDef_8h_html_a004b0d855740e5d3894fd14d9e47d080"><div class="ttname"><a href="MaaDef_8h.html#a004b0d855740e5d3894fd14d9e47d080">MaaAdbScreencapMethod_All</a></div><div class="ttdeci">#define MaaAdbScreencapMethod_All</div><div class="ttdef"><b>Definition</b> MaaDef.h:244</div></div>
+<div class="ttc" id="aMaaDef_8h_html_a594d59b13a02d41b6a335e0f6575fca2"><div class="ttname"><a href="MaaDef_8h.html#a594d59b13a02d41b6a335e0f6575fca2">MaaAdbScreencapMethod_MinicapDirect</a></div><div class="ttdeci">#define MaaAdbScreencapMethod_MinicapDirect</div><div class="ttdef"><b>Definition</b> MaaDef.h:239</div></div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -1587,6 +1591,12 @@ default value is MaaLoggingLevel_Error
 </pre> </td></tr>
 <tr><td class="fieldname"><a id="ad09e62ec1fd03dadaf5fb009026c38eea34d392a2384c7cc6d0a75112952f5edf" name="ad09e62ec1fd03dadaf5fb009026c38eea34d392a2384c7cc6d0a75112952f5edf"></a>MaaGlobalOption_SaveOnError&#160;</td><td class="fielddoc"><p>Whether to save screenshot on error </p><pre class="fragment">value: bool, eg: true; val_size: sizeof(bool) 
 </pre> </td></tr>
+<tr><td class="fieldname"><a id="ad09e62ec1fd03dadaf5fb009026c38eeaa0b82e4c6b2048977eb87578ab41bc5a" name="ad09e62ec1fd03dadaf5fb009026c38eeaa0b82e4c6b2048977eb87578ab41bc5a"></a>MaaGlobalOption_DrawQuality&#160;</td><td class="fielddoc"><p>Image quality for draw images </p><pre class="fragment">value: int, eg: 85; val_size: sizeof(int)
+default value is 85, range: [0, 100] 
+</pre> </td></tr>
+<tr><td class="fieldname"><a id="ad09e62ec1fd03dadaf5fb009026c38eead004c29c045174fe392e0484fc2f9f39" name="ad09e62ec1fd03dadaf5fb009026c38eead004c29c045174fe392e0484fc2f9f39"></a>MaaGlobalOption_RecoImageCacheLimit&#160;</td><td class="fielddoc"><p>Recognition image cache limit </p><pre class="fragment">value: size_t, eg: 4096; val_size: sizeof(size_t)
+default value is 4096 
+</pre> </td></tr>
 </table>
 
 </div>
@@ -1704,7 +1714,7 @@ default value is MaaLoggingLevel_Error
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="dir_d44c64559bbebec7f509842c48db8b23.html">include</a></li><li class="navelem"><a class="el" href="dir_370cd1367c21b1a87c5c9c6803b8d0b9.html">MaaFramework</a></li><li class="navelem"><a class="el" href="MaaDef_8h.html">MaaDef.h</a></li>
-    <li class="footer">Generated on Thu Dec 11 2025 for MaaFramework by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.8 </li>
+    <li class="footer">Generated on Sat Dec 13 2025 for MaaFramework by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.8 </li>
   </ul>
 </div>
 </body>
