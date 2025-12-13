@@ -1,9 +1,11 @@
 #pragma once
 
+#include <deque>
 #include <map>
 #include <optional>
 #include <shared_mutex>
 #include <string>
+#include <unordered_map>
 
 #include "Common/TaskResultTypes.h"
 #include "MaaUtils/NoWarningCVMat.hpp"
@@ -15,6 +17,8 @@ MAA_NS_BEGIN
 class RuntimeCache
 {
 public:
+    static constexpr size_t kRecoImageCacheLimit = 4096;
+
     std::optional<MaaNodeId> get_latest_node(const std::string& name) const;
     void set_latest_node(const std::string& name, MaaNodeId id);
 
@@ -33,10 +37,20 @@ public:
     void clear();
 
 private:
+    struct RecoImageCache
+    {
+        MAA_TASK_NS::ImageEncodedBuffer raw;
+        std::vector<MAA_TASK_NS::ImageEncodedBuffer> draws;
+    };
+
+    void evict_reco_image_cache_if_needed();
+
     std::map<std::string, MaaNodeId> latest_nodes_;
     mutable std::shared_mutex latest_nodes_mutex_;
 
     std::map<MaaRecoId, MAA_TASK_NS::RecoResult> reco_details_;
+    std::unordered_map<MaaRecoId, RecoImageCache> reco_image_cache_;
+    std::deque<MaaRecoId> reco_image_order_;
     mutable std::shared_mutex reco_details_mutex_;
 
     std::map<MaaActId, MAA_TASK_NS::ActionResult> action_details_;
