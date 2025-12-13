@@ -40,9 +40,14 @@ public: // from InputBase
 
 private:
     void ensure_foreground();
+    // 获取 last_pos_，若未设置则返回窗口客户区中心坐标
+    std::pair<int, int> get_target_pos() const;
 
     HWND hwnd_ = nullptr;
     const bool block_input_ = false;
+
+    std::pair<int, int> last_pos_;
+    bool last_pos_set_ = false;
 };
 
 MAA_CTRL_UNIT_NS_END
