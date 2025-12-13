@@ -121,6 +121,9 @@ bool AgentServer::handle_inserted_request(const json::value& j)
     if (handle_image_header(j)) {
         return true;
     }
+    else if (handle_image_encoded_header(j)) {
+        return true;
+    }
     else if (handle_recognition_request(j)) {
         return true;
     }

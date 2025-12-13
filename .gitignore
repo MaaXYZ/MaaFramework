@@ -450,5 +450,5 @@ maa_pi_config.json
 recording/*
 
 3rdparty/MaaDeps
-temp/*
 tmp/*
+temp/*

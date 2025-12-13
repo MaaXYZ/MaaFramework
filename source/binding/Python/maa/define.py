@@ -96,6 +96,18 @@ class MaaGlobalOptionEnum(IntEnum):
     # value: bool, eg: true; val_size: sizeof(bool)
     SaveOnError = 7
 
+    # Image quality for draw images
+    #
+    # value: int, eg: 85; val_size: sizeof(int)
+    # default value is 85, range: [0, 100]
+    DrawQuality = 8
+
+    # Recognition image cache limit
+    #
+    # value: size_t, eg: 4096; val_size: sizeof(size_t)
+    # default value is 4096
+    RecoImageCacheLimit = 9
+
 
 class MaaCtrlOptionEnum(IntEnum):
     Invalid = 0
