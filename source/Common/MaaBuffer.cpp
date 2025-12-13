@@ -305,7 +305,7 @@ MaaBool MaaImageBufferSetEncoded(MaaImageBuffer* handle, MaaImageEncodedData dat
     }
 
     ImageEncodedBuffer buffer(data, data + size);
-    handle->set(buffer);
+    handle->set(std::move(buffer));
 
     return true;
 }
