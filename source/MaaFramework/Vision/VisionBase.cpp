@@ -37,8 +37,11 @@ cv::Mat VisionBase::draw_roi(const cv::Mat& base) const
 
 void VisionBase::handle_draw(const cv::Mat& draw) const
 {
+    const auto& option = MAA_GLOBAL_NS::OptionMgr::get_instance();
+    int quality = option.draw_quality();
+
     ImageEncodedBuffer jpg;
-    cv::imencode(".jpg", draw, jpg, { cv::IMWRITE_JPEG_QUALITY, 85 });
+    cv::imencode(".jpg", draw, jpg, { cv::IMWRITE_JPEG_QUALITY, quality });
 
     draws_.emplace_back(std::move(jpg));
 }

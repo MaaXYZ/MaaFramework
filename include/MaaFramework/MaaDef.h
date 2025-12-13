@@ -113,6 +113,12 @@ enum MaaGlobalOptionEnum
     ///
     /// value: bool, eg: true; val_size: sizeof(bool)
     MaaGlobalOption_SaveOnError = 7,
+
+    /// Image quality for draw images
+    ///
+    /// value: int, eg: 85; val_size: sizeof(int)
+    /// default value is 85, range: [0, 100]
+    MaaGlobalOption_DrawQuality = 8,
 };
 
 typedef MaaOption MaaResOption;

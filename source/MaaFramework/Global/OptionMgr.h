@@ -28,6 +28,8 @@ public:
 
     bool save_on_error() const { return save_on_error_; }
 
+    int draw_quality() const { return draw_quality_; }
+
 private:
     OptionMgr() = default;
 
@@ -37,12 +39,14 @@ private:
     bool set_stdout_level(MaaOptionValue value, MaaOptionValueSize val_size);
     bool set_debug_mode(MaaOptionValue value, MaaOptionValueSize val_size);
     bool set_save_on_error(MaaOptionValue value, MaaOptionValueSize val_size);
+    bool set_draw_quality(MaaOptionValue value, MaaOptionValueSize val_size);
 
 private:
     std::filesystem::path log_dir_;
     bool save_draw_ = false;
     bool debug_mode_ = false;
     bool save_on_error_ = false;
+    int draw_quality_ = 85;
 };
 
 MAA_GLOBAL_NS_END
