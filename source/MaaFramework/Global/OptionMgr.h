@@ -30,6 +30,8 @@ public:
 
     int draw_quality() const { return draw_quality_; }
 
+    size_t reco_image_cache_limit() const { return reco_image_cache_limit_; }
+
 private:
     OptionMgr() = default;
 
@@ -40,6 +42,7 @@ private:
     bool set_debug_mode(MaaOptionValue value, MaaOptionValueSize val_size);
     bool set_save_on_error(MaaOptionValue value, MaaOptionValueSize val_size);
     bool set_draw_quality(MaaOptionValue value, MaaOptionValueSize val_size);
+    bool set_reco_image_cache_limit(MaaOptionValue value, MaaOptionValueSize val_size);
 
 private:
     std::filesystem::path log_dir_;
@@ -47,6 +50,7 @@ private:
     bool debug_mode_ = false;
     bool save_on_error_ = false;
     int draw_quality_ = 85;
+    size_t reco_image_cache_limit_ = 4096;
 };
 
 MAA_GLOBAL_NS_END

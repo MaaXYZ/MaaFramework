@@ -119,6 +119,12 @@ enum MaaGlobalOptionEnum
     /// value: int, eg: 85; val_size: sizeof(int)
     /// default value is 85, range: [0, 100]
     MaaGlobalOption_DrawQuality = 8,
+
+    /// Recognition image cache limit
+    ///
+    /// value: size_t, eg: 4096; val_size: sizeof(size_t)
+    /// default value is 4096
+    MaaGlobalOption_RecoImageCacheLimit = 9,
 };
 
 typedef MaaOption MaaResOption;

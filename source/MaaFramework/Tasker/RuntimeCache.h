@@ -17,8 +17,6 @@ MAA_NS_BEGIN
 class RuntimeCache
 {
 public:
-    static constexpr size_t kRecoImageCacheLimit = 4096;
-
     std::optional<MaaNodeId> get_latest_node(const std::string& name) const;
     void set_latest_node(const std::string& name, MaaNodeId id);
 

@@ -2,6 +2,7 @@
 
 #include <mutex>
 
+#include "Global/OptionMgr.h"
 #include "MaaUtils/Logger.h"
 
 MAA_NS_BEGIN
@@ -81,7 +82,8 @@ void RuntimeCache::set_reco_detail(MaaRecoId uid, MAA_TASK_NS::RecoResult detail
 
 void RuntimeCache::evict_reco_image_cache_if_needed()
 {
-    while (reco_image_cache_.size() >= kRecoImageCacheLimit && !reco_image_order_.empty()) {
+    size_t limit = MAA_GLOBAL_NS::OptionMgr::get_instance().reco_image_cache_limit();
+    while (reco_image_cache_.size() >= limit && !reco_image_order_.empty()) {
         MaaRecoId oldest = reco_image_order_.front();
         reco_image_order_.pop_front();
         reco_image_cache_.erase(oldest);
