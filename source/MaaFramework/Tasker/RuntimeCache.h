@@ -41,7 +41,7 @@ private:
         std::vector<MAA_TASK_NS::ImageEncodedBuffer> draws;
     };
 
-    void evict_reco_image_cache_if_needed();
+    void evict_reco_image_cache_if_needed(size_t limit);
 
     std::map<std::string, MaaNodeId> latest_nodes_;
     mutable std::shared_mutex latest_nodes_mutex_;

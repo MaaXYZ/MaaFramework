@@ -41,7 +41,10 @@ void VisionBase::handle_draw(const cv::Mat& draw) const
     int quality = option.draw_quality();
 
     ImageEncodedBuffer jpg;
-    cv::imencode(".jpg", draw, jpg, { cv::IMWRITE_JPEG_QUALITY, quality });
+    if (!cv::imencode(".jpg", draw, jpg, { cv::IMWRITE_JPEG_QUALITY, quality })) {
+        LogError << "Failed to encode draw image" << VAR(name_);
+        return;
+    }
 
     draws_.emplace_back(std::move(jpg));
 }
