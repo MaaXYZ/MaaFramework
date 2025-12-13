@@ -16,6 +16,8 @@ MAA_AGENT_NS_BEGIN
 
 class Transceiver
 {
+    using ImageEncodedBuffer = std::vector<uint8_t>;
+
 public:
     virtual ~Transceiver();
 
@@ -48,6 +50,9 @@ public:
             else if (msg.is<ImageHeader>()) {
                 handle_image(msg.as<ImageHeader>());
             }
+            else if (msg.is<ImageEncodedHeader>()) {
+                handle_image_encoded(msg.as<ImageEncodedHeader>());
+            }
             else {
                 // LogTrace << "inserted request" << VAR(req_id) << VAR(loop_count);
                 handle_inserted_request(msg);
@@ -58,11 +63,14 @@ public:
     }
 
     std::string send_image(const cv::Mat& mat);
+    std::string send_image_encoded(const ImageEncodedBuffer& encoded_data);
     cv::Mat get_image_cache(const std::string& uuid);
+    ImageEncodedBuffer get_image_encoded_cache(const std::string& uuid);
 
 protected:
     virtual bool handle_inserted_request(const json::value& j) = 0;
     bool handle_image_header(const json::value& j);
+    bool handle_image_encoded_header(const json::value& j);
 
     void init_socket(const std::string& identifier, bool bind);
     void uninit_socket();
@@ -75,6 +83,7 @@ protected:
 
 private:
     void handle_image(const ImageHeader& header);
+    void handle_image_encoded(const ImageEncodedHeader& header);
     bool poll(zmq::pollitem_t& pollitem);
 
 protected:
@@ -85,6 +94,7 @@ protected:
     std::filesystem::path ipc_path_;
 
     std::map<std::string /* uuid */, cv::Mat> recved_images_;
+    std::map<std::string /* uuid */, ImageEncodedBuffer> recved_images_encoded_;
 
 private:
     inline static int64_t s_req_id_ = 0;

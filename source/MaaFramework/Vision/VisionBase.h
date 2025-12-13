@@ -39,11 +39,14 @@ protected:
 class VisionBase
 {
 public:
+    using ImageEncodedBuffer = std::vector<uint8_t>;
+
+public:
     VisionBase(cv::Mat image, cv::Rect roi, std::string name);
 
-    const std::vector<cv::Mat>& draws() const& { return draws_; }
+    const std::vector<ImageEncodedBuffer>& draws() const& { return draws_; }
 
-    std::vector<cv::Mat> draws() && { return std::move(draws_); }
+    std::vector<ImageEncodedBuffer> draws() && { return std::move(draws_); }
 
     MaaRecoId uid() const { return uid_; }
 
@@ -67,7 +70,7 @@ protected:
 private:
     void init_draw();
 
-    mutable std::vector<cv::Mat> draws_;
+    mutable std::vector<ImageEncodedBuffer> draws_;
 
 private:
     inline static std::atomic<MaaRecoId> s_global_uid = 300'000'000;

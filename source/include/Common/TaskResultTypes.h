@@ -10,6 +10,8 @@
 
 MAA_TASK_NS_BEGIN
 
+using ImageEncodedBuffer = std::vector<uint8_t>;
+
 struct RecoResult
 {
     MaaRecoId reco_id = MaaInvalidId;
@@ -17,8 +19,8 @@ struct RecoResult
     std::string algorithm;
     std::optional<cv::Rect> box = std::nullopt;
     json::value detail;
-    cv::Mat raw;
-    std::vector<cv::Mat> draws;
+    ImageEncodedBuffer raw;
+    std::vector<ImageEncodedBuffer> draws;
 
     MEO_TOJSON(reco_id, name, algorithm, box, detail);
 };
