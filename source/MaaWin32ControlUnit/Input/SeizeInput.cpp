@@ -21,6 +21,20 @@ void SeizeInput::ensure_foreground()
     ::MaaNS::CtrlUnitNs::ensure_foreground_and_topmost(hwnd_);
 }
 
+std::pair<int, int> SeizeInput::get_target_pos() const
+{
+    if (last_pos_set_) {
+        return last_pos_;
+    }
+
+    // 未设置时返回窗口客户区中心
+    RECT rect = {};
+    if (hwnd_ && GetClientRect(hwnd_, &rect)) {
+        return { (rect.right - rect.left) / 2, (rect.bottom - rect.top) / 2 };
+    }
+    return { 0, 0 };
+}
+
 MaaControllerFeature SeizeInput::get_features() const
 {
     return MaaControllerFeature_UseMouseDownAndUpInsteadOfClick | MaaControllerFeature_UseKeyboardDownAndUpInsteadOfClick;
@@ -68,6 +82,9 @@ bool SeizeInput::touch_down(int contact, int x, int y, int pressure)
 
     SendInput(1, &input, sizeof(INPUT));
 
+    last_pos_ = { x, y };
+    last_pos_set_ = true;
+
     return true;
 }
 
@@ -96,6 +113,9 @@ bool SeizeInput::touch_move(int contact, int x, int y, int pressure)
     input.mi.dwFlags = MOUSEEVENTF_MOVE | MOUSEEVENTF_ABSOLUTE;
 
     SendInput(1, &input, sizeof(INPUT));
+
+    last_pos_ = { x, y };
+    last_pos_set_ = true;
 
     return true;
 }
@@ -241,6 +261,14 @@ bool SeizeInput::scroll(int dx, int dy)
             BlockInput(FALSE);
         }
     });
+
+    // 移动光标到目标位置
+    auto [target_x, target_y] = get_target_pos();
+    POINT point = { target_x, target_y };
+    if (hwnd_) {
+        ClientToScreen(hwnd_, &point);
+    }
+    SetCursorPos(point.x, point.y);
 
     INPUT input = {};
     input.type = INPUT_MOUSE;

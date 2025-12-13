@@ -22,6 +22,20 @@ void PostThreadMessageInput::ensure_foreground()
     ::MaaNS::CtrlUnitNs::ensure_foreground(hwnd_);
 }
 
+std::pair<int, int> PostThreadMessageInput::get_target_pos() const
+{
+    if (last_pos_set_) {
+        return last_pos_;
+    }
+
+    // 未设置时返回窗口客户区中心
+    RECT rect = {};
+    if (hwnd_ && GetClientRect(hwnd_, &rect)) {
+        return { (rect.right - rect.left) / 2, (rect.bottom - rect.top) / 2 };
+    }
+    return { 0, 0 };
+}
+
 MaaControllerFeature PostThreadMessageInput::get_features() const
 {
     return MaaControllerFeature_UseMouseDownAndUpInsteadOfClick | MaaControllerFeature_UseKeyboardDownAndUpInsteadOfClick;
@@ -65,6 +79,7 @@ bool PostThreadMessageInput::touch_down(int contact, int x, int y, int pressure)
     // 发送到目标线程队列
     PostThreadMessage(thread_id_, msg_info.message, msg_info.w_param, MAKELPARAM(x, y));
     last_pos_ = { x, y };
+    last_pos_set_ = true;
 
     return true;
 }
@@ -88,6 +103,7 @@ bool PostThreadMessageInput::touch_move(int contact, int x, int y, int pressure)
 
     PostThreadMessage(thread_id_, msg_info.message, msg_info.w_param, MAKELPARAM(x, y));
     last_pos_ = { x, y };
+    last_pos_set_ = true;
 
     return true;
 }
@@ -109,7 +125,8 @@ bool PostThreadMessageInput::touch_up(int contact)
         return false;
     }
 
-    PostThreadMessage(thread_id_, msg_info.message, msg_info.w_param, MAKELPARAM(last_pos_.first, last_pos_.second));
+    auto target_pos = get_target_pos();
+    PostThreadMessage(thread_id_, msg_info.message, msg_info.w_param, MAKELPARAM(target_pos.first, target_pos.second));
 
     return true;
 }
@@ -178,14 +195,16 @@ bool PostThreadMessageInput::scroll(int dx, int dy)
 
     ensure_foreground();
 
+    auto target_pos = get_target_pos();
+
     if (dy != 0) {
         WPARAM wParam = MAKEWPARAM(0, static_cast<short>(dy));
-        PostThreadMessage(thread_id_, WM_MOUSEWHEEL, wParam, MAKELPARAM(last_pos_.first, last_pos_.second));
+        PostThreadMessage(thread_id_, WM_MOUSEWHEEL, wParam, MAKELPARAM(target_pos.first, target_pos.second));
     }
 
     if (dx != 0) {
         WPARAM wParam = MAKEWPARAM(0, static_cast<short>(dx));
-        PostThreadMessage(thread_id_, WM_MOUSEHWHEEL, wParam, MAKELPARAM(last_pos_.first, last_pos_.second));
+        PostThreadMessage(thread_id_, WM_MOUSEHWHEEL, wParam, MAKELPARAM(target_pos.first, target_pos.second));
     }
 
     return true;
