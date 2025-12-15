@@ -327,6 +327,10 @@ jobs:
               run: |
                   cmake --install build --prefix install --config ${{ needs.meta.outputs.build-config }}
 
+                  if [[ ${{ needs.meta.outputs.build-config }} == RelWithDebInfo ]]; then
+                    tools/collect-mac-debug.sh install
+                  fi
+
                   cp -r docs install
                   cp README*.md install
 
