@@ -293,6 +293,23 @@ bool PipelineParser::parse_node(
         return false;
     }
 
+    if (!get_and_check_value(input, "repeat", data.repeat, default_value.repeat)) {
+        LogError << "failed to get_and_check_value repeat" << VAR(input);
+        return false;
+    }
+
+    auto repeat_delay = default_value.repeat_delay.count();
+    if (!get_and_check_value(input, "repeat_delay", repeat_delay, repeat_delay)) {
+        LogError << "failed to get_and_check_value repeat_delay" << VAR(input);
+        return false;
+    }
+    data.repeat_delay = std::chrono::milliseconds(repeat_delay);
+
+    if (!parse_wait_freezes_param(input, "repeat_wait_freezes", data.repeat_wait_freezes, default_value.repeat_wait_freezes)) {
+        LogError << "failed to repeat_wait_freezes" << VAR(input);
+        return false;
+    }
+
     if (!get_and_check_value(input, "max_hit", data.max_hit, default_value.max_hit)) {
         LogError << "failed to get_and_check_value max_hit" << VAR(input);
         return false;

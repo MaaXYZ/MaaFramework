@@ -384,6 +384,10 @@ json::object PipelineDumper::dump(const PipelineData& pp)
     data.pre_wait_freezes = dump_wait_freezes(pp.pre_wait_freezes);
     data.post_wait_freezes = dump_wait_freezes(pp.post_wait_freezes);
 
+    data.repeat = pp.repeat;
+    data.repeat_delay = pp.repeat_delay.count();
+    data.repeat_wait_freezes = dump_wait_freezes(pp.repeat_wait_freezes);
+
     data.max_hit = pp.max_hit;
     data.attach = pp.attach;
 
