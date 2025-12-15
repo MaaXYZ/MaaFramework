@@ -152,15 +152,14 @@ bool Runner::run(const RuntimeParam& param)
 
         std::vector<std::string> args = param.agent->child_args;
         args.emplace_back(socket_id);
-        std::filesystem::path exec = boost::process::search_path(param.agent->child_exec);
-        if (exec.empty()) {
-            LogError << "Failed to find agent executable" << VAR(param.agent->child_exec);
-            return false;
-        }
         auto os_args = conv_args(args);
 
-        LogInfo << "Start Agent" << VAR(exec) << VAR(os_args);
-        agent_child = boost::process::child(exec, os_args, boost::process::start_dir = param.agent->cwd);
+        LogInfo << "Start Agent" << VAR(param.agent->child_exec) << VAR(os_args) << VAR(param.agent->cwd);
+        agent_child = boost::process::child(param.agent->child_exec, os_args, boost::process::start_dir = param.agent->cwd);
+        if (!agent_child.valid()) {
+            LogError << "Failed to start agent process" << VAR(param.agent->child_exec) << VAR(args) << VAR(param.agent->cwd);
+            return false;
+        }
 
         bool connected = MaaAgentClientConnect(agent);
         if (!connected) {
