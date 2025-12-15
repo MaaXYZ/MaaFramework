@@ -37,14 +37,14 @@ const AdbDeviceFinder::EmulatorConstDataMap& AdbDeviceWin32Finder::get_emulator_
 
         { "MuMuPlayer12",
           {
-              .keyword = "MuMuPlayer",
+              .keyword = "MuMuPlayer.exe",
               .adb_candidate_paths = { "vmonitor\\bin\\adb_server.exe"_path,
                                        "MuMu\\emulator\\nemu\\vmonitor\\bin\\adb_server.exe"_path,
                                        "adb.exe"_path },
           } },
         { "MuMuPlayer12 v5",
           {
-              .keyword = "MuMuNxDevice",
+              .keyword = "MuMuNxDevice.exe",
               .adb_candidate_paths = { "..\\..\\..\\nx_main\\adb.exe"_path, "adb.exe"_path },
           } },
 
