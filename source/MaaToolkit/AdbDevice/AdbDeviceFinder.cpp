@@ -187,7 +187,7 @@ std::vector<AdbDeviceFinder::Emulator> AdbDeviceFinder::find_emulators() const
     LogFunc;
 
     std::vector<Emulator> result;
-    std::unordered_set<std::filesystem::path> seen_process_paths;
+    std::unordered_set<std::filesystem::path> seen_adb_paths;
 
     auto all_processes = list_processes();
 
@@ -206,12 +206,17 @@ std::vector<AdbDeviceFinder::Emulator> AdbDeviceFinder::find_emulators() const
             continue;
         }
 
-        // Deduplicate by process_path to distinguish multiple instances or installations
-        if (!seen_process_paths.insert(*process_path).second) {
+        auto adb_path = get_emulator_adb_path(find_it->second, process.pid);
+
+        if (adb_path.empty()) {
+            LogWarn << "adb_path is empty or does not exist" << VAR(adb_path);
             continue;
         }
 
-        auto adb_path = get_emulator_adb_path(find_it->second, process.pid);
+        // Deduplicate by adb_path to distinguish multiple instances or installations
+        if (!seen_adb_paths.insert(adb_path).second) {
+            continue;
+        }
 
         Emulator emulator {
             .name = find_it->first,
