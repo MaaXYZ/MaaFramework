@@ -21,7 +21,7 @@
                 "name": {
                     "type": "string",
                     "title": "选项唯一标识符",
-                    "description": "用作选项ID"
+                    "description": "用作选项 ID"
                 },
                 "label": {
                     "$ref": "#/definitions/i18nString",
@@ -31,7 +31,7 @@
                 "description": {
                     "$ref": "#/definitions/i18nString",
                     "title": "详细描述",
-                    "description": "支持文件路径、URL或直接文本，内容支持Markdown格式"
+                    "description": "支持文件路径、URL 或直接文本，内容支持 Markdown 格式"
                 },
                 "icon": {
                     "$ref": "#/definitions/i18nString",
@@ -64,7 +64,7 @@
                 "name": {
                     "type": "string",
                     "title": "输入字段唯一标识符",
-                    "description": "用作输入字段ID"
+                    "description": "用作输入字段 ID"
                 },
                 "label": {
                     "$ref": "#/definitions/i18nString",
@@ -74,7 +74,7 @@
                 "description": {
                     "$ref": "#/definitions/i18nString",
                     "title": "详细描述",
-                    "description": "帮助用户理解输入要求。支持文件路径、URL或直接文本，内容支持Markdown格式"
+                    "description": "帮助用户理解输入要求。支持文件路径、URL 或直接文本，内容支持 Markdown 格式"
                 },
                 "default": {
                     "type": "string",
@@ -127,7 +127,7 @@
                         "description": {
                             "$ref": "#/definitions/i18nString",
                             "title": "详细描述",
-                            "description": "帮助用户理解配置项的作用。支持文件路径、URL或直接文本，内容支持Markdown格式"
+                            "description": "帮助用户理解配置项的作用。支持文件路径、URL 或直接文本，内容支持 Markdown 格式"
                         },
                         "icon": {
                             "$ref": "#/definitions/i18nString",
@@ -145,7 +145,7 @@
                         "pipeline_override": {
                             "$ref": "#/definitions/pipelineOverride",
                             "title": "Pipeline 覆盖模板",
-                            "description": "支持使用 {名称} 格式引用输入字段的值"
+                            "description": "支持使用「名称」格式引用输入字段的值"
                         }
                     },
                     "required": [
@@ -170,7 +170,7 @@
                         "description": {
                             "$ref": "#/definitions/i18nString",
                             "title": "详细描述",
-                            "description": "帮助用户理解配置项的作用。支持文件路径、URL或直接文本，内容支持Markdown格式"
+                            "description": "帮助用户理解配置项的作用。支持文件路径、URL 或直接文本，内容支持 Markdown 格式"
                         },
                         "icon": {
                             "$ref": "#/definitions/i18nString",
@@ -212,7 +212,7 @@
                         "description": {
                             "$ref": "#/definitions/i18nString",
                             "title": "详细描述",
-                            "description": "帮助用户理解配置项的作用。支持文件路径、URL或直接文本，内容支持Markdown格式"
+                            "description": "帮助用户理解配置项的作用。支持文件路径、URL 或直接文本，内容支持 Markdown 格式"
                         },
                         "icon": {
                             "$ref": "#/definitions/i18nString",
@@ -250,7 +250,7 @@
                 "name": {
                     "type": "string",
                     "title": "唯一名称标识符",
-                    "description": "用作控制器ID"
+                    "description": "用作控制器 ID"
                 },
                 "label": {
                     "$ref": "#/definitions/i18nString",
@@ -260,7 +260,7 @@
                 "description": {
                     "$ref": "#/definitions/i18nString",
                     "title": "详细描述",
-                    "description": "支持文件路径、URL或直接文本，内容支持Markdown格式"
+                    "description": "支持文件路径、URL 或直接文本，内容支持 Markdown 格式"
                 },
                 "icon": {
                     "$ref": "#/definitions/i18nString",
@@ -371,7 +371,7 @@
                 "name": {
                     "type": "string",
                     "title": "唯一名称标识符",
-                    "description": "用作资源包ID"
+                    "description": "用作资源包 ID"
                 },
                 "label": {
                     "$ref": "#/definitions/i18nString",
@@ -381,7 +381,7 @@
                 "description": {
                     "$ref": "#/definitions/i18nString",
                     "title": "详细描述",
-                    "description": "支持文件路径、URL或直接文本，内容支持Markdown格式"
+                    "description": "支持文件路径、URL 或直接文本，内容支持 Markdown 格式"
                 },
                 "icon": {
                     "$ref": "#/definitions/i18nString",
@@ -418,7 +418,7 @@
                 "name": {
                     "type": "string",
                     "title": "任务唯一标识符",
-                    "description": "用作任务ID"
+                    "description": "用作任务 ID"
                 },
                 "label": {
                     "$ref": "#/definitions/i18nString",
@@ -433,13 +433,13 @@
                 "default_check": {
                     "type": "boolean",
                     "title": "默认选中",
-                    "description": "是否默认选中该任务。Client在初始化时会根据该值决定是否默认勾选该任务",
+                    "description": "是否默认选中该任务。Client 在初始化时会根据该值决定是否默认勾选该任务",
                     "default": false
                 },
                 "description": {
                     "$ref": "#/definitions/i18nString",
                     "title": "详细描述",
-                    "description": "帮助用户理解任务功能。支持文件路径、URL或直接文本，内容支持Markdown格式"
+                    "description": "帮助用户理解任务功能。支持文件路径、URL 或直接文本，内容支持 Markdown 格式"
                 },
                 "doc": {
                     "anyOf": [
@@ -492,7 +492,7 @@
         "agentConfig": {
             "type": "object",
             "title": "代理配置",
-            "description": "包含子进程(AgentServer)的信息",
+            "description": "包含子进程（AgentServer）的信息",
             "properties": {
                 "child_exec": {
                     "type": "string",
@@ -543,7 +543,7 @@
         "name": {
             "type": "string",
             "title": "项目唯一标识符",
-            "description": "用作项目ID"
+            "description": "用作项目 ID"
         },
         "label": {
             "$ref": "#/definitions/i18nString",
@@ -573,7 +573,7 @@
         "github": {
             "type": "string",
             "title": "GitHub 仓库地址",
-            "description": "项目GitHub仓库地址，用于版本更新检查和问题反馈",
+            "description": "项目 GitHub 仓库地址，用于版本更新检查和问题反馈",
             "format": "uri"
         },
         "version": {
@@ -584,22 +584,22 @@
         "contact": {
             "$ref": "#/definitions/i18nString",
             "title": "联系方式",
-            "description": "显示在\"关于\"页面。支持文件路径、URL或直接文本，内容支持Markdown格式"
+            "description": "显示在「关于」页面。支持文件路径、URL 或直接文本，内容支持 Markdown 格式"
         },
         "license": {
             "$ref": "#/definitions/i18nString",
             "title": "许可证信息",
-            "description": "显示在\"关于\"页面。支持文件路径、URL或直接文本，内容支持Markdown格式"
+            "description": "显示在「关于」页面。支持文件路径、URL 或直接文本，内容支持 Markdown 格式"
         },
         "welcome": {
             "$ref": "#/definitions/i18nString",
             "title": "欢迎消息",
-            "description": "在用户首次使用时弹窗显示，亦可作为公告使用。支持文件路径、URL或直接文本，内容支持Markdown格式。系统会记录显示内容，当内容更新时会再次弹窗显示"
+            "description": "在用户首次使用时弹窗显示，亦可作为公告使用。支持文件路径、URL 或直接文本，内容支持 Markdown 格式。系统会记录显示内容，当内容更新时会再次弹窗显示"
         },
         "description": {
             "$ref": "#/definitions/i18nString",
             "title": "项目描述",
-            "description": "显示在\"关于\"页面。支持文件路径、URL或直接文本，内容支持Markdown格式"
+            "description": "显示在「关于」页面。支持文件路径、URL 或直接文本，内容支持 Markdown 格式"
         },
         "controller": {
             "type": "array",
