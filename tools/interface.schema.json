@@ -6,13 +6,13 @@
     "definitions": {
         "i18nString": {
             "type": "string",
-            "description": "支持国际化的字符串，以 $ 开头表示从翻译文件中读取"
+            "description": "支持国际化的字符串,以 $ 开头表示从翻译文件中读取"
         },
         "pipelineOverride": {
             "type": "object",
             "title": "Pipeline 覆盖配置",
             "description": "用于覆盖已加载资源中的 pipeline 配置",
-            "$ref": "./pipeline.schema.json"
+            "additionalProperties": true
         },
         "caseItem": {
             "type": "object",
@@ -26,22 +26,22 @@
                 "label": {
                     "$ref": "#/definitions/i18nString",
                     "title": "显示名称",
-                    "description": "用于在用户界面中展示，支持国际化。如果未设置，则显示 name 字段的值"
+                    "description": "用于在用户界面中展示,支持国际化。如果未设置,则显示 name 字段的值"
                 },
                 "description": {
                     "$ref": "#/definitions/i18nString",
                     "title": "详细描述",
-                    "description": "支持文件路径、URL或直接文本，内容支持Markdown格式"
+                    "description": "支持文件路径、URL或直接文本,内容支持Markdown格式"
                 },
                 "icon": {
                     "$ref": "#/definitions/i18nString",
                     "title": "图标路径",
-                    "description": "选项图标文件路径，相对于项目根目录"
+                    "description": "选项图标文件路径,相对于项目根目录"
                 },
                 "option": {
                     "type": "array",
                     "title": "子配置项列表",
-                    "description": "只有当用户选中当前选项时，才会显示这些子配置项。这些子配置项同样放在外层的 option 中定义，支持无限嵌套",
+                    "description": "只有当用户选中当前选项时,才会显示这些子配置项。这些子配置项同样放在外层的 option 中定义,支持无限嵌套",
                     "items": {
                         "type": "string"
                     }
@@ -69,12 +69,12 @@
                 "label": {
                     "$ref": "#/definitions/i18nString",
                     "title": "显示名称",
-                    "description": "用于在用户界面中展示，支持国际化。如果未设置，则显示 name 字段的值"
+                    "description": "用于在用户界面中展示,支持国际化。如果未设置,则显示 name 字段的值"
                 },
                 "description": {
                     "$ref": "#/definitions/i18nString",
                     "title": "详细描述",
-                    "description": "帮助用户理解输入要求。支持文件路径、URL或直接文本，内容支持Markdown格式"
+                    "description": "帮助用户理解输入要求。支持文件路径、URL或直接文本,内容支持Markdown格式"
                 },
                 "default": {
                     "type": "string",
@@ -84,7 +84,7 @@
                 "pipeline_type": {
                     "type": "string",
                     "title": "Pipeline 数据类型",
-                    "description": "输入字段在 pipeline_override 中的数据类型，用于类型转换",
+                    "description": "输入字段在 pipeline_override 中的数据类型,用于类型转换",
                     "enum": [
                         "string",
                         "int",
@@ -110,86 +110,42 @@
         "optionDefinition": {
             "type": "object",
             "title": "配置项定义",
-            "properties": {
-                "type": {
-                    "type": "string",
-                    "title": "配置项类型",
-                    "description": "select: 下拉选项框; input: 用户输入框; switch: 选择框(Yes or No)",
-                    "enum": [
-                        "select",
-                        "input",
-                        "switch"
-                    ],
-                    "default": "select"
-                },
-                "label": {
-                    "$ref": "#/definitions/i18nString",
-                    "title": "显示标签",
-                    "description": "用于在用户界面中展示，支持国际化"
-                },
-                "description": {
-                    "$ref": "#/definitions/i18nString",
-                    "title": "详细描述",
-                    "description": "帮助用户理解配置项的作用。支持文件路径、URL或直接文本，内容支持Markdown格式"
-                },
-                "icon": {
-                    "$ref": "#/definitions/i18nString",
-                    "title": "图标路径",
-                    "description": "配置项图标文件路径，相对于项目根目录"
-                },
-                "cases": {
-                    "type": "array",
-                    "title": "可选项列表",
-                    "description": "在 type 为 select/switch 时使用",
-                    "items": {
-                        "$ref": "#/definitions/caseItem"
-                    }
-                },
-                "inputs": {
-                    "type": "array",
-                    "title": "输入配置",
-                    "description": "在 type 为 input 时使用，定义用户可输入的字段",
-                    "items": {
-                        "$ref": "#/definitions/inputItem"
-                    }
-                },
-                "pipeline_override": {
-                    "$ref": "#/definitions/pipelineOverride",
-                    "title": "Pipeline 覆盖模板",
-                    "description": "当配置项为 input 类型时使用，支持使用 {名称} 格式引用输入字段的值"
-                },
-                "default_case": {
-                    "type": "string",
-                    "title": "默认选项",
-                    "description": "默认选项名称，仅在 type 为 select 时使用"
-                }
-            },
-            "additionalProperties": false,
             "oneOf": [
                 {
                     "title": "inputOption",
                     "type": "object",
                     "properties": {
                         "type": {
-                            "const": "input"
+                            "const": "input",
+                            "description": "用户输入框,允许用户手动输入内容"
                         },
                         "label": {
-                            "$ref": "#/definitions/i18nString"
+                            "$ref": "#/definitions/i18nString",
+                            "title": "显示标签",
+                            "description": "用于在用户界面中展示,支持国际化"
                         },
                         "description": {
-                            "$ref": "#/definitions/i18nString"
+                            "$ref": "#/definitions/i18nString",
+                            "title": "详细描述",
+                            "description": "帮助用户理解配置项的作用。支持文件路径、URL或直接文本,内容支持Markdown格式"
                         },
                         "icon": {
-                            "$ref": "#/definitions/i18nString"
+                            "$ref": "#/definitions/i18nString",
+                            "title": "图标路径",
+                            "description": "配置项图标文件路径,相对于项目根目录"
                         },
                         "inputs": {
                             "type": "array",
+                            "title": "输入配置",
+                            "description": "定义用户可输入的字段",
                             "items": {
                                 "$ref": "#/definitions/inputItem"
                             }
                         },
                         "pipeline_override": {
-                            "$ref": "#/definitions/pipelineOverride"
+                            "$ref": "#/definitions/pipelineOverride",
+                            "title": "Pipeline 覆盖模板",
+                            "description": "支持使用 {名称} 格式引用输入字段的值"
                         }
                     },
                     "required": [
@@ -203,25 +159,35 @@
                     "type": "object",
                     "properties": {
                         "type": {
-                            "const": "select"
+                            "const": "select",
+                            "description": "下拉选项框,用户从预定义的选项中选择"
                         },
                         "label": {
-                            "$ref": "#/definitions/i18nString"
+                            "$ref": "#/definitions/i18nString",
+                            "title": "显示标签",
+                            "description": "用于在用户界面中展示,支持国际化"
                         },
                         "description": {
-                            "$ref": "#/definitions/i18nString"
+                            "$ref": "#/definitions/i18nString",
+                            "title": "详细描述",
+                            "description": "帮助用户理解配置项的作用。支持文件路径、URL或直接文本,内容支持Markdown格式"
                         },
                         "icon": {
-                            "$ref": "#/definitions/i18nString"
+                            "$ref": "#/definitions/i18nString",
+                            "title": "图标路径",
+                            "description": "配置项图标文件路径,相对于项目根目录"
                         },
                         "cases": {
                             "type": "array",
+                            "title": "可选项列表",
                             "items": {
                                 "$ref": "#/definitions/caseItem"
                             }
                         },
                         "default_case": {
-                            "type": "string"
+                            "type": "string",
+                            "title": "默认选项",
+                            "description": "默认选项名称"
                         }
                     },
                     "required": [
@@ -235,24 +201,38 @@
                     "type": "object",
                     "properties": {
                         "type": {
-                            "const": "switch"
+                            "const": "switch",
+                            "description": "选择框,Yes or No"
                         },
                         "label": {
-                            "$ref": "#/definitions/i18nString"
+                            "$ref": "#/definitions/i18nString",
+                            "title": "显示标签",
+                            "description": "用于在用户界面中展示,支持国际化"
                         },
                         "description": {
-                            "$ref": "#/definitions/i18nString"
+                            "$ref": "#/definitions/i18nString",
+                            "title": "详细描述",
+                            "description": "帮助用户理解配置项的作用。支持文件路径、URL或直接文本,内容支持Markdown格式"
                         },
                         "icon": {
-                            "$ref": "#/definitions/i18nString"
+                            "$ref": "#/definitions/i18nString",
+                            "title": "图标路径",
+                            "description": "配置项图标文件路径,相对于项目根目录"
                         },
                         "cases": {
                             "type": "array",
+                            "title": "可选项列表",
+                            "description": "仅支持两个 cases。case.name 应为 Yes/yes/Y/y 或 No/no/N/n 之一,建议使用 Yes 和 No",
                             "minItems": 2,
                             "maxItems": 2,
                             "items": {
                                 "$ref": "#/definitions/caseItem"
                             }
+                        },
+                        "default_case": {
+                            "type": "string",
+                            "title": "默认选项",
+                            "description": "默认选项名称,应为 Yes 或 No"
                         }
                     },
                     "required": [
@@ -275,17 +255,17 @@
                 "label": {
                     "$ref": "#/definitions/i18nString",
                     "title": "显示名称",
-                    "description": "用于在用户界面中展示，支持国际化。如果未设置，则显示 name 字段的值"
+                    "description": "用于在用户界面中展示,支持国际化。如果未设置,则显示 name 字段的值"
                 },
                 "description": {
                     "$ref": "#/definitions/i18nString",
                     "title": "详细描述",
-                    "description": "支持文件路径、URL或直接文本，内容支持Markdown格式"
+                    "description": "支持文件路径、URL或直接文本,内容支持Markdown格式"
                 },
                 "icon": {
                     "$ref": "#/definitions/i18nString",
                     "title": "图标路径",
-                    "description": "控制器图标文件路径，相对于项目根目录"
+                    "description": "控制器图标文件路径,相对于项目根目录"
                 },
                 "type": {
                     "type": "string",
@@ -298,19 +278,25 @@
                 "display_short_side": {
                     "type": "number",
                     "title": "短边分辨率",
-                    "description": "默认缩放分辨率的短边长度，用于屏幕适配。与 display_long_side 和 display_raw 互斥",
+                    "description": "默认缩放分辨率的短边长度,用于屏幕适配。与 display_long_side 和 display_raw 互斥",
                     "default": 720
                 },
                 "display_long_side": {
                     "type": "number",
                     "title": "长边分辨率",
-                    "description": "默认缩放分辨率的长边长度，用于屏幕适配。与 display_short_side 和 display_raw 互斥"
+                    "description": "默认缩放分辨率的长边长度,用于屏幕适配。与 display_short_side 和 display_raw 互斥"
                 },
                 "display_raw": {
                     "type": "boolean",
                     "title": "使用原始分辨率",
-                    "description": "是否使用原始分辨率进行截图，不进行缩放。与缩放分辨率设置互斥",
+                    "description": "是否使用原始分辨率进行截图,不进行缩放。与缩放分辨率设置互斥",
                     "default": false
+                },
+                "adb": {
+                    "type": "object",
+                    "title": "Adb 控制器配置",
+                    "description": "Adb 控制器的具体配置。V2 协议中 input/screencap 由 MaaFramework 自动检测,无需手动配置",
+                    "additionalProperties": true
                 },
                 "win32": {
                     "type": "object",
@@ -330,7 +316,7 @@
                         "mouse": {
                             "type": "string",
                             "title": "鼠标控制方式",
-                            "description": "可选。Win32 控制器的鼠标控制方式，不提供则使用默认",
+                            "description": "可选。Win32 控制器的鼠标控制方式,不提供则使用默认",
                             "enum": [
                                 "Seize",
                                 "SendMessage",
@@ -344,7 +330,7 @@
                         "keyboard": {
                             "type": "string",
                             "title": "键盘控制方式",
-                            "description": "可选。Win32 控制器的键盘控制方式，不提供则使用默认",
+                            "description": "可选。Win32 控制器的键盘控制方式,不提供则使用默认",
                             "enum": [
                                 "Seize",
                                 "SendMessage",
@@ -358,7 +344,7 @@
                         "screencap": {
                             "type": "string",
                             "title": "截图方式",
-                            "description": "可选。Win32 控制器的截图方式，不提供则使用默认",
+                            "description": "可选。Win32 控制器的截图方式,不提供则使用默认",
                             "enum": [
                                 "GDI",
                                 "FramePool",
@@ -390,22 +376,22 @@
                 "label": {
                     "$ref": "#/definitions/i18nString",
                     "title": "显示名称",
-                    "description": "用于在用户界面中展示，支持国际化。如果未设置，则显示 name 字段的值"
+                    "description": "用于在用户界面中展示,支持国际化。如果未设置,则显示 name 字段的值"
                 },
                 "description": {
                     "$ref": "#/definitions/i18nString",
                     "title": "详细描述",
-                    "description": "支持文件路径、URL或直接文本，内容支持Markdown格式"
+                    "description": "支持文件路径、URL或直接文本,内容支持Markdown格式"
                 },
                 "icon": {
                     "$ref": "#/definitions/i18nString",
                     "title": "图标路径",
-                    "description": "资源图标文件路径，相对于项目根目录"
+                    "description": "资源图标文件路径,相对于项目根目录"
                 },
                 "path": {
                     "type": "array",
                     "title": "资源路径",
-                    "description": "加载的路径数组。如果提供多个路径，会依次加载，后加载的资源会覆盖前加载的资源。文件相对路径为 interface.json 同目录下的相对路径",
+                    "description": "加载的路径数组。如果提供多个路径,会依次加载,后加载的资源会覆盖前加载的资源。文件相对路径为 interface.json 同目录下的相对路径",
                     "items": {
                         "type": "string"
                     }
@@ -413,7 +399,7 @@
                 "controller": {
                     "type": "array",
                     "title": "支持的控制器",
-                    "description": "指定该资源包支持的控制器类型列表。数组元素应与 controller 配置中的 name 字段对应。若不指定，则表示支持所有控制器类型",
+                    "description": "指定该资源包支持的控制器类型列表。数组元素应与 controller 配置中的 name 字段对应。若不指定,则表示支持所有控制器类型",
                     "items": {
                         "type": "string"
                     }
@@ -437,7 +423,7 @@
                 "label": {
                     "$ref": "#/definitions/i18nString",
                     "title": "显示名称",
-                    "description": "用于在用户界面中展示，支持国际化。如果未设置，则显示 name 字段的值"
+                    "description": "用于在用户界面中展示,支持国际化。如果未设置,则显示 name 字段的值"
                 },
                 "entry": {
                     "type": "string",
@@ -453,17 +439,32 @@
                 "description": {
                     "$ref": "#/definitions/i18nString",
                     "title": "详细描述",
-                    "description": "帮助用户理解任务功能。支持文件路径、URL或直接文本，内容支持Markdown格式"
+                    "description": "帮助用户理解任务功能。支持文件路径、URL或直接文本,内容支持Markdown格式"
+                },
+                "doc": {
+                    "anyOf": [
+                        {
+                            "$ref": "#/definitions/i18nString"
+                        },
+                        {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/i18nString"
+                            }
+                        }
+                    ],
+                    "title": "任务文档",
+                    "description": "任务的详细文档说明,支持字符串或字符串数组"
                 },
                 "icon": {
                     "$ref": "#/definitions/i18nString",
                     "title": "图标路径",
-                    "description": "任务图标文件路径，相对于项目根目录"
+                    "description": "任务图标文件路径,相对于项目根目录"
                 },
                 "resource": {
                     "type": "array",
                     "title": "支持的资源包",
-                    "description": "指定该任务支持的资源包列表。数组元素应与 resource 配置中的 name 字段对应。若不指定，则表示该任务在所有资源包中都可用",
+                    "description": "指定该任务支持的资源包列表。数组元素应与 resource 配置中的 name 字段对应。若不指定,则表示该任务在所有资源包中都可用",
                     "items": {
                         "type": "string"
                     }
@@ -476,7 +477,7 @@
                 "option": {
                     "type": "array",
                     "title": "任务配置项",
-                    "description": "含有若干 option 对象中的键的值，Client 会根据要求让用户进行选择",
+                    "description": "包含若干 option 对象中的键的值,Client 会根据要求让用户进行选择",
                     "items": {
                         "type": "string"
                     }
@@ -491,12 +492,12 @@
         "agentConfig": {
             "type": "object",
             "title": "代理配置",
-            "description": "含有子进程（AgentServer）的信息",
+            "description": "包含子进程(AgentServer)的信息",
             "properties": {
                 "child_exec": {
                     "type": "string",
                     "title": "子进程路径",
-                    "description": "子进程路径，为系统路径中可执行文件。如在环境变量中存在 Python 路径，可直接写 python。CWD 为 interface.json 所在目录"
+                    "description": "子进程路径,为系统路径中可执行文件。如在环境变量中存在 Python 路径,可直接写 python。CWD 为 interface.json 所在目录"
                 },
                 "child_args": {
                     "type": "array",
@@ -509,7 +510,7 @@
                 "identifier": {
                     "type": "string",
                     "title": "连接标识符",
-                    "description": "被用来创建一个通信套接字。填写则会被使用，否则自动创建"
+                    "description": "被用来创建一个通信套接字。填写则会被使用,否则自动创建"
                 }
             },
             "required": [
@@ -522,13 +523,13 @@
         "interface_version": {
             "type": "number",
             "title": "接口版本号",
-            "description": "当前为 2，固定且必须设置。用于标识 ProjectInterface 协议版本",
+            "description": "当前为 2,固定且必须设置。用于标识 ProjectInterface 协议版本",
             "const": 2
         },
         "languages": {
             "type": "object",
             "title": "多语言支持配置",
-            "description": "键为语言代码，值为对应的翻译文件路径。文件相对路径为 interface.json 同目录下的相对路径",
+            "description": "键为语言代码,值为对应的翻译文件路径。文件相对路径为 interface.json 同目录下的相对路径",
             "additionalProperties": {
                 "type": "string"
             },
@@ -547,17 +548,17 @@
         "label": {
             "$ref": "#/definitions/i18nString",
             "title": "项目显示名称",
-            "description": "用于在用户界面中展示，支持国际化。如果未设置，则显示 name 字段的值"
+            "description": "用于在用户界面中展示,支持国际化。如果未设置,则显示 name 字段的值"
         },
         "title": {
             "$ref": "#/definitions/i18nString",
             "title": "窗口标题",
-            "description": "Client 会直接显示该内容，不添加其他修饰。默认使用 name 和 version 拼接生成"
+            "description": "Client 会直接显示该内容,不添加其他修饰。默认使用 name 和 version 拼接生成"
         },
         "icon": {
             "$ref": "#/definitions/i18nString",
             "title": "应用图标",
-            "description": "应用图标文件路径，相对于项目根目录。若不指定，则使用默认图标"
+            "description": "应用图标文件路径,相对于项目根目录。若不指定,则使用默认图标"
         },
         "mirrorchyan_rid": {
             "type": "string",
@@ -567,43 +568,43 @@
         "mirrorchyan_multiplatform": {
             "type": "boolean",
             "title": "多平台支持",
-            "description": "是否支持多平台，影响资源包的打包和分发策略"
+            "description": "是否支持多平台,影响资源包的打包和分发策略"
         },
         "github": {
             "type": "string",
             "title": "GitHub 仓库地址",
-            "description": "项目GitHub仓库地址，用于版本更新检查和问题反馈",
+            "description": "项目GitHub仓库地址,用于版本更新检查和问题反馈",
             "format": "uri"
         },
         "version": {
             "type": "string",
             "title": "项目版本号",
-            "description": "Client 可以展示给用户，同时用于版本更新检查"
+            "description": "Client 可以展示给用户,同时用于版本更新检查"
         },
         "contact": {
             "$ref": "#/definitions/i18nString",
             "title": "联系方式",
-            "description": "显示在“关于”页面。支持文件路径、URL或直接文本，内容支持Markdown格式"
+            "description": "显示在\"关于\"页面。支持文件路径、URL或直接文本,内容支持Markdown格式"
         },
         "license": {
             "$ref": "#/definitions/i18nString",
             "title": "许可证信息",
-            "description": "显示在“关于”页面。支持文件路径、URL或直接文本，内容支持Markdown格式"
+            "description": "显示在\"关于\"页面。支持文件路径、URL或直接文本,内容支持Markdown格式"
         },
         "welcome": {
             "$ref": "#/definitions/i18nString",
             "title": "欢迎消息",
-            "description": "在用户首次使用时弹窗显示，亦可作为公告使用。支持文件路径、URL或直接文本，内容支持Markdown格式。系统会记录显示内容，当内容更新时会再次弹窗显示"
+            "description": "在用户首次使用时弹窗显示,亦可作为公告使用。支持文件路径、URL或直接文本,内容支持Markdown格式。系统会记录显示内容,当内容更新时会再次弹窗显示"
         },
         "description": {
             "$ref": "#/definitions/i18nString",
             "title": "项目描述",
-            "description": "显示在“关于”页面。支持文件路径、URL或直接文本，内容支持Markdown格式"
+            "description": "显示在\"关于\"页面。支持文件路径、URL或直接文本,内容支持Markdown格式"
         },
         "controller": {
             "type": "array",
             "title": "控制器配置",
-            "description": "为一个对象数组，含有预设的控制器信息",
+            "description": "为一个对象数组,包含预设的控制器信息",
             "items": {
                 "$ref": "#/definitions/controllerItem"
             }
@@ -611,7 +612,7 @@
         "resource": {
             "type": "array",
             "title": "资源配置",
-            "description": "为一个对象数组，含有资源加载的信息",
+            "description": "为一个对象数组,包含资源加载的信息",
             "items": {
                 "$ref": "#/definitions/resourceItem"
             }
@@ -622,7 +623,7 @@
         "task": {
             "type": "array",
             "title": "任务配置",
-            "description": "为一个对象数组，含有可执行任务的信息",
+            "description": "为一个对象数组,包含可执行任务的信息",
             "items": {
                 "$ref": "#/definitions/taskItem"
             }
@@ -630,7 +631,7 @@
         "option": {
             "type": "object",
             "title": "配置项定义",
-            "description": "为一个对象映射，含有配置项的信息",
+            "description": "为一个对象映射,包含配置项的信息",
             "additionalProperties": {
                 "$ref": "#/definitions/optionDefinition"
             }
