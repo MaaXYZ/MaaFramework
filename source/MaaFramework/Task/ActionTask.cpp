@@ -53,9 +53,7 @@ MaaActId ActionTask::run_impl()
         { "focus", cur_node.focus },
     };
 
-    if (debug_mode() || !cur_node.focus.is_null()) {
-        notify(MaaMsg_Node_ActionNode_Starting, node_cb_detail);
-    }
+    notify(MaaMsg_Node_ActionNode_Starting, node_cb_detail);
 
     RecoResult fake_reco {
         .reco_id = MaaInvalidId,
@@ -75,12 +73,10 @@ MaaActId ActionTask::run_impl()
     LogInfo << "ActionTask node done" << VAR(result) << VAR(task_id_);
     set_node_detail(result.node_id, result);
 
-    if (debug_mode() || !cur_node.focus.is_null()) {
-        node_cb_detail["node_details"] = result;
-        node_cb_detail["reco_details"] = fake_reco;
-        node_cb_detail["action_details"] = act;
-        notify(act.success ? MaaMsg_Node_ActionNode_Succeeded : MaaMsg_Node_ActionNode_Failed, node_cb_detail);
-    }
+    node_cb_detail["node_details"] = result;
+    node_cb_detail["reco_details"] = fake_reco;
+    node_cb_detail["action_details"] = act;
+    notify(act.success ? MaaMsg_Node_ActionNode_Succeeded : MaaMsg_Node_ActionNode_Failed, node_cb_detail);
 
     return act.action_id;
 }

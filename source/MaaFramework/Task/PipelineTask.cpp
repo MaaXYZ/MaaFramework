@@ -151,9 +151,7 @@ NodeDetail PipelineTask::run_next(const std::vector<MAA_RES_NS::NodeAttr>& next,
         { "focus", cur_node.focus },
     };
 
-    if (debug_mode() || !cur_node.focus.is_null()) {
-        notify(MaaMsg_Node_PipelineNode_Starting, node_cb_detail);
-    }
+    notify(MaaMsg_Node_PipelineNode_Starting, node_cb_detail);
 
     while (!context_->need_to_stop()) {
         auto current_clock = std::chrono::steady_clock::now();
@@ -183,9 +181,7 @@ NodeDetail PipelineTask::run_next(const std::vector<MAA_RES_NS::NodeAttr>& next,
         if (!hit_opt) {
             LogError << "get_pipeline_data failed, node not exist" << VAR(hit_name);
 
-            if (debug_mode() || !cur_node.focus.is_null()) {
-                notify(MaaMsg_Node_PipelineNode_Failed, node_cb_detail);
-            }
+            notify(MaaMsg_Node_PipelineNode_Failed, node_cb_detail);
 
             return {};
         }
@@ -207,13 +203,11 @@ NodeDetail PipelineTask::run_next(const std::vector<MAA_RES_NS::NodeAttr>& next,
         LogInfo << "PipelineTask node done" << VAR(result) << VAR(task_id_);
         set_node_detail(result.node_id, result);
 
-        if (debug_mode() || !cur_node.focus.is_null()) {
-            node_cb_detail["node_details"] = result;
-            node_cb_detail["reco_details"] = reco;
-            node_cb_detail["action_details"] = act;
+        node_cb_detail["node_details"] = result;
+        node_cb_detail["reco_details"] = reco;
+        node_cb_detail["action_details"] = act;
 
-            notify(act.success ? MaaMsg_Node_PipelineNode_Succeeded : MaaMsg_Node_PipelineNode_Failed, node_cb_detail);
-        }
+        notify(act.success ? MaaMsg_Node_PipelineNode_Succeeded : MaaMsg_Node_PipelineNode_Failed, node_cb_detail);
 
         return result;
     }
@@ -225,9 +219,7 @@ NodeDetail PipelineTask::run_next(const std::vector<MAA_RES_NS::NodeAttr>& next,
     LogError << "PipelineTask bad next" << VAR(result) << VAR(task_id_);
     set_node_detail(result.node_id, result);
 
-    if (debug_mode() || !cur_node.focus.is_null()) {
-        notify(MaaMsg_Node_PipelineNode_Failed, node_cb_detail);
-    }
+    notify(MaaMsg_Node_PipelineNode_Failed, node_cb_detail);
 
     return result;
 }
@@ -261,9 +253,7 @@ RecoResult PipelineTask::recognize_list(const cv::Mat& image, const std::vector<
         { "focus", cur_node.focus },
     };
 
-    if (debug_mode() || !cur_node.focus.is_null()) {
-        notify(MaaMsg_Node_NextList_Starting, reco_list_cb_detail);
-    }
+    notify(MaaMsg_Node_NextList_Starting, reco_list_cb_detail);
 
     for (const auto& node : list) {
         if (context_->need_to_stop()) {
@@ -288,16 +278,12 @@ RecoResult PipelineTask::recognize_list(const cv::Mat& image, const std::vector<
             continue;
         }
 
-        if (debug_mode() || !cur_node.focus.is_null()) {
-            notify(MaaMsg_Node_NextList_Succeeded, reco_list_cb_detail);
-        }
+        notify(MaaMsg_Node_NextList_Succeeded, reco_list_cb_detail);
 
         return result;
     }
 
-    if (debug_mode() || !cur_node.focus.is_null()) {
-        notify(MaaMsg_Node_NextList_Failed, reco_list_cb_detail);
-    }
+    notify(MaaMsg_Node_NextList_Failed, reco_list_cb_detail);
 
     return {};
 }

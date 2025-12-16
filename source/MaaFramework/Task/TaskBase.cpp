@@ -81,17 +81,13 @@ RecoResult TaskBase::run_recognition(const cv::Mat& image, const PipelineData& d
         { "focus", data.focus },
     };
 
-    if (debug_mode() || !data.focus.is_null()) {
-        notify(MaaMsg_Node_Recognition_Starting, cb_detail);
-    }
+    notify(MaaMsg_Node_Recognition_Starting, cb_detail);
 
     Recognizer recognizer(tasker_, *context_, image);
     RecoResult result = recognizer.recognize(data);
 
-    if (debug_mode() || !data.focus.is_null()) {
-        cb_detail["reco_details"] = result;
-        notify(result.box ? MaaMsg_Node_Recognition_Succeeded : MaaMsg_Node_Recognition_Failed, cb_detail);
-    }
+    cb_detail["reco_details"] = result;
+    notify(result.box ? MaaMsg_Node_Recognition_Succeeded : MaaMsg_Node_Recognition_Failed, cb_detail);
 
     if (result.box) {
         LogInfo << "reco hit" << VAR(result.name) << VAR(result.box);
@@ -124,17 +120,13 @@ ActionResult TaskBase::run_action(const RecoResult& reco, const PipelineData& da
         { "name", reco.name },
         { "focus", data.focus },
     };
-    if (debug_mode() || !data.focus.is_null()) {
-        notify(MaaMsg_Node_Action_Starting, cb_detail);
-    }
+    notify(MaaMsg_Node_Action_Starting, cb_detail);
 
     Actuator actuator(tasker_, *context_);
     ActionResult result = actuator.run(*reco.box, reco.reco_id, data, entry_);
 
-    if (debug_mode() || !data.focus.is_null()) {
-        cb_detail["action_details"] = result;
-        notify(result.success ? MaaMsg_Node_Action_Succeeded : MaaMsg_Node_Action_Failed, cb_detail);
-    }
+    cb_detail["action_details"] = result;
+    notify(result.success ? MaaMsg_Node_Action_Succeeded : MaaMsg_Node_Action_Failed, cb_detail);
 
     return result;
 }
