@@ -144,7 +144,7 @@ NodeDetail PipelineTask::run_next(const std::vector<MAA_RES_NS::NodeAttr>& next,
 
     const auto& cur_node = *cur_opt;
 
-    const json::value node_cb_detail {
+    json::value node_cb_detail {
         { "task_id", task_id() },
         { "node_id", node_id },
         { "name", cur_node_ },
@@ -203,10 +203,15 @@ NodeDetail PipelineTask::run_next(const std::vector<MAA_RES_NS::NodeAttr>& next,
             .action_id = act.action_id,
             .completed = act.success,
         };
+
         LogInfo << "PipelineTask node done" << VAR(result) << VAR(task_id_);
         set_node_detail(result.node_id, result);
 
         if (debug_mode() || !cur_node.focus.is_null()) {
+            node_cb_detail["node_details"] = result;
+            node_cb_detail["reco_details"] = reco;
+            node_cb_detail["action_details"] = act;
+
             notify(act.success ? MaaMsg_Node_PipelineNode_Succeeded : MaaMsg_Node_PipelineNode_Failed, node_cb_detail);
         }
 

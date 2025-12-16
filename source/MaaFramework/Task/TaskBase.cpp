@@ -89,10 +89,8 @@ RecoResult TaskBase::run_recognition(const cv::Mat& image, const PipelineData& d
 
     if (debug_mode() || !data.focus.is_null()) {
         const json::value reco_cb_detail {
-            { "task_id", task_id() },
-            { "reco_id", result.reco_id },
-            { "name", data.name },
-            { "focus", data.focus },
+            { "task_id", task_id() }, { "reco_id", result.reco_id }, { "name", data.name },
+            { "focus", data.focus },  { "reco_details", result },
         };
         notify(result.box ? MaaMsg_Node_Recognition_Succeeded : MaaMsg_Node_Recognition_Failed, reco_cb_detail);
     }
@@ -133,19 +131,17 @@ ActionResult TaskBase::run_action(const RecoResult& reco, const PipelineData& da
     }
 
     Actuator actuator(tasker_, *context_);
-    ActionResult action_result = actuator.run(*reco.box, reco.reco_id, data, entry_);
+    ActionResult result = actuator.run(*reco.box, reco.reco_id, data, entry_);
 
     if (debug_mode() || !data.focus.is_null()) {
         const json::value cb_detail {
-            { "task_id", task_id() },
-            { "action_id", action_result.action_id },
-            { "name", data.name },
-            { "focus", data.focus },
+            { "task_id", task_id() }, { "action_id", result.action_id }, { "name", data.name },
+            { "focus", data.focus },  { "action_details", result },
         };
-        notify(action_result.success ? MaaMsg_Node_Action_Succeeded : MaaMsg_Node_Action_Failed, cb_detail);
+        notify(result.success ? MaaMsg_Node_Action_Succeeded : MaaMsg_Node_Action_Failed, cb_detail);
     }
 
-    return action_result;
+    return result;
 }
 
 cv::Mat TaskBase::screencap()

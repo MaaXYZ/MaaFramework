@@ -46,7 +46,7 @@ MaaActId ActionTask::run_impl()
 
     auto node_id = generate_node_id();
 
-    const json::value node_cb_detail {
+    json::value node_cb_detail {
         { "task_id", task_id() },
         { "node_id", node_id },
         { "name", entry_ },
@@ -76,6 +76,9 @@ MaaActId ActionTask::run_impl()
     set_node_detail(result.node_id, result);
 
     if (debug_mode() || !cur_node.focus.is_null()) {
+        node_cb_detail["node_details"] = result;
+        node_cb_detail["reco_details"] = fake_reco;
+        node_cb_detail["action_details"] = act;
         notify(act.success ? MaaMsg_Node_ActionNode_Succeeded : MaaMsg_Node_ActionNode_Failed, node_cb_detail);
     }
 

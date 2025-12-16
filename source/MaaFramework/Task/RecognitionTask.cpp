@@ -39,7 +39,7 @@ MaaRecoId RecognitionTask::run_impl()
 
     auto node_id = generate_node_id();
 
-    const json::value node_cb_detail {
+    json::value node_cb_detail {
         { "task_id", task_id() },
         { "node_id", node_id },
         { "name", entry_ },
@@ -64,6 +64,9 @@ MaaRecoId RecognitionTask::run_impl()
     set_node_detail(result.node_id, result);
 
     if (debug_mode() || !cur_node.focus.is_null()) {
+        node_cb_detail["node_details"] = result;
+        node_cb_detail["reco_details"] = reco;
+        node_cb_detail["action_details"] = nullptr;
         notify(hit ? MaaMsg_Node_RecognitionNode_Succeeded : MaaMsg_Node_RecognitionNode_Failed, node_cb_detail);
     }
 
