@@ -20,7 +20,7 @@ public:
 public:
     RecoResult recognize(const PipelineData& pipeline_data);
 
-    const MaaRecoId get_id() const { return reco_id_; }
+    MaaRecoId get_id() const { return reco_id_; }
 
 private:
     RecoResult direct_hit(const std::string& name);

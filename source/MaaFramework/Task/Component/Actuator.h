@@ -25,7 +25,7 @@ public:
 
     ActionResult run(const cv::Rect& reco_hit, MaaRecoId reco_id, const PipelineData& pipeline_data, const std::string& entry);
 
-    const MaaActId get_id() const { return action_id_; }
+    MaaActId get_id() const { return action_id_; }
 
 private:
     static cv::Point rand_point(const cv::Rect& r);

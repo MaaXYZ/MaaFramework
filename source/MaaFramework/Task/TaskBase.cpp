@@ -141,7 +141,7 @@ cv::Mat TaskBase::screencap()
     return controller()->screencap();
 }
 
-const MaaNodeId TaskBase::generate_node_id()
+MaaNodeId TaskBase::generate_node_id()
 {
     return ++s_global_node_id;
 }

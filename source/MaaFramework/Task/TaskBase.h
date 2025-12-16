@@ -40,7 +40,7 @@ protected:
     RecoResult run_recognition(const cv::Mat& image, const PipelineData& data);
     ActionResult run_action(const RecoResult& reco, const PipelineData& data);
     cv::Mat screencap();
-    const MaaNodeId generate_node_id();
+    MaaNodeId generate_node_id();
     void set_node_detail(MaaNodeId node_id, NodeDetail detail);
     void set_task_detail(TaskDetail detail);
 
