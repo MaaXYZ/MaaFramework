@@ -54,13 +54,24 @@ static std::string temp_directory()
     auto path = std::filesystem::temp_directory_path();
 
 #ifdef _WIN32
+
+    bool fallback = false;
+
     // ZeroMQ IPC 在 Windows 上不支持 Unicode 路径，拉💩
     if (GetACP() != CP_UTF8 && std::ranges::any_of(path.native(), [](wchar_t ch) { return ch > 127; })) {
+        fallback = true;
+    }
+    else if (!std::filesystem::exists(path) || !std::filesystem::is_directory(path)) {
+        fallback = true;
+    }
+
+    if (fallback) {
         path = MaaNS::path("C:/Temp");
         if (!std::filesystem::exists(path)) {
             std::filesystem::create_directories(path);
         }
     }
+
 #endif
 
     return path_to_utf8_string(path);
