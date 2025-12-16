@@ -12,7 +12,7 @@
 
 MAA_TASK_NS_BEGIN
 
-class Recognizer
+class Recognizer : public NonCopyable
 {
 public:
     explicit Recognizer(Tasker* tasker, Context& context, const cv::Mat& image);
@@ -20,7 +20,7 @@ public:
 public:
     RecoResult recognize(const PipelineData& pipeline_data);
 
-    MaaRecoId get_id() const { return reco_id_; }
+    const MaaRecoId get_id() const { return reco_id_; }
 
 private:
     RecoResult direct_hit(const std::string& name);

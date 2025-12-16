@@ -15,7 +15,7 @@
 
 MAA_TASK_NS_BEGIN
 
-class TaskBase
+class TaskBase : public NonCopyable
 {
 public:
     TaskBase(std::string entry, Tasker* tasker, std::shared_ptr<Context> context = nullptr);
@@ -40,7 +40,7 @@ protected:
     RecoResult run_recognition(const cv::Mat& image, const PipelineData& data);
     ActionResult run_action(const RecoResult& reco, const PipelineData& data);
     cv::Mat screencap();
-    MaaNodeId generate_node_id();
+    const MaaNodeId generate_node_id();
     void set_node_detail(MaaNodeId node_id, NodeDetail detail);
     void set_task_detail(TaskDetail detail);
 

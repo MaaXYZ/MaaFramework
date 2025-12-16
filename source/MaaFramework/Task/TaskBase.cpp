@@ -75,7 +75,7 @@ RecoResult TaskBase::run_recognition(const cv::Mat& image, const PipelineData& d
     }
 
     Recognizer recognizer(tasker_, *context_, image);
-    
+
     json::value cb_detail {
         { "task_id", task_id() },
         { "reco_id", recognizer.get_id() },
@@ -141,7 +141,7 @@ cv::Mat TaskBase::screencap()
     return controller()->screencap();
 }
 
-MaaNodeId TaskBase::generate_node_id()
+const MaaNodeId TaskBase::generate_node_id()
 {
     return ++s_global_node_id;
 }
