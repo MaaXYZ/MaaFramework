@@ -11,7 +11,7 @@
 
 ## 目录结构
 
-```
+```text
 MaaFramework/
 ├── include/                    # C 语言头文件（公开 API）
 │   ├── MaaFramework/           # 核心框架 API
@@ -79,7 +79,7 @@ MaaFramework/
 
 ### 执行流程
 
-```
+```text
 1. 创建 Resource → 加载资源
 2. 创建 Controller → 连接设备
 3. 创建 Tasker → 绑定 Resource 和 Controller
@@ -128,6 +128,10 @@ MaaFramework/
 - C++ 使用 C++20 标准
 - 使用 clang-format 格式化代码
 - 头文件使用 `#pragma once`
+
+#### 函数拆分与 lambda 使用
+
+- **避免长 lambda**：lambda 适合做轻量的适配/回调（通常几行内即可读懂）。当 lambda 内包含较长的 `switch`/循环/复杂控制流或超过可读的长度时，应提取为具名函数/成员方法，提升可读性、可测试性与复用性。
 
 #### 控制流与嵌套
 
@@ -217,28 +221,14 @@ bool process(Resource* res, const Input& input)
 
 ## 常见开发场景
 
-### 添加新的识别算法
+### 添加新的 Pipeline 字段
 
-1. 在 `source/MaaFramework/Vision/` 添加算法实现
-2. 在 `source/MaaFramework/Task/Component/Recognizer.cpp` 注册算法
-3. 在 `source/MaaFramework/Resource/PipelineParser.cpp` 添加解析逻辑
-4. 在 `source/MaaFramework/Resource/PipelineDumper.cpp` 添加序列化逻辑
-5. 更新 Python 绑定中的 `get_node_object` 解析逻辑（如有新的结果格式）
-6. 更新 `tools/pipeline.schema.json`
-7. 更新中英文文档 `docs/*/3.1-*`
-
-> **说明**：Python 绑定的 `get_node_object` 数据来源于 `PipelineDumper` 序列化的 JSON，而非原始 Pipeline JSON。
-
-### 添加新的动作类型
-
-1. 在 `source/MaaFramework/Task/Component/Actuator.cpp` 实现动作
+1. 在 `source/MaaFramework/` 添加字段本身的功能性代码
 2. 在 `source/MaaFramework/Resource/PipelineParser.cpp` 添加解析逻辑
 3. 在 `source/MaaFramework/Resource/PipelineDumper.cpp` 添加序列化逻辑
-4. 更新 Python 绑定中的 `get_node_object` 解析逻辑（如有新的结果格式）
+4. 更新 `source/binding` 中的解析逻辑（注意：binding 中的数据来源于 `PipelineDumper` 序列化的 JSON，而非原始 Pipeline JSON。）
 5. 更新 `tools/pipeline.schema.json`
-6. 更新中英文文档
-
-> **说明**：Python 绑定的 `get_node_object` 数据来源于 `PipelineDumper` 序列化的 JSON，而非原始 Pipeline JSON。
+6. 更新中英文文档 `docs/*/3.1-*`
 
 ### 修改回调消息（MaaMsg）
 

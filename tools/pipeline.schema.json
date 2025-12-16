@@ -3889,6 +3889,26 @@
                     "$ref": "#/$defs/WaitFreezesOrNInt64",
                     "markdownDescription": "*uint* | *object*\n\n行动动作后 到 识别 next，等待画面不动了的时间，毫秒。可选，默认 0 ，即不等待。\n\n连续 `pre_wait_freezes` 毫秒 画面 **没有较大变化** 才会退出动作。\n\n若为 object，可设置更多参数，详见 [等待画面静止](#等待画面静止)。\n\n具体的顺序为 `pre_wait_freezes` - `pre_delay` - `action` - `post_wait_freezes` - `post_delay` 。"
                 },
+                "repeat": {
+                    "title": "Repeat Property",
+                    "description": "动作重复执行次数。可选，默认 1 ，即不重复。",
+                    "$ref": "#/$defs/jsonUInt32",
+                    "default": 1,
+                    "markdownDescription": "*uint*\n\n动作重复执行次数。可选，默认 1 ，即不重复。\n\n执行流程为 `pre_wait_freezes` - `pre_delay` - `action` - [`repeat_wait_freezes` - `repeat_delay` - `action`] × (repeat-1) - `post_wait_freezes` - `post_delay` 。"
+                },
+                "repeat_delay": {
+                    "title": "Repeat Delay Property",
+                    "description": "每次重复动作之间的延迟，毫秒。可选，默认 0 。",
+                    "$ref": "#/$defs/jsonNInt64",
+                    "default": 0,
+                    "markdownDescription": "*uint*\n\n每次重复动作之间的延迟，毫秒。可选，默认 0 。\n\n仅当 `repeat` > 1 时生效，在第二次及之后的每次动作执行前等待。"
+                },
+                "repeat_wait_freezes": {
+                    "title": "Repeat Wait Freezes Property",
+                    "description": "每次重复动作之间等待画面不动了的时间，毫秒。可选，默认 0 ，即不等待。",
+                    "$ref": "#/$defs/WaitFreezesOrNInt64",
+                    "markdownDescription": "*uint* | *object*\n\n每次重复动作之间等待画面不动了的时间，毫秒。可选，默认 0 ，即不等待。\n\n仅当 `repeat` > 1 时生效，在第二次及之后的每次动作执行前等待画面静止。\n\n若为 object，可设置更多参数，详见 [等待画面静止](#等待画面静止)。"
+                },
                 "focus": {
                     "title": "Focus Property",
                     "description": "关注节点，会额外产生部分回调消息。可选，默认 null，不产生回调消息。",

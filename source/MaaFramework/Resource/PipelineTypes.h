@@ -331,6 +331,10 @@ struct PipelineData
     WaitFreezesParam pre_wait_freezes;
     WaitFreezesParam post_wait_freezes;
 
+    uint repeat = 1;
+    std::chrono::milliseconds repeat_delay = std::chrono::milliseconds(0);
+    WaitFreezesParam repeat_wait_freezes;
+
     uint max_hit = std::numeric_limits<uint>::max();
 
     json::value focus;

@@ -35,96 +35,104 @@ ActionResult Actuator::run(const cv::Rect& reco_hit, MaaRecoId reco_id, const Pi
     wait_freezes(pipeline_data.pre_wait_freezes, reco_hit);
     sleep(pipeline_data.pre_delay);
 
-    ActionResult result;
-    switch (pipeline_data.action_type) {
-    case Type::DoNothing:
-        result = do_nothing(pipeline_data.name);
-        break;
-
-    case Type::Click:
-        result = click(std::get<ClickParam>(pipeline_data.action_param), reco_hit, pipeline_data.name);
-        break;
-
-    case Type::LongPress:
-        result = long_press(std::get<LongPressParam>(pipeline_data.action_param), reco_hit, pipeline_data.name);
-        break;
-
-    case Type::Swipe:
-        result = swipe(std::get<SwipeParam>(pipeline_data.action_param), reco_hit, pipeline_data.name);
-        break;
-
-    case Type::MultiSwipe:
-        result = multi_swipe(std::get<MultiSwipeParam>(pipeline_data.action_param), reco_hit, pipeline_data.name);
-        break;
-
-    case Type::TouchDown:
-        result = touch_down(std::get<TouchParam>(pipeline_data.action_param), reco_hit, pipeline_data.name);
-        break;
-    case Type::TouchMove:
-        result = touch_move(std::get<TouchParam>(pipeline_data.action_param), reco_hit, pipeline_data.name);
-        break;
-    case Type::TouchUp:
-        result = touch_up(std::get<TouchUpParam>(pipeline_data.action_param), pipeline_data.name);
-        break;
-    case Type::ClickKey:
-        result = click_key(std::get<ClickKeyParam>(pipeline_data.action_param), pipeline_data.name);
-        break;
-
-    case Type::LongPressKey:
-        result = long_press_key(std::get<LongPressKeyParam>(pipeline_data.action_param), pipeline_data.name);
-        break;
-
-    case Type::KeyDown:
-        result = key_down(std::get<KeyParam>(pipeline_data.action_param), pipeline_data.name);
-        break;
-    case Type::KeyUp:
-        result = key_up(std::get<KeyParam>(pipeline_data.action_param), pipeline_data.name);
-        break;
-    case Type::InputText:
-        result = input_text(std::get<InputTextParam>(pipeline_data.action_param), pipeline_data.name);
-        break;
-
-    case Type::StartApp:
-        result = start_app(std::get<AppParam>(pipeline_data.action_param), pipeline_data.name);
-        break;
-
-    case Type::StopApp:
-        result = stop_app(std::get<AppParam>(pipeline_data.action_param), pipeline_data.name);
-        break;
-
-    case Type::Scroll:
-        result = scroll(std::get<ScrollParam>(pipeline_data.action_param), pipeline_data.name);
-        break;
-
-    case Type::StopTask:
-        result = stop_task(pipeline_data.name);
-        break;
-
-    case Type::Command:
-        result = command(std::get<CommandParam>(pipeline_data.action_param), reco_hit, pipeline_data.name, entry);
-        break;
-
-    case Type::Shell:
-        result = shell(std::get<ShellParam>(pipeline_data.action_param), pipeline_data.name);
-        break;
-
-    case Type::Custom:
-        result = custom_action(std::get<CustomParam>(pipeline_data.action_param), reco_hit, reco_id, pipeline_data.name);
-        break;
-
-    default:
-        LogError << "Unknown action" << VAR(static_cast<int>(pipeline_data.action_type));
-        return {};
-    }
-
-    LogInfo << "action" << VAR(result);
     auto& rt_cache = tasker_->runtime_cache();
-    rt_cache.set_action_detail(result.action_id, result);
+    ActionResult result;
+
+    for (uint i = 0; i < pipeline_data.repeat; ++i) {
+        if (i > 0) {
+            wait_freezes(pipeline_data.repeat_wait_freezes, reco_hit);
+            sleep(pipeline_data.repeat_delay);
+        }
+
+        if (context_.need_to_stop()) {
+            return {};
+        }
+
+        result = execute_action(reco_hit, reco_id, pipeline_data, entry);
+        LogInfo << "action" << VAR(i) << VAR(pipeline_data.repeat) << VAR(result);
+        rt_cache.set_action_detail(result.action_id, result);
+
+        if (context_.need_to_stop()) {
+            return {};
+        }
+    }
 
     wait_freezes(pipeline_data.post_wait_freezes, reco_hit);
     sleep(pipeline_data.post_delay);
 
     return result;
+}
+
+ActionResult
+    Actuator::execute_action(const cv::Rect& reco_hit, MaaRecoId reco_id, const PipelineData& pipeline_data, const std::string& entry)
+{
+    using namespace MAA_RES_NS::Action;
+
+    switch (pipeline_data.action_type) {
+    case Type::DoNothing:
+        return do_nothing(pipeline_data.name);
+
+    case Type::Click:
+        return click(std::get<ClickParam>(pipeline_data.action_param), reco_hit, pipeline_data.name);
+
+    case Type::LongPress:
+        return long_press(std::get<LongPressParam>(pipeline_data.action_param), reco_hit, pipeline_data.name);
+
+    case Type::Swipe:
+        return swipe(std::get<SwipeParam>(pipeline_data.action_param), reco_hit, pipeline_data.name);
+
+    case Type::MultiSwipe:
+        return multi_swipe(std::get<MultiSwipeParam>(pipeline_data.action_param), reco_hit, pipeline_data.name);
+
+    case Type::TouchDown:
+        return touch_down(std::get<TouchParam>(pipeline_data.action_param), reco_hit, pipeline_data.name);
+
+    case Type::TouchMove:
+        return touch_move(std::get<TouchParam>(pipeline_data.action_param), reco_hit, pipeline_data.name);
+
+    case Type::TouchUp:
+        return touch_up(std::get<TouchUpParam>(pipeline_data.action_param), pipeline_data.name);
+
+    case Type::ClickKey:
+        return click_key(std::get<ClickKeyParam>(pipeline_data.action_param), pipeline_data.name);
+
+    case Type::LongPressKey:
+        return long_press_key(std::get<LongPressKeyParam>(pipeline_data.action_param), pipeline_data.name);
+
+    case Type::KeyDown:
+        return key_down(std::get<KeyParam>(pipeline_data.action_param), pipeline_data.name);
+
+    case Type::KeyUp:
+        return key_up(std::get<KeyParam>(pipeline_data.action_param), pipeline_data.name);
+
+    case Type::InputText:
+        return input_text(std::get<InputTextParam>(pipeline_data.action_param), pipeline_data.name);
+
+    case Type::StartApp:
+        return start_app(std::get<AppParam>(pipeline_data.action_param), pipeline_data.name);
+
+    case Type::StopApp:
+        return stop_app(std::get<AppParam>(pipeline_data.action_param), pipeline_data.name);
+
+    case Type::Scroll:
+        return scroll(std::get<ScrollParam>(pipeline_data.action_param), pipeline_data.name);
+
+    case Type::StopTask:
+        return stop_task(pipeline_data.name);
+
+    case Type::Command:
+        return command(std::get<CommandParam>(pipeline_data.action_param), reco_hit, pipeline_data.name, entry);
+
+    case Type::Shell:
+        return shell(std::get<ShellParam>(pipeline_data.action_param), pipeline_data.name);
+
+    case Type::Custom:
+        return custom_action(std::get<CustomParam>(pipeline_data.action_param), reco_hit, reco_id, pipeline_data.name);
+
+    default:
+        LogError << "Unknown action" << VAR(static_cast<int>(pipeline_data.action_type));
+        return {};
+    }
 }
 
 cv::Point Actuator::rand_point(const cv::Rect& r)
