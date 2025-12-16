@@ -1034,7 +1034,7 @@ bool AgentClient::handle_tasker_get_task_detail(const json::value& j)
         return false;
     }
     const TaskerGetTaskDetailReverseRequest& req = j.as<TaskerGetTaskDetailReverseRequest>();
-    LogFunc << VAR(req) << VAR(ipc_addr_);
+    // LogFunc << VAR(req) << VAR(ipc_addr_);
     MaaTasker* tasker = query_tasker(req.tasker_id);
     if (!tasker) {
         LogError << "tasker not found" << VAR(req.tasker_id);
@@ -1060,7 +1060,7 @@ bool AgentClient::handle_tasker_get_node_detail(const json::value& j)
         return false;
     }
     const TaskerGetNodeDetailReverseRequest& req = j.as<TaskerGetNodeDetailReverseRequest>();
-    LogFunc << VAR(req) << VAR(ipc_addr_);
+    // LogFunc << VAR(req) << VAR(ipc_addr_);
 
     MaaTasker* tasker = query_tasker(req.tasker_id);
     if (!tasker) {
@@ -1089,7 +1089,7 @@ bool AgentClient::handle_tasker_get_reco_result(const json::value& j)
         return false;
     }
     const TaskerGetRecoResultReverseRequest& req = j.as<TaskerGetRecoResultReverseRequest>();
-    LogFunc << VAR(req) << VAR(ipc_addr_);
+    // LogFunc << VAR(req) << VAR(ipc_addr_);
     MaaTasker* tasker = query_tasker(req.tasker_id);
     if (!tasker) {
         LogError << "tasker not found" << VAR(req.tasker_id);
@@ -1126,7 +1126,7 @@ bool AgentClient::handle_tasker_get_action_result(const json::value& j)
         return false;
     }
     const TaskerGetActionResultReverseRequest& req = j.as<TaskerGetActionResultReverseRequest>();
-    LogFunc << VAR(req) << VAR(ipc_addr_);
+    // LogFunc << VAR(req) << VAR(ipc_addr_);
 
     MaaTasker* tasker = query_tasker(req.tasker_id);
     if (!tasker) {

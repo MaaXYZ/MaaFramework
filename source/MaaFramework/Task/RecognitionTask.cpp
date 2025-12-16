@@ -39,16 +39,14 @@ MaaRecoId RecognitionTask::run_impl()
 
     auto node_id = generate_node_id();
 
-    const json::value node_cb_detail {
+    json::value node_cb_detail {
         { "task_id", task_id() },
         { "node_id", node_id },
         { "name", entry_ },
         { "focus", cur_node.focus },
     };
 
-    if (debug_mode() || !cur_node.focus.is_null()) {
-        notify(MaaMsg_Node_RecognitionNode_Starting, node_cb_detail);
-    }
+    notify(MaaMsg_Node_RecognitionNode_Starting, node_cb_detail);
 
     auto reco = run_recognition(image_, cur_node);
 
@@ -63,9 +61,10 @@ MaaRecoId RecognitionTask::run_impl()
     LogInfo << "RecognitionTask node done" << VAR(result) << VAR(task_id_);
     set_node_detail(result.node_id, result);
 
-    if (debug_mode() || !cur_node.focus.is_null()) {
-        notify(hit ? MaaMsg_Node_RecognitionNode_Succeeded : MaaMsg_Node_RecognitionNode_Failed, node_cb_detail);
-    }
+    node_cb_detail["node_details"] = result;
+    node_cb_detail["reco_details"] = reco;
+    node_cb_detail["action_details"] = nullptr;
+    notify(hit ? MaaMsg_Node_RecognitionNode_Succeeded : MaaMsg_Node_RecognitionNode_Failed, node_cb_detail);
 
     return reco.reco_id;
 }

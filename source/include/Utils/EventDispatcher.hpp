@@ -55,7 +55,8 @@ public:
 public:
     void notify(void* handle, std::string_view msg, const json::value& details)
     {
-        // LogFunc << VAR_VOIDP(handle) << VAR(msg) << VAR(details);
+        static constexpr std::string_view kLogFlag = "!!!OnEventNotify!!!";
+        LogInfo << kLogFlag << VAR_VOIDP(handle) << VAR(msg) << VAR(details);
 
         const std::string str_detail = details.to_string();
         dispatch([&](const std::shared_ptr<EventSink>& sink) {
