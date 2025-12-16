@@ -108,7 +108,7 @@ RecoResult Recognizer::direct_hit(const std::string& name)
 {
     LogDebug << name;
     return RecoResult {
-        .reco_id = MAA_VISION_NS::VisionBase::generate_uid(),
+        .reco_id = reco_id_,
         .name = name,
         .algorithm = "DirectHit",
         .box = cv::Rect {},
@@ -129,7 +129,7 @@ RecoResult Recognizer::template_match(const MAA_VISION_NS::TemplateMatcherParam&
         box = analyzer.best_result()->box;
     }
 
-    return RecoResult { .reco_id = analyzer.uid(),
+    return RecoResult { .reco_id = reco_id_,
                         .name = name,
                         .algorithm = "TemplateMatch",
                         .box = std::move(box),
@@ -151,7 +151,7 @@ RecoResult Recognizer::feature_match(const MAA_VISION_NS::FeatureMatcherParam& p
         box = analyzer.best_result()->box;
     }
 
-    return RecoResult { .reco_id = analyzer.uid(),
+    return RecoResult { .reco_id = reco_id_,
                         .name = name,
                         .algorithm = "FeatureMatch",
                         .box = std::move(box),
@@ -172,7 +172,7 @@ RecoResult Recognizer::color_match(const MAA_VISION_NS::ColorMatcherParam& param
         box = analyzer.best_result()->box;
     }
 
-    return RecoResult { .reco_id = analyzer.uid(),
+    return RecoResult { .reco_id = reco_id_,
                         .name = name,
                         .algorithm = "ColorMatch",
                         .box = std::move(box),
@@ -202,7 +202,7 @@ RecoResult Recognizer::ocr(const MAA_VISION_NS::OCRerParam& param, const std::st
         box = analyzer.best_result()->box;
     }
 
-    return RecoResult { .reco_id = analyzer.uid(),
+    return RecoResult { .reco_id = reco_id_,
                         .name = name,
                         .algorithm = "OCR",
                         .box = std::move(box),
@@ -232,7 +232,7 @@ RecoResult Recognizer::nn_classify(const MAA_VISION_NS::NeuralNetworkClassifierP
         box = analyzer.best_result()->box;
     }
 
-    return RecoResult { .reco_id = analyzer.uid(),
+    return RecoResult { .reco_id = reco_id_,
                         .name = name,
                         .algorithm = "NeuralNetworkClassify",
                         .box = std::move(box),
@@ -262,7 +262,7 @@ RecoResult Recognizer::nn_detect(const MAA_VISION_NS::NeuralNetworkDetectorParam
         box = analyzer.best_result()->box;
     }
 
-    return RecoResult { .reco_id = analyzer.uid(),
+    return RecoResult { .reco_id = reco_id_,
                         .name = name,
                         .algorithm = "NeuralNetworkDetect",
                         .box = std::move(box),
@@ -289,7 +289,7 @@ RecoResult Recognizer::custom_recognize(const MAA_VISION_NS::CustomRecognitionPa
         box = analyzer.best_result()->box;
     }
 
-    return RecoResult { .reco_id = analyzer.uid(),
+    return RecoResult { .reco_id = reco_id_,
                         .name = name,
                         .algorithm = "Custom",
                         .box = std::move(box),

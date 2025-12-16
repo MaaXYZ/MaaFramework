@@ -1,5 +1,7 @@
 #pragma once
 
+#include <cstdint>
+
 #include "MaaUtils/Conf.h"
 
 #define MAA_GLOBAL_NS MAA_NS::GlobalNS
@@ -68,3 +70,9 @@
     namespace MAA_AGENT_SERVER_NS \
     {
 #define MAA_AGENT_SERVER_NS_END }
+
+constexpr int64_t kRunnerIdBase = 100'000'000;
+constexpr int64_t kTaskIdBase = 200'000'000;
+constexpr int64_t kNodeIdBase = 300'000'000;
+constexpr int64_t kRecoIdBase = 400'000'000;
+constexpr int64_t kActIdBase = 500'000'000;

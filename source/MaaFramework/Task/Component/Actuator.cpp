@@ -180,7 +180,7 @@ ActionResult Actuator::click(const MAA_RES_NS::Action::ClickParam& param, const 
     bool ret = controller()->click(ctrl_param);
 
     return ActionResult {
-        .action_id = ++s_global_action_id,
+        .action_id = action_id_,
         .name = name,
         .action = "Click",
         .box = box,
@@ -201,7 +201,7 @@ ActionResult Actuator::long_press(const MAA_RES_NS::Action::LongPressParam& para
     bool ret = controller()->long_press(ctrl_param);
 
     return ActionResult {
-        .action_id = ++s_global_action_id,
+        .action_id = action_id_,
         .name = name,
         .action = "LongPress",
         .box = box,
@@ -240,7 +240,7 @@ ActionResult Actuator::swipe(const MAA_RES_NS::Action::SwipeParam& param, const 
     bool ret = controller()->swipe(ctrl_param);
 
     return ActionResult {
-        .action_id = ++s_global_action_id,
+        .action_id = action_id_,
         .name = name,
         .action = "Swipe",
         .box = box,
@@ -284,7 +284,7 @@ ActionResult Actuator::multi_swipe(const MAA_RES_NS::Action::MultiSwipeParam& pa
     bool ret = controller()->multi_swipe(ctrl_param);
 
     return ActionResult {
-        .action_id = ++s_global_action_id,
+        .action_id = action_id_,
         .name = name,
         .action = "MultiSwipe",
         .box = box,
@@ -305,7 +305,7 @@ ActionResult Actuator::touch_down(const MAA_RES_NS::Action::TouchParam& param, c
     bool ret = controller()->touch_down(ctrl_param);
 
     return ActionResult {
-        .action_id = ++s_global_action_id,
+        .action_id = action_id_,
         .name = name,
         .action = "TouchDown",
         .box = box,
@@ -326,7 +326,7 @@ ActionResult Actuator::touch_move(const MAA_RES_NS::Action::TouchParam& param, c
     bool ret = controller()->touch_move(ctrl_param);
 
     return ActionResult {
-        .action_id = ++s_global_action_id,
+        .action_id = action_id_,
         .name = name,
         .action = "TouchMove",
         .box = box,
@@ -346,7 +346,7 @@ ActionResult Actuator::touch_up(const MAA_RES_NS::Action::TouchUpParam& param, c
     bool ret = controller()->touch_up(ctrl_param);
 
     return ActionResult {
-        .action_id = ++s_global_action_id,
+        .action_id = action_id_,
         .name = name,
         .action = "TouchUp",
         .box = cv::Rect {},
@@ -366,7 +366,7 @@ ActionResult Actuator::click_key(const MAA_RES_NS::Action::ClickKeyParam& param,
     bool ret = controller()->click_key(ctrl_param);
 
     return ActionResult {
-        .action_id = ++s_global_action_id,
+        .action_id = action_id_,
         .name = name,
         .action = "ClickKey",
         .box = cv::Rect {},
@@ -386,7 +386,7 @@ ActionResult Actuator::long_press_key(const MAA_RES_NS::Action::LongPressKeyPara
     bool ret = controller()->long_press_key(ctrl_param);
 
     return ActionResult {
-        .action_id = ++s_global_action_id,
+        .action_id = action_id_,
         .name = name,
         .action = "LongPressKey",
         .box = cv::Rect {},
@@ -406,7 +406,7 @@ ActionResult Actuator::key_down(const MAA_RES_NS::Action::KeyParam& param, const
     bool ret = controller()->key_down(ctrl_param);
 
     return ActionResult {
-        .action_id = ++s_global_action_id,
+        .action_id = action_id_,
         .name = name,
         .action = "KeyDown",
         .box = cv::Rect {},
@@ -426,7 +426,7 @@ ActionResult Actuator::key_up(const MAA_RES_NS::Action::KeyParam& param, const s
     bool ret = controller()->key_up(ctrl_param);
 
     return ActionResult {
-        .action_id = ++s_global_action_id,
+        .action_id = action_id_,
         .name = name,
         .action = "KeyUp",
         .box = cv::Rect {},
@@ -446,7 +446,7 @@ ActionResult Actuator::input_text(const MAA_RES_NS::Action::InputTextParam& para
     bool ret = controller()->input_text(ctrl_param);
 
     return ActionResult {
-        .action_id = ++s_global_action_id,
+        .action_id = action_id_,
         .name = name,
         .action = "InputText",
         .box = cv::Rect {},
@@ -466,7 +466,7 @@ ActionResult Actuator::scroll(const MAA_RES_NS::Action::ScrollParam& param, cons
     bool ret = controller()->scroll(ctrl_param);
 
     return ActionResult {
-        .action_id = ++s_global_action_id,
+        .action_id = action_id_,
         .name = name,
         .action = "Scroll",
         .box = cv::Rect {},
@@ -493,7 +493,7 @@ ActionResult Actuator::shell(const MAA_RES_NS::Action::ShellParam& param, const 
     json::object detail { { "cmd", param.cmd }, { "timeout", param.timeout }, { "success", ret }, { "output", output } };
 
     return ActionResult {
-        .action_id = ++s_global_action_id,
+        .action_id = action_id_,
         .name = name,
         .action = "Shell",
         .box = cv::Rect {},
@@ -573,7 +573,7 @@ ActionResult Actuator::start_app(const MAA_RES_NS::Action::AppParam& param, cons
     bool ret = controller()->start_app(ctrl_param);
 
     return ActionResult {
-        .action_id = ++s_global_action_id,
+        .action_id = action_id_,
         .name = name,
         .action = "StartApp",
         .box = cv::Rect {},
@@ -593,7 +593,7 @@ ActionResult Actuator::stop_app(const MAA_RES_NS::Action::AppParam& param, const
     bool ret = controller()->stop_app(ctrl_param);
 
     return ActionResult {
-        .action_id = ++s_global_action_id,
+        .action_id = action_id_,
         .name = name,
         .action = "StopApp",
         .box = cv::Rect {},
@@ -625,7 +625,7 @@ ActionResult
     bool ret = CommandAction().run(param, rt);
 
     return ActionResult {
-        .action_id = ++s_global_action_id,
+        .action_id = action_id_,
         .name = name,
         .action = "Command",
         .box = box,
@@ -650,7 +650,7 @@ ActionResult
     bool ret = CustomAction::run(context_, name, session, param, reco_id, rect);
 
     return ActionResult {
-        .action_id = ++s_global_action_id,
+        .action_id = action_id_,
         .name = name,
         .action = "Custom",
         .box = box,
@@ -662,7 +662,7 @@ ActionResult
 ActionResult Actuator::do_nothing(const std::string& name)
 {
     return ActionResult {
-        .action_id = ++s_global_action_id,
+        .action_id = action_id_,
         .name = name,
         .action = "DoNothing",
         .box = cv::Rect {},
@@ -677,7 +677,7 @@ ActionResult Actuator::stop_task(const std::string& name)
     context_.need_to_stop() = true;
 
     return ActionResult {
-        .action_id = ++s_global_action_id,
+        .action_id = action_id_,
         .name = name,
         .action = "StopTask",
         .box = cv::Rect {},

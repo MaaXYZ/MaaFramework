@@ -74,16 +74,17 @@ RecoResult TaskBase::run_recognition(const cv::Mat& image, const PipelineData& d
         return {};
     }
 
+    Recognizer recognizer(tasker_, *context_, image);
+
     json::value cb_detail {
         { "task_id", task_id() },
-        { "reco_id", 0 },
+        { "reco_id", recognizer.get_id() },
         { "name", data.name },
         { "focus", data.focus },
     };
 
     notify(MaaMsg_Node_Recognition_Starting, cb_detail);
 
-    Recognizer recognizer(tasker_, *context_, image);
     RecoResult result = recognizer.recognize(data);
 
     cb_detail["reco_details"] = result;
@@ -114,15 +115,15 @@ ActionResult TaskBase::run_action(const RecoResult& reco, const PipelineData& da
         return {};
     }
 
+    Actuator actuator(tasker_, *context_);
     json::value cb_detail {
         { "task_id", task_id() },
-        { "action_id", 0 },
+        { "action_id", actuator.get_id() },
         { "name", reco.name },
         { "focus", data.focus },
     };
     notify(MaaMsg_Node_Action_Starting, cb_detail);
 
-    Actuator actuator(tasker_, *context_);
     ActionResult result = actuator.run(*reco.box, reco.reco_id, data, entry_);
 
     cb_detail["action_details"] = result;

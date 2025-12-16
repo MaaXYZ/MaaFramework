@@ -48,10 +48,6 @@ public:
 
     std::vector<ImageEncodedBuffer> draws() && { return std::move(draws_); }
 
-    MaaRecoId uid() const { return uid_; }
-
-    static MaaRecoId generate_uid() { return ++s_global_uid; }
-
 protected:
     cv::Mat image_with_roi() const;
 
@@ -65,15 +61,11 @@ protected:
     const std::string name_;
 
     bool debug_draw_ = false;
-    const MaaRecoId uid_ = ++s_global_uid;
 
 private:
     void init_draw();
 
     mutable std::vector<ImageEncodedBuffer> draws_;
-
-private:
-    inline static std::atomic<MaaRecoId> s_global_uid = 300'000'000;
 };
 
 MAA_VISION_NS_END
