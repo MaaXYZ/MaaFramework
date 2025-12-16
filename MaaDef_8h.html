@@ -256,12 +256,16 @@ Typedefs</h2></td></tr>
 <tr class="memitem:ade3bcba89b5092219c2af3b0faffa934" id="r_ade3bcba89b5092219c2af3b0faffa934"><td class="memItemLeft" align="right" valign="top">typedef <a class="el" href="MaaDef_8h.html#abfd624a6cf1959968525f8088abdd772">MaaOption</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="MaaDef_8h.html#ade3bcba89b5092219c2af3b0faffa934">MaaTaskerOption</a></td></tr>
 <tr class="separator:ade3bcba89b5092219c2af3b0faffa934"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a337e4b247a734f5c1c058689f75c1369" id="r_a337e4b247a734f5c1c058689f75c1369"><td class="memItemLeft" align="right" valign="top">typedef uint64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="MaaDef_8h.html#a337e4b247a734f5c1c058689f75c1369">MaaAdbScreencapMethod</a></td></tr>
+<tr class="memdesc:a337e4b247a734f5c1c058689f75c1369"><td class="mdescLeft">&#160;</td><td class="mdescRight">Adb screencap method flags.  <br /></td></tr>
 <tr class="separator:a337e4b247a734f5c1c058689f75c1369"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa02386b09246fa0704ec371f80bb661f" id="r_aa02386b09246fa0704ec371f80bb661f"><td class="memItemLeft" align="right" valign="top">typedef uint64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="MaaDef_8h.html#aa02386b09246fa0704ec371f80bb661f">MaaAdbInputMethod</a></td></tr>
+<tr class="memdesc:aa02386b09246fa0704ec371f80bb661f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Adb input method flags.  <br /></td></tr>
 <tr class="separator:aa02386b09246fa0704ec371f80bb661f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a23833339ba6406d680688350d27d37b3" id="r_a23833339ba6406d680688350d27d37b3"><td class="memItemLeft" align="right" valign="top">typedef uint64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="MaaDef_8h.html#a23833339ba6406d680688350d27d37b3">MaaWin32ScreencapMethod</a></td></tr>
+<tr class="memdesc:a23833339ba6406d680688350d27d37b3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Win32 screencap method.  <br /></td></tr>
 <tr class="separator:a23833339ba6406d680688350d27d37b3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a29af4457ff72b57b157a1d58d6d28878" id="r_a29af4457ff72b57b157a1d58d6d28878"><td class="memItemLeft" align="right" valign="top">typedef uint64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="MaaDef_8h.html#a29af4457ff72b57b157a1d58d6d28878">MaaWin32InputMethod</a></td></tr>
+<tr class="memdesc:a29af4457ff72b57b157a1d58d6d28878"><td class="mdescLeft">&#160;</td><td class="mdescRight">Win32 input method.  <br /></td></tr>
 <tr class="separator:a29af4457ff72b57b157a1d58d6d28878"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7a7491d55c50840ccb1891ba9b7740c4" id="r_a7a7491d55c50840ccb1891ba9b7740c4"><td class="memItemLeft" align="right" valign="top">typedef uint64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="MaaDef_8h.html#a7a7491d55c50840ccb1891ba9b7740c4">MaaDbgControllerType</a></td></tr>
 <tr class="separator:a7a7491d55c50840ccb1891ba9b7740c4"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -324,6 +328,10 @@ Enumerations</h2></td></tr>
 &#160;&#160;<a class="el" href="MaaDef_8h.html#ad09e62ec1fd03dadaf5fb009026c38eea85acfc5fc6cdca745d0eb2a090c05c5f">MaaGlobalOption_DebugMode</a> = 6
 , <br />
 &#160;&#160;<a class="el" href="MaaDef_8h.html#ad09e62ec1fd03dadaf5fb009026c38eea34d392a2384c7cc6d0a75112952f5edf">MaaGlobalOption_SaveOnError</a> = 7
+, <br />
+&#160;&#160;<a class="el" href="MaaDef_8h.html#ad09e62ec1fd03dadaf5fb009026c38eeaa0b82e4c6b2048977eb87578ab41bc5a">MaaGlobalOption_DrawQuality</a> = 8
+, <br />
+&#160;&#160;<a class="el" href="MaaDef_8h.html#ad09e62ec1fd03dadaf5fb009026c38eead004c29c045174fe392e0484fc2f9f39">MaaGlobalOption_RecoImageCacheLimit</a> = 9
 <br />
  }</td></tr>
 <tr class="separator:ad09e62ec1fd03dadaf5fb009026c38ee"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -548,8 +556,8 @@ Enumerations</h2></td></tr>
 </div><div class="memdoc">
 <b>Value:</b><div class="fragment"><div class="line">    (<a class="code hl_define" href="MaaDef_8h.html#a004b0d855740e5d3894fd14d9e47d080">MaaAdbScreencapMethod_All</a> &amp; (~MaaAdbScreencapMethod_RawByNetcat) &amp; (~<a class="code hl_define" href="MaaDef_8h.html#a594d59b13a02d41b6a335e0f6575fca2">MaaAdbScreencapMethod_MinicapDirect</a>) \</div>
 <div class="line">     &amp; (~MaaAdbScreencapMethod_MinicapStream))</div>
-<div class="ttc" id="aMaaDef_8h_html_a004b0d855740e5d3894fd14d9e47d080"><div class="ttname"><a href="MaaDef_8h.html#a004b0d855740e5d3894fd14d9e47d080">MaaAdbScreencapMethod_All</a></div><div class="ttdeci">#define MaaAdbScreencapMethod_All</div><div class="ttdef"><b>Definition</b> MaaDef.h:232</div></div>
-<div class="ttc" id="aMaaDef_8h_html_a594d59b13a02d41b6a335e0f6575fca2"><div class="ttname"><a href="MaaDef_8h.html#a594d59b13a02d41b6a335e0f6575fca2">MaaAdbScreencapMethod_MinicapDirect</a></div><div class="ttdeci">#define MaaAdbScreencapMethod_MinicapDirect</div><div class="ttdef"><b>Definition</b> MaaDef.h:227</div></div>
+<div class="ttc" id="aMaaDef_8h_html_a004b0d855740e5d3894fd14d9e47d080"><div class="ttname"><a href="MaaDef_8h.html#a004b0d855740e5d3894fd14d9e47d080">MaaAdbScreencapMethod_All</a></div><div class="ttdeci">#define MaaAdbScreencapMethod_All</div><div class="ttdef"><b>Definition</b> MaaDef.h:262</div></div>
+<div class="ttc" id="aMaaDef_8h_html_a594d59b13a02d41b6a335e0f6575fca2"><div class="ttname"><a href="MaaDef_8h.html#a594d59b13a02d41b6a335e0f6575fca2">MaaAdbScreencapMethod_MinicapDirect</a></div><div class="ttdeci">#define MaaAdbScreencapMethod_MinicapDirect</div><div class="ttdef"><b>Definition</b> MaaDef.h:257</div></div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -1363,7 +1371,29 @@ Enumerations</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Use bitwise OR to set the method you need, MaaFramework will test their speed and use the fastest one. </p>
+
+<p>Adb screencap method flags. </p>
+<p>Use bitwise OR to set the methods you need. MaaFramework will test all provided methods and use the fastest available one.</p>
+<p>Default: All methods except RawByNetcat, MinicapDirect, MinicapStream</p>
+<p>Note: MinicapDirect and MinicapStream use lossy JPEG encoding, which may significantly reduce template matching accuracy. Not recommended.</p>
+<table class="markdownTable">
+<tr class="markdownTableHead">
+<th class="markdownTableHeadNone">Method   </th><th class="markdownTableHeadNone">Speed   </th><th class="markdownTableHeadNone">Compatibility   </th><th class="markdownTableHeadNone">Encoding   </th><th class="markdownTableHeadNone">Notes    </th></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone">EncodeToFileAndPull   </td><td class="markdownTableBodyNone">Slow   </td><td class="markdownTableBodyNone">High   </td><td class="markdownTableBodyNone">Lossless   </td><td class="markdownTableBodyNone"></td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone">Encode   </td><td class="markdownTableBodyNone">Slow   </td><td class="markdownTableBodyNone">High   </td><td class="markdownTableBodyNone">Lossless   </td><td class="markdownTableBodyNone"></td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone">RawWithGzip   </td><td class="markdownTableBodyNone">Medium   </td><td class="markdownTableBodyNone">High   </td><td class="markdownTableBodyNone">Lossless   </td><td class="markdownTableBodyNone"></td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone">RawByNetcat   </td><td class="markdownTableBodyNone">Fast   </td><td class="markdownTableBodyNone">Low   </td><td class="markdownTableBodyNone">Lossless   </td><td class="markdownTableBodyNone"></td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone">MinicapDirect   </td><td class="markdownTableBodyNone">Fast   </td><td class="markdownTableBodyNone">Low   </td><td class="markdownTableBodyNone">Lossy   </td><td class="markdownTableBodyNone"></td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone">MinicapStream   </td><td class="markdownTableBodyNone">Very Fast   </td><td class="markdownTableBodyNone">Low   </td><td class="markdownTableBodyNone">Lossy   </td><td class="markdownTableBodyNone"></td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone">EmulatorExtras   </td><td class="markdownTableBodyNone">Very Fast   </td><td class="markdownTableBodyNone">Low   </td><td class="markdownTableBodyNone">Lossless   </td><td class="markdownTableBodyNone">Emulators only: MuMu 12, LDPlayer 9   </td></tr>
+</table>
 
 </div>
 </div>
@@ -1378,7 +1408,23 @@ Enumerations</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Use bitwise OR to set the method you need, MaaFramework will select the available ones according to priority. The priority is: EmulatorExtras &gt; Maatouch &gt; MinitouchAndAdbKey &gt; AdbShell </p>
+
+<p>Adb input method flags. </p>
+<p>Use bitwise OR to set the methods you need. MaaFramework will select the first available method according to priority.</p>
+<p>Priority (high to low): EmulatorExtras &gt; Maatouch &gt; MinitouchAndAdbKey &gt; AdbShell</p>
+<p>Default: All methods except EmulatorExtras</p>
+<table class="markdownTable">
+<tr class="markdownTableHead">
+<th class="markdownTableHeadNone">Method   </th><th class="markdownTableHeadNone">Speed   </th><th class="markdownTableHeadNone">Compatibility   </th><th class="markdownTableHeadNone">Notes    </th></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone">AdbShell   </td><td class="markdownTableBodyNone">Slow   </td><td class="markdownTableBodyNone">High   </td><td class="markdownTableBodyNone"></td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone">MinitouchAndAdbKey   </td><td class="markdownTableBodyNone">Fast   </td><td class="markdownTableBodyNone">Medium   </td><td class="markdownTableBodyNone">Key press still uses AdbShell    </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone">Maatouch   </td><td class="markdownTableBodyNone">Fast   </td><td class="markdownTableBodyNone">Medium   </td><td class="markdownTableBodyNone"></td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone">EmulatorExtras   </td><td class="markdownTableBodyNone">Fast   </td><td class="markdownTableBodyNone">Low   </td><td class="markdownTableBodyNone">Emulators only: MuMu 12   </td></tr>
+</table>
 
 </div>
 </div>
@@ -1393,7 +1439,28 @@ Enumerations</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>No bitwise OR, just set it </p>
+
+<p>Win32 screencap method. </p>
+<p>No bitwise OR, select ONE method only.</p>
+<p>No default value. Client should choose one as default.</p>
+<p>Different applications use different rendering methods, there is no universal solution.</p>
+<table class="markdownTable">
+<tr class="markdownTableHead">
+<th class="markdownTableHeadNone">Method   </th><th class="markdownTableHeadNone">Speed   </th><th class="markdownTableHeadNone">Compatibility   </th><th class="markdownTableHeadNone">Require Admin   </th><th class="markdownTableHeadNone">Background Support   </th><th class="markdownTableHeadNone">Notes    </th></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone">GDI   </td><td class="markdownTableBodyNone">Fast   </td><td class="markdownTableBodyNone">Medium   </td><td class="markdownTableBodyNone">No   </td><td class="markdownTableBodyNone">No   </td><td class="markdownTableBodyNone"></td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone">FramePool   </td><td class="markdownTableBodyNone">Very Fast   </td><td class="markdownTableBodyNone">Medium   </td><td class="markdownTableBodyNone">No   </td><td class="markdownTableBodyNone">Yes   </td><td class="markdownTableBodyNone">Requires Windows 10 1903+    </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone">DXGI_DesktopDup   </td><td class="markdownTableBodyNone">Very Fast   </td><td class="markdownTableBodyNone">Low   </td><td class="markdownTableBodyNone">No   </td><td class="markdownTableBodyNone">No   </td><td class="markdownTableBodyNone">Desktop duplication (full screen)    </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone">DXGI_DesktopDup_Window   </td><td class="markdownTableBodyNone">Very Fast   </td><td class="markdownTableBodyNone">Low   </td><td class="markdownTableBodyNone">No   </td><td class="markdownTableBodyNone">No   </td><td class="markdownTableBodyNone">Desktop duplication then crop    </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone">PrintWindow   </td><td class="markdownTableBodyNone">Medium   </td><td class="markdownTableBodyNone">Medium   </td><td class="markdownTableBodyNone">No   </td><td class="markdownTableBodyNone">Yes   </td><td class="markdownTableBodyNone"></td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone">ScreenDC   </td><td class="markdownTableBodyNone">Fast   </td><td class="markdownTableBodyNone">High   </td><td class="markdownTableBodyNone">No   </td><td class="markdownTableBodyNone">No   </td><td class="markdownTableBodyNone"></td></tr>
+</table>
+<p>Note: When a window is minimized on Windows, all screencap methods will fail. Avoid minimizing the target window. </p>
 
 </div>
 </div>
@@ -1408,7 +1475,16 @@ Enumerations</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>No bitwise OR, just set it </p>
+
+<p>Win32 input method. </p>
+<p>No bitwise OR, select ONE method only.</p>
+<p>No default value. Client should choose one as default.</p>
+<p>Different applications process input differently, there is no universal solution.</p>
+<p>| Method | Compatibility | Require Admin | Seize Mouse | Background Support | Notes | |---------------------------&mdash;|------------&mdash;|------------&mdash;|-----------&mdash;|-----------------&mdash;|----------------------------------------------------------&mdash;| | Seize | High | No | Yes | No | | | SendMessage | Medium | Maybe | No | Yes | | | PostMessage | Medium | Maybe | No | Yes | | | LegacyEvent | Low | No | Yes | No | | | PostThreadMessage | Low | Maybe | No | Yes | | | SendMessageWithCursorPos | Medium | Maybe | Briefly | Yes | Designed for apps that check real cursor position | | PostMessageWithCursorPos | Medium | Maybe | Briefly | Yes | Designed for apps that check real cursor position |</p>
+<p>Note:</p><ul>
+<li>Admin rights mainly depend on the target application's privilege level. If the target runs as admin, MaaFramework should also run as admin for compatibility.</li>
+<li>"WithCursorPos" methods briefly move the cursor to target position, send message, then restore cursor position. This "briefly" seizes the mouse but won't block user operations. </li>
+</ul>
 
 </div>
 </div>
@@ -1587,6 +1663,12 @@ default value is MaaLoggingLevel_Error
 </pre> </td></tr>
 <tr><td class="fieldname"><a id="ad09e62ec1fd03dadaf5fb009026c38eea34d392a2384c7cc6d0a75112952f5edf" name="ad09e62ec1fd03dadaf5fb009026c38eea34d392a2384c7cc6d0a75112952f5edf"></a>MaaGlobalOption_SaveOnError&#160;</td><td class="fielddoc"><p>Whether to save screenshot on error </p><pre class="fragment">value: bool, eg: true; val_size: sizeof(bool) 
 </pre> </td></tr>
+<tr><td class="fieldname"><a id="ad09e62ec1fd03dadaf5fb009026c38eeaa0b82e4c6b2048977eb87578ab41bc5a" name="ad09e62ec1fd03dadaf5fb009026c38eeaa0b82e4c6b2048977eb87578ab41bc5a"></a>MaaGlobalOption_DrawQuality&#160;</td><td class="fielddoc"><p>Image quality for draw images </p><pre class="fragment">value: int, eg: 85; val_size: sizeof(int)
+default value is 85, range: [0, 100] 
+</pre> </td></tr>
+<tr><td class="fieldname"><a id="ad09e62ec1fd03dadaf5fb009026c38eead004c29c045174fe392e0484fc2f9f39" name="ad09e62ec1fd03dadaf5fb009026c38eead004c29c045174fe392e0484fc2f9f39"></a>MaaGlobalOption_RecoImageCacheLimit&#160;</td><td class="fielddoc"><p>Recognition image cache limit </p><pre class="fragment">value: size_t, eg: 4096; val_size: sizeof(size_t)
+default value is 4096 
+</pre> </td></tr>
 </table>
 
 </div>
@@ -1704,7 +1786,7 @@ default value is MaaLoggingLevel_Error
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="dir_d44c64559bbebec7f509842c48db8b23.html">include</a></li><li class="navelem"><a class="el" href="dir_370cd1367c21b1a87c5c9c6803b8d0b9.html">MaaFramework</a></li><li class="navelem"><a class="el" href="MaaDef_8h.html">MaaDef.h</a></li>
-    <li class="footer">Generated on Sat Dec 13 2025 for MaaFramework by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.8 </li>
+    <li class="footer">Generated on Tue Dec 16 2025 for MaaFramework by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.8 </li>
   </ul>
 </div>
 </body>
