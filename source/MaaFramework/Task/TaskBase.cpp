@@ -74,25 +74,23 @@ RecoResult TaskBase::run_recognition(const cv::Mat& image, const PipelineData& d
         return {};
     }
 
+    json::value cb_detail {
+        { "task_id", task_id() },
+        { "reco_id", 0 },
+        { "name", data.name },
+        { "focus", data.focus },
+    };
+
     if (debug_mode() || !data.focus.is_null()) {
-        const json::value reco_cb_detail {
-            { "task_id", task_id() },
-            { "reco_id", 0 },
-            { "name", data.name },
-            { "focus", data.focus },
-        };
-        notify(MaaMsg_Node_Recognition_Starting, reco_cb_detail);
+        notify(MaaMsg_Node_Recognition_Starting, cb_detail);
     }
 
     Recognizer recognizer(tasker_, *context_, image);
     RecoResult result = recognizer.recognize(data);
 
     if (debug_mode() || !data.focus.is_null()) {
-        const json::value reco_cb_detail {
-            { "task_id", task_id() }, { "reco_id", result.reco_id }, { "name", data.name },
-            { "focus", data.focus },  { "reco_details", result },
-        };
-        notify(result.box ? MaaMsg_Node_Recognition_Succeeded : MaaMsg_Node_Recognition_Failed, reco_cb_detail);
+        cb_detail["reco_details"] = result;
+        notify(result.box ? MaaMsg_Node_Recognition_Succeeded : MaaMsg_Node_Recognition_Failed, cb_detail);
     }
 
     if (result.box) {
@@ -120,13 +118,13 @@ ActionResult TaskBase::run_action(const RecoResult& reco, const PipelineData& da
         return {};
     }
 
+    json::value cb_detail {
+        { "task_id", task_id() },
+        { "action_id", 0 },
+        { "name", reco.name },
+        { "focus", data.focus },
+    };
     if (debug_mode() || !data.focus.is_null()) {
-        const json::value cb_detail {
-            { "task_id", task_id() },
-            { "action_id", 0 },
-            { "name", reco.name },
-            { "focus", data.focus },
-        };
         notify(MaaMsg_Node_Action_Starting, cb_detail);
     }
 
@@ -134,10 +132,7 @@ ActionResult TaskBase::run_action(const RecoResult& reco, const PipelineData& da
     ActionResult result = actuator.run(*reco.box, reco.reco_id, data, entry_);
 
     if (debug_mode() || !data.focus.is_null()) {
-        const json::value cb_detail {
-            { "task_id", task_id() }, { "action_id", result.action_id }, { "name", data.name },
-            { "focus", data.focus },  { "action_details", result },
-        };
+        cb_detail["action_details"] = result;
         notify(result.success ? MaaMsg_Node_Action_Succeeded : MaaMsg_Node_Action_Failed, cb_detail);
     }
 
