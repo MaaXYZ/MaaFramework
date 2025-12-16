@@ -30,7 +30,7 @@ public:
 private:
     static cv::Point rand_point(const cv::Rect& r);
     static std::mt19937 rand_engine_;
-    inline static std::atomic<MaaActId> s_global_action_id = 500'000'000;
+    inline static std::atomic<MaaActId> s_global_action_id = kActIdBase;
 
 private:
     ActionResult execute_action(const cv::Rect& reco_hit, MaaRecoId reco_id, const PipelineData& pipeline_data, const std::string& entry);

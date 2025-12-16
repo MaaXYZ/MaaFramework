@@ -40,7 +40,7 @@ private:
     MAA_RES_NS::ResourceMgr* resource();
 
 private:
-    inline static std::atomic<MaaRecoId> s_global_reco_id = 400'000'000;
+    inline static std::atomic<MaaRecoId> s_global_reco_id = kRecoIdBase;
 
     Tasker* tasker_ = nullptr;
     Context& context_;

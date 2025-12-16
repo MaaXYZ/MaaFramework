@@ -68,3 +68,9 @@
     namespace MAA_AGENT_SERVER_NS \
     {
 #define MAA_AGENT_SERVER_NS_END }
+
+constexpr MaaId kRunnerIdBase = 100'000'000;
+constexpr MaaId kTaskIdBase = 200'000'000;
+constexpr MaaId kNodeIdBase = 300'000'000;
+constexpr MaaId kRecoIdBase = 400'000'000;
+constexpr MaaId kActIdBase = 500'000'000;
