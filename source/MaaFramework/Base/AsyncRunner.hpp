@@ -61,7 +61,7 @@ private:
     mutable std::condition_variable compl_cond_;
 
     std::atomic_bool exit_ = false;
-    inline static std::atomic<Id> cross_inst_id_ = 400'000'000;
+    inline static std::atomic<Id> cross_inst_id_ = 100'000'000;
 
     std::thread thread_;
 };

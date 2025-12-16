@@ -1,5 +1,6 @@
 #pragma once
 
+#include <atomic>
 #include <meojson/json.hpp>
 
 #include "Common/Conf.h"
@@ -19,6 +20,8 @@ public:
 public:
     RecoResult recognize(const PipelineData& pipeline_data);
 
+    MaaRecoId get_id() const { return reco_id_; }
+
 private:
     RecoResult direct_hit(const std::string& name);
     RecoResult template_match(const MAA_VISION_NS::TemplateMatcherParam& param, const std::string& name);
@@ -37,9 +40,12 @@ private:
     MAA_RES_NS::ResourceMgr* resource();
 
 private:
+    inline static std::atomic<MaaRecoId> s_global_reco_id = 400'000'000;
+
     Tasker* tasker_ = nullptr;
     Context& context_;
     cv::Mat image_;
+    const MaaRecoId reco_id_ = ++s_global_reco_id;
 };
 
 MAA_TASK_NS_END

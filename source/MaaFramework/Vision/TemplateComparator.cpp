@@ -34,7 +34,7 @@ void TemplateComparator::analyze()
     cherry_pick();
     auto cost = duration_since(start_time);
 
-    LogDebug << name_ << VAR(uid_) << VAR(all_results_) << VAR(filtered_results_) << VAR(best_result_) << VAR(cost) << VAR(param_.threshold)
+    LogDebug << name_ << VAR(all_results_) << VAR(filtered_results_) << VAR(best_result_) << VAR(cost) << VAR(param_.threshold)
              << VAR(param_.method);
 }
 
