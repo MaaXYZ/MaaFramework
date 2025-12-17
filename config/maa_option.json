@@ -1,0 +1,6 @@
+{
+    "logging": true,
+    "save_draw": false,
+    "save_on_error": true,
+    "stdout_level": 7
+}

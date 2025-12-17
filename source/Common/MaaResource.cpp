@@ -136,6 +136,57 @@ MaaResId MaaResourcePostBundle(MaaResource* res, const char* path)
     return res->post_bundle(MAA_NS::path(path));
 }
 
+MaaResId MaaResourcePostOcrModel(MaaResource* res, const char* path)
+{
+    LogFunc << VAR_VOIDP(res) << VAR(path);
+
+    if (!res) {
+        LogError << "handle is null";
+        return MaaInvalidId;
+    }
+
+    if (!path) {
+        LogError << "path is null";
+        return MaaInvalidId;
+    }
+
+    return res->post_ocr_model(MAA_NS::path(path));
+}
+
+MaaResId MaaResourcePostPipeline(MaaResource* res, const char* path)
+{
+    LogFunc << VAR_VOIDP(res) << VAR(path);
+
+    if (!res) {
+        LogError << "handle is null";
+        return MaaInvalidId;
+    }
+
+    if (!path) {
+        LogError << "path is null";
+        return MaaInvalidId;
+    }
+
+    return res->post_pipeline(MAA_NS::path(path));
+}
+
+MaaResId MaaResourcePostImage(MaaResource* res, const char* path)
+{
+    LogFunc << VAR_VOIDP(res) << VAR(path);
+
+    if (!res) {
+        LogError << "handle is null";
+        return MaaInvalidId;
+    }
+
+    if (!path) {
+        LogError << "path is null";
+        return MaaInvalidId;
+    }
+
+    return res->post_image(MAA_NS::path(path));
+}
+
 MaaBool MaaResourceOverridePipeline(MaaResource* res, const char* pipeline_override)
 {
     LogFunc << VAR_VOIDP(res) << VAR(pipeline_override);

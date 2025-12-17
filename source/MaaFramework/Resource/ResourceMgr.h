@@ -16,6 +16,20 @@
 
 MAA_RES_NS_BEGIN
 
+enum class PostPathType
+{
+    Bundle,
+    OcrModel,
+    Pipeline,
+    Image,
+};
+
+struct PostPathItem
+{
+    PostPathType type = PostPathType::Bundle;
+    std::filesystem::path path;
+};
+
 struct CustomRecognitionSession
 {
     MaaCustomRecognitionCallback recognition = nullptr;
@@ -38,6 +52,9 @@ public: // MaaResource
     virtual bool set_option(MaaResOption key, MaaOptionValue value, MaaOptionValueSize val_size) override;
 
     virtual MaaResId post_bundle(const std::filesystem::path& path) override;
+    virtual MaaResId post_ocr_model(const std::filesystem::path& path) override;
+    virtual MaaResId post_pipeline(const std::filesystem::path& path) override;
+    virtual MaaResId post_image(const std::filesystem::path& path) override;
 
     virtual MaaStatus status(MaaResId res_id) const override;
     virtual MaaStatus wait(MaaResId res_id) const override;
@@ -106,8 +123,13 @@ private:
     bool use_coreml();
     bool use_cuda();
 
-    bool run_load(typename AsyncRunner<std::filesystem::path>::Id id, std::filesystem::path path);
-    bool load(const std::filesystem::path& path);
+    MaaResId post_path(PostPathType type, const std::filesystem::path& path);
+
+    bool run_load(typename AsyncRunner<PostPathItem>::Id id, PostPathItem item);
+    bool load_bundle(const std::filesystem::path& path);
+    bool load_ocr_model(const std::filesystem::path& path);
+    bool load_pipeline(const std::filesystem::path& path);
+    bool load_image(const std::filesystem::path& path);
     bool check_stop();
 
 private:
@@ -128,7 +150,7 @@ private:
     mutable std::string hash_cache_;
     std::atomic_bool valid_ = true;
 
-    std::unique_ptr<AsyncRunner<std::filesystem::path>> res_loader_ = nullptr;
+    std::unique_ptr<AsyncRunner<PostPathItem>> res_loader_ = nullptr;
     EventDispatcher notifier_;
 
     MaaInferenceDevice inference_device_ = MaaInferenceDevice_Auto;

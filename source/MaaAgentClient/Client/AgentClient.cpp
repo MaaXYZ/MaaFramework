@@ -311,6 +311,15 @@ bool AgentClient::handle_inserted_request(const json::value& j)
     else if (handle_resource_post_bundle(j)) {
         return true;
     }
+    else if (handle_resource_post_ocr_model(j)) {
+        return true;
+    }
+    else if (handle_resource_post_pipeline(j)) {
+        return true;
+    }
+    else if (handle_resource_post_image(j)) {
+        return true;
+    }
     else if (handle_resource_status(j)) {
         return true;
     }
@@ -1191,6 +1200,75 @@ bool AgentClient::handle_resource_post_bundle(const json::value& j)
 
     MaaResId res_id = resource->post_bundle(path(req.path));
     ResourcePostBundleReverseResponse resp {
+        .res_id = res_id,
+    };
+    send(resp);
+
+    return true;
+}
+
+bool AgentClient::handle_resource_post_ocr_model(const json::value& j)
+{
+    if (!j.is<ResourcePostOcrModelReverseRequest>()) {
+        return false;
+    }
+    const ResourcePostOcrModelReverseRequest& req = j.as<ResourcePostOcrModelReverseRequest>();
+    LogFunc << VAR(req) << VAR(ipc_addr_);
+
+    MaaResource* resource = query_resource(req.resource_id);
+    if (!resource) {
+        LogError << "resource not found" << VAR(req.resource_id);
+        return false;
+    }
+
+    MaaResId res_id = resource->post_ocr_model(path(req.path));
+    ResourcePostOcrModelReverseResponse resp {
+        .res_id = res_id,
+    };
+    send(resp);
+
+    return true;
+}
+
+bool AgentClient::handle_resource_post_pipeline(const json::value& j)
+{
+    if (!j.is<ResourcePostPipelineReverseRequest>()) {
+        return false;
+    }
+    const ResourcePostPipelineReverseRequest& req = j.as<ResourcePostPipelineReverseRequest>();
+    LogFunc << VAR(req) << VAR(ipc_addr_);
+
+    MaaResource* resource = query_resource(req.resource_id);
+    if (!resource) {
+        LogError << "resource not found" << VAR(req.resource_id);
+        return false;
+    }
+
+    MaaResId res_id = resource->post_pipeline(path(req.path));
+    ResourcePostPipelineReverseResponse resp {
+        .res_id = res_id,
+    };
+    send(resp);
+
+    return true;
+}
+
+bool AgentClient::handle_resource_post_image(const json::value& j)
+{
+    if (!j.is<ResourcePostImageReverseRequest>()) {
+        return false;
+    }
+    const ResourcePostImageReverseRequest& req = j.as<ResourcePostImageReverseRequest>();
+    LogFunc << VAR(req) << VAR(ipc_addr_);
+
+    MaaResource* resource = query_resource(req.resource_id);
+    if (!resource) {
+        LogError << "resource not found" << VAR(req.resource_id);
+        return false;
+    }
+
+    MaaResId res_id = resource->post_image(path(req.path));
+    ResourcePostImageReverseResponse resp {
         .res_id = res_id,
     };
     send(resp);
