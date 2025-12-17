@@ -45,6 +45,12 @@ extern "C"
 
     MAA_FRAMEWORK_API MaaResId MaaResourcePostBundle(MaaResource* res, const char* path);
 
+    MAA_FRAMEWORK_API MaaResId MaaResourcePostOcrModel(MaaResource* res, const char* path);
+
+    MAA_FRAMEWORK_API MaaResId MaaResourcePostPipeline(MaaResource* res, const char* path);
+
+    MAA_FRAMEWORK_API MaaResId MaaResourcePostImage(MaaResource* res, const char* path);
+
     MAA_FRAMEWORK_API MaaBool MaaResourceOverridePipeline(MaaResource* res, const char* pipeline_override);
 
     MAA_FRAMEWORK_API MaaBool MaaResourceOverrideNext(MaaResource* res, const char* node_name, const MaaStringListBuffer* next_list);

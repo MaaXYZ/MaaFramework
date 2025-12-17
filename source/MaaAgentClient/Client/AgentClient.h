@@ -72,6 +72,9 @@ private:
     bool handle_tasker_get_latest_node(const json::value& j);
 
     bool handle_resource_post_bundle(const json::value& j);
+    bool handle_resource_post_ocr_model(const json::value& j);
+    bool handle_resource_post_pipeline(const json::value& j);
+    bool handle_resource_post_image(const json::value& j);
     bool handle_resource_status(const json::value& j);
     bool handle_resource_wait(const json::value& j);
     bool handle_resource_valid(const json::value& j);

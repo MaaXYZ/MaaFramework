@@ -43,6 +43,9 @@ public:
     virtual bool set_option(MaaResOption key, MaaOptionValue value, MaaOptionValueSize val_size) = 0;
 
     virtual MaaResId post_bundle(const std::filesystem::path& path) = 0;
+    virtual MaaResId post_ocr_model(const std::filesystem::path& path) = 0;
+    virtual MaaResId post_pipeline(const std::filesystem::path& path) = 0;
+    virtual MaaResId post_image(const std::filesystem::path& path) = 0;
 
     virtual MaaStatus status(MaaResId res_id) const = 0;
     virtual MaaStatus wait(MaaResId res_id) const = 0;

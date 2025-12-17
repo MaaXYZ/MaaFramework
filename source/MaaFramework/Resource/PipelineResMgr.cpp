@@ -29,6 +29,26 @@ bool PipelineResMgr::load(const std::filesystem::path& path, const DefaultPipeli
     return true;
 }
 
+bool PipelineResMgr::load_file(const std::filesystem::path& path, const DefaultPipelineMgr& default_mgr)
+{
+    LogFunc << VAR(path);
+
+    std::set<std::string> existing_keys;
+    if (!open_and_parse_file(path, existing_keys, default_mgr)) {
+        LogError << "open_and_parse_file failed" << VAR(path);
+        return false;
+    }
+
+    if (!PipelineChecker::check_all_validity(pipeline_data_map_)) {
+        LogError << "check_all_validity failed" << VAR(path);
+        return false;
+    }
+
+    paths_.emplace_back(path);
+
+    return true;
+}
+
 void PipelineResMgr::clear()
 {
     LogFunc;

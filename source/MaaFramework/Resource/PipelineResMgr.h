@@ -20,6 +20,7 @@ public:
 
 public:
     bool load(const std::filesystem::path& path, const DefaultPipelineMgr& default_mgr);
+    bool load_file(const std::filesystem::path& path, const DefaultPipelineMgr& default_mgr);
     void clear();
 
     const std::vector<std::filesystem::path>& get_paths() const { return paths_; }

@@ -30,6 +30,45 @@ MaaResId RemoteResource::post_bundle(const std::filesystem::path& path)
     return resp_opt->res_id;
 }
 
+MaaResId RemoteResource::post_ocr_model(const std::filesystem::path& path)
+{
+    ResourcePostOcrModelReverseRequest req {
+        .resource_id = resource_id_,
+        .path = path_to_utf8_string(path),
+    };
+    auto resp_opt = server_.send_and_recv<ResourcePostOcrModelReverseResponse>(req);
+    if (!resp_opt) {
+        return MaaInvalidId;
+    }
+    return resp_opt->res_id;
+}
+
+MaaResId RemoteResource::post_pipeline(const std::filesystem::path& path)
+{
+    ResourcePostPipelineReverseRequest req {
+        .resource_id = resource_id_,
+        .path = path_to_utf8_string(path),
+    };
+    auto resp_opt = server_.send_and_recv<ResourcePostPipelineReverseResponse>(req);
+    if (!resp_opt) {
+        return MaaInvalidId;
+    }
+    return resp_opt->res_id;
+}
+
+MaaResId RemoteResource::post_image(const std::filesystem::path& path)
+{
+    ResourcePostImageReverseRequest req {
+        .resource_id = resource_id_,
+        .path = path_to_utf8_string(path),
+    };
+    auto resp_opt = server_.send_and_recv<ResourcePostImageReverseResponse>(req);
+    if (!resp_opt) {
+        return MaaInvalidId;
+    }
+    return resp_opt->res_id;
+}
+
 MaaStatus RemoteResource::status(MaaResId res_id) const
 {
     ResourceStatusReverseRequest req {

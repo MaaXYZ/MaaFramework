@@ -13,6 +13,7 @@ class TemplateResMgr : public NonCopyable
 {
 public:
     bool lazy_load(const std::filesystem::path& path);
+    bool load_file(const std::filesystem::path& path);
 
     void clear();
 
