@@ -21,7 +21,8 @@ TempFileHolder::~TempFileHolder()
             continue;
         }
         LogTrace << "remove" << VAR(p);
-        std::filesystem::remove(p);
+        std::error_code ec;
+        std::filesystem::remove(p, ec);
     }
 }
 
@@ -74,7 +75,7 @@ bool CommandAction::run(const MAA_RES_NS::Action::CommandParam& command, const R
     }
 
     LogInfo << VAR(exec) << VAR(args);
-    boost::process::child child(exec, args);
+    boost::process::child child(exec, args, boost::process::start_dir = exec.parent_path());
 
     if (!child.joinable()) {
         LogError << "child is not joinable";

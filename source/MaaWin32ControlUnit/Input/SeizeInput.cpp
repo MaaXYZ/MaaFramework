@@ -9,9 +9,30 @@
 
 MAA_CTRL_UNIT_NS_BEGIN
 
+SeizeInput::~SeizeInput()
+{
+    if (block_input_) {
+        BlockInput(FALSE);
+    }
+}
+
 void SeizeInput::ensure_foreground()
 {
     ::MaaNS::CtrlUnitNs::ensure_foreground_and_topmost(hwnd_);
+}
+
+std::pair<int, int> SeizeInput::get_target_pos() const
+{
+    if (last_pos_set_) {
+        return last_pos_;
+    }
+
+    // 未设置时返回窗口客户区中心
+    RECT rect = {};
+    if (hwnd_ && GetClientRect(hwnd_, &rect)) {
+        return { (rect.right - rect.left) / 2, (rect.bottom - rect.top) / 2 };
+    }
+    return { 0, 0 };
 }
 
 MaaControllerFeature SeizeInput::get_features() const
@@ -41,6 +62,10 @@ bool SeizeInput::touch_down(int contact, int x, int y, int pressure)
     }
     LogInfo << VAR(contact) << VAR(x) << VAR(y) << VAR(pressure) << VAR(point.x) << VAR(point.y) << VAR_VOIDP(hwnd_);
 
+    if (block_input_) {
+        BlockInput(TRUE);
+    }
+
     SetCursorPos(point.x, point.y);
 
     INPUT input = {};
@@ -56,6 +81,9 @@ bool SeizeInput::touch_down(int contact, int x, int y, int pressure)
     input.mi.mouseData = flags_info.button_data;
 
     SendInput(1, &input, sizeof(INPUT));
+
+    last_pos_ = { x, y };
+    last_pos_set_ = true;
 
     return true;
 }
@@ -73,7 +101,21 @@ bool SeizeInput::touch_move(int contact, int x, int y, int pressure)
     }
     // LogInfo << VAR(contact) << VAR(x) << VAR(y) << VAR(pressure) << VAR(point.x) << VAR(point.y) << VAR_VOIDP(hwnd_);
 
-    SetCursorPos(point.x, point.y);
+    // 使用 SendInput + MOUSEEVENTF_MOVE + MOUSEEVENTF_ABSOLUTE 移动光标
+    // 需要将屏幕坐标转换为 0-65535 范围的归一化坐标
+    int screen_width = GetSystemMetrics(SM_CXSCREEN);
+    int screen_height = GetSystemMetrics(SM_CYSCREEN);
+
+    INPUT input = {};
+    input.type = INPUT_MOUSE;
+    input.mi.dx = static_cast<LONG>((point.x * 65535) / screen_width);
+    input.mi.dy = static_cast<LONG>((point.y * 65535) / screen_height);
+    input.mi.dwFlags = MOUSEEVENTF_MOVE | MOUSEEVENTF_ABSOLUTE;
+
+    SendInput(1, &input, sizeof(INPUT));
+
+    last_pos_ = { x, y };
+    last_pos_set_ = true;
 
     return true;
 }
@@ -84,6 +126,12 @@ bool SeizeInput::touch_up(int contact)
         ensure_foreground();
     }
     LogInfo << VAR(contact) << VAR(hwnd_);
+
+    OnScopeLeave([this]() {
+        if (block_input_) {
+            BlockInput(FALSE);
+        }
+    });
 
     INPUT input = {};
     input.type = INPUT_MOUSE;
@@ -117,6 +165,16 @@ bool SeizeInput::input_text(const std::string& text)
     auto u16_text = to_u16(text);
     LogInfo << VAR(text) << VAR(u16_text) << VAR(hwnd_);
 
+    if (block_input_) {
+        BlockInput(TRUE);
+    }
+
+    OnScopeLeave([this]() {
+        if (block_input_) {
+            BlockInput(FALSE);
+        }
+    });
+
     std::vector<INPUT> input_vec;
 
     for (const auto ch : u16_text) {
@@ -148,6 +206,10 @@ bool SeizeInput::key_down(int key)
     }
     LogInfo << VAR(key) << VAR(hwnd_);
 
+    if (block_input_) {
+        BlockInput(TRUE);
+    }
+
     INPUT inputs[1] = {};
 
     inputs[0].type = INPUT_KEYBOARD;
@@ -164,6 +226,12 @@ bool SeizeInput::key_up(int key)
         ensure_foreground();
     }
     LogInfo << VAR(key) << VAR(hwnd_);
+
+    OnScopeLeave([this]() {
+        if (block_input_) {
+            BlockInput(FALSE);
+        }
+    });
 
     INPUT inputs[1] = {};
 
@@ -183,6 +251,24 @@ bool SeizeInput::scroll(int dx, int dy)
     if (hwnd_) {
         ensure_foreground();
     }
+
+    if (block_input_) {
+        BlockInput(TRUE);
+    }
+
+    OnScopeLeave([this]() {
+        if (block_input_) {
+            BlockInput(FALSE);
+        }
+    });
+
+    // 移动光标到目标位置
+    auto [target_x, target_y] = get_target_pos();
+    POINT point = { target_x, target_y };
+    if (hwnd_) {
+        ClientToScreen(hwnd_, &point);
+    }
+    SetCursorPos(point.x, point.y);
 
     INPUT input = {};
     input.type = INPUT_MOUSE;

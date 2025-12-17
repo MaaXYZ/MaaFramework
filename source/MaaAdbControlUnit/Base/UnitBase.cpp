@@ -45,7 +45,7 @@ bool UnitBase::parse_command(
     return true;
 }
 
-std::optional<std::string> UnitBase::startup_and_read_pipe(const ProcessArgv& argv, std::chrono::seconds timeout)
+std::optional<std::string> UnitBase::startup_and_read_pipe(const ProcessArgv& argv, std::chrono::milliseconds timeout)
 {
     auto start_time = std::chrono::steady_clock::now();
 

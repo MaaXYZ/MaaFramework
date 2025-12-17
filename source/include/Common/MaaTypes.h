@@ -88,12 +88,15 @@ public:
 
     virtual MaaCtrlId post_scroll(int dx, int dy) = 0;
 
+    virtual MaaCtrlId post_shell(const std::string& cmd, int64_t timeout = 20000) = 0;
+
     virtual MaaStatus status(MaaCtrlId ctrl_id) const = 0;
     virtual MaaStatus wait(MaaCtrlId ctrl_id) const = 0;
     virtual bool connected() const = 0;
     virtual bool running() const = 0;
 
     virtual cv::Mat cached_image() const = 0;
+    virtual std::string cached_shell_output() const = 0;
     virtual std::string get_uuid() = 0;
 };
 
@@ -109,6 +112,12 @@ public:
     virtual bool set_option(MaaTaskerOption key, MaaOptionValue value, MaaOptionValueSize val_size) = 0;
 
     virtual MaaTaskId post_task(const std::string& entry, const json::value& pipeline_override) = 0;
+    virtual MaaTaskId post_recognition(const std::string& reco_type, const json::value& reco_param, const cv::Mat& image) = 0;
+    virtual MaaTaskId post_action(
+        const std::string& action_type,
+        const json::value& action_param,
+        const cv::Rect& box,
+        const std::string& reco_detail) = 0;
 
     virtual MaaStatus status(MaaTaskId task_id) const = 0;
     virtual MaaStatus wait(MaaTaskId task_id) const = 0;

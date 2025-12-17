@@ -1,7 +1,10 @@
 import ctypes
+import dataclasses
 import json
 from pathlib import Path
 from typing import Dict, Optional, Union
+
+import numpy
 
 from .define import *
 from .library import Library
@@ -10,6 +13,7 @@ from .job import Job, JobWithResult
 from .event_sink import EventSink, NotificationType
 from .resource import Resource
 from .controller import Controller
+from .pipeline import JRecognitionParam, JActionParam, JRecognitionType, JActionType
 
 
 class Tasker:
@@ -133,6 +137,65 @@ class Tasker:
         taskid = Library.framework().MaaTaskerPostTask(
             self._handle,
             *Tasker._gen_post_param(entry, pipeline_override),
+        )
+        return self._gen_task_job(taskid)
+
+    def post_recognition(
+        self,
+        reco_type: JRecognitionType,
+        reco_param: JRecognitionParam,
+        image: numpy.ndarray,
+    ) -> JobWithResult:
+        """异步执行识别 / Asynchronously execute recognition
+
+        Args:
+            reco_type: 识别类型 / Recognition type
+            reco_param: 识别参数 / Recognition parameters
+            image: 前序截图 / Previous screenshot
+
+        Returns:
+            JobWithResult: 任务作业对象 / Task job object
+        """
+        img_buffer = ImageBuffer()
+        img_buffer.set(image)
+        reco_param_json = json.dumps(dataclasses.asdict(reco_param), ensure_ascii=False)
+        taskid = Library.framework().MaaTaskerPostRecognition(
+            self._handle,
+            reco_type.encode(),
+            reco_param_json.encode(),
+            img_buffer._handle,
+        )
+        return self._gen_task_job(taskid)
+
+    def post_action(
+        self,
+        action_type: JActionType,
+        action_param: JActionParam,
+        box: Rect = (0, 0, 0, 0),
+        reco_detail: str = "",
+    ) -> JobWithResult:
+        """异步执行操作 / Asynchronously execute action
+
+        Args:
+            action_type: 操作类型 / Action type
+            action_param: 操作参数 / Action parameters
+            box: 前序识别位置 / Previous recognition position
+            reco_detail: 前序识别详情 / Previous recognition details
+
+        Returns:
+            JobWithResult: 任务作业对象 / Task job object
+        """
+        rect_buffer = RectBuffer()
+        rect_buffer.set(box)
+        action_param_json = json.dumps(
+            dataclasses.asdict(action_param), ensure_ascii=False
+        )
+        taskid = Library.framework().MaaTaskerPostAction(
+            self._handle,
+            action_type.encode(),
+            action_param_json.encode(),
+            rect_buffer._handle,
+            reco_detail.encode(),
         )
         return self._gen_task_job(taskid)
 
@@ -580,6 +643,44 @@ class Tasker:
         )
 
     @staticmethod
+    def set_draw_quality(quality: int) -> bool:
+        """设置识别可视化图像的 JPEG 质量 / Set the JPEG quality for recognition visualization images
+
+        Args:
+            quality: JPEG 质量（0-100），默认 85 / JPEG quality (0-100), default 85
+
+        Returns:
+            bool: 是否成功 / Whether successful
+        """
+        cquality = ctypes.c_int(quality)
+        return bool(
+            Library.framework().MaaGlobalSetOption(
+                MaaOption(MaaGlobalOptionEnum.DrawQuality),
+                ctypes.pointer(cquality),
+                ctypes.sizeof(ctypes.c_int),
+            )
+        )
+
+    @staticmethod
+    def set_reco_image_cache_limit(limit: int) -> bool:
+        """设置识别图像缓存数量限制 / Set the recognition image cache limit
+
+        Args:
+            limit: 缓存数量限制，默认 4096 / Cache limit, default 4096
+
+        Returns:
+            bool: 是否成功 / Whether successful
+        """
+        climit = ctypes.c_size_t(limit)
+        return bool(
+            Library.framework().MaaGlobalSetOption(
+                MaaOption(MaaGlobalOptionEnum.RecoImageCacheLimit),
+                ctypes.pointer(climit),
+                ctypes.sizeof(ctypes.c_size_t),
+            )
+        )
+
+    @staticmethod
     def load_plugin(path: Union[Path, str]) -> bool:
         """加载插件 / Load plugin
 
@@ -689,6 +790,23 @@ class Tasker:
         Library.framework().MaaTaskerPostTask.argtypes = [
             MaaTaskerHandle,
             ctypes.c_char_p,
+            ctypes.c_char_p,
+        ]
+
+        Library.framework().MaaTaskerPostRecognition.restype = MaaId
+        Library.framework().MaaTaskerPostRecognition.argtypes = [
+            MaaTaskerHandle,
+            ctypes.c_char_p,
+            ctypes.c_char_p,
+            MaaImageBufferHandle,
+        ]
+
+        Library.framework().MaaTaskerPostAction.restype = MaaId
+        Library.framework().MaaTaskerPostAction.argtypes = [
+            MaaTaskerHandle,
+            ctypes.c_char_p,
+            ctypes.c_char_p,
+            MaaRectHandle,
             ctypes.c_char_p,
         ]
 

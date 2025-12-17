@@ -98,9 +98,10 @@ enum class Type
     KeyDown,
     KeyUp,
     Scroll,
-    Command,
-    Custom,
     StopTask,
+    Command,
+    Shell,
+    Custom,
 };
 
 using TargetObj = MAA_VISION_NS::TargetObj;
@@ -182,6 +183,12 @@ struct ScrollParam
     int dy = 0;
 };
 
+struct ShellParam
+{
+    std::string cmd;
+    int64_t timeout = 20000;
+};
+
 struct CommandParam
 {
     std::string exec;
@@ -210,6 +217,7 @@ using Param = std::variant<
     InputTextParam,
     AppParam,
     ScrollParam,
+    ShellParam,
     CommandParam,
     CustomParam>;
 
@@ -248,6 +256,8 @@ inline static const std::unordered_map<std::string, Type> kTypeMap = {
     { "keyup", Type::KeyUp },
     { "Scroll", Type::Scroll },
     { "scroll", Type::Scroll },
+    { "Shell", Type::Shell },
+    { "shell", Type::Shell },
     { "Command", Type::Command },
     { "command", Type::Command },
     { "Custom", Type::Custom },
@@ -267,8 +277,8 @@ inline static const std::unordered_map<Type, std::string> kTypeNameMap = {
     { Type::InputText, "InputText" },   { Type::StartApp, "StartApp" },
     { Type::StopApp, "StopApp" },       { Type::KeyDown, "KeyDown" },
     { Type::KeyUp, "KeyUp" },           { Type::Scroll, "Scroll" },
-    { Type::Command, "Command" },       { Type::Custom, "Custom" },
-    { Type::StopTask, "StopTask" },
+    { Type::StopTask, "StopTask" },     { Type::Command, "Command" },
+    { Type::Shell, "Shell" },           { Type::Custom, "Custom" },
 };
 } // namespace Action
 
@@ -320,6 +330,10 @@ struct PipelineData
 
     WaitFreezesParam pre_wait_freezes;
     WaitFreezesParam post_wait_freezes;
+
+    uint repeat = 1;
+    std::chrono::milliseconds repeat_delay = std::chrono::milliseconds(0);
+    WaitFreezesParam repeat_wait_freezes;
 
     uint max_hit = std::numeric_limits<uint>::max();
 

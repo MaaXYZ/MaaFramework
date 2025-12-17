@@ -209,6 +209,9 @@ bool AgentClient::handle_inserted_request(const json::value& j)
     if (handle_image_header(j)) {
         return true;
     }
+    else if (handle_image_encoded_header(j)) {
+        return true;
+    }
 
     else if (handle_context_run_task(j)) {
         return true;
@@ -257,6 +260,12 @@ bool AgentClient::handle_inserted_request(const json::value& j)
         return true;
     }
     else if (handle_tasker_post_task(j)) {
+        return true;
+    }
+    else if (handle_tasker_post_recognition(j)) {
+        return true;
+    }
+    else if (handle_tasker_post_action(j)) {
         return true;
     }
     else if (handle_tasker_status(j)) {
@@ -366,6 +375,9 @@ bool AgentClient::handle_inserted_request(const json::value& j)
     else if (handle_controller_post_screencap(j)) {
         return true;
     }
+    else if (handle_controller_post_shell(j)) {
+        return true;
+    }
     else if (handle_controller_post_touch_down(j)) {
         return true;
     }
@@ -397,6 +409,9 @@ bool AgentClient::handle_inserted_request(const json::value& j)
         return true;
     }
     else if (handle_controller_cached_image(j)) {
+        return true;
+    }
+    else if (handle_controller_get_shell_output(j)) {
         return true;
     }
     else if (handle_controller_get_uuid(j)) {
@@ -802,6 +817,56 @@ bool AgentClient::handle_tasker_post_task(const json::value& j)
     return true;
 }
 
+bool AgentClient::handle_tasker_post_recognition(const json::value& j)
+{
+    if (!j.is<TaskerPostRecognitionReverseRequest>()) {
+        return false;
+    }
+    const TaskerPostRecognitionReverseRequest& req = j.as<TaskerPostRecognitionReverseRequest>();
+    LogFunc << VAR(req) << VAR(ipc_addr_);
+
+    MaaTasker* tasker = query_tasker(req.tasker_id);
+    if (!tasker) {
+        LogError << "tasker not found" << VAR(req.tasker_id);
+        return false;
+    }
+
+    MaaTaskId task_id = tasker->post_recognition(req.reco_type, req.reco_param, get_image_cache(req.image));
+
+    TaskerPostRecognitionReverseResponse resp {
+        .task_id = task_id,
+    };
+    send(resp);
+    return true;
+}
+
+bool AgentClient::handle_tasker_post_action(const json::value& j)
+{
+    if (!j.is<TaskerPostActionReverseRequest>()) {
+        return false;
+    }
+    const TaskerPostActionReverseRequest& req = j.as<TaskerPostActionReverseRequest>();
+    LogFunc << VAR(req) << VAR(ipc_addr_);
+
+    MaaTasker* tasker = query_tasker(req.tasker_id);
+    if (!tasker) {
+        LogError << "tasker not found" << VAR(req.tasker_id);
+        return false;
+    }
+
+    MaaTaskId task_id = tasker->post_action(
+        req.action_type,
+        req.action_param,
+        cv::Rect { req.box[0], req.box[1], req.box[2], req.box[3] },
+        req.reco_detail);
+
+    TaskerPostActionReverseResponse resp {
+        .task_id = task_id,
+    };
+    send(resp);
+    return true;
+}
+
 bool AgentClient::handle_tasker_status(const json::value& j)
 {
     if (!j.is<TaskerStatusReverseRequest>()) {
@@ -969,7 +1034,7 @@ bool AgentClient::handle_tasker_get_task_detail(const json::value& j)
         return false;
     }
     const TaskerGetTaskDetailReverseRequest& req = j.as<TaskerGetTaskDetailReverseRequest>();
-    LogFunc << VAR(req) << VAR(ipc_addr_);
+    // LogFunc << VAR(req) << VAR(ipc_addr_);
     MaaTasker* tasker = query_tasker(req.tasker_id);
     if (!tasker) {
         LogError << "tasker not found" << VAR(req.tasker_id);
@@ -995,7 +1060,7 @@ bool AgentClient::handle_tasker_get_node_detail(const json::value& j)
         return false;
     }
     const TaskerGetNodeDetailReverseRequest& req = j.as<TaskerGetNodeDetailReverseRequest>();
-    LogFunc << VAR(req) << VAR(ipc_addr_);
+    // LogFunc << VAR(req) << VAR(ipc_addr_);
 
     MaaTasker* tasker = query_tasker(req.tasker_id);
     if (!tasker) {
@@ -1024,7 +1089,7 @@ bool AgentClient::handle_tasker_get_reco_result(const json::value& j)
         return false;
     }
     const TaskerGetRecoResultReverseRequest& req = j.as<TaskerGetRecoResultReverseRequest>();
-    LogFunc << VAR(req) << VAR(ipc_addr_);
+    // LogFunc << VAR(req) << VAR(ipc_addr_);
     MaaTasker* tasker = query_tasker(req.tasker_id);
     if (!tasker) {
         LogError << "tasker not found" << VAR(req.tasker_id);
@@ -1035,7 +1100,7 @@ bool AgentClient::handle_tasker_get_reco_result(const json::value& j)
 
     std::vector<std::string> draws;
     for (const auto& draw : detail.draws) {
-        draws.emplace_back(send_image(draw));
+        draws.emplace_back(send_image_encoded(draw));
     }
 
     TaskerGetRecoResultReverseResponse resp {
@@ -1047,7 +1112,7 @@ bool AgentClient::handle_tasker_get_reco_result(const json::value& j)
         .box = detail.box ? std::array<int32_t, 4> { detail.box->x, detail.box->y, detail.box->width, detail.box->height }
                           : std::array<int32_t, 4> {},
         .detail = detail.detail,
-        .raw = send_image(detail.raw),
+        .raw = send_image_encoded(detail.raw),
         .draws = std::move(draws),
     };
     send(resp);
@@ -1061,7 +1126,7 @@ bool AgentClient::handle_tasker_get_action_result(const json::value& j)
         return false;
     }
     const TaskerGetActionResultReverseRequest& req = j.as<TaskerGetActionResultReverseRequest>();
-    LogFunc << VAR(req) << VAR(ipc_addr_);
+    // LogFunc << VAR(req) << VAR(ipc_addr_);
 
     MaaTasker* tasker = query_tasker(req.tasker_id);
     if (!tasker) {
@@ -1659,6 +1724,26 @@ bool AgentClient::handle_controller_post_screencap(const json::value& j)
     return true;
 }
 
+bool AgentClient::handle_controller_post_shell(const json::value& j)
+{
+    if (!j.is<ControllerPostShellReverseRequest>()) {
+        return false;
+    }
+    const ControllerPostShellReverseRequest& req = j.as<ControllerPostShellReverseRequest>();
+    LogFunc << VAR(req) << VAR(ipc_addr_);
+    MaaController* controller = query_controller(req.controller_id);
+    if (!controller) {
+        LogError << "controller not found" << VAR(req.controller_id);
+        return false;
+    }
+    MaaCtrlId ctrl_id = controller->post_shell(req.cmd, req.timeout);
+    ControllerPostShellReverseResponse resp {
+        .ctrl_id = ctrl_id,
+    };
+    send(resp);
+    return true;
+}
+
 bool AgentClient::handle_controller_post_touch_down(const json::value& j)
 {
     if (!j.is<ControllerPostTouchDownReverseRequest>()) {
@@ -1874,6 +1959,26 @@ bool AgentClient::handle_controller_cached_image(const json::value& j)
     auto image = controller->cached_image();
     ControllerCachedImageReverseResponse resp {
         .image = send_image(image),
+    };
+    send(resp);
+    return true;
+}
+
+bool AgentClient::handle_controller_get_shell_output(const json::value& j)
+{
+    if (!j.is<ControllerGetShellOutputReverseRequest>()) {
+        return false;
+    }
+    const ControllerGetShellOutputReverseRequest& req = j.as<ControllerGetShellOutputReverseRequest>();
+    LogFunc << VAR(req) << VAR(ipc_addr_);
+    MaaController* controller = query_controller(req.controller_id);
+    if (!controller) {
+        LogError << "controller not found" << VAR(req.controller_id);
+        return false;
+    }
+    std::string output = controller->cached_shell_output();
+    ControllerGetShellOutputReverseResponse resp {
+        .output = output,
     };
     send(resp);
     return true;

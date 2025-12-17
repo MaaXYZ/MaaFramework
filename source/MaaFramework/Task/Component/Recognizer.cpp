@@ -73,7 +73,10 @@ RecoResult Recognizer::recognize(const PipelineData& pipeline_data)
 
     if (debug_mode()) {
         // 图太大了，不能无条件存
-        result.raw = image_;
+        ImageEncodedBuffer png;
+        cv::imencode(".png", image_, png);
+
+        result.raw = std::move(png);
     }
     if (pipeline_data.inverse) {
         LogDebug << "pipeline_data.inverse is true, reverse the result" << VAR(pipeline_data.name) << VAR(result.box);
@@ -105,7 +108,7 @@ RecoResult Recognizer::direct_hit(const std::string& name)
 {
     LogDebug << name;
     return RecoResult {
-        .reco_id = MAA_VISION_NS::VisionBase::generate_uid(),
+        .reco_id = reco_id_,
         .name = name,
         .algorithm = "DirectHit",
         .box = cv::Rect {},
@@ -126,7 +129,7 @@ RecoResult Recognizer::template_match(const MAA_VISION_NS::TemplateMatcherParam&
         box = analyzer.best_result()->box;
     }
 
-    return RecoResult { .reco_id = analyzer.uid(),
+    return RecoResult { .reco_id = reco_id_,
                         .name = name,
                         .algorithm = "TemplateMatch",
                         .box = std::move(box),
@@ -148,7 +151,7 @@ RecoResult Recognizer::feature_match(const MAA_VISION_NS::FeatureMatcherParam& p
         box = analyzer.best_result()->box;
     }
 
-    return RecoResult { .reco_id = analyzer.uid(),
+    return RecoResult { .reco_id = reco_id_,
                         .name = name,
                         .algorithm = "FeatureMatch",
                         .box = std::move(box),
@@ -169,7 +172,7 @@ RecoResult Recognizer::color_match(const MAA_VISION_NS::ColorMatcherParam& param
         box = analyzer.best_result()->box;
     }
 
-    return RecoResult { .reco_id = analyzer.uid(),
+    return RecoResult { .reco_id = reco_id_,
                         .name = name,
                         .algorithm = "ColorMatch",
                         .box = std::move(box),
@@ -199,7 +202,7 @@ RecoResult Recognizer::ocr(const MAA_VISION_NS::OCRerParam& param, const std::st
         box = analyzer.best_result()->box;
     }
 
-    return RecoResult { .reco_id = analyzer.uid(),
+    return RecoResult { .reco_id = reco_id_,
                         .name = name,
                         .algorithm = "OCR",
                         .box = std::move(box),
@@ -229,7 +232,7 @@ RecoResult Recognizer::nn_classify(const MAA_VISION_NS::NeuralNetworkClassifierP
         box = analyzer.best_result()->box;
     }
 
-    return RecoResult { .reco_id = analyzer.uid(),
+    return RecoResult { .reco_id = reco_id_,
                         .name = name,
                         .algorithm = "NeuralNetworkClassify",
                         .box = std::move(box),
@@ -259,7 +262,7 @@ RecoResult Recognizer::nn_detect(const MAA_VISION_NS::NeuralNetworkDetectorParam
         box = analyzer.best_result()->box;
     }
 
-    return RecoResult { .reco_id = analyzer.uid(),
+    return RecoResult { .reco_id = reco_id_,
                         .name = name,
                         .algorithm = "NeuralNetworkDetect",
                         .box = std::move(box),
@@ -286,7 +289,7 @@ RecoResult Recognizer::custom_recognize(const MAA_VISION_NS::CustomRecognitionPa
         box = analyzer.best_result()->box;
     }
 
-    return RecoResult { .reco_id = analyzer.uid(),
+    return RecoResult { .reco_id = reco_id_,
                         .name = name,
                         .algorithm = "Custom",
                         .box = std::move(box),
@@ -341,10 +344,14 @@ void Recognizer::save_draws(const std::string& node_name, const RecoResult& resu
 
     auto dir = option.log_dir() / "vision";
 
+    std::filesystem::create_directories(dir);
+
     for (const auto& draw : result.draws) {
-        std::string filename = std::format("{}_{}_{}.png", node_name, result.reco_id, format_now_for_filename());
+        std::string filename = std::format("{}_{}_{}.jpg", node_name, result.reco_id, format_now_for_filename());
         auto filepath = dir / path(filename);
-        imwrite(filepath, draw);
+
+        std::ofstream of(filepath, std::ios::out | std::ios::binary);
+        of.write(reinterpret_cast<const char*>(draw.data()), draw.size());
         LogDebug << "save draw to" << filepath;
     }
 }

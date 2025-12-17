@@ -17,8 +17,11 @@ class AdbDeviceMacOSFinder
 public:
     virtual ~AdbDeviceMacOSFinder() override = default;
 
+protected:
+    virtual const EmulatorConstDataMap& get_emulator_const_data() const override;
+
 private:
-    AdbDeviceMacOSFinder();
+    AdbDeviceMacOSFinder() = default;
 };
 
 MAA_TOOLKIT_NS_END

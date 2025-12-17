@@ -70,8 +70,7 @@ void CustomRecognition::analyze()
     }
 
     auto cost = duration_since(start_time);
-    LogDebug << VAR(name_) << VAR(param_.name) << VAR(uid_) << VAR(all_results_) << VAR(filtered_results_) << VAR(best_result_) << VAR(cost)
-             << VAR(ret);
+    LogDebug << VAR(name_) << VAR(param_.name) << VAR(all_results_) << VAR(filtered_results_) << VAR(best_result_) << VAR(cost) << VAR(ret);
 }
 
 MAA_TASK_NS_END

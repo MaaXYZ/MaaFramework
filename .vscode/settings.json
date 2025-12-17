@@ -2,22 +2,19 @@
     "json.schemas": [
         {
             "fileMatch": [
-                "/sample/resource/pipeline/*.json"
+                "/sample/resource/pipeline/*.json",
+                "/sample/resource/pipeline/*.jsonc",
+                "/sample/resource/default_pipeline.json"
             ],
             "url": "/tools/pipeline.schema.json"
         },
         {
             "fileMatch": [
-                "/sample/interface.json"
+                "/sample/interface.json",
+                "/sample/interface.jsonc"
             ],
             "url": "/tools/interface.schema.json"
-        },{
-            "fileMatch": [
-                "/sample/interface_v2.json",
-                "/sample/interface_v2.jsonc"
-            ],
-            "url": "/tools/interface_v2.schema.json"
-        }
+        },
     ],
     "[json]": {
         "editor.formatOnSave": true,

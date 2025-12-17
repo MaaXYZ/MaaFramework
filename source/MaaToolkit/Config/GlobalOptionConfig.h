@@ -29,8 +29,9 @@ public:
         bool save_draw = false;
         bool save_on_error = true;
         int32_t stdout_level = MaaLoggingLevel_Error;
+        int draw_quality = 85;
 
-        MEO_JSONIZATION(MEO_OPT logging, MEO_OPT save_draw, MEO_OPT save_on_error, MEO_OPT stdout_level);
+        MEO_JSONIZATION(MEO_OPT logging, MEO_OPT save_draw, MEO_OPT save_on_error, MEO_OPT stdout_level, MEO_OPT draw_quality);
     };
 
 public:

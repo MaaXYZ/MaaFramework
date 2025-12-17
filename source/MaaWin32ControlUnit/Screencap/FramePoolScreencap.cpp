@@ -67,6 +67,20 @@ std::optional<cv::Mat> FramePoolScreencap::screencap()
 
     cv::Mat raw(texture_desc_.Height, texture_desc_.Width, CV_8UC4, mapped.pData, mapped.RowPitch);
 
+    // 先按 alpha 通道裁剪掉四周 alpha != 255 的边框
+    cv::Mat alpha_channel;
+    cv::extractChannel(raw, alpha_channel, 3);
+
+    cv::Mat alpha_bin;
+    cv::threshold(alpha_channel, alpha_bin, UCHAR_MAX - 1, UCHAR_MAX, cv::THRESH_BINARY);
+
+    cv::Rect alpha_roi = cv::boundingRect(alpha_bin);
+    if (alpha_roi.empty()) {
+        LogError << "No opaque pixels found";
+        return std::nullopt;
+    }
+    cv::Mat trimmed = raw(alpha_roi);
+
     // 获取窗口客户区矩形（相对于窗口）
     RECT client_rect = { 0 };
     if (!GetClientRect(hwnd_, &client_rect)) {
@@ -88,39 +102,36 @@ std::optional<cv::Mat> FramePoolScreencap::screencap()
         return std::nullopt;
     }
 
-    int border_left = client_top_left.x - window_rect.left;
-    int border_top = client_top_left.y - window_rect.top;
-
-    // 神秘小算法
-    // 检查 alpha 通道值，找到真正的边框位置
-    for (int i = 0; i < border_left; ++i) {
-        if (raw.at<cv::Vec4b>(border_top, i)[3] != 255) {
-            continue;
-        }
-        border_left = i;
-        break;
-    }
+    // 计算边框位置，减去 alpha 裁剪的偏移
+    int border_left = client_top_left.x - window_rect.left - alpha_roi.x;
+    int border_top = client_top_left.y - window_rect.top - alpha_roi.y;
 
     // 获取客户区大小
     int client_width = client_rect.right - client_rect.left;
     int client_height = client_rect.bottom - client_rect.top;
 
-    if (client_width > raw.cols) {
-        client_width = raw.cols;
+    if (border_left < 0) {
+        border_left = 0;
     }
-    if (border_left + client_width > raw.cols) {
-        border_left = raw.cols - client_width;
+    if (border_top < 0) {
+        border_top = 0;
     }
-    if (client_height > raw.rows) {
-        client_height = raw.rows;
+    if (client_width > trimmed.cols) {
+        client_width = trimmed.cols;
     }
-    if (border_top + client_height > raw.rows) {
-        border_top = raw.rows - client_height;
+    if (border_left + client_width > trimmed.cols) {
+        border_left = trimmed.cols - client_width;
+    }
+    if (client_height > trimmed.rows) {
+        client_height = trimmed.rows;
+    }
+    if (border_top + client_height > trimmed.rows) {
+        border_top = trimmed.rows - client_height;
     }
 
     // 裁剪出客户区（去掉边框）
     cv::Rect client_roi(border_left, border_top, client_width, client_height);
-    cv::Mat image = raw(client_roi);
+    cv::Mat image = trimmed(client_roi);
 
     return bgra_to_bgr(image);
 }

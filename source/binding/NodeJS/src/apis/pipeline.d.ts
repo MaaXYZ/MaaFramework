@@ -190,9 +190,11 @@ declare global {
         type ActionSwipe = {
             begin?: true | NodeName | Rect
             begin_offset?: Rect
-            end?: true | NodeName | Rect
-            end_offset?: Rect
-            duration?: number
+            end?: true | NodeName | Rect | (true | NodeName | Rect)[]
+            end_offset?: Rect | Rect[]
+            duration?: number | number[]
+            end_hold?: number | number[]
+            only_hover?: boolean
             contact?: number
         }
 
@@ -202,9 +204,11 @@ declare global {
                     starting?: number
                     begin?: true | NodeName | Rect
                     begin_offset?: Rect
-                    end?: true | NodeName | Rect
-                    end_offset?: Rect
-                    duration?: number
+                    end?: true | NodeName | Rect | (true | NodeName | Rect)[]
+                    end_offset?: Rect | Rect[]
+                    duration?: number | number[]
+                    end_hold?: number | number[]
+                    only_hover?: boolean
                     contact?: number
                 }[]
             },
@@ -293,7 +297,15 @@ declare global {
                 args?: string[]
                 detach?: boolean
             },
-            'exec',
+            Mode
+        >
+
+        type ActionShell<Mode> = RequiredIfStrict<
+            {
+                cmd?: string
+                timeout?: number
+            },
+            'cmd',
             Mode
         >
 
@@ -348,9 +360,10 @@ declare global {
             | MixAct<'InputText', ActionInputText<Mode>, Mode>
             | MixAct<'StartApp', ActionStartApp<Mode>, Mode>
             | MixAct<'StopApp', ActionStopApp<Mode>, Mode>
-            | MixAct<'StopTask', ActionStopTask, Mode>
             | MixAct<'Scroll', ActionScroll, Mode>
+            | MixAct<'StopTask', ActionStopTask, Mode>
             | MixAct<'Command', ActionCommand<Mode>, Mode>
+            | MixAct<'Shell', ActionShell<Mode>, Mode>
             | MixAct<'Custom', ActionCustom<Mode>, Mode>
 
         type NodeAttr = {
@@ -378,10 +391,13 @@ declare global {
             inverse?: boolean
             enabled?: boolean
             max_hit?: number
-            pre_delay?: boolean
-            post_delay?: boolean
+            pre_delay?: number
+            post_delay?: number
             pre_wait_freezes?: RemoveIfDump<number, Mode> | WaitFreeze
             post_wait_freezes?: RemoveIfDump<number, Mode> | WaitFreeze
+            repeat?: number
+            repeat_delay?: number
+            repeat_wait_freezes?: RemoveIfDump<number, Mode> | WaitFreeze
             focus?: unknown
             attach?: Record<string, unknown>
         }

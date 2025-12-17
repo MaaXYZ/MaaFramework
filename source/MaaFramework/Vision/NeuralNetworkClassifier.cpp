@@ -25,7 +25,7 @@ NeuralNetworkClassifier::NeuralNetworkClassifier(
 
 void NeuralNetworkClassifier::analyze()
 {
-    LogFunc << name_ << VAR(uid_);
+    LogFunc << name_;
 
     if (!session_) {
         LogError << "OrtSession not loaded";
@@ -39,7 +39,7 @@ void NeuralNetworkClassifier::analyze()
     cherry_pick();
 
     auto cost = duration_since(start_time);
-    LogDebug << name_ << VAR(uid_) << VAR(all_results_) << VAR(filtered_results_) << VAR(best_result_) << VAR(cost) << VAR(param_.model)
+    LogDebug << name_ << VAR(all_results_) << VAR(filtered_results_) << VAR(best_result_) << VAR(cost) << VAR(param_.model)
              << VAR(param_.labels) << VAR(param_.expected);
 }
 
@@ -97,9 +97,15 @@ NeuralNetworkClassifier::Result NeuralNetworkClassifier::classify() const
 
 void NeuralNetworkClassifier::add_results(ResultsVec results, const std::vector<int>& expected)
 {
-    std::ranges::copy_if(results, std::back_inserter(filtered_results_), [&](const auto& res) {
-        return std::ranges::find(expected, res.cls_index) != expected.end();
-    });
+    if (expected.empty()) {
+        // expected 为空时，所有结果均可用
+        merge_vector_(filtered_results_, results);
+    }
+    else {
+        std::ranges::copy_if(results, std::back_inserter(filtered_results_), [&](const auto& res) {
+            return std::ranges::find(expected, res.cls_index) != expected.end();
+        });
+    }
 
     merge_vector_(all_results_, std::move(results));
 }

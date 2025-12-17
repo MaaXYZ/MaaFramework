@@ -15,7 +15,7 @@
 
 MAA_TASK_NS_BEGIN
 
-class Actuator
+class Actuator : public NonCopyable
 {
 public:
     using PreTaskBoxes = std::map<std::string, cv::Rect>;
@@ -25,12 +25,16 @@ public:
 
     ActionResult run(const cv::Rect& reco_hit, MaaRecoId reco_id, const PipelineData& pipeline_data, const std::string& entry);
 
+    MaaActId get_id() const { return action_id_; }
+
 private:
     static cv::Point rand_point(const cv::Rect& r);
     static std::mt19937 rand_engine_;
-    inline static std::atomic<MaaActId> s_global_action_id = 500'000'000;
+    inline static std::atomic<MaaActId> s_global_action_id = kActIdBase;
 
 private:
+    ActionResult execute_action(const cv::Rect& reco_hit, MaaRecoId reco_id, const PipelineData& pipeline_data, const std::string& entry);
+
     ActionResult click(const MAA_RES_NS::Action::ClickParam& param, const cv::Rect& box, const std::string& name);
     ActionResult long_press(const MAA_RES_NS::Action::LongPressParam& param, const cv::Rect& box, const std::string& name);
     ActionResult swipe(const MAA_RES_NS::Action::SwipeParam& param, const cv::Rect& box, const std::string& name);
@@ -44,6 +48,7 @@ private:
     ActionResult key_up(const MAA_RES_NS::Action::KeyParam& param, const std::string& name);
     ActionResult input_text(const MAA_RES_NS::Action::InputTextParam& param, const std::string& name);
     ActionResult scroll(const MAA_RES_NS::Action::ScrollParam& param, const std::string& name);
+    ActionResult shell(const MAA_RES_NS::Action::ShellParam& param, const std::string& name);
 
     ActionResult start_app(const MAA_RES_NS::Action::AppParam& param, const std::string& name);
     ActionResult stop_app(const MAA_RES_NS::Action::AppParam& param, const std::string& name);
@@ -68,6 +73,7 @@ private:
 private:
     Tasker* tasker_ = nullptr;
     Context& context_;
+    const MaaActId action_id_ = ++s_global_action_id;
 };
 
 MAA_TASK_NS_END

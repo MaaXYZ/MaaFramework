@@ -4,12 +4,9 @@
 #include "MaaUtils/Logger.h"
 
 #include "Input/LegacyEventInput.h"
-#include "Input/PostMessageInput.h"
-#include "Input/PostMessageWithCursorPosInput.h"
+#include "Input/MessageInput.h"
 #include "Input/PostThreadMessageInput.h"
 #include "Input/SeizeInput.h"
-#include "Input/SendMessageInput.h"
-#include "Input/SendMessageWithCursorPosInput.h"
 #include "Screencap/DesktopDupScreencap.h"
 #include "Screencap/DesktopDupWindowScreencap.h"
 #include "Screencap/FramePoolScreencap.h"
@@ -34,6 +31,18 @@ Win32ControlUnitMgr::Win32ControlUnitMgr(
 
 bool Win32ControlUnitMgr::connect()
 {
+#ifndef MAA_WIN32_COMPATIBLE
+    // 设置 Per-Monitor DPI Aware V2，确保 GetClientRect/GetWindowRect 等 API 返回物理像素。
+    // 修复高 DPI 缩放下 PrintWindow/FramePool 等截图方式只能截取部分区域的问题。
+    auto prev_ctx = SetThreadDpiAwarenessContext(DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2);
+    if (prev_ctx) {
+        LogInfo << "SetThreadDpiAwarenessContext to PER_MONITOR_AWARE_V2 success" << VAR_VOIDP(prev_ctx);
+    }
+    else {
+        LogWarn << "SetThreadDpiAwarenessContext failed, error:" << GetLastError();
+    }
+#endif
+
     if (hwnd_) {
         if (!IsWindow(hwnd_)) {
             LogError << "hwnd_ is invalid";
@@ -77,19 +86,19 @@ bool Win32ControlUnitMgr::connect()
     auto make_input = [&](MaaWin32InputMethod method) -> std::shared_ptr<InputBase> {
         switch (method) {
         case MaaWin32InputMethod_Seize:
-            return std::make_shared<SeizeInput>(hwnd_);
+            return std::make_shared<SeizeInput>(hwnd_, true);
         case MaaWin32InputMethod_SendMessage:
-            return std::make_shared<SendMessageInput>(hwnd_);
+            return std::make_shared<MessageInput>(hwnd_, MessageInput::Mode::SendMessage, false, false);
         case MaaWin32InputMethod_PostMessage:
-            return std::make_shared<PostMessageInput>(hwnd_);
+            return std::make_shared<MessageInput>(hwnd_, MessageInput::Mode::PostMessage, false, false);
         case MaaWin32InputMethod_LegacyEvent:
-            return std::make_shared<LegacyEventInput>(hwnd_);
+            return std::make_shared<LegacyEventInput>(hwnd_, true);
         case MaaWin32InputMethod_PostThreadMessage:
             return std::make_shared<PostThreadMessageInput>(hwnd_);
         case MaaWin32InputMethod_SendMessageWithCursorPos:
-            return std::make_shared<SendMessageWithCursorPosInput>(hwnd_);
+            return std::make_shared<MessageInput>(hwnd_, MessageInput::Mode::SendMessage, true, true);
         case MaaWin32InputMethod_PostMessageWithCursorPos:
-            return std::make_shared<PostMessageWithCursorPosInput>(hwnd_);
+            return std::make_shared<MessageInput>(hwnd_, MessageInput::Mode::PostMessage, true, true);
         default:
             LogError << "Unknown input method: " << static_cast<int>(method);
             return nullptr;

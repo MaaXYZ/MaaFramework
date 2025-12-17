@@ -3,12 +3,20 @@ description: publish nodejs package
 inputs:
     token:
         description: The NPM access token to use when publishing
-        required: true
+        required: false
     access:
         description: >
             Determines whether the published package should be publicly visible,
             or restricted to members of your NPM organization.
         required: false
+    path:
+        description: The path to the package directory.
+        required: false
+        default: "."
+    tag:
+        description: The tag to use when publishing the package.
+        required: false
+        default: "latest"
     dry-run:
         description: Run npm with the --dry-run flag to avoid actually publishing anything.
         required: false
@@ -26,46 +34,56 @@ outputs:
 runs:
     using: "composite"
     steps:
-        - uses: JS-DevTools/npm-publish@v3
+        - uses: actions/setup-node@v5
+          with:
+              node-version: "24"
+        - uses: JS-DevTools/npm-publish@v4
           id: nodejs
           with:
-              package: assets/MAA-nodejs-package/maa-node
+              package: ${{ inputs.path }}/maa-node
+              tag: ${{ inputs.tag }}
               token: ${{ inputs.token }}
               access: ${{ inputs.access }}
               dry-run: ${{ inputs.dry-run }}
-        - uses: JS-DevTools/npm-publish@v3
+        - uses: JS-DevTools/npm-publish@v4
           with:
-              package: assets/MAA-nodejs-package/maa-node-win32-x64
+              package: ${{ inputs.path }}/maa-node-win32-x64
+              tag: ${{ inputs.tag }}
               token: ${{ inputs.token }}
               access: ${{ inputs.access }}
               dry-run: ${{ inputs.dry-run }}
-        - uses: JS-DevTools/npm-publish@v3
+        - uses: JS-DevTools/npm-publish@v4
           with:
-              package: assets/MAA-nodejs-package/maa-node-win32-arm64
+              package: ${{ inputs.path }}/maa-node-win32-arm64
+              tag: ${{ inputs.tag }}
               token: ${{ inputs.token }}
               access: ${{ inputs.access }}
               dry-run: ${{ inputs.dry-run }}
-        - uses: JS-DevTools/npm-publish@v3
+        - uses: JS-DevTools/npm-publish@v4
           with:
-              package: assets/MAA-nodejs-package/maa-node-linux-x64
+              package: ${{ inputs.path }}/maa-node-linux-x64
+              tag: ${{ inputs.tag }}
               token: ${{ inputs.token }}
               access: ${{ inputs.access }}
               dry-run: ${{ inputs.dry-run }}
-        - uses: JS-DevTools/npm-publish@v3
+        - uses: JS-DevTools/npm-publish@v4
           with:
-              package: assets/MAA-nodejs-package/maa-node-linux-arm64
+              package: ${{ inputs.path }}/maa-node-linux-arm64
+              tag: ${{ inputs.tag }}
               token: ${{ inputs.token }}
               access: ${{ inputs.access }}
               dry-run: ${{ inputs.dry-run }}
-        - uses: JS-DevTools/npm-publish@v3
+        - uses: JS-DevTools/npm-publish@v4
           with:
-              package: assets/MAA-nodejs-package/maa-node-darwin-x64
+              package: ${{ inputs.path }}/maa-node-darwin-x64
+              tag: ${{ inputs.tag }}
               token: ${{ inputs.token }}
               access: ${{ inputs.access }}
               dry-run: ${{ inputs.dry-run }}
-        - uses: JS-DevTools/npm-publish@v3
+        - uses: JS-DevTools/npm-publish@v4
           with:
-              package: assets/MAA-nodejs-package/maa-node-darwin-arm64
+              package: ${{ inputs.path }}/maa-node-darwin-arm64
+              tag: ${{ inputs.tag }}
               token: ${{ inputs.token }}
               access: ${{ inputs.access }}
               dry-run: ${{ inputs.dry-run }}

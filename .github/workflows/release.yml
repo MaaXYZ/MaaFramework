@@ -1,0 +1,260 @@
+name: release
+
+on:
+    workflow_dispatch:
+        inputs:
+            dry-run:
+                description: "Use dry-run"
+                required: false
+                type: boolean
+                default: false
+            run-id:
+                description: "Build workflow run ID"
+                required: true
+                type: string
+            only-publish-to:
+                description: "Only publish packages to"
+                required: false
+                type: choice
+                default: All
+                options:
+                    - npmjs.com
+                    - NuGet.org
+                    - PyPI.org
+                    - GitHub
+                    - MirrorChyan
+                    - All
+            run-name:
+                description: "Run name"
+                required: false
+                type: string
+
+run-name: "${{ inputs.run-name }} Release | ${{ inputs.only-publish-to }} ${{inputs.dry-run && '| Dry Run ' || ''}}| Build from #${{ inputs.run-id }}"
+concurrency:
+    group: ${{ github.workflow }}-${{ inputs.run-id }}
+    cancel-in-progress: false
+
+# 注意：如果 only-publish-to 是 All，则所有 jobs 的状态都必须是成功，All 的状态由 create_issue 判断
+jobs:
+    meta:
+        uses: ./.github/workflows/meta.yml
+        with:
+            reuse-from-run-id: ${{ inputs.run-id }}
+
+    nuget:
+        if: ${{ inputs.only-publish-to == 'NuGet.org' || inputs.only-publish-to == 'All' }}
+        continue-on-error: ${{ inputs.only-publish-to == 'All' }}
+        runs-on: ubuntu-latest
+        outputs:
+            result: ${{ steps.publish.outcome }}
+        permissions:
+            id-token: write
+        env:
+            NUGET_PACKAGE_SOURCE: ${{ inputs.dry-run && 'https://apiint.nugettest.org/v3/index.json' || 'https://api.nuget.org/v3/index.json' }}
+            NUGET_AUDIENCE: ${{ inputs.dry-run && 'https://int.nugettest.org' || 'https://www.nuget.org' }}
+        steps:
+            - uses: dawidd6/action-download-artifact@v6
+              with:
+                  workflow: build.yml
+                  run_id: ${{ inputs.run-id }}
+                  name: pkgs-nuget
+                  path: assets/pkgs-nuget
+                  check_artifacts: true
+                  if_no_artifact_found: fail
+
+            - id: login
+              uses: NuGet/login@v1
+              with:
+                user: moomiji
+                token-service-url: ${{ env.NUGET_AUDIENCE }}/api/v2/token
+                audience: ${{ env.NUGET_AUDIENCE }}
+
+            - name: Publish NuGet
+              id: publish
+              run: |
+                  dotnet nuget push assets/pkgs-nuget/*.nupkg \
+                    --api-key ${{steps.login.outputs.NUGET_API_KEY}} \
+                    --source ${{ env.NUGET_PACKAGE_SOURCE }} \
+                    --skip-duplicate
+
+    nodejs:
+        if: ${{ inputs.only-publish-to == 'npmjs.com' || inputs.only-publish-to == 'All' }}
+        continue-on-error: ${{ inputs.only-publish-to == 'All' }}
+        runs-on: ubuntu-latest
+        outputs:
+            result: ${{ steps.publish.outcome }}
+        permissions:
+            id-token: write
+        steps:
+            - uses: actions/checkout@v4
+              with:
+                  fetch-depth: 0
+
+            - uses: dawidd6/action-download-artifact@v6
+              with:
+                  workflow: build.yml
+                  run_id: ${{ inputs.run-id }}
+                  name: pkgs-nodejs
+                  path: assets/pkgs-nodejs
+                  check_artifacts: true
+                  if_no_artifact_found: fail
+
+            - uses: ./.github/actions/publish_nodejs
+              id: publish
+              with:
+                  access: public
+                  path: assets/pkgs-nodejs
+                  dry-run: ${{ inputs.dry-run }}
+
+    pip:
+        if: ${{ inputs.only-publish-to == 'PyPI.org' || inputs.only-publish-to == 'All' }}
+        continue-on-error: ${{ inputs.only-publish-to == 'All' }}
+        runs-on: ubuntu-latest
+        outputs:
+            result: ${{ steps.publish.outcome }}
+        permissions:
+            id-token: write
+        env:
+            PYPI_REPOSITORY: ${{ inputs.dry-run && 'testpypi' || 'pypi' }}
+        steps:
+            - uses: dawidd6/action-download-artifact@v6
+              with:
+                  workflow: build.yml
+                  run_id: ${{ inputs.run-id }}
+                  name: pkgs-pip
+                  path: assets/pkgs-pip
+                  check_artifacts: true
+                  if_no_artifact_found: fail
+
+            - name: Publish Pip Packages
+              id: publish
+              run: |
+                  pip install --upgrade twine packaging
+                  python -m twine upload \
+                    assets/pkgs-pip/*.whl \
+                    --repository ${{ env.PYPI_REPOSITORY }} \
+                    --skip-existing
+
+    github:
+        needs: [meta]
+        if: ${{ inputs.only-publish-to == 'GitHub' || inputs.only-publish-to == 'All' }}
+        continue-on-error: ${{ inputs.only-publish-to == 'All' }}
+        runs-on: ubuntu-latest
+        outputs:
+            result: ${{ steps.publish.outcome }}
+        permissions:
+            contents: write
+        steps:
+            - uses: dawidd6/action-download-artifact@v6
+              with:
+                  workflow: build.yml
+                  run_id: ${{ inputs.run-id }}
+                  name_is_regexp: true
+                  name: MAA-*
+                  path: assets
+                  check_artifacts: true
+                  if_no_artifact_found: fail
+
+            - name: Package artifacts
+              run: |
+                  cd assets
+                  for f in *; do
+                    (cd $f && zip -r ../$f-${{ needs.meta.outputs.tag }}.zip .)
+                  done
+
+            - id: publish
+              uses: softprops/action-gh-release@v2
+              with:
+                  files: assets/*.zip
+                  tag_name: ${{ inputs.dry-run && 'v0.0.0' || needs.meta.outputs.tag }}
+                  prerelease: ${{ needs.meta.outputs.is-prerelease == 'true' }}
+                  generate_release_notes: ${{ !inputs.dry-run }}
+
+    mirrorchyan:
+        needs: [meta, github]
+        if: always() && needs.meta.result == 'success' && (
+                inputs.only-publish-to == 'MirrorChyan' ||
+                inputs.only-publish-to == 'All'
+            )
+        continue-on-error: ${{ inputs.only-publish-to == 'All' }}
+        runs-on: ubuntu-latest
+        outputs:
+            result: ${{ steps.publish.outcome }}
+        steps:
+            - name: Trigger MirrorChyanUploading
+              id: publish
+              if: inputs.only-publish-to == 'MirrorChyan' ||
+                ( inputs.only-publish-to == 'All' && needs.github.outputs.result == 'success' ) 
+              env:
+                  GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+              run: |
+                  if [ "${{ inputs.dry-run }}" = "true" ]; then
+                    echo "Dry run mode, skipping MirrorChyan upload."
+                    exit 0
+                  fi
+
+                  gh workflow run --repo ${{ github.repository }} mirrorchyan.yml -f tag=${{ needs.meta.outputs.tag }}
+                  gh workflow run --repo ${{ github.repository }} mirrorchyan_release_note.yml -f tag=${{ needs.meta.outputs.tag }}
+
+    create_issue:
+        needs: [meta, nuget, nodejs, pip, github, mirrorchyan]
+        runs-on: ubuntu-latest
+        if: success() && (
+                needs.nuget.outputs.result != 'success'  ||
+                needs.nodejs.outputs.result != 'success' ||
+                needs.pip.outputs.result != 'success'    ||
+                needs.github.outputs.result != 'success' ||
+                needs.mirrorchyan.outputs.result != 'success'
+            )
+        env:
+            ISSUE_TITLE: "${{ needs.meta.outputs.tag }} failed to release"
+            ISSUE_BODY: |
+                A new release attempt for tag ${{ needs.meta.outputs.tag }} failed.
+
+                ${{ needs.nuget.outputs.result != 'success'         && '- nuget         @moomiji'   || '' }}
+                ${{ needs.nodejs.outputs.result != 'success'        && '- nodejs        @neko-para' || '' }}
+                ${{ needs.pip.outputs.result != 'success'           && '- pip           @MistEO'    || '' }}
+                ${{ needs.github.outputs.result != 'success'        && '- github        @MistEO'    || '' }}
+                ${{ needs.mirrorchyan.outputs.result != 'success'   && '- mirrorchyan   @MistEO'    || '' }}
+
+                Release run: [${{ github.run_id }}](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})
+
+                Build   run: [${{ inputs.run-id }}](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ inputs.run-id }})
+
+                | Job | Result |
+                | --- | ------ |
+                | nuget | ${{ needs.nuget.outputs.result }} |
+                | nodejs | ${{ needs.nodejs.outputs.result }} |
+                | pip | ${{ needs.pip.outputs.result }} |
+                | mirrorchyan | ${{ needs.mirrorchyan.outputs.result }} |
+                | github | ${{ needs.github.outputs.result }} |
+
+                cc @MistEO
+        steps:
+            - name: find issues
+              id: find-issues
+              uses: actions-cool/issues-helper@v3
+              with:
+                  actions: "find-issues"
+                  issue-state: "all"
+                  title-includes: "${{ env.ISSUE_TITLE }}"
+            - name: Create issue
+              if: ${{ fromJSON(steps.find-issues.outputs.issues)[0] == null }}
+              uses: actions-cool/issues-helper@v3
+              with:
+                  actions: "create-issue"
+                  title: ${{ env.ISSUE_TITLE }}
+                  body: ${{ env.ISSUE_BODY }}
+            - name: Open issue
+              if: ${{ fromJSON(steps.find-issues.outputs.issues)[0].state == 'closed' }}
+              uses: actions-cool/issues-helper@v3
+              with:
+                  actions: "open-issue"
+                  issue-number: ${{ fromJSON(steps.find-issues.outputs.issues)[0].number }}
+            - name: Add comment
+              if: ${{ fromJSON(steps.find-issues.outputs.issues)[0] != null }}
+              uses: actions-cool/issues-helper@v3
+              with:
+                  actions: "create-comment"
+                  issue-number: ${{ fromJSON(steps.find-issues.outputs.issues)[0].number }}
+                  body: ${{ env.ISSUE_BODY }}

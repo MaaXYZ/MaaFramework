@@ -57,6 +57,7 @@ struct TemplateMatcherParam
 {
     inline static constexpr double kDefaultThreshold = 0.7;
     inline static constexpr int kDefaultMethod = 5; // cv::TM_CCOEFF_NORMED
+    inline static constexpr int kMethodInvertBase = 10000;
 
     Target roi_target;
     std::vector<std::string> template_;

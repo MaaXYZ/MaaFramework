@@ -143,6 +143,40 @@ maajs::ValueType
     return maajs::CallCtorHelper(ExtContext::get(env)->taskJobCtor, self, id);
 }
 
+maajs::ValueType TaskerImpl::post_recognition(
+    maajs::ValueType self,
+    maajs::EnvType,
+    std::string reco_type,
+    maajs::OptionalParam<maajs::ValueType> reco_param,
+    maajs::ArrayBufferType image)
+{
+    ImageBuffer img;
+    img.set(image);
+    auto id = MaaTaskerPostRecognition(
+        tasker,
+        reco_type.c_str(),
+        maajs::JsonStringify(env, reco_param.value_or(maajs::ObjectType::New(env))).c_str(),
+        img);
+    return maajs::CallCtorHelper(ExtContext::get(env)->taskJobCtor, self, id);
+}
+
+maajs::ValueType TaskerImpl::post_action(
+    maajs::ValueType self,
+    maajs::EnvType,
+    std::string action_type,
+    maajs::OptionalParam<maajs::ValueType> action_param,
+    MaaRect box,
+    std::string reco_detail)
+{
+    auto id = MaaTaskerPostAction(
+        tasker,
+        action_type.c_str(),
+        maajs::JsonStringify(env, action_param.value_or(maajs::ObjectType::New(env))).c_str(),
+        &box,
+        reco_detail.c_str());
+    return maajs::CallCtorHelper(ExtContext::get(env)->taskJobCtor, self, id);
+}
+
 maajs::ValueType TaskerImpl::post_stop(maajs::ValueType self, maajs::EnvType)
 {
     auto id = MaaTaskerPostStop(tasker);
@@ -405,6 +439,8 @@ void TaskerImpl::init_proto(maajs::ObjectType proto, maajs::FunctionType)
     MAA_BIND_FUNC(proto, "remove_context_sink", TaskerImpl::remove_context_sink);
     MAA_BIND_FUNC(proto, "clear_context_sinks", TaskerImpl::clear_context_sinks);
     MAA_BIND_FUNC(proto, "post_task", TaskerImpl::post_task);
+    MAA_BIND_FUNC(proto, "post_recognition", TaskerImpl::post_recognition);
+    MAA_BIND_FUNC(proto, "post_action", TaskerImpl::post_action);
     MAA_BIND_FUNC(proto, "post_stop", TaskerImpl::post_stop);
     MAA_BIND_FUNC(proto, "status", TaskerImpl::status);
     MAA_BIND_FUNC(proto, "wait", TaskerImpl::wait);

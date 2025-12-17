@@ -46,13 +46,13 @@ _✨ 基于图像识别的自动化黑盒测试框架 ✨_
 ## 即刻开始
 
 > [!TIP]
-> 访问我们的 [官网](https://maafw.xyz/) 以获得更优秀的文档阅读体验。
-> 
+> 访问我们的 [官网](https://maafw.xyz/) 以获得更优秀的文档阅读体验。  
 > 找不到相关文档？试试问 [AI](https://deepwiki.com/MaaXYZ/MaaFramework) ！
 
-- [快速开始](docs/zh_cn/1.1-快速开始.md)
-- [集成文档](docs/zh_cn/2.1-集成文档.md)
-- [Pipeline 协议](docs/zh_cn/3.1-任务流水线协议.md)
+- [快速开始](docs/zh_cn/1.1-快速开始.md) & [术语解释](docs/zh_cn/1.2-术语解释.md)
+- [代码集成](docs/zh_cn/2.1-集成文档.md) & [API](docs/zh_cn/2.2-集成接口一览.md)
+- [Pipeline 低代码协议](docs/zh_cn/3.1-任务流水线协议.md)
+- [项目接口 PI 协议](docs/zh_cn/3.3-ProjectInterfaceV2协议.md)
 
 ## 社区项目
 
@@ -75,8 +75,17 @@ _✨ 基于图像识别的自动化黑盒测试框架 ✨_
 - [MFATools](https://github.com/SweetSmellFox/MFATools) ![csharp](https://img.shields.io/badge/C%23-239120?logo=csharp&logoColor=white) ![license](https://img.shields.io/github/license/SweetSmellFox/MFATools) ![activity](https://img.shields.io/github/commit-activity/m/SweetSmellFox/MFATools?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/SweetSmellFox/MFATools?style=social)  
   基于WPF框架开发的工具界面，旨在提供类似于截图工具的功能
 
-- [MaaPipelineEditor](https://github.com/kqcoxn/MaaPipelineEditor) ![Typescript](https://img.shields.io/badge/Typescript-8A2BE2?logo=typescript) ![activity](https://img.shields.io/github/commit-activity/m/kqcoxn/MaaPipelineEditor?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/kqcoxn/MaaPipelineEditor?style=social)  
-  基于 react-flow 的 MaaFramework Pipeline 工作流式可视化编辑器，使用“无代码”流程图构建您的 Pipeline！
+- [MaaPipelineEditor](https://github.com/kqcoxn/MaaPipelineEditor) ![Typescript](https://img.shields.io/badge/Typescript-8A2BE2?logo=typescript) ![Golang](https://img.shields.io/badge/Go-007d9c?logo=go) ![activity](https://img.shields.io/github/commit-activity/m/kqcoxn/MaaPipelineEditor?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/kqcoxn/MaaPipelineEditor?style=social) [![website](https://img.shields.io/badge/https://mpe.codax.site-%234285F4)](https://mpe.codax.site/stable/)  
+  可视化阅读与构建 Pipeline，[功能完备](https://github.com/kqcoxn/MaaPipelineEditor?tab=readme-ov-file#%E4%BA%AE%E7%82%B9)，极致轻量跨平台，提供渐进式[本地功能扩展](https://mpe.codax.site/docs/guide/server/deploy.html)，无缝兼容新旧项目
+
+- [MaaInspector](https://github.com/TanyaShue/MaaInspector) ![Typescript](https://img.shields.io/badge/Typescript-8A2BE2?logo=typescript) ![activity](https://img.shields.io/github/commit-activity/m/TanyaShue/MaaInspector?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/TanyaShue/MaaInspector?style=social)  
+  基于 vue-flow 的可视化编辑器，集成节点预览,编辑,调试于一体的简单好用的 MaaFramework Pipeline 编辑器
+
+- [MaaMCP](https://github.com/MaaXYZ/MaaMCP) ![python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white) ![license](https://img.shields.io/github/license/MaaXYZ/MaaMCP) ![activity](https://img.shields.io/github/commit-activity/m/MaaXYZ/MaaMCP?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/MaaXYZ/MaaMCP?style=social) [![pypi](https://img.shields.io/badge/PyPI-3776AB?logo=pypi&logoColor=white)](https://pypi.org/project/maa-mcp)  
+  基于 MaaFramework 的 MCP 服务器 为 AI 助手提供 Android 设备和 Windows 桌面自动化能力
+
+- [MAALogAnalyzer](https://github.com/Windsland52/MAALogAnalyzer) ![Typescript](https://img.shields.io/badge/Typescript-8A2BE2?logo=typescript) ![license](https://img.shields.io/github/license/Windsland52/MAALogAnalyzer) ![activity](https://img.shields.io/github/commit-activity/m/Windsland52/MAALogAnalyzer?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/Windsland52/MAALogAnalyzer?style=social) [![website](https://img.shields.io/badge/https://maaloganalyzer.maafw.xyz-%234285F4)](https://maaloganalyzer.maafw.xyz/)  
+  基于 Vue 3 + Tauri 的 MaaFramework 日志分析工具，支持可视化任务执行流程和全文搜索
 
 ### 应用程序
 
@@ -104,11 +113,8 @@ _✨ 基于图像识别的自动化黑盒测试框架 ✨_
 - [MaaXuexi](https://github.com/ravizhan/MaaXuexi) ![python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white) ![Pipeline](https://img.shields.io/badge/Pipeline-%23876f69?logo=paddypower&logoColor=%23FFFFFF) ![license](https://img.shields.io/github/license/ravizhan/MaaXuexi) ![activity](https://img.shields.io/github/commit-activity/m/ravizhan/MaaXuexi?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/ravizhan/MaaXuexi?style=social)  
   学习强国 自动化助手。图像技术 + 模拟控制，解放双手！由 MaaFramework 强力驱动！
 
-- [MAA_MHXY_MG](https://github.com/gitlihang/Maa_MHXY_MG) ![Pipeline](https://img.shields.io/badge/Pipeline-%23876f69?logo=paddypower&logoColor=%23FFFFFF) ![license](https://img.shields.io/github/license/gitlihang/Maa_MHXY_MG) ![activity](https://img.shields.io/github/commit-activity/m/gitlihang/Maa_MHXY_MG?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/gitlihang/Maa_MHXY_MG?style=social) [![mirrorc](./docs/static/mirrorc-zh.svg)](https://mirrorchyan.com/zh/projects?source=maafw-badge)    
+- [MAA_MHXY_MG](https://github.com/gitlihang/Maa_MHXY_MG) ![Pipeline](https://img.shields.io/badge/Pipeline-%23876f69?logo=paddypower&logoColor=%23FFFFFF) ![license](https://img.shields.io/github/license/gitlihang/Maa_MHXY_MG) ![activity](https://img.shields.io/github/commit-activity/m/gitlihang/Maa_MHXY_MG?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/gitlihang/Maa_MHXY_MG?style=social) [![mirrorc](./docs/static/mirrorc-zh.svg)](https://mirrorchyan.com/zh/projects?source=maafw-badge)
   梦幻西游手游 小助手。图像技术 + 模拟控制，解放双手！由 MaaFramework 强力驱动！
-
-- [MNMA](https://github.com/kqcoxn/MaaNewMoonAccompanying) ![Pipeline](https://img.shields.io/badge/Pipeline-%23876f69?logo=paddypower&logoColor=%23FFFFFF) ![python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white) ![license](https://img.shields.io/github/license/kqcoxn/MaaNewMoonAccompanying) ![activity](https://img.shields.io/github/commit-activity/m/kqcoxn/MaaNewMoonAccompanying?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/kqcoxn/MaaNewMoonAccompanying?style=social) [![mirrorc](./docs/static/mirrorc-zh.svg)](https://mirrorchyan.com/zh/projects?source=maafw-badge)  
-  新月同行 小助手。图像技术 + 模拟控制，解放双手！由 MaaFramework 强力驱动！
 
 - [MaaTOT](https://github.com/Coxwtwo/MaaTOT) ![Pipeline](https://img.shields.io/badge/Pipeline-%23876f69?logo=paddypower&logoColor=%23FFFFFF) ![license](https://img.shields.io/github/license/Coxwtwo/MaaTOT) ![activity](https://img.shields.io/github/commit-activity/m/Coxwtwo/MaaTOT?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/Coxwtwo/MaaTOT?style=social)  
   未定事件簿 小助手。图像技术 + 模拟控制，解放双手！由 MaaFramework 强力驱动！
@@ -145,7 +151,13 @@ _✨ 基于图像识别的自动化黑盒测试框架 ✨_
 
 - [MBCCtools](https://github.com/quietlysnow/MBCCtools) ![Pipeline](https://img.shields.io/badge/Pipeline-%23876f69?logo=paddypower&logoColor=%23FFFFFF) ![license](https://img.shields.io/github/license/quietlysnow/MBCCtools) ![activity](https://img.shields.io/github/commit-activity/m/quietlysnow/MBCCtools?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/quietlysnow/MBCCtools?style=social)  
   无期迷途 小助手。图像技术 + 模拟控制，解放双手！由 MaaFramework 强力驱动！
-  
+
+- [MaaEOV](https://github.com/Tigerisu/MaaEOV) ![Pipeline](https://img.shields.io/badge/Pipeline-%23876f69?logo=paddypower&logoColor=%23FFFFFF) ![license](https://img.shields.io/github/license/Tigerisu/MaaEOV) ![activity](https://img.shields.io/github/commit-activity/m/Tigerisu/MaaEOV?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/Tigerisu/MaaEOV?style=social)  
+  异象回声 小助手。图像技术 + 模拟控制，解放双手！由 MaaFramework 强力驱动！
+
+- [MAA Star Resonance](https://github.com/26F-Studio/maa-star-resonance) ![Typescript](https://img.shields.io/badge/Typescript-8A2BE2?logo=typescript) ![license](https://img.shields.io/github/license/26F-Studio/maa-star-resonance) ![activity](https://img.shields.io/github/commit-activity/m/26F-Studio/maa-star-resonance?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/26F-Studio/maa-star-resonance?style=social)  
+  星痕共鸣小助手。使用 Electron + 文本图像识别 + ADB模拟控制 技术，解放双手！由 MaaFramework 和 Quasar 强力驱动！
+
 ## 生态共建
 
 MAA 正计划建设为一类项目，而非舟的单一软件。  
@@ -251,9 +263,9 @@ _请留意，仅当您准备开发 MaaFramework 本身时，才需要阅读本�
 
 [![贡献者](https://contrib.rocks/image?repo=MaaXYZ/MaaFramework&max=1000)](https://github.com/MaaXYZ/MaaFramework/graphs/contributors)
 
-## 讨论
+## 沟通交流
 
-- 集成/开发交流 QQ 群: 595990173
+欢迎开发者加入官方 QQ 群（595990173），交流集成与开发实践。群内仅讨论开发相关议题，不提供日常使用/客服支持；为保证讨论质量，长期离题或违规的成员可能会被移除。
 
 ## 赞助
 

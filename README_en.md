@@ -49,12 +49,13 @@ It offers low-code simplicity while maintaining high extensibility. The framewor
 ## Get Started
 
 > [!TIP]
-> Visit our [website](https://maafw.xyz/) for a better documentation experience.
+> Visit our [website](https://maafw.xyz/) for a better documentation experience.  
 > Can't find the relevant documents? Try asking [AI](https://deepwiki.com/MaaXYZ/MaaFramework) ！
 
-- [Quick Start](docs/en_us/1.1-QuickStarted.md)
-- [Integration](docs/en_us/2.1-Integration.md)
-- [Pipeline Protocol](docs/en_us/3.1-PipelineProtocol.md)
+- [Quick Start](docs/en_us/1.1-QuickStarted.md) & [Terms](docs/en_us/1.2-ExplanationOfTerms.md)
+- [Integration](docs/en_us/2.1-Integration.md) & [API](docs/en_us/2.2-IntegratedInterfaceOverview.md)
+- [Pipeline Low-code Protocol](docs/en_us/3.1-PipelineProtocol.md)
+- [Project Interface Protocol](docs/en_us/3.3-ProjectInterfaceV2.md)
 
 ## Community Project
 
@@ -77,8 +78,17 @@ It offers low-code simplicity while maintaining high extensibility. The framewor
 - [MFATools](https://github.com/SweetSmellFox/MFATools) ![csharp](https://img.shields.io/badge/C%23-239120?logo=csharp&logoColor=white) ![license](https://img.shields.io/github/license/SweetSmellFox/MFATools) ![activity](https://img.shields.io/github/commit-activity/m/SweetSmellFox/MFATools?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/SweetSmellFox/MFATools?style=social)  
     The tool interface is developed based on the WPF framework, aiming to provide functions similar to the screenshot tool.
 
-- [MaaPipelineEditor](https://github.com/kqcoxn/MaaPipelineEditor) ![Typescript](https://img.shields.io/badge/Typescript-8A2BE2?logo=typescript) ![activity](https://img.shields.io/github/commit-activity/m/kqcoxn/MaaPipelineEditor?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/kqcoxn/MaaPipelineEditor?style=social)  
-    MaaFramework Pipeline workflow visual editor based on react-flow. Create your Pipeline using a "no code" flowchart!
+- [MaaPipelineEditor](https://github.com/kqcoxn/MaaPipelineEditor) ![Typescript](https://img.shields.io/badge/Typescript-8A2BE2?logo=typescript) ![Golang](https://img.shields.io/badge/Go-007d9c?logo=go) ![activity](https://img.shields.io/github/commit-activity/m/kqcoxn/MaaPipelineEditor?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/kqcoxn/MaaPipelineEditor?style=social) [![website](https://img.shields.io/badge/https://mpe.codax.site-%234285F4)](https://mpe.codax.site/stable/)  
+    Visual reading and construction Pipeline, [fully functional](https://github.com/kqcoxn/MaaPipelineEditor?tab=readme-ov-file#%E4%BA%AE%E7%82%B9), extremely lightweight cross-platform, progressive [local function extension](https://mpe.codax.site/docs/guide/server/deploy.html), seamless compatibility between old and new projects.
+
+- [MaaInspector](https://github.com/TanyaShue/MaaInspector) ![Typescript](https://img.shields.io/badge/Typescript-8A2BE2?logo=typescript) ![activity](https://img.shields.io/github/commit-activity/m/TanyaShue/MaaInspector?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/TanyaShue/MaaInspector?style=social)  
+  A visual editor based on vue-flow — a simple and user-friendly MaaFramework Pipeline Editor that integrates node preview, editing, and debugging all in one.  
+
+- [MaaMCP](https://github.com/MaaXYZ/MaaMCP) ![python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white) ![license](https://img.shields.io/github/license/MaaXYZ/MaaMCP) ![activity](https://img.shields.io/github/commit-activity/m/MaaXYZ/MaaMCP?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/MaaXYZ/MaaMCP?style=social) [![pypi](https://img.shields.io/badge/PyPI-3776AB?logo=pypi&logoColor=white)](https://pypi.org/project/maa-mcp)  
+  A MCP server, based on MaaFramework, provides AI assistants with automation capabilities for Android devices and Windows desktops.
+
+- [MAALogAnalyzer](https://github.com/Windsland52/MAALogAnalyzer) ![Typescript](https://img.shields.io/badge/Typescript-8A2BE2?logo=typescript) ![license](https://img.shields.io/github/license/Windsland52/MAALogAnalyzer) ![activity](https://img.shields.io/github/commit-activity/m/Windsland52/MAALogAnalyzer?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/Windsland52/MAALogAnalyzer?style=social) [![website](https://img.shields.io/badge/https://maaloganalyzer.maafw.xyz-%234285F4)](https://maaloganalyzer.maafw.xyz/)  
+  A MaaFramework log analysis tool based on Vue 3 + Tauri, supporting visualization of task execution flow and full-text search.
 
 ### Application
 
@@ -109,9 +119,6 @@ It offers low-code simplicity while maintaining high extensibility. The framewor
 - [MAA_MHXY_MG](https://github.com/gitlihang/Maa_MHXY_MG) ![Pipeline](https://img.shields.io/badge/Pipeline-%23876f69?logo=paddypower&logoColor=%23FFFFFF) ![license](https://img.shields.io/github/license/gitlihang/Maa_MHXY_MG) ![activity](https://img.shields.io/github/commit-activity/m/gitlihang/Maa_MHXY_MG?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/gitlihang/Maa_MHXY_MG?style=social) [![mirrorc](./docs/static/mirrorc-en.svg)](https://mirrorchyan.com/en/projects?source=maafw-badge)  
     Fantasy Westward Journey Mobile Assistant Based on New Architecture. Image technology + analogue control to free your hands! Powered by MaaFramework!
 
-- [MNMA](https://github.com/kqcoxn/MaaNewMoonAccompanying) ![Pipeline](https://img.shields.io/badge/Pipeline-%23876f69?logo=paddypower&logoColor=%23FFFFFF) ![python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white) ![license](https://img.shields.io/github/license/kqcoxn/MaaNewMoonAccompanying) ![activity](https://img.shields.io/github/commit-activity/m/kqcoxn/MaaNewMoonAccompanying?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/kqcoxn/MaaNewMoonAccompanying?style=social) [![mirrorc](./docs/static/mirrorc-en.svg)](https://mirrorchyan.com/en/projects?source=maafw-badge)  
-    A New Moon Accompanying Assistant. Image technology + simulation control, freeing your hands! Powered by MaaFramework.
-
 - [MaaTOT](https://github.com/Coxwtwo/MaaTOT) ![Pipeline](https://img.shields.io/badge/Pipeline-%23876f69?logo=paddypower&logoColor=%23FFFFFF) ![license](https://img.shields.io/github/license/Coxwtwo/MaaTOT) ![activity](https://img.shields.io/github/commit-activity/m/Coxwtwo/MaaTOT?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/Coxwtwo/MaaTOT?style=social)  
     A Tears of Themis Assistant. Image technology + simulation control, freeing your hands! Powered by MaaFramework.
 
@@ -141,12 +148,18 @@ It offers low-code simplicity while maintaining high extensibility. The framewor
 
 - [MAG](https://github.com/Kazaorus/MAG) ![Pipeline](https://img.shields.io/badge/Pipeline-%23876f69?logo=paddypower&logoColor=%23FFFFFF) ![Python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white) ![license](https://img.shields.io/github/license/Kazaorus/MAG) ![activity](https://img.shields.io/github/commit-activity/m/Kazaorus/MAG?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/Kazaorus/MAG?style=social)  
     Assistant for Aether Gazer. Image recognition + simulation control to free your hands! Powered by MaaFramework!
-    
+
 - [MAAAE](https://github.com/NewWYoming/MAAAE) ![Pipeline](https://img.shields.io/badge/Pipeline-%23876f69?logo=paddypower&logoColor=%23FFFFFF) ![python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white) ![license](https://img.shields.io/github/license/NewWYoming/MAAAE) ![activity](https://img.shields.io/github/commit-activity/m/NewWYoming/MAAAE?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/NewWYoming/MAAAE?style=social)  
     An assistant for Ash Echoes. Image technology + simulation control, freeing your hands! Powered by MaaFramework.
   
 - [MBCCtools](https://github.com/quietlysnow/MBCCtools) ![Pipeline](https://img.shields.io/badge/Pipeline-%23876f69?logo=paddypower&logoColor=%23FFFFFF) ![license](https://img.shields.io/github/license/quietlysnow/MBCCtools) ![activity](https://img.shields.io/github/commit-activity/m/quietlysnow/MBCCtools?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/quietlysnow/MBCCtools?style=social)  
   Assistant for Path to Nowhere. Image recognition + simulation control to free your hands! Powered by MaaFramework!
+
+- [MaaEOV](https://github.com/Tigerisu/MaaEOV) ![Pipeline](https://img.shields.io/badge/Pipeline-%23876f69?logo=paddypower&logoColor=%23FFFFFF) ![license](https://img.shields.io/github/license/Tigerisu/MaaEOV) ![activity](https://img.shields.io/github/commit-activity/m/Tigerisu/MaaEOV?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/Tigerisu/MaaEOV?style=social)  
+  Assistant for _Echoes Of Vision_. Image recognition + simulation control to free your hands! Powered by MaaFramework!
+
+- [MAA Star Resonance](https://github.com/26F-Studio/maa-star-resonance) ![Typescript](https://img.shields.io/badge/Typescript-8A2BE2?logo=typescript) ![license](https://img.shields.io/github/license/26F-Studio/maa-star-resonance) ![activity](https://img.shields.io/github/commit-activity/m/26F-Studio/maa-star-resonance?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/26F-Studio/maa-star-resonance?style=social)  
+  A helper for Star Resonance. Using Electron + text image recognition + ADB simulation control technology, freeing your hands! Powered by MaaFramework and Quasar.
 
 ## Eco-Building
 
@@ -255,7 +268,7 @@ Thanks to the following developers for their contributions to MaaFramework:
 
 ## Discussion
 
-- QQ Group: 595990173
+Developers are welcome to join the official QQ group (595990173) for integration and development discussions. The group is reserved for engineering topics; product-usage support is not provided, and off-topic or spam accounts may be removed to keep the channel focused.
 
 ## Sponsor
 

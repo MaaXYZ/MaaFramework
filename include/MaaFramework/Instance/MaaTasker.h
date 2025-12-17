@@ -52,6 +52,27 @@ extern "C"
 
     MAA_FRAMEWORK_API MaaTaskId MaaTaskerPostTask(MaaTasker* tasker, const char* entry, const char* pipeline_override);
 
+    /**
+     * @param reco_type Recognition type string
+     * @param reco_param Recognition parameters json
+     * @param image Previous screenshot
+     */
+    MAA_FRAMEWORK_API MaaTaskId
+        MaaTaskerPostRecognition(MaaTasker* tasker, const char* reco_type, const char* reco_param, const MaaImageBuffer* image);
+
+    /**
+     * @param action_type Action type string
+     * @param action_param Action parameters json
+     * @param box Previous recognition position
+     * @param reco_detail Previous recognition details
+     */
+    MAA_FRAMEWORK_API MaaTaskId MaaTaskerPostAction(
+        MaaTasker* tasker,
+        const char* action_type,
+        const char* action_param,
+        const MaaRect* box,
+        const char* reco_detail);
+
     MAA_FRAMEWORK_API MaaStatus MaaTaskerStatus(const MaaTasker* tasker, MaaTaskId id);
 
     MAA_FRAMEWORK_API MaaStatus MaaTaskerWait(const MaaTasker* tasker, MaaTaskId id);

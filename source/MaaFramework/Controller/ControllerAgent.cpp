@@ -148,6 +148,13 @@ MaaCtrlId ControllerAgent::post_scroll(int dx, int dy)
     return focus_id(id);
 }
 
+MaaCtrlId ControllerAgent::post_shell(const std::string& cmd, int64_t timeout)
+{
+    ShellParam p { .cmd = cmd, .timeout = timeout };
+    auto id = post({ .type = Action::Type::shell, .param = std::move(p) });
+    return focus_id(id);
+}
+
 MaaStatus ControllerAgent::status(MaaCtrlId ctrl_id) const
 {
     if (!action_runner_) {
@@ -178,7 +185,14 @@ bool ControllerAgent::connected() const
 
 cv::Mat ControllerAgent::cached_image() const
 {
-    return image_;
+    std::unique_lock lock(image_mutex_);
+    return image_.clone();
+}
+
+std::string ControllerAgent::cached_shell_output() const
+{
+    std::unique_lock lock(shell_output_mutex_);
+    return shell_output_;
 }
 
 std::string ControllerAgent::get_uuid()
@@ -294,12 +308,11 @@ bool ControllerAgent::input_text(InputTextParam p)
 
 cv::Mat ControllerAgent::screencap()
 {
-    std::unique_lock lock(image_mutex_);
     auto id = post({ .type = Action::Type::screencap });
     if (wait(id) != MaaStatus_Succeeded) {
         return {};
     }
-    return image_.clone();
+    return cached_image();
 }
 
 bool ControllerAgent::start_app(AppParam p)
@@ -318,6 +331,17 @@ bool ControllerAgent::scroll(ScrollParam p)
 {
     auto id = post({ .type = Action::Type::scroll, .param = std::move(p) });
     return wait(id) == MaaStatus_Succeeded;
+}
+
+bool ControllerAgent::shell(const std::string& cmd, std::string& output, int64_t timeout)
+{
+    ShellParam p { .cmd = cmd, .timeout = timeout };
+    auto id = post({ .type = Action::Type::shell, .param = std::move(p) });
+    bool ret = wait(id) == MaaStatus_Succeeded;
+    if (ret) {
+        output = cached_shell_output();
+    }
+    return ret;
 }
 
 MaaCtrlId ControllerAgent::post(Action action)
@@ -778,6 +802,29 @@ bool ControllerAgent::handle_scroll(const ScrollParam& param)
     return ret;
 }
 
+bool ControllerAgent::handle_shell(const ShellParam& param)
+{
+    if (!control_unit_) {
+        LogError << "control_unit_ is nullptr";
+        return false;
+    }
+
+    auto adb_unit = std::dynamic_pointer_cast<MAA_CTRL_UNIT_NS::AdbControlUnitAPI>(control_unit_);
+    if (!adb_unit) {
+        LogError << "Shell commands are only supported for ADB controllers. Current controller type does not support shell execution.";
+        return false;
+    }
+
+    std::string output;
+    bool ret = adb_unit->shell(param.cmd, output, std::chrono::milliseconds(param.timeout));
+    if (ret) {
+        std::unique_lock lock(shell_output_mutex_);
+        shell_output_ = std::move(output);
+    }
+
+    return ret;
+}
+
 bool ControllerAgent::check_stop()
 {
     if (!need_to_stop_) {
@@ -877,6 +924,10 @@ bool ControllerAgent::run_action(typename AsyncRunner<Action>::Id id, Action act
         ret = handle_scroll(std::get<ScrollParam>(action.param));
         break;
 
+    case Action::Type::shell:
+        ret = handle_shell(std::get<ShellParam>(action.param));
+        break;
+
     default:
         LogError << "Unknown action type" << VAR(static_cast<int>(action.type));
         ret = false;
@@ -929,7 +980,7 @@ bool ControllerAgent::postproc_screenshot(const cv::Mat& raw)
         }
     }
 
-    cv::resize(raw, image_, { image_target_width_, image_target_height_ });
+    cv::resize(raw, image_, { image_target_width_, image_target_height_ }, 0, 0, cv::INTER_AREA);
     return !image_.empty();
 }
 

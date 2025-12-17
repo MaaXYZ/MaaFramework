@@ -1,9 +1,11 @@
 #pragma once
 
+#include <deque>
 #include <map>
 #include <optional>
 #include <shared_mutex>
 #include <string>
+#include <unordered_map>
 
 #include "Common/TaskResultTypes.h"
 #include "MaaUtils/NoWarningCVMat.hpp"
@@ -33,10 +35,20 @@ public:
     void clear();
 
 private:
+    struct RecoImageCache
+    {
+        MAA_TASK_NS::ImageEncodedBuffer raw;
+        std::vector<MAA_TASK_NS::ImageEncodedBuffer> draws;
+    };
+
+    void evict_reco_image_cache_if_needed(size_t limit);
+
     std::map<std::string, MaaNodeId> latest_nodes_;
     mutable std::shared_mutex latest_nodes_mutex_;
 
     std::map<MaaRecoId, MAA_TASK_NS::RecoResult> reco_details_;
+    std::unordered_map<MaaRecoId, RecoImageCache> reco_image_cache_;
+    std::deque<MaaRecoId> reco_image_order_;
     mutable std::shared_mutex reco_details_mutex_;
 
     std::map<MaaActId, MAA_TASK_NS::ActionResult> action_details_;

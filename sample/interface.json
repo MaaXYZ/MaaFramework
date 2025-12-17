@@ -1,52 +1,95 @@
 {
-    "version": "1.0",
-    "message": "Welecome to MaaFramework!",
+    // 本文件为 PI V2 协议示例，更多详情请参考文档
+    // https://github.com/MaaXYZ/MaaFramework/blob/main/docs/zh_cn/3.3-ProjectInterfaceV2%E5%8D%8F%E8%AE%AE.md
+    "interface_version": 2, // ProjectInterface 协议版本号，当前为 2，固定且必须设置
+    "languages": { // 多语言支持配置，键为语言代码，值为对应的翻译文件路径
+        "zh_cn": "interface_zh.json",
+        "en_us": "interface_en.json"
+    },
+    "name": "MyDemo3", // 项目唯一标识符，用作项目ID
+    "label": "$MyDemo3", // 项目显示名称，支持国际化。优先显示label，未设置时显示name
+    "title": "Demo3 v1.0.0", // 窗口标题，Client直接显示该内容不做修饰。默认使用name和version拼接生成，支持国际化
+    "icon": "$demo3.png", // 应用图标文件路径，相对于项目根目录。未设置时使用默认图标
+    "mirrorchyan_rid": "demo3", // MirrorChyan资源包标识符，用于资源管理和分发
+    "mirrorchyan_multiplatform": false, // 是否支持多平台，影响资源包的打包和分发策略
+    "github": "https://github.com/MAA1999/M9A", // 项目GitHub仓库地址，用于版本更新检查和问题反馈
+    "version": "1.0.0", // 项目版本号，用于版本更新检查和Client显示
+    "contact": "QQ群: 592974962；B站：https://bilibili/xxxx", // 联系方式信息，显示在"关于"页面。支持文件路径、URL或直接文本，内容支持Markdown格式，支持国际化
+    "license": "MIT", // 项目许可证信息，显示在"关于"页面。支持文件路径、URL或直接文本，内容支持Markdown格式，支持国际化
+    "welcome": "欢迎使用MAA!", // 欢迎消息，在用户首次使用时弹窗显示，亦可作为公告使用。支持文件路径、URL或直接文本，内容支持Markdown格式。当内容更新时会再次弹窗，支持国际化
+    "description": "MaaFramework is a framework for building automation applications.", // 项目描述信息，显示在"关于"页面。支持文件路径、URL或直接文本，内容支持Markdown格式，支持国际化
     "agent": {
         "child_exec": "python",
         "child_args": [
-            "sample/python/demo3_agent.py"
+            "sample/python/demo3_agent.py" // 子进程参数。支持相对路径（相对于interface.json所在目录）
         ]
     },
     "controller": [
         {
-            "name": "安卓端",
-            "type": "Adb"
+            "name": "Android",
+            "label": "$安卓端", // 显示名称，支持国际化。优先显示label，未设置时显示name
+            "description": "通过 ADB 连接安卓设备", // 控制器详细描述。支持文件路径、URL或直接文本，内容支持Markdown格式，支持国际化
+            "icon": "adb.png", // 控制器图标文件路径，相对于项目根目录
+            "type": "Adb",
+            "display_short_side": 720, // 默认缩放分辨率的短边长度，用于屏幕适配。与long_side二选一
+            // "display_long_side": 1080, // 默认缩放分辨率的长边长度，与short_side二选一
+            "display_raw": false // 是否使用原始分辨率进行截图，与缩放分辨率设置互斥
         },
         {
-            "name": "桌面端",
+            "name": "Windows",
+            "label": "$电脑端", // 显示名称，支持国际化。所有具有name字段的对象都应添加label字段
+            "description": "通过 Win32 API 连接 Windows 应用程序",
             "type": "Win32",
             "win32": {
                 "class_regex": ".*",
-                "window_regex": "Visual Studio"
+                "window_regex": "Visual Studio",
+                // 截图及控制方式，请根据项目实际情况修改
+                // 文档: https://github.com/MaaXYZ/MaaFramework/blob/main/docs/zh_cn/2.4-%E6%8E%A7%E5%88%B6%E6%96%B9%E5%BC%8F%E8%AF%B4%E6%98%8E.md
+                "screencap": "PrintWindow", // 截图方式
+                "mouse": "PostMessageWithCursorPos", // 鼠标控制方式
+                "keyboard": "PostMessageWithCursorPos" // 键盘控制方式
             }
         }
     ],
     "resource": [
         {
             "name": "Official",
+            "label": "$官服资源", // 显示名称，支持国际化。优先显示label，未设置时显示name
+            "description": "官服资源", // 资源详细描述。支持文件路径、URL或直接文本，内容支持Markdown格式，支持国际化
+            "icon": "official.png", // 资源图标文件路径，相对于项目根目录
             "path": [
-                "{PROJECT_DIR}/resource"
-            ]
+                "resource" // 资源路径，相对于interface.json所在目录
+            ],
+            "controller": [
+                "Android"
+            ] // 指定该资源包支持的控制器类型列表。若不指定，则支持所有控制器。当用户选择某控制器时，只有支持该控制器的资源包才会显示
         },
         {
             "name": "Bilibili",
+            "label": "$B站资源", // 显示名称，支持国际化。优先显示label，未设置时显示name
             "path": [
-                "{PROJECT_DIR}/resource",
-                "{PROJECT_DIR}/resource_bilibili"
+                "resource",
+                "resource_bilibili" // 资源路径，相对于interface.json所在目录
             ]
         }
     ],
     "task": [
         {
             "name": "收取荒原",
-            "entry": "Wilderness"
+            "label": "$收取荒原", // 显示名称，支持国际化。优先显示label，未设置时显示name
+            "entry": "Wilderness",
+            "default_check": true, // 是否默认选中该任务。Client初始化时根据该值决定是否勾选
+            "description": "收取荒原资源，若不勾选，则不会执行此任务", // 任务详细描述，帮助用户理解任务功能。支持文件路径、URL或直接文本，内容支持Markdown格式，支持国际化
+            "icon": "wilderness.png" // 任务图标文件路径，相对于项目根目录。用于在用户界面中显示
         },
         {
             "name": "每日心相（意志解析）",
+            "label": "$每日心相", // 显示名称，支持国际化。优先显示label，未设置时显示name
             "entry": "Psychube"
         },
         {
             "name": "常规作战",
+            "label": "$常规作战", // 显示名称，支持国际化。优先显示label，未设置时显示name
             "entry": "Combat",
             "option": [
                 "作战关卡",
@@ -56,7 +99,11 @@
         },
         {
             "name": "活动：绿湖噩梦 17 艰难（活动已结束）",
+            "label": "$活动任务", // 显示名称，支持国际化。优先显示label，未设置时显示name
             "entry": "ANightmareAtGreenLake",
+            "resource": [
+                "Official"
+            ], // 指定该任务支持的资源包列表。若不指定，则在所有资源包中都显示。当用户选择某资源包时，只有支持该资源包的任务才会显示
             "option": [
                 "复现次数",
                 "刷完全部体力"
@@ -75,14 +122,25 @@
         },
         {
             "name": "领取奖励",
+            "label": "$领取奖励", // 显示名称，支持国际化。优先显示label，未设置时显示name
             "entry": "Awards"
         }
     ],
     "option": {
         "作战关卡": {
+            "type": "select", // 配置项类型。select为下拉选项框，用户从预定义选项中选择
+            "label": "$选择作战关卡",
+            "description": "选择要刷的关卡", // 配置项详细描述。支持文件路径、URL或直接文本，内容支持Markdown格式，支持国际化
             "cases": [
                 {
                     "name": "3-9 厄险（百灵百验鸟）",
+                    "label": "$3-9厄险", // 显示名称，支持国际化。优先显示label，未设置时显示name
+                    "description": "刷百灵鸟", // 选项详细描述。支持文件路径、URL或直接文本，内容支持Markdown格式，支持国际化
+                    "icon": "百灵鸟.png", // 选项图标文件路径，相对于项目根目录
+                    "option": [ // 子配置项列表。只有用户选中当前选项时才显示。子选项同样在外层option中定义，支持无限嵌套
+                        "使用理智药",
+                        "刷完xxx"
+                    ],
                     "pipeline_override": {
                         "EnterTheShow": {
                             "next": "MainChapter_3"
@@ -97,6 +155,7 @@
                 },
                 {
                     "name": "4-20 厄险（双头形骨架）",
+                    "label": "$4-20厄险", // 显示名称，支持国际化。优先显示label，未设置时显示name
                     "pipeline_override": {
                         "EnterTheShow": {
                             "next": "MainChapter_4"
@@ -111,10 +170,57 @@
                 }
             ]
         },
+        "自定义关卡": {
+            "type": "input", // 用户输入类型
+            "label": "自定义关卡",
+            "description": "自己选打什么关", // 描述，应支持 文件名、URL、字符串，同时内容支持 markdown，支持国际化
+            "icon": "扳手.png", // 图标，可选
+            "inputs": [
+                {
+                    "name": "章节号",
+                    "label": "$章节号", // 显示名称，支持国际化。优先显示label，未设置时显示name
+                    "description": "关卡章节号，用阿拉伯数字表示", // 描述，应支持 文件名、URL、字符串，同时内容支持 markdown，支持国际化
+                    "default": "4",
+                    "pipeline_type": "string", // 拼接到 pipeline_override 中的类型
+                    "verify": "^\\d+$" // 正则表达式校验用户输入
+                },
+                {
+                    "name": "难度",
+                    "label": "$难度", // 显示名称，支持国际化。优先显示label，未设置旰显示name
+                    "default": "Hard",
+                    "pipeline_type": "string",
+                    "verify": "^(Normal|Hard)$" // 正则表达式校验用户输入
+                },
+                {
+                    "name": "超时时间",
+                    "label": "$超时时间", // 显示名称，支持国际化。优先显示label，未设置时显示name
+                    "default": "20000",
+                    "pipeline_type": "int",
+                    "verify": "^\\d+$" // 正则表达式校验用户输入
+                }
+            ],
+            "pipeline_override": {
+                "EnterTheShow": {
+                    "next": "MainChapter_{章节号}",
+                    "timeout": "{超时时间}" // 这里会被拼接成 "timeout": 20000
+                },
+                "TargetStageName": {
+                    "expected": "{关卡号}"
+                },
+                "StageDifficulty": {
+                    "next": "StageDifficulty_{难度}"
+                }
+            }
+        },
         "复现次数": {
+            "description": "打几次", // 描述，应支持 文件名、URL、字符串，同时内容支持 markdown，支持国际化
+            "icon": "times.png", // 图标，可选
             "cases": [
                 {
                     "name": "x1",
+                    "label": "$1次", // 显示名称，支持国际化。优先显示label，未设置时显示name
+                    "description": "打1次", // 描述，应支持 文件名、URL、字符串，同时内容支持 markdown，支持国际化
+                    "icon": "once.png", // 图标，可选
                     "pipeline_override": {
                         "SetReplaysTimes": {
                             "expected": "1"
@@ -123,6 +229,7 @@
                 },
                 {
                     "name": "x2",
+                    "label": "$2次", // 显示名称，支持国际化。优先显示label，未设置时显示name
                     "pipeline_override": {
                         "SetReplaysTimes": {
                             "expected": "2"
@@ -131,6 +238,7 @@
                 },
                 {
                     "name": "x3",
+                    "label": "$3次", // 显示名称，支持国际化。优先显示label，未设置时显示name
                     "pipeline_override": {
                         "SetReplaysTimes": {
                             "expected": "3"
@@ -139,6 +247,7 @@
                 },
                 {
                     "name": "x4",
+                    "label": "$4次", // 显示名称，支持国际化。优先显示label，未设置时显示name
                     "pipeline_override": {
                         "SetReplaysTimes": {
                             "expected": "4"
@@ -148,9 +257,13 @@
             ]
         },
         "刷完全部体力": {
+            "type": "switch", // switch类型，Yes or No 二选一
+            "label": "$刷完全部体力",
+            "description": "是否刷完全部体力",
             "cases": [
                 {
                     "name": "Yes",
+                    "label": "$是", // 显示名称，支持国际化。优先显示label，未设置时显示name
                     "pipeline_override": {
                         "AllIn": {
                             "enabled": true
@@ -159,9 +272,70 @@
                 },
                 {
                     "name": "No",
+                    "label": "$否", // 显示名称，支持国际化。优先显示label，未设置时显示name
                     "pipeline_override": {
                         "AllIn": {
                             "enabled": false
+                        }
+                    }
+                }
+            ]
+        },
+        "使用理智药": {
+            "type": "switch", // switch类型示例
+            "label": "$使用理智药",
+            "description": "体力不足时是否使用理智药",
+            "cases": [
+                {
+                    "name": "Yes",
+                    "label": "$使用",
+                    "pipeline_override": {
+                        "UseSanityPotion": {
+                            "enabled": true
+                        }
+                    }
+                },
+                {
+                    "name": "No",
+                    "label": "$不使用",
+                    "pipeline_override": {
+                        "UseSanityPotion": {
+                            "enabled": false
+                        }
+                    }
+                }
+            ]
+        },
+        "刷完xxx": {
+            "type": "select", // 子配置项示例
+            "label": "$刷完后操作",
+            "description": "刷完关卡后执行的操作",
+            "default_case": "返回主界面",
+            "cases": [
+                {
+                    "name": "返回主界面",
+                    "label": "$返回主界面",
+                    "pipeline_override": {
+                        "AfterFarming": {
+                            "next": "ReturnToMainMenu"
+                        }
+                    }
+                },
+                {
+                    "name": "继续战斗",
+                    "label": "$继续战斗",
+                    "pipeline_override": {
+                        "AfterFarming": {
+                            "next": "ContinueBattle"
+                        }
+                    }
+                },
+                {
+                    "name": "退出游戏",
+                    "label": "$退出游戏",
+                    "pipeline_override": {
+                        "AfterFarming": {
+                            "next": "ExitGame"
                         }
                     }
                 }

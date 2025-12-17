@@ -31,7 +31,7 @@ NeuralNetworkDetector::NeuralNetworkDetector(
 
 void NeuralNetworkDetector::analyze()
 {
-    LogFunc << name_ << VAR(uid_);
+    LogFunc << name_;
 
     if (!session_) {
         LogError << "OrtSession not loaded";
@@ -47,8 +47,8 @@ void NeuralNetworkDetector::analyze()
     cherry_pick();
 
     auto cost = duration_since(start_time);
-    LogDebug << name_ << VAR(uid_) << VAR(all_results_) << VAR(filtered_results_) << VAR(best_result_) << VAR(cost) << VAR(param_.model)
-             << VAR(labels) << VAR(param_.expected) << VAR(param_.thresholds);
+    LogDebug << name_ << VAR(all_results_) << VAR(filtered_results_) << VAR(best_result_) << VAR(cost) << VAR(param_.model) << VAR(labels)
+             << VAR(param_.expected) << VAR(param_.thresholds);
 }
 
 NeuralNetworkDetector::ResultsVec NeuralNetworkDetector::detect(const std::vector<std::string>& labels) const
@@ -154,8 +154,18 @@ NeuralNetworkDetector::ResultsVec NeuralNetworkDetector::detect(const std::vecto
 
 void NeuralNetworkDetector::add_results(ResultsVec results, const std::vector<int>& expected, const std::vector<double>& thresholds)
 {
+    if (expected.empty()) {
+        // expected 为空时，所有结果均可用，但仍需满足默认阈值
+        double default_threshold = thresholds.empty() ? NeuralNetworkDetectorParam::kDefaultThreshold : thresholds.front();
+        std::ranges::copy_if(results, std::back_inserter(filtered_results_), [&](const auto& res) {
+            return res.score >= default_threshold;
+        });
+        merge_vector_(all_results_, std::move(results));
+        return;
+    }
+
     if (expected.size() != thresholds.size()) {
-        LogError << name_ << VAR(uid_) << "expected.size() != thresholds.size()" << VAR(expected) << VAR(thresholds);
+        LogError << name_ << "expected.size() != thresholds.size()" << VAR(expected) << VAR(thresholds);
         return;
     }
 
@@ -259,11 +269,11 @@ std::vector<std::string> NeuralNetworkDetector::parse_labels_from_metadata() con
     }
 
     if (names_str.empty()) {
-        LogDebug << name_ << VAR(uid_) << "No metadata found with keys: names, name, labels, class_names";
+        LogDebug << name_ << "No metadata found with keys: names, name, labels, class_names";
         return {};
     }
 
-    LogDebug << name_ << VAR(uid_) << "Found metadata" << VAR(names_str);
+    LogDebug << name_ << "Found metadata" << VAR(names_str);
 
     // 解析字符串格式：{0: 'white_dog', 1: 'white_cat', 2: 'black_dog', 3: 'black_cat'}
     // 支持单引号和双引号
@@ -295,14 +305,14 @@ std::vector<std::string> NeuralNetworkDetector::parse_labels_from_metadata() con
     }
 
     if (label_map.empty()) {
-        LogWarn << name_ << VAR(uid_) << "Failed to parse metadata as Python dict format" << VAR(names_str);
+        LogWarn << name_ << "Failed to parse metadata as Python dict format" << VAR(names_str);
         return {};
     }
 
     // 找到最大索引，创建对应大小的向量
     int max_index = label_map.rbegin()->first;
     if (max_index < 0 || max_index > 10000) {
-        LogWarn << name_ << VAR(uid_) << "Invalid max_index" << VAR(max_index);
+        LogWarn << name_ << "Invalid max_index" << VAR(max_index);
         return {};
     }
 
@@ -313,7 +323,7 @@ std::vector<std::string> NeuralNetworkDetector::parse_labels_from_metadata() con
         }
     }
 
-    LogDebug << name_ << VAR(uid_) << "Parsed labels from metadata" << VAR(labels.size());
+    LogDebug << name_ << "Parsed labels from metadata" << VAR(labels.size());
     return labels;
 }
 
