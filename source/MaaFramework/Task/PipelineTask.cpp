@@ -83,7 +83,7 @@ bool PipelineTask::run()
             save_on_error(node.name);
         }
         else {
-            LogInfo << "invalid node id, handle error" << VAR(node.name);
+            LogWarn << "invalid node id, handle error" << VAR(node.name);
             error_handling = true;
             next = node.on_error;
             save_on_error(node.name);
@@ -166,7 +166,7 @@ NodeDetail PipelineTask::run_next(const std::vector<MAA_RES_NS::NodeAttr>& next,
 
         if (!reco.box) {
             if (duration_since(start_clock) > pretask.reco_timeout) {
-                LogError << "Task timeout" << VAR(pretask.name) << VAR(duration_since(start_clock)) << VAR(pretask.reco_timeout);
+                LogWarn << "Task timeout" << VAR(pretask.name) << VAR(duration_since(start_clock)) << VAR(pretask.reco_timeout);
                 break;
             }
 
@@ -216,7 +216,7 @@ NodeDetail PipelineTask::run_next(const std::vector<MAA_RES_NS::NodeAttr>& next,
         .node_id = node_id,
         .completed = false,
     };
-    LogError << "PipelineTask bad next" << VAR(result) << VAR(task_id_);
+    LogWarn << "PipelineTask bad next" << VAR(result) << VAR(task_id_);
     set_node_detail(result.node_id, result);
 
     notify(MaaMsg_Node_PipelineNode_Failed, node_cb_detail);
