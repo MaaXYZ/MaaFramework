@@ -131,6 +131,9 @@
     <member refid="MaaResource_8h_1acc69c217aaf4e775e5be1ff436a5e6da" kind="function"><name>MaaResourceUnregisterCustomAction</name></member>
     <member refid="MaaResource_8h_1ad3c7ba0220c6da7172032b74af86e89c" kind="function"><name>MaaResourceClearCustomAction</name></member>
     <member refid="MaaResource_8h_1a08043e4ee98ab14cc8c731cd5d98c064" kind="function"><name>MaaResourcePostBundle</name></member>
+    <member refid="MaaResource_8h_1a968f1ab2f31cfb768cc3ed2e5df498ad" kind="function"><name>MaaResourcePostOcrModel</name></member>
+    <member refid="MaaResource_8h_1a6f8112725945067b40e05956d86388de" kind="function"><name>MaaResourcePostPipeline</name></member>
+    <member refid="MaaResource_8h_1a8f1736dec70b35b68846e57fc40bbb2f" kind="function"><name>MaaResourcePostImage</name></member>
     <member refid="MaaResource_8h_1a8585514c308fa0e9004e26ccd9ec240a" kind="function"><name>MaaResourceOverridePipeline</name></member>
     <member refid="MaaResource_8h_1af54353480b6dcd1e22723a560545c9b9" kind="function"><name>MaaResourceOverrideNext</name></member>
     <member refid="MaaResource_8h_1a1310b4983c90e6fe58ed41a43661f947" kind="function"><name>MaaResourceOverrideImage</name></member>
