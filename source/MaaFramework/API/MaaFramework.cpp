@@ -116,6 +116,30 @@ MaaController* MaaDbgControllerCreate(const char* read_path, const char* write_p
     return new MAA_CTRL_NS::ControllerAgent(std::move(control_unit));
 }
 
+MaaController* MaaPlayCoverControllerCreate(const char* address, const char* uuid)
+{
+    LogFunc << VAR(address) << VAR(uuid);
+
+    if (!address) {
+        LogError << "address is null";
+        return nullptr;
+    }
+
+    if (!uuid) {
+        LogError << "uuid is null";
+        return nullptr;
+    }
+
+    auto control_unit = MAA_NS::PlayCoverControlUnitLibraryHolder::create_control_unit(address, uuid);
+
+    if (!control_unit) {
+        LogError << "Failed to create control unit";
+        return nullptr;
+    }
+
+    return new MAA_CTRL_NS::ControllerAgent(std::move(control_unit));
+}
+
 void MaaControllerDestroy(MaaController* ctrl)
 {
     LogFunc << VAR_VOIDP(ctrl);

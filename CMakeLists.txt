@@ -10,6 +10,7 @@ option(WITH_ADB_CONTROLLER "build with adb controller" ON)
 option(WITH_WIN32_CONTROLLER "build with win32 controller" ON)
 option(WITH_DBG_CONTROLLER "build with debugging controller" OFF)
 option(WITH_CUSTOM_CONTROLLER "build with custom controller" ON)
+option(WITH_PLAYCOVER_CONTROLLER "build with PlayCover controller for macOS" ON)
 option(WITH_NODEJS_BINDING "build with nodejs binding" OFF)
 option(WITH_QUICKJS_BINDING "build with quickjs binding" OFF)
 option(WITH_MAA_AGENT "build with MaaAgent" ON)
@@ -57,6 +58,10 @@ endif()
 
 if(BUILD_DLOPEN_TESTING)
     add_subdirectory(test/dlopen)
+endif()
+
+if(WITH_PLAYCOVER_CONTROLLER)
+    add_subdirectory(test/playcover_test)
 endif()
 
 if(BUILD_NODE_TEST)
