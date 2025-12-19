@@ -1754,6 +1754,7 @@ bool PipelineParser::parse_and_param(
     if (!output) {
         output = std::make_shared<Recognition::AndParam>();
     }
+    output->all_of.clear();
 
     auto all_opt = input.find("all_of");
     if (!all_opt || !all_opt->is_array() || all_opt->as_array().empty()) {
@@ -1791,6 +1792,7 @@ bool PipelineParser::parse_or_param(
     if (!output) {
         output = std::make_shared<Recognition::OrParam>();
     }
+    output->any_of.clear();
 
     auto any_opt = input.find("any_of");
     if (!any_opt || !any_opt->is_array() || any_opt->as_array().empty()) {

@@ -202,7 +202,7 @@ PipelineV2::JRecognition PipelineDumper::dump_reco(Recognition::Type type, const
         const auto& p = std::get<std::shared_ptr<Recognition::AndParam>>(param);
         if (!p) {
             LogError << "AndParam is null";
-            return {};
+            return reco;
         }
 
         std::vector<json::value> all_list;
@@ -223,7 +223,7 @@ PipelineV2::JRecognition PipelineDumper::dump_reco(Recognition::Type type, const
         const auto& p = std::get<std::shared_ptr<Recognition::OrParam>>(param);
         if (!p) {
             LogError << "OrParam is null";
-            return {};
+            return reco;
         }
 
         std::vector<json::value> any_list;
