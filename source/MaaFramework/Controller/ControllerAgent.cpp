@@ -394,7 +394,7 @@ bool ControllerAgent::handle_click(const ClickParam& param)
     bool ret = true;
     if (control_unit_->get_features() & MaaControllerFeature_UseMouseDownAndUpInsteadOfClick) {
         ret &= control_unit_->touch_down(param.contact, point.x, point.y, 1);
-        std::this_thread::sleep_for(std::chrono::milliseconds(20));
+        std::this_thread::sleep_for(std::chrono::milliseconds(50));
         ret &= control_unit_->touch_up(param.contact);
     }
     else {
@@ -667,7 +667,7 @@ bool ControllerAgent::handle_click_key(const ClickKeyParam& param)
     for (const auto& keycode : param.keycode) {
         if (use_key_down_up) {
             ret &= control_unit_->key_down(keycode);
-            std::this_thread::sleep_for(std::chrono::milliseconds(20));
+            std::this_thread::sleep_for(std::chrono::milliseconds(50));
             ret &= control_unit_->key_up(keycode);
         }
         else {

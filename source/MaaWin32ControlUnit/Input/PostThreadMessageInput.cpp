@@ -151,7 +151,7 @@ bool PostThreadMessageInput::input_text(const std::string& text)
     // 文本输入仅发送 WM_CHAR
     for (const auto ch : to_u16(text)) {
         PostThreadMessage(thread_id_, WM_CHAR, static_cast<WPARAM>(ch), 0);
-        std::this_thread::sleep_for(std::chrono::milliseconds(10));
+        std::this_thread::sleep_for(std::chrono::milliseconds(50));
     }
     return true;
 }
