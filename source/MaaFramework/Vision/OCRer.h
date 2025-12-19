@@ -72,7 +72,7 @@ private:
     void sort_(ResultsVec& results) const;
 
 private:
-    static boost::wregex gen_regex(const std::wstring& pattern);
+    static const boost::wregex& gen_regex(const std::wstring& pattern);
 
 private:
     const OCRerParam param_;

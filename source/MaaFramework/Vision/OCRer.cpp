@@ -17,9 +17,10 @@ MAA_SUPPRESS_CV_WARNINGS_END
 
 MAA_VISION_NS_BEGIN
 
-boost::wregex OCRer::gen_regex(const std::wstring& pattern)
+const boost::wregex& OCRer::gen_regex(const std::wstring& pattern)
 {
-    // TODO: 要不要加个锁？
+    static std::mutex mtx;
+    std::unique_lock lock(mtx);
 
     static std::unordered_map<std::wstring, boost::wregex> s_cache;
     if (auto it = s_cache.find(pattern); it != s_cache.end()) {
