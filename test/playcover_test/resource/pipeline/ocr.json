@@ -1,7 +1,0 @@
-{
-    "FullScreenOCR": {
-        "recognition": "OCR",
-        "roi": [0, 0, 0, 0],
-        "only_rec": true
-    }
-}

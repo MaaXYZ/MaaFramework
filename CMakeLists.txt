@@ -60,10 +60,6 @@ if(BUILD_DLOPEN_TESTING)
     add_subdirectory(test/dlopen)
 endif()
 
-if(WITH_PLAYCOVER_CONTROLLER)
-    add_subdirectory(test/playcover_test)
-endif()
-
 if(BUILD_NODE_TEST)
     add_subdirectory(tools/NodeTest)
 endif()
