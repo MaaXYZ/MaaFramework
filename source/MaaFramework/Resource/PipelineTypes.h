@@ -28,8 +28,13 @@ enum class Type
     NeuralNetworkClassify,
     NeuralNetworkDetect,
     ColorMatch,
+    And,
+    Or,
     Custom,
 };
+
+struct AndParam;
+struct OrParam;
 
 using Param = std::variant<
     std::monostate,
@@ -40,7 +45,30 @@ using Param = std::variant<
     MAA_VISION_NS::NeuralNetworkClassifierParam,
     MAA_VISION_NS::NeuralNetworkDetectorParam,
     MAA_VISION_NS::ColorMatcherParam,
+    std::shared_ptr<AndParam>,
+    std::shared_ptr<OrParam>,
     MAA_VISION_NS::CustomRecognitionParam>;
+
+// Sub-recognition element for Multiple recognition
+struct SubRecognition
+{
+    std::string sub_name;
+    Type type = Type::Invalid;
+    Param param;
+};
+
+// And recognition parameter (logical AND - all must match)
+struct AndParam
+{
+    std::vector<SubRecognition> all_of;
+    int box_index = 0;
+};
+
+// Or recognition parameter (logical OR - first match wins)
+struct OrParam
+{
+    std::vector<SubRecognition> any_of;
+};
 
 inline static const std::unordered_map<std::string, Type> kTypeMap = {
     { "DirectHit", Type::DirectHit },
@@ -61,6 +89,10 @@ inline static const std::unordered_map<std::string, Type> kTypeMap = {
     { "neuralnetworkdetect", Type::NeuralNetworkDetect },
     { "NNDetect", Type::NeuralNetworkDetect },
     { "nnDetect", Type::NeuralNetworkDetect },
+    { "And", Type::And },
+    { "and", Type::And },
+    { "Or", Type::Or },
+    { "or", Type::Or },
     { "Custom", Type::Custom },
     { "custom", Type::Custom },
 };
@@ -73,6 +105,8 @@ inline static const std::unordered_map<Type, std::string> kTypeNameMap = {
     { Type::NeuralNetworkClassify, "NeuralNetworkClassify" },
     { Type::NeuralNetworkDetect, "NeuralNetworkDetect" },
     { Type::ColorMatch, "ColorMatch" },
+    { Type::And, "And" },
+    { Type::Or, "Or" },
     { Type::Custom, "Custom" },
 };
 } // namespace Recognition

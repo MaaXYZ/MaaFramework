@@ -29,55 +29,14 @@ RecoResult Recognizer::recognize(const PipelineData& pipeline_data)
         return {};
     }
 
-    using namespace MAA_RES_NS::Recognition;
-    using namespace MAA_VISION_NS;
-
-    RecoResult result;
-    switch (pipeline_data.reco_type) {
-    case Type::DirectHit:
-        result = direct_hit(pipeline_data.name);
-        break;
-
-    case Type::TemplateMatch:
-        result = template_match(std::get<TemplateMatcherParam>(pipeline_data.reco_param), pipeline_data.name);
-        break;
-
-    case Type::FeatureMatch:
-        result = feature_match(std::get<FeatureMatcherParam>(pipeline_data.reco_param), pipeline_data.name);
-        break;
-
-    case Type::ColorMatch:
-        result = color_match(std::get<ColorMatcherParam>(pipeline_data.reco_param), pipeline_data.name);
-        break;
-
-    case Type::OCR:
-        result = ocr(std::get<OCRerParam>(pipeline_data.reco_param), pipeline_data.name);
-        break;
-
-    case Type::NeuralNetworkClassify:
-        result = nn_classify(std::get<NeuralNetworkClassifierParam>(pipeline_data.reco_param), pipeline_data.name);
-        break;
-
-    case Type::NeuralNetworkDetect:
-        result = nn_detect(std::get<NeuralNetworkDetectorParam>(pipeline_data.reco_param), pipeline_data.name);
-        break;
-
-    case Type::Custom:
-        result = custom_recognize(std::get<CustomRecognitionParam>(pipeline_data.reco_param), pipeline_data.name);
-        break;
-
-    default:
-        LogError << "Unknown type" << VAR(static_cast<int>(pipeline_data.reco_type)) << VAR(pipeline_data.name);
-        return {};
-    }
+    RecoResult result = run_recognition(pipeline_data.reco_type, pipeline_data.reco_param, pipeline_data.name);
 
     if (debug_mode()) {
-        // 图太大了，不能无条件存
         ImageEncodedBuffer png;
         cv::imencode(".png", image_, png);
-
         result.raw = std::move(png);
     }
+
     if (pipeline_data.inverse) {
         LogDebug << "pipeline_data.inverse is true, reverse the result" << VAR(pipeline_data.name) << VAR(result.box);
         result.box = result.box ? std::nullopt : std::make_optional<cv::Rect>();
@@ -295,6 +254,185 @@ RecoResult Recognizer::custom_recognize(const MAA_VISION_NS::CustomRecognitionPa
                         .box = std::move(box),
                         .detail = gen_detail(analyzer.all_results(), analyzer.filtered_results(), analyzer.best_result()),
                         .draws = std::move(analyzer).draws() };
+}
+
+RecoResult Recognizer::and_(const std::shared_ptr<MAA_RES_NS::Recognition::AndParam>& param, const std::string& name)
+{
+    if (!param) {
+        LogError << "AndParam is null";
+        return {};
+    }
+
+    LogDebug << "And recognition" << VAR(name) << VAR(param->all_of.size()) << VAR(param->box_index);
+
+    std::vector<RecoResult> sub_results;
+    std::unordered_map<std::string, cv::Rect> sub_name_boxes;
+    std::vector<ImageEncodedBuffer> all_draws;
+    json::array sub_details;
+
+    for (size_t i = 0; i < param->all_of.size(); ++i) {
+        const auto& sub_reco = param->all_of[i];
+
+        for (const auto& [sub_name, box] : sub_name_boxes) {
+            auto& rt_cache = tasker_->runtime_cache();
+            rt_cache.set_latest_node(sub_name, MaaInvalidId);
+
+            RecoResult temp_result {
+                .reco_id = reco_id_,
+                .name = sub_name,
+                .algorithm = "And.SubRef",
+                .box = box,
+            };
+            rt_cache.set_reco_detail(reco_id_, temp_result);
+
+            NodeDetail temp_node { .node_id = MaaInvalidId, .name = sub_name, .reco_id = reco_id_ };
+            rt_cache.set_node_detail(MaaInvalidId, temp_node);
+        }
+
+        RecoResult sub_result = run_recognition(sub_reco.type, sub_reco.param, name + ".all_of[" + std::to_string(i) + "]");
+
+        for (auto& draw : sub_result.draws) {
+            all_draws.emplace_back(std::move(draw));
+        }
+
+        if (!sub_result.box) {
+            LogDebug << "And: sub recognition failed at index" << VAR(i) << VAR(sub_reco.sub_name);
+            return RecoResult {
+                .reco_id = reco_id_,
+                .name = name,
+                .algorithm = "And",
+                .box = std::nullopt,
+                .detail = json::object { { "failed_at", i }, { "sub_results", std::move(sub_details) } },
+                .draws = std::move(all_draws),
+            };
+        }
+
+        if (!sub_reco.sub_name.empty()) {
+            sub_name_boxes[sub_reco.sub_name] = *sub_result.box;
+        }
+
+        sub_details.emplace_back(json::object {
+            { "sub_name", sub_reco.sub_name },
+            { "algorithm", sub_result.algorithm },
+            { "box", json::array { sub_result.box->x, sub_result.box->y, sub_result.box->width, sub_result.box->height } },
+            { "detail", sub_result.detail },
+        });
+
+        sub_results.emplace_back(std::move(sub_result));
+    }
+
+    std::optional<cv::Rect> final_box = sub_results[param->box_index].box;
+
+    return RecoResult {
+        .reco_id = reco_id_,
+        .name = name,
+        .algorithm = "And",
+        .box = std::move(final_box),
+        .detail = json::object { { "sub_results", std::move(sub_details) }, { "box_index", param->box_index } },
+        .draws = std::move(all_draws),
+    };
+}
+
+RecoResult Recognizer::or_(const std::shared_ptr<MAA_RES_NS::Recognition::OrParam>& param, const std::string& name)
+{
+    if (!param) {
+        LogError << "OrParam is null";
+        return {};
+    }
+
+    LogDebug << "Or recognition" << VAR(name) << VAR(param->any_of.size());
+
+    std::vector<ImageEncodedBuffer> all_draws;
+    json::array sub_details;
+
+    for (size_t i = 0; i < param->any_of.size(); ++i) {
+        const auto& sub_reco = param->any_of[i];
+
+        RecoResult sub_result = run_recognition(sub_reco.type, sub_reco.param, name + ".any_of[" + std::to_string(i) + "]");
+
+        for (auto& draw : sub_result.draws) {
+            all_draws.emplace_back(std::move(draw));
+        }
+
+        if (sub_result.box) {
+            LogDebug << "Or: sub recognition succeeded at index" << VAR(i) << VAR(sub_reco.sub_name);
+            sub_details.emplace_back(json::object {
+                { "sub_name", sub_reco.sub_name },
+                { "algorithm", sub_result.algorithm },
+                { "box", json::array { sub_result.box->x, sub_result.box->y, sub_result.box->width, sub_result.box->height } },
+                { "detail", sub_result.detail },
+            });
+
+            return RecoResult {
+                .reco_id = reco_id_,
+                .name = name,
+                .algorithm = "Or",
+                .box = std::move(sub_result.box),
+                .detail = json::object { { "hit_index", i }, { "sub_results", std::move(sub_details) } },
+                .draws = std::move(all_draws),
+            };
+        }
+
+        sub_details.emplace_back(json::object {
+            { "sub_name", sub_reco.sub_name },
+            { "algorithm", sub_result.algorithm },
+            { "box", nullptr },
+            { "detail", sub_result.detail },
+        });
+    }
+
+    LogDebug << "Or: all sub recognitions failed";
+    return RecoResult {
+        .reco_id = reco_id_,
+        .name = name,
+        .algorithm = "Or",
+        .box = std::nullopt,
+        .detail = json::object { { "sub_results", std::move(sub_details) } },
+        .draws = std::move(all_draws),
+    };
+}
+
+RecoResult
+    Recognizer::run_recognition(MAA_RES_NS::Recognition::Type type, const MAA_RES_NS::Recognition::Param& param, const std::string& name)
+{
+    using namespace MAA_RES_NS::Recognition;
+    using namespace MAA_VISION_NS;
+
+    switch (type) {
+    case Type::DirectHit:
+        return direct_hit(name);
+
+    case Type::TemplateMatch:
+        return template_match(std::get<TemplateMatcherParam>(param), name);
+
+    case Type::FeatureMatch:
+        return feature_match(std::get<FeatureMatcherParam>(param), name);
+
+    case Type::ColorMatch:
+        return color_match(std::get<ColorMatcherParam>(param), name);
+
+    case Type::OCR:
+        return ocr(std::get<OCRerParam>(param), name);
+
+    case Type::NeuralNetworkClassify:
+        return nn_classify(std::get<NeuralNetworkClassifierParam>(param), name);
+
+    case Type::NeuralNetworkDetect:
+        return nn_detect(std::get<NeuralNetworkDetectorParam>(param), name);
+
+    case Type::And:
+        return and_(std::get<std::shared_ptr<AndParam>>(param), name);
+
+    case Type::Or:
+        return or_(std::get<std::shared_ptr<OrParam>>(param), name);
+
+    case Type::Custom:
+        return custom_recognize(std::get<CustomRecognitionParam>(param), name);
+
+    default:
+        LogError << "Unknown recognition type" << VAR(static_cast<int>(type));
+        return {};
+    }
 }
 
 cv::Rect Recognizer::get_roi(const MAA_VISION_NS::Target& roi)

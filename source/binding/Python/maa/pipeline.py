@@ -17,6 +17,8 @@ class JRecognitionType(StrEnum):
     OCR = "OCR"
     NeuralNetworkClassify = "NeuralNetworkClassify"
     NeuralNetworkDetect = "NeuralNetworkDetect"
+    And = "And"
+    Or = "Or"
     Custom = "Custom"
 
 
@@ -131,6 +133,17 @@ class JCustomRecognition:
     custom_recognition_param: Any = None
 
 
+@dataclass
+class JAnd:
+    all_of: List[Any] = field(default_factory=list)
+    box_index: int = 0
+
+
+@dataclass
+class JOr:
+    any_of: List[Any] = field(default_factory=list)
+
+
 # Recognition parameter union type
 JRecognitionParam = Union[
     JDirectHit,
@@ -140,6 +153,8 @@ JRecognitionParam = Union[
     JOCR,
     JNeuralNetworkClassify,
     JNeuralNetworkDetect,
+    JAnd,
+    JOr,
     JCustomRecognition,
 ]
 
@@ -387,6 +402,8 @@ class JPipelineParser:
             JRecognitionType.OCR: JOCR,
             JRecognitionType.NeuralNetworkClassify: JNeuralNetworkClassify,
             JRecognitionType.NeuralNetworkDetect: JNeuralNetworkDetect,
+            JRecognitionType.And: JAnd,
+            JRecognitionType.Or: JOr,
             JRecognitionType.Custom: JCustomRecognition,
         }
         return cls._parse_param(param_type, param_data, param_type_map, JDirectHit)
