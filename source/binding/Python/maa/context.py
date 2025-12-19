@@ -217,6 +217,14 @@ class Context:
             return None
 
     def get_node_object(self, name: str) -> Optional[JPipelineData]:
+        """获取任务当前的定义（解析为对象） / Get the current definition of task (parsed as object)
+
+        Args:
+            name: 任务名 / Task name
+
+        Returns:
+            Optional[JPipelineData]: 任务定义对象，如果不存在则返回 None / Task definition object, or None if not exists
+        """
         node_data = self.get_node_data(name)
 
         if not node_data:
