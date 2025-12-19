@@ -15,6 +15,7 @@ public:
 
     static json::object dump(const PipelineData& pp);
     static PipelineV2::JRecognition dump_reco(Recognition::Type type, const Recognition::Param& param);
+    static PipelineV2::JAction dump_act(Action::Type type, const Action::Param& param);
 };
 
 MAA_RES_NS_END

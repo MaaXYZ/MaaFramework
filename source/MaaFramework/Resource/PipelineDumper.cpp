@@ -257,6 +257,179 @@ PipelineV2::JRecognition PipelineDumper::dump_reco(Recognition::Type type, const
     return reco;
 }
 
+PipelineV2::JAction PipelineDumper::dump_act(Action::Type type, const Action::Param& param)
+{
+    PipelineV2::JAction act;
+    act.type = Action::kTypeNameMap.at(type);
+
+    switch (type) {
+    case Action::Type::DoNothing:
+        act.param = PipelineV2::JDoNothing {};
+        break;
+
+    case Action::Type::Click: {
+        const auto& p = std::get<Action::ClickParam>(param);
+        act.param = PipelineV2::JClick {
+            .target = dump_target(p.target),
+            .target_offset = dump_rect(p.target.offset),
+            .contact = p.contact,
+        };
+    } break;
+
+    case Action::Type::LongPress: {
+        const auto& p = std::get<Action::LongPressParam>(param);
+        act.param = PipelineV2::JLongPress {
+            .target = dump_target(p.target),
+            .target_offset = dump_rect(p.target.offset),
+            .duration = p.duration,
+            .contact = p.contact,
+        };
+    } break;
+
+    case Action::Type::Swipe: {
+        const auto& p = std::get<Action::SwipeParam>(param);
+        act.param = PipelineV2::JSwipe {
+            .starting = 0,
+            .begin = dump_target(p.begin),
+            .begin_offset = dump_rect(p.begin.offset),
+            .end = dump_target_obj_array(p.end),
+            .end_offset = dump_rect_array(p.end_offset),
+            .end_hold = p.end_hold,
+            .duration = p.duration,
+            .only_hover = p.only_hover,
+            .contact = p.contact,
+        };
+    } break;
+
+    case Action::Type::MultiSwipe: {
+        const auto& p = std::get<Action::MultiSwipeParam>(param);
+        PipelineV2::JMultiSwipe jswipes;
+        for (const auto& s : p.swipes) {
+            jswipes.swipes.emplace_back(PipelineV2::JSwipe {
+                .starting = s.starting,
+                .begin = dump_target(s.begin),
+                .begin_offset = dump_rect(s.begin.offset),
+                .end = dump_target_obj_array(s.end),
+                .end_offset = dump_rect_array(s.end_offset),
+                .end_hold = s.end_hold,
+                .duration = s.duration,
+                .only_hover = s.only_hover,
+                .contact = s.contact,
+            });
+        }
+        act.param = std::move(jswipes);
+    } break;
+
+    case Action::Type::TouchDown:
+    case Action::Type::TouchMove: {
+        const auto& p = std::get<Action::TouchParam>(param);
+        act.param = PipelineV2::JTouch {
+            .contact = p.contact,
+            .target = dump_target(p.target),
+            .target_offset = dump_rect(p.target.offset),
+            .pressure = p.pressure,
+        };
+    } break;
+
+    case Action::Type::TouchUp: {
+        const auto& p = std::get<Action::TouchUpParam>(param);
+        act.param = PipelineV2::JTouchUp {
+            .contact = p.contact,
+        };
+    } break;
+
+    case Action::Type::ClickKey: {
+        const auto& p = std::get<Action::ClickKeyParam>(param);
+        act.param = PipelineV2::JClickKey {
+            .key = p.keys,
+        };
+    } break;
+
+    case Action::Type::LongPressKey: {
+        const auto& p = std::get<Action::LongPressKeyParam>(param);
+        act.param = PipelineV2::JLongPressKey {
+            .key = p.keys,
+            .duration = p.duration,
+        };
+    } break;
+
+    case Action::Type::KeyDown:
+    case Action::Type::KeyUp: {
+        const auto& p = std::get<Action::KeyParam>(param);
+        act.param = PipelineV2::JKey {
+            .key = p.key,
+        };
+    } break;
+
+    case Action::Type::InputText: {
+        const auto& p = std::get<Action::InputTextParam>(param);
+        act.param = PipelineV2::JInputText {
+            .input_text = p.text,
+        };
+    } break;
+
+    case Action::Type::StartApp: {
+        const auto& p = std::get<Action::AppParam>(param);
+        act.param = PipelineV2::JStartApp {
+            .package = p.package,
+        };
+    } break;
+
+    case Action::Type::StopApp: {
+        const auto& p = std::get<Action::AppParam>(param);
+        act.param = PipelineV2::JStopApp {
+            .package = p.package,
+        };
+    } break;
+
+    case Action::Type::Scroll: {
+        const auto& p = std::get<Action::ScrollParam>(param);
+        act.param = PipelineV2::JScroll {
+            .dx = p.dx,
+            .dy = p.dy,
+        };
+    } break;
+
+    case Action::Type::StopTask: {
+        act.param = PipelineV2::JStopTask {};
+        break;
+    }
+
+    case Action::Type::Command: {
+        const auto& p = std::get<Action::CommandParam>(param);
+        act.param = PipelineV2::JCommand {
+            .exec = p.exec,
+            .args = p.args,
+            .detach = p.detach,
+        };
+    } break;
+
+    case Action::Type::Shell: {
+        const auto& p = std::get<Action::ShellParam>(param);
+        act.param = PipelineV2::JShell {
+            .cmd = p.cmd,
+            .timeout = p.timeout,
+        };
+    } break;
+
+    case Action::Type::Custom: {
+        const auto& p = std::get<Action::CustomParam>(param);
+        act.param = PipelineV2::JCustomAction {
+            .target = dump_target(p.target),
+            .target_offset = dump_rect(p.target.offset),
+            .custom_action = p.name,
+            .custom_action_param = p.custom_param,
+        };
+    } break;
+
+    default:
+        LogError << "Invalid action type" << VAR(type);
+        return {};
+    }
+
+    return act;
+}
+
 json::object PipelineDumper::dump(const PipelineData& pp)
 {
     PipelineV2::JPipelineData data;
@@ -273,173 +446,7 @@ json::object PipelineDumper::dump(const PipelineData& pp)
     data.focus = pp.focus;
 
     data.recognition = dump_reco(pp.reco_type, pp.reco_param);
-
-    data.action.type = Action::kTypeNameMap.at(pp.action_type);
-
-    switch (pp.action_type) {
-    case Action::Type::DoNothing:
-        data.action.param = PipelineV2::JDoNothing {};
-        break;
-
-    case Action::Type::Click: {
-        const auto& param = std::get<Action::ClickParam>(pp.action_param);
-        data.action.param = PipelineV2::JClick {
-            .target = dump_target(param.target),
-            .target_offset = dump_rect(param.target.offset),
-            .contact = param.contact,
-        };
-    } break;
-
-    case Action::Type::LongPress: {
-        const auto& param = std::get<Action::LongPressParam>(pp.action_param);
-        data.action.param = PipelineV2::JLongPress {
-            .target = dump_target(param.target),
-            .target_offset = dump_rect(param.target.offset),
-            .duration = param.duration,
-            .contact = param.contact,
-        };
-    } break;
-
-    case Action::Type::Swipe: {
-        const auto& param = std::get<Action::SwipeParam>(pp.action_param);
-        data.action.param = PipelineV2::JSwipe {
-            .starting = 0,
-            .begin = dump_target(param.begin),
-            .begin_offset = dump_rect(param.begin.offset),
-            .end = dump_target_obj_array(param.end),
-            .end_offset = dump_rect_array(param.end_offset),
-            .end_hold = param.end_hold,
-            .duration = param.duration,
-            .only_hover = param.only_hover,
-            .contact = param.contact,
-        };
-    } break;
-
-    case Action::Type::MultiSwipe: {
-        const auto& param = std::get<Action::MultiSwipeParam>(pp.action_param);
-        PipelineV2::JMultiSwipe jswipes;
-        for (const auto& s : param.swipes) {
-            jswipes.swipes.emplace_back(PipelineV2::JSwipe {
-                .starting = s.starting,
-                .begin = dump_target(s.begin),
-                .begin_offset = dump_rect(s.begin.offset),
-                .end = dump_target_obj_array(s.end),
-                .end_offset = dump_rect_array(s.end_offset),
-                .end_hold = s.end_hold,
-                .duration = s.duration,
-                .only_hover = s.only_hover,
-                .contact = s.contact,
-            });
-        }
-        data.action.param = std::move(jswipes);
-    } break;
-
-    case Action::Type::TouchDown:
-    case Action::Type::TouchMove: {
-        const auto& param = std::get<Action::TouchParam>(pp.action_param);
-        data.action.param = PipelineV2::JTouch {
-            .contact = param.contact,
-            .target = dump_target(param.target),
-            .target_offset = dump_rect(param.target.offset),
-            .pressure = param.pressure,
-        };
-    } break;
-
-    case Action::Type::TouchUp: {
-        const auto& param = std::get<Action::TouchUpParam>(pp.action_param);
-        data.action.param = PipelineV2::JTouchUp {
-            .contact = param.contact,
-        };
-    } break;
-
-    case Action::Type::ClickKey: {
-        const auto& param = std::get<Action::ClickKeyParam>(pp.action_param);
-        data.action.param = PipelineV2::JClickKey {
-            .key = param.keys,
-        };
-    } break;
-
-    case Action::Type::LongPressKey: {
-        const auto& param = std::get<Action::LongPressKeyParam>(pp.action_param);
-        data.action.param = PipelineV2::JLongPressKey {
-            .key = param.keys,
-            .duration = param.duration,
-        };
-    } break;
-
-    case Action::Type::KeyDown:
-    case Action::Type::KeyUp: {
-        const auto& param = std::get<Action::KeyParam>(pp.action_param);
-        data.action.param = PipelineV2::JKey {
-            .key = param.key,
-        };
-    } break;
-
-    case Action::Type::InputText: {
-        const auto& param = std::get<Action::InputTextParam>(pp.action_param);
-        data.action.param = PipelineV2::JInputText {
-            .input_text = param.text,
-        };
-    } break;
-
-    case Action::Type::StartApp: {
-        const auto& param = std::get<Action::AppParam>(pp.action_param);
-        data.action.param = PipelineV2::JStartApp {
-            .package = param.package,
-        };
-    } break;
-
-    case Action::Type::StopApp: {
-        const auto& param = std::get<Action::AppParam>(pp.action_param);
-        data.action.param = PipelineV2::JStopApp {
-            .package = param.package,
-        };
-    } break;
-
-    case Action::Type::Scroll: {
-        const auto& param = std::get<Action::ScrollParam>(pp.action_param);
-        data.action.param = PipelineV2::JScroll {
-            .dx = param.dx,
-            .dy = param.dy,
-        };
-    } break;
-
-    case Action::Type::StopTask: {
-        data.action.param = PipelineV2::JStopTask {};
-        break;
-    }
-
-    case Action::Type::Command: {
-        const auto& param = std::get<Action::CommandParam>(pp.action_param);
-        data.action.param = PipelineV2::JCommand {
-            .exec = param.exec,
-            .args = param.args,
-            .detach = param.detach,
-        };
-    } break;
-
-    case Action::Type::Shell: {
-        const auto& param = std::get<Action::ShellParam>(pp.action_param);
-        data.action.param = PipelineV2::JShell {
-            .cmd = param.cmd,
-            .timeout = param.timeout,
-        };
-    } break;
-
-    case Action::Type::Custom: {
-        const auto& param = std::get<Action::CustomParam>(pp.action_param);
-        data.action.param = PipelineV2::JCustomAction {
-            .target = dump_target(param.target),
-            .target_offset = dump_rect(param.target.offset),
-            .custom_action = param.name,
-            .custom_action_param = param.custom_param,
-        };
-    } break;
-
-    default:
-        LogError << "Invalid action type" << VAR(pp.action_type);
-        return {};
-    }
+    data.action = dump_act(pp.action_type, pp.action_param);
 
     data.pre_wait_freezes = dump_wait_freezes(pp.pre_wait_freezes);
     data.post_wait_freezes = dump_wait_freezes(pp.post_wait_freezes);
