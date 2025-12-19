@@ -101,6 +101,7 @@ struct Win32ControllerImpl : public ControllerImpl
     static void init_proto(maajs::ObjectType proto, maajs::FunctionType ctor);
 };
 
+#ifdef __APPLE__
 using PlayCoverControllerCtorParam = std::tuple<std::string, std::string>;
 
 struct PlayCoverControllerImpl : public ControllerImpl
@@ -112,6 +113,7 @@ struct PlayCoverControllerImpl : public ControllerImpl
     static PlayCoverControllerImpl* ctor(const maajs::CallbackInfo&);
     static void init_proto(maajs::ObjectType proto, maajs::FunctionType ctor);
 };
+#endif
 
 using DbgControllerCtorParam = std::tuple<std::string, std::string, MaaDbgControllerType, std::string>;
 
