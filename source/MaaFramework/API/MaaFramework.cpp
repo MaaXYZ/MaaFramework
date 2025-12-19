@@ -120,13 +120,6 @@ MaaController* MaaPlayCoverControllerCreate(const char* address, const char* uui
 {
     LogFunc << VAR(address) << VAR(uuid);
 
-#ifndef __APPLE__
-
-    LogError << "This API" << __FUNCTION__ << "is only available on macOS";
-    return nullptr;
-
-#else
-
     if (!address) {
         LogError << "address is null";
         return nullptr;
@@ -145,7 +138,6 @@ MaaController* MaaPlayCoverControllerCreate(const char* address, const char* uui
     }
 
     return new MAA_CTRL_NS::ControllerAgent(std::move(control_unit));
-#endif
 }
 
 void MaaControllerDestroy(MaaController* ctrl)
