@@ -17,6 +17,19 @@ MAA_SUPPRESS_CV_WARNINGS_END
 
 MAA_VISION_NS_BEGIN
 
+boost::wregex OCRer::gen_regex(const std::wstring& pattern)
+{
+    // TODO: 要不要加个锁？
+
+    static std::unordered_map<std::wstring, boost::wregex> s_cache;
+    if (auto it = s_cache.find(pattern); it != s_cache.end()) {
+        return it->second;
+    }
+
+    // PipelineParser 里已经检查过正则的合法性了
+    return s_cache.emplace(pattern, boost::wregex(pattern)).first->second;
+}
+
 OCRer::OCRer(
     cv::Mat image,
     cv::Rect roi,
@@ -204,7 +217,7 @@ void OCRer::postproc_trim_(Result& res) const
 void OCRer::postproc_replace_(Result& res) const
 {
     for (const auto& [regex, format] : param_.replace) {
-        auto replaced_text = boost::regex_replace(res.text, boost::wregex(regex), format);
+        auto replaced_text = boost::regex_replace(res.text, gen_regex(regex), format);
         LogDebug << VAR(res.text) << VAR(regex) << VAR(format) << VAR(replaced_text);
         res.text = std::move(replaced_text);
     }
@@ -217,7 +230,7 @@ bool OCRer::filter_by_required(const Result& res, const std::vector<std::wstring
     }
 
     for (const auto& regex : expected) {
-        if (boost::regex_search(res.text, boost::wregex(regex))) {
+        if (boost::regex_search(res.text, gen_regex(regex))) {
             return true;
         }
     }
