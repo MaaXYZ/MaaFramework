@@ -485,8 +485,7 @@ bool Interactor::select_win32_hwnd(const MAA_PROJECT_INTERFACE_NS::InterfaceData
         rt_config.class_name = MAA_NS::to_u16(MaaToolkitDesktopWindowGetClassName(window_handle));
         rt_config.window_name = MAA_NS::to_u16(MaaToolkitDesktopWindowGetWindowName(window_handle));
 
-        if (boost::regex_search(rt_config.class_name, *class_regex)
-            && boost::regex_search(rt_config.window_name, *window_regex)) {
+        if (boost::regex_search(rt_config.class_name, *class_regex) && boost::regex_search(rt_config.window_name, *window_regex)) {
             matched_config.emplace_back(std::move(rt_config));
         }
     }
