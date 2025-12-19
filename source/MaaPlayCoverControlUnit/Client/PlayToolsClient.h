@@ -1,7 +1,6 @@
 #pragma once
 
 #include <cstdint>
-#include <mutex>
 #include <string>
 #include <utility>
 #include <vector>
@@ -50,7 +49,6 @@ private:
     boost::asio::ip::tcp::socket socket_;
     std::string address_;
     std::pair<int, int> screen_size_ { 0, 0 };
-    mutable std::mutex mutex_;
 };
 
 MAA_CTRL_UNIT_NS_END

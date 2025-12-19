@@ -29,8 +29,6 @@ PlayToolsClient::~PlayToolsClient()
 
 bool PlayToolsClient::connect(const std::string& address)
 {
-    std::lock_guard<std::mutex> lock(mutex_);
-
     if (address_ != address) {
         close();
         address_ = address;
@@ -64,13 +62,11 @@ void PlayToolsClient::close()
 
 bool PlayToolsClient::is_connected() const
 {
-    std::lock_guard<std::mutex> lock(mutex_);
     return socket_.is_open() && screen_size_.first > 0;
 }
 
 std::pair<int, int> PlayToolsClient::screen_size() const
 {
-    std::lock_guard<std::mutex> lock(mutex_);
     return screen_size_;
 }
 
@@ -168,8 +164,6 @@ bool PlayToolsClient::fetch_screen_size(int& width, int& height)
 
 bool PlayToolsClient::screencap(std::vector<uint8_t>& buffer, int& width, int& height)
 {
-    std::lock_guard<std::mutex> lock(mutex_);
-
     if (!open()) {
         return false;
     }
@@ -215,8 +209,6 @@ bool PlayToolsClient::screencap(std::vector<uint8_t>& buffer, int& width, int& h
 
 bool PlayToolsClient::touch(TouchPhase phase, int x, int y)
 {
-    std::lock_guard<std::mutex> lock(mutex_);
-
     if (!open()) {
         return false;
     }
@@ -243,8 +235,6 @@ bool PlayToolsClient::touch(TouchPhase phase, int x, int y)
 
 bool PlayToolsClient::terminate()
 {
-    std::lock_guard<std::mutex> lock(mutex_);
-
     if (!socket_.is_open()) {
         return true;
     }
