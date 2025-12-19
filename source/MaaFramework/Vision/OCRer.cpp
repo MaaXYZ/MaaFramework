@@ -1,6 +1,7 @@
 #include "OCRer.h"
 
 #include <ranges>
+#include <shared_mutex>
 
 #include <boost/regex.hpp>
 
@@ -19,14 +20,17 @@ MAA_VISION_NS_BEGIN
 
 const boost::wregex& OCRer::gen_regex(const std::wstring& pattern)
 {
-    static std::mutex mtx;
-    std::unique_lock lock(mtx);
-
+    static std::shared_mutex mtx;
     static std::unordered_map<std::wstring, boost::wregex> s_cache;
-    if (auto it = s_cache.find(pattern); it != s_cache.end()) {
-        return it->second;
+
+    {
+        std::shared_lock slock(mtx);
+        if (auto it = s_cache.find(pattern); it != s_cache.end()) {
+            return it->second;
+        }
     }
 
+    std::unique_lock ulock(mtx);
     // PipelineParser 里已经检查过正则的合法性了
     return s_cache.emplace(pattern, boost::wregex(pattern)).first->second;
 }
