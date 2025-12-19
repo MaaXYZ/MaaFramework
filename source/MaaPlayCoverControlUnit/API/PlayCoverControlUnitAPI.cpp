@@ -16,8 +16,8 @@ MaaControlUnitHandle MaaPlayCoverControlUnitCreate(const char* address, const ch
 
     LogFunc << VAR(address) << VAR(uuid);
 
-    if (!address || !uuid) {
-        LogError << "address or uuid is null";
+    if (!address || !uuid || !address[0] || !uuid[0]) {
+        LogError << "address or uuid is null or empty";
         return nullptr;
     }
 

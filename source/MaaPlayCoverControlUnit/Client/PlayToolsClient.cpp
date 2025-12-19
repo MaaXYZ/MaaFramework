@@ -5,10 +5,15 @@
 #include <cstring>
 #include <sstream>
 
+#ifdef _WIN32
+#include <winsock2.h>
+#else
+#include <arpa/inet.h>
+#endif
+
 #include "MaaUtils/Logger.h"
 
 using boost::asio::ip::tcp;
-namespace socket_ops = boost::asio::detail::socket_ops;
 
 MAA_CTRL_UNIT_NS_BEGIN
 
@@ -103,10 +108,16 @@ bool PlayToolsClient::open()
 
     if (std::memcmp(buffer.data(), signature, 4) != 0) {
         LogError << "Got invalid response from PlayTools";
+        close();
         return false;
     }
 
-    return check_version() && fetch_screen_size(screen_size_.first, screen_size_.second);
+    if (!check_version() || !fetch_screen_size(screen_size_.first, screen_size_.second)) {
+        close();
+        return false;
+    }
+
+    return true;
 }
 
 bool PlayToolsClient::check_version()
@@ -123,7 +134,7 @@ bool PlayToolsClient::check_version()
         return false;
     }
 
-    version = socket_ops::network_to_host_long(version);
+    version = ntohl(version);
     if (version < MinimalVersion) {
         LogError << "Unsupported PlayTools version:" << version << "minimal required:" << MinimalVersion;
         return false;
@@ -148,8 +159,8 @@ bool PlayToolsClient::fetch_screen_size(int& width, int& height)
         return false;
     }
 
-    width = socket_ops::network_to_host_short(w);
-    height = socket_ops::network_to_host_short(h);
+    width = ntohs(w);
+    height = ntohs(h);
 
     LogInfo << "Screen size:" << width << "x" << height;
     return true;
@@ -169,7 +180,7 @@ bool PlayToolsClient::screencap(std::vector<uint8_t>& buffer, int& width, int& h
     try {
         boost::asio::write(socket_, boost::asio::buffer(request));
         boost::asio::read(socket_, boost::asio::buffer(&image_size, sizeof(image_size)));
-        image_size = socket_ops::network_to_host_long(image_size);
+        image_size = ntohl(image_size);
     }
     catch (const std::exception& e) {
         LogError << "Cannot get screencap:" << e.what();
@@ -210,8 +221,8 @@ bool PlayToolsClient::touch(TouchPhase phase, int x, int y)
         return false;
     }
 
-    uint16_t nx = socket_ops::host_to_network_short(static_cast<uint16_t>(x));
-    uint16_t ny = socket_ops::host_to_network_short(static_cast<uint16_t>(y));
+    uint16_t nx = htons(static_cast<uint16_t>(x));
+    uint16_t ny = htons(static_cast<uint16_t>(y));
     uint8_t payload[5] = { static_cast<uint8_t>(phase), 0, 0, 0, 0 };
     std::memcpy(payload + 1, &nx, sizeof(nx));
     std::memcpy(payload + 3, &ny, sizeof(ny));

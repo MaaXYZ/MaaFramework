@@ -33,8 +33,6 @@ public:
     void close();
     bool is_connected() const;
 
-    bool check_version();
-    bool fetch_screen_size(int& width, int& height);
     bool screencap(std::vector<uint8_t>& buffer, int& width, int& height);
     bool touch(TouchPhase phase, int x, int y);
     bool terminate();
@@ -43,6 +41,8 @@ public:
 
 private:
     bool open();
+    bool check_version();
+    bool fetch_screen_size(int& width, int& height);
 
     static constexpr int MinimalVersion = 2;
 
