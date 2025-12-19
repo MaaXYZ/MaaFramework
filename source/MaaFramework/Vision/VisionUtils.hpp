@@ -3,7 +3,8 @@
 #include <numeric>
 #include <random>
 #include <ranges>
-#include <regex>
+
+#include <boost/regex.hpp>
 
 #include "Common/Conf.h"
 #include "MaaUtils/Logger.h"
@@ -120,7 +121,7 @@ inline static void sort_by_expected_regex_(ResultsVec& results, const std::vecto
         return;
     }
 
-    std::vector<std::wregex> patterns;
+    std::vector<boost::wregex> patterns;
     patterns.reserve(expected.size());
     for (const auto& pattern : expected) {
         patterns.emplace_back(pattern);
@@ -133,7 +134,7 @@ inline static void sort_by_expected_regex_(ResultsVec& results, const std::vecto
     for (const auto& result : results) {
         size_t match_index = 0;
         for (size_t j = 0; j < patterns.size(); ++j) {
-            if (std::regex_search(result.text, patterns[j])) {
+            if (boost::regex_search(result.text, patterns[j])) {
                 match_index = j + 1;
                 break;
             }

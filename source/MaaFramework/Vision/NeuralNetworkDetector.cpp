@@ -4,8 +4,9 @@
 #include <cctype>
 #include <map>
 #include <ranges>
-#include <regex>
 #include <sstream>
+
+#include <boost/regex.hpp>
 
 #include <onnxruntime/onnxruntime_cxx_api.h>
 
@@ -282,13 +283,13 @@ std::vector<std::string> NeuralNetworkDetector::parse_labels_from_metadata() con
     // 解析 Python 字典格式：{0: 'label1', 1: 'label2', ...}
     // 正则表达式匹配：数字: 引号内的字符串
     // 支持单引号和双引号，以及可能的空格
-    std::regex dict_pattern(R"((\d+)\s*:\s*['"]([^'"]+)['"])");
-    std::sregex_iterator iter(names_str.begin(), names_str.end(), dict_pattern);
-    std::sregex_iterator end;
+    boost::regex dict_pattern(R"((\d+)\s*:\s*['"]([^'"]+)['"])");
+    boost::sregex_iterator iter(names_str.begin(), names_str.end(), dict_pattern);
+    boost::sregex_iterator end;
 
     std::map<int, std::string> label_map;
     for (; iter != end; ++iter) {
-        const std::smatch& match = *iter;
+        const boost::smatch& match = *iter;
         if (match.size() < 3) {
             continue; // 跳过不完整的匹配
         }
