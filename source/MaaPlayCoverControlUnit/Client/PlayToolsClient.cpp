@@ -45,18 +45,16 @@ void PlayToolsClient::close()
         return;
     }
 
-    try {
-        socket_.shutdown(tcp::socket::shutdown_both);
-    }
-    catch (const std::exception& e) {
-        LogWarn << "Error during socket shutdown:" << e.what();
+    boost::system::error_code ec;
+    socket_.shutdown(tcp::socket::shutdown_both, ec);
+    if (ec && ec != boost::asio::error::not_connected) {
+        LogWarn << "Error during socket shutdown:" << ec.message();
     }
 
-    try {
-        socket_.close();
-    }
-    catch (const std::exception& e) {
-        LogWarn << "Error during socket close:" << e.what();
+    ec.clear();
+    socket_.close(ec);
+    if (ec) {
+        LogWarn << "Error during socket close:" << ec.message();
     }
 }
 
@@ -92,13 +90,25 @@ bool PlayToolsClient::open()
     constexpr char handshake[4] = { 'M', 'A', 'A', 0 };
     constexpr char signature[4] = { 'O', 'K', 'A', 'Y' };
 
-    try {
-        boost::asio::connect(socket_, resolver.resolve(host, port));
-        boost::asio::write(socket_, boost::asio::buffer(handshake));
-        boost::asio::read(socket_, boost::asio::buffer(buffer, 4));
+    boost::system::error_code ec;
+    auto endpoints = resolver.resolve(host, port, ec);
+    if (ec) {
+        LogError << "Cannot resolve address" << address_ << ec.message();
+        return false;
     }
-    catch (const std::exception& e) {
-        LogError << "Cannot connect to" << address_ << e.what();
+    boost::asio::connect(socket_, endpoints, ec);
+    if (ec) {
+        LogError << "Cannot connect to" << address_ << ec.message();
+        return false;
+    }
+    boost::asio::write(socket_, boost::asio::buffer(handshake), ec);
+    if (ec) {
+        LogError << "Cannot send handshake:" << ec.message();
+        return false;
+    }
+    boost::asio::read(socket_, boost::asio::buffer(buffer, 4), ec);
+    if (ec) {
+        LogError << "Cannot read handshake response:" << ec.message();
         return false;
     }
 
@@ -121,12 +131,15 @@ bool PlayToolsClient::check_version()
     uint32_t version = 0;
     constexpr char request[6] = { 0, 4, 'V', 'E', 'R', 'N' };
 
-    try {
-        boost::asio::write(socket_, boost::asio::buffer(request));
-        boost::asio::read(socket_, boost::asio::buffer(&version, sizeof(version)));
+    boost::system::error_code ec;
+    boost::asio::write(socket_, boost::asio::buffer(request), ec);
+    if (ec) {
+        LogError << "Cannot send version request:" << ec.message();
+        return false;
     }
-    catch (const std::exception& e) {
-        LogError << "Cannot get PlayTools version:" << e.what();
+    boost::asio::read(socket_, boost::asio::buffer(&version, sizeof(version)), ec);
+    if (ec) {
+        LogError << "Cannot read version response:" << ec.message();
         return false;
     }
 
@@ -145,13 +158,20 @@ bool PlayToolsClient::fetch_screen_size(int& width, int& height)
     uint16_t w = 0, h = 0;
     constexpr char request[6] = { 0, 4, 'S', 'I', 'Z', 'E' };
 
-    try {
-        boost::asio::write(socket_, boost::asio::buffer(request));
-        boost::asio::read(socket_, boost::asio::buffer(&w, sizeof(w)));
-        boost::asio::read(socket_, boost::asio::buffer(&h, sizeof(h)));
+    boost::system::error_code ec;
+    boost::asio::write(socket_, boost::asio::buffer(request), ec);
+    if (ec) {
+        LogError << "Cannot send size request:" << ec.message();
+        return false;
     }
-    catch (const std::exception& e) {
-        LogError << "Cannot get screen resolution:" << e.what();
+    boost::asio::read(socket_, boost::asio::buffer(&w, sizeof(w)), ec);
+    if (ec) {
+        LogError << "Cannot read screen width:" << ec.message();
+        return false;
+    }
+    boost::asio::read(socket_, boost::asio::buffer(&h, sizeof(h)), ec);
+    if (ec) {
+        LogError << "Cannot read screen height:" << ec.message();
         return false;
     }
 
@@ -171,16 +191,20 @@ bool PlayToolsClient::screencap(std::vector<uint8_t>& buffer, int& width, int& h
     uint32_t image_size = 0;
     constexpr char request[6] = { 0, 4, 'S', 'C', 'R', 'N' };
 
-    try {
-        boost::asio::write(socket_, boost::asio::buffer(request));
-        boost::asio::read(socket_, boost::asio::buffer(&image_size, sizeof(image_size)));
-        image_size = ntohl(image_size);
-    }
-    catch (const std::exception& e) {
-        LogError << "Cannot get screencap:" << e.what();
+    boost::system::error_code ec;
+    boost::asio::write(socket_, boost::asio::buffer(request), ec);
+    if (ec) {
+        LogError << "Cannot send screencap request:" << ec.message();
         close();
         return false;
     }
+    boost::asio::read(socket_, boost::asio::buffer(&image_size, sizeof(image_size)), ec);
+    if (ec) {
+        LogError << "Cannot read screencap size:" << ec.message();
+        close();
+        return false;
+    }
+    image_size = ntohl(image_size);
 
     if (image_size == 0) {
         LogError << "Cannot get screencap: invalid image size";
@@ -192,12 +216,10 @@ bool PlayToolsClient::screencap(std::vector<uint8_t>& buffer, int& width, int& h
         LogWarn << "Image size mismatch: got" << image_size << "expected" << expected_size;
     }
 
-    try {
-        buffer.resize(image_size);
-        boost::asio::read(socket_, boost::asio::buffer(buffer.data(), image_size));
-    }
-    catch (const std::exception& e) {
-        LogError << "Cannot read screencap data:" << e.what();
+    buffer.resize(image_size);
+    boost::asio::read(socket_, boost::asio::buffer(buffer.data(), image_size), ec);
+    if (ec) {
+        LogError << "Cannot read screencap data:" << ec.message();
         close();
         return false;
     }
@@ -219,13 +241,17 @@ bool PlayToolsClient::touch(TouchPhase phase, int x, int y)
     std::memcpy(payload + 1, &nx, sizeof(nx));
     std::memcpy(payload + 3, &ny, sizeof(ny));
 
-    try {
-        constexpr char request[6] = { 0, 9, 'T', 'U', 'C', 'H' };
-        boost::asio::write(socket_, boost::asio::buffer(request));
-        boost::asio::write(socket_, boost::asio::buffer(payload, 5));
+    constexpr char request[6] = { 0, 9, 'T', 'U', 'C', 'H' };
+    boost::system::error_code ec;
+    boost::asio::write(socket_, boost::asio::buffer(request), ec);
+    if (ec) {
+        LogError << "Cannot send touch request:" << ec.message();
+        close();
+        return false;
     }
-    catch (const std::exception& e) {
-        LogError << "Cannot touch screen:" << e.what();
+    boost::asio::write(socket_, boost::asio::buffer(payload, 5), ec);
+    if (ec) {
+        LogError << "Cannot send touch payload:" << ec.message();
         close();
         return false;
     }
@@ -239,12 +265,11 @@ bool PlayToolsClient::terminate()
         return true;
     }
 
-    try {
-        constexpr char request[6] = { 0, 4, 'T', 'E', 'R', 'M' };
-        boost::asio::write(socket_, boost::asio::buffer(request));
-    }
-    catch (const std::exception& e) {
-        LogError << "Cannot terminate game:" << e.what();
+    constexpr char request[6] = { 0, 4, 'T', 'E', 'R', 'M' };
+    boost::system::error_code ec;
+    boost::asio::write(socket_, boost::asio::buffer(request), ec);
+    if (ec) {
+        LogError << "Cannot terminate game:" << ec.message();
         return false;
     }
 
