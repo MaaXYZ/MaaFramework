@@ -1,10 +1,5 @@
 #include "PlayCoverControlUnitMgr.h"
 
-#include <algorithm>
-#include <chrono>
-#include <cmath>
-#include <thread>
-
 #include "MaaUtils/Logger.h"
 #include "MaaUtils/NoWarningCV.hpp"
 
@@ -81,69 +76,14 @@ bool PlayCoverControlUnitMgr::screencap(cv::Mat& image)
 
 bool PlayCoverControlUnitMgr::click(int x, int y)
 {
-    LogTrace << VAR(x) << VAR(y);
-
-    if (!touch_down(0, x, y, 0)) {
-        return false;
-    }
-
-    std::this_thread::sleep_for(std::chrono::milliseconds(DefaultClickDelay));
-
-    return touch_up(0);
+    LogError << "deprecated" << VAR(x) << VAR(y);
+    return false;
 }
 
 bool PlayCoverControlUnitMgr::swipe(int x1, int y1, int x2, int y2, int duration)
 {
-    LogTrace << VAR(x1) << VAR(y1) << VAR(x2) << VAR(y2) << VAR(duration);
-
-    auto [width, height] = client_->screen_size();
-    if (width <= 0 || height <= 0) {
-        LogError << "Invalid screen size";
-        return false;
-    }
-
-    x1 = std::clamp(x1, 0, width - 1);
-    y1 = std::clamp(y1, 0, height - 1);
-
-    if (!touch_down(0, x1, y1, 0)) {
-        return false;
-    }
-
-    int actual_duration = duration > 0 ? duration : DefaultSwipeDuration;
-
-    auto cubic_spline = [](double slope_0, double slope_1, double t) {
-        const double a = slope_0;
-        const double b = -(2 * slope_0 + slope_1 - 3);
-        const double c = -(-slope_0 - slope_1 + 2);
-        return a * t + b * std::pow(t, 2) + c * std::pow(t, 3);
-    };
-
-    constexpr double slope_in = 1.0;
-    constexpr double slope_out = 1.0;
-
-    for (int cur_time = DefaultSwipeDelay; cur_time < actual_duration; cur_time += DefaultSwipeDelay) {
-        double progress = cubic_spline(slope_in, slope_out, static_cast<double>(cur_time) / actual_duration);
-        int cur_x = static_cast<int>(std::lerp(static_cast<double>(x1), static_cast<double>(x2), progress));
-        int cur_y = static_cast<int>(std::lerp(static_cast<double>(y1), static_cast<double>(y2), progress));
-
-        if (cur_x < 0 || cur_x >= width || cur_y < 0 || cur_y >= height) {
-            continue;
-        }
-
-        if (!touch_move(0, cur_x, cur_y, 0)) {
-            return false;
-        }
-
-        std::this_thread::sleep_for(std::chrono::milliseconds(DefaultSwipeDelay));
-    }
-
-    if (x2 >= 0 && x2 < width && y2 >= 0 && y2 < height) {
-        if (!touch_move(0, x2, y2, 0)) {
-            return false;
-        }
-    }
-
-    return touch_up(0);
+    LogError << "deprecated" << VAR(x1) << VAR(y1) << VAR(x2) << VAR(y2) << VAR(duration);
+    return false;
 }
 
 bool PlayCoverControlUnitMgr::touch_down(int contact, int x, int y, int pressure)

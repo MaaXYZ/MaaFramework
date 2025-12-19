@@ -52,10 +52,6 @@ private:
     int last_touch_x_ = 0;
     int last_touch_y_ = 0;
     bool has_last_touch_point_ = false;
-
-    static constexpr int DefaultClickDelay = 50;
-    static constexpr int DefaultSwipeDelay = 5;
-    static constexpr int DefaultSwipeDuration = 200;
 };
 
 MAA_CTRL_UNIT_NS_END
