@@ -112,11 +112,14 @@ class JobWithResult(Job):
         super().wait()
         return self
 
-    def get(self, wait: bool = True):
+    def get(self, wait: bool = False):
         """获取作业结果 / Get job result
 
         Args:
-            wait: 是否等待作业完成后再获取结果，默认为 True / Whether to wait for job completion before getting result, default is True
+            wait: 是否在获取结果前等待作业完成，默认为 False。建议先显式调用 wait()（或传入 wait=True），
+                确保异步操作已完成后再获取结果 / Whether to wait for job completion before getting result,
+                default is False. It's recommended to call wait() first (or pass wait=True) to ensure the
+                async operation is finished before getting the result.
 
         Returns:
             作业执行结果，类型取决于具体作业 / Job execution result, type depends on the specific job

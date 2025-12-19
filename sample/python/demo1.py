@@ -58,7 +58,7 @@ def main():
     controller.post_connection().wait()
 
     # screenshot
-    image = controller.post_screencap().get()
+    image = controller.post_screencap().wait().get()
     # do something with image
     # ...
 
@@ -117,7 +117,7 @@ class MyRecongition(CustomRecognition):
             },
         )
 
-        new_image = context.tasker.controller.post_screencap().get()
+        new_image = context.tasker.controller.post_screencap().wait().get()
 
         # async click without waiting
         click_job = context.tasker.controller.post_click(10, 20)
