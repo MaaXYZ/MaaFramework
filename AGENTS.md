@@ -125,8 +125,9 @@ MaaFramework/
 
 ### 代码风格
 
-- 使用 C++20 标准
-- 主要遵循 Google C++ 风格
+- 优先使用 C++20 特性，如 `std::format`、`std::ranges`、`std::views` 等
+- 当 Boost 提供比标准库显著更优的实现，且不引入额外依赖时，考虑使用 Boost（如 `boost::wregex` 优于 `std::regex`）
+- 主要遵循 Google C++ 代码风格
 
 #### 函数拆分与 lambda 使用
 
