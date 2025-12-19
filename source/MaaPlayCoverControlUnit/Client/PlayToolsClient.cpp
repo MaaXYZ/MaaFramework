@@ -38,20 +38,22 @@ void PlayToolsClient::close()
 {
     screen_size_ = { 0, 0 };
 
-    if (socket_.is_open()) {
-        try {
-            socket_.shutdown(tcp::socket::shutdown_both);
-        }
-        catch (const std::exception& e) {
-            LogWarn << "Error during socket shutdown:" << e.what();
-        }
+    if (!socket_.is_open()) {
+        return;
+    }
 
-        try {
-            socket_.close();
-        }
-        catch (const std::exception& e) {
-            LogWarn << "Error during socket close:" << e.what();
-        }
+    try {
+        socket_.shutdown(tcp::socket::shutdown_both);
+    }
+    catch (const std::exception& e) {
+        LogWarn << "Error during socket shutdown:" << e.what();
+    }
+
+    try {
+        socket_.close();
+    }
+    catch (const std::exception& e) {
+        LogWarn << "Error during socket close:" << e.what();
     }
 }
 

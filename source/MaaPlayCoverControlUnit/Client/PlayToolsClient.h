@@ -43,7 +43,6 @@ public:
 
 private:
     bool open();
-    bool send_command(const char* cmd, size_t len);
 
     static constexpr int MinimalVersion = 2;
 
