@@ -5,8 +5,9 @@
 #include <fstream>
 #include <functional>
 #include <ranges>
-#include <regex>
 #include <unordered_set>
+
+#include <boost/regex.hpp>
 
 #include "MaaFramework/Utility/MaaBuffer.h"
 #include "MaaToolkit/AdbDevice/MaaToolkitAdbDevice.h"
@@ -484,10 +485,10 @@ bool Interactor::select_win32_hwnd(const MAA_PROJECT_INTERFACE_NS::InterfaceData
         rt_config.class_name = MAA_NS::to_u16(MaaToolkitDesktopWindowGetClassName(window_handle));
         rt_config.window_name = MAA_NS::to_u16(MaaToolkitDesktopWindowGetWindowName(window_handle));
 
-        std::wsmatch class_match;
-        std::wsmatch window_match;
-        if (std::regex_search(rt_config.class_name, class_match, *class_regex)
-            && std::regex_search(rt_config.window_name, window_match, *window_regex)) {
+        boost::wsmatch class_match;
+        boost::wsmatch window_match;
+        if (boost::regex_search(rt_config.class_name, class_match, *class_regex)
+            && boost::regex_search(rt_config.window_name, window_match, *window_regex)) {
             matched_config.emplace_back(std::move(rt_config));
         }
     }
@@ -810,7 +811,7 @@ bool Interactor::process_option(
             if (!input_def.verify.empty()) {
                 if (auto pattern = MAA_NS::regex_valid(MAA_NS::to_u16(input_def.verify))) {
                     auto value_u16 = MAA_NS::to_u16(value);
-                    while (!std::regex_match(value_u16, *pattern)) {
+                    while (!boost::regex_match(value_u16, *pattern)) {
                         std::string error_msg =
                             input_def.pattern_msg.empty() ? "Invalid input, please retry: " : input_def.pattern_msg + ": ";
                         std::cout << MAA_NS::utf8_to_crt(error_msg);

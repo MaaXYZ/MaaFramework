@@ -1,7 +1,8 @@
 #include "OCRer.h"
 
 #include <ranges>
-#include <regex>
+
+#include <boost/regex.hpp>
 
 MAA_SUPPRESS_CV_WARNINGS_BEGIN
 #include "fastdeploy/vision/ocr/ppocr/dbdetector.h"
@@ -203,7 +204,7 @@ void OCRer::postproc_trim_(Result& res) const
 void OCRer::postproc_replace_(Result& res) const
 {
     for (const auto& [regex, format] : param_.replace) {
-        auto replaced_text = std::regex_replace(res.text, std::wregex(regex), format);
+        auto replaced_text = boost::regex_replace(res.text, boost::wregex(regex), format);
         LogDebug << VAR(res.text) << VAR(regex) << VAR(format) << VAR(replaced_text);
         res.text = std::move(replaced_text);
     }
@@ -216,7 +217,7 @@ bool OCRer::filter_by_required(const Result& res, const std::vector<std::wstring
     }
 
     for (const auto& regex : expected) {
-        if (std::regex_search(res.text, std::wregex(regex))) {
+        if (boost::regex_search(res.text, boost::wregex(regex))) {
             return true;
         }
     }
