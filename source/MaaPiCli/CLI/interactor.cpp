@@ -19,6 +19,12 @@
 
 static bool s_eof = false;
 
+#if defined(__APPLE__)
+static constexpr bool kPlayCoverSupported = true;
+#else
+static constexpr bool kPlayCoverSupported = false;
+#endif
+
 // return [1, size]
 std::vector<int> input_multi_impl(size_t size, std::string_view prompt)
 {
@@ -195,6 +201,15 @@ void Interactor::print_config() const
             std::cout << MAA_NS::utf8_to_crt(std::format("\t\t{}\n", format_win32_config(config_.configuration().win32)));
         }
         break;
+    case InterfaceData::Controller::Type::PlayCover: {
+        const auto& pc = config_.configuration().playcover;
+        if (!pc.address.empty() && !pc.uuid.empty()) {
+            std::cout << MAA_NS::utf8_to_crt(std::format("\t\t{}\n\t\t{}\n", pc.address, pc.uuid));
+        }
+        if (!kPlayCoverSupported) {
+            std::cout << "\t\t(PlayCover is only available on macOS)\n";
+        }
+    } break;
     default:
         LogError << "Unknown controller type" << VAR(config_.configuration().controller.type);
         break;
@@ -339,7 +354,11 @@ void Interactor::select_controller()
         for (size_t i = 0; i < all_controllers.size(); ++i) {
             const auto& ctrl = all_controllers[i];
             std::string display_name = get_display_name(ctrl.name, ctrl.label);
-            std::cout << MAA_NS::utf8_to_crt(std::format("\t{}. {}\n", i + 1, display_name));
+            std::cout << MAA_NS::utf8_to_crt(std::format("\t{}. {}", i + 1, display_name));
+            if (ctrl.type == InterfaceData::Controller::Type::PlayCover && !kPlayCoverSupported) {
+                std::cout << " (macOS only)";
+            }
+            std::cout << "\n";
             if (!ctrl.description.empty()) {
                 std::string desc_text = read_text_content(ctrl.description);
                 std::cout << "\t   " << MAA_NS::utf8_to_crt(desc_text) << "\n";
@@ -363,6 +382,27 @@ void Interactor::select_controller()
     case InterfaceData::Controller::Type::Win32:
         config_.configuration().controller.type = InterfaceData::Controller::Type::Win32;
         select_win32_hwnd(controller.win32);
+        break;
+    case InterfaceData::Controller::Type::PlayCover:
+        if (!kPlayCoverSupported) {
+            std::cout << "\nPlayCover controller is only available on macOS.\n";
+            // Check if there are other controllers available
+            bool has_other_controllers = std::ranges::any_of(all_controllers, [](const auto& ctrl) {
+                return ctrl.type != InterfaceData::Controller::Type::PlayCover;
+            });
+            if (has_other_controllers) {
+                std::cout << "Please select another controller.\n\n";
+                mpause();
+                select_controller();
+            }
+            else {
+                std::cout << "No other controllers available.\n\n";
+                mpause();
+            }
+            return;
+        }
+        config_.configuration().controller.type = InterfaceData::Controller::Type::PlayCover;
+        select_playcover(controller.playcover);
         break;
     default:
         LogError << "Unknown controller type" << VAR(controller.type);
@@ -447,6 +487,35 @@ void Interactor::select_adb_manual_input()
     std::cout << "\n";
 
     config_.configuration().adb.name = std::format("{}-{}", adb_address, adb_path);
+}
+
+void Interactor::select_playcover(const MAA_PROJECT_INTERFACE_NS::InterfaceData::Controller::PlayCoverConfig& playcover_config)
+{
+    std::cout << "### Configure PlayCover ###\n\n";
+
+    auto& pc = config_.configuration().playcover;
+
+    // Use uuid from interface.json if available
+    if (!playcover_config.uuid.empty() && pc.uuid.empty()) {
+        pc.uuid = playcover_config.uuid;
+    }
+
+    // Default address if not configured
+    std::string default_address = pc.address.empty() ? "127.0.0.1:1717" : pc.address;
+
+    // Ask for address (use default if empty input)
+    std::cout << "PlayTools service address (host:port) [" << default_address << "]: ";
+    std::cin.sync();
+    std::string buffer;
+    std::getline(std::cin, buffer);
+
+    if (std::cin.eof()) {
+        s_eof = true;
+        return;
+    }
+
+    pc.address = buffer.empty() ? default_address : buffer;
+    std::cout << "\n";
 }
 
 std::string Interactor::format_win32_config(const MAA_PROJECT_INTERFACE_NS::Configuration::Win32Config& win32_config)
@@ -934,6 +1003,29 @@ bool Interactor::check_validity()
         }
 
         return select_win32_hwnd(controller_iter->win32);
+    }
+
+    if (config_.configuration().controller.type == InterfaceData::Controller::Type::PlayCover) {
+        if (!kPlayCoverSupported) {
+            LogError << "PlayCover controller is only available on macOS";
+            return false;
+        }
+
+        auto& pc = config_.configuration().playcover;
+        if (pc.address.empty()) {
+            auto& name = config_.configuration().controller.name;
+            auto controller_iter =
+                std::ranges::find(config_.interface_data().controller, name, std::mem_fn(&InterfaceData::Controller::name));
+
+            if (controller_iter != config_.interface_data().controller.end()) {
+                select_playcover(controller_iter->playcover);
+            }
+        }
+
+        if (pc.address.empty()) {
+            LogError << "PlayCover address is empty";
+            return false;
+        }
     }
 
     return true;

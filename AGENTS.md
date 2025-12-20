@@ -73,7 +73,7 @@ MaaFramework/
 ### 核心对象
 
 1. **MaaResource**：资源管理器，加载 Pipeline JSON、模型、图像模板
-2. **MaaController**：控制器，负责截图和输入操作（ADB/Win32）
+2. **MaaController**：控制器，负责截图和输入操作（ADB/Win32/PlayCover）
 3. **MaaTasker**：任务执行器，绑定 Resource 和 Controller 后执行任务
 4. **MaaContext**：任务上下文，在 Custom 回调中提供运行时操作能力
 

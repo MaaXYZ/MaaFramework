@@ -40,6 +40,19 @@ extern "C"
     MAA_FRAMEWORK_API MaaController*
         MaaDbgControllerCreate(const char* read_path, const char* write_path, MaaDbgControllerType type, const char* config);
 
+    /**
+     * @brief Create a PlayCover controller for macOS.
+     *
+     * @param address The PlayTools service address in "host:port" format.
+     * @param uuid The application bundle identifier (e.g., "com.hypergryph.arknights").
+     * @return The controller handle, or nullptr on failure.
+     *
+     * @note This controller is designed for PlayCover on macOS.
+     * @note Some features are not supported: start_app, input_text, click_key, key_down, key_up, scroll.
+     * @note Only single touch is supported (contact must be 0).
+     */
+    MAA_FRAMEWORK_API MaaController* MaaPlayCoverControllerCreate(const char* address, const char* uuid);
+
     MAA_FRAMEWORK_API void MaaControllerDestroy(MaaController* ctrl);
 
     MAA_FRAMEWORK_API MaaSinkId MaaControllerAddSink(MaaController* ctrl, MaaEventCallback sink, void* trans_arg);
