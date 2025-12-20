@@ -494,64 +494,26 @@ void Interactor::select_playcover(const MAA_PROJECT_INTERFACE_NS::InterfaceData:
 
     auto& pc = config_.configuration().playcover;
 
-    // Use preset defaults if available
-    if (!playcover_config.address.empty() && pc.address.empty()) {
-        pc.address = playcover_config.address;
-    }
+    // Use uuid from interface.json if available
     if (!playcover_config.uuid.empty() && pc.uuid.empty()) {
         pc.uuid = playcover_config.uuid;
     }
 
-    // Ask for address (loop until non-empty)
-    while (true) {
-        std::cout << "PlayTools service address (host:port)";
-        if (!pc.address.empty()) {
-            std::cout << " [" << pc.address << "]";
-        }
-        std::cout << ": ";
-        std::cin.sync();
-        std::string buffer;
-        std::getline(std::cin, buffer);
+    // Default address if not configured
+    std::string default_address = pc.address.empty() ? "127.0.0.1:1717" : pc.address;
 
-        if (std::cin.eof()) {
-            s_eof = true;
-            return;
-        }
+    // Ask for address (use default if empty input)
+    std::cout << "PlayTools service address (host:port) [" << default_address << "]: ";
+    std::cin.sync();
+    std::string buffer;
+    std::getline(std::cin, buffer);
 
-        if (!buffer.empty()) {
-            pc.address = buffer;
-        }
-        if (!pc.address.empty()) {
-            break;
-        }
-        std::cout << "Address cannot be empty.\n";
+    if (std::cin.eof()) {
+        s_eof = true;
+        return;
     }
-    std::cout << "\n";
 
-    // Ask for uuid (loop until non-empty)
-    while (true) {
-        std::cout << "Bundle identifier (e.g. com.hypergryph.arknights)";
-        if (!pc.uuid.empty()) {
-            std::cout << " [" << pc.uuid << "]";
-        }
-        std::cout << ": ";
-        std::cin.sync();
-        std::string buffer;
-        std::getline(std::cin, buffer);
-
-        if (std::cin.eof()) {
-            s_eof = true;
-            return;
-        }
-
-        if (!buffer.empty()) {
-            pc.uuid = buffer;
-        }
-        if (!pc.uuid.empty()) {
-            break;
-        }
-        std::cout << "Bundle identifier cannot be empty.\n";
-    }
+    pc.address = buffer.empty() ? default_address : buffer;
     std::cout << "\n";
 }
 
@@ -1052,7 +1014,7 @@ bool Interactor::check_validity()
         }
 
         auto& pc = config_.configuration().playcover;
-        if (pc.address.empty() || pc.uuid.empty()) {
+        if (pc.address.empty()) {
             auto& name = config_.configuration().controller.name;
             auto controller_iter =
                 std::ranges::find(config_.interface_data().controller, name, std::mem_fn(&InterfaceData::Controller::name));
@@ -1062,8 +1024,8 @@ bool Interactor::check_validity()
             }
         }
 
-        if (pc.address.empty() || pc.uuid.empty()) {
-            LogError << "PlayCover address or uuid is empty";
+        if (pc.address.empty()) {
+            LogError << "PlayCover address is empty";
             return false;
         }
     }
