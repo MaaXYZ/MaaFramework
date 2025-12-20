@@ -11,6 +11,7 @@
 MAA_CTRL_UNIT_NS_BEGIN
 class ControlUnitAPI;
 class AdbControlUnitAPI;
+class AndroidControlUnitAPI;
 class Win32ControlUnitAPI;
 class CustomControlUnitAPI;
 MAA_CTRL_UNIT_NS_END
@@ -49,6 +50,19 @@ private:
     inline static const std::string version_func_name_ = "MaaWin32ControlUnitGetVersion";
     inline static const std::string create_func_name_ = "MaaWin32ControlUnitCreate";
     inline static const std::string destroy_func_name_ = "MaaWin32ControlUnitDestroy";
+};
+
+class AndroidControlUnitLibraryHolder : public LibraryHolder<AndroidControlUnitLibraryHolder>
+{
+public:
+    static std::shared_ptr<MAA_CTRL_UNIT_NS::AndroidControlUnitAPI>
+        create_control_unit(MaaAndroidScreencapMethod screencap_methods, MaaAndroidInputMethod input_methods);
+
+private:
+    inline static const std::filesystem::path libname_ = MAA_NS::path("MaaAndroidControlUnit");
+    inline static const std::string version_func_name_ = "MaaAndroidControlUnitGetVersion";
+    inline static const std::string create_func_name_ = "MaaAndroidControlUnitCreate";
+    inline static const std::string destroy_func_name_ = "MaaAndroidControlUnitDestroy";
 };
 
 class DbgControlUnitLibraryHolder : public LibraryHolder<DbgControlUnitLibraryHolder>

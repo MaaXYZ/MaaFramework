@@ -29,6 +29,9 @@ extern "C"
         const char* config,
         const char* agent_path);
 
+    MAA_FRAMEWORK_API MaaController*
+        MaaAndroidControllerCreate(MaaAndroidScreencapMethod screencap_methods, MaaAndroidInputMethod input_methods);
+
     MAA_FRAMEWORK_API MaaController* MaaWin32ControllerCreate(
         void* hWnd,
         MaaWin32ScreencapMethod screencap_method,

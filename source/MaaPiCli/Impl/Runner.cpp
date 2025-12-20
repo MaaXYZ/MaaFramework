@@ -89,6 +89,9 @@ bool Runner::run(const RuntimeParam& param)
         controller_handle =
             MaaWin32ControllerCreate(p_win32_param->hwnd, p_win32_param->screencap, p_win32_param->mouse, p_win32_param->keyboard);
     }
+    else if (const auto* p_android_param = std::get_if<RuntimeParam::AndroidParam>(&param.controller_param)) {
+        controller_handle = MaaAndroidControllerCreate(p_android_param->screencap, p_android_param->input);
+    }
     else {
         LogError << "Unknown controller type";
         return false;
