@@ -29,11 +29,20 @@ struct InterfaceData
             MEO_JSONIZATION(MEO_OPT class_regex, MEO_OPT window_regex, MEO_OPT screencap, MEO_OPT mouse, MEO_OPT keyboard);
         };
 
+        struct PlayCoverConfig
+        {
+            std::string address;
+            std::string uuid;
+
+            MEO_JSONIZATION(MEO_OPT address, MEO_OPT uuid);
+        };
+
         enum class Type
         {
             Invalid,
             Adb,
             Win32,
+            PlayCover,
         };
 
         std::string name;
@@ -47,6 +56,7 @@ struct InterfaceData
         bool display_raw = false;
 
         Win32Config win32;
+        PlayCoverConfig playcover;
 
         MEO_JSONIZATION(
             name,
@@ -56,7 +66,8 @@ struct InterfaceData
             MEO_OPT display_short_side,
             MEO_OPT display_long_side,
             MEO_OPT display_raw,
-            MEO_OPT win32);
+            MEO_OPT win32,
+            MEO_OPT playcover);
     };
 
     struct Resource
@@ -233,6 +244,14 @@ struct Configuration
         MEO_JSONIZATION(name, adb_path, address);
     };
 
+    struct PlayCoverConfig
+    {
+        std::string address;
+        std::string uuid;
+
+        MEO_JSONIZATION(MEO_OPT address, MEO_OPT uuid);
+    };
+
     struct Option
     {
         std::string name;
@@ -253,10 +272,11 @@ struct Configuration
     Controller controller;
     AdbConfig adb;
     Win32Config win32;
+    PlayCoverConfig playcover;
     std::string resource;
     std::vector<Task> task;
 
-    MEO_JSONIZATION(controller, MEO_OPT adb, MEO_OPT win32, resource, task);
+    MEO_JSONIZATION(controller, MEO_OPT adb, MEO_OPT win32, MEO_OPT playcover, resource, task);
 };
 
 struct RuntimeParam
@@ -288,6 +308,12 @@ struct RuntimeParam
         MaaWin32InputMethod keyboard = MaaWin32InputMethod_None;
     };
 
+    struct PlayCoverParam
+    {
+        std::string address;
+        std::string uuid;
+    };
+
     struct Task
     {
         std::string name;
@@ -303,7 +329,7 @@ struct RuntimeParam
         std::filesystem::path cwd;
     };
 
-    std::variant<std::monostate, AdbParam, Win32Param> controller_param;
+    std::variant<std::monostate, AdbParam, Win32Param, PlayCoverParam> controller_param;
     std::vector<std::filesystem::path> resource_path;
 
     std::vector<Task> task;

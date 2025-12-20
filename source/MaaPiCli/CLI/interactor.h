@@ -24,6 +24,7 @@ private:
     void select_adb_manual_input();
 
     bool select_win32_hwnd(const MAA_PROJECT_INTERFACE_NS::InterfaceData::Controller::Win32Config& win32_config);
+    void select_playcover(const MAA_PROJECT_INTERFACE_NS::InterfaceData::Controller::PlayCoverConfig& playcover_config);
 
     void select_resource();
     void add_task();

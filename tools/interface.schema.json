@@ -272,7 +272,8 @@
                     "title": "控制器类型",
                     "enum": [
                         "Adb",
-                        "Win32"
+                        "Win32",
+                        "PlayCover"
                     ]
                 },
                 "display_short_side": {
@@ -353,6 +354,26 @@
                                 "PrintWindow",
                                 "ScreenDC"
                             ]
+                        }
+                    },
+                    "additionalProperties": false
+                },
+                "playcover": {
+                    "type": "object",
+                    "title": "PlayCover 控制器配置",
+                    "description": "PlayCover 控制器的具体配置（仅 macOS）",
+                    "properties": {
+                        "address": {
+                            "type": "string",
+                            "title": "默认服务地址",
+                            "description": "PlayTools 服务的默认地址，格式为 host:port",
+                            "examples": ["127.0.0.1:1717"]
+                        },
+                        "uuid": {
+                            "type": "string",
+                            "title": "默认 Bundle Identifier",
+                            "description": "应用的默认 Bundle Identifier",
+                            "examples": ["com.hypergryph.arknights"]
                         }
                     },
                     "additionalProperties": false
