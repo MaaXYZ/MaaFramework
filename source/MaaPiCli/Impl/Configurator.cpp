@@ -195,10 +195,10 @@ std::optional<RuntimeParam> Configurator::generate_runtime() const
         RuntimeParam::PlayCoverParam playcover;
 
         playcover.address = config_.playcover.address;
-        playcover.uuid = config_.playcover.uuid;
+        playcover.uuid = config_.playcover.uuid.empty() ? "maa.playcover" : config_.playcover.uuid;
 
-        if (playcover.address.empty() || playcover.uuid.empty()) {
-            LogError << "PlayCover config is incomplete" << VAR(playcover.address) << VAR(playcover.uuid);
+        if (playcover.address.empty()) {
+            LogError << "PlayCover address is empty";
             return std::nullopt;
         }
 
