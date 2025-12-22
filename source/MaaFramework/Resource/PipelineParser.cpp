@@ -1820,16 +1820,23 @@ bool PipelineParser::parse_sub_recognition(
     using namespace Recognition;
     using namespace MAA_VISION_NS;
 
-    if (!get_and_check_value(input, "sub_name", output.sub_name, std::string {})) {
-        LogError << "failed to get_and_check_value sub_name" << VAR(input);
-        return false;
-    }
-
     // Default parent type and param for sub-recognition
     Type parent_type = Type::DirectHit;
     Param parent_param = DirectHitParam {};
 
-    return parse_recognition(input, output.type, output.param, parent_type, parent_param, default_mgr);
+    if (!parse_recognition(input, output.type, output.param, parent_type, parent_param, default_mgr)) {
+        return false;
+    }
+
+    if (!get_and_check_value(input, "sub_name", output.sub_name, std::string {})) {
+        LogError << "failed to get_and_check_value sub_name" << VAR(input);
+        return false;
+    }
+    if (output.sub_name.empty()) {
+        output.sub_name = json::value(output.type).as_string();
+    }
+
+    return true;
 }
 
 MAA_RES_NS_END

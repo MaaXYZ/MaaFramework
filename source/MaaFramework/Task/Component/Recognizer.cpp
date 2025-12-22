@@ -63,9 +63,22 @@ json::value gen_detail(const std::vector<Res>& all, const std::vector<Res>& filt
     };
 }
 
+template <typename Res>
+std::vector<cv::Rect> get_boxes(const std::vector<Res>& results)
+{
+    std::vector<cv::Rect> boxes;
+    for (const auto& res : results) {
+        boxes.emplace_back(res.box);
+    }
+    return boxes;
+}
+
 RecoResult Recognizer::direct_hit(const std::string& name)
 {
     LogDebug << name;
+
+    sub_filtered_boxes_.insert_or_assign(name, std::vector<cv::Rect> {});
+
     return RecoResult {
         .reco_id = reco_id_,
         .name = name,
@@ -82,6 +95,8 @@ RecoResult Recognizer::template_match(const MAA_VISION_NS::TemplateMatcherParam&
 
     auto templs = context_.get_images(param.template_);
     TemplateMatcher analyzer(image_, roi, param, templs, name);
+
+    sub_filtered_boxes_.insert_or_assign(name, get_boxes(analyzer.filtered_results()));
 
     std::optional<cv::Rect> box = std::nullopt;
     if (analyzer.best_result()) {
@@ -105,6 +120,8 @@ RecoResult Recognizer::feature_match(const MAA_VISION_NS::FeatureMatcherParam& p
     auto templs = context_.get_images(param.template_);
     FeatureMatcher analyzer(image_, roi, param, templs, name);
 
+    sub_filtered_boxes_.insert_or_assign(name, get_boxes(analyzer.filtered_results()));
+
     std::optional<cv::Rect> box = std::nullopt;
     if (analyzer.best_result()) {
         box = analyzer.best_result()->box;
@@ -125,6 +142,8 @@ RecoResult Recognizer::color_match(const MAA_VISION_NS::ColorMatcherParam& param
     cv::Rect roi = get_roi(param.roi_target);
 
     ColorMatcher analyzer(image_, roi, param, name);
+
+    sub_filtered_boxes_.insert_or_assign(name, get_boxes(analyzer.filtered_results()));
 
     std::optional<cv::Rect> box = std::nullopt;
     if (analyzer.best_result()) {
@@ -156,6 +175,8 @@ RecoResult Recognizer::ocr(const MAA_VISION_NS::OCRerParam& param, const std::st
 
     OCRer analyzer(image_, roi, param, det_session, reco_session, ocr_session, name);
 
+    sub_filtered_boxes_.insert_or_assign(name, get_boxes(analyzer.filtered_results()));
+
     std::optional<cv::Rect> box = std::nullopt;
     if (analyzer.best_result()) {
         box = analyzer.best_result()->box;
@@ -185,6 +206,8 @@ RecoResult Recognizer::nn_classify(const MAA_VISION_NS::NeuralNetworkClassifierP
     const auto& mem_info = onnx_res.memory_info();
 
     NeuralNetworkClassifier analyzer(image_, roi, param, session, mem_info, name);
+
+    sub_filtered_boxes_.insert_or_assign(name, get_boxes(analyzer.filtered_results()));
 
     std::optional<cv::Rect> box = std::nullopt;
     if (analyzer.best_result()) {
@@ -216,6 +239,8 @@ RecoResult Recognizer::nn_detect(const MAA_VISION_NS::NeuralNetworkDetectorParam
 
     NeuralNetworkDetector analyzer(image_, roi, param, session, mem_info, name);
 
+    sub_filtered_boxes_.insert_or_assign(name, get_boxes(analyzer.filtered_results()));
+
     std::optional<cv::Rect> box = std::nullopt;
     if (analyzer.best_result()) {
         box = analyzer.best_result()->box;
@@ -243,6 +268,8 @@ RecoResult Recognizer::custom_recognize(const MAA_VISION_NS::CustomRecognitionPa
     auto session = resource()->custom_recognition(param.name);
     CustomRecognition analyzer(image_, roi, param, session, context_, name);
 
+    sub_filtered_boxes_.insert_or_assign(name, get_boxes(analyzer.filtered_results()));
+
     std::optional<cv::Rect> box = std::nullopt;
     if (analyzer.best_result()) {
         box = analyzer.best_result()->box;
@@ -266,71 +293,46 @@ RecoResult Recognizer::and_(const std::shared_ptr<MAA_RES_NS::Recognition::AndPa
     LogDebug << "And recognition" << VAR(name) << VAR(param->all_of.size()) << VAR(param->box_index);
 
     std::vector<RecoResult> sub_results;
-    std::unordered_map<std::string, cv::Rect> sub_name_boxes;
-    std::vector<ImageEncodedBuffer> all_draws;
-    json::array sub_details;
+    bool all_hit = true;
 
-    for (size_t i = 0; i < param->all_of.size(); ++i) {
-        const auto& sub_reco = param->all_of[i];
+    for (const auto& sub_reco : param->all_of) {
+        RecoResult res = run_recognition(sub_reco.type, sub_reco.param, std::format("{}.{}", name, sub_reco.sub_name));
+        all_hit &= res.box.has_value();
 
-        for (const auto& [sub_name, box] : sub_name_boxes) {
-            auto& rt_cache = tasker_->runtime_cache();
-            rt_cache.set_latest_node(sub_name, MaaInvalidId);
+        sub_results.emplace_back(std::move(res));
 
-            RecoResult temp_result {
-                .reco_id = reco_id_,
-                .name = sub_name,
-                .algorithm = "And.SubRef",
-                .box = box,
-            };
-            rt_cache.set_reco_detail(reco_id_, temp_result);
-
-            NodeDetail temp_node { .node_id = MaaInvalidId, .name = sub_name, .reco_id = reco_id_ };
-            rt_cache.set_node_detail(MaaInvalidId, temp_node);
+        if (!all_hit) {
+            LogDebug << "And: sub recognition failed at" << VAR(sub_reco.type) << VAR(sub_reco.sub_name);
+            break;
         }
-
-        RecoResult sub_result = run_recognition(sub_reco.type, sub_reco.param, name + ".all_of[" + std::to_string(i) + "]");
-
-        for (auto& draw : sub_result.draws) {
-            all_draws.emplace_back(std::move(draw));
-        }
-
-        if (!sub_result.box) {
-            LogDebug << "And: sub recognition failed at index" << VAR(i) << VAR(sub_reco.sub_name);
-            return RecoResult {
-                .reco_id = reco_id_,
-                .name = name,
-                .algorithm = "And",
-                .box = std::nullopt,
-                .detail = json::object { { "failed_at", i }, { "sub_results", std::move(sub_details) } },
-                .draws = std::move(all_draws),
-            };
-        }
-
-        if (!sub_reco.sub_name.empty()) {
-            sub_name_boxes[sub_reco.sub_name] = *sub_result.box;
-        }
-
-        sub_details.emplace_back(json::object {
-            { "sub_name", sub_reco.sub_name },
-            { "algorithm", sub_result.algorithm },
-            { "box", json::array { sub_result.box->x, sub_result.box->y, sub_result.box->width, sub_result.box->height } },
-            { "detail", sub_result.detail },
-        });
-
-        sub_results.emplace_back(std::move(sub_result));
     }
 
-    std::optional<cv::Rect> final_box = sub_results[param->box_index].box;
+    std::vector<ImageEncodedBuffer> all_draws;
+    for (auto& sub : sub_results) {
+        all_draws.insert(all_draws.end(), std::make_move_iterator(sub.draws.begin()), std::make_move_iterator(sub.draws.end()));
+    }
 
-    return RecoResult {
+    RecoResult result {
         .reco_id = reco_id_,
         .name = name,
         .algorithm = "And",
-        .box = std::move(final_box),
-        .detail = json::object { { "sub_results", std::move(sub_details) }, { "box_index", param->box_index } },
+        .detail = sub_results,
         .draws = std::move(all_draws),
     };
+
+    if (!all_hit) {
+        LogDebug << "And recognition failed" << VAR(name);
+        return result;
+    }
+
+    if (sub_results.size() <= param->box_index) {
+        LogError << "all hit, but box_index is out of range" << VAR(name) << VAR(sub_results.size()) << VAR(param->box_index);
+        return {};
+    }
+
+    result.box = std::move(sub_results[param->box_index].box);
+
+    return result;
 }
 
 RecoResult Recognizer::or_(const std::shared_ptr<MAA_RES_NS::Recognition::OrParam>& param, const std::string& name)
@@ -342,54 +344,46 @@ RecoResult Recognizer::or_(const std::shared_ptr<MAA_RES_NS::Recognition::OrPara
 
     LogDebug << "Or recognition" << VAR(name) << VAR(param->any_of.size());
 
+    std::vector<RecoResult> sub_results;
+
+    bool has_hit = false;
+
+    for (const auto& sub_reco : param->any_of) {
+        RecoResult res = run_recognition(sub_reco.type, sub_reco.param, std::format("{}.{}", name, sub_reco.sub_name));
+        has_hit = res.box.has_value();
+        sub_results.emplace_back(std::move(res));
+
+        if (has_hit) {
+            LogDebug << "Or: sub recognition succeeded at" << VAR(sub_reco.type) << VAR(sub_reco.sub_name);
+            break;
+        }
+    }
     std::vector<ImageEncodedBuffer> all_draws;
-    json::array sub_details;
-
-    for (size_t i = 0; i < param->any_of.size(); ++i) {
-        const auto& sub_reco = param->any_of[i];
-
-        RecoResult sub_result = run_recognition(sub_reco.type, sub_reco.param, name + ".any_of[" + std::to_string(i) + "]");
-
-        for (auto& draw : sub_result.draws) {
-            all_draws.emplace_back(std::move(draw));
-        }
-
-        if (sub_result.box) {
-            LogDebug << "Or: sub recognition succeeded at index" << VAR(i) << VAR(sub_reco.sub_name);
-            sub_details.emplace_back(json::object {
-                { "sub_name", sub_reco.sub_name },
-                { "algorithm", sub_result.algorithm },
-                { "box", json::array { sub_result.box->x, sub_result.box->y, sub_result.box->width, sub_result.box->height } },
-                { "detail", sub_result.detail },
-            });
-
-            return RecoResult {
-                .reco_id = reco_id_,
-                .name = name,
-                .algorithm = "Or",
-                .box = std::move(sub_result.box),
-                .detail = json::object { { "hit_index", i }, { "sub_results", std::move(sub_details) } },
-                .draws = std::move(all_draws),
-            };
-        }
-
-        sub_details.emplace_back(json::object {
-            { "sub_name", sub_reco.sub_name },
-            { "algorithm", sub_result.algorithm },
-            { "box", nullptr },
-            { "detail", sub_result.detail },
-        });
+    for (auto& sub : sub_results) {
+        all_draws.insert(all_draws.end(), std::make_move_iterator(sub.draws.begin()), std::make_move_iterator(sub.draws.end()));
     }
 
-    LogDebug << "Or: all sub recognitions failed";
-    return RecoResult {
+    RecoResult result {
         .reco_id = reco_id_,
         .name = name,
         .algorithm = "Or",
-        .box = std::nullopt,
-        .detail = json::object { { "sub_results", std::move(sub_details) } },
+        .detail = sub_results,
         .draws = std::move(all_draws),
     };
+
+    if (!has_hit) {
+        LogDebug << "Or recognition failed" << VAR(name);
+        return result;
+    }
+
+    if (sub_results.empty()) {
+        LogError << "has hit, but no sub results" << VAR(name);
+        return {};
+    }
+
+    result.box = std::move(sub_results.back().box);
+
+    return result;
 }
 
 RecoResult

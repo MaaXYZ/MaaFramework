@@ -50,6 +50,9 @@ private:
     Context& context_;
     cv::Mat image_;
     const MaaRecoId reco_id_ = ++s_global_reco_id;
+
+    // for AND recognition sub-box caching
+    std::unordered_map<std::string, std::vector<cv::Rect>> sub_filtered_boxes_;
 };
 
 MAA_TASK_NS_END
