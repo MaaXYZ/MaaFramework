@@ -405,6 +405,14 @@ class Tasker:
         )
 
     def get_action_detail(self, action_id: int) -> Optional[ActionDetail]:
+        """获取操作信息 / Get action info
+
+        Args:
+            action_id: 操作号 / Action id
+
+        Returns:
+            Optional[ActionDetail]: 操作详情，如果不存在则返回 None / Action detail, or None if not exists
+        """
         name = StringBuffer()
         action = StringBuffer()
         box = RectBuffer()

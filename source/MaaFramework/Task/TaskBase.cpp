@@ -155,7 +155,9 @@ void TaskBase::set_node_detail(MaaNodeId node_id, NodeDetail detail)
 
     auto& cache = tasker_->runtime_cache();
     cache.set_node_detail(node_id, detail);
-    cache.set_latest_node(detail.name, node_id);
+    if (!detail.name.empty()) {
+        cache.set_latest_node(detail.name, node_id);
+    }
 
     // value_or 的默认值用于 run 到一半调用方手动 clear cache 了的情况
     TaskDetail task_detail =

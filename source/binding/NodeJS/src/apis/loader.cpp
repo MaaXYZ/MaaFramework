@@ -20,6 +20,9 @@ static maajs::ObjectType init(maajs::EnvType env)
     maajs::BindValue(maa, "Controller", load_controller(env));
     maajs::BindValue(maa, "AdbController", load_adb_controller(env));
     maajs::BindValue(maa, "Win32Controller", load_win32_controller(env));
+#ifdef __APPLE__
+    maajs::BindValue(maa, "PlayCoverController", load_playcover_controller(env));
+#endif
     maajs::BindValue(maa, "DbgController", load_dbg_controller(env));
     maajs::BindValue(maa, "CustomController", load_custom_controller(env));
     maajs::BindValue(maa, "TaskJob", load_task_job(env));

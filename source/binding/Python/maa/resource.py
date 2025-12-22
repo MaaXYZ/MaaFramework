@@ -216,6 +216,14 @@ class Resource:
             return None
 
     def get_node_object(self, name: str) -> Optional[JPipelineData]:
+        """获取任务当前的定义（解析为对象） / Get the current definition of task (parsed as object)
+
+        Args:
+            name: 任务名 / Task name
+
+        Returns:
+            Optional[JPipelineData]: 任务定义对象，如果不存在则返回 None / Task definition object, or None if not exists
+        """
         node_data = self.get_node_data(name)
 
         if not node_data:
@@ -310,6 +318,14 @@ class Resource:
         return self.use_auto_ep()
 
     def custom_recognition(self, name: str):
+        """自定义识别器装饰器 / Custom recognition decorator
+
+        Args:
+            name: 识别器名称，需与 Pipeline 中的 custom_recognition 字段匹配 / Recognition name, should match the custom_recognition field in Pipeline
+
+        Returns:
+            装饰器函数 / Decorator function
+        """
 
         def wrapper_recognition(recognition):
             self.register_custom_recognition(name=name, recognition=recognition())
@@ -374,6 +390,14 @@ class Resource:
         )
 
     def custom_action(self, name: str):
+        """自定义动作装饰器 / Custom action decorator
+
+        Args:
+            name: 动作名称，需与 Pipeline 中的 custom_action 字段匹配 / Action name, should match the custom_action field in Pipeline
+
+        Returns:
+            装饰器函数 / Decorator function
+        """
 
         def wrapper_action(action):
             self.register_custom_action(name=name, action=action())

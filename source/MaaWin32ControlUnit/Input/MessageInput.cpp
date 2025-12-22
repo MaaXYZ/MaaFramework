@@ -254,7 +254,7 @@ bool MessageInput::input_text(const std::string& text)
         if (!send_or_post_w(WM_CHAR, static_cast<WPARAM>(ch), 0)) {
             return false;
         }
-        std::this_thread::sleep_for(std::chrono::milliseconds(10));
+        std::this_thread::sleep_for(std::chrono::milliseconds(50));
     }
     return true;
 }

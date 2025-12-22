@@ -14,6 +14,7 @@ from .library import Library
 __all__ = [
     "AdbController",
     "DbgController",
+    "PlayCoverController",
     "Win32Controller",
     "CustomController",
 ]
@@ -717,6 +718,53 @@ class Win32Controller(Controller):
             MaaWin32ScreencapMethod,
             MaaWin32InputMethod,
             MaaWin32InputMethod,
+        ]
+
+
+class PlayCoverController(Controller):
+    """PlayCover 控制器 / PlayCover controller
+
+    用于在 macOS 上控制通过 PlayCover 运行的 iOS 应用
+    For controlling iOS apps running via PlayCover on macOS
+    """
+
+    def __init__(
+        self,
+        address: str,
+        uuid: str,
+        notification_handler: None = None,
+    ):
+        """创建 PlayCover 控制器 / Create PlayCover controller
+
+        Args:
+            address: PlayTools 服务地址 (host:port) / PlayTools service endpoint (host:port)
+            uuid: 目标应用 bundle identifier / Target app bundle identifier
+
+        Raises:
+            NotImplementedError: 如果提供了 notification_handler
+            RuntimeError: 如果创建失败
+        """
+        if notification_handler:
+            raise NotImplementedError(
+                "NotificationHandler is deprecated, use add_sink instead."
+            )
+
+        super().__init__()
+        self._set_playcover_api_properties()
+
+        self._handle = Library.framework().MaaPlayCoverControllerCreate(
+            address.encode(),
+            uuid.encode(),
+        )
+
+        if not self._handle:
+            raise RuntimeError("Failed to create PlayCover controller.")
+
+    def _set_playcover_api_properties(self):
+        Library.framework().MaaPlayCoverControllerCreate.restype = MaaControllerHandle
+        Library.framework().MaaPlayCoverControllerCreate.argtypes = [
+            ctypes.c_char_p,
+            ctypes.c_char_p,
         ]
 
 

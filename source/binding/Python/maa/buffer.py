@@ -9,6 +9,12 @@ from .library import Library
 
 
 class StringBuffer:
+    """字符串缓冲区 / String buffer
+
+    用于在 Python 和 C API 之间传递字符串数据。
+    Used to pass string data between Python and C API.
+    """
+
     _handle: MaaStringBufferHandle
     _own: bool
 
@@ -30,11 +36,24 @@ class StringBuffer:
             Library.framework().MaaStringBufferDestroy(self._handle)
 
     def get(self) -> str:
+        """获取缓冲区内容 / Get buffer content
+
+        Returns:
+            str: 字符串内容 / String content
+        """
         buff = Library.framework().MaaStringBufferGet(self._handle)
         sz = Library.framework().MaaStringBufferSize(self._handle)
         return ctypes.string_at(buff, sz).decode()
 
     def set(self, value: Union[str, bytes]) -> bool:
+        """设置缓冲区内容 / Set buffer content
+
+        Args:
+            value: 字符串或字节数据 / String or bytes data
+
+        Returns:
+            bool: 是否成功 / Whether successful
+        """
         if isinstance(value, str):
             value = value.encode()
         return bool(
@@ -43,9 +62,19 @@ class StringBuffer:
 
     @property
     def empty(self) -> bool:
+        """判断缓冲区是否为空 / Check if buffer is empty
+
+        Returns:
+            bool: 是否为空 / Whether empty
+        """
         return bool(Library.framework().MaaStringBufferIsEmpty(self._handle))
 
     def clear(self) -> bool:
+        """清空缓冲区 / Clear buffer
+
+        Returns:
+            bool: 是否成功 / Whether successful
+        """
         return bool(Library.framework().MaaStringBufferClear(self._handle))
 
     _api_properties_initialized: bool = False
@@ -89,6 +118,12 @@ class StringBuffer:
 
 
 class StringListBuffer:
+    """字符串列表缓冲区 / String list buffer
+
+    用于在 Python 和 C API 之间传递字符串列表数据。
+    Used to pass string list data between Python and C API.
+    """
+
     _handle: MaaStringListBufferHandle
     _own: bool
 
@@ -110,6 +145,11 @@ class StringListBuffer:
             Library.framework().MaaStringListBufferDestroy(self._handle)
 
     def get(self) -> List[str]:
+        """获取字符串列表 / Get string list
+
+        Returns:
+            List[str]: 字符串列表 / String list
+        """
         count = Library.framework().MaaStringListBufferSize(self._handle)
         result = []
         for i in range(count):
@@ -119,6 +159,14 @@ class StringListBuffer:
         return result
 
     def set(self, value: List[str]) -> bool:
+        """设置字符串列表 / Set string list
+
+        Args:
+            value: 字符串列表 / String list
+
+        Returns:
+            bool: 是否成功 / Whether successful
+        """
         self.clear()
         for s in value:
             if not self.append(s):
@@ -126,6 +174,14 @@ class StringListBuffer:
         return True
 
     def append(self, value: str) -> bool:
+        """追加字符串 / Append string
+
+        Args:
+            value: 要追加的字符串 / String to append
+
+        Returns:
+            bool: 是否成功 / Whether successful
+        """
         buff = StringBuffer()
         buff.set(value)
         return bool(
@@ -133,9 +189,22 @@ class StringListBuffer:
         )
 
     def remove(self, index: int) -> bool:
+        """移除指定索引的字符串 / Remove string at index
+
+        Args:
+            index: 要移除的索引 / Index to remove
+
+        Returns:
+            bool: 是否成功 / Whether successful
+        """
         return bool(Library.framework().MaaStringListBufferRemove(self._handle, index))
 
     def clear(self) -> bool:
+        """清空列表 / Clear list
+
+        Returns:
+            bool: 是否成功 / Whether successful
+        """
         return bool(Library.framework().MaaStringListBufferClear(self._handle))
 
     _api_properties_initialized: bool = False
@@ -191,6 +260,12 @@ class StringListBuffer:
 
 
 class ImageBuffer:
+    """图像缓冲区 / Image buffer
+
+    用于在 Python 和 C API 之间传递图像数据。图像格式为 BGR，与 OpenCV 兼容。
+    Used to pass image data between Python and C API. Image format is BGR, compatible with OpenCV.
+    """
+
     _handle: MaaImageBufferHandle
     _own: bool
 
@@ -212,6 +287,11 @@ class ImageBuffer:
             Library.framework().MaaImageBufferDestroy(self._handle)
 
     def get(self) -> numpy.ndarray:
+        """获取图像数据 / Get image data
+
+        Returns:
+            numpy.ndarray: BGR 格式图像，形状为 (height, width, channels) / BGR format image with shape (height, width, channels)
+        """
         buff = Library.framework().MaaImageBufferGetRawData(self._handle)
         if not buff:
             return numpy.ndarray((0, 0, 3), dtype=numpy.uint8)
@@ -226,6 +306,17 @@ class ImageBuffer:
         )
 
     def set(self, value: numpy.ndarray) -> bool:
+        """设置图像数据 / Set image data
+
+        Args:
+            value: BGR 格式图像，形状为 (height, width, channels) / BGR format image with shape (height, width, channels)
+
+        Returns:
+            bool: 是否成功 / Whether successful
+
+        Raises:
+            TypeError: 如果 value 不是 numpy.ndarray
+        """
         if not isinstance(value, numpy.ndarray):
             raise TypeError("value must be a numpy.ndarray")
 
@@ -245,9 +336,19 @@ class ImageBuffer:
 
     @property
     def empty(self) -> bool:
+        """判断缓冲区是否为空 / Check if buffer is empty
+
+        Returns:
+            bool: 是否为空 / Whether empty
+        """
         return bool(Library.framework().MaaImageBufferIsEmpty(self._handle))
 
     def clear(self) -> bool:
+        """清空缓冲区 / Clear buffer
+
+        Returns:
+            bool: 是否成功 / Whether successful
+        """
         return bool(Library.framework().MaaImageBufferClear(self._handle))
 
     _api_properties_initialized: bool = False
@@ -296,6 +397,12 @@ class ImageBuffer:
 
 
 class ImageListBuffer:
+    """图像列表缓冲区 / Image list buffer
+
+    用于在 Python 和 C API 之间传递图像列表数据。
+    Used to pass image list data between Python and C API.
+    """
+
     _handle: MaaImageListBufferHandle
     _own: bool
 
@@ -317,6 +424,11 @@ class ImageListBuffer:
             Library.framework().MaaImageListBufferDestroy(self._handle)
 
     def get(self) -> List[numpy.ndarray]:
+        """获取图像列表 / Get image list
+
+        Returns:
+            List[numpy.ndarray]: 图像列表 / Image list
+        """
         count = Library.framework().MaaImageListBufferSize(self._handle)
         result = []
         for i in range(count):
@@ -326,6 +438,14 @@ class ImageListBuffer:
         return result
 
     def set(self, value: List[numpy.ndarray]) -> bool:
+        """设置图像列表 / Set image list
+
+        Args:
+            value: 图像列表 / Image list
+
+        Returns:
+            bool: 是否成功 / Whether successful
+        """
         self.clear()
         for img in value:
             if not self.append(img):
@@ -333,6 +453,14 @@ class ImageListBuffer:
         return True
 
     def append(self, value: numpy.ndarray) -> bool:
+        """追加图像 / Append image
+
+        Args:
+            value: 要追加的图像 / Image to append
+
+        Returns:
+            bool: 是否成功 / Whether successful
+        """
         buff = ImageBuffer()
         buff.set(value)
         return bool(
@@ -340,9 +468,22 @@ class ImageListBuffer:
         )
 
     def remove(self, index: int) -> bool:
+        """移除指定索引的图像 / Remove image at index
+
+        Args:
+            index: 要移除的索引 / Index to remove
+
+        Returns:
+            bool: 是否成功 / Whether successful
+        """
         return bool(Library.framework().MaaImageListBufferRemove(self._handle, index))
 
     def clear(self) -> bool:
+        """清空列表 / Clear list
+
+        Returns:
+            bool: 是否成功 / Whether successful
+        """
         return bool(Library.framework().MaaImageListBufferClear(self._handle))
 
     _api_properties_initialized: bool = False
@@ -394,6 +535,12 @@ class ImageListBuffer:
 
 
 class RectBuffer:
+    """矩形缓冲区 / Rectangle buffer
+
+    用于在 Python 和 C API 之间传递矩形数据（x, y, width, height）。
+    Used to pass rectangle data (x, y, width, height) between Python and C API.
+    """
+
     _handle: MaaRectHandle
     _own: bool
 
@@ -415,6 +562,11 @@ class RectBuffer:
             Library.framework().MaaRectDestroy(self._handle)
 
     def get(self) -> Rect:
+        """获取矩形数据 / Get rectangle data
+
+        Returns:
+            Rect: 矩形对象 (x, y, width, height) / Rectangle object (x, y, width, height)
+        """
         x = Library.framework().MaaRectGetX(self._handle)
         y = Library.framework().MaaRectGetY(self._handle)
         w = Library.framework().MaaRectGetW(self._handle)
@@ -423,6 +575,18 @@ class RectBuffer:
         return Rect(x, y, w, h)
 
     def set(self, value: RectType) -> bool:
+        """设置矩形数据 / Set rectangle data
+
+        Args:
+            value: 矩形数据，可以是 Rect、tuple、list 或 numpy.ndarray / Rectangle data, can be Rect, tuple, list, or numpy.ndarray
+
+        Returns:
+            bool: 是否成功 / Whether successful
+
+        Raises:
+            ValueError: 如果数据格式不正确
+            TypeError: 如果类型不支持
+        """
         if isinstance(value, numpy.ndarray):
             if value.ndim != 1:
                 raise ValueError("value must be a 1D array")

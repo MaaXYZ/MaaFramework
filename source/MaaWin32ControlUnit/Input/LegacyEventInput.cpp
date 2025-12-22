@@ -147,7 +147,7 @@ bool LegacyEventInput::input_text(const std::string& text)
         // 这里简化处理，只发送字符码
         keybd_event(static_cast<BYTE>(ch), 0, 0, 0);
         keybd_event(static_cast<BYTE>(ch), 0, KEYEVENTF_KEYUP, 0);
-        std::this_thread::sleep_for(std::chrono::milliseconds(10));
+        std::this_thread::sleep_for(std::chrono::milliseconds(50));
     }
 
     return true;
@@ -217,4 +217,3 @@ bool LegacyEventInput::scroll(int dx, int dy)
 }
 
 MAA_CTRL_UNIT_NS_END
-

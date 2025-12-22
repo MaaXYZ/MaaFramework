@@ -4,6 +4,8 @@
 #include <ostream>
 #include <vector>
 
+#include <boost/regex.hpp>
+
 #include "Common/Conf.h"
 
 #include "MaaUtils/Encoding.h"
@@ -68,6 +70,9 @@ private:
     void postproc_replace_(Result& res) const;
     bool filter_by_required(const Result& res, const std::vector<std::wstring>& expected) const;
     void sort_(ResultsVec& results) const;
+
+private:
+    static const boost::wregex& gen_regex(const std::wstring& pattern);
 
 private:
     const OCRerParam param_;

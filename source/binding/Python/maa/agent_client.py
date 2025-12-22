@@ -10,9 +10,25 @@ from .buffer import StringBuffer, StringListBuffer
 
 
 class AgentClient:
+    """Agent 客户端 / Agent client
+
+    用于连接到 AgentServer，将自定义识别器和动作的执行委托给独立进程。
+    这允许将 MaaFW 本体与 Custom 逻辑分离至独立进程运行。
+    Used to connect to AgentServer, delegating custom recognition and action execution to a separate process.
+    This allows separating MaaFW core from Custom logic into independent processes.
+    """
+
     _handle: MaaAgentClientHandle
 
     def __init__(self, identifier: Optional[str] = None):
+        """创建 Agent 客户端 / Create Agent client
+
+        Args:
+            identifier: 可选的连接标识符，用于匹配特定的 AgentServer / Optional connection identifier for matching specific AgentServer
+
+        Raises:
+            RuntimeError: 如果创建失败
+        """
         self._set_api_properties()
 
         if identifier:
@@ -32,6 +48,11 @@ class AgentClient:
 
     @property
     def identifier(self) -> Optional[str]:
+        """获取连接标识符 / Get connection identifier
+
+        Returns:
+            Optional[str]: 连接标识符，如果未设置则返回 None / Connection identifier, or None if not set
+        """
         id_buffer = StringBuffer()
         if not Library.agent_client().MaaAgentClientIdentifier(
             self._handle, id_buffer._handle
@@ -41,6 +62,17 @@ class AgentClient:
         return id_buffer.get()
 
     def bind(self, resource: Resource) -> bool:
+        """绑定资源 / Bind resource
+
+        将 AgentServer 中注册的自定义识别器和动作绑定到资源上。
+        Bind custom recognitions and actions registered in AgentServer to the resource.
+
+        Args:
+            resource: 资源对象 / Resource object
+
+        Returns:
+            bool: 是否成功 / Whether successful
+        """
         # avoid gc
         self._resource = resource
 
@@ -53,6 +85,19 @@ class AgentClient:
     def register_sink(
         self, resource: Resource, controller: Controller, tasker: Tasker
     ) -> bool:
+        """注册事件监听器 / Register event sinks
+
+        将资源、控制器、任务器的事件转发给 AgentServer。
+        Forward resource, controller, and tasker events to AgentServer.
+
+        Args:
+            resource: 资源对象 / Resource object
+            controller: 控制器对象 / Controller object
+            tasker: 任务器对象 / Tasker object
+
+        Returns:
+            bool: 是否全部注册成功 / Whether all registrations succeeded
+        """
         # avoid gc
         self._sinks = [resource, controller, tasker]
 
@@ -75,20 +120,48 @@ class AgentClient:
         )
 
     def connect(self) -> bool:
+        """连接到 AgentServer / Connect to AgentServer
+
+        Returns:
+            bool: 是否成功 / Whether successful
+        """
         return bool(Library.agent_client().MaaAgentClientConnect(self._handle))
 
     def disconnect(self) -> bool:
+        """断开与 AgentServer 的连接 / Disconnect from AgentServer
+
+        Returns:
+            bool: 是否成功 / Whether successful
+        """
         return bool(Library.agent_client().MaaAgentClientDisconnect(self._handle))
 
     @property
     def connected(self) -> bool:
+        """判断是否已连接 / Check if connected
+
+        Returns:
+            bool: 是否已连接 / Whether connected
+        """
         return bool(Library.agent_client().MaaAgentClientConnected(self._handle))
 
     @property
     def alive(self) -> bool:
+        """判断连接是否存活 / Check if connection is alive
+
+        Returns:
+            bool: 连接是否存活 / Whether connection is alive
+        """
         return bool(Library.agent_client().MaaAgentClientAlive(self._handle))
 
     def set_timeout(self, milliseconds: int) -> bool:
+        """设置超时时间 / Set timeout
+
+        Args:
+            milliseconds: 超时时间（毫秒） / Timeout in milliseconds
+
+        Returns:
+            bool: 是否成功 / Whether successful
+        """
         return bool(
             Library.agent_client().MaaAgentClientSetTimeout(
                 self._handle, ctypes.c_int64(milliseconds)
