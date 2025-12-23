@@ -73,17 +73,22 @@ std::vector<cv::Rect> get_boxes(const std::vector<Res>& results)
     return boxes;
 }
 
-RecoResult Recognizer::direct_hit(const std::string& name)
+RecoResult Recognizer::direct_hit(const MAA_VISION_NS::DirectHitParam& param, const std::string& name)
 {
     LogDebug << name;
 
-    sub_filtered_boxes_.insert_or_assign(name, std::vector<cv::Rect> {});
+    cv::Rect roi = get_roi(param.roi_target);
+
+    // DirectHit
+    cv::Rect box = roi;
+
+    sub_filtered_boxes_.insert_or_assign(name, std::vector { box });
 
     return RecoResult {
         .reco_id = reco_id_,
         .name = name,
         .algorithm = "DirectHit",
-        .box = cv::Rect {},
+        .box = box,
     };
 }
 
@@ -394,7 +399,7 @@ RecoResult
 
     switch (type) {
     case Type::DirectHit:
-        return direct_hit(name);
+        return direct_hit(std::get<DirectHitParam>(param), name);
 
     case Type::TemplateMatch:
         return template_match(std::get<TemplateMatcherParam>(param), name);

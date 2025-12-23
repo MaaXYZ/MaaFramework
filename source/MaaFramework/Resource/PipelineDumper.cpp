@@ -84,9 +84,13 @@ PipelineV2::JRecognition PipelineDumper::dump_reco(Recognition::Type type, const
     reco.type = Recognition::kTypeNameMap.at(type);
 
     switch (type) {
-    case Recognition::Type::DirectHit:
-        reco.param = PipelineV2::JDirectHit {};
-        break;
+    case Recognition::Type::DirectHit: {
+        const auto& p = std::get<MAA_VISION_NS::DirectHitParam>(param);
+        reco.param = PipelineV2::JDirectHit {
+            .roi = dump_target(p.roi_target),
+            .roi_offset = dump_rect(p.roi_target.offset),
+        };
+    } break;
 
     case Recognition::Type::TemplateMatch: {
         const auto& p = std::get<MAA_VISION_NS::TemplateMatcherParam>(param);

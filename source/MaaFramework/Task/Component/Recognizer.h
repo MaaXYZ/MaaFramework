@@ -23,7 +23,7 @@ public:
     MaaRecoId get_id() const { return reco_id_; }
 
 private:
-    RecoResult direct_hit(const std::string& name);
+    RecoResult direct_hit(const MAA_VISION_NS::DirectHitParam& param, const std::string& name);
     RecoResult template_match(const MAA_VISION_NS::TemplateMatcherParam& param, const std::string& name);
     RecoResult feature_match(const MAA_VISION_NS::FeatureMatcherParam& param, const std::string& name);
     RecoResult color_match(const MAA_VISION_NS::ColorMatcherParam& param, const std::string& name);

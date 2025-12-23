@@ -48,7 +48,8 @@ class JActionType(StrEnum):
 # Recognition parameter dataclasses (matching C++ JRecognitionParam variants)
 @dataclass
 class JDirectHit:
-    pass
+    roi: JTarget = (0, 0, 0, 0)
+    roi_offset: JRect = (0, 0, 0, 0)
 
 
 @dataclass
@@ -371,15 +372,11 @@ class JPipelineParser:
         param_type: Union[JRecognitionType, JActionType],
         param_data: dict,
         param_type_map: dict,
-        default_class,
     ) -> Union[JRecognitionParam, JActionParam]:
         """Generic function to parse parameters based on type map."""
         param_class = param_type_map.get(param_type)
         if not param_class:
             raise ValueError(f"Unknown type: {param_type}")
-
-        if param_class == default_class:
-            return param_class()
 
         try:
             return param_class(**param_data)
@@ -406,7 +403,7 @@ class JPipelineParser:
             JRecognitionType.Or: JOr,
             JRecognitionType.Custom: JCustomRecognition,
         }
-        return cls._parse_param(param_type, param_data, param_type_map, JDirectHit)
+        return cls._parse_param(param_type, param_data, param_type_map)
 
     @classmethod
     def _parse_action_param(
@@ -436,7 +433,7 @@ class JPipelineParser:
             JActionType.Custom: JCustomAction,
         }
 
-        return cls._parse_param(param_type, param_data, param_type_map, JDoNothing)
+        return cls._parse_param(param_type, param_data, param_type_map)
 
     @classmethod
     def parse_pipeline_data(cls, pipeline_data: Union[str, Dict]) -> JPipelineData:

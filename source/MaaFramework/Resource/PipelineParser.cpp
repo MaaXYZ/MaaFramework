@@ -367,9 +367,14 @@ bool PipelineParser::parse_recognition(
 
     bool same_type = parent_type == out_type;
     switch (out_type) {
-    case Type::DirectHit:
-        out_param = default_mgr.get_recognition_param<DirectHitParam>(Type::DirectHit);
-        return true;
+    case Type::DirectHit: {
+        auto default_param = default_mgr.get_recognition_param<DirectHitParam>(Type::DirectHit);
+        out_param = default_param;
+        return parse_direct_hit_param(
+            param_input,
+            std::get<DirectHitParam>(out_param),
+            same_type ? std::get<DirectHitParam>(parent_param) : default_param);
+    } break;
 
     case Type::TemplateMatch: {
         auto default_param = default_mgr.get_recognition_param<TemplateMatcherParam>(Type::TemplateMatch);
@@ -452,6 +457,19 @@ bool PipelineParser::parse_recognition(
     }
 
     return false;
+}
+
+bool PipelineParser::parse_direct_hit_param(
+    const json::value& input,
+    MAA_VISION_NS::DirectHitParam& output,
+    const MAA_VISION_NS::DirectHitParam& default_value)
+{
+    if (!parse_roi_target(input, output.roi_target, default_value.roi_target)) {
+        LogError << "failed to parse_roi_target" << VAR(input);
+        return false;
+    }
+
+    return true;
 }
 
 bool PipelineParser::parse_template_matcher_param(

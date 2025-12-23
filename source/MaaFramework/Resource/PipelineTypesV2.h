@@ -17,7 +17,10 @@ using JTarget = std::variant<bool, std::string, JRect>;
 
 struct JDirectHit
 {
-    json::value to_json() const { return json::object(); }
+    JTarget roi = JRect {};
+    JRect roi_offset {};
+
+    MEO_TOJSON(roi, roi_offset);
 };
 
 struct JTemplateMatch

@@ -27,7 +27,10 @@ declare global {
             NeuralNetworkDetect: 'Horizontal' | 'Vertical' | 'Score' | 'Area' | 'Random' | 'Expected'
         }
 
-        type RecognitionDirectHit = {}
+        type RecognitionDirectHit = {
+            roi?: Rect | NodeName
+            roi_offset?: Rect
+        }
 
         type RecognitionTemplateMatch<Mode> = RequiredIfStrict<
             {
