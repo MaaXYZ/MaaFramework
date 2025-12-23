@@ -15,8 +15,13 @@ MAA_SUPPRESS_CV_WARNINGS_END
 
 MAA_VISION_NS_BEGIN
 
-FeatureMatcher::FeatureMatcher(cv::Mat image, cv::Rect roi, FeatureMatcherParam param, std::vector<cv::Mat> templates, std::string name)
-    : VisionBase(std::move(image), std::move(roi), std::move(name))
+FeatureMatcher::FeatureMatcher(
+    cv::Mat image,
+    std::vector<cv::Rect> rois,
+    FeatureMatcherParam param,
+    std::vector<cv::Mat> templates,
+    std::string name)
+    : VisionBase(std::move(image), std::move(rois), std::move(name))
     , param_(std::move(param))
     , templates_(std::move(templates))
 {
@@ -35,8 +40,11 @@ void FeatureMatcher::analyze()
     for (const auto& templ : templates_) {
         auto [keypoints_1, descriptors_1] = detect(templ, create_mask(templ, param_.green_mask));
 
-        auto results = feature_match(templ, keypoints_1, descriptors_1);
-        add_results(std::move(results), param_.count);
+        while (next_roi()) {
+            auto results = feature_match(templ, keypoints_1, descriptors_1);
+            add_results(std::move(results), param_.count);
+        }
+        reset_roi();
     }
 
     cherry_pick();

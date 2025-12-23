@@ -36,7 +36,8 @@ private:
 
     RecoResult run_recognition(MAA_RES_NS::Recognition::Type type, const MAA_RES_NS::Recognition::Param& param, const std::string& name);
 
-    cv::Rect get_roi(const MAA_VISION_NS::Target& roi);
+    std::vector<cv::Rect> get_rois(const MAA_VISION_NS::Target& roi, bool use_best = false);
+    std::vector<cv::Rect> get_rois_from_pretask(const std::string& name, bool use_best);
     void save_draws(const std::string& node_name, const RecoResult& result) const;
 
 private:
@@ -53,6 +54,7 @@ private:
 
     // for AND recognition sub-box caching
     std::unordered_map<std::string, std::vector<cv::Rect>> sub_filtered_boxes_;
+    std::unordered_map<std::string, cv::Rect> sub_best_box_;
 };
 
 MAA_TASK_NS_END

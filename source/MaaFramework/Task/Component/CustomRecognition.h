@@ -27,7 +27,7 @@ class CustomRecognition
 public:
     CustomRecognition(
         const cv::Mat& image,
-        const cv::Rect& roi,
+        const std::vector<cv::Rect>& rois,
         const MAA_VISION_NS::CustomRecognitionParam& param,
         MAA_RES_NS::CustomRecognitionSession session,
         Context& context,

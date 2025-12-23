@@ -1,5 +1,4 @@
 #pragma once
-#pragma once
 
 #include <ostream>
 #include <vector>
@@ -33,7 +32,7 @@ class NeuralNetworkClassifier
 public:
     NeuralNetworkClassifier(
         cv::Mat image,
-        cv::Rect roi,
+        std::vector<cv::Rect> rois,
         NeuralNetworkClassifierParam param,
         std::shared_ptr<Ort::Session> session,
         const Ort::MemoryInfo& memory_info,

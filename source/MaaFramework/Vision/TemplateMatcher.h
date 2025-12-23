@@ -24,7 +24,12 @@ class TemplateMatcher
     , public RecoResultAPI<TemplateMatcherResult>
 {
 public:
-    TemplateMatcher(cv::Mat image, cv::Rect roi, TemplateMatcherParam param, std::vector<cv::Mat> templates, std::string name = "");
+    TemplateMatcher(
+        cv::Mat image,
+        std::vector<cv::Rect> rois,
+        TemplateMatcherParam param,
+        std::vector<cv::Mat> templates,
+        std::string name = "");
 
 private:
     void analyze();

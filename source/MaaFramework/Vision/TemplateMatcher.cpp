@@ -7,8 +7,13 @@
 
 MAA_VISION_NS_BEGIN
 
-TemplateMatcher::TemplateMatcher(cv::Mat image, cv::Rect roi, TemplateMatcherParam param, std::vector<cv::Mat> templates, std::string name)
-    : VisionBase(std::move(image), std::move(roi), std::move(name))
+TemplateMatcher::TemplateMatcher(
+    cv::Mat image,
+    std::vector<cv::Rect> rois,
+    TemplateMatcherParam param,
+    std::vector<cv::Mat> templates,
+    std::string name)
+    : VisionBase(std::move(image), std::move(rois), std::move(name))
     , param_(std::move(param))
     , low_score_better_(param_.method == cv::TemplateMatchModes::TM_SQDIFF || param_.method == cv::TemplateMatchModes::TM_SQDIFF_NORMED)
     , templates_(std::move(templates))
@@ -26,9 +31,12 @@ void TemplateMatcher::analyze()
     auto start_time = std::chrono::steady_clock::now();
 
     for (size_t i = 0; i != templates_.size(); ++i) {
-        auto results = template_match(templates_.at(i));
-        double threshold = i < param_.thresholds.size() ? param_.thresholds.at(i) : param_.thresholds.back();
-        add_results(std::move(results), threshold);
+        while (next_roi()) {
+            auto results = template_match(templates_.at(i));
+            double threshold = i < param_.thresholds.size() ? param_.thresholds.at(i) : param_.thresholds.back();
+            add_results(std::move(results), threshold);
+        }
+        reset_roi();
     }
 
     cherry_pick();
