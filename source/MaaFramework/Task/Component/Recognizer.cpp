@@ -278,7 +278,7 @@ RecoResult Recognizer::custom_recognize(const MAA_VISION_NS::CustomRecognitionPa
     std::vector<cv::Rect> rois = get_rois(param.roi_target, true);
 
     auto session = resource()->custom_recognition(param.name);
-    CustomRecognition analyzer(image_, rois, param, session, context_, name);
+    CustomRecognition analyzer(image_, rois.empty() ? cv::Rect {} : rois.front(), param, session, context_, name);
 
     sub_filtered_boxes_.insert_or_assign(name, get_boxes(analyzer.filtered_results()));
     sub_best_box_.insert_or_assign(name, analyzer.best_result() ? analyzer.best_result()->box : cv::Rect {});
