@@ -450,6 +450,30 @@ maajs::ValueType load_win32_controller(maajs::EnvType env)
     return ctor;
 }
 
+#ifdef __APPLE__
+PlayCoverControllerImpl* PlayCoverControllerImpl::ctor(const maajs::CallbackInfo& info)
+{
+    auto [address, uuid] = maajs::UnWrapArgs<PlayCoverControllerCtorParam, void>(info);
+    auto ctrl = MaaPlayCoverControllerCreate(address.c_str(), uuid.c_str());
+    if (!ctrl) {
+        return nullptr;
+    }
+    return new PlayCoverControllerImpl(ctrl, true);
+}
+
+void PlayCoverControllerImpl::init_proto(maajs::ObjectType, maajs::FunctionType)
+{
+}
+
+maajs::ValueType load_playcover_controller(maajs::EnvType env)
+{
+    maajs::FunctionType ctor;
+    maajs::NativeClass<PlayCoverControllerImpl>::init<ControllerImpl>(env, ctor, &ExtContext::get(env)->controllerCtor);
+    ExtContext::get(env)->playcoverControllerCtor = maajs::PersistentFunction(ctor);
+    return ctor;
+}
+#endif
+
 DbgControllerImpl* DbgControllerImpl::ctor(const maajs::CallbackInfo& info)
 {
     auto [read_path, write_path, type, config] = maajs::UnWrapArgs<DbgControllerCtorParam, void>(info);

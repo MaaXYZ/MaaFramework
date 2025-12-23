@@ -15,6 +15,9 @@ maajs::ValueType load_image_job(maajs::EnvType env);
 maajs::ValueType load_controller(maajs::EnvType env);
 maajs::ValueType load_adb_controller(maajs::EnvType env);
 maajs::ValueType load_win32_controller(maajs::EnvType env);
+#ifdef __APPLE__
+maajs::ValueType load_playcover_controller(maajs::EnvType env);
+#endif
 maajs::ValueType load_dbg_controller(maajs::EnvType env);
 maajs::ValueType load_custom_controller(maajs::EnvType env);
 

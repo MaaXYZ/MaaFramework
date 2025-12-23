@@ -11,6 +11,20 @@ from .define import *
 
 
 class CustomRecognition(ABC):
+    """自定义识别器基类 / Custom recognition base class
+
+    用于实现自定义的 Pipeline 识别算法。继承此类并实现 analyze 方法，
+    然后通过 Resource.register_custom_recognition 或 AgentServer.register_custom_recognition 注册。
+    Used to implement custom Pipeline recognition algorithms. Inherit this class and implement the analyze method,
+    then register via Resource.register_custom_recognition or AgentServer.register_custom_recognition.
+
+    Example:
+        class MyRecognition(CustomRecognition):
+            def analyze(self, context, argv):
+                # 返回识别到的位置，或 None 表示未识别到
+                return (100, 100, 50, 50)
+    """
+
     _handle: MaaCustomRecognitionCallback
 
     def __init__(self):
@@ -18,6 +32,17 @@ class CustomRecognition(ABC):
 
     @dataclass
     class AnalyzeArg:
+        """analyze 方法的参数 / Arguments for analyze method
+
+        Attributes:
+            task_detail: 当前任务详情 / Current task detail
+            node_name: 当前节点名 / Current node name
+            custom_recognition_name: 自定义识别器名 / Custom recognition name
+            custom_recognition_param: 自定义识别器参数 (JSON 字符串) / Custom recognition parameter (JSON string)
+            image: 待识别的图像 (BGR 格式) / Image to recognize (BGR format)
+            roi: 识别区域 / Recognition region of interest
+        """
+
         task_detail: TaskDetail
         node_name: str
         custom_recognition_name: str
@@ -27,6 +52,13 @@ class CustomRecognition(ABC):
 
     @dataclass
     class AnalyzeResult:
+        """analyze 方法的返回结果 / Return result of analyze method
+
+        Attributes:
+            box: 识别到的位置，None 表示未识别到 / Recognized position, None means not recognized
+            detail: 识别详情，会被记录到识别结果中 / Recognition details, will be recorded in recognition result
+        """
+
         box: Optional[RectType]
         detail: dict
 
@@ -36,6 +68,18 @@ class CustomRecognition(ABC):
         context: Context,
         argv: AnalyzeArg,
     ) -> Union[AnalyzeResult, Optional[RectType]]:
+        """执行自定义识别 / Execute custom recognition
+
+        Args:
+            context: 任务上下文，可用于执行其他操作 / Task context, can be used to execute other operations
+            argv: 识别参数 / Recognition arguments
+
+        Returns:
+            Union[AnalyzeResult, Optional[RectType]]: 识别结果。可返回 AnalyzeResult、RectType 或 None。
+            返回 None 表示未识别到。
+            Recognition result. Can return AnalyzeResult, RectType, or None.
+            Return None means not recognized.
+        """
         raise NotImplementedError
 
     @property

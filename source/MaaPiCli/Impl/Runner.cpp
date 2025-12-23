@@ -89,6 +89,15 @@ bool Runner::run(const RuntimeParam& param)
         controller_handle =
             MaaWin32ControllerCreate(p_win32_param->hwnd, p_win32_param->screencap, p_win32_param->mouse, p_win32_param->keyboard);
     }
+    else if (const auto* p_playcover_param = std::get_if<RuntimeParam::PlayCoverParam>(&param.controller_param)) {
+#if defined(__APPLE__)
+        controller_handle = MaaPlayCoverControllerCreate(p_playcover_param->address.c_str(), p_playcover_param->uuid.c_str());
+#else
+        std::ignore = p_playcover_param;
+        LogError << "PlayCover controller is only supported on macOS";
+        return false;
+#endif
+    }
     else {
         LogError << "Unknown controller type";
         return false;

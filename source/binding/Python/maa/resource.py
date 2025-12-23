@@ -76,6 +76,63 @@ class Resource:
         )
         return Job(res_id, self._status, self._wait)
 
+    def post_ocr_model(self, path: Union[pathlib.Path, str]) -> Job:
+        """异步加载 OCR 模型 / Asynchronously load OCR model from path
+
+        这是一个异步操作，会立即返回一个 Job 对象
+        This is an asynchronous operation that immediately returns a Job object
+
+        Args:
+            path: OCR 模型目录路径 / OCR model directory path
+
+        Returns:
+            Job: 作业对象，可通过 status/wait 查询状态 / Job object, can query status via status/wait
+        """
+        res_id = Library.framework().MaaResourcePostOcrModel(
+            self._handle, str(path).encode()
+        )
+        return Job(res_id, self._status, self._wait)
+
+    def post_pipeline(self, path: Union[pathlib.Path, str]) -> Job:
+        """异步加载 Pipeline / Asynchronously load pipeline from path
+
+        这是一个异步操作，会立即返回一个 Job 对象
+        This is an asynchronous operation that immediately returns a Job object
+
+        支持加载目录或单个 json/jsonc 文件
+        Supports loading a directory or a single json/jsonc file
+
+        Args:
+            path: Pipeline 目录或文件路径 / Pipeline directory or file path
+
+        Returns:
+            Job: 作业对象，可通过 status/wait 查询状态 / Job object, can query status via status/wait
+        """
+        res_id = Library.framework().MaaResourcePostPipeline(
+            self._handle, str(path).encode()
+        )
+        return Job(res_id, self._status, self._wait)
+
+    def post_image(self, path: Union[pathlib.Path, str]) -> Job:
+        """异步加载图片资源 / Asynchronously load image resources from path
+
+        这是一个异步操作，会立即返回一个 Job 对象
+        This is an asynchronous operation that immediately returns a Job object
+
+        支持加载目录或单个图片文件
+        Supports loading a directory or a single image file
+
+        Args:
+            path: 图片目录或文件路径 / Image directory or file path
+
+        Returns:
+            Job: 作业对象，可通过 status/wait 查询状态 / Job object, can query status via status/wait
+        """
+        res_id = Library.framework().MaaResourcePostImage(
+            self._handle, str(path).encode()
+        )
+        return Job(res_id, self._status, self._wait)
+
     def override_pipeline(self, pipeline_override: Dict) -> bool:
         """覆盖 pipeline / Override pipeline_override
 
@@ -159,6 +216,14 @@ class Resource:
             return None
 
     def get_node_object(self, name: str) -> Optional[JPipelineData]:
+        """获取任务当前的定义（解析为对象） / Get the current definition of task (parsed as object)
+
+        Args:
+            name: 任务名 / Task name
+
+        Returns:
+            Optional[JPipelineData]: 任务定义对象，如果不存在则返回 None / Task definition object, or None if not exists
+        """
         node_data = self.get_node_data(name)
 
         if not node_data:
@@ -253,6 +318,14 @@ class Resource:
         return self.use_auto_ep()
 
     def custom_recognition(self, name: str):
+        """自定义识别器装饰器 / Custom recognition decorator
+
+        Args:
+            name: 识别器名称，需与 Pipeline 中的 custom_recognition 字段匹配 / Recognition name, should match the custom_recognition field in Pipeline
+
+        Returns:
+            装饰器函数 / Decorator function
+        """
 
         def wrapper_recognition(recognition):
             self.register_custom_recognition(name=name, recognition=recognition())
@@ -317,6 +390,14 @@ class Resource:
         )
 
     def custom_action(self, name: str):
+        """自定义动作装饰器 / Custom action decorator
+
+        Args:
+            name: 动作名称，需与 Pipeline 中的 custom_action 字段匹配 / Action name, should match the custom_action field in Pipeline
+
+        Returns:
+            装饰器函数 / Decorator function
+        """
 
         def wrapper_action(action):
             self.register_custom_action(name=name, action=action())
@@ -524,6 +605,24 @@ class Resource:
             ctypes.c_char_p,
         ]
 
+        Library.framework().MaaResourcePostOcrModel.restype = MaaResId
+        Library.framework().MaaResourcePostOcrModel.argtypes = [
+            MaaResourceHandle,
+            ctypes.c_char_p,
+        ]
+
+        Library.framework().MaaResourcePostPipeline.restype = MaaResId
+        Library.framework().MaaResourcePostPipeline.argtypes = [
+            MaaResourceHandle,
+            ctypes.c_char_p,
+        ]
+
+        Library.framework().MaaResourcePostImage.restype = MaaResId
+        Library.framework().MaaResourcePostImage.argtypes = [
+            MaaResourceHandle,
+            ctypes.c_char_p,
+        ]
+
         Library.framework().MaaResourceStatus.restype = MaaStatus
         Library.framework().MaaResourceStatus.argtypes = [
             MaaResourceHandle,
@@ -661,8 +760,9 @@ class ResourceEventSink(EventSink):
     @dataclass
     class ResourceLoadingDetail:
         res_id: int
-        hash: str
         path: str
+        type: str
+        hash: str
 
     def on_resource_loading(
         self,
@@ -684,8 +784,9 @@ class ResourceEventSink(EventSink):
         if msg.startswith("Resource.Loading"):
             detail = self.ResourceLoadingDetail(
                 res_id=details["res_id"],
-                hash=details["hash"],
                 path=details["path"],
+                type=details.get("type", "Bundle"),
+                hash=details["hash"],
             )
             self.on_resource_loading(resource, noti_type, detail)
 

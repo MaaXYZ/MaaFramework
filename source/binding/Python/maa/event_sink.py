@@ -17,6 +17,18 @@ from .define import MaaEventCallback
 
 
 class NotificationType(IntEnum):
+    """通知类型枚举 / Notification type enumeration
+
+    用于标识事件回调的状态类型。
+    Used to identify the status type of event callbacks.
+
+    Attributes:
+        Unknown: 未知类型 / Unknown type
+        Starting: 开始 / Starting
+        Succeeded: 成功 / Succeeded
+        Failed: 失败 / Failed
+    """
+
     Unknown = 0
     Starting = 1
     Succeeded = 2
@@ -24,7 +36,25 @@ class NotificationType(IntEnum):
 
 
 class EventSink(ABC):
+    """事件监听器基类 / Event sink base class
+
+    用于接收 MaaFramework 各种事件回调的抽象基类。
+    派生类包括 ResourceEventSink、ControllerEventSink、TaskerEventSink、ContextEventSink。
+    Abstract base class for receiving various event callbacks from MaaFramework.
+    Derived classes include ResourceEventSink, ControllerEventSink, TaskerEventSink, ContextEventSink.
+    """
+
     def on_unknown_notification(self, instance, msg: str, details: dict):
+        """处理未知类型的通知 / Handle unknown notification
+
+        当收到无法识别的通知时调用。
+        Called when an unrecognized notification is received.
+
+        Args:
+            instance: 相关实例对象 / Related instance object
+            msg: 消息类型 / Message type
+            details: 消息详情 / Message details
+        """
         pass
 
     def _on_raw_notification(self, handle: ctypes.c_void_p, msg: str, details: dict):

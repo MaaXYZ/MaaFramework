@@ -208,6 +208,24 @@ maajs::ValueType ResourceImpl::post_bundle(maajs::ValueType self, maajs::EnvType
     return maajs::CallCtorHelper(ExtContext::get(env)->jobCtor, self, id);
 }
 
+maajs::ValueType ResourceImpl::post_ocr_model(maajs::ValueType self, maajs::EnvType, std::string path)
+{
+    auto id = MaaResourcePostOcrModel(resource, path.c_str());
+    return maajs::CallCtorHelper(ExtContext::get(env)->jobCtor, self, id);
+}
+
+maajs::ValueType ResourceImpl::post_pipeline(maajs::ValueType self, maajs::EnvType, std::string path)
+{
+    auto id = MaaResourcePostPipeline(resource, path.c_str());
+    return maajs::CallCtorHelper(ExtContext::get(env)->jobCtor, self, id);
+}
+
+maajs::ValueType ResourceImpl::post_image(maajs::ValueType self, maajs::EnvType, std::string path)
+{
+    auto id = MaaResourcePostImage(resource, path.c_str());
+    return maajs::CallCtorHelper(ExtContext::get(env)->jobCtor, self, id);
+}
+
 void ResourceImpl::override_pipeline(maajs::ValueType pipeline)
 {
     auto str = maajs::JsonStringify(env, pipeline);
@@ -378,6 +396,9 @@ void ResourceImpl::init_proto(maajs::ObjectType proto, maajs::FunctionType)
     MAA_BIND_FUNC(proto, "unregister_custom_action", ResourceImpl::unregister_custom_action);
     MAA_BIND_FUNC(proto, "clear_custom_action", ResourceImpl::clear_custom_action);
     MAA_BIND_FUNC(proto, "post_bundle", ResourceImpl::post_bundle);
+    MAA_BIND_FUNC(proto, "post_ocr_model", ResourceImpl::post_ocr_model);
+    MAA_BIND_FUNC(proto, "post_pipeline", ResourceImpl::post_pipeline);
+    MAA_BIND_FUNC(proto, "post_image", ResourceImpl::post_image);
     MAA_BIND_SETTER(proto, "inference_device", ResourceImpl::set_inference_device);
     MAA_BIND_SETTER(proto, "inference_execution_provider", ResourceImpl::set_inference_execution_provider);
     MAA_BIND_FUNC(proto, "override_pipeline", ResourceImpl::override_pipeline);

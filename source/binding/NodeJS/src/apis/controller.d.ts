@@ -218,6 +218,10 @@ declare global {
             static find(): Promise<DesktopDevice[] | null>
         }
 
+        class PlayCoverController extends Controller {
+            constructor(address: string, uuid: string)
+        }
+
         class DbgController extends Controller {
             constructor(
                 read_path: string,

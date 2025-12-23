@@ -133,7 +133,11 @@ std::string CommandAction::get_resource_dir(const Runtime& runtime)
         return {};
     }
 
-    return path_to_utf8_string(runtime.resource_paths.back());
+    const auto& p = runtime.resource_paths.back();
+    if (std::filesystem::is_regular_file(p)) {
+        return path_to_utf8_string(p.parent_path());
+    }
+    return path_to_utf8_string(p);
 }
 
 MAA_TASK_NS_END

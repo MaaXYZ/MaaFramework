@@ -33,6 +33,9 @@ struct ResourceImpl : public maajs::NativeClassBase
     void unregister_custom_action(std::string name);
     void clear_custom_action();
     maajs::ValueType post_bundle(maajs::ValueType self, maajs::EnvType env, std::string path);
+    maajs::ValueType post_ocr_model(maajs::ValueType self, maajs::EnvType env, std::string path);
+    maajs::ValueType post_pipeline(maajs::ValueType self, maajs::EnvType env, std::string path);
+    maajs::ValueType post_image(maajs::ValueType self, maajs::EnvType env, std::string path);
     void override_pipeline(maajs::ValueType pipeline);
     void override_next(std::string node_name, std::vector<std::string> next_list);
     void override_image(std::string image_name, maajs::ArrayBufferType image);

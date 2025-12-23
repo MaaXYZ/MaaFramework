@@ -191,6 +191,20 @@ std::optional<RuntimeParam> Configurator::generate_runtime() const
         runtime.controller_param = std::move(win32);
     } break;
 
+    case InterfaceData::Controller::Type::PlayCover: {
+        RuntimeParam::PlayCoverParam playcover;
+
+        playcover.address = config_.playcover.address;
+        playcover.uuid = config_.playcover.uuid.empty() ? "maa.playcover" : config_.playcover.uuid;
+
+        if (playcover.address.empty()) {
+            LogError << "PlayCover address is empty";
+            return std::nullopt;
+        }
+
+        runtime.controller_param = std::move(playcover);
+    } break;
+
     default: {
         LogError << "Unknown controller type" << VAR(controller.type);
         return std::nullopt;

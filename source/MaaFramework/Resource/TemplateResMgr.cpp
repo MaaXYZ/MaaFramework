@@ -13,6 +13,26 @@ bool TemplateResMgr::lazy_load(const std::filesystem::path& path)
     return true;
 }
 
+bool TemplateResMgr::load_file(const std::filesystem::path& path)
+{
+    LogFunc << VAR(path);
+
+    if (!std::filesystem::exists(path) || !std::filesystem::is_regular_file(path)) {
+        LogError << "path not exists or not a file" << VAR(path);
+        return false;
+    }
+
+    cv::Mat image = MAA_NS::imread(path);
+    if (image.empty()) {
+        LogError << "Failed to load image:" << path;
+        return false;
+    }
+
+    auto name = path_to_utf8_string(path.filename());
+    image_cache_[name] = { std::move(image) };
+    return true;
+}
+
 void TemplateResMgr::clear()
 {
     LogFunc;

@@ -76,4 +76,16 @@ private:
     inline static const std::string destroy_func_name_ = "MaaCustomControlUnitDestroy";
 };
 
+class PlayCoverControlUnitLibraryHolder : public LibraryHolder<PlayCoverControlUnitLibraryHolder>
+{
+public:
+    static std::shared_ptr<MAA_CTRL_UNIT_NS::ControlUnitAPI> create_control_unit(const char* address, const char* uuid);
+
+private:
+    inline static const std::filesystem::path libname_ = MAA_NS::path("MaaPlayCoverControlUnit");
+    inline static const std::string version_func_name_ = "MaaPlayCoverControlUnitGetVersion";
+    inline static const std::string create_func_name_ = "MaaPlayCoverControlUnitCreate";
+    inline static const std::string destroy_func_name_ = "MaaPlayCoverControlUnitDestroy";
+};
+
 MAA_NS_END

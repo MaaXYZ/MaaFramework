@@ -24,8 +24,9 @@
  *
  * details_json: {
  *      res_id: number,
- *      hash: string,
  *      path: string,
+ *      type: string,  // "Bundle" | "OcrModel" | "Pipeline" | "Image"
+ *      hash: string,
  * }
  */
 #define MaaMsg_Resource_Loading_Starting ("Resource.Loading.Starting")
