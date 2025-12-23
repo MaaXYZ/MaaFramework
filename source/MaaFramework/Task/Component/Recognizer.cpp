@@ -340,7 +340,8 @@ RecoResult Recognizer::and_(const std::shared_ptr<MAA_RES_NS::Recognition::AndPa
 
     if (static_cast<int>(sub_results.size()) <= param->box_index) {
         LogError << "all hit, but box_index is out of range" << VAR(name) << VAR(sub_results.size()) << VAR(param->box_index);
-        return {};
+        result.box = std::nullopt;
+        return result;
     }
 
     result.box = std::move(sub_results[param->box_index].box);
@@ -437,7 +438,7 @@ RecoResult
         return custom_recognize(std::get<CustomRecognitionParam>(param), name);
 
     default:
-        LogError << "Unknown recognition type" << VAR(static_cast<int>(type));
+    LogError << "Unknown recognition type" << VAR(static_cast<int>(type)) << VAR(name);
         return {};
     }
 }

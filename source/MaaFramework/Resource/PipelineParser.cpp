@@ -1851,7 +1851,7 @@ bool PipelineParser::parse_sub_recognition(
         return false;
     }
     if (output.sub_name.empty()) {
-        output.sub_name = json::value(output.type).as_string();
+        output.sub_name = Recognition::kTypeNameMap.at(output.type);
     }
 
     return true;
