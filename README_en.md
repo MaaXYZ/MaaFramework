@@ -161,6 +161,9 @@ It offers low-code simplicity while maintaining high extensibility. The framewor
 - [MAA Star Resonance](https://github.com/26F-Studio/maa-star-resonance) ![Typescript](https://img.shields.io/badge/Typescript-8A2BE2?logo=typescript) ![license](https://img.shields.io/github/license/26F-Studio/maa-star-resonance) ![activity](https://img.shields.io/github/commit-activity/m/26F-Studio/maa-star-resonance?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/26F-Studio/maa-star-resonance?style=social)  
   A helper for Star Resonance. Using Electron + text image recognition + ADB simulation control technology, freeing your hands! Powered by MaaFramework and Quasar.
 
+- [StellaSora-Auto-Helper](https://github.com/SodaCodeSave/StellaSora-Auto-Helper) ![Pipeline](https://img.shields.io/badge/Pipeline-%23876f69?logo=paddypower&logoColor=%23FFFFFF) ![license](https://img.shields.io/github/license/SodaCodeSave/StellaSora-Auto-Helper) ![activity](https://img.shields.io/github/commit-activity/m/SodaCodeSave/StellaSora-Auto-Helper?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/SodaCodeSave/StellaSora-Auto-Helper?style=social)  
+  Assistant for Stella Sora. Image recognition + simulation control to free your hands! Powered by MaaFramework!
+
 ## Eco-Building
 
 MAA is planned to be a category of projects rather than just a single piece of software.
