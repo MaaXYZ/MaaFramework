@@ -2296,10 +2296,10 @@
                 },
                 "dy": {
                     "title": "Scroll Dy Property",
-                    "description": "垂直滚动距离，正值向下滚动，负值向上滚动。可选，默认 0。建议使用 120 的整数倍（WHEEL_DELTA）。",
+                    "description": "垂直滚动距离，正值向上滚动，负值向下滚动。可选，默认 0。建议使用 120 的整数倍（WHEEL_DELTA）。",
                     "type": "integer",
                     "default": 0,
-                    "markdownDescription": "*int*\n\n垂直滚动距离，正值向下滚动，负值向上滚动。可选，默认 0。\n\n建议使用 120 的整数倍（WHEEL_DELTA）以获得最佳兼容性。"
+                    "markdownDescription": "*int*\n\n垂直滚动距离，正值向上滚动，负值向下滚动。可选，默认 0。\n\n建议使用 120 的整数倍（WHEEL_DELTA）以获得最佳兼容性。"
                 }
             }
         },

@@ -226,7 +226,7 @@ class Controller:
 
         Args:
             dx: 水平滚动距离，正值向右滚动，负值向左滚动 / Horizontal scroll distance, positive for right, negative for left
-            dy: 垂直滚动距离，正值向下滚动，负值向上滚动 / Vertical scroll distance, positive for down, negative for up
+            dy: 垂直滚动距离，正值向上滚动，负值向下滚动 / Vertical scroll distance, positive for up, negative for down
 
         Returns:
             Job: 作业对象 / Job object
