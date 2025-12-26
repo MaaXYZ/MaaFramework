@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>布局2 - 标签页布局</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-dark: #0f0f0f;
+            --bg-main: #1a1a1a;
+            --bg-card: #242424;
+            --bg-hover: #2d2d2d;
+            --accent: #ff6b35;
+            --accent-glow: rgba(255, 107, 53, 0.3);
+            --accent-secondary: #ffc107;
+            --text-white: #ffffff;
+            --text-gray: #a0a0a0;
+            --text-dim: #666666;
+            --border: #333333;
+            --success: #4caf50;
+            --radius: 12px;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Inter', -apple-system, sans-serif;
+            background: var(--bg-dark);
+            color: var(--text-white);
+            min-height: 100vh;
+        }
+
+        /* 顶部导航 */
+        .navbar {
+            height: 64px;
+            background: var(--bg-main);
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            padding: 0 24px;
+        }
+
+        .navbar-brand { display: flex; align-items: center; gap: 12px; }
+        .navbar-logo {
+            width: 36px; height: 36px;
+            background: linear-gradient(135deg, var(--accent), var(--accent-secondary));
+            border-radius: 10px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 18px; font-weight: 700; color: white;
+        }
+        .navbar-title { font-size: 18px; font-weight: 600; }
+
+        .navbar-tabs { display: flex; margin-left: 48px; gap: 4px; }
+        .navbar-tab {
+            padding: 8px 20px;
+            font-size: 14px; font-weight: 500;
+            color: var(--text-gray);
+            cursor: pointer;
+            border-radius: 8px;
+            transition: all 0.2s;
+            position: relative;
+        }
+        .navbar-tab:hover { color: var(--text-white); background: var(--bg-hover); }
+        .navbar-tab.active { color: var(--accent); background: var(--accent-glow); }
+        .navbar-tab.active::after {
+            content: '';
+            position: absolute;
+            bottom: -13px; left: 50%;
+            transform: translateX(-50%);
+            width: 24px; height: 3px;
+            background: var(--accent);
+            border-radius: 2px;
+        }
+
+        .navbar-spacer { flex: 1; }
+
+        .navbar-status {
+            display: flex; align-items: center; gap: 8px;
+            padding: 6px 14px;
+            background: rgba(76, 175, 80, 0.15);
+            border-radius: 20px;
+            font-size: 13px; color: var(--success);
+        }
+        .status-indicator { width: 8px; height: 8px; background: var(--success); border-radius: 50%; }
+
+        .navbar-actions { display: flex; gap: 8px; margin-left: 16px; }
+        .icon-btn {
+            width: 36px; height: 36px;
+            display: flex; align-items: center; justify-content: center;
+            background: var(--bg-card); border: 1px solid var(--border);
+            border-radius: 8px; color: var(--text-gray);
+            cursor: pointer; transition: all 0.2s;
+        }
+        .icon-btn:hover { background: var(--bg-hover); color: var(--text-white); }
+
+        .main-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 32px 24px 120px;
+        }
+
+        /* 设备连接卡片 */
+        .connection-card {
+            background: var(--bg-main);
+            border-radius: var(--radius);
+            padding: 20px 24px;
+            margin-bottom: 24px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .device-preview {
+            width: 60px; height: 100px;
+            background: var(--bg-card);
+            border-radius: 10px;
+            border: 2px solid var(--border);
+            position: relative;
+        }
+        .device-preview::before {
+            content: '';
+            position: absolute;
+            top: 6px; left: 50%;
+            transform: translateX(-50%);
+            width: 20px; height: 3px;
+            background: var(--bg-hover);
+            border-radius: 2px;
+        }
+        .device-preview-screen {
+            position: absolute;
+            top: 12px; left: 3px; right: 3px; bottom: 12px;
+            background: linear-gradient(180deg, #2a4a6a 0%, #1a2a3a 100%);
+            border-radius: 3px;
+        }
+
+        .device-info { flex: 1; }
+        .device-name { font-size: 16px; font-weight: 600; margin-bottom: 4px; }
+        .device-detail { font-size: 12px; color: var(--text-gray); }
+
+        .connection-controls { display: flex; gap: 12px; align-items: flex-end; }
+        .select-wrapper { display: flex; flex-direction: column; gap: 4px; }
+        .select-label { font-size: 11px; color: var(--text-dim); text-transform: uppercase; }
+        .custom-select {
+            min-width: 160px; height: 38px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 0 12px;
+            color: var(--text-white);
+            font-size: 13px;
+        }
+        .btn-connect {
+            height: 38px; padding: 0 20px;
+            background: var(--accent);
+            border: none; border-radius: 8px;
+            color: white; font-size: 13px; font-weight: 500;
+            cursor: pointer; transition: all 0.2s;
+        }
+        .btn-connect:hover { filter: brightness(1.1); box-shadow: 0 4px 20px var(--accent-glow); }
+
+        /* 两栏布局 */
+        .two-column { display: grid; grid-template-columns: 1fr 400px; gap: 24px; }
+
+        /* 任务模板区 */
+        .section-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 16px;
+        }
+        .section-title { font-size: 18px; font-weight: 600; }
+        .section-subtitle { font-size: 13px; color: var(--text-dim); }
+
+        .template-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 12px;
+            margin-bottom: 32px;
+        }
+
+        .template-card {
+            background: var(--bg-main);
+            border-radius: var(--radius);
+            padding: 16px;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: 1px solid transparent;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .template-card:hover { background: var(--bg-card); border-color: var(--border); }
+        .template-card:active { transform: scale(0.98); }
+
+        .template-icon {
+            width: 40px; height: 40px;
+            background: var(--bg-card);
+            border-radius: 10px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 20px;
+        }
+        .template-info { flex: 1; }
+        .template-name { font-size: 14px; font-weight: 500; }
+        .template-desc { font-size: 11px; color: var(--text-dim); margin-top: 2px; }
+
+        .template-add {
+            width: 28px; height: 28px;
+            background: var(--accent);
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            color: white; font-size: 16px;
+        }
+
+        /* 执行队列 */
+        .queue-panel {
+            background: var(--bg-main);
+            border-radius: var(--radius);
+            overflow: hidden;
+        }
+
+        .queue-header {
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .queue-title { font-size: 15px; font-weight: 600; }
+        .queue-badge {
+            padding: 2px 10px;
+            background: var(--accent);
+            border-radius: 10px;
+            font-size: 12px;
+            color: white;
+        }
+        .queue-action {
+            margin-left: auto;
+            font-size: 12px;
+            color: var(--text-gray);
+            cursor: pointer;
+        }
+        .queue-action:hover { color: var(--accent); }
+
+        .queue-list { max-height: 500px; overflow-y: auto; }
+
+        .queue-empty {
+            padding: 48px 24px;
+            text-align: center;
+            color: var(--text-dim);
+        }
+        .queue-empty-icon { font-size: 48px; margin-bottom: 12px; opacity: 0.5; }
+        .queue-empty-text { font-size: 13px; }
+
+        .queue-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 14px 20px;
+            border-bottom: 1px solid var(--border);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .queue-item:hover { background: var(--bg-card); }
+        .queue-item.selected { background: var(--accent-glow); }
+        .queue-item:last-child { border-bottom: none; }
+
+        .queue-drag { color: var(--text-dim); cursor: grab; }
+        .queue-index {
+            width: 22px; height: 22px;
+            background: var(--bg-card);
+            border-radius: 6px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 11px; color: var(--text-gray);
+        }
+        .queue-icon {
+            width: 36px; height: 36px;
+            background: var(--bg-card);
+            border-radius: 8px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 18px;
+        }
+        .queue-info { flex: 1; min-width: 0; }
+        .queue-name { font-size: 13px; font-weight: 500; }
+        .queue-config {
+            font-size: 11px; color: var(--text-dim);
+            margin-top: 2px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .queue-delete {
+            width: 28px; height: 28px;
+            display: flex; align-items: center; justify-content: center;
+            border-radius: 6px;
+            color: var(--text-dim);
+            cursor: pointer;
+            opacity: 0;
+            transition: all 0.2s;
+        }
+        .queue-item:hover .queue-delete { opacity: 1; }
+        .queue-delete:hover { background: #ea4335; color: white; }
+
+        .queue-footer {
+            padding: 16px 20px;
+            border-top: 1px solid var(--border);
+            background: var(--bg-card);
+        }
+        .queue-footer-info { font-size: 12px; color: var(--text-gray); margin-bottom: 12px; }
+        .queue-footer-btns { display: flex; gap: 10px; }
+        .btn-queue {
+            flex: 1;
+            height: 40px;
+            border: none;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .btn-queue-secondary {
+            background: var(--bg-main);
+            color: var(--text-white);
+            border: 1px solid var(--border);
+        }
+        .btn-queue-primary {
+            background: linear-gradient(135deg, var(--accent), #ff8a50);
+            color: white;
+        }
+        .btn-queue-primary:hover { filter: brightness(1.1); }
+
+        /* 底部操作栏 */
+        .bottom-bar {
+            position: fixed;
+            bottom: 0; left: 0; right: 0;
+            height: 72px;
+            background: var(--bg-main);
+            border-top: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            padding: 0 24px;
+        }
+
+        .bottom-bar-info { flex: 1; }
+        .bottom-bar-title { font-size: 14px; font-weight: 500; }
+        .bottom-bar-subtitle { font-size: 12px; color: var(--text-gray); }
+
+        .btn-run {
+            height: 48px; padding: 0 40px;
+            background: linear-gradient(135deg, var(--accent), #ff8a50);
+            border: none; border-radius: 10px;
+            color: white; font-size: 15px; font-weight: 600;
+            cursor: pointer; transition: all 0.2s;
+            display: flex; align-items: center; gap: 8px;
+        }
+        .btn-run:hover { transform: scale(1.02); box-shadow: 0 8px 30px var(--accent-glow); }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="navbar-brand">
+            <div class="navbar-logo">M</div>
+            <span class="navbar-title">MaaDemo</span>
+        </div>
+        <div class="navbar-tabs">
+            <div class="navbar-tab active">任务</div>
+            <div class="navbar-tab">设置</div>
+            <div class="navbar-tab">调度</div>
+            <div class="navbar-tab">日志</div>
+            <div class="navbar-tab">关于</div>
+        </div>
+        <div class="navbar-spacer"></div>
+        <div class="navbar-status">
+            <div class="status-indicator"></div>
+            设备已连接
+        </div>
+        <div class="navbar-actions">
+            <div class="icon-btn" title="通知">🔔</div>
+            <div class="icon-btn" title="帮助">❓</div>
+        </div>
+    </nav>
+
+    <div class="main-content">
+        <div class="connection-card">
+            <div class="device-preview">
+                <div class="device-preview-screen"></div>
+            </div>
+            <div class="device-info">
+                <div class="device-name">127.0.0.1:5555</div>
+                <div class="device-detail">MuMu 模拟器 · Android 11 · 1920×1080</div>
+            </div>
+            <div class="connection-controls">
+                <div class="select-wrapper">
+                    <span class="select-label">控制器</span>
+                    <select class="custom-select">
+                        <option>Android (ADB)</option>
+                        <option>Windows</option>
+                    </select>
+                </div>
+                <div class="select-wrapper">
+                    <span class="select-label">资源包</span>
+                    <select class="custom-select">
+                        <option>官方服务器</option>
+                        <option>B服资源</option>
+                    </select>
+                </div>
+                <div class="select-wrapper">
+                    <span class="select-label">设备</span>
+                    <select class="custom-select">
+                        <option>127.0.0.1:5555</option>
+                        <option>192.168.1.100</option>
+                    </select>
+                </div>
+                <button class="btn-connect">🔄 刷新</button>
+            </div>
+        </div>
+
+        <div class="two-column">
+            <div>
+                <div class="section-header">
+                    <div>
+                        <h2 class="section-title">可用任务</h2>
+                        <p class="section-subtitle">点击添加到执行队列，可重复添加</p>
+                    </div>
+                </div>
+
+                <div class="template-grid">
+                    <div class="template-card">
+                        <div class="template-icon">🎮</div>
+                        <div class="template-info">
+                            <div class="template-name">日常任务</div>
+                            <div class="template-desc">每日签到和任务</div>
+                        </div>
+                        <div class="template-add">+</div>
+                    </div>
+                    <div class="template-card">
+                        <div class="template-icon">⚔️</div>
+                        <div class="template-info">
+                            <div class="template-name">刷图作战</div>
+                            <div class="template-desc">自动刷取材料</div>
+                        </div>
+                        <div class="template-add">+</div>
+                    </div>
+                    <div class="template-card">
+                        <div class="template-icon">🏠</div>
+                        <div class="template-info">
+                            <div class="template-name">基建换班</div>
+                            <div class="template-desc">更换干员排班</div>
+                        </div>
+                        <div class="template-add">+</div>
+                    </div>
+                    <div class="template-card">
+                        <div class="template-icon">🎁</div>
+                        <div class="template-info">
+                            <div class="template-name">领取奖励</div>
+                            <div class="template-desc">邮件和任务奖励</div>
+                        </div>
+                        <div class="template-add">+</div>
+                    </div>
+                    <div class="template-card">
+                        <div class="template-icon">🛒</div>
+                        <div class="template-info">
+                            <div class="template-name">信用商店</div>
+                            <div class="template-desc">自动购买物品</div>
+                        </div>
+                        <div class="template-add">+</div>
+                    </div>
+                    <div class="template-card">
+                        <div class="template-icon">🎪</div>
+                        <div class="template-info">
+                            <div class="template-name">活动关卡</div>
+                            <div class="template-desc">限时活动任务</div>
+                        </div>
+                        <div class="template-add">+</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="queue-panel">
+                <div class="queue-header">
+                    <span class="queue-title">执行队列</span>
+                    <span class="queue-badge">4</span>
+                    <span class="queue-action">清空队列</span>
+                </div>
+                <div class="queue-list">
+                    <div class="queue-item selected">
+                        <span class="queue-drag">⋮⋮</span>
+                        <span class="queue-index">1</span>
+                        <div class="queue-icon">🎮</div>
+                        <div class="queue-info">
+                            <div class="queue-name">日常任务</div>
+                            <div class="queue-config">默认配置</div>
+                        </div>
+                        <span class="queue-delete">✕</span>
+                    </div>
+                    <div class="queue-item">
+                        <span class="queue-drag">⋮⋮</span>
+                        <span class="queue-index">2</span>
+                        <div class="queue-icon">⚔️</div>
+                        <div class="queue-info">
+                            <div class="queue-name">刷图作战</div>
+                            <div class="queue-config">关卡: 3-9 · 次数: 50</div>
+                        </div>
+                        <span class="queue-delete">✕</span>
+                    </div>
+                    <div class="queue-item">
+                        <span class="queue-drag">⋮⋮</span>
+                        <span class="queue-index">3</span>
+                        <div class="queue-icon">⚔️</div>
+                        <div class="queue-info">
+                            <div class="queue-name">刷图作战</div>
+                            <div class="queue-config">关卡: CE-5 · 次数: 20</div>
+                        </div>
+                        <span class="queue-delete">✕</span>
+                    </div>
+                    <div class="queue-item">
+                        <span class="queue-drag">⋮⋮</span>
+                        <span class="queue-index">4</span>
+                        <div class="queue-icon">🏠</div>
+                        <div class="queue-info">
+                            <div class="queue-name">基建换班</div>
+                            <div class="queue-config">策略: 效率优先</div>
+                        </div>
+                        <span class="queue-delete">✕</span>
+                    </div>
+                </div>
+                <div class="queue-footer">
+                    <div class="queue-footer-info">点击任务编辑配置，拖拽调整顺序</div>
+                    <div class="queue-footer-btns">
+                        <button class="btn-queue btn-queue-secondary">💾 保存</button>
+                        <button class="btn-queue btn-queue-secondary">📂 加载</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="bottom-bar">
+        <div class="bottom-bar-info">
+            <div class="bottom-bar-title">队列中 4 个任务</div>
+            <div class="bottom-bar-subtitle">预计运行时间: 约 45 分钟</div>
+        </div>
+        <button class="btn-run">▶ 开始运行</button>
+    </div>
+</body>
+</html>

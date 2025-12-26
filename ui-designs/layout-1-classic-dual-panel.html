@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>布局1 - 经典双栏布局</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-primary: #1a1d23;
+            --bg-secondary: #22262e;
+            --bg-tertiary: #2a2f38;
+            --accent: #4a9eff;
+            --accent-hover: #6bb3ff;
+            --accent-dim: rgba(74, 158, 255, 0.15);
+            --text-primary: #e8eaed;
+            --text-secondary: #9aa0a6;
+            --text-muted: #5f6368;
+            --border: #3c4043;
+            --success: #34a853;
+            --warning: #fbbc04;
+            --error: #ea4335;
+            --radius: 8px;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Noto Sans SC', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* 顶部标题栏 */
+        .titlebar {
+            height: 48px;
+            background: var(--bg-secondary);
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            padding: 0 16px;
+            gap: 12px;
+        }
+
+        .titlebar-icon {
+            width: 24px; height: 24px;
+            background: linear-gradient(135deg, var(--accent), #7c4dff);
+            border-radius: 6px;
+        }
+
+        .titlebar-title { font-size: 14px; font-weight: 500; }
+        .titlebar-version { font-size: 12px; color: var(--text-muted); margin-left: 4px; }
+        .titlebar-spacer { flex: 1; }
+
+        .titlebar-btn {
+            width: 32px; height: 32px;
+            display: flex; align-items: center; justify-content: center;
+            border-radius: 6px; cursor: pointer;
+            color: var(--text-secondary); transition: all 0.2s;
+        }
+        .titlebar-btn:hover { background: var(--bg-tertiary); color: var(--text-primary); }
+
+        .main-container { flex: 1; display: flex; overflow: hidden; }
+
+        /* 左侧面板 */
+        .left-panel {
+            width: 340px;
+            background: var(--bg-secondary);
+            border-right: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .panel-header {
+            padding: 12px 16px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .panel-title {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .panel-badge {
+            padding: 2px 8px;
+            background: var(--accent);
+            border-radius: 10px;
+            font-size: 11px;
+            color: white;
+        }
+
+        .panel-action {
+            margin-left: auto;
+            padding: 4px 10px;
+            background: var(--accent);
+            border-radius: 6px;
+            font-size: 12px;
+            color: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .panel-action:hover { background: var(--accent-hover); }
+
+        /* 任务模板选择区 */
+        .template-section {
+            padding: 12px;
+            border-bottom: 1px solid var(--border);
+            background: var(--bg-tertiary);
+        }
+
+        .template-label {
+            font-size: 11px;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .template-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .template-chip {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 12px;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .template-chip:hover {
+            border-color: var(--accent);
+            background: var(--accent-dim);
+        }
+        .template-chip-icon { font-size: 14px; }
+        .template-chip-add {
+            width: 16px; height: 16px;
+            background: var(--accent);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            color: white;
+            margin-left: 4px;
+        }
+
+        /* 执行队列 */
+        .queue-list { flex: 1; overflow-y: auto; padding: 8px; }
+
+        .queue-empty {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--text-muted);
+        }
+        .queue-empty-icon { font-size: 48px; margin-bottom: 12px; opacity: 0.5; }
+        .queue-empty-text { font-size: 13px; }
+        .queue-empty-hint { font-size: 12px; margin-top: 8px; color: var(--text-muted); }
+
+        .queue-item {
+            display: flex;
+            align-items: center;
+            padding: 12px;
+            border-radius: var(--radius);
+            cursor: pointer;
+            transition: all 0.2s;
+            gap: 10px;
+            margin-bottom: 6px;
+            background: var(--bg-tertiary);
+            border: 1px solid transparent;
+        }
+        .queue-item:hover { border-color: var(--border); }
+        .queue-item.selected { background: var(--accent-dim); border-color: var(--accent); }
+
+        .queue-item-drag {
+            color: var(--text-muted);
+            cursor: grab;
+            font-size: 14px;
+        }
+
+        .queue-item-index {
+            width: 20px; height: 20px;
+            background: var(--bg-secondary);
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            color: var(--text-secondary);
+            flex-shrink: 0;
+        }
+
+        .queue-item-icon {
+            width: 32px; height: 32px;
+            background: var(--bg-secondary);
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            flex-shrink: 0;
+        }
+
+        .queue-item-info { flex: 1; min-width: 0; }
+        .queue-item-name { font-size: 13px; font-weight: 500; }
+        .queue-item-config {
+            font-size: 11px;
+            color: var(--text-secondary);
+            margin-top: 2px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .queue-item-delete {
+            width: 24px; height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 4px;
+            color: var(--text-muted);
+            cursor: pointer;
+            opacity: 0;
+            transition: all 0.2s;
+        }
+        .queue-item:hover .queue-item-delete { opacity: 1; }
+        .queue-item-delete:hover { background: var(--error); color: white; }
+
+        /* 右侧面板 */
+        .right-panel { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+
+        .connection-bar {
+            padding: 14px 16px;
+            background: var(--bg-secondary);
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            gap: 12px;
+            align-items: flex-end;
+        }
+
+        .form-group { display: flex; flex-direction: column; gap: 4px; }
+        .form-group.flex-1 { flex: 1; }
+        .form-label { font-size: 11px; color: var(--text-secondary); font-weight: 500; }
+
+        .form-select, .form-input {
+            height: 34px;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 0 10px;
+            color: var(--text-primary);
+            font-size: 13px;
+            outline: none;
+        }
+        .form-select:focus, .form-input:focus { border-color: var(--accent); }
+
+        .btn {
+            height: 34px;
+            padding: 0 14px;
+            border-radius: var(--radius);
+            font-size: 12px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .btn-primary { background: var(--accent); color: white; }
+        .btn-primary:hover { background: var(--accent-hover); }
+        .btn-secondary { background: var(--bg-tertiary); color: var(--text-primary); border: 1px solid var(--border); }
+        .btn-secondary:hover { background: var(--border); }
+
+        .connection-status {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 12px;
+            background: rgba(52, 168, 83, 0.15);
+            border-radius: var(--radius);
+            font-size: 12px;
+            color: var(--success);
+        }
+        .status-dot {
+            width: 6px; height: 6px;
+            background: var(--success);
+            border-radius: 50%;
+        }
+
+        /* 配置区 */
+        .config-area { flex: 1; overflow-y: auto; padding: 16px; }
+
+        .config-empty {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            color: var(--text-muted);
+        }
+        .config-empty-icon { font-size: 64px; margin-bottom: 16px; opacity: 0.3; }
+        .config-empty-text { font-size: 14px; }
+
+        .config-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 16px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid var(--border);
+        }
+        .config-header-icon { font-size: 24px; }
+        .config-header-title { font-size: 16px; font-weight: 600; }
+        .config-header-instance {
+            padding: 3px 10px;
+            background: var(--accent-dim);
+            border-radius: 12px;
+            font-size: 11px;
+            color: var(--accent);
+        }
+
+        .config-section {
+            background: var(--bg-secondary);
+            border-radius: var(--radius);
+            padding: 14px;
+            margin-bottom: 12px;
+        }
+
+        .config-section-title {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            margin-bottom: 12px;
+            text-transform: uppercase;
+        }
+
+        .config-row {
+            display: flex;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid var(--border);
+        }
+        .config-row:last-child { border-bottom: none; padding-bottom: 0; }
+        .config-row:first-of-type { padding-top: 0; }
+
+        .config-label { flex: 1; font-size: 13px; }
+        .config-value { width: 180px; }
+
+        .switch {
+            width: 40px; height: 22px;
+            background: var(--bg-tertiary);
+            border-radius: 11px;
+            cursor: pointer;
+            position: relative;
+            transition: background 0.2s;
+        }
+        .switch.on { background: var(--accent); }
+        .switch::after {
+            content: '';
+            position: absolute;
+            width: 18px; height: 18px;
+            background: white;
+            border-radius: 50%;
+            top: 2px; left: 2px;
+            transition: transform 0.2s;
+        }
+        .switch.on::after { transform: translateX(18px); }
+
+        /* 底部操作栏 */
+        .action-bar {
+            padding: 14px 16px;
+            background: var(--bg-secondary);
+            border-top: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .action-bar-spacer { flex: 1; }
+
+        .btn-run {
+            height: 40px;
+            padding: 0 28px;
+            font-size: 14px;
+            background: linear-gradient(135deg, var(--accent), #7c4dff);
+        }
+        .btn-run:hover { filter: brightness(1.1); }
+
+        /* 日志面板 */
+        .log-panel {
+            height: 160px;
+            background: var(--bg-secondary);
+            border-top: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .log-header {
+            padding: 8px 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border-bottom: 1px solid var(--border);
+            cursor: pointer;
+        }
+        .log-title { font-size: 12px; font-weight: 500; color: var(--text-secondary); }
+
+        .log-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 10px 16px;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 11px;
+            line-height: 1.7;
+        }
+        .log-line { color: var(--text-secondary); }
+        .log-line.info { color: var(--accent); }
+        .log-line.success { color: var(--success); }
+        .log-time { color: var(--text-muted); margin-right: 8px; }
+    </style>
+</head>
+<body>
+    <div class="titlebar">
+        <div class="titlebar-icon"></div>
+        <span class="titlebar-title">MaaFramework Demo</span>
+        <span class="titlebar-version">v2.0.0</span>
+        <div class="titlebar-spacer"></div>
+        <div class="titlebar-btn" title="设置">⚙</div>
+        <div class="titlebar-btn" title="关于">ℹ</div>
+        <div class="titlebar-btn" title="最小化">−</div>
+        <div class="titlebar-btn" title="最大化">□</div>
+        <div class="titlebar-btn" title="关闭">×</div>
+    </div>
+
+    <div class="main-container">
+        <!-- 左侧：任务模板 + 执行队列 -->
+        <div class="left-panel">
+            <!-- 任务模板选择区 -->
+            <div class="template-section">
+                <div class="template-label">点击添加任务到队列</div>
+                <div class="template-grid">
+                    <div class="template-chip">
+                        <span class="template-chip-icon">🎮</span>
+                        日常任务
+                        <span class="template-chip-add">+</span>
+                    </div>
+                    <div class="template-chip">
+                        <span class="template-chip-icon">⚔️</span>
+                        刷图作战
+                        <span class="template-chip-add">+</span>
+                    </div>
+                    <div class="template-chip">
+                        <span class="template-chip-icon">🏠</span>
+                        基建换班
+                        <span class="template-chip-add">+</span>
+                    </div>
+                    <div class="template-chip">
+                        <span class="template-chip-icon">🎁</span>
+                        领取奖励
+                        <span class="template-chip-add">+</span>
+                    </div>
+                    <div class="template-chip">
+                        <span class="template-chip-icon">🛒</span>
+                        信用商店
+                        <span class="template-chip-add">+</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 执行队列头部 -->
+            <div class="panel-header">
+                <span class="panel-title">执行队列</span>
+                <span class="panel-badge">4</span>
+                <span class="panel-action">🗑 清空</span>
+            </div>
+
+            <!-- 执行队列列表 -->
+            <div class="queue-list">
+                <div class="queue-item selected">
+                    <span class="queue-item-drag">⋮⋮</span>
+                    <span class="queue-item-index">1</span>
+                    <div class="queue-item-icon">🎮</div>
+                    <div class="queue-item-info">
+                        <div class="queue-item-name">日常任务</div>
+                        <div class="queue-item-config">默认配置</div>
+                    </div>
+                    <span class="queue-item-delete">✕</span>
+                </div>
+                <div class="queue-item">
+                    <span class="queue-item-drag">⋮⋮</span>
+                    <span class="queue-item-index">2</span>
+                    <div class="queue-item-icon">⚔️</div>
+                    <div class="queue-item-info">
+                        <div class="queue-item-name">刷图作战</div>
+                        <div class="queue-item-config">关卡: 3-9 · 次数: 50 · 使用理智药</div>
+                    </div>
+                    <span class="queue-item-delete">✕</span>
+                </div>
+                <div class="queue-item">
+                    <span class="queue-item-drag">⋮⋮</span>
+                    <span class="queue-item-index">3</span>
+                    <div class="queue-item-icon">⚔️</div>
+                    <div class="queue-item-info">
+                        <div class="queue-item-name">刷图作战</div>
+                        <div class="queue-item-config">关卡: CE-5 · 次数: 20</div>
+                    </div>
+                    <span class="queue-item-delete">✕</span>
+                </div>
+                <div class="queue-item">
+                    <span class="queue-item-drag">⋮⋮</span>
+                    <span class="queue-item-index">4</span>
+                    <div class="queue-item-icon">🏠</div>
+                    <div class="queue-item-info">
+                        <div class="queue-item-name">基建换班</div>
+                        <div class="queue-item-config">策略: 效率优先</div>
+                    </div>
+                    <span class="queue-item-delete">✕</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- 右侧配置区域 -->
+        <div class="right-panel">
+            <div class="connection-bar">
+                <div class="form-group">
+                    <span class="form-label">控制器</span>
+                    <select class="form-select" style="width: 130px;">
+                        <option>Android (ADB)</option>
+                        <option>Windows 窗口</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <span class="form-label">资源包</span>
+                    <select class="form-select" style="width: 120px;">
+                        <option>官方服务器</option>
+                        <option>B服</option>
+                    </select>
+                </div>
+                <div class="form-group flex-1">
+                    <span class="form-label">设备</span>
+                    <select class="form-select" style="width: 100%;">
+                        <option>127.0.0.1:5555 (模拟器)</option>
+                        <option>192.168.1.100:5555</option>
+                    </select>
+                </div>
+                <button class="btn btn-secondary">🔄 刷新</button>
+                <div class="connection-status">
+                    <div class="status-dot"></div>
+                    已连接
+                </div>
+            </div>
+
+            <div class="config-area">
+                <div class="config-header">
+                    <span class="config-header-icon">🎮</span>
+                    <span class="config-header-title">日常任务</span>
+                    <span class="config-header-instance">队列 #1</span>
+                </div>
+
+                <div class="config-section">
+                    <div class="config-section-title">基础设置</div>
+                    <div class="config-row">
+                        <span class="config-label">作战关卡</span>
+                        <div class="config-value">
+                            <select class="form-select" style="width: 100%;">
+                                <option>3-9 厄险（百灵百验鸟）</option>
+                                <option>1-7 常规</option>
+                                <option>CE-5 龙门币</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="config-row">
+                        <span class="config-label">刷取次数</span>
+                        <div class="config-value">
+                            <input type="number" class="form-input" style="width: 100%;" value="99">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="config-section">
+                    <div class="config-section-title">理智设置</div>
+                    <div class="config-row">
+                        <span class="config-label">使用理智药</span>
+                        <div class="config-value" style="display: flex; justify-content: flex-end;">
+                            <div class="switch on"></div>
+                        </div>
+                    </div>
+                    <div class="config-row">
+                        <span class="config-label">理智药数量上限</span>
+                        <div class="config-value">
+                            <input type="number" class="form-input" style="width: 100%;" value="5">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="config-section">
+                    <div class="config-section-title">其他选项</div>
+                    <div class="config-row">
+                        <span class="config-label">任务完成后退出游戏</span>
+                        <div class="config-value" style="display: flex; justify-content: flex-end;">
+                            <div class="switch"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="action-bar">
+                <span style="font-size: 13px; color: var(--text-secondary);">队列中 4 个任务</span>
+                <div class="action-bar-spacer"></div>
+                <button class="btn btn-secondary">💾 保存配置</button>
+                <button class="btn btn-secondary">📂 加载配置</button>
+                <button class="btn btn-primary btn-run">▶ 开始运行</button>
+            </div>
+
+            <div class="log-panel">
+                <div class="log-header">
+                    <span class="log-title">运行日志</span>
+                    <span style="flex:1;"></span>
+                    <span style="font-size: 12px; color: var(--text-muted);">▼ 折叠</span>
+                </div>
+                <div class="log-content">
+                    <div class="log-line info"><span class="log-time">[10:23:45]</span>正在连接设备 127.0.0.1:5555...</div>
+                    <div class="log-line success"><span class="log-time">[10:23:46]</span>设备连接成功</div>
+                    <div class="log-line"><span class="log-time">[10:23:47]</span>正在加载资源包...</div>
+                    <div class="log-line success"><span class="log-time">[10:23:48]</span>资源加载完成，共 156 个节点</div>
+                    <div class="log-line info"><span class="log-time">[10:23:49]</span>准备执行队列，共 4 个任务</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
