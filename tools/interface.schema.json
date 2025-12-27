@@ -325,7 +325,8 @@
                                 "LegacyEvent",
                                 "PostThreadMessage",
                                 "SendMessageWithCursorPos",
-                                "PostMessageWithCursorPos"
+                                "PostMessageWithCursorPos",
+                                "Gamepad"
                             ]
                         },
                         "keyboard": {
@@ -339,7 +340,8 @@
                                 "LegacyEvent",
                                 "PostThreadMessage",
                                 "SendMessageWithCursorPos",
-                                "PostMessageWithCursorPos"
+                                "PostMessageWithCursorPos",
+                                "Gamepad"
                             ]
                         },
                         "screencap": {

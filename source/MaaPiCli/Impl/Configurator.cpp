@@ -39,6 +39,7 @@ MaaWin32InputMethod parse_win32_input_method(const std::string& method)
         { "PostThreadMessage", MaaWin32InputMethod_PostThreadMessage },
         { "SendMessageWithCursorPos", MaaWin32InputMethod_SendMessageWithCursorPos },
         { "PostMessageWithCursorPos", MaaWin32InputMethod_PostMessageWithCursorPos },
+        { "Gamepad", MaaWin32InputMethod_Gamepad },
     };
 
     if (auto it = mapping.find(method); it != mapping.end()) {

@@ -3,6 +3,7 @@
 #include "MaaFramework/MaaMsg.h"
 #include "MaaUtils/Logger.h"
 
+#include "Input/GamepadInput.h"
 #include "Input/LegacyEventInput.h"
 #include "Input/MessageInput.h"
 #include "Input/PostThreadMessageInput.h"
@@ -99,6 +100,8 @@ bool Win32ControlUnitMgr::connect()
             return std::make_shared<MessageInput>(hwnd_, MessageInput::Mode::SendMessage, true, true);
         case MaaWin32InputMethod_PostMessageWithCursorPos:
             return std::make_shared<MessageInput>(hwnd_, MessageInput::Mode::PostMessage, true, true);
+        case MaaWin32InputMethod_Gamepad:
+            return std::make_shared<GamepadInput>();
         default:
             LogError << "Unknown input method: " << static_cast<int>(method);
             return nullptr;
