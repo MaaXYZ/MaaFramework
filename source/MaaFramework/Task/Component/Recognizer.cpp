@@ -309,7 +309,7 @@ RecoResult Recognizer::and_(const std::shared_ptr<MAA_RES_NS::Recognition::AndPa
     bool all_hit = true;
 
     for (const auto& sub_reco : param->all_of) {
-        RecoResult res = run_recognition(sub_reco.type, sub_reco.param, std::format("{}.{}", name, sub_reco.sub_name));
+        RecoResult res = run_recognition(sub_reco.type, sub_reco.param, sub_reco.sub_name);
         all_hit &= res.box.has_value();
 
         sub_results.emplace_back(std::move(res));
@@ -372,7 +372,7 @@ RecoResult Recognizer::or_(const std::shared_ptr<MAA_RES_NS::Recognition::OrPara
     bool has_hit = false;
 
     for (const auto& sub_reco : param->any_of) {
-        RecoResult res = run_recognition(sub_reco.type, sub_reco.param, std::format("{}.{}", name, sub_reco.sub_name));
+        RecoResult res = run_recognition(sub_reco.type, sub_reco.param, sub_reco.sub_name);
         has_hit = res.box.has_value();
         sub_results.emplace_back(std::move(res));
 
@@ -470,7 +470,7 @@ std::vector<cv::Rect> Recognizer::get_rois(const MAA_VISION_NS::Target& roi, boo
 
     using namespace MAA_VISION_NS;
 
-    std::vector<cv::Rect> raws;
+    std::vector<cv::Rect> results;
 
     switch (roi.type) {
     case Target::Type::Self:
@@ -478,11 +478,11 @@ std::vector<cv::Rect> Recognizer::get_rois(const MAA_VISION_NS::Target& roi, boo
         return {};
 
     case Target::Type::PreTask:
-        raws = get_rois_from_pretask(std::get<std::string>(roi.param), use_best);
+        results = get_rois_from_pretask(std::get<std::string>(roi.param), use_best);
         break;
 
     case Target::Type::Region:
-        raws = { std::get<cv::Rect>(roi.param) };
+        results = { std::get<cv::Rect>(roi.param) };
         break;
 
     default:
@@ -490,13 +490,13 @@ std::vector<cv::Rect> Recognizer::get_rois(const MAA_VISION_NS::Target& roi, boo
         return {};
     }
 
-    std::vector<cv::Rect> result;
-    result.reserve(raws.size());
-    for (const auto& raw : raws) {
-        result.emplace_back(
-            cv::Rect { raw.x + roi.offset.x, raw.y + roi.offset.y, raw.width + roi.offset.width, raw.height + roi.offset.height });
+    for (cv::Rect& res : results) {
+        res.x += roi.offset.x;
+        res.y += roi.offset.y;
+        res.width += roi.offset.width;
+        res.height += roi.offset.height;
     }
-    return result;
+    return results;
 }
 
 std::vector<cv::Rect> Recognizer::get_rois_from_pretask(const std::string& name, bool use_best)
