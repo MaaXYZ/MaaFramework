@@ -1,5 +1,6 @@
 var NAVTREEINDEX1 =
 {
+"MaaDef_8h.html#ad09e62ec1fd03dadaf5fb009026c38eead004c29c045174fe392e0484fc2f9f39":[3,0,0,2,4,83,7],
 "MaaDef_8h.html#ad09e62ec1fd03dadaf5fb009026c38eeaf81992513d077ca4fe38f7ae787695cd":[3,0,0,2,4,83,0],
 "MaaDef_8h.html#ad2101e87aad0f5d03b8136943daee40e":[3,0,0,2,4,58],
 "MaaDef_8h.html#ad3df932dcfe5f836a7e98f0ebef2cf83":[3,0,0,2,4,10],

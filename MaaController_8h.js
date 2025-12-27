@@ -5,6 +5,7 @@ var MaaController_8h =
     [ "MaaWin32ControllerCreate", "MaaController_8h.html#a0a0532a08e57b6b8b23282b51f6431a0", null ],
     [ "MaaCustomControllerCreate", "MaaController_8h.html#a2ff145414faed5fdeedc36e97729677e", null ],
     [ "MaaDbgControllerCreate", "MaaController_8h.html#a1ea4c3aa0b3bcb39d35dc13cdde9a044", null ],
+    [ "MaaPlayCoverControllerCreate", "MaaController_8h.html#af9b278b0a220ea72ff4ce564a055ff52", null ],
     [ "MaaControllerDestroy", "MaaController_8h.html#a497982481bf79e89bc457d8a6e5e7bed", null ],
     [ "MaaControllerAddSink", "MaaController_8h.html#aa01ed95af83d12f7bc3d49fdba415419", null ],
     [ "MaaControllerRemoveSink", "MaaController_8h.html#a1ae3f067cb374a85ae7580a08945e7b6", null ],
