@@ -44,6 +44,10 @@ public:
     static bool parse_next(const json::value& input, std::vector<NodeAttr>& output);
 
 private:
+    static bool parse_direct_hit_param(
+        const json::value& input,
+        MAA_VISION_NS::DirectHitParam& output,
+        const MAA_VISION_NS::DirectHitParam& default_value);
     static bool parse_template_matcher_param(
         const json::value& input,
         MAA_VISION_NS::TemplateMatcherParam& output,
@@ -70,6 +74,11 @@ private:
         const json::value& input,
         MAA_VISION_NS::ColorMatcherParam& output,
         const MAA_VISION_NS::ColorMatcherParam& default_value);
+    static bool
+        parse_and_param(const json::value& input, std::shared_ptr<Recognition::AndParam>& output, const DefaultPipelineMgr& default_mgr);
+    static bool
+        parse_or_param(const json::value& input, std::shared_ptr<Recognition::OrParam>& output, const DefaultPipelineMgr& default_mgr);
+    static bool parse_sub_recognition(const json::value& input, Recognition::SubRecognition& output, const DefaultPipelineMgr& default_mgr);
 
     static bool parse_roi_target(const json::value& input, MAA_VISION_NS::Target& output, const MAA_VISION_NS::Target& default_value);
 

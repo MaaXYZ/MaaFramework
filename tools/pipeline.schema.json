@@ -523,7 +523,20 @@
         },
         "DirectHit": {
             "type": "object",
-            "properties": {}
+            "properties": {
+                "roi": {
+                    "title": "ROI Property",
+                    "description": "识别区域坐标。可选，默认 [0, 0, 0, 0] ，即全屏。",
+                    "$ref": "#/$defs/jsonRoi",
+                    "markdownDescription": "*array<int, 4>* | *string*\n\n识别区域坐标。可选，默认 [0, 0, 0, 0] ，即全屏。\n\n- *array<int, 4>*: 识别区域坐标，[x, y, w, h]，若希望全屏可设为 [0, 0, 0, 0] 。\n\n- *string*: 填写节点名，在之前执行过的某节点识别到的目标范围内识别。"
+                },
+                "roi_offset": {
+                    "title": "ROI Offset Property",
+                    "description": "在 `roi` 的基础上额外移动再作为范围，四个值分别相加。可选，默认 [0, 0, 0, 0] 。",
+                    "$ref": "#/$defs/jsonRect",
+                    "markdownDescription": "*array<int, 4>*\n\n在 `roi` 的基础上额外移动再作为范围，四个值分别相加。可选，默认 [0, 0, 0, 0] 。"
+                }
+            }
         },
         "DirectHitV1": {
             "properties": {
@@ -1265,6 +1278,127 @@
                 }
             }
         },
+        "SubRecognition": {
+            "type": "object",
+            "properties": {
+                "sub_name": {
+                    "title": "Sub Name Property",
+                    "description": "子识别别名。可选。后续子识别可通过 `roi: sub_name` 引用之前子识别的 `filtered` 作为 ROI（仅 And 有效）。",
+                    "type": "string",
+                    "markdownDescription": "*string*\n\n子识别别名。可选。\n\n后续子识别可通过 `roi: sub_name` 引用之前子识别的识别框作为 ROI；同名以最后一个为准。仅 And 有效。"
+                }
+            }
+        },
+        "And": {
+            "type": "object",
+            "properties": {
+                "all_of": {
+                    "title": "All Of Property",
+                    "description": "子识别列表。所有子识别都命中才算成功。必选。",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/$defs/SubRecognition"
+                    },
+                    "markdownDescription": "*list<object, >*\n\n子识别列表。所有子识别都命中才算成功。必选。\n\n列表元素写法与普通节点的 `recognition` 一致（兼容 v1/v2，允许混用）。"
+                },
+                "box_index": {
+                    "title": "Box Index Property",
+                    "description": "指定输出哪个子识别的识别框（box）作为当前节点的识别框。可选，默认 0。",
+                    "$ref": "#/$defs/jsonNInt32",
+                    "markdownDescription": "*int*\n\n指定输出哪个子识别的识别框（box）作为当前节点的识别框。可选，默认 0 。\n\n需要满足 `0 <= box_index < all_of.size` 。"
+                }
+            },
+            "required": [
+                "all_of"
+            ]
+        },
+        "AndV1": {
+            "properties": {
+                "recognition": {
+                    "const": "And"
+                }
+            },
+            "allOf": [
+                {
+                    "$ref": "#/$defs/And"
+                }
+            ]
+        },
+        "AndV2": {
+            "properties": {
+                "type": {
+                    "const": "And"
+                },
+                "param": {
+                    "unevaluatedProperties": false,
+                    "allOf": [
+                        {
+                            "$ref": "#/$defs/And"
+                        },
+                        {
+                            "$ref": "#/$defs/jsonComments"
+                        }
+                    ]
+                }
+            },
+            "dependentSchemas": {
+                "type": {
+                    "$ref": "#/$defs/TypeWithDependent"
+                }
+            }
+        },
+        "Or": {
+            "type": "object",
+            "properties": {
+                "any_of": {
+                    "title": "Any Of Property",
+                    "description": "子识别列表。命中第一个即成功，后续不再识别。必选。",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/$defs/SubRecognition"
+                    },
+                    "markdownDescription": "*list<object, >*\n\n子识别列表。命中第一个即成功，后续不再识别。必选。\n\n列表元素写法与普通节点的 `recognition` 一致（兼容 v1/v2，允许混用）。"
+                }
+            },
+            "required": [
+                "any_of"
+            ]
+        },
+        "OrV1": {
+            "properties": {
+                "recognition": {
+                    "const": "Or"
+                }
+            },
+            "allOf": [
+                {
+                    "$ref": "#/$defs/Or"
+                }
+            ]
+        },
+        "OrV2": {
+            "properties": {
+                "type": {
+                    "const": "Or"
+                },
+                "param": {
+                    "unevaluatedProperties": false,
+                    "allOf": [
+                        {
+                            "$ref": "#/$defs/Or"
+                        },
+                        {
+                            "$ref": "#/$defs/jsonComments"
+                        }
+                    ]
+                }
+            },
+            "dependentSchemas": {
+                "type": {
+                    "$ref": "#/$defs/TypeWithDependent"
+                }
+            }
+        },
         "CustomRecognition": {
             "type": "object",
             "properties": {
@@ -1382,6 +1516,8 @@
                 "OCR",
                 "NeuralNetworkClassify",
                 "NeuralNetworkDetect",
+                "And",
+                "Or",
                 "Custom"
             ]
         },
@@ -1710,6 +1846,32 @@
                     }
                 },
                 {
+                    "label": "AndV1",
+                    "body": "^ \"And\",\n\"all_of\": []"
+                },
+                {
+                    "label": "AndV2",
+                    "body": {
+                        "type": "And",
+                        "param": {
+                            "all_of": []
+                        }
+                    }
+                },
+                {
+                    "label": "OrV1",
+                    "body": "^ \"Or\",\n\"any_of\": []"
+                },
+                {
+                    "label": "OrV2",
+                    "body": {
+                        "type": "Or",
+                        "param": {
+                            "any_of": []
+                        }
+                    }
+                },
+                {
                     "label": "CustomRecognitionV1",
                     "body": "^ \"Custom\",\n\"custom_recognition\": \"\""
                 },
@@ -1754,6 +1916,12 @@
                 },
                 {
                     "$ref": "#/$defs/NeuralNetworkDetectV1"
+                },
+                {
+                    "$ref": "#/$defs/AndV1"
+                },
+                {
+                    "$ref": "#/$defs/OrV1"
                 },
                 {
                     "$ref": "#/$defs/CustomRecognitionV1"
@@ -1802,6 +1970,12 @@
                         },
                         {
                             "$ref": "#/$defs/NeuralNetworkDetectV2"
+                        },
+                        {
+                            "$ref": "#/$defs/AndV2"
+                        },
+                        {
+                            "$ref": "#/$defs/OrV2"
                         },
                         {
                             "$ref": "#/$defs/CustomRecognitionV2"

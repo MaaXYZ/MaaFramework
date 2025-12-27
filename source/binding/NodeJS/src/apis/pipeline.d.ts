@@ -27,7 +27,10 @@ declare global {
             NeuralNetworkDetect: 'Horizontal' | 'Vertical' | 'Score' | 'Area' | 'Random' | 'Expected'
         }
 
-        type RecognitionDirectHit = {}
+        type RecognitionDirectHit = {
+            roi?: Rect | NodeName
+            roi_offset?: Rect
+        }
 
         type RecognitionTemplateMatch<Mode> = RequiredIfStrict<
             {
@@ -139,6 +142,26 @@ declare global {
             Mode
         >
 
+        type SubRecognition<Mode> = {
+            sub_name?: string
+            recognition?: string | { type: string; param?: unknown }
+            roi?: Rect | NodeName
+            roi_offset?: Rect
+            template?: MaybeArray<string, Mode>
+            threshold?: MaybeArray<number, Mode>
+            expected?: MaybeArray<string | number, Mode>
+            [key: string]: unknown
+        }
+
+        type RecognitionAnd<Mode> = {
+            all_of: SubRecognition<Mode>[]
+            box_index?: number
+        }
+
+        type RecognitionOr<Mode> = {
+            any_of: SubRecognition<Mode>[]
+        }
+
         type MixReco<Type extends string, Param, Mode> =
             | {
                   recognition: {
@@ -170,6 +193,8 @@ declare global {
             | MixReco<'OCR', RecognitionOCR<Mode>, Mode>
             | MixReco<'NeuralNetworkClassify', RecognitionNeuralNetworkClassify<Mode>, Mode>
             | MixReco<'NeuralNetworkDetect', RecognitionNeuralNetworkDetect<Mode>, Mode>
+            | MixReco<'And', RecognitionAnd<Mode>, Mode>
+            | MixReco<'Or', RecognitionOr<Mode>, Mode>
             | MixReco<'Custom', RecognitionCustom<Mode>, Mode>
 
         type ActionDoNothing = {}

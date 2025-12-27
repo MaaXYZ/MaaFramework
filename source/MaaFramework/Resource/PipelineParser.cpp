@@ -367,9 +367,14 @@ bool PipelineParser::parse_recognition(
 
     bool same_type = parent_type == out_type;
     switch (out_type) {
-    case Type::DirectHit:
-        out_param = default_mgr.get_recognition_param<DirectHitParam>(Type::DirectHit);
-        return true;
+    case Type::DirectHit: {
+        auto default_param = default_mgr.get_recognition_param<DirectHitParam>(Type::DirectHit);
+        out_param = default_param;
+        return parse_direct_hit_param(
+            param_input,
+            std::get<DirectHitParam>(out_param),
+            same_type ? std::get<DirectHitParam>(parent_param) : default_param);
+    } break;
 
     case Type::TemplateMatch: {
         auto default_param = default_mgr.get_recognition_param<TemplateMatcherParam>(Type::TemplateMatch);
@@ -425,6 +430,18 @@ bool PipelineParser::parse_recognition(
             same_type ? std::get<ColorMatcherParam>(parent_param) : default_param);
     } break;
 
+    case Type::And: {
+        auto param = std::make_shared<AndParam>();
+        out_param = param;
+        return parse_and_param(param_input, param, default_mgr);
+    } break;
+
+    case Type::Or: {
+        auto param = std::make_shared<OrParam>();
+        out_param = param;
+        return parse_or_param(param_input, param, default_mgr);
+    } break;
+
     case Type::Custom: {
         auto default_param = default_mgr.get_recognition_param<CustomRecognitionParam>(Type::Custom);
         out_param = default_param;
@@ -440,6 +457,19 @@ bool PipelineParser::parse_recognition(
     }
 
     return false;
+}
+
+bool PipelineParser::parse_direct_hit_param(
+    const json::value& input,
+    MAA_VISION_NS::DirectHitParam& output,
+    const MAA_VISION_NS::DirectHitParam& default_value)
+{
+    if (!parse_roi_target(input, output.roi_target, default_value.roi_target)) {
+        LogError << "failed to parse_roi_target" << VAR(input);
+        return false;
+    }
+
+    return true;
 }
 
 bool PipelineParser::parse_template_matcher_param(
@@ -1731,6 +1761,99 @@ bool PipelineParser::parse_node_string_in_next(const std::string& raw, NodeAttr&
     }
 
     output.name = remaining;
+    return true;
+}
+
+bool PipelineParser::parse_and_param(
+    const json::value& input,
+    std::shared_ptr<Recognition::AndParam>& output,
+    const DefaultPipelineMgr& default_mgr)
+{
+    if (!output) {
+        output = std::make_shared<Recognition::AndParam>();
+    }
+    output->all_of.clear();
+
+    auto all_opt = input.find("all_of");
+    if (!all_opt || !all_opt->is_array() || all_opt->as_array().empty()) {
+        LogError << "And recognition requires non-empty 'all_of' array field" << VAR(input);
+        return false;
+    }
+
+    for (const auto& sub_input : all_opt->as_array()) {
+        Recognition::SubRecognition sub_reco;
+        if (!parse_sub_recognition(sub_input, sub_reco, default_mgr)) {
+            LogError << "failed to parse sub recognition in 'all_of'" << VAR(sub_input);
+            return false;
+        }
+        output->all_of.emplace_back(std::move(sub_reco));
+    }
+
+    if (!get_and_check_value(input, "box_index", output->box_index, 0)) {
+        LogError << "failed to get_and_check_value box_index" << VAR(input);
+        return false;
+    }
+
+    if (output->box_index < 0 || output->box_index >= static_cast<int>(output->all_of.size())) {
+        LogError << "box_index out of range" << VAR(output->box_index) << VAR(output->all_of.size());
+        return false;
+    }
+
+    return true;
+}
+
+bool PipelineParser::parse_or_param(
+    const json::value& input,
+    std::shared_ptr<Recognition::OrParam>& output,
+    const DefaultPipelineMgr& default_mgr)
+{
+    if (!output) {
+        output = std::make_shared<Recognition::OrParam>();
+    }
+    output->any_of.clear();
+
+    auto any_opt = input.find("any_of");
+    if (!any_opt || !any_opt->is_array() || any_opt->as_array().empty()) {
+        LogError << "Or recognition requires non-empty 'any_of' array field" << VAR(input);
+        return false;
+    }
+
+    for (const auto& sub_input : any_opt->as_array()) {
+        Recognition::SubRecognition sub_reco;
+        if (!parse_sub_recognition(sub_input, sub_reco, default_mgr)) {
+            LogError << "failed to parse sub recognition in 'any_of'" << VAR(sub_input);
+            return false;
+        }
+        output->any_of.emplace_back(std::move(sub_reco));
+    }
+
+    return true;
+}
+
+bool PipelineParser::parse_sub_recognition(
+    const json::value& input,
+    Recognition::SubRecognition& output,
+    const DefaultPipelineMgr& default_mgr)
+{
+    using namespace Recognition;
+    using namespace MAA_VISION_NS;
+
+    // Default parent type and param for sub-recognition
+    Type parent_type = Type::DirectHit;
+    Param parent_param = DirectHitParam {};
+
+    if (!parse_recognition(input, output.type, output.param, parent_type, parent_param, default_mgr)) {
+        return false;
+    }
+
+    if (!get_and_check_value(input, "sub_name", output.sub_name, std::string {})) {
+        LogError << "failed to get_and_check_value sub_name" << VAR(input);
+        return false;
+    }
+    if (output.sub_name.empty()) {
+        output.sub_name = Recognition::kTypeNameMap.at(output.type);
+    }
+
     return true;
 }
 

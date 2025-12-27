@@ -334,6 +334,17 @@ inline cv::Rect correct_roi(const cv::Rect& roi, const cv::Mat& image)
     return res;
 }
 
+inline std::vector<cv::Rect> correct_rois(std::vector<cv::Rect> rois, const cv::Mat& image)
+{
+    if (rois.empty()) {
+        return { correct_roi(cv::Rect {}, image) };
+    }
+    for (auto& roi : rois) {
+        roi = correct_roi(roi, image);
+    }
+    return rois;
+}
+
 inline cv::Mat create_mask(const cv::Mat& image, bool green_mask)
 {
     cv::Mat mask = cv::Mat::ones(image.size(), CV_8UC1);

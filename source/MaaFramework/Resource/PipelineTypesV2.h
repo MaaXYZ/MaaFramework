@@ -17,7 +17,10 @@ using JTarget = std::variant<bool, std::string, JRect>;
 
 struct JDirectHit
 {
-    json::value to_json() const { return json::object(); }
+    JTarget roi = JRect {};
+    JRect roi_offset {};
+
+    MEO_TOJSON(roi, roi_offset);
 };
 
 struct JTemplateMatch
@@ -116,8 +119,34 @@ struct JCustomRecognition
     MEO_TOJSON(roi, roi_offset, custom_recognition, custom_recognition_param);
 };
 
-using JRecognitionParam = std::
-    variant<JDirectHit, JTemplateMatch, JFeatureMatch, JColorMatch, JOCR, JNeuralNetworkClassify, JNeuralNetworkDetect, JCustomRecognition>;
+struct JSubRecognition;
+
+struct JAnd
+{
+    std::vector<json::value> all_of;
+    int box_index = 0;
+
+    MEO_TOJSON(all_of, box_index);
+};
+
+struct JOr
+{
+    std::vector<json::value> any_of;
+
+    MEO_TOJSON(any_of);
+};
+
+using JRecognitionParam = std::variant<
+    JDirectHit,
+    JTemplateMatch,
+    JFeatureMatch,
+    JColorMatch,
+    JOCR,
+    JNeuralNetworkClassify,
+    JNeuralNetworkDetect,
+    JAnd,
+    JOr,
+    JCustomRecognition>;
 
 struct JRecognition
 {
