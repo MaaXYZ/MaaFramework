@@ -309,17 +309,18 @@ PipelineV2::JAction PipelineDumper::dump_act(Action::Type type, const Action::Pa
         const auto& p = std::get<Action::MultiSwipeParam>(param);
         PipelineV2::JMultiSwipe jswipes;
         for (const auto& s : p.swipes) {
-            jswipes.swipes.emplace_back(PipelineV2::JSwipe {
-                .starting = s.starting,
-                .begin = dump_target(s.begin),
-                .begin_offset = dump_rect(s.begin.offset),
-                .end = dump_target_obj_array(s.end),
-                .end_offset = dump_rect_array(s.end_offset),
-                .end_hold = s.end_hold,
-                .duration = s.duration,
-                .only_hover = s.only_hover,
-                .contact = s.contact,
-            });
+            jswipes.swipes.emplace_back(
+                PipelineV2::JSwipe {
+                    .starting = s.starting,
+                    .begin = dump_target(s.begin),
+                    .begin_offset = dump_rect(s.begin.offset),
+                    .end = dump_target_obj_array(s.end),
+                    .end_offset = dump_rect_array(s.end_offset),
+                    .end_hold = s.end_hold,
+                    .duration = s.duration,
+                    .only_hover = s.only_hover,
+                    .contact = s.contact,
+                });
         }
         act.param = std::move(jswipes);
     } break;

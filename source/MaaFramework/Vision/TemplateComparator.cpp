@@ -6,7 +6,12 @@
 
 MAA_VISION_NS_BEGIN
 
-TemplateComparator::TemplateComparator(cv::Mat lhs, cv::Mat rhs, std::vector<cv::Rect> rois, TemplateComparatorParam param, std::string name)
+TemplateComparator::TemplateComparator(
+    cv::Mat lhs,
+    cv::Mat rhs,
+    std::vector<cv::Rect> rois,
+    TemplateComparatorParam param,
+    std::string name)
     : VisionBase(std::move(lhs), std::move(rois), std::move(name))
     , rhs_image_(std::move(rhs))
     , param_(std::move(param))
