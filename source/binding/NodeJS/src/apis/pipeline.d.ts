@@ -24,7 +24,13 @@ declare global {
             ColorMatch: 'Horizontal' | 'Vertical' | 'Score' | 'Area' | 'Random'
             OCR: 'Horizontal' | 'Vertical' | 'Area' | 'Length' | 'Random' | 'Expected'
             NeuralNetworkClassify: 'Horizontal' | 'Vertical' | 'Score' | 'Random' | 'Expected'
-            NeuralNetworkDetect: 'Horizontal' | 'Vertical' | 'Score' | 'Area' | 'Random' | 'Expected'
+            NeuralNetworkDetect:
+                | 'Horizontal'
+                | 'Vertical'
+                | 'Score'
+                | 'Area'
+                | 'Random'
+                | 'Expected'
         }
 
         type RecognitionDirectHit = {
@@ -142,25 +148,22 @@ declare global {
             Mode
         >
 
-        type SubRecognition<Mode> = {
-            sub_name?: string
-            recognition?: string | { type: string; param?: unknown }
-            roi?: Rect | NodeName
-            roi_offset?: Rect
-            template?: MaybeArray<string, Mode>
-            threshold?: MaybeArray<number, Mode>
-            expected?: MaybeArray<string | number, Mode>
-            [key: string]: unknown
-        }
+        type RecognitionAnd<Mode> = RequiredIfStrict<
+            {
+                all_of?: Recognition<Mode>['recognition'][]
+                box_index?: number
+            },
+            'all_of',
+            Mode
+        >
 
-        type RecognitionAnd<Mode> = {
-            all_of: SubRecognition<Mode>[]
-            box_index?: number
-        }
-
-        type RecognitionOr<Mode> = {
-            any_of: SubRecognition<Mode>[]
-        }
+        type RecognitionOr<Mode> = RequiredIfStrict<
+            {
+                any_of: Recognition<Mode>['recognition'][]
+            },
+            'any_of',
+            Mode
+        >
 
         type MixReco<Type extends string, Param, Mode> =
             | {
@@ -175,6 +178,18 @@ declare global {
                   } & Param,
                   Mode
               >
+
+        type RecognitionType =
+            | 'DirectHit'
+            | 'TemplateMatch'
+            | 'FeatureMatch'
+            | 'ColorMatch'
+            | 'OCR'
+            | 'NeuralNetworkClassify'
+            | 'NeuralNetworkDetect'
+            | 'And'
+            | 'Or'
+            | 'Custom'
 
         type Recognition<Mode> =
             | RemoveIfDump<
@@ -322,6 +337,7 @@ declare global {
                 args?: string[]
                 detach?: boolean
             },
+            'exec',
             Mode
         >
 
@@ -358,6 +374,29 @@ declare global {
                       param?: Param
                   }
               }
+
+        type ActionType =
+            | 'DoNothing'
+            | 'Click'
+            | 'LongPress'
+            | 'Swipe'
+            | 'MultiSwipe'
+            | 'TouchDown'
+            | 'TouchMove'
+            | 'TouchUp'
+            | 'Key'
+            | 'ClickKey'
+            | 'LongPressKey'
+            | 'KeyDown'
+            | 'KeyUp'
+            | 'InputText'
+            | 'StartApp'
+            | 'StopApp'
+            | 'Scroll'
+            | 'StopTask'
+            | 'Command'
+            | 'Shell'
+            | 'Custom'
 
         type Action<Mode> =
             | RemoveIfDump<
