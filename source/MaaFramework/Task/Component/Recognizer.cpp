@@ -335,16 +335,25 @@ RecoResult Recognizer::and_(const std::shared_ptr<MAA_RES_NS::Recognition::AndPa
 
     if (!all_hit) {
         LogDebug << "And recognition failed" << VAR(name);
+        sub_filtered_boxes_.insert_or_assign(name, std::vector<cv::Rect> {});
+        sub_best_box_.insert_or_assign(name, cv::Rect {});
         return result;
     }
 
     if (static_cast<int>(sub_results.size()) <= param->box_index) {
         LogError << "all hit, but box_index is out of range" << VAR(name) << VAR(sub_results.size()) << VAR(param->box_index);
         result.box = std::nullopt;
+        sub_filtered_boxes_.insert_or_assign(name, std::vector<cv::Rect> {});
+        sub_best_box_.insert_or_assign(name, cv::Rect {});
         return result;
     }
 
     result.box = std::move(sub_results[param->box_index].box);
+
+    cv::Rect final_box = result.box.value_or(cv::Rect {});
+    // 按理说这里要从 sub 取的，但是太麻烦而且是 corner case，先不管了，后面有需要再加
+    sub_filtered_boxes_.insert_or_assign(name, std::vector<cv::Rect> { final_box });
+    sub_best_box_.insert_or_assign(name, final_box);
 
     return result;
 }
@@ -387,15 +396,24 @@ RecoResult Recognizer::or_(const std::shared_ptr<MAA_RES_NS::Recognition::OrPara
 
     if (!has_hit) {
         LogDebug << "Or recognition failed" << VAR(name);
+        sub_filtered_boxes_.insert_or_assign(name, std::vector<cv::Rect> {});
+        sub_best_box_.insert_or_assign(name, cv::Rect {});
         return result;
     }
 
     if (sub_results.empty()) {
         LogError << "has hit, but no sub results" << VAR(name);
+        sub_filtered_boxes_.insert_or_assign(name, std::vector<cv::Rect> {});
+        sub_best_box_.insert_or_assign(name, cv::Rect {});
         return {};
     }
 
     result.box = std::move(sub_results.back().box);
+
+    cv::Rect final_box = result.box.value_or(cv::Rect {});
+    // 按理说这里要从 sub 取的，但是太麻烦而且是 corner case，先不管了，后面有需要再加
+    sub_filtered_boxes_.insert_or_assign(name, std::vector<cv::Rect> { final_box });
+    sub_best_box_.insert_or_assign(name, final_box);
 
     return result;
 }
@@ -438,7 +456,7 @@ RecoResult
         return custom_recognize(std::get<CustomRecognitionParam>(param), name);
 
     default:
-    LogError << "Unknown recognition type" << VAR(static_cast<int>(type)) << VAR(name);
+        LogError << "Unknown recognition type" << VAR(static_cast<int>(type)) << VAR(name);
         return {};
     }
 }
