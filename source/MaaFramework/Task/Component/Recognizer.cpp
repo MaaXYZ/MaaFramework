@@ -251,11 +251,11 @@ RecoResult Recognizer::nn_detect(const MAA_VISION_NS::NeuralNetworkDetectorParam
     NeuralNetworkDetector analyzer(image_, rois, param, session, mem_info, name);
 
     sub_filtered_boxes_.insert_or_assign(name, get_boxes(analyzer.filtered_results()));
+    sub_best_box_.insert_or_assign(name, analyzer.best_result() ? analyzer.best_result()->box : cv::Rect {});
 
     std::optional<cv::Rect> box = std::nullopt;
     if (analyzer.best_result()) {
         box = analyzer.best_result()->box;
-        sub_best_box_.insert_or_assign(name, *box);
     }
 
     return RecoResult { .reco_id = reco_id_,
