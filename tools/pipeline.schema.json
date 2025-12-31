@@ -2221,13 +2221,13 @@
                     "title": "Begin Offset Property",
                     "description": "在 `begin` 的基础上额外移动再作为起点，四个值分别相加。可选，默认 [0, 0, 0, 0] 。",
                     "$ref": "#/$defs/jsonRect",
-                    "markdownDescription": "*array<int, 4>*\n\n在 `begin` 的基础上额外移动再作为起点，四个值分别相加。可选,默认 [0, 0, 0, 0] 。"
+                    "markdownDescription": "*array<int, 4>*\n\n在 `begin` 的基础上额外移动再作为起点，四个值分别相加。可选，默认 [0, 0, 0, 0] 。"
                 },
                 "end": {
                     "title": "End Property",
                     "description": "滑动终点。可选，默认 true 。",
                     "$ref": "#/$defs/jsonTargetOrList",
-                    "markdownDescription": "*true* | *string* | *array<int, 2>* | *array<int, 4>* | *list<true | string | array<int, 2> | array<int, 4>>*\n\n滑动终点。可选,默认 true 。\n\n- *true*: 目标为本节点中刚刚识别到的位置(即自身)。\n\n- *string*: 填写节点名,目标为之前执行过的某节点识别到的位置。\n\n- *array<int, 2>*: 固定坐标点 [x, y]。\n\n- *array<int, 4>*: 固定坐标区域 [x, y, w, h],会在矩形内随机选取一点(越靠近中心概率越高,边缘概率相对较低),若希望全屏可设为 [0, 0, 0, 0] 。\n\n- *list<...>*: v4.5.x 版本新增支持,可配置滑动途径点,列表内各项不抬手连续滑动。"
+                    "markdownDescription": "*true* | *string* | *array<int, 2>* | *array<int, 4>* | *list<true | string | array<int, 2> | array<int, 4>>*\n\n滑动终点。可选，默认 true 。\n\n- *true*: 目标为本节点中刚刚识别到的位置(即自身)。\n\n- *string*: 填写节点名,目标为之前执行过的某节点识别到的位置。\n\n- *array<int, 2>*: 固定坐标点 [x, y]。\n\n- *array<int, 4>*: 固定坐标区域 [x, y, w, h],会在矩形内随机选取一点(越靠近中心概率越高,边缘概率相对较低),若希望全屏可设为 [0, 0, 0, 0] 。\n\n- *list<...>*: v4.5.x 版本新增支持,可配置滑动途径点,列表内各项不抬手连续滑动。"
                 },
                 "end_offset": {
                     "title": "End Offset Property",
@@ -4029,9 +4029,9 @@
                 },
                 "next": {
                     "title": "Next Property",
-                    "description": "接下来要执行的节点列表。可选,默认空。",
+                    "description": "接下来要执行的节点列表。可选，默认空。",
                     "$ref": "#/$defs/jsonNodeOrList",
-                    "markdownDescription": "*string* | *NodeAttr* | *list<string | NodeAttr, >*\n\n接下来要执行的节点列表。可选,默认空。\n\n按顺序识别 next 中的每个节点,只执行第一个识别到的。\n\n💡 v5.1 版本起新增支持:\n- 带属性节点: `{ \"name\": \"NodeName\", \"jump_back\": true }`\n- 前缀形式: `\"[JumpBack]NodeName\"` 或 `\"[Anchor]AnchorName\"`\n- 异质数组: 可混合使用字符串和对象\n\n详情请参考 [节点属性](#节点属性)。"
+                    "markdownDescription": "*string* | *NodeAttr* | *list<string | NodeAttr, >*\n\n接下来要执行的节点列表。可选，默认空。\n\n按顺序识别 next 中的每个节点,只执行第一个识别到的。\n\n💡 v5.1 版本起新增支持:\n- 带属性节点: `{ \"name\": \"NodeName\", \"jump_back\": true }`\n- 前缀形式: `\"[JumpBack]NodeName\"` 或 `\"[Anchor]AnchorName\"`\n- 异质数组: 可混合使用字符串和对象\n\n详情请参考 [节点属性](#节点属性)。"
                 },
                 "interrupt": {
                     "title": "Interrupt Property",
@@ -4069,9 +4069,9 @@
                 },
                 "anchor": {
                     "title": "Anchor Property",
-                    "description": "锚点名称。可选,默认空。",
+                    "description": "锚点名称。可选，默认空。",
                     "$ref": "#/$defs/jsonStringOrList",
-                    "markdownDescription": "*string* | *list<string, >*\n\n锚点名称。可选,默认空。\n\n当节点执行成功后,会将该锚点名设置为当前节点。多个节点可设置同一个锚点名,后执行的会覆盖先执行的。\n\n在 `next` 或 `on_error` 中可通过以下方式引用该锚点:\n- 前缀形式: `\"[Anchor]AnchorName\"`\n- 对象形式: `{ \"name\": \"AnchorName\", \"anchor\": true }`\n\n运行时会解析为最后设置该锚点的节点。\n\n详见 [节点属性](#节点属性)。"
+                    "markdownDescription": "*string* | *list<string, >*\n\n锚点名称。可选，默认空。\n\n当节点执行成功后,会将该锚点名设置为当前节点。多个节点可设置同一个锚点名,后执行的会覆盖先执行的。\n\n在 `next` 或 `on_error` 中可通过以下方式引用该锚点:\n- 前缀形式: `\"[Anchor]AnchorName\"`\n- 对象形式: `{ \"name\": \"AnchorName\", \"anchor\": true }`\n\n运行时会解析为最后设置该锚点的节点。\n\n详见 [节点属性](#节点属性)。"
                 },
                 "inverse": {
                     "title": "Inverse Property",
