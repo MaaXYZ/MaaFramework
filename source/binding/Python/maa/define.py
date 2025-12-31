@@ -647,6 +647,7 @@ class ActionEnum(StrEnum):
     InputText = "InputText"
     StartApp = "StartApp"
     StopApp = "StopApp"
+    Scroll = "Scroll"
     StopTask = "StopTask"
     Command = "Command"
     Shell = "Shell"
@@ -781,6 +782,12 @@ class AppActionResult:
     package: str
 
 
+@dataclass
+class ScrollActionResult:
+    dx: int
+    dy: int
+
+
 ActionResult = Union[
     ClickActionResult,
     LongPressActionResult,
@@ -790,6 +797,7 @@ ActionResult = Union[
     LongPressKeyActionResult,
     InputTextActionResult,
     AppActionResult,
+    ScrollActionResult,
     None,
 ]
 
@@ -804,6 +812,7 @@ ActionResultDict = {
     ActionEnum.InputText: InputTextActionResult,
     ActionEnum.StartApp: AppActionResult,
     ActionEnum.StopApp: AppActionResult,
+    ActionEnum.Scroll: ScrollActionResult,
     ActionEnum.StopTask: None,
     ActionEnum.Command: None,
     ActionEnum.Shell: None,
