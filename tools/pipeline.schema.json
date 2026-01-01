@@ -188,47 +188,6 @@
             "maximum": 4294967295,
             "default": 0
         },
-        "jsonUInt32List": {
-            "type": "array",
-            "items": {
-                "$ref": "#/$defs/jsonUInt32"
-            },
-            "default": []
-        },
-        "jsonUInt32OrList": {
-            "anyOf": [
-                {
-                    "$ref": "#/$defs/jsonUInt32"
-                },
-                {
-                    "$ref": "#/$defs/jsonUInt32List"
-                }
-            ],
-            "default": []
-        },
-        "jsonRectList": {
-            "type": "array",
-            "items": {
-                "$ref": "#/$defs/jsonRect"
-            },
-            "default": []
-        },
-        "jsonRectOrList": {
-            "anyOf": [
-                {
-                    "$ref": "#/$defs/jsonRect"
-                },
-                {
-                    "$ref": "#/$defs/jsonRectList"
-                }
-            ],
-            "default": [
-                0,
-                0,
-                0,
-                0
-            ]
-        },
         "jsonInt64": {
             "type": "integer",
             "format": "int64",
@@ -373,7 +332,7 @@
             "anyOf": [
                 {
                     "type": "string",
-                    "description": "节点名称，可带前缀如 [JumpBack]NodeName 或 [Anchor]AnchorName"
+                    "description": "节点名称，可带前缀如 [JumpBack]NodeName"
                 },
                 {
                     "$ref": "#/$defs/NodeAttr"
@@ -391,7 +350,7 @@
             "anyOf": [
                 {
                     "type": "string",
-                    "description": "节点名称，可带前缀如 [JumpBack]NodeName 或 [Anchor]AnchorName"
+                    "description": "节点名称，可带前缀如 [JumpBack]NodeName"
                 },
                 {
                     "$ref": "#/$defs/NodeAttr"
@@ -484,6 +443,47 @@
                 0,
                 0
             ]
+        },
+        "jsonRectList": {
+            "type": "array",
+            "items": {
+                "$ref": "#/$defs/jsonRect"
+            },
+            "default": []
+        },
+        "jsonRectOrList": {
+            "anyOf": [
+                {
+                    "$ref": "#/$defs/jsonRect"
+                },
+                {
+                    "$ref": "#/$defs/jsonRectList"
+                }
+            ],
+            "default": [
+                0,
+                0,
+                0,
+                0
+            ]
+        },
+        "jsonUInt32List": {
+            "type": "array",
+            "items": {
+                "$ref": "#/$defs/jsonUInt32"
+            },
+            "default": []
+        },
+        "jsonUInt32OrList": {
+            "anyOf": [
+                {
+                    "$ref": "#/$defs/jsonUInt32"
+                },
+                {
+                    "$ref": "#/$defs/jsonUInt32List"
+                }
+            ],
+            "default": 0
         },
         "jsonPoint": {
             "type": "array",
@@ -623,7 +623,7 @@
                     "title": "Template Property",
                     "description": "模板图片路径，需要 `image` 文件夹的相对路径。必选。",
                     "$ref": "#/$defs/jsonStringOrList",
-                    "markdownDescription": "*string* | *list<string, >*\n\n模板图片路径，需要 `image` 文件夹的相对路径。必选。\n\n所使用的图片需要是无损原图缩放到 720p 后的裁剪。请参考 [这里]（1.1-快速开始.md#图片文件）。\n\n支持填写文件夹路径，将递归加载其中所有图片文件。"
+                    "markdownDescription": "*string* | *list<string, >*\n\n模板图片路径，需要 `image` 文件夹的相对路径。必选。\n\n所使用的图片需要是无损原图缩放到 720p 后的裁剪。请参考 [这里](1.1-快速开始.md#图片文件)。\n\n支持填写文件夹路径，将递归加载其中所有图片文件。"
                 },
                 "threshold": {
                     "title": "Threshold Property",
@@ -860,7 +860,7 @@
                     "title": "Method Property",
                     "description": "颜色匹配方式。即 cv::ColorConversionCodes。可选，默认 4 (RGB) 。",
                     "$ref": "#/$defs/jsonInt32",
-                    "markdownDescription": "*int*\n\n颜色匹配方式。即 cv::ColorConversionCodes。可选，默认 4 (RGB) 。\n\n常用值：4 （RGB, 3 通道）, 40 （HSV, 3 通道）, 6 （GRAY, 1 通道）。\n\n详情请参考 [OpenCV 官方文档](https://docs.opencv.org/4.x/d8/d01/group__imgproc__color__conversions.html)。",
+                    "markdownDescription": "*int*\n\n颜色匹配方式。即 cv::ColorConversionCodes。可选，默认 4 (RGB) 。\n\n常用值：4 (RGB, 3 通道), 40 (HSV, 3 通道), 6 (GRAY, 1 通道)。\n\n详情请参考 [OpenCV 官方文档](https://docs.opencv.org/4.x/d8/d01/group__imgproc__color__conversions.html)。",
                     "defaultSnippets": [
                         {
                             "label": "RGB",
@@ -1221,7 +1221,7 @@
                     "title": "Model Property",
                     "description": "模型文件路径。使用 `model/detect` 文件夹的相对路径。必选。",
                     "type": "string",
-                    "markdownDescription": "*string*\n\n模型文件路径。使用 `model/detect` 文件夹的相对路径。必选。\n\n目前支持 YoloV8 ONNX 模型，其他同样输入输出的 Yolo 模型理论上也可以支持，但未经测试。\n\n训练参考 [NNDetect 食谱](https://github.com/MaaXYZ/MaaNeuralNetworkCookbook/tree/main/NeuralNetworkDetect)。"
+                    "markdownDescription": "*string*\n\n模型文件路径。使用 `model/detect` 文件夹的相对路径。必选。\n\n目前支持由 YOLOv8 和 YOLOv11 导出的 ONNX 格式的模型，其他同样输入输出的 Yolo 模型理论上也可以支持，但未经测试。\n\n训练参考 [NNDetect 食谱](https://github.com/MaaXYZ/MaaNeuralNetworkCookbook/tree/main/NeuralNetworkDetect)。"
                 },
                 "expected": {
                     "title": "Expected Property",
@@ -2215,7 +2215,7 @@
                     "title": "Begin Property",
                     "description": "滑动起点。可选，默认 true 。",
                     "$ref": "#/$defs/jsonTarget",
-                    "markdownDescription": "*true* | *string* | *array<int, 2>* | *array<int, 4>*\n\n滑动起点。可选，默认 true 。\n\n- *true*: 目标为本节点中刚刚识别到的位置（即自身)。\n\n- *string*: 填写节点名，目标为之前执行过的某节点识别到的位置。\n\n- *array<int, 2>*: 固定坐标点 [x, y]。\n\n- *array<int, 4>*: 固定坐标区域 [x, y, w, h]，会在矩形内随机选取一点（越靠近中心概率越高，边缘概率相对较低)，若希望全屏可设为 [0, 0, 0, 0] 。"
+                    "markdownDescription": "*true* | *string* | *array<int, 2>* | *array<int, 4>*\n\n滑动起点。可选，默认 true 。\n\n- *true*: 目标为本节点中刚刚识别到的位置（即自身）。\n\n- *string*: 填写节点名，目标为之前执行过的某节点识别到的位置。\n\n- *array<int, 2>*: 固定坐标点 [x, y]。\n\n- *array<int, 4>*: 固定坐标区域 [x, y, w, h]，会在矩形内随机选取一点（越靠近中心概率越高，边缘概率相对较低），若希望全屏可设为 [0, 0, 0, 0] 。"
                 },
                 "begin_offset": {
                     "title": "Begin Offset Property",
@@ -2227,7 +2227,7 @@
                     "title": "End Property",
                     "description": "滑动终点。可选，默认 true 。",
                     "$ref": "#/$defs/jsonTargetOrList",
-                    "markdownDescription": "*true* | *string* | *array<int, 2>* | *array<int, 4>* | *list<true | string | array<int, 2> | array<int, 4>>*\n\n滑动终点。可选，默认 true 。\n\n- *true*: 目标为本节点中刚刚识别到的位置（即自身)。\n\n- *string*: 填写节点名，目标为之前执行过的某节点识别到的位置。\n\n- *array<int, 2>*: 固定坐标点 [x, y]。\n\n- *array<int, 4>*: 固定坐标区域 [x, y, w, h],会在矩形内随机选取一点（越靠近中心概率越高，边缘概率相对较低),若希望全屏可设为 [0, 0, 0, 0] 。\n\n- *list<...>*: v4.5.x 版本新增支持，可配置滑动途径点，列表内各项不抬手连续滑动。"
+                    "markdownDescription": "*true* | *string* | *array<int, 2>* | *array<int, 4>* | *list<true | string | array<int, 2> | array<int, 4>>*\n\n滑动终点。可选，默认 true 。\n\n- *true*: 目标为本节点中刚刚识别到的位置（即自身）。\n\n- *string*: 填写节点名，目标为之前执行过的某节点识别到的位置。\n\n- *array<int, 2>*: 固定坐标点 [x, y]。\n\n- *array<int, 4>*: 固定坐标区域 [x, y, w, h]，会在矩形内随机选取一点（越靠近中心概率越高，边缘概率相对较低），若希望全屏可设为 [0, 0, 0, 0] 。\n\n- *list<...>*: v4.5.x 版本新增支持，可配置滑动途径点，列表内各项不抬手连续滑动。"
                 },
                 "end_offset": {
                     "title": "End Offset Property",
@@ -2259,7 +2259,7 @@
                     "title": "Contact Property",
                     "description": "触点编号，用于区分不同的触控点。可选，默认 0 。",
                     "$ref": "#/$defs/jsonUInt32",
-                    "markdownDescription": "*uint*\n\n触点编号，用于区分不同的触控点。可选，默认 0 。\n\n- Adb 控制器：表示手指编号（0 为第一根手指，1 为第二根手指，以此类推)\n- Win32 控制器：表示鼠标按键编号（0 为左键，1 为右键，2 为中键，3 为 XBUTTON1，4 为 XBUTTON2)",
+                    "markdownDescription": "*uint*\n\n触点编号，用于区分不同的触控点。可选，默认 0 。\n\n- Adb 控制器：表示手指编号（0 为第一根手指，1 为第二根手指，以此类推）\n- Win32 控制器：表示鼠标按键编号（0 为左键，1 为右键，2 为中键，3 为 XBUTTON1，4 为 XBUTTON2）",
                     "default": 0
                 }
             }
@@ -2517,17 +2517,17 @@
             "properties": {
                 "dx": {
                     "title": "Scroll Dx Property",
-                    "description": "水平滚动距离，正值向右滚动，负值向左滚动。可选，默认 0。建议使用 120 的整数倍（WHEEL_DELTA)。",
+                    "description": "水平滚动距离，正值向右滚动，负值向左滚动。可选，默认 0。建议使用 120 的整数倍（WHEEL_DELTA）。",
                     "type": "integer",
                     "default": 0,
-                    "markdownDescription": "*int*\n\n水平滚动距离，正值向右滚动，负值向左滚动。可选，默认 0。\n\n> **注意**:\n> - Adb 控制器和 PlayCover 控制器不支持滚动操作。仅 Win32 控制器支持。\n> - `dx`/`dy` 的值会直接作为滚动增量发送。Windows 标准滚轮每格增量为 120(WHEEL_DELTA)，建议使用 120 的整数倍以获得最佳兼容性。"
+                    "markdownDescription": "*int*\n\n水平滚动距离，正值向右滚动，负值向左滚动。可选，默认 0。\n\n建议使用 120 的整数倍（WHEEL_DELTA）以获得最佳兼容性。"
                 },
                 "dy": {
                     "title": "Scroll Dy Property",
-                    "description": "垂直滚动距离，正值向上滚动，负值向下滚动。可选，默认 0。建议使用 120 的整数倍（WHEEL_DELTA)。",
+                    "description": "垂直滚动距离，正值向上滚动，负值向下滚动。可选，默认 0。建议使用 120 的整数倍（WHEEL_DELTA）。",
                     "type": "integer",
                     "default": 0,
-                    "markdownDescription": "*int*\n\n垂直滚动距离，正值向上滚动，负值向下滚动。可选，默认 0。\n\n> **注意**:\n> - Adb 控制器和 PlayCover 控制器不支持滚动操作。仅 Win32 控制器支持。\n> - `dx`/`dy` 的值会直接作为滚动增量发送。Windows 标准滚轮每格增量为 120(WHEEL_DELTA)，建议使用 120 的整数倍以获得最佳兼容性。"
+                    "markdownDescription": "*int*\n\n垂直滚动距离，正值向上滚动，负值向下滚动。可选，默认 0。\n\n建议使用 120 的整数倍（WHEEL_DELTA）以获得最佳兼容性。"
                 }
             }
         },
@@ -3097,14 +3097,14 @@
                     "title": "Shell Command Property",
                     "description": "要执行的 shell 命令。必选。仅对 ADB 控制器有效。",
                     "type": "string",
-                    "markdownDescription": "*string*\n\n要执行的 shell 命令。必选。\n\n例如 `getprop ro.build.version.sdk` 或 `settings put global animator_duration_scale 0`。\n\n> 注意：此动作仅对 ADB 控制器有效。命令输出可以通过 `MaaTaskerGetActionDetail` 在动作详情中获取。"
+                    "markdownDescription": "*string*\n\n要执行的 shell 命令。必选。\n\n例如 `getprop ro.build.version.sdk` 或 `settings put global animator_duration_scale 0`。\n\n> 注意：此动作仅对 ADB 控制器有效。"
                 },
                 "timeout": {
                     "title": "Timeout Property",
-                    "description": "超时时间（毫秒)。可选，默认 20000 （20秒）。",
+                    "description": "超时时间（毫秒）。可选，默认 20000 (20秒)。",
                     "type": "integer",
                     "default": 20000,
-                    "markdownDescription": "*int*\n\n超时时间（毫秒)。可选，默认 20000 （20秒）。"
+                    "markdownDescription": "*int*\n\n超时时间（毫秒）。可选，默认 20000 (20秒)。"
                 }
             },
             "required": [
@@ -3280,6 +3280,7 @@
                 "StopApp",
                 "StopTask",
                 "Command",
+                "Shell",
                 "Custom"
             ]
         },
@@ -3456,6 +3457,27 @@
                     "anyOf": [
                         {
                             "$ref": "#/$defs/CustomAction/properties/custom_action_param"
+                        }
+                    ]
+                },
+                "cmd": {
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/Shell/properties/cmd"
+                        }
+                    ]
+                },
+                "end_hold": {
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/Swipe/properties/end_hold"
+                        }
+                    ]
+                },
+                "only_hover": {
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/Swipe/properties/only_hover"
                         }
                     ]
                 }
@@ -4019,33 +4041,33 @@
                     "title": "Recognition Property",
                     "description": "识别算法类型。可选，默认 `DirectHit` 。",
                     "$ref": "#/$defs/RecognitionProperty",
-                    "markdownDescription": "*string* | *object* (v2)\n\n识别算法类型。可选，默认 `DirectHit` 。\n\n可选的值：`DirectHit` | `TemplateMatch` | `FeatureMatch` | `ColorMatch` | `OCR` | `NeuralNetworkClassify` | `NeuralNetworkDetect` | `Custom`\n\n详见 [算法类型]（#算法类型）。"
+                    "markdownDescription": "*string* | *object* (v2)\n\n识别算法类型。可选，默认 `DirectHit` 。\n\n可选的值：`DirectHit` | `TemplateMatch` | `FeatureMatch` | `ColorMatch` | `OCR` | `NeuralNetworkClassify` | `NeuralNetworkDetect` | `Custom`\n\n详见 [算法类型](#算法类型)。"
                 },
                 "action": {
                     "title": "Action Property",
                     "description": "执行的动作。可选，默认 `DoNothing` 。",
                     "$ref": "#/$defs/ActionProperty",
-                    "markdownDescription": "*string* | *object* (v2)\n\n执行的动作。可选，默认 `DoNothing` 。\n\n可选的值：`DoNothing` | `Click` | `LongPress` | `Swipe` | `MultiSwipe` | `TouchDown` | `TouchMove` | `TouchUp` | `ClickKey` | `LongPressKey` | `KeyDown` | `KeyUp` | `InputText` | `StartApp` | `StopApp` | `StopTask` | `Command` | `Custom`\n\n详见 [动作类型]（#动作类型）。"
+                    "markdownDescription": "*string* | *object* (v2)\n\n执行的动作。可选，默认 `DoNothing` 。\n\n可选的值：`DoNothing` | `Click` | `LongPress` | `Swipe` | `MultiSwipe` | `TouchDown` | `TouchMove` | `TouchUp` | `ClickKey` | `LongPressKey` | `KeyDown` | `KeyUp` | `InputText` | `StartApp` | `StopApp` | `StopTask` | `Command` | `Custom`\n\n详见 [动作类型](#动作类型)。"
                 },
                 "next": {
                     "title": "Next Property",
                     "description": "接下来要执行的节点列表。可选，默认空。",
                     "$ref": "#/$defs/jsonNodeOrList",
-                    "markdownDescription": "*string* | *NodeAttr* | *list<string | NodeAttr, >*\n\n接下来要执行的节点列表。可选，默认空。\n\n按顺序识别 next 中的每个节点，只执行第一个识别到的。\n\n💡 v5.1 版本起新增支持:\n- 带属性节点: `{ \"name\": \"NodeName\", \"jump_back\": true }`\n- 前缀形式: `\"[JumpBack]NodeName\"` 或 `\"[Anchor]AnchorName\"`\n- 异质数组: 可混合使用字符串和对象\n\n详情请参考 [节点属性]（#节点属性）。"
+                    "markdownDescription": "*string* | *NodeAttr* | *list<string | NodeAttr, >*\n\n接下来要执行的节点列表。可选，默认空。\n\n按顺序识别 next 中的每个节点，只执行第一个识别到的。\n\n💡 v5.1 版本起新增支持带属性节点、NodeAttr 形式对象，或两者结合的异质数组。详情参见文档中的「节点属性」章节。"
                 },
                 "interrupt": {
                     "title": "Interrupt Property",
                     "deprecated": true,
-                    "description": "**(已在 5.1 版本中废弃，推荐使用 [节点属性]（#节点属性） 中的 `[JumpBack]` 功能替代)**",
+                    "description": "（已在 5.1 版本中废弃，推荐使用 节点前缀跳回功能 `[JumpBack]` 替代）",
                     "$ref": "#/$defs/jsonStringOrList",
-                    "markdownDescription": "*string* | *list<string, >*\n\n**(已在 5.1 版本中废弃，推荐使用 [节点属性]（#节点属性） 中的 `[JumpBack]` 功能替代)**\n\n我们提供了 [迁移脚本](https://github.com/MaaXYZ/MaaFramework/blob/main/tools/migrate_pipeline_v5.py),可帮助您无损地将 Pipeline 自动转换为新风格~"
+                    "markdownDescription": "*string* | *list<string, >*\n\n**（已在 5.1 版本中废弃，推荐使用 节点前缀跳回功能 `[JumpBack]` 替代）**\n\n我们提供了 [迁移脚本](https://github.com/MaaXYZ/MaaFramework/blob/main/tools/migrate_pipeline_v5.py)，可帮助您无损地将 Pipeline 自动转换为新风格~"
                 },
                 "is_sub": {
                     "title": "Is Sub Property",
                     "deprecated": true,
-                    "description": "**(已在 5.1 版本中废弃，推荐使用 [节点属性]（#节点属性） 中的 `[JumpBack]` 功能替代)**",
+                    "description": "（已在 5.1 版本中废弃，推荐使用 节点前缀跳回功能 `[JumpBack]` 替代）",
                     "$ref": "#/$defs/jsonBooleanFalse",
-                    "markdownDescription": "*bool*\n\n**(已在 5.1 版本中废弃，推荐使用 [节点属性]（#节点属性） 中的 `[JumpBack]` 功能替代)**\n\n我们提供了 [迁移脚本](https://github.com/MaaXYZ/MaaFramework/blob/main/tools/migrate_pipeline_v5.py),可帮助您无损地将 Pipeline 自动转换为新风格~"
+                    "markdownDescription": "*bool*\n\n**（已在 5.1 版本中废弃，推荐使用 节点前缀跳回功能 `[JumpBack]` 替代）**\n\n我们提供了 [迁移脚本](https://github.com/MaaXYZ/MaaFramework/blob/main/tools/migrate_pipeline_v5.py)，可帮助您无损地将 Pipeline 自动转换为新风格~"
                 },
                 "rate_limit": {
                     "title": "Rate Limit Property",
@@ -4071,7 +4093,7 @@
                     "title": "Anchor Property",
                     "description": "锚点名称。可选，默认空。",
                     "$ref": "#/$defs/jsonStringOrList",
-                    "markdownDescription": "*string* | *list<string, >*\n\n锚点名称。可选，默认空。\n\n当节点执行成功后，会将该锚点名设置为当前节点。多个节点可设置同一个锚点名，后执行的会覆盖先执行的。\n\n在 `next` 或 `on_error` 中可通过以下方式引用该锚点:\n- 前缀形式: `\"[Anchor]AnchorName\"`\n- 对象形式: `{ \"name\": \"AnchorName\", \"anchor\": true }`\n\n运行时会解析为最后设置该锚点的节点。\n\n详见 [节点属性]（#节点属性）。"
+                    "markdownDescription": "*string* | *list<string, >*\n\n锚点名称。可选，默认空。\n\n当节点执行成功后，会将该锚点名设置为当前节点。多个节点可设置同一个锚点名，后执行的会覆盖先执行的。\n\n在 `next` 或 `on_error` 中可通过 `[Anchor]` 属性引用该锚点，运行时会解析为最后设置该锚点的节点。\n\n详见文档中的「节点属性」章节。"
                 },
                 "inverse": {
                     "title": "Inverse Property",
@@ -4109,13 +4131,13 @@
                     "title": "Pre Wait Freezes Property",
                     "$ref": "#/$defs/WaitFreezesOrNInt64",
                     "description": "识别到 到 执行动作前，等待画面不动了的时间，毫秒。可选，默认 0 ，即不等待。",
-                    "markdownDescription": "*uint* | *object*\n\n识别到 到 执行动作前，等待画面不动了的时间，毫秒。可选，默认 0 ，即不等待。\n\n连续 `pre_wait_freezes` 毫秒 画面 **没有较大变化** 才会退出动作。\n\n若为 object，可设置更多参数，详见 [等待画面静止]（#等待画面静止）。\n\n具体的顺序为 `pre_wait_freezes` - `pre_delay` - `action` - `post_wait_freezes` - `post_delay` 。"
+                    "markdownDescription": "*uint* | *object*\n\n识别到 到 执行动作前，等待画面不动了的时间，毫秒。可选，默认 0 ，即不等待。\n\n连续 `pre_wait_freezes` 毫秒 画面 **没有较大变化** 才会退出动作。\n\n若为 object，可设置更多参数，详见 [等待画面静止](#等待画面静止)。\n\n具体的顺序为 `pre_wait_freezes` - `pre_delay` - `action` - `post_wait_freezes` - `post_delay` 。"
                 },
                 "post_wait_freezes": {
                     "title": "Post Wait Freezes Property",
                     "description": "行动动作后 到 识别 next，等待画面不动了的时间，毫秒。可选，默认 0 ，即不等待。",
                     "$ref": "#/$defs/WaitFreezesOrNInt64",
-                    "markdownDescription": "*uint* | *object*\n\n行动动作后 到 识别 next，等待画面不动了的时间，毫秒。可选，默认 0 ，即不等待。\n\n连续 `pre_wait_freezes` 毫秒 画面 **没有较大变化** 才会退出动作。\n\n若为 object，可设置更多参数，详见 [等待画面静止]（#等待画面静止）。\n\n具体的顺序为 `pre_wait_freezes` - `pre_delay` - `action` - `post_wait_freezes` - `post_delay` 。"
+                    "markdownDescription": "*uint* | *object*\n\n行动动作后 到 识别 next，等待画面不动了的时间，毫秒。可选，默认 0 ，即不等待。\n\n连续 `pre_wait_freezes` 毫秒 画面 **没有较大变化** 才会退出动作。\n\n若为 object，可设置更多参数，详见 [等待画面静止](#等待画面静止)。\n\n具体的顺序为 `pre_wait_freezes` - `pre_delay` - `action` - `post_wait_freezes` - `post_delay` 。"
                 },
                 "repeat": {
                     "title": "Repeat Property",
@@ -4135,13 +4157,13 @@
                     "title": "Repeat Wait Freezes Property",
                     "description": "每次重复动作之间等待画面不动了的时间，毫秒。可选，默认 0 ，即不等待。",
                     "$ref": "#/$defs/WaitFreezesOrNInt64",
-                    "markdownDescription": "*uint* | *object*\n\n每次重复动作之间等待画面不动了的时间，毫秒。可选，默认 0 ，即不等待。\n\n仅当 `repeat` > 1 时生效，在第二次及之后的每次动作执行前等待画面静止。\n\n若为 object，可设置更多参数，详见 [等待画面静止]（#等待画面静止）。"
+                    "markdownDescription": "*uint* | *object*\n\n每次重复动作之间等待画面不动了的时间，毫秒。可选，默认 0 ，即不等待。\n\n仅当 `repeat` > 1 时生效，在第二次及之后的每次动作执行前等待画面静止。\n\n若为 object，可设置更多参数，详见 [等待画面静止](#等待画面静止)。"
                 },
                 "focus": {
                     "title": "Focus Property",
                     "description": "关注节点，会额外产生部分回调消息。可选，默认 null，不产生回调消息。",
                     "$ref": "#/$defs/jsonDefaultNull",
-                    "markdownDescription": "*any*\n\n关注节点，会额外产生部分回调消息。可选，默认 null，不产生回调消息。\n\n详见 [节点通知]（#节点通知）。"
+                    "markdownDescription": "*any*\n\n关注节点，会额外产生部分回调消息。可选，默认 null，不产生回调消息。\n\n详见 [节点通知](#节点通知)。"
                 },
                 "attach": {
                     "title": "Attach Property",
