@@ -361,17 +361,13 @@
                     "title": "PlayCover 控制器配置",
                     "description": "PlayCover 控制器的具体配置（仅 macOS）",
                     "properties": {
-                        "address": {
-                            "type": "string",
-                            "title": "服务地址",
-                            "description": "PlayTools 服务的地址，格式为 host:port。可选",
-                            "examples": ["127.0.0.1:1717"]
-                        },
                         "uuid": {
                             "type": "string",
                             "title": "Bundle Identifier",
                             "description": "可选。目标应用的 Bundle Identifier，不提供则使用默认 maa.playcover，仅作为控制器标识符，与被操控应用无关",
-                            "examples": ["com.hypergryph.arknights"]
+                            "examples": [
+                                "com.hypergryph.arknights"
+                            ]
                         }
                     },
                     "additionalProperties": false
