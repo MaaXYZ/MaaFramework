@@ -164,6 +164,9 @@ It offers low-code simplicity while maintaining high extensibility. The framewor
 - [StellaSora-Auto-Helper](https://github.com/SodaCodeSave/StellaSora-Auto-Helper) ![Pipeline](https://img.shields.io/badge/Pipeline-%23876f69?logo=paddypower&logoColor=%23FFFFFF) ![license](https://img.shields.io/github/license/SodaCodeSave/StellaSora-Auto-Helper) ![activity](https://img.shields.io/github/commit-activity/m/SodaCodeSave/StellaSora-Auto-Helper?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/SodaCodeSave/StellaSora-Auto-Helper?style=social)  
   Assistant for Stella Sora. Image recognition + simulation control to free your hands! Powered by MaaFramework!
 
+- [MaaDuDuL](https://github.com/kqcoxn/MaaDuDuL) ![Pipeline](https://img.shields.io/badge/Pipeline-%23876f69?logo=paddypower&logoColor=%23FFFFFF) ![Python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white) ![license](https://img.shields.io/github/license/kqcoxn/MaaDuDuL) ![activity](https://img.shields.io/github/commit-activity/m/kqcoxn/MaaDuDuL?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/kqcoxn/MaaDuDuL?style=social) [![mirrorc](./docs/static/mirrorc-zh.svg)](https://mirrorchyan.com/zh/projects?source=maafw-badge) [![website](https://img.shields.io/badge/https://mddl.codax.site-%234285F4)](https://mddl.codax.site)  
+  Assistant for Trickcal. Image technology + simulation control, automatic pinch face, free hands! Powerfully driven by MaaFramework!
+
 ## Eco-Building
 
 MAA is planned to be a category of projects rather than just a single piece of software.
