@@ -648,6 +648,11 @@ class ActionEnum(StrEnum):
     StartApp = "StartApp"
     StopApp = "StopApp"
     Scroll = "Scroll"
+    TouchDown = "TouchDown"
+    TouchMove = "TouchMove"
+    TouchUp = "TouchUp"
+    KeyDown = "KeyDown"
+    KeyUp = "KeyUp"
     StopTask = "StopTask"
     Command = "Command"
     Shell = "Shell"
@@ -738,12 +743,14 @@ class RecognitionDetail:
 @dataclass
 class ClickActionResult:
     point: Point
+    contact: int
 
 
 @dataclass
 class LongPressActionResult:
     point: Point
     duration: int
+    contact: int
 
 
 @dataclass
@@ -754,6 +761,7 @@ class SwipeActionResult:
     duration: List[int]
     only_hover: bool
     starting: int
+    contact: int
 
 
 @dataclass
@@ -788,6 +796,21 @@ class ScrollActionResult:
     dy: int
 
 
+@dataclass
+class TouchActionResult:
+    contact: int
+    point: Point
+    pressure: int
+
+
+@dataclass
+class ShellActionResult:
+    cmd: str
+    timeout: int
+    success: bool
+    output: str
+
+
 ActionResult = Union[
     ClickActionResult,
     LongPressActionResult,
@@ -798,6 +821,8 @@ ActionResult = Union[
     InputTextActionResult,
     AppActionResult,
     ScrollActionResult,
+    TouchActionResult,
+    ShellActionResult,
     None,
 ]
 
@@ -813,9 +838,14 @@ ActionResultDict = {
     ActionEnum.StartApp: AppActionResult,
     ActionEnum.StopApp: AppActionResult,
     ActionEnum.Scroll: ScrollActionResult,
+    ActionEnum.TouchDown: TouchActionResult,
+    ActionEnum.TouchMove: TouchActionResult,
+    ActionEnum.TouchUp: TouchActionResult,
+    ActionEnum.KeyDown: ClickKeyActionResult,
+    ActionEnum.KeyUp: ClickKeyActionResult,
     ActionEnum.StopTask: None,
     ActionEnum.Command: None,
-    ActionEnum.Shell: None,
+    ActionEnum.Shell: ShellActionResult,
     ActionEnum.Custom: None,
 }
 
