@@ -648,6 +648,11 @@ class ActionEnum(StrEnum):
     StartApp = "StartApp"
     StopApp = "StopApp"
     Scroll = "Scroll"
+    TouchDown = "TouchDown"
+    TouchMove = "TouchMove"
+    TouchUp = "TouchUp"
+    KeyDown = "KeyDown"
+    KeyUp = "KeyUp"
     StopTask = "StopTask"
     Command = "Command"
     Shell = "Shell"
@@ -788,6 +793,13 @@ class ScrollActionResult:
     dy: int
 
 
+@dataclass
+class TouchActionResult:
+    contact: int
+    point: Point
+    pressure: int
+
+
 ActionResult = Union[
     ClickActionResult,
     LongPressActionResult,
@@ -798,6 +810,7 @@ ActionResult = Union[
     InputTextActionResult,
     AppActionResult,
     ScrollActionResult,
+    TouchActionResult,
     None,
 ]
 
@@ -813,6 +826,11 @@ ActionResultDict = {
     ActionEnum.StartApp: AppActionResult,
     ActionEnum.StopApp: AppActionResult,
     ActionEnum.Scroll: ScrollActionResult,
+    ActionEnum.TouchDown: TouchActionResult,
+    ActionEnum.TouchMove: TouchActionResult,
+    ActionEnum.TouchUp: TouchActionResult,
+    ActionEnum.KeyDown: ClickKeyActionResult,
+    ActionEnum.KeyUp: ClickKeyActionResult,
     ActionEnum.StopTask: None,
     ActionEnum.Command: None,
     ActionEnum.Shell: None,
