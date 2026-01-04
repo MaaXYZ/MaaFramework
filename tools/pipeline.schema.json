@@ -444,6 +444,47 @@
                 0
             ]
         },
+        "jsonRectList": {
+            "type": "array",
+            "items": {
+                "$ref": "#/$defs/jsonRect"
+            },
+            "default": []
+        },
+        "jsonRectOrList": {
+            "anyOf": [
+                {
+                    "$ref": "#/$defs/jsonRect"
+                },
+                {
+                    "$ref": "#/$defs/jsonRectList"
+                }
+            ],
+            "default": [
+                0,
+                0,
+                0,
+                0
+            ]
+        },
+        "jsonUInt32List": {
+            "type": "array",
+            "items": {
+                "$ref": "#/$defs/jsonUInt32"
+            },
+            "default": []
+        },
+        "jsonUInt32OrList": {
+            "anyOf": [
+                {
+                    "$ref": "#/$defs/jsonUInt32"
+                },
+                {
+                    "$ref": "#/$defs/jsonUInt32List"
+                }
+            ],
+            "default": 0
+        },
         "jsonPoint": {
             "type": "array",
             "items": {
@@ -1180,7 +1221,7 @@
                     "title": "Model Property",
                     "description": "模型文件路径。使用 `model/detect` 文件夹的相对路径。必选。",
                     "type": "string",
-                    "markdownDescription": "*string*\n\n模型文件路径。使用 `model/detect` 文件夹的相对路径。必选。\n\n目前支持 YoloV8 ONNX 模型，其他同样输入输出的 Yolo 模型理论上也可以支持，但未经测试。\n\n训练参考 [NNDetect 食谱](https://github.com/MaaXYZ/MaaNeuralNetworkCookbook/tree/main/NeuralNetworkDetect)。"
+                    "markdownDescription": "*string*\n\n模型文件路径。使用 `model/detect` 文件夹的相对路径。必选。\n\n目前支持由 YOLOv8 和 YOLOv11 导出的 ONNX 格式的模型，其他同样输入输出的 Yolo 模型理论上也可以支持，但未经测试。\n\n训练参考 [NNDetect 食谱](https://github.com/MaaXYZ/MaaNeuralNetworkCookbook/tree/main/NeuralNetworkDetect)。"
                 },
                 "expected": {
                     "title": "Expected Property",
@@ -2191,15 +2232,28 @@
                 "end_offset": {
                     "title": "End Offset Property",
                     "description": "在 `end` 的基础上额外移动再作为终点，四个值分别相加。可选，默认 [0, 0, 0, 0] 。",
-                    "$ref": "#/$defs/jsonRect",
-                    "markdownDescription": "*array<int, 4>*\n\n在 `end` 的基础上额外移动再作为终点，四个值分别相加。可选，默认 [0, 0, 0, 0] 。"
+                    "$ref": "#/$defs/jsonRectOrList",
+                    "markdownDescription": "*array<int, 4>* | *list<array<int, 4>>*\n\n在 `end` 的基础上额外移动再作为终点，四个值分别相加。可选，默认 [0, 0, 0, 0] 。"
                 },
                 "duration": {
                     "title": "Duration Property",
                     "description": "滑动持续时间，单位毫秒。可选，默认 200 。",
-                    "$ref": "#/$defs/jsonUInt32",
-                    "markdownDescription": "*uint*\n\n滑动持续时间，单位毫秒。可选，默认 200 。",
+                    "$ref": "#/$defs/jsonUInt32OrList",
+                    "markdownDescription": "*uint* | *list<uint,>*\n\n滑动持续时间，单位毫秒。可选，默认 200 。",
                     "default": 200
+                },
+                "end_hold": {
+                    "title": "End Hold Property",
+                    "description": "滑动到终点后，额外等待一定时间再抬起，单位 ms。可选，默认 0。",
+                    "$ref": "#/$defs/jsonUInt32OrList",
+                    "markdownDescription": "*uint* | *list<uint,>*\n\n滑动到终点后，额外等待一定时间再抬起，单位 ms。可选，默认 0。",
+                    "default": 0
+                },
+                "only_hover": {
+                    "title": "Only Hover Property",
+                    "description": "仅鼠标悬停移动，无按下/抬起动作。可选，默认 false。",
+                    "$ref": "#/$defs/jsonBooleanFalse",
+                    "markdownDescription": "*bool*\n\n仅鼠标悬停移动，无按下/抬起动作。可选，默认 false。"
                 },
                 "contact": {
                     "title": "Contact Property",
@@ -3226,6 +3280,7 @@
                 "StopApp",
                 "StopTask",
                 "Command",
+                "Shell",
                 "Custom"
             ]
         },
@@ -3402,6 +3457,27 @@
                     "anyOf": [
                         {
                             "$ref": "#/$defs/CustomAction/properties/custom_action_param"
+                        }
+                    ]
+                },
+                "cmd": {
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/Shell/properties/cmd"
+                        }
+                    ]
+                },
+                "end_hold": {
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/Swipe/properties/end_hold"
+                        }
+                    ]
+                },
+                "only_hover": {
+                    "anyOf": [
+                        {
+                            "$ref": "#/$defs/Swipe/properties/only_hover"
                         }
                     ]
                 }

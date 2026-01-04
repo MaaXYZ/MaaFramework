@@ -857,7 +857,7 @@ bool ControllerAgent::run_action(typename AsyncRunner<Action>::Id id, Action act
         { "param", action.param },
     };
 
-    LogInfo << cb_detail.to_string();
+    // LogInfo << cb_detail.to_string();
 
     if (notify) {
         notifier_.notify(this, MaaMsg_Controller_Action_Starting, cb_detail);
