@@ -147,16 +147,12 @@ maajs::ValueType TaskerImpl::post_recognition(
     maajs::ValueType self,
     maajs::EnvType,
     std::string reco_type,
-    maajs::OptionalParam<maajs::ValueType> reco_param,
+    maajs::ValueType reco_param,
     maajs::ArrayBufferType image)
 {
     ImageBuffer img;
     img.set(image);
-    auto id = MaaTaskerPostRecognition(
-        tasker,
-        reco_type.c_str(),
-        maajs::JsonStringify(env, reco_param.value_or(maajs::ObjectType::New(env))).c_str(),
-        img);
+    auto id = MaaTaskerPostRecognition(tasker, reco_type.c_str(), maajs::JsonStringify(env, reco_param).c_str(), img);
     return maajs::CallCtorHelper(ExtContext::get(env)->taskJobCtor, self, id);
 }
 
@@ -164,16 +160,16 @@ maajs::ValueType TaskerImpl::post_action(
     maajs::ValueType self,
     maajs::EnvType,
     std::string action_type,
-    maajs::OptionalParam<maajs::ValueType> action_param,
+    maajs::ValueType action_param,
     MaaRect box,
-    std::string reco_detail)
+    maajs::OptionalParam<std::string> reco_detail)
 {
     auto id = MaaTaskerPostAction(
         tasker,
         action_type.c_str(),
-        maajs::JsonStringify(env, action_param.value_or(maajs::ObjectType::New(env))).c_str(),
+        maajs::JsonStringify(env, action_param).c_str(),
         &box,
-        reco_detail.c_str());
+        reco_detail.value_or("").c_str());
     return maajs::CallCtorHelper(ExtContext::get(env)->taskJobCtor, self, id);
 }
 

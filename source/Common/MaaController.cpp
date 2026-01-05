@@ -267,7 +267,7 @@ MaaBool MaaControllerGetShellOutput(const MaaController* ctrl, MaaStringBuffer* 
 
 MaaCtrlId MaaControllerPostScreencap(MaaController* ctrl)
 {
-    LogFunc << VAR_VOIDP(ctrl);
+    // LogFunc << VAR_VOIDP(ctrl);
 
     if (!ctrl) {
         LogError << "handle is null";

@@ -30,7 +30,7 @@ class NeuralNetworkDetector
 public:
     NeuralNetworkDetector(
         cv::Mat image,
-        cv::Rect roi,
+        std::vector<cv::Rect> rois,
         NeuralNetworkDetectorParam param,
         std::shared_ptr<Ort::Session> session,
         const Ort::MemoryInfo& memory_info,

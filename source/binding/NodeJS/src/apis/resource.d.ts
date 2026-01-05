@@ -26,6 +26,9 @@ declare global {
             unregister_custom_action(name: string): void
             clear_custom_action(): void
             post_bundle(path: string): Job<ResId, Resource>
+            post_ocr_model(path: string): Job<ResId, Resource>
+            post_pipeline(path: string): Job<ResId, Resource>
+            post_image(path: string): Job<ResId, Resource>
             override_pipeline(
                 pipeline_override: Record<string, unknown> | Record<string, unknown>[],
             ): void

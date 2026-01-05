@@ -548,7 +548,7 @@ void Actuator::wait_freezes(const MAA_RES_NS::WaitFreezesParam& param, const cv:
             break;
         }
 
-        TemplateComparator comparator(pre_image, cur_image, roi, comp_param);
+        TemplateComparator comparator(pre_image, cur_image, { roi }, comp_param);
 
         if (!comparator.best_result()) {
             pre_image = cur_image;

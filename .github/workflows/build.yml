@@ -42,7 +42,7 @@ on:
         types: [MaaUtilsUpdated]
 
 concurrency:
-    group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}-${{ github.ref == 'refs/heads/main' && github.sha }}-${{ github.event_name == 'repository_dispatch' && github.event.action }}
+    group: ${{ github.workflow }}-${{ github.event.pull_request.head.repo.full_name || github.repository }}-${{ github.head_ref || github.ref_name }}${{ github.ref == 'refs/heads/dev' && format('-{0}', github.sha) || '' }}
     cancel-in-progress: true
 
 jobs:

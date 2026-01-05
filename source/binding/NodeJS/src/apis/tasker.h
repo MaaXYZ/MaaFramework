@@ -41,15 +41,15 @@ struct TaskerImpl : public maajs::NativeClassBase
         maajs::ValueType self,
         maajs::EnvType env,
         std::string reco_type,
-        maajs::OptionalParam<maajs::ValueType> reco_param,
+        maajs::ValueType reco_param,
         maajs::ArrayBufferType image);
     maajs::ValueType post_action(
         maajs::ValueType self,
         maajs::EnvType env,
         std::string action_type,
-        maajs::OptionalParam<maajs::ValueType> action_param,
-        MaaRect box = { 0, 0, 0, 0 },
-        std::string reco_detail = "");
+        maajs::ValueType action_param,
+        MaaRect box,
+        maajs::OptionalParam<std::string> reco_detail);
     maajs::ValueType post_stop(maajs::ValueType self, maajs::EnvType env);
     MaaStatus status(MaaResId id);
     maajs::PromiseType wait(MaaResId id);

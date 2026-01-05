@@ -6,8 +6,13 @@
 
 MAA_VISION_NS_BEGIN
 
-TemplateComparator::TemplateComparator(cv::Mat lhs, cv::Mat rhs, cv::Rect roi, TemplateComparatorParam param, std::string name)
-    : VisionBase(std::move(lhs), std::move(roi), std::move(name))
+TemplateComparator::TemplateComparator(
+    cv::Mat lhs,
+    cv::Mat rhs,
+    std::vector<cv::Rect> rois,
+    TemplateComparatorParam param,
+    std::string name)
+    : VisionBase(std::move(lhs), std::move(rois), std::move(name))
     , rhs_image_(std::move(rhs))
     , param_(std::move(param))
     , low_score_better_(param_.method == cv::TemplateMatchModes::TM_SQDIFF || param_.method == cv::TemplateMatchModes::TM_SQDIFF_NORMED)
@@ -24,12 +29,13 @@ void TemplateComparator::analyze()
 
     auto start_time = std::chrono::steady_clock::now();
 
-    cv::Mat lhs_roi = image_(correct_roi(roi_, image_));
-    cv::Mat rhs_roi = rhs_image_(correct_roi(roi_, rhs_image_));
-    double score = comp(lhs_roi, rhs_roi, param_.method);
-    Result res = Result { .box = roi_, .score = score };
-
-    add_results({ std::move(res) }, param_.threshold);
+    while (next_roi()) {
+        cv::Mat lhs_roi = image_(correct_roi(roi_, image_));
+        cv::Mat rhs_roi = rhs_image_(correct_roi(roi_, rhs_image_));
+        double score = comp(lhs_roi, rhs_roi, param_.method);
+        Result res = Result { .box = roi_, .score = score };
+        add_results({ std::move(res) }, param_.threshold);
+    }
 
     cherry_pick();
     auto cost = duration_since(start_time);

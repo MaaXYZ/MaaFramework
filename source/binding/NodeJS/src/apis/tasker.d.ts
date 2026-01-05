@@ -137,6 +137,17 @@ declare global {
                 entry: string,
                 pipeline_override?: Record<string, unknown> | Record<string, unknown>[],
             ): TaskJob
+            post_recognition(
+                reco_type: RecognitionType,
+                reco_param: Record<string, unknown> | Record<string, unknown>[],
+                image: ImageData,
+            ): TaskJob
+            post_action(
+                action_type: ActionType,
+                action_param: Record<string, unknown> | Record<string, unknown>[],
+                box: maa.Rect,
+                reco_detail?: string,
+            ): TaskJob
             post_stop(): TaskJob
             status(id: TaskId): Status
             wait(id: TaskId): Promise<Status>
