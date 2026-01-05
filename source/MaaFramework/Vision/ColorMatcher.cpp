@@ -8,8 +8,8 @@
 
 MAA_VISION_NS_BEGIN
 
-ColorMatcher::ColorMatcher(cv::Mat image, cv::Rect roi, ColorMatcherParam param, std::string name)
-    : VisionBase(std::move(image), std::move(roi), std::move(name))
+ColorMatcher::ColorMatcher(cv::Mat image, std::vector<cv::Rect> rois, ColorMatcherParam param, std::string name)
+    : VisionBase(std::move(image), std::move(rois), std::move(name))
     , param_(std::move(param))
 {
     analyze();
@@ -20,14 +20,17 @@ void ColorMatcher::analyze()
     auto start_time = std::chrono::steady_clock::now();
 
     for (const auto& range : param_.range) {
-        auto results = color_match(range);
-        add_results(std::move(results), param_.count);
+        while (next_roi()) {
+            auto results = color_match(range);
+            add_results(std::move(results), param_.count);
+        }
+        reset_roi();
     }
 
     cherry_pick();
 
     auto cost = duration_since(start_time);
-    LogDebug << name_ << VAR(uid_) << VAR(all_results_) << VAR(filtered_results_) << VAR(best_result_) << VAR(cost) << VAR(param_.count)
+    LogDebug << name_ << VAR(all_results_) << VAR(filtered_results_) << VAR(best_result_) << VAR(cost) << VAR(param_.count)
              << VAR(param_.method) << VAR(param_.connected);
 }
 

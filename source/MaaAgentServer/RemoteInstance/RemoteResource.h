@@ -16,6 +16,9 @@ public:
     virtual bool set_option(MaaResOption key, MaaOptionValue value, MaaOptionValueSize val_size) override;
 
     virtual MaaResId post_bundle(const std::filesystem::path& path) override;
+    virtual MaaResId post_ocr_model(const std::filesystem::path& path) override;
+    virtual MaaResId post_pipeline(const std::filesystem::path& path) override;
+    virtual MaaResId post_image(const std::filesystem::path& path) override;
 
     virtual MaaStatus status(MaaResId res_id) const override;
     virtual MaaStatus wait(MaaResId res_id) const override;
@@ -25,6 +28,7 @@ public:
 
     virtual bool override_pipeline(const json::value& pipeline_override) override;
     virtual bool override_next(const std::string& node_name, const std::vector<std::string>& next) override;
+    virtual bool override_image(const std::string& image_name, const cv::Mat& image) override;
     virtual std::optional<json::object> get_node_data(const std::string& node_name) const override;
 
     virtual void register_custom_recognition(const std::string& name, MaaCustomRecognitionCallback recognition, void* trans_arg) override;
@@ -36,6 +40,8 @@ public:
 
     virtual std::string get_hash() const override;
     virtual std::vector<std::string> get_node_list() const override;
+    virtual std::vector<std::string> get_custom_recognition_list() const override;
+    virtual std::vector<std::string> get_custom_action_list() const override;
 
     virtual MaaSinkId add_sink(MaaEventCallback callback, void* trans_arg) override;
     virtual void remove_sink(MaaSinkId sink_id) override;

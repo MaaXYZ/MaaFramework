@@ -30,7 +30,7 @@ class NeuralNetworkDetector
 public:
     NeuralNetworkDetector(
         cv::Mat image,
-        cv::Rect roi,
+        std::vector<cv::Rect> rois,
         NeuralNetworkDetectorParam param,
         std::shared_ptr<Ort::Session> session,
         const Ort::MemoryInfo& memory_info,
@@ -39,7 +39,7 @@ public:
 private:
     void analyze();
 
-    ResultsVec detect() const;
+    ResultsVec detect(const std::vector<std::string>& labels) const;
 
     void add_results(ResultsVec results, const std::vector<int>& expected, const std::vector<double>& thresholds);
     void cherry_pick();
@@ -47,6 +47,9 @@ private:
 private:
     cv::Mat draw_result(const ResultsVec& results) const;
     void sort_(ResultsVec& results) const;
+
+private:
+    std::vector<std::string> parse_labels_from_metadata() const;
 
 private:
     const NeuralNetworkDetectorParam param_;

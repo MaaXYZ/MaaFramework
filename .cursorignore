@@ -1,0 +1,5 @@
+build/
+install/
+3rdparty/quickjs/
+source/MaaUtils/MaaDeps/vcpkg/
+test/TestingDataSet/

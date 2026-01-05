@@ -34,6 +34,7 @@ extern "C"
 
         /// Write result to buffer.
         MaaBool (*request_uuid)(void* trans_arg, /* out */ MaaStringBuffer* buffer);
+        MaaControllerFeature (*get_features)(void* trans_arg);
 
         MaaBool (*start_app)(const char* intent, void* trans_arg);
         MaaBool (*stop_app)(const char* intent, void* trans_arg);
@@ -58,6 +59,8 @@ extern "C"
         MaaBool (*key_down)(int32_t keycode, void* trans_arg);
 
         MaaBool (*key_up)(int32_t keycode, void* trans_arg);
+
+        MaaBool (*scroll)(int32_t dx, int32_t dy, void* trans_arg);
     };
 
 #ifdef __cplusplus

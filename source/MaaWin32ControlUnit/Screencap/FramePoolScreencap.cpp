@@ -27,6 +27,11 @@ std::optional<cv::Mat> FramePoolScreencap::screencap()
         }
     }
 
+    // 检查窗口大小是否变化，如果变化则重新创建 frame pool
+    if (!check_and_handle_size_changed()) {
+        return std::nullopt;
+    }
+
     std::unique_lock lock(frame_mutex_);
 
     constexpr size_t kTimeoutSec = 20;
@@ -62,13 +67,71 @@ std::optional<cv::Mat> FramePoolScreencap::screencap()
 
     cv::Mat raw(texture_desc_.Height, texture_desc_.Width, CV_8UC4, mapped.pData, mapped.RowPitch);
 
-    std::vector<cv::Mat> channels;
-    cv::split(raw, channels);
-    cv::Mat alpha_bin;
-    cv::threshold(channels.back(), alpha_bin, UCHAR_MAX - 1, UCHAR_MAX, cv::THRESH_BINARY);
+    // 先按 alpha 通道裁剪掉四周 alpha != 255 的边框
+    cv::Mat alpha_channel;
+    cv::extractChannel(raw, alpha_channel, 3);
 
-    cv::Rect boundary = cv::boundingRect(alpha_bin);
-    cv::Mat image = raw(boundary);
+    cv::Mat alpha_bin;
+    cv::threshold(alpha_channel, alpha_bin, UCHAR_MAX - 1, UCHAR_MAX, cv::THRESH_BINARY);
+
+    cv::Rect alpha_roi = cv::boundingRect(alpha_bin);
+    if (alpha_roi.empty()) {
+        LogError << "No opaque pixels found";
+        return std::nullopt;
+    }
+    cv::Mat trimmed = raw(alpha_roi);
+
+    // 获取窗口客户区矩形（相对于窗口）
+    RECT client_rect = { 0 };
+    if (!GetClientRect(hwnd_, &client_rect)) {
+        LogError << "GetClientRect failed";
+        return std::nullopt;
+    }
+
+    // 将客户区左上角转换为屏幕坐标
+    POINT client_top_left = { client_rect.left, client_rect.top };
+    if (!ClientToScreen(hwnd_, &client_top_left)) {
+        LogError << "ClientToScreen failed";
+        return std::nullopt;
+    }
+
+    // 获取窗口矩形（屏幕坐标）
+    RECT window_rect = { 0 };
+    if (!GetWindowRect(hwnd_, &window_rect)) {
+        LogError << "GetWindowRect failed";
+        return std::nullopt;
+    }
+
+    // 计算边框位置，减去 alpha 裁剪的偏移
+    int border_left = client_top_left.x - window_rect.left - alpha_roi.x;
+    int border_top = client_top_left.y - window_rect.top - alpha_roi.y;
+
+    // 获取客户区大小
+    int client_width = client_rect.right - client_rect.left;
+    int client_height = client_rect.bottom - client_rect.top;
+
+    if (border_left < 0) {
+        border_left = 0;
+    }
+    if (border_top < 0) {
+        border_top = 0;
+    }
+    if (client_width > trimmed.cols) {
+        client_width = trimmed.cols;
+    }
+    if (border_left + client_width > trimmed.cols) {
+        border_left = trimmed.cols - client_width;
+    }
+    if (client_height > trimmed.rows) {
+        client_height = trimmed.rows;
+    }
+    if (border_top + client_height > trimmed.rows) {
+        border_top = trimmed.rows - client_height;
+    }
+
+    // 裁剪出客户区（去掉边框）
+    cv::Rect client_roi(border_left, border_top, client_width, client_height);
+    cv::Mat image = trimmed(client_roi);
 
     return bgra_to_bgr(image);
 }
@@ -161,11 +224,22 @@ bool FramePoolScreencap::init()
 
     cap_session_.StartCapture();
 
+    // 记录初始窗口大小
+    if (cap_item_) {
+        auto size = cap_item_.Size();
+        last_capture_size_.first = size.Width;
+        last_capture_size_.second = size.Height;
+    }
+
     return true;
 }
 
 void FramePoolScreencap::uninit()
 {
+    if (cap_session_) {
+        cap_session_.Close();
+        cap_session_ = nullptr;
+    }
     if (cap_frame_pool_ && frame_arrived_token_.value) {
         cap_frame_pool_.FrameArrived(frame_arrived_token_);
         frame_arrived_token_ = {};
@@ -175,6 +249,32 @@ void FramePoolScreencap::uninit()
     cap_session_ = nullptr;
     latest_frame_ = nullptr;
     texture_desc_ = { 0 };
+    last_capture_size_ = {};
+}
+
+bool FramePoolScreencap::check_and_handle_size_changed()
+{
+    if (!cap_item_) {
+        return true;
+    }
+
+    auto current_size = cap_item_.Size();
+    // 如果窗口大小没有变化，直接返回
+    if (current_size.Width == last_capture_size_.first && current_size.Height == last_capture_size_.second) {
+        return true;
+    }
+
+    LogInfo << "Window size changed, recreating frame pool" << VAR(current_size.Width) << VAR(current_size.Height)
+            << VAR(last_capture_size_.first) << VAR(last_capture_size_.second);
+
+    // 完全重新初始化以适应新的窗口大小
+    uninit();
+    if (!init()) {
+        LogError << "reinit failed after size change";
+        return false;
+    }
+
+    return true;
 }
 
 bool FramePoolScreencap::init_texture(winrt::com_ptr<ID3D11Texture2D> raw_texture)

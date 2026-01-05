@@ -14,6 +14,10 @@ if(WITH_CUSTOM_CONTROLLER)
     add_subdirectory(MaaCustomControlUnit)
 endif()
 
+if(WITH_PLAYCOVER_CONTROLLER)
+    add_subdirectory(MaaPlayCoverControlUnit)
+endif()
+
 add_subdirectory(LibraryHolder)
 add_subdirectory(MaaFramework)
 add_subdirectory(MaaToolkit)

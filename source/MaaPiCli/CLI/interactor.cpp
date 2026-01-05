@@ -2,10 +2,12 @@
 
 #include <algorithm>
 #include <format>
+#include <fstream>
 #include <functional>
 #include <ranges>
-#include <regex>
 #include <unordered_set>
+
+#include <boost/regex.hpp>
 
 #include "MaaFramework/Utility/MaaBuffer.h"
 #include "MaaToolkit/AdbDevice/MaaToolkitAdbDevice.h"
@@ -15,8 +17,13 @@
 #include "MaaUtils/Platform.h"
 #include "ProjectInterface/Runner.h"
 
-
 static bool s_eof = false;
+
+#if defined(__APPLE__)
+static constexpr bool kPlayCoverSupported = true;
+#else
+static constexpr bool kPlayCoverSupported = false;
+#endif
 
 // return [1, size]
 std::vector<int> input_multi_impl(size_t size, std::string_view prompt)
@@ -43,7 +50,7 @@ std::vector<int> input_multi_impl(size_t size, std::string_view prompt)
             continue;
         }
 
-        if (!std::ranges::all_of(buffer, [](char c) { return std::isdigit(c) || std::isspace(c); })) {
+        if (!std::ranges::all_of(buffer, [](unsigned char c) { return std::isdigit(c) || std::isspace(c); })) {
             fail();
             continue;
         }
@@ -107,13 +114,8 @@ void clear_screen()
 #endif
 }
 
-Interactor::Interactor(
-    std::filesystem::path user_path,
-    std::map<std::string, MAA_PROJECT_INTERFACE_NS::CustomRecognitionSession> custom_recognitions,
-    std::map<std::string, MAA_PROJECT_INTERFACE_NS::CustomActionSession> custom_actions)
+Interactor::Interactor(std::filesystem::path user_path)
     : user_path_(std::move(user_path))
-    , custom_recognitions_(std::move(custom_recognitions))
-    , custom_actions_(std::move(custom_actions))
 {
     LogDebug << VAR(user_path_);
 }
@@ -165,7 +167,7 @@ bool Interactor::run()
         return false;
     }
 
-    bool ret = MAA_PROJECT_INTERFACE_NS::Runner::run(runtime.value(), custom_recognitions_, custom_actions_);
+    bool ret = MAA_PROJECT_INTERFACE_NS::Runner::run(runtime.value());
 
     if (!ret) {
         std::cout << "### Failed to run tasks ###\n\n";
@@ -189,7 +191,7 @@ void Interactor::print_config() const
     std::cout << "Controller:\n\n";
     std::cout << "\t" << MAA_NS::utf8_to_crt(config_.configuration().controller.name) << "\n";
 
-    switch (config_.configuration().controller.type_enum) {
+    switch (config_.configuration().controller.type) {
     case InterfaceData::Controller::Type::Adb:
         std::cout << MAA_NS::utf8_to_crt(
             std::format("\t\t{}\n\t\t{}\n", config_.configuration().adb.adb_path, config_.configuration().adb.address));
@@ -199,8 +201,17 @@ void Interactor::print_config() const
             std::cout << MAA_NS::utf8_to_crt(std::format("\t\t{}\n", format_win32_config(config_.configuration().win32)));
         }
         break;
+    case InterfaceData::Controller::Type::PlayCover: {
+        const auto& pc = config_.configuration().playcover;
+        if (!pc.address.empty() && !pc.uuid.empty()) {
+            std::cout << MAA_NS::utf8_to_crt(std::format("\t\t{}\n\t\t{}\n", pc.address, pc.uuid));
+        }
+        if (!kPlayCoverSupported) {
+            std::cout << "\t\t(PlayCover is only available on macOS)\n";
+        }
+    } break;
     default:
-        LogError << "Unknown controller type";
+        LogError << "Unknown controller type" << VAR(config_.configuration().controller.type);
         break;
     }
 
@@ -218,20 +229,65 @@ void Interactor::interact_for_first_time_use()
     welcome();
     select_controller();
     select_resource();
-    add_task();
+
+    // Auto-add tasks with default_check=true
+    add_default_tasks();
+
+    // If no default tasks were added, let user select manually
+    if (config_.configuration().task.empty()) {
+        add_task();
+    }
 }
 
 void Interactor::welcome() const
 {
-    if (config_.interface_data().message.empty()) {
-        std::cout << "Welcome to use Maa Project Interface CLI!\n";
+    using namespace MAA_PROJECT_INTERFACE_NS;
+
+    const auto& data = config_.interface_data();
+
+    // 显示标题或项目名称
+    if (!data.title.empty()) {
+        std::cout << MAA_NS::utf8_to_crt(config_.translate(data.title)) << "\n\n";
     }
     else {
-        std::cout << MAA_NS::utf8_to_crt(config_.interface_data().message) << "\n";
+        std::string display_name = get_display_name(data.name, data.label);
+        if (!display_name.empty()) {
+            std::cout << MAA_NS::utf8_to_crt(display_name);
+            if (!data.version.empty()) {
+                std::cout << " v" << MAA_NS::utf8_to_crt(data.version);
+            }
+            std::cout << "\n\n";
+        }
     }
-    std::cout << "MaaFramework: " << MAA_VERSION << "\n\n";
 
-    std::cout << "Version: " << MAA_NS::utf8_to_crt(config_.interface_data().version) << "\n\n";
+    // 显示欢迎信息
+    if (!data.welcome.empty()) {
+        std::string welcome_text = read_text_content(data.welcome);
+        std::cout << MAA_NS::utf8_to_crt(welcome_text) << "\n\n";
+    }
+
+    // 显示项目描述
+    if (!data.description.empty()) {
+        std::string desc_text = read_text_content(data.description);
+        std::cout << "Description: " << MAA_NS::utf8_to_crt(desc_text) << "\n\n";
+    }
+
+    // 显示 GitHub 地址
+    if (!data.github.empty()) {
+        std::cout << "GitHub: " << MAA_NS::utf8_to_crt(data.github) << "\n\n";
+    }
+
+    // 显示联系方式
+    if (!data.contact.empty()) {
+        std::string contact_text = read_text_content(data.contact);
+        std::cout << "Contact: " << MAA_NS::utf8_to_crt(contact_text) << "\n\n";
+    }
+
+    // 显示许可证信息
+    if (!data.license.empty()) {
+        std::string license_text = read_text_content(data.license);
+        std::cout << "License: " << MAA_NS::utf8_to_crt(license_text) << "\n\n";
+    }
 }
 
 bool Interactor::interact_once()
@@ -273,6 +329,9 @@ bool Interactor::interact_once()
         break;
     case 7:
         return false;
+    default:
+        LogError << "Invalid action" << VAR(action);
+        return false;
     }
 
     return true;
@@ -283,6 +342,7 @@ void Interactor::select_controller()
     using namespace MAA_PROJECT_INTERFACE_NS;
 
     const auto& all_controllers = config_.interface_data().controller;
+
     if (all_controllers.empty()) {
         LogError << "Controller is empty";
         return;
@@ -292,7 +352,17 @@ void Interactor::select_controller()
     if (all_controllers.size() != 1) {
         std::cout << "### Select controller ###\n\n";
         for (size_t i = 0; i < all_controllers.size(); ++i) {
-            std::cout << MAA_NS::utf8_to_crt(std::format("\t{}. {}\n", i + 1, all_controllers[i].name));
+            const auto& ctrl = all_controllers[i];
+            std::string display_name = get_display_name(ctrl.name, ctrl.label);
+            std::cout << MAA_NS::utf8_to_crt(std::format("\t{}. {}", i + 1, display_name));
+            if (ctrl.type == InterfaceData::Controller::Type::PlayCover && !kPlayCoverSupported) {
+                std::cout << " (macOS only)";
+            }
+            std::cout << "\n";
+            if (!ctrl.description.empty()) {
+                std::string desc_text = read_text_content(ctrl.description);
+                std::cout << "\t   " << MAA_NS::utf8_to_crt(desc_text) << "\n";
+            }
         }
         std::cout << "\n";
         index = input(all_controllers.size()) - 1;
@@ -304,14 +374,35 @@ void Interactor::select_controller()
 
     config_.configuration().controller.name = controller.name;
 
-    switch (controller.type_enum) {
+    switch (controller.type) {
     case InterfaceData::Controller::Type::Adb:
-        config_.configuration().controller.type_enum = InterfaceData::Controller::Type::Adb;
+        config_.configuration().controller.type = InterfaceData::Controller::Type::Adb;
         select_adb();
         break;
     case InterfaceData::Controller::Type::Win32:
-        config_.configuration().controller.type_enum = InterfaceData::Controller::Type::Win32;
+        config_.configuration().controller.type = InterfaceData::Controller::Type::Win32;
         select_win32_hwnd(controller.win32);
+        break;
+    case InterfaceData::Controller::Type::PlayCover:
+        if (!kPlayCoverSupported) {
+            std::cout << "\nPlayCover controller is only available on macOS.\n";
+            // Check if there are other controllers available
+            bool has_other_controllers = std::ranges::any_of(all_controllers, [](const auto& ctrl) {
+                return ctrl.type != InterfaceData::Controller::Type::PlayCover;
+            });
+            if (has_other_controllers) {
+                std::cout << "Please select another controller.\n\n";
+                mpause();
+                select_controller();
+            }
+            else {
+                std::cout << "No other controllers available.\n\n";
+                mpause();
+            }
+            return;
+        }
+        config_.configuration().controller.type = InterfaceData::Controller::Type::PlayCover;
+        select_playcover(controller.playcover);
         break;
     default:
         LogError << "Unknown controller type" << VAR(controller.type);
@@ -374,9 +465,9 @@ void Interactor::select_adb_auto_detect()
 
     auto device_handle = MaaToolkitAdbDeviceListAt(list_handle, index);
 
+    adb_config.name = MaaToolkitAdbDeviceGetName(device_handle);
     adb_config.adb_path = MaaToolkitAdbDeviceGetAdbPath(device_handle);
     adb_config.address = MaaToolkitAdbDeviceGetAddress(device_handle);
-    adb_config.config = json::parse(MaaToolkitAdbDeviceGetConfig(device_handle)).value_or(json::object()).as_object();
 }
 
 void Interactor::select_adb_manual_input()
@@ -393,6 +484,37 @@ void Interactor::select_adb_manual_input()
     std::string adb_address;
     std::getline(std::cin, adb_address);
     config_.configuration().adb.address = adb_address;
+    std::cout << "\n";
+
+    config_.configuration().adb.name = std::format("{}-{}", adb_address, adb_path);
+}
+
+void Interactor::select_playcover(const MAA_PROJECT_INTERFACE_NS::InterfaceData::Controller::PlayCoverConfig& playcover_config)
+{
+    std::cout << "### Configure PlayCover ###\n\n";
+
+    auto& pc = config_.configuration().playcover;
+
+    // Use uuid from interface.json if available
+    if (!playcover_config.uuid.empty() && pc.uuid.empty()) {
+        pc.uuid = playcover_config.uuid;
+    }
+
+    // Default address if not configured
+    std::string default_address = pc.address.empty() ? "127.0.0.1:1717" : pc.address;
+
+    // Ask for address (use default if empty input)
+    std::cout << "PlayTools service address (host:port) [" << default_address << "]: ";
+    std::cin.sync();
+    std::string buffer;
+    std::getline(std::cin, buffer);
+
+    if (std::cin.eof()) {
+        s_eof = true;
+        return;
+    }
+
+    pc.address = buffer.empty() ? default_address : buffer;
     std::cout << "\n";
 }
 
@@ -416,14 +538,12 @@ bool Interactor::select_win32_hwnd(const MAA_PROJECT_INTERFACE_NS::InterfaceData
 
     size_t list_size = MaaToolkitDesktopWindowListSize(list_handle);
 
-    auto class_u16 = MAA_NS::to_u16(win32_config.class_regex);
-    auto window_u16 = MAA_NS::to_u16(win32_config.window_regex);
-    if (!MAA_NS::regex_valid(class_u16) || !MAA_NS::regex_valid(window_u16)) {
-        LogError << "regex is invalid" << VAR(class_u16) << VAR(window_u16);
+    auto class_regex = MAA_NS::regex_valid(MAA_NS::to_u16(win32_config.class_regex));
+    auto window_regex = MAA_NS::regex_valid(MAA_NS::to_u16(win32_config.window_regex));
+    if (!class_regex || !window_regex) {
+        LogError << "regex is invalid" << VAR(win32_config.class_regex) << VAR(win32_config.window_regex);
         return false;
     }
-    std::wregex class_regex(class_u16);
-    std::wregex window_regex(window_u16);
 
     std::vector<Configuration::Win32Config> matched_config;
     for (size_t i = 0; i < list_size; ++i) {
@@ -434,10 +554,7 @@ bool Interactor::select_win32_hwnd(const MAA_PROJECT_INTERFACE_NS::InterfaceData
         rt_config.class_name = MAA_NS::to_u16(MaaToolkitDesktopWindowGetClassName(window_handle));
         rt_config.window_name = MAA_NS::to_u16(MaaToolkitDesktopWindowGetWindowName(window_handle));
 
-        std::wsmatch class_match;
-        std::wsmatch window_match;
-        if (std::regex_search(rt_config.class_name, class_match, class_regex)
-            && std::regex_search(rt_config.window_name, window_match, window_regex)) {
+        if (boost::regex_search(rt_config.class_name, *class_regex) && boost::regex_search(rt_config.window_name, *window_regex)) {
             matched_config.emplace_back(std::move(rt_config));
         }
     }
@@ -471,24 +588,46 @@ void Interactor::select_resource()
     using namespace MAA_PROJECT_INTERFACE_NS;
 
     const auto& all_resources = config_.interface_data().resource;
+    const auto& current_controller = config_.configuration().controller.name;
+
     if (all_resources.empty()) {
         LogError << "Resource is empty";
         return;
     }
 
+    // Filter resources by current controller
+    std::vector<const InterfaceData::Resource*> available_resources;
+    for (const auto& res : all_resources) {
+        // If controller list is empty, resource supports all controllers
+        if (res.controller.empty() || std::ranges::find(res.controller, current_controller) != res.controller.end()) {
+            available_resources.push_back(&res);
+        }
+    }
+
+    if (available_resources.empty()) {
+        LogError << "No resource available for controller" << VAR(current_controller);
+        return;
+    }
+
     int index = 0;
-    if (all_resources.size() != 1) {
+    if (available_resources.size() != 1) {
         std::cout << "### Select resource ###\n\n";
-        for (size_t i = 0; i < all_resources.size(); ++i) {
-            std::cout << MAA_NS::utf8_to_crt(std::format("\t{}. {}\n", i + 1, all_resources[i].name));
+        for (size_t i = 0; i < available_resources.size(); ++i) {
+            const auto& res = *available_resources[i];
+            std::string display_name = get_display_name(res.name, res.label);
+            std::cout << MAA_NS::utf8_to_crt(std::format("\t{}. {}\n", i + 1, display_name));
+            if (!res.description.empty()) {
+                std::string desc_text = read_text_content(res.description);
+                std::cout << "\t   " << MAA_NS::utf8_to_crt(desc_text) << "\n";
+            }
         }
         std::cout << "\n";
-        index = input(all_resources.size()) - 1;
+        index = input(available_resources.size()) - 1;
     }
     else {
         index = 0;
     }
-    const auto& resource = all_resources[index];
+    const auto& resource = *available_resources[index];
 
     config_.configuration().resource = resource.name;
 }
@@ -498,46 +637,275 @@ void Interactor::add_task()
     using namespace MAA_PROJECT_INTERFACE_NS;
 
     const auto& all_data_tasks = config_.interface_data().task;
+    const auto& current_resource = config_.configuration().resource;
+
     if (all_data_tasks.empty()) {
         LogError << "Task is empty";
         return;
     }
 
+    // Filter tasks by current resource
+    std::vector<const InterfaceData::Task*> available_tasks;
+    for (const auto& task : all_data_tasks) {
+        // If resource list is empty, task supports all resources
+        if (task.resource.empty() || std::ranges::find(task.resource, current_resource) != task.resource.end()) {
+            available_tasks.push_back(&task);
+        }
+    }
+
+    if (available_tasks.empty()) {
+        LogError << "No task available for resource" << VAR(current_resource);
+        return;
+    }
+
     std::cout << "### Add task ###\n\n";
-    for (size_t i = 0; i < all_data_tasks.size(); ++i) {
-        std::cout << MAA_NS::utf8_to_crt(std::format("\t{}. {}\n", i + 1, all_data_tasks[i].name));
+    for (size_t i = 0; i < available_tasks.size(); ++i) {
+        const auto& task = *available_tasks[i];
+        std::string display_name = get_display_name(task.name, task.label);
+        std::cout << MAA_NS::utf8_to_crt(std::format("\t{}. {}\n", i + 1, display_name));
+        if (!task.description.empty()) {
+            std::string desc_text = read_text_content(task.description);
+            std::cout << "\t   " << MAA_NS::utf8_to_crt(desc_text) << "\n";
+        }
     }
     std::cout << "\n";
-    auto input_indexes = input_multi(all_data_tasks.size());
+    auto input_indexes = input_multi(available_tasks.size());
 
     for (int index : input_indexes) {
-        const auto& data_task = all_data_tasks[index - 1];
+        const auto& data_task = *available_tasks[index - 1];
+        std::string task_display_name = get_display_name(data_task.name, data_task.label);
 
         std::vector<Configuration::Option> config_options;
+        bool all_options_ok = true;
         for (const auto& option_name : data_task.option) {
-            if (!config_.interface_data().option.contains(option_name)) {
-                LogError << "Option not found" << VAR(option_name);
-                return;
+            if (!process_option(option_name, task_display_name, config_options)) {
+                LogWarn << "Failed to process option, skipping task" << VAR(data_task.name) << VAR(option_name);
+                all_options_ok = false;
+                break;
             }
+        }
 
-            const auto& opt = config_.interface_data().option.at(option_name);
+        if (all_options_ok) {
+            config_.configuration().task.emplace_back(Configuration::Task { .name = data_task.name, .option = std::move(config_options) });
+        }
+    }
+}
 
-            if (!opt.default_case.empty()) {
-                config_options.emplace_back(Configuration::Option { option_name, opt.default_case });
-                continue;
+void Interactor::add_default_tasks()
+{
+    using namespace MAA_PROJECT_INTERFACE_NS;
+
+    const auto& all_data_tasks = config_.interface_data().task;
+    const auto& current_resource = config_.configuration().resource;
+
+    for (const auto& task : all_data_tasks) {
+        // Skip tasks without default_check
+        if (!task.default_check) {
+            continue;
+        }
+
+        // Check if task supports current resource
+        if (!task.resource.empty() && std::ranges::find(task.resource, current_resource) == task.resource.end()) {
+            continue;
+        }
+
+        std::string task_display_name = get_display_name(task.name, task.label);
+
+        // Process options for this task
+        std::vector<Configuration::Option> config_options;
+        bool all_options_ok = true;
+        for (const auto& option_name : task.option) {
+            if (!process_option(option_name, task_display_name, config_options)) {
+                LogWarn << "Failed to process option for default task, skipping" << VAR(task.name) << VAR(option_name);
+                all_options_ok = false;
+                break;
             }
-            std::cout << MAA_NS::utf8_to_crt(std::format("\n\n## Input option of \"{}\" for \"{}\" ##\n\n", option_name, data_task.name));
+        }
+
+        if (all_options_ok) {
+            config_.configuration().task.emplace_back(Configuration::Task { .name = task.name, .option = std::move(config_options) });
+            std::cout << "Auto-added default task: " << MAA_NS::utf8_to_crt(task_display_name) << "\n";
+        }
+    }
+
+    if (!config_.configuration().task.empty()) {
+        std::cout << "\n";
+    }
+}
+
+bool Interactor::process_option(
+    const std::string& option_name,
+    const std::string& task_display_name,
+    std::vector<MAA_PROJECT_INTERFACE_NS::Configuration::Option>& config_options)
+{
+    using namespace MAA_PROJECT_INTERFACE_NS;
+
+    if (!config_.interface_data().option.contains(option_name)) {
+        LogError << "Option not found" << VAR(option_name);
+        return false;
+    }
+
+    const auto& opt = config_.interface_data().option.at(option_name);
+
+    Configuration::Option config_opt;
+    config_opt.name = option_name;
+
+    std::string opt_display_name = get_display_name(option_name, opt.label);
+
+    // Selected case for processing sub-options
+    const InterfaceData::Option::Case* selected_case = nullptr;
+
+    switch (opt.type) {
+    case InterfaceData::Option::Type::Select: {
+        if (!opt.default_case.empty()) {
+            config_opt.value = opt.default_case;
+            // Find the selected case for sub-options
+            auto case_iter = std::ranges::find(opt.cases, opt.default_case, std::mem_fn(&InterfaceData::Option::Case::name));
+            if (case_iter != opt.cases.end()) {
+                selected_case = &(*case_iter);
+            }
+        }
+        else {
+            std::cout << MAA_NS::utf8_to_crt(
+                std::format("\n\n## Select option \"{}\" for \"{}\" ##\n\n", opt_display_name, task_display_name));
+            if (!opt.description.empty()) {
+                std::string desc_text = read_text_content(opt.description);
+                std::cout << MAA_NS::utf8_to_crt(desc_text) << "\n\n";
+            }
             for (size_t i = 0; i < opt.cases.size(); ++i) {
-                std::cout << MAA_NS::utf8_to_crt(std::format("\t{}. {}\n", i + 1, opt.cases[i].name));
+                const auto& case_item = opt.cases[i];
+                std::string case_display_name = get_display_name(case_item.name, case_item.label);
+                std::cout << MAA_NS::utf8_to_crt(std::format("\t{}. {}\n", i + 1, case_display_name));
+                if (!case_item.description.empty()) {
+                    std::string case_desc = read_text_content(case_item.description);
+                    std::cout << "\t   " << MAA_NS::utf8_to_crt(case_desc) << "\n";
+                }
             }
             std::cout << "\n";
 
             int case_index = input(opt.cases.size()) - 1;
-            config_options.emplace_back(Configuration::Option { option_name, opt.cases[case_index].name });
+            config_opt.value = opt.cases[case_index].name;
+            selected_case = &opt.cases[case_index];
+        }
+    } break;
+
+    case InterfaceData::Option::Type::Switch: {
+        // Switch 类型必须有恰好两个 cases
+        if (opt.cases.size() < 2) {
+            LogError << "Switch option must have at least 2 cases" << VAR(option_name) << VAR(opt.cases.size());
+            return false;
+        }
+        std::cout << MAA_NS::utf8_to_crt(std::format("\n\n## Switch option \"{}\" for \"{}\" ##\n\n", opt_display_name, task_display_name));
+        if (!opt.description.empty()) {
+            std::string desc_text = read_text_content(opt.description);
+            std::cout << MAA_NS::utf8_to_crt(desc_text) << "\n\n";
+        }
+        std::string case0_name = get_display_name(opt.cases[0].name, opt.cases[0].label);
+        std::string case1_name = get_display_name(opt.cases[1].name, opt.cases[1].label);
+        std::cout << "\t" << MAA_NS::utf8_to_crt(case0_name) << "\n";
+        std::cout << "\t" << MAA_NS::utf8_to_crt(case1_name) << "\n";
+        std::cout << "\nInput Y/N: ";
+
+        static const std::unordered_set<std::string> yes_names = { "Yes", "yes", "Y", "y" };
+        static const std::unordered_set<std::string> no_names = { "No", "no", "N", "n" };
+
+        std::string buffer;
+        bool is_yes = false;
+        while (true) {
+            std::cin.sync();
+            std::getline(std::cin, buffer);
+
+            if (std::cin.eof()) {
+                s_eof = true;
+                return false;
+            }
+
+            if (yes_names.contains(buffer)) {
+                is_yes = true;
+                break;
+            }
+            else if (no_names.contains(buffer)) {
+                is_yes = false;
+                break;
+            }
+            else {
+                std::cout << "Invalid input, please input Y/N: ";
+            }
         }
 
-        config_.configuration().task.emplace_back(Configuration::Task { .name = data_task.name, .option = std::move(config_options) });
+        // Find matching Yes/No case
+        auto find_case = [&](bool find_yes) -> const InterfaceData::Option::Case* {
+            for (const auto& case_item : opt.cases) {
+                bool is_yes_case = yes_names.contains(case_item.name);
+                if (find_yes == is_yes_case) {
+                    return &case_item;
+                }
+            }
+            // Fallback
+            LogWarn << "No matching Yes/No case found, using fallback" << VAR(find_yes);
+            return find_yes ? &opt.cases[0] : &opt.cases[1];
+        };
+
+        selected_case = find_case(is_yes);
+        config_opt.value = selected_case->name;
+        std::cout << "\n";
+    } break;
+
+    case InterfaceData::Option::Type::Input: {
+        std::cout << MAA_NS::utf8_to_crt(std::format("\n\n## Input option \"{}\" for \"{}\" ##\n\n", opt_display_name, task_display_name));
+        if (!opt.description.empty()) {
+            std::string desc_text = read_text_content(opt.description);
+            std::cout << MAA_NS::utf8_to_crt(desc_text) << "\n\n";
+        }
+
+        for (const auto& input_def : opt.inputs) {
+            std::string default_val = input_def.default_;
+            std::string input_display_name = get_display_name(input_def.name, input_def.label);
+            if (!input_def.description.empty()) {
+                std::string input_desc = read_text_content(input_def.description);
+                std::cout << MAA_NS::utf8_to_crt(input_desc) << "\n";
+            }
+            std::cout << MAA_NS::utf8_to_crt(std::format("{} [{}]: ", input_display_name, default_val));
+
+            std::cin.sync();
+            std::string buffer;
+            std::getline(std::cin, buffer);
+
+            std::string value = buffer.empty() ? default_val : buffer;
+
+            // Validate with regex if provided
+            if (!input_def.verify.empty()) {
+                if (auto pattern = MAA_NS::regex_valid(MAA_NS::to_u16(input_def.verify))) {
+                    auto value_u16 = MAA_NS::to_u16(value);
+                    while (!boost::regex_match(value_u16, *pattern)) {
+                        std::string error_msg =
+                            input_def.pattern_msg.empty() ? "Invalid input, please retry: " : input_def.pattern_msg + ": ";
+                        std::cout << MAA_NS::utf8_to_crt(error_msg);
+                        std::getline(std::cin, buffer);
+                        value = buffer.empty() ? default_val : buffer;
+                        value_u16 = MAA_NS::to_u16(value);
+                    }
+                }
+            }
+
+            config_opt.inputs[input_def.name] = value;
+        }
+        std::cout << "\n";
+    } break;
     }
+
+    config_options.emplace_back(std::move(config_opt));
+
+    // Process nested sub-options if the selected case has any
+    if (selected_case && !selected_case->option.empty()) {
+        for (const auto& sub_option_name : selected_case->option) {
+            if (!process_option(sub_option_name, task_display_name, config_options)) {
+                return false;
+            }
+        }
+    }
+
+    return true;
 }
 
 void Interactor::edit_task()
@@ -605,8 +973,16 @@ void Interactor::print_config_tasks(bool with_index) const
             std::cout << MAA_NS::utf8_to_crt(std::format("\t- {}\n", task.name));
         }
 
-        for (const auto& [key, value] : task.option) {
-            std::cout << "\t\t- " << MAA_NS::utf8_to_crt(key) << ": " << MAA_NS::utf8_to_crt(value) << "\n";
+        for (const auto& opt : task.option) {
+            if (!opt.value.empty()) {
+                std::cout << "\t\t- " << MAA_NS::utf8_to_crt(opt.name) << ": " << MAA_NS::utf8_to_crt(opt.value) << "\n";
+            }
+            else if (!opt.inputs.empty()) {
+                std::cout << "\t\t- " << MAA_NS::utf8_to_crt(opt.name) << ":\n";
+                for (const auto& [key, val] : opt.inputs) {
+                    std::cout << "\t\t\t" << MAA_NS::utf8_to_crt(key) << ": " << MAA_NS::utf8_to_crt(val) << "\n";
+                }
+            }
         }
     }
     std::cout << "\n";
@@ -616,7 +992,7 @@ bool Interactor::check_validity()
 {
     using namespace MAA_PROJECT_INTERFACE_NS;
 
-    if (config_.configuration().controller.type_enum == InterfaceData::Controller::Type::Win32
+    if (config_.configuration().controller.type == InterfaceData::Controller::Type::Win32
         && config_.configuration().win32.hwnd == nullptr) {
         auto& name = config_.configuration().controller.name;
         auto controller_iter = std::ranges::find(config_.interface_data().controller, name, std::mem_fn(&InterfaceData::Controller::name));
@@ -629,6 +1005,29 @@ bool Interactor::check_validity()
         return select_win32_hwnd(controller_iter->win32);
     }
 
+    if (config_.configuration().controller.type == InterfaceData::Controller::Type::PlayCover) {
+        if (!kPlayCoverSupported) {
+            LogError << "PlayCover controller is only available on macOS";
+            return false;
+        }
+
+        auto& pc = config_.configuration().playcover;
+        if (pc.address.empty()) {
+            auto& name = config_.configuration().controller.name;
+            auto controller_iter =
+                std::ranges::find(config_.interface_data().controller, name, std::mem_fn(&InterfaceData::Controller::name));
+
+            if (controller_iter != config_.interface_data().controller.end()) {
+                select_playcover(controller_iter->playcover);
+            }
+        }
+
+        if (pc.address.empty()) {
+            LogError << "PlayCover address is empty";
+            return false;
+        }
+    }
+
     return true;
 }
 
@@ -637,4 +1036,38 @@ void Interactor::mpause() const
     std::cout << "\nPress Enter to continue...";
     std::cin.sync();
     std::cin.get();
+}
+
+std::string Interactor::get_display_name(const std::string& name, const std::string& label) const
+{
+    if (label.empty()) {
+        return name;
+    }
+    // 翻译 label（如果以 $ 开头会被翻译）
+    return config_.translate(label);
+}
+
+std::string Interactor::read_text_content(const std::string& text) const
+{
+    if (text.empty()) {
+        return {};
+    }
+
+    // 先翻译文本（如果以 $ 开头）
+    std::string translated = config_.translate(text);
+
+    // 尝试作为文件路径读取
+    auto file_path = config_.resource_dir() / MAA_NS::path(translated);
+    constexpr size_t kMaxPath = 255;
+    if (MAA_NS::path_to_utf8_string(file_path).size() < kMaxPath && std::filesystem::exists(file_path)) {
+        std::ifstream ifs(file_path);
+        if (ifs.is_open()) {
+            std::stringstream buffer;
+            buffer << ifs.rdbuf();
+            return buffer.str();
+        }
+    }
+
+    // 不是文件，直接返回翻译后的文本
+    return translated;
 }

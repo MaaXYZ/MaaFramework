@@ -13,33 +13,51 @@ bool TemplateResMgr::lazy_load(const std::filesystem::path& path)
     return true;
 }
 
+bool TemplateResMgr::load_file(const std::filesystem::path& path)
+{
+    LogFunc << VAR(path);
+
+    if (!std::filesystem::exists(path) || !std::filesystem::is_regular_file(path)) {
+        LogError << "path not exists or not a file" << VAR(path);
+        return false;
+    }
+
+    cv::Mat image = MAA_NS::imread(path);
+    if (image.empty()) {
+        LogError << "Failed to load image:" << path;
+        return false;
+    }
+
+    auto name = path_to_utf8_string(path.filename());
+    image_cache_[name] = { std::move(image) };
+    return true;
+}
+
 void TemplateResMgr::clear()
 {
     LogFunc;
 
     roots_.clear();
-    image_cahce_.clear();
+    image_cache_.clear();
 }
 
-std::vector<cv::Mat> TemplateResMgr::images(const std::vector<std::string>& names)
+std::vector<cv::Mat> TemplateResMgr::get_image(const std::string& name)
 {
-    std::vector<cv::Mat> results;
-
-    for (const auto& name : names) {
-        if (auto iter = image_cahce_.find(name); iter != image_cahce_.end()) {
-            results.insert(results.end(), iter->second.begin(), iter->second.end());
-            continue;
-        }
-
-        auto imgs = load(name);
-        if (imgs.empty()) {
-            continue;
-        }
-        image_cahce_.emplace(name, imgs);
-        results.insert(results.end(), std::make_move_iterator(imgs.begin()), std::make_move_iterator(imgs.end()));
+    if (auto iter = image_cache_.find(name); iter != image_cache_.end()) {
+        return iter->second;
     }
 
-    return results;
+    auto imgs = load(name);
+    if (imgs.empty()) {
+        return {};
+    }
+    image_cache_.emplace(name, imgs);
+    return imgs;
+}
+
+void TemplateResMgr::set_image(const std::string& name, const cv::Mat& image)
+{
+    image_cache_[name] = { image };
 }
 
 std::vector<cv::Mat> TemplateResMgr::load(const std::string& name)

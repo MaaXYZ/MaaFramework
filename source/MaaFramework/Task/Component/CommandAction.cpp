@@ -21,7 +21,8 @@ TempFileHolder::~TempFileHolder()
             continue;
         }
         LogTrace << "remove" << VAR(p);
-        std::filesystem::remove(p);
+        std::error_code ec;
+        std::filesystem::remove(p, ec);
     }
 }
 
@@ -74,7 +75,7 @@ bool CommandAction::run(const MAA_RES_NS::Action::CommandParam& command, const R
     }
 
     LogInfo << VAR(exec) << VAR(args);
-    boost::process::child child(exec, args);
+    boost::process::child child(exec, args, boost::process::start_dir = exec.parent_path());
 
     if (!child.joinable()) {
         LogError << "child is not joinable";
@@ -132,7 +133,11 @@ std::string CommandAction::get_resource_dir(const Runtime& runtime)
         return {};
     }
 
-    return path_to_utf8_string(runtime.resource_paths.back());
+    const auto& p = runtime.resource_paths.back();
+    if (std::filesystem::is_regular_file(p)) {
+        return path_to_utf8_string(p.parent_path());
+    }
+    return path_to_utf8_string(p);
 }
 
 MAA_TASK_NS_END

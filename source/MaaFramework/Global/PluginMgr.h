@@ -9,9 +9,9 @@
 #include <boost/function.hpp>
 
 #include "Common/Conf.h"
-#include "MaaUtils/LibraryHolder.h"
 #include "MaaFramework/MaaDef.h"
 #include "MaaPlugin/MaaPluginAPI.h"
+#include "MaaUtils/LibraryHolder.h"
 #include "MaaUtils/SingletonHolder.hpp"
 
 MAA_GLOBAL_NS_BEGIN

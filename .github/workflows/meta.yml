@@ -2,17 +2,33 @@ name: meta
 
 on:
     workflow_call:
+        inputs:
+            reuse-from-run-id:
+                description: "Reuse meta outputs from a workflow run ID. This will cause other inputs to be ignored."
+                required: false
+                type: string
+            build-config:
+                description: "Build configuration to use. options: `Release` `RelWithDebInfo` `Debug`"
+                required: false
+                default: "RelWithDebInfo"
+                type: string
         outputs:
-            is_release:
-                value: ${{ jobs.set.outputs.is_release }}
-            is_pre_release:
-                value: ${{ jobs.set.outputs.is_pre_release }}
+            is-release:
+                value: ${{ jobs.set.outputs.is-release }}
+            is-prerelease:
+                value: ${{ jobs.set.outputs.is-prerelease }}
             tag:
                 value: ${{ jobs.set.outputs.tag }}
             version:
                 value: ${{ jobs.set.outputs.version }}
-            build_config:
-                value: ${{ jobs.set.outputs.build_config }}
+            build-config:
+                value: ${{ jobs.set.outputs.build-config }}
+            latest-plugin:
+                value: ${{ jobs.set.outputs.latest-plugin }}
+
+env:
+    META_OUTPUT: "meta-outputs.txt"
+
 jobs:
     set:
         runs-on: ubuntu-latest
@@ -20,8 +36,34 @@ jobs:
             - uses: actions/checkout@v4
               with:
                   fetch-depth: 0
-            - id: set
+            
+            - id: latest-plugin
+              uses: pozetroninc/github-action-get-latest-release@master
+              with:
+                  repository: MaaXYZ/MaaPluginDemo
+                  token: ${{ secrets.GITHUB_TOKEN }}
+                  excludes: "draft"
+
+            - name: set
+              id: set
+              env:
+                  GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
               run: |
+                  # 如果有 inputs.run_id 从 run_id 获取 meta 的输出
+                  run_id="${{ inputs.reuse-from-run-id }}"
+                  if [[ -n "$run_id" ]] && gh run download $run_id --repo ${{ github.repository }} --name meta; then
+                    if [[ -f "$META_OUTPUT" ]]; then
+                        echo "Reusing meta outputs from run ID: $run_id"
+                        cat "$META_OUTPUT" | tee -a "$GITHUB_OUTPUT"
+                        exit 0
+                      else
+                        echo "Expected meta output file not found at: $META_OUTPUT" >&2
+                        echo "Make sure the 'meta' artifact contains this file path." >&2
+                        exit 1
+                      fi
+                  fi
+
+                  # 构建 meta 信息
                   is_release=${{ startsWith(github.ref, 'refs/tags/v') }}
                   is_pre_release=${{ contains(github.ref, '-alpha.') || contains(github.ref, '-beta.') || contains(github.ref, '-rc.') }}
                   commit_hash=$(git rev-parse --short HEAD)
@@ -50,20 +92,27 @@ jobs:
                     version=${tag#v}+${commit_hash}.$(date +%Y%m%d)
                   fi
 
-                  build_config="Release"
-
-                  echo "tag=$tag
+                  echo "
+                  tag=$tag
                   version=$version
-                  is_release=$is_release
-                  is_pre_release=$is_pre_release
-                  build_config=$build_config" | tee -a "$GITHUB_OUTPUT"
+                  is-release=$is_release
+                  is-prerelease=$is_pre_release
+                  build-config=${{ inputs.build-config }}
+                  latest-plugin=${{ steps.latest-plugin.outputs.release }}
+                  " | tee -a "$GITHUB_OUTPUT" "$META_OUTPUT"
+
+            - uses: actions/upload-artifact@v4
+              with:
+                  name: meta
+                  path: ${{ env.META_OUTPUT }}
 
         outputs:
-            is_release: ${{ steps.set.outputs.is_release }}
-            is_pre_release: ${{ steps.set.outputs.is_pre_release }}
+            is-release: ${{ steps.set.outputs.is-release }}
+            is-prerelease: ${{ steps.set.outputs.is-prerelease }}
             tag: ${{ steps.set.outputs.tag }} # v<release version> | v<ci version>
             version: ${{ steps.set.outputs.version }} # <release version> | <ci version>+<build> e.g ↓
-            build_config: ${{ steps.set.outputs.build_config }} # Release | RelWithDebInfo | Debug
+            build-config: ${{ steps.set.outputs.build-config }} # Release | RelWithDebInfo | Debug
+            latest-plugin: ${{ steps.set.outputs.latest-plugin }}
 
 
             # 主版本号.次版本号.修订号[-(alpha|beta|rc).预发布号]

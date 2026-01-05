@@ -11,13 +11,16 @@
 #include "MaaUtils/NonCopyable.hpp"
 #include "PipelineTypes.h"
 
-
 MAA_RES_NS_BEGIN
 
 class PipelineResMgr : public NonCopyable
 {
 public:
+    inline static constexpr std::string_view kFilePrefix_Ignore = ".";
+
+public:
     bool load(const std::filesystem::path& path, const DefaultPipelineMgr& default_mgr);
+    bool load_file(const std::filesystem::path& path, const DefaultPipelineMgr& default_mgr);
     void clear();
 
     const std::vector<std::filesystem::path>& get_paths() const { return paths_; }

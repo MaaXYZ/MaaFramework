@@ -7,7 +7,6 @@
 #include "PipelineParser.h"
 #include "Vision/VisionTypes.h"
 
-
 MAA_RES_NS_BEGIN
 
 bool DefaultPipelineMgr::load(const std::filesystem::path& path)

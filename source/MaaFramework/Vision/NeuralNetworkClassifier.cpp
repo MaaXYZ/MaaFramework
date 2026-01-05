@@ -10,12 +10,12 @@ MAA_VISION_NS_BEGIN
 
 NeuralNetworkClassifier::NeuralNetworkClassifier(
     cv::Mat image,
-    cv::Rect roi,
+    std::vector<cv::Rect> rois,
     NeuralNetworkClassifierParam param,
     std::shared_ptr<Ort::Session> session,
     const Ort::MemoryInfo& memory_info,
     std::string name)
-    : VisionBase(std::move(image), std::move(roi), std::move(name))
+    : VisionBase(std::move(image), std::move(rois), std::move(name))
     , param_(std::move(param))
     , session_(std::move(session))
     , memory_info_(memory_info)
@@ -25,7 +25,7 @@ NeuralNetworkClassifier::NeuralNetworkClassifier(
 
 void NeuralNetworkClassifier::analyze()
 {
-    LogFunc << name_ << VAR(uid_);
+    LogFunc << name_;
 
     if (!session_) {
         LogError << "OrtSession not loaded";
@@ -33,13 +33,15 @@ void NeuralNetworkClassifier::analyze()
     }
     auto start_time = std::chrono::steady_clock::now();
 
-    auto res = classify();
-    add_results({ std::move(res) }, param_.expected);
+    while (next_roi()) {
+        auto res = classify();
+        add_results({ std::move(res) }, param_.expected);
+    }
 
     cherry_pick();
 
     auto cost = duration_since(start_time);
-    LogDebug << name_ << VAR(uid_) << VAR(all_results_) << VAR(filtered_results_) << VAR(best_result_) << VAR(cost) << VAR(param_.model)
+    LogDebug << name_ << VAR(all_results_) << VAR(filtered_results_) << VAR(best_result_) << VAR(cost) << VAR(param_.model)
              << VAR(param_.labels) << VAR(param_.expected);
 }
 
@@ -84,7 +86,7 @@ NeuralNetworkClassifier::Result NeuralNetworkClassifier::classify() const
     res.probs = softmax(res.raw);
     res.cls_index = std::max_element(res.probs.begin(), res.probs.end()) - res.probs.begin();
     res.score = res.probs[res.cls_index];
-    res.label = res.cls_index < param_.labels.size() ? param_.labels[res.cls_index] : std::format("Unkonwn_{}", res.cls_index);
+    res.label = res.cls_index < param_.labels.size() ? param_.labels[res.cls_index] : std::format("Unknown_{}", res.cls_index);
     res.box = roi_;
 
     if (debug_draw_) {
@@ -97,9 +99,15 @@ NeuralNetworkClassifier::Result NeuralNetworkClassifier::classify() const
 
 void NeuralNetworkClassifier::add_results(ResultsVec results, const std::vector<int>& expected)
 {
-    std::ranges::copy_if(results, std::back_inserter(filtered_results_), [&](const auto& res) {
-        return std::ranges::find(expected, res.cls_index) != expected.end();
-    });
+    if (expected.empty()) {
+        // expected 为空时，所有结果均可用
+        merge_vector_(filtered_results_, results);
+    }
+    else {
+        std::ranges::copy_if(results, std::back_inserter(filtered_results_), [&](const auto& res) {
+            return std::ranges::find(expected, res.cls_index) != expected.end();
+        });
+    }
 
     merge_vector_(all_results_, std::move(results));
 }
@@ -143,6 +151,9 @@ void NeuralNetworkClassifier::sort_(ResultsVec& results) const
         break;
     case ResultOrderBy::Random:
         sort_by_random_(results);
+        break;
+    case ResultOrderBy::Expected:
+        sort_by_expected_index_(results, param_.expected);
         break;
     default:
         LogError << "Not supported order by" << VAR(param_.order_by);

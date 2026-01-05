@@ -7,10 +7,15 @@
 
 MAA_VISION_NS_BEGIN
 
-TemplateMatcher::TemplateMatcher(cv::Mat image, cv::Rect roi, TemplateMatcherParam param, std::vector<cv::Mat> templates, std::string name)
-    : VisionBase(std::move(image), std::move(roi), std::move(name))
+TemplateMatcher::TemplateMatcher(
+    cv::Mat image,
+    std::vector<cv::Rect> rois,
+    TemplateMatcherParam param,
+    std::vector<cv::Mat> templates,
+    std::string name)
+    : VisionBase(std::move(image), std::move(rois), std::move(name))
     , param_(std::move(param))
-    , use_min_score_(param_.method == cv::TemplateMatchModes::TM_SQDIFF || param_.method == cv::TemplateMatchModes::TM_SQDIFF_NORMED)
+    , low_score_better_(param_.method == cv::TemplateMatchModes::TM_SQDIFF || param_.method == cv::TemplateMatchModes::TM_SQDIFF_NORMED)
     , templates_(std::move(templates))
 {
     analyze();
@@ -19,22 +24,25 @@ TemplateMatcher::TemplateMatcher(cv::Mat image, cv::Rect roi, TemplateMatcherPar
 void TemplateMatcher::analyze()
 {
     if (templates_.empty() || param_.thresholds.empty()) {
-        LogError << name_ << VAR(uid_) << "templates or threshold is empty" << VAR(param_.template_) << VAR(param_.thresholds);
+        LogError << name_ << "templates or threshold is empty" << VAR(param_.template_) << VAR(param_.thresholds);
         return;
     }
 
     auto start_time = std::chrono::steady_clock::now();
 
     for (size_t i = 0; i != templates_.size(); ++i) {
-        auto results = template_match(templates_.at(i));
-        double threshold = i < param_.thresholds.size() ? param_.thresholds.at(i) : param_.thresholds.back();
-        add_results(std::move(results), threshold);
+        while (next_roi()) {
+            auto results = template_match(templates_.at(i));
+            double threshold = i < param_.thresholds.size() ? param_.thresholds.at(i) : param_.thresholds.back();
+            add_results(std::move(results), threshold);
+        }
+        reset_roi();
     }
 
     cherry_pick();
 
     auto cost = duration_since(start_time);
-    LogDebug << name_ << VAR(uid_) << VAR(all_results_) << VAR(filtered_results_) << VAR(best_result_) << VAR(cost) << VAR(param_.template_)
+    LogDebug << name_ << VAR(all_results_) << VAR(filtered_results_) << VAR(best_result_) << VAR(cost) << VAR(param_.template_)
              << VAR(templates_.size()) << VAR(param_.thresholds) << VAR(param_.method) << VAR(param_.green_mask);
 }
 
@@ -43,15 +51,30 @@ TemplateMatcher::ResultsVec TemplateMatcher::template_match(const cv::Mat& templ
     cv::Mat image = image_with_roi();
 
     if (templ.cols > image.cols || templ.rows > image.rows) {
-        LogError << name_ << VAR(uid_) << "templ size is too large" << VAR(image) << VAR(templ);
+        LogError << name_ << "templ size is too large" << VAR(image) << VAR(templ);
         return {};
     }
 
+    bool invert_score = false;
+
+    int method = param_.method;
+    if (method >= TemplateMatcherParam::kMethodInvertBase) {
+        invert_score = true;
+        method -= TemplateMatcherParam::kMethodInvertBase;
+    }
+
     cv::Mat matched;
-    cv::matchTemplate(image, templ, matched, param_.method, create_mask(templ, param_.green_mask));
+    cv::matchTemplate(image, templ, matched, method, create_mask(templ, param_.green_mask));
+
+    if (invert_score) {
+        matched = 1.0f - matched;
+    }
 
     ResultsVec raw_results;
     Result closest_result;
+    if (low_score_better_) {
+        closest_result.score = std::numeric_limits<float>::max();
+    }
     for (int col = 0; col < matched.cols; ++col) {
         for (int row = 0; row < matched.rows; ++row) {
             float score = matched.at<float>(row, col);
@@ -80,7 +103,7 @@ TemplateMatcher::ResultsVec TemplateMatcher::template_match(const cv::Mat& templ
         raw_results.emplace_back(closest_result);
     }
 
-    auto nms_results = NMS(std::move(raw_results), 0.7, !use_min_score_);
+    auto nms_results = NMS(std::move(raw_results), 0.7, !low_score_better_);
 
     if (debug_draw_) {
         auto draw = draw_result(templ, nms_results);
@@ -142,7 +165,7 @@ void TemplateMatcher::sort_(ResultsVec& results) const
         sort_by_vertical_(results);
         break;
     case ResultOrderBy::Score:
-        sort_by_score_(results);
+        sort_by_score_(results, low_score_better_);
         break;
     case ResultOrderBy::Area:
         sort_by_area_(results);
@@ -158,7 +181,7 @@ void TemplateMatcher::sort_(ResultsVec& results) const
 
 bool TemplateMatcher::comp_score(double s1, double s2) const
 {
-    return use_min_score_ ? s1 > s2 : s1 < s2;
+    return low_score_better_ ? s1 > s2 : s1 < s2;
 }
 
 MAA_VISION_NS_END

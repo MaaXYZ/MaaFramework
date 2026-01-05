@@ -128,7 +128,63 @@ MaaResId MaaResourcePostBundle(MaaResource* res, const char* path)
         return MaaInvalidId;
     }
 
+    if (!path) {
+        LogError << "path is null";
+        return MaaInvalidId;
+    }
+
     return res->post_bundle(MAA_NS::path(path));
+}
+
+MaaResId MaaResourcePostOcrModel(MaaResource* res, const char* path)
+{
+    LogFunc << VAR_VOIDP(res) << VAR(path);
+
+    if (!res) {
+        LogError << "handle is null";
+        return MaaInvalidId;
+    }
+
+    if (!path) {
+        LogError << "path is null";
+        return MaaInvalidId;
+    }
+
+    return res->post_ocr_model(MAA_NS::path(path));
+}
+
+MaaResId MaaResourcePostPipeline(MaaResource* res, const char* path)
+{
+    LogFunc << VAR_VOIDP(res) << VAR(path);
+
+    if (!res) {
+        LogError << "handle is null";
+        return MaaInvalidId;
+    }
+
+    if (!path) {
+        LogError << "path is null";
+        return MaaInvalidId;
+    }
+
+    return res->post_pipeline(MAA_NS::path(path));
+}
+
+MaaResId MaaResourcePostImage(MaaResource* res, const char* path)
+{
+    LogFunc << VAR_VOIDP(res) << VAR(path);
+
+    if (!res) {
+        LogError << "handle is null";
+        return MaaInvalidId;
+    }
+
+    if (!path) {
+        LogError << "path is null";
+        return MaaInvalidId;
+    }
+
+    return res->post_image(MAA_NS::path(path));
 }
 
 MaaBool MaaResourceOverridePipeline(MaaResource* res, const char* pipeline_override)
@@ -139,6 +195,12 @@ MaaBool MaaResourceOverridePipeline(MaaResource* res, const char* pipeline_overr
         LogError << "handle is null";
         return false;
     }
+
+    if (!pipeline_override) {
+        LogError << "pipeline_override is null";
+        return false;
+    }
+
     auto ov_opt = json::parse(pipeline_override);
     if (!ov_opt) {
         LogError << "failed to parse" << VAR(pipeline_override);
@@ -161,6 +223,11 @@ MaaBool MaaResourceOverrideNext(MaaResource* res, const char* node_name, const M
         return false;
     }
 
+    if (!node_name) {
+        LogError << "node_name is null";
+        return false;
+    }
+
     std::vector<std::string> next;
 
     size_t size = next_list->size();
@@ -171,12 +238,36 @@ MaaBool MaaResourceOverrideNext(MaaResource* res, const char* node_name, const M
     return res->override_next(node_name, next);
 }
 
+MaaBool MaaResourceOverrideImage(MaaResource* res, const char* image_name, const MaaImageBuffer* image)
+{
+    LogFunc << VAR_VOIDP(res) << VAR(image_name);
+
+    if (!res || !image) {
+        LogError << "handle is null";
+        return false;
+    }
+
+    if (!image_name) {
+        LogError << "image_name is null";
+        return false;
+    }
+
+    const cv::Mat& mat = image->get();
+
+    return res->override_image(image_name, mat);
+}
+
 MaaBool MaaResourceGetNodeData(MaaResource* res, const char* node_name, MaaStringBuffer* buffer)
 {
     LogFunc << VAR_VOIDP(res) << VAR(node_name);
 
     if (!res || !buffer) {
         LogError << "handle is null";
+        return false;
+    }
+
+    if (!node_name) {
+        LogError << "node_name is null";
         return false;
     }
 
@@ -275,6 +366,42 @@ MaaBool MaaResourceGetNodeList(const MaaResource* res, /* out */ MaaStringListBu
     }
 
     auto list = res->get_node_list();
+
+    buffer->clear();
+
+    for (const auto& name : list) {
+        buffer->append(MaaNS::StringBuffer(name));
+    }
+
+    return true;
+}
+
+MaaBool MaaResourceGetCustomRecognitionList(const MaaResource* res, /* out */ MaaStringListBuffer* buffer)
+{
+    if (!res || !buffer) {
+        LogError << "handle is null";
+        return false;
+    }
+
+    auto list = res->get_custom_recognition_list();
+
+    buffer->clear();
+
+    for (const auto& name : list) {
+        buffer->append(MaaNS::StringBuffer(name));
+    }
+
+    return true;
+}
+
+MaaBool MaaResourceGetCustomActionList(const MaaResource* res, /* out */ MaaStringListBuffer* buffer)
+{
+    if (!res || !buffer) {
+        LogError << "handle is null";
+        return false;
+    }
+
+    auto list = res->get_custom_action_list();
 
     buffer->clear();
 

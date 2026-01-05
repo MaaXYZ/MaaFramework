@@ -7,7 +7,6 @@
 #include "MaaUtils/Logger.h"
 #include "Task/Context.h"
 
-
 MAA_TASK_NS_BEGIN
 
 CustomRecognition::CustomRecognition(
@@ -17,7 +16,7 @@ CustomRecognition::CustomRecognition(
     MAA_RES_NS::CustomRecognitionSession session,
     Context& context,
     std::string name)
-    : VisionBase(image, roi, name)
+    : VisionBase(image, { roi }, name)
     , param_(param)
     , session_(std::move(session))
     , context_(context)
@@ -36,6 +35,8 @@ void CustomRecognition::analyze()
     }
 
     auto start_time = std::chrono::steady_clock::now();
+
+    next_roi();
 
     /*in*/
     ImageBuffer image_buffer(image_);
@@ -71,8 +72,7 @@ void CustomRecognition::analyze()
     }
 
     auto cost = duration_since(start_time);
-    LogDebug << VAR(name_) << VAR(param_.name) << VAR(uid_) << VAR(all_results_) << VAR(filtered_results_) << VAR(best_result_) << VAR(cost)
-             << VAR(ret);
+    LogDebug << VAR(name_) << VAR(param_.name) << VAR(all_results_) << VAR(filtered_results_) << VAR(best_result_) << VAR(cost) << VAR(ret);
 }
 
 MAA_TASK_NS_END

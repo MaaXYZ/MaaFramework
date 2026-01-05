@@ -127,14 +127,18 @@ MaaController* create_win32_controller()
         std::string class_name = MaaToolkitDesktopWindowGetClassName(window_handle);
         std::string window_name = MaaToolkitDesktopWindowGetWindowName(window_handle);
 
-        if (window_name == "原神") {
+        if (window_name.find("二重螺旋") != std::string::npos) {
             hwnd = MaaToolkitDesktopWindowGetHandle(window_handle);
             break;
         }
     }
 
     // create controller by hwnd
-    auto controller_handle = MaaWin32ControllerCreate(hwnd, MaaWin32ScreencapMethod_DXGI_DesktopDup, MaaWin32InputMethod_Seize);
+    auto controller_handle = MaaWin32ControllerCreate(
+        hwnd,
+        MaaWin32ScreencapMethod_DXGI_DesktopDup_Window,
+        MaaWin32InputMethod_SendMessage,
+        MaaWin32InputMethod_SendMessage);
 
     destroy();
     return controller_handle;

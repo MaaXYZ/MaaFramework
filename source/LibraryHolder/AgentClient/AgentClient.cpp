@@ -7,7 +7,6 @@
 #include "MaaUtils/Logger.h"
 #include "MaaUtils/Runtime.h"
 
-
 MAA_NS_BEGIN
 
 std::shared_ptr<MaaAgentClient> AgentClientLibraryHolder::create_agent_client()

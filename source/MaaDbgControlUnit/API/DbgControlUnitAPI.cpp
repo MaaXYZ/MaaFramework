@@ -5,7 +5,6 @@
 #include "MaaUtils/Platform.h"
 #include "ReplayRecording/ReplayRecordingMgr.h"
 
-
 const char* MaaDbgControlUnitGetVersion()
 {
 #pragma message("MaaDbgControlUnit MAA_VERSION: " MAA_VERSION)
@@ -16,6 +15,11 @@ const char* MaaDbgControlUnitGetVersion()
 MaaControlUnitHandle MaaDbgControlUnitCreate(MaaDbgControllerType type, const char* read_path)
 {
     LogFunc << VAR(type) << VAR(read_path);
+
+    if (!read_path) {
+        LogError << "read_path is null";
+        return nullptr;
+    }
 
     auto read_stdpath = MAA_NS::path(read_path);
 

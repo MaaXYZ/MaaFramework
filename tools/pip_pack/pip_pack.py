@@ -114,11 +114,7 @@ def pack(pack_dir: Path, info_dir: Path):
 
         bin_path = Path("assets") / f"MAA-{platform}" / "bin"
 
-        pack_bin_path.mkdir(exist_ok=True)
-        for fp in bin_path.iterdir():
-            if fp.name.startswith(("MaaPiCli", "MaaNode")):
-                continue
-            shutil.copyfile(fp, pack_bin_path / fp.name)
+        shutil.copytree(bin_path, pack_bin_path, ignore=shutil.ignore_patterns("MaaPiCli*", "MaaNode*"), dirs_exist_ok=True)
 
         print("done")
 

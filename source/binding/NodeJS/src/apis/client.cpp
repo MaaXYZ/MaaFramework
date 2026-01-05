@@ -39,6 +39,27 @@ void ClientImpl::bind_resource(maajs::NativeObject<ResourceImpl> resource)
     }
 }
 
+void ClientImpl::register_resource_sink(maajs::NativeObject<ResourceImpl> resource)
+{
+    if (!MaaAgentClientRegisterResourceSink(client, resource->resource)) {
+        throw maajs::MaaError { "Client register_resource_sink failed" };
+    }
+}
+
+void ClientImpl::register_controller_sink(maajs::NativeObject<ControllerImpl> controller)
+{
+    if (!MaaAgentClientRegisterControllerSink(client, controller->controller)) {
+        throw maajs::MaaError { "Client register_controller_sink failed" };
+    }
+}
+
+void ClientImpl::register_tasker_sink(maajs::NativeObject<TaskerImpl> tasker)
+{
+    if (!MaaAgentClientRegisterTaskerSink(client, tasker->tasker)) {
+        throw maajs::MaaError { "Client register_tasker_sink failed" };
+    }
+}
+
 maajs::PromiseType ClientImpl::connect()
 {
     auto work = new maajs::AsyncWork<bool>(env, [client = client]() { return MaaAgentClientConnect(client); });
@@ -70,6 +91,26 @@ void ClientImpl::set_timeout(uint64_t ms)
     }
 }
 
+std::optional<std::vector<std::string>> ClientImpl::get_custom_recognition_list()
+{
+    StringListBuffer buffer;
+    if (!MaaAgentClientGetCustomRecognitionList(client, buffer)) {
+        return std::nullopt;
+    }
+
+    return buffer.as_vector([](StringBufferRefer buf) { return buf.str(); });
+}
+
+std::optional<std::vector<std::string>> ClientImpl::get_custom_action_list()
+{
+    StringListBuffer buffer;
+    if (!MaaAgentClientGetCustomActionList(client, buffer)) {
+        return std::nullopt;
+    }
+
+    return buffer.as_vector([](StringBufferRefer buf) { return buf.str(); });
+}
+
 std::string ClientImpl::to_string()
 {
     return std::format(" handle = {:#018x} ", reinterpret_cast<uintptr_t>(client));
@@ -91,11 +132,16 @@ void ClientImpl::init_proto(maajs::ObjectType proto, maajs::FunctionType)
     MAA_BIND_FUNC(proto, "destroy", ClientImpl::destroy);
     MAA_BIND_GETTER(proto, "identifier", ClientImpl::get_identifier);
     MAA_BIND_FUNC(proto, "bind_resource", ClientImpl::bind_resource);
+    MAA_BIND_FUNC(proto, "register_resource_sink", ClientImpl::register_resource_sink);
+    MAA_BIND_FUNC(proto, "register_controller_sink", ClientImpl::register_controller_sink);
+    MAA_BIND_FUNC(proto, "register_tasker_sink", ClientImpl::register_tasker_sink);
     MAA_BIND_FUNC(proto, "connect", ClientImpl::connect);
     MAA_BIND_FUNC(proto, "disconnect", ClientImpl::disconnect);
     MAA_BIND_GETTER(proto, "connected", ClientImpl::get_connected);
     MAA_BIND_GETTER(proto, "alive", ClientImpl::get_alive);
     MAA_BIND_SETTER(proto, "timeout", ClientImpl::set_timeout);
+    MAA_BIND_GETTER(proto, "custom_recognition_list", ClientImpl::get_custom_recognition_list);
+    MAA_BIND_GETTER(proto, "custom_action_list", ClientImpl::get_custom_action_list);
 }
 
 maajs::ValueType load_client(maajs::EnvType env)

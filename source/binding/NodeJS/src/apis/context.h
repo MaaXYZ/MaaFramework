@@ -33,11 +33,16 @@ struct ContextImpl : public maajs::NativeClassBase
         maajs::OptionalParam<maajs::ValueType> pipeline_override);
     void override_pipeline(maajs::ValueType pipeline);
     void override_next(std::string node_name, std::vector<std::string> next_list);
+    void override_image(std::string image_name, maajs::ArrayBufferType image);
     std::optional<std::string> get_node_data(std::string node_name);
     std::optional<maajs::ValueType> get_node_data_parsed(std::string node_name);
     MaaTaskId get_task_id();
     maajs::ValueType get_tasker();
     maajs::ValueType clone();
+    void set_anchor(std::string anchor_name, std::string node_name);
+    std::optional<std::string> get_anchor(std::string anchor_name);
+    int32_t get_hit_count(std::string node_name);
+    void clear_hit_count(std::string node_name);
 
     std::string to_string() override;
 

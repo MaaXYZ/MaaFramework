@@ -208,6 +208,24 @@ maajs::ValueType ResourceImpl::post_bundle(maajs::ValueType self, maajs::EnvType
     return maajs::CallCtorHelper(ExtContext::get(env)->jobCtor, self, id);
 }
 
+maajs::ValueType ResourceImpl::post_ocr_model(maajs::ValueType self, maajs::EnvType, std::string path)
+{
+    auto id = MaaResourcePostOcrModel(resource, path.c_str());
+    return maajs::CallCtorHelper(ExtContext::get(env)->jobCtor, self, id);
+}
+
+maajs::ValueType ResourceImpl::post_pipeline(maajs::ValueType self, maajs::EnvType, std::string path)
+{
+    auto id = MaaResourcePostPipeline(resource, path.c_str());
+    return maajs::CallCtorHelper(ExtContext::get(env)->jobCtor, self, id);
+}
+
+maajs::ValueType ResourceImpl::post_image(maajs::ValueType self, maajs::EnvType, std::string path)
+{
+    auto id = MaaResourcePostImage(resource, path.c_str());
+    return maajs::CallCtorHelper(ExtContext::get(env)->jobCtor, self, id);
+}
+
 void ResourceImpl::override_pipeline(maajs::ValueType pipeline)
 {
     auto str = maajs::JsonStringify(env, pipeline);
@@ -227,6 +245,15 @@ void ResourceImpl::override_next(std::string node_name, std::vector<std::string>
     });
     if (!MaaResourceOverrideNext(resource, node_name.c_str(), buffer)) {
         throw maajs::MaaError { "Resource override_next failed" };
+    }
+}
+
+void ResourceImpl::override_image(std::string image_name, maajs::ArrayBufferType image)
+{
+    ImageBuffer buffer;
+    buffer.set(image);
+    if (!MaaResourceOverrideImage(resource, image_name.c_str(), buffer)) {
+        throw maajs::MaaError { "Resource override_image failed" };
     }
 }
 
@@ -283,6 +310,26 @@ std::optional<std::vector<std::string>> ResourceImpl::get_node_list()
 {
     StringListBuffer buffer;
     if (!MaaResourceGetNodeList(resource, buffer)) {
+        return std::nullopt;
+    }
+
+    return buffer.as_vector([](StringBufferRefer buf) { return buf.str(); });
+}
+
+std::optional<std::vector<std::string>> ResourceImpl::get_custom_recognition_list()
+{
+    StringListBuffer buffer;
+    if (!MaaResourceGetCustomRecognitionList(resource, buffer)) {
+        return std::nullopt;
+    }
+
+    return buffer.as_vector([](StringBufferRefer buf) { return buf.str(); });
+}
+
+std::optional<std::vector<std::string>> ResourceImpl::get_custom_action_list()
+{
+    StringListBuffer buffer;
+    if (!MaaResourceGetCustomActionList(resource, buffer)) {
         return std::nullopt;
     }
 
@@ -349,10 +396,14 @@ void ResourceImpl::init_proto(maajs::ObjectType proto, maajs::FunctionType)
     MAA_BIND_FUNC(proto, "unregister_custom_action", ResourceImpl::unregister_custom_action);
     MAA_BIND_FUNC(proto, "clear_custom_action", ResourceImpl::clear_custom_action);
     MAA_BIND_FUNC(proto, "post_bundle", ResourceImpl::post_bundle);
+    MAA_BIND_FUNC(proto, "post_ocr_model", ResourceImpl::post_ocr_model);
+    MAA_BIND_FUNC(proto, "post_pipeline", ResourceImpl::post_pipeline);
+    MAA_BIND_FUNC(proto, "post_image", ResourceImpl::post_image);
     MAA_BIND_SETTER(proto, "inference_device", ResourceImpl::set_inference_device);
     MAA_BIND_SETTER(proto, "inference_execution_provider", ResourceImpl::set_inference_execution_provider);
     MAA_BIND_FUNC(proto, "override_pipeline", ResourceImpl::override_pipeline);
     MAA_BIND_FUNC(proto, "override_next", ResourceImpl::override_next);
+    MAA_BIND_FUNC(proto, "override_image", ResourceImpl::override_image);
     MAA_BIND_FUNC(proto, "get_node_data", ResourceImpl::get_node_data);
     MAA_BIND_FUNC(proto, "get_node_data_parsed", ResourceImpl::get_node_data_parsed);
     MAA_BIND_FUNC(proto, "clear", ResourceImpl::clear);
@@ -361,6 +412,8 @@ void ResourceImpl::init_proto(maajs::ObjectType proto, maajs::FunctionType)
     MAA_BIND_GETTER(proto, "loaded", ResourceImpl::get_loaded);
     MAA_BIND_GETTER(proto, "hash", ResourceImpl::get_hash);
     MAA_BIND_GETTER(proto, "node_list", ResourceImpl::get_node_list);
+    MAA_BIND_GETTER(proto, "custom_recognition_list", ResourceImpl::get_custom_recognition_list);
+    MAA_BIND_GETTER(proto, "custom_action_list", ResourceImpl::get_custom_action_list);
 }
 
 maajs::ValueType load_resource(maajs::EnvType env)

@@ -21,15 +21,14 @@ public:
     virtual ~AdbDeviceWin32Finder() override = default;
 
 protected:
-    virtual std::vector<std::string> find_adb_serials(const std::filesystem::path& adb_path, const Emulator& emulator) const override;
-    virtual void request_device_config(const Emulator& emulator, AdbDevice& device) const override;
+    virtual const EmulatorConstDataMap& get_emulator_const_data() const override;
+    virtual std::vector<AdbDevice> find_by_emulator_tool(const Emulator& emulator) const override;
 
 private:
-    AdbDeviceWin32Finder();
+    AdbDeviceWin32Finder() = default;
 
-    std::vector<std::string> find_mumu_serials(const std::filesystem::path& adb_path, const Emulator& emulator) const;
-    static int get_mumu_index(const std::string& adb_serial);
-    static int get_ld_index(const std::string& adb_serial);
+    std::vector<AdbDevice> find_mumu_devices(const Emulator& emulator) const;
+    std::vector<AdbDevice> find_ld_devices(const Emulator& emulator) const;
 };
 
 MAA_TOOLKIT_NS_END

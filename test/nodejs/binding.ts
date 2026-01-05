@@ -19,17 +19,13 @@ const myReco: maa.CustomRecognitionCallback = async self => {
     }
 
     await self.context.run_task(entry, ppover)
-    await self.context.run_action(
+    const action_detail = await self.context.run_action(
         entry,
-        {
-            x: 114,
-            y: 514,
-            width: 191,
-            height: 810
-        },
+        [114, 514, 191, 810],
         'RunAction Detail',
         ppover
     )
+    console.log('action_detail:', action_detail)
     const reco_detail = await self.context.run_recognition(entry, self.image, ppover)
     console.log('reco_detail:', reco_detail)
 
@@ -49,7 +45,7 @@ const myReco: maa.CustomRecognitionCallback = async self => {
 
     analyzed = true
 
-    return [{ x: 11, y: 4, width: 5, height: 14 }, 'Hello World!']
+    return [[11, 4, 5, 14], 'Hello World!']
 }
 
 const myAct: maa.CustomActionCallback = async self => {

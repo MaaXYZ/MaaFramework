@@ -24,7 +24,12 @@ class TemplateMatcher
     , public RecoResultAPI<TemplateMatcherResult>
 {
 public:
-    TemplateMatcher(cv::Mat image, cv::Rect roi, TemplateMatcherParam param, std::vector<cv::Mat> templates, std::string name = "");
+    TemplateMatcher(
+        cv::Mat image,
+        std::vector<cv::Rect> rois,
+        TemplateMatcherParam param,
+        std::vector<cv::Mat> templates,
+        std::string name = "");
 
 private:
     void analyze();
@@ -42,7 +47,7 @@ private:
 
 private:
     const TemplateMatcherParam param_;
-    const bool use_min_score_ = false;
+    const bool low_score_better_ = false;
     const std::vector<cv::Mat> templates_;
 };
 

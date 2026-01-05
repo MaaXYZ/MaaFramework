@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Project>
+  <PropertyGroup>
+    <MaaFrameworkPlatform Condition="'$(MaaFrameworkPlatform)' == ''">$(RuntimeIdentifier)</MaaFrameworkPlatform>
+    <MaaFrameworkPlatform Condition="'$(MaaFrameworkPlatform)' == ''">$(RuntimeIdentifiers)</MaaFrameworkPlatform>
+  </PropertyGroup>
+  <ItemGroup>
+    <_MaaFrameworkPlatforms Condition="'@(_MaaFrameworkPlatforms)' == '' And '$(MaaFrameworkPlatform)' != ''" Include="$(MaaFrameworkPlatform)" />
+    <_MaaFrameworkPlatforms Condition="'$(MaaFrameworkPlatform)' == ''" Include="__RID__" />
+  </ItemGroup>
+  <ItemGroup Condition="@(_MaaFrameworkPlatforms->AnyHaveMetadataValue('Identity', '__RID__'))">
+    <_MaaFrameworkPlugins KeepDuplicates="false" Include="$(MSBuildThisFileDirectory)..\bin\plugins\**">
+      <DestinationFolder>plugins\__RID__\</DestinationFolder>
+    </_MaaFrameworkPlugins>
+    <_MaaFrameworkRuntime KeepDuplicates="false" Include="$(MSBuildThisFileDirectory)..\bin\**"
+                                                 Exclude="@(_MaaFrameworkPlugins)">
+      <DestinationFolder>runtimes\__RID__\native\</DestinationFolder>
+    </_MaaFrameworkRuntime>
+  </ItemGroup>
+
+  <Target Name="CopyMaaFrameworkRuntimeFilesToOutput" AfterTargets="ResolveAssemblyReferences">
+    <ItemGroup>
+      <Content Include="@(_MaaFrameworkPlugins)">
+        <NuGetPackageId>__PID__</NuGetPackageId>
+        <Link>%(_MaaFrameworkPlugins.DestinationFolder)%(RecursiveDir)%(FileName)%(Extension)</Link>
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        <PublishState>Included</PublishState>
+        <Visible>false</Visible>
+        <Pack>false</Pack>
+      </Content>
+      <Content Include="@(_MaaFrameworkRuntime)">
+        <NuGetPackageId>__PID__</NuGetPackageId>
+        <Link>%(_MaaFrameworkRuntime.DestinationFolder)%(RecursiveDir)%(FileName)%(Extension)</Link>
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        <PublishState>Included</PublishState>
+        <Visible>false</Visible>
+        <Pack>false</Pack>
+      </Content>
+    </ItemGroup>
+  </Target>
+</Project>

@@ -8,7 +8,6 @@
 #include "PipelineChecker.h"
 #include "PipelineParser.h"
 
-
 MAA_RES_NS_BEGIN
 
 bool PipelineResMgr::load(const std::filesystem::path& path, const DefaultPipelineMgr& default_mgr)
@@ -17,6 +16,26 @@ bool PipelineResMgr::load(const std::filesystem::path& path, const DefaultPipeli
 
     if (!load_all_json(path, default_mgr)) {
         LogError << "load_all_json failed" << VAR(path);
+        return false;
+    }
+
+    if (!PipelineChecker::check_all_validity(pipeline_data_map_)) {
+        LogError << "check_all_validity failed" << VAR(path);
+        return false;
+    }
+
+    paths_.emplace_back(path);
+
+    return true;
+}
+
+bool PipelineResMgr::load_file(const std::filesystem::path& path, const DefaultPipelineMgr& default_mgr)
+{
+    LogFunc << VAR(path);
+
+    std::set<std::string> existing_keys;
+    if (!open_and_parse_file(path, existing_keys, default_mgr)) {
+        LogError << "open_and_parse_file failed" << VAR(path);
         return false;
     }
 
@@ -59,11 +78,9 @@ bool PipelineResMgr::load_all_json(const std::filesystem::path& path, const Defa
             continue;
         }
         auto relative = std::filesystem::relative(entry_path, path);
-        for (const auto& part : relative) {
-            if (path_to_utf8_string(part).starts_with('.')) {
-                LogWarn << "entry starts with . skip" << VAR(entry_path) << VAR(part);
-                continue;
-            }
+        if (std::ranges::any_of(relative, [](const auto& part) { return path_to_utf8_string(part).starts_with(kFilePrefix_Ignore); })) {
+            LogWarn << "entry path contains component starting with '.', skip" << VAR(entry_path);
+            continue;
         }
 
         auto ext = path_to_utf8_string(entry_path.extension());
@@ -155,7 +172,7 @@ bool PipelineResMgr::parse_and_override_once(
             LogError << "key is empty" << VAR(key);
             return false;
         }
-        if (key.starts_with('$')) {
+        if (key.starts_with(PipelineData::kNodePrefix_Ignore)) {
             LogInfo << "key starts with '$', skip" << VAR(key);
             continue;
         }

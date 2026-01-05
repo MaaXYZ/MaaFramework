@@ -5,7 +5,6 @@
 #include "MaaUtils/IOStream/SockIOStream.h"
 #include "ScreencapHelper.h"
 
-
 #include "Common/Conf.h"
 
 MAA_CTRL_UNIT_NS_BEGIN

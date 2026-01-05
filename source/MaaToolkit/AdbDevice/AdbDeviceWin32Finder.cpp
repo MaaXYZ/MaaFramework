@@ -11,9 +11,9 @@ MAA_TOOLKIT_NS_BEGIN
 
 using namespace path_literals;
 
-AdbDeviceWin32Finder::AdbDeviceWin32Finder()
+const AdbDeviceFinder::EmulatorConstDataMap& AdbDeviceWin32Finder::get_emulator_const_data() const
 {
-    std::unordered_map<std::string, EmulatorConstantData> emulators = {
+    static const EmulatorConstDataMap kConstData {
         { "BlueStacks",
           { .keyword = "HD-Player",
             .adb_candidate_paths = { "HD-Adb.exe"_path, "Engine\\ProgramFiles\\HD-Adb.exe"_path },
@@ -56,95 +56,36 @@ AdbDeviceWin32Finder::AdbDeviceWin32Finder()
             .adb_common_serials = { "emulator-5554", "127.0.0.1:5555" } } },
     };
 
-    set_emulator_const_data(std::move(emulators));
+    return kConstData;
 }
 
-std::vector<std::string> AdbDeviceWin32Finder::find_adb_serials(const std::filesystem::path& adb_path, const Emulator& emulator) const
+std::vector<AdbDevice> AdbDeviceWin32Finder::find_by_emulator_tool(const Emulator& emulator) const
 {
-    if (emulator.name == "LDPlayer") {
-        return find_serials_by_adb_command(adb_path);
-    }
-    else if (emulator.name == "MuMuPlayer12" || emulator.name == "MuMuPlayer12 v5") {
-        return find_mumu_serials(adb_path, emulator);
-    }
-    else {
-        return AdbDeviceFinder::find_adb_serials(adb_path, emulator);
-    }
-}
+    LogFunc << VAR(emulator.name);
 
-void AdbDeviceWin32Finder::request_device_config(const Emulator& emulator, AdbDevice& device) const
-{
-    if (emulator.name == "MuMuPlayer12") {
-        // C:\Program Files\Netease\MuMuPlayer-12.0\shell\MuMuPlayer.exe
-        auto path_opt = get_process_path(emulator.process.pid);
-        if (!path_opt) {
-            return;
-        }
-        auto dir = path_opt->parent_path().parent_path();
-
-        auto& mumu_cfg = device.config["extras"]["mumu"];
-
-        mumu_cfg["enable"] = true;
-        mumu_cfg["path"] = path_to_utf8_string(dir);
-        mumu_cfg["index"] = get_mumu_index(device.serial);
-
-        device.screencap_methods = MaaAdbScreencapMethod_EmulatorExtras;
-        device.input_methods = MaaAdbInputMethod_Default | MaaAdbInputMethod_EmulatorExtras;
-
-        LogInfo << "MuMuPlayer12 cfg" << VAR(device.serial) << device.config;
-    }
-    else if (emulator.name == "MuMuPlayer12 v5") {
-        // C:\Program Files\Netease\MuMuPlayer-12.0\nx_device\12.0\shell\MuMuNxDevice.exe
-        auto path_opt = get_process_path(emulator.process.pid);
-        if (!path_opt) {
-            return;
-        }
-        auto dir = path_opt->parent_path().parent_path().parent_path().parent_path();
-
-        auto& mumu_cfg = device.config["extras"]["mumu"];
-
-        mumu_cfg["enable"] = true;
-        mumu_cfg["path"] = path_to_utf8_string(dir);
-        mumu_cfg["index"] = get_mumu_index(device.serial);
-
-        device.screencap_methods = MaaAdbScreencapMethod_EmulatorExtras;
-        device.input_methods = MaaAdbInputMethod_Default | MaaAdbInputMethod_EmulatorExtras;
-
-        LogInfo << "MuMuPlayer12 cfg" << VAR(device.serial) << device.config;
+    if (emulator.name == "MuMuPlayer12" || emulator.name == "MuMuPlayer12 v5") {
+        return find_mumu_devices(emulator);
     }
     else if (emulator.name == "LDPlayer") {
-        // E:\Program Files\leidian\LDPlayer9\dnplayer.exe
-        auto path_opt = get_process_path(emulator.process.pid);
-        if (!path_opt) {
-            return;
-        }
-        auto dir = path_opt->parent_path();
-
-        auto& ld_cfg = device.config["extras"]["ld"];
-
-        ld_cfg["enable"] = true;
-        ld_cfg["path"] = path_to_utf8_string(dir);
-        ld_cfg["index"] = get_ld_index(device.serial);
-        ld_cfg["pid"] = emulator.process.pid;
-
-        device.screencap_methods = MaaAdbScreencapMethod_EmulatorExtras;
-        device.input_methods = MaaAdbInputMethod_Default;
-
-        LogInfo << "LDPlayer cfg" << VAR(device.serial) << device.config;
+        return find_ld_devices(emulator);
     }
-    else {
-        AdbDeviceFinder::request_device_config(emulator, device);
-    }
+
+    return {};
 }
 
-std::vector<std::string> AdbDeviceWin32Finder::find_mumu_serials(const std::filesystem::path& adb_path, const Emulator& emulator) const
+std::vector<AdbDevice> AdbDeviceWin32Finder::find_mumu_devices(const Emulator& emulator) const
 {
-    std::ignore = emulator;
+    LogFunc << VAR(emulator.name);
 
-    std::filesystem::path mumu_mgr_path = adb_path.parent_path() / "MuMuManager.exe";
+    if (emulator.adb_path.empty() || !std::filesystem::exists(emulator.adb_path)) {
+        LogWarn << "adb_path is empty or does not exist" << VAR(emulator.adb_path);
+        return {};
+    }
+
+    std::filesystem::path mumu_mgr_path = emulator.adb_path.parent_path() / "MuMuManager.exe";
     if (!std::filesystem::exists(mumu_mgr_path)) {
         LogWarn << "MuMuManager not found" << VAR(mumu_mgr_path);
-        return find_serials_by_adb_command(adb_path);
+        return {};
     }
 
     static const std::vector<std::string> mumu_mgr_args = { "info", "--vmindex", "all" };
@@ -158,66 +99,164 @@ std::vector<std::string> AdbDeviceWin32Finder::find_mumu_serials(const std::file
         return {};
     }
 
-    auto get_serial = [](const json::value& obj) -> std::optional<std::string> {
-        auto ip_opt = obj.find<std::string>("adb_host_ip");
-        auto port_opt = obj.find<int>("adb_port");
-        if (!ip_opt || !port_opt) {
-            return std::nullopt;
-        }
-        return std::format("{}:{}", *ip_opt, *port_opt);
+    struct MumuInfo
+    {
+        std::string index;
+        std::string name;
+        std::string adb_host_ip;
+        int adb_port;
+
+        MEO_JSONIZATION(index, name, adb_host_ip, adb_port);
     };
 
-    std::vector<std::string> serials;
-    auto unique_serial_opt = get_serial(*jopt);
-    if (unique_serial_opt) {
-        serials.emplace_back(*std::move(unique_serial_opt));
-        return serials;
+    json::value& jinfo = *jopt;
+    std::vector<MumuInfo> info;
+
+    if (jinfo.is<MumuInfo>()) {
+        info = { jinfo.as<MumuInfo>() };
+    }
+    else if (jinfo.is_object()) {
+        for (const auto& i : jinfo.as_object() | std::views::values) {
+            if (i.is<MumuInfo>()) {
+                info.emplace_back(i.as<MumuInfo>());
+            }
+            else {
+                LogWarn << "Invalid MuMuManager info format" << VAR(i);
+                continue;
+            }
+        }
+    }
+    else {
+        LogError << "Invalid MuMuManager info format" << VAR(output);
+        return {};
     }
 
-    for (const auto& [key, obj] : jopt->as_object()) {
-        auto serial_opt = get_serial(obj);
-        if (!serial_opt) {
+    std::filesystem::path dir;
+    if (emulator.name == "MuMuPlayer12 v5") {
+        // MuMuPlayer12 v5: C:\Program Files\Netease\MuMuPlayer-12.0\nx_device\12.0\shell\MuMuNxDevice.exe
+        dir = emulator.process_path.parent_path().parent_path().parent_path().parent_path();
+    }
+    else {
+        // MuMuPlayer12: C:\Program Files\Netease\MuMuPlayer-12.0\shell\MuMuPlayer.exe
+        dir = emulator.process_path.parent_path().parent_path();
+    }
+
+    std::vector<AdbDevice> result;
+    for (const MumuInfo& i : info) {
+        AdbDevice device;
+        device.name = std::format("{}-{}", i.name, emulator.name);
+        device.adb_path = emulator.adb_path;
+        device.serial = std::format("{}:{}", i.adb_host_ip, i.adb_port);
+
+        device.screencap_methods = MaaAdbScreencapMethod_EmulatorExtras;
+        device.input_methods = MaaAdbInputMethod_Default | MaaAdbInputMethod_EmulatorExtras;
+
+        int index = 0;
+        if (std::ranges::all_of(i.index, [](unsigned char c) { return std::isdigit(c); })) {
+            index = std::stoi(i.index);
+        }
+        else {
+            LogError << "Invalid MuMu index" << VAR(i.index);
             continue;
         }
-        serials.emplace_back(*std::move(serial_opt));
+
+        auto& mumu_cfg = device.config["extras"]["mumu"];
+        mumu_cfg["enable"] = true;
+        mumu_cfg["path"] = path_to_utf8_string(dir);
+        mumu_cfg["index"] = index;
+
+        LogInfo << "MuMu device" << VAR(device);
+
+        result.emplace_back(std::move(device));
     }
-    return serials;
+
+    return result;
 }
 
-int AdbDeviceWin32Finder::get_mumu_index(const std::string& adb_serial)
+std::vector<AdbDevice> AdbDeviceWin32Finder::find_ld_devices(const Emulator& emulator) const
 {
-    auto sp = string_split(adb_serial, ':');
-    if (sp.size() != 2) {
-        return 0;
+    LogFunc << VAR(emulator.name);
+
+    if (emulator.adb_path.empty() || !std::filesystem::exists(emulator.adb_path)) {
+        LogWarn << "adb_path is empty or does not exist" << VAR(emulator.adb_path);
+        return {};
     }
 
-    auto& str_port = sp.at(1);
-    if (str_port.empty() || !std::ranges::all_of(str_port, [](auto c) { return std::isdigit(c); })) {
-        return 0;
+    // E:\Program Files\leidian\LDPlayer9\dnplayer.exe
+    auto dir = emulator.process_path.parent_path();
+
+    std::filesystem::path ldconsole_path = dir / "ldconsole.exe";
+    if (!std::filesystem::exists(ldconsole_path)) {
+        LogWarn << "ldconsole.exe not found" << VAR(ldconsole_path);
+        return {};
     }
 
-    int port = std::stoi(str_port);
-    int index = (port - 16384) / 32;
+    static const std::vector<std::string> ldconsole_args = { "list2" };
+    ChildPipeIOStream ios(ldconsole_path, ldconsole_args);
+    std::string raw = ios.read();
+    std::string output = gbk_to_utf8(raw);
+    LogDebug << VAR(ldconsole_path) << VAR(ldconsole_args) << VAR(raw) << VAR(output);
 
-    return index;
-}
+    // list2 output format:
+    // 索引,标题,顶层窗口句柄,绑定窗口句柄,是否进入android,进程PID,VBox进程PID
+    // 0,雷电模拟器,2032678,1704928,1,7456,3500
+    // 1,雷电模拟器-1,852422,590830,1,3772,3180
 
-int AdbDeviceWin32Finder::get_ld_index(const std::string& adb_serial)
-{
-    auto sp = string_split(adb_serial, '-');
-    if (sp.size() != 2) {
-        return 0;
+    std::vector<AdbDevice> result;
+    auto lines = string_split(output, '\n');
+    for (auto line : lines) {
+        string_trim_(line);
+        string_replace_all_(line, "\r", "");
+        if (line.empty()) {
+            continue;
+        }
+
+        auto fields = string_split(line, ',');
+        if (fields.size() < 7) {
+            LogWarn << "Invalid list2 output line" << VAR(line);
+            continue;
+        }
+
+        int index = 0;
+        int vbox_pid = 0;
+        if (std::ranges::all_of(fields[0], [](unsigned char c) { return std::isdigit(c); })
+            && std::ranges::all_of(fields[6], [](unsigned char c) { return std::isdigit(c); })) {
+            index = std::stoi(fields[0]);
+            vbox_pid = std::stoi(fields[6]);
+        }
+        else {
+            LogWarn << "Failed to parse list2 fields" << VAR(line);
+            continue;
+        }
+
+        if (vbox_pid <= 0) {
+            LogWarn << "Invalid VBox PID" << VAR(line);
+            continue;
+        }
+
+        // LDPlayer adb serial: emulator-5554, emulator-5556, ...
+        std::string serial = std::format("emulator-{}", 5554 + index * 2);
+
+        AdbDevice device;
+        device.name = std::format("{}-{}", fields[1], emulator.name);
+        device.adb_path = emulator.adb_path;
+        device.serial = serial;
+
+        device.screencap_methods = MaaAdbScreencapMethod_EmulatorExtras;
+        device.input_methods = MaaAdbInputMethod_Default;
+
+        auto& ld_cfg = device.config["extras"]["ld"];
+        ld_cfg["enable"] = true;
+        ld_cfg["path"] = path_to_utf8_string(dir);
+        ld_cfg["index"] = index;
+        ld_cfg["pid"] = vbox_pid;
+
+        LogInfo << "LDPlayer device" << VAR(device);
+
+        result.emplace_back(std::move(device));
     }
 
-    auto& str_port = sp.at(1);
-    if (str_port.empty() || !std::ranges::all_of(str_port, [](auto c) { return std::isdigit(c); })) {
-        return 0;
-    }
-
-    int port = std::stoi(str_port);
-    int index = (port - 5554) / 2;
-
-    return index;
+    return result;
 }
 
 MAA_TOOLKIT_NS_END

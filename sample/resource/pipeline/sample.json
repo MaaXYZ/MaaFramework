@@ -2,18 +2,14 @@
     "StartUpAndClickButton": {
         "next": [
             "Click_Button",
-            "Flag_NoButton"
-        ],
-        "interrupt": [
-            "Sub_StartUp"
+            "Flag_NoButton",
+            "[JumpBack]Sub_StartUp"
         ]
     },
     "Sub_StartUp": {
         "next": [
-            "Flag_InApp"
-        ],
-        "interrupt": [
-            "Sub_StartUp"
+            "Flag_InApp",
+            "[JumpBack]Sub_StartUp"
         ]
     },
     "Sub_StartApp": {

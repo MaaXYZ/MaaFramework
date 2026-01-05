@@ -22,11 +22,16 @@ declare global {
                 pipeline_override: Record<string, unknown> | Record<string, unknown>[],
             ): void
             override_next(node_name: string, next: string[]): void
+            override_image(image_name: string, image: ImageData | Buffer): void
             get_node_data(node_name: string): string | null
             get_node_data_parsed(node_name: string): DumpTask | null
             get task_id(): TaskId
             get tasker(): Tasker
             clone(): Context
+            set_anchor(anchor_name: string, node_name: string): void
+            get_anchor(anchor_name: string): string | null
+            get_hit_count(node_name: string): number
+            clear_hit_count(node_name: string): void
         }
     }
 }

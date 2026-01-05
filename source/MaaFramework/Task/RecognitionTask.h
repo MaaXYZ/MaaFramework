@@ -9,16 +9,18 @@ MAA_TASK_NS_BEGIN
 class RecognitionTask : public TaskBase
 {
 public:
-    using TaskBase::TaskBase;
+    RecognitionTask(const cv::Mat& image, std::string entry, Tasker* tasker, std::shared_ptr<Context> context = nullptr);
 
     virtual ~RecognitionTask() override = default;
 
+public:
     virtual bool run() override;
 
-    virtual void post_stop() override {}
-
 public:
-    MaaRecoId run_with_param(const cv::Mat& image);
+    MaaRecoId run_impl();
+
+private:
+    cv::Mat image_;
 };
 
 MAA_TASK_NS_END

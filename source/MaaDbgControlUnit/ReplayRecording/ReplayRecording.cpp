@@ -43,6 +43,11 @@ bool ReplayRecording::request_uuid(std::string& uuid)
     return true;
 }
 
+MaaControllerFeature ReplayRecording::get_features() const
+{
+    return MaaControllerFeature_None;
+}
+
 bool ReplayRecording::start_app(const std::string& intent)
 {
     LogInfo << VAR(intent);
@@ -183,11 +188,6 @@ bool ReplayRecording::swipe(int x1, int y1, int x2, int y2, int duration)
     sleep(record.cost);
     ++record_index_;
     return record.success;
-}
-
-bool ReplayRecording::is_touch_availabled() const
-{
-    return false;
 }
 
 bool ReplayRecording::touch_down(int contact, int x, int y, int pressure)
@@ -332,11 +332,6 @@ bool ReplayRecording::input_text(const std::string& text)
     return record.success;
 }
 
-bool ReplayRecording::is_key_down_up_availabled() const
-{
-    return false;
-}
-
 bool ReplayRecording::key_down(int key)
 {
     LogInfo << VAR(key);
@@ -385,6 +380,26 @@ bool ReplayRecording::key_up(int key)
 
     if (param.keycode != key) {
         LogError << "record key_up is not match" << VAR(param.keycode) << VAR(key) << VAR(record.raw_data);
+        return false;
+    }
+
+    sleep(record.cost);
+    ++record_index_;
+    return record.success;
+}
+
+bool ReplayRecording::scroll(int dx, int dy)
+{
+    LogInfo << VAR(dx) << VAR(dy);
+
+    if (record_index_ >= recording_.records.size()) {
+        LogError << "record index out of range" << VAR(record_index_) << VAR(recording_.records.size());
+        return false;
+    }
+
+    const Record& record = recording_.records.at(record_index_);
+    if (record.action.type != Record::Action::Type::scroll) {
+        LogError << "record type is not scroll" << VAR(record.action.type) << VAR(record.raw_data);
         return false;
     }
 

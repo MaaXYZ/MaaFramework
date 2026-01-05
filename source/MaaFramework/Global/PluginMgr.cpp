@@ -70,23 +70,37 @@ bool PluginMgr::load_and_parse(const std::filesystem::path& library_path)
     }
 
     auto& library = *opt;
+    std::filesystem::path filepath = library.location();
+    LogInfo << VAR(library_path) << VAR(filepath);
+
+    constexpr const char* kFuncGetPluginVersion = "GetPluginVersion";
+    if (library.has(kFuncGetPluginVersion)) {
+        auto func = library.get<decltype(GetPluginVersion)>(kFuncGetPluginVersion);
+        std::string_view plugin_version = func();
+        LogInfo << VAR(plugin_version) << VAR(filepath);
+    }
+    else {
+        LogWarn << "No func, ignore" << kFuncGetPluginVersion << VAR(filepath);
+    }
 
     constexpr uint32_t kApiVersion = 1;
     constexpr const char* kFuncGetApiVersion = "GetApiVersion";
     if (library.has(kFuncGetApiVersion)) {
         auto func = library.get<decltype(GetApiVersion)>(kFuncGetApiVersion);
         if (!func) {
-            LogError << "Failed to get function" << VAR(library_path) << VAR(kFuncGetApiVersion);
+            LogError << "Failed to get function" << VAR(kFuncGetApiVersion) << VAR(filepath);
             return false;
         }
-        uint32_t version = func();
-        if (version != kApiVersion) {
-            LogError << "Unsupported API version" << VAR(library_path) << VAR(version) << VAR(kApiVersion);
+        uint32_t api_version = func();
+        LogInfo << VAR(api_version) << VAR(filepath);
+
+        if (api_version != kApiVersion) {
+            LogError << "Unsupported API version" << VAR(api_version) << VAR(kApiVersion) << VAR(filepath);
             return false;
         }
     }
     else {
-        LogError << "No API version function found" << VAR(library_path);
+        LogError << "No API version function found" << VAR(filepath);
         return false;
     }
 
@@ -95,27 +109,43 @@ bool PluginMgr::load_and_parse(const std::filesystem::path& library_path)
     constexpr const char* kFuncOnResourceEvent = "OnResourceEvent";
     if (library.has(kFuncOnResourceEvent)) {
         plugin.on_res_event = library.get<decltype(OnResourceEvent)>(kFuncOnResourceEvent);
+        LogInfo << "Registered" << kFuncOnResourceEvent << VAR_VOIDP(plugin.on_res_event) << VAR(filepath);
+    }
+    else {
+        LogWarn << "No func, ignore" << kFuncOnResourceEvent << VAR(filepath);
     }
 
     constexpr const char* kFuncOnControllerEvent = "OnControllerEvent";
     if (library.has(kFuncOnControllerEvent)) {
         plugin.on_ctrl_event = library.get<decltype(OnControllerEvent)>(kFuncOnControllerEvent);
+        LogInfo << "Registered" << kFuncOnControllerEvent << VAR_VOIDP(plugin.on_ctrl_event) << VAR(filepath);
+    }
+    else {
+        LogWarn << "No func, ignore" << kFuncOnControllerEvent << VAR(filepath);
     }
 
     constexpr const char* kFuncOnTaskerEvent = "OnTaskerEvent";
     if (library.has(kFuncOnTaskerEvent)) {
         plugin.on_tasker_event = library.get<decltype(OnTaskerEvent)>(kFuncOnTaskerEvent);
+        LogInfo << "Registered" << kFuncOnTaskerEvent << VAR_VOIDP(plugin.on_tasker_event) << VAR(filepath);
+    }
+    else {
+        LogWarn << "No func, ignore" << kFuncOnTaskerEvent << VAR(filepath);
     }
 
     constexpr const char* kFuncOnContextEvent = "OnContextEvent";
     if (library.has(kFuncOnContextEvent)) {
         plugin.on_ctrl_event = library.get<decltype(OnContextEvent)>(kFuncOnContextEvent);
+        LogInfo << "Registered" << kFuncOnContextEvent << VAR_VOIDP(plugin.on_ctrl_event) << VAR(filepath);
+    }
+    else {
+        LogWarn << "No func, ignore" << kFuncOnContextEvent << VAR(filepath);
     }
 
-    std::filesystem::path filepath = library.location();
     plugin.library = std::move(library);
 
     plugins_.insert_or_assign(path_to_utf8_string(filepath), std::move(plugin));
+    LogInfo << "Plugin registerd" << VAR(filepath);
     return true;
 }
 

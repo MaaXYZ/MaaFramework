@@ -17,7 +17,10 @@ using JTarget = std::variant<bool, std::string, JRect>;
 
 struct JDirectHit
 {
-    json::value to_json() const { return json::object(); }
+    JTarget roi = JRect {};
+    JRect roi_offset {};
+
+    MEO_TOJSON(roi, roi_offset);
 };
 
 struct JTemplateMatch
@@ -116,8 +119,34 @@ struct JCustomRecognition
     MEO_TOJSON(roi, roi_offset, custom_recognition, custom_recognition_param);
 };
 
-using JRecognitionParam = std::
-    variant<JDirectHit, JTemplateMatch, JFeatureMatch, JColorMatch, JOCR, JNeuralNetworkClassify, JNeuralNetworkDetect, JCustomRecognition>;
+struct JSubRecognition;
+
+struct JAnd
+{
+    std::vector<json::value> all_of;
+    int box_index = 0;
+
+    MEO_TOJSON(all_of, box_index);
+};
+
+struct JOr
+{
+    std::vector<json::value> any_of;
+
+    MEO_TOJSON(any_of);
+};
+
+using JRecognitionParam = std::variant<
+    JDirectHit,
+    JTemplateMatch,
+    JFeatureMatch,
+    JColorMatch,
+    JOCR,
+    JNeuralNetworkClassify,
+    JNeuralNetworkDetect,
+    JAnd,
+    JOr,
+    JCustomRecognition>;
 
 struct JRecognition
 {
@@ -136,8 +165,9 @@ struct JClick
 {
     JTarget target;
     JRect target_offset {};
+    uint32_t contact = 0;
 
-    MEO_TOJSON(target, target_offset);
+    MEO_TOJSON(target, target_offset, contact);
 };
 
 struct JLongPress
@@ -145,7 +175,8 @@ struct JLongPress
     JTarget target;
     JRect target_offset {};
     uint32_t duration = 0;
-    MEO_TOJSON(target, target_offset, duration);
+    uint32_t contact = 0;
+    MEO_TOJSON(target, target_offset, duration, contact);
 };
 
 struct JSwipe
@@ -158,7 +189,8 @@ struct JSwipe
     std::vector<uint32_t> end_hold;
     std::vector<uint32_t> duration;
     bool only_hover = false;
-    MEO_TOJSON(starting, begin, begin_offset, end, end_offset, end_hold, duration, only_hover);
+    uint32_t contact = 0;
+    MEO_TOJSON(starting, begin, begin_offset, end, end_offset, end_hold, duration, only_hover, contact);
 };
 
 struct JMultiSwipe
@@ -166,6 +198,23 @@ struct JMultiSwipe
     std::vector<JSwipe> swipes;
 
     MEO_TOJSON(swipes);
+};
+
+struct JTouch
+{
+    uint32_t contact = 0;
+    JTarget target;
+    JRect target_offset {};
+    int32_t pressure = 0;
+
+    MEO_TOJSON(contact, target, target_offset, pressure);
+};
+
+struct JTouchUp
+{
+    uint32_t contact = 0;
+
+    MEO_TOJSON(contact);
 };
 
 struct JClickKey
@@ -181,6 +230,13 @@ struct JLongPressKey
     uint32_t duration = 0;
 
     MEO_TOJSON(key, duration);
+};
+
+struct JKey
+{
+    int key = 0;
+
+    MEO_TOJSON(key);
 };
 
 struct JInputText
@@ -209,6 +265,14 @@ struct JStopTask
     json::value to_json() const { return json::object(); }
 };
 
+struct JScroll
+{
+    int dx = 0;
+    int dy = 0;
+
+    MEO_TOJSON(dx, dy);
+};
+
 struct JCommand
 {
     std::string exec;
@@ -218,6 +282,14 @@ struct JCommand
     MEO_TOJSON(exec, args, detach);
 };
 
+struct JShell
+{
+    std::string cmd;
+    int64_t timeout = 20000;
+
+    MEO_TOJSON(cmd, timeout);
+};
+
 struct JCustomAction
 {
     JTarget target;
@@ -225,7 +297,7 @@ struct JCustomAction
     std::string custom_action;
     json::value custom_action_param;
 
-    MEO_TOJSON(custom_action, custom_action_param);
+    MEO_TOJSON(target, target_offset, custom_action, custom_action_param);
 };
 
 using JActionParam = std::variant<
@@ -234,12 +306,18 @@ using JActionParam = std::variant<
     JLongPress,
     JSwipe,
     JMultiSwipe,
+    JTouch,
+    JTouchUp,
     JClickKey,
     JLongPressKey,
+    JKey,
     JInputText,
     JStartApp,
     JStopApp,
+    JScroll,
+    JStopTask,
     JCommand,
+    JShell,
     JCustomAction>;
 
 struct JAction
@@ -267,36 +345,44 @@ struct JPipelineData
 {
     JRecognition recognition;
     JAction action;
-    std::vector<std::string> next;
-    std::vector<std::string> interrupt;
-    bool is_sub = false;
+    std::vector<NodeAttr> next;
     int64_t rate_limit = 0;
     int64_t timeout = 0;
-    std::vector<std::string> on_error;
+    std::vector<NodeAttr> on_error;
+    std::vector<std::string> anchor;
     bool inverse = false;
     bool enabled = false;
     int64_t pre_delay = 0;
     int64_t post_delay = 0;
     JWaitFreezes pre_wait_freezes;
     JWaitFreezes post_wait_freezes;
+    uint32_t repeat = 0;
+    int64_t repeat_delay = 0;
+    JWaitFreezes repeat_wait_freezes;
+    uint32_t max_hit = 0;
     json::value focus;
+    json::object attach;
 
     MEO_TOJSON(
         recognition,
         action,
         next,
-        interrupt,
-        is_sub,
         rate_limit,
         timeout,
         on_error,
+        anchor,
         inverse,
         enabled,
         pre_delay,
         post_delay,
         pre_wait_freezes,
         post_wait_freezes,
-        focus);
+        repeat,
+        repeat_delay,
+        repeat_wait_freezes,
+        max_hit,
+        focus,
+        attach);
 };
 } // namespace PipelineV2
 

@@ -4,6 +4,7 @@
 #include <optional>
 #include <string>
 #include <tuple>
+#include <vector>
 
 #include <MaaAgentClient/MaaAgentClientAPI.h>
 #include <MaaFramework/MaaAPI.h>
@@ -23,11 +24,16 @@ struct ClientImpl : public maajs::NativeClassBase
     void destroy();
     std::string get_identifier();
     void bind_resource(maajs::NativeObject<ResourceImpl> resource);
+    void register_resource_sink(maajs::NativeObject<ResourceImpl> resource);
+    void register_controller_sink(maajs::NativeObject<ControllerImpl> controller);
+    void register_tasker_sink(maajs::NativeObject<TaskerImpl>);
     maajs::PromiseType connect();
     void disconnect();
     bool get_connected();
     bool get_alive();
     void set_timeout(uint64_t ms);
+    std::optional<std::vector<std::string>> get_custom_recognition_list();
+    std::optional<std::vector<std::string>> get_custom_action_list();
 
     std::string to_string() override;
 

@@ -11,7 +11,6 @@
 #include "MaaUtils/NonCopyable.hpp"
 #include "PipelineTypes.h"
 
-
 MAA_RES_NS_BEGIN
 
 class DefaultPipelineMgr : public NonCopyable

@@ -30,6 +30,45 @@ MaaResId RemoteResource::post_bundle(const std::filesystem::path& path)
     return resp_opt->res_id;
 }
 
+MaaResId RemoteResource::post_ocr_model(const std::filesystem::path& path)
+{
+    ResourcePostOcrModelReverseRequest req {
+        .resource_id = resource_id_,
+        .path = path_to_utf8_string(path),
+    };
+    auto resp_opt = server_.send_and_recv<ResourcePostOcrModelReverseResponse>(req);
+    if (!resp_opt) {
+        return MaaInvalidId;
+    }
+    return resp_opt->res_id;
+}
+
+MaaResId RemoteResource::post_pipeline(const std::filesystem::path& path)
+{
+    ResourcePostPipelineReverseRequest req {
+        .resource_id = resource_id_,
+        .path = path_to_utf8_string(path),
+    };
+    auto resp_opt = server_.send_and_recv<ResourcePostPipelineReverseResponse>(req);
+    if (!resp_opt) {
+        return MaaInvalidId;
+    }
+    return resp_opt->res_id;
+}
+
+MaaResId RemoteResource::post_image(const std::filesystem::path& path)
+{
+    ResourcePostImageReverseRequest req {
+        .resource_id = resource_id_,
+        .path = path_to_utf8_string(path),
+    };
+    auto resp_opt = server_.send_and_recv<ResourcePostImageReverseResponse>(req);
+    if (!resp_opt) {
+        return MaaInvalidId;
+    }
+    return resp_opt->res_id;
+}
+
 MaaStatus RemoteResource::status(MaaResId res_id) const
 {
     ResourceStatusReverseRequest req {
@@ -123,6 +162,21 @@ bool RemoteResource::override_next(const std::string& node_name, const std::vect
     return resp_opt->ret;
 }
 
+bool RemoteResource::override_image(const std::string& image_name, const cv::Mat& image)
+{
+    ResourceOverrideImageReverseRequest req {
+        .resource_id = resource_id_,
+        .image_name = image_name,
+        .image = server_.send_image(image),
+    };
+
+    auto resp_opt = server_.send_and_recv<ResourceOverrideImageReverseResponse>(req);
+    if (!resp_opt) {
+        return false;
+    }
+    return resp_opt->ret;
+}
+
 std::optional<json::object> RemoteResource::get_node_data(const std::string& node_name) const
 {
     ResourceGetNodeDataReverseRequest req {
@@ -190,6 +244,30 @@ std::vector<std::string> RemoteResource::get_node_list() const
         return {};
     }
     return resp_opt->node_list;
+}
+
+std::vector<std::string> RemoteResource::get_custom_recognition_list() const
+{
+    ResourceGetCustomRecognitionListReverseRequest req {
+        .resource_id = resource_id_,
+    };
+    auto resp_opt = server_.send_and_recv<ResourceGetCustomRecognitionListReverseResponse>(req);
+    if (!resp_opt) {
+        return {};
+    }
+    return resp_opt->custom_recognition_list;
+}
+
+std::vector<std::string> RemoteResource::get_custom_action_list() const
+{
+    ResourceGetCustomActionListReverseRequest req {
+        .resource_id = resource_id_,
+    };
+    auto resp_opt = server_.send_and_recv<ResourceGetCustomActionListReverseResponse>(req);
+    if (!resp_opt) {
+        return {};
+    }
+    return resp_opt->custom_action_list;
 }
 
 MaaSinkId RemoteResource::add_sink(MaaEventCallback callback, void* trans_arg)

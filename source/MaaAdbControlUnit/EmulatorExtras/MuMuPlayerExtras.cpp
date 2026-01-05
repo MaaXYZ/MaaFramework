@@ -92,6 +92,11 @@ std::optional<cv::Mat> MuMuPlayerExtras::screencap()
     return dst;
 }
 
+MaaControllerFeature MuMuPlayerExtras::get_features() const
+{
+    return MaaControllerFeature_UseMouseDownAndUpInsteadOfClick | MaaControllerFeature_UseKeyboardDownAndUpInsteadOfClick;
+}
+
 bool MuMuPlayerExtras::click(int x, int y)
 {
     LogError << "deprecated" << VAR(x) << VAR(y);
@@ -185,10 +190,9 @@ bool MuMuPlayerExtras::input_text(const std::string& text)
         return false;
     }
 
-    int display_id = get_display_id();
-    LogInfo << VAR(text) << VAR(display_id);
+    LogInfo << VAR(text) << VAR(text.size());
 
-    int ret = input_text_func_(mumu_handle_, display_id, text.c_str());
+    int ret = input_text_func_(mumu_handle_, static_cast<int>(text.size()), text.c_str());
 
     if (ret != 0) {
         LogError << "Failed to input_text" << VAR(ret);
@@ -356,6 +360,12 @@ bool MuMuPlayerExtras::key_up(int key)
     }
 
     return true;
+}
+
+bool MuMuPlayerExtras::scroll(int dx, int dy)
+{
+    LogError << "Scroll is not supported on MuMuPlayerExtras" << VAR(dx) << VAR(dy);
+    return false;
 }
 
 void MuMuPlayerExtras::on_app_started(const std::string& intent)

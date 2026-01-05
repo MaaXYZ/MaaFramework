@@ -15,12 +15,9 @@ struct DesktopWindow
     void* hwnd = nullptr;
     std::wstring class_name;
     std::wstring window_name;
-};
 
-inline std::ostream& operator<<(std::ostream& os, const DesktopWindow& window)
-{
-    return os << VAR_VOIDP_RAW(window.hwnd) << VAR_RAW(from_u16(window.class_name)) << VAR_RAW(from_u16(window.window_name));
-}
+    MEO_TOJSON(hwnd, class_name, window_name);
+};
 
 class DesktopWindowBuffer : public MaaToolkitDesktopWindow
 {

@@ -16,6 +16,7 @@ MaaCtrlId = MaaId
 MaaResId = MaaId
 MaaTaskId = MaaId
 MaaRecoId = MaaId
+MaaActId = MaaId
 MaaNodeId = MaaId
 MaaSinkId = MaaId
 MaaInvalidId = MaaId(0)
@@ -89,6 +90,23 @@ class MaaGlobalOptionEnum(IntEnum):
     #
     # value: bool, eg: true; val_size: sizeof(bool)
     DebugMode = 6
+
+    # Whether to save screenshot on error
+    #
+    # value: bool, eg: true; val_size: sizeof(bool)
+    SaveOnError = 7
+
+    # Image quality for draw images
+    #
+    # value: int, eg: 85; val_size: sizeof(int)
+    # default value is 85, range: [0, 100]
+    DrawQuality = 8
+
+    # Recognition image cache limit
+    #
+    # value: size_t, eg: 4096; val_size: sizeof(size_t)
+    # default value is 4096
+    RecoImageCacheLimit = 9
 
 
 class MaaCtrlOptionEnum(IntEnum):
@@ -166,8 +184,25 @@ MaaAdbScreencapMethod = ctypes.c_uint64
 
 class MaaAdbScreencapMethodEnum(IntEnum):
     """
-    Use bitwise OR to set the method you need
-    MaaFramework will test their speed and use the fastest one.
+    Adb screencap method flags.
+
+    Use bitwise OR to set the methods you need.
+    MaaFramework will test all provided methods and use the fastest available one.
+
+    Default: All methods except RawByNetcat, MinicapDirect, MinicapStream
+
+    Note: MinicapDirect and MinicapStream use lossy JPEG encoding, which may
+    significantly reduce template matching accuracy. Not recommended.
+
+    | Method                | Speed      | Compatibility | Encoding | Notes                             |
+    |-----------------------|------------|---------------|----------|-----------------------------------|
+    | EncodeToFileAndPull   | Slow       | High          | Lossless |                                   |
+    | Encode                | Slow       | High          | Lossless |                                   |
+    | RawWithGzip           | Medium     | High          | Lossless |                                   |
+    | RawByNetcat           | Fast       | Low           | Lossless |                                   |
+    | MinicapDirect         | Fast       | Low           | Lossy    |                                   |
+    | MinicapStream         | Very Fast  | Low           | Lossy    |                                   |
+    | EmulatorExtras        | Very Fast  | Low           | Lossless | Emulators only: MuMu 12, LDPlayer 9 |
     """
 
     Null = 0
@@ -189,9 +224,21 @@ MaaAdbInputMethod = ctypes.c_uint64
 
 class MaaAdbInputMethodEnum(IntEnum):
     """
-    Use bitwise OR to set the method you need
-    MaaFramework will select the available ones according to priority.
-    The priority is: EmulatorExtras > Maatouch > MinitouchAndAdbKey > AdbShell
+    Adb input method flags.
+
+    Use bitwise OR to set the methods you need.
+    MaaFramework will select the first available method according to priority.
+
+    Priority (high to low): EmulatorExtras > Maatouch > MinitouchAndAdbKey > AdbShell
+
+    Default: All methods except EmulatorExtras
+
+    | Method               | Speed | Compatibility | Notes                                 |
+    |----------------------|-------|---------------|---------------------------------------|
+    | AdbShell             | Slow  | High          |                                       |
+    | MinitouchAndAdbKey   | Fast  | Medium        | Key press still uses AdbShell         |
+    | Maatouch             | Fast  | Medium        |                                       |
+    | EmulatorExtras       | Fast  | Low           | Emulators only: MuMu 12               |
     """
 
     Null = 0
@@ -208,28 +255,92 @@ class MaaAdbInputMethodEnum(IntEnum):
 MaaWin32ScreencapMethod = ctypes.c_uint64
 
 
-# No bitwise OR, just set it
 class MaaWin32ScreencapMethodEnum(IntEnum):
+    """
+    Win32 screencap method.
+
+    No bitwise OR, select ONE method only.
+
+    No default value. Client should choose one as default.
+
+    Different applications use different rendering methods, there is no universal solution.
+
+    | Method                  | Speed     | Compatibility | Require Admin | Background Support | Notes                            |
+    |-------------------------|-----------|---------------|---------------|--------------------|----------------------------------|
+    | GDI                     | Fast      | Medium        | No            | No                 |                                  |
+    | FramePool               | Very Fast | Medium        | No            | Yes                | Requires Windows 10 1903+        |
+    | DXGI_DesktopDup         | Very Fast | Low           | No            | No                 | Desktop duplication (full screen)|
+    | DXGI_DesktopDup_Window  | Very Fast | Low           | No            | No                 | Desktop duplication then crop    |
+    | PrintWindow             | Medium    | Medium        | No            | Yes                |                                  |
+    | ScreenDC                | Fast      | High          | No            | No                 |                                  |
+
+    Note: When a window is minimized on Windows, all screencap methods will fail.
+    Avoid minimizing the target window.
+    """
+
     Null = 0
 
     GDI = 1
     FramePool = 1 << 1
     DXGI_DesktopDup = 1 << 2
+    DXGI_DesktopDup_Window = 1 << 3
+    PrintWindow = 1 << 4
+    ScreenDC = 1 << 5
 
 
 MaaWin32InputMethod = ctypes.c_uint64
 
 
-# No bitwise OR, just set it
 class MaaWin32InputMethodEnum(IntEnum):
+    """
+    Win32 input method.
+
+    No bitwise OR, select ONE method only.
+
+    No default value. Client should choose one as default.
+
+    Different applications process input differently, there is no universal solution.
+
+    | Method                       | Compatibility | Require Admin | Seize Mouse | Background Support | Notes                                                       |
+    |------------------------------|---------------|---------------|--------------|--------------------|-------------------------------------------------------------|
+    | Seize                        | High          | No            | Yes          | No                 |                                                             |
+    | SendMessage                  | Medium        | Maybe         | No           | Yes                |                                                             |
+    | PostMessage                  | Medium        | Maybe         | No           | Yes                |                                                             |
+    | LegacyEvent                  | Low           | No            | Yes          | No                 |                                                             |
+    | PostThreadMessage            | Low           | Maybe         | No           | Yes                |                                                             |
+    | SendMessageWithCursorPos     | Medium        | Maybe         | Briefly      | Yes                | Designed for apps that check real cursor position           |
+    | PostMessageWithCursorPos     | Medium        | Maybe         | Briefly      | Yes                | Designed for apps that check real cursor position           |
+
+    Note:
+    - Admin rights mainly depend on the target application's privilege level.
+      If the target runs as admin, MaaFramework should also run as admin for compatibility.
+    - "WithCursorPos" methods briefly move the cursor to target position, send message,
+      then restore cursor position. This "briefly" seizes the mouse but won't block user operations.
+    """
+
     Null = 0
 
     Seize = 1
     SendMessage = 1 << 1
+    PostMessage = 1 << 2
+    LegacyEvent = 1 << 3
+    PostThreadMessage = 1 << 4
+    SendMessageWithCursorPos = 1 << 5
+    PostMessageWithCursorPos = 1 << 6
 
 
 # No bitwise OR, just set it
 MaaDbgControllerType = ctypes.c_uint64
+
+MaaControllerFeature = ctypes.c_uint64
+
+
+# Use bitwise OR to set the features you need
+class MaaControllerFeatureEnum(IntEnum):
+    Null = 0
+
+    UseMouseDownAndUpInsteadOfClick = 1
+    UseKeyboardDownAndUpInsteadOfClick = 1 << 1
 
 
 class MaaDbgControllerTypeEnum(IntEnum):
@@ -289,6 +400,10 @@ class MaaCustomControllerCallbacks(ctypes.Structure):
         MaaBool,
         ctypes.c_void_p,
         MaaStringBufferHandle,
+    )
+    GetFeaturesFunc = FUNCTYPE(
+        MaaControllerFeature,
+        ctypes.c_void_p,
     )
     StartAppFunc = FUNCTYPE(
         MaaBool,
@@ -361,9 +476,16 @@ class MaaCustomControllerCallbacks(ctypes.Structure):
         ctypes.c_int32,
         ctypes.c_void_p,
     )
+    ScrollFunc = FUNCTYPE(
+        MaaBool,
+        ctypes.c_int32,
+        ctypes.c_int32,
+        ctypes.c_void_p,
+    )
     _fields_ = [
         ("connect", ConnectFunc),
         ("request_uuid", RequestUuidFunc),
+        ("get_features", GetFeaturesFunc),
         ("start_app", StartAppFunc),
         ("stop_app", StopAppFunc),
         ("screencap", ScreencapFunc),
@@ -376,6 +498,7 @@ class MaaCustomControllerCallbacks(ctypes.Structure):
         ("input_text", InputTextFunc),
         ("key_down", KeyDownFunc),
         ("key_up", KeyUpFunc),
+        ("scroll", ScrollFunc),
     ]
 
 
@@ -409,6 +532,41 @@ class Status:
     @property
     def running(self) -> bool:
         return self._status == MaaStatusEnum.running
+
+
+@dataclass
+class Point:
+    x: int = 0
+    y: int = 0
+
+    def __add__(
+        self,
+        other: Union[
+            "Point",
+            Tuple[int, int],
+            List[int],
+        ],
+    ):
+        if (
+            isinstance(other, Point)
+            or isinstance(other, tuple)
+            or (isinstance(other, list) and len(other) == 2)
+        ):
+            x1, y1 = self
+            x2, y2 = other
+            return Point(
+                x1 + x2,
+                y1 + y2,
+            )
+
+        raise TypeError(f"Cannot add {type(other).__name__} to Point")
+
+    def __iter__(self):
+        yield self.x
+        yield self.y
+
+    def __getitem__(self, key):
+        return list(self)[key]
 
 
 @dataclass
@@ -449,12 +607,15 @@ class Rect:
         yield self.h
 
     def __getitem__(self, key):
-        return self.roi[key]
+        return list(self)[key]
 
-    @property
-    def roi(self):
-        return list(self)
 
+PointType = Union[
+    Point,
+    List[int],
+    numpy.ndarray,
+    Tuple[int, int],
+]
 
 RectType = Union[
     Rect,
@@ -472,6 +633,29 @@ class AlgorithmEnum(StrEnum):
     OCR = "OCR"
     NeuralNetworkClassify = "NeuralNetworkClassify"
     NeuralNetworkDetect = "NeuralNetworkDetect"
+    Custom = "Custom"
+
+
+class ActionEnum(StrEnum):
+    DoNothing = "DoNothing"
+    Click = "Click"
+    LongPress = "LongPress"
+    Swipe = "Swipe"
+    MultiSwipe = "MultiSwipe"
+    ClickKey = "ClickKey"
+    LongPressKey = "LongPressKey"
+    InputText = "InputText"
+    StartApp = "StartApp"
+    StopApp = "StopApp"
+    Scroll = "Scroll"
+    TouchDown = "TouchDown"
+    TouchMove = "TouchMove"
+    TouchUp = "TouchUp"
+    KeyDown = "KeyDown"
+    KeyUp = "KeyUp"
+    StopTask = "StopTask"
+    Command = "Command"
+    Shell = "Shell"
     Custom = "Custom"
 
 
@@ -544,10 +728,11 @@ class RecognitionDetail:
     reco_id: int
     name: str
     algorithm: AlgorithmEnum
+    hit: bool
     box: Optional[Rect]
 
     all_results: List[RecognitionResult]
-    filterd_results: List[RecognitionResult]
+    filtered_results: List[RecognitionResult]
     best_result: Optional[RecognitionResult]
 
     raw_detail: Dict
@@ -556,10 +741,132 @@ class RecognitionDetail:
 
 
 @dataclass
+class ClickActionResult:
+    point: Point
+    contact: int
+
+
+@dataclass
+class LongPressActionResult:
+    point: Point
+    duration: int
+    contact: int
+
+
+@dataclass
+class SwipeActionResult:
+    begin: Point
+    end: List[Point]
+    end_hold: List[int]
+    duration: List[int]
+    only_hover: bool
+    starting: int
+    contact: int
+
+
+@dataclass
+class MultiSwipeActionResult:
+    swipes: List[SwipeActionResult]
+
+
+@dataclass
+class ClickKeyActionResult:
+    keycode: List[int]
+
+
+@dataclass
+class LongPressKeyActionResult:
+    keycode: List[int]
+    duration: int
+
+
+@dataclass
+class InputTextActionResult:
+    text: str
+
+
+@dataclass
+class AppActionResult:
+    package: str
+
+
+@dataclass
+class ScrollActionResult:
+    dx: int
+    dy: int
+
+
+@dataclass
+class TouchActionResult:
+    contact: int
+    point: Point
+    pressure: int
+
+
+@dataclass
+class ShellActionResult:
+    cmd: str
+    timeout: int
+    success: bool
+    output: str
+
+
+ActionResult = Union[
+    ClickActionResult,
+    LongPressActionResult,
+    SwipeActionResult,
+    MultiSwipeActionResult,
+    ClickKeyActionResult,
+    LongPressKeyActionResult,
+    InputTextActionResult,
+    AppActionResult,
+    ScrollActionResult,
+    TouchActionResult,
+    ShellActionResult,
+    None,
+]
+
+ActionResultDict = {
+    ActionEnum.DoNothing: None,
+    ActionEnum.Click: ClickActionResult,
+    ActionEnum.LongPress: LongPressActionResult,
+    ActionEnum.Swipe: SwipeActionResult,
+    ActionEnum.MultiSwipe: MultiSwipeActionResult,
+    ActionEnum.ClickKey: ClickKeyActionResult,
+    ActionEnum.LongPressKey: LongPressKeyActionResult,
+    ActionEnum.InputText: InputTextActionResult,
+    ActionEnum.StartApp: AppActionResult,
+    ActionEnum.StopApp: AppActionResult,
+    ActionEnum.Scroll: ScrollActionResult,
+    ActionEnum.TouchDown: TouchActionResult,
+    ActionEnum.TouchMove: TouchActionResult,
+    ActionEnum.TouchUp: TouchActionResult,
+    ActionEnum.KeyDown: ClickKeyActionResult,
+    ActionEnum.KeyUp: ClickKeyActionResult,
+    ActionEnum.StopTask: None,
+    ActionEnum.Command: None,
+    ActionEnum.Shell: ShellActionResult,
+    ActionEnum.Custom: None,
+}
+
+
+@dataclass
+class ActionDetail:
+    action_id: int
+    name: str
+    action: ActionEnum
+    box: Rect
+    success: bool
+    result: Optional[ActionResult]
+    raw_detail: Dict
+
+
+@dataclass
 class NodeDetail:
     node_id: int
     name: str
     recognition: RecognitionDetail
+    action: ActionDetail
     completed: bool
 
 

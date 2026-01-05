@@ -15,8 +15,13 @@ MAA_SUPPRESS_CV_WARNINGS_END
 
 MAA_VISION_NS_BEGIN
 
-FeatureMatcher::FeatureMatcher(cv::Mat image, cv::Rect roi, FeatureMatcherParam param, std::vector<cv::Mat> templates, std::string name)
-    : VisionBase(std::move(image), std::move(roi), std::move(name))
+FeatureMatcher::FeatureMatcher(
+    cv::Mat image,
+    std::vector<cv::Rect> rois,
+    FeatureMatcherParam param,
+    std::vector<cv::Mat> templates,
+    std::string name)
+    : VisionBase(std::move(image), std::move(rois), std::move(name))
     , param_(std::move(param))
     , templates_(std::move(templates))
 {
@@ -26,7 +31,7 @@ FeatureMatcher::FeatureMatcher(cv::Mat image, cv::Rect roi, FeatureMatcherParam 
 void FeatureMatcher::analyze()
 {
     if (templates_.empty()) {
-        LogError << name_ << VAR(uid_) << "templates is empty" << VAR(param_.template_);
+        LogError << name_ << "templates is empty" << VAR(param_.template_);
         return;
     }
 
@@ -35,15 +40,18 @@ void FeatureMatcher::analyze()
     for (const auto& templ : templates_) {
         auto [keypoints_1, descriptors_1] = detect(templ, create_mask(templ, param_.green_mask));
 
-        auto results = feature_match(templ, keypoints_1, descriptors_1);
-        add_results(std::move(results), param_.count);
+        while (next_roi()) {
+            auto results = feature_match(templ, keypoints_1, descriptors_1);
+            add_results(std::move(results), param_.count);
+        }
+        reset_roi();
     }
 
     cherry_pick();
 
     auto cost = duration_since(start_time);
-    LogDebug << name_ << VAR(uid_) << VAR(all_results_) << VAR(filtered_results_) << VAR(best_result_) << VAR(cost) << VAR(param_.template_)
-             << VAR(templates_.size()) << VAR(param_.green_mask) << VAR(param_.distance_ratio) << VAR(param_.count);
+    LogDebug << name_ << VAR(all_results_) << VAR(filtered_results_) << VAR(best_result_) << VAR(cost) << VAR(param_.template_)
+             << VAR(templates_.size()) << VAR(param_.green_mask) << VAR(param_.ratio) << VAR(param_.count);
 }
 
 FeatureMatcher::ResultsVec
@@ -81,12 +89,12 @@ cv::Ptr<cv::Feature2D> FeatureMatcher::create_detector() const
 #ifdef MAA_VISION_HAS_XFEATURES2D
         return cv::xfeatures2d::SURF::create();
 #else
-        LogError << name_ << VAR(uid_) << "SURF not enabled";
+        LogError << name_ << "SURF not enabled";
         return nullptr;
 #endif
     }
 
-    LogError << name_ << VAR(uid_) << "Unknown detector" << VAR(static_cast<int>(param_.detector));
+    LogError << name_ << "Unknown detector" << VAR(static_cast<int>(param_.detector));
     return nullptr;
 }
 
@@ -94,7 +102,7 @@ std::pair<std::vector<cv::KeyPoint>, cv::Mat> FeatureMatcher::detect(const cv::M
 {
     auto detector = create_detector();
     if (!detector) {
-        LogError << name_ << VAR(uid_) << "detector is empty";
+        LogError << name_ << "detector is empty";
         return {};
     }
 
@@ -119,7 +127,7 @@ cv::Ptr<cv::DescriptorMatcher> FeatureMatcher::create_matcher() const
         return cv::BFMatcher::create(cv::NORM_HAMMING);
     }
 
-    LogError << name_ << VAR(uid_) << "Unknown detector" << VAR(static_cast<int>(param_.detector));
+    LogError << name_ << "Unknown detector" << VAR(static_cast<int>(param_.detector));
     return nullptr;
 }
 
@@ -132,7 +140,7 @@ std::vector<std::vector<cv::DMatch>> FeatureMatcher::match(const cv::Mat& descri
 
     auto matcher = create_matcher();
     if (!matcher) {
-        LogError << name_ << VAR(uid_) << "matcher is empty";
+        LogError << name_ << "matcher is empty";
         return {};
     }
 
@@ -161,7 +169,7 @@ FeatureMatcher::ResultsVec FeatureMatcher::feature_postproc(
             continue;
         }
 
-        double threshold = param_.distance_ratio * point[1].distance;
+        double threshold = param_.ratio * point[1].distance;
         if (point[0].distance > threshold) {
             continue;
         }
@@ -169,7 +177,7 @@ FeatureMatcher::ResultsVec FeatureMatcher::feature_postproc(
         obj.emplace_back(keypoints_1[point[0].trainIdx].pt);
         scene.emplace_back(keypoints_2[point[0].queryIdx].pt);
     }
-    LogDebug << name_ << VAR(uid_) << "Match:" << VAR(good_matches.size()) << VAR(match_points.size()) << VAR(param_.distance_ratio);
+    LogDebug << name_ << "Match:" << VAR(good_matches.size()) << VAR(match_points.size()) << VAR(param_.ratio);
 
     const std::array<cv::Point2d, 4> obj_corners = {
         cv::Point2d(0, 0),
@@ -197,7 +205,7 @@ FeatureMatcher::ResultsVec FeatureMatcher::feature_postproc(
         cv::Rect box = scene_box & roi_;
         size_t count = std::ranges::count_if(scene, [&box](const auto& point) { return box.contains(point); });
         if (count == 0) {
-            LogWarn << name_ << VAR(uid_) << "No points in box" << VAR(box) << VAR(scene_box) << VAR(roi_);
+            LogWarn << name_ << "No points in box" << VAR(box) << VAR(scene_box) << VAR(roi_);
             break;
         }
 

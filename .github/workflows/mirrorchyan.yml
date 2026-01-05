@@ -2,27 +2,35 @@ name: mirrorchyan
 
 on:
   workflow_dispatch:
+    inputs:
+        tag:
+            default: ''
+            required: false
+#   release:
+#     types: [released]
 
 jobs:
-  mirrorchyan:
-    runs-on: macos-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        os: [win, macos, linux]
-        arch: [aarch64, x86_64]
+    mirrorchyan:
+        runs-on: macos-latest
+        if: ${{ github.repository_owner == 'MaaXYZ' }}
+        strategy:
+            fail-fast: false
+            matrix:
+                os: [win, macos, linux]
+                arch: [aarch64, x86_64]
 
-    steps:
-      - id: uploading
-        uses: MirrorChyan/uploading-action@v1
-        with:
-          filetype: latest-release
-          filename: "MAA-${{ matrix.os }}-${{ matrix.arch }}-*.zip"
-          mirrorchyan_rid: MaaFramework
+        steps:
+            - id: uploading
+              uses: MirrorChyan/uploading-action@v1
+              with:
+                  filetype: latest-release
+                  filename: "MAA-${{ matrix.os }}-${{ matrix.arch }}-*.zip"
+                  mirrorchyan_rid: MaaFramework
+                  tag: ${{ inputs.tag }}
 
-          owner: MaaXYZ
-          repo: MaaFramework
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          upload_token: ${{ secrets.MirrorChyanUploadToken }}
-          os: ${{ matrix.os }}
-          arch: ${{ matrix.arch }}
+                  owner: MaaXYZ
+                  repo: MaaFramework
+                  github_token: ${{ secrets.GITHUB_TOKEN }}
+                  upload_token: ${{ secrets.MirrorChyanUploadToken }}
+                  os: ${{ matrix.os }}
+                  arch: ${{ matrix.arch }}

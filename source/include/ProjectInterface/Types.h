@@ -1,6 +1,7 @@
 #pragma once
 
 #include <filesystem>
+#include <optional>
 #include <string>
 #include <unordered_map>
 #include <variant>
@@ -17,77 +18,154 @@ struct InterfaceData
 {
     struct Controller
     {
-        struct AdbConfig
-        {
-            MaaAdbScreencapMethod screencap = MaaAdbScreencapMethod_Default;
-            MaaAdbInputMethod input = MaaAdbInputMethod_Default;
-
-            json::object config;
-
-            MEO_JSONIZATION(MEO_OPT screencap, MEO_OPT input, MEO_OPT config);
-        };
-
         struct Win32Config
         {
             std::string class_regex;
             std::string window_regex;
+            std::string screencap;
+            std::string mouse;
+            std::string keyboard;
 
-            MaaWin32ScreencapMethod screencap = MaaWin32ScreencapMethod_DXGI_DesktopDup;
-            MaaWin32InputMethod input = MaaWin32InputMethod_Seize;
-
-            MEO_JSONIZATION(MEO_OPT class_regex, MEO_OPT window_regex, MEO_OPT screencap, MEO_OPT input);
+            MEO_JSONIZATION(MEO_OPT class_regex, MEO_OPT window_regex, MEO_OPT screencap, MEO_OPT mouse, MEO_OPT keyboard);
         };
 
-        inline static std::string kTypeAdb = "Adb";
-        inline static std::string kTypeWin32 = "Win32";
+        struct PlayCoverConfig
+        {
+            std::string address;
+            std::string uuid;
 
-        std::string name;
-        std::string type; // "Adb", "Win32"
+            MEO_JSONIZATION(MEO_OPT address, MEO_OPT uuid);
+        };
+
         enum class Type
         {
             Invalid,
             Adb,
             Win32,
-        } type_enum = Type::Invalid;
+            PlayCover,
+        };
 
-        AdbConfig adb;
+        std::string name;
+        std::string label;
+        std::string description;
+        Type type = Type::Adb;
+
+        // 分辨率设置，三者互斥
+        std::optional<int> display_short_side; // 默认720
+        std::optional<int> display_long_side;
+        bool display_raw = false;
+
         Win32Config win32;
+        PlayCoverConfig playcover;
 
-        MEO_JSONIZATION(name, type, MEO_OPT adb, MEO_OPT win32);
+        MEO_JSONIZATION(
+            name,
+            MEO_OPT label,
+            MEO_OPT description,
+            type,
+            MEO_OPT display_short_side,
+            MEO_OPT display_long_side,
+            MEO_OPT display_raw,
+            MEO_OPT win32,
+            MEO_OPT playcover);
     };
 
     struct Resource
     {
         std::string name;
+        std::string label;
+        std::string description;
         std::vector<std::string> path;
+        std::vector<std::string> controller; // 支持的控制器列表
 
-        MEO_JSONIZATION(name, path);
+        MEO_JSONIZATION(name, MEO_OPT label, MEO_OPT description, path, MEO_OPT controller);
     };
 
     struct Task
     {
         std::string name;
+        std::string label;
+        std::string description;
         std::string entry;
+        bool default_check = false;
         json::object pipeline_override;
         std::vector<std::string> option;
+        std::vector<std::string> resource; // 支持的资源包列表
 
-        MEO_JSONIZATION(name, entry, MEO_OPT pipeline_override, MEO_OPT option);
+        MEO_JSONIZATION(
+            name,
+            MEO_OPT label,
+            MEO_OPT description,
+            entry,
+            MEO_OPT default_check,
+            MEO_OPT pipeline_override,
+            MEO_OPT option,
+            MEO_OPT resource);
     };
 
     struct Option
     {
+        enum class Type
+        {
+            Select,
+            Input,
+            Switch,
+        };
+
         struct Case
         {
             std::string name;
+            std::string label;
+            std::string description;
             json::object pipeline_override;
+            std::vector<std::string> option; // 子选项
 
-            MEO_JSONIZATION(name, MEO_OPT pipeline_override);
+            MEO_JSONIZATION(name, MEO_OPT label, MEO_OPT description, MEO_OPT pipeline_override, MEO_OPT option);
         };
 
-        std::vector<Case> cases;
-        std::string default_case; // case.name
+        struct Input
+        {
+            enum class PipelineType
+            {
+                String,
+                Int,
+                Bool,
+            };
 
-        MEO_JSONIZATION(cases, MEO_OPT default_case);
+            std::string name;
+            std::string label;
+            std::string description;
+            std::string default_;
+            PipelineType pipeline_type = PipelineType::String;
+            std::string verify;      // regex
+            std::string pattern_msg; // 验证失败提示
+
+            MEO_JSONIZATION(
+                name,
+                MEO_OPT label,
+                MEO_OPT description,
+                MEO_OPT MEO_KEY("default") default_,
+                MEO_OPT pipeline_type,
+                MEO_OPT verify,
+                MEO_OPT pattern_msg);
+        };
+
+        Type type = Type::Select;
+        std::string label;
+        std::string description;
+        std::vector<Case> cases;
+        std::vector<Input> inputs;
+        json::object pipeline_override; // for input type
+        std::string default_case;       // case.name
+
+        MEO_JSONIZATION(
+            MEO_OPT type,
+            MEO_OPT label,
+            MEO_OPT description,
+            MEO_OPT cases,
+            MEO_OPT inputs,
+            MEO_OPT pipeline_override,
+            MEO_OPT default_case);
     };
 
     struct Agent
@@ -99,15 +177,41 @@ struct InterfaceData
         MEO_JSONIZATION(child_exec, MEO_OPT child_args, MEO_OPT identifier);
     };
 
+    int interface_version = 2;
+    std::unordered_map<std::string, std::string> languages; // 语言代码 -> 翻译文件路径
+    std::string name;
+    std::string label;
+    std::string title;
+    std::string version;
+    std::string welcome;
+    std::string description;
+    std::string contact;
+    std::string license;
+    std::string github;
+
     std::vector<Controller> controller;
     std::vector<Resource> resource;
     std::vector<Task> task;
     std::unordered_map<std::string, Option> option;
-    std::string version;
-    std::string message;
     Agent agent;
 
-    MEO_JSONIZATION(controller, resource, task, MEO_OPT option, MEO_OPT version, MEO_OPT message, MEO_OPT agent);
+    MEO_JSONIZATION(
+        interface_version,
+        MEO_OPT languages,
+        MEO_OPT name,
+        MEO_OPT label,
+        MEO_OPT title,
+        MEO_OPT version,
+        MEO_OPT welcome,
+        MEO_OPT description,
+        MEO_OPT contact,
+        MEO_OPT license,
+        MEO_OPT github,
+        controller,
+        resource,
+        task,
+        MEO_OPT option,
+        MEO_OPT agent);
 };
 
 struct Configuration
@@ -115,7 +219,7 @@ struct Configuration
     struct Controller
     {
         std::string name;
-        InterfaceData::Controller::Type type_enum = InterfaceData::Controller::Type::Invalid;
+        InterfaceData::Controller::Type type = InterfaceData::Controller::Type::Adb;
 
         MEO_JSONIZATION(name);
     };
@@ -133,19 +237,28 @@ struct Configuration
 
     struct AdbConfig
     {
+        std::string name;
         std::string adb_path;
         std::string address;
-        json::object config;
 
-        MEO_JSONIZATION(adb_path, address, config);
+        MEO_JSONIZATION(name, adb_path, address);
+    };
+
+    struct PlayCoverConfig
+    {
+        std::string address;
+        std::string uuid;
+
+        MEO_JSONIZATION(MEO_OPT address, MEO_OPT uuid);
     };
 
     struct Option
     {
         std::string name;
-        std::string value;
+        std::string value;                                   // for select/switch
+        std::unordered_map<std::string, std::string> inputs; // for input type
 
-        MEO_JSONIZATION(name, value);
+        MEO_JSONIZATION(name, MEO_OPT value, MEO_OPT inputs);
     };
 
     struct Task
@@ -159,17 +272,26 @@ struct Configuration
     Controller controller;
     AdbConfig adb;
     Win32Config win32;
+    PlayCoverConfig playcover;
     std::string resource;
     std::vector<Task> task;
-    int32_t gpu = MaaInferenceDevice_Auto;
 
-    MEO_JSONIZATION(controller, MEO_OPT adb, MEO_OPT win32, resource, task, MEO_OPT gpu);
+    MEO_JSONIZATION(controller, MEO_OPT adb, MEO_OPT win32, MEO_OPT playcover, resource, task);
 };
 
 struct RuntimeParam
 {
+    // 分辨率设置，三者互斥
+    struct DisplayConfig
+    {
+        std::optional<int> short_side; // 默认720
+        std::optional<int> long_side;
+        bool raw = false;
+    };
+
     struct AdbParam
     {
+        std::string name;
         std::string adb_path;
         std::string address;
         MaaAdbScreencapMethod screencap = MaaAdbScreencapMethod_None;
@@ -182,7 +304,14 @@ struct RuntimeParam
     {
         void* hwnd = nullptr;
         MaaWin32ScreencapMethod screencap = MaaWin32ScreencapMethod_None;
-        MaaWin32InputMethod input = MaaWin32InputMethod_None;
+        MaaWin32InputMethod mouse = MaaWin32InputMethod_None;
+        MaaWin32InputMethod keyboard = MaaWin32InputMethod_None;
+    };
+
+    struct PlayCoverParam
+    {
+        std::string address;
+        std::string uuid;
     };
 
     struct Task
@@ -197,27 +326,16 @@ struct RuntimeParam
         std::filesystem::path child_exec;
         std::vector<std::string> child_args;
         std::string identifier;
+        std::filesystem::path cwd;
     };
 
-    std::variant<std::monostate, AdbParam, Win32Param> controller_param;
+    std::variant<std::monostate, AdbParam, Win32Param, PlayCoverParam> controller_param;
     std::vector<std::filesystem::path> resource_path;
 
     std::vector<Task> task;
-    int32_t gpu = MaaInferenceDevice_Auto;
 
     std::optional<Agent> agent;
-};
-
-struct CustomRecognitionSession
-{
-    MaaCustomRecognitionCallback recognition = nullptr;
-    void* trans_arg = nullptr;
-};
-
-struct CustomActionSession
-{
-    MaaCustomActionCallback action = nullptr;
-    void* trans_arg = nullptr;
+    DisplayConfig display_config;
 };
 
 MAA_PROJECT_INTERFACE_NS_END

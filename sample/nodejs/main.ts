@@ -30,22 +30,14 @@ const my_reco: maa.CustomRecognitionCallback = async self => {
 
     self.context.override_next(self.task, ['TaskA', 'TaskB'])
 
-    return [
-        {
-            x: 0,
-            y: 0,
-            width: 100,
-            height: 100
-        },
-        'Hello World!'
-    ]
+    return [[0, 0, 100, 100], 'Hello World!']
 }
 
 async function main() {
     maa.Global.config_init_option('./')
 
     const res = new maa.Resource()
-    res.add_wrapped_sink(msg => {
+    res.add_sink((_, msg) => {
         console.log(msg)
     })
     await res.post_bundle('sample/resource').wait()
@@ -56,18 +48,21 @@ async function main() {
     }
     const [name, adb_path, address, screencap_methods, input_methods, config] = devices[0]
     const ctrl = new maa.AdbController(adb_path, address, screencap_methods, input_methods, config)
-    ctrl.add_wrapped_sink(msg => {
+    ctrl.add_sink((_, msg) => {
         console.log(msg)
     })
     await ctrl.post_connection().wait()
 
     const tskr = new maa.Tasker()
-    tskr.add_wrapped_sink(msg => {
+    tskr.add_sink((_, msg) => {
+        console.log(msg)
+    })
+    tskr.add_context_sink((_, msg) => {
         console.log(msg)
     })
 
-    tskr.bind(ctrl)
-    tskr.bind(res)
+    tskr.controller = ctrl
+    tskr.resource = res
 
     console.log(tskr.inited)
 

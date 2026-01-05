@@ -3,7 +3,6 @@
 #include "MaaUtils/Logger.h"
 #include "ReplayRecording/RecordParser.h"
 
-
 MAA_CTRL_UNIT_NS_BEGIN
 
 ReplayRecording* create_replay_recording(const std::filesystem::path& path)

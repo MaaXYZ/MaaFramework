@@ -49,6 +49,7 @@ struct ControllerImpl : public maajs::NativeClassBase
     maajs::ValueType post_touch_up(maajs::ValueType self, maajs::EnvType env, int32_t contact);
     maajs::ValueType post_key_down(maajs::ValueType self, maajs::EnvType env, int32_t keycode);
     maajs::ValueType post_key_up(maajs::ValueType self, maajs::EnvType env, int32_t keycode);
+    maajs::ValueType post_scroll(maajs::ValueType self, maajs::EnvType env, int32_t dx, int32_t dy);
     maajs::ValueType post_screencap(maajs::ValueType self, maajs::EnvType env);
     MaaStatus status(MaaCtrlId id);
     maajs::PromiseType wait(MaaCtrlId id);
@@ -86,7 +87,7 @@ struct AdbControllerImpl : public ControllerImpl
 };
 
 using Win32Device = std::tuple<uintptr_t, std::string, std::string>;
-using Win32ControllerCtorParam = std::tuple<uintptr_t, MaaWin32ScreencapMethod, MaaWin32InputMethod>;
+using Win32ControllerCtorParam = std::tuple<uintptr_t, MaaWin32ScreencapMethod, MaaWin32InputMethod, MaaWin32InputMethod>;
 
 struct Win32ControllerImpl : public ControllerImpl
 {
@@ -99,6 +100,20 @@ struct Win32ControllerImpl : public ControllerImpl
     static Win32ControllerImpl* ctor(const maajs::CallbackInfo&);
     static void init_proto(maajs::ObjectType proto, maajs::FunctionType ctor);
 };
+
+#ifdef __APPLE__
+using PlayCoverControllerCtorParam = std::tuple<std::string, std::string>;
+
+struct PlayCoverControllerImpl : public ControllerImpl
+{
+    using ControllerImpl::ControllerImpl;
+
+    constexpr static char name[] = "PlayCoverController";
+
+    static PlayCoverControllerImpl* ctor(const maajs::CallbackInfo&);
+    static void init_proto(maajs::ObjectType proto, maajs::FunctionType ctor);
+};
+#endif
 
 using DbgControllerCtorParam = std::tuple<std::string, std::string, MaaDbgControllerType, std::string>;
 
@@ -117,7 +132,13 @@ struct CustomControllerContext
     std::map<std::string, maajs::CallbackContext*> callbacks;
 
     ~CustomControllerContext();
-    void add_bind(maajs::EnvType env, std::string name, std::string func_name, int argc, std::shared_ptr<maajs::ObjectRefType> actor);
+    void add_bind(
+        maajs::EnvType env,
+        std::string name,
+        std::string func_name,
+        int argc,
+        std::shared_ptr<maajs::ObjectRefType> actor,
+        std::function<maajs::ValueType(maajs::EnvType)> fallback);
     void gc_mark(maajs::NativeMarkerFunc marker);
 };
 

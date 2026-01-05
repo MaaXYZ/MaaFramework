@@ -8,7 +8,6 @@
 #include "Manager/InputAgent.h"
 #include "Manager/ScreencapAgent.h"
 
-
 MAA_CTRL_UNIT_NS_BEGIN
 
 AdbControlUnitMgr::AdbControlUnitMgr(
@@ -95,6 +94,14 @@ bool AdbControlUnitMgr::request_uuid(std::string& uuid)
     return true;
 }
 
+MaaControllerFeature AdbControlUnitMgr::get_features() const
+{
+    if (!input_) {
+        return MaaControllerFeature_None;
+    }
+    return input_->get_features();
+}
+
 bool AdbControlUnitMgr::start_app(const std::string& intent)
 {
     bool ret = activity_.start_app(intent);
@@ -160,16 +167,6 @@ bool AdbControlUnitMgr::swipe(int x1, int y1, int x2, int y2, int duration)
     return input_->swipe(x1, y1, x2, y2, duration);
 }
 
-bool AdbControlUnitMgr::is_touch_availabled() const
-{
-    if (!input_) {
-        LogError << "input_ is null";
-        return false;
-    }
-
-    return input_->is_touch_availabled();
-}
-
 bool AdbControlUnitMgr::touch_down(int contact, int x, int y, int pressure)
 {
     if (!input_) {
@@ -220,16 +217,6 @@ bool AdbControlUnitMgr::input_text(const std::string& text)
     return input_->input_text(text);
 }
 
-bool AdbControlUnitMgr::is_key_down_up_availabled() const
-{
-    if (!input_) {
-        LogError << "input_ is null";
-        return false;
-    }
-
-    return input_->is_key_down_up_availabled();
-}
-
 bool AdbControlUnitMgr::key_down(int key)
 {
     if (!input_) {
@@ -250,6 +237,12 @@ bool AdbControlUnitMgr::key_up(int key)
     return input_->key_up(key);
 }
 
+bool AdbControlUnitMgr::scroll(int dx, int dy)
+{
+    LogError << "Scroll is not supported on Adb controller" << VAR(dx) << VAR(dy);
+    return false;
+}
+
 bool AdbControlUnitMgr::find_device(std::vector<std::string>& devices)
 {
     auto opt = device_list_.request_devices();
@@ -262,9 +255,9 @@ bool AdbControlUnitMgr::find_device(std::vector<std::string>& devices)
     return true;
 }
 
-bool AdbControlUnitMgr::shell(const std::string& cmd, std::string& output)
+bool AdbControlUnitMgr::shell(const std::string& cmd, std::string& output, std::chrono::milliseconds timeout)
 {
-    auto opt = adb_command_.shell(cmd);
+    auto opt = adb_command_.shell(cmd, timeout);
     if (!opt) {
         LogError << "failed to adb shell" << VAR(cmd);
         return false;

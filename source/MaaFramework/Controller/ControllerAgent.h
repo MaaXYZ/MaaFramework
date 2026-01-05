@@ -12,7 +12,6 @@
 #include "MaaUtils/NoWarningCVMat.hpp"
 #include "Utils/EventDispatcher.hpp"
 
-
 #include "Common/Conf.h"
 
 MAA_RES_NS_BEGIN
@@ -24,16 +23,18 @@ MAA_CTRL_NS_BEGIN
 struct ClickParam
 {
     cv::Point point {};
+    int contact = 0;
 
-    MEO_TOJSON(point);
+    MEO_TOJSON(point, contact);
 };
 
 struct LongPressParam
 {
     cv::Point point {};
     uint duration = 0;
+    int contact = 0;
 
-    MEO_TOJSON(point, duration);
+    MEO_TOJSON(point, duration, contact);
 };
 
 struct SwipeParam
@@ -44,8 +45,9 @@ struct SwipeParam
     std::vector<uint> duration;
     bool only_hover = false;
     uint starting = 0;
+    int contact = 0;
 
-    MEO_TOJSON(starting, begin, end, end_hold, duration, only_hover);
+    MEO_TOJSON(starting, begin, end, end_hold, duration, only_hover, contact);
 };
 
 struct MultiSwipeParam
@@ -93,6 +95,22 @@ struct AppParam
     MEO_TOJSON(package);
 };
 
+struct ScrollParam
+{
+    int dx = 0;
+    int dy = 0;
+
+    MEO_TOJSON(dx, dy);
+};
+
+struct ShellParam
+{
+    std::string cmd;
+    int64_t timeout = 20000;
+
+    MEO_TOJSON(cmd, timeout);
+};
+
 using Param = std::variant<
     std::monostate,
     ClickParam,
@@ -103,7 +121,9 @@ using Param = std::variant<
     ClickKeyParam,
     LongPressKeyParam,
     InputTextParam,
-    AppParam>;
+    AppParam,
+    ScrollParam,
+    ShellParam>;
 
 struct Action
 {
@@ -126,12 +146,12 @@ struct Action
         stop_app,
         key_down,
         key_up,
+        scroll,
+        shell,
     } type = Type::invalid;
 
     Param param;
 };
-
-std::ostream& operator<<(std::ostream& os, const Action::Type& action);
 
 class ControllerAgent : public MaaController
 {
@@ -158,12 +178,17 @@ public: // MaaController
     virtual MaaCtrlId post_key_down(int keycode) override;
     virtual MaaCtrlId post_key_up(int keycode) override;
 
+    virtual MaaCtrlId post_scroll(int dx, int dy) override;
+
+    virtual MaaCtrlId post_shell(const std::string& cmd, int64_t timeout = 20000) override;
+
     virtual MaaStatus status(MaaCtrlId ctrl_id) const override;
     virtual MaaStatus wait(MaaCtrlId ctrl_id) const override;
     virtual bool connected() const override;
     virtual bool running() const override;
 
     virtual cv::Mat cached_image() const override;
+    virtual std::string cached_shell_output() const override;
     virtual std::string get_uuid() override;
 
     virtual MaaSinkId add_sink(MaaEventCallback callback, void* trans_arg) override;
@@ -179,14 +204,23 @@ public: // for Actuator
     bool swipe(SwipeParam p);
     bool multi_swipe(MultiSwipeParam p);
 
+    bool touch_down(TouchParam p);
+    bool touch_move(TouchParam p);
+    bool touch_up(TouchParam p);
+
     bool click_key(ClickKeyParam p);
     bool long_press_key(LongPressKeyParam p);
+    bool key_down(ClickKeyParam p);
+    bool key_up(ClickKeyParam p);
 
     bool input_text(InputTextParam p);
     cv::Mat screencap();
 
     bool start_app(AppParam p);
     bool stop_app(AppParam p);
+
+    bool scroll(ScrollParam p);
+    bool shell(const std::string& cmd, std::string& output, int64_t timeout = 20000);
 
 private:
     bool handle_connect();
@@ -205,6 +239,8 @@ private:
     bool handle_stop_app(const AppParam& param);
     bool handle_key_down(const ClickKeyParam& param);
     bool handle_key_up(const ClickKeyParam& param);
+    bool handle_scroll(const ScrollParam& param);
+    bool handle_shell(const ShellParam& param);
 
     MaaCtrlId post(Action action);
     MaaCtrlId focus_id(MaaCtrlId id);
@@ -232,8 +268,10 @@ private:
     EventDispatcher notifier_;
 
     bool connected_ = false;
-    std::mutex image_mutex_;
+    mutable std::mutex image_mutex_;
     cv::Mat image_;
+    mutable std::mutex shell_output_mutex_;
+    std::string shell_output_;
 
     bool image_use_raw_size_ = false;
     int image_target_long_side_ = 0;

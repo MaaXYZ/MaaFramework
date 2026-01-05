@@ -1,7 +1,10 @@
 #pragma once
 
+#include <numeric>
 #include <random>
 #include <ranges>
+
+#include <boost/regex.hpp>
 
 #include "Common/Conf.h"
 #include "MaaUtils/Logger.h"
@@ -30,9 +33,14 @@ inline static void sort_by_vertical_(ResultsVec& results)
 }
 
 template <typename ResultsVec>
-inline static void sort_by_score_(ResultsVec& results)
+inline static void sort_by_score_(ResultsVec& results, bool reverse = false)
 {
-    std::ranges::sort(results, std::greater {}, std::mem_fn(&ResultsVec::value_type::score));
+    if (reverse) {
+        std::ranges::sort(results, std::less {}, std::mem_fn(&ResultsVec::value_type::score));
+    }
+    else {
+        std::ranges::sort(results, std::greater {}, std::mem_fn(&ResultsVec::value_type::score));
+    }
 }
 
 template <typename ResultsVec>
@@ -76,6 +84,90 @@ inline static void sort_by_required_(ResultsVec& results, const std::vector<std:
     });
 }
 
+template <typename ResultsVec>
+inline static void sort_by_expected_index_(ResultsVec& results, const std::vector<int>& expected)
+{
+    if (results.empty() || expected.empty()) {
+        return;
+    }
+
+    std::unordered_map<size_t, size_t> index_cache;
+    for (size_t i = 0; i != expected.size(); ++i) {
+        index_cache.emplace(static_cast<size_t>(expected[i]), i + 1);
+    }
+
+    std::ranges::sort(results, [&index_cache](const auto& lhs, const auto& rhs) -> bool {
+        auto l_it = index_cache.find(lhs.cls_index);
+        auto r_it = index_cache.find(rhs.cls_index);
+
+        bool l_matched = (l_it != index_cache.end());
+        bool r_matched = (r_it != index_cache.end());
+
+        if (!l_matched) {
+            return false; // 未匹配的排后面
+        }
+        if (!r_matched) {
+            return true; // 已匹配的排前面
+        }
+
+        return l_it->second < r_it->second; // 按预期顺序排序
+    });
+}
+
+template <typename ResultsVec>
+inline static void sort_by_expected_regex_(ResultsVec& results, const std::vector<std::wstring>& expected)
+{
+    if (results.empty() || expected.empty()) {
+        return;
+    }
+
+    std::vector<boost::wregex> patterns;
+    patterns.reserve(expected.size());
+    for (const auto& pattern : expected) {
+        patterns.emplace_back(pattern);
+    }
+
+    // 预先计算所有结果的匹配索引 (1-based，0 表示未匹配)
+    std::vector<size_t> match_indices;
+    match_indices.reserve(results.size());
+
+    for (const auto& result : results) {
+        size_t match_index = 0;
+        for (size_t j = 0; j < patterns.size(); ++j) {
+            if (boost::regex_search(result.text, patterns[j])) {
+                match_index = j + 1;
+                break;
+            }
+        }
+        match_indices.push_back(match_index);
+    }
+
+    // 创建排列索引并排序
+    std::vector<size_t> order(results.size());
+    std::iota(order.begin(), order.end(), 0);
+
+    std::ranges::sort(order, [&match_indices](size_t a, size_t b) -> bool {
+        const size_t a_match = match_indices[a];
+        const size_t b_match = match_indices[b];
+
+        if (a_match == 0) {
+            return false; // a 未匹配，排后面
+        }
+        if (b_match == 0) {
+            return true;          // b 未匹配，a 排前面
+        }
+        return a_match < b_match; // 按匹配顺序排序
+    });
+
+    // 根据排序后的索引重排结果
+    ResultsVec sorted_results;
+    sorted_results.reserve(results.size());
+    for (size_t idx : order) {
+        sorted_results.push_back(std::move(results[idx]));
+    }
+    results = std::move(sorted_results);
+}
+
 inline static std::optional<size_t> pythonic_index(size_t total, int index)
 {
     if (index >= 0 && static_cast<uint32_t>(index) < total) {
@@ -89,14 +181,14 @@ inline static std::optional<size_t> pythonic_index(size_t total, int index)
 
 // Non-Maximum Suppression
 template <typename ResultsVec>
-inline static ResultsVec NMS(ResultsVec results, double threshold = 0.7, bool max_val = true)
+inline static ResultsVec NMS(ResultsVec results, double threshold = 0.7, bool greater = true)
 {
-    std::ranges::sort(results, [&](const auto& a, const auto& b) { return max_val ? (a.score > b.score) : (a.score < b.score); });
+    std::ranges::sort(results, [&](const auto& a, const auto& b) { return greater ? (a.score > b.score) : (a.score < b.score); });
 
     ResultsVec nms_results;
     for (size_t i = 0; i < results.size(); ++i) {
         const auto& res1 = results[i];
-        if ((max_val && res1.score < 0.1f) || (!max_val && res1.score > 0.9f)) {
+        if ((greater && res1.score < 0.1f) || (!greater && res1.score > 0.9f)) {
             continue;
         }
         auto res1_box = res1.box;
@@ -104,12 +196,12 @@ inline static ResultsVec NMS(ResultsVec results, double threshold = 0.7, bool ma
 
         for (size_t j = i + 1; j < results.size(); ++j) {
             auto& res2 = results[j];
-            if ((max_val && res2.score < 0.1f) || (!max_val && res2.score > 0.9f)) {
+            if ((greater && res2.score < 0.1f) || (!greater && res2.score > 0.9f)) {
                 continue;
             }
             int iou_area = (res1_box & res2.box).area();
             if (iou_area >= threshold * res2.box.area()) {
-                res2.score = max_val ? 0 : 1;
+                res2.score = greater ? 0 : 1;
             }
         }
     }
@@ -148,6 +240,9 @@ template <typename T>
 inline static T softmax(const T& input)
 {
     T output = input;
+    if (output.empty()) {
+        return output;
+    }
     float rowmax = *std::ranges::max_element(output);
     std::vector<float> y(output.size());
     float sum = 0.0f;
@@ -239,6 +334,17 @@ inline cv::Rect correct_roi(const cv::Rect& roi, const cv::Mat& image)
     return res;
 }
 
+inline std::vector<cv::Rect> correct_rois(std::vector<cv::Rect> rois, const cv::Mat& image)
+{
+    if (rois.empty()) {
+        return { correct_roi(cv::Rect {}, image) };
+    }
+    for (auto& roi : rois) {
+        roi = correct_roi(roi, image);
+    }
+    return rois;
+}
+
 inline cv::Mat create_mask(const cv::Mat& image, bool green_mask)
 {
     cv::Mat mask = cv::Mat::ones(image.size(), CV_8UC1);
@@ -254,12 +360,6 @@ inline cv::Mat create_mask(const cv::Mat& image, const cv::Rect& roi)
     cv::Mat mask = cv::Mat::zeros(image.size(), CV_8UC1);
     mask(roi) = 255;
     return mask;
-}
-
-inline std::ostream& operator<<(std::ostream& os, const cv::Rect& rect)
-{
-    os << "Rect(" << rect.x << ", " << rect.y << ", " << rect.width << ", " << rect.height << ")";
-    return os;
 }
 
 MAA_VISION_NS_END

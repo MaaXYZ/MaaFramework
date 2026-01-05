@@ -6,10 +6,12 @@
 #include "Global/PluginMgr.h"
 #include "MaaFramework/MaaMsg.h"
 #include "MaaUtils/Logger.h"
+#include "MaaUtils/Uuid.h"
 #include "Resource/ResourceMgr.h"
+#include "Task/ActionTask.h"
 #include "Task/EmptyTask.h"
 #include "Task/PipelineTask.h"
-
+#include "Task/RecognitionTask.h"
 
 MAA_NS_BEGIN
 
@@ -92,6 +94,44 @@ MaaTaskId Tasker::post_task(const std::string& entry, const json::value& pipelin
     }
 
     auto task_ptr = std::make_shared<MAA_TASK_NS::PipelineTask>(entry, this);
+    return post_task(std::move(task_ptr), pipeline_override);
+}
+
+MaaTaskId Tasker::post_recognition(const std::string& reco_type, const json::value& reco_param, const cv::Mat& image)
+{
+    LogInfo << VAR(reco_type) << VAR(reco_param) << VAR(image);
+
+    if (!check_stop()) {
+        return MaaInvalidId;
+    }
+
+    std::string entry = std::format("recognition/{}/{}", reco_type, make_uuid());
+
+    json::value pipeline_override;
+    pipeline_override[entry]["recognition"] = { { "type", reco_type }, { "param", reco_param } };
+
+    auto task_ptr = std::make_shared<MAA_TASK_NS::RecognitionTask>(image, entry, this);
+    return post_task(std::move(task_ptr), pipeline_override);
+}
+
+MaaTaskId Tasker::post_action(
+    const std::string& action_type,
+    const json::value& action_param,
+    const cv::Rect& box,
+    const std::string& reco_detail)
+{
+    LogInfo << VAR(action_type) << VAR(action_param) << VAR(box) << VAR(reco_detail);
+
+    if (!check_stop()) {
+        return MaaInvalidId;
+    }
+
+    std::string entry = std::format("action/{}/{}", action_type, make_uuid());
+
+    json::value pipeline_override;
+    pipeline_override[entry]["action"] = { { "type", action_type }, { "param", action_param } };
+
+    auto task_ptr = std::make_shared<MAA_TASK_NS::ActionTask>(box, reco_detail, entry, this);
     return post_task(std::move(task_ptr), pipeline_override);
 }
 
@@ -186,6 +226,11 @@ std::optional<MAA_TASK_NS::RecoResult> Tasker::get_reco_result(MaaRecoId reco_id
     return runtime_cache().get_reco_result(reco_id);
 }
 
+std::optional<MAA_TASK_NS::ActionResult> Tasker::get_action_result(MaaActId action_id) const
+{
+    return runtime_cache().get_action_result(action_id);
+}
+
 std::optional<MaaNodeId> Tasker::get_latest_node(const std::string& node_name) const
 {
     return runtime_cache().get_latest_node(node_name);
@@ -266,6 +311,10 @@ MaaTaskId Tasker::post_task(TaskPtr task_ptr, const json::value& pipeline_overri
 
 bool Tasker::run_task(RunnerId runner_id, TaskPtr task_ptr)
 {
+    if (!need_to_stop_) {
+        MAA_LOG_NS::Logger::get_instance().flush();
+    }
+
     LogFunc << VAR(runner_id) << VAR(task_ptr);
 
     if (!task_ptr) {
@@ -311,8 +360,6 @@ bool Tasker::run_task(RunnerId runner_id, TaskPtr task_ptr)
     notifier_.notify(this, ret ? MaaMsg_Tasker_Task_Succeeded : MaaMsg_Tasker_Task_Failed, cb_detail);
 
     running_task_ = nullptr;
-
-    MAA_LOG_NS::Logger::get_instance().flush();
 
     return ret;
 }

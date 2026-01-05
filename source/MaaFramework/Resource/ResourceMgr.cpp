@@ -9,7 +9,7 @@
 #include "MaaUtils/Logger.h"
 #include "MaaUtils/Platform.h"
 #include "PipelineDumper.h"
-
+#include "PipelineParser.h"
 
 MAA_RES_NS_BEGIN
 
@@ -24,8 +24,8 @@ ResourceMgr::ResourceMgr()
         add_sink(sink, this);
     }
 
-    res_loader_ = std::make_unique<AsyncRunner<std::filesystem::path>>(
-        std::bind(&ResourceMgr::run_load, this, std::placeholders::_1, std::placeholders::_2));
+    res_loader_ =
+        std::make_unique<AsyncRunner<PostPathItem>>(std::bind(&ResourceMgr::run_load, this, std::placeholders::_1, std::placeholders::_2));
 }
 
 ResourceMgr::~ResourceMgr()
@@ -56,7 +56,27 @@ bool ResourceMgr::set_option(MaaResOption key, MaaOptionValue value, MaaOptionVa
 
 MaaResId ResourceMgr::post_bundle(const std::filesystem::path& path)
 {
-    LogInfo << VAR(path);
+    return post_path(PostPathType::Bundle, path);
+}
+
+MaaResId ResourceMgr::post_ocr_model(const std::filesystem::path& path)
+{
+    return post_path(PostPathType::OcrModel, path);
+}
+
+MaaResId ResourceMgr::post_pipeline(const std::filesystem::path& path)
+{
+    return post_path(PostPathType::Pipeline, path);
+}
+
+MaaResId ResourceMgr::post_image(const std::filesystem::path& path)
+{
+    return post_path(PostPathType::Image, path);
+}
+
+MaaResId ResourceMgr::post_path(PostPathType type, const std::filesystem::path& path)
+{
+    LogInfo << VAR(static_cast<int>(type)) << VAR(path);
 
     if (!check_stop()) {
         return MaaInvalidId;
@@ -70,7 +90,7 @@ MaaResId ResourceMgr::post_bundle(const std::filesystem::path& path)
         return MaaInvalidId;
     }
 
-    return res_loader_->post(path);
+    return res_loader_->post(PostPathItem { .type = type, .path = path });
 }
 
 MaaStatus ResourceMgr::status(MaaResId res_id) const
@@ -120,6 +140,26 @@ std::vector<std::string> ResourceMgr::get_node_list() const
     return pipeline_res_.get_node_list();
 }
 
+std::vector<std::string> ResourceMgr::get_custom_recognition_list() const
+{
+    std::vector<std::string> result;
+    result.reserve(custom_recognition_sessions_.size());
+    for (const auto& [name, _] : custom_recognition_sessions_) {
+        result.emplace_back(name);
+    }
+    return result;
+}
+
+std::vector<std::string> ResourceMgr::get_custom_action_list() const
+{
+    std::vector<std::string> result;
+    result.reserve(custom_action_sessions_.size());
+    for (const auto& [name, _] : custom_action_sessions_) {
+        result.emplace_back(name);
+    }
+    return result;
+}
+
 MaaSinkId ResourceMgr::add_sink(MaaEventCallback callback, void* trans_arg)
 {
     return notifier_.add_sink(callback, trans_arg);
@@ -150,8 +190,18 @@ std::string ResourceMgr::calc_hash()
 {
     std::vector<size_t> filesizes;
     for (const auto& p : paths_) {
-        if (!std::filesystem::exists(p) || !std::filesystem::is_directory(p)) {
-            LogError << "path not exists or not a directory" << VAR(p);
+        if (!std::filesystem::exists(p)) {
+            LogError << "path not exists" << VAR(p);
+            continue;
+        }
+
+        if (std::filesystem::is_regular_file(p)) {
+            filesizes.emplace_back(std::filesystem::file_size(p));
+            continue;
+        }
+
+        if (!std::filesystem::is_directory(p)) {
+            LogError << "path is not a file or directory" << VAR(p);
             continue;
         }
 
@@ -209,7 +259,18 @@ bool ResourceMgr::override_pipeline(const json::value& pipeline_override)
 bool ResourceMgr::override_next(const std::string& node_name, const std::vector<std::string>& next)
 {
     LogFunc << VAR(node_name) << VAR(next);
-    pipeline_res_.get_pipeline_data_map()[node_name].next = next;
+
+    if (!PipelineParser::parse_next(next, pipeline_res_.get_pipeline_data_map()[node_name].next)) {
+        LogError << "failed to parse_next" << VAR(next);
+        return false;
+    }
+
+    return true;
+}
+
+bool ResourceMgr::override_image(const std::string& image_name, const cv::Mat& image)
+{
+    template_res_.set_image(image_name, image);
     return true;
 }
 
@@ -531,19 +592,39 @@ bool ResourceMgr::use_cuda()
     return true;
 }
 
-bool ResourceMgr::run_load(typename AsyncRunner<std::filesystem::path>::Id id, std::filesystem::path path)
+bool ResourceMgr::run_load(typename AsyncRunner<PostPathItem>::Id id, PostPathItem item)
 {
-    LogFunc << VAR(id) << VAR(path);
+    LogFunc << VAR(id) << VAR(static_cast<int>(item.type)) << VAR(item.path);
 
     json::value cb_detail = {
         { "res_id", id },
-        { "path", path_to_utf8_string(path) },
+        { "path", path_to_utf8_string(item.path) },
+        { "type", item.type },
         { "hash", get_hash() },
     };
 
     notifier_.notify(this, MaaMsg_Resource_Loading_Starting, cb_detail);
 
-    valid_ = load(path);
+    check_and_set_inference_device();
+
+    switch (item.type) {
+    case PostPathType::Bundle:
+        valid_ = load_bundle(item.path);
+        break;
+    case PostPathType::OcrModel:
+        valid_ = load_ocr_model(item.path);
+        break;
+    case PostPathType::Pipeline:
+        valid_ = load_pipeline(item.path);
+        break;
+    case PostPathType::Image:
+        valid_ = load_image(item.path);
+        break;
+    default:
+        LogError << "Unknown PostPathType" << VAR(static_cast<int>(item.type));
+        valid_ = false;
+        break;
+    }
 
     cb_detail["hash"] = calc_hash();
 
@@ -552,7 +633,7 @@ bool ResourceMgr::run_load(typename AsyncRunner<std::filesystem::path>::Id id, s
     return valid_;
 }
 
-bool ResourceMgr::load(const std::filesystem::path& path)
+bool ResourceMgr::load_bundle(const std::filesystem::path& path)
 {
     LogFunc << VAR(path);
 
@@ -569,10 +650,15 @@ bool ResourceMgr::load(const std::filesystem::path& path)
 
     bool to_load = false;
     bool ret = true;
-    if (auto p = path / "default_pipeline.json"_path; std::filesystem::exists(p)) {
+    if (auto jc_path = path / "default_pipeline.jsonc"_path; std::filesystem::exists(jc_path)) {
         to_load = true;
-        ret &= default_pipeline_.load(p);
+        ret &= default_pipeline_.load(jc_path);
     }
+    else if (auto j_path = path / "default_pipeline.json"_path; std::filesystem::exists(j_path)) {
+        to_load = true;
+        ret &= default_pipeline_.load(j_path);
+    }
+
     if (auto p = path / "pipeline"_path; std::filesystem::exists(p)) {
         to_load = true;
         ret &= pipeline_res_.load(p, default_pipeline_);
@@ -597,6 +683,56 @@ bool ResourceMgr::load(const std::filesystem::path& path)
     LogInfo << VAR(path) << VAR(ret) << VAR(to_load);
 
     return to_load && ret;
+}
+
+bool ResourceMgr::load_ocr_model(const std::filesystem::path& path)
+{
+    LogFunc << VAR(path);
+
+    if (!std::filesystem::exists(path) || !std::filesystem::is_directory(path)) {
+        LogError << "path not exists or not a directory" << VAR(path);
+        return false;
+    }
+
+    paths_.emplace_back(path);
+
+    return ocr_res_.lazy_load(path);
+}
+
+bool ResourceMgr::load_pipeline(const std::filesystem::path& path)
+{
+    LogFunc << VAR(path);
+
+    if (!std::filesystem::exists(path)) {
+        LogError << "path not exists" << VAR(path);
+        return false;
+    }
+
+    paths_.emplace_back(path);
+
+    if (std::filesystem::is_directory(path)) {
+        return pipeline_res_.load(path, default_pipeline_);
+    }
+
+    return pipeline_res_.load_file(path, default_pipeline_);
+}
+
+bool ResourceMgr::load_image(const std::filesystem::path& path)
+{
+    LogFunc << VAR(path);
+
+    if (!std::filesystem::exists(path)) {
+        LogError << "path not exists" << VAR(path);
+        return false;
+    }
+
+    paths_.emplace_back(path);
+
+    if (std::filesystem::is_directory(path)) {
+        return template_res_.lazy_load(path);
+    }
+
+    return template_res_.load_file(path);
 }
 
 bool ResourceMgr::check_stop()

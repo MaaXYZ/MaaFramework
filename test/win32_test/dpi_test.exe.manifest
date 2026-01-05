@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<assembly xmlns="urn:schemas-microsoft-com:asm.v1" manifestVersion="1.0" xmlns:asmv3="urn:schemas-microsoft-com:asm.v3">
+  <assemblyIdentity
+    type="win32"
+    name="MaaFramework.DpiTest"
+    version="1.0.0.0"/>
+  <asmv3:application>
+    <asmv3:windowsSettings>
+      <!-- 强制设置为 DPI Unaware 以复现问题 -->
+      <dpiAware xmlns="http://schemas.microsoft.com/SMI/2005/WindowsSettings">false</dpiAware>
+      <dpiAwareness xmlns="http://schemas.microsoft.com/SMI/2016/WindowsSettings">unaware</dpiAwareness>
+    </asmv3:windowsSettings>
+  </asmv3:application>
+</assembly>
+

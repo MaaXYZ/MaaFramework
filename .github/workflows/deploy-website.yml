@@ -11,7 +11,7 @@ jobs:
     deploy:
         runs-on: ubuntu-latest
         env:
-          GH_TOKEN: ${{ secrets.MaaFwDocsDeploy }}
+            GH_TOKEN: ${{ secrets.MaaFwDocsDeploy }}
         steps:
             - run: |
-                gh workflow --repo MaaXYZ/MaaFrameworkWebsite run deploy.yml
+                  gh workflow --repo MaaXYZ/MaaFrameworkWebsite run deploy.yml

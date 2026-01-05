@@ -2,8 +2,8 @@
 
 #include <memory>
 
-#include "MaaUtils/LibraryHolder.h"
 #include "MaaFramework/Instance/MaaCustomController.h"
+#include "MaaUtils/LibraryHolder.h"
 #include "MaaUtils/Platform.h"
 
 #include "Common/Conf.h"
@@ -38,8 +38,11 @@ private:
 class Win32ControlUnitLibraryHolder : public LibraryHolder<Win32ControlUnitLibraryHolder>
 {
 public:
-    static std::shared_ptr<MAA_CTRL_UNIT_NS::Win32ControlUnitAPI>
-        create_control_unit(void* hWnd, MaaWin32ScreencapMethod screencap_method, MaaWin32InputMethod input_method);
+    static std::shared_ptr<MAA_CTRL_UNIT_NS::Win32ControlUnitAPI> create_control_unit(
+        void* hWnd,
+        MaaWin32ScreencapMethod screencap_method,
+        MaaWin32InputMethod mouse_method,
+        MaaWin32InputMethod keyboard_method);
 
 private:
     inline static const std::filesystem::path libname_ = MAA_NS::path("MaaWin32ControlUnit");
@@ -71,6 +74,18 @@ private:
     inline static const std::string version_func_name_ = "MaaCustomControlUnitGetVersion";
     inline static const std::string create_func_name_ = "MaaCustomControlUnitCreate";
     inline static const std::string destroy_func_name_ = "MaaCustomControlUnitDestroy";
+};
+
+class PlayCoverControlUnitLibraryHolder : public LibraryHolder<PlayCoverControlUnitLibraryHolder>
+{
+public:
+    static std::shared_ptr<MAA_CTRL_UNIT_NS::ControlUnitAPI> create_control_unit(const char* address, const char* uuid);
+
+private:
+    inline static const std::filesystem::path libname_ = MAA_NS::path("MaaPlayCoverControlUnit");
+    inline static const std::string version_func_name_ = "MaaPlayCoverControlUnitGetVersion";
+    inline static const std::string create_func_name_ = "MaaPlayCoverControlUnitCreate";
+    inline static const std::string destroy_func_name_ = "MaaPlayCoverControlUnitDestroy";
 };
 
 MAA_NS_END

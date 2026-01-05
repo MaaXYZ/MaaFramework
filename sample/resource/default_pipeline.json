@@ -1,9 +1,60 @@
 {
+    // ===== 使用说明 =====
+    // 1. 此文件为默认参数配置，实际 pipeline JSON 中未指定的字段将使用这里的值
+    // 2. 优先级：节点显式配置 > default_pipeline.json > 内置默认值
+    // 3. 多个 Bundle 加载时，已加载的节点不受后续 Bundle 的默认配置影响
+    // 4. 建议为常用算法/动作配置合理的默认值，减少重复配置
+    // 文档： https://github.com/MaaXYZ/MaaFramework/blob/main/docs/zh_cn/3.1-%E4%BB%BB%E5%8A%A1%E6%B5%81%E6%B0%B4%E7%BA%BF%E5%8D%8F%E8%AE%AE.md#%E9%BB%98%E8%AE%A4%E5%B1%9E%E6%80%A7
+    // ====================
+    // 所有节点的通用默认配置
     "Default": {
-        "rate_limit": 2000
+        "rate_limit": 2000, // 识别间隔（毫秒）
+        "timeout": 30000, // 任务超时（毫秒）
+        "pre_delay": 500, // 识别后到动作前的延迟
+        "post_delay": 200 // 动作后到下一次识别的延迟
     },
+    // ===== 识别算法默认配置 =====
+    // 模板匹配（找图）
     "TemplateMatch": {
         "recognition": "TemplateMatch",
-        "threshold": 0.7
+        "threshold": 0.7, // 匹配阈值，越高越严格
+        "method": 5 // 匹配算法：5=归一化相关系数（推荐）
+        // 可选 v2 格式（与 v1 等效）：
+        // "recognition": {
+        //     "type": "TemplateMatch",
+        //     "param": {
+        //         "threshold": 0.7,
+        //         "method": 5
+        //     }
+        // }
+    },
+    // 文字识别（OCR）
+    "OCR": {
+        "recognition": "OCR",
+        "model": "OCR", // 使用的模型名称（需在 model/ocr 目录下）
+        "threshold": 0.3, // 置信度阈值
+        "order_by": "Horizontal", // 排序方式：Horizontal | Vertical | Area | Length
+        "replace": [] // 文字替换规则列表，格式：[["待替换字符串", "替换为"]]
+    },
+    // ===== 动作类型默认配置 =====
+    // 点击
+    "Click": {
+        "action": "Click",
+        "target": true // 点击识别到的目标位置
+        // "target_offset": [0, 0, 100, 100]  // 在目标区域内随机偏移
+    },
+    // 长按
+    "LongPress": {
+        "action": "LongPress",
+        "target": true,
+        "duration": 1000 // 长按时长（毫秒）
+    },
+    // 滑动
+    "Swipe": {
+        "action": "Swipe",
+        "duration": 500 // 滑动持续时间（毫秒）
+        // "begin": [100, 100],  // 起点坐标（需具体指定）
+        // "end": [500, 100]     // 终点坐标（需具体指定）
     }
+    // 可参考文档补充更多算法和动作的默认配置
 }

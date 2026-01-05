@@ -18,6 +18,12 @@ bool OptionMgr::set_option(MaaGlobalOption key, MaaOptionValue value, MaaOptionV
         return set_stdout_level(value, val_size);
     case MaaGlobalOption_DebugMode:
         return set_debug_mode(value, val_size);
+    case MaaGlobalOption_SaveOnError:
+        return set_save_on_error(value, val_size);
+    case MaaGlobalOption_DrawQuality:
+        return set_draw_quality(value, val_size);
+    case MaaGlobalOption_RecoImageCacheLimit:
+        return set_reco_image_cache_limit(value, val_size);
     default:
         LogError << "Unknown key" << VAR(key) << VAR(value);
         return false;
@@ -84,6 +90,60 @@ bool OptionMgr::set_debug_mode(MaaOptionValue value, MaaOptionValueSize val_size
     debug_mode_ = *reinterpret_cast<const bool*>(value);
 
     LogInfo << "Set debug message" << VAR(debug_mode_);
+
+    return true;
+}
+
+bool OptionMgr::set_save_on_error(MaaOptionValue value, MaaOptionValueSize val_size)
+{
+    LogFunc;
+
+    if (val_size != sizeof(bool)) {
+        LogError << "Invalid value size" << VAR(val_size);
+        return false;
+    }
+
+    save_on_error_ = *reinterpret_cast<const bool*>(value);
+
+    LogInfo << "Set save on error" << VAR(save_on_error_);
+
+    return true;
+}
+
+bool OptionMgr::set_draw_quality(MaaOptionValue value, MaaOptionValueSize val_size)
+{
+    LogFunc;
+
+    if (val_size != sizeof(int)) {
+        LogError << "Invalid value size" << VAR(val_size);
+        return false;
+    }
+
+    int quality = *reinterpret_cast<const int*>(value);
+    if (quality < 0 || quality > 100) {
+        LogError << "Invalid quality value, should be in [0, 100]" << VAR(quality);
+        return false;
+    }
+
+    draw_quality_ = quality;
+
+    LogInfo << "Set draw quality" << VAR(draw_quality_);
+
+    return true;
+}
+
+bool OptionMgr::set_reco_image_cache_limit(MaaOptionValue value, MaaOptionValueSize val_size)
+{
+    LogFunc;
+
+    if (val_size != sizeof(size_t)) {
+        LogError << "Invalid value size" << VAR(val_size);
+        return false;
+    }
+
+    reco_image_cache_limit_ = *reinterpret_cast<const size_t*>(value);
+
+    LogInfo << "Set reco image cache limit" << VAR(reco_image_cache_limit_);
 
     return true;
 }

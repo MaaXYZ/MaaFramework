@@ -37,7 +37,7 @@ std::optional<std::string> DeviceInfo::request_uuid()
     }
 
     auto& uuid_str = output_opt.value();
-    std::erase_if(uuid_str, [](char c) { return !std::isdigit(c) && !std::isalpha(c); });
+    std::erase_if(uuid_str, [](unsigned char c) { return !std::isdigit(c) && !std::isalpha(c); });
 
     return uuid_str;
 }

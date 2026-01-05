@@ -2,18 +2,26 @@ name: mirrorchyan_release_note
 
 on:
   workflow_dispatch:
+    inputs:
+        tag:
+            default: ''
+            required: false
   release:
     types: [edited]
 
 jobs:
-  mirrorchyan:
-    runs-on: macos-latest
+    mirrorchyan:
+        if: ${{ github.repository_owner == 'MaaXYZ' }}
+        runs-on: macos-latest
 
-    steps:
-      - id: uploading
-        uses: MirrorChyan/release-note-action@v1
-        with:
-          mirrorchyan_rid: MaaFramework
+        steps:
+            - id: uploading
+              uses: MirrorChyan/release-note-action@v1
+              with:
+                  mirrorchyan_rid: MaaFramework
+                  version_name: ${{ inputs.tag }}
 
-          upload_token: ${{ secrets.MirrorChyanUploadToken }}
-          github_token: ${{ secrets.GITHUB_TOKEN }}
+                  owner: MaaXYZ
+                  repo: MaaFramework
+                  upload_token: ${{ secrets.MirrorChyanUploadToken }}
+                  github_token: ${{ secrets.GITHUB_TOKEN }}

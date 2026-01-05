@@ -52,6 +52,27 @@ extern "C"
 
     MAA_FRAMEWORK_API MaaTaskId MaaTaskerPostTask(MaaTasker* tasker, const char* entry, const char* pipeline_override);
 
+    /**
+     * @param reco_type Recognition type string
+     * @param reco_param Recognition parameters json
+     * @param image Previous screenshot
+     */
+    MAA_FRAMEWORK_API MaaTaskId
+        MaaTaskerPostRecognition(MaaTasker* tasker, const char* reco_type, const char* reco_param, const MaaImageBuffer* image);
+
+    /**
+     * @param action_type Action type string
+     * @param action_param Action parameters json
+     * @param box Previous recognition position
+     * @param reco_detail Previous recognition details
+     */
+    MAA_FRAMEWORK_API MaaTaskId MaaTaskerPostAction(
+        MaaTasker* tasker,
+        const char* action_type,
+        const char* action_param,
+        const MaaRect* box,
+        const char* reco_detail);
+
     MAA_FRAMEWORK_API MaaStatus MaaTaskerStatus(const MaaTasker* tasker, MaaTaskId id);
 
     MAA_FRAMEWORK_API MaaStatus MaaTaskerWait(const MaaTasker* tasker, MaaTaskId id);
@@ -83,7 +104,23 @@ extern "C"
     );
 
     /**
+     * @param[out] action
+     * @param[out] box
+     * @param[out] success
+     * @param[out] detail_json
+     */
+    MAA_FRAMEWORK_API MaaBool MaaTaskerGetActionDetail(
+        const MaaTasker* tasker,
+        MaaActId action_id,
+        /* out */ MaaStringBuffer* node_name,
+        /* out */ MaaStringBuffer* action,
+        /* out */ MaaRect* box,
+        /* out */ MaaBool* success,
+        /* out */ MaaStringBuffer* detail_json);
+
+    /**
      * @param[out] reco_id
+     * @param[out] action_id
      * @param[out] completed
      */
     MAA_FRAMEWORK_API MaaBool MaaTaskerGetNodeDetail(
@@ -91,6 +128,7 @@ extern "C"
         MaaNodeId node_id,
         /* out */ MaaStringBuffer* node_name,
         /* out */ MaaRecoId* reco_id,
+        /* out */ MaaActId* action_id,
         /* out */ MaaBool* completed);
 
     /**

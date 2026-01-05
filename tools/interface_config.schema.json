@@ -13,7 +13,7 @@
                 "type": {
                     "title": "控制器类型",
                     "type": "string",
-                    "enum": ["Adb", "Win32"]
+                    "enum": ["Adb", "Win32", "PlayCover"]
                 }
             }
         },
@@ -38,6 +38,20 @@
         "win32": {
             "title": "Win32配置",
             "type": "object"
+        },
+        "playcover": {
+            "title": "PlayCover配置",
+            "type": "object",
+            "properties": {
+                "address": {
+                    "title": "服务地址",
+                    "type": "string"
+                },
+                "uuid": {
+                    "title": "Bundle Identifier",
+                    "type": "string"
+                }
+            }
         },
         "resource": {
             "title": "激活的资源",

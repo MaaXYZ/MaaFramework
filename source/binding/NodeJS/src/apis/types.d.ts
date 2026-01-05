@@ -10,6 +10,7 @@ declare global {
         type CtrlId = Id & { __brand: 'CtrlId' }
         type TaskId = Id & { __brand: 'TaskId' }
         type RecoId = Id & { __brand: 'RecoId' }
+        type ActId = Id & { __brand: 'ActId' }
         type NodeId = Id & { __brand: 'NodeId' }
         type SinkId = Id & { __brand: 'SinkId' }
 
@@ -17,16 +18,15 @@ declare global {
 
         type ImageData = ArrayBuffer
 
-        type Rect = {
-            x: number
-            y: number
-            width: number
-            height: number
-        }
-
-        type FlatRect = [x: number, y: number, width: number, height: number]
+        type Point = [x: number, y: number]
+        type Rect = [x: number, y: number, width: number, height: number]
 
         type MaybePromise<T> = T | Promise<T>
+
+        type NotifyMessage<Category extends string> =
+            | `${Category}.Starting`
+            | `${Category}.Succeeded`
+            | `${Category}.Failed`
 
         interface CustomRecognitionSelf {
             context: Context

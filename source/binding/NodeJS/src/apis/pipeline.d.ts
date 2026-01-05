@@ -22,17 +22,26 @@ declare global {
             TemplateMatch: 'Horizontal' | 'Vertical' | 'Score' | 'Random'
             FeatureMatch: 'Horizontal' | 'Vertical' | 'Score' | 'Area' | 'Random'
             ColorMatch: 'Horizontal' | 'Vertical' | 'Score' | 'Area' | 'Random'
-            OCR: 'Horizontal' | 'Vertical' | 'Area' | 'Length' | 'Random'
-            NeuralNetworkClassify: 'Horizontal' | 'Vertical' | 'Score' | 'Random'
-            NeuralNetworkDetect: 'Horizontal' | 'Vertical' | 'Score' | 'Area' | 'Random'
+            OCR: 'Horizontal' | 'Vertical' | 'Area' | 'Length' | 'Random' | 'Expected'
+            NeuralNetworkClassify: 'Horizontal' | 'Vertical' | 'Score' | 'Random' | 'Expected'
+            NeuralNetworkDetect:
+                | 'Horizontal'
+                | 'Vertical'
+                | 'Score'
+                | 'Area'
+                | 'Random'
+                | 'Expected'
         }
 
-        type RecognitionDirectHit = {}
+        type RecognitionDirectHit = {
+            roi?: Rect | NodeName
+            roi_offset?: Rect
+        }
 
         type RecognitionTemplateMatch<Mode> = RequiredIfStrict<
             {
-                roi?: FlatRect | NodeName
-                roi_offset?: FlatRect
+                roi?: Rect | NodeName
+                roi_offset?: Rect
                 template?: MaybeArray<string, Mode>
                 threshold?: MaybeArray<number, Mode>
                 order_by?: OrderByMap['TemplateMatch']
@@ -46,8 +55,8 @@ declare global {
 
         type RecognitionFeatureMatch<Mode> = RequiredIfStrict<
             {
-                roi?: FlatRect | NodeName
-                roi_offset?: FlatRect
+                roi?: Rect | NodeName
+                roi_offset?: Rect
                 template?: MaybeArray<string, Mode>
                 count?: number
                 order_by?: OrderByMap['FeatureMatch']
@@ -61,8 +70,8 @@ declare global {
         >
 
         type RecognitionColorMatch<Mode> = {
-            roi?: FlatRect | NodeName
-            roi_offset?: FlatRect
+            roi?: Rect | NodeName
+            roi_offset?: Rect
         } & RequiredIfStrict<
             | {
                   method?: 4 | 40
@@ -85,8 +94,8 @@ declare global {
 
         type RecognitionOCR<Mode> = RequiredIfStrict<
             {
-                roi?: FlatRect | NodeName
-                roi_offset?: FlatRect
+                roi?: Rect | NodeName
+                roi_offset?: Rect
                 expected?: MaybeArray<string, Mode>
                 threshold?: MaybeArray<number, Mode>
                 replace?: MaybeArray<FixedArray<string, 2>, Mode>
@@ -101,8 +110,8 @@ declare global {
 
         type RecognitionNeuralNetworkClassify<Mode> = RequiredIfStrict<
             {
-                roi?: FlatRect | NodeName
-                roi_offset?: FlatRect
+                roi?: Rect | NodeName
+                roi_offset?: Rect
                 labels?: string[]
                 model?: string
                 expected?: MaybeArray<number, Mode>
@@ -115,8 +124,8 @@ declare global {
 
         type RecognitionNeuralNetworkDetect<Mode> = RequiredIfStrict<
             {
-                roi?: FlatRect | NodeName
-                roi_offset?: FlatRect
+                roi?: Rect | NodeName
+                roi_offset?: Rect
                 labels?: string[]
                 model?: string
                 expected?: MaybeArray<number, Mode>
@@ -130,12 +139,29 @@ declare global {
 
         type RecognitionCustom<Mode> = RequiredIfStrict<
             {
-                roi?: FlatRect | NodeName
-                roi_offset?: FlatRect
+                roi?: Rect | NodeName
+                roi_offset?: Rect
                 custom_recognition?: string
                 custom_recognition_param?: unknown
             },
             'custom_recognition',
+            Mode
+        >
+
+        type RecognitionAnd<Mode> = RequiredIfStrict<
+            {
+                all_of?: Recognition<Mode>['recognition'][]
+                box_index?: number
+            },
+            'all_of',
+            Mode
+        >
+
+        type RecognitionOr<Mode> = RequiredIfStrict<
+            {
+                any_of: Recognition<Mode>['recognition'][]
+            },
+            'any_of',
             Mode
         >
 
@@ -152,6 +178,18 @@ declare global {
                   } & Param,
                   Mode
               >
+
+        type RecognitionType =
+            | 'DirectHit'
+            | 'TemplateMatch'
+            | 'FeatureMatch'
+            | 'ColorMatch'
+            | 'OCR'
+            | 'NeuralNetworkClassify'
+            | 'NeuralNetworkDetect'
+            | 'And'
+            | 'Or'
+            | 'Custom'
 
         type Recognition<Mode> =
             | RemoveIfDump<
@@ -170,41 +208,70 @@ declare global {
             | MixReco<'OCR', RecognitionOCR<Mode>, Mode>
             | MixReco<'NeuralNetworkClassify', RecognitionNeuralNetworkClassify<Mode>, Mode>
             | MixReco<'NeuralNetworkDetect', RecognitionNeuralNetworkDetect<Mode>, Mode>
+            | MixReco<'And', RecognitionAnd<Mode>, Mode>
+            | MixReco<'Or', RecognitionOr<Mode>, Mode>
             | MixReco<'Custom', RecognitionCustom<Mode>, Mode>
 
         type ActionDoNothing = {}
 
         type ActionClick = {
-            target?: true | NodeName | FlatRect
-            target_offset?: FlatRect
+            target?: true | NodeName | Rect
+            target_offset?: Rect
+            contact?: number
         }
 
         type ActionLongPress = {
-            target?: true | NodeName | FlatRect
-            target_offset?: FlatRect
+            target?: true | NodeName | Rect
+            target_offset?: Rect
             duration?: number
+            contact?: number
         }
 
         type ActionSwipe = {
-            begin?: true | NodeName | FlatRect
-            begin_offset?: FlatRect
-            end?: true | NodeName | FlatRect
-            end_offset?: FlatRect
-            duration?: number
+            begin?: true | NodeName | Rect
+            begin_offset?: Rect
+            end?: true | NodeName | Rect | (true | NodeName | Rect)[]
+            end_offset?: Rect | Rect[]
+            duration?: number | number[]
+            end_hold?: number | number[]
+            only_hover?: boolean
+            contact?: number
         }
 
         type ActionMultiSwipe<Mode> = RequiredIfStrict<
             {
                 swipes?: {
                     starting?: number
-                    begin?: true | NodeName | FlatRect
-                    begin_offset?: FlatRect
-                    end?: true | NodeName | FlatRect
-                    end_offset?: FlatRect
-                    duration?: number
+                    begin?: true | NodeName | Rect
+                    begin_offset?: Rect
+                    end?: true | NodeName | Rect | (true | NodeName | Rect)[]
+                    end_offset?: Rect | Rect[]
+                    duration?: number | number[]
+                    end_hold?: number | number[]
+                    only_hover?: boolean
+                    contact?: number
                 }[]
             },
             'swipes',
+            Mode
+        >
+
+        type ActionTouch<Mode> = RequiredIfStrict<
+            {
+                contact?: number
+                target?: true | NodeName | Rect
+                target_offset?: Rect
+                pressure?: number
+            },
+            never,
+            Mode
+        >
+
+        type ActionTouchUp<Mode> = RequiredIfStrict<
+            {
+                contact?: number
+            },
+            never,
             Mode
         >
 
@@ -220,6 +287,14 @@ declare global {
             {
                 key?: number
                 duration?: number
+            },
+            'key',
+            Mode
+        >
+
+        type ActionSingleKey<Mode> = RequiredIfStrict<
+            {
+                key?: number
             },
             'key',
             Mode
@@ -251,6 +326,11 @@ declare global {
 
         type ActionStopTask = {}
 
+        type ActionScroll = {
+            dx?: number
+            dy?: number
+        }
+
         type ActionCommand<Mode> = RequiredIfStrict<
             {
                 exec?: string
@@ -261,10 +341,19 @@ declare global {
             Mode
         >
 
+        type ActionShell<Mode> = RequiredIfStrict<
+            {
+                cmd?: string
+                timeout?: number
+            },
+            'cmd',
+            Mode
+        >
+
         type ActionCustom<Mode> = RequiredIfStrict<
             {
-                target?: true | NodeName | FlatRect
-                target_offset?: FlatRect
+                target?: true | NodeName | Rect
+                target_offset?: Rect
                 custom_action?: string
                 custom_action_param?: unknown
             },
@@ -286,6 +375,29 @@ declare global {
                   }
               }
 
+        type ActionType =
+            | 'DoNothing'
+            | 'Click'
+            | 'LongPress'
+            | 'Swipe'
+            | 'MultiSwipe'
+            | 'TouchDown'
+            | 'TouchMove'
+            | 'TouchUp'
+            | 'Key'
+            | 'ClickKey'
+            | 'LongPressKey'
+            | 'KeyDown'
+            | 'KeyUp'
+            | 'InputText'
+            | 'StartApp'
+            | 'StopApp'
+            | 'Scroll'
+            | 'StopTask'
+            | 'Command'
+            | 'Shell'
+            | 'Custom'
+
         type Action<Mode> =
             | RemoveIfDump<
                   {
@@ -301,20 +413,33 @@ declare global {
             | MixAct<'LongPress', ActionLongPress, Mode>
             | MixAct<'Swipe', ActionSwipe, Mode>
             | MixAct<'MultiSwipe', ActionMultiSwipe<Mode>, Mode>
+            | MixAct<'TouchDown', ActionTouch<Mode>, Mode>
+            | MixAct<'TouchMove', ActionTouch<Mode>, Mode>
+            | MixAct<'TouchUp', ActionTouchUp<Mode>, Mode>
             | MixAct<'Key', ActionClickKey<Mode>, Mode>
             | MixAct<'ClickKey', ActionClickKey<Mode>, Mode>
             | MixAct<'LongPressKey', ActionLongPressKey<Mode>, Mode>
+            | MixAct<'KeyDown', ActionSingleKey<Mode>, Mode>
+            | MixAct<'KeyUp', ActionSingleKey<Mode>, Mode>
             | MixAct<'InputText', ActionInputText<Mode>, Mode>
             | MixAct<'StartApp', ActionStartApp<Mode>, Mode>
             | MixAct<'StopApp', ActionStopApp<Mode>, Mode>
+            | MixAct<'Scroll', ActionScroll, Mode>
             | MixAct<'StopTask', ActionStopTask, Mode>
             | MixAct<'Command', ActionCommand<Mode>, Mode>
+            | MixAct<'Shell', ActionShell<Mode>, Mode>
             | MixAct<'Custom', ActionCustom<Mode>, Mode>
+
+        type NodeAttr = {
+            name: string
+            jump_back: boolean
+            anchor: boolean
+        }
 
         type WaitFreeze = {
             time?: number
-            target?: true | NodeName | FlatRect
-            target_offset?: FlatRect
+            target?: true | NodeName | Rect
+            target_offset?: Rect
             threshold?: number
             method?: 1 | 3 | 5
             rate_limit?: number
@@ -322,19 +447,23 @@ declare global {
         }
 
         type General<Mode> = {
-            next?: MaybeArray<NodeName, Mode>
-            interrupt?: MaybeArray<NodeName, Mode>
-            is_sub?: boolean
+            next?: MaybeArray<NodeAttr, Mode>
             rate_limit?: number
             timeout?: number
-            on_error?: MaybeArray<string, Mode>
+            on_error?: MaybeArray<NodeAttr, Mode>
+            anchor?: MaybeArray<string, Mode>
             inverse?: boolean
             enabled?: boolean
-            pre_delay?: boolean
-            post_delay?: boolean
+            max_hit?: number
+            pre_delay?: number
+            post_delay?: number
             pre_wait_freezes?: RemoveIfDump<number, Mode> | WaitFreeze
             post_wait_freezes?: RemoveIfDump<number, Mode> | WaitFreeze
+            repeat?: number
+            repeat_delay?: number
+            repeat_wait_freezes?: RemoveIfDump<number, Mode> | WaitFreeze
             focus?: unknown
+            attach?: Record<string, unknown>
         }
 
         type Task = Recognition<ModeFragment> & Action<ModeFragment> & General<ModeFragment>

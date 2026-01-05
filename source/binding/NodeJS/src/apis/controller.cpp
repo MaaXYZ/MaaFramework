@@ -195,6 +195,12 @@ maajs::ValueType ControllerImpl::post_key_up(maajs::ValueType self, maajs::EnvTy
     return maajs::CallCtorHelper(ExtContext::get(env)->jobCtor, self, id);
 }
 
+maajs::ValueType ControllerImpl::post_scroll(maajs::ValueType self, maajs::EnvType, int32_t dx, int32_t dy)
+{
+    auto id = MaaControllerPostScroll(controller, dx, dy);
+    return maajs::CallCtorHelper(ExtContext::get(env)->jobCtor, self, id);
+}
+
 maajs::ValueType ControllerImpl::post_screencap(maajs::ValueType self, maajs::EnvType)
 {
     auto id = MaaControllerPostScreencap(controller);
@@ -298,6 +304,7 @@ void ControllerImpl::init_proto(maajs::ObjectType proto, maajs::FunctionType)
     MAA_BIND_FUNC(proto, "post_touch_up", ControllerImpl::post_touch_up);
     MAA_BIND_FUNC(proto, "post_key_down", ControllerImpl::post_key_down);
     MAA_BIND_FUNC(proto, "post_key_up", ControllerImpl::post_key_up);
+    MAA_BIND_FUNC(proto, "post_scroll", ControllerImpl::post_scroll);
     MAA_BIND_FUNC(proto, "post_screencap", ControllerImpl::post_screencap);
     MAA_BIND_FUNC(proto, "status", ControllerImpl::status);
     MAA_BIND_FUNC(proto, "wait", ControllerImpl::wait);
@@ -422,8 +429,8 @@ maajs::PromiseType Win32ControllerImpl::find(maajs::EnvType env)
 
 Win32ControllerImpl* Win32ControllerImpl::ctor(const maajs::CallbackInfo& info)
 {
-    auto [hwnd, screencap_methods, input_methods] = maajs::UnWrapArgs<Win32ControllerCtorParam, void>(info);
-    auto ctrl = MaaWin32ControllerCreate(reinterpret_cast<void*>(hwnd), screencap_methods, input_methods);
+    auto [hwnd, screencap_method, mouse_method, keyboard_method] = maajs::UnWrapArgs<Win32ControllerCtorParam, void>(info);
+    auto ctrl = MaaWin32ControllerCreate(reinterpret_cast<void*>(hwnd), screencap_method, mouse_method, keyboard_method);
     if (!ctrl) {
         return nullptr;
     }
@@ -442,6 +449,30 @@ maajs::ValueType load_win32_controller(maajs::EnvType env)
     ExtContext::get(env)->win32ControllerCtor = maajs::PersistentFunction(ctor);
     return ctor;
 }
+
+#ifdef __APPLE__
+PlayCoverControllerImpl* PlayCoverControllerImpl::ctor(const maajs::CallbackInfo& info)
+{
+    auto [address, uuid] = maajs::UnWrapArgs<PlayCoverControllerCtorParam, void>(info);
+    auto ctrl = MaaPlayCoverControllerCreate(address.c_str(), uuid.c_str());
+    if (!ctrl) {
+        return nullptr;
+    }
+    return new PlayCoverControllerImpl(ctrl, true);
+}
+
+void PlayCoverControllerImpl::init_proto(maajs::ObjectType, maajs::FunctionType)
+{
+}
+
+maajs::ValueType load_playcover_controller(maajs::EnvType env)
+{
+    maajs::FunctionType ctor;
+    maajs::NativeClass<PlayCoverControllerImpl>::init<ControllerImpl>(env, ctor, &ExtContext::get(env)->controllerCtor);
+    ExtContext::get(env)->playcoverControllerCtor = maajs::PersistentFunction(ctor);
+    return ctor;
+}
+#endif
 
 DbgControllerImpl* DbgControllerImpl::ctor(const maajs::CallbackInfo& info)
 {
@@ -477,14 +508,15 @@ void CustomControllerContext::add_bind(
     std::string name,
     std::string func_name,
     int argc,
-    std::shared_ptr<maajs::ObjectRefType> actor)
+    std::shared_ptr<maajs::ObjectRefType> actor,
+    std::function<maajs::ValueType(maajs::EnvType)> fallback)
 {
     callbacks[name] = new maajs::CallbackContext(
         maajs::MakeFunction(
             env,
             func_name.c_str(),
             argc,
-            [actor, name](const auto& info) -> maajs::ValueType {
+            [actor, name, fallback](const auto& info) -> maajs::ValueType {
                 auto func = actor->Value()[name].AsValue();
                 if (func.IsFunction()) {
                     std::vector<maajs::ValueType> args;
@@ -495,7 +527,7 @@ void CustomControllerContext::add_bind(
                     return func.As<maajs::FunctionType>().Call(actor->Value(), args);
                 }
                 else {
-                    return maajs::BooleanType::New(info.Env(), false);
+                    return fallback(info.Env());
                 }
             },
             actor),
@@ -534,20 +566,29 @@ CustomControllerImpl* CustomControllerImpl::ctor(const maajs::CallbackInfo& info
         return nullptr;
     }
 
-    context->add_bind(info.Env(), "connect", "CustomConnect", 0, actor);
-    context->add_bind(info.Env(), "request_uuid", "CustomRequestUuid", 0, actor);
-    context->add_bind(info.Env(), "start_app", "CustomStartApp", 1, actor);
-    context->add_bind(info.Env(), "stop_app", "CustomStopApp", 1, actor);
-    context->add_bind(info.Env(), "screencap", "CustomScreencap", 0, actor);
-    context->add_bind(info.Env(), "click", "CustomClick", 2, actor);
-    context->add_bind(info.Env(), "swipe", "CustomSwipe", 5, actor);
-    context->add_bind(info.Env(), "touch_down", "CustomTouchDown", 4, actor);
-    context->add_bind(info.Env(), "touch_move", "CustomTouchMove", 4, actor);
-    context->add_bind(info.Env(), "touch_up", "CustomTouchUp", 1, actor);
-    context->add_bind(info.Env(), "click_key", "CustomClickKey", 1, actor);
-    context->add_bind(info.Env(), "input_text", "CustomInputText", 1, actor);
-    context->add_bind(info.Env(), "key_down", "CustomKeyDown", 1, actor);
-    context->add_bind(info.Env(), "key_up", "CustomKeyUp", 1, actor);
+    auto ret_false = [](maajs::EnvType env2) {
+        return maajs::BooleanType::New(env2, false);
+    };
+    auto ret_null = [](maajs::EnvType env2) {
+        return env2.Null();
+    };
+
+    context->add_bind(info.Env(), "connect", "CustomConnect", 0, actor, ret_false);
+    context->add_bind(info.Env(), "request_uuid", "CustomRequestUuid", 0, actor, ret_null);
+    context->add_bind(info.Env(), "get_features", "CustomGetFeatures", 0, actor, ret_null);
+    context->add_bind(info.Env(), "start_app", "CustomStartApp", 1, actor, ret_false);
+    context->add_bind(info.Env(), "stop_app", "CustomStopApp", 1, actor, ret_false);
+    context->add_bind(info.Env(), "screencap", "CustomScreencap", 0, actor, ret_null);
+    context->add_bind(info.Env(), "click", "CustomClick", 2, actor, ret_false);
+    context->add_bind(info.Env(), "swipe", "CustomSwipe", 5, actor, ret_false);
+    context->add_bind(info.Env(), "touch_down", "CustomTouchDown", 4, actor, ret_false);
+    context->add_bind(info.Env(), "touch_move", "CustomTouchMove", 4, actor, ret_false);
+    context->add_bind(info.Env(), "touch_up", "CustomTouchUp", 1, actor, ret_false);
+    context->add_bind(info.Env(), "click_key", "CustomClickKey", 1, actor, ret_false);
+    context->add_bind(info.Env(), "input_text", "CustomInputText", 1, actor, ret_false);
+    context->add_bind(info.Env(), "key_down", "CustomKeyDown", 1, actor, ret_false);
+    context->add_bind(info.Env(), "key_up", "CustomKeyUp", 1, actor, ret_false);
+    context->add_bind(info.Env(), "scroll", "CustomScroll", 2, actor, ret_false);
 
     auto impl = new CustomControllerImpl(ctrl, true);
     impl->actor = actor;

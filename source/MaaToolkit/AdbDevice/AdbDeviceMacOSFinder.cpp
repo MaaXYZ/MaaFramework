@@ -8,9 +8,9 @@ MAA_TOOLKIT_NS_BEGIN
 
 using namespace path_literals;
 
-AdbDeviceMacOSFinder::AdbDeviceMacOSFinder()
+const AdbDeviceFinder::EmulatorConstDataMap& AdbDeviceMacOSFinder::get_emulator_const_data() const
 {
-    std::unordered_map<std::string, EmulatorConstantData> emulators = {
+    static const EmulatorConstDataMap kConstData {
         { "Nox",
           { .keyword = "Nox", .adb_candidate_paths = { "adb"_path }, .adb_common_serials = { "127.0.0.1:62001", "127.0.0.1:59865" } } },
 
@@ -35,7 +35,7 @@ AdbDeviceMacOSFinder::AdbDeviceMacOSFinder()
             .adb_common_serials = { "127.0.0.1:5555", "127.0.0.1:5556", "127.0.0.1:5565", "127.0.0.1:5575" } } },
     };
 
-    set_emulator_const_data(std::move(emulators));
+    return kConstData;
 }
 
 MAA_TOOLKIT_NS_END

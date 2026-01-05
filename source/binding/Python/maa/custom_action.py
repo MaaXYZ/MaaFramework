@@ -8,6 +8,20 @@ from .define import *
 
 
 class CustomAction(ABC):
+    """自定义动作基类 / Custom action base class
+
+    用于实现自定义的 Pipeline 动作。继承此类并实现 run 方法，
+    然后通过 Resource.register_custom_action 或 AgentServer.register_custom_action 注册。
+    Used to implement custom Pipeline actions. Inherit this class and implement the run method,
+    then register via Resource.register_custom_action or AgentServer.register_custom_action.
+
+    Example:
+        class MyAction(CustomAction):
+            def run(self, context, argv):
+                context.tasker.controller.post_click(100, 100).wait()
+                return True
+    """
+
     _handle: MaaCustomActionCallback
 
     def __init__(self):
@@ -15,6 +29,17 @@ class CustomAction(ABC):
 
     @dataclass
     class RunArg:
+        """run 方法的参数 / Arguments for run method
+
+        Attributes:
+            task_detail: 当前任务详情 / Current task detail
+            node_name: 当前节点名 / Current node name
+            custom_action_name: 自定义动作名 / Custom action name
+            custom_action_param: 自定义动作参数 (JSON 字符串) / Custom action parameter (JSON string)
+            reco_detail: 前序识别详情 / Previous recognition detail
+            box: 前序识别位置 / Previous recognition box
+        """
+
         task_detail: TaskDetail
         node_name: str
         custom_action_name: str
@@ -24,6 +49,12 @@ class CustomAction(ABC):
 
     @dataclass
     class RunResult:
+        """run 方法的返回结果 / Return result of run method
+
+        Attributes:
+            success: 动作是否执行成功 / Whether the action executed successfully
+        """
+
         success: bool
 
     @abstractmethod
@@ -32,6 +63,15 @@ class CustomAction(ABC):
         context: Context,
         argv: RunArg,
     ) -> Union[RunResult, bool]:
+        """执行自定义动作 / Execute custom action
+
+        Args:
+            context: 任务上下文，可用于执行其他操作 / Task context, can be used to execute other operations
+            argv: 动作参数 / Action arguments
+
+        Returns:
+            Union[RunResult, bool]: 执行结果，可返回 RunResult 或 bool / Execution result, can return RunResult or bool
+        """
         raise NotImplementedError
 
     @property

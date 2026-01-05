@@ -19,6 +19,7 @@ public:
 
     virtual bool override_pipeline(const json::value& pipeline_override) = 0;
     virtual bool override_next(const std::string& node_name, const std::vector<std::string>& next) = 0;
+    virtual bool override_image(const std::string& image_name, const cv::Mat& image) = 0;
     virtual std::optional<json::object> get_node_data(const std::string& node_name) const = 0;
 };
 
@@ -42,6 +43,9 @@ public:
     virtual bool set_option(MaaResOption key, MaaOptionValue value, MaaOptionValueSize val_size) = 0;
 
     virtual MaaResId post_bundle(const std::filesystem::path& path) = 0;
+    virtual MaaResId post_ocr_model(const std::filesystem::path& path) = 0;
+    virtual MaaResId post_pipeline(const std::filesystem::path& path) = 0;
+    virtual MaaResId post_image(const std::filesystem::path& path) = 0;
 
     virtual MaaStatus status(MaaResId res_id) const = 0;
     virtual MaaStatus wait(MaaResId res_id) const = 0;
@@ -58,6 +62,8 @@ public:
 
     virtual std::string get_hash() const = 0;
     virtual std::vector<std::string> get_node_list() const = 0;
+    virtual std::vector<std::string> get_custom_recognition_list() const = 0;
+    virtual std::vector<std::string> get_custom_action_list() const = 0;
 };
 
 struct MaaController : public IMaaEventDispatcher
@@ -83,12 +89,17 @@ public:
     virtual MaaCtrlId post_key_down(int keycode) = 0;
     virtual MaaCtrlId post_key_up(int keycode) = 0;
 
+    virtual MaaCtrlId post_scroll(int dx, int dy) = 0;
+
+    virtual MaaCtrlId post_shell(const std::string& cmd, int64_t timeout = 20000) = 0;
+
     virtual MaaStatus status(MaaCtrlId ctrl_id) const = 0;
     virtual MaaStatus wait(MaaCtrlId ctrl_id) const = 0;
     virtual bool connected() const = 0;
     virtual bool running() const = 0;
 
     virtual cv::Mat cached_image() const = 0;
+    virtual std::string cached_shell_output() const = 0;
     virtual std::string get_uuid() = 0;
 };
 
@@ -104,6 +115,12 @@ public:
     virtual bool set_option(MaaTaskerOption key, MaaOptionValue value, MaaOptionValueSize val_size) = 0;
 
     virtual MaaTaskId post_task(const std::string& entry, const json::value& pipeline_override) = 0;
+    virtual MaaTaskId post_recognition(const std::string& reco_type, const json::value& reco_param, const cv::Mat& image) = 0;
+    virtual MaaTaskId post_action(
+        const std::string& action_type,
+        const json::value& action_param,
+        const cv::Rect& box,
+        const std::string& reco_detail) = 0;
 
     virtual MaaStatus status(MaaTaskId task_id) const = 0;
     virtual MaaStatus wait(MaaTaskId task_id) const = 0;
@@ -119,6 +136,7 @@ public:
     virtual std::optional<MAA_TASK_NS::TaskDetail> get_task_detail(MaaTaskId task_id) const = 0;
     virtual std::optional<MAA_TASK_NS::NodeDetail> get_node_detail(MaaNodeId node_id) const = 0;
     virtual std::optional<MAA_TASK_NS::RecoResult> get_reco_result(MaaRecoId reco_id) const = 0;
+    virtual std::optional<MAA_TASK_NS::ActionResult> get_action_result(MaaActId action_id) const = 0;
     virtual std::optional<MaaNodeId> get_latest_node(const std::string& node_name) const = 0;
 
     virtual MaaSinkId add_context_sink(MaaEventCallback callback, void* trans_arg) = 0;
@@ -133,13 +151,18 @@ public:
 
     virtual MaaTaskId run_task(const std::string& entry, const json::value& pipeline_override) = 0;
     virtual MaaRecoId run_recognition(const std::string& entry, const json::value& pipeline_override, const cv::Mat& image) = 0;
-    virtual MaaNodeId
+    virtual MaaActId
         run_action(const std::string& entry, const json::value& pipeline_override, const cv::Rect& box, const std::string& reco_detail) = 0;
 
     virtual MaaContext* clone() const = 0;
 
     virtual MaaTaskId task_id() const = 0;
     virtual MaaTasker* tasker() const = 0;
+
+    virtual void set_anchor(const std::string& anchor_name, const std::string& node_name) = 0;
+    virtual std::optional<std::string> get_anchor(const std::string& anchor_name) const = 0;
+    virtual uint get_hit_count(const std::string& node_name) const = 0;
+    virtual void clear_hit_count(const std::string& node_name) = 0;
 };
 
 struct MaaAgentClient
@@ -158,4 +181,6 @@ public:
     virtual bool connected() = 0;
     virtual bool alive() = 0;
     virtual void set_timeout(const std::chrono::milliseconds& timeout) = 0;
+    virtual std::vector<std::string> get_custom_recognition_list() const = 0;
+    virtual std::vector<std::string> get_custom_action_list() const = 0;
 };

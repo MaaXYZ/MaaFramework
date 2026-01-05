@@ -26,7 +26,7 @@ bool MinitouchInput::parse(const json::value& config)
         return false;
     }
 
-    arch_list_ = jarch.as_collection<std::string>();
+    arch_list_ = jarch.as<std::vector<std::string>>();
 
     return invoke_app_->parse(config) && MtouchHelper::parse(config) && adb_shell_input_->parse(config);
 }
@@ -63,6 +63,15 @@ bool MinitouchInput::init()
     return invoke_and_read_info();
 }
 
+MaaControllerFeature MinitouchInput::get_features() const
+{
+    MaaControllerFeature feat = MaaControllerFeature_UseMouseDownAndUpInsteadOfClick;
+    if (adb_shell_input_) {
+        feat |= adb_shell_input_->get_features() & MaaControllerFeature_UseKeyboardDownAndUpInsteadOfClick;
+    }
+    return feat;
+}
+
 bool MinitouchInput::click_key(int key)
 {
     if (!adb_shell_input_) {
@@ -81,16 +90,6 @@ bool MinitouchInput::input_text(const std::string& text)
     }
 
     return adb_shell_input_->input_text(text);
-}
-
-bool MinitouchInput::is_key_down_up_availabled() const
-{
-    if (!adb_shell_input_) {
-        LogError << "adb_shell_input_ is nullptr";
-        return false;
-    }
-
-    return adb_shell_input_->is_key_down_up_availabled();
 }
 
 bool MinitouchInput::key_down(int key)

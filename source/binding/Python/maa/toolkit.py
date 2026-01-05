@@ -10,6 +10,20 @@ from .library import Library
 
 @dataclass
 class AdbDevice:
+    """ADB 设备信息 / ADB device information
+
+    通过 Toolkit.find_adb_devices 获取。
+    Obtained via Toolkit.find_adb_devices.
+
+    Attributes:
+        name: 设备名称 / Device name
+        adb_path: adb 可执行文件路径 / Path to adb executable
+        address: 设备地址 (如 127.0.0.1:5555) / Device address (e.g., 127.0.0.1:5555)
+        screencap_methods: 可用的截图方式位掩码 / Available screenshot methods bitmask
+        input_methods: 可用的输入方式位掩码 / Available input methods bitmask
+        config: 额外配置信息 / Extra configuration
+    """
+
     name: str
     adb_path: Path
     address: str
@@ -20,17 +34,42 @@ class AdbDevice:
 
 @dataclass
 class DesktopWindow:
+    """桌面窗口信息 / Desktop window information
+
+    通过 Toolkit.find_desktop_windows 获取。
+    Obtained via Toolkit.find_desktop_windows.
+
+    Attributes:
+        hwnd: 窗口句柄 / Window handle
+        class_name: 窗口类名 / Window class name
+        window_name: 窗口标题 / Window title
+    """
+
     hwnd: ctypes.c_void_p
     class_name: str
     window_name: str
 
 
 class Toolkit:
+    """工具包 / Toolkit
+
+    提供设备发现、配置初始化等辅助功能。
+    Provides auxiliary functions such as device discovery and configuration initialization.
+    """
 
     ### public ###
 
     @staticmethod
     def init_option(user_path: Union[str, Path], default_config: Dict = {}) -> bool:
+        """从 user_path 中加载全局配置 / Load global config from user_path
+
+        Args:
+            user_path: 配置存储路径 / Config storage path
+            default_config: 默认配置 / Default config
+
+        Returns:
+            bool: 是否成功 / Whether successful
+        """
         Toolkit._set_api_properties()
 
         return bool(
@@ -44,6 +83,14 @@ class Toolkit:
     def find_adb_devices(
         specified_adb: Optional[Union[str, Path]] = None
     ) -> List[AdbDevice]:
+        """搜索所有已知安卓模拟器 / Search all known Android emulators
+
+        Args:
+            specified_adb: 可选，指定 adb 路径进行搜索 / Optional, search using specified adb path
+
+        Returns:
+            List[AdbDevice]: 设备列表 / Device list
+        """
         Toolkit._set_api_properties()
 
         list_handle = Library.toolkit().MaaToolkitAdbDeviceListCreate()
@@ -90,6 +137,11 @@ class Toolkit:
 
     @staticmethod
     def find_desktop_windows() -> List[DesktopWindow]:
+        """查询所有窗口信息 / Query all window info
+
+        Returns:
+            List[DesktopWindow]: 窗口列表 / Window list
+        """
         Toolkit._set_api_properties()
 
         list_handle = Library.toolkit().MaaToolkitDesktopWindowListCreate()

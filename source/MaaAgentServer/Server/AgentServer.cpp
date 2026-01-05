@@ -9,7 +9,6 @@
 #include "MaaUtils/Logger.h"
 #include "RemoteInstance/RemoteContext.h"
 
-
 MAA_AGENT_SERVER_NS_BEGIN
 
 bool AgentServer::start_up(const std::string& identifier)
@@ -120,6 +119,9 @@ bool AgentServer::handle_inserted_request(const json::value& j)
     LogInfo << VAR(j) << VAR(ipc_addr_);
 
     if (handle_image_header(j)) {
+        return true;
+    }
+    else if (handle_image_encoded_header(j)) {
         return true;
     }
     else if (handle_recognition_request(j)) {

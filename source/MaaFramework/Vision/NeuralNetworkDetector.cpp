@@ -1,6 +1,12 @@
 #include "NeuralNetworkDetector.h"
 
+#include <algorithm>
+#include <cctype>
+#include <map>
 #include <ranges>
+#include <sstream>
+
+#include <boost/regex.hpp>
 
 #include <onnxruntime/onnxruntime_cxx_api.h>
 
@@ -11,12 +17,12 @@ MAA_VISION_NS_BEGIN
 
 NeuralNetworkDetector::NeuralNetworkDetector(
     cv::Mat image,
-    cv::Rect roi,
+    std::vector<cv::Rect> rois,
     NeuralNetworkDetectorParam param,
     std::shared_ptr<Ort::Session> session,
     const Ort::MemoryInfo& memory_info,
     std::string name)
-    : VisionBase(std::move(image), std::move(roi), std::move(name))
+    : VisionBase(std::move(image), std::move(rois), std::move(name))
     , param_(std::move(param))
     , session_(std::move(session))
     , memory_info_(memory_info)
@@ -26,7 +32,7 @@ NeuralNetworkDetector::NeuralNetworkDetector(
 
 void NeuralNetworkDetector::analyze()
 {
-    LogFunc << name_ << VAR(uid_);
+    LogFunc << name_;
 
     if (!session_) {
         LogError << "OrtSession not loaded";
@@ -35,17 +41,20 @@ void NeuralNetworkDetector::analyze()
 
     auto start_time = std::chrono::steady_clock::now();
 
-    auto results = detect();
-    add_results(std::move(results), param_.expected, param_.thresholds);
+    auto labels = param_.labels.empty() ? parse_labels_from_metadata() : param_.labels;
+    while (next_roi()) {
+        auto results = detect(labels);
+        add_results(std::move(results), param_.expected, param_.thresholds);
+    }
 
     cherry_pick();
 
     auto cost = duration_since(start_time);
-    LogDebug << name_ << VAR(uid_) << VAR(all_results_) << VAR(filtered_results_) << VAR(best_result_) << VAR(cost) << VAR(param_.model)
-             << VAR(param_.labels) << VAR(param_.expected) << VAR(param_.thresholds);
+    LogDebug << name_ << VAR(all_results_) << VAR(filtered_results_) << VAR(best_result_) << VAR(cost) << VAR(param_.model) << VAR(labels)
+             << VAR(param_.expected) << VAR(param_.thresholds);
 }
 
-NeuralNetworkDetector::ResultsVec NeuralNetworkDetector::detect() const
+NeuralNetworkDetector::ResultsVec NeuralNetworkDetector::detect(const std::vector<std::string>& labels) const
 {
     if (!session_) {
         LogError << "OrtSession not loaded";
@@ -128,7 +137,7 @@ NeuralNetworkDetector::ResultsVec NeuralNetworkDetector::detect() const
 
             Result res;
             res.cls_index = j - kConfidenceIndex;
-            res.label = res.cls_index < param_.labels.size() ? param_.labels[res.cls_index] : std::format("Unkonwn_{}", res.cls_index);
+            res.label = res.cls_index < labels.size() ? labels[res.cls_index] : std::format("Unknown_{}", res.cls_index);
             res.box = box;
             res.score = score;
 
@@ -148,8 +157,18 @@ NeuralNetworkDetector::ResultsVec NeuralNetworkDetector::detect() const
 
 void NeuralNetworkDetector::add_results(ResultsVec results, const std::vector<int>& expected, const std::vector<double>& thresholds)
 {
+    if (expected.empty()) {
+        // expected 为空时，所有结果均可用，但仍需满足默认阈值
+        double default_threshold = thresholds.empty() ? NeuralNetworkDetectorParam::kDefaultThreshold : thresholds.front();
+        std::ranges::copy_if(results, std::back_inserter(filtered_results_), [&](const auto& res) {
+            return res.score >= default_threshold;
+        });
+        merge_vector_(all_results_, std::move(results));
+        return;
+    }
+
     if (expected.size() != thresholds.size()) {
-        LogError << name_ << VAR(uid_) << "expected.size() != thresholds.size()" << VAR(expected) << VAR(thresholds);
+        LogError << name_ << "expected.size() != thresholds.size()" << VAR(expected) << VAR(thresholds);
         return;
     }
 
@@ -222,10 +241,93 @@ void NeuralNetworkDetector::sort_(ResultsVec& results) const
     case ResultOrderBy::Random:
         sort_by_random_(results);
         break;
+    case ResultOrderBy::Expected:
+        sort_by_expected_index_(results, param_.expected);
+        break;
     default:
         LogError << "Not supported order by" << VAR(param_.order_by);
         break;
     }
+}
+
+std::vector<std::string> NeuralNetworkDetector::parse_labels_from_metadata() const
+{
+    if (!session_) {
+        return {};
+    }
+
+    Ort::AllocatorWithDefaultOptions allocator;
+    Ort::ModelMetadata metadata = session_->GetModelMetadata();
+
+    std::string names_str;
+
+    constexpr std::array<std::string_view, 4> possible_keys = { "names", "name", "labels", "class_names" };
+    for (const std::string_view& key : possible_keys) {
+        auto ptr = metadata.LookupCustomMetadataMapAllocated(key.data(), allocator);
+        if (!ptr) {
+            continue;
+        }
+        names_str = ptr.get();
+        break;
+    }
+
+    if (names_str.empty()) {
+        LogDebug << name_ << "No metadata found with keys: names, name, labels, class_names";
+        return {};
+    }
+
+    LogDebug << name_ << "Found metadata" << VAR(names_str);
+
+    // 解析字符串格式：{0: 'white_dog', 1: 'white_cat', 2: 'black_dog', 3: 'black_cat'}
+    // 支持单引号和双引号
+    std::vector<std::string> labels;
+
+    // 解析 Python 字典格式：{0: 'label1', 1: 'label2', ...}
+    // 正则表达式匹配：数字: 引号内的字符串
+    // 支持单引号和双引号，以及可能的空格
+    boost::regex dict_pattern(R"((\d+)\s*:\s*['"]([^'"]+)['"])");
+    boost::sregex_iterator iter(names_str.begin(), names_str.end(), dict_pattern);
+    boost::sregex_iterator end;
+
+    std::map<int, std::string> label_map;
+    for (; iter != end; ++iter) {
+        const boost::smatch& match = *iter;
+        if (match.size() < 3) {
+            continue; // 跳过不完整的匹配
+        }
+
+        const std::string& index_str = match[1].str();
+        int index = std::stoi(index_str);
+
+        const std::string& label = match[2].str();
+        if (label.empty()) {
+            continue; // 跳过空标签
+        }
+
+        label_map[index] = label;
+    }
+
+    if (label_map.empty()) {
+        LogWarn << name_ << "Failed to parse metadata as Python dict format" << VAR(names_str);
+        return {};
+    }
+
+    // 找到最大索引，创建对应大小的向量
+    int max_index = label_map.rbegin()->first;
+    if (max_index < 0 || max_index > 10000) {
+        LogWarn << name_ << "Invalid max_index" << VAR(max_index);
+        return {};
+    }
+
+    labels.resize(static_cast<size_t>(max_index + 1));
+    for (const auto& [index, label] : label_map) {
+        if (index >= 0 && static_cast<size_t>(index) < labels.size()) {
+            labels[static_cast<size_t>(index)] = label;
+        }
+    }
+
+    LogDebug << name_ << "Parsed labels from metadata" << VAR(labels.size());
+    return labels;
 }
 
 MAA_VISION_NS_END

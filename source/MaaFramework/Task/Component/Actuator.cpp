@@ -3,12 +3,13 @@
 #include "CommandAction.h"
 #include "Controller/ControllerAgent.h"
 #include "CustomAction.h"
+#include "MaaUtils/JsonExt.hpp"
 #include "MaaUtils/Logger.h"
 #include "Vision/TemplateComparator.h"
 
 MAA_TASK_NS_BEGIN
 
-std::minstd_rand Actuator::rand_engine_(std::random_device {}());
+std::mt19937 Actuator::rand_engine_(std::random_device {}());
 
 Actuator::Actuator(Tasker* tasker, Context& context)
     : tasker_(tasker)
@@ -16,125 +17,204 @@ Actuator::Actuator(Tasker* tasker, Context& context)
 {
 }
 
-bool Actuator::run(const cv::Rect& reco_hit, MaaRecoId reco_id, const PipelineData& pipeline_data, const std::string& entry)
+ActionResult Actuator::run(const cv::Rect& reco_hit, MaaRecoId reco_id, const PipelineData& pipeline_data, const std::string& entry)
 {
     using namespace MAA_RES_NS::Action;
-    LogFunc << VAR(pipeline_data.name);
+    LogTrace << VAR(pipeline_data.name);
+
+    if (!tasker_) {
+        LogError << "tasker is null";
+        return {};
+    }
 
     if (pipeline_data.action_type == Type::Invalid) {
         LogDebug << "invalid action";
-        return false;
+        return {};
     }
 
     wait_freezes(pipeline_data.pre_wait_freezes, reco_hit);
     sleep(pipeline_data.pre_delay);
 
-    bool ret = false;
-    switch (pipeline_data.action_type) {
-    case Type::DoNothing:
-        ret = true;
-        break;
-    case Type::Click:
-        ret = click(std::get<ClickParam>(pipeline_data.action_param), reco_hit);
-        break;
-    case Type::LongPress:
-        ret = long_press(std::get<LongPressParam>(pipeline_data.action_param), reco_hit);
-        break;
-    case Type::Swipe:
-        ret = swipe(std::get<SwipeParam>(pipeline_data.action_param), reco_hit);
-        break;
-    case Type::MultiSwipe:
-        ret = multi_swipe(std::get<MultiSwipeParam>(pipeline_data.action_param), reco_hit);
-        break;
-    case Type::ClickKey:
-        ret = click_key(std::get<ClickKeyParam>(pipeline_data.action_param));
-        break;
-    case Type::LongPressKey:
-        ret = long_press_key(std::get<LongPressKeyParam>(pipeline_data.action_param));
-        break;
-    case Type::InputText:
-        ret = input_text(std::get<InputTextParam>(pipeline_data.action_param));
-        break;
-    case Type::StartApp:
-        ret = start_app(std::get<AppParam>(pipeline_data.action_param));
-        break;
-    case Type::StopApp:
-        ret = stop_app(std::get<AppParam>(pipeline_data.action_param));
-        break;
-    case Type::Command:
-        ret = command(std::get<CommandParam>(pipeline_data.action_param), reco_hit, pipeline_data.name, entry);
-        break;
-    case Type::Custom:
-        ret = custom_action(std::get<CustomParam>(pipeline_data.action_param), reco_hit, reco_id, pipeline_data.name);
-        break;
-    case Type::StopTask:
-        LogInfo << "Action: StopTask";
-        context_.need_to_stop() = true;
-        ret = true;
-        break;
-    default:
-        ret = false;
-        LogError << "Unknown action" << VAR(static_cast<int>(pipeline_data.action_type));
-        break;
+    auto& rt_cache = tasker_->runtime_cache();
+    ActionResult result;
+
+    for (uint i = 0; i < pipeline_data.repeat; ++i) {
+        if (i > 0) {
+            wait_freezes(pipeline_data.repeat_wait_freezes, reco_hit);
+            sleep(pipeline_data.repeat_delay);
+        }
+
+        if (context_.need_to_stop()) {
+            return {};
+        }
+
+        result = execute_action(reco_hit, reco_id, pipeline_data, entry);
+        LogInfo << "action" << VAR(i) << VAR(pipeline_data.repeat) << VAR(result);
+        rt_cache.set_action_detail(result.action_id, result);
+
+        if (context_.need_to_stop()) {
+            return {};
+        }
     }
 
     wait_freezes(pipeline_data.post_wait_freezes, reco_hit);
     sleep(pipeline_data.post_delay);
 
-    return ret;
+    return result;
+}
+
+ActionResult
+    Actuator::execute_action(const cv::Rect& reco_hit, MaaRecoId reco_id, const PipelineData& pipeline_data, const std::string& entry)
+{
+    using namespace MAA_RES_NS::Action;
+
+    switch (pipeline_data.action_type) {
+    case Type::DoNothing:
+        return do_nothing(pipeline_data.name);
+
+    case Type::Click:
+        return click(std::get<ClickParam>(pipeline_data.action_param), reco_hit, pipeline_data.name);
+
+    case Type::LongPress:
+        return long_press(std::get<LongPressParam>(pipeline_data.action_param), reco_hit, pipeline_data.name);
+
+    case Type::Swipe:
+        return swipe(std::get<SwipeParam>(pipeline_data.action_param), reco_hit, pipeline_data.name);
+
+    case Type::MultiSwipe:
+        return multi_swipe(std::get<MultiSwipeParam>(pipeline_data.action_param), reco_hit, pipeline_data.name);
+
+    case Type::TouchDown:
+        return touch_down(std::get<TouchParam>(pipeline_data.action_param), reco_hit, pipeline_data.name);
+
+    case Type::TouchMove:
+        return touch_move(std::get<TouchParam>(pipeline_data.action_param), reco_hit, pipeline_data.name);
+
+    case Type::TouchUp:
+        return touch_up(std::get<TouchUpParam>(pipeline_data.action_param), pipeline_data.name);
+
+    case Type::ClickKey:
+        return click_key(std::get<ClickKeyParam>(pipeline_data.action_param), pipeline_data.name);
+
+    case Type::LongPressKey:
+        return long_press_key(std::get<LongPressKeyParam>(pipeline_data.action_param), pipeline_data.name);
+
+    case Type::KeyDown:
+        return key_down(std::get<KeyParam>(pipeline_data.action_param), pipeline_data.name);
+
+    case Type::KeyUp:
+        return key_up(std::get<KeyParam>(pipeline_data.action_param), pipeline_data.name);
+
+    case Type::InputText:
+        return input_text(std::get<InputTextParam>(pipeline_data.action_param), pipeline_data.name);
+
+    case Type::StartApp:
+        return start_app(std::get<AppParam>(pipeline_data.action_param), pipeline_data.name);
+
+    case Type::StopApp:
+        return stop_app(std::get<AppParam>(pipeline_data.action_param), pipeline_data.name);
+
+    case Type::Scroll:
+        return scroll(std::get<ScrollParam>(pipeline_data.action_param), pipeline_data.name);
+
+    case Type::StopTask:
+        return stop_task(pipeline_data.name);
+
+    case Type::Command:
+        return command(std::get<CommandParam>(pipeline_data.action_param), reco_hit, pipeline_data.name, entry);
+
+    case Type::Shell:
+        return shell(std::get<ShellParam>(pipeline_data.action_param), pipeline_data.name);
+
+    case Type::Custom:
+        return custom_action(std::get<CustomParam>(pipeline_data.action_param), reco_hit, reco_id, pipeline_data.name);
+
+    default:
+        LogError << "Unknown action" << VAR(static_cast<int>(pipeline_data.action_type));
+        return {};
+    }
 }
 
 cv::Point Actuator::rand_point(const cv::Rect& r)
 {
-    int x = 0, y = 0;
-
-    if (r.width == 0) {
-        x = r.x;
-    }
-    else {
-        int x_rand = std::poisson_distribution<int>(r.width / 2.)(rand_engine_);
-        x = x_rand + r.x;
+    // 过小矩形直接返回中心点，避免死循环
+    if (r.width <= 2 || r.height <= 2) {
+        return { r.x + r.width / 2, r.y + r.height / 2 };
     }
 
-    if (r.height == 0) {
-        y = r.y;
-    }
-    else {
-        int y_rand = std::poisson_distribution<int>(r.height / 2.)(rand_engine_);
-        y = y_rand + r.y;
+    constexpr double kStdDevFactor = 3.0;
+
+    const double std_dev_x = r.width / kStdDevFactor;
+    const double std_dev_y = r.height / kStdDevFactor;
+
+    std::normal_distribution<double> dist_x(r.x + r.width / 2.0, std_dev_x);
+    std::normal_distribution<double> dist_y(r.y + r.height / 2.0, std_dev_y);
+
+    // 优先进行有限次拒绝采样
+    constexpr int kMaxAttempts = 8;
+    for (int i = 0; i < kMaxAttempts; ++i) {
+        const int x = static_cast<int>(std::round(dist_x(rand_engine_)));
+        const int y = static_cast<int>(std::round(dist_y(rand_engine_)));
+        const cv::Point sampled { x, y };
+        if (!r.contains(sampled)) {
+            continue;
+        }
+
+        return sampled;
     }
 
-    return { x, y };
+    LogWarn << "Too many sampling attempts";
+    // 返回中心点
+    return { r.x + r.width / 2, r.y + r.height / 2 };
 }
 
-bool Actuator::click(const MAA_RES_NS::Action::ClickParam& param, const cv::Rect& box)
+ActionResult Actuator::click(const MAA_RES_NS::Action::ClickParam& param, const cv::Rect& box, const std::string& name)
 {
     if (!controller()) {
         LogError << "Controller is null";
-        return false;
+        return {};
     }
 
     cv::Point point = rand_point(get_target_rect(param.target, box));
-    return controller()->click({ .point = point });
+    MAA_CTRL_NS::ClickParam ctrl_param { .point = point, .contact = static_cast<int>(param.contact) };
+    bool ret = controller()->click(ctrl_param);
+
+    return ActionResult {
+        .action_id = action_id_,
+        .name = name,
+        .action = "Click",
+        .box = box,
+        .success = ret,
+        .detail = json::value(ctrl_param),
+    };
 }
 
-bool Actuator::long_press(const MAA_RES_NS::Action::LongPressParam& param, const cv::Rect& box)
+ActionResult Actuator::long_press(const MAA_RES_NS::Action::LongPressParam& param, const cv::Rect& box, const std::string& name)
 {
     if (!controller()) {
         LogError << "Controller is null";
-        return false;
+        return {};
     }
 
     cv::Point point = rand_point(get_target_rect(param.target, box));
+    MAA_CTRL_NS::LongPressParam ctrl_param { .point = point, .duration = param.duration, .contact = static_cast<int>(param.contact) };
+    bool ret = controller()->long_press(ctrl_param);
 
-    return controller()->long_press({ .point = point, .duration = param.duration });
+    return ActionResult {
+        .action_id = action_id_,
+        .name = name,
+        .action = "LongPress",
+        .box = box,
+        .success = ret,
+        .detail = json::value(ctrl_param),
+    };
 }
 
-bool Actuator::swipe(const MAA_RES_NS::Action::SwipeParam& param, const cv::Rect& box)
+ActionResult Actuator::swipe(const MAA_RES_NS::Action::SwipeParam& param, const cv::Rect& box, const std::string& name)
 {
     if (!controller()) {
         LogError << "Controller is null";
-        return false;
+        return {};
     }
 
     cv::Point begin = rand_point(get_target_rect(param.begin, box));
@@ -150,19 +230,30 @@ bool Actuator::swipe(const MAA_RES_NS::Action::SwipeParam& param, const cv::Rect
         end.emplace_back(p);
     }
 
-    return controller()->swipe({ .begin = begin,
-                                 .end = std::move(end),
-                                 .end_hold = param.end_hold,
-                                 .duration = param.duration,
-                                 .only_hover = param.only_hover,
-                                 .starting = param.starting });
+    MAA_CTRL_NS::SwipeParam ctrl_param { .begin = begin,
+                                         .end = std::move(end),
+                                         .end_hold = param.end_hold,
+                                         .duration = param.duration,
+                                         .only_hover = param.only_hover,
+                                         .starting = param.starting,
+                                         .contact = static_cast<int>(param.contact) };
+    bool ret = controller()->swipe(ctrl_param);
+
+    return ActionResult {
+        .action_id = action_id_,
+        .name = name,
+        .action = "Swipe",
+        .box = box,
+        .success = ret,
+        .detail = json::value(ctrl_param),
+    };
 }
 
-bool Actuator::multi_swipe(const MAA_RES_NS::Action::MultiSwipeParam& param, const cv::Rect& box)
+ActionResult Actuator::multi_swipe(const MAA_RES_NS::Action::MultiSwipeParam& param, const cv::Rect& box, const std::string& name)
 {
     if (!controller()) {
         LogError << "Controller is null";
-        return false;
+        return {};
     }
 
     std::vector<MAA_CTRL_NS::SwipeParam> swipes;
@@ -179,45 +270,236 @@ bool Actuator::multi_swipe(const MAA_RES_NS::Action::MultiSwipeParam& param, con
             cv::Point p = rand_point(get_target_rect(end_target, box));
             end.emplace_back(p);
         }
-        swipes.push_back({ .begin = begin,
-                           .end = std::move(end),
-                           .end_hold = swipe.end_hold,
-                           .duration = swipe.duration,
-                           .only_hover = swipe.only_hover,
-                           .starting = swipe.starting });
+        swipes.push_back(
+            { .begin = begin,
+              .end = std::move(end),
+              .end_hold = swipe.end_hold,
+              .duration = swipe.duration,
+              .only_hover = swipe.only_hover,
+              .starting = swipe.starting,
+              .contact = static_cast<int>(swipe.contact) });
     }
 
-    return controller()->multi_swipe({ .swipes = std::move(swipes) });
+    MAA_CTRL_NS::MultiSwipeParam ctrl_param { .swipes = std::move(swipes) };
+    bool ret = controller()->multi_swipe(ctrl_param);
+
+    return ActionResult {
+        .action_id = action_id_,
+        .name = name,
+        .action = "MultiSwipe",
+        .box = box,
+        .success = ret,
+        .detail = json::value(ctrl_param),
+    };
 }
 
-bool Actuator::click_key(const MAA_RES_NS::Action::ClickKeyParam& param)
+ActionResult Actuator::touch_down(const MAA_RES_NS::Action::TouchParam& param, const cv::Rect& box, const std::string& name)
 {
     if (!controller()) {
         LogError << "Controller is null";
-        return false;
+        return {};
     }
 
-    return controller()->click_key({ .keycode = param.keys });
+    cv::Point point = rand_point(get_target_rect(param.target, box));
+    MAA_CTRL_NS::TouchParam ctrl_param { .contact = static_cast<int>(param.contact), .point = point, .pressure = param.pressure };
+    bool ret = controller()->touch_down(ctrl_param);
+
+    return ActionResult {
+        .action_id = action_id_,
+        .name = name,
+        .action = "TouchDown",
+        .box = box,
+        .success = ret,
+        .detail = json::value(ctrl_param),
+    };
 }
 
-bool Actuator::long_press_key(const MAA_RES_NS::Action::LongPressKeyParam& param)
+ActionResult Actuator::touch_move(const MAA_RES_NS::Action::TouchParam& param, const cv::Rect& box, const std::string& name)
 {
     if (!controller()) {
         LogError << "Controller is null";
-        return false;
+        return {};
     }
 
-    return controller()->long_press_key({ .keycode = param.keys, .duration = param.duration });
+    cv::Point point = rand_point(get_target_rect(param.target, box));
+    MAA_CTRL_NS::TouchParam ctrl_param { .contact = static_cast<int>(param.contact), .point = point, .pressure = param.pressure };
+    bool ret = controller()->touch_move(ctrl_param);
+
+    return ActionResult {
+        .action_id = action_id_,
+        .name = name,
+        .action = "TouchMove",
+        .box = box,
+        .success = ret,
+        .detail = json::value(ctrl_param),
+    };
 }
 
-bool Actuator::input_text(const MAA_RES_NS::Action::InputTextParam& param)
+ActionResult Actuator::touch_up(const MAA_RES_NS::Action::TouchUpParam& param, const std::string& name)
 {
     if (!controller()) {
         LogError << "Controller is null";
-        return false;
+        return {};
     }
 
-    return controller()->input_text({ .text = param.text });
+    MAA_CTRL_NS::TouchParam ctrl_param { .contact = static_cast<int>(param.contact), .point = {}, .pressure = 0 };
+    bool ret = controller()->touch_up(ctrl_param);
+
+    return ActionResult {
+        .action_id = action_id_,
+        .name = name,
+        .action = "TouchUp",
+        .box = cv::Rect {},
+        .success = ret,
+        .detail = json::value(ctrl_param),
+    };
+}
+
+ActionResult Actuator::click_key(const MAA_RES_NS::Action::ClickKeyParam& param, const std::string& name)
+{
+    if (!controller()) {
+        LogError << "Controller is null";
+        return {};
+    }
+
+    MAA_CTRL_NS::ClickKeyParam ctrl_param { .keycode = param.keys };
+    bool ret = controller()->click_key(ctrl_param);
+
+    return ActionResult {
+        .action_id = action_id_,
+        .name = name,
+        .action = "ClickKey",
+        .box = cv::Rect {},
+        .success = ret,
+        .detail = json::value(ctrl_param),
+    };
+}
+
+ActionResult Actuator::long_press_key(const MAA_RES_NS::Action::LongPressKeyParam& param, const std::string& name)
+{
+    if (!controller()) {
+        LogError << "Controller is null";
+        return {};
+    }
+
+    MAA_CTRL_NS::LongPressKeyParam ctrl_param { .keycode = param.keys, .duration = param.duration };
+    bool ret = controller()->long_press_key(ctrl_param);
+
+    return ActionResult {
+        .action_id = action_id_,
+        .name = name,
+        .action = "LongPressKey",
+        .box = cv::Rect {},
+        .success = ret,
+        .detail = json::value(ctrl_param),
+    };
+}
+
+ActionResult Actuator::key_down(const MAA_RES_NS::Action::KeyParam& param, const std::string& name)
+{
+    if (!controller()) {
+        LogError << "Controller is null";
+        return {};
+    }
+
+    MAA_CTRL_NS::ClickKeyParam ctrl_param { .keycode = { param.key } };
+    bool ret = controller()->key_down(ctrl_param);
+
+    return ActionResult {
+        .action_id = action_id_,
+        .name = name,
+        .action = "KeyDown",
+        .box = cv::Rect {},
+        .success = ret,
+        .detail = json::value(ctrl_param),
+    };
+}
+
+ActionResult Actuator::key_up(const MAA_RES_NS::Action::KeyParam& param, const std::string& name)
+{
+    if (!controller()) {
+        LogError << "Controller is null";
+        return {};
+    }
+
+    MAA_CTRL_NS::ClickKeyParam ctrl_param { .keycode = { param.key } };
+    bool ret = controller()->key_up(ctrl_param);
+
+    return ActionResult {
+        .action_id = action_id_,
+        .name = name,
+        .action = "KeyUp",
+        .box = cv::Rect {},
+        .success = ret,
+        .detail = json::value(ctrl_param),
+    };
+}
+
+ActionResult Actuator::input_text(const MAA_RES_NS::Action::InputTextParam& param, const std::string& name)
+{
+    if (!controller()) {
+        LogError << "Controller is null";
+        return {};
+    }
+
+    MAA_CTRL_NS::InputTextParam ctrl_param { .text = param.text };
+    bool ret = controller()->input_text(ctrl_param);
+
+    return ActionResult {
+        .action_id = action_id_,
+        .name = name,
+        .action = "InputText",
+        .box = cv::Rect {},
+        .success = ret,
+        .detail = json::value(ctrl_param),
+    };
+}
+
+ActionResult Actuator::scroll(const MAA_RES_NS::Action::ScrollParam& param, const std::string& name)
+{
+    if (!controller()) {
+        LogError << "Controller is null";
+        return {};
+    }
+
+    MAA_CTRL_NS::ScrollParam ctrl_param { .dx = param.dx, .dy = param.dy };
+    bool ret = controller()->scroll(ctrl_param);
+
+    return ActionResult {
+        .action_id = action_id_,
+        .name = name,
+        .action = "Scroll",
+        .box = cv::Rect {},
+        .success = ret,
+        .detail = json::value(ctrl_param),
+    };
+}
+
+ActionResult Actuator::shell(const MAA_RES_NS::Action::ShellParam& param, const std::string& name)
+{
+    if (!controller()) {
+        LogError << "Controller is null";
+        return {};
+    }
+
+    std::string output;
+    bool ret = controller()->shell(param.cmd, output, param.timeout);
+
+    LogDebug << "Shell command executed" << VAR(param.cmd) << VAR(param.timeout) << VAR(ret);
+    if (!output.empty()) {
+        LogTrace << "Shell output:" << output;
+    }
+
+    json::object detail { { "cmd", param.cmd }, { "timeout", param.timeout }, { "success", ret }, { "output", output } };
+
+    return ActionResult {
+        .action_id = action_id_,
+        .name = name,
+        .action = "Shell",
+        .box = cv::Rect {},
+        .success = ret,
+        .detail = json::value(detail),
+    };
 }
 
 void Actuator::wait_freezes(const MAA_RES_NS::WaitFreezesParam& param, const cv::Rect& box)
@@ -232,8 +514,8 @@ void Actuator::wait_freezes(const MAA_RES_NS::WaitFreezesParam& param, const cv:
     }
     using namespace MAA_VISION_NS;
 
-    LogFunc << "Wait freezes:" << VAR(param.time) << VAR(param.rate_limit) << VAR(param.timeout) << VAR(param.threshold)
-            << VAR(param.method);
+    LogTrace << "Wait freezes:" << VAR(param.time) << VAR(param.rate_limit) << VAR(param.timeout) << VAR(param.threshold)
+             << VAR(param.method);
 
     auto rate_limit = std::min(param.rate_limit, param.time);
 
@@ -254,7 +536,7 @@ void Actuator::wait_freezes(const MAA_RES_NS::WaitFreezesParam& param, const cv:
         std::this_thread::sleep_until(screencap_clock + rate_limit);
 
         if (duration_since(start_clock) > param.timeout) {
-            LogError << "Wait freezes timeout" << VAR(duration_since(start_clock)) << VAR(param.timeout);
+            LogWarn << "Wait freezes timeout" << VAR(duration_since(start_clock)) << VAR(param.timeout);
             break;
         }
 
@@ -266,7 +548,7 @@ void Actuator::wait_freezes(const MAA_RES_NS::WaitFreezesParam& param, const cv:
             break;
         }
 
-        TemplateComparator comparator(pre_image, cur_image, roi, comp_param);
+        TemplateComparator comparator(pre_image, cur_image, { roi }, comp_param);
 
         if (!comparator.best_result()) {
             pre_image = cur_image;
@@ -280,40 +562,57 @@ void Actuator::wait_freezes(const MAA_RES_NS::WaitFreezesParam& param, const cv:
     }
 }
 
-bool Actuator::start_app(const MAA_RES_NS::Action::AppParam& param)
+ActionResult Actuator::start_app(const MAA_RES_NS::Action::AppParam& param, const std::string& name)
 {
     if (!controller()) {
         LogError << "Controller is null";
-        return false;
+        return {};
     }
 
-    return controller()->start_app({ .package = param.package });
+    MAA_CTRL_NS::AppParam ctrl_param { .package = param.package };
+    bool ret = controller()->start_app(ctrl_param);
+
+    return ActionResult {
+        .action_id = action_id_,
+        .name = name,
+        .action = "StartApp",
+        .box = cv::Rect {},
+        .success = ret,
+        .detail = json::value(ctrl_param),
+    };
 }
 
-bool Actuator::stop_app(const MAA_RES_NS::Action::AppParam& param)
+ActionResult Actuator::stop_app(const MAA_RES_NS::Action::AppParam& param, const std::string& name)
 {
     if (!controller()) {
         LogError << "Controller is null";
-        return false;
+        return {};
     }
 
-    return controller()->stop_app({ .package = param.package });
+    MAA_CTRL_NS::AppParam ctrl_param { .package = param.package };
+    bool ret = controller()->stop_app(ctrl_param);
+
+    return ActionResult {
+        .action_id = action_id_,
+        .name = name,
+        .action = "StopApp",
+        .box = cv::Rect {},
+        .success = ret,
+        .detail = json::value(ctrl_param),
+    };
 }
 
-bool Actuator::command(
-    const MAA_RES_NS::Action::CommandParam& param,
-    const cv::Rect& box,
-    const std::string& name,
-    const std::string& entry)
+ActionResult
+    Actuator::command(const MAA_RES_NS::Action::CommandParam& param, const cv::Rect& box, const std::string& name, const std::string& entry)
 {
     if (!controller()) {
         LogError << "Controller is null";
-        return false;
+        return {};
     }
     auto* resource = tasker_ ? tasker_->resource() : nullptr;
     if (!resource) {
         LogError << "Resource is null";
-        return false;
+        return {};
     }
 
     CommandAction::Runtime rt {
@@ -323,22 +622,68 @@ bool Actuator::command(
         .image = controller()->cached_image(),
         .box = box,
     };
-    return CommandAction().run(param, rt);
+    bool ret = CommandAction().run(param, rt);
+
+    return ActionResult {
+        .action_id = action_id_,
+        .name = name,
+        .action = "Command",
+        .box = box,
+        .success = ret,
+        .detail = json::object(),
+    };
 }
 
-bool Actuator::custom_action(const MAA_RES_NS::Action::CustomParam& param, const cv::Rect& box, MaaRecoId reco_id, const std::string& name)
+ActionResult
+    Actuator::custom_action(const MAA_RES_NS::Action::CustomParam& param, const cv::Rect& box, MaaRecoId reco_id, const std::string& name)
 {
     if (!tasker_) {
         LogError << "tasker_ is null";
-        return false;
+        return {};
     }
     if (!tasker_->resource()) {
         LogError << "resource is null";
-        return false;
+        return {};
     }
     auto session = tasker_->resource()->custom_action(param.name);
     cv::Rect rect = get_target_rect(param.target, box);
-    return CustomAction::run(context_, name, session, param, reco_id, rect);
+    bool ret = CustomAction::run(context_, name, session, param, reco_id, rect);
+
+    return ActionResult {
+        .action_id = action_id_,
+        .name = name,
+        .action = "Custom",
+        .box = box,
+        .success = ret,
+        .detail = json::object(),
+    };
+}
+
+ActionResult Actuator::do_nothing(const std::string& name)
+{
+    return ActionResult {
+        .action_id = action_id_,
+        .name = name,
+        .action = "DoNothing",
+        .box = cv::Rect {},
+        .success = true,
+        .detail = json::object(),
+    };
+}
+
+ActionResult Actuator::stop_task(const std::string& name)
+{
+    LogInfo << "Action: StopTask";
+    context_.need_to_stop() = true;
+
+    return ActionResult {
+        .action_id = action_id_,
+        .name = name,
+        .action = "StopTask",
+        .box = cv::Rect {},
+        .success = true,
+        .detail = json::object(),
+    };
 }
 
 cv::Rect Actuator::get_target_rect(const MAA_RES_NS::Action::Target target, const cv::Rect& box)
@@ -398,7 +743,7 @@ void Actuator::sleep(unsigned ms) const
 
 void Actuator::sleep(std::chrono::milliseconds ms) const
 {
-    LogFunc << ms;
+    LogDebug << ms;
 
     std::this_thread::sleep_for(ms);
 }

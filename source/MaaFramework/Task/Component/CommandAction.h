@@ -9,7 +9,6 @@
 #include "MaaUtils/SingletonHolder.hpp"
 #include "Resource/PipelineTypes.h"
 
-
 MAA_TASK_NS_BEGIN
 
 class TempFileHolder : public SingletonHolder<TempFileHolder>

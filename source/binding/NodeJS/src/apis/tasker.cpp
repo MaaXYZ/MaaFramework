@@ -143,6 +143,36 @@ maajs::ValueType
     return maajs::CallCtorHelper(ExtContext::get(env)->taskJobCtor, self, id);
 }
 
+maajs::ValueType TaskerImpl::post_recognition(
+    maajs::ValueType self,
+    maajs::EnvType,
+    std::string reco_type,
+    maajs::ValueType reco_param,
+    maajs::ArrayBufferType image)
+{
+    ImageBuffer img;
+    img.set(image);
+    auto id = MaaTaskerPostRecognition(tasker, reco_type.c_str(), maajs::JsonStringify(env, reco_param).c_str(), img);
+    return maajs::CallCtorHelper(ExtContext::get(env)->taskJobCtor, self, id);
+}
+
+maajs::ValueType TaskerImpl::post_action(
+    maajs::ValueType self,
+    maajs::EnvType,
+    std::string action_type,
+    maajs::ValueType action_param,
+    MaaRect box,
+    maajs::OptionalParam<std::string> reco_detail)
+{
+    auto id = MaaTaskerPostAction(
+        tasker,
+        action_type.c_str(),
+        maajs::JsonStringify(env, action_param).c_str(),
+        &box,
+        reco_detail.value_or("").c_str());
+    return maajs::CallCtorHelper(ExtContext::get(env)->taskJobCtor, self, id);
+}
+
 maajs::ValueType TaskerImpl::post_stop(maajs::ValueType self, maajs::EnvType)
 {
     auto id = MaaTaskerPostStop(tasker);
@@ -261,16 +291,41 @@ std::optional<maajs::ValueType> TaskerImpl::recognition_detail(MaaRecoId id)
     }
 }
 
+std::optional<maajs::ValueType> TaskerImpl::action_detail(MaaActId id)
+{
+    StringBuffer node_name;
+    StringBuffer action;
+    MaaRect box {};
+    MaaBool success = false;
+    StringBuffer detail_json;
+    if (MaaTaskerGetActionDetail(tasker, id, node_name, action, &box, &success, detail_json)) {
+        auto result = maajs::ObjectType::New(env);
+
+        result["name"] = maajs::StringType::New(env, node_name.str());
+        result["action"] = maajs::StringType::New(env, action.str());
+        result["box"] = maajs::JSConvert<MaaRect>::to_value(env, box);
+        result["success"] = maajs::BooleanType::New(env, success);
+        result["detail"] = maajs::JsonParse(env, detail_json.str());
+
+        return result;
+    }
+    else {
+        return std::nullopt;
+    }
+}
+
 std::optional<maajs::ValueType> TaskerImpl::node_detail(MaaNodeId id)
 {
     StringBuffer node_name;
     MaaRecoId reco_id = MaaInvalidId;
+    MaaActId action_id = MaaInvalidId;
     MaaBool completed = false;
-    if (MaaTaskerGetNodeDetail(tasker, id, node_name, &reco_id, &completed)) {
+    if (MaaTaskerGetNodeDetail(tasker, id, node_name, &reco_id, &action_id, &completed)) {
         auto result = maajs::ObjectType::New(env);
 
         result["name"] = maajs::StringType::New(env, node_name.str());
         result["reco"] = reco_id == MaaInvalidId ? env.Null() : recognition_detail(reco_id).value_or(env.Null());
+        result["action"] = action_id == MaaInvalidId ? env.Null() : action_detail(action_id).value_or(env.Null());
         result["completed"] = maajs::BooleanType::New(env, completed);
 
         return result;
@@ -380,6 +435,8 @@ void TaskerImpl::init_proto(maajs::ObjectType proto, maajs::FunctionType)
     MAA_BIND_FUNC(proto, "remove_context_sink", TaskerImpl::remove_context_sink);
     MAA_BIND_FUNC(proto, "clear_context_sinks", TaskerImpl::clear_context_sinks);
     MAA_BIND_FUNC(proto, "post_task", TaskerImpl::post_task);
+    MAA_BIND_FUNC(proto, "post_recognition", TaskerImpl::post_recognition);
+    MAA_BIND_FUNC(proto, "post_action", TaskerImpl::post_action);
     MAA_BIND_FUNC(proto, "post_stop", TaskerImpl::post_stop);
     MAA_BIND_FUNC(proto, "status", TaskerImpl::status);
     MAA_BIND_FUNC(proto, "wait", TaskerImpl::wait);
@@ -390,6 +447,7 @@ void TaskerImpl::init_proto(maajs::ObjectType proto, maajs::FunctionType)
     MAA_BIND_GETTER_SETTER(proto, "controller", TaskerImpl::get_controller, TaskerImpl::set_controller);
     MAA_BIND_FUNC(proto, "clear_cache", TaskerImpl::clear_cache);
     MAA_BIND_FUNC(proto, "recognition_detail", TaskerImpl::recognition_detail);
+    MAA_BIND_FUNC(proto, "action_detail", TaskerImpl::action_detail);
     MAA_BIND_FUNC(proto, "node_detail", TaskerImpl::node_detail);
     MAA_BIND_FUNC(proto, "task_detail", TaskerImpl::task_detail);
     MAA_BIND_FUNC(proto, "latest_node", TaskerImpl::latest_node);

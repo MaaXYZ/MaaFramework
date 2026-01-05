@@ -1,6 +1,15 @@
 declare global {
     namespace maa {
-        type Point = [x: number, y: number]
+        type ClickParam = {
+            point: Point
+            contact: number
+        }
+
+        type LongPressParam = {
+            point: Point
+            duration: number
+            contact: number
+        }
 
         type SwipeParam = {
             begin: Point
@@ -9,13 +18,56 @@ declare global {
             duration: number[]
             only_hover: boolean
             starting: number
+            contact: number
         }
 
+        type MultiSwipeParam = {
+            swipes: SwipeParam[]
+        }
+
+        type TouchParam = {
+            contact: number
+            point: Point
+            pressure: number
+        }
+
+        type ClickKeyParam = {
+            keycode: number[]
+        }
+
+        type LongPressKeyParam = {
+            keycode: number[]
+            duration: number
+        }
+
+        type InputTextParam = {
+            text: string
+        }
+
+        type AppParam = {
+            package: string
+        }
+
+        type ScrollParam = {
+            dx: number
+            dy: number
+        }
+
+        type ActionParam =
+            | {}
+            | ClickParam
+            | LongPressParam
+            | SwipeParam
+            | MultiSwipeParam
+            | TouchParam
+            | ClickKeyParam
+            | LongPressKeyParam
+            | InputTextParam
+            | AppParam
+            | ScrollParam
+
         type ControllerNotify = {
-            msg:
-                | 'Controller.Action.Starting'
-                | 'Controller.Action.Succeeded'
-                | 'Controller.Action.Failed'
+            msg: NotifyMessage<'Action'>
             ctrl_id: number // CtrlId
             uuid: string
         } & (
@@ -25,16 +77,11 @@ declare global {
               }
             | {
                   action: 'click'
-                  param: {
-                      point: Point
-                  }
+                  param: ClickParam
               }
             | {
                   action: 'long_press'
-                  param: {
-                      point: Point
-                      duration: number
-                  }
+                  param: LongPressParam
               }
             | {
                   action: 'swipe'
@@ -42,34 +89,23 @@ declare global {
               }
             | {
                   action: 'multi_swipe'
-                  param: SwipeParam[]
+                  param: MultiSwipeParam
               }
             | {
                   action: 'touch_down' | 'touch_move' | 'touch_up'
-                  param: {
-                      contact: number
-                      point: Point
-                      pressure: number
-                  }
+                  param: TouchParam
               }
             | {
                   action: 'click_key' | 'key_down' | 'key_up'
-                  param: {
-                      keycode: number[]
-                  }
+                  param: ClickKeyParam
               }
             | {
                   action: 'long_press_key'
-                  param: {
-                      keycode: number[]
-                      duration: number
-                  }
+                  param: LongPressKeyParam
               }
             | {
                   action: 'input_text'
-                  param: {
-                      text: string
-                  }
+                  param: InputTextParam
               }
             | {
                   action: 'screencap'
@@ -77,9 +113,11 @@ declare global {
               }
             | {
                   action: 'start_app' | 'stop_app'
-                  param: {
-                      package: string
-                  }
+                  param: AppParam
+              }
+            | {
+                  action: 'scroll'
+                  param: ScrollParam
               }
         )
 
@@ -127,6 +165,10 @@ declare global {
             post_touch_up(contact: number): Job<CtrlId, Controller>
             post_key_down(keycode: number): Job<CtrlId, Controller>
             post_key_up(keycode: number): Job<CtrlId, Controller>
+            /**
+             * Post a scroll action. Using multiples of 120 (WHEEL_DELTA) is recommended for best compatibility.
+             */
+            post_scroll(dx: number, dy: number): Job<CtrlId, Controller>
             post_screencap(): ImageJob
             override_pipeline(pipeline: Record<string, unknown> | Record<string, unknown>[]): void
             override_next(node_name: string, next_list: string[]): void
@@ -169,10 +211,15 @@ declare global {
             constructor(
                 hwnd: DesktopHandle,
                 screencap_methods: ScreencapOrInputMethods,
-                input_methods: ScreencapOrInputMethods,
+                mouse_method: ScreencapOrInputMethods,
+                keyboard_methods: ScreencapOrInputMethods,
             )
 
             static find(): Promise<DesktopDevice[] | null>
+        }
+
+        class PlayCoverController extends Controller {
+            constructor(address: string, uuid: string)
         }
 
         class DbgController extends Controller {
@@ -187,6 +234,7 @@ declare global {
         interface CustomControllerActor {
             connect?(): maa.MaybePromise<boolean>
             request_uuid?(): maa.MaybePromise<string | null>
+            get_features?(): maa.MaybePromise<null | ('mouse' | 'keyboard')[]>
             start_app?(intent: string): maa.MaybePromise<boolean>
             stop_app?(intent: string): maa.MaybePromise<boolean>
             screencap?(): maa.MaybePromise<maa.ImageData | null>
@@ -215,6 +263,7 @@ declare global {
             input_text?(text: string): maa.MaybePromise<boolean>
             key_down?(keycode: number): maa.MaybePromise<boolean>
             key_up?(keycode: number): maa.MaybePromise<boolean>
+            scroll?(dx: number, dy: number): maa.MaybePromise<boolean>
         }
 
         class CustomController extends Controller {

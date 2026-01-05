@@ -115,6 +115,16 @@ bool InputAgent::init()
     return true;
 }
 
+MaaControllerFeature InputAgent::get_features() const
+{
+    if (!active_unit_) {
+        LogError << "No available input method" << VAR(active_unit_);
+        return MaaControllerFeature_None;
+    }
+
+    return active_unit_->get_features();
+}
+
 bool InputAgent::click(int x, int y)
 {
     if (!active_unit_) {
@@ -133,16 +143,6 @@ bool InputAgent::swipe(int x1, int y1, int x2, int y2, int duration)
     }
 
     return active_unit_->swipe(x1, y1, x2, y2, duration);
-}
-
-bool InputAgent::is_touch_availabled() const
-{
-    if (!active_unit_) {
-        LogError << "No available input method" << VAR(active_unit_);
-        return false;
-    }
-
-    return active_unit_->is_touch_availabled();
 }
 
 bool InputAgent::touch_down(int contact, int x, int y, int pressure)
@@ -195,16 +195,6 @@ bool InputAgent::input_text(const std::string& text)
     return active_unit_->input_text(text);
 }
 
-bool InputAgent::is_key_down_up_availabled() const
-{
-    if (!active_unit_) {
-        LogError << "No available input method" << VAR(active_unit_);
-        return false;
-    }
-
-    return active_unit_->is_key_down_up_availabled();
-}
-
 bool InputAgent::key_down(int key)
 {
     if (!active_unit_) {
@@ -223,6 +213,12 @@ bool InputAgent::key_up(int key)
     }
 
     return active_unit_->key_up(key);
+}
+
+bool InputAgent::scroll(int dx, int dy)
+{
+    LogError << "Scroll is not supported on Adb controller" << VAR(dx) << VAR(dy);
+    return false;
 }
 
 void InputAgent::on_image_resolution_changed(const std::pair<int, int>& pre, const std::pair<int, int>& cur)
@@ -253,28 +249,6 @@ void InputAgent::on_app_stopped(const std::string& intent)
     }
 
     active_unit_->on_app_stopped(intent);
-}
-
-std::ostream& operator<<(std::ostream& os, InputAgent::Method m)
-{
-    switch (m) {
-    case InputAgent::Method::UnknownYet:
-        os << "UnknownYet";
-        break;
-    case InputAgent::Method::AdbShell:
-        os << "AdbShell";
-        break;
-    case InputAgent::Method::MinitouchAndAdbKey:
-        os << "MinitouchAndAdbKey";
-        break;
-    case InputAgent::Method::Maatouch:
-        os << "Maatouch";
-        break;
-    case InputAgent::Method::MuMuPlayerExtras:
-        os << "MuMuPlayerExtras";
-        break;
-    }
-    return os;
 }
 
 MAA_CTRL_UNIT_NS_END

@@ -1,7 +1,10 @@
 #pragma once
 
+#include <mutex>
 #include <ostream>
 #include <vector>
+
+#include <boost/regex.hpp>
 
 #include "Common/Conf.h"
 
@@ -40,17 +43,13 @@ class OCRer
     , public RecoResultAPI<OCRerResult>
 {
 public:
-    using Cache = std::map<cv::Rect, ResultsVec, RectComparator>;
-
-public:
     OCRer(
         cv::Mat image,
-        cv::Rect roi,
+        std::vector<cv::Rect> rois,
         OCRerParam param,
         std::shared_ptr<fastdeploy::vision::ocr::DBDetector> deter,
         std::shared_ptr<fastdeploy::vision::ocr::Recognizer> recer,
         std::shared_ptr<fastdeploy::pipeline::PPOCRv3> ocrer,
-        Cache& cache,
         std::string name = "");
 
 private:
@@ -73,13 +72,16 @@ private:
     void sort_(ResultsVec& results) const;
 
 private:
+    static const boost::wregex& gen_regex(const std::wstring& pattern);
+
+private:
     const OCRerParam param_;
 
     std::shared_ptr<fastdeploy::vision::ocr::DBDetector> deter_ = nullptr;
     std::shared_ptr<fastdeploy::vision::ocr::Recognizer> recer_ = nullptr;
     std::shared_ptr<fastdeploy::pipeline::PPOCRv3> ocrer_ = nullptr;
 
-    Cache& cache_;
+    inline static std::mutex s_predict_mutex_;
 };
 
 MAA_VISION_NS_END

@@ -196,6 +196,34 @@ MaaCtrlId RemoteController::post_key_up(int keycode)
     return resp_opt->ctrl_id;
 }
 
+MaaCtrlId RemoteController::post_scroll(int dx, int dy)
+{
+    ControllerPostScrollReverseRequest req {
+        .controller_id = controller_id_,
+        .dx = dx,
+        .dy = dy,
+    };
+    auto resp_opt = server_.send_and_recv<ControllerPostScrollReverseResponse>(req);
+    if (!resp_opt) {
+        return MaaInvalidId;
+    }
+    return resp_opt->ctrl_id;
+}
+
+MaaCtrlId RemoteController::post_shell(const std::string& cmd, int64_t timeout)
+{
+    ControllerPostShellReverseRequest req {
+        .controller_id = controller_id_,
+        .cmd = cmd,
+        .timeout = timeout,
+    };
+    auto resp_opt = server_.send_and_recv<ControllerPostShellReverseResponse>(req);
+    if (!resp_opt) {
+        return MaaInvalidId;
+    }
+    return resp_opt->ctrl_id;
+}
+
 MaaStatus RemoteController::status(MaaCtrlId ctrl_id) const
 {
     ControllerStatusReverseRequest req {
@@ -256,6 +284,18 @@ cv::Mat RemoteController::cached_image() const
         return {};
     }
     return server_.get_image_cache(resp_opt->image);
+}
+
+std::string RemoteController::cached_shell_output() const
+{
+    ControllerGetShellOutputReverseRequest req {
+        .controller_id = controller_id_,
+    };
+    auto resp_opt = server_.send_and_recv<ControllerGetShellOutputReverseResponse>(req);
+    if (!resp_opt) {
+        return {};
+    }
+    return resp_opt->output;
 }
 
 std::string RemoteController::get_uuid()

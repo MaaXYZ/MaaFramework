@@ -1,8 +1,14 @@
 import os
 from pathlib import Path
 import sys
-
 import numpy
+import io
+
+# Fix encoding issues on Windows (cp1252 cannot encode some Unicode characters)
+if sys.stdout.encoding != 'utf-8':
+    sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8', errors='replace')
+if sys.stderr.encoding != 'utf-8':
+    sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding='utf-8', errors='replace')
 
 if len(sys.argv) < 3:
     print("Usage: python binding_test.py <binding_dir> <install_dir>")
@@ -53,7 +59,10 @@ class MyRecognition(CustomRecognition):
             }
         }
         context.run_task(entry, ppover)
-        context.run_action(entry, [114, 514, 191, 810], "RunAction Detail", ppover)
+        action_detail = context.run_action(
+            entry, [114, 514, 191, 810], "RunAction Detail", ppover
+        )
+        print(f"action_detail: {action_detail}")
         reco_detail = context.run_recognition(entry, argv.image, ppover)
         print(f"reco_detail: {reco_detail}")
 

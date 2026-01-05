@@ -14,7 +14,6 @@
 #include "MaaUtils/SingletonHolder.hpp"
 #include "Utils/EventDispatcher.hpp"
 
-
 MAA_AGENT_SERVER_NS_BEGIN
 
 class AgentServer

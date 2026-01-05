@@ -27,7 +27,8 @@ int main()
     auto win32_handle = MAA_NS::Win32ControlUnitLibraryHolder::create_control_unit(
         FindWindowA(nullptr, nullptr),
         MaaWin32ScreencapMethod_DXGI_DesktopDup,
-        MaaWin32InputMethod_Seize);
+        MaaWin32InputMethod_Seize,
+        MaaWin32InputMethod_SendMessage);
     if (!win32_handle) {
         std::cerr << "Failed to create win32 control unit" << std::endl;
         return -1;

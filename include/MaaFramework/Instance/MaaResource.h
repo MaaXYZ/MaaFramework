@@ -45,9 +45,17 @@ extern "C"
 
     MAA_FRAMEWORK_API MaaResId MaaResourcePostBundle(MaaResource* res, const char* path);
 
+    MAA_FRAMEWORK_API MaaResId MaaResourcePostOcrModel(MaaResource* res, const char* path);
+
+    MAA_FRAMEWORK_API MaaResId MaaResourcePostPipeline(MaaResource* res, const char* path);
+
+    MAA_FRAMEWORK_API MaaResId MaaResourcePostImage(MaaResource* res, const char* path);
+
     MAA_FRAMEWORK_API MaaBool MaaResourceOverridePipeline(MaaResource* res, const char* pipeline_override);
 
     MAA_FRAMEWORK_API MaaBool MaaResourceOverrideNext(MaaResource* res, const char* node_name, const MaaStringListBuffer* next_list);
+
+    MAA_FRAMEWORK_API MaaBool MaaResourceOverrideImage(MaaResource* res, const char* image_name, const MaaImageBuffer* image);
 
     MAA_FRAMEWORK_API MaaBool MaaResourceGetNodeData(MaaResource* res, const char* node_name, /* out */ MaaStringBuffer* buffer);
 
@@ -64,6 +72,10 @@ extern "C"
     MAA_FRAMEWORK_API MaaBool MaaResourceGetHash(const MaaResource* res, /* out */ MaaStringBuffer* buffer);
 
     MAA_FRAMEWORK_API MaaBool MaaResourceGetNodeList(const MaaResource* res, /* out */ MaaStringListBuffer* buffer);
+
+    MAA_FRAMEWORK_API MaaBool MaaResourceGetCustomRecognitionList(const MaaResource* res, /* out */ MaaStringListBuffer* buffer);
+
+    MAA_FRAMEWORK_API MaaBool MaaResourceGetCustomActionList(const MaaResource* res, /* out */ MaaStringListBuffer* buffer);
 
 #ifdef __cplusplus
 }

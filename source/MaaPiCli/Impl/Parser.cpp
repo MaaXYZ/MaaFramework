@@ -31,6 +31,12 @@ std::optional<InterfaceData> Parser::parse_interface(const json::value& json)
 
     auto data = json.as<InterfaceData>();
 
+    // check interface version
+    if (data.interface_version != 2) {
+        LogError << "Unsupported interface version, expected 2" << VAR(data.interface_version);
+        return std::nullopt;
+    }
+
     // check option for task
     for (auto& task : data.task) {
         for (auto& option : task.option) {
@@ -40,14 +46,10 @@ std::optional<InterfaceData> Parser::parse_interface(const json::value& json)
             }
         }
     }
+
+    // check controller type
     for (auto& ctrl : data.controller) {
-        if (ctrl.type == InterfaceData::Controller::kTypeAdb) {
-            ctrl.type_enum = InterfaceData::Controller::Type::Adb;
-        }
-        else if (ctrl.type == InterfaceData::Controller::kTypeWin32) {
-            ctrl.type_enum = InterfaceData::Controller::Type::Win32;
-        }
-        else {
+        if (ctrl.type == InterfaceData::Controller::Type::Invalid) {
             LogError << "Invalid Controller Type" << VAR(ctrl.type);
             return std::nullopt;
         }
@@ -112,7 +114,7 @@ bool Parser::check_configuration(const InterfaceData& data, Configuration& confi
         config.controller.name.clear();
         return false;
     }
-    config.controller.type_enum = controller_iter->type_enum;
+    config.controller.type = controller_iter->type;
 
     return !erased;
 }
@@ -134,10 +136,18 @@ bool Parser::check_task(const InterfaceData& data, Configuration::Task& config_t
 
         const InterfaceData::Option& data_option = option_iter->second;
 
-        auto case_iter = std::ranges::find(data_option.cases, config_option.value, std::mem_fn(&InterfaceData::Option::Case::name));
-        if (case_iter == data_option.cases.end()) {
-            LogWarn << "Case not found" << VAR(config_task.name) << VAR(config_option.name) << VAR(config_option.value);
-            return false;
+        switch (data_option.type) {
+        case InterfaceData::Option::Type::Select:
+        case InterfaceData::Option::Type::Switch: {
+            auto case_iter = std::ranges::find(data_option.cases, config_option.value, std::mem_fn(&InterfaceData::Option::Case::name));
+            if (case_iter == data_option.cases.end()) {
+                LogWarn << "Case not found" << VAR(config_task.name) << VAR(config_option.name) << VAR(config_option.value);
+                return false;
+            }
+        } break;
+        case InterfaceData::Option::Type::Input:
+            // input type uses inputs map, no case validation needed
+            break;
         }
     }
 

@@ -1,7 +1,9 @@
 #include "OCRer.h"
 
 #include <ranges>
-#include <regex>
+#include <shared_mutex>
+
+#include <boost/regex.hpp>
 
 MAA_SUPPRESS_CV_WARNINGS_BEGIN
 #include "fastdeploy/vision/ocr/ppocr/dbdetector.h"
@@ -16,21 +18,36 @@ MAA_SUPPRESS_CV_WARNINGS_END
 
 MAA_VISION_NS_BEGIN
 
+const boost::wregex& OCRer::gen_regex(const std::wstring& pattern)
+{
+    static std::shared_mutex mtx;
+    static std::unordered_map<std::wstring, boost::wregex> s_cache;
+
+    {
+        std::shared_lock slock(mtx);
+        if (auto it = s_cache.find(pattern); it != s_cache.end()) {
+            return it->second;
+        }
+    }
+
+    std::unique_lock ulock(mtx);
+    // PipelineParser 里已经检查过正则的合法性了
+    return s_cache.emplace(pattern, boost::wregex(pattern)).first->second;
+}
+
 OCRer::OCRer(
     cv::Mat image,
-    cv::Rect roi,
+    std::vector<cv::Rect> rois,
     OCRerParam param,
     std::shared_ptr<fastdeploy::vision::ocr::DBDetector> deter,
     std::shared_ptr<fastdeploy::vision::ocr::Recognizer> recer,
     std::shared_ptr<fastdeploy::pipeline::PPOCRv3> ocrer,
-    Cache& cache,
     std::string name)
-    : VisionBase(std::move(image), std::move(roi), std::move(name))
+    : VisionBase(std::move(image), std::move(rois), std::move(name))
     , param_(std::move(param))
     , deter_(std::move(deter))
     , recer_(std::move(recer))
     , ocrer_(std::move(ocrer))
-    , cache_(cache)
 {
     analyze();
 }
@@ -39,13 +56,15 @@ void OCRer::analyze()
 {
     auto start_time = std::chrono::steady_clock::now();
 
-    auto results = predict();
-    add_results(std::move(results), param_.expected);
+    while (next_roi()) {
+        auto results = predict();
+        add_results(std::move(results), param_.expected);
+    }
 
     cherry_pick();
 
     auto cost = duration_since(start_time);
-    LogDebug << name_ << VAR(uid_) << VAR(all_results_) << VAR(filtered_results_) << VAR(best_result_) << VAR(cost) << VAR(param_.model)
+    LogDebug << name_ << VAR(all_results_) << VAR(filtered_results_) << VAR(best_result_) << VAR(cost) << VAR(param_.model)
              << VAR(param_.only_rec) << VAR(param_.expected);
 }
 
@@ -53,15 +72,8 @@ OCRer::ResultsVec OCRer::predict() const
 {
     ResultsVec results;
 
-    if (auto cache_it = cache_.find(roi_); cache_it != cache_.end()) {
-        LogDebug << "Hit OCR cache" << VAR(roi_);
-        results = cache_it->second;
-    }
-    else {
-        auto image_roi = image_with_roi();
-        results = param_.only_rec ? ResultsVec { predict_only_rec(image_roi) } : predict_det_and_rec(image_roi);
-        cache_.emplace(roi_, results);
-    }
+    auto image_roi = image_with_roi();
+    results = param_.only_rec ? ResultsVec { predict_only_rec(image_roi) } : predict_det_and_rec(image_roi);
 
     std::ranges::for_each(results, [&](auto& res) {
         res.box.x += roi_.x;
@@ -84,7 +96,12 @@ OCRer::ResultsVec OCRer::predict_det_and_rec(const cv::Mat& image_roi) const
     }
 
     fastdeploy::vision::OCRResult ocr_result;
-    bool ret = ocrer_->Predict(image_roi, &ocr_result);
+
+    bool ret = false;
+    {
+        std::unique_lock lock(s_predict_mutex_);
+        ret = ocrer_->Predict(image_roi, &ocr_result);
+    }
     if (!ret) {
         LogWarn << "predict return false" << VAR(ocrer_) << VAR(image_) << VAR(image_roi);
         return {};
@@ -136,8 +153,11 @@ OCRer::Result OCRer::predict_only_rec(const cv::Mat& image_roi) const
 
     std::string reco_text;
     float reco_score = 0;
-
-    bool ret = recer_->Predict(image_roi, &reco_text, &reco_score);
+    bool ret = false;
+    {
+        std::unique_lock lock(s_predict_mutex_);
+        ret = recer_->Predict(image_roi, &reco_text, &reco_score);
+    }
     if (!ret) {
         LogWarn << "recer_ return false" << VAR(recer_) << VAR(image_) << VAR(image_roi);
         return {};
@@ -204,7 +224,7 @@ void OCRer::postproc_trim_(Result& res) const
 void OCRer::postproc_replace_(Result& res) const
 {
     for (const auto& [regex, format] : param_.replace) {
-        auto replaced_text = std::regex_replace(res.text, std::wregex(regex), format);
+        auto replaced_text = boost::regex_replace(res.text, gen_regex(regex), format);
         LogDebug << VAR(res.text) << VAR(regex) << VAR(format) << VAR(replaced_text);
         res.text = std::move(replaced_text);
     }
@@ -217,7 +237,7 @@ bool OCRer::filter_by_required(const Result& res, const std::vector<std::wstring
     }
 
     for (const auto& regex : expected) {
-        if (std::regex_search(res.text, std::wregex(regex))) {
+        if (boost::regex_search(res.text, gen_regex(regex))) {
             return true;
         }
     }
@@ -245,6 +265,9 @@ void OCRer::sort_(ResultsVec& results) const
         break;
     case ResultOrderBy::Length:
         std::ranges::sort(results, [](const auto& lhs, const auto& rhs) -> bool { return lhs.text.size() > rhs.text.size(); });
+        break;
+    case ResultOrderBy::Expected:
+        sort_by_expected_regex_(results, param_.expected);
         break;
 
     default:

@@ -3,28 +3,32 @@ name: test
 on:
     push:
         branches:
-            - '**'
+            - "**"
         paths:
-            - '.github/workflows/test.yml'
-            - '3rdparty/**'
-            - 'cmake/**'
-            - 'include/**'
-            - 'source/**'
-            - 'CMakeLists.txt'
-            - 'test/**'
+            - ".github/workflows/test.yml"
+            - "3rdparty/**"
+            - "cmake/**"
+            - "include/**"
+            - "source/**"
+            - "CMakeLists.txt"
+            - "test/**"
 
     pull_request:
         branches:
-            - '**'
+            - "**"
         paths:
-            - '.github/workflows/test.yml'
-            - '3rdparty/**'
-            - 'cmake/**'
-            - 'include/**'
-            - 'source/**'
-            - 'CMakeLists.txt'
-            - 'test/**'
+            - ".github/workflows/test.yml"
+            - "3rdparty/**"
+            - "cmake/**"
+            - "include/**"
+            - "source/**"
+            - "CMakeLists.txt"
+            - "test/**"
     workflow_dispatch:
+
+concurrency:
+    group: ${{ github.workflow }}-${{ github.event.pull_request.head.repo.full_name || github.repository }}-${{ github.head_ref || github.ref_name }}${{ github.ref == 'refs/heads/dev' && format('-{0}', github.sha) || '' }}
+    cancel-in-progress: true
 
 jobs:
     meta:
@@ -55,7 +59,7 @@ jobs:
               with:
                   minimum-size: 16GB
                   maximum-size: 16GB
-                  disk-root: 'D:'
+                  disk-root: "D:"
 
             - uses: actions/checkout@v4
               with:
@@ -69,7 +73,7 @@ jobs:
             - name: Setup Python
               uses: actions/setup-python@v5.2.0
               with:
-                  python-version: '3.9'
+                  python-version: "3.9"
 
             - name: Bootstrap MaaDeps
               env:
@@ -97,7 +101,7 @@ jobs:
 
             - name: Build MAA
               run: |
-                  cmake --preset "${{ matrix.arch == 'x86_64' && 'MSVC 2022' || 'MSVC 2022 ARM' }}" -DMAADEPS_TRIPLET="maa-${{ matrix.arch == 'x86_64' && 'x64' || 'arm64' }}-windows" -DCMAKE_SYSTEM_VERSION="10.0.26100.0" -DMAA_HASH_VERSION='${{ needs.meta.outputs.tag }}' -DWITH_NODEJS_BINDING=ON -DWITH_QUICKJS_BINDING=ON -DBUILD_PICLI=OFF -DBUILD_PIPELINE_TESTING=ON -DBUILD_DLOPEN_TESTING=ON
+                  cmake --preset "${{ matrix.arch == 'x86_64' && 'MSVC 2022' || 'MSVC 2022 ARM' }}" -DMAADEPS_TRIPLET="maa-${{ matrix.arch == 'x86_64' && 'x64' || 'arm64' }}-windows" -DCMAKE_SYSTEM_VERSION="10.0.26100.0" -DMAA_HASH_VERSION='${{ needs.meta.outputs.tag }}' -DWITH_NODEJS_BINDING=ON -DWITH_QUICKJS_BINDING=ON -DBUILD_PICLI=OFF -DWITH_DBG_CONTROLLER=ON -DBUILD_PIPELINE_TESTING=ON -DBUILD_DLOPEN_TESTING=ON
 
                   cmake --build build --preset "${{ matrix.arch == 'x86_64' && 'MSVC 2022' || 'MSVC 2022 ARM' }} - Debug" -j 16
 
@@ -105,6 +109,21 @@ jobs:
               shell: bash
               run: |
                   cmake --install build --prefix install --config Debug
+
+            - name: Download Plugin
+              uses: robinraju/release-downloader@v1
+              with:
+                  repository: MaaXYZ/MaaPluginDemo
+                  tag: ${{ needs.meta.outputs.latest-plugin }}
+                  fileName: "*win-${{ matrix.arch }}*"
+                  out-file-path: "build/download_plugins"
+                  extract: true
+                  token: ${{ secrets.GITHUB_TOKEN }}
+
+            - name: Install Plugin
+              shell: bash
+              run: |
+                  cp -r build/download_plugins/bin install/bin/plugins
 
             - name: Run DlopenTesting
               # TODO: qemu for aarch64
@@ -138,13 +157,13 @@ jobs:
               if: always()
               with:
                   name: MAA-win-${{ matrix.arch }}-text_log
-                  path: 'install/bin/debug/*.log'
+                  path: "install/bin/debug/*.log"
 
             - uses: actions/upload-artifact@v4
               if: always()
               with:
                   name: MAA-win-${{ matrix.arch }}-full
-                  path: 'install'
+                  path: "install"
 
     ubuntu:
         needs: meta
@@ -155,15 +174,9 @@ jobs:
             fail-fast: false
 
         steps:
-            # maybe should explicitly update some pkg instead of all?
-            - name: Update system
-              run: |
-                  sudo apt-get update -y
-                  sudo apt-get remove -y --purge firefox
-                  sudo apt-get upgrade -y
-
             - name: Install dep
               run: |
+                  sudo apt-get update -y
                   sudo apt-get install -y ninja-build cmake ccache
 
             # https://github.com/MaaXYZ/MaaFramework/actions/runs/5643408179/job/15285186255
@@ -179,7 +192,7 @@ jobs:
             - name: Setup Python
               uses: actions/setup-python@v5.2.0
               with:
-                  python-version: '3.9'
+                  python-version: "3.9"
 
             - name: Bootstrap MaaDeps
               env:
@@ -212,7 +225,7 @@ jobs:
                     -DMAA_HASH_VERSION='${{ needs.meta.outputs.tag }}' \
                     -DWITH_NODEJS_BINDING=ON -DWITH_QUICKJS_BINDING=ON \
                     -DBUILD_PICLI=OFF \
-                    -DBUILD_PIPELINE_TESTING=ON \
+                    -DWITH_DBG_CONTROLLER=ON -DBUILD_PIPELINE_TESTING=ON \
                     -DBUILD_DLOPEN_TESTING=ON
 
                   cmake --build build --preset 'NinjaMulti Linux ${{ matrix.arch == 'x86_64' && 'x64' || 'arm64' }} - Debug' -j 16
@@ -221,6 +234,21 @@ jobs:
               shell: bash
               run: |
                   cmake --install build --prefix install --config Debug
+
+            - name: Download Plugin
+              uses: robinraju/release-downloader@v1
+              with:
+                  repository: MaaXYZ/MaaPluginDemo
+                  tag: ${{ needs.meta.outputs.latest-plugin }}
+                  fileName: "*linux-${{ matrix.arch }}*"
+                  out-file-path: "build/download_plugins"
+                  extract: true
+                  token: ${{ secrets.GITHUB_TOKEN }}
+
+            - name: Install Plugin
+              shell: bash
+              run: |
+                  cp -r build/download_plugins/bin install/bin/plugins
 
             - name: Run DlopenTesting
               # TODO: qemu for aarch64
@@ -256,13 +284,13 @@ jobs:
               if: always()
               with:
                   name: MAA-linux-${{ matrix.arch }}-text_log
-                  path: 'install/bin/debug/*.log'
+                  path: "install/bin/debug/*.log"
 
             - uses: actions/upload-artifact@v4
               if: always()
               with:
                   name: MAA-linux-${{ matrix.arch }}-full
-                  path: 'install'
+                  path: "install"
 
     macos:
         needs: meta
@@ -293,7 +321,7 @@ jobs:
             - name: Setup Python
               uses: actions/setup-python@v5.2.0
               with:
-                  python-version: '3.9'
+                  python-version: "3.9"
 
             - name: Bootstrap MaaDeps
               env:
@@ -327,7 +355,7 @@ jobs:
                     -DCMAKE_OSX_SYSROOT=macosx \
                     -DWITH_NODEJS_BINDING=ON -DWITH_QUICKJS_BINDING=ON \
                     -DBUILD_PICLI=OFF \
-                    -DBUILD_PIPELINE_TESTING=ON \
+                    -DWITH_DBG_CONTROLLER=ON -DBUILD_PIPELINE_TESTING=ON \
                     -DBUILD_DLOPEN_TESTING=ON \
                     -DCMAKE_OSX_ARCHITECTURES='${{ matrix.arch == 'x86_64' && 'x86_64' || 'arm64' }}'
 
@@ -337,6 +365,21 @@ jobs:
               shell: bash
               run: |
                   cmake --install build --prefix install --config Debug
+
+            - name: Download Plugin
+              uses: robinraju/release-downloader@v1
+              with:
+                  repository: MaaXYZ/MaaPluginDemo
+                  tag: ${{ needs.meta.outputs.latest-plugin }}
+                  fileName: "*macos-${{ matrix.arch }}*"
+                  out-file-path: "build/download_plugins"
+                  extract: true
+                  token: ${{ secrets.GITHUB_TOKEN }}
+
+            - name: Install Plugin
+              shell: bash
+              run: |
+                  cp -r build/download_plugins/bin install/bin/plugins
 
             - name: Run DlopenTesting
               shell: bash
@@ -368,10 +411,10 @@ jobs:
               if: always()
               with:
                   name: MAA-macos-${{ matrix.arch }}-text_log
-                  path: 'install/bin/debug/*.log'
+                  path: "install/bin/debug/*.log"
 
             - uses: actions/upload-artifact@v4
               if: always()
               with:
                   name: MAA-macos-${{ matrix.arch }}-full
-                  path: 'install'
+                  path: "install"

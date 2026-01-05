@@ -39,7 +39,12 @@ static QuickJSRuntime* getRuntime()
     return runtime;
 }
 
-uint32_t GetApiVersion()
+const char* GetPluginVersion(void)
+{
+    return MAA_VERSION;
+}
+
+uint32_t GetApiVersion(void)
 {
     return 1;
 }

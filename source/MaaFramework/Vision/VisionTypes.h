@@ -44,21 +44,26 @@ enum class ResultOrderBy
     Vertical,
     Score,
     Area,
-    Length,   // for OCR
+    Length, // for OCR
     Random,
-    Expected, // TODO
+    Expected,
 };
 
-struct DirectHitParam
+struct RoiTargetParamBase
+{
+    Target roi_target;
+};
+
+struct DirectHitParam : public RoiTargetParamBase
 {
 };
 
-struct TemplateMatcherParam
+struct TemplateMatcherParam : public RoiTargetParamBase
 {
     inline static constexpr double kDefaultThreshold = 0.7;
     inline static constexpr int kDefaultMethod = 5; // cv::TM_CCOEFF_NORMED
+    inline static constexpr int kMethodInvertBase = 10000;
 
-    Target roi_target;
     std::vector<std::string> template_;
     std::vector<double> thresholds = { kDefaultThreshold };
     int method = kDefaultMethod;
@@ -68,13 +73,12 @@ struct TemplateMatcherParam
     int result_index = 0;
 };
 
-struct OCRerParam
+struct OCRerParam : public RoiTargetParamBase
 {
     inline static constexpr double kDefaultThreshold = 0.3;
 
     std::string model;
     bool only_rec = false;
-    Target roi_target;
     std::vector<std::wstring> expected;
     double threshold = kDefaultThreshold;
     std::vector<std::pair<std::wstring, std::wstring>> replace;
@@ -83,25 +87,21 @@ struct OCRerParam
     int result_index = 0;
 };
 
-struct TemplateComparatorParam
+struct TemplateComparatorParam : public RoiTargetParamBase
 {
-    Target roi_target;
     double threshold = 0.0;
     int method = 0;
 };
 
-struct CustomRecognitionParam
+struct CustomRecognitionParam : public RoiTargetParamBase
 {
     std::string name;
     json::value custom_param;
-    Target roi_target;
 };
 
-struct NeuralNetworkClassifierParam
+struct NeuralNetworkClassifierParam : public RoiTargetParamBase
 {
     std::string model;
-
-    Target roi_target;
     std::vector<std::string> labels; // only for output and debug
     std::vector</*result_index*/ int> expected;
 
@@ -109,7 +109,7 @@ struct NeuralNetworkClassifierParam
     int result_index = 0;
 };
 
-struct NeuralNetworkDetectorParam
+struct NeuralNetworkDetectorParam : public RoiTargetParamBase
 {
     enum class Net
     {
@@ -120,8 +120,6 @@ struct NeuralNetworkDetectorParam
 
     std::string model;
     Net net = kDefaultNet;
-
-    Target roi_target;
     std::vector<std::string> labels; // only for output and debug
     std::vector</*result_index*/ int> expected;
     std::vector<double> thresholds = { kDefaultThreshold };
@@ -130,13 +128,12 @@ struct NeuralNetworkDetectorParam
     int result_index = 0;
 };
 
-struct ColorMatcherParam
+struct ColorMatcherParam : public RoiTargetParamBase
 {
     inline static constexpr int kDefaultCount = 1;
     inline static constexpr int kDefaultMethod = 4; // cv::COLOR_BGR2RGB
     using Range = std::pair<std::vector<int>, std::vector<int>>;
 
-    Target roi_target;
     std::vector<Range> range;
     int count = kDefaultCount;
     int method = kDefaultMethod;
@@ -146,7 +143,7 @@ struct ColorMatcherParam
     int result_index = 0;
 };
 
-struct FeatureMatcherParam
+struct FeatureMatcherParam : public RoiTargetParamBase
 {
     enum class Detector
     {
@@ -166,50 +163,21 @@ struct FeatureMatcherParam
 
     inline static constexpr Detector kDefaultDetector = Detector::SIFT;
     // inline static constexpr Matcher kDefaultMatcher = Matcher::FLANN;
-    inline static constexpr double kDefaultDistanceRatio = 0.6;
+    inline static constexpr double kDefaultkDefaultRatio = 0.6;
     inline static constexpr int kDefaultCount = 4;
 
-    Target roi_target;
     std::vector<std::string> template_;
     bool green_mask = false;
 
     Detector detector = kDefaultDetector;
     // Matcher matcher = kDefaultMatcher;
 
-    double distance_ratio = kDefaultDistanceRatio;
+    double ratio = kDefaultkDefaultRatio;
     int count = kDefaultCount;
 
     ResultOrderBy order_by = ResultOrderBy::Horizontal;
     int result_index = 0;
 };
-
-inline std::ostream& operator<<(std::ostream& os, const ResultOrderBy& order_by)
-{
-    switch (order_by) {
-    case ResultOrderBy::Horizontal:
-        os << "Horizontal";
-        break;
-    case ResultOrderBy::Vertical:
-        os << "Vertical";
-        break;
-    case ResultOrderBy::Score:
-        os << "Score";
-        break;
-    case ResultOrderBy::Area:
-        os << "Area";
-        break;
-    case ResultOrderBy::Length:
-        os << "Length";
-        break;
-    case ResultOrderBy::Random:
-        os << "Random";
-        break;
-    case ResultOrderBy::Expected:
-        os << "Expected";
-        break;
-    }
-    return os;
-}
 
 struct RectComparator
 {

@@ -15,8 +15,8 @@ public:
 private:
     static bool check_all_next_list(const PipelineDataMap& data_map);
     static bool check_all_regex(const PipelineDataMap& data_map);
-    
-    static bool check_next_list(const PipelineData::NextList& next_list, const PipelineDataMap& data_map);
+
+    static bool check_next_list(const std::vector<NodeAttr>& next_list, const PipelineDataMap& data_map);
 };
 
 MAA_RES_NS_END

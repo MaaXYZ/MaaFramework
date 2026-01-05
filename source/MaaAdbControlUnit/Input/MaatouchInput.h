@@ -27,14 +27,13 @@ public: // from UnitBase
 public: // from InputBase
     virtual bool init() override;
 
+    virtual MaaControllerFeature get_features() const override;
+
     virtual bool click_key(int key) override;
     virtual bool input_text(const std::string& text) override;
-    
-    virtual bool is_key_down_up_availabled() const override { return true; }
 
     virtual bool key_down(int key) override;
     virtual bool key_up(int key) override;
-
 
 public: // from ControlUnitSink
     virtual void on_image_resolution_changed(const std::pair<int, int>& pre, const std::pair<int, int>& cur) override;

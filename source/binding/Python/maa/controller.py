@@ -14,6 +14,7 @@ from .library import Library
 __all__ = [
     "AdbController",
     "DbgController",
+    "PlayCoverController",
     "Win32Controller",
     "CustomController",
 ]
@@ -41,14 +42,46 @@ class Controller:
             Library.framework().MaaControllerDestroy(self._handle)
 
     def post_connection(self) -> Job:
+        """异步连接设备 / Asynchronously connect device
+
+        这是一个异步操作，会立即返回一个 Job 对象
+        This is an asynchronous operation that immediately returns a Job object
+
+        Returns:
+            Job: 作业对象，可通过 status/wait 查询状态 / Job object, can query status via status/wait
+        """
         ctrl_id = Library.framework().MaaControllerPostConnection(self._handle)
         return self._gen_ctrl_job(ctrl_id)
 
     def post_click(self, x: int, y: int) -> Job:
+        """异步点击 / Asynchronously click
+
+        这是一个异步操作，会立即返回一个 Job 对象
+        This is an asynchronous operation that immediately returns a Job object
+
+        Args:
+            x: x 坐标 / x coordinate
+            y: y 坐标 / y coordinate
+
+        Returns:
+            Job: 作业对象，可通过 status/wait 查询状态 / Job object, can query status via status/wait
+        """
         ctrl_id = Library.framework().MaaControllerPostClick(self._handle, x, y)
         return self._gen_ctrl_job(ctrl_id)
 
     def post_swipe(self, x1: int, y1: int, x2: int, y2: int, duration: int) -> Job:
+        """滑动 / Swipe
+
+        Args:
+            x1: 起点 x 坐标 / Start x coordinate
+            y1: 起点 y 坐标 / Start y coordinate
+            x2: 终点 x 坐标 / End x coordinate
+            y2: 终点 y 坐标 / End y coordinate
+            duration: 滑动时长(毫秒) / Swipe duration in milliseconds
+
+        Returns:
+            Job: 作业对象 / Job object
+        """
         ctrl_id = Library.framework().MaaControllerPostSwipe(
             self._handle, x1, y1, x2, y2, duration
         )
@@ -61,30 +94,78 @@ class Controller:
         return self.post_click_key(key)
 
     def post_click_key(self, key: int) -> Job:
+        """单击按键 / Click key
+
+        Args:
+            key: 虚拟键码 / Virtual key code
+
+        Returns:
+            Job: 作业对象 / Job object
+        """
         ctrl_id = Library.framework().MaaControllerPostClickKey(self._handle, key)
         return self._gen_ctrl_job(ctrl_id)
 
     def post_key_down(self, key: int) -> Job:
+        """按下键 / Key down
+
+        Args:
+            key: 虚拟键码 / Virtual key code
+
+        Returns:
+            Job: 作业对象 / Job object
+        """
         ctrl_id = Library.framework().MaaControllerPostKeyDown(self._handle, key)
         return self._gen_ctrl_job(ctrl_id)
 
     def post_key_up(self, key: int) -> Job:
+        """抬起键 / Key up
+
+        Args:
+            key: 虚拟键码 / Virtual key code
+
+        Returns:
+            Job: 作业对象 / Job object
+        """
         ctrl_id = Library.framework().MaaControllerPostKeyUp(self._handle, key)
         return self._gen_ctrl_job(ctrl_id)
 
     def post_input_text(self, text: str) -> Job:
+        """输入文本 / Input text
+
+        Args:
+            text: 要输入的文本 / Text to input
+
+        Returns:
+            Job: 作业对象 / Job object
+        """
         ctrl_id = Library.framework().MaaControllerPostInputText(
             self._handle, text.encode()
         )
         return self._gen_ctrl_job(ctrl_id)
 
     def post_start_app(self, intent: str) -> Job:
+        """启动应用 / Start app
+
+        Args:
+            intent: 目标应用 (Adb 控制器: package name 或 activity) / Target app (Adb controller: package name or activity)
+
+        Returns:
+            Job: 作业对象 / Job object
+        """
         ctrl_id = Library.framework().MaaControllerPostStartApp(
             self._handle, intent.encode()
         )
         return self._gen_ctrl_job(ctrl_id)
 
     def post_stop_app(self, intent: str) -> Job:
+        """关闭应用 / Stop app
+
+        Args:
+            intent: 目标应用 (Adb 控制器: package name) / Target app (Adb controller: package name)
+
+        Returns:
+            Job: 作业对象 / Job object
+        """
         ctrl_id = Library.framework().MaaControllerPostStopApp(
             self._handle, intent.encode()
         )
@@ -93,6 +174,17 @@ class Controller:
     def post_touch_down(
         self, x: int, y: int, contact: int = 0, pressure: int = 1
     ) -> Job:
+        """按下 / Touch down
+
+        Args:
+            x: x 坐标 / x coordinate
+            y: y 坐标 / y coordinate
+            contact: 触点编号 (Adb 控制器: 手指编号; Win32 控制器: 鼠标按键 0:左键, 1:右键, 2:中键) / Contact number (Adb controller: finger number; Win32 controller: mouse button 0:left, 1:right, 2:middle)
+            pressure: 触点力度 / Contact pressure
+
+        Returns:
+            Job: 作业对象 / Job object
+        """
         ctrl_id = Library.framework().MaaControllerPostTouchDown(
             self._handle, contact, x, y, pressure
         )
@@ -101,16 +193,57 @@ class Controller:
     def post_touch_move(
         self, x: int, y: int, contact: int = 0, pressure: int = 1
     ) -> Job:
+        """移动 / Move
+
+        Args:
+            x: x 坐标 / x coordinate
+            y: y 坐标 / y coordinate
+            contact: 触点编号 (Adb 控制器: 手指编号; Win32 控制器: 鼠标按键 0:左键, 1:右键, 2:中键) / Contact number (Adb controller: finger number; Win32 controller: mouse button 0:left, 1:right, 2:middle)
+            pressure: 触点力度 / Contact pressure
+
+        Returns:
+            Job: 作业对象 / Job object
+        """
         ctrl_id = Library.framework().MaaControllerPostTouchMove(
             self._handle, contact, x, y, pressure
         )
         return self._gen_ctrl_job(ctrl_id)
 
     def post_touch_up(self, contact: int = 0) -> Job:
+        """抬起 / Touch up
+
+        Args:
+            contact: 触点编号 (Adb 控制器: 手指编号; Win32 控制器: 鼠标按键 0:左键, 1:右键, 2:中键) / Contact number (Adb controller: finger number; Win32 controller: mouse button 0:left, 1:right, 2:middle)
+
+        Returns:
+            Job: 作业对象 / Job object
+        """
         ctrl_id = Library.framework().MaaControllerPostTouchUp(self._handle, contact)
         return self._gen_ctrl_job(ctrl_id)
 
+    def post_scroll(self, dx: int, dy: int) -> Job:
+        """滚动 / Scroll
+
+        Args:
+            dx: 水平滚动距离，正值向右滚动，负值向左滚动 / Horizontal scroll distance, positive for right, negative for left
+            dy: 垂直滚动距离，正值向上滚动，负值向下滚动 / Vertical scroll distance, positive for up, negative for down
+
+        Returns:
+            Job: 作业对象 / Job object
+
+        Note:
+            不是所有控制器都支持滚动操作 / Not all controllers support scroll operation
+            建议使用 120 的整数倍（WHEEL_DELTA）以获得最佳兼容性 / Using multiples of 120 (WHEEL_DELTA) is recommended
+        """
+        ctrl_id = Library.framework().MaaControllerPostScroll(self._handle, dx, dy)
+        return self._gen_ctrl_job(ctrl_id)
+
     def post_screencap(self) -> JobWithResult:
+        """截图 / Screenshot
+
+        Returns:
+            JobWithResult: 作业对象，可通过 result 获取截图 / Job object, can get screenshot via result
+        """
         ctrl_id = Library.framework().MaaControllerPostScreencap(self._handle)
         return JobWithResult(
             ctrl_id,
@@ -121,6 +254,14 @@ class Controller:
 
     @property
     def cached_image(self) -> numpy.ndarray:
+        """获取最新一次截图 / Get the latest screenshot
+
+        Returns:
+            numpy.ndarray: 截图图像 / Screenshot image
+
+        Raises:
+            RuntimeError: 如果获取失败
+        """
         image_buffer = ImageBuffer()
         if not Library.framework().MaaControllerCachedImage(
             self._handle, image_buffer._handle
@@ -128,18 +269,76 @@ class Controller:
             raise RuntimeError("Failed to get cached image.")
         return image_buffer.get()
 
+    def post_shell(self, cmd: str, timeout: int = 20000) -> JobWithResult:
+        """执行 shell 命令 (仅 ADB 控制器) / Execute shell command (ADB only)
+
+        Args:
+            cmd: shell 命令 / shell command
+            timeout: 超时时间（毫秒），默认 20000 / Timeout in milliseconds, default 20000
+
+        Returns:
+            JobWithResult: 作业对象，可通过 result 获取命令输出 / Job object, can get output via result
+        """
+        ctrl_id = Library.framework().MaaControllerPostShell(
+            self._handle, cmd.encode("utf-8"), timeout
+        )
+        return JobWithResult(
+            ctrl_id,
+            self._status,
+            self._wait,
+            self._get_shell_output,
+        )
+
+    @property
+    def shell_output(self) -> str:
+        """获取最近一次 shell 命令输出 / Get the latest shell command output
+
+        Returns:
+            str: shell 命令输出 / shell command output
+
+        Raises:
+            RuntimeError: 如果获取失败
+        """
+        string_buffer = StringBuffer()
+        if not Library.framework().MaaControllerGetShellOutput(
+            self._handle, string_buffer._handle
+        ):
+            raise RuntimeError("Failed to get shell output.")
+        return string_buffer.get()
+
     @property
     def connected(self) -> bool:
+        """判断是否已连接 / Check if connected
+
+        Returns:
+            bool: 是否已连接 / Whether connected
+        """
         return bool(Library.framework().MaaControllerConnected(self._handle))
 
     @property
     def uuid(self) -> str:
+        """获取设备 uuid / Get device uuid
+
+        Returns:
+            str: 设备 uuid / Device uuid
+
+        Raises:
+            RuntimeError: 如果获取失败
+        """
         buffer = StringBuffer()
         if not Library.framework().MaaControllerGetUuid(self._handle, buffer._handle):
             raise RuntimeError("Failed to get UUID.")
         return buffer.get()
 
     def set_screenshot_target_long_side(self, long_side: int) -> bool:
+        """设置截图缩放长边到指定长度 / Set screenshot scaling long side to specified length
+
+        Args:
+            long_side: 长边长度 / Long side length
+
+        Returns:
+            bool: 是否成功 / Whether successful
+        """
         cint = ctypes.c_int32(long_side)
         return bool(
             Library.framework().MaaControllerSetOption(
@@ -151,6 +350,14 @@ class Controller:
         )
 
     def set_screenshot_target_short_side(self, short_side: int) -> bool:
+        """设置截图缩放短边到指定长度 / Set screenshot scaling short side to specified length
+
+        Args:
+            short_side: 短边长度 / Short side length
+
+        Returns:
+            bool: 是否成功 / Whether successful
+        """
         cint = ctypes.c_int32(short_side)
         return bool(
             Library.framework().MaaControllerSetOption(
@@ -162,6 +369,17 @@ class Controller:
         )
 
     def set_screenshot_use_raw_size(self, enable: bool) -> bool:
+        """设置截图不缩放 / Set screenshot use raw size without scaling
+
+        注意：此选项可能导致在不同分辨率的设备上坐标不正确
+        Note: This option may cause incorrect coordinates on devices with different resolutions
+
+        Args:
+            enable: 是否启用 / Whether to enable
+
+        Returns:
+            bool: 是否成功 / Whether successful
+        """
         cbool = MaaBool(enable)
         return bool(
             Library.framework().MaaControllerSetOption(
@@ -175,6 +393,14 @@ class Controller:
     _sink_holder: Dict[int, "ControllerEventSink"] = {}
 
     def add_sink(self, sink: "ControllerEventSink") -> Optional[int]:
+        """添加控制器事件监听器 / Add controller event listener
+
+        Args:
+            sink: 事件监听器 / Event sink
+
+        Returns:
+            Optional[int]: 监听器 id，失败返回 None / Listener id, or None if failed
+        """
         sink_id = int(
             Library.framework().MaaControllerAddSink(
                 self._handle, *EventSink._gen_c_param(sink)
@@ -187,10 +413,16 @@ class Controller:
         return sink_id
 
     def remove_sink(self, sink_id: int) -> None:
+        """移除控制器事件监听器 / Remove controller event listener
+
+        Args:
+            sink_id: 监听器 id / Listener id
+        """
         Library.framework().MaaControllerRemoveSink(self._handle, sink_id)
         self._sink_holder.pop(sink_id)
 
     def clear_sinks(self) -> None:
+        """清除所有控制器事件监听器 / Clear all controller event listeners"""
         Library.framework().MaaControllerClearSinks(self._handle)
 
     ### private ###
@@ -203,6 +435,9 @@ class Controller:
 
     def _get_screencap(self, _: int) -> numpy.ndarray:
         return self.cached_image
+
+    def _get_shell_output(self, _: int) -> str:
+        return self.shell_output
 
     def _gen_ctrl_job(self, ctrlid: MaaCtrlId) -> Job:
         return Job(
@@ -312,6 +547,14 @@ class Controller:
             MaaControllerHandle,
             c_int32,
         ]
+
+        Library.framework().MaaControllerPostScroll.restype = MaaCtrlId
+        Library.framework().MaaControllerPostScroll.argtypes = [
+            MaaControllerHandle,
+            c_int32,
+            c_int32,
+        ]
+
         Library.framework().MaaControllerStatus.restype = MaaStatus
         Library.framework().MaaControllerStatus.argtypes = [
             MaaControllerHandle,
@@ -357,6 +600,12 @@ class Controller:
 
 
 class AdbController(Controller):
+    """Adb 控制器 / Adb controller
+
+    截图方式和输入方式会在启动时进行测速, 选择最快的方案
+    Screenshot and input methods will be speed tested at startup, selecting the fastest option
+    """
+
     AGENT_BINARY_PATH = os.path.join(
         os.path.dirname(__file__),
         "../MaaAgentBinary",
@@ -372,6 +621,21 @@ class AdbController(Controller):
         agent_path: Union[str, Path] = AGENT_BINARY_PATH,
         notification_handler: None = None,
     ):
+        """创建 Adb 控制器 / Create Adb controller
+
+        Args:
+            adb_path: adb 路径 / adb path
+            address: 连接地址 / connection address
+            screencap_methods: 所有可使用的截图方式 / all available screenshot methods
+            input_methods: 所有可使用的输入方式 / all available input methods
+            config: 额外配置 / extra config
+            agent_path: MaaAgentBinary 路径 / MaaAgentBinary path
+            notification_handler: 已废弃，请使用 add_sink 代替 / Deprecated, use add_sink instead
+
+        Raises:
+            NotImplementedError: 如果提供了 notification_handler
+            RuntimeError: 如果创建失败
+        """
         if notification_handler:
             raise NotImplementedError(
                 "NotificationHandler is deprecated, use add_sink instead."
@@ -406,14 +670,29 @@ class AdbController(Controller):
 
 
 class Win32Controller(Controller):
+    """Win32 控制器 / Win32 controller"""
 
     def __init__(
         self,
         hWnd: Union[ctypes.c_void_p, int, None],
         screencap_method: int = MaaWin32ScreencapMethodEnum.DXGI_DesktopDup,
-        input_method: int = MaaWin32InputMethodEnum.Seize,
+        mouse_method: int = MaaWin32InputMethodEnum.Seize,
+        keyboard_method: int = MaaWin32InputMethodEnum.Seize,
         notification_handler: None = None,
     ):
+        """创建 Win32 控制器 / Create Win32 controller
+
+        Args:
+            hWnd: 窗口句柄 / window handle
+            screencap_method: 使用的截图方式 / screenshot method used
+            mouse_method: 使用的鼠标输入方式 / mouse input method used
+            keyboard_method: 使用的键盘输入方式 / keyboard input method used
+            notification_handler: 已废弃，请使用 add_sink 代替 / Deprecated, use add_sink instead
+
+        Raises:
+            NotImplementedError: 如果提供了 notification_handler
+            RuntimeError: 如果创建失败
+        """
         if notification_handler:
             raise NotImplementedError(
                 "NotificationHandler is deprecated, use add_sink instead."
@@ -425,7 +704,8 @@ class Win32Controller(Controller):
         self._handle = Library.framework().MaaWin32ControllerCreate(
             hWnd,
             MaaWin32ScreencapMethod(screencap_method),
-            MaaWin32InputMethod(input_method),
+            MaaWin32InputMethod(mouse_method),
+            MaaWin32InputMethod(keyboard_method),
         )
 
         if not self._handle:
@@ -437,10 +717,59 @@ class Win32Controller(Controller):
             ctypes.c_void_p,
             MaaWin32ScreencapMethod,
             MaaWin32InputMethod,
+            MaaWin32InputMethod,
+        ]
+
+
+class PlayCoverController(Controller):
+    """PlayCover 控制器 / PlayCover controller
+
+    用于在 macOS 上控制通过 PlayCover 运行的 iOS 应用
+    For controlling iOS apps running via PlayCover on macOS
+    """
+
+    def __init__(
+        self,
+        address: str,
+        uuid: str,
+        notification_handler: None = None,
+    ):
+        """创建 PlayCover 控制器 / Create PlayCover controller
+
+        Args:
+            address: PlayTools 服务地址 (host:port) / PlayTools service endpoint (host:port)
+            uuid: 目标应用 bundle identifier / Target app bundle identifier
+
+        Raises:
+            NotImplementedError: 如果提供了 notification_handler
+            RuntimeError: 如果创建失败
+        """
+        if notification_handler:
+            raise NotImplementedError(
+                "NotificationHandler is deprecated, use add_sink instead."
+            )
+
+        super().__init__()
+        self._set_playcover_api_properties()
+
+        self._handle = Library.framework().MaaPlayCoverControllerCreate(
+            address.encode(),
+            uuid.encode(),
+        )
+
+        if not self._handle:
+            raise RuntimeError("Failed to create PlayCover controller.")
+
+    def _set_playcover_api_properties(self):
+        Library.framework().MaaPlayCoverControllerCreate.restype = MaaControllerHandle
+        Library.framework().MaaPlayCoverControllerCreate.argtypes = [
+            ctypes.c_char_p,
+            ctypes.c_char_p,
         ]
 
 
 class DbgController(Controller):
+    """调试控制器 / Debug controller"""
 
     def __init__(
         self,
@@ -450,6 +779,19 @@ class DbgController(Controller):
         config: Dict[str, Any] = {},
         notification_handler: None = None,
     ):
+        """创建调试控制器 / Create debug controller
+
+        Args:
+            read_path: 输入路径, 包含通过 Recording 选项记录的操作 / Input path, includes operations recorded via Recording option
+            write_path: 输出路径, 包含执行结果 / Output path, includes execution results
+            dbg_type: 控制器模式 / Controller mode
+            config: 额外配置 / Extra config
+            notification_handler: 已废弃，请使用 add_sink 代替 / Deprecated, use add_sink instead
+
+        Raises:
+            NotImplementedError: 如果提供了 notification_handler
+            RuntimeError: 如果创建失败
+        """
         if notification_handler:
             raise NotImplementedError(
                 "NotificationHandler is deprecated, use add_sink instead."
@@ -497,6 +839,7 @@ class CustomController(Controller):
         self._callbacks = MaaCustomControllerCallbacks(
             CustomController._c_connect_agent,
             CustomController._c_request_uuid_agent,
+            CustomController._c_get_features_agent,
             CustomController._c_start_app_agent,
             CustomController._c_stop_app_agent,
             CustomController._c_screencap_agent,
@@ -509,6 +852,7 @@ class CustomController(Controller):
             CustomController._c_input_text_agent,
             CustomController._c_key_down_agent,
             CustomController._c_key_up_agent,
+            CustomController._c_scroll_agent,
         )
 
         self._handle = Library.framework().MaaCustomControllerCreate(
@@ -534,6 +878,12 @@ class CustomController(Controller):
     @abstractmethod
     def request_uuid(self) -> str:
         raise NotImplementedError
+
+    def get_features(self) -> int:
+        return (
+            MaaControllerFeatureEnum.UseMouseDownAndUpInsteadOfClick
+            | MaaControllerFeatureEnum.UseKeyboardDownAndUpInsteadOfClick
+        )
 
     @abstractmethod
     def start_app(self, intent: str) -> bool:
@@ -595,6 +945,10 @@ class CustomController(Controller):
     def key_up(self, keycode: int) -> bool:
         raise NotImplementedError
 
+    @abstractmethod
+    def scroll(self, dx: int, dy: int) -> bool:
+        raise NotImplementedError
+
     @staticmethod
     @MaaCustomControllerCallbacks.ConnectFunc
     def _c_connect_agent(
@@ -629,6 +983,19 @@ class CustomController(Controller):
         uuid_buffer = StringBuffer(c_buffer)
         uuid_buffer.set(uuid)
         return int(True)
+
+    @staticmethod
+    @MaaCustomControllerCallbacks.GetFeaturesFunc
+    def _c_get_features_agent(trans_arg: ctypes.c_void_p) -> int:
+        if not trans_arg:
+            return int(MaaControllerFeatureEnum.Null)
+
+        self: CustomController = ctypes.cast(
+            trans_arg,
+            ctypes.py_object,
+        ).value
+
+        return int(self.get_features())
 
     @staticmethod
     @MaaCustomControllerCallbacks.StartAppFunc
@@ -839,6 +1206,23 @@ class CustomController(Controller):
         ).value
 
         return int(self.input_text(c_text.decode()))
+
+    @staticmethod
+    @MaaCustomControllerCallbacks.ScrollFunc
+    def _c_scroll_agent(
+        c_dx: ctypes.c_int32,
+        c_dy: ctypes.c_int32,
+        trans_arg: ctypes.c_void_p,
+    ) -> int:
+        if not trans_arg:
+            return int(False)
+
+        self: CustomController = ctypes.cast(
+            trans_arg,
+            ctypes.py_object,
+        ).value
+
+        return int(self.scroll(int(c_dx), int(c_dy)))
 
     def _set_custom_api_properties(self):
         Library.framework().MaaCustomControllerCreate.restype = MaaControllerHandle
