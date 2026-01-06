@@ -8,9 +8,9 @@
     // ====================
     // 所有节点的通用默认配置
     "Default": {
-        "rate_limit": 2000, // 识别间隔（毫秒）
-        "timeout": 30000, // 任务超时（毫秒）
-        "pre_delay": 500, // 识别后到动作前的延迟
+        "rate_limit": 1000, // 识别间隔（毫秒）
+        "timeout": 20000, // 任务超时（毫秒）
+        "pre_delay": 200, // 识别后到动作前的延迟
         "post_delay": 200 // 动作后到下一次识别的延迟
     },
     // ===== 识别算法默认配置 =====
@@ -31,7 +31,6 @@
     // 文字识别（OCR）
     "OCR": {
         "recognition": "OCR",
-        "model": "OCR", // 使用的模型名称（需在 model/ocr 目录下）
         "threshold": 0.3, // 置信度阈值
         "order_by": "Horizontal", // 排序方式：Horizontal | Vertical | Area | Length
         "replace": [] // 文字替换规则列表，格式：[["待替换字符串", "替换为"]]
@@ -52,7 +51,7 @@
     // 滑动
     "Swipe": {
         "action": "Swipe",
-        "duration": 500 // 滑动持续时间（毫秒）
+        "duration": 200 // 滑动持续时间（毫秒）
         // "begin": [100, 100],  // 起点坐标（需具体指定）
         // "end": [500, 100]     // 终点坐标（需具体指定）
     }
