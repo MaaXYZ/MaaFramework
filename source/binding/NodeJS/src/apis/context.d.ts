@@ -9,7 +9,7 @@ declare global {
             ): Promise<TaskDetail | null>
             run_recognition(
                 entry: string,
-                image: ImageData | Buffer,
+                image: ImageData,
                 pipeline_override?: Record<string, unknown> | Record<string, unknown>[],
             ): Promise<RecoDetail | null>
             run_action(
@@ -22,7 +22,7 @@ declare global {
                 pipeline_override: Record<string, unknown> | Record<string, unknown>[],
             ): void
             override_next(node_name: string, next: string[]): void
-            override_image(image_name: string, image: ImageData | Buffer): void
+            override_image(image_name: string, image: ImageData): void
             get_node_data(node_name: string): string | null
             get_node_data_parsed(node_name: string): DumpTask | null
             get task_id(): TaskId

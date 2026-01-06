@@ -157,11 +157,6 @@ struct JSConvert<ArrayBufferType>
         if (val.IsArrayBuffer()) {
             return val.As<ArrayBufferType>();
         }
-#ifdef MAA_JS_IMPL_IS_NODEJS
-        if (val.IsBuffer()) {
-            return val.As<ObjectType>()["arraybuffer"].AsValue().As<ArrayBufferType>();
-        }
-#endif
         throw MaaError { std::format("expect {}, got {}", name(), DumpValue(val)) };
     }
 
