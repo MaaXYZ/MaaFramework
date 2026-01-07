@@ -68,8 +68,8 @@ RecoResult TaskBase::run_recognition(const cv::Mat& image, const PipelineData& d
         return {};
     }
 
-    uint current_hit = context_->get_hit_count(data.name);
-    if (current_hit >= data.max_hit) {
+    size_t current_hit = context_->get_hit_count(data.name);
+    if (current_hit >= static_cast<size_t>(data.max_hit)) {
         LogDebug << "max_hit reached" << VAR(data.name) << VAR(current_hit) << VAR(data.max_hit);
         return {};
     }

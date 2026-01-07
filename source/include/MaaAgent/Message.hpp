@@ -387,7 +387,7 @@ struct ContextGetHitCountReverseRequest
 
 struct ContextGetHitCountReverseResponse
 {
-    uint64_t count = 0;
+    size_t count = 0;
 
     MessageTypePlaceholder _ContextGetHitCountReverseResponse = 1;
     MEO_JSONIZATION(count, _ContextGetHitCountReverseResponse);

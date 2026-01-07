@@ -303,7 +303,7 @@ bool& Context::need_to_stop()
     return need_to_stop_;
 }
 
-uint Context::get_hit_count(const std::string& node_name) const
+size_t Context::get_hit_count(const std::string& node_name) const
 {
     auto it = task_state_->hit_count.find(node_name);
     if (it != task_state_->hit_count.end()) {
