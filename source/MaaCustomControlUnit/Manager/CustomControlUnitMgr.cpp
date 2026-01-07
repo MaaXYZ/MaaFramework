@@ -29,8 +29,8 @@ bool CustomControlUnitMgr::connected() const
     LogFunc << VAR_VOIDP(controller_) << VAR_VOIDP(controller_->connected);
 
     if (!controller_ || !controller_->connected) {
-        LogError << "controller_ or controller_->connected is nullptr";
-        return false;
+        // connected 回调是可选的，未提供时默认返回 true（已连接）
+        return true;
     }
 
     return controller_->connected(controller_arg_);

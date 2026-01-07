@@ -876,9 +876,9 @@ class CustomController(Controller):
     def connect(self) -> bool:
         raise NotImplementedError
 
-    @abstractmethod
     def connected(self) -> bool:
-        raise NotImplementedError
+        """检查是否已连接（可选实现，默认返回 True）"""
+        return True
 
     @abstractmethod
     def request_uuid(self) -> str:
