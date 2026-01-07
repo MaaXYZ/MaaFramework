@@ -309,6 +309,7 @@ RecoResult Recognizer::and_(const std::shared_ptr<MAA_RES_NS::Recognition::AndPa
     bool all_hit = true;
 
     for (const auto& sub_reco : param->all_of) {
+        LogDebug << "And: run sub recognition" << VAR(sub_reco.type) << VAR(sub_reco.sub_name);
         RecoResult res = run_recognition(sub_reco.type, sub_reco.param, sub_reco.sub_name);
         all_hit &= res.box.has_value();
 
@@ -372,6 +373,7 @@ RecoResult Recognizer::or_(const std::shared_ptr<MAA_RES_NS::Recognition::OrPara
     bool has_hit = false;
 
     for (const auto& sub_reco : param->any_of) {
+        LogDebug << "Or: run sub recognition" << VAR(sub_reco.type) << VAR(sub_reco.sub_name);
         RecoResult res = run_recognition(sub_reco.type, sub_reco.param, sub_reco.sub_name);
         has_hit = res.box.has_value();
         sub_results.emplace_back(std::move(res));
