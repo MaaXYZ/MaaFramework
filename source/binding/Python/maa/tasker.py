@@ -388,7 +388,7 @@ class Tasker:
 
         raw_detail = json.loads(detail_json.get())
         algorithm: AlgorithmEnum = AlgorithmEnum(algorithm.get())
-        parsed_detail = Tasker._parse_recognition_raw_detail(algorithm, raw_detail)
+        parsed_detail = self._parse_recognition_raw_detail(algorithm, raw_detail)
 
         return RecognitionDetail(
             reco_id=reco_id,
@@ -710,14 +710,24 @@ class Tasker:
 
     _api_properties_initialized: bool = False
 
-    @staticmethod
-    def _parse_recognition_raw_detail(algorithm: AlgorithmEnum, raw_detail: Dict):
+    def _parse_recognition_raw_detail(self, algorithm: AlgorithmEnum, raw_detail):
         if not raw_detail:
             return [], [], None
 
         ResultType = AlgorithmResultDict[algorithm]
         if not ResultType:
             return [], [], None
+
+        # And/Or 的 detail 是子识别结果数组，递归获取完整的 RecognitionDetail
+        if algorithm in (AlgorithmEnum.And, AlgorithmEnum.Or):
+            sub_results = []
+            for sub in raw_detail:
+                reco_id = sub.get("reco_id", 0)
+                sub_detail = self.get_recognition_detail(reco_id)
+                if sub_detail:
+                    sub_results.append(sub_detail)
+            result = ResultType(sub_results=sub_results)
+            return [result], [result], result
 
         all_results: List[RecognitionResult] = []
         filtered_results: List[RecognitionResult] = []
