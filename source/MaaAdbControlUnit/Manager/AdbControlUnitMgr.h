@@ -86,7 +86,6 @@ private:
     std::shared_ptr<InputBase> input_ = nullptr;
     std::shared_ptr<ScreencapBase> screencap_ = nullptr;
 
-    bool connected_ = false;
     bool screencap_available_ = false;
     std::pair<int, int> image_resolution_;
 };
