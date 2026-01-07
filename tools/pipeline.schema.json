@@ -1324,9 +1324,9 @@
             "properties": {
                 "sub_name": {
                     "title": "Sub Name Property",
-                    "description": "子识别别名。可选。后续子识别可通过 `roi: sub_name` 引用之前子识别的 `filtered` 作为 ROI（仅 And 有效）。",
+                    "description": "子识别别名。可选。后续子识别可通过 `roi: sub_name` 引用之前子识别的 `filtered` 作为 ROI；同名以最后一个为准；仅当前节点内有效。（仅支持 `And`）",
                     "type": "string",
-                    "markdownDescription": "*string*\n\n子识别别名。可选。\n\n后续子识别可通过 `roi: sub_name` 引用之前子识别的识别框作为 ROI；同名以最后一个为准。仅 And 有效。"
+                    "markdownDescription": "*string*\n\n子识别别名。可选。\n\n后续子识别可通过 `roi: sub_name` 引用之前子识别的 `filtered` 作为 ROI；同名以最后一个为准；仅当前节点内有效。（仅支持 `And`）"
                 }
             }
         },
