@@ -387,13 +387,18 @@ class Tasker:
             return None
 
         raw_detail = json.loads(detail_json.get())
-        algorithm: AlgorithmEnum = AlgorithmEnum(algorithm.get())
-        parsed_detail = self._parse_recognition_raw_detail(algorithm, raw_detail)
+        algorithm_str = algorithm.get()
+        parsed_detail = self._parse_recognition_raw_detail(algorithm_str, raw_detail)
+
+        try:
+            algorithm_enum = AlgorithmEnum(algorithm_str)
+        except ValueError:
+            algorithm_enum = algorithm_str  # type: ignore
 
         return RecognitionDetail(
             reco_id=reco_id,
             name=name.get(),
-            algorithm=algorithm,
+            algorithm=algorithm_enum,
             hit=bool(hit),
             box=bool(hit) and box.get() or None,
             all_results=parsed_detail[0],
@@ -435,8 +440,13 @@ class Tasker:
             return None
 
         raw_detail = json.loads(detail_json.get())
-        action_enum: ActionEnum = ActionEnum(action.get())
-        parsed_result = Tasker._parse_action_raw_detail(action_enum, raw_detail)
+        action_str = action.get()
+        parsed_result = Tasker._parse_action_raw_detail(action_str, raw_detail)
+
+        try:
+            action_enum = ActionEnum(action_str)
+        except ValueError:
+            action_enum = action_str  # type: ignore
 
         return ActionDetail(
             action_id=action_id,
@@ -710,16 +720,21 @@ class Tasker:
 
     _api_properties_initialized: bool = False
 
-    def _parse_recognition_raw_detail(self, algorithm: AlgorithmEnum, raw_detail):
+    def _parse_recognition_raw_detail(self, algorithm: str, raw_detail):
         if not raw_detail:
             return [], [], None
 
-        ResultType = AlgorithmResultDict[algorithm]
+        try:
+            algorithm_enum = AlgorithmEnum(algorithm)
+        except ValueError:
+            return [], [], None
+
+        ResultType = AlgorithmResultDict.get(algorithm_enum)
         if not ResultType:
             return [], [], None
 
         # And/Or 的 detail 是子识别结果数组，递归获取完整的 RecognitionDetail
-        if algorithm in (AlgorithmEnum.And, AlgorithmEnum.Or):
+        if algorithm_enum in (AlgorithmEnum.And, AlgorithmEnum.Or):
             sub_results = []
             for sub in raw_detail:
                 reco_id = sub.get("reco_id")
@@ -750,12 +765,17 @@ class Tasker:
 
     @staticmethod
     def _parse_action_raw_detail(
-        action: ActionEnum, raw_detail: Dict
+        action: str, raw_detail: Dict
     ) -> Optional[ActionResult]:
         if not raw_detail:
             return None
 
-        ResultType = ActionResultDict[action]
+        try:
+            action_enum = ActionEnum(action)
+        except ValueError:
+            return None
+
+        ResultType = ActionResultDict.get(action_enum)
         if not ResultType:
             return None
 

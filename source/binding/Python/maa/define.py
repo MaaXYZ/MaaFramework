@@ -747,7 +747,7 @@ AlgorithmResultDict = {
 class RecognitionDetail:
     reco_id: int
     name: str
-    algorithm: AlgorithmEnum
+    algorithm: Union[AlgorithmEnum, str]
     hit: bool
     box: Optional[Rect]
 
@@ -874,7 +874,7 @@ ActionResultDict = {
 class ActionDetail:
     action_id: int
     name: str
-    action: ActionEnum
+    action: Union[ActionEnum, str]
     box: Rect
     success: bool
     result: Optional[ActionResult]
