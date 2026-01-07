@@ -722,7 +722,9 @@ class Tasker:
         if algorithm in (AlgorithmEnum.And, AlgorithmEnum.Or):
             sub_results = []
             for sub in raw_detail:
-                reco_id = sub.get("reco_id", 0)
+                reco_id = sub.get("reco_id")
+                if not reco_id:
+                    continue
                 sub_detail = self.get_recognition_detail(reco_id)
                 if sub_detail:
                     sub_results.append(sub_detail)
