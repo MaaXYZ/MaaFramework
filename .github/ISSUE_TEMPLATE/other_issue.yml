@@ -9,14 +9,16 @@ body:
 
               📖 **[问题反馈指南 / Troubleshooting Guide](https://github.com/MaaXYZ/MaaFramework/blob/main/docs/zh_cn/5.1-问题反馈.md)**
 
-              简单的使用问题建议先在 QQ 群（595990173）咨询。
+              简单的使用问题建议先在 QQ 群（595990173）咨询。  
               For simple usage questions, consider asking in QQ Group (595990173) first.
 
     - type: textarea
       id: description
       attributes:
           label: 问题描述 / Description
-          description: 请详细描述您的问题 / Please describe your issue in detail
+          description: |
+              请详细描述您的问题  
+              Please describe your issue in detail
       validations:
           required: false
 
