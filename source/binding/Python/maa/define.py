@@ -633,6 +633,8 @@ class AlgorithmEnum(StrEnum):
     OCR = "OCR"
     NeuralNetworkClassify = "NeuralNetworkClassify"
     NeuralNetworkDetect = "NeuralNetworkDetect"
+    And = "And"
+    Or = "Or"
     Custom = "Custom"
 
 
@@ -701,6 +703,20 @@ class CustomRecognitionResult:
     detail: Union[str, Dict]
 
 
+@dataclass
+class AndRecognitionResult:
+    """And 算法识别结果，包含所有子识别的完整详情"""
+
+    sub_results: List["RecognitionDetail"]
+
+
+@dataclass
+class OrRecognitionResult:
+    """Or 算法识别结果，包含已执行子识别的完整详情"""
+
+    sub_results: List["RecognitionDetail"]
+
+
 RecognitionResult = Union[
     TemplateMatchResult,
     FeatureMatchResult,
@@ -708,6 +724,8 @@ RecognitionResult = Union[
     OCRResult,
     NeuralNetworkClassifyResult,
     NeuralNetworkDetectResult,
+    AndRecognitionResult,
+    OrRecognitionResult,
     CustomRecognitionResult,
 ]
 
@@ -719,6 +737,8 @@ AlgorithmResultDict = {
     AlgorithmEnum.OCR: OCRResult,
     AlgorithmEnum.NeuralNetworkClassify: NeuralNetworkClassifyResult,
     AlgorithmEnum.NeuralNetworkDetect: NeuralNetworkDetectResult,
+    AlgorithmEnum.And: AndRecognitionResult,
+    AlgorithmEnum.Or: OrRecognitionResult,
     AlgorithmEnum.Custom: CustomRecognitionResult,
 }
 
@@ -727,7 +747,7 @@ AlgorithmResultDict = {
 class RecognitionDetail:
     reco_id: int
     name: str
-    algorithm: AlgorithmEnum
+    algorithm: Union[AlgorithmEnum, str]
     hit: bool
     box: Optional[Rect]
 
@@ -854,7 +874,7 @@ ActionResultDict = {
 class ActionDetail:
     action_id: int
     name: str
-    action: ActionEnum
+    action: Union[ActionEnum, str]
     box: Rect
     success: bool
     result: Optional[ActionResult]
