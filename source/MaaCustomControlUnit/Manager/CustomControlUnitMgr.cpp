@@ -24,6 +24,18 @@ bool CustomControlUnitMgr::connect()
     return controller_->connect(controller_arg_);
 }
 
+bool CustomControlUnitMgr::connected() const
+{
+    LogFunc << VAR_VOIDP(controller_) << VAR_VOIDP(controller_->connected);
+
+    if (!controller_ || !controller_->connected) {
+        LogError << "controller_ or controller_->connected is nullptr";
+        return false;
+    }
+
+    return controller_->connected(controller_arg_);
+}
+
 bool CustomControlUnitMgr::request_uuid(std::string& uuid)
 {
     LogFunc << VAR_VOIDP(controller_) << VAR_VOIDP(controller_->request_uuid);

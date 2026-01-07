@@ -41,6 +41,8 @@ AdbControlUnitMgr::AdbControlUnitMgr(
 
 bool AdbControlUnitMgr::connect()
 {
+    connected_ = false;
+
     if (!connection_.connect()) {
         LogError << "failed to connect" << VAR(adb_path_) << VAR(adb_serial_);
         return false;
@@ -80,7 +82,13 @@ bool AdbControlUnitMgr::connect()
         LogWarn << "input_methods_ is MaaAdbInputMethod_None";
     }
 
+    connected_ = true;
     return true;
+}
+
+bool AdbControlUnitMgr::connected() const
+{
+    return connected_;
 }
 
 bool AdbControlUnitMgr::request_uuid(std::string& uuid)

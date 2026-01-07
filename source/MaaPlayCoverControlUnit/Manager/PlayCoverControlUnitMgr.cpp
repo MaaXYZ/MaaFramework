@@ -26,6 +26,11 @@ bool PlayCoverControlUnitMgr::connect()
     return client_->connect(address_);
 }
 
+bool PlayCoverControlUnitMgr::connected() const
+{
+    return client_->connected();
+}
+
 bool PlayCoverControlUnitMgr::request_uuid(std::string& uuid)
 {
     uuid = uuid_;
