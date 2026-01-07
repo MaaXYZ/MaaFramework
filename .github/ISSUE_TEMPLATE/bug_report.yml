@@ -29,13 +29,17 @@ body:
     - type: textarea
       id: description
       attributes:
-          label: 问题描述 / Problem Description
+          label: 问题描述及复现步骤 / Problem Description & Reproduction Steps
           description: |
-              请描述预期行为和实际行为  
-              Describe expected vs actual behavior
+              请描述预期行为和实际行为，并提供复现步骤  
+              Describe expected vs actual behavior and provide reproduction steps
           placeholder: |
               预期行为 / Expected: ...  
-              实际行为 / Actual: ...
+              实际行为 / Actual: ...  
+              复现步骤 / Reproduction Steps:  
+              1. ...  
+              2. ...  
+              3. ...
       validations:
           required: true
 
@@ -51,31 +55,16 @@ body:
           required: true
 
     - type: textarea
-      id: environment
+      id: logs
       attributes:
-          label: 运行环境 / Environment
+          label: 日志文件 / Log Files
           description: |
-              操作系统、设备信息等  
-              OS, device info, etc.
-          placeholder: |
-              OS: Windows 11 / macOS 14 / Ubuntu 22.04  
-              Device: ...
+              请上传完整的 maa.log 文件（位于 `<工作目录>/debug/maa.log`）  
+              Please upload the complete maa.log file (located at `<working_dir>/debug/maa.log`)
+
+              💡 若日志过短，请同时上传 `maa.bak.log`；建议对比正常/异常日志时重命名区分
       validations:
           required: true
-
-    - type: textarea
-      id: reproduce
-      attributes:
-          label: 复现步骤 / Steps to Reproduce
-          description: |
-              请提供复现问题的步骤  
-              Provide steps to reproduce the issue
-          placeholder: |
-              1. ...  
-              2. ...  
-              3. ...
-      validations:
-          required: false
 
     - type: textarea
       id: pipeline
@@ -96,18 +85,6 @@ body:
               }
       validations:
           required: false
-
-    - type: textarea
-      id: logs
-      attributes:
-          label: 日志文件 / Log Files
-          description: |
-              请上传完整的 maa.log 文件（位于 `<工作目录>/debug/maa.log`）  
-              Please upload the complete maa.log file (located at `<working_dir>/debug/maa.log`)
-
-              💡 若日志过短，请同时上传 `maa.bak.log`；建议对比正常/异常日志时重命名区分
-      validations:
-          required: true
 
     - type: textarea
       id: dump
@@ -150,7 +127,7 @@ body:
       attributes:
           label: 其他信息 / Additional Information
           description: |
-              其他可能有帮助的信息，如原始截图、最小复现项目等  
+              其他可能有帮助的信息，如运行环境、原始截图、最小复现项目等  
               Any other helpful information, such as original screenshots or minimal reproduction project
       validations:
           required: false
@@ -165,7 +142,6 @@ body:
               - ✅ 完整的 `maa.log` 日志文件  
               - ✅ 问题描述（预期 vs 实际）  
               - ✅ MaaFramework 版本号  
-              - ✅ 运行环境
 
               ### 崩溃问题额外提供 / Additional for Crash
               - 🔸 Crash Dump 文件（`.dmp`）  
