@@ -1,0 +1,87 @@
+name: Bug 报告 / Bug Report
+description: 提交一个 Bug 报告 / Submit a bug report
+labels: ["bug"]
+body:
+    - type: markdown
+      attributes:
+          value: |
+              ## 提交前请阅读 / Please Read Before Submitting
+
+              📖 **[问题反馈指南 / Troubleshooting Guide](https://github.com/MaaXYZ/MaaFramework/blob/main/docs/zh_cn/5.1-问题反馈.md)**
+
+              ⚠️ **请先更新到最新版本的 MaaFramework，确认问题是否仍然存在后再提交 Issue。**
+              ⚠️ **Please update to the latest version of MaaFramework and verify the issue still exists before submitting.**
+
+              请确保您已阅读上述文档，并按要求提供必要信息。
+              Please make sure you have read the guide above and provide the required information.
+
+    - type: textarea
+      id: description
+      attributes:
+          label: 问题描述 / Problem Description
+          description: 请描述预期行为和实际行为 / Describe expected vs actual behavior
+          placeholder: |
+              预期行为 / Expected: ...
+              实际行为 / Actual: ...
+      validations:
+          required: true
+
+    - type: input
+      id: version
+      attributes:
+          label: MaaFramework 版本 / Version
+          description: 请提供准确的版本号 / Please provide the exact version
+          placeholder: "例如 / e.g.: v2.0.0"
+      validations:
+          required: true
+
+    - type: textarea
+      id: environment
+      attributes:
+          label: 运行环境 / Environment
+          description: 操作系统、设备信息等 / OS, device info, etc.
+          placeholder: |
+              OS: Windows 11 / macOS 14 / Ubuntu 22.04
+              Device: ...
+      validations:
+          required: true
+
+    - type: textarea
+      id: pipeline
+      attributes:
+          label: Pipeline JSON
+          description: 若与任务流程相关，请提供相关节点配置 / If related to task flow, provide relevant node configuration
+          render: json
+      validations:
+          required: false
+
+    - type: textarea
+      id: reproduce
+      attributes:
+          label: 复现步骤 / Steps to Reproduce
+          description: 请提供复现问题的步骤 / Provide steps to reproduce the issue
+          placeholder: |
+              1. ...
+              2. ...
+              3. ...
+      validations:
+          required: false
+
+    - type: textarea
+      id: logs
+      attributes:
+          label: 日志文件 / Log Files
+          description: |
+              请上传完整的 maa.log 文件（位于 `<工作目录>/debug/maa.log`）
+              Please upload the complete maa.log file (located at `<working_dir>/debug/maa.log`)
+          placeholder: 拖拽上传 maa.log 文件 / Drag and drop maa.log file here
+      validations:
+          required: true
+
+    - type: textarea
+      id: additional
+      attributes:
+          label: 其他信息 / Additional Information
+          description: 其他可能有帮助的信息 / Any other helpful information
+      validations:
+          required: false

@@ -1,0 +1,108 @@
+name: 识别问题 / Recognition Issue
+description: 图像识别相关问题 / Image recognition related issues
+labels: ["bug", "recognition"]
+body:
+    - type: markdown
+      attributes:
+          value: |
+              ## 提交前请阅读 / Please Read Before Submitting
+
+              📖 **[问题反馈指南 / Troubleshooting Guide](https://github.com/MaaXYZ/MaaFramework/blob/main/docs/zh_cn/5.1-问题反馈.md)**
+
+              ⚠️ **请先更新到最新版本的 MaaFramework，确认问题是否仍然存在后再提交 Issue。**
+              ⚠️ **Please update to the latest version of MaaFramework and verify the issue still exists before submitting.**
+
+              识别问题需要提供 **Draw 调试图像**、**Pipeline 配置** 和 **模板图片**。
+              Recognition issues require **Draw debug images**, **Pipeline config**, and **template images**.
+
+              ### 开启调试图像 / Enable Debug Images
+              在 `<工作目录>/config/maa_option.json` 中设置 `"save_draw": true`
+              Set `"save_draw": true` in `<working_dir>/config/maa_option.json`
+
+    - type: textarea
+      id: description
+      attributes:
+          label: 问题描述 / Problem Description
+          description: 请描述预期识别结果和实际识别结果 / Describe expected vs actual recognition results
+          placeholder: |
+              预期识别到 / Expected to recognize: ...
+              实际识别到 / Actually recognized: ...
+      validations:
+          required: true
+
+    - type: input
+      id: version
+      attributes:
+          label: MaaFramework 版本 / Version
+          description: 请提供准确的版本号 / Please provide the exact version
+          placeholder: "例如 / e.g.: v2.0.0"
+      validations:
+          required: true
+
+    - type: textarea
+      id: pipeline
+      attributes:
+          label: Pipeline JSON
+          description: 请提供相关节点的识别配置 / Provide recognition configuration of related nodes
+          render: json
+          placeholder: |
+              {
+                  "节点名": {
+                      "recognition": "TemplateMatch",
+                      "template": "xxx.png",
+                      "threshold": 0.7,
+                      ...
+                  }
+              }
+      validations:
+          required: true
+
+    - type: textarea
+      id: draw_images
+      attributes:
+          label: Draw 调试图片 / Draw Debug Images
+          description: |
+              请上传 `<工作目录>/debug/vision/` 目录下对应的调试图片
+              Upload debug images from `<working_dir>/debug/vision/`
+          placeholder: 拖拽上传图片 / Drag and drop images here
+      validations:
+          required: true
+
+    - type: textarea
+      id: template_images
+      attributes:
+          label: 模板图片 / Template Images
+          description: |
+              请上传 Pipeline 中 `template` 字段引用的图片（位于 `resource/image/`）
+              Upload images referenced by `template` field (located in `resource/image/`)
+          placeholder: 拖拽上传图片 / Drag and drop images here
+      validations:
+          required: true
+
+    - type: textarea
+      id: screenshot
+      attributes:
+          label: 原始截图 / Original Screenshot
+          description: 问题发生时的完整屏幕截图（可选但建议提供）/ Complete screenshot when issue occurred (optional but recommended)
+          placeholder: 拖拽上传图片 / Drag and drop image here
+      validations:
+          required: false
+
+    - type: textarea
+      id: logs
+      attributes:
+          label: 日志文件 / Log Files
+          description: |
+              请上传 maa.log 文件（位于 `<工作目录>/debug/maa.log`）
+              Please upload maa.log file (located at `<working_dir>/debug/maa.log`)
+          placeholder: 拖拽上传 maa.log 文件 / Drag and drop maa.log file here
+      validations:
+          required: true
+
+    - type: textarea
+      id: additional
+      attributes:
+          label: 其他信息 / Additional Information
+          description: 其他可能有帮助的信息 / Any other helpful information
+      validations:
+          required: false
