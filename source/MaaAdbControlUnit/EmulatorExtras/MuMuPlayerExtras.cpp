@@ -59,6 +59,15 @@ bool MuMuPlayerExtras::init()
     return load_mumu_library() && connect_mumu() && init_screencap();
 }
 
+void MuMuPlayerExtras::on_image_resolution_changed(const std::pair<int, int>& pre, const std::pair<int, int>& cur)
+{
+    std::ignore = pre;
+    std::ignore = cur;
+
+    disconnect_mumu();
+    connect_mumu() && init_screencap();
+}
+
 std::optional<cv::Mat> MuMuPlayerExtras::screencap()
 {
     LogDebug;
