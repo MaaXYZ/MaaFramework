@@ -396,6 +396,10 @@ class MaaCustomControllerCallbacks(ctypes.Structure):
         MaaBool,
         ctypes.c_void_p,
     )
+    ConnectedFunc = FUNCTYPE(
+        MaaBool,
+        ctypes.c_void_p,
+    )
     RequestUuidFunc = FUNCTYPE(
         MaaBool,
         ctypes.c_void_p,
@@ -484,6 +488,7 @@ class MaaCustomControllerCallbacks(ctypes.Structure):
     )
     _fields_ = [
         ("connect", ConnectFunc),
+        ("connected", ConnectedFunc),
         ("request_uuid", RequestUuidFunc),
         ("get_features", GetFeaturesFunc),
         ("start_app", StartAppFunc),

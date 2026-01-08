@@ -18,6 +18,7 @@ public:
 
 public: // from ControlUnitAPI
     virtual bool connect() override;
+    virtual bool connected() const override;
 
     virtual bool request_uuid(/*out*/ std::string& uuid) override;
     virtual MaaControllerFeature get_features() const override;
