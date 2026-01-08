@@ -161,10 +161,12 @@ bool AdbControlUnitMgr::screencap(cv::Mat& image)
             std::this_thread::sleep_for(j * kRescreencapDelay);
         }
 
-        LogWarn << "screencap failed after retries, re-connect";
+        LogWarn << "screencap failed after retries, force re-connect" << VAR(i);
         connection_.kill_server();
-        connect();
-        std::this_thread::sleep_for(i * kReconnectDelay);
+        if (!connect()) {
+            LogError << "re-connect failed" << VAR(i);
+            std::this_thread::sleep_for(i * kReconnectDelay);
+        }
     }
 
     return false;
