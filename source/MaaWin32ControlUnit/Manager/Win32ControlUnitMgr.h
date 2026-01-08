@@ -23,6 +23,7 @@ public:
 
 public: // from ControlUnitAPI
     virtual bool connect() override;
+    virtual bool connected() const override;
 
     virtual bool request_uuid(/*out*/ std::string& uuid) override;
     virtual MaaControllerFeature get_features() const override;
@@ -53,6 +54,7 @@ private:
     MaaWin32InputMethod mouse_method_ = MaaWin32InputMethod_None;
     MaaWin32InputMethod keyboard_method_ = MaaWin32InputMethod_None;
 
+    bool connected_ = false;
     std::shared_ptr<InputBase> mouse_ = nullptr;
     std::shared_ptr<InputBase> keyboard_ = nullptr;
     std::shared_ptr<ScreencapBase> screencap_ = nullptr;

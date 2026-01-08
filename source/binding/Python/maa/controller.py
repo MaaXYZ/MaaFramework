@@ -838,6 +838,7 @@ class CustomController(Controller):
 
         self._callbacks = MaaCustomControllerCallbacks(
             CustomController._c_connect_agent,
+            CustomController._c_connected_agent,
             CustomController._c_request_uuid_agent,
             CustomController._c_get_features_agent,
             CustomController._c_start_app_agent,
@@ -874,6 +875,10 @@ class CustomController(Controller):
     @abstractmethod
     def connect(self) -> bool:
         raise NotImplementedError
+
+    def connected(self) -> bool:
+        """检查是否已连接（可选实现，默认返回 True）"""
+        return True
 
     @abstractmethod
     def request_uuid(self) -> str:
@@ -963,6 +968,21 @@ class CustomController(Controller):
         ).value
 
         return int(self.connect())
+
+    @staticmethod
+    @MaaCustomControllerCallbacks.ConnectedFunc
+    def _c_connected_agent(
+        trans_arg: ctypes.c_void_p,
+    ) -> int:
+        if not trans_arg:
+            return int(False)
+
+        self: CustomController = ctypes.cast(
+            trans_arg,
+            ctypes.py_object,
+        ).value
+
+        return int(self.connected())
 
     @staticmethod
     @MaaCustomControllerCallbacks.RequestUuidFunc
