@@ -364,6 +364,17 @@ class Tasker:
         Returns:
             Optional[RecognitionDetail]: 识别详情，如果不存在则返回 None / Recognition detail, or None if not exists
         """
+        return self._get_recognition_detail_impl(reco_id, set())
+
+    def _get_recognition_detail_impl(
+        self, reco_id: int, visited: Set[int]
+    ) -> Optional[RecognitionDetail]:
+        """内部实现：获取识别信息，带 visited 集合防止递归 / Internal: Get recognition info with visited set to prevent recursion"""
+        if reco_id in visited:
+            return None
+
+        visited.add(reco_id)
+
         name = StringBuffer()
         algorithm = StringBuffer()  # type: ignore
         hit = MaaBool()
@@ -389,7 +400,9 @@ class Tasker:
 
         raw_detail = json.loads(detail_json.get())
         algorithm_str = algorithm.get()
-        parsed_detail = self._parse_recognition_raw_detail(algorithm_str, raw_detail)
+        parsed_detail = self._parse_recognition_raw_detail(
+            algorithm_str, raw_detail, visited
+        )
 
         try:
             algorithm_enum = AlgorithmEnum(algorithm_str)
@@ -721,7 +734,9 @@ class Tasker:
 
     _api_properties_initialized: bool = False
 
-    def _parse_recognition_raw_detail(self, algorithm: str, raw_detail):
+    def _parse_recognition_raw_detail(
+        self, algorithm: str, raw_detail, visited: Set[int]
+    ):
         if not raw_detail:
             return [], [], None
 
@@ -737,14 +752,12 @@ class Tasker:
         # And/Or 的 detail 是子识别结果数组，递归获取完整的 RecognitionDetail
         if algorithm_enum in (AlgorithmEnum.And, AlgorithmEnum.Or):
             sub_results = []
-            visited: Set[int] = set()
             for sub in raw_detail:
                 reco_id: int = sub.get("reco_id")
                 if not reco_id or reco_id in visited:
                     continue
 
-                visited.add(reco_id)
-                sub_detail = self.get_recognition_detail(reco_id)
+                sub_detail = self._get_recognition_detail_impl(reco_id, visited)
                 if sub_detail:
                     sub_results.append(sub_detail)
             result = ResultType(sub_results=sub_results)
