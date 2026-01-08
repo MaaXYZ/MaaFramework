@@ -191,6 +191,8 @@ public: // MaaController
     virtual std::string cached_shell_output() const override;
     virtual std::string get_uuid() override;
 
+    virtual bool get_resolution(int32_t& width, int32_t& height) const override;
+
     virtual MaaSinkId add_sink(MaaEventCallback callback, void* trans_arg) override;
     virtual void remove_sink(MaaSinkId sink_id) override;
     virtual void clear_sinks() override;

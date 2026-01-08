@@ -3,7 +3,7 @@ from abc import abstractmethod
 from ctypes import c_int32
 import os
 from pathlib import Path
-from typing import Any, Dict, Optional, Union
+from typing import Any, Dict, Optional, Tuple, Union
 
 from .buffer import ImageBuffer, StringBuffer
 from .event_sink import EventSink, NotificationType
@@ -261,6 +261,14 @@ class Controller:
 
         Raises:
             RuntimeError: 如果获取失败
+
+        Note:
+            返回的图像是经过缩放的，尺寸根据截图目标尺寸设置（长边/短边）而定，可能与设备原始分辨率不同。
+            使用 resolution 属性可获取设备的原始（未缩放）分辨率。
+
+            The returned image is scaled according to the screenshot target size settings (long side / short side).
+            The image dimensions may differ from the raw device resolution.
+            Use the resolution property to get the raw (unscaled) device resolution.
         """
         image_buffer = ImageBuffer()
         if not Library.framework().MaaControllerCachedImage(
@@ -329,6 +337,34 @@ class Controller:
         if not Library.framework().MaaControllerGetUuid(self._handle, buffer._handle):
             raise RuntimeError("Failed to get UUID.")
         return buffer.get()
+
+    @property
+    def resolution(self) -> Tuple[int, int]:
+        """获取设备原始（未缩放）分辨率 / Get the raw (unscaled) device resolution
+
+        Returns:
+            Tuple[int, int]: (宽度, 高度) / (width, height)
+
+        Raises:
+            RuntimeError: 如果获取失败（例如未连接或未截图）/ If get failed (e.g., not connected or no screenshot taken yet)
+
+        Note:
+            返回的是设备屏幕的实际分辨率，未经任何缩放处理。
+            而通过 cached_image 获取的截图是经过缩放的，其尺寸可能与此原始分辨率不同。
+            需要在首次截图后才能获取到有效值。
+
+            This returns the actual device screen resolution before any scaling.
+            The screenshot obtained via cached_image is scaled according to the screenshot target size settings,
+            so its dimensions may differ from this raw resolution.
+            Valid values are only available after the first screenshot is taken.
+        """
+        width = ctypes.c_int32()
+        height = ctypes.c_int32()
+        if not Library.framework().MaaControllerGetResolution(
+            self._handle, ctypes.byref(width), ctypes.byref(height)
+        ):
+            raise RuntimeError("Failed to get resolution.")
+        return (width.value, height.value)
 
     def set_screenshot_target_long_side(self, long_side: int) -> bool:
         """设置截图缩放长边到指定长度 / Set screenshot scaling long side to specified length
@@ -580,6 +616,13 @@ class Controller:
         Library.framework().MaaControllerGetUuid.argtypes = [
             MaaControllerHandle,
             MaaStringBufferHandle,
+        ]
+
+        Library.framework().MaaControllerGetResolution.restype = MaaBool
+        Library.framework().MaaControllerGetResolution.argtypes = [
+            MaaControllerHandle,
+            ctypes.POINTER(ctypes.c_int32),
+            ctypes.POINTER(ctypes.c_int32),
         ]
 
         Library.framework().MaaControllerAddSink.restype = MaaSinkId

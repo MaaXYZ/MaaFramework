@@ -203,6 +203,17 @@ std::string ControllerAgent::get_uuid()
     return uuid_cache_;
 }
 
+bool ControllerAgent::get_resolution(int32_t& width, int32_t& height) const
+{
+    if (image_raw_width_ == 0 || image_raw_height_ == 0) {
+        return false;
+    }
+
+    width = image_raw_width_;
+    height = image_raw_height_;
+    return true;
+}
+
 MaaSinkId ControllerAgent::add_sink(MaaEventCallback callback, void* trans_arg)
 {
     return notifier_.add_sink(callback, trans_arg);
