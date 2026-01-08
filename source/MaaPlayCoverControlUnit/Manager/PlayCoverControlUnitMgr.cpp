@@ -22,12 +22,21 @@ PlayCoverControlUnitMgr::~PlayCoverControlUnitMgr()
 
 bool PlayCoverControlUnitMgr::connect()
 {
+    if (!client_) {
+        LogError << "client_ is nullptr";
+        return false;
+    }
+
     LogFunc << VAR(address_);
     return client_->connect(address_);
 }
 
 bool PlayCoverControlUnitMgr::connected() const
 {
+    if (!client_) {
+        LogError << "client_ is nullptr";
+        return false;
+    }
     return client_->connected();
 }
 
@@ -51,6 +60,11 @@ bool PlayCoverControlUnitMgr::start_app(const std::string& intent)
 
 bool PlayCoverControlUnitMgr::stop_app(const std::string& intent)
 {
+    if (!client_) {
+        LogError << "client_ is nullptr";
+        return false;
+    }
+
     LogInfo << "stop_app" << VAR(intent);
     std::ignore = intent;
     return client_->terminate();
@@ -58,6 +72,11 @@ bool PlayCoverControlUnitMgr::stop_app(const std::string& intent)
 
 bool PlayCoverControlUnitMgr::screencap(cv::Mat& image)
 {
+    if (!client_) {
+        LogError << "client_ is nullptr";
+        return false;
+    }
+
     LogTrace;
 
     std::vector<uint8_t> buffer;
@@ -93,6 +112,11 @@ bool PlayCoverControlUnitMgr::swipe(int x1, int y1, int x2, int y2, int duration
 
 bool PlayCoverControlUnitMgr::touch_down(int contact, int x, int y, int pressure)
 {
+    if (!client_) {
+        LogError << "client_ is nullptr";
+        return false;
+    }
+
     std::ignore = pressure;
 
     if (contact != 0) {
@@ -112,6 +136,11 @@ bool PlayCoverControlUnitMgr::touch_down(int contact, int x, int y, int pressure
 
 bool PlayCoverControlUnitMgr::touch_move(int contact, int x, int y, int pressure)
 {
+    if (!client_) {
+        LogError << "client_ is nullptr";
+        return false;
+    }
+
     std::ignore = pressure;
 
     if (contact != 0) {
@@ -131,6 +160,11 @@ bool PlayCoverControlUnitMgr::touch_move(int contact, int x, int y, int pressure
 
 bool PlayCoverControlUnitMgr::touch_up(int contact)
 {
+    if (!client_) {
+        LogError << "client_ is nullptr";
+        return false;
+    }
+
     if (contact != 0) {
         LogWarn << "PlayCover only supports single touch, contact:" << contact;
         return false;
