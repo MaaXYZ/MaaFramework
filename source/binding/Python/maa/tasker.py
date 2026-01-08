@@ -2,7 +2,7 @@ import ctypes
 import dataclasses
 import json
 from pathlib import Path
-from typing import Dict, Optional, Union
+from typing import Dict, Optional, Union, Set
 
 import numpy
 
@@ -737,10 +737,13 @@ class Tasker:
         # And/Or 的 detail 是子识别结果数组，递归获取完整的 RecognitionDetail
         if algorithm_enum in (AlgorithmEnum.And, AlgorithmEnum.Or):
             sub_results = []
+            visited: Set[int] = set()
             for sub in raw_detail:
-                reco_id = sub.get("reco_id")
-                if not reco_id:
+                reco_id: int = sub.get("reco_id")
+                if not reco_id or reco_id in visited:
                     continue
+
+                visited.add(reco_id)
                 sub_detail = self.get_recognition_detail(reco_id)
                 if sub_detail:
                     sub_results.append(sub_detail)
