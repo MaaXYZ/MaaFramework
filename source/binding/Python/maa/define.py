@@ -885,8 +885,8 @@ class ActionDetail:
 class NodeDetail:
     node_id: int
     name: str
-    recognition: RecognitionDetail
-    action: ActionDetail
+    recognition: Optional[RecognitionDetail]
+    action: Optional[ActionDetail]
     completed: bool
 
 

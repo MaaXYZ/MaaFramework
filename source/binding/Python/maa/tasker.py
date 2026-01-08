@@ -11,6 +11,7 @@ from .library import Library
 from .buffer import ImageListBuffer, RectBuffer, StringBuffer, ImageBuffer
 from .job import Job, JobWithResult
 from .event_sink import EventSink, NotificationType
+from .context import ContextEventSink
 from .resource import Resource
 from .controller import Controller
 from .pipeline import JRecognitionParam, JActionParam, JRecognitionType, JActionType
@@ -171,7 +172,7 @@ class Tasker:
         self,
         action_type: JActionType,
         action_param: JActionParam,
-        box: Rect = (0, 0, 0, 0),
+        box: Rect = Rect(0, 0, 0, 0),
         reco_detail: str = "",
     ) -> JobWithResult:
         """异步执行操作 / Asynchronously execute action
