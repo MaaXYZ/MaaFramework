@@ -21,6 +21,8 @@ bool ReplayRecording::connect()
 {
     LogInfo;
 
+    connected_ = false;
+
     if (record_index_ >= recording_.records.size()) {
         LogError << "record index out of range" << VAR(record_index_) << VAR(recording_.records.size());
         return false;
@@ -34,7 +36,13 @@ bool ReplayRecording::connect()
 
     sleep(record.cost);
     ++record_index_;
+    connected_ = record.success;
     return record.success;
+}
+
+bool ReplayRecording::connected() const
+{
+    return connected_;
 }
 
 bool ReplayRecording::request_uuid(std::string& uuid)

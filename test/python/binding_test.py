@@ -498,6 +498,10 @@ class MyController(CustomController):
         self.count += 1
         return True
 
+    def connected(self) -> bool:
+        print("on MyController.connected")
+        return True
+
     def request_uuid(self) -> str:
         print("  on MyController.request_uuid")
         return "12345678"

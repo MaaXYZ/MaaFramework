@@ -267,7 +267,6 @@ private:
     const std::shared_ptr<MAA_CTRL_UNIT_NS::ControlUnitAPI> control_unit_ = nullptr;
     EventDispatcher notifier_;
 
-    bool connected_ = false;
     mutable std::mutex image_mutex_;
     cv::Mat image_;
     mutable std::mutex shell_output_mutex_;
