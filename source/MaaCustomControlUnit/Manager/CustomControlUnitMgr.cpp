@@ -27,6 +27,7 @@ bool CustomControlUnitMgr::connected() const
 {
     if (!controller_ || !controller_->connected) {
         // connected 回调是可选的，未提供时默认返回 true（已连接）
+        LogTrace << "connected callback not provided, returning true";
         return true;
     }
 
