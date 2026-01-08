@@ -11,7 +11,6 @@ from .library import Library
 from .buffer import ImageListBuffer, RectBuffer, StringBuffer, ImageBuffer
 from .job import Job, JobWithResult
 from .event_sink import EventSink, NotificationType
-from .context import ContextEventSink
 from .resource import Resource
 from .controller import Controller
 from .pipeline import JRecognitionParam, JActionParam, JRecognitionType, JActionType

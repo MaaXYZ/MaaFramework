@@ -87,7 +87,7 @@ class Library:
         cls.toolkit_libpath = path / toolkit_library[platform_type]
 
     @classmethod
-    def framework(cls) -> Union[ctypes.CDLL, ctypes.WinDLL]:
+    def framework(cls) -> Union["ctypes.CDLL", "ctypes.WinDLL"]:
         """获取 MaaFramework 库 / Get MaaFramework library
 
         Returns:
@@ -108,11 +108,11 @@ class Library:
             return cls.agent_server()
 
     @classmethod
-    def toolkit(cls) -> ctypes.CDLL:
+    def toolkit(cls) -> Union["ctypes.CDLL", "ctypes.WinDLL"]:
         """获取 MaaToolkit 库 / Get MaaToolkit library
 
         Returns:
-            ctypes.CDLL: MaaToolkit 动态库对象 / MaaToolkit dynamic library object
+            (ctypes.CDLL | ctypes.WinDLL): MaaFramework 动态库对象 / MaaFramework dynamic library object
         """
         if cls._lib_type is None:
             raise RuntimeError("Library._lib_type is None!")
@@ -123,11 +123,11 @@ class Library:
         return cls._toolkit
 
     @classmethod
-    def agent_client(cls) -> ctypes.CDLL:
+    def agent_client(cls) -> Union["ctypes.CDLL", "ctypes.WinDLL"]:
         """获取 MaaAgentClient 库 / Get MaaAgentClient library
 
         Returns:
-            ctypes.CDLL: MaaAgentClient 动态库对象 / MaaAgentClient dynamic library object
+            (ctypes.CDLL | ctypes.WinDLL): MaaFramework 动态库对象 / MaaFramework dynamic library object
 
         Raises:
             ValueError: 如果在 AgentServer 模式下调用
@@ -144,11 +144,11 @@ class Library:
         return cls._agent_client
 
     @classmethod
-    def agent_server(cls) -> ctypes.CDLL:
+    def agent_server(cls) -> Union["ctypes.CDLL", "ctypes.WinDLL"]:
         """获取 MaaAgentServer 库 / Get MaaAgentServer library
 
         Returns:
-            ctypes.CDLL: MaaAgentServer 动态库对象 / MaaAgentServer dynamic library object
+            (ctypes.CDLL | ctypes.WinDLL): MaaAgentServer 动态库对象 / MaaAgentServer dynamic library object
 
         Raises:
             ValueError: 如果不在 AgentServer 模式下调用
