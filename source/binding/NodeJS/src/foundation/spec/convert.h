@@ -375,7 +375,7 @@ struct JSConvert<std::tuple<Args...>>
             }
             T result;
             [&]<size_t... I>(std::index_sequence<I...>) {
-                ((std::get<I>(result) = JSConvert<std::tuple_element_t<I, T>>::from_value(arr[I])), ...);
+                ((std::get<I>(result) = JSConvert<std::tuple_element_t<I, T>>::from_value(arr[static_cast<uint32_t>(I)])), ...);
             }(std::make_index_sequence<std::tuple_size_v<T>>());
             return result;
         }
