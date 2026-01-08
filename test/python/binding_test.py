@@ -5,10 +5,10 @@ import numpy
 import io
 
 # Fix encoding issues on Windows (cp1252 cannot encode some Unicode characters)
-if sys.stdout.encoding != 'utf-8':
-    sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8', errors='replace')
-if sys.stderr.encoding != 'utf-8':
-    sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding='utf-8', errors='replace')
+if sys.stdout.encoding != "utf-8":
+    sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8", errors="replace")
+if sys.stderr.encoding != "utf-8":
+    sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding="utf-8", errors="replace")
 
 if len(sys.argv) < 3:
     print("Usage: python binding_test.py <binding_dir> <install_dir>")
@@ -182,6 +182,32 @@ def api_test():
     else:
         print("pipeline failed")
         raise RuntimeError("pipeline failed")
+
+    detail_and = (
+        tasker.post_task(
+            "and_test",
+            {
+                "and_test": {
+                    "recognition": {
+                        "type": "Or",
+                        "param": {
+                            "any_of": [
+                                {"recognition": {"type": "DirectHit"}},
+                                {"recognition": {"type": "DirectHit"}},
+                            ]
+                        },
+                    },
+                }
+            },
+        )
+        .wait()
+        .get()
+    )
+    if detail_and:
+        print(f"pipeline detail_and: {detail_and}")
+    else:
+        print("pipeline detail_and failed")
+        raise RuntimeError("pipeline detail_and failed")
 
     stopping = tasker.stopping
     print(f"stopping0: {stopping}")

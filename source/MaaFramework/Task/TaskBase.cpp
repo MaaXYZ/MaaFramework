@@ -85,7 +85,12 @@ RecoResult TaskBase::run_recognition(const cv::Mat& image, const PipelineData& d
 
     notify(MaaMsg_Node_Recognition_Starting, cb_detail);
 
-    RecoResult result = recognizer.recognize(data);
+    RecoResult result = recognizer.recognize(data.reco_type, data.reco_param, data.name);
+
+    if (data.inverse) {
+        LogDebug << "pipeline_data.inverse is true, reverse the result" << VAR(data.name) << VAR(result.box);
+        result.box = result.box ? std::nullopt : std::make_optional<cv::Rect>();
+    }
 
     cb_detail["reco_details"] = result;
     notify(result.box ? MaaMsg_Node_Recognition_Succeeded : MaaMsg_Node_Recognition_Failed, cb_detail);
