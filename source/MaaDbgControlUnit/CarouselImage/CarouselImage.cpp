@@ -10,6 +10,7 @@ bool CarouselImage::connect()
 {
     LogInfo << VAR(path_);
 
+    connected_ = false;
     images_.clear();
     image_index_ = 0;
 
@@ -49,7 +50,13 @@ bool CarouselImage::connect()
     }
 
     resolution_ = images_.front().size();
+    connected_ = true;
     return true;
+}
+
+bool CarouselImage::connected() const
+{
+    return connected_;
 }
 
 bool CarouselImage::request_uuid(std::string& uuid)

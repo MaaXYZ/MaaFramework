@@ -30,7 +30,7 @@ public:
 
     bool connect(const std::string& address);
     void close();
-    bool is_connected() const;
+    bool connected() const;
 
     bool screencap(std::vector<uint8_t>& buffer, int& width, int& height);
     bool touch(TouchPhase phase, int x, int y);

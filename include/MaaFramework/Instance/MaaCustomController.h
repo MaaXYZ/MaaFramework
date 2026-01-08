@@ -31,6 +31,7 @@ extern "C"
     struct MaaCustomControllerCallbacks
     {
         MaaBool (*connect)(void* trans_arg);
+        MaaBool (*connected)(void* trans_arg);
 
         /// Write result to buffer.
         MaaBool (*request_uuid)(void* trans_arg, /* out */ MaaStringBuffer* buffer);

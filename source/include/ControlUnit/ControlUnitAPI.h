@@ -16,6 +16,7 @@ public:
     virtual ~ControlUnitAPI() = default;
 
     virtual bool connect() = 0;
+    virtual bool connected() const = 0;
 
     virtual bool request_uuid(/*out*/ std::string& uuid) = 0;
     virtual MaaControllerFeature get_features() const = 0;

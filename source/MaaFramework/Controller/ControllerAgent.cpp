@@ -180,7 +180,10 @@ MaaStatus ControllerAgent::wait(MaaCtrlId ctrl_id) const
 
 bool ControllerAgent::connected() const
 {
-    return connected_;
+    if (!control_unit_) {
+        return false;
+    }
+    return control_unit_->connected();
 }
 
 cv::Mat ControllerAgent::cached_image() const
@@ -375,11 +378,11 @@ bool ControllerAgent::handle_connect()
         return false;
     }
 
-    connected_ = control_unit_->connect();
+    bool ret = control_unit_->connect();
 
     request_uuid();
 
-    return connected_;
+    return ret;
 }
 
 bool ControllerAgent::handle_click(const ClickParam& param)
