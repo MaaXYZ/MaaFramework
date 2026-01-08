@@ -2,7 +2,13 @@ cmake_minimum_required(VERSION 3.28)
 
 project(MaaFw)
 
-set(CMAKE_CXX_SCAN_FOR_MODULES  OFF)
+set(CMAKE_CXX_SCAN_FOR_MODULES OFF)
+
+# Detect if we are cross-compiling to Windows from Linux
+if(CMAKE_SYSTEM_NAME STREQUAL "Windows" AND CMAKE_HOST_SYSTEM_NAME STREQUAL "Linux")
+    set(MAA_CROSS_COMPILE_WIN32 ON)
+    message(STATUS "Cross-compiling for Windows on Linux host")
+endif()
 
 include(source/MaaUtils/MaaUtils.cmake)
 
@@ -35,7 +41,7 @@ if(NOT WITH_DBG_CONTROLLER)
 endif()
 
 if(WITH_WIN32_CONTROLLER AND NOT WIN32)
-    message(STATUS "Not on Windows, disable WITH_WIN32_CONTROLLER")
+    message(STATUS "Not targeting Windows, disable WITH_WIN32_CONTROLLER")
     set(WITH_WIN32_CONTROLLER OFF)
 endif()
 
