@@ -705,16 +705,20 @@ class CustomRecognitionResult:
 
 @dataclass
 class AndRecognitionResult:
-    """And 算法识别结果，包含所有子识别的完整详情"""
-
-    sub_results: List["RecognitionDetail"]
+    reco_id: int
+    name: str
+    algorithm: str
+    box: Optional[Rect] = None
+    detail: Optional[Dict] = None
 
 
 @dataclass
 class OrRecognitionResult:
-    """Or 算法识别结果，包含已执行子识别的完整详情"""
-
-    sub_results: List["RecognitionDetail"]
+    reco_id: int
+    name: str
+    algorithm: str
+    box: Optional[Rect] = None
+    detail: Optional[Dict] = None
 
 
 RecognitionResult = Union[

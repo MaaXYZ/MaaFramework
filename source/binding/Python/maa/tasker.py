@@ -733,18 +733,50 @@ class Tasker:
         if not ResultType:
             return [], [], None
 
-        # And/Or 的 detail 是子识别结果数组，递归获取完整的 RecognitionDetail
+        # And/Or 的 detail 是子识别结果数组
+        # 需要解析每个子识别的结果，支持嵌套
         if algorithm_enum in (AlgorithmEnum.And, AlgorithmEnum.Or):
-            sub_results = []
-            for sub in raw_detail:
-                reco_id = sub.get("reco_id")
-                if not reco_id:
-                    continue
-                sub_detail = self.get_recognition_detail(reco_id)
-                if sub_detail:
-                    sub_results.append(sub_detail)
-            result = ResultType(sub_results=sub_results)
-            return [result], [result], result
+            if isinstance(raw_detail, list):
+                all_results = []
+
+                for item in raw_detail:
+                    if not isinstance(item, dict):
+                        continue
+
+                    # 提取子识别的信息
+                    sub_algorithm = item.get('algorithm', '')
+                    sub_detail = item.get('detail')
+
+                    if not sub_detail:
+                        continue
+
+                    try:
+                        # 检查是否是嵌套的 And/Or
+                        sub_algorithm_enum = AlgorithmEnum(sub_algorithm)
+
+                        if sub_algorithm_enum in (AlgorithmEnum.And, AlgorithmEnum.Or):
+                            # 递归处理嵌套的 And/Or
+                            nested_results = self._parse_recognition_raw_detail(sub_algorithm, sub_detail)
+                            if nested_results and nested_results[0]:
+                                all_results.extend(nested_results[0])
+                            continue
+
+                        # 处理普通算法
+                        SubResultType = AlgorithmResultDict.get(sub_algorithm_enum)
+
+                        if not SubResultType or not isinstance(sub_detail, dict):
+                            continue
+
+                        # 从子识别的 detail 中解析结果
+                        sub_all = sub_detail.get('all', [])
+                        for sub_result in sub_all:
+                            all_results.append(SubResultType(**sub_result))
+
+                    except (ValueError, TypeError):
+                        continue
+
+                # 返回所有子识别的结果
+                return all_results, all_results, all_results[0] if all_results else None
 
         all_results: List[RecognitionResult] = []
         filtered_results: List[RecognitionResult] = []
