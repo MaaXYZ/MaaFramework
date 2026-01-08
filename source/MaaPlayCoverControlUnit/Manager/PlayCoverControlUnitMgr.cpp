@@ -34,6 +34,7 @@ bool PlayCoverControlUnitMgr::connect()
 bool PlayCoverControlUnitMgr::connected() const
 {
     if (!client_) {
+        LogError << "client_ is nullptr";
         return false;
     }
     return client_->connected();
