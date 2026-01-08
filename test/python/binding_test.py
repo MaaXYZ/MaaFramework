@@ -189,9 +189,9 @@ def api_test():
             {
                 "and_test": {
                     "recognition": {
-                        "type": "Or",
+                        "type": "And",
                         "param": {
-                            "any_of": [
+                            "all_of": [
                                 {"recognition": {"type": "DirectHit"}},
                                 {"recognition": {"type": "DirectHit"}},
                             ]
