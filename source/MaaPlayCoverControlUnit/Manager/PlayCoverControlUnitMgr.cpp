@@ -28,6 +28,9 @@ bool PlayCoverControlUnitMgr::connect()
 
 bool PlayCoverControlUnitMgr::connected() const
 {
+    if (!client_) {
+        return false;
+    }
     return client_->connected();
 }
 

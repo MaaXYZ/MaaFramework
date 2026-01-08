@@ -26,13 +26,14 @@ bool CustomControlUnitMgr::connect()
 
 bool CustomControlUnitMgr::connected() const
 {
-    LogFunc << VAR_VOIDP(controller_) << VAR_VOIDP(controller_->connected);
+    LogFunc << VAR_VOIDP(controller_);
 
     if (!controller_ || !controller_->connected) {
         // connected 回调是可选的，未提供时默认返回 true（已连接）
         return true;
     }
 
+    LogTrace << VAR_VOIDP(controller_->connected);
     return controller_->connected(controller_arg_);
 }
 
