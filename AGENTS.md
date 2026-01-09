@@ -184,6 +184,7 @@ MaaFramework/
 - [ ] 添加/更新中英文文档
 - [ ] 更新 MaaMsg.h 及绑定层消息解析代码（如有新消息）
 - [ ] 更新 `test/python/` 中的单元测试
+- [ ] 更新 `test/agent/` 中的 Agent 单元测试（如涉及 Agent 接口）
 
 ## 常见开发场景
 
@@ -215,11 +216,24 @@ MaaFramework/
 3. 在 `source/MaaAgentServer/RemoteInstance/Remote<Module>.h` 添加对应方法声明
 4. 在 `source/MaaAgentServer/RemoteInstance/Remote<Module>.cpp` 实现远程调用逻辑
 5. 在 `test/python/binding_test.py` 添加相应的 API 调用测试
+6. 在 `test/agent/` 中添加 Agent 单元测试，验证远程调用功能
+
+**Agent 单元测试说明**：
+
+- `test/agent/agent_main_test.py`：AgentClient 端测试（主进程），负责创建 Resource/Controller/Tasker，并测试 AgentClient 的连接管理、custom_*_list 等 API
+- `test/agent/agent_child_test.py`：AgentServer 端测试（子进程），在自定义识别器/动作中测试 Remote* 类提供的 Context/Tasker/Resource/Controller API
 
 **Agent 架构说明**：
 
 - **AgentClient**：运行在主程序中，将 Custom 请求转发到 Server，并处理 Server 的远程调用
 - **AgentServer**：运行在用户进程中，注册自定义识别器/动作，通过 Remote* 类代理访问主程序实例
+
+**AgentServer 不支持的 API**（参考 `source/MaaAgentServer/API/MaaAgentServerNotImpl.cpp`）：
+
+- 创建/销毁实例：`MaaResourceCreate`、`MaaTaskerCreate`、`MaaControllerDestroy` 等
+- 全局选项：`MaaGlobalSetOption`、`MaaSetGlobalOption`
+- 插件加载：`MaaGlobalLoadPlugin`
+- Sink 管理：Remote* 实例不支持 `add_sink`/`remove_sink`，需使用 `AgentServer.add_*_sink` 代替
 
 ### 修改 workflows 和 actions
 
