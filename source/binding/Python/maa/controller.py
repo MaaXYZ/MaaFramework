@@ -343,27 +343,24 @@ class Controller:
         """获取设备原始（未缩放）分辨率 / Get the raw (unscaled) device resolution
 
         Returns:
-            Tuple[int, int]: (宽度, 高度) / (width, height)
-
-        Raises:
-            RuntimeError: 如果获取失败（例如未连接或未截图）/ If get failed (e.g., not connected or no screenshot taken yet)
+            Tuple[int, int]: (宽度, 高度)，获取失败时返回 (0, 0) / (width, height), returns (0, 0) on failure
 
         Note:
             返回的是设备屏幕的实际分辨率，未经任何缩放处理。
             而通过 cached_image 获取的截图是经过缩放的，其尺寸可能与此原始分辨率不同。
-            需要在首次截图后才能获取到有效值。
+            需要在首次截图后才能获取到有效值，否则返回 (0, 0)。
 
             This returns the actual device screen resolution before any scaling.
             The screenshot obtained via cached_image is scaled according to the screenshot target size settings,
             so its dimensions may differ from this raw resolution.
-            Valid values are only available after the first screenshot is taken.
+            Valid values are only available after the first screenshot is taken, otherwise returns (0, 0).
         """
         width = ctypes.c_int32()
         height = ctypes.c_int32()
         if not Library.framework().MaaControllerGetResolution(
             self._handle, ctypes.byref(width), ctypes.byref(height)
         ):
-            raise RuntimeError("Failed to get resolution.")
+            return (0, 0)
         return (width.value, height.value)
 
     def set_screenshot_target_long_side(self, long_side: int) -> bool:
