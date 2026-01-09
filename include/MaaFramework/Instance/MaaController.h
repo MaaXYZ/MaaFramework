@@ -99,6 +99,16 @@ extern "C"
 
     MAA_FRAMEWORK_API MaaCtrlId MaaControllerPostKeyUp(MaaController* ctrl, int32_t keycode);
 
+    /**
+     * @brief Post a screenshot request to the controller.
+     *
+     * @param ctrl The controller handle.
+     * @return The control id of the screenshot action.
+     *
+     * @note The screenshot image is scaled according to the screenshot target size settings (long side / short side).
+     *       Use MaaControllerGetResolution to get the raw (unscaled) device resolution.
+     * @see MaaControllerCachedImage, MaaControllerSetOption, MaaControllerGetResolution
+     */
     MAA_FRAMEWORK_API MaaCtrlId MaaControllerPostScreencap(MaaController* ctrl);
 
     /**
@@ -145,9 +155,36 @@ extern "C"
 
     MAA_FRAMEWORK_API MaaBool MaaControllerConnected(const MaaController* ctrl);
 
+    /**
+     * @brief Get the cached screenshot image.
+     *
+     * @param ctrl The controller handle.
+     * @param buffer The output buffer to store the screenshot image.
+     * @return true if the screenshot is available, false otherwise.
+     *
+     * @note The returned image is scaled according to the screenshot target size settings (long side / short side).
+     *       The image dimensions may differ from the raw device resolution.
+     *       Use MaaControllerGetResolution to get the raw (unscaled) device resolution.
+     * @see MaaControllerPostScreencap, MaaControllerSetOption, MaaControllerGetResolution
+     */
     MAA_FRAMEWORK_API MaaBool MaaControllerCachedImage(const MaaController* ctrl, /* out */ MaaImageBuffer* buffer);
 
     MAA_FRAMEWORK_API MaaBool MaaControllerGetUuid(MaaController* ctrl, /* out */ MaaStringBuffer* buffer);
+
+    /**
+     * @brief Get the raw (unscaled) device resolution.
+     *
+     * @param ctrl The controller handle.
+     * @param[out] width Output parameter for the raw width.
+     * @param[out] height Output parameter for the raw height.
+     * @return true if the resolution is available, false otherwise (e.g., not connected or no screenshot taken yet).
+     *
+     * @note This returns the actual device screen resolution before any scaling.
+     *       The screenshot obtained via MaaControllerCachedImage is scaled according to the screenshot target size settings,
+     *       so its dimensions may differ from this raw resolution.
+     * @see MaaControllerCachedImage, MaaControllerPostScreencap
+     */
+    MAA_FRAMEWORK_API MaaBool MaaControllerGetResolution(const MaaController* ctrl, /* out */ int32_t* width, /* out */ int32_t* height);
 
     MAA_DEPRECATED MAA_FRAMEWORK_API MaaCtrlId MaaControllerPostPressKey(MaaController* ctrl, int32_t keycode);
 
