@@ -947,6 +947,9 @@ def main():
     print(f"MaaFw Version: {Library.version()}")
     Toolkit.init_option(install_dir / "bin")
 
+    # 重置测试状态，避免同一进程多次运行时残留陈旧状态
+    PipelineTestRecognition.test_results.clear()
+
     # 创建临时测试资源目录
     import tempfile
 
