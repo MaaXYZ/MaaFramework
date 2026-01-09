@@ -344,3 +344,13 @@ MaaBool MaaControllerGetUuid(MaaController* ctrl, MaaStringBuffer* buffer)
     buffer->set(std::move(uuid));
     return true;
 }
+
+MaaBool MaaControllerGetResolution(const MaaController* ctrl, int32_t* width, int32_t* height)
+{
+    if (!ctrl || !width || !height) {
+        LogError << "handle or output params are null";
+        return false;
+    }
+
+    return ctrl->get_resolution(*width, *height);
+}

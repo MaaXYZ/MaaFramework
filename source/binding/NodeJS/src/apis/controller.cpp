@@ -242,6 +242,16 @@ std::optional<std::string> ControllerImpl::get_uuid()
     return buf.str();
 }
 
+std::optional<std::tuple<int32_t, int32_t>> ControllerImpl::get_resolution()
+{
+    int32_t width = 0;
+    int32_t height = 0;
+    if (!MaaControllerGetResolution(controller, &width, &height)) {
+        return std::nullopt;
+    }
+    return std::make_tuple(width, height);
+}
+
 std::string ControllerImpl::to_string()
 {
     return std::format(" handle = {:#018x}, {} ", reinterpret_cast<uintptr_t>(controller), own ? "owned" : "rented");
@@ -311,6 +321,7 @@ void ControllerImpl::init_proto(maajs::ObjectType proto, maajs::FunctionType)
     MAA_BIND_GETTER(proto, "connected", ControllerImpl::get_connected);
     MAA_BIND_GETTER(proto, "cached_image", ControllerImpl::get_cached_image);
     MAA_BIND_GETTER(proto, "uuid", ControllerImpl::get_uuid);
+    MAA_BIND_GETTER(proto, "resolution", ControllerImpl::get_resolution);
 }
 
 maajs::ValueType load_controller(maajs::EnvType env)

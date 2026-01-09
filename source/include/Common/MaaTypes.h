@@ -101,6 +101,8 @@ public:
     virtual cv::Mat cached_image() const = 0;
     virtual std::string cached_shell_output() const = 0;
     virtual std::string get_uuid() = 0;
+
+    virtual bool get_resolution(int32_t& width, int32_t& height) const = 0;
 };
 
 struct MaaTasker : public IMaaEventDispatcher
