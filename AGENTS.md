@@ -194,8 +194,9 @@ MaaFramework/
 2. 在 `source/MaaFramework/Resource/PipelineParser.cpp` 添加解析逻辑
 3. 在 `source/MaaFramework/Resource/PipelineDumper.cpp` 添加序列化逻辑
 4. 更新 `source/binding` 中的解析逻辑（注意：binding 中的数据来源于 `PipelineDumper` 序列化的 JSON，而非原始 Pipeline JSON。）
-5. 更新 `tools/pipeline.schema.json`
-6. 更新中英文文档 `docs/*/3.1-*`
+5. 在 `test/python/pipeline_test.py` 添加相应的单元测试，验证字段的解析、override 和 get 功能
+6. 更新 `tools/pipeline.schema.json`
+7. 更新中英文文档 `docs/*/3.1-*`
 
 ### 修改回调消息（MaaMsg）
 
