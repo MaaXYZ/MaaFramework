@@ -183,8 +183,7 @@ MaaFramework/
 - [ ] 更新 Pipeline Schema（如涉及）
 - [ ] 添加/更新中英文文档
 - [ ] 更新 MaaMsg.h 及绑定层消息解析代码（如有新消息）
-
-> **注意**：如没有特别说明，不需要更新测试用例。
+- [ ] 更新 `test/python/` 中的单元测试
 
 ## 常见开发场景
 
@@ -215,6 +214,7 @@ MaaFramework/
 2. 在 `source/MaaAgentClient/Client/AgentClient.cpp` 实现该方法
 3. 在 `source/MaaAgentServer/RemoteInstance/Remote<Module>.h` 添加对应方法声明
 4. 在 `source/MaaAgentServer/RemoteInstance/Remote<Module>.cpp` 实现远程调用逻辑
+5. 在 `test/python/binding_test.py` 添加相应的 API 调用测试
 
 **Agent 架构说明**：
 
