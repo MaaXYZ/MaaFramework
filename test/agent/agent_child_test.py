@@ -110,13 +110,17 @@ class MyRecognition(CustomRecognition):
 
         # 测试 get_node_data (Context 级别)
         node_data = new_ctx.get_node_data(argv.node_name)
-        print(f"  ctx.get_node_data keys: {list(node_data.keys()) if node_data else None}")
+        print(
+            f"  ctx.get_node_data keys: {list(node_data.keys()) if node_data else None}"
+        )
 
         # 测试 anchor API
         new_ctx.set_anchor("test_anchor", "TaskA")
         anchor_result = new_ctx.get_anchor("test_anchor")
         print(f"  anchor_result: {anchor_result}")
-        assert anchor_result == "TaskA", f"anchor should be 'TaskA', got {anchor_result}"
+        assert (
+            anchor_result == "TaskA"
+        ), f"anchor should be 'TaskA', got {anchor_result}"
 
         # 测试 hit count API
         hit_count = new_ctx.get_hit_count(argv.node_name)
@@ -218,6 +222,12 @@ class MyAction(CustomAction):
         cached_image = controller.cached_image
         print(f"  cached_image shape: {cached_image.shape}")
 
+        # 测试 resolution (需要在首次截图后才能获取有效值)
+        resolution = controller.resolution
+        print(f"  resolution: {resolution}")
+        assert isinstance(resolution, tuple), "resolution should be a tuple"
+        assert len(resolution) == 2, "resolution should have 2 elements"
+
         # 测试基本输入操作
         controller.post_click(191, 98).wait()
         controller.post_swipe(100, 200, 300, 400, 100).wait()
@@ -250,7 +260,9 @@ class MyAction(CustomAction):
         task_detail = task_job.get()
 
         if task_detail:
-            print(f"  task_detail: entry={task_detail.entry}, status={task_detail.status}")
+            print(
+                f"  task_detail: entry={task_detail.entry}, status={task_detail.status}"
+            )
 
             # 测试 get_task_detail
             fetched_task_detail = tasker.get_task_detail(task_detail.task_id)
@@ -262,13 +274,13 @@ class MyAction(CustomAction):
             if task_detail.nodes:
                 node = task_detail.nodes[0]
                 node_detail = tasker.get_node_detail(node.node_id)
-                print(
-                    f"  get_node_detail: {node_detail.name if node_detail else None}"
-                )
+                print(f"  get_node_detail: {node_detail.name if node_detail else None}")
 
                 # 测试 get_recognition_detail
                 if node.recognition:
-                    reco_detail = tasker.get_recognition_detail(node.recognition.reco_id)
+                    reco_detail = tasker.get_recognition_detail(
+                        node.recognition.reco_id
+                    )
                     print(
                         f"  get_recognition_detail: {reco_detail.name if reco_detail else None}"
                     )
