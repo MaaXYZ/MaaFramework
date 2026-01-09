@@ -73,6 +73,63 @@ class MyRecognition(CustomRecognition):
         node_obj = new_ctx.get_node_object(argv.node_name)
         print(f"node_data: {node_data}, node_obj: {node_obj}")
 
+        # Test And/Or recognition default value preservation after override
+        new_ctx.override_pipeline(
+            {
+                "AndTestNode": {
+                    "recognition": {
+                        "type": "And",
+                        "param": {
+                            "all_of": [
+                                {"recognition": {"type": "DirectHit"}},
+                                {"recognition": {"type": "DirectHit"}},
+                            ],
+                            "box_index": 1,
+                        },
+                    },
+                },
+            }
+        )
+        # Override only box_index, all_of should be inherited
+        new_ctx.override_pipeline(
+            {
+                "AndTestNode": {
+                    "recognition": {"param": {"box_index": 0}},
+                },
+            }
+        )
+        and_node_obj = new_ctx.get_node_object("AndTestNode")
+        print(f"and_node_obj after override: {and_node_obj}")
+        all_of = and_node_obj.recognition.param.all_of
+        if len(all_of) != 2:
+            raise RuntimeError(
+                f"And override failed: all_of should have 2 items, got {len(all_of)}"
+            )
+
+        new_ctx.override_pipeline(
+            {
+                "OrTestNode": {
+                    "recognition": {
+                        "type": "Or",
+                        "param": {
+                            "any_of": [
+                                {"recognition": {"type": "DirectHit"}},
+                            ],
+                        },
+                    },
+                },
+            }
+        )
+        # Override with empty object, any_of should be inherited
+        new_ctx.override_pipeline({"OrTestNode": {}})
+        or_node_obj = new_ctx.get_node_object("OrTestNode")
+        print(f"or_node_obj after override: {or_node_obj}")
+        any_of = or_node_obj.recognition.param.any_of
+        if len(any_of) != 1:
+            raise RuntimeError(
+                f"Or override failed: any_of should have 1 item, got {len(any_of)}"
+            )
+
         res_node_data = new_ctx.tasker.resource.get_node_data(argv.node_name)
         res_node_obj = new_ctx.tasker.resource.get_node_object(argv.node_name)
         print(f"res_node_data: {res_node_data}, res_node_obj: {res_node_obj}")
