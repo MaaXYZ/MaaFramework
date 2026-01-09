@@ -311,6 +311,21 @@ std::string RemoteController::get_uuid()
     return resp_opt->uuid;
 }
 
+bool RemoteController::get_resolution(int32_t& width, int32_t& height) const
+{
+    ControllerGetResolutionReverseRequest req {
+        .controller_id = controller_id_,
+    };
+
+    auto resp_opt = server_.send_and_recv<ControllerGetResolutionReverseResponse>(req);
+    if (!resp_opt) {
+        return false;
+    }
+    width = resp_opt->width;
+    height = resp_opt->height;
+    return resp_opt->success;
+}
+
 MaaSinkId RemoteController::add_sink(MaaEventCallback callback, void* trans_arg)
 {
     LogError << "Can NOT add sink for remote instance, use AgentServer.add_controller_sink instead" << VAR_VOIDP(callback)
