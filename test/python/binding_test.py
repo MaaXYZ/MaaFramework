@@ -190,7 +190,8 @@ class MyAction(CustomAction):
         cached_image = controller.cached_image
         connected = controller.connected
         uuid = controller.uuid
-        print(f"  connected: {connected}, uuid: {uuid}")
+        resolution = controller.resolution
+        print(f"  connected: {connected}, uuid: {uuid}, resolution: {resolution}")
 
         global runned
         runned = True
@@ -334,6 +335,14 @@ def test_controller_api():
     # 测试 cached_image
     cached = dbg_controller.cached_image
     print(f"  cached_image shape: {cached.shape}")
+
+    # 测试 resolution (需要在首次截图后才能获取有效值)
+    resolution = dbg_controller.resolution
+    print(f"  resolution: {resolution}")
+    assert isinstance(resolution, tuple), "resolution should be a tuple"
+    assert len(resolution) == 2, "resolution should have 2 elements"
+    assert isinstance(resolution[0], int), "resolution width should be int"
+    assert isinstance(resolution[1], int), "resolution height should be int"
 
     # 测试输入操作
     dbg_controller.post_click(100, 100).wait()
