@@ -72,8 +72,8 @@ _✨ 基于图像识别的自动化黑盒测试框架 ✨_
 - [maa-support-extension](https://github.com/neko-para/maa-support-extension) ![Typescript](https://img.shields.io/badge/Typescript-8A2BE2?logo=typescript) ![activity](https://img.shields.io/github/commit-activity/m/neko-para/maa-support-extension?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/neko-para/maa-support-extension?style=social) [![marketplace](https://img.shields.io/badge/Visual%20Studio%20Marketplace-black?logo=vscodium&logoColor=#2F80ED)](https://marketplace.visualstudio.com/items?itemName=nekosu.maa-support)  
   MaaFramework VSCode 插件
 
-- [MFATools](https://github.com/SweetSmellFox/MFATools) ![csharp](https://img.shields.io/badge/C%23-239120?logo=csharp&logoColor=white) ![license](https://img.shields.io/github/license/SweetSmellFox/MFATools) ![activity](https://img.shields.io/github/commit-activity/m/SweetSmellFox/MFATools?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/SweetSmellFox/MFATools?style=social)  
-  基于WPF框架开发的工具界面，旨在提供类似于截图工具的功能
+- [MFAToolsPlus](https://github.com/SweetSmellFox/MFAToolsPlus) ![csharp](https://img.shields.io/badge/C%23-239120?logo=csharp&logoColor=white) ![license](https://img.shields.io/github/license/SweetSmellFox/MFAToolsPlus) ![activity](https://img.shields.io/github/commit-activity/m/SweetSmellFox/MFAToolsPlus?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/SweetSmellFox/MFAToolsPlus?style=social)  
+  基于 Avalonia 框架开发的跨平台开发工具箱，提供便捷的数据获取和模拟测试方法
 
 - [MaaPipelineEditor](https://github.com/kqcoxn/MaaPipelineEditor) ![Typescript](https://img.shields.io/badge/Typescript-8A2BE2?logo=typescript) ![Golang](https://img.shields.io/badge/Go-007d9c?logo=go) ![activity](https://img.shields.io/github/commit-activity/m/kqcoxn/MaaPipelineEditor?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/kqcoxn/MaaPipelineEditor?style=social) [![website](https://img.shields.io/badge/https://mpe.codax.site-%234285F4)](https://mpe.codax.site/stable/)  
   可视化阅读与构建 Pipeline，[功能完备](https://github.com/kqcoxn/MaaPipelineEditor?tab=readme-ov-file#%E4%BA%AE%E7%82%B9)，极致轻量跨平台，提供渐进式[本地功能扩展](https://mpe.codax.site/docs/guide/server/deploy.html)，无缝兼容新旧项目
