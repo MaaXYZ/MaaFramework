@@ -21,7 +21,7 @@ class TemplateComparator
     , public RecoResultAPI<TemplateComparatorResult>
 {
 public:
-    TemplateComparator(cv::Mat lhs, cv::Mat rhs, cv::Rect roi, TemplateComparatorParam param, std::string name = "");
+    TemplateComparator(cv::Mat lhs, cv::Mat rhs, std::vector<cv::Rect> rois, TemplateComparatorParam param, std::string name = "");
 
 private:
     void analyze();

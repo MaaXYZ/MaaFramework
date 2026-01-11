@@ -106,7 +106,7 @@ extern "C"
      *
      * @param ctrl The controller handle.
      * @param dx The horizontal scroll delta. Positive values scroll right, negative values scroll left.
-     * @param dy The vertical scroll delta. Positive values scroll down, negative values scroll up.
+     * @param dy The vertical scroll delta. Positive values scroll up, negative values scroll down.
      * @return The control id of the scroll action.
      *
      * @note Not all controllers support scroll. If not supported, the action will fail.

@@ -857,7 +857,7 @@ bool ControllerAgent::run_action(typename AsyncRunner<Action>::Id id, Action act
         { "param", action.param },
     };
 
-    LogInfo << cb_detail.to_string();
+    // LogInfo << cb_detail.to_string();
 
     if (notify) {
         notifier_.notify(this, MaaMsg_Controller_Action_Starting, cb_detail);
@@ -933,8 +933,11 @@ bool ControllerAgent::run_action(typename AsyncRunner<Action>::Id id, Action act
         ret = false;
     }
 
-    if (notify) {
-        notifier_.notify(this, ret ? MaaMsg_Controller_Action_Succeeded : MaaMsg_Controller_Action_Failed, cb_detail);
+    if (ret && notify) {
+        notifier_.notify(this, MaaMsg_Controller_Action_Succeeded, cb_detail);
+    }
+    else if (!ret) {
+        notifier_.notify(this, MaaMsg_Controller_Action_Failed, cb_detail);
     }
 
     return ret;

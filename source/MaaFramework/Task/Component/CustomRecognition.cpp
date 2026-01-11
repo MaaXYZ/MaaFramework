@@ -16,7 +16,7 @@ CustomRecognition::CustomRecognition(
     MAA_RES_NS::CustomRecognitionSession session,
     Context& context,
     std::string name)
-    : VisionBase(image, roi, name)
+    : VisionBase(image, { roi }, name)
     , param_(param)
     , session_(std::move(session))
     , context_(context)
@@ -35,6 +35,8 @@ void CustomRecognition::analyze()
     }
 
     auto start_time = std::chrono::steady_clock::now();
+
+    next_roi();
 
     /*in*/
     ImageBuffer image_buffer(image_);

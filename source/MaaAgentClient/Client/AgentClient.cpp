@@ -749,7 +749,7 @@ bool AgentClient::handle_context_get_hit_count(const json::value& j)
         return false;
     }
 
-    uint count = context->get_hit_count(req.node_name);
+    size_t count = context->get_hit_count(req.node_name);
 
     ContextGetHitCountReverseResponse resp {
         .count = count,

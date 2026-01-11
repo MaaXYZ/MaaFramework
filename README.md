@@ -25,7 +25,7 @@ _✨ 基于图像识别的自动化黑盒测试框架 ✨_
   <a href="https://pypi.org/project/MaaFw/" target="_blank"><img alt="pypi" src="https://img.shields.io/pypi/dm/maafw?logo=pypi&label=PyPI"></a>
   <a href="https://www.nuget.org/packages/Maa.Framework.Runtimes" target="_blank"><img alt="nuget" src="https://img.shields.io/badge/NuGet-004880?logo=nuget"></a>
   <a href="https://www.npmjs.com/package/@maaxyz/maa-node" target="_blank"><img alt="npm" src="https://img.shields.io/badge/npm-CB3837?logo=npm"></a>
-  <a href="https://mirrorchyan.com/en/projects?source=maafw-badge" target="_blank"><img alt="mirrorc" src="./docs/static/mirrorc-zh.svg"></a>
+  <a href="https://mirrorchyan.com/zh/projects?source=maafw-badge" target="_blank"><img alt="mirrorc" src="./docs/static/mirrorc-zh.svg"></a>
   <br>
   <a href="https://maafw.xyz/" target="_blank"><img alt="website" src="./docs/static/maafw.svg"></a>
   <a href="https://deepwiki.com/MaaXYZ/MaaFramework" target="_blank"><img alt="deepwiki" src="https://deepwiki.com/badge.svg"></a>
@@ -134,7 +134,7 @@ _✨ 基于图像识别的自动化黑盒测试框架 ✨_
 - [Maa_bbb](https://github.com/miaojiuqing/Maa_bbb) ![Pipeline](https://img.shields.io/badge/Pipeline-%23876f69?logo=paddypower&logoColor=%23FFFFFF) ![Python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white) ![license](https://img.shields.io/github/license/miaojiuqing/Maa_bbb) ![activity](https://img.shields.io/github/commit-activity/m/miaojiuqing/Maa_bbb?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/miaojiuqing/Maa_bbb?style=social) [![mirrorc](./docs/static/mirrorc-zh.svg)](https://mirrorchyan.com/zh/projects?source=maafw-badge)  
   崩坏三小助手。使用图像识别+模拟控制技术，解放双手！PC端与模拟器端同步支持，由 MaaFramework 强力驱动！
 
-- [MAN](https://github.com/duorua/narutomobile) ![Pipeline](https://img.shields.io/badge/Pipeline-%23876f69?logo=paddypower&logoColor=%23FFFFFF) ![Python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white) ![license](https://img.shields.io/github/license/duorua/narutomobile) ![activity](https://img.shields.io/github/commit-activity/m/duorua/narutomobile?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/duorua/narutomobile?style=social) [![mirrorc](./docs/static/mirrorc-zh.svg)](https://mirrorchyan.com/zh/projects?source=maafw-badge)  
+- [MAN](https://github.com/duorua/narutomobile) ![Pipeline](https://img.shields.io/badge/Pipeline-%23876f69?logo=paddypower&logoColor=%23FFFFFF) ![Python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white) ![license](https://img.shields.io/github/license/duorua/narutomobile) ![activity](https://img.shields.io/github/commit-activity/m/duorua/narutomobile?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/duorua/narutomobile?style=social) [![mirrorc](./docs/static/mirrorc-zh.svg)](https://mirrorchyan.com/zh/projects?source=maafw-badge) [![website](https://img.shields.io/badge/https://naruto.natsuu.top-%234285F4)](https://naruto.natsuu.top)  
   火影忍者摸头村小助手。使用图像识别+模拟控制技术，解放双手！PC端与模拟器端同步支持，由 MaaFramework 强力驱动！
 
 - [MaaGakumasu](https://github.com/SuperWaterGod/MaaGakumasu) ![Pipeline](https://img.shields.io/badge/Pipeline-%23876f69?logo=paddypower&logoColor=%23FFFFFF) ![Python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white) ![license](https://img.shields.io/github/license/SuperWaterGod/MaaGakumasu) ![activity](https://img.shields.io/github/commit-activity/m/SuperWaterGod/MaaGakumasu?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/SuperWaterGod/MaaGakumasu?style=social) [![mirrorc](./docs/static/mirrorc-zh.svg)](https://mirrorchyan.com/zh/projects?source=maafw-badge)  
@@ -157,6 +157,12 @@ _✨ 基于图像识别的自动化黑盒测试框架 ✨_
 
 - [MAA Star Resonance](https://github.com/26F-Studio/maa-star-resonance) ![Typescript](https://img.shields.io/badge/Typescript-8A2BE2?logo=typescript) ![license](https://img.shields.io/github/license/26F-Studio/maa-star-resonance) ![activity](https://img.shields.io/github/commit-activity/m/26F-Studio/maa-star-resonance?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/26F-Studio/maa-star-resonance?style=social)  
   星痕共鸣小助手。使用 Electron + 文本图像识别 + ADB模拟控制 技术，解放双手！由 MaaFramework 和 Quasar 强力驱动！
+
+- [StellaSora-Auto-Helper](https://github.com/SodaCodeSave/StellaSora-Auto-Helper) ![Pipeline](https://img.shields.io/badge/Pipeline-%23876f69?logo=paddypower&logoColor=%23FFFFFF) ![license](https://img.shields.io/github/license/SodaCodeSave/StellaSora-Auto-Helper) ![activity](https://img.shields.io/github/commit-activity/m/SodaCodeSave/StellaSora-Auto-Helper?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/SodaCodeSave/StellaSora-Auto-Helper?style=social)  
+  星塔旅人 小助手。图像技术 + 模拟控制，解放双手！由 MaaFramework 强力驱动！
+
+- [MaaDuDuL](https://github.com/kqcoxn/MaaDuDuL) ![Pipeline](https://img.shields.io/badge/Pipeline-%23876f69?logo=paddypower&logoColor=%23FFFFFF) ![Python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white) ![license](https://img.shields.io/github/license/kqcoxn/MaaDuDuL) ![activity](https://img.shields.io/github/commit-activity/m/kqcoxn/MaaDuDuL?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/kqcoxn/MaaDuDuL?style=social) [![mirrorc](./docs/static/mirrorc-zh.svg)](https://mirrorchyan.com/zh/projects?source=maafw-badge) [![website](https://img.shields.io/badge/https://mddl.codax.site-%234285F4)](https://mddl.codax.site)  
+  嘟嘟脸恶作剧 小助手。图像技术 + 模拟控制，自动捏脸，解放双手！由 MaaFramework 强力驱动！
 
 ## 生态共建
 

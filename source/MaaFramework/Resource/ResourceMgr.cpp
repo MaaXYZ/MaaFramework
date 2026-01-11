@@ -250,7 +250,7 @@ bool ResourceMgr::clear()
 
 bool ResourceMgr::override_pipeline(const json::value& pipeline_override)
 {
-    LogFunc << VAR(pipeline_override);
+    LogInfo << VAR(pipeline_override);
 
     std::set<std::string> existing_keys;
     return pipeline_res_.parse_and_override(pipeline_override, existing_keys, default_pipeline_);
@@ -258,7 +258,7 @@ bool ResourceMgr::override_pipeline(const json::value& pipeline_override)
 
 bool ResourceMgr::override_next(const std::string& node_name, const std::vector<std::string>& next)
 {
-    LogFunc << VAR(node_name) << VAR(next);
+    LogInfo << VAR(node_name) << VAR(next);
 
     if (!PipelineParser::parse_next(next, pipeline_res_.get_pipeline_data_map()[node_name].next)) {
         LogError << "failed to parse_next" << VAR(next);
@@ -270,6 +270,8 @@ bool ResourceMgr::override_next(const std::string& node_name, const std::vector<
 
 bool ResourceMgr::override_image(const std::string& image_name, const cv::Mat& image)
 {
+    LogInfo << VAR(image_name) << VAR(image);
+
     template_res_.set_image(image_name, image);
     return true;
 }

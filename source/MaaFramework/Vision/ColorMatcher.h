@@ -21,7 +21,7 @@ class ColorMatcher
     , public RecoResultAPI<ColorMatcherResult>
 {
 public:
-    ColorMatcher(cv::Mat image, cv::Rect roi, ColorMatcherParam param, std::string name = "");
+    ColorMatcher(cv::Mat image, std::vector<cv::Rect> rois, ColorMatcherParam param, std::string name = "");
 
 private:
     void analyze();

@@ -633,6 +633,8 @@ class AlgorithmEnum(StrEnum):
     OCR = "OCR"
     NeuralNetworkClassify = "NeuralNetworkClassify"
     NeuralNetworkDetect = "NeuralNetworkDetect"
+    And = "And"
+    Or = "Or"
     Custom = "Custom"
 
 
@@ -647,6 +649,12 @@ class ActionEnum(StrEnum):
     InputText = "InputText"
     StartApp = "StartApp"
     StopApp = "StopApp"
+    Scroll = "Scroll"
+    TouchDown = "TouchDown"
+    TouchMove = "TouchMove"
+    TouchUp = "TouchUp"
+    KeyDown = "KeyDown"
+    KeyUp = "KeyUp"
     StopTask = "StopTask"
     Command = "Command"
     Shell = "Shell"
@@ -695,6 +703,20 @@ class CustomRecognitionResult:
     detail: Union[str, Dict]
 
 
+@dataclass
+class AndRecognitionResult:
+    """And 算法识别结果，包含所有子识别的完整详情"""
+
+    sub_results: List["RecognitionDetail"]
+
+
+@dataclass
+class OrRecognitionResult:
+    """Or 算法识别结果，包含已执行子识别的完整详情"""
+
+    sub_results: List["RecognitionDetail"]
+
+
 RecognitionResult = Union[
     TemplateMatchResult,
     FeatureMatchResult,
@@ -702,6 +724,8 @@ RecognitionResult = Union[
     OCRResult,
     NeuralNetworkClassifyResult,
     NeuralNetworkDetectResult,
+    AndRecognitionResult,
+    OrRecognitionResult,
     CustomRecognitionResult,
 ]
 
@@ -713,6 +737,8 @@ AlgorithmResultDict = {
     AlgorithmEnum.OCR: OCRResult,
     AlgorithmEnum.NeuralNetworkClassify: NeuralNetworkClassifyResult,
     AlgorithmEnum.NeuralNetworkDetect: NeuralNetworkDetectResult,
+    AlgorithmEnum.And: AndRecognitionResult,
+    AlgorithmEnum.Or: OrRecognitionResult,
     AlgorithmEnum.Custom: CustomRecognitionResult,
 }
 
@@ -721,7 +747,7 @@ AlgorithmResultDict = {
 class RecognitionDetail:
     reco_id: int
     name: str
-    algorithm: AlgorithmEnum
+    algorithm: Union[AlgorithmEnum, str]
     hit: bool
     box: Optional[Rect]
 
@@ -737,12 +763,14 @@ class RecognitionDetail:
 @dataclass
 class ClickActionResult:
     point: Point
+    contact: int
 
 
 @dataclass
 class LongPressActionResult:
     point: Point
     duration: int
+    contact: int
 
 
 @dataclass
@@ -753,6 +781,7 @@ class SwipeActionResult:
     duration: List[int]
     only_hover: bool
     starting: int
+    contact: int
 
 
 @dataclass
@@ -781,6 +810,27 @@ class AppActionResult:
     package: str
 
 
+@dataclass
+class ScrollActionResult:
+    dx: int
+    dy: int
+
+
+@dataclass
+class TouchActionResult:
+    contact: int
+    point: Point
+    pressure: int
+
+
+@dataclass
+class ShellActionResult:
+    cmd: str
+    timeout: int
+    success: bool
+    output: str
+
+
 ActionResult = Union[
     ClickActionResult,
     LongPressActionResult,
@@ -790,6 +840,9 @@ ActionResult = Union[
     LongPressKeyActionResult,
     InputTextActionResult,
     AppActionResult,
+    ScrollActionResult,
+    TouchActionResult,
+    ShellActionResult,
     None,
 ]
 
@@ -804,9 +857,15 @@ ActionResultDict = {
     ActionEnum.InputText: InputTextActionResult,
     ActionEnum.StartApp: AppActionResult,
     ActionEnum.StopApp: AppActionResult,
+    ActionEnum.Scroll: ScrollActionResult,
+    ActionEnum.TouchDown: TouchActionResult,
+    ActionEnum.TouchMove: TouchActionResult,
+    ActionEnum.TouchUp: TouchActionResult,
+    ActionEnum.KeyDown: ClickKeyActionResult,
+    ActionEnum.KeyUp: ClickKeyActionResult,
     ActionEnum.StopTask: None,
     ActionEnum.Command: None,
-    ActionEnum.Shell: None,
+    ActionEnum.Shell: ShellActionResult,
     ActionEnum.Custom: None,
 }
 
@@ -815,7 +874,7 @@ ActionResultDict = {
 class ActionDetail:
     action_id: int
     name: str
-    action: ActionEnum
+    action: Union[ActionEnum, str]
     box: Rect
     success: bool
     result: Optional[ActionResult]
@@ -826,8 +885,8 @@ class ActionDetail:
 class NodeDetail:
     node_id: int
     name: str
-    recognition: RecognitionDetail
-    action: ActionDetail
+    recognition: Optional[RecognitionDetail]
+    action: Optional[ActionDetail]
     completed: bool
 
 

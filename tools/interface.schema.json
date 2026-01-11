@@ -191,7 +191,6 @@
                         }
                     },
                     "required": [
-                        "type",
                         "cases"
                     ],
                     "additionalProperties": false
@@ -236,7 +235,6 @@
                         }
                     },
                     "required": [
-                        "type",
                         "cases"
                     ],
                     "additionalProperties": false
@@ -363,17 +361,13 @@
                     "title": "PlayCover 控制器配置",
                     "description": "PlayCover 控制器的具体配置（仅 macOS）",
                     "properties": {
-                        "address": {
-                            "type": "string",
-                            "title": "默认服务地址",
-                            "description": "PlayTools 服务的默认地址，格式为 host:port",
-                            "examples": ["127.0.0.1:1717"]
-                        },
                         "uuid": {
                             "type": "string",
-                            "title": "默认 Bundle Identifier",
-                            "description": "应用的默认 Bundle Identifier",
-                            "examples": ["com.hypergryph.arknights"]
+                            "title": "Bundle Identifier",
+                            "description": "可选。目标应用的 Bundle Identifier，不提供则使用默认 maa.playcover，仅作为控制器标识符，与被操控应用无关",
+                            "examples": [
+                                "com.hypergryph.arknights"
+                            ]
                         }
                     },
                     "additionalProperties": false
@@ -421,6 +415,14 @@
                     "type": "array",
                     "title": "支持的控制器",
                     "description": "指定该资源包支持的控制器类型列表。数组元素应与 controller 配置中的 name 字段对应。若不指定，则表示支持所有控制器类型",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "option": {
+                    "type": "array",
+                    "title": "全局选项配置",
+                    "description": "可选。资源包的全局选项配置，为一个字符串数组，数组元素应与外层 option 配置中的键名对应。该选项生成的参数会参与到所有任务的 pipeline override 中",
                     "items": {
                         "type": "string"
                     }

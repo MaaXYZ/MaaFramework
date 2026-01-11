@@ -37,13 +37,13 @@ const boost::wregex& OCRer::gen_regex(const std::wstring& pattern)
 
 OCRer::OCRer(
     cv::Mat image,
-    cv::Rect roi,
+    std::vector<cv::Rect> rois,
     OCRerParam param,
     std::shared_ptr<fastdeploy::vision::ocr::DBDetector> deter,
     std::shared_ptr<fastdeploy::vision::ocr::Recognizer> recer,
     std::shared_ptr<fastdeploy::pipeline::PPOCRv3> ocrer,
     std::string name)
-    : VisionBase(std::move(image), std::move(roi), std::move(name))
+    : VisionBase(std::move(image), std::move(rois), std::move(name))
     , param_(std::move(param))
     , deter_(std::move(deter))
     , recer_(std::move(recer))
@@ -56,8 +56,10 @@ void OCRer::analyze()
 {
     auto start_time = std::chrono::steady_clock::now();
 
-    auto results = predict();
-    add_results(std::move(results), param_.expected);
+    while (next_roi()) {
+        auto results = predict();
+        add_results(std::move(results), param_.expected);
+    }
 
     cherry_pick();
 
