@@ -32,5 +32,6 @@ var MaaController_8h =
     [ "MaaControllerConnected", "MaaController_8h.html#a0066bfa64a73b16f82a5060bdef72982", null ],
     [ "MaaControllerCachedImage", "MaaController_8h.html#a730b6f3a5048f143a83c22bb05aec583", null ],
     [ "MaaControllerGetUuid", "MaaController_8h.html#a0d7b5199f257b233e79a062c0811b555", null ],
+    [ "MaaControllerGetResolution", "MaaController_8h.html#a5373a7227d07d8d46c9a011111d2083b", null ],
     [ "MaaControllerPostPressKey", "MaaController_8h.html#a5d20a13ed1473795423cc2f51423bea0", null ]
 ];

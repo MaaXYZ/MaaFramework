@@ -2,6 +2,7 @@
 <doxygenindex xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="index.xsd" version="1.9.8" xml:lang="en-US">
   <compound refid="structMaaCustomControllerCallbacks" kind="struct"><name>MaaCustomControllerCallbacks</name>
     <member refid="structMaaCustomControllerCallbacks_1a74d6aa4b9e6fc074f4d97d6ebe3be6ad" kind="variable"><name>connect</name></member>
+    <member refid="structMaaCustomControllerCallbacks_1a5294cb3629297bc3449019222b445a79" kind="variable"><name>connected</name></member>
     <member refid="structMaaCustomControllerCallbacks_1af0a00cdd379be8608bf360acfdfde4ea" kind="variable"><name>request_uuid</name></member>
     <member refid="structMaaCustomControllerCallbacks_1a318dbd580c96d8bf215a2df9d565d450" kind="variable"><name>get_features</name></member>
     <member refid="structMaaCustomControllerCallbacks_1ac25e877ae83b359a0b3e7ee8b02f534f" kind="variable"><name>start_app</name></member>
@@ -115,6 +116,7 @@
     <member refid="MaaController_8h_1a0066bfa64a73b16f82a5060bdef72982" kind="function"><name>MaaControllerConnected</name></member>
     <member refid="MaaController_8h_1a730b6f3a5048f143a83c22bb05aec583" kind="function"><name>MaaControllerCachedImage</name></member>
     <member refid="MaaController_8h_1a0d7b5199f257b233e79a062c0811b555" kind="function"><name>MaaControllerGetUuid</name></member>
+    <member refid="MaaController_8h_1a5373a7227d07d8d46c9a011111d2083b" kind="function"><name>MaaControllerGetResolution</name></member>
     <member refid="MaaController_8h_1a5d20a13ed1473795423cc2f51423bea0" kind="function"><name>MaaControllerPostPressKey</name></member>
   </compound>
   <compound refid="MaaCustomController_8h" kind="file"><name>MaaCustomController.h</name>

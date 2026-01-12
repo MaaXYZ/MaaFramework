@@ -645,12 +645,29 @@
           <declname>ctrl</declname>
         </param>
         <briefdescription>
+<para>Post a screenshot request to the controller. </para>
         </briefdescription>
         <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>ctrl</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The controller handle. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>The control id of the screenshot action.</para>
+</simplesect>
+<simplesect kind="note"><para>The screenshot image is scaled according to the screenshot target size settings (long side / short side). Use MaaControllerGetResolution to get the raw (unscaled) device resolution. </para>
+</simplesect>
+<simplesect kind="see"><para><ref refid="MaaController_8h_1a730b6f3a5048f143a83c22bb05aec583" kindref="member">MaaControllerCachedImage</ref>, <ref refid="MaaController_8h_1ac0247a25f33dfbc7bd3a0183a669aad3" kindref="member">MaaControllerSetOption</ref>, <ref refid="MaaController_8h_1a5373a7227d07d8d46c9a011111d2083b" kindref="member">MaaControllerGetResolution</ref> </para>
+</simplesect>
+</para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="include/MaaFramework/Instance/MaaController.h" line="102" column="33" declfile="include/MaaFramework/Instance/MaaController.h" declline="102" declcolumn="33"/>
+        <location file="include/MaaFramework/Instance/MaaController.h" line="112" column="33" declfile="include/MaaFramework/Instance/MaaController.h" declline="112" declcolumn="33"/>
       </memberdef>
       <memberdef kind="function" id="MaaController_8h_1ab5b9b134755f4381cb4e5e99f21732b1" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="MaaPort_8h_1a67006334d91d228121dbba7a8bf8fe05" kindref="member">MAA_FRAMEWORK_API</ref> <ref refid="MaaDef_8h_1aea6a27f8f45b661fda5c19b6062b656e" kindref="member">MaaCtrlId</ref></type>
@@ -708,7 +725,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="include/MaaFramework/Instance/MaaController.h" line="116" column="33" declfile="include/MaaFramework/Instance/MaaController.h" declline="116" declcolumn="33"/>
+        <location file="include/MaaFramework/Instance/MaaController.h" line="126" column="33" declfile="include/MaaFramework/Instance/MaaController.h" declline="126" declcolumn="33"/>
       </memberdef>
       <memberdef kind="function" id="MaaController_8h_1a3f16bddc42e950694efd7da2fa51cb9f" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="MaaPort_8h_1a67006334d91d228121dbba7a8bf8fe05" kindref="member">MAA_FRAMEWORK_API</ref> <ref refid="MaaDef_8h_1aea6a27f8f45b661fda5c19b6062b656e" kindref="member">MaaCtrlId</ref></type>
@@ -766,7 +783,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="include/MaaFramework/Instance/MaaController.h" line="129" column="33" declfile="include/MaaFramework/Instance/MaaController.h" declline="129" declcolumn="33"/>
+        <location file="include/MaaFramework/Instance/MaaController.h" line="139" column="33" declfile="include/MaaFramework/Instance/MaaController.h" declline="139" declcolumn="33"/>
       </memberdef>
       <memberdef kind="function" id="MaaController_8h_1a92255bcc65b61750e01fa07bcd8d17e0" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="MaaPort_8h_1a67006334d91d228121dbba7a8bf8fe05" kindref="member">MAA_FRAMEWORK_API</ref> <ref refid="MaaDef_8h_1a2f7289f2a8e07f48c6261b52a120cdf6" kindref="member">MaaBool</ref></type>
@@ -810,7 +827,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="include/MaaFramework/Instance/MaaController.h" line="140" column="31" declfile="include/MaaFramework/Instance/MaaController.h" declline="140" declcolumn="31"/>
+        <location file="include/MaaFramework/Instance/MaaController.h" line="150" column="31" declfile="include/MaaFramework/Instance/MaaController.h" declline="150" declcolumn="31"/>
       </memberdef>
       <memberdef kind="function" id="MaaController_8h_1afb8528c818e4fd03c7493b7b013474ed" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="MaaPort_8h_1a67006334d91d228121dbba7a8bf8fe05" kindref="member">MAA_FRAMEWORK_API</ref> <ref refid="MaaDef_8h_1ada00e4de6b9b4dcae75ed50f4bcaeef5" kindref="member">MaaStatus</ref></type>
@@ -831,7 +848,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="include/MaaFramework/Instance/MaaController.h" line="142" column="33" declfile="include/MaaFramework/Instance/MaaController.h" declline="142" declcolumn="33"/>
+        <location file="include/MaaFramework/Instance/MaaController.h" line="152" column="33" declfile="include/MaaFramework/Instance/MaaController.h" declline="152" declcolumn="33"/>
       </memberdef>
       <memberdef kind="function" id="MaaController_8h_1a67674de1a9a97550510068d7c9a5abd1" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="MaaPort_8h_1a67006334d91d228121dbba7a8bf8fe05" kindref="member">MAA_FRAMEWORK_API</ref> <ref refid="MaaDef_8h_1ada00e4de6b9b4dcae75ed50f4bcaeef5" kindref="member">MaaStatus</ref></type>
@@ -852,7 +869,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="include/MaaFramework/Instance/MaaController.h" line="144" column="33" declfile="include/MaaFramework/Instance/MaaController.h" declline="144" declcolumn="33"/>
+        <location file="include/MaaFramework/Instance/MaaController.h" line="154" column="33" declfile="include/MaaFramework/Instance/MaaController.h" declline="154" declcolumn="33"/>
       </memberdef>
       <memberdef kind="function" id="MaaController_8h_1a0066bfa64a73b16f82a5060bdef72982" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="MaaPort_8h_1a67006334d91d228121dbba7a8bf8fe05" kindref="member">MAA_FRAMEWORK_API</ref> <ref refid="MaaDef_8h_1a2f7289f2a8e07f48c6261b52a120cdf6" kindref="member">MaaBool</ref></type>
@@ -869,7 +886,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="include/MaaFramework/Instance/MaaController.h" line="146" column="31" declfile="include/MaaFramework/Instance/MaaController.h" declline="146" declcolumn="31"/>
+        <location file="include/MaaFramework/Instance/MaaController.h" line="156" column="31" declfile="include/MaaFramework/Instance/MaaController.h" declline="156" declcolumn="31"/>
       </memberdef>
       <memberdef kind="function" id="MaaController_8h_1a730b6f3a5048f143a83c22bb05aec583" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="MaaPort_8h_1a67006334d91d228121dbba7a8bf8fe05" kindref="member">MAA_FRAMEWORK_API</ref> <ref refid="MaaDef_8h_1a2f7289f2a8e07f48c6261b52a120cdf6" kindref="member">MaaBool</ref></type>
@@ -885,12 +902,37 @@
           <declname>buffer</declname>
         </param>
         <briefdescription>
+<para>Get the cached screenshot image. </para>
         </briefdescription>
         <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>ctrl</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The controller handle. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>buffer</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The output buffer to store the screenshot image. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>true if the screenshot is available, false otherwise.</para>
+</simplesect>
+<simplesect kind="note"><para>The returned image is scaled according to the screenshot target size settings (long side / short side). The image dimensions may differ from the raw device resolution. Use MaaControllerGetResolution to get the raw (unscaled) device resolution. </para>
+</simplesect>
+<simplesect kind="see"><para><ref refid="MaaController_8h_1ad65392ee4028a2d8ba74d2fab960fb50" kindref="member">MaaControllerPostScreencap</ref>, <ref refid="MaaController_8h_1ac0247a25f33dfbc7bd3a0183a669aad3" kindref="member">MaaControllerSetOption</ref>, <ref refid="MaaController_8h_1a5373a7227d07d8d46c9a011111d2083b" kindref="member">MaaControllerGetResolution</ref> </para>
+</simplesect>
+</para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="include/MaaFramework/Instance/MaaController.h" line="148" column="31" declfile="include/MaaFramework/Instance/MaaController.h" declline="148" declcolumn="31"/>
+        <location file="include/MaaFramework/Instance/MaaController.h" line="170" column="31" declfile="include/MaaFramework/Instance/MaaController.h" declline="170" declcolumn="31"/>
       </memberdef>
       <memberdef kind="function" id="MaaController_8h_1a0d7b5199f257b233e79a062c0811b555" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="MaaPort_8h_1a67006334d91d228121dbba7a8bf8fe05" kindref="member">MAA_FRAMEWORK_API</ref> <ref refid="MaaDef_8h_1a2f7289f2a8e07f48c6261b52a120cdf6" kindref="member">MaaBool</ref></type>
@@ -911,7 +953,65 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="include/MaaFramework/Instance/MaaController.h" line="150" column="31" declfile="include/MaaFramework/Instance/MaaController.h" declline="150" declcolumn="31"/>
+        <location file="include/MaaFramework/Instance/MaaController.h" line="172" column="31" declfile="include/MaaFramework/Instance/MaaController.h" declline="172" declcolumn="31"/>
+      </memberdef>
+      <memberdef kind="function" id="MaaController_8h_1a5373a7227d07d8d46c9a011111d2083b" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="MaaPort_8h_1a67006334d91d228121dbba7a8bf8fe05" kindref="member">MAA_FRAMEWORK_API</ref> <ref refid="MaaDef_8h_1a2f7289f2a8e07f48c6261b52a120cdf6" kindref="member">MaaBool</ref></type>
+        <definition>MAA_FRAMEWORK_API MaaBool MaaControllerGetResolution</definition>
+        <argsstring>(const MaaController *ctrl, int32_t *width, int32_t *height)</argsstring>
+        <name>MaaControllerGetResolution</name>
+        <param>
+          <type>const <ref refid="MaaDef_8h_1aa6c9c6967753196880a2a7f778fbb706" kindref="member">MaaController</ref> *</type>
+          <declname>ctrl</declname>
+        </param>
+        <param>
+          <type>int32_t *</type>
+          <declname>width</declname>
+        </param>
+        <param>
+          <type>int32_t *</type>
+          <declname>height</declname>
+        </param>
+        <briefdescription>
+<para>Get the raw (unscaled) device resolution. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>ctrl</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The controller handle. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="out">width</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Output parameter for the raw width. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="out">height</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Output parameter for the raw height. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>true if the resolution is available, false otherwise (e.g., not connected or no screenshot taken yet).</para>
+</simplesect>
+<simplesect kind="note"><para>This returns the actual device screen resolution before any scaling. The screenshot obtained via MaaControllerCachedImage is scaled according to the screenshot target size settings, so its dimensions may differ from this raw resolution. </para>
+</simplesect>
+<simplesect kind="see"><para><ref refid="MaaController_8h_1a730b6f3a5048f143a83c22bb05aec583" kindref="member">MaaControllerCachedImage</ref>, <ref refid="MaaController_8h_1ad65392ee4028a2d8ba74d2fab960fb50" kindref="member">MaaControllerPostScreencap</ref> </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaFramework/Instance/MaaController.h" line="187" column="31" declfile="include/MaaFramework/Instance/MaaController.h" declline="187" declcolumn="31"/>
       </memberdef>
       <memberdef kind="function" id="MaaController_8h_1a5d20a13ed1473795423cc2f51423bea0" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="MaaPort_8h_1aea94eb63afa29e65c59844ec3f57d691" kindref="member">MAA_DEPRECATED</ref> <ref refid="MaaPort_8h_1a67006334d91d228121dbba7a8bf8fe05" kindref="member">MAA_FRAMEWORK_API</ref> <ref refid="MaaDef_8h_1aea6a27f8f45b661fda5c19b6062b656e" kindref="member">MaaCtrlId</ref></type>
@@ -932,7 +1032,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="include/MaaFramework/Instance/MaaController.h" line="152" column="48" declfile="include/MaaFramework/Instance/MaaController.h" declline="152" declcolumn="48"/>
+        <location file="include/MaaFramework/Instance/MaaController.h" line="189" column="48" declfile="include/MaaFramework/Instance/MaaController.h" declline="189" declcolumn="48"/>
       </memberdef>
     </sectiondef>
     <briefdescription>
