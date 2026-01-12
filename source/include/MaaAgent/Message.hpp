@@ -14,7 +14,7 @@ MAA_AGENT_NS_BEGIN
 // ReverseRequest: server -> client
 
 using MessageTypePlaceholder = int;
-inline static constexpr int kProtocolVersion = 6;
+inline static constexpr int kProtocolVersion = 7;
 
 struct StartUpRequest
 {
@@ -1024,9 +1024,11 @@ struct ControllerPostClickReverseRequest
     std::string controller_id;
     int32_t x = 0;
     int32_t y = 0;
+    int32_t contact = 0;
+    int32_t pressure = 1;
 
     MessageTypePlaceholder _ControllerPostClickReverseRequest = 1;
-    MEO_JSONIZATION(controller_id, x, y, _ControllerPostClickReverseRequest);
+    MEO_JSONIZATION(controller_id, x, y, contact, pressure, _ControllerPostClickReverseRequest);
 };
 
 struct ControllerPostClickReverseResponse
@@ -1045,9 +1047,11 @@ struct ControllerPostSwipeReverseRequest
     int32_t x2 = 0;
     int32_t y2 = 0;
     int32_t duration = 0;
+    int32_t contact = 0;
+    int32_t pressure = 1;
 
     MessageTypePlaceholder _ControllerPostSwipeReverseRequest = 1;
-    MEO_JSONIZATION(controller_id, x1, y1, x2, y2, duration, _ControllerPostSwipeReverseRequest);
+    MEO_JSONIZATION(controller_id, x1, y1, x2, y2, duration, contact, pressure, _ControllerPostSwipeReverseRequest);
 };
 
 struct ControllerPostSwipeReverseResponse

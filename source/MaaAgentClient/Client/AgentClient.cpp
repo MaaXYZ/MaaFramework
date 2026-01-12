@@ -1677,7 +1677,7 @@ bool AgentClient::handle_controller_post_click(const json::value& j)
         LogError << "controller not found" << VAR(req.controller_id);
         return false;
     }
-    MaaCtrlId ctrl_id = controller->post_click(req.x, req.y);
+    MaaCtrlId ctrl_id = controller->post_click(req.x, req.y, req.contact, req.pressure);
     ControllerPostClickReverseResponse resp {
         .ctrl_id = ctrl_id,
     };
@@ -1697,7 +1697,7 @@ bool AgentClient::handle_controller_post_swipe(const json::value& j)
         LogError << "controller not found" << VAR(req.controller_id);
         return false;
     }
-    MaaCtrlId ctrl_id = controller->post_swipe(req.x1, req.y1, req.x2, req.y2, req.duration);
+    MaaCtrlId ctrl_id = controller->post_swipe(req.x1, req.y1, req.x2, req.y2, req.duration, req.contact, req.pressure);
     ControllerPostSwipeReverseResponse resp {
         .ctrl_id = ctrl_id,
     };

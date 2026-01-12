@@ -75,7 +75,19 @@ MaaCtrlId MaaControllerPostClick(MaaController* ctrl, int32_t x, int32_t y)
         return MaaInvalidId;
     }
 
-    return ctrl->post_click(x, y);
+    return ctrl->post_click(x, y, 0, 1);
+}
+
+MaaCtrlId MaaControllerPostClickV2(MaaController* ctrl, int32_t x, int32_t y, int32_t contact, int32_t pressure)
+{
+    LogFunc << VAR_VOIDP(ctrl) << VAR(x) << VAR(y) << VAR(contact) << VAR(pressure);
+
+    if (!ctrl) {
+        LogError << "handle is null";
+        return MaaInvalidId;
+    }
+
+    return ctrl->post_click(x, y, contact, pressure);
 }
 
 MaaCtrlId MaaControllerPostSwipe(MaaController* ctrl, int32_t x1, int32_t y1, int32_t x2, int32_t y2, int32_t duration)
@@ -87,7 +99,27 @@ MaaCtrlId MaaControllerPostSwipe(MaaController* ctrl, int32_t x1, int32_t y1, in
         return MaaInvalidId;
     }
 
-    return ctrl->post_swipe(x1, y1, x2, y2, duration);
+    return ctrl->post_swipe(x1, y1, x2, y2, duration, 0, 1);
+}
+
+MaaCtrlId MaaControllerPostSwipeV2(
+    MaaController* ctrl,
+    int32_t x1,
+    int32_t y1,
+    int32_t x2,
+    int32_t y2,
+    int32_t duration,
+    int32_t contact,
+    int32_t pressure)
+{
+    LogFunc << VAR_VOIDP(ctrl) << VAR(x1) << VAR(y1) << VAR(x2) << VAR(y2) << VAR(duration) << VAR(contact) << VAR(pressure);
+
+    if (!ctrl) {
+        LogError << "handle is null";
+        return MaaInvalidId;
+    }
+
+    return ctrl->post_swipe(x1, y1, x2, y2, duration, contact, pressure);
 }
 
 MaaCtrlId MaaControllerPostPressKey(MaaController* ctrl, int32_t keycode)
