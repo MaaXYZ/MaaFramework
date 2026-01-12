@@ -415,19 +415,20 @@ typedef uint64_t MaaGamepadType;
  *
  * | Value   | Button    | Xbox Equivalent | Description               |
  * |---------|-----------|-----------------|---------------------------|
- * | 0x1000  | CROSS     | A               | Cross (X) button          |
- * | 0x2000  | CIRCLE    | B               | Circle button             |
- * | 0x4000  | SQUARE    | X               | Square button             |
- * | 0x8000  | TRIANGLE  | Y               | Triangle button           |
- * | 0x0100  | L1        | LB              | L1 button                 |
- * | 0x0200  | R1        | RB              | R1 button                 |
- * | 0x0040  | L3        | L_THUMB         | Left stick click          |
- * | 0x0080  | R3        | R_THUMB         | Right stick click         |
- * | 0x0010  | OPTIONS   | START           | Options button            |
- * | 0x0020  | SHARE     | BACK            | Share button              |
- * | 0x10000 | PS        | -               | PS button (DS4 special)   |
- * | 0x20000 | TOUCHPAD  | -               | Touchpad click (DS4 only) |
+ * | 0x1000  | CROSS     | A                   | Cross (X) button          |
+ * | 0x2000  | CIRCLE    | B                   | Circle button             |
+ * | 0x4000  | SQUARE    | X                   | Square button             |
+ * | 0x8000  | TRIANGLE  | Y                   | Triangle button           |
+ * | 0x0100  | L1        | LB                  | L1 button                 |
+ * | 0x0200  | R1        | RB                  | R1 button                 |
+ * | 0x0040  | L3        | L_THUMB             | Left stick click          |
+ * | 0x0080  | R3        | R_THUMB             | Right stick click         |
+ * | 0x0010  | OPTIONS   | START               | Options button            |
+ * | 0x0020  | SHARE     | BACK                | Share button              |
+ * | 0x10000 | PS        | -                   | PS button (DS4 special)   |
+ * | 0x20000 | TOUCHPAD  | -                   | Touchpad click (DS4 only) |
  */
+typedef uint64_t MaaGamepadButton;
 // Xbox 360 buttons (XUSB protocol values)
 #define MaaGamepadButton_A 0x1000
 #define MaaGamepadButton_B 0x2000
@@ -483,6 +484,7 @@ typedef uint64_t MaaGamepadType;
  * - touch_move(contact, x, y, pressure): Update analog input position/value
  * - touch_up(contact): Release/reset analog input to center/zero
  */
+typedef uint64_t MaaGamepadTouch;
 #define MaaGamepadTouch_LeftStick 0
 #define MaaGamepadTouch_RightStick 1
 #define MaaGamepadTouch_LeftTrigger 2
