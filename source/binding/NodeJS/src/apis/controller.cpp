@@ -580,12 +580,15 @@ CustomControllerImpl* CustomControllerImpl::ctor(const maajs::CallbackInfo& info
     auto ret_false = [](maajs::EnvType env2) {
         return maajs::BooleanType::New(env2, false);
     };
+    auto ret_true = [](maajs::EnvType env2) {
+        return maajs::BooleanType::New(env2, true);
+    };
     auto ret_null = [](maajs::EnvType env2) {
         return env2.Null();
     };
 
     context->add_bind(info.Env(), "connect", "CustomConnect", 0, actor, ret_false);
-    context->add_bind(info.Env(), "connected", "CustomConnected", 0, actor, ret_false);
+    context->add_bind(info.Env(), "connected", "CustomConnected", 0, actor, ret_true);
     context->add_bind(info.Env(), "request_uuid", "CustomRequestUuid", 0, actor, ret_null);
     context->add_bind(info.Env(), "get_features", "CustomGetFeatures", 0, actor, ret_null);
     context->add_bind(info.Env(), "start_app", "CustomStartApp", 1, actor, ret_false);

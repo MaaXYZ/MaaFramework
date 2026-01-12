@@ -156,12 +156,8 @@ MaaBool CustomConnect(void* trans_arg)
 MaaBool CustomConnected(void* trans_arg)
 {
     auto customCtx = reinterpret_cast<CustomControllerContext*>(trans_arg);
-    auto it = customCtx->callbacks.find("connected");
-    if (it == customCtx->callbacks.end() || !it->second) {
-        // 回调未提供时默认返回 true（已连接）
-        return true;
-    }
-    return it->second->Call<bool>([&](maajs::FunctionType func) { return func.Call({}); });
+    auto ctx = customCtx->callbacks["connected"];
+    return ctx->Call<bool>([&](maajs::FunctionType func) { return func.Call({}); });
 }
 
 MaaBool CustomRequestUuid(void* trans_arg, MaaStringBuffer* buffer)
