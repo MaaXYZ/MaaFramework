@@ -30,40 +30,39 @@ int main([[maybe_unused]] int argc, char** argv)
     std::string user_path = "./";
     MaaToolkitConfigInitOption(user_path.c_str(), "{}");
 
-    auto controller_handle = create_adb_controller();
-    // auto controller_handle = create_win32_controller();
-    auto ctrl_id = MaaControllerPostConnection(controller_handle);
-
-    auto resource_handle = MaaResourceCreate();
-    std::string resource_dir = R"(E:\Code\MaaFramework\sample\resource)";
-    auto res_id = MaaResourcePostBundle(resource_handle, resource_dir.c_str());
-
-    MaaControllerWait(controller_handle, ctrl_id);
-    MaaResourceWait(resource_handle, res_id);
-
-    auto tasker_handle = MaaTaskerCreate();
-    MaaTaskerBindResource(tasker_handle, resource_handle);
-    MaaTaskerBindController(tasker_handle, controller_handle);
-
-    auto destroy = [&]() {
-        MaaTaskerDestroy(tasker_handle);
-        MaaResourceDestroy(resource_handle);
-        MaaControllerDestroy(controller_handle);
-    };
-
-    if (!MaaTaskerInited(tasker_handle)) {
-        std::cout << "Failed to init MAA" << std::endl;
-
-        destroy();
-        return -1;
-    }
-
-    MaaResourceRegisterCustomRecognition(resource_handle, "MyReco", my_reco, nullptr);
-
-    auto task_id = MaaTaskerPostTask(tasker_handle, "MyTask", "{}");
-    MaaTaskerWait(tasker_handle, task_id);
-
-    destroy();
+    auto h = MaaGamepadControllerCreate(nullptr, MaaGamepadType_Xbox360, 0);
+    MaaControllerPostConnection(h);
+    Sleep(5000);
+    // MaaControllerPostTouchDown(h, MaaGamepadTouch_LeftStick, 10000, -10000, 0);
+    MaaControllerPostKeyDown(h, MaaGamepadButton_A);
+    Sleep(500);
+    MaaControllerPostKeyUp(h, MaaGamepadButton_A);
+    Sleep(500);
+    MaaControllerPostKeyDown(h, MaaGamepadButton_A);
+    Sleep(500);
+    MaaControllerPostKeyUp(h, MaaGamepadButton_A);
+    Sleep(500);
+    MaaControllerPostKeyDown(h, MaaGamepadButton_A);
+    Sleep(500);
+    MaaControllerPostKeyUp(h, MaaGamepadButton_A);
+    Sleep(500);
+    MaaControllerPostKeyDown(h, MaaGamepadButton_A);
+    Sleep(500);
+    MaaControllerPostKeyUp(h, MaaGamepadButton_A);
+    Sleep(500);
+    MaaControllerPostKeyDown(h, MaaGamepadButton_A);
+    Sleep(500);
+    MaaControllerPostKeyUp(h, MaaGamepadButton_A);
+    Sleep(500);
+    MaaControllerPostKeyDown(h, MaaGamepadButton_A);
+    Sleep(500);
+    MaaControllerPostKeyUp(h, MaaGamepadButton_A);
+    Sleep(500);
+    MaaControllerPostKeyDown(h, MaaGamepadButton_A);
+    Sleep(500);
+    auto id = MaaControllerPostKeyUp(h, MaaGamepadButton_A);
+    // MaaControllerPostTouchDown(h, MaaGamepadTouch_LeftStick, 10000, -10000, 0);
+    MaaControllerWait(h, id);
 
     return 0;
 }

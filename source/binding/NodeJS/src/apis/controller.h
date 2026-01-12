@@ -137,6 +137,20 @@ struct DbgControllerImpl : public ControllerImpl
     static void init_proto(maajs::ObjectType proto, maajs::FunctionType ctor);
 };
 
+#ifdef _WIN32
+using GamepadControllerCtorParam = std::tuple<maajs::OptionalParam<uintptr_t>, MaaGamepadType, MaaWin32ScreencapMethod>;
+
+struct GamepadControllerImpl : public ControllerImpl
+{
+    using ControllerImpl::ControllerImpl;
+
+    constexpr static char name[] = "GamepadController";
+
+    static GamepadControllerImpl* ctor(const maajs::CallbackInfo&);
+    static void init_proto(maajs::ObjectType proto, maajs::FunctionType ctor);
+};
+#endif
+
 struct CustomControllerContext
 {
     std::map<std::string, maajs::CallbackContext*> callbacks;

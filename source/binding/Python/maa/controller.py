@@ -8,7 +8,31 @@ from typing import Any, Dict, Optional, Tuple, Union
 
 from .buffer import ImageBuffer, StringBuffer
 from .event_sink import EventSink, NotificationType
-from .define import *
+from .define import (
+    MaaControllerHandle,
+    MaaCtrlId,
+    MaaStatus,
+    MaaOption,
+    MaaCtrlOption,
+    MaaOptionValue,
+    MaaOptionValueSize,
+    MaaAdbScreencapMethod,
+    MaaAdbInputMethod,
+    MaaWin32ScreencapMethod,
+    MaaWin32InputMethod,
+    MaaDbgControllerType,
+    MaaGamepadType,
+    MaaBool,
+    MaaImageBufferHandle,
+    MaaStringBufferHandle,
+    MaaEventCallback,
+    MaaSinkId,
+    MaaInvalidId,
+    MaaCustomControllerCallbacks,
+    MaaCtrlOptionEnum,
+    MaaControllerFeatureEnum,
+    MaaWin32ScreencapMethodEnum,
+)
 from .job import Job, JobWithResult
 from .library import Library
 
@@ -17,6 +41,7 @@ __all__ = [
     "DbgController",
     "PlayCoverController",
     "Win32Controller",
+    "GamepadController",
     "CustomController",
 ]
 
@@ -894,6 +919,69 @@ class DbgController(Controller):
             ctypes.c_char_p,
             MaaDbgControllerType,
             ctypes.c_char_p,
+        ]
+
+
+class GamepadController(Controller):
+    """虚拟手柄控制器 (仅 Windows) / Virtual gamepad controller (Windows only)
+
+    通过 ViGEm 模拟 Xbox 360 或 DualShock 4 手柄，用于控制需要手柄输入的游戏。
+    Emulates Xbox 360 or DualShock 4 gamepad via ViGEm for controlling games that require gamepad input.
+
+    需要安装 ViGEm Bus Driver: https://github.com/ViGEm/ViGEmBus/releases
+    Requires ViGEm Bus Driver: https://github.com/ViGEm/ViGEmBus/releases
+
+    手柄操作映射:
+    - click_key/key_down/key_up: 数字按键 (使用 MaaGamepadButtonEnum)
+    - touch_down/touch_move/touch_up: 摇杆和扳机 (contact 使用 MaaGamepadContactEnum)
+      - contact 0: 左摇杆 (x, y: -32768~32767)
+      - contact 1: 右摇杆 (x, y: -32768~32767)
+      - contact 2: 左扳机 (pressure: 0~255)
+      - contact 3: 右扳机 (pressure: 0~255)
+    """
+
+    def __init__(
+        self,
+        hWnd: Union[ctypes.c_void_p, int, None],
+        gamepad_type: int = 1,  # MaaGamepadTypeEnum.Xbox360
+        screencap_method: int = MaaWin32ScreencapMethodEnum.DXGI_DesktopDup,
+        notification_handler: None = None,
+    ):
+        """创建虚拟手柄控制器 / Create virtual gamepad controller
+
+        Args:
+            hWnd: 窗口句柄，用于截图 (可为 None，不需要截图时) / Window handle for screencap (can be None if screencap not needed)
+            gamepad_type: 手柄类型 (MaaGamepadTypeEnum.Xbox360 或 MaaGamepadTypeEnum.DualShock4) / Gamepad type
+            screencap_method: 截图方式 (当 hWnd 不为 None 时使用) / Screencap method (used when hWnd is not None)
+            notification_handler: 已废弃，请使用 add_sink 代替 / Deprecated, use add_sink instead
+
+        Raises:
+            NotImplementedError: 如果提供了 notification_handler
+            RuntimeError: 如果创建失败
+        """
+        if notification_handler:
+            raise NotImplementedError(
+                "NotificationHandler is deprecated, use add_sink instead."
+            )
+
+        super().__init__()
+        self._set_gamepad_api_properties()
+
+        self._handle = Library.framework().MaaGamepadControllerCreate(
+            hWnd,
+            MaaGamepadType(gamepad_type),
+            MaaWin32ScreencapMethod(screencap_method),
+        )
+
+        if not self._handle:
+            raise RuntimeError("Failed to create Gamepad controller.")
+
+    def _set_gamepad_api_properties(self):
+        Library.framework().MaaGamepadControllerCreate.restype = MaaControllerHandle
+        Library.framework().MaaGamepadControllerCreate.argtypes = [
+            ctypes.c_void_p,
+            MaaGamepadType,
+            MaaWin32ScreencapMethod,
         ]
 
 
