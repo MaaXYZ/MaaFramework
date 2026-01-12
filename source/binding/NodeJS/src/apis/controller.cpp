@@ -470,6 +470,7 @@ maajs::ValueType load_win32_controller(maajs::EnvType env)
     return ctor;
 }
 
+#ifdef __APPLE__
 PlayCoverControllerImpl* PlayCoverControllerImpl::ctor(const maajs::CallbackInfo& info)
 {
     auto [address, uuid] = maajs::UnWrapArgs<PlayCoverControllerCtorParam, void>(info);
@@ -491,6 +492,7 @@ maajs::ValueType load_playcover_controller(maajs::EnvType env)
     ExtContext::get(env)->playcoverControllerCtor = maajs::PersistentFunction(ctor);
     return ctor;
 }
+#endif
 
 DbgControllerImpl* DbgControllerImpl::ctor(const maajs::CallbackInfo& info)
 {
@@ -514,6 +516,7 @@ maajs::ValueType load_dbg_controller(maajs::EnvType env)
     return ctor;
 }
 
+#ifdef _WIN32
 GamepadControllerImpl* GamepadControllerImpl::ctor(const maajs::CallbackInfo& info)
 {
     auto [hwnd, gamepad_type, screencap_method] = maajs::UnWrapArgs<GamepadControllerCtorParam, void>(info);
@@ -535,6 +538,7 @@ maajs::ValueType load_gamepad_controller(maajs::EnvType env)
     ExtContext::get(env)->gamepadControllerCtor = maajs::PersistentFunction(ctor);
     return ctor;
 }
+#endif
 
 CustomControllerContext::~CustomControllerContext()
 {
