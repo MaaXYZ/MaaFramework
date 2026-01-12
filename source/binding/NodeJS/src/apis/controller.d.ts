@@ -180,6 +180,7 @@ declare global {
             get connected(): boolean
             get cached_image(): ImageData | null
             get uuid(): string | null
+            get resolution(): [width: number, height: number] | null
         }
 
         type AdbDevice = [
