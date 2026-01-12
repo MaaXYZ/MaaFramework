@@ -164,6 +164,9 @@ _✨ 基于图像识别的自动化黑盒测试框架 ✨_
 - [MaaDuDuL](https://github.com/kqcoxn/MaaDuDuL) ![Pipeline](https://img.shields.io/badge/Pipeline-%23876f69?logo=paddypower&logoColor=%23FFFFFF) ![Python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white) ![license](https://img.shields.io/github/license/kqcoxn/MaaDuDuL) ![activity](https://img.shields.io/github/commit-activity/m/kqcoxn/MaaDuDuL?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/kqcoxn/MaaDuDuL?style=social) [![mirrorc](./docs/static/mirrorc-zh.svg)](https://mirrorchyan.com/zh/projects?source=maafw-badge) [![website](https://img.shields.io/badge/https://mddl.codax.site-%234285F4)](https://mddl.codax.site)  
   嘟嘟脸恶作剧 小助手。图像技术 + 模拟控制，自动捏脸，解放双手！由 MaaFramework 强力驱动！
 
+- [MaaLYSK](https://github.com/Witty36/MaaLYSK) ![Pipeline](https://img.shields.io/badge/Pipeline-%23876f69?logo=paddypower&logoColor=%23FFFFFF) ![Python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white) ![license](https://img.shields.io/github/license/Witty36/MaaLYSK) ![activity](https://img.shields.io/github/commit-activity/m/Witty36/MaaLYSK?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/Witty36/MaaLYSK?style=social) [![mirrorc](./docs/static/mirrorc-zh.svg)](https://mirrorchyan.com/zh/projects?rid=MaaLYSK) [![website](https://img.shields.io/badge/https://maalysk.top-%234285F4)](https://maalysk.top)  
+  恋与深空 小助手。使用图像技术 + 模拟控制，解放双手！由 MaaFramework 强力驱动！
+
 ## 生态共建
 
 MAA 正计划建设为一类项目，而非舟的单一软件。  
