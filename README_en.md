@@ -167,6 +167,9 @@ It offers low-code simplicity while maintaining high extensibility. The framewor
 - [MaaDuDuL](https://github.com/kqcoxn/MaaDuDuL) ![Pipeline](https://img.shields.io/badge/Pipeline-%23876f69?logo=paddypower&logoColor=%23FFFFFF) ![Python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white) ![license](https://img.shields.io/github/license/kqcoxn/MaaDuDuL) ![activity](https://img.shields.io/github/commit-activity/m/kqcoxn/MaaDuDuL?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/kqcoxn/MaaDuDuL?style=social) [![mirrorc](./docs/static/mirrorc-en.svg)](https://mirrorchyan.com/en/projects?source=maafw-badge) [![website](https://img.shields.io/badge/https://mddl.codax.site-%234285F4)](https://mddl.codax.site)  
   Assistant for Trickcal. Image technology + simulation control, automatic pinch face, free hands! Powerfully driven by MaaFramework!
 
+- [MaaLYSK](https://github.com/Witty36/MaaLYSK) ![Pipeline](https://img.shields.io/badge/Pipeline-%23876f69?logo=paddypower&logoColor=%23FFFFFF) ![Python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white) ![license](https://img.shields.io/github/license/Witty36/MaaLYSK) ![activity](https://img.shields.io/github/commit-activity/m/Witty36/MaaLYSK?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/Witty36/MaaLYSK?style=social) [![mirrorc](./docs/static/mirrorc-en.svg)](https://mirrorchyan.com/en/projects?rid=MaaLYSK) [![website](https://img.shields.io/badge/https://maalysk.top-%234285F4)](https://maalysk.top)  
+  Assistant for Love and Deepspace. Image technology + simulation control, automatic pinch face, free hands! Powerfully driven by MaaFramework!
+
 ## Eco-Building
 
 MAA is planned to be a category of projects rather than just a single piece of software.
