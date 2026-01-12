@@ -24,6 +24,9 @@ static maajs::ObjectType init(maajs::EnvType env)
     maajs::BindValue(maa, "PlayCoverController", load_playcover_controller(env));
 #endif
     maajs::BindValue(maa, "DbgController", load_dbg_controller(env));
+#ifdef _WIN32
+    maajs::BindValue(maa, "GamepadController", load_gamepad_controller(env));
+#endif
     maajs::BindValue(maa, "CustomController", load_custom_controller(env));
     maajs::BindValue(maa, "TaskJob", load_task_job(env));
     maajs::BindValue(maa, "Tasker", load_tasker(env));

@@ -24,6 +24,14 @@ if(WITH_WIN32_CONTROLLER)
     add_dependencies(MaaFramework MaaWin32ControlUnit)
 endif()
 
+if(WITH_GAMEPAD_CONTROLLER)
+    add_dependencies(MaaFramework MaaGamepadControlUnit)
+endif()
+
+if(WITH_PLAYCOVER_CONTROLLER)
+    add_dependencies(MaaFramework MaaPlayCoverControlUnit)
+endif()
+
 if(WITH_DBG_CONTROLLER)
     add_dependencies(MaaFramework MaaDbgControlUnit)
 endif()

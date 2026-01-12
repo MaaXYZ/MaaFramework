@@ -140,6 +140,28 @@ MaaController* MaaPlayCoverControllerCreate(const char* address, const char* uui
     return new MAA_CTRL_NS::ControllerAgent(std::move(control_unit));
 }
 
+MaaController* MaaGamepadControllerCreate(void* hWnd, MaaWin32ScreencapMethod screencap_method)
+{
+    LogFunc << VAR_VOIDP(hWnd) << VAR(screencap_method);
+
+#ifndef _WIN32
+
+    LogError << "This API" << __FUNCTION__ << "is only available on Windows";
+    return nullptr;
+
+#else
+
+    auto control_unit = MAA_NS::GamepadControlUnitLibraryHolder::create_control_unit(hWnd, screencap_method);
+
+    if (!control_unit) {
+        LogError << "Failed to create control unit";
+        return nullptr;
+    }
+
+    return new MAA_CTRL_NS::ControllerAgent(std::move(control_unit));
+#endif
+}
+
 void MaaControllerDestroy(MaaController* ctrl)
 {
     LogFunc << VAR_VOIDP(ctrl);

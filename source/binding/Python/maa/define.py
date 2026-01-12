@@ -327,7 +327,6 @@ class MaaWin32InputMethodEnum(IntEnum):
     PostThreadMessage = 1 << 4
     SendMessageWithCursorPos = 1 << 5
     PostMessageWithCursorPos = 1 << 6
-    Gamepad = 1 << 7
 
 
 # No bitwise OR, just set it

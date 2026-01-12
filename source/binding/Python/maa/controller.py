@@ -14,6 +14,7 @@ from .library import Library
 __all__ = [
     "AdbController",
     "DbgController",
+    "GamepadController",
     "PlayCoverController",
     "Win32Controller",
     "CustomController",
@@ -805,6 +806,59 @@ class PlayCoverController(Controller):
         Library.framework().MaaPlayCoverControllerCreate.argtypes = [
             ctypes.c_char_p,
             ctypes.c_char_p,
+        ]
+
+
+class GamepadController(Controller):
+    """Gamepad 控制器 / Gamepad controller
+
+    模拟虚拟 Xbox 360 手柄，使用 Win32 截图，需要安装 ViGEmBus 驱动
+    Simulates a virtual Xbox 360 gamepad with Win32 screencap, requires ViGEmBus driver
+
+    仅支持 Windows 平台
+    Only available on Windows
+    """
+
+    def __init__(
+        self,
+        hWnd: int,
+        screencap_method: MaaWin32ScreencapMethodEnum = MaaWin32ScreencapMethodEnum.DXGI_DesktopDup,
+        notification_handler: None = None,
+    ):
+        """创建 Gamepad 控制器 / Create Gamepad controller
+
+        Args:
+            hWnd: 窗口句柄 / Window handle
+            screencap_method: 截图方法 / Screenshot method
+            notification_handler: 已废弃，请使用 add_sink 代替 / Deprecated, use add_sink instead
+
+        Raises:
+            NotImplementedError: 如果提供了 notification_handler
+            RuntimeError: 如果创建失败（例如 ViGEmBus 驱动未安装）
+        """
+        if notification_handler:
+            raise NotImplementedError(
+                "NotificationHandler is deprecated, use add_sink instead."
+            )
+
+        super().__init__()
+        self._set_gamepad_api_properties()
+
+        self._handle = Library.framework().MaaGamepadControllerCreate(
+            ctypes.c_void_p(hWnd),
+            ctypes.c_uint64(screencap_method),
+        )
+
+        if not self._handle:
+            raise RuntimeError(
+                "Failed to create Gamepad controller. Please install ViGEmBus driver."
+            )
+
+    def _set_gamepad_api_properties(self):
+        Library.framework().MaaGamepadControllerCreate.restype = MaaControllerHandle
+        Library.framework().MaaGamepadControllerCreate.argtypes = [
+            ctypes.c_void_p,
+            ctypes.c_uint64,
         ]
 
 

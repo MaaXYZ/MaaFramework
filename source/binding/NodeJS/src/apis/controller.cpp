@@ -507,6 +507,30 @@ maajs::ValueType load_dbg_controller(maajs::EnvType env)
     return ctor;
 }
 
+#ifdef _WIN32
+GamepadControllerImpl* GamepadControllerImpl::ctor(const maajs::CallbackInfo& info)
+{
+    auto [hwnd, screencap_method] = maajs::UnWrapArgs<GamepadControllerCtorParam, void>(info);
+    auto ctrl = MaaGamepadControllerCreate(reinterpret_cast<void*>(hwnd), screencap_method);
+    if (!ctrl) {
+        return nullptr;
+    }
+    return new GamepadControllerImpl(ctrl, true);
+}
+
+void GamepadControllerImpl::init_proto(maajs::ObjectType, maajs::FunctionType)
+{
+}
+
+maajs::ValueType load_gamepad_controller(maajs::EnvType env)
+{
+    maajs::FunctionType ctor;
+    maajs::NativeClass<GamepadControllerImpl>::init<ControllerImpl>(env, ctor, &ExtContext::get(env)->controllerCtor);
+    ExtContext::get(env)->gamepadControllerCtor = maajs::PersistentFunction(ctor);
+    return ctor;
+}
+#endif
+
 CustomControllerContext::~CustomControllerContext()
 {
     for (const auto& [_, ctx] : callbacks) {

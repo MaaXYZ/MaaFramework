@@ -53,6 +53,19 @@ extern "C"
      */
     MAA_FRAMEWORK_API MaaController* MaaPlayCoverControllerCreate(const char* address, const char* uuid);
 
+    /**
+     * @brief Create a virtual Xbox 360 gamepad controller (Windows only).
+     *
+     * @param hWnd The window handle for screenshot capture.
+     * @param screencap_method The screenshot method to use (see MaaWin32ScreencapMethod).
+     * @return The controller handle, or nullptr on failure.
+     *
+     * @note Requires ViGEmBus driver to be installed: https://github.com/nefarius/ViGEmBus/releases
+     * @note Uses Win32 screenshot methods, gamepad for input.
+     * @note Use key_down/key_up for button presses, touch_down/touch_move/touch_up for sticks and triggers.
+     */
+    MAA_FRAMEWORK_API MaaController* MaaGamepadControllerCreate(void* hWnd, MaaWin32ScreencapMethod screencap_method);
+
     MAA_FRAMEWORK_API void MaaControllerDestroy(MaaController* ctrl);
 
     MAA_FRAMEWORK_API MaaSinkId MaaControllerAddSink(MaaController* ctrl, MaaEventCallback sink, void* trans_arg);

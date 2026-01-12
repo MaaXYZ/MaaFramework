@@ -231,6 +231,16 @@ declare global {
             )
         }
 
+        /**
+         * Virtual Xbox 360 gamepad controller (Windows only).
+         *
+         * Requires ViGEmBus driver to be installed.
+         * Uses Win32 screenshot methods, gamepad for input.
+         */
+        class GamepadController extends Controller {
+            constructor(hwnd: DesktopHandle, screencap_method: ScreencapOrInputMethods)
+        }
+
         interface CustomControllerActor {
             connect?(): maa.MaybePromise<boolean>
             connected?(): maa.MaybePromise<boolean>
