@@ -25,6 +25,12 @@ static constexpr bool kPlayCoverSupported = true;
 static constexpr bool kPlayCoverSupported = false;
 #endif
 
+#if defined(_WIN32)
+static constexpr bool kGamepadSupported = true;
+#else
+static constexpr bool kGamepadSupported = false;
+#endif
+
 // return [1, size]
 std::vector<int> input_multi_impl(size_t size, std::string_view prompt)
 {
@@ -210,6 +216,14 @@ void Interactor::print_config() const
             std::cout << "\t\t(PlayCover is only available on macOS)\n";
         }
     } break;
+    case InterfaceData::Controller::Type::Gamepad:
+        if (config_.configuration().gamepad.hwnd) {
+            std::cout << MAA_NS::utf8_to_crt(std::format("\t\t{}\n", format_win32_config(config_.configuration().gamepad)));
+        }
+        if (!kGamepadSupported) {
+            std::cout << "\t\t(Gamepad is only available on Windows)\n";
+        }
+        break;
     default:
         LogError << "Unknown controller type" << VAR(config_.configuration().controller.type);
         break;
@@ -358,6 +372,9 @@ void Interactor::select_controller()
             if (ctrl.type == InterfaceData::Controller::Type::PlayCover && !kPlayCoverSupported) {
                 std::cout << " (macOS only)";
             }
+            if (ctrl.type == InterfaceData::Controller::Type::Gamepad && !kGamepadSupported) {
+                std::cout << " (Windows only)";
+            }
             std::cout << "\n";
             if (!ctrl.description.empty()) {
                 std::string desc_text = read_text_content(ctrl.description);
@@ -381,7 +398,9 @@ void Interactor::select_controller()
         break;
     case InterfaceData::Controller::Type::Win32:
         config_.configuration().controller.type = InterfaceData::Controller::Type::Win32;
-        select_win32_hwnd(controller.win32);
+        if (auto hwnd = select_desktop_hwnd(controller.win32)) {
+            config_.configuration().win32 = *hwnd;
+        }
         break;
     case InterfaceData::Controller::Type::PlayCover:
         if (!kPlayCoverSupported) {
@@ -403,6 +422,29 @@ void Interactor::select_controller()
         }
         config_.configuration().controller.type = InterfaceData::Controller::Type::PlayCover;
         select_playcover(controller.playcover);
+        break;
+    case InterfaceData::Controller::Type::Gamepad:
+        if (!kGamepadSupported) {
+            std::cout << "\nGamepad controller is only available on Windows.\n";
+            // Check if there are other controllers available
+            bool has_other_controllers = std::ranges::any_of(all_controllers, [](const auto& ctrl) {
+                return ctrl.type != InterfaceData::Controller::Type::Gamepad;
+            });
+            if (has_other_controllers) {
+                std::cout << "Please select another controller.\n\n";
+                mpause();
+                select_controller();
+            }
+            else {
+                std::cout << "No other controllers available.\n\n";
+                mpause();
+            }
+            return;
+        }
+        config_.configuration().controller.type = InterfaceData::Controller::Type::Gamepad;
+        if (auto hwnd = select_desktop_hwnd(controller.gamepad)) {
+            config_.configuration().gamepad = *hwnd;
+        }
         break;
     default:
         LogError << "Unknown controller type" << VAR(controller.type);
@@ -518,16 +560,17 @@ void Interactor::select_playcover(const MAA_PROJECT_INTERFACE_NS::InterfaceData:
     std::cout << "\n";
 }
 
-std::string Interactor::format_win32_config(const MAA_PROJECT_INTERFACE_NS::Configuration::Win32Config& win32_config)
+std::string Interactor::format_win32_config(const MAA_PROJECT_INTERFACE_NS::Configuration::Win32Config& config)
 {
     return std::format(
         "{}\n\t\t{}\n\t\t{}",
-        win32_config.hwnd,
-        MAA_NS::from_u16(win32_config.class_name),
-        MAA_NS::from_u16(win32_config.window_name));
+        config.hwnd,
+        MAA_NS::from_u16(config.class_name),
+        MAA_NS::from_u16(config.window_name));
 }
 
-bool Interactor::select_win32_hwnd(const MAA_PROJECT_INTERFACE_NS::InterfaceData::Controller::Win32Config& win32_config)
+std::optional<MAA_PROJECT_INTERFACE_NS::Configuration::Win32Config>
+    Interactor::select_desktop_hwnd(const MAA_PROJECT_INTERFACE_NS::InterfaceData::Controller::Win32Config& config)
 {
     using namespace MAA_PROJECT_INTERFACE_NS;
 
@@ -538,11 +581,11 @@ bool Interactor::select_win32_hwnd(const MAA_PROJECT_INTERFACE_NS::InterfaceData
 
     size_t list_size = MaaToolkitDesktopWindowListSize(list_handle);
 
-    auto class_regex = MAA_NS::regex_valid(MAA_NS::to_u16(win32_config.class_regex));
-    auto window_regex = MAA_NS::regex_valid(MAA_NS::to_u16(win32_config.window_regex));
+    auto class_regex = MAA_NS::regex_valid(MAA_NS::to_u16(config.class_regex));
+    auto window_regex = MAA_NS::regex_valid(MAA_NS::to_u16(config.window_regex));
     if (!class_regex || !window_regex) {
-        LogError << "regex is invalid" << VAR(win32_config.class_regex) << VAR(win32_config.window_regex);
-        return false;
+        LogError << "regex is invalid" << VAR(config.class_regex) << VAR(config.window_regex);
+        return std::nullopt;
     }
 
     std::vector<Configuration::Win32Config> matched_config;
@@ -560,14 +603,13 @@ bool Interactor::select_win32_hwnd(const MAA_PROJECT_INTERFACE_NS::InterfaceData
     }
 
     if (matched_config.empty()) {
-        LogError << "Window Not Found" << VAR(win32_config.class_regex) << VAR(win32_config.window_regex);
+        LogError << "Window Not Found" << VAR(config.class_regex) << VAR(config.window_regex);
         mpause();
-        return false;
+        return std::nullopt;
     }
     size_t matched_size = matched_config.size();
     if (matched_size == 1) {
-        config_.configuration().win32 = matched_config.front();
-        return true;
+        return matched_config.front();
     }
 
     std::cout << "### Select HWND ###\n\n";
@@ -578,9 +620,7 @@ bool Interactor::select_win32_hwnd(const MAA_PROJECT_INTERFACE_NS::InterfaceData
     std::cout << "\n";
 
     int index = input(matched_size) - 1;
-    config_.configuration().win32 = matched_config.at(index);
-
-    return true;
+    return matched_config.at(index);
 }
 
 void Interactor::select_resource()
@@ -998,11 +1038,15 @@ bool Interactor::check_validity()
         auto controller_iter = std::ranges::find(config_.interface_data().controller, name, std::mem_fn(&InterfaceData::Controller::name));
 
         if (controller_iter == config_.interface_data().controller.end()) {
-            LogError << "Contorller not found" << VAR(name);
+            LogError << "Controller not found" << VAR(name);
             return false;
         }
 
-        return select_win32_hwnd(controller_iter->win32);
+        if (auto hwnd = select_desktop_hwnd(controller_iter->win32)) {
+            config_.configuration().win32 = *hwnd;
+            return true;
+        }
+        return false;
     }
 
     if (config_.configuration().controller.type == InterfaceData::Controller::Type::PlayCover) {
@@ -1026,6 +1070,28 @@ bool Interactor::check_validity()
             LogError << "PlayCover address is empty";
             return false;
         }
+    }
+
+    if (config_.configuration().controller.type == InterfaceData::Controller::Type::Gamepad
+        && config_.configuration().gamepad.hwnd == nullptr) {
+        if (!kGamepadSupported) {
+            LogError << "Gamepad controller is only available on Windows";
+            return false;
+        }
+
+        auto& name = config_.configuration().controller.name;
+        auto controller_iter = std::ranges::find(config_.interface_data().controller, name, std::mem_fn(&InterfaceData::Controller::name));
+
+        if (controller_iter == config_.interface_data().controller.end()) {
+            LogError << "Controller not found" << VAR(name);
+            return false;
+        }
+
+        if (auto hwnd = select_desktop_hwnd(controller_iter->gamepad)) {
+            config_.configuration().gamepad = *hwnd;
+            return true;
+        }
+        return false;
     }
 
     return true;

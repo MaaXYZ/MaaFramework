@@ -206,6 +206,21 @@ std::optional<RuntimeParam> Configurator::generate_runtime() const
         runtime.controller_param = std::move(playcover);
     } break;
 
+    case InterfaceData::Controller::Type::Gamepad: {
+        RuntimeParam::GamepadParam gamepad;
+
+        gamepad.hwnd = config_.gamepad.hwnd;
+
+        if (!controller.gamepad.screencap.empty()) {
+            gamepad.screencap = parse_win32_screencap_method(controller.gamepad.screencap);
+        }
+        if (gamepad.screencap == MaaWin32ScreencapMethod_None) {
+            gamepad.screencap = MaaWin32ScreencapMethod_DXGI_DesktopDup;
+        }
+
+        runtime.controller_param = std::move(gamepad);
+    } break;
+
     default: {
         LogError << "Unknown controller type" << VAR(controller.type);
         return std::nullopt;

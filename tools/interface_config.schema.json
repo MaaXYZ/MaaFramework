@@ -13,7 +13,7 @@
                 "type": {
                     "title": "控制器类型",
                     "type": "string",
-                    "enum": ["Adb", "Win32", "PlayCover"]
+                    "enum": ["Adb", "Win32", "PlayCover", "Gamepad"]
                 }
             }
         },
@@ -52,6 +52,10 @@
                     "type": "string"
                 }
             }
+        },
+        "gamepad": {
+            "title": "Gamepad配置",
+            "type": "object"
         },
         "resource": {
             "title": "激活的资源",

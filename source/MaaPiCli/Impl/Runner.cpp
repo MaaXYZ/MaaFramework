@@ -98,6 +98,15 @@ bool Runner::run(const RuntimeParam& param)
         return false;
 #endif
     }
+    else if (const auto* p_gamepad_param = std::get_if<RuntimeParam::GamepadParam>(&param.controller_param)) {
+#if defined(_WIN32)
+        controller_handle = MaaGamepadControllerCreate(p_gamepad_param->hwnd, p_gamepad_param->screencap);
+#else
+        std::ignore = p_gamepad_param;
+        LogError << "Gamepad controller is only supported on Windows";
+        return false;
+#endif
+    }
     else {
         LogError << "Unknown controller type";
         return false;

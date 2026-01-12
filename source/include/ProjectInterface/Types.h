@@ -37,12 +37,16 @@ struct InterfaceData
             MEO_JSONIZATION(MEO_OPT address, MEO_OPT uuid);
         };
 
+        // Gamepad 使用与 Win32 相同的窗口配置结构（不含 mouse/keyboard）
+        using GamepadConfig = Win32Config;
+
         enum class Type
         {
             Invalid,
             Adb,
             Win32,
             PlayCover,
+            Gamepad,
         };
 
         std::string name;
@@ -57,6 +61,7 @@ struct InterfaceData
 
         Win32Config win32;
         PlayCoverConfig playcover;
+        GamepadConfig gamepad;
 
         MEO_JSONIZATION(
             name,
@@ -67,7 +72,8 @@ struct InterfaceData
             MEO_OPT display_long_side,
             MEO_OPT display_raw,
             MEO_OPT win32,
-            MEO_OPT playcover);
+            MEO_OPT playcover,
+            MEO_OPT gamepad);
     };
 
     struct Resource
@@ -252,6 +258,9 @@ struct Configuration
         MEO_JSONIZATION(MEO_OPT address, MEO_OPT uuid);
     };
 
+    // Gamepad 使用与 Win32 相同的窗口配置结构
+    using GamepadConfig = Win32Config;
+
     struct Option
     {
         std::string name;
@@ -273,10 +282,11 @@ struct Configuration
     AdbConfig adb;
     Win32Config win32;
     PlayCoverConfig playcover;
+    GamepadConfig gamepad;
     std::string resource;
     std::vector<Task> task;
 
-    MEO_JSONIZATION(controller, MEO_OPT adb, MEO_OPT win32, MEO_OPT playcover, resource, task);
+    MEO_JSONIZATION(controller, MEO_OPT adb, MEO_OPT win32, MEO_OPT playcover, MEO_OPT gamepad, resource, task);
 };
 
 struct RuntimeParam
@@ -314,6 +324,12 @@ struct RuntimeParam
         std::string uuid;
     };
 
+    struct GamepadParam
+    {
+        void* hwnd = nullptr;
+        MaaWin32ScreencapMethod screencap = MaaWin32ScreencapMethod_None;
+    };
+
     struct Task
     {
         std::string name;
@@ -329,7 +345,7 @@ struct RuntimeParam
         std::filesystem::path cwd;
     };
 
-    std::variant<std::monostate, AdbParam, Win32Param, PlayCoverParam> controller_param;
+    std::variant<std::monostate, AdbParam, Win32Param, PlayCoverParam, GamepadParam> controller_param;
     std::vector<std::filesystem::path> resource_path;
 
     std::vector<Task> task;
