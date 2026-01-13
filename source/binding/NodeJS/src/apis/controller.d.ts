@@ -232,6 +232,25 @@ declare global {
             )
         }
 
+        /**
+         * Virtual gamepad controller for Windows (requires ViGEm Bus Driver).
+         *
+         * Control mapping:
+         * - click_key/key_down/key_up: Digital buttons (use GamepadButton constants)
+         * - touch_down/touch_move/touch_up: Analog sticks and triggers (use GamepadContact constants)
+         *   - contact 0: Left stick (x, y: -32768~32767)
+         *   - contact 1: Right stick (x, y: -32768~32767)
+         *   - contact 2: Left trigger (pressure: 0~255)
+         *   - contact 3: Right trigger (pressure: 0~255)
+         */
+        class GamepadController extends Controller {
+            constructor(
+                hwnd: DesktopHandle | null, // Window handle for screencap (can be null)
+                gamepad_type: Uint64, // GamepadType (Xbox360 or DualShock4)
+                screencap_method: ScreencapOrInputMethods,
+            )
+        }
+
         interface CustomControllerActor {
             connect?(): maa.MaybePromise<boolean>
             connected?(): maa.MaybePromise<boolean>

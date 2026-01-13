@@ -46,6 +46,20 @@ MaaWin32InputMethod parse_win32_input_method(const std::string& method)
     }
     return MaaWin32InputMethod_None;
 }
+
+MaaGamepadType parse_gamepad_type(const std::string& type)
+{
+    static const std::unordered_map<std::string, MaaGamepadType> mapping = {
+        { "Xbox360", MaaGamepadType_Xbox360 },
+        { "DualShock4", MaaGamepadType_DualShock4 },
+        { "DS4", MaaGamepadType_DualShock4 },
+    };
+
+    if (auto it = mapping.find(type); it != mapping.end()) {
+        return it->second;
+    }
+    return MaaGamepadType_Xbox360;
+}
 } // namespace
 
 bool Configurator::load(const std::filesystem::path& resource_dir, const std::filesystem::path& user_dir)
@@ -203,6 +217,23 @@ std::optional<RuntimeParam> Configurator::generate_runtime() const
         }
 
         runtime.controller_param = std::move(playcover);
+    } break;
+
+    case InterfaceData::Controller::Type::Gamepad: {
+        RuntimeParam::GamepadParam gamepad;
+
+        gamepad.hwnd = config_.gamepad.hwnd;
+        gamepad.gamepad_type =
+            parse_gamepad_type(config_.gamepad.gamepad_type.empty() ? controller.gamepad.gamepad_type : config_.gamepad.gamepad_type);
+
+        if (!controller.gamepad.screencap.empty()) {
+            gamepad.screencap = parse_win32_screencap_method(controller.gamepad.screencap);
+        }
+        if (gamepad.screencap == MaaWin32ScreencapMethod_None && gamepad.hwnd != nullptr) {
+            gamepad.screencap = MaaWin32ScreencapMethod_DXGI_DesktopDup;
+        }
+
+        runtime.controller_param = std::move(gamepad);
     } break;
 
     default: {

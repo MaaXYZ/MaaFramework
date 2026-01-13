@@ -94,15 +94,21 @@ MaaControllerFeature MessageInput::get_features() const
     return MaaControllerFeature_UseMouseDownAndUpInsteadOfClick | MaaControllerFeature_UseKeyboardDownAndUpInsteadOfClick;
 }
 
+// get_features() 返回 MaaControllerFeature_UseMouseDownAndUpInsteadOfClick，
+// 上层 ControllerAgent 会使用 touch_down/touch_up 替代 click/swipe
 bool MessageInput::click(int x, int y)
 {
-    LogError << "deprecated" << VAR(mode_) << VAR(with_cursor_pos_) << VAR(x) << VAR(y);
+    LogError << "deprecated: get_features() returns MaaControllerFeature_UseMouseDownAndUpInsteadOfClick, "
+                "use touch_down/touch_up instead"
+             << VAR(mode_) << VAR(with_cursor_pos_) << VAR(x) << VAR(y);
     return false;
 }
 
 bool MessageInput::swipe(int x1, int y1, int x2, int y2, int duration)
 {
-    LogError << "deprecated" << VAR(mode_) << VAR(with_cursor_pos_) << VAR(x1) << VAR(y1) << VAR(x2) << VAR(y2) << VAR(duration);
+    LogError << "deprecated: get_features() returns MaaControllerFeature_UseMouseDownAndUpInsteadOfClick, "
+                "use touch_down/touch_move/touch_up instead"
+             << VAR(mode_) << VAR(with_cursor_pos_) << VAR(x1) << VAR(y1) << VAR(x2) << VAR(y2) << VAR(duration);
     return false;
 }
 
@@ -232,9 +238,13 @@ bool MessageInput::touch_up(int contact)
     return true;
 }
 
+// get_features() 返回 MaaControllerFeature_UseKeyboardDownAndUpInsteadOfClick，
+// 上层 ControllerAgent 会使用 key_down/key_up 替代 click_key
 bool MessageInput::click_key(int key)
 {
-    LogError << "deprecated" << VAR(mode_) << VAR(with_cursor_pos_) << VAR(key);
+    LogError << "deprecated: get_features() returns MaaControllerFeature_UseKeyboardDownAndUpInsteadOfClick, "
+                "use key_down/key_up instead"
+             << VAR(mode_) << VAR(with_cursor_pos_) << VAR(key);
     return false;
 }
 

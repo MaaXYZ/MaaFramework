@@ -470,7 +470,6 @@ maajs::ValueType load_win32_controller(maajs::EnvType env)
     return ctor;
 }
 
-#ifdef __APPLE__
 PlayCoverControllerImpl* PlayCoverControllerImpl::ctor(const maajs::CallbackInfo& info)
 {
     auto [address, uuid] = maajs::UnWrapArgs<PlayCoverControllerCtorParam, void>(info);
@@ -492,7 +491,6 @@ maajs::ValueType load_playcover_controller(maajs::EnvType env)
     ExtContext::get(env)->playcoverControllerCtor = maajs::PersistentFunction(ctor);
     return ctor;
 }
-#endif
 
 DbgControllerImpl* DbgControllerImpl::ctor(const maajs::CallbackInfo& info)
 {
@@ -513,6 +511,28 @@ maajs::ValueType load_dbg_controller(maajs::EnvType env)
     maajs::FunctionType ctor;
     maajs::NativeClass<DbgControllerImpl>::init<ControllerImpl>(env, ctor, &ExtContext::get(env)->controllerCtor);
     ExtContext::get(env)->dbgControllerCtor = maajs::PersistentFunction(ctor);
+    return ctor;
+}
+
+GamepadControllerImpl* GamepadControllerImpl::ctor(const maajs::CallbackInfo& info)
+{
+    auto [hwnd, gamepad_type, screencap_method] = maajs::UnWrapArgs<GamepadControllerCtorParam, void>(info);
+    auto ctrl = MaaGamepadControllerCreate(reinterpret_cast<void*>(hwnd.value_or(0)), gamepad_type, screencap_method);
+    if (!ctrl) {
+        return nullptr;
+    }
+    return new GamepadControllerImpl(ctrl, true);
+}
+
+void GamepadControllerImpl::init_proto(maajs::ObjectType, maajs::FunctionType)
+{
+}
+
+maajs::ValueType load_gamepad_controller(maajs::EnvType env)
+{
+    maajs::FunctionType ctor;
+    maajs::NativeClass<GamepadControllerImpl>::init<ControllerImpl>(env, ctor, &ExtContext::get(env)->controllerCtor);
+    ExtContext::get(env)->gamepadControllerCtor = maajs::PersistentFunction(ctor);
     return ctor;
 }
 

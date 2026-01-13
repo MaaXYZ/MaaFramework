@@ -25,6 +25,7 @@ private:
 
     bool select_win32_hwnd(const MAA_PROJECT_INTERFACE_NS::InterfaceData::Controller::Win32Config& win32_config);
     void select_playcover(const MAA_PROJECT_INTERFACE_NS::InterfaceData::Controller::PlayCoverConfig& playcover_config);
+    void select_gamepad(const MAA_PROJECT_INTERFACE_NS::InterfaceData::Controller::GamepadConfig& gamepad_config);
 
     void select_resource();
     void add_task();
@@ -47,6 +48,7 @@ private:
     void mpause() const;
 
     static std::string format_win32_config(const MAA_PROJECT_INTERFACE_NS::Configuration::Win32Config& win32_config);
+    static std::string format_gamepad_config(const MAA_PROJECT_INTERFACE_NS::Configuration::GamepadConfig& gamepad_config);
 
     // 获取翻译后的显示名称：优先使用翻译后的 label，否则使用 name
     std::string get_display_name(const std::string& name, const std::string& label) const;
