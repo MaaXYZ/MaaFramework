@@ -1,20 +1,9 @@
 #include "GamepadControlUnitMgr.h"
 
+#include "ControlUnit/Win32ControlUnitAPI.h"
 #include "Input/ViGEmInput.h"
 #include "MaaUtils/LibraryHolder.h"
 #include "MaaUtils/Logger.h"
-
-// Forward declarations for Win32ControlUnit API
-extern "C"
-{
-    typedef MaaWin32ControlUnitHandle (*MaaWin32ControlUnitCreateFunc)(
-        void* hWnd,
-        MaaWin32ScreencapMethod screencap_method,
-        MaaWin32InputMethod mouse_method,
-        MaaWin32InputMethod keyboard_method);
-
-    typedef void (*MaaWin32ControlUnitDestroyFunc)(MaaWin32ControlUnitHandle handle);
-}
 
 MAA_CTRL_UNIT_NS_BEGIN
 
@@ -34,8 +23,8 @@ public:
             return false;
         }
 
-        create_func_ = get_function<MaaWin32ControlUnitCreateFunc>("MaaWin32ControlUnitCreate");
-        destroy_func_ = get_function<MaaWin32ControlUnitDestroyFunc>("MaaWin32ControlUnitDestroy");
+        create_func_ = get_function<decltype(::MaaWin32ControlUnitCreate)>("MaaWin32ControlUnitCreate");
+        destroy_func_ = get_function<decltype(::MaaWin32ControlUnitDestroy)>("MaaWin32ControlUnitDestroy");
 
         if (!create_func_ || !destroy_func_) {
             LogError << "Failed to get Win32ControlUnit API functions";
@@ -77,8 +66,8 @@ public:
     MaaWin32ControlUnitHandle handle() const { return handle_; }
 
 private:
-    boost::function<MaaWin32ControlUnitCreateFunc> create_func_;
-    boost::function<MaaWin32ControlUnitDestroyFunc> destroy_func_;
+    boost::function<decltype(::MaaWin32ControlUnitCreate)> create_func_;
+    boost::function<decltype(::MaaWin32ControlUnitDestroy)> destroy_func_;
     MaaWin32ControlUnitHandle handle_ = nullptr;
 };
 
