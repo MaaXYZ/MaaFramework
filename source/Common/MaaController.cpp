@@ -68,7 +68,7 @@ MaaCtrlId MaaControllerPostConnection(MaaController* ctrl)
 
 MaaCtrlId MaaControllerPostClick(MaaController* ctrl, int32_t x, int32_t y)
 {
-    return MaaControllerPostClickV2(x, y, 0, 1);
+    return MaaControllerPostClickV2(ctrl, x, y, 0, 1);
 }
 
 MaaCtrlId MaaControllerPostClickV2(MaaController* ctrl, int32_t x, int32_t y, int32_t contact, int32_t pressure)
@@ -85,7 +85,7 @@ MaaCtrlId MaaControllerPostClickV2(MaaController* ctrl, int32_t x, int32_t y, in
 
 MaaCtrlId MaaControllerPostSwipe(MaaController* ctrl, int32_t x1, int32_t y1, int32_t x2, int32_t y2, int32_t duration)
 {
-    return MaaControllerPostSwipeV2(x1, y1, x2, y2, duration, 0, 1);
+    return MaaControllerPostSwipeV2(ctrl, x1, y1, x2, y2, duration, 0, 1);
 }
 
 MaaCtrlId MaaControllerPostSwipeV2(
