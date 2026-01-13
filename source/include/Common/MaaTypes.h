@@ -74,8 +74,8 @@ public:
     virtual bool set_option(MaaCtrlOption key, MaaOptionValue value, MaaOptionValueSize val_size) = 0;
 
     virtual MaaCtrlId post_connection() = 0;
-    virtual MaaCtrlId post_click(int x, int y) = 0;
-    virtual MaaCtrlId post_swipe(int x1, int y1, int x2, int y2, int duration) = 0;
+    virtual MaaCtrlId post_click(int x, int y, int contact, int pressure) = 0;
+    virtual MaaCtrlId post_swipe(int x1, int y1, int x2, int y2, int duration, int contact, int pressure) = 0;
     virtual MaaCtrlId post_click_key(int keycode) = 0;
     virtual MaaCtrlId post_input_text(const std::string& text) = 0;
     virtual MaaCtrlId post_start_app(const std::string& intent) = 0;

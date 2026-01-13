@@ -58,16 +58,20 @@ MaaCtrlId ControllerAgent::post_connection()
     return focus_id(id);
 }
 
-MaaCtrlId ControllerAgent::post_click(int x, int y)
+MaaCtrlId ControllerAgent::post_click(int x, int y, int contact, int pressure)
 {
-    ClickParam p { .point = { x, y } };
+    ClickParam p { .point = { x, y }, .contact = contact, .pressure = pressure };
     auto id = post({ .type = Action::Type::click, .param = std::move(p) });
     return focus_id(id);
 }
 
-MaaCtrlId ControllerAgent::post_swipe(int x1, int y1, int x2, int y2, int duration)
+MaaCtrlId ControllerAgent::post_swipe(int x1, int y1, int x2, int y2, int duration, int contact, int pressure)
 {
-    SwipeParam p { .begin = { x1, y1 }, .end = { { x2, y2 } }, .duration = { static_cast<uint>(duration) } };
+    SwipeParam p { .begin = { x1, y1 },
+                   .end = { { x2, y2 } },
+                   .duration = { static_cast<uint>(duration) },
+                   .contact = contact,
+                   .pressure = pressure };
     auto id = post({ .type = Action::Type::swipe, .param = std::move(p) });
     return focus_id(id);
 }
@@ -407,7 +411,7 @@ bool ControllerAgent::handle_click(const ClickParam& param)
 
     bool ret = true;
     if (control_unit_->get_features() & MaaControllerFeature_UseMouseDownAndUpInsteadOfClick) {
-        ret &= control_unit_->touch_down(param.contact, point.x, point.y, 1);
+        ret &= control_unit_->touch_down(param.contact, point.x, point.y, param.pressure);
         std::this_thread::sleep_for(std::chrono::milliseconds(50));
         ret &= control_unit_->touch_up(param.contact);
     }
@@ -429,7 +433,7 @@ bool ControllerAgent::handle_long_press(const LongPressParam& param)
 
     bool ret = true;
     if (control_unit_->get_features() & MaaControllerFeature_UseMouseDownAndUpInsteadOfClick) {
-        ret &= control_unit_->touch_down(param.contact, point.x, point.y, 1);
+        ret &= control_unit_->touch_down(param.contact, point.x, point.y, param.pressure);
         std::this_thread::sleep_for(std::chrono::milliseconds(param.duration));
         ret &= control_unit_->touch_up(param.contact);
     }
@@ -457,7 +461,7 @@ bool ControllerAgent::handle_swipe(const SwipeParam& param)
     bool ret = !param.end.empty();
 
     if (!param.only_hover && use_touch_down_up) {
-        ret &= control_unit_->touch_down(param.contact, begin.x, begin.y, 1);
+        ret &= control_unit_->touch_down(param.contact, begin.x, begin.y, param.pressure);
     }
 
     for (size_t i = 0; i < param.end.size(); ++i) {
@@ -482,13 +486,13 @@ bool ControllerAgent::handle_swipe(const SwipeParam& param)
                 std::this_thread::sleep_until(now + delay);
 
                 now = std::chrono::steady_clock::now();
-                ret &= control_unit_->touch_move(param.contact, mx, my, 1);
+                ret &= control_unit_->touch_move(param.contact, mx, my, param.pressure);
             }
 
             std::this_thread::sleep_until(now + delay);
 
             now = std::chrono::steady_clock::now();
-            ret &= control_unit_->touch_move(param.contact, end.x, end.y, 1);
+            ret &= control_unit_->touch_move(param.contact, end.x, end.y, param.pressure);
 
             std::this_thread::sleep_until(now + delay);
         }
@@ -599,14 +603,14 @@ bool ControllerAgent::handle_multi_swipe(const MultiSwipeParam& param)
 
             if (seg_op.step_index == 0) {
                 if (!s.only_hover) {
-                    ret &= control_unit_->touch_down(contact, seg_op.begin.x, seg_op.begin.y, 1);
+                    ret &= control_unit_->touch_down(contact, seg_op.begin.x, seg_op.begin.y, s.pressure);
                 }
                 ++seg_op.step_index;
             }
             else if (seg_op.step_index < seg_op.total_step) {
                 int mx = static_cast<int>(seg_op.begin.x + seg_op.step_index * seg_op.x_step_len);
                 int my = static_cast<int>(seg_op.begin.y + seg_op.step_index * seg_op.y_step_len);
-                ret &= control_unit_->touch_move(contact, mx, my, 1);
+                ret &= control_unit_->touch_move(contact, mx, my, s.pressure);
                 ++seg_op.step_index;
             }
             else if (seg_op.step_index == seg_op.total_step) {

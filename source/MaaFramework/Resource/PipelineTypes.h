@@ -145,6 +145,7 @@ struct ClickParam
 {
     Target target;
     uint contact = 0;
+    int pressure = 1;
 };
 
 struct LongPressParam
@@ -152,6 +153,7 @@ struct LongPressParam
     Target target;
     uint duration = 1000;
     uint contact = 0;
+    int pressure = 1;
 };
 
 struct SwipeParam
@@ -166,6 +168,7 @@ struct SwipeParam
 
     uint starting = 0; // only for MultiSwipe
     uint contact = 0;
+    int pressure = 1;
 };
 
 struct MultiSwipeParam
