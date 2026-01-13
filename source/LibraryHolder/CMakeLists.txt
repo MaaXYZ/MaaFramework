@@ -19,6 +19,10 @@ if(WITH_WIN32_CONTROLLER)
     add_dependencies(LibraryHolder MaaWin32ControlUnit)
 endif()
 
+if(WITH_PLAYCOVER_CONTROLLER)
+    add_dependencies(LibraryHolder MaaPlayCoverControlUnit)
+endif()
+
 if(WITH_DBG_CONTROLLER)
     add_dependencies(LibraryHolder MaaDbgControlUnit)
 endif()
