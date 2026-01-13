@@ -37,8 +37,8 @@ public:  // from ControlUnitAPI
     // touch functions repurposed for analog inputs:
     // contact 0: left stick (x: -32768~32767, y: -32768~32767)
     // contact 1: right stick (x: -32768~32767, y: -32768~32767)
-    // contact 2: left trigger (x: 0~255, y ignored)
-    // contact 3: right trigger (x: 0~255, y ignored)
+    // contact 2: left trigger (pressure: 0~255, x/y ignored)
+    // contact 3: right trigger (pressure: 0~255, x/y ignored)
     virtual bool touch_down(int contact, int x, int y, int pressure) override;
     virtual bool touch_move(int contact, int x, int y, int pressure) override;
     virtual bool touch_up(int contact) override;

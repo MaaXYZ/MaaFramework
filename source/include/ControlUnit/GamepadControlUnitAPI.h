@@ -28,8 +28,8 @@ extern "C"
      *       - touch_down/touch_move/touch_up: For analog inputs (sticks and triggers)
      *         - contact 0: Left stick (x: -32768~32767, y: -32768~32767)
      *         - contact 1: Right stick (x: -32768~32767, y: -32768~32767)
-     *         - contact 2: Left trigger (x: 0~255, y ignored)
-     *         - contact 3: Right trigger (x: 0~255, y ignored)
+     *         - contact 2: Left trigger (pressure: 0~255, x/y ignored)
+     *         - contact 3: Right trigger (pressure: 0~255, x/y ignored)
      * @see MaaGamepadButton, MaaGamepadTouch, MaaGamepadType
      */
     MAA_CONTROL_UNIT_API MaaWin32ControlUnitHandle MaaGamepadControlUnitCreate(

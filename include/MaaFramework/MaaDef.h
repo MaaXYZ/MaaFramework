@@ -467,17 +467,17 @@ typedef uint64_t MaaGamepadButton;
  * @brief Virtual gamepad touch contact definitions for touch_down/touch_move/touch_up
  *
  * For gamepad controller, the touch functions are repurposed for analog inputs:
- * - x, y: Analog stick position or trigger value
- * - pressure: Not used (ignored)
+ * - x, y: Analog stick position
+ * - pressure: Trigger value (0~255)
  *
  * Contact mapping:
  *
- * | Contact | Input           | x range     | y range     | Description                    |
- * |---------|-----------------|-------------|-------------|--------------------------------|
- * | 0       | Left Stick      | -32768~32767| -32768~32767| Left analog stick X/Y position |
- * | 1       | Right Stick     | -32768~32767| -32768~32767| Right analog stick X/Y position|
- * | 2       | Left Trigger    | 0~255       | ignored     | Left trigger (LT/L2) value     |
- * | 3       | Right Trigger   | 0~255       | ignored     | Right trigger (RT/R2) value    |
+ * | Contact | Input           | x range     | y range     | pressure   | Description                    |
+ * |---------|-----------------|-------------|-------------|------------|--------------------------------|
+ * | 0       | Left Stick      | -32768~32767| -32768~32767| ignored    | Left analog stick X/Y position |
+ * | 1       | Right Stick     | -32768~32767| -32768~32767| ignored    | Right analog stick X/Y position|
+ * | 2       | Left Trigger    | ignored     | ignored     | 0~255      | Left trigger (LT/L2) value     |
+ * | 3       | Right Trigger   | ignored     | ignored     | 0~255      | Right trigger (RT/R2) value    |
  *
  * Usage:
  * - touch_down(contact, x, y, pressure): Start analog input

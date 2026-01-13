@@ -68,8 +68,8 @@ extern "C"
      *       - touch_down/touch_move/touch_up: For analog inputs (sticks and triggers)
      *         - contact 0 (MaaGamepadTouch_LeftStick): Left stick (x: -32768~32767, y: -32768~32767)
      *         - contact 1 (MaaGamepadTouch_RightStick): Right stick (x: -32768~32767, y: -32768~32767)
-     *         - contact 2 (MaaGamepadTouch_LeftTrigger): Left trigger (x: 0~255, y ignored)
-     *         - contact 3 (MaaGamepadTouch_RightTrigger): Right trigger (x: 0~255, y ignored)
+     *         - contact 2 (MaaGamepadTouch_LeftTrigger): Left trigger (pressure: 0~255, x/y ignored)
+     *         - contact 3 (MaaGamepadTouch_RightTrigger): Right trigger (pressure: 0~255, x/y ignored)
      * @note click and swipe are not directly supported for gamepad.
      * @note input_text, start_app, stop_app, scroll are not supported.
      * @see MaaGamepadButton, MaaGamepadTouch, MaaGamepadType

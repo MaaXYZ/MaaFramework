@@ -45,46 +45,6 @@ constexpr uint8_t DS4_SPECIAL_TOUCHPAD = 0x02;
 // DS4 DPAD values
 constexpr uint16_t DS4_DPAD_NONE = 0x8;
 
-// Function pointer types
-using FnVigemAlloc = void* (*)();
-using FnVigemFree = void (*)(void*);
-using FnVigemConnect = uint32_t (*)(void*);
-using FnVigemDisconnect = void (*)(void*);
-using FnVigemTargetAlloc = void* (*)();
-using FnVigemTargetFree = void (*)(void*);
-using FnVigemTargetAdd = uint32_t (*)(void*, void*);
-using FnVigemTargetRemove = uint32_t (*)(void*, void*);
-
-#pragma pack(push, 1)
-
-struct XusbReport
-{
-    uint16_t wButtons;
-    uint8_t bLeftTrigger;
-    uint8_t bRightTrigger;
-    int16_t sThumbLX;
-    int16_t sThumbLY;
-    int16_t sThumbRX;
-    int16_t sThumbRY;
-};
-
-struct Ds4Report
-{
-    uint8_t bThumbLX;
-    uint8_t bThumbLY;
-    uint8_t bThumbRX;
-    uint8_t bThumbRY;
-    uint16_t wButtons;
-    uint8_t bSpecial;
-    uint8_t bTriggerL;
-    uint8_t bTriggerR;
-};
-
-#pragma pack(pop)
-
-using FnVigemTargetX360Update = uint32_t (*)(void*, void*, XusbReport);
-using FnVigemTargetDs4Update = uint32_t (*)(void*, void*, Ds4Report);
-
 uint16_t convert_xbox_to_ds4_button(int button)
 {
     // Convert Xbox button codes to DS4 button codes
@@ -161,27 +121,22 @@ ViGEmInput::~ViGEmInput()
 
 bool ViGEmInput::load_vigem_library()
 {
-    if (vigem_dll_) {
-        return true;
-    }
-
-    vigem_dll_ = LoadLibraryW(L"ViGEmClient.dll");
-    if (!vigem_dll_) {
-        LogError << "Failed to load ViGEmClient.dll, error:" << GetLastError();
+    if (!load_library("ViGEmClient")) {
+        LogError << "Failed to load ViGEmClient library";
         return false;
     }
 
-    fn_vigem_alloc_ = reinterpret_cast<void*>(GetProcAddress(vigem_dll_, "vigem_alloc"));
-    fn_vigem_free_ = reinterpret_cast<void*>(GetProcAddress(vigem_dll_, "vigem_free"));
-    fn_vigem_connect_ = reinterpret_cast<void*>(GetProcAddress(vigem_dll_, "vigem_connect"));
-    fn_vigem_disconnect_ = reinterpret_cast<void*>(GetProcAddress(vigem_dll_, "vigem_disconnect"));
-    fn_vigem_target_x360_alloc_ = reinterpret_cast<void*>(GetProcAddress(vigem_dll_, "vigem_target_x360_alloc"));
-    fn_vigem_target_ds4_alloc_ = reinterpret_cast<void*>(GetProcAddress(vigem_dll_, "vigem_target_ds4_alloc"));
-    fn_vigem_target_free_ = reinterpret_cast<void*>(GetProcAddress(vigem_dll_, "vigem_target_free"));
-    fn_vigem_target_add_ = reinterpret_cast<void*>(GetProcAddress(vigem_dll_, "vigem_target_add"));
-    fn_vigem_target_remove_ = reinterpret_cast<void*>(GetProcAddress(vigem_dll_, "vigem_target_remove"));
-    fn_vigem_target_x360_update_ = reinterpret_cast<void*>(GetProcAddress(vigem_dll_, "vigem_target_x360_update"));
-    fn_vigem_target_ds4_update_ = reinterpret_cast<void*>(GetProcAddress(vigem_dll_, "vigem_target_ds4_update"));
+    fn_vigem_alloc_ = get_function<FnVigemAlloc>("vigem_alloc");
+    fn_vigem_free_ = get_function<FnVigemFree>("vigem_free");
+    fn_vigem_connect_ = get_function<FnVigemConnect>("vigem_connect");
+    fn_vigem_disconnect_ = get_function<FnVigemDisconnect>("vigem_disconnect");
+    fn_vigem_target_x360_alloc_ = get_function<FnVigemTargetAlloc>("vigem_target_x360_alloc");
+    fn_vigem_target_ds4_alloc_ = get_function<FnVigemTargetAlloc>("vigem_target_ds4_alloc");
+    fn_vigem_target_free_ = get_function<FnVigemTargetFree>("vigem_target_free");
+    fn_vigem_target_add_ = get_function<FnVigemTargetAdd>("vigem_target_add");
+    fn_vigem_target_remove_ = get_function<FnVigemTargetRemove>("vigem_target_remove");
+    fn_vigem_target_x360_update_ = get_function<FnVigemTargetX360Update>("vigem_target_x360_update");
+    fn_vigem_target_ds4_update_ = get_function<FnVigemTargetDs4Update>("vigem_target_ds4_update");
 
     if (!fn_vigem_alloc_ || !fn_vigem_free_ || !fn_vigem_connect_ || !fn_vigem_disconnect_ || !fn_vigem_target_free_
         || !fn_vigem_target_add_ || !fn_vigem_target_remove_) {
@@ -205,17 +160,12 @@ bool ViGEmInput::load_vigem_library()
         }
     }
 
-    LogInfo << "ViGEmClient.dll loaded successfully";
+    LogInfo << "ViGEmClient library loaded successfully";
     return true;
 }
 
 void ViGEmInput::unload_vigem_library()
 {
-    if (vigem_dll_) {
-        FreeLibrary(vigem_dll_);
-        vigem_dll_ = nullptr;
-    }
-
     fn_vigem_alloc_ = nullptr;
     fn_vigem_free_ = nullptr;
     fn_vigem_connect_ = nullptr;
@@ -227,6 +177,8 @@ void ViGEmInput::unload_vigem_library()
     fn_vigem_target_remove_ = nullptr;
     fn_vigem_target_x360_update_ = nullptr;
     fn_vigem_target_ds4_update_ = nullptr;
+
+    unload_library();
 }
 
 bool ViGEmInput::init_vigem()
@@ -235,17 +187,13 @@ bool ViGEmInput::init_vigem()
         return false;
     }
 
-    auto vigem_alloc = reinterpret_cast<FnVigemAlloc>(fn_vigem_alloc_);
-    auto vigem_connect = reinterpret_cast<FnVigemConnect>(fn_vigem_connect_);
-    auto vigem_target_add = reinterpret_cast<FnVigemTargetAdd>(fn_vigem_target_add_);
-
-    vigem_client_ = vigem_alloc();
+    vigem_client_ = fn_vigem_alloc_();
     if (!vigem_client_) {
         LogError << "Failed to allocate ViGEm client";
         return false;
     }
 
-    auto ret = vigem_connect(vigem_client_);
+    auto ret = fn_vigem_connect_(vigem_client_);
     if (ret != VIGEM_ERROR_NONE) {
         LogError << "Failed to connect to ViGEm bus, error:" << std::hex << ret;
         cleanup_vigem();
@@ -253,12 +201,10 @@ bool ViGEmInput::init_vigem()
     }
 
     if (type_ == MaaGamepadType_Xbox360) {
-        auto target_alloc = reinterpret_cast<FnVigemTargetAlloc>(fn_vigem_target_x360_alloc_);
-        vigem_target_ = target_alloc();
+        vigem_target_ = fn_vigem_target_x360_alloc_();
     }
     else {
-        auto target_alloc = reinterpret_cast<FnVigemTargetAlloc>(fn_vigem_target_ds4_alloc_);
-        vigem_target_ = target_alloc();
+        vigem_target_ = fn_vigem_target_ds4_alloc_();
     }
 
     if (!vigem_target_) {
@@ -267,7 +213,7 @@ bool ViGEmInput::init_vigem()
         return false;
     }
 
-    ret = vigem_target_add(vigem_client_, vigem_target_);
+    ret = fn_vigem_target_add_(vigem_client_, vigem_target_);
     if (ret != VIGEM_ERROR_NONE) {
         LogError << "Failed to add ViGEm target, error:" << std::hex << ret;
         cleanup_vigem();
@@ -281,28 +227,24 @@ bool ViGEmInput::init_vigem()
 void ViGEmInput::cleanup_vigem()
 {
     if (vigem_target_ && vigem_client_) {
-        auto vigem_target_remove = reinterpret_cast<FnVigemTargetRemove>(fn_vigem_target_remove_);
-        if (vigem_target_remove) {
-            vigem_target_remove(vigem_client_, vigem_target_);
+        if (fn_vigem_target_remove_) {
+            fn_vigem_target_remove_(vigem_client_, vigem_target_);
         }
     }
 
     if (vigem_target_) {
-        auto vigem_target_free = reinterpret_cast<FnVigemTargetFree>(fn_vigem_target_free_);
-        if (vigem_target_free) {
-            vigem_target_free(vigem_target_);
+        if (fn_vigem_target_free_) {
+            fn_vigem_target_free_(vigem_target_);
         }
         vigem_target_ = nullptr;
     }
 
     if (vigem_client_) {
-        auto vigem_disconnect = reinterpret_cast<FnVigemDisconnect>(fn_vigem_disconnect_);
-        auto vigem_free = reinterpret_cast<FnVigemFree>(fn_vigem_free_);
-        if (vigem_disconnect) {
-            vigem_disconnect(vigem_client_);
+        if (fn_vigem_disconnect_) {
+            fn_vigem_disconnect_(vigem_client_);
         }
-        if (vigem_free) {
-            vigem_free(vigem_client_);
+        if (fn_vigem_free_) {
+            fn_vigem_free_(vigem_client_);
         }
         vigem_client_ = nullptr;
     }
@@ -326,7 +268,6 @@ bool ViGEmInput::update_report()
 
     uint32_t ret = 0;
     if (type_ == MaaGamepadType_Xbox360) {
-        auto update = reinterpret_cast<FnVigemTargetX360Update>(fn_vigem_target_x360_update_);
         XusbReport report;
         report.wButtons = state_.xbox.wButtons;
         report.bLeftTrigger = state_.xbox.bLeftTrigger;
@@ -335,10 +276,9 @@ bool ViGEmInput::update_report()
         report.sThumbLY = state_.xbox.sThumbLY;
         report.sThumbRX = state_.xbox.sThumbRX;
         report.sThumbRY = state_.xbox.sThumbRY;
-        ret = update(vigem_client_, vigem_target_, report);
+        ret = fn_vigem_target_x360_update_(vigem_client_, vigem_target_, report);
     }
     else {
-        auto update = reinterpret_cast<FnVigemTargetDs4Update>(fn_vigem_target_ds4_update_);
         Ds4Report report;
         report.bThumbLX = state_.ds4.bThumbLX;
         report.bThumbLY = state_.ds4.bThumbLY;
@@ -348,7 +288,7 @@ bool ViGEmInput::update_report()
         report.bSpecial = state_.ds4.bSpecial;
         report.bTriggerL = state_.ds4.bTriggerL;
         report.bTriggerR = state_.ds4.bTriggerR;
-        ret = update(vigem_client_, vigem_target_, report);
+        ret = fn_vigem_target_ds4_update_(vigem_client_, vigem_target_, report);
     }
 
     if (ret != VIGEM_ERROR_NONE) {

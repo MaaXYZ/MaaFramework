@@ -1,11 +1,8 @@
 #include "GamepadControlUnitMgr.h"
 
 #include "Input/ViGEmInput.h"
+#include "MaaUtils/LibraryHolder.h"
 #include "MaaUtils/Logger.h"
-
-#ifdef _WIN32
-#include <Windows.h>
-#endif
 
 // Forward declarations for Win32ControlUnit API
 extern "C"
@@ -21,33 +18,24 @@ extern "C"
 
 MAA_CTRL_UNIT_NS_BEGIN
 
-// Win32ControlUnit loader - dynamically loads MaaWin32ControlUnit.dll
-class Win32ControlUnitLoader
+// Win32ControlUnit loader - dynamically loads MaaWin32ControlUnit library
+class Win32ControlUnitLoader : public LibraryHolder<Win32ControlUnitLoader>
 {
 public:
     Win32ControlUnitLoader() = default;
 
-    ~Win32ControlUnitLoader()
-    {
-        destroy();
-        unload();
-    }
+    ~Win32ControlUnitLoader() { destroy(); }
 
     bool load()
     {
 #ifdef _WIN32
-        if (module_) {
-            return true;
-        }
-
-        module_ = LoadLibraryW(L"MaaWin32ControlUnit.dll");
-        if (!module_) {
-            LogError << "Failed to load MaaWin32ControlUnit.dll, error:" << GetLastError();
+        if (!load_library("MaaWin32ControlUnit")) {
+            LogError << "Failed to load MaaWin32ControlUnit library";
             return false;
         }
 
-        create_func_ = reinterpret_cast<MaaWin32ControlUnitCreateFunc>(GetProcAddress(module_, "MaaWin32ControlUnitCreate"));
-        destroy_func_ = reinterpret_cast<MaaWin32ControlUnitDestroyFunc>(GetProcAddress(module_, "MaaWin32ControlUnitDestroy"));
+        create_func_ = get_function<MaaWin32ControlUnitCreateFunc>("MaaWin32ControlUnitCreate");
+        destroy_func_ = get_function<MaaWin32ControlUnitDestroyFunc>("MaaWin32ControlUnitDestroy");
 
         if (!create_func_ || !destroy_func_) {
             LogError << "Failed to get Win32ControlUnit API functions";
@@ -63,14 +51,9 @@ public:
 
     void unload()
     {
-#ifdef _WIN32
-        if (module_) {
-            FreeLibrary(module_);
-            module_ = nullptr;
-        }
         create_func_ = nullptr;
         destroy_func_ = nullptr;
-#endif
+        unload_library();
     }
 
     MaaWin32ControlUnitHandle create(void* hwnd, MaaWin32ScreencapMethod screencap_method)
@@ -94,11 +77,8 @@ public:
     MaaWin32ControlUnitHandle handle() const { return handle_; }
 
 private:
-#ifdef _WIN32
-    HMODULE module_ = nullptr;
-#endif
-    MaaWin32ControlUnitCreateFunc create_func_ = nullptr;
-    MaaWin32ControlUnitDestroyFunc destroy_func_ = nullptr;
+    boost::function<MaaWin32ControlUnitCreateFunc> create_func_;
+    boost::function<MaaWin32ControlUnitDestroyFunc> destroy_func_;
     MaaWin32ControlUnitHandle handle_ = nullptr;
 };
 
@@ -195,22 +175,28 @@ bool GamepadControlUnitMgr::request_uuid(std::string& uuid)
 
 MaaControllerFeature GamepadControlUnitMgr::get_features() const
 {
-    // Gamepad prefers key_down/key_up pattern for better control
-    return MaaControllerFeature_UseKeyboardDownAndUpInsteadOfClick | MaaControllerFeature_NoScalingTouchPoints;
+    return MaaControllerFeature_UseMouseDownAndUpInsteadOfClick | MaaControllerFeature_UseKeyboardDownAndUpInsteadOfClick
+           | MaaControllerFeature_NoScalingTouchPoints;
 }
 
 bool GamepadControlUnitMgr::start_app(const std::string& intent)
 {
-    std::ignore = intent;
-    LogWarn << "start_app not supported for gamepad controller";
-    return false;
+    if (!win32_unit_) {
+        LogError << "Win32 screencap not available (hwnd not provided or init failed)";
+        return false;
+    }
+
+    return win32_loader_->start_app(intent);
 }
 
 bool GamepadControlUnitMgr::stop_app(const std::string& intent)
 {
-    std::ignore = intent;
-    LogWarn << "stop_app not supported for gamepad controller";
-    return false;
+    if (!win32_unit_) {
+        LogError << "Win32 screencap not available (hwnd not provided or init failed)";
+        return false;
+    }
+
+    return win32_loader_->stop_app(intent);
 }
 
 bool GamepadControlUnitMgr::screencap(cv::Mat& image)
@@ -225,30 +211,18 @@ bool GamepadControlUnitMgr::screencap(cv::Mat& image)
 
 bool GamepadControlUnitMgr::click(int x, int y)
 {
-    // For gamepad, click doesn't make sense in the traditional way
-    // We could interpret this as a quick stick movement, but it's better to log a warning
-    std::ignore = x;
-    std::ignore = y;
-    LogWarn << "click not directly supported for gamepad, use touch functions for stick control";
+    LogError << "deprecated" << VAR(x) << VAR(y);
     return false;
 }
 
 bool GamepadControlUnitMgr::swipe(int x1, int y1, int x2, int y2, int duration)
 {
-    // Swipe could be interpreted as a stick movement from one position to another
-    std::ignore = x1;
-    std::ignore = y1;
-    std::ignore = x2;
-    std::ignore = y2;
-    std::ignore = duration;
-    LogWarn << "swipe not directly supported for gamepad, use touch functions for stick control";
+    LogError << "deprecated" << VAR(x1) << VAR(y1) << VAR(x2) << VAR(y2) << VAR(duration);
     return false;
 }
 
 bool GamepadControlUnitMgr::touch_down(int contact, int x, int y, int pressure)
 {
-    std::ignore = pressure;
-
     if (!gamepad_input_ || !gamepad_input_->connected()) {
         LogError << "Gamepad not connected";
         return false;
@@ -260,9 +234,9 @@ bool GamepadControlUnitMgr::touch_down(int contact, int x, int y, int pressure)
     case MaaGamepadTouch_RightStick:
         return gamepad_input_->set_right_stick(x, y);
     case MaaGamepadTouch_LeftTrigger:
-        return gamepad_input_->set_left_trigger(x);
+        return gamepad_input_->set_left_trigger(pressure);
     case MaaGamepadTouch_RightTrigger:
-        return gamepad_input_->set_right_trigger(x);
+        return gamepad_input_->set_right_trigger(pressure);
     default:
         LogError << "Invalid gamepad touch contact:" << contact;
         return false;
@@ -299,18 +273,13 @@ bool GamepadControlUnitMgr::touch_up(int contact)
 
 bool GamepadControlUnitMgr::click_key(int key)
 {
-    if (!gamepad_input_ || !gamepad_input_->connected()) {
-        LogError << "Gamepad not connected";
-        return false;
-    }
-
-    return gamepad_input_->click_button(key);
+    LogError << "deprecated" << VAR(key);
+    return false;
 }
 
 bool GamepadControlUnitMgr::input_text(const std::string& text)
 {
-    std::ignore = text;
-    LogWarn << "input_text not supported for gamepad controller";
+    LogError << "input_text not supported for gamepad controller" << VAR(text);
     return false;
 }
 
@@ -336,9 +305,7 @@ bool GamepadControlUnitMgr::key_up(int key)
 
 bool GamepadControlUnitMgr::scroll(int dx, int dy)
 {
-    std::ignore = dx;
-    std::ignore = dy;
-    LogWarn << "scroll not supported for gamepad controller";
+    LogError << "scroll not supported for gamepad controller" << VAR(dx) << VAR(dy);
     return false;
 }
 
