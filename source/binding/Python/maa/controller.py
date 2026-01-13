@@ -1,7 +1,8 @@
 import json
+import os
+import numpy
 from abc import abstractmethod
 from ctypes import c_int32
-import os
 from pathlib import Path
 from typing import Any, Dict, Optional, Tuple, Union
 
