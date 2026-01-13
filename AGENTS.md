@@ -191,13 +191,14 @@ MaaFramework/
 
 ### 添加新的 Pipeline 字段
 
-1. 在 `source/MaaFramework/` 添加字段本身的功能性代码
-2. 在 `source/MaaFramework/Resource/PipelineParser.cpp` 添加解析逻辑
-3. 在 `source/MaaFramework/Resource/PipelineDumper.cpp` 添加序列化逻辑
-4. 更新 `source/binding` 中的解析逻辑（注意：binding 中的数据来源于 `PipelineDumper` 序列化的 JSON，而非原始 Pipeline JSON。）
-5. 在 `test/python/pipeline_test.py` 添加相应的单元测试，验证字段的解析、override 和 get 功能
-6. 更新 `tools/pipeline.schema.json`
-7. 更新中英文文档 `docs/*/3.1-*`
+1. 在 `source/MaaFramework/Resource/PipelineTypes.h` 添加字段到对应的结构体
+2. 在 `source/MaaFramework/Resource/PipelineTypesV2.h` 添加字段到对应的 `J*` 结构体（用于序列化）
+3. 在 `source/MaaFramework/Resource/PipelineParser.cpp` 添加解析逻辑
+4. 在 `source/MaaFramework/Resource/PipelineDumper.cpp` 添加序列化逻辑
+5. 更新 `source/binding/Python/maa/pipeline.py` 中对应的数据类（如 `JClick`、`JSwipe` 等），添加新字段。注意：binding 中的数据来源于 `PipelineDumper` 序列化的 JSON，字段需与 C++ 的 `J*` 结构体保持一致。
+6. 在 `test/python/pipeline_test.py` 添加相应的单元测试，验证字段的解析、override 和 get 功能
+7. 更新 `tools/pipeline.schema.json`
+8. 更新中英文文档 `docs/*/3.1-*`
 
 ### 修改回调消息（MaaMsg）
 

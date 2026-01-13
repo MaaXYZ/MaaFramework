@@ -24,8 +24,9 @@ struct ClickParam
 {
     cv::Point point {};
     int contact = 0;
+    int pressure = 1;
 
-    MEO_TOJSON(point, contact);
+    MEO_TOJSON(point, contact, pressure);
 };
 
 struct LongPressParam
@@ -33,8 +34,9 @@ struct LongPressParam
     cv::Point point {};
     uint duration = 0;
     int contact = 0;
+    int pressure = 1;
 
-    MEO_TOJSON(point, duration, contact);
+    MEO_TOJSON(point, duration, contact, pressure);
 };
 
 struct SwipeParam
@@ -46,8 +48,9 @@ struct SwipeParam
     bool only_hover = false;
     uint starting = 0;
     int contact = 0;
+    int pressure = 1;
 
-    MEO_TOJSON(starting, begin, end, end_hold, duration, only_hover, contact);
+    MEO_TOJSON(starting, begin, end, end_hold, duration, only_hover, contact, pressure);
 };
 
 struct MultiSwipeParam
@@ -163,8 +166,8 @@ public: // MaaController
     virtual bool set_option(MaaCtrlOption key, MaaOptionValue value, MaaOptionValueSize val_size) override;
 
     virtual MaaCtrlId post_connection() override;
-    virtual MaaCtrlId post_click(int x, int y) override;
-    virtual MaaCtrlId post_swipe(int x1, int y1, int x2, int y2, int duration) override;
+    virtual MaaCtrlId post_click(int x, int y, int contact, int pressure) override;
+    virtual MaaCtrlId post_swipe(int x1, int y1, int x2, int y2, int duration, int contact, int pressure) override;
     virtual MaaCtrlId post_click_key(int keycode) override;
     virtual MaaCtrlId post_input_text(const std::string& text) override;
     virtual MaaCtrlId post_start_app(const std::string& intent) override;

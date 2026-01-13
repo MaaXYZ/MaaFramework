@@ -2114,6 +2114,13 @@
                     "$ref": "#/$defs/jsonUInt32",
                     "markdownDescription": "*uint*\n\n触点编号，用于区分不同的触控点。可选，默认 0 。\n\n- Adb 控制器：表示手指编号（0 为第一根手指，1 为第二根手指，以此类推）\n- Win32 控制器：表示鼠标按键编号（0 为左键，1 为右键，2 为中键，3 为 XBUTTON1，4 为 XBUTTON2）",
                     "default": 0
+                },
+                "pressure": {
+                    "title": "Pressure Property",
+                    "description": "触点力度。可选，默认 1 。",
+                    "$ref": "#/$defs/jsonInt32",
+                    "markdownDescription": "*int*\n\n触点力度。可选，默认 1 。",
+                    "default": 1
                 }
             }
         },
@@ -2175,6 +2182,13 @@
                     "$ref": "#/$defs/jsonUInt32",
                     "markdownDescription": "*uint*\n\n触点编号，用于区分不同的触控点。可选，默认 0 。\n\n- Adb 控制器：表示手指编号（0 为第一根手指，1 为第二根手指，以此类推）\n- Win32 控制器：表示鼠标按键编号（0 为左键，1 为右键，2 为中键，3 为 XBUTTON1，4 为 XBUTTON2）",
                     "default": 0
+                },
+                "pressure": {
+                    "title": "Pressure Property",
+                    "description": "触点力度。可选，默认 1 。",
+                    "$ref": "#/$defs/jsonInt32",
+                    "markdownDescription": "*int*\n\n触点力度。可选，默认 1 。",
+                    "default": 1
                 }
             }
         },
@@ -2261,6 +2275,13 @@
                     "$ref": "#/$defs/jsonUInt32",
                     "markdownDescription": "*uint*\n\n触点编号，用于区分不同的触控点。可选，默认 0 。\n\n- Adb 控制器：表示手指编号（0 为第一根手指，1 为第二根手指，以此类推）\n- Win32 控制器：表示鼠标按键编号（0 为左键，1 为右键，2 为中键，3 为 XBUTTON1，4 为 XBUTTON2）",
                     "default": 0
+                },
+                "pressure": {
+                    "title": "Pressure Property",
+                    "description": "触点力度。可选，默认 1 。",
+                    "$ref": "#/$defs/jsonInt32",
+                    "markdownDescription": "*int*\n\n触点力度。可选，默认 1 。",
+                    "default": 1
                 }
             }
         },
