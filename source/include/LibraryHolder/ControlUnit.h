@@ -91,10 +91,8 @@ private:
 class GamepadControlUnitLibraryHolder : public LibraryHolder<GamepadControlUnitLibraryHolder>
 {
 public:
-    static std::shared_ptr<MAA_CTRL_UNIT_NS::Win32ControlUnitAPI> create_control_unit(
-        void* hWnd,
-        MaaGamepadType gamepad_type,
-        MaaWin32ScreencapMethod screencap_method);
+    static std::shared_ptr<MAA_CTRL_UNIT_NS::Win32ControlUnitAPI>
+        create_control_unit(void* hWnd, MaaGamepadType gamepad_type, MaaWin32ScreencapMethod screencap_method);
 
 private:
     inline static const std::filesystem::path libname_ = MAA_NS::path("MaaGamepadControlUnit");

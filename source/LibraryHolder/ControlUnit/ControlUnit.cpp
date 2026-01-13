@@ -198,10 +198,8 @@ std::shared_ptr<MAA_CTRL_UNIT_NS::ControlUnitAPI>
     return std::shared_ptr<MAA_CTRL_UNIT_NS::ControlUnitAPI>(control_unit_handle, destroy_control_unit_func);
 }
 
-std::shared_ptr<MAA_CTRL_UNIT_NS::Win32ControlUnitAPI> GamepadControlUnitLibraryHolder::create_control_unit(
-    void* hWnd,
-    MaaGamepadType gamepad_type,
-    MaaWin32ScreencapMethod screencap_method)
+std::shared_ptr<MAA_CTRL_UNIT_NS::Win32ControlUnitAPI>
+    GamepadControlUnitLibraryHolder::create_control_unit(void* hWnd, MaaGamepadType gamepad_type, MaaWin32ScreencapMethod screencap_method)
 {
     if (!load_library(library_dir() / libname_)) {
         LogError << "Failed to load library" << VAR(library_dir()) << VAR(libname_);

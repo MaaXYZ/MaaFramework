@@ -74,10 +74,8 @@ int main()
 #ifdef WITH_GAMEPAD_CONTROLLER
 
     std::cout << "********** GamepadControlUnitLibraryHolder::create_control_unit **********" << std::endl;
-    auto gamepad_handle = MAA_NS::GamepadControlUnitLibraryHolder::create_control_unit(
-        nullptr,
-        MaaGamepadType_Xbox360,
-        MaaWin32ScreencapMethod_None);
+    auto gamepad_handle =
+        MAA_NS::GamepadControlUnitLibraryHolder::create_control_unit(nullptr, MaaGamepadType_Xbox360, MaaWin32ScreencapMethod_None);
     if (!gamepad_handle) {
         std::cerr << "Failed to create gamepad control unit" << std::endl;
         return -1;

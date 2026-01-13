@@ -87,8 +87,9 @@ bool MtouchHelper::request_display_info()
 // 上层 ControllerAgent 会使用 touch_down/touch_up 替代 click/swipe
 bool MtouchHelper::click(int x, int y)
 {
-    LogError << type_name() << "deprecated: get_features() returns MaaControllerFeature_UseMouseDownAndUpInsteadOfClick, "
-                               "use touch_down/touch_up instead"
+    LogError << type_name()
+             << "deprecated: get_features() returns MaaControllerFeature_UseMouseDownAndUpInsteadOfClick, "
+                "use touch_down/touch_up instead"
              << VAR(x) << VAR(y);
 
     return false;
@@ -96,8 +97,9 @@ bool MtouchHelper::click(int x, int y)
 
 bool MtouchHelper::swipe(int x1, int y1, int x2, int y2, int duration)
 {
-    LogError << type_name() << "deprecated: get_features() returns MaaControllerFeature_UseMouseDownAndUpInsteadOfClick, "
-                               "use touch_down/touch_move/touch_up instead"
+    LogError << type_name()
+             << "deprecated: get_features() returns MaaControllerFeature_UseMouseDownAndUpInsteadOfClick, "
+                "use touch_down/touch_move/touch_up instead"
              << VAR(x1) << VAR(y1) << VAR(x2) << VAR(y2) << VAR(duration);
 
     return false;

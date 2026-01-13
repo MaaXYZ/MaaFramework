@@ -365,22 +365,22 @@ void Interactor::select_controller()
     int index = 0;
     if (all_controllers.size() != 1) {
         std::cout << "### Select controller ###\n\n";
-    for (size_t i = 0; i < all_controllers.size(); ++i) {
-        const auto& ctrl = all_controllers[i];
-        std::string display_name = get_display_name(ctrl.name, ctrl.label);
-        std::cout << MAA_NS::utf8_to_crt(std::format("\t{}. {}", i + 1, display_name));
-        if (ctrl.type == InterfaceData::Controller::Type::PlayCover && !kPlayCoverSupported) {
-            std::cout << " (macOS only)";
+        for (size_t i = 0; i < all_controllers.size(); ++i) {
+            const auto& ctrl = all_controllers[i];
+            std::string display_name = get_display_name(ctrl.name, ctrl.label);
+            std::cout << MAA_NS::utf8_to_crt(std::format("\t{}. {}", i + 1, display_name));
+            if (ctrl.type == InterfaceData::Controller::Type::PlayCover && !kPlayCoverSupported) {
+                std::cout << " (macOS only)";
+            }
+            if (ctrl.type == InterfaceData::Controller::Type::Gamepad && !kGamepadSupported) {
+                std::cout << " (Windows only)";
+            }
+            std::cout << "\n";
+            if (!ctrl.description.empty()) {
+                std::string desc_text = read_text_content(ctrl.description);
+                std::cout << "\t   " << MAA_NS::utf8_to_crt(desc_text) << "\n";
+            }
         }
-        if (ctrl.type == InterfaceData::Controller::Type::Gamepad && !kGamepadSupported) {
-            std::cout << " (Windows only)";
-        }
-        std::cout << "\n";
-        if (!ctrl.description.empty()) {
-            std::string desc_text = read_text_content(ctrl.description);
-            std::cout << "\t   " << MAA_NS::utf8_to_crt(desc_text) << "\n";
-        }
-    }
         std::cout << "\n";
         index = input(all_controllers.size()) - 1;
     }
@@ -683,12 +683,13 @@ void Interactor::select_gamepad(const MAA_PROJECT_INTERFACE_NS::InterfaceData::C
                 std::cout << "### Select HWND for screencap ###\n\n";
 
                 for (size_t i = 0; i < matched_size; ++i) {
-                    std::cout << MAA_NS::utf8_to_crt(std::format(
-                        "\t{}. {}\n\t\t{}\n\t\t{}\n",
-                        i + 1,
-                        matched_config.at(i).hwnd,
-                        MAA_NS::from_u16(matched_config.at(i).class_name),
-                        MAA_NS::from_u16(matched_config.at(i).window_name)));
+                    std::cout << MAA_NS::utf8_to_crt(
+                        std::format(
+                            "\t{}. {}\n\t\t{}\n\t\t{}\n",
+                            i + 1,
+                            matched_config.at(i).hwnd,
+                            MAA_NS::from_u16(matched_config.at(i).class_name),
+                            MAA_NS::from_u16(matched_config.at(i).window_name)));
                 }
                 std::cout << "\n";
 
