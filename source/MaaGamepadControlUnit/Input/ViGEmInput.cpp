@@ -195,15 +195,6 @@ bool ViGEmInput::release_button(int button)
     return update_report();
 }
 
-bool ViGEmInput::click_button(int button)
-{
-    if (!press_button(button)) {
-        return false;
-    }
-    Sleep(50);
-    return release_button(button);
-}
-
 bool ViGEmInput::set_left_stick(int x, int y)
 {
     if (!connected_) {

@@ -31,7 +31,6 @@ public:
 
     bool press_button(int button);
     bool release_button(int button);
-    bool click_button(int button);
 
     bool set_left_stick(int x, int y);
     bool set_right_stick(int x, int y);

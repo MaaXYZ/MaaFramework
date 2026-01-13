@@ -350,8 +350,8 @@ class MaaGamepadTypeEnum(IntEnum):
     | DualShock4  | Sony DualShock 4 Controller (wired)   |
     """
 
-    Xbox360 = 1
-    DualShock4 = 2
+    Xbox360 = 0
+    DualShock4 = 1
 
 
 class MaaGamepadButtonEnum(IntEnum):
