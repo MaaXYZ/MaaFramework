@@ -22,23 +22,16 @@ class Resource:
 
     def __init__(
         self,
-        notification_handler: None = None,
         handle: Optional[MaaResourceHandle] = None,
     ):
         """创建资源 / Create resource
 
         Args:
-            notification_handler: 已废弃，请使用 add_sink 代替 / Deprecated, use add_sink instead
             handle: 可选的外部句柄 / Optional external handle
 
         Raises:
-            NotImplementedError: 如果提供了 notification_handler
             RuntimeError: 如果创建失败
         """
-        if notification_handler:
-            raise NotImplementedError(
-                "NotificationHandler is deprecated, use add_sink instead."
-            )
 
         self._set_api_properties()
 

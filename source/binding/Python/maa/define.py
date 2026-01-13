@@ -332,6 +332,89 @@ class MaaWin32InputMethodEnum(IntEnum):
 # No bitwise OR, just set it
 MaaDbgControllerType = ctypes.c_uint64
 
+# No bitwise OR, just set it
+MaaGamepadType = ctypes.c_uint64
+
+
+class MaaGamepadTypeEnum(IntEnum):
+    """
+    Virtual gamepad type for GamepadController (Windows only).
+
+    No bitwise OR, select ONE type only.
+
+    Requires ViGEm Bus Driver to be installed.
+
+    | Type        | Description                           |
+    |-------------|---------------------------------------|
+    | Xbox360     | Microsoft Xbox 360 Controller (wired) |
+    | DualShock4  | Sony DualShock 4 Controller (wired)   |
+    """
+
+    Xbox360 = 0
+    DualShock4 = 1
+
+
+class MaaGamepadButtonEnum(IntEnum):
+    """
+    Gamepad button flags (XUSB protocol values).
+
+    Use bitwise OR to combine multiple buttons.
+    DS4 face buttons are aliases to Xbox face buttons.
+    """
+
+    # D-pad
+    DPAD_UP = 0x0001
+    DPAD_DOWN = 0x0002
+    DPAD_LEFT = 0x0004
+    DPAD_RIGHT = 0x0008
+
+    # Control buttons
+    START = 0x0010
+    BACK = 0x0020
+    LEFT_THUMB = 0x0040  # L3
+    RIGHT_THUMB = 0x0080  # R3
+
+    # Shoulder buttons
+    LB = 0x0100  # Left Bumper / L1
+    RB = 0x0200  # Right Bumper / R1
+
+    # Guide button
+    GUIDE = 0x0400
+
+    # Face buttons (Xbox layout)
+    A = 0x1000
+    B = 0x2000
+    X = 0x4000
+    Y = 0x8000
+
+    # DS4 face buttons (aliases to Xbox buttons)
+    CROSS = A
+    CIRCLE = B
+    SQUARE = X
+    TRIANGLE = Y
+    L1 = LB
+    R1 = RB
+    L3 = LEFT_THUMB
+    R3 = RIGHT_THUMB
+    OPTIONS = START
+    SHARE = BACK
+
+    # DS4 special buttons (unique values)
+    PS = 0x10000
+    TOUCHPAD = 0x20000
+
+
+class MaaGamepadContactEnum(IntEnum):
+    """
+    Gamepad contact (analog stick or trigger) mapping for touch_down/touch_move/touch_up.
+    """
+
+    LEFT_STICK = 0  # x: -32768~32767, y: -32768~32767
+    RIGHT_STICK = 1  # x: -32768~32767, y: -32768~32767
+    LEFT_TRIGGER = 2  # pressure: 0~255
+    RIGHT_TRIGGER = 3  # pressure: 0~255
+
+
 MaaControllerFeature = ctypes.c_uint64
 
 
