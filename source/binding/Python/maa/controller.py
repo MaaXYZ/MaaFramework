@@ -8,31 +8,7 @@ from typing import Any, Dict, Optional, Tuple, Union
 
 from .buffer import ImageBuffer, StringBuffer
 from .event_sink import EventSink, NotificationType
-from .define import (
-    MaaControllerHandle,
-    MaaCtrlId,
-    MaaStatus,
-    MaaOption,
-    MaaCtrlOption,
-    MaaOptionValue,
-    MaaOptionValueSize,
-    MaaAdbScreencapMethod,
-    MaaAdbInputMethod,
-    MaaWin32ScreencapMethod,
-    MaaWin32InputMethod,
-    MaaDbgControllerType,
-    MaaGamepadType,
-    MaaBool,
-    MaaImageBufferHandle,
-    MaaStringBufferHandle,
-    MaaEventCallback,
-    MaaSinkId,
-    MaaInvalidId,
-    MaaCustomControllerCallbacks,
-    MaaCtrlOptionEnum,
-    MaaControllerFeatureEnum,
-    MaaWin32ScreencapMethodEnum,
-)
+from .define import *
 from .job import Job, JobWithResult
 from .library import Library
 
