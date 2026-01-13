@@ -271,7 +271,8 @@
                     "enum": [
                         "Adb",
                         "Win32",
-                        "PlayCover"
+                        "PlayCover",
+                        "Gamepad"
                     ]
                 },
                 "display_short_side": {
@@ -367,6 +368,48 @@
                             "description": "可选。目标应用的 Bundle Identifier，不提供则使用默认 maa.playcover，仅作为控制器标识符，与被操控应用无关",
                             "examples": [
                                 "com.hypergryph.arknights"
+                            ]
+                        }
+                    },
+                    "additionalProperties": false
+                },
+                "gamepad": {
+                    "type": "object",
+                    "title": "Gamepad 控制器配置",
+                    "description": "虚拟游戏手柄控制器的具体配置（仅 Windows）。需要安装 ViGEm Bus Driver",
+                    "properties": {
+                        "class_regex": {
+                            "type": "string",
+                            "title": "窗口类名正则",
+                            "description": "可选。搜索窗口类名使用的正则表达式，用于截图功能"
+                        },
+                        "window_regex": {
+                            "type": "string",
+                            "title": "窗口标题正则",
+                            "description": "可选。搜索窗口标题使用的正则表达式，用于截图功能"
+                        },
+                        "gamepad_type": {
+                            "type": "string",
+                            "title": "手柄类型",
+                            "description": "可选。虚拟手柄类型，不提供则默认使用 Xbox360",
+                            "enum": [
+                                "Xbox360",
+                                "DualShock4",
+                                "DS4"
+                            ],
+                            "default": "Xbox360"
+                        },
+                        "screencap": {
+                            "type": "string",
+                            "title": "截图方式",
+                            "description": "可选。截图方式，不提供则使用默认。仅当配置了窗口正则时有效",
+                            "enum": [
+                                "GDI",
+                                "FramePool",
+                                "DXGI_DesktopDup",
+                                "DXGI_DesktopDup_Window",
+                                "PrintWindow",
+                                "ScreenDC"
                             ]
                         }
                     },

@@ -963,6 +963,10 @@ bool ControllerAgent::run_action(typename AsyncRunner<Action>::Id id, Action act
 
 cv::Point ControllerAgent::preproc_touch_point(const cv::Point& p)
 {
+    if (control_unit_ && control_unit_->get_features() & MaaControllerFeature_NoScalingTouchPoints) {
+        return p;
+    }
+
     if (image_target_width_ == 0 || image_target_height_ == 0) {
         LogWarn << "Invalid image target size" << VAR(image_target_width_) << VAR(image_target_height_);
 
