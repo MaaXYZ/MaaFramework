@@ -60,12 +60,14 @@ void Ds4GamepadState::press_button(int button)
 {
     report_.wButtons |= convert_button(button);
     report_.bSpecial |= convert_special(button);
+    update_dpad(button, true);
 }
 
 void Ds4GamepadState::release_button(int button)
 {
     report_.wButtons &= ~convert_button(button);
     report_.bSpecial &= ~convert_special(button);
+    update_dpad(button, false);
 }
 
 void Ds4GamepadState::set_left_stick(int x, int y)
@@ -93,6 +95,7 @@ void Ds4GamepadState::set_right_trigger(uint8_t value)
 void Ds4GamepadState::reset()
 {
     report_ = Ds4Report {};
+    dpad_state_ = 0;
 }
 
 uint32_t Ds4GamepadState::update(
@@ -157,6 +160,82 @@ uint8_t Ds4GamepadState::convert_special(int button)
     }
 
     return result;
+}
+
+void Ds4GamepadState::update_dpad(int button, bool pressed)
+{
+    // Xbox D-pad uses bit flags, DS4 D-pad uses a 4-bit value (0-8)
+    // We track D-pad state separately and compute the DS4 value
+    uint8_t dpad_mask = 0;
+    if (button & XBOX_DPAD_UP) {
+        dpad_mask |= 0x01;
+    }
+    if (button & XBOX_DPAD_RIGHT) {
+        dpad_mask |= 0x02;
+    }
+    if (button & XBOX_DPAD_DOWN) {
+        dpad_mask |= 0x04;
+    }
+    if (button & XBOX_DPAD_LEFT) {
+        dpad_mask |= 0x08;
+    }
+
+    if (dpad_mask == 0) {
+        return;
+    }
+
+    if (pressed) {
+        dpad_state_ |= dpad_mask;
+    }
+    else {
+        dpad_state_ &= ~dpad_mask;
+    }
+
+    // Clear D-pad bits (lower 4 bits) and set new value
+    report_.wButtons = (report_.wButtons & 0xFFF0) | compute_dpad_value();
+}
+
+uint8_t Ds4GamepadState::compute_dpad_value() const
+{
+    // DS4 D-pad encoding: N=0, NE=1, E=2, SE=3, S=4, SW=5, W=6, NW=7, None=8
+    bool up = dpad_state_ & 0x01;
+    bool right = dpad_state_ & 0x02;
+    bool down = dpad_state_ & 0x04;
+    bool left = dpad_state_ & 0x08;
+
+    // Handle conflicting directions (both pressed = neither active)
+    if (up && down) {
+        up = down = false;
+    }
+    if (left && right) {
+        left = right = false;
+    }
+
+    if (up && right) {
+        return 1;
+    }
+    if (right && down) {
+        return 3;
+    }
+    if (down && left) {
+        return 5;
+    }
+    if (left && up) {
+        return 7;
+    }
+    if (up) {
+        return 0;
+    }
+    if (right) {
+        return 2;
+    }
+    if (down) {
+        return 4;
+    }
+    if (left) {
+        return 6;
+    }
+    return 8;
 }
 
 // Factory

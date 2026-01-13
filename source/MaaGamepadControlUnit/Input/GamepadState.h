@@ -72,9 +72,12 @@ public:
 private:
     static uint16_t convert_button(int button);
     static uint8_t convert_special(int button);
+    void update_dpad(int button, bool pressed);
+    uint8_t compute_dpad_value() const;
 
 private:
     vigem::Ds4Report report_;
+    uint8_t dpad_state_ = 0;
 };
 
 std::unique_ptr<GamepadState> create_gamepad_state(MaaGamepadType type);
