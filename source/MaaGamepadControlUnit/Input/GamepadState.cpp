@@ -72,14 +72,16 @@ void Ds4GamepadState::release_button(int button)
 
 void Ds4GamepadState::set_left_stick(int x, int y)
 {
+    // DS4 X: 0=left, 255=right; Xbox X: -32768=left, 32767=right
     report_.bThumbLX = static_cast<uint8_t>(std::clamp((x + 32768) * 255 / 65535, 0, 255));
-    report_.bThumbLY = static_cast<uint8_t>(std::clamp((y + 32768) * 255 / 65535, 0, 255));
+    // DS4 Y: 0=up, 255=down; Xbox Y: 32767=up, -32768=down (inverted)
+    report_.bThumbLY = static_cast<uint8_t>(std::clamp((-y + 32767) * 255 / 65535, 0, 255));
 }
 
 void Ds4GamepadState::set_right_stick(int x, int y)
 {
     report_.bThumbRX = static_cast<uint8_t>(std::clamp((x + 32768) * 255 / 65535, 0, 255));
-    report_.bThumbRY = static_cast<uint8_t>(std::clamp((y + 32768) * 255 / 65535, 0, 255));
+    report_.bThumbRY = static_cast<uint8_t>(std::clamp((-y + 32767) * 255 / 65535, 0, 255));
 }
 
 void Ds4GamepadState::set_left_trigger(uint8_t value)
