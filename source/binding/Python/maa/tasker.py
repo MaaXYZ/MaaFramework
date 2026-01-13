@@ -24,23 +24,16 @@ class Tasker:
 
     def __init__(
         self,
-        notification_handler: None = None,
         handle: Optional[MaaTaskerHandle] = None,
     ):
         """创建实例 / Create instance
 
         Args:
-            notification_handler: 已废弃，请使用 add_sink, add_context_sink 代替 / Deprecated, use add_sink, add_context_sink instead
             handle: 可选的外部句柄 / Optional external handle
 
         Raises:
-            NotImplementedError: 如果提供了 notification_handler
             RuntimeError: 如果创建失败
         """
-        if notification_handler:
-            raise NotImplementedError(
-                "NotificationHandler is deprecated, use add_sink, add_context_sink instead."
-            )
 
         self._set_api_properties()
 

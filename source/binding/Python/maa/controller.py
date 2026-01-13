@@ -697,7 +697,6 @@ class AdbController(Controller):
         input_methods: int = MaaAdbInputMethodEnum.Default,
         config: Dict[str, Any] = {},
         agent_path: Union[str, Path] = AGENT_BINARY_PATH,
-        notification_handler: None = None,
     ):
         """创建 Adb 控制器 / Create Adb controller
 
@@ -708,17 +707,10 @@ class AdbController(Controller):
             input_methods: 所有可使用的输入方式 / all available input methods
             config: 额外配置 / extra config
             agent_path: MaaAgentBinary 路径 / MaaAgentBinary path
-            notification_handler: 已废弃，请使用 add_sink 代替 / Deprecated, use add_sink instead
 
         Raises:
-            NotImplementedError: 如果提供了 notification_handler
             RuntimeError: 如果创建失败
         """
-        if notification_handler:
-            raise NotImplementedError(
-                "NotificationHandler is deprecated, use add_sink instead."
-            )
-
         super().__init__()
         self._set_adb_api_properties()
 
@@ -753,10 +745,9 @@ class Win32Controller(Controller):
     def __init__(
         self,
         hWnd: Union[ctypes.c_void_p, int, None],
-        screencap_method: int = MaaWin32ScreencapMethodEnum.DXGI_DesktopDup,
+        screencap_method: int = MaaWin32ScreencapMethodEnum.PrintWindow,
         mouse_method: int = MaaWin32InputMethodEnum.Seize,
         keyboard_method: int = MaaWin32InputMethodEnum.Seize,
-        notification_handler: None = None,
     ):
         """创建 Win32 控制器 / Create Win32 controller
 
@@ -765,17 +756,10 @@ class Win32Controller(Controller):
             screencap_method: 使用的截图方式 / screenshot method used
             mouse_method: 使用的鼠标输入方式 / mouse input method used
             keyboard_method: 使用的键盘输入方式 / keyboard input method used
-            notification_handler: 已废弃，请使用 add_sink 代替 / Deprecated, use add_sink instead
 
         Raises:
-            NotImplementedError: 如果提供了 notification_handler
             RuntimeError: 如果创建失败
         """
-        if notification_handler:
-            raise NotImplementedError(
-                "NotificationHandler is deprecated, use add_sink instead."
-            )
-
         super().__init__()
         self._set_win32_api_properties()
 
@@ -810,7 +794,6 @@ class PlayCoverController(Controller):
         self,
         address: str,
         uuid: str,
-        notification_handler: None = None,
     ):
         """创建 PlayCover 控制器 / Create PlayCover controller
 
@@ -819,14 +802,8 @@ class PlayCoverController(Controller):
             uuid: 目标应用 bundle identifier / Target app bundle identifier
 
         Raises:
-            NotImplementedError: 如果提供了 notification_handler
             RuntimeError: 如果创建失败
         """
-        if notification_handler:
-            raise NotImplementedError(
-                "NotificationHandler is deprecated, use add_sink instead."
-            )
-
         super().__init__()
         self._set_playcover_api_properties()
 
@@ -855,7 +832,6 @@ class DbgController(Controller):
         write_path: Union[str, Path],
         dbg_type: int,
         config: Dict[str, Any] = {},
-        notification_handler: None = None,
     ):
         """创建调试控制器 / Create debug controller
 
@@ -864,17 +840,10 @@ class DbgController(Controller):
             write_path: 输出路径, 包含执行结果 / Output path, includes execution results
             dbg_type: 控制器模式 / Controller mode
             config: 额外配置 / Extra config
-            notification_handler: 已废弃，请使用 add_sink 代替 / Deprecated, use add_sink instead
 
         Raises:
-            NotImplementedError: 如果提供了 notification_handler
             RuntimeError: 如果创建失败
         """
-        if notification_handler:
-            raise NotImplementedError(
-                "NotificationHandler is deprecated, use add_sink instead."
-            )
-
         super().__init__()
         self._set_dbg_api_properties()
 
@@ -919,9 +888,8 @@ class GamepadController(Controller):
     def __init__(
         self,
         hWnd: Union[ctypes.c_void_p, int, None],
-        gamepad_type: int = 1,  # MaaGamepadTypeEnum.Xbox360
-        screencap_method: int = MaaWin32ScreencapMethodEnum.DXGI_DesktopDup,
-        notification_handler: None = None,
+        gamepad_type: int = MaaGamepadTypeEnum.Xbox360,
+        screencap_method: int = MaaWin32ScreencapMethodEnum.PrintWindow,
     ):
         """创建虚拟手柄控制器 / Create virtual gamepad controller
 
@@ -929,17 +897,10 @@ class GamepadController(Controller):
             hWnd: 窗口句柄，用于截图 (可为 None，不需要截图时) / Window handle for screencap (can be None if screencap not needed)
             gamepad_type: 手柄类型 (MaaGamepadTypeEnum.Xbox360 或 MaaGamepadTypeEnum.DualShock4) / Gamepad type
             screencap_method: 截图方式 (当 hWnd 不为 None 时使用) / Screencap method (used when hWnd is not None)
-            notification_handler: 已废弃，请使用 add_sink 代替 / Deprecated, use add_sink instead
 
         Raises:
-            NotImplementedError: 如果提供了 notification_handler
             RuntimeError: 如果创建失败
         """
-        if notification_handler:
-            raise NotImplementedError(
-                "NotificationHandler is deprecated, use add_sink instead."
-            )
-
         super().__init__()
         self._set_gamepad_api_properties()
 
@@ -965,15 +926,7 @@ class CustomController(Controller):
 
     _callbacks: MaaCustomControllerCallbacks
 
-    def __init__(
-        self,
-        notification_handler: None = None,
-    ):
-        if notification_handler:
-            raise NotImplementedError(
-                "NotificationHandler is deprecated, use add_sink instead."
-            )
-
+    def __init__(self):
         super().__init__()
         self._set_custom_api_properties()
 
