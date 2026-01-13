@@ -163,13 +163,8 @@ bool GamepadControlUnitMgr::connected() const
 
 bool GamepadControlUnitMgr::request_uuid(std::string& uuid)
 {
-    // Generate a UUID based on gamepad type
-    std::stringstream ss;
-    ss << "gamepad_" << (gamepad_type_ == MaaGamepadType_Xbox360 ? "xbox360" : "ds4");
-    if (hwnd_) {
-        ss << "_hwnd_" << hwnd_;
-    }
-    uuid = std::move(ss).str();
+    std::string_view type_str = (gamepad_type_ == MaaGamepadType_Xbox360 ? "xbox360" : "ds4");
+    uuid = std::format("gamepad_{}_hwnd_{}", type_str, reinterpret_cast<uintptr_t>(hwnd_));
     return true;
 }
 
