@@ -54,6 +54,7 @@ public:  // from ControlUnitAPI
 
 private:
     bool init_win32_unit();
+    void send_activate();
 
 private:
     HWND hwnd_ = nullptr;

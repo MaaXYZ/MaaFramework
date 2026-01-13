@@ -141,6 +141,15 @@ bool GamepadControlUnitMgr::init_win32_unit()
     return true;
 }
 
+void GamepadControlUnitMgr::send_activate()
+{
+    if (!hwnd_) {
+        return;
+    }
+    // 发送 WM_ACTIVATE + WA_ACTIVE，让目标窗口认为自己被激活
+    SendMessageW(hwnd_, WM_ACTIVATE, WA_ACTIVE, 0);
+}
+
 bool GamepadControlUnitMgr::connected() const
 {
     return connected_ && gamepad_input_ && gamepad_input_->connected();
@@ -214,6 +223,8 @@ bool GamepadControlUnitMgr::touch_down(int contact, int x, int y, int pressure)
         return false;
     }
 
+    send_activate();
+
     switch (contact) {
     case MaaGamepadTouch_LeftStick:
         return gamepad_input_->set_left_stick(x, y);
@@ -279,6 +290,8 @@ bool GamepadControlUnitMgr::key_down(int key)
         LogError << "Gamepad not connected";
         return false;
     }
+
+    send_activate();
 
     return gamepad_input_->press_button(key);
 }
