@@ -141,13 +141,17 @@ bool GamepadControlUnitMgr::init_win32_unit()
     return true;
 }
 
-void GamepadControlUnitMgr::send_activate()
+void GamepadControlUnitMgr::ensure_foreground()
 {
     if (!hwnd_) {
         return;
     }
-    // 发送 WM_ACTIVATE + WA_ACTIVE，让目标窗口认为自己被激活
-    SendMessageW(hwnd_, WM_ACTIVATE, WA_ACTIVE, 0);
+
+    if (hwnd_ == GetForegroundWindow()) {
+        return;
+    }
+
+    SetForegroundWindow(hwnd_);
 }
 
 bool GamepadControlUnitMgr::connected() const
@@ -223,7 +227,7 @@ bool GamepadControlUnitMgr::touch_down(int contact, int x, int y, int pressure)
         return false;
     }
 
-    send_activate();
+    ensure_foreground();
 
     switch (contact) {
     case MaaGamepadTouch_LeftStick:
@@ -291,7 +295,7 @@ bool GamepadControlUnitMgr::key_down(int key)
         return false;
     }
 
-    send_activate();
+    ensure_foreground();
 
     return gamepad_input_->press_button(key);
 }

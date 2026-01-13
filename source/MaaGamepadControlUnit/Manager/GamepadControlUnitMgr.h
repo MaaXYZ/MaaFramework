@@ -19,7 +19,7 @@ public:
     GamepadControlUnitMgr(HWND hWnd, MaaGamepadType gamepad_type, MaaWin32ScreencapMethod screencap_method);
     virtual ~GamepadControlUnitMgr() override;
 
-public:  // from ControlUnitAPI
+public: // from ControlUnitAPI
     virtual bool connect() override;
     virtual bool connected() const override;
 
@@ -54,7 +54,7 @@ public:  // from ControlUnitAPI
 
 private:
     bool init_win32_unit();
-    void send_activate();
+    void ensure_foreground();
 
 private:
     HWND hwnd_ = nullptr;
@@ -64,8 +64,8 @@ private:
     bool connected_ = false;
 
     std::unique_ptr<ViGEmInput> gamepad_input_;
-    std::unique_ptr<Win32ControlUnitLoader> win32_loader_;  // DLL loader
-    std::shared_ptr<ControlUnitAPI> win32_unit_;            // for screencap
+    std::unique_ptr<Win32ControlUnitLoader> win32_loader_; // DLL loader
+    std::shared_ptr<ControlUnitAPI> win32_unit_;           // for screencap
 };
 
 MAA_CTRL_UNIT_NS_END
