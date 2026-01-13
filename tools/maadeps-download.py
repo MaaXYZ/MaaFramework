@@ -8,7 +8,7 @@ sys.path.append(str(sub_path))
 from maadeps_download import main as download_main, detect_host_triplet
 
 REPO = "MaaXYZ/MaaDeps"
-VERSION = "v2.10.0-beta.1"
+VERSION = "v2.11.0"
 
 if __name__ == "__main__":
     if len(sys.argv) == 2:
