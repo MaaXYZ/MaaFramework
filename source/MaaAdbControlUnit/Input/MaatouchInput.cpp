@@ -48,9 +48,13 @@ MaaControllerFeature MaatouchInput::get_features() const
     return MaaControllerFeature_UseMouseDownAndUpInsteadOfClick | MaaControllerFeature_UseKeyboardDownAndUpInsteadOfClick;
 }
 
+// get_features() 返回 MaaControllerFeature_UseKeyboardDownAndUpInsteadOfClick，
+// 上层 ControllerAgent 会使用 key_down/key_up 替代 click_key
 bool MaatouchInput::click_key(int key)
 {
-    LogError << "deprecated" << VAR(key);
+    LogError << "deprecated: get_features() returns MaaControllerFeature_UseKeyboardDownAndUpInsteadOfClick, "
+                "use key_down/key_up instead"
+             << VAR(key);
     return false;
 }
 
