@@ -138,13 +138,20 @@ declare global {
             set screenshot_use_raw_size(value: boolean)
 
             post_connection(): Job<CtrlId, Controller>
-            post_click(x: number, y: number): Job<CtrlId, Controller>
+            post_click(
+                x: number,
+                y: number,
+                contact?: number,
+                pressure?: number,
+            ): Job<CtrlId, Controller>
             post_swipe(
                 x1: number,
                 y1: number,
                 x2: number,
                 y2: number,
                 duration: number,
+                contact?: number,
+                pressure?: number,
             ): Job<CtrlId, Controller>
             post_click_key(keycode: number): Job<CtrlId, Controller>
             post_input_text(text: string): Job<CtrlId, Controller>
