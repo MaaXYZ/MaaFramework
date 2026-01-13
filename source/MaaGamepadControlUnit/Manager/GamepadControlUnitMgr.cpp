@@ -40,8 +40,8 @@ public:
 
     void unload()
     {
-        create_func_ = nullptr;
-        destroy_func_ = nullptr;
+        create_func_.clear();
+        destroy_func_.clear();
         unload_library();
     }
 

@@ -67,17 +67,17 @@ bool ViGEmInput::load_vigem_library()
 
 void ViGEmInput::unload_vigem_library()
 {
-    fn_vigem_alloc_ = nullptr;
-    fn_vigem_free_ = nullptr;
-    fn_vigem_connect_ = nullptr;
-    fn_vigem_disconnect_ = nullptr;
-    fn_vigem_target_x360_alloc_ = nullptr;
-    fn_vigem_target_ds4_alloc_ = nullptr;
-    fn_vigem_target_free_ = nullptr;
-    fn_vigem_target_add_ = nullptr;
-    fn_vigem_target_remove_ = nullptr;
-    fn_vigem_target_x360_update_ = nullptr;
-    fn_vigem_target_ds4_update_ = nullptr;
+    fn_vigem_alloc_.clear();
+    fn_vigem_free_.clear();
+    fn_vigem_connect_.clear();
+    fn_vigem_disconnect_.clear();
+    fn_vigem_target_x360_alloc_.clear();
+    fn_vigem_target_ds4_alloc_.clear();
+    fn_vigem_target_free_.clear();
+    fn_vigem_target_add_.clear();
+    fn_vigem_target_remove_.clear();
+    fn_vigem_target_x360_update_.clear();
+    fn_vigem_target_ds4_update_.clear();
 
     unload_library();
 }

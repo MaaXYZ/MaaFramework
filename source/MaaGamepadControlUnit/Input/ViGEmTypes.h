@@ -73,16 +73,16 @@ struct Ds4Report
 
 #pragma pack(pop)
 
-// ViGEm function pointer types
-using FnVigemAlloc = void* (*)();
-using FnVigemFree = void (*)(void*);
-using FnVigemConnect = uint32_t (*)(void*);
-using FnVigemDisconnect = void (*)(void*);
-using FnVigemTargetAlloc = void* (*)();
-using FnVigemTargetFree = void (*)(void*);
-using FnVigemTargetAdd = uint32_t (*)(void*, void*);
-using FnVigemTargetRemove = uint32_t (*)(void*, void*);
-using FnVigemTargetX360Update = uint32_t (*)(void*, void*, XusbReport);
-using FnVigemTargetDs4Update = uint32_t (*)(void*, void*, Ds4Report);
+// ViGEm function signatures (for boost::function)
+using FnVigemAlloc = void*();
+using FnVigemFree = void(void*);
+using FnVigemConnect = uint32_t(void*);
+using FnVigemDisconnect = void(void*);
+using FnVigemTargetAlloc = void*();
+using FnVigemTargetFree = void(void*);
+using FnVigemTargetAdd = uint32_t(void*, void*);
+using FnVigemTargetRemove = uint32_t(void*, void*);
+using FnVigemTargetX360Update = uint32_t(void*, void*, XusbReport);
+using FnVigemTargetDs4Update = uint32_t(void*, void*, Ds4Report);
 
 } // namespace vigem
