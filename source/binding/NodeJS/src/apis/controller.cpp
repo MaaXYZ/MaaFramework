@@ -126,10 +126,15 @@ maajs::ValueType ControllerImpl::post_connection(maajs::ValueType self, maajs::E
     return maajs::CallCtorHelper(ExtContext::get(env)->jobCtor, self, id);
 }
 
-maajs::ValueType
-    ControllerImpl::post_click(maajs::ValueType self, maajs::EnvType, int32_t x, int32_t y, int32_t contact, int32_t pressure)
+maajs::ValueType ControllerImpl::post_click(
+    maajs::ValueType self,
+    maajs::EnvType,
+    int32_t x,
+    int32_t y,
+    maajs::OptionalParam<int32_t> contact,
+    maajs::OptionalParam<int32_t> pressure)
 {
-    auto id = MaaControllerPostClickV2(controller, x, y, contact, pressure);
+    auto id = MaaControllerPostClickV2(controller, x, y, contact.value_or(0), pressure.value_or(1));
     return maajs::CallCtorHelper(ExtContext::get(env)->jobCtor, self, id);
 }
 
@@ -141,10 +146,10 @@ maajs::ValueType ControllerImpl::post_swipe(
     int32_t x2,
     int32_t y2,
     int32_t duration,
-    int32_t contact,
-    int32_t pressure)
+    maajs::OptionalParam<int32_t> contact,
+    maajs::OptionalParam<int32_t> pressure)
 {
-    auto id = MaaControllerPostSwipeV2(controller, x1, y1, x2, y2, duration, contact, pressure);
+    auto id = MaaControllerPostSwipeV2(controller, x1, y1, x2, y2, duration, contact.value_or(0), pressure.value_or(1));
     return maajs::CallCtorHelper(ExtContext::get(env)->jobCtor, self, id);
 }
 
