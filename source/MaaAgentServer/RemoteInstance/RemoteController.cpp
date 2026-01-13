@@ -30,12 +30,14 @@ MaaCtrlId RemoteController::post_connection()
     return resp_opt->ctrl_id;
 }
 
-MaaCtrlId RemoteController::post_click(int x, int y)
+MaaCtrlId RemoteController::post_click(int x, int y, int contact, int pressure)
 {
     ControllerPostClickReverseRequest req {
         .controller_id = controller_id_,
         .x = x,
         .y = y,
+        .contact = contact,
+        .pressure = pressure,
     };
     auto resp_opt = server_.send_and_recv<ControllerPostClickReverseResponse>(req);
     if (!resp_opt) {
@@ -44,7 +46,7 @@ MaaCtrlId RemoteController::post_click(int x, int y)
     return resp_opt->ctrl_id;
 }
 
-MaaCtrlId RemoteController::post_swipe(int x1, int y1, int x2, int y2, int duration)
+MaaCtrlId RemoteController::post_swipe(int x1, int y1, int x2, int y2, int duration, int contact, int pressure)
 {
     ControllerPostSwipeReverseRequest req {
         .controller_id = controller_id_,
@@ -53,6 +55,8 @@ MaaCtrlId RemoteController::post_swipe(int x1, int y1, int x2, int y2, int durat
         .x2 = x2,
         .y2 = y2,
         .duration = duration,
+        .contact = contact,
+        .pressure = pressure,
     };
     auto resp_opt = server_.send_and_recv<ControllerPostSwipeReverseResponse>(req);
     if (!resp_opt) {

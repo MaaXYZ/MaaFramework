@@ -1198,6 +1198,11 @@ bool PipelineParser::parse_click(const json::value& input, Action::ClickParam& o
         return false;
     }
 
+    if (!get_and_check_value(input, "pressure", output.pressure, default_value.pressure)) {
+        LogError << "failed to get_and_check_value pressure" << VAR(input);
+        return false;
+    }
+
     return true;
 }
 
@@ -1215,6 +1220,11 @@ bool PipelineParser::parse_long_press(const json::value& input, Action::LongPres
 
     if (!get_and_check_value(input, "contact", output.contact, default_value.contact)) {
         LogError << "failed to get_and_check_value contact" << VAR(input);
+        return false;
+    }
+
+    if (!get_and_check_value(input, "pressure", output.pressure, default_value.pressure)) {
+        LogError << "failed to get_and_check_value pressure" << VAR(input);
         return false;
     }
 
@@ -1266,6 +1276,11 @@ bool PipelineParser::parse_swipe(const json::value& input, Action::SwipeParam& o
 
     if (!get_and_check_value(input, "contact", output.contact, default_value.contact)) {
         LogError << "failed to get_and_check_value contact" << VAR(input);
+        return false;
+    }
+
+    if (!get_and_check_value(input, "pressure", output.pressure, default_value.pressure)) {
+        LogError << "failed to get_and_check_value pressure" << VAR(input);
         return false;
     }
 

@@ -74,8 +74,24 @@ extern "C"
 
     MAA_FRAMEWORK_API MaaCtrlId MaaControllerPostClick(MaaController* ctrl, int32_t x, int32_t y);
 
+    // for adb controller, contact means finger id (0 for first finger, 1 for second finger, etc)
+    // for win32 controller, contact means mouse button id (0 for left, 1 for right, 2 for middle)
+    MAA_FRAMEWORK_API MaaCtrlId MaaControllerPostClickV2(MaaController* ctrl, int32_t x, int32_t y, int32_t contact, int32_t pressure);
+
     MAA_FRAMEWORK_API MaaCtrlId
         MaaControllerPostSwipe(MaaController* ctrl, int32_t x1, int32_t y1, int32_t x2, int32_t y2, int32_t duration);
+
+    // for adb controller, contact means finger id (0 for first finger, 1 for second finger, etc)
+    // for win32 controller, contact means mouse button id (0 for left, 1 for right, 2 for middle)
+    MAA_FRAMEWORK_API MaaCtrlId MaaControllerPostSwipeV2(
+        MaaController* ctrl,
+        int32_t x1,
+        int32_t y1,
+        int32_t x2,
+        int32_t y2,
+        int32_t duration,
+        int32_t contact,
+        int32_t pressure);
 
     MAA_FRAMEWORK_API MaaCtrlId MaaControllerPostClickKey(MaaController* ctrl, int32_t keycode);
 

@@ -1,7 +1,8 @@
 import json
+import os
+import numpy
 from abc import abstractmethod
 from ctypes import c_int32
-import os
 from pathlib import Path
 from typing import Any, Dict, Optional, Tuple, Union
 
@@ -53,7 +54,7 @@ class Controller:
         ctrl_id = Library.framework().MaaControllerPostConnection(self._handle)
         return self._gen_ctrl_job(ctrl_id)
 
-    def post_click(self, x: int, y: int) -> Job:
+    def post_click(self, x: int, y: int, contact: int = 0, pressure: int = 1) -> Job:
         """异步点击 / Asynchronously click
 
         这是一个异步操作，会立即返回一个 Job 对象
@@ -62,14 +63,27 @@ class Controller:
         Args:
             x: x 坐标 / x coordinate
             y: y 坐标 / y coordinate
+            contact: 触点编号 (Adb 控制器: 手指编号; Win32 控制器: 鼠标按键 0:左键, 1:右键, 2:中键) / Contact number (Adb controller: finger number; Win32 controller: mouse button 0:left, 1:right, 2:middle)
+            pressure: 触点力度 / Contact pressure
 
         Returns:
             Job: 作业对象，可通过 status/wait 查询状态 / Job object, can query status via status/wait
         """
-        ctrl_id = Library.framework().MaaControllerPostClick(self._handle, x, y)
+        ctrl_id = Library.framework().MaaControllerPostClickV2(
+            self._handle, x, y, contact, pressure
+        )
         return self._gen_ctrl_job(ctrl_id)
 
-    def post_swipe(self, x1: int, y1: int, x2: int, y2: int, duration: int) -> Job:
+    def post_swipe(
+        self,
+        x1: int,
+        y1: int,
+        x2: int,
+        y2: int,
+        duration: int,
+        contact: int = 0,
+        pressure: int = 1,
+    ) -> Job:
         """滑动 / Swipe
 
         Args:
@@ -78,12 +92,14 @@ class Controller:
             x2: 终点 x 坐标 / End x coordinate
             y2: 终点 y 坐标 / End y coordinate
             duration: 滑动时长(毫秒) / Swipe duration in milliseconds
+            contact: 触点编号 (Adb 控制器: 手指编号; Win32 控制器: 鼠标按键 0:左键, 1:右键, 2:中键) / Contact number (Adb controller: finger number; Win32 controller: mouse button 0:left, 1:right, 2:middle)
+            pressure: 触点力度 / Contact pressure
 
         Returns:
             Job: 作业对象 / Job object
         """
-        ctrl_id = Library.framework().MaaControllerPostSwipe(
-            self._handle, x1, y1, x2, y2, duration
+        ctrl_id = Library.framework().MaaControllerPostSwipeV2(
+            self._handle, x1, y1, x2, y2, duration, contact, pressure
         )
         return self._gen_ctrl_job(ctrl_id)
 
@@ -508,9 +524,30 @@ class Controller:
             c_int32,
         ]
 
+        Library.framework().MaaControllerPostClickV2.restype = MaaCtrlId
+        Library.framework().MaaControllerPostClickV2.argtypes = [
+            MaaControllerHandle,
+            c_int32,
+            c_int32,
+            c_int32,
+            c_int32,
+        ]
+
         Library.framework().MaaControllerPostSwipe.restype = MaaCtrlId
         Library.framework().MaaControllerPostSwipe.argtypes = [
             MaaControllerHandle,
+            c_int32,
+            c_int32,
+            c_int32,
+            c_int32,
+            c_int32,
+        ]
+
+        Library.framework().MaaControllerPostSwipeV2.restype = MaaCtrlId
+        Library.framework().MaaControllerPostSwipeV2.argtypes = [
+            MaaControllerHandle,
+            c_int32,
+            c_int32,
             c_int32,
             c_int32,
             c_int32,
