@@ -17,9 +17,10 @@ PostThreadMessageInput::PostThreadMessageInput(HWND hwnd)
     }
 }
 
-void PostThreadMessageInput::ensure_foreground()
+void PostThreadMessageInput::send_activate()
 {
-    ::MaaNS::CtrlUnitNs::ensure_foreground(hwnd_);
+    // PostThreadMessage 模式使用 PostMessage 发送激活消息
+    ::MaaNS::CtrlUnitNs::send_activate_message(hwnd_, true);
 }
 
 std::pair<int, int> PostThreadMessageInput::get_target_pos() const
@@ -70,7 +71,7 @@ bool PostThreadMessageInput::touch_down(int contact, int x, int y, int pressure)
         return false;
     }
 
-    ensure_foreground();
+    send_activate();
 
     touch_move(contact, x, y, pressure);
 
@@ -123,7 +124,7 @@ bool PostThreadMessageInput::touch_up(int contact)
         return false;
     }
 
-    ensure_foreground();
+    send_activate();
 
     MouseMessageInfo msg_info;
     if (!contact_to_mouse_up_message(contact, msg_info)) {
@@ -156,7 +157,7 @@ bool PostThreadMessageInput::input_text(const std::string& text)
         return false;
     }
 
-    ensure_foreground();
+    send_activate();
 
     // 文本输入仅发送 WM_CHAR
     for (const auto ch : to_u16(text)) {
@@ -173,7 +174,7 @@ bool PostThreadMessageInput::key_down(int key)
         return false;
     }
 
-    ensure_foreground();
+    send_activate();
 
     LPARAM lParam = make_keydown_lparam(key);
     PostThreadMessage(thread_id_, WM_KEYDOWN, static_cast<WPARAM>(key), lParam);
@@ -187,7 +188,7 @@ bool PostThreadMessageInput::key_up(int key)
         return false;
     }
 
-    ensure_foreground();
+    send_activate();
 
     LPARAM lParam = make_keyup_lparam(key);
     PostThreadMessage(thread_id_, WM_KEYUP, static_cast<WPARAM>(key), lParam);
@@ -203,7 +204,7 @@ bool PostThreadMessageInput::scroll(int dx, int dy)
         return false;
     }
 
-    ensure_foreground();
+    send_activate();
 
     auto target_pos = get_target_pos();
 

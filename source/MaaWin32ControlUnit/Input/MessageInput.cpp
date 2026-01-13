@@ -16,9 +16,10 @@ MessageInput::~MessageInput()
     }
 }
 
-void MessageInput::ensure_foreground()
+void MessageInput::send_activate()
 {
-    ::MaaNS::CtrlUnitNs::ensure_foreground(hwnd_);
+    bool use_post = (mode_ == Mode::PostMessage);
+    ::MaaNS::CtrlUnitNs::send_activate_message(hwnd_, use_post);
 }
 
 bool MessageInput::send_or_post_w(UINT message, WPARAM wParam, LPARAM lParam)
@@ -135,7 +136,7 @@ bool MessageInput::touch_down(int contact, int x, int y, int pressure)
         return false;
     }
 
-    ensure_foreground();
+    send_activate();
 
     if (block_input_) {
         BlockInput(TRUE);
@@ -210,7 +211,7 @@ bool MessageInput::touch_up(int contact)
         return false;
     }
 
-    ensure_foreground();
+    send_activate();
 
     OnScopeLeave([this]() {
         if (block_input_) {
@@ -257,7 +258,7 @@ bool MessageInput::input_text(const std::string& text)
         return false;
     }
 
-    ensure_foreground();
+    send_activate();
 
     // 文本输入仅发送 WM_CHAR
     for (const auto ch : to_u16(text)) {
@@ -278,7 +279,7 @@ bool MessageInput::key_down(int key)
         return false;
     }
 
-    ensure_foreground();
+    send_activate();
 
     LPARAM lParam = make_keydown_lparam(key);
     return send_or_post_w(WM_KEYDOWN, static_cast<WPARAM>(key), lParam);
@@ -293,7 +294,7 @@ bool MessageInput::key_up(int key)
         return false;
     }
 
-    ensure_foreground();
+    send_activate();
 
     LPARAM lParam = make_keyup_lparam(key);
     return send_or_post_w(WM_KEYUP, static_cast<WPARAM>(key), lParam);
@@ -308,7 +309,7 @@ bool MessageInput::scroll(int dx, int dy)
         return false;
     }
 
-    ensure_foreground();
+    send_activate();
 
     if (block_input_) {
         BlockInput(TRUE);
