@@ -579,19 +579,19 @@
         </inbodydescription>
         <location file="include/MaaFramework/MaaDef.h" line="370" column="9" bodyfile="include/MaaFramework/MaaDef.h" bodystart="370" bodyend="-1"/>
       </memberdef>
-      <memberdef kind="define" id="MaaDef_8h_1a9d97a808d79e338e4a9001268e805336" prot="public" static="no">
-        <name>MaaControllerFeature_None</name>
-        <initializer>0</initializer>
+      <memberdef kind="define" id="MaaDef_8h_1a586ad29ada2c999ae75b77ad6baeedb9" prot="public" static="no">
+        <name>MaaGamepadType_Xbox360</name>
+        <initializer>0ULL</initializer>
         <briefdescription>
         </briefdescription>
         <detaileddescription>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="include/MaaFramework/MaaDef.h" line="373" column="9" bodyfile="include/MaaFramework/MaaDef.h" bodystart="373" bodyend="-1"/>
+        <location file="include/MaaFramework/MaaDef.h" line="384" column="9" bodyfile="include/MaaFramework/MaaDef.h" bodystart="384" bodyend="-1"/>
       </memberdef>
-      <memberdef kind="define" id="MaaDef_8h_1a717d745204302e5eabf406b008c5a957" prot="public" static="no">
-        <name>MaaControllerFeature_UseMouseDownAndUpInsteadOfClick</name>
+      <memberdef kind="define" id="MaaDef_8h_1af8af7e509a456f76d65db79f99b14591" prot="public" static="no">
+        <name>MaaGamepadType_DualShock4</name>
         <initializer>1ULL</initializer>
         <briefdescription>
         </briefdescription>
@@ -599,7 +599,372 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="include/MaaFramework/MaaDef.h" line="374" column="9" bodyfile="include/MaaFramework/MaaDef.h" bodystart="374" bodyend="-1"/>
+        <location file="include/MaaFramework/MaaDef.h" line="385" column="9" bodyfile="include/MaaFramework/MaaDef.h" bodystart="385" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="define" id="MaaDef_8h_1acbc161630001bc8f54f7cf136a0493fc" prot="public" static="no">
+        <name>MaaGamepadButton_A</name>
+        <initializer>0x1000</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaFramework/MaaDef.h" line="433" column="9" bodyfile="include/MaaFramework/MaaDef.h" bodystart="433" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="define" id="MaaDef_8h_1ab6642c8e33ef8fd4663844c7902a4b88" prot="public" static="no">
+        <name>MaaGamepadButton_B</name>
+        <initializer>0x2000</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaFramework/MaaDef.h" line="434" column="9" bodyfile="include/MaaFramework/MaaDef.h" bodystart="434" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="define" id="MaaDef_8h_1aff435019a0fd0944954b3359ec995b73" prot="public" static="no">
+        <name>MaaGamepadButton_X</name>
+        <initializer>0x4000</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaFramework/MaaDef.h" line="435" column="9" bodyfile="include/MaaFramework/MaaDef.h" bodystart="435" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="define" id="MaaDef_8h_1a721c98469b8587587d49e3faa7cd4e91" prot="public" static="no">
+        <name>MaaGamepadButton_Y</name>
+        <initializer>0x8000</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaFramework/MaaDef.h" line="436" column="9" bodyfile="include/MaaFramework/MaaDef.h" bodystart="436" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="define" id="MaaDef_8h_1a829f56dfed642469c93e764ecb2a2324" prot="public" static="no">
+        <name>MaaGamepadButton_LB</name>
+        <initializer>0x0100</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaFramework/MaaDef.h" line="437" column="9" bodyfile="include/MaaFramework/MaaDef.h" bodystart="437" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="define" id="MaaDef_8h_1ad485ac5c8162c383e480dda71d5e3de2" prot="public" static="no">
+        <name>MaaGamepadButton_RB</name>
+        <initializer>0x0200</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaFramework/MaaDef.h" line="438" column="9" bodyfile="include/MaaFramework/MaaDef.h" bodystart="438" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="define" id="MaaDef_8h_1a092eaebcba991de49d33bcd1b43157a0" prot="public" static="no">
+        <name>MaaGamepadButton_LEFT_THUMB</name>
+        <initializer>0x0040</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaFramework/MaaDef.h" line="439" column="9" bodyfile="include/MaaFramework/MaaDef.h" bodystart="439" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="define" id="MaaDef_8h_1a96858ccbeab2d09b260f5cf8f7853e3b" prot="public" static="no">
+        <name>MaaGamepadButton_RIGHT_THUMB</name>
+        <initializer>0x0080</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaFramework/MaaDef.h" line="440" column="9" bodyfile="include/MaaFramework/MaaDef.h" bodystart="440" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="define" id="MaaDef_8h_1a026a34d3279ae1914494b719d45da075" prot="public" static="no">
+        <name>MaaGamepadButton_START</name>
+        <initializer>0x0010</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaFramework/MaaDef.h" line="441" column="9" bodyfile="include/MaaFramework/MaaDef.h" bodystart="441" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="define" id="MaaDef_8h_1a6ab0f942cf53ee5bef82efc619aff6d8" prot="public" static="no">
+        <name>MaaGamepadButton_BACK</name>
+        <initializer>0x0020</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaFramework/MaaDef.h" line="442" column="9" bodyfile="include/MaaFramework/MaaDef.h" bodystart="442" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="define" id="MaaDef_8h_1adb6bd0da85936d9b6241faad67037b50" prot="public" static="no">
+        <name>MaaGamepadButton_GUIDE</name>
+        <initializer>0x0400</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaFramework/MaaDef.h" line="443" column="9" bodyfile="include/MaaFramework/MaaDef.h" bodystart="443" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="define" id="MaaDef_8h_1a528a2bcf79894972c5827c112bf55691" prot="public" static="no">
+        <name>MaaGamepadButton_DPAD_UP</name>
+        <initializer>0x0001</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaFramework/MaaDef.h" line="444" column="9" bodyfile="include/MaaFramework/MaaDef.h" bodystart="444" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="define" id="MaaDef_8h_1a7b123c7d27ed4f240ba8ba46e50ce086" prot="public" static="no">
+        <name>MaaGamepadButton_DPAD_DOWN</name>
+        <initializer>0x0002</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaFramework/MaaDef.h" line="445" column="9" bodyfile="include/MaaFramework/MaaDef.h" bodystart="445" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="define" id="MaaDef_8h_1aff4c7b27b10eba1ad519448582e57d84" prot="public" static="no">
+        <name>MaaGamepadButton_DPAD_LEFT</name>
+        <initializer>0x0004</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaFramework/MaaDef.h" line="446" column="9" bodyfile="include/MaaFramework/MaaDef.h" bodystart="446" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="define" id="MaaDef_8h_1a6e1c8783f1d81f51c21dbe95aa21f9fa" prot="public" static="no">
+        <name>MaaGamepadButton_DPAD_RIGHT</name>
+        <initializer>0x0008</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaFramework/MaaDef.h" line="447" column="9" bodyfile="include/MaaFramework/MaaDef.h" bodystart="447" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="define" id="MaaDef_8h_1ad80f0a36dd65cb8208b9c28a1112b796" prot="public" static="no">
+        <name>MaaGamepadButton_CROSS</name>
+        <initializer><ref refid="MaaDef_8h_1acbc161630001bc8f54f7cf136a0493fc" kindref="member">MaaGamepadButton_A</ref></initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaFramework/MaaDef.h" line="450" column="9" bodyfile="include/MaaFramework/MaaDef.h" bodystart="450" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="define" id="MaaDef_8h_1a34aaaf26cf91ddab88362a1f7c900154" prot="public" static="no">
+        <name>MaaGamepadButton_CIRCLE</name>
+        <initializer><ref refid="MaaDef_8h_1ab6642c8e33ef8fd4663844c7902a4b88" kindref="member">MaaGamepadButton_B</ref></initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaFramework/MaaDef.h" line="451" column="9" bodyfile="include/MaaFramework/MaaDef.h" bodystart="451" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="define" id="MaaDef_8h_1a5aadc42136d91795ddbe892bf392a807" prot="public" static="no">
+        <name>MaaGamepadButton_SQUARE</name>
+        <initializer><ref refid="MaaDef_8h_1aff435019a0fd0944954b3359ec995b73" kindref="member">MaaGamepadButton_X</ref></initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaFramework/MaaDef.h" line="452" column="9" bodyfile="include/MaaFramework/MaaDef.h" bodystart="452" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="define" id="MaaDef_8h_1a028f1515ebc3918b3c0abd6a85400e6d" prot="public" static="no">
+        <name>MaaGamepadButton_TRIANGLE</name>
+        <initializer><ref refid="MaaDef_8h_1a721c98469b8587587d49e3faa7cd4e91" kindref="member">MaaGamepadButton_Y</ref></initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaFramework/MaaDef.h" line="453" column="9" bodyfile="include/MaaFramework/MaaDef.h" bodystart="453" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="define" id="MaaDef_8h_1a280c5b45d707fc75dee7b03bcbd3f2ce" prot="public" static="no">
+        <name>MaaGamepadButton_L1</name>
+        <initializer><ref refid="MaaDef_8h_1a829f56dfed642469c93e764ecb2a2324" kindref="member">MaaGamepadButton_LB</ref></initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaFramework/MaaDef.h" line="454" column="9" bodyfile="include/MaaFramework/MaaDef.h" bodystart="454" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="define" id="MaaDef_8h_1a7d05d73a2577c84ef7ff42d53c634cdf" prot="public" static="no">
+        <name>MaaGamepadButton_R1</name>
+        <initializer><ref refid="MaaDef_8h_1ad485ac5c8162c383e480dda71d5e3de2" kindref="member">MaaGamepadButton_RB</ref></initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaFramework/MaaDef.h" line="455" column="9" bodyfile="include/MaaFramework/MaaDef.h" bodystart="455" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="define" id="MaaDef_8h_1a13ebdda97661a8af94d90c0866b5ba5a" prot="public" static="no">
+        <name>MaaGamepadButton_L3</name>
+        <initializer><ref refid="MaaDef_8h_1a092eaebcba991de49d33bcd1b43157a0" kindref="member">MaaGamepadButton_LEFT_THUMB</ref></initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaFramework/MaaDef.h" line="456" column="9" bodyfile="include/MaaFramework/MaaDef.h" bodystart="456" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="define" id="MaaDef_8h_1a3ffbb685bbaaa306ad59f2ab1fbd75ec" prot="public" static="no">
+        <name>MaaGamepadButton_R3</name>
+        <initializer><ref refid="MaaDef_8h_1a96858ccbeab2d09b260f5cf8f7853e3b" kindref="member">MaaGamepadButton_RIGHT_THUMB</ref></initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaFramework/MaaDef.h" line="457" column="9" bodyfile="include/MaaFramework/MaaDef.h" bodystart="457" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="define" id="MaaDef_8h_1a97d149138ef0e0aae4615c53c5547105" prot="public" static="no">
+        <name>MaaGamepadButton_OPTIONS</name>
+        <initializer><ref refid="MaaDef_8h_1a026a34d3279ae1914494b719d45da075" kindref="member">MaaGamepadButton_START</ref></initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaFramework/MaaDef.h" line="458" column="9" bodyfile="include/MaaFramework/MaaDef.h" bodystart="458" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="define" id="MaaDef_8h_1aca9de8235428dece0d8a5dfec486ae73" prot="public" static="no">
+        <name>MaaGamepadButton_SHARE</name>
+        <initializer><ref refid="MaaDef_8h_1a6ab0f942cf53ee5bef82efc619aff6d8" kindref="member">MaaGamepadButton_BACK</ref></initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaFramework/MaaDef.h" line="459" column="9" bodyfile="include/MaaFramework/MaaDef.h" bodystart="459" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="define" id="MaaDef_8h_1a294262e494093148a4205e34c3fea63f" prot="public" static="no">
+        <name>MaaGamepadButton_PS</name>
+        <initializer>0x10000</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaFramework/MaaDef.h" line="462" column="9" bodyfile="include/MaaFramework/MaaDef.h" bodystart="462" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="define" id="MaaDef_8h_1a7aaba2e0a11aee00e7b56b0c51bb239a" prot="public" static="no">
+        <name>MaaGamepadButton_TOUCHPAD</name>
+        <initializer>0x20000</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaFramework/MaaDef.h" line="463" column="9" bodyfile="include/MaaFramework/MaaDef.h" bodystart="463" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="define" id="MaaDef_8h_1a3713b287136eabe2203bcc488320e524" prot="public" static="no">
+        <name>MaaGamepadTouch_LeftStick</name>
+        <initializer>0</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaFramework/MaaDef.h" line="488" column="9" bodyfile="include/MaaFramework/MaaDef.h" bodystart="488" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="define" id="MaaDef_8h_1ad2c4f9269c40a83671a74d188f0e6002" prot="public" static="no">
+        <name>MaaGamepadTouch_RightStick</name>
+        <initializer>1</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaFramework/MaaDef.h" line="489" column="9" bodyfile="include/MaaFramework/MaaDef.h" bodystart="489" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="define" id="MaaDef_8h_1a572fba9d73a204b8a4aa05f7d478fbd2" prot="public" static="no">
+        <name>MaaGamepadTouch_LeftTrigger</name>
+        <initializer>2</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaFramework/MaaDef.h" line="490" column="9" bodyfile="include/MaaFramework/MaaDef.h" bodystart="490" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="define" id="MaaDef_8h_1ae9473fa358a86a65f4fed2bb5bc6a6e4" prot="public" static="no">
+        <name>MaaGamepadTouch_RightTrigger</name>
+        <initializer>3</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaFramework/MaaDef.h" line="491" column="9" bodyfile="include/MaaFramework/MaaDef.h" bodystart="491" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="define" id="MaaDef_8h_1a9d97a808d79e338e4a9001268e805336" prot="public" static="no">
+        <name>MaaControllerFeature_None</name>
+        <initializer>0</initializer>
+        <briefdescription>
+<para>No special features, controller supports click/swipe/click_key directly. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaFramework/MaaDef.h" line="500" column="9" bodyfile="include/MaaFramework/MaaDef.h" bodystart="500" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="define" id="MaaDef_8h_1a717d745204302e5eabf406b008c5a957" prot="public" static="no">
+        <name>MaaControllerFeature_UseMouseDownAndUpInsteadOfClick</name>
+        <initializer>1ULL</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Controller prefers touch_down/touch_move/touch_up instead of click/swipe. When set, ControllerAgent will use touch_down/touch_up to simulate click, and touch_down/touch_move/touch_up to simulate swipe. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaFramework/MaaDef.h" line="505" column="9" bodyfile="include/MaaFramework/MaaDef.h" bodystart="505" bodyend="-1"/>
       </memberdef>
       <memberdef kind="define" id="MaaDef_8h_1ac8dc1b4410fe6a3ff2d62f5a2ee803ec" prot="public" static="no">
         <name>MaaControllerFeature_UseKeyboardDownAndUpInsteadOfClick</name>
@@ -607,10 +972,23 @@
         <briefdescription>
         </briefdescription>
         <detaileddescription>
+<para>Controller prefers key_down/key_up instead of click_key. When set, ControllerAgent will use key_down + key_up to simulate click_key. </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="include/MaaFramework/MaaDef.h" line="375" column="9" bodyfile="include/MaaFramework/MaaDef.h" bodystart="375" bodyend="-1"/>
+        <location file="include/MaaFramework/MaaDef.h" line="509" column="9" bodyfile="include/MaaFramework/MaaDef.h" bodystart="509" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="define" id="MaaDef_8h_1a5ca72cf3815fc88ba7ef8b762bc6ed94" prot="public" static="no">
+        <name>MaaControllerFeature_NoScalingTouchPoints</name>
+        <initializer>(1ULL &lt;&lt; 2)</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Controller does not scale touch points automatically. When set, ControllerAgent will skip coordinate scaling for touch operations. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaFramework/MaaDef.h" line="513" column="9" bodyfile="include/MaaFramework/MaaDef.h" bodystart="513" bodyend="-1"/>
       </memberdef>
     </sectiondef>
     <sectiondef kind="enum">
@@ -1650,6 +2028,282 @@ default value is 4096
         </inbodydescription>
         <location file="include/MaaFramework/MaaDef.h" line="367" column="18" bodyfile="include/MaaFramework/MaaDef.h" bodystart="367" bodyend="-1"/>
       </memberdef>
+      <memberdef kind="typedef" id="MaaDef_8h_1a53a0d2c454370893abfbaf100b48dc0d" prot="public" static="no">
+        <type>uint64_t</type>
+        <definition>typedef uint64_t MaaGamepadType</definition>
+        <argsstring></argsstring>
+        <name>MaaGamepadType</name>
+        <briefdescription>
+<para>Virtual gamepad type. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Select ONE type only.</para>
+<para><table rows="3" cols="2"><row>
+<entry thead="yes"><para>Type   </para>
+</entry><entry thead="yes"><para>Description    </para>
+</entry></row>
+<row>
+<entry thead="no"><para>Xbox360   </para>
+</entry><entry thead="no"><para>Microsoft Xbox 360 Controller (wired)    </para>
+</entry></row>
+<row>
+<entry thead="no"><para>DualShock4   </para>
+</entry><entry thead="no"><para>Sony DualShock 4 Controller (wired)   </para>
+</entry></row>
+</table>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaFramework/MaaDef.h" line="383" column="18" bodyfile="include/MaaFramework/MaaDef.h" bodystart="383" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="typedef" id="MaaDef_8h_1abb0b4cd931aa02d962781dbe496df3cd" prot="public" static="no">
+        <type>uint64_t</type>
+        <definition>typedef uint64_t MaaGamepadButton</definition>
+        <argsstring></argsstring>
+        <name>MaaGamepadButton</name>
+        <briefdescription>
+<para>Virtual gamepad button codes for click_key/key_down/key_up. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Use these values with MaaControllerPostClickKey, MaaControllerPostKeyDown, MaaControllerPostKeyUp. Values are based on XUSB (Xbox 360) button flags. DS4 face buttons are mapped to Xbox equivalents.</para>
+<para>Xbox 360 buttons:</para>
+<para><table rows="16" cols="3"><row>
+<entry thead="yes"><para>Value   </para>
+</entry><entry thead="yes"><para>Button   </para>
+</entry><entry thead="yes"><para>Description    </para>
+</entry></row>
+<row>
+<entry thead="no"><para>0x1000   </para>
+</entry><entry thead="no"><para>A   </para>
+</entry><entry thead="no"><para>A button    </para>
+</entry></row>
+<row>
+<entry thead="no"><para>0x2000   </para>
+</entry><entry thead="no"><para>B   </para>
+</entry><entry thead="no"><para>B button    </para>
+</entry></row>
+<row>
+<entry thead="no"><para>0x4000   </para>
+</entry><entry thead="no"><para>X   </para>
+</entry><entry thead="no"><para>X button    </para>
+</entry></row>
+<row>
+<entry thead="no"><para>0x8000   </para>
+</entry><entry thead="no"><para>Y   </para>
+</entry><entry thead="no"><para>Y button    </para>
+</entry></row>
+<row>
+<entry thead="no"><para>0x0100   </para>
+</entry><entry thead="no"><para>LB (Left Shoulder)   </para>
+</entry><entry thead="no"><para>Left bumper    </para>
+</entry></row>
+<row>
+<entry thead="no"><para>0x0200   </para>
+</entry><entry thead="no"><para>RB (Right Shoulder)   </para>
+</entry><entry thead="no"><para>Right bumper    </para>
+</entry></row>
+<row>
+<entry thead="no"><para>0x0040   </para>
+</entry><entry thead="no"><para>L_THUMB   </para>
+</entry><entry thead="no"><para>Left stick click    </para>
+</entry></row>
+<row>
+<entry thead="no"><para>0x0080   </para>
+</entry><entry thead="no"><para>R_THUMB   </para>
+</entry><entry thead="no"><para>Right stick click    </para>
+</entry></row>
+<row>
+<entry thead="no"><para>0x0010   </para>
+</entry><entry thead="no"><para>START   </para>
+</entry><entry thead="no"><para>Start button    </para>
+</entry></row>
+<row>
+<entry thead="no"><para>0x0020   </para>
+</entry><entry thead="no"><para>BACK   </para>
+</entry><entry thead="no"><para>Back button    </para>
+</entry></row>
+<row>
+<entry thead="no"><para>0x0400   </para>
+</entry><entry thead="no"><para>GUIDE   </para>
+</entry><entry thead="no"><para>Guide/Home button    </para>
+</entry></row>
+<row>
+<entry thead="no"><para>0x0001   </para>
+</entry><entry thead="no"><para>DPAD_UP   </para>
+</entry><entry thead="no"><para>D-pad up    </para>
+</entry></row>
+<row>
+<entry thead="no"><para>0x0002   </para>
+</entry><entry thead="no"><para>DPAD_DOWN   </para>
+</entry><entry thead="no"><para>D-pad down    </para>
+</entry></row>
+<row>
+<entry thead="no"><para>0x0004   </para>
+</entry><entry thead="no"><para>DPAD_LEFT   </para>
+</entry><entry thead="no"><para>D-pad left    </para>
+</entry></row>
+<row>
+<entry thead="no"><para>0x0008   </para>
+</entry><entry thead="no"><para>DPAD_RIGHT   </para>
+</entry><entry thead="no"><para>D-pad right   </para>
+</entry></row>
+</table>
+</para>
+<para>DualShock 4 buttons (aliases to Xbox buttons):</para>
+<para><table rows="13" cols="4"><row>
+<entry thead="yes"><para>Value   </para>
+</entry><entry thead="yes"><para>Button   </para>
+</entry><entry thead="yes"><para>Xbox Equivalent   </para>
+</entry><entry thead="yes"><para>Description    </para>
+</entry></row>
+<row>
+<entry thead="no"><para>0x1000   </para>
+</entry><entry thead="no"><para>CROSS   </para>
+</entry><entry thead="no"><para>A   </para>
+</entry><entry thead="no"><para>Cross (X) button    </para>
+</entry></row>
+<row>
+<entry thead="no"><para>0x2000   </para>
+</entry><entry thead="no"><para>CIRCLE   </para>
+</entry><entry thead="no"><para>B   </para>
+</entry><entry thead="no"><para>Circle button    </para>
+</entry></row>
+<row>
+<entry thead="no"><para>0x4000   </para>
+</entry><entry thead="no"><para>SQUARE   </para>
+</entry><entry thead="no"><para>X   </para>
+</entry><entry thead="no"><para>Square button    </para>
+</entry></row>
+<row>
+<entry thead="no"><para>0x8000   </para>
+</entry><entry thead="no"><para>TRIANGLE   </para>
+</entry><entry thead="no"><para>Y   </para>
+</entry><entry thead="no"><para>Triangle button    </para>
+</entry></row>
+<row>
+<entry thead="no"><para>0x0100   </para>
+</entry><entry thead="no"><para>L1   </para>
+</entry><entry thead="no"><para>LB   </para>
+</entry><entry thead="no"><para>L1 button    </para>
+</entry></row>
+<row>
+<entry thead="no"><para>0x0200   </para>
+</entry><entry thead="no"><para>R1   </para>
+</entry><entry thead="no"><para>RB   </para>
+</entry><entry thead="no"><para>R1 button    </para>
+</entry></row>
+<row>
+<entry thead="no"><para>0x0040   </para>
+</entry><entry thead="no"><para>L3   </para>
+</entry><entry thead="no"><para>L_THUMB   </para>
+</entry><entry thead="no"><para>Left stick click    </para>
+</entry></row>
+<row>
+<entry thead="no"><para>0x0080   </para>
+</entry><entry thead="no"><para>R3   </para>
+</entry><entry thead="no"><para>R_THUMB   </para>
+</entry><entry thead="no"><para>Right stick click    </para>
+</entry></row>
+<row>
+<entry thead="no"><para>0x0010   </para>
+</entry><entry thead="no"><para>OPTIONS   </para>
+</entry><entry thead="no"><para>START   </para>
+</entry><entry thead="no"><para>Options button    </para>
+</entry></row>
+<row>
+<entry thead="no"><para>0x0020   </para>
+</entry><entry thead="no"><para>SHARE   </para>
+</entry><entry thead="no"><para>BACK   </para>
+</entry><entry thead="no"><para>Share button    </para>
+</entry></row>
+<row>
+<entry thead="no"><para>0x10000   </para>
+</entry><entry thead="no"><para>PS   </para>
+</entry><entry thead="no"><para>-   </para>
+</entry><entry thead="no"><para>PS button (DS4 special)    </para>
+</entry></row>
+<row>
+<entry thead="no"><para>0x20000   </para>
+</entry><entry thead="no"><para>TOUCHPAD   </para>
+</entry><entry thead="no"><para>-   </para>
+</entry><entry thead="no"><para>Touchpad click (DS4 only)   </para>
+</entry></row>
+</table>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaFramework/MaaDef.h" line="431" column="18" bodyfile="include/MaaFramework/MaaDef.h" bodystart="431" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="typedef" id="MaaDef_8h_1a4970adab630ddcf1e06f84acb415d270" prot="public" static="no">
+        <type>uint64_t</type>
+        <definition>typedef uint64_t MaaGamepadTouch</definition>
+        <argsstring></argsstring>
+        <name>MaaGamepadTouch</name>
+        <briefdescription>
+<para>Virtual gamepad touch contact definitions for touch_down/touch_move/touch_up. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>For gamepad controller, the touch functions are repurposed for analog inputs:<itemizedlist>
+<listitem><para>x, y: Analog stick position</para>
+</listitem><listitem><para>pressure: Trigger value (0~255)</para>
+</listitem></itemizedlist>
+</para>
+<para>Contact mapping:</para>
+<para><table rows="5" cols="6"><row>
+<entry thead="yes"><para>Contact   </para>
+</entry><entry thead="yes"><para>Input   </para>
+</entry><entry thead="yes"><para>x range   </para>
+</entry><entry thead="yes"><para>y range   </para>
+</entry><entry thead="yes"><para>pressure   </para>
+</entry><entry thead="yes"><para>Description    </para>
+</entry></row>
+<row>
+<entry thead="no"><para>0   </para>
+</entry><entry thead="no"><para>Left Stick   </para>
+</entry><entry thead="no"><para>-32768~32767   </para>
+</entry><entry thead="no"><para>-32768~32767   </para>
+</entry><entry thead="no"><para>ignored   </para>
+</entry><entry thead="no"><para>Left analog stick X/Y position    </para>
+</entry></row>
+<row>
+<entry thead="no"><para>1   </para>
+</entry><entry thead="no"><para>Right Stick   </para>
+</entry><entry thead="no"><para>-32768~32767   </para>
+</entry><entry thead="no"><para>-32768~32767   </para>
+</entry><entry thead="no"><para>ignored   </para>
+</entry><entry thead="no"><para>Right analog stick X/Y position    </para>
+</entry></row>
+<row>
+<entry thead="no"><para>2   </para>
+</entry><entry thead="no"><para>Left Trigger   </para>
+</entry><entry thead="no"><para>ignored   </para>
+</entry><entry thead="no"><para>ignored   </para>
+</entry><entry thead="no"><para>0~255   </para>
+</entry><entry thead="no"><para>Left trigger (LT/L2) value    </para>
+</entry></row>
+<row>
+<entry thead="no"><para>3   </para>
+</entry><entry thead="no"><para>Right Trigger   </para>
+</entry><entry thead="no"><para>ignored   </para>
+</entry><entry thead="no"><para>ignored   </para>
+</entry><entry thead="no"><para>0~255   </para>
+</entry><entry thead="no"><para>Right trigger (RT/R2) value   </para>
+</entry></row>
+</table>
+</para>
+<para>Usage:<itemizedlist>
+<listitem><para>touch_down(contact, x, y, pressure): Start analog input</para>
+</listitem><listitem><para>touch_move(contact, x, y, pressure): Update analog input position/value</para>
+</listitem><listitem><para>touch_up(contact): Release/reset analog input to center/zero </para>
+</listitem></itemizedlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaFramework/MaaDef.h" line="487" column="18" bodyfile="include/MaaFramework/MaaDef.h" bodystart="487" bodyend="-1"/>
+      </memberdef>
       <memberdef kind="typedef" id="MaaDef_8h_1a350d60e24f82240806bc6569f4da65f8" prot="public" static="no">
         <type>uint64_t</type>
         <definition>typedef uint64_t MaaControllerFeature</definition>
@@ -1658,10 +2312,11 @@ default value is 4096
         <briefdescription>
         </briefdescription>
         <detaileddescription>
+<para>Controller feature flags returned by get_features(). These flags indicate which input methods the controller supports/prefers. </para>
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="include/MaaFramework/MaaDef.h" line="372" column="18" bodyfile="include/MaaFramework/MaaDef.h" bodystart="372" bodyend="-1"/>
+        <location file="include/MaaFramework/MaaDef.h" line="497" column="18" bodyfile="include/MaaFramework/MaaDef.h" bodystart="497" bodyend="-1"/>
       </memberdef>
       <memberdef kind="typedef" id="MaaDef_8h_1a90ae9b4896224481bd0967903dafdfa1" prot="public" static="no">
         <type>struct <ref refid="structMaaRect" kindref="compound">MaaRect</ref></type>
@@ -1674,7 +2329,7 @@ default value is 4096
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="include/MaaFramework/MaaDef.h" line="383" column="9"/>
+        <location file="include/MaaFramework/MaaDef.h" line="521" column="9"/>
       </memberdef>
       <memberdef kind="typedef" id="MaaDef_8h_1a83fe073ae3fefc09c17fd9eb6b6b3e50" prot="public" static="no">
         <type>void(<ref refid="MaaPort_8h_1afaf570464c85866c04fabe324fe35c18" kindref="member">MAA_CALL</ref> *</type>
@@ -1687,7 +2342,7 @@ default value is 4096
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="include/MaaFramework/MaaDef.h" line="390" column="9" bodyfile="include/MaaFramework/MaaDef.h" bodystart="390" bodyend="-1"/>
+        <location file="include/MaaFramework/MaaDef.h" line="528" column="9" bodyfile="include/MaaFramework/MaaDef.h" bodystart="528" bodyend="-1"/>
       </memberdef>
       <memberdef kind="typedef" id="MaaDef_8h_1a6b9bcefbd6beaf7a0da83c92318a8693" prot="public" static="no">
         <type>void(<ref refid="MaaPort_8h_1afaf570464c85866c04fabe324fe35c18" kindref="member">MAA_CALL</ref> *</type>
@@ -1707,7 +2362,7 @@ default value is 4096
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="include/MaaFramework/MaaDef.h" line="397" column="9" bodyfile="include/MaaFramework/MaaDef.h" bodystart="397" bodyend="-1"/>
+        <location file="include/MaaFramework/MaaDef.h" line="535" column="9" bodyfile="include/MaaFramework/MaaDef.h" bodystart="535" bodyend="-1"/>
       </memberdef>
       <memberdef kind="typedef" id="MaaDef_8h_1a5ea5d33341ce8007c366ebd04f08ee51" prot="public" static="no">
         <type><ref refid="MaaDef_8h_1a2f7289f2a8e07f48c6261b52a120cdf6" kindref="member">MaaBool</ref>(<ref refid="MaaPort_8h_1afaf570464c85866c04fabe324fe35c18" kindref="member">MAA_CALL</ref> *</type>
@@ -1720,7 +2375,7 @@ default value is 4096
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="include/MaaFramework/MaaDef.h" line="399" column="9" bodyfile="include/MaaFramework/MaaDef.h" bodystart="399" bodyend="-1"/>
+        <location file="include/MaaFramework/MaaDef.h" line="537" column="9" bodyfile="include/MaaFramework/MaaDef.h" bodystart="537" bodyend="-1"/>
       </memberdef>
       <memberdef kind="typedef" id="MaaDef_8h_1a5d8d307550fff35a2df364eeac7f5191" prot="public" static="no">
         <type><ref refid="MaaDef_8h_1a2f7289f2a8e07f48c6261b52a120cdf6" kindref="member">MaaBool</ref>(<ref refid="MaaPort_8h_1afaf570464c85866c04fabe324fe35c18" kindref="member">MAA_CALL</ref> *</type>
@@ -1733,7 +2388,7 @@ default value is 4096
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="include/MaaFramework/MaaDef.h" line="411" column="9" bodyfile="include/MaaFramework/MaaDef.h" bodystart="411" bodyend="-1"/>
+        <location file="include/MaaFramework/MaaDef.h" line="549" column="9" bodyfile="include/MaaFramework/MaaDef.h" bodystart="549" bodyend="-1"/>
       </memberdef>
     </sectiondef>
     <briefdescription>
