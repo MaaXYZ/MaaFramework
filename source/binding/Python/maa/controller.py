@@ -745,7 +745,7 @@ class Win32Controller(Controller):
     def __init__(
         self,
         hWnd: Union[ctypes.c_void_p, int, None],
-        screencap_method: int = MaaWin32ScreencapMethodEnum.PrintWindow,
+        screencap_method: int = MaaWin32ScreencapMethodEnum.FramePool,
         mouse_method: int = MaaWin32InputMethodEnum.Seize,
         keyboard_method: int = MaaWin32InputMethodEnum.Seize,
     ):
@@ -889,7 +889,7 @@ class GamepadController(Controller):
         self,
         hWnd: Union[ctypes.c_void_p, int, None],
         gamepad_type: int = MaaGamepadTypeEnum.Xbox360,
-        screencap_method: int = MaaWin32ScreencapMethodEnum.PrintWindow,
+        screencap_method: int = MaaWin32ScreencapMethodEnum.FramePool,
     ):
         """创建虚拟手柄控制器 / Create virtual gamepad controller
 
