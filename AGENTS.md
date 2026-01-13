@@ -220,6 +220,16 @@ MaaFramework/
 5. 在 `test/python/binding_test.py` 添加相应的 API 调用测试
 6. 在 `test/agent/` 中添加 Agent 单元测试，验证远程调用功能
 
+### 修改 NodeJS Binding
+
+当修改 NodeJS Binding 时, 需要注意以下内容:
+
+1. 所有逻辑都在 `source/binding/NodeJS/src/apis` 中
+2. 对于某一个特定内容, 需要联动修改 `.h`, `.cpp`, `.d.ts`
+3. 当接口包含默认参数时, 在 `.h` 中声明的接口应使用 `maajs::OptionalParam` 来包裹对应参数, 在 `.cpp` 中使用 `.value_or()` 提供默认值
+4. 当接口包含 `T | null` 格式时, 使用 `std::optional`
+5. 当发现接口变更无法找到合适的修改位置时, 在 Issue 或 PR 中 @neko-para
+
 **Agent 单元测试说明**：
 
 - `test/agent/agent_main_test.py`：AgentClient 端测试（主进程），负责创建 Resource/Controller/Tasker，并测试 AgentClient 的连接管理、custom_*_list 等 API
