@@ -36,6 +36,10 @@ if(WITH_CUSTOM_CONTROLLER)
     target_compile_definitions(DlopenTesting PRIVATE WITH_CUSTOM_CONTROLLER)
 endif()
 
+if(WITH_GAMEPAD_CONTROLLER)
+    target_compile_definitions(DlopenTesting PRIVATE WITH_GAMEPAD_CONTROLLER)
+endif()
+
 add_dependencies(DlopenTesting LibraryHolder)
 
 set_target_properties(DlopenTesting PROPERTIES FOLDER Testing)
