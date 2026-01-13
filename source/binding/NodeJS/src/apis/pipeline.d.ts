@@ -451,11 +451,11 @@ declare global {
         }
 
         type General<Mode> = {
-            next?: MaybeArray<RemoveIfDump<string, Mode> | NodeAttr<Mode>, Mode>
+            next?: MaybeArray<RemoveIfDump<NodeName, Mode> | NodeAttr<Mode>, Mode>
             rate_limit?: number
             timeout?: number
-            on_error?: MaybeArray<RemoveIfDump<string, Mode> | NodeAttr<Mode>, Mode>
-            anchor?: MaybeArray<string, Mode>
+            on_error?: MaybeArray<RemoveIfDump<NodeName, Mode> | NodeAttr<Mode>, Mode>
+            anchor?: MaybeArray<NodeName, Mode>
             inverse?: boolean
             enabled?: boolean
             max_hit?: number
