@@ -492,6 +492,14 @@
                         "type": "string"
                     }
                 },
+                "controller": {
+                    "type": "array",
+                    "title": "支持的控制器",
+                    "description": "指定该任务支持的控制器类型列表。数组元素应与 controller 配置中的 name 字段对应。若不指定，则表示该任务在所有控制器类型中都可用",
+                    "items": {
+                        "type": "string"
+                    }
+                },
                 "pipeline_override": {
                     "$ref": "#/definitions/pipelineOverride",
                     "title": "Pipeline 覆盖",
