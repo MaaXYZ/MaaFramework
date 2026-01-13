@@ -490,10 +490,26 @@ typedef uint64_t MaaGamepadTouch;
 #define MaaGamepadTouch_LeftTrigger 2
 #define MaaGamepadTouch_RightTrigger 3
 
+/**
+ * Controller feature flags returned by get_features().
+ * These flags indicate which input methods the controller supports/prefers.
+ */
 typedef uint64_t MaaControllerFeature;
+
+/// No special features, controller supports click/swipe/click_key directly.
 #define MaaControllerFeature_None 0
+
+/// Controller prefers touch_down/touch_move/touch_up instead of click/swipe.
+/// When set, ControllerAgent will use touch_down/touch_up to simulate click,
+/// and touch_down/touch_move/touch_up to simulate swipe.
 #define MaaControllerFeature_UseMouseDownAndUpInsteadOfClick 1ULL
+
+/// Controller prefers key_down/key_up instead of click_key.
+/// When set, ControllerAgent will use key_down + key_up to simulate click_key.
 #define MaaControllerFeature_UseKeyboardDownAndUpInsteadOfClick (1ULL << 1)
+
+/// Controller does not scale touch points automatically.
+/// When set, ControllerAgent will skip coordinate scaling for touch operations.
 #define MaaControllerFeature_NoScalingTouchPoints (1ULL << 2)
 
 typedef struct MaaRect
