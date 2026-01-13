@@ -109,7 +109,7 @@ bool GamepadControlUnitMgr::connect()
 
     // Initialize Win32 screencap if hwnd is provided
     if (hwnd_ && screencap_method_ != MaaWin32ScreencapMethod_None) {
-        if (!init_win32_screencap()) {
+        if (!init_win32_unit()) {
             LogWarn << "Failed to initialize Win32 screencap, screencap will not be available";
             // Don't fail the entire connection, gamepad input is still usable
         }
@@ -120,12 +120,8 @@ bool GamepadControlUnitMgr::connect()
     return true;
 }
 
-bool GamepadControlUnitMgr::init_win32_screencap()
+bool GamepadControlUnitMgr::init_win32_unit()
 {
-    if (!hwnd_ || screencap_method_ == MaaWin32ScreencapMethod_None) {
-        return false;
-    }
-
     // Dynamically load MaaWin32ControlUnit.dll
     win32_loader_ = std::make_unique<Win32ControlUnitLoader>();
     if (!win32_loader_->load()) {
@@ -181,7 +177,7 @@ bool GamepadControlUnitMgr::start_app(const std::string& intent)
         return false;
     }
 
-    return win32_loader_->start_app(intent);
+    return win32_unit_->start_app(intent);
 }
 
 bool GamepadControlUnitMgr::stop_app(const std::string& intent)
@@ -191,7 +187,7 @@ bool GamepadControlUnitMgr::stop_app(const std::string& intent)
         return false;
     }
 
-    return win32_loader_->stop_app(intent);
+    return win32_unit_->stop_app(intent);
 }
 
 bool GamepadControlUnitMgr::screencap(cv::Mat& image)

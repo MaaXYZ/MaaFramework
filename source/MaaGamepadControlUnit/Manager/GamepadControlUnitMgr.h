@@ -53,7 +53,7 @@ public:  // from ControlUnitAPI
     virtual bool scroll(int dx, int dy) override;
 
 private:
-    bool init_win32_screencap();
+    bool init_win32_unit();
 
 private:
     HWND hwnd_ = nullptr;
