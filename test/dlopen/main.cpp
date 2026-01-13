@@ -36,6 +36,17 @@ int main()
 
 #endif
 
+#ifdef WITH_PLAYCOVER_CONTROLLER
+
+    std::cout << "********** PlayCoverControlUnitLibraryHolder::create_control_unit **********" << std::endl;
+    auto playcover_handle = MAA_NS::PlayCoverControlUnitLibraryHolder::create_control_unit("127.0.0.1:1717", "com.example.app");
+    if (!playcover_handle) {
+        std::cerr << "Failed to create playcover control unit" << std::endl;
+        return -1;
+    }
+
+#endif
+
 #ifdef WITH_DBG_CONTROLLER
 
     std::cout << "********** DbgControlUnitLibraryHolder::create_control_unit **********" << std::endl;

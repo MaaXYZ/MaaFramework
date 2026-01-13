@@ -178,6 +178,7 @@ MaaFramework/
 
 - [ ] 在 `include/` 中添加 C API 声明
 - [ ] 在 `source/` 中实现功能
+- [ ] 更新 C++20 模块导出（`source/modules/MaaFramework.cppm`）
 - [ ] 更新 MaaAgent（如涉及 Context/Tasker/Resource/Controller 接口）
 - [ ] 更新 Python/NodeJS 绑定
 - [ ] 更新 Pipeline Schema（如涉及）
