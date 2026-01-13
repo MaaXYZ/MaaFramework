@@ -90,7 +90,8 @@ struct InterfaceData
         bool default_check = false;
         json::object pipeline_override;
         std::vector<std::string> option;
-        std::vector<std::string> resource; // 支持的资源包列表
+        std::vector<std::string> resource;    // 支持的资源包列表
+        std::vector<std::string> controller;  // 支持的控制器列表
 
         MEO_JSONIZATION(
             name,
@@ -100,7 +101,8 @@ struct InterfaceData
             MEO_OPT default_check,
             MEO_OPT pipeline_override,
             MEO_OPT option,
-            MEO_OPT resource);
+            MEO_OPT resource,
+            MEO_OPT controller);
     };
 
     struct Option
