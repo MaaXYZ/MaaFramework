@@ -211,32 +211,47 @@ void Interactor::interact()
     }
 }
 
-bool Interactor::run()
+const MAA_PROJECT_INTERFACE_NS::InterfaceData::Controller* Interactor::find_current_controller() const
+{
+    using namespace MAA_PROJECT_INTERFACE_NS;
+
+    const auto& name = config_.configuration().controller.name;
+    auto it = std::ranges::find(config_.interface_data().controller, name, std::mem_fn(&InterfaceData::Controller::name));
+
+    return (it != config_.interface_data().controller.end()) ? &(*it) : nullptr;
+}
+
+bool Interactor::check_and_elevate_if_needed()
 {
 #if defined(_WIN32)
-    // Check elevation requirement right before running tasks. This avoids prompting during controller selection.
-    {
-        using namespace MAA_PROJECT_INTERFACE_NS;
-        const auto& name = config_.configuration().controller.name;
-        auto it = std::ranges::find(config_.interface_data().controller, name, std::mem_fn(&InterfaceData::Controller::name));
-        if (it != config_.interface_data().controller.end() && it->permission_required && !is_running_as_admin()) {
-            std::cout << "\nThis controller requires administrator privileges.\n"
-                         "MaaPiCli will try to restart itself as Administrator to run tasks (UAC prompt will appear).\n\n";
-
-            // Save config first so the elevated instance can reuse it.
-            config_.save(user_path_);
-
-            if (!restart_self_as_admin(L"-d")) {
-                std::cout << "\nFailed to restart as Administrator (UAC may have been cancelled, or the request was denied).\n"
-                             "Please manually start MaaPiCli as Administrator and run again.\n\n";
-                return false;
-            }
-
-            // Elevated instance is being started; exit current process.
-            std::exit(0);
-        }
+    const auto* controller = find_current_controller();
+    if (!controller || !controller->permission_required || is_running_as_admin()) {
+        return true;
     }
+
+    std::cout << "\nThis controller requires administrator privileges.\n"
+                 "MaaPiCli will try to restart itself as Administrator to run tasks (UAC prompt will appear).\n\n";
+
+    config_.save(user_path_);
+
+    if (!restart_self_as_admin(L"-d")) {
+        std::cout << "\nFailed to restart as Administrator (UAC may have been cancelled, or the request was denied).\n"
+                     "Please manually start MaaPiCli as Administrator and run again.\n\n";
+        return false;
+    }
+
+    // Elevated instance is being started; exit current process.
+    std::exit(0);
+#else
+    return true;
 #endif
+}
+
+bool Interactor::run()
+{
+    if (!check_and_elevate_if_needed()) {
+        return false;
+    }
 
     if (!check_validity()) {
         LogError << "Config is invalid";
