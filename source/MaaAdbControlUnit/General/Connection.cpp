@@ -10,6 +10,11 @@ Connection::Connection(std::filesystem::path adb_path, std::string adb_serial)
 {
 }
 
+Connection::~Connection()
+{
+    stop_monitor();
+}
+
 bool Connection::parse(const json::value& config)
 {
     static const json::array kDefaultConnectArgv = {
@@ -22,12 +27,20 @@ bool Connection::parse(const json::value& config)
         "kill-server",
     };
     static const json::array kDefaultTestConnectionArgv = {
-        "{ADB}", "-s", "{ADB_SERIAL}", "shell", "echo Hello MaaFw!",
+        "{ADB}",
+        "-s",
+        "{ADB_SERIAL}",
+        "get-state",
+    };
+    // 使用 cat 等待 stdin，最轻量的长期挂起命令
+    static const json::array kDefaultMonitorArgv = {
+        "{ADB}", "-s", "{ADB_SERIAL}", "shell", "cat",
     };
 
     return parse_command("Connect", config, kDefaultConnectArgv, connect_argv_)
            && parse_command("KillServer", config, kDefaultKillServerArgv, kill_server_argv_)
-           && parse_command("TestConnection", config, kDefaultTestConnectionArgv, test_connection_argv_);
+           && parse_command("TestConnection", config, kDefaultTestConnectionArgv, test_connection_argv_)
+           && parse_command("Monitor", config, kDefaultMonitorArgv, monitor_argv_);
 }
 
 bool Connection::connect()
@@ -43,7 +56,13 @@ bool Connection::connect()
         }
     }
 
-    return test_connection();
+    if (!test_connection()) {
+        return false;
+    }
+
+    start_monitor();
+
+    return true;
 }
 
 bool Connection::kill_server()
@@ -68,7 +87,13 @@ bool Connection::test_connection()
         return false;
     }
 
-    return startup_and_read_pipe(*argv_opt).has_value();
+    auto output_opt = startup_and_read_pipe(*argv_opt);
+    if (!output_opt) {
+        return false;
+    }
+
+    // get-state 返回 "device" 表示设备正常连接，"offline" 或 "bootloader" 表示不可用
+    return output_opt->find("device") != std::string::npos;
 }
 
 bool Connection::connect_remote()
@@ -94,6 +119,41 @@ bool Connection::connect_remote()
 
     LogInfo << "connected";
     return true;
+}
+
+bool Connection::start_monitor()
+{
+    LogFunc;
+
+    stop_monitor();
+
+    auto argv_opt = monitor_argv_.gen(argv_replace_);
+    if (!argv_opt) {
+        LogError << "failed to generate monitor argv";
+        return false;
+    }
+
+    monitor_ios_ = std::make_shared<ChildPipeIOStream>(argv_opt->exec, argv_opt->args);
+
+    LogInfo << "monitor started";
+    return true;
+}
+
+void Connection::stop_monitor()
+{
+    if (monitor_ios_) {
+        LogFunc;
+        monitor_ios_->release();
+        monitor_ios_ = nullptr;
+    }
+}
+
+bool Connection::is_alive() const
+{
+    if (!monitor_ios_) {
+        return false;
+    }
+    return monitor_ios_->is_open();
 }
 
 MAA_CTRL_UNIT_NS_END

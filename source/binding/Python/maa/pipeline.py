@@ -171,6 +171,7 @@ class JClick:
     target: JTarget = True
     target_offset: JRect = (0, 0, 0, 0)
     contact: int = 0
+    pressure: int = 1
 
 
 @dataclass
@@ -179,6 +180,7 @@ class JLongPress:
     target_offset: JRect = (0, 0, 0, 0)
     duration: int = 1000
     contact: int = 0
+    pressure: int = 1
 
 
 @dataclass
@@ -192,6 +194,7 @@ class JSwipe:
     duration: List[int] = field(default_factory=lambda: [200])
     only_hover: bool = False
     contact: int = 0
+    pressure: int = 1
 
 
 @dataclass
@@ -384,7 +387,7 @@ class JPipelineParser:
             print(
                 f"Warning: Failed to create {param_class.__name__} with data {param_data}: {e}"
             )
-            return default_class()
+            return param_class()
 
     @classmethod
     def _parse_recognition_param(

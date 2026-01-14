@@ -207,6 +207,10 @@ class MyController implements maa.CustomControllerActor {
         this.count += 1
         return true
     }
+    connected(): maa.MaybePromise<boolean> {
+        console.log('on MyController.connected')
+        return true
+    }
     request_uuid(): maa.MaybePromise<string | null> {
         console.log('on MyController.request_uuid')
         // this.count += 1

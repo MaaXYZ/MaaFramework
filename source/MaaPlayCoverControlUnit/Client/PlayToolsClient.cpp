@@ -58,7 +58,7 @@ void PlayToolsClient::close()
     }
 }
 
-bool PlayToolsClient::is_connected() const
+bool PlayToolsClient::connected() const
 {
     return socket_.is_open() && screen_size_.first > 0;
 }

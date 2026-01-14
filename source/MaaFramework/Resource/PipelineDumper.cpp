@@ -277,6 +277,7 @@ PipelineV2::JAction PipelineDumper::dump_act(Action::Type type, const Action::Pa
             .target = dump_target(p.target),
             .target_offset = dump_rect(p.target.offset),
             .contact = p.contact,
+            .pressure = p.pressure,
         };
     } break;
 
@@ -287,6 +288,7 @@ PipelineV2::JAction PipelineDumper::dump_act(Action::Type type, const Action::Pa
             .target_offset = dump_rect(p.target.offset),
             .duration = p.duration,
             .contact = p.contact,
+            .pressure = p.pressure,
         };
     } break;
 
@@ -302,6 +304,7 @@ PipelineV2::JAction PipelineDumper::dump_act(Action::Type type, const Action::Pa
             .duration = p.duration,
             .only_hover = p.only_hover,
             .contact = p.contact,
+            .pressure = p.pressure,
         };
     } break;
 
@@ -320,6 +323,7 @@ PipelineV2::JAction PipelineDumper::dump_act(Action::Type type, const Action::Pa
                     .duration = s.duration,
                     .only_hover = s.only_hover,
                     .contact = s.contact,
+                    .pressure = s.pressure,
                 });
         }
         act.param = std::move(jswipes);

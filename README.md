@@ -72,8 +72,8 @@ _✨ 基于图像识别的自动化黑盒测试框架 ✨_
 - [maa-support-extension](https://github.com/neko-para/maa-support-extension) ![Typescript](https://img.shields.io/badge/Typescript-8A2BE2?logo=typescript) ![activity](https://img.shields.io/github/commit-activity/m/neko-para/maa-support-extension?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/neko-para/maa-support-extension?style=social) [![marketplace](https://img.shields.io/badge/Visual%20Studio%20Marketplace-black?logo=vscodium&logoColor=#2F80ED)](https://marketplace.visualstudio.com/items?itemName=nekosu.maa-support)  
   MaaFramework VSCode 插件
 
-- [MFATools](https://github.com/SweetSmellFox/MFATools) ![csharp](https://img.shields.io/badge/C%23-239120?logo=csharp&logoColor=white) ![license](https://img.shields.io/github/license/SweetSmellFox/MFATools) ![activity](https://img.shields.io/github/commit-activity/m/SweetSmellFox/MFATools?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/SweetSmellFox/MFATools?style=social)  
-  基于WPF框架开发的工具界面，旨在提供类似于截图工具的功能
+- [MFAToolsPlus](https://github.com/SweetSmellFox/MFAToolsPlus) ![csharp](https://img.shields.io/badge/C%23-239120?logo=csharp&logoColor=white) ![license](https://img.shields.io/github/license/SweetSmellFox/MFAToolsPlus) ![activity](https://img.shields.io/github/commit-activity/m/SweetSmellFox/MFAToolsPlus?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/SweetSmellFox/MFAToolsPlus?style=social)  
+  基于 Avalonia 框架开发的跨平台开发工具箱，提供便捷的数据获取和模拟测试方法
 
 - [MaaPipelineEditor](https://github.com/kqcoxn/MaaPipelineEditor) ![Typescript](https://img.shields.io/badge/Typescript-8A2BE2?logo=typescript) ![Golang](https://img.shields.io/badge/Go-007d9c?logo=go) ![activity](https://img.shields.io/github/commit-activity/m/kqcoxn/MaaPipelineEditor?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/kqcoxn/MaaPipelineEditor?style=social) [![website](https://img.shields.io/badge/https://mpe.codax.site-%234285F4)](https://mpe.codax.site/stable/)  
   可视化阅读与构建 Pipeline，[功能完备](https://github.com/kqcoxn/MaaPipelineEditor?tab=readme-ov-file#%E4%BA%AE%E7%82%B9)，极致轻量跨平台，提供渐进式[本地功能扩展](https://mpe.codax.site/docs/guide/server/deploy.html)，无缝兼容新旧项目
@@ -164,6 +164,9 @@ _✨ 基于图像识别的自动化黑盒测试框架 ✨_
 - [MaaDuDuL](https://github.com/kqcoxn/MaaDuDuL) ![Pipeline](https://img.shields.io/badge/Pipeline-%23876f69?logo=paddypower&logoColor=%23FFFFFF) ![Python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white) ![license](https://img.shields.io/github/license/kqcoxn/MaaDuDuL) ![activity](https://img.shields.io/github/commit-activity/m/kqcoxn/MaaDuDuL?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/kqcoxn/MaaDuDuL?style=social) [![mirrorc](./docs/static/mirrorc-zh.svg)](https://mirrorchyan.com/zh/projects?source=maafw-badge) [![website](https://img.shields.io/badge/https://mddl.codax.site-%234285F4)](https://mddl.codax.site)  
   嘟嘟脸恶作剧 小助手。图像技术 + 模拟控制，自动捏脸，解放双手！由 MaaFramework 强力驱动！
 
+- [MaaLYSK](https://github.com/Witty36/MaaLYSK) ![Pipeline](https://img.shields.io/badge/Pipeline-%23876f69?logo=paddypower&logoColor=%23FFFFFF) ![Python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white) ![license](https://img.shields.io/github/license/Witty36/MaaLYSK) ![activity](https://img.shields.io/github/commit-activity/m/Witty36/MaaLYSK?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/Witty36/MaaLYSK?style=social) [![mirrorc](./docs/static/mirrorc-zh.svg)](https://mirrorchyan.com/zh/projects?rid=MaaLYSK) [![website](https://img.shields.io/badge/https://maalysk.top-%234285F4)](https://maalysk.top)  
+  恋与深空 小助手。使用图像技术 + 模拟控制，解放双手！由 MaaFramework 强力驱动！
+
 ## 生态共建
 
 MAA 正计划建设为一类项目，而非舟的单一软件。  
@@ -247,6 +250,8 @@ _请留意，仅当您准备开发 MaaFramework 本身时，才需要阅读本�
   A massively spiffy yet delicately unobtrusive compression library.
 - [gzip-hpp](https://github.com/mapbox/gzip-hpp)  
   Gzip header-only C++ library
+- [ViGEmClient](https://github.com/nefarius/ViGEmClient)  
+  ViGEm Client SDK for feeder development.
 - ~~[protobuf](https://github.com/protocolbuffers/protobuf)~~  
   ~~Protocol Buffers - Google's data interchange format~~
 - ~~[grpc](https://github.com/grpc/grpc)~~  

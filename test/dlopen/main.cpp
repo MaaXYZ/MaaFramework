@@ -36,6 +36,17 @@ int main()
 
 #endif
 
+#ifdef WITH_PLAYCOVER_CONTROLLER
+
+    std::cout << "********** PlayCoverControlUnitLibraryHolder::create_control_unit **********" << std::endl;
+    auto playcover_handle = MAA_NS::PlayCoverControlUnitLibraryHolder::create_control_unit("127.0.0.1:1717", "com.example.app");
+    if (!playcover_handle) {
+        std::cerr << "Failed to create playcover control unit" << std::endl;
+        return -1;
+    }
+
+#endif
+
 #ifdef WITH_DBG_CONTROLLER
 
     std::cout << "********** DbgControlUnitLibraryHolder::create_control_unit **********" << std::endl;
@@ -55,6 +66,18 @@ int main()
     auto custom_handle = MAA_NS::CustomControlUnitLibraryHolder::create_control_unit(&callbacks, nullptr);
     if (!custom_handle) {
         std::cerr << "Failed to create custom control unit" << std::endl;
+        return -1;
+    }
+
+#endif
+
+#ifdef WITH_GAMEPAD_CONTROLLER
+
+    std::cout << "********** GamepadControlUnitLibraryHolder::create_control_unit **********" << std::endl;
+    auto gamepad_handle =
+        MAA_NS::GamepadControlUnitLibraryHolder::create_control_unit(nullptr, MaaGamepadType_Xbox360, MaaWin32ScreencapMethod_None);
+    if (!gamepad_handle) {
+        std::cerr << "Failed to create gamepad control unit" << std::endl;
         return -1;
     }
 

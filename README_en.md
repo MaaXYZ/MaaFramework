@@ -75,8 +75,8 @@ It offers low-code simplicity while maintaining high extensibility. The framewor
 - [maa-support-extension](https://github.com/neko-para/maa-support-extension) ![Typescript](https://img.shields.io/badge/Typescript-8A2BE2?logo=typescript) ![activity](https://img.shields.io/github/commit-activity/m/neko-para/maa-support-extension?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/neko-para/maa-support-extension?style=social) [![marketplace](https://img.shields.io/badge/Visual%20Studio%20Marketplace-black?logo=vscodium&logoColor=#2F80ED)](https://marketplace.visualstudio.com/items?itemName=nekosu.maa-support)  
     MaaFramework VSCode Extension
 
-- [MFATools](https://github.com/SweetSmellFox/MFATools) ![csharp](https://img.shields.io/badge/C%23-239120?logo=csharp&logoColor=white) ![license](https://img.shields.io/github/license/SweetSmellFox/MFATools) ![activity](https://img.shields.io/github/commit-activity/m/SweetSmellFox/MFATools?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/SweetSmellFox/MFATools?style=social)  
-    The tool interface is developed based on the WPF framework, aiming to provide functions similar to the screenshot tool.
+- [MFAToolsPlus](https://github.com/SweetSmellFox/MFAToolsPlus) ![csharp](https://img.shields.io/badge/C%23-239120?logo=csharp&logoColor=white) ![license](https://img.shields.io/github/license/SweetSmellFox/MFAToolsPlus) ![activity](https://img.shields.io/github/commit-activity/m/SweetSmellFox/MFAToolsPlus?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/SweetSmellFox/MFAToolsPlus?style=social)  
+  A cross-platform development toolbox built on the Avalonia framework, providing convenient data acquisition and simulation testing methods.
 
 - [MaaPipelineEditor](https://github.com/kqcoxn/MaaPipelineEditor) ![Typescript](https://img.shields.io/badge/Typescript-8A2BE2?logo=typescript) ![Golang](https://img.shields.io/badge/Go-007d9c?logo=go) ![activity](https://img.shields.io/github/commit-activity/m/kqcoxn/MaaPipelineEditor?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/kqcoxn/MaaPipelineEditor?style=social) [![website](https://img.shields.io/badge/https://mpe.codax.site-%234285F4)](https://mpe.codax.site/stable/)  
     Visual reading and construction Pipeline, [fully functional](https://github.com/kqcoxn/MaaPipelineEditor?tab=readme-ov-file#%E4%BA%AE%E7%82%B9), extremely lightweight cross-platform, progressive [local function extension](https://mpe.codax.site/docs/guide/server/deploy.html), seamless compatibility between old and new projects.
@@ -167,6 +167,9 @@ It offers low-code simplicity while maintaining high extensibility. The framewor
 - [MaaDuDuL](https://github.com/kqcoxn/MaaDuDuL) ![Pipeline](https://img.shields.io/badge/Pipeline-%23876f69?logo=paddypower&logoColor=%23FFFFFF) ![Python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white) ![license](https://img.shields.io/github/license/kqcoxn/MaaDuDuL) ![activity](https://img.shields.io/github/commit-activity/m/kqcoxn/MaaDuDuL?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/kqcoxn/MaaDuDuL?style=social) [![mirrorc](./docs/static/mirrorc-en.svg)](https://mirrorchyan.com/en/projects?source=maafw-badge) [![website](https://img.shields.io/badge/https://mddl.codax.site-%234285F4)](https://mddl.codax.site)  
   Assistant for Trickcal. Image technology + simulation control, automatic pinch face, free hands! Powerfully driven by MaaFramework!
 
+- [MaaLYSK](https://github.com/Witty36/MaaLYSK) ![Pipeline](https://img.shields.io/badge/Pipeline-%23876f69?logo=paddypower&logoColor=%23FFFFFF) ![Python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white) ![license](https://img.shields.io/github/license/Witty36/MaaLYSK) ![activity](https://img.shields.io/github/commit-activity/m/Witty36/MaaLYSK?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/Witty36/MaaLYSK?style=social) [![mirrorc](./docs/static/mirrorc-en.svg)](https://mirrorchyan.com/en/projects?rid=MaaLYSK) [![website](https://img.shields.io/badge/https://maalysk.top-%234285F4)](https://maalysk.top)  
+  Assistant for Love and Deepspace. Image technology + simulation control, automatic pinch face, free hands! Powerfully driven by MaaFramework!
+
 ## Eco-Building
 
 MAA is planned to be a category of projects rather than just a single piece of software.
@@ -250,6 +253,8 @@ _Please note that you only need to read this chapter if you are ready to develop
     A massively spiffy yet delicately unobtrusive compression library.
 - [gzip-hpp](https://github.com/mapbox/gzip-hpp)  
     Gzip header-only C++ library
+- [ViGEmClient](https://github.com/nefarius/ViGEmClient)  
+    ViGEm Client SDK for feeder development.
 - ~~[protobuf](https://github.com/protocolbuffers/protobuf)~~  
     ~~Protocol Buffers - Google's data interchange format~~
 - ~~[grpc](https://github.com/grpc/grpc)~~  
