@@ -158,14 +158,14 @@ std::optional<std::wstring> get_current_exe_path()
     return buf;
 }
 
-bool restart_self_as_admin()
+bool restart_self_as_admin(const wchar_t* parameters)
 {
     auto exe = get_current_exe_path();
     if (!exe) {
         return false;
     }
 
-    const auto ret = reinterpret_cast<intptr_t>(ShellExecuteW(nullptr, L"runas", exe->c_str(), nullptr, nullptr, SW_SHOWNORMAL));
+    const auto ret = reinterpret_cast<intptr_t>(ShellExecuteW(nullptr, L"runas", exe->c_str(), parameters, nullptr, SW_SHOWNORMAL));
     return ret > 32;
 }
 #endif
@@ -213,6 +213,31 @@ void Interactor::interact()
 
 bool Interactor::run()
 {
+#if defined(_WIN32)
+    // Check elevation requirement right before running tasks. This avoids prompting during controller selection.
+    {
+        using namespace MAA_PROJECT_INTERFACE_NS;
+        const auto& name = config_.configuration().controller.name;
+        auto it = std::ranges::find(config_.interface_data().controller, name, std::mem_fn(&InterfaceData::Controller::name));
+        if (it != config_.interface_data().controller.end() && it->permission_required && !is_running_as_admin()) {
+            std::cout << "\nThis controller requires administrator privileges.\n"
+                         "MaaPiCli will try to restart itself as Administrator to run tasks (UAC prompt will appear).\n\n";
+
+            // Save config first so the elevated instance can reuse it.
+            config_.save(user_path_);
+
+            if (!restart_self_as_admin(L"-d")) {
+                std::cout << "\nFailed to restart as Administrator (UAC may have been cancelled, or the request was denied).\n"
+                             "Please manually start MaaPiCli as Administrator and run again.\n\n";
+                return false;
+            }
+
+            // Elevated instance is being started; exit current process.
+            std::exit(0);
+        }
+    }
+#endif
+
     if (!check_validity()) {
         LogError << "Config is invalid";
         return false;
@@ -442,29 +467,6 @@ void Interactor::select_controller()
 
     config_.configuration().controller.name = controller.name;
     config_.configuration().controller.type = controller.type;
-
-#if defined(_WIN32)
-    if (controller.permission_required && !is_running_as_admin()) {
-        std::cout << "\n该控制器需要管理员权限运行。\n"
-                     "将尝试以管理员身份重新启动（会弹出 UAC 提示）。\n\n";
-
-        // 先保存配置，确保重启后沿用用户选择
-        config_.save(user_path_);
-
-        mpause();
-
-        if (!restart_self_as_admin()) {
-            std::cout << "\n以管理员身份重新启动失败（可能是你取消了 UAC，或系统拒绝了请求）。\n"
-                         "请重新选择控制器，或手动以管理员身份启动 MaaPiCli。\n\n";
-            mpause();
-            select_controller();
-            return;
-        }
-
-        // 已成功发起提权重启，当前进程退出
-        std::exit(0);
-    }
-#endif
 
     switch (controller.type) {
     case InterfaceData::Controller::Type::Adb:
