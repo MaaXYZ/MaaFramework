@@ -61,6 +61,9 @@ struct InterfaceData
         std::string description;
         Type type = Type::Adb;
 
+        // 是否需要管理员权限（例如某些 Win32 输入方式需要更高权限）
+        bool permission_required = false;
+
         // 分辨率设置，三者互斥
         std::optional<int> display_short_side; // 默认720
         std::optional<int> display_long_side;
@@ -75,6 +78,7 @@ struct InterfaceData
             MEO_OPT label,
             MEO_OPT description,
             type,
+            MEO_OPT permission_required,
             MEO_OPT display_short_side,
             MEO_OPT display_long_side,
             MEO_OPT display_raw,
@@ -103,8 +107,8 @@ struct InterfaceData
         bool default_check = false;
         json::object pipeline_override;
         std::vector<std::string> option;
-        std::vector<std::string> resource;    // 支持的资源包列表
-        std::vector<std::string> controller;  // 支持的控制器列表
+        std::vector<std::string> resource;   // 支持的资源包列表
+        std::vector<std::string> controller; // 支持的控制器列表
 
         MEO_JSONIZATION(
             name,

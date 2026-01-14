@@ -9,6 +9,11 @@
 
 #include <boost/regex.hpp>
 
+#if defined(_WIN32)
+#include "MaaUtils/SafeWindows.hpp"
+#include <shellapi.h>
+#endif
+
 #include "MaaFramework/Utility/MaaBuffer.h"
 #include "MaaToolkit/AdbDevice/MaaToolkitAdbDevice.h"
 #include "MaaToolkit/DesktopWindow/MaaToolkitDesktopWindow.h"
@@ -119,6 +124,53 @@ void clear_screen()
     std::ignore = system("clear");
 #endif
 }
+
+namespace
+{
+#if defined(_WIN32)
+bool is_running_as_admin()
+{
+    BOOL is_member = FALSE;
+
+    // CheckTokenMembership(nullptr, ...) checks the current effective token (UAC-aware).
+    BYTE sid_buffer[SECURITY_MAX_SID_SIZE];
+    DWORD sid_size = sizeof(sid_buffer);
+    PSID admin_sid = sid_buffer;
+
+    if (!CreateWellKnownSid(WinBuiltinAdministratorsSid, nullptr, admin_sid, &sid_size)) {
+        return false;
+    }
+    if (!CheckTokenMembership(nullptr, admin_sid, &is_member)) {
+        return false;
+    }
+    return is_member == TRUE;
+}
+
+std::optional<std::wstring> get_current_exe_path()
+{
+    std::wstring buf;
+    buf.resize(32768);
+    DWORD len = GetModuleFileNameW(nullptr, buf.data(), static_cast<DWORD>(buf.size()));
+    if (len == 0 || len >= buf.size()) {
+        return std::nullopt;
+    }
+    buf.resize(len);
+    return buf;
+}
+
+bool restart_self_as_admin()
+{
+    auto exe = get_current_exe_path();
+    if (!exe) {
+        return false;
+    }
+
+    // 交互式选择控制器触发提权，不需要保留 argv（此处也避免引入参数转义复杂度）。
+    const auto ret = reinterpret_cast<intptr_t>(ShellExecuteW(nullptr, L"runas", exe->c_str(), nullptr, nullptr, SW_SHOWNORMAL));
+    return ret > 32;
+}
+#endif
+} // namespace
 
 Interactor::Interactor(std::filesystem::path user_path)
     : user_path_(std::move(user_path))
@@ -390,6 +442,30 @@ void Interactor::select_controller()
     const auto& controller = all_controllers[index];
 
     config_.configuration().controller.name = controller.name;
+    config_.configuration().controller.type = controller.type;
+
+#if defined(_WIN32)
+    if (controller.permission_required && !is_running_as_admin()) {
+        std::cout << "\n该控制器需要管理员权限运行。\n"
+                     "将尝试以管理员身份重新启动（会弹出 UAC 提示）。\n\n";
+
+        // 先保存配置，确保重启后沿用用户选择
+        config_.save(user_path_);
+
+        mpause();
+
+        if (!restart_self_as_admin()) {
+            std::cout << "\n以管理员身份重新启动失败（可能是你取消了 UAC，或系统拒绝了请求）。\n"
+                         "请重新选择控制器，或手动以管理员身份启动 MaaPiCli。\n\n";
+            mpause();
+            select_controller();
+            return;
+        }
+
+        // 已成功发起提权重启，当前进程退出
+        std::exit(0);
+    }
+#endif
 
     switch (controller.type) {
     case InterfaceData::Controller::Type::Adb:

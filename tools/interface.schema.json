@@ -292,6 +292,12 @@
                     "description": "是否使用原始分辨率进行截图，不进行缩放。与缩放分辨率设置互斥",
                     "default": false
                 },
+                "permission_required": {
+                    "type": "boolean",
+                    "title": "需要管理员权限",
+                    "description": "该控制器是否需要以管理员权限运行（例如某些 Win32 输入方式需要更高权限）。不设置则默认为 false",
+                    "default": false
+                },
                 "adb": {
                     "type": "object",
                     "title": "Adb 控制器配置",
