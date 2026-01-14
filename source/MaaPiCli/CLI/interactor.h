@@ -59,8 +59,15 @@ private:
     // 查找当前配置中选中的 Controller 定义
     const MAA_PROJECT_INTERFACE_NS::InterfaceData::Controller* find_current_controller() const;
 
-    // 在运行前检查是否需要管理员权限，如需提权则保存配置并重启；返回 false 表示需要中断执行
-    bool check_and_elevate_if_needed();
+    enum class ElevationResult
+    {
+        NotNeeded,       // 不需要提权
+        Failed,          // 提权失败
+        ElevatedStarted, // 已启动提权进程,当前进程应退出
+    };
+
+    // 在运行前检查是否需要管理员权限，如需提权则保存配置并重启
+    ElevationResult check_and_elevate_if_needed();
 
 private:
     MAA_PROJECT_INTERFACE_NS::Configurator config_;

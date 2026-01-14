@@ -128,6 +128,14 @@ void clear_screen()
 namespace
 {
 #if defined(_WIN32)
+// Windows path limit: MAX_PATH (260) is insufficient for long paths; use a larger buffer.
+// Modern Windows supports paths up to 32,767 characters with proper configuration.
+constexpr DWORD kMaxPathBuffer = 32768;
+
+// ShellExecuteW return value threshold: values > 32 indicate success, <= 32 indicate error codes.
+// See: https://docs.microsoft.com/en-us/windows/win32/api/shellapi/nf-shellapi-shellexecutew
+constexpr intptr_t kShellExecuteSuccessThreshold = 32;
+
 bool is_running_as_admin()
 {
     BOOL is_member = FALSE;
@@ -149,7 +157,7 @@ bool is_running_as_admin()
 std::optional<std::wstring> get_current_exe_path()
 {
     std::wstring buf;
-    buf.resize(32768);
+    buf.resize(kMaxPathBuffer);
     DWORD len = GetModuleFileNameW(nullptr, buf.data(), static_cast<DWORD>(buf.size()));
     if (len == 0 || len >= buf.size()) {
         return std::nullopt;
@@ -158,15 +166,37 @@ std::optional<std::wstring> get_current_exe_path()
     return buf;
 }
 
-bool restart_self_as_admin(const wchar_t* parameters)
+bool restart_self_as_admin()
 {
     auto exe = get_current_exe_path();
     if (!exe) {
         return false;
     }
 
-    const auto ret = reinterpret_cast<intptr_t>(ShellExecuteW(nullptr, L"runas", exe->c_str(), parameters, nullptr, SW_SHOWNORMAL));
-    return ret > 32;
+    // Preserve original command-line arguments (excluding argv[0], the executable path)
+    std::wstring combined_params;
+    int argc = 0;
+    LPWSTR cmd_line = GetCommandLineW();
+    LPWSTR* argv = nullptr;
+
+    if (cmd_line != nullptr) {
+        argv = CommandLineToArgvW(cmd_line, &argc);
+    }
+
+    if (argv != nullptr && argc > 1) {
+        for (int i = 1; i < argc; ++i) {
+            if (!combined_params.empty()) {
+                combined_params.push_back(L' ');
+            }
+            combined_params.append(argv[i]);
+        }
+        LocalFree(argv);
+    }
+
+    const wchar_t* lpParameters = combined_params.empty() ? nullptr : combined_params.c_str();
+
+    const auto ret = reinterpret_cast<intptr_t>(ShellExecuteW(nullptr, L"runas", exe->c_str(), lpParameters, nullptr, SW_SHOWNORMAL));
+    return ret > kShellExecuteSuccessThreshold;
 }
 #endif
 } // namespace
@@ -221,12 +251,12 @@ const MAA_PROJECT_INTERFACE_NS::InterfaceData::Controller* Interactor::find_curr
     return (it != config_.interface_data().controller.end()) ? &(*it) : nullptr;
 }
 
-bool Interactor::check_and_elevate_if_needed()
+Interactor::ElevationResult Interactor::check_and_elevate_if_needed()
 {
 #if defined(_WIN32)
     const auto* controller = find_current_controller();
     if (!controller || !controller->permission_required || is_running_as_admin()) {
-        return true;
+        return ElevationResult::NotNeeded;
     }
 
     std::cout << "\nThis controller requires administrator privileges.\n"
@@ -234,23 +264,28 @@ bool Interactor::check_and_elevate_if_needed()
 
     config_.save(user_path_);
 
-    if (!restart_self_as_admin(L"-d")) {
+    if (!restart_self_as_admin()) {
         std::cout << "\nFailed to restart as Administrator (UAC may have been cancelled, or the request was denied).\n"
                      "Please manually start MaaPiCli as Administrator and run again.\n\n";
-        return false;
+        return ElevationResult::Failed;
     }
 
-    // Elevated instance is being started; exit current process.
-    std::exit(0);
+    // Elevated instance has been started; caller should exit current process.
+    return ElevationResult::ElevatedStarted;
 #else
-    return true;
+    return ElevationResult::NotNeeded;
 #endif
 }
 
 bool Interactor::run()
 {
-    if (!check_and_elevate_if_needed()) {
+    auto elevation_result = check_and_elevate_if_needed();
+    if (elevation_result == ElevationResult::Failed) {
         return false;
+    }
+    if (elevation_result == ElevationResult::ElevatedStarted) {
+        // Elevated instance is now running; signal caller to exit gracefully.
+        return true;
     }
 
     if (!check_validity()) {
