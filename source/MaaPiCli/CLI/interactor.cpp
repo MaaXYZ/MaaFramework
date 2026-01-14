@@ -768,23 +768,29 @@ void Interactor::add_task()
 
     const auto& all_data_tasks = config_.interface_data().task;
     const auto& current_resource = config_.configuration().resource;
+    const auto& current_controller = config_.configuration().controller.name;
 
     if (all_data_tasks.empty()) {
         LogError << "Task is empty";
         return;
     }
 
-    // Filter tasks by current resource
+    // Filter tasks by current resource and controller
     std::vector<const InterfaceData::Task*> available_tasks;
     for (const auto& task : all_data_tasks) {
         // If resource list is empty, task supports all resources
-        if (task.resource.empty() || std::ranges::find(task.resource, current_resource) != task.resource.end()) {
-            available_tasks.push_back(&task);
+        if (!task.resource.empty() && std::ranges::find(task.resource, current_resource) == task.resource.end()) {
+            continue;
         }
+        // If controller list is empty, task supports all controllers
+        if (!task.controller.empty() && std::ranges::find(task.controller, current_controller) == task.controller.end()) {
+            continue;
+        }
+        available_tasks.push_back(&task);
     }
 
     if (available_tasks.empty()) {
-        LogError << "No task available for resource" << VAR(current_resource);
+        LogError << "No task available for resource" << VAR(current_resource) << "and controller" << VAR(current_controller);
         return;
     }
 
@@ -827,6 +833,7 @@ void Interactor::add_default_tasks()
 
     const auto& all_data_tasks = config_.interface_data().task;
     const auto& current_resource = config_.configuration().resource;
+    const auto& current_controller = config_.configuration().controller.name;
 
     for (const auto& task : all_data_tasks) {
         // Skip tasks without default_check
@@ -836,6 +843,11 @@ void Interactor::add_default_tasks()
 
         // Check if task supports current resource
         if (!task.resource.empty() && std::ranges::find(task.resource, current_resource) == task.resource.end()) {
+            continue;
+        }
+
+        // Check if task supports current controller
+        if (!task.controller.empty() && std::ranges::find(task.controller, current_controller) == task.controller.end()) {
             continue;
         }
 
