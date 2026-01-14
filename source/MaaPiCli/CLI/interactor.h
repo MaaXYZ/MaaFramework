@@ -56,6 +56,19 @@ private:
     // 读取文本内容：如果是文件路径则读取文件，否则直接返回；支持翻译
     std::string read_text_content(const std::string& text) const;
 
+    // 查找当前配置中选中的 Controller 定义
+    const MAA_PROJECT_INTERFACE_NS::InterfaceData::Controller* find_current_controller() const;
+
+    enum class ElevationResult
+    {
+        NotNeeded,       // 不需要提权
+        Failed,          // 提权失败
+        ElevatedStarted, // 已启动提权进程,当前进程应退出
+    };
+
+    // 在运行前检查是否需要管理员权限，如需提权则保存配置并重启
+    ElevationResult check_and_elevate_if_needed();
+
 private:
     MAA_PROJECT_INTERFACE_NS::Configurator config_;
     std::filesystem::path user_path_;

@@ -9,6 +9,11 @@
 
 #include <boost/regex.hpp>
 
+#if defined(_WIN32)
+#include "MaaUtils/SafeWindows.hpp"
+#include <shellapi.h>
+#endif
+
 #include "MaaFramework/Utility/MaaBuffer.h"
 #include "MaaToolkit/AdbDevice/MaaToolkitAdbDevice.h"
 #include "MaaToolkit/DesktopWindow/MaaToolkitDesktopWindow.h"
@@ -120,6 +125,82 @@ void clear_screen()
 #endif
 }
 
+namespace
+{
+#if defined(_WIN32)
+// Windows path limit: MAX_PATH (260) is insufficient for long paths; use a larger buffer.
+// Modern Windows supports paths up to 32,767 characters with proper configuration.
+constexpr DWORD kMaxPathBuffer = 32768;
+
+// ShellExecuteW return value threshold: values > 32 indicate success, <= 32 indicate error codes.
+// See: https://docs.microsoft.com/en-us/windows/win32/api/shellapi/nf-shellapi-shellexecutew
+constexpr intptr_t kShellExecuteSuccessThreshold = 32;
+
+bool is_running_as_admin()
+{
+    BOOL is_member = FALSE;
+
+    // CheckTokenMembership(nullptr, ...) checks the current effective token (UAC-aware).
+    BYTE sid_buffer[SECURITY_MAX_SID_SIZE] = {};
+    DWORD sid_size = sizeof(sid_buffer);
+    PSID admin_sid = sid_buffer;
+
+    if (!CreateWellKnownSid(WinBuiltinAdministratorsSid, nullptr, admin_sid, &sid_size)) {
+        return false;
+    }
+    if (!CheckTokenMembership(nullptr, admin_sid, &is_member)) {
+        return false;
+    }
+    return is_member == TRUE;
+}
+
+std::optional<std::wstring> get_current_exe_path()
+{
+    std::wstring buf;
+    buf.resize(kMaxPathBuffer);
+    DWORD len = GetModuleFileNameW(nullptr, buf.data(), static_cast<DWORD>(buf.size()));
+    if (len == 0 || len >= buf.size()) {
+        return std::nullopt;
+    }
+    buf.resize(len);
+    return buf;
+}
+
+bool restart_self_as_admin()
+{
+    auto exe = get_current_exe_path();
+    if (!exe) {
+        return false;
+    }
+
+    // Preserve original command-line arguments (excluding argv[0], the executable path)
+    std::wstring combined_params;
+    int argc = 0;
+    LPWSTR cmd_line = GetCommandLineW();
+    LPWSTR* argv = nullptr;
+
+    if (cmd_line != nullptr) {
+        argv = CommandLineToArgvW(cmd_line, &argc);
+    }
+
+    if (argv != nullptr && argc > 1) {
+        for (int i = 1; i < argc; ++i) {
+            if (!combined_params.empty()) {
+                combined_params.push_back(L' ');
+            }
+            combined_params.append(argv[i]);
+        }
+        LocalFree(argv);
+    }
+
+    const wchar_t* lpParameters = combined_params.empty() ? nullptr : combined_params.c_str();
+
+    const auto ret = reinterpret_cast<intptr_t>(ShellExecuteW(nullptr, L"runas", exe->c_str(), lpParameters, nullptr, SW_SHOWNORMAL));
+    return ret > kShellExecuteSuccessThreshold;
+}
+#endif
+} // namespace
+
 Interactor::Interactor(std::filesystem::path user_path)
     : user_path_(std::move(user_path))
 {
@@ -160,8 +241,53 @@ void Interactor::interact()
     }
 }
 
+const MAA_PROJECT_INTERFACE_NS::InterfaceData::Controller* Interactor::find_current_controller() const
+{
+    using namespace MAA_PROJECT_INTERFACE_NS;
+
+    const auto& name = config_.configuration().controller.name;
+    auto it = std::ranges::find(config_.interface_data().controller, name, std::mem_fn(&InterfaceData::Controller::name));
+
+    return (it != config_.interface_data().controller.end()) ? &(*it) : nullptr;
+}
+
+Interactor::ElevationResult Interactor::check_and_elevate_if_needed()
+{
+#if defined(_WIN32)
+    const auto* controller = find_current_controller();
+    if (!controller || !controller->permission_required || is_running_as_admin()) {
+        return ElevationResult::NotNeeded;
+    }
+
+    std::cout << "\nThis controller requires administrator privileges.\n"
+                 "MaaPiCli will try to restart itself as Administrator to run tasks (UAC prompt will appear).\n\n";
+
+    config_.save(user_path_);
+
+    if (!restart_self_as_admin()) {
+        std::cout << "\nFailed to restart as Administrator (UAC may have been cancelled, or the request was denied).\n"
+                     "Please manually start MaaPiCli as Administrator and run again.\n\n";
+        return ElevationResult::Failed;
+    }
+
+    // Elevated instance has been started; caller should exit current process.
+    return ElevationResult::ElevatedStarted;
+#else
+    return ElevationResult::NotNeeded;
+#endif
+}
+
 bool Interactor::run()
 {
+    auto elevation_result = check_and_elevate_if_needed();
+    if (elevation_result == ElevationResult::Failed) {
+        return false;
+    }
+    if (elevation_result == ElevationResult::ElevatedStarted) {
+        // Elevated instance is now running; signal caller to exit gracefully.
+        return true;
+    }
+
     if (!check_validity()) {
         LogError << "Config is invalid";
         return false;
@@ -390,6 +516,7 @@ void Interactor::select_controller()
     const auto& controller = all_controllers[index];
 
     config_.configuration().controller.name = controller.name;
+    config_.configuration().controller.type = controller.type;
 
     switch (controller.type) {
     case InterfaceData::Controller::Type::Adb:
