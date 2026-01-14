@@ -133,7 +133,7 @@ bool is_running_as_admin()
     BOOL is_member = FALSE;
 
     // CheckTokenMembership(nullptr, ...) checks the current effective token (UAC-aware).
-    BYTE sid_buffer[SECURITY_MAX_SID_SIZE];
+    BYTE sid_buffer[SECURITY_MAX_SID_SIZE] = {};
     DWORD sid_size = sizeof(sid_buffer);
     PSID admin_sid = sid_buffer;
 
@@ -165,7 +165,6 @@ bool restart_self_as_admin()
         return false;
     }
 
-    // 交互式选择控制器触发提权，不需要保留 argv（此处也避免引入参数转义复杂度）。
     const auto ret = reinterpret_cast<intptr_t>(ShellExecuteW(nullptr, L"runas", exe->c_str(), nullptr, nullptr, SW_SHOWNORMAL));
     return ret > 32;
 }
