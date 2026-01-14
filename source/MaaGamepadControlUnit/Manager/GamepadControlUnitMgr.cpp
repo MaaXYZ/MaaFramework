@@ -4,6 +4,7 @@
 #include "Input/ViGEmInput.h"
 #include "MaaUtils/LibraryHolder.h"
 #include "MaaUtils/Logger.h"
+#include "MaaUtils/Runtime.h"
 
 MAA_CTRL_UNIT_NS_BEGIN
 
@@ -18,7 +19,7 @@ public:
     bool load()
     {
 #ifdef _WIN32
-        if (!load_library("MaaWin32ControlUnit")) {
+        if (!load_library(library_dir() / "MaaWin32ControlUnit")) {
             LogError << "Failed to load MaaWin32ControlUnit library";
             return false;
         }

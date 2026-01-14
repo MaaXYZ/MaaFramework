@@ -3,6 +3,7 @@
 #include <algorithm>
 
 #include "MaaUtils/Logger.h"
+#include "MaaUtils/Runtime.h"
 
 MAA_CTRL_UNIT_NS_BEGIN
 
@@ -22,7 +23,7 @@ ViGEmInput::~ViGEmInput()
 
 bool ViGEmInput::load_vigem_library()
 {
-    if (!load_library("ViGEmClient")) {
+    if (!load_library(library_dir() / "ViGEmClient")) {
         LogError << "Failed to load ViGEmClient library";
         return false;
     }
