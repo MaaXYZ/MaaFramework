@@ -430,11 +430,15 @@ declare global {
             | MixAct<'Shell', ActionShell<Mode>, Mode>
             | MixAct<'Custom', ActionCustom<Mode>, Mode>
 
-        type NodeAttr = {
-            name: string
-            jump_back: boolean
-            anchor: boolean
-        }
+        type NodeAttr<Mode> = RequiredIfStrict<
+            {
+                name?: string
+                jump_back?: boolean
+                anchor?: boolean
+            },
+            'name',
+            Mode
+        >
 
         type WaitFreeze = {
             time?: number
@@ -447,11 +451,11 @@ declare global {
         }
 
         type General<Mode> = {
-            next?: MaybeArray<NodeAttr, Mode>
+            next?: MaybeArray<RemoveIfDump<NodeName, Mode> | NodeAttr<Mode>, Mode>
             rate_limit?: number
             timeout?: number
-            on_error?: MaybeArray<NodeAttr, Mode>
-            anchor?: MaybeArray<string, Mode>
+            on_error?: MaybeArray<RemoveIfDump<NodeName, Mode> | NodeAttr<Mode>, Mode>
+            anchor?: MaybeArray<NodeName, Mode>
             inverse?: boolean
             enabled?: boolean
             max_hit?: number

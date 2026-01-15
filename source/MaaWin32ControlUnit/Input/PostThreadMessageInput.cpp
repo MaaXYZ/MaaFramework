@@ -17,9 +17,10 @@ PostThreadMessageInput::PostThreadMessageInput(HWND hwnd)
     }
 }
 
-void PostThreadMessageInput::ensure_foreground()
+void PostThreadMessageInput::send_activate()
 {
-    ::MaaNS::CtrlUnitNs::ensure_foreground(hwnd_);
+    // PostThreadMessage 模式使用 PostMessage 发送激活消息
+    ::MaaNS::CtrlUnitNs::send_activate_message(hwnd_, true);
 }
 
 std::pair<int, int> PostThreadMessageInput::get_target_pos() const
@@ -41,15 +42,21 @@ MaaControllerFeature PostThreadMessageInput::get_features() const
     return MaaControllerFeature_UseMouseDownAndUpInsteadOfClick | MaaControllerFeature_UseKeyboardDownAndUpInsteadOfClick;
 }
 
+// get_features() 返回 MaaControllerFeature_UseMouseDownAndUpInsteadOfClick，
+// 上层 ControllerAgent 会使用 touch_down/touch_up 替代 click/swipe
 bool PostThreadMessageInput::click(int x, int y)
 {
-    LogError << "deprecated" << VAR(x) << VAR(y);
+    LogError << "deprecated: get_features() returns MaaControllerFeature_UseMouseDownAndUpInsteadOfClick, "
+                "use touch_down/touch_up instead"
+             << VAR(x) << VAR(y);
     return false;
 }
 
 bool PostThreadMessageInput::swipe(int x1, int y1, int x2, int y2, int duration)
 {
-    LogError << "deprecated" << VAR(x1) << VAR(y1) << VAR(x2) << VAR(y2) << VAR(duration);
+    LogError << "deprecated: get_features() returns MaaControllerFeature_UseMouseDownAndUpInsteadOfClick, "
+                "use touch_down/touch_move/touch_up instead"
+             << VAR(x1) << VAR(y1) << VAR(x2) << VAR(y2) << VAR(duration);
     return false;
 }
 
@@ -64,7 +71,7 @@ bool PostThreadMessageInput::touch_down(int contact, int x, int y, int pressure)
         return false;
     }
 
-    ensure_foreground();
+    send_activate();
 
     touch_move(contact, x, y, pressure);
 
@@ -117,7 +124,7 @@ bool PostThreadMessageInput::touch_up(int contact)
         return false;
     }
 
-    ensure_foreground();
+    send_activate();
 
     MouseMessageInfo msg_info;
     if (!contact_to_mouse_up_message(contact, msg_info)) {
@@ -131,9 +138,13 @@ bool PostThreadMessageInput::touch_up(int contact)
     return true;
 }
 
+// get_features() 返回 MaaControllerFeature_UseKeyboardDownAndUpInsteadOfClick，
+// 上层 ControllerAgent 会使用 key_down/key_up 替代 click_key
 bool PostThreadMessageInput::click_key(int key)
 {
-    LogError << "deprecated" << VAR(key);
+    LogError << "deprecated: get_features() returns MaaControllerFeature_UseKeyboardDownAndUpInsteadOfClick, "
+                "use key_down/key_up instead"
+             << VAR(key);
     return false;
 }
 
@@ -146,7 +157,7 @@ bool PostThreadMessageInput::input_text(const std::string& text)
         return false;
     }
 
-    ensure_foreground();
+    send_activate();
 
     // 文本输入仅发送 WM_CHAR
     for (const auto ch : to_u16(text)) {
@@ -163,7 +174,7 @@ bool PostThreadMessageInput::key_down(int key)
         return false;
     }
 
-    ensure_foreground();
+    send_activate();
 
     LPARAM lParam = make_keydown_lparam(key);
     PostThreadMessage(thread_id_, WM_KEYDOWN, static_cast<WPARAM>(key), lParam);
@@ -177,7 +188,7 @@ bool PostThreadMessageInput::key_up(int key)
         return false;
     }
 
-    ensure_foreground();
+    send_activate();
 
     LPARAM lParam = make_keyup_lparam(key);
     PostThreadMessage(thread_id_, WM_KEYUP, static_cast<WPARAM>(key), lParam);
@@ -193,7 +204,7 @@ bool PostThreadMessageInput::scroll(int dx, int dy)
         return false;
     }
 
-    ensure_foreground();
+    send_activate();
 
     auto target_pos = get_target_pos();
 

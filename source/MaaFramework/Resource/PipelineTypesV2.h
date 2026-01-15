@@ -166,8 +166,9 @@ struct JClick
     JTarget target;
     JRect target_offset {};
     uint32_t contact = 0;
+    int32_t pressure = 1;
 
-    MEO_TOJSON(target, target_offset, contact);
+    MEO_TOJSON(target, target_offset, contact, pressure);
 };
 
 struct JLongPress
@@ -176,7 +177,8 @@ struct JLongPress
     JRect target_offset {};
     uint32_t duration = 0;
     uint32_t contact = 0;
-    MEO_TOJSON(target, target_offset, duration, contact);
+    int32_t pressure = 1;
+    MEO_TOJSON(target, target_offset, duration, contact, pressure);
 };
 
 struct JSwipe
@@ -190,7 +192,8 @@ struct JSwipe
     std::vector<uint32_t> duration;
     bool only_hover = false;
     uint32_t contact = 0;
-    MEO_TOJSON(starting, begin, begin_offset, end, end_offset, end_hold, duration, only_hover, contact);
+    int32_t pressure = 1;
+    MEO_TOJSON(starting, begin, begin_offset, end, end_offset, end_hold, duration, only_hover, contact, pressure);
 };
 
 struct JMultiSwipe

@@ -299,7 +299,7 @@ MaaBool MaaContextGetHitCount(MaaContext* context, const char* node_name, MaaSiz
         return false;
     }
 
-    *count = context->get_hit_count(node_name);
+    *count = static_cast<MaaSize>(context->get_hit_count(node_name));
     return true;
 }
 

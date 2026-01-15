@@ -27,7 +27,7 @@ on:
     workflow_dispatch:
 
 concurrency:
-    group: ${{ github.workflow }}-${{ github.event.pull_request.head.repo.full_name || github.repository }}-${{ github.head_ref || github.ref_name }}${{ github.ref == 'refs/heads/dev' && format('-{0}', github.sha) || '' }}
+    group: ${{ github.workflow }}-${{ github.event.pull_request.head.repo.full_name || github.repository }}-${{ github.head_ref || github.ref_name }}${{ github.ref == 'refs/heads/main' && format('-{0}', github.sha) || '' }}
     cancel-in-progress: true
 
 jobs:
@@ -144,6 +144,7 @@ jobs:
               run: |
                   python3 -m pip install ./source/binding/Python
                   python3 ./test/python/binding_test.py ./source/binding/Python ./install
+                  python3 ./test/python/pipeline_test.py ./source/binding/Python ./install
                   python3 ./test/agent/agent_main_test.py ./source/binding/Python ./install
 
             - name: Run NodeJS testing
@@ -271,6 +272,7 @@ jobs:
                   source .venv/bin/activate
                   python3 -m pip install ./source/binding/Python
                   python3 ./test/python/binding_test.py ./source/binding/Python ./install
+                  python3 ./test/python/pipeline_test.py ./source/binding/Python ./install
                   python3 ./test/agent/agent_main_test.py ./source/binding/Python ./install
 
             - name: Run NodeJS testing
@@ -398,6 +400,7 @@ jobs:
                   source .venv/bin/activate
                   python3 -m pip install ./source/binding/Python
                   python3 ./test/python/binding_test.py ./source/binding/Python ./install
+                  python3 ./test/python/pipeline_test.py ./source/binding/Python ./install
                   python3 ./test/agent/agent_main_test.py ./source/binding/Python ./install
 
             - name: Run NodeJS testing

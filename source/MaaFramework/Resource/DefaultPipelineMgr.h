@@ -22,12 +22,27 @@ public:
 public:
     const PipelineData& get_pipeline() const { return pipeline_param_; }
 
+    template <typename T>
+    struct is_shared_ptr : std::false_type
+    {
+    };
+
+    template <typename T>
+    struct is_shared_ptr<std::shared_ptr<T>> : std::true_type
+    {
+    };
+
     template <typename RecoParam>
     RecoParam get_recognition_param(Recognition::Type type) const
     {
         auto iter = recognition_param_.find(type);
         if (iter == recognition_param_.end()) {
-            return {};
+            if constexpr (is_shared_ptr<RecoParam>::value) {
+                return std::make_shared<typename RecoParam::element_type>();
+            }
+            else {
+                return {};
+            }
         }
         return std::get<RecoParam>(iter->second);
     }

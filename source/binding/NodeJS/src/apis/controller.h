@@ -37,9 +37,23 @@ struct ControllerImpl : public maajs::NativeClassBase
     void set_screenshot_target_short_side(int32_t value);
     void set_screenshot_use_raw_size(bool value);
     maajs::ValueType post_connection(maajs::ValueType self, maajs::EnvType env);
-    maajs::ValueType post_click(maajs::ValueType self, maajs::EnvType env, int32_t x, int32_t y);
-    maajs::ValueType
-        post_swipe(maajs::ValueType self, maajs::EnvType env, int32_t x1, int32_t y1, int32_t x2, int32_t y2, int32_t duration);
+    maajs::ValueType post_click(
+        maajs::ValueType self,
+        maajs::EnvType env,
+        int32_t x,
+        int32_t y,
+        maajs::OptionalParam<int32_t> contact,
+        maajs::OptionalParam<int32_t> pressure);
+    maajs::ValueType post_swipe(
+        maajs::ValueType self,
+        maajs::EnvType env,
+        int32_t x1,
+        int32_t y1,
+        int32_t x2,
+        int32_t y2,
+        int32_t duration,
+        maajs::OptionalParam<int32_t> contact,
+        maajs::OptionalParam<int32_t> pressure);
     maajs::ValueType post_click_key(maajs::ValueType self, maajs::EnvType env, int32_t keycode);
     maajs::ValueType post_input_text(maajs::ValueType self, maajs::EnvType env, std::string text);
     maajs::ValueType post_start_app(maajs::ValueType self, maajs::EnvType env, std::string intent);
@@ -56,6 +70,7 @@ struct ControllerImpl : public maajs::NativeClassBase
     bool get_connected();
     std::optional<maajs::ArrayBufferType> get_cached_image();
     std::optional<std::string> get_uuid();
+    std::optional<std::tuple<int32_t, int32_t>> get_resolution();
 
     std::string to_string() override;
 
@@ -101,7 +116,6 @@ struct Win32ControllerImpl : public ControllerImpl
     static void init_proto(maajs::ObjectType proto, maajs::FunctionType ctor);
 };
 
-#ifdef __APPLE__
 using PlayCoverControllerCtorParam = std::tuple<std::string, std::string>;
 
 struct PlayCoverControllerImpl : public ControllerImpl
@@ -113,7 +127,6 @@ struct PlayCoverControllerImpl : public ControllerImpl
     static PlayCoverControllerImpl* ctor(const maajs::CallbackInfo&);
     static void init_proto(maajs::ObjectType proto, maajs::FunctionType ctor);
 };
-#endif
 
 using DbgControllerCtorParam = std::tuple<std::string, std::string, MaaDbgControllerType, std::string>;
 
@@ -124,6 +137,18 @@ struct DbgControllerImpl : public ControllerImpl
     constexpr static char name[] = "DbgController";
 
     static DbgControllerImpl* ctor(const maajs::CallbackInfo&);
+    static void init_proto(maajs::ObjectType proto, maajs::FunctionType ctor);
+};
+
+using GamepadControllerCtorParam = std::tuple<std::optional<uintptr_t>, MaaGamepadType, MaaWin32ScreencapMethod>;
+
+struct GamepadControllerImpl : public ControllerImpl
+{
+    using ControllerImpl::ControllerImpl;
+
+    constexpr static char name[] = "GamepadController";
+
+    static GamepadControllerImpl* ctor(const maajs::CallbackInfo&);
     static void init_proto(maajs::ObjectType proto, maajs::FunctionType ctor);
 };
 

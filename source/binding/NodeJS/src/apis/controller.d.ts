@@ -138,13 +138,20 @@ declare global {
             set screenshot_use_raw_size(value: boolean)
 
             post_connection(): Job<CtrlId, Controller>
-            post_click(x: number, y: number): Job<CtrlId, Controller>
+            post_click(
+                x: number,
+                y: number,
+                contact?: number,
+                pressure?: number,
+            ): Job<CtrlId, Controller>
             post_swipe(
                 x1: number,
                 y1: number,
                 x2: number,
                 y2: number,
                 duration: number,
+                contact?: number,
+                pressure?: number,
             ): Job<CtrlId, Controller>
             post_click_key(keycode: number): Job<CtrlId, Controller>
             post_input_text(text: string): Job<CtrlId, Controller>
@@ -180,6 +187,7 @@ declare global {
             get connected(): boolean
             get cached_image(): ImageData | null
             get uuid(): string | null
+            get resolution(): [width: number, height: number] | null
         }
 
         type AdbDevice = [
@@ -231,8 +239,28 @@ declare global {
             )
         }
 
+        /**
+         * Virtual gamepad controller for Windows (requires ViGEm Bus Driver).
+         *
+         * Control mapping:
+         * - click_key/key_down/key_up: Digital buttons (use GamepadButton constants)
+         * - touch_down/touch_move/touch_up: Analog sticks and triggers (use GamepadContact constants)
+         *   - contact 0: Left stick (x, y: -32768~32767)
+         *   - contact 1: Right stick (x, y: -32768~32767)
+         *   - contact 2: Left trigger (pressure: 0~255)
+         *   - contact 3: Right trigger (pressure: 0~255)
+         */
+        class GamepadController extends Controller {
+            constructor(
+                hwnd: DesktopHandle | null, // Window handle for screencap (can be null)
+                gamepad_type: Uint64, // GamepadType (Xbox360 or DualShock4)
+                screencap_method: ScreencapOrInputMethods,
+            )
+        }
+
         interface CustomControllerActor {
             connect?(): maa.MaybePromise<boolean>
+            connected?(): maa.MaybePromise<boolean>
             request_uuid?(): maa.MaybePromise<string | null>
             get_features?(): maa.MaybePromise<null | ('mouse' | 'keyboard')[]>
             start_app?(intent: string): maa.MaybePromise<boolean>

@@ -88,4 +88,17 @@ private:
     inline static const std::string destroy_func_name_ = "MaaPlayCoverControlUnitDestroy";
 };
 
+class GamepadControlUnitLibraryHolder : public LibraryHolder<GamepadControlUnitLibraryHolder>
+{
+public:
+    static std::shared_ptr<MAA_CTRL_UNIT_NS::Win32ControlUnitAPI>
+        create_control_unit(void* hWnd, MaaGamepadType gamepad_type, MaaWin32ScreencapMethod screencap_method);
+
+private:
+    inline static const std::filesystem::path libname_ = MAA_NS::path("MaaGamepadControlUnit");
+    inline static const std::string version_func_name_ = "MaaGamepadControlUnitGetVersion";
+    inline static const std::string create_func_name_ = "MaaGamepadControlUnitCreate";
+    inline static const std::string destroy_func_name_ = "MaaGamepadControlUnitDestroy";
+};
+
 MAA_NS_END

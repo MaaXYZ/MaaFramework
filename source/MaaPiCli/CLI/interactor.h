@@ -25,6 +25,7 @@ private:
 
     bool select_win32_hwnd(const MAA_PROJECT_INTERFACE_NS::InterfaceData::Controller::Win32Config& win32_config);
     void select_playcover(const MAA_PROJECT_INTERFACE_NS::InterfaceData::Controller::PlayCoverConfig& playcover_config);
+    void select_gamepad(const MAA_PROJECT_INTERFACE_NS::InterfaceData::Controller::GamepadConfig& gamepad_config);
 
     void select_resource();
     void add_task();
@@ -47,12 +48,26 @@ private:
     void mpause() const;
 
     static std::string format_win32_config(const MAA_PROJECT_INTERFACE_NS::Configuration::Win32Config& win32_config);
+    static std::string format_gamepad_config(const MAA_PROJECT_INTERFACE_NS::Configuration::GamepadConfig& gamepad_config);
 
     // 获取翻译后的显示名称：优先使用翻译后的 label，否则使用 name
     std::string get_display_name(const std::string& name, const std::string& label) const;
 
     // 读取文本内容：如果是文件路径则读取文件，否则直接返回；支持翻译
     std::string read_text_content(const std::string& text) const;
+
+    // 查找当前配置中选中的 Controller 定义
+    const MAA_PROJECT_INTERFACE_NS::InterfaceData::Controller* find_current_controller() const;
+
+    enum class ElevationResult
+    {
+        NotNeeded,       // 不需要提权
+        Failed,          // 提权失败
+        ElevatedStarted, // 已启动提权进程,当前进程应退出
+    };
+
+    // 在运行前检查是否需要管理员权限，如需提权则保存配置并重启
+    ElevationResult check_and_elevate_if_needed();
 
 private:
     MAA_PROJECT_INTERFACE_NS::Configurator config_;

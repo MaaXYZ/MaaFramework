@@ -74,8 +74,8 @@ public:
     virtual bool set_option(MaaCtrlOption key, MaaOptionValue value, MaaOptionValueSize val_size) = 0;
 
     virtual MaaCtrlId post_connection() = 0;
-    virtual MaaCtrlId post_click(int x, int y) = 0;
-    virtual MaaCtrlId post_swipe(int x1, int y1, int x2, int y2, int duration) = 0;
+    virtual MaaCtrlId post_click(int x, int y, int contact, int pressure) = 0;
+    virtual MaaCtrlId post_swipe(int x1, int y1, int x2, int y2, int duration, int contact, int pressure) = 0;
     virtual MaaCtrlId post_click_key(int keycode) = 0;
     virtual MaaCtrlId post_input_text(const std::string& text) = 0;
     virtual MaaCtrlId post_start_app(const std::string& intent) = 0;
@@ -101,6 +101,8 @@ public:
     virtual cv::Mat cached_image() const = 0;
     virtual std::string cached_shell_output() const = 0;
     virtual std::string get_uuid() = 0;
+
+    virtual bool get_resolution(int32_t& width, int32_t& height) const = 0;
 };
 
 struct MaaTasker : public IMaaEventDispatcher
@@ -161,7 +163,7 @@ public:
 
     virtual void set_anchor(const std::string& anchor_name, const std::string& node_name) = 0;
     virtual std::optional<std::string> get_anchor(const std::string& anchor_name) const = 0;
-    virtual uint get_hit_count(const std::string& node_name) const = 0;
+    virtual size_t get_hit_count(const std::string& node_name) const = 0;
     virtual void clear_hit_count(const std::string& node_name) = 0;
 };
 

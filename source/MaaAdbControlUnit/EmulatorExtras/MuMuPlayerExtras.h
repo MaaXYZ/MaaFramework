@@ -24,6 +24,8 @@ public:
 public: // from UnitBase
     virtual bool parse(const json::value& config) override;
 
+    virtual void on_image_resolution_changed(const std::pair<int, int>& pre, const std::pair<int, int>& cur) override;
+
 public: // from ScreencapBase
     virtual bool init() override;
 
