@@ -53,6 +53,30 @@ extern "C"
      */
     MAA_FRAMEWORK_API MaaController* MaaPlayCoverControllerCreate(const char* address, const char* uuid);
 
+    /**
+     * @brief Create a virtual gamepad controller for Windows.
+     *
+     * @param hWnd Window handle for screencap (optional, can be nullptr if screencap not needed).
+     * @param gamepad_type Type of virtual gamepad (MaaGamepadType_Xbox360 or MaaGamepadType_DualShock4).
+     * @param screencap_method Win32 screencap method to use. Ignored if hWnd is nullptr.
+     * @return The controller handle, or nullptr on failure.
+     *
+     * @note Requires ViGEm Bus Driver to be installed on the system.
+     * @note For gamepad control, use:
+     *       - click_key/key_down/key_up: For digital buttons (A, B, X, Y, LB, RB, etc.)
+     *         See MaaGamepadButton_* constants for available buttons.
+     *       - touch_down/touch_move/touch_up: For analog inputs (sticks and triggers)
+     *         - contact 0 (MaaGamepadTouch_LeftStick): Left stick (x: -32768~32767, y: -32768~32767)
+     *         - contact 1 (MaaGamepadTouch_RightStick): Right stick (x: -32768~32767, y: -32768~32767)
+     *         - contact 2 (MaaGamepadTouch_LeftTrigger): Left trigger (pressure: 0~255, x/y ignored)
+     *         - contact 3 (MaaGamepadTouch_RightTrigger): Right trigger (pressure: 0~255, x/y ignored)
+     * @note click and swipe are not directly supported for gamepad.
+     * @note input_text, start_app, stop_app, scroll are not supported.
+     * @see MaaGamepadButton, MaaGamepadTouch, MaaGamepadType
+     */
+    MAA_FRAMEWORK_API MaaController*
+        MaaGamepadControllerCreate(void* hWnd, MaaGamepadType gamepad_type, MaaWin32ScreencapMethod screencap_method);
+
     MAA_FRAMEWORK_API void MaaControllerDestroy(MaaController* ctrl);
 
     MAA_FRAMEWORK_API MaaSinkId MaaControllerAddSink(MaaController* ctrl, MaaEventCallback sink, void* trans_arg);
@@ -74,8 +98,24 @@ extern "C"
 
     MAA_FRAMEWORK_API MaaCtrlId MaaControllerPostClick(MaaController* ctrl, int32_t x, int32_t y);
 
+    // for adb controller, contact means finger id (0 for first finger, 1 for second finger, etc)
+    // for win32 controller, contact means mouse button id (0 for left, 1 for right, 2 for middle)
+    MAA_FRAMEWORK_API MaaCtrlId MaaControllerPostClickV2(MaaController* ctrl, int32_t x, int32_t y, int32_t contact, int32_t pressure);
+
     MAA_FRAMEWORK_API MaaCtrlId
         MaaControllerPostSwipe(MaaController* ctrl, int32_t x1, int32_t y1, int32_t x2, int32_t y2, int32_t duration);
+
+    // for adb controller, contact means finger id (0 for first finger, 1 for second finger, etc)
+    // for win32 controller, contact means mouse button id (0 for left, 1 for right, 2 for middle)
+    MAA_FRAMEWORK_API MaaCtrlId MaaControllerPostSwipeV2(
+        MaaController* ctrl,
+        int32_t x1,
+        int32_t y1,
+        int32_t x2,
+        int32_t y2,
+        int32_t duration,
+        int32_t contact,
+        int32_t pressure);
 
     MAA_FRAMEWORK_API MaaCtrlId MaaControllerPostClickKey(MaaController* ctrl, int32_t keycode);
 
@@ -99,6 +139,16 @@ extern "C"
 
     MAA_FRAMEWORK_API MaaCtrlId MaaControllerPostKeyUp(MaaController* ctrl, int32_t keycode);
 
+    /**
+     * @brief Post a screenshot request to the controller.
+     *
+     * @param ctrl The controller handle.
+     * @return The control id of the screenshot action.
+     *
+     * @note The screenshot image is scaled according to the screenshot target size settings (long side / short side).
+     *       Use MaaControllerGetResolution to get the raw (unscaled) device resolution.
+     * @see MaaControllerCachedImage, MaaControllerSetOption, MaaControllerGetResolution
+     */
     MAA_FRAMEWORK_API MaaCtrlId MaaControllerPostScreencap(MaaController* ctrl);
 
     /**
@@ -145,9 +195,36 @@ extern "C"
 
     MAA_FRAMEWORK_API MaaBool MaaControllerConnected(const MaaController* ctrl);
 
+    /**
+     * @brief Get the cached screenshot image.
+     *
+     * @param ctrl The controller handle.
+     * @param buffer The output buffer to store the screenshot image.
+     * @return true if the screenshot is available, false otherwise.
+     *
+     * @note The returned image is scaled according to the screenshot target size settings (long side / short side).
+     *       The image dimensions may differ from the raw device resolution.
+     *       Use MaaControllerGetResolution to get the raw (unscaled) device resolution.
+     * @see MaaControllerPostScreencap, MaaControllerSetOption, MaaControllerGetResolution
+     */
     MAA_FRAMEWORK_API MaaBool MaaControllerCachedImage(const MaaController* ctrl, /* out */ MaaImageBuffer* buffer);
 
     MAA_FRAMEWORK_API MaaBool MaaControllerGetUuid(MaaController* ctrl, /* out */ MaaStringBuffer* buffer);
+
+    /**
+     * @brief Get the raw (unscaled) device resolution.
+     *
+     * @param ctrl The controller handle.
+     * @param[out] width Output parameter for the raw width.
+     * @param[out] height Output parameter for the raw height.
+     * @return true if the resolution is available, false otherwise (e.g., not connected or no screenshot taken yet).
+     *
+     * @note This returns the actual device screen resolution before any scaling.
+     *       The screenshot obtained via MaaControllerCachedImage is scaled according to the screenshot target size settings,
+     *       so its dimensions may differ from this raw resolution.
+     * @see MaaControllerCachedImage, MaaControllerPostScreencap
+     */
+    MAA_FRAMEWORK_API MaaBool MaaControllerGetResolution(const MaaController* ctrl, /* out */ int32_t* width, /* out */ int32_t* height);
 
     MAA_DEPRECATED MAA_FRAMEWORK_API MaaCtrlId MaaControllerPostPressKey(MaaController* ctrl, int32_t keycode);
 

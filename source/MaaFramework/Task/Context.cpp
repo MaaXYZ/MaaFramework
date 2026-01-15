@@ -195,6 +195,8 @@ bool Context::override_next(const std::string& node_name, const std::vector<std:
 
 bool Context::override_image(const std::string& image_name, const cv::Mat& image)
 {
+    LogInfo << VAR(getptr()) << VAR(image_name) << VAR(image);
+
     image_override_.insert_or_assign(image_name, image);
     return true;
 }
@@ -303,7 +305,7 @@ bool& Context::need_to_stop()
     return need_to_stop_;
 }
 
-uint Context::get_hit_count(const std::string& node_name) const
+size_t Context::get_hit_count(const std::string& node_name) const
 {
     auto it = task_state_->hit_count.find(node_name);
     if (it != task_state_->hit_count.end()) {

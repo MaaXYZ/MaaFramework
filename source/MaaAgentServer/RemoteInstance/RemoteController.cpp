@@ -30,12 +30,14 @@ MaaCtrlId RemoteController::post_connection()
     return resp_opt->ctrl_id;
 }
 
-MaaCtrlId RemoteController::post_click(int x, int y)
+MaaCtrlId RemoteController::post_click(int x, int y, int contact, int pressure)
 {
     ControllerPostClickReverseRequest req {
         .controller_id = controller_id_,
         .x = x,
         .y = y,
+        .contact = contact,
+        .pressure = pressure,
     };
     auto resp_opt = server_.send_and_recv<ControllerPostClickReverseResponse>(req);
     if (!resp_opt) {
@@ -44,7 +46,7 @@ MaaCtrlId RemoteController::post_click(int x, int y)
     return resp_opt->ctrl_id;
 }
 
-MaaCtrlId RemoteController::post_swipe(int x1, int y1, int x2, int y2, int duration)
+MaaCtrlId RemoteController::post_swipe(int x1, int y1, int x2, int y2, int duration, int contact, int pressure)
 {
     ControllerPostSwipeReverseRequest req {
         .controller_id = controller_id_,
@@ -53,6 +55,8 @@ MaaCtrlId RemoteController::post_swipe(int x1, int y1, int x2, int y2, int durat
         .x2 = x2,
         .y2 = y2,
         .duration = duration,
+        .contact = contact,
+        .pressure = pressure,
     };
     auto resp_opt = server_.send_and_recv<ControllerPostSwipeReverseResponse>(req);
     if (!resp_opt) {
@@ -309,6 +313,21 @@ std::string RemoteController::get_uuid()
         return {};
     }
     return resp_opt->uuid;
+}
+
+bool RemoteController::get_resolution(int32_t& width, int32_t& height) const
+{
+    ControllerGetResolutionReverseRequest req {
+        .controller_id = controller_id_,
+    };
+
+    auto resp_opt = server_.send_and_recv<ControllerGetResolutionReverseResponse>(req);
+    if (!resp_opt) {
+        return false;
+    }
+    width = resp_opt->width;
+    height = resp_opt->height;
+    return resp_opt->success;
 }
 
 MaaSinkId RemoteController::add_sink(MaaEventCallback callback, void* trans_arg)

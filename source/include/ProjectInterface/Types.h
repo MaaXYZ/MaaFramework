@@ -37,18 +37,32 @@ struct InterfaceData
             MEO_JSONIZATION(MEO_OPT address, MEO_OPT uuid);
         };
 
+        struct GamepadConfig
+        {
+            std::string class_regex;
+            std::string window_regex;
+            std::string gamepad_type;
+            std::string screencap;
+
+            MEO_JSONIZATION(MEO_OPT class_regex, MEO_OPT window_regex, MEO_OPT gamepad_type, MEO_OPT screencap);
+        };
+
         enum class Type
         {
             Invalid,
             Adb,
             Win32,
             PlayCover,
+            Gamepad,
         };
 
         std::string name;
         std::string label;
         std::string description;
         Type type = Type::Adb;
+
+        // 是否需要管理员权限（例如某些 Win32 输入方式需要更高权限）
+        bool permission_required = false;
 
         // 分辨率设置，三者互斥
         std::optional<int> display_short_side; // 默认720
@@ -57,17 +71,20 @@ struct InterfaceData
 
         Win32Config win32;
         PlayCoverConfig playcover;
+        GamepadConfig gamepad;
 
         MEO_JSONIZATION(
             name,
             MEO_OPT label,
             MEO_OPT description,
             type,
+            MEO_OPT permission_required,
             MEO_OPT display_short_side,
             MEO_OPT display_long_side,
             MEO_OPT display_raw,
             MEO_OPT win32,
-            MEO_OPT playcover);
+            MEO_OPT playcover,
+            MEO_OPT gamepad);
     };
 
     struct Resource
@@ -90,7 +107,8 @@ struct InterfaceData
         bool default_check = false;
         json::object pipeline_override;
         std::vector<std::string> option;
-        std::vector<std::string> resource; // 支持的资源包列表
+        std::vector<std::string> resource;   // 支持的资源包列表
+        std::vector<std::string> controller; // 支持的控制器列表
 
         MEO_JSONIZATION(
             name,
@@ -100,7 +118,8 @@ struct InterfaceData
             MEO_OPT default_check,
             MEO_OPT pipeline_override,
             MEO_OPT option,
-            MEO_OPT resource);
+            MEO_OPT resource,
+            MEO_OPT controller);
     };
 
     struct Option
@@ -252,6 +271,18 @@ struct Configuration
         MEO_JSONIZATION(MEO_OPT address, MEO_OPT uuid);
     };
 
+    struct GamepadConfig
+    {
+        void* hwnd = nullptr;
+        std::wstring class_name;
+        std::wstring window_name;
+        std::string gamepad_type;
+
+        int _placeholder = 0;
+
+        MEO_JSONIZATION(MEO_OPT _placeholder, MEO_OPT gamepad_type);
+    };
+
     struct Option
     {
         std::string name;
@@ -273,10 +304,11 @@ struct Configuration
     AdbConfig adb;
     Win32Config win32;
     PlayCoverConfig playcover;
+    GamepadConfig gamepad;
     std::string resource;
     std::vector<Task> task;
 
-    MEO_JSONIZATION(controller, MEO_OPT adb, MEO_OPT win32, MEO_OPT playcover, resource, task);
+    MEO_JSONIZATION(controller, MEO_OPT adb, MEO_OPT win32, MEO_OPT playcover, MEO_OPT gamepad, resource, task);
 };
 
 struct RuntimeParam
@@ -314,6 +346,13 @@ struct RuntimeParam
         std::string uuid;
     };
 
+    struct GamepadParam
+    {
+        void* hwnd = nullptr;
+        MaaGamepadType gamepad_type = MaaGamepadType_Xbox360;
+        MaaWin32ScreencapMethod screencap = MaaWin32ScreencapMethod_None;
+    };
+
     struct Task
     {
         std::string name;
@@ -329,7 +368,7 @@ struct RuntimeParam
         std::filesystem::path cwd;
     };
 
-    std::variant<std::monostate, AdbParam, Win32Param, PlayCoverParam> controller_param;
+    std::variant<std::monostate, AdbParam, Win32Param, PlayCoverParam, GamepadParam> controller_param;
     std::vector<std::filesystem::path> resource_path;
 
     std::vector<Task> task;

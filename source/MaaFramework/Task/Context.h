@@ -13,7 +13,7 @@ MAA_TASK_NS_BEGIN
 
 struct TaskState
 {
-    std::unordered_map<std::string, unsigned int> hit_count;
+    std::unordered_map<std::string, size_t> hit_count;
     std::unordered_map<std::string, std::string> anchors;
 };
 
@@ -61,7 +61,7 @@ public:
 
     bool& need_to_stop();
 
-    virtual uint get_hit_count(const std::string& node_name) const override;
+    virtual size_t get_hit_count(const std::string& node_name) const override;
     void increment_hit_count(const std::string& node_name);
     virtual void clear_hit_count(const std::string& node_name) override;
 

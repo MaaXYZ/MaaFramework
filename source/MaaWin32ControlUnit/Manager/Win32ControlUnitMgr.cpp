@@ -31,6 +31,8 @@ Win32ControlUnitMgr::Win32ControlUnitMgr(
 
 bool Win32ControlUnitMgr::connect()
 {
+    connected_ = false;
+
 #ifndef MAA_WIN32_COMPATIBLE
     // 设置 Per-Monitor DPI Aware V2，确保 GetClientRect/GetWindowRect 等 API 返回物理像素。
     // 修复高 DPI 缩放下 PrintWindow/FramePool 等截图方式只能截取部分区域的问题。
@@ -112,6 +114,21 @@ bool Win32ControlUnitMgr::connect()
     else {
         mouse_ = make_input(mouse_method_);
         keyboard_ = make_input(keyboard_method_);
+    }
+
+    connected_ = true;
+    return true;
+}
+
+bool Win32ControlUnitMgr::connected() const
+{
+    // 除了检查连接标志，还需要检查窗口是否仍然有效
+    if (!connected_) {
+        return false;
+    }
+
+    if (hwnd_ && !IsWindow(hwnd_)) {
+        return false;
     }
 
     return true;

@@ -426,6 +426,9 @@ bool AgentClient::handle_inserted_request(const json::value& j)
     else if (handle_controller_get_uuid(j)) {
         return true;
     }
+    else if (handle_controller_get_resolution(j)) {
+        return true;
+    }
     else if (handle_event_response(j)) {
         return true;
     }
@@ -749,7 +752,7 @@ bool AgentClient::handle_context_get_hit_count(const json::value& j)
         return false;
     }
 
-    uint count = context->get_hit_count(req.node_name);
+    size_t count = context->get_hit_count(req.node_name);
 
     ContextGetHitCountReverseResponse resp {
         .count = count,
@@ -1674,7 +1677,7 @@ bool AgentClient::handle_controller_post_click(const json::value& j)
         LogError << "controller not found" << VAR(req.controller_id);
         return false;
     }
-    MaaCtrlId ctrl_id = controller->post_click(req.x, req.y);
+    MaaCtrlId ctrl_id = controller->post_click(req.x, req.y, req.contact, req.pressure);
     ControllerPostClickReverseResponse resp {
         .ctrl_id = ctrl_id,
     };
@@ -1694,7 +1697,7 @@ bool AgentClient::handle_controller_post_swipe(const json::value& j)
         LogError << "controller not found" << VAR(req.controller_id);
         return false;
     }
-    MaaCtrlId ctrl_id = controller->post_swipe(req.x1, req.y1, req.x2, req.y2, req.duration);
+    MaaCtrlId ctrl_id = controller->post_swipe(req.x1, req.y1, req.x2, req.y2, req.duration, req.contact, req.pressure);
     ControllerPostSwipeReverseResponse resp {
         .ctrl_id = ctrl_id,
     };
@@ -2077,6 +2080,30 @@ bool AgentClient::handle_controller_get_uuid(const json::value& j)
     std::string uuid = controller->get_uuid();
     ControllerGetUuidReverseResponse resp {
         .uuid = uuid,
+    };
+    send(resp);
+    return true;
+}
+
+bool AgentClient::handle_controller_get_resolution(const json::value& j)
+{
+    if (!j.is<ControllerGetResolutionReverseRequest>()) {
+        return false;
+    }
+    const ControllerGetResolutionReverseRequest& req = j.as<ControllerGetResolutionReverseRequest>();
+    LogFunc << VAR(req) << VAR(ipc_addr_);
+    MaaController* controller = query_controller(req.controller_id);
+    if (!controller) {
+        LogError << "controller not found" << VAR(req.controller_id);
+        return false;
+    }
+    int32_t width = 0;
+    int32_t height = 0;
+    bool success = controller->get_resolution(width, height);
+    ControllerGetResolutionReverseResponse resp {
+        .success = success,
+        .width = width,
+        .height = height,
     };
     send(resp);
     return true;

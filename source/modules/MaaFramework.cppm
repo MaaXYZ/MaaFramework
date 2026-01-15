@@ -17,6 +17,7 @@ export using ::MaaTaskId;
 export using ::MaaRecoId;
 export using ::MaaActId;
 export using ::MaaNodeId;
+export using ::MaaSinkId;
 export constexpr auto _MaaInvalidId = MaaInvalidId;
 
 export using ::MaaStringBuffer;
@@ -81,20 +82,34 @@ export constexpr auto _MaaWin32ScreencapMethod_None = MaaWin32ScreencapMethod_No
 export constexpr auto _MaaWin32ScreencapMethod_GDI = MaaWin32ScreencapMethod_GDI;
 export constexpr auto _MaaWin32ScreencapMethod_FramePool = MaaWin32ScreencapMethod_FramePool;
 export constexpr auto _MaaWin32ScreencapMethod_DXGI_DesktopDup = MaaWin32ScreencapMethod_DXGI_DesktopDup;
+export constexpr auto _MaaWin32ScreencapMethod_DXGI_DesktopDup_Window = MaaWin32ScreencapMethod_DXGI_DesktopDup_Window;
+export constexpr auto _MaaWin32ScreencapMethod_PrintWindow = MaaWin32ScreencapMethod_PrintWindow;
+export constexpr auto _MaaWin32ScreencapMethod_ScreenDC = MaaWin32ScreencapMethod_ScreenDC;
 
 export using ::MaaWin32InputMethod;
 export constexpr auto _MaaWin32InputMethod_None = MaaWin32InputMethod_None;
 export constexpr auto _MaaWin32InputMethod_Seize = MaaWin32InputMethod_Seize;
 export constexpr auto _MaaWin32InputMethod_SendMessage = MaaWin32InputMethod_SendMessage;
+export constexpr auto _MaaWin32InputMethod_PostMessage = MaaWin32InputMethod_PostMessage;
+export constexpr auto _MaaWin32InputMethod_LegacyEvent = MaaWin32InputMethod_LegacyEvent;
+export constexpr auto _MaaWin32InputMethod_PostThreadMessage = MaaWin32InputMethod_PostThreadMessage;
+export constexpr auto _MaaWin32InputMethod_SendMessageWithCursorPos = MaaWin32InputMethod_SendMessageWithCursorPos;
+export constexpr auto _MaaWin32InputMethod_PostMessageWithCursorPos = MaaWin32InputMethod_PostMessageWithCursorPos;
 
 export using ::MaaDbgControllerType;
 export constexpr auto _MaaDbgControllerType_None = MaaDbgControllerType_None;
 export constexpr auto _MaaDbgControllerType_CarouselImage = MaaDbgControllerType_CarouselImage;
 export constexpr auto _MaaDbgControllerType_ReplayRecording = MaaDbgControllerType_ReplayRecording;
 
+export using ::MaaControllerFeature;
+export constexpr auto _MaaControllerFeature_None = MaaControllerFeature_None;
+export constexpr auto _MaaControllerFeature_UseMouseDownAndUpInsteadOfClick = MaaControllerFeature_UseMouseDownAndUpInsteadOfClick;
+export constexpr auto _MaaControllerFeature_UseKeyboardDownAndUpInsteadOfClick = MaaControllerFeature_UseKeyboardDownAndUpInsteadOfClick;
+
 export using ::MaaRect;
 
 export using ::MaaNotificationCallback;
+export using ::MaaEventCallback;
 export using ::MaaCustomRecognitionCallback;
 export using ::MaaCustomActionCallback;
 
@@ -105,9 +120,15 @@ export using ::MaaContextRunRecognition;
 export using ::MaaContextRunAction;
 export using ::MaaContextOverridePipeline;
 export using ::MaaContextOverrideNext;
+export using ::MaaContextOverrideImage;
+export using ::MaaContextGetNodeData;
 export using ::MaaContextGetTaskId;
 export using ::MaaContextGetTasker;
 export using ::MaaContextClone;
+export using ::MaaContextSetAnchor;
+export using ::MaaContextGetAnchor;
+export using ::MaaContextGetHitCount;
+export using ::MaaContextClearHitCount;
 
 // Instance/MaaController.h
 
@@ -116,7 +137,11 @@ export using ::MaaAdbControllerCreate;
 export using ::MaaWin32ControllerCreate;
 export using ::MaaCustomControllerCreate;
 export using ::MaaDbgControllerCreate;
+export using ::MaaPlayCoverControllerCreate;
 export using ::MaaControllerDestroy;
+export using ::MaaControllerAddSink;
+export using ::MaaControllerRemoveSink;
+export using ::MaaControllerClearSinks;
 export using ::MaaControllerSetOption;
 export using ::MaaControllerPostConnection;
 export using ::MaaControllerPostClick;
@@ -131,11 +156,15 @@ export using ::MaaControllerPostTouchDown;
 export using ::MaaControllerPostTouchMove;
 export using ::MaaControllerPostTouchUp;
 export using ::MaaControllerPostScreencap;
+export using ::MaaControllerPostScroll;
+export using ::MaaControllerPostShell;
+export using ::MaaControllerGetShellOutput;
 export using ::MaaControllerStatus;
 export using ::MaaControllerWait;
 export using ::MaaControllerConnected;
 export using ::MaaControllerCachedImage;
 export using ::MaaControllerGetUuid;
+export using ::MaaControllerGetResolution;
 
 // Instance/MaaCustomController.h
 
@@ -145,6 +174,9 @@ export using ::MaaCustomControllerCallbacks;
 
 export using ::MaaResourceCreate;
 export using ::MaaResourceDestroy;
+export using ::MaaResourceAddSink;
+export using ::MaaResourceRemoveSink;
+export using ::MaaResourceClearSinks;
 export using ::MaaResourceRegisterCustomRecognition;
 export using ::MaaResourceUnregisterCustomRecognition;
 export using ::MaaResourceClearCustomRecognition;
@@ -157,6 +189,8 @@ export using ::MaaResourcePostPipeline;
 export using ::MaaResourcePostImage;
 export using ::MaaResourceOverridePipeline;
 export using ::MaaResourceOverrideNext;
+export using ::MaaResourceOverrideImage;
+export using ::MaaResourceGetNodeData;
 export using ::MaaResourceClear;
 export using ::MaaResourceStatus;
 export using ::MaaResourceWait;
@@ -164,16 +198,26 @@ export using ::MaaResourceLoaded;
 export using ::MaaResourceSetOption;
 export using ::MaaResourceGetHash;
 export using ::MaaResourceGetNodeList;
+export using ::MaaResourceGetCustomRecognitionList;
+export using ::MaaResourceGetCustomActionList;
 
 // Instance/MaaTasker.h
 
 export using ::MaaTaskerCreate;
 export using ::MaaTaskerDestroy;
+export using ::MaaTaskerAddSink;
+export using ::MaaTaskerRemoveSink;
+export using ::MaaTaskerClearSinks;
+export using ::MaaTaskerAddContextSink;
+export using ::MaaTaskerRemoveContextSink;
+export using ::MaaTaskerClearContextSinks;
 export using ::MaaTaskerSetOption;
 export using ::MaaTaskerBindResource;
 export using ::MaaTaskerBindController;
 export using ::MaaTaskerInited;
 export using ::MaaTaskerPostTask;
+export using ::MaaTaskerPostRecognition;
+export using ::MaaTaskerPostAction;
 export using ::MaaTaskerStatus;
 export using ::MaaTaskerWait;
 export using ::MaaTaskerRunning;
@@ -230,15 +274,16 @@ export using ::MaaImageListBufferAt;
 export using ::MaaImageListBufferAppend;
 export using ::MaaImageListBufferRemove;
 export using ::MaaImageListBufferClear;
-// export using ::MaaRectCreate;
-// export using ::MaaRectDestroy;
-// export using ::MaaRectGetX;
-// export using ::MaaRectGetY;
-// export using ::MaaRectGetW;
-// export using ::MaaRectGetH;
-// export using ::MaaRectSet;
+export using ::MaaRectCreate;
+export using ::MaaRectDestroy;
+export using ::MaaRectGetX;
+export using ::MaaRectGetY;
+export using ::MaaRectGetW;
+export using ::MaaRectGetH;
+export using ::MaaRectSet;
 
-// Utility/MaaUtility.h
+// Global/MaaGlobal.h & Utility/MaaUtility.h
 
 export using ::MaaVersion;
 export using ::MaaGlobalSetOption;
+export using ::MaaGlobalLoadPlugin;

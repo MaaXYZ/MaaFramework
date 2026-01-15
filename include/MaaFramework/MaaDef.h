@@ -369,10 +369,148 @@ typedef uint64_t MaaDbgControllerType;
 #define MaaDbgControllerType_CarouselImage 1ULL
 #define MaaDbgControllerType_ReplayRecording (1ULL << 1)
 
+// MaaGamepadType:
+/**
+ * @brief Virtual gamepad type
+ *
+ * Select ONE type only.
+ *
+ * | Type          | Description                                    |
+ * |---------------|------------------------------------------------|
+ * | Xbox360       | Microsoft Xbox 360 Controller (wired)          |
+ * | DualShock4    | Sony DualShock 4 Controller (wired)            |
+ */
+typedef uint64_t MaaGamepadType;
+#define MaaGamepadType_Xbox360 0ULL
+#define MaaGamepadType_DualShock4 1ULL
+
+// MaaGamepadButton:
+/**
+ * @brief Virtual gamepad button codes for click_key/key_down/key_up
+ *
+ * Use these values with MaaControllerPostClickKey, MaaControllerPostKeyDown, MaaControllerPostKeyUp.
+ * Values are based on XUSB (Xbox 360) button flags. DS4 face buttons are mapped to Xbox equivalents.
+ *
+ * Xbox 360 buttons:
+ *
+ * | Value   | Button              | Description            |
+ * |---------|---------------------|------------------------|
+ * | 0x1000  | A                   | A button               |
+ * | 0x2000  | B                   | B button               |
+ * | 0x4000  | X                   | X button               |
+ * | 0x8000  | Y                   | Y button               |
+ * | 0x0100  | LB (Left Shoulder)  | Left bumper            |
+ * | 0x0200  | RB (Right Shoulder) | Right bumper           |
+ * | 0x0040  | L_THUMB             | Left stick click       |
+ * | 0x0080  | R_THUMB             | Right stick click      |
+ * | 0x0010  | START               | Start button           |
+ * | 0x0020  | BACK                | Back button            |
+ * | 0x0400  | GUIDE               | Guide/Home button      |
+ * | 0x0001  | DPAD_UP             | D-pad up               |
+ * | 0x0002  | DPAD_DOWN           | D-pad down             |
+ * | 0x0004  | DPAD_LEFT           | D-pad left             |
+ * | 0x0008  | DPAD_RIGHT          | D-pad right            |
+ *
+ * DualShock 4 buttons (aliases to Xbox buttons):
+ *
+ * | Value   | Button    | Xbox Equivalent | Description               |
+ * |---------|-----------|-----------------|---------------------------|
+ * | 0x1000  | CROSS     | A                   | Cross (X) button          |
+ * | 0x2000  | CIRCLE    | B                   | Circle button             |
+ * | 0x4000  | SQUARE    | X                   | Square button             |
+ * | 0x8000  | TRIANGLE  | Y                   | Triangle button           |
+ * | 0x0100  | L1        | LB                  | L1 button                 |
+ * | 0x0200  | R1        | RB                  | R1 button                 |
+ * | 0x0040  | L3        | L_THUMB             | Left stick click          |
+ * | 0x0080  | R3        | R_THUMB             | Right stick click         |
+ * | 0x0010  | OPTIONS   | START               | Options button            |
+ * | 0x0020  | SHARE     | BACK                | Share button              |
+ * | 0x10000 | PS        | -                   | PS button (DS4 special)   |
+ * | 0x20000 | TOUCHPAD  | -                   | Touchpad click (DS4 only) |
+ */
+typedef uint64_t MaaGamepadButton;
+// Xbox 360 buttons (XUSB protocol values)
+#define MaaGamepadButton_A 0x1000
+#define MaaGamepadButton_B 0x2000
+#define MaaGamepadButton_X 0x4000
+#define MaaGamepadButton_Y 0x8000
+#define MaaGamepadButton_LB 0x0100
+#define MaaGamepadButton_RB 0x0200
+#define MaaGamepadButton_LEFT_THUMB 0x0040
+#define MaaGamepadButton_RIGHT_THUMB 0x0080
+#define MaaGamepadButton_START 0x0010
+#define MaaGamepadButton_BACK 0x0020
+#define MaaGamepadButton_GUIDE 0x0400
+#define MaaGamepadButton_DPAD_UP 0x0001
+#define MaaGamepadButton_DPAD_DOWN 0x0002
+#define MaaGamepadButton_DPAD_LEFT 0x0004
+#define MaaGamepadButton_DPAD_RIGHT 0x0008
+
+// DualShock 4 face buttons (aliases to Xbox face buttons)
+#define MaaGamepadButton_CROSS MaaGamepadButton_A
+#define MaaGamepadButton_CIRCLE MaaGamepadButton_B
+#define MaaGamepadButton_SQUARE MaaGamepadButton_X
+#define MaaGamepadButton_TRIANGLE MaaGamepadButton_Y
+#define MaaGamepadButton_L1 MaaGamepadButton_LB
+#define MaaGamepadButton_R1 MaaGamepadButton_RB
+#define MaaGamepadButton_L3 MaaGamepadButton_LEFT_THUMB
+#define MaaGamepadButton_R3 MaaGamepadButton_RIGHT_THUMB
+#define MaaGamepadButton_OPTIONS MaaGamepadButton_START
+#define MaaGamepadButton_SHARE MaaGamepadButton_BACK
+
+// DualShock 4 special buttons (unique values, no Xbox equivalent)
+#define MaaGamepadButton_PS 0x10000
+#define MaaGamepadButton_TOUCHPAD 0x20000
+
+// MaaGamepadTouch:
+/**
+ * @brief Virtual gamepad touch contact definitions for touch_down/touch_move/touch_up
+ *
+ * For gamepad controller, the touch functions are repurposed for analog inputs:
+ * - x, y: Analog stick position
+ * - pressure: Trigger value (0~255)
+ *
+ * Contact mapping:
+ *
+ * | Contact | Input           | x range     | y range     | pressure   | Description                    |
+ * |---------|-----------------|-------------|-------------|------------|--------------------------------|
+ * | 0       | Left Stick      | -32768~32767| -32768~32767| ignored    | Left analog stick X/Y position |
+ * | 1       | Right Stick     | -32768~32767| -32768~32767| ignored    | Right analog stick X/Y position|
+ * | 2       | Left Trigger    | ignored     | ignored     | 0~255      | Left trigger (LT/L2) value     |
+ * | 3       | Right Trigger   | ignored     | ignored     | 0~255      | Right trigger (RT/R2) value    |
+ *
+ * Usage:
+ * - touch_down(contact, x, y, pressure): Start analog input
+ * - touch_move(contact, x, y, pressure): Update analog input position/value
+ * - touch_up(contact): Release/reset analog input to center/zero
+ */
+typedef uint64_t MaaGamepadTouch;
+#define MaaGamepadTouch_LeftStick 0
+#define MaaGamepadTouch_RightStick 1
+#define MaaGamepadTouch_LeftTrigger 2
+#define MaaGamepadTouch_RightTrigger 3
+
+/**
+ * Controller feature flags returned by get_features().
+ * These flags indicate which input methods the controller supports/prefers.
+ */
 typedef uint64_t MaaControllerFeature;
+
+/// No special features, controller supports click/swipe/click_key directly.
 #define MaaControllerFeature_None 0
+
+/// Controller prefers touch_down/touch_move/touch_up instead of click/swipe.
+/// When set, ControllerAgent will use touch_down/touch_up to simulate click,
+/// and touch_down/touch_move/touch_up to simulate swipe.
 #define MaaControllerFeature_UseMouseDownAndUpInsteadOfClick 1ULL
+
+/// Controller prefers key_down/key_up instead of click_key.
+/// When set, ControllerAgent will use key_down + key_up to simulate click_key.
 #define MaaControllerFeature_UseKeyboardDownAndUpInsteadOfClick (1ULL << 1)
+
+/// Controller does not scale touch points automatically.
+/// When set, ControllerAgent will skip coordinate scaling for touch operations.
+#define MaaControllerFeature_NoScalingTouchPoints (1ULL << 2)
 
 typedef struct MaaRect
 {

@@ -1,0 +1,155 @@
+name: Bug 报告 / Bug Report
+description: Bug / 崩溃 / 识别问题 / Bug, Crash, or Recognition Issues
+labels: ["bug"]
+body:
+    - type: markdown
+      attributes:
+          value: |
+              ## 提交前请阅读 / Please Read Before Submitting
+
+              📖 **[问题反馈指南 / Troubleshooting Guide](https://github.com/MaaXYZ/MaaFramework/blob/main/docs/zh_cn/5.1-问题反馈.md)**
+
+              ⚠️ **请先更新到最新版本的 MaaFramework，确认问题是否仍然存在后再提交 Issue。**  
+              ⚠️ **Please update to the latest version of MaaFramework and verify the issue still exists before submitting.**
+
+    - type: dropdown
+      id: issue_type
+      attributes:
+          label: 问题类型 / Issue Type
+          description: |
+              请选择问题类型  
+              Select the type of issue
+          options:
+              - 一般 Bug / General Bug
+              - 崩溃 / Crash
+              - 识别问题 / Recognition Issue
+      validations:
+          required: true
+
+    - type: textarea
+      id: description
+      attributes:
+          label: 问题描述及复现步骤 / Problem Description & Reproduction Steps
+          description: |
+              请描述预期行为和实际行为，并提供复现步骤  
+              Describe expected vs actual behavior and provide reproduction steps
+          placeholder: |
+              预期行为 / Expected: ...  
+              实际行为 / Actual: ...  
+              复现步骤 / Reproduction Steps:  
+              1. ...  
+              2. ...  
+              3. ...
+      validations:
+          required: true
+
+    - type: input
+      id: version
+      attributes:
+          label: MaaFramework 版本 / Version
+          description: |
+              请提供准确的版本号（崩溃问题必须精确，用于调试符号匹配）  
+              Provide exact version (critical for crash analysis due to debug symbols)
+          placeholder: "例如 / e.g.: v2.0.0"
+      validations:
+          required: true
+
+    - type: textarea
+      id: logs
+      attributes:
+          label: 日志文件 / Log Files
+          description: |
+              请上传完整的 maa.log 文件（位于 `<工作目录>/debug/maa.log`）  
+              Please upload the complete maa.log file (located at `<working_dir>/debug/maa.log`)
+
+              💡 若日志过短，请同时上传 `maa.bak.log`；建议对比正常/异常日志时重命名区分
+      validations:
+          required: true
+
+    - type: textarea
+      id: pipeline
+      attributes:
+          label: Pipeline JSON
+          description: |
+              若与任务流程或识别相关，请提供相关节点配置  
+              If related to task flow or recognition, provide relevant node configuration
+          render: json
+          placeholder: |
+              {
+                  "节点名": {
+                      "recognition": "TemplateMatch",
+                      "template": "xxx.png",
+                      "threshold": 0.7,
+                      ...
+                  }
+              }
+      validations:
+          required: false
+
+    - type: textarea
+      id: dump
+      attributes:
+          label: 崩溃 Dump 文件 / Crash Dump (仅崩溃问题 / Crash only)
+          description: |
+              **Windows**: `C:\Users\<用户名>\AppData\Local\CrashDumps\*.dmp`  
+              **Linux/macOS**: Core dump 文件或 `dmesg` / 系统日志
+
+              ⚠️ 请确认文件修改日期与崩溃时间对应  
+              Verify modification date matches crash time
+      validations:
+          required: false
+
+    - type: textarea
+      id: draw_images
+      attributes:
+          label: Draw 调试图片 / Draw Debug Images (仅识别问题 / Recognition only)
+          description: |
+              开启方式：在 `<工作目录>/config/maa_option.json` 设置 `"save_draw": true`  
+              Enable: Set `"save_draw": true` in `<working_dir>/config/maa_option.json`
+
+              上传 `<工作目录>/debug/vision/` 目录下对应的调试图片  
+              Upload debug images from `<working_dir>/debug/vision/`
+      validations:
+          required: false
+
+    - type: textarea
+      id: template_images
+      attributes:
+          label: 模板图片 / Template Images (仅识别问题 / Recognition only)
+          description: |
+              请上传 Pipeline 中 `template` 字段引用的图片（位于 `resource/image/`）  
+              Upload images referenced by `template` field (located in `resource/image/`)
+      validations:
+          required: false
+
+    - type: textarea
+      id: additional
+      attributes:
+          label: 其他信息 / Additional Information
+          description: |
+              其他可能有帮助的信息，如运行环境、原始截图、最小复现项目等  
+              Any other helpful information, such as original screenshots or minimal reproduction project
+      validations:
+          required: false
+
+    - type: markdown
+      attributes:
+          value: |
+              ---
+              ## 📋 提交清单 / Submission Checklist
+
+              ### 所有问题必需 / Required for All Issues
+              - ✅ 完整的 `maa.log` 日志文件  
+              - ✅ 问题描述（预期 vs 实际）  
+              - ✅ MaaFramework 版本号  
+
+              ### 崩溃问题额外提供 / Additional for Crash
+              - 🔸 Crash Dump 文件（`.dmp`）  
+              - 🔸 **精确的版本号**（调试符号匹配需要）  
+              - 🔸 崩溃前的操作步骤
+
+              ### 识别问题额外提供 / Additional for Recognition
+              - 🔸 Draw 调试图片（`debug/vision/`）  
+              - 🔸 Pipeline JSON（识别配置）  
+              - 🔸 模板图片（`resource/image/`）  
+              - 🔸 原始截图（建议提供）

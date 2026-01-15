@@ -197,7 +197,7 @@ std::optional<std::string> RemoteContext::get_anchor(const std::string& anchor_n
     return resp_opt->node_name;
 }
 
-uint RemoteContext::get_hit_count(const std::string& node_name) const
+size_t RemoteContext::get_hit_count(const std::string& node_name) const
 {
     ContextGetHitCountReverseRequest req {
         .context_id = context_id_,
@@ -208,7 +208,7 @@ uint RemoteContext::get_hit_count(const std::string& node_name) const
     if (!resp_opt) {
         return 0;
     }
-    return static_cast<uint>(resp_opt->count);
+    return resp_opt->count;
 }
 
 void RemoteContext::clear_hit_count(const std::string& node_name)

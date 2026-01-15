@@ -16,8 +16,8 @@ public:
     virtual bool set_option(MaaCtrlOption key, MaaOptionValue value, MaaOptionValueSize val_size) override;
 
     virtual MaaCtrlId post_connection() override;
-    virtual MaaCtrlId post_click(int x, int y) override;
-    virtual MaaCtrlId post_swipe(int x1, int y1, int x2, int y2, int duration) override;
+    virtual MaaCtrlId post_click(int x, int y, int contact, int pressure) override;
+    virtual MaaCtrlId post_swipe(int x1, int y1, int x2, int y2, int duration, int contact, int pressure) override;
     virtual MaaCtrlId post_click_key(int keycode) override;
     virtual MaaCtrlId post_input_text(const std::string& text) override;
     virtual MaaCtrlId post_start_app(const std::string& intent) override;
@@ -43,6 +43,8 @@ public:
     virtual cv::Mat cached_image() const override;
     virtual std::string cached_shell_output() const override;
     virtual std::string get_uuid() override;
+
+    virtual bool get_resolution(int32_t& width, int32_t& height) const override;
 
     virtual MaaSinkId add_sink(MaaEventCallback callback, void* trans_arg) override;
     virtual void remove_sink(MaaSinkId sink_id) override;

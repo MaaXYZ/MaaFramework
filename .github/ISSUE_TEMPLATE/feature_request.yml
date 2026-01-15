@@ -1,0 +1,43 @@
+name: 功能建议 / Feature Request
+description: 提出新功能或改进建议 / Suggest a new feature or improvement
+labels: ["enhancement"]
+body:
+    - type: markdown
+      attributes:
+          value: |
+              ## 提交前请阅读 / Please Read Before Submitting
+
+              📖 **[任务流水线协议 / Pipeline Protocol](https://github.com/MaaXYZ/MaaFramework/blob/main/docs/zh_cn/3.1-任务流水线协议.md)**  
+              📖 **[集成文档 / Integration Docs](https://github.com/MaaXYZ/MaaFramework/blob/main/docs/zh_cn/2.1-集成文档.md)**
+
+              请先阅读相关文档，确认该功能尚未存在后再提交建议。  
+              Please read the documentation first to confirm the feature doesn't already exist.
+
+              💡 如果文档中有该功能但您无法使用，请先更新到最新版本再试。  
+              💡 If the feature exists in docs but you can't use it, please update to the latest version first.
+
+    - type: textarea
+      id: description
+      attributes:
+          label: 功能描述 / Feature Description
+          description: |
+              请描述您希望添加的功能，以及使用场景。  
+              Describe the feature you'd like and its use case.
+      validations:
+          required: false
+
+    - type: input
+      id: version
+      attributes:
+          label: MaaFramework 版本 / Version
+          placeholder: "例如 / e.g.: v2.0.0"
+      validations:
+          required: false
+
+    - type: textarea
+      id: additional
+      attributes:
+          label: 其他信息 / Additional Information
+          description: 日志、截图等 / Logs, screenshots, etc.
+      validations:
+          required: false

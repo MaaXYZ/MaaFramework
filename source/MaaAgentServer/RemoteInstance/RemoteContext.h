@@ -34,7 +34,7 @@ public:
 
     virtual void set_anchor(const std::string& anchor_name, const std::string& node_name) override;
     virtual std::optional<std::string> get_anchor(const std::string& anchor_name) const override;
-    virtual uint get_hit_count(const std::string& node_name) const override;
+    virtual size_t get_hit_count(const std::string& node_name) const override;
     virtual void clear_hit_count(const std::string& node_name) override;
 
 private:
