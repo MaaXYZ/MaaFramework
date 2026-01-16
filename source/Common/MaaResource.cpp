@@ -411,3 +411,51 @@ MaaBool MaaResourceGetCustomActionList(const MaaResource* res, /* out */ MaaStri
 
     return true;
 }
+
+MaaBool MaaResourceGetDefaultRecognitionParam(const MaaResource* res, const char* reco_type, MaaStringBuffer* buffer)
+{
+    LogFunc << VAR_VOIDP(res) << VAR(reco_type);
+
+    if (!res || !buffer) {
+        LogError << "handle is null";
+        return false;
+    }
+
+    if (!reco_type) {
+        LogError << "reco_type is null";
+        return false;
+    }
+
+    auto param_opt = res->get_default_recognition_param(reco_type);
+    if (!param_opt) {
+        LogError << "failed to get default recognition param" << VAR(reco_type);
+        return false;
+    }
+
+    buffer->set(param_opt->dumps());
+    return true;
+}
+
+MaaBool MaaResourceGetDefaultActionParam(const MaaResource* res, const char* action_type, MaaStringBuffer* buffer)
+{
+    LogFunc << VAR_VOIDP(res) << VAR(action_type);
+
+    if (!res || !buffer) {
+        LogError << "handle is null";
+        return false;
+    }
+
+    if (!action_type) {
+        LogError << "action_type is null";
+        return false;
+    }
+
+    auto param_opt = res->get_default_action_param(action_type);
+    if (!param_opt) {
+        LogError << "failed to get default action param" << VAR(action_type);
+        return false;
+    }
+
+    buffer->set(param_opt->dumps());
+    return true;
+}

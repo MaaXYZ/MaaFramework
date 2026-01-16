@@ -752,4 +752,134 @@ bool ResourceMgr::check_stop()
     return true;
 }
 
+std::optional<json::object> ResourceMgr::get_default_recognition_param(const std::string& reco_type) const
+{
+    using namespace MAA_RES_NS::Recognition;
+
+    auto type_iter = kTypeMap.find(reco_type);
+    if (type_iter == kTypeMap.end()) {
+        LogError << "recognition type not found" << VAR(reco_type);
+        return std::nullopt;
+    }
+
+    Type type = type_iter->second;
+    Param param;
+
+    switch (type) {
+    case Type::DirectHit:
+        param = default_pipeline_.get_recognition_param<DirectHitParam>(type);
+        break;
+    case Type::TemplateMatch:
+        param = default_pipeline_.get_recognition_param<TemplateMatcherParam>(type);
+        break;
+    case Type::FeatureMatch:
+        param = default_pipeline_.get_recognition_param<FeatureMatcherParam>(type);
+        break;
+    case Type::ColorMatch:
+        param = default_pipeline_.get_recognition_param<ColorMatcherParam>(type);
+        break;
+    case Type::OCR:
+        param = default_pipeline_.get_recognition_param<OCRerParam>(type);
+        break;
+    case Type::NeuralNetworkClassify:
+        param = default_pipeline_.get_recognition_param<NeuralNetworkClassifierParam>(type);
+        break;
+    case Type::NeuralNetworkDetect:
+        param = default_pipeline_.get_recognition_param<NeuralNetworkDetectorParam>(type);
+        break;
+    case Type::And:
+        param = default_pipeline_.get_recognition_param<std::shared_ptr<AndParam>>(type);
+        break;
+    case Type::Or:
+        param = default_pipeline_.get_recognition_param<std::shared_ptr<OrParam>>(type);
+        break;
+    case Type::Custom:
+        param = default_pipeline_.get_recognition_param<CustomRecognitionParam>(type);
+        break;
+    default:
+        LogError << "invalid recognition type" << VAR(reco_type) << VAR(static_cast<int>(type));
+        return std::nullopt;
+    }
+
+    auto reco = PipelineDumper::dump_reco(type, param);
+    return reco.param.to_json().as_object();
+}
+
+std::optional<json::object> ResourceMgr::get_default_action_param(const std::string& action_type) const
+{
+    using namespace MAA_RES_NS::Action;
+
+    auto type_iter = kTypeMap.find(action_type);
+    if (type_iter == kTypeMap.end()) {
+        LogError << "action type not found" << VAR(action_type);
+        return std::nullopt;
+    }
+
+    Type type = type_iter->second;
+    Param param;
+
+    switch (type) {
+    case Type::DoNothing:
+        param = DoNothingParam {};
+        break;
+    case Type::Click:
+        param = default_pipeline_.get_action_param<ClickParam>(type);
+        break;
+    case Type::LongPress:
+        param = default_pipeline_.get_action_param<LongPressParam>(type);
+        break;
+    case Type::Swipe:
+        param = default_pipeline_.get_action_param<SwipeParam>(type);
+        break;
+    case Type::MultiSwipe:
+        param = default_pipeline_.get_action_param<MultiSwipeParam>(type);
+        break;
+    case Type::TouchDown:
+    case Type::TouchMove:
+        param = default_pipeline_.get_action_param<TouchParam>(type);
+        break;
+    case Type::TouchUp:
+        param = default_pipeline_.get_action_param<TouchUpParam>(type);
+        break;
+    case Type::ClickKey:
+        param = default_pipeline_.get_action_param<ClickKeyParam>(type);
+        break;
+    case Type::LongPressKey:
+        param = default_pipeline_.get_action_param<LongPressKeyParam>(type);
+        break;
+    case Type::KeyDown:
+    case Type::KeyUp:
+        param = default_pipeline_.get_action_param<KeyParam>(type);
+        break;
+    case Type::InputText:
+        param = default_pipeline_.get_action_param<InputTextParam>(type);
+        break;
+    case Type::StartApp:
+    case Type::StopApp:
+        param = default_pipeline_.get_action_param<AppParam>(type);
+        break;
+    case Type::Scroll:
+        param = default_pipeline_.get_action_param<ScrollParam>(type);
+        break;
+    case Type::StopTask:
+        param = StopTaskParam {};
+        break;
+    case Type::Command:
+        param = default_pipeline_.get_action_param<CommandParam>(type);
+        break;
+    case Type::Shell:
+        param = default_pipeline_.get_action_param<ShellParam>(type);
+        break;
+    case Type::Custom:
+        param = default_pipeline_.get_action_param<CustomParam>(type);
+        break;
+    default:
+        LogError << "invalid action type" << VAR(action_type) << VAR(static_cast<int>(type));
+        return std::nullopt;
+    }
+
+    auto act = PipelineDumper::dump_act(type, param);
+    return act.param.to_json().as_object();
+}
+
 MAA_RES_NS_END

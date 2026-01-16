@@ -36,6 +36,12 @@ declare global {
             override_image(image_name: string, image: ImageData): void
             get_node_data(node_name: string): string | null
             get_node_data_parsed(node_name: string): DumpTask | null
+            get_default_recognition_param(
+                reco_type: RecognitionType,
+            ): Recognition<ModeFragment>['recognition']['param'] | null
+            get_default_action_param(
+                action_type: ActionType,
+            ): Action<ModeFragment>['action']['param'] | null
             clear(): void
             status(id: ResId): Status
             wait(id: ResId): Promise<Status>
