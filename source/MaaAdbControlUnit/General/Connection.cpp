@@ -153,7 +153,7 @@ bool Connection::is_alive() const
     if (!monitor_ios_) {
         return false;
     }
-    return monitor_ios_->is_open();
+    return monitor_ios_->running();
 }
 
 MAA_CTRL_UNIT_NS_END
