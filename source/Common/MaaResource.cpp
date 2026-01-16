@@ -414,8 +414,6 @@ MaaBool MaaResourceGetCustomActionList(const MaaResource* res, /* out */ MaaStri
 
 MaaBool MaaResourceGetDefaultRecognitionParam(const MaaResource* res, const char* reco_type, MaaStringBuffer* buffer)
 {
-    LogFunc << VAR_VOIDP(res) << VAR(reco_type);
-
     if (!res || !buffer) {
         LogError << "handle is null";
         return false;
@@ -438,8 +436,6 @@ MaaBool MaaResourceGetDefaultRecognitionParam(const MaaResource* res, const char
 
 MaaBool MaaResourceGetDefaultActionParam(const MaaResource* res, const char* action_type, MaaStringBuffer* buffer)
 {
-    LogFunc << VAR_VOIDP(res) << VAR(action_type);
-
     if (!res || !buffer) {
         LogError << "handle is null";
         return false;
