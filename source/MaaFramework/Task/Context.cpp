@@ -4,6 +4,7 @@
 
 #include "ActionTask.h"
 #include "MaaUtils/Logger.h"
+#include "MaaUtils/Uuid.h"
 #include "PipelineTask.h"
 #include "RecognitionTask.h"
 #include "Resource/PipelineChecker.h"
@@ -115,6 +116,34 @@ MaaActId
         return MaaInvalidId;
     }
     return subtask.run_impl();
+}
+
+MaaRecoId Context::run_recognition_direct(const std::string& reco_type, const json::value& reco_param, const cv::Mat& image)
+{
+    LogTrace << VAR(getptr()) << VAR(reco_type) << VAR(reco_param);
+
+    std::string entry = std::format("recognition/{}/{}", reco_type, make_uuid());
+
+    json::value pipeline_override;
+    pipeline_override[entry]["recognition"] = { { "type", reco_type }, { "param", reco_param } };
+
+    return run_recognition(entry, pipeline_override, image);
+}
+
+MaaActId Context::run_action_direct(
+    const std::string& action_type,
+    const json::value& action_param,
+    const cv::Rect& box,
+    const std::string& reco_detail)
+{
+    LogTrace << VAR(getptr()) << VAR(action_type) << VAR(action_param) << VAR(box) << VAR(reco_detail);
+
+    std::string entry = std::format("action/{}/{}", action_type, make_uuid());
+
+    json::value pipeline_override;
+    pipeline_override[entry]["action"] = { { "type", action_type }, { "param", action_param } };
+
+    return run_action(entry, pipeline_override, box, reco_detail);
 }
 
 bool Context::override_pipeline(const json::value& pipeline_override)

@@ -195,10 +195,11 @@ MaaFramework/
 2. 在 `source/MaaFramework/Resource/PipelineTypesV2.h` 添加字段到对应的 `J*` 结构体（用于序列化）
 3. 在 `source/MaaFramework/Resource/PipelineParser.cpp` 添加解析逻辑
 4. 在 `source/MaaFramework/Resource/PipelineDumper.cpp` 添加序列化逻辑
-5. 更新 `source/binding/Python/maa/pipeline.py` 中对应的数据类（如 `JClick`、`JSwipe` 等），添加新字段。注意：binding 中的数据来源于 `PipelineDumper` 序列化的 JSON，字段需与 C++ 的 `J*` 结构体保持一致。
-6. 在 `test/python/pipeline_test.py` 添加相应的单元测试，验证字段的解析、override 和 get 功能
-7. 更新 `tools/pipeline.schema.json`
-8. 更新中英文文档 `docs/*/3.1-*`
+5. 如果是新增识别/动作算法类型，还需更新 `ResourceMgr.cpp` 中的 `get_default_recognition_param` / `get_default_action_param`
+6. 更新 `source/binding/Python/maa/pipeline.py` 中对应的数据类（如 `JClick`、`JSwipe` 等），添加新字段。注意：binding 中的数据来源于 `PipelineDumper` 序列化的 JSON，字段需与 C++ 的 `J*` 结构体保持一致。
+7. 在 `test/python/pipeline_test.py` 添加相应的单元测试，验证字段的解析、override 和 get 功能
+8. 更新 `tools/pipeline.schema.json`
+9. 更新中英文文档 `docs/*/3.1-*`
 
 ### 修改回调消息（MaaMsg）
 

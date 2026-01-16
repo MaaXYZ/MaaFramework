@@ -48,6 +48,7 @@ from maa.custom_recognition import CustomRecognition
 from maa.define import MaaDbgControllerTypeEnum, LoggingLevelEnum
 from maa.context import Context, ContextEventSink
 from maa.event_sink import EventSink
+from maa.pipeline import JRecognitionType, JActionType, JOCR, JClick
 
 analyzed: bool = False
 runned: bool = False
@@ -116,6 +117,18 @@ class MyRecognition(CustomRecognition):
         print(f"  action_detail: {action_detail}")
         reco_detail = context.run_recognition(entry, argv.image, ppover)
         print(f"  reco_detail: {reco_detail}")
+
+        # 测试 run_recognition_direct
+        reco_direct_detail = context.run_recognition_direct(
+            JRecognitionType.OCR, JOCR(), argv.image
+        )
+        print(f"  reco_direct_detail: {reco_direct_detail}")
+
+        # 测试 run_action_direct
+        action_direct_detail = context.run_action_direct(
+            JActionType.Click, JClick(), (100, 100, 50, 50), ""
+        )
+        print(f"  action_direct_detail: {action_direct_detail}")
 
         # 测试 clone 和 override
         new_ctx = context.clone()
@@ -282,6 +295,28 @@ def test_resource_api():
     # 测试 override_image (resource 级别)
     test_img = numpy.zeros((100, 100, 3), dtype=numpy.uint8)
     resource.override_image("test_template", test_img)
+
+    # 测试 get_default_recognition_param
+    ocr_default = resource.get_default_recognition_param(JRecognitionType.OCR)
+    print(f"  ocr_default: {ocr_default}")
+    assert ocr_default is not None, "get_default_recognition_param should return value"
+
+    template_default = resource.get_default_recognition_param(
+        JRecognitionType.TemplateMatch
+    )
+    print(f"  template_default: {template_default}")
+    assert (
+        template_default is not None
+    ), "get_default_recognition_param should return value"
+
+    # 测试 get_default_action_param
+    click_default = resource.get_default_action_param(JActionType.Click)
+    print(f"  click_default: {click_default}")
+    assert click_default is not None, "get_default_action_param should return value"
+
+    swipe_default = resource.get_default_action_param(JActionType.Swipe)
+    print(f"  swipe_default: {swipe_default}")
+    assert swipe_default is not None, "get_default_action_param should return value"
 
     # 测试 remove_sink
     assert sink_id is not None, "sink_id should not be None"

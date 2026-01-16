@@ -31,6 +31,19 @@ struct ContextImpl : public maajs::NativeClassBase
         MaaRect box,
         std::string reco_detail,
         maajs::OptionalParam<maajs::ValueType> pipeline_override);
+    maajs::PromiseType run_recognition_direct(
+        maajs::ValueType self,
+        maajs::EnvType env,
+        std::string reco_type,
+        maajs::ValueType reco_param,
+        maajs::ArrayBufferType image);
+    maajs::PromiseType run_action_direct(
+        maajs::ValueType self,
+        maajs::EnvType env,
+        std::string action_type,
+        maajs::ValueType action_param,
+        MaaRect box,
+        std::string reco_detail);
     void override_pipeline(maajs::ValueType pipeline);
     void override_next(std::string node_name, std::vector<std::string> next_list);
     void override_image(std::string image_name, maajs::ArrayBufferType image);

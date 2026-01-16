@@ -73,6 +73,47 @@ maajs::PromiseType ContextImpl::run_action(
     });
 }
 
+maajs::PromiseType ContextImpl::run_recognition_direct(
+    maajs::ValueType self,
+    maajs::EnvType,
+    std::string reco_type,
+    maajs::ValueType reco_param,
+    maajs::ArrayBufferType image)
+{
+    auto buf = std::make_shared<ImageBuffer>();
+    buf->set(image);
+    auto param_str = maajs::JsonStringify(env, reco_param);
+    auto worker = new maajs::AsyncWork<MaaRecoId>(env, [context = context, reco_type, param_str, buf]() {
+        return MaaContextRunRecognitionDirect(context, reco_type.c_str(), param_str.c_str(), *buf);
+    });
+    worker->Queue();
+
+    return maajs::PromiseThen(worker->Promise(), self.As<maajs::ObjectType>(), [](const maajs::CallbackInfo& info, maajs::ObjectType self) {
+        auto tasker = self["tasker"].AsValue().As<maajs::ObjectType>();
+        return maajs::CallMemberHelper<maajs::ValueType>(tasker, "recognition_detail", maajs::JSConvert<MaaRecoId>::from_value(info[0]));
+    });
+}
+
+maajs::PromiseType ContextImpl::run_action_direct(
+    maajs::ValueType self,
+    maajs::EnvType,
+    std::string action_type,
+    maajs::ValueType action_param,
+    MaaRect box,
+    std::string reco_detail)
+{
+    auto param_str = maajs::JsonStringify(env, action_param);
+    auto worker = new maajs::AsyncWork<MaaActId>(env, [context = context, action_type, param_str, box, reco_detail]() {
+        return MaaContextRunActionDirect(context, action_type.c_str(), param_str.c_str(), &box, reco_detail.c_str());
+    });
+    worker->Queue();
+
+    return maajs::PromiseThen(worker->Promise(), self.As<maajs::ObjectType>(), [](const maajs::CallbackInfo& info, maajs::ObjectType self) {
+        auto tasker = self["tasker"].AsValue().As<maajs::ObjectType>();
+        return maajs::CallMemberHelper<maajs::ValueType>(tasker, "action_detail", maajs::JSConvert<MaaActId>::from_value(info[0]));
+    });
+}
+
 void ContextImpl::override_pipeline(maajs::ValueType pipeline)
 {
     auto str = maajs::JsonStringify(env, pipeline);
@@ -201,6 +242,8 @@ void ContextImpl::init_proto(maajs::ObjectType proto, maajs::FunctionType)
     MAA_BIND_FUNC(proto, "run_task", ContextImpl::run_task);
     MAA_BIND_FUNC(proto, "run_recognition", ContextImpl::run_recognition);
     MAA_BIND_FUNC(proto, "run_action", ContextImpl::run_action);
+    MAA_BIND_FUNC(proto, "run_recognition_direct", ContextImpl::run_recognition_direct);
+    MAA_BIND_FUNC(proto, "run_action_direct", ContextImpl::run_action_direct);
     MAA_BIND_FUNC(proto, "override_pipeline", ContextImpl::override_pipeline);
     MAA_BIND_FUNC(proto, "override_next", ContextImpl::override_next);
     MAA_BIND_FUNC(proto, "override_image", ContextImpl::override_image);

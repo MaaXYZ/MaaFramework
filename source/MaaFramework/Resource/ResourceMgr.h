@@ -79,6 +79,9 @@ public: // MaaResource
     virtual std::vector<std::string> get_custom_recognition_list() const override;
     virtual std::vector<std::string> get_custom_action_list() const override;
 
+    virtual std::optional<json::object> get_default_recognition_param(const std::string& reco_type) const override;
+    virtual std::optional<json::object> get_default_action_param(const std::string& action_type) const override;
+
     virtual MaaSinkId add_sink(MaaEventCallback callback, void* trans_arg) override;
     virtual void remove_sink(MaaSinkId sink_id) override;
     virtual void clear_sinks() override;

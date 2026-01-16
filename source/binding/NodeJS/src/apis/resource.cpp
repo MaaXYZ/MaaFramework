@@ -275,6 +275,24 @@ std::optional<maajs::ValueType> ResourceImpl::get_node_data_parsed(std::string n
     return maajs::JsonParse(env, *json);
 }
 
+std::optional<maajs::ValueType> ResourceImpl::get_default_recognition_param(std::string reco_type)
+{
+    StringBuffer buffer;
+    if (!MaaResourceGetDefaultRecognitionParam(resource, reco_type.c_str(), buffer)) {
+        return std::nullopt;
+    }
+    return maajs::JsonParse(env, buffer.str());
+}
+
+std::optional<maajs::ValueType> ResourceImpl::get_default_action_param(std::string action_type)
+{
+    StringBuffer buffer;
+    if (!MaaResourceGetDefaultActionParam(resource, action_type.c_str(), buffer)) {
+        return std::nullopt;
+    }
+    return maajs::JsonParse(env, buffer.str());
+}
+
 void ResourceImpl::clear()
 {
     MaaResourceClear(resource);
@@ -406,6 +424,8 @@ void ResourceImpl::init_proto(maajs::ObjectType proto, maajs::FunctionType)
     MAA_BIND_FUNC(proto, "override_image", ResourceImpl::override_image);
     MAA_BIND_FUNC(proto, "get_node_data", ResourceImpl::get_node_data);
     MAA_BIND_FUNC(proto, "get_node_data_parsed", ResourceImpl::get_node_data_parsed);
+    MAA_BIND_FUNC(proto, "get_default_recognition_param", ResourceImpl::get_default_recognition_param);
+    MAA_BIND_FUNC(proto, "get_default_action_param", ResourceImpl::get_default_action_param);
     MAA_BIND_FUNC(proto, "clear", ResourceImpl::clear);
     MAA_BIND_FUNC(proto, "status", ResourceImpl::status);
     MAA_BIND_FUNC(proto, "wait", ResourceImpl::wait);

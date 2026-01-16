@@ -46,6 +46,7 @@ from maa.custom_action import CustomAction
 from maa.custom_recognition import CustomRecognition
 from maa.toolkit import Toolkit
 from maa.library import Library
+from maa.pipeline import JRecognitionType, JActionType, JOCR, JClick
 
 
 analyzed: bool = False
@@ -102,6 +103,18 @@ class MyRecognition(CustomRecognition):
         # 测试 run_recognition
         reco_detail = context.run_recognition(entry, argv.image, ppover)
         print(f"  reco_detail: {reco_detail}")
+
+        # 测试 run_recognition_direct
+        reco_direct_detail = context.run_recognition_direct(
+            JRecognitionType.OCR, JOCR(), argv.image
+        )
+        print(f"  reco_direct_detail: {reco_direct_detail}")
+
+        # 测试 run_action_direct
+        action_direct_detail = context.run_action_direct(
+            JActionType.Click, JClick(), (100, 100, 50, 50), ""
+        )
+        print(f"  action_direct_detail: {action_direct_detail}")
 
         # 测试 clone 和 override
         new_ctx = context.clone()
@@ -182,6 +195,18 @@ class MyRecognition(CustomRecognition):
         print(f"  custom_action_list: {action_list}")
         assert "MyRec" in reco_list, "MyRec should be in custom_recognition_list"
         assert "MyAct" in action_list, "MyAct should be in custom_action_list"
+
+        # 测试 get_default_recognition_param
+        ocr_default = resource.get_default_recognition_param(JRecognitionType.OCR)
+        print(f"  ocr_default: {ocr_default}")
+        assert (
+            ocr_default is not None
+        ), "get_default_recognition_param should return value"
+
+        # 测试 get_default_action_param
+        click_default = resource.get_default_action_param(JActionType.Click)
+        print(f"  click_default: {click_default}")
+        assert click_default is not None, "get_default_action_param should return value"
 
         global analyzed
         analyzed = True
