@@ -1,0 +1,294 @@
+name: test-rust
+
+on:
+    push:
+        branches:
+            - "**"
+        paths:
+            - ".github/workflows/test-rust.yml"
+            - "3rdparty/**"
+            - "cmake/**"
+            - "include/**"
+            - "source/**"
+            - "CMakeLists.txt"
+            - "test/**"
+
+    pull_request:
+        branches:
+            - "**"
+        paths:
+            - ".github/workflows/test-rust.yml"
+            - "3rdparty/**"
+            - "cmake/**"
+            - "include/**"
+            - "source/**"
+            - "CMakeLists.txt"
+            - "test/**"
+    workflow_dispatch:
+
+concurrency:
+    group: ${{ github.workflow }}-${{ github.event.pull_request.head.repo.full_name || github.repository }}-${{ github.head_ref || github.ref_name }}${{ github.ref == 'refs/heads/main' && format('-{0}', github.sha) || '' }}
+    cancel-in-progress: true
+
+jobs:
+    meta:
+        uses: ./.github/workflows/meta.yml
+
+    windows:
+        needs: meta
+        runs-on: windows-latest
+        strategy:
+            matrix:
+                arch: [x86_64]
+            fail-fast: false
+
+        steps:
+            - name: Windows runner hack
+              shell: cmd
+              run: |
+                  dir d:\a
+                  cd ..
+                  mkdir C:\MaaFramework
+                  rmdir MaaFramework
+                  mklink /j MaaFramework C:\MaaFramework
+                  dism /Online /Disable-Feature /FeatureName:Windows-Defender /Remove /NoRestart /Quiet
+                  cd .
+
+            - name: Windows runner hack (2)
+              uses: al-cheb/configure-pagefile-action@v1.4
+              with:
+                  minimum-size: 16GB
+                  maximum-size: 16GB
+                  disk-root: "D:"
+
+            - uses: actions/checkout@v4
+              with:
+                  submodules: recursive
+
+            - name: Setup Windows 10 SDK
+              uses: GuillaumeFalourd/setup-windows10-sdk-action@v2.2
+              with:
+                  sdk-version: 26100
+
+            - name: Setup Python
+              uses: actions/setup-python@v5.2.0
+              with:
+                  python-version: "3.9"
+
+            - name: Setup Rust
+              uses: actions-rust-lang/setup-rust-toolchain@v1
+              with:
+                  toolchain: stable
+                  target: x86_64-pc-windows-msvc
+
+            - name: Install LLVM
+              run: choco install llvm -y
+
+            - name: Bootstrap MaaDeps
+              env:
+                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+              run: |
+                  python3 tools/maadeps-download.py ${{ matrix.arch == 'x86_64' && 'x64' || 'arm64' }}-windows
+
+            - name: Build MAA
+              run: |
+                  cmake --preset "${{ matrix.arch == 'x86_64' && 'MSVC 2022' || 'MSVC 2022 ARM' }}" -DMAADEPS_TRIPLET="maa-${{ matrix.arch == 'x86_64' && 'x64' || 'arm64' }}-windows" -DCMAKE_SYSTEM_VERSION="10.0.26100.0" -DMAA_HASH_VERSION='${{ needs.meta.outputs.tag }}' -DWITH_NODEJS_BINDING=OFF -DWITH_QUICKJS_BINDING=OFF -DBUILD_PICLI=OFF -DWITH_DBG_CONTROLLER=ON -DBUILD_PIPELINE_TESTING=ON -DBUILD_DLOPEN_TESTING=ON
+
+                  cmake --build build --preset "${{ matrix.arch == 'x86_64' && 'MSVC 2022' || 'MSVC 2022 ARM' }} - Debug" -j 16
+
+            - name: Install
+              shell: bash
+              run: |
+                  cmake --install build --prefix install --config Debug
+
+            - name: Download Plugin
+              uses: robinraju/release-downloader@v1
+              with:
+                  repository: MaaXYZ/MaaPluginDemo
+                  tag: ${{ needs.meta.outputs.latest-plugin }}
+                  fileName: "*win-${{ matrix.arch }}*"
+                  out-file-path: "build/download_plugins"
+                  extract: true
+                  token: ${{ secrets.GITHUB_TOKEN }}
+
+            - name: Install Plugin
+              shell: bash
+              run: |
+                  cp -r build/download_plugins/bin install/bin/plugins
+
+            - name: Run Rust testing
+              shell: bash
+              run: |
+                  # Setup paths for tests
+                  cp -r install source/binding/install
+                  export PATH=$PATH:$(pwd)/install/bin
+                  
+                  cd source/binding/Rust
+                  cargo test --verbose
+
+    ubuntu:
+        needs: meta
+        runs-on: ubuntu-latest
+        strategy:
+            matrix:
+                arch: [x86_64]
+            fail-fast: false
+
+        steps:
+            - name: Install dep
+              run: |
+                  sudo apt-get update -y
+                  sudo apt-get install -y ninja-build cmake ccache libclang-dev
+
+            - uses: actions/checkout@v4
+              with:
+                  submodules: recursive
+
+            - name: Setup ccache
+              uses: Chocobo1/setup-ccache-action@v1
+              with:
+                  remove_stale_cache: false
+
+            - name: Setup Python
+              uses: actions/setup-python@v5.2.0
+              with:
+                  python-version: "3.9"
+
+            - name: Setup Rust
+              uses: actions-rust-lang/setup-rust-toolchain@v1
+              with:
+                  toolchain: stable
+
+            - name: Bootstrap MaaDeps
+              env:
+                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+              run: |
+                  python3 tools/maadeps-download.py ${{ matrix.arch == 'x86_64' && 'x64' || 'arm64' }}-linux
+
+            - name: Build MAA
+              run: |
+                  cmake --preset 'NinjaMulti Linux ${{ matrix.arch == 'x86_64' && 'x64' || 'arm64' }}' \
+                    -DMAADEPS_TRIPLET='maa-${{ matrix.arch == 'x86_64' && 'x64' || 'arm64' }}-linux' \
+                    -DMAA_HASH_VERSION='${{ needs.meta.outputs.tag }}' \
+                    -DWITH_NODEJS_BINDING=OFF -DWITH_QUICKJS_BINDING=OFF \
+                    -DBUILD_PICLI=OFF \
+                    -DWITH_DBG_CONTROLLER=ON -DBUILD_PIPELINE_TESTING=ON \
+                    -DBUILD_DLOPEN_TESTING=ON
+
+                  cmake --build build --preset 'NinjaMulti Linux ${{ matrix.arch == 'x86_64' && 'x64' || 'arm64' }} - Debug' -j 16
+
+            - name: Install
+              shell: bash
+              run: |
+                  cmake --install build --prefix install --config Debug
+
+            - name: Download Plugin
+              uses: robinraju/release-downloader@v1
+              with:
+                  repository: MaaXYZ/MaaPluginDemo
+                  tag: ${{ needs.meta.outputs.latest-plugin }}
+                  fileName: "*linux-${{ matrix.arch }}*"
+                  out-file-path: "build/download_plugins"
+                  extract: true
+                  token: ${{ secrets.GITHUB_TOKEN }}
+
+            - name: Install Plugin
+              shell: bash
+              run: |
+                  cp -r build/download_plugins/bin install/bin/plugins
+
+            - name: Run Rust testing
+              shell: bash
+              run: |
+                  cp -r install source/binding/install
+                  export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$(pwd)/install/lib:$(pwd)/install/bin
+                  
+                  cd source/binding/Rust
+                  cargo test --verbose
+
+    macos:
+        needs: meta
+        strategy:
+            matrix:
+                arch: [aarch64]
+            fail-fast: false
+        runs-on: macos-latest
+
+        steps:
+            - uses: actions/checkout@v4
+              with:
+                  submodules: recursive
+
+            - uses: maxim-lobanov/setup-xcode@v1
+              with:
+                  xcode-version: 16.2
+
+            - name: Install dep
+              run: |
+                  brew install ninja ccache llvm
+                  echo "LIBCLANG_PATH=$(brew --prefix llvm)/lib" >> $GITHUB_ENV
+
+            - name: Setup ccache
+              uses: Chocobo1/setup-ccache-action@v1
+              with:
+                  remove_stale_cache: false
+
+            - name: Setup Python
+              uses: actions/setup-python@v5.2.0
+              with:
+                  python-version: "3.9"
+
+            - name: Setup Rust
+              uses: actions-rust-lang/setup-rust-toolchain@v1
+              with:
+                  toolchain: stable
+                  target: aarch64-apple-darwin
+
+            - name: Bootstrap MaaDeps
+              env:
+                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+              run: |
+                  python3 tools/maadeps-download.py ${{ matrix.arch == 'x86_64' && 'x64' || 'arm64' }}-osx
+
+            - name: Build MAA
+              run: |
+                  cmake --preset 'NinjaMulti' \
+                    -DMAADEPS_TRIPLET='maa-${{ matrix.arch == 'x86_64' && 'x64' || 'arm64' }}-osx' \
+                    -DMAA_HASH_VERSION='${{ needs.meta.outputs.tag }}' \
+                    -DCMAKE_OSX_SYSROOT=macosx \
+                    -DWITH_NODEJS_BINDING=OFF -DWITH_QUICKJS_BINDING=OFF \
+                    -DBUILD_PICLI=OFF \
+                    -DWITH_DBG_CONTROLLER=ON -DBUILD_PIPELINE_TESTING=ON \
+                    -DBUILD_DLOPEN_TESTING=ON \
+                    -DCMAKE_OSX_ARCHITECTURES='${{ matrix.arch == 'x86_64' && 'x86_64' || 'arm64' }}'
+
+                  cmake --build build --preset 'NinjaMulti - Debug' -j 16
+
+            - name: Install
+              shell: bash
+              run: |
+                  cmake --install build --prefix install --config Debug
+
+            - name: Download Plugin
+              uses: robinraju/release-downloader@v1
+              with:
+                  repository: MaaXYZ/MaaPluginDemo
+                  tag: ${{ needs.meta.outputs.latest-plugin }}
+                  fileName: "*macos-${{ matrix.arch }}*"
+                  out-file-path: "build/download_plugins"
+                  extract: true
+                  token: ${{ secrets.GITHUB_TOKEN }}
+
+            - name: Install Plugin
+              shell: bash
+              run: |
+                  cp -r build/download_plugins/bin install/bin/plugins
+
+            - name: Run Rust testing
+              shell: bash
+              run: |
+                  cp -r install source/binding/install
+                  export DYLD_LIBRARY_PATH=$DYLD_LIBRARY_PATH:$(pwd)/install/lib:$(pwd)/install/bin
+                  
+                  cd source/binding/Rust
+                  cargo test --verbose
