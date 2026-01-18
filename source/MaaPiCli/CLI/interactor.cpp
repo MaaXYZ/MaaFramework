@@ -9,6 +9,11 @@
 
 #include <boost/regex.hpp>
 
+#if defined(_WIN32)
+#include "MaaUtils/SafeWindows.hpp"
+#include <shellapi.h>
+#endif
+
 #include "MaaFramework/Utility/MaaBuffer.h"
 #include "MaaToolkit/AdbDevice/MaaToolkitAdbDevice.h"
 #include "MaaToolkit/DesktopWindow/MaaToolkitDesktopWindow.h"
@@ -23,6 +28,12 @@ static bool s_eof = false;
 static constexpr bool kPlayCoverSupported = true;
 #else
 static constexpr bool kPlayCoverSupported = false;
+#endif
+
+#if defined(_WIN32)
+static constexpr bool kGamepadSupported = true;
+#else
+static constexpr bool kGamepadSupported = false;
 #endif
 
 // return [1, size]
@@ -114,6 +125,82 @@ void clear_screen()
 #endif
 }
 
+namespace
+{
+#if defined(_WIN32)
+// Windows path limit: MAX_PATH (260) is insufficient for long paths; use a larger buffer.
+// Modern Windows supports paths up to 32,767 characters with proper configuration.
+constexpr DWORD kMaxPathBuffer = 32768;
+
+// ShellExecuteW return value threshold: values > 32 indicate success, <= 32 indicate error codes.
+// See: https://docs.microsoft.com/en-us/windows/win32/api/shellapi/nf-shellapi-shellexecutew
+constexpr intptr_t kShellExecuteSuccessThreshold = 32;
+
+bool is_running_as_admin()
+{
+    BOOL is_member = FALSE;
+
+    // CheckTokenMembership(nullptr, ...) checks the current effective token (UAC-aware).
+    BYTE sid_buffer[SECURITY_MAX_SID_SIZE] = {};
+    DWORD sid_size = sizeof(sid_buffer);
+    PSID admin_sid = sid_buffer;
+
+    if (!CreateWellKnownSid(WinBuiltinAdministratorsSid, nullptr, admin_sid, &sid_size)) {
+        return false;
+    }
+    if (!CheckTokenMembership(nullptr, admin_sid, &is_member)) {
+        return false;
+    }
+    return is_member == TRUE;
+}
+
+std::optional<std::wstring> get_current_exe_path()
+{
+    std::wstring buf;
+    buf.resize(kMaxPathBuffer);
+    DWORD len = GetModuleFileNameW(nullptr, buf.data(), static_cast<DWORD>(buf.size()));
+    if (len == 0 || len >= buf.size()) {
+        return std::nullopt;
+    }
+    buf.resize(len);
+    return buf;
+}
+
+bool restart_self_as_admin()
+{
+    auto exe = get_current_exe_path();
+    if (!exe) {
+        return false;
+    }
+
+    // Preserve original command-line arguments (excluding argv[0], the executable path)
+    std::wstring combined_params;
+    int argc = 0;
+    LPWSTR cmd_line = GetCommandLineW();
+    LPWSTR* argv = nullptr;
+
+    if (cmd_line != nullptr) {
+        argv = CommandLineToArgvW(cmd_line, &argc);
+    }
+
+    if (argv != nullptr && argc > 1) {
+        for (int i = 1; i < argc; ++i) {
+            if (!combined_params.empty()) {
+                combined_params.push_back(L' ');
+            }
+            combined_params.append(argv[i]);
+        }
+        LocalFree(argv);
+    }
+
+    const wchar_t* lpParameters = combined_params.empty() ? nullptr : combined_params.c_str();
+
+    const auto ret = reinterpret_cast<intptr_t>(ShellExecuteW(nullptr, L"runas", exe->c_str(), lpParameters, nullptr, SW_SHOWNORMAL));
+    return ret > kShellExecuteSuccessThreshold;
+}
+#endif
+} // namespace
+
 Interactor::Interactor(std::filesystem::path user_path)
     : user_path_(std::move(user_path))
 {
@@ -154,8 +241,53 @@ void Interactor::interact()
     }
 }
 
+const MAA_PROJECT_INTERFACE_NS::InterfaceData::Controller* Interactor::find_current_controller() const
+{
+    using namespace MAA_PROJECT_INTERFACE_NS;
+
+    const auto& name = config_.configuration().controller.name;
+    auto it = std::ranges::find(config_.interface_data().controller, name, std::mem_fn(&InterfaceData::Controller::name));
+
+    return (it != config_.interface_data().controller.end()) ? &(*it) : nullptr;
+}
+
+Interactor::ElevationResult Interactor::check_and_elevate_if_needed()
+{
+#if defined(_WIN32)
+    const auto* controller = find_current_controller();
+    if (!controller || !controller->permission_required || is_running_as_admin()) {
+        return ElevationResult::NotNeeded;
+    }
+
+    std::cout << "\nThis controller requires administrator privileges.\n"
+                 "MaaPiCli will try to restart itself as Administrator to run tasks (UAC prompt will appear).\n\n";
+
+    config_.save(user_path_);
+
+    if (!restart_self_as_admin()) {
+        std::cout << "\nFailed to restart as Administrator (UAC may have been cancelled, or the request was denied).\n"
+                     "Please manually start MaaPiCli as Administrator and run again.\n\n";
+        return ElevationResult::Failed;
+    }
+
+    // Elevated instance has been started; caller should exit current process.
+    return ElevationResult::ElevatedStarted;
+#else
+    return ElevationResult::NotNeeded;
+#endif
+}
+
 bool Interactor::run()
 {
+    auto elevation_result = check_and_elevate_if_needed();
+    if (elevation_result == ElevationResult::Failed) {
+        return false;
+    }
+    if (elevation_result == ElevationResult::ElevatedStarted) {
+        // Elevated instance is now running; signal caller to exit gracefully.
+        return true;
+    }
+
     if (!check_validity()) {
         LogError << "Config is invalid";
         return false;
@@ -208,6 +340,14 @@ void Interactor::print_config() const
         }
         if (!kPlayCoverSupported) {
             std::cout << "\t\t(PlayCover is only available on macOS)\n";
+        }
+    } break;
+    case InterfaceData::Controller::Type::Gamepad: {
+        if (config_.configuration().gamepad.hwnd) {
+            std::cout << MAA_NS::utf8_to_crt(std::format("\t\t{}\n", format_gamepad_config(config_.configuration().gamepad)));
+        }
+        if (!kGamepadSupported) {
+            std::cout << "\t\t(Gamepad is only available on Windows)\n";
         }
     } break;
     default:
@@ -358,6 +498,9 @@ void Interactor::select_controller()
             if (ctrl.type == InterfaceData::Controller::Type::PlayCover && !kPlayCoverSupported) {
                 std::cout << " (macOS only)";
             }
+            if (ctrl.type == InterfaceData::Controller::Type::Gamepad && !kGamepadSupported) {
+                std::cout << " (Windows only)";
+            }
             std::cout << "\n";
             if (!ctrl.description.empty()) {
                 std::string desc_text = read_text_content(ctrl.description);
@@ -373,6 +516,7 @@ void Interactor::select_controller()
     const auto& controller = all_controllers[index];
 
     config_.configuration().controller.name = controller.name;
+    config_.configuration().controller.type = controller.type;
 
     switch (controller.type) {
     case InterfaceData::Controller::Type::Adb:
@@ -403,6 +547,27 @@ void Interactor::select_controller()
         }
         config_.configuration().controller.type = InterfaceData::Controller::Type::PlayCover;
         select_playcover(controller.playcover);
+        break;
+    case InterfaceData::Controller::Type::Gamepad:
+        if (!kGamepadSupported) {
+            std::cout << "\nGamepad controller is only available on Windows.\n";
+            // Check if there are other controllers available
+            bool has_other_controllers = std::ranges::any_of(all_controllers, [](const auto& ctrl) {
+                return ctrl.type != InterfaceData::Controller::Type::Gamepad;
+            });
+            if (has_other_controllers) {
+                std::cout << "Please select another controller.\n\n";
+                mpause();
+                select_controller();
+            }
+            else {
+                std::cout << "No other controllers available.\n\n";
+                mpause();
+            }
+            return;
+        }
+        config_.configuration().controller.type = InterfaceData::Controller::Type::Gamepad;
+        select_gamepad(controller.gamepad);
         break;
     default:
         LogError << "Unknown controller type" << VAR(controller.type);
@@ -527,6 +692,17 @@ std::string Interactor::format_win32_config(const MAA_PROJECT_INTERFACE_NS::Conf
         MAA_NS::from_u16(win32_config.window_name));
 }
 
+std::string Interactor::format_gamepad_config(const MAA_PROJECT_INTERFACE_NS::Configuration::GamepadConfig& gamepad_config)
+{
+    std::string type_str = gamepad_config.gamepad_type.empty() ? "Xbox360" : gamepad_config.gamepad_type;
+    return std::format(
+        "{}\n\t\t{}\n\t\t{}\n\t\tGamepad: {}",
+        gamepad_config.hwnd,
+        MAA_NS::from_u16(gamepad_config.class_name),
+        MAA_NS::from_u16(gamepad_config.window_name),
+        type_str);
+}
+
 bool Interactor::select_win32_hwnd(const MAA_PROJECT_INTERFACE_NS::InterfaceData::Controller::Win32Config& win32_config)
 {
     using namespace MAA_PROJECT_INTERFACE_NS;
@@ -581,6 +757,87 @@ bool Interactor::select_win32_hwnd(const MAA_PROJECT_INTERFACE_NS::InterfaceData
     config_.configuration().win32 = matched_config.at(index);
 
     return true;
+}
+
+void Interactor::select_gamepad(const MAA_PROJECT_INTERFACE_NS::InterfaceData::Controller::GamepadConfig& gamepad_config)
+{
+    using namespace MAA_PROJECT_INTERFACE_NS;
+
+    std::cout << "### Configure Gamepad Controller ###\n\n";
+
+    // Select window for screencap (optional, reuse Win32 window selection logic)
+    auto list_handle = MaaToolkitDesktopWindowListCreate();
+    OnScopeLeave([&]() { MaaToolkitDesktopWindowListDestroy(list_handle); });
+
+    MaaToolkitDesktopWindowFindAll(list_handle);
+
+    size_t list_size = MaaToolkitDesktopWindowListSize(list_handle);
+
+    auto class_regex = MAA_NS::regex_valid(MAA_NS::to_u16(gamepad_config.class_regex));
+    auto window_regex = MAA_NS::regex_valid(MAA_NS::to_u16(gamepad_config.window_regex));
+    if (!class_regex || !window_regex) {
+        LogError << "regex is invalid" << VAR(gamepad_config.class_regex) << VAR(gamepad_config.window_regex);
+        std::cout << "Window regex is invalid, screencap will not be available.\n";
+        config_.configuration().gamepad.hwnd = nullptr;
+    }
+    else {
+        std::vector<Configuration::GamepadConfig> matched_config;
+        for (size_t i = 0; i < list_size; ++i) {
+            Configuration::GamepadConfig rt_config;
+
+            auto window_handle = MaaToolkitDesktopWindowListAt(list_handle, i);
+            rt_config.hwnd = MaaToolkitDesktopWindowGetHandle(window_handle);
+            rt_config.class_name = MAA_NS::to_u16(MaaToolkitDesktopWindowGetClassName(window_handle));
+            rt_config.window_name = MAA_NS::to_u16(MaaToolkitDesktopWindowGetWindowName(window_handle));
+
+            if (boost::regex_search(rt_config.class_name, *class_regex) && boost::regex_search(rt_config.window_name, *window_regex)) {
+                matched_config.emplace_back(std::move(rt_config));
+            }
+        }
+
+        if (matched_config.empty()) {
+            std::cout << "No matching window found, screencap will not be available.\n";
+            config_.configuration().gamepad.hwnd = nullptr;
+        }
+        else {
+            size_t matched_size = matched_config.size();
+            if (matched_size == 1) {
+                config_.configuration().gamepad.hwnd = matched_config.front().hwnd;
+                config_.configuration().gamepad.class_name = matched_config.front().class_name;
+                config_.configuration().gamepad.window_name = matched_config.front().window_name;
+            }
+            else {
+                std::cout << "### Select HWND for screencap ###\n\n";
+
+                for (size_t i = 0; i < matched_size; ++i) {
+                    std::cout << MAA_NS::utf8_to_crt(
+                        std::format(
+                            "\t{}. {}\n\t\t{}\n\t\t{}\n",
+                            i + 1,
+                            matched_config.at(i).hwnd,
+                            MAA_NS::from_u16(matched_config.at(i).class_name),
+                            MAA_NS::from_u16(matched_config.at(i).window_name)));
+                }
+                std::cout << "\n";
+
+                int index = input(matched_size) - 1;
+                config_.configuration().gamepad.hwnd = matched_config.at(index).hwnd;
+                config_.configuration().gamepad.class_name = matched_config.at(index).class_name;
+                config_.configuration().gamepad.window_name = matched_config.at(index).window_name;
+            }
+        }
+    }
+
+    // Select gamepad type
+    std::cout << "\n### Select Gamepad Type ###\n\n";
+    std::cout << "\t1. Xbox 360\n";
+    std::cout << "\t2. DualShock 4 (PS4)\n";
+    std::cout << "\n";
+
+    int type_index = input(2);
+    config_.configuration().gamepad.gamepad_type = (type_index == 1) ? "Xbox360" : "DualShock4";
+
+    std::cout << "\n";
 }
 
 void Interactor::select_resource()
@@ -638,23 +895,29 @@ void Interactor::add_task()
 
     const auto& all_data_tasks = config_.interface_data().task;
     const auto& current_resource = config_.configuration().resource;
+    const auto& current_controller = config_.configuration().controller.name;
 
     if (all_data_tasks.empty()) {
         LogError << "Task is empty";
         return;
     }
 
-    // Filter tasks by current resource
+    // Filter tasks by current resource and controller
     std::vector<const InterfaceData::Task*> available_tasks;
     for (const auto& task : all_data_tasks) {
         // If resource list is empty, task supports all resources
-        if (task.resource.empty() || std::ranges::find(task.resource, current_resource) != task.resource.end()) {
-            available_tasks.push_back(&task);
+        if (!task.resource.empty() && std::ranges::find(task.resource, current_resource) == task.resource.end()) {
+            continue;
         }
+        // If controller list is empty, task supports all controllers
+        if (!task.controller.empty() && std::ranges::find(task.controller, current_controller) == task.controller.end()) {
+            continue;
+        }
+        available_tasks.push_back(&task);
     }
 
     if (available_tasks.empty()) {
-        LogError << "No task available for resource" << VAR(current_resource);
+        LogError << "No task available for resource" << VAR(current_resource) << "and controller" << VAR(current_controller);
         return;
     }
 
@@ -697,6 +960,7 @@ void Interactor::add_default_tasks()
 
     const auto& all_data_tasks = config_.interface_data().task;
     const auto& current_resource = config_.configuration().resource;
+    const auto& current_controller = config_.configuration().controller.name;
 
     for (const auto& task : all_data_tasks) {
         // Skip tasks without default_check
@@ -706,6 +970,11 @@ void Interactor::add_default_tasks()
 
         // Check if task supports current resource
         if (!task.resource.empty() && std::ranges::find(task.resource, current_resource) == task.resource.end()) {
+            continue;
+        }
+
+        // Check if task supports current controller
+        if (!task.controller.empty() && std::ranges::find(task.controller, current_controller) == task.controller.end()) {
             continue;
         }
 
@@ -1025,6 +1294,25 @@ bool Interactor::check_validity()
         if (pc.address.empty()) {
             LogError << "PlayCover address is empty";
             return false;
+        }
+    }
+
+    if (config_.configuration().controller.type == InterfaceData::Controller::Type::Gamepad) {
+        if (!kGamepadSupported) {
+            LogError << "Gamepad controller is only available on Windows";
+            return false;
+        }
+
+        // Gamepad hwnd is optional (for screencap), so no validation needed
+        // But we need to select gamepad type if not configured
+        if (config_.configuration().gamepad.gamepad_type.empty()) {
+            auto& name = config_.configuration().controller.name;
+            auto controller_iter =
+                std::ranges::find(config_.interface_data().controller, name, std::mem_fn(&InterfaceData::Controller::name));
+
+            if (controller_iter != config_.interface_data().controller.end()) {
+                select_gamepad(controller_iter->gamepad);
+            }
         }
     }
 

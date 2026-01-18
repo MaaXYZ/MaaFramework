@@ -42,7 +42,7 @@ on:
         types: [MaaUtilsUpdated]
 
 concurrency:
-    group: ${{ github.workflow }}-${{ github.event.pull_request.head.repo.full_name || github.repository }}-${{ github.head_ref || github.ref_name }}${{ github.ref == 'refs/heads/dev' && format('-{0}', github.sha) || '' }}
+    group: ${{ github.workflow }}-${{ github.event.pull_request.head.repo.full_name || github.repository }}-${{ github.head_ref || github.ref_name }}${{ github.ref == 'refs/heads/main' && format('-{0}', github.sha) || '' }}
     cancel-in-progress: true
 
 jobs:
@@ -387,7 +387,7 @@ jobs:
             - uses: nttld/setup-ndk@v1
               id: setup-ndk
               with:
-                  ndk-version: r27c
+                  ndk-version: r27d
 
             - name: Setup ccache
               uses: Chocobo1/setup-ccache-action@v1

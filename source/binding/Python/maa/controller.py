@@ -1,9 +1,10 @@
 import json
+import os
+import numpy
 from abc import abstractmethod
 from ctypes import c_int32
-import os
 from pathlib import Path
-from typing import Any, Dict, Optional, Union
+from typing import Any, Dict, Optional, Tuple, Union
 
 from .buffer import ImageBuffer, StringBuffer
 from .event_sink import EventSink, NotificationType
@@ -16,6 +17,7 @@ __all__ = [
     "DbgController",
     "PlayCoverController",
     "Win32Controller",
+    "GamepadController",
     "CustomController",
 ]
 
@@ -53,7 +55,7 @@ class Controller:
         ctrl_id = Library.framework().MaaControllerPostConnection(self._handle)
         return self._gen_ctrl_job(ctrl_id)
 
-    def post_click(self, x: int, y: int) -> Job:
+    def post_click(self, x: int, y: int, contact: int = 0, pressure: int = 1) -> Job:
         """异步点击 / Asynchronously click
 
         这是一个异步操作，会立即返回一个 Job 对象
@@ -62,14 +64,27 @@ class Controller:
         Args:
             x: x 坐标 / x coordinate
             y: y 坐标 / y coordinate
+            contact: 触点编号 (Adb 控制器: 手指编号; Win32 控制器: 鼠标按键 0:左键, 1:右键, 2:中键) / Contact number (Adb controller: finger number; Win32 controller: mouse button 0:left, 1:right, 2:middle)
+            pressure: 触点力度 / Contact pressure
 
         Returns:
             Job: 作业对象，可通过 status/wait 查询状态 / Job object, can query status via status/wait
         """
-        ctrl_id = Library.framework().MaaControllerPostClick(self._handle, x, y)
+        ctrl_id = Library.framework().MaaControllerPostClickV2(
+            self._handle, x, y, contact, pressure
+        )
         return self._gen_ctrl_job(ctrl_id)
 
-    def post_swipe(self, x1: int, y1: int, x2: int, y2: int, duration: int) -> Job:
+    def post_swipe(
+        self,
+        x1: int,
+        y1: int,
+        x2: int,
+        y2: int,
+        duration: int,
+        contact: int = 0,
+        pressure: int = 1,
+    ) -> Job:
         """滑动 / Swipe
 
         Args:
@@ -78,12 +93,14 @@ class Controller:
             x2: 终点 x 坐标 / End x coordinate
             y2: 终点 y 坐标 / End y coordinate
             duration: 滑动时长(毫秒) / Swipe duration in milliseconds
+            contact: 触点编号 (Adb 控制器: 手指编号; Win32 控制器: 鼠标按键 0:左键, 1:右键, 2:中键) / Contact number (Adb controller: finger number; Win32 controller: mouse button 0:left, 1:right, 2:middle)
+            pressure: 触点力度 / Contact pressure
 
         Returns:
             Job: 作业对象 / Job object
         """
-        ctrl_id = Library.framework().MaaControllerPostSwipe(
-            self._handle, x1, y1, x2, y2, duration
+        ctrl_id = Library.framework().MaaControllerPostSwipeV2(
+            self._handle, x1, y1, x2, y2, duration, contact, pressure
         )
         return self._gen_ctrl_job(ctrl_id)
 
@@ -261,6 +278,14 @@ class Controller:
 
         Raises:
             RuntimeError: 如果获取失败
+
+        Note:
+            返回的图像是经过缩放的，尺寸根据截图目标尺寸设置（长边/短边）而定，可能与设备原始分辨率不同。
+            使用 resolution 属性可获取设备的原始（未缩放）分辨率。
+
+            The returned image is scaled according to the screenshot target size settings (long side / short side).
+            The image dimensions may differ from the raw device resolution.
+            Use the resolution property to get the raw (unscaled) device resolution.
         """
         image_buffer = ImageBuffer()
         if not Library.framework().MaaControllerCachedImage(
@@ -329,6 +354,31 @@ class Controller:
         if not Library.framework().MaaControllerGetUuid(self._handle, buffer._handle):
             raise RuntimeError("Failed to get UUID.")
         return buffer.get()
+
+    @property
+    def resolution(self) -> Tuple[int, int]:
+        """获取设备原始（未缩放）分辨率 / Get the raw (unscaled) device resolution
+
+        Returns:
+            Tuple[int, int]: (宽度, 高度)，获取失败时返回 (0, 0) / (width, height), returns (0, 0) on failure
+
+        Note:
+            返回的是设备屏幕的实际分辨率，未经任何缩放处理。
+            而通过 cached_image 获取的截图是经过缩放的，其尺寸可能与此原始分辨率不同。
+            需要在首次截图后才能获取到有效值，否则返回 (0, 0)。
+
+            This returns the actual device screen resolution before any scaling.
+            The screenshot obtained via cached_image is scaled according to the screenshot target size settings,
+            so its dimensions may differ from this raw resolution.
+            Valid values are only available after the first screenshot is taken, otherwise returns (0, 0).
+        """
+        width = ctypes.c_int32()
+        height = ctypes.c_int32()
+        if not Library.framework().MaaControllerGetResolution(
+            self._handle, ctypes.byref(width), ctypes.byref(height)
+        ):
+            return (0, 0)
+        return (width.value, height.value)
 
     def set_screenshot_target_long_side(self, long_side: int) -> bool:
         """设置截图缩放长边到指定长度 / Set screenshot scaling long side to specified length
@@ -475,9 +525,30 @@ class Controller:
             c_int32,
         ]
 
+        Library.framework().MaaControllerPostClickV2.restype = MaaCtrlId
+        Library.framework().MaaControllerPostClickV2.argtypes = [
+            MaaControllerHandle,
+            c_int32,
+            c_int32,
+            c_int32,
+            c_int32,
+        ]
+
         Library.framework().MaaControllerPostSwipe.restype = MaaCtrlId
         Library.framework().MaaControllerPostSwipe.argtypes = [
             MaaControllerHandle,
+            c_int32,
+            c_int32,
+            c_int32,
+            c_int32,
+            c_int32,
+        ]
+
+        Library.framework().MaaControllerPostSwipeV2.restype = MaaCtrlId
+        Library.framework().MaaControllerPostSwipeV2.argtypes = [
+            MaaControllerHandle,
+            c_int32,
+            c_int32,
             c_int32,
             c_int32,
             c_int32,
@@ -582,6 +653,13 @@ class Controller:
             MaaStringBufferHandle,
         ]
 
+        Library.framework().MaaControllerGetResolution.restype = MaaBool
+        Library.framework().MaaControllerGetResolution.argtypes = [
+            MaaControllerHandle,
+            ctypes.POINTER(ctypes.c_int32),
+            ctypes.POINTER(ctypes.c_int32),
+        ]
+
         Library.framework().MaaControllerAddSink.restype = MaaSinkId
         Library.framework().MaaControllerAddSink.argtypes = [
             MaaControllerHandle,
@@ -619,7 +697,6 @@ class AdbController(Controller):
         input_methods: int = MaaAdbInputMethodEnum.Default,
         config: Dict[str, Any] = {},
         agent_path: Union[str, Path] = AGENT_BINARY_PATH,
-        notification_handler: None = None,
     ):
         """创建 Adb 控制器 / Create Adb controller
 
@@ -630,17 +707,10 @@ class AdbController(Controller):
             input_methods: 所有可使用的输入方式 / all available input methods
             config: 额外配置 / extra config
             agent_path: MaaAgentBinary 路径 / MaaAgentBinary path
-            notification_handler: 已废弃，请使用 add_sink 代替 / Deprecated, use add_sink instead
 
         Raises:
-            NotImplementedError: 如果提供了 notification_handler
             RuntimeError: 如果创建失败
         """
-        if notification_handler:
-            raise NotImplementedError(
-                "NotificationHandler is deprecated, use add_sink instead."
-            )
-
         super().__init__()
         self._set_adb_api_properties()
 
@@ -675,10 +745,9 @@ class Win32Controller(Controller):
     def __init__(
         self,
         hWnd: Union[ctypes.c_void_p, int, None],
-        screencap_method: int = MaaWin32ScreencapMethodEnum.DXGI_DesktopDup,
+        screencap_method: int = MaaWin32ScreencapMethodEnum.FramePool,
         mouse_method: int = MaaWin32InputMethodEnum.Seize,
         keyboard_method: int = MaaWin32InputMethodEnum.Seize,
-        notification_handler: None = None,
     ):
         """创建 Win32 控制器 / Create Win32 controller
 
@@ -687,17 +756,10 @@ class Win32Controller(Controller):
             screencap_method: 使用的截图方式 / screenshot method used
             mouse_method: 使用的鼠标输入方式 / mouse input method used
             keyboard_method: 使用的键盘输入方式 / keyboard input method used
-            notification_handler: 已废弃，请使用 add_sink 代替 / Deprecated, use add_sink instead
 
         Raises:
-            NotImplementedError: 如果提供了 notification_handler
             RuntimeError: 如果创建失败
         """
-        if notification_handler:
-            raise NotImplementedError(
-                "NotificationHandler is deprecated, use add_sink instead."
-            )
-
         super().__init__()
         self._set_win32_api_properties()
 
@@ -732,7 +794,6 @@ class PlayCoverController(Controller):
         self,
         address: str,
         uuid: str,
-        notification_handler: None = None,
     ):
         """创建 PlayCover 控制器 / Create PlayCover controller
 
@@ -741,14 +802,8 @@ class PlayCoverController(Controller):
             uuid: 目标应用 bundle identifier / Target app bundle identifier
 
         Raises:
-            NotImplementedError: 如果提供了 notification_handler
             RuntimeError: 如果创建失败
         """
-        if notification_handler:
-            raise NotImplementedError(
-                "NotificationHandler is deprecated, use add_sink instead."
-            )
-
         super().__init__()
         self._set_playcover_api_properties()
 
@@ -777,7 +832,6 @@ class DbgController(Controller):
         write_path: Union[str, Path],
         dbg_type: int,
         config: Dict[str, Any] = {},
-        notification_handler: None = None,
     ):
         """创建调试控制器 / Create debug controller
 
@@ -786,17 +840,10 @@ class DbgController(Controller):
             write_path: 输出路径, 包含执行结果 / Output path, includes execution results
             dbg_type: 控制器模式 / Controller mode
             config: 额外配置 / Extra config
-            notification_handler: 已废弃，请使用 add_sink 代替 / Deprecated, use add_sink instead
 
         Raises:
-            NotImplementedError: 如果提供了 notification_handler
             RuntimeError: 如果创建失败
         """
-        if notification_handler:
-            raise NotImplementedError(
-                "NotificationHandler is deprecated, use add_sink instead."
-            )
-
         super().__init__()
         self._set_dbg_api_properties()
 
@@ -820,24 +867,72 @@ class DbgController(Controller):
         ]
 
 
+class GamepadController(Controller):
+    """虚拟手柄控制器 (仅 Windows) / Virtual gamepad controller (Windows only)
+
+    通过 ViGEm 模拟 Xbox 360 或 DualShock 4 手柄，用于控制需要手柄输入的游戏。
+    Emulates Xbox 360 or DualShock 4 gamepad via ViGEm for controlling games that require gamepad input.
+
+    需要安装 ViGEm Bus Driver: https://github.com/ViGEm/ViGEmBus/releases
+    Requires ViGEm Bus Driver: https://github.com/ViGEm/ViGEmBus/releases
+
+    手柄操作映射:
+    - click_key/key_down/key_up: 数字按键 (使用 MaaGamepadButtonEnum)
+    - touch_down/touch_move/touch_up: 摇杆和扳机 (contact 使用 MaaGamepadContactEnum)
+      - contact 0: 左摇杆 (x, y: -32768~32767)
+      - contact 1: 右摇杆 (x, y: -32768~32767)
+      - contact 2: 左扳机 (pressure: 0~255)
+      - contact 3: 右扳机 (pressure: 0~255)
+    """
+
+    def __init__(
+        self,
+        hWnd: Union[ctypes.c_void_p, int, None],
+        gamepad_type: int = MaaGamepadTypeEnum.Xbox360,
+        screencap_method: int = MaaWin32ScreencapMethodEnum.FramePool,
+    ):
+        """创建虚拟手柄控制器 / Create virtual gamepad controller
+
+        Args:
+            hWnd: 窗口句柄，用于截图 (可为 None，不需要截图时) / Window handle for screencap (can be None if screencap not needed)
+            gamepad_type: 手柄类型 (MaaGamepadTypeEnum.Xbox360 或 MaaGamepadTypeEnum.DualShock4) / Gamepad type
+            screencap_method: 截图方式 (当 hWnd 不为 None 时使用) / Screencap method (used when hWnd is not None)
+
+        Raises:
+            RuntimeError: 如果创建失败
+        """
+        super().__init__()
+        self._set_gamepad_api_properties()
+
+        self._handle = Library.framework().MaaGamepadControllerCreate(
+            hWnd,
+            MaaGamepadType(gamepad_type),
+            MaaWin32ScreencapMethod(screencap_method),
+        )
+
+        if not self._handle:
+            raise RuntimeError("Failed to create Gamepad controller.")
+
+    def _set_gamepad_api_properties(self):
+        Library.framework().MaaGamepadControllerCreate.restype = MaaControllerHandle
+        Library.framework().MaaGamepadControllerCreate.argtypes = [
+            ctypes.c_void_p,
+            MaaGamepadType,
+            MaaWin32ScreencapMethod,
+        ]
+
+
 class CustomController(Controller):
 
     _callbacks: MaaCustomControllerCallbacks
 
-    def __init__(
-        self,
-        notification_handler: None = None,
-    ):
-        if notification_handler:
-            raise NotImplementedError(
-                "NotificationHandler is deprecated, use add_sink instead."
-            )
-
+    def __init__(self):
         super().__init__()
         self._set_custom_api_properties()
 
         self._callbacks = MaaCustomControllerCallbacks(
             CustomController._c_connect_agent,
+            CustomController._c_connected_agent,
             CustomController._c_request_uuid_agent,
             CustomController._c_get_features_agent,
             CustomController._c_start_app_agent,
@@ -874,6 +969,10 @@ class CustomController(Controller):
     @abstractmethod
     def connect(self) -> bool:
         raise NotImplementedError
+
+    def connected(self) -> bool:
+        """检查是否已连接（可选实现，默认返回 True）"""
+        return True
 
     @abstractmethod
     def request_uuid(self) -> str:
@@ -963,6 +1062,21 @@ class CustomController(Controller):
         ).value
 
         return int(self.connect())
+
+    @staticmethod
+    @MaaCustomControllerCallbacks.ConnectedFunc
+    def _c_connected_agent(
+        trans_arg: ctypes.c_void_p,
+    ) -> int:
+        if not trans_arg:
+            return int(False)
+
+        self: CustomController = ctypes.cast(
+            trans_arg,
+            ctypes.py_object,
+        ).value
+
+        return int(self.connected())
 
     @staticmethod
     @MaaCustomControllerCallbacks.RequestUuidFunc

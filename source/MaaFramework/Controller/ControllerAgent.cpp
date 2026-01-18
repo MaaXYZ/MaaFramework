@@ -58,16 +58,20 @@ MaaCtrlId ControllerAgent::post_connection()
     return focus_id(id);
 }
 
-MaaCtrlId ControllerAgent::post_click(int x, int y)
+MaaCtrlId ControllerAgent::post_click(int x, int y, int contact, int pressure)
 {
-    ClickParam p { .point = { x, y } };
+    ClickParam p { .point = { x, y }, .contact = contact, .pressure = pressure };
     auto id = post({ .type = Action::Type::click, .param = std::move(p) });
     return focus_id(id);
 }
 
-MaaCtrlId ControllerAgent::post_swipe(int x1, int y1, int x2, int y2, int duration)
+MaaCtrlId ControllerAgent::post_swipe(int x1, int y1, int x2, int y2, int duration, int contact, int pressure)
 {
-    SwipeParam p { .begin = { x1, y1 }, .end = { { x2, y2 } }, .duration = { static_cast<uint>(duration) } };
+    SwipeParam p { .begin = { x1, y1 },
+                   .end = { { x2, y2 } },
+                   .duration = { static_cast<uint>(duration) },
+                   .contact = contact,
+                   .pressure = pressure };
     auto id = post({ .type = Action::Type::swipe, .param = std::move(p) });
     return focus_id(id);
 }
@@ -180,7 +184,10 @@ MaaStatus ControllerAgent::wait(MaaCtrlId ctrl_id) const
 
 bool ControllerAgent::connected() const
 {
-    return connected_;
+    if (!control_unit_) {
+        return false;
+    }
+    return control_unit_->connected();
 }
 
 cv::Mat ControllerAgent::cached_image() const
@@ -201,6 +208,17 @@ std::string ControllerAgent::get_uuid()
         request_uuid();
     }
     return uuid_cache_;
+}
+
+bool ControllerAgent::get_resolution(int32_t& width, int32_t& height) const
+{
+    if (image_raw_width_ == 0 || image_raw_height_ == 0) {
+        return false;
+    }
+
+    width = image_raw_width_;
+    height = image_raw_height_;
+    return true;
 }
 
 MaaSinkId ControllerAgent::add_sink(MaaEventCallback callback, void* trans_arg)
@@ -375,11 +393,11 @@ bool ControllerAgent::handle_connect()
         return false;
     }
 
-    connected_ = control_unit_->connect();
+    bool ret = control_unit_->connect();
 
     request_uuid();
 
-    return connected_;
+    return ret;
 }
 
 bool ControllerAgent::handle_click(const ClickParam& param)
@@ -393,7 +411,7 @@ bool ControllerAgent::handle_click(const ClickParam& param)
 
     bool ret = true;
     if (control_unit_->get_features() & MaaControllerFeature_UseMouseDownAndUpInsteadOfClick) {
-        ret &= control_unit_->touch_down(param.contact, point.x, point.y, 1);
+        ret &= control_unit_->touch_down(param.contact, point.x, point.y, param.pressure);
         std::this_thread::sleep_for(std::chrono::milliseconds(50));
         ret &= control_unit_->touch_up(param.contact);
     }
@@ -415,7 +433,7 @@ bool ControllerAgent::handle_long_press(const LongPressParam& param)
 
     bool ret = true;
     if (control_unit_->get_features() & MaaControllerFeature_UseMouseDownAndUpInsteadOfClick) {
-        ret &= control_unit_->touch_down(param.contact, point.x, point.y, 1);
+        ret &= control_unit_->touch_down(param.contact, point.x, point.y, param.pressure);
         std::this_thread::sleep_for(std::chrono::milliseconds(param.duration));
         ret &= control_unit_->touch_up(param.contact);
     }
@@ -443,7 +461,7 @@ bool ControllerAgent::handle_swipe(const SwipeParam& param)
     bool ret = !param.end.empty();
 
     if (!param.only_hover && use_touch_down_up) {
-        ret &= control_unit_->touch_down(param.contact, begin.x, begin.y, 1);
+        ret &= control_unit_->touch_down(param.contact, begin.x, begin.y, param.pressure);
     }
 
     for (size_t i = 0; i < param.end.size(); ++i) {
@@ -468,13 +486,13 @@ bool ControllerAgent::handle_swipe(const SwipeParam& param)
                 std::this_thread::sleep_until(now + delay);
 
                 now = std::chrono::steady_clock::now();
-                ret &= control_unit_->touch_move(param.contact, mx, my, 1);
+                ret &= control_unit_->touch_move(param.contact, mx, my, param.pressure);
             }
 
             std::this_thread::sleep_until(now + delay);
 
             now = std::chrono::steady_clock::now();
-            ret &= control_unit_->touch_move(param.contact, end.x, end.y, 1);
+            ret &= control_unit_->touch_move(param.contact, end.x, end.y, param.pressure);
 
             std::this_thread::sleep_until(now + delay);
         }
@@ -585,14 +603,14 @@ bool ControllerAgent::handle_multi_swipe(const MultiSwipeParam& param)
 
             if (seg_op.step_index == 0) {
                 if (!s.only_hover) {
-                    ret &= control_unit_->touch_down(contact, seg_op.begin.x, seg_op.begin.y, 1);
+                    ret &= control_unit_->touch_down(contact, seg_op.begin.x, seg_op.begin.y, s.pressure);
                 }
                 ++seg_op.step_index;
             }
             else if (seg_op.step_index < seg_op.total_step) {
                 int mx = static_cast<int>(seg_op.begin.x + seg_op.step_index * seg_op.x_step_len);
                 int my = static_cast<int>(seg_op.begin.y + seg_op.step_index * seg_op.y_step_len);
-                ret &= control_unit_->touch_move(contact, mx, my, 1);
+                ret &= control_unit_->touch_move(contact, mx, my, s.pressure);
                 ++seg_op.step_index;
             }
             else if (seg_op.step_index == seg_op.total_step) {
@@ -933,8 +951,11 @@ bool ControllerAgent::run_action(typename AsyncRunner<Action>::Id id, Action act
         ret = false;
     }
 
-    if (notify) {
-        notifier_.notify(this, ret ? MaaMsg_Controller_Action_Succeeded : MaaMsg_Controller_Action_Failed, cb_detail);
+    if (ret && notify) {
+        notifier_.notify(this, MaaMsg_Controller_Action_Succeeded, cb_detail);
+    }
+    else if (!ret) {
+        notifier_.notify(this, MaaMsg_Controller_Action_Failed, cb_detail);
     }
 
     return ret;
@@ -942,6 +963,10 @@ bool ControllerAgent::run_action(typename AsyncRunner<Action>::Id id, Action act
 
 cv::Point ControllerAgent::preproc_touch_point(const cv::Point& p)
 {
+    if (control_unit_ && control_unit_->get_features() & MaaControllerFeature_NoScalingTouchPoints) {
+        return p;
+    }
+
     if (image_target_width_ == 0 || image_target_height_ == 0) {
         LogWarn << "Invalid image target size" << VAR(image_target_width_) << VAR(image_target_height_);
 

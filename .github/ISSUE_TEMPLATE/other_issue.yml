@@ -1,0 +1,39 @@
+name: 其他问题 / Other Issue
+description: 其他类型的问题或疑问 / Other types of issues or questions
+labels: ["question"]
+body:
+    - type: markdown
+      attributes:
+          value: |
+              ## 提交前请阅读 / Please Read Before Submitting
+
+              📖 **[问题反馈指南 / Troubleshooting Guide](https://github.com/MaaXYZ/MaaFramework/blob/main/docs/zh_cn/5.1-问题反馈.md)**
+
+              简单的使用问题建议先在 QQ 群（595990173）咨询。  
+              For simple usage questions, consider asking in QQ Group (595990173) first.
+
+    - type: textarea
+      id: description
+      attributes:
+          label: 问题描述 / Description
+          description: |
+              请详细描述您的问题  
+              Please describe your issue in detail
+      validations:
+          required: false
+
+    - type: input
+      id: version
+      attributes:
+          label: MaaFramework 版本 / Version
+          placeholder: "例如 / e.g.: v2.0.0"
+      validations:
+          required: false
+
+    - type: textarea
+      id: additional
+      attributes:
+          label: 其他信息 / Additional Information
+          description: 日志、截图等 / Logs, screenshots, etc.
+      validations:
+          required: false

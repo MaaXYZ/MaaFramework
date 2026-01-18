@@ -34,7 +34,7 @@ declare global {
             algorithm: string
             hit: boolean
             box: Rect
-            detail: RecoDetailObject
+            detail: RecoDetailObject | RecoDetailWithoutDraws[]
         }
 
         type RecoDetail = RecoDetailWithoutDraws & {
