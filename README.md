@@ -26,6 +26,7 @@ _✨ 基于图像识别的自动化黑盒测试框架 ✨_
   <a href="https://www.nuget.org/packages/Maa.Framework.Runtimes" target="_blank"><img alt="nuget" src="https://img.shields.io/badge/NuGet-004880?logo=nuget"></a>
   <a href="https://www.npmjs.com/package/@maaxyz/maa-node" target="_blank"><img alt="npm" src="https://img.shields.io/badge/npm-CB3837?logo=npm"></a>
   <a href="https://pkg.go.dev/github.com/MaaXYZ/maa-framework-go/v3"><img alt="go reference" src="https://pkg.go.dev/badge/github.com/MaaXYZ/maa-framework-go/v3.svg" /></a>
+  <a href="https://crates.io/crates/maa-framework"><img alt="rust crate" src="https://img.shields.io/badge/Rust-crate-orange?logo=rust" /></a>
   <a href="https://mirrorchyan.com/zh/projects?source=maafw-badge" target="_blank"><img alt="mirrorc" src="./docs/static/mirrorc-zh.svg"></a>
   <br>
   <a href="https://maafw.xyz/" target="_blank"><img alt="website" src="./docs/static/maafw.svg"></a>
