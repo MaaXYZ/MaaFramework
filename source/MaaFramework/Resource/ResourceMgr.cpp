@@ -767,25 +767,25 @@ std::optional<json::object> ResourceMgr::get_default_recognition_param(const std
 
     switch (type) {
     case Type::DirectHit:
-        param = default_pipeline_.get_recognition_param<DirectHitParam>(type);
+        param = default_pipeline_.get_recognition_param<MAA_VISION_NS::DirectHitParam>(type);
         break;
     case Type::TemplateMatch:
-        param = default_pipeline_.get_recognition_param<TemplateMatcherParam>(type);
+        param = default_pipeline_.get_recognition_param<MAA_VISION_NS::TemplateMatcherParam>(type);
         break;
     case Type::FeatureMatch:
-        param = default_pipeline_.get_recognition_param<FeatureMatcherParam>(type);
+        param = default_pipeline_.get_recognition_param<MAA_VISION_NS::FeatureMatcherParam>(type);
         break;
     case Type::ColorMatch:
-        param = default_pipeline_.get_recognition_param<ColorMatcherParam>(type);
+        param = default_pipeline_.get_recognition_param<MAA_VISION_NS::ColorMatcherParam>(type);
         break;
     case Type::OCR:
-        param = default_pipeline_.get_recognition_param<OCRerParam>(type);
+        param = default_pipeline_.get_recognition_param<MAA_VISION_NS::OCRerParam>(type);
         break;
     case Type::NeuralNetworkClassify:
-        param = default_pipeline_.get_recognition_param<NeuralNetworkClassifierParam>(type);
+        param = default_pipeline_.get_recognition_param<MAA_VISION_NS::NeuralNetworkClassifierParam>(type);
         break;
     case Type::NeuralNetworkDetect:
-        param = default_pipeline_.get_recognition_param<NeuralNetworkDetectorParam>(type);
+        param = default_pipeline_.get_recognition_param<MAA_VISION_NS::NeuralNetworkDetectorParam>(type);
         break;
     case Type::And:
         param = default_pipeline_.get_recognition_param<std::shared_ptr<AndParam>>(type);
@@ -794,7 +794,7 @@ std::optional<json::object> ResourceMgr::get_default_recognition_param(const std
         param = default_pipeline_.get_recognition_param<std::shared_ptr<OrParam>>(type);
         break;
     case Type::Custom:
-        param = default_pipeline_.get_recognition_param<CustomRecognitionParam>(type);
+        param = default_pipeline_.get_recognition_param<MAA_VISION_NS::CustomRecognitionParam>(type);
         break;
     default:
         LogError << "invalid recognition type" << VAR(reco_type) << VAR(static_cast<int>(type));
@@ -802,7 +802,7 @@ std::optional<json::object> ResourceMgr::get_default_recognition_param(const std
     }
 
     auto reco = PipelineDumper::dump_reco(type, param);
-    return reco.param.to_json().as_object();
+    return reco.to_json().as_object().at("param").as_object();
 }
 
 std::optional<json::object> ResourceMgr::get_default_action_param(const std::string& action_type) const
@@ -820,7 +820,7 @@ std::optional<json::object> ResourceMgr::get_default_action_param(const std::str
 
     switch (type) {
     case Type::DoNothing:
-        param = DoNothingParam {};
+        param = std::monostate {};
         break;
     case Type::Click:
         param = default_pipeline_.get_action_param<ClickParam>(type);
@@ -862,7 +862,7 @@ std::optional<json::object> ResourceMgr::get_default_action_param(const std::str
         param = default_pipeline_.get_action_param<ScrollParam>(type);
         break;
     case Type::StopTask:
-        param = StopTaskParam {};
+        param = std::monostate {};
         break;
     case Type::Command:
         param = default_pipeline_.get_action_param<CommandParam>(type);
@@ -879,7 +879,7 @@ std::optional<json::object> ResourceMgr::get_default_action_param(const std::str
     }
 
     auto act = PipelineDumper::dump_act(type, param);
-    return act.param.to_json().as_object();
+    return act.to_json().as_object().at("param").as_object();
 }
 
 MAA_RES_NS_END
