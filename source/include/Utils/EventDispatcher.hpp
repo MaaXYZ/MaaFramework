@@ -27,6 +27,11 @@ class EventDispatcher
     , private Dispatcher<EventSink>
 {
 public:
+    EventDispatcher(bool with_log = true)
+        : log_(with_log)
+    {
+    }
+
     virtual MaaSinkId add_sink(MaaEventCallback callback, void* trans_arg) override
     {
         LogInfo << VAR_VOIDP(callback) << VAR_VOIDP(trans_arg);
@@ -55,8 +60,10 @@ public:
 public:
     void notify(void* handle, std::string_view msg, const json::value& details)
     {
-        static constexpr std::string_view kLogFlag = "!!!OnEventNotify!!!";
-        LogInfo << kLogFlag << VAR_VOIDP(handle) << VAR(msg) << VAR(details);
+        if (log_) {
+            static constexpr std::string_view kLogFlag = "!!!OnEventNotify!!!";
+            LogInfo << kLogFlag << VAR_VOIDP(handle) << VAR(msg) << VAR(details);
+        }
 
         const std::string str_detail = details.to_string();
         dispatch([&](const std::shared_ptr<EventSink>& sink) {
@@ -66,6 +73,9 @@ public:
             sink->on_event(handle, msg, str_detail);
         });
     }
+
+private:
+    bool log_ = false;
 };
 
 MAA_NS_END

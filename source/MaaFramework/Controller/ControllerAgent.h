@@ -270,7 +270,7 @@ private:
 
 private:
     const std::shared_ptr<MAA_CTRL_UNIT_NS::ControlUnitAPI> control_unit_ = nullptr;
-    EventDispatcher notifier_;
+    EventDispatcher notifier_ = EventDispatcher(false);
 
     mutable std::mutex image_mutex_;
     cv::Mat image_;
