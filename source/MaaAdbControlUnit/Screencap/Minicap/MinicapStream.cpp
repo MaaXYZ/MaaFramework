@@ -49,8 +49,6 @@ bool MinicapStream::init()
 
 std::optional<cv::Mat> MinicapStream::screencap()
 {
-    LogDebug;
-
     std::unique_lock locker(mutex_);
     if (quit_) {
         return std::nullopt;

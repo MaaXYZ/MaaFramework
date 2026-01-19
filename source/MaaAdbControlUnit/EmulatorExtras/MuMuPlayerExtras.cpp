@@ -70,8 +70,6 @@ void MuMuPlayerExtras::on_image_resolution_changed(const std::pair<int, int>& pr
 
 std::optional<cv::Mat> MuMuPlayerExtras::screencap()
 {
-    LogDebug;
-
     if (!capture_display_func_) {
         LogError << "capture_display_func_ is null";
         return std::nullopt;
