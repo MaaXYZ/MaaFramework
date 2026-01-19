@@ -4,6 +4,7 @@
 #include <MaaToolkit/MaaToolkitAPI.h>
 
 #include "../foundation/spec.h"
+#include "buffer.h"
 
 std::string version_from_macro()
 {
@@ -100,6 +101,16 @@ void config_init_option(std::string user_path, maajs::OptionalParam<std::string>
     }
 }
 
+maajs::ArrayBufferType resize_image(maajs::ArrayBufferType src, int32_t width, int32_t height)
+{
+    ImageBuffer buf;
+    buf.set(src);
+    if (!MaaImageBufferResize(buf, width, height)) {
+        throw maajs::MaaError { "Global resize_image failed" };
+    }
+    return buf.data(src.Env());
+}
+
 maajs::ObjectType load_global(maajs::EnvType env)
 {
     auto globalObject = maajs::ObjectType::New(env);
@@ -114,6 +125,7 @@ maajs::ObjectType load_global(maajs::EnvType env)
     MAA_BIND_SETTER(globalObject, "draw_quality", set_draw_quality);
     MAA_BIND_SETTER(globalObject, "reco_image_cache_limit", set_reco_image_cache_limit);
     MAA_BIND_FUNC(globalObject, "config_init_option", config_init_option);
+    MAA_BIND_FUNC(globalObject, "resize_image", resize_image);
 
     return globalObject;
 }

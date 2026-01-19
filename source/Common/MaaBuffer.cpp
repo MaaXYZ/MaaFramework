@@ -4,6 +4,7 @@
 #include "MaaUtils/Buffer/ListBuffer.hpp"
 #include "MaaUtils/Buffer/StringBuffer.hpp"
 #include "MaaUtils/Logger.h"
+#include "MaaUtils/NoWarningCV.hpp"
 
 MaaStringBuffer* MaaStringBufferCreate()
 {
@@ -269,6 +270,48 @@ MaaBool MaaImageBufferSetRawData(MaaImageBuffer* handle, MaaImageRawData data, i
     }
 
     handle->set(img);
+    return true;
+}
+
+MaaBool MaaImageBufferResize(MaaImageBuffer* handle, int32_t width, int32_t height)
+{
+    if (!handle) {
+        LogError << "handle is null";
+        return 0;
+    }
+
+    if (!width && !height) {
+        LogError << "width and height are both 0";
+        return 0;
+    }
+
+    if (handle->empty()) {
+        LogError << "handle is empty";
+        return 0;
+    }
+
+    auto curWidth = handle->width();
+    auto curHeight = handle->height();
+
+    if (!curWidth || !curHeight) {
+        LogWarn << "handle is empty";
+        return 0;
+    }
+
+    int32_t targetWidth = curWidth, targetHeight = curHeight;
+    if (width) {
+        targetWidth = width;
+        targetHeight = static_cast<int32_t>(std::round(static_cast<double>(curHeight) * width / curWidth));
+    }
+    else {
+        targetHeight = height;
+        targetWidth = static_cast<int32_t>(std::round(static_cast<double>(curWidth) * height / curHeight));
+    }
+
+    cv::Mat target;
+    cv::resize(handle->get(), target, { targetWidth, targetHeight }, 0, 0, cv::INTER_AREA);
+    handle->set(target);
+
     return true;
 }
 

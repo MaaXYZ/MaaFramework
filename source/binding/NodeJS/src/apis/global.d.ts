@@ -13,6 +13,8 @@ declare global {
             set draw_quality(value: number)
             set reco_image_cache_limit(value: number)
             config_init_option(user_path: string, default_json?: string): void
+
+            resize_image(image: ArrayBuffer, width: number, height: number): ArrayBuffer
         }
     }
 }
