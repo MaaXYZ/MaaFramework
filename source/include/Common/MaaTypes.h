@@ -124,6 +124,8 @@ public:
         const cv::Rect& box,
         const std::string& reco_detail) = 0;
 
+    virtual bool override_pipeline(MaaTaskId task_id, const json::value& pipeline_override) = 0;
+
     virtual MaaStatus status(MaaTaskId task_id) const = 0;
     virtual MaaStatus wait(MaaTaskId task_id) const = 0;
 

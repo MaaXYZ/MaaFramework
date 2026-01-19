@@ -11,7 +11,7 @@ from .define import *
 from .library import Library
 from .tasker import Tasker
 from .pipeline import JPipelineData, JPipelineParser, JNodeAttr
-from .job import JobWithResult
+from .job import TaskJob
 
 
 class Context:
@@ -241,11 +241,11 @@ class Context:
         """
         return self._tasker
 
-    def get_task_job(self) -> JobWithResult:
+    def get_task_job(self) -> TaskJob:
         """获取对应任务号的任务作业 / Get task job for corresponding task id
 
         Returns:
-            JobWithResult: 任务作业对象 / Task job object
+            TaskJob: 任务作业对象 / Task job object
 
         Raises:
             ValueError: 如果任务 id 为 None

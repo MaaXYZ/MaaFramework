@@ -257,6 +257,14 @@ void TaskerImpl::clear_cache()
     MaaTaskerClearCache(tasker);
 }
 
+void TaskerImpl::override_pipeline(MaaTaskId task_id, maajs::ValueType pipeline)
+{
+    auto str = maajs::JsonStringify(env, pipeline);
+    if (!MaaTaskerOverridePipeline(tasker, task_id, str.c_str())) {
+        throw maajs::MaaError { "Tasker override_pipeline failed" };
+    }
+}
+
 std::optional<maajs::ValueType> TaskerImpl::recognition_detail(MaaRecoId id)
 {
     StringBuffer node_name;
@@ -446,6 +454,7 @@ void TaskerImpl::init_proto(maajs::ObjectType proto, maajs::FunctionType)
     MAA_BIND_GETTER_SETTER(proto, "resource", TaskerImpl::get_resource, TaskerImpl::set_resource);
     MAA_BIND_GETTER_SETTER(proto, "controller", TaskerImpl::get_controller, TaskerImpl::set_controller);
     MAA_BIND_FUNC(proto, "clear_cache", TaskerImpl::clear_cache);
+    MAA_BIND_FUNC(proto, "override_pipeline", TaskerImpl::override_pipeline);
     MAA_BIND_FUNC(proto, "recognition_detail", TaskerImpl::recognition_detail);
     MAA_BIND_FUNC(proto, "action_detail", TaskerImpl::action_detail);
     MAA_BIND_FUNC(proto, "node_detail", TaskerImpl::node_detail);

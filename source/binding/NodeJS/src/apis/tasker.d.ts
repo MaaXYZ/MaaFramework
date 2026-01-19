@@ -159,6 +159,7 @@ declare global {
             set controller(res: Controller | null)
             get controller(): Controller | null
             clear_cache(): void
+            override_pipeline(task_id: TaskId, pipeline: Record<string, unknown> | Record<string, unknown>[]): void
             recognition_detail(id: RecoId): RecoDetail | null
             action_detail(id: ActId): ActionDetail | null
             node_detail(id: NodeId): NodeDetail | null

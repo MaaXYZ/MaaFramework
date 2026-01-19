@@ -477,6 +477,12 @@ def test_tasker_api(resource: Resource, controller: DbgController):
     # 测试 clear_cache
     tasker.clear_cache()
 
+    # 测试 override_pipeline (通过 job 对象)
+    task_job = tasker.post_task("Entry", ppover)
+    override_result = task_job.override_pipeline({"Entry": {"next": []}})
+    print(f"  task_job.override_pipeline result: {override_result}")
+    task_job.wait()
+
     # 测试 remove_sink 和 clear_sinks
     assert tasker_sink_id is not None, "tasker_sink_id should not be None"
     assert context_sink_id is not None, "context_sink_id should not be None"

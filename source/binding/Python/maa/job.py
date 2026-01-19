@@ -1,3 +1,6 @@
+import json
+from typing import Dict
+
 from .define import *
 
 
@@ -129,3 +132,41 @@ class JobWithResult(Job):
             self.wait()
 
         return self._get_func(self._job_id)
+
+
+class TaskJob(JobWithResult):
+    """任务作业句柄 / Task job handle
+
+    继承自 JobWithResult，额外提供任务相关的操作。
+    Inherits from JobWithResult, additionally provides task-related operations.
+    """
+
+    def __init__(self, job_id: MaaId, status_func, wait_func, get_func, override_pipeline_func):
+        super().__init__(job_id, status_func, wait_func, get_func)
+        self._override_pipeline_func = override_pipeline_func
+
+    def wait(self) -> "TaskJob":
+        """等待作业完成 / Wait for job completion
+
+        Returns:
+            TaskJob: 返回自身，支持链式调用 / Returns self for method chaining
+        """
+        super().wait()
+        return self
+
+    def override_pipeline(self, pipeline_override: Dict) -> bool:
+        """覆盖此任务的 pipeline / Override pipeline for this task
+
+        在任务执行期间动态修改 pipeline 配置
+        Dynamically modify pipeline configuration during task execution
+
+        Args:
+            pipeline_override: 用于覆盖的 json / JSON for overriding
+
+        Returns:
+            bool: 是否成功 / Whether successful
+        """
+        return self._override_pipeline_func(
+            self._job_id,
+            json.dumps(pipeline_override, ensure_ascii=False).encode(),
+        )

@@ -292,6 +292,9 @@ bool AgentClient::handle_inserted_request(const json::value& j)
     else if (handle_tasker_clear_cache(j)) {
         return true;
     }
+    else if (handle_tasker_override_pipeline(j)) {
+        return true;
+    }
     else if (handle_tasker_get_task_detail(j)) {
         return true;
     }
@@ -1036,6 +1039,29 @@ bool AgentClient::handle_tasker_clear_cache(const json::value& j)
     }
     tasker->clear_cache();
     TaskerClearCacheReverseResponse resp {};
+    send(resp);
+    return true;
+}
+
+bool AgentClient::handle_tasker_override_pipeline(const json::value& j)
+{
+    if (!j.is<TaskerOverridePipelineReverseRequest>()) {
+        return false;
+    }
+    const TaskerOverridePipelineReverseRequest& req = j.as<TaskerOverridePipelineReverseRequest>();
+    LogFunc << VAR(req) << VAR(ipc_addr_);
+
+    MaaTasker* tasker = query_tasker(req.tasker_id);
+    if (!tasker) {
+        LogError << "tasker not found" << VAR(req.tasker_id);
+        return false;
+    }
+
+    bool ret = tasker->override_pipeline(req.task_id, req.pipeline_override);
+
+    TaskerOverridePipelineReverseResponse resp {
+        .ret = ret,
+    };
     send(resp);
     return true;
 }
