@@ -394,6 +394,8 @@ PipelineV2::JAction PipelineDumper::dump_act(Action::Type type, const Action::Pa
     case Action::Type::Scroll: {
         const auto& p = std::get<Action::ScrollParam>(param);
         act.param = PipelineV2::JScroll {
+            .target = dump_target(p.target),
+            .target_offset = dump_rect(p.target.offset),
             .dx = p.dx,
             .dy = p.dy,
         };

@@ -816,6 +816,12 @@ bool ControllerAgent::handle_scroll(const ScrollParam& param)
         return false;
     }
 
+    // Move to target position before scrolling
+    cv::Point point = preproc_touch_point(param.point);
+    if (!control_unit_->touch_move(0, point.x, point.y, 0)) {
+        LogWarn << "Failed to move to scroll position" << VAR(point);
+    }
+
     bool ret = control_unit_->scroll(param.dx, param.dy);
     return ret;
 }

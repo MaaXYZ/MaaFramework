@@ -253,6 +253,8 @@ class JStopTask:
 
 @dataclass
 class JScroll:
+    target: JTarget = True
+    target_offset: JRect = (0, 0, 0, 0)
     dx: int = 0
     dy: int = 0
 
