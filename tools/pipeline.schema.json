@@ -2536,6 +2536,18 @@
         "Scroll": {
             "type": "object",
             "properties": {
+                "target": {
+                    "title": "Target Property",
+                    "description": "滚动目标的位置，鼠标会先移动到该位置再进行滚动。可选，默认 true 。",
+                    "$ref": "#/$defs/jsonTarget",
+                    "markdownDescription": "*true* | *string* | *array<int, 4>*\n\n滚动目标的位置，鼠标会先移动到该位置再进行滚动。可选，默认 true 。\n\n- *true*: 目标为本节点中刚刚识别到的位置（即自身）。\n\n- *string*: 填写节点名，目标为之前执行过的某节点识别到的位置。\n\n- *array<int, 4>*: 目标为固定坐标区域内随机一点，[x, y, w, h]，若希望全屏可设为 [0, 0, 0, 0] 。"
+                },
+                "target_offset": {
+                    "title": "Target Offset Property",
+                    "description": "在 `target` 的基础上额外移动再作为滚动目标，四个值分别相加。可选，默认 [0, 0, 0, 0] 。",
+                    "$ref": "#/$defs/jsonRect",
+                    "markdownDescription": "*array<int, 4>*\n\n在 `target` 的基础上额外移动再作为滚动目标，四个值分别相加。可选，默认 [0, 0, 0, 0] 。"
+                },
                 "dx": {
                     "title": "Scroll Dx Property",
                     "description": "水平滚动距离，正值向右滚动，负值向左滚动。可选，默认 0。建议使用 120 的整数倍（WHEEL_DELTA）。",

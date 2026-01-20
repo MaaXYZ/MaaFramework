@@ -100,10 +100,11 @@ struct AppParam
 
 struct ScrollParam
 {
+    cv::Point point {};
     int dx = 0;
     int dy = 0;
 
-    MEO_TOJSON(dx, dy);
+    MEO_TOJSON(point, dx, dy);
 };
 
 struct ShellParam

@@ -270,10 +270,12 @@ struct JStopTask
 
 struct JScroll
 {
+    JTarget target;
+    JRect target_offset {};
     int dx = 0;
     int dy = 0;
 
-    MEO_TOJSON(dx, dy);
+    MEO_TOJSON(target, target_offset, dx, dy);
 };
 
 struct JCommand

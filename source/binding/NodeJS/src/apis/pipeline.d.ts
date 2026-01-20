@@ -327,6 +327,8 @@ declare global {
         type ActionStopTask = {}
 
         type ActionScroll = {
+            target?: true | NodeName | Rect
+            target_offset?: Rect
             dx?: number
             dy?: number
         }

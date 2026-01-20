@@ -66,6 +66,7 @@ from maa.pipeline import (
     JInputText,
     JStartApp,
     JStopApp,
+    JScroll,
     JCommand,
     JShell,
     JCustomAction,
@@ -692,6 +693,27 @@ class PipelineTestRecognition(CustomRecognition):
         assert_true(isinstance(param, JCustomAction), "Custom param")
         assert_eq(param.custom_action, "MyCustomAction", "custom_action")
         assert_eq(param.custom_action_param, {"data": 123}, "custom_action_param")
+
+        # Scroll
+        new_ctx.override_pipeline(
+            {
+                "ActScroll": {
+                    "action": "Scroll",
+                    "target": [100, 200, 50, 50],
+                    "target_offset": [10, 10, 0, 0],
+                    "dx": 0,
+                    "dy": -360,
+                }
+            }
+        )
+        obj = new_ctx.get_node_object("ActScroll")
+        assert_eq(obj.action.type, JActionType.Scroll, "Scroll type")
+        param = obj.action.param
+        assert_true(isinstance(param, JScroll), "Scroll param")
+        assert_eq(param.target, [100, 200, 50, 50], "target")
+        assert_eq(param.target_offset, [10, 10, 0, 0], "target_offset")
+        assert_eq(param.dx, 0, "dx")
+        assert_eq(param.dy, -360, "dy")
 
         print("    PASS: action types parsing")
 
