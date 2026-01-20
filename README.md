@@ -69,6 +69,9 @@ _✨ 基于图像识别的自动化黑盒测试框架 ✨_
 -   [MXU](https://github.com/MistEO/MXU) ![Typescript](https://img.shields.io/badge/Typescript-8A2BE2?logo=typescript) ![rust](https://img.shields.io/badge/Rust-000000?logo=rust&logoColor=white) ![license](https://img.shields.io/github/license/MistEO/MXU) ![activity](https://img.shields.io/github/commit-activity/m/MistEO/MXU?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/MistEO/MXU?style=social)  
     基于 Tauri 2 + React 的轻量级跨平台通用 GUI。由 MaaFramework 强力驱动！
 
+-   [MFA-WebUI](https://github.com/ravizhan/MFA-WebUI) ![Vue](https://img.shields.io/badge/Vue-1867C0?logo=vuedotjs) ![Python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white) ![license](https://img.shields.io/github/license/ravizhan/MFA-WebUI) ![activity](https://img.shields.io/github/commit-activity/m/ravizhan/MFA-WebUI?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/ravizhan/MFA-WebUI?style=social)  
+    基于 Vue + FastAPI 的轻量级跨平台通用 WebUI。由 MaaFramework 强力驱动！
+
 ### 开发工具
 
 -   [MaaDebugger](https://github.com/MaaXYZ/MaaDebugger) ![python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white) ![license](https://img.shields.io/github/license/MaaXYZ/MaaDebugger) ![activity](https://img.shields.io/github/commit-activity/m/MaaXYZ/MaaDebugger?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/MaaXYZ/MaaDebugger?style=social) [![pypi](https://img.shields.io/badge/PyPI-3776AB?logo=pypi&logoColor=white)](https://pypi.org/project/MaaDebugger/)  
