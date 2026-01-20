@@ -41,6 +41,8 @@ struct ResourceImpl : public maajs::NativeClassBase
     void override_image(std::string image_name, maajs::ArrayBufferType image);
     std::optional<std::string> get_node_data(std::string node_name);
     std::optional<maajs::ValueType> get_node_data_parsed(std::string node_name);
+    std::optional<maajs::ValueType> get_default_recognition_param(std::string reco_type);
+    std::optional<maajs::ValueType> get_default_action_param(std::string action_type);
     void clear();
     MaaStatus status(MaaResId id);
     maajs::PromiseType wait(MaaResId id);

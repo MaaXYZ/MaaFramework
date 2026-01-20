@@ -118,6 +118,8 @@ export using ::MaaCustomActionCallback;
 export using ::MaaContextRunTask;
 export using ::MaaContextRunRecognition;
 export using ::MaaContextRunAction;
+export using ::MaaContextRunRecognitionDirect;
+export using ::MaaContextRunActionDirect;
 export using ::MaaContextOverridePipeline;
 export using ::MaaContextOverrideNext;
 export using ::MaaContextOverrideImage;
@@ -200,6 +202,8 @@ export using ::MaaResourceGetHash;
 export using ::MaaResourceGetNodeList;
 export using ::MaaResourceGetCustomRecognitionList;
 export using ::MaaResourceGetCustomActionList;
+export using ::MaaResourceGetDefaultRecognitionParam;
+export using ::MaaResourceGetDefaultActionParam;
 
 // Instance/MaaTasker.h
 
