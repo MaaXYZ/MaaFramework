@@ -68,6 +68,9 @@ It offers low-code simplicity while maintaining high extensibility. The framewor
 -   [MFW-PyQt6](https://github.com/overflow65537/MFW-PyQt6) ![python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white) ![license](https://img.shields.io/github/license/overflow65537/MFW-PyQt6) ![activity](https://img.shields.io/github/commit-activity/m/overflow65537/MFW-PyQt6?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/overflow65537/MFW-PyQt6?style=social) [![mirrorc](./docs/static/mirrorc-en.svg)](https://mirrorchyan.com/en/projects?source=maafw-badge)  
      A generic GUI based on PyQt6. Powered by MaaFramework!
 
+-   [MXU](https://github.com/MistEO/MXU) ![Typescript](https://img.shields.io/badge/Typescript-8A2BE2?logo=typescript) ![rust](https://img.shields.io/badge/Rust-000000?logo=rust&logoColor=white) ![license](https://img.shields.io/github/license/MistEO/MXU) ![activity](https://img.shields.io/github/commit-activity/m/MistEO/MXU?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/MistEO/MXU?style=social)  
+     A lightweight cross-platform generic GUI based on Tauri 2 + React. Powered by MaaFramework!
+
 ### Development Tool
 
 -   [MaaDebugger](https://github.com/MaaXYZ/MaaDebugger) ![python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white) ![license](https://img.shields.io/github/license/MaaXYZ/MaaDebugger) ![activity](https://img.shields.io/github/commit-activity/m/MaaXYZ/MaaDebugger?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/MaaXYZ/MaaDebugger?style=social) [![pypi](https://img.shields.io/badge/PyPI-3776AB?logo=pypi&logoColor=white)](https://pypi.org/project/MaaDebugger/)  

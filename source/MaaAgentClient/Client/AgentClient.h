@@ -41,6 +41,8 @@ private:
     bool handle_context_run_task(const json::value& j);
     bool handle_context_run_recognition(const json::value& j);
     bool handle_context_run_action(const json::value& j);
+    bool handle_context_run_recognition_direct(const json::value& j);
+    bool handle_context_run_action_direct(const json::value& j);
     bool handle_context_override_pipeline(const json::value& j);
     bool handle_context_override_next(const json::value& j);
     bool handle_context_override_image(const json::value& j);
@@ -89,6 +91,8 @@ private:
     bool handle_resource_get_node_list(const json::value& j);
     bool handle_resource_get_custom_recognition_list(const json::value& j);
     bool handle_resource_get_custom_action_list(const json::value& j);
+    bool handle_resource_get_default_recognition_param(const json::value& j);
+    bool handle_resource_get_default_action_param(const json::value& j);
 
     bool handle_controller_post_connection(const json::value& j);
     bool handle_controller_post_click(const json::value& j);

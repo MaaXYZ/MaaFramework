@@ -222,6 +222,12 @@ bool AgentClient::handle_inserted_request(const json::value& j)
     else if (handle_context_run_action(j)) {
         return true;
     }
+    else if (handle_context_run_recognition_direct(j)) {
+        return true;
+    }
+    else if (handle_context_run_action_direct(j)) {
+        return true;
+    }
     else if (handle_context_override_pipeline(j)) {
         return true;
     }
@@ -360,6 +366,12 @@ bool AgentClient::handle_inserted_request(const json::value& j)
         return true;
     }
     else if (handle_resource_get_custom_action_list(j)) {
+        return true;
+    }
+    else if (handle_resource_get_default_recognition_param(j)) {
+        return true;
+    }
+    else if (handle_resource_get_default_action_param(j)) {
         return true;
     }
 
@@ -510,6 +522,60 @@ bool AgentClient::handle_context_run_action(const json::value& j)
         context->run_action(req.entry, req.pipeline_override, cv::Rect { req.box[0], req.box[1], req.box[2], req.box[3] }, req.reco_detail);
 
     ContextRunActionReverseResponse resp {
+        .action_id = act_id,
+    };
+    send(resp);
+
+    return true;
+}
+
+bool AgentClient::handle_context_run_recognition_direct(const json::value& j)
+{
+    if (!j.is<ContextRunRecognitionDirectReverseRequest>()) {
+        return false;
+    }
+
+    const ContextRunRecognitionDirectReverseRequest& req = j.as<ContextRunRecognitionDirectReverseRequest>();
+    LogFunc << VAR(req) << VAR(ipc_addr_);
+
+    MaaContext* context = query_context(req.context_id);
+    if (!context) {
+        LogError << "context not found" << VAR(req.context_id);
+        return false;
+    }
+
+    MaaRecoId reco_id = context->run_recognition_direct(req.reco_type, req.reco_param, get_image_cache(req.image));
+
+    ContextRunRecognitionDirectReverseResponse resp {
+        .reco_id = reco_id,
+    };
+    send(resp);
+
+    return true;
+}
+
+bool AgentClient::handle_context_run_action_direct(const json::value& j)
+{
+    if (!j.is<ContextRunActionDirectReverseRequest>()) {
+        return false;
+    }
+
+    const ContextRunActionDirectReverseRequest& req = j.as<ContextRunActionDirectReverseRequest>();
+    LogFunc << VAR(req) << VAR(ipc_addr_);
+
+    MaaContext* context = query_context(req.context_id);
+    if (!context) {
+        LogError << "context not found" << VAR(req.context_id);
+        return false;
+    }
+
+    MaaActId act_id = context->run_action_direct(
+        req.action_type,
+        req.action_param,
+        cv::Rect { req.box[0], req.box[1], req.box[2], req.box[3] },
+        req.reco_detail);
+
+    ContextRunActionDirectReverseResponse resp {
         .action_id = act_id,
     };
     send(resp);
@@ -1665,6 +1731,56 @@ bool AgentClient::handle_resource_get_custom_action_list(const json::value& j)
     auto custom_action_list = resource->get_custom_action_list();
     ResourceGetCustomActionListReverseResponse resp {
         .custom_action_list = std::move(custom_action_list),
+    };
+    send(resp);
+
+    return true;
+}
+
+bool AgentClient::handle_resource_get_default_recognition_param(const json::value& j)
+{
+    if (!j.is<ResourceGetDefaultRecognitionParamReverseRequest>()) {
+        return false;
+    }
+
+    const ResourceGetDefaultRecognitionParamReverseRequest& req = j.as<ResourceGetDefaultRecognitionParamReverseRequest>();
+    LogFunc << VAR(req) << VAR(ipc_addr_);
+
+    MaaResource* resource = query_resource(req.resource_id);
+    if (!resource) {
+        LogError << "resource not found" << VAR(req.resource_id);
+        return false;
+    }
+
+    auto param_opt = resource->get_default_recognition_param(req.reco_type);
+    ResourceGetDefaultRecognitionParamReverseResponse resp {
+        .has_value = param_opt.has_value(),
+        .param = param_opt.value_or(json::object {}),
+    };
+    send(resp);
+
+    return true;
+}
+
+bool AgentClient::handle_resource_get_default_action_param(const json::value& j)
+{
+    if (!j.is<ResourceGetDefaultActionParamReverseRequest>()) {
+        return false;
+    }
+
+    const ResourceGetDefaultActionParamReverseRequest& req = j.as<ResourceGetDefaultActionParamReverseRequest>();
+    LogFunc << VAR(req) << VAR(ipc_addr_);
+
+    MaaResource* resource = query_resource(req.resource_id);
+    if (!resource) {
+        LogError << "resource not found" << VAR(req.resource_id);
+        return false;
+    }
+
+    auto param_opt = resource->get_default_action_param(req.action_type);
+    ResourceGetDefaultActionParamReverseResponse resp {
+        .has_value = param_opt.has_value(),
+        .param = param_opt.value_or(json::object {}),
     };
     send(resp);
 

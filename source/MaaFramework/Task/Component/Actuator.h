@@ -47,7 +47,7 @@ private:
     ActionResult key_down(const MAA_RES_NS::Action::KeyParam& param, const std::string& name);
     ActionResult key_up(const MAA_RES_NS::Action::KeyParam& param, const std::string& name);
     ActionResult input_text(const MAA_RES_NS::Action::InputTextParam& param, const std::string& name);
-    ActionResult scroll(const MAA_RES_NS::Action::ScrollParam& param, const std::string& name);
+    ActionResult scroll(const MAA_RES_NS::Action::ScrollParam& param, const cv::Rect& box, const std::string& name);
     ActionResult shell(const MAA_RES_NS::Action::ShellParam& param, const std::string& name);
 
     ActionResult start_app(const MAA_RES_NS::Action::AppParam& param, const std::string& name);

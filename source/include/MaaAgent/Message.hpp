@@ -223,6 +223,45 @@ struct ContextRunActionReverseResponse
     MEO_JSONIZATION(action_id, _ContextRunActionReverseResponse);
 };
 
+struct ContextRunRecognitionDirectReverseRequest
+{
+    std::string context_id;
+    std::string reco_type;
+    json::value reco_param;
+    std::string image;
+
+    MessageTypePlaceholder _ContextRunRecognitionDirectReverseRequest = 1;
+    MEO_JSONIZATION(context_id, reco_type, reco_param, image, _ContextRunRecognitionDirectReverseRequest);
+};
+
+struct ContextRunRecognitionDirectReverseResponse
+{
+    int64_t reco_id = 0;
+
+    MessageTypePlaceholder _ContextRunRecognitionDirectReverseResponse = 1;
+    MEO_JSONIZATION(reco_id, _ContextRunRecognitionDirectReverseResponse);
+};
+
+struct ContextRunActionDirectReverseRequest
+{
+    std::string context_id;
+    std::string action_type;
+    json::value action_param;
+    std::array<int, 4> box {};
+    std::string reco_detail;
+
+    MessageTypePlaceholder _ContextRunActionDirectReverseRequest = 1;
+    MEO_JSONIZATION(context_id, action_type, action_param, box, reco_detail, _ContextRunActionDirectReverseRequest);
+};
+
+struct ContextRunActionDirectReverseResponse
+{
+    int64_t action_id = 0;
+
+    MessageTypePlaceholder _ContextRunActionDirectReverseResponse = 1;
+    MEO_JSONIZATION(action_id, _ContextRunActionDirectReverseResponse);
+};
+
 struct ContextOverridePipelineReverseRequest
 {
     std::string context_id;
@@ -1019,6 +1058,42 @@ struct ResourceGetCustomActionListReverseResponse
 
     MessageTypePlaceholder _ResourceGetCustomActionListReverseResponse = 1;
     MEO_JSONIZATION(custom_action_list, _ResourceGetCustomActionListReverseResponse);
+};
+
+struct ResourceGetDefaultRecognitionParamReverseRequest
+{
+    std::string resource_id;
+    std::string reco_type;
+
+    MessageTypePlaceholder _ResourceGetDefaultRecognitionParamReverseRequest = 1;
+    MEO_JSONIZATION(resource_id, reco_type, _ResourceGetDefaultRecognitionParamReverseRequest);
+};
+
+struct ResourceGetDefaultRecognitionParamReverseResponse
+{
+    bool has_value = false;
+    json::object param;
+
+    MessageTypePlaceholder _ResourceGetDefaultRecognitionParamReverseResponse = 1;
+    MEO_JSONIZATION(has_value, param, _ResourceGetDefaultRecognitionParamReverseResponse);
+};
+
+struct ResourceGetDefaultActionParamReverseRequest
+{
+    std::string resource_id;
+    std::string action_type;
+
+    MessageTypePlaceholder _ResourceGetDefaultActionParamReverseRequest = 1;
+    MEO_JSONIZATION(resource_id, action_type, _ResourceGetDefaultActionParamReverseRequest);
+};
+
+struct ResourceGetDefaultActionParamReverseResponse
+{
+    bool has_value = false;
+    json::object param;
+
+    MessageTypePlaceholder _ResourceGetDefaultActionParamReverseResponse = 1;
+    MEO_JSONIZATION(has_value, param, _ResourceGetDefaultActionParamReverseResponse);
 };
 
 struct ControllerPostConnectionReverseRequest

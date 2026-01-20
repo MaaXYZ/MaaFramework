@@ -53,7 +53,7 @@ struct TaskerImpl : public maajs::NativeClassBase
     maajs::ValueType post_stop(maajs::ValueType self, maajs::EnvType env);
     MaaStatus status(MaaResId id);
     maajs::PromiseType wait(MaaResId id);
-    bool get_inited();
+    maajs::PromiseType get_inited();
     bool get_running();
     bool get_stopping();
     void set_resource(std::optional<maajs::NativeObject<ResourceImpl>> res);

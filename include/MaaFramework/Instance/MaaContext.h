@@ -31,6 +31,31 @@ extern "C"
         const MaaRect* box,
         const char* reco_detail);
 
+    /**
+     * @brief Run recognition directly with type and parameters, without requiring a pipeline entry.
+     *
+     * @param reco_type Recognition type string (e.g., "OCR", "TemplateMatch")
+     * @param reco_param Recognition parameters json
+     * @param image Image to recognize
+     */
+    MAA_FRAMEWORK_API MaaRecoId
+        MaaContextRunRecognitionDirect(MaaContext* context, const char* reco_type, const char* reco_param, const MaaImageBuffer* image);
+
+    /**
+     * @brief Run action directly with type and parameters, without requiring a pipeline entry.
+     *
+     * @param action_type Action type string (e.g., "Click", "Swipe")
+     * @param action_param Action parameters json
+     * @param box Previous recognition position
+     * @param reco_detail Previous recognition details
+     */
+    MAA_FRAMEWORK_API MaaActId MaaContextRunActionDirect(
+        MaaContext* context,
+        const char* action_type,
+        const char* action_param,
+        const MaaRect* box,
+        const char* reco_detail);
+
     MAA_FRAMEWORK_API MaaBool MaaContextOverridePipeline(MaaContext* context, const char* pipeline_override);
 
     MAA_FRAMEWORK_API MaaBool MaaContextOverrideNext(MaaContext* context, const char* node_name, const MaaStringListBuffer* next_list);

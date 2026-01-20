@@ -270,6 +270,36 @@ std::vector<std::string> RemoteResource::get_custom_action_list() const
     return resp_opt->custom_action_list;
 }
 
+std::optional<json::object> RemoteResource::get_default_recognition_param(const std::string& reco_type) const
+{
+    ResourceGetDefaultRecognitionParamReverseRequest req {
+        .resource_id = resource_id_,
+        .reco_type = reco_type,
+    };
+
+    auto resp_opt = server_.send_and_recv<ResourceGetDefaultRecognitionParamReverseResponse>(req);
+    if (!resp_opt || !resp_opt->has_value) {
+        return std::nullopt;
+    }
+
+    return resp_opt->param;
+}
+
+std::optional<json::object> RemoteResource::get_default_action_param(const std::string& action_type) const
+{
+    ResourceGetDefaultActionParamReverseRequest req {
+        .resource_id = resource_id_,
+        .action_type = action_type,
+    };
+
+    auto resp_opt = server_.send_and_recv<ResourceGetDefaultActionParamReverseResponse>(req);
+    if (!resp_opt || !resp_opt->has_value) {
+        return std::nullopt;
+    }
+
+    return resp_opt->param;
+}
+
 MaaSinkId RemoteResource::add_sink(MaaEventCallback callback, void* trans_arg)
 {
     LogError << "Can NOT add sink for remote instance, use AgentServer.add_resource_sink instead" << VAR_VOIDP(callback)

@@ -216,6 +216,7 @@ struct AppParam
 
 struct ScrollParam
 {
+    Target target;
     int dx = 0;
     int dy = 0;
 };
