@@ -162,9 +162,11 @@ public:
         run_action(const std::string& entry, const json::value& pipeline_override, const cv::Rect& box, const std::string& reco_detail) = 0;
 
     virtual MaaRecoId run_recognition_direct(const std::string& reco_type, const json::value& reco_param, const cv::Mat& image) = 0;
-    virtual MaaActId
-        run_action_direct(const std::string& action_type, const json::value& action_param, const cv::Rect& box, const std::string& reco_detail)
-            = 0;
+    virtual MaaActId run_action_direct(
+        const std::string& action_type,
+        const json::value& action_param,
+        const cv::Rect& box,
+        const std::string& reco_detail) = 0;
 
     virtual MaaContext* clone() const = 0;
 
