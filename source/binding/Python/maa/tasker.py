@@ -9,7 +9,7 @@ import numpy
 from .define import *
 from .library import Library
 from .buffer import ImageListBuffer, RectBuffer, StringBuffer, ImageBuffer
-from .job import Job, JobWithResult
+from .job import Job, JobWithResult, TaskJob
 from .event_sink import EventSink, NotificationType
 from .resource import Resource
 from .controller import Controller
@@ -114,18 +114,19 @@ class Tasker:
         """
         return bool(Library.framework().MaaTaskerInited(self._handle))
 
-    def post_task(self, entry: str, pipeline_override: Dict = {}) -> JobWithResult:
+    def post_task(self, entry: str, pipeline_override: Dict = {}) -> TaskJob:
         """异步执行任务 / Asynchronously execute task
 
-        这是一个异步操作，会立即返回一个 Job 对象
-        This is an asynchronous operation that immediately returns a Job object
+        这是一个异步操作，会立即返回一个 TaskJob 对象
+        This is an asynchronous operation that immediately returns a TaskJob object
 
         Args:
             entry: 任务入口 / Task entry
             pipeline_override: 用于覆盖的 json / JSON for overriding
 
         Returns:
-            JobWithResult: 任务作业对象，可通过 status/wait 查询状态，通过 get() 获取结果 / Task job object, can query status via status/wait, get result via get()
+            TaskJob: 任务作业对象，可通过 status/wait 查询状态，通过 get() 获取结果，通过 override_pipeline() 动态修改 pipeline
+                / Task job object, can query status via status/wait, get result via get(), modify pipeline via override_pipeline()
         """
         taskid = Library.framework().MaaTaskerPostTask(
             self._handle,
@@ -138,7 +139,7 @@ class Tasker:
         reco_type: JRecognitionType,
         reco_param: JRecognitionParam,
         image: numpy.ndarray,
-    ) -> JobWithResult:
+    ) -> TaskJob:
         """异步执行识别 / Asynchronously execute recognition
 
         Args:
@@ -147,7 +148,7 @@ class Tasker:
             image: 前序截图 / Previous screenshot
 
         Returns:
-            JobWithResult: 任务作业对象 / Task job object
+            TaskJob: 任务作业对象 / Task job object
         """
         img_buffer = ImageBuffer()
         img_buffer.set(image)
@@ -166,7 +167,7 @@ class Tasker:
         action_param: JActionParam,
         box: Rect = Rect(0, 0, 0, 0),
         reco_detail: str = "",
-    ) -> JobWithResult:
+    ) -> TaskJob:
         """异步执行操作 / Asynchronously execute action
 
         Args:
@@ -176,7 +177,7 @@ class Tasker:
             reco_detail: 前序识别详情 / Previous recognition details
 
         Returns:
-            JobWithResult: 任务作业对象 / Task job object
+            TaskJob: 任务作业对象 / Task job object
         """
         rect_buffer = RectBuffer()
         rect_buffer.set(box)
@@ -253,6 +254,24 @@ class Tasker:
             bool: 是否成功 / Whether successful
         """
         return bool(Library.framework().MaaTaskerClearCache(self._handle))
+
+    def override_pipeline(self, task_id: int, pipeline_override: Dict) -> bool:
+        """覆盖指定任务的 pipeline / Override pipeline for specified task
+
+        在任务执行期间动态修改 pipeline 配置
+        Dynamically modify pipeline configuration during task execution
+
+        Args:
+            task_id: 任务 ID / Task ID
+            pipeline_override: 用于覆盖的 json / JSON for overriding
+
+        Returns:
+            bool: 是否成功 / Whether successful
+        """
+        return self._override_pipeline(
+            task_id,
+            json.dumps(pipeline_override, ensure_ascii=False).encode(),
+        )
 
     _sink_holder: Dict[int, "EventSink"] = {}
 
@@ -333,12 +352,22 @@ class Tasker:
             pipeline_json.encode(),
         )
 
-    def _gen_task_job(self, taskid: MaaTaskId) -> JobWithResult:
-        return JobWithResult(
+    def _gen_task_job(self, taskid: MaaTaskId) -> TaskJob:
+        return TaskJob(
             taskid,
             self._task_status,
             self._task_wait,
             self.get_task_detail,
+            self._override_pipeline,
+        )
+
+    def _override_pipeline(self, task_id: int, pipeline_override_bytes: bytes) -> bool:
+        return bool(
+            Library.framework().MaaTaskerOverridePipeline(
+                self._handle,
+                task_id,
+                pipeline_override_bytes,
+            )
         )
 
     def _task_status(self, id: int) -> ctypes.c_int32:
@@ -924,6 +953,13 @@ class Tasker:
         Library.framework().MaaTaskerClearCache.restype = MaaBool
         Library.framework().MaaTaskerClearCache.argtypes = [
             MaaTaskerHandle,
+        ]
+
+        Library.framework().MaaTaskerOverridePipeline.restype = MaaBool
+        Library.framework().MaaTaskerOverridePipeline.argtypes = [
+            MaaTaskerHandle,
+            MaaTaskId,
+            ctypes.c_char_p,
         ]
 
         Library.framework().MaaTaskerAddSink.restype = MaaSinkId

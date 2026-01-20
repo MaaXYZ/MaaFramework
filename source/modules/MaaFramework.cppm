@@ -230,6 +230,7 @@ export using ::MaaTaskerStopping;
 export using ::MaaTaskerGetResource;
 export using ::MaaTaskerGetController;
 export using ::MaaTaskerClearCache;
+export using ::MaaTaskerOverridePipeline;
 export using ::MaaTaskerGetRecognitionDetail;
 export using ::MaaTaskerGetActionDetail;
 export using ::MaaTaskerGetNodeDetail;

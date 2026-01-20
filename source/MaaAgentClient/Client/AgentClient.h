@@ -67,6 +67,7 @@ private:
     bool handle_tasker_resource(const json::value& j);
     bool handle_tasker_controller(const json::value& j);
     bool handle_tasker_clear_cache(const json::value& j);
+    bool handle_tasker_override_pipeline(const json::value& j);
     bool handle_tasker_get_task_detail(const json::value& j);
     bool handle_tasker_get_node_detail(const json::value& j);
     bool handle_tasker_get_reco_result(const json::value& j);

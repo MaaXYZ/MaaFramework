@@ -648,6 +648,24 @@ struct TaskerClearCacheReverseResponse
     MEO_JSONIZATION(_TaskerClearCacheReverseResponse);
 };
 
+struct TaskerOverridePipelineReverseRequest
+{
+    std::string tasker_id;
+    int64_t task_id = 0;
+    json::value pipeline_override;
+
+    MessageTypePlaceholder _TaskerOverridePipelineReverseRequest = 1;
+    MEO_JSONIZATION(tasker_id, task_id, pipeline_override, _TaskerOverridePipelineReverseRequest);
+};
+
+struct TaskerOverridePipelineReverseResponse
+{
+    bool ret = false;
+
+    MessageTypePlaceholder _TaskerOverridePipelineReverseResponse = 1;
+    MEO_JSONIZATION(ret, _TaskerOverridePipelineReverseResponse);
+};
+
 struct TaskerGetTaskDetailReverseRequest
 {
     std::string tasker_id;

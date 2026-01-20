@@ -166,6 +166,13 @@ class MyRecognition(CustomRecognition):
         print(f"  tasker.running: {tasker.running}")
         print(f"  tasker.stopping: {tasker.stopping}")
 
+        # 测试 override_pipeline (通过 job 对象)
+        task_job = new_ctx.get_task_job()
+        override_result = task_job.override_pipeline(
+            {"TestOverride": {"action": "DoNothing"}}
+        )
+        print(f"  task_job.override_pipeline result: {override_result}")
+
         # ============================================================
         # Resource API 测试 (通过 context.tasker.resource)
         # ============================================================

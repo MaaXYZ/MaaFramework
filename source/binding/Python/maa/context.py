@@ -11,6 +11,7 @@ from .buffer import ImageBuffer, RectBuffer, StringBuffer, StringListBuffer
 from .define import *
 from .library import Library
 from .tasker import Tasker
+from .job import TaskJob
 from .pipeline import (
     JPipelineData,
     JPipelineParser,
@@ -20,7 +21,6 @@ from .pipeline import (
     JRecognitionParam,
     JActionParam,
 )
-from .job import JobWithResult
 
 
 class Context:
@@ -331,11 +331,11 @@ class Context:
         """
         return self._tasker
 
-    def get_task_job(self) -> JobWithResult:
+    def get_task_job(self) -> TaskJob:
         """获取对应任务号的任务作业 / Get task job for corresponding task id
 
         Returns:
-            JobWithResult: 任务作业对象 / Task job object
+            TaskJob: 任务作业对象 / Task job object
 
         Raises:
             ValueError: 如果任务 id 为 None

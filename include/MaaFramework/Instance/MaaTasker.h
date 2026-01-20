@@ -88,6 +88,8 @@ extern "C"
 
     MAA_FRAMEWORK_API MaaBool MaaTaskerClearCache(MaaTasker* tasker);
 
+    MAA_FRAMEWORK_API MaaBool MaaTaskerOverridePipeline(MaaTasker* tasker, MaaTaskId task_id, const char* pipeline_override);
+
     /**
      * @param[out] hit
      */

@@ -309,6 +309,29 @@ MaaBool MaaTaskerClearCache(MaaTasker* tasker)
     return true;
 }
 
+MaaBool MaaTaskerOverridePipeline(MaaTasker* tasker, MaaTaskId task_id, const char* pipeline_override)
+{
+    LogFunc << VAR_VOIDP(tasker) << VAR(task_id) << VAR(pipeline_override);
+
+    if (!tasker) {
+        LogError << "handle is null";
+        return false;
+    }
+
+    if (!pipeline_override) {
+        LogError << "pipeline_override is null";
+        return false;
+    }
+
+    auto ov_opt = json::parse(pipeline_override);
+    if (!ov_opt) {
+        LogError << "failed to parse" << VAR(pipeline_override);
+        return false;
+    }
+
+    return tasker->override_pipeline(task_id, *ov_opt);
+}
+
 #define CheckNullAndWarn(var)                        \
     if (!var) {                                      \
         LogWarn << #var << "is null, no assignment"; \
