@@ -71,7 +71,7 @@ It offers low-code simplicity while maintaining high extensibility. The framewor
 -   [MXU](https://github.com/MistEO/MXU) ![Typescript](https://img.shields.io/badge/Typescript-8A2BE2?logo=typescript) ![rust](https://img.shields.io/badge/Rust-000000?logo=rust&logoColor=white) ![license](https://img.shields.io/github/license/MistEO/MXU) ![activity](https://img.shields.io/github/commit-activity/m/MistEO/MXU?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/MistEO/MXU?style=social)  
      A lightweight cross-platform generic GUI based on Tauri 2 + React. Powered by MaaFramework!
 
--   [MWU](https://github.com/ravizhan/MWU) ![Vue](https://img.shields.io/badge/Vue-1867C0?logo=vuedotjs) ![Python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white) ![license](https://img.shields.io/github/license/ravizhan/MWU) ![activity](https://img.shields.io/github/commit-activity/m/ravizhan/MWU?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/ravizhan/MWU?style=social)
+-   [MWU](https://github.com/ravizhan/MWU) ![Vue](https://img.shields.io/badge/Vue-1867C0?logo=vuedotjs) ![Python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white) ![license](https://img.shields.io/github/license/ravizhan/MWU) ![activity](https://img.shields.io/github/commit-activity/m/ravizhan/MWU?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/ravizhan/MWU?style=social)  
      A lightweight cross-platform generic WebUI based on Vue + FastAPI. Powered by MaaFramework!
 
 ### Development Tool
