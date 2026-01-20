@@ -191,9 +191,11 @@ maajs::PromiseType TaskerImpl::wait(MaaTaskId id)
     return worker->Promise();
 }
 
-bool TaskerImpl::get_inited()
+maajs::PromiseType TaskerImpl::get_inited()
 {
-    return MaaTaskerInited(tasker);
+    auto worker = new maajs::AsyncWork<bool>(env, [handle = tasker]() { return MaaTaskerInited(handle); });
+    worker->Queue();
+    return worker->Promise();
 }
 
 bool TaskerImpl::get_running()
