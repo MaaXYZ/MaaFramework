@@ -162,6 +162,12 @@ Functions</h2></td></tr>
 <tr class="separator:a1046bba51b717e5b6f69e673c10141d1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a131e370cac4c849c1d7a28f58491a9a9" id="r_a131e370cac4c849c1d7a28f58491a9a9"><td class="memItemLeft" align="right" valign="top"><a class="el" href="MaaPort_8h.html#a67006334d91d228121dbba7a8bf8fe05">MAA_FRAMEWORK_API</a> <a class="el" href="MaaDef_8h.html#a2f7289f2a8e07f48c6261b52a120cdf6">MaaBool</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="MaaResource_8h.html#a131e370cac4c849c1d7a28f58491a9a9">MaaResourceGetCustomActionList</a> (const <a class="el" href="MaaDef_8h.html#ab42b9ae54996623815428a30a8c9250d">MaaResource</a> *res, <a class="el" href="MaaDef_8h.html#a7668a404d5063ffc525180d3e144999f">MaaStringListBuffer</a> *buffer)</td></tr>
 <tr class="separator:a131e370cac4c849c1d7a28f58491a9a9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a54e07840896dd99b1aa1580c84cc25e3" id="r_a54e07840896dd99b1aa1580c84cc25e3"><td class="memItemLeft" align="right" valign="top"><a class="el" href="MaaPort_8h.html#a67006334d91d228121dbba7a8bf8fe05">MAA_FRAMEWORK_API</a> <a class="el" href="MaaDef_8h.html#a2f7289f2a8e07f48c6261b52a120cdf6">MaaBool</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="MaaResource_8h.html#a54e07840896dd99b1aa1580c84cc25e3">MaaResourceGetDefaultRecognitionParam</a> (const <a class="el" href="MaaDef_8h.html#ab42b9ae54996623815428a30a8c9250d">MaaResource</a> *res, const char *reco_type, <a class="el" href="MaaDef_8h.html#a4010bb63df489fc09efb6ba9a1fc1c98">MaaStringBuffer</a> *buffer)</td></tr>
+<tr class="memdesc:a54e07840896dd99b1aa1580c84cc25e3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get default recognition parameters for the specified type from DefaultPipelineMgr.  <br /></td></tr>
+<tr class="separator:a54e07840896dd99b1aa1580c84cc25e3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a861e1c03118c4cdc4456625fad276ad9" id="r_a861e1c03118c4cdc4456625fad276ad9"><td class="memItemLeft" align="right" valign="top"><a class="el" href="MaaPort_8h.html#a67006334d91d228121dbba7a8bf8fe05">MAA_FRAMEWORK_API</a> <a class="el" href="MaaDef_8h.html#a2f7289f2a8e07f48c6261b52a120cdf6">MaaBool</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="MaaResource_8h.html#a861e1c03118c4cdc4456625fad276ad9">MaaResourceGetDefaultActionParam</a> (const <a class="el" href="MaaDef_8h.html#ab42b9ae54996623815428a30a8c9250d">MaaResource</a> *res, const char *action_type, <a class="el" href="MaaDef_8h.html#a4010bb63df489fc09efb6ba9a1fc1c98">MaaStringBuffer</a> *buffer)</td></tr>
+<tr class="memdesc:a861e1c03118c4cdc4456625fad276ad9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get default action parameters for the specified type from DefaultPipelineMgr.  <br /></td></tr>
+<tr class="separator:a861e1c03118c4cdc4456625fad276ad9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>The resource API. </p>
@@ -938,6 +944,92 @@ Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+
+</div>
+</div>
+<a id="a54e07840896dd99b1aa1580c84cc25e3" name="a54e07840896dd99b1aa1580c84cc25e3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a54e07840896dd99b1aa1580c84cc25e3">&#9670;&#160;</a></span>MaaResourceGetDefaultRecognitionParam()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="MaaPort_8h.html#a67006334d91d228121dbba7a8bf8fe05">MAA_FRAMEWORK_API</a> <a class="el" href="MaaDef_8h.html#a2f7289f2a8e07f48c6261b52a120cdf6">MaaBool</a> MaaResourceGetDefaultRecognitionParam </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="MaaDef_8h.html#ab42b9ae54996623815428a30a8c9250d">MaaResource</a> *&#160;</td>
+          <td class="paramname"><em>res</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const char *&#160;</td>
+          <td class="paramname"><em>reco_type</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="MaaDef_8h.html#a4010bb63df489fc09efb6ba9a1fc1c98">MaaStringBuffer</a> *&#160;</td>
+          <td class="paramname"><em>buffer</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Get default recognition parameters for the specified type from DefaultPipelineMgr. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">reco_type</td><td>Recognition type string (e.g., "OCR", "TemplateMatch") </td></tr>
+    <tr><td class="paramname">buffer</td><td>[out] Output buffer for the JSON string of recognition parameters </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a861e1c03118c4cdc4456625fad276ad9" name="a861e1c03118c4cdc4456625fad276ad9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a861e1c03118c4cdc4456625fad276ad9">&#9670;&#160;</a></span>MaaResourceGetDefaultActionParam()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="MaaPort_8h.html#a67006334d91d228121dbba7a8bf8fe05">MAA_FRAMEWORK_API</a> <a class="el" href="MaaDef_8h.html#a2f7289f2a8e07f48c6261b52a120cdf6">MaaBool</a> MaaResourceGetDefaultActionParam </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="MaaDef_8h.html#ab42b9ae54996623815428a30a8c9250d">MaaResource</a> *&#160;</td>
+          <td class="paramname"><em>res</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const char *&#160;</td>
+          <td class="paramname"><em>action_type</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="MaaDef_8h.html#a4010bb63df489fc09efb6ba9a1fc1c98">MaaStringBuffer</a> *&#160;</td>
+          <td class="paramname"><em>buffer</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Get default action parameters for the specified type from DefaultPipelineMgr. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">action_type</td><td>Action type string (e.g., "Click", "Swipe") </td></tr>
+    <tr><td class="paramname">buffer</td><td>[out] Output buffer for the JSON string of action parameters </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>

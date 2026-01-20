@@ -23,6 +23,7 @@ var MaaTasker_8h =
     [ "MaaTaskerGetResource", "MaaTasker_8h.html#a66bcb6d294dd92c294555c826ef2d749", null ],
     [ "MaaTaskerGetController", "MaaTasker_8h.html#a077181e4d90b12a219ff49d092700a86", null ],
     [ "MaaTaskerClearCache", "MaaTasker_8h.html#aea0f684a6987fc963254f68870537925", null ],
+    [ "MaaTaskerOverridePipeline", "MaaTasker_8h.html#a899a756cf686e880c0691105176c6773", null ],
     [ "MaaTaskerGetRecognitionDetail", "MaaTasker_8h.html#aa0a412e5b5e08fb4f4e11de826700ff7", null ],
     [ "MaaTaskerGetActionDetail", "MaaTasker_8h.html#ad18ddb1160386ad45e2268b5fc655488", null ],
     [ "MaaTaskerGetNodeDetail", "MaaTasker_8h.html#a2807a557aa5cac9d2bee6281ec22f836", null ],

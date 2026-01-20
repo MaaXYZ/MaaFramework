@@ -639,6 +639,94 @@
         </inbodydescription>
         <location file="include/MaaFramework/Instance/MaaResource.h" line="78" column="31" declfile="include/MaaFramework/Instance/MaaResource.h" declline="78" declcolumn="31"/>
       </memberdef>
+      <memberdef kind="function" id="MaaResource_8h_1a54e07840896dd99b1aa1580c84cc25e3" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="MaaPort_8h_1a67006334d91d228121dbba7a8bf8fe05" kindref="member">MAA_FRAMEWORK_API</ref> <ref refid="MaaDef_8h_1a2f7289f2a8e07f48c6261b52a120cdf6" kindref="member">MaaBool</ref></type>
+        <definition>MAA_FRAMEWORK_API MaaBool MaaResourceGetDefaultRecognitionParam</definition>
+        <argsstring>(const MaaResource *res, const char *reco_type, MaaStringBuffer *buffer)</argsstring>
+        <name>MaaResourceGetDefaultRecognitionParam</name>
+        <param>
+          <type>const <ref refid="MaaDef_8h_1ab42b9ae54996623815428a30a8c9250d" kindref="member">MaaResource</ref> *</type>
+          <declname>res</declname>
+        </param>
+        <param>
+          <type>const char *</type>
+          <declname>reco_type</declname>
+        </param>
+        <param>
+          <type><ref refid="MaaDef_8h_1a4010bb63df489fc09efb6ba9a1fc1c98" kindref="member">MaaStringBuffer</ref> *</type>
+          <declname>buffer</declname>
+        </param>
+        <briefdescription>
+<para>Get default recognition parameters for the specified type from DefaultPipelineMgr. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>reco_type</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Recognition type string (e.g., &quot;OCR&quot;, &quot;TemplateMatch&quot;) </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>buffer</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>[out] Output buffer for the JSON string of recognition parameters </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaFramework/Instance/MaaResource.h" line="87" column="9" declfile="include/MaaFramework/Instance/MaaResource.h" declline="87" declcolumn="9"/>
+      </memberdef>
+      <memberdef kind="function" id="MaaResource_8h_1a861e1c03118c4cdc4456625fad276ad9" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="MaaPort_8h_1a67006334d91d228121dbba7a8bf8fe05" kindref="member">MAA_FRAMEWORK_API</ref> <ref refid="MaaDef_8h_1a2f7289f2a8e07f48c6261b52a120cdf6" kindref="member">MaaBool</ref></type>
+        <definition>MAA_FRAMEWORK_API MaaBool MaaResourceGetDefaultActionParam</definition>
+        <argsstring>(const MaaResource *res, const char *action_type, MaaStringBuffer *buffer)</argsstring>
+        <name>MaaResourceGetDefaultActionParam</name>
+        <param>
+          <type>const <ref refid="MaaDef_8h_1ab42b9ae54996623815428a30a8c9250d" kindref="member">MaaResource</ref> *</type>
+          <declname>res</declname>
+        </param>
+        <param>
+          <type>const char *</type>
+          <declname>action_type</declname>
+        </param>
+        <param>
+          <type><ref refid="MaaDef_8h_1a4010bb63df489fc09efb6ba9a1fc1c98" kindref="member">MaaStringBuffer</ref> *</type>
+          <declname>buffer</declname>
+        </param>
+        <briefdescription>
+<para>Get default action parameters for the specified type from DefaultPipelineMgr. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>action_type</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Action type string (e.g., &quot;Click&quot;, &quot;Swipe&quot;) </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>buffer</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>[out] Output buffer for the JSON string of action parameters </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaFramework/Instance/MaaResource.h" line="96" column="9" declfile="include/MaaFramework/Instance/MaaResource.h" declline="96" declcolumn="9"/>
+      </memberdef>
     </sectiondef>
     <briefdescription>
 <para>The resource API. </para>

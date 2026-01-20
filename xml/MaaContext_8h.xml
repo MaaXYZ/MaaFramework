@@ -130,6 +130,130 @@
         </inbodydescription>
         <location file="include/MaaFramework/Instance/MaaContext.h" line="27" column="32" declfile="include/MaaFramework/Instance/MaaContext.h" declline="27" declcolumn="32"/>
       </memberdef>
+      <memberdef kind="function" id="MaaContext_8h_1a5fc7edecb7e63370aa45a777e0a9d97e" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="MaaPort_8h_1a67006334d91d228121dbba7a8bf8fe05" kindref="member">MAA_FRAMEWORK_API</ref> <ref refid="MaaDef_8h_1a7519e6a8329a32c8e3058c20ec74cda8" kindref="member">MaaRecoId</ref></type>
+        <definition>MAA_FRAMEWORK_API MaaRecoId MaaContextRunRecognitionDirect</definition>
+        <argsstring>(MaaContext *context, const char *reco_type, const char *reco_param, const MaaImageBuffer *image)</argsstring>
+        <name>MaaContextRunRecognitionDirect</name>
+        <param>
+          <type><ref refid="MaaDef_8h_1ad2101e87aad0f5d03b8136943daee40e" kindref="member">MaaContext</ref> *</type>
+          <declname>context</declname>
+        </param>
+        <param>
+          <type>const char *</type>
+          <declname>reco_type</declname>
+        </param>
+        <param>
+          <type>const char *</type>
+          <declname>reco_param</declname>
+        </param>
+        <param>
+          <type>const <ref refid="MaaDef_8h_1a0a52c8503deca448e71a407cdb14d259" kindref="member">MaaImageBuffer</ref> *</type>
+          <declname>image</declname>
+        </param>
+        <briefdescription>
+<para>Run recognition directly with type and parameters, without requiring a pipeline entry. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>reco_type</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Recognition type string (e.g., &quot;OCR&quot;, &quot;TemplateMatch&quot;) </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>reco_param</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Recognition parameters json </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>image</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Image to recognize </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaFramework/Instance/MaaContext.h" line="42" column="9" declfile="include/MaaFramework/Instance/MaaContext.h" declline="42" declcolumn="9"/>
+      </memberdef>
+      <memberdef kind="function" id="MaaContext_8h_1a6f2559c822c79aee9b3ae27e3ea460cf" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="MaaPort_8h_1a67006334d91d228121dbba7a8bf8fe05" kindref="member">MAA_FRAMEWORK_API</ref> <ref refid="MaaDef_8h_1ac3229e974a0f5b3508f88d1b2196f526" kindref="member">MaaActId</ref></type>
+        <definition>MAA_FRAMEWORK_API MaaActId MaaContextRunActionDirect</definition>
+        <argsstring>(MaaContext *context, const char *action_type, const char *action_param, const MaaRect *box, const char *reco_detail)</argsstring>
+        <name>MaaContextRunActionDirect</name>
+        <param>
+          <type><ref refid="MaaDef_8h_1ad2101e87aad0f5d03b8136943daee40e" kindref="member">MaaContext</ref> *</type>
+          <declname>context</declname>
+        </param>
+        <param>
+          <type>const char *</type>
+          <declname>action_type</declname>
+        </param>
+        <param>
+          <type>const char *</type>
+          <declname>action_param</declname>
+        </param>
+        <param>
+          <type>const <ref refid="structMaaRect" kindref="compound">MaaRect</ref> *</type>
+          <declname>box</declname>
+        </param>
+        <param>
+          <type>const char *</type>
+          <declname>reco_detail</declname>
+        </param>
+        <briefdescription>
+<para>Run action directly with type and parameters, without requiring a pipeline entry. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>action_type</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Action type string (e.g., &quot;Click&quot;, &quot;Swipe&quot;) </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>action_param</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Action parameters json </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>box</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Previous recognition position </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>reco_detail</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Previous recognition details </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaFramework/Instance/MaaContext.h" line="52" column="32" declfile="include/MaaFramework/Instance/MaaContext.h" declline="52" declcolumn="32"/>
+      </memberdef>
       <memberdef kind="function" id="MaaContext_8h_1a581b031a7dceedcf1ff6cec308895cce" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="MaaPort_8h_1a67006334d91d228121dbba7a8bf8fe05" kindref="member">MAA_FRAMEWORK_API</ref> <ref refid="MaaDef_8h_1a2f7289f2a8e07f48c6261b52a120cdf6" kindref="member">MaaBool</ref></type>
         <definition>MAA_FRAMEWORK_API MaaBool MaaContextOverridePipeline</definition>
@@ -149,7 +273,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="include/MaaFramework/Instance/MaaContext.h" line="34" column="31" declfile="include/MaaFramework/Instance/MaaContext.h" declline="34" declcolumn="31"/>
+        <location file="include/MaaFramework/Instance/MaaContext.h" line="59" column="31" declfile="include/MaaFramework/Instance/MaaContext.h" declline="59" declcolumn="31"/>
       </memberdef>
       <memberdef kind="function" id="MaaContext_8h_1a1ece7f4198230c43f226ab8f7923728d" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="MaaPort_8h_1a67006334d91d228121dbba7a8bf8fe05" kindref="member">MAA_FRAMEWORK_API</ref> <ref refid="MaaDef_8h_1a2f7289f2a8e07f48c6261b52a120cdf6" kindref="member">MaaBool</ref></type>
@@ -174,7 +298,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="include/MaaFramework/Instance/MaaContext.h" line="36" column="31" declfile="include/MaaFramework/Instance/MaaContext.h" declline="36" declcolumn="31"/>
+        <location file="include/MaaFramework/Instance/MaaContext.h" line="61" column="31" declfile="include/MaaFramework/Instance/MaaContext.h" declline="61" declcolumn="31"/>
       </memberdef>
       <memberdef kind="function" id="MaaContext_8h_1a6064c7441f9e387eb1f0cbfa6d1ea38d" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="MaaPort_8h_1a67006334d91d228121dbba7a8bf8fe05" kindref="member">MAA_FRAMEWORK_API</ref> <ref refid="MaaDef_8h_1a2f7289f2a8e07f48c6261b52a120cdf6" kindref="member">MaaBool</ref></type>
@@ -199,7 +323,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="include/MaaFramework/Instance/MaaContext.h" line="38" column="31" declfile="include/MaaFramework/Instance/MaaContext.h" declline="38" declcolumn="31"/>
+        <location file="include/MaaFramework/Instance/MaaContext.h" line="63" column="31" declfile="include/MaaFramework/Instance/MaaContext.h" declline="63" declcolumn="31"/>
       </memberdef>
       <memberdef kind="function" id="MaaContext_8h_1a2b0cbab881d3ade5dc8b7a1e8571be3d" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="MaaPort_8h_1a67006334d91d228121dbba7a8bf8fe05" kindref="member">MAA_FRAMEWORK_API</ref> <ref refid="MaaDef_8h_1a2f7289f2a8e07f48c6261b52a120cdf6" kindref="member">MaaBool</ref></type>
@@ -224,7 +348,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="include/MaaFramework/Instance/MaaContext.h" line="40" column="31" declfile="include/MaaFramework/Instance/MaaContext.h" declline="40" declcolumn="31"/>
+        <location file="include/MaaFramework/Instance/MaaContext.h" line="65" column="31" declfile="include/MaaFramework/Instance/MaaContext.h" declline="65" declcolumn="31"/>
       </memberdef>
       <memberdef kind="function" id="MaaContext_8h_1abecb5883a59f9a8037982bb1cbc3ff43" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="MaaPort_8h_1a67006334d91d228121dbba7a8bf8fe05" kindref="member">MAA_FRAMEWORK_API</ref> <ref refid="MaaDef_8h_1a711b3db9be6db60ae4cb09e3629e42f0" kindref="member">MaaTaskId</ref></type>
@@ -241,7 +365,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="include/MaaFramework/Instance/MaaContext.h" line="42" column="33" declfile="include/MaaFramework/Instance/MaaContext.h" declline="42" declcolumn="33"/>
+        <location file="include/MaaFramework/Instance/MaaContext.h" line="67" column="33" declfile="include/MaaFramework/Instance/MaaContext.h" declline="67" declcolumn="33"/>
       </memberdef>
       <memberdef kind="function" id="MaaContext_8h_1a646adf1aa6a50e61fd06c173b72fab1f" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="MaaPort_8h_1a67006334d91d228121dbba7a8bf8fe05" kindref="member">MAA_FRAMEWORK_API</ref> <ref refid="MaaDef_8h_1a8c41e8466c5da06f230f729c29bdac8a" kindref="member">MaaTasker</ref> *</type>
@@ -258,7 +382,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="include/MaaFramework/Instance/MaaContext.h" line="44" column="33" declfile="include/MaaFramework/Instance/MaaContext.h" declline="44" declcolumn="33"/>
+        <location file="include/MaaFramework/Instance/MaaContext.h" line="69" column="33" declfile="include/MaaFramework/Instance/MaaContext.h" declline="69" declcolumn="33"/>
       </memberdef>
       <memberdef kind="function" id="MaaContext_8h_1a681fba1bb60a679d6e35df345e663d72" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="MaaPort_8h_1a67006334d91d228121dbba7a8bf8fe05" kindref="member">MAA_FRAMEWORK_API</ref> <ref refid="MaaDef_8h_1ad2101e87aad0f5d03b8136943daee40e" kindref="member">MaaContext</ref> *</type>
@@ -275,7 +399,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="include/MaaFramework/Instance/MaaContext.h" line="46" column="34" declfile="include/MaaFramework/Instance/MaaContext.h" declline="46" declcolumn="34"/>
+        <location file="include/MaaFramework/Instance/MaaContext.h" line="71" column="34" declfile="include/MaaFramework/Instance/MaaContext.h" declline="71" declcolumn="34"/>
       </memberdef>
       <memberdef kind="function" id="MaaContext_8h_1a6b81fa90c844b13dee6dd7c5e532ba80" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="MaaPort_8h_1a67006334d91d228121dbba7a8bf8fe05" kindref="member">MAA_FRAMEWORK_API</ref> <ref refid="MaaDef_8h_1a2f7289f2a8e07f48c6261b52a120cdf6" kindref="member">MaaBool</ref></type>
@@ -300,7 +424,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="include/MaaFramework/Instance/MaaContext.h" line="48" column="31" declfile="include/MaaFramework/Instance/MaaContext.h" declline="48" declcolumn="31"/>
+        <location file="include/MaaFramework/Instance/MaaContext.h" line="73" column="31" declfile="include/MaaFramework/Instance/MaaContext.h" declline="73" declcolumn="31"/>
       </memberdef>
       <memberdef kind="function" id="MaaContext_8h_1a835f6dbcf3a39954ed4938d5d5a52d15" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="MaaPort_8h_1a67006334d91d228121dbba7a8bf8fe05" kindref="member">MAA_FRAMEWORK_API</ref> <ref refid="MaaDef_8h_1a2f7289f2a8e07f48c6261b52a120cdf6" kindref="member">MaaBool</ref></type>
@@ -325,7 +449,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="include/MaaFramework/Instance/MaaContext.h" line="49" column="31" declfile="include/MaaFramework/Instance/MaaContext.h" declline="49" declcolumn="31"/>
+        <location file="include/MaaFramework/Instance/MaaContext.h" line="74" column="31" declfile="include/MaaFramework/Instance/MaaContext.h" declline="74" declcolumn="31"/>
       </memberdef>
       <memberdef kind="function" id="MaaContext_8h_1af0c8334fc52f04f0bc6be18f0b0da63a" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="MaaPort_8h_1a67006334d91d228121dbba7a8bf8fe05" kindref="member">MAA_FRAMEWORK_API</ref> <ref refid="MaaDef_8h_1a2f7289f2a8e07f48c6261b52a120cdf6" kindref="member">MaaBool</ref></type>
@@ -350,7 +474,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="include/MaaFramework/Instance/MaaContext.h" line="50" column="31" declfile="include/MaaFramework/Instance/MaaContext.h" declline="50" declcolumn="31"/>
+        <location file="include/MaaFramework/Instance/MaaContext.h" line="75" column="31" declfile="include/MaaFramework/Instance/MaaContext.h" declline="75" declcolumn="31"/>
       </memberdef>
       <memberdef kind="function" id="MaaContext_8h_1afc659de91e6d81ead8cc39e09b7b9f4c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="MaaPort_8h_1a67006334d91d228121dbba7a8bf8fe05" kindref="member">MAA_FRAMEWORK_API</ref> <ref refid="MaaDef_8h_1a2f7289f2a8e07f48c6261b52a120cdf6" kindref="member">MaaBool</ref></type>
@@ -371,7 +495,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="include/MaaFramework/Instance/MaaContext.h" line="51" column="31" declfile="include/MaaFramework/Instance/MaaContext.h" declline="51" declcolumn="31"/>
+        <location file="include/MaaFramework/Instance/MaaContext.h" line="76" column="31" declfile="include/MaaFramework/Instance/MaaContext.h" declline="76" declcolumn="31"/>
       </memberdef>
     </sectiondef>
     <briefdescription>

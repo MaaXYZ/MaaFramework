@@ -71,6 +71,8 @@
     <member refid="MaaContext_8h_1ae55a7608008e1f51ce52614e3cae3a2d" kind="function"><name>MaaContextRunTask</name></member>
     <member refid="MaaContext_8h_1a0cf90816e1b498a66ade37ff12a4e6eb" kind="function"><name>MaaContextRunRecognition</name></member>
     <member refid="MaaContext_8h_1ad46ec2676c2e012a47d2274cc7d44d46" kind="function"><name>MaaContextRunAction</name></member>
+    <member refid="MaaContext_8h_1a5fc7edecb7e63370aa45a777e0a9d97e" kind="function"><name>MaaContextRunRecognitionDirect</name></member>
+    <member refid="MaaContext_8h_1a6f2559c822c79aee9b3ae27e3ea460cf" kind="function"><name>MaaContextRunActionDirect</name></member>
     <member refid="MaaContext_8h_1a581b031a7dceedcf1ff6cec308895cce" kind="function"><name>MaaContextOverridePipeline</name></member>
     <member refid="MaaContext_8h_1a1ece7f4198230c43f226ab8f7923728d" kind="function"><name>MaaContextOverrideNext</name></member>
     <member refid="MaaContext_8h_1a6064c7441f9e387eb1f0cbfa6d1ea38d" kind="function"><name>MaaContextOverrideImage</name></member>
@@ -153,6 +155,8 @@
     <member refid="MaaResource_8h_1a93292991dbd360311465e875e9053055" kind="function"><name>MaaResourceGetNodeList</name></member>
     <member refid="MaaResource_8h_1a1046bba51b717e5b6f69e673c10141d1" kind="function"><name>MaaResourceGetCustomRecognitionList</name></member>
     <member refid="MaaResource_8h_1a131e370cac4c849c1d7a28f58491a9a9" kind="function"><name>MaaResourceGetCustomActionList</name></member>
+    <member refid="MaaResource_8h_1a54e07840896dd99b1aa1580c84cc25e3" kind="function"><name>MaaResourceGetDefaultRecognitionParam</name></member>
+    <member refid="MaaResource_8h_1a861e1c03118c4cdc4456625fad276ad9" kind="function"><name>MaaResourceGetDefaultActionParam</name></member>
   </compound>
   <compound refid="MaaTasker_8h" kind="file"><name>MaaTasker.h</name>
     <member refid="MaaTasker_8h_1abc517c855a09e5cd6a3cf33f0c7abb4b" kind="function"><name>MaaTaskerCreate</name></member>
@@ -178,6 +182,7 @@
     <member refid="MaaTasker_8h_1a66bcb6d294dd92c294555c826ef2d749" kind="function"><name>MaaTaskerGetResource</name></member>
     <member refid="MaaTasker_8h_1a077181e4d90b12a219ff49d092700a86" kind="function"><name>MaaTaskerGetController</name></member>
     <member refid="MaaTasker_8h_1aea0f684a6987fc963254f68870537925" kind="function"><name>MaaTaskerClearCache</name></member>
+    <member refid="MaaTasker_8h_1a899a756cf686e880c0691105176c6773" kind="function"><name>MaaTaskerOverridePipeline</name></member>
     <member refid="MaaTasker_8h_1aa0a412e5b5e08fb4f4e11de826700ff7" kind="function"><name>MaaTaskerGetRecognitionDetail</name></member>
     <member refid="MaaTasker_8h_1ad18ddb1160386ad45e2268b5fc655488" kind="function"><name>MaaTaskerGetActionDetail</name></member>
     <member refid="MaaTasker_8h_1a2807a557aa5cac9d2bee6281ec22f836" kind="function"><name>MaaTaskerGetNodeDetail</name></member>
