@@ -45,6 +45,7 @@ from maa.tasker import Tasker, TaskerEventSink
 from maa.toolkit import Toolkit
 from maa.custom_action import CustomAction
 from maa.custom_recognition import CustomRecognition
+from maa.buffer import ImageBuffer
 from maa.define import MaaDbgControllerTypeEnum, LoggingLevelEnum
 from maa.context import Context, ContextEventSink
 from maa.event_sink import EventSink
@@ -374,6 +375,28 @@ def test_controller_api():
 
 
 # ============================================================================
+# Buffer API 测试
+# ============================================================================
+
+
+def test_buffer_api():
+    print("\n=== test_buffer_api ===")
+
+    buf = ImageBuffer()
+    src = numpy.zeros((100, 200, 3), dtype=numpy.uint8)
+    assert buf.set(src), "set should succeed"
+
+    # 仅指定宽度，按比例缩放高度
+    assert buf.resize(50, 0), "resize should succeed"
+    resized = buf.get()
+    print(f"  resized shape: {resized.shape}")
+    assert resized.shape[1] == 50, "width should be 50"
+    assert resized.shape[0] == 25, "height should keep aspect ratio"
+
+    print("  PASS: buffer API")
+
+
+# ============================================================================
 # Tasker API 测试
 # ============================================================================
 
@@ -647,6 +670,7 @@ if __name__ == "__main__":
     # 测试各模块 API
     resource = test_resource_api()
     controller = test_controller_api()
+    test_buffer_api()
     tasker = test_tasker_api(resource, controller)
 
     # 验证自定义识别和动作被调用

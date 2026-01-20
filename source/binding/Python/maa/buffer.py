@@ -334,6 +334,20 @@ class ImageBuffer:
             )
         )
 
+    def resize(self, width: int = 0, height: int = 0) -> bool:
+        """调整图像尺寸 / Resize image
+
+        Args:
+            width: 目标宽度，0 表示按高度等比缩放 / Target width, 0 to scale by height
+            height: 目标高度，0 表示按宽度等比缩放 / Target height, 0 to scale by width
+
+        Returns:
+            bool: 是否成功 / Whether successful
+        """
+        return bool(
+            Library.framework().MaaImageBufferResize(self._handle, width, height)
+        )
+
     @property
     def empty(self) -> bool:
         """判断缓冲区是否为空 / Check if buffer is empty
@@ -385,6 +399,13 @@ class ImageBuffer:
             MaaImageBufferHandle,
             ctypes.c_void_p,
             ctypes.c_int32,
+            ctypes.c_int32,
+            ctypes.c_int32,
+        ]
+
+        Library.framework().MaaImageBufferResize.restype = MaaBool
+        Library.framework().MaaImageBufferResize.argtypes = [
+            MaaImageBufferHandle,
             ctypes.c_int32,
             ctypes.c_int32,
         ]
