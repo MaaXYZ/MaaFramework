@@ -120,6 +120,84 @@ MaaActId
     return context->run_action(entry, ov_opt->as_object(), cvbox, reco_detail);
 }
 
+MaaRecoId MaaContextRunRecognitionDirect(MaaContext* context, const char* reco_type, const char* reco_param, const MaaImageBuffer* image)
+{
+    LogFunc << VAR_VOIDP(context) << VAR(reco_type) << VAR(reco_param);
+
+    if (!context || !image) {
+        LogError << "handle is null";
+        return MaaInvalidId;
+    }
+
+    if (!reco_type) {
+        LogError << "reco_type is null";
+        return MaaInvalidId;
+    }
+
+    if (!reco_param) {
+        LogError << "reco_param is null";
+        return MaaInvalidId;
+    }
+
+    auto param_opt = json::parse(reco_param);
+    if (!param_opt) {
+        LogError << "failed to parse" << VAR(reco_param);
+        return MaaInvalidId;
+    }
+
+    const auto& mat = image->get();
+    if (mat.empty()) {
+        LogError << "empty image";
+        return MaaInvalidId;
+    }
+
+    return context->run_recognition_direct(reco_type, *param_opt, mat);
+}
+
+MaaActId MaaContextRunActionDirect(
+    MaaContext* context,
+    const char* action_type,
+    const char* action_param,
+    const MaaRect* box,
+    const char* reco_detail)
+{
+    LogFunc << VAR_VOIDP(context) << VAR(action_type) << VAR(action_param) << VAR(reco_detail);
+
+    if (!context) {
+        LogError << "handle is null";
+        return MaaInvalidId;
+    }
+
+    if (!action_type) {
+        LogError << "action_type is null";
+        return MaaInvalidId;
+    }
+
+    if (!action_param) {
+        LogError << "action_param is null";
+        return MaaInvalidId;
+    }
+
+    if (!box) {
+        LogError << "box is null";
+        return MaaInvalidId;
+    }
+
+    if (!reco_detail) {
+        LogError << "reco_detail is null";
+        return MaaInvalidId;
+    }
+
+    auto param_opt = json::parse(action_param);
+    if (!param_opt) {
+        LogError << "failed to parse" << VAR(action_param);
+        return MaaInvalidId;
+    }
+
+    cv::Rect cv_box { box->x, box->y, box->width, box->height };
+    return context->run_action_direct(action_type, *param_opt, cv_box, reco_detail);
+}
+
 MaaBool MaaContextOverridePipeline(MaaContext* context, const char* pipeline_override)
 {
     LogFunc << VAR_VOIDP(context) << VAR(pipeline_override);
@@ -299,7 +377,7 @@ MaaBool MaaContextGetHitCount(MaaContext* context, const char* node_name, MaaSiz
         return false;
     }
 
-    *count = context->get_hit_count(node_name);
+    *count = static_cast<MaaSize>(context->get_hit_count(node_name));
     return true;
 }
 

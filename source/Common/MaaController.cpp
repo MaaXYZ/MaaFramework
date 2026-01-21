@@ -68,26 +68,44 @@ MaaCtrlId MaaControllerPostConnection(MaaController* ctrl)
 
 MaaCtrlId MaaControllerPostClick(MaaController* ctrl, int32_t x, int32_t y)
 {
-    LogFunc << VAR_VOIDP(ctrl) << VAR(x) << VAR(y);
+    return MaaControllerPostClickV2(ctrl, x, y, 0, 1);
+}
+
+MaaCtrlId MaaControllerPostClickV2(MaaController* ctrl, int32_t x, int32_t y, int32_t contact, int32_t pressure)
+{
+    LogFunc << VAR_VOIDP(ctrl) << VAR(x) << VAR(y) << VAR(contact) << VAR(pressure);
 
     if (!ctrl) {
         LogError << "handle is null";
         return MaaInvalidId;
     }
 
-    return ctrl->post_click(x, y);
+    return ctrl->post_click(x, y, contact, pressure);
 }
 
 MaaCtrlId MaaControllerPostSwipe(MaaController* ctrl, int32_t x1, int32_t y1, int32_t x2, int32_t y2, int32_t duration)
 {
-    LogFunc << VAR_VOIDP(ctrl) << VAR(x1) << VAR(y1) << VAR(x2) << VAR(y2) << VAR(duration);
+    return MaaControllerPostSwipeV2(ctrl, x1, y1, x2, y2, duration, 0, 1);
+}
+
+MaaCtrlId MaaControllerPostSwipeV2(
+    MaaController* ctrl,
+    int32_t x1,
+    int32_t y1,
+    int32_t x2,
+    int32_t y2,
+    int32_t duration,
+    int32_t contact,
+    int32_t pressure)
+{
+    LogFunc << VAR_VOIDP(ctrl) << VAR(x1) << VAR(y1) << VAR(x2) << VAR(y2) << VAR(duration) << VAR(contact) << VAR(pressure);
 
     if (!ctrl) {
         LogError << "handle is null";
         return MaaInvalidId;
     }
 
-    return ctrl->post_swipe(x1, y1, x2, y2, duration);
+    return ctrl->post_swipe(x1, y1, x2, y2, duration, contact, pressure);
 }
 
 MaaCtrlId MaaControllerPostPressKey(MaaController* ctrl, int32_t keycode)
@@ -267,7 +285,7 @@ MaaBool MaaControllerGetShellOutput(const MaaController* ctrl, MaaStringBuffer* 
 
 MaaCtrlId MaaControllerPostScreencap(MaaController* ctrl)
 {
-    LogFunc << VAR_VOIDP(ctrl);
+    // LogFunc << VAR_VOIDP(ctrl);
 
     if (!ctrl) {
         LogError << "handle is null";
@@ -343,4 +361,14 @@ MaaBool MaaControllerGetUuid(MaaController* ctrl, MaaStringBuffer* buffer)
 
     buffer->set(std::move(uuid));
     return true;
+}
+
+MaaBool MaaControllerGetResolution(const MaaController* ctrl, int32_t* width, int32_t* height)
+{
+    if (!ctrl || !width || !height) {
+        LogError << "handle or output params are null";
+        return false;
+    }
+
+    return ctrl->get_resolution(*width, *height);
 }

@@ -17,12 +17,12 @@ MAA_VISION_NS_BEGIN
 
 NeuralNetworkDetector::NeuralNetworkDetector(
     cv::Mat image,
-    cv::Rect roi,
+    std::vector<cv::Rect> rois,
     NeuralNetworkDetectorParam param,
     std::shared_ptr<Ort::Session> session,
     const Ort::MemoryInfo& memory_info,
     std::string name)
-    : VisionBase(std::move(image), std::move(roi), std::move(name))
+    : VisionBase(std::move(image), std::move(rois), std::move(name))
     , param_(std::move(param))
     , session_(std::move(session))
     , memory_info_(memory_info)
@@ -42,8 +42,10 @@ void NeuralNetworkDetector::analyze()
     auto start_time = std::chrono::steady_clock::now();
 
     auto labels = param_.labels.empty() ? parse_labels_from_metadata() : param_.labels;
-    auto results = detect(labels);
-    add_results(std::move(results), param_.expected, param_.thresholds);
+    while (next_roi()) {
+        auto results = detect(labels);
+        add_results(std::move(results), param_.expected, param_.thresholds);
+    }
 
     cherry_pick();
 

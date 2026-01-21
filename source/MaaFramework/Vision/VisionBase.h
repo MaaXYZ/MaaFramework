@@ -42,7 +42,7 @@ public:
     using ImageEncodedBuffer = std::vector<uint8_t>;
 
 public:
-    VisionBase(cv::Mat image, cv::Rect roi, std::string name);
+    VisionBase(cv::Mat image, std::vector<cv::Rect> rois, std::string name);
 
     const std::vector<ImageEncodedBuffer>& draws() const& { return draws_; }
 
@@ -51,19 +51,26 @@ public:
 protected:
     cv::Mat image_with_roi() const;
 
+    bool next_roi();
+    void reset_roi();
+
 protected:
     cv::Mat draw_roi(const cv::Mat& base = cv::Mat()) const;
     void handle_draw(const cv::Mat& draw) const;
 
 protected:
     const cv::Mat image_;
-    const cv::Rect roi_;
     const std::string name_;
+
+    cv::Rect roi_ {};
 
     bool debug_draw_ = false;
 
 private:
     void init_draw();
+
+    std::vector<cv::Rect> rois_;
+    size_t roi_index_ = 0;
 
     mutable std::vector<ImageEncodedBuffer> draws_;
 };

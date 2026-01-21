@@ -48,7 +48,7 @@ public: // from InputBase
     virtual bool scroll(int dx, int dy) override;
 
 private:
-    void ensure_foreground();
+    void send_activate();
     bool send_or_post_w(UINT message, WPARAM wParam, LPARAM lParam);
 
     // 准备鼠标位置：with_cursor_pos_ 模式下移动真实光标，返回 lParam

@@ -69,7 +69,7 @@ private:
     std::unordered_map<std::string, CustomActionSession> custom_actions_;
 
     EventDispatcher res_notifier_;
-    EventDispatcher ctrl_notifier_;
+    EventDispatcher ctrl_notifier_ = EventDispatcher(false);
     EventDispatcher tasker_notifier_;
     EventDispatcher ctx_notifier_;
 

@@ -64,6 +64,43 @@ MaaActId RemoteContext::run_action(
     return resp_opt->action_id;
 }
 
+MaaRecoId RemoteContext::run_recognition_direct(const std::string& reco_type, const json::value& reco_param, const cv::Mat& image)
+{
+    ContextRunRecognitionDirectReverseRequest req {
+        .context_id = context_id_,
+        .reco_type = reco_type,
+        .reco_param = reco_param,
+        .image = server_.send_image(image),
+    };
+
+    auto resp_opt = server_.send_and_recv<ContextRunRecognitionDirectReverseResponse>(req);
+    if (!resp_opt) {
+        return MaaInvalidId;
+    }
+    return resp_opt->reco_id;
+}
+
+MaaActId RemoteContext::run_action_direct(
+    const std::string& action_type,
+    const json::value& action_param,
+    const cv::Rect& box,
+    const std::string& reco_detail)
+{
+    ContextRunActionDirectReverseRequest req {
+        .context_id = context_id_,
+        .action_type = action_type,
+        .action_param = action_param,
+        .box = { box.x, box.y, box.width, box.height },
+        .reco_detail = reco_detail,
+    };
+
+    auto resp_opt = server_.send_and_recv<ContextRunActionDirectReverseResponse>(req);
+    if (!resp_opt) {
+        return MaaInvalidId;
+    }
+    return resp_opt->action_id;
+}
+
 bool RemoteContext::override_pipeline(const json::value& pipeline_override)
 {
     ContextOverridePipelineReverseRequest req {
@@ -197,7 +234,7 @@ std::optional<std::string> RemoteContext::get_anchor(const std::string& anchor_n
     return resp_opt->node_name;
 }
 
-uint RemoteContext::get_hit_count(const std::string& node_name) const
+size_t RemoteContext::get_hit_count(const std::string& node_name) const
 {
     ContextGetHitCountReverseRequest req {
         .context_id = context_id_,
@@ -208,7 +245,7 @@ uint RemoteContext::get_hit_count(const std::string& node_name) const
     if (!resp_opt) {
         return 0;
     }
-    return static_cast<uint>(resp_opt->count);
+    return resp_opt->count;
 }
 
 void RemoteContext::clear_hit_count(const std::string& node_name)

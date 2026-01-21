@@ -178,24 +178,28 @@ MaaFramework/
 
 - [ ] 在 `include/` 中添加 C API 声明
 - [ ] 在 `source/` 中实现功能
+- [ ] 更新 C++20 模块导出（`source/modules/MaaFramework.cppm`）
 - [ ] 更新 MaaAgent（如涉及 Context/Tasker/Resource/Controller 接口）
 - [ ] 更新 Python/NodeJS 绑定
 - [ ] 更新 Pipeline Schema（如涉及）
 - [ ] 添加/更新中英文文档
 - [ ] 更新 MaaMsg.h 及绑定层消息解析代码（如有新消息）
-
-> **注意**：如没有特别说明，不需要更新测试用例。
+- [ ] 更新 `test/python/` 中的单元测试
+- [ ] 更新 `test/agent/` 中的 Agent 单元测试（如涉及 Agent 接口）
 
 ## 常见开发场景
 
 ### 添加新的 Pipeline 字段
 
-1. 在 `source/MaaFramework/` 添加字段本身的功能性代码
-2. 在 `source/MaaFramework/Resource/PipelineParser.cpp` 添加解析逻辑
-3. 在 `source/MaaFramework/Resource/PipelineDumper.cpp` 添加序列化逻辑
-4. 更新 `source/binding` 中的解析逻辑（注意：binding 中的数据来源于 `PipelineDumper` 序列化的 JSON，而非原始 Pipeline JSON。）
-5. 更新 `tools/pipeline.schema.json`
-6. 更新中英文文档 `docs/*/3.1-*`
+1. 在 `source/MaaFramework/Resource/PipelineTypes.h` 添加字段到对应的结构体
+2. 在 `source/MaaFramework/Resource/PipelineTypesV2.h` 添加字段到对应的 `J*` 结构体（用于序列化）
+3. 在 `source/MaaFramework/Resource/PipelineParser.cpp` 添加解析逻辑
+4. 在 `source/MaaFramework/Resource/PipelineDumper.cpp` 添加序列化逻辑
+5. 如果是新增识别/动作算法类型，还需更新 `ResourceMgr.cpp` 中的 `get_default_recognition_param` / `get_default_action_param`
+6. 更新 `source/binding/Python/maa/pipeline.py` 中对应的数据类（如 `JClick`、`JSwipe` 等），添加新字段。注意：binding 中的数据来源于 `PipelineDumper` 序列化的 JSON，字段需与 C++ 的 `J*` 结构体保持一致。
+7. 在 `test/python/pipeline_test.py` 添加相应的单元测试，验证字段的解析、override 和 get 功能
+8. 更新 `tools/pipeline.schema.json`
+9. 更新中英文文档 `docs/*/3.1-*`
 
 ### 修改回调消息（MaaMsg）
 
@@ -214,11 +218,35 @@ MaaFramework/
 2. 在 `source/MaaAgentClient/Client/AgentClient.cpp` 实现该方法
 3. 在 `source/MaaAgentServer/RemoteInstance/Remote<Module>.h` 添加对应方法声明
 4. 在 `source/MaaAgentServer/RemoteInstance/Remote<Module>.cpp` 实现远程调用逻辑
+5. 在 `test/python/binding_test.py` 添加相应的 API 调用测试
+6. 在 `test/agent/` 中添加 Agent 单元测试，验证远程调用功能
+
+### 修改 NodeJS Binding
+
+当修改 NodeJS Binding 时, 需要注意以下内容:
+
+1. 所有逻辑都在 `source/binding/NodeJS/src/apis` 中
+2. 对于某一个特定内容, 需要联动修改 `.h`, `.cpp`, `.d.ts`
+3. 当接口包含默认参数时, 在 `.h` 中声明的接口应使用 `maajs::OptionalParam` 来包裹对应参数, 在 `.cpp` 中使用 `.value_or()` 提供默认值
+4. 当接口包含 `T | null` 格式时, 使用 `std::optional`
+5. 当发现接口变更无法找到合适的修改位置时, 在 Issue 或 PR 中 @neko-para
+
+**Agent 单元测试说明**：
+
+- `test/agent/agent_main_test.py`：AgentClient 端测试（主进程），负责创建 Resource/Controller/Tasker，并测试 AgentClient 的连接管理、custom_*_list 等 API
+- `test/agent/agent_child_test.py`：AgentServer 端测试（子进程），在自定义识别器/动作中测试 Remote* 类提供的 Context/Tasker/Resource/Controller API
 
 **Agent 架构说明**：
 
 - **AgentClient**：运行在主程序中，将 Custom 请求转发到 Server，并处理 Server 的远程调用
 - **AgentServer**：运行在用户进程中，注册自定义识别器/动作，通过 Remote* 类代理访问主程序实例
+
+**AgentServer 不支持的 API**（参考 `source/MaaAgentServer/API/MaaAgentServerNotImpl.cpp`）：
+
+- 创建/销毁实例：`MaaResourceCreate`、`MaaTaskerCreate`、`MaaControllerDestroy` 等
+- 全局选项：`MaaGlobalSetOption`、`MaaSetGlobalOption`
+- 插件加载：`MaaGlobalLoadPlugin`
+- Sink 管理：Remote* 实例不支持 `add_sink`/`remove_sink`，需使用 `AgentServer.add_*_sink` 代替
 
 ### 修改 workflows 和 actions
 

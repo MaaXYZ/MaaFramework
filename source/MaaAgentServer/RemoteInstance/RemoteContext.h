@@ -22,6 +22,12 @@ public:
     virtual MaaActId
         run_action(const std::string& entry, const json::value& pipeline_override, const cv::Rect& box, const std::string& reco_detail)
             override;
+    virtual MaaRecoId run_recognition_direct(const std::string& reco_type, const json::value& reco_param, const cv::Mat& image) override;
+    virtual MaaActId run_action_direct(
+        const std::string& action_type,
+        const json::value& action_param,
+        const cv::Rect& box,
+        const std::string& reco_detail) override;
     virtual bool override_pipeline(const json::value& pipeline_override) override;
     virtual bool override_next(const std::string& node_name, const std::vector<std::string>& next) override;
     virtual bool override_image(const std::string& image_name, const cv::Mat& image) override;
@@ -34,7 +40,7 @@ public:
 
     virtual void set_anchor(const std::string& anchor_name, const std::string& node_name) override;
     virtual std::optional<std::string> get_anchor(const std::string& anchor_name) const override;
-    virtual uint get_hit_count(const std::string& node_name) const override;
+    virtual size_t get_hit_count(const std::string& node_name) const override;
     virtual void clear_hit_count(const std::string& node_name) override;
 
 private:

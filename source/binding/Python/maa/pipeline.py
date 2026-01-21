@@ -17,6 +17,8 @@ class JRecognitionType(StrEnum):
     OCR = "OCR"
     NeuralNetworkClassify = "NeuralNetworkClassify"
     NeuralNetworkDetect = "NeuralNetworkDetect"
+    And = "And"
+    Or = "Or"
     Custom = "Custom"
 
 
@@ -46,7 +48,8 @@ class JActionType(StrEnum):
 # Recognition parameter dataclasses (matching C++ JRecognitionParam variants)
 @dataclass
 class JDirectHit:
-    pass
+    roi: JTarget = (0, 0, 0, 0)
+    roi_offset: JRect = (0, 0, 0, 0)
 
 
 @dataclass
@@ -131,6 +134,17 @@ class JCustomRecognition:
     custom_recognition_param: Any = None
 
 
+@dataclass
+class JAnd:
+    all_of: List[Any] = field(default_factory=list)
+    box_index: int = 0
+
+
+@dataclass
+class JOr:
+    any_of: List[Any] = field(default_factory=list)
+
+
 # Recognition parameter union type
 JRecognitionParam = Union[
     JDirectHit,
@@ -140,6 +154,8 @@ JRecognitionParam = Union[
     JOCR,
     JNeuralNetworkClassify,
     JNeuralNetworkDetect,
+    JAnd,
+    JOr,
     JCustomRecognition,
 ]
 
@@ -155,6 +171,7 @@ class JClick:
     target: JTarget = True
     target_offset: JRect = (0, 0, 0, 0)
     contact: int = 0
+    pressure: int = 1
 
 
 @dataclass
@@ -163,6 +180,7 @@ class JLongPress:
     target_offset: JRect = (0, 0, 0, 0)
     duration: int = 1000
     contact: int = 0
+    pressure: int = 1
 
 
 @dataclass
@@ -176,6 +194,7 @@ class JSwipe:
     duration: List[int] = field(default_factory=lambda: [200])
     only_hover: bool = False
     contact: int = 0
+    pressure: int = 1
 
 
 @dataclass
@@ -234,6 +253,8 @@ class JStopTask:
 
 @dataclass
 class JScroll:
+    target: JTarget = True
+    target_offset: JRect = (0, 0, 0, 0)
     dx: int = 0
     dy: int = 0
 
@@ -356,15 +377,11 @@ class JPipelineParser:
         param_type: Union[JRecognitionType, JActionType],
         param_data: dict,
         param_type_map: dict,
-        default_class,
     ) -> Union[JRecognitionParam, JActionParam]:
         """Generic function to parse parameters based on type map."""
         param_class = param_type_map.get(param_type)
         if not param_class:
             raise ValueError(f"Unknown type: {param_type}")
-
-        if param_class == default_class:
-            return param_class()
 
         try:
             return param_class(**param_data)
@@ -372,7 +389,7 @@ class JPipelineParser:
             print(
                 f"Warning: Failed to create {param_class.__name__} with data {param_data}: {e}"
             )
-            return default_class()
+            return param_class()
 
     @classmethod
     def _parse_recognition_param(
@@ -387,9 +404,11 @@ class JPipelineParser:
             JRecognitionType.OCR: JOCR,
             JRecognitionType.NeuralNetworkClassify: JNeuralNetworkClassify,
             JRecognitionType.NeuralNetworkDetect: JNeuralNetworkDetect,
+            JRecognitionType.And: JAnd,
+            JRecognitionType.Or: JOr,
             JRecognitionType.Custom: JCustomRecognition,
         }
-        return cls._parse_param(param_type, param_data, param_type_map, JDirectHit)
+        return cls._parse_param(param_type, param_data, param_type_map)
 
     @classmethod
     def _parse_action_param(
@@ -419,7 +438,7 @@ class JPipelineParser:
             JActionType.Custom: JCustomAction,
         }
 
-        return cls._parse_param(param_type, param_data, param_type_map, JDoNothing)
+        return cls._parse_param(param_type, param_data, param_type_map)
 
     @classmethod
     def parse_pipeline_data(cls, pipeline_data: Union[str, Dict]) -> JPipelineData:

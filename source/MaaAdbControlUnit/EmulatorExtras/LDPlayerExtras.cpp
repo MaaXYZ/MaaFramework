@@ -46,8 +46,6 @@ bool LDPlayerExtras::init()
 
 std::optional<cv::Mat> LDPlayerExtras::screencap()
 {
-    LogDebug;
-
     if (!ld_handle_) {
         LogError << "ld_handle_ is null";
         return std::nullopt;

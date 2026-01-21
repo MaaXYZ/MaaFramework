@@ -167,11 +167,13 @@ MaaTaskId Tasker::post_stop()
 
     need_to_stop_ = true;
 
-    if (task_runner_ && task_runner_->running()) {
-        task_runner_->clear();
-    }
-    if (running_task_) {
-        running_task_->post_stop();
+    if (task_runner_) {
+        if (task_runner_->running()) {
+            task_runner_->clear();
+        }
+        if (auto running_task = task_runner_->get_running()) {
+            (*running_task)->post_stop();
+        }
     }
     if (resource_) {
         resource_->post_stop();
@@ -180,7 +182,8 @@ MaaTaskId Tasker::post_stop()
         controller_->post_stop();
     }
 
-    auto task_ptr = std::make_shared<MAA_TASK_NS::EmptyTask>(std::string(MAA_FUNCTION), this);
+    static const std::string kStopEntry = "MaaTaskerPostStop";
+    auto task_ptr = std::make_shared<MAA_TASK_NS::EmptyTask>(kStopEntry, this);
     return post_task(std::move(task_ptr), json::object {});
 }
 
@@ -322,11 +325,8 @@ bool Tasker::run_task(RunnerId runner_id, TaskPtr task_ptr)
         return false;
     }
 
-    running_task_ = task_ptr;
-    OnScopeLeave([&] { running_task_ = nullptr; });
-
     if (need_to_stop_) {
-        running_task_->post_stop();
+        task_ptr->post_stop();
     }
 
     MaaTaskId task_id = task_ptr->task_id();
@@ -359,9 +359,25 @@ bool Tasker::run_task(RunnerId runner_id, TaskPtr task_ptr)
     }
     notifier_.notify(this, ret ? MaaMsg_Tasker_Task_Succeeded : MaaMsg_Tasker_Task_Failed, cb_detail);
 
-    running_task_ = nullptr;
-
     return ret;
+}
+
+bool Tasker::override_pipeline(MaaTaskId task_id, const json::value& pipeline_override)
+{
+    LogFunc << VAR(task_id) << VAR(pipeline_override);
+
+    RunnerId runner_id = task_id_to_runner_id(task_id);
+    if (runner_id == MaaInvalidId) {
+        return false;
+    }
+
+    auto task_ptr_opt = task_runner_->get(runner_id);
+    if (!task_ptr_opt) {
+        LogError << "task not found or already completed" << VAR(task_id) << VAR(runner_id);
+        return false;
+    }
+
+    return (*task_ptr_opt)->override_pipeline(pipeline_override);
 }
 
 bool Tasker::check_stop()

@@ -24,10 +24,19 @@ declare global {
             ColorMatch: 'Horizontal' | 'Vertical' | 'Score' | 'Area' | 'Random'
             OCR: 'Horizontal' | 'Vertical' | 'Area' | 'Length' | 'Random' | 'Expected'
             NeuralNetworkClassify: 'Horizontal' | 'Vertical' | 'Score' | 'Random' | 'Expected'
-            NeuralNetworkDetect: 'Horizontal' | 'Vertical' | 'Score' | 'Area' | 'Random' | 'Expected'
+            NeuralNetworkDetect:
+                | 'Horizontal'
+                | 'Vertical'
+                | 'Score'
+                | 'Area'
+                | 'Random'
+                | 'Expected'
         }
 
-        type RecognitionDirectHit = {}
+        type RecognitionDirectHit = {
+            roi?: Rect | NodeName
+            roi_offset?: Rect
+        }
 
         type RecognitionTemplateMatch<Mode> = RequiredIfStrict<
             {
@@ -139,6 +148,23 @@ declare global {
             Mode
         >
 
+        type RecognitionAnd<Mode> = RequiredIfStrict<
+            {
+                all_of?: Recognition<Mode>['recognition'][]
+                box_index?: number
+            },
+            'all_of',
+            Mode
+        >
+
+        type RecognitionOr<Mode> = RequiredIfStrict<
+            {
+                any_of: Recognition<Mode>['recognition'][]
+            },
+            'any_of',
+            Mode
+        >
+
         type MixReco<Type extends string, Param, Mode> =
             | {
                   recognition: {
@@ -152,6 +178,18 @@ declare global {
                   } & Param,
                   Mode
               >
+
+        type RecognitionType =
+            | 'DirectHit'
+            | 'TemplateMatch'
+            | 'FeatureMatch'
+            | 'ColorMatch'
+            | 'OCR'
+            | 'NeuralNetworkClassify'
+            | 'NeuralNetworkDetect'
+            | 'And'
+            | 'Or'
+            | 'Custom'
 
         type Recognition<Mode> =
             | RemoveIfDump<
@@ -170,6 +208,8 @@ declare global {
             | MixReco<'OCR', RecognitionOCR<Mode>, Mode>
             | MixReco<'NeuralNetworkClassify', RecognitionNeuralNetworkClassify<Mode>, Mode>
             | MixReco<'NeuralNetworkDetect', RecognitionNeuralNetworkDetect<Mode>, Mode>
+            | MixReco<'And', RecognitionAnd<Mode>, Mode>
+            | MixReco<'Or', RecognitionOr<Mode>, Mode>
             | MixReco<'Custom', RecognitionCustom<Mode>, Mode>
 
         type ActionDoNothing = {}
@@ -287,6 +327,8 @@ declare global {
         type ActionStopTask = {}
 
         type ActionScroll = {
+            target?: true | NodeName | Rect
+            target_offset?: Rect
             dx?: number
             dy?: number
         }
@@ -297,6 +339,7 @@ declare global {
                 args?: string[]
                 detach?: boolean
             },
+            'exec',
             Mode
         >
 
@@ -334,6 +377,29 @@ declare global {
                   }
               }
 
+        type ActionType =
+            | 'DoNothing'
+            | 'Click'
+            | 'LongPress'
+            | 'Swipe'
+            | 'MultiSwipe'
+            | 'TouchDown'
+            | 'TouchMove'
+            | 'TouchUp'
+            | 'Key'
+            | 'ClickKey'
+            | 'LongPressKey'
+            | 'KeyDown'
+            | 'KeyUp'
+            | 'InputText'
+            | 'StartApp'
+            | 'StopApp'
+            | 'Scroll'
+            | 'StopTask'
+            | 'Command'
+            | 'Shell'
+            | 'Custom'
+
         type Action<Mode> =
             | RemoveIfDump<
                   {
@@ -366,11 +432,15 @@ declare global {
             | MixAct<'Shell', ActionShell<Mode>, Mode>
             | MixAct<'Custom', ActionCustom<Mode>, Mode>
 
-        type NodeAttr = {
-            name: string
-            jump_back: boolean
-            anchor: boolean
-        }
+        type NodeAttr<Mode> = RequiredIfStrict<
+            {
+                name?: string
+                jump_back?: boolean
+                anchor?: boolean
+            },
+            'name',
+            Mode
+        >
 
         type WaitFreeze = {
             time?: number
@@ -383,11 +453,11 @@ declare global {
         }
 
         type General<Mode> = {
-            next?: MaybeArray<NodeAttr, Mode>
+            next?: MaybeArray<RemoveIfDump<NodeName, Mode> | NodeAttr<Mode>, Mode>
             rate_limit?: number
             timeout?: number
-            on_error?: MaybeArray<NodeAttr, Mode>
-            anchor?: MaybeArray<string, Mode>
+            on_error?: MaybeArray<RemoveIfDump<NodeName, Mode> | NodeAttr<Mode>, Mode>
+            anchor?: MaybeArray<NodeName, Mode>
             inverse?: boolean
             enabled?: boolean
             max_hit?: number

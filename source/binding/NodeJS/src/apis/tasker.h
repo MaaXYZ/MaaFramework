@@ -41,19 +41,19 @@ struct TaskerImpl : public maajs::NativeClassBase
         maajs::ValueType self,
         maajs::EnvType env,
         std::string reco_type,
-        maajs::OptionalParam<maajs::ValueType> reco_param,
+        maajs::ValueType reco_param,
         maajs::ArrayBufferType image);
     maajs::ValueType post_action(
         maajs::ValueType self,
         maajs::EnvType env,
         std::string action_type,
-        maajs::OptionalParam<maajs::ValueType> action_param,
-        MaaRect box = { 0, 0, 0, 0 },
-        std::string reco_detail = "");
+        maajs::ValueType action_param,
+        MaaRect box,
+        maajs::OptionalParam<std::string> reco_detail);
     maajs::ValueType post_stop(maajs::ValueType self, maajs::EnvType env);
     MaaStatus status(MaaResId id);
     maajs::PromiseType wait(MaaResId id);
-    bool get_inited();
+    maajs::PromiseType get_inited();
     bool get_running();
     bool get_stopping();
     void set_resource(std::optional<maajs::NativeObject<ResourceImpl>> res);
@@ -61,6 +61,7 @@ struct TaskerImpl : public maajs::NativeClassBase
     void set_controller(std::optional<maajs::NativeObject<ControllerImpl>> ctrl);
     std::optional<maajs::ValueType> get_controller();
     void clear_cache();
+    void override_pipeline(MaaTaskId task_id, maajs::ValueType pipeline);
     std::optional<maajs::ValueType> recognition_detail(MaaRecoId id);
     std::optional<maajs::ValueType> action_detail(MaaActId id);
     std::optional<maajs::ValueType> node_detail(MaaNodeId id);

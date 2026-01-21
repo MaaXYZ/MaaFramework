@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+    - name: 📖 问题反馈指南 / Troubleshooting Guide
+      url: https://github.com/MaaXYZ/MaaFramework/blob/main/docs/zh_cn/5.1-问题反馈.md
+      about: 提交 Issue 前请先阅读此文档 / Please read this guide before submitting an issue
+    - name: 🐧 QQ 群 / QQ Group (595990173)
+      url: https://qm.qq.com/q/RzN0wJlPQO
+      about: 仅讨论开发相关议题 / Development discussions only

@@ -14,7 +14,7 @@ MAA_AGENT_NS_BEGIN
 // ReverseRequest: server -> client
 
 using MessageTypePlaceholder = int;
-inline static constexpr int kProtocolVersion = 6;
+inline static constexpr int kProtocolVersion = 7;
 
 struct StartUpRequest
 {
@@ -223,6 +223,45 @@ struct ContextRunActionReverseResponse
     MEO_JSONIZATION(action_id, _ContextRunActionReverseResponse);
 };
 
+struct ContextRunRecognitionDirectReverseRequest
+{
+    std::string context_id;
+    std::string reco_type;
+    json::value reco_param;
+    std::string image;
+
+    MessageTypePlaceholder _ContextRunRecognitionDirectReverseRequest = 1;
+    MEO_JSONIZATION(context_id, reco_type, reco_param, image, _ContextRunRecognitionDirectReverseRequest);
+};
+
+struct ContextRunRecognitionDirectReverseResponse
+{
+    int64_t reco_id = 0;
+
+    MessageTypePlaceholder _ContextRunRecognitionDirectReverseResponse = 1;
+    MEO_JSONIZATION(reco_id, _ContextRunRecognitionDirectReverseResponse);
+};
+
+struct ContextRunActionDirectReverseRequest
+{
+    std::string context_id;
+    std::string action_type;
+    json::value action_param;
+    std::array<int, 4> box {};
+    std::string reco_detail;
+
+    MessageTypePlaceholder _ContextRunActionDirectReverseRequest = 1;
+    MEO_JSONIZATION(context_id, action_type, action_param, box, reco_detail, _ContextRunActionDirectReverseRequest);
+};
+
+struct ContextRunActionDirectReverseResponse
+{
+    int64_t action_id = 0;
+
+    MessageTypePlaceholder _ContextRunActionDirectReverseResponse = 1;
+    MEO_JSONIZATION(action_id, _ContextRunActionDirectReverseResponse);
+};
+
 struct ContextOverridePipelineReverseRequest
 {
     std::string context_id;
@@ -387,7 +426,7 @@ struct ContextGetHitCountReverseRequest
 
 struct ContextGetHitCountReverseResponse
 {
-    uint64_t count = 0;
+    size_t count = 0;
 
     MessageTypePlaceholder _ContextGetHitCountReverseResponse = 1;
     MEO_JSONIZATION(count, _ContextGetHitCountReverseResponse);
@@ -607,6 +646,24 @@ struct TaskerClearCacheReverseResponse
 {
     MessageTypePlaceholder _TaskerClearCacheReverseResponse = 1;
     MEO_JSONIZATION(_TaskerClearCacheReverseResponse);
+};
+
+struct TaskerOverridePipelineReverseRequest
+{
+    std::string tasker_id;
+    int64_t task_id = 0;
+    json::value pipeline_override;
+
+    MessageTypePlaceholder _TaskerOverridePipelineReverseRequest = 1;
+    MEO_JSONIZATION(tasker_id, task_id, pipeline_override, _TaskerOverridePipelineReverseRequest);
+};
+
+struct TaskerOverridePipelineReverseResponse
+{
+    bool ret = false;
+
+    MessageTypePlaceholder _TaskerOverridePipelineReverseResponse = 1;
+    MEO_JSONIZATION(ret, _TaskerOverridePipelineReverseResponse);
 };
 
 struct TaskerGetTaskDetailReverseRequest
@@ -1003,6 +1060,42 @@ struct ResourceGetCustomActionListReverseResponse
     MEO_JSONIZATION(custom_action_list, _ResourceGetCustomActionListReverseResponse);
 };
 
+struct ResourceGetDefaultRecognitionParamReverseRequest
+{
+    std::string resource_id;
+    std::string reco_type;
+
+    MessageTypePlaceholder _ResourceGetDefaultRecognitionParamReverseRequest = 1;
+    MEO_JSONIZATION(resource_id, reco_type, _ResourceGetDefaultRecognitionParamReverseRequest);
+};
+
+struct ResourceGetDefaultRecognitionParamReverseResponse
+{
+    bool has_value = false;
+    json::object param;
+
+    MessageTypePlaceholder _ResourceGetDefaultRecognitionParamReverseResponse = 1;
+    MEO_JSONIZATION(has_value, param, _ResourceGetDefaultRecognitionParamReverseResponse);
+};
+
+struct ResourceGetDefaultActionParamReverseRequest
+{
+    std::string resource_id;
+    std::string action_type;
+
+    MessageTypePlaceholder _ResourceGetDefaultActionParamReverseRequest = 1;
+    MEO_JSONIZATION(resource_id, action_type, _ResourceGetDefaultActionParamReverseRequest);
+};
+
+struct ResourceGetDefaultActionParamReverseResponse
+{
+    bool has_value = false;
+    json::object param;
+
+    MessageTypePlaceholder _ResourceGetDefaultActionParamReverseResponse = 1;
+    MEO_JSONIZATION(has_value, param, _ResourceGetDefaultActionParamReverseResponse);
+};
+
 struct ControllerPostConnectionReverseRequest
 {
     std::string controller_id;
@@ -1024,9 +1117,11 @@ struct ControllerPostClickReverseRequest
     std::string controller_id;
     int32_t x = 0;
     int32_t y = 0;
+    int32_t contact = 0;
+    int32_t pressure = 1;
 
     MessageTypePlaceholder _ControllerPostClickReverseRequest = 1;
-    MEO_JSONIZATION(controller_id, x, y, _ControllerPostClickReverseRequest);
+    MEO_JSONIZATION(controller_id, x, y, contact, pressure, _ControllerPostClickReverseRequest);
 };
 
 struct ControllerPostClickReverseResponse
@@ -1045,9 +1140,11 @@ struct ControllerPostSwipeReverseRequest
     int32_t x2 = 0;
     int32_t y2 = 0;
     int32_t duration = 0;
+    int32_t contact = 0;
+    int32_t pressure = 1;
 
     MessageTypePlaceholder _ControllerPostSwipeReverseRequest = 1;
-    MEO_JSONIZATION(controller_id, x1, y1, x2, y2, duration, _ControllerPostSwipeReverseRequest);
+    MEO_JSONIZATION(controller_id, x1, y1, x2, y2, duration, contact, pressure, _ControllerPostSwipeReverseRequest);
 };
 
 struct ControllerPostSwipeReverseResponse
@@ -1381,6 +1478,24 @@ struct ControllerGetUuidReverseResponse
 
     MessageTypePlaceholder _ControllerGetUuidReverseResponse = 1;
     MEO_JSONIZATION(uuid, _ControllerGetUuidReverseResponse);
+};
+
+struct ControllerGetResolutionReverseRequest
+{
+    std::string controller_id;
+
+    MessageTypePlaceholder _ControllerGetResolutionReverseRequest = 1;
+    MEO_JSONIZATION(controller_id, _ControllerGetResolutionReverseRequest);
+};
+
+struct ControllerGetResolutionReverseResponse
+{
+    bool success = false;
+    int32_t width = 0;
+    int32_t height = 0;
+
+    MessageTypePlaceholder _ControllerGetResolutionReverseResponse = 1;
+    MEO_JSONIZATION(success, width, height, _ControllerGetResolutionReverseResponse);
 };
 
 struct ImageHeader

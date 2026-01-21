@@ -8,10 +8,10 @@
 
 MAA_VISION_NS_BEGIN
 
-VisionBase::VisionBase(cv::Mat image, cv::Rect roi, std::string name)
+VisionBase::VisionBase(cv::Mat image, std::vector<cv::Rect> rois, std::string name)
     : image_(std::move(image))
-    , roi_(correct_roi(roi, image_))
     , name_(std::move(name))
+    , rois_(correct_rois(std::move(rois), image_))
 {
     init_draw();
 }
@@ -19,6 +19,20 @@ VisionBase::VisionBase(cv::Mat image, cv::Rect roi, std::string name)
 cv::Mat VisionBase::image_with_roi() const
 {
     return image_(roi_);
+}
+
+bool VisionBase::next_roi()
+{
+    if (roi_index_ >= rois_.size()) {
+        return false;
+    }
+    roi_ = rois_[roi_index_++];
+    return true;
+}
+
+void VisionBase::reset_roi()
+{
+    roi_index_ = 0;
 }
 
 cv::Mat VisionBase::draw_roi(const cv::Mat& base) const

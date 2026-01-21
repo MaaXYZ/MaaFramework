@@ -54,7 +54,6 @@ std::optional<cv::Mat> ScreencapRawByNetcat::screencap()
     if (!argv_opt) {
         return std::nullopt;
     }
-    auto start_time = std::chrono::steady_clock::now();
 
     auto& argv = *argv_opt;
 
@@ -71,9 +70,6 @@ std::optional<cv::Mat> ScreencapRawByNetcat::screencap()
     ios->expires_after(1s);
     std::string output = ios->read(1s);
     ios->release();
-
-    auto duration = duration_since(start_time);
-    LogDebug << VAR(argv.exec) << VAR(argv.args) << VAR(output.size()) << VAR(duration);
 
     if (!child.release()) {
         LogWarn << "child return error" << VAR(argv.exec) << VAR(argv.args);

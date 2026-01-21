@@ -17,7 +17,10 @@ using JTarget = std::variant<bool, std::string, JRect>;
 
 struct JDirectHit
 {
-    json::value to_json() const { return json::object(); }
+    JTarget roi = JRect {};
+    JRect roi_offset {};
+
+    MEO_TOJSON(roi, roi_offset);
 };
 
 struct JTemplateMatch
@@ -116,8 +119,34 @@ struct JCustomRecognition
     MEO_TOJSON(roi, roi_offset, custom_recognition, custom_recognition_param);
 };
 
-using JRecognitionParam = std::
-    variant<JDirectHit, JTemplateMatch, JFeatureMatch, JColorMatch, JOCR, JNeuralNetworkClassify, JNeuralNetworkDetect, JCustomRecognition>;
+struct JSubRecognition;
+
+struct JAnd
+{
+    std::vector<json::value> all_of;
+    int box_index = 0;
+
+    MEO_TOJSON(all_of, box_index);
+};
+
+struct JOr
+{
+    std::vector<json::value> any_of;
+
+    MEO_TOJSON(any_of);
+};
+
+using JRecognitionParam = std::variant<
+    JDirectHit,
+    JTemplateMatch,
+    JFeatureMatch,
+    JColorMatch,
+    JOCR,
+    JNeuralNetworkClassify,
+    JNeuralNetworkDetect,
+    JAnd,
+    JOr,
+    JCustomRecognition>;
 
 struct JRecognition
 {
@@ -137,8 +166,9 @@ struct JClick
     JTarget target;
     JRect target_offset {};
     uint32_t contact = 0;
+    int32_t pressure = 1;
 
-    MEO_TOJSON(target, target_offset, contact);
+    MEO_TOJSON(target, target_offset, contact, pressure);
 };
 
 struct JLongPress
@@ -147,7 +177,8 @@ struct JLongPress
     JRect target_offset {};
     uint32_t duration = 0;
     uint32_t contact = 0;
-    MEO_TOJSON(target, target_offset, duration, contact);
+    int32_t pressure = 1;
+    MEO_TOJSON(target, target_offset, duration, contact, pressure);
 };
 
 struct JSwipe
@@ -161,7 +192,8 @@ struct JSwipe
     std::vector<uint32_t> duration;
     bool only_hover = false;
     uint32_t contact = 0;
-    MEO_TOJSON(starting, begin, begin_offset, end, end_offset, end_hold, duration, only_hover, contact);
+    int32_t pressure = 1;
+    MEO_TOJSON(starting, begin, begin_offset, end, end_offset, end_hold, duration, only_hover, contact, pressure);
 };
 
 struct JMultiSwipe
@@ -238,10 +270,12 @@ struct JStopTask
 
 struct JScroll
 {
+    JTarget target;
+    JRect target_offset {};
     int dx = 0;
     int dy = 0;
 
-    MEO_TOJSON(dx, dy);
+    MEO_TOJSON(target, target_offset, dx, dy);
 };
 
 struct JCommand

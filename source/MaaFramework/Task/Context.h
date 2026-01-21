@@ -13,7 +13,7 @@ MAA_TASK_NS_BEGIN
 
 struct TaskState
 {
-    std::unordered_map<std::string, unsigned int> hit_count;
+    std::unordered_map<std::string, size_t> hit_count;
     std::unordered_map<std::string, std::string> anchors;
 };
 
@@ -44,6 +44,12 @@ public: // from MaaContextAPI
     virtual MaaActId
         run_action(const std::string& entry, const json::value& pipeline_override, const cv::Rect& box, const std::string& reco_detail)
             override;
+    virtual MaaRecoId run_recognition_direct(const std::string& reco_type, const json::value& reco_param, const cv::Mat& image) override;
+    virtual MaaActId run_action_direct(
+        const std::string& action_type,
+        const json::value& action_param,
+        const cv::Rect& box,
+        const std::string& reco_detail) override;
     virtual bool override_pipeline(const json::value& pipeline_override) override;
     virtual bool override_next(const std::string& node_name, const std::vector<std::string>& next) override;
     virtual bool override_image(const std::string& image_name, const cv::Mat& image) override;
@@ -61,7 +67,7 @@ public:
 
     bool& need_to_stop();
 
-    virtual uint get_hit_count(const std::string& node_name) const override;
+    virtual size_t get_hit_count(const std::string& node_name) const override;
     void increment_hit_count(const std::string& node_name);
     virtual void clear_hit_count(const std::string& node_name) override;
 

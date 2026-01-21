@@ -9,18 +9,20 @@
 
 MAA_CTRL_UNIT_NS_BEGIN
 
-// 窗口激活工具函数（基础版本，用于消息发送方式）
-inline void ensure_foreground(HWND hwnd)
+// 发送 WM_ACTIVATE 消息激活窗口（用于后台消息发送方式）
+// 让目标窗口认为自己被激活，但不实际改变前台窗口
+inline void send_activate_message(HWND hwnd, bool use_post = false)
 {
     if (!hwnd) {
         return;
     }
-    if (hwnd == GetForegroundWindow()) {
-        return;
+    // WM_ACTIVATE + WA_ACTIVE，lParam 为 0 表示没有前一个窗口
+    if (use_post) {
+        PostMessageW(hwnd, WM_ACTIVATE, WA_ACTIVE, 0);
     }
-    // ShowWindow(hwnd, SW_MINIMIZE);
-    // ShowWindow(hwnd, SW_RESTORE);
-    SetForegroundWindow(hwnd);
+    else {
+        SendMessageW(hwnd, WM_ACTIVATE, WA_ACTIVE, 0);
+    }
 
     std::this_thread::sleep_for(std::chrono::milliseconds(10));
 }

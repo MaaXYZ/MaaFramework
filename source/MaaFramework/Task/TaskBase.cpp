@@ -68,8 +68,8 @@ RecoResult TaskBase::run_recognition(const cv::Mat& image, const PipelineData& d
         return {};
     }
 
-    uint current_hit = context_->get_hit_count(data.name);
-    if (current_hit >= data.max_hit) {
+    size_t current_hit = context_->get_hit_count(data.name);
+    if (current_hit >= static_cast<size_t>(data.max_hit)) {
         LogDebug << "max_hit reached" << VAR(data.name) << VAR(current_hit) << VAR(data.max_hit);
         return {};
     }
@@ -85,7 +85,12 @@ RecoResult TaskBase::run_recognition(const cv::Mat& image, const PipelineData& d
 
     notify(MaaMsg_Node_Recognition_Starting, cb_detail);
 
-    RecoResult result = recognizer.recognize(data);
+    RecoResult result = recognizer.recognize(data.reco_type, data.reco_param, data.name);
+
+    if (data.inverse) {
+        LogDebug << "pipeline_data.inverse is true, reverse the result" << VAR(data.name) << VAR(result.box);
+        result.box = result.box ? std::nullopt : std::make_optional<cv::Rect>();
+    }
 
     cb_detail["reco_details"] = result;
     notify(result.box ? MaaMsg_Node_Recognition_Succeeded : MaaMsg_Node_Recognition_Failed, cb_detail);

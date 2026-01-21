@@ -126,16 +126,30 @@ maajs::ValueType ControllerImpl::post_connection(maajs::ValueType self, maajs::E
     return maajs::CallCtorHelper(ExtContext::get(env)->jobCtor, self, id);
 }
 
-maajs::ValueType ControllerImpl::post_click(maajs::ValueType self, maajs::EnvType, int32_t x, int32_t y)
+maajs::ValueType ControllerImpl::post_click(
+    maajs::ValueType self,
+    maajs::EnvType,
+    int32_t x,
+    int32_t y,
+    maajs::OptionalParam<int32_t> contact,
+    maajs::OptionalParam<int32_t> pressure)
 {
-    auto id = MaaControllerPostClick(controller, x, y);
+    auto id = MaaControllerPostClickV2(controller, x, y, contact.value_or(0), pressure.value_or(1));
     return maajs::CallCtorHelper(ExtContext::get(env)->jobCtor, self, id);
 }
 
-maajs::ValueType
-    ControllerImpl::post_swipe(maajs::ValueType self, maajs::EnvType, int32_t x1, int32_t y1, int32_t x2, int32_t y2, int32_t duration)
+maajs::ValueType ControllerImpl::post_swipe(
+    maajs::ValueType self,
+    maajs::EnvType,
+    int32_t x1,
+    int32_t y1,
+    int32_t x2,
+    int32_t y2,
+    int32_t duration,
+    maajs::OptionalParam<int32_t> contact,
+    maajs::OptionalParam<int32_t> pressure)
 {
-    auto id = MaaControllerPostSwipe(controller, x1, y1, x2, y2, duration);
+    auto id = MaaControllerPostSwipeV2(controller, x1, y1, x2, y2, duration, contact.value_or(0), pressure.value_or(1));
     return maajs::CallCtorHelper(ExtContext::get(env)->jobCtor, self, id);
 }
 
@@ -219,9 +233,11 @@ maajs::PromiseType ControllerImpl::wait(MaaCtrlId id)
     return worker->Promise();
 }
 
-bool ControllerImpl::get_connected()
+maajs::PromiseType ControllerImpl::get_connected()
 {
-    return MaaControllerConnected(controller);
+    auto worker = new maajs::AsyncWork<bool>(env, [handle = controller]() { return MaaControllerConnected(handle); });
+    worker->Queue();
+    return worker->Promise();
 }
 
 std::optional<maajs::ArrayBufferType> ControllerImpl::get_cached_image()
@@ -240,6 +256,16 @@ std::optional<std::string> ControllerImpl::get_uuid()
         return std::nullopt;
     }
     return buf.str();
+}
+
+std::optional<std::tuple<int32_t, int32_t>> ControllerImpl::get_resolution()
+{
+    int32_t width = 0;
+    int32_t height = 0;
+    if (!MaaControllerGetResolution(controller, &width, &height)) {
+        return std::nullopt;
+    }
+    return std::make_tuple(width, height);
 }
 
 std::string ControllerImpl::to_string()
@@ -311,6 +337,7 @@ void ControllerImpl::init_proto(maajs::ObjectType proto, maajs::FunctionType)
     MAA_BIND_GETTER(proto, "connected", ControllerImpl::get_connected);
     MAA_BIND_GETTER(proto, "cached_image", ControllerImpl::get_cached_image);
     MAA_BIND_GETTER(proto, "uuid", ControllerImpl::get_uuid);
+    MAA_BIND_GETTER(proto, "resolution", ControllerImpl::get_resolution);
 }
 
 maajs::ValueType load_controller(maajs::EnvType env)
@@ -450,7 +477,6 @@ maajs::ValueType load_win32_controller(maajs::EnvType env)
     return ctor;
 }
 
-#ifdef __APPLE__
 PlayCoverControllerImpl* PlayCoverControllerImpl::ctor(const maajs::CallbackInfo& info)
 {
     auto [address, uuid] = maajs::UnWrapArgs<PlayCoverControllerCtorParam, void>(info);
@@ -472,7 +498,6 @@ maajs::ValueType load_playcover_controller(maajs::EnvType env)
     ExtContext::get(env)->playcoverControllerCtor = maajs::PersistentFunction(ctor);
     return ctor;
 }
-#endif
 
 DbgControllerImpl* DbgControllerImpl::ctor(const maajs::CallbackInfo& info)
 {
@@ -493,6 +518,28 @@ maajs::ValueType load_dbg_controller(maajs::EnvType env)
     maajs::FunctionType ctor;
     maajs::NativeClass<DbgControllerImpl>::init<ControllerImpl>(env, ctor, &ExtContext::get(env)->controllerCtor);
     ExtContext::get(env)->dbgControllerCtor = maajs::PersistentFunction(ctor);
+    return ctor;
+}
+
+GamepadControllerImpl* GamepadControllerImpl::ctor(const maajs::CallbackInfo& info)
+{
+    auto [hwnd, gamepad_type, screencap_method] = maajs::UnWrapArgs<GamepadControllerCtorParam, void>(info);
+    auto ctrl = MaaGamepadControllerCreate(reinterpret_cast<void*>(hwnd.value_or(0)), gamepad_type, screencap_method);
+    if (!ctrl) {
+        return nullptr;
+    }
+    return new GamepadControllerImpl(ctrl, true);
+}
+
+void GamepadControllerImpl::init_proto(maajs::ObjectType, maajs::FunctionType)
+{
+}
+
+maajs::ValueType load_gamepad_controller(maajs::EnvType env)
+{
+    maajs::FunctionType ctor;
+    maajs::NativeClass<GamepadControllerImpl>::init<ControllerImpl>(env, ctor, &ExtContext::get(env)->controllerCtor);
+    ExtContext::get(env)->gamepadControllerCtor = maajs::PersistentFunction(ctor);
     return ctor;
 }
 
@@ -569,11 +616,15 @@ CustomControllerImpl* CustomControllerImpl::ctor(const maajs::CallbackInfo& info
     auto ret_false = [](maajs::EnvType env2) {
         return maajs::BooleanType::New(env2, false);
     };
+    auto ret_true = [](maajs::EnvType env2) {
+        return maajs::BooleanType::New(env2, true);
+    };
     auto ret_null = [](maajs::EnvType env2) {
         return env2.Null();
     };
 
     context->add_bind(info.Env(), "connect", "CustomConnect", 0, actor, ret_false);
+    context->add_bind(info.Env(), "connected", "CustomConnected", 0, actor, ret_true);
     context->add_bind(info.Env(), "request_uuid", "CustomRequestUuid", 0, actor, ret_null);
     context->add_bind(info.Env(), "get_features", "CustomGetFeatures", 0, actor, ret_null);
     context->add_bind(info.Env(), "start_app", "CustomStartApp", 1, actor, ret_false);

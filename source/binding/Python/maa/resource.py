@@ -11,7 +11,14 @@ from .define import *
 from .job import Job
 from .library import Library
 from .buffer import StringBuffer, StringListBuffer, ImageBuffer
-from .pipeline import JPipelineData, JPipelineParser
+from .pipeline import (
+    JPipelineData,
+    JPipelineParser,
+    JRecognitionType,
+    JRecognitionParam,
+    JActionType,
+    JActionParam,
+)
 
 
 class Resource:
@@ -22,23 +29,16 @@ class Resource:
 
     def __init__(
         self,
-        notification_handler: None = None,
         handle: Optional[MaaResourceHandle] = None,
     ):
         """创建资源 / Create resource
 
         Args:
-            notification_handler: 已废弃，请使用 add_sink 代替 / Deprecated, use add_sink instead
             handle: 可选的外部句柄 / Optional external handle
 
         Raises:
-            NotImplementedError: 如果提供了 notification_handler
             RuntimeError: 如果创建失败
         """
-        if notification_handler:
-            raise NotImplementedError(
-                "NotificationHandler is deprecated, use add_sink instead."
-            )
 
         self._set_api_properties()
 
@@ -230,6 +230,60 @@ class Resource:
             return None
 
         return JPipelineParser.parse_pipeline_data(node_data)
+
+    def get_default_recognition_param(
+        self, reco_type: JRecognitionType
+    ) -> Optional[JRecognitionParam]:
+        """获取指定识别类型的默认参数 / Get default parameters for specified recognition type
+
+        Args:
+            reco_type: 识别类型 / Recognition type
+
+        Returns:
+            Optional[JRecognitionParam]: 默认参数对象，如果不存在则返回 None / Default parameter object, or None if not exists
+        """
+        string_buffer = StringBuffer()
+        if not Library.framework().MaaResourceGetDefaultRecognitionParam(
+            self._handle, reco_type.encode(), string_buffer._handle
+        ):
+            return None
+
+        data = string_buffer.get()
+        if not data:
+            return None
+
+        try:
+            param_data = json.loads(data)
+            return JPipelineParser._parse_recognition_param(reco_type, param_data)
+        except (json.JSONDecodeError, ValueError):
+            return None
+
+    def get_default_action_param(
+        self, action_type: JActionType
+    ) -> Optional[JActionParam]:
+        """获取指定动作类型的默认参数 / Get default parameters for specified action type
+
+        Args:
+            action_type: 动作类型 / Action type
+
+        Returns:
+            Optional[JActionParam]: 默认参数对象，如果不存在则返回 None / Default parameter object, or None if not exists
+        """
+        string_buffer = StringBuffer()
+        if not Library.framework().MaaResourceGetDefaultActionParam(
+            self._handle, action_type.encode(), string_buffer._handle
+        ):
+            return None
+
+        data = string_buffer.get()
+        if not data:
+            return None
+
+        try:
+            param_data = json.loads(data)
+            return JPipelineParser._parse_action_param(action_type, param_data)
+        except (json.JSONDecodeError, ValueError):
+            return None
 
     @property
     def loaded(self) -> bool:
@@ -736,6 +790,20 @@ class Resource:
         Library.framework().MaaResourceGetCustomActionList.argtypes = [
             MaaResourceHandle,
             MaaStringListBufferHandle,
+        ]
+
+        Library.framework().MaaResourceGetDefaultRecognitionParam.restype = MaaBool
+        Library.framework().MaaResourceGetDefaultRecognitionParam.argtypes = [
+            MaaResourceHandle,
+            ctypes.c_char_p,
+            MaaStringBufferHandle,
+        ]
+
+        Library.framework().MaaResourceGetDefaultActionParam.restype = MaaBool
+        Library.framework().MaaResourceGetDefaultActionParam.argtypes = [
+            MaaResourceHandle,
+            ctypes.c_char_p,
+            MaaStringBufferHandle,
         ]
 
         Library.framework().MaaResourceAddSink.restype = MaaSinkId

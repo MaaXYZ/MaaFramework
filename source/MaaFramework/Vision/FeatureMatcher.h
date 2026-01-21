@@ -28,7 +28,12 @@ class FeatureMatcher
     , public RecoResultAPI<FeatureMatcherResult>
 {
 public:
-    FeatureMatcher(cv::Mat image, cv::Rect roi, FeatureMatcherParam param, std::vector<cv::Mat> templates, std::string name = "");
+    FeatureMatcher(
+        cv::Mat image,
+        std::vector<cv::Rect> rois,
+        FeatureMatcherParam param,
+        std::vector<cv::Mat> templates,
+        std::string name = "");
 
 private:
     void analyze();

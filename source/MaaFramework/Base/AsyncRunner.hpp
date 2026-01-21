@@ -4,6 +4,7 @@
 #include <functional>
 #include <list>
 #include <mutex>
+#include <optional>
 #include <shared_mutex>
 #include <thread>
 
@@ -39,6 +40,8 @@ public:
     void wait(Id id) const;
     void wait_all() const;
     Status status(Id id) const;
+    std::optional<Item> get(Id id) const;
+    std::optional<Item> get_running() const;
 
     void clear();
     bool running() const;
@@ -49,9 +52,12 @@ private:
     ProcessFunc process_;
 
     std::list<std::pair<Id, Item>> queue_;
-    std::mutex queue_mutex_;
+    mutable std::mutex queue_mutex_;
     std::condition_variable queue_cond_;
     std::atomic_bool running_ = false;
+
+    Id running_id_ = 0;
+    Item running_item_ {};
 
     mutable std::shared_mutex status_mutex_;
     std::map<Id, Status> status_map_;
@@ -128,6 +134,9 @@ inline void AsyncRunner<Item>::working()
 
         auto [id, item] = std::move(queue_.front());
         queue_.pop_front();
+
+        running_id_ = id;
+        running_item_ = item;
         queue_lock.unlock();
 
         std::unique_lock status_lock(status_mutex_);
@@ -135,6 +144,12 @@ inline void AsyncRunner<Item>::working()
         status_lock.unlock();
 
         bool ret = process_(id, std::move(item));
+
+        {
+            std::unique_lock clear_lock(queue_mutex_);
+            running_id_ = 0;
+            running_item_ = {};
+        }
 
         status_lock.lock();
         status_map_[id] = ret ? Status::succeeded : Status::failed;
@@ -217,6 +232,36 @@ inline AsyncRunner<Item>::Status AsyncRunner<Item>::status(Id id) const
         return Status::invalid;
     }
     return iter->second;
+}
+
+template <typename Item>
+inline std::optional<Item> AsyncRunner<Item>::get(Id id) const
+{
+    std::unique_lock queue_lock(queue_mutex_);
+
+    if (running_id_ == id) {
+        return running_item_;
+    }
+
+    for (const auto& [item_id, item] : queue_) {
+        if (item_id == id) {
+            return item;
+        }
+    }
+
+    return std::nullopt;
+}
+
+template <typename Item>
+inline std::optional<Item> AsyncRunner<Item>::get_running() const
+{
+    std::unique_lock queue_lock(queue_mutex_);
+
+    if (running_id_ != 0) {
+        return running_item_;
+    }
+
+    return std::nullopt;
 }
 
 template <typename Item>

@@ -21,6 +21,7 @@ public:
 
 public:
     virtual bool connect() override;
+    virtual bool connected() const override;
 
     virtual bool request_uuid(std::string& uuid) override;
     virtual MaaControllerFeature get_features() const override;

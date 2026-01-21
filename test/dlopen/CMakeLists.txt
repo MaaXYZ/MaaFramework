@@ -24,12 +24,20 @@ if(WITH_WIN32_CONTROLLER)
     target_compile_definitions(DlopenTesting PRIVATE WITH_WIN32_CONTROLLER)
 endif()
 
+if(WITH_PLAYCOVER_CONTROLLER)
+    target_compile_definitions(DlopenTesting PRIVATE WITH_PLAYCOVER_CONTROLLER)
+endif()
+
 if(WITH_DBG_CONTROLLER)
     target_compile_definitions(DlopenTesting PRIVATE WITH_DBG_CONTROLLER)
 endif()
 
 if(WITH_CUSTOM_CONTROLLER)
     target_compile_definitions(DlopenTesting PRIVATE WITH_CUSTOM_CONTROLLER)
+endif()
+
+if(WITH_GAMEPAD_CONTROLLER)
+    target_compile_definitions(DlopenTesting PRIVATE WITH_GAMEPAD_CONTROLLER)
 endif()
 
 add_dependencies(DlopenTesting LibraryHolder)

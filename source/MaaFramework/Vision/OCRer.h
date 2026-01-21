@@ -45,7 +45,7 @@ class OCRer
 public:
     OCRer(
         cv::Mat image,
-        cv::Rect roi,
+        std::vector<cv::Rect> rois,
         OCRerParam param,
         std::shared_ptr<fastdeploy::vision::ocr::DBDetector> deter,
         std::shared_ptr<fastdeploy::vision::ocr::Recognizer> recer,

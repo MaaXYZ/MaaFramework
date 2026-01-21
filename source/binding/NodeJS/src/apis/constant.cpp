@@ -90,52 +90,67 @@ static maajs::ValueType load_dbg_controller_type(maajs::EnvType env)
     return obj;
 }
 
-#define DS(key) obj[#key] = maajs::StringType::New(env, #key)
-
-static maajs::ValueType load_recognition_type(maajs::EnvType env)
+static maajs::ValueType load_gamepad_type(maajs::EnvType env)
 {
     auto obj = maajs::ObjectType::New(env);
 
-    DS(DirectHit);
-    DS(TemplateMatch);
-    DS(FeatureMatch);
-    DS(ColorMatch);
-    DS(OCR);
-    DS(NeuralNetworkClassify);
-    DS(NeuralNetworkDetect);
-    DS(Custom);
+    DEM(MaaGamepadType, Xbox360);
+    DEM(MaaGamepadType, DualShock4);
 
     return obj;
 }
 
-static maajs::ValueType load_action_type(maajs::EnvType env)
+static maajs::ValueType load_gamepad_button(maajs::EnvType env)
 {
     auto obj = maajs::ObjectType::New(env);
 
-    DS(DoNothing);
-    DS(Click);
-    DS(LongPress);
-    DS(Swipe);
-    DS(MultiSwipe);
-    DS(TouchDown);
-    DS(TouchMove);
-    DS(TouchUp);
-    DS(ClickKey);
-    DS(LongPressKey);
-    DS(KeyDown);
-    DS(KeyUp);
-    DS(InputText);
-    DS(StartApp);
-    DS(StopApp);
-    DS(StopTask);
-    DS(Scroll);
-    DS(Command);
-    DS(Custom);
+    // Xbox 360 buttons
+    DEM(MaaGamepadButton, DPAD_UP);
+    DEM(MaaGamepadButton, DPAD_DOWN);
+    DEM(MaaGamepadButton, DPAD_LEFT);
+    DEM(MaaGamepadButton, DPAD_RIGHT);
+    DEM(MaaGamepadButton, START);
+    DEM(MaaGamepadButton, BACK);
+    DEM(MaaGamepadButton, LEFT_THUMB);
+    DEM(MaaGamepadButton, RIGHT_THUMB);
+    DEM(MaaGamepadButton, LB);
+    DEM(MaaGamepadButton, RB);
+    DEM(MaaGamepadButton, GUIDE);
+    DEM(MaaGamepadButton, A);
+    DEM(MaaGamepadButton, B);
+    DEM(MaaGamepadButton, X);
+    DEM(MaaGamepadButton, Y);
+
+    // DS4 face buttons (aliases, same values as Xbox)
+    DEM(MaaGamepadButton, CROSS);
+    DEM(MaaGamepadButton, CIRCLE);
+    DEM(MaaGamepadButton, SQUARE);
+    DEM(MaaGamepadButton, TRIANGLE);
+    DEM(MaaGamepadButton, L1);
+    DEM(MaaGamepadButton, R1);
+    DEM(MaaGamepadButton, L3);
+    DEM(MaaGamepadButton, R3);
+    DEM(MaaGamepadButton, OPTIONS);
+    DEM(MaaGamepadButton, SHARE);
+
+    // DS4 special buttons
+    DEM(MaaGamepadButton, PS);
+    DEM(MaaGamepadButton, TOUCHPAD);
 
     return obj;
 }
 
-#undef DS
+static maajs::ValueType load_gamepad_contact(maajs::EnvType env)
+{
+    auto obj = maajs::ObjectType::New(env);
+
+    DEM(MaaGamepadTouch, LeftStick);
+    DEM(MaaGamepadTouch, RightStick);
+    DEM(MaaGamepadTouch, LeftTrigger);
+    DEM(MaaGamepadTouch, RightTrigger);
+
+    return obj;
+}
 
 std::map<std::string, maajs::ValueType> load_constant(maajs::EnvType env)
 {
@@ -146,7 +161,8 @@ std::map<std::string, maajs::ValueType> load_constant(maajs::EnvType env)
         { "Win32ScreencapMethod", load_win32_screencap_method(env) },
         { "Win32InputMethod", load_win32_input_method(env) },
         { "DbgControllerType", load_dbg_controller_type(env) },
-        { "RecognitionType", load_recognition_type(env) },
-        { "ActionType", load_action_type(env) },
+        { "GamepadType", load_gamepad_type(env) },
+        { "GamepadButton", load_gamepad_button(env) },
+        { "GamepadContact", load_gamepad_contact(env) },
     };
 }

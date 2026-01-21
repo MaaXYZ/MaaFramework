@@ -332,6 +332,89 @@ class MaaWin32InputMethodEnum(IntEnum):
 # No bitwise OR, just set it
 MaaDbgControllerType = ctypes.c_uint64
 
+# No bitwise OR, just set it
+MaaGamepadType = ctypes.c_uint64
+
+
+class MaaGamepadTypeEnum(IntEnum):
+    """
+    Virtual gamepad type for GamepadController (Windows only).
+
+    No bitwise OR, select ONE type only.
+
+    Requires ViGEm Bus Driver to be installed.
+
+    | Type        | Description                           |
+    |-------------|---------------------------------------|
+    | Xbox360     | Microsoft Xbox 360 Controller (wired) |
+    | DualShock4  | Sony DualShock 4 Controller (wired)   |
+    """
+
+    Xbox360 = 0
+    DualShock4 = 1
+
+
+class MaaGamepadButtonEnum(IntEnum):
+    """
+    Gamepad button flags (XUSB protocol values).
+
+    Use bitwise OR to combine multiple buttons.
+    DS4 face buttons are aliases to Xbox face buttons.
+    """
+
+    # D-pad
+    DPAD_UP = 0x0001
+    DPAD_DOWN = 0x0002
+    DPAD_LEFT = 0x0004
+    DPAD_RIGHT = 0x0008
+
+    # Control buttons
+    START = 0x0010
+    BACK = 0x0020
+    LEFT_THUMB = 0x0040  # L3
+    RIGHT_THUMB = 0x0080  # R3
+
+    # Shoulder buttons
+    LB = 0x0100  # Left Bumper / L1
+    RB = 0x0200  # Right Bumper / R1
+
+    # Guide button
+    GUIDE = 0x0400
+
+    # Face buttons (Xbox layout)
+    A = 0x1000
+    B = 0x2000
+    X = 0x4000
+    Y = 0x8000
+
+    # DS4 face buttons (aliases to Xbox buttons)
+    CROSS = A
+    CIRCLE = B
+    SQUARE = X
+    TRIANGLE = Y
+    L1 = LB
+    R1 = RB
+    L3 = LEFT_THUMB
+    R3 = RIGHT_THUMB
+    OPTIONS = START
+    SHARE = BACK
+
+    # DS4 special buttons (unique values)
+    PS = 0x10000
+    TOUCHPAD = 0x20000
+
+
+class MaaGamepadContactEnum(IntEnum):
+    """
+    Gamepad contact (analog stick or trigger) mapping for touch_down/touch_move/touch_up.
+    """
+
+    LEFT_STICK = 0  # x: -32768~32767, y: -32768~32767
+    RIGHT_STICK = 1  # x: -32768~32767, y: -32768~32767
+    LEFT_TRIGGER = 2  # pressure: 0~255
+    RIGHT_TRIGGER = 3  # pressure: 0~255
+
+
 MaaControllerFeature = ctypes.c_uint64
 
 
@@ -393,6 +476,10 @@ MaaAgentClientHandle = ctypes.c_void_p
 
 class MaaCustomControllerCallbacks(ctypes.Structure):
     ConnectFunc = FUNCTYPE(
+        MaaBool,
+        ctypes.c_void_p,
+    )
+    ConnectedFunc = FUNCTYPE(
         MaaBool,
         ctypes.c_void_p,
     )
@@ -484,6 +571,7 @@ class MaaCustomControllerCallbacks(ctypes.Structure):
     )
     _fields_ = [
         ("connect", ConnectFunc),
+        ("connected", ConnectedFunc),
         ("request_uuid", RequestUuidFunc),
         ("get_features", GetFeaturesFunc),
         ("start_app", StartAppFunc),
@@ -633,6 +721,8 @@ class AlgorithmEnum(StrEnum):
     OCR = "OCR"
     NeuralNetworkClassify = "NeuralNetworkClassify"
     NeuralNetworkDetect = "NeuralNetworkDetect"
+    And = "And"
+    Or = "Or"
     Custom = "Custom"
 
 
@@ -647,6 +737,12 @@ class ActionEnum(StrEnum):
     InputText = "InputText"
     StartApp = "StartApp"
     StopApp = "StopApp"
+    Scroll = "Scroll"
+    TouchDown = "TouchDown"
+    TouchMove = "TouchMove"
+    TouchUp = "TouchUp"
+    KeyDown = "KeyDown"
+    KeyUp = "KeyUp"
     StopTask = "StopTask"
     Command = "Command"
     Shell = "Shell"
@@ -695,6 +791,20 @@ class CustomRecognitionResult:
     detail: Union[str, Dict]
 
 
+@dataclass
+class AndRecognitionResult:
+    """And 算法识别结果，包含所有子识别的完整详情"""
+
+    sub_results: List["RecognitionDetail"]
+
+
+@dataclass
+class OrRecognitionResult:
+    """Or 算法识别结果，包含已执行子识别的完整详情"""
+
+    sub_results: List["RecognitionDetail"]
+
+
 RecognitionResult = Union[
     TemplateMatchResult,
     FeatureMatchResult,
@@ -702,6 +812,8 @@ RecognitionResult = Union[
     OCRResult,
     NeuralNetworkClassifyResult,
     NeuralNetworkDetectResult,
+    AndRecognitionResult,
+    OrRecognitionResult,
     CustomRecognitionResult,
 ]
 
@@ -713,6 +825,8 @@ AlgorithmResultDict = {
     AlgorithmEnum.OCR: OCRResult,
     AlgorithmEnum.NeuralNetworkClassify: NeuralNetworkClassifyResult,
     AlgorithmEnum.NeuralNetworkDetect: NeuralNetworkDetectResult,
+    AlgorithmEnum.And: AndRecognitionResult,
+    AlgorithmEnum.Or: OrRecognitionResult,
     AlgorithmEnum.Custom: CustomRecognitionResult,
 }
 
@@ -721,7 +835,7 @@ AlgorithmResultDict = {
 class RecognitionDetail:
     reco_id: int
     name: str
-    algorithm: AlgorithmEnum
+    algorithm: Union[AlgorithmEnum, str]
     hit: bool
     box: Optional[Rect]
 
@@ -737,12 +851,14 @@ class RecognitionDetail:
 @dataclass
 class ClickActionResult:
     point: Point
+    contact: int
 
 
 @dataclass
 class LongPressActionResult:
     point: Point
     duration: int
+    contact: int
 
 
 @dataclass
@@ -753,6 +869,7 @@ class SwipeActionResult:
     duration: List[int]
     only_hover: bool
     starting: int
+    contact: int
 
 
 @dataclass
@@ -781,6 +898,27 @@ class AppActionResult:
     package: str
 
 
+@dataclass
+class ScrollActionResult:
+    dx: int
+    dy: int
+
+
+@dataclass
+class TouchActionResult:
+    contact: int
+    point: Point
+    pressure: int
+
+
+@dataclass
+class ShellActionResult:
+    cmd: str
+    timeout: int
+    success: bool
+    output: str
+
+
 ActionResult = Union[
     ClickActionResult,
     LongPressActionResult,
@@ -790,6 +928,9 @@ ActionResult = Union[
     LongPressKeyActionResult,
     InputTextActionResult,
     AppActionResult,
+    ScrollActionResult,
+    TouchActionResult,
+    ShellActionResult,
     None,
 ]
 
@@ -804,9 +945,15 @@ ActionResultDict = {
     ActionEnum.InputText: InputTextActionResult,
     ActionEnum.StartApp: AppActionResult,
     ActionEnum.StopApp: AppActionResult,
+    ActionEnum.Scroll: ScrollActionResult,
+    ActionEnum.TouchDown: TouchActionResult,
+    ActionEnum.TouchMove: TouchActionResult,
+    ActionEnum.TouchUp: TouchActionResult,
+    ActionEnum.KeyDown: ClickKeyActionResult,
+    ActionEnum.KeyUp: ClickKeyActionResult,
     ActionEnum.StopTask: None,
     ActionEnum.Command: None,
-    ActionEnum.Shell: None,
+    ActionEnum.Shell: ShellActionResult,
     ActionEnum.Custom: None,
 }
 
@@ -815,7 +962,7 @@ ActionResultDict = {
 class ActionDetail:
     action_id: int
     name: str
-    action: ActionEnum
+    action: Union[ActionEnum, str]
     box: Rect
     success: bool
     result: Optional[ActionResult]
@@ -826,8 +973,8 @@ class ActionDetail:
 class NodeDetail:
     node_id: int
     name: str
-    recognition: RecognitionDetail
-    action: ActionDetail
+    recognition: Optional[RecognitionDetail]
+    action: Optional[ActionDetail]
     completed: bool
 
 

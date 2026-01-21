@@ -191,7 +191,6 @@
                         }
                     },
                     "required": [
-                        "type",
                         "cases"
                     ],
                     "additionalProperties": false
@@ -236,7 +235,6 @@
                         }
                     },
                     "required": [
-                        "type",
                         "cases"
                     ],
                     "additionalProperties": false
@@ -273,7 +271,8 @@
                     "enum": [
                         "Adb",
                         "Win32",
-                        "PlayCover"
+                        "PlayCover",
+                        "Gamepad"
                     ]
                 },
                 "display_short_side": {
@@ -291,6 +290,12 @@
                     "type": "boolean",
                     "title": "使用原始分辨率",
                     "description": "是否使用原始分辨率进行截图，不进行缩放。与缩放分辨率设置互斥",
+                    "default": false
+                },
+                "permission_required": {
+                    "type": "boolean",
+                    "title": "需要管理员权限",
+                    "description": "该控制器是否需要以管理员权限运行（例如某些 Win32 输入方式需要更高权限）。不设置则默认为 false",
                     "default": false
                 },
                 "adb": {
@@ -363,17 +368,55 @@
                     "title": "PlayCover 控制器配置",
                     "description": "PlayCover 控制器的具体配置（仅 macOS）",
                     "properties": {
-                        "address": {
-                            "type": "string",
-                            "title": "默认服务地址",
-                            "description": "PlayTools 服务的默认地址，格式为 host:port",
-                            "examples": ["127.0.0.1:1717"]
-                        },
                         "uuid": {
                             "type": "string",
-                            "title": "默认 Bundle Identifier",
-                            "description": "应用的默认 Bundle Identifier",
-                            "examples": ["com.hypergryph.arknights"]
+                            "title": "Bundle Identifier",
+                            "description": "可选。目标应用的 Bundle Identifier，不提供则使用默认 maa.playcover，仅作为控制器标识符，与被操控应用无关",
+                            "examples": [
+                                "com.hypergryph.arknights"
+                            ]
+                        }
+                    },
+                    "additionalProperties": false
+                },
+                "gamepad": {
+                    "type": "object",
+                    "title": "Gamepad 控制器配置",
+                    "description": "虚拟游戏手柄控制器的具体配置（仅 Windows）。需要安装 ViGEm Bus Driver",
+                    "properties": {
+                        "class_regex": {
+                            "type": "string",
+                            "title": "窗口类名正则",
+                            "description": "可选。搜索窗口类名使用的正则表达式，用于截图功能"
+                        },
+                        "window_regex": {
+                            "type": "string",
+                            "title": "窗口标题正则",
+                            "description": "可选。搜索窗口标题使用的正则表达式，用于截图功能"
+                        },
+                        "gamepad_type": {
+                            "type": "string",
+                            "title": "手柄类型",
+                            "description": "可选。虚拟手柄类型，不提供则默认使用 Xbox360",
+                            "enum": [
+                                "Xbox360",
+                                "DualShock4",
+                                "DS4"
+                            ],
+                            "default": "Xbox360"
+                        },
+                        "screencap": {
+                            "type": "string",
+                            "title": "截图方式",
+                            "description": "可选。截图方式，不提供则使用默认。仅当配置了窗口正则时有效",
+                            "enum": [
+                                "GDI",
+                                "FramePool",
+                                "DXGI_DesktopDup",
+                                "DXGI_DesktopDup_Window",
+                                "PrintWindow",
+                                "ScreenDC"
+                            ]
                         }
                     },
                     "additionalProperties": false
@@ -421,6 +464,14 @@
                     "type": "array",
                     "title": "支持的控制器",
                     "description": "指定该资源包支持的控制器类型列表。数组元素应与 controller 配置中的 name 字段对应。若不指定，则表示支持所有控制器类型",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "option": {
+                    "type": "array",
+                    "title": "全局选项配置",
+                    "description": "可选。资源包的全局选项配置，为一个字符串数组，数组元素应与外层 option 配置中的键名对应。该选项生成的参数会参与到所有任务的 pipeline override 中",
                     "items": {
                         "type": "string"
                     }
@@ -486,6 +537,14 @@
                     "type": "array",
                     "title": "支持的资源包",
                     "description": "指定该任务支持的资源包列表。数组元素应与 resource 配置中的 name 字段对应。若不指定，则表示该任务在所有资源包中都可用",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "controller": {
+                    "type": "array",
+                    "title": "支持的控制器",
+                    "description": "指定该任务支持的控制器类型列表。数组元素应与 controller 配置中的 name 字段对应。若不指定，则表示该任务在所有控制器类型中都可用",
                     "items": {
                         "type": "string"
                     }

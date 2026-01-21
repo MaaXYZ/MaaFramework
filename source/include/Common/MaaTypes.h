@@ -64,6 +64,9 @@ public:
     virtual std::vector<std::string> get_node_list() const = 0;
     virtual std::vector<std::string> get_custom_recognition_list() const = 0;
     virtual std::vector<std::string> get_custom_action_list() const = 0;
+
+    virtual std::optional<json::object> get_default_recognition_param(const std::string& reco_type) const = 0;
+    virtual std::optional<json::object> get_default_action_param(const std::string& action_type) const = 0;
 };
 
 struct MaaController : public IMaaEventDispatcher
@@ -74,8 +77,8 @@ public:
     virtual bool set_option(MaaCtrlOption key, MaaOptionValue value, MaaOptionValueSize val_size) = 0;
 
     virtual MaaCtrlId post_connection() = 0;
-    virtual MaaCtrlId post_click(int x, int y) = 0;
-    virtual MaaCtrlId post_swipe(int x1, int y1, int x2, int y2, int duration) = 0;
+    virtual MaaCtrlId post_click(int x, int y, int contact, int pressure) = 0;
+    virtual MaaCtrlId post_swipe(int x1, int y1, int x2, int y2, int duration, int contact, int pressure) = 0;
     virtual MaaCtrlId post_click_key(int keycode) = 0;
     virtual MaaCtrlId post_input_text(const std::string& text) = 0;
     virtual MaaCtrlId post_start_app(const std::string& intent) = 0;
@@ -101,6 +104,8 @@ public:
     virtual cv::Mat cached_image() const = 0;
     virtual std::string cached_shell_output() const = 0;
     virtual std::string get_uuid() = 0;
+
+    virtual bool get_resolution(int32_t& width, int32_t& height) const = 0;
 };
 
 struct MaaTasker : public IMaaEventDispatcher
@@ -121,6 +126,8 @@ public:
         const json::value& action_param,
         const cv::Rect& box,
         const std::string& reco_detail) = 0;
+
+    virtual bool override_pipeline(MaaTaskId task_id, const json::value& pipeline_override) = 0;
 
     virtual MaaStatus status(MaaTaskId task_id) const = 0;
     virtual MaaStatus wait(MaaTaskId task_id) const = 0;
@@ -154,6 +161,13 @@ public:
     virtual MaaActId
         run_action(const std::string& entry, const json::value& pipeline_override, const cv::Rect& box, const std::string& reco_detail) = 0;
 
+    virtual MaaRecoId run_recognition_direct(const std::string& reco_type, const json::value& reco_param, const cv::Mat& image) = 0;
+    virtual MaaActId run_action_direct(
+        const std::string& action_type,
+        const json::value& action_param,
+        const cv::Rect& box,
+        const std::string& reco_detail) = 0;
+
     virtual MaaContext* clone() const = 0;
 
     virtual MaaTaskId task_id() const = 0;
@@ -161,7 +175,7 @@ public:
 
     virtual void set_anchor(const std::string& anchor_name, const std::string& node_name) = 0;
     virtual std::optional<std::string> get_anchor(const std::string& anchor_name) const = 0;
-    virtual uint get_hit_count(const std::string& node_name) const = 0;
+    virtual size_t get_hit_count(const std::string& node_name) const = 0;
     virtual void clear_hit_count(const std::string& node_name) = 0;
 };
 

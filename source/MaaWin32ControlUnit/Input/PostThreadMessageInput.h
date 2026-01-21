@@ -35,7 +35,7 @@ public: // from InputBase
     virtual bool scroll(int dx, int dy) override;
 
 private:
-    void ensure_foreground();
+    void send_activate();
     // 获取 last_pos_，若未设置则返回窗口客户区中心坐标
     std::pair<int, int> get_target_pos() const;
 

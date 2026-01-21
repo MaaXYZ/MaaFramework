@@ -1,4 +1,5 @@
 import ctypes
+import dataclasses
 import json
 from dataclasses import dataclass
 from typing import Any, Dict, Optional, Tuple
@@ -10,8 +11,16 @@ from .buffer import ImageBuffer, RectBuffer, StringBuffer, StringListBuffer
 from .define import *
 from .library import Library
 from .tasker import Tasker
-from .pipeline import JPipelineData, JPipelineParser, JNodeAttr
-from .job import JobWithResult
+from .job import TaskJob
+from .pipeline import (
+    JPipelineData,
+    JPipelineParser,
+    JNodeAttr,
+    JRecognitionType,
+    JActionType,
+    JRecognitionParam,
+    JActionParam,
+)
 
 
 class Context:
@@ -133,6 +142,87 @@ class Context:
 
         return self.tasker.get_action_detail(act_id)
 
+    def run_recognition_direct(
+        self,
+        reco_type: JRecognitionType,
+        reco_param: JRecognitionParam,
+        image: numpy.ndarray,
+    ) -> Optional[RecognitionDetail]:
+        """同步执行识别 / Synchronously execute recognition
+
+        直接使用识别类型和参数执行，无需通过 pipeline entry。
+        Execute directly with recognition type and parameters, without requiring a pipeline entry.
+
+        Args:
+            reco_type: 识别类型 / Recognition type
+            reco_param: 识别参数 / Recognition parameters
+            image: 前序截图 / Previous screenshot
+
+        Returns:
+            Optional[RecognitionDetail]: 识别结果。无论是否命中，只要尝试进行了识别，就会返回；
+            请通过 RecognitionDetail.hit 判断是否命中。只在未能启动识别流程时才可能返回 None。
+            Recognition detail. It always returns as long as recognition was attempted;
+            use RecognitionDetail.hit to determine hit. Only return None if the recognition process fails to start.
+        """
+        img_buffer = ImageBuffer()
+        img_buffer.set(image)
+        reco_param_json = json.dumps(dataclasses.asdict(reco_param), ensure_ascii=False)
+        reco_id = int(
+            Library.framework().MaaContextRunRecognitionDirect(
+                self._handle,
+                reco_type.encode(),
+                reco_param_json.encode(),
+                img_buffer._handle,
+            )
+        )
+        if not reco_id:
+            return None
+
+        return self.tasker.get_recognition_detail(reco_id)
+
+    def run_action_direct(
+        self,
+        action_type: JActionType,
+        action_param: JActionParam,
+        box: RectType = (0, 0, 0, 0),
+        reco_detail: str = "",
+    ) -> Optional[ActionDetail]:
+        """同步执行操作 / Synchronously execute action
+
+        直接使用操作类型和参数执行，无需通过 pipeline entry。
+        Execute directly with action type and parameters, without requiring a pipeline entry.
+
+        Args:
+            action_type: 操作类型 / Action type
+            action_param: 操作参数 / Action parameters
+            box: 前序识别位置 / Previous recognition position
+            reco_detail: 前序识别详情 / Previous recognition details
+
+        Returns:
+            Optional[ActionDetail]: 操作结果。无论动作是否成功，只要尝试执行了动作，就会返回；
+            请通过 ActionDetail.success 判断是否执行成功。只在未能启动动作流程时才可能返回 None。
+            Action detail. It always returns as long as the action was attempted;
+            use ActionDetail.success to determine success. Only return None if the action flow fails to start.
+        """
+        rect_buffer = RectBuffer()
+        rect_buffer.set(box)
+        action_param_json = json.dumps(
+            dataclasses.asdict(action_param), ensure_ascii=False
+        )
+        act_id = int(
+            Library.framework().MaaContextRunActionDirect(
+                self._handle,
+                action_type.encode(),
+                action_param_json.encode(),
+                rect_buffer._handle,
+                reco_detail.encode(),
+            )
+        )
+        if not act_id:
+            return None
+
+        return self.tasker.get_action_detail(act_id)
+
     def override_pipeline(self, pipeline_override: Dict) -> bool:
         """覆盖 pipeline / Override pipeline_override
 
@@ -241,11 +331,11 @@ class Context:
         """
         return self._tasker
 
-    def get_task_job(self) -> JobWithResult:
+    def get_task_job(self) -> TaskJob:
         """获取对应任务号的任务作业 / Get task job for corresponding task id
 
         Returns:
-            JobWithResult: 任务作业对象 / Task job object
+            TaskJob: 任务作业对象 / Task job object
 
         Raises:
             ValueError: 如果任务 id 为 None
@@ -383,6 +473,23 @@ class Context:
             ctypes.c_char_p,
             MaaRectHandle,
             MaaStringBufferHandle,
+        ]
+
+        Library.framework().MaaContextRunRecognitionDirect.restype = MaaRecoId
+        Library.framework().MaaContextRunRecognitionDirect.argtypes = [
+            MaaContextHandle,
+            ctypes.c_char_p,
+            ctypes.c_char_p,
+            MaaImageBufferHandle,
+        ]
+
+        Library.framework().MaaContextRunActionDirect.restype = MaaActId
+        Library.framework().MaaContextRunActionDirect.argtypes = [
+            MaaContextHandle,
+            ctypes.c_char_p,
+            ctypes.c_char_p,
+            MaaRectHandle,
+            ctypes.c_char_p,
         ]
 
         Library.framework().MaaContextOverridePipeline.restype = MaaBool

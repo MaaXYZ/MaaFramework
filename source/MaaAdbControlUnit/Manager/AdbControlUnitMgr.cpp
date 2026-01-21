@@ -1,6 +1,7 @@
 #include "AdbControlUnitMgr.h"
 
 #include <meojson/json.hpp>
+#include <thread>
 
 #include "MaaFramework/MaaMsg.h"
 #include "MaaUtils/Logger.h"
@@ -83,6 +84,11 @@ bool AdbControlUnitMgr::connect()
     return true;
 }
 
+bool AdbControlUnitMgr::connected() const
+{
+    return connection_.is_alive();
+}
+
 bool AdbControlUnitMgr::request_uuid(std::string& uuid)
 {
     auto opt = device_info_.request_uuid();
@@ -122,10 +128,25 @@ bool AdbControlUnitMgr::stop_app(const std::string& intent)
 
 bool AdbControlUnitMgr::screencap(cv::Mat& image)
 {
+    using namespace std::chrono_literals;
+
     constexpr int kMaxReconnectTimes = 3;
     constexpr int kMaxRescreencapTimes = 10;
+    constexpr auto kRescreencapDelay = 500ms;
+    constexpr auto kReconnectDelay = 5000ms;
 
     for (int i = 0; i < kMaxReconnectTimes; ++i) {
+        // 先检查连接状态，断开则直接重连，避免无谓的截图失败重试
+        if (!connection_.is_alive()) {
+            LogWarn << "connection lost, re-connect";
+            connection_.kill_server();
+            if (!connect()) {
+                LogError << "re-connect failed" << VAR(i);
+                std::this_thread::sleep_for(i * kReconnectDelay);
+                continue;
+            }
+        }
+
         for (int j = 0; j < kMaxRescreencapTimes; ++j) {
             if (_screencap(image)) {
                 screencap_available_ = true;
@@ -136,12 +157,16 @@ bool AdbControlUnitMgr::screencap(cv::Mat& image)
                 // first time
                 return false;
             }
-            LogWarn << "re-screencap";
+            LogWarn << "re-screencap" << VAR(j);
+            std::this_thread::sleep_for(j * kRescreencapDelay);
         }
 
-        LogWarn << "re-connect";
+        LogWarn << "screencap failed after retries, force re-connect" << VAR(i);
         connection_.kill_server();
-        connect();
+        if (!connect()) {
+            LogError << "re-connect failed" << VAR(i);
+            std::this_thread::sleep_for(i * kReconnectDelay);
+        }
     }
 
     return false;

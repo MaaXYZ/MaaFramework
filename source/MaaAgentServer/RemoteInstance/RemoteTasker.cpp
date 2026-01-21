@@ -204,6 +204,22 @@ void RemoteTasker::clear_cache()
     server_.send_and_recv<TaskerClearCacheReverseResponse>(req);
 }
 
+bool RemoteTasker::override_pipeline(MaaTaskId task_id, const json::value& pipeline_override)
+{
+    TaskerOverridePipelineReverseRequest req {
+        .tasker_id = tasker_id_,
+        .task_id = task_id,
+        .pipeline_override = pipeline_override,
+    };
+
+    auto resp_opt = server_.send_and_recv<TaskerOverridePipelineReverseResponse>(req);
+    if (!resp_opt) {
+        return false;
+    }
+
+    return resp_opt->ret;
+}
+
 std::optional<MAA_TASK_NS::TaskDetail> RemoteTasker::get_task_detail(MaaTaskId task_id) const
 {
     TaskerGetTaskDetailReverseRequest req {

@@ -250,7 +250,7 @@ bool ResourceMgr::clear()
 
 bool ResourceMgr::override_pipeline(const json::value& pipeline_override)
 {
-    LogFunc << VAR(pipeline_override);
+    LogInfo << VAR(pipeline_override);
 
     std::set<std::string> existing_keys;
     return pipeline_res_.parse_and_override(pipeline_override, existing_keys, default_pipeline_);
@@ -258,7 +258,7 @@ bool ResourceMgr::override_pipeline(const json::value& pipeline_override)
 
 bool ResourceMgr::override_next(const std::string& node_name, const std::vector<std::string>& next)
 {
-    LogFunc << VAR(node_name) << VAR(next);
+    LogInfo << VAR(node_name) << VAR(next);
 
     if (!PipelineParser::parse_next(next, pipeline_res_.get_pipeline_data_map()[node_name].next)) {
         LogError << "failed to parse_next" << VAR(next);
@@ -270,6 +270,8 @@ bool ResourceMgr::override_next(const std::string& node_name, const std::vector<
 
 bool ResourceMgr::override_image(const std::string& image_name, const cv::Mat& image)
 {
+    LogInfo << VAR(image_name) << VAR(image);
+
     template_res_.set_image(image_name, image);
     return true;
 }
@@ -748,6 +750,136 @@ bool ResourceMgr::check_stop()
 
     need_to_stop_ = false;
     return true;
+}
+
+std::optional<json::object> ResourceMgr::get_default_recognition_param(const std::string& reco_type) const
+{
+    using namespace MAA_RES_NS::Recognition;
+
+    auto type_iter = kTypeMap.find(reco_type);
+    if (type_iter == kTypeMap.end()) {
+        LogError << "recognition type not found" << VAR(reco_type);
+        return std::nullopt;
+    }
+
+    Type type = type_iter->second;
+    Param param;
+
+    switch (type) {
+    case Type::DirectHit:
+        param = default_pipeline_.get_recognition_param<MAA_VISION_NS::DirectHitParam>(type);
+        break;
+    case Type::TemplateMatch:
+        param = default_pipeline_.get_recognition_param<MAA_VISION_NS::TemplateMatcherParam>(type);
+        break;
+    case Type::FeatureMatch:
+        param = default_pipeline_.get_recognition_param<MAA_VISION_NS::FeatureMatcherParam>(type);
+        break;
+    case Type::ColorMatch:
+        param = default_pipeline_.get_recognition_param<MAA_VISION_NS::ColorMatcherParam>(type);
+        break;
+    case Type::OCR:
+        param = default_pipeline_.get_recognition_param<MAA_VISION_NS::OCRerParam>(type);
+        break;
+    case Type::NeuralNetworkClassify:
+        param = default_pipeline_.get_recognition_param<MAA_VISION_NS::NeuralNetworkClassifierParam>(type);
+        break;
+    case Type::NeuralNetworkDetect:
+        param = default_pipeline_.get_recognition_param<MAA_VISION_NS::NeuralNetworkDetectorParam>(type);
+        break;
+    case Type::And:
+        param = default_pipeline_.get_recognition_param<std::shared_ptr<AndParam>>(type);
+        break;
+    case Type::Or:
+        param = default_pipeline_.get_recognition_param<std::shared_ptr<OrParam>>(type);
+        break;
+    case Type::Custom:
+        param = default_pipeline_.get_recognition_param<MAA_VISION_NS::CustomRecognitionParam>(type);
+        break;
+    default:
+        LogError << "invalid recognition type" << VAR(reco_type) << VAR(static_cast<int>(type));
+        return std::nullopt;
+    }
+
+    auto reco = PipelineDumper::dump_reco(type, param);
+    return reco.to_json().as_object().at("param").as_object();
+}
+
+std::optional<json::object> ResourceMgr::get_default_action_param(const std::string& action_type) const
+{
+    using namespace MAA_RES_NS::Action;
+
+    auto type_iter = kTypeMap.find(action_type);
+    if (type_iter == kTypeMap.end()) {
+        LogError << "action type not found" << VAR(action_type);
+        return std::nullopt;
+    }
+
+    Type type = type_iter->second;
+    Param param;
+
+    switch (type) {
+    case Type::DoNothing:
+        param = std::monostate {};
+        break;
+    case Type::Click:
+        param = default_pipeline_.get_action_param<ClickParam>(type);
+        break;
+    case Type::LongPress:
+        param = default_pipeline_.get_action_param<LongPressParam>(type);
+        break;
+    case Type::Swipe:
+        param = default_pipeline_.get_action_param<SwipeParam>(type);
+        break;
+    case Type::MultiSwipe:
+        param = default_pipeline_.get_action_param<MultiSwipeParam>(type);
+        break;
+    case Type::TouchDown:
+    case Type::TouchMove:
+        param = default_pipeline_.get_action_param<TouchParam>(type);
+        break;
+    case Type::TouchUp:
+        param = default_pipeline_.get_action_param<TouchUpParam>(type);
+        break;
+    case Type::ClickKey:
+        param = default_pipeline_.get_action_param<ClickKeyParam>(type);
+        break;
+    case Type::LongPressKey:
+        param = default_pipeline_.get_action_param<LongPressKeyParam>(type);
+        break;
+    case Type::KeyDown:
+    case Type::KeyUp:
+        param = default_pipeline_.get_action_param<KeyParam>(type);
+        break;
+    case Type::InputText:
+        param = default_pipeline_.get_action_param<InputTextParam>(type);
+        break;
+    case Type::StartApp:
+    case Type::StopApp:
+        param = default_pipeline_.get_action_param<AppParam>(type);
+        break;
+    case Type::Scroll:
+        param = default_pipeline_.get_action_param<ScrollParam>(type);
+        break;
+    case Type::StopTask:
+        param = std::monostate {};
+        break;
+    case Type::Command:
+        param = default_pipeline_.get_action_param<CommandParam>(type);
+        break;
+    case Type::Shell:
+        param = default_pipeline_.get_action_param<ShellParam>(type);
+        break;
+    case Type::Custom:
+        param = default_pipeline_.get_action_param<CustomParam>(type);
+        break;
+    default:
+        LogError << "invalid action type" << VAR(action_type) << VAR(static_cast<int>(type));
+        return std::nullopt;
+    }
+
+    auto act = PipelineDumper::dump_act(type, param);
+    return act.to_json().as_object().at("param").as_object();
 }
 
 MAA_RES_NS_END
