@@ -536,7 +536,8 @@ void Actuator::wait_freezes(const MAA_RES_NS::WaitFreezesParam& param, const cv:
         LogDebug << "sleep_until" << VAR(rate_limit);
         std::this_thread::sleep_until(screencap_clock + rate_limit);
 
-        if (duration_since(start_clock) > param.timeout) {
+        // timeout < 0 表示无限等待，跳过超时检查
+        if (param.timeout >= std::chrono::milliseconds(0) && duration_since(start_clock) > param.timeout) {
             LogWarn << "Wait freezes timeout" << VAR(duration_since(start_clock)) << VAR(param.timeout);
             break;
         }

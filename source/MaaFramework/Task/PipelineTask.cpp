@@ -165,7 +165,8 @@ NodeDetail PipelineTask::run_next(const std::vector<MAA_RES_NS::NodeAttr>& next,
         }
 
         if (!reco.box) {
-            if (duration_since(start_clock) > pretask.reco_timeout) {
+            // reco_timeout < 0 表示无限等待，跳过超时检查
+            if (pretask.reco_timeout >= std::chrono::milliseconds(0) && duration_since(start_clock) > pretask.reco_timeout) {
                 LogWarn << "Task timeout" << VAR(pretask.name) << VAR(duration_since(start_clock)) << VAR(pretask.reco_timeout);
                 break;
             }

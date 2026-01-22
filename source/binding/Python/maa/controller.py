@@ -299,7 +299,7 @@ class Controller:
 
         Args:
             cmd: shell 命令 / shell command
-            timeout: 超时时间（毫秒），默认 20000 / Timeout in milliseconds, default 20000
+            timeout: 超时时间（毫秒），默认 20000，设置为 -1 表示无限等待 / Timeout in milliseconds, default 20000, set to -1 for infinite wait
 
         Returns:
             JobWithResult: 作业对象，可通过 result 获取命令输出 / Job object, can get output via result

@@ -3134,10 +3134,10 @@
                 },
                 "timeout": {
                     "title": "Timeout Property",
-                    "description": "超时时间（毫秒）。可选，默认 20000 (20秒)。",
+                    "description": "超时时间（毫秒）。可选，默认 20000 (20秒)。设置为 -1 表示无限等待。",
                     "type": "integer",
                     "default": 20000,
-                    "markdownDescription": "*int*\n\n超时时间（毫秒）。可选，默认 20000 (20秒)。"
+                    "markdownDescription": "*int*\n\n超时时间（毫秒）。可选，默认 20000 (20秒)。\n\n设置为 -1 表示无限等待，永不超时。"
                 }
             },
             "required": [
@@ -4028,9 +4028,9 @@
                 },
                 "timeout": {
                     "title": "Timeout Property",
-                    "description": "识别超时时间，毫秒。可选，默认 20 * 1000 。",
-                    "$ref": "#/$defs/jsonNInt64",
-                    "markdownDescription": "*uint*\n\n识别超时时间，毫秒。可选，默认 20 * 1000 。",
+                    "description": "识别超时时间，毫秒。可选，默认 20 * 1000 。设置为 -1 表示无限等待。",
+                    "$ref": "#/$defs/jsonInt64",
+                    "markdownDescription": "*int*\n\n识别超时时间，毫秒。可选，默认 20 * 1000 。\n\n设置为 -1 表示无限等待，永不超时。",
                     "default": 20000
                 }
             }
@@ -4111,10 +4111,10 @@
                 },
                 "timeout": {
                     "title": "Timeout Property",
-                    "description": "识别超时时间，毫秒。可选，默认 20 * 1000 。",
-                    "$ref": "#/$defs/jsonNInt64",
+                    "description": "识别超时时间，毫秒。可选，默认 20 * 1000 。设置为 -1 表示无限等待。",
+                    "$ref": "#/$defs/jsonInt64",
                     "default": 20000,
-                    "markdownDescription": "*uint*\n\n识别超时时间，毫秒。可选，默认 20 * 1000 。\n\n具体逻辑为 `while(!timeout) { foreach(next); sleep_until(rate_limit); }` 。"
+                    "markdownDescription": "*int*\n\n识别超时时间，毫秒。可选，默认 20 * 1000 。\n\n设置为 -1 表示无限等待，永不超时。\n\n具体逻辑为 `while(!timeout) { foreach(next); sleep_until(rate_limit); }` 。"
                 },
                 "on_error": {
                     "title": "On Error Property",

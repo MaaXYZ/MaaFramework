@@ -840,7 +840,9 @@ bool ControllerAgent::handle_shell(const ShellParam& param)
     }
 
     std::string output;
-    bool ret = adb_unit->shell(param.cmd, output, std::chrono::milliseconds(param.timeout));
+    // timeout < 0 表示无限等待
+    auto timeout = param.timeout < 0 ? std::chrono::milliseconds::max() : std::chrono::milliseconds(param.timeout);
+    bool ret = adb_unit->shell(param.cmd, output, timeout);
     if (ret) {
         std::unique_lock lock(shell_output_mutex_);
         shell_output_ = std::move(output);
