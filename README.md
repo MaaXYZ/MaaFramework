@@ -142,7 +142,7 @@ _✨ 基于图像识别的自动化黑盒测试框架 ✨_
     崩坏三小助手。使用图像识别+模拟控制技术，解放双手！PC 端与模拟器端同步支持，由 MaaFramework 强力驱动！
 
 - [MAN](https://github.com/duorua/narutomobile) ![Pipeline](https://img.shields.io/badge/Pipeline-%23876f69?logo=paddypower&logoColor=%23FFFFFF) ![Python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white) ![license](https://img.shields.io/github/license/duorua/narutomobile) ![activity](https://img.shields.io/github/commit-activity/m/duorua/narutomobile?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/duorua/narutomobile?style=social) [![mirrorc](./docs/static/mirrorc-zh.svg)](https://mirrorchyan.com/zh/projects?source=maafw-badge) [![website](https://img.shields.io/badge/https://naruto.natsuu.top-%234285F4)](https://naruto.natsuu.top)  
-    火影忍者摸头村小助手。使用图像识别+模拟控制技术，解放双手！PC 端与模拟器端同步支持，由 MaaFramework 强力驱动！
+    火影忍者手游小助手。使用图像识别+模拟控制技术，解放双手！由 MaaFramework 强力驱动！
 
 - [MaaGakumasu](https://github.com/SuperWaterGod/MaaGakumasu) ![Pipeline](https://img.shields.io/badge/Pipeline-%23876f69?logo=paddypower&logoColor=%23FFFFFF) ![Python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white) ![license](https://img.shields.io/github/license/SuperWaterGod/MaaGakumasu) ![activity](https://img.shields.io/github/commit-activity/m/SuperWaterGod/MaaGakumasu?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/SuperWaterGod/MaaGakumasu?style=social) [![mirrorc](./docs/static/mirrorc-zh.svg)](https://mirrorchyan.com/zh/projects?source=maafw-badge)  
     学园偶像大师小助手。使用图像技术 + 模拟控制 + 深度学习，解放双手！由 MaaFramework 强力驱动！
