@@ -103,9 +103,6 @@ _✨ 基于图像识别的自动化黑盒测试框架 ✨_
 - [MSBA](https://github.com/overflow65537/MAA_SnowBreak) ![Pipeline](https://img.shields.io/badge/Pipeline-%23876f69?logo=paddypower&logoColor=%23FFFFFF) ![python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white) ![license](https://img.shields.io/github/license/overflow65537/MAA_SnowBreak) ![activity](https://img.shields.io/github/commit-activity/m/overflow65537/MAA_SnowBreak?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/overflow65537/MAA_SnowBreak?style=social) [![mirrorc](./docs/static/mirrorc-zh.svg)](https://mirrorchyan.com/zh/projects?source=maafw-badge)  
     尘白禁区 小助手。图像技术 + 模拟控制，解放双手！由 MaaFramework 强力驱动！
 
-- [MaaEnd](https://github.com/MaaEnd/MaaEnd) ![Pipeline](https://img.shields.io/badge/Pipeline-%23876f69?logo=paddypower&logoColor=%23FFFFFF) ![license](https://img.shields.io/github/license/MaaEnd/MaaEnd) ![activity](https://img.shields.io/github/commit-activity/m/MaaEnd/MaaEnd?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/MaaEnd/MaaEnd?style=social)  
-    终末地小助手。由 MaaFramework 与 MXU 驱动，绝赞开发中！
-
 - [MaaYYs](https://github.com/TanyaShue/MaaYYs) ![python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white) ![qt](https://img.shields.io/badge/Qt6-41CD52?logo=Qt&logoColor=white) ![license](https://img.shields.io/github/license/TanyaShue/MaaYYs) ![activity](https://img.shields.io/github/commit-activity/m/TanyaShue/MaaYYs?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/TanyaShue/MaaYYs?style=social) [![mirrorc](./docs/static/mirrorc-zh.svg)](https://mirrorchyan.com/zh/projects?source=maafw-badge)  
     阴阳师小助手。图像技术 + 模拟控制，当赛博屯屯鼠，自动日常，解放你的双手！由 MaaFramework 强力驱动！
 
@@ -175,6 +172,9 @@ _✨ 基于图像识别的自动化黑盒测试框架 ✨_
 
 - [MaaLYSK](https://github.com/Witty36/MaaLYSK) ![Pipeline](https://img.shields.io/badge/Pipeline-%23876f69?logo=paddypower&logoColor=%23FFFFFF) ![Python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white) ![license](https://img.shields.io/github/license/Witty36/MaaLYSK) ![activity](https://img.shields.io/github/commit-activity/m/Witty36/MaaLYSK?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/Witty36/MaaLYSK?style=social) [![mirrorc](./docs/static/mirrorc-zh.svg)](https://mirrorchyan.com/zh/projects?rid=MaaLYSK) [![website](https://img.shields.io/badge/https://maalysk.top-%234285F4)](https://maalysk.top)  
     恋与深空 小助手。使用图像技术 + 模拟控制，解放双手！由 MaaFramework 强力驱动！
+
+- [MaaEnd](https://github.com/MaaEnd/MaaEnd) ![Pipeline](https://img.shields.io/badge/Pipeline-%23876f69?logo=paddypower&logoColor=%23FFFFFF) ![Go](https://img.shields.io/badge/Go-007d9c?logo=go) ![license](https://img.shields.io/github/license/MaaEnd/MaaEnd) ![activity](https://img.shields.io/github/commit-activity/m/MaaEnd/MaaEnd?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/MaaEnd/MaaEnd?style=social)  
+    终末地小助手。由 MaaFramework 与 MXU 驱动，绝赞开发中！
 
 ## 生态共建
 
