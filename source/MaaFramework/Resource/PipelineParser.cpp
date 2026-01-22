@@ -347,7 +347,7 @@ bool PipelineParser::parse_recognition(
     json::value param_input = input;
 
     if (auto reco_opt = input.find("recognition"); reco_opt && reco_opt->is_object()) {
-        param_input = reco_opt->get("param", json::object());
+        param_input = reco_opt->get("param", *reco_opt);
         reco_type_name = reco_opt->get("type", kDefaultRecognitionFlag);
     }
     else if (!get_and_check_value(input, "recognition", reco_type_name, kDefaultRecognitionFlag)) {
@@ -1017,7 +1017,7 @@ bool PipelineParser::parse_action(
     json::value param_input = input;
 
     if (auto reco_opt = input.find("action"); reco_opt && reco_opt->is_object()) {
-        param_input = reco_opt->get("param", json::object());
+        param_input = reco_opt->get("param", *reco_opt);
         act_type_name = reco_opt->get("type", kDefaultActionFlag);
     }
     else if (!get_and_check_value(param_input, "action", act_type_name, kDefaultActionFlag)) {
