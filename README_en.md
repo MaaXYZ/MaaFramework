@@ -174,7 +174,10 @@ It offers low-code simplicity while maintaining high extensibility. The framewor
     Assistant for Trickcal. Image technology + simulation control, automatic pinch face, free hands! Powerfully driven by MaaFramework!
 
 - [MaaLYSK](https://github.com/Witty36/MaaLYSK) ![Pipeline](https://img.shields.io/badge/Pipeline-%23876f69?logo=paddypower&logoColor=%23FFFFFF) ![Python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white) ![license](https://img.shields.io/github/license/Witty36/MaaLYSK) ![activity](https://img.shields.io/github/commit-activity/m/Witty36/MaaLYSK?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/Witty36/MaaLYSK?style=social) [![mirrorc](./docs/static/mirrorc-en.svg)](https://mirrorchyan.com/en/projects?rid=MaaLYSK) [![website](https://img.shields.io/badge/https://maalysk.top-%234285F4)](https://maalysk.top)  
-    Assistant for Love and Deepspace. Image technology + simulation control, automatic pinch face, free hands! Powerfully driven by MaaFramework!
+     Assistant for Love and Deepspace. Image technology + simulation control, automatic pinch face, free hands! Powerfully driven by MaaFramework!
+
+- [MaaEnd](https://github.com/MaaEnd/MaaEnd) ![Pipeline](https://img.shields.io/badge/Pipeline-%23876f69?logo=paddypower&logoColor=%23FFFFFF) ![Go](https://img.shields.io/badge/Go-007d9c?logo=go) ![license](https://img.shields.io/github/license/MaaEnd/MaaEnd) ![activity](https://img.shields.io/github/commit-activity/m/MaaEnd/MaaEnd?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/MaaEnd/MaaEnd?style=social) [![mirrorc](./docs/static/mirrorc-en.svg)](https://mirrorchyan.com/en/projects?source=maafw-badge)  
+     An Endfield assistant powered by MaaFramework and MXU, still under active development.
 
 ## Eco-Building
 
