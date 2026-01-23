@@ -21,9 +21,7 @@
 
 #include "SafeDXGI.hpp"
 
-#include <winrt/Windows.Foundation.Metadata.h>
 #include <winrt/Windows.Graphics.Capture.h>
-#include <winrt/Windows.Security.Authorization.AppCapabilityAccess.h>
 
 MAA_CTRL_UNIT_NS_BEGIN
 

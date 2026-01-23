@@ -5,6 +5,8 @@
 #include <windows.graphics.capture.interop.h>
 #include <windows.graphics.directx.direct3d11.interop.h>
 #include <winrt/Windows.Foundation.h>
+#include <winrt/Windows.Foundation.Metadata.h>
+#include <winrt/Windows.Security.Authorization.AppCapabilityAccess.h>
 
 #include "HwndUtils.hpp"
 #include "MaaUtils/Logger.h"
@@ -307,6 +309,8 @@ bool FramePoolScreencap::init_texture(winrt::com_ptr<ID3D11Texture2D> raw_textur
 
 void FramePoolScreencap::try_disable_border()
 {
+    LogFunc;
+
     using namespace winrt::Windows::Foundation::Metadata;
     using namespace winrt::Windows::Graphics::Capture;
 
