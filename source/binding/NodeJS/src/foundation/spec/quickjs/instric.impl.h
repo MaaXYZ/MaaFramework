@@ -180,7 +180,7 @@ inline void BindGetterSetter(
 {
     if (!getter) {
         getter = [prop = std::string(prop)](const CallbackInfo& info) {
-            return StringType::From(info.Env(), std::format("no getter for {}", prop));
+            return StringType::New(info.Env(), std::format("no getter for {}", prop));
         };
     }
     if (!setter) {
