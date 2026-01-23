@@ -184,7 +184,7 @@ declare global {
             clear(): void
             status(id: CtrlId): Status
             wait(id: CtrlId): Promise<Status>
-            get connected(): Promise<boolean>
+            get connected(): boolean
             get cached_image(): ImageData | null
             get uuid(): string | null
             get resolution(): [width: number, height: number] | null

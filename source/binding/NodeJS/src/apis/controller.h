@@ -67,7 +67,7 @@ struct ControllerImpl : public maajs::NativeClassBase
     maajs::ValueType post_screencap(maajs::ValueType self, maajs::EnvType env);
     MaaStatus status(MaaCtrlId id);
     maajs::PromiseType wait(MaaCtrlId id);
-    maajs::PromiseType get_connected();
+    bool get_connected();
     std::optional<maajs::ArrayBufferType> get_cached_image();
     std::optional<std::string> get_uuid();
     std::optional<std::tuple<int32_t, int32_t>> get_resolution();

@@ -233,11 +233,9 @@ maajs::PromiseType ControllerImpl::wait(MaaCtrlId id)
     return worker->Promise();
 }
 
-maajs::PromiseType ControllerImpl::get_connected()
+bool ControllerImpl::get_connected()
 {
-    auto worker = new maajs::AsyncWork<MaaStatus>(env, [handle = controller]() { return MaaControllerConnected(handle); });
-    worker->Queue();
-    return worker->Promise();
+    return MaaControllerConnected(controller);
 }
 
 std::optional<maajs::ArrayBufferType> ControllerImpl::get_cached_image()
