@@ -88,6 +88,16 @@ inline void BindGetterSetter(
     std::function<void(NativeMarkerFunc)>,
     std::function<void(NativeMarkerFunc)>)
 {
+    if (!getter) {
+        getter = [prop = std::string(prop)](const CallbackInfo& info) {
+            return StringType::From(info.Env(), std::format("no getter for {}", prop));
+        };
+    }
+    if (!setter) {
+        setter = [prop = std::string(prop)](const CallbackInfo& info) {
+            return info.Env().Undefined();
+        };
+    }
     object.DefineProperty(
         Napi::PropertyDescriptor::Accessor(prop, getter, [setter](const CallbackInfo& info) { setter(info); }, napi_enumerable));
 }
