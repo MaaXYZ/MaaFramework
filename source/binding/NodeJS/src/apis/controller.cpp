@@ -235,7 +235,7 @@ maajs::PromiseType ControllerImpl::wait(MaaCtrlId id)
 
 maajs::PromiseType ControllerImpl::get_connected()
 {
-    auto worker = new maajs::AsyncWork<bool>(env, [handle = controller]() { return MaaControllerConnected(handle); });
+    auto worker = new maajs::AsyncWork<MaaStatus>(env, [handle = controller]() { return MaaControllerConnected(handle); });
     worker->Queue();
     return worker->Promise();
 }

@@ -151,7 +151,7 @@ declare global {
             post_stop(): TaskJob
             status(id: TaskId): Status
             wait(id: TaskId): Promise<Status>
-            get inited(): Promise<boolean>
+            get inited(): boolean
             get running(): boolean
             get stopping(): boolean
             set resource(res: Resource | null)
