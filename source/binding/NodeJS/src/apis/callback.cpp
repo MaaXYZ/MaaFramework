@@ -155,9 +155,11 @@ MaaBool CustomConnect(void* trans_arg)
 
 MaaBool CustomConnected(void* trans_arg)
 {
-    auto customCtx = reinterpret_cast<CustomControllerContext*>(trans_arg);
-    auto ctx = customCtx->callbacks["connected"];
-    return ctx->Call<bool>([&](maajs::FunctionType func) { return func.Call({}); });
+    // auto customCtx = reinterpret_cast<CustomControllerContext*>(trans_arg);
+    // auto ctx = customCtx->callbacks["connected"];
+    // return ctx->Call<bool>([&](maajs::FunctionType func) { return func.Call({}); });
+    std::ignore = trans_arg;
+    return true;
 }
 
 MaaBool CustomRequestUuid(void* trans_arg, MaaStringBuffer* buffer)

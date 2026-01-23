@@ -260,7 +260,7 @@ declare global {
 
         interface CustomControllerActor {
             connect?(): maa.MaybePromise<boolean>
-            connected?(): maa.MaybePromise<boolean>
+            // connected?(): maa.MaybePromise<boolean>
             request_uuid?(): maa.MaybePromise<string | null>
             get_features?(): maa.MaybePromise<null | ('mouse' | 'keyboard')[]>
             start_app?(intent: string): maa.MaybePromise<boolean>
