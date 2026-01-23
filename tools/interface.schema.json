@@ -698,7 +698,19 @@
             }
         },
         "agent": {
-            "$ref": "#/definitions/agentConfig"
+            "oneOf": [
+                {
+                    "$ref": "#/definitions/agentConfig"
+                },
+                {
+                    "type": "array",
+                    "title": "代理配置数组",
+                    "description": "多个子进程（AgentServer）的配置",
+                    "items": {
+                        "$ref": "#/definitions/agentConfig"
+                    }
+                }
+            ]
         },
         "task": {
             "type": "array",

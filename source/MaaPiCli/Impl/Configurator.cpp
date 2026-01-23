@@ -247,15 +247,18 @@ std::optional<RuntimeParam> Configurator::generate_runtime() const
     runtime.display_config.long_side = controller.display_long_side;
     runtime.display_config.raw = controller.display_raw;
 
-    if (!data_.agent.child_exec.empty()) {
-        RuntimeParam::Agent agent;
+    for (const auto& agent_config : data_.agent) {
+        if (agent_config.child_exec.empty()) {
+            continue;
+        }
 
-        agent.child_exec = MaaNS::path(data_.agent.child_exec);
-        agent.child_args = data_.agent.child_args;
-        agent.identifier = data_.agent.identifier;
+        RuntimeParam::Agent agent;
+        agent.child_exec = MaaNS::path(agent_config.child_exec);
+        agent.child_args = agent_config.child_args;
+        agent.identifier = agent_config.identifier;
         agent.cwd = resource_dir_;
 
-        runtime.agent = std::move(agent);
+        runtime.agent.emplace_back(std::move(agent));
     }
 
     return runtime;
