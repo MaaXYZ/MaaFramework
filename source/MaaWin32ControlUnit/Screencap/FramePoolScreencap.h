@@ -21,7 +21,9 @@
 
 #include "SafeDXGI.hpp"
 
+#include <winrt/Windows.Foundation.Metadata.h>
 #include <winrt/Windows.Graphics.Capture.h>
+#include <winrt/Windows.Security.Authorization.AppCapabilityAccess.h>
 
 MAA_CTRL_UNIT_NS_BEGIN
 
@@ -48,6 +50,7 @@ private:
     bool init_texture(winrt::com_ptr<ID3D11Texture2D> raw_texture);
     void uninit();
     bool check_and_handle_size_changed();
+    void try_disable_border();
 
 private:
     HWND hwnd_ = nullptr;
