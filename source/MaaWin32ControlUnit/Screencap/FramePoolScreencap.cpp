@@ -4,8 +4,8 @@
 
 #include <windows.graphics.capture.interop.h>
 #include <windows.graphics.directx.direct3d11.interop.h>
-#include <winrt/Windows.Foundation.h>
 #include <winrt/Windows.Foundation.Metadata.h>
+#include <winrt/Windows.Foundation.h>
 #include <winrt/Windows.Security.Authorization.AppCapabilityAccess.h>
 
 #include "HwndUtils.hpp"
