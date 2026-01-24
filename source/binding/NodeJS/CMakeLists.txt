@@ -47,7 +47,7 @@ if(WITH_NODEJS_BINDING)
     )
 
     if(WIN32)
-        set(CMAKE_JS_SRC "${CMAKE_CURRENT_LIST_DIR}/node_modules/cmake-js/lib/cpp/win_delay_load_hook.cc")
+        set(CMAKE_JS_SRC "src/utils/win_delay_load_hook.cc")
     endif()
 
     set(NODE_RUNTIME "node")

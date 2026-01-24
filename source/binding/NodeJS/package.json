@@ -7,7 +7,6 @@
     "devDependencies": {
         "@tsconfig/node20": "^20.1.6",
         "@types/node": "^20.19.9",
-        "cmake-js": "^7.3.1",
         "node-addon-api": "^8.5.0",
         "node-api-headers": "^1.5.0",
         "tsx": "^4.20.3",
