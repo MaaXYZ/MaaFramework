@@ -23,13 +23,19 @@ std::optional<InterfaceData> Parser::parse_interface(const std::filesystem::path
 
 std::optional<InterfaceData> Parser::parse_interface(const json::value& json)
 {
+    // 预处理：将单个 agent 对象转换为数组以支持两种格式
+    json::value processed_json = json;
+    if (processed_json.contains("agent") && processed_json["agent"].is_object()) {
+        processed_json["agent"] = json::array { processed_json["agent"] };
+    }
+
     std::string error_key;
-    if (!InterfaceData().check_json(json, error_key)) {
-        LogError << "json is not an InterfaceData" << VAR(error_key) << VAR(json);
+    if (!InterfaceData().check_json(processed_json, error_key)) {
+        LogError << "json is not an InterfaceData" << VAR(error_key) << VAR(processed_json);
         return std::nullopt;
     }
 
-    auto data = json.as<InterfaceData>();
+    auto data = processed_json.as<InterfaceData>();
 
     // check interface version
     if (data.interface_version != 2) {

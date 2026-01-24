@@ -212,7 +212,7 @@ struct InterfaceData
     std::vector<Resource> resource;
     std::vector<Task> task;
     std::unordered_map<std::string, Option> option;
-    Agent agent;
+    std::vector<Agent> agent;
 
     MEO_JSONIZATION(
         interface_version,
@@ -373,7 +373,7 @@ struct RuntimeParam
 
     std::vector<Task> task;
 
-    std::optional<Agent> agent;
+    std::vector<Agent> agent;
     DisplayConfig display_config;
 };
 
