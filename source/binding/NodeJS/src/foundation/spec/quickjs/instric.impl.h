@@ -178,6 +178,16 @@ inline void BindGetterSetter(
     std::function<void(NativeMarkerFunc)> run_getter_marker,
     std::function<void(NativeMarkerFunc)> run_setter_marker)
 {
+    if (!getter) {
+        getter = [prop = std::string(prop)](const CallbackInfo& info) {
+            return StringType::New(info.Env(), std::format("no getter for {}", prop));
+        };
+    }
+    if (!setter) {
+        setter = [prop = std::string(prop)](const CallbackInfo& info) {
+            return info.Env().Undefined();
+        };
+    }
     JS_DefinePropertyGetSet(
         object.Env(),
         object.peek(),

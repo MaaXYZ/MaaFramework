@@ -4,7 +4,9 @@
 
 #include <windows.graphics.capture.interop.h>
 #include <windows.graphics.directx.direct3d11.interop.h>
+#include <winrt/Windows.Foundation.Metadata.h>
 #include <winrt/Windows.Foundation.h>
+#include <winrt/Windows.Security.Authorization.AppCapabilityAccess.h>
 
 #include "HwndUtils.hpp"
 #include "MaaUtils/Logger.h"
@@ -222,6 +224,9 @@ bool FramePoolScreencap::init()
         return false;
     }
 
+    // 尝试关闭截图时的黄色边框（Windows 11 及部分 Win10 版本支持）
+    try_disable_border();
+
     cap_session_.StartCapture();
 
     // 记录初始窗口大小
@@ -300,6 +305,46 @@ bool FramePoolScreencap::init_texture(winrt::com_ptr<ID3D11Texture2D> raw_textur
     }
 
     return true;
+}
+
+void FramePoolScreencap::try_disable_border()
+{
+    LogFunc;
+
+    using namespace winrt::Windows::Foundation::Metadata;
+    using namespace winrt::Windows::Graphics::Capture;
+
+    // GraphicsCaptureAccess 和 IsBorderRequired 在 UniversalApiContract v10.0 (Windows 10 2004) 引入
+    if (!ApiInformation::IsApiContractPresent(L"Windows.Foundation.UniversalApiContract", 10)) {
+        LogInfo << "UniversalApiContract v10 not present, border toggle not supported";
+        return;
+    }
+
+    if (!ApiInformation::IsTypePresent(L"Windows.Graphics.Capture.GraphicsCaptureAccess")) {
+        LogInfo << "GraphicsCaptureAccess not present, border toggle not supported";
+        return;
+    }
+
+    if (!ApiInformation::IsPropertyPresent(L"Windows.Graphics.Capture.GraphicsCaptureSession", L"IsBorderRequired")) {
+        LogInfo << "IsBorderRequired property not supported on this system";
+        return;
+    }
+
+    auto op = GraphicsCaptureAccess::RequestAccessAsync(GraphicsCaptureAccessKind::Borderless);
+    auto status = op.wait_for(std::chrono::seconds(5));
+    if (status != winrt::Windows::Foundation::AsyncStatus::Completed) {
+        LogWarn << "RequestAccessAsync did not complete in time";
+        return;
+    }
+
+    auto access_result = op.GetResults();
+    if (access_result != winrt::Windows::Security::Authorization::AppCapabilityAccess::AppCapabilityAccessStatus::Allowed) {
+        LogWarn << "Borderless capture access not granted:" << static_cast<int>(access_result);
+        return;
+    }
+
+    cap_session_.IsBorderRequired(false);
+    LogInfo << "Capture border disabled successfully";
 }
 
 MAA_CTRL_UNIT_NS_END

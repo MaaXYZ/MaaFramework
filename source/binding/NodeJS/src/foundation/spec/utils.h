@@ -9,8 +9,10 @@
 #define MAA_WRAP_FUNC_VALUE(env, func) maajs::WrapFunctionHelper<decltype(&func), (&func), #func>::makeValue(env)
 
 #define MAA_BIND_FUNC(object, prop, func) maajs::BindValue(object, prop, MAA_WRAP_FUNC_VALUE(object.Env(), func))
-#define MAA_BIND_GETTER(object, prop, func) maajs::BindGetterSetter(object, prop, #func, "", MAA_WRAP_FUNC(func), nullptr)
-#define MAA_BIND_SETTER(object, prop, func) maajs::BindGetterSetter(object, prop, "", #func, nullptr, MAA_WRAP_FUNC(func))
+#define MAA_BIND_GETTER(object, prop, func) \
+    maajs::BindGetterSetter(object, prop, #func, "phony setter for " prop, MAA_WRAP_FUNC(func), nullptr)
+#define MAA_BIND_SETTER(object, prop, func) \
+    maajs::BindGetterSetter(object, prop, "phony getter for " prop, #func, nullptr, MAA_WRAP_FUNC(func))
 #define MAA_BIND_GETTER_SETTER(object, prop, getter, setter) \
     maajs::BindGetterSetter(object, prop, #getter, #setter, MAA_WRAP_FUNC(getter), MAA_WRAP_FUNC(setter))
 

@@ -48,6 +48,7 @@ private:
     bool init_texture(winrt::com_ptr<ID3D11Texture2D> raw_texture);
     void uninit();
     bool check_and_handle_size_changed();
+    void try_disable_border();
 
 private:
     HWND hwnd_ = nullptr;
