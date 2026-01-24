@@ -19,13 +19,5 @@
     },
     "engines": {
         "node": ">= 20.0.0"
-    },
-    "devDependencies": {
-        "@trivago/prettier-plugin-sort-imports": "^4.3.0",
-        "@tsconfig/node20": "^20.1.4",
-        "@types/node": "^20.17.22",
-        "esbuild": "^0.25.0",
-        "prettier": "^3.5.2",
-        "typescript": "^5.8.2"
     }
 }
