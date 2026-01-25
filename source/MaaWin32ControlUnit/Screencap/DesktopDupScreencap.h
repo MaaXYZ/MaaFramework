@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Base/UnitBase.h"
+#include "HdrToneMapping.hpp"
 #include "SafeDXGI.hpp"
 
 #include "Common/Conf.h"
@@ -39,6 +40,8 @@ protected:
     HWND hwnd_ = nullptr;
     HMONITOR current_monitor_ = nullptr;
     bool output_just_initialized_ = false;
+
+    HdrToneMapper hdr_tone_mapper_;
 
 private:
     bool init_d3d_device();

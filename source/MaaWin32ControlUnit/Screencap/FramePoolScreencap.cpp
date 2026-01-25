@@ -51,6 +51,15 @@ std::optional<cv::Mat> FramePoolScreencap::screencap()
         return std::nullopt;
     }
 
+    // 检测并处理 HDR 纹理
+    // 如果纹理是 HDR 格式（如 R16G16B16A16_FLOAT），使用 Direct2D 进行 tone mapping
+    auto hdr_result = hdr_tone_mapper_.tone_map(d3d_device_.get(), d3d_context_.get(), texture.get());
+    if (hdr_result) {
+        lock.unlock();
+        return crop_to_client_area(*hdr_result);
+    }
+
+    // 非 HDR 格式或 tone mapping 失败，使用原有的 SDR 处理流程
     if (!readable_texture_ && !init_texture(texture)) {
         LogError << "falied to init_texture";
         return std::nullopt;
@@ -68,7 +77,11 @@ std::optional<cv::Mat> FramePoolScreencap::screencap()
     OnScopeLeave([&]() { d3d_context_->Unmap(readable_texture_.get(), 0); });
 
     cv::Mat raw(texture_desc_.Height, texture_desc_.Width, CV_8UC4, mapped.pData, mapped.RowPitch);
+    return crop_to_client_area(raw);
+}
 
+std::optional<cv::Mat> FramePoolScreencap::crop_to_client_area(const cv::Mat& raw)
+{
     // 先按 alpha 通道裁剪掉四周 alpha != 255 的边框
     cv::Mat alpha_channel;
     cv::extractChannel(raw, alpha_channel, 3);
