@@ -338,14 +338,6 @@ std::optional<cv::Mat> DesktopDupScreencap::screencap_impl()
         }
     });
 
-    // 检测并处理 HDR 纹理
-    // 如果纹理是 HDR 格式（如 R16G16B16A16_FLOAT），使用 Direct2D 进行 tone mapping
-    auto hdr_result = hdr_tone_mapper_.tone_map(d3d_device_, d3d_context_, raw_texture);
-    if (hdr_result) {
-        return hdr_result; // HDR 处理成功，直接返回 SDR 结果
-    }
-
-    // 非 HDR 格式或 tone mapping 失败，使用原有的 SDR 处理流程
     if (!readable_texture_ && !init_texture(raw_texture)) {
         LogError << "failed to init_texture";
         return std::nullopt;

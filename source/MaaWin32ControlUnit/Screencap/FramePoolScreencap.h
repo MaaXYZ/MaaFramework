@@ -19,7 +19,6 @@
 
 #if MAA_FRAMEPOOL_SCREENCAP_AVAILABLE
 
-#include "HdrToneMapping.hpp"
 #include "SafeDXGI.hpp"
 
 #include <winrt/Windows.Graphics.Capture.h>
@@ -50,7 +49,6 @@ private:
     void uninit();
     bool check_and_handle_size_changed();
     void try_disable_border();
-    std::optional<cv::Mat> crop_to_client_area(const cv::Mat& raw);
 
 private:
     HWND hwnd_ = nullptr;
@@ -72,8 +70,6 @@ private:
 
     // 存储上次的窗口大小，用于检测窗口大小变化
     std::pair<int, int> last_capture_size_ = { 0, 0 };
-
-    HdrToneMapper hdr_tone_mapper_;
 };
 
 MAA_CTRL_UNIT_NS_END
