@@ -196,6 +196,22 @@ bool FramePoolScreencap::init()
         return false;
     }
 
+    if (!cap_item_) {
+        LogError << "cap_item_ is null after CreateForWindow";
+        return false;
+    }
+
+    auto item_size = cap_item_.Size();
+    if (item_size.Width <= 0 || item_size.Height <= 0) {
+        LogError << "Invalid capture item size" << VAR(item_size.Width) << VAR(item_size.Height);
+        return false;
+    }
+
+    if (!IsWindow(hwnd_) || !IsWindowVisible(hwnd_)) {
+        LogError << "Window is no longer valid or visible";
+        return false;
+    }
+
     winrt::com_ptr<IDXGIDevice> dxgi_device = d3d_device_.as<IDXGIDevice>();
 
     winrt::com_ptr<IInspectable> inspectable = nullptr;

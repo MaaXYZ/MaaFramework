@@ -1019,8 +1019,9 @@ bool ControllerAgent::postproc_screenshot(const cv::Mat& raw)
 
 bool ControllerAgent::calc_target_image_size()
 {
-    if (image_target_long_side_ == 0 && image_target_short_side_ == 0) {
-        LogError << "Invalid image target size";
+
+    if (image_raw_width_ == 0 || image_raw_height_ == 0) {
+        LogError << "Invalid image raw size";
         return false;
     }
 
@@ -1029,6 +1030,11 @@ bool ControllerAgent::calc_target_image_size()
         image_target_width_ = image_raw_width_;
         image_target_height_ = image_raw_height_;
         return true;
+    }
+
+    if (image_target_long_side_ == 0 && image_target_short_side_ == 0) {
+        LogError << "Invalid image target size";
+        return false;
     }
 
     LogDebug << "Re-calc image target size:" << VAR(image_target_long_side_) << VAR(image_target_short_side_) << VAR(image_raw_width_)
