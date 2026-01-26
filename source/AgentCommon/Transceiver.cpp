@@ -50,6 +50,7 @@ bool Transceiver::handle_image_encoded_header(const json::value& j)
     return true;
 }
 
+#ifdef _WIN32
 static bool test_write_permission(const std::filesystem::path& dir)
 {
     auto test_file = dir / std::format("maafw-write-test-{}.tmp", make_uuid());
@@ -68,6 +69,7 @@ static bool test_write_permission(const std::filesystem::path& dir)
     LogTrace << "write permission test passed" << VAR(dir);
     return true;
 }
+#endif
 
 static std::string temp_directory()
 {
