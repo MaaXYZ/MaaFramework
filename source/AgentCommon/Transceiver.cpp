@@ -64,6 +64,9 @@ static std::string temp_directory()
     else if (!std::filesystem::exists(path) || !std::filesystem::is_directory(path)) {
         fallback = true;
     }
+    else if (path_to_utf8_string(path).find("Administrator") != std::string::npos) {
+        fallback = true;
+    }
 
     if (fallback) {
         path = MaaNS::path("C:/Temp");
@@ -79,6 +82,8 @@ static std::string temp_directory()
 
 void Transceiver::init_socket(const std::string& identifier, bool bind)
 {
+    LogFunc << VAR(bind);
+
     static auto kTempDir = temp_directory();
 
     std::string path = std::format("{}/maafw-agent-{}.sock", kTempDir, identifier);
