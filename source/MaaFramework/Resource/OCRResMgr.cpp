@@ -24,6 +24,9 @@ void OCRResMgr::use_cpu()
 
     det_option_.UseCpu();
     rec_option_.UseCpu();
+
+    det_option_.SetCpuThreadNum(4);
+    rec_option_.SetCpuThreadNum(4);
 }
 
 void OCRResMgr::use_cuda(int device_id)
@@ -50,8 +53,8 @@ void OCRResMgr::use_coreml(uint32_t coreml_flag)
     // rec_option_.UseCoreML(coreml_flag);
 
     LogWarn << "OCR with CoreML is very poor. I don’t know the reason yet. Roll back to using CPU";
-    det_option_.UseCpu();
-    rec_option_.UseCpu();
+
+    use_cpu();
 }
 
 bool OCRResMgr::lazy_load(const std::filesystem::path& path)
