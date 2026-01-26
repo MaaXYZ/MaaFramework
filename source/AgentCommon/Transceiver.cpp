@@ -1,6 +1,7 @@
 #include "MaaAgent/Transceiver.h"
 
 #include <format>
+#include <fstream>
 
 #ifdef _WIN32
 #include "MaaUtils/SafeWindows.hpp"
@@ -49,6 +50,25 @@ bool Transceiver::handle_image_encoded_header(const json::value& j)
     return true;
 }
 
+static bool test_write_permission(const std::filesystem::path& dir)
+{
+    auto test_file = dir / std::format("maafw-write-test-{}.tmp", make_uuid());
+    std::error_code ec;
+
+    LogTrace << "testing write permission" << VAR(dir) << VAR(test_file);
+
+    std::ofstream ofs(test_file, std::ios::binary);
+    if (!ofs.is_open()) {
+        LogWarn << "failed to create test file, no write permission" << VAR(dir);
+        return false;
+    }
+    ofs.close();
+
+    std::filesystem::remove(test_file, ec);
+    LogTrace << "write permission test passed" << VAR(dir);
+    return true;
+}
+
 static std::string temp_directory()
 {
     auto path = std::filesystem::temp_directory_path();
@@ -64,7 +84,7 @@ static std::string temp_directory()
     else if (!std::filesystem::exists(path) || !std::filesystem::is_directory(path)) {
         fallback = true;
     }
-    else if (path_to_utf8_string(path).find("Administrator") != std::string::npos) {
+    else if (!test_write_permission(path)) {
         fallback = true;
     }
 
