@@ -18,6 +18,7 @@ Context::Context(MaaTaskId id, Tasker* tasker, PrivateArg)
     : task_id_(id)
     , tasker_(tasker)
     , task_state_(std::make_shared<TaskState>())
+    , need_to_stop_(std::make_shared<bool>())
 {
     LogDebug << VAR(id) << VAR_VOIDP(tasker);
 }
@@ -51,6 +52,7 @@ Context::Context(const Context& other)
     , pipeline_override_(other.pipeline_override_)
     , image_override_(other.image_override_)
     , task_state_(other.task_state_)
+    , need_to_stop_(other.need_to_stop_)
 // don't copy clone_holder_
 {
     LogDebug << VAR(other.getptr());
@@ -331,7 +333,7 @@ std::vector<cv::Mat> Context::get_images(const std::vector<std::string>& names)
 
 bool& Context::need_to_stop()
 {
-    return need_to_stop_;
+    return *need_to_stop_;
 }
 
 size_t Context::get_hit_count(const std::string& node_name) const

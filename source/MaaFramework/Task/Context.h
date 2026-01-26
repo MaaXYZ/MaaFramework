@@ -87,10 +87,9 @@ private:
 
     // task level
     std::shared_ptr<TaskState> task_state_ = nullptr;
+    std::shared_ptr<bool> need_to_stop_ = nullptr;
 
 private:
-    bool need_to_stop_ = false;
-
     mutable std::vector<std::shared_ptr<Context>> clone_holder_;
 };
 
