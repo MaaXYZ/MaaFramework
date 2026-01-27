@@ -295,24 +295,21 @@ inline static std::vector<float> image_to_tensor(const cv::Mat& image)
     return tensor;
 }
 
-inline cv::Rect correct_roi(const cv::Rect& roi, const cv::Mat& image)
+// 将支持负数的矩形转换为标准矩形：
+// - x/y 负数表示从右/下边缘反向计算
+// - w/h 负数表示取绝对值并将 (x,y) 视为右下角
+// - w/h 为 0 表示延伸至边缘
+inline cv::Rect normalize_rect(const cv::Rect& rect, int image_width, int image_height)
 {
-    if (image.empty()) {
-        LogError << "image is empty" << VAR(image.size());
-        return roi;
-    }
+    cv::Rect res = rect;
 
-    cv::Rect res = roi;
-
-    // 负数坐标表示从图像边缘反向计算
     if (res.x < 0) {
-        res.x = image.cols + res.x;
+        res.x = image_width + res.x;
     }
     if (res.y < 0) {
-        res.y = image.rows + res.y;
+        res.y = image_height + res.y;
     }
 
-    // 负数宽高：取绝对值，并将 xy 作为右下角而非左上角
     if (res.width < 0) {
         res.width = -res.width;
         res.x -= res.width;
@@ -322,13 +319,24 @@ inline cv::Rect correct_roi(const cv::Rect& roi, const cv::Mat& image)
         res.y -= res.height;
     }
 
-    // 宽高为 0 时表示延伸至边缘
     if (res.width == 0) {
-        res.width = image.cols - res.x;
+        res.width = image_width - res.x;
     }
     if (res.height == 0) {
-        res.height = image.rows - res.y;
+        res.height = image_height - res.y;
     }
+
+    return res;
+}
+
+inline cv::Rect correct_roi(const cv::Rect& roi, const cv::Mat& image)
+{
+    if (image.empty()) {
+        LogError << "image is empty" << VAR(image.size());
+        return roi;
+    }
+
+    cv::Rect res = normalize_rect(roi, image.cols, image.rows);
 
     // 边界检查和修正
     if (image.cols < res.x) {

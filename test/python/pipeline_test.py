@@ -936,6 +936,135 @@ def test_repeat_params(context: Context):
 
 
 # ============================================================================
+# 负数 roi 和 target 参数测试
+# ============================================================================
+
+
+def test_negative_roi_and_target(context: Context):
+    """测试负数 roi 和 target 参数的解析"""
+    print("\n=== test_negative_roi_and_target ===")
+
+    new_ctx = context.clone()
+
+    # 测试负数 roi 坐标（从边缘反向计算）
+    new_ctx.override_pipeline(
+        {
+            "NegativeRoiCoord": {
+                "recognition": "TemplateMatch",
+                "template": ["test.png"],
+                "roi": [-100, -100, 50, 50],
+            }
+        }
+    )
+    obj = new_ctx.get_node_object("NegativeRoiCoord")
+    assert_eq(obj.recognition.param.roi, [-100, -100, 50, 50], "negative roi coords")
+
+    # 测试负数 roi 宽高（xy 作为右下角）
+    new_ctx.override_pipeline(
+        {
+            "NegativeRoiSize": {
+                "recognition": "TemplateMatch",
+                "template": ["test.png"],
+                "roi": [200, 200, -100, -50],
+            }
+        }
+    )
+    obj = new_ctx.get_node_object("NegativeRoiSize")
+    assert_eq(obj.recognition.param.roi, [200, 200, -100, -50], "negative roi size")
+
+    # 测试 roi 宽高为 0（延伸至边缘）
+    new_ctx.override_pipeline(
+        {
+            "ZeroRoiSize": {
+                "recognition": "TemplateMatch",
+                "template": ["test.png"],
+                "roi": [100, 100, 0, 0],
+            }
+        }
+    )
+    obj = new_ctx.get_node_object("ZeroRoiSize")
+    assert_eq(obj.recognition.param.roi, [100, 100, 0, 0], "zero roi size")
+
+    # 测试组合：负数坐标 + 零宽高（右下角到边缘）
+    new_ctx.override_pipeline(
+        {
+            "NegativeRoiCombo": {
+                "recognition": "TemplateMatch",
+                "template": ["test.png"],
+                "roi": [-100, -100, 0, 0],
+            }
+        }
+    )
+    obj = new_ctx.get_node_object("NegativeRoiCombo")
+    assert_eq(obj.recognition.param.roi, [-100, -100, 0, 0], "negative roi combo")
+
+    # 测试 2 元素数组的负数坐标
+    new_ctx.override_pipeline(
+        {
+            "NegativeRoi2Elem": {
+                "recognition": "TemplateMatch",
+                "template": ["test.png"],
+                "roi": [-50, -50],
+            }
+        }
+    )
+    obj = new_ctx.get_node_object("NegativeRoi2Elem")
+    assert_eq(obj.recognition.param.roi, [-50, -50, 0, 0], "negative roi 2-element")
+
+    # 测试负数 target 坐标
+    new_ctx.override_pipeline(
+        {
+            "NegativeTargetCoord": {
+                "action": "Click",
+                "target": [-100, -100, 50, 50],
+            }
+        }
+    )
+    obj = new_ctx.get_node_object("NegativeTargetCoord")
+    assert_eq(obj.action.param.target, [-100, -100, 50, 50], "negative target coords")
+
+    # 测试负数 target 宽高
+    new_ctx.override_pipeline(
+        {
+            "NegativeTargetSize": {
+                "action": "Click",
+                "target": [300, 300, -100, -100],
+            }
+        }
+    )
+    obj = new_ctx.get_node_object("NegativeTargetSize")
+    assert_eq(obj.action.param.target, [300, 300, -100, -100], "negative target size")
+
+    # 测试 2 元素数组的负数 target
+    new_ctx.override_pipeline(
+        {
+            "NegativeTarget2Elem": {
+                "action": "Click",
+                "target": [-50, -50],
+            }
+        }
+    )
+    obj = new_ctx.get_node_object("NegativeTarget2Elem")
+    assert_eq(obj.action.param.target, [-50, -50, 0, 0], "negative target 2-element")
+
+    # 测试 Swipe 的负数坐标
+    new_ctx.override_pipeline(
+        {
+            "NegativeSwipe": {
+                "action": "Swipe",
+                "begin": [-100, -100, 50, 50],
+                "end": [-50, -50],
+            }
+        }
+    )
+    obj = new_ctx.get_node_object("NegativeSwipe")
+    assert_eq(obj.action.param.begin, [-100, -100, 50, 50], "negative swipe begin")
+    assert_eq(obj.action.param.end[0], [-50, -50, 0, 0], "negative swipe end")
+
+    print("  PASS: negative roi and target")
+
+
+# ============================================================================
 # 主测试流程
 # ============================================================================
 
@@ -1033,6 +1162,7 @@ def main():
             def analyze(self, context, argv):
                 test_wait_freezes(context)
                 test_repeat_params(context)
+                test_negative_roi_and_target(context)
                 return CustomRecognition.AnalyzeResult(
                     box=(0, 0, 10, 10), detail="done"
                 )
