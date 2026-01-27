@@ -50,53 +50,19 @@ bool Transceiver::handle_image_encoded_header(const json::value& j)
     return true;
 }
 
-#ifdef _WIN32
-static bool test_write_permission(const std::filesystem::path& dir)
-{
-    auto test_file = dir / std::format("maafw-write-test-{}.tmp", make_uuid());
-    std::error_code ec;
-
-    LogTrace << "testing write permission" << VAR(dir) << VAR(test_file);
-
-    std::ofstream ofs(test_file, std::ios::binary);
-    if (!ofs.is_open()) {
-        LogWarn << "failed to create test file, no write permission" << VAR(dir);
-        return false;
-    }
-    ofs.close();
-
-    std::filesystem::remove(test_file, ec);
-    LogTrace << "write permission test passed" << VAR(dir);
-    return true;
-}
-#endif
-
 static std::string temp_directory()
 {
+#ifndef _WIN32
     auto path = std::filesystem::temp_directory_path();
+#else
+    // https://github.com/MaaEnd/MaaEnd/issues/95
+    // 测了写权限了还不行，我没招了，直接拉💩
+    auto path = MaaNS::path("C:/Temp");
 
-#ifdef _WIN32
-
-    bool fallback = false;
-
-    // ZeroMQ IPC 在 Windows 上不支持 Unicode 路径，拉💩
-    if (GetACP() != CP_UTF8 && std::ranges::any_of(path.native(), [](wchar_t ch) { return ch > 127; })) {
-        fallback = true;
+    if (!std::filesystem::exists(path)) {
+        std::error_code ec;
+        std::filesystem::create_directories(path, ec);
     }
-    else if (!std::filesystem::exists(path) || !std::filesystem::is_directory(path)) {
-        fallback = true;
-    }
-    else if (!test_write_permission(path)) {
-        fallback = true;
-    }
-
-    if (fallback) {
-        path = MaaNS::path("C:/Temp");
-        if (!std::filesystem::exists(path)) {
-            std::filesystem::create_directories(path);
-        }
-    }
-
 #endif
 
     return path_to_utf8_string(path);
