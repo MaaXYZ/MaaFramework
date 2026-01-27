@@ -31,10 +31,6 @@ ResourceMgr::ResourceMgr()
 ResourceMgr::~ResourceMgr()
 {
     LogFunc;
-
-    if (res_loader_) {
-        res_loader_->wait_all();
-    }
 }
 
 bool ResourceMgr::set_option(MaaResOption key, MaaOptionValue value, MaaOptionValueSize val_size)

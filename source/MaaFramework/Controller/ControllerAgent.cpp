@@ -28,10 +28,6 @@ ControllerAgent::ControllerAgent(std::shared_ptr<MAA_CTRL_UNIT_NS::ControlUnitAP
 ControllerAgent::~ControllerAgent()
 {
     LogFunc;
-
-    if (action_runner_) {
-        action_runner_->wait_all();
-    }
 }
 
 bool ControllerAgent::set_option(MaaCtrlOption key, MaaOptionValue value, MaaOptionValueSize val_size)

@@ -84,7 +84,7 @@ inline AsyncRunner<Item>::AsyncRunner(ProcessFunc proc)
 template <typename Item>
 inline AsyncRunner<Item>::~AsyncRunner()
 {
-    // LogFunc;
+    LogFunc;
 
     release();
 }
@@ -92,7 +92,7 @@ inline AsyncRunner<Item>::~AsyncRunner()
 template <typename Item>
 inline void AsyncRunner<Item>::release()
 {
-    // LogFunc;
+    LogFunc;
 
     exit_ = true;
 

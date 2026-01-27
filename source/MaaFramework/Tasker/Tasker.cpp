@@ -35,10 +35,6 @@ Tasker::Tasker()
 Tasker::~Tasker()
 {
     LogFunc;
-
-    if (task_runner_) {
-        task_runner_->wait_all();
-    }
 }
 
 bool Tasker::bind_resource(MaaResource* resource)
