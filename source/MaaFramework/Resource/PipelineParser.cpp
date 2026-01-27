@@ -1611,7 +1611,7 @@ bool PipelineParser::parse_rect(const json::value& input_rect, cv::Rect& output)
         rect_vec.emplace_back(r.as_integer());
     }
     if (rect_vec.size() == 2) {
-        output = cv::Rect(rect_vec[0], rect_vec[1], 0, 0);
+        output = cv::Rect(rect_vec[0], rect_vec[1], 1, 1);
     }
     else if (rect_vec.size() == 4) {
         output = cv::Rect(rect_vec[0], rect_vec[1], rect_vec[2], rect_vec[3]);
