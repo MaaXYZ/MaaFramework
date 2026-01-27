@@ -4,6 +4,7 @@
 #include "MaaUtils/Buffer/ListBuffer.hpp"
 #include "MaaUtils/Buffer/StringBuffer.hpp"
 #include "MaaUtils/Logger.h"
+#include "MaaUtils/NoWarningCV.hpp"
 
 MaaStringBuffer* MaaStringBufferCreate()
 {
@@ -270,6 +271,16 @@ MaaBool MaaImageBufferSetRawData(MaaImageBuffer* handle, MaaImageRawData data, i
 
     handle->set(img);
     return true;
+}
+
+MaaBool MaaImageBufferResize(MaaImageBuffer* handle, int32_t width, int32_t height)
+{
+    if (!handle) {
+        LogError << "handle is null";
+        return 0;
+    }
+
+    return handle->resize(width, height);
 }
 
 MaaImageEncodedData MaaImageBufferGetEncoded(const MaaImageBuffer* handle)

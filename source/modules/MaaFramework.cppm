@@ -268,6 +268,7 @@ export using ::MaaImageBufferHeight;
 export using ::MaaImageBufferChannels;
 export using ::MaaImageBufferType;
 export using ::MaaImageBufferSetRawData;
+export using ::MaaImageBufferResize;
 export using ::MaaImageBufferGetEncoded;
 export using ::MaaImageBufferGetEncodedSize;
 export using ::MaaImageBufferSetEncoded;
