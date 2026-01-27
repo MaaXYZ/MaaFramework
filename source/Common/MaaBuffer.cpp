@@ -280,39 +280,7 @@ MaaBool MaaImageBufferResize(MaaImageBuffer* handle, int32_t width, int32_t heig
         return 0;
     }
 
-    if (!width && !height) {
-        LogError << "width and height are both 0";
-        return 0;
-    }
-
-    if (handle->empty()) {
-        LogError << "handle is empty";
-        return 0;
-    }
-
-    auto curWidth = handle->width();
-    auto curHeight = handle->height();
-
-    if (!curWidth || !curHeight) {
-        LogWarn << "handle is empty";
-        return 0;
-    }
-
-    int32_t targetWidth = curWidth, targetHeight = curHeight;
-    if (width) {
-        targetWidth = width;
-        targetHeight = static_cast<int32_t>(std::round(static_cast<double>(curHeight) * width / curWidth));
-    }
-    else {
-        targetHeight = height;
-        targetWidth = static_cast<int32_t>(std::round(static_cast<double>(curWidth) * height / curHeight));
-    }
-
-    cv::Mat target;
-    cv::resize(handle->get(), target, { targetWidth, targetHeight }, 0, 0, cv::INTER_AREA);
-    handle->set(target);
-
-    return true;
+    return handle->resize(width, height);
 }
 
 MaaImageEncodedData MaaImageBufferGetEncoded(const MaaImageBuffer* handle)
