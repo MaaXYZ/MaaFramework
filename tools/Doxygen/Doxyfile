@@ -300,7 +300,7 @@ DOCSET_PUBLISHER_ID    = org.doxygen.Publisher
 
 DOCSET_PUBLISHER_NAME  = Publisher
 
-SITEMAP_URL            = "https://maafw.xyz"
+SITEMAP_URL            = "https://maafw.com"
 
 GENERATE_TREEVIEW      = YES
 

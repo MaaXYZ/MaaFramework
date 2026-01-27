@@ -28,7 +28,7 @@ _✨ An automation black-box testing framework based on image recognition ✨_
   <a href="https://pkg.go.dev/github.com/MaaXYZ/maa-framework-go/v3"><img alt="go reference" src="https://pkg.go.dev/badge/github.com/MaaXYZ/maa-framework-go/v3.svg" /></a>
   <a href="https://mirrorchyan.com/en/projects?source=maafw-badge" target="_blank"><img alt="mirrorc" src="./docs/static/mirrorc-en.svg"></a>
   <br>
-  <a href="https://maafw.xyz/" target="_blank"><img alt="website" src="./docs/static/maafw.svg"></a>
+  <a href="https://maafw.com/" target="_blank"><img alt="website" src="./docs/static/maafw.svg"></a>
   <a href="https://deepwiki.com/MaaXYZ/MaaFramework" target="_blank"><img alt="deepwiki" src="https://deepwiki.com/badge.svg"></a>
 </p>
 
@@ -50,7 +50,7 @@ It offers low-code simplicity while maintaining high extensibility. The framewor
 ## Get Started
 
 > [!TIP]
-> Visit our [website](https://maafw.xyz/) for a better documentation experience.  
+> Visit our [website](https://maafw.com/) for a better documentation experience.  
 > Can't find the relevant documents? Try asking [AI](https://deepwiki.com/MaaXYZ/MaaFramework) ！
 
 - [Quick Start](docs/en_us/1.1-QuickStarted.md) & [Terms](docs/en_us/1.2-ExplanationOfTerms.md)
@@ -94,7 +94,7 @@ It offers low-code simplicity while maintaining high extensibility. The framewor
 - [MaaMCP](https://github.com/MaaXYZ/MaaMCP) ![python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white) ![license](https://img.shields.io/github/license/MaaXYZ/MaaMCP) ![activity](https://img.shields.io/github/commit-activity/m/MaaXYZ/MaaMCP?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/MaaXYZ/MaaMCP?style=social) [![pypi](https://img.shields.io/badge/PyPI-3776AB?logo=pypi&logoColor=white)](https://pypi.org/project/maa-mcp)  
     A MCP server, based on MaaFramework, provides AI assistants with automation capabilities for Android devices and Windows desktops.
 
-- [MaaLogAnalyzer](https://github.com/Windsland52/MAALogAnalyzer) ![Typescript](https://img.shields.io/badge/Typescript-8A2BE2?logo=typescript) ![license](https://img.shields.io/github/license/Windsland52/MAALogAnalyzer) ![activity](https://img.shields.io/github/commit-activity/m/Windsland52/MAALogAnalyzer?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/Windsland52/MAALogAnalyzer?style=social) [![website](https://img.shields.io/badge/https://maaloganalyzer.maafw.xyz-%234285F4)](https://maaloganalyzer.maafw.xyz/)  
+- [MaaLogAnalyzer](https://github.com/Windsland52/MAALogAnalyzer) ![Typescript](https://img.shields.io/badge/Typescript-8A2BE2?logo=typescript) ![license](https://img.shields.io/github/license/Windsland52/MAALogAnalyzer) ![activity](https://img.shields.io/github/commit-activity/m/Windsland52/MAALogAnalyzer?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/Windsland52/MAALogAnalyzer?style=social) [![website](https://img.shields.io/badge/https://maaloganalyzer.maafw.com-%234285F4)](https://maaloganalyzer.maafw.com/)  
     MaaFramework user log analysis tool, supporting visual task execution flow and full-text search.
 
 ### Application

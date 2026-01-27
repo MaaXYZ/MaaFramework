@@ -29,7 +29,7 @@ _✨ 基于图像识别的自动化黑盒测试框架 ✨_
   <a href="https://crates.io/crates/maa-framework"><img alt="rust crate" src="https://img.shields.io/badge/Rust-crate-orange?logo=rust" /></a>
   <a href="https://mirrorchyan.com/zh/projects?source=maafw-badge" target="_blank"><img alt="mirrorc" src="./docs/static/mirrorc-zh.svg"></a>
   <br>
-  <a href="https://maafw.xyz/" target="_blank"><img alt="website" src="./docs/static/maafw.svg"></a>
+  <a href="https://maafw.com/" target="_blank"><img alt="website" src="./docs/static/maafw.svg"></a>
   <a href="https://deepwiki.com/MaaXYZ/MaaFramework" target="_blank"><img alt="deepwiki" src="https://deepwiki.com/badge.svg"></a>
 </p>
 
@@ -48,7 +48,7 @@ _✨ 基于图像识别的自动化黑盒测试框架 ✨_
 ## 即刻开始
 
 > [!TIP]
-> 访问我们的 [官网](https://maafw.xyz/) 以获得更优秀的文档阅读体验。  
+> 访问我们的 [官网](https://maafw.com/) 以获得更优秀的文档阅读体验。  
 > 找不到相关文档？试试问 [AI](https://deepwiki.com/MaaXYZ/MaaFramework) ！
 
 - [快速开始](docs/zh_cn/1.1-快速开始.md) & [术语解释](docs/zh_cn/1.2-术语解释.md)
@@ -92,7 +92,7 @@ _✨ 基于图像识别的自动化黑盒测试框架 ✨_
 - [MaaMCP](https://github.com/MaaXYZ/MaaMCP) ![python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white) ![license](https://img.shields.io/github/license/MaaXYZ/MaaMCP) ![activity](https://img.shields.io/github/commit-activity/m/MaaXYZ/MaaMCP?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/MaaXYZ/MaaMCP?style=social) [![pypi](https://img.shields.io/badge/PyPI-3776AB?logo=pypi&logoColor=white)](https://pypi.org/project/maa-mcp)  
     基于 MaaFramework 的 MCP 服务器 为 AI 助手提供 Android 设备和 Windows 桌面自动化能力
 
-- [MaaLogAnalyzer](https://github.com/Windsland52/MAALogAnalyzer) ![Typescript](https://img.shields.io/badge/Typescript-8A2BE2?logo=typescript) ![license](https://img.shields.io/github/license/Windsland52/MAALogAnalyzer) ![activity](https://img.shields.io/github/commit-activity/m/Windsland52/MAALogAnalyzer?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/Windsland52/MAALogAnalyzer?style=social) [![website](https://img.shields.io/badge/https://maaloganalyzer.maafw.xyz-%234285F4)](https://maaloganalyzer.maafw.xyz/)  
+- [MaaLogAnalyzer](https://github.com/Windsland52/MAALogAnalyzer) ![Typescript](https://img.shields.io/badge/Typescript-8A2BE2?logo=typescript) ![license](https://img.shields.io/github/license/Windsland52/MAALogAnalyzer) ![activity](https://img.shields.io/github/commit-activity/m/Windsland52/MAALogAnalyzer?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/Windsland52/MAALogAnalyzer?style=social) [![website](https://img.shields.io/badge/https://maaloganalyzer.maafw.com-%234285F4)](https://maaloganalyzer.maafw.com/)  
     MaaFramework 用户日志分析工具，支持可视化任务执行流程和全文搜索
 
 ### 应用程序

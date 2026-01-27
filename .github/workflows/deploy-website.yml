@@ -1,4 +1,4 @@
-name: deploy-maafw.xyz
+name: deploy-maafw.com
 
 on:
     push:
