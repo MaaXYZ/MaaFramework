@@ -295,17 +295,50 @@ inline static std::vector<float> image_to_tensor(const cv::Mat& image)
     return tensor;
 }
 
+// 将支持负数的矩形转换为标准矩形：
+// - x/y 负数表示从右/下边缘反向计算
+// - w/h 负数表示取绝对值并将 (x,y) 视为右下角
+// - w/h 为 0 表示延伸至边缘
+inline cv::Rect normalize_rect(const cv::Rect& rect, int image_width, int image_height)
+{
+    cv::Rect res = rect;
+
+    if (res.x < 0) {
+        res.x = image_width + res.x;
+    }
+    if (res.y < 0) {
+        res.y = image_height + res.y;
+    }
+
+    if (res.width < 0) {
+        res.width = -res.width;
+        res.x -= res.width;
+    }
+    if (res.height < 0) {
+        res.height = -res.height;
+        res.y -= res.height;
+    }
+
+    if (res.width == 0) {
+        res.width = image_width - res.x;
+    }
+    if (res.height == 0) {
+        res.height = image_height - res.y;
+    }
+
+    return res;
+}
+
 inline cv::Rect correct_roi(const cv::Rect& roi, const cv::Mat& image)
 {
     if (image.empty()) {
         LogError << "image is empty" << VAR(image.size());
         return roi;
     }
-    if (roi.empty()) {
-        return { 0, 0, image.cols, image.rows };
-    }
 
-    cv::Rect res = roi;
+    cv::Rect res = normalize_rect(roi, image.cols, image.rows);
+
+    // 边界检查和修正
     if (image.cols < res.x) {
         LogError << "roi is out of range" << VAR(image.size()) << VAR(res);
         res.x = image.cols - res.width;

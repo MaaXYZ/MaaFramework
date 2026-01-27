@@ -6,6 +6,7 @@
 #include "MaaUtils/JsonExt.hpp"
 #include "MaaUtils/Logger.h"
 #include "Vision/TemplateComparator.h"
+#include "Vision/VisionUtils.hpp"
 
 MAA_TASK_NS_BEGIN
 
@@ -724,6 +725,11 @@ cv::Rect Actuator::get_target_rect(const MAA_RES_NS::Action::Target target, cons
     }
 
     auto image = controller()->cached_image();
+
+    // Region 类型支持负数坐标和尺寸
+    if (target.type == Target::Type::Region) {
+        raw = MAA_VISION_NS::normalize_rect(raw, image.cols, image.rows);
+    }
 
     int x = std::clamp(raw.x + target.offset.x, 0, image.cols);
     int y = std::clamp(raw.y + target.offset.y, 0, image.rows);
