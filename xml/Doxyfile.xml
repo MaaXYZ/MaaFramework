@@ -201,7 +201,7 @@
   <option  id='CHM_INDEX_ENCODING' default='yes' type='string'><value><![CDATA[]]></value></option>
   <option  id='BINARY_TOC' default='yes' type='bool'><value>NO</value></option>
   <option  id='TOC_EXPAND' default='yes' type='bool'><value>NO</value></option>
-  <option  id='SITEMAP_URL' default='no' type='string'><value><![CDATA[https://maafw.xyz]]></value></option>
+  <option  id='SITEMAP_URL' default='no' type='string'><value><![CDATA[https://maafw.com]]></value></option>
   <option  id='GENERATE_QHP' default='yes' type='bool'><value>NO</value></option>
   <option  id='QCH_FILE' default='yes' type='string'><value><![CDATA[]]></value></option>
   <option  id='QHP_NAMESPACE' default='yes' type='string'><value><![CDATA[org.doxygen.Project]]></value></option>
