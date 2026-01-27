@@ -426,6 +426,7 @@
     <member refid="MaaBuffer_8h_1ae853448a1632c7e73ac1004a5b963d40" kind="function"><name>MaaImageBufferChannels</name></member>
     <member refid="MaaBuffer_8h_1a0987a5d84f007279c74cc6ee8e48b0db" kind="function"><name>MaaImageBufferType</name></member>
     <member refid="MaaBuffer_8h_1a264698059fd0819daa031ec80bc3be7a" kind="function"><name>MaaImageBufferSetRawData</name></member>
+    <member refid="MaaBuffer_8h_1a30fd17ae6d48e651dafb97e9b0b1a864" kind="function"><name>MaaImageBufferResize</name></member>
     <member refid="MaaBuffer_8h_1acdbc42bfeb973fed192a94152273fd85" kind="function"><name>MaaImageBufferGetEncoded</name></member>
     <member refid="MaaBuffer_8h_1a04aa8aa6ddcc0358c7ab89aa2cadabd2" kind="function"><name>MaaImageBufferGetEncodedSize</name></member>
     <member refid="MaaBuffer_8h_1a6b57da4b068683e5b4d9f379cebd8941" kind="function"><name>MaaImageBufferSetEncoded</name></member>

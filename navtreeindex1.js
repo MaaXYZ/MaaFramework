@@ -1,5 +1,6 @@
 var NAVTREEINDEX1 =
 {
+"MaaDef_8h.html#a9aa211dbcabe90cacd0c94ea6a03d116a3ff6bf91b8715ced2a6c20ac9c1b4109":[3,0,0,2,4,123,1],
 "MaaDef_8h.html#a9aa211dbcabe90cacd0c94ea6a03d116ace3b2838a2190168d82cf04fd4d05cf9":[3,0,0,2,4,123,2],
 "MaaDef_8h.html#a9aa211dbcabe90cacd0c94ea6a03d116afdc31dbaaa6b035f11b40cd574165f8e":[3,0,0,2,4,123,0],
 "MaaDef_8h.html#a9d97a808d79e338e4a9001268e805336":[3,0,0,2,4,71],
@@ -248,6 +249,5 @@ var NAVTREEINDEX1 =
 "structMaaCustomControllerCallbacks.html#a9cab96282d0a73e1354a4fa48c3712f3":[2,0,0,9],
 "structMaaCustomControllerCallbacks.html#ac25e877ae83b359a0b3e7ee8b02f534f":[2,0,0,4],
 "structMaaCustomControllerCallbacks.html#ace80d9863f4faaa37fcf1a00bc521561":[2,0,0,7],
-"structMaaCustomControllerCallbacks.html#ad7eb80327cea4f03830d13480ce03eb7":[2,0,0,10],
-"structMaaCustomControllerCallbacks.html#add383d0ce3995532bfe0db9d008b6f7e":[2,0,0,13]
+"structMaaCustomControllerCallbacks.html#ad7eb80327cea4f03830d13480ce03eb7":[2,0,0,10]
 };

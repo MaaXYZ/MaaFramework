@@ -28,6 +28,7 @@ var MaaBuffer_8h =
     [ "MaaImageBufferChannels", "MaaBuffer_8h.html#ae853448a1632c7e73ac1004a5b963d40", null ],
     [ "MaaImageBufferType", "MaaBuffer_8h.html#a0987a5d84f007279c74cc6ee8e48b0db", null ],
     [ "MaaImageBufferSetRawData", "MaaBuffer_8h.html#a264698059fd0819daa031ec80bc3be7a", null ],
+    [ "MaaImageBufferResize", "MaaBuffer_8h.html#a30fd17ae6d48e651dafb97e9b0b1a864", null ],
     [ "MaaImageBufferGetEncoded", "MaaBuffer_8h.html#acdbc42bfeb973fed192a94152273fd85", null ],
     [ "MaaImageBufferGetEncodedSize", "MaaBuffer_8h.html#a04aa8aa6ddcc0358c7ab89aa2cadabd2", null ],
     [ "MaaImageBufferSetEncoded", "MaaBuffer_8h.html#a6b57da4b068683e5b4d9f379cebd8941", null ],

@@ -166,6 +166,8 @@ Functions</h2></td></tr>
 <tr class="separator:a0987a5d84f007279c74cc6ee8e48b0db"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a264698059fd0819daa031ec80bc3be7a" id="r_a264698059fd0819daa031ec80bc3be7a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="MaaPort_8h.html#a67006334d91d228121dbba7a8bf8fe05">MAA_FRAMEWORK_API</a> <a class="el" href="MaaDef_8h.html#a2f7289f2a8e07f48c6261b52a120cdf6">MaaBool</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="MaaBuffer_8h.html#a264698059fd0819daa031ec80bc3be7a">MaaImageBufferSetRawData</a> (<a class="el" href="MaaDef_8h.html#a0a52c8503deca448e71a407cdb14d259">MaaImageBuffer</a> *handle, <a class="el" href="MaaBuffer_8h.html#a56cc9baf46b22a99679aef7fbddd0676">MaaImageRawData</a> data, int32_t width, int32_t height, int32_t type)</td></tr>
 <tr class="separator:a264698059fd0819daa031ec80bc3be7a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a30fd17ae6d48e651dafb97e9b0b1a864" id="r_a30fd17ae6d48e651dafb97e9b0b1a864"><td class="memItemLeft" align="right" valign="top"><a class="el" href="MaaPort_8h.html#a67006334d91d228121dbba7a8bf8fe05">MAA_FRAMEWORK_API</a> <a class="el" href="MaaDef_8h.html#a2f7289f2a8e07f48c6261b52a120cdf6">MaaBool</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="MaaBuffer_8h.html#a30fd17ae6d48e651dafb97e9b0b1a864">MaaImageBufferResize</a> (<a class="el" href="MaaDef_8h.html#a0a52c8503deca448e71a407cdb14d259">MaaImageBuffer</a> *handle, int32_t width, int32_t height)</td></tr>
+<tr class="separator:a30fd17ae6d48e651dafb97e9b0b1a864"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:acdbc42bfeb973fed192a94152273fd85" id="r_acdbc42bfeb973fed192a94152273fd85"><td class="memItemLeft" align="right" valign="top"><a class="el" href="MaaPort_8h.html#a67006334d91d228121dbba7a8bf8fe05">MAA_FRAMEWORK_API</a> <a class="el" href="MaaBuffer_8h.html#a968e001e4bea16b169d95e3e398250c2">MaaImageEncodedData</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="MaaBuffer_8h.html#acdbc42bfeb973fed192a94152273fd85">MaaImageBufferGetEncoded</a> (const <a class="el" href="MaaDef_8h.html#a0a52c8503deca448e71a407cdb14d259">MaaImageBuffer</a> *handle)</td></tr>
 <tr class="separator:acdbc42bfeb973fed192a94152273fd85"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a04aa8aa6ddcc0358c7ab89aa2cadabd2" id="r_a04aa8aa6ddcc0358c7ab89aa2cadabd2"><td class="memItemLeft" align="right" valign="top"><a class="el" href="MaaPort_8h.html#a67006334d91d228121dbba7a8bf8fe05">MAA_FRAMEWORK_API</a> <a class="el" href="MaaDef_8h.html#a72a89077c419a0fe586d68bde004d856">MaaSize</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="MaaBuffer_8h.html#a04aa8aa6ddcc0358c7ab89aa2cadabd2">MaaImageBufferGetEncodedSize</a> (const <a class="el" href="MaaDef_8h.html#a0a52c8503deca448e71a407cdb14d259">MaaImageBuffer</a> *handle)</td></tr>
@@ -775,6 +777,40 @@ Functions</h2></td></tr>
           <td></td>
           <td class="paramtype">int32_t&#160;</td>
           <td class="paramname"><em>type</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a30fd17ae6d48e651dafb97e9b0b1a864" name="a30fd17ae6d48e651dafb97e9b0b1a864"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a30fd17ae6d48e651dafb97e9b0b1a864">&#9670;&#160;</a></span>MaaImageBufferResize()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="MaaPort_8h.html#a67006334d91d228121dbba7a8bf8fe05">MAA_FRAMEWORK_API</a> <a class="el" href="MaaDef_8h.html#a2f7289f2a8e07f48c6261b52a120cdf6">MaaBool</a> MaaImageBufferResize </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="MaaDef_8h.html#a0a52c8503deca448e71a407cdb14d259">MaaImageBuffer</a> *&#160;</td>
+          <td class="paramname"><em>handle</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int32_t&#160;</td>
+          <td class="paramname"><em>width</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int32_t&#160;</td>
+          <td class="paramname"><em>height</em>&#160;</td>
         </tr>
         <tr>
           <td></td>

@@ -67,7 +67,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="include/MaaFramework/Utility/MaaBuffer.h" line="58" column="21" bodyfile="include/MaaFramework/Utility/MaaBuffer.h" bodystart="58" bodyend="-1"/>
+        <location file="include/MaaFramework/Utility/MaaBuffer.h" line="59" column="21" bodyfile="include/MaaFramework/Utility/MaaBuffer.h" bodystart="59" bodyend="-1"/>
       </memberdef>
     </sectiondef>
     <sectiondef kind="func">
@@ -541,6 +541,31 @@
         </inbodydescription>
         <location file="include/MaaFramework/Utility/MaaBuffer.h" line="56" column="9" declfile="include/MaaFramework/Utility/MaaBuffer.h" declline="56" declcolumn="9"/>
       </memberdef>
+      <memberdef kind="function" id="MaaBuffer_8h_1a30fd17ae6d48e651dafb97e9b0b1a864" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="MaaPort_8h_1a67006334d91d228121dbba7a8bf8fe05" kindref="member">MAA_FRAMEWORK_API</ref> <ref refid="MaaDef_8h_1a2f7289f2a8e07f48c6261b52a120cdf6" kindref="member">MaaBool</ref></type>
+        <definition>MAA_FRAMEWORK_API MaaBool MaaImageBufferResize</definition>
+        <argsstring>(MaaImageBuffer *handle, int32_t width, int32_t height)</argsstring>
+        <name>MaaImageBufferResize</name>
+        <param>
+          <type><ref refid="MaaDef_8h_1a0a52c8503deca448e71a407cdb14d259" kindref="member">MaaImageBuffer</ref> *</type>
+          <declname>handle</declname>
+        </param>
+        <param>
+          <type>int32_t</type>
+          <declname>width</declname>
+        </param>
+        <param>
+          <type>int32_t</type>
+          <declname>height</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaFramework/Utility/MaaBuffer.h" line="57" column="31" declfile="include/MaaFramework/Utility/MaaBuffer.h" declline="57" declcolumn="31"/>
+      </memberdef>
       <memberdef kind="function" id="MaaBuffer_8h_1acdbc42bfeb973fed192a94152273fd85" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="MaaPort_8h_1a67006334d91d228121dbba7a8bf8fe05" kindref="member">MAA_FRAMEWORK_API</ref> <ref refid="MaaBuffer_8h_1a968e001e4bea16b169d95e3e398250c2" kindref="member">MaaImageEncodedData</ref></type>
         <definition>MAA_FRAMEWORK_API MaaImageEncodedData MaaImageBufferGetEncoded</definition>
@@ -556,7 +581,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="include/MaaFramework/Utility/MaaBuffer.h" line="59" column="43" declfile="include/MaaFramework/Utility/MaaBuffer.h" declline="59" declcolumn="43"/>
+        <location file="include/MaaFramework/Utility/MaaBuffer.h" line="60" column="43" declfile="include/MaaFramework/Utility/MaaBuffer.h" declline="60" declcolumn="43"/>
       </memberdef>
       <memberdef kind="function" id="MaaBuffer_8h_1a04aa8aa6ddcc0358c7ab89aa2cadabd2" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="MaaPort_8h_1a67006334d91d228121dbba7a8bf8fe05" kindref="member">MAA_FRAMEWORK_API</ref> <ref refid="MaaDef_8h_1a72a89077c419a0fe586d68bde004d856" kindref="member">MaaSize</ref></type>
@@ -573,7 +598,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="include/MaaFramework/Utility/MaaBuffer.h" line="60" column="31" declfile="include/MaaFramework/Utility/MaaBuffer.h" declline="60" declcolumn="31"/>
+        <location file="include/MaaFramework/Utility/MaaBuffer.h" line="61" column="31" declfile="include/MaaFramework/Utility/MaaBuffer.h" declline="61" declcolumn="31"/>
       </memberdef>
       <memberdef kind="function" id="MaaBuffer_8h_1a6b57da4b068683e5b4d9f379cebd8941" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="MaaPort_8h_1a67006334d91d228121dbba7a8bf8fe05" kindref="member">MAA_FRAMEWORK_API</ref> <ref refid="MaaDef_8h_1a2f7289f2a8e07f48c6261b52a120cdf6" kindref="member">MaaBool</ref></type>
@@ -598,7 +623,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="include/MaaFramework/Utility/MaaBuffer.h" line="61" column="31" declfile="include/MaaFramework/Utility/MaaBuffer.h" declline="61" declcolumn="31"/>
+        <location file="include/MaaFramework/Utility/MaaBuffer.h" line="62" column="31" declfile="include/MaaFramework/Utility/MaaBuffer.h" declline="62" declcolumn="31"/>
       </memberdef>
       <memberdef kind="function" id="MaaBuffer_8h_1a96ef3254f962a091c79e6c8a83b54c6c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="MaaPort_8h_1a67006334d91d228121dbba7a8bf8fe05" kindref="member">MAA_FRAMEWORK_API</ref> <ref refid="MaaDef_8h_1a851b5afdefb36ce0affc05d7df854142" kindref="member">MaaImageListBuffer</ref> *</type>
@@ -611,7 +636,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="include/MaaFramework/Utility/MaaBuffer.h" line="63" column="42" declfile="include/MaaFramework/Utility/MaaBuffer.h" declline="63" declcolumn="42"/>
+        <location file="include/MaaFramework/Utility/MaaBuffer.h" line="64" column="42" declfile="include/MaaFramework/Utility/MaaBuffer.h" declline="64" declcolumn="42"/>
       </memberdef>
       <memberdef kind="function" id="MaaBuffer_8h_1ad39f48b923a6e91398e07461e1f6e5de" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="MaaPort_8h_1a67006334d91d228121dbba7a8bf8fe05" kindref="member">MAA_FRAMEWORK_API</ref> void</type>
@@ -628,7 +653,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="include/MaaFramework/Utility/MaaBuffer.h" line="64" column="28" declfile="include/MaaFramework/Utility/MaaBuffer.h" declline="64" declcolumn="28"/>
+        <location file="include/MaaFramework/Utility/MaaBuffer.h" line="65" column="28" declfile="include/MaaFramework/Utility/MaaBuffer.h" declline="65" declcolumn="28"/>
       </memberdef>
       <memberdef kind="function" id="MaaBuffer_8h_1a7ce8c531e32d570b8c135c291fce9069" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="MaaPort_8h_1a67006334d91d228121dbba7a8bf8fe05" kindref="member">MAA_FRAMEWORK_API</ref> <ref refid="MaaDef_8h_1a2f7289f2a8e07f48c6261b52a120cdf6" kindref="member">MaaBool</ref></type>
@@ -645,7 +670,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="include/MaaFramework/Utility/MaaBuffer.h" line="65" column="31" declfile="include/MaaFramework/Utility/MaaBuffer.h" declline="65" declcolumn="31"/>
+        <location file="include/MaaFramework/Utility/MaaBuffer.h" line="66" column="31" declfile="include/MaaFramework/Utility/MaaBuffer.h" declline="66" declcolumn="31"/>
       </memberdef>
       <memberdef kind="function" id="MaaBuffer_8h_1a8ecfbee12a38ae81af4736a9b7122a44" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="MaaPort_8h_1a67006334d91d228121dbba7a8bf8fe05" kindref="member">MAA_FRAMEWORK_API</ref> <ref refid="MaaDef_8h_1a72a89077c419a0fe586d68bde004d856" kindref="member">MaaSize</ref></type>
@@ -662,7 +687,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="include/MaaFramework/Utility/MaaBuffer.h" line="66" column="31" declfile="include/MaaFramework/Utility/MaaBuffer.h" declline="66" declcolumn="31"/>
+        <location file="include/MaaFramework/Utility/MaaBuffer.h" line="67" column="31" declfile="include/MaaFramework/Utility/MaaBuffer.h" declline="67" declcolumn="31"/>
       </memberdef>
       <memberdef kind="function" id="MaaBuffer_8h_1a4254ed0486833131c904d4a1ea572035" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="MaaPort_8h_1a67006334d91d228121dbba7a8bf8fe05" kindref="member">MAA_FRAMEWORK_API</ref> const <ref refid="MaaDef_8h_1a0a52c8503deca448e71a407cdb14d259" kindref="member">MaaImageBuffer</ref> *</type>
@@ -683,7 +708,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="include/MaaFramework/Utility/MaaBuffer.h" line="68" column="44" declfile="include/MaaFramework/Utility/MaaBuffer.h" declline="68" declcolumn="44"/>
+        <location file="include/MaaFramework/Utility/MaaBuffer.h" line="69" column="44" declfile="include/MaaFramework/Utility/MaaBuffer.h" declline="69" declcolumn="44"/>
       </memberdef>
       <memberdef kind="function" id="MaaBuffer_8h_1a388553fdf4e386f70bba3d06eaef3fee" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="MaaPort_8h_1a67006334d91d228121dbba7a8bf8fe05" kindref="member">MAA_FRAMEWORK_API</ref> <ref refid="MaaDef_8h_1a2f7289f2a8e07f48c6261b52a120cdf6" kindref="member">MaaBool</ref></type>
@@ -704,7 +729,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="include/MaaFramework/Utility/MaaBuffer.h" line="71" column="31" declfile="include/MaaFramework/Utility/MaaBuffer.h" declline="71" declcolumn="31"/>
+        <location file="include/MaaFramework/Utility/MaaBuffer.h" line="72" column="31" declfile="include/MaaFramework/Utility/MaaBuffer.h" declline="72" declcolumn="31"/>
       </memberdef>
       <memberdef kind="function" id="MaaBuffer_8h_1ab0c5beb1f17b944dd1d5ae1a2e9c55fe" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="MaaPort_8h_1a67006334d91d228121dbba7a8bf8fe05" kindref="member">MAA_FRAMEWORK_API</ref> <ref refid="MaaDef_8h_1a2f7289f2a8e07f48c6261b52a120cdf6" kindref="member">MaaBool</ref></type>
@@ -725,7 +750,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="include/MaaFramework/Utility/MaaBuffer.h" line="72" column="31" declfile="include/MaaFramework/Utility/MaaBuffer.h" declline="72" declcolumn="31"/>
+        <location file="include/MaaFramework/Utility/MaaBuffer.h" line="73" column="31" declfile="include/MaaFramework/Utility/MaaBuffer.h" declline="73" declcolumn="31"/>
       </memberdef>
       <memberdef kind="function" id="MaaBuffer_8h_1acf243ee35644284fb8bd9bf024d32cd6" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="MaaPort_8h_1a67006334d91d228121dbba7a8bf8fe05" kindref="member">MAA_FRAMEWORK_API</ref> <ref refid="MaaDef_8h_1a2f7289f2a8e07f48c6261b52a120cdf6" kindref="member">MaaBool</ref></type>
@@ -742,7 +767,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="include/MaaFramework/Utility/MaaBuffer.h" line="73" column="31" declfile="include/MaaFramework/Utility/MaaBuffer.h" declline="73" declcolumn="31"/>
+        <location file="include/MaaFramework/Utility/MaaBuffer.h" line="74" column="31" declfile="include/MaaFramework/Utility/MaaBuffer.h" declline="74" declcolumn="31"/>
       </memberdef>
       <memberdef kind="function" id="MaaBuffer_8h_1a7ce60f072394b69766241f639385c204" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="MaaPort_8h_1a67006334d91d228121dbba7a8bf8fe05" kindref="member">MAA_FRAMEWORK_API</ref> <ref refid="structMaaRect" kindref="compound">MaaRect</ref> *</type>
@@ -755,7 +780,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="include/MaaFramework/Utility/MaaBuffer.h" line="75" column="31" declfile="include/MaaFramework/Utility/MaaBuffer.h" declline="75" declcolumn="31"/>
+        <location file="include/MaaFramework/Utility/MaaBuffer.h" line="76" column="31" declfile="include/MaaFramework/Utility/MaaBuffer.h" declline="76" declcolumn="31"/>
       </memberdef>
       <memberdef kind="function" id="MaaBuffer_8h_1a173272ddec11db3c402a41c257cc1ddc" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="MaaPort_8h_1a67006334d91d228121dbba7a8bf8fe05" kindref="member">MAA_FRAMEWORK_API</ref> void</type>
@@ -772,7 +797,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="include/MaaFramework/Utility/MaaBuffer.h" line="76" column="28" declfile="include/MaaFramework/Utility/MaaBuffer.h" declline="76" declcolumn="28"/>
+        <location file="include/MaaFramework/Utility/MaaBuffer.h" line="77" column="28" declfile="include/MaaFramework/Utility/MaaBuffer.h" declline="77" declcolumn="28"/>
       </memberdef>
       <memberdef kind="function" id="MaaBuffer_8h_1a262ed94f072b8ea94c2dfd54f6d53c03" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="MaaPort_8h_1a67006334d91d228121dbba7a8bf8fe05" kindref="member">MAA_FRAMEWORK_API</ref> int32_t</type>
@@ -789,7 +814,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="include/MaaFramework/Utility/MaaBuffer.h" line="77" column="31" declfile="include/MaaFramework/Utility/MaaBuffer.h" declline="77" declcolumn="31"/>
+        <location file="include/MaaFramework/Utility/MaaBuffer.h" line="78" column="31" declfile="include/MaaFramework/Utility/MaaBuffer.h" declline="78" declcolumn="31"/>
       </memberdef>
       <memberdef kind="function" id="MaaBuffer_8h_1a91ed1093d563623e878b439e7694e3ab" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="MaaPort_8h_1a67006334d91d228121dbba7a8bf8fe05" kindref="member">MAA_FRAMEWORK_API</ref> int32_t</type>
@@ -806,7 +831,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="include/MaaFramework/Utility/MaaBuffer.h" line="78" column="31" declfile="include/MaaFramework/Utility/MaaBuffer.h" declline="78" declcolumn="31"/>
+        <location file="include/MaaFramework/Utility/MaaBuffer.h" line="79" column="31" declfile="include/MaaFramework/Utility/MaaBuffer.h" declline="79" declcolumn="31"/>
       </memberdef>
       <memberdef kind="function" id="MaaBuffer_8h_1a1cfefa0a8dc4e721bce6aa3602d97ba3" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="MaaPort_8h_1a67006334d91d228121dbba7a8bf8fe05" kindref="member">MAA_FRAMEWORK_API</ref> int32_t</type>
@@ -823,7 +848,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="include/MaaFramework/Utility/MaaBuffer.h" line="79" column="31" declfile="include/MaaFramework/Utility/MaaBuffer.h" declline="79" declcolumn="31"/>
+        <location file="include/MaaFramework/Utility/MaaBuffer.h" line="80" column="31" declfile="include/MaaFramework/Utility/MaaBuffer.h" declline="80" declcolumn="31"/>
       </memberdef>
       <memberdef kind="function" id="MaaBuffer_8h_1a1eca17dafdbe325994a720137c88b208" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="MaaPort_8h_1a67006334d91d228121dbba7a8bf8fe05" kindref="member">MAA_FRAMEWORK_API</ref> int32_t</type>
@@ -840,7 +865,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="include/MaaFramework/Utility/MaaBuffer.h" line="80" column="31" declfile="include/MaaFramework/Utility/MaaBuffer.h" declline="80" declcolumn="31"/>
+        <location file="include/MaaFramework/Utility/MaaBuffer.h" line="81" column="31" declfile="include/MaaFramework/Utility/MaaBuffer.h" declline="81" declcolumn="31"/>
       </memberdef>
       <memberdef kind="function" id="MaaBuffer_8h_1a0a35a526b64704cb0c99873fa03ed9c2" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
         <type><ref refid="MaaPort_8h_1a67006334d91d228121dbba7a8bf8fe05" kindref="member">MAA_FRAMEWORK_API</ref> <ref refid="MaaDef_8h_1a2f7289f2a8e07f48c6261b52a120cdf6" kindref="member">MaaBool</ref></type>
@@ -873,7 +898,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="include/MaaFramework/Utility/MaaBuffer.h" line="82" column="31" declfile="include/MaaFramework/Utility/MaaBuffer.h" declline="82" declcolumn="31"/>
+        <location file="include/MaaFramework/Utility/MaaBuffer.h" line="83" column="31" declfile="include/MaaFramework/Utility/MaaBuffer.h" declline="83" declcolumn="31"/>
       </memberdef>
     </sectiondef>
     <briefdescription>
