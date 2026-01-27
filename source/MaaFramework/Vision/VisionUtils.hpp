@@ -301,11 +301,36 @@ inline cv::Rect correct_roi(const cv::Rect& roi, const cv::Mat& image)
         LogError << "image is empty" << VAR(image.size());
         return roi;
     }
-    if (roi.empty()) {
-        return { 0, 0, image.cols, image.rows };
-    }
 
     cv::Rect res = roi;
+
+    // 负数坐标表示从图像边缘反向计算
+    if (res.x < 0) {
+        res.x = image.cols + res.x;
+    }
+    if (res.y < 0) {
+        res.y = image.rows + res.y;
+    }
+
+    // 负数宽高：取绝对值，并将 xy 作为右下角而非左上角
+    if (res.width < 0) {
+        res.width = -res.width;
+        res.x -= res.width;
+    }
+    if (res.height < 0) {
+        res.height = -res.height;
+        res.y -= res.height;
+    }
+
+    // 宽高为 0 时表示延伸至边缘
+    if (res.width == 0) {
+        res.width = image.cols - res.x;
+    }
+    if (res.height == 0) {
+        res.height = image.rows - res.y;
+    }
+
+    // 边界检查和修正
     if (image.cols < res.x) {
         LogError << "roi is out of range" << VAR(image.size()) << VAR(res);
         res.x = image.cols - res.width;

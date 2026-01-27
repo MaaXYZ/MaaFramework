@@ -725,6 +725,32 @@ cv::Rect Actuator::get_target_rect(const MAA_RES_NS::Action::Target target, cons
 
     auto image = controller()->cached_image();
 
+    // Region 类型支持负数坐标和尺寸
+    if (target.type == Target::Type::Region) {
+        if (raw.x < 0) {
+            raw.x = image.cols + raw.x;
+        }
+        if (raw.y < 0) {
+            raw.y = image.rows + raw.y;
+        }
+        // 负数宽高：取绝对值，并将 xy 作为右下角而非左上角
+        if (raw.width < 0) {
+            raw.width = -raw.width;
+            raw.x -= raw.width;
+        }
+        if (raw.height < 0) {
+            raw.height = -raw.height;
+            raw.y -= raw.height;
+        }
+        // 宽高为 0 时表示延伸至边缘
+        if (raw.width == 0) {
+            raw.width = image.cols - raw.x;
+        }
+        if (raw.height == 0) {
+            raw.height = image.rows - raw.y;
+        }
+    }
+
     int x = std::clamp(raw.x + target.offset.x, 0, image.cols);
     int y = std::clamp(raw.y + target.offset.y, 0, image.rows);
     int width = std::clamp(raw.width + target.offset.width, 0, image.cols - x);
