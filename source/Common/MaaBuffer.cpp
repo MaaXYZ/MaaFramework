@@ -4,7 +4,6 @@
 #include "MaaUtils/Buffer/ListBuffer.hpp"
 #include "MaaUtils/Buffer/StringBuffer.hpp"
 #include "MaaUtils/Logger.h"
-#include "MaaUtils/NoWarningCV.hpp"
 
 MaaStringBuffer* MaaStringBufferCreate()
 {
