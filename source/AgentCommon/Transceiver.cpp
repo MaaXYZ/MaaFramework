@@ -109,7 +109,22 @@ static uint16_t parse_port_from_endpoint(const std::string& endpoint)
         return 0;
     }
     std::string port_str = endpoint.substr(pos + 1);
-    return static_cast<uint16_t>(std::stoi(port_str));
+    
+    // 验证字符串是否为有效数字
+    if (port_str.empty() || !std::all_of(port_str.begin(), port_str.end(), [](unsigned char c) {
+        return std::isdigit(c) != 0;
+    })) {
+        return 0;
+    }
+    
+    // 使用 strtoul 替代 stoi，避免异常并处理溢出
+    char* end = nullptr;
+    unsigned long port = std::strtoul(port_str.c_str(), &end, 10);
+    if (end != port_str.c_str() + port_str.size() || port > 65535) {
+        return 0;
+    }
+    
+    return static_cast<uint16_t>(port);
 }
 
 uint16_t Transceiver::init_tcp_socket(uint16_t port, bool bind)

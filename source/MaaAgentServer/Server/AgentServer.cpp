@@ -20,16 +20,22 @@ static std::optional<uint16_t> parse_tcp_port(const std::string& identifier)
         return std::nullopt;
     }
 
-    bool all_digits = std::all_of(identifier.begin(), identifier.end(), ::isdigit);
+    // 避免 ::isdigit 在负值 char 上的未定义行为
+    bool all_digits = std::all_of(identifier.begin(), identifier.end(), [](unsigned char c) {
+        return std::isdigit(c) != 0;
+    });
     if (!all_digits) {
         return std::nullopt;
     }
 
-    int port = std::stoi(identifier);
-    if (port > 0 && port <= 65535) {
-        return static_cast<uint16_t>(port);
+    // 使用 strtoul 替代 stoi，避免异常并处理溢出
+    char* end = nullptr;
+    unsigned long port = std::strtoul(identifier.c_str(), &end, 10);
+    if (end != identifier.c_str() + identifier.size() || port == 0 || port > 65535) {
+        return std::nullopt;
     }
-    return std::nullopt;
+    
+    return static_cast<uint16_t>(port);
 }
 
 bool AgentServer::start_up(const std::string& identifier)

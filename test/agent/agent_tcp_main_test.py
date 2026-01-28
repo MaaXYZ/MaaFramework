@@ -203,7 +203,10 @@ def api_test():
     print("agent.disconnect() succeeded")
 
     # 验证断开连接后的状态
-    print(f"agent.connected after disconnect: {agent.connected}")
+    assert not agent.connected, "agent should be disconnected after agent.disconnect() in TCP mode"
+    if hasattr(agent, "alive"):
+        assert not agent.alive, "agent should not be alive after agent.disconnect() in TCP mode"
+    print("Verified: agent.connected and agent.alive are False after disconnect")
 
     print("\n" + "=" * 50)
     print("All agent TCP tests passed!")
