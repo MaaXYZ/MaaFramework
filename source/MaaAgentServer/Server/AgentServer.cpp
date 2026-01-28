@@ -21,9 +21,7 @@ static std::optional<uint16_t> parse_tcp_port(const std::string& identifier)
     }
 
     // 避免 ::isdigit 在负值 char 上的未定义行为
-    bool all_digits = std::all_of(identifier.begin(), identifier.end(), [](unsigned char c) {
-        return std::isdigit(c) != 0;
-    });
+    bool all_digits = std::all_of(identifier.begin(), identifier.end(), [](unsigned char c) { return std::isdigit(c) != 0; });
     if (!all_digits) {
         return std::nullopt;
     }
@@ -34,7 +32,7 @@ static std::optional<uint16_t> parse_tcp_port(const std::string& identifier)
     if (end != identifier.c_str() + identifier.size() || port == 0 || port > 65535) {
         return std::nullopt;
     }
-    
+
     return static_cast<uint16_t>(port);
 }
 
