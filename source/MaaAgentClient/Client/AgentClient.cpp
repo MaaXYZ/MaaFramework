@@ -1229,6 +1229,9 @@ bool AgentClient::handle_tasker_get_reco_result(const json::value& j)
 
     std::vector<std::string> draws;
     for (const auto& draw : detail.draws) {
+        if (draw.empty()) {
+            continue;
+        }
         draws.emplace_back(send_image_encoded(draw));
     }
 
@@ -1241,7 +1244,7 @@ bool AgentClient::handle_tasker_get_reco_result(const json::value& j)
         .box = detail.box ? std::array<int32_t, 4> { detail.box->x, detail.box->y, detail.box->width, detail.box->height }
                           : std::array<int32_t, 4> {},
         .detail = detail.detail,
-        .raw = send_image_encoded(detail.raw),
+        .raw = detail.raw.empty() ? std::string() : send_image_encoded(detail.raw),
         .draws = std::move(draws),
     };
     send(resp);
