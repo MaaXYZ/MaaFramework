@@ -244,7 +244,7 @@ MaaFramework/
 **AgentServer 不支持的 API**（参考 `source/MaaAgentServer/API/MaaAgentServerNotImpl.cpp`）：
 
 - 创建/销毁实例：`MaaResourceCreate`、`MaaTaskerCreate`、`MaaControllerDestroy` 等
-- 全局选项：`MaaGlobalSetOption`、`MaaSetGlobalOption`
+- 全局选项：`MaaGlobalSetOption`、`MaaGlobalSetOption`
 - 插件加载：`MaaGlobalLoadPlugin`
 - Sink 管理：Remote* 实例不支持 `add_sink`/`remove_sink`，需使用 `AgentServer.add_*_sink` 代替
 
