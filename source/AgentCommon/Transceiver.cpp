@@ -166,6 +166,8 @@ uint16_t Transceiver::init_tcp_socket(uint16_t port, bool bind)
 
 bool Transceiver::should_fallback_to_tcp()
 {
+    LogFunc;
+    
 #ifdef _WIN32
     // Windows 从 Build 17063 开始支持 AF_UNIX (Unix Domain Socket)
     // 直接尝试创建 socket 来检测系统是否支持，比检测版本号更可靠
@@ -197,9 +199,12 @@ bool Transceiver::should_fallback_to_tcp()
     closesocket(test_sock);
     WSACleanup();
     cached_result = false;
+
+    LogInfo << "AF_UNIX socket supported on this Windows version";
     return false;
 #else
     // 非 Windows 系统通常 IPC 工作正常
+    LogInfo << "IPC supported on this system";
     return false;
 #endif
 }
