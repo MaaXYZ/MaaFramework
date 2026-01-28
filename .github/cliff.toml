@@ -1,0 +1,96 @@
+[remote.github]
+owner = "MaaXYZ"
+repo = "MaaFramework"
+[changelog]
+# 标题
+header = """
+# 更新日志
+"""
+
+body = """
+{%- macro remote_url() -%}
+  https://github.com/{{ remote.github.owner }}/{{ remote.github.repo }}
+{%- endmacro -%}
+
+{% macro print_commit(commit) -%}
+    - {% if commit.scope %}*({{ commit.scope }})* {% endif %}\
+        {% if commit.breaking %}[**breaking**] {% endif %}\
+        {{ commit.message | split(pat="\n") | first | upper_first }} \
+        @{{ commit.author.name }}
+        {%- if commit.footers -%}
+            {%- for footer in commit.footers -%}
+                {%- if footer.token == "Co-authored-by" -%}
+                    {%- set co_author_name = footer.value | split(pat=" <") | first | trim %} @{{ co_author_name }}
+                {%- endif -%}
+            {%- endfor -%}
+        {%- endif %}
+{% endmacro -%}
+
+{% if version %}\
+    ## {{ version | trim_start_matches(pat="v") }} ({{ timestamp | date(format="%Y-%m-%d") }})
+{% else %}\
+    ## 未发布
+{% endif %}\
+
+{% for group, commits in commits | group_by(attribute="group") %}
+    ### {{ group | striptags | trim | upper_first }}
+    {% for commit in commits
+    | filter(attribute="scope")
+    | sort(attribute="scope") %}
+        {{ self::print_commit(commit=commit) }}
+    {%- endfor %}
+    {% for commit in commits %}
+        {%- if not commit.scope -%}
+            {{ self::print_commit(commit=commit) }}
+        {% endif -%}
+    {% endfor -%}
+{% endfor -%}
+{%- if github -%}
+{% if github.contributors | filter(attribute="is_first_time", value=true) | length != 0 %}
+  ## 新贡献者 ❤️
+{% endif %}\
+{% for contributor in github.contributors | filter(attribute="is_first_time", value=true) %}
+  * @{{ contributor.username }} made their first contribution
+    {%- if contributor.pr_number %} in \
+      [#{{ contributor.pr_number }}]({{ self::remote_url() }}/pull/{{ contributor.pr_number }}) \
+    {%- endif %}
+{%- endfor -%}
+{%- endif %}
+"""
+
+# 尾部
+footer = """
+"""
+
+[git]
+# 过滤提交
+conventional_commits = true # 使用约定式提交格式
+filter_unconventional = false # 不过滤非约定式提交
+# 启用完整的 commit 信息
+split_commits = false
+# 保留完整的 commit body
+protect_breaking_commits = false
+commit_parsers = [
+    { message = "^feat", group = "<!-- 0 -->✨ 新功能" },
+    { message = "^fix", group = "<!-- 1 -->🐛 Bug修复" },
+    { message = "^docs", group = "<!-- 4 -->📚 文档" },
+    { message = "^perf", group = "<!-- 3 -->🚀 性能优化" },
+    { message = "^refactor", group = "<!-- 2 -->🚜 代码重构" },
+    { message = "^style", group = "<!-- 5 -->🎨 样式" },
+    { message = "^test", group = "<!-- 6 -->🧪 测试" },
+    { message = "^chore\\(deps\\)", group = "📦 依赖更新" },
+    { message = "^chore", group = "<!-- 8 -->🔧 日常维护" },
+    { message = "^ci", group = "<!-- 7 -->⚙️ 持续集成" },
+    { body = ".*security", group = "<!-- 9 -->🔒 安全" },
+    { message = "^revert", group = "<!-- 10 -->◀️ 撤销" },
+]
+
+# 忽略这些提交
+ignore_tags = "rc"
+
+# 排序规则
+sort_commits = "oldest"
+
+# 启用GitHub集成
+[git.github]
+commits = true

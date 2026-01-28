@@ -41,6 +41,30 @@ jobs:
         with:
             reuse-from-run-id: ${{ inputs.run-id }}
 
+    changelog:
+        name: Generate changelog
+        needs: meta
+        runs-on: ubuntu-latest
+        outputs:
+            release_body: ${{ steps.git-cliff.outputs.content }}
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v4
+              with:
+                  fetch-depth: 0
+
+            - name: Generate a changelog
+              uses: orhun/git-cliff-action@v4
+              id: git-cliff
+              with:
+                  config: .github/cliff.toml
+                  args: >-
+                      -vv --latest --strip header
+                      ${{ needs.meta.outputs.is-prerelease == 'false' && '--tag-pattern "^v[0-9]+\\.[0-9]+\\.[0-9]+$"' || '' }}
+              env:
+                  OUTPUT: CHANGES.md
+                  GITHUB_REPO: ${{ github.repository }}
+
     nuget:
         if: ${{ inputs.only-publish-to == 'NuGet.org' || inputs.only-publish-to == 'All' }}
         continue-on-error: ${{ inputs.only-publish-to == 'All' }}
@@ -136,7 +160,7 @@ jobs:
                     --skip-existing
 
     github:
-        needs: [meta]
+        needs: [meta, changelog]
         if: ${{ inputs.only-publish-to == 'GitHub' || inputs.only-publish-to == 'All' }}
         continue-on-error: ${{ inputs.only-publish-to == 'All' }}
         runs-on: ubuntu-latest
@@ -168,7 +192,7 @@ jobs:
                   files: assets/*.zip
                   tag_name: ${{ inputs.dry-run && 'v0.0.0' || needs.meta.outputs.tag }}
                   prerelease: ${{ needs.meta.outputs.is-prerelease == 'true' }}
-                  generate_release_notes: ${{ !inputs.dry-run }}
+                  body: ${{ needs.changelog.outputs.release_body }}
 
     mirrorchyan:
         needs: [meta, github]
@@ -197,7 +221,7 @@ jobs:
                   gh workflow run --repo ${{ github.repository }} mirrorchyan_release_note.yml -f tag=${{ needs.meta.outputs.tag }}
 
     create_issue:
-        needs: [meta, nuget, nodejs, pip, github, mirrorchyan]
+        needs: [meta, changelog, nuget, nodejs, pip, github, mirrorchyan]
         runs-on: ubuntu-latest
         if: success() && (
                 needs.nuget.outputs.result != 'success'  ||
