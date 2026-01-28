@@ -26,6 +26,7 @@ public: // MaaAgentClient
     virtual void register_controller_sink(MaaController* ctrl) override;
     virtual void register_tasker_sink(MaaTasker* tasker) override;
     virtual std::string create_socket(const std::string& identifier) override;
+    virtual std::string create_tcp_socket(uint16_t port) override;
     virtual bool connect() override;
     virtual bool disconnect() override;
     virtual bool connected() override;

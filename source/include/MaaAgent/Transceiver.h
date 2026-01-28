@@ -87,11 +87,20 @@ private:
     bool poll(zmq::pollitem_t& pollitem);
 
 protected:
+    // 返回实际绑定的端口号，如果传入 0 则自动选择可用端口
+    uint16_t init_tcp_socket(uint16_t port, bool bind);
+
+    // 检测 IPC 是否可能失败（Windows 下的路径问题等）
+    static bool should_fallback_to_tcp();
+
+protected:
     zmq::context_t zmq_ctx_;
     zmq::socket_t zmq_sock_;
 
     std::string ipc_addr_;
     std::filesystem::path ipc_path_;
+    bool is_tcp_ = false;
+    uint16_t tcp_port_ = 0;
 
     std::map<std::string /* uuid */, cv::Mat> recved_images_;
     std::map<std::string /* uuid */, ImageEncodedBuffer> recved_images_encoded_;

@@ -2,9 +2,14 @@
 
 #include <format>
 #include <fstream>
+#include <optional>
 
 #ifdef _WIN32
 #include "MaaUtils/SafeWindows.hpp"
+// afunix.h 在旧版 SDK 中可能不存在，直接定义 AF_UNIX 常量
+#ifndef AF_UNIX
+#define AF_UNIX 1
+#endif
 #endif
 
 #include "MaaUtils/Platform.h"
@@ -77,6 +82,7 @@ void Transceiver::init_socket(const std::string& identifier, bool bind)
     std::string path = std::format("{}/maafw-agent-{}.sock", kTempDir, identifier);
     ipc_addr_ = std::format("ipc://{}", path);
     ipc_path_ = MaaNS::path(path);
+    is_tcp_ = false;
 
     LogInfo << VAR(ipc_addr_) << VAR(identifier);
 
@@ -95,6 +101,114 @@ void Transceiver::init_socket(const std::string& identifier, bool bind)
     }
 }
 
+static uint16_t parse_port_from_endpoint(const std::string& endpoint)
+{
+    // endpoint 格式为 "tcp://127.0.0.1:12345"
+    auto pos = endpoint.rfind(':');
+    if (pos == std::string::npos || pos >= endpoint.size() - 1) {
+        return 0;
+    }
+    std::string port_str = endpoint.substr(pos + 1);
+    
+    // 验证字符串是否为有效数字
+    if (port_str.empty() || !std::all_of(port_str.begin(), port_str.end(), [](unsigned char c) {
+        return std::isdigit(c) != 0;
+    })) {
+        return 0;
+    }
+    
+    // 使用 strtoul 替代 stoi，避免异常并处理溢出
+    char* end = nullptr;
+    unsigned long port = std::strtoul(port_str.c_str(), &end, 10);
+    if (end != port_str.c_str() + port_str.size() || port > 65535) {
+        return 0;
+    }
+    
+    return static_cast<uint16_t>(port);
+}
+
+uint16_t Transceiver::init_tcp_socket(uint16_t port, bool bind)
+{
+    LogFunc << VAR(port) << VAR(bind);
+
+    is_tcp_ = true;
+
+    zmq_sock_ = zmq::socket_t(zmq_ctx_, zmq::socket_type::pair);
+
+    zmq_pollitem_send_ = zmq::pollitem_t(zmq_sock_.handle(), 0, ZMQ_POLLOUT, 0);
+    zmq_pollitem_recv_ = zmq::pollitem_t(zmq_sock_.handle(), 0, ZMQ_POLLIN, 0);
+
+    is_bound_ = bind;
+
+    if (is_bound_) {
+        // 如果 port 为 0，使用通配符让系统自动分配端口
+        std::string bind_addr = std::format("tcp://127.0.0.1:{}", port == 0 ? "*" : std::to_string(port));
+        zmq_sock_.bind(bind_addr);
+
+        // 获取实际绑定的端点
+        char endpoint[256] = {};
+        size_t endpoint_len = sizeof(endpoint);
+        zmq_getsockopt(zmq_sock_.handle(), ZMQ_LAST_ENDPOINT, endpoint, &endpoint_len);
+        ipc_addr_ = endpoint;
+
+        tcp_port_ = parse_port_from_endpoint(ipc_addr_);
+        LogInfo << "TCP socket bound" << VAR(ipc_addr_) << VAR(tcp_port_);
+    }
+    else {
+        ipc_addr_ = std::format("tcp://127.0.0.1:{}", port);
+        tcp_port_ = port;
+        zmq_sock_.connect(ipc_addr_);
+        LogInfo << "TCP socket connected" << VAR(ipc_addr_);
+    }
+
+    return tcp_port_;
+}
+
+bool Transceiver::should_fallback_to_tcp()
+{
+    LogFunc;
+    
+#ifdef _WIN32
+    // Windows 从 Build 17063 开始支持 AF_UNIX (Unix Domain Socket)
+    // 直接尝试创建 socket 来检测系统是否支持，比检测版本号更可靠
+
+    static std::optional<bool> cached_result;
+    if (cached_result.has_value()) {
+        return *cached_result;
+    }
+
+    // 需要先初始化 Winsock，否则 socket() 会失败
+    WSADATA wsa_data;
+    int wsa_result = WSAStartup(MAKEWORD(2, 2), &wsa_data);
+    if (wsa_result != 0) {
+        LogWarn << "WSAStartup failed, falling back to TCP" << VAR(wsa_result);
+        cached_result = true;
+        return true;
+    }
+
+    SOCKET test_sock = socket(AF_UNIX, SOCK_STREAM, 0);
+    if (test_sock == INVALID_SOCKET) {
+        int err = WSAGetLastError();
+        WSACleanup();
+        // WSAEAFNOSUPPORT (10047) 表示地址族不支持
+        LogWarn << "AF_UNIX socket not supported on this Windows version, falling back to TCP" << VAR(err);
+        cached_result = true;
+        return true;
+    }
+
+    closesocket(test_sock);
+    WSACleanup();
+    cached_result = false;
+
+    LogInfo << "AF_UNIX socket supported on this Windows version";
+    return false;
+#else
+    // 非 Windows 系统通常 IPC 工作正常
+    LogInfo << "IPC supported on this system";
+    return false;
+#endif
+}
+
 void Transceiver::uninit_socket()
 {
     LogFunc << VAR(ipc_addr_);
@@ -111,8 +225,11 @@ void Transceiver::uninit_socket()
     zmq_sock_.close();
     zmq_ctx_.close();
 
-    std::error_code ec;
-    std::filesystem::remove(ipc_path_, ec);
+    // TCP 模式无需删除 socket 文件
+    if (!is_tcp_) {
+        std::error_code ec;
+        std::filesystem::remove(ipc_path_, ec);
+    }
 }
 
 bool Transceiver::alive()

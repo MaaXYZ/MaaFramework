@@ -146,6 +146,7 @@ jobs:
                   python3 ./test/python/binding_test.py ./source/binding/Python ./install
                   python3 ./test/python/pipeline_test.py ./source/binding/Python ./install
                   python3 ./test/agent/agent_main_test.py ./source/binding/Python ./install
+                  python3 ./test/agent/agent_tcp_main_test.py ./source/binding/Python ./install
 
             - name: Run NodeJS testing
               shell: bash
@@ -274,6 +275,7 @@ jobs:
                   python3 ./test/python/binding_test.py ./source/binding/Python ./install
                   python3 ./test/python/pipeline_test.py ./source/binding/Python ./install
                   python3 ./test/agent/agent_main_test.py ./source/binding/Python ./install
+                  python3 ./test/agent/agent_tcp_main_test.py ./source/binding/Python ./install
 
             - name: Run NodeJS testing
               shell: bash
@@ -402,6 +404,7 @@ jobs:
                   python3 ./test/python/binding_test.py ./source/binding/Python ./install
                   python3 ./test/python/pipeline_test.py ./source/binding/Python ./install
                   python3 ./test/agent/agent_main_test.py ./source/binding/Python ./install
+                  python3 ./test/agent/agent_tcp_main_test.py ./source/binding/Python ./install
 
             - name: Run NodeJS testing
               shell: bash

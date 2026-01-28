@@ -20,6 +20,16 @@ MaaAgentClient* MaaAgentClientCreateV2(const MaaStringBuffer* identifier)
     return new MAA_AGENT_CLIENT_NS::AgentClient(identifier ? identifier->get() : "");
 }
 
+MaaAgentClient* MaaAgentClientCreateTcp(uint16_t port)
+{
+    LogFunc << VAR(port);
+
+    auto* client = new MAA_AGENT_CLIENT_NS::AgentClient();
+    client->create_tcp_socket(port);
+
+    return client;
+}
+
 void MaaAgentClientDestroy(MaaAgentClient* client)
 {
     LogFunc << VAR_VOIDP(client);

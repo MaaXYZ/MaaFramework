@@ -190,6 +190,7 @@ public:
     virtual void register_controller_sink(MaaController* ctrl) = 0;
     virtual void register_tasker_sink(MaaTasker* tasker) = 0;
     virtual std::string create_socket(const std::string& identifier) = 0;
+    virtual std::string create_tcp_socket(uint16_t port) = 0;
     virtual bool connect() = 0;
     virtual bool disconnect() = 0;
     virtual bool connected() = 0;

@@ -20,16 +20,25 @@ class AgentClient:
 
     _handle: MaaAgentClientHandle
 
-    def __init__(self, identifier: Optional[str] = None):
+    def __init__(self, identifier: Optional[str] = None, *, _handle: MaaAgentClientHandle = None):
         """创建 Agent 客户端 / Create Agent client
+
+        默认使用 IPC 模式。在不支持 AF_UNIX 的旧版 Windows（Build 17063 之前）上会自动回退到 TCP 模式。
+        Uses IPC mode by default. On older Windows versions that don't support AF_UNIX (before Build 17063),
+        it will automatically fall back to TCP mode.
 
         Args:
             identifier: 可选的连接标识符，用于匹配特定的 AgentServer / Optional connection identifier for matching specific AgentServer
+            _handle: 内部使用，直接传入已创建的句柄 / Internal use, directly pass in an already created handle
 
         Raises:
             RuntimeError: 如果创建失败
         """
         self._set_api_properties()
+
+        if _handle:
+            self._handle = _handle
+            return
 
         if identifier:
             id_buffer = StringBuffer()
@@ -41,6 +50,38 @@ class AgentClient:
         self._handle = Library.agent_client().MaaAgentClientCreateV2(id_buffer_handle)
         if not self._handle:
             raise RuntimeError("Failed to create agent client.")
+
+    @classmethod
+    def create_tcp(cls, port: int = 0) -> "AgentClient":
+        """创建使用 TCP 连接的 Agent 客户端 / Create Agent client with TCP connection
+
+        客户端会监听 127.0.0.1 上的指定端口。如果传入 0 则自动选择可用端口。
+        AgentServer 端使用 identifier 属性获取的端口号作为 identifier 即可通过 TCP 连接。
+        The client listens on 127.0.0.1 at the specified port. If 0 is passed, an available port is automatically selected.
+        AgentServer can use the port number from the identifier property to connect via TCP.
+
+        Args:
+            port: TCP 端口号 (0-65535)，0 表示自动选择 / TCP port number (0-65535), 0 means auto-select
+
+        Returns:
+            AgentClient: TCP 模式的客户端实例 / Client instance in TCP mode
+
+        Raises:
+            RuntimeError: 如果创建失败
+            ValueError: 如果端口号无效
+        """
+        if not (0 <= port <= 65535):
+            raise ValueError(
+                f"Invalid port number: {port}. Must be between 0 and 65535."
+            )
+
+        cls._set_api_properties()
+
+        handle = Library.agent_client().MaaAgentClientCreateTcp(ctypes.c_uint16(port))
+        if not handle:
+            raise RuntimeError("Failed to create TCP agent client.")
+
+        return cls(_handle=handle)
 
     def __del__(self):
         if self._handle:
@@ -217,6 +258,11 @@ class AgentClient:
         Library.agent_client().MaaAgentClientCreateV2.restype = MaaAgentClientHandle
         Library.agent_client().MaaAgentClientCreateV2.argtypes = [
             MaaStringBufferHandle,
+        ]
+
+        Library.agent_client().MaaAgentClientCreateTcp.restype = MaaAgentClientHandle
+        Library.agent_client().MaaAgentClientCreateTcp.argtypes = [
+            ctypes.c_uint16,
         ]
 
         Library.agent_client().MaaAgentClientIdentifier.restype = MaaBool
