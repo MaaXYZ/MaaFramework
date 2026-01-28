@@ -12,9 +12,22 @@ export using ::MaaAgentClient;
 
 // MaaAgentClientAPI.h
 
-export using ::MaaAgentClientCreate;
+export using ::MaaAgentClientCreateV2;
+export using ::MaaAgentClientCreateTcp;
 export using ::MaaAgentClientDestroy;
+export using ::MaaAgentClientIdentifier;
 export using ::MaaAgentClientBindResource;
-export using ::MaaAgentClientCreateSocket;
+export using ::MaaAgentClientRegisterResourceSink;
+export using ::MaaAgentClientRegisterControllerSink;
+export using ::MaaAgentClientRegisterTaskerSink;
 export using ::MaaAgentClientConnect;
 export using ::MaaAgentClientDisconnect;
+export using ::MaaAgentClientConnected;
+export using ::MaaAgentClientAlive;
+export using ::MaaAgentClientSetTimeout;
+export using ::MaaAgentClientGetCustomRecognitionList;
+export using ::MaaAgentClientGetCustomActionList;
+
+// Deprecated APIs
+export using ::MaaAgentClientCreate;
+export using ::MaaAgentClientCreateSocket;

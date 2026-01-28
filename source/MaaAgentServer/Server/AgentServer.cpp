@@ -1,5 +1,7 @@
 #include "AgentServer.h"
 
+#include <algorithm>
+#include <optional>
 #include <ranges>
 
 #include "MaaAgent/Message.hpp"
@@ -11,6 +13,25 @@
 
 MAA_AGENT_SERVER_NS_BEGIN
 
+static std::optional<uint16_t> parse_tcp_port(const std::string& identifier)
+{
+    // 纯数字视为 TCP 端口号
+    if (identifier.empty()) {
+        return std::nullopt;
+    }
+
+    bool all_digits = std::all_of(identifier.begin(), identifier.end(), ::isdigit);
+    if (!all_digits) {
+        return std::nullopt;
+    }
+
+    int port = std::stoi(identifier);
+    if (port > 0 && port <= 65535) {
+        return static_cast<uint16_t>(port);
+    }
+    return std::nullopt;
+}
+
 bool AgentServer::start_up(const std::string& identifier)
 {
     LogFunc << VAR(identifier);
@@ -20,7 +41,15 @@ bool AgentServer::start_up(const std::string& identifier)
         return false;
     }
 
-    init_socket(identifier, false);
+    auto port_opt = parse_tcp_port(identifier);
+
+    if (port_opt) {
+        LogInfo << "Using TCP mode" << VAR(*port_opt);
+        init_tcp_socket(*port_opt, false);
+    }
+    else {
+        init_socket(identifier, false);
+    }
 
     msg_loop_running_ = true;
     msg_thread_ = std::thread(&AgentServer::request_msg_loop, this);

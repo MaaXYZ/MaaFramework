@@ -9,6 +9,8 @@ extern "C"
 
     MAA_AGENT_CLIENT_API MaaAgentClient* MaaAgentClientCreateV2(const MaaStringBuffer* identifier);
 
+    MAA_AGENT_CLIENT_API MaaAgentClient* MaaAgentClientCreateTcp(uint16_t port);
+
     MAA_AGENT_CLIENT_API void MaaAgentClientDestroy(MaaAgentClient* client);
 
     MAA_AGENT_CLIENT_API MaaBool MaaAgentClientIdentifier(MaaAgentClient* client, MaaStringBuffer* identifier);

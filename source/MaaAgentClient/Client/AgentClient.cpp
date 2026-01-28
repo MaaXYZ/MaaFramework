@@ -116,6 +116,23 @@ std::string AgentClient::create_socket(const std::string& identifier)
     return identifier_;
 }
 
+std::string AgentClient::create_tcp_socket(uint16_t port)
+{
+    LogFunc << VAR(port);
+
+    if (!identifier_.empty()) {
+        LogError << "Attempted to create a new socket, but one already exists. Returning the existing socket identifier."
+                 << VAR(identifier_);
+        return identifier_;
+    }
+
+    identifier_ = std::to_string(port);
+
+    init_tcp_socket(port, true);
+
+    return identifier_;
+}
+
 bool AgentClient::connect()
 {
     LogFunc << VAR(ipc_addr_);

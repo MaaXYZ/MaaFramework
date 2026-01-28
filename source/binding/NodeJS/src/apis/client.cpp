@@ -12,6 +12,11 @@ ClientImpl::ClientImpl(std::string identifier)
     client = MaaAgentClientCreateV2(buf);
 }
 
+ClientImpl::ClientImpl(uint16_t port)
+{
+    client = MaaAgentClientCreateTcp(port);
+}
+
 ClientImpl::~ClientImpl()
 {
     destroy();
@@ -127,7 +132,12 @@ ClientImpl* ClientImpl::ctor(const maajs::CallbackInfo& info)
     }
 }
 
-void ClientImpl::init_proto(maajs::ObjectType proto, maajs::FunctionType)
+maajs::NativeObject<ClientImpl> ClientImpl::create_tcp(uint16_t port)
+{
+    return maajs::NativeClass<ClientImpl>::create(env, new ClientImpl(port));
+}
+
+void ClientImpl::init_proto(maajs::ObjectType proto, maajs::FunctionType ctor)
 {
     MAA_BIND_FUNC(proto, "destroy", ClientImpl::destroy);
     MAA_BIND_GETTER(proto, "identifier", ClientImpl::get_identifier);
@@ -142,6 +152,7 @@ void ClientImpl::init_proto(maajs::ObjectType proto, maajs::FunctionType)
     MAA_BIND_SETTER(proto, "timeout", ClientImpl::set_timeout);
     MAA_BIND_GETTER(proto, "custom_recognition_list", ClientImpl::get_custom_recognition_list);
     MAA_BIND_GETTER(proto, "custom_action_list", ClientImpl::get_custom_action_list);
+    MAA_BIND_STATIC_FUNC(ctor, "create_tcp", ClientImpl::create_tcp);
 }
 
 maajs::ValueType load_client(maajs::EnvType env)

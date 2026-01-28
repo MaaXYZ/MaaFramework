@@ -77,8 +77,38 @@ void Transceiver::init_socket(const std::string& identifier, bool bind)
     std::string path = std::format("{}/maafw-agent-{}.sock", kTempDir, identifier);
     ipc_addr_ = std::format("ipc://{}", path);
     ipc_path_ = MaaNS::path(path);
+    is_tcp_ = false;
 
     LogInfo << VAR(ipc_addr_) << VAR(identifier);
+
+    zmq_sock_ = zmq::socket_t(zmq_ctx_, zmq::socket_type::pair);
+
+    zmq_pollitem_send_ = zmq::pollitem_t(zmq_sock_.handle(), 0, ZMQ_POLLOUT, 0);
+    zmq_pollitem_recv_ = zmq::pollitem_t(zmq_sock_.handle(), 0, ZMQ_POLLIN, 0);
+
+    is_bound_ = bind;
+
+    if (is_bound_) {
+        zmq_sock_.bind(ipc_addr_);
+    }
+    else {
+        zmq_sock_.connect(ipc_addr_);
+    }
+}
+
+void Transceiver::init_tcp_socket(uint16_t port, bool bind)
+{
+    LogFunc << VAR(port) << VAR(bind);
+
+    if (bind) {
+        ipc_addr_ = std::format("tcp://127.0.0.1:{}", port);
+    }
+    else {
+        ipc_addr_ = std::format("tcp://127.0.0.1:{}", port);
+    }
+    is_tcp_ = true;
+
+    LogInfo << VAR(ipc_addr_);
 
     zmq_sock_ = zmq::socket_t(zmq_ctx_, zmq::socket_type::pair);
 
@@ -111,8 +141,11 @@ void Transceiver::uninit_socket()
     zmq_sock_.close();
     zmq_ctx_.close();
 
-    std::error_code ec;
-    std::filesystem::remove(ipc_path_, ec);
+    // TCP 模式无需删除 socket 文件
+    if (!is_tcp_) {
+        std::error_code ec;
+        std::filesystem::remove(ipc_path_, ec);
+    }
 }
 
 bool Transceiver::alive()

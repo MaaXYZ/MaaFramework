@@ -87,11 +87,15 @@ private:
     bool poll(zmq::pollitem_t& pollitem);
 
 protected:
+    void init_tcp_socket(uint16_t port, bool bind);
+
+protected:
     zmq::context_t zmq_ctx_;
     zmq::socket_t zmq_sock_;
 
     std::string ipc_addr_;
     std::filesystem::path ipc_path_;
+    bool is_tcp_ = false;
 
     std::map<std::string /* uuid */, cv::Mat> recved_images_;
     std::map<std::string /* uuid */, ImageEncodedBuffer> recved_images_encoded_;

@@ -3,6 +3,8 @@ declare global {
         class Client {
             constructor(identifier?: string)
 
+            static create_tcp(port: number): Client
+
             destroy(): void
             get identifier(): string
             bind_resource(resource: Resource): void
