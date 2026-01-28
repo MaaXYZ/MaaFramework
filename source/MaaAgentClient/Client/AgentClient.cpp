@@ -19,8 +19,16 @@ AgentClient::AgentClient(const std::string& identifier)
 {
     LogFunc;
 
-    identifier_ = identifier.empty() ? make_uuid() : identifier;
-    init_socket(identifier_, true);
+    // Windows 上检测 IPC 是否可能失败，如果失败则自动使用 TCP
+    if (should_fallback_to_tcp()) {
+        LogInfo << "IPC may fail on this system, using TCP instead";
+        uint16_t port = init_tcp_socket(0, true);
+        identifier_ = std::to_string(port);
+    }
+    else {
+        identifier_ = identifier.empty() ? make_uuid() : identifier;
+        init_socket(identifier_, true);
+    }
 
     LogInfo << VAR(identifier) << VAR(identifier_);
 }
@@ -126,9 +134,9 @@ std::string AgentClient::create_tcp_socket(uint16_t port)
         return identifier_;
     }
 
-    identifier_ = std::to_string(port);
-
-    init_tcp_socket(port, true);
+    // init_tcp_socket 返回实际绑定的端口（如果传入 0 则自动选择）
+    uint16_t actual_port = init_tcp_socket(port, true);
+    identifier_ = std::to_string(actual_port);
 
     return identifier_;
 }

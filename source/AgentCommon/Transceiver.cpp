@@ -2,9 +2,14 @@
 
 #include <format>
 #include <fstream>
+#include <optional>
 
 #ifdef _WIN32
 #include "MaaUtils/SafeWindows.hpp"
+// afunix.h 在旧版 SDK 中可能不存在，直接定义 AF_UNIX 常量
+#ifndef AF_UNIX
+#define AF_UNIX 1
+#endif
 #endif
 
 #include "MaaUtils/Platform.h"
@@ -96,19 +101,22 @@ void Transceiver::init_socket(const std::string& identifier, bool bind)
     }
 }
 
-void Transceiver::init_tcp_socket(uint16_t port, bool bind)
+static uint16_t parse_port_from_endpoint(const std::string& endpoint)
+{
+    // endpoint 格式为 "tcp://127.0.0.1:12345"
+    auto pos = endpoint.rfind(':');
+    if (pos == std::string::npos || pos >= endpoint.size() - 1) {
+        return 0;
+    }
+    std::string port_str = endpoint.substr(pos + 1);
+    return static_cast<uint16_t>(std::stoi(port_str));
+}
+
+uint16_t Transceiver::init_tcp_socket(uint16_t port, bool bind)
 {
     LogFunc << VAR(port) << VAR(bind);
 
-    if (bind) {
-        ipc_addr_ = std::format("tcp://127.0.0.1:{}", port);
-    }
-    else {
-        ipc_addr_ = std::format("tcp://127.0.0.1:{}", port);
-    }
     is_tcp_ = true;
-
-    LogInfo << VAR(ipc_addr_);
 
     zmq_sock_ = zmq::socket_t(zmq_ctx_, zmq::socket_type::pair);
 
@@ -118,11 +126,67 @@ void Transceiver::init_tcp_socket(uint16_t port, bool bind)
     is_bound_ = bind;
 
     if (is_bound_) {
-        zmq_sock_.bind(ipc_addr_);
+        // 如果 port 为 0，使用通配符让系统自动分配端口
+        std::string bind_addr = std::format("tcp://127.0.0.1:{}", port == 0 ? "*" : std::to_string(port));
+        zmq_sock_.bind(bind_addr);
+
+        // 获取实际绑定的端点
+        char endpoint[256] = {};
+        size_t endpoint_len = sizeof(endpoint);
+        zmq_getsockopt(zmq_sock_.handle(), ZMQ_LAST_ENDPOINT, endpoint, &endpoint_len);
+        ipc_addr_ = endpoint;
+
+        tcp_port_ = parse_port_from_endpoint(ipc_addr_);
+        LogInfo << "TCP socket bound" << VAR(ipc_addr_) << VAR(tcp_port_);
     }
     else {
+        ipc_addr_ = std::format("tcp://127.0.0.1:{}", port);
+        tcp_port_ = port;
         zmq_sock_.connect(ipc_addr_);
+        LogInfo << "TCP socket connected" << VAR(ipc_addr_);
     }
+
+    return tcp_port_;
+}
+
+bool Transceiver::should_fallback_to_tcp()
+{
+#ifdef _WIN32
+    // Windows 从 Build 17063 开始支持 AF_UNIX (Unix Domain Socket)
+    // 直接尝试创建 socket 来检测系统是否支持，比检测版本号更可靠
+
+    static std::optional<bool> cached_result;
+    if (cached_result.has_value()) {
+        return *cached_result;
+    }
+
+    // 需要先初始化 Winsock，否则 socket() 会失败
+    WSADATA wsa_data;
+    int wsa_result = WSAStartup(MAKEWORD(2, 2), &wsa_data);
+    if (wsa_result != 0) {
+        LogWarn << "WSAStartup failed, falling back to TCP" << VAR(wsa_result);
+        cached_result = true;
+        return true;
+    }
+
+    SOCKET test_sock = socket(AF_UNIX, SOCK_STREAM, 0);
+    if (test_sock == INVALID_SOCKET) {
+        int err = WSAGetLastError();
+        WSACleanup();
+        // WSAEAFNOSUPPORT (10047) 表示地址族不支持
+        LogWarn << "AF_UNIX socket not supported on this Windows version, falling back to TCP" << VAR(err);
+        cached_result = true;
+        return true;
+    }
+
+    closesocket(test_sock);
+    WSACleanup();
+    cached_result = false;
+    return false;
+#else
+    // 非 Windows 系统通常 IPC 工作正常
+    return false;
+#endif
 }
 
 void Transceiver::uninit_socket()

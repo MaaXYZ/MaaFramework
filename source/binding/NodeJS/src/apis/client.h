@@ -43,6 +43,6 @@ struct ClientImpl : public maajs::NativeClassBase
     static ClientImpl* ctor(const maajs::CallbackInfo& info);
     static void init_proto(maajs::ObjectType proto, maajs::FunctionType ctor);
 
-    static maajs::NativeObject<ClientImpl> create_tcp(uint16_t port);
+    static maajs::ValueType create_tcp(maajs::EnvType env, maajs::OptionalParam<uint16_t> port);
 };
 

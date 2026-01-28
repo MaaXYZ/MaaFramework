@@ -66,17 +66,17 @@ def api_test():
     # ============================================================
     # AgentClient TCP API 测试
     # ============================================================
-    TCP_PORT = 23456  # 使用一个固定端口用于测试
-
-    agent = AgentClient.create_tcp(TCP_PORT)
+    # 使用端口 0 让系统自动选择可用端口
+    agent = AgentClient.create_tcp(0)
     print(f"agent (TCP): {agent}")
 
-    # 测试 identifier (应该是端口号字符串)
+    # 测试 identifier (应该是自动分配的端口号字符串)
     socket_id = agent.identifier
     print(f"agent.identifier: {socket_id}")
-    if socket_id != str(TCP_PORT):
-        print(f"unexpected identifier: {socket_id}, expected: {TCP_PORT}")
+    if not socket_id or not socket_id.isdigit():
+        print(f"unexpected identifier: {socket_id}, expected a port number string")
         exit(1)
+    print(f"Auto-selected port: {socket_id}")
 
     # 测试 bind
     if not agent.bind(resource):
