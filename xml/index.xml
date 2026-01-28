@@ -29,6 +29,7 @@
   </compound>
   <compound refid="MaaAgentClientAPI_8h" kind="file"><name>MaaAgentClientAPI.h</name>
     <member refid="MaaAgentClientAPI_8h_1aabf857baa187865204e5c0e2e455f71a" kind="function"><name>MaaAgentClientCreateV2</name></member>
+    <member refid="MaaAgentClientAPI_8h_1ab334a1d1dc2c2f0b9f42fc06102d72a9" kind="function"><name>MaaAgentClientCreateTcp</name></member>
     <member refid="MaaAgentClientAPI_8h_1a330835a995399c4cd083671a72c42331" kind="function"><name>MaaAgentClientDestroy</name></member>
     <member refid="MaaAgentClientAPI_8h_1aa8883d8757c32c9cc0c3308b6f91e786" kind="function"><name>MaaAgentClientIdentifier</name></member>
     <member refid="MaaAgentClientAPI_8h_1ae92e9c2dd74218aa0617a8630456ef64" kind="function"><name>MaaAgentClientBindResource</name></member>

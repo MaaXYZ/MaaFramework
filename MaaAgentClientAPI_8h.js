@@ -1,6 +1,7 @@
 var MaaAgentClientAPI_8h =
 [
     [ "MaaAgentClientCreateV2", "MaaAgentClientAPI_8h.html#aabf857baa187865204e5c0e2e455f71a", null ],
+    [ "MaaAgentClientCreateTcp", "MaaAgentClientAPI_8h.html#ab334a1d1dc2c2f0b9f42fc06102d72a9", null ],
     [ "MaaAgentClientDestroy", "MaaAgentClientAPI_8h.html#a330835a995399c4cd083671a72c42331", null ],
     [ "MaaAgentClientIdentifier", "MaaAgentClientAPI_8h.html#aa8883d8757c32c9cc0c3308b6f91e786", null ],
     [ "MaaAgentClientBindResource", "MaaAgentClientAPI_8h.html#ae92e9c2dd74218aa0617a8630456ef64", null ],
