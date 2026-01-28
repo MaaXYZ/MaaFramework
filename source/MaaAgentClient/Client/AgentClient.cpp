@@ -199,6 +199,10 @@ bool AgentClient::disconnect()
     }
 
     connected_ = false;
+
+    // 在 TCP 模式下关闭 socket，确保 alive() 返回 false
+    uninit_socket();
+
     return true;
 }
 
