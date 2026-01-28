@@ -20,7 +20,6 @@ struct ClientImpl : public maajs::NativeClassBase
 
     ClientImpl() = default;
     ClientImpl(std::string identifier);
-    ClientImpl(uint16_t port);
     ~ClientImpl();
     void destroy();
     std::string get_identifier();
@@ -42,7 +41,5 @@ struct ClientImpl : public maajs::NativeClassBase
 
     static ClientImpl* ctor(const maajs::CallbackInfo& info);
     static void init_proto(maajs::ObjectType proto, maajs::FunctionType ctor);
-
-    static maajs::ValueType create_tcp(maajs::EnvType env, maajs::OptionalParam<uint16_t> port);
 };
 

@@ -12,11 +12,6 @@ ClientImpl::ClientImpl(std::string identifier)
     client = MaaAgentClientCreateV2(buf);
 }
 
-ClientImpl::ClientImpl(uint16_t port)
-{
-    client = MaaAgentClientCreateTcp(port);
-}
-
 ClientImpl::~ClientImpl()
 {
     destroy();
@@ -124,12 +119,6 @@ std::string ClientImpl::to_string()
 ClientImpl* ClientImpl::ctor(const maajs::CallbackInfo& info)
 {
     try {
-        // 如果第一个参数是数字，则视为端口号创建 TCP Client
-        if (info.Length() > 0 && info[0].IsNumber()) {
-            auto port = maajs::JSConvert<uint16_t>::from_value(info[0]);
-            return new ClientImpl { port };
-        }
-        // 否则视为标识符创建普通 Client
         auto params = maajs::UnWrapArgs<std::tuple<maajs::OptionalParam<std::string>>>(info);
         return new ClientImpl { std::get<0>(params).value_or("") };
     }
@@ -138,12 +127,7 @@ ClientImpl* ClientImpl::ctor(const maajs::CallbackInfo& info)
     }
 }
 
-maajs::ValueType ClientImpl::create_tcp(maajs::EnvType env, maajs::OptionalParam<uint16_t> port)
-{
-    return maajs::CallCtorHelper(ExtContext::get(env)->clientCtor.value(), port.value_or(0));
-}
-
-void ClientImpl::init_proto(maajs::ObjectType proto, maajs::FunctionType ctor)
+void ClientImpl::init_proto(maajs::ObjectType proto, maajs::FunctionType)
 {
     MAA_BIND_FUNC(proto, "destroy", ClientImpl::destroy);
     MAA_BIND_GETTER(proto, "identifier", ClientImpl::get_identifier);
@@ -158,7 +142,6 @@ void ClientImpl::init_proto(maajs::ObjectType proto, maajs::FunctionType ctor)
     MAA_BIND_SETTER(proto, "timeout", ClientImpl::set_timeout);
     MAA_BIND_GETTER(proto, "custom_recognition_list", ClientImpl::get_custom_recognition_list);
     MAA_BIND_GETTER(proto, "custom_action_list", ClientImpl::get_custom_action_list);
-    MAA_BIND_FUNC(ctor, "create_tcp", ClientImpl::create_tcp);
 }
 
 maajs::ValueType load_client(maajs::EnvType env)
