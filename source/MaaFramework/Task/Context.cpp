@@ -3,7 +3,7 @@
 #include <meojson/json.hpp>
 
 #include "ActionTask.h"
-#include "Component/WaitFreezes.h"
+#include "Component/Freezer.h"
 #include "MaaUtils/Logger.h"
 #include "MaaUtils/Uuid.h"
 #include "PipelineTask.h"
@@ -149,45 +149,57 @@ MaaActId Context::run_action_direct(
     return run_action(entry, pipeline_override, box, reco_detail);
 }
 
-bool Context::wait_freezes(std::chrono::milliseconds time, const cv::Rect& roi, const json::value& other_param)
+bool Context::wait_freezes(std::chrono::milliseconds time, const cv::Rect& roi, const json::value& wait_freezes_param)
 {
-    LogTrace << VAR(getptr()) << VAR(time) << VAR(roi) << VAR(other_param);
+    LogTrace << VAR(getptr()) << VAR(time) << VAR(roi) << VAR(wait_freezes_param);
 
     if (!tasker_) {
         LogError << "tasker is null";
         return false;
     }
-
-    // 使用 MEO_JSONIZATION 解析 other_param
-    MAA_RES_NS::WaitFreezesInput input;
-    if (other_param.is_object() && !other_param.as_object().empty()) {
-        if (!other_param.is<MAA_RES_NS::WaitFreezesInput>()) {
-            LogError << "failed to parse other_param" << VAR(other_param);
-            return false;
-        }
-        input = other_param.as<MAA_RES_NS::WaitFreezesInput>();
-    }
-
-    // 校验 time 和 other_param.time 互斥
-    bool time_nonzero = time > std::chrono::milliseconds(0);
-    bool other_time_nonzero = input.time > 0;
-
-    if (time_nonzero && other_time_nonzero) {
-        LogError << "time and other_param.time are mutually exclusive, both are non-zero" << VAR(time) << VAR(input.time);
-        return false;
-    }
-    if (!time_nonzero && !other_time_nonzero) {
-        LogError << "time and other_param.time are mutually exclusive, both are zero" << VAR(time) << VAR(input.time);
+    auto* resource = tasker_->resource();
+    if (!resource) {
+        LogError << "resource is null";
         return false;
     }
 
-    // 转换为内部参数
-    MAA_RES_NS::WaitFreezesParam param = input.to_param();
-    if (time_nonzero) {
+    // 从 DefaultPipelineMgr 获取默认值
+    const auto& default_param = resource->default_pipeline().get_pipeline().pre_wait_freezes;
+
+    // 解析 wait_freezes_param
+    MAA_RES_NS::WaitFreezesParam param;
+    if (!MAA_RES_NS::PipelineParser::parse_wait_freezes_value(wait_freezes_param, param, default_param)) {
+        LogError << "failed to parse wait_freezes_param" << VAR(wait_freezes_param);
+        return false;
+    }
+
+    // 校验并合并 time：两者互斥
+    if (time > std::chrono::milliseconds(0) && param.time > std::chrono::milliseconds(0)) {
+        LogError << "time and wait_freezes_param.time are mutually exclusive, both are non-zero" << VAR(time) << VAR(param.time);
+        return false;
+    }
+    if (time > std::chrono::milliseconds(0)) {
         param.time = time;
     }
+    if (param.time <= std::chrono::milliseconds(0)) {
+        LogError << "time is required but not provided" << VAR(time) << VAR(param.time);
+        return false;
+    }
 
-    return WaitFreezes::wait(tasker_, param, roi);
+    // 校验并计算 ROI：roi 和 target 互斥
+    bool has_target = param.target.type != MAA_RES_NS::Action::Target::Type::Self;
+    if (!roi.empty() && has_target) {
+        LogError << "roi and target are mutually exclusive" << VAR(roi) << VAR(static_cast<int>(param.target.type));
+        return false;
+    }
+
+    Freezer freezer(tasker_);
+    cv::Rect final_roi = roi;
+    if (has_target) {
+        final_roi = freezer.get_target_rect(param.target);
+    }
+
+    return freezer.wait(param, final_roi);
 }
 
 bool Context::override_pipeline(const json::value& pipeline_override)

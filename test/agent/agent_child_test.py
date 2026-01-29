@@ -140,10 +140,12 @@ class MyRecognition(CustomRecognition):
         print(f"  hit_count: {hit_count}")
         new_ctx.clear_hit_count(argv.node_name)
 
-        # 测试 wait_freezes API（参数校验：time 和 other_param.time 同时为零应返回 false）
-        wait_result = new_ctx.wait_freezes(time=0, other_param={})
+        # 测试 wait_freezes API（参数校验：time 和 wait_freezes_param.time 同时为零应返回 false）
+        wait_result = new_ctx.wait_freezes(time=0, wait_freezes_param={})
         print(f"  wait_freezes (both zero): {wait_result}")
-        assert not wait_result, "wait_freezes should return false when both time are zero"
+        assert (
+            not wait_result
+        ), "wait_freezes should return false when both time are zero"
 
         # 测试 override_image (Context 级别)
         test_image = numpy.zeros((100, 100, 3), dtype=numpy.uint8)

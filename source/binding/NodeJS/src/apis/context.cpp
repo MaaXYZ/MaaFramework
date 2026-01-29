@@ -216,7 +216,7 @@ void ContextImpl::clear_hit_count(std::string node_name)
 bool ContextImpl::wait_freezes(
     maajs::OptionalParam<int64_t> time,
     maajs::OptionalParam<std::optional<MaaRect>> roi,
-    maajs::OptionalParam<maajs::ValueType> other_param)
+    maajs::OptionalParam<maajs::ValueType> wait_freezes_param)
 {
     int64_t time_val = time.value_or(0);
 
@@ -228,8 +228,8 @@ bool ContextImpl::wait_freezes(
     }
 
     std::string param_str = "{}";
-    if (other_param.has_value()) {
-        param_str = maajs::stringify(other_param.value());
+    if (wait_freezes_param.has_value()) {
+        param_str = maajs::stringify(wait_freezes_param.value());
     }
 
     return MaaContextWaitFreezes(context, static_cast<MaaSize>(time_val), roi_ptr, param_str.c_str());

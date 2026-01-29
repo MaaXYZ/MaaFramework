@@ -59,7 +59,7 @@ struct ContextImpl : public maajs::NativeClassBase
     bool wait_freezes(
         maajs::OptionalParam<int64_t> time,
         maajs::OptionalParam<std::optional<MaaRect>> roi,
-        maajs::OptionalParam<maajs::ValueType> other_param);
+        maajs::OptionalParam<maajs::ValueType> wait_freezes_param);
 
     std::string to_string() override;
 

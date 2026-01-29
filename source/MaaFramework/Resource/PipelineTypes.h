@@ -332,30 +332,6 @@ struct WaitFreezesParam
     std::chrono::milliseconds timeout = std::chrono::milliseconds(20 * 1000);
 };
 
-// 用于从 JSON 直接解析的输入结构（不含 target，适用于 Context API）
-struct WaitFreezesInput
-{
-    int64_t time = 0;
-    double threshold = 0.95;
-    int method = MAA_VISION_NS::TemplateMatcherParam::kDefaultMethod;
-    int64_t rate_limit = 1000;
-    int64_t timeout = 20 * 1000;
-
-    MEO_JSONIZATION(MEO_OPT time, MEO_OPT threshold, MEO_OPT method, MEO_OPT rate_limit, MEO_OPT timeout);
-
-    WaitFreezesParam to_param() const
-    {
-        return WaitFreezesParam {
-            .time = std::chrono::milliseconds(time),
-            .target = {},
-            .threshold = threshold,
-            .method = method,
-            .rate_limit = std::chrono::milliseconds(rate_limit),
-            .timeout = std::chrono::milliseconds(timeout),
-        };
-    }
-};
-
 struct NodeAttr
 {
     std::string name;

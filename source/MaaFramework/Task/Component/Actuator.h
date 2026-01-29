@@ -62,9 +62,9 @@ private:
 
     void wait_freezes(const MAA_RES_NS::WaitFreezesParam& param, const cv::Rect& box);
 
-    cv::Rect get_target_rect(const MAA_RES_NS::Action::Target target, const cv::Rect& box);
-
 private:
+    cv::Rect get_target_rect(const MAA_RES_NS::Action::Target& target, const cv::Rect& box);
+
     MAA_CTRL_NS::ControllerAgent* controller();
 
     void sleep(unsigned ms) const;

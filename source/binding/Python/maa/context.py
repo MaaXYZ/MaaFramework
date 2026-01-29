@@ -429,28 +429,28 @@ class Context:
         self,
         time: int = 0,
         roi: Optional[Tuple[int, int, int, int]] = None,
-        other_param: Optional[Dict] = None,
+        wait_freezes_param: Optional[Dict] = None,
     ) -> bool:
         """等待画面静止 / Wait for screen to stabilize (freeze)
 
         Args:
             time: 等待时间（毫秒） / Wait time in milliseconds
             roi: ROI 区域 (x, y, w, h)，为 None 时使用整个屏幕 / ROI region, if None uses entire screen
-            other_param: 其他参数，如 threshold, method, rate_limit, timeout / Other parameters
+            wait_freezes_param: 其他参数，如 threshold, method, rate_limit, timeout / Other parameters
 
         Returns:
             bool: 是否成功 / Whether successful
 
         Note:
-            time 和 other_param["time"] 互斥，不能同时为非零或同时为零 /
-            time and other_param["time"] are mutually exclusive
+            time 和 wait_freezes_param["time"] 互斥，不能同时为非零或同时为零 /
+            time and wait_freezes_param["time"] are mutually exclusive
         """
         rect_handle = None
         if roi:
             rect_handle = MaaRectHandle()
             Library.framework().MaaRectSet(rect_handle, roi[0], roi[1], roi[2], roi[3])
 
-        param_json = json.dumps(other_param or {}, ensure_ascii=False)
+        param_json = json.dumps(wait_freezes_param or {}, ensure_ascii=False)
 
         return bool(
             Library.framework().MaaContextWaitFreezes(

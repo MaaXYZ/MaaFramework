@@ -46,7 +46,7 @@ declare global {
             wait_freezes(
                 time?: number,
                 roi?: Rect | null,
-                other_param?: {
+                wait_freezes_param?: {
                     time?: number
                     threshold?: number
                     method?: number

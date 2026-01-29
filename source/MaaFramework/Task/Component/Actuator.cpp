@@ -3,10 +3,10 @@
 #include "CommandAction.h"
 #include "Controller/ControllerAgent.h"
 #include "CustomAction.h"
+#include "Freezer.h"
 #include "MaaUtils/JsonExt.hpp"
 #include "MaaUtils/Logger.h"
 #include "Vision/VisionUtils.hpp"
-#include "WaitFreezes.h"
 
 MAA_TASK_NS_BEGIN
 
@@ -510,10 +510,9 @@ void Actuator::wait_freezes(const MAA_RES_NS::WaitFreezesParam& param, const cv:
         return;
     }
 
-    // 计算 ROI 区域（处理 target 偏移等）
-    cv::Rect roi = get_target_rect(param.target, box);
-
-    WaitFreezes::wait(controller(), param, roi);
+    Freezer freezer(tasker_);
+    cv::Rect roi = freezer.get_target_rect(param.target, box);
+    freezer.wait(param, roi);
 }
 
 ActionResult Actuator::start_app(const MAA_RES_NS::Action::AppParam& param, const std::string& name)
@@ -640,59 +639,15 @@ ActionResult Actuator::stop_task(const std::string& name)
     };
 }
 
-cv::Rect Actuator::get_target_rect(const MAA_RES_NS::Action::Target target, const cv::Rect& box)
-{
-    if (!tasker_) {
-        LogError << "tasker is null";
-        return {};
-    }
-    if (!tasker_->controller()) {
-        LogError << "controller is null";
-        return {};
-    }
-
-    using namespace MAA_RES_NS::Action;
-
-    cv::Rect raw {};
-    switch (target.type) {
-    case Target::Type::Self:
-        raw = box;
-        break;
-    case Target::Type::PreTask: {
-        auto& cache = tasker_->runtime_cache();
-        std::string name = std::get<std::string>(target.param);
-        MaaNodeId node_id = cache.get_latest_node(name).value_or(MaaInvalidId);
-        NodeDetail node_detail = cache.get_node_detail(node_id).value_or(NodeDetail {});
-        RecoResult reco_result = cache.get_reco_result(node_detail.reco_id).value_or(RecoResult {});
-        raw = reco_result.box.value_or(cv::Rect {});
-        LogDebug << "pre task" << VAR(name) << VAR(raw);
-    } break;
-    case Target::Type::Region:
-        raw = std::get<cv::Rect>(target.param);
-        break;
-    default:
-        LogError << "Unknown target" << VAR(static_cast<int>(target.type));
-        return {};
-    }
-
-    auto image = controller()->cached_image();
-
-    // Region 类型支持负数坐标和尺寸
-    if (target.type == Target::Type::Region) {
-        raw = MAA_VISION_NS::normalize_rect(raw, image.cols, image.rows);
-    }
-
-    int x = std::clamp(raw.x + target.offset.x, 0, image.cols);
-    int y = std::clamp(raw.y + target.offset.y, 0, image.rows);
-    int width = std::clamp(raw.width + target.offset.width, 0, image.cols - x);
-    int height = std::clamp(raw.height + target.offset.height, 0, image.rows - y);
-
-    return cv::Rect(x, y, width, height);
-}
-
 MAA_CTRL_NS::ControllerAgent* Actuator::controller()
 {
     return tasker_ ? tasker_->controller() : nullptr;
+}
+
+cv::Rect Actuator::get_target_rect(const MAA_RES_NS::Action::Target& target, const cv::Rect& box)
+{
+    Freezer freezer(tasker_);
+    return freezer.get_target_rect(target, box);
 }
 
 void Actuator::sleep(unsigned ms) const

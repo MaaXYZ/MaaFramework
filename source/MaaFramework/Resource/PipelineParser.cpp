@@ -1484,6 +1484,61 @@ bool PipelineParser::parse_custom_action_param(
     return true;
 }
 
+bool PipelineParser::parse_wait_freezes_value(
+    const json::value& input,
+    WaitFreezesParam& output,
+    const WaitFreezesParam& default_value)
+{
+    if (input.is_number()) {
+        output = default_value;
+        output.time = std::chrono::milliseconds(input.as_unsigned());
+        return true;
+    }
+
+    if (!input.is_object()) {
+        LogError << "invalid wait_freezes_param, expected number or object" << VAR(input);
+        return false;
+    }
+
+    auto time = default_value.time.count();
+    if (!get_and_check_value(input, "time", time, time)) {
+        LogError << "failed to parse_wait_freezes_value time" << VAR(input);
+        return false;
+    }
+    output.time = std::chrono::milliseconds(time);
+
+    if (!parse_action_target(input, "target", output.target, default_value.target)) {
+        LogError << "failed to parse_wait_freezes_value parse_action_target" << VAR(input);
+        return false;
+    }
+
+    if (!get_and_check_value(input, "threshold", output.threshold, default_value.threshold)) {
+        LogError << "failed to parse_wait_freezes_value threshold" << VAR(input);
+        return false;
+    }
+
+    if (!get_and_check_value(input, "method", output.method, default_value.method)) {
+        LogError << "failed to parse_wait_freezes_value method" << VAR(input);
+        return false;
+    }
+
+    auto rate_limit = default_value.rate_limit.count();
+    if (!get_and_check_value(input, "rate_limit", rate_limit, rate_limit)) {
+        LogError << "failed to parse_wait_freezes_value rate_limit" << VAR(input);
+        return false;
+    }
+    output.rate_limit = std::chrono::milliseconds(rate_limit);
+
+    auto timeout = default_value.timeout.count();
+    if (!get_and_check_value(input, "timeout", timeout, timeout)) {
+        LogError << "failed to parse_wait_freezes_value timeout" << VAR(input);
+        return false;
+    }
+    output.timeout = std::chrono::milliseconds(timeout);
+
+    return true;
+}
+
 bool PipelineParser::parse_wait_freezes_param(
     const json::value& input,
     const std::string& key,
@@ -1496,56 +1551,7 @@ bool PipelineParser::parse_wait_freezes_param(
         return true;
     }
 
-    const auto& field = *opt;
-
-    if (field.is_number()) {
-        output = default_value;
-        output.time = std::chrono::milliseconds(field.as_unsigned());
-        return true;
-    }
-    else if (field.is_object()) {
-        auto time = default_value.time.count();
-        if (!get_and_check_value(field, "time", time, time)) {
-            LogError << "failed to parse_wait_freezes_param time" << VAR(field);
-            return false;
-        }
-        output.time = std::chrono::milliseconds(time);
-
-        if (!parse_action_target(field, "target", output.target, default_value.target)) {
-            LogError << "failed to parse_wait_freezes_param parse_action_target" << VAR(field);
-            return false;
-        }
-
-        if (!get_and_check_value(field, "threshold", output.threshold, default_value.threshold)) {
-            LogError << "failed to parse_wait_freezes_param threshold" << VAR(field);
-            return false;
-        }
-
-        if (!get_and_check_value(field, "method", output.method, default_value.method)) {
-            LogError << "failed to parse_wait_freezes_param method" << VAR(field);
-            return false;
-        }
-
-        auto rate_limit = default_value.rate_limit.count();
-        if (!get_and_check_value(field, "rate_limit", rate_limit, rate_limit)) {
-            LogError << "failed to parse_wait_freezes_param rate_limit" << VAR(field);
-            return false;
-        }
-        output.rate_limit = std::chrono::milliseconds(rate_limit);
-
-        auto timeout = default_value.timeout.count();
-        if (!get_and_check_value(field, "timeout", timeout, timeout)) {
-            LogError << "failed to parse_wait_freezes_param timeout" << VAR(field);
-            return false;
-        }
-        output.timeout = std::chrono::milliseconds(timeout);
-
-        return true;
-    }
-    else {
-        LogError << "invalid wait_freezes_param" << VAR(field);
-        return false;
-    }
+    return parse_wait_freezes_value(*opt, output, default_value);
 }
 
 bool PipelineParser::parse_next(

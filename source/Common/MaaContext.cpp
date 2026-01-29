@@ -198,9 +198,9 @@ MaaActId MaaContextRunActionDirect(
     return context->run_action_direct(action_type, *param_opt, cv_box, reco_detail);
 }
 
-MaaBool MaaContextWaitFreezes(MaaContext* context, MaaSize time, const MaaRect* roi, const char* other_param)
+MaaBool MaaContextWaitFreezes(MaaContext* context, MaaSize time, const MaaRect* roi, const char* wait_freezes_param)
 {
-    LogFunc << VAR_VOIDP(context) << VAR(time) << VAR(other_param);
+    LogFunc << VAR_VOIDP(context) << VAR(time) << VAR(wait_freezes_param);
 
     if (!context) {
         LogError << "handle is null";
@@ -208,10 +208,10 @@ MaaBool MaaContextWaitFreezes(MaaContext* context, MaaSize time, const MaaRect* 
     }
 
     json::value param_json;
-    if (other_param) {
-        auto param_opt = json::parse(other_param);
+    if (wait_freezes_param) {
+        auto param_opt = json::parse(wait_freezes_param);
         if (!param_opt) {
-            LogError << "failed to parse other_param" << VAR(other_param);
+            LogError << "failed to parse wait_freezes_param" << VAR(wait_freezes_param);
             return false;
         }
         param_json = std::move(*param_opt);
