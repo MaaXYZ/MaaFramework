@@ -3,6 +3,7 @@
 #include <meojson/json.hpp>
 
 #include "ActionTask.h"
+#include "Component/WaitFreezes.h"
 #include "MaaUtils/Logger.h"
 #include "MaaUtils/Uuid.h"
 #include "PipelineTask.h"
@@ -13,15 +14,6 @@
 #include "Tasker/Tasker.h"
 
 MAA_TASK_NS_BEGIN
-
-Context::Context(MaaTaskId id, Tasker* tasker, PrivateArg)
-    : task_id_(id)
-    , tasker_(tasker)
-    , task_state_(std::make_shared<TaskState>())
-    , need_to_stop_(std::make_shared<bool>())
-{
-    LogDebug << VAR(id) << VAR_VOIDP(tasker);
-}
 
 std::shared_ptr<Context> Context::create(MaaTaskId id, Tasker* tasker)
 {
@@ -43,6 +35,15 @@ std::shared_ptr<const Context> Context::getptr() const
 std::shared_ptr<Context> Context::make_clone() const
 {
     return std::make_shared<Context>(*this);
+}
+
+Context::Context(MaaTaskId id, Tasker* tasker, PrivateArg)
+    : task_id_(id)
+    , tasker_(tasker)
+    , task_state_(std::make_shared<TaskState>())
+    , need_to_stop_(std::make_shared<bool>())
+{
+    LogDebug << VAR(id) << VAR_VOIDP(tasker);
 }
 
 Context::Context(const Context& other)
@@ -148,6 +149,47 @@ MaaActId Context::run_action_direct(
     return run_action(entry, pipeline_override, box, reco_detail);
 }
 
+bool Context::wait_freezes(std::chrono::milliseconds time, const cv::Rect& roi, const json::value& other_param)
+{
+    LogTrace << VAR(getptr()) << VAR(time) << VAR(roi) << VAR(other_param);
+
+    if (!tasker_) {
+        LogError << "tasker is null";
+        return false;
+    }
+
+    // 使用 MEO_JSONIZATION 解析 other_param
+    MAA_RES_NS::WaitFreezesInput input;
+    if (other_param.is_object() && !other_param.as_object().empty()) {
+        if (!other_param.is<MAA_RES_NS::WaitFreezesInput>()) {
+            LogError << "failed to parse other_param" << VAR(other_param);
+            return false;
+        }
+        input = other_param.as<MAA_RES_NS::WaitFreezesInput>();
+    }
+
+    // 校验 time 和 other_param.time 互斥
+    bool time_nonzero = time > std::chrono::milliseconds(0);
+    bool other_time_nonzero = input.time > 0;
+
+    if (time_nonzero && other_time_nonzero) {
+        LogError << "time and other_param.time are mutually exclusive, both are non-zero" << VAR(time) << VAR(input.time);
+        return false;
+    }
+    if (!time_nonzero && !other_time_nonzero) {
+        LogError << "time and other_param.time are mutually exclusive, both are zero" << VAR(time) << VAR(input.time);
+        return false;
+    }
+
+    // 转换为内部参数
+    MAA_RES_NS::WaitFreezesParam param = input.to_param();
+    if (time_nonzero) {
+        param.time = time;
+    }
+
+    return WaitFreezes::wait(tasker_, param, roi);
+}
+
 bool Context::override_pipeline(const json::value& pipeline_override)
 {
     LogTrace << VAR(getptr()) << VAR(pipeline_override);
@@ -185,25 +227,6 @@ bool Context::override_pipeline(const json::value& pipeline_override)
     return ret && check_pipeline();
 }
 
-bool Context::override_pipeline_once(const json::object& pipeline_override, const MAA_RES_NS::DefaultPipelineMgr& default_mgr)
-{
-    // LogTrace << VAR(getptr()) << VAR(pipeline_override);
-
-    for (const auto& [key, value] : pipeline_override) {
-        PipelineData result;
-        auto default_result = get_pipeline_data(key).value_or(default_mgr.get_pipeline());
-        bool ret = MAA_RES_NS::PipelineParser::parse_node(key, value, result, default_result, default_mgr);
-        if (!ret) {
-            LogError << "parse_task failed" << VAR(key) << VAR(value);
-            return false;
-        }
-
-        pipeline_override_.insert_or_assign(key, std::move(result));
-    }
-
-    return true;
-}
-
 bool Context::override_next(const std::string& node_name, const std::vector<std::string>& next)
 {
     LogTrace << VAR(getptr()) << VAR(node_name) << VAR(next);
@@ -232,14 +255,6 @@ bool Context::override_image(const std::string& image_name, const cv::Mat& image
     return true;
 }
 
-Context* Context::clone() const
-{
-    auto& ref = clone_holder_.emplace_back(make_clone());
-    LogDebug << VAR(getptr()) << VAR(ref);
-
-    return ref.get();
-}
-
 std::optional<json::object> Context::get_node_data(const std::string& node_name) const
 {
     auto pp_opt = get_pipeline_data(node_name);
@@ -250,6 +265,14 @@ std::optional<json::object> Context::get_node_data(const std::string& node_name)
     return MAA_RES_NS::PipelineDumper::dump(*pp_opt);
 }
 
+Context* Context::clone() const
+{
+    auto& ref = clone_holder_.emplace_back(make_clone());
+    LogDebug << VAR(getptr()) << VAR(ref);
+
+    return ref.get();
+}
+
 MaaTaskId Context::task_id() const
 {
     return task_id_;
@@ -258,6 +281,35 @@ MaaTaskId Context::task_id() const
 Tasker* Context::tasker() const
 {
     return tasker_;
+}
+
+size_t Context::get_hit_count(const std::string& node_name) const
+{
+    auto it = task_state_->hit_count.find(node_name);
+    if (it != task_state_->hit_count.end()) {
+        return it->second;
+    }
+    return 0;
+}
+
+void Context::clear_hit_count(const std::string& node_name)
+{
+    task_state_->hit_count.erase(node_name);
+}
+
+void Context::set_anchor(const std::string& anchor_name, const std::string& node_name)
+{
+    LogDebug << VAR(anchor_name) << VAR(node_name);
+    task_state_->anchors[anchor_name] = node_name;
+}
+
+std::optional<std::string> Context::get_anchor(const std::string& anchor_name) const
+{
+    auto it = task_state_->anchors.find(anchor_name);
+    if (it != task_state_->anchors.end()) {
+        return it->second;
+    }
+    return std::nullopt;
 }
 
 std::optional<PipelineData> Context::get_pipeline_data(const std::string& node_name) const
@@ -336,38 +388,28 @@ bool& Context::need_to_stop()
     return *need_to_stop_;
 }
 
-size_t Context::get_hit_count(const std::string& node_name) const
-{
-    auto it = task_state_->hit_count.find(node_name);
-    if (it != task_state_->hit_count.end()) {
-        return it->second;
-    }
-    return 0;
-}
-
 void Context::increment_hit_count(const std::string& node_name)
 {
     task_state_->hit_count[node_name]++;
 }
 
-void Context::clear_hit_count(const std::string& node_name)
+bool Context::override_pipeline_once(const json::object& pipeline_override, const MAA_RES_NS::DefaultPipelineMgr& default_mgr)
 {
-    task_state_->hit_count.erase(node_name);
-}
+    // LogTrace << VAR(getptr()) << VAR(pipeline_override);
 
-void Context::set_anchor(const std::string& anchor_name, const std::string& node_name)
-{
-    LogDebug << VAR(anchor_name) << VAR(node_name);
-    task_state_->anchors[anchor_name] = node_name;
-}
+    for (const auto& [key, value] : pipeline_override) {
+        PipelineData result;
+        auto default_result = get_pipeline_data(key).value_or(default_mgr.get_pipeline());
+        bool ret = MAA_RES_NS::PipelineParser::parse_node(key, value, result, default_result, default_mgr);
+        if (!ret) {
+            LogError << "parse_task failed" << VAR(key) << VAR(value);
+            return false;
+        }
 
-std::optional<std::string> Context::get_anchor(const std::string& anchor_name) const
-{
-    auto it = task_state_->anchors.find(anchor_name);
-    if (it != task_state_->anchors.end()) {
-        return it->second;
+        pipeline_override_.insert_or_assign(key, std::move(result));
     }
-    return std::nullopt;
+
+    return true;
 }
 
 bool Context::check_pipeline() const

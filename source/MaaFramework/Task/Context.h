@@ -50,15 +50,18 @@ public: // from MaaContextAPI
         const json::value& action_param,
         const cv::Rect& box,
         const std::string& reco_detail) override;
+    virtual bool wait_freezes(std::chrono::milliseconds time, const cv::Rect& roi, const json::value& other_param) override;
     virtual bool override_pipeline(const json::value& pipeline_override) override;
     virtual bool override_next(const std::string& node_name, const std::vector<std::string>& next) override;
     virtual bool override_image(const std::string& image_name, const cv::Mat& image) override;
     virtual std::optional<json::object> get_node_data(const std::string& node_name) const override;
-
     virtual Context* clone() const override;
-
     virtual MaaTaskId task_id() const override;
     virtual Tasker* tasker() const override;
+    virtual size_t get_hit_count(const std::string& node_name) const override;
+    virtual void clear_hit_count(const std::string& node_name) override;
+    virtual void set_anchor(const std::string& anchor_name, const std::string& node_name) override;
+    virtual std::optional<std::string> get_anchor(const std::string& anchor_name) const override;
 
 public:
     std::optional<PipelineData> get_pipeline_data(const std::string& node_name) const;
@@ -66,13 +69,7 @@ public:
     std::vector<cv::Mat> get_images(const std::vector<std::string>& names);
 
     bool& need_to_stop();
-
-    virtual size_t get_hit_count(const std::string& node_name) const override;
     void increment_hit_count(const std::string& node_name);
-    virtual void clear_hit_count(const std::string& node_name) override;
-
-    virtual void set_anchor(const std::string& anchor_name, const std::string& node_name) override;
-    virtual std::optional<std::string> get_anchor(const std::string& anchor_name) const override;
 
 private:
     bool override_pipeline_once(const json::object& pipeline_override, const MAA_RES_NS::DefaultPipelineMgr& default_mgr);

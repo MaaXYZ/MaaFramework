@@ -5,8 +5,8 @@
 #include "CustomAction.h"
 #include "MaaUtils/JsonExt.hpp"
 #include "MaaUtils/Logger.h"
-#include "Vision/TemplateComparator.h"
 #include "Vision/VisionUtils.hpp"
+#include "WaitFreezes.h"
 
 MAA_TASK_NS_BEGIN
 
@@ -510,59 +510,10 @@ void Actuator::wait_freezes(const MAA_RES_NS::WaitFreezesParam& param, const cv:
         return;
     }
 
-    if (!controller()) {
-        LogError << "Controller is null";
-        return;
-    }
-    using namespace MAA_VISION_NS;
-
-    LogTrace << "Wait freezes:" << VAR(param.time) << VAR(param.rate_limit) << VAR(param.timeout) << VAR(param.threshold)
-             << VAR(param.method);
-
-    auto rate_limit = std::min(param.rate_limit, param.time);
-
-    auto screencap_clock = std::chrono::steady_clock::now();
-    cv::Mat pre_image = controller()->screencap();
-
+    // 计算 ROI 区域（处理 target 偏移等）
     cv::Rect roi = get_target_rect(param.target, box);
-    TemplateComparatorParam comp_param {
-        .threshold = param.threshold,
-        .method = param.method,
-    };
 
-    const auto start_clock = std::chrono::steady_clock::now();
-    auto pre_image_clock = start_clock;
-
-    while (true) {
-        LogDebug << "sleep_until" << VAR(rate_limit);
-        std::this_thread::sleep_until(screencap_clock + rate_limit);
-
-        // timeout < 0 表示无限等待，跳过超时检查
-        if (param.timeout >= std::chrono::milliseconds(0) && duration_since(start_clock) > param.timeout) {
-            LogWarn << "Wait freezes timeout" << VAR(duration_since(start_clock)) << VAR(param.timeout);
-            break;
-        }
-
-        screencap_clock = std::chrono::steady_clock::now();
-        cv::Mat cur_image = controller()->screencap();
-
-        if (pre_image.empty() || cur_image.empty()) {
-            LogError << "Image is empty" << VAR(pre_image.empty()) << VAR(cur_image.empty());
-            break;
-        }
-
-        TemplateComparator comparator(pre_image, cur_image, { roi }, comp_param);
-
-        if (!comparator.best_result()) {
-            pre_image = cur_image;
-            pre_image_clock = std::chrono::steady_clock::now();
-            continue;
-        }
-
-        if (duration_since(pre_image_clock) > param.time) {
-            break;
-        }
-    }
+    WaitFreezes::wait(controller(), param, roi);
 }
 
 ActionResult Actuator::start_app(const MAA_RES_NS::Action::AppParam& param, const std::string& name)

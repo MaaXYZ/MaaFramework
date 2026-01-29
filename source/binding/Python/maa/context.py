@@ -425,6 +425,42 @@ class Context:
             )
         )
 
+    def wait_freezes(
+        self,
+        time: int = 0,
+        roi: Optional[Tuple[int, int, int, int]] = None,
+        other_param: Optional[Dict] = None,
+    ) -> bool:
+        """等待画面静止 / Wait for screen to stabilize (freeze)
+
+        Args:
+            time: 等待时间（毫秒） / Wait time in milliseconds
+            roi: ROI 区域 (x, y, w, h)，为 None 时使用整个屏幕 / ROI region, if None uses entire screen
+            other_param: 其他参数，如 threshold, method, rate_limit, timeout / Other parameters
+
+        Returns:
+            bool: 是否成功 / Whether successful
+
+        Note:
+            time 和 other_param["time"] 互斥，不能同时为非零或同时为零 /
+            time and other_param["time"] are mutually exclusive
+        """
+        rect_handle = None
+        if roi:
+            rect_handle = MaaRectHandle()
+            Library.framework().MaaRectSet(rect_handle, roi[0], roi[1], roi[2], roi[3])
+
+        param_json = json.dumps(other_param or {}, ensure_ascii=False)
+
+        return bool(
+            Library.framework().MaaContextWaitFreezes(
+                self._handle,
+                ctypes.c_uint64(time),
+                rect_handle,
+                param_json.encode(),
+            )
+        )
+
     ### private ###
 
     def _init_tasker(self):
@@ -558,6 +594,14 @@ class Context:
         Library.framework().MaaContextClearHitCount.restype = MaaBool
         Library.framework().MaaContextClearHitCount.argtypes = [
             MaaContextHandle,
+            ctypes.c_char_p,
+        ]
+
+        Library.framework().MaaContextWaitFreezes.restype = MaaBool
+        Library.framework().MaaContextWaitFreezes.argtypes = [
+            MaaContextHandle,
+            ctypes.c_uint64,
+            MaaRectHandle,
             ctypes.c_char_p,
         ]
 

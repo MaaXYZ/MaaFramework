@@ -286,6 +286,9 @@ bool AgentClient::handle_inserted_request(const json::value& j)
     else if (handle_context_clear_hit_count(j)) {
         return true;
     }
+    else if (handle_context_wait_freezes(j)) {
+        return true;
+    }
 
     else if (handle_tasker_inited(j)) {
         return true;
@@ -873,6 +876,29 @@ bool AgentClient::handle_context_clear_hit_count(const json::value& j)
     context->clear_hit_count(req.node_name);
 
     ContextClearHitCountReverseResponse resp {};
+    send(resp);
+    return true;
+}
+
+bool AgentClient::handle_context_wait_freezes(const json::value& j)
+{
+    if (!j.is<ContextWaitFreezesReverseRequest>()) {
+        return false;
+    }
+
+    const ContextWaitFreezesReverseRequest& req = j.as<ContextWaitFreezesReverseRequest>();
+    LogFunc << VAR(req) << VAR(ipc_addr_);
+
+    MaaContext* context = query_context(req.context_id);
+    if (!context) {
+        LogError << "context not found" << VAR(req.context_id);
+        return false;
+    }
+
+    cv::Rect roi { req.roi[0], req.roi[1], req.roi[2], req.roi[3] };
+    bool ret = context->wait_freezes(std::chrono::milliseconds(req.time), roi, req.other_param);
+
+    ContextWaitFreezesReverseResponse resp { .ret = ret };
     send(resp);
     return true;
 }

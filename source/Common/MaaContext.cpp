@@ -198,6 +198,36 @@ MaaActId MaaContextRunActionDirect(
     return context->run_action_direct(action_type, *param_opt, cv_box, reco_detail);
 }
 
+MaaBool MaaContextWaitFreezes(MaaContext* context, MaaSize time, const MaaRect* roi, const char* other_param)
+{
+    LogFunc << VAR_VOIDP(context) << VAR(time) << VAR(other_param);
+
+    if (!context) {
+        LogError << "handle is null";
+        return false;
+    }
+
+    json::value param_json;
+    if (other_param) {
+        auto param_opt = json::parse(other_param);
+        if (!param_opt) {
+            LogError << "failed to parse other_param" << VAR(other_param);
+            return false;
+        }
+        param_json = std::move(*param_opt);
+    }
+
+    cv::Rect cv_roi {};
+    if (roi) {
+        cv_roi.x = roi->x;
+        cv_roi.y = roi->y;
+        cv_roi.width = roi->width;
+        cv_roi.height = roi->height;
+    }
+
+    return context->wait_freezes(std::chrono::milliseconds(time), cv_roi, param_json);
+}
+
 MaaBool MaaContextOverridePipeline(MaaContext* context, const char* pipeline_override)
 {
     LogFunc << VAR_VOIDP(context) << VAR(pipeline_override);

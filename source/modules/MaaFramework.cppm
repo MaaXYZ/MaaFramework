@@ -131,6 +131,7 @@ export using ::MaaContextSetAnchor;
 export using ::MaaContextGetAnchor;
 export using ::MaaContextGetHitCount;
 export using ::MaaContextClearHitCount;
+export using ::MaaContextWaitFreezes;
 
 // Instance/MaaController.h
 

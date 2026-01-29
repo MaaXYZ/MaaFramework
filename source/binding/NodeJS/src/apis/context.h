@@ -56,6 +56,10 @@ struct ContextImpl : public maajs::NativeClassBase
     std::optional<std::string> get_anchor(std::string anchor_name);
     int32_t get_hit_count(std::string node_name);
     void clear_hit_count(std::string node_name);
+    bool wait_freezes(
+        maajs::OptionalParam<int64_t> time,
+        maajs::OptionalParam<std::optional<MaaRect>> roi,
+        maajs::OptionalParam<maajs::ValueType> other_param);
 
     std::string to_string() override;
 

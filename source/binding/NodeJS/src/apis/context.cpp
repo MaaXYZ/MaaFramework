@@ -213,6 +213,28 @@ void ContextImpl::clear_hit_count(std::string node_name)
     }
 }
 
+bool ContextImpl::wait_freezes(
+    maajs::OptionalParam<int64_t> time,
+    maajs::OptionalParam<std::optional<MaaRect>> roi,
+    maajs::OptionalParam<maajs::ValueType> other_param)
+{
+    int64_t time_val = time.value_or(0);
+
+    MaaRect* roi_ptr = nullptr;
+    MaaRect roi_val {};
+    if (auto roi_opt = roi.value_or(std::nullopt); roi_opt.has_value()) {
+        roi_val = roi_opt.value();
+        roi_ptr = &roi_val;
+    }
+
+    std::string param_str = "{}";
+    if (other_param.has_value()) {
+        param_str = maajs::stringify(other_param.value());
+    }
+
+    return MaaContextWaitFreezes(context, static_cast<MaaSize>(time_val), roi_ptr, param_str.c_str());
+}
+
 std::string ContextImpl::to_string()
 {
     return std::format(" handle = {:#018x} ", reinterpret_cast<uintptr_t>(context));
@@ -256,6 +278,7 @@ void ContextImpl::init_proto(maajs::ObjectType proto, maajs::FunctionType)
     MAA_BIND_FUNC(proto, "get_anchor", ContextImpl::get_anchor);
     MAA_BIND_FUNC(proto, "get_hit_count", ContextImpl::get_hit_count);
     MAA_BIND_FUNC(proto, "clear_hit_count", ContextImpl::clear_hit_count);
+    MAA_BIND_FUNC(proto, "wait_freezes", ContextImpl::wait_freezes);
 }
 
 maajs::ValueType load_context(maajs::EnvType env)

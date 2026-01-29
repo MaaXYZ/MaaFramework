@@ -258,4 +258,20 @@ void RemoteContext::clear_hit_count(const std::string& node_name)
     server_.send_and_recv<ContextClearHitCountReverseResponse>(req);
 }
 
+bool RemoteContext::wait_freezes(std::chrono::milliseconds time, const cv::Rect& roi, const json::value& other_param)
+{
+    ContextWaitFreezesReverseRequest req {
+        .context_id = context_id_,
+        .time = time.count(),
+        .roi = { roi.x, roi.y, roi.width, roi.height },
+        .other_param = other_param,
+    };
+
+    auto resp_opt = server_.send_and_recv<ContextWaitFreezesReverseResponse>(req);
+    if (!resp_opt) {
+        return false;
+    }
+    return resp_opt->ret;
+}
+
 MAA_AGENT_SERVER_NS_END

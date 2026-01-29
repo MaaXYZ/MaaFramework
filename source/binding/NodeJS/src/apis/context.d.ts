@@ -43,6 +43,17 @@ declare global {
             get_anchor(anchor_name: string): string | null
             get_hit_count(node_name: string): number
             clear_hit_count(node_name: string): void
+            wait_freezes(
+                time?: number,
+                roi?: Rect | null,
+                other_param?: {
+                    time?: number
+                    threshold?: number
+                    method?: number
+                    rate_limit?: number
+                    timeout?: number
+                },
+            ): boolean
         }
     }
 }
