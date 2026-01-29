@@ -20,6 +20,7 @@ from .pipeline import (
     JActionType,
     JRecognitionParam,
     JActionParam,
+    JWaitFreezes,
 )
 
 
@@ -429,28 +430,32 @@ class Context:
         self,
         time: int = 0,
         roi: Optional[Tuple[int, int, int, int]] = None,
-        wait_freezes_param: Optional[Dict] = None,
+        wait_freezes_param: Optional[JWaitFreezes] = None,
     ) -> bool:
         """等待画面静止 / Wait for screen to stabilize (freeze)
 
         Args:
             time: 等待时间（毫秒） / Wait time in milliseconds
             roi: ROI 区域 (x, y, w, h)，为 None 时使用整个屏幕 / ROI region, if None uses entire screen
-            wait_freezes_param: 其他参数，如 threshold, method, rate_limit, timeout / Other parameters
+            wait_freezes_param: 等待参数，使用 JWaitFreezes。支持 time, target, target_offset, threshold, method, rate_limit, timeout
+                              / Wait parameters, use JWaitFreezes. Supports time, target, target_offset, threshold, method, rate_limit, timeout
 
         Returns:
             bool: 是否成功 / Whether successful
 
         Note:
-            time 和 wait_freezes_param["time"] 互斥，不能同时为非零或同时为零 /
-            time and wait_freezes_param["time"] are mutually exclusive
+            - time 和 wait_freezes_param.time 互斥，不能同时为非零或同时为零 / time and wait_freezes_param.time are mutually exclusive
+            - roi 和 wait_freezes_param.target 互斥，不能同时指定 / roi and wait_freezes_param.target are mutually exclusive
         """
         rect_handle = None
         if roi:
             rect_handle = MaaRectHandle()
             Library.framework().MaaRectSet(rect_handle, roi[0], roi[1], roi[2], roi[3])
 
-        param_json = json.dumps(wait_freezes_param or {}, ensure_ascii=False)
+        # Convert JWaitFreezes to dict
+        from dataclasses import asdict
+        param_dict = asdict(wait_freezes_param) if wait_freezes_param is not None else {}
+        param_json = json.dumps(param_dict, ensure_ascii=False)
 
         return bool(
             Library.framework().MaaContextWaitFreezes(

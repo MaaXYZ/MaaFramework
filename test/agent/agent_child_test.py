@@ -141,7 +141,8 @@ class MyRecognition(CustomRecognition):
         new_ctx.clear_hit_count(argv.node_name)
 
         # 测试 wait_freezes API（参数校验：time 和 wait_freezes_param.time 同时为零应返回 false）
-        wait_result = new_ctx.wait_freezes(time=0, wait_freezes_param={})
+        from maa.pipeline import JWaitFreezes
+        wait_result = new_ctx.wait_freezes(time=0, wait_freezes_param=JWaitFreezes(time=0))
         print(f"  wait_freezes (both zero): {wait_result}")
         assert (
             not wait_result
