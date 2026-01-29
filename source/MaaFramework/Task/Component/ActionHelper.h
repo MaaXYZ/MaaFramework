@@ -3,10 +3,9 @@
 #include "Common/Conf.h"
 #include "Controller/ControllerAgent.h"
 #include "Resource/PipelineTypes.h"
+#include "Tasker/Tasker.h"
 
 MAA_TASK_NS_BEGIN
-
-class Tasker;
 
 class ActionHelper : public NonCopyable
 {
