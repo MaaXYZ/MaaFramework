@@ -8,13 +8,13 @@ MAA_TASK_NS_BEGIN
 
 class Tasker;
 
-class Freezer : public NonCopyable
+class ActionHelper : public NonCopyable
 {
 public:
-    explicit Freezer(Tasker* tasker);
+    explicit ActionHelper(Tasker* tasker);
 
     // 等待画面静止
-    bool wait(const MAA_RES_NS::WaitFreezesParam& param, const cv::Rect& box);
+    bool wait_freezes(const MAA_RES_NS::WaitFreezesParam& param, const cv::Rect& box);
 
     // 根据 target 计算 ROI 区域
     cv::Rect get_target_rect(const MAA_RES_NS::Action::Target& target, const cv::Rect& box = {});

@@ -1,4 +1,4 @@
-#include "Freezer.h"
+#include "ActionHelper.h"
 
 #include "Common/TaskResultTypes.h"
 #include "MaaUtils/Logger.h"
@@ -8,12 +8,12 @@
 
 MAA_TASK_NS_BEGIN
 
-Freezer::Freezer(Tasker* tasker)
+ActionHelper::ActionHelper(Tasker* tasker)
     : tasker_(tasker)
 {
 }
 
-bool Freezer::wait(const MAA_RES_NS::WaitFreezesParam& param, const cv::Rect& box)
+bool ActionHelper::wait_freezes(const MAA_RES_NS::WaitFreezesParam& param, const cv::Rect& box)
 {
     if (param.time <= std::chrono::milliseconds(0)) {
         return true;
@@ -81,7 +81,7 @@ bool Freezer::wait(const MAA_RES_NS::WaitFreezesParam& param, const cv::Rect& bo
     return true;
 }
 
-cv::Rect Freezer::get_target_rect(const MAA_RES_NS::Action::Target& target, const cv::Rect& box)
+cv::Rect ActionHelper::get_target_rect(const MAA_RES_NS::Action::Target& target, const cv::Rect& box)
 {
     if (!tasker_) {
         LogError << "Tasker is null";
@@ -134,7 +134,7 @@ cv::Rect Freezer::get_target_rect(const MAA_RES_NS::Action::Target& target, cons
     return cv::Rect(x, y, width, height);
 }
 
-MAA_CTRL_NS::ControllerAgent* Freezer::controller()
+MAA_CTRL_NS::ControllerAgent* ActionHelper::controller()
 {
     return tasker_ ? tasker_->controller() : nullptr;
 }

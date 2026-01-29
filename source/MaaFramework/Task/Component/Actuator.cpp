@@ -1,9 +1,9 @@
 #include "Actuator.h"
 
+#include "ActionHelper.h"
 #include "CommandAction.h"
 #include "Controller/ControllerAgent.h"
 #include "CustomAction.h"
-#include "Freezer.h"
 #include "MaaUtils/JsonExt.hpp"
 #include "MaaUtils/Logger.h"
 #include "Vision/VisionUtils.hpp"
@@ -510,9 +510,9 @@ void Actuator::wait_freezes(const MAA_RES_NS::WaitFreezesParam& param, const cv:
         return;
     }
 
-    Freezer freezer(tasker_);
-    cv::Rect roi = freezer.get_target_rect(param.target, box);
-    freezer.wait(param, roi);
+    ActionHelper helper(tasker_);
+    cv::Rect roi = helper.get_target_rect(param.target, box);
+    helper.wait_freezes(param, roi);
 }
 
 ActionResult Actuator::start_app(const MAA_RES_NS::Action::AppParam& param, const std::string& name)
@@ -646,8 +646,8 @@ MAA_CTRL_NS::ControllerAgent* Actuator::controller()
 
 cv::Rect Actuator::get_target_rect(const MAA_RES_NS::Action::Target& target, const cv::Rect& box)
 {
-    Freezer freezer(tasker_);
-    return freezer.get_target_rect(target, box);
+    ActionHelper helper(tasker_);
+    return helper.get_target_rect(target, box);
 }
 
 void Actuator::sleep(unsigned ms) const

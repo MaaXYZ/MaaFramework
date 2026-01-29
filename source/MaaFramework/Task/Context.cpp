@@ -3,7 +3,7 @@
 #include <meojson/json.hpp>
 
 #include "ActionTask.h"
-#include "Component/Freezer.h"
+#include "Component/ActionHelper.h"
 #include "MaaUtils/Logger.h"
 #include "MaaUtils/Uuid.h"
 #include "PipelineTask.h"
@@ -193,13 +193,13 @@ bool Context::wait_freezes(std::chrono::milliseconds time, const cv::Rect& roi, 
         return false;
     }
 
-    Freezer freezer(tasker_);
+    ActionHelper helper(tasker_);
     cv::Rect final_roi = roi;
     if (has_target) {
-        final_roi = freezer.get_target_rect(param.target);
+        final_roi = helper.get_target_rect(param.target);
     }
 
-    return freezer.wait(param, final_roi);
+    return helper.wait_freezes(param, final_roi);
 }
 
 bool Context::override_pipeline(const json::value& pipeline_override)
