@@ -1484,10 +1484,7 @@ bool PipelineParser::parse_custom_action_param(
     return true;
 }
 
-bool PipelineParser::parse_wait_freezes_value(
-    const json::value& input,
-    WaitFreezesParam& output,
-    const WaitFreezesParam& default_value)
+bool PipelineParser::parse_wait_freezes_value(const json::value& input, WaitFreezesParam& output, const WaitFreezesParam& default_value)
 {
     if (input.is_number()) {
         output = default_value;
