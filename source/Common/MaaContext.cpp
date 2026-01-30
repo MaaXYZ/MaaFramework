@@ -207,7 +207,7 @@ MaaBool MaaContextWaitFreezes(MaaContext* context, MaaSize time, const MaaRect* 
         return false;
     }
 
-    json::value param_json;
+    json::value param_json = json::object();
     if (wait_freezes_param) {
         auto param_opt = json::parse(wait_freezes_param);
         if (!param_opt) {

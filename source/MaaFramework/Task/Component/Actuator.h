@@ -11,6 +11,7 @@
 #include "Controller/ControllerAgent.h"
 #include "Resource/PipelineTypes.h"
 #include "Task/Context.h"
+#include "Task/Component/ActionHelper.h"
 #include "Tasker/Tasker.h"
 
 MAA_TASK_NS_BEGIN
@@ -63,8 +64,6 @@ private:
     void wait_freezes(const MAA_RES_NS::WaitFreezesParam& param, const cv::Rect& box);
 
 private:
-    cv::Rect get_target_rect(const MAA_RES_NS::Action::Target& target, const cv::Rect& box);
-
     MAA_CTRL_NS::ControllerAgent* controller();
 
     void sleep(unsigned ms) const;
@@ -74,6 +73,8 @@ private:
     Tasker* tasker_ = nullptr;
     Context& context_;
     const MaaActId action_id_ = ++s_global_action_id;
+
+    ActionHelper helper_;
 };
 
 MAA_TASK_NS_END

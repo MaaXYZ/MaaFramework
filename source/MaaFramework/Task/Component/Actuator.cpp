@@ -1,6 +1,5 @@
 #include "Actuator.h"
 
-#include "ActionHelper.h"
 #include "CommandAction.h"
 #include "Controller/ControllerAgent.h"
 #include "CustomAction.h"
@@ -15,6 +14,7 @@ std::mt19937 Actuator::rand_engine_(std::random_device {}());
 Actuator::Actuator(Tasker* tasker, Context& context)
     : tasker_(tasker)
     , context_(context)
+    , helper_(tasker)
 {
 }
 
@@ -176,7 +176,7 @@ ActionResult Actuator::click(const MAA_RES_NS::Action::ClickParam& param, const 
         return {};
     }
 
-    cv::Point point = rand_point(get_target_rect(param.target, box));
+    cv::Point point = rand_point(helper_.get_target_rect(param.target, box));
     MAA_CTRL_NS::ClickParam ctrl_param { .point = point, .contact = static_cast<int>(param.contact) };
     bool ret = controller()->click(ctrl_param);
 
@@ -197,7 +197,7 @@ ActionResult Actuator::long_press(const MAA_RES_NS::Action::LongPressParam& para
         return {};
     }
 
-    cv::Point point = rand_point(get_target_rect(param.target, box));
+    cv::Point point = rand_point(helper_.get_target_rect(param.target, box));
     MAA_CTRL_NS::LongPressParam ctrl_param { .point = point, .duration = param.duration, .contact = static_cast<int>(param.contact) };
     bool ret = controller()->long_press(ctrl_param);
 
@@ -218,7 +218,7 @@ ActionResult Actuator::swipe(const MAA_RES_NS::Action::SwipeParam& param, const 
         return {};
     }
 
-    cv::Point begin = rand_point(get_target_rect(param.begin, box));
+    cv::Point begin = rand_point(helper_.get_target_rect(param.begin, box));
 
     std::vector<cv::Point> end;
     for (size_t i = 0; i < param.end.size(); ++i) {
@@ -227,7 +227,7 @@ ActionResult Actuator::swipe(const MAA_RES_NS::Action::SwipeParam& param, const 
                               : i < param.end_offset.size() ? param.end_offset.at(i)
                                                             : param.end_offset.back();
         MAA_RES_NS::Action::Target end_target { .type = e.type, .param = e.param, .offset = end_offset };
-        cv::Point p = rand_point(get_target_rect(end_target, box));
+        cv::Point p = rand_point(helper_.get_target_rect(end_target, box));
         end.emplace_back(p);
     }
 
@@ -259,7 +259,7 @@ ActionResult Actuator::multi_swipe(const MAA_RES_NS::Action::MultiSwipeParam& pa
 
     std::vector<MAA_CTRL_NS::SwipeParam> swipes;
     for (const auto& swipe : param.swipes) {
-        cv::Point begin = rand_point(get_target_rect(swipe.begin, box));
+        cv::Point begin = rand_point(helper_.get_target_rect(swipe.begin, box));
 
         std::vector<cv::Point> end;
         for (size_t i = 0; i < swipe.end.size(); ++i) {
@@ -268,7 +268,7 @@ ActionResult Actuator::multi_swipe(const MAA_RES_NS::Action::MultiSwipeParam& pa
                                   : i < swipe.end_offset.size() ? swipe.end_offset.at(i)
                                                                 : swipe.end_offset.back();
             MAA_RES_NS::Action::Target end_target { .type = e.type, .param = e.param, .offset = end_offset };
-            cv::Point p = rand_point(get_target_rect(end_target, box));
+            cv::Point p = rand_point(helper_.get_target_rect(end_target, box));
             end.emplace_back(p);
         }
         swipes.push_back(
@@ -301,7 +301,7 @@ ActionResult Actuator::touch_down(const MAA_RES_NS::Action::TouchParam& param, c
         return {};
     }
 
-    cv::Point point = rand_point(get_target_rect(param.target, box));
+    cv::Point point = rand_point(helper_.get_target_rect(param.target, box));
     MAA_CTRL_NS::TouchParam ctrl_param { .contact = static_cast<int>(param.contact), .point = point, .pressure = param.pressure };
     bool ret = controller()->touch_down(ctrl_param);
 
@@ -322,7 +322,7 @@ ActionResult Actuator::touch_move(const MAA_RES_NS::Action::TouchParam& param, c
         return {};
     }
 
-    cv::Point point = rand_point(get_target_rect(param.target, box));
+    cv::Point point = rand_point(helper_.get_target_rect(param.target, box));
     MAA_CTRL_NS::TouchParam ctrl_param { .contact = static_cast<int>(param.contact), .point = point, .pressure = param.pressure };
     bool ret = controller()->touch_move(ctrl_param);
 
@@ -463,7 +463,7 @@ ActionResult Actuator::scroll(const MAA_RES_NS::Action::ScrollParam& param, cons
         return {};
     }
 
-    cv::Point point = rand_point(get_target_rect(param.target, box));
+    cv::Point point = rand_point(helper_.get_target_rect(param.target, box));
     MAA_CTRL_NS::ScrollParam ctrl_param { .point = point, .dx = param.dx, .dy = param.dy };
     bool ret = controller()->scroll(ctrl_param);
 
@@ -510,9 +510,8 @@ void Actuator::wait_freezes(const MAA_RES_NS::WaitFreezesParam& param, const cv:
         return;
     }
 
-    ActionHelper helper(tasker_);
-    cv::Rect roi = helper.get_target_rect(param.target, box);
-    helper.wait_freezes(param, roi);
+    cv::Rect roi = helper_.get_target_rect(param.target, box);
+    helper_.wait_freezes(param, roi);
 }
 
 ActionResult Actuator::start_app(const MAA_RES_NS::Action::AppParam& param, const std::string& name)
@@ -599,7 +598,7 @@ ActionResult
         return {};
     }
     auto session = tasker_->resource()->custom_action(param.name);
-    cv::Rect rect = get_target_rect(param.target, box);
+    cv::Rect rect = helper_.get_target_rect(param.target, box);
     bool ret = CustomAction::run(context_, name, session, param, reco_id, rect);
 
     return ActionResult {
@@ -642,12 +641,6 @@ ActionResult Actuator::stop_task(const std::string& name)
 MAA_CTRL_NS::ControllerAgent* Actuator::controller()
 {
     return tasker_ ? tasker_->controller() : nullptr;
-}
-
-cv::Rect Actuator::get_target_rect(const MAA_RES_NS::Action::Target& target, const cv::Rect& box)
-{
-    ActionHelper helper(tasker_);
-    return helper.get_target_rect(target, box);
 }
 
 void Actuator::sleep(unsigned ms) const
