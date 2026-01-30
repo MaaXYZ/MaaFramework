@@ -177,7 +177,7 @@ _✨ 基于图像识别的自动化黑盒测试框架 ✨_
     终末地小助手。由 MaaFramework 与 MXU 驱动，绝赞开发中！
 
 - [MaaGFNeuralCloud](https://github.com/PinkMMF/MaaGFNeuralCloud) ![Pipeline](https://img.shields.io/badge/Pipeline-%23876f69?logo=paddypower&logoColor=%23FFFFFF) ![license](https://img.shields.io/github/license/PinkMMF/MaaGFNeuralCloud) ![activity](https://img.shields.io/github/commit-activity/m/PinkMMF/MaaGFNeuralCloud?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/PinkMMF/MaaGFNeuralCloud?style=social)  
-    少女前线: 云图计划自动化助手。图像技术 + 模拟控制，解放双手！由 MaaFramework 强力驱动！
+    少女前线：云图计划自动化助手。图像技术 + 模拟控制，解放双手！由 MaaFramework 强力驱动！
 
 ## 生态共建
 
