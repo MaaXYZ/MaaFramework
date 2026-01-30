@@ -42,7 +42,7 @@ public:
     virtual std::optional<std::string> get_anchor(const std::string& anchor_name) const override;
     virtual size_t get_hit_count(const std::string& node_name) const override;
     virtual void clear_hit_count(const std::string& node_name) override;
-    virtual bool wait_freezes(std::chrono::milliseconds time, const cv::Rect& roi, const json::value& wait_freezes_param) override;
+    virtual bool wait_freezes(std::chrono::milliseconds time, const cv::Rect& box, const json::value& wait_freezes_param) override;
 
 private:
     Transceiver& server_;

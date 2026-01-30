@@ -198,7 +198,7 @@ MaaActId MaaContextRunActionDirect(
     return context->run_action_direct(action_type, *param_opt, cv_box, reco_detail);
 }
 
-MaaBool MaaContextWaitFreezes(MaaContext* context, MaaSize time, const MaaRect* roi, const char* wait_freezes_param)
+MaaBool MaaContextWaitFreezes(MaaContext* context, MaaSize time, const MaaRect* box, const char* wait_freezes_param)
 {
     LogFunc << VAR_VOIDP(context) << VAR(time) << VAR(wait_freezes_param);
 
@@ -217,15 +217,15 @@ MaaBool MaaContextWaitFreezes(MaaContext* context, MaaSize time, const MaaRect* 
         param_json = std::move(*param_opt);
     }
 
-    cv::Rect cv_roi {};
-    if (roi) {
-        cv_roi.x = roi->x;
-        cv_roi.y = roi->y;
-        cv_roi.width = roi->width;
-        cv_roi.height = roi->height;
+    cv::Rect cv_box {};
+    if (box) {
+        cv_box.x = box->x;
+        cv_box.y = box->y;
+        cv_box.width = box->width;
+        cv_box.height = box->height;
     }
 
-    return context->wait_freezes(std::chrono::milliseconds(time), cv_roi, param_json);
+    return context->wait_freezes(std::chrono::milliseconds(time), cv_box, param_json);
 }
 
 MaaBool MaaContextOverridePipeline(MaaContext* context, const char* pipeline_override)

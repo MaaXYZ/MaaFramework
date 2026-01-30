@@ -895,8 +895,8 @@ bool AgentClient::handle_context_wait_freezes(const json::value& j)
         return false;
     }
 
-    cv::Rect roi { req.roi[0], req.roi[1], req.roi[2], req.roi[3] };
-    bool ret = context->wait_freezes(std::chrono::milliseconds(req.time), roi, req.wait_freezes_param);
+    cv::Rect box { req.box[0], req.box[1], req.box[2], req.box[3] };
+    bool ret = context->wait_freezes(std::chrono::milliseconds(req.time), box, req.wait_freezes_param);
 
     ContextWaitFreezesReverseResponse resp { .ret = ret };
     send(resp);

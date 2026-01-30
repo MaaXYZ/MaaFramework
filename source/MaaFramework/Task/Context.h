@@ -50,7 +50,7 @@ public: // from MaaContextAPI
         const json::value& action_param,
         const cv::Rect& box,
         const std::string& reco_detail) override;
-    virtual bool wait_freezes(std::chrono::milliseconds time, const cv::Rect& roi, const json::value& wait_freezes_param) override;
+    virtual bool wait_freezes(std::chrono::milliseconds time, const cv::Rect& box, const json::value& wait_freezes_param) override;
     virtual bool override_pipeline(const json::value& pipeline_override) override;
     virtual bool override_next(const std::string& node_name, const std::vector<std::string>& next) override;
     virtual bool override_image(const std::string& image_name, const cv::Mat& image) override;

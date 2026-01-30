@@ -149,9 +149,9 @@ MaaActId Context::run_action_direct(
     return run_action(entry, pipeline_override, box, reco_detail);
 }
 
-bool Context::wait_freezes(std::chrono::milliseconds time, const cv::Rect& roi, const json::value& wait_freezes_param)
+bool Context::wait_freezes(std::chrono::milliseconds time, const cv::Rect& box, const json::value& wait_freezes_param)
 {
-    LogTrace << VAR(getptr()) << VAR(time) << VAR(roi) << VAR(wait_freezes_param);
+    LogTrace << VAR(getptr()) << VAR(time) << VAR(box) << VAR(wait_freezes_param);
 
     if (!tasker_) {
         LogError << "tasker is null";
@@ -186,20 +186,10 @@ bool Context::wait_freezes(std::chrono::milliseconds time, const cv::Rect& roi, 
         return false;
     }
 
-    // 校验并计算 ROI：roi 和 target 互斥
-    bool has_target = param.target.type != MAA_RES_NS::Action::Target::Type::Self;
-    if (!roi.empty() && has_target) {
-        LogError << "roi and target are mutually exclusive" << VAR(roi) << VAR(static_cast<int>(param.target.type));
-        return false;
-    }
-
     ActionHelper helper(tasker_);
-    cv::Rect final_roi = roi;
-    if (has_target) {
-        final_roi = helper.get_target_rect(param.target);
-    }
+    cv::Rect roi = helper.get_target_rect(param.target, box);
 
-    return helper.wait_freezes(param, final_roi);
+    return helper.wait_freezes(param, roi);
 }
 
 bool Context::override_pipeline(const json::value& pipeline_override)

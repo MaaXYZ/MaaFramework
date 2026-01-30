@@ -429,14 +429,14 @@ class Context:
     def wait_freezes(
         self,
         time: int = 0,
-        roi: Optional[Tuple[int, int, int, int]] = None,
+        box: Optional[Tuple[int, int, int, int]] = None,
         wait_freezes_param: Optional[JWaitFreezes] = None,
     ) -> bool:
         """等待画面静止 / Wait for screen to stabilize (freeze)
 
         Args:
             time: 等待时间（毫秒） / Wait time in milliseconds
-            roi: ROI 区域 (x, y, w, h)，为 None 时使用整个屏幕 / ROI region, if None uses entire screen
+            box: 识别命中的区域 (x, y, w, h)，用于 target 为 Self 时计算 ROI / Recognition hit box, used when target is Self to calculate ROI
             wait_freezes_param: 等待参数，使用 JWaitFreezes。支持 time, target, target_offset, threshold, method, rate_limit, timeout
                               / Wait parameters, use JWaitFreezes. Supports time, target, target_offset, threshold, method, rate_limit, timeout
 
@@ -445,12 +445,11 @@ class Context:
 
         Note:
             - time 和 wait_freezes_param.time 互斥，不能同时为非零或同时为零 / time and wait_freezes_param.time are mutually exclusive
-            - roi 和 wait_freezes_param.target 互斥，不能同时指定 / roi and wait_freezes_param.target are mutually exclusive
         """
         rect_handle = None
-        if roi:
+        if box:
             rect_handle = MaaRectHandle()
-            Library.framework().MaaRectSet(rect_handle, roi[0], roi[1], roi[2], roi[3])
+            Library.framework().MaaRectSet(rect_handle, box[0], box[1], box[2], box[3])
 
         # Convert JWaitFreezes to dict
         from dataclasses import asdict

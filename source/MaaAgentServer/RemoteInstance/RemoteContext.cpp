@@ -258,12 +258,12 @@ void RemoteContext::clear_hit_count(const std::string& node_name)
     server_.send_and_recv<ContextClearHitCountReverseResponse>(req);
 }
 
-bool RemoteContext::wait_freezes(std::chrono::milliseconds time, const cv::Rect& roi, const json::value& wait_freezes_param)
+bool RemoteContext::wait_freezes(std::chrono::milliseconds time, const cv::Rect& box, const json::value& wait_freezes_param)
 {
     ContextWaitFreezesReverseRequest req {
         .context_id = context_id_,
         .time = time.count(),
-        .roi = { roi.x, roi.y, roi.width, roi.height },
+        .box = { box.x, box.y, box.width, box.height },
         .wait_freezes_param = wait_freezes_param,
     };
 
