@@ -179,6 +179,9 @@ It offers low-code simplicity while maintaining high extensibility. The framewor
 - [MaaEnd](https://github.com/MaaEnd/MaaEnd) ![Pipeline](https://img.shields.io/badge/Pipeline-%23876f69?logo=paddypower&logoColor=%23FFFFFF) ![Go](https://img.shields.io/badge/Go-007d9c?logo=go) ![license](https://img.shields.io/github/license/MaaEnd/MaaEnd) ![activity](https://img.shields.io/github/commit-activity/m/MaaEnd/MaaEnd?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/MaaEnd/MaaEnd?style=social) [![mirrorc](./docs/static/mirrorc-en.svg)](https://mirrorchyan.com/en/projects?source=maafw-badge)  
      An Endfield assistant powered by MaaFramework and MXU, still under active development.
 
+- [MaaGFNeuralCloud](https://github.com/PinkMMF/MaaGFNeuralCloud) ![Pipeline](https://img.shields.io/badge/Pipeline-%23876f69?logo=paddypower&logoColor=%23FFFFFF) ![license](https://img.shields.io/github/license/PinkMMF/MaaGFNeuralCloud) ![activity](https://img.shields.io/github/commit-activity/m/PinkMMF/MaaGFNeuralCloud?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/PinkMMF/MaaGFNeuralCloud?style=social)  
+    An assistant tool for Girls' Frontline: Project Neural Cloud using MaaFramework.
+
 ## Eco-Building
 
 MAA is planned to be a category of projects rather than just a single piece of software.
