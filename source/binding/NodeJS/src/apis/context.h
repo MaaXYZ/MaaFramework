@@ -45,7 +45,7 @@ struct ContextImpl : public maajs::NativeClassBase
         MaaRect box,
         std::string reco_detail);
     maajs::PromiseType
-        wait_freezes(uint64_t time, maajs::OptionalParam<MaaRect> roi, maajs::OptionalParam<maajs::ValueType> wait_freezes_param);
+        wait_freezes(uint64_t time, maajs::OptionalParam<MaaRect> box, maajs::OptionalParam<maajs::ValueType> wait_freezes_param);
     void override_pipeline(maajs::ValueType pipeline);
     void override_next(std::string node_name, std::vector<std::string> next_list);
     void override_image(std::string image_name, maajs::ArrayBufferType image);

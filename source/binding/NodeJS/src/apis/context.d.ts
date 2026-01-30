@@ -31,7 +31,7 @@ declare global {
             ): Promise<NodeDetail | null>
             wait_freezes(
                 time: Uint64,
-                roi?: Rect,
+                box?: Rect,
                 wait_freezes_param?: WaitFreeze,
             ): Promise<boolean>
             override_pipeline(
