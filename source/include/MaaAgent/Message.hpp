@@ -447,6 +447,25 @@ struct ContextClearHitCountReverseResponse
     MEO_JSONIZATION(_ContextClearHitCountReverseResponse);
 };
 
+struct ContextWaitFreezesReverseRequest
+{
+    std::string context_id;
+    int64_t time = 0;
+    std::array<int32_t, 4> roi = {};
+    json::value wait_freezes_param;
+
+    MessageTypePlaceholder _ContextWaitFreezesReverseRequest = 1;
+    MEO_JSONIZATION(context_id, time, roi, wait_freezes_param, _ContextWaitFreezesReverseRequest);
+};
+
+struct ContextWaitFreezesReverseResponse
+{
+    bool ret = false;
+
+    MessageTypePlaceholder _ContextWaitFreezesReverseResponse = 1;
+    MEO_JSONIZATION(ret, _ContextWaitFreezesReverseResponse);
+};
+
 struct TaskerInitedReverseRequest
 {
     std::string tasker_id;

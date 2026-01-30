@@ -56,6 +56,8 @@ extern "C"
         const MaaRect* box,
         const char* reco_detail);
 
+    MAA_FRAMEWORK_API MaaBool MaaContextWaitFreezes(MaaContext* context, MaaSize time, const MaaRect* roi, const char* wait_freezes_param);
+
     MAA_FRAMEWORK_API MaaBool MaaContextOverridePipeline(MaaContext* context, const char* pipeline_override);
 
     MAA_FRAMEWORK_API MaaBool MaaContextOverrideNext(MaaContext* context, const char* node_name, const MaaStringListBuffer* next_list);

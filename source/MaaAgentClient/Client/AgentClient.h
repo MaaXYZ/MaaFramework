@@ -55,6 +55,7 @@ private:
     bool handle_context_get_anchor(const json::value& j);
     bool handle_context_get_hit_count(const json::value& j);
     bool handle_context_clear_hit_count(const json::value& j);
+    bool handle_context_wait_freezes(const json::value& j);
 
     bool handle_tasker_inited(const json::value& j);
     bool handle_tasker_post_task(const json::value& j);

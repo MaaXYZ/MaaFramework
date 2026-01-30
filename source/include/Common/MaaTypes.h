@@ -177,6 +177,8 @@ public:
     virtual std::optional<std::string> get_anchor(const std::string& anchor_name) const = 0;
     virtual size_t get_hit_count(const std::string& node_name) const = 0;
     virtual void clear_hit_count(const std::string& node_name) = 0;
+
+    virtual bool wait_freezes(std::chrono::milliseconds time, const cv::Rect& roi, const json::value& wait_freezes_param) = 0;
 };
 
 struct MaaAgentClient

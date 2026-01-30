@@ -5,7 +5,6 @@
 #include "CustomAction.h"
 #include "MaaUtils/JsonExt.hpp"
 #include "MaaUtils/Logger.h"
-#include "Vision/TemplateComparator.h"
 #include "Vision/VisionUtils.hpp"
 
 MAA_TASK_NS_BEGIN
@@ -15,6 +14,7 @@ std::mt19937 Actuator::rand_engine_(std::random_device {}());
 Actuator::Actuator(Tasker* tasker, Context& context)
     : tasker_(tasker)
     , context_(context)
+    , helper_(tasker)
 {
 }
 
@@ -176,7 +176,7 @@ ActionResult Actuator::click(const MAA_RES_NS::Action::ClickParam& param, const 
         return {};
     }
 
-    cv::Point point = rand_point(get_target_rect(param.target, box));
+    cv::Point point = rand_point(helper_.get_target_rect(param.target, box));
     MAA_CTRL_NS::ClickParam ctrl_param { .point = point, .contact = static_cast<int>(param.contact) };
     bool ret = controller()->click(ctrl_param);
 
@@ -197,7 +197,7 @@ ActionResult Actuator::long_press(const MAA_RES_NS::Action::LongPressParam& para
         return {};
     }
 
-    cv::Point point = rand_point(get_target_rect(param.target, box));
+    cv::Point point = rand_point(helper_.get_target_rect(param.target, box));
     MAA_CTRL_NS::LongPressParam ctrl_param { .point = point, .duration = param.duration, .contact = static_cast<int>(param.contact) };
     bool ret = controller()->long_press(ctrl_param);
 
@@ -218,7 +218,7 @@ ActionResult Actuator::swipe(const MAA_RES_NS::Action::SwipeParam& param, const 
         return {};
     }
 
-    cv::Point begin = rand_point(get_target_rect(param.begin, box));
+    cv::Point begin = rand_point(helper_.get_target_rect(param.begin, box));
 
     std::vector<cv::Point> end;
     for (size_t i = 0; i < param.end.size(); ++i) {
@@ -227,7 +227,7 @@ ActionResult Actuator::swipe(const MAA_RES_NS::Action::SwipeParam& param, const 
                               : i < param.end_offset.size() ? param.end_offset.at(i)
                                                             : param.end_offset.back();
         MAA_RES_NS::Action::Target end_target { .type = e.type, .param = e.param, .offset = end_offset };
-        cv::Point p = rand_point(get_target_rect(end_target, box));
+        cv::Point p = rand_point(helper_.get_target_rect(end_target, box));
         end.emplace_back(p);
     }
 
@@ -259,7 +259,7 @@ ActionResult Actuator::multi_swipe(const MAA_RES_NS::Action::MultiSwipeParam& pa
 
     std::vector<MAA_CTRL_NS::SwipeParam> swipes;
     for (const auto& swipe : param.swipes) {
-        cv::Point begin = rand_point(get_target_rect(swipe.begin, box));
+        cv::Point begin = rand_point(helper_.get_target_rect(swipe.begin, box));
 
         std::vector<cv::Point> end;
         for (size_t i = 0; i < swipe.end.size(); ++i) {
@@ -268,7 +268,7 @@ ActionResult Actuator::multi_swipe(const MAA_RES_NS::Action::MultiSwipeParam& pa
                                   : i < swipe.end_offset.size() ? swipe.end_offset.at(i)
                                                                 : swipe.end_offset.back();
             MAA_RES_NS::Action::Target end_target { .type = e.type, .param = e.param, .offset = end_offset };
-            cv::Point p = rand_point(get_target_rect(end_target, box));
+            cv::Point p = rand_point(helper_.get_target_rect(end_target, box));
             end.emplace_back(p);
         }
         swipes.push_back(
@@ -301,7 +301,7 @@ ActionResult Actuator::touch_down(const MAA_RES_NS::Action::TouchParam& param, c
         return {};
     }
 
-    cv::Point point = rand_point(get_target_rect(param.target, box));
+    cv::Point point = rand_point(helper_.get_target_rect(param.target, box));
     MAA_CTRL_NS::TouchParam ctrl_param { .contact = static_cast<int>(param.contact), .point = point, .pressure = param.pressure };
     bool ret = controller()->touch_down(ctrl_param);
 
@@ -322,7 +322,7 @@ ActionResult Actuator::touch_move(const MAA_RES_NS::Action::TouchParam& param, c
         return {};
     }
 
-    cv::Point point = rand_point(get_target_rect(param.target, box));
+    cv::Point point = rand_point(helper_.get_target_rect(param.target, box));
     MAA_CTRL_NS::TouchParam ctrl_param { .contact = static_cast<int>(param.contact), .point = point, .pressure = param.pressure };
     bool ret = controller()->touch_move(ctrl_param);
 
@@ -463,7 +463,7 @@ ActionResult Actuator::scroll(const MAA_RES_NS::Action::ScrollParam& param, cons
         return {};
     }
 
-    cv::Point point = rand_point(get_target_rect(param.target, box));
+    cv::Point point = rand_point(helper_.get_target_rect(param.target, box));
     MAA_CTRL_NS::ScrollParam ctrl_param { .point = point, .dx = param.dx, .dy = param.dy };
     bool ret = controller()->scroll(ctrl_param);
 
@@ -510,59 +510,8 @@ void Actuator::wait_freezes(const MAA_RES_NS::WaitFreezesParam& param, const cv:
         return;
     }
 
-    if (!controller()) {
-        LogError << "Controller is null";
-        return;
-    }
-    using namespace MAA_VISION_NS;
-
-    LogTrace << "Wait freezes:" << VAR(param.time) << VAR(param.rate_limit) << VAR(param.timeout) << VAR(param.threshold)
-             << VAR(param.method);
-
-    auto rate_limit = std::min(param.rate_limit, param.time);
-
-    auto screencap_clock = std::chrono::steady_clock::now();
-    cv::Mat pre_image = controller()->screencap();
-
-    cv::Rect roi = get_target_rect(param.target, box);
-    TemplateComparatorParam comp_param {
-        .threshold = param.threshold,
-        .method = param.method,
-    };
-
-    const auto start_clock = std::chrono::steady_clock::now();
-    auto pre_image_clock = start_clock;
-
-    while (true) {
-        LogDebug << "sleep_until" << VAR(rate_limit);
-        std::this_thread::sleep_until(screencap_clock + rate_limit);
-
-        // timeout < 0 表示无限等待，跳过超时检查
-        if (param.timeout >= std::chrono::milliseconds(0) && duration_since(start_clock) > param.timeout) {
-            LogWarn << "Wait freezes timeout" << VAR(duration_since(start_clock)) << VAR(param.timeout);
-            break;
-        }
-
-        screencap_clock = std::chrono::steady_clock::now();
-        cv::Mat cur_image = controller()->screencap();
-
-        if (pre_image.empty() || cur_image.empty()) {
-            LogError << "Image is empty" << VAR(pre_image.empty()) << VAR(cur_image.empty());
-            break;
-        }
-
-        TemplateComparator comparator(pre_image, cur_image, { roi }, comp_param);
-
-        if (!comparator.best_result()) {
-            pre_image = cur_image;
-            pre_image_clock = std::chrono::steady_clock::now();
-            continue;
-        }
-
-        if (duration_since(pre_image_clock) > param.time) {
-            break;
-        }
-    }
+    cv::Rect roi = helper_.get_target_rect(param.target, box);
+    helper_.wait_freezes(param, roi);
 }
 
 ActionResult Actuator::start_app(const MAA_RES_NS::Action::AppParam& param, const std::string& name)
@@ -649,7 +598,7 @@ ActionResult
         return {};
     }
     auto session = tasker_->resource()->custom_action(param.name);
-    cv::Rect rect = get_target_rect(param.target, box);
+    cv::Rect rect = helper_.get_target_rect(param.target, box);
     bool ret = CustomAction::run(context_, name, session, param, reco_id, rect);
 
     return ActionResult {
@@ -687,56 +636,6 @@ ActionResult Actuator::stop_task(const std::string& name)
         .success = true,
         .detail = json::object(),
     };
-}
-
-cv::Rect Actuator::get_target_rect(const MAA_RES_NS::Action::Target target, const cv::Rect& box)
-{
-    if (!tasker_) {
-        LogError << "tasker is null";
-        return {};
-    }
-    if (!tasker_->controller()) {
-        LogError << "controller is null";
-        return {};
-    }
-
-    using namespace MAA_RES_NS::Action;
-
-    cv::Rect raw {};
-    switch (target.type) {
-    case Target::Type::Self:
-        raw = box;
-        break;
-    case Target::Type::PreTask: {
-        auto& cache = tasker_->runtime_cache();
-        std::string name = std::get<std::string>(target.param);
-        MaaNodeId node_id = cache.get_latest_node(name).value_or(MaaInvalidId);
-        NodeDetail node_detail = cache.get_node_detail(node_id).value_or(NodeDetail {});
-        RecoResult reco_result = cache.get_reco_result(node_detail.reco_id).value_or(RecoResult {});
-        raw = reco_result.box.value_or(cv::Rect {});
-        LogDebug << "pre task" << VAR(name) << VAR(raw);
-    } break;
-    case Target::Type::Region:
-        raw = std::get<cv::Rect>(target.param);
-        break;
-    default:
-        LogError << "Unknown target" << VAR(static_cast<int>(target.type));
-        return {};
-    }
-
-    auto image = controller()->cached_image();
-
-    // Region 类型支持负数坐标和尺寸
-    if (target.type == Target::Type::Region) {
-        raw = MAA_VISION_NS::normalize_rect(raw, image.cols, image.rows);
-    }
-
-    int x = std::clamp(raw.x + target.offset.x, 0, image.cols);
-    int y = std::clamp(raw.y + target.offset.y, 0, image.rows);
-    int width = std::clamp(raw.width + target.offset.width, 0, image.cols - x);
-    int height = std::clamp(raw.height + target.offset.height, 0, image.rows - y);
-
-    return cv::Rect(x, y, width, height);
 }
 
 MAA_CTRL_NS::ControllerAgent* Actuator::controller()
