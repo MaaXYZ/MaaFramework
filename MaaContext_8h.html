@@ -118,6 +118,8 @@ Functions</h2></td></tr>
 <tr class="memitem:a6f2559c822c79aee9b3ae27e3ea460cf" id="r_a6f2559c822c79aee9b3ae27e3ea460cf"><td class="memItemLeft" align="right" valign="top"><a class="el" href="MaaPort_8h.html#a67006334d91d228121dbba7a8bf8fe05">MAA_FRAMEWORK_API</a> <a class="el" href="MaaDef_8h.html#ac3229e974a0f5b3508f88d1b2196f526">MaaActId</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="MaaContext_8h.html#a6f2559c822c79aee9b3ae27e3ea460cf">MaaContextRunActionDirect</a> (<a class="el" href="MaaDef_8h.html#ad2101e87aad0f5d03b8136943daee40e">MaaContext</a> *context, const char *action_type, const char *action_param, const <a class="el" href="structMaaRect.html">MaaRect</a> *box, const char *reco_detail)</td></tr>
 <tr class="memdesc:a6f2559c822c79aee9b3ae27e3ea460cf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Run action directly with type and parameters, without requiring a pipeline entry.  <br /></td></tr>
 <tr class="separator:a6f2559c822c79aee9b3ae27e3ea460cf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a53e55fc374932c9e824d19e1bc0f4b27" id="r_a53e55fc374932c9e824d19e1bc0f4b27"><td class="memItemLeft" align="right" valign="top"><a class="el" href="MaaPort_8h.html#a67006334d91d228121dbba7a8bf8fe05">MAA_FRAMEWORK_API</a> <a class="el" href="MaaDef_8h.html#a2f7289f2a8e07f48c6261b52a120cdf6">MaaBool</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="MaaContext_8h.html#a53e55fc374932c9e824d19e1bc0f4b27">MaaContextWaitFreezes</a> (<a class="el" href="MaaDef_8h.html#ad2101e87aad0f5d03b8136943daee40e">MaaContext</a> *context, <a class="el" href="MaaDef_8h.html#a72a89077c419a0fe586d68bde004d856">MaaSize</a> time, const <a class="el" href="structMaaRect.html">MaaRect</a> *roi, const char *wait_freezes_param)</td></tr>
+<tr class="separator:a53e55fc374932c9e824d19e1bc0f4b27"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a581b031a7dceedcf1ff6cec308895cce" id="r_a581b031a7dceedcf1ff6cec308895cce"><td class="memItemLeft" align="right" valign="top"><a class="el" href="MaaPort_8h.html#a67006334d91d228121dbba7a8bf8fe05">MAA_FRAMEWORK_API</a> <a class="el" href="MaaDef_8h.html#a2f7289f2a8e07f48c6261b52a120cdf6">MaaBool</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="MaaContext_8h.html#a581b031a7dceedcf1ff6cec308895cce">MaaContextOverridePipeline</a> (<a class="el" href="MaaDef_8h.html#ad2101e87aad0f5d03b8136943daee40e">MaaContext</a> *context, const char *pipeline_override)</td></tr>
 <tr class="separator:a581b031a7dceedcf1ff6cec308895cce"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1ece7f4198230c43f226ab8f7923728d" id="r_a1ece7f4198230c43f226ab8f7923728d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="MaaPort_8h.html#a67006334d91d228121dbba7a8bf8fe05">MAA_FRAMEWORK_API</a> <a class="el" href="MaaDef_8h.html#a2f7289f2a8e07f48c6261b52a120cdf6">MaaBool</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="MaaContext_8h.html#a1ece7f4198230c43f226ab8f7923728d">MaaContextOverrideNext</a> (<a class="el" href="MaaDef_8h.html#ad2101e87aad0f5d03b8136943daee40e">MaaContext</a> *context, const char *node_name, const <a class="el" href="MaaDef_8h.html#a7668a404d5063ffc525180d3e144999f">MaaStringListBuffer</a> *next_list)</td></tr>
@@ -370,6 +372,46 @@ Functions</h2></td></tr>
   </table>
   </dd>
 </dl>
+
+</div>
+</div>
+<a id="a53e55fc374932c9e824d19e1bc0f4b27" name="a53e55fc374932c9e824d19e1bc0f4b27"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a53e55fc374932c9e824d19e1bc0f4b27">&#9670;&#160;</a></span>MaaContextWaitFreezes()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="MaaPort_8h.html#a67006334d91d228121dbba7a8bf8fe05">MAA_FRAMEWORK_API</a> <a class="el" href="MaaDef_8h.html#a2f7289f2a8e07f48c6261b52a120cdf6">MaaBool</a> MaaContextWaitFreezes </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="MaaDef_8h.html#ad2101e87aad0f5d03b8136943daee40e">MaaContext</a> *&#160;</td>
+          <td class="paramname"><em>context</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="MaaDef_8h.html#a72a89077c419a0fe586d68bde004d856">MaaSize</a>&#160;</td>
+          <td class="paramname"><em>time</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structMaaRect.html">MaaRect</a> *&#160;</td>
+          <td class="paramname"><em>roi</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const char *&#160;</td>
+          <td class="paramname"><em>wait_freezes_param</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
 
 </div>
 </div>
@@ -693,7 +735,7 @@ Functions</h2></td></tr>
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="dir_d44c64559bbebec7f509842c48db8b23.html">include</a></li><li class="navelem"><a class="el" href="dir_370cd1367c21b1a87c5c9c6803b8d0b9.html">MaaFramework</a></li><li class="navelem"><a class="el" href="dir_0debf1eee29073ebb629a4e1dfd2a5f6.html">Instance</a></li><li class="navelem"><a class="el" href="MaaContext_8h.html">MaaContext.h</a></li>
-    <li class="footer">Generated on Wed Jan 28 2026 for MaaFramework by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.8 </li>
+    <li class="footer">Generated on Fri Jan 30 2026 for MaaFramework by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.8 </li>
   </ul>
 </div>
 </body>
