@@ -142,6 +142,16 @@ std::optional<RuntimeParam> Configurator::generate_runtime() const
         return std::nullopt;
     }
 
+    // Find current controller for attach_resource_path
+    auto controller_iter =
+        std::ranges::find_if(data_.controller, [&](const auto& controller) { return controller.name == config_.controller.name; });
+    if (controller_iter != data_.controller.end()) {
+        // Append attach_resource_path after resource.path
+        for (const auto& attach_path : controller_iter->attach_resource_path) {
+            runtime.resource_path.emplace_back(resource_dir_ / MaaNS::path(attach_path));
+        }
+    }
+
     for (const auto& config_task : config_.task) {
         auto task_opt = generate_runtime_task(config_task);
         if (!task_opt) {
