@@ -29,6 +29,11 @@ declare global {
                 box: Rect,
                 reco_detail: string,
             ): Promise<NodeDetail | null>
+            wait_freezes(
+                time: Uint64,
+                roi?: Rect,
+                wait_freezes_param?: WaitFreeze,
+            ): Promise<boolean>
             override_pipeline(
                 pipeline_override: Record<string, unknown> | Record<string, unknown>[],
             ): void
