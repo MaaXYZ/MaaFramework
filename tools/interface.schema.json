@@ -298,6 +298,14 @@
                     "description": "该控制器是否需要以管理员权限运行（例如某些 Win32 输入方式需要更高权限）。不设置则默认为 false",
                     "default": false
                 },
+                "attach_resource_path": {
+                    "type": "array",
+                    "title": "附加资源路径",
+                    "description": "可选。附加资源路径数组。将会在 resource.path 加载完成后，额外加载这些路径下的资源",
+                    "items": {
+                        "type": "string"
+                    }
+                },
                 "adb": {
                     "type": "object",
                     "title": "Adb 控制器配置",
@@ -726,6 +734,14 @@
             "description": "为一个对象映射，包含配置项的信息",
             "additionalProperties": {
                 "$ref": "#/definitions/optionDefinition"
+            }
+        },
+        "import": {
+            "type": "array",
+            "title": "导入其他 PI 文件",
+            "description": "可选。导入其他 PI 文件的路径数组。文件相对路径为 interface.json 同目录下的相对路径。仅支持导入这些文件中的 task 和 option 字段",
+            "items": {
+                "type": "string"
             }
         }
     },
