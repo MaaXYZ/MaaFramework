@@ -44,7 +44,7 @@ var searchData=
   ['maacontextrunrecognitiondirect_41',['MaaContextRunRecognitionDirect',['../MaaContext_8h.html#a5fc7edecb7e63370aa45a777e0a9d97e',1,'MaaContext.h']]],
   ['maacontextruntask_42',['MaaContextRunTask',['../MaaContext_8h.html#ae55a7608008e1f51ce52614e3cae3a2d',1,'MaaContext.h']]],
   ['maacontextsetanchor_43',['MaaContextSetAnchor',['../MaaContext_8h.html#a6b81fa90c844b13dee6dd7c5e532ba80',1,'MaaContext.h']]],
-  ['maacontextwaitfreezes_44',['MaaContextWaitFreezes',['../MaaContext_8h.html#a53e55fc374932c9e824d19e1bc0f4b27',1,'MaaContext.h']]],
+  ['maacontextwaitfreezes_44',['MaaContextWaitFreezes',['../MaaContext_8h.html#acef9057c0564eed1e1bc961da13c8b4d',1,'MaaContext.h']]],
   ['maacontrolleraddsink_45',['MaaControllerAddSink',['../MaaController_8h.html#aa01ed95af83d12f7bc3d49fdba415419',1,'MaaController.h']]],
   ['maacontrollercachedimage_46',['MaaControllerCachedImage',['../MaaController_8h.html#a730b6f3a5048f143a83c22bb05aec583',1,'MaaController.h']]],
   ['maacontrollerclearsinks_47',['MaaControllerClearSinks',['../MaaController_8h.html#a4b4a854e5d591d14a303d9ab622332fb',1,'MaaController.h']]],

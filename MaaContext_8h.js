@@ -5,7 +5,7 @@ var MaaContext_8h =
     [ "MaaContextRunAction", "MaaContext_8h.html#ad46ec2676c2e012a47d2274cc7d44d46", null ],
     [ "MaaContextRunRecognitionDirect", "MaaContext_8h.html#a5fc7edecb7e63370aa45a777e0a9d97e", null ],
     [ "MaaContextRunActionDirect", "MaaContext_8h.html#a6f2559c822c79aee9b3ae27e3ea460cf", null ],
-    [ "MaaContextWaitFreezes", "MaaContext_8h.html#a53e55fc374932c9e824d19e1bc0f4b27", null ],
+    [ "MaaContextWaitFreezes", "MaaContext_8h.html#acef9057c0564eed1e1bc961da13c8b4d", null ],
     [ "MaaContextOverridePipeline", "MaaContext_8h.html#a581b031a7dceedcf1ff6cec308895cce", null ],
     [ "MaaContextOverrideNext", "MaaContext_8h.html#a1ece7f4198230c43f226ab8f7923728d", null ],
     [ "MaaContextOverrideImage", "MaaContext_8h.html#a6064c7441f9e387eb1f0cbfa6d1ea38d", null ],
