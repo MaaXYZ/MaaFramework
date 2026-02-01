@@ -21,6 +21,10 @@ FramePoolScreencap::~FramePoolScreencap()
 
 std::optional<cv::Mat> FramePoolScreencap::screencap()
 {
+    if (!hwnd_) {
+        LogError << "hwnd_ is nullptr";
+        return std::nullopt;
+    }
     if (!cap_frame_pool_) {
         if (!init()) {
             LogError << "init failed";
@@ -34,15 +38,16 @@ std::optional<cv::Mat> FramePoolScreencap::screencap()
         return std::nullopt;
     }
 
-    std::unique_lock lock(frame_mutex_);
-
-    constexpr size_t kTimeoutSec = 20;
-    if (!latest_frame_ && frame_cv_.wait_for(lock, std::chrono::seconds(kTimeoutSec)) == std::cv_status::timeout) {
-        LogError << "wait for frame timeout";
-        return std::nullopt;
+    winrt::Windows::Graphics::Capture::Direct3D11CaptureFrame frame = nullptr;
+    while (true) {
+        frame = cap_frame_pool_.TryGetNextFrame();
+        if (frame) {
+            break;
+        }
+        LogWarn << "frame is null, continue";
     }
 
-    auto access = latest_frame_.Surface().as<Windows::Graphics::DirectX::Direct3D11::IDirect3DDxgiInterfaceAccess>();
+    auto access = frame.Surface().as<Windows::Graphics::DirectX::Direct3D11::IDirect3DDxgiInterfaceAccess>();
 
     winrt::com_ptr<ID3D11Texture2D> texture = nullptr;
     HRESULT ret = access->GetInterface(winrt::guid_of<ID3D11Texture2D>(), texture.put_void());
@@ -56,8 +61,6 @@ std::optional<cv::Mat> FramePoolScreencap::screencap()
         return std::nullopt;
     }
     d3d_context_->CopyResource(readable_texture_.get(), texture.get());
-
-    lock.unlock();
 
     D3D11_MAPPED_SUBRESOURCE mapped { 0 };
     ret = d3d_context_->Map(readable_texture_.get(), 0, D3D11_MAP_READ, 0, &mapped);
@@ -138,15 +141,6 @@ std::optional<cv::Mat> FramePoolScreencap::screencap()
     return bgra_to_bgr(image);
 }
 
-void FramePoolScreencap::frame_handler(
-    winrt::Windows::Graphics::Capture::Direct3D11CaptureFramePool const&,
-    winrt::Windows::Foundation::IInspectable const&)
-{
-    std::unique_lock lock(frame_mutex_);
-    latest_frame_ = cap_frame_pool_.TryGetNextFrame();
-    frame_cv_.notify_one();
-}
-
 bool FramePoolScreencap::init()
 {
     LogFunc;
@@ -221,18 +215,16 @@ bool FramePoolScreencap::init()
         return false;
     }
 
-    cap_frame_pool_ = winrt::Windows::Graphics::Capture::Direct3D11CaptureFramePool::CreateFreeThreaded(
+    cap_frame_pool_ = winrt::Windows::Graphics::Capture::Direct3D11CaptureFramePool::Create(
         inspectable.as<winrt::Windows::Graphics::DirectX::Direct3D11::IDirect3DDevice>(),
         winrt::Windows::Graphics::DirectX::DirectXPixelFormat::B8G8R8A8UIntNormalized,
-        2,
+        1,
         cap_item_.Size());
 
     if (!cap_frame_pool_) {
         LogError << "Direct3D11CaptureFramePool::Create failed";
         return false;
     }
-
-    frame_arrived_token_ = cap_frame_pool_.FrameArrived({ this, &FramePoolScreencap::frame_handler });
 
     cap_session_ = cap_frame_pool_.CreateCaptureSession(cap_item_);
     if (!cap_session_) {
@@ -261,14 +253,10 @@ void FramePoolScreencap::uninit()
         cap_session_.Close();
         cap_session_ = nullptr;
     }
-    if (cap_frame_pool_ && frame_arrived_token_.value) {
-        cap_frame_pool_.FrameArrived(frame_arrived_token_);
-        frame_arrived_token_ = {};
-    }
+
     readable_texture_ = nullptr;
     cap_frame_pool_ = nullptr;
     cap_session_ = nullptr;
-    latest_frame_ = nullptr;
     texture_desc_ = { 0 };
     last_capture_size_ = {};
 }
