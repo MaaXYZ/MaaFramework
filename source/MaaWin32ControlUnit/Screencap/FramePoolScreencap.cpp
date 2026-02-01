@@ -8,9 +8,12 @@
 #include <winrt/Windows.Foundation.h>
 #include <winrt/Windows.Security.Authorization.AppCapabilityAccess.h>
 
+#include <thread>
+
 #include "HwndUtils.hpp"
 #include "MaaUtils/Logger.h"
 #include "MaaUtils/NoWarningCV.hpp"
+#include "MaaUtils/Time.hpp"
 
 MAA_CTRL_UNIT_NS_BEGIN
 
@@ -46,11 +49,19 @@ std::optional<cv::Mat> FramePoolScreencap::screencap()
     }
 
     // 等待新帧到来
-    while (true) {
+    using namespace std::chrono_literals;
+    auto start_time = std::chrono::steady_clock::now();
+    while (duration_since(start_time) < 2000ms) {
         frame = cap_frame_pool_.TryGetNextFrame();
         if (frame) {
             break;
         }
+        std::this_thread::sleep_for(10ms);
+    }
+
+    if (!frame) {
+        LogError << "Failed to get frame after timeout";
+        return std::nullopt;
     }
 
     auto access = frame.Surface().as<Windows::Graphics::DirectX::Direct3D11::IDirect3DDxgiInterfaceAccess>();
