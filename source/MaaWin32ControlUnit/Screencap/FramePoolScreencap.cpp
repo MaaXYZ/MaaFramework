@@ -38,6 +38,7 @@ std::optional<cv::Mat> FramePoolScreencap::screencap()
 
     // 检查窗口大小是否变化，如果变化则重新创建 frame pool
     if (!check_and_handle_size_changed()) {
+        LogError << "check_and_handle_size_changed failed";
         return std::nullopt;
     }
 
@@ -52,11 +53,11 @@ std::optional<cv::Mat> FramePoolScreencap::screencap()
     using namespace std::chrono_literals;
     auto start_time = std::chrono::steady_clock::now();
     while (duration_since(start_time) < 2000ms) {
+        std::this_thread::sleep_for(2ms);
         frame = cap_frame_pool_.TryGetNextFrame();
         if (frame) {
             break;
         }
-        std::this_thread::sleep_for(10ms);
     }
 
     if (!frame) {
