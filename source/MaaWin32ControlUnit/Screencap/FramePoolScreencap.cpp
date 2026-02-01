@@ -39,12 +39,18 @@ std::optional<cv::Mat> FramePoolScreencap::screencap()
     }
 
     winrt::Windows::Graphics::Capture::Direct3D11CaptureFrame frame = nullptr;
+
+    // 先清空 FramePool 中可能残留的旧帧
+    while (auto old_frame = cap_frame_pool_.TryGetNextFrame()) {
+        old_frame.Close();
+    }
+
+    // 等待新帧到来
     while (true) {
         frame = cap_frame_pool_.TryGetNextFrame();
         if (frame) {
             break;
         }
-        LogWarn << "frame is null, continue";
     }
 
     auto access = frame.Surface().as<Windows::Graphics::DirectX::Direct3D11::IDirect3DDxgiInterfaceAccess>();
