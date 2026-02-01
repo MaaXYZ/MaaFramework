@@ -69,6 +69,9 @@ struct InterfaceData
         std::optional<int> display_long_side;
         bool display_raw = false;
 
+        // 附加资源路径，在 resource.path 加载完成后额外加载
+        std::vector<std::string> attach_resource_path;
+
         Win32Config win32;
         PlayCoverConfig playcover;
         GamepadConfig gamepad;
@@ -82,6 +85,7 @@ struct InterfaceData
             MEO_OPT display_short_side,
             MEO_OPT display_long_side,
             MEO_OPT display_raw,
+            MEO_OPT attach_resource_path,
             MEO_OPT win32,
             MEO_OPT playcover,
             MEO_OPT gamepad);
@@ -212,7 +216,9 @@ struct InterfaceData
     std::vector<Resource> resource;
     std::vector<Task> task;
     std::unordered_map<std::string, Option> option;
-    std::vector<Agent> agent;
+    std::variant<Agent, std::vector<Agent>> agent;
+
+    std::vector<std::string> import_;
 
     MEO_JSONIZATION(
         interface_version,
@@ -230,7 +236,16 @@ struct InterfaceData
         resource,
         task,
         MEO_OPT option,
-        MEO_OPT agent);
+        MEO_OPT agent,
+        MEO_OPT MEO_KEY("import") import_);
+};
+
+struct ImportData
+{
+    std::vector<InterfaceData::Task> task;
+    std::unordered_map<std::string, InterfaceData::Option> option;
+
+    MEO_JSONIZATION(MEO_OPT task, MEO_OPT option);
 };
 
 struct Configuration

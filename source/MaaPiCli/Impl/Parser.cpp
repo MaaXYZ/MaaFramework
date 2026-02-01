@@ -2,6 +2,7 @@
 
 #include <functional>
 #include <ranges>
+#include <unordered_set>
 
 #include "MaaUtils/Logger.h"
 
@@ -18,24 +19,41 @@ std::optional<InterfaceData> Parser::parse_interface(const std::filesystem::path
     }
 
     const json::value& json = *json_opt;
-    return parse_interface(json);
+    auto data_opt = parse_interface(json);
+    if (!data_opt) {
+        return std::nullopt;
+    }
+
+    InterfaceData& data = *data_opt;
+
+    auto base_dir = path.parent_path();
+    for (const std::string& import_path : data_opt->import_) {
+        auto import_full_path = base_dir / MaaNS::path(import_path);
+        auto import_data = parse_import_data(import_full_path);
+        if (!import_data) {
+            LogError << "failed to parse import interface data" << VAR(import_full_path) << VAR(import_path);
+            return std::nullopt;
+        }
+        data.task.insert(
+            data.task.end(),
+            std::make_move_iterator(import_data->task.begin()),
+            std::make_move_iterator(import_data->task.end()));
+
+        data.option.insert(std::make_move_iterator(import_data->option.begin()), std::make_move_iterator(import_data->option.end()));
+    }
+
+    return data;
 }
 
 std::optional<InterfaceData> Parser::parse_interface(const json::value& json)
 {
-    // 预处理：将单个 agent 对象转换为数组以支持两种格式
-    json::value processed_json = json;
-    if (processed_json.contains("agent") && processed_json["agent"].is_object()) {
-        processed_json["agent"] = json::array { processed_json["agent"] };
-    }
-
     std::string error_key;
-    if (!InterfaceData().check_json(processed_json, error_key)) {
-        LogError << "json is not an InterfaceData" << VAR(error_key) << VAR(processed_json);
+    if (!InterfaceData().check_json(json, error_key)) {
+        LogError << "json is not an InterfaceData" << VAR(error_key) << VAR(json);
         return std::nullopt;
     }
 
-    auto data = processed_json.as<InterfaceData>();
+    auto data = json.as<InterfaceData>();
 
     // check interface version
     if (data.interface_version != 2) {
@@ -90,6 +108,30 @@ std::optional<Configuration> Parser::parse_config(const json::value& json)
     }
 
     return json.as<Configuration>();
+}
+
+std::optional<ImportData> Parser::parse_import_data(const std::filesystem::path& path)
+{
+    LogFunc << VAR(path);
+    auto json_opt = json::open(path, true, true);
+    if (!json_opt) {
+        LogError << "failed to parse import interface" << VAR(path);
+        return std::nullopt;
+    }
+
+    const json::value& json = *json_opt;
+    return parse_import_data(json);
+}
+
+std::optional<ImportData> Parser::parse_import_data(const json::value& json)
+{
+    std::string error_key;
+    if (!ImportData().check_json(json, error_key)) {
+        LogError << "json is not a valid ImportData" << VAR(error_key);
+        return std::nullopt;
+    }
+
+    return json.as<ImportData>();
 }
 
 bool Parser::check_configuration(const InterfaceData& data, Configuration& config)

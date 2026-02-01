@@ -142,6 +142,21 @@ std::optional<RuntimeParam> Configurator::generate_runtime() const
         return std::nullopt;
     }
 
+    // Find current controller for attach_resource_path
+
+    auto controller_iter =
+        std::ranges::find_if(data_.controller, [&](const auto& controller) { return controller.name == config_.controller.name; });
+    if (controller_iter == data_.controller.end()) {
+        LogWarn << "Controller not found" << VAR(config_.controller.name);
+        return std::nullopt;
+    }
+    auto& controller = *controller_iter;
+
+    // Append attach_resource_path after resource.path
+    for (const auto& attach_path : controller.attach_resource_path) {
+        runtime.resource_path.emplace_back(resource_dir_ / MaaNS::path(attach_path));
+    }
+
     for (const auto& config_task : config_.task) {
         auto task_opt = generate_runtime_task(config_task);
         if (!task_opt) {
@@ -154,14 +169,6 @@ std::optional<RuntimeParam> Configurator::generate_runtime() const
         LogWarn << "No task to run";
         return std::nullopt;
     }
-
-    auto controller_iter =
-        std::ranges::find_if(data_.controller, [&](const auto& controller) { return controller.name == config_.controller.name; });
-    if (controller_iter == data_.controller.end()) {
-        LogWarn << "Controller not found" << VAR(config_.controller.name);
-        return std::nullopt;
-    }
-    auto& controller = *controller_iter;
 
     switch (controller.type) {
     case InterfaceData::Controller::Type::Adb: {
@@ -247,7 +254,19 @@ std::optional<RuntimeParam> Configurator::generate_runtime() const
     runtime.display_config.long_side = controller.display_long_side;
     runtime.display_config.raw = controller.display_raw;
 
-    for (const auto& agent_config : data_.agent) {
+    std::vector<InterfaceData::Agent> agents = std::visit(
+        [](auto&& arg) -> std::vector<InterfaceData::Agent> {
+            using T = std::decay_t<decltype(arg)>;
+            if constexpr (std::is_same_v<T, InterfaceData::Agent>) {
+                return { arg };
+            }
+            else {
+                return arg;
+            }
+        },
+        data_.agent);
+
+    for (const auto& agent_config : agents) {
         if (agent_config.child_exec.empty()) {
             continue;
         }
