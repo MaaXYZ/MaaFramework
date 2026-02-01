@@ -216,20 +216,9 @@ struct InterfaceData
     std::vector<Resource> resource;
     std::vector<Task> task;
     std::unordered_map<std::string, Option> option;
-    std::vector<Agent> agent;
+    std::variant<Agent, std::vector<Agent>> agent;
 
-    // 导入其他 PI 文件，仅导入 task 和 option
     std::vector<std::string> import_;
-
-    // 用于解析导入文件的轻量结构体，仅包含可导入的字段
-    struct ImportData
-    {
-        std::vector<Task> task;
-        std::unordered_map<std::string, Option> option;
-        std::vector<std::string> import_;
-
-        MEO_JSONIZATION(MEO_OPT task, MEO_OPT option, MEO_OPT MEO_KEY("import") import_);
-    };
 
     MEO_JSONIZATION(
         interface_version,
@@ -249,6 +238,14 @@ struct InterfaceData
         MEO_OPT option,
         MEO_OPT agent,
         MEO_OPT MEO_KEY("import") import_);
+};
+
+struct ImportData
+{
+    std::vector<InterfaceData::Task> task;
+    std::unordered_map<std::string, InterfaceData::Option> option;
+
+    MEO_JSONIZATION(MEO_OPT task, MEO_OPT option);
 };
 
 struct Configuration

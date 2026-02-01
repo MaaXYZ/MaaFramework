@@ -8,100 +8,6 @@
 
 MAA_PROJECT_INTERFACE_NS_BEGIN
 
-namespace
-{
-// Forward declaration
-bool parse_and_merge_imports(
-    InterfaceData& data,
-    const std::filesystem::path& base_dir,
-    std::unordered_set<std::string>& loaded_files);
-
-bool merge_imported_data(InterfaceData& data, const InterfaceData::ImportData& imported)
-{
-    // Merge tasks - append imported tasks (check for duplicates by name)
-    for (const auto& imported_task : imported.task) {
-        auto existing = std::ranges::find(data.task, imported_task.name, &InterfaceData::Task::name);
-        if (existing == data.task.end()) {
-            data.task.emplace_back(imported_task);
-        }
-        else {
-            LogWarn << "Duplicate task name in import, skipping:" << imported_task.name;
-        }
-    }
-
-    // Merge options - append imported options (check for duplicates by key)
-    for (const auto& [key, imported_option] : imported.option) {
-        if (!data.option.contains(key)) {
-            data.option[key] = imported_option;
-        }
-        else {
-            LogWarn << "Duplicate option key in import, skipping:" << key;
-        }
-    }
-
-    return true;
-}
-
-bool parse_and_merge_imports(
-    InterfaceData& data,
-    const std::filesystem::path& base_dir,
-    std::unordered_set<std::string>& loaded_files)
-{
-    for (const auto& import_path_str : data.import_) {
-        auto import_path = base_dir / import_path_str;
-        auto canonical_path = std::filesystem::weakly_canonical(import_path).string();
-
-        // Check for circular imports
-        if (loaded_files.contains(canonical_path)) {
-            LogWarn << "Circular import detected, skipping:" << import_path;
-            continue;
-        }
-        loaded_files.insert(canonical_path);
-
-        LogInfo << "Loading imported interface:" << import_path;
-
-        auto json_opt = json::open(import_path, true, true);
-        if (!json_opt) {
-            LogError << "Failed to open imported interface:" << import_path;
-            return false;
-        }
-
-        // Use centralized parsing for imported data
-        auto imported_opt = Parser::parse_import_data(*json_opt);
-        if (!imported_opt) {
-            LogError << "Failed to parse imported interface:" << import_path;
-            return false;
-        }
-
-        InterfaceData::ImportData& imported = *imported_opt;
-
-        // Recursively load imports from imported file
-        if (!imported.import_.empty()) {
-            // Create a temporary InterfaceData to hold the recursively imported data
-            InterfaceData temp_data;
-            temp_data.task = std::move(imported.task);
-            temp_data.option = std::move(imported.option);
-            temp_data.import_ = std::move(imported.import_);
-
-            auto import_dir = import_path.parent_path();
-            if (!parse_and_merge_imports(temp_data, import_dir, loaded_files)) {
-                return false;
-            }
-
-            // Move the data back
-            imported.task = std::move(temp_data.task);
-            imported.option = std::move(temp_data.option);
-        }
-
-        if (!merge_imported_data(data, imported)) {
-            return false;
-        }
-    }
-
-    return true;
-}
-} // namespace
-
 std::optional<InterfaceData> Parser::parse_interface(const std::filesystem::path& path)
 {
     LogFunc << VAR(path);
@@ -118,39 +24,36 @@ std::optional<InterfaceData> Parser::parse_interface(const std::filesystem::path
         return std::nullopt;
     }
 
-    // Process imports if present
-    if (!data_opt->import_.empty()) {
-        auto base_dir = path.parent_path();
-        auto canonical_path = std::filesystem::weakly_canonical(path).string();
-        std::unordered_set<std::string> loaded_files { canonical_path };
+    InterfaceData& data = *data_opt;
 
-        if (!parse_and_merge_imports(*data_opt, base_dir, loaded_files)) {
-            LogError << "Failed to process imports for" << path;
+    auto base_dir = path.parent_path();
+    for (const std::string& import_path : data_opt->import_) {
+        auto import_full_path = base_dir / MaaNS::path(import_path);
+        auto import_data = parse_import_data(import_full_path);
+        if (!import_data) {
+            LogError << "failed to parse import interface data" << VAR(import_full_path) << VAR(import_path);
             return std::nullopt;
         }
+        data.task.insert(
+            data.task.end(),
+            std::make_move_iterator(import_data->task.begin()),
+            std::make_move_iterator(import_data->task.end()));
 
-        // Clear import_ after processing to avoid confusing downstream consumers
-        data_opt->import_.clear();
+        data.option.insert(std::make_move_iterator(import_data->option.begin()), std::make_move_iterator(import_data->option.end()));
     }
 
-    return data_opt;
+    return data;
 }
 
 std::optional<InterfaceData> Parser::parse_interface(const json::value& json)
 {
-    // 预处理：将单个 agent 对象转换为数组以支持两种格式
-    json::value processed_json = json;
-    if (processed_json.contains("agent") && processed_json["agent"].is_object()) {
-        processed_json["agent"] = json::array { processed_json["agent"] };
-    }
-
     std::string error_key;
-    if (!InterfaceData().check_json(processed_json, error_key)) {
-        LogError << "json is not an InterfaceData" << VAR(error_key) << VAR(processed_json);
+    if (!InterfaceData().check_json(json, error_key)) {
+        LogError << "json is not an InterfaceData" << VAR(error_key) << VAR(json);
         return std::nullopt;
     }
 
-    auto data = processed_json.as<InterfaceData>();
+    auto data = json.as<InterfaceData>();
 
     // check interface version
     if (data.interface_version != 2) {
@@ -207,15 +110,28 @@ std::optional<Configuration> Parser::parse_config(const json::value& json)
     return json.as<Configuration>();
 }
 
-std::optional<InterfaceData::ImportData> Parser::parse_import_data(const json::value& json)
+std::optional<ImportData> Parser::parse_import_data(const std::filesystem::path& path)
+{
+    LogFunc << VAR(path);
+    auto json_opt = json::open(path, true, true);
+    if (!json_opt) {
+        LogError << "failed to parse import interface" << VAR(path);
+        return std::nullopt;
+    }
+
+    const json::value& json = *json_opt;
+    return parse_import_data(json);
+}
+
+std::optional<ImportData> Parser::parse_import_data(const json::value& json)
 {
     std::string error_key;
-    if (!InterfaceData::ImportData().check_json(json, error_key)) {
+    if (!ImportData().check_json(json, error_key)) {
         LogError << "json is not a valid ImportData" << VAR(error_key);
         return std::nullopt;
     }
 
-    return json.as<InterfaceData::ImportData>();
+    return json.as<ImportData>();
 }
 
 bool Parser::check_configuration(const InterfaceData& data, Configuration& config)

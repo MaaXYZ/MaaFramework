@@ -254,7 +254,19 @@ std::optional<RuntimeParam> Configurator::generate_runtime() const
     runtime.display_config.long_side = controller.display_long_side;
     runtime.display_config.raw = controller.display_raw;
 
-    for (const auto& agent_config : data_.agent) {
+    std::vector<InterfaceData::Agent> agents = std::visit(
+        [](auto&& arg) -> std::vector<InterfaceData::Agent> {
+            using T = std::decay_t<decltype(arg)>;
+            if constexpr (std::is_same_v<T, InterfaceData::Agent>) {
+                return { arg };
+            }
+            else {
+                return arg;
+            }
+        },
+        data_.agent);
+
+    for (const auto& agent_config : agents) {
         if (agent_config.child_exec.empty()) {
             continue;
         }
