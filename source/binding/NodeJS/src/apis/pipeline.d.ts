@@ -92,21 +92,17 @@ declare global {
                 connected?: boolean
             }
 
-        type RecognitionOCR<Mode> = RequiredIfStrict<
-            {
-                roi?: Rect | NodeName
-                roi_offset?: Rect
-                expected?: MaybeArray<string, Mode>
-                threshold?: MaybeArray<number, Mode>
-                replace?: MaybeArray<FixedArray<string, 2>, Mode>
-                order_by?: OrderByMap['OCR']
-                index?: number
-                only_rec?: boolean
-                model?: string
-            },
-            'expected',
-            Mode
-        >
+        type RecognitionOCR<Mode> = {
+            roi?: Rect | NodeName
+            roi_offset?: Rect
+            expected?: MaybeArray<string, Mode>
+            threshold?: MaybeArray<number, Mode>
+            replace?: MaybeArray<FixedArray<string, 2>, Mode>
+            order_by?: OrderByMap['OCR']
+            index?: number
+            only_rec?: boolean
+            model?: string
+        }
 
         type RecognitionNeuralNetworkClassify<Mode> = RequiredIfStrict<
             {
@@ -475,11 +471,12 @@ declare global {
         type Task = Recognition<ModeFragment> & Action<ModeFragment> & General<ModeFragment>
         type StrictTask = Recognition<ModeStrict> & Action<ModeStrict> & General<ModeStrict>
 
-        type RecursiveRequired<T> = T extends Record<string, unknown>
-            ? {
-                  [key in keyof T]: NonNullable<RecursiveRequired<T[key]>>
-              }
-            : T
+        type RecursiveRequired<T> =
+            T extends Record<string, unknown>
+                ? {
+                      [key in keyof T]: NonNullable<RecursiveRequired<T[key]>>
+                  }
+                : T
 
         type DumpTask = RecursiveRequired<
             Recognition<ModeDump> & Action<ModeDump> & General<ModeDump>
