@@ -251,7 +251,12 @@ struct JSConvert<int64_t>
     static int64_t from_value(ValueType val)
     {
         if (val.IsString()) {
-            return std::stoll(val.As<StringType>().Utf8Value());
+            try {
+                return std::stoll(val.As<StringType>().Utf8Value());
+            }
+            catch (const std::invalid_argument&) {
+                throw MaaError { std::format("expect {}, got {}", name(), DumpValue(val)) };
+            }
         }
         throw MaaError { std::format("expect {}, got {}", name(), DumpValue(val)) };
     }
@@ -267,7 +272,12 @@ struct JSConvert<uint64_t>
     static uint64_t from_value(ValueType val)
     {
         if (val.IsString()) {
-            return std::stoull(val.As<StringType>().Utf8Value());
+            try {
+                return std::stoull(val.As<StringType>().Utf8Value());
+            }
+            catch (const std::invalid_argument&) {
+                throw MaaError { std::format("expect {}, got {}", name(), DumpValue(val)) };
+            }
         }
         throw MaaError { std::format("expect {}, got {}", name(), DumpValue(val)) };
     }
@@ -285,7 +295,12 @@ struct JSConvert<uintptr_t>
     static uintptr_t from_value(ValueType val)
     {
         if (val.IsString()) {
-            return std::stoull(val.As<StringType>().Utf8Value());
+            try {
+                return std::stoull(val.As<StringType>().Utf8Value());
+            }
+            catch (const std::invalid_argument&) {
+                throw MaaError { std::format("expect {}, got {}", name(), DumpValue(val)) };
+            }
         }
         throw MaaError { std::format("expect {}, got {}", name(), DumpValue(val)) };
     }
