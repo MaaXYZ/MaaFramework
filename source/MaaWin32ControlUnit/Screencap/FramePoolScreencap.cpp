@@ -88,7 +88,30 @@ std::optional<cv::Mat> FramePoolScreencap::screencap()
     }
     OnScopeLeave([&]() { d3d_context_->Unmap(readable_texture_.get(), 0); });
 
-    cv::Mat raw(texture_desc_.Height, texture_desc_.Width, CV_8UC4, mapped.pData, mapped.RowPitch);
+    // 根据纹理格式处理数据
+    cv::Mat raw;
+    int width = static_cast<int>(texture_desc_.Width);
+    int height = static_cast<int>(texture_desc_.Height);
+    int row_pitch = static_cast<int>(mapped.RowPitch);
+
+    switch (texture_desc_.Format) {
+    case DXGI_FORMAT_R16G16B16A16_FLOAT:
+        LogDebug << "Processing HDR R16G16B16A16_FLOAT format";
+        raw = hdr_float16_to_sdr_bgra(mapped.pData, width, height, row_pitch);
+        break;
+
+    case DXGI_FORMAT_R10G10B10A2_UNORM:
+        LogDebug << "Processing HDR R10G10B10A2_UNORM format";
+        raw = hdr_r10g10b10a2_to_sdr_bgra(mapped.pData, width, height, row_pitch);
+        break;
+
+    case DXGI_FORMAT_B8G8R8A8_UNORM:
+    case DXGI_FORMAT_R8G8B8A8_UNORM:
+    default:
+        // 标准 SDR 格式
+        raw = cv::Mat(height, width, CV_8UC4, mapped.pData, row_pitch).clone();
+        break;
+    }
 
     // 先按 alpha 通道裁剪掉四周 alpha != 255 的边框
     cv::Mat alpha_channel;
@@ -233,11 +256,23 @@ bool FramePoolScreencap::init()
         return false;
     }
 
+    auto d3d_device = inspectable.as<winrt::Windows::Graphics::DirectX::Direct3D11::IDirect3DDevice>();
+
+    // 优先尝试 HDR 格式（R16G16B16A16Float），如果失败则回退到 SDR 格式
     cap_frame_pool_ = winrt::Windows::Graphics::Capture::Direct3D11CaptureFramePool::Create(
-        inspectable.as<winrt::Windows::Graphics::DirectX::Direct3D11::IDirect3DDevice>(),
-        winrt::Windows::Graphics::DirectX::DirectXPixelFormat::B8G8R8A8UIntNormalized,
+        d3d_device,
+        winrt::Windows::Graphics::DirectX::DirectXPixelFormat::R16G16B16A16Float,
         1,
         cap_item_.Size());
+
+    if (!cap_frame_pool_) {
+        LogInfo << "Failed to create HDR frame pool, falling back to SDR format";
+        cap_frame_pool_ = winrt::Windows::Graphics::Capture::Direct3D11CaptureFramePool::Create(
+            d3d_device,
+            winrt::Windows::Graphics::DirectX::DirectXPixelFormat::B8G8R8A8UIntNormalized,
+            1,
+            cap_item_.Size());
+    }
 
     if (!cap_frame_pool_) {
         LogError << "Direct3D11CaptureFramePool::Create failed";

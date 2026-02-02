@@ -25,6 +25,7 @@ protected:
     bool init_texture(ID3D11Texture2D* raw_texture);
     void uninit();
     std::optional<cv::Mat> screencap_impl();
+    cv::Mat process_texture_data(const D3D11_MAPPED_SUBRESOURCE& mapped);
 
     ID3D11Device* d3d_device_ = nullptr;
     ID3D11DeviceContext* d3d_context_ = nullptr;
