@@ -994,9 +994,9 @@
                 },
                 "expected": {
                     "title": "Expected Property",
-                    "description": "期望的结果，支持正则。必选。",
+                    "description": "期望的结果，支持正则。可选，默认匹配所有结果。",
                     "$ref": "#/$defs/jsonRegexOrList",
-                    "markdownDescription": "*string* | *list<string, >*\n\n期望的结果，支持正则。必选。"
+                    "markdownDescription": "*string* | *list<string, >*\n\n期望的结果，支持正则。可选，默认匹配所有结果。"
                 },
                 "threshold": {
                     "title": "Threshold Property",
@@ -1043,19 +1043,7 @@
                     "type": "string",
                     "markdownDescription": "*string*\n\n模型 **文件夹** 路径。使用 `model/ocr` 文件夹的相对路径。可选，默认为空。\n\n若为空，则为 `model/ocr` 根目录下的模型文件。\n\n文件夹中需要包含 `rec.onnx`, `det.onnx`, `keys.txt` 三个文件。"
                 }
-            },
-            "anyOf": [
-                {
-                    "required": [
-                        "expected"
-                    ]
-                },
-                {
-                    "required": [
-                        "expected_code"
-                    ]
-                }
-            ]
+            }
         },
         "OcrV1": {
             "properties": {
@@ -1115,9 +1103,9 @@
                 },
                 "expected": {
                     "title": "Expected Property",
-                    "description": "期望的分类下标。必选。",
+                    "description": "期望的分类下标。可选，默认匹配所有结果。",
                     "$ref": "#/$defs/jsonInt32OrList",
-                    "markdownDescription": "*int* | *list<int, >*\n\n期望的分类下标。必选。"
+                    "markdownDescription": "*int* | *list<int, >*\n\n期望的分类下标。可选，默认匹配所有结果。"
                 },
                 "order_by": {
                     "title": "Order By Property",
@@ -1142,26 +1130,12 @@
             "anyOf": [
                 {
                     "required": [
-                        "model",
-                        "expected"
+                        "model"
                     ]
                 },
                 {
                     "required": [
-                        "model_code",
-                        "expected_code"
-                    ]
-                },
-                {
-                    "required": [
-                        "model_code",
-                        "expected"
-                    ]
-                },
-                {
-                    "required": [
-                        "model",
-                        "expected_code"
+                        "model_code"
                     ]
                 }
             ]
@@ -1224,9 +1198,9 @@
                 },
                 "expected": {
                     "title": "Expected Property",
-                    "description": "期望的分类下标。必选。",
+                    "description": "期望的分类下标。可选，默认匹配所有结果。",
                     "$ref": "#/$defs/jsonInt32OrList",
-                    "markdownDescription": "*int* | *list<int, >*\n\n期望的分类下标。"
+                    "markdownDescription": "*int* | *list<int, >*\n\n期望的分类下标。可选，默认匹配所有结果。"
                 },
                 "threshold": {
                     "title": "Threshold Property",
@@ -1259,26 +1233,12 @@
             "anyOf": [
                 {
                     "required": [
-                        "model",
-                        "expected"
+                        "model"
                     ]
                 },
                 {
                     "required": [
-                        "model_code",
-                        "expected_code"
-                    ]
-                },
-                {
-                    "required": [
-                        "model_code",
-                        "expected"
-                    ]
-                },
-                {
-                    "required": [
-                        "model",
-                        "expected_code"
+                        "model_code"
                     ]
                 }
             ]
