@@ -149,7 +149,7 @@ MaaSinkId AgentServer::add_context_sink(MaaEventCallback sink, void* trans_arg)
 
 bool AgentServer::handle_inserted_request(const json::value& j)
 {
-    LogInfo << VAR(j) << VAR(ipc_addr_);
+    // LogInfo << VAR(j) << VAR(ipc_addr_);
 
     if (handle_image_header(j)) {
         return true;
@@ -332,7 +332,7 @@ bool AgentServer::handle_resource_event(const json::value& j)
     }
 
     const ResourceEventRequest& req = j.as<ResourceEventRequest>();
-    LogFunc << VAR(req) << VAR(ipc_addr_) << VAR(req.message);
+    // LogFunc << VAR(req) << VAR(ipc_addr_) << VAR(req.message);
 
     RemoteResource resource(*this, req.resource_id);
     res_notifier_.notify(&resource, req.message, req.details);
@@ -348,7 +348,7 @@ bool AgentServer::handle_controller_event(const json::value& j)
         return false;
     }
     const ControllerEventRequest& req = j.as<ControllerEventRequest>();
-    LogFunc << VAR(req) << VAR(ipc_addr_) << VAR(req.message);
+    // LogFunc << VAR(req) << VAR(ipc_addr_) << VAR(req.message);
 
     RemoteController controller(*this, req.controller_id);
     ctrl_notifier_.notify(&controller, req.message, req.details);
@@ -364,7 +364,7 @@ bool AgentServer::handle_tasker_event(const json::value& j)
         return false;
     }
     const TaskerEventRequest& req = j.as<TaskerEventRequest>();
-    LogFunc << VAR(req) << VAR(ipc_addr_) << VAR(req.message);
+    // LogFunc << VAR(req) << VAR(ipc_addr_) << VAR(req.message);
 
     RemoteTasker tasker(*this, req.tasker_id);
     tasker_notifier_.notify(&tasker, req.message, req.details);
@@ -380,7 +380,7 @@ bool AgentServer::handle_context_event(const json::value& j)
         return false;
     }
     const ContextEventRequest& req = j.as<ContextEventRequest>();
-    LogFunc << VAR(req) << VAR(ipc_addr_) << VAR(req.message);
+    // LogFunc << VAR(req) << VAR(ipc_addr_) << VAR(req.message);
 
     RemoteContext context(*this, req.context_id);
     ctx_notifier_.notify(&context, req.message, req.details);
