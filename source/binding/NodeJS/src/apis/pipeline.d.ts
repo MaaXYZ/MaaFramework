@@ -46,7 +46,7 @@ declare global {
                 threshold?: MaybeArray<number, Mode>
                 order_by?: OrderByMap['TemplateMatch']
                 index?: number
-                method?: 1 | 3 | 5
+                method?: 10001 | 3 | 5
                 green_mask?: boolean
             },
             'template',
