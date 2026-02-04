@@ -354,6 +354,8 @@ RecoResult Recognizer::custom_recognize(const MAA_VISION_NS::CustomRecognitionPa
 
 RecoResult Recognizer::and_(const std::shared_ptr<MAA_RES_NS::Recognition::AndParam>& param, const std::string& name)
 {
+    using namespace MAA_RES_NS::Recognition;
+
     if (!param) {
         LogError << "AndParam is null";
         return {};
@@ -365,15 +367,31 @@ RecoResult Recognizer::and_(const std::shared_ptr<MAA_RES_NS::Recognition::AndPa
     bool all_hit = true;
 
     for (const auto& sub_reco : param->all_of) {
-        LogDebug << "And: run sub recognition" << VAR(sub_reco.type) << VAR(sub_reco.sub_name);
         Recognizer sub_recognizer(*this);
-        RecoResult res = sub_recognizer.recognize(sub_reco.type, sub_reco.param, sub_reco.sub_name);
-        all_hit &= res.box.has_value();
+        RecoResult res;
 
+        if (auto* node_name = std::get_if<std::string>(&sub_reco)) {
+            // Resolve node name to get recognition params
+            auto node_opt = context_.get_pipeline_data(*node_name);
+            if (!node_opt) {
+                LogError << "And: failed to get pipeline data for node" << VAR(*node_name);
+                all_hit = false;
+                break;
+            }
+            LogDebug << "And: run node reference" << VAR(*node_name);
+            res = sub_recognizer.recognize(node_opt->reco_type, node_opt->reco_param, *node_name);
+        }
+        else {
+            const auto& inline_sub = std::get<InlineSubRecognition>(sub_reco);
+            LogDebug << "And: run inline sub recognition" << VAR(inline_sub.type) << VAR(inline_sub.sub_name);
+            res = sub_recognizer.recognize(inline_sub.type, inline_sub.param, inline_sub.sub_name);
+        }
+
+        all_hit &= res.box.has_value();
         sub_results.emplace_back(std::move(res));
 
         if (!all_hit) {
-            LogDebug << "And: sub recognition failed at" << VAR(sub_reco.type) << VAR(sub_reco.sub_name);
+            LogDebug << "And: sub recognition failed";
             break;
         }
     }
@@ -418,6 +436,8 @@ RecoResult Recognizer::and_(const std::shared_ptr<MAA_RES_NS::Recognition::AndPa
 
 RecoResult Recognizer::or_(const std::shared_ptr<MAA_RES_NS::Recognition::OrParam>& param, const std::string& name)
 {
+    using namespace MAA_RES_NS::Recognition;
+
     if (!param) {
         LogError << "OrParam is null";
         return {};
@@ -430,14 +450,30 @@ RecoResult Recognizer::or_(const std::shared_ptr<MAA_RES_NS::Recognition::OrPara
     bool has_hit = false;
 
     for (const auto& sub_reco : param->any_of) {
-        LogDebug << "Or: run sub recognition" << VAR(sub_reco.type) << VAR(sub_reco.sub_name);
         Recognizer sub_recognizer(*this);
-        RecoResult res = sub_recognizer.recognize(sub_reco.type, sub_reco.param, sub_reco.sub_name);
+        RecoResult res;
+
+        if (auto* node_name = std::get_if<std::string>(&sub_reco)) {
+            // Resolve node name to get recognition params
+            auto node_opt = context_.get_pipeline_data(*node_name);
+            if (!node_opt) {
+                LogError << "Or: failed to get pipeline data for node" << VAR(*node_name);
+                continue;
+            }
+            LogDebug << "Or: run node reference" << VAR(*node_name);
+            res = sub_recognizer.recognize(node_opt->reco_type, node_opt->reco_param, *node_name);
+        }
+        else {
+            const auto& inline_sub = std::get<InlineSubRecognition>(sub_reco);
+            LogDebug << "Or: run inline sub recognition" << VAR(inline_sub.type) << VAR(inline_sub.sub_name);
+            res = sub_recognizer.recognize(inline_sub.type, inline_sub.param, inline_sub.sub_name);
+        }
+
         has_hit = res.box.has_value();
         sub_results.emplace_back(std::move(res));
 
         if (has_hit) {
-            LogDebug << "Or: sub recognition succeeded at" << VAR(sub_reco.type) << VAR(sub_reco.sub_name);
+            LogDebug << "Or: sub recognition succeeded";
             break;
         }
     }

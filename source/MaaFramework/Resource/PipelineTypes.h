@@ -49,13 +49,16 @@ using Param = std::variant<
     std::shared_ptr<OrParam>,
     MAA_VISION_NS::CustomRecognitionParam>;
 
-// Sub-recognition element for Multiple recognition
-struct SubRecognition
+// Inline sub-recognition with explicit type and params
+struct InlineSubRecognition
 {
     std::string sub_name;
     Type type = Type::Invalid;
     Param param;
 };
+
+// Sub-recognition element: either a node name (string) or inline recognition
+using SubRecognition = std::variant<std::string, InlineSubRecognition>;
 
 // And recognition parameter (logical AND - all must match)
 struct AndParam

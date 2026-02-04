@@ -136,12 +136,18 @@ class JCustomRecognition:
 
 @dataclass
 class JAnd:
+    # all_of: List of sub-recognitions. Each element can be:
+    #   - str: node name reference (uses that node's recognition params)
+    #   - dict/object: inline recognition definition
     all_of: List[Any] = field(default_factory=list)
     box_index: int = 0
 
 
 @dataclass
 class JOr:
+    # any_of: List of sub-recognitions. Each element can be:
+    #   - str: node name reference (uses that node's recognition params)
+    #   - dict/object: inline recognition definition
     any_of: List[Any] = field(default_factory=list)
 
 
