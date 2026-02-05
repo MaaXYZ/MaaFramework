@@ -146,7 +146,7 @@ declare global {
 
         type RecognitionAnd<Mode> = RequiredIfStrict<
             {
-                all_of?: Recognition<Mode>['recognition'][]
+                all_of?: (string | Recognition<Mode>['recognition'])[]
                 box_index?: number
             },
             'all_of',
@@ -155,7 +155,7 @@ declare global {
 
         type RecognitionOr<Mode> = RequiredIfStrict<
             {
-                any_of: Recognition<Mode>['recognition'][]
+                any_of: (string | Recognition<Mode>['recognition'])[]
             },
             'any_of',
             Mode
