@@ -58,11 +58,6 @@ RecoResult TaskBase::run_recognition(const cv::Mat& image, const PipelineData& d
         return {};
     }
 
-    if (image.empty()) {
-        LogError << "Image is empty";
-        return {};
-    }
-
     if (!data.enabled) {
         LogDebug << "node disabled" << data.name << VAR(data.enabled);
         return {};
@@ -140,6 +135,7 @@ ActionResult TaskBase::run_action(const RecoResult& reco, const PipelineData& da
 cv::Mat TaskBase::screencap()
 {
     if (!controller()) {
+        LogDebug << "controller not bound, skip screencap";
         return {};
     }
 

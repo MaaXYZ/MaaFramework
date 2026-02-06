@@ -92,7 +92,7 @@ RecoResult Recognizer::recognize(MAA_RES_NS::Recognition::Type type, const MAA_R
         break;
     }
 
-    if (debug_mode()) {
+    if (debug_mode() && !image_.empty()) {
         ImageEncodedBuffer png;
         cv::imencode(".png", image_, png);
         result.raw = std::move(png);
@@ -153,6 +153,11 @@ RecoResult Recognizer::template_match(const MAA_VISION_NS::TemplateMatcherParam&
 {
     using namespace MAA_VISION_NS;
 
+    if (image_.empty()) {
+        LogError << "Image is empty";
+        return {};
+    }
+
     std::vector<cv::Rect> rois = get_rois(param.roi_target);
 
     auto templs = context_.get_images(param.template_);
@@ -177,6 +182,11 @@ RecoResult Recognizer::template_match(const MAA_VISION_NS::TemplateMatcherParam&
 RecoResult Recognizer::feature_match(const MAA_VISION_NS::FeatureMatcherParam& param, const std::string& name)
 {
     using namespace MAA_VISION_NS;
+
+    if (image_.empty()) {
+        LogError << "Image is empty";
+        return {};
+    }
 
     std::vector<cv::Rect> rois = get_rois(param.roi_target);
 
@@ -203,6 +213,11 @@ RecoResult Recognizer::color_match(const MAA_VISION_NS::ColorMatcherParam& param
 {
     using namespace MAA_VISION_NS;
 
+    if (image_.empty()) {
+        LogError << "Image is empty";
+        return {};
+    }
+
     std::vector<cv::Rect> rois = get_rois(param.roi_target);
 
     ColorMatcher analyzer(image_, rois, param, name);
@@ -226,6 +241,11 @@ RecoResult Recognizer::color_match(const MAA_VISION_NS::ColorMatcherParam& param
 RecoResult Recognizer::ocr(const MAA_VISION_NS::OCRerParam& param, const std::string& name)
 {
     using namespace MAA_VISION_NS;
+
+    if (image_.empty()) {
+        LogError << "Image is empty";
+        return {};
+    }
 
     if (!resource()) {
         LogError << "Resource not bound or status is null" << VAR(resource());
@@ -260,6 +280,11 @@ RecoResult Recognizer::nn_classify(const MAA_VISION_NS::NeuralNetworkClassifierP
 {
     using namespace MAA_VISION_NS;
 
+    if (image_.empty()) {
+        LogError << "Image is empty";
+        return {};
+    }
+
     if (!resource()) {
         LogError << "Resource not bound";
         return {};
@@ -292,6 +317,11 @@ RecoResult Recognizer::nn_classify(const MAA_VISION_NS::NeuralNetworkClassifierP
 RecoResult Recognizer::nn_detect(const MAA_VISION_NS::NeuralNetworkDetectorParam& param, const std::string& name)
 {
     using namespace MAA_VISION_NS;
+
+    if (image_.empty()) {
+        LogError << "Image is empty";
+        return {};
+    }
 
     if (!resource()) {
         LogError << "Resource not bound";

@@ -234,11 +234,6 @@ RecoResult PipelineTask::recognize_list(const cv::Mat& image, const std::vector<
         return {};
     }
 
-    if (image.empty()) {
-        LogError << "Image is empty";
-        return {};
-    }
-
     auto cur_opt = context_->get_pipeline_data(cur_node_);
     if (!cur_opt) {
         LogError << "get_pipeline_data failed, node not exist" << VAR(cur_node_);

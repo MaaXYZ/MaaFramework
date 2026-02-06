@@ -332,7 +332,8 @@ inline cv::Rect normalize_rect(const cv::Rect& rect, int image_width, int image_
 inline cv::Rect correct_roi(const cv::Rect& roi, const cv::Mat& image)
 {
     if (image.empty()) {
-        LogError << "image is empty" << VAR(image.size());
+        // 允许空图像，Custom Recognition 等场景可能不需要图像
+        LogDebug << "image is empty, skip roi correction";
         return roi;
     }
 
