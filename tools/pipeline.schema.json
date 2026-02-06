@@ -1278,7 +1278,7 @@
                 }
             }
         },
-        "SubRecognition": {
+        "SubRecognitionInline": {
             "type": "object",
             "properties": {
                 "sub_name": {
@@ -1289,17 +1289,28 @@
                 }
             }
         },
+        "SubRecognition": {
+            "anyOf": [
+                {
+                    "type": "string",
+                    "description": "节点名称引用。运行时使用该节点的识别算法和参数。"
+                },
+                {
+                    "$ref": "#/$defs/SubRecognitionInline"
+                }
+            ]
+        },
         "And": {
             "type": "object",
             "properties": {
                 "all_of": {
                     "title": "All Of Property",
-                    "description": "子识别列表。所有子识别都命中才算成功。必选。",
+                    "description": "子识别列表。所有子识别都命中才算成功。必选。支持节点名称引用或内联定义。",
                     "type": "array",
                     "items": {
                         "$ref": "#/$defs/SubRecognition"
                     },
-                    "markdownDescription": "*list<object, >*\n\n子识别列表。所有子识别都命中才算成功。必选。\n\n列表元素写法与普通节点的 `recognition` 一致（兼容 v1/v2，允许混用）。"
+                    "markdownDescription": "*list<string | object, >*\n\n子识别列表。所有子识别都命中才算成功。必选。\n\n列表元素可以是：\n- 字符串：节点名称引用，运行时使用该节点的识别算法和参数\n- 对象：内联识别定义，写法与普通节点的 `recognition` 一致（兼容 v1/v2，允许混用）"
                 },
                 "box_index": {
                     "title": "Box Index Property",
@@ -1352,12 +1363,12 @@
             "properties": {
                 "any_of": {
                     "title": "Any Of Property",
-                    "description": "子识别列表。命中第一个即成功，后续不再识别。必选。",
+                    "description": "子识别列表。命中第一个即成功，后续不再识别。必选。支持节点名称引用或内联定义。",
                     "type": "array",
                     "items": {
                         "$ref": "#/$defs/SubRecognition"
                     },
-                    "markdownDescription": "*list<object, >*\n\n子识别列表。命中第一个即成功，后续不再识别。必选。\n\n列表元素写法与普通节点的 `recognition` 一致（兼容 v1/v2，允许混用）。"
+                    "markdownDescription": "*list<string | object, >*\n\n子识别列表。命中第一个即成功，后续不再识别。必选。\n\n列表元素可以是：\n- 字符串：节点名称引用，运行时使用该节点的识别算法和参数\n- 对象：内联识别定义，写法与普通节点的 `recognition` 一致（兼容 v1/v2，允许混用）"
                 }
             },
             "required": [

@@ -121,9 +121,12 @@ struct JCustomRecognition
 
 struct JSubRecognition;
 
+// Sub-recognition element: either a node name (string) or inline recognition (object)
+using JSubRecognitionItem = std::variant<std::string, json::value>;
+
 struct JAnd
 {
-    std::vector<json::value> all_of;
+    std::vector<JSubRecognitionItem> all_of;
     int box_index = 0;
 
     MEO_TOJSON(all_of, box_index);
@@ -131,7 +134,7 @@ struct JAnd
 
 struct JOr
 {
-    std::vector<json::value> any_of;
+    std::vector<JSubRecognitionItem> any_of;
 
     MEO_TOJSON(any_of);
 };

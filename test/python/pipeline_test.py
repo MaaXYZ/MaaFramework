@@ -187,6 +187,9 @@ class PipelineTestRecognition(CustomRecognition):
         # 5. 测试 And/Or 识别的 override 继承
         self._test_and_or_override_inheritance(context)
 
+        # 5.5 测试 And/Or 节点名称引用
+        self._test_and_or_node_reference(context)
+
         # 6. 测试各种识别类型的解析
         self._test_recognition_types(context)
 
@@ -383,6 +386,100 @@ class PipelineTestRecognition(CustomRecognition):
         )
 
         print("    PASS: And/Or override inheritance")
+
+    def _test_and_or_node_reference(self, context: Context):
+        print("  Testing And/Or node name reference...")
+
+        new_ctx = context.clone()
+
+        # 创建基础识别节点
+        new_ctx.override_pipeline(
+            {
+                "BaseTemplateNode": {
+                    "recognition": "TemplateMatch",
+                    "template": ["test.png"],
+                    "threshold": 0.8,
+                },
+                "BaseOCRNode": {
+                    "recognition": "OCR",
+                    "expected": ["hello"],
+                },
+            }
+        )
+
+        # 创建 And 节点，使用节点名称引用
+        new_ctx.override_pipeline(
+            {
+                "AndWithNodeRef": {
+                    "recognition": {
+                        "type": "And",
+                        "param": {
+                            "all_of": [
+                                "BaseTemplateNode",  # 节点名称引用
+                                "BaseOCRNode",  # 节点名称引用
+                                {"recognition": {"type": "DirectHit"}},  # 内联定义
+                            ],
+                            "box_index": 0,
+                        },
+                    },
+                },
+            }
+        )
+
+        and_node_obj = new_ctx.get_node_object("AndWithNodeRef")
+        assert_eq(and_node_obj.recognition.type, JRecognitionType.And, "And type")
+        assert_true(isinstance(and_node_obj.recognition.param, JAnd), "And param type")
+        # all_of 应该有 3 个元素：2 个字符串引用 + 1 个内联对象
+        assert_eq(len(and_node_obj.recognition.param.all_of), 3, "all_of length")
+        # 字符串引用保持为字符串
+        assert_eq(
+            and_node_obj.recognition.param.all_of[0],
+            "BaseTemplateNode",
+            "all_of[0] is node name reference",
+        )
+        assert_eq(
+            and_node_obj.recognition.param.all_of[1],
+            "BaseOCRNode",
+            "all_of[1] is node name reference",
+        )
+        # 内联定义是对象
+        assert_true(
+            isinstance(and_node_obj.recognition.param.all_of[2], dict),
+            "all_of[2] is inline object",
+        )
+
+        # 创建 Or 节点，使用节点名称引用
+        new_ctx.override_pipeline(
+            {
+                "OrWithNodeRef": {
+                    "recognition": {
+                        "type": "Or",
+                        "param": {
+                            "any_of": [
+                                "BaseTemplateNode",  # 节点名称引用
+                                {"recognition": {"type": "DirectHit"}},  # 内联定义
+                            ],
+                        },
+                    },
+                },
+            }
+        )
+
+        or_node_obj = new_ctx.get_node_object("OrWithNodeRef")
+        assert_eq(or_node_obj.recognition.type, JRecognitionType.Or, "Or type")
+        assert_true(isinstance(or_node_obj.recognition.param, JOr), "Or param type")
+        assert_eq(len(or_node_obj.recognition.param.any_of), 2, "any_of length")
+        assert_eq(
+            or_node_obj.recognition.param.any_of[0],
+            "BaseTemplateNode",
+            "any_of[0] is node name reference",
+        )
+        assert_true(
+            isinstance(or_node_obj.recognition.param.any_of[1], dict),
+            "any_of[1] is inline object",
+        )
+
+        print("    PASS: And/Or node name reference")
 
     def _test_recognition_types(self, context: Context):
         print("  Testing recognition types parsing...")

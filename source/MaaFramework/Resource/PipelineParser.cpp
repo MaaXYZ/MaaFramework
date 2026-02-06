@@ -1907,21 +1907,31 @@ bool PipelineParser::parse_sub_recognition(
     using namespace Recognition;
     using namespace MAA_VISION_NS;
 
+    // If input is a string, treat it as a node name reference
+    if (input.is_string()) {
+        output = input.as_string();
+        return true;
+    }
+
+    // Otherwise, parse as inline sub-recognition
+    InlineSubRecognition inline_reco;
+
     Type parent_type = Type::DirectHit;
     Param parent_param = DirectHitParam {};
 
-    if (!parse_recognition(input, output.type, output.param, parent_type, parent_param, default_mgr)) {
+    if (!parse_recognition(input, inline_reco.type, inline_reco.param, parent_type, parent_param, default_mgr)) {
         return false;
     }
 
-    if (!get_and_check_value(input, "sub_name", output.sub_name, std::string {})) {
+    if (!get_and_check_value(input, "sub_name", inline_reco.sub_name, std::string {})) {
         LogError << "failed to get_and_check_value sub_name" << VAR(input);
         return false;
     }
-    if (output.sub_name.empty()) {
-        output.sub_name = Recognition::kTypeNameMap.at(output.type);
+    if (inline_reco.sub_name.empty()) {
+        inline_reco.sub_name = Recognition::kTypeNameMap.at(inline_reco.type);
     }
 
+    output = std::move(inline_reco);
     return true;
 }
 
