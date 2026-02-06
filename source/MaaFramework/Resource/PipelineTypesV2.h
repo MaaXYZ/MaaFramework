@@ -129,43 +129,14 @@ struct JAnd
     std::vector<JSubRecognitionItem> all_of;
     int box_index = 0;
 
-    json::value to_json() const
-    {
-        json::array arr;
-        for (const auto& item : all_of) {
-            if (auto* s = std::get_if<std::string>(&item)) {
-                arr.emplace_back(*s);
-            }
-            else {
-                arr.emplace_back(std::get<json::value>(item));
-            }
-        }
-        json::object obj;
-        obj["all_of"] = std::move(arr);
-        obj["box_index"] = box_index;
-        return obj;
-    }
+    MEO_TOJSON(all_of, box_index);
 };
 
 struct JOr
 {
     std::vector<JSubRecognitionItem> any_of;
 
-    json::value to_json() const
-    {
-        json::array arr;
-        for (const auto& item : any_of) {
-            if (auto* s = std::get_if<std::string>(&item)) {
-                arr.emplace_back(*s);
-            }
-            else {
-                arr.emplace_back(std::get<json::value>(item));
-            }
-        }
-        json::object obj;
-        obj["any_of"] = std::move(arr);
-        return obj;
-    }
+    MEO_TOJSON(any_of);
 };
 
 using JRecognitionParam = std::variant<
