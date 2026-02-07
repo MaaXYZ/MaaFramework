@@ -47,6 +47,13 @@ struct InterfaceData
             MEO_JSONIZATION(MEO_OPT class_regex, MEO_OPT window_regex, MEO_OPT gamepad_type, MEO_OPT screencap);
         };
 
+        struct WlRootsConfig
+        {
+            std::string wlr_socket_path;
+
+            MEO_JSONIZATION(MEO_OPT wlr_socket_path);
+        };
+
         enum class Type
         {
             Invalid,
@@ -54,6 +61,7 @@ struct InterfaceData
             Win32,
             PlayCover,
             Gamepad,
+            WlRoots,
         };
 
         std::string name;
@@ -75,6 +83,7 @@ struct InterfaceData
         Win32Config win32;
         PlayCoverConfig playcover;
         GamepadConfig gamepad;
+        WlRootsConfig wlroots;
 
         MEO_JSONIZATION(
             name,
@@ -88,7 +97,8 @@ struct InterfaceData
             MEO_OPT attach_resource_path,
             MEO_OPT win32,
             MEO_OPT playcover,
-            MEO_OPT gamepad);
+            MEO_OPT gamepad,
+            MEO_OPT wlroots);
     };
 
     struct Resource
