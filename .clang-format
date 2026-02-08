@@ -188,3 +188,12 @@ TabWidth: 4
 UseTab: Never
 # VerilogBreakBetweenInstancePorts:
 # WhitespaceSensitiveMacros:
+
+---
+Language: ObjC
+BasedOnStyle: "WebKit"
+IndentWidth: 4
+TabWidth: 4
+UseTab: Never
+ColumnLimit: 140
+Standard: c++20
