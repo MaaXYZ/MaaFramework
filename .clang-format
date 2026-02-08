@@ -197,3 +197,30 @@ TabWidth: 4
 UseTab: Never
 ColumnLimit: 140
 Standard: c++20
+AlignAfterOpenBracket: "AlwaysBreak"
+AllowShortFunctionsOnASingleLine: InlineOnly
+AlignTrailingComments:
+    Kind: Always
+    OverEmptyLines: 1
+BraceWrapping:
+    AfterCaseLabel: false
+    AfterClass: true
+    AfterControlStatement: Never
+    AfterEnum: true
+    AfterFunction: true
+    AfterNamespace: true
+    # AfterObjCDeclaration: true
+    AfterStruct: true
+    AfterUnion: true
+    AfterExternBlock: true
+    BeforeCatch: true
+    BeforeElse: true
+    BeforeLambdaBody: false
+    BeforeWhile: false
+    IndentBraces: false
+    SplitEmptyFunction: true
+    SplitEmptyRecord: true
+    SplitEmptyNamespace: true
+InsertBraces: true
+BreakBeforeBraces: Custom
+InsertNewlineAtEOF: true
