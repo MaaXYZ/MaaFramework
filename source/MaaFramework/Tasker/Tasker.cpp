@@ -69,8 +69,8 @@ bool Tasker::bind_controller(MaaController* controller)
 
 bool Tasker::inited() const
 {
-    // 只要求 resource 有效，controller 是可选的（允许无 controller 运行不涉及截图/操控的流水线）
-    return resource_ && resource_->valid();
+    // 要求 resource 有效；controller 是可选的，但如果已绑定则必须处于连接状态
+    return resource_ && resource_->valid() && (!controller_ || controller_->connected());
 }
 
 bool Tasker::set_option(MaaTaskerOption key, MaaOptionValue value, MaaOptionValueSize val_size)
