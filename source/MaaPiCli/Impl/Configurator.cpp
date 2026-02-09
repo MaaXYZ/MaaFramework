@@ -60,6 +60,30 @@ MaaGamepadType parse_gamepad_type(const std::string& type)
     }
     return MaaGamepadType_Xbox360;
 }
+
+MaaMacOSScreencapMethod parse_macos_screencap_method(const std::string& method)
+{
+    static const std::unordered_map<std::string, MaaMacOSScreencapMethod> mapping = {
+        { "ScreenCaptureKit", MaaMacOSScreencapMethod_ScreenCaptureKit },
+    };
+
+    if (auto it = mapping.find(method); it != mapping.end()) {
+        return it->second;
+    }
+    return MaaMacOSScreencapMethod_None;
+}
+
+MaaMacOSInputMethod parse_macos_input_method(const std::string& method)
+{
+    static const std::unordered_map<std::string, MaaMacOSInputMethod> mapping = {
+        { "GlobalEvent", MaaMacOSInputMethod_GlobalEvent },
+    };
+
+    if (auto it = mapping.find(method); it != mapping.end()) {
+        return it->second;
+    }
+    return MaaMacOSInputMethod_None;
+}
 } // namespace
 
 bool Configurator::load(const std::filesystem::path& resource_dir, const std::filesystem::path& user_dir)
@@ -210,6 +234,30 @@ std::optional<RuntimeParam> Configurator::generate_runtime() const
         }
 
         runtime.controller_param = std::move(win32);
+    } break;
+
+    case InterfaceData::Controller::Type::MacOS: {
+        RuntimeParam::MacOSParam macos;
+
+        macos.window_id = config_.macos.window_id;
+        macos.pid = config_.macos.pid;
+
+        // v2: parse from config, use default if not specified or invalid
+        if (!controller.macos.screencap_method.empty()) {
+            macos.screencap = parse_macos_screencap_method(controller.macos.screencap_method);
+        }
+        if (macos.screencap == MaaMacOSScreencapMethod_None) {
+            macos.screencap = MaaMacOSScreencapMethod_ScreenCaptureKit;
+        }
+
+        if (!controller.macos.input_method.empty()) {
+            macos.input = parse_macos_input_method(controller.macos.input_method);
+        }
+        if (macos.input == MaaMacOSInputMethod_None) {
+            macos.input = MaaMacOSInputMethod_GlobalEvent;
+        }
+
+        runtime.controller_param = std::move(macos);
     } break;
 
     case InterfaceData::Controller::Type::PlayCover: {
