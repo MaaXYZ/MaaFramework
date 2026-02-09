@@ -413,14 +413,13 @@ maajs::PromiseType AdbControllerImpl::find(maajs::EnvType env, maajs::OptionalPa
         result.reserve(size);
         for (size_t i = 0; i < size; i++) {
             auto dev = MaaToolkitAdbDeviceListAt(lst, i);
-            result.push_back(
-                std::make_tuple(
-                    std::string(MaaToolkitAdbDeviceGetName(dev)),
-                    std::string(MaaToolkitAdbDeviceGetAdbPath(dev)),
-                    std::string(MaaToolkitAdbDeviceGetAddress(dev)),
-                    MaaToolkitAdbDeviceGetScreencapMethods(dev),
-                    MaaToolkitAdbDeviceGetInputMethods(dev),
-                    std::string(MaaToolkitAdbDeviceGetConfig(dev))));
+            result.push_back(std::make_tuple(
+                std::string(MaaToolkitAdbDeviceGetName(dev)),
+                std::string(MaaToolkitAdbDeviceGetAdbPath(dev)),
+                std::string(MaaToolkitAdbDeviceGetAddress(dev)),
+                MaaToolkitAdbDeviceGetScreencapMethods(dev),
+                MaaToolkitAdbDeviceGetInputMethods(dev),
+                std::string(MaaToolkitAdbDeviceGetConfig(dev))));
         }
         MaaToolkitAdbDeviceListDestroy(lst);
 
@@ -481,11 +480,10 @@ maajs::PromiseType Win32ControllerImpl::find(maajs::EnvType env)
         result.reserve(size);
         for (size_t i = 0; i < size; i++) {
             auto dev = MaaToolkitDesktopWindowListAt(lst, i);
-            result.push_back(
-                std::make_tuple(
-                    reinterpret_cast<uintptr_t>(MaaToolkitDesktopWindowGetHandle(dev)),
-                    std::string(MaaToolkitDesktopWindowGetClassName(dev)),
-                    std::string(MaaToolkitDesktopWindowGetWindowName(dev))));
+            result.push_back(std::make_tuple(
+                MaaToolkitDesktopWindowGetHandle(dev),
+                std::string(MaaToolkitDesktopWindowGetWindowName(dev)),
+                std::string(MaaToolkitDesktopWindowGetWin32ClassName(dev))));
         }
         MaaToolkitDesktopWindowListDestroy(lst);
 
@@ -538,11 +536,12 @@ maajs::PromiseType MacOSControllerImpl::find(maajs::EnvType env)
         result.reserve(size);
         for (size_t i = 0; i < size; i++) {
             auto dev = MaaToolkitDesktopWindowListAt(lst, i);
-            result.push_back(
-                std::make_tuple(
-                    reinterpret_cast<uintptr_t>(MaaToolkitDesktopWindowGetHandle(dev)),
-                    std::string(MaaToolkitDesktopWindowGetClassName(dev)),
-                    std::string(MaaToolkitDesktopWindowGetWindowName(dev))));
+            result.push_back(std::make_tuple(
+                MaaToolkitDesktopWindowGetHandle(dev),
+                std::string(MaaToolkitDesktopWindowGetWindowName(dev)),
+                MaaToolkitDesktopWindowGetMacOSPID(dev),
+                std::string(MaaToolkitDesktopWindowGetMacOSBundleID(dev)),
+                std::string(MaaToolkitDesktopWindowGetMacOSApplicationName(dev))));
         }
         MaaToolkitDesktopWindowListDestroy(lst);
 
@@ -671,11 +670,10 @@ maajs::PromiseType WlRootsControllerImpl::find(maajs::EnvType env)
         result.reserve(size);
         for (size_t i = 0; i < size; i++) {
             auto dev = MaaToolkitDesktopWindowListAt(lst, i);
-            result.push_back(
-                std::make_tuple(
-                    reinterpret_cast<uint64_t>(MaaToolkitDesktopWindowGetHandle(dev)),
-                    std::string(MaaToolkitDesktopWindowGetClassName(dev)),
-                    std::string(MaaToolkitDesktopWindowGetWindowName(dev))));
+            result.push_back(std::make_tuple(
+                reinterpret_cast<uint64_t>(MaaToolkitDesktopWindowGetHandle(dev)),
+                std::string(MaaToolkitDesktopWindowGetWindowName(dev)),
+                std::string(MaaToolkitDesktopWindowGetLinuxSocketPath(dev))));
         }
         MaaToolkitDesktopWindowListDestroy(lst);
 

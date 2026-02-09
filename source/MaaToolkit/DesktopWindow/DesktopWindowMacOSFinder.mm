@@ -37,22 +37,28 @@ std::vector<DesktopWindow> DesktopWindowMacOSFinder::find_all() const
                     continue;
                 }
 
-                std::wstring class_name;
+                uint32_t window_id = window.windowID;
+
+                NSString* nsTitle = window.title ? window.title : @"";
+                std::string title = [nsTitle UTF8String];
+
+                int32_t pid = window.owningApplication.processID;
+
+                std::string bundle_id;
+                std::string application_name;
                 if (window.owningApplication) {
-                    NSString* bundleId = window.owningApplication.bundleIdentifier ? window.owningApplication.bundleIdentifier : @"";
-                    class_name = MAA_NS::to_u16([bundleId UTF8String]);
+                    NSString* nsBundleId = window.owningApplication.bundleIdentifier ? window.owningApplication.bundleIdentifier : @"";
+                    bundle_id = [nsBundleId UTF8String];
+                    NSString* nsApplicationName = window.owningApplication.applicationName ? window.owningApplication.applicationName : @"";
+                    application_name = [nsApplicationName UTF8String];
                 }
 
-                NSString* title = window.title ? window.title : @"";
-                std::wstring window_name = MAA_NS::to_u16([title UTF8String]);
-
-                // 将CGWindowID转换为void*
-                void* hwnd = (void*)(uintptr_t)window.windowID;
-
                 captured_windows.emplace_back(DesktopWindow {
-                    .hwnd = hwnd,
-                    .class_name = class_name,
-                    .window_name = window_name,
+                    .window_id = window_id,
+                    .title = title,
+                    .pid = pid,
+                    .bundle_id = bundle_id,
+                    .application_name = application_name,
                 });
             }
 
