@@ -5,6 +5,7 @@
 #include <AppKit/AppKit.h>
 #include <ApplicationServices/ApplicationServices.h>
 #include <CoreFoundation/CoreFoundation.h>
+#include <tuple>
 
 MAA_CTRL_UNIT_NS_BEGIN
 
@@ -15,7 +16,7 @@ MaaControllerFeature GlobalEventInput::get_features() const
 
 bool GlobalEventInput::click(int x, int y)
 {
-    CGPoint location = CGPointMake(x, y);
+    CGPoint location = CGPointMake(x + offset_x_, y + offset_y_);
 
     // 先激活窗口
     if (!activate_window(pid_)) {
@@ -84,8 +85,8 @@ bool GlobalEventInput::swipe(int x1, int y1, int x2, int y2, int duration)
         LogWarn << "Warning: Failed to activate window, swipe may not work";
     }
 
-    CGPoint start_location = CGPointMake(x1, y1);
-    CGPoint end_location = CGPointMake(x2, y2);
+    CGPoint start_location = CGPointMake(x1 + offset_x_, y1 + offset_y_);
+    CGPoint end_location = CGPointMake(x2 + offset_x_, y2 + offset_y_);
 
     // 按下
     CGEventRef touch_down = CGEventCreateMouseEvent(nullptr, kCGEventLeftMouseDown, start_location, kCGMouseButtonLeft);
@@ -128,7 +129,7 @@ bool GlobalEventInput::touch_down(int contact, int x, int y, int pressure)
         LogWarn << "Warning: Failed to activate window, touch may not work";
     }
 
-    CGPoint location = CGPointMake(x, y);
+    CGPoint location = CGPointMake(x + offset_x_, y + offset_y_);
 
     CGEventRef touch_down = CGEventCreateMouseEvent(nullptr, kCGEventLeftMouseDown, location, kCGMouseButtonLeft);
     if (touch_down) {
@@ -148,7 +149,7 @@ bool GlobalEventInput::touch_move(int contact, int x, int y, int pressure)
         return false;
     }
 
-    CGPoint location = CGPointMake(x, y);
+    CGPoint location = CGPointMake(x + offset_x_, y + offset_y_);
 
     CGEventRef touch_move = CGEventCreateMouseEvent(nullptr, kCGEventLeftMouseDragged, location, kCGMouseButtonLeft);
     if (touch_move) {
@@ -361,8 +362,12 @@ bool GlobalEventInput::activate_window(pid_t target_pid)
     return false;
 }
 
-pid_t GlobalEventInput::get_window_pid(uint32_t window_id)
+std::tuple<pid_t, int, int> GlobalEventInput::get_window_info(uint32_t window_id)
 {
+    pid_t pid = -1;
+    int offset_x = 0;
+    int offset_y = 0;
+
     // 获取窗口信息
     CFArrayRef window_list = CGWindowListCopyWindowInfo(kCGWindowListOptionIncludingWindow, window_id);
 
@@ -370,20 +375,29 @@ pid_t GlobalEventInput::get_window_pid(uint32_t window_id)
         if (window_list) {
             CFRelease(window_list);
         }
-        return -1;
+        return { pid, offset_x, offset_y };
     }
 
     CFDictionaryRef window_info = (CFDictionaryRef)CFArrayGetValueAtIndex(window_list, 0);
 
     // 获取进程PID
     CFNumberRef pid_ref = (CFNumberRef)CFDictionaryGetValue(window_info, kCGWindowOwnerPID);
-    pid_t pid = -1;
     if (pid_ref) {
         CFNumberGetValue(pid_ref, kCFNumberIntType, &pid);
     }
 
+    // 获取窗口边界
+    CFDictionaryRef bounds_ref = (CFDictionaryRef)CFDictionaryGetValue(window_info, kCGWindowBounds);
+    if (bounds_ref) {
+        CGRect bounds;
+        if (CGRectMakeWithDictionaryRepresentation(bounds_ref, &bounds)) {
+            offset_x = static_cast<int>(bounds.origin.x);
+            offset_y = static_cast<int>(bounds.origin.y);
+        }
+    }
+
     CFRelease(window_list);
-    return pid;
+    return { pid, offset_x, offset_y };
 }
 
 MAA_CTRL_UNIT_NS_END

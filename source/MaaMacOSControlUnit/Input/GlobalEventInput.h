@@ -11,8 +11,13 @@ class GlobalEventInput : public InputBase
 public:
     GlobalEventInput(uint32_t window_id, pid_t pid = 0)
         : window_id_(window_id)
-        , pid_(pid == 0 ? get_window_pid(window_id) : pid)
     {
+        auto [pid_val, offset_x, offset_y] = get_window_info(window_id);
+        if (pid == 0) {
+            pid_ = pid_val;
+        }
+        offset_x_ = offset_x;
+        offset_y_ = offset_y;
     }
 
     virtual ~GlobalEventInput() override = default;
@@ -37,10 +42,12 @@ public: // from InputBase
 
 private:
     bool activate_window(pid_t target_pid);
-    pid_t get_window_pid(uint32_t window_id);
+    std::tuple<pid_t, int, int> get_window_info(uint32_t window_id);
 
     uint32_t window_id_ = 0;
     pid_t pid_ = -1;
+    int offset_x_ = 0;
+    int offset_y_ = 0;
 };
 
 MAA_CTRL_UNIT_NS_END
