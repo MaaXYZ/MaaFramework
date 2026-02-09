@@ -23,6 +23,16 @@ if(LINUX)
     target_link_libraries(MaaToolkit PRIVATE pthread dl)
 endif()
 
+if(APPLE)
+    # macOS frameworks for ScreenCaptureKit
+    find_library(SCREEN_CAPTURE_KIT ScreenCaptureKit REQUIRED)
+    find_library(CORE_FOUNDATION CoreFoundation REQUIRED)
+    target_link_libraries(MaaToolkit PRIVATE
+        ${SCREEN_CAPTURE_KIT}
+        ${CORE_FOUNDATION}
+    )
+endif()
+
 add_dependencies(MaaToolkit MaaUtils MaaFramework LibraryHolder)
 
 install(
