@@ -1,6 +1,8 @@
 #include "ScreenCaptureKitScreencap.h"
 
 #include "MaaUtils/Logger.h"
+#include <opencv2/core.hpp>
+#include <opencv2/imgproc.hpp>
 
 #include <ApplicationServices/ApplicationServices.h>
 #include <CoreFoundation/CoreFoundation.h>
@@ -76,8 +78,8 @@ std::optional<cv::Mat> ScreenCaptureKitScreencap::screencap()
                                             size_t bytesPerRow = CVPixelBufferGetBytesPerRow(imageBuffer);
 
                                             if (baseAddress && width > 0 && height > 0) {
-                                                captured_image
-                                                    = cv::Mat((int)height, (int)width, CV_8UC4, baseAddress, bytesPerRow).clone();
+                                                cv::Mat raw_image = cv::Mat((int)height, (int)width, CV_8UC4, baseAddress, bytesPerRow);
+                                                cv::cvtColor(raw_image, captured_image, cv::COLOR_BGRA2BGR);
                                                 capture_success = true;
                                             }
 
@@ -136,8 +138,8 @@ std::optional<cv::Mat> ScreenCaptureKitScreencap::screencap()
                                                      size_t bytesPerRow = CVPixelBufferGetBytesPerRow(imageBuffer);
 
                                                      if (baseAddress && width > 0 && height > 0) {
-                                                         captured_image
-                                                             = cv::Mat((int)height, (int)width, CV_8UC4, baseAddress, bytesPerRow).clone();
+                                                         cv::Mat raw_image = cv::Mat((int)height, (int)width, CV_8UC4, baseAddress, bytesPerRow);
+                                                         cv::cvtColor(raw_image, captured_image, cv::COLOR_BGRA2BGR);
                                                          capture_success = true;
                                                      }
 
