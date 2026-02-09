@@ -1,4 +1,10 @@
 file(GLOB_RECURSE maa_toolkit_src *.h *.hpp *.cpp)
+
+if(APPLE)
+    file(GLOB_RECURSE maa_toolkit_objc_src *.mm)
+    list(APPEND maa_toolkit_src ${maa_toolkit_objc_src})
+endif()
+
 file(GLOB_RECURSE maa_toolkit_header ${MAA_PUBLIC_INC}/MaaToolkit/*)
 
 add_library(MaaToolkit SHARED ${maa_toolkit_src} ${maa_toolkit_header})
