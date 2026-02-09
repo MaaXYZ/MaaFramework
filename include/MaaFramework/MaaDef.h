@@ -360,6 +360,36 @@ typedef uint64_t MaaWin32InputMethod;
 #define MaaWin32InputMethod_SendMessageWithCursorPos (1ULL << 5)
 #define MaaWin32InputMethod_PostMessageWithCursorPos (1ULL << 6)
 
+// MaaMacOSScreencapMethod:
+/**
+ * @brief macOS screencap method
+ *
+ * Select ONE method only.
+ *
+ * | Method          | Description                                    |
+ * |-----------------|------------------------------------------------|
+ * | ScreenCaptureKit| Modern macOS screencap using ScreenCaptureKit  |
+ */
+typedef uint64_t MaaMacOSScreencapMethod;
+#define MaaMacOSScreencapMethod_None 0ULL
+#define MaaMacOSScreencapMethod_ScreenCaptureKit 1ULL
+// TODO Core Graphics method?
+
+// MaaMacOSInputMethod:
+/**
+ * @brief macOS input method
+ *
+ * Select ONE method only.
+ *
+ * | Method          | Description                                    |
+ * |-----------------|------------------------------------------------|
+ * | GlobalEvent     | Global event injection using CGEventPost       |
+ */
+typedef uint64_t MaaMacOSInputMethod;
+#define MaaMacOSInputMethod_None 0ULL
+#define MaaMacOSInputMethod_GlobalEvent 1ULL
+// TODO PostToPid method?
+
 // MaaDbgControllerType:
 /**
  * No bitwise OR, just set it

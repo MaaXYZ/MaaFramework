@@ -13,6 +13,7 @@
 
 MaaController* create_adb_controller();
 MaaController* create_win32_controller();
+MaaController* create_macos_controller();
 MaaBool my_reco(
     MaaContext* context,
     MaaTaskId task_id,
@@ -32,6 +33,7 @@ int main([[maybe_unused]] int argc, char** argv)
 
     auto controller_handle = create_adb_controller();
     // auto controller_handle = create_win32_controller();
+    // auto controller_handle = create_macos_controller();
     auto ctrl_id = MaaControllerPostConnection(controller_handle);
 
     auto resource_handle = MaaResourceCreate();
@@ -141,6 +143,18 @@ MaaController* create_win32_controller()
         MaaWin32InputMethod_SendMessage);
 
     destroy();
+    return controller_handle;
+}
+
+MaaController* create_macos_controller()
+{
+    // For macOS, we need to find a window by its ID
+    // You can get window IDs by running the macOS test program first
+    uint32_t window_id = 0; // 0 means desktop, or specify a window ID
+
+    auto controller_handle =
+        MaaMacOSControllerCreate(window_id, 0, MaaMacOSScreencapMethod_ScreenCaptureKit, MaaMacOSInputMethod_GlobalEvent);
+
     return controller_handle;
 }
 

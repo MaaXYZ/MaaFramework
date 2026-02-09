@@ -329,6 +329,48 @@ class MaaWin32InputMethodEnum(IntEnum):
     PostMessageWithCursorPos = 1 << 6
 
 
+MaaMacOSScreencapMethod = ctypes.c_uint64
+
+
+class MaaMacOSScreencapMethodEnum(IntEnum):
+    """
+    MacOS screencap method.
+
+    No bitwise OR, select ONE method only.
+
+    No default value. Client should choose one as default.
+
+    | Method          | Speed     | Compatibility | Background Support | Notes                  |
+    |-----------------|-----------|---------------|--------------------|------------------------|
+    | ScreenCaptureKit| Very Fast | High          | Yes                | Requires macOS 12.3+   |
+    """
+
+    Null = 0
+
+    ScreenCaptureKit = 1
+
+
+MaaMacOSInputMethod = ctypes.c_uint64
+
+
+class MaaMacOSInputMethodEnum(IntEnum):
+    """
+    MacOS input method.
+
+    No bitwise OR, select ONE method only.
+
+    No default value. Client should choose one as default.
+
+    | Method      | Compatibility | Background Support | Notes                  |
+    |-------------|---------------|--------------------|------------------------|
+    | GlobalEvent | High          | Yes                | Global event injection |
+    """
+
+    Null = 0
+
+    GlobalEvent = 1
+
+
 # No bitwise OR, just set it
 MaaDbgControllerType = ctypes.c_uint64
 
