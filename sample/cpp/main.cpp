@@ -148,13 +148,36 @@ MaaController* create_win32_controller()
 
 MaaController* create_macos_controller()
 {
-    // For macOS, we need to find a window by its ID
-    // You can get window IDs by running the macOS test program first
-    uint32_t window_id = 0; // 0 means desktop, or specify a window ID
+    auto list_handle = MaaToolkitDesktopWindowListCreate();
+    auto destroy = [&]() {
+        MaaToolkitDesktopWindowListDestroy(list_handle);
+    };
+
+    MaaToolkitDesktopWindowFindAll(list_handle);
+
+    size_t size = MaaToolkitDesktopWindowListSize(list_handle);
+    if (size == 0) {
+        std::cout << "No window found" << std::endl;
+
+        destroy();
+        return nullptr;
+    }
+
+    uint32_t window_id = 0;
+    for (size_t i = 0; i < size; ++i) {
+        auto window_handle = MaaToolkitDesktopWindowListAt(list_handle, i);
+        std::string window_name = MaaToolkitDesktopWindowGetWindowName(window_handle);
+
+        if (window_name.find("关于本机") != std::string::npos) {
+            window_id = reinterpret_cast<uintptr_t>(MaaToolkitDesktopWindowGetHandle(window_handle));
+            break;
+        }
+    }
 
     auto controller_handle =
         MaaMacOSControllerCreate(window_id, 0, MaaMacOSScreencapMethod_ScreenCaptureKit, MaaMacOSInputMethod_GlobalEvent);
 
+    destroy();
     return controller_handle;
 }
 
