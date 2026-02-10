@@ -359,7 +359,7 @@ std::optional<maajs::ValueType> TaskerImpl::task_detail(MaaTaskId id)
 
         std::vector<maajs::ValueType> nodesArr;
         for (auto node_id : nodes) {
-            nodesArr.push_back(node_detail(node_id).value_or(env.Null()));
+            nodesArr.push_back(maajs::JSConvert<uint64_t>::to_value(env, node_id));
         }
         result["nodes"] = maajs::MakeArray(env, nodesArr);
 
