@@ -2,7 +2,7 @@ import ctypes
 import platform
 from dataclasses import dataclass
 from enum import IntEnum
-from typing import List, Tuple, Union, Dict, Optional
+from typing import Callable, List, Tuple, Union, Dict, Optional
 
 import numpy
 from strenum import StrEnum  # For Python 3.9/3.10
@@ -1008,7 +1008,7 @@ class TaskDetail:
         entry: str,
         node_id_list: List[int],
         status: "Status",
-        node_detail_func=None,
+        node_detail_func: Optional[Callable[[int], Optional["NodeDetail"]]] = None,
     ):
         self.task_id = task_id
         self.entry = entry
