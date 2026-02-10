@@ -978,12 +978,59 @@ class NodeDetail:
     completed: bool
 
 
-@dataclass
 class TaskDetail:
-    task_id: int
-    entry: str
-    nodes: List[NodeDetail]
-    status: Status
+    """任务详情 / Task detail
+
+    nodes 属性为惰性加载，仅在首次访问时才通过 IPC 获取各节点详情并缓存结果。
+    The nodes property is lazily loaded: node details are fetched via IPC
+    only on the first access and cached thereafter.
+
+    Attributes:
+        task_id: 任务 ID / Task ID
+        entry: 入口节点名 / Entry node name
+        node_id_list: 节点 ID 列表（轻量，无 IPC 开销）/ Node ID list (lightweight, no IPC cost)
+        status: 任务状态 / Task status
+        nodes: 节点详情列表（惰性加载）/ Node detail list (lazily loaded)
+    """
+
+    __slots__ = (
+        "task_id",
+        "entry",
+        "node_id_list",
+        "status",
+        "_node_detail_func",
+        "_nodes",
+    )
+
+    def __init__(
+        self,
+        task_id: int,
+        entry: str,
+        node_id_list: List[int],
+        status: "Status",
+        node_detail_func=None,
+    ):
+        self.task_id = task_id
+        self.entry = entry
+        self.node_id_list = node_id_list
+        self.status = status
+        self._node_detail_func = node_detail_func
+        self._nodes: Optional[List[NodeDetail]] = None
+
+    @property
+    def nodes(self) -> List[NodeDetail]:
+        if self._nodes is None:
+            if self._node_detail_func is not None:
+                self._nodes = [self._node_detail_func(nid) for nid in self.node_id_list]
+            else:
+                self._nodes = []
+        return self._nodes
+
+    def __repr__(self) -> str:
+        return (
+            f"TaskDetail(task_id={self.task_id}, entry={self.entry!r}, "
+            f"node_id_list={self.node_id_list}, status={self.status})"
+        )
 
 
 class LoggingLevelEnum(IntEnum):
