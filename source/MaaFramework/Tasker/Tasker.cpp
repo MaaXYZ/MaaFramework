@@ -249,10 +249,10 @@ const RuntimeCache& Tasker::runtime_cache() const
 
 boost::asio::thread_pool& Tasker::reco_thread_pool()
 {
-    if (!reco_thread_pool_) {
+    std::call_once(reco_thread_pool_init_flag_, [this]() {
         reco_thread_pool_ = std::make_unique<boost::asio::thread_pool>(
             std::max(2u, std::thread::hardware_concurrency()));
-    }
+    });
     return *reco_thread_pool_;
 }
 

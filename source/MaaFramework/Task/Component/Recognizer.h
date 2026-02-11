@@ -43,6 +43,8 @@ private:
 
     bool has_sub_dependencies(const std::vector<MAA_RES_NS::Recognition::SubRecognition>& subs);
 
+    void set_sub_boxes(const std::string& name, std::vector<cv::Rect> filtered, cv::Rect best);
+
 private:
     bool debug_mode() const;
     MAA_RES_NS::ResourceMgr* resource();
@@ -58,6 +60,7 @@ private:
     // for AND recognition sub-box caching
     std::shared_ptr<std::unordered_map<std::string, std::vector<cv::Rect>>> sub_filtered_boxes_;
     std::shared_ptr<std::unordered_map<std::string, cv::Rect>> sub_best_box_;
+    std::shared_ptr<std::mutex> sub_boxes_mutex_;
 };
 
 MAA_TASK_NS_END

@@ -2,6 +2,7 @@
 
 #include <map>
 #include <memory>
+#include <mutex>
 #include <shared_mutex>
 #include <vector>
 
@@ -99,6 +100,7 @@ private:
     RuntimeCache runtime_cache_;
 
     std::unique_ptr<boost::asio::thread_pool> reco_thread_pool_;
+    std::once_flag reco_thread_pool_init_flag_;
 };
 
 MAA_NS_END
