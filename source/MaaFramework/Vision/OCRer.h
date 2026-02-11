@@ -59,20 +59,13 @@ public:
         std::shared_ptr<fastdeploy::pipeline::PPOCRv3> ocrer,
         std::string name = "");
 
-    OCRer(
-        cv::Mat image,
-        std::vector<cv::Rect> rois,
-        OCRerParam param,
-        const OCRBatchCacheValue& cached_results,
-        std::string name = "");
+    OCRer(cv::Mat image, std::vector<cv::Rect> rois, OCRerParam param, const OCRBatchCacheValue& cached_results, std::string name = "");
 
-    static std::vector<OCRerResult> batch_predict_only_rec(
-        const std::vector<cv::Mat>& images,
-        const std::shared_ptr<fastdeploy::vision::ocr::Recognizer>& recer);
+    static std::vector<OCRerResult>
+        batch_predict_only_rec(const std::vector<cv::Mat>& images, const std::shared_ptr<fastdeploy::vision::ocr::Recognizer>& recer);
 
-    static std::vector<std::vector<OCRerResult>> batch_predict_det_rec(
-        const std::vector<cv::Mat>& images,
-        const std::shared_ptr<fastdeploy::pipeline::PPOCRv3>& ocrer);
+    static std::vector<std::vector<OCRerResult>>
+        batch_predict_det_rec(const std::vector<cv::Mat>& images, const std::shared_ptr<fastdeploy::pipeline::PPOCRv3>& ocrer);
 
 private:
     void analyze();
