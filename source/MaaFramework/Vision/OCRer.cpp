@@ -52,6 +52,18 @@ OCRer::OCRer(
     analyze();
 }
 
+OCRer::OCRer(
+    cv::Mat image,
+    std::vector<cv::Rect> rois,
+    OCRerParam param,
+    const OCRBatchCacheValue& cached_results,
+    std::string name)
+    : VisionBase(std::move(image), std::move(rois), std::move(name))
+    , param_(std::move(param))
+{
+    analyze_cached(cached_results);
+}
+
 void OCRer::analyze()
 {
     auto start_time = std::chrono::steady_clock::now();
@@ -274,6 +286,118 @@ void OCRer::sort_(ResultsVec& results) const
         LogError << "Not supported order by" << VAR(param_.order_by);
         break;
     }
+}
+
+void OCRer::analyze_cached(const OCRBatchCacheValue& cached)
+{
+    auto start_time = std::chrono::steady_clock::now();
+
+    for (size_t i = 0; i < cached.per_roi_results.size() && next_roi(); ++i) {
+        auto results = cached.per_roi_results[i];
+
+        if (debug_draw_) {
+            auto draw = draw_result(results);
+            handle_draw(draw);
+        }
+
+        add_results(std::move(results), param_.expected);
+    }
+
+    cherry_pick();
+
+    auto cost = duration_since(start_time);
+    LogDebug << name_ << "(cached)" << VAR(all_results_) << VAR(filtered_results_) << VAR(best_result_) << VAR(cost);
+}
+
+std::vector<OCRerResult> OCRer::batch_predict_only_rec(
+    const std::vector<cv::Mat>& images,
+    const std::shared_ptr<fastdeploy::vision::ocr::Recognizer>& recer)
+{
+    if (!recer || images.empty()) {
+        return {};
+    }
+
+    std::vector<std::string> texts;
+    std::vector<float> scores;
+    bool ret = false;
+    {
+        std::unique_lock lock(s_predict_mutex_);
+        ret = recer->BatchPredict(images, &texts, &scores);
+    }
+    if (!ret) {
+        LogWarn << "BatchPredict only_rec failed";
+        return {};
+    }
+
+    std::vector<OCRerResult> results;
+    results.reserve(images.size());
+    for (size_t i = 0; i < texts.size() && i < images.size(); ++i) {
+        results.emplace_back(OCRerResult {
+            .text = to_u16(texts[i]),
+            .box = { 0, 0, images[i].cols, images[i].rows },
+            .score = scores[i],
+        });
+    }
+    return results;
+}
+
+std::vector<std::vector<OCRerResult>> OCRer::batch_predict_det_rec(
+    const std::vector<cv::Mat>& images,
+    const std::shared_ptr<fastdeploy::pipeline::PPOCRv3>& ocrer)
+{
+    if (!ocrer || images.empty()) {
+        return {};
+    }
+
+    std::vector<fastdeploy::vision::OCRResult> batch_results;
+    bool ret = false;
+    {
+        std::unique_lock lock(s_predict_mutex_);
+        ret = ocrer->BatchPredict(images, &batch_results);
+    }
+    if (!ret) {
+        LogWarn << "BatchPredict det_rec failed";
+        return {};
+    }
+
+    std::vector<std::vector<OCRerResult>> all_results;
+    all_results.reserve(batch_results.size());
+
+    for (size_t img_idx = 0; img_idx < batch_results.size(); ++img_idx) {
+        auto& ocr_result = batch_results[img_idx];
+        std::vector<OCRerResult> results;
+
+        if (ocr_result.boxes.size() != ocr_result.text.size() || ocr_result.text.size() != ocr_result.rec_scores.size()) {
+            if (ocr_result.boxes.empty() && ocr_result.text.size() == 1 && ocr_result.rec_scores.size() == 1) {
+                if (auto raw_text = ocr_result.text.front(); !raw_text.empty()) {
+                    results.emplace_back(OCRerResult {
+                        .text = to_u16(raw_text),
+                        .box = { 0, 0, images[img_idx].cols, images[img_idx].rows },
+                        .score = ocr_result.rec_scores.front(),
+                    });
+                }
+            }
+            all_results.emplace_back(std::move(results));
+            continue;
+        }
+
+        for (size_t i = 0; i < ocr_result.text.size(); ++i) {
+            const auto& raw_box = ocr_result.boxes.at(i);
+            int x_collect[] = { raw_box[0], raw_box[2], raw_box[4], raw_box[6] };
+            int y_collect[] = { raw_box[1], raw_box[3], raw_box[5], raw_box[7] };
+            auto [left, right] = std::ranges::minmax(x_collect);
+            auto [top, bottom] = std::ranges::minmax(y_collect);
+
+            results.emplace_back(OCRerResult {
+                .text = to_u16(ocr_result.text.at(i)),
+                .box = cv::Rect(left, top, right - left, bottom - top),
+                .score = ocr_result.rec_scores.at(i),
+            });
+        }
+        all_results.emplace_back(std::move(results));
+    }
+
+    return all_results;
 }
 
 MAA_VISION_NS_END

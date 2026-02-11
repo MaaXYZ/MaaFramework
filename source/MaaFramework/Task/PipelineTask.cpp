@@ -2,6 +2,7 @@
 
 #include <stack>
 
+#include "Component/Recognizer.h"
 #include "Controller/ControllerAgent.h"
 #include "Global/OptionMgr.h"
 #include "MaaFramework/MaaMsg.h"
@@ -251,6 +252,10 @@ RecoResult PipelineTask::recognize_list(const cv::Mat& image, const std::vector<
 
     notify(MaaMsg_Node_NextList_Starting, reco_list_cb_detail);
 
+    auto batch_info = collect_batchable_ocr_nodes(list);
+    auto ocr_cache = batch_info ? std::make_shared<MAA_VISION_NS::OCRBatchCache>() : nullptr;
+    bool batch_triggered = false;
+
     for (const auto& node : list) {
         if (context_->need_to_stop()) {
             LogWarn << "need_to_stop";
@@ -264,7 +269,28 @@ RecoResult PipelineTask::recognize_list(const cv::Mat& image, const std::vector<
         }
         const auto& pipeline_data = *node_opt;
 
-        RecoResult result = run_recognition(image, pipeline_data);
+        if (batch_info && !batch_triggered && batch_info->node_names.contains(pipeline_data.name)) {
+            batch_triggered = true;
+
+            Recognizer recognizer(tasker_, *context_, image, ocr_cache);
+
+            std::vector<BatchOCREntry> entries;
+            for (const auto& batch_name : batch_info->node_names) {
+                auto batch_node_opt = context_->get_pipeline_data(batch_name);
+                if (!batch_node_opt) {
+                    continue;
+                }
+
+                entries.push_back(BatchOCREntry {
+                    .name = batch_name,
+                    .param = std::get<MAA_VISION_NS::OCRerParam>(batch_node_opt->reco_param),
+                });
+            }
+
+            recognizer.prefetch_batch_ocr(entries, batch_info->only_rec);
+        }
+
+        RecoResult result = run_recognition(image, pipeline_data, ocr_cache);
 
         if (context_->need_to_stop()) {
             LogWarn << "need_to_stop";
@@ -282,6 +308,80 @@ RecoResult PipelineTask::recognize_list(const cv::Mat& image, const std::vector<
     notify(MaaMsg_Node_NextList_Failed, reco_list_cb_detail);
 
     return {};
+}
+
+std::optional<BatchableOCRInfo> PipelineTask::collect_batchable_ocr_nodes(const std::vector<MAA_RES_NS::NodeAttr>& list)
+{
+    using namespace MAA_RES_NS::Recognition;
+
+    if (!context_) {
+        return std::nullopt;
+    }
+
+    std::set<std::string> all_node_names;
+    for (const auto& node : list) {
+        auto data_opt = context_->get_pipeline_data(node);
+        if (data_opt) {
+            all_node_names.insert(data_opt->name);
+        }
+    }
+
+    BatchableOCRInfo info;
+    bool first = true;
+
+    for (const auto& node : list) {
+        auto data_opt = context_->get_pipeline_data(node);
+        if (!data_opt) {
+            continue;
+        }
+        const auto& data = *data_opt;
+
+        if (!data.enabled) {
+            continue;
+        }
+
+        if (data.reco_type != Type::OCR) {
+            continue;
+        }
+
+        if (data.inverse) {
+            continue;
+        }
+
+        size_t current_hit = context_->get_hit_count(data.name);
+        if (current_hit >= static_cast<size_t>(data.max_hit)) {
+            continue;
+        }
+
+        const auto& param = std::get<MAA_VISION_NS::OCRerParam>(data.reco_param);
+
+        if (param.roi_target.type == MAA_VISION_NS::TargetType::PreTask) {
+            const auto& ref_name = std::get<std::string>(param.roi_target.param);
+            if (all_node_names.contains(ref_name)) {
+                continue;
+            }
+        }
+
+        if (first) {
+            info.model = param.model;
+            info.only_rec = param.only_rec;
+            first = false;
+        }
+        else {
+            if (param.model != info.model || param.only_rec != info.only_rec) {
+                continue;
+            }
+        }
+
+        info.node_names.insert(data.name);
+    }
+
+    if (info.node_names.size() < 2) {
+        return std::nullopt;
+    }
+
+    LogInfo << "collected batchable OCR nodes" << VAR(info.node_names.size()) << VAR(info.model) << VAR(info.only_rec);
+    return info;
 }
 
 void PipelineTask::save_on_error(const std::string& node_name)
