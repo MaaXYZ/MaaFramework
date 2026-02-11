@@ -153,7 +153,10 @@ class MyRecognition(CustomRecognition):
 
         # 测试 wait_freezes API（参数校验：time 和 wait_freezes_param.time 同时为零应返回 false）
         from maa.pipeline import JWaitFreezes
-        wait_result = new_ctx.wait_freezes(time=0, wait_freezes_param=JWaitFreezes(time=0))
+
+        wait_result = new_ctx.wait_freezes(
+            time=0, wait_freezes_param=JWaitFreezes(time=0)
+        )
         print(f"  wait_freezes (both zero): {wait_result}")
         assert (
             not wait_result
@@ -450,7 +453,7 @@ def test_tasker_api(resource: Resource, controller: DbgController):
     # 测试全局选项 (静态方法)
     Tasker.set_save_draw(True)
     Tasker.set_stdout_level(LoggingLevelEnum.All)
-    Tasker.set_log_dir(".")
+    Tasker.set_log_dir("debug")
     Tasker.set_debug_mode(True)
     Tasker.set_save_on_error(True)
     Tasker.set_draw_quality(85)
