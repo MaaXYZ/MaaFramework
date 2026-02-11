@@ -276,7 +276,7 @@ class PipelineTestRecognition(CustomRecognition):
         assert_eq(node_obj.max_hit, 3, "max_hit")
         assert_eq(node_obj.enabled, True, "enabled")
         assert_eq(node_obj.inverse, False, "inverse")
-        assert_eq(node_obj.anchor, {"my_anchor": ""}, "anchor")  # Array format converted to dict
+        assert_eq(node_obj.anchor, {"my_anchor": "$CURRENT"}, "anchor")  # Array format converted to dict with $CURRENT marker
         assert_eq(node_obj.attach.get("custom_data"), 123, "attach")
 
         # 验证 next 列表解析
@@ -894,11 +894,11 @@ class PipelineTestRecognition(CustomRecognition):
                 "AnchorArray": {
                     "anchor": ["ArrayAnchor1", "ArrayAnchor2"]
                 },
-                # 格式 3: 对象 - 映射到特定节点
+                # 格式 3: 对象 - 映射到特定节点或清除
                 "AnchorObject": {
                     "anchor": {
                         "ObjAnchor1": "TargetNode1",
-                        "ObjAnchor2": "",  # 空字符串表示当前节点
+                        "ObjAnchor2": "",  # 空字符串表示清除锚点
                         "ObjAnchor3": "TargetNode2"
                     }
                 },
@@ -908,21 +908,21 @@ class PipelineTestRecognition(CustomRecognition):
             }
         )
 
-        # 验证格式 1: 字符串
+        # 验证格式 1: 字符串 (转换为 $CURRENT 表示当前节点)
         obj1 = new_ctx.get_node_object("AnchorString")
         assert_not_none(obj1, "AnchorString should exist")
-        assert_eq(obj1.anchor, {"StringAnchor": ""}, "anchor string format")
+        assert_eq(obj1.anchor, {"StringAnchor": "$CURRENT"}, "anchor string format")
 
-        # 验证格式 2: 字符串数组
+        # 验证格式 2: 字符串数组 (转换为 $CURRENT 表示当前节点)
         obj2 = new_ctx.get_node_object("AnchorArray")
         assert_not_none(obj2, "AnchorArray should exist")
-        assert_eq(obj2.anchor, {"ArrayAnchor1": "", "ArrayAnchor2": ""}, "anchor array format")
+        assert_eq(obj2.anchor, {"ArrayAnchor1": "$CURRENT", "ArrayAnchor2": "$CURRENT"}, "anchor array format")
 
         # 验证格式 3: 对象
         obj3 = new_ctx.get_node_object("AnchorObject")
         assert_not_none(obj3, "AnchorObject should exist")
         assert_eq(obj3.anchor.get("ObjAnchor1"), "TargetNode1", "anchor object mapping 1")
-        assert_eq(obj3.anchor.get("ObjAnchor2"), "", "anchor object mapping 2 (current node)")
+        assert_eq(obj3.anchor.get("ObjAnchor2"), "", "anchor object mapping 2 (empty = clear)")
         assert_eq(obj3.anchor.get("ObjAnchor3"), "TargetNode2", "anchor object mapping 3")
 
         print("    PASS: anchor object format")

@@ -190,7 +190,12 @@ NodeDetail PipelineTask::run_next(const std::vector<MAA_RES_NS::NodeAttr>& next,
         auto act = run_action(reco, *hit_opt);
 
         for (const auto& [anchor, target] : hit_opt->anchor) {
-            context_->set_anchor(anchor, target.empty() ? hit_name : target);
+            if (target == MAA_RES_NS::PipelineData::kAnchorTarget_Current) {
+                context_->set_anchor(anchor, hit_name);
+            }
+            else {
+                context_->set_anchor(anchor, target);
+            }
         }
 
         NodeDetail result {

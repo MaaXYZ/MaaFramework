@@ -1948,7 +1948,7 @@ bool PipelineParser::parse_anchor(
     }
     output = {};
     if (opt->is_string()) {
-        output[opt->as_string()] = "";
+        output[opt->as_string()] = std::string(PipelineData::kAnchorTarget_Current);
     }
     else if (opt->is_array()) {
         for (const auto& item : opt->as_array()) {
@@ -1956,7 +1956,7 @@ bool PipelineParser::parse_anchor(
                 LogError << "type error" << VAR(key) << VAR(input);
                 return false;
             }
-            output[item.as_string()] = "";
+            output[item.as_string()] = std::string(PipelineData::kAnchorTarget_Current);
         }
     }
     else if (opt->is_object()) {
