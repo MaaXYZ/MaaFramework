@@ -124,6 +124,7 @@ bool AVDExtras::start()
     if (shm_ == MAP_FAILED) {
         LogError << "AVDExtras failed to mmap shared memory:" << VAR(errno);
         shm_ = nullptr;
+        stop();
         return false;
     }
 #endif
