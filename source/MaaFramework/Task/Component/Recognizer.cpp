@@ -607,7 +607,7 @@ RecoResult Recognizer::and_parallel(const std::shared_ptr<MAA_RES_NS::Recognitio
     for (size_t i = 0; i < param->all_of.size(); ++i) {
         const auto& sub_reco = param->all_of[i];
 
-        boost::asio::post(pool, [this, &sub_reco, i, total, cancelled, state, name]() {
+        boost::asio::post(pool, [this, &sub_reco, i, cancelled, state]() {
             if (cancelled->load(std::memory_order_acquire) || state->has_failure.load(std::memory_order_acquire)) {
                 state->completed_count.fetch_add(1, std::memory_order_release);
                 state->cv.notify_one();
@@ -730,7 +730,7 @@ RecoResult Recognizer::or_parallel(const std::shared_ptr<MAA_RES_NS::Recognition
     for (size_t i = 0; i < param->any_of.size(); ++i) {
         const auto& sub_reco = param->any_of[i];
 
-        boost::asio::post(pool, [this, &sub_reco, i, total, cancelled, state, name]() {
+        boost::asio::post(pool, [this, &sub_reco, i, cancelled, state]() {
             if (cancelled->load(std::memory_order_acquire)) {
                 state->completed_count.fetch_add(1, std::memory_order_release);
                 state->cv.notify_one();

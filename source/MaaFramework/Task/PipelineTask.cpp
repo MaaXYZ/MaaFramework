@@ -331,7 +331,7 @@ RecoResult PipelineTask::recognize_list_parallel(const cv::Mat& image, const std
     for (size_t i = 0; i < list.size(); ++i) {
         const auto& node = list[i];
 
-        boost::asio::post(pool, [this, &image, node, i, total, cancelled, result]() {
+        boost::asio::post(pool, [this, &image, node, i, cancelled, result]() {
             if (cancelled->load(std::memory_order_acquire) || context_->need_to_stop()) {
                 result->completed_count.fetch_add(1, std::memory_order_release);
                 result->cv.notify_one();
