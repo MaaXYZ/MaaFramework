@@ -1,3 +1,5 @@
+#ifndef __ANDROID__
+
 #include "AVDExtras.h"
 
 #include "MaaUtils/Logger.h"
@@ -170,3 +172,5 @@ void AVDExtras::stop()
 }
 
 MAA_CTRL_UNIT_NS_END
+
+#endif

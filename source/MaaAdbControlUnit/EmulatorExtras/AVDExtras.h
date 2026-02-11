@@ -1,5 +1,7 @@
 #pragma once
 
+#ifndef __ANDROID__
+
 #include "Base/UnitBase.h"
 #include "MaaUtils/IOStream/ChildPipeIOStream.h"
 #include "MaaUtils/NoWarningCVMat.hpp"
@@ -61,3 +63,5 @@ private:
 };
 
 MAA_CTRL_UNIT_NS_END
+
+#endif
