@@ -15,7 +15,11 @@
 
 MAA_TASK_NS_BEGIN
 
-Recognizer::Recognizer(Tasker* tasker, Context& context, const cv::Mat& image_, std::shared_ptr<MAA_VISION_NS::OCRBatchCache> ocr_batch_cache)
+Recognizer::Recognizer(
+    Tasker* tasker,
+    Context& context,
+    const cv::Mat& image_,
+    std::shared_ptr<MAA_VISION_NS::OCRBatchCache> ocr_batch_cache)
     : tasker_(tasker)
     , context_(context)
     , image_(image_)
@@ -306,7 +310,13 @@ RecoResult Recognizer::custom_recognize(const MAA_VISION_NS::CustomRecognitionPa
     return build_result(
         name,
         "Custom",
-        CustomRecognition(image_, rois.empty() ? cv::Rect {} : rois.front(), param, resource()->custom_recognition(param.name), context_, name));
+        CustomRecognition(
+            image_,
+            rois.empty() ? cv::Rect {} : rois.front(),
+            param,
+            resource()->custom_recognition(param.name),
+            context_,
+            name));
 }
 
 RecoResult Recognizer::and_(const std::shared_ptr<MAA_RES_NS::Recognition::AndParam>& param, const std::string& name)
@@ -642,6 +652,10 @@ void Recognizer::prefetch_batch_ocr(const std::vector<BatchOCREntry>& entries, b
 
         auto flat_results = OCRer::batch_predict_only_rec(images, resource()->ocr_res().recer(model));
 
+        if (flat_results.size() != roi_infos.size()) {
+            LogWarn << "OCR only_rec batch incomplete" << VAR(roi_infos.size()) << VAR(flat_results.size());
+        }
+
         for (size_t i = 0; i < roi_infos.size() && i < flat_results.size(); ++i) {
             const auto& info = roi_infos[i];
             auto& result = flat_results[i];
@@ -673,6 +687,10 @@ void Recognizer::prefetch_batch_ocr(const std::vector<BatchOCREntry>& entries, b
 
         auto batch_results = OCRer::batch_predict_det_rec(images, resource()->ocr_res().ocrer(model));
 
+        if (batch_results.size() != merge_groups.size()) {
+            LogWarn << "OCR det_rec batch incomplete" << VAR(merge_groups.size()) << VAR(batch_results.size());
+        }
+
         auto store_results = [&](const RoiInfo& info, std::vector<OCRerResult> results) {
             auto& cache_val = (*ocr_batch_cache_)[entries[info.entry_idx].name];
             if (cache_val.per_roi_results.size() <= info.roi_idx) {
@@ -699,8 +717,8 @@ void Recognizer::prefetch_batch_ocr(const std::vector<BatchOCREntry>& entries, b
 
                 std::vector<OCRerResult> child_results;
                 for (const auto& res : parent_results) {
-                    if (res.box.x >= child_corrected.x && res.box.y >= child_corrected.y
-                        && res.box.br().x <= child_corrected.br().x && res.box.br().y <= child_corrected.br().y) {
+                    if (res.box.x >= child_corrected.x && res.box.y >= child_corrected.y && res.box.br().x <= child_corrected.br().x
+                        && res.box.br().y <= child_corrected.br().y) {
                         child_results.push_back(res);
                     }
                 }

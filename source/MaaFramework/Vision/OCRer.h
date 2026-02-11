@@ -2,6 +2,7 @@
 
 #include <mutex>
 #include <ostream>
+#include <unordered_map>
 #include <vector>
 
 #include <boost/regex.hpp>

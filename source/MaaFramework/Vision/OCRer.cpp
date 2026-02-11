@@ -301,8 +301,10 @@ void OCRer::analyze_cached(const OCRBatchCacheValue& cached)
 {
     auto start_time = std::chrono::steady_clock::now();
 
+    size_t used_cached = 0;
     for (size_t i = 0; i < cached.per_roi_results.size() && next_roi(); ++i) {
         auto results = cached.per_roi_results[i];
+        ++used_cached;
 
         if (debug_draw_) {
             auto draw = draw_result(results);
@@ -310,6 +312,10 @@ void OCRer::analyze_cached(const OCRBatchCacheValue& cached)
         }
 
         add_results(std::move(results), param_.expected);
+    }
+
+    if (used_cached < cached.per_roi_results.size()) {
+        LogWarn << name_ << "(cached) unused cached ROI results" << VAR(used_cached) << VAR(cached.per_roi_results.size());
     }
 
     cherry_pick();
@@ -337,9 +343,14 @@ std::vector<OCRerResult>
         return {};
     }
 
+    if (texts.size() != scores.size()) {
+        LogWarn << "Mismatched batch only_rec text/score size" << VAR(texts.size()) << VAR(scores.size());
+    }
+
     std::vector<OCRerResult> results;
-    results.reserve(images.size());
-    for (size_t i = 0; i < texts.size() && i < images.size(); ++i) {
+    auto count = std::min({ texts.size(), scores.size(), images.size() });
+    results.reserve(count);
+    for (size_t i = 0; i < count; ++i) {
         results.emplace_back(
             OCRerResult {
                 .text = to_u16(texts[i]),

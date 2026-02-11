@@ -2,6 +2,7 @@
 
 #include "TaskBase.h"
 
+#include <optional>
 #include <set>
 
 #include "Common/Conf.h"
