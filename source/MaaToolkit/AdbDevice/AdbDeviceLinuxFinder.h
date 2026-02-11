@@ -17,6 +17,9 @@ class AdbDeviceLinuxFinder
 public:
     virtual ~AdbDeviceLinuxFinder() override = default;
 
+protected:
+    virtual const EmulatorConstDataMap& get_emulator_const_data() const override;
+
 private:
     AdbDeviceLinuxFinder() = default;
 };

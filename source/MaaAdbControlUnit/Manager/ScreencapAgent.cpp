@@ -4,6 +4,7 @@
 #include <ranges>
 #include <unordered_set>
 
+#include "EmulatorExtras/AVDExtras.h"
 #include "EmulatorExtras/LDPlayerExtras.h"
 #include "EmulatorExtras/MuMuPlayerExtras.h"
 #include "MaaUtils/Logger.h"
@@ -42,9 +43,8 @@ ScreencapAgent::ScreencapAgent(MaaAdbScreencapMethod methods, const std::filesys
 #ifdef _WIN32
         method_set.emplace(ScreencapAgent::Method::MuMuPlayerExtras);
         method_set.emplace(ScreencapAgent::Method::LDPlayerExtras);
-#else
-        LogWarn << "EmulatorExtras is not supported on this platform";
 #endif
+        method_set.emplace(ScreencapAgent::Method::AVDExtras);
     }
 
     LogInfo << VAR(methods) << VAR(method_set) << VAR(agent_path);
@@ -89,6 +89,9 @@ ScreencapAgent::ScreencapAgent(MaaAdbScreencapMethod methods, const std::filesys
             unit = std::make_shared<LDPlayerExtras>();
             break;
 #endif
+        case Method::AVDExtras:
+            unit = std::make_shared<AVDExtras>();
+            break;
 
         default:
             LogWarn << "Not support:" << method;
