@@ -1,5 +1,11 @@
 #include "Recognizer.h"
 
+#include <condition_variable>
+#include <mutex>
+#include <unordered_set>
+
+#include <boost/asio/post.hpp>
+
 #include "CustomRecognition.h"
 #include "Global/OptionMgr.h"
 #include "MaaUtils/ImageIo.h"
@@ -393,6 +399,22 @@ RecoResult Recognizer::and_(const std::shared_ptr<MAA_RES_NS::Recognition::AndPa
 
     LogDebug << "And recognition" << VAR(name) << VAR(param->all_of.size()) << VAR(param->box_index);
 
+    // 多个子识别器时使用并行版本（但包含 Custom 识别时回退串行，Agent IPC 不是线程安全的）
+    if (param->all_of.size() > 1) {
+        bool has_custom = std::ranges::any_of(param->all_of, [this](const SubRecognition& sub) {
+            if (auto* node_name = std::get_if<std::string>(&sub)) {
+                auto node_opt = context_.get_pipeline_data(*node_name);
+                return node_opt && node_opt->reco_type == Type::Custom;
+            }
+            else {
+                return std::get<InlineSubRecognition>(sub).type == Type::Custom;
+            }
+        });
+        if (!has_custom && !has_sub_dependencies(param->all_of)) {
+            return and_parallel(param, name);
+        }
+    }
+
     std::vector<RecoResult> sub_results;
     bool all_hit = true;
 
@@ -475,6 +497,22 @@ RecoResult Recognizer::or_(const std::shared_ptr<MAA_RES_NS::Recognition::OrPara
 
     LogDebug << "Or recognition" << VAR(name) << VAR(param->any_of.size());
 
+    // 多个子识别器时使用并行版本（但包含 Custom 识别时回退串行，Agent IPC 不是线程安全的）
+    if (param->any_of.size() > 1) {
+        bool has_custom = std::ranges::any_of(param->any_of, [this](const SubRecognition& sub) {
+            if (auto* node_name = std::get_if<std::string>(&sub)) {
+                auto node_opt = context_.get_pipeline_data(*node_name);
+                return node_opt && node_opt->reco_type == Type::Custom;
+            }
+            else {
+                return std::get<InlineSubRecognition>(sub).type == Type::Custom;
+            }
+        });
+        if (!has_custom && !has_sub_dependencies(param->any_of)) {
+            return or_parallel(param, name);
+        }
+    }
+
     std::vector<RecoResult> sub_results;
 
     bool has_hit = false;
@@ -542,6 +580,307 @@ RecoResult Recognizer::or_(const std::shared_ptr<MAA_RES_NS::Recognition::OrPara
     sub_best_box_->insert_or_assign(name, final_box);
 
     return result;
+}
+
+RecoResult Recognizer::and_parallel(const std::shared_ptr<MAA_RES_NS::Recognition::AndParam>& param, const std::string& name)
+{
+    using namespace MAA_RES_NS::Recognition;
+
+    LogDebug << "And parallel recognition" << VAR(name) << VAR(param->all_of.size());
+
+    auto cancelled = std::make_shared<std::atomic<bool>>(false);
+
+    struct ParallelState
+    {
+        std::mutex mutex;
+        std::vector<std::pair<size_t, RecoResult>> results;
+        std::atomic<size_t> completed_count { 0 };
+        std::atomic<bool> has_failure { false };
+        std::condition_variable cv;
+    };
+
+    auto state = std::make_shared<ParallelState>();
+    const size_t total = param->all_of.size();
+
+    auto& pool = tasker_->reco_thread_pool();
+
+    for (size_t i = 0; i < param->all_of.size(); ++i) {
+        const auto& sub_reco = param->all_of[i];
+
+        boost::asio::post(pool, [this, &sub_reco, i, total, cancelled, state, name]() {
+            if (cancelled->load(std::memory_order_acquire) || state->has_failure.load(std::memory_order_acquire)) {
+                state->completed_count.fetch_add(1, std::memory_order_release);
+                state->cv.notify_one();
+                return;
+            }
+
+            Recognizer sub_recognizer(*this);
+            RecoResult res;
+
+            if (auto* node_name = std::get_if<std::string>(&sub_reco)) {
+                auto node_opt = context_.get_pipeline_data(*node_name);
+                if (!node_opt) {
+                    LogError << "And parallel: failed to get pipeline data for node" << VAR(*node_name);
+                    state->has_failure.store(true, std::memory_order_release);
+                    cancelled->store(true, std::memory_order_release);
+                    state->completed_count.fetch_add(1, std::memory_order_release);
+                    state->cv.notify_one();
+                    return;
+                }
+                res = sub_recognizer.recognize(node_opt->reco_type, node_opt->reco_param, *node_name);
+            }
+            else {
+                const auto& inline_sub = std::get<InlineSubRecognition>(sub_reco);
+                res = sub_recognizer.recognize(inline_sub.type, inline_sub.param, inline_sub.sub_name);
+            }
+
+            if (!res.box.has_value()) {
+                state->has_failure.store(true, std::memory_order_release);
+                cancelled->store(true, std::memory_order_release);
+            }
+
+            {
+                std::lock_guard lock(state->mutex);
+                state->results.emplace_back(i, std::move(res));
+            }
+
+            state->completed_count.fetch_add(1, std::memory_order_release);
+            state->cv.notify_one();
+        });
+    }
+
+    {
+        std::unique_lock lock(state->mutex);
+        state->cv.wait(lock, [&state, total]() {
+            return state->completed_count.load(std::memory_order_acquire) >= total;
+        });
+    }
+
+    // 按原始顺序排序结果
+    std::sort(state->results.begin(), state->results.end(), [](const auto& a, const auto& b) {
+        return a.first < b.first;
+    });
+
+    std::vector<RecoResult> sub_results;
+    for (auto& [idx, res] : state->results) {
+        sub_results.emplace_back(std::move(res));
+    }
+
+    bool all_hit = !state->has_failure.load(std::memory_order_acquire);
+
+    std::vector<ImageEncodedBuffer> all_draws;
+    for (auto& sub : sub_results) {
+        all_draws.insert(all_draws.end(), std::make_move_iterator(sub.draws.begin()), std::make_move_iterator(sub.draws.end()));
+    }
+
+    RecoResult result {
+        .reco_id = reco_id_,
+        .name = name,
+        .algorithm = "And",
+        .detail = sub_results,
+        .draws = std::move(all_draws),
+    };
+
+    if (!all_hit) {
+        LogDebug << "And parallel recognition failed" << VAR(name);
+        sub_filtered_boxes_->insert_or_assign(name, std::vector<cv::Rect> {});
+        sub_best_box_->insert_or_assign(name, cv::Rect {});
+        return result;
+    }
+
+    if (static_cast<int>(sub_results.size()) <= param->box_index) {
+        LogError << "all hit, but box_index is out of range" << VAR(name) << VAR(sub_results.size()) << VAR(param->box_index);
+        result.box = std::nullopt;
+        sub_filtered_boxes_->insert_or_assign(name, std::vector<cv::Rect> {});
+        sub_best_box_->insert_or_assign(name, cv::Rect {});
+        return result;
+    }
+
+    result.box = std::move(sub_results[param->box_index].box);
+
+    cv::Rect final_box = result.box.value_or(cv::Rect {});
+    sub_filtered_boxes_->insert_or_assign(name, std::vector<cv::Rect> { final_box });
+    sub_best_box_->insert_or_assign(name, final_box);
+
+    return result;
+}
+
+RecoResult Recognizer::or_parallel(const std::shared_ptr<MAA_RES_NS::Recognition::OrParam>& param, const std::string& name)
+{
+    using namespace MAA_RES_NS::Recognition;
+
+    LogDebug << "Or parallel recognition" << VAR(name) << VAR(param->any_of.size());
+
+    auto cancelled = std::make_shared<std::atomic<bool>>(false);
+
+    struct ParallelState
+    {
+        std::mutex mutex;
+        std::vector<std::pair<size_t, RecoResult>> results;
+        std::atomic<size_t> completed_count { 0 };
+        size_t first_hit_index = SIZE_MAX;
+        std::condition_variable cv;
+    };
+
+    auto state = std::make_shared<ParallelState>();
+    const size_t total = param->any_of.size();
+
+    auto& pool = tasker_->reco_thread_pool();
+
+    for (size_t i = 0; i < param->any_of.size(); ++i) {
+        const auto& sub_reco = param->any_of[i];
+
+        boost::asio::post(pool, [this, &sub_reco, i, total, cancelled, state, name]() {
+            if (cancelled->load(std::memory_order_acquire)) {
+                state->completed_count.fetch_add(1, std::memory_order_release);
+                state->cv.notify_one();
+                return;
+            }
+
+            Recognizer sub_recognizer(*this);
+            RecoResult res;
+
+            if (auto* node_name = std::get_if<std::string>(&sub_reco)) {
+                auto node_opt = context_.get_pipeline_data(*node_name);
+                if (!node_opt) {
+                    LogError << "Or parallel: failed to get pipeline data for node" << VAR(*node_name);
+                    state->completed_count.fetch_add(1, std::memory_order_release);
+                    state->cv.notify_one();
+                    return;
+                }
+                res = sub_recognizer.recognize(node_opt->reco_type, node_opt->reco_param, *node_name);
+            }
+            else {
+                const auto& inline_sub = std::get<InlineSubRecognition>(sub_reco);
+                res = sub_recognizer.recognize(inline_sub.type, inline_sub.param, inline_sub.sub_name);
+            }
+
+            {
+                std::lock_guard lock(state->mutex);
+                state->results.emplace_back(i, std::move(res));
+                if (state->results.back().second.box.has_value() && i < state->first_hit_index) {
+                    state->first_hit_index = i;
+                    cancelled->store(true, std::memory_order_release);
+                }
+            }
+
+            state->completed_count.fetch_add(1, std::memory_order_release);
+            state->cv.notify_one();
+        });
+    }
+
+    {
+        std::unique_lock lock(state->mutex);
+        state->cv.wait(lock, [&state, total]() {
+            return state->completed_count.load(std::memory_order_acquire) >= total;
+        });
+    }
+
+    // 按原始顺序排序结果
+    std::sort(state->results.begin(), state->results.end(), [](const auto& a, const auto& b) {
+        return a.first < b.first;
+    });
+
+    std::vector<RecoResult> sub_results;
+    for (auto& [idx, res] : state->results) {
+        sub_results.emplace_back(std::move(res));
+    }
+
+    bool has_hit = state->first_hit_index != SIZE_MAX;
+
+    std::vector<ImageEncodedBuffer> all_draws;
+    for (auto& sub : sub_results) {
+        all_draws.insert(all_draws.end(), std::make_move_iterator(sub.draws.begin()), std::make_move_iterator(sub.draws.end()));
+    }
+
+    RecoResult result {
+        .reco_id = reco_id_,
+        .name = name,
+        .algorithm = "Or",
+        .detail = sub_results,
+        .draws = std::move(all_draws),
+    };
+
+    if (!has_hit) {
+        LogDebug << "Or parallel recognition failed" << VAR(name);
+        sub_filtered_boxes_->insert_or_assign(name, std::vector<cv::Rect> {});
+        sub_best_box_->insert_or_assign(name, cv::Rect {});
+        return result;
+    }
+
+    // 找到第一个命中的结果
+    RecoResult* hit_result = nullptr;
+    for (auto& sub : sub_results) {
+        if (sub.box.has_value()) {
+            hit_result = &sub;
+            break;
+        }
+    }
+
+    if (!hit_result) {
+        LogError << "has hit, but no hit result found" << VAR(name);
+        sub_filtered_boxes_->insert_or_assign(name, std::vector<cv::Rect> {});
+        sub_best_box_->insert_or_assign(name, cv::Rect {});
+        return result;
+    }
+
+    result.box = std::move(hit_result->box);
+
+    cv::Rect final_box = result.box.value_or(cv::Rect {});
+    sub_filtered_boxes_->insert_or_assign(name, std::vector<cv::Rect> { final_box });
+    sub_best_box_->insert_or_assign(name, final_box);
+
+    return result;
+}
+
+bool Recognizer::has_sub_dependencies(const std::vector<MAA_RES_NS::Recognition::SubRecognition>& subs)
+{
+    using namespace MAA_RES_NS::Recognition;
+
+    // 边收集 sub_name 边检查依赖（依赖总是"后面引用前面"的模式）
+    std::unordered_set<std::string> sub_names;
+
+    auto check_roi_dependency = [&sub_names](const MAA_VISION_NS::Target& roi) -> bool {
+        if (roi.type == MAA_VISION_NS::TargetType::PreTask) {
+            const auto& ref_name = std::get<std::string>(roi.param);
+            return sub_names.contains(ref_name);
+        }
+        return false;
+    };
+
+    for (const auto& sub : subs) {
+        if (auto* inline_sub = std::get_if<InlineSubRecognition>(&sub)) {
+            // 先检查当前子识别器的 roi 是否引用了已收集的 sub_name
+            bool has_dep = std::visit(
+                [&check_roi_dependency](const auto& param) -> bool {
+                    using T = std::decay_t<decltype(param)>;
+                    if constexpr (std::is_base_of_v<MAA_VISION_NS::RoiTargetParamBase, T>) {
+                        return check_roi_dependency(param.roi_target);
+                    }
+                    else if constexpr (std::is_same_v<T, std::shared_ptr<AndParam>> ||
+                                       std::is_same_v<T, std::shared_ptr<OrParam>>) {
+                        // And/Or 嵌套的情况暂不处理，回退串行
+                        return true;
+                    }
+                    else {
+                        return false;
+                    }
+                },
+                inline_sub->param);
+
+            if (has_dep) {
+                LogDebug << "Found sub-recognition dependency, fallback to serial" << VAR(inline_sub->sub_name);
+                return true;
+            }
+
+            // 然后将当前子识别器的 sub_name 加入集合
+            if (!inline_sub->sub_name.empty()) {
+                sub_names.insert(inline_sub->sub_name);
+            }
+        }
+    }
+
+    return false;
 }
 
 std::vector<cv::Rect> Recognizer::get_rois(const MAA_VISION_NS::Target& roi, bool use_best)

@@ -32,12 +32,16 @@ private:
     RecoResult nn_classify(const MAA_VISION_NS::NeuralNetworkClassifierParam& param, const std::string& name);
     RecoResult nn_detect(const MAA_VISION_NS::NeuralNetworkDetectorParam& param, const std::string& name);
     RecoResult and_(const std::shared_ptr<MAA_RES_NS::Recognition::AndParam>& param, const std::string& name);
+    RecoResult and_parallel(const std::shared_ptr<MAA_RES_NS::Recognition::AndParam>& param, const std::string& name);
     RecoResult or_(const std::shared_ptr<MAA_RES_NS::Recognition::OrParam>& param, const std::string& name);
+    RecoResult or_parallel(const std::shared_ptr<MAA_RES_NS::Recognition::OrParam>& param, const std::string& name);
     RecoResult custom_recognize(const MAA_VISION_NS::CustomRecognitionParam& param, const std::string& name);
 
     std::vector<cv::Rect> get_rois(const MAA_VISION_NS::Target& roi, bool use_best = false);
     std::vector<cv::Rect> get_rois_from_pretask(const std::string& name, bool use_best);
     void save_draws(const std::string& node_name, const RecoResult& result) const;
+
+    bool has_sub_dependencies(const std::vector<MAA_RES_NS::Recognition::SubRecognition>& subs);
 
 private:
     bool debug_mode() const;

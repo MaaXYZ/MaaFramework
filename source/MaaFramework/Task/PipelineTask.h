@@ -23,6 +23,7 @@ public:
 private:
     NodeDetail run_next(const std::vector<MAA_RES_NS::NodeAttr>& next, const PipelineData& pretask);
     RecoResult recognize_list(const cv::Mat& image, const std::vector<MAA_RES_NS::NodeAttr>& list);
+    RecoResult recognize_list_parallel(const cv::Mat& image, const std::vector<MAA_RES_NS::NodeAttr>& list);
     void save_on_error(const std::string& node_name);
 };
 

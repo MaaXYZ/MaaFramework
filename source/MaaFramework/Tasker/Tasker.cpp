@@ -1,5 +1,6 @@
 #include "RuntimeCache.h"
 
+#include <algorithm>
 #include <ranges>
 
 #include "Controller/ControllerAgent.h"
@@ -244,6 +245,15 @@ RuntimeCache& Tasker::runtime_cache()
 const RuntimeCache& Tasker::runtime_cache() const
 {
     return runtime_cache_;
+}
+
+boost::asio::thread_pool& Tasker::reco_thread_pool()
+{
+    if (!reco_thread_pool_) {
+        reco_thread_pool_ = std::make_unique<boost::asio::thread_pool>(
+            std::max(2u, std::thread::hardware_concurrency()));
+    }
+    return *reco_thread_pool_;
 }
 
 MaaSinkId Tasker::add_sink(MaaEventCallback callback, void* trans_arg)

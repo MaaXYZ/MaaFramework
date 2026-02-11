@@ -1,6 +1,11 @@
 #include "PipelineTask.h"
 
+#include <atomic>
+#include <condition_variable>
+#include <mutex>
 #include <stack>
+
+#include <boost/asio/post.hpp>
 
 #include "Controller/ControllerAgent.h"
 #include "Global/OptionMgr.h"
@@ -251,6 +256,20 @@ RecoResult PipelineTask::recognize_list(const cv::Mat& image, const std::vector<
 
     notify(MaaMsg_Node_NextList_Starting, reco_list_cb_detail);
 
+    // 如果只有一个元素，保持串行执行避免线程池开销
+    // 如果包含 Custom 识别，回退串行执行（Agent IPC 不是线程安全的）
+    if (list.size() > 1) {
+        bool has_custom = std::ranges::any_of(list, [this](const MAA_RES_NS::NodeAttr& node) {
+            auto node_opt = context_->get_pipeline_data(node);
+            return node_opt && node_opt->reco_type == MAA_RES_NS::Recognition::Type::Custom;
+        });
+        if (!has_custom) {
+            RecoResult result = recognize_list_parallel(image, list);
+            notify(result.box ? MaaMsg_Node_NextList_Succeeded : MaaMsg_Node_NextList_Failed, reco_list_cb_detail);
+            return result;
+        }
+    }
+
     for (const auto& node : list) {
         if (context_->need_to_stop()) {
             LogWarn << "need_to_stop";
@@ -280,6 +299,81 @@ RecoResult PipelineTask::recognize_list(const cv::Mat& image, const std::vector<
     }
 
     notify(MaaMsg_Node_NextList_Failed, reco_list_cb_detail);
+
+    return {};
+}
+
+RecoResult PipelineTask::recognize_list_parallel(const cv::Mat& image, const std::vector<MAA_RES_NS::NodeAttr>& list)
+{
+    LogFunc << VAR(cur_node_) << VAR(list.size());
+
+    if (!context_) {
+        LogError << "context is null";
+        return {};
+    }
+
+    auto cancelled = std::make_shared<std::atomic<bool>>(false);
+
+    struct ParallelResult
+    {
+        std::mutex mutex;
+        std::optional<RecoResult> first_hit;
+        size_t first_hit_index = SIZE_MAX;
+        std::atomic<size_t> completed_count { 0 };
+        std::condition_variable cv;
+    };
+
+    auto result = std::make_shared<ParallelResult>();
+    const size_t total = list.size();
+
+    auto& pool = tasker()->reco_thread_pool();
+
+    for (size_t i = 0; i < list.size(); ++i) {
+        const auto& node = list[i];
+
+        boost::asio::post(pool, [this, &image, node, i, total, cancelled, result]() {
+            if (cancelled->load(std::memory_order_acquire) || context_->need_to_stop()) {
+                result->completed_count.fetch_add(1, std::memory_order_release);
+                result->cv.notify_one();
+                return;
+            }
+
+            auto node_opt = context_->get_pipeline_data(node);
+            if (!node_opt) {
+                LogError << "get_pipeline_data failed, node not exist" << VAR(node);
+                result->completed_count.fetch_add(1, std::memory_order_release);
+                result->cv.notify_one();
+                return;
+            }
+
+            const auto& pipeline_data = *node_opt;
+            RecoResult reco_result = run_recognition(image, pipeline_data, false);
+
+            if (reco_result.box) {
+                std::lock_guard lock(result->mutex);
+                if (i < result->first_hit_index) {
+                    result->first_hit = std::move(reco_result);
+                    result->first_hit_index = i;
+                }
+                cancelled->store(true, std::memory_order_release);
+            }
+
+            result->completed_count.fetch_add(1, std::memory_order_release);
+            result->cv.notify_one();
+        });
+    }
+
+    {
+        std::unique_lock lock(result->mutex);
+        result->cv.wait(lock, [&result, total]() {
+            return result->completed_count.load(std::memory_order_acquire) >= total;
+        });
+    }
+
+    if (result->first_hit) {
+        context_->increment_hit_count(result->first_hit->name);
+        return std::move(*result->first_hit);
+    }
 
     return {};
 }

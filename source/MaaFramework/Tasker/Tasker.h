@@ -5,6 +5,8 @@
 #include <shared_mutex>
 #include <vector>
 
+#include <boost/asio/thread_pool.hpp>
+
 #include "Base/AsyncRunner.hpp"
 #include "Common/MaaTypes.h"
 #include "Controller/ControllerAgent.h"
@@ -69,6 +71,8 @@ public:
 
     void context_notify(MaaContext* context, std::string_view msg, const json::value& details);
 
+    boost::asio::thread_pool& reco_thread_pool();
+
 private:
     using TaskPtr = std::shared_ptr<MAA_TASK_NS::TaskBase>;
     using RunnerId = AsyncRunner<TaskPtr>::Id;
@@ -93,6 +97,8 @@ private:
     mutable std::shared_mutex task_id_mapping_mutex_;
 
     RuntimeCache runtime_cache_;
+
+    std::unique_ptr<boost::asio::thread_pool> reco_thread_pool_;
 };
 
 MAA_NS_END

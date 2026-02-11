@@ -49,7 +49,7 @@ MAA_CTRL_NS::ControllerAgent* TaskBase::controller()
     return tasker_ ? tasker_->controller() : nullptr;
 }
 
-RecoResult TaskBase::run_recognition(const cv::Mat& image, const PipelineData& data)
+RecoResult TaskBase::run_recognition(const cv::Mat& image, const PipelineData& data, bool increment_hit)
 {
     LogFunc << VAR(cur_node_) << VAR(data.name);
 
@@ -92,7 +92,9 @@ RecoResult TaskBase::run_recognition(const cv::Mat& image, const PipelineData& d
 
     if (result.box) {
         LogInfo << "reco hit" << VAR(result.name) << VAR(result.box);
-        context_->increment_hit_count(data.name);
+        if (increment_hit) {
+            context_->increment_hit_count(data.name);
+        }
     }
 
     return result;
