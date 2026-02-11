@@ -29,6 +29,7 @@ Recognizer::Recognizer(const Recognizer& recognizer)
     : tasker_(recognizer.tasker_)
     , context_(recognizer.context_)
     , image_(recognizer.image_)
+    // do not copy reco_id_
     , sub_filtered_boxes_(recognizer.sub_filtered_boxes_)
     , sub_best_box_(recognizer.sub_best_box_)
     , ocr_batch_cache_(recognizer.ocr_batch_cache_)
