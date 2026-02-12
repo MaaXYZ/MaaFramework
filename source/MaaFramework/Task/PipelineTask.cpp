@@ -252,8 +252,8 @@ RecoResult PipelineTask::recognize_list(const cv::Mat& image, const std::vector<
 
     notify(MaaMsg_Node_NextList_Starting, reco_list_cb_detail);
 
-    auto batch_info = collect_batchable_ocr_nodes(list);
-    auto ocr_cache = batch_info ? std::make_shared<MAA_VISION_NS::OCRBatchCache>() : nullptr;
+    auto batch_plan = prepare_batch_ocr(list);
+    auto ocr_cache = batch_plan ? std::make_shared<MAA_VISION_NS::OCRBatchCache>() : nullptr;
     bool batch_triggered = false;
 
     for (const auto& node : list) {
@@ -269,25 +269,11 @@ RecoResult PipelineTask::recognize_list(const cv::Mat& image, const std::vector<
         }
         const auto& pipeline_data = *node_opt;
 
-        if (batch_info && !batch_triggered && batch_info->node_names.contains(pipeline_data.name)) {
+        if (batch_plan && !batch_triggered && batch_plan->node_names.contains(pipeline_data.name)) {
             batch_triggered = true;
 
             Recognizer recognizer(tasker_, *context_, image, ocr_cache);
-
-            std::vector<BatchOCREntry> entries;
-            for (const auto& batch_name : batch_info->node_names) {
-                auto batch_node_opt = context_->get_pipeline_data(batch_name);
-                if (!batch_node_opt) {
-                    continue;
-                }
-
-                entries.push_back(BatchOCREntry {
-                    .name = batch_name,
-                    .param = std::get<MAA_VISION_NS::OCRerParam>(batch_node_opt->reco_param),
-                });
-            }
-
-            recognizer.prefetch_batch_ocr(entries, batch_info->only_rec);
+            recognizer.prefetch_batch_ocr(batch_plan->entries, batch_plan->only_rec);
         }
 
         RecoResult result = run_recognition(image, pipeline_data, ocr_cache);
@@ -310,7 +296,7 @@ RecoResult PipelineTask::recognize_list(const cv::Mat& image, const std::vector<
     return {};
 }
 
-std::optional<BatchableOCRInfo> PipelineTask::collect_batchable_ocr_nodes(const std::vector<MAA_RES_NS::NodeAttr>& list)
+std::optional<BatchOCRPlan> PipelineTask::prepare_batch_ocr(const std::vector<MAA_RES_NS::NodeAttr>& list)
 {
     using namespace MAA_RES_NS::Recognition;
 
@@ -326,8 +312,8 @@ std::optional<BatchableOCRInfo> PipelineTask::collect_batchable_ocr_nodes(const 
         }
     }
 
-    BatchableOCRInfo info;
-    bool first = true;
+    OCRCollectContext ctx;
+    ctx.all_node_names = &all_node_names;
 
     for (const auto& node : list) {
         auto data_opt = context_->get_pipeline_data(node);
@@ -336,15 +322,7 @@ std::optional<BatchableOCRInfo> PipelineTask::collect_batchable_ocr_nodes(const 
         }
         const auto& data = *data_opt;
 
-        if (!data.enabled) {
-            continue;
-        }
-
-        if (data.reco_type != Type::OCR) {
-            continue;
-        }
-
-        if (data.inverse) {
+        if (!data.enabled || data.inverse) {
             continue;
         }
 
@@ -353,35 +331,94 @@ std::optional<BatchableOCRInfo> PipelineTask::collect_batchable_ocr_nodes(const 
             continue;
         }
 
-        const auto& param = std::get<MAA_VISION_NS::OCRerParam>(data.reco_param);
-
-        if (param.roi_target.type == MAA_VISION_NS::TargetType::PreTask) {
-            const auto& ref_name = std::get<std::string>(param.roi_target.param);
-            if (all_node_names.contains(ref_name)) {
-                continue;
-            }
-        }
-
-        if (first) {
-            info.model = param.model;
-            info.only_rec = param.only_rec;
-            first = false;
-        }
-        else {
-            if (param.model != info.model || param.only_rec != info.only_rec) {
-                continue;
-            }
-        }
-
-        info.node_names.insert(data.name);
+        collect_ocr_from_reco(ctx, data.name, data.reco_type, data.reco_param);
     }
 
-    if (info.node_names.size() < 2) {
+    if (ctx.plan.node_names.size() < 2) {
         return std::nullopt;
     }
 
-    LogInfo << "collected batchable OCR nodes" << VAR(info.node_names.size()) << VAR(info.model) << VAR(info.only_rec);
-    return info;
+    for (const auto& name : ctx.plan.node_names) {
+        auto node_opt = context_->get_pipeline_data(name);
+        if (!node_opt) {
+            continue;
+        }
+        ctx.plan.entries.push_back(
+            BatchOCREntry {
+                .name = name,
+                .param = std::get<MAA_VISION_NS::OCRerParam>(node_opt->reco_param),
+            });
+    }
+
+    LogInfo << "prepared batch OCR plan" << VAR(ctx.plan.node_names) << VAR(ctx.plan.model) << VAR(ctx.plan.only_rec);
+    return ctx.plan;
+}
+
+void PipelineTask::try_add_ocr_node(OCRCollectContext& ctx, const std::string& name, const MAA_VISION_NS::OCRerParam& param)
+{
+    if (param.roi_target.type == MAA_VISION_NS::TargetType::PreTask) {
+        const auto& ref_name = std::get<std::string>(param.roi_target.param);
+        if (ctx.all_node_names->contains(ref_name)) {
+            return;
+        }
+    }
+
+    if (ctx.first) {
+        ctx.plan.model = param.model;
+        ctx.plan.only_rec = param.only_rec;
+        ctx.first = false;
+    }
+    else if (param.model != ctx.plan.model || param.only_rec != ctx.plan.only_rec) {
+        return;
+    }
+
+    ctx.plan.node_names.insert(name);
+}
+
+void PipelineTask::collect_ocr_from_reco(
+    OCRCollectContext& ctx,
+    const std::string& name,
+    MAA_RES_NS::Recognition::Type type,
+    const MAA_RES_NS::Recognition::Param& param)
+{
+    using namespace MAA_RES_NS::Recognition;
+
+    if (type == Type::OCR) {
+        try_add_ocr_node(ctx, name, std::get<MAA_VISION_NS::OCRerParam>(param));
+    }
+    else if (type == Type::And) {
+        const auto& and_param = std::get<std::shared_ptr<AndParam>>(param);
+        if (and_param) {
+            collect_ocr_from_sub_recognitions(ctx, and_param->all_of);
+        }
+    }
+    else if (type == Type::Or) {
+        const auto& or_param = std::get<std::shared_ptr<OrParam>>(param);
+        if (or_param) {
+            collect_ocr_from_sub_recognitions(ctx, or_param->any_of);
+        }
+    }
+}
+
+void PipelineTask::collect_ocr_from_sub_recognitions(
+    OCRCollectContext& ctx,
+    const std::vector<MAA_RES_NS::Recognition::SubRecognition>& subs)
+{
+    using namespace MAA_RES_NS::Recognition;
+
+    for (const auto& sub : subs) {
+        if (auto* node_name = std::get_if<std::string>(&sub)) {
+            auto sub_opt = context_->get_pipeline_data(*node_name);
+            if (!sub_opt || !sub_opt->enabled) {
+                continue;
+            }
+            collect_ocr_from_reco(ctx, sub_opt->name, sub_opt->reco_type, sub_opt->reco_param);
+        }
+        else {
+            const auto& inline_sub = std::get<InlineSubRecognition>(sub);
+            collect_ocr_from_reco(ctx, inline_sub.sub_name, inline_sub.type, inline_sub.param);
+        }
+    }
 }
 
 void PipelineTask::save_on_error(const std::string& node_name)
