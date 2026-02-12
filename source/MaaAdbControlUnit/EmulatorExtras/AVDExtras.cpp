@@ -9,6 +9,13 @@
 #include <cstdint>
 #include <sstream>
 
+#ifdef _WIN32
+#include "MaaUtils/SafeWindows.hpp"
+#else
+#include <sys/mman.h>
+#include <sys/stat.h>
+#endif
+
 MAA_CTRL_UNIT_NS_BEGIN
 
 AVDExtras::~AVDExtras()
