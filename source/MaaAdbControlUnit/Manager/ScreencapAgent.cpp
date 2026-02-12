@@ -43,7 +43,8 @@ ScreencapAgent::ScreencapAgent(MaaAdbScreencapMethod methods, const std::filesys
 #ifdef _WIN32
         method_set.emplace(ScreencapAgent::Method::MuMuPlayerExtras);
         method_set.emplace(ScreencapAgent::Method::LDPlayerExtras);
-#elif !defined(__ANDROID__)
+#endif
+#ifndef __ANDROID__
         method_set.emplace(ScreencapAgent::Method::AVDExtras);
 #else
         LogWarn << "EmulatorExtras is not supported on this platform";
