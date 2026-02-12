@@ -154,7 +154,7 @@ bool request_avd_config(std::shared_ptr<MAA_CTRL_UNIT_NS::AdbControlUnitAPI> con
     if (!control_unit->shell("getprop ro.product.model", output)) {
         return false;
     }
-    if (!output.starts_with("sdk_")) {
+    if (!output.starts_with("Android SDK") && !output.starts_with("sdk_")) {
         return false;
     }
 
