@@ -541,6 +541,58 @@ maajs::ValueType load_gamepad_controller(maajs::EnvType env)
     return ctor;
 }
 
+WlRootsControllerImpl* WlRootsControllerImpl::ctor(const maajs::CallbackInfo& info)
+{
+    auto [wlr_socket_path] = maajs::UnWrapArgs<WlRootsControllerCtorParam, void>(info);
+    auto ctrl = MaaWlRootsControllerCreate(wlr_socket_path.c_str());
+    if (!ctrl) {
+        return nullptr;
+    }
+    return new WlRootsControllerImpl(ctrl, true);
+}
+
+maajs::PromiseType WlRootsControllerImpl::find(maajs::EnvType env)
+{
+    using Result = std::optional<std::vector<WlRootsCompositor>>;
+    auto worker = new maajs::AsyncWork<Result>(env, []() -> Result {
+        auto lst = MaaToolkitDesktopWindowListCreate();
+        if (!MaaToolkitDesktopWindowFindAll(lst)) {
+            MaaToolkitDesktopWindowListDestroy(lst);
+            return std::nullopt;
+        }
+
+        std::vector<WlRootsCompositor> result;
+        auto size = MaaToolkitDesktopWindowListSize(lst);
+        result.reserve(size);
+        for (size_t i = 0; i < size; i++) {
+            auto dev = MaaToolkitDesktopWindowListAt(lst, i);
+            result.push_back(
+                std::make_tuple(
+                    reinterpret_cast<uint64_t>(MaaToolkitDesktopWindowGetHandle(dev)),
+                    std::string(MaaToolkitDesktopWindowGetClassName(dev)),
+                    std::string(MaaToolkitDesktopWindowGetWindowName(dev))));
+        }
+        MaaToolkitDesktopWindowListDestroy(lst);
+
+        return result;
+    });
+    worker->Queue();
+    return worker->Promise();
+}
+
+void WlRootsControllerImpl::init_proto(maajs::ObjectType, maajs::FunctionType ctor)
+{
+    MAA_BIND_FUNC(ctor, "find", find);
+}
+
+maajs::ValueType load_wlroots_controller(maajs::EnvType env)
+{
+    maajs::FunctionType ctor;
+    maajs::NativeClass<WlRootsControllerImpl>::init<ControllerImpl>(env, ctor, &ExtContext::get(env)->controllerCtor);
+    ExtContext::get(env)->dbgControllerCtor = maajs::PersistentFunction(ctor);
+    return ctor;
+}
+
 CustomControllerContext::~CustomControllerContext()
 {
     for (const auto& [_, ctx] : callbacks) {

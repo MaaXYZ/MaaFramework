@@ -152,6 +152,21 @@ struct GamepadControllerImpl : public ControllerImpl
     static void init_proto(maajs::ObjectType proto, maajs::FunctionType ctor);
 };
 
+using WlRootsCompositor = std::tuple<uint64_t, std::string, std::string>;
+using WlRootsControllerCtorParam = std::tuple<std::string>;
+
+struct WlRootsControllerImpl : public ControllerImpl
+{
+    using ControllerImpl::ControllerImpl;
+
+    static maajs::PromiseType find(maajs::EnvType env);
+
+    constexpr static char name[] = "WlRootsController";
+
+    static WlRootsControllerImpl* ctor(const maajs::CallbackInfo&);
+    static void init_proto(maajs::ObjectType proto, maajs::FunctionType ctor);
+};
+
 struct CustomControllerContext
 {
     std::map<std::string, maajs::CallbackContext*> callbacks;
