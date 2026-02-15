@@ -47,13 +47,6 @@ struct InterfaceData
             MEO_JSONIZATION(MEO_OPT class_regex, MEO_OPT window_regex, MEO_OPT gamepad_type, MEO_OPT screencap);
         };
 
-        struct WlRootsConfig
-        {
-            std::string wlr_socket_path;
-
-            MEO_JSONIZATION(MEO_OPT wlr_socket_path);
-        };
-
         enum class Type
         {
             Invalid,
@@ -83,7 +76,6 @@ struct InterfaceData
         Win32Config win32;
         PlayCoverConfig playcover;
         GamepadConfig gamepad;
-        WlRootsConfig wlroots;
 
         MEO_JSONIZATION(
             name,
@@ -97,8 +89,7 @@ struct InterfaceData
             MEO_OPT attach_resource_path,
             MEO_OPT win32,
             MEO_OPT playcover,
-            MEO_OPT gamepad,
-            MEO_OPT wlroots);
+            MEO_OPT gamepad);
     };
 
     struct Resource
@@ -308,6 +299,13 @@ struct Configuration
         MEO_JSONIZATION(MEO_OPT _placeholder, MEO_OPT gamepad_type);
     };
 
+    struct WlRootsConfig
+    {
+        std::string wlr_socket_path;
+
+        MEO_JSONIZATION(MEO_OPT wlr_socket_path);
+    };
+
     struct Option
     {
         std::string name;
@@ -330,10 +328,11 @@ struct Configuration
     Win32Config win32;
     PlayCoverConfig playcover;
     GamepadConfig gamepad;
+    WlRootsConfig wlroots;
     std::string resource;
     std::vector<Task> task;
 
-    MEO_JSONIZATION(controller, MEO_OPT adb, MEO_OPT win32, MEO_OPT playcover, MEO_OPT gamepad, resource, task);
+    MEO_JSONIZATION(controller, MEO_OPT adb, MEO_OPT win32, MEO_OPT playcover, MEO_OPT gamepad, MEO_OPT wlroots, resource, task);
 };
 
 struct RuntimeParam
@@ -378,6 +377,11 @@ struct RuntimeParam
         MaaWin32ScreencapMethod screencap = MaaWin32ScreencapMethod_None;
     };
 
+    struct WlRootsParam
+    {
+        std::string wlr_socket_path;
+    };
+
     struct Task
     {
         std::string name;
@@ -393,7 +397,7 @@ struct RuntimeParam
         std::filesystem::path cwd;
     };
 
-    std::variant<std::monostate, AdbParam, Win32Param, PlayCoverParam, GamepadParam> controller_param;
+    std::variant<std::monostate, AdbParam, Win32Param, PlayCoverParam, GamepadParam, WlRootsParam> controller_param;
     std::vector<std::filesystem::path> resource_path;
 
     std::vector<Task> task;
