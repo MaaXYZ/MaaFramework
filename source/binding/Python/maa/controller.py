@@ -18,6 +18,7 @@ __all__ = [
     "PlayCoverController",
     "Win32Controller",
     "GamepadController",
+    "WlRootsController",
     "CustomController",
 ]
 
@@ -819,6 +820,42 @@ class PlayCoverController(Controller):
         Library.framework().MaaPlayCoverControllerCreate.restype = MaaControllerHandle
         Library.framework().MaaPlayCoverControllerCreate.argtypes = [
             ctypes.c_char_p,
+            ctypes.c_char_p,
+        ]
+
+
+class WlRootsController(Controller):
+    """WlRoots 控制器 / WlRoots controller
+
+    用于在 Linux 上控制在 wlroots 合成器中运行的应用
+    For controlling apps running in wlroots compositor on Linux
+    """
+
+    def __init__(
+            self,
+            wlr_socket_path: str,
+    ):
+        """创建 WlRoots 控制器 / Create WlRoots controller
+
+        Args:
+            wlr_socket_path: Wayland Socket 路径 / Wayland Socket Path
+
+        Raises:
+            RuntimeError: 如果创建失败
+        """
+        super().__init__()
+        self._set_wlroots_api_properties()
+
+        self._handle = Library.framework().MaaWlRootsControllerCreate(
+            wlr_socket_path.encode(),
+        )
+
+        if not self._handle:
+            raise RuntimeError("Failed to create WlRoots controller.")
+
+    def _set_wlroots_api_properties(self):
+        Library.framework().MaaPlayCoverControllerCreate.restype = MaaControllerHandle
+        Library.framework().MaaPlayCoverControllerCreate.argtypes = [
             ctypes.c_char_p,
         ]
 
