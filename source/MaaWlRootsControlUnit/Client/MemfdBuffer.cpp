@@ -8,26 +8,19 @@
 
 MAA_CTRL_UNIT_NS_BEGIN
 
-MemfdBuffer::MemfdBuffer(uint32_t width, uint32_t height, uint32_t stride)
+MemfdBuffer::MemfdBuffer(int width, int height, int stride)
     : width_(width)
     , height_(height)
     , stride_(stride)
 {
     LogDebug << "Creating new shm buffer" << VAR(width) << VAR(height) << VAR(stride);
-    width_ = width;
-    height_ = height;
-    stride_ = stride;
 
     fd_ = memfd_create(BUFFER_NAME, 0);
     if (fd_ < 0) {
         LogError << "Failed to create memfd";
         return;
     }
-    int ret;
-    do {
-        ret = ftruncate(fd_, size());
-    } while (ret < 0 && errno == EINTR);
-    if (ret < 0) {
+    if (int ret = ftruncate(fd_, size()); ret < 0) {
         LogError << "Failed to allocate buffer";
         close(fd_);
         fd_ = 0;

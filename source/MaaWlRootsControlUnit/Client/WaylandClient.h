@@ -48,8 +48,8 @@ private:
     bool bind_protocol();
     bool prepare_device();
     bool process_requests() const;
-    bool check_buffer(uint32_t format, uint32_t width, uint32_t height, uint32_t stride) const;
-    bool create_buffer(uint32_t format, uint32_t width, uint32_t height, uint32_t stride);
+    bool check_buffer(int format, int width, int height, int stride) const;
+    bool create_buffer(int format, int width, int height, int stride);
     bool close_buffer();
 
     std::unique_ptr<wl_display> display_;
@@ -65,7 +65,7 @@ private:
 
     std::pair<int, int> screen_size_ { 0, 0 };
 
-    wl_registry_listener registry_listener_;
+    wl_registry_listener registry_listener_ = { };
 
     std::filesystem::path socket_path_;
 
@@ -75,7 +75,7 @@ private:
     std::unique_ptr<MemfdBuffer> buffer_;
     std::unique_ptr<wl_shm_pool> shm_pool_;
     std::unique_ptr<wl_buffer> buffer_obj_;
-    uint32_t buffer_format_;
+    int buffer_format_ = 0;
 };
 
 MAA_CTRL_UNIT_NS_END

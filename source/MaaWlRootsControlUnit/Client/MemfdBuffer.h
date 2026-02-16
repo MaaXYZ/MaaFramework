@@ -7,30 +7,30 @@ MAA_CTRL_UNIT_NS_BEGIN
 class MemfdBuffer
 {
 public:
-    MemfdBuffer(uint32_t width, uint32_t height, uint32_t stride);
+    MemfdBuffer(int width, int height, int stride);
     ~MemfdBuffer();
 
     void* ptr() const { return ptr_; }
 
-    uint32_t size() const { return height_ * stride_; }
+    int size() const { return height_ * stride_; }
 
-    uint32_t width() const { return width_; }
+    int width() const { return width_; }
 
-    uint32_t height() const { return height_; }
+    int height() const { return height_; }
 
-    uint32_t stride() const { return stride_; }
+    int stride() const { return stride_; }
 
     int fd() const { return fd_; }
 
     bool available() const { return available_; }
 
 private:
-    bool available_;
-    int fd_;
-    uint32_t width_;
-    uint32_t height_;
-    uint32_t stride_;
-    void* ptr_;
+    bool available_ = false;
+    int fd_ = -1;
+    int width_ = 0;
+    int height_ = 0;
+    int stride_ = 0;
+    void* ptr_ = nullptr;
 };
 
 MAA_CTRL_UNIT_NS_END

@@ -12,8 +12,6 @@ MAA_CTRL_UNIT_NS_BEGIN
 #define WHEEL_DELTA 15
 
 WaylandClient::WaylandClient()
-    : registry_listener_({ })
-    , buffer_format_(0)
 {
 }
 
@@ -25,6 +23,7 @@ WaylandClient::~WaylandClient()
 bool WaylandClient::connect(const std::filesystem::path& socket_path)
 {
     if (socket_path_ != socket_path) {
+        LogInfo << "Closing old socket" << socket_path_;
         close();
         socket_path_ = socket_path;
     }
@@ -185,7 +184,7 @@ bool WaylandClient::screencap(void** buffer, uint32_t& width, uint32_t& height, 
 
     zwlr_screencopy_frame_v1_listener frame_listener = { };
     frame_listener.buffer = [](void* data, zwlr_screencopy_frame_v1* frame, uint32_t format, uint32_t w, uint32_t h, uint32_t stride) {
-        LogTrace << "Recevied new buffer: " << VAR(format) << VAR(w) << VAR(h) << VAR(stride);
+        LogTrace << "Received new buffer: " << VAR(format) << VAR(w) << VAR(h) << VAR(stride);
         const auto self = static_cast<WaylandClient*>(data);
         if (!self->check_buffer(format, w, h, stride)) {
             if (!self->create_buffer(format, w, h, stride)) {
@@ -264,7 +263,7 @@ bool WaylandClient::connected() const
 
 bool WaylandClient::pointer(EventPhase phase, int x, int y)
 {
-    const int event_time = get_ms();
+    const uint32_t event_time = get_ms();
     switch (phase) {
     case EventPhase::Began:
         zwlr_virtual_pointer_v1_button(pointer_.get(), event_time, BTN_LEFT, WL_POINTER_BUTTON_STATE_PRESSED);
@@ -329,7 +328,7 @@ std::pair<int, int> WaylandClient::screen_size() const
     return screen_size_;
 }
 
-bool WaylandClient::check_buffer(uint32_t format, uint32_t width, uint32_t height, uint32_t stride) const
+bool WaylandClient::check_buffer(int format, int width, int height, int stride) const
 {
     if (!buffer_obj_ && !buffer_) {
         return false;
@@ -340,7 +339,7 @@ bool WaylandClient::check_buffer(uint32_t format, uint32_t width, uint32_t heigh
     return true;
 }
 
-bool WaylandClient::create_buffer(uint32_t format, uint32_t width, uint32_t height, uint32_t stride)
+bool WaylandClient::create_buffer(int format, int width, int height, int stride)
 {
     if (!close_buffer()) {
         LogError << "Failed to close old buffer";
