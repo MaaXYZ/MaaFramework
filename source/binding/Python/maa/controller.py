@@ -854,8 +854,8 @@ class WlRootsController(Controller):
             raise RuntimeError("Failed to create WlRoots controller.")
 
     def _set_wlroots_api_properties(self):
-        Library.framework().MaaPlayCoverControllerCreate.restype = MaaControllerHandle
-        Library.framework().MaaPlayCoverControllerCreate.argtypes = [
+        Library.framework().MaaWlRootsControllerCreate.restype = MaaControllerHandle
+        Library.framework().MaaWlRootsControllerCreate.argtypes = [
             ctypes.c_char_p,
         ]
 

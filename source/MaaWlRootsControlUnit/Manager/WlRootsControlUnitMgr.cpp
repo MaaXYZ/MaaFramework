@@ -219,7 +219,7 @@ bool WlRootsControlUnitMgr::key_down(int key)
         return false;
     }
 
-    return client_->input(WaylandClient::EventPhase::Ended, key);
+    return client_->input(WaylandClient::EventPhase::Began, key);
 }
 
 bool WlRootsControlUnitMgr::key_up(int key)
@@ -229,7 +229,7 @@ bool WlRootsControlUnitMgr::key_up(int key)
         return false;
     }
 
-    return client_->input(WaylandClient::EventPhase::Began, key);
+    return client_->input(WaylandClient::EventPhase::Ended, key);
 }
 
 bool WlRootsControlUnitMgr::scroll(int dx, int dy)

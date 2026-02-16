@@ -166,7 +166,7 @@ MaaController* MaaWlRootsControllerCreate(const char* wlr_socket_path)
 {
     LogFunc << VAR(wlr_socket_path);
 
-#ifndef __linux
+#ifndef __linux__
 
     LogError << "This API" << __FUNCTION__ << "is only available on Linux";
     return nullptr;

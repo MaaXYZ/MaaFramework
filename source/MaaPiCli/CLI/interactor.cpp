@@ -364,7 +364,7 @@ void Interactor::print_config() const
         if (!kWlRootsSupported) {
             std::cout << "\t\t(WLRoots is only available on Linux)\n";
         }
-    }
+    } break;
     default:
         LogError << "Unknown controller type" << VAR(config_.configuration().controller.type);
         break;
