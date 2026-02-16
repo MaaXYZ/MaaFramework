@@ -199,10 +199,13 @@ class PipelineTestRecognition(CustomRecognition):
         # 8. 测试 Node 属性
         self._test_node_attributes(context)
 
-        # 9. 测试 v2 格式
+        # 9. 测试 anchor 对象格式
+        self._test_anchor_object_format(context)
+
+        # 10. 测试 v2 格式
         self._test_v2_format(context)
 
-        # 10. 比较 Context 和 Resource 级别
+        # 11. 比较 Context 和 Resource 级别
         self._test_context_vs_resource(context)
 
     def _test_context_get_node_data(self, context: Context):
@@ -273,7 +276,7 @@ class PipelineTestRecognition(CustomRecognition):
         assert_eq(node_obj.max_hit, 3, "max_hit")
         assert_eq(node_obj.enabled, True, "enabled")
         assert_eq(node_obj.inverse, False, "inverse")
-        assert_eq(node_obj.anchor, ["my_anchor"], "anchor")
+        assert_eq(node_obj.anchor, {"my_anchor": "$CURRENT"}, "anchor")  # Array format converted to dict with $CURRENT marker
         assert_eq(node_obj.attach.get("custom_data"), 123, "attach")
 
         # 验证 next 列表解析
@@ -874,6 +877,56 @@ class PipelineTestRecognition(CustomRecognition):
         assert_eq(obj.on_error[0].jump_back, True, "on_error[0].jump_back")
 
         print("    PASS: node attributes")
+
+    def _test_anchor_object_format(self, context: Context):
+        print("  Testing anchor object format...")
+
+        new_ctx = context.clone()
+
+        # 测试 anchor 的三种格式
+        new_ctx.override_pipeline(
+            {
+                # 格式 1: 字符串
+                "AnchorString": {
+                    "anchor": "StringAnchor"
+                },
+                # 格式 2: 字符串数组
+                "AnchorArray": {
+                    "anchor": ["ArrayAnchor1", "ArrayAnchor2"]
+                },
+                # 格式 3: 对象 - 映射到特定节点或清除
+                "AnchorObject": {
+                    "anchor": {
+                        "ObjAnchor1": "TargetNode1",
+                        "ObjAnchor2": "",  # 空字符串表示清除锚点
+                        "ObjAnchor3": "TargetNode2"
+                    }
+                },
+                # 目标节点
+                "TargetNode1": {},
+                "TargetNode2": {},
+            }
+        )
+
+        # 验证格式 1: 字符串 (转换为 $CURRENT 表示当前节点)
+        obj1 = new_ctx.get_node_object("AnchorString")
+        assert_not_none(obj1, "AnchorString should exist")
+        assert_eq(obj1.anchor, {"StringAnchor": "$CURRENT"}, "anchor string format")
+
+        # 验证格式 2: 字符串数组 (转换为 $CURRENT 表示当前节点)
+        obj2 = new_ctx.get_node_object("AnchorArray")
+        assert_not_none(obj2, "AnchorArray should exist")
+        assert_eq(obj2.anchor, {"ArrayAnchor1": "$CURRENT", "ArrayAnchor2": "$CURRENT"}, "anchor array format")
+
+        # 验证格式 3: 对象
+        obj3 = new_ctx.get_node_object("AnchorObject")
+        assert_not_none(obj3, "AnchorObject should exist")
+        assert_eq(obj3.anchor.get("ObjAnchor1"), "TargetNode1", "anchor object mapping 1")
+        assert_eq(obj3.anchor.get("ObjAnchor2"), "", "anchor object mapping 2 (empty = clear)")
+        assert_eq(obj3.anchor.get("ObjAnchor3"), "TargetNode2", "anchor object mapping 3")
+
+        print("    PASS: anchor object format")
+
 
     def _test_v2_format(self, context: Context):
         print("  Testing v2 format parsing...")
