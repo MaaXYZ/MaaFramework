@@ -589,7 +589,7 @@ maajs::ValueType load_wlroots_controller(maajs::EnvType env)
 {
     maajs::FunctionType ctor;
     maajs::NativeClass<WlRootsControllerImpl>::init<ControllerImpl>(env, ctor, &ExtContext::get(env)->controllerCtor);
-    ExtContext::get(env)->dbgControllerCtor = maajs::PersistentFunction(ctor);
+    ExtContext::get(env)->wlrootsControllerCtor = maajs::PersistentFunction(ctor);
     return ctor;
 }
 
