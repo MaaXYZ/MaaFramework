@@ -264,7 +264,8 @@ bool WaylandClient::connected() const
 bool WaylandClient::pointer(EventPhase phase, int x, int y, int contact)
 {
     const uint32_t event_time = get_ms();
- int btn = BTN_LEFT;
+
+    int btn = BTN_LEFT;
     switch (contact) {
     case 1:
         btn = BTN_RIGHT;

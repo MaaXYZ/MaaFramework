@@ -137,7 +137,7 @@ bool WlRootsControlUnitMgr::touch_down(int contact, int x, int y, int pressure)
         return false;
     }
 
-    if (!client_->pointer(WaylandClient::EventPhase::Moved, x, y, contact)) {
+    if (!client_->pointer(WaylandClient::EventPhase::Began, x, y, contact)) {
         return false;
     }
 
