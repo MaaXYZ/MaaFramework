@@ -38,7 +38,7 @@ public:
     bool connected() const;
 
     bool screencap(void** buffer, uint32_t& width, uint32_t& height, uint32_t& format);
-    bool pointer(EventPhase phase, int x, int y);
+    bool pointer(EventPhase phase, int x, int y, int contact);
     bool scroll(int dx, int dy);
     bool input(EventPhase phase, int key);
     std::pair<int, int> screen_size() const;

@@ -126,7 +126,6 @@ bool WlRootsControlUnitMgr::swipe(int x1, int y1, int x2, int y2, int duration)
 
 bool WlRootsControlUnitMgr::touch_down(int contact, int x, int y, int pressure)
 {
-    std::ignore = contact;
     std::ignore = pressure;
 
     if (!client_) {
@@ -134,7 +133,7 @@ bool WlRootsControlUnitMgr::touch_down(int contact, int x, int y, int pressure)
         return false;
     }
 
-    if (!client_->pointer(WaylandClient::EventPhase::Moved, x, y)) {
+    if (!client_->pointer(WaylandClient::EventPhase::Moved, x, y, contact)) {
         return false;
     }
 
@@ -146,7 +145,6 @@ bool WlRootsControlUnitMgr::touch_down(int contact, int x, int y, int pressure)
 
 bool WlRootsControlUnitMgr::touch_move(int contact, int x, int y, int pressure)
 {
-    std::ignore = contact;
     std::ignore = pressure;
 
     if (!client_) {
@@ -154,7 +152,7 @@ bool WlRootsControlUnitMgr::touch_move(int contact, int x, int y, int pressure)
         return false;
     }
 
-    if (!client_->pointer(WaylandClient::EventPhase::Moved, x, y)) {
+    if (!client_->pointer(WaylandClient::EventPhase::Moved, x, y, contact)) {
         return false;
     }
 
@@ -166,7 +164,6 @@ bool WlRootsControlUnitMgr::touch_move(int contact, int x, int y, int pressure)
 
 bool WlRootsControlUnitMgr::touch_up(int contact)
 {
-    std::ignore = contact;
     if (!client_) {
         LogError << "client_ is nullptr";
         return false;
@@ -181,7 +178,7 @@ bool WlRootsControlUnitMgr::touch_up(int contact)
         up = { width / 2, height / 2 };
     }
 
-    if (!client_->pointer(WaylandClient::EventPhase::Ended, up.first, up.second)) {
+    if (!client_->pointer(WaylandClient::EventPhase::Ended, up.first, up.second, contact)) {
         return false;
     }
 

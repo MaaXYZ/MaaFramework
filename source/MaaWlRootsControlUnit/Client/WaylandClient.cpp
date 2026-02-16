@@ -261,21 +261,34 @@ bool WaylandClient::connected() const
     return display_ != nullptr;
 }
 
-bool WaylandClient::pointer(EventPhase phase, int x, int y)
+bool WaylandClient::pointer(EventPhase phase, int x, int y, int contact)
 {
     const uint32_t event_time = get_ms();
+ int btn = BTN_LEFT;
+    switch (contact) {
+    case 1:
+        btn = BTN_RIGHT;
+        break;
+    case 2:
+        btn = BTN_MIDDLE;
+        break;
+    case 0:
+    default:;
+    }
+
     switch (phase) {
     case EventPhase::Began:
-        zwlr_virtual_pointer_v1_button(pointer_.get(), event_time, BTN_LEFT, WL_POINTER_BUTTON_STATE_PRESSED);
+        zwlr_virtual_pointer_v1_button(pointer_.get(), event_time, btn, WL_POINTER_BUTTON_STATE_PRESSED);
         break;
     case EventPhase::Moved:
         zwlr_virtual_pointer_v1_motion_absolute(pointer_.get(), event_time, x, y, screen_size_.first, screen_size_.second);
         break;
     case EventPhase::Ended:
-        zwlr_virtual_pointer_v1_button(pointer_.get(), event_time, BTN_LEFT, WL_POINTER_BUTTON_STATE_RELEASED);
+        zwlr_virtual_pointer_v1_button(pointer_.get(), event_time, btn, WL_POINTER_BUTTON_STATE_RELEASED);
         break;
     default:;
     }
+
     zwlr_virtual_pointer_v1_frame(pointer_.get());
     return process_requests();
 }
