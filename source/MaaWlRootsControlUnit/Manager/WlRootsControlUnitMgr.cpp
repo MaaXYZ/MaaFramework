@@ -97,6 +97,9 @@ bool WlRootsControlUnitMgr::screencap(cv::Mat& image)
     case WL_SHM_FORMAT_ABGR8888:
         cvt_mode = cv::COLOR_RGBA2BGR;
         break;
+    case WL_SHM_FORMAT_ARGB8888:
+    case WL_SHM_FORMAT_XRGB8888:
+        cvt_mode = cv::COLOR_BGRA2BGR;
     default:
         LogWarn << "Unsupported color format" << VAR(format) << "Using RGBA2BGR";
     }
