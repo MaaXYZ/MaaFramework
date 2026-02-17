@@ -7,9 +7,9 @@
 #include "Common/MaaTypes.h"
 #include "Resource/PipelineTypes.h"
 #include "Task/Context.h"
+#include "Task/PipelineTask.h"
 #include "Tasker/Tasker.h"
 #include "Vision/OCRer.h"
-#include "Task/PipelineTask.h"
 
 MAA_TASK_NS_BEGIN
 

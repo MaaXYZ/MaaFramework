@@ -49,7 +49,8 @@ MAA_CTRL_NS::ControllerAgent* TaskBase::controller()
     return tasker_ ? tasker_->controller() : nullptr;
 }
 
-RecoResult TaskBase::run_recognition(const cv::Mat& image, const PipelineData& data, std::shared_ptr<MAA_VISION_NS::OCRBatchCache> ocr_cache)
+RecoResult
+    TaskBase::run_recognition(const cv::Mat& image, const PipelineData& data, std::shared_ptr<MAA_VISION_NS::OCRBatchCache> ocr_cache)
 {
     LogFunc << VAR(cur_node_) << VAR(data.name);
 
