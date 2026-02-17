@@ -44,19 +44,6 @@ bool WaylandClient::open()
         return false;
     }
 
-    display_listener_.error = [](void* data, struct wl_display* wl_display, void* object_id, uint32_t code, const char* message) {
-        std::ignore = data;
-        std::ignore = wl_display;
-        LogError << "Protocol error" << VAR(object_id) << VAR(code) << VAR(message);
-    };
-    display_listener_.delete_id = [](void* data, struct wl_display* wl_display, uint32_t id) {
-        std::ignore = data;
-        std::ignore = wl_display;
-        LogTrace << "Delete id" << VAR(id);
-    };
-
-    wl_display_add_listener(display_.get(), &display_listener_, this);
-
     if (!bind_protocol()) {
         LogError << "Failed to bind protocols";
         close();

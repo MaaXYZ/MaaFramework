@@ -61,7 +61,6 @@ private:
 
     std::pair<int, int> screen_size_ { 0, 0 };
 
-    wl_display_listener display_listener_ = { };
     wl_registry_listener registry_listener_ = { };
 
     std::filesystem::path socket_path_;
