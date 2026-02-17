@@ -15,12 +15,17 @@
 
 MAA_TASK_NS_BEGIN
 
-Recognizer::Recognizer(Tasker* tasker, Context& context, const cv::Mat& image_)
+Recognizer::Recognizer(
+    Tasker* tasker,
+    Context& context,
+    const cv::Mat& image_,
+    std::shared_ptr<MAA_VISION_NS::OCRBatchCache> ocr_batch_cache)
     : tasker_(tasker)
     , context_(context)
     , image_(image_)
     , sub_filtered_boxes_(std::make_shared<typename decltype(sub_filtered_boxes_)::element_type>())
     , sub_best_box_(std::make_shared<typename decltype(sub_best_box_)::element_type>())
+    , ocr_batch_cache_(std::move(ocr_batch_cache))
 {
 }
 
@@ -31,6 +36,7 @@ Recognizer::Recognizer(const Recognizer& recognizer)
     // do not copy reco_id_
     , sub_filtered_boxes_(recognizer.sub_filtered_boxes_)
     , sub_best_box_(recognizer.sub_best_box_)
+    , ocr_batch_cache_(recognizer.ocr_batch_cache_)
 {
 }
 
@@ -149,6 +155,22 @@ RecoResult Recognizer::direct_hit(const MAA_VISION_NS::DirectHitParam& param, co
     };
 }
 
+template <typename Analyzer>
+RecoResult Recognizer::build_result(const std::string& name, const std::string& algorithm, Analyzer&& analyzer)
+{
+    sub_filtered_boxes_->insert_or_assign(name, get_boxes(analyzer.filtered_results()));
+    sub_best_box_->insert_or_assign(name, analyzer.best_result() ? analyzer.best_result()->box : cv::Rect {});
+
+    return RecoResult {
+        .reco_id = reco_id_,
+        .name = name,
+        .algorithm = algorithm,
+        .box = analyzer.best_result() ? std::make_optional(analyzer.best_result()->box) : std::nullopt,
+        .detail = gen_detail(analyzer.all_results(), analyzer.filtered_results(), analyzer.best_result()),
+        .draws = std::move(analyzer).draws(),
+    };
+}
+
 RecoResult Recognizer::template_match(const MAA_VISION_NS::TemplateMatcherParam& param, const std::string& name)
 {
     using namespace MAA_VISION_NS;
@@ -159,24 +181,9 @@ RecoResult Recognizer::template_match(const MAA_VISION_NS::TemplateMatcherParam&
     }
 
     std::vector<cv::Rect> rois = get_rois(param.roi_target);
-
     auto templs = context_.get_images(param.template_);
-    TemplateMatcher analyzer(image_, rois, param, templs, name);
 
-    sub_filtered_boxes_->insert_or_assign(name, get_boxes(analyzer.filtered_results()));
-    sub_best_box_->insert_or_assign(name, analyzer.best_result() ? analyzer.best_result()->box : cv::Rect {});
-
-    std::optional<cv::Rect> box = std::nullopt;
-    if (analyzer.best_result()) {
-        box = analyzer.best_result()->box;
-    }
-
-    return RecoResult { .reco_id = reco_id_,
-                        .name = name,
-                        .algorithm = "TemplateMatch",
-                        .box = std::move(box),
-                        .detail = gen_detail(analyzer.all_results(), analyzer.filtered_results(), analyzer.best_result()),
-                        .draws = std::move(analyzer).draws() };
+    return build_result(name, "TemplateMatch", TemplateMatcher(image_, rois, param, templs, name));
 }
 
 RecoResult Recognizer::feature_match(const MAA_VISION_NS::FeatureMatcherParam& param, const std::string& name)
@@ -189,24 +196,9 @@ RecoResult Recognizer::feature_match(const MAA_VISION_NS::FeatureMatcherParam& p
     }
 
     std::vector<cv::Rect> rois = get_rois(param.roi_target);
-
     auto templs = context_.get_images(param.template_);
-    FeatureMatcher analyzer(image_, rois, param, templs, name);
 
-    sub_filtered_boxes_->insert_or_assign(name, get_boxes(analyzer.filtered_results()));
-    sub_best_box_->insert_or_assign(name, analyzer.best_result() ? analyzer.best_result()->box : cv::Rect {});
-
-    std::optional<cv::Rect> box = std::nullopt;
-    if (analyzer.best_result()) {
-        box = analyzer.best_result()->box;
-    }
-
-    return RecoResult { .reco_id = reco_id_,
-                        .name = name,
-                        .algorithm = "FeatureMatch",
-                        .box = std::move(box),
-                        .detail = gen_detail(analyzer.all_results(), analyzer.filtered_results(), analyzer.best_result()),
-                        .draws = std::move(analyzer).draws() };
+    return build_result(name, "FeatureMatch", FeatureMatcher(image_, rois, param, templs, name));
 }
 
 RecoResult Recognizer::color_match(const MAA_VISION_NS::ColorMatcherParam& param, const std::string& name)
@@ -220,22 +212,7 @@ RecoResult Recognizer::color_match(const MAA_VISION_NS::ColorMatcherParam& param
 
     std::vector<cv::Rect> rois = get_rois(param.roi_target);
 
-    ColorMatcher analyzer(image_, rois, param, name);
-
-    sub_filtered_boxes_->insert_or_assign(name, get_boxes(analyzer.filtered_results()));
-    sub_best_box_->insert_or_assign(name, analyzer.best_result() ? analyzer.best_result()->box : cv::Rect {});
-
-    std::optional<cv::Rect> box = std::nullopt;
-    if (analyzer.best_result()) {
-        box = analyzer.best_result()->box;
-    }
-
-    return RecoResult { .reco_id = reco_id_,
-                        .name = name,
-                        .algorithm = "ColorMatch",
-                        .box = std::move(box),
-                        .detail = gen_detail(analyzer.all_results(), analyzer.filtered_results(), analyzer.best_result()),
-                        .draws = std::move(analyzer).draws() };
+    return build_result(name, "ColorMatch", ColorMatcher(image_, rois, param, name));
 }
 
 RecoResult Recognizer::ocr(const MAA_VISION_NS::OCRerParam& param, const std::string& name)
@@ -254,26 +231,23 @@ RecoResult Recognizer::ocr(const MAA_VISION_NS::OCRerParam& param, const std::st
 
     std::vector<cv::Rect> rois = get_rois(param.roi_target);
 
-    auto det_session = resource()->ocr_res().deter(param.model);
-    auto reco_session = resource()->ocr_res().recer(param.model);
-    auto ocr_session = resource()->ocr_res().ocrer(param.model);
-
-    OCRer analyzer(image_, rois, param, det_session, reco_session, ocr_session, name);
-
-    sub_filtered_boxes_->insert_or_assign(name, get_boxes(analyzer.filtered_results()));
-    sub_best_box_->insert_or_assign(name, analyzer.best_result() ? analyzer.best_result()->box : cv::Rect {});
-
-    std::optional<cv::Rect> box = std::nullopt;
-    if (analyzer.best_result()) {
-        box = analyzer.best_result()->box;
+    if (ocr_batch_cache_ && ocr_batch_cache_->contains(name)) {
+        const auto& cached = ocr_batch_cache_->at(name);
+        LogDebug << "OCR using batch cache" << VAR(name) << VAR(cached.per_roi_results.size()) << VAR(rois.size());
+        return build_result(name, "OCR", OCRer(image_, rois, param, cached, name));
     }
 
-    return RecoResult { .reco_id = reco_id_,
-                        .name = name,
-                        .algorithm = "OCR",
-                        .box = std::move(box),
-                        .detail = gen_detail(analyzer.all_results(), analyzer.filtered_results(), analyzer.best_result()),
-                        .draws = std::move(analyzer).draws() };
+    return build_result(
+        name,
+        "OCR",
+        OCRer(
+            image_,
+            rois,
+            param,
+            resource()->ocr_res().deter(param.model),
+            resource()->ocr_res().recer(param.model),
+            resource()->ocr_res().ocrer(param.model),
+            name));
 }
 
 RecoResult Recognizer::nn_classify(const MAA_VISION_NS::NeuralNetworkClassifierParam& param, const std::string& name)
@@ -293,25 +267,11 @@ RecoResult Recognizer::nn_classify(const MAA_VISION_NS::NeuralNetworkClassifierP
     std::vector<cv::Rect> rois = get_rois(param.roi_target);
 
     auto& onnx_res = resource()->onnx_res();
-    const auto& session = onnx_res.classifier(param.model);
-    const auto& mem_info = onnx_res.memory_info();
 
-    NeuralNetworkClassifier analyzer(image_, rois, param, session, mem_info, name);
-
-    sub_filtered_boxes_->insert_or_assign(name, get_boxes(analyzer.filtered_results()));
-    sub_best_box_->insert_or_assign(name, analyzer.best_result() ? analyzer.best_result()->box : cv::Rect {});
-
-    std::optional<cv::Rect> box = std::nullopt;
-    if (analyzer.best_result()) {
-        box = analyzer.best_result()->box;
-    }
-
-    return RecoResult { .reco_id = reco_id_,
-                        .name = name,
-                        .algorithm = "NeuralNetworkClassify",
-                        .box = std::move(box),
-                        .detail = gen_detail(analyzer.all_results(), analyzer.filtered_results(), analyzer.best_result()),
-                        .draws = std::move(analyzer).draws() };
+    return build_result(
+        name,
+        "NeuralNetworkClassify",
+        NeuralNetworkClassifier(image_, rois, param, onnx_res.classifier(param.model), onnx_res.memory_info(), name));
 }
 
 RecoResult Recognizer::nn_detect(const MAA_VISION_NS::NeuralNetworkDetectorParam& param, const std::string& name)
@@ -331,55 +291,34 @@ RecoResult Recognizer::nn_detect(const MAA_VISION_NS::NeuralNetworkDetectorParam
     std::vector<cv::Rect> rois = get_rois(param.roi_target);
 
     auto& onnx_res = resource()->onnx_res();
-    const auto& session = onnx_res.detector(param.model);
-    const auto& mem_info = onnx_res.memory_info();
 
-    NeuralNetworkDetector analyzer(image_, rois, param, session, mem_info, name);
-
-    sub_filtered_boxes_->insert_or_assign(name, get_boxes(analyzer.filtered_results()));
-    sub_best_box_->insert_or_assign(name, analyzer.best_result() ? analyzer.best_result()->box : cv::Rect {});
-
-    std::optional<cv::Rect> box = std::nullopt;
-    if (analyzer.best_result()) {
-        box = analyzer.best_result()->box;
-    }
-
-    return RecoResult { .reco_id = reco_id_,
-                        .name = name,
-                        .algorithm = "NeuralNetworkDetect",
-                        .box = std::move(box),
-                        .detail = gen_detail(analyzer.all_results(), analyzer.filtered_results(), analyzer.best_result()),
-                        .draws = std::move(analyzer).draws() };
+    return build_result(
+        name,
+        "NeuralNetworkDetect",
+        NeuralNetworkDetector(image_, rois, param, onnx_res.detector(param.model), onnx_res.memory_info(), name));
 }
 
 RecoResult Recognizer::custom_recognize(const MAA_VISION_NS::CustomRecognitionParam& param, const std::string& name)
 {
     using namespace MAA_VISION_NS;
-    std::ignore = name; // node name
 
     if (!resource()) {
         LogError << "resource is null";
         return {};
     }
+
     std::vector<cv::Rect> rois = get_rois(param.roi_target, true);
 
-    auto session = resource()->custom_recognition(param.name);
-    CustomRecognition analyzer(image_, rois.empty() ? cv::Rect {} : rois.front(), param, session, context_, name);
-
-    sub_filtered_boxes_->insert_or_assign(name, get_boxes(analyzer.filtered_results()));
-    sub_best_box_->insert_or_assign(name, analyzer.best_result() ? analyzer.best_result()->box : cv::Rect {});
-
-    std::optional<cv::Rect> box = std::nullopt;
-    if (analyzer.best_result()) {
-        box = analyzer.best_result()->box;
-    }
-
-    return RecoResult { .reco_id = reco_id_,
-                        .name = name,
-                        .algorithm = "Custom",
-                        .box = std::move(box),
-                        .detail = gen_detail(analyzer.all_results(), analyzer.filtered_results(), analyzer.best_result()),
-                        .draws = std::move(analyzer).draws() };
+    return build_result(
+        name,
+        "Custom",
+        CustomRecognition(
+            image_,
+            rois.empty() ? cv::Rect {} : rois.front(),
+            param,
+            resource()->custom_recognition(param.name),
+            context_,
+            name));
 }
 
 RecoResult Recognizer::and_(const std::shared_ptr<MAA_RES_NS::Recognition::AndParam>& param, const std::string& name)
@@ -637,6 +576,166 @@ bool Recognizer::debug_mode() const
 MAA_RES_NS::ResourceMgr* Recognizer::resource()
 {
     return tasker_ ? tasker_->resource() : nullptr;
+}
+
+void Recognizer::prefetch_batch_ocr(const std::vector<BatchOCREntry>& entries, bool only_rec)
+{
+    using namespace MAA_VISION_NS;
+
+    if (!ocr_batch_cache_ || entries.empty() || !resource()) {
+        LogDebug << "prefetch_batch_ocr skipped" << VAR(!!ocr_batch_cache_) << VAR(entries.empty()) << VAR(!!resource());
+        return;
+    }
+
+    struct RoiInfo
+    {
+        size_t entry_idx;
+        size_t roi_idx;
+        cv::Rect roi;
+    };
+
+    auto do_roi_merge = [](std::vector<RoiInfo>& infos) {
+        struct MergeGroup
+        {
+            size_t parent_idx;
+            std::vector<size_t> child_indices;
+        };
+
+        std::ranges::sort(infos, [](const RoiInfo& a, const RoiInfo& b) { return a.roi.area() > b.roi.area(); });
+
+        std::vector<MergeGroup> groups;
+
+        auto contains = [](const cv::Rect& outer, const cv::Rect& inner) {
+            return inner.x >= outer.x && inner.y >= outer.y && inner.br().x <= outer.br().x && inner.br().y <= outer.br().y;
+        };
+
+        for (size_t i = 0; i < infos.size(); ++i) {
+            bool merged = false;
+            for (auto& group : groups) {
+                if (contains(infos[group.parent_idx].roi, infos[i].roi)) {
+                    group.child_indices.push_back(i);
+                    merged = true;
+                    break;
+                }
+            }
+            if (!merged) {
+                groups.push_back({ .parent_idx = i });
+            }
+        }
+
+        return groups;
+    };
+
+    std::vector<std::vector<cv::Rect>> all_rois;
+    all_rois.reserve(entries.size());
+    for (const auto& entry : entries) {
+        all_rois.push_back(get_rois(entry.param.roi_target));
+    }
+
+    std::vector<RoiInfo> roi_infos;
+    for (size_t ei = 0; ei < entries.size(); ++ei) {
+        for (size_t ri = 0; ri < all_rois[ei].size(); ++ri) {
+            roi_infos.push_back({ ei, ri, all_rois[ei][ri] });
+        }
+    }
+
+    if (roi_infos.empty()) {
+        LogDebug << "prefetch_batch_ocr: no ROIs collected, skipping";
+        return;
+    }
+
+    const auto& model = entries.front().param.model;
+    LogDebug << "prefetch_batch_ocr starting" << VAR(model) << VAR(only_rec) << VAR(roi_infos.size()) << VAR(entries.size());
+
+    if (only_rec) {
+        std::vector<cv::Mat> images;
+        images.reserve(roi_infos.size());
+        for (const auto& info : roi_infos) {
+            cv::Rect corrected = correct_roi(info.roi, image_);
+            images.push_back(image_(corrected));
+        }
+
+        auto flat_results = OCRer::batch_predict_only_rec(images, resource()->ocr_res().recer(model));
+
+        if (flat_results.size() != roi_infos.size()) {
+            LogWarn << "OCR only_rec batch incomplete" << VAR(roi_infos.size()) << VAR(flat_results.size());
+        }
+
+        for (size_t i = 0; i < roi_infos.size() && i < flat_results.size(); ++i) {
+            const auto& info = roi_infos[i];
+            auto& result = flat_results[i];
+
+            cv::Rect corrected = correct_roi(info.roi, image_);
+            result.box.x += corrected.x;
+            result.box.y += corrected.y;
+
+            auto& cache_val = (*ocr_batch_cache_)[entries[info.entry_idx].name];
+            if (cache_val.per_roi_results.size() <= info.roi_idx) {
+                cache_val.per_roi_results.resize(info.roi_idx + 1);
+            }
+            cache_val.per_roi_results[info.roi_idx] = { std::move(result) };
+        }
+    }
+    else {
+        auto merge_groups = do_roi_merge(roi_infos);
+
+        LogDebug << "det_rec ROI merge" << VAR(roi_infos.size()) << "merged into" << VAR(merge_groups.size()) << "groups";
+
+        std::vector<cv::Mat> images;
+        std::vector<cv::Rect> corrected_parent_rois;
+        images.reserve(merge_groups.size());
+        corrected_parent_rois.reserve(merge_groups.size());
+
+        for (const auto& group : merge_groups) {
+            cv::Rect corrected = correct_roi(roi_infos[group.parent_idx].roi, image_);
+            corrected_parent_rois.push_back(corrected);
+            images.push_back(image_(corrected));
+        }
+
+        auto batch_results = OCRer::batch_predict_det_rec(images, resource()->ocr_res().ocrer(model));
+
+        if (batch_results.size() != merge_groups.size()) {
+            LogWarn << "OCR det_rec batch incomplete" << VAR(merge_groups.size()) << VAR(batch_results.size());
+        }
+
+        auto store_results = [&](const RoiInfo& info, std::vector<OCRerResult> results) {
+            auto& cache_val = (*ocr_batch_cache_)[entries[info.entry_idx].name];
+            if (cache_val.per_roi_results.size() <= info.roi_idx) {
+                cache_val.per_roi_results.resize(info.roi_idx + 1);
+            }
+            cache_val.per_roi_results[info.roi_idx] = std::move(results);
+        };
+
+        for (size_t gi = 0; gi < merge_groups.size() && gi < batch_results.size(); ++gi) {
+            const auto& group = merge_groups[gi];
+            auto& parent_results = batch_results[gi];
+            const auto& parent_roi = corrected_parent_rois[gi];
+
+            for (auto& res : parent_results) {
+                res.box.x += parent_roi.x;
+                res.box.y += parent_roi.y;
+            }
+
+            store_results(roi_infos[group.parent_idx], parent_results);
+
+            for (size_t child_idx : group.child_indices) {
+                const auto& child_info = roi_infos[child_idx];
+                cv::Rect child_corrected = correct_roi(child_info.roi, image_);
+
+                std::vector<OCRerResult> child_results;
+                for (const auto& res : parent_results) {
+                    if (res.box.x >= child_corrected.x && res.box.y >= child_corrected.y && res.box.br().x <= child_corrected.br().x
+                        && res.box.br().y <= child_corrected.br().y) {
+                        child_results.push_back(res);
+                    }
+                }
+                store_results(child_info, std::move(child_results));
+            }
+        }
+    }
+
+    LogInfo << "prefetch_batch_ocr completed" << VAR(entries.size()) << VAR(roi_infos.size()) << VAR(only_rec)
+            << VAR(ocr_batch_cache_->size());
 }
 
 MAA_TASK_NS_END
