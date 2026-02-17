@@ -1,5 +1,6 @@
 #pragma once
 
+#include "KeyMap.h"
 #include "MemfdBuffer.h"
 #include "WaylandHelper.h"
 
@@ -9,13 +10,6 @@
 #include "Common/Conf.h"
 
 MAA_CTRL_UNIT_NS_BEGIN
-
-inline uint64_t get_ms()
-{
-    timespec ts = { 0 };
-    clock_gettime(CLOCK_MONOTONIC, &ts);
-    return static_cast<uint64_t>(ts.tv_sec) * UINT64_C(1000) + static_cast<uint64_t>(ts.tv_nsec) / UINT64_C(1'000'000);
-}
 
 class WaylandClient
 {
@@ -51,6 +45,7 @@ private:
     bool check_buffer(int format, int width, int height, int stride) const;
     bool create_buffer(int format, int width, int height, int stride);
     bool close_buffer();
+    bool prepare_keymap();
 
     std::unique_ptr<wl_display> display_;
     std::unique_ptr<wl_registry> registry_;
@@ -61,6 +56,7 @@ private:
     std::unique_ptr<zwlr_virtual_pointer_manager_v1> pointer_manager_;
     std::unique_ptr<zwlr_virtual_pointer_v1> pointer_;
     std::unique_ptr<zwp_virtual_keyboard_manager_v1> keyboard_manager_;
+    std::unique_ptr<MemfdBuffer> keymap_buffer_;
     std::unique_ptr<zwp_virtual_keyboard_v1> keyboard_;
 
     std::pair<int, int> screen_size_ { 0, 0 };
@@ -76,7 +72,10 @@ private:
     std::unique_ptr<MemfdBuffer> buffer_;
     std::unique_ptr<wl_shm_pool> shm_pool_;
     std::unique_ptr<wl_buffer> buffer_obj_;
+    int buffer_width_ = 0;
+    int buffer_height_ = 0;
     int buffer_format_ = 0;
+    int buffer_stride_ = 0;
 };
 
 MAA_CTRL_UNIT_NS_END

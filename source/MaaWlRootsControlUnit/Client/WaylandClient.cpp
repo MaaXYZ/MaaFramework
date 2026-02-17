@@ -176,8 +176,7 @@ bool WaylandClient::prepare_device()
     };
     wl_output_add_listener(output_.get(), &output_listener, this);
     zwlr_virtual_pointer_v1_axis_source(pointer_.get(), WL_POINTER_AXIS_SOURCE_WHEEL);
-    // TODO: prepare xkb data
-    return process_requests();
+    return prepare_keymap() && process_requests();
 }
 
 bool WaylandClient::process_requests() const
@@ -256,8 +255,8 @@ bool WaylandClient::screencap(void** buffer, uint32_t& width, uint32_t& height, 
         }
     }
 
-    width = buffer_->width();
-    height = buffer_->height();
+    width = buffer_width_;
+    height = buffer_height_;
     format = buffer_format_;
     *buffer = buffer_->ptr();
     return capture_successful_;
@@ -276,7 +275,7 @@ bool WaylandClient::connected() const
 
 bool WaylandClient::pointer(EventPhase phase, int x, int y, int contact)
 {
-    const uint32_t event_time = get_ms();
+    const uint32_t event_time = WaylandHelper::get_ms();
 
     int btn = BTN_LEFT;
     switch (contact) {
@@ -315,7 +314,7 @@ bool WaylandClient::scroll(int dx, int dy)
     if (dy != 0) {
         zwlr_virtual_pointer_v1_axis_discrete(
             pointer_.get(),
-            get_ms(),
+            WaylandHelper::get_ms(),
             WL_POINTER_AXIS_VERTICAL_SCROLL,
             wl_fixed_from_int(WHEEL_DELTA),
             dy);
@@ -324,7 +323,7 @@ bool WaylandClient::scroll(int dx, int dy)
     if (dx != 0) {
         zwlr_virtual_pointer_v1_axis_discrete(
             pointer_.get(),
-            get_ms(),
+            WaylandHelper::get_ms(),
             WL_POINTER_AXIS_HORIZONTAL_SCROLL,
             wl_fixed_from_int(WHEEL_DELTA),
             dx);
@@ -335,7 +334,7 @@ bool WaylandClient::scroll(int dx, int dy)
 
 bool WaylandClient::input(EventPhase phase, int key)
 {
-    const uint64_t event_time = get_ms();
+    const uint64_t event_time = WaylandHelper::get_ms();
     switch (phase) {
     case EventPhase::Began:
         zwp_virtual_keyboard_v1_key(keyboard_.get(), event_time, key, WL_KEYBOARD_KEY_STATE_PRESSED);
@@ -360,7 +359,7 @@ bool WaylandClient::check_buffer(int format, int width, int height, int stride) 
     if (!buffer_obj_ && !buffer_) {
         return false;
     }
-    if (width != buffer_->width() || height != buffer_->height() || stride != buffer_->stride() || format != buffer_format_) {
+    if (width != buffer_width_ || height != buffer_height_ || stride != buffer_stride_ || format != buffer_format_) {
         return false;
     }
     return true;
@@ -377,6 +376,9 @@ bool WaylandClient::create_buffer(int format, int width, int height, int stride)
         return false;
     }
     buffer_format_ = format;
+    buffer_width_ = width;
+    buffer_height_ = height;
+    buffer_stride_ = stride;
     shm_pool_.reset(wl_shm_create_pool(shm_.get(), buffer_->fd(), buffer_->size()));
     buffer_obj_.reset(wl_shm_pool_create_buffer(shm_pool_.get(), 0, width, height, stride, format));
     if (!process_requests()) {
@@ -399,6 +401,18 @@ bool WaylandClient::close_buffer()
         return false;
     }
     buffer_.reset();
+    return true;
+}
+
+bool WaylandClient::prepare_keymap()
+{
+    keymap_buffer_ = std::make_unique<MemfdBuffer>(kKeyMap.size());
+    if (!keymap_buffer_->available()) {
+        LogError << "Failed to create keymap buffer";
+        return false;
+    }
+    std::strcpy(static_cast<char*>(keymap_buffer_->ptr()), kKeyMap.data());
+    zwp_virtual_keyboard_v1_keymap(keyboard_.get(), WL_KEYBOARD_KEYMAP_FORMAT_XKB_V1, keymap_buffer_->fd(), keymap_buffer_->size());
     return true;
 }
 

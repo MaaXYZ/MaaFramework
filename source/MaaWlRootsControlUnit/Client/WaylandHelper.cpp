@@ -1,4 +1,5 @@
 #include "WaylandHelper.h"
+
 #include "MaaUtils/Logger.h"
 
 #define DEFAULT_DELETER(TypeName, DeleteFunction)            \
@@ -26,3 +27,17 @@ DEFAULT_DELETER(zwp_virtual_keyboard_manager_v1, zwp_virtual_keyboard_manager_v1
 DEFAULT_DELETER(zwp_virtual_keyboard_v1, zwp_virtual_keyboard_v1_destroy)
 
 #undef DEFAULT_DELETER
+
+MAA_CTRL_UNIT_NS_BEGIN
+void WaylandHelper::randname(std::string& name)
+{
+    timespec ts;
+    clock_gettime(CLOCK_REALTIME, &ts);
+    long r = ts.tv_nsec;
+    for (int i = 0; i < 6; ++i) {
+        name[i] = 'A' + (r & 15) + (r & 16) * 2;
+        r >>= 5;
+    }
+}
+
+MAA_CTRL_UNIT_NS_END

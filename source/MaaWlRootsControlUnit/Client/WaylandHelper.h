@@ -1,4 +1,5 @@
 #pragma once
+#include "Common/Conf.h"
 #include "wayland/virtual-keyboard.h"
 #include "wayland/wlr-screencopy.h"
 #include "wayland/wlr-virtual-pointer.h"
@@ -27,3 +28,19 @@ DEFAULT_DELETER_FDECL(zwlr_virtual_pointer_manager_v1)
 DEFAULT_DELETER_FDECL(zwlr_virtual_pointer_v1)
 DEFAULT_DELETER_FDECL(zwp_virtual_keyboard_manager_v1)
 DEFAULT_DELETER_FDECL(zwp_virtual_keyboard_v1)
+MAA_CTRL_UNIT_NS_BEGIN
+
+class WaylandHelper
+{
+public:
+    static uint64_t get_ms()
+    {
+        timespec ts = { 0 };
+        clock_gettime(CLOCK_MONOTONIC, &ts);
+        return static_cast<uint64_t>(ts.tv_sec) * UINT64_C(1000) + static_cast<uint64_t>(ts.tv_nsec) / UINT64_C(1'000'000);
+    }
+
+    static void randname(std::string& name);
+};
+
+MAA_CTRL_UNIT_NS_END
