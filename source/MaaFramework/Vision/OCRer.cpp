@@ -301,10 +301,6 @@ void OCRer::analyze_cached(const OCRBatchCacheValue& cached)
 {
     auto start_time = std::chrono::steady_clock::now();
 
-    size_t total_rois = 0;
-    // count how many ROIs this OCRer instance has (peek without consuming)
-    // We'll count via used_cached + remaining after loop
-
     size_t used_cached = 0;
     for (size_t i = 0; i < cached.per_roi_results.size() && next_roi(); ++i) {
         auto results = cached.per_roi_results[i];
