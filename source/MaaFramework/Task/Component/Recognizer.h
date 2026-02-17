@@ -9,14 +9,9 @@
 #include "Task/Context.h"
 #include "Tasker/Tasker.h"
 #include "Vision/OCRer.h"
+#include "Task/PipelineTask.h"
 
 MAA_TASK_NS_BEGIN
-
-struct BatchOCREntry
-{
-    std::string name;
-    MAA_VISION_NS::OCRerParam param;
-};
 
 class Recognizer
 {

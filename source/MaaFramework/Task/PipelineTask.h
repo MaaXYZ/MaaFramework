@@ -14,6 +14,12 @@ MAA_RES_NS_END
 
 MAA_TASK_NS_BEGIN
 
+struct BatchOCREntry
+{
+    std::string name;
+    MAA_VISION_NS::OCRerParam param;
+};
+
 struct BatchOCRPlan
 {
     std::string model;
