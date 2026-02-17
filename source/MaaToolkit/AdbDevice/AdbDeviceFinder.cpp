@@ -140,6 +140,30 @@ bool request_waydroid_config(std::shared_ptr<MAA_CTRL_UNIT_NS::AdbControlUnitAPI
     return true;
 }
 
+bool request_avd_config(std::shared_ptr<MAA_CTRL_UNIT_NS::AdbControlUnitAPI> control_unit, AdbDevice& device)
+{
+    if (!control_unit) {
+        return false;
+    }
+
+    if (!device.serial.starts_with("emulator-")) {
+        return false;
+    }
+
+    std::string output;
+    if (!control_unit->shell("getprop ro.product.model", output)) {
+        return false;
+    }
+    if (!output.starts_with("Android SDK") && !output.starts_with("sdk_")) {
+        return false;
+    }
+
+    device.config["extras"]["avd"]["enable"] = true;
+
+    LogInfo << "AVDExtras enabled for" << VAR(device);
+    return true;
+}
+
 std::optional<AdbDevice>
     AdbDeviceFinder::try_device(const std::filesystem::path& adb_path, const std::string& serial, const Emulator& emulator) const
 {
@@ -173,6 +197,8 @@ std::optional<AdbDevice>
     device.config = {};
 
     if (request_waydroid_config(control_unit, device)) {
+    }
+    else if (request_avd_config(control_unit, device)) {
     }
     // else if (request_xxx_config(control_unit, device)) {
     // }

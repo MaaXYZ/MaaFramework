@@ -37,7 +37,7 @@
         },
         "jsonDocument": {
             "patternProperties": {
-                ".*_doc$|^doc$": {
+                ".*_doc$|^doc$|.*_desc$|^desc$": {
                     "title": "Document Property",
                     "description": "文档 | 该节点属性的文档说明。",
                     "type": "string",
