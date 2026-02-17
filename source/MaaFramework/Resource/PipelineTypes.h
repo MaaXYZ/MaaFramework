@@ -2,6 +2,7 @@
 
 #include <chrono>
 #include <limits>
+#include <map>
 #include <memory>
 #include <string>
 #include <unordered_map>
@@ -362,7 +363,7 @@ struct PipelineData
 
     std::vector<NodeAttr> next;
     std::vector<NodeAttr> on_error;
-    std::vector<std::string> anchor;
+    std::map<std::string, std::string> anchor;
     std::chrono::milliseconds rate_limit = std::chrono::milliseconds(1000);
     std::chrono::milliseconds reco_timeout = std::chrono::milliseconds(20 * 1000);
 
