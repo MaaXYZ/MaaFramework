@@ -34,10 +34,18 @@ public:
     bool screencap(void** buffer, uint32_t& width, uint32_t& height, uint32_t& format);
     bool pointer(EventPhase phase, int x, int y, int contact);
     bool scroll(int dx, int dy);
-    bool input(EventPhase phase, int key);
+    bool input_key(EventPhase phase, int key);
+    bool input_str(const std::string& str);
     std::pair<int, int> screen_size() const;
 
 private:
+    enum class Keymap : uint8_t
+    {
+        Unknown = 0,
+        Ascii = 1,
+        Scancode = 2,
+    };
+
     bool open();
     bool bind_protocol();
     bool prepare_device();
@@ -46,6 +54,7 @@ private:
     bool create_buffer(int format, int width, int height, int stride);
     bool close_buffer();
     bool prepare_keymap();
+    bool switch_keymap(Keymap new_map);
 
     std::unique_ptr<wl_display> display_;
     std::unique_ptr<wl_registry> registry_;
@@ -55,9 +64,12 @@ private:
     std::unique_ptr<zwlr_screencopy_manager_v1> screencopy_manager_;
     std::unique_ptr<zwlr_virtual_pointer_manager_v1> pointer_manager_;
     std::unique_ptr<zwlr_virtual_pointer_v1> pointer_;
+
     std::unique_ptr<zwp_virtual_keyboard_manager_v1> keyboard_manager_;
-    std::unique_ptr<MemfdBuffer> keymap_buffer_;
+    std::unique_ptr<MemfdBuffer> ascii_keymap_buffer_;
+    std::unique_ptr<MemfdBuffer> scancode_keymap_buffer_;
     std::unique_ptr<zwp_virtual_keyboard_v1> keyboard_;
+    Keymap current_keymap_ = Keymap::Unknown;
 
     std::pair<int, int> screen_size_ { 0, 0 };
 

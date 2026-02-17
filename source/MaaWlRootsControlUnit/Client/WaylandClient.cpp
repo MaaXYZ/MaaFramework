@@ -295,9 +295,6 @@ bool WaylandClient::pointer(EventPhase phase, int x, int y, int contact)
 
 bool WaylandClient::scroll(int dx, int dy)
 {
-    // TODO
-    std::ignore = dx;
-    std::ignore = dy;
     if (dy != 0) {
         zwlr_virtual_pointer_v1_axis_discrete(
             pointer_.get(),
@@ -319,9 +316,13 @@ bool WaylandClient::scroll(int dx, int dy)
     return process_requests();
 }
 
-bool WaylandClient::input(EventPhase phase, int key)
+bool WaylandClient::input_key(EventPhase phase, int key)
 {
     const uint64_t event_time = WaylandHelper::get_ms();
+    if (!switch_keymap(Keymap::Scancode)) {
+        LogError << "Failed to switch keymap to scancode";
+        return false;
+    }
     switch (phase) {
     case EventPhase::Began:
         zwp_virtual_keyboard_v1_key(keyboard_.get(), event_time, key, WL_KEYBOARD_KEY_STATE_PRESSED);
@@ -334,6 +335,24 @@ bool WaylandClient::input(EventPhase phase, int key)
     default:;
     }
     return process_requests();
+}
+
+bool WaylandClient::input_str(const std::string& str)
+{
+    if (!switch_keymap(Keymap::Ascii)) {
+        LogError << "Failed to switch keymap to ascii";
+        return false;
+    }
+    for (const auto ch : str) {
+        const uint64_t event_time = WaylandHelper::get_ms();
+        zwp_virtual_keyboard_v1_key(keyboard_.get(), event_time, ch - 8, WL_KEYBOARD_KEY_STATE_PRESSED); // todo: -8?
+        std::this_thread::sleep_for(std::chrono::milliseconds(50));
+        zwp_virtual_keyboard_v1_key(keyboard_.get(), event_time, ch - 8, WL_KEYBOARD_KEY_STATE_RELEASED);
+        if (!process_requests()) {
+            return false;
+        }
+    }
+    return true;
 }
 
 std::pair<int, int> WaylandClient::screen_size() const
@@ -393,14 +412,55 @@ bool WaylandClient::close_buffer()
 
 bool WaylandClient::prepare_keymap()
 {
-    keymap_buffer_ = std::make_unique<MemfdBuffer>(kKeyMap.size());
-    if (!keymap_buffer_->available()) {
-        LogError << "Failed to create keymap buffer";
+    ascii_keymap_buffer_ = std::make_unique<MemfdBuffer>(kAsciiKeyMap.size());
+    if (!ascii_keymap_buffer_->available()) {
+        LogError << "Failed to create ascii keymap buffer";
         return false;
     }
-    std::strcpy(static_cast<char*>(keymap_buffer_->ptr()), kKeyMap.data());
-    zwp_virtual_keyboard_v1_keymap(keyboard_.get(), WL_KEYBOARD_KEYMAP_FORMAT_XKB_V1, keymap_buffer_->fd(), keymap_buffer_->size());
+    std::strcpy(static_cast<char*>(ascii_keymap_buffer_->ptr()), kAsciiKeyMap.data());
+
+    scancode_keymap_buffer_ = std::make_unique<MemfdBuffer>(kScanCodeKeyMap.size());
+    if (!scancode_keymap_buffer_->available()) {
+        LogError << "Failed to create scancode keymap buffer";
+        return false;
+    }
+    std::strcpy(static_cast<char*>(scancode_keymap_buffer_->ptr()), kScanCodeKeyMap.data());
+
     return true;
+}
+
+bool WaylandClient::switch_keymap(Keymap new_map)
+{
+    if (current_keymap_ == new_map) {
+        return true;
+    }
+
+    LogDebug << "Switching keymap" << VAR(current_keymap_) << VAR(new_map);
+
+    switch (new_map) {
+    case Keymap::Unknown:
+        break;
+    case Keymap::Ascii:
+        zwp_virtual_keyboard_v1_keymap(
+            keyboard_.get(),
+            WL_KEYBOARD_KEYMAP_FORMAT_XKB_V1,
+            ascii_keymap_buffer_->fd(),
+            ascii_keymap_buffer_->size());
+        current_keymap_ = Keymap::Ascii;
+        break;
+    case Keymap::Scancode:
+        zwp_virtual_keyboard_v1_keymap(
+            keyboard_.get(),
+            WL_KEYBOARD_KEYMAP_FORMAT_XKB_V1,
+            scancode_keymap_buffer_->fd(),
+            scancode_keymap_buffer_->size());
+        current_keymap_ = Keymap::Scancode;
+        break;
+    default:
+        LogWarn << "Using unknown keymap" << VAR(new_map);
+    }
+
+    return process_requests();
 }
 
 MAA_CTRL_UNIT_NS_END

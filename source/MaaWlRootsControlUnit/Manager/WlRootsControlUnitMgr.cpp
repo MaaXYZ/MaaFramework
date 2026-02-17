@@ -200,14 +200,8 @@ bool WlRootsControlUnitMgr::click_key(int key)
 
 bool WlRootsControlUnitMgr::input_text(const std::string& text)
 {
-    for (const auto ch : text) {
-        if (!client_->input(WaylandClient::EventPhase::Began, ch)) {
-            return false;
-        }
-        std::this_thread::sleep_for(std::chrono::milliseconds(50));
-        if (!client_->input(WaylandClient::EventPhase::Ended, ch)) {
-            return false;
-        }
+    if (!client_->input_str(text)) {
+        return false;
     }
     return true;
 }
@@ -219,7 +213,7 @@ bool WlRootsControlUnitMgr::key_down(int key)
         return false;
     }
 
-    return client_->input(WaylandClient::EventPhase::Began, key);
+    return client_->input_key(WaylandClient::EventPhase::Began, key);
 }
 
 bool WlRootsControlUnitMgr::key_up(int key)
@@ -229,7 +223,7 @@ bool WlRootsControlUnitMgr::key_up(int key)
         return false;
     }
 
-    return client_->input(WaylandClient::EventPhase::Ended, key);
+    return client_->input_key(WaylandClient::EventPhase::Ended, key);
 }
 
 bool WlRootsControlUnitMgr::scroll(int dx, int dy)
