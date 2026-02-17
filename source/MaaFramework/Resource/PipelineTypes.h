@@ -2,6 +2,7 @@
 
 #include <chrono>
 #include <limits>
+#include <map>
 #include <memory>
 #include <string>
 #include <unordered_map>
