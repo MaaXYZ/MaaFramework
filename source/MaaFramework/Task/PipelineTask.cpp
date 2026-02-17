@@ -336,6 +336,7 @@ std::optional<BatchOCRPlan> PipelineTask::prepare_batch_ocr(const std::vector<MA
     }
 
     if (ctx.plan.node_names.size() < 2) {
+        LogDebug << "batch OCR not needed, eligible OCR nodes < 2" << VAR(ctx.plan.node_names.size());
         return std::nullopt;
     }
 
@@ -360,6 +361,7 @@ void PipelineTask::try_add_ocr_node(OCRCollectContext& ctx, const std::string& n
     if (param.roi_target.type == MAA_VISION_NS::TargetType::PreTask) {
         const auto& ref_name = std::get<std::string>(param.roi_target.param);
         if (ctx.all_node_names->contains(ref_name)) {
+            LogDebug << "batch OCR skipping node with PreTask ROI dependency" << VAR(name) << VAR(ref_name);
             return;
         }
     }
@@ -370,6 +372,8 @@ void PipelineTask::try_add_ocr_node(OCRCollectContext& ctx, const std::string& n
         ctx.first = false;
     }
     else if (param.model != ctx.plan.model || param.only_rec != ctx.plan.only_rec) {
+        LogDebug << "batch OCR skipping node due to model/only_rec mismatch" << VAR(name) << VAR(param.model)
+                 << VAR(ctx.plan.model) << VAR(param.only_rec) << VAR(ctx.plan.only_rec);
         return;
     }
 

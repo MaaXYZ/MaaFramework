@@ -232,7 +232,9 @@ RecoResult Recognizer::ocr(const MAA_VISION_NS::OCRerParam& param, const std::st
     std::vector<cv::Rect> rois = get_rois(param.roi_target);
 
     if (ocr_batch_cache_ && ocr_batch_cache_->contains(name)) {
-        return build_result(name, "OCR", OCRer(image_, rois, param, ocr_batch_cache_->at(name), name));
+        const auto& cached = ocr_batch_cache_->at(name);
+        LogDebug << "OCR using batch cache" << VAR(name) << VAR(cached.per_roi_results.size()) << VAR(rois.size());
+        return build_result(name, "OCR", OCRer(image_, rois, param, cached, name));
     }
 
     return build_result(
@@ -581,6 +583,7 @@ void Recognizer::prefetch_batch_ocr(const std::vector<BatchOCREntry>& entries, b
     using namespace MAA_VISION_NS;
 
     if (!ocr_batch_cache_ || entries.empty() || !resource()) {
+        LogDebug << "prefetch_batch_ocr skipped" << VAR(!!ocr_batch_cache_) << VAR(entries.empty()) << VAR(!!resource());
         return;
     }
 
@@ -637,10 +640,12 @@ void Recognizer::prefetch_batch_ocr(const std::vector<BatchOCREntry>& entries, b
     }
 
     if (roi_infos.empty()) {
+        LogDebug << "prefetch_batch_ocr: no ROIs collected, skipping";
         return;
     }
 
     const auto& model = entries.front().param.model;
+    LogDebug << "prefetch_batch_ocr starting" << VAR(model) << VAR(only_rec) << VAR(roi_infos.size()) << VAR(entries.size());
 
     if (only_rec) {
         std::vector<cv::Mat> images;
@@ -673,6 +678,8 @@ void Recognizer::prefetch_batch_ocr(const std::vector<BatchOCREntry>& entries, b
     }
     else {
         auto merge_groups = do_roi_merge(roi_infos);
+
+        LogDebug << "det_rec ROI merge" << VAR(roi_infos.size()) << "merged into" << VAR(merge_groups.size()) << "groups";
 
         std::vector<cv::Mat> images;
         std::vector<cv::Rect> corrected_parent_rois;
@@ -727,7 +734,8 @@ void Recognizer::prefetch_batch_ocr(const std::vector<BatchOCREntry>& entries, b
         }
     }
 
-    LogInfo << "prefetch_batch_ocr completed" << VAR(entries.size()) << VAR(roi_infos.size()) << VAR(only_rec);
+    LogInfo << "prefetch_batch_ocr completed" << VAR(entries.size()) << VAR(roi_infos.size()) << VAR(only_rec)
+            << VAR(ocr_batch_cache_->size());
 }
 
 MAA_TASK_NS_END

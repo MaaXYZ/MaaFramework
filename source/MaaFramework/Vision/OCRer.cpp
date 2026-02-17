@@ -301,10 +301,16 @@ void OCRer::analyze_cached(const OCRBatchCacheValue& cached)
 {
     auto start_time = std::chrono::steady_clock::now();
 
+    size_t total_rois = 0;
+    // count how many ROIs this OCRer instance has (peek without consuming)
+    // We'll count via used_cached + remaining after loop
+
     size_t used_cached = 0;
     for (size_t i = 0; i < cached.per_roi_results.size() && next_roi(); ++i) {
         auto results = cached.per_roi_results[i];
         ++used_cached;
+
+        LogDebug << name_ << "(cached) ROI" << VAR(i) << VAR(roi_) << VAR(results.size());
 
         if (debug_draw_) {
             auto draw = draw_result(results);
@@ -316,6 +322,10 @@ void OCRer::analyze_cached(const OCRBatchCacheValue& cached)
 
     if (used_cached < cached.per_roi_results.size()) {
         LogWarn << name_ << "(cached) unused cached ROI results" << VAR(used_cached) << VAR(cached.per_roi_results.size());
+    }
+    if (used_cached > 0 && next_roi()) {
+        LogWarn << name_ << "(cached) more ROIs than cached results, some ROIs will have no results" << VAR(used_cached)
+                << VAR(cached.per_roi_results.size());
     }
 
     cherry_pick();
