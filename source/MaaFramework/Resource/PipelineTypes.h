@@ -349,7 +349,6 @@ struct PipelineData
     inline static constexpr std::string_view kNodePrefix_Ignore = "$";
     inline static constexpr std::string_view kNodeAttr_JumpBack = "[JumpBack]";
     inline static constexpr std::string_view kNodeAttr_Anchor = "[Anchor]";
-    inline static constexpr std::string_view kAnchorTarget_Current = "$CURRENT";
 
     std::string name;
     bool enabled = true;

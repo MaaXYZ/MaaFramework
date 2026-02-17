@@ -152,6 +152,7 @@ private:
     static bool parse_anchor(
         const json::value& input,
         const std::string& key,
+        const std::string& node_name,
         std::map<std::string, std::string>& output,
         const std::map<std::string, std::string>& default_value);
 };

@@ -250,7 +250,7 @@ bool PipelineParser::parse_node(
         return false;
     }
 
-    if (!parse_anchor(input, "anchor", data.anchor, default_value.anchor)) {
+    if (!parse_anchor(input, "anchor", name, data.anchor, default_value.anchor)) {
         LogError << "failed to parse_anchor anchor" << VAR(input);
         return false;
     }
@@ -1938,6 +1938,7 @@ bool PipelineParser::parse_sub_recognition(
 bool PipelineParser::parse_anchor(
     const json::value& input,
     const std::string& key,
+    const std::string& node_name,
     std::map<std::string, std::string>& output,
     const std::map<std::string, std::string>& default_value)
 {
@@ -1948,7 +1949,7 @@ bool PipelineParser::parse_anchor(
     }
     output = {};
     if (opt->is_string()) {
-        output[opt->as_string()] = std::string(PipelineData::kAnchorTarget_Current);
+        output[opt->as_string()] = node_name;
     }
     else if (opt->is_array()) {
         for (const auto& item : opt->as_array()) {
@@ -1956,7 +1957,7 @@ bool PipelineParser::parse_anchor(
                 LogError << "type error" << VAR(key) << VAR(input);
                 return false;
             }
-            output[item.as_string()] = std::string(PipelineData::kAnchorTarget_Current);
+            output[item.as_string()] = node_name;
         }
     }
     else if (opt->is_object()) {
