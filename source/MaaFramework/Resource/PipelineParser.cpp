@@ -250,8 +250,8 @@ bool PipelineParser::parse_node(
         return false;
     }
 
-    if (!get_and_check_value_or_array(input, "anchor", data.anchor, default_value.anchor)) {
-        LogError << "failed to get_and_check_value_or_array anchor" << VAR(input);
+    if (!parse_anchor(input, "anchor", name, data.anchor, default_value.anchor)) {
+        LogError << "failed to parse_anchor anchor" << VAR(input);
         return false;
     }
 
@@ -1932,6 +1932,47 @@ bool PipelineParser::parse_sub_recognition(
     }
 
     output = std::move(inline_reco);
+    return true;
+}
+
+bool PipelineParser::parse_anchor(
+    const json::value& input,
+    const std::string& key,
+    const std::string& node_name,
+    std::map<std::string, std::string>& output,
+    const std::map<std::string, std::string>& default_value)
+{
+    auto opt = input.find(key);
+    if (!opt) {
+        output = default_value;
+        return true;
+    }
+    output = {};
+    if (opt->is_string()) {
+        output[opt->as_string()] = node_name;
+    }
+    else if (opt->is_array()) {
+        for (const auto& item : opt->as_array()) {
+            if (!item.is_string()) {
+                LogError << "type error" << VAR(key) << VAR(input);
+                return false;
+            }
+            output[item.as_string()] = node_name;
+        }
+    }
+    else if (opt->is_object()) {
+        for (const auto& [prop, item] : opt->as_object()) {
+            if (!item.is_string()) {
+                LogError << "type error" << VAR(key) << VAR(input);
+                return false;
+            }
+            output[prop] = item.as_string();
+        }
+    }
+    else {
+        LogError << "type error" << VAR(key) << VAR(input);
+        return false;
+    }
     return true;
 }
 

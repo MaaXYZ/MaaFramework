@@ -348,7 +348,7 @@ class JPipelineData:
     rate_limit: int = 1000
     timeout: int = 20000
     on_error: List[JNodeAttr] = field(default_factory=list)
-    anchor: List[str] = field(default_factory=list)
+    anchor: Dict[str, str] = field(default_factory=dict)
     inverse: bool = False
     enabled: bool = True
     pre_delay: int = 200
@@ -489,7 +489,7 @@ class JPipelineParser:
             rate_limit=data.get("rate_limit"),
             timeout=data.get("timeout"),
             on_error=cls._parse_node_attr_list(data.get("on_error")),
-            anchor=data.get("anchor"),
+            anchor=data.get("anchor", {}),
             inverse=data.get("inverse"),
             enabled=data.get("enabled"),
             pre_delay=data.get("pre_delay"),

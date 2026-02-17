@@ -453,7 +453,7 @@ declare global {
             rate_limit?: number
             timeout?: number
             on_error?: MaybeArray<RemoveIfDump<NodeName, Mode> | NodeAttr<Mode>, Mode>
-            anchor?: MaybeArray<NodeName, Mode>
+            anchor?: RemoveIfDump<NodeName | NodeName[], Mode> | Record<NodeName, NodeName>
             inverse?: boolean
             enabled?: boolean
             max_hit?: number
