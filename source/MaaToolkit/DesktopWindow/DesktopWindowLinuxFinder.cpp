@@ -41,8 +41,11 @@ std::vector<DesktopWindow> DesktopWindowLinuxFinder::find_all() const
             }
 
             uint32_t id = 0;
-            std::sscanf(filename.c_str(), "wayland-%d", &id);
-
+            if (int parsed = std::sscanf(filename.c_str(), "wayland-%d", &id); parsed != 1) {
+                LogWarn << "Failed to parse wayland socket name: " << filename;
+                wl_display_disconnect(display);
+                continue;
+            }
             result.emplace_back(
                 DesktopWindow { .hwnd = reinterpret_cast<void*>(static_cast<uintptr_t>(id)),
                                 .class_name = MAA_NS::to_u16(entry.path().string()),

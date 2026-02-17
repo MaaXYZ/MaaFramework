@@ -888,7 +888,7 @@ void Interactor::select_wlroots_auto_detect()
     size_t size = MaaToolkitDesktopWindowListSize(list_handle);
     if (size == 0) {
         std::cout << "No sockets found!\n\n";
-        select_adb();
+        select_wlroots();
         return;
     }
 

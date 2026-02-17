@@ -58,7 +58,7 @@ bool MemfdBuffer::create_buffer()
     if (const int ret = ftruncate(fd_, size_); ret < 0) {
         LogError << "Failed to allocate buffer";
         close(fd_);
-        fd_ = 0;
+        fd_ = -1;
         return false;
     }
     ptr_ = mmap(nullptr, size_, PROT_READ | PROT_WRITE, MAP_SHARED, fd_, 0);

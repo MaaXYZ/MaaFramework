@@ -345,7 +345,7 @@ bool WaylandClient::input_str(const std::string& str)
     }
     for (const auto ch : str) {
         const uint64_t event_time = WaylandHelper::get_ms();
-        zwp_virtual_keyboard_v1_key(keyboard_.get(), event_time, ch - 8, WL_KEYBOARD_KEY_STATE_PRESSED); // todo: -8?
+        zwp_virtual_keyboard_v1_key(keyboard_.get(), event_time, ch - 8, WL_KEYBOARD_KEY_STATE_PRESSED);
         std::this_thread::sleep_for(std::chrono::milliseconds(50));
         zwp_virtual_keyboard_v1_key(keyboard_.get(), event_time, ch - 8, WL_KEYBOARD_KEY_STATE_RELEASED);
         if (!process_requests()) {
@@ -378,7 +378,7 @@ bool WaylandClient::create_buffer(int format, int width, int height, int stride)
     }
     buffer_ = std::make_unique<MemfdBuffer>(width, height, stride);
     if (!buffer_->available()) {
-        LogError << "Failed to close shm buffer";
+        LogError << "Failed to create shm buffer";
         return false;
     }
     buffer_format_ = format;
