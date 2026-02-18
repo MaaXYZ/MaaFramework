@@ -37,7 +37,7 @@
         },
         "jsonDocument": {
             "patternProperties": {
-                ".*_doc$|^doc$": {
+                ".*_doc$|^doc$|.*_desc$|^desc$": {
                     "title": "Document Property",
                     "description": "文档 | 该节点属性的文档说明。",
                     "type": "string",
@@ -306,6 +306,23 @@
                 }
             ],
             "default": []
+        },
+        "jsonStringOrListOrMap": {
+            "anyOf": [
+                {
+                    "type": "string"
+                },
+                {
+                    "$ref": "#/$defs/jsonStringList"
+                },
+                {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "string"
+                    }
+                }
+            ],
+            "default": {}
         },
         "NodeAttr": {
             "type": "object",
@@ -4095,8 +4112,8 @@
                 "anchor": {
                     "title": "Anchor Property",
                     "description": "锚点名称。可选，默认空。",
-                    "$ref": "#/$defs/jsonStringOrList",
-                    "markdownDescription": "*string* | *list<string, >*\n\n锚点名称。可选，默认空。\n\n当节点执行成功后，会将该锚点名设置为当前节点。多个节点可设置同一个锚点名，后执行的会覆盖先执行的。\n\n在 `next` 或 `on_error` 中可通过 `[Anchor]` 属性引用该锚点，运行时会解析为最后设置该锚点的节点。\n\n详见文档中的「节点属性」章节。"
+                    "$ref": "#/$defs/jsonStringOrListOrMap",
+                    "markdownDescription": "*string* | *list<string, >* | *object*\n\n锚点名称。可选，默认空。\n\n当节点执行成功后，会将该锚点名设置为对应的节点。多个节点可设置同一个锚点名，后执行的会覆盖先执行的。\n\n支持三种格式：\n- 字符串：`\"anchor\": \"MyAnchor\"` - 将锚点设置为当前节点\n- 字符串数组：`\"anchor\": [\"A\", \"B\"]` - 将多个锚点都设置为当前节点\n- 对象：`\"anchor\": {\"A\": \"TargetNode\", \"B\": \"\"}` - 将锚点 A 设置为 TargetNode，清除锚点 B（空字符串表示清除该锚点）\n\n在 `next` 或 `on_error` 中可通过 `[Anchor]` 属性引用该锚点，运行时会解析为最后设置该锚点的节点。\n\n详见文档中的「节点属性」章节。"
                 },
                 "inverse": {
                     "title": "Inverse Property",

@@ -5,7 +5,7 @@ on:
         tags:
             - "v*"
         branches:
-            - "**"
+            - "main"
         paths:
             - ".github/workflows/build.yml"
             - "3rdparty/**"
