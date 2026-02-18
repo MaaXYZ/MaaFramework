@@ -95,6 +95,8 @@ export constexpr auto _MaaWin32InputMethod_LegacyEvent = MaaWin32InputMethod_Leg
 export constexpr auto _MaaWin32InputMethod_PostThreadMessage = MaaWin32InputMethod_PostThreadMessage;
 export constexpr auto _MaaWin32InputMethod_SendMessageWithCursorPos = MaaWin32InputMethod_SendMessageWithCursorPos;
 export constexpr auto _MaaWin32InputMethod_PostMessageWithCursorPos = MaaWin32InputMethod_PostMessageWithCursorPos;
+export constexpr auto _MaaWin32InputMethod_SendMessageWithWindowPos = MaaWin32InputMethod_SendMessageWithWindowPos;
+export constexpr auto _MaaWin32InputMethod_PostMessageWithWindowPos = MaaWin32InputMethod_PostMessageWithWindowPos;
 
 export using ::MaaDbgControllerType;
 export constexpr auto _MaaDbgControllerType_None = MaaDbgControllerType_None;
