@@ -278,6 +278,7 @@ bool WaylandClient::pointer(EventPhase phase, int x, int y, int contact)
 
     switch (phase) {
     case EventPhase::Began:
+        zwlr_virtual_pointer_v1_motion_absolute(pointer_.get(), event_time, x, y, screen_size_.first, screen_size_.second);
         zwlr_virtual_pointer_v1_button(pointer_.get(), event_time, btn, WL_POINTER_BUTTON_STATE_PRESSED);
         break;
     case EventPhase::Moved:
