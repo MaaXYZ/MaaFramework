@@ -1,6 +1,7 @@
 #pragma once
 
 #include <array>
+#include <map>
 #include <string>
 #include <vector>
 
@@ -357,7 +358,7 @@ struct JPipelineData
     int64_t rate_limit = 0;
     int64_t timeout = 0;
     std::vector<NodeAttr> on_error;
-    std::vector<std::string> anchor;
+    std::map<std::string, std::string> anchor;
     bool inverse = false;
     bool enabled = false;
     int64_t pre_delay = 0;
