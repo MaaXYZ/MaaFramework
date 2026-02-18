@@ -120,14 +120,7 @@ bool MessageInput::move_window_to_align_cursor(int x, int y)
 
     int delta_x = cursor_pos.x - target_screen_pos.x;
     int delta_y = cursor_pos.y - target_screen_pos.y;
-    SetWindowPos(
-        hwnd_,
-        nullptr,
-        current_rect.left + delta_x,
-        current_rect.top + delta_y,
-        0,
-        0,
-        SWP_NOSIZE | SWP_NOZORDER | SWP_NOACTIVATE);
+    SetWindowPos(hwnd_, nullptr, current_rect.left + delta_x, current_rect.top + delta_y, 0, 0, SWP_NOSIZE | SWP_NOZORDER | SWP_NOACTIVATE);
     return true;
 }
 
