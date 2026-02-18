@@ -245,6 +245,14 @@ std::optional<RuntimeParam> Configurator::generate_runtime() const
         runtime.controller_param = std::move(gamepad);
     } break;
 
+    case InterfaceData::Controller::Type::WlRoots: {
+        RuntimeParam::WlRootsParam wlroots;
+
+        wlroots.wlr_socket_path = config_.wlroots.wlr_socket_path;
+
+        runtime.controller_param = std::move(wlroots);
+    } break;
+
     default: {
         LogError << "Unknown controller type" << VAR(controller.type);
         return std::nullopt;

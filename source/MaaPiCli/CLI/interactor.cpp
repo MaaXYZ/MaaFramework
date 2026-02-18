@@ -563,6 +563,27 @@ void Interactor::select_controller()
         config_.configuration().controller.type = InterfaceData::Controller::Type::PlayCover;
         select_playcover(controller.playcover);
         break;
+    case InterfaceData::Controller::Type::WlRoots:
+        if (!kWlRootsSupported) {
+            std::cout << "\nWlRoots controller is only available on Linux.\n";
+            // Check if there are other controllers available
+            bool has_other_controllers = std::ranges::any_of(all_controllers, [](const auto& ctrl) {
+                return ctrl.type != InterfaceData::Controller::Type::WlRoots;
+            });
+            if (has_other_controllers) {
+                std::cout << "Please select another controller.\n\n";
+                mpause();
+                select_controller();
+            }
+            else {
+                std::cout << "No other controllers available.\n\n";
+                mpause();
+            }
+            return;
+        }
+        config_.configuration().controller.type = InterfaceData::Controller::Type::WlRoots;
+        select_wlroots();
+        break;
     case InterfaceData::Controller::Type::Gamepad:
         if (!kGamepadSupported) {
             std::cout << "\nGamepad controller is only available on Windows.\n";
