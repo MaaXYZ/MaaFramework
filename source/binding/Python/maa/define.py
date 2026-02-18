@@ -310,8 +310,8 @@ class MaaWin32InputMethodEnum(IntEnum):
     | PostThreadMessage            | Low           | Maybe         | No           | Yes                |                                                             |
     | SendMessageWithCursorPos     | Medium        | Maybe         | Briefly      | Yes                | Moves cursor to target position, then restores              |
     | PostMessageWithCursorPos     | Medium        | Maybe         | Briefly      | Yes                | Moves cursor to target position, then restores              |
-    | SendMessageWithWindowPos     | Medium        | Maybe         | No           | No                 | Moves window to align target with cursor, then restores     |
-    | PostMessageWithWindowPos     | Medium        | Maybe         | No           | No                 | Moves window to align target with cursor, then restores     |
+    | SendMessageWithWindowPos     | Medium        | Maybe         | No           | Yes                | Moves window to align target with cursor, then restores     |
+    | PostMessageWithWindowPos     | Medium        | Maybe         | No           | Yes                | Moves window to align target with cursor, then restores     |
 
     Note:
     - Admin rights mainly depend on the target application's privilege level.
