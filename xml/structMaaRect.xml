@@ -16,7 +16,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="include/MaaFramework/MaaDef.h" line="517" column="13" bodyfile="include/MaaFramework/MaaDef.h" bodystart="517" bodyend="-1"/>
+        <location file="include/MaaFramework/MaaDef.h" line="523" column="13" bodyfile="include/MaaFramework/MaaDef.h" bodystart="523" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structMaaRect_1ad01ed70b06d17f552838eaa84447041c" prot="public" static="no" mutable="no">
         <type>int32_t</type>
@@ -30,7 +30,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="include/MaaFramework/MaaDef.h" line="518" column="13" bodyfile="include/MaaFramework/MaaDef.h" bodystart="518" bodyend="-1"/>
+        <location file="include/MaaFramework/MaaDef.h" line="524" column="13" bodyfile="include/MaaFramework/MaaDef.h" bodystart="524" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structMaaRect_1a73e6dc516ec3103c7ac89d94eaa9550b" prot="public" static="no" mutable="no">
         <type>int32_t</type>
@@ -44,7 +44,7 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="include/MaaFramework/MaaDef.h" line="519" column="13" bodyfile="include/MaaFramework/MaaDef.h" bodystart="519" bodyend="-1"/>
+        <location file="include/MaaFramework/MaaDef.h" line="525" column="13" bodyfile="include/MaaFramework/MaaDef.h" bodystart="525" bodyend="-1"/>
       </memberdef>
       <memberdef kind="variable" id="structMaaRect_1adfa84de77550a2afc6c92349f20e12cc" prot="public" static="no" mutable="no">
         <type>int32_t</type>
@@ -58,14 +58,14 @@
         </detaileddescription>
         <inbodydescription>
         </inbodydescription>
-        <location file="include/MaaFramework/MaaDef.h" line="520" column="13" bodyfile="include/MaaFramework/MaaDef.h" bodystart="520" bodyend="-1"/>
+        <location file="include/MaaFramework/MaaDef.h" line="526" column="13" bodyfile="include/MaaFramework/MaaDef.h" bodystart="526" bodyend="-1"/>
       </memberdef>
     </sectiondef>
     <briefdescription>
     </briefdescription>
     <detaileddescription>
     </detaileddescription>
-    <location file="include/MaaFramework/MaaDef.h" line="515" column="1" bodyfile="include/MaaFramework/MaaDef.h" bodystart="516" bodyend="521"/>
+    <location file="include/MaaFramework/MaaDef.h" line="521" column="1" bodyfile="include/MaaFramework/MaaDef.h" bodystart="522" bodyend="527"/>
     <listofallmembers>
       <member refid="structMaaRect_1adfa84de77550a2afc6c92349f20e12cc" prot="public" virt="non-virtual"><scope>MaaRect</scope><name>height</name></member>
       <member refid="structMaaRect_1a73e6dc516ec3103c7ac89d94eaa9550b" prot="public" virt="non-virtual"><scope>MaaRect</scope><name>width</name></member>

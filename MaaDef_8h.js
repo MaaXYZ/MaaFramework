@@ -35,6 +35,8 @@ var MaaDef_8h =
     [ "MaaWin32InputMethod_PostThreadMessage", "MaaDef_8h.html#a2cb24665bfde6623c6f0ebc131784f10", null ],
     [ "MaaWin32InputMethod_SendMessageWithCursorPos", "MaaDef_8h.html#a56de1c099cca8d34e038b77a644b949f", null ],
     [ "MaaWin32InputMethod_PostMessageWithCursorPos", "MaaDef_8h.html#abb8a086b671038580f7acc36248d4163", null ],
+    [ "MaaWin32InputMethod_SendMessageWithWindowPos", "MaaDef_8h.html#afa5aca8f812f6146ef66b2a8db0da7a2", null ],
+    [ "MaaWin32InputMethod_PostMessageWithWindowPos", "MaaDef_8h.html#a923e6bae66dabe3f86e618af84905cac", null ],
     [ "MaaDbgControllerType_None", "MaaDef_8h.html#ab67ca0fce1cf517080804b1cae4be9b6", null ],
     [ "MaaDbgControllerType_CarouselImage", "MaaDef_8h.html#a6a9179147858e053948175909352e60d", null ],
     [ "MaaDbgControllerType_ReplayRecording", "MaaDef_8h.html#ad5fbfc89110fdbfd5f535c0a4557b809", null ],
