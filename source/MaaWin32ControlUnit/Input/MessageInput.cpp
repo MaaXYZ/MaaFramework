@@ -101,6 +101,36 @@ void MessageInput::restore_pos()
     }
 }
 
+bool MessageInput::move_window_to_align_cursor(int x, int y)
+{
+    if (!hwnd_) {
+        return false;
+    }
+
+    POINT cursor_pos;
+    if (!GetCursorPos(&cursor_pos)) {
+        return false;
+    }
+
+    POINT target_screen_pos = client_to_screen(x, y);
+    RECT current_rect;
+    if (!GetWindowRect(hwnd_, &current_rect)) {
+        return false;
+    }
+
+    int delta_x = cursor_pos.x - target_screen_pos.x;
+    int delta_y = cursor_pos.y - target_screen_pos.y;
+    SetWindowPos(
+        hwnd_,
+        nullptr,
+        current_rect.left + delta_x,
+        current_rect.top + delta_y,
+        0,
+        0,
+        SWP_NOSIZE | SWP_NOZORDER | SWP_NOACTIVATE);
+    return true;
+}
+
 LPARAM MessageInput::prepare_mouse_position(int x, int y)
 {
     if (with_cursor_pos_) {
@@ -109,26 +139,10 @@ LPARAM MessageInput::prepare_mouse_position(int x, int y)
         SetCursorPos(screen_pos.x, screen_pos.y);
         std::this_thread::sleep_for(std::chrono::milliseconds(1));
     }
-    else if (with_window_pos_ && hwnd_) {
+    else if (with_window_pos_) {
         // WithWindowPos 模式：移动窗口位置，使目标位置与当前鼠标位置重合
-        POINT cursor_pos;
-        if (GetCursorPos(&cursor_pos)) {
-            POINT target_screen_pos = client_to_screen(x, y);
-            RECT current_rect;
-            if (GetWindowRect(hwnd_, &current_rect)) {
-                int delta_x = cursor_pos.x - target_screen_pos.x;
-                int delta_y = cursor_pos.y - target_screen_pos.y;
-                SetWindowPos(
-                    hwnd_,
-                    nullptr,
-                    current_rect.left + delta_x,
-                    current_rect.top + delta_y,
-                    0,
-                    0,
-                    SWP_NOSIZE | SWP_NOZORDER | SWP_NOACTIVATE);
-                std::this_thread::sleep_for(std::chrono::milliseconds(1));
-            }
-        }
+        move_window_to_align_cursor(x, y);
+        std::this_thread::sleep_for(std::chrono::milliseconds(1));
     }
     return MAKELPARAM(x, y);
 }
@@ -389,23 +403,7 @@ bool MessageInput::scroll(int dx, int dy)
     else if (with_window_pos_) {
         // WithWindowPos 模式：保存当前窗口位置，并移动窗口使目标位置与鼠标重合
         save_window_pos();
-        POINT cursor_pos;
-        if (GetCursorPos(&cursor_pos)) {
-            POINT target_screen_pos = client_to_screen(target_pos.first, target_pos.second);
-            RECT current_rect;
-            if (GetWindowRect(hwnd_, &current_rect)) {
-                int delta_x = cursor_pos.x - target_screen_pos.x;
-                int delta_y = cursor_pos.y - target_screen_pos.y;
-                SetWindowPos(
-                    hwnd_,
-                    nullptr,
-                    current_rect.left + delta_x,
-                    current_rect.top + delta_y,
-                    0,
-                    0,
-                    SWP_NOSIZE | SWP_NOZORDER | SWP_NOACTIVATE);
-            }
-        }
+        move_window_to_align_cursor(target_pos.first, target_pos.second);
     }
 
     std::this_thread::sleep_for(std::chrono::milliseconds(10));

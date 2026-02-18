@@ -55,6 +55,9 @@ private:
     // 准备鼠标位置：with_cursor_pos_ 模式下移动真实光标，with_window_pos_ 模式下移动窗口，返回 lParam
     LPARAM prepare_mouse_position(int x, int y);
 
+    // WithWindowPos 模式：移动窗口使客户区坐标 (x,y) 与当前鼠标位置重合
+    bool move_window_to_align_cursor(int x, int y);
+
     // helpers for cursor/window position
     POINT client_to_screen(int x, int y);
     void save_cursor_pos();
