@@ -31,7 +31,7 @@ DEFAULT_DELETER(zwp_virtual_keyboard_v1, zwp_virtual_keyboard_v1_destroy)
 MAA_CTRL_UNIT_NS_BEGIN
 void WaylandHelper::randname(std::string& name)
 {
-    timespec ts;
+    timespec ts = { };
     clock_gettime(CLOCK_REALTIME, &ts);
     long r = ts.tv_nsec;
     for (int i = 0; i < 6; ++i) {
