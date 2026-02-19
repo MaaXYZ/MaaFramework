@@ -39,13 +39,6 @@ struct OCRerResult
     MEO_JSONIZATION(text, box, score);
 };
 
-struct OCRBatchCacheValue
-{
-    std::vector<std::vector<OCRerResult>> per_roi_results;
-};
-
-using OCRBatchCache = std::unordered_map<std::string, OCRBatchCacheValue>;
-
 class OCRer
     : public VisionBase
     , public RecoResultAPI<OCRerResult>
@@ -60,17 +53,11 @@ public:
         std::shared_ptr<fastdeploy::pipeline::PPOCRv3> ocrer,
         std::string name = "");
 
-    OCRer(cv::Mat image, std::vector<cv::Rect> rois, OCRerParam param, const OCRBatchCacheValue& cached_results, std::string name = "");
-
-    static std::vector<OCRerResult>
-        batch_predict_only_rec(const std::vector<cv::Mat>& images, const std::shared_ptr<fastdeploy::vision::ocr::Recognizer>& recer);
-
-    static std::vector<std::vector<OCRerResult>>
-        batch_predict_det_rec(const std::vector<cv::Mat>& images, const std::shared_ptr<fastdeploy::pipeline::PPOCRv3>& ocrer);
+    OCRer(cv::Mat image, std::vector<cv::Rect> rois, OCRerParam param, const ResultsVec& cached, std::string name = "");
 
 private:
     void analyze();
-    void analyze_cached(const OCRBatchCacheValue& cached);
+    void handle_cached(const ResultsVec& cached);
 
     ResultsVec predict() const;
 
@@ -100,5 +87,7 @@ private:
 
     inline static std::mutex s_predict_mutex_;
 };
+
+using OCRCache = std::unordered_map<std::string, OCRer::ResultsVec>;
 
 MAA_VISION_NS_END

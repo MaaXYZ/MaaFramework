@@ -18,54 +18,6 @@ MAA_SUPPRESS_CV_WARNINGS_END
 
 MAA_VISION_NS_BEGIN
 
-namespace
-{
-
-// 将 fastdeploy OCRResult 转换为 OCRerResult 列表
-// 抽取自 predict_det_and_rec 和 batch_predict_det_rec 的共同逻辑
-std::vector<OCRerResult> convert_ocr_result(const fastdeploy::vision::OCRResult& ocr_result, const cv::Size& image_size)
-{
-    std::vector<OCRerResult> results;
-
-    if (ocr_result.boxes.size() != ocr_result.text.size() || ocr_result.text.size() != ocr_result.rec_scores.size()) {
-        LogWarn << "Wrong ocr_result size" << VAR(ocr_result.boxes) << VAR(ocr_result.text) << VAR(ocr_result.rec_scores);
-
-        if (ocr_result.boxes.empty() && ocr_result.text.size() == 1 && ocr_result.rec_scores.size() == 1) {
-            if (auto raw_text = ocr_result.text.front(); !raw_text.empty()) {
-                // det 模型没出结果，整个 ROI 直接被送给了 rec 模型
-                results.emplace_back(
-                    OCRerResult {
-                        .text = to_u16(raw_text),
-                        .box = { 0, 0, image_size.width, image_size.height },
-                        .score = ocr_result.rec_scores.front(),
-                    });
-            }
-        }
-        return results;
-    }
-
-    for (size_t i = 0; i < ocr_result.text.size(); ++i) {
-        // the raw_box rect like ↓
-        // 0 - 1
-        // 3 - 2
-        const auto& raw_box = ocr_result.boxes.at(i);
-        int x_collect[] = { raw_box[0], raw_box[2], raw_box[4], raw_box[6] };
-        int y_collect[] = { raw_box[1], raw_box[3], raw_box[5], raw_box[7] };
-        auto [left, right] = std::ranges::minmax(x_collect);
-        auto [top, bottom] = std::ranges::minmax(y_collect);
-
-        results.emplace_back(
-            OCRerResult {
-                .text = to_u16(ocr_result.text.at(i)),
-                .box = cv::Rect(left, top, right - left, bottom - top),
-                .score = ocr_result.rec_scores.at(i),
-            });
-    }
-    return results;
-}
-
-} // namespace
-
 const boost::wregex& OCRer::gen_regex(const std::wstring& pattern)
 {
     static std::shared_mutex mtx;
@@ -100,11 +52,11 @@ OCRer::OCRer(
     analyze();
 }
 
-OCRer::OCRer(cv::Mat image, std::vector<cv::Rect> rois, OCRerParam param, const OCRBatchCacheValue& cached_results, std::string name)
+OCRer::OCRer(cv::Mat image, std::vector<cv::Rect> rois, OCRerParam param, const ResultsVec& cached, std::string name)
     : VisionBase(std::move(image), std::move(rois), std::move(name))
     , param_(std::move(param))
 {
-    analyze_cached(cached_results);
+    handle_cached(cached);
 }
 
 void OCRer::analyze()
@@ -120,6 +72,23 @@ void OCRer::analyze()
 
     auto cost = duration_since(start_time);
     LogDebug << name_ << VAR(all_results_) << VAR(filtered_results_) << VAR(best_result_) << VAR(cost) << VAR(param_.model)
+             << VAR(param_.only_rec) << VAR(param_.expected);
+}
+
+void OCRer::handle_cached(const ResultsVec& cached)
+{
+    // 这里应该按 roi 再分发一次结果，但除了 draw 没啥实际作用，以后再说
+    next_roi();
+
+    if (debug_draw_) {
+        auto draw = draw_result(cached);
+        handle_draw(draw);
+    }
+
+    add_results(cached, param_.expected);
+    cherry_pick();
+
+    LogDebug << name_ << VAR(cached) << VAR(all_results_) << VAR(filtered_results_) << VAR(best_result_) << VAR(param_.model)
              << VAR(param_.only_rec) << VAR(param_.expected);
 }
 
@@ -162,7 +131,41 @@ OCRer::ResultsVec OCRer::predict_det_and_rec(const cv::Mat& image_roi) const
         return {};
     }
 
-    return convert_ocr_result(ocr_result, image_roi.size());
+    ResultsVec results;
+
+    if (ocr_result.boxes.size() != ocr_result.text.size() || ocr_result.text.size() != ocr_result.rec_scores.size()) {
+        LogWarn << "Wrong ocr_result size" << VAR(ocr_result.boxes) << VAR(ocr_result.text) << VAR(ocr_result.rec_scores);
+
+        if (ocr_result.boxes.empty() && ocr_result.text.size() == 1 && ocr_result.rec_scores.size() == 1) {
+            if (auto raw_text = ocr_result.text.front(); !raw_text.empty()) {
+                // 这种情况是 det 模型没出结果，整个 ROI 直接被送给了 rec 模型。凑合用吧（
+                auto text = to_u16(raw_text);
+                auto score = ocr_result.rec_scores.front();
+                results.emplace_back(Result { .text = std::move(text), .box = { 0, 0, image_roi.cols, image_roi.rows }, .score = score });
+            }
+        }
+
+        return results;
+    }
+
+    for (size_t i = 0; i != ocr_result.text.size(); ++i) {
+        // the raw_box rect like ↓
+        // 0 - 1
+        // 3 - 2
+        const auto& raw_box = ocr_result.boxes.at(i);
+        int x_collect[] = { raw_box[0], raw_box[2], raw_box[4], raw_box[6] };
+        int y_collect[] = { raw_box[1], raw_box[3], raw_box[5], raw_box[7] };
+        auto [left, right] = std::ranges::minmax(x_collect);
+        auto [top, bottom] = std::ranges::minmax(y_collect);
+
+        auto text = to_u16(ocr_result.text.at(i));
+        cv::Rect my_box(left, top, right - left, bottom - top);
+        auto score = ocr_result.rec_scores.at(i);
+
+        results.emplace_back(Result { .text = std::move(text), .box = my_box, .score = score });
+    }
+
+    return results;
 }
 
 OCRer::Result OCRer::predict_only_rec(const cv::Mat& image_roi) const
@@ -295,104 +298,6 @@ void OCRer::sort_(ResultsVec& results) const
         LogError << "Not supported order by" << VAR(param_.order_by);
         break;
     }
-}
-
-void OCRer::analyze_cached(const OCRBatchCacheValue& cached)
-{
-    auto start_time = std::chrono::steady_clock::now();
-
-    size_t used_cached = 0;
-    for (size_t i = 0; i < cached.per_roi_results.size() && next_roi(); ++i) {
-        auto results = cached.per_roi_results[i];
-        ++used_cached;
-
-        LogDebug << name_ << "(cached) ROI" << VAR(i) << VAR(roi_) << VAR(results.size());
-
-        if (debug_draw_) {
-            auto draw = draw_result(results);
-            handle_draw(draw);
-        }
-
-        add_results(std::move(results), param_.expected);
-    }
-
-    if (used_cached < cached.per_roi_results.size()) {
-        LogWarn << name_ << "(cached) unused cached ROI results" << VAR(used_cached) << VAR(cached.per_roi_results.size());
-    }
-    if (used_cached > 0 && next_roi()) {
-        LogWarn << name_ << "(cached) more ROIs than cached results, some ROIs will have no results" << VAR(used_cached)
-                << VAR(cached.per_roi_results.size());
-    }
-
-    cherry_pick();
-
-    auto cost = duration_since(start_time);
-    LogDebug << name_ << "(cached)" << VAR(all_results_) << VAR(filtered_results_) << VAR(best_result_) << VAR(cost);
-}
-
-std::vector<OCRerResult>
-    OCRer::batch_predict_only_rec(const std::vector<cv::Mat>& images, const std::shared_ptr<fastdeploy::vision::ocr::Recognizer>& recer)
-{
-    if (!recer || images.empty()) {
-        return {};
-    }
-
-    std::vector<std::string> texts;
-    std::vector<float> scores;
-    bool ret = false;
-    {
-        std::unique_lock lock(s_predict_mutex_);
-        ret = recer->BatchPredict(images, &texts, &scores);
-    }
-    if (!ret) {
-        LogWarn << "BatchPredict only_rec failed";
-        return {};
-    }
-
-    if (texts.size() != scores.size()) {
-        LogWarn << "Mismatched batch only_rec text/score size" << VAR(texts.size()) << VAR(scores.size());
-    }
-
-    std::vector<OCRerResult> results;
-    auto count = std::min({ texts.size(), scores.size(), images.size() });
-    results.reserve(count);
-    for (size_t i = 0; i < count; ++i) {
-        results.emplace_back(
-            OCRerResult {
-                .text = to_u16(texts[i]),
-                .box = { 0, 0, images[i].cols, images[i].rows },
-                .score = scores[i],
-            });
-    }
-    return results;
-}
-
-std::vector<std::vector<OCRerResult>>
-    OCRer::batch_predict_det_rec(const std::vector<cv::Mat>& images, const std::shared_ptr<fastdeploy::pipeline::PPOCRv3>& ocrer)
-{
-    if (!ocrer || images.empty()) {
-        return {};
-    }
-
-    std::vector<fastdeploy::vision::OCRResult> batch_results;
-    bool ret = false;
-    {
-        std::unique_lock lock(s_predict_mutex_);
-        ret = ocrer->BatchPredict(images, &batch_results);
-    }
-    if (!ret) {
-        LogWarn << "BatchPredict det_rec failed";
-        return {};
-    }
-
-    std::vector<std::vector<OCRerResult>> all_results;
-    all_results.reserve(batch_results.size());
-
-    for (size_t img_idx = 0; img_idx < batch_results.size(); ++img_idx) {
-        all_results.emplace_back(convert_ocr_result(batch_results[img_idx], images[img_idx].size()));
-    }
-
-    return all_results;
 }
 
 MAA_VISION_NS_END
