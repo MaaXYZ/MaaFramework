@@ -619,13 +619,14 @@ void Recognizer::prefetch_batch_ocr(const std::vector<BatchOCREntry>& entries)
         return a.x <= b.x && a.y <= b.y && (a.x + a.width) >= (b.x + b.width) && (a.y + a.height) >= (b.y + b.height);
     };
 
-    for (const MAA_VISION_NS::OCRerResult& res : ocrer.all_results()) {
-        for (const auto& [node, rois] : node_rois) {
+    for (const auto& [node, rois] : node_rois) {
+        auto& cache = (*ocr_batch_cache_)[node];
+        for (const MAA_VISION_NS::OCRerResult& res : ocrer.all_results()) {
             for (const auto& r : rois) {
                 if (!contains(r, res.box)) {
                     continue;
                 }
-                (*ocr_batch_cache_)[node].emplace_back(res);
+                cache.emplace_back(res);
             }
         }
     }
