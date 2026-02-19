@@ -167,9 +167,9 @@ bool SeizeInput::input_text(const std::string& text)
     auto u16_text = to_u16(text);
     LogInfo << VAR(text) << VAR(u16_text) << VAR(hwnd_);
 
-    check_and_block_input();
+    // check_and_block_input();
 
-    OnScopeLeave([this]() { unblock_input(); });
+    // OnScopeLeave([this]() { unblock_input(); });
 
     std::vector<INPUT> input_vec;
 
@@ -202,7 +202,7 @@ bool SeizeInput::key_down(int key)
     }
     LogInfo << VAR(key) << VAR(hwnd_);
 
-    check_and_block_input();
+    // check_and_block_input();
 
     INPUT inputs[1] = {};
 
@@ -221,7 +221,7 @@ bool SeizeInput::key_up(int key)
     }
     LogInfo << VAR(key) << VAR(hwnd_);
 
-    OnScopeLeave([this]() { unblock_input(); });
+    // OnScopeLeave([this]() { unblock_input(); });
 
     INPUT inputs[1] = {};
 

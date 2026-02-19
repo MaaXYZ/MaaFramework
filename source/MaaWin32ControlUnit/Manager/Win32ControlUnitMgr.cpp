@@ -98,13 +98,21 @@ bool Win32ControlUnitMgr::connect()
         case MaaWin32InputMethod_PostThreadMessage:
             return std::make_shared<PostThreadMessageInput>(hwnd_);
         case MaaWin32InputMethod_SendMessageWithCursorPos:
-            return std::make_shared<MessageInput>(hwnd_, MessageInput::Config { .mode = MessageInput::Mode::SendMessage, .with_cursor_pos = true });
+            return std::make_shared<MessageInput>(
+                hwnd_,
+                MessageInput::Config { .mode = MessageInput::Mode::SendMessage, .with_cursor_pos = true, .block_input = true });
         case MaaWin32InputMethod_PostMessageWithCursorPos:
-            return std::make_shared<MessageInput>(hwnd_, MessageInput::Config { .mode = MessageInput::Mode::PostMessage, .with_cursor_pos = true });
+            return std::make_shared<MessageInput>(
+                hwnd_,
+                MessageInput::Config { .mode = MessageInput::Mode::PostMessage, .with_cursor_pos = true, .block_input = true });
         case MaaWin32InputMethod_SendMessageWithWindowPos:
-            return std::make_shared<MessageInput>(hwnd_, MessageInput::Config { .mode = MessageInput::Mode::SendMessage, .with_window_pos = true });
+            return std::make_shared<MessageInput>(
+                hwnd_,
+                MessageInput::Config { .mode = MessageInput::Mode::SendMessage, .with_window_pos = true, .block_input = true });
         case MaaWin32InputMethod_PostMessageWithWindowPos:
-            return std::make_shared<MessageInput>(hwnd_, MessageInput::Config { .mode = MessageInput::Mode::PostMessage, .with_window_pos = true });
+            return std::make_shared<MessageInput>(
+                hwnd_,
+                MessageInput::Config { .mode = MessageInput::Mode::PostMessage, .with_window_pos = true, .block_input = true });
         default:
             LogError << "Unknown input method: " << static_cast<int>(method);
             return nullptr;

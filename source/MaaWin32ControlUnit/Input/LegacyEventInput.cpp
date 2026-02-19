@@ -133,9 +133,8 @@ bool LegacyEventInput::input_text(const std::string& text)
     auto u16_text = to_u16(text);
     LogInfo << VAR(text) << VAR(u16_text) << VAR(hwnd_);
 
-    check_and_block_input();
-
-    OnScopeLeave([this]() { unblock_input(); });
+    // check_and_block_input();
+    // OnScopeLeave([this]() { unblock_input(); });
 
     // 使用旧的keybd_event API（已废弃，但某些情况下可能仍然有效）
     for (const auto ch : u16_text) {
@@ -156,7 +155,7 @@ bool LegacyEventInput::key_down(int key)
     }
     LogInfo << VAR(key) << VAR(hwnd_);
 
-    check_and_block_input();
+    // check_and_block_input();
 
     keybd_event(static_cast<BYTE>(key), 0, 0, 0);
 
@@ -170,7 +169,7 @@ bool LegacyEventInput::key_up(int key)
     }
     LogInfo << VAR(key) << VAR(hwnd_);
 
-    OnScopeLeave([this]() { unblock_input(); });
+    // OnScopeLeave([this]() { unblock_input(); });
 
     keybd_event(static_cast<BYTE>(key), 0, KEYEVENTF_KEYUP, 0);
 
