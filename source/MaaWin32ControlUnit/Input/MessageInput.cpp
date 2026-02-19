@@ -11,9 +11,8 @@ MAA_CTRL_UNIT_NS_BEGIN
 
 MessageInput::~MessageInput()
 {
-    if (config_.block_input) {
-        BlockInput(FALSE);
-    }
+    restore_pos();
+    unblock_input();
 }
 
 void MessageInput::send_activate()
@@ -59,26 +58,34 @@ void MessageInput::save_cursor_pos()
 
 void MessageInput::restore_cursor_pos()
 {
-    if (cursor_pos_saved_) {
-        SetCursorPos(saved_cursor_pos_.x, saved_cursor_pos_.y);
-        cursor_pos_saved_ = false;
+    if (!cursor_pos_saved_) {
+        return;
     }
+    std::this_thread::sleep_for(std::chrono::milliseconds(10));
+
+    SetCursorPos(saved_cursor_pos_.x, saved_cursor_pos_.y);
+    cursor_pos_saved_ = false;
 }
 
 void MessageInput::save_window_pos()
 {
-    if (hwnd_) {
-        GetWindowRect(hwnd_, &saved_window_rect_);
-        window_pos_saved_ = true;
+    if (!hwnd_) {
+        return;
     }
+
+    GetWindowRect(hwnd_, &saved_window_rect_);
+    window_pos_saved_ = true;
 }
 
 void MessageInput::restore_window_pos()
 {
-    if (window_pos_saved_ && hwnd_) {
-        SetWindowPos(hwnd_, nullptr, saved_window_rect_.left, saved_window_rect_.top, 0, 0, SWP_NOSIZE | SWP_NOZORDER | SWP_NOACTIVATE);
-        window_pos_saved_ = false;
+    if (!window_pos_saved_ || !hwnd_) {
+        return;
     }
+    std::this_thread::sleep_for(std::chrono::milliseconds(10));
+
+    SetWindowPos(hwnd_, nullptr, saved_window_rect_.left, saved_window_rect_.top, 0, 0, SWP_NOSIZE | SWP_NOZORDER | SWP_NOACTIVATE);
+    window_pos_saved_ = false;
 }
 
 void MessageInput::save_pos()
@@ -140,6 +147,22 @@ LPARAM MessageInput::prepare_mouse_position(int x, int y)
     return MAKELPARAM(x, y);
 }
 
+void MessageInput::check_and_block_input()
+{
+    if (!config_.block_input) {
+        return;
+    }
+    BlockInput(TRUE);
+}
+
+void MessageInput::unblock_input()
+{
+    if (!config_.block_input) {
+        return;
+    }
+    BlockInput(FALSE);
+}
+
 std::pair<int, int> MessageInput::get_target_pos() const
 {
     if (last_pos_set_) {
@@ -173,13 +196,15 @@ bool MessageInput::swipe(int x1, int y1, int x2, int y2, int duration)
 {
     LogError << "deprecated: get_features() returns MaaControllerFeature_UseMouseDownAndUpInsteadOfClick, "
                 "use touch_down/touch_move/touch_up instead"
-             << VAR(config_.mode) << VAR(config_.with_cursor_pos) << VAR(config_.with_window_pos) << VAR(x1) << VAR(y1) << VAR(x2) << VAR(y2) << VAR(duration);
+             << VAR(config_.mode) << VAR(config_.with_cursor_pos) << VAR(config_.with_window_pos) << VAR(x1) << VAR(y1) << VAR(x2)
+             << VAR(y2) << VAR(duration);
     return false;
 }
 
 bool MessageInput::touch_down(int contact, int x, int y, int pressure)
 {
-    LogInfo << VAR(config_.mode) << VAR(config_.with_cursor_pos) << VAR(config_.with_window_pos) << VAR(contact) << VAR(x) << VAR(y) << VAR(pressure);
+    LogInfo << VAR(config_.mode) << VAR(config_.with_cursor_pos) << VAR(config_.with_window_pos) << VAR(contact) << VAR(x) << VAR(y)
+            << VAR(pressure);
 
     std::ignore = pressure;
 
@@ -190,33 +215,29 @@ bool MessageInput::touch_down(int contact, int x, int y, int pressure)
 
     MouseMessageInfo move_info;
     if (!contact_to_mouse_move_message(contact, move_info)) {
-        LogError << VAR(config_.mode) << VAR(config_.with_cursor_pos) << VAR(config_.with_window_pos) << "contact out of range" << VAR(contact);
+        LogError << VAR(config_.mode) << VAR(config_.with_cursor_pos) << VAR(config_.with_window_pos) << "contact out of range"
+                 << VAR(contact);
         return false;
     }
 
     MouseMessageInfo down_info;
     if (!contact_to_mouse_down_message(contact, down_info)) {
-        LogError << VAR(config_.mode) << VAR(config_.with_cursor_pos) << VAR(config_.with_window_pos) << "contact out of range" << VAR(contact);
+        LogError << VAR(config_.mode) << VAR(config_.with_cursor_pos) << VAR(config_.with_window_pos) << "contact out of range"
+                 << VAR(contact);
         return false;
     }
 
     send_activate();
 
-    if (config_.block_input) {
-        BlockInput(TRUE);
-    }
+    check_and_block_input();
 
-    if (config_.with_cursor_pos || config_.with_window_pos) {
-        save_pos();
-    }
+    save_pos();
 
     // 准备位置并发送 MOVE 消息
     LPARAM lParam = prepare_mouse_position(x, y);
 
     if (!send_or_post_w(move_info.message, move_info.w_param, lParam)) {
-        if (config_.with_cursor_pos || config_.with_window_pos) {
-            restore_pos();
-        }
+        restore_pos();
         return false;
     }
 
@@ -224,9 +245,7 @@ bool MessageInput::touch_down(int contact, int x, int y, int pressure)
 
     // 发送 DOWN 消息
     if (!send_or_post_w(down_info.message, down_info.w_param, lParam)) {
-        if (config_.with_cursor_pos || config_.with_window_pos) {
-            restore_pos();
-        }
+        restore_pos();
         return false;
     }
 
@@ -249,7 +268,8 @@ bool MessageInput::touch_move(int contact, int x, int y, int pressure)
 
     MouseMessageInfo msg_info;
     if (!contact_to_mouse_move_message(contact, msg_info)) {
-        LogError << VAR(config_.mode) << VAR(config_.with_cursor_pos) << VAR(config_.with_window_pos) << "contact out of range" << VAR(contact);
+        LogError << VAR(config_.mode) << VAR(config_.with_cursor_pos) << VAR(config_.with_window_pos) << "contact out of range"
+                 << VAR(contact);
         return false;
     }
 
@@ -277,28 +297,23 @@ bool MessageInput::touch_up(int contact)
 
     send_activate();
 
-    OnScopeLeave([this]() {
-        if (config_.block_input) {
-            BlockInput(FALSE);
-        }
-    });
+    OnScopeLeave([this]() { unblock_input(); });
 
     MouseMessageInfo msg_info;
     if (!contact_to_mouse_up_message(contact, msg_info)) {
-        LogError << VAR(config_.mode) << VAR(config_.with_cursor_pos) << VAR(config_.with_window_pos) << "contact out of range" << VAR(contact);
+        LogError << VAR(config_.mode) << VAR(config_.with_cursor_pos) << VAR(config_.with_window_pos) << "contact out of range"
+                 << VAR(contact);
         return false;
     }
 
     auto target_pos = get_target_pos();
     if (!send_or_post_w(msg_info.message, msg_info.w_param, MAKELPARAM(target_pos.first, target_pos.second))) {
+        restore_pos();
         return false;
     }
 
     // touch_up 时恢复位置（与 touch_down 配对）
-    if (config_.with_cursor_pos || config_.with_window_pos) {
-        std::this_thread::sleep_for(std::chrono::milliseconds(10));
-        restore_pos();
-    }
+    restore_pos();
 
     return true;
 }
@@ -324,14 +339,14 @@ bool MessageInput::input_text(const std::string& text)
 
     send_activate();
 
+    bool success = true;
+
     // 文本输入仅发送 WM_CHAR
     for (const auto ch : to_u16(text)) {
-        if (!send_or_post_w(WM_CHAR, static_cast<WPARAM>(ch), 0)) {
-            return false;
-        }
+        success &= send_or_post_w(WM_CHAR, static_cast<WPARAM>(ch), 0);
         std::this_thread::sleep_for(std::chrono::milliseconds(50));
     }
-    return true;
+    return success;
 }
 
 bool MessageInput::key_down(int key)
@@ -375,62 +390,33 @@ bool MessageInput::scroll(int dx, int dy)
 
     send_activate();
 
-    if (config_.block_input) {
-        BlockInput(TRUE);
-    }
-
-    OnScopeLeave([this]() {
-        if (config_.block_input) {
-            BlockInput(FALSE);
-        }
-    });
+    check_and_block_input();
+    OnScopeLeave([this]() { unblock_input(); });
 
     auto target_pos = get_target_pos();
 
-    if (config_.with_cursor_pos) {
-        // WithCursorPos 模式：保存当前光标位置，并移动到目标位置
-        save_cursor_pos();
-        POINT screen_pos = client_to_screen(target_pos.first, target_pos.second);
-        SetCursorPos(screen_pos.x, screen_pos.y);
-    }
-    else if (config_.with_window_pos) {
-        // WithWindowPos 模式：保存当前窗口位置，并移动窗口使目标位置与鼠标重合
-        save_window_pos();
-        move_window_to_align_cursor(target_pos.first, target_pos.second);
-    }
+    save_pos();
 
-    std::this_thread::sleep_for(std::chrono::milliseconds(10));
-
-    // WM_MOUSEWHEEL 的 lParam 应为屏幕坐标
+    // prepare_mouse_position 用于移动光标/窗口（副作用），但 WM_MOUSEWHEEL 的 lParam 需要屏幕坐标
+    prepare_mouse_position(target_pos.first, target_pos.second);
     POINT screen_pos = client_to_screen(target_pos.first, target_pos.second);
     LPARAM lParam = MAKELPARAM(screen_pos.x, screen_pos.y);
 
+    bool success = true;
+
     if (dy != 0) {
         WPARAM wParam = MAKEWPARAM(0, static_cast<short>(dy));
-        if (!send_or_post_w(WM_MOUSEWHEEL, wParam, lParam)) {
-            if (config_.with_cursor_pos || config_.with_window_pos) {
-                restore_pos();
-            }
-            return false;
-        }
+        success &= send_or_post_w(WM_MOUSEWHEEL, wParam, lParam);
     }
 
     if (dx != 0) {
         WPARAM wParam = MAKEWPARAM(0, static_cast<short>(dx));
-        if (!send_or_post_w(WM_MOUSEHWHEEL, wParam, lParam)) {
-            if (config_.with_cursor_pos || config_.with_window_pos) {
-                restore_pos();
-            }
-            return false;
-        }
+        success &= send_or_post_w(WM_MOUSEHWHEEL, wParam, lParam);
     }
 
-    if (config_.with_cursor_pos || config_.with_window_pos) {
-        std::this_thread::sleep_for(std::chrono::milliseconds(10));
-        restore_pos();
-    }
+    restore_pos();
 
-    return true;
+    return success;
 }
 
 MAA_CTRL_UNIT_NS_END

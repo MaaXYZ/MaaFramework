@@ -11,9 +11,7 @@ MAA_CTRL_UNIT_NS_BEGIN
 
 LegacyEventInput::~LegacyEventInput()
 {
-    if (block_input_) {
-        BlockInput(FALSE);
-    }
+    unblock_input();
 }
 
 void LegacyEventInput::ensure_foreground()
@@ -54,9 +52,7 @@ bool LegacyEventInput::touch_down(int contact, int x, int y, int pressure)
     }
     LogInfo << VAR(contact) << VAR(x) << VAR(y) << VAR(pressure) << VAR(point.x) << VAR(point.y) << VAR_VOIDP(hwnd_);
 
-    if (block_input_) {
-        BlockInput(TRUE);
-    }
+    check_and_block_input();
 
     SetCursorPos(point.x, point.y);
 
@@ -105,11 +101,7 @@ bool LegacyEventInput::touch_up(int contact)
     }
     LogInfo << VAR(contact) << VAR(hwnd_);
 
-    OnScopeLeave([this]() {
-        if (block_input_) {
-            BlockInput(FALSE);
-        }
-    });
+    OnScopeLeave([this]() { unblock_input(); });
 
     MouseEventFlags flags_info;
     if (!contact_to_mouse_up_flags(contact, flags_info)) {
@@ -141,15 +133,9 @@ bool LegacyEventInput::input_text(const std::string& text)
     auto u16_text = to_u16(text);
     LogInfo << VAR(text) << VAR(u16_text) << VAR(hwnd_);
 
-    if (block_input_) {
-        BlockInput(TRUE);
-    }
+    check_and_block_input();
 
-    OnScopeLeave([this]() {
-        if (block_input_) {
-            BlockInput(FALSE);
-        }
-    });
+    OnScopeLeave([this]() { unblock_input(); });
 
     // 使用旧的keybd_event API（已废弃，但某些情况下可能仍然有效）
     for (const auto ch : u16_text) {
@@ -170,9 +156,7 @@ bool LegacyEventInput::key_down(int key)
     }
     LogInfo << VAR(key) << VAR(hwnd_);
 
-    if (block_input_) {
-        BlockInput(TRUE);
-    }
+    check_and_block_input();
 
     keybd_event(static_cast<BYTE>(key), 0, 0, 0);
 
@@ -186,11 +170,7 @@ bool LegacyEventInput::key_up(int key)
     }
     LogInfo << VAR(key) << VAR(hwnd_);
 
-    OnScopeLeave([this]() {
-        if (block_input_) {
-            BlockInput(FALSE);
-        }
-    });
+    OnScopeLeave([this]() { unblock_input(); });
 
     keybd_event(static_cast<BYTE>(key), 0, KEYEVENTF_KEYUP, 0);
 
@@ -205,15 +185,9 @@ bool LegacyEventInput::scroll(int dx, int dy)
         ensure_foreground();
     }
 
-    if (block_input_) {
-        BlockInput(TRUE);
-    }
+    check_and_block_input();
 
-    OnScopeLeave([this]() {
-        if (block_input_) {
-            BlockInput(FALSE);
-        }
-    });
+    OnScopeLeave([this]() { unblock_input(); });
 
     if (dy != 0) {
         mouse_event(MOUSEEVENTF_WHEEL, 0, 0, static_cast<DWORD>(dy), 0);
@@ -224,6 +198,22 @@ bool LegacyEventInput::scroll(int dx, int dy)
     }
 
     return true;
+}
+
+void LegacyEventInput::check_and_block_input()
+{
+    if (!block_input_) {
+        return;
+    }
+    BlockInput(TRUE);
+}
+
+void LegacyEventInput::unblock_input()
+{
+    if (!block_input_) {
+        return;
+    }
+    BlockInput(FALSE);
 }
 
 MAA_CTRL_UNIT_NS_END

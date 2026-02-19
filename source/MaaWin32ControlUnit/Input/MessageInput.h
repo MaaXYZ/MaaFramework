@@ -74,6 +74,9 @@ private:
     void save_pos();
     void restore_pos();
 
+    void check_and_block_input();
+    void unblock_input();
+
     // 获取 last_pos_，若未设置则返回窗口客户区中心坐标
     std::pair<int, int> get_target_pos() const;
 
