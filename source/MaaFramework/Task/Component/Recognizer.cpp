@@ -615,15 +615,19 @@ void Recognizer::prefetch_batch_ocr(const std::vector<BatchOCREntry>& entries)
         resource()->ocr_res().ocrer(batch_param.model),
         batch_name);
 
-    auto contains = [](const cv::Rect& a, const cv::Rect& b) {
-        return a.x <= b.x && a.y <= b.y && (a.x + a.width) >= (b.x + b.width) && (a.y + a.height) >= (b.y + b.height);
+    // auto contains = [](const cv::Rect& a, const cv::Rect& b) {
+    //     return a.x <= b.x && a.y <= b.y && (a.x + a.width) >= (b.x + b.width) && (a.y + a.height) >= (b.y + b.height);
+    // };
+    // 考虑两个 ROI 一边占一半的情况，不用 contains 了
+    auto intersect = [](const cv::Rect& a, const cv::Rect& b) {
+        return (a & b).area() > 0;
     };
 
     for (const auto& [node, rois] : node_rois) {
         auto& cache = (*ocr_batch_cache_)[node];
         for (const MAA_VISION_NS::OCRerResult& res : ocrer.all_results()) {
             for (const auto& r : rois) {
-                if (!contains(r, res.box)) {
+                if (!intersect(r, res.box)) {
                     continue;
                 }
                 cache.emplace_back(res);
