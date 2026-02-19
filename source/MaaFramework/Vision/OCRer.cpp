@@ -77,6 +77,9 @@ void OCRer::analyze()
 
 void OCRer::handle_cached(const ResultsVec& cached)
 {
+    // 这里应该按 roi 再分发一次结果，但除了 draw 没啥实际作用，以后再说
+    next_roi();
+
     if (debug_draw_) {
         auto draw = draw_result(cached);
         handle_draw(draw);
