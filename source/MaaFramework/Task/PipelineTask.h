@@ -18,21 +18,8 @@ struct BatchOCREntry
 {
     std::string name;
     MAA_VISION_NS::OCRerParam param;
-};
 
-struct BatchOCRPlan
-{
-    std::string model;
-    bool only_rec = false;
-    std::set<std::string> node_names;
-    std::vector<BatchOCREntry> entries;
-};
-
-struct OCRCollectContext
-{
-    BatchOCRPlan plan;
-    bool first = true;
-    const std::set<std::string>* all_node_names = nullptr;
+    MEO_TOJSON(name);
 };
 
 class PipelineTask : public TaskBase
@@ -44,6 +31,20 @@ public:
 
     virtual bool run() override;
     virtual void post_stop() override;
+
+private:
+    struct BatchOCRPlan
+    {
+        std::string model;
+        std::set<std::string> node_names;
+        std::vector<BatchOCREntry> entries;
+    };
+
+    struct OCRCollectContext
+    {
+        BatchOCRPlan plan;
+        bool first = true;
+    };
 
 private:
     NodeDetail run_next(const std::vector<MAA_RES_NS::NodeAttr>& next, const PipelineData& pretask);
