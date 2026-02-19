@@ -18,12 +18,17 @@ public:
         PostMessage,
     };
 
-    MessageInput(HWND hwnd, Mode mode, bool with_cursor_pos = false, bool with_window_pos = false, bool block_input = false)
+    struct Config
+    {
+        Mode mode = Mode::SendMessage;
+        bool with_cursor_pos = false;
+        bool with_window_pos = false;
+        bool block_input = false;
+    };
+
+    MessageInput(HWND hwnd, Config config)
         : hwnd_(hwnd)
-        , mode_(mode)
-        , with_cursor_pos_(with_cursor_pos)
-        , with_window_pos_(with_window_pos)
-        , block_input_(block_input)
+        , config_(config)
     {
     }
 
@@ -73,10 +78,7 @@ private:
     std::pair<int, int> get_target_pos() const;
 
     const HWND hwnd_ = nullptr;
-    const Mode mode_ = Mode::SendMessage;
-    const bool with_cursor_pos_ = false;
-    const bool with_window_pos_ = false;
-    const bool block_input_ = false;
+    const Config config_;
 
     std::pair<int, int> last_pos_;
     bool last_pos_set_ = false;
