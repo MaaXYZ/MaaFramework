@@ -599,6 +599,11 @@ void Recognizer::prefetch_batch_ocr(const std::vector<BatchOCREntry>& entries)
         batch_name += entry.name + "+";
     }
 
+    if (node_rois.empty()) {
+        LogWarn << "node_rois is empty" << VAR(entries);
+        return;
+    }
+
     OCRerParam batch_param = entries.front().param;
 
     // 获取所有结果

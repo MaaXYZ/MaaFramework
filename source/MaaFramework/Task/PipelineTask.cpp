@@ -368,7 +368,7 @@ void PipelineTask::try_add_ocr_node(OCRCollectContext& ctx, const std::string& n
         ctx.first = false;
     }
     else if (param.model != ctx.plan.model) {
-        LogDebug << "batch OCR skipping node due to model/only_rec mismatch" << VAR(name) << VAR(param.model) << VAR(ctx.plan.model);
+        LogDebug << "batch OCR skipping node due to model mismatch" << VAR(name) << VAR(param.model) << VAR(ctx.plan.model);
         return;
     }
 
