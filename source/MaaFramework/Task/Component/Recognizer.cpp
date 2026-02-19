@@ -591,7 +591,7 @@ void Recognizer::prefetch_batch_ocr(const std::vector<BatchOCREntry>& entries)
     for (const auto& entry : entries) {
         for (const cv::Rect& roi : get_rois(entry.param.roi_target)) {
             cv::Rect r = correct_roi(roi, image_);
-            image_.copyTo(masked_image(r));
+            image_(r).copyTo(masked_image(r));
 
             node_rois[entry.name].emplace_back(r);
             union_roi |= r;
