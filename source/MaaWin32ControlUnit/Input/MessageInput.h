@@ -18,12 +18,12 @@ public:
         PostMessage,
     };
 
-    MessageInput(HWND hwnd, Mode mode, bool with_cursor_pos = false, bool block_input = false, bool with_window_pos = false)
+    MessageInput(HWND hwnd, Mode mode, bool with_cursor_pos = false, bool with_window_pos = false, bool block_input = false)
         : hwnd_(hwnd)
         , mode_(mode)
         , with_cursor_pos_(with_cursor_pos)
-        , block_input_(block_input)
         , with_window_pos_(with_window_pos)
+        , block_input_(block_input)
     {
     }
 
@@ -75,8 +75,8 @@ private:
     const HWND hwnd_ = nullptr;
     const Mode mode_ = Mode::SendMessage;
     const bool with_cursor_pos_ = false;
-    const bool block_input_ = false;
     const bool with_window_pos_ = false;
+    const bool block_input_ = false;
 
     std::pair<int, int> last_pos_;
     bool last_pos_set_ = false;
