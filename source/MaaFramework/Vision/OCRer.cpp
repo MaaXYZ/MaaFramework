@@ -73,6 +73,12 @@ void OCRer::analyze()
 
     while (next_roi()) {
         auto results = cache_ ? handle_cached() : predict();
+
+        if (debug_draw_) {
+            auto draw = draw_result(results);
+            handle_draw(draw);
+        }
+
         add_results(std::move(results), param_.expected);
     }
 
@@ -95,11 +101,6 @@ OCRer::ResultsVec OCRer::predict() const
         res.box.y += roi_.y;
     });
 
-    if (debug_draw_) {
-        auto draw = draw_result(results);
-        handle_draw(draw);
-    }
-
     return results;
 }
 
@@ -111,6 +112,7 @@ OCRer::ResultsVec OCRer::handle_cached() const
     }
 
     if (cache_->empty()) {
+        LogWarn << "cache is empty";
         return {};
     }
 
@@ -135,11 +137,6 @@ OCRer::ResultsVec OCRer::handle_cached() const
     if (!intersections.empty()) {
         ResultsVec res = predict_batch_rec(intersections);
         results.insert(results.end(), std::make_move_iterator(res.begin()), std::make_move_iterator(res.end()));
-    }
-
-    if (debug_draw_) {
-        auto draw = draw_result(results);
-        handle_draw(draw);
     }
 
     return results;

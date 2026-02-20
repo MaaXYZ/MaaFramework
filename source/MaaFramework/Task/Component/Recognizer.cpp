@@ -583,7 +583,7 @@ void Recognizer::prefetch_batch_ocr(const std::vector<BatchOCREntry>& entries)
     using namespace MAA_VISION_NS;
 
     if (!ocr_batch_cache_ || entries.empty() || !resource()) {
-        LogDebug << "prefetch_batch_ocr skipped" << VAR(ocr_batch_cache_) << VAR(entries.empty()) << VAR(!!resource());
+        LogDebug << "prefetch_batch_ocr skipped" << VAR(ocr_batch_cache_) << VAR(entries.empty()) << VAR(resource());
         return;
     }
 
