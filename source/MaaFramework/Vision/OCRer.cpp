@@ -249,7 +249,7 @@ OCRer::ResultsVec OCRer::predict_batch_rec(const std::vector<cv::Rect>& rois) co
         LogWarn << "recer_ BatchPredict return false" << VAR(recer_) << VAR(rois) << VAR(imgs);
         return {};
     }
-    if (ocr_result.boxes.size() != rois.size() || ocr_result.text.size() != rois.size() || ocr_result.rec_scores.size() != rois.size()) {
+    if (ocr_result.text.size() != rois.size() || ocr_result.rec_scores.size() != rois.size()) {
         LogError << "Bad ocr result size" << VAR(rois) << VAR(ocr_result.boxes) << VAR(ocr_result.text) << VAR(ocr_result.rec_scores);
         return {};
     }
