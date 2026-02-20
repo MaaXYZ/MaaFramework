@@ -230,7 +230,7 @@ RecoResult Recognizer::ocr(const MAA_VISION_NS::OCRerParam& param, const std::st
     if (ocr_batch_cache_ && ocr_batch_cache_->contains(name)) {
         const auto& cached = ocr_batch_cache_->at(name);
         LogDebug << "OCR using batch cache" << VAR(name) << VAR(cached);
-        return build_result(name, "OCR", OCRer(image_, rois, param, cached, name));
+        return build_result(name, "OCR", OCRer(image_, rois, param, cached, resource()->ocr_res().recer(param.model), name));
     }
 
     return build_result(
@@ -576,6 +576,10 @@ MAA_RES_NS::ResourceMgr* Recognizer::resource()
 
 void Recognizer::prefetch_batch_ocr(const std::vector<BatchOCREntry>& entries)
 {
+    // 这个函数虽然叫 batch，最一开始的实现也确实是 gpu batch
+    // 但后来发现，直接做 mask 效率更高，于是就走普通 OCR 了
+    // 对外接口仍然可以理解为 batch，实际我们的代码实现是 mask
+
     using namespace MAA_VISION_NS;
 
     if (!ocr_batch_cache_ || entries.empty() || !resource()) {
@@ -620,10 +624,7 @@ void Recognizer::prefetch_batch_ocr(const std::vector<BatchOCREntry>& entries)
         resource()->ocr_res().ocrer(batch_param.model),
         batch_name);
 
-    // auto contains = [](const cv::Rect& a, const cv::Rect& b) {
-    //     return a.x <= b.x && a.y <= b.y && (a.x + a.width) >= (b.x + b.width) && (a.y + a.height) >= (b.y + b.height);
-    // };
-    // 考虑两个 ROI 一边占一半的情况，不用 contains 了
+    // 这里先把全部沾点边的结果（有交集的）都收集起来，后面实际要用的时候 (OCR::analyze_cached) 再进一步划分
     auto intersect = [](const cv::Rect& a, const cv::Rect& b) {
         return (a & b).area() > 0;
     };
