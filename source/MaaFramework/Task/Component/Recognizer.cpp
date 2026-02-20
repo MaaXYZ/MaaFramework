@@ -641,7 +641,7 @@ void Recognizer::prefetch_batch_ocr(const std::vector<BatchOCREntry>& entries)
         }
     }
 
-    LogInfo << "prefetch_batch_ocr completed" << VAR(entries) << VAR(ocr_batch_cache_);
+    LogInfo << "prefetch_batch_ocr completed" << VAR(entries) << VAR(*ocr_batch_cache_);
 }
 
 MAA_TASK_NS_END
