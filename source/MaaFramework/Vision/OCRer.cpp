@@ -136,6 +136,11 @@ OCRer::ResultsVec OCRer::handle_cached() const
         results.insert(results.end(), std::make_move_iterator(res.begin()), std::make_move_iterator(res.end()));
     }
 
+    if (debug_draw_) {
+        auto draw = draw_result(results);
+        handle_draw(draw);
+    }
+
     return results;
 }
 
