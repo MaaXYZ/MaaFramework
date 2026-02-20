@@ -624,7 +624,7 @@ void Recognizer::prefetch_batch_ocr(const std::vector<BatchOCREntry>& entries)
         resource()->ocr_res().ocrer(batch_param.model),
         batch_name);
 
-    // 这里先把全部沾点边的结果（有交集的）都收集起来，后面实际要用的时候 (OCR::analyze_cached) 再进一步划分
+    // 这里先把全部沾点边的结果（有交集的）都收集起来，后面实际要用的时候 (OCR::handle_cached) 再进一步划分
     auto intersect = [](const cv::Rect& a, const cv::Rect& b) {
         return (a & b).area() > 0;
     };
