@@ -133,12 +133,6 @@ OCRer::ResultsVec OCRer::handle_cached() const
 
     if (!intersections.empty()) {
         ResultsVec res = predict_batch_rec(intersections);
-        std::ranges::for_each(res, [&](auto& r) {
-            r.box.x += roi_.x;
-            r.box.y += roi_.y;
-        });
-        LogInfo << VAR(res);
-
         results.insert(results.end(), std::make_move_iterator(res.begin()), std::make_move_iterator(res.end()));
     }
 
@@ -269,6 +263,8 @@ OCRer::ResultsVec OCRer::predict_batch_rec(const std::vector<cv::Rect>& rois) co
 
         results.emplace_back(Result { .text = std::move(text), .box = my_box, .score = score });
     }
+
+    LogInfo << VAR(results);
 
     return results;
 }
