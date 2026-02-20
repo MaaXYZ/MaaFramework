@@ -131,6 +131,7 @@ OCRer::ResultsVec OCRer::handle_cached() const
         }
     }
 
+    // ROI 和 缓存结果相交的部分，拿相交的部分重新做一下识别
     if (!intersections.empty()) {
         ResultsVec res = predict_batch_rec(intersections);
         results.insert(results.end(), std::make_move_iterator(res.begin()), std::make_move_iterator(res.end()));
