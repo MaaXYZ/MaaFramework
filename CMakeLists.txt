@@ -2,12 +2,13 @@ cmake_minimum_required(VERSION 3.28)
 
 project(MaaFw)
 
-set(CMAKE_CXX_SCAN_FOR_MODULES  OFF)
+set(CMAKE_CXX_SCAN_FOR_MODULES OFF)
 
 include(source/MaaUtils/MaaUtils.cmake)
 
 option(WITH_ADB_CONTROLLER "build with adb controller" ON)
 option(WITH_WIN32_CONTROLLER "build with win32 controller" ON)
+option(WITH_MACOS_CONTROLLER "build with macOS controller" ON)
 option(WITH_DBG_CONTROLLER "build with debugging controller" OFF)
 option(WITH_CUSTOM_CONTROLLER "build with custom controller" ON)
 option(WITH_PLAYCOVER_CONTROLLER "build with PlayCover controller for macOS" ON)
@@ -38,6 +39,11 @@ endif()
 if(WITH_WIN32_CONTROLLER AND NOT WIN32)
     message(STATUS "Not on Windows, disable WITH_WIN32_CONTROLLER")
     set(WITH_WIN32_CONTROLLER OFF)
+endif()
+
+if(WITH_MACOS_CONTROLLER AND NOT APPLE)
+    message(STATUS "Not on macOS, disable WITH_MACOS_CONTROLLER")
+    set(WITH_MACOS_CONTROLLER OFF)
 endif()
 
 if(WITH_GAMEPAD_CONTROLLER AND NOT WIN32)

@@ -49,6 +49,17 @@
                 "mouse": "PostMessageWithCursorPos", // 鼠标控制方式
                 "keyboard": "PostMessageWithCursorPos" // 键盘控制方式
             }
+        },
+        {
+            "name": "macOS",
+            "label": "$macOS端",
+            "description": "通过 macOS 原生 API 连接 macOS 应用程序",
+            "type": "MacOS",
+            "macos": {
+                "title_regex": "关于本机", // 窗口名称正则表达式，用于匹配目标窗口
+                "screencap_method": "ScreenCaptureKit", // 截图方式
+                "input_method": "GlobalEvent" // 输入方式
+            }
         }
     ],
     "resource": [

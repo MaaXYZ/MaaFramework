@@ -6,8 +6,8 @@ import colormatcher
 from datetime import datetime
 from roimage import Roimage
 
-from maa.define import MaaAdbScreencapMethodEnum, MaaWin32ScreencapMethodEnum
-from maa.controller import AdbController, Win32Controller, Controller
+from maa.define import MaaAdbScreencapMethodEnum, MaaWin32ScreencapMethodEnum, MaaMacOSScreencapMethodEnum, MaaMacOSInputMethodEnum
+from maa.controller import AdbController, Win32Controller, MacOSController, Controller
 from maa.toolkit import Toolkit
 
 # 初始化设备参数
@@ -15,6 +15,7 @@ from maa.toolkit import Toolkit
 device_serial = None
 adb_screencap_method = MaaAdbScreencapMethodEnum.Default
 win32_screencap_method = MaaWin32ScreencapMethodEnum.DXGI_DesktopDup
+macos_screencap_method = MaaMacOSScreencapMethodEnum.ScreenCaptureKit
 
 # 初始窗口大小 (width, height)
 # window_size = (720, 1280) # 竖屏
@@ -75,8 +76,9 @@ def parse_args() -> Controller:
 
     t = int(input("1 | AdbController\n"
                   "2 | Win32Controller\n"
+                  "3 | MacOSController\n"
                   "Please select the controller type (ENTER to pass): "))
-    if not 1 <= t <= 2:
+    if not 1 <= t <= 3:
         return None
     print("MaaToolkit search in progress...")
 
@@ -104,6 +106,19 @@ def parse_args() -> Controller:
             device_serial = window_list[i].window_name
             return Win32Controller(hWnd=window_list[i].hwnd,
                                    screencap_method=win32_screencap_method)
+    elif t == 3:
+        window_list = Toolkit.find_desktop_windows()
+        if len(window_list):
+            max_len = 40
+            for i, w in enumerate(window_list):
+                c = w.class_name[:max_len - 3] + '...' if len(w.class_name) > max_len else w.class_name
+                print(f"{w.hwnd:>19} {c:>{max_len}} | {i:>3} | {w.window_name}")
+            print(str.format("{:->19} {:->{}} | {:->3} | {}", " hwnd", " class name", max_len, "num", "window name"))
+        i = int(input("Please select the window (ENTER to pass): "))
+        if 0 <= i < len(window_list):
+            device_serial = window_list[i].window_name
+            return MacOSController(window_id=window_list[i].hwnd,
+                                   screencap_method=macos_screencap_method)
     return None
 
 
