@@ -13,6 +13,7 @@ class ControlUnitAPI;
 class AdbControlUnitAPI;
 class Win32ControlUnitAPI;
 class CustomControlUnitAPI;
+class WlRootsControlUnitAPI;
 MAA_CTRL_UNIT_NS_END
 
 MAA_NS_BEGIN
@@ -99,6 +100,18 @@ private:
     inline static const std::string version_func_name_ = "MaaGamepadControlUnitGetVersion";
     inline static const std::string create_func_name_ = "MaaGamepadControlUnitCreate";
     inline static const std::string destroy_func_name_ = "MaaGamepadControlUnitDestroy";
+};
+
+class WlRootsControlUnitLibraryHolder : public LibraryHolder<WlRootsControlUnitLibraryHolder>
+{
+public:
+    static std::shared_ptr<MAA_CTRL_UNIT_NS::ControlUnitAPI> create_control_unit(const char* wlr_socket_path);
+
+private:
+    inline static const std::filesystem::path libname_ = MAA_NS::path("MaaWlRootsControlUnit");
+    inline static const std::string version_func_name_ = "MaaWlRootsControlUnitGetVersion";
+    inline static const std::string create_func_name_ = "MaaWlRootsControlUnitCreate";
+    inline static const std::string destroy_func_name_ = "MaaWlRootsControlUnitDestroy";
 };
 
 MAA_NS_END

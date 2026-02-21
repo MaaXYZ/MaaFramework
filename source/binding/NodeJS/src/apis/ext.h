@@ -91,6 +91,7 @@ struct ExtContext : public maajs::NativeClassBase
     maajs::FunctionRefType playcoverControllerCtor;
     maajs::FunctionRefType dbgControllerCtor;
     maajs::FunctionRefType gamepadControllerCtor;
+    maajs::FunctionRefType wlrootsControllerCtor;
     maajs::FunctionRefType customControllerCtor;
     maajs::FunctionRefType taskJobCtor;
     maajs::FunctionRefType taskerCtor;

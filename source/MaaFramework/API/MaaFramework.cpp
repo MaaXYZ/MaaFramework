@@ -162,6 +162,28 @@ MaaController* MaaGamepadControllerCreate(void* hWnd, MaaGamepadType gamepad_typ
 #endif
 }
 
+MaaController* MaaWlRootsControllerCreate(const char* wlr_socket_path)
+{
+    LogFunc << VAR(wlr_socket_path);
+
+#ifndef __linux__
+
+    LogError << "This API" << __FUNCTION__ << "is only available on Linux";
+    return nullptr;
+
+#else
+
+    auto control_unit = MAA_NS::WlRootsControlUnitLibraryHolder::create_control_unit(wlr_socket_path);
+
+    if (!control_unit) {
+        LogError << "Failed to create control unit";
+        return nullptr;
+    }
+
+    return new MAA_CTRL_NS::ControllerAgent(std::move(control_unit));
+#endif
+}
+
 void MaaControllerDestroy(MaaController* ctrl)
 {
     LogFunc << VAR_VOIDP(ctrl);
