@@ -200,10 +200,12 @@ bool WlRootsControlUnitMgr::click_key(int key)
 
 bool WlRootsControlUnitMgr::input_text(const std::string& text)
 {
-    if (!client_->input_str(text)) {
+    if (!client_) {
+        LogError << "client_ is nullptr";
         return false;
     }
-    return true;
+
+    return client_->input_str(text);
 }
 
 bool WlRootsControlUnitMgr::key_down(int key)
