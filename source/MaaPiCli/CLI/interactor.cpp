@@ -927,7 +927,7 @@ void Interactor::select_macos(const MAA_PROJECT_INTERFACE_NS::InterfaceData::Con
         }
     }
     else {
-        std::cout << "Window regex is required.\n\n";
+        std::cout << "Title regex is required.\n\n";
         return;
     }
 
