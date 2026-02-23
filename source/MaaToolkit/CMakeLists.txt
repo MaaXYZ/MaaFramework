@@ -27,9 +27,11 @@ if(APPLE)
     # macOS frameworks for ScreenCaptureKit
     find_library(SCREEN_CAPTURE_KIT ScreenCaptureKit REQUIRED)
     find_library(CORE_FOUNDATION CoreFoundation REQUIRED)
+    find_library(FOUNDATION Foundation REQUIRED)
     target_link_libraries(MaaToolkit PRIVATE
         ${SCREEN_CAPTURE_KIT}
         ${CORE_FOUNDATION}
+        ${FOUNDATION}
     )
 endif()
 
