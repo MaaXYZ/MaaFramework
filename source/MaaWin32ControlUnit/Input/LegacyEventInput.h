@@ -42,6 +42,9 @@ public: // from InputBase
 private:
     void ensure_foreground();
 
+    void check_and_block_input();
+    void unblock_input();
+
     HWND hwnd_ = nullptr;
     const bool block_input_ = false;
 };

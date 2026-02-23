@@ -148,6 +148,13 @@ private:
         const std::vector<NodeAttr>& default_next);
     static bool parse_node_in_next(const json::value& input, NodeAttr& output);
     static bool parse_node_string_in_next(const std::string& raw, NodeAttr& output);
+
+    static bool parse_anchor(
+        const json::value& input,
+        const std::string& key,
+        const std::string& node_name,
+        std::map<std::string, std::string>& output,
+        const std::map<std::string, std::string>& default_value);
 };
 
 MAA_RES_NS_END

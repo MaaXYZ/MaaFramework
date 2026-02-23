@@ -566,13 +566,14 @@ class Tasker:
         if not ret:
             return None
 
-        nodes = []
-        for i in range(size.value):
-            detail = self.get_node_detail(int(c_node_id_list[i]))
-            nodes.append(detail)
+        node_id_list = [int(c_node_id_list[i]) for i in range(size.value)]
 
         return TaskDetail(
-            task_id=task_id, entry=entry.get(), nodes=nodes, status=Status(status)
+            task_id=task_id,
+            entry=entry.get(),
+            node_id_list=node_id_list,
+            status=Status(status),
+            node_detail_func=self.get_node_detail,
         )
 
     @staticmethod

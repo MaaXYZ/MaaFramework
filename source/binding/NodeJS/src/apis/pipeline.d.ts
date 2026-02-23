@@ -146,7 +146,7 @@ declare global {
 
         type RecognitionAnd<Mode> = RequiredIfStrict<
             {
-                all_of?: Recognition<Mode>['recognition'][]
+                all_of?: (string | Recognition<Mode>['recognition'])[]
                 box_index?: number
             },
             'all_of',
@@ -155,7 +155,7 @@ declare global {
 
         type RecognitionOr<Mode> = RequiredIfStrict<
             {
-                any_of: Recognition<Mode>['recognition'][]
+                any_of: (string | Recognition<Mode>['recognition'])[]
             },
             'any_of',
             Mode
@@ -453,7 +453,7 @@ declare global {
             rate_limit?: number
             timeout?: number
             on_error?: MaybeArray<RemoveIfDump<NodeName, Mode> | NodeAttr<Mode>, Mode>
-            anchor?: MaybeArray<NodeName, Mode>
+            anchor?: RemoveIfDump<NodeName | NodeName[], Mode> | Record<NodeName, NodeName>
             inverse?: boolean
             enabled?: boolean
             max_hit?: number

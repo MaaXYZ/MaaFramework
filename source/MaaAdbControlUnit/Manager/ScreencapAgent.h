@@ -22,6 +22,7 @@ public:
         MinicapStream,
         MuMuPlayerExtras,
         LDPlayerExtras,
+        AVDExtras,
     };
 
 public:

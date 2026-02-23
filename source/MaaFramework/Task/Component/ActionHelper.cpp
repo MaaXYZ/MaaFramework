@@ -87,10 +87,6 @@ cv::Rect ActionHelper::get_target_rect(const MAA_RES_NS::Action::Target& target,
         LogError << "Tasker is null";
         return {};
     }
-    if (!controller()) {
-        LogError << "Controller is null";
-        return {};
-    }
 
     using namespace MAA_RES_NS::Action;
 
@@ -117,6 +113,16 @@ cv::Rect ActionHelper::get_target_rect(const MAA_RES_NS::Action::Target& target,
     default:
         LogError << "Unknown target type" << VAR(static_cast<int>(target.type));
         return {};
+    }
+
+    // 无 controller 时跳过边界检查，直接返回 raw + offset
+    if (!controller()) {
+        LogDebug << "controller not bound, skip image boundary check";
+        return cv::Rect(
+            raw.x + target.offset.x,
+            raw.y + target.offset.y,
+            raw.width + target.offset.width,
+            raw.height + target.offset.height);
     }
 
     auto image = controller()->cached_image();

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <array>
+#include <map>
 #include <string>
 #include <vector>
 
@@ -121,9 +122,12 @@ struct JCustomRecognition
 
 struct JSubRecognition;
 
+// Sub-recognition element: either a node name (string) or inline recognition (object)
+using JSubRecognitionItem = std::variant<std::string, json::value>;
+
 struct JAnd
 {
-    std::vector<json::value> all_of;
+    std::vector<JSubRecognitionItem> all_of;
     int box_index = 0;
 
     MEO_TOJSON(all_of, box_index);
@@ -131,7 +135,7 @@ struct JAnd
 
 struct JOr
 {
-    std::vector<json::value> any_of;
+    std::vector<JSubRecognitionItem> any_of;
 
     MEO_TOJSON(any_of);
 };
@@ -354,7 +358,7 @@ struct JPipelineData
     int64_t rate_limit = 0;
     int64_t timeout = 0;
     std::vector<NodeAttr> on_error;
-    std::vector<std::string> anchor;
+    std::map<std::string, std::string> anchor;
     bool inverse = false;
     bool enabled = false;
     int64_t pre_delay = 0;

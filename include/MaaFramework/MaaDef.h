@@ -333,22 +333,26 @@ typedef uint64_t MaaWin32ScreencapMethod;
  *
  * Different applications process input differently, there is no universal solution.
  *
- * | Method                       | Compatibility | Require Admin | Seize Mouse | Background Support | Notes |
- * |------------------------------|---------------|---------------|--------------|--------------------|-------------------------------------------------------------|
- * | Seize                        | High          | No            | Yes          | No                 | | | SendMessage                  |
+ * | Method                       | Compatibility | Require Admin | Seize Mouse  | Background Support | Notes |
+ * |------------------------------|---------------|---------------|--------------|--------------------|-------------------------------------------------------------
+ * | | Seize                        | High          | No            | Yes          | No                 | | | SendMessage                  |
  * Medium        | Maybe         | No           | Yes                |                                                             | |
  * PostMessage                  | Medium        | Maybe         | No           | Yes                | | | LegacyEvent                  | Low
  * | No            | Yes          | No                 |                                                             | | PostThreadMessage
  * | Low           | Maybe         | No           | Yes                |                                                             | |
- * SendMessageWithCursorPos     | Medium        | Maybe         | Briefly      | Yes                | Designed for apps that check real
- * cursor position           | | PostMessageWithCursorPos     | Medium        | Maybe         | Briefly      | Yes                | Designed
- * for apps that check real cursor position           |
+ * SendMessageWithCursorPos     | Medium        | Maybe         | Briefly      | Yes                | Moves cursor to target position, then
+ * restores              | | PostMessageWithCursorPos     | Medium        | Maybe         | Briefly      | Yes                | Moves cursor
+ * to target position, then restores              | | SendMessageWithWindowPos     | Medium        | Maybe         | No           | Yes |
+ * Moves window to align target with cursor, then restores     | | PostMessageWithWindowPos     | Medium        | Maybe         | No | Yes |
+ * Moves window to align target with cursor, then restores     |
  *
  * Note:
  * - Admin rights mainly depend on the target application's privilege level.
  *   If the target runs as admin, MaaFramework should also run as admin for compatibility.
  * - "WithCursorPos" methods briefly move the cursor to target position, send message,
  *   then restore cursor position. This "briefly" seizes the mouse but won't block user operations.
+ * - "WithWindowPos" methods briefly move the window so the target aligns with the current cursor
+ *   position, send message, then restore the window position. The cursor is not moved.
  */
 typedef uint64_t MaaWin32InputMethod;
 #define MaaWin32InputMethod_None 0ULL
@@ -359,6 +363,8 @@ typedef uint64_t MaaWin32InputMethod;
 #define MaaWin32InputMethod_PostThreadMessage (1ULL << 4)
 #define MaaWin32InputMethod_SendMessageWithCursorPos (1ULL << 5)
 #define MaaWin32InputMethod_PostMessageWithCursorPos (1ULL << 6)
+#define MaaWin32InputMethod_SendMessageWithWindowPos (1ULL << 7)
+#define MaaWin32InputMethod_PostMessageWithWindowPos (1ULL << 8)
 
 // MaaMacOSScreencapMethod:
 /**
