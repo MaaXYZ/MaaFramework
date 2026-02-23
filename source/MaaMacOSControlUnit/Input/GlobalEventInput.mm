@@ -5,7 +5,10 @@
 #include <AppKit/AppKit.h>
 #include <ApplicationServices/ApplicationServices.h>
 #include <CoreFoundation/CoreFoundation.h>
+#include <cctype>
+#include <map>
 #include <tuple>
+#include <unistd.h>
 
 MAA_CTRL_UNIT_NS_BEGIN
 
