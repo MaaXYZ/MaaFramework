@@ -11,9 +11,7 @@ MAA_CTRL_UNIT_NS_BEGIN
 
 SeizeInput::~SeizeInput()
 {
-    if (block_input_) {
-        BlockInput(FALSE);
-    }
+    unblock_input();
 }
 
 void SeizeInput::ensure_foreground()
@@ -68,9 +66,7 @@ bool SeizeInput::touch_down(int contact, int x, int y, int pressure)
     }
     LogInfo << VAR(contact) << VAR(x) << VAR(y) << VAR(pressure) << VAR(point.x) << VAR(point.y) << VAR_VOIDP(hwnd_);
 
-    if (block_input_) {
-        BlockInput(TRUE);
-    }
+    check_and_block_input();
 
     SetCursorPos(point.x, point.y);
 
@@ -133,11 +129,7 @@ bool SeizeInput::touch_up(int contact)
     }
     LogInfo << VAR(contact) << VAR(hwnd_);
 
-    OnScopeLeave([this]() {
-        if (block_input_) {
-            BlockInput(FALSE);
-        }
-    });
+    OnScopeLeave([this]() { unblock_input(); });
 
     INPUT input = {};
     input.type = INPUT_MOUSE;
@@ -175,15 +167,9 @@ bool SeizeInput::input_text(const std::string& text)
     auto u16_text = to_u16(text);
     LogInfo << VAR(text) << VAR(u16_text) << VAR(hwnd_);
 
-    if (block_input_) {
-        BlockInput(TRUE);
-    }
+    // check_and_block_input();
 
-    OnScopeLeave([this]() {
-        if (block_input_) {
-            BlockInput(FALSE);
-        }
-    });
+    // OnScopeLeave([this]() { unblock_input(); });
 
     std::vector<INPUT> input_vec;
 
@@ -216,9 +202,7 @@ bool SeizeInput::key_down(int key)
     }
     LogInfo << VAR(key) << VAR(hwnd_);
 
-    if (block_input_) {
-        BlockInput(TRUE);
-    }
+    // check_and_block_input();
 
     INPUT inputs[1] = {};
 
@@ -237,11 +221,7 @@ bool SeizeInput::key_up(int key)
     }
     LogInfo << VAR(key) << VAR(hwnd_);
 
-    OnScopeLeave([this]() {
-        if (block_input_) {
-            BlockInput(FALSE);
-        }
-    });
+    // OnScopeLeave([this]() { unblock_input(); });
 
     INPUT inputs[1] = {};
 
@@ -262,15 +242,9 @@ bool SeizeInput::scroll(int dx, int dy)
         ensure_foreground();
     }
 
-    if (block_input_) {
-        BlockInput(TRUE);
-    }
+    check_and_block_input();
 
-    OnScopeLeave([this]() {
-        if (block_input_) {
-            BlockInput(FALSE);
-        }
-    });
+    OnScopeLeave([this]() { unblock_input(); });
 
     // 移动光标到目标位置
     auto [target_x, target_y] = get_target_pos();
@@ -296,6 +270,22 @@ bool SeizeInput::scroll(int dx, int dy)
     }
 
     return true;
+}
+
+void SeizeInput::check_and_block_input()
+{
+    if (!block_input_) {
+        return;
+    }
+    BlockInput(TRUE);
+}
+
+void SeizeInput::unblock_input()
+{
+    if (!block_input_) {
+        return;
+    }
+    BlockInput(FALSE);
 }
 
 MAA_CTRL_UNIT_NS_END

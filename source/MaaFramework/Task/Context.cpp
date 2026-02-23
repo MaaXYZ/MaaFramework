@@ -302,7 +302,12 @@ void Context::clear_hit_count(const std::string& node_name)
 void Context::set_anchor(const std::string& anchor_name, const std::string& node_name)
 {
     LogDebug << VAR(anchor_name) << VAR(node_name);
-    task_state_->anchors[anchor_name] = node_name;
+    if (node_name.empty()) {
+        task_state_->anchors.erase(anchor_name);
+    }
+    else {
+        task_state_->anchors[anchor_name] = node_name;
+    }
 }
 
 std::optional<std::string> Context::get_anchor(const std::string& anchor_name) const

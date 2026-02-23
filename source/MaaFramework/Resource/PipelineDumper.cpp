@@ -209,12 +209,18 @@ PipelineV2::JRecognition PipelineDumper::dump_reco(Recognition::Type type, const
             return reco;
         }
 
-        std::vector<json::value> all_list;
+        std::vector<PipelineV2::JSubRecognitionItem> all_list;
         for (const auto& sub : p->all_of) {
-            auto sub_reco = dump_reco(sub.type, sub.param);
-            json::object sub_json = sub_reco.to_json().as_object();
-            sub_json["sub_name"] = sub.sub_name;
-            all_list.emplace_back(std::move(sub_json));
+            if (auto* node_name = std::get_if<std::string>(&sub)) {
+                all_list.emplace_back(*node_name);
+            }
+            else {
+                const auto& inline_sub = std::get<Recognition::InlineSubRecognition>(sub);
+                auto sub_reco = dump_reco(inline_sub.type, inline_sub.param);
+                json::object sub_json = sub_reco.to_json().as_object();
+                sub_json["sub_name"] = inline_sub.sub_name;
+                all_list.emplace_back(json::value(std::move(sub_json)));
+            }
         }
 
         reco.param = PipelineV2::JAnd {
@@ -230,12 +236,18 @@ PipelineV2::JRecognition PipelineDumper::dump_reco(Recognition::Type type, const
             return reco;
         }
 
-        std::vector<json::value> any_list;
+        std::vector<PipelineV2::JSubRecognitionItem> any_list;
         for (const auto& sub : p->any_of) {
-            auto sub_reco = dump_reco(sub.type, sub.param);
-            json::object sub_json = sub_reco.to_json().as_object();
-            sub_json["sub_name"] = sub.sub_name;
-            any_list.emplace_back(std::move(sub_json));
+            if (auto* node_name = std::get_if<std::string>(&sub)) {
+                any_list.emplace_back(*node_name);
+            }
+            else {
+                const auto& inline_sub = std::get<Recognition::InlineSubRecognition>(sub);
+                auto sub_reco = dump_reco(inline_sub.type, inline_sub.param);
+                json::object sub_json = sub_reco.to_json().as_object();
+                sub_json["sub_name"] = inline_sub.sub_name;
+                any_list.emplace_back(json::value(std::move(sub_json)));
+            }
         }
 
         reco.param = PipelineV2::JOr {

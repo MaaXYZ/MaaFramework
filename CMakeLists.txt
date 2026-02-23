@@ -110,9 +110,9 @@ endif()
 
 include(CMakePackageConfigHelpers)
 
-configure_package_config_file(${CMAKE_CURRENT_SOURCE_DIR}/Config.cmake.in "MaaFrameworkConfig.cmake"
+configure_package_config_file(${CMAKE_CURRENT_SOURCE_DIR}/cmake/MaaFrameworkConfig.cmake.in "MaaFrameworkConfig.cmake"
     INSTALL_DESTINATION share/cmake/MaaFramework)
-configure_package_config_file(${CMAKE_CURRENT_SOURCE_DIR}/Config.cmake.in "MaaAgentServerConfig.cmake"
+configure_package_config_file(${CMAKE_CURRENT_SOURCE_DIR}/cmake/MaaAgentServerConfig.cmake.in "MaaAgentServerConfig.cmake"
     INSTALL_DESTINATION share/cmake/MaaAgentServer)
 
 install(FILES "${CMAKE_CURRENT_BINARY_DIR}/MaaFrameworkConfig.cmake"

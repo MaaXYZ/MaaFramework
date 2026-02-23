@@ -338,7 +338,9 @@
                                 "LegacyEvent",
                                 "PostThreadMessage",
                                 "SendMessageWithCursorPos",
-                                "PostMessageWithCursorPos"
+                                "PostMessageWithCursorPos",
+                                "SendMessageWithWindowPos",
+                                "PostMessageWithWindowPos"
                             ]
                         },
                         "keyboard": {
@@ -352,7 +354,9 @@
                                 "LegacyEvent",
                                 "PostThreadMessage",
                                 "SendMessageWithCursorPos",
-                                "PostMessageWithCursorPos"
+                                "PostMessageWithCursorPos",
+                                "SendMessageWithWindowPos",
+                                "PostMessageWithWindowPos"
                             ]
                         },
                         "screencap": {
@@ -522,6 +526,21 @@
                     "description": "帮助用户理解任务功能。支持文件路径、URL 或直接文本，内容支持 Markdown 格式"
                 },
                 "doc": {
+                    "anyOf": [
+                        {
+                            "$ref": "#/definitions/i18nString"
+                        },
+                        {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/i18nString"
+                            }
+                        }
+                    ],
+                    "title": "任务文档",
+                    "description": "任务的详细文档说明，支持字符串或字符串数组"
+                },
+                "desc": {
                     "anyOf": [
                         {
                             "$ref": "#/definitions/i18nString"
