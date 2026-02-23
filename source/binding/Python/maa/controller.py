@@ -818,7 +818,6 @@ class MacOSController(Controller):
         Library.framework().MaaMacOSControllerCreate.restype = MaaControllerHandle
         Library.framework().MaaMacOSControllerCreate.argtypes = [
             ctypes.c_uint32,
-            ctypes.c_int32,
             MaaMacOSScreencapMethod,
             MaaMacOSInputMethod,
         ]
