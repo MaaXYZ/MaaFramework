@@ -2,6 +2,7 @@
 
 #include <chrono>
 #include <limits>
+#include <map>
 #include <memory>
 #include <string>
 #include <unordered_map>
@@ -49,13 +50,16 @@ using Param = std::variant<
     std::shared_ptr<OrParam>,
     MAA_VISION_NS::CustomRecognitionParam>;
 
-// Sub-recognition element for Multiple recognition
-struct SubRecognition
+// Inline sub-recognition with explicit type and params
+struct InlineSubRecognition
 {
     std::string sub_name;
     Type type = Type::Invalid;
     Param param;
 };
+
+// Sub-recognition element: either a node name (string) or inline recognition
+using SubRecognition = std::variant<std::string, InlineSubRecognition>;
 
 // And recognition parameter (logical AND - all must match)
 struct AndParam
@@ -359,7 +363,7 @@ struct PipelineData
 
     std::vector<NodeAttr> next;
     std::vector<NodeAttr> on_error;
-    std::vector<std::string> anchor;
+    std::map<std::string, std::string> anchor;
     std::chrono::milliseconds rate_limit = std::chrono::milliseconds(1000);
     std::chrono::milliseconds reco_timeout = std::chrono::milliseconds(20 * 1000);
 

@@ -22,6 +22,7 @@ option(BUILD_SAMPLE "build a demo" OFF)
 option(BUILD_PIPELINE_TESTING "build pipeline testing" OFF)
 option(BUILD_DLOPEN_TESTING "build dlopen testing" OFF)
 option(BUILD_NODE_TEST "build node test" OFF)
+option(BUILD_MACOS_TEST "build macOS test" OFF)
 
 option(ENABLE_CCACHE "enable ccache if possible" ON)
 option(ENABLE_HASH_VERSION "enable hash version from git" OFF)
@@ -81,6 +82,10 @@ if(BUILD_NODE_TEST)
     add_subdirectory(tools/NodeTest)
 endif()
 
+if(BUILD_MACOS_TEST)
+    add_subdirectory(test/macos_test)
+endif()
+
 maadeps_install(bin)
 
 install(
@@ -110,9 +115,9 @@ endif()
 
 include(CMakePackageConfigHelpers)
 
-configure_package_config_file(${CMAKE_CURRENT_SOURCE_DIR}/Config.cmake.in "MaaFrameworkConfig.cmake"
+configure_package_config_file(${CMAKE_CURRENT_SOURCE_DIR}/cmake/MaaFrameworkConfig.cmake.in "MaaFrameworkConfig.cmake"
     INSTALL_DESTINATION share/cmake/MaaFramework)
-configure_package_config_file(${CMAKE_CURRENT_SOURCE_DIR}/Config.cmake.in "MaaAgentServerConfig.cmake"
+configure_package_config_file(${CMAKE_CURRENT_SOURCE_DIR}/cmake/MaaAgentServerConfig.cmake.in "MaaAgentServerConfig.cmake"
     INSTALL_DESTINATION share/cmake/MaaAgentServer)
 
 install(FILES "${CMAKE_CURRENT_BINARY_DIR}/MaaFrameworkConfig.cmake"

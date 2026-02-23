@@ -2,6 +2,7 @@
 
 #include <mutex>
 #include <ostream>
+#include <unordered_map>
 #include <vector>
 
 #include <boost/regex.hpp>
@@ -52,10 +53,19 @@ public:
         std::shared_ptr<fastdeploy::pipeline::PPOCRv3> ocrer,
         std::string name = "");
 
+    OCRer(
+        cv::Mat image,
+        std::vector<cv::Rect> rois,
+        OCRerParam param,
+        const ResultsVec& cached,
+        std::shared_ptr<fastdeploy::vision::ocr::Recognizer> recer,
+        std::string name = "");
+
 private:
     void analyze();
 
     ResultsVec predict() const;
+    ResultsVec handle_cached() const;
 
     void add_results(ResultsVec results, const std::vector<std::wstring>& expected);
     void cherry_pick();
@@ -63,6 +73,7 @@ private:
 private:
     ResultsVec predict_det_and_rec(const cv::Mat& image_roi) const;
     Result predict_only_rec(const cv::Mat& image_roi) const;
+    ResultsVec predict_batch_rec(const std::vector<cv::Rect>& rois) const;
 
     cv::Mat draw_result(const ResultsVec& results) const;
 
@@ -77,11 +88,15 @@ private:
 private:
     const OCRerParam param_;
 
+    std::optional<ResultsVec> cache_;
+
     std::shared_ptr<fastdeploy::vision::ocr::DBDetector> deter_ = nullptr;
     std::shared_ptr<fastdeploy::vision::ocr::Recognizer> recer_ = nullptr;
     std::shared_ptr<fastdeploy::pipeline::PPOCRv3> ocrer_ = nullptr;
 
     inline static std::mutex s_predict_mutex_;
 };
+
+using OCRCache = std::unordered_map<std::string, OCRer::ResultsVec>;
 
 MAA_VISION_NS_END

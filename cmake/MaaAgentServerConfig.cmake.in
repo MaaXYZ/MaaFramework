@@ -1,0 +1,8 @@
+@PACKAGE_INIT@
+
+include(CMakeFindDependencyMacro)
+find_dependency(MaaFramework HINTS "${CMAKE_CURRENT_LIST_DIR}/../MaaFramework")
+
+include("${CMAKE_CURRENT_LIST_DIR}/MaaAgentServer.cmake")
+
+check_required_components(MaaAgentServer)

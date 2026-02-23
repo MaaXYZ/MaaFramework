@@ -19,20 +19,20 @@ bool MacOSControlUnitMgr::connect()
 {
     connected_ = false;
 
-    // 检查macOS版本
-    if (__builtin_available(macOS 12.3, *)) {
-        // ScreenCaptureKit需要macOS 12.3+
-    }
-    else {
-        LogError << "macOS 12.3 or later required for ScreenCaptureKit";
-        return false;
-    }
-
     switch (screencap_method_) {
     case MaaMacOSScreencapMethod_ScreenCaptureKit:
-        screencap_ = std::make_shared<ScreenCaptureKitScreencap>(window_id_);
+        // 检查macOS版本
+        if (__builtin_available(macOS 14.0, *)) {
+            screencap_ = std::make_shared<ScreenCaptureKitScreencap>(window_id_);
+        }
+        else {
+            LogError << "macOS 14.0 or later required for ScreenCaptureKit";
+            return false;
+        }
         break;
-
+    case MaaMacOSScreencapMethod_None:
+        LogWarn << "No screencap method specified, screencap will not work";
+        break;
     default:
         LogError << "Unknown screencap method: " << static_cast<int>(screencap_method_);
         break;
@@ -42,7 +42,9 @@ bool MacOSControlUnitMgr::connect()
     case MaaMacOSInputMethod_GlobalEvent:
         input_ = std::make_shared<GlobalEventInput>(window_id_);
         break;
-
+    case MaaMacOSInputMethod_None:
+        LogWarn << "No input method specified, input will not work";
+        break;
     default:
         LogError << "Unknown input method: " << static_cast<int>(input_method_);
         break;

@@ -82,7 +82,7 @@ MaaController*
 
 #ifndef __APPLE__
 
-    LogError << "This API" << __FUNCTION__ << "is only available on macOS";
+    LogError << "This API " << __FUNCTION__ << " is only available on macOS";
     return nullptr;
 
 #else

@@ -2,6 +2,7 @@
 
 #include <stack>
 
+#include "Component/Recognizer.h"
 #include "Controller/ControllerAgent.h"
 #include "Global/OptionMgr.h"
 #include "MaaFramework/MaaMsg.h"
@@ -189,8 +190,9 @@ NodeDetail PipelineTask::run_next(const std::vector<MAA_RES_NS::NodeAttr>& next,
 
         auto act = run_action(reco, *hit_opt);
 
-        for (const auto& anchor : hit_opt->anchor) {
-            context_->set_anchor(anchor, hit_name);
+        // Process anchor settings: empty string means clear
+        for (const auto& [anchor, target] : hit_opt->anchor) {
+            context_->set_anchor(anchor, target);
         }
 
         NodeDetail result {
@@ -234,11 +236,6 @@ RecoResult PipelineTask::recognize_list(const cv::Mat& image, const std::vector<
         return {};
     }
 
-    if (image.empty()) {
-        LogError << "Image is empty";
-        return {};
-    }
-
     auto cur_opt = context_->get_pipeline_data(cur_node_);
     if (!cur_opt) {
         LogError << "get_pipeline_data failed, node not exist" << VAR(cur_node_);
@@ -256,6 +253,10 @@ RecoResult PipelineTask::recognize_list(const cv::Mat& image, const std::vector<
 
     notify(MaaMsg_Node_NextList_Starting, reco_list_cb_detail);
 
+    auto batch_plan = prepare_batch_ocr(list);
+    auto ocr_cache = batch_plan ? std::make_shared<MAA_VISION_NS::OCRCache>() : nullptr;
+    bool batch_triggered = false;
+
     for (const auto& node : list) {
         if (context_->need_to_stop()) {
             LogWarn << "need_to_stop";
@@ -269,7 +270,14 @@ RecoResult PipelineTask::recognize_list(const cv::Mat& image, const std::vector<
         }
         const auto& pipeline_data = *node_opt;
 
-        RecoResult result = run_recognition(image, pipeline_data);
+        if (batch_plan && !batch_triggered && batch_plan->node_names.contains(pipeline_data.name)) {
+            batch_triggered = true;
+
+            Recognizer recognizer(tasker_, *context_, image, ocr_cache);
+            recognizer.prefetch_batch_ocr(batch_plan->entries);
+        }
+
+        RecoResult result = run_recognition(image, pipeline_data, ocr_cache);
 
         if (context_->need_to_stop()) {
             LogWarn << "need_to_stop";
@@ -287,6 +295,135 @@ RecoResult PipelineTask::recognize_list(const cv::Mat& image, const std::vector<
     notify(MaaMsg_Node_NextList_Failed, reco_list_cb_detail);
 
     return {};
+}
+
+std::optional<PipelineTask::BatchOCRPlan> PipelineTask::prepare_batch_ocr(const std::vector<MAA_RES_NS::NodeAttr>& list)
+{
+    using namespace MAA_RES_NS::Recognition;
+
+    if (!context_) {
+        return std::nullopt;
+    }
+
+    OCRCollectContext ctx;
+
+    for (const auto& node : list) {
+        auto data_opt = context_->get_pipeline_data(node);
+        if (!data_opt) {
+            continue;
+        }
+        const auto& data = *data_opt;
+
+        if (!data.enabled) {
+            continue;
+        }
+
+        size_t current_hit = context_->get_hit_count(data.name);
+        if (current_hit >= static_cast<size_t>(data.max_hit)) {
+            continue;
+        }
+
+        collect_ocr_from_reco(ctx, data.name, data.reco_type, data.reco_param);
+    }
+
+    if (ctx.plan.node_names.size() < 2) {
+        LogDebug << "batch OCR not needed, eligible OCR nodes < 2" << VAR(ctx.plan.node_names.size());
+        return std::nullopt;
+    }
+
+    for (const auto& name : ctx.plan.node_names) {
+        auto node_opt = context_->get_pipeline_data(name);
+        if (!node_opt) {
+            continue;
+        }
+        ctx.plan.entries.emplace_back(
+            BatchOCREntry {
+                .name = name,
+                .param = std::get<MAA_VISION_NS::OCRerParam>(node_opt->reco_param),
+            });
+    }
+
+    LogInfo << "prepared batch OCR plan" << VAR(ctx.plan.node_names) << VAR(ctx.plan.model);
+    return ctx.plan;
+}
+
+void PipelineTask::try_add_ocr_node(OCRCollectContext& ctx, const std::string& name, const MAA_VISION_NS::OCRerParam& param)
+{
+    if (param.roi_target.type == MAA_VISION_NS::TargetType::PreTask) {
+        const auto& ref_name = std::get<std::string>(param.roi_target.param);
+        if (ctx.plan.node_names.contains(ref_name)) {
+            LogDebug << "batch OCR skipping node with PreTask ROI dependency" << VAR(name) << VAR(ref_name);
+            return;
+        }
+    }
+
+    if (param.only_rec) {
+        // 这玩意 Batch 出来结果顺序可能是乱的，不知道哪个是哪个
+        // 我猜的，没试过，后面有空再看看
+        return;
+    }
+
+    if (ctx.first) {
+        ctx.plan.model = param.model;
+        ctx.first = false;
+    }
+    else if (param.model != ctx.plan.model) {
+        LogDebug << "batch OCR skipping node due to model mismatch" << VAR(name) << VAR(param.model) << VAR(ctx.plan.model);
+        return;
+    }
+
+    ctx.plan.node_names.emplace(name);
+}
+
+void PipelineTask::collect_ocr_from_reco(
+    OCRCollectContext& ctx,
+    const std::string& name,
+    MAA_RES_NS::Recognition::Type type,
+    const MAA_RES_NS::Recognition::Param& param)
+{
+    using namespace MAA_RES_NS::Recognition;
+
+    if (type == Type::OCR) {
+        try_add_ocr_node(ctx, name, std::get<MAA_VISION_NS::OCRerParam>(param));
+    }
+    else if (type == Type::And) {
+        const auto& and_param = std::get<std::shared_ptr<AndParam>>(param);
+        if (!and_param) {
+            LogError << "Bad AND param" << VAR(name);
+            return;
+        }
+        collect_ocr_from_sub_recognitions(ctx, and_param->all_of);
+    }
+    else if (type == Type::Or) {
+        const auto& or_param = std::get<std::shared_ptr<OrParam>>(param);
+        if (!or_param) {
+            LogError << "Bad OR param" << VAR(name);
+            return;
+        }
+        collect_ocr_from_sub_recognitions(ctx, or_param->any_of);
+    }
+}
+
+void PipelineTask::collect_ocr_from_sub_recognitions(
+    OCRCollectContext& ctx,
+    const std::vector<MAA_RES_NS::Recognition::SubRecognition>& subs)
+{
+    using namespace MAA_RES_NS::Recognition;
+
+    for (const auto& sub : subs) {
+        if (auto* node_name = std::get_if<std::string>(&sub)) {
+            auto sub_opt = context_->get_pipeline_data(*node_name);
+            if (!sub_opt) {
+                LogError << "Bad sub ref" << VAR(*node_name);
+                continue;
+            }
+            collect_ocr_from_reco(ctx, sub_opt->name, sub_opt->reco_type, sub_opt->reco_param);
+        }
+        else {
+            const auto& inline_sub = std::get<InlineSubRecognition>(sub);
+            collect_ocr_from_reco(ctx, inline_sub.sub_name, inline_sub.type, inline_sub.param);
+        }
+    }
 }
 
 void PipelineTask::save_on_error(const std::string& node_name)

@@ -6,7 +6,7 @@ import colormatcher
 from datetime import datetime
 from roimage import Roimage
 
-from maa.define import MaaAdbScreencapMethodEnum, MaaWin32ScreencapMethodEnum, MaaMacOSScreencapMethodEnum, MaaMacOSInputMethodEnum
+from maa.define import MaaAdbScreencapMethodEnum, MaaWin32ScreencapMethodEnum, MaaMacOSScreencapMethodEnum
 from maa.controller import AdbController, Win32Controller, MacOSController, Controller
 from maa.toolkit import Toolkit
 

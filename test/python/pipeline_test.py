@@ -187,6 +187,9 @@ class PipelineTestRecognition(CustomRecognition):
         # 5. 测试 And/Or 识别的 override 继承
         self._test_and_or_override_inheritance(context)
 
+        # 5.5 测试 And/Or 节点名称引用
+        self._test_and_or_node_reference(context)
+
         # 6. 测试各种识别类型的解析
         self._test_recognition_types(context)
 
@@ -196,10 +199,13 @@ class PipelineTestRecognition(CustomRecognition):
         # 8. 测试 Node 属性
         self._test_node_attributes(context)
 
-        # 9. 测试 v2 格式
+        # 9. 测试 anchor 对象格式
+        self._test_anchor_object_format(context)
+
+        # 10. 测试 v2 格式
         self._test_v2_format(context)
 
-        # 10. 比较 Context 和 Resource 级别
+        # 11. 比较 Context 和 Resource 级别
         self._test_context_vs_resource(context)
 
     def _test_context_get_node_data(self, context: Context):
@@ -270,7 +276,7 @@ class PipelineTestRecognition(CustomRecognition):
         assert_eq(node_obj.max_hit, 3, "max_hit")
         assert_eq(node_obj.enabled, True, "enabled")
         assert_eq(node_obj.inverse, False, "inverse")
-        assert_eq(node_obj.anchor, ["my_anchor"], "anchor")
+        assert_eq(node_obj.anchor, {"my_anchor": "OverrideTestNode"}, "anchor")  # Array format converted to dict with node name
         assert_eq(node_obj.attach.get("custom_data"), 123, "attach")
 
         # 验证 next 列表解析
@@ -383,6 +389,100 @@ class PipelineTestRecognition(CustomRecognition):
         )
 
         print("    PASS: And/Or override inheritance")
+
+    def _test_and_or_node_reference(self, context: Context):
+        print("  Testing And/Or node name reference...")
+
+        new_ctx = context.clone()
+
+        # 创建基础识别节点
+        new_ctx.override_pipeline(
+            {
+                "BaseTemplateNode": {
+                    "recognition": "TemplateMatch",
+                    "template": ["test.png"],
+                    "threshold": 0.8,
+                },
+                "BaseOCRNode": {
+                    "recognition": "OCR",
+                    "expected": ["hello"],
+                },
+            }
+        )
+
+        # 创建 And 节点，使用节点名称引用
+        new_ctx.override_pipeline(
+            {
+                "AndWithNodeRef": {
+                    "recognition": {
+                        "type": "And",
+                        "param": {
+                            "all_of": [
+                                "BaseTemplateNode",  # 节点名称引用
+                                "BaseOCRNode",  # 节点名称引用
+                                {"recognition": {"type": "DirectHit"}},  # 内联定义
+                            ],
+                            "box_index": 0,
+                        },
+                    },
+                },
+            }
+        )
+
+        and_node_obj = new_ctx.get_node_object("AndWithNodeRef")
+        assert_eq(and_node_obj.recognition.type, JRecognitionType.And, "And type")
+        assert_true(isinstance(and_node_obj.recognition.param, JAnd), "And param type")
+        # all_of 应该有 3 个元素：2 个字符串引用 + 1 个内联对象
+        assert_eq(len(and_node_obj.recognition.param.all_of), 3, "all_of length")
+        # 字符串引用保持为字符串
+        assert_eq(
+            and_node_obj.recognition.param.all_of[0],
+            "BaseTemplateNode",
+            "all_of[0] is node name reference",
+        )
+        assert_eq(
+            and_node_obj.recognition.param.all_of[1],
+            "BaseOCRNode",
+            "all_of[1] is node name reference",
+        )
+        # 内联定义是对象
+        assert_true(
+            isinstance(and_node_obj.recognition.param.all_of[2], dict),
+            "all_of[2] is inline object",
+        )
+
+        # 创建 Or 节点，使用节点名称引用
+        new_ctx.override_pipeline(
+            {
+                "OrWithNodeRef": {
+                    "recognition": {
+                        "type": "Or",
+                        "param": {
+                            "any_of": [
+                                "BaseTemplateNode",  # 节点名称引用
+                                {"recognition": {"type": "DirectHit"}},  # 内联定义
+                            ],
+                        },
+                    },
+                },
+            }
+        )
+
+        or_node_obj = new_ctx.get_node_object("OrWithNodeRef")
+        assert_eq(or_node_obj.recognition.type, JRecognitionType.Or, "Or type")
+        assert_true(isinstance(or_node_obj.recognition.param, JOr), "Or param type")
+        assert_eq(len(or_node_obj.recognition.param.any_of), 2, "any_of length")
+        assert_eq(
+            or_node_obj.recognition.param.any_of[0],
+            "BaseTemplateNode",
+            "any_of[0] is node name reference",
+        )
+        assert_true(
+            isinstance(or_node_obj.recognition.param.any_of[1], dict),
+            "any_of[1] is inline object",
+        )
+
+        print("    PASS: And/Or node name reference")
 
     def _test_recognition_types(self, context: Context):
         print("  Testing recognition types parsing...")
@@ -777,6 +877,56 @@ class PipelineTestRecognition(CustomRecognition):
         assert_eq(obj.on_error[0].jump_back, True, "on_error[0].jump_back")
 
         print("    PASS: node attributes")
+
+    def _test_anchor_object_format(self, context: Context):
+        print("  Testing anchor object format...")
+
+        new_ctx = context.clone()
+
+        # 测试 anchor 的三种格式
+        new_ctx.override_pipeline(
+            {
+                # 格式 1: 字符串
+                "AnchorString": {
+                    "anchor": "StringAnchor"
+                },
+                # 格式 2: 字符串数组
+                "AnchorArray": {
+                    "anchor": ["ArrayAnchor1", "ArrayAnchor2"]
+                },
+                # 格式 3: 对象 - 映射到特定节点或清除
+                "AnchorObject": {
+                    "anchor": {
+                        "ObjAnchor1": "TargetNode1",
+                        "ObjAnchor2": "",  # 空字符串表示清除锚点
+                        "ObjAnchor3": "TargetNode2"
+                    }
+                },
+                # 目标节点
+                "TargetNode1": {},
+                "TargetNode2": {},
+            }
+        )
+
+        # 验证格式 1: 字符串 (解析时直接设置为当前节点名)
+        obj1 = new_ctx.get_node_object("AnchorString")
+        assert_not_none(obj1, "AnchorString should exist")
+        assert_eq(obj1.anchor, {"StringAnchor": "AnchorString"}, "anchor string format")
+
+        # 验证格式 2: 字符串数组 (解析时直接设置为当前节点名)
+        obj2 = new_ctx.get_node_object("AnchorArray")
+        assert_not_none(obj2, "AnchorArray should exist")
+        assert_eq(obj2.anchor, {"ArrayAnchor1": "AnchorArray", "ArrayAnchor2": "AnchorArray"}, "anchor array format")
+
+        # 验证格式 3: 对象
+        obj3 = new_ctx.get_node_object("AnchorObject")
+        assert_not_none(obj3, "AnchorObject should exist")
+        assert_eq(obj3.anchor.get("ObjAnchor1"), "TargetNode1", "anchor object mapping 1")
+        assert_eq(obj3.anchor.get("ObjAnchor2"), "", "anchor object mapping 2 (empty = clear)")
+        assert_eq(obj3.anchor.get("ObjAnchor3"), "TargetNode2", "anchor object mapping 3")
+
+        print("    PASS: anchor object format")
+
 
     def _test_v2_format(self, context: Context):
         print("  Testing v2 format parsing...")

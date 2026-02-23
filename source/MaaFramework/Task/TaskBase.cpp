@@ -49,17 +49,12 @@ MAA_CTRL_NS::ControllerAgent* TaskBase::controller()
     return tasker_ ? tasker_->controller() : nullptr;
 }
 
-RecoResult TaskBase::run_recognition(const cv::Mat& image, const PipelineData& data)
+RecoResult TaskBase::run_recognition(const cv::Mat& image, const PipelineData& data, std::shared_ptr<MAA_VISION_NS::OCRCache> ocr_cache)
 {
     LogFunc << VAR(cur_node_) << VAR(data.name);
 
     if (!context_) {
         LogError << "context is null";
-        return {};
-    }
-
-    if (image.empty()) {
-        LogError << "Image is empty";
         return {};
     }
 
@@ -74,7 +69,7 @@ RecoResult TaskBase::run_recognition(const cv::Mat& image, const PipelineData& d
         return {};
     }
 
-    Recognizer recognizer(tasker_, *context_, image);
+    Recognizer recognizer(tasker_, *context_, image, std::move(ocr_cache));
 
     json::value cb_detail {
         { "task_id", task_id() },
@@ -140,6 +135,7 @@ ActionResult TaskBase::run_action(const RecoResult& reco, const PipelineData& da
 cv::Mat TaskBase::screencap()
 {
     if (!controller()) {
+        LogDebug << "controller not bound, skip screencap";
         return {};
     }
 

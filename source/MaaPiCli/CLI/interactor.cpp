@@ -36,12 +36,6 @@ static constexpr bool kGamepadSupported = true;
 static constexpr bool kGamepadSupported = false;
 #endif
 
-#if defined(__APPLE__)
-static constexpr bool kMacOSSupported = true;
-#else
-static constexpr bool kMacOSSupported = false;
-#endif
-
 // return [1, size]
 std::vector<int> input_multi_impl(size_t size, std::string_view prompt)
 {
@@ -347,9 +341,6 @@ void Interactor::print_config() const
             macos.title,
             macos.screencap_method,
             macos.input_method));
-        if (!kMacOSSupported) {
-            std::cout << "\t\t(macOS controller is only available on macOS)\n";
-        }
     } break;
     case InterfaceData::Controller::Type::PlayCover: {
         const auto& pc = config_.configuration().playcover;
@@ -546,22 +537,6 @@ void Interactor::select_controller()
         select_win32_hwnd(controller.win32);
         break;
     case InterfaceData::Controller::Type::MacOS:
-        if (!kMacOSSupported) {
-            std::cout << "\nmacOS controller is only available on macOS.\n";
-            // Check if there are other controllers available
-            bool has_other_controllers =
-                std::ranges::any_of(all_controllers, [](const auto& ctrl) { return ctrl.type != InterfaceData::Controller::Type::MacOS; });
-            if (has_other_controllers) {
-                std::cout << "Please select another controller.\n\n";
-                mpause();
-                select_controller();
-            }
-            else {
-                std::cout << "No other controllers available.\n\n";
-                mpause();
-            }
-            return;
-        }
         config_.configuration().controller.type = InterfaceData::Controller::Type::MacOS;
         select_macos(controller.macos);
         break;
@@ -952,7 +927,7 @@ void Interactor::select_macos(const MAA_PROJECT_INTERFACE_NS::InterfaceData::Con
         }
     }
     else {
-        std::cout << "Window regex is required.\n\n";
+        std::cout << "Title regex is required.\n\n";
         return;
     }
 
@@ -1432,11 +1407,6 @@ bool Interactor::check_validity()
     }
 
     if (config_.configuration().controller.type == InterfaceData::Controller::Type::MacOS) {
-        if (!kMacOSSupported) {
-            LogError << "macOS controller is only available on macOS";
-            return false;
-        }
-
         auto& mac = config_.configuration().macos;
         if (mac.window_id == 0 || mac.title.empty()) {
             auto& name = config_.configuration().controller.name;
