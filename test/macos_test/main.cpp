@@ -100,8 +100,8 @@ void runMaaTest(const std::string& windowTitle)
 
 void gui(const std::string& windowTitle)
 {
-    createAndShowTestWindow(windowTitle);
-    runAppLoop();
+    MacOSTestGUI gui(windowTitle);
+    gui.run();
 }
 
 int main()

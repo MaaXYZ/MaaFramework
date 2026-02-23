@@ -1,12 +1,11 @@
+#include <Carbon/Carbon.h>
 #import <Cocoa/Cocoa.h>
 #include <iostream>
 
 #include "./MacOSTestGUI.h"
 
-// 创建并显示测试窗口（不运行 run loop）
-void createAndShowTestWindow(const std::string& windowTitle)
+MacOSTestGUI::MacOSTestGUI(const std::string& windowTitle)
 {
-    // 初始化 NSApplication（如果还没有初始化）
     NSApplication* app = [NSApplication sharedApplication];
 
     // 创建窗口
@@ -48,8 +47,11 @@ void createAndShowTestWindow(const std::string& windowTitle)
     [window makeKeyAndOrderFront:nil];
 }
 
-// 运行应用程序 run loop（用于显示窗口）
-void runAppLoop()
+MacOSTestGUI::~MacOSTestGUI()
+{
+}
+
+void MacOSTestGUI::run()
 {
     NSApplication* app = [NSApplication sharedApplication];
     [app run];

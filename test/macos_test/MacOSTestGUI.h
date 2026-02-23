@@ -1,3 +1,10 @@
+#include <string>
 
-void createAndShowTestWindow(const std::string& window_title);
-void runAppLoop();
+class MacOSTestGUI
+{
+public:
+    MacOSTestGUI(const std::string& windowTitle);
+    ~MacOSTestGUI();
+
+    void run();
+};
