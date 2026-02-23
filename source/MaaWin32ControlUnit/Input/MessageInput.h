@@ -18,12 +18,17 @@ public:
         PostMessage,
     };
 
-    MessageInput(HWND hwnd, Mode mode, bool with_cursor_pos = false, bool block_input = false, bool with_window_pos = false)
+    struct Config
+    {
+        Mode mode = Mode::SendMessage;
+        bool with_cursor_pos = false;
+        bool with_window_pos = false;
+        bool block_input = false;
+    };
+
+    MessageInput(HWND hwnd, Config config)
         : hwnd_(hwnd)
-        , mode_(mode)
-        , with_cursor_pos_(with_cursor_pos)
-        , block_input_(block_input)
-        , with_window_pos_(with_window_pos)
+        , config_(config)
     {
     }
 
@@ -69,14 +74,14 @@ private:
     void save_pos();
     void restore_pos();
 
+    void check_and_block_input();
+    void unblock_input();
+
     // 获取 last_pos_，若未设置则返回窗口客户区中心坐标
     std::pair<int, int> get_target_pos() const;
 
     const HWND hwnd_ = nullptr;
-    const Mode mode_ = Mode::SendMessage;
-    const bool with_cursor_pos_ = false;
-    const bool block_input_ = false;
-    const bool with_window_pos_ = false;
+    const Config config_;
 
     std::pair<int, int> last_pos_;
     bool last_pos_set_ = false;

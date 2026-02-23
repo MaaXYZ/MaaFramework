@@ -15,11 +15,7 @@
 
 MAA_TASK_NS_BEGIN
 
-Recognizer::Recognizer(
-    Tasker* tasker,
-    Context& context,
-    const cv::Mat& image_,
-    std::shared_ptr<MAA_VISION_NS::OCRBatchCache> ocr_batch_cache)
+Recognizer::Recognizer(Tasker* tasker, Context& context, const cv::Mat& image_, std::shared_ptr<MAA_VISION_NS::OCRCache> ocr_batch_cache)
     : tasker_(tasker)
     , context_(context)
     , image_(image_)
@@ -233,8 +229,8 @@ RecoResult Recognizer::ocr(const MAA_VISION_NS::OCRerParam& param, const std::st
 
     if (ocr_batch_cache_ && ocr_batch_cache_->contains(name)) {
         const auto& cached = ocr_batch_cache_->at(name);
-        LogDebug << "OCR using batch cache" << VAR(name) << VAR(cached.per_roi_results.size()) << VAR(rois.size());
-        return build_result(name, "OCR", OCRer(image_, rois, param, cached, name));
+        LogDebug << "OCR using batch cache" << VAR(name) << VAR(cached);
+        return build_result(name, "OCR", OCRer(image_, rois, param, cached, resource()->ocr_res().recer(param.model), name));
     }
 
     return build_result(
@@ -578,164 +574,74 @@ MAA_RES_NS::ResourceMgr* Recognizer::resource()
     return tasker_ ? tasker_->resource() : nullptr;
 }
 
-void Recognizer::prefetch_batch_ocr(const std::vector<BatchOCREntry>& entries, bool only_rec)
+void Recognizer::prefetch_batch_ocr(const std::vector<BatchOCREntry>& entries)
 {
+    // 这个函数虽然叫 batch，最一开始的实现也确实是 gpu batch
+    // 但后来发现，直接做 mask 效率更高，于是就走普通 OCR 了
+    // 对外接口仍然可以理解为 batch，实际我们的代码实现是 mask
+
     using namespace MAA_VISION_NS;
 
     if (!ocr_batch_cache_ || entries.empty() || !resource()) {
-        LogDebug << "prefetch_batch_ocr skipped" << VAR(!!ocr_batch_cache_) << VAR(entries.empty()) << VAR(!!resource());
+        LogDebug << "prefetch_batch_ocr skipped" << VAR(ocr_batch_cache_) << VAR(entries.empty()) << VAR(resource());
         return;
     }
 
-    struct RoiInfo
-    {
-        size_t entry_idx;
-        size_t roi_idx;
-        cv::Rect roi;
-    };
+    cv::Mat masked_image = cv::Mat::zeros(image_.size(), image_.type());
+    std::string batch_name;
+    cv::Rect union_roi;
 
-    auto do_roi_merge = [](std::vector<RoiInfo>& infos) {
-        struct MergeGroup
-        {
-            size_t parent_idx;
-            std::vector<size_t> child_indices;
-        };
-
-        std::ranges::sort(infos, [](const RoiInfo& a, const RoiInfo& b) { return a.roi.area() > b.roi.area(); });
-
-        std::vector<MergeGroup> groups;
-
-        auto contains = [](const cv::Rect& outer, const cv::Rect& inner) {
-            return inner.x >= outer.x && inner.y >= outer.y && inner.br().x <= outer.br().x && inner.br().y <= outer.br().y;
-        };
-
-        for (size_t i = 0; i < infos.size(); ++i) {
-            bool merged = false;
-            for (auto& group : groups) {
-                if (contains(infos[group.parent_idx].roi, infos[i].roi)) {
-                    group.child_indices.push_back(i);
-                    merged = true;
-                    break;
-                }
-            }
-            if (!merged) {
-                groups.push_back({ .parent_idx = i });
-            }
-        }
-
-        return groups;
-    };
-
-    std::vector<std::vector<cv::Rect>> all_rois;
-    all_rois.reserve(entries.size());
+    std::unordered_map<std::string, std::vector<cv::Rect>> node_rois;
     for (const auto& entry : entries) {
-        all_rois.push_back(get_rois(entry.param.roi_target));
-    }
+        for (const cv::Rect& roi : get_rois(entry.param.roi_target)) {
+            cv::Rect r = correct_roi(roi, image_);
+            image_(r).copyTo(masked_image(r));
 
-    std::vector<RoiInfo> roi_infos;
-    for (size_t ei = 0; ei < entries.size(); ++ei) {
-        for (size_t ri = 0; ri < all_rois[ei].size(); ++ri) {
-            roi_infos.push_back({ ei, ri, all_rois[ei][ri] });
+            node_rois[entry.name].emplace_back(r);
+            union_roi |= r;
         }
+        batch_name += entry.name + "+";
     }
 
-    if (roi_infos.empty()) {
-        LogDebug << "prefetch_batch_ocr: no ROIs collected, skipping";
+    if (node_rois.empty()) {
+        LogWarn << "node_rois is empty" << VAR(entries);
         return;
     }
 
-    const auto& model = entries.front().param.model;
-    LogDebug << "prefetch_batch_ocr starting" << VAR(model) << VAR(only_rec) << VAR(roi_infos.size()) << VAR(entries.size());
+    OCRerParam batch_param = entries.front().param;
 
-    if (only_rec) {
-        std::vector<cv::Mat> images;
-        images.reserve(roi_infos.size());
-        for (const auto& info : roi_infos) {
-            cv::Rect corrected = correct_roi(info.roi, image_);
-            images.push_back(image_(corrected));
-        }
+    // 获取所有结果
+    batch_param.expected.clear();
+    batch_param.threshold = 0;
+    batch_param.replace.clear();
 
-        auto flat_results = OCRer::batch_predict_only_rec(images, resource()->ocr_res().recer(model));
+    OCRer ocrer(
+        masked_image,
+        { union_roi },
+        batch_param,
+        resource()->ocr_res().deter(batch_param.model),
+        resource()->ocr_res().recer(batch_param.model),
+        resource()->ocr_res().ocrer(batch_param.model),
+        batch_name);
 
-        if (flat_results.size() != roi_infos.size()) {
-            LogWarn << "OCR only_rec batch incomplete" << VAR(roi_infos.size()) << VAR(flat_results.size());
-        }
+    // 这里先把全部沾点边的结果（有交集的）都收集起来，后面实际要用的时候 (OCR::handle_cached) 再进一步划分
+    auto intersect = [](const cv::Rect& a, const cv::Rect& b) {
+        return (a & b).area() > 0;
+    };
 
-        for (size_t i = 0; i < roi_infos.size() && i < flat_results.size(); ++i) {
-            const auto& info = roi_infos[i];
-            auto& result = flat_results[i];
-
-            cv::Rect corrected = correct_roi(info.roi, image_);
-            result.box.x += corrected.x;
-            result.box.y += corrected.y;
-
-            auto& cache_val = (*ocr_batch_cache_)[entries[info.entry_idx].name];
-            if (cache_val.per_roi_results.size() <= info.roi_idx) {
-                cache_val.per_roi_results.resize(info.roi_idx + 1);
-            }
-            cache_val.per_roi_results[info.roi_idx] = { std::move(result) };
-        }
-    }
-    else {
-        auto merge_groups = do_roi_merge(roi_infos);
-
-        LogDebug << "det_rec ROI merge" << VAR(roi_infos.size()) << "merged into" << VAR(merge_groups.size()) << "groups";
-
-        std::vector<cv::Mat> images;
-        std::vector<cv::Rect> corrected_parent_rois;
-        images.reserve(merge_groups.size());
-        corrected_parent_rois.reserve(merge_groups.size());
-
-        for (const auto& group : merge_groups) {
-            cv::Rect corrected = correct_roi(roi_infos[group.parent_idx].roi, image_);
-            corrected_parent_rois.push_back(corrected);
-            images.push_back(image_(corrected));
-        }
-
-        auto batch_results = OCRer::batch_predict_det_rec(images, resource()->ocr_res().ocrer(model));
-
-        if (batch_results.size() != merge_groups.size()) {
-            LogWarn << "OCR det_rec batch incomplete" << VAR(merge_groups.size()) << VAR(batch_results.size());
-        }
-
-        auto store_results = [&](const RoiInfo& info, std::vector<OCRerResult> results) {
-            auto& cache_val = (*ocr_batch_cache_)[entries[info.entry_idx].name];
-            if (cache_val.per_roi_results.size() <= info.roi_idx) {
-                cache_val.per_roi_results.resize(info.roi_idx + 1);
-            }
-            cache_val.per_roi_results[info.roi_idx] = std::move(results);
-        };
-
-        for (size_t gi = 0; gi < merge_groups.size() && gi < batch_results.size(); ++gi) {
-            const auto& group = merge_groups[gi];
-            auto& parent_results = batch_results[gi];
-            const auto& parent_roi = corrected_parent_rois[gi];
-
-            for (auto& res : parent_results) {
-                res.box.x += parent_roi.x;
-                res.box.y += parent_roi.y;
-            }
-
-            store_results(roi_infos[group.parent_idx], parent_results);
-
-            for (size_t child_idx : group.child_indices) {
-                const auto& child_info = roi_infos[child_idx];
-                cv::Rect child_corrected = correct_roi(child_info.roi, image_);
-
-                std::vector<OCRerResult> child_results;
-                for (const auto& res : parent_results) {
-                    if (res.box.x >= child_corrected.x && res.box.y >= child_corrected.y && res.box.br().x <= child_corrected.br().x
-                        && res.box.br().y <= child_corrected.br().y) {
-                        child_results.push_back(res);
-                    }
+    for (const auto& [node, rois] : node_rois) {
+        auto& cache = (*ocr_batch_cache_)[node];
+        for (const MAA_VISION_NS::OCRerResult& res : ocrer.all_results()) {
+            for (const auto& r : rois) {
+                if (!intersect(r, res.box)) {
+                    continue;
                 }
-                store_results(child_info, std::move(child_results));
+                cache.emplace_back(res);
             }
         }
     }
 
-    LogInfo << "prefetch_batch_ocr completed" << VAR(entries.size()) << VAR(roi_infos.size()) << VAR(only_rec)
-            << VAR(ocr_batch_cache_->size());
+    LogInfo << "prefetch_batch_ocr completed" << VAR(entries) << VAR(*ocr_batch_cache_);
 }
 
 MAA_TASK_NS_END

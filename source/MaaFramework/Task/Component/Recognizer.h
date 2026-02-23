@@ -16,17 +16,14 @@ MAA_TASK_NS_BEGIN
 class Recognizer
 {
 public:
-    Recognizer(
-        Tasker* tasker,
-        Context& context,
-        const cv::Mat& image,
-        std::shared_ptr<MAA_VISION_NS::OCRBatchCache> ocr_batch_cache = nullptr);
+public:
+    Recognizer(Tasker* tasker, Context& context, const cv::Mat& image, std::shared_ptr<MAA_VISION_NS::OCRCache> ocr_batch_cache = nullptr);
     Recognizer(const Recognizer& recognizer);
 
 public:
     RecoResult recognize(MAA_RES_NS::Recognition::Type type, const MAA_RES_NS::Recognition::Param& param, const std::string& name);
 
-    void prefetch_batch_ocr(const std::vector<BatchOCREntry>& entries, bool only_rec);
+    void prefetch_batch_ocr(const std::vector<BatchOCREntry>& entries);
 
     MaaRecoId get_id() const { return reco_id_; }
 
@@ -64,7 +61,7 @@ private:
     std::shared_ptr<std::unordered_map<std::string, std::vector<cv::Rect>>> sub_filtered_boxes_;
     std::shared_ptr<std::unordered_map<std::string, cv::Rect>> sub_best_box_;
 
-    std::shared_ptr<MAA_VISION_NS::OCRBatchCache> ocr_batch_cache_;
+    std::shared_ptr<MAA_VISION_NS::OCRCache> ocr_batch_cache_;
 };
 
 MAA_TASK_NS_END

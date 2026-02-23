@@ -39,7 +39,7 @@ protected:
     MAA_CTRL_NS::ControllerAgent* controller();
 
     RecoResult
-        run_recognition(const cv::Mat& image, const PipelineData& data, std::shared_ptr<MAA_VISION_NS::OCRBatchCache> ocr_cache = nullptr);
+        run_recognition(const cv::Mat& image, const PipelineData& data, std::shared_ptr<MAA_VISION_NS::OCRCache> ocr_cache = nullptr);
     ActionResult run_action(const RecoResult& reco, const PipelineData& data);
     cv::Mat screencap();
     MaaNodeId generate_node_id();
