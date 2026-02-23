@@ -8,13 +8,8 @@
 
 MAA_CTRL_UNIT_NS_BEGIN
 
-MacOSControlUnitMgr::MacOSControlUnitMgr(
-    uint32_t window_id,
-    pid_t pid,
-    MaaMacOSScreencapMethod screencap_method,
-    MaaMacOSInputMethod input_method)
+MacOSControlUnitMgr::MacOSControlUnitMgr(uint32_t window_id, MaaMacOSScreencapMethod screencap_method, MaaMacOSInputMethod input_method)
     : window_id_(window_id)
-    , pid_(pid)
     , screencap_method_(screencap_method)
     , input_method_(input_method)
 {
@@ -45,7 +40,7 @@ bool MacOSControlUnitMgr::connect()
 
     switch (input_method_) {
     case MaaMacOSInputMethod_GlobalEvent:
-        input_ = std::make_shared<GlobalEventInput>(window_id_, pid_);
+        input_ = std::make_shared<GlobalEventInput>(window_id_);
         break;
 
     default:

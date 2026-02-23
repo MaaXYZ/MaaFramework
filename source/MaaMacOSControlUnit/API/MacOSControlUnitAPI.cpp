@@ -13,13 +13,13 @@ extern "C"
     }
 
     MaaMacOSControlUnitHandle
-        MaaMacOSControlUnitCreate(uint32_t window_id, pid_t pid, MaaMacOSScreencapMethod screencap_method, MaaMacOSInputMethod input_method)
+        MaaMacOSControlUnitCreate(uint32_t window_id, MaaMacOSScreencapMethod screencap_method, MaaMacOSInputMethod input_method)
     {
         using namespace MAA_CTRL_UNIT_NS;
 
-        LogFunc << VAR(window_id) << VAR(pid) << VAR(screencap_method) << VAR(input_method);
+        LogFunc << VAR(window_id) << VAR(screencap_method) << VAR(input_method);
 
-        auto unit_mgr = std::make_unique<MacOSControlUnitMgr>(window_id, pid, screencap_method, input_method);
+        auto unit_mgr = std::make_unique<MacOSControlUnitMgr>(window_id, screencap_method, input_method);
         return unit_mgr.release();
     }
 

@@ -9,13 +9,11 @@ MAA_CTRL_UNIT_NS_BEGIN
 class GlobalEventInput : public InputBase
 {
 public:
-    GlobalEventInput(uint32_t window_id, pid_t pid = 0)
+    GlobalEventInput(uint32_t window_id)
         : window_id_(window_id)
     {
-        auto [pid_val, offset_x, offset_y] = get_window_info(window_id);
-        if (pid == 0) {
-            pid_ = pid_val;
-        }
+        auto [pid, offset_x, offset_y] = get_window_info(window_id);
+        pid_ = pid;
         offset_x_ = offset_x;
         offset_y_ = offset_y;
     }

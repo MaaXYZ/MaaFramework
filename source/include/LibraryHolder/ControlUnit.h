@@ -56,7 +56,7 @@ class MacOSControlUnitLibraryHolder : public LibraryHolder<MacOSControlUnitLibra
 {
 public:
     static std::shared_ptr<MAA_CTRL_UNIT_NS::MacOSControlUnitAPI>
-        create_control_unit(uint32_t window_id, pid_t pid, MaaMacOSScreencapMethod screencap_method, MaaMacOSInputMethod input_method);
+        create_control_unit(uint32_t window_id, MaaMacOSScreencapMethod screencap_method, MaaMacOSInputMethod input_method);
 
 private:
     inline static const std::filesystem::path libname_ = MAA_NS::path("MaaMacOSControlUnit");

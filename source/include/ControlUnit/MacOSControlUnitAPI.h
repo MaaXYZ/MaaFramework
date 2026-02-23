@@ -13,11 +13,8 @@ extern "C"
 
     MAA_CONTROL_UNIT_API const char* MaaMacOSControlUnitGetVersion();
 
-    MAA_CONTROL_UNIT_API MaaMacOSControlUnitHandle MaaMacOSControlUnitCreate(
-        uint32_t window_id,
-        pid_t pid,
-        MaaMacOSScreencapMethod screencap_method,
-        MaaMacOSInputMethod input_method);
+    MAA_CONTROL_UNIT_API MaaMacOSControlUnitHandle
+        MaaMacOSControlUnitCreate(uint32_t window_id, MaaMacOSScreencapMethod screencap_method, MaaMacOSInputMethod input_method);
 
     MAA_CONTROL_UNIT_API void MaaMacOSControlUnitDestroy(MaaMacOSControlUnitHandle handle);
 

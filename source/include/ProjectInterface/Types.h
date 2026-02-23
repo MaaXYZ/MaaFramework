@@ -284,12 +284,11 @@ struct Configuration
     struct MacOSConfig
     {
         uint32_t window_id = 0;
-        int32_t pid = 0;
         std::string title;
         std::string screencap_method;
         std::string input_method;
 
-        MEO_JSONIZATION(MEO_OPT window_id, MEO_OPT pid, MEO_OPT title, MEO_OPT screencap_method, MEO_OPT input_method);
+        MEO_JSONIZATION(MEO_OPT window_id, MEO_OPT title, MEO_OPT screencap_method, MEO_OPT input_method);
     };
 
     struct AdbConfig
@@ -382,7 +381,6 @@ struct RuntimeParam
     struct MacOSParam
     {
         uint32_t window_id = 0;
-        int32_t pid = 0;
         MaaMacOSScreencapMethod screencap = MaaMacOSScreencapMethod_None;
         MaaMacOSInputMethod input = MaaMacOSInputMethod_None;
     };

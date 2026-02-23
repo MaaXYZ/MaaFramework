@@ -233,7 +233,6 @@ std::shared_ptr<MAA_CTRL_UNIT_NS::Win32ControlUnitAPI>
 
 std::shared_ptr<MAA_CTRL_UNIT_NS::MacOSControlUnitAPI> MacOSControlUnitLibraryHolder::create_control_unit(
     uint32_t window_id,
-    pid_t pid,
     MaaMacOSScreencapMethod screencap_method,
     MaaMacOSInputMethod input_method)
 {
@@ -256,7 +255,7 @@ std::shared_ptr<MAA_CTRL_UNIT_NS::MacOSControlUnitAPI> MacOSControlUnitLibraryHo
         return nullptr;
     }
 
-    auto control_unit_handle = create_control_unit_func(window_id, pid, screencap_method, input_method);
+    auto control_unit_handle = create_control_unit_func(window_id, screencap_method, input_method);
 
     if (!control_unit_handle) {
         LogError << "Failed to create control unit";

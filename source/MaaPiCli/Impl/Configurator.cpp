@@ -240,7 +240,6 @@ std::optional<RuntimeParam> Configurator::generate_runtime() const
         RuntimeParam::MacOSParam macos;
 
         macos.window_id = config_.macos.window_id;
-        macos.pid = config_.macos.pid;
 
         // v2: parse from config, use default if not specified or invalid
         if (!controller.macos.screencap_method.empty()) {

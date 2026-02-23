@@ -789,7 +789,6 @@ class MacOSController(Controller):
     def __init__(
         self,
         window_id: int,
-        pid: int = 0,
         screencap_method: int = MaaMacOSScreencapMethodEnum.ScreenCaptureKit,
         input_method: int = MaaMacOSInputMethodEnum.GlobalEvent,
     ):
@@ -797,7 +796,6 @@ class MacOSController(Controller):
 
         Args:
             window_id: 窗口 ID / window ID
-            pid: 进程 ID，如果为 0 则自动获取 / process ID, auto detect if 0
             screencap_method: 使用的截图方式 / screenshot method used
             input_method: 使用的输入方式 / input method used
 
@@ -809,7 +807,6 @@ class MacOSController(Controller):
 
         self._handle = Library.framework().MaaMacOSControllerCreate(
             window_id,
-            pid,
             MaaMacOSScreencapMethod(screencap_method),
             MaaMacOSInputMethod(input_method),
         )

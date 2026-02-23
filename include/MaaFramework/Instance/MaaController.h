@@ -39,7 +39,6 @@ extern "C"
      * @brief Create a macOS controller for native macOS applications.
      *
      * @param window_id The CGWindowID of the target window (0 for desktop).
-     * @param pid The process ID of the target application (0 to auto-detect from window_id).
      * @param screencap_method macOS screencap method to use.
      * @param input_method macOS input method to use.
      * @return The controller handle, or nullptr on failure.
@@ -47,14 +46,11 @@ extern "C"
      * @note This controller is designed for native macOS applications.
      * @note Requires Screen Recording permission for screencap.
      * @note Input simulation requires Accessibility permission.
-     * @note Some features are not supported: start_app, stop_app, input_text, click_key, key_down, key_up, scroll.
+     * @note Some features are not supported: start_app, stop_app, scroll.
      * @note Only single touch is supported (contact must be 0).
      */
-    MAA_FRAMEWORK_API MaaController* MaaMacOSControllerCreate(
-        uint32_t window_id,
-        int32_t pid,
-        MaaMacOSScreencapMethod screencap_method,
-        MaaMacOSInputMethod input_method);
+    MAA_FRAMEWORK_API MaaController*
+        MaaMacOSControllerCreate(uint32_t window_id, MaaMacOSScreencapMethod screencap_method, MaaMacOSInputMethod input_method);
 
     MAA_FRAMEWORK_API MaaController* MaaCustomControllerCreate(MaaCustomControllerCallbacks* controller, void* controller_arg);
 

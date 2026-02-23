@@ -174,8 +174,7 @@ MaaController* create_macos_controller()
         }
     }
 
-    auto controller_handle =
-        MaaMacOSControllerCreate(window_id, 0, MaaMacOSScreencapMethod_ScreenCaptureKit, MaaMacOSInputMethod_GlobalEvent);
+    auto controller_handle = MaaMacOSControllerCreate(window_id, MaaMacOSScreencapMethod_ScreenCaptureKit, MaaMacOSInputMethod_GlobalEvent);
 
     destroy();
     return controller_handle;

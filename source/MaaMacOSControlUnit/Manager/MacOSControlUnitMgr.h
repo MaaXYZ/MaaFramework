@@ -13,7 +13,7 @@ MAA_CTRL_UNIT_NS_BEGIN
 class MacOSControlUnitMgr : public MacOSControlUnitAPI
 {
 public:
-    MacOSControlUnitMgr(uint32_t window_id, pid_t pid, MaaMacOSScreencapMethod screencap_method, MaaMacOSInputMethod input_method);
+    MacOSControlUnitMgr(uint32_t window_id, MaaMacOSScreencapMethod screencap_method, MaaMacOSInputMethod input_method);
     virtual ~MacOSControlUnitMgr() override = default;
 
 public: // from ControlUnitAPI
@@ -45,7 +45,6 @@ public: // from ControlUnitAPI
 
 private:
     uint32_t window_id_ = 0;
-    pid_t pid_ = 0;
     MaaMacOSScreencapMethod screencap_method_ = MaaMacOSScreencapMethod_None;
     MaaMacOSInputMethod input_method_ = MaaMacOSInputMethod_None;
 
