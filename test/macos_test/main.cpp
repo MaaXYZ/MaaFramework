@@ -59,7 +59,7 @@ void runMaaTest(const std::string& windowTitle)
     MaaToolkitConfigInitOption("./", "{}");
 
     // 等待一下，让窗口完全显示
-    std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+    std::this_thread::sleep_for(std::chrono::milliseconds(500));
 
     uint32_t windowID = 0;
 
@@ -73,10 +73,12 @@ void runMaaTest(const std::string& windowTitle)
     for (size_t i = 0; i < size; ++i) {
         auto w = MaaToolkitDesktopWindowListAt(winlist, i);
         std::string name = MaaToolkitDesktopWindowGetWindowName(w);
-        windowID = reinterpret_cast<uintptr_t>(MaaToolkitDesktopWindowGetHandle(w));
+        uint32_t currentWindowID = reinterpret_cast<uintptr_t>(MaaToolkitDesktopWindowGetHandle(w));
 
         if (name.find(windowTitle) != std::string::npos) {
+            windowID = currentWindowID;
             std::cout << "Found Test Window: " << name << " (WindowID: " << windowID << ")" << std::endl;
+            break;
         }
     }
 
@@ -95,7 +97,42 @@ void runMaaTest(const std::string& windowTitle)
     }
 
     std::cout << "MaaController 创建成功，开始测试输入..." << std::endl;
-    
+
+    // 连接控制器
+    auto ctrl_id = MaaControllerPostConnection(controller);
+
+    // 创建资源
+    auto resource_handle = MaaResourceCreate();
+    std::string resource_dir = "./resources/macos_test";
+    auto res_id = MaaResourcePostBundle(resource_handle, resource_dir.c_str());
+
+    MaaControllerWait(controller, ctrl_id);
+    MaaResourceWait(resource_handle, res_id);
+
+    // 创建任务器
+    auto tasker_handle = MaaTaskerCreate();
+    MaaTaskerBindResource(tasker_handle, resource_handle);
+    MaaTaskerBindController(tasker_handle, controller);
+
+    auto destroy = [&]() {
+        MaaTaskerDestroy(tasker_handle);
+        MaaResourceDestroy(resource_handle);
+        MaaControllerDestroy(controller);
+    };
+
+    if (!MaaTaskerInited(tasker_handle)) {
+        std::cout << "Failed to init MAA" << std::endl;
+        destroy();
+        return;
+    }
+
+    // 执行任务
+    auto task_id = MaaTaskerPostTask(tasker_handle, "test_start", "{}");
+    MaaTaskerWait(tasker_handle, task_id);
+
+    std::cout << "MAA 任务执行完成。" << std::endl;
+
+    destroy();
 }
 
 void gui(const std::string& windowTitle)

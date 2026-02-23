@@ -1,0 +1,36 @@
+{
+  "test_start": {
+    "focus": "Test Start!",
+    "next": "bee_recognition"
+  },
+  "bee_recognition": {
+    "focus": "Find Bee!",
+    "recognition": "FeatureMatch",
+    "template": "Bee.png",
+    "green_mask": true,
+    "threshold": 0.5,
+    "next": "click_action"
+  },
+  "click_action": {
+    "action": "Click",
+    "target": "bee_recognition",
+    "next": "swipe_action"
+  },
+  "swipe_action": {
+    "action": "Swipe",
+    "begin": [
+      100,
+      100
+    ],
+    "end": [
+      620,
+      620
+    ],
+    "duration": 2000,
+    "next": "key_action"
+  },
+  "key_action": {
+    "action": "InputText",
+    "input_text": "abc123"
+  }
+}
