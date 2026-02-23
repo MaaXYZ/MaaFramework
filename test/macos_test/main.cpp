@@ -5,8 +5,8 @@
 #include "MaaFramework/MaaAPI.h"
 #include "MaaToolkit/MaaToolkitAPI.h"
 
-#include "./gui.h"
-#include "./macos_permission.h"
+#include "./MacOSPermission.h"
+#include "./MacOSTestGUI.h"
 
 // 检查并请求必要权限
 void checkAndRequestPermissions()
@@ -53,7 +53,7 @@ void checkAndRequestPermissions()
 }
 
 // 运行 MaaFW 窗口测试
-void runMaaTest(const std::string& window_title)
+void runMaaTest(const std::string& windowTitle)
 {
     // 初始化 MaaToolkit
     MaaToolkitConfigInitOption("./", "{}");
@@ -75,7 +75,7 @@ void runMaaTest(const std::string& window_title)
         std::string name = MaaToolkitDesktopWindowGetWindowName(w);
         windowID = reinterpret_cast<uintptr_t>(MaaToolkitDesktopWindowGetHandle(w));
 
-        if (name.find(window_title) != std::string::npos) {
+        if (name.find(windowTitle) != std::string::npos) {
             std::cout << "Found Test Window: " << name << " (WindowID: " << windowID << ")" << std::endl;
         }
     }
@@ -98,18 +98,18 @@ void runMaaTest(const std::string& window_title)
     
 }
 
-void gui(const std::string& window_title)
+void gui(const std::string& windowTitle)
 {
-    createAndShowTestWindow(window_title);
+    createAndShowTestWindow(windowTitle);
     runAppLoop();
 }
 
 int main()
 {
     checkAndRequestPermissions();
-    std::string random_title = "MaaTestWindow_" + std::to_string(rand() % 10000);
-    std::thread maatThread(runMaaTest, random_title);
-    gui(random_title);
+    std::string randomTitle = "MaaTestWindow_" + std::to_string(rand() % 10000);
+    std::thread maatThread(runMaaTest, randomTitle);
+    gui(randomTitle);
 
     maatThread.join();
     return 0;

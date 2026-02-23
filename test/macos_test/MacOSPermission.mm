@@ -4,7 +4,7 @@
 #import <CoreGraphics/CoreGraphics.h>
 #import <Foundation/Foundation.h>
 
-#include "./macos_permission.h"
+#include "./MacOSPermission.h"
 
 bool check_screen_recording_permission(void)
 {

@@ -1,4 +1,8 @@
-add_executable(macos_test macos_permission.h macos_permission.mm gui.mm main.cpp)
+add_executable(macos_test
+    MacOSPermission.h MacOSPermission.mm
+    MacOSTestGUI.h MacOSTestGUI.mm
+    main.cpp
+)
 
 target_compile_options(macos_test PRIVATE -Wno-error -Wno-unused-parameter -Wno-unused-variable)
 

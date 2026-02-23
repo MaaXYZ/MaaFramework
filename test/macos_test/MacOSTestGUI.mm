@@ -1,10 +1,10 @@
 #import <Cocoa/Cocoa.h>
 #include <iostream>
 
-#include "./gui.h"
+#include "./MacOSTestGUI.h"
 
 // 创建并显示测试窗口（不运行 run loop）
-void createAndShowTestWindow(const std::string& window_title)
+void createAndShowTestWindow(const std::string& windowTitle)
 {
     // 初始化 NSApplication（如果还没有初始化）
     NSApplication* app = [NSApplication sharedApplication];
@@ -17,7 +17,7 @@ void createAndShowTestWindow(const std::string& window_title)
                                                      backing:NSBackingStoreBuffered
                                                        defer:NO];
 
-    [window setTitle:[NSString stringWithUTF8String:window_title.c_str()]];
+    [window setTitle:[NSString stringWithUTF8String:windowTitle.c_str()]];
 
     // 创建容器视图
     NSView* containerView = [[NSView alloc] initWithFrame:NSMakeRect(0, 0, 400, 400)];
