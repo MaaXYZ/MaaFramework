@@ -225,6 +225,21 @@ RecoResult Recognizer::ocr(const MAA_VISION_NS::OCRerParam& param, const std::st
         return {};
     }
 
+    std::optional<ColorFilterConfig> color_filter;
+    if (!param.color_filter.empty()) {
+        auto filter_data = context_.get_pipeline_data(param.color_filter);
+        if (!filter_data) {
+            LogError << "color_filter node not found" << VAR(param.color_filter);
+            return {};
+        }
+        if (filter_data->reco_type != MAA_RES_NS::Recognition::Type::ColorMatch) {
+            LogError << "color_filter node is not ColorMatch" << VAR(param.color_filter);
+            return {};
+        }
+        const auto& color_param = std::get<ColorMatcherParam>(filter_data->reco_param);
+        color_filter = ColorFilterConfig { .method = color_param.method, .range = color_param.range };
+    }
+
     std::vector<cv::Rect> rois = get_rois(param.roi_target);
 
     if (ocr_batch_cache_ && ocr_batch_cache_->contains(name)) {
@@ -243,7 +258,8 @@ RecoResult Recognizer::ocr(const MAA_VISION_NS::OCRerParam& param, const std::st
             resource()->ocr_res().deter(param.model),
             resource()->ocr_res().recer(param.model),
             resource()->ocr_res().ocrer(param.model),
-            name));
+            name,
+            std::move(color_filter)));
 }
 
 RecoResult Recognizer::nn_classify(const MAA_VISION_NS::NeuralNetworkClassifierParam& param, const std::string& name)
