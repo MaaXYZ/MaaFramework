@@ -11,12 +11,12 @@ const char* MaaProxyControlUnitGetVersion()
     return MAA_VERSION;
 }
 
-MaaControlUnitHandle MaaProxyControlUnitCreate(MaaControlUnitHandle inner, const char* dump_dir)
+MaaControlUnitHandle MaaProxyControlUnitCreate(void* shared_inner, const char* dump_dir)
 {
-    LogFunc << VAR_VOIDP(inner) << VAR(dump_dir);
+    LogFunc << VAR_VOIDP(shared_inner) << VAR(dump_dir);
 
-    if (!inner) {
-        LogError << "inner is null";
+    if (!shared_inner) {
+        LogError << "shared_inner is null";
         return nullptr;
     }
 
@@ -25,6 +25,7 @@ MaaControlUnitHandle MaaProxyControlUnitCreate(MaaControlUnitHandle inner, const
         return nullptr;
     }
 
+    auto& inner = *static_cast<std::shared_ptr<MAA_CTRL_UNIT_NS::ControlUnitAPI>*>(shared_inner);
     return new MAA_CTRL_UNIT_NS::ProxyController(inner, MAA_NS::path(dump_dir));
 }
 

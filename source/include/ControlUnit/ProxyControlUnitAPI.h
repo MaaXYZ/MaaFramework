@@ -10,7 +10,7 @@ extern "C"
 
     MAA_CONTROL_UNIT_API const char* MaaProxyControlUnitGetVersion();
 
-    MAA_CONTROL_UNIT_API MaaControlUnitHandle MaaProxyControlUnitCreate(MaaControlUnitHandle inner, const char* dump_dir);
+    MAA_CONTROL_UNIT_API MaaControlUnitHandle MaaProxyControlUnitCreate(void* shared_inner, const char* dump_dir);
 
     MAA_CONTROL_UNIT_API void MaaProxyControlUnitDestroy(MaaControlUnitHandle handle);
 

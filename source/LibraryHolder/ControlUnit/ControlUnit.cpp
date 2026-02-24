@@ -232,7 +232,7 @@ std::shared_ptr<MAA_CTRL_UNIT_NS::Win32ControlUnitAPI>
 }
 
 std::shared_ptr<MAA_CTRL_UNIT_NS::ControlUnitAPI>
-    ProxyControlUnitLibraryHolder::create_control_unit(MAA_CTRL_UNIT_NS::ControlUnitAPI* inner, const char* dump_dir)
+    ProxyControlUnitLibraryHolder::create_control_unit(std::shared_ptr<MAA_CTRL_UNIT_NS::ControlUnitAPI> inner, const char* dump_dir)
 {
     if (!load_library(library_dir() / libname_)) {
         LogError << "Failed to load library" << VAR(library_dir()) << VAR(libname_);
@@ -253,7 +253,7 @@ std::shared_ptr<MAA_CTRL_UNIT_NS::ControlUnitAPI>
         return nullptr;
     }
 
-    auto control_unit_handle = create_control_unit_func(inner, dump_dir);
+    auto control_unit_handle = create_control_unit_func(&inner, dump_dir);
 
     if (!control_unit_handle) {
         LogError << "Failed to create control unit";

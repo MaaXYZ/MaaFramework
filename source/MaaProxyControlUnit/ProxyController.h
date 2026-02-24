@@ -3,6 +3,8 @@
 #include <chrono>
 #include <filesystem>
 #include <fstream>
+#include <functional>
+#include <memory>
 #include <mutex>
 
 #include "ControlUnit/ControlUnitAPI.h"
@@ -16,7 +18,7 @@ MAA_CTRL_UNIT_NS_BEGIN
 class ProxyController : public AdbControlUnitAPI
 {
 public:
-    ProxyController(ControlUnitAPI* inner, std::filesystem::path dump_dir);
+    ProxyController(std::shared_ptr<ControlUnitAPI> inner, std::filesystem::path dump_dir);
     virtual ~ProxyController() override;
 
 public: // from ControlUnitAPI
@@ -60,7 +62,7 @@ private:
     RecordLine make_line(RecordType type, bool success, int64_t timestamp, int cost);
 
 private:
-    ControlUnitAPI* inner_;
+    std::shared_ptr<ControlUnitAPI> inner_;
     std::filesystem::path dump_dir_;
 
     std::mutex recording_mutex_;

@@ -142,7 +142,7 @@ MaaController* MaaProxyControllerCreate(MaaController* inner, const char* dump_d
         return nullptr;
     }
 
-    auto control_unit = MAA_NS::ProxyControlUnitLibraryHolder::create_control_unit(inner_unit.get(), dump_dir);
+    auto control_unit = MAA_NS::ProxyControlUnitLibraryHolder::create_control_unit(std::move(inner_unit), dump_dir);
     if (!control_unit) {
         LogError << "Failed to create proxy control unit";
         return nullptr;

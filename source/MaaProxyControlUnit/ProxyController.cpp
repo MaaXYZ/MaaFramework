@@ -7,12 +7,12 @@
 
 MAA_CTRL_UNIT_NS_BEGIN
 
-ProxyController::ProxyController(ControlUnitAPI* inner, std::filesystem::path dump_dir)
-    : inner_(inner)
+ProxyController::ProxyController(std::shared_ptr<ControlUnitAPI> inner, std::filesystem::path dump_dir)
+    : inner_(std::move(inner))
     , dump_dir_(std::move(dump_dir))
     , recording_start_(std::chrono::steady_clock::now())
 {
-    LogFunc << VAR_VOIDP(inner_) << VAR(dump_dir_);
+    LogFunc << VAR_VOIDP(inner_.get()) << VAR(dump_dir_);
 
     std::error_code ec;
     std::filesystem::create_directories(dump_dir_, ec);
@@ -165,7 +165,7 @@ bool ProxyController::scroll(int dx, int dy)
 
 bool ProxyController::find_device(std::vector<std::string>& devices)
 {
-    auto* adb = dynamic_cast<AdbControlUnitAPI*>(inner_);
+    auto adb = std::dynamic_pointer_cast<AdbControlUnitAPI>(inner_);
     if (!adb) {
         return false;
     }
@@ -174,7 +174,7 @@ bool ProxyController::find_device(std::vector<std::string>& devices)
 
 bool ProxyController::shell(const std::string& cmd, std::string& output, std::chrono::milliseconds timeout)
 {
-    auto* adb = dynamic_cast<AdbControlUnitAPI*>(inner_);
+    auto adb = std::dynamic_pointer_cast<AdbControlUnitAPI>(inner_);
     if (!adb) {
         return false;
     }

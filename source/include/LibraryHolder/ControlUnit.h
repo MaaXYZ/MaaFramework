@@ -105,7 +105,7 @@ class ProxyControlUnitLibraryHolder : public LibraryHolder<ProxyControlUnitLibra
 {
 public:
     static std::shared_ptr<MAA_CTRL_UNIT_NS::ControlUnitAPI>
-        create_control_unit(MAA_CTRL_UNIT_NS::ControlUnitAPI* inner, const char* dump_dir);
+        create_control_unit(std::shared_ptr<MAA_CTRL_UNIT_NS::ControlUnitAPI> inner, const char* dump_dir);
 
 private:
     inline static const std::filesystem::path libname_ = MAA_NS::path("MaaProxyControlUnit");
