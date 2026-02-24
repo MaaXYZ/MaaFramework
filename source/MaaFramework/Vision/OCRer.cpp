@@ -309,6 +309,14 @@ cv::Mat OCRer::draw_result(const ResultsVec& results) const
         cv::putText(image_draw, flag, cv::Point(my_box.x, my_box.y - 5), cv::FONT_HERSHEY_PLAIN, 1.2, color, 1);
     }
 
+    if (color_filter_) {
+        auto bin = apply_color_filter(image_);
+
+        int raw_width = image_draw.cols;
+        cv::copyMakeBorder(image_draw, image_draw, 0, 0, 0, bin.cols, cv::BORDER_CONSTANT, cv::Scalar(0, 0, 0));
+        bin.copyTo(image_draw(cv::Rect(raw_width, 0, bin.cols, bin.rows)));
+    }
+
     return image_draw;
 }
 
