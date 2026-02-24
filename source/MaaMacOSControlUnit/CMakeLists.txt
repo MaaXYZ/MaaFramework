@@ -16,6 +16,7 @@ find_library(SCREEN_CAPTURE_KIT ScreenCaptureKit REQUIRED)
 find_library(CORE_MEDIA CoreMedia REQUIRED)
 find_library(CORE_VIDEO CoreVideo REQUIRED)
 find_library(APP_KIT AppKit REQUIRED)
+find_library(CARBON Carbon REQUIRED)
 
 target_link_libraries(MaaMacOSControlUnit PRIVATE
     ${APPLICATION_SERVICES}
@@ -25,6 +26,7 @@ target_link_libraries(MaaMacOSControlUnit PRIVATE
     ${CORE_MEDIA}
     ${CORE_VIDEO}
     ${APP_KIT}
+    ${CARBON}
 )
 
 target_compile_definitions(MaaMacOSControlUnit PRIVATE MAA_CONTROL_UNIT_EXPORTS)

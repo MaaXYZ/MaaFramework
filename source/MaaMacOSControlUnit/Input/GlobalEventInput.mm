@@ -4,6 +4,7 @@
 
 #include <AppKit/AppKit.h>
 #include <ApplicationServices/ApplicationServices.h>
+#include <Carbon/Carbon.h>
 #include <CoreFoundation/CoreFoundation.h>
 #include <cctype>
 #include <map>
@@ -221,19 +222,41 @@ bool GlobalEventInput::input_text(const std::string& text)
         LogWarn << "Warning: Failed to activate window, input_text may not work";
     }
 
-    // CGKeyCode 映射表 (基于标准美式键盘布局)
-    static std::map<char, CGKeyCode> key_map
-        = { { 'a', 0 },   { 'b', 11 }, { 'c', 8 },  { 'd', 2 },  { 'e', 14 },  { 'f', 3 },  { 'g', 5 },  { 'h', 4 },  { 'i', 34 },
-            { 'j', 38 },  { 'k', 40 }, { 'l', 37 }, { 'm', 46 }, { 'n', 45 },  { 'o', 31 }, { 'p', 35 }, { 'q', 12 }, { 'r', 15 },
-            { 's', 1 },   { 't', 17 }, { 'u', 32 }, { 'v', 9 },  { 'w', 13 },  { 'x', 7 },  { 'y', 16 }, { 'z', 6 },  { 'A', 0 },
-            { 'B', 11 },  { 'C', 8 },  { 'D', 2 },  { 'E', 14 }, { 'F', 3 },   { 'G', 5 },  { 'H', 4 },  { 'I', 34 }, { 'J', 38 },
-            { 'K', 40 },  { 'L', 37 }, { 'M', 46 }, { 'N', 45 }, { 'O', 31 },  { 'P', 35 }, { 'Q', 12 }, { 'R', 15 }, { 'S', 1 },
-            { 'T', 17 },  { 'U', 32 }, { 'V', 9 },  { 'W', 13 }, { 'X', 7 },   { 'Y', 16 }, { 'Z', 6 },  { ' ', 49 }, { '1', 18 },
-            { '2', 19 },  { '3', 20 }, { '4', 21 }, { '5', 23 }, { '6', 22 },  { '7', 26 }, { '8', 28 }, { '9', 25 }, { '0', 29 },
-            { '!', 18 },  { '@', 19 }, { '#', 20 }, { '$', 21 }, { '%', 23 },  { '^', 22 }, { '&', 26 }, { '*', 28 }, { '(', 25 },
-            { ')', 29 },  { '-', 27 }, { '_', 27 }, { '=', 24 }, { '+', 24 },  { '[', 33 }, { ']', 30 }, { '{', 33 }, { '}', 30 },
-            { '\\', 42 }, { '|', 42 }, { ';', 41 }, { ':', 41 }, { '\'', 39 }, { '"', 39 }, { ',', 43 }, { '<', 43 }, { '.', 47 },
-            { '>', 47 },  { '/', 44 }, { '?', 44 }, { '`', 50 }, { '~', 50 } };
+    // CGKeyCode 映射表 (基于标准美式键盘布局，使用 Carbon 宏)
+    static std::map<char, CGKeyCode> key_map = {
+        // 小写字母
+        {'a', kVK_ANSI_A}, {'b', kVK_ANSI_B}, {'c', kVK_ANSI_C}, {'d', kVK_ANSI_D}, {'e', kVK_ANSI_E},
+        {'f', kVK_ANSI_F}, {'g', kVK_ANSI_G}, {'h', kVK_ANSI_H}, {'i', kVK_ANSI_I}, {'j', kVK_ANSI_J},
+        {'k', kVK_ANSI_K}, {'l', kVK_ANSI_L}, {'m', kVK_ANSI_M}, {'n', kVK_ANSI_N}, {'o', kVK_ANSI_O},
+        {'p', kVK_ANSI_P}, {'q', kVK_ANSI_Q}, {'r', kVK_ANSI_R}, {'s', kVK_ANSI_S}, {'t', kVK_ANSI_T},
+        {'u', kVK_ANSI_U}, {'v', kVK_ANSI_V}, {'w', kVK_ANSI_W}, {'x', kVK_ANSI_X}, {'y', kVK_ANSI_Y},
+        {'z', kVK_ANSI_Z},
+        // 大写字母 (使用相同的键码，shift 处理)
+        {'A', kVK_ANSI_A}, {'B', kVK_ANSI_B}, {'C', kVK_ANSI_C}, {'D', kVK_ANSI_D}, {'E', kVK_ANSI_E},
+        {'F', kVK_ANSI_F}, {'G', kVK_ANSI_G}, {'H', kVK_ANSI_H}, {'I', kVK_ANSI_I}, {'J', kVK_ANSI_J},
+        {'K', kVK_ANSI_K}, {'L', kVK_ANSI_L}, {'M', kVK_ANSI_M}, {'N', kVK_ANSI_N}, {'O', kVK_ANSI_O},
+        {'P', kVK_ANSI_P}, {'Q', kVK_ANSI_Q}, {'R', kVK_ANSI_R}, {'S', kVK_ANSI_S}, {'T', kVK_ANSI_T},
+        {'U', kVK_ANSI_U}, {'V', kVK_ANSI_V}, {'W', kVK_ANSI_W}, {'X', kVK_ANSI_X}, {'Y', kVK_ANSI_Y},
+        {'Z', kVK_ANSI_Z},
+        // 数字
+        {'1', kVK_ANSI_1}, {'2', kVK_ANSI_2}, {'3', kVK_ANSI_3}, {'4', kVK_ANSI_4}, {'5', kVK_ANSI_5},
+        {'6', kVK_ANSI_6}, {'7', kVK_ANSI_7}, {'8', kVK_ANSI_8}, {'9', kVK_ANSI_9}, {'0', kVK_ANSI_0},
+        // 符号 (shift + 数字/符号键)
+        {'!', kVK_ANSI_1}, {'@', kVK_ANSI_2}, {'#', kVK_ANSI_3}, {'$', kVK_ANSI_4}, {'%', kVK_ANSI_5},
+        {'^', kVK_ANSI_6}, {'&', kVK_ANSI_7}, {'*', kVK_ANSI_8}, {'(', kVK_ANSI_9}, {')', kVK_ANSI_0},
+        // 其他符号
+        {'-', kVK_ANSI_Minus}, {'_', kVK_ANSI_Minus}, {'=', kVK_ANSI_Equal}, {'+', kVK_ANSI_Equal},
+        {'[', kVK_ANSI_LeftBracket}, {']', kVK_ANSI_RightBracket}, {'{', kVK_ANSI_LeftBracket}, {'}', kVK_ANSI_RightBracket},
+        {'\\', kVK_ANSI_Backslash}, {'|', kVK_ANSI_Backslash},
+        {';', kVK_ANSI_Semicolon}, {':', kVK_ANSI_Semicolon},
+        {'\'', kVK_ANSI_Quote}, {'"', kVK_ANSI_Quote},
+        {',', kVK_ANSI_Comma}, {'<', kVK_ANSI_Comma},
+        {'.', kVK_ANSI_Period}, {'>', kVK_ANSI_Period},
+        {'/', kVK_ANSI_Slash}, {'?', kVK_ANSI_Slash},
+        {'`', kVK_ANSI_Grave}, {'~', kVK_ANSI_Grave},
+        // 空格
+        {' ', kVK_Space}
+    };
 
     for (char c : text) {
         auto it = key_map.find(c);
