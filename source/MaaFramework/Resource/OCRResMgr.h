@@ -10,7 +10,7 @@
 
 MAA_SUPPRESS_CV_WARNINGS_BEGIN
 #include "fastdeploy/vision/ocr/ppocr/dbdetector.h"
-#include "fastdeploy/vision/ocr/ppocr/ppocr_v3.h"
+#include "fastdeploy/vision/ocr/ppocr/ppocr_v4.h"
 #include "fastdeploy/vision/ocr/ppocr/recognizer.h"
 MAA_SUPPRESS_CV_WARNINGS_END
 
@@ -35,7 +35,7 @@ public:
 public:
     std::shared_ptr<fastdeploy::vision::ocr::DBDetector> deter(const std::string& name);
     std::shared_ptr<fastdeploy::vision::ocr::Recognizer> recer(const std::string& name);
-    std::shared_ptr<fastdeploy::pipeline::PPOCRv3> ocrer(const std::string& name);
+    std::shared_ptr<fastdeploy::pipeline::PPOCRv4> ocrer(const std::string& name);
 
 private:
     inline static const std::filesystem::path kDetModelFilename = "det.onnx";
@@ -44,7 +44,7 @@ private:
 
     std::shared_ptr<fastdeploy::vision::ocr::DBDetector> load_deter(const std::string& name);
     std::shared_ptr<fastdeploy::vision::ocr::Recognizer> load_recer(const std::string& name);
-    std::shared_ptr<fastdeploy::pipeline::PPOCRv3> load_ocrer(const std::string& name);
+    std::shared_ptr<fastdeploy::pipeline::PPOCRv4> load_ocrer(const std::string& name);
 
     std::vector<std::filesystem::path> roots_;
 
@@ -53,7 +53,7 @@ private:
 
     std::unordered_map<std::string, std::shared_ptr<fastdeploy::vision::ocr::DBDetector>> deters_;
     std::unordered_map<std::string, std::shared_ptr<fastdeploy::vision::ocr::Recognizer>> recers_;
-    std::unordered_map<std::string, std::shared_ptr<fastdeploy::pipeline::PPOCRv3>> ocrers_;
+    std::unordered_map<std::string, std::shared_ptr<fastdeploy::pipeline::PPOCRv4>> ocrers_;
 };
 
 MAA_RES_NS_END
