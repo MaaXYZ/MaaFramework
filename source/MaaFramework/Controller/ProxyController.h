@@ -3,10 +3,10 @@
 #include <chrono>
 #include <filesystem>
 #include <fstream>
-#include <functional>
 #include <mutex>
 
 #include "Common/MaaTypes.h"
+#include "ControlUnit/RecordTypes.h"
 #include "MaaUtils/NoWarningCVMat.hpp"
 #include "Utils/EventDispatcher.hpp"
 
@@ -61,10 +61,10 @@ public: // MaaController
 private:
     void write_record(const json::value& record);
 
-    MaaCtrlId forward_and_record(
-        const std::string& type,
-        const json::object& params,
-        std::function<MaaCtrlId()> post_fn);
+    template <typename ParamT>
+    MaaCtrlId forward_and_record(const std::string& type, const ParamT& param, std::function<MaaCtrlId()> post_fn);
+
+    MAA_CTRL_UNIT_NS::RecordLine make_line(const std::string& type, bool success, int64_t timestamp, int cost);
 
     static void MAA_CALL inner_sink_callback(void* handle, const char* message, const char* details_json, void* trans_arg);
 

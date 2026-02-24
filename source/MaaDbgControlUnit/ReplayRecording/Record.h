@@ -1,6 +1,5 @@
 #pragma once
 
-#include <filesystem>
 #include <string>
 #include <variant>
 #include <vector>
@@ -8,6 +7,7 @@
 #include <meojson/json.hpp>
 
 #include "Common/Conf.h"
+#include "ControlUnit/RecordTypes.h"
 #include "MaaUtils/NoWarningCVMat.hpp"
 
 MAA_CTRL_UNIT_NS_BEGIN
@@ -20,62 +20,18 @@ struct DeviceInfo
 
 struct Record
 {
-    struct ConnectParam
-    {
-        std::string uuid;
-        cv::Size resolution;
-        std::string version;
-    };
+    using ConnectParam = RecordConnect;
+    using ClickParam = RecordClick;
+    using SwipeParam = RecordSwipe;
+    using TouchParam = RecordTouch;
+    using ClickKeyParam = RecordKey;
+    using InputTextParam = RecordInputText;
+    using AppParam = RecordApp;
+    using ScrollParam = RecordScroll;
 
-    struct ClickParam
+    struct ScreencapParam : RecordScreencap
     {
-        int x = 0;
-        int y = 0;
-    };
-
-    struct SwipeParam
-    {
-        int x1 = 0;
-        int y1 = 0;
-        int x2 = 0;
-        int y2 = 0;
-        int duration = 0;
-        int starting = 0;
-    };
-
-    struct TouchParam
-    {
-        int contact = 0;
-        int x = 0;
-        int y = 0;
-        int pressure = 0;
-    };
-
-    struct ClickKeyParam
-    {
-        int keycode = 0;
-    };
-
-    struct InputTextParam
-    {
-        std::string text;
-    };
-
-    struct AppParam
-    {
-        std::string package;
-    };
-
-    struct ScreencapParam
-    {
-        std::filesystem::path path;
         cv::Mat image;
-    };
-
-    struct ScrollParam
-    {
-        int dx = 0;
-        int dy = 0;
     };
 
     using Param = std::variant<
