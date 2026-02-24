@@ -62,9 +62,9 @@ private:
     void write_record(const json::value& record);
 
     template <typename ParamT>
-    MaaCtrlId forward_and_record(const std::string& type, const ParamT& param, std::function<MaaCtrlId()> post_fn);
+    MaaCtrlId forward_and_record(MAA_CTRL_UNIT_NS::RecordType type, const ParamT& param, std::function<MaaCtrlId()> post_fn);
 
-    MAA_CTRL_UNIT_NS::RecordLine make_line(const std::string& type, bool success, int64_t timestamp, int cost);
+    MAA_CTRL_UNIT_NS::RecordLine make_line(MAA_CTRL_UNIT_NS::RecordType type, bool success, int64_t timestamp, int cost);
 
     static void MAA_CALL inner_sink_callback(void* handle, const char* message, const char* details_json, void* trans_arg);
 

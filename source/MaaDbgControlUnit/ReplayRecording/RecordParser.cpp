@@ -1,7 +1,6 @@
 #include "RecordParser.h"
 
 #include <fstream>
-#include <unordered_map>
 
 #include "MaaUtils/ImageIo.h"
 #include "MaaUtils/Logger.h"
@@ -47,8 +46,8 @@ std::optional<Recording> RecordParser::parse(const std::filesystem::path& path)
 
         auto& record = record_opt.value();
 
-        if (record.action.type == Record::Action::Type::connect) {
-            auto& param = std::get<Record::ConnectParam>(record.action.param);
+        if (record.action.type == RecordType::connect) {
+            auto& param = std::get<RecordConnect>(record.action.param);
             recording.version = param.version;
             recording.device_info.uuid = param.uuid;
             recording.device_info.resolution = cv::Size(param.width, param.height);
@@ -68,20 +67,8 @@ std::optional<Record> RecordParser::parse_record(const json::value& record_json,
         return std::nullopt;
     }
 
-    static const std::unordered_map<std::string, Record::Action::Type> kTypeMap = {
-        { "connect", Record::Action::Type::connect },           { "click", Record::Action::Type::click },
-        { "swipe", Record::Action::Type::swipe },               { "multi_swipe", Record::Action::Type::multi_swipe },
-        { "touch_down", Record::Action::Type::touch_down },     { "touch_move", Record::Action::Type::touch_move },
-        { "touch_up", Record::Action::Type::touch_up },         { "click_key", Record::Action::Type::click_key },
-        { "input_text", Record::Action::Type::input_text },     { "screencap", Record::Action::Type::screencap },
-        { "start_app", Record::Action::Type::start_app },       { "stop_app", Record::Action::Type::stop_app },
-        { "key_down", Record::Action::Type::key_down },         { "key_up", Record::Action::Type::key_up },
-        { "scroll", Record::Action::Type::scroll },
-    };
-
-    auto it = kTypeMap.find(line.type);
-    if (it == kTypeMap.end()) {
-        LogError << "Invalid type:" << line.type;
+    if (line.type == RecordType::invalid) {
+        LogError << "Invalid record type:" << VAR(record_json);
         return std::nullopt;
     }
 
@@ -90,7 +77,7 @@ std::optional<Record> RecordParser::parse_record(const json::value& record_json,
     record.timestamp = line.timestamp;
     record.success = line.success;
     record.cost = line.cost;
-    record.action.type = it->second;
+    record.action.type = line.type;
 
     auto parse_param = [&]<typename T>() -> std::optional<Record::Param> {
         T param;
@@ -103,17 +90,17 @@ std::optional<Record> RecordParser::parse_record(const json::value& record_json,
 
     std::optional<Record::Param> param_opt;
 
-    switch (record.action.type) {
-    case Record::Action::Type::connect:
+    switch (line.type) {
+    case RecordType::connect:
         param_opt = parse_param.operator()<RecordConnect>();
         break;
-    case Record::Action::Type::click:
+    case RecordType::click:
         param_opt = parse_param.operator()<RecordClick>();
         break;
-    case Record::Action::Type::swipe:
+    case RecordType::swipe:
         param_opt = parse_param.operator()<RecordSwipe>();
         break;
-    case Record::Action::Type::multi_swipe: {
+    case RecordType::multi_swipe: {
         RecordMultiSwipe ms;
         if (!ms.from_json(record_json)) {
             LogError << "Failed to parse multi_swipe:" << VAR(record_json);
@@ -122,21 +109,21 @@ std::optional<Record> RecordParser::parse_record(const json::value& record_json,
         param_opt = std::move(ms.swipes);
         break;
     }
-    case Record::Action::Type::touch_down:
-    case Record::Action::Type::touch_move:
-    case Record::Action::Type::touch_up:
+    case RecordType::touch_down:
+    case RecordType::touch_move:
+    case RecordType::touch_up:
         param_opt = parse_param.operator()<RecordTouch>();
         break;
-    case Record::Action::Type::click_key:
-    case Record::Action::Type::key_down:
-    case Record::Action::Type::key_up:
+    case RecordType::click_key:
+    case RecordType::key_down:
+    case RecordType::key_up:
         param_opt = parse_param.operator()<RecordKey>();
         break;
-    case Record::Action::Type::input_text:
+    case RecordType::input_text:
         param_opt = parse_param.operator()<RecordInputText>();
         break;
-    case Record::Action::Type::screencap: {
-        Record::ScreencapParam sp;
+    case RecordType::screencap: {
+        RecordScreencapData sp;
         if (!sp.from_json(record_json)) {
             LogError << "Failed to parse screencap:" << VAR(record_json);
             return std::nullopt;
@@ -152,15 +139,15 @@ std::optional<Record> RecordParser::parse_record(const json::value& record_json,
         param_opt = std::move(sp);
         break;
     }
-    case Record::Action::Type::start_app:
-    case Record::Action::Type::stop_app:
+    case RecordType::start_app:
+    case RecordType::stop_app:
         param_opt = parse_param.operator()<RecordApp>();
         break;
-    case Record::Action::Type::scroll:
+    case RecordType::scroll:
         param_opt = parse_param.operator()<RecordScroll>();
         break;
     default:
-        LogError << "Invalid type:" << VAR(record.action.type);
+        LogError << "Unhandled record type:" << VAR(line.type);
         return std::nullopt;
     }
 

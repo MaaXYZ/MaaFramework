@@ -29,7 +29,7 @@ bool ReplayRecording::connect()
     }
 
     const Record& record = recording_.records.at(record_index_);
-    if (record.action.type != Record::Action::Type::connect) {
+    if (record.action.type != RecordType::connect) {
         LogError << "record type is not connect" << VAR(record.action.type) << VAR(record.raw_data);
         return false;
     }
@@ -66,12 +66,12 @@ bool ReplayRecording::start_app(const std::string& intent)
     }
 
     const Record& record = recording_.records.at(record_index_);
-    if (record.action.type != Record::Action::Type::start_app) {
+    if (record.action.type != RecordType::start_app) {
         LogError << "record type is not start" << VAR(record.action.type) << VAR(record.raw_data);
         return false;
     }
 
-    auto param = std::get<Record::AppParam>(record.action.param);
+    auto param = std::get<RecordApp>(record.action.param);
 
     if (param.package != intent) {
         LogError << "record intent is not match" << VAR(param.package) << VAR(intent) << VAR(record.raw_data);
@@ -93,12 +93,12 @@ bool ReplayRecording::stop_app(const std::string& intent)
     }
 
     const Record& record = recording_.records.at(record_index_);
-    if (record.action.type != Record::Action::Type::stop_app) {
+    if (record.action.type != RecordType::stop_app) {
         LogError << "record type is not stop" << VAR(record.action.type) << VAR(record.raw_data);
         return false;
     }
 
-    auto param = std::get<Record::AppParam>(record.action.param);
+    auto param = std::get<RecordApp>(record.action.param);
 
     if (param.package != intent) {
         LogError << "record intent is not match" << VAR(param.package) << VAR(intent) << VAR(record.raw_data);
@@ -121,12 +121,12 @@ bool ReplayRecording::screencap(cv::Mat& image)
 
     const Record& record = recording_.records.at(record_index_);
 
-    if (record.action.type != Record::Action::Type::screencap) {
+    if (record.action.type != RecordType::screencap) {
         LogError << "record type is not screencap" << VAR(record.action.type) << VAR(record.raw_data);
         return false;
     }
 
-    auto param = std::get<Record::ScreencapParam>(record.action.param);
+    auto param = std::get<RecordScreencapData>(record.action.param);
 
     sleep(record.cost);
     ++record_index_;
@@ -145,7 +145,7 @@ bool ReplayRecording::click(int x, int y)
     }
 
     const Record& record = recording_.records.at(record_index_);
-    if (record.action.type != Record::Action::Type::click) {
+    if (record.action.type != RecordType::click) {
         LogError << "record type is not click" << VAR(record.action.type) << VAR(record.raw_data);
         return false;
     }
@@ -175,7 +175,7 @@ bool ReplayRecording::swipe(int x1, int y1, int x2, int y2, int duration)
     }
 
     const Record& record = recording_.records.at(record_index_);
-    if (record.action.type != Record::Action::Type::swipe) {
+    if (record.action.type != RecordType::swipe) {
         LogError << "record type is not swipe" << VAR(record.action.type) << VAR(record.raw_data);
         return false;
     }
@@ -209,12 +209,12 @@ bool ReplayRecording::touch_down(int contact, int x, int y, int pressure)
 
     const Record& record = recording_.records.at(record_index_);
 
-    if (record.action.type != Record::Action::Type::touch_down) {
+    if (record.action.type != RecordType::touch_down) {
         LogError << "record type is not touch_down" << VAR(record.action.type) << VAR(record.raw_data);
         return false;
     }
 
-    auto param = std::get<Record::TouchParam>(record.action.param);
+    auto param = std::get<RecordTouch>(record.action.param);
 
     if (param.contact != contact || param.x != x || param.y != y || param.pressure != pressure) {
         LogError << "record touch_down is not match" << VAR(param.contact) << VAR(param.x) << VAR(param.y) << VAR(param.pressure)
@@ -238,12 +238,12 @@ bool ReplayRecording::touch_move(int contact, int x, int y, int pressure)
 
     const Record& record = recording_.records.at(record_index_);
 
-    if (record.action.type != Record::Action::Type::touch_move) {
+    if (record.action.type != RecordType::touch_move) {
         LogError << "record type is not touch_move" << VAR(record.action.type) << VAR(record.raw_data);
         return false;
     }
 
-    auto param = std::get<Record::TouchParam>(record.action.param);
+    auto param = std::get<RecordTouch>(record.action.param);
 
     if (param.contact != contact || param.x != x || param.y != y || param.pressure != pressure) {
         LogError << "record touch_move is not match" << VAR(param.contact) << VAR(param.x) << VAR(param.y) << VAR(param.pressure)
@@ -267,12 +267,12 @@ bool ReplayRecording::touch_up(int contact)
 
     const Record& record = recording_.records.at(record_index_);
 
-    if (record.action.type != Record::Action::Type::touch_up) {
+    if (record.action.type != RecordType::touch_up) {
         LogError << "record type is not touch_up" << VAR(record.action.type) << VAR(record.raw_data);
         return false;
     }
 
-    auto param = std::get<Record::TouchParam>(record.action.param);
+    auto param = std::get<RecordTouch>(record.action.param);
 
     if (param.contact != contact) {
         LogError << "record touch_up is not match" << VAR(param.contact) << VAR(contact) << VAR(record.raw_data);
@@ -295,12 +295,12 @@ bool ReplayRecording::click_key(int key)
 
     const Record& record = recording_.records.at(record_index_);
 
-    if (record.action.type != Record::Action::Type::click_key) {
+    if (record.action.type != RecordType::click_key) {
         LogError << "record type is not click_key" << VAR(record.action.type) << VAR(record.raw_data);
         return false;
     }
 
-    auto param = std::get<Record::ClickKeyParam>(record.action.param);
+    auto param = std::get<RecordKey>(record.action.param);
 
     if (param.keycode != key) {
         LogError << "record click_key is not match" << VAR(param.keycode) << VAR(key) << VAR(record.raw_data);
@@ -323,12 +323,12 @@ bool ReplayRecording::input_text(const std::string& text)
 
     const Record& record = recording_.records.at(record_index_);
 
-    if (record.action.type != Record::Action::Type::input_text) {
+    if (record.action.type != RecordType::input_text) {
         LogError << "record type is not input_text" << VAR(record.action.type) << VAR(record.raw_data);
         return false;
     }
 
-    auto param = std::get<Record::InputTextParam>(record.action.param);
+    auto param = std::get<RecordInputText>(record.action.param);
 
     if (param.text != text) {
         LogError << "record text is not match" << VAR(param.text) << VAR(text) << VAR(record.raw_data);
@@ -351,12 +351,12 @@ bool ReplayRecording::key_down(int key)
 
     const Record& record = recording_.records.at(record_index_);
 
-    if (record.action.type != Record::Action::Type::key_down) {
+    if (record.action.type != RecordType::key_down) {
         LogError << "record type is not key_down" << VAR(record.action.type) << VAR(record.raw_data);
         return false;
     }
 
-    auto param = std::get<Record::ClickKeyParam>(record.action.param);
+    auto param = std::get<RecordKey>(record.action.param);
 
     if (param.keycode != key) {
         LogError << "record key_down is not match" << VAR(param.keycode) << VAR(key) << VAR(record.raw_data);
@@ -379,12 +379,12 @@ bool ReplayRecording::key_up(int key)
 
     const Record& record = recording_.records.at(record_index_);
 
-    if (record.action.type != Record::Action::Type::key_up) {
+    if (record.action.type != RecordType::key_up) {
         LogError << "record type is not key_up" << VAR(record.action.type) << VAR(record.raw_data);
         return false;
     }
 
-    auto param = std::get<Record::ClickKeyParam>(record.action.param);
+    auto param = std::get<RecordKey>(record.action.param);
 
     if (param.keycode != key) {
         LogError << "record key_up is not match" << VAR(param.keycode) << VAR(key) << VAR(record.raw_data);
@@ -406,7 +406,7 @@ bool ReplayRecording::scroll(int dx, int dy)
     }
 
     const Record& record = recording_.records.at(record_index_);
-    if (record.action.type != Record::Action::Type::scroll) {
+    if (record.action.type != RecordType::scroll) {
         LogError << "record type is not scroll" << VAR(record.action.type) << VAR(record.raw_data);
         return false;
     }

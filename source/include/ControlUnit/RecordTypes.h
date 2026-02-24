@@ -9,9 +9,29 @@
 
 MAA_CTRL_UNIT_NS_BEGIN
 
+enum class RecordType
+{
+    invalid,
+    connect,
+    click,
+    swipe,
+    multi_swipe,
+    touch_down,
+    touch_move,
+    touch_up,
+    click_key,
+    input_text,
+    screencap,
+    start_app,
+    stop_app,
+    key_down,
+    key_up,
+    scroll,
+};
+
 struct RecordLine
 {
-    std::string type;
+    RecordType type = RecordType::invalid;
     int64_t timestamp = 0;
     bool success = false;
     int cost = 0;

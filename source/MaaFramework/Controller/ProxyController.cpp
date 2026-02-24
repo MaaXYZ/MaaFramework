@@ -73,41 +73,41 @@ MaaCtrlId ProxyController::post_connection()
         }
     }
 
-    write_record(make_record_json(make_line("connect", success, timestamp, static_cast<int>(cost)), param));
+    write_record(make_record_json(make_line(RecordType::connect, success, timestamp, static_cast<int>(cost)), param));
     return id;
 }
 
 MaaCtrlId ProxyController::post_click(int x, int y, int contact, int pressure)
 {
-    return forward_and_record("click", RecordClick { x, y }, [&]() { return inner_->post_click(x, y, contact, pressure); });
+    return forward_and_record(RecordType::click, RecordClick { x, y }, [&]() { return inner_->post_click(x, y, contact, pressure); });
 }
 
 MaaCtrlId ProxyController::post_swipe(int x1, int y1, int x2, int y2, int duration, int contact, int pressure)
 {
     return forward_and_record(
-        "swipe",
+        RecordType::swipe,
         RecordSwipe { x1, y1, x2, y2, duration },
         [&]() { return inner_->post_swipe(x1, y1, x2, y2, duration, contact, pressure); });
 }
 
 MaaCtrlId ProxyController::post_click_key(int keycode)
 {
-    return forward_and_record("click_key", RecordKey { keycode }, [&]() { return inner_->post_click_key(keycode); });
+    return forward_and_record(RecordType::click_key, RecordKey { keycode }, [&]() { return inner_->post_click_key(keycode); });
 }
 
 MaaCtrlId ProxyController::post_input_text(const std::string& text)
 {
-    return forward_and_record("input_text", RecordInputText { text }, [&]() { return inner_->post_input_text(text); });
+    return forward_and_record(RecordType::input_text, RecordInputText { text }, [&]() { return inner_->post_input_text(text); });
 }
 
 MaaCtrlId ProxyController::post_start_app(const std::string& intent)
 {
-    return forward_and_record("start_app", RecordApp { intent }, [&]() { return inner_->post_start_app(intent); });
+    return forward_and_record(RecordType::start_app, RecordApp { intent }, [&]() { return inner_->post_start_app(intent); });
 }
 
 MaaCtrlId ProxyController::post_stop_app(const std::string& intent)
 {
-    return forward_and_record("stop_app", RecordApp { intent }, [&]() { return inner_->post_stop_app(intent); });
+    return forward_and_record(RecordType::stop_app, RecordApp { intent }, [&]() { return inner_->post_stop_app(intent); });
 }
 
 MaaCtrlId ProxyController::post_screencap()
@@ -134,14 +134,14 @@ MaaCtrlId ProxyController::post_screencap()
         }
     }
 
-    write_record(make_record_json(make_line("screencap", success, timestamp, static_cast<int>(cost)), param));
+    write_record(make_record_json(make_line(RecordType::screencap, success, timestamp, static_cast<int>(cost)), param));
     return id;
 }
 
 MaaCtrlId ProxyController::post_touch_down(int contact, int x, int y, int pressure)
 {
     return forward_and_record(
-        "touch_down",
+        RecordType::touch_down,
         RecordTouch { contact, x, y, pressure },
         [&]() { return inner_->post_touch_down(contact, x, y, pressure); });
 }
@@ -149,29 +149,29 @@ MaaCtrlId ProxyController::post_touch_down(int contact, int x, int y, int pressu
 MaaCtrlId ProxyController::post_touch_move(int contact, int x, int y, int pressure)
 {
     return forward_and_record(
-        "touch_move",
+        RecordType::touch_move,
         RecordTouch { contact, x, y, pressure },
         [&]() { return inner_->post_touch_move(contact, x, y, pressure); });
 }
 
 MaaCtrlId ProxyController::post_touch_up(int contact)
 {
-    return forward_and_record("touch_up", RecordTouch { contact }, [&]() { return inner_->post_touch_up(contact); });
+    return forward_and_record(RecordType::touch_up, RecordTouch { contact }, [&]() { return inner_->post_touch_up(contact); });
 }
 
 MaaCtrlId ProxyController::post_key_down(int keycode)
 {
-    return forward_and_record("key_down", RecordKey { keycode }, [&]() { return inner_->post_key_down(keycode); });
+    return forward_and_record(RecordType::key_down, RecordKey { keycode }, [&]() { return inner_->post_key_down(keycode); });
 }
 
 MaaCtrlId ProxyController::post_key_up(int keycode)
 {
-    return forward_and_record("key_up", RecordKey { keycode }, [&]() { return inner_->post_key_up(keycode); });
+    return forward_and_record(RecordType::key_up, RecordKey { keycode }, [&]() { return inner_->post_key_up(keycode); });
 }
 
 MaaCtrlId ProxyController::post_scroll(int dx, int dy)
 {
-    return forward_and_record("scroll", RecordScroll { dx, dy }, [&]() { return inner_->post_scroll(dx, dy); });
+    return forward_and_record(RecordType::scroll, RecordScroll { dx, dy }, [&]() { return inner_->post_scroll(dx, dy); });
 }
 
 MaaCtrlId ProxyController::post_shell(const std::string& cmd, int64_t timeout)
@@ -248,7 +248,7 @@ void ProxyController::write_record(const json::value& record)
 }
 
 template <typename ParamT>
-MaaCtrlId ProxyController::forward_and_record(const std::string& type, const ParamT& param, std::function<MaaCtrlId()> post_fn)
+MaaCtrlId ProxyController::forward_and_record(RecordType type, const ParamT& param, std::function<MaaCtrlId()> post_fn)
 {
     auto start = std::chrono::steady_clock::now();
     auto id = post_fn();
@@ -263,7 +263,7 @@ MaaCtrlId ProxyController::forward_and_record(const std::string& type, const Par
     return id;
 }
 
-RecordLine ProxyController::make_line(const std::string& type, bool success, int64_t timestamp, int cost)
+RecordLine ProxyController::make_line(RecordType type, bool success, int64_t timestamp, int cost)
 {
     return RecordLine { .type = type, .timestamp = timestamp, .success = success, .cost = cost };
 }
