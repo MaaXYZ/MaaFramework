@@ -78,7 +78,10 @@ POINT MessageInput::client_to_screen(int x, int y)
 
 void MessageInput::save_cursor_pos()
 {
-    GetCursorPos(&saved_cursor_pos_);
+    if (!GetCursorPos(&saved_cursor_pos_)) {
+        LogError << "GetCursorPos failed" << VAR(GetLastError());
+        return;
+    }
     cursor_pos_saved_ = true;
 }
 
@@ -89,7 +92,9 @@ void MessageInput::restore_cursor_pos()
     }
     std::this_thread::sleep_for(std::chrono::milliseconds(10));
 
-    SetCursorPos(saved_cursor_pos_.x, saved_cursor_pos_.y);
+    if (!SetCursorPos(saved_cursor_pos_.x, saved_cursor_pos_.y)) {
+        LogError << "SetCursorPos failed" << VAR(saved_cursor_pos_.x) << VAR(saved_cursor_pos_.y) << VAR(GetLastError());
+    }
     cursor_pos_saved_ = false;
 }
 
@@ -99,7 +104,10 @@ void MessageInput::save_window_pos()
         return;
     }
 
-    GetWindowRect(hwnd_, &saved_window_rect_);
+    if (!GetWindowRect(hwnd_, &saved_window_rect_)) {
+        LogError << "GetWindowRect failed" << VAR(hwnd_) << VAR(GetLastError());
+        return;
+    }
     window_pos_saved_ = true;
 }
 
@@ -110,7 +118,9 @@ void MessageInput::restore_window_pos()
     }
     std::this_thread::sleep_for(std::chrono::milliseconds(10));
 
-    SetWindowPos(hwnd_, nullptr, saved_window_rect_.left, saved_window_rect_.top, 0, 0, SWP_NOSIZE | SWP_NOZORDER | SWP_NOACTIVATE);
+    if (!SetWindowPos(hwnd_, nullptr, saved_window_rect_.left, saved_window_rect_.top, 0, 0, SWP_NOSIZE | SWP_NOZORDER | SWP_NOACTIVATE)) {
+        LogError << "SetWindowPos failed during restore" << VAR(hwnd_) << VAR(GetLastError());
+    }
     window_pos_saved_ = false;
 }
 
@@ -139,21 +149,25 @@ void MessageInput::restore_pos()
 bool MessageInput::move_window_to_align_cursor(int x, int y)
 {
     if (!hwnd_) {
+        LogError << "move_window_to_align_cursor: hwnd_ is nullptr";
         return false;
     }
 
     POINT cursor_pos;
     if (!GetCursorPos(&cursor_pos)) {
+        LogError << "GetCursorPos failed" << VAR(GetLastError());
         return false;
     }
 
     POINT pt = { 0, 0 };
     if (!ClientToScreen(hwnd_, &pt)) {
+        LogError << "ClientToScreen failed" << VAR(hwnd_) << VAR(GetLastError());
         return false;
     }
 
     RECT current_rect;
     if (!GetWindowRect(hwnd_, &current_rect)) {
+        LogError << "GetWindowRect failed" << VAR(hwnd_) << VAR(GetLastError());
         return false;
     }
 
@@ -164,8 +178,11 @@ bool MessageInput::move_window_to_align_cursor(int x, int y)
     int new_left = cursor_pos.x - x - border_x;
     int new_top = cursor_pos.y - y - border_y;
 
-    SetWindowPos(hwnd_, nullptr, new_left, new_top, 0, 0, 
-                 SWP_NOSIZE | SWP_NOZORDER | SWP_NOACTIVATE | SWP_ASYNCWINDOWPOS);
+    if (!SetWindowPos(hwnd_, nullptr, new_left, new_top, 0, 0,
+                      SWP_NOSIZE | SWP_NOZORDER | SWP_NOACTIVATE | SWP_ASYNCWINDOWPOS)) {
+        LogError << "SetWindowPos failed" << VAR(hwnd_) << VAR(new_left) << VAR(new_top) << VAR(GetLastError());
+        return false;
+    }
 
     return true;
 }
@@ -175,7 +192,9 @@ LPARAM MessageInput::prepare_mouse_position(int x, int y)
     if (config_.with_cursor_pos) {
         // WithCursorPos 模式：移动真实光标到目标位置
         POINT screen_pos = client_to_screen(x, y);
-        SetCursorPos(screen_pos.x, screen_pos.y);
+        if (!SetCursorPos(screen_pos.x, screen_pos.y)) {
+            LogError << "SetCursorPos failed" << VAR(screen_pos.x) << VAR(screen_pos.y) << VAR(GetLastError());
+        }
         std::this_thread::sleep_for(std::chrono::milliseconds(1));
     }
     else if (config_.with_window_pos) {
@@ -237,18 +256,42 @@ void MessageInput::open_target_process()
     DWORD pid = 0;
     GetWindowThreadProcessId(hwnd_, &pid);
     if (!pid) {
+        LogWarn << "GetWindowThreadProcessId returned 0" << VAR(hwnd_) << VAR(GetLastError());
         return;
     }
 
     target_process_handle_ = OpenProcess(PROCESS_SUSPEND_RESUME, FALSE, pid);
+    if (!target_process_handle_) {
+        LogWarn << "OpenProcess failed" << VAR(pid) << VAR(GetLastError());
+    }
 }
 
 void MessageInput::close_target_process()
 {
-    if (target_process_handle_) {
-        CloseHandle(target_process_handle_);
-        target_process_handle_ = nullptr;
+    if (!target_process_handle_) {
+        return;
     }
+    CloseHandle(target_process_handle_);
+    target_process_handle_ = nullptr;
+}
+
+// 动态解析 ntdll 未文档化函数（仅解析一次，线程安全由 static 局部变量保证）
+template <typename Fn>
+static Fn resolve_nt_function(const char* name)
+{
+    static Fn func = nullptr;
+    static bool resolved = false;
+    if (!resolved) {
+        HMODULE ntdll = GetModuleHandleW(L"ntdll.dll");
+        if (ntdll) {
+            func = reinterpret_cast<Fn>(GetProcAddress(ntdll, name));
+        }
+        if (!func) {
+            LogWarn << "Failed to resolve ntdll function" << VAR(name);
+        }
+        resolved = true;
+    }
+    return func;
 }
 
 void MessageInput::suspend_target_process()
@@ -257,20 +300,10 @@ void MessageInput::suspend_target_process()
         return;
     }
 
-    // 动态加载 NtSuspendProcess（ntdll 未文档化但广泛使用的 API）
-    typedef LONG(NTAPI * NtSuspendProcessFn)(HANDLE);
-    static NtSuspendProcessFn pNtSuspendProcess = nullptr;
-    static bool resolved = false;
-    if (!resolved) {
-        HMODULE ntdll = GetModuleHandleW(L"ntdll.dll");
-        if (ntdll) {
-            pNtSuspendProcess = (NtSuspendProcessFn)GetProcAddress(ntdll, "NtSuspendProcess");
-        }
-        resolved = true;
-    }
-
-    if (pNtSuspendProcess) {
-        pNtSuspendProcess(target_process_handle_);
+    using NtSuspendProcessFn = LONG(NTAPI*)(HANDLE);
+    auto fn = resolve_nt_function<NtSuspendProcessFn>("NtSuspendProcess");
+    if (fn) {
+        fn(target_process_handle_);
     }
 }
 
@@ -280,23 +313,73 @@ void MessageInput::resume_target_process()
         return;
     }
 
-    typedef LONG(NTAPI * NtResumeProcessFn)(HANDLE);
-    static NtResumeProcessFn pNtResumeProcess = nullptr;
-    static bool resolved = false;
-    if (!resolved) {
-        HMODULE ntdll = GetModuleHandleW(L"ntdll.dll");
-        if (ntdll) {
-            pNtResumeProcess = (NtResumeProcessFn)GetProcAddress(ntdll, "NtResumeProcess");
-        }
-        resolved = true;
-    }
-
-    if (pNtResumeProcess) {
-        pNtResumeProcess(target_process_handle_);
+    using NtResumeProcessFn = LONG(NTAPI*)(HANDLE);
+    auto fn = resolve_nt_function<NtResumeProcessFn>("NtResumeProcess");
+    if (fn) {
+        fn(target_process_handle_);
     }
 }
 
 // ======================== 追踪线程 ========================
+
+void MessageInput::process_pending_mouse_frame()
+{
+    has_pending_mouse_.store(false, std::memory_order_relaxed);
+
+    // 原子读取并清零累积的 delta（exchange 保证不丢失并发写入）
+    int dx = pending_mouse_x_.exchange(0, std::memory_order_relaxed);
+    int dy = pending_mouse_y_.exchange(0, std::memory_order_relaxed);
+    int tx = tracking_x_.load(std::memory_order_relaxed);
+    int ty = tracking_y_.load(std::memory_order_relaxed);
+
+    // 基于当前真实光标位置 + 累积 delta 计算目标光标位置
+    POINT cursor;
+    if (!GetCursorPos(&cursor)) {
+        LogError << "GetCursorPos failed in tracking frame" << VAR(GetLastError());
+        return;
+    }
+    int mx = cursor.x + dx;
+    int my = cursor.y + dy;
+
+    // 限制目标光标位置在虚拟主屏幕范围内，避免光标撞墙时窗口继续飞出边界导致不同步
+    int vscreen_x = GetSystemMetrics(SM_XVIRTUALSCREEN);
+    int vscreen_y = GetSystemMetrics(SM_YVIRTUALSCREEN);
+    int vscreen_w = GetSystemMetrics(SM_CXVIRTUALSCREEN);
+    int vscreen_h = GetSystemMetrics(SM_CYVIRTUALSCREEN);
+
+    mx = std::max(vscreen_x, std::min(mx, vscreen_x + vscreen_w - 1));
+    my = std::max(vscreen_y, std::min(my, vscreen_y + vscreen_h - 1));
+
+    POINT client_origin = { 0, 0 };
+    if (!ClientToScreen(hwnd_, &client_origin)) {
+        LogError << "ClientToScreen failed in tracking frame" << VAR(hwnd_) << VAR(GetLastError());
+        return;
+    }
+
+    RECT rect;
+    if (!GetWindowRect(hwnd_, &rect)) {
+        LogError << "GetWindowRect failed in tracking frame" << VAR(hwnd_) << VAR(GetLastError());
+        return;
+    }
+
+    int border_x = client_origin.x - rect.left;
+    int border_y = client_origin.y - rect.top;
+    int new_left = mx - tx - border_x;
+    int new_top  = my - ty - border_y;
+
+    // 1. 挂起目标进程，使其看不到中间态
+    suspend_target_process();
+
+    // 2. 移动窗口（SWP_ASYNCWINDOWPOS 避免阻塞 + SWP_NOSENDCHANGING 跳过同步通知）
+    SetWindowPos(hwnd_, nullptr, new_left, new_top, 0, 0,
+                 SWP_NOSIZE | SWP_NOZORDER | SWP_NOACTIVATE | SWP_NOSENDCHANGING | SWP_ASYNCWINDOWPOS);
+
+    // 3. 释放光标到累积后的真实目标位置
+    SetCursorPos(mx, my);
+
+    // 4. 恢复目标进程（它醒来时看到的窗口和光标已完美对齐）
+    resume_target_process();
+}
 
 void MessageInput::tracking_thread_func()
 {
@@ -304,11 +387,20 @@ void MessageInput::tracking_thread_func()
 
     // 将系统定时器精度提升到 1ms，确保 Sleep/MsgWait 精度
     timeBeginPeriod(1);
+    OnScopeLeave([this]() {
+        close_target_process();
+        timeEndPeriod(1);
+    });
 
     // 预先打开目标进程句柄（用于挂起/恢复）
     open_target_process();
 
     HHOOK hHook = SetWindowsHookExW(WH_MOUSE_LL, MouseHookProc, GetModuleHandleW(NULL), 0);
+    if (!hHook) {
+        LogError << "SetWindowsHookExW failed, tracking disabled" << VAR(GetLastError());
+        return;
+    }
+    OnScopeLeave([&]() { UnhookWindowsHookEx(hHook); });
 
     // 60fps 节流：每帧间隔 ~16.67ms
     using clock = std::chrono::steady_clock;
@@ -333,65 +425,11 @@ void MessageInput::tracking_thread_func()
         auto now = clock::now();
         bool frame_ready = (now - last_frame) >= frame_interval;
 
-        // 批量处理待定鼠标事件（60fps 节流）
         if (tracking_active_ && has_pending_mouse_.load(std::memory_order_acquire) && frame_ready) {
-            has_pending_mouse_.store(false, std::memory_order_relaxed);
-
-            // 原子读取并清零累积的 delta（exchange 保证不丢失并发写入）
-            int dx = pending_mouse_x_.exchange(0, std::memory_order_relaxed);
-            int dy = pending_mouse_y_.exchange(0, std::memory_order_relaxed);
-            int tx = tracking_x_.load(std::memory_order_relaxed);
-            int ty = tracking_y_.load(std::memory_order_relaxed);
-
-            // 基于当前真实光标位置 + 累积 delta 计算目标光标位置
-            POINT cursor;
-            GetCursorPos(&cursor);
-            int mx = cursor.x + dx;
-            int my = cursor.y + dy;
-
-            // 限制目标光标位置在虚拟主屏幕范围内，避免光标撞墙时窗口继续飞出边界导致不同步
-            int vscreen_x = GetSystemMetrics(SM_XVIRTUALSCREEN);
-            int vscreen_y = GetSystemMetrics(SM_YVIRTUALSCREEN);
-            int vscreen_w = GetSystemMetrics(SM_CXVIRTUALSCREEN);
-            int vscreen_h = GetSystemMetrics(SM_CYVIRTUALSCREEN);
-            
-            mx = std::max(vscreen_x, std::min(mx, vscreen_x + vscreen_w - 1));
-            my = std::max(vscreen_y, std::min(my, vscreen_y + vscreen_h - 1));
-
-            POINT client_origin = { 0, 0 };
-            if (ClientToScreen(hwnd_, &client_origin)) {
-                RECT rect;
-                if (GetWindowRect(hwnd_, &rect)) {
-                    int border_x = client_origin.x - rect.left;
-                    int border_y = client_origin.y - rect.top;
-                    int new_left = mx - tx - border_x;
-                    int new_top  = my - ty - border_y;
-
-                    // 1. 挂起目标进程，使其看不到中间态
-                    suspend_target_process();
-
-                    // 2. 移动窗口（SWP_ASYNCWINDOWPOS 避免阻塞 + SWP_NOSENDCHANGING 跳过同步通知）
-                    SetWindowPos(hwnd_, nullptr, new_left, new_top, 0, 0,
-                                 SWP_NOSIZE | SWP_NOZORDER | SWP_NOACTIVATE | SWP_NOSENDCHANGING | SWP_ASYNCWINDOWPOS);
-
-                    // 3. 释放光标到累积后的真实目标位置
-                    SetCursorPos(mx, my);
-
-                    // 4. 恢复目标进程（它醒来时看到的窗口和光标已完美对齐）
-                    resume_target_process();
-                }
-            }
-
+            process_pending_mouse_frame();
             last_frame = now;
         }
     }
-
-    if (hHook) {
-        UnhookWindowsHookEx(hHook);
-    }
-
-    close_target_process();
-    timeEndPeriod(1);
 }
 
 void MessageInput::check_and_block_input()

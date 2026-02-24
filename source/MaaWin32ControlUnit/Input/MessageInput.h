@@ -79,6 +79,7 @@ private:
 
     // WithWindowPos background tracking
     void tracking_thread_func();
+    void process_pending_mouse_frame();
     std::thread tracking_thread_;
     std::atomic<bool> tracking_exit_{ false };
     std::atomic<bool> tracking_active_{ false };
