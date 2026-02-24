@@ -35,4 +35,8 @@ if(WITH_GAMEPAD_CONTROLLER)
     add_dependencies(LibraryHolder MaaGamepadControlUnit)
 endif()
 
+if(WITH_PROXY_CONTROLLER)
+    add_dependencies(LibraryHolder MaaProxyControlUnit)
+endif()
+
 source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES ${library_holder_src})

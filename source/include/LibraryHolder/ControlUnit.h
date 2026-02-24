@@ -101,4 +101,17 @@ private:
     inline static const std::string destroy_func_name_ = "MaaGamepadControlUnitDestroy";
 };
 
+class ProxyControlUnitLibraryHolder : public LibraryHolder<ProxyControlUnitLibraryHolder>
+{
+public:
+    static std::shared_ptr<MAA_CTRL_UNIT_NS::ControlUnitAPI>
+        create_control_unit(MAA_CTRL_UNIT_NS::ControlUnitAPI* inner, const char* dump_dir);
+
+private:
+    inline static const std::filesystem::path libname_ = MAA_NS::path("MaaProxyControlUnit");
+    inline static const std::string version_func_name_ = "MaaProxyControlUnitGetVersion";
+    inline static const std::string create_func_name_ = "MaaProxyControlUnitCreate";
+    inline static const std::string destroy_func_name_ = "MaaProxyControlUnitDestroy";
+};
+
 MAA_NS_END

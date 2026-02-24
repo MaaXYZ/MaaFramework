@@ -1,7 +1,6 @@
 #include "MaaFramework/MaaAPI.h"
 
 #include "Controller/ControllerAgent.h"
-#include "Controller/ProxyController.h"
 #include "Global/OptionMgr.h"
 #include "Global/PluginMgr.h"
 #include "LibraryHolder/ControlUnit.h"
@@ -131,7 +130,25 @@ MaaController* MaaProxyControllerCreate(MaaController* inner, const char* dump_d
         return nullptr;
     }
 
-    return new MAA_CTRL_NS::ProxyController(inner, MAA_NS::path(dump_dir));
+    auto* agent = dynamic_cast<MAA_CTRL_NS::ControllerAgent*>(inner);
+    if (!agent) {
+        LogError << "inner is not a ControllerAgent";
+        return nullptr;
+    }
+
+    auto inner_unit = agent->control_unit();
+    if (!inner_unit) {
+        LogError << "inner control unit is null";
+        return nullptr;
+    }
+
+    auto control_unit = MAA_NS::ProxyControlUnitLibraryHolder::create_control_unit(inner_unit.get(), dump_dir);
+    if (!control_unit) {
+        LogError << "Failed to create proxy control unit";
+        return nullptr;
+    }
+
+    return new MAA_CTRL_NS::ControllerAgent(std::move(control_unit));
 }
 
 MaaController* MaaPlayCoverControllerCreate(const char* address, const char* uuid)
