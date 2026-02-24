@@ -41,6 +41,19 @@ extern "C"
         MaaDbgControllerCreate(const char* read_path, const char* write_path, MaaDbgControllerType type, const char* config);
 
     /**
+     * @brief Create a proxy controller that wraps an existing controller and records all operations.
+     *
+     * @param inner The inner controller to forward all operations to. Must not be null.
+     *              The proxy does NOT take ownership of the inner controller.
+     * @param dump_dir Directory path where recording files will be written.
+     *                 A "recording.jsonl" file and screenshot images will be created here.
+     *                 The recorded files can be replayed using MaaDbgControllerCreate with
+     *                 MaaDbgControllerType_ReplayRecording.
+     * @return The proxy controller handle, or nullptr on failure.
+     */
+    MAA_FRAMEWORK_API MaaController* MaaProxyControllerCreate(MaaController* inner, const char* dump_dir);
+
+    /**
      * @brief Create a PlayCover controller for macOS.
      *
      * @param address The PlayTools service address in "host:port" format.

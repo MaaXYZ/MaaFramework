@@ -145,6 +145,9 @@ inline std::ostream& operator<<(std::ostream& os, Record::Action::Type type)
     case Record::Action::Type::swipe:
         os << "swipe";
         break;
+    case Record::Action::Type::multi_swipe:
+        os << "multi_swipe";
+        break;
     case Record::Action::Type::touch_down:
         os << "touch_down";
         break;

@@ -72,13 +72,14 @@ std::optional<Record> RecordParser::parse_record(const json::value& record_json,
 
     std::string type_str = record_json.get("type", std::string());
     static const std::unordered_map<std::string, Record::Action::Type> kTypeMap = {
-        { "connect", Record::Action::Type::connect },       { "click", Record::Action::Type::click },
-        { "swipe", Record::Action::Type::swipe },           { "touch_down", Record::Action::Type::touch_down },
-        { "touch_move", Record::Action::Type::touch_move }, { "touch_up", Record::Action::Type::touch_up },
-        { "click_key", Record::Action::Type::click_key },   { "input_text", Record::Action::Type::input_text },
-        { "screencap", Record::Action::Type::screencap },   { "start_app", Record::Action::Type::start_app },
-        { "stop_app", Record::Action::Type::stop_app },     { "key_down", Record::Action::Type::key_down },
-        { "key_up", Record::Action::Type::key_up },
+        { "connect", Record::Action::Type::connect },           { "click", Record::Action::Type::click },
+        { "swipe", Record::Action::Type::swipe },               { "multi_swipe", Record::Action::Type::multi_swipe },
+        { "touch_down", Record::Action::Type::touch_down },     { "touch_move", Record::Action::Type::touch_move },
+        { "touch_up", Record::Action::Type::touch_up },         { "click_key", Record::Action::Type::click_key },
+        { "input_text", Record::Action::Type::input_text },     { "screencap", Record::Action::Type::screencap },
+        { "start_app", Record::Action::Type::start_app },       { "stop_app", Record::Action::Type::stop_app },
+        { "key_down", Record::Action::Type::key_down },         { "key_up", Record::Action::Type::key_up },
+        { "scroll", Record::Action::Type::scroll },
     };
 
     auto it = kTypeMap.find(type_str);
@@ -123,6 +124,9 @@ std::optional<Record> RecordParser::parse_record(const json::value& record_json,
     case Record::Action::Type::stop_app:
         action_opt = parse_app(record_json);
         break;
+    case Record::Action::Type::scroll:
+        action_opt = parse_scroll(record_json);
+        break;
     default:
         LogError << "Invalid type:" << VAR(record.action.type);
         return std::nullopt;
@@ -155,6 +159,13 @@ std::optional<Record::Param> RecordParser::parse_connect(const json::value& reco
     else {
         LogError << "Failed to find uuid:" << VAR(record_json);
         return std::nullopt;
+    }
+
+    if (auto w_opt = record_json.find<int>("width")) {
+        result.resolution.width = *w_opt;
+    }
+    if (auto h_opt = record_json.find<int>("height")) {
+        result.resolution.height = *h_opt;
     }
 
     return result;
@@ -352,6 +363,20 @@ std::optional<Record::Param> RecordParser::parse_app(const json::value& record_j
     else {
         LogError << "Failed to find package:" << VAR(record_json);
         return std::nullopt;
+    }
+
+    return result;
+}
+
+std::optional<Record::Param> RecordParser::parse_scroll(const json::value& record_json)
+{
+    Record::ScrollParam result;
+
+    if (auto dx_opt = record_json.find<int>("dx")) {
+        result.dx = *dx_opt;
+    }
+    if (auto dy_opt = record_json.find<int>("dy")) {
+        result.dy = *dy_opt;
     }
 
     return result;

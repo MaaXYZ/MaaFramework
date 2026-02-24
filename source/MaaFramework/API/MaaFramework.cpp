@@ -1,6 +1,7 @@
 #include "MaaFramework/MaaAPI.h"
 
 #include "Controller/ControllerAgent.h"
+#include "Controller/ProxyController.h"
 #include "Global/OptionMgr.h"
 #include "Global/PluginMgr.h"
 #include "LibraryHolder/ControlUnit.h"
@@ -114,6 +115,23 @@ MaaController* MaaDbgControllerCreate(const char* read_path, const char* write_p
     }
 
     return new MAA_CTRL_NS::ControllerAgent(std::move(control_unit));
+}
+
+MaaController* MaaProxyControllerCreate(MaaController* inner, const char* dump_dir)
+{
+    LogFunc << VAR_VOIDP(inner) << VAR(dump_dir);
+
+    if (!inner) {
+        LogError << "inner controller is null";
+        return nullptr;
+    }
+
+    if (!dump_dir) {
+        LogError << "dump_dir is null";
+        return nullptr;
+    }
+
+    return new MAA_CTRL_NS::ProxyController(inner, MAA_NS::path(dump_dir));
 }
 
 MaaController* MaaPlayCoverControllerCreate(const char* address, const char* uuid)
