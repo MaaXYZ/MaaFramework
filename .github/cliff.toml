@@ -71,6 +71,9 @@ split_commits = false
 # 保留完整的 commit body
 protect_breaking_commits = false
 commit_parsers = [
+    # 跳过包含 [skip changelog] 的 commit
+    { message = ".*\\[skip changelog\\].*", skip = true },
+    { body = ".*\\[skip changelog\\].*", skip = true },
     { message = "^feat", group = "<!-- 0 -->✨ 新功能" },
     { message = "^fix", group = "<!-- 1 -->🐛 Bug修复" },
     { message = "^docs", group = "<!-- 4 -->📚 文档" },
