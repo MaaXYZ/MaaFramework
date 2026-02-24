@@ -240,17 +240,6 @@ declare global {
         }
 
         /**
-         * Proxy controller that wraps an existing controller and records all operations.
-         * The recorded files can be replayed using DbgController with ReplayRecording type.
-         */
-        class ProxyController extends Controller {
-            constructor(
-                inner: Controller,
-                dump_dir: string,
-            )
-        }
-
-        /**
          * Virtual gamepad controller for Windows (requires ViGEm Bus Driver).
          *
          * Control mapping:

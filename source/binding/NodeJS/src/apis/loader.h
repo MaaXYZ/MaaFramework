@@ -17,7 +17,6 @@ maajs::ValueType load_adb_controller(maajs::EnvType env);
 maajs::ValueType load_win32_controller(maajs::EnvType env);
 maajs::ValueType load_playcover_controller(maajs::EnvType env);
 maajs::ValueType load_dbg_controller(maajs::EnvType env);
-maajs::ValueType load_proxy_controller(maajs::EnvType env);
 maajs::ValueType load_gamepad_controller(maajs::EnvType env);
 maajs::ValueType load_custom_controller(maajs::EnvType env);
 
