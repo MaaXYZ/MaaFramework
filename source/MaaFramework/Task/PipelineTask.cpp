@@ -364,6 +364,7 @@ void PipelineTask::try_add_ocr_node(OCRCollectContext& ctx, const std::string& n
     }
 
     if (!param.color_filter.empty()) {
+        // color_filter 需要对每个 ROI 单独做颜色二值化，无法与其他节点共享 mask 图
         return;
     }
 

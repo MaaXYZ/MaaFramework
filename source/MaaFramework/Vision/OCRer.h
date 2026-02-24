@@ -41,7 +41,7 @@ struct OCRerResult
 
 struct ColorFilterConfig
 {
-    int method = 4;
+    int method = ColorMatcherParam::kDefaultMethod;
     std::vector<ColorMatcherParam::Range> range;
 };
 
