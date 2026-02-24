@@ -126,6 +126,33 @@ declare global {
             | 'PostMessageWithWindowPos',
             ScreencapOrInputMethods
         >
+
+        /**
+         * macOS screencap method.
+         *
+         * No bitwise OR, select ONE method only.
+         *
+         * Default: ScreenCaptureKit
+         *
+         * | Method          | Speed     | Compatibility | Require Permission | Background Support | Notes                            |
+         * |-----------------|-----------|---------------|--------------------|--------------------|----------------------------------|
+         * | ScreenCaptureKit| Very Fast | High          | Screen Recording   | Yes                | Requires macOS 14.0+             |
+         */
+        const MacOSScreencapMethod: Record<'ScreenCaptureKit', ScreencapOrInputMethods>
+
+        /**
+         * macOS input method.
+         *
+         * No bitwise OR, select ONE method only.
+         *
+         * Default: GlobalEvent
+         *
+         * | Method      | Compatibility | Require Permission | Background Support | Notes                            |
+         * |-------------|---------------|--------------------|--------------------|----------------------------------|
+         * | GlobalEvent | High          | Accessibility      | Yes                |                                  |
+         */
+        const MacOSInputMethod: Record<'GlobalEvent', ScreencapOrInputMethods>
+
         const DbgControllerType: Record<'CarouselImage' | 'ReplayRecording', Uint64>
         const GamepadType: Record<'Xbox360' | 'DualShock4', Uint64>
     }

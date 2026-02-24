@@ -226,6 +226,16 @@ declare global {
             static find(): Promise<DesktopDevice[] | null>
         }
 
+        class MacOSController extends Controller {
+            constructor(
+                window_id: number,
+                screencap_method: ScreencapOrInputMethods,
+                input_method: ScreencapOrInputMethods,
+            )
+
+            static find(): Promise<DesktopDevice[] | null>
+        }
+
         class PlayCoverController extends Controller {
             constructor(address: string, uuid: string)
         }

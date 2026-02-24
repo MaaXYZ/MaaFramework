@@ -116,6 +116,21 @@ struct Win32ControllerImpl : public ControllerImpl
     static void init_proto(maajs::ObjectType proto, maajs::FunctionType ctor);
 };
 
+using MacOSDevice = std::tuple<uintptr_t, std::string, std::string>;
+using MacOSControllerCtorParam = std::tuple<uint32_t, MaaMacOSScreencapMethod, MaaMacOSInputMethod>;
+
+struct MacOSControllerImpl : public ControllerImpl
+{
+    using ControllerImpl::ControllerImpl;
+
+    static maajs::PromiseType find(maajs::EnvType env);
+
+    constexpr static char name[] = "MacOSController";
+
+    static MacOSControllerImpl* ctor(const maajs::CallbackInfo&);
+    static void init_proto(maajs::ObjectType proto, maajs::FunctionType ctor);
+};
+
 using PlayCoverControllerCtorParam = std::tuple<std::string, std::string>;
 
 struct PlayCoverControllerImpl : public ControllerImpl
