@@ -97,7 +97,7 @@ std::vector<cv::Mat> TemplateResMgr::load(const std::string& name)
             results.emplace_back(std::move(image));
         }
         else if (std::filesystem::is_directory(path)) {
-            for (const auto& entry : std::filesystem::directory_iterator(path)) {
+            for (const auto& entry : std::filesystem::recursive_directory_iterator(path)) {
                 if (!entry.is_regular_file()) {
                     continue;
                 }
