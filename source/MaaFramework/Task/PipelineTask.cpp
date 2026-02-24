@@ -445,7 +445,7 @@ void PipelineTask::save_on_error(const std::string& node_name)
         return;
     }
 
-    std::string filename = std::format("{}_{}.png", node_name, format_now_for_filename());
+    std::string filename = std::format("{}_{}.png", format_now_for_filename(), node_name);
     auto filepath = option.log_dir() / "on_error" / path(filename);
     imwrite(filepath, image);
     LogInfo << "save on error to" << filepath;

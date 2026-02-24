@@ -555,7 +555,7 @@ void Recognizer::save_draws(const std::string& node_name, const RecoResult& resu
     std::filesystem::create_directories(dir);
 
     for (const auto& draw : result.draws) {
-        std::string filename = std::format("{}_{}_{}.jpg", node_name, result.reco_id, format_now_for_filename());
+        std::string filename = std::format("{}_{}_{}.jpg", format_now_for_filename(), node_name, result.reco_id);
         auto filepath = dir / path(filename);
 
         std::ofstream of(filepath, std::ios::out | std::ios::binary);
