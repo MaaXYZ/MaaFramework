@@ -31,6 +31,6 @@
   },
   "key_action": {
     "action": "InputText",
-    "input_text": "abc123"
+    "input_text": "Hello, MaaFramework!"
   }
 }

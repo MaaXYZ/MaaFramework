@@ -223,55 +223,56 @@ bool GlobalEventInput::input_text(const std::string& text)
     }
 
     // CGKeyCode 映射表 (基于标准美式键盘布局，使用 Carbon 宏)
-    static std::map<char, CGKeyCode> key_map = {
-        // 小写字母
-        {'a', kVK_ANSI_A}, {'b', kVK_ANSI_B}, {'c', kVK_ANSI_C}, {'d', kVK_ANSI_D}, {'e', kVK_ANSI_E},
-        {'f', kVK_ANSI_F}, {'g', kVK_ANSI_G}, {'h', kVK_ANSI_H}, {'i', kVK_ANSI_I}, {'j', kVK_ANSI_J},
-        {'k', kVK_ANSI_K}, {'l', kVK_ANSI_L}, {'m', kVK_ANSI_M}, {'n', kVK_ANSI_N}, {'o', kVK_ANSI_O},
-        {'p', kVK_ANSI_P}, {'q', kVK_ANSI_Q}, {'r', kVK_ANSI_R}, {'s', kVK_ANSI_S}, {'t', kVK_ANSI_T},
-        {'u', kVK_ANSI_U}, {'v', kVK_ANSI_V}, {'w', kVK_ANSI_W}, {'x', kVK_ANSI_X}, {'y', kVK_ANSI_Y},
-        {'z', kVK_ANSI_Z},
-        // 大写字母 (使用相同的键码，shift 处理)
-        {'A', kVK_ANSI_A}, {'B', kVK_ANSI_B}, {'C', kVK_ANSI_C}, {'D', kVK_ANSI_D}, {'E', kVK_ANSI_E},
-        {'F', kVK_ANSI_F}, {'G', kVK_ANSI_G}, {'H', kVK_ANSI_H}, {'I', kVK_ANSI_I}, {'J', kVK_ANSI_J},
-        {'K', kVK_ANSI_K}, {'L', kVK_ANSI_L}, {'M', kVK_ANSI_M}, {'N', kVK_ANSI_N}, {'O', kVK_ANSI_O},
-        {'P', kVK_ANSI_P}, {'Q', kVK_ANSI_Q}, {'R', kVK_ANSI_R}, {'S', kVK_ANSI_S}, {'T', kVK_ANSI_T},
-        {'U', kVK_ANSI_U}, {'V', kVK_ANSI_V}, {'W', kVK_ANSI_W}, {'X', kVK_ANSI_X}, {'Y', kVK_ANSI_Y},
-        {'Z', kVK_ANSI_Z},
-        // 数字
-        {'1', kVK_ANSI_1}, {'2', kVK_ANSI_2}, {'3', kVK_ANSI_3}, {'4', kVK_ANSI_4}, {'5', kVK_ANSI_5},
-        {'6', kVK_ANSI_6}, {'7', kVK_ANSI_7}, {'8', kVK_ANSI_8}, {'9', kVK_ANSI_9}, {'0', kVK_ANSI_0},
-        // 符号 (shift + 数字/符号键)
-        {'!', kVK_ANSI_1}, {'@', kVK_ANSI_2}, {'#', kVK_ANSI_3}, {'$', kVK_ANSI_4}, {'%', kVK_ANSI_5},
-        {'^', kVK_ANSI_6}, {'&', kVK_ANSI_7}, {'*', kVK_ANSI_8}, {'(', kVK_ANSI_9}, {')', kVK_ANSI_0},
-        // 其他符号
-        {'-', kVK_ANSI_Minus}, {'_', kVK_ANSI_Minus}, {'=', kVK_ANSI_Equal}, {'+', kVK_ANSI_Equal},
-        {'[', kVK_ANSI_LeftBracket}, {']', kVK_ANSI_RightBracket}, {'{', kVK_ANSI_LeftBracket}, {'}', kVK_ANSI_RightBracket},
-        {'\\', kVK_ANSI_Backslash}, {'|', kVK_ANSI_Backslash},
-        {';', kVK_ANSI_Semicolon}, {':', kVK_ANSI_Semicolon},
-        {'\'', kVK_ANSI_Quote}, {'"', kVK_ANSI_Quote},
-        {',', kVK_ANSI_Comma}, {'<', kVK_ANSI_Comma},
-        {'.', kVK_ANSI_Period}, {'>', kVK_ANSI_Period},
-        {'/', kVK_ANSI_Slash}, {'?', kVK_ANSI_Slash},
-        {'`', kVK_ANSI_Grave}, {'~', kVK_ANSI_Grave},
+    struct KeyInfo {
+        CGKeyCode code;
+        bool needs_shift;
+    };
+    static std::map<char, KeyInfo> key_map = {
+        // 小写字母 (不需要 shift)
+        {'a', {kVK_ANSI_A, false}}, {'b', {kVK_ANSI_B, false}}, {'c', {kVK_ANSI_C, false}}, {'d', {kVK_ANSI_D, false}}, {'e', {kVK_ANSI_E, false}},
+        {'f', {kVK_ANSI_F, false}}, {'g', {kVK_ANSI_G, false}}, {'h', {kVK_ANSI_H, false}}, {'i', {kVK_ANSI_I, false}}, {'j', {kVK_ANSI_J, false}},
+        {'k', {kVK_ANSI_K, false}}, {'l', {kVK_ANSI_L, false}}, {'m', {kVK_ANSI_M, false}}, {'n', {kVK_ANSI_N, false}}, {'o', {kVK_ANSI_O, false}},
+        {'p', {kVK_ANSI_P, false}}, {'q', {kVK_ANSI_Q, false}}, {'r', {kVK_ANSI_R, false}}, {'s', {kVK_ANSI_S, false}}, {'t', {kVK_ANSI_T, false}},
+        {'u', {kVK_ANSI_U, false}}, {'v', {kVK_ANSI_V, false}}, {'w', {kVK_ANSI_W, false}}, {'x', {kVK_ANSI_X, false}}, {'y', {kVK_ANSI_Y, false}},
+        {'z', {kVK_ANSI_Z, false}},
+        // 数字 (不需要 shift)
+        {'1', {kVK_ANSI_1, false}}, {'2', {kVK_ANSI_2, false}}, {'3', {kVK_ANSI_3, false}}, {'4', {kVK_ANSI_4, false}}, {'5', {kVK_ANSI_5, false}},
+        {'6', {kVK_ANSI_6, false}}, {'7', {kVK_ANSI_7, false}}, {'8', {kVK_ANSI_8, false}}, {'9', {kVK_ANSI_9, false}}, {'0', {kVK_ANSI_0, false}},
+        // 标点符号 (需要 shift)
+        {'!', {kVK_ANSI_1, true}}, {'@', {kVK_ANSI_2, true}}, {'#', {kVK_ANSI_3, true}}, {'$', {kVK_ANSI_4, true}}, {'%', {kVK_ANSI_5, true}},
+        {'^', {kVK_ANSI_6, true}}, {'&', {kVK_ANSI_7, true}}, {'*', {kVK_ANSI_8, true}}, {'(', {kVK_ANSI_9, true}}, {')', {kVK_ANSI_0, true}},
+        {'_', {kVK_ANSI_Minus, true}}, {'+', {kVK_ANSI_Equal, true}},
+        {'{', {kVK_ANSI_LeftBracket, true}}, {'}', {kVK_ANSI_RightBracket, true}},
+        {'|', {kVK_ANSI_Backslash, true}},
+        {':', {kVK_ANSI_Semicolon, true}},
+        {'"', {kVK_ANSI_Quote, true}},
+        {'<', {kVK_ANSI_Comma, true}},
+        {'>', {kVK_ANSI_Period, true}},
+        {'?', {kVK_ANSI_Slash, true}},
+        {'~', {kVK_ANSI_Grave, true}},
+        // 其他符号 (不需要 shift)
+        {'-', {kVK_ANSI_Minus, false}}, {'=', {kVK_ANSI_Equal, false}},
+        {'[', {kVK_ANSI_LeftBracket, false}}, {']', {kVK_ANSI_RightBracket, false}},
+        {'\\', {kVK_ANSI_Backslash, false}},
+        {';', {kVK_ANSI_Semicolon, false}},
+        {'\'', {kVK_ANSI_Quote, false}},
+        {',', {kVK_ANSI_Comma, false}},
+        {'.', {kVK_ANSI_Period, false}},
+        {'/', {kVK_ANSI_Slash, false}},
+        {'`', {kVK_ANSI_Grave, false}},
         // 空格
-        {' ', kVK_Space}
+        {' ', {kVK_Space, false}}
     };
 
     for (char c : text) {
-        auto it = key_map.find(c);
+        char lookup_char = tolower(c);
+        auto it = key_map.find(lookup_char);
         CGKeyCode key_code;
         bool need_shift = false;
 
         if (it != key_map.end()) {
-            key_code = it->second;
-            // 检查是否需要Shift（通过比较小写和大写版本的键码）
-            if (isupper(c)) {
-                auto lower_it = key_map.find(tolower(c));
-                if (lower_it != key_map.end() && lower_it->second == key_code) {
-                    need_shift = true;
-                }
-            }
+            key_code = it->second.code;
+            need_shift = it->second.needs_shift || isupper(c);
         }
         else {
             LogWarn << "Unsupported character: " << std::string(1, c) << " (code: " << (int)(unsigned char)c << ")";
