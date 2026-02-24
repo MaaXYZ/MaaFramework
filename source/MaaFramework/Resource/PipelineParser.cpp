@@ -1436,8 +1436,8 @@ bool PipelineParser::parse_shell(const json::value& input, Action::ShellParam& o
         return false;
     }
 
-    if (!get_and_check_value(input, "timeout", output.timeout, default_value.timeout)) {
-        LogError << "failed to get_and_check_value timeout" << VAR(input);
+    if (!get_and_check_value(input, "shell_timeout", output.shell_timeout, default_value.shell_timeout)) {
+        LogError << "failed to get_and_check_value shell_timeout" << VAR(input);
         return false;
     }
 

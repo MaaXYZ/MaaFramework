@@ -228,7 +228,7 @@ struct ScrollParam
 struct ShellParam
 {
     std::string cmd;
-    int64_t timeout = 20000;
+    int64_t shell_timeout = 20000;
 };
 
 struct CommandParam

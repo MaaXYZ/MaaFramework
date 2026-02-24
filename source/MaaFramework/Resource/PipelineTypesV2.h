@@ -294,9 +294,9 @@ struct JCommand
 struct JShell
 {
     std::string cmd;
-    int64_t timeout = 20000;
+    int64_t shell_timeout = 20000;
 
-    MEO_TOJSON(cmd, timeout);
+    MEO_TOJSON(cmd, shell_timeout);
 };
 
 struct JCustomAction
