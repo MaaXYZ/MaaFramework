@@ -61,10 +61,7 @@ bool MacOSControlUnitMgr::connected() const
 
 bool MacOSControlUnitMgr::request_uuid(std::string& uuid)
 {
-    std::stringstream ss;
-    ss << window_id_;
-    uuid = std::move(ss).str();
-
+    uuid = std::to_string(window_id_);
     return true;
 }
 
