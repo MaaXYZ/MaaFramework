@@ -24,7 +24,7 @@ class Recognizer;
 
 namespace pipeline
 {
-class PPOCRv3;
+class PPOCRv4;
 }
 }
 
@@ -50,7 +50,7 @@ public:
         OCRerParam param,
         std::shared_ptr<fastdeploy::vision::ocr::DBDetector> deter,
         std::shared_ptr<fastdeploy::vision::ocr::Recognizer> recer,
-        std::shared_ptr<fastdeploy::pipeline::PPOCRv3> ocrer,
+        std::shared_ptr<fastdeploy::pipeline::PPOCRv4> ocrer,
         std::string name = "");
 
     OCRer(
@@ -92,7 +92,7 @@ private:
 
     std::shared_ptr<fastdeploy::vision::ocr::DBDetector> deter_ = nullptr;
     std::shared_ptr<fastdeploy::vision::ocr::Recognizer> recer_ = nullptr;
-    std::shared_ptr<fastdeploy::pipeline::PPOCRv3> ocrer_ = nullptr;
+    std::shared_ptr<fastdeploy::pipeline::PPOCRv4> ocrer_ = nullptr;
 
     inline static std::mutex s_predict_mutex_;
 };

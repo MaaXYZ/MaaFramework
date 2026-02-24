@@ -7,7 +7,7 @@
 
 MAA_SUPPRESS_CV_WARNINGS_BEGIN
 #include "fastdeploy/vision/ocr/ppocr/dbdetector.h"
-#include "fastdeploy/vision/ocr/ppocr/ppocr_v3.h"
+#include "fastdeploy/vision/ocr/ppocr/ppocr_v4.h"
 #include "fastdeploy/vision/ocr/ppocr/recognizer.h"
 MAA_SUPPRESS_CV_WARNINGS_END
 
@@ -41,7 +41,7 @@ OCRer::OCRer(
     OCRerParam param,
     std::shared_ptr<fastdeploy::vision::ocr::DBDetector> deter,
     std::shared_ptr<fastdeploy::vision::ocr::Recognizer> recer,
-    std::shared_ptr<fastdeploy::pipeline::PPOCRv3> ocrer,
+    std::shared_ptr<fastdeploy::pipeline::PPOCRv4> ocrer,
     std::string name)
     : VisionBase(std::move(image), std::move(rois), std::move(name))
     , param_(std::move(param))

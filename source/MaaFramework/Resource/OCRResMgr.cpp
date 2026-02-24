@@ -128,7 +128,7 @@ std::shared_ptr<fastdeploy::vision::ocr::Recognizer> OCRResMgr::recer(const std:
     return recer;
 }
 
-std::shared_ptr<fastdeploy::pipeline::PPOCRv3> OCRResMgr::ocrer(const std::string& name)
+std::shared_ptr<fastdeploy::pipeline::PPOCRv4> OCRResMgr::ocrer(const std::string& name)
 {
     if (auto iter = ocrers_.find(name); iter != ocrers_.end()) {
         return iter->second;
@@ -202,7 +202,7 @@ std::shared_ptr<fastdeploy::vision::ocr::Recognizer> OCRResMgr::load_recer(const
     return nullptr;
 }
 
-std::shared_ptr<fastdeploy::pipeline::PPOCRv3> OCRResMgr::load_ocrer(const std::string& name)
+std::shared_ptr<fastdeploy::pipeline::PPOCRv4> OCRResMgr::load_ocrer(const std::string& name)
 {
     using namespace path_literals;
 
@@ -215,10 +215,10 @@ std::shared_ptr<fastdeploy::pipeline::PPOCRv3> OCRResMgr::load_ocrer(const std::
         return nullptr;
     }
 
-    auto ocr = std::make_shared<fastdeploy::pipeline::PPOCRv3>(det.get(), rec.get());
+    auto ocr = std::make_shared<fastdeploy::pipeline::PPOCRv4>(det.get(), rec.get());
 
     if (!ocr || !ocr->Initialized()) {
-        LogError << "Failed to load PPOCRv3:" << VAR(name) << VAR(ocr) << VAR(ocr->Initialized());
+        LogError << "Failed to load PPOCRv4:" << VAR(name) << VAR(ocr) << VAR(ocr->Initialized());
         return nullptr;
     }
     return ocr;
