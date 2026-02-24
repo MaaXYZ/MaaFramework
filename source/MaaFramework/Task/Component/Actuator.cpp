@@ -485,14 +485,14 @@ ActionResult Actuator::shell(const MAA_RES_NS::Action::ShellParam& param, const 
     }
 
     std::string output;
-    bool ret = controller()->shell(param.cmd, output, param.timeout);
+    bool ret = controller()->shell(param.cmd, output, param.shell_timeout);
 
-    LogDebug << "Shell command executed" << VAR(param.cmd) << VAR(param.timeout) << VAR(ret);
+    LogDebug << "Shell command executed" << VAR(param.cmd) << VAR(param.shell_timeout) << VAR(ret);
     if (!output.empty()) {
         LogTrace << "Shell output:" << output;
     }
 
-    json::object detail { { "cmd", param.cmd }, { "timeout", param.timeout }, { "success", ret }, { "output", output } };
+    json::object detail { { "cmd", param.cmd }, { "shell_timeout", param.shell_timeout }, { "success", ret }, { "output", output } };
 
     return ActionResult {
         .action_id = action_id_,

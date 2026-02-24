@@ -150,7 +150,7 @@ MaaCtrlId ControllerAgent::post_scroll(int dx, int dy)
 
 MaaCtrlId ControllerAgent::post_shell(const std::string& cmd, int64_t timeout)
 {
-    ShellParam p { .cmd = cmd, .timeout = timeout };
+    ShellParam p { .cmd = cmd, .shell_timeout = timeout };
     auto id = post({ .type = Action::Type::shell, .param = std::move(p) });
     return focus_id(id);
 }
@@ -349,7 +349,7 @@ bool ControllerAgent::scroll(ScrollParam p)
 
 bool ControllerAgent::shell(const std::string& cmd, std::string& output, int64_t timeout)
 {
-    ShellParam p { .cmd = cmd, .timeout = timeout };
+    ShellParam p { .cmd = cmd, .shell_timeout = timeout };
     auto id = post({ .type = Action::Type::shell, .param = std::move(p) });
     bool ret = wait(id) == MaaStatus_Succeeded;
     if (ret) {
@@ -836,8 +836,8 @@ bool ControllerAgent::handle_shell(const ShellParam& param)
     }
 
     std::string output;
-    // timeout < 0 表示无限等待
-    auto timeout = param.timeout < 0 ? std::chrono::milliseconds::max() : std::chrono::milliseconds(param.timeout);
+    // shell_timeout < 0 表示无限等待
+    auto timeout = param.shell_timeout < 0 ? std::chrono::milliseconds::max() : std::chrono::milliseconds(param.shell_timeout);
     bool ret = adb_unit->shell(param.cmd, output, timeout);
     if (ret) {
         std::unique_lock lock(shell_output_mutex_);

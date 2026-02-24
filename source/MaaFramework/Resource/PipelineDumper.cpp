@@ -431,7 +431,7 @@ PipelineV2::JAction PipelineDumper::dump_act(Action::Type type, const Action::Pa
         const auto& p = std::get<Action::ShellParam>(param);
         act.param = PipelineV2::JShell {
             .cmd = p.cmd,
-            .timeout = p.timeout,
+            .shell_timeout = p.shell_timeout,
         };
     } break;
 
