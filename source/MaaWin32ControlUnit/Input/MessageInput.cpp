@@ -7,12 +7,38 @@
 
 #include "InputUtils.h"
 
+#include <mmsystem.h>
+
+// 如果未定义该常量，则预先定义，用于确保 Windows 10 下的多显示器坐标准确性
+#ifndef DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2
+DECLARE_HANDLE(DPI_AWARENESS_CONTEXT);
+#define DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2 ((DPI_AWARENESS_CONTEXT)-4)
+#endif
+
+#pragma comment(lib, "Winmm.lib")
+
 MAA_CTRL_UNIT_NS_BEGIN
+
+std::atomic<bool> MessageInput::hook_block_mouse_{ false };
+std::atomic<MessageInput*> MessageInput::s_active_instance_{ nullptr };
+
+MessageInput::MessageInput(HWND hwnd, Config config)
+    : hwnd_(hwnd)
+    , config_(config)
+{
+    if (config_.with_window_pos) {
+        tracking_thread_ = std::thread(&MessageInput::tracking_thread_func, this);
+    }
+}
 
 MessageInput::~MessageInput()
 {
     restore_pos();
     unblock_input();
+    tracking_exit_ = true;
+    if (tracking_thread_.joinable()) {
+        tracking_thread_.join();
+    }
 }
 
 void MessageInput::send_activate()
@@ -104,6 +130,8 @@ void MessageInput::restore_pos()
         restore_cursor_pos();
     }
     else if (config_.with_window_pos) {
+        tracking_active_ = false;
+        s_active_instance_ = nullptr;
         restore_window_pos();
     }
 }
@@ -119,15 +147,26 @@ bool MessageInput::move_window_to_align_cursor(int x, int y)
         return false;
     }
 
-    POINT target_screen_pos = client_to_screen(x, y);
+    POINT pt = { 0, 0 };
+    if (!ClientToScreen(hwnd_, &pt)) {
+        return false;
+    }
+
     RECT current_rect;
     if (!GetWindowRect(hwnd_, &current_rect)) {
         return false;
     }
 
-    int delta_x = cursor_pos.x - target_screen_pos.x;
-    int delta_y = cursor_pos.y - target_screen_pos.y;
-    SetWindowPos(hwnd_, nullptr, current_rect.left + delta_x, current_rect.top + delta_y, 0, 0, SWP_NOSIZE | SWP_NOZORDER | SWP_NOACTIVATE);
+    // 锚点算法：使用客户区起始位置与窗口真实坐标间的偏移量，避免由于异步调用的延迟导致的累积拉扯误差
+    int border_x = pt.x - current_rect.left;
+    int border_y = pt.y - current_rect.top;
+
+    int new_left = cursor_pos.x - x - border_x;
+    int new_top = cursor_pos.y - y - border_y;
+
+    SetWindowPos(hwnd_, nullptr, new_left, new_top, 0, 0, 
+                 SWP_NOSIZE | SWP_NOZORDER | SWP_NOACTIVATE | SWP_ASYNCWINDOWPOS);
+
     return true;
 }
 
@@ -140,11 +179,219 @@ LPARAM MessageInput::prepare_mouse_position(int x, int y)
         std::this_thread::sleep_for(std::chrono::milliseconds(1));
     }
     else if (config_.with_window_pos) {
-        // WithWindowPos 模式：移动窗口位置，使目标位置与当前鼠标位置重合
+        tracking_x_ = x;
+        tracking_y_ = y;
+        s_active_instance_ = this;
+        tracking_active_ = true;
+
         move_window_to_align_cursor(x, y);
-        std::this_thread::sleep_for(std::chrono::milliseconds(1));
     }
     return MAKELPARAM(x, y);
+}
+
+// WH_MOUSE_LL 钩子回调：累加硬件鼠标位移 delta 并拦截，由追踪线程 60fps 批量释放
+LRESULT CALLBACK MessageInput::MouseHookProc(int nCode, WPARAM wParam, LPARAM lParam)
+{
+    if (nCode == HC_ACTION && wParam == WM_MOUSEMOVE) {
+        // 在关键初始化窗口期间，直接吞掉所有鼠标移动
+        if (hook_block_mouse_) {
+            return 1;
+        }
+
+        MSLLHOOKSTRUCT* pMouse = (MSLLHOOKSTRUCT*)lParam;
+
+        // 跳过注入的合成事件（如我们自己的 SetCursorPos），只处理真实硬件输入
+        if (pMouse->flags & LLMHF_INJECTED) {
+            return CallNextHookEx(NULL, nCode, wParam, lParam);
+        }
+
+        MessageInput* inst = s_active_instance_.load(std::memory_order_acquire);
+        if (inst && inst->tracking_active_) {
+            // pt 是系统根据 "当前光标位置 + 硬件原始delta" 计算出的目标位置
+            // 光标被我们冻住了，所以 delta = pt - 当前冻住的光标位置
+            POINT cursor;
+            GetCursorPos(&cursor);
+            int dx = pMouse->pt.x - cursor.x;
+            int dy = pMouse->pt.y - cursor.y;
+
+            // 使用 fetch_add 累加每次的增量，不丢失任何中间移动
+            inst->pending_mouse_x_.fetch_add(dx, std::memory_order_relaxed);
+            inst->pending_mouse_y_.fetch_add(dy, std::memory_order_relaxed);
+            inst->has_pending_mouse_.store(true, std::memory_order_release);
+
+            // 拦截原始硬件鼠标移动（稍后由追踪线程通过 SetCursorPos 一次性释放累积量）
+            return 1;
+        }
+    }
+    return CallNextHookEx(NULL, nCode, wParam, lParam);
+}
+
+// ======================== 目标进程挂起/恢复 ========================
+
+void MessageInput::open_target_process()
+{
+    if (target_process_handle_ || !hwnd_) {
+        return;
+    }
+
+    DWORD pid = 0;
+    GetWindowThreadProcessId(hwnd_, &pid);
+    if (!pid) {
+        return;
+    }
+
+    target_process_handle_ = OpenProcess(PROCESS_SUSPEND_RESUME, FALSE, pid);
+}
+
+void MessageInput::close_target_process()
+{
+    if (target_process_handle_) {
+        CloseHandle(target_process_handle_);
+        target_process_handle_ = nullptr;
+    }
+}
+
+void MessageInput::suspend_target_process()
+{
+    if (!target_process_handle_) {
+        return;
+    }
+
+    // 动态加载 NtSuspendProcess（ntdll 未文档化但广泛使用的 API）
+    typedef LONG(NTAPI * NtSuspendProcessFn)(HANDLE);
+    static NtSuspendProcessFn pNtSuspendProcess = nullptr;
+    static bool resolved = false;
+    if (!resolved) {
+        HMODULE ntdll = GetModuleHandleW(L"ntdll.dll");
+        if (ntdll) {
+            pNtSuspendProcess = (NtSuspendProcessFn)GetProcAddress(ntdll, "NtSuspendProcess");
+        }
+        resolved = true;
+    }
+
+    if (pNtSuspendProcess) {
+        pNtSuspendProcess(target_process_handle_);
+    }
+}
+
+void MessageInput::resume_target_process()
+{
+    if (!target_process_handle_) {
+        return;
+    }
+
+    typedef LONG(NTAPI * NtResumeProcessFn)(HANDLE);
+    static NtResumeProcessFn pNtResumeProcess = nullptr;
+    static bool resolved = false;
+    if (!resolved) {
+        HMODULE ntdll = GetModuleHandleW(L"ntdll.dll");
+        if (ntdll) {
+            pNtResumeProcess = (NtResumeProcessFn)GetProcAddress(ntdll, "NtResumeProcess");
+        }
+        resolved = true;
+    }
+
+    if (pNtResumeProcess) {
+        pNtResumeProcess(target_process_handle_);
+    }
+}
+
+// ======================== 追踪线程 ========================
+
+void MessageInput::tracking_thread_func()
+{
+    SetThreadPriority(GetCurrentThread(), THREAD_PRIORITY_HIGHEST);
+
+    // 将系统定时器精度提升到 1ms，确保 Sleep/MsgWait 精度
+    timeBeginPeriod(1);
+
+    // 预先打开目标进程句柄（用于挂起/恢复）
+    open_target_process();
+
+    HHOOK hHook = SetWindowsHookExW(WH_MOUSE_LL, MouseHookProc, GetModuleHandleW(NULL), 0);
+
+    // 60fps 节流：每帧间隔 ~16.67ms
+    using clock = std::chrono::steady_clock;
+    auto last_frame = clock::now();
+    const auto frame_interval = std::chrono::microseconds(16667);
+
+    MSG msg;
+    while (!tracking_exit_) {
+        // 消息泵：WH_MOUSE_LL 钩子回调在此线程上被系统调度，必须保持消息循环活跃
+        DWORD res = MsgWaitForMultipleObjects(0, NULL, FALSE, 1, QS_ALLINPUT);
+        if (res == WAIT_OBJECT_0) {
+            while (PeekMessageW(&msg, NULL, 0, 0, PM_REMOVE)) {
+                if (msg.message == WM_QUIT) {
+                    tracking_exit_ = true;
+                    break;
+                }
+                TranslateMessage(&msg);
+                DispatchMessageW(&msg);
+            }
+        }
+
+        auto now = clock::now();
+        bool frame_ready = (now - last_frame) >= frame_interval;
+
+        // 批量处理待定鼠标事件（60fps 节流）
+        if (tracking_active_ && has_pending_mouse_.load(std::memory_order_acquire) && frame_ready) {
+            has_pending_mouse_.store(false, std::memory_order_relaxed);
+
+            // 原子读取并清零累积的 delta（exchange 保证不丢失并发写入）
+            int dx = pending_mouse_x_.exchange(0, std::memory_order_relaxed);
+            int dy = pending_mouse_y_.exchange(0, std::memory_order_relaxed);
+            int tx = tracking_x_.load(std::memory_order_relaxed);
+            int ty = tracking_y_.load(std::memory_order_relaxed);
+
+            // 基于当前真实光标位置 + 累积 delta 计算目标光标位置
+            POINT cursor;
+            GetCursorPos(&cursor);
+            int mx = cursor.x + dx;
+            int my = cursor.y + dy;
+
+            // 限制目标光标位置在虚拟主屏幕范围内，避免光标撞墙时窗口继续飞出边界导致不同步
+            int vscreen_x = GetSystemMetrics(SM_XVIRTUALSCREEN);
+            int vscreen_y = GetSystemMetrics(SM_YVIRTUALSCREEN);
+            int vscreen_w = GetSystemMetrics(SM_CXVIRTUALSCREEN);
+            int vscreen_h = GetSystemMetrics(SM_CYVIRTUALSCREEN);
+            
+            mx = std::max(vscreen_x, std::min(mx, vscreen_x + vscreen_w - 1));
+            my = std::max(vscreen_y, std::min(my, vscreen_y + vscreen_h - 1));
+
+            POINT client_origin = { 0, 0 };
+            if (ClientToScreen(hwnd_, &client_origin)) {
+                RECT rect;
+                if (GetWindowRect(hwnd_, &rect)) {
+                    int border_x = client_origin.x - rect.left;
+                    int border_y = client_origin.y - rect.top;
+                    int new_left = mx - tx - border_x;
+                    int new_top  = my - ty - border_y;
+
+                    // 1. 挂起目标进程，使其看不到中间态
+                    suspend_target_process();
+
+                    // 2. 移动窗口（SWP_ASYNCWINDOWPOS 避免阻塞 + SWP_NOSENDCHANGING 跳过同步通知）
+                    SetWindowPos(hwnd_, nullptr, new_left, new_top, 0, 0,
+                                 SWP_NOSIZE | SWP_NOZORDER | SWP_NOACTIVATE | SWP_NOSENDCHANGING | SWP_ASYNCWINDOWPOS);
+
+                    // 3. 释放光标到累积后的真实目标位置
+                    SetCursorPos(mx, my);
+
+                    // 4. 恢复目标进程（它醒来时看到的窗口和光标已完美对齐）
+                    resume_target_process();
+                }
+            }
+
+            last_frame = now;
+        }
+    }
+
+    if (hHook) {
+        UnhookWindowsHookEx(hHook);
+    }
+
+    close_target_process();
+    timeEndPeriod(1);
 }
 
 void MessageInput::check_and_block_input()
