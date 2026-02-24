@@ -363,6 +363,10 @@ void PipelineTask::try_add_ocr_node(OCRCollectContext& ctx, const std::string& n
         return;
     }
 
+    if (!param.color_filter.empty()) {
+        return;
+    }
+
     if (ctx.first) {
         ctx.plan.model = param.model;
         ctx.first = false;

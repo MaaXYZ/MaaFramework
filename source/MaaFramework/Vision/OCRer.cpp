@@ -42,9 +42,11 @@ OCRer::OCRer(
     std::shared_ptr<fastdeploy::vision::ocr::DBDetector> deter,
     std::shared_ptr<fastdeploy::vision::ocr::Recognizer> recer,
     std::shared_ptr<fastdeploy::pipeline::PPOCRv3> ocrer,
-    std::string name)
+    std::string name,
+    std::optional<ColorFilterConfig> color_filter)
     : VisionBase(std::move(image), std::move(rois), std::move(name))
     , param_(std::move(param))
+    , color_filter_(std::move(color_filter))
     , deter_(std::move(deter))
     , recer_(std::move(recer))
     , ocrer_(std::move(ocrer))
@@ -89,11 +91,33 @@ void OCRer::analyze()
              << VAR(param_.only_rec) << VAR(param_.expected);
 }
 
+cv::Mat OCRer::apply_color_filter(const cv::Mat& image_roi) const
+{
+    const auto& cfg = *color_filter_;
+
+    cv::Mat color;
+    cv::cvtColor(image_roi, color, cfg.method);
+
+    cv::Mat bin = cv::Mat::zeros(image_roi.size(), CV_8UC1);
+    for (const auto& [lower, upper] : cfg.range) {
+        cv::Mat single;
+        cv::inRange(color, lower, upper, single);
+        cv::bitwise_or(bin, single, bin);
+    }
+
+    cv::Mat result;
+    cv::cvtColor(bin, result, cv::COLOR_GRAY2BGR);
+    return result;
+}
+
 OCRer::ResultsVec OCRer::predict() const
 {
     ResultsVec results;
 
     auto image_roi = image_with_roi();
+    if (color_filter_) {
+        image_roi = apply_color_filter(image_roi);
+    }
     results = param_.only_rec ? ResultsVec { predict_only_rec(image_roi) } : predict_det_and_rec(image_roi);
 
     std::ranges::for_each(results, [&](auto& res) {

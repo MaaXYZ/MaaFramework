@@ -572,6 +572,7 @@ class PipelineTestRecognition(CustomRecognition):
                     "replace": [["0", "O"], ["1", "I"]],
                     "only_rec": True,
                     "model": "custom_model",
+                    "color_filter": "RecoColorMatch",
                 }
             }
         )
@@ -584,6 +585,7 @@ class PipelineTestRecognition(CustomRecognition):
         assert_eq(param.replace, [["0", "O"], ["1", "I"]], "replace")
         assert_eq(param.only_rec, True, "only_rec")
         assert_eq(param.model, "custom_model", "model")
+        assert_eq(param.color_filter, "RecoColorMatch", "color_filter")
 
         # NeuralNetworkClassify
         new_ctx.override_pipeline(

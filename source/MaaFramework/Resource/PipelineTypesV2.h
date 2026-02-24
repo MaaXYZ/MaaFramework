@@ -79,8 +79,9 @@ struct JOCR
     int index = 0;
     bool only_rec = false;
     std::string model;
+    std::string color_filter;
 
-    MEO_TOJSON(roi, roi_offset, expected, threshold, replace, order_by, index, only_rec, model);
+    MEO_TOJSON(roi, roi_offset, expected, threshold, replace, order_by, index, only_rec, model, color_filter);
 };
 
 struct JNeuralNetworkClassify

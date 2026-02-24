@@ -710,6 +710,11 @@ bool PipelineParser::parse_ocrer_param(
         output.replace = default_value.replace;
     }
 
+    if (!get_and_check_value(input, "color_filter", output.color_filter, default_value.color_filter)) {
+        LogError << "failed to get_and_check_value color_filter" << VAR(input);
+        return false;
+    }
+
     return true;
 }
 
