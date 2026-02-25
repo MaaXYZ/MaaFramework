@@ -521,7 +521,7 @@ maajs::ValueType load_dbg_controller(maajs::EnvType env)
 
 ProxyControllerImpl* ProxyControllerImpl::ctor(const maajs::CallbackInfo& info)
 {
-    auto [inner_ctrl, dump_dir] = maajs::UnWrapArgs<std::tuple<ControllerImpl*, std::string>, void>(info);
+    auto [inner_ctrl, dump_dir] = maajs::UnWrapArgs<ProxyControllerCtorParam, void>(info);
     if (!inner_ctrl || !inner_ctrl->controller) {
         return nullptr;
     }

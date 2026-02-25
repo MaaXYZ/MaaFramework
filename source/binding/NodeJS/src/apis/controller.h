@@ -140,6 +140,8 @@ struct DbgControllerImpl : public ControllerImpl
     static void init_proto(maajs::ObjectType proto, maajs::FunctionType ctor);
 };
 
+using ProxyControllerCtorParam = std::tuple<maajs::NativeObject<DbgControllerImpl>, std::string>;
+
 struct ProxyControllerImpl : public ControllerImpl
 {
     using ControllerImpl::ControllerImpl;
