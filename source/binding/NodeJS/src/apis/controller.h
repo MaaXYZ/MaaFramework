@@ -140,6 +140,16 @@ struct DbgControllerImpl : public ControllerImpl
     static void init_proto(maajs::ObjectType proto, maajs::FunctionType ctor);
 };
 
+struct ProxyControllerImpl : public ControllerImpl
+{
+    using ControllerImpl::ControllerImpl;
+
+    constexpr static char name[] = "ProxyController";
+
+    static ProxyControllerImpl* ctor(const maajs::CallbackInfo&);
+    static void init_proto(maajs::ObjectType proto, maajs::FunctionType ctor);
+};
+
 using GamepadControllerCtorParam = std::tuple<std::optional<uintptr_t>, MaaGamepadType, MaaWin32ScreencapMethod>;
 
 struct GamepadControllerImpl : public ControllerImpl
