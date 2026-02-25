@@ -858,6 +858,7 @@ class RecognitionDetail:
 class ClickActionResult:
     point: Point
     contact: int
+    pressure: int
 
 
 @dataclass
@@ -865,6 +866,7 @@ class LongPressActionResult:
     point: Point
     duration: int
     contact: int
+    pressure: int
 
 
 @dataclass
@@ -876,6 +878,7 @@ class SwipeActionResult:
     only_hover: bool
     starting: int
     contact: int
+    pressure: int
 
 
 @dataclass
@@ -906,6 +909,7 @@ class AppActionResult:
 
 @dataclass
 class ScrollActionResult:
+    point: Point
     dx: int
     dy: int
 
@@ -920,7 +924,7 @@ class TouchActionResult:
 @dataclass
 class ShellActionResult:
     cmd: str
-    timeout: int
+    shell_timeout: int
     success: bool
     output: str
 
