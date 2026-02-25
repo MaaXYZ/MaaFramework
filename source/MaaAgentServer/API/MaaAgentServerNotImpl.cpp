@@ -26,6 +26,12 @@ MaaController* MaaDbgControllerCreate(const char*, const char*, MaaDbgController
     return nullptr;
 }
 
+MaaController* MaaProxyControllerCreate(MaaController*, const char*)
+{
+    LogError << "MaaAgentServer Not implement this API, Please use MaaFramework";
+    return nullptr;
+}
+
 MaaController* MaaGamepadControllerCreate(void*, MaaGamepadType, MaaWin32ScreencapMethod)
 {
     LogError << "MaaAgentServer Not implement this API, Please use MaaFramework";
