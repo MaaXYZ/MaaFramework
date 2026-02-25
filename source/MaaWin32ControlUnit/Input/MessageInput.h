@@ -98,8 +98,8 @@ private:
     void resume_target_process();
     HANDLE target_process_handle_{ nullptr };
     
-    static std::atomic<bool> hook_block_mouse_;
-    static std::atomic<MessageInput*> s_active_instance_;
+    inline static std::atomic<bool> hook_block_mouse_{ false };
+    inline static std::atomic<MessageInput*> s_active_instance_{ nullptr };
     static LRESULT CALLBACK MouseHookProc(int nCode, WPARAM wParam, LPARAM lParam);
 
     const HWND hwnd_ = nullptr;

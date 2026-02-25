@@ -9,18 +9,7 @@
 
 #include <mmsystem.h>
 
-// 如果未定义该常量，则预先定义，用于确保 Windows 10 下的多显示器坐标准确性
-#ifndef DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2
-DECLARE_HANDLE(DPI_AWARENESS_CONTEXT);
-#define DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2 ((DPI_AWARENESS_CONTEXT)-4)
-#endif
-
-#pragma comment(lib, "Winmm.lib")
-
 MAA_CTRL_UNIT_NS_BEGIN
-
-std::atomic<bool> MessageInput::hook_block_mouse_{ false };
-std::atomic<MessageInput*> MessageInput::s_active_instance_{ nullptr };
 
 MessageInput::MessageInput(HWND hwnd, Config config)
     : hwnd_(hwnd)
@@ -165,7 +154,7 @@ bool MessageInput::move_window_to_align_cursor(int x, int y)
         return false;
     }
 
-    RECT current_rect;
+    RECT current_rect = { 0, 0, 0, 0 };
     if (!GetWindowRect(hwnd_, &current_rect)) {
         LogError << "GetWindowRect failed" << VAR(hwnd_) << VAR(GetLastError());
         return false;
