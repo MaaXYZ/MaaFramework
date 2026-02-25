@@ -213,7 +213,7 @@ LRESULT CALLBACK MessageInput::MouseHookProc(int nCode, WPARAM wParam, LPARAM lP
             return CallNextHookEx(NULL, nCode, wParam, lParam);
         }
 
-        MessageInput* inst = s_active_instance_.load(std::memory_order_acquire);
+        MessageInput* inst = s_active_instance_.load();
         if (inst && inst->tracking_active_) {
             // pt 是系统根据 "当前光标位置 + 硬件原始delta" 计算出的目标位置
             // 光标被我们冻住了，所以 delta = pt - 当前冻住的光标位置
@@ -223,9 +223,9 @@ LRESULT CALLBACK MessageInput::MouseHookProc(int nCode, WPARAM wParam, LPARAM lP
             int dy = pMouse->pt.y - cursor.y;
 
             // 使用 fetch_add 累加每次的增量，不丢失任何中间移动
-            inst->pending_mouse_x_.fetch_add(dx, std::memory_order_relaxed);
-            inst->pending_mouse_y_.fetch_add(dy, std::memory_order_relaxed);
-            inst->has_pending_mouse_.store(true, std::memory_order_release);
+            inst->pending_mouse_x_.fetch_add(dx);
+            inst->pending_mouse_y_.fetch_add(dy);
+            inst->has_pending_mouse_.store(true);
 
             // 拦截原始硬件鼠标移动（稍后由追踪线程通过 SetCursorPos 一次性释放累积量）
             return 1;
@@ -313,13 +313,13 @@ void MessageInput::resume_target_process()
 
 void MessageInput::process_pending_mouse_frame()
 {
-    has_pending_mouse_.store(false, std::memory_order_relaxed);
+    has_pending_mouse_.store(false);
 
     // 原子读取并清零累积的 delta（exchange 保证不丢失并发写入）
-    int dx = pending_mouse_x_.exchange(0, std::memory_order_relaxed);
-    int dy = pending_mouse_y_.exchange(0, std::memory_order_relaxed);
-    int tx = tracking_x_.load(std::memory_order_relaxed);
-    int ty = tracking_y_.load(std::memory_order_relaxed);
+    int dx = pending_mouse_x_.exchange(0);
+    int dy = pending_mouse_y_.exchange(0);
+    int tx = tracking_x_.load();
+    int ty = tracking_y_.load();
 
     // 基于当前真实光标位置 + 累积 delta 计算目标光标位置
     POINT cursor;
@@ -414,7 +414,7 @@ void MessageInput::tracking_thread_func()
         auto now = clock::now();
         bool frame_ready = (now - last_frame) >= frame_interval;
 
-        if (tracking_active_ && has_pending_mouse_.load(std::memory_order_acquire) && frame_ready) {
+        if (tracking_active_ && has_pending_mouse_.load() && frame_ready) {
             process_pending_mouse_frame();
             last_frame = now;
         }
