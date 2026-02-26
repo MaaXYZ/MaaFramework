@@ -134,6 +134,7 @@
             "type": "select", // 配置项类型。select为下拉选项框，用户从预定义选项中选择
             "label": "$选择作战关卡",
             "description": "选择要刷的关卡", // 配置项详细描述。支持文件路径、URL或直接文本，内容支持Markdown格式，支持国际化
+            "resource": ["Official"], // 💡 v2.3.0 仅在选择 Official 资源包时显示该配置项
             "cases": [
                 {
                     "name": "3-9 厄险（百灵百验鸟）",
