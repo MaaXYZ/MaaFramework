@@ -107,6 +107,15 @@ bool Runner::run(const RuntimeParam& param)
         return false;
 #endif
     }
+    else if (const auto* p_macos_param = std::get_if<RuntimeParam::MacOSParam>(&param.controller_param)) {
+#if defined(__APPLE__)
+        controller_handle = MaaMacOSControllerCreate(p_macos_param->window_id, p_macos_param->screencap, p_macos_param->input);
+#else
+        std::ignore = p_macos_param;
+        LogError << "MacOS controller is only supported on macOS";
+        return false;
+#endif
+    }
     else {
         LogError << "Unknown controller type";
         return false;

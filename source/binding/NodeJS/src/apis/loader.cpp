@@ -20,6 +20,7 @@ static maajs::ObjectType init(maajs::EnvType env)
     maajs::BindValue(maa, "Controller", load_controller(env));
     maajs::BindValue(maa, "AdbController", load_adb_controller(env));
     maajs::BindValue(maa, "Win32Controller", load_win32_controller(env));
+    maajs::BindValue(maa, "MacOSController", load_macos_controller(env));
     maajs::BindValue(maa, "PlayCoverController", load_playcover_controller(env));
     maajs::BindValue(maa, "DbgController", load_dbg_controller(env));
     maajs::BindValue(maa, "GamepadController", load_gamepad_controller(env));

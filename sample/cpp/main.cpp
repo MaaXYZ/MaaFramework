@@ -13,6 +13,7 @@
 
 MaaController* create_adb_controller();
 MaaController* create_win32_controller();
+MaaController* create_macos_controller();
 MaaBool my_reco(
     MaaContext* context,
     MaaTaskId task_id,
@@ -32,6 +33,7 @@ int main([[maybe_unused]] int argc, char** argv)
 
     auto controller_handle = create_adb_controller();
     // auto controller_handle = create_win32_controller();
+    // auto controller_handle = create_macos_controller();
     auto ctrl_id = MaaControllerPostConnection(controller_handle);
 
     auto resource_handle = MaaResourceCreate();
@@ -139,6 +141,40 @@ MaaController* create_win32_controller()
         MaaWin32ScreencapMethod_DXGI_DesktopDup_Window,
         MaaWin32InputMethod_SendMessage,
         MaaWin32InputMethod_SendMessage);
+
+    destroy();
+    return controller_handle;
+}
+
+MaaController* create_macos_controller()
+{
+    auto list_handle = MaaToolkitDesktopWindowListCreate();
+    auto destroy = [&]() {
+        MaaToolkitDesktopWindowListDestroy(list_handle);
+    };
+
+    MaaToolkitDesktopWindowFindAll(list_handle);
+
+    size_t size = MaaToolkitDesktopWindowListSize(list_handle);
+    if (size == 0) {
+        std::cout << "No window found" << std::endl;
+
+        destroy();
+        return nullptr;
+    }
+
+    uint32_t window_id = 0;
+    for (size_t i = 0; i < size; ++i) {
+        auto window_handle = MaaToolkitDesktopWindowListAt(list_handle, i);
+        std::string window_name = MaaToolkitDesktopWindowGetWindowName(window_handle);
+
+        if (window_name.find("关于本机") != std::string::npos) {
+            window_id = reinterpret_cast<uintptr_t>(MaaToolkitDesktopWindowGetHandle(window_handle));
+            break;
+        }
+    }
+
+    auto controller_handle = MaaMacOSControllerCreate(window_id, MaaMacOSScreencapMethod_ScreenCaptureKit, MaaMacOSInputMethod_GlobalEvent);
 
     destroy();
     return controller_handle;

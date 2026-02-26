@@ -475,6 +475,58 @@ maajs::ValueType load_win32_controller(maajs::EnvType env)
     return ctor;
 }
 
+maajs::PromiseType MacOSControllerImpl::find(maajs::EnvType env)
+{
+    using Result = std::optional<std::vector<MacOSDevice>>;
+    auto worker = new maajs::AsyncWork<Result>(env, []() -> Result {
+        auto lst = MaaToolkitDesktopWindowListCreate();
+        if (!MaaToolkitDesktopWindowFindAll(lst)) {
+            MaaToolkitDesktopWindowListDestroy(lst);
+            return std::nullopt;
+        }
+
+        std::vector<MacOSDevice> result;
+        auto size = MaaToolkitDesktopWindowListSize(lst);
+        result.reserve(size);
+        for (size_t i = 0; i < size; i++) {
+            auto dev = MaaToolkitDesktopWindowListAt(lst, i);
+            result.push_back(
+                std::make_tuple(
+                    reinterpret_cast<uintptr_t>(MaaToolkitDesktopWindowGetHandle(dev)),
+                    std::string(MaaToolkitDesktopWindowGetClassName(dev)),
+                    std::string(MaaToolkitDesktopWindowGetWindowName(dev))));
+        }
+        MaaToolkitDesktopWindowListDestroy(lst);
+
+        return result;
+    });
+    worker->Queue();
+    return worker->Promise();
+}
+
+MacOSControllerImpl* MacOSControllerImpl::ctor(const maajs::CallbackInfo& info)
+{
+    auto [window_id, screencap_method, input_method] = maajs::UnWrapArgs<MacOSControllerCtorParam, void>(info);
+    auto ctrl = MaaMacOSControllerCreate(window_id, screencap_method, input_method);
+    if (!ctrl) {
+        return nullptr;
+    }
+    return new MacOSControllerImpl(ctrl, true);
+}
+
+void MacOSControllerImpl::init_proto(maajs::ObjectType, maajs::FunctionType ctor)
+{
+    MAA_BIND_FUNC(ctor, "find", find);
+}
+
+maajs::ValueType load_macos_controller(maajs::EnvType env)
+{
+    maajs::FunctionType ctor;
+    maajs::NativeClass<MacOSControllerImpl>::init<ControllerImpl>(env, ctor, &ExtContext::get(env)->controllerCtor);
+    ExtContext::get(env)->macosControllerCtor = maajs::PersistentFunction(ctor);
+    return ctor;
+}
+
 PlayCoverControllerImpl* PlayCoverControllerImpl::ctor(const maajs::CallbackInfo& info)
 {
     auto [address, uuid] = maajs::UnWrapArgs<PlayCoverControllerCtorParam, void>(info);

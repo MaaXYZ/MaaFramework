@@ -783,6 +783,46 @@ class Win32Controller(Controller):
         ]
 
 
+class MacOSController(Controller):
+    """MacOS 控制器 / MacOS controller"""
+
+    def __init__(
+        self,
+        window_id: int,
+        screencap_method: int = MaaMacOSScreencapMethodEnum.ScreenCaptureKit,
+        input_method: int = MaaMacOSInputMethodEnum.GlobalEvent,
+    ):
+        """创建 MacOS 控制器 / Create MacOS controller
+
+        Args:
+            window_id: 窗口 ID / window ID
+            screencap_method: 使用的截图方式 / screenshot method used
+            input_method: 使用的输入方式 / input method used
+
+        Raises:
+            RuntimeError: 如果创建失败
+        """
+        super().__init__()
+        self._set_macos_api_properties()
+
+        self._handle = Library.framework().MaaMacOSControllerCreate(
+            window_id,
+            MaaMacOSScreencapMethod(screencap_method),
+            MaaMacOSInputMethod(input_method),
+        )
+
+        if not self._handle:
+            raise RuntimeError("Failed to create MacOS controller.")
+
+    def _set_macos_api_properties(self):
+        Library.framework().MaaMacOSControllerCreate.restype = MaaControllerHandle
+        Library.framework().MaaMacOSControllerCreate.argtypes = [
+            ctypes.c_uint32,
+            MaaMacOSScreencapMethod,
+            MaaMacOSInputMethod,
+        ]
+
+
 class PlayCoverController(Controller):
     """PlayCover 控制器 / PlayCover controller
 

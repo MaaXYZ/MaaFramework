@@ -244,6 +244,22 @@ struct JSConvert<int32_t>
 };
 
 template <>
+struct JSConvert<uint32_t>
+{
+    static std::string name() { return "number<uint32_t>"; }
+
+    static uint32_t from_value(ValueType val)
+    {
+        if (val.IsNumber()) {
+            return val.As<NumberType>().Uint32Value();
+        }
+        throw MaaError { std::format("expect {}, got {}", name(), DumpValue(val)) };
+    }
+
+    static ValueType to_value(EnvType env, const uint32_t& val) { return NumberType::New(env, val); }
+};
+
+template <>
 struct JSConvert<int64_t>
 {
     static std::string name() { return "string<int64_t>"; }
