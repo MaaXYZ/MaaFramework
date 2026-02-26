@@ -28,7 +28,7 @@ elseif(WIN32)
     endif()
 
     target_link_options(MaaToolkit PRIVATE "/delayload:MaaFrameworkProvider.dll")
-    target_link_libraries(MaaToolkit PRIVATE delayimp)
+    target_link_libraries(MaaToolkit PRIVATE delayimp ${FWLIB_TARGET})
     target_sources(MaaToolkit PRIVATE DelayLoad/Hook.cpp)
 endif()
 
