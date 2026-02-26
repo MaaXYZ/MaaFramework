@@ -114,18 +114,13 @@ void PseudoMinimizeHelper::revert_pseudo_minimize()
 {
     LogInfo << "Reverting pseudo-minimize" << VAR_VOIDP(hwnd_);
 
-    // 1. 恢复透明度
+    // 1. 直接恢复到保存的原始扩展样式，避免位操作导致的样式丢失
+    SetWindowLongPtr(hwnd_, GWL_EXSTYLE, original_ex_style_);
+
+    // 2. 恢复透明度（需在恢复样式之后，因为原样式可能不含 WS_EX_LAYERED）
     if (had_layered_style_) {
         SetLayeredWindowAttributes(hwnd_, 0, original_alpha_, LWA_ALPHA);
     }
-
-    // 2. 恢复原始扩展样式（移除我们添加的 WS_EX_TRANSPARENT，以及如果原来没有 WS_EX_LAYERED 也移除）
-    LONG_PTR current_ex_style = GetWindowLongPtr(hwnd_, GWL_EXSTYLE);
-    LONG_PTR restored_style = current_ex_style & ~WS_EX_TRANSPARENT;
-    if (!had_layered_style_) {
-        restored_style &= ~WS_EX_LAYERED;
-    }
-    SetWindowLongPtr(hwnd_, GWL_EXSTYLE, restored_style);
 
     pseudo_minimized_ = false;
 }
