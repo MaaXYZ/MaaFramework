@@ -85,7 +85,9 @@ declare global {
             | 'DXGI_DesktopDup'
             | 'DXGI_DesktopDup_Window'
             | 'PrintWindow'
-            | 'ScreenDC',
+            | 'ScreenDC'
+            | 'FramePoolWithPseudoMinimize'
+            | 'PrintWindowWithPseudoMinimize',
             ScreencapOrInputMethods
         >
 

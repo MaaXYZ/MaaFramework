@@ -61,6 +61,8 @@ static maajs::ValueType load_win32_screencap_method(maajs::EnvType env)
     DEM(MaaWin32ScreencapMethod, DXGI_DesktopDup_Window);
     DEM(MaaWin32ScreencapMethod, PrintWindow);
     DEM(MaaWin32ScreencapMethod, ScreenDC);
+    DEM(MaaWin32ScreencapMethod, FramePoolWithPseudoMinimize);
+    DEM(MaaWin32ScreencapMethod, PrintWindowWithPseudoMinimize);
 
     return obj;
 }
