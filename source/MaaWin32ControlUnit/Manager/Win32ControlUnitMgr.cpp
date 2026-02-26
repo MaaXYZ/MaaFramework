@@ -54,8 +54,8 @@ bool Win32ControlUnitMgr::connect()
         }
 
         // FramePool 和 PrintWindow 内置伪最小化支持，允许最小化窗口
-        bool supports_minimized = screencap_method_ == MaaWin32ScreencapMethod_FramePool
-                                  || screencap_method_ == MaaWin32ScreencapMethod_PrintWindow;
+        bool supports_minimized =
+            screencap_method_ == MaaWin32ScreencapMethod_FramePool || screencap_method_ == MaaWin32ScreencapMethod_PrintWindow;
         if (!supports_minimized && IsIconic(hwnd_)) {
             LogError << "hwnd_ is minimized";
             return false;

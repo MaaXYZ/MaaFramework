@@ -35,8 +35,7 @@ void PseudoMinimizeHelper::start()
         DWORD flags = 0;
         COLORREF color_key = 0;
         if (!GetLayeredWindowAttributes(hwnd_, &color_key, &original_alpha_, &flags)) {
-            LogWarn << "GetLayeredWindowAttributes failed, defaulting alpha to 255"
-                    << VAR_VOIDP(hwnd_) << VAR(GetLastError());
+            LogWarn << "GetLayeredWindowAttributes failed, defaulting alpha to 255" << VAR_VOIDP(hwnd_) << VAR(GetLastError());
             original_alpha_ = 255;
         }
     }
@@ -118,8 +117,7 @@ void PseudoMinimizeHelper::apply_pseudo_minimize()
         return;
     }
     SetLastError(0);
-    if (SetWindowLongPtr(hwnd_, GWL_EXSTYLE, ex_style | WS_EX_LAYERED | WS_EX_TRANSPARENT) == 0
-        && GetLastError() != 0) {
+    if (SetWindowLongPtr(hwnd_, GWL_EXSTYLE, ex_style | WS_EX_LAYERED | WS_EX_TRANSPARENT) == 0 && GetLastError() != 0) {
         LogError << "SetWindowLongPtr failed in apply" << VAR_VOIDP(hwnd_) << VAR(GetLastError());
         return;
     }

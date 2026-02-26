@@ -169,8 +169,7 @@ bool MessageInput::move_window_to_align_cursor(int x, int y)
     int new_left = cursor_pos.x - x - border_x;
     int new_top = cursor_pos.y - y - border_y;
 
-    if (!SetWindowPos(hwnd_, nullptr, new_left, new_top, 0, 0,
-                      SWP_NOSIZE | SWP_NOZORDER | SWP_NOACTIVATE | SWP_ASYNCWINDOWPOS)) {
+    if (!SetWindowPos(hwnd_, nullptr, new_left, new_top, 0, 0, SWP_NOSIZE | SWP_NOZORDER | SWP_NOACTIVATE | SWP_ASYNCWINDOWPOS)) {
         LogError << "SetWindowPos failed" << VAR(hwnd_) << VAR(new_left) << VAR(new_top) << VAR(GetLastError());
         return false;
     }
@@ -353,14 +352,20 @@ void MessageInput::process_pending_mouse_frame()
     int border_x = client_origin.x - rect.left;
     int border_y = client_origin.y - rect.top;
     int new_left = mx - tx - border_x;
-    int new_top  = my - ty - border_y;
+    int new_top = my - ty - border_y;
 
     // 1. 挂起目标进程，使其看不到中间态
     suspend_target_process();
 
     // 2. 移动窗口（SWP_ASYNCWINDOWPOS 避免阻塞 + SWP_NOSENDCHANGING 跳过同步通知）
-    SetWindowPos(hwnd_, nullptr, new_left, new_top, 0, 0,
-                 SWP_NOSIZE | SWP_NOZORDER | SWP_NOACTIVATE | SWP_NOSENDCHANGING | SWP_ASYNCWINDOWPOS);
+    SetWindowPos(
+        hwnd_,
+        nullptr,
+        new_left,
+        new_top,
+        0,
+        0,
+        SWP_NOSIZE | SWP_NOZORDER | SWP_NOACTIVATE | SWP_NOSENDCHANGING | SWP_ASYNCWINDOWPOS);
 
     // 3. 释放光标到累积后的真实目标位置
     SetCursorPos(mx, my);

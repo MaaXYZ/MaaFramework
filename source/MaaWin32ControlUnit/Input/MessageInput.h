@@ -81,25 +81,25 @@ private:
     void tracking_thread_func();
     void process_pending_mouse_frame();
     std::thread tracking_thread_;
-    std::atomic_bool tracking_exit_{ false };
-    std::atomic_bool tracking_active_{ false };
-    std::atomic_int tracking_x_{ 0 };
-    std::atomic_int tracking_y_{ 0 };
+    std::atomic_bool tracking_exit_ { false };
+    std::atomic_bool tracking_active_ { false };
+    std::atomic_int tracking_x_ { 0 };
+    std::atomic_int tracking_y_ { 0 };
 
     // 钩子存储的待处理鼠标位置（由 60fps 批处理消费）
-    std::atomic_int pending_mouse_x_{ 0 };
-    std::atomic_int pending_mouse_y_{ 0 };
-    std::atomic_bool has_pending_mouse_{ false };
+    std::atomic_int pending_mouse_x_ { 0 };
+    std::atomic_int pending_mouse_y_ { 0 };
+    std::atomic_bool has_pending_mouse_ { false };
 
     // 目标进程挂起/恢复
     void open_target_process();
     void close_target_process();
     void suspend_target_process();
     void resume_target_process();
-    HANDLE target_process_handle_{ nullptr };
-    
-    inline static std::atomic_bool hook_block_mouse_{ false };
-    inline static std::atomic<MessageInput*> s_active_instance_{ nullptr };
+    HANDLE target_process_handle_ { nullptr };
+
+    inline static std::atomic_bool hook_block_mouse_ { false };
+    inline static std::atomic<MessageInput*> s_active_instance_ { nullptr };
     static LRESULT CALLBACK MouseHookProc(int nCode, WPARAM wParam, LPARAM lParam);
 
     const HWND hwnd_ = nullptr;
