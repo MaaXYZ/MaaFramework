@@ -154,6 +154,7 @@ jobs:
                   cd test/nodejs
                   pnpm i
                   npx tsx binding.ts
+                  npx tsx server.ts
 
             - uses: actions/upload-artifact@v4
               if: always()

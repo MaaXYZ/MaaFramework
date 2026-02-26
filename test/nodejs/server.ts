@@ -6,6 +6,11 @@ async function main() {
 
     console.log('AgentServer', maa.Server)
 
+    try {
+        maa.Global.config_init_option('.') // This should failed
+        process.exit(1)
+    } catch {}
+
     process.exit(0)
 }
 

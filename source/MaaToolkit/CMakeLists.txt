@@ -10,14 +10,29 @@ target_include_directories(
 
 target_compile_definitions(MaaToolkit PRIVATE MAA_TOOLKIT_EXPORTS)
 
-target_link_libraries(
-    MaaToolkit PRIVATE MaaUtils MaaFramework LibraryHolder Boost::system ${OpenCV_LIBS})
+target_link_libraries(MaaToolkit PRIVATE MaaUtils LibraryHolder Boost::system ${OpenCV_LIBS})
 
 if(LINUX)
     target_link_libraries(MaaToolkit PRIVATE pthread dl)
 endif()
 
-add_dependencies(MaaToolkit MaaUtils MaaFramework LibraryHolder)
+if(APPLE)
+    target_link_options(MaaToolkit PRIVATE "-Wl,-U,_MaaGlobalSetOption")
+elseif(WIN32)
+    set(FWLIB_DEF ${CMAKE_CURRENT_LIST_DIR}/DelayLoad/MaaFrameworkProvider.def)
+    set(FWLIB_TARGET ${CMAKE_BINARY_DIR}/MaaFrameworkProvider.lib)
+    if(MSVC)
+        execute_process(COMMAND ${CMAKE_AR} /def:${FWLIB_DEF} /out:${FWLIB_TARGET} ${CMAKE_STATIC_LINKER_FLAGS})
+    else()
+        execute_process(COMMAND ${CMAKE_LINKER} /def:${WLIB_DE} /out:${FWLIB_TARGET} ${CMAKE_STATIC_LINKER_FLAGS})
+    endif()
+
+    target_link_options(MaaToolkit PRIVATE "/delayload:MaaFrameworkProvider.dll")
+    target_link_libraries(MaaToolkit PRIVATE delayimp)
+    target_sources(MaaToolkit PRIVATE DelayLoad/Hook.cpp)
+endif()
+
+add_dependencies(MaaToolkit MaaUtils LibraryHolder)
 
 install(
     TARGETS MaaToolkit
@@ -27,7 +42,10 @@ install(
     ARCHIVE DESTINATION lib)
 
 if(WIN32)
-    install(FILES $<TARGET_PDB_FILE:MaaToolkit> DESTINATION symbol OPTIONAL)
+    install(
+        FILES $<TARGET_PDB_FILE:MaaToolkit>
+        DESTINATION symbol
+        OPTIONAL)
 endif()
 
 install(DIRECTORY "${MAA_PUBLIC_INC}/MaaToolkit" DESTINATION "include")
