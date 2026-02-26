@@ -118,6 +118,7 @@ class Library:
             raise RuntimeError("Library._lib_type is None!")
 
         if not cls._toolkit:
+            cls.framework() # 前置加载 framework / agentserver, 解决符号问题
             cls._toolkit = cls._lib_type(str(cls.toolkit_libpath))
 
         return cls._toolkit
