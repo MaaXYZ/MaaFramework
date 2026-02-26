@@ -98,7 +98,7 @@ class Library:
 
         if not cls.is_agent_server():
             if not cls._framework:
-                cls._framework = cls._lib_type(str(cls.framework_libpath))
+                cls._framework = cls._lib_type(str(cls.framework_libpath), mode = 2 + 8) # RTLD_NOW | RTLD_GLOBAL
 
             if cls._framework is None:
                 raise RuntimeError("Library._framework is None!")
@@ -161,7 +161,7 @@ class Library:
             raise ValueError("Agent client is not available in the current context.")
 
         if not cls._agent_server:
-            cls._agent_server = cls._lib_type(str(cls.agent_server_libpath))
+            cls._agent_server = cls._lib_type(str(cls.agent_server_libpath), mode = 2 + 8) # RTLD_NOW | RTLD_GLOBAL
 
         return cls._agent_server
 
