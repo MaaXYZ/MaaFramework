@@ -24,7 +24,7 @@ elseif(WIN32)
     if(MSVC)
         execute_process(COMMAND ${CMAKE_AR} /def:${FWLIB_DEF} /out:${FWLIB_TARGET} ${CMAKE_STATIC_LINKER_FLAGS})
     else()
-        execute_process(COMMAND ${CMAKE_LINKER} /def:${WLIB_DE} /out:${FWLIB_TARGET} ${CMAKE_STATIC_LINKER_FLAGS})
+        execute_process(COMMAND ${CMAKE_LINKER} /def:${FWLIB_DEF} /out:${FWLIB_TARGET} ${CMAKE_STATIC_LINKER_FLAGS})
     endif()
 
     target_link_options(MaaToolkit PRIVATE "/delayload:MaaFrameworkProvider.dll")
