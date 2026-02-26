@@ -24,6 +24,9 @@ public:
     void start();
     void stop();
 
+    // 截图前同步调用：若窗口处于最小化状态，立即执行伪最小化并等待窗口就绪
+    void ensure_not_minimized();
+
     bool is_pseudo_minimized() const { return pseudo_minimized_; }
 
 private:

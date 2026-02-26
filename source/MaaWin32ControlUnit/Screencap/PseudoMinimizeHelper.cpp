@@ -69,6 +69,17 @@ void PseudoMinimizeHelper::stop()
     LogInfo << "PseudoMinimizeHelper stopped" << VAR_VOIDP(hwnd_);
 }
 
+void PseudoMinimizeHelper::ensure_not_minimized()
+{
+    if (!IsWindow(hwnd_)) {
+        return;
+    }
+
+    if (IsIconic(hwnd_)) {
+        apply_pseudo_minimize();
+    }
+}
+
 void PseudoMinimizeHelper::monitor_thread_func()
 {
     LogFunc;
@@ -80,12 +91,9 @@ void PseudoMinimizeHelper::monitor_thread_func()
             break;
         }
 
-        if (!pseudo_minimized_ && IsIconic(hwnd_)) {
-            // 窗口被最小化了，执行伪最小化
-            apply_pseudo_minimize();
-        }
-        else if (pseudo_minimized_ && GetForegroundWindow() == hwnd_) {
-            // 窗口重新变为前台（用户点击了任务栏图标），恢复正常
+        // ensure_not_minimized() 已在 screencap 前同步处理最小化→伪最小化，
+        // 此处仅处理伪最小化→恢复（用户重新激活窗口时）
+        if (pseudo_minimized_ && GetForegroundWindow() == hwnd_) {
             revert_pseudo_minimize();
         }
 
