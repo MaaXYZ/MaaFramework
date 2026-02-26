@@ -10,9 +10,11 @@
 #include "Screencap/DesktopDupScreencap.h"
 #include "Screencap/DesktopDupWindowScreencap.h"
 #include "Screencap/FramePoolScreencap.h"
+#include "Screencap/FramePoolWithPseudoMinimizeScreencap.h"
 #include "Screencap/GdiScreencap.h"
 #include "Screencap/HwndUtils.hpp"
 #include "Screencap/PrintWindowScreencap.h"
+#include "Screencap/PrintWindowWithPseudoMinimizeScreencap.h"
 #include "Screencap/ScreenDCScreencap.h"
 
 MAA_CTRL_UNIT_NS_BEGIN
@@ -51,7 +53,10 @@ bool Win32ControlUnitMgr::connect()
             return false;
         }
 
-        if (IsIconic(hwnd_)) {
+        // PseudoMinimize 方式允许最小化窗口
+        bool pseudo_minimize = screencap_method_ == MaaWin32ScreencapMethod_FramePoolWithPseudoMinimize
+                               || screencap_method_ == MaaWin32ScreencapMethod_PrintWindowWithPseudoMinimize;
+        if (!pseudo_minimize && IsIconic(hwnd_)) {
             LogError << "hwnd_ is minimized";
             return false;
         }
@@ -78,6 +83,12 @@ bool Win32ControlUnitMgr::connect()
         break;
     case MaaWin32ScreencapMethod_ScreenDC:
         screencap_ = std::make_shared<ScreenDCScreencap>(hwnd_);
+        break;
+    case MaaWin32ScreencapMethod_FramePoolWithPseudoMinimize:
+        screencap_ = std::make_shared<FramePoolWithPseudoMinimizeScreencap>(hwnd_);
+        break;
+    case MaaWin32ScreencapMethod_PrintWindowWithPseudoMinimize:
+        screencap_ = std::make_shared<PrintWindowWithPseudoMinimizeScreencap>(hwnd_);
         break;
 
     default:
