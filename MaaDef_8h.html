@@ -2051,7 +2051,7 @@ Enumerations</h2></td></tr>
 <tr class="markdownTableRowEven">
 <td class="markdownTableBodyNone">ScreenDC   </td><td class="markdownTableBodyNone">Fast   </td><td class="markdownTableBodyNone">High   </td><td class="markdownTableBodyNone">No   </td><td class="markdownTableBodyNone">No   </td><td class="markdownTableBodyNone"></td></tr>
 </table>
-<p>Note: When a window is minimized on Windows, all screencap methods will fail. Avoid minimizing the target window. </p>
+<p>Note: FramePool and PrintWindow support pseudo-minimize — when the target window is minimized, they make it transparent and click-through, then restore it without activation, allowing screencap to continue without disturbing the user. Other screencap methods will fail when the target window is minimized. </p>
 
 </div>
 </div>
