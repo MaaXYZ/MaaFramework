@@ -5,7 +5,8 @@
 #include "Base/UnitBase.h"
 #include "MaaUtils/SafeWindows.hpp"
 
-#include "Common/Conf.h"
+#include <atomic>
+#include <thread>
 
 MAA_CTRL_UNIT_NS_BEGIN
 
@@ -26,11 +27,7 @@ public:
         bool block_input = false;
     };
 
-    MessageInput(HWND hwnd, Config config)
-        : hwnd_(hwnd)
-        , config_(config)
-    {
-    }
+    MessageInput(HWND hwnd, Config config);
 
     virtual ~MessageInput() override;
 
@@ -79,6 +76,31 @@ private:
 
     // 获取 last_pos_，若未设置则返回窗口客户区中心坐标
     std::pair<int, int> get_target_pos() const;
+
+    // WithWindowPos background tracking
+    void tracking_thread_func();
+    void process_pending_mouse_frame();
+    std::thread tracking_thread_;
+    std::atomic_bool tracking_exit_{ false };
+    std::atomic_bool tracking_active_{ false };
+    std::atomic_int tracking_x_{ 0 };
+    std::atomic_int tracking_y_{ 0 };
+
+    // 钩子存储的待处理鼠标位置（由 60fps 批处理消费）
+    std::atomic_int pending_mouse_x_{ 0 };
+    std::atomic_int pending_mouse_y_{ 0 };
+    std::atomic_bool has_pending_mouse_{ false };
+
+    // 目标进程挂起/恢复
+    void open_target_process();
+    void close_target_process();
+    void suspend_target_process();
+    void resume_target_process();
+    HANDLE target_process_handle_{ nullptr };
+    
+    inline static std::atomic_bool hook_block_mouse_{ false };
+    inline static std::atomic<MessageInput*> s_active_instance_{ nullptr };
+    static LRESULT CALLBACK MouseHookProc(int nCode, WPARAM wParam, LPARAM lParam);
 
     const HWND hwnd_ = nullptr;
     const Config config_;
