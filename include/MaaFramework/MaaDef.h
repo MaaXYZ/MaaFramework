@@ -302,17 +302,20 @@ typedef uint64_t MaaAdbInputMethod;
  *
  * Different applications use different rendering methods, there is no universal solution.
  *
- * | Method                  | Speed     | Compatibility | Require Admin | Background Support | Notes                            |
- * |-------------------------|-----------|---------------|---------------|--------------------|----------------------------------|
- * | GDI                     | Fast      | Medium        | No            | No                 |                                  |
- * | FramePool               | Very Fast | Medium        | No            | Yes                | Requires Windows 10 1903+        |
- * | DXGI_DesktopDup         | Very Fast | Low           | No            | No                 | Desktop duplication (full screen)|
- * | DXGI_DesktopDup_Window  | Very Fast | Low           | No            | No                 | Desktop duplication then crop    |
- * | PrintWindow             | Medium    | Medium        | No            | Yes                |                                  |
- * | ScreenDC                | Fast      | High          | No            | No                 |                                  |
+ * | Method                             | Speed     | Compatibility | Require Admin | Background Support | Notes                                       |
+ * |------------------------------------|-----------|---------------|---------------|--------------------|---------------------------------------------|
+ * | GDI                                | Fast      | Medium        | No            | No                 |                                             |
+ * | FramePool                          | Very Fast | Medium        | No            | Yes                | Requires Windows 10 1903+                   |
+ * | DXGI_DesktopDup                    | Very Fast | Low           | No            | No                 | Desktop duplication (full screen)            |
+ * | DXGI_DesktopDup_Window             | Very Fast | Low           | No            | No                 | Desktop duplication then crop               |
+ * | PrintWindow                        | Medium    | Medium        | No            | Yes                |                                             |
+ * | ScreenDC                           | Fast      | High          | No            | No                 |                                             |
+ * | FramePoolWithPseudoMinimize        | Very Fast | Medium        | No            | Yes                | FramePool + pseudo-minimize support         |
+ * | PrintWindowWithPseudoMinimize      | Medium    | Medium        | No            | Yes                | PrintWindow + pseudo-minimize support       |
  *
- * Note: When a window is minimized on Windows, all screencap methods will fail.
- * Avoid minimizing the target window.
+ * Note: Most screencap methods fail when a window is minimized.
+ * Use PseudoMinimize variants to capture minimized windows — they make
+ * the window transparent and click-through, then restore it without activation.
  */
 typedef uint64_t MaaWin32ScreencapMethod;
 #define MaaWin32ScreencapMethod_None 0ULL
@@ -322,6 +325,8 @@ typedef uint64_t MaaWin32ScreencapMethod;
 #define MaaWin32ScreencapMethod_DXGI_DesktopDup_Window (1ULL << 3)
 #define MaaWin32ScreencapMethod_PrintWindow (1ULL << 4)
 #define MaaWin32ScreencapMethod_ScreenDC (1ULL << 5)
+#define MaaWin32ScreencapMethod_FramePoolWithPseudoMinimize (1ULL << 6)
+#define MaaWin32ScreencapMethod_PrintWindowWithPseudoMinimize (1ULL << 7)
 
 // MaaWin32InputMethod:
 /**
