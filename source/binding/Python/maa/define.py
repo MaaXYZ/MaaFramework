@@ -286,8 +286,6 @@ class MaaWin32ScreencapMethodEnum(IntEnum):
     DXGI_DesktopDup_Window = 1 << 3
     PrintWindow = 1 << 4
     ScreenDC = 1 << 5
-    FramePoolWithPseudoMinimize = 1 << 6
-    PrintWindowWithPseudoMinimize = 1 << 7
 
 
 MaaWin32InputMethod = ctypes.c_uint64

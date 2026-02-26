@@ -53,10 +53,10 @@ bool Win32ControlUnitMgr::connect()
             return false;
         }
 
-        // PseudoMinimize 方式允许最小化窗口
-        bool pseudo_minimize = screencap_method_ == MaaWin32ScreencapMethod_FramePoolWithPseudoMinimize
-                               || screencap_method_ == MaaWin32ScreencapMethod_PrintWindowWithPseudoMinimize;
-        if (!pseudo_minimize && IsIconic(hwnd_)) {
+        // FramePool 和 PrintWindow 内置伪最小化支持，允许最小化窗口
+        bool supports_minimized = screencap_method_ == MaaWin32ScreencapMethod_FramePool
+                                  || screencap_method_ == MaaWin32ScreencapMethod_PrintWindow;
+        if (!supports_minimized && IsIconic(hwnd_)) {
             LogError << "hwnd_ is minimized";
             return false;
         }
@@ -70,7 +70,7 @@ bool Win32ControlUnitMgr::connect()
         screencap_ = std::make_shared<GdiScreencap>(hwnd_);
         break;
     case MaaWin32ScreencapMethod_FramePool:
-        screencap_ = std::make_shared<FramePoolScreencap>(hwnd_);
+        screencap_ = std::make_shared<FramePoolWithPseudoMinimizeScreencap>(hwnd_);
         break;
     case MaaWin32ScreencapMethod_DXGI_DesktopDup:
         screencap_ = std::make_shared<DesktopDupScreencap>(hwnd_);
@@ -79,16 +79,10 @@ bool Win32ControlUnitMgr::connect()
         screencap_ = std::make_shared<DesktopDupWindowScreencap>(hwnd_);
         break;
     case MaaWin32ScreencapMethod_PrintWindow:
-        screencap_ = std::make_shared<PrintWindowScreencap>(hwnd_);
+        screencap_ = std::make_shared<PrintWindowWithPseudoMinimizeScreencap>(hwnd_);
         break;
     case MaaWin32ScreencapMethod_ScreenDC:
         screencap_ = std::make_shared<ScreenDCScreencap>(hwnd_);
-        break;
-    case MaaWin32ScreencapMethod_FramePoolWithPseudoMinimize:
-        screencap_ = std::make_shared<FramePoolWithPseudoMinimizeScreencap>(hwnd_);
-        break;
-    case MaaWin32ScreencapMethod_PrintWindowWithPseudoMinimize:
-        screencap_ = std::make_shared<PrintWindowWithPseudoMinimizeScreencap>(hwnd_);
         break;
 
     default:
