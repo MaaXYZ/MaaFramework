@@ -76,8 +76,10 @@ declare global {
          * | PrintWindow             | Medium    | Medium        | No            | Yes                |                                  |
          * | ScreenDC                | Fast      | High          | No            | No                 |                                  |
          *
-         * Note: When a window is minimized on Windows, all screencap methods will fail.
-         * Avoid minimizing the target window.
+         * Note: FramePool and PrintWindow have built-in pseudo-minimize support —
+         * when the target window is minimized, they make it transparent and click-through,
+         * then restore it without activation, allowing screencap to continue.
+         * Other screencap methods will fail when the target window is minimized.
          */
         const Win32ScreencapMethod: Record<
             | 'GDI'

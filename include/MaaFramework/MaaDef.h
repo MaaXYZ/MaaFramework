@@ -311,8 +311,10 @@ typedef uint64_t MaaAdbInputMethod;
  * | PrintWindow             | Medium    | Medium        | No            | Yes                |                                  |
  * | ScreenDC                | Fast      | High          | No            | No                 |                                  |
  *
- * Note: When a window is minimized on Windows, all screencap methods will fail.
- * Avoid minimizing the target window.
+ * Note: FramePool and PrintWindow support pseudo-minimize — when the target window
+ * is minimized, they make it transparent and click-through, then restore it without
+ * activation, allowing screencap to continue without disturbing the user.
+ * Other screencap methods will fail when the target window is minimized.
  */
 typedef uint64_t MaaWin32ScreencapMethod;
 #define MaaWin32ScreencapMethod_None 0ULL
