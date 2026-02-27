@@ -52,6 +52,8 @@ public: // from ControlUnitAPI
 
     virtual bool scroll(int dx, int dy) override;
 
+    virtual bool inactive() override;
+
 private:
     bool init_win32_unit();
     void ensure_foreground();

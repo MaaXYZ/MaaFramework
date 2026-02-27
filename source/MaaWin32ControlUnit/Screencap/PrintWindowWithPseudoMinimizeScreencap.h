@@ -26,6 +26,13 @@ public: // from ScreencapBase
         return inner_.screencap();
     }
 
+    virtual void inactive() override
+    {
+        if (helper_.is_pseudo_minimized()) {
+            helper_.revert_pseudo_minimize();
+        }
+    }
+
 private:
     PrintWindowScreencap inner_;
     PseudoMinimizeHelper helper_;

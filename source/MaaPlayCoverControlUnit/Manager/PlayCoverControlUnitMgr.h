@@ -46,6 +46,8 @@ public:
 
     virtual bool scroll(int dx, int dy) override;
 
+    virtual bool inactive() override;
+
 private:
     std::unique_ptr<PlayToolsClient> client_;
     std::string address_;

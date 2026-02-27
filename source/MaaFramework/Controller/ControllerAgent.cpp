@@ -155,6 +155,12 @@ MaaCtrlId ControllerAgent::post_shell(const std::string& cmd, int64_t timeout)
     return focus_id(id);
 }
 
+MaaCtrlId ControllerAgent::post_inactive()
+{
+    auto id = post({ .type = Action::Type::inactive });
+    return focus_id(id);
+}
+
 MaaStatus ControllerAgent::status(MaaCtrlId ctrl_id) const
 {
     if (!action_runner_) {
@@ -355,6 +361,18 @@ bool ControllerAgent::shell(const std::string& cmd, std::string& output, int64_t
     if (ret) {
         output = cached_shell_output();
     }
+    return ret;
+}
+
+bool ControllerAgent::handle_inactive()
+{
+    if (!control_unit_) {
+        LogError << "control_unit_ is nullptr";
+        return false;
+    }
+
+    bool ret = control_unit_->inactive();
+
     return ret;
 }
 
@@ -948,6 +966,10 @@ bool ControllerAgent::run_action(typename AsyncRunner<Action>::Id id, Action act
 
     case Action::Type::shell:
         ret = handle_shell(std::get<ShellParam>(action.param));
+        break;
+
+    case Action::Type::inactive:
+        ret = handle_inactive();
         break;
 
     default:

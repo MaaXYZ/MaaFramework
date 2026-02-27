@@ -220,4 +220,15 @@ bool CustomControlUnitMgr::scroll(int dx, int dy)
     return controller_->scroll(dx, dy, controller_arg_);
 }
 
+bool CustomControlUnitMgr::inactive()
+{
+    if (!controller_ || !controller_->inactive) {
+        LogTrace << "inactive callback not provided, returning true";
+        return true;
+    }
+
+    LogFunc << VAR_VOIDP(controller_) << VAR_VOIDP(controller_->inactive);
+    return controller_->inactive(controller_arg_);
+}
+
 MAA_CTRL_UNIT_NS_END

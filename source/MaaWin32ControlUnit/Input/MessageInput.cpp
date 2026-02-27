@@ -441,6 +441,14 @@ void MessageInput::unblock_input()
     BlockInput(FALSE);
 }
 
+void MessageInput::inactive()
+{
+    LogFunc;
+
+    restore_pos();
+    unblock_input();
+}
+
 std::pair<int, int> MessageInput::get_target_pos() const
 {
     if (last_pos_set_) {

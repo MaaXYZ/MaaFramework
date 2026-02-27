@@ -288,4 +288,15 @@ void SeizeInput::unblock_input()
     BlockInput(FALSE);
 }
 
+void SeizeInput::inactive()
+{
+    LogFunc;
+
+    unblock_input();
+
+    if (hwnd_) {
+        SetWindowPos(hwnd_, HWND_NOTOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
+    }
+}
+
 MAA_CTRL_UNIT_NS_END

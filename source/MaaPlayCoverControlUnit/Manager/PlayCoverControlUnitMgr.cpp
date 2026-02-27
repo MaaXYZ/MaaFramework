@@ -232,4 +232,9 @@ bool PlayCoverControlUnitMgr::scroll(int dx, int dy)
     return false;
 }
 
+bool PlayCoverControlUnitMgr::inactive()
+{
+    return true;
+}
+
 MAA_CTRL_UNIT_NS_END

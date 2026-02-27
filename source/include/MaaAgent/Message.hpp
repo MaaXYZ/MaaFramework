@@ -1131,6 +1131,22 @@ struct ControllerPostConnectionReverseResponse
     MEO_JSONIZATION(ctrl_id, _ControllerPostConnectionReverseResponse);
 };
 
+struct ControllerPostInactiveReverseRequest
+{
+    std::string controller_id;
+
+    MessageTypePlaceholder _ControllerPostInactiveReverseRequest = 1;
+    MEO_JSONIZATION(controller_id, _ControllerPostInactiveReverseRequest);
+};
+
+struct ControllerPostInactiveReverseResponse
+{
+    int64_t ctrl_id = 0;
+
+    MessageTypePlaceholder _ControllerPostInactiveReverseResponse = 1;
+    MEO_JSONIZATION(ctrl_id, _ControllerPostInactiveReverseResponse);
+};
+
 struct ControllerPostClickReverseRequest
 {
     std::string controller_id;

@@ -50,6 +50,8 @@ public: // from InputBase
 
     virtual bool scroll(int dx, int dy) override;
 
+    virtual void inactive() override;
+
 private:
     void send_activate();
     bool send_or_post_w(UINT message, WPARAM wParam, LPARAM lParam);

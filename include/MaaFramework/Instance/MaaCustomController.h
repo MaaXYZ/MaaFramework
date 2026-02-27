@@ -62,6 +62,8 @@ extern "C"
         MaaBool (*key_up)(int32_t keycode, void* trans_arg);
 
         MaaBool (*scroll)(int32_t dx, int32_t dy, void* trans_arg);
+
+        MaaBool (*inactive)(void* trans_arg);
     };
 
 #ifdef __cplusplus

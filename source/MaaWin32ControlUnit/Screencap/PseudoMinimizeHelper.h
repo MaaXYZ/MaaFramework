@@ -29,10 +29,11 @@ public:
 
     bool is_pseudo_minimized() const { return pseudo_minimized_; }
 
+    void revert_pseudo_minimize();
+
 private:
     void monitor_thread_func();
     void apply_pseudo_minimize();
-    void revert_pseudo_minimize();
 
     HWND hwnd_ = nullptr;
 

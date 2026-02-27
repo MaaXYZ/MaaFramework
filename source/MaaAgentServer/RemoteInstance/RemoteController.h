@@ -35,6 +35,8 @@ public:
 
     virtual MaaCtrlId post_shell(const std::string& cmd, int64_t timeout = 20000) override;
 
+    virtual MaaCtrlId post_inactive() override;
+
     virtual MaaStatus status(MaaCtrlId ctrl_id) const override;
     virtual MaaStatus wait(MaaCtrlId ctrl_id) const override;
     virtual bool connected() const override;
