@@ -959,5 +959,11 @@
             }
         }
     },
+    "required": [
+        "interface_version",
+        "name",
+        "controller",
+        "resource"
+    ],
     "additionalProperties": false
 }
