@@ -610,11 +610,12 @@ void Recognizer::prefetch_batch_ocr(const std::vector<BatchOCREntry>& entries)
     std::unordered_map<std::string, std::vector<cv::Rect>> node_rois;
     for (const auto& entry : entries) {
         for (const cv::Rect& roi : get_rois(entry.param.roi_target)) {
-            cv::Rect r = correct_roi(roi, image_);
-            if (r.empty()) {
-                LogWarn << "corrected roi is empty, skip" << VAR(roi) << VAR(r);
+            auto opt_r = correct_roi(roi, image_);
+            if (!opt_r) {
+                LogWarn << "corrected roi is empty, skip" << VAR(roi);
                 continue;
             }
+            cv::Rect r = *opt_r;
             image_(r).copyTo(masked_image(r));
 
             node_rois[entry.name].emplace_back(r);

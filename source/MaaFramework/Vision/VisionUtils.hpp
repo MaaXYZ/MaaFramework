@@ -1,6 +1,7 @@
 #pragma once
 
 #include <numeric>
+#include <optional>
 #include <random>
 #include <ranges>
 
@@ -329,11 +330,11 @@ inline cv::Rect normalize_rect(const cv::Rect& rect, int image_width, int image_
     return res;
 }
 
-inline cv::Rect correct_roi(const cv::Rect& roi, const cv::Mat& image)
+inline std::optional<cv::Rect> correct_roi(const cv::Rect& roi, const cv::Mat& image)
 {
     if (image.empty()) {
         // 允许空图像，Custom Recognition 等场景可能不需要图像
-        LogDebug << "image is empty, skip roi correction";
+        LogDebug << "image is empty, skip roi correction" << VAR(roi);
         return roi;
     }
 
@@ -342,11 +343,11 @@ inline cv::Rect correct_roi(const cv::Rect& roi, const cv::Mat& image)
     // 边界检查和修正
     if (image.cols < res.x) {
         LogError << "roi is out of range" << VAR(image.size()) << VAR(res);
-        return {};
+        return std::nullopt;
     }
     if (image.rows < res.y) {
         LogError << "roi is out of range" << VAR(image.size()) << VAR(res);
-        return {};
+        return std::nullopt;
     }
 
     if (res.x < 0) {
@@ -367,6 +368,12 @@ inline cv::Rect correct_roi(const cv::Rect& roi, const cv::Mat& image)
         LogWarn << "roi is out of range" << VAR(image.size()) << VAR(res);
         res.height = image.rows - res.y;
     }
+
+    if (res.empty()) {
+        LogWarn << "roi is empty after correction and will be removed" << VAR(image.size()) << VAR(res);
+        return std::nullopt;
+    }
+
     return res;
 }
 
@@ -380,12 +387,13 @@ inline std::vector<cv::Rect> correct_rois(std::vector<cv::Rect> rois, const cv::
     }
 
     for (auto it = rois.begin(); it != rois.end();) {
-        *it = correct_roi(*it, image);
-        if (it->empty()) {
+        auto r = correct_roi(*it, image);
+        if (!r) {
             LogWarn << "roi is invalid after correction and will be removed" << VAR(image.size()) << VAR(*it);
             it = rois.erase(it);
         }
         else {
+            *it = *r;
             ++it;
         }
     }
