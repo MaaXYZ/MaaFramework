@@ -1,0 +1,523 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "MaaFramework Project Interface Task File",
+    "description": "MaaFramework 项目接口导入的任务文件 JSON Schema，用于 interface.json 的 import 字段引用的文件",
+    "type": "object",
+    "definitions": {
+        "i18nString": {
+            "type": "string",
+            "description": "支持国际化的字符串，以 $ 开头表示从翻译文件中读取"
+        },
+        "pipelineOverride": {
+            "type": "object",
+            "title": "Pipeline 覆盖配置",
+            "description": "用于覆盖已加载资源中的 pipeline 配置",
+            "additionalProperties": true
+        },
+        "caseItem": {
+            "type": "object",
+            "title": "选项项",
+            "properties": {
+                "name": {
+                    "type": "string",
+                    "title": "选项唯一标识符",
+                    "description": "用作选项 ID"
+                },
+                "label": {
+                    "$ref": "#/definitions/i18nString",
+                    "title": "显示名称",
+                    "description": "用于在用户界面中展示，支持国际化。如果未设置，则显示 name 字段的值"
+                },
+                "description": {
+                    "$ref": "#/definitions/i18nString",
+                    "title": "详细描述",
+                    "description": "支持文件路径、URL 或直接文本，内容支持 Markdown 格式"
+                },
+                "icon": {
+                    "$ref": "#/definitions/i18nString",
+                    "title": "图标路径",
+                    "description": "选项图标文件路径，相对于项目根目录"
+                },
+                "option": {
+                    "type": "array",
+                    "title": "子配置项列表",
+                    "description": "只有当用户选中当前选项时，才会显示这些子配置项。这些子配置项同样放在外层的 option 中定义，支持无限嵌套",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "pipeline_override": {
+                    "$ref": "#/definitions/pipelineOverride",
+                    "title": "Pipeline 覆盖",
+                    "description": "在选项激活时生效的 pipeline 配置覆盖"
+                }
+            },
+            "required": [
+                "name"
+            ],
+            "additionalProperties": false
+        },
+        "inputItem": {
+            "type": "object",
+            "title": "输入字段",
+            "properties": {
+                "name": {
+                    "type": "string",
+                    "title": "输入字段唯一标识符",
+                    "description": "用作输入字段 ID"
+                },
+                "label": {
+                    "$ref": "#/definitions/i18nString",
+                    "title": "显示名称",
+                    "description": "用于在用户界面中展示，支持国际化。如果未设置，则显示 name 字段的值"
+                },
+                "description": {
+                    "$ref": "#/definitions/i18nString",
+                    "title": "详细描述",
+                    "description": "帮助用户理解输入要求。支持文件路径、URL 或直接文本，内容支持 Markdown 格式"
+                },
+                "default": {
+                    "type": "string",
+                    "title": "默认值",
+                    "description": "输入字段的默认值"
+                },
+                "pipeline_type": {
+                    "type": "string",
+                    "title": "Pipeline 数据类型",
+                    "description": "输入字段在 pipeline_override 中的数据类型，用于类型转换",
+                    "enum": [
+                        "string",
+                        "int",
+                        "bool"
+                    ]
+                },
+                "verify": {
+                    "type": "string",
+                    "title": "校验正则表达式",
+                    "description": "用于校验用户输入是否合法的正则表达式"
+                },
+                "pattern_msg": {
+                    "$ref": "#/definitions/i18nString",
+                    "title": "校验错误信息",
+                    "description": "正则校验用户输入错误时显示的信息"
+                }
+            },
+            "required": [
+                "name"
+            ],
+            "additionalProperties": false
+        },
+        "optionDefinition": {
+            "type": "object",
+            "title": "配置项定义",
+            "oneOf": [
+                {
+                    "title": "inputOption",
+                    "type": "object",
+                    "properties": {
+                        "type": {
+                            "const": "input",
+                            "description": "用户输入框，允许用户手动输入内容"
+                        },
+                        "label": {
+                            "$ref": "#/definitions/i18nString",
+                            "title": "显示标签",
+                            "description": "用于在用户界面中展示，支持国际化"
+                        },
+                        "description": {
+                            "$ref": "#/definitions/i18nString",
+                            "title": "详细描述",
+                            "description": "帮助用户理解配置项的作用。支持文件路径、URL 或直接文本，内容支持 Markdown 格式"
+                        },
+                        "icon": {
+                            "$ref": "#/definitions/i18nString",
+                            "title": "图标路径",
+                            "description": "配置项图标文件路径，相对于项目根目录"
+                        },
+                        "controller": {
+                            "type": "array",
+                            "title": "适用的控制器",
+                            "description": "💡 v2.3.0 可选。指定该配置项适用的控制器类型列表",
+                            "items": { "type": "string" }
+                        },
+                        "resource": {
+                            "type": "array",
+                            "title": "适用的资源包",
+                            "description": "💡 v2.3.0 可选。指定该配置项适用的资源包列表",
+                            "items": { "type": "string" }
+                        },
+                        "inputs": {
+                            "type": "array",
+                            "title": "输入配置",
+                            "description": "定义用户可输入的字段",
+                            "items": {
+                                "$ref": "#/definitions/inputItem"
+                            }
+                        },
+                        "pipeline_override": {
+                            "$ref": "#/definitions/pipelineOverride",
+                            "title": "Pipeline 覆盖模板",
+                            "description": "支持使用「名称」格式引用输入字段的值"
+                        }
+                    },
+                    "required": [
+                        "type",
+                        "inputs"
+                    ],
+                    "additionalProperties": false
+                },
+                {
+                    "title": "selectOption",
+                    "type": "object",
+                    "properties": {
+                        "type": {
+                            "const": "select",
+                            "description": "下拉选项框，用户从预定义的选项中选择"
+                        },
+                        "label": {
+                            "$ref": "#/definitions/i18nString",
+                            "title": "显示标签",
+                            "description": "用于在用户界面中展示，支持国际化"
+                        },
+                        "description": {
+                            "$ref": "#/definitions/i18nString",
+                            "title": "详细描述",
+                            "description": "帮助用户理解配置项的作用。支持文件路径、URL 或直接文本，内容支持 Markdown 格式"
+                        },
+                        "icon": {
+                            "$ref": "#/definitions/i18nString",
+                            "title": "图标路径",
+                            "description": "配置项图标文件路径，相对于项目根目录"
+                        },
+                        "controller": {
+                            "type": "array",
+                            "title": "适用的控制器",
+                            "description": "💡 v2.3.0 可选。指定该配置项适用的控制器类型列表",
+                            "items": { "type": "string" }
+                        },
+                        "resource": {
+                            "type": "array",
+                            "title": "适用的资源包",
+                            "description": "💡 v2.3.0 可选。指定该配置项适用的资源包列表",
+                            "items": { "type": "string" }
+                        },
+                        "cases": {
+                            "type": "array",
+                            "title": "可选项列表",
+                            "items": {
+                                "$ref": "#/definitions/caseItem"
+                            }
+                        },
+                        "default_case": {
+                            "type": "string",
+                            "title": "默认选项",
+                            "description": "默认选项名称"
+                        }
+                    },
+                    "required": [
+                        "cases"
+                    ],
+                    "additionalProperties": false
+                },
+                {
+                    "title": "checkboxOption",
+                    "type": "object",
+                    "description": "💡 v2.3.0 多选框，用户从预定义的选项中选择多个",
+                    "properties": {
+                        "type": {
+                            "const": "checkbox",
+                            "description": "💡 v2.3.0 多选框，用户从预定义的选项中选择多个"
+                        },
+                        "label": {
+                            "$ref": "#/definitions/i18nString",
+                            "title": "显示标签",
+                            "description": "用于在用户界面中展示，支持国际化"
+                        },
+                        "description": {
+                            "$ref": "#/definitions/i18nString",
+                            "title": "详细描述",
+                            "description": "帮助用户理解配置项的作用。支持文件路径、URL 或直接文本，内容支持 Markdown 格式"
+                        },
+                        "icon": {
+                            "$ref": "#/definitions/i18nString",
+                            "title": "图标路径",
+                            "description": "配置项图标文件路径，相对于项目根目录"
+                        },
+                        "controller": {
+                            "type": "array",
+                            "title": "适用的控制器",
+                            "description": "💡 v2.3.0 可选。指定该配置项适用的控制器类型列表",
+                            "items": { "type": "string" }
+                        },
+                        "resource": {
+                            "type": "array",
+                            "title": "适用的资源包",
+                            "description": "💡 v2.3.0 可选。指定该配置项适用的资源包列表",
+                            "items": { "type": "string" }
+                        },
+                        "cases": {
+                            "type": "array",
+                            "title": "可选项列表",
+                            "description": "用户可同时选中多个 case，所有被选中的 case 的 pipeline_override 会按照 cases 数组中的定义顺序依次合并生效",
+                            "items": {
+                                "$ref": "#/definitions/caseItem"
+                            }
+                        },
+                        "default_case": {
+                            "type": "array",
+                            "title": "默认选中项",
+                            "description": "💡 v2.3.0 默认选中的选项名称数组，Client 使用该值作为多选框的初始选中值",
+                            "items": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "required": [
+                        "type",
+                        "cases"
+                    ],
+                    "additionalProperties": false
+                },
+                {
+                    "title": "switchOption",
+                    "type": "object",
+                    "properties": {
+                        "type": {
+                            "const": "switch",
+                            "description": "选择框，Yes or No"
+                        },
+                        "label": {
+                            "$ref": "#/definitions/i18nString",
+                            "title": "显示标签",
+                            "description": "用于在用户界面中展示，支持国际化"
+                        },
+                        "description": {
+                            "$ref": "#/definitions/i18nString",
+                            "title": "详细描述",
+                            "description": "帮助用户理解配置项的作用。支持文件路径、URL 或直接文本，内容支持 Markdown 格式"
+                        },
+                        "icon": {
+                            "$ref": "#/definitions/i18nString",
+                            "title": "图标路径",
+                            "description": "配置项图标文件路径，相对于项目根目录"
+                        },
+                        "controller": {
+                            "type": "array",
+                            "title": "适用的控制器",
+                            "description": "💡 v2.3.0 可选。指定该配置项适用的控制器类型列表",
+                            "items": { "type": "string" }
+                        },
+                        "resource": {
+                            "type": "array",
+                            "title": "适用的资源包",
+                            "description": "💡 v2.3.0 可选。指定该配置项适用的资源包列表",
+                            "items": { "type": "string" }
+                        },
+                        "cases": {
+                            "type": "array",
+                            "title": "可选项列表",
+                            "description": "仅支持两个 cases。case.name 应为 Yes/yes/Y/y 或 No/no/N/n 之一，建议使用 Yes 和 No",
+                            "minItems": 2,
+                            "maxItems": 2,
+                            "items": {
+                                "$ref": "#/definitions/caseItem"
+                            }
+                        },
+                        "default_case": {
+                            "type": "string",
+                            "title": "默认选项",
+                            "description": "默认选项名称，应为 Yes 或 No"
+                        }
+                    },
+                    "required": [
+                        "cases"
+                    ],
+                    "additionalProperties": false
+                }
+            ]
+        },
+        "taskItem": {
+            "type": "object",
+            "title": "任务配置",
+            "properties": {
+                "name": {
+                    "type": "string",
+                    "title": "任务唯一标识符",
+                    "description": "用作任务 ID"
+                },
+                "label": {
+                    "$ref": "#/definitions/i18nString",
+                    "title": "显示名称",
+                    "description": "用于在用户界面中展示，支持国际化。如果未设置，则显示 name 字段的值"
+                },
+                "entry": {
+                    "type": "string",
+                    "title": "任务入口",
+                    "description": "为 pipeline 中 Task 的名称"
+                },
+                "default_check": {
+                    "type": "boolean",
+                    "title": "默认选中",
+                    "description": "是否默认选中该任务。Client 在初始化时会根据该值决定是否默认勾选该任务",
+                    "default": false
+                },
+                "description": {
+                    "$ref": "#/definitions/i18nString",
+                    "title": "详细描述",
+                    "description": "帮助用户理解任务功能。支持文件路径、URL 或直接文本，内容支持 Markdown 格式"
+                },
+                "doc": {
+                    "anyOf": [
+                        {
+                            "$ref": "#/definitions/i18nString"
+                        },
+                        {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/i18nString"
+                            }
+                        }
+                    ],
+                    "title": "任务文档",
+                    "description": "任务的详细文档说明，支持字符串或字符串数组"
+                },
+                "desc": {
+                    "anyOf": [
+                        {
+                            "$ref": "#/definitions/i18nString"
+                        },
+                        {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/i18nString"
+                            }
+                        }
+                    ],
+                    "title": "任务文档",
+                    "description": "任务的详细文档说明，支持字符串或字符串数组"
+                },
+                "icon": {
+                    "$ref": "#/definitions/i18nString",
+                    "title": "图标路径",
+                    "description": "任务图标文件路径，相对于项目根目录"
+                },
+                "resource": {
+                    "type": "array",
+                    "title": "支持的资源包",
+                    "description": "指定该任务支持的资源包列表。数组元素应与 resource 配置中的 name 字段对应。若不指定，则表示该任务在所有资源包中都可用",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "controller": {
+                    "type": "array",
+                    "title": "支持的控制器",
+                    "description": "指定该任务支持的控制器类型列表。数组元素应与 controller 配置中的 name 字段对应。若不指定，则表示该任务在所有控制器类型中都可用",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "pipeline_override": {
+                    "$ref": "#/definitions/pipelineOverride",
+                    "title": "Pipeline 覆盖",
+                    "description": "执行任务时会覆盖已加载的资源"
+                },
+                "option": {
+                    "type": "array",
+                    "title": "任务配置项",
+                    "description": "包含若干 option 对象中的键的值，Client 会根据要求让用户进行选择",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            },
+            "required": [
+                "name",
+                "entry"
+            ],
+            "additionalProperties": false
+        }
+    },
+    "properties": {
+        "task": {
+            "type": "array",
+            "title": "任务配置",
+            "description": "为一个对象数组，包含可执行任务的信息",
+            "items": {
+                "$ref": "#/definitions/taskItem"
+            }
+        },
+        "option": {
+            "type": "object",
+            "title": "配置项定义",
+            "description": "为一个对象映射，包含配置项的信息",
+            "additionalProperties": {
+                "$ref": "#/definitions/optionDefinition"
+            }
+        },
+        "preset": {
+            "type": "array",
+            "title": "预设配置",
+            "description": "💡 v2.3.0 可选。预设配置，为一个对象数组。每个预设是一套预定义的任务勾选状态与选项值的快照，用户可一键应用，快速切换不同使用场景",
+            "items": {
+                "type": "object",
+                "title": "预设项",
+                "properties": {
+                    "name": {
+                        "type": "string",
+                        "title": "预设唯一标识符",
+                        "description": "用作预设 ID"
+                    },
+                    "label": {
+                        "$ref": "#/definitions/i18nString",
+                        "title": "显示名称",
+                        "description": "用于在用户界面中展示，支持国际化。如果未设置，则显示 name 字段的值"
+                    },
+                    "description": {
+                        "$ref": "#/definitions/i18nString",
+                        "title": "详细描述",
+                        "description": "帮助用户理解该预设的适用场景。支持文件路径、URL 或直接文本，内容支持 Markdown 格式"
+                    },
+                    "icon": {
+                        "$ref": "#/definitions/i18nString",
+                        "title": "图标路径",
+                        "description": "预设图标文件路径，相对于项目根目录"
+                    },
+                    "task": {
+                        "type": "array",
+                        "title": "预设任务配置",
+                        "description": "预设包含的任务配置列表",
+                        "items": {
+                            "type": "object",
+                            "title": "预设任务项",
+                            "properties": {
+                                "name": {
+                                    "type": "string",
+                                    "title": "任务名称",
+                                    "description": "必须。与顶层 task[].name 对应的任务名称"
+                                },
+                                "enabled": {
+                                    "type": "boolean",
+                                    "title": "是否启用",
+                                    "description": "可选，默认 true。该任务在预设中是否勾选",
+                                    "default": true
+                                },
+                                "option": {
+                                    "type": "object",
+                                    "title": "任务选项预设值",
+                                    "description": "可选。该任务各配置项的预设值，键为顶层 option 中的键名。select/switch 类型填 case.name 字符串，checkbox 类型填 case.name 数组，input 类型填 record<string, string>",
+                                    "additionalProperties": true
+                                }
+                            },
+                            "required": ["name"],
+                            "additionalProperties": false
+                        }
+                    }
+                },
+                "required": ["name"],
+                "additionalProperties": false
+            }
+        }
+    },
+    "additionalProperties": false
+}
