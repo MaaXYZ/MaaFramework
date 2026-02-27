@@ -16,7 +16,7 @@
         },
         "caseItem": {
             "type": "object",
-            "title": "选项项",
+            "title": "选项",
             "properties": {
                 "name": {
                     "type": "string",
@@ -159,13 +159,17 @@
                             "type": "array",
                             "title": "适用的控制器",
                             "description": "💡 v2.3.0 可选。指定该配置项适用的控制器类型列表",
-                            "items": { "type": "string" }
+                            "items": {
+                                "type": "string"
+                            }
                         },
                         "resource": {
                             "type": "array",
                             "title": "适用的资源包",
                             "description": "💡 v2.3.0 可选。指定该配置项适用的资源包列表",
-                            "items": { "type": "string" }
+                            "items": {
+                                "type": "string"
+                            }
                         },
                         "inputs": {
                             "type": "array",
@@ -214,13 +218,17 @@
                             "type": "array",
                             "title": "适用的控制器",
                             "description": "💡 v2.3.0 可选。指定该配置项适用的控制器类型列表",
-                            "items": { "type": "string" }
+                            "items": {
+                                "type": "string"
+                            }
                         },
                         "resource": {
                             "type": "array",
                             "title": "适用的资源包",
                             "description": "💡 v2.3.0 可选。指定该配置项适用的资源包列表",
-                            "items": { "type": "string" }
+                            "items": {
+                                "type": "string"
+                            }
                         },
                         "cases": {
                             "type": "array",
@@ -268,13 +276,17 @@
                             "type": "array",
                             "title": "适用的控制器",
                             "description": "💡 v2.3.0 可选。指定该配置项适用的控制器类型列表",
-                            "items": { "type": "string" }
+                            "items": {
+                                "type": "string"
+                            }
                         },
                         "resource": {
                             "type": "array",
                             "title": "适用的资源包",
                             "description": "💡 v2.3.0 可选。指定该配置项适用的资源包列表",
-                            "items": { "type": "string" }
+                            "items": {
+                                "type": "string"
+                            }
                         },
                         "cases": {
                             "type": "array",
@@ -326,13 +338,17 @@
                             "type": "array",
                             "title": "适用的控制器",
                             "description": "💡 v2.3.0 可选。指定该配置项适用的控制器类型列表",
-                            "items": { "type": "string" }
+                            "items": {
+                                "type": "string"
+                            }
                         },
                         "resource": {
                             "type": "array",
                             "title": "适用的资源包",
                             "description": "💡 v2.3.0 可选。指定该配置项适用的资源包列表",
-                            "items": { "type": "string" }
+                            "items": {
+                                "type": "string"
+                            }
                         },
                         "cases": {
                             "type": "array",
@@ -949,12 +965,16 @@
                                     "additionalProperties": true
                                 }
                             },
-                            "required": ["name"],
+                            "required": [
+                                "name"
+                            ],
                             "additionalProperties": false
                         }
                     }
                 },
-                "required": ["name"],
+                "required": [
+                    "name"
+                ],
                 "additionalProperties": false
             }
         }

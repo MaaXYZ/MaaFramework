@@ -16,7 +16,7 @@
         },
         "caseItem": {
             "type": "object",
-            "title": "选项项",
+            "title": "选项",
             "properties": {
                 "name": {
                     "type": "string",
