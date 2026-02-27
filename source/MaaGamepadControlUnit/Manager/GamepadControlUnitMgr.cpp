@@ -317,4 +317,9 @@ bool GamepadControlUnitMgr::scroll(int dx, int dy)
     return false;
 }
 
+bool GamepadControlUnitMgr::inactive()
+{
+    return true;
+}
+
 MAA_CTRL_UNIT_NS_END

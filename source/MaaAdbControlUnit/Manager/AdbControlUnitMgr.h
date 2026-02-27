@@ -57,6 +57,8 @@ public: // from ControlUnitAPI
 
     virtual bool scroll(int dx, int dy) override;
 
+    virtual bool inactive() override;
+
 public:
     virtual bool find_device(/*out*/ std::vector<std::string>& devices) override;
     virtual bool

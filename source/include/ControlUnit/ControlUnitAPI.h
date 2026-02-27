@@ -41,7 +41,7 @@ public:
 
     virtual bool scroll(int dx, int dy) = 0;
 
-    virtual bool inactive() { return true; }
+    virtual bool inactive() = 0;
 };
 
 class AdbControlUnitAPI : public ControlUnitAPI

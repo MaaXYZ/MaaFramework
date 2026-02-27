@@ -172,4 +172,9 @@ bool CarouselImage::scroll(int dx, int dy)
     return true;
 }
 
+bool CarouselImage::inactive()
+{
+    return true;
+}
+
 MAA_CTRL_UNIT_NS_END
