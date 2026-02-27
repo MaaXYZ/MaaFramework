@@ -16,6 +16,7 @@ public:
 
 public:
     virtual std::optional<cv::Mat> screencap() = 0;
+
     virtual void inactive() {}
 
 protected:
