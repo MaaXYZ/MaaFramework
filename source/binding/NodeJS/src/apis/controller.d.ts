@@ -112,6 +112,10 @@ declare global {
                   param?: never
               }
             | {
+                  action: 'inactive'
+                  param?: never
+              }
+            | {
                   action: 'start_app' | 'stop_app'
                   param: AppParam
               }
@@ -176,6 +180,7 @@ declare global {
              * Post a scroll action. Using multiples of 120 (WHEEL_DELTA) is recommended for best compatibility.
              */
             post_scroll(dx: number, dy: number): Job<CtrlId, Controller>
+            post_inactive(): Job<CtrlId, Controller>
             post_screencap(): ImageJob
             override_pipeline(pipeline: Record<string, unknown> | Record<string, unknown>[]): void
             override_next(node_name: string, next_list: string[]): void
@@ -292,6 +297,7 @@ declare global {
             key_down?(keycode: number): maa.MaybePromise<boolean>
             key_up?(keycode: number): maa.MaybePromise<boolean>
             scroll?(dx: number, dy: number): maa.MaybePromise<boolean>
+            inactive?(): maa.MaybePromise<boolean>
         }
 
         class CustomController extends Controller {

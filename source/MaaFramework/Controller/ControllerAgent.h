@@ -152,6 +152,7 @@ struct Action
         key_up,
         scroll,
         shell,
+        inactive,
     } type = Type::invalid;
 
     Param param;
@@ -185,6 +186,8 @@ public: // MaaController
     virtual MaaCtrlId post_scroll(int dx, int dy) override;
 
     virtual MaaCtrlId post_shell(const std::string& cmd, int64_t timeout = 20000) override;
+
+    virtual MaaCtrlId post_inactive() override;
 
     virtual MaaStatus status(MaaCtrlId ctrl_id) const override;
     virtual MaaStatus wait(MaaCtrlId ctrl_id) const override;
@@ -247,6 +250,7 @@ private:
     bool handle_key_up(const ClickKeyParam& param);
     bool handle_scroll(const ScrollParam& param);
     bool handle_shell(const ShellParam& param);
+    bool handle_inactive();
 
     MaaCtrlId post(Action action);
     MaaCtrlId focus_id(MaaCtrlId id);

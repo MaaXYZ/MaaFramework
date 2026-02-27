@@ -39,6 +39,8 @@ public: // from InputBase
 
     virtual bool scroll(int dx, int dy) override;
 
+    virtual void inactive() override;
+
 private:
     void ensure_foreground();
 

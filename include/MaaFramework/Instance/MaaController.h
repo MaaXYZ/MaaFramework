@@ -166,6 +166,17 @@ extern "C"
     MAA_FRAMEWORK_API MaaCtrlId MaaControllerPostScroll(MaaController* ctrl, int32_t dx, int32_t dy);
 
     /**
+     * @brief Post an inactive request to the controller.
+     *
+     * @param ctrl The controller handle.
+     * @return The control id of the inactive action.
+     *
+     * @note For Win32 controllers, this restores window position (removes topmost) and unblocks user input.
+     * @note For other controllers, this is a no-op that always succeeds.
+     */
+    MAA_FRAMEWORK_API MaaCtrlId MaaControllerPostInactive(MaaController* ctrl);
+
+    /**
      * @brief Post a shell command to the controller.
      *
      * @param ctrl The controller handle.

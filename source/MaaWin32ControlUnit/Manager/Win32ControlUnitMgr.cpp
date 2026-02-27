@@ -310,4 +310,21 @@ bool Win32ControlUnitMgr::scroll(int dx, int dy)
     return mouse_->scroll(dx, dy);
 }
 
+bool Win32ControlUnitMgr::inactive()
+{
+    LogFunc;
+
+    if (screencap_) {
+        screencap_->inactive();
+    }
+    if (mouse_) {
+        mouse_->inactive();
+    }
+    if (keyboard_ && keyboard_ != mouse_) {
+        keyboard_->inactive();
+    }
+
+    return true;
+}
+
 MAA_CTRL_UNIT_NS_END

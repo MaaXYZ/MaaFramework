@@ -295,6 +295,18 @@ MaaCtrlId MaaControllerPostScreencap(MaaController* ctrl)
     return ctrl->post_screencap();
 }
 
+MaaCtrlId MaaControllerPostInactive(MaaController* ctrl)
+{
+    LogFunc << VAR_VOIDP(ctrl);
+
+    if (!ctrl) {
+        LogError << "handle is null";
+        return MaaInvalidId;
+    }
+
+    return ctrl->post_inactive();
+}
+
 MaaStatus MaaControllerStatus(const MaaController* ctrl, MaaCtrlId id)
 {
     // LogFunc << VAR_VOIDP(ctrl) << VAR(id);

@@ -314,6 +314,21 @@ class Controller:
             self._get_shell_output,
         )
 
+    def post_inactive(self) -> Job:
+        """设置控制器为不活跃状态 / Set controller to inactive state
+
+        对于 Win32 控制器，这会恢复窗口位置（取消置顶）并解除输入阻断。
+        对于其他控制器，这是一个空操作，总是成功。
+
+        For Win32 controllers, this restores window position (removes topmost) and unblocks user input.
+        For other controllers, this is a no-op that always succeeds.
+
+        Returns:
+            Job: 作业对象，可通过 status/wait 查询状态 / Job object, can query status via status/wait
+        """
+        ctrl_id = Library.framework().MaaControllerPostInactive(self._handle)
+        return self._gen_ctrl_job(ctrl_id)
+
     @property
     def shell_output(self) -> str:
         """获取最近一次 shell 命令输出 / Get the latest shell command output
@@ -624,6 +639,11 @@ class Controller:
             MaaControllerHandle,
             c_int32,
             c_int32,
+        ]
+
+        Library.framework().MaaControllerPostInactive.restype = MaaCtrlId
+        Library.framework().MaaControllerPostInactive.argtypes = [
+            MaaControllerHandle,
         ]
 
         Library.framework().MaaControllerStatus.restype = MaaStatus
@@ -948,6 +968,7 @@ class CustomController(Controller):
             CustomController._c_key_down_agent,
             CustomController._c_key_up_agent,
             CustomController._c_scroll_agent,
+            CustomController._c_inactive_agent,
         )
 
         self._handle = Library.framework().MaaCustomControllerCreate(
@@ -1047,6 +1068,10 @@ class CustomController(Controller):
     @abstractmethod
     def scroll(self, dx: int, dy: int) -> bool:
         raise NotImplementedError
+
+    def inactive(self) -> bool:
+        """设置控制器为不活跃状态（可选实现，默认返回 True）"""
+        return True
 
     @staticmethod
     @MaaCustomControllerCallbacks.ConnectFunc
@@ -1337,6 +1362,21 @@ class CustomController(Controller):
         ).value
 
         return int(self.scroll(int(c_dx), int(c_dy)))
+
+    @staticmethod
+    @MaaCustomControllerCallbacks.InactiveFunc
+    def _c_inactive_agent(
+        trans_arg: ctypes.c_void_p,
+    ) -> int:
+        if not trans_arg:
+            return int(False)
+
+        self: CustomController = ctypes.cast(
+            trans_arg,
+            ctypes.py_object,
+        ).value
+
+        return int(self.inactive())
 
     def _set_custom_api_properties(self):
         Library.framework().MaaCustomControllerCreate.restype = MaaControllerHandle

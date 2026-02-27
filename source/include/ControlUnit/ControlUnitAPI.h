@@ -40,6 +40,8 @@ public:
     virtual bool key_up(int key) = 0;
 
     virtual bool scroll(int dx, int dy) = 0;
+
+    virtual bool inactive() { return true; }
 };
 
 class AdbControlUnitAPI : public ControlUnitAPI

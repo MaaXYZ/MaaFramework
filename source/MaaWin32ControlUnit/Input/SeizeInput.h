@@ -38,6 +38,8 @@ public: // from InputBase
 
     virtual bool scroll(int dx, int dy) override;
 
+    virtual void inactive() override;
+
 private:
     void ensure_foreground();
     // 获取 last_pos_，若未设置则返回窗口客户区中心坐标

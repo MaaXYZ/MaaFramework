@@ -290,6 +290,9 @@ class MyAction(CustomAction):
         controller.post_start_app("aaa")
         controller.post_stop_app("bbb")
 
+        # 测试 inactive 操作
+        controller.post_inactive().wait()
+
         # ============================================================
         # Tasker API 补充测试 (详情获取)
         # ============================================================

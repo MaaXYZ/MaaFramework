@@ -111,6 +111,7 @@ private:
     bool handle_controller_post_key_down(const json::value& j);
     bool handle_controller_post_key_up(const json::value& j);
     bool handle_controller_post_scroll(const json::value& j);
+    bool handle_controller_post_inactive(const json::value& j);
     bool handle_controller_status(const json::value& j);
     bool handle_controller_wait(const json::value& j);
     bool handle_controller_connected(const json::value& j);
