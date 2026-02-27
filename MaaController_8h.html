@@ -170,6 +170,9 @@ Functions</h2></td></tr>
 <tr class="memitem:ab5b9b134755f4381cb4e5e99f21732b1" id="r_ab5b9b134755f4381cb4e5e99f21732b1"><td class="memItemLeft" align="right" valign="top"><a class="el" href="MaaPort_8h.html#a67006334d91d228121dbba7a8bf8fe05">MAA_FRAMEWORK_API</a> <a class="el" href="MaaDef_8h.html#aea6a27f8f45b661fda5c19b6062b656e">MaaCtrlId</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="MaaController_8h.html#ab5b9b134755f4381cb4e5e99f21732b1">MaaControllerPostScroll</a> (<a class="el" href="MaaDef_8h.html#aa6c9c6967753196880a2a7f778fbb706">MaaController</a> *ctrl, int32_t dx, int32_t dy)</td></tr>
 <tr class="memdesc:ab5b9b134755f4381cb4e5e99f21732b1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Post a scroll action to the controller.  <br /></td></tr>
 <tr class="separator:ab5b9b134755f4381cb4e5e99f21732b1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a307a93663ec1034d905be07e56703cdf" id="r_a307a93663ec1034d905be07e56703cdf"><td class="memItemLeft" align="right" valign="top"><a class="el" href="MaaPort_8h.html#a67006334d91d228121dbba7a8bf8fe05">MAA_FRAMEWORK_API</a> <a class="el" href="MaaDef_8h.html#aea6a27f8f45b661fda5c19b6062b656e">MaaCtrlId</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="MaaController_8h.html#a307a93663ec1034d905be07e56703cdf">MaaControllerPostInactive</a> (<a class="el" href="MaaDef_8h.html#aa6c9c6967753196880a2a7f778fbb706">MaaController</a> *ctrl)</td></tr>
+<tr class="memdesc:a307a93663ec1034d905be07e56703cdf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Post an inactive request to the controller.  <br /></td></tr>
+<tr class="separator:a307a93663ec1034d905be07e56703cdf"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3f16bddc42e950694efd7da2fa51cb9f" id="r_a3f16bddc42e950694efd7da2fa51cb9f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="MaaPort_8h.html#a67006334d91d228121dbba7a8bf8fe05">MAA_FRAMEWORK_API</a> <a class="el" href="MaaDef_8h.html#aea6a27f8f45b661fda5c19b6062b656e">MaaCtrlId</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="MaaController_8h.html#a3f16bddc42e950694efd7da2fa51cb9f">MaaControllerPostShell</a> (<a class="el" href="MaaDef_8h.html#aa6c9c6967753196880a2a7f778fbb706">MaaController</a> *ctrl, const char *cmd, int64_t timeout)</td></tr>
 <tr class="memdesc:a3f16bddc42e950694efd7da2fa51cb9f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Post a shell command to the controller.  <br /></td></tr>
 <tr class="separator:a3f16bddc42e950694efd7da2fa51cb9f"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -1208,6 +1211,36 @@ The dx/dy values are sent directly as scroll increments. Using multiples of 120 
 
 </div>
 </div>
+<a id="a307a93663ec1034d905be07e56703cdf" name="a307a93663ec1034d905be07e56703cdf"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a307a93663ec1034d905be07e56703cdf">&#9670;&#160;</a></span>MaaControllerPostInactive()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="MaaPort_8h.html#a67006334d91d228121dbba7a8bf8fe05">MAA_FRAMEWORK_API</a> <a class="el" href="MaaDef_8h.html#aea6a27f8f45b661fda5c19b6062b656e">MaaCtrlId</a> MaaControllerPostInactive </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="MaaDef_8h.html#aa6c9c6967753196880a2a7f778fbb706">MaaController</a> *&#160;</td>
+          <td class="paramname"><em>ctrl</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Post an inactive request to the controller. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">ctrl</td><td>The controller handle. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>The control id of the inactive action.</dd></dl>
+<dl class="section note"><dt>Note</dt><dd>For Win32 controllers, this restores window position (removes topmost) and unblocks user input. </dd>
+<dd>
+For other controllers, this is a no-op that always succeeds. </dd></dl>
+
+</div>
+</div>
 <a id="a3f16bddc42e950694efd7da2fa51cb9f" name="a3f16bddc42e950694efd7da2fa51cb9f"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a3f16bddc42e950694efd7da2fa51cb9f">&#9670;&#160;</a></span>MaaControllerPostShell()</h2>
 
@@ -1517,7 +1550,7 @@ The dx/dy values are sent directly as scroll increments. Using multiples of 120 
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="dir_d44c64559bbebec7f509842c48db8b23.html">include</a></li><li class="navelem"><a class="el" href="dir_370cd1367c21b1a87c5c9c6803b8d0b9.html">MaaFramework</a></li><li class="navelem"><a class="el" href="dir_0debf1eee29073ebb629a4e1dfd2a5f6.html">Instance</a></li><li class="navelem"><a class="el" href="MaaController_8h.html">MaaController.h</a></li>
-    <li class="footer">Generated on Thu Feb 26 2026 for MaaFramework by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.8 </li>
+    <li class="footer">Generated on Fri Feb 27 2026 for MaaFramework by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.8 </li>
   </ul>
 </div>
 </body>

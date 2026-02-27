@@ -244,6 +244,20 @@
         </inbodydescription>
         <location file="include/MaaFramework/Instance/MaaCustomController.h" line="64" column="9" bodyfile="include/MaaFramework/Instance/MaaCustomController.h" bodystart="64" bodyend="-1"/>
       </memberdef>
+      <memberdef kind="variable" id="structMaaCustomControllerCallbacks_1a1b40637a2af654c10ce501d968abefc7" prot="public" static="no" mutable="no">
+        <type><ref refid="MaaDef_8h_1a2f7289f2a8e07f48c6261b52a120cdf6" kindref="member">MaaBool</ref>(*</type>
+        <definition>MaaBool(* MaaCustomControllerCallbacks::inactive) (void *trans_arg)</definition>
+        <argsstring>)(void *trans_arg)</argsstring>
+        <name>inactive</name>
+        <qualifiedname>MaaCustomControllerCallbacks::inactive</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="include/MaaFramework/Instance/MaaCustomController.h" line="66" column="9" bodyfile="include/MaaFramework/Instance/MaaCustomController.h" bodystart="66" bodyend="-1"/>
+      </memberdef>
     </sectiondef>
     <briefdescription>
 <para>The custom controller API. </para>
@@ -252,13 +266,14 @@
 <para>To create a custom controller, you need to implement this API.</para>
 <para>You do not have to implement all the functions in this API. Instead, just implement the functions you need. Do note that if an unimplemented function is called, the framework will likely crash. </para>
     </detaileddescription>
-    <location file="include/MaaFramework/Instance/MaaCustomController.h" line="31" column="5" bodyfile="include/MaaFramework/Instance/MaaCustomController.h" bodystart="32" bodyend="65"/>
+    <location file="include/MaaFramework/Instance/MaaCustomController.h" line="31" column="5" bodyfile="include/MaaFramework/Instance/MaaCustomController.h" bodystart="32" bodyend="67"/>
     <listofallmembers>
       <member refid="structMaaCustomControllerCallbacks_1ace80d9863f4faaa37fcf1a00bc521561" prot="public" virt="non-virtual"><scope>MaaCustomControllerCallbacks</scope><name>click</name></member>
       <member refid="structMaaCustomControllerCallbacks_1a2df5a214e13e5d9542d3458016c5f51c" prot="public" virt="non-virtual"><scope>MaaCustomControllerCallbacks</scope><name>click_key</name></member>
       <member refid="structMaaCustomControllerCallbacks_1a74d6aa4b9e6fc074f4d97d6ebe3be6ad" prot="public" virt="non-virtual"><scope>MaaCustomControllerCallbacks</scope><name>connect</name></member>
       <member refid="structMaaCustomControllerCallbacks_1a5294cb3629297bc3449019222b445a79" prot="public" virt="non-virtual"><scope>MaaCustomControllerCallbacks</scope><name>connected</name></member>
       <member refid="structMaaCustomControllerCallbacks_1a318dbd580c96d8bf215a2df9d565d450" prot="public" virt="non-virtual"><scope>MaaCustomControllerCallbacks</scope><name>get_features</name></member>
+      <member refid="structMaaCustomControllerCallbacks_1a1b40637a2af654c10ce501d968abefc7" prot="public" virt="non-virtual"><scope>MaaCustomControllerCallbacks</scope><name>inactive</name></member>
       <member refid="structMaaCustomControllerCallbacks_1add383d0ce3995532bfe0db9d008b6f7e" prot="public" virt="non-virtual"><scope>MaaCustomControllerCallbacks</scope><name>input_text</name></member>
       <member refid="structMaaCustomControllerCallbacks_1a46da9230073fb4ac1ccc7b8c28d87467" prot="public" virt="non-virtual"><scope>MaaCustomControllerCallbacks</scope><name>key_down</name></member>
       <member refid="structMaaCustomControllerCallbacks_1a99d5b6c3270039db39a1f5cdeb27b269" prot="public" virt="non-virtual"><scope>MaaCustomControllerCallbacks</scope><name>key_up</name></member>

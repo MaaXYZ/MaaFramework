@@ -18,6 +18,7 @@
     <member refid="structMaaCustomControllerCallbacks_1a46da9230073fb4ac1ccc7b8c28d87467" kind="variable"><name>key_down</name></member>
     <member refid="structMaaCustomControllerCallbacks_1a99d5b6c3270039db39a1f5cdeb27b269" kind="variable"><name>key_up</name></member>
     <member refid="structMaaCustomControllerCallbacks_1ae2381df699964f6e95fe89ad2fc22e38" kind="variable"><name>scroll</name></member>
+    <member refid="structMaaCustomControllerCallbacks_1a1b40637a2af654c10ce501d968abefc7" kind="variable"><name>inactive</name></member>
   </compound>
   <compound refid="structMaaRect" kind="struct"><name>MaaRect</name>
     <member refid="structMaaRect_1a5cf5c0bb6cb3244ea7364e0e14ccf439" kind="variable"><name>x</name></member>
@@ -116,6 +117,7 @@
     <member refid="MaaController_8h_1afb7c57e77010237effcfe2f638e0bd79" kind="function"><name>MaaControllerPostKeyUp</name></member>
     <member refid="MaaController_8h_1ad65392ee4028a2d8ba74d2fab960fb50" kind="function"><name>MaaControllerPostScreencap</name></member>
     <member refid="MaaController_8h_1ab5b9b134755f4381cb4e5e99f21732b1" kind="function"><name>MaaControllerPostScroll</name></member>
+    <member refid="MaaController_8h_1a307a93663ec1034d905be07e56703cdf" kind="function"><name>MaaControllerPostInactive</name></member>
     <member refid="MaaController_8h_1a3f16bddc42e950694efd7da2fa51cb9f" kind="function"><name>MaaControllerPostShell</name></member>
     <member refid="MaaController_8h_1a92255bcc65b61750e01fa07bcd8d17e0" kind="function"><name>MaaControllerGetShellOutput</name></member>
     <member refid="MaaController_8h_1afb8528c818e4fd03c7493b7b013474ed" kind="function"><name>MaaControllerStatus</name></member>
