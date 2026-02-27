@@ -30,8 +30,15 @@ void TemplateComparator::analyze()
     auto start_time = std::chrono::steady_clock::now();
 
     while (next_roi()) {
-        cv::Mat lhs_roi = image_(correct_roi(roi_, image_));
-        cv::Mat rhs_roi = rhs_image_(correct_roi(roi_, rhs_image_));
+        cv::Rect lhs_r = correct_roi(roi_, image_);
+        cv::Rect rhs_r = correct_roi(roi_, rhs_image_);
+        if (lhs_r.empty() || rhs_r.empty()) {
+            LogWarn << "roi is empty after correction, skip" << VAR(roi_) << VAR(lhs_r) << VAR(rhs_r);
+            continue;
+        }
+
+        cv::Mat lhs_roi = image_(lhs_r);
+        cv::Mat rhs_roi = rhs_image_(rhs_r);
         double score = comp(lhs_roi, rhs_roi, param_.method);
         Result res = Result { .box = roi_, .score = score };
         add_results({ std::move(res) }, param_.threshold);

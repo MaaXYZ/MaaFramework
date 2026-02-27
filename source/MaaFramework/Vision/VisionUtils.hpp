@@ -342,19 +342,21 @@ inline cv::Rect correct_roi(const cv::Rect& roi, const cv::Mat& image)
     // 边界检查和修正
     if (image.cols < res.x) {
         LogError << "roi is out of range" << VAR(image.size()) << VAR(res);
-        res.x = image.cols - res.width;
+        return {};
     }
     if (image.rows < res.y) {
         LogError << "roi is out of range" << VAR(image.size()) << VAR(res);
-        res.y = image.rows - res.height;
+        return {};
     }
 
     if (res.x < 0) {
         LogWarn << "roi is out of range" << VAR(image.size()) << VAR(res);
+        res.width += res.x; // 减少宽度以适应边界
         res.x = 0;
     }
     if (res.y < 0) {
         LogWarn << "roi is out of range" << VAR(image.size()) << VAR(res);
+        res.height += res.y; // 减少高度以适应边界
         res.y = 0;
     }
     if (image.cols < res.x + res.width) {
@@ -371,11 +373,23 @@ inline cv::Rect correct_roi(const cv::Rect& roi, const cv::Mat& image)
 inline std::vector<cv::Rect> correct_rois(std::vector<cv::Rect> rois, const cv::Mat& image)
 {
     if (rois.empty()) {
-        return { correct_roi(cv::Rect {}, image) };
+        if (image.empty()) {
+            return {};
+        }
+        return { cv::Rect(0, 0, image.cols, image.rows) };
     }
-    for (auto& roi : rois) {
-        roi = correct_roi(roi, image);
+
+    for (auto it = rois.begin(); it != rois.end();) {
+        *it = correct_roi(*it, image);
+        if (it->empty()) {
+            LogWarn << "roi is invalid after correction and will be removed" << VAR(image.size()) << VAR(*it);
+            it = rois.erase(it);
+        }
+        else {
+            ++it;
+        }
     }
+
     return rois;
 }
 
