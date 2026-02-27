@@ -319,6 +319,9 @@ bool GamepadControlUnitMgr::scroll(int dx, int dy)
 
 bool GamepadControlUnitMgr::inactive()
 {
+    if (win32_unit_) {
+        return win32_unit_->inactive();
+    }
     return true;
 }
 
