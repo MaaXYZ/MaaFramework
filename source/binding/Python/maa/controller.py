@@ -15,6 +15,7 @@ from .library import Library
 __all__ = [
     "AdbController",
     "DbgController",
+    "ProxyController",
     "PlayCoverController",
     "Win32Controller",
     "GamepadController",
@@ -883,6 +884,43 @@ class DbgController(Controller):
             ctypes.c_char_p,
             ctypes.c_char_p,
             MaaDbgControllerType,
+            ctypes.c_char_p,
+        ]
+
+
+class ProxyController(Controller):
+    """代理控制器，包装现有控制器并记录所有操作 / Proxy controller that wraps an existing controller and records all operations"""
+
+    def __init__(
+        self,
+        inner: Controller,
+        dump_dir: Union[str, Path],
+    ):
+        """创建代理控制器 / Create proxy controller
+
+        Args:
+            inner: 被包装的内部控制器 / The inner controller to wrap
+            dump_dir: 录制文件输出目录 / Directory for recording output files
+
+        Raises:
+            RuntimeError: 如果创建失败
+        """
+        super().__init__()
+        self._inner = inner
+        self._set_proxy_api_properties()
+
+        self._handle = Library.framework().MaaProxyControllerCreate(
+            inner._handle,
+            str(dump_dir).encode(),
+        )
+
+        if not self._handle:
+            raise RuntimeError("Failed to create proxy controller.")
+
+    def _set_proxy_api_properties(self):
+        Library.framework().MaaProxyControllerCreate.restype = MaaControllerHandle
+        Library.framework().MaaProxyControllerCreate.argtypes = [
+            MaaControllerHandle,
             ctypes.c_char_p,
         ]
 

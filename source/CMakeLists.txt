@@ -22,6 +22,10 @@ if(WITH_GAMEPAD_CONTROLLER)
     add_subdirectory(MaaGamepadControlUnit)
 endif()
 
+if(WITH_PROXY_CONTROLLER)
+    add_subdirectory(MaaProxyControlUnit)
+endif()
+
 add_subdirectory(LibraryHolder)
 add_subdirectory(MaaFramework)
 add_subdirectory(MaaToolkit)

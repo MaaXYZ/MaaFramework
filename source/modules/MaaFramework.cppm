@@ -142,6 +142,7 @@ export using ::MaaAdbControllerCreate;
 export using ::MaaWin32ControllerCreate;
 export using ::MaaCustomControllerCreate;
 export using ::MaaDbgControllerCreate;
+export using ::MaaProxyControllerCreate;
 export using ::MaaPlayCoverControllerCreate;
 export using ::MaaControllerDestroy;
 export using ::MaaControllerAddSink;

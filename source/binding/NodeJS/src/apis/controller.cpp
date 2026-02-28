@@ -526,6 +526,30 @@ maajs::ValueType load_dbg_controller(maajs::EnvType env)
     return ctor;
 }
 
+ProxyControllerImpl* ProxyControllerImpl::ctor(const maajs::CallbackInfo& info)
+{
+    auto [inner_ctrl, dump_dir] = maajs::UnWrapArgs<ProxyControllerCtorParam, void>(info);
+    if (!inner_ctrl || !inner_ctrl->controller) {
+        return nullptr;
+    }
+    auto ctrl = MaaProxyControllerCreate(inner_ctrl->controller, dump_dir.c_str());
+    if (!ctrl) {
+        return nullptr;
+    }
+    return new ProxyControllerImpl(ctrl, true);
+}
+
+void ProxyControllerImpl::init_proto(maajs::ObjectType, maajs::FunctionType)
+{
+}
+
+maajs::ValueType load_proxy_controller(maajs::EnvType env)
+{
+    maajs::FunctionType ctor;
+    maajs::NativeClass<ProxyControllerImpl>::init<ControllerImpl>(env, ctor, &ExtContext::get(env)->controllerCtor);
+    return ctor;
+}
+
 GamepadControllerImpl* GamepadControllerImpl::ctor(const maajs::CallbackInfo& info)
 {
     auto [hwnd, gamepad_type, screencap_method] = maajs::UnWrapArgs<GamepadControllerCtorParam, void>(info);
