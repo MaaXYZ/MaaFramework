@@ -297,24 +297,37 @@ bool WaylandClient::pointer(EventPhase phase, int x, int y, int contact)
 bool WaylandClient::scroll(int dx, int dy)
 {
     if (dy != 0) {
-        zwlr_virtual_pointer_v1_axis_discrete(
-            pointer_.get(),
-            WaylandHelper::get_ms(),
-            WL_POINTER_AXIS_VERTICAL_SCROLL,
-            wl_fixed_from_int(WHEEL_DELTA),
-            dy);
+        const int step_y = dy / 120;
+        for (int i = 0; i < abs(step_y); ++i) {
+            zwlr_virtual_pointer_v1_axis_discrete(
+                pointer_.get(),
+                WaylandHelper::get_ms(),
+                WL_POINTER_AXIS_VERTICAL_SCROLL,
+                wl_fixed_from_int(step_y >= 0 ? 10 : -10),
+                step_y >= 0 ? 1 : -1);
+            zwlr_virtual_pointer_v1_frame(pointer_.get());
+            if (!process_requests()) {
+                return false;
+            }
+        }
     }
 
     if (dx != 0) {
-        zwlr_virtual_pointer_v1_axis_discrete(
-            pointer_.get(),
-            WaylandHelper::get_ms(),
-            WL_POINTER_AXIS_HORIZONTAL_SCROLL,
-            wl_fixed_from_int(WHEEL_DELTA),
-            dx);
+        const int step_x = dx / 120;
+        for (int i = 0; i < abs(step_x); ++i) {
+            zwlr_virtual_pointer_v1_axis_discrete(
+                pointer_.get(),
+                WaylandHelper::get_ms(),
+                WL_POINTER_AXIS_HORIZONTAL_SCROLL,
+                wl_fixed_from_int(step_x >= 0 ? 10 : -10),
+                step_x >= 0 ? 1 : -1);
+            zwlr_virtual_pointer_v1_frame(pointer_.get());
+            if (!process_requests()) {
+                return false;
+            }
+        }
     }
-    zwlr_virtual_pointer_v1_frame(pointer_.get());
-    return process_requests();
+    return true;
 }
 
 bool WaylandClient::input_key(EventPhase phase, int key)
