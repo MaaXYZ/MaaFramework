@@ -246,4 +246,9 @@ bool WlRootsControlUnitMgr::stop_app(const std::string& intent)
     return false;
 }
 
+bool WlRootsControlUnitMgr::inactive()
+{
+    return true;
+}
+
 MAA_CTRL_UNIT_NS_END

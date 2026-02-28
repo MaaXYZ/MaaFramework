@@ -47,6 +47,8 @@ public:
 
     virtual bool scroll(int dx, int dy) override;
 
+    virtual bool inactive() override;
+
 private:
     std::unique_ptr<WaylandClient> client_;
     std::filesystem::path wlr_socket_path_;
