@@ -1,4 +1,4 @@
-#ifdef __linux__
+#if defined(__linux__) && !defined(ANDROID)
 
 #include "DesktopWindowLinuxFinder.h"
 #include <wayland-client-protocol.h>
@@ -62,4 +62,4 @@ std::vector<DesktopWindow> DesktopWindowLinuxFinder::find_all() const
 
 MAA_TOOLKIT_NS_END
 
-#endif // __linux__
+#endif // __linux__ && !ANDROID
