@@ -572,6 +572,7 @@ class PipelineTestRecognition(CustomRecognition):
                     "replace": [["0", "O"], ["1", "I"]],
                     "only_rec": True,
                     "model": "custom_model",
+                    "color_filter": "RecoColorMatch",
                 }
             }
         )
@@ -584,6 +585,7 @@ class PipelineTestRecognition(CustomRecognition):
         assert_eq(param.replace, [["0", "O"], ["1", "I"]], "replace")
         assert_eq(param.only_rec, True, "only_rec")
         assert_eq(param.model, "custom_model", "model")
+        assert_eq(param.color_filter, "RecoColorMatch", "color_filter")
 
         # NeuralNetworkClassify
         new_ctx.override_pipeline(
@@ -768,14 +770,14 @@ class PipelineTestRecognition(CustomRecognition):
 
         # Shell
         new_ctx.override_pipeline(
-            {"ActShell": {"action": "Shell", "cmd": "ls -la", "timeout": 30000}}
+            {"ActShell": {"action": "Shell", "cmd": "ls -la", "shell_timeout": 30000}}
         )
         obj = new_ctx.get_node_object("ActShell")
         assert_eq(obj.action.type, JActionType.Shell, "Shell type")
         param = obj.action.param
         assert_true(isinstance(param, JShell), "Shell param")
         assert_eq(param.cmd, "ls -la", "cmd")
-        assert_eq(param.timeout, 30000, "timeout")
+        assert_eq(param.shell_timeout, 30000, "shell_timeout")
 
         # Custom
         new_ctx.override_pipeline(

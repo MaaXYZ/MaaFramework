@@ -215,6 +215,12 @@ maajs::ValueType ControllerImpl::post_scroll(maajs::ValueType self, maajs::EnvTy
     return maajs::CallCtorHelper(ExtContext::get(env)->jobCtor, self, id);
 }
 
+maajs::ValueType ControllerImpl::post_inactive(maajs::ValueType self, maajs::EnvType)
+{
+    auto id = MaaControllerPostInactive(controller);
+    return maajs::CallCtorHelper(ExtContext::get(env)->jobCtor, self, id);
+}
+
 maajs::ValueType ControllerImpl::post_screencap(maajs::ValueType self, maajs::EnvType)
 {
     auto id = MaaControllerPostScreencap(controller);
@@ -329,6 +335,7 @@ void ControllerImpl::init_proto(maajs::ObjectType proto, maajs::FunctionType)
     MAA_BIND_FUNC(proto, "post_key_down", ControllerImpl::post_key_down);
     MAA_BIND_FUNC(proto, "post_key_up", ControllerImpl::post_key_up);
     MAA_BIND_FUNC(proto, "post_scroll", ControllerImpl::post_scroll);
+    MAA_BIND_FUNC(proto, "post_inactive", ControllerImpl::post_inactive);
     MAA_BIND_FUNC(proto, "post_screencap", ControllerImpl::post_screencap);
     MAA_BIND_FUNC(proto, "status", ControllerImpl::status);
     MAA_BIND_FUNC(proto, "wait", ControllerImpl::wait);

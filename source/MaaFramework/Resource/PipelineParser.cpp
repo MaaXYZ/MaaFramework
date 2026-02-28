@@ -710,6 +710,11 @@ bool PipelineParser::parse_ocrer_param(
         output.replace = default_value.replace;
     }
 
+    if (!get_and_check_value(input, "color_filter", output.color_filter, default_value.color_filter)) {
+        LogError << "failed to get_and_check_value color_filter" << VAR(input);
+        return false;
+    }
+
     return true;
 }
 
@@ -1436,8 +1441,8 @@ bool PipelineParser::parse_shell(const json::value& input, Action::ShellParam& o
         return false;
     }
 
-    if (!get_and_check_value(input, "timeout", output.timeout, default_value.timeout)) {
-        LogError << "failed to get_and_check_value timeout" << VAR(input);
+    if (!get_and_check_value(input, "shell_timeout", output.shell_timeout, default_value.shell_timeout)) {
+        LogError << "failed to get_and_check_value shell_timeout" << VAR(input);
         return false;
     }
 

@@ -575,6 +575,10 @@ class MaaCustomControllerCallbacks(ctypes.Structure):
         ctypes.c_int32,
         ctypes.c_void_p,
     )
+    InactiveFunc = FUNCTYPE(
+        MaaBool,
+        ctypes.c_void_p,
+    )
     _fields_ = [
         ("connect", ConnectFunc),
         ("connected", ConnectedFunc),
@@ -593,6 +597,7 @@ class MaaCustomControllerCallbacks(ctypes.Structure):
         ("key_down", KeyDownFunc),
         ("key_up", KeyUpFunc),
         ("scroll", ScrollFunc),
+        ("inactive", InactiveFunc),
     ]
 
 
@@ -858,6 +863,7 @@ class RecognitionDetail:
 class ClickActionResult:
     point: Point
     contact: int
+    pressure: int
 
 
 @dataclass
@@ -865,6 +871,7 @@ class LongPressActionResult:
     point: Point
     duration: int
     contact: int
+    pressure: int
 
 
 @dataclass
@@ -876,6 +883,7 @@ class SwipeActionResult:
     only_hover: bool
     starting: int
     contact: int
+    pressure: int
 
 
 @dataclass
@@ -906,6 +914,7 @@ class AppActionResult:
 
 @dataclass
 class ScrollActionResult:
+    point: Point
     dx: int
     dy: int
 
@@ -920,7 +929,7 @@ class TouchActionResult:
 @dataclass
 class ShellActionResult:
     cmd: str
-    timeout: int
+    shell_timeout: int
     success: bool
     output: str
 

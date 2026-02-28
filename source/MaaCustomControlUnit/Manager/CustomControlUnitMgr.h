@@ -43,6 +43,8 @@ public: // from ControlUnitAPI
 
     virtual bool scroll(int dx, int dy) override;
 
+    virtual bool inactive() override;
+
 private:
     MaaCustomControllerCallbacks* controller_ = nullptr;
     void* controller_arg_ = nullptr;

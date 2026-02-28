@@ -1059,6 +1059,12 @@
                     "description": "模型 **文件夹** 路径。使用 `model/ocr` 文件夹的相对路径。可选，默认为空。",
                     "type": "string",
                     "markdownDescription": "*string*\n\n模型 **文件夹** 路径。使用 `model/ocr` 文件夹的相对路径。可选，默认为空。\n\n若为空，则为 `model/ocr` 根目录下的模型文件。\n\n文件夹中需要包含 `rec.onnx`, `det.onnx`, `keys.txt` 三个文件。"
+                },
+                "color_filter": {
+                    "title": "Color Filter Property",
+                    "description": "颜色过滤。填写某个 ColorMatch 节点名，先使用该节点的颜色参数对图像进行二值化，再送入 OCR 识别。可选，默认为空。",
+                    "type": "string",
+                    "markdownDescription": "*string*\n\n颜色过滤。填写某个 `ColorMatch` 节点名，先使用该节点的颜色参数（`method`、`lower`、`upper`）对图像进行二值化，再送入 OCR 识别。可选，默认为空。\n\n仅使用该节点的颜色二值化逻辑，不依赖其 `count`、`order_by` 等结果参数。\n\n设置了该字段的 OCR 节点不参与 batch 优化。"
                 }
             }
         },
@@ -3119,8 +3125,8 @@
                     "type": "string",
                     "markdownDescription": "*string*\n\n要执行的 shell 命令。必选。\n\n例如 `getprop ro.build.version.sdk` 或 `settings put global animator_duration_scale 0`。\n\n> 注意：此动作仅对 ADB 控制器有效。"
                 },
-                "timeout": {
-                    "title": "Timeout Property",
+                "shell_timeout": {
+                    "title": "Shell Timeout Property",
                     "description": "超时时间（毫秒）。可选，默认 20000 (20秒)。设置为 -1 表示无限等待。",
                     "type": "integer",
                     "default": 20000,

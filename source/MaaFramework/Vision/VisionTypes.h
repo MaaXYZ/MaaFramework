@@ -82,6 +82,7 @@ struct OCRerParam : public RoiTargetParamBase
     std::vector<std::wstring> expected;
     double threshold = kDefaultThreshold;
     std::vector<std::pair<std::wstring, std::wstring>> replace;
+    std::string color_filter;
 
     ResultOrderBy order_by = ResultOrderBy::Horizontal;
     int result_index = 0;

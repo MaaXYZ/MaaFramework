@@ -163,6 +163,7 @@ export using ::MaaControllerPostTouchUp;
 export using ::MaaControllerPostScreencap;
 export using ::MaaControllerPostScroll;
 export using ::MaaControllerPostShell;
+export using ::MaaControllerPostInactive;
 export using ::MaaControllerGetShellOutput;
 export using ::MaaControllerStatus;
 export using ::MaaControllerWait;

@@ -102,6 +102,7 @@ declare global {
             index?: number
             only_rec?: boolean
             model?: string
+            color_filter?: string
         }
 
         type RecognitionNeuralNetworkClassify<Mode> = RequiredIfStrict<

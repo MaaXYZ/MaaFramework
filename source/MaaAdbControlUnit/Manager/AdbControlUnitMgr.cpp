@@ -268,6 +268,11 @@ bool AdbControlUnitMgr::scroll(int dx, int dy)
     return false;
 }
 
+bool AdbControlUnitMgr::inactive()
+{
+    return true;
+}
+
 bool AdbControlUnitMgr::find_device(std::vector<std::string>& devices)
 {
     auto opt = device_list_.request_devices();

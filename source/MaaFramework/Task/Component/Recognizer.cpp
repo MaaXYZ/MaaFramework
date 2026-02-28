@@ -225,6 +225,21 @@ RecoResult Recognizer::ocr(const MAA_VISION_NS::OCRerParam& param, const std::st
         return {};
     }
 
+    std::optional<ColorFilterConfig> color_filter;
+    if (!param.color_filter.empty()) {
+        auto filter_data = context_.get_pipeline_data(param.color_filter);
+        if (!filter_data) {
+            LogError << "color_filter node not found" << VAR(param.color_filter);
+            return {};
+        }
+        if (filter_data->reco_type != MAA_RES_NS::Recognition::Type::ColorMatch) {
+            LogError << "color_filter node is not ColorMatch" << VAR(param.color_filter);
+            return {};
+        }
+        const auto& color_param = std::get<ColorMatcherParam>(filter_data->reco_param);
+        color_filter = ColorFilterConfig { .method = color_param.method, .range = color_param.range };
+    }
+
     std::vector<cv::Rect> rois = get_rois(param.roi_target);
 
     if (ocr_batch_cache_ && ocr_batch_cache_->contains(name)) {
@@ -243,7 +258,8 @@ RecoResult Recognizer::ocr(const MAA_VISION_NS::OCRerParam& param, const std::st
             resource()->ocr_res().deter(param.model),
             resource()->ocr_res().recer(param.model),
             resource()->ocr_res().ocrer(param.model),
-            name));
+            name,
+            std::move(color_filter)));
 }
 
 RecoResult Recognizer::nn_classify(const MAA_VISION_NS::NeuralNetworkClassifierParam& param, const std::string& name)
@@ -555,7 +571,7 @@ void Recognizer::save_draws(const std::string& node_name, const RecoResult& resu
     std::filesystem::create_directories(dir);
 
     for (const auto& draw : result.draws) {
-        std::string filename = std::format("{}_{}_{}.jpg", node_name, result.reco_id, format_now_for_filename());
+        std::string filename = std::format("{}_{}_{}.jpg", format_now_for_filename(), node_name, result.reco_id);
         auto filepath = dir / path(filename);
 
         std::ofstream of(filepath, std::ios::out | std::ios::binary);
@@ -594,7 +610,12 @@ void Recognizer::prefetch_batch_ocr(const std::vector<BatchOCREntry>& entries)
     std::unordered_map<std::string, std::vector<cv::Rect>> node_rois;
     for (const auto& entry : entries) {
         for (const cv::Rect& roi : get_rois(entry.param.roi_target)) {
-            cv::Rect r = correct_roi(roi, image_);
+            auto opt_r = correct_roi(roi, image_);
+            if (!opt_r) {
+                LogWarn << "corrected roi is empty, skip" << VAR(roi);
+                continue;
+            }
+            cv::Rect r = *opt_r;
             image_(r).copyTo(masked_image(r));
 
             node_rois[entry.name].emplace_back(r);

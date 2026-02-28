@@ -33,7 +33,8 @@
             "type": "Adb",
             "display_short_side": 720, // 默认缩放分辨率的短边长度，用于屏幕适配。与long_side二选一
             // "display_long_side": 1080, // 默认缩放分辨率的长边长度，与short_side二选一
-            "display_raw": false // 是否使用原始分辨率进行截图，与缩放分辨率设置互斥
+            "display_raw": false, // 是否使用原始分辨率进行截图，与缩放分辨率设置互斥
+            "option": ["战斗自动闪避"] // 💡 v2.3.0 控制器级选项。该选项会参与到所有使用该控制器的任务的 pipeline override 中
         },
         {
             "name": "Windows",
@@ -62,7 +63,8 @@
             ],
             "controller": [
                 "Android"
-            ] // 指定该资源包支持的控制器类型列表。若不指定，则支持所有控制器。当用户选择某控制器时，只有支持该控制器的资源包才会显示
+            ], // 指定该资源包支持的控制器类型列表。若不指定，则支持所有控制器。当用户选择某控制器时，只有支持该控制器的资源包才会显示
+            "option": ["战斗划火柴"] // 💡 v2.3.0 资源包级选项。该选项会参与到所有使用该资源包的任务的 pipeline override 中
         },
         {
             "name": "Bilibili",
@@ -94,7 +96,8 @@
             "option": [
                 "作战关卡",
                 "复现次数",
-                "刷完全部体力"
+                "刷完全部体力",
+                "战斗划火柴" // 💡 v2.3.0 checkbox 类型选项，可多选
             ]
         },
         {
@@ -131,6 +134,7 @@
             "type": "select", // 配置项类型。select为下拉选项框，用户从预定义选项中选择
             "label": "$选择作战关卡",
             "description": "选择要刷的关卡", // 配置项详细描述。支持文件路径、URL或直接文本，内容支持Markdown格式，支持国际化
+            "resource": ["Official"], // 💡 v2.3.0 仅在选择 Official 资源包时显示该配置项
             "cases": [
                 {
                     "name": "3-9 厄险（百灵百验鸟）",
@@ -340,6 +344,118 @@
                     }
                 }
             ]
+        },
+        "战斗划火柴": { // 💡 v2.3.0 checkbox 类型，用户可多选
+            "type": "checkbox",
+            "label": "$战斗划火柴",
+            "description": "选择要启用的划火柴功能，可多选。多个被选中 case 按 cases 定义顺序合并，与用户勾选顺序无关",
+            "default_case": ["普通划火柴", "蓄力划火柴"], // checkbox 时填字符串数组
+            "cases": [
+                {
+                    "name": "普通划火柴",
+                    "label": "$普通划火柴",
+                    "description": "启用普通划火柴",
+                    "pipeline_override": {
+                        "NormalMatch": {
+                            "enabled": true
+                        }
+                    }
+                },
+                {
+                    "name": "蓄力划火柴",
+                    "label": "$蓄力划火柴",
+                    "description": "启用蓄力划火柴",
+                    "pipeline_override": {
+                        "ChargedMatch": {
+                            "enabled": true
+                        }
+                    }
+                },
+                {
+                    "name": "连续划火柴",
+                    "label": "$连续划火柴",
+                    "description": "启用连续划火柴",
+                    "pipeline_override": {
+                        "ComboMatch": {
+                            "enabled": true
+                        }
+                    }
+                }
+            ]
+        },
+        "战斗自动闪避": { // 💡 v2.3.0 由 controller.option 引用的选项
+            "type": "switch",
+            "label": "$战斗自动闪避",
+            "description": "是否启用战斗中自动闪避功能",
+            "default_case": "No",
+            "cases": [
+                {
+                    "name": "Yes",
+                    "label": "$启用",
+                    "pipeline_override": {
+                        "AutoDodge": {
+                            "enabled": true
+                        }
+                    }
+                },
+                {
+                    "name": "No",
+                    "label": "$不启用",
+                    "pipeline_override": {
+                        "AutoDodge": {
+                            "enabled": false
+                        }
+                    }
+                }
+            ]
         }
-    }
+    },
+    "global_option": [ // 💡 v2.3.0 全局选项，参与所有任务的 pipeline override，优先级最低
+        "战斗划火柴",
+        "战斗自动闪避"
+    ],
+    // 💡 v2.3.0 Option 覆盖顺序（优先级从低到高）：
+    // global_option → resource.option → controller.option → task.option
+    // 越具体的配置优先级越高，越通用的配置作为兜底默认值
+    "preset": [ // 💡 v2.3.0 预设配置，用户可一键应用，快速切换不同使用场景
+        {
+            "name": "刷日常",
+            "label": "$刷日常",
+            "description": "每日例行套餐：荒原 + 心相 + 3-9 + 领奖",
+            "icon": "preset_daily.png",
+            "task": [
+                { "name": "收取荒原", "enabled": true },
+                { "name": "每日心相（意志解析）", "enabled": true },
+                {
+                    "name": "常规作战",
+                    "enabled": true,
+                    "option": {
+                        "作战关卡": "3-9 厄险（百灵百验鸟）",
+                        "复现次数": "x3",
+                        "刷完全部体力": "No",
+                        "战斗划火柴": ["普通划火柴", "蓄力划火柴"]
+                    }
+                },
+                { "name": "领取奖励", "enabled": true },
+                { "name": "活动：绿湖噩梦 17 艰难（活动已结束）", "enabled": false }
+            ]
+        },
+        {
+            "name": "ALL IN",
+            "label": "$全力刷本",
+            "description": "全力刷特定关卡，消耗所有体力",
+            "task": [
+                {
+                    "name": "常规作战",
+                    "enabled": true,
+                    "option": {
+                        "作战关卡": "4-20 厄险（双头形骨架）",
+                        "复现次数": "x4",
+                        "刷完全部体力": "Yes",
+                        "战斗划火柴": ["普通划火柴", "蓄力划火柴", "连续划火柴"]
+                    }
+                }
+            ]
+        }
+    ]
 }

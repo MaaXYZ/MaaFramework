@@ -363,6 +363,11 @@ void PipelineTask::try_add_ocr_node(OCRCollectContext& ctx, const std::string& n
         return;
     }
 
+    if (!param.color_filter.empty()) {
+        // color_filter 需要对每个 ROI 单独做颜色二值化，无法与其他节点共享 mask 图
+        return;
+    }
+
     if (ctx.first) {
         ctx.plan.model = param.model;
         ctx.first = false;
@@ -445,7 +450,7 @@ void PipelineTask::save_on_error(const std::string& node_name)
         return;
     }
 
-    std::string filename = std::format("{}_{}.png", node_name, format_now_for_filename());
+    std::string filename = std::format("{}_{}.png", format_now_for_filename(), node_name);
     auto filepath = option.log_dir() / "on_error" / path(filename);
     imwrite(filepath, image);
     LogInfo << "save on error to" << filepath;

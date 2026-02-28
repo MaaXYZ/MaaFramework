@@ -101,6 +101,7 @@ class JOCR:
     index: int = 0
     only_rec: bool = False
     model: str = ""
+    color_filter: str = ""
 
 
 @dataclass
@@ -275,7 +276,7 @@ class JCommand:
 @dataclass
 class JShell:
     cmd: str  # 必选
-    timeout: int = 20000
+    shell_timeout: int = 20000
 
 
 @dataclass

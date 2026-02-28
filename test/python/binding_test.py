@@ -211,6 +211,7 @@ class MyAction(CustomAction):
         controller.post_scroll(0, 120).wait()
         controller.post_start_app("aaa")
         controller.post_stop_app("bbb")
+        controller.post_inactive().wait()
 
         cached_image = controller.cached_image
         connected = controller.connected
@@ -404,6 +405,7 @@ def test_controller_api():
     dbg_controller.post_scroll(0, 120).wait()
     dbg_controller.post_start_app("com.test.app").wait()
     dbg_controller.post_stop_app("com.test.app").wait()
+    dbg_controller.post_inactive().wait()
 
     # 测试截图选项
     dbg_controller.set_screenshot_target_long_side(1920)
@@ -683,6 +685,7 @@ def test_custom_controller():
     ret &= controller.post_key_down(65).wait().succeeded
     ret &= controller.post_key_up(65).wait().succeeded
     ret &= controller.post_scroll(0, 120).wait().succeeded
+    ret &= controller.post_inactive().wait().succeeded
 
     print(f"  controller.count: {controller.count}, ret: {ret}")
     print("  PASS: custom controller")

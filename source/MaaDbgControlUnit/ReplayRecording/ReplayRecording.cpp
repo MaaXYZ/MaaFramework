@@ -422,4 +422,9 @@ void ReplayRecording::sleep(int ms)
     std::this_thread::sleep_for(std::chrono::milliseconds(ms));
 }
 
+bool ReplayRecording::inactive()
+{
+    return true;
+}
+
 MAA_CTRL_UNIT_NS_END

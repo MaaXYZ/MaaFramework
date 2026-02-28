@@ -172,6 +172,7 @@ PipelineV2::JRecognition PipelineDumper::dump_reco(Recognition::Type type, const
             .index = p.result_index,
             .only_rec = p.only_rec,
             .model = p.model,
+            .color_filter = p.color_filter,
         };
     } break;
 
@@ -431,7 +432,7 @@ PipelineV2::JAction PipelineDumper::dump_act(Action::Type type, const Action::Pa
         const auto& p = std::get<Action::ShellParam>(param);
         act.param = PipelineV2::JShell {
             .cmd = p.cmd,
-            .timeout = p.timeout,
+            .shell_timeout = p.shell_timeout,
         };
     } break;
 

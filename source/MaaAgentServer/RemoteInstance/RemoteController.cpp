@@ -228,6 +228,18 @@ MaaCtrlId RemoteController::post_shell(const std::string& cmd, int64_t timeout)
     return resp_opt->ctrl_id;
 }
 
+MaaCtrlId RemoteController::post_inactive()
+{
+    ControllerPostInactiveReverseRequest req {
+        .controller_id = controller_id_,
+    };
+    auto resp_opt = server_.send_and_recv<ControllerPostInactiveReverseResponse>(req);
+    if (!resp_opt) {
+        return MaaInvalidId;
+    }
+    return resp_opt->ctrl_id;
+}
+
 MaaStatus RemoteController::status(MaaCtrlId ctrl_id) const
 {
     ControllerStatusReverseRequest req {

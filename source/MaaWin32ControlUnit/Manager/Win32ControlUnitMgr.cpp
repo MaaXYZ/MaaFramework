@@ -10,9 +10,11 @@
 #include "Screencap/DesktopDupScreencap.h"
 #include "Screencap/DesktopDupWindowScreencap.h"
 #include "Screencap/FramePoolScreencap.h"
+#include "Screencap/FramePoolWithPseudoMinimizeScreencap.h"
 #include "Screencap/GdiScreencap.h"
 #include "Screencap/HwndUtils.hpp"
 #include "Screencap/PrintWindowScreencap.h"
+#include "Screencap/PrintWindowWithPseudoMinimizeScreencap.h"
 #include "Screencap/ScreenDCScreencap.h"
 
 MAA_CTRL_UNIT_NS_BEGIN
@@ -51,7 +53,10 @@ bool Win32ControlUnitMgr::connect()
             return false;
         }
 
-        if (IsIconic(hwnd_)) {
+        // FramePool 和 PrintWindow 内置伪最小化支持，允许最小化窗口
+        bool supports_minimized =
+            screencap_method_ == MaaWin32ScreencapMethod_FramePool || screencap_method_ == MaaWin32ScreencapMethod_PrintWindow;
+        if (!supports_minimized && IsIconic(hwnd_)) {
             LogError << "hwnd_ is minimized";
             return false;
         }
@@ -65,7 +70,7 @@ bool Win32ControlUnitMgr::connect()
         screencap_ = std::make_shared<GdiScreencap>(hwnd_);
         break;
     case MaaWin32ScreencapMethod_FramePool:
-        screencap_ = std::make_shared<FramePoolScreencap>(hwnd_);
+        screencap_ = std::make_shared<FramePoolWithPseudoMinimizeScreencap>(hwnd_);
         break;
     case MaaWin32ScreencapMethod_DXGI_DesktopDup:
         screencap_ = std::make_shared<DesktopDupScreencap>(hwnd_);
@@ -74,7 +79,7 @@ bool Win32ControlUnitMgr::connect()
         screencap_ = std::make_shared<DesktopDupWindowScreencap>(hwnd_);
         break;
     case MaaWin32ScreencapMethod_PrintWindow:
-        screencap_ = std::make_shared<PrintWindowScreencap>(hwnd_);
+        screencap_ = std::make_shared<PrintWindowWithPseudoMinimizeScreencap>(hwnd_);
         break;
     case MaaWin32ScreencapMethod_ScreenDC:
         screencap_ = std::make_shared<ScreenDCScreencap>(hwnd_);
@@ -100,19 +105,19 @@ bool Win32ControlUnitMgr::connect()
         case MaaWin32InputMethod_SendMessageWithCursorPos:
             return std::make_shared<MessageInput>(
                 hwnd_,
-                MessageInput::Config { .mode = MessageInput::Mode::SendMessage, .with_cursor_pos = true, .block_input = true });
+                MessageInput::Config { .mode = MessageInput::Mode::SendMessage, .with_cursor_pos = true, .block_input = false });
         case MaaWin32InputMethod_PostMessageWithCursorPos:
             return std::make_shared<MessageInput>(
                 hwnd_,
-                MessageInput::Config { .mode = MessageInput::Mode::PostMessage, .with_cursor_pos = true, .block_input = true });
+                MessageInput::Config { .mode = MessageInput::Mode::PostMessage, .with_cursor_pos = true, .block_input = false });
         case MaaWin32InputMethod_SendMessageWithWindowPos:
             return std::make_shared<MessageInput>(
                 hwnd_,
-                MessageInput::Config { .mode = MessageInput::Mode::SendMessage, .with_window_pos = true, .block_input = true });
+                MessageInput::Config { .mode = MessageInput::Mode::SendMessage, .with_window_pos = true, .block_input = false });
         case MaaWin32InputMethod_PostMessageWithWindowPos:
             return std::make_shared<MessageInput>(
                 hwnd_,
-                MessageInput::Config { .mode = MessageInput::Mode::PostMessage, .with_window_pos = true, .block_input = true });
+                MessageInput::Config { .mode = MessageInput::Mode::PostMessage, .with_window_pos = true, .block_input = false });
         default:
             LogError << "Unknown input method: " << static_cast<int>(method);
             return nullptr;
@@ -303,6 +308,23 @@ bool Win32ControlUnitMgr::scroll(int dx, int dy)
     }
 
     return mouse_->scroll(dx, dy);
+}
+
+bool Win32ControlUnitMgr::inactive()
+{
+    LogFunc;
+
+    if (screencap_) {
+        screencap_->inactive();
+    }
+    if (mouse_) {
+        mouse_->inactive();
+    }
+    if (keyboard_ && keyboard_ != mouse_) {
+        keyboard_->inactive();
+    }
+
+    return true;
 }
 
 MAA_CTRL_UNIT_NS_END
