@@ -1,6 +1,7 @@
 #include "MaaToolkit/DesktopWindow/MaaToolkitDesktopWindow.h"
 
 #include "DesktopWindow/DesktopWindowBuffer.hpp"
+#include "DesktopWindow/DesktopWindowAndroidFinder.h"
 #include "DesktopWindow/DesktopWindowLinuxFinder.h"
 #include "DesktopWindow/DesktopWindowMacOSFinder.h"
 #include "DesktopWindow/DesktopWindowWin32Finder.h"
