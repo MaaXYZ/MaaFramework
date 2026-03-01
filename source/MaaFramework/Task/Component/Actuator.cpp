@@ -3,8 +3,11 @@
 #include "CommandAction.h"
 #include "Controller/ControllerAgent.h"
 #include "CustomAction.h"
+#include "Global/OptionMgr.h"
+#include "MaaUtils/ImageIo.h"
 #include "MaaUtils/JsonExt.hpp"
 #include "MaaUtils/Logger.h"
+#include "MaaUtils/Time.hpp"
 #include "Vision/VisionUtils.hpp"
 
 MAA_TASK_NS_BEGIN
@@ -126,6 +129,9 @@ ActionResult
 
     case Type::Shell:
         return shell(std::get<ShellParam>(pipeline_data.action_param), pipeline_data.name);
+
+    case Type::Screencap:
+        return screencap(std::get<ScreencapParam>(pipeline_data.action_param), pipeline_data.name);
 
     case Type::Custom:
         return custom_action(std::get<CustomParam>(pipeline_data.action_param), reco_hit, reco_id, pipeline_data.name);
@@ -498,6 +504,55 @@ ActionResult Actuator::shell(const MAA_RES_NS::Action::ShellParam& param, const 
         .action_id = action_id_,
         .name = name,
         .action = "Shell",
+        .box = cv::Rect {},
+        .success = ret,
+        .detail = json::value(detail),
+    };
+}
+
+ActionResult Actuator::screencap(const MAA_RES_NS::Action::ScreencapParam& param, const std::string& name)
+{
+    if (!controller()) {
+        LogError << "Controller is null";
+        return {};
+    }
+
+    auto image = controller()->cached_image();
+    if (image.empty()) {
+        LogError << "cached_image is empty";
+        return {};
+    }
+
+    const auto& option = MAA_GLOBAL_NS::OptionMgr::get_instance();
+
+    std::string ext = "." + param.format;
+    std::string filename = param.filename.empty() ? std::format("{}_{}{}", format_now_for_filename(), name, ext) : param.filename + ext;
+    auto filepath = std::filesystem::absolute(option.log_dir() / "screencap" / path(filename));
+
+    std::vector<int> encode_params;
+    if (param.format == "jpg" || param.format == "jpeg") {
+        encode_params = { cv::IMWRITE_JPEG_QUALITY, param.quality };
+    }
+
+    bool ret = imwrite(filepath, image, encode_params);
+    if (ret) {
+        LogInfo << "screencap saved to" << filepath;
+    }
+    else {
+        LogError << "failed to save screencap" << VAR(filepath) << VAR(param.format) << VAR(param.quality);
+    }
+
+    json::object detail {
+        { "filepath", path_to_utf8_string(filepath) },
+        { "format", param.format },
+        { "quality", param.quality },
+        { "success", ret },
+    };
+
+    return ActionResult {
+        .action_id = action_id_,
+        .name = name,
+        .action = "Screencap",
         .box = cv::Rect {},
         .success = ret,
         .detail = json::value(detail),

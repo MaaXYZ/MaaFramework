@@ -3172,6 +3172,64 @@
                 }
             }
         },
+        "Screencap": {
+            "type": "object",
+            "properties": {
+                "filename": {
+                    "title": "Filename Property",
+                    "description": "保存截图的文件名（不含扩展名）。可选，默认使用 \"时间戳_节点名\" 格式。",
+                    "type": "string",
+                    "markdownDescription": "*string*\n\n保存截图的文件名（不含扩展名）。可选，默认使用 `时间戳_节点名` 格式。\n\n截图保存在 `log_dir/screencap/` 目录下。"
+                },
+                "format": {
+                    "title": "Format Property",
+                    "description": "图片格式。可选，默认 \"png\"。",
+                    "type": "string",
+                    "enum": ["png", "jpg", "jpeg"],
+                    "default": "png",
+                    "markdownDescription": "*string*\n\n图片格式。可选，默认 `\"png\"`（无损）。\n\n可选值：`\"png\"` | `\"jpg\"` | `\"jpeg\"`"
+                },
+                "quality": {
+                    "title": "Quality Property",
+                    "description": "图片质量，仅对 jpg/jpeg 有效。可选，默认 100。",
+                    "type": "integer",
+                    "default": 100,
+                    "minimum": 0,
+                    "maximum": 100,
+                    "markdownDescription": "*int*\n\n图片质量（0-100），仅对 `jpg` / `jpeg` 格式有效。可选，默认 100。\n\n`png` 格式始终为无损压缩，此字段无效。"
+                }
+            }
+        },
+        "ScreencapV1": {
+            "properties": {
+                "action": {
+                    "const": "Screencap"
+                }
+            },
+            "allOf": [
+                {
+                    "$ref": "#/$defs/Screencap"
+                }
+            ]
+        },
+        "ScreencapV2": {
+            "properties": {
+                "type": {
+                    "const": "Screencap"
+                },
+                "param": {
+                    "unevaluatedProperties": false,
+                    "allOf": [
+                        {
+                            "$ref": "#/$defs/Screencap"
+                        },
+                        {
+                            "$ref": "#/$defs/jsonComments"
+                        }
+                    ]
+                }
+            }
+        },
         "CustomAction": {
             "type": "object",
             "properties": {
@@ -3307,6 +3365,7 @@
                 "StopTask",
                 "Command",
                 "Shell",
+                "Screencap",
                 "Custom"
             ]
         },
@@ -3748,6 +3807,17 @@
                     }
                 },
                 {
+                    "label": "ScreencapV1",
+                    "body": "^ \"Screencap\""
+                },
+                {
+                    "label": "ScreencapV2",
+                    "body": {
+                        "type": "Screencap",
+                        "param": {}
+                    }
+                },
+                {
                     "label": "CustomActionV1",
                     "body": "^ \"Custom\",\n\"custom_action\": \"\""
                 },
@@ -3828,6 +3898,9 @@
                 },
                 {
                     "$ref": "#/$defs/ShellV1"
+                },
+                {
+                    "$ref": "#/$defs/ScreencapV1"
                 },
                 {
                     "$ref": "#/$defs/CustomActionV1"
@@ -3912,6 +3985,9 @@
                         },
                         {
                             "$ref": "#/$defs/ShellV2"
+                        },
+                        {
+                            "$ref": "#/$defs/ScreencapV2"
                         },
                         {
                             "$ref": "#/$defs/CustomActionV2"

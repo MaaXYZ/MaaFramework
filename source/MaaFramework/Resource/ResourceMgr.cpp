@@ -866,6 +866,9 @@ std::optional<json::object> ResourceMgr::get_default_action_param(const std::str
     case Type::Shell:
         param = default_pipeline_.get_action_param<ShellParam>(type);
         break;
+    case Type::Screencap:
+        param = default_pipeline_.get_action_param<ScreencapParam>(type);
+        break;
     case Type::Custom:
         param = default_pipeline_.get_action_param<CustomParam>(type);
         break;
