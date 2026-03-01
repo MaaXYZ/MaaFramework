@@ -44,6 +44,7 @@ struct NodeDetail
     MaaRecoId reco_id = MaaInvalidId;
     MaaActId action_id = MaaInvalidId;
     bool completed = false;
+    bool jump_back = false;
 
     MEO_TOJSON(node_id, name, reco_id, action_id, completed);
 };
