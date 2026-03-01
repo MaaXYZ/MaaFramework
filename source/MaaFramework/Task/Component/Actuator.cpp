@@ -527,7 +527,7 @@ ActionResult Actuator::screencap(const MAA_RES_NS::Action::ScreencapParam& param
 
     std::string ext = "." + param.format;
     std::string filename = param.filename.empty() ? std::format("{}_{}{}", format_now_for_filename(), name, ext) : param.filename + ext;
-    auto filepath = option.log_dir() / "screencap" / path(filename);
+    auto filepath = std::filesystem::absolute(option.log_dir() / "screencap" / path(filename));
 
     std::vector<int> encode_params;
     if (param.format == "jpg" || param.format == "jpeg") {
@@ -538,7 +538,6 @@ ActionResult Actuator::screencap(const MAA_RES_NS::Action::ScreencapParam& param
     LogInfo << "screencap saved to" << filepath << VAR(ret);
 
     json::object detail {
-        { "filename", filename },
         { "filepath", path_to_utf8_string(filepath) },
         { "format", param.format },
         { "quality", param.quality },
