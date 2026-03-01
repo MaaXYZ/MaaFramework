@@ -263,6 +263,14 @@ declare global {
             )
         }
 
+        type WlRootsCompositor = [handle: DesktopHandle, class_name: string, window_name: string]
+
+        class WlRootsController extends Controller {
+            constructor(wlr_socket_path: string)
+
+            static find(): Promise<WlRootsCompositor[] | null>
+        }
+
         interface CustomControllerActor {
             connect?(): maa.MaybePromise<boolean>
             // connected?(): maa.MaybePromise<boolean>

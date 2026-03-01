@@ -36,6 +36,12 @@ static constexpr bool kGamepadSupported = true;
 static constexpr bool kGamepadSupported = false;
 #endif
 
+#if defined(__linux__)
+static constexpr bool kWlRootsSupported = true;
+#else
+static constexpr bool kWlRootsSupported = false;
+#endif
+
 // return [1, size]
 std::vector<int> input_multi_impl(size_t size, std::string_view prompt)
 {
@@ -350,6 +356,15 @@ void Interactor::print_config() const
             std::cout << "\t\t(Gamepad is only available on Windows)\n";
         }
     } break;
+    case InterfaceData::Controller::Type::WlRoots: {
+        const auto& wlr = config_.configuration().wlroots;
+        if (!wlr.wlr_socket_path.empty()) {
+            std::cout << MAA_NS::utf8_to_crt(std::format("\t\t{}\n", wlr.wlr_socket_path));
+        }
+        if (!kWlRootsSupported) {
+            std::cout << "\t\t(WLRoots is only available on Linux)\n";
+        }
+    } break;
     default:
         LogError << "Unknown controller type" << VAR(config_.configuration().controller.type);
         break;
@@ -547,6 +562,27 @@ void Interactor::select_controller()
         }
         config_.configuration().controller.type = InterfaceData::Controller::Type::PlayCover;
         select_playcover(controller.playcover);
+        break;
+    case InterfaceData::Controller::Type::WlRoots:
+        if (!kWlRootsSupported) {
+            std::cout << "\nWlRoots controller is only available on Linux.\n";
+            // Check if there are other controllers available
+            bool has_other_controllers = std::ranges::any_of(all_controllers, [](const auto& ctrl) {
+                return ctrl.type != InterfaceData::Controller::Type::WlRoots;
+            });
+            if (has_other_controllers) {
+                std::cout << "Please select another controller.\n\n";
+                mpause();
+                select_controller();
+            }
+            else {
+                std::cout << "No other controllers available.\n\n";
+                mpause();
+            }
+            return;
+        }
+        config_.configuration().controller.type = InterfaceData::Controller::Type::WlRoots;
+        select_wlroots();
         break;
     case InterfaceData::Controller::Type::Gamepad:
         if (!kGamepadSupported) {
@@ -837,6 +873,74 @@ void Interactor::select_gamepad(const MAA_PROJECT_INTERFACE_NS::InterfaceData::C
     int type_index = input(2);
     config_.configuration().gamepad.gamepad_type = (type_index == 1) ? "Xbox360" : "DualShock4";
 
+    std::cout << "\n";
+}
+
+void Interactor::select_wlroots()
+{
+    std::cout << "### Select Wayland Socket ###\n\n";
+
+    std::cout << "\t1. Auto detect\n";
+    std::cout << "\t2. Manual input\n";
+    std::cout << "\n";
+
+    int action = input(2);
+
+    switch (action) {
+    case 1:
+        select_wlroots_auto_detect();
+        break;
+
+    case 2:
+        select_wlroots_manual_input();
+        break;
+    }
+}
+
+void Interactor::select_wlroots_auto_detect()
+{
+    std::cout << "Finding sockets...\n\n";
+
+    auto list_handle = MaaToolkitDesktopWindowListCreate();
+    OnScopeLeave([&]() { MaaToolkitDesktopWindowListDestroy(list_handle); });
+
+    MaaToolkitDesktopWindowFindAll(list_handle);
+
+    size_t size = MaaToolkitDesktopWindowListSize(list_handle);
+    if (size == 0) {
+        std::cout << "No sockets found!\n\n";
+        select_wlroots();
+        return;
+    }
+
+    std::cout << "## Select Socket ##\n\n";
+
+    for (size_t i = 0; i < size; ++i) {
+        auto compositor = MaaToolkitDesktopWindowListAt(list_handle, i);
+
+        auto id = MaaToolkitDesktopWindowGetHandle(compositor);
+        std::string name = MaaToolkitDesktopWindowGetWindowName(compositor);
+        std::string path = MaaToolkitDesktopWindowGetClassName(compositor);
+
+        std::cout << MAA_NS::utf8_to_crt(std::format("\t{}. {}\n\t\t{}\n\t\t{}\n", i + 1, id, name, path));
+    }
+    std::cout << "\n";
+
+    int index = input(size) - 1;
+    auto& wlr_config = config_.configuration().wlroots;
+
+    auto compositor = MaaToolkitDesktopWindowListAt(list_handle, index);
+
+    wlr_config.wlr_socket_path = MaaToolkitDesktopWindowGetClassName(compositor);
+}
+
+void Interactor::select_wlroots_manual_input()
+{
+    std::cout << "Please input Wayland socket path: ";
+    std::cin.sync();
+    std::string socket_path;
+    std::getline(std::cin, socket_path);
+    config_.configuration().wlroots.wlr_socket_path = socket_path;
     std::cout << "\n";
 }
 

@@ -54,6 +54,16 @@ extern "C"
     MAA_FRAMEWORK_API MaaController* MaaPlayCoverControllerCreate(const char* address, const char* uuid);
 
     /**
+     * @brief Create a wlroots controller for Linux.
+     *
+     * @param wlr_socket_path The wayland socket path (e.g., "/run/user/1000/wayland-0").
+     * @return The controller handle, or nullptr on failure.
+     *
+     * @note This controller is designed for wlroots on Linux.
+     */
+    MAA_FRAMEWORK_API MaaController* MaaWlRootsControllerCreate(const char* wlr_socket_path);
+
+    /**
      * @brief Create a virtual gamepad controller for Windows.
      *
      * @param hWnd Window handle for screencap (optional, can be nullptr if screencap not needed).

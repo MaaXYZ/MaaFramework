@@ -22,6 +22,10 @@ if(WITH_GAMEPAD_CONTROLLER)
     add_subdirectory(MaaGamepadControlUnit)
 endif()
 
+if(WITH_WLROOTS_CONTROLLER)
+    add_subdirectory(MaaWlRootsControlUnit)
+endif()
+
 add_subdirectory(LibraryHolder)
 add_subdirectory(MaaFramework)
 add_subdirectory(MaaToolkit)

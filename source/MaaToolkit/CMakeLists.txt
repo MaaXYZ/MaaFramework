@@ -14,7 +14,9 @@ target_link_libraries(
     MaaToolkit PRIVATE MaaUtils MaaFramework LibraryHolder Boost::system ${OpenCV_LIBS})
 
 if(LINUX)
-    target_link_libraries(MaaToolkit PRIVATE pthread dl)
+    find_library(Wayland_LIBS wayland-client)
+    find_library(FFI_LIBS ffi)
+    target_link_libraries(MaaToolkit PRIVATE pthread dl ${Wayland_LIBS} ${FFI_LIBS})
 endif()
 
 add_dependencies(MaaToolkit MaaUtils MaaFramework LibraryHolder)
