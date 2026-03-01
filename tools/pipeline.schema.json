@@ -3179,7 +3179,7 @@
                     "title": "Filename Property",
                     "description": "保存截图的文件名（不含扩展名）。可选，默认使用 \"时间戳_节点名\" 格式。",
                     "type": "string",
-                    "markdownDescription": "*string*\n\n保存截图的文件名（不含扩展名）。可选，默认使用 `时间戳_节点名` 格式。\n\n截图保存在 `log_dir/screenshot/` 目录下。"
+                    "markdownDescription": "*string*\n\n保存截图的文件名（不含扩展名）。可选，默认使用 `时间戳_节点名` 格式。\n\n截图保存在 `log_dir/screencap/` 目录下。"
                 },
                 "format": {
                     "title": "Format Property",
