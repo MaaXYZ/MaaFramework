@@ -1493,9 +1493,20 @@ bool PipelineParser::parse_screencap(
         return false;
     }
 
+    static const std::unordered_set<std::string> kValidFormats = { "png", "jpg", "jpeg" };
+    if (kValidFormats.find(output.format) == kValidFormats.end()) {
+        LogError << "invalid screencap format, expected png|jpg|jpeg" << VAR(output.format) << VAR(input);
+        return false;
+    }
+
     if (!get_and_check_value(input, "quality", output.quality, default_value.quality)) {
         LogError << "failed to get_and_check_value quality" << VAR(input);
         return false;
+    }
+
+    if (output.quality < 0 || output.quality > 100) {
+        LogWarn << "screencap quality out of range [0, 100], clamping" << VAR(output.quality);
+        output.quality = std::clamp(output.quality, 0, 100);
     }
 
     return true;

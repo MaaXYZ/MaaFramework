@@ -535,7 +535,12 @@ ActionResult Actuator::screencap(const MAA_RES_NS::Action::ScreencapParam& param
     }
 
     bool ret = imwrite(filepath, image, encode_params);
-    LogInfo << "screencap saved to" << filepath << VAR(ret);
+    if (ret) {
+        LogInfo << "screencap saved to" << filepath;
+    }
+    else {
+        LogError << "failed to save screencap" << VAR(filepath) << VAR(param.format) << VAR(param.quality);
+    }
 
     json::object detail {
         { "filepath", path_to_utf8_string(filepath) },
