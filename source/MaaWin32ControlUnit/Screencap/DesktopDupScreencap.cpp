@@ -4,6 +4,8 @@
 #include "MaaUtils/ImageIo.h"
 #include "MaaUtils/Logger.h"
 
+#include <array>
+
 MAA_CTRL_UNIT_NS_BEGIN
 
 DesktopDupScreencap::~DesktopDupScreencap()
@@ -231,7 +233,33 @@ bool DesktopDupScreencap::init_primary_output()
 
 bool DesktopDupScreencap::init_output_duplication()
 {
-    HRESULT ret = dxgi_output_->DuplicateOutput(d3d_device_, &dxgi_dup_);
+    // 尝试使用 DuplicateOutput1 以支持 HDR 格式
+    IDXGIOutput5* output5 = nullptr;
+    HRESULT ret = dxgi_output_->QueryInterface(__uuidof(IDXGIOutput5), reinterpret_cast<void**>(&output5));
+    if (SUCCEEDED(ret) && output5) {
+        // 指定支持的格式，包括 HDR 格式
+        // 优先使用原始格式以获得最佳质量
+        std::array<DXGI_FORMAT, 4> formats = {
+            DXGI_FORMAT_R16G16B16A16_FLOAT, // HDR scRGB
+            DXGI_FORMAT_R10G10B10A2_UNORM,  // HDR10
+            DXGI_FORMAT_B8G8R8A8_UNORM,     // SDR
+            DXGI_FORMAT_R8G8B8A8_UNORM,     // SDR
+        };
+
+        ret = output5->DuplicateOutput1(d3d_device_, 0, static_cast<UINT>(formats.size()), formats.data(), &dxgi_dup_);
+        output5->Release();
+
+        if (SUCCEEDED(ret)) {
+            DXGI_OUTDUPL_DESC dup_desc;
+            dxgi_dup_->GetDesc(&dup_desc);
+            LogInfo << "DuplicateOutput1 succeeded with format" << VAR(static_cast<int>(dup_desc.ModeDesc.Format));
+            return true;
+        }
+        LogWarn << "DuplicateOutput1 failed, falling back to DuplicateOutput" << VAR(ret);
+    }
+
+    // 回退到旧的 API
+    ret = dxgi_output_->DuplicateOutput(d3d_device_, &dxgi_dup_);
     if (FAILED(ret)) {
         LogError << "DuplicateOutput failed" << VAR(ret);
         return false;
@@ -300,6 +328,29 @@ void DesktopDupScreencap::uninit()
     }
 }
 
+cv::Mat DesktopDupScreencap::process_texture_data(const D3D11_MAPPED_SUBRESOURCE& mapped)
+{
+    int width = static_cast<int>(texture_desc_.Width);
+    int height = static_cast<int>(texture_desc_.Height);
+    int row_pitch = static_cast<int>(mapped.RowPitch);
+
+    switch (texture_desc_.Format) {
+    case DXGI_FORMAT_R16G16B16A16_FLOAT:
+        LogDebug << "Processing HDR R16G16B16A16_FLOAT format";
+        return hdr_float16_to_sdr_bgra(mapped.pData, width, height, row_pitch);
+
+    case DXGI_FORMAT_R10G10B10A2_UNORM:
+        LogDebug << "Processing HDR R10G10B10A2_UNORM format";
+        return hdr_r10g10b10a2_to_sdr_bgra(mapped.pData, width, height, row_pitch);
+
+    case DXGI_FORMAT_B8G8R8A8_UNORM:
+    case DXGI_FORMAT_R8G8B8A8_UNORM:
+    default:
+        // 标准 SDR 格式，直接返回
+        return cv::Mat(height, width, CV_8UC4, mapped.pData, row_pitch).clone();
+    }
+}
+
 std::optional<cv::Mat> DesktopDupScreencap::screencap_impl()
 {
     if (!d3d_context_ || !dxgi_dup_) {
@@ -353,8 +404,7 @@ std::optional<cv::Mat> DesktopDupScreencap::screencap_impl()
     }
     OnScopeLeave([&]() { d3d_context_->Unmap(readable_texture_, 0); });
 
-    cv::Mat mat(texture_desc_.Height, texture_desc_.Width, CV_8UC4, mapped.pData, mapped.RowPitch);
-    return mat;
+    return process_texture_data(mapped);
 }
 
 MAA_CTRL_UNIT_NS_END
