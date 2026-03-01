@@ -1174,6 +1174,15 @@ bool PipelineParser::parse_action(
         return parse_shell(param_input, std::get<ShellParam>(out_param), same_type ? std::get<ShellParam>(parent_param) : default_param);
     } break;
 
+    case Type::Screencap: {
+        auto default_param = default_mgr.get_action_param<ScreencapParam>(Type::Screencap);
+        out_param = default_param;
+        return parse_screencap(
+            param_input,
+            std::get<ScreencapParam>(out_param),
+            same_type ? std::get<ScreencapParam>(parent_param) : default_param);
+    } break;
+
     case Type::Custom: {
         auto default_param = default_mgr.get_action_param<CustomParam>(Type::Custom);
         out_param = default_param;
@@ -1463,6 +1472,29 @@ bool PipelineParser::parse_command_param(const json::value& input, Action::Comma
 
     if (!get_and_check_value(input, "detach", output.detach, default_value.detach)) {
         LogError << "failed to get_and_check_value detach" << VAR(input);
+        return false;
+    }
+
+    return true;
+}
+
+bool PipelineParser::parse_screencap(
+    const json::value& input,
+    Action::ScreencapParam& output,
+    const Action::ScreencapParam& default_value)
+{
+    if (!get_and_check_value(input, "filename", output.filename, default_value.filename)) {
+        LogError << "failed to get_and_check_value filename" << VAR(input);
+        return false;
+    }
+
+    if (!get_and_check_value(input, "format", output.format, default_value.format)) {
+        LogError << "failed to get_and_check_value format" << VAR(input);
+        return false;
+    }
+
+    if (!get_and_check_value(input, "quality", output.quality, default_value.quality)) {
+        LogError << "failed to get_and_check_value quality" << VAR(input);
         return false;
     }
 

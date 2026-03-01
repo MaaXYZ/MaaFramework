@@ -436,6 +436,15 @@ PipelineV2::JAction PipelineDumper::dump_act(Action::Type type, const Action::Pa
         };
     } break;
 
+    case Action::Type::Screencap: {
+        const auto& p = std::get<Action::ScreencapParam>(param);
+        act.param = PipelineV2::JScreencap {
+            .filename = p.filename,
+            .format = p.format,
+            .quality = p.quality,
+        };
+    } break;
+
     case Action::Type::Custom: {
         const auto& p = std::get<Action::CustomParam>(param);
         act.param = PipelineV2::JCustomAction {
