@@ -185,11 +185,6 @@ json::object CarouselImage::get_info() const
     info["path"] = path_to_utf8_string(path_);
     info["image_count"] = static_cast<int64_t>(images_.size());
     info["image_index"] = static_cast<int64_t>(image_index_);
-    info["resolution"] = json::object {
-        { "width", resolution_.width },
-        { "height", resolution_.height },
-    };
-    info["connected"] = connected();
     return info;
 }
 

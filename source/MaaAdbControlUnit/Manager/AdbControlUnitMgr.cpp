@@ -378,11 +378,6 @@ json::object AdbControlUnitMgr::get_info() const
     info["input_methods"] = static_cast<int64_t>(input_methods_);
     info["agent_path"] = path_to_utf8_string(agent_path_);
     info["config"] = config_;
-    info["connected"] = connected();
-    info["image_resolution"] = json::object {
-        { "width", image_resolution_.first },
-        { "height", image_resolution_.second },
-    };
     return info;
 }
 

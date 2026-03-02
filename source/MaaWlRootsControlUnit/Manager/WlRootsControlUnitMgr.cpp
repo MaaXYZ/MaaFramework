@@ -257,7 +257,6 @@ json::object WlRootsControlUnitMgr::get_info() const
     json::object info;
     info["type"] = "wlroots";
     info["wlr_socket_path"] = path_to_utf8_string(wlr_socket_path_);
-    info["connected"] = connected();
     return info;
 }
 

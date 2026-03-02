@@ -433,7 +433,6 @@ json::object ReplayRecording::get_info() const
     info["type"] = "dbg_replay_recording";
     info["record_count"] = static_cast<int64_t>(recording_.records.size());
     info["record_index"] = static_cast<int64_t>(record_index_);
-    info["connected"] = connected();
     return info;
 }
 
