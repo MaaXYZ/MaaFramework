@@ -163,6 +163,16 @@ bool ProxyController::scroll(int dx, int dy)
     return forward_and_record(RecordType::scroll, RecordScroll { dx, dy }, [&]() { return inner_->scroll(dx, dy); });
 }
 
+bool ProxyController::inactive()
+{
+    return inner_->inactive();
+}
+
+json::object ProxyController::get_info() const
+{
+    return inner_->get_info();
+}
+
 bool ProxyController::find_device(std::vector<std::string>& devices)
 {
     auto adb = std::dynamic_pointer_cast<AdbControlUnitAPI>(inner_);
