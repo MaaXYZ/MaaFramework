@@ -330,8 +330,8 @@ inline static const std::unordered_map<Type, std::string> kTypeNameMap = {
     { Type::InputText, "InputText" },   { Type::StartApp, "StartApp" },
     { Type::StopApp, "StopApp" },       { Type::KeyDown, "KeyDown" },
     { Type::KeyUp, "KeyUp" },           { Type::Scroll, "Scroll" },
-    { Type::StopTask, "StopTask" },       { Type::Command, "Command" },
-    { Type::Shell, "Shell" },             { Type::Screencap, "Screencap" },
+    { Type::StopTask, "StopTask" },     { Type::Command, "Command" },
+    { Type::Shell, "Shell" },           { Type::Screencap, "Screencap" },
     { Type::Custom, "Custom" },
 };
 } // namespace Action

@@ -1478,10 +1478,7 @@ bool PipelineParser::parse_command_param(const json::value& input, Action::Comma
     return true;
 }
 
-bool PipelineParser::parse_screencap(
-    const json::value& input,
-    Action::ScreencapParam& output,
-    const Action::ScreencapParam& default_value)
+bool PipelineParser::parse_screencap(const json::value& input, Action::ScreencapParam& output, const Action::ScreencapParam& default_value)
 {
     if (!get_and_check_value(input, "filename", output.filename, default_value.filename)) {
         LogError << "failed to get_and_check_value filename" << VAR(input);
