@@ -69,6 +69,7 @@ from maa.pipeline import (
     JScroll,
     JCommand,
     JShell,
+    JScreencap,
     JCustomAction,
     JNodeAttr,
 )
@@ -778,6 +779,37 @@ class PipelineTestRecognition(CustomRecognition):
         assert_true(isinstance(param, JShell), "Shell param")
         assert_eq(param.cmd, "ls -la", "cmd")
         assert_eq(param.shell_timeout, 30000, "shell_timeout")
+
+        # Screencap
+        new_ctx.override_pipeline(
+            {
+                "ActScreencap": {
+                    "action": "Screencap",
+                    "filename": "test_capture",
+                    "format": "jpg",
+                    "quality": 85,
+                }
+            }
+        )
+        obj = new_ctx.get_node_object("ActScreencap")
+        assert_eq(obj.action.type, JActionType.Screencap, "Screencap type")
+        param = obj.action.param
+        assert_true(isinstance(param, JScreencap), "Screencap param")
+        assert_eq(param.filename, "test_capture", "filename")
+        assert_eq(param.format, "jpg", "format")
+        assert_eq(param.quality, 85, "quality")
+
+        # Screencap with defaults
+        new_ctx.override_pipeline(
+            {"ActScreencapDefault": {"action": "Screencap"}}
+        )
+        obj = new_ctx.get_node_object("ActScreencapDefault")
+        assert_eq(obj.action.type, JActionType.Screencap, "Screencap default type")
+        param = obj.action.param
+        assert_true(isinstance(param, JScreencap), "Screencap default param")
+        assert_eq(param.filename, "", "default filename")
+        assert_eq(param.format, "png", "default format")
+        assert_eq(param.quality, 100, "default quality")
 
         # Custom
         new_ctx.override_pipeline(

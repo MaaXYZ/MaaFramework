@@ -349,6 +349,12 @@ declare global {
             Mode
         >
 
+        type ActionScreencap = {
+            filename?: string
+            format?: 'png' | 'jpg' | 'jpeg'
+            quality?: number
+        }
+
         type ActionCustom<Mode> = RequiredIfStrict<
             {
                 target?: true | NodeName | Rect
@@ -395,6 +401,7 @@ declare global {
             | 'StopTask'
             | 'Command'
             | 'Shell'
+            | 'Screencap'
             | 'Custom'
 
         type Action<Mode> =
@@ -427,6 +434,7 @@ declare global {
             | MixAct<'StopTask', ActionStopTask, Mode>
             | MixAct<'Command', ActionCommand<Mode>, Mode>
             | MixAct<'Shell', ActionShell<Mode>, Mode>
+            | MixAct<'Screencap', ActionScreencap, Mode>
             | MixAct<'Custom', ActionCustom<Mode>, Mode>
 
         type NodeAttr<Mode> = RequiredIfStrict<

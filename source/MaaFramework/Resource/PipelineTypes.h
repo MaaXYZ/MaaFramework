@@ -139,6 +139,7 @@ enum class Type
     StopTask,
     Command,
     Shell,
+    Screencap,
     Custom,
 };
 
@@ -238,6 +239,13 @@ struct CommandParam
     bool detach = false;
 };
 
+struct ScreencapParam
+{
+    std::string filename;
+    std::string format = "png";
+    int quality = 100;
+};
+
 struct CustomParam
 {
     std::string name;
@@ -261,6 +269,7 @@ using Param = std::variant<
     ScrollParam,
     ShellParam,
     CommandParam,
+    ScreencapParam,
     CustomParam>;
 
 inline static const std::unordered_map<std::string, Type> kTypeMap = {
@@ -300,6 +309,8 @@ inline static const std::unordered_map<std::string, Type> kTypeMap = {
     { "scroll", Type::Scroll },
     { "Shell", Type::Shell },
     { "shell", Type::Shell },
+    { "Screencap", Type::Screencap },
+    { "screencap", Type::Screencap },
     { "Command", Type::Command },
     { "command", Type::Command },
     { "Custom", Type::Custom },
@@ -319,8 +330,9 @@ inline static const std::unordered_map<Type, std::string> kTypeNameMap = {
     { Type::InputText, "InputText" },   { Type::StartApp, "StartApp" },
     { Type::StopApp, "StopApp" },       { Type::KeyDown, "KeyDown" },
     { Type::KeyUp, "KeyUp" },           { Type::Scroll, "Scroll" },
-    { Type::StopTask, "StopTask" },     { Type::Command, "Command" },
-    { Type::Shell, "Shell" },           { Type::Custom, "Custom" },
+    { Type::StopTask, "StopTask" },       { Type::Command, "Command" },
+    { Type::Shell, "Shell" },             { Type::Screencap, "Screencap" },
+    { Type::Custom, "Custom" },
 };
 } // namespace Action
 
