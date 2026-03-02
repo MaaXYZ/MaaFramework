@@ -223,6 +223,11 @@ bool ControllerAgent::get_resolution(int32_t& width, int32_t& height) const
     return true;
 }
 
+json::object ControllerAgent::get_info() const
+{
+    return control_unit_->get_info();
+}
+
 MaaSinkId ControllerAgent::add_sink(MaaEventCallback callback, void* trans_arg)
 {
     return notifier_.add_sink(callback, trans_arg);
@@ -890,11 +895,12 @@ bool ControllerAgent::run_action(typename AsyncRunner<Action>::Id id, Action act
         notify = focus_ids_.erase(id) > 0;
     }
 
-    const json::value cb_detail = {
+    json::value cb_detail = {
         { "ctrl_id", id },
         { "uuid", get_uuid() },
         { "action", action.type },
         { "param", action.param },
+        { "info", control_unit_->get_info() },
     };
 
     // LogInfo << cb_detail.to_string();
@@ -976,6 +982,9 @@ bool ControllerAgent::run_action(typename AsyncRunner<Action>::Id id, Action act
         LogError << "Unknown action type" << VAR(static_cast<int>(action.type));
         ret = false;
     }
+
+    cb_detail["uuid"] = get_uuid();
+    cb_detail["info"] = control_unit_->get_info();
 
     if (ret && notify) {
         notifier_.notify(this, MaaMsg_Controller_Action_Succeeded, cb_detail);

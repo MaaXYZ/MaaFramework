@@ -59,6 +59,8 @@ public: // from ControlUnitAPI
 
     virtual bool inactive() override;
 
+    virtual json::object get_info() const override;
+
 public:
     virtual bool find_device(/*out*/ std::vector<std::string>& devices) override;
     virtual bool

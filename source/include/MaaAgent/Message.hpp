@@ -1533,6 +1533,22 @@ struct ControllerGetResolutionReverseResponse
     MEO_JSONIZATION(success, width, height, _ControllerGetResolutionReverseResponse);
 };
 
+struct ControllerGetInfoReverseRequest
+{
+    std::string controller_id;
+
+    MessageTypePlaceholder _ControllerGetInfoReverseRequest = 1;
+    MEO_JSONIZATION(controller_id, _ControllerGetInfoReverseRequest);
+};
+
+struct ControllerGetInfoReverseResponse
+{
+    json::object info;
+
+    MessageTypePlaceholder _ControllerGetInfoReverseResponse = 1;
+    MEO_JSONIZATION(info, _ControllerGetInfoReverseResponse);
+};
+
 struct ImageHeader
 {
     std::string uuid;

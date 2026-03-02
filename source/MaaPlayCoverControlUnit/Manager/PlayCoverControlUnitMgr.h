@@ -48,6 +48,8 @@ public:
 
     virtual bool inactive() override;
 
+    virtual json::object get_info() const override;
+
 private:
     std::unique_ptr<PlayToolsClient> client_;
     std::string address_;

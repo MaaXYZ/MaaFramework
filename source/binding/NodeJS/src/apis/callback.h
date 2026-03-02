@@ -44,6 +44,7 @@ MaaBool CustomClickKey(int32_t keycode, void* trans_arg);
 MaaBool CustomInputText(const char* text, void* trans_arg);
 MaaBool CustomKeyDown(int32_t keycode, void* trans_arg);
 MaaBool CustomKeyUp(int32_t keycode, void* trans_arg);
+MaaBool CustomGetInfo(void* trans_arg, MaaStringBuffer* buffer);
 
 inline MaaCustomControllerCallbacks CustomCallbacks {
     .connect = CustomConnect,
@@ -62,4 +63,5 @@ inline MaaCustomControllerCallbacks CustomCallbacks {
     .input_text = CustomInputText,
     .key_down = CustomKeyDown,
     .key_up = CustomKeyUp,
+    .get_info = CustomGetInfo,
 };

@@ -237,4 +237,14 @@ bool PlayCoverControlUnitMgr::inactive()
     return true;
 }
 
+json::object PlayCoverControlUnitMgr::get_info() const
+{
+    json::object info;
+    info["type"] = "playcover";
+    info["address"] = address_;
+    info["uuid"] = uuid_;
+    info["connected"] = client_ != nullptr;
+    return info;
+}
+
 MAA_CTRL_UNIT_NS_END

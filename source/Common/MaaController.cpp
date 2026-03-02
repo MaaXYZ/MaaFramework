@@ -384,3 +384,15 @@ MaaBool MaaControllerGetResolution(const MaaController* ctrl, int32_t* width, in
 
     return ctrl->get_resolution(*width, *height);
 }
+
+MaaBool MaaControllerGetInfo(const MaaController* ctrl, MaaStringBuffer* buffer)
+{
+    if (!ctrl || !buffer) {
+        LogError << "handle is null";
+        return false;
+    }
+
+    auto info = ctrl->get_info();
+    buffer->set(info.to_string());
+    return true;
+}

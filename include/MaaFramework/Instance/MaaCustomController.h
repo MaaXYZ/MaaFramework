@@ -64,6 +64,9 @@ extern "C"
         MaaBool (*scroll)(int32_t dx, int32_t dy, void* trans_arg);
 
         MaaBool (*inactive)(void* trans_arg);
+
+        /// Write result (JSON string) to buffer. Optional, can be NULL.
+        MaaBool (*get_info)(void* trans_arg, /* out */ MaaStringBuffer* buffer);
     };
 
 #ifdef __cplusplus

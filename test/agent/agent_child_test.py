@@ -268,6 +268,12 @@ class MyAction(CustomAction):
         assert isinstance(resolution, tuple), "resolution should be a tuple"
         assert len(resolution) == 2, "resolution should have 2 elements"
 
+        # 测试 info
+        info = controller.info
+        print(f"  info: {info}")
+        assert isinstance(info, dict), "info should be a dict"
+        assert "type" in info, "info should contain 'type'"
+
         # 测试基本输入操作
         controller.post_click(191, 98).wait()
         controller.post_swipe(100, 200, 300, 400, 100).wait()

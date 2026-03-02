@@ -427,4 +427,14 @@ bool ReplayRecording::inactive()
     return true;
 }
 
+json::object ReplayRecording::get_info() const
+{
+    json::object info;
+    info["type"] = "dbg_replay_recording";
+    info["record_count"] = static_cast<int64_t>(recording_.records.size());
+    info["record_index"] = static_cast<int64_t>(record_index_);
+    info["connected"] = connected_;
+    return info;
+}
+
 MAA_CTRL_UNIT_NS_END

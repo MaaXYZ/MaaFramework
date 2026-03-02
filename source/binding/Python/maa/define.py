@@ -579,6 +579,11 @@ class MaaCustomControllerCallbacks(ctypes.Structure):
         MaaBool,
         ctypes.c_void_p,
     )
+    GetInfoFunc = FUNCTYPE(
+        MaaBool,
+        ctypes.c_void_p,
+        MaaStringBufferHandle,
+    )
     _fields_ = [
         ("connect", ConnectFunc),
         ("connected", ConnectedFunc),
@@ -598,6 +603,7 @@ class MaaCustomControllerCallbacks(ctypes.Structure):
         ("key_up", KeyUpFunc),
         ("scroll", ScrollFunc),
         ("inactive", InactiveFunc),
+        ("get_info", GetInfoFunc),
     ]
 
 

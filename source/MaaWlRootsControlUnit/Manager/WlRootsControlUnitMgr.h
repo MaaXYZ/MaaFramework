@@ -49,6 +49,8 @@ public:
 
     virtual bool inactive() override;
 
+    virtual json::object get_info() const override;
+
 private:
     std::unique_ptr<WaylandClient> client_;
     std::filesystem::path wlr_socket_path_;

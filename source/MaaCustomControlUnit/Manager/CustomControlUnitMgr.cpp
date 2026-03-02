@@ -231,4 +231,29 @@ bool CustomControlUnitMgr::inactive()
     return controller_->inactive(controller_arg_);
 }
 
+json::object CustomControlUnitMgr::get_info() const
+{
+    json::object info;
+    info["type"] = "custom";
+    info["info"] = get_info_from_controller();
+    info["connected"] = connected();
+
+    return info;
+}
+
+std::optional<std::string> CustomControlUnitMgr::get_info_from_controller() const
+{
+    if (!controller_ || !controller_->get_info) {
+        LogError << "controller_ or controller_->get_info is nullptr";
+        return std::nullopt;
+    }
+
+    StringBuffer buffer;
+    if (!controller_->get_info(controller_arg_, &buffer)) {
+        LogError << "failed to get_info";
+        return std::nullopt;
+    }
+    return buffer.get();
+}
+
 MAA_CTRL_UNIT_NS_END

@@ -364,3 +364,17 @@ MaaBool CustomKeyUp(int32_t keycode, void* trans_arg)
             });
     });
 }
+
+MaaBool CustomGetInfo(void* trans_arg, MaaStringBuffer* buffer)
+{
+    auto customCtx = reinterpret_cast<CustomControllerContext*>(trans_arg);
+    auto ctx = customCtx->callbacks["get_info"];
+    auto result = ctx->Call<std::optional<std::string>>([&](maajs::FunctionType func) { return func.Call({}); });
+    if (result) {
+        StringBuffer(buffer, false).set(*result);
+        return true;
+    }
+    else {
+        return false;
+    }
+}

@@ -372,6 +372,23 @@ class Controller:
         return buffer.get()
 
     @property
+    def info(self) -> Dict[str, Any]:
+        """获取控制器信息 / Get controller information
+
+        Returns:
+            Dict[str, Any]: 控制器信息，包含类型、构造参数等 / Controller information including type, constructor parameters, etc.
+
+        Raises:
+            RuntimeError: 如果获取失败
+        """
+        buffer = StringBuffer()
+        if not Library.framework().MaaControllerGetInfo(
+            self._handle, buffer._handle
+        ):
+            raise RuntimeError("Failed to get controller info.")
+        return json.loads(buffer.get())
+
+    @property
     def resolution(self) -> Tuple[int, int]:
         """获取设备原始（未缩放）分辨率 / Get the raw (unscaled) device resolution
 
@@ -679,6 +696,12 @@ class Controller:
             MaaControllerHandle,
             ctypes.POINTER(ctypes.c_int32),
             ctypes.POINTER(ctypes.c_int32),
+        ]
+
+        Library.framework().MaaControllerGetInfo.restype = MaaBool
+        Library.framework().MaaControllerGetInfo.argtypes = [
+            MaaControllerHandle,
+            MaaStringBufferHandle,
         ]
 
         Library.framework().MaaControllerAddSink.restype = MaaSinkId
@@ -1006,6 +1029,7 @@ class CustomController(Controller):
             CustomController._c_key_up_agent,
             CustomController._c_scroll_agent,
             CustomController._c_inactive_agent,
+            CustomController._c_get_info_agent,
         )
 
         self._handle = Library.framework().MaaCustomControllerCreate(
@@ -1109,6 +1133,16 @@ class CustomController(Controller):
     def inactive(self) -> bool:
         """设置控制器为不活跃状态（可选实现，默认返回 True）"""
         return True
+
+    def get_custom_info(self) -> Dict[str, Any]:
+        """获取自定义控制器的额外信息（可选实现，默认返回空字典）
+
+        Get custom controller's extra info (optional, returns empty dict by default)
+
+        Returns:
+            Dict[str, Any]: 额外信息，将与基础信息合并 / Extra info, will be merged with base info
+        """
+        return {}
 
     @staticmethod
     @MaaCustomControllerCallbacks.ConnectFunc
@@ -1415,6 +1449,26 @@ class CustomController(Controller):
 
         return int(self.inactive())
 
+    @staticmethod
+    @MaaCustomControllerCallbacks.GetInfoFunc
+    def _c_get_info_agent(
+        trans_arg: ctypes.c_void_p,
+        c_buffer: MaaStringBufferHandle,
+    ) -> int:
+        if not trans_arg:
+            return int(False)
+
+        self: CustomController = ctypes.cast(
+            trans_arg,
+            ctypes.py_object,
+        ).value
+
+        info = self.get_custom_info()
+
+        info_buffer = StringBuffer(c_buffer)
+        info_buffer.set(json.dumps(info, ensure_ascii=False))
+        return int(True)
+
     def _set_custom_api_properties(self):
         Library.framework().MaaCustomControllerCreate.restype = MaaControllerHandle
         Library.framework().MaaCustomControllerCreate.argtypes = [
@@ -1431,6 +1485,7 @@ class ControllerEventSink(EventSink):
         uuid: str
         action: str
         param: dict
+        info: dict
 
     def on_controller_action(
         self,
@@ -1455,6 +1510,7 @@ class ControllerEventSink(EventSink):
                 uuid=details["uuid"],
                 action=details["action"],
                 param=details["param"],
+                info=details["info"],
             )
             self.on_controller_action(controller, noti_type, detail)
 
