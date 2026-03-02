@@ -335,7 +335,7 @@ json::object Win32ControlUnitMgr::get_info() const
     info["screencap_method"] = static_cast<int64_t>(screencap_method_);
     info["mouse_method"] = static_cast<int64_t>(mouse_method_);
     info["keyboard_method"] = static_cast<int64_t>(keyboard_method_);
-    info["connected"] = connected_;
+    info["connected"] = connected();
     return info;
 }
 

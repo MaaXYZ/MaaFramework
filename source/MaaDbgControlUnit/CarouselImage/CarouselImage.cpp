@@ -189,7 +189,7 @@ json::object CarouselImage::get_info() const
         { "width", resolution_.width },
         { "height", resolution_.height },
     };
-    info["connected"] = connected_;
+    info["connected"] = connected();
     return info;
 }
 

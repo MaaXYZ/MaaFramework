@@ -243,7 +243,7 @@ json::object PlayCoverControlUnitMgr::get_info() const
     info["type"] = "playcover";
     info["address"] = address_;
     info["uuid"] = uuid_;
-    info["connected"] = client_ != nullptr;
+    info["connected"] = connected();
     return info;
 }
 

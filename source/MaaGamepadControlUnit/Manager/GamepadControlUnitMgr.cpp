@@ -332,7 +332,7 @@ json::object GamepadControlUnitMgr::get_info() const
     info["hwnd"] = reinterpret_cast<uint64_t>(hwnd_);
     info["gamepad_type"] = static_cast<int64_t>(gamepad_type_);
     info["screencap_method"] = static_cast<int64_t>(screencap_method_);
-    info["connected"] = connected_;
+    info["connected"] = connected();
     return info;
 }
 
