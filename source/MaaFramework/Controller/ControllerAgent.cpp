@@ -895,7 +895,7 @@ bool ControllerAgent::run_action(typename AsyncRunner<Action>::Id id, Action act
         notify = focus_ids_.erase(id) > 0;
     }
 
-    json::value cb_detail = {
+    const json::value cb_detail = {
         { "ctrl_id", id },
         { "uuid", get_uuid() },
         { "action", action.type },
@@ -982,9 +982,6 @@ bool ControllerAgent::run_action(typename AsyncRunner<Action>::Id id, Action act
         LogError << "Unknown action type" << VAR(static_cast<int>(action.type));
         ret = false;
     }
-
-    cb_detail["uuid"] = get_uuid();
-    cb_detail["info"] = control_unit_->get_info();
 
     if (ret && notify) {
         notifier_.notify(this, MaaMsg_Controller_Action_Succeeded, cb_detail);
