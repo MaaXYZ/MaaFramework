@@ -26,6 +26,10 @@ if(WITH_PROXY_CONTROLLER)
     add_subdirectory(MaaProxyControlUnit)
 endif()
 
+if(WITH_WLROOTS_CONTROLLER)
+    add_subdirectory(MaaWlRootsControlUnit)
+endif()
+
 add_subdirectory(LibraryHolder)
 add_subdirectory(MaaFramework)
 add_subdirectory(MaaToolkit)

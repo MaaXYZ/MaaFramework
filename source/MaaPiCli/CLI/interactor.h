@@ -26,6 +26,9 @@ private:
     bool select_win32_hwnd(const MAA_PROJECT_INTERFACE_NS::InterfaceData::Controller::Win32Config& win32_config);
     void select_playcover(const MAA_PROJECT_INTERFACE_NS::InterfaceData::Controller::PlayCoverConfig& playcover_config);
     void select_gamepad(const MAA_PROJECT_INTERFACE_NS::InterfaceData::Controller::GamepadConfig& gamepad_config);
+    void select_wlroots();
+    void select_wlroots_auto_detect();
+    void select_wlroots_manual_input();
 
     void select_resource();
     void add_task();

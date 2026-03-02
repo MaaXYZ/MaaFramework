@@ -70,6 +70,7 @@ declare global {
             msg: NotifyMessage<'Action'>
             ctrl_id: number // CtrlId
             uuid: string
+            info: Record<string, unknown>
         } & (
             | {
                   action: 'connect'
@@ -109,6 +110,10 @@ declare global {
               }
             | {
                   action: 'screencap'
+                  param?: never
+              }
+            | {
+                  action: 'inactive'
                   param?: never
               }
             | {
@@ -176,6 +181,7 @@ declare global {
              * Post a scroll action. Using multiples of 120 (WHEEL_DELTA) is recommended for best compatibility.
              */
             post_scroll(dx: number, dy: number): Job<CtrlId, Controller>
+            post_inactive(): Job<CtrlId, Controller>
             post_screencap(): ImageJob
             override_pipeline(pipeline: Record<string, unknown> | Record<string, unknown>[]): void
             override_next(node_name: string, next_list: string[]): void
@@ -188,6 +194,7 @@ declare global {
             get cached_image(): ImageData | null
             get uuid(): string | null
             get resolution(): [width: number, height: number] | null
+            get info(): string | null
         }
 
         type AdbDevice = [
@@ -269,6 +276,14 @@ declare global {
             )
         }
 
+        type WlRootsCompositor = [handle: DesktopHandle, class_name: string, window_name: string]
+
+        class WlRootsController extends Controller {
+            constructor(wlr_socket_path: string)
+
+            static find(): Promise<WlRootsCompositor[] | null>
+        }
+
         interface CustomControllerActor {
             connect?(): maa.MaybePromise<boolean>
             // connected?(): maa.MaybePromise<boolean>
@@ -303,6 +318,8 @@ declare global {
             key_down?(keycode: number): maa.MaybePromise<boolean>
             key_up?(keycode: number): maa.MaybePromise<boolean>
             scroll?(dx: number, dy: number): maa.MaybePromise<boolean>
+            inactive?(): maa.MaybePromise<boolean>
+            get_info?(): maa.MaybePromise<string | null>
         }
 
         class CustomController extends Controller {

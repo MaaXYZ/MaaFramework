@@ -295,6 +295,18 @@ MaaCtrlId MaaControllerPostScreencap(MaaController* ctrl)
     return ctrl->post_screencap();
 }
 
+MaaCtrlId MaaControllerPostInactive(MaaController* ctrl)
+{
+    LogFunc << VAR_VOIDP(ctrl);
+
+    if (!ctrl) {
+        LogError << "handle is null";
+        return MaaInvalidId;
+    }
+
+    return ctrl->post_inactive();
+}
+
 MaaStatus MaaControllerStatus(const MaaController* ctrl, MaaCtrlId id)
 {
     // LogFunc << VAR_VOIDP(ctrl) << VAR(id);
@@ -371,4 +383,21 @@ MaaBool MaaControllerGetResolution(const MaaController* ctrl, int32_t* width, in
     }
 
     return ctrl->get_resolution(*width, *height);
+}
+
+MaaBool MaaControllerGetInfo(const MaaController* ctrl, MaaStringBuffer* buffer)
+{
+    if (!ctrl || !buffer) {
+        LogError << "handle is null";
+        return false;
+    }
+
+    auto info = ctrl->get_info();
+    if (!info.contains("type") || !info.at("type").is_string()) {
+        LogError << "invalid controller info: missing or invalid type field";
+        return false;
+    }
+
+    buffer->set(info.to_string());
+    return true;
 }

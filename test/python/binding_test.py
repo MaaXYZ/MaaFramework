@@ -211,12 +211,14 @@ class MyAction(CustomAction):
         controller.post_scroll(0, 120).wait()
         controller.post_start_app("aaa")
         controller.post_stop_app("bbb")
+        controller.post_inactive().wait()
 
         cached_image = controller.cached_image
         connected = controller.connected
         uuid = controller.uuid
         resolution = controller.resolution
-        print(f"  connected: {connected}, uuid: {uuid}, resolution: {resolution}")
+        info = controller.info
+        print(f"  connected: {connected}, uuid: {uuid}, resolution: {resolution}, info type: {info.get('type')}")
 
         global runned
         runned = True
@@ -391,6 +393,13 @@ def test_controller_api():
     assert isinstance(resolution[0], int), "resolution width should be int"
     assert isinstance(resolution[1], int), "resolution height should be int"
 
+    # 测试 info
+    info = dbg_controller.info
+    print(f"  info: {info}")
+    assert isinstance(info, dict), "info should be a dict"
+    assert "type" in info, "info should contain 'type'"
+    assert info["type"].startswith("dbg_"), "dbg controller type should start with 'dbg_'"
+
     # 测试输入操作
     dbg_controller.post_click(100, 100).wait()
     dbg_controller.post_swipe(100, 100, 200, 200, 100).wait()
@@ -404,6 +413,7 @@ def test_controller_api():
     dbg_controller.post_scroll(0, 120).wait()
     dbg_controller.post_start_app("com.test.app").wait()
     dbg_controller.post_stop_app("com.test.app").wait()
+    dbg_controller.post_inactive().wait()
 
     # 测试截图选项
     dbg_controller.set_screenshot_target_long_side(1920)
@@ -655,6 +665,12 @@ class MyController(CustomController):
         self.count += 1
         return True
 
+    def get_custom_info(self) -> dict:
+        return {
+            "custom_key": "custom_value",
+            "answer": 42,
+        }
+
 
 def test_custom_controller():
     print("\n=== test_custom_controller ===")
@@ -665,6 +681,12 @@ def test_custom_controller():
     ret = controller.post_connection().wait().succeeded
     uuid = controller.uuid
     print(f"  uuid: {uuid}")
+    info = controller.info
+    print(f"  info: {info}")
+    assert isinstance(info, dict), "info should be a dict"
+    assert info.get("type") == "custom", "info type should be custom"
+    assert info.get("custom_key") == "custom_value", "custom info should contain custom_key"
+    assert info.get("answer") == 42, "custom info should contain answer"
 
     ret &= controller.post_start_app("custom_aaa").wait().succeeded
     ret &= controller.post_stop_app("custom_bbb").wait().succeeded
@@ -683,6 +705,7 @@ def test_custom_controller():
     ret &= controller.post_key_down(65).wait().succeeded
     ret &= controller.post_key_up(65).wait().succeeded
     ret &= controller.post_scroll(0, 120).wait().succeeded
+    ret &= controller.post_inactive().wait().succeeded
 
     print(f"  controller.count: {controller.count}, ret: {ret}")
     print("  PASS: custom controller")

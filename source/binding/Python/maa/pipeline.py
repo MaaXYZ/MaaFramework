@@ -42,6 +42,7 @@ class JActionType(StrEnum):
     Scroll = "Scroll"
     Command = "Command"
     Shell = "Shell"
+    Screencap = "Screencap"
     Custom = "Custom"
 
 
@@ -101,6 +102,7 @@ class JOCR:
     index: int = 0
     only_rec: bool = False
     model: str = ""
+    color_filter: str = ""
 
 
 @dataclass
@@ -279,6 +281,13 @@ class JShell:
 
 
 @dataclass
+class JScreencap:
+    filename: str = ""
+    format: str = "png"
+    quality: int = 100
+
+
+@dataclass
 class JCustomAction:
     custom_action: str  # 必选
     target: JTarget = True
@@ -305,6 +314,7 @@ JActionParam = Union[
     JScroll,
     JCommand,
     JShell,
+    JScreencap,
     JCustomAction,
 ]
 
@@ -441,6 +451,7 @@ class JPipelineParser:
             JActionType.Scroll: JScroll,
             JActionType.Command: JCommand,
             JActionType.Shell: JShell,
+            JActionType.Screencap: JScreencap,
             JActionType.Custom: JCustomAction,
         }
 

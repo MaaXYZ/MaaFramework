@@ -96,6 +96,8 @@ public:
 
     virtual MaaCtrlId post_shell(const std::string& cmd, int64_t timeout = 20000) = 0;
 
+    virtual MaaCtrlId post_inactive() = 0;
+
     virtual MaaStatus status(MaaCtrlId ctrl_id) const = 0;
     virtual MaaStatus wait(MaaCtrlId ctrl_id) const = 0;
     virtual bool connected() const = 0;
@@ -106,6 +108,8 @@ public:
     virtual std::string get_uuid() = 0;
 
     virtual bool get_resolution(int32_t& width, int32_t& height) const = 0;
+
+    virtual json::object get_info() const = 0;
 };
 
 struct MaaTasker : public IMaaEventDispatcher

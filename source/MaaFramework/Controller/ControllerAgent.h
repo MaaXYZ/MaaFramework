@@ -152,6 +152,7 @@ struct Action
         key_up,
         scroll,
         shell,
+        inactive,
     } type = Type::invalid;
 
     Param param;
@@ -186,6 +187,8 @@ public: // MaaController
 
     virtual MaaCtrlId post_shell(const std::string& cmd, int64_t timeout = 20000) override;
 
+    virtual MaaCtrlId post_inactive() override;
+
     virtual MaaStatus status(MaaCtrlId ctrl_id) const override;
     virtual MaaStatus wait(MaaCtrlId ctrl_id) const override;
     virtual bool connected() const override;
@@ -196,6 +199,8 @@ public: // MaaController
     virtual std::string get_uuid() override;
 
     virtual bool get_resolution(int32_t& width, int32_t& height) const override;
+
+    virtual json::object get_info() const override;
 
     virtual MaaSinkId add_sink(MaaEventCallback callback, void* trans_arg) override;
     virtual void remove_sink(MaaSinkId sink_id) override;
@@ -248,6 +253,7 @@ private:
     bool handle_key_up(const ClickKeyParam& param);
     bool handle_scroll(const ScrollParam& param);
     bool handle_shell(const ShellParam& param);
+    bool handle_inactive();
 
     MaaCtrlId post(Action action);
     MaaCtrlId focus_id(MaaCtrlId id);

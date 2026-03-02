@@ -448,6 +448,9 @@ bool AgentClient::handle_inserted_request(const json::value& j)
     else if (handle_controller_post_scroll(j)) {
         return true;
     }
+    else if (handle_controller_post_inactive(j)) {
+        return true;
+    }
     else if (handle_controller_status(j)) {
         return true;
     }
@@ -470,6 +473,9 @@ bool AgentClient::handle_inserted_request(const json::value& j)
         return true;
     }
     else if (handle_controller_get_resolution(j)) {
+        return true;
+    }
+    else if (handle_controller_get_info(j)) {
         return true;
     }
     else if (handle_event_response(j)) {
@@ -2141,6 +2147,26 @@ bool AgentClient::handle_controller_post_scroll(const json::value& j)
     return true;
 }
 
+bool AgentClient::handle_controller_post_inactive(const json::value& j)
+{
+    if (!j.is<ControllerPostInactiveReverseRequest>()) {
+        return false;
+    }
+    const ControllerPostInactiveReverseRequest& req = j.as<ControllerPostInactiveReverseRequest>();
+    LogFunc << VAR(req) << VAR(ipc_addr_);
+    MaaController* controller = query_controller(req.controller_id);
+    if (!controller) {
+        LogError << "controller not found" << VAR(req.controller_id);
+        return false;
+    }
+    MaaCtrlId ctrl_id = controller->post_inactive();
+    ControllerPostInactiveReverseResponse resp {
+        .ctrl_id = ctrl_id,
+    };
+    send(resp);
+    return true;
+}
+
 bool AgentClient::handle_controller_status(const json::value& j)
 {
     if (!j.is<ControllerStatusReverseRequest>()) {
@@ -2300,6 +2326,26 @@ bool AgentClient::handle_controller_get_resolution(const json::value& j)
         .success = success,
         .width = width,
         .height = height,
+    };
+    send(resp);
+    return true;
+}
+
+bool AgentClient::handle_controller_get_info(const json::value& j)
+{
+    if (!j.is<ControllerGetInfoReverseRequest>()) {
+        return false;
+    }
+    const ControllerGetInfoReverseRequest& req = j.as<ControllerGetInfoReverseRequest>();
+    LogFunc << VAR(req) << VAR(ipc_addr_);
+    MaaController* controller = query_controller(req.controller_id);
+    if (!controller) {
+        LogError << "controller not found" << VAR(req.controller_id);
+        return false;
+    }
+    json::object info = controller->get_info();
+    ControllerGetInfoReverseResponse resp {
+        .info = std::move(info),
     };
     send(resp);
     return true;

@@ -64,6 +64,7 @@ struct ControllerImpl : public maajs::NativeClassBase
     maajs::ValueType post_key_down(maajs::ValueType self, maajs::EnvType env, int32_t keycode);
     maajs::ValueType post_key_up(maajs::ValueType self, maajs::EnvType env, int32_t keycode);
     maajs::ValueType post_scroll(maajs::ValueType self, maajs::EnvType env, int32_t dx, int32_t dy);
+    maajs::ValueType post_inactive(maajs::ValueType self, maajs::EnvType env);
     maajs::ValueType post_screencap(maajs::ValueType self, maajs::EnvType env);
     MaaStatus status(MaaCtrlId id);
     maajs::PromiseType wait(MaaCtrlId id);
@@ -71,6 +72,7 @@ struct ControllerImpl : public maajs::NativeClassBase
     std::optional<maajs::ArrayBufferType> get_cached_image();
     std::optional<std::string> get_uuid();
     std::optional<std::tuple<int32_t, int32_t>> get_resolution();
+    std::optional<std::string> get_info();
 
     std::string to_string() override;
 
@@ -159,6 +161,21 @@ struct GamepadControllerImpl : public ControllerImpl
     constexpr static char name[] = "GamepadController";
 
     static GamepadControllerImpl* ctor(const maajs::CallbackInfo&);
+    static void init_proto(maajs::ObjectType proto, maajs::FunctionType ctor);
+};
+
+using WlRootsCompositor = std::tuple<uint64_t, std::string, std::string>;
+using WlRootsControllerCtorParam = std::tuple<std::string>;
+
+struct WlRootsControllerImpl : public ControllerImpl
+{
+    using ControllerImpl::ControllerImpl;
+
+    static maajs::PromiseType find(maajs::EnvType env);
+
+    constexpr static char name[] = "WlRootsController";
+
+    static WlRootsControllerImpl* ctor(const maajs::CallbackInfo&);
     static void init_proto(maajs::ObjectType proto, maajs::FunctionType ctor);
 };
 

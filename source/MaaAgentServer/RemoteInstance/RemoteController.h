@@ -35,6 +35,8 @@ public:
 
     virtual MaaCtrlId post_shell(const std::string& cmd, int64_t timeout = 20000) override;
 
+    virtual MaaCtrlId post_inactive() override;
+
     virtual MaaStatus status(MaaCtrlId ctrl_id) const override;
     virtual MaaStatus wait(MaaCtrlId ctrl_id) const override;
     virtual bool connected() const override;
@@ -45,6 +47,8 @@ public:
     virtual std::string get_uuid() override;
 
     virtual bool get_resolution(int32_t& width, int32_t& height) const override;
+
+    virtual json::object get_info() const override;
 
     virtual MaaSinkId add_sink(MaaEventCallback callback, void* trans_arg) override;
     virtual void remove_sink(MaaSinkId sink_id) override;

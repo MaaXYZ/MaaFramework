@@ -228,6 +228,18 @@ MaaCtrlId RemoteController::post_shell(const std::string& cmd, int64_t timeout)
     return resp_opt->ctrl_id;
 }
 
+MaaCtrlId RemoteController::post_inactive()
+{
+    ControllerPostInactiveReverseRequest req {
+        .controller_id = controller_id_,
+    };
+    auto resp_opt = server_.send_and_recv<ControllerPostInactiveReverseResponse>(req);
+    if (!resp_opt) {
+        return MaaInvalidId;
+    }
+    return resp_opt->ctrl_id;
+}
+
 MaaStatus RemoteController::status(MaaCtrlId ctrl_id) const
 {
     ControllerStatusReverseRequest req {
@@ -328,6 +340,19 @@ bool RemoteController::get_resolution(int32_t& width, int32_t& height) const
     width = resp_opt->width;
     height = resp_opt->height;
     return resp_opt->success;
+}
+
+json::object RemoteController::get_info() const
+{
+    ControllerGetInfoReverseRequest req {
+        .controller_id = controller_id_,
+    };
+
+    auto resp_opt = server_.send_and_recv<ControllerGetInfoReverseResponse>(req);
+    if (!resp_opt) {
+        return {};
+    }
+    return resp_opt->info;
 }
 
 MaaSinkId RemoteController::add_sink(MaaEventCallback callback, void* trans_arg)

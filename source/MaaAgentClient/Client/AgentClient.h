@@ -111,6 +111,7 @@ private:
     bool handle_controller_post_key_down(const json::value& j);
     bool handle_controller_post_key_up(const json::value& j);
     bool handle_controller_post_scroll(const json::value& j);
+    bool handle_controller_post_inactive(const json::value& j);
     bool handle_controller_status(const json::value& j);
     bool handle_controller_wait(const json::value& j);
     bool handle_controller_connected(const json::value& j);
@@ -119,6 +120,7 @@ private:
     bool handle_controller_get_shell_output(const json::value& j);
     bool handle_controller_get_uuid(const json::value& j);
     bool handle_controller_get_resolution(const json::value& j);
+    bool handle_controller_get_info(const json::value& j);
 
     bool handle_event_response(const json::value& j);
 

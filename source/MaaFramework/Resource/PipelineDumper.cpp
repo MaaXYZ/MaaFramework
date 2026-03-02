@@ -172,6 +172,7 @@ PipelineV2::JRecognition PipelineDumper::dump_reco(Recognition::Type type, const
             .index = p.result_index,
             .only_rec = p.only_rec,
             .model = p.model,
+            .color_filter = p.color_filter,
         };
     } break;
 
@@ -432,6 +433,15 @@ PipelineV2::JAction PipelineDumper::dump_act(Action::Type type, const Action::Pa
         act.param = PipelineV2::JShell {
             .cmd = p.cmd,
             .shell_timeout = p.shell_timeout,
+        };
+    } break;
+
+    case Action::Type::Screencap: {
+        const auto& p = std::get<Action::ScreencapParam>(param);
+        act.param = PipelineV2::JScreencap {
+            .filename = p.filename,
+            .format = p.format,
+            .quality = p.quality,
         };
     } break;
 

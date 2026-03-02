@@ -47,6 +47,10 @@ public: // from ControlUnitAPI
 
     virtual bool scroll(int dx, int dy) override;
 
+    virtual bool inactive() override;
+
+    virtual json::object get_info() const override;
+
 private:
     std::filesystem::path path_;
     std::vector<cv::Mat> images_;

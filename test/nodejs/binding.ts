@@ -65,6 +65,7 @@ const myAct: maa.CustomActionCallback = async self => {
     await ctrl.post_touch_up(1).wait()
     await ctrl.post_start_app('aaa').wait()
     await ctrl.post_stop_app('bbb').wait()
+    await ctrl.post_inactive().wait()
 
     const cached_image = ctrl.cached_image
     const connected = ctrl.connected
@@ -190,6 +191,7 @@ async function custom_ctrl_test() {
     ret &&= await ctrl.post_touch_up(1).wait().succeeded
     ret &&= await ctrl.post_click_key(32).wait().succeeded
     ret &&= await ctrl.post_input_text('Hello World!').wait().succeeded
+    ret &&= await ctrl.post_inactive().wait().succeeded
 
     console.log('controller count', myCtrl.count, 'ret', ret)
 

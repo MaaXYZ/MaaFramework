@@ -45,6 +45,7 @@ public:
 
     void clear();
     bool running() const;
+    bool pending() const;
 
 private:
     void working();
@@ -291,6 +292,13 @@ template <typename Item>
 inline bool AsyncRunner<Item>::running() const
 {
     return running_;
+}
+
+template <typename Item>
+inline bool AsyncRunner<Item>::pending() const
+{
+    std::unique_lock queue_lock(queue_mutex_);
+    return !queue_.empty();
 }
 
 MAA_NS_END

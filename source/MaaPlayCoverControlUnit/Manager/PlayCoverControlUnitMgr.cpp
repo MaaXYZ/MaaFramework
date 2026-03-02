@@ -232,4 +232,17 @@ bool PlayCoverControlUnitMgr::scroll(int dx, int dy)
     return false;
 }
 
+bool PlayCoverControlUnitMgr::inactive()
+{
+    return true;
+}
+
+json::object PlayCoverControlUnitMgr::get_info() const
+{
+    json::object info;
+    info["type"] = "playcover";
+    info["address"] = address_;
+    return info;
+}
+
 MAA_CTRL_UNIT_NS_END

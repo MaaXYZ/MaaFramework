@@ -356,6 +356,10 @@ bool Tasker::run_task(RunnerId runner_id, TaskPtr task_ptr)
     }
     notifier_.notify(this, ret ? MaaMsg_Tasker_Task_Succeeded : MaaMsg_Tasker_Task_Failed, cb_detail);
 
+    if (controller_ && !task_runner_->pending()) {
+        controller_->post_inactive();
+    }
+
     return ret;
 }
 

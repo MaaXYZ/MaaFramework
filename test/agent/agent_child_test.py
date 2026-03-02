@@ -268,6 +268,17 @@ class MyAction(CustomAction):
         assert isinstance(resolution, tuple), "resolution should be a tuple"
         assert len(resolution) == 2, "resolution should have 2 elements"
 
+        # 测试 info
+        info = controller.info
+        print(f"  info: {info}")
+        assert isinstance(info, dict), "info should be a dict"
+        assert "type" in info, "info should contain 'type'"
+        assert isinstance(info["type"], str), "info['type'] should be a str"
+        assert info["type"].startswith("dbg_"), "info['type'] should start with 'dbg_'"
+        assert (
+            "image_count" in info or "record_count" in info
+        ), "info should contain at least 'image_count' or 'record_count'"
+
         # 测试基本输入操作
         controller.post_click(191, 98).wait()
         controller.post_swipe(100, 200, 300, 400, 100).wait()
@@ -289,6 +300,9 @@ class MyAction(CustomAction):
         # 测试应用操作
         controller.post_start_app("aaa")
         controller.post_stop_app("bbb")
+
+        # 测试 inactive 操作
+        controller.post_inactive().wait()
 
         # ============================================================
         # Tasker API 补充测试 (详情获取)

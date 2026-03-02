@@ -38,10 +38,10 @@ declare global {
             get_node_data_parsed(node_name: string): DumpTask | null
             get_default_recognition_param(
                 reco_type: RecognitionType,
-            ): Recognition<ModeFragment>['recognition']['param'] | null
+            ): Exclude<Recognition<ModeFragment>['recognition'], string | undefined>['param'] | null
             get_default_action_param(
                 action_type: ActionType,
-            ): Action<ModeFragment>['action']['param'] | null
+            ): Exclude<Action<ModeFragment>['action'], string | undefined>['param'] | null
             clear(): void
             status(id: ResId): Status
             wait(id: ResId): Promise<Status>

@@ -9,6 +9,7 @@
 #include "ControlUnit/PlayCoverControlUnitAPI.h"
 #include "ControlUnit/ProxyControlUnitAPI.h"
 #include "ControlUnit/Win32ControlUnitAPI.h"
+#include "ControlUnit/WlRootsControlUnitAPI.h"
 #include "MaaUtils/Logger.h"
 #include "MaaUtils/Runtime.h"
 
@@ -254,6 +255,37 @@ std::shared_ptr<MAA_CTRL_UNIT_NS::ControlUnitAPI>
     }
 
     auto control_unit_handle = create_control_unit_func(&inner, dump_dir);
+
+    if (!control_unit_handle) {
+        LogError << "Failed to create control unit";
+        return nullptr;
+    }
+
+    return std::shared_ptr<MAA_CTRL_UNIT_NS::ControlUnitAPI>(control_unit_handle, destroy_control_unit_func);
+}
+
+std::shared_ptr<MAA_CTRL_UNIT_NS::ControlUnitAPI> WlRootsControlUnitLibraryHolder::create_control_unit(const char* wlr_socket_path)
+{
+    if (!load_library(library_dir() / libname_)) {
+        LogError << "Failed to load library" << VAR(library_dir()) << VAR(libname_);
+        return nullptr;
+    }
+
+    check_version<WlRootsControlUnitLibraryHolder, decltype(MaaWlRootsControlUnitGetVersion)>(version_func_name_);
+
+    auto create_control_unit_func = get_function<decltype(MaaWlRootsControlUnitCreate)>(create_func_name_);
+    if (!create_control_unit_func) {
+        LogError << "Failed to get function create_control_unit";
+        return nullptr;
+    }
+
+    auto destroy_control_unit_func = get_function<decltype(MaaWlRootsControlUnitDestroy)>(destroy_func_name_);
+    if (!destroy_control_unit_func) {
+        LogError << "Failed to get function destroy_control_unit";
+        return nullptr;
+    }
+
+    auto control_unit_handle = create_control_unit_func(wlr_socket_path);
 
     if (!control_unit_handle) {
         LogError << "Failed to create control unit";

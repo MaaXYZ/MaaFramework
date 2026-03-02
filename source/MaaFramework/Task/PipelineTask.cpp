@@ -59,11 +59,7 @@ bool PipelineTask::run()
             std::string pre_node_name = node.name;
             node = std::move(*hit_opt);
 
-            auto it = std::ranges::find_if(next, [&](const MAA_RES_NS::NodeAttr& n) {
-                auto data_opt = context_->get_pipeline_data(n);
-                return data_opt && data_opt->name == node_detail.name;
-            });
-            if (it != next.end() && it->jump_back) {
+            if (node_detail.jump_back) {
                 LogInfo << "push jumpback_stack:" << pre_node_name;
                 jumpback_stack.emplace(pre_node_name);
             }
@@ -188,9 +184,17 @@ NodeDetail PipelineTask::run_next(const std::vector<MAA_RES_NS::NodeAttr>& next,
             return {};
         }
 
+        // Resolve jump_back BEFORE action execution (anchors are still intact at this point)
+        bool jump_back = std::ranges::any_of(next, [&](const MAA_RES_NS::NodeAttr& n) {
+            if (!n.jump_back) {
+                return false;
+            }
+            auto data_opt = context_->get_pipeline_data(n);
+            return data_opt && data_opt->name == hit_name;
+        });
+
         auto act = run_action(reco, *hit_opt);
 
-        // Process anchor settings: empty string means clear
         for (const auto& [anchor, target] : hit_opt->anchor) {
             context_->set_anchor(anchor, target);
         }
@@ -201,6 +205,7 @@ NodeDetail PipelineTask::run_next(const std::vector<MAA_RES_NS::NodeAttr>& next,
             .reco_id = reco.reco_id,
             .action_id = act.action_id,
             .completed = act.success,
+            .jump_back = jump_back,
         };
 
         LogInfo << "PipelineTask node done" << VAR(result) << VAR(task_id_);
@@ -360,6 +365,11 @@ void PipelineTask::try_add_ocr_node(OCRCollectContext& ctx, const std::string& n
     if (param.only_rec) {
         // 这玩意 Batch 出来结果顺序可能是乱的，不知道哪个是哪个
         // 我猜的，没试过，后面有空再看看
+        return;
+    }
+
+    if (!param.color_filter.empty()) {
+        // color_filter 需要对每个 ROI 单独做颜色二值化，无法与其他节点共享 mask 图
         return;
     }
 

@@ -215,6 +215,12 @@ maajs::ValueType ControllerImpl::post_scroll(maajs::ValueType self, maajs::EnvTy
     return maajs::CallCtorHelper(ExtContext::get(env)->jobCtor, self, id);
 }
 
+maajs::ValueType ControllerImpl::post_inactive(maajs::ValueType self, maajs::EnvType)
+{
+    auto id = MaaControllerPostInactive(controller);
+    return maajs::CallCtorHelper(ExtContext::get(env)->jobCtor, self, id);
+}
+
 maajs::ValueType ControllerImpl::post_screencap(maajs::ValueType self, maajs::EnvType)
 {
     auto id = MaaControllerPostScreencap(controller);
@@ -264,6 +270,15 @@ std::optional<std::tuple<int32_t, int32_t>> ControllerImpl::get_resolution()
         return std::nullopt;
     }
     return std::make_tuple(width, height);
+}
+
+std::optional<std::string> ControllerImpl::get_info()
+{
+    StringBuffer buf;
+    if (!MaaControllerGetInfo(controller, buf)) {
+        return std::nullopt;
+    }
+    return buf.str();
 }
 
 std::string ControllerImpl::to_string()
@@ -329,6 +344,7 @@ void ControllerImpl::init_proto(maajs::ObjectType proto, maajs::FunctionType)
     MAA_BIND_FUNC(proto, "post_key_down", ControllerImpl::post_key_down);
     MAA_BIND_FUNC(proto, "post_key_up", ControllerImpl::post_key_up);
     MAA_BIND_FUNC(proto, "post_scroll", ControllerImpl::post_scroll);
+    MAA_BIND_FUNC(proto, "post_inactive", ControllerImpl::post_inactive);
     MAA_BIND_FUNC(proto, "post_screencap", ControllerImpl::post_screencap);
     MAA_BIND_FUNC(proto, "status", ControllerImpl::status);
     MAA_BIND_FUNC(proto, "wait", ControllerImpl::wait);
@@ -336,6 +352,7 @@ void ControllerImpl::init_proto(maajs::ObjectType proto, maajs::FunctionType)
     MAA_BIND_GETTER(proto, "cached_image", ControllerImpl::get_cached_image);
     MAA_BIND_GETTER(proto, "uuid", ControllerImpl::get_uuid);
     MAA_BIND_GETTER(proto, "resolution", ControllerImpl::get_resolution);
+    MAA_BIND_GETTER(proto, "info", ControllerImpl::get_info);
 }
 
 maajs::ValueType load_controller(maajs::EnvType env)
@@ -540,6 +557,7 @@ maajs::ValueType load_proxy_controller(maajs::EnvType env)
 {
     maajs::FunctionType ctor;
     maajs::NativeClass<ProxyControllerImpl>::init<ControllerImpl>(env, ctor, &ExtContext::get(env)->controllerCtor);
+    ExtContext::get(env)->proxyControllerCtor = maajs::PersistentFunction(ctor);
     return ctor;
 }
 
@@ -562,6 +580,58 @@ maajs::ValueType load_gamepad_controller(maajs::EnvType env)
     maajs::FunctionType ctor;
     maajs::NativeClass<GamepadControllerImpl>::init<ControllerImpl>(env, ctor, &ExtContext::get(env)->controllerCtor);
     ExtContext::get(env)->gamepadControllerCtor = maajs::PersistentFunction(ctor);
+    return ctor;
+}
+
+WlRootsControllerImpl* WlRootsControllerImpl::ctor(const maajs::CallbackInfo& info)
+{
+    auto [wlr_socket_path] = maajs::UnWrapArgs<WlRootsControllerCtorParam, void>(info);
+    auto ctrl = MaaWlRootsControllerCreate(wlr_socket_path.c_str());
+    if (!ctrl) {
+        return nullptr;
+    }
+    return new WlRootsControllerImpl(ctrl, true);
+}
+
+maajs::PromiseType WlRootsControllerImpl::find(maajs::EnvType env)
+{
+    using Result = std::optional<std::vector<WlRootsCompositor>>;
+    auto worker = new maajs::AsyncWork<Result>(env, []() -> Result {
+        auto lst = MaaToolkitDesktopWindowListCreate();
+        if (!MaaToolkitDesktopWindowFindAll(lst)) {
+            MaaToolkitDesktopWindowListDestroy(lst);
+            return std::nullopt;
+        }
+
+        std::vector<WlRootsCompositor> result;
+        auto size = MaaToolkitDesktopWindowListSize(lst);
+        result.reserve(size);
+        for (size_t i = 0; i < size; i++) {
+            auto dev = MaaToolkitDesktopWindowListAt(lst, i);
+            result.push_back(
+                std::make_tuple(
+                    reinterpret_cast<uint64_t>(MaaToolkitDesktopWindowGetHandle(dev)),
+                    std::string(MaaToolkitDesktopWindowGetClassName(dev)),
+                    std::string(MaaToolkitDesktopWindowGetWindowName(dev))));
+        }
+        MaaToolkitDesktopWindowListDestroy(lst);
+
+        return result;
+    });
+    worker->Queue();
+    return worker->Promise();
+}
+
+void WlRootsControllerImpl::init_proto(maajs::ObjectType, maajs::FunctionType ctor)
+{
+    MAA_BIND_FUNC(ctor, "find", find);
+}
+
+maajs::ValueType load_wlroots_controller(maajs::EnvType env)
+{
+    maajs::FunctionType ctor;
+    maajs::NativeClass<WlRootsControllerImpl>::init<ControllerImpl>(env, ctor, &ExtContext::get(env)->controllerCtor);
+    ExtContext::get(env)->wlrootsControllerCtor = maajs::PersistentFunction(ctor);
     return ctor;
 }
 
@@ -647,7 +717,6 @@ CustomControllerImpl* CustomControllerImpl::ctor(const maajs::CallbackInfo& info
 
     context->add_bind(info.Env(), "connect", "CustomConnect", 0, actor, ret_false);
     // context->add_bind(info.Env(), "connected", "CustomConnected", 0, actor, ret_true);
-    std::ignore = ret_true;
     context->add_bind(info.Env(), "request_uuid", "CustomRequestUuid", 0, actor, ret_null);
     context->add_bind(info.Env(), "get_features", "CustomGetFeatures", 0, actor, ret_null);
     context->add_bind(info.Env(), "start_app", "CustomStartApp", 1, actor, ret_false);
@@ -663,6 +732,8 @@ CustomControllerImpl* CustomControllerImpl::ctor(const maajs::CallbackInfo& info
     context->add_bind(info.Env(), "key_down", "CustomKeyDown", 1, actor, ret_false);
     context->add_bind(info.Env(), "key_up", "CustomKeyUp", 1, actor, ret_false);
     context->add_bind(info.Env(), "scroll", "CustomScroll", 2, actor, ret_false);
+    context->add_bind(info.Env(), "inactive", "CustomInactive", 0, actor, ret_true);
+    context->add_bind(info.Env(), "get_info", "CustomGetInfo", 0, actor, ret_null);
 
     auto impl = new CustomControllerImpl(ctrl, true);
     impl->actor = actor;

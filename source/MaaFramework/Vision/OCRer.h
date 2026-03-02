@@ -39,6 +39,12 @@ struct OCRerResult
     MEO_JSONIZATION(text, box, score);
 };
 
+struct ColorFilterConfig
+{
+    int method = ColorMatcherParam::kDefaultMethod;
+    std::vector<ColorMatcherParam::Range> range;
+};
+
 class OCRer
     : public VisionBase
     , public RecoResultAPI<OCRerResult>
@@ -51,7 +57,8 @@ public:
         std::shared_ptr<fastdeploy::vision::ocr::DBDetector> deter,
         std::shared_ptr<fastdeploy::vision::ocr::Recognizer> recer,
         std::shared_ptr<fastdeploy::pipeline::PPOCRv4> ocrer,
-        std::string name = "");
+        std::string name = "",
+        std::optional<ColorFilterConfig> color_filter = std::nullopt);
 
     OCRer(
         cv::Mat image,
@@ -71,6 +78,7 @@ private:
     void cherry_pick();
 
 private:
+    cv::Mat apply_color_filter(const cv::Mat& image_roi) const;
     ResultsVec predict_det_and_rec(const cv::Mat& image_roi) const;
     Result predict_only_rec(const cv::Mat& image_roi) const;
     ResultsVec predict_batch_rec(const std::vector<cv::Rect>& rois) const;
@@ -87,6 +95,7 @@ private:
 
 private:
     const OCRerParam param_;
+    const std::optional<ColorFilterConfig> color_filter_;
 
     std::optional<ResultsVec> cache_;
 

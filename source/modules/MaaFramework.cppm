@@ -103,6 +103,10 @@ export constexpr auto _MaaDbgControllerType_None = MaaDbgControllerType_None;
 export constexpr auto _MaaDbgControllerType_CarouselImage = MaaDbgControllerType_CarouselImage;
 export constexpr auto _MaaDbgControllerType_ReplayRecording = MaaDbgControllerType_ReplayRecording;
 
+export using ::MaaGamepadType;
+export constexpr auto _MaaGamepadType_Xbox360 = MaaGamepadType_Xbox360;
+export constexpr auto _MaaGamepadType_DualShock4 = MaaGamepadType_DualShock4;
+
 export using ::MaaControllerFeature;
 export constexpr auto _MaaControllerFeature_None = MaaControllerFeature_None;
 export constexpr auto _MaaControllerFeature_UseMouseDownAndUpInsteadOfClick = MaaControllerFeature_UseMouseDownAndUpInsteadOfClick;
@@ -144,6 +148,8 @@ export using ::MaaCustomControllerCreate;
 export using ::MaaDbgControllerCreate;
 export using ::MaaProxyControllerCreate;
 export using ::MaaPlayCoverControllerCreate;
+export using ::MaaWlRootsControllerCreate;
+export using ::MaaGamepadControllerCreate;
 export using ::MaaControllerDestroy;
 export using ::MaaControllerAddSink;
 export using ::MaaControllerRemoveSink;
@@ -164,6 +170,7 @@ export using ::MaaControllerPostTouchUp;
 export using ::MaaControllerPostScreencap;
 export using ::MaaControllerPostScroll;
 export using ::MaaControllerPostShell;
+export using ::MaaControllerPostInactive;
 export using ::MaaControllerGetShellOutput;
 export using ::MaaControllerStatus;
 export using ::MaaControllerWait;
@@ -171,6 +178,7 @@ export using ::MaaControllerConnected;
 export using ::MaaControllerCachedImage;
 export using ::MaaControllerGetUuid;
 export using ::MaaControllerGetResolution;
+export using ::MaaControllerGetInfo;
 
 // Instance/MaaCustomController.h
 

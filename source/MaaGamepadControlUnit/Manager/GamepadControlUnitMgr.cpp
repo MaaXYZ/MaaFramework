@@ -317,4 +317,22 @@ bool GamepadControlUnitMgr::scroll(int dx, int dy)
     return false;
 }
 
+bool GamepadControlUnitMgr::inactive()
+{
+    if (win32_unit_) {
+        return win32_unit_->inactive();
+    }
+    return true;
+}
+
+json::object GamepadControlUnitMgr::get_info() const
+{
+    json::object info;
+    info["type"] = "gamepad";
+    info["hwnd"] = reinterpret_cast<uint64_t>(hwnd_);
+    info["gamepad_type"] = static_cast<int64_t>(gamepad_type_);
+    info["screencap_method"] = static_cast<int64_t>(screencap_method_);
+    return info;
+}
+
 MAA_CTRL_UNIT_NS_END

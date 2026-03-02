@@ -45,6 +45,10 @@ public: // from ControlUnitAPI
 
     virtual bool scroll(int dx, int dy) override;
 
+    virtual bool inactive() override;
+
+    virtual json::object get_info() const override;
+
 private:
     void sleep(int ms);
 

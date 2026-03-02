@@ -43,7 +43,13 @@ public: // from ControlUnitAPI
 
     virtual bool scroll(int dx, int dy) override;
 
+    virtual bool inactive() override;
+
+    virtual json::object get_info() const override;
+
 private:
+    std::optional<json::object> get_info_from_controller() const;
+
     MaaCustomControllerCallbacks* controller_ = nullptr;
     void* controller_arg_ = nullptr;
 };

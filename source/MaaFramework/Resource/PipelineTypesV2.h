@@ -79,8 +79,9 @@ struct JOCR
     int index = 0;
     bool only_rec = false;
     std::string model;
+    std::string color_filter;
 
-    MEO_TOJSON(roi, roi_offset, expected, threshold, replace, order_by, index, only_rec, model);
+    MEO_TOJSON(roi, roi_offset, expected, threshold, replace, order_by, index, only_rec, model, color_filter);
 };
 
 struct JNeuralNetworkClassify
@@ -299,6 +300,15 @@ struct JShell
     MEO_TOJSON(cmd, shell_timeout);
 };
 
+struct JScreencap
+{
+    std::string filename;
+    std::string format;
+    int quality = 0;
+
+    MEO_TOJSON(filename, format, quality);
+};
+
 struct JCustomAction
 {
     JTarget target;
@@ -327,6 +337,7 @@ using JActionParam = std::variant<
     JStopTask,
     JCommand,
     JShell,
+    JScreencap,
     JCustomAction>;
 
 struct JAction
