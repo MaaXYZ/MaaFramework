@@ -665,6 +665,12 @@ class MyController(CustomController):
         self.count += 1
         return True
 
+    def get_custom_info(self) -> dict:
+        return {
+            "custom_key": "custom_value",
+            "answer": 42,
+        }
+
 
 def test_custom_controller():
     print("\n=== test_custom_controller ===")
@@ -675,6 +681,12 @@ def test_custom_controller():
     ret = controller.post_connection().wait().succeeded
     uuid = controller.uuid
     print(f"  uuid: {uuid}")
+    info = controller.info
+    print(f"  info: {info}")
+    assert isinstance(info, dict), "info should be a dict"
+    assert info.get("type") == "custom", "info type should be custom"
+    assert info.get("custom_key") == "custom_value", "custom info should contain custom_key"
+    assert info.get("answer") == 42, "custom info should contain answer"
 
     ret &= controller.post_start_app("custom_aaa").wait().succeeded
     ret &= controller.post_stop_app("custom_bbb").wait().succeeded

@@ -273,6 +273,11 @@ class MyAction(CustomAction):
         print(f"  info: {info}")
         assert isinstance(info, dict), "info should be a dict"
         assert "type" in info, "info should contain 'type'"
+        assert isinstance(info["type"], str), "info['type'] should be a str"
+        assert info["type"].startswith("dbg_"), "info['type'] should start with 'dbg_'"
+        assert (
+            "image_count" in info or "record_count" in info
+        ), "info should contain at least 'image_count' or 'record_count'"
 
         # 测试基本输入操作
         controller.post_click(191, 98).wait()

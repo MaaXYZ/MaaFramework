@@ -393,6 +393,11 @@ MaaBool MaaControllerGetInfo(const MaaController* ctrl, MaaStringBuffer* buffer)
     }
 
     auto info = ctrl->get_info();
+    if (!info.contains("type") || !info.at("type").is_string()) {
+        LogError << "invalid controller info: missing or invalid type field";
+        return false;
+    }
+
     buffer->set(info.to_string());
     return true;
 }

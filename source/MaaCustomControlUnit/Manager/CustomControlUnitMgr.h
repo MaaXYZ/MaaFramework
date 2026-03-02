@@ -48,7 +48,7 @@ public: // from ControlUnitAPI
     virtual json::object get_info() const override;
 
 private:
-    std::optional<std::string> get_info_from_controller() const;
+    std::optional<json::object> get_info_from_controller() const;
 
     MaaCustomControllerCallbacks* controller_ = nullptr;
     void* controller_arg_ = nullptr;

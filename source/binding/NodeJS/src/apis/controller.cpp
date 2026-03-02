@@ -692,7 +692,6 @@ CustomControllerImpl* CustomControllerImpl::ctor(const maajs::CallbackInfo& info
 
     context->add_bind(info.Env(), "connect", "CustomConnect", 0, actor, ret_false);
     // context->add_bind(info.Env(), "connected", "CustomConnected", 0, actor, ret_true);
-    std::ignore = ret_true;
     context->add_bind(info.Env(), "request_uuid", "CustomRequestUuid", 0, actor, ret_null);
     context->add_bind(info.Env(), "get_features", "CustomGetFeatures", 0, actor, ret_null);
     context->add_bind(info.Env(), "start_app", "CustomStartApp", 1, actor, ret_false);
@@ -708,6 +707,7 @@ CustomControllerImpl* CustomControllerImpl::ctor(const maajs::CallbackInfo& info
     context->add_bind(info.Env(), "key_down", "CustomKeyDown", 1, actor, ret_false);
     context->add_bind(info.Env(), "key_up", "CustomKeyUp", 1, actor, ret_false);
     context->add_bind(info.Env(), "scroll", "CustomScroll", 2, actor, ret_false);
+    context->add_bind(info.Env(), "inactive", "CustomInactive", 0, actor, ret_true);
     context->add_bind(info.Env(), "get_info", "CustomGetInfo", 0, actor, ret_null);
 
     auto impl = new CustomControllerImpl(ctrl, true);
