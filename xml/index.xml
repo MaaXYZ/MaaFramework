@@ -19,6 +19,7 @@
     <member refid="structMaaCustomControllerCallbacks_1a99d5b6c3270039db39a1f5cdeb27b269" kind="variable"><name>key_up</name></member>
     <member refid="structMaaCustomControllerCallbacks_1ae2381df699964f6e95fe89ad2fc22e38" kind="variable"><name>scroll</name></member>
     <member refid="structMaaCustomControllerCallbacks_1a1b40637a2af654c10ce501d968abefc7" kind="variable"><name>inactive</name></member>
+    <member refid="structMaaCustomControllerCallbacks_1a6d16b04282a3cf8354e5e326464263b7" kind="variable"><name>get_info</name></member>
   </compound>
   <compound refid="structMaaRect" kind="struct"><name>MaaRect</name>
     <member refid="structMaaRect_1a5cf5c0bb6cb3244ea7364e0e14ccf439" kind="variable"><name>x</name></member>
@@ -95,6 +96,7 @@
     <member refid="MaaController_8h_1a2ff145414faed5fdeedc36e97729677e" kind="function"><name>MaaCustomControllerCreate</name></member>
     <member refid="MaaController_8h_1a1ea4c3aa0b3bcb39d35dc13cdde9a044" kind="function"><name>MaaDbgControllerCreate</name></member>
     <member refid="MaaController_8h_1af9b278b0a220ea72ff4ce564a055ff52" kind="function"><name>MaaPlayCoverControllerCreate</name></member>
+    <member refid="MaaController_8h_1a49a0cea456829030f106857728783500" kind="function"><name>MaaWlRootsControllerCreate</name></member>
     <member refid="MaaController_8h_1ab979f25e17e04ae8cc2d2a6aa1b2540a" kind="function"><name>MaaGamepadControllerCreate</name></member>
     <member refid="MaaController_8h_1a497982481bf79e89bc457d8a6e5e7bed" kind="function"><name>MaaControllerDestroy</name></member>
     <member refid="MaaController_8h_1aa01ed95af83d12f7bc3d49fdba415419" kind="function"><name>MaaControllerAddSink</name></member>
@@ -126,6 +128,7 @@
     <member refid="MaaController_8h_1a730b6f3a5048f143a83c22bb05aec583" kind="function"><name>MaaControllerCachedImage</name></member>
     <member refid="MaaController_8h_1a0d7b5199f257b233e79a062c0811b555" kind="function"><name>MaaControllerGetUuid</name></member>
     <member refid="MaaController_8h_1a5373a7227d07d8d46c9a011111d2083b" kind="function"><name>MaaControllerGetResolution</name></member>
+    <member refid="MaaController_8h_1a3d3746b5ad82db515edb9c32378823d7" kind="function"><name>MaaControllerGetInfo</name></member>
     <member refid="MaaController_8h_1a5d20a13ed1473795423cc2f51423bea0" kind="function"><name>MaaControllerPostPressKey</name></member>
   </compound>
   <compound refid="MaaCustomController_8h" kind="file"><name>MaaCustomController.h</name>

@@ -17,5 +17,6 @@ var structMaaCustomControllerCallbacks =
     [ "key_down", "structMaaCustomControllerCallbacks.html#a46da9230073fb4ac1ccc7b8c28d87467", null ],
     [ "key_up", "structMaaCustomControllerCallbacks.html#a99d5b6c3270039db39a1f5cdeb27b269", null ],
     [ "scroll", "structMaaCustomControllerCallbacks.html#ae2381df699964f6e95fe89ad2fc22e38", null ],
-    [ "inactive", "structMaaCustomControllerCallbacks.html#a1b40637a2af654c10ce501d968abefc7", null ]
+    [ "inactive", "structMaaCustomControllerCallbacks.html#a1b40637a2af654c10ce501d968abefc7", null ],
+    [ "get_info", "structMaaCustomControllerCallbacks.html#a6d16b04282a3cf8354e5e326464263b7", null ]
 ];

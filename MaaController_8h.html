@@ -123,6 +123,9 @@ Functions</h2></td></tr>
 <tr class="memitem:af9b278b0a220ea72ff4ce564a055ff52" id="r_af9b278b0a220ea72ff4ce564a055ff52"><td class="memItemLeft" align="right" valign="top"><a class="el" href="MaaPort_8h.html#a67006334d91d228121dbba7a8bf8fe05">MAA_FRAMEWORK_API</a> <a class="el" href="MaaDef_8h.html#aa6c9c6967753196880a2a7f778fbb706">MaaController</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="MaaController_8h.html#af9b278b0a220ea72ff4ce564a055ff52">MaaPlayCoverControllerCreate</a> (const char *address, const char *uuid)</td></tr>
 <tr class="memdesc:af9b278b0a220ea72ff4ce564a055ff52"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create a PlayCover controller for macOS.  <br /></td></tr>
 <tr class="separator:af9b278b0a220ea72ff4ce564a055ff52"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a49a0cea456829030f106857728783500" id="r_a49a0cea456829030f106857728783500"><td class="memItemLeft" align="right" valign="top"><a class="el" href="MaaPort_8h.html#a67006334d91d228121dbba7a8bf8fe05">MAA_FRAMEWORK_API</a> <a class="el" href="MaaDef_8h.html#aa6c9c6967753196880a2a7f778fbb706">MaaController</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="MaaController_8h.html#a49a0cea456829030f106857728783500">MaaWlRootsControllerCreate</a> (const char *wlr_socket_path)</td></tr>
+<tr class="memdesc:a49a0cea456829030f106857728783500"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create a wlroots controller for Linux.  <br /></td></tr>
+<tr class="separator:a49a0cea456829030f106857728783500"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab979f25e17e04ae8cc2d2a6aa1b2540a" id="r_ab979f25e17e04ae8cc2d2a6aa1b2540a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="MaaPort_8h.html#a67006334d91d228121dbba7a8bf8fe05">MAA_FRAMEWORK_API</a> <a class="el" href="MaaDef_8h.html#aa6c9c6967753196880a2a7f778fbb706">MaaController</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="MaaController_8h.html#ab979f25e17e04ae8cc2d2a6aa1b2540a">MaaGamepadControllerCreate</a> (void *hWnd, <a class="el" href="MaaDef_8h.html#a53a0d2c454370893abfbaf100b48dc0d">MaaGamepadType</a> gamepad_type, <a class="el" href="MaaDef_8h.html#a23833339ba6406d680688350d27d37b3">MaaWin32ScreencapMethod</a> screencap_method)</td></tr>
 <tr class="memdesc:ab979f25e17e04ae8cc2d2a6aa1b2540a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create a virtual gamepad controller for Windows.  <br /></td></tr>
 <tr class="separator:ab979f25e17e04ae8cc2d2a6aa1b2540a"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -193,6 +196,9 @@ Functions</h2></td></tr>
 <tr class="memitem:a5373a7227d07d8d46c9a011111d2083b" id="r_a5373a7227d07d8d46c9a011111d2083b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="MaaPort_8h.html#a67006334d91d228121dbba7a8bf8fe05">MAA_FRAMEWORK_API</a> <a class="el" href="MaaDef_8h.html#a2f7289f2a8e07f48c6261b52a120cdf6">MaaBool</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="MaaController_8h.html#a5373a7227d07d8d46c9a011111d2083b">MaaControllerGetResolution</a> (const <a class="el" href="MaaDef_8h.html#aa6c9c6967753196880a2a7f778fbb706">MaaController</a> *ctrl, int32_t *width, int32_t *height)</td></tr>
 <tr class="memdesc:a5373a7227d07d8d46c9a011111d2083b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the raw (unscaled) device resolution.  <br /></td></tr>
 <tr class="separator:a5373a7227d07d8d46c9a011111d2083b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3d3746b5ad82db515edb9c32378823d7" id="r_a3d3746b5ad82db515edb9c32378823d7"><td class="memItemLeft" align="right" valign="top"><a class="el" href="MaaPort_8h.html#a67006334d91d228121dbba7a8bf8fe05">MAA_FRAMEWORK_API</a> <a class="el" href="MaaDef_8h.html#a2f7289f2a8e07f48c6261b52a120cdf6">MaaBool</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="MaaController_8h.html#a3d3746b5ad82db515edb9c32378823d7">MaaControllerGetInfo</a> (const <a class="el" href="MaaDef_8h.html#aa6c9c6967753196880a2a7f778fbb706">MaaController</a> *ctrl, <a class="el" href="MaaDef_8h.html#a4010bb63df489fc09efb6ba9a1fc1c98">MaaStringBuffer</a> *buffer)</td></tr>
+<tr class="memdesc:a3d3746b5ad82db515edb9c32378823d7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get controller information as a JSON string.  <br /></td></tr>
+<tr class="separator:a3d3746b5ad82db515edb9c32378823d7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5d20a13ed1473795423cc2f51423bea0" id="r_a5d20a13ed1473795423cc2f51423bea0"><td class="memItemLeft" align="right" valign="top"><a class="el" href="MaaPort_8h.html#aea94eb63afa29e65c59844ec3f57d691">MAA_DEPRECATED</a> <a class="el" href="MaaPort_8h.html#a67006334d91d228121dbba7a8bf8fe05">MAA_FRAMEWORK_API</a> <a class="el" href="MaaDef_8h.html#aea6a27f8f45b661fda5c19b6062b656e">MaaCtrlId</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="MaaController_8h.html#a5d20a13ed1473795423cc2f51423bea0">MaaControllerPostPressKey</a> (<a class="el" href="MaaDef_8h.html#aa6c9c6967753196880a2a7f778fbb706">MaaController</a> *ctrl, int32_t keycode)</td></tr>
 <tr class="separator:a5d20a13ed1473795423cc2f51423bea0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
@@ -416,6 +422,34 @@ Functions</h2></td></tr>
 Some features are not supported: start_app, input_text, click_key, key_down, key_up, scroll. </dd>
 <dd>
 Only single touch is supported (contact must be 0). </dd></dl>
+
+</div>
+</div>
+<a id="a49a0cea456829030f106857728783500" name="a49a0cea456829030f106857728783500"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a49a0cea456829030f106857728783500">&#9670;&#160;</a></span>MaaWlRootsControllerCreate()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="MaaPort_8h.html#a67006334d91d228121dbba7a8bf8fe05">MAA_FRAMEWORK_API</a> <a class="el" href="MaaDef_8h.html#aa6c9c6967753196880a2a7f778fbb706">MaaController</a> * MaaWlRootsControllerCreate </td>
+          <td>(</td>
+          <td class="paramtype">const char *&#160;</td>
+          <td class="paramname"><em>wlr_socket_path</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Create a wlroots controller for Linux. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">wlr_socket_path</td><td>The wayland socket path (e.g., "/run/user/1000/wayland-0"). </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>The controller handle, or nullptr on failure.</dd></dl>
+<dl class="section note"><dt>Note</dt><dd>This controller is designed for wlroots on Linux. </dd></dl>
 
 </div>
 </div>
@@ -1516,6 +1550,45 @@ For other controllers, this is a no-op that always succeeds. </dd></dl>
 
 </div>
 </div>
+<a id="a3d3746b5ad82db515edb9c32378823d7" name="a3d3746b5ad82db515edb9c32378823d7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3d3746b5ad82db515edb9c32378823d7">&#9670;&#160;</a></span>MaaControllerGetInfo()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="MaaPort_8h.html#a67006334d91d228121dbba7a8bf8fe05">MAA_FRAMEWORK_API</a> <a class="el" href="MaaDef_8h.html#a2f7289f2a8e07f48c6261b52a120cdf6">MaaBool</a> MaaControllerGetInfo </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="MaaDef_8h.html#aa6c9c6967753196880a2a7f778fbb706">MaaController</a> *&#160;</td>
+          <td class="paramname"><em>ctrl</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="MaaDef_8h.html#a4010bb63df489fc09efb6ba9a1fc1c98">MaaStringBuffer</a> *&#160;</td>
+          <td class="paramname"><em>buffer</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Get controller information as a JSON string. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">ctrl</td><td>The controller handle. </td></tr>
+    <tr><td class="paramname">buffer</td><td>The output buffer to store the JSON string. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>true if the info is available, false otherwise.</dd></dl>
+<dl class="section note"><dt>Note</dt><dd>Returns controller-specific information including type, constructor parameters and current state. The returned JSON always contains a "type" field indicating the controller type. </dd></dl>
+
+</div>
+</div>
 <a id="a5d20a13ed1473795423cc2f51423bea0" name="a5d20a13ed1473795423cc2f51423bea0"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a5d20a13ed1473795423cc2f51423bea0">&#9670;&#160;</a></span>MaaControllerPostPressKey()</h2>
 
@@ -1550,7 +1623,7 @@ For other controllers, this is a no-op that always succeeds. </dd></dl>
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="dir_d44c64559bbebec7f509842c48db8b23.html">include</a></li><li class="navelem"><a class="el" href="dir_370cd1367c21b1a87c5c9c6803b8d0b9.html">MaaFramework</a></li><li class="navelem"><a class="el" href="dir_0debf1eee29073ebb629a4e1dfd2a5f6.html">Instance</a></li><li class="navelem"><a class="el" href="MaaController_8h.html">MaaController.h</a></li>
-    <li class="footer">Generated on Fri Feb 27 2026 for MaaFramework by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.8 </li>
+    <li class="footer">Generated on Mon Mar 2 2026 for MaaFramework by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.8 </li>
   </ul>
 </div>
 </body>

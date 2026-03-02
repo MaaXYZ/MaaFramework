@@ -6,6 +6,7 @@ var MaaController_8h =
     [ "MaaCustomControllerCreate", "MaaController_8h.html#a2ff145414faed5fdeedc36e97729677e", null ],
     [ "MaaDbgControllerCreate", "MaaController_8h.html#a1ea4c3aa0b3bcb39d35dc13cdde9a044", null ],
     [ "MaaPlayCoverControllerCreate", "MaaController_8h.html#af9b278b0a220ea72ff4ce564a055ff52", null ],
+    [ "MaaWlRootsControllerCreate", "MaaController_8h.html#a49a0cea456829030f106857728783500", null ],
     [ "MaaGamepadControllerCreate", "MaaController_8h.html#ab979f25e17e04ae8cc2d2a6aa1b2540a", null ],
     [ "MaaControllerDestroy", "MaaController_8h.html#a497982481bf79e89bc457d8a6e5e7bed", null ],
     [ "MaaControllerAddSink", "MaaController_8h.html#aa01ed95af83d12f7bc3d49fdba415419", null ],
@@ -37,5 +38,6 @@ var MaaController_8h =
     [ "MaaControllerCachedImage", "MaaController_8h.html#a730b6f3a5048f143a83c22bb05aec583", null ],
     [ "MaaControllerGetUuid", "MaaController_8h.html#a0d7b5199f257b233e79a062c0811b555", null ],
     [ "MaaControllerGetResolution", "MaaController_8h.html#a5373a7227d07d8d46c9a011111d2083b", null ],
+    [ "MaaControllerGetInfo", "MaaController_8h.html#a3d3746b5ad82db515edb9c32378823d7", null ],
     [ "MaaControllerPostPressKey", "MaaController_8h.html#a5d20a13ed1473795423cc2f51423bea0", null ]
 ];
