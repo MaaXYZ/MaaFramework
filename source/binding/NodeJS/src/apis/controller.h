@@ -72,6 +72,7 @@ struct ControllerImpl : public maajs::NativeClassBase
     std::optional<maajs::ArrayBufferType> get_cached_image();
     std::optional<std::string> get_uuid();
     std::optional<std::tuple<int32_t, int32_t>> get_resolution();
+    std::optional<std::string> get_info();
 
     std::string to_string() override;
 

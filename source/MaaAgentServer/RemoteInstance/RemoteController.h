@@ -48,6 +48,8 @@ public:
 
     virtual bool get_resolution(int32_t& width, int32_t& height) const override;
 
+    virtual json::object get_info() const override;
+
     virtual MaaSinkId add_sink(MaaEventCallback callback, void* trans_arg) override;
     virtual void remove_sink(MaaSinkId sink_id) override;
     virtual void clear_sinks() override;

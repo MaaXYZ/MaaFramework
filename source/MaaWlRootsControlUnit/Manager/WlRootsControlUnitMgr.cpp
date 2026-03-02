@@ -8,6 +8,7 @@
 
 #include "Client/WaylandClient.h"
 #include "MaaUtils/Logger.h"
+#include "MaaUtils/Platform.h"
 
 MAA_CTRL_UNIT_NS_BEGIN
 
@@ -249,6 +250,14 @@ bool WlRootsControlUnitMgr::stop_app(const std::string& intent)
 bool WlRootsControlUnitMgr::inactive()
 {
     return true;
+}
+
+json::object WlRootsControlUnitMgr::get_info() const
+{
+    json::object info;
+    info["type"] = "wlroots";
+    info["wlr_socket_path"] = path_to_utf8_string(wlr_socket_path_);
+    return info;
 }
 
 MAA_CTRL_UNIT_NS_END

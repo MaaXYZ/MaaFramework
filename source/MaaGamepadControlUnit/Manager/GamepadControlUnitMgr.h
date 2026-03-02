@@ -54,6 +54,8 @@ public: // from ControlUnitAPI
 
     virtual bool inactive() override;
 
+    virtual json::object get_info() const override;
+
 private:
     bool init_win32_unit();
     void ensure_foreground();

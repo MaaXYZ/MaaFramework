@@ -247,6 +247,18 @@ extern "C"
      */
     MAA_FRAMEWORK_API MaaBool MaaControllerGetResolution(const MaaController* ctrl, /* out */ int32_t* width, /* out */ int32_t* height);
 
+    /**
+     * @brief Get controller information as a JSON string.
+     *
+     * @param ctrl The controller handle.
+     * @param buffer The output buffer to store the JSON string.
+     * @return true if the info is available, false otherwise.
+     *
+     * @note Returns controller-specific information including type, constructor parameters and current state.
+     *       The returned JSON always contains a "type" field indicating the controller type.
+     */
+    MAA_FRAMEWORK_API MaaBool MaaControllerGetInfo(const MaaController* ctrl, /* out */ MaaStringBuffer* buffer);
+
     MAA_DEPRECATED MAA_FRAMEWORK_API MaaCtrlId MaaControllerPostPressKey(MaaController* ctrl, int32_t keycode);
 
 #ifdef __cplusplus

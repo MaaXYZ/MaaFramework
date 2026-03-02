@@ -327,4 +327,15 @@ bool Win32ControlUnitMgr::inactive()
     return true;
 }
 
+json::object Win32ControlUnitMgr::get_info() const
+{
+    json::object info;
+    info["type"] = "win32";
+    info["hwnd"] = reinterpret_cast<uint64_t>(hwnd_);
+    info["screencap_method"] = static_cast<int64_t>(screencap_method_);
+    info["mouse_method"] = static_cast<int64_t>(mouse_method_);
+    info["keyboard_method"] = static_cast<int64_t>(keyboard_method_);
+    return info;
+}
+
 MAA_CTRL_UNIT_NS_END

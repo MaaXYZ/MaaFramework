@@ -364,3 +364,38 @@ MaaBool CustomKeyUp(int32_t keycode, void* trans_arg)
             });
     });
 }
+
+MaaBool CustomScroll(int32_t dx, int32_t dy, void* trans_arg)
+{
+    auto customCtx = reinterpret_cast<CustomControllerContext*>(trans_arg);
+    auto ctx = customCtx->callbacks["scroll"];
+    return ctx->Call<bool>([&](maajs::FunctionType func) {
+        return func.Call(
+            {
+                maajs::NumberType::New(func.Env(), dx),
+                maajs::NumberType::New(func.Env(), dy),
+            });
+    });
+}
+
+MaaBool CustomInactive(void* trans_arg)
+{
+    auto customCtx = reinterpret_cast<CustomControllerContext*>(trans_arg);
+    auto ctx = customCtx->callbacks["inactive"];
+    return ctx->Call<bool>([&](maajs::FunctionType func) { return func.Call({}); });
+}
+
+MaaBool CustomGetInfo(void* trans_arg, MaaStringBuffer* buffer)
+{
+    auto customCtx = reinterpret_cast<CustomControllerContext*>(trans_arg);
+    auto ctx = customCtx->callbacks["get_info"];
+    auto result = ctx->Call<std::optional<std::string>>([&](maajs::FunctionType func) { return func.Call({}); });
+    if (result) {
+        StringBuffer(buffer, false).set(*result);
+        return true;
+    }
+    else {
+        StringBuffer(buffer, false).set("{}");
+        return true;
+    }
+}

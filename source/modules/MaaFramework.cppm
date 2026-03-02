@@ -171,6 +171,7 @@ export using ::MaaControllerConnected;
 export using ::MaaControllerCachedImage;
 export using ::MaaControllerGetUuid;
 export using ::MaaControllerGetResolution;
+export using ::MaaControllerGetInfo;
 
 // Instance/MaaCustomController.h
 

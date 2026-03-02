@@ -4,6 +4,8 @@
 #include <string>
 #include <utility>
 
+#include <meojson/json.hpp>
+
 #include "Common/Conf.h"
 #include "MaaFramework/MaaDef.h"
 #include "MaaUtils/NoWarningCVMat.hpp"
@@ -42,6 +44,8 @@ public:
     virtual bool scroll(int dx, int dy) = 0;
 
     virtual bool inactive() = 0;
+
+    virtual json::object get_info() const = 0;
 };
 
 class AdbControlUnitAPI : public ControlUnitAPI

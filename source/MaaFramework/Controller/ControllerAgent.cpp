@@ -223,6 +223,11 @@ bool ControllerAgent::get_resolution(int32_t& width, int32_t& height) const
     return true;
 }
 
+json::object ControllerAgent::get_info() const
+{
+    return control_unit_->get_info();
+}
+
 MaaSinkId ControllerAgent::add_sink(MaaEventCallback callback, void* trans_arg)
 {
     return notifier_.add_sink(callback, trans_arg);
@@ -895,6 +900,7 @@ bool ControllerAgent::run_action(typename AsyncRunner<Action>::Id id, Action act
         { "uuid", get_uuid() },
         { "action", action.type },
         { "param", action.param },
+        { "info", control_unit_->get_info() },
     };
 
     // LogInfo << cb_detail.to_string();

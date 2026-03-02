@@ -342,6 +342,19 @@ bool RemoteController::get_resolution(int32_t& width, int32_t& height) const
     return resp_opt->success;
 }
 
+json::object RemoteController::get_info() const
+{
+    ControllerGetInfoReverseRequest req {
+        .controller_id = controller_id_,
+    };
+
+    auto resp_opt = server_.send_and_recv<ControllerGetInfoReverseResponse>(req);
+    if (!resp_opt) {
+        return {};
+    }
+    return resp_opt->info;
+}
+
 MaaSinkId RemoteController::add_sink(MaaEventCallback callback, void* trans_arg)
 {
     LogError << "Can NOT add sink for remote instance, use AgentServer.add_controller_sink instead" << VAR_VOIDP(callback)

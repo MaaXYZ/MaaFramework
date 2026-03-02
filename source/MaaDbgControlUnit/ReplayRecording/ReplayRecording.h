@@ -47,6 +47,8 @@ public: // from ControlUnitAPI
 
     virtual bool inactive() override;
 
+    virtual json::object get_info() const override;
+
 private:
     void sleep(int ms);
 

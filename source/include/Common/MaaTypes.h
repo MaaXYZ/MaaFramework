@@ -108,6 +108,8 @@ public:
     virtual std::string get_uuid() = 0;
 
     virtual bool get_resolution(int32_t& width, int32_t& height) const = 0;
+
+    virtual json::object get_info() const = 0;
 };
 
 struct MaaTasker : public IMaaEventDispatcher

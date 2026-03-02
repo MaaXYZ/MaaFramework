@@ -368,4 +368,17 @@ void AdbControlUnitMgr::on_app_stopped(const std::string& intent)
     });
 }
 
+json::object AdbControlUnitMgr::get_info() const
+{
+    json::object info;
+    info["type"] = "adb";
+    info["adb_path"] = path_to_utf8_string(adb_path_);
+    info["adb_serial"] = adb_serial_;
+    info["screencap_methods"] = static_cast<int64_t>(screencap_methods_);
+    info["input_methods"] = static_cast<int64_t>(input_methods_);
+    info["agent_path"] = path_to_utf8_string(agent_path_);
+    info["config"] = config_;
+    return info;
+}
+
 MAA_CTRL_UNIT_NS_END

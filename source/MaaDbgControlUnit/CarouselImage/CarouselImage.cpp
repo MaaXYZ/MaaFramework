@@ -2,6 +2,7 @@
 
 #include "MaaUtils/ImageIo.h"
 #include "MaaUtils/Logger.h"
+#include "MaaUtils/Platform.h"
 #include "MaaUtils/StringMisc.hpp"
 
 MAA_CTRL_UNIT_NS_BEGIN
@@ -175,6 +176,16 @@ bool CarouselImage::scroll(int dx, int dy)
 bool CarouselImage::inactive()
 {
     return true;
+}
+
+json::object CarouselImage::get_info() const
+{
+    json::object info;
+    info["type"] = "dbg_carousel_image";
+    info["path"] = path_to_utf8_string(path_);
+    info["image_count"] = static_cast<int64_t>(images_.size());
+    info["image_index"] = static_cast<int64_t>(image_index_);
+    return info;
 }
 
 MAA_CTRL_UNIT_NS_END

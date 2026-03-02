@@ -272,6 +272,15 @@ std::optional<std::tuple<int32_t, int32_t>> ControllerImpl::get_resolution()
     return std::make_tuple(width, height);
 }
 
+std::optional<std::string> ControllerImpl::get_info()
+{
+    StringBuffer buf;
+    if (!MaaControllerGetInfo(controller, buf)) {
+        return std::nullopt;
+    }
+    return buf.str();
+}
+
 std::string ControllerImpl::to_string()
 {
     return std::format(" handle = {:#018x}, {} ", reinterpret_cast<uintptr_t>(controller), own ? "owned" : "rented");
@@ -343,6 +352,7 @@ void ControllerImpl::init_proto(maajs::ObjectType proto, maajs::FunctionType)
     MAA_BIND_GETTER(proto, "cached_image", ControllerImpl::get_cached_image);
     MAA_BIND_GETTER(proto, "uuid", ControllerImpl::get_uuid);
     MAA_BIND_GETTER(proto, "resolution", ControllerImpl::get_resolution);
+    MAA_BIND_GETTER(proto, "info", ControllerImpl::get_info);
 }
 
 maajs::ValueType load_controller(maajs::EnvType env)
@@ -682,7 +692,6 @@ CustomControllerImpl* CustomControllerImpl::ctor(const maajs::CallbackInfo& info
 
     context->add_bind(info.Env(), "connect", "CustomConnect", 0, actor, ret_false);
     // context->add_bind(info.Env(), "connected", "CustomConnected", 0, actor, ret_true);
-    std::ignore = ret_true;
     context->add_bind(info.Env(), "request_uuid", "CustomRequestUuid", 0, actor, ret_null);
     context->add_bind(info.Env(), "get_features", "CustomGetFeatures", 0, actor, ret_null);
     context->add_bind(info.Env(), "start_app", "CustomStartApp", 1, actor, ret_false);
@@ -698,6 +707,8 @@ CustomControllerImpl* CustomControllerImpl::ctor(const maajs::CallbackInfo& info
     context->add_bind(info.Env(), "key_down", "CustomKeyDown", 1, actor, ret_false);
     context->add_bind(info.Env(), "key_up", "CustomKeyUp", 1, actor, ret_false);
     context->add_bind(info.Env(), "scroll", "CustomScroll", 2, actor, ret_false);
+    context->add_bind(info.Env(), "inactive", "CustomInactive", 0, actor, ret_true);
+    context->add_bind(info.Env(), "get_info", "CustomGetInfo", 0, actor, ret_null);
 
     auto impl = new CustomControllerImpl(ctrl, true);
     impl->actor = actor;

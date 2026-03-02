@@ -475,6 +475,9 @@ bool AgentClient::handle_inserted_request(const json::value& j)
     else if (handle_controller_get_resolution(j)) {
         return true;
     }
+    else if (handle_controller_get_info(j)) {
+        return true;
+    }
     else if (handle_event_response(j)) {
         return true;
     }
@@ -2323,6 +2326,26 @@ bool AgentClient::handle_controller_get_resolution(const json::value& j)
         .success = success,
         .width = width,
         .height = height,
+    };
+    send(resp);
+    return true;
+}
+
+bool AgentClient::handle_controller_get_info(const json::value& j)
+{
+    if (!j.is<ControllerGetInfoReverseRequest>()) {
+        return false;
+    }
+    const ControllerGetInfoReverseRequest& req = j.as<ControllerGetInfoReverseRequest>();
+    LogFunc << VAR(req) << VAR(ipc_addr_);
+    MaaController* controller = query_controller(req.controller_id);
+    if (!controller) {
+        LogError << "controller not found" << VAR(req.controller_id);
+        return false;
+    }
+    json::object info = controller->get_info();
+    ControllerGetInfoReverseResponse resp {
+        .info = std::move(info),
     };
     send(resp);
     return true;

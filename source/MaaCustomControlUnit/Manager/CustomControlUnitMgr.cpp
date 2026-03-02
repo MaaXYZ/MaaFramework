@@ -231,4 +231,40 @@ bool CustomControlUnitMgr::inactive()
     return controller_->inactive(controller_arg_);
 }
 
+json::object CustomControlUnitMgr::get_info() const
+{
+    json::object info;
+    if (auto extra_info_opt = get_info_from_controller()) {
+        info = std::move(*extra_info_opt);
+    }
+    info["type"] = "custom";
+
+    return info;
+}
+
+std::optional<json::object> CustomControlUnitMgr::get_info_from_controller() const
+{
+    if (!controller_ || !controller_->get_info) {
+        LogTrace << "get_info callback not provided, treating as no extra info";
+        return std::nullopt;
+    }
+
+    StringBuffer buffer;
+    if (!controller_->get_info(controller_arg_, &buffer)) {
+        LogTrace << "get_info callback returned false, treating as no extra info";
+        return std::nullopt;
+    }
+
+    auto extra_info_opt = json::parse(buffer.get());
+    if (!extra_info_opt.has_value()) {
+        LogWarn << "failed to parse custom get_info result as JSON";
+        return std::nullopt;
+    }
+    if (!extra_info_opt->is_object()) {
+        LogWarn << "custom get_info result is not a JSON object";
+        return std::nullopt;
+    }
+    return extra_info_opt->as_object();
+}
+
 MAA_CTRL_UNIT_NS_END

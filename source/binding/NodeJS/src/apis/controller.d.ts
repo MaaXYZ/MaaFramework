@@ -70,6 +70,7 @@ declare global {
             msg: NotifyMessage<'Action'>
             ctrl_id: number // CtrlId
             uuid: string
+            info: Record<string, unknown>
         } & (
             | {
                   action: 'connect'
@@ -193,6 +194,7 @@ declare global {
             get cached_image(): ImageData | null
             get uuid(): string | null
             get resolution(): [width: number, height: number] | null
+            get info(): string | null
         }
 
         type AdbDevice = [
@@ -306,6 +308,7 @@ declare global {
             key_up?(keycode: number): maa.MaybePromise<boolean>
             scroll?(dx: number, dy: number): maa.MaybePromise<boolean>
             inactive?(): maa.MaybePromise<boolean>
+            get_info?(): maa.MaybePromise<string | null>
         }
 
         class CustomController extends Controller {

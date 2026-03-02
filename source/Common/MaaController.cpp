@@ -384,3 +384,20 @@ MaaBool MaaControllerGetResolution(const MaaController* ctrl, int32_t* width, in
 
     return ctrl->get_resolution(*width, *height);
 }
+
+MaaBool MaaControllerGetInfo(const MaaController* ctrl, MaaStringBuffer* buffer)
+{
+    if (!ctrl || !buffer) {
+        LogError << "handle is null";
+        return false;
+    }
+
+    auto info = ctrl->get_info();
+    if (!info.contains("type") || !info.at("type").is_string()) {
+        LogError << "invalid controller info: missing or invalid type field";
+        return false;
+    }
+
+    buffer->set(info.to_string());
+    return true;
+}
