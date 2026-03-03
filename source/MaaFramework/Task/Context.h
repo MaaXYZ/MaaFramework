@@ -72,7 +72,7 @@ public:
     void increment_hit_count(const std::string& node_name);
 
 private:
-    bool override_pipeline_once(const json::object& pipeline_override, const MAA_RES_NS::DefaultPipelineMgr& default_mgr);
+    bool override_pipeline_once(const json::object& pipeline_override);
     bool check_pipeline() const;
 
     MaaTaskId task_id_ = 0;

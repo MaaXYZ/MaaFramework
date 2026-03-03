@@ -4,7 +4,6 @@
 
 #include "Base/AsyncRunner.hpp"
 #include "Common/MaaTypes.h"
-#include "DefaultPipelineMgr.h"
 #include "MaaFramework/Instance/MaaResource.h"
 #include "OCRResMgr.h"
 #include "ONNXResMgr.h"
@@ -106,8 +105,6 @@ public:
 
     auto& template_res() { return template_res_; }
 
-    const auto& default_pipeline() const { return default_pipeline_; }
-
     const std::vector<std::filesystem::path>& paths() const { return paths_; }
 
     CustomRecognitionSession custom_recognition(const std::string& name) const;
@@ -139,7 +136,6 @@ private:
     bool need_to_stop_ = false;
 
 private:
-    DefaultPipelineMgr default_pipeline_;
     PipelineResMgr pipeline_res_;
     OCRResMgr ocr_res_;
     ONNXResMgr onnx_res_;

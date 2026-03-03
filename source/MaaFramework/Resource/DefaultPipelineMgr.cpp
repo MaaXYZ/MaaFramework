@@ -34,14 +34,21 @@ void DefaultPipelineMgr::clear()
 
 bool DefaultPipelineMgr::parse_pipeline(const json::value& input)
 {
-    static const std::string kDefaultKey = "Default";
-    auto opt = input.find(kDefaultKey);
-    if (!opt) {
+    auto opt = input.find("Default");
+    auto dollar_opt = input.find("$Default");
+
+    if (opt && dollar_opt) {
+        LogError << "both \"Default\" and \"$Default\" exist, please use only one";
+        return false;
+    }
+
+    auto& found = opt ? opt : dollar_opt;
+    if (!found) {
         LogDebug << "no default key found in pipeline" << VAR(input);
         return true;
     }
 
-    return PipelineParser::parse_node(std::string(), *opt, pipeline_param_, {}, {});
+    return PipelineParser::parse_node(std::string(), *found, pipeline_param_, {}, {});
 }
 
 bool DefaultPipelineMgr::parse_recognition(const json::value& input)
@@ -50,13 +57,21 @@ bool DefaultPipelineMgr::parse_recognition(const json::value& input)
 
     for (const auto& [name, type] : kTypeMap) {
         auto opt = input.find(name);
-        if (!opt) {
+        auto dollar_opt = input.find("$" + name);
+
+        if (opt && dollar_opt) {
+            LogError << "both" << VAR(name) << "and" << VAR("$" + name) << "exist, please use only one";
+            return false;
+        }
+
+        auto& found = opt ? opt : dollar_opt;
+        if (!found) {
             continue;
         }
 
         Type parsed_type = Type::Invalid;
         Param parsed_param;
-        bool ret = PipelineParser::parse_recognition(*opt, parsed_type, parsed_param, Type::Invalid, {}, {});
+        bool ret = PipelineParser::parse_recognition(*found, parsed_type, parsed_param, Type::Invalid, {}, {});
         if (!ret) {
             LogError << "parse_recognition failed" << VAR(name);
             return false;
@@ -77,13 +92,21 @@ bool DefaultPipelineMgr::parse_action(const json::value& input)
 
     for (const auto& [name, type] : kTypeMap) {
         auto opt = input.find(name);
-        if (!opt) {
+        auto dollar_opt = input.find("$" + name);
+
+        if (opt && dollar_opt) {
+            LogError << "both" << VAR(name) << "and" << VAR("$" + name) << "exist, please use only one";
+            return false;
+        }
+
+        auto& found = opt ? opt : dollar_opt;
+        if (!found) {
             continue;
         }
 
         Type parsed_type = Type::Invalid;
         Param parsed_param;
-        bool ret = PipelineParser::parse_action(*opt, parsed_type, parsed_param, Type::Invalid, {}, {});
+        bool ret = PipelineParser::parse_action(*found, parsed_type, parsed_param, Type::Invalid, {}, {});
         if (!ret) {
             LogError << "parse_action failed" << VAR(name);
             return false;
