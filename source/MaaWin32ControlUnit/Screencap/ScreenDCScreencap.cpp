@@ -12,6 +12,11 @@ std::optional<cv::Mat> ScreenDCScreencap::screencap()
         return std::nullopt;
     }
 
+    // Ensure the window is fully visible on the monitor before screencap
+    if (!ensure_window_on_screen(hwnd_)) {
+        LogWarn << "Failed to ensure window on screen";
+    }
+
     // 获取窗口在屏幕上的位置
     RECT window_rect = { 0 };
     if (!GetWindowRect(hwnd_, &window_rect)) {
