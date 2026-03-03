@@ -156,8 +156,8 @@ inline bool ensure_window_on_screen(HWND hwnd)
     int new_window_w = new_client_w + frame_left + frame_right;
     int new_window_h = new_client_h + frame_top + frame_bottom;
 
-    LogInfo << "Moving/resizing window to keep client area on screen" << VAR(new_window_x) << VAR(new_window_y)
-            << VAR(new_window_w) << VAR(new_window_h);
+    LogInfo << "Moving/resizing window to keep client area on screen" << VAR(new_window_x) << VAR(new_window_y) << VAR(new_window_w)
+            << VAR(new_window_h);
 
     // SWP_ASYNCWINDOWPOS: avoid blocking if the target window's thread is busy/hung
     return SetWindowPos(
