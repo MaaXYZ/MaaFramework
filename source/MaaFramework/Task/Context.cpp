@@ -163,12 +163,9 @@ bool Context::wait_freezes(std::chrono::milliseconds time, const cv::Rect& box, 
         return false;
     }
 
-    // 使用框架内置默认值
-    MAA_RES_NS::WaitFreezesParam default_param;
-
     // 解析 wait_freezes_param
     MAA_RES_NS::WaitFreezesParam param;
-    if (!MAA_RES_NS::PipelineParser::parse_wait_freezes_value(wait_freezes_param, param, default_param)) {
+    if (!MAA_RES_NS::PipelineParser::parse_wait_freezes_value(wait_freezes_param, param)) {
         LogError << "failed to parse wait_freezes_param" << VAR(wait_freezes_param);
         return false;
     }
