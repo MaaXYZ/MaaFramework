@@ -78,7 +78,7 @@ extern "C"
     MAA_FRAMEWORK_API MaaBool MaaResourceGetCustomActionList(const MaaResource* res, /* out */ MaaStringListBuffer* buffer);
 
     /**
-     * @brief Get default recognition parameters for the specified type from DefaultPipelineMgr.
+     * @brief Get framework built-in default recognition parameters for the specified type.
      *
      * @param reco_type Recognition type string (e.g., "OCR", "TemplateMatch")
      * @param buffer [out] Output buffer for the JSON string of recognition parameters
@@ -87,7 +87,7 @@ extern "C"
         MaaResourceGetDefaultRecognitionParam(const MaaResource* res, const char* reco_type, /* out */ MaaStringBuffer* buffer);
 
     /**
-     * @brief Get default action parameters for the specified type from DefaultPipelineMgr.
+     * @brief Get framework built-in default action parameters for the specified type.
      *
      * @param action_type Action type string (e.g., "Click", "Swipe")
      * @param buffer [out] Output buffer for the JSON string of action parameters
