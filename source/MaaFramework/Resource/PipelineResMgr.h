@@ -33,6 +33,7 @@ public:
 
 public:
     bool parse_and_override(const json::value& input, std::set<std::string>& existing_keys, const DefaultPipelineMgr& default_mgr = {});
+    bool parse_and_override(const json::value& input, const DefaultPipelineMgr& default_mgr = {});
 
 private:
     bool load_all_json(const std::filesystem::path& path, const DefaultPipelineMgr& default_mgr);

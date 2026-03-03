@@ -48,7 +48,7 @@ bool DefaultPipelineMgr::parse_pipeline(const json::value& input)
         return true;
     }
 
-    return PipelineParser::parse_node(std::string(), *found, pipeline_param_, {}, {});
+    return PipelineParser::parse_node(std::string(), *found, pipeline_param_, {});
 }
 
 bool DefaultPipelineMgr::parse_recognition(const json::value& input)
@@ -71,7 +71,7 @@ bool DefaultPipelineMgr::parse_recognition(const json::value& input)
 
         Type parsed_type = Type::Invalid;
         Param parsed_param;
-        bool ret = PipelineParser::parse_recognition(*found, parsed_type, parsed_param, Type::Invalid, {}, {});
+        bool ret = PipelineParser::parse_recognition(*found, parsed_type, parsed_param, Type::Invalid, {});
         if (!ret) {
             LogError << "parse_recognition failed" << VAR(name);
             return false;
@@ -106,7 +106,7 @@ bool DefaultPipelineMgr::parse_action(const json::value& input)
 
         Type parsed_type = Type::Invalid;
         Param parsed_param;
-        bool ret = PipelineParser::parse_action(*found, parsed_type, parsed_param, Type::Invalid, {}, {});
+        bool ret = PipelineParser::parse_action(*found, parsed_type, parsed_param, Type::Invalid, {});
         if (!ret) {
             LogError << "parse_action failed" << VAR(name);
             return false;

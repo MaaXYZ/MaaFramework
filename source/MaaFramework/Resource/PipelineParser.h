@@ -23,7 +23,7 @@ public:
         const json::value& input,
         PipelineData& output,
         const PipelineData& parent_values,
-        const DefaultPipelineMgr& default_mgr);
+        const DefaultPipelineMgr& default_mgr = {});
 
     static bool parse_recognition(
         const json::value& input,
@@ -31,7 +31,7 @@ public:
         Recognition::Param& out_param,
         const Recognition::Type& parent_type,
         const Recognition::Param& parent_param,
-        const DefaultPipelineMgr& default_mgr);
+        const DefaultPipelineMgr& default_mgr = {});
 
     static bool parse_action(
         const json::value& input,
@@ -39,7 +39,7 @@ public:
         Action::Param& out_param,
         const Action::Type& parent_type,
         const Action::Param& parent_param,
-        const DefaultPipelineMgr& default_mgr);
+        const DefaultPipelineMgr& default_mgr = {});
 
     static bool parse_next(const json::value& input, std::vector<NodeAttr>& output);
 

@@ -162,6 +162,12 @@ bool PipelineResMgr::parse_and_override(
     return ret;
 }
 
+bool PipelineResMgr::parse_and_override(const json::value& input, const DefaultPipelineMgr& default_mgr)
+{
+    std::set<std::string> existing_keys;
+    return parse_and_override(input, existing_keys, default_mgr);
+}
+
 bool PipelineResMgr::parse_and_override_once(
     const json::object& input,
     std::set<std::string>& existing_keys,

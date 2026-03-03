@@ -248,8 +248,7 @@ bool ResourceMgr::override_pipeline(const json::value& pipeline_override)
 {
     LogInfo << VAR(pipeline_override);
 
-    std::set<std::string> existing_keys;
-    return pipeline_res_.parse_and_override(pipeline_override, existing_keys);
+    return pipeline_res_.parse_and_override(pipeline_override);
 }
 
 bool ResourceMgr::override_next(const std::string& node_name, const std::vector<std::string>& next)
