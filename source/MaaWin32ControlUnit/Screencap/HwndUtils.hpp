@@ -79,7 +79,7 @@ inline bool ensure_window_on_screen(HWND hwnd)
         return false;
     }
 
-    RECT monitor_rect = mi.rcMonitor;
+    RECT monitor_rect = mi.rcWork;
     int monitor_w = monitor_rect.right - monitor_rect.left;
     int monitor_h = monitor_rect.bottom - monitor_rect.top;
 
@@ -159,7 +159,15 @@ inline bool ensure_window_on_screen(HWND hwnd)
     LogInfo << "Moving/resizing window to keep client area on screen" << VAR(new_window_x) << VAR(new_window_y)
             << VAR(new_window_w) << VAR(new_window_h);
 
-    return SetWindowPos(hwnd, nullptr, new_window_x, new_window_y, new_window_w, new_window_h, SWP_NOZORDER | SWP_NOACTIVATE)
+    // SWP_ASYNCWINDOWPOS: avoid blocking if the target window's thread is busy/hung
+    return SetWindowPos(
+               hwnd,
+               nullptr,
+               new_window_x,
+               new_window_y,
+               new_window_w,
+               new_window_h,
+               SWP_NOZORDER | SWP_NOACTIVATE | SWP_ASYNCWINDOWPOS)
            != 0;
 }
 
