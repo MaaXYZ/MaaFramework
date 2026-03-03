@@ -97,6 +97,9 @@ It offers low-code simplicity while maintaining high extensibility. The framewor
 - [MaaLogAnalyzer](https://github.com/Windsland52/MAALogAnalyzer) ![Typescript](https://img.shields.io/badge/Typescript-8A2BE2?logo=typescript) ![license](https://img.shields.io/github/license/Windsland52/MAALogAnalyzer) ![activity](https://img.shields.io/github/commit-activity/m/Windsland52/MAALogAnalyzer?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/Windsland52/MAALogAnalyzer?style=social) [![website](https://img.shields.io/badge/https://maaloganalyzer.maafw.com-%234285F4)](https://maaloganalyzer.maafw.com/)  
     MaaFramework user log analysis tool, supporting visual task execution flow and full-text search.
 
+- [MaaLogs](https://github.com/amiliyaai/MaaLogs) ![TypeScript](https://img.shields.io/badge/Typescript-8A2BE2?logo=typescript) ![license](https://img.shields.io/github/license/amiliyaai/MaaLogs) ![activity](https://img.shields.io/github/commit-activity/m/amiliyaai/MaaLogs?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/amiliyaai/MaaLogs?style=social)  
+    MaaFramework log analysis tool, supports multi-project log parsing, visual task processes, and AI intelligent analysis
+
 ### Application
 
 - [M9A](https://github.com/MaaXYZ/M9A) ![Pipeline](https://img.shields.io/badge/Pipeline-%23876f69?logo=paddypower&logoColor=%23FFFFFF) ![python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white) ![license](https://img.shields.io/github/license/MaaXYZ/M9A) ![activity](https://img.shields.io/github/commit-activity/m/MaaXYZ/M9A?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/MaaXYZ/M9A?style=social) [![mirrorc](./docs/static/mirrorc-en.svg)](https://mirrorchyan.com/en/projects?source=maafw-badge) [![website](https://img.shields.io/badge/https://1999.fan-%234285F4)](https://1999.fan)  
