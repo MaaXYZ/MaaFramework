@@ -167,6 +167,20 @@ bool PipelineResMgr::parse_and_override_once(
     std::set<std::string>& existing_keys,
     const DefaultPipelineMgr& default_mgr)
 {
+    static const std::string kFileDefaultKey = "$Default";
+
+    PipelineData file_default = default_mgr.get_pipeline();
+    if (auto opt = input.find(kFileDefaultKey)) {
+        if (!opt->is_object()) {
+            LogError << "$Default value is not object";
+            return false;
+        }
+        if (!PipelineParser::parse_node(std::string(), *opt, file_default, default_mgr.get_pipeline(), default_mgr)) {
+            LogError << "parse $Default failed";
+            return false;
+        }
+    }
+
     for (const auto& [key, value] : input) {
         if (key.empty()) {
             LogError << "key is empty" << VAR(key);
@@ -186,7 +200,7 @@ bool PipelineResMgr::parse_and_override_once(
         }
 
         PipelineData result;
-        const auto& default_result = pipeline_data_map_.contains(key) ? pipeline_data_map_.at(key) : default_mgr.get_pipeline();
+        const auto& default_result = pipeline_data_map_.contains(key) ? pipeline_data_map_.at(key) : file_default;
         bool ret = PipelineParser::parse_node(key, value, result, default_result, default_mgr);
         if (!ret) {
             LogError << "parse_task failed" << VAR(key) << VAR(value);
