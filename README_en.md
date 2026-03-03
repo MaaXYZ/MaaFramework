@@ -98,7 +98,7 @@ It offers low-code simplicity while maintaining high extensibility. The framewor
     MaaFramework user log analysis tool, supporting visual task execution flow and full-text search.
 
 - [MaaLogs](https://github.com/amiliyaai/MaaLogs) ![TypeScript](https://img.shields.io/badge/Typescript-8A2BE2?logo=typescript) ![license](https://img.shields.io/github/license/amiliyaai/MaaLogs) ![activity](https://img.shields.io/github/commit-activity/m/amiliyaai/MaaLogs?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/amiliyaai/MaaLogs?style=social)  
-    MaaFramework log analysis tool, supports multi-project log parsing, visual task processes, and AI intelligent analysis
+    MaaFramework log analysis tool that supports multi-project log parsing, visual task processes, and AI intelligent analysis.
 
 ### Application
 
