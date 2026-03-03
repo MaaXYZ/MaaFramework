@@ -60,7 +60,7 @@ bool DefaultPipelineMgr::parse_recognition(const json::value& input)
         auto dollar_opt = input.find("$" + name);
 
         if (opt && dollar_opt) {
-            LogError << "both" << VAR(name) << "and" << VAR("$" + name) << "exist, please use only one";
+            LogError << "both " << VAR(name) << " and " << VAR("$" + name) << " exist, please use only one";
             return false;
         }
 
@@ -95,7 +95,7 @@ bool DefaultPipelineMgr::parse_action(const json::value& input)
         auto dollar_opt = input.find("$" + name);
 
         if (opt && dollar_opt) {
-            LogError << "both" << VAR(name) << "and" << VAR("$" + name) << "exist, please use only one";
+            LogError << "both " << VAR(name) << " and " << VAR("$" + name) << " exist, please use only one";
             return false;
         }
 
