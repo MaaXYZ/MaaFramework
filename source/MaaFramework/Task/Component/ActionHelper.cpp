@@ -13,7 +13,7 @@ ActionHelper::ActionHelper(Tasker* tasker)
 {
 }
 
-bool ActionHelper::wait_freezes(const MAA_RES_NS::WaitFreezesParam& param, const cv::Rect& box)
+bool ActionHelper::wait_freezes(const MAA_RES_NS::WaitFreezesParam& param, const cv::Rect& box, const std::string& name)
 {
     if (param.time <= std::chrono::milliseconds(0)) {
         return true;
@@ -65,7 +65,10 @@ bool ActionHelper::wait_freezes(const MAA_RES_NS::WaitFreezesParam& param, const
             return false;
         }
 
-        TemplateComparator comparator(pre_image, cur_image, { roi }, comp_param);
+        std::string draw_name = name.empty() ? "wait_freezes" : std::format("{}_wait_freezes", name);
+        TemplateComparator comparator(pre_image, cur_image, { roi }, comp_param, draw_name);
+
+        VisionBase::save_draws(draw_name, comparator.draws());
 
         if (!comparator.best_result()) {
             pre_image = cur_image;

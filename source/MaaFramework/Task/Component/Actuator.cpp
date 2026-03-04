@@ -36,7 +36,7 @@ ActionResult Actuator::run(const cv::Rect& reco_hit, MaaRecoId reco_id, const Pi
         return {};
     }
 
-    wait_freezes(pipeline_data.pre_wait_freezes, reco_hit);
+    wait_freezes(pipeline_data.pre_wait_freezes, reco_hit, pipeline_data.name);
     sleep(pipeline_data.pre_delay);
 
     auto& rt_cache = tasker_->runtime_cache();
@@ -44,7 +44,7 @@ ActionResult Actuator::run(const cv::Rect& reco_hit, MaaRecoId reco_id, const Pi
 
     for (uint i = 0; i < pipeline_data.repeat; ++i) {
         if (i > 0) {
-            wait_freezes(pipeline_data.repeat_wait_freezes, reco_hit);
+            wait_freezes(pipeline_data.repeat_wait_freezes, reco_hit, pipeline_data.name);
             sleep(pipeline_data.repeat_delay);
         }
 
@@ -61,7 +61,7 @@ ActionResult Actuator::run(const cv::Rect& reco_hit, MaaRecoId reco_id, const Pi
         }
     }
 
-    wait_freezes(pipeline_data.post_wait_freezes, reco_hit);
+    wait_freezes(pipeline_data.post_wait_freezes, reco_hit, pipeline_data.name);
     sleep(pipeline_data.post_delay);
 
     return result;
@@ -559,14 +559,14 @@ ActionResult Actuator::screencap(const MAA_RES_NS::Action::ScreencapParam& param
     };
 }
 
-void Actuator::wait_freezes(const MAA_RES_NS::WaitFreezesParam& param, const cv::Rect& box)
+void Actuator::wait_freezes(const MAA_RES_NS::WaitFreezesParam& param, const cv::Rect& box, const std::string& name)
 {
     if (param.time <= std::chrono::milliseconds(0)) {
         return;
     }
 
     cv::Rect roi = helper_.get_target_rect(param.target, box);
-    helper_.wait_freezes(param, roi);
+    helper_.wait_freezes(param, roi, name);
 }
 
 ActionResult Actuator::start_app(const MAA_RES_NS::Action::AppParam& param, const std::string& name)
