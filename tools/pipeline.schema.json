@@ -42,6 +42,15 @@
                     "description": "文档 | 该节点属性的文档说明。",
                     "type": "string",
                     "markdownDescription": "*string*\n\n文档 | 该节点属性的文档说明。"
+                },
+                ".*_docs$|^docs$": {
+                    "title": "Document List Property",
+                    "description": "文档 | 该节点属性的文档说明列表。",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    },
+                    "markdownDescription": "*string[]*\n\n文档 | 该节点属性的文档说明列表。"
                 }
             }
         },
