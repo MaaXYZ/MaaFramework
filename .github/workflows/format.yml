@@ -7,6 +7,7 @@ on:
 
 jobs:
     format:
+        if: ${{ github.repository_owner == 'MaaXYZ' }}
         runs-on: macos-latest
         steps:
             - name: Checkout repository
