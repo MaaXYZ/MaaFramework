@@ -89,7 +89,7 @@ void VisionBase::save_draws(const std::string& name, const std::vector<ImageEnco
 
     for (const auto& draw : draws) {
         std::string filename = std::format("{}_{}.jpg", format_now_for_filename(), name);
-        auto filepath = dir / std::filesystem::path(filename);
+        auto filepath = dir / path(filename);
 
         std::ofstream of(filepath, std::ios::out | std::ios::binary);
         of.write(reinterpret_cast<const char*>(draw.data()), draw.size());
