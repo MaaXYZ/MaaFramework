@@ -4,6 +4,7 @@
 #include "Controller/ControllerAgent.h"
 #include "CustomAction.h"
 #include "Global/OptionMgr.h"
+#include "MaaFramework/MaaMsg.h"
 #include "MaaUtils/ImageIo.h"
 #include "MaaUtils/JsonExt.hpp"
 #include "MaaUtils/Logger.h"
@@ -36,7 +37,7 @@ ActionResult Actuator::run(const cv::Rect& reco_hit, MaaRecoId reco_id, const Pi
         return {};
     }
 
-    wait_freezes(pipeline_data.pre_wait_freezes, reco_hit, pipeline_data.name);
+    wait_freezes(pipeline_data.pre_wait_freezes, reco_hit, pipeline_data.name, "pre", pipeline_data.focus);
     sleep(pipeline_data.pre_delay);
 
     auto& rt_cache = tasker_->runtime_cache();
@@ -44,7 +45,7 @@ ActionResult Actuator::run(const cv::Rect& reco_hit, MaaRecoId reco_id, const Pi
 
     for (uint i = 0; i < pipeline_data.repeat; ++i) {
         if (i > 0) {
-            wait_freezes(pipeline_data.repeat_wait_freezes, reco_hit, pipeline_data.name);
+            wait_freezes(pipeline_data.repeat_wait_freezes, reco_hit, pipeline_data.name, "repeat", pipeline_data.focus);
             sleep(pipeline_data.repeat_delay);
         }
 
@@ -61,7 +62,7 @@ ActionResult Actuator::run(const cv::Rect& reco_hit, MaaRecoId reco_id, const Pi
         }
     }
 
-    wait_freezes(pipeline_data.post_wait_freezes, reco_hit, pipeline_data.name);
+    wait_freezes(pipeline_data.post_wait_freezes, reco_hit, pipeline_data.name, "post", pipeline_data.focus);
     sleep(pipeline_data.post_delay);
 
     return result;
@@ -559,14 +560,48 @@ ActionResult Actuator::screencap(const MAA_RES_NS::Action::ScreencapParam& param
     };
 }
 
-void Actuator::wait_freezes(const MAA_RES_NS::WaitFreezesParam& param, const cv::Rect& box, const std::string& name)
+void Actuator::wait_freezes(
+    const MAA_RES_NS::WaitFreezesParam& param,
+    const cv::Rect& box,
+    const std::string& name,
+    std::string_view phase,
+    const json::value& focus)
 {
     if (param.time <= std::chrono::milliseconds(0)) {
         return;
     }
+    if (!tasker_) {
+        LogError << "tasker is null";
+        return;
+    }
 
     cv::Rect roi = helper_.get_target_rect(param.target, box);
-    helper_.wait_freezes(param, roi, name);
+
+    json::value cb_detail {
+        { "task_id", context_.task_id() },
+        { "name", name },
+        { "phase", std::string(phase) },
+        { "roi", roi },
+        { "param",
+          {
+              { "time", param.time.count() },
+              { "threshold", param.threshold },
+              { "method", param.method },
+              { "rate_limit", param.rate_limit.count() },
+              { "timeout", param.timeout.count() },
+          } },
+        { "focus", focus },
+    };
+    tasker_->context_notify(&context_, MaaMsg_Node_WaitFreezes_Starting, cb_detail);
+
+    auto wait_result = helper_.wait_freezes(param, roi, name);
+    cb_detail["reco_ids"] = json::array(wait_result.reco_ids);
+    cb_detail["elapsed"] = wait_result.elapsed.count();
+
+    tasker_->context_notify(
+        &context_,
+        wait_result.success ? MaaMsg_Node_WaitFreezes_Succeeded : MaaMsg_Node_WaitFreezes_Failed,
+        cb_detail);
 }
 
 ActionResult Actuator::start_app(const MAA_RES_NS::Action::AppParam& param, const std::string& name)
