@@ -128,8 +128,10 @@ cv::Mat TemplateComparator::draw_result(const cv::Rect& roi, double score) const
     cv::rectangle(draw, rhs_roi, roi_color, 1);
     cv::putText(draw, roi_flag, cv::Point(rhs_roi.x, rhs_roi.y - 5), cv::FONT_HERSHEY_PLAIN, 1.2, roi_color, 1);
 
+    cv::line(draw, roi.tl(), rhs_roi.tl(), roi_color, 1);
+
     std::string score_flag = std::format("Score: {:.3f}", score);
-    cv::putText(draw, score_flag, cv::Point(roi.x, roi.y + roi.height + 20), cv::FONT_HERSHEY_PLAIN, 1.2, score_color, 1);
+    cv::putText(draw, score_flag, cv::Point(roi.x, roi.y + roi.height + 30), cv::FONT_HERSHEY_SIMPLEX, 1, score_color, 2);
 
     return draw;
 }
