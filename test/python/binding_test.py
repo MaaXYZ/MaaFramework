@@ -154,13 +154,20 @@ class MyRecognition(CustomRecognition):
         # 测试 wait_freezes API（参数校验：time 和 wait_freezes_param.time 同时为零应返回 false）
         from maa.pipeline import JWaitFreezes
 
-        wait_result = new_ctx.wait_freezes(
-            time=0, wait_freezes_param=JWaitFreezes(time=0)
-        )
-        print(f"  wait_freezes (both zero): {wait_result}")
-        assert (
-            not wait_result
-        ), "wait_freezes should return false when both time are zero"
+        wait_cases = [
+            ("both zero", None),
+            ("both zero, with box", (10, 10, 100, 100)),
+        ]
+        for case_name, box in wait_cases:
+            wait_result = new_ctx.wait_freezes(
+                time=0,
+                box=box,
+                wait_freezes_param=JWaitFreezes(time=0),
+            )
+            print(f"  wait_freezes ({case_name}): {wait_result}")
+            assert (
+                not wait_result
+            ), "wait_freezes should return false when both time are zero"
 
         # 测试 override_image
         test_image = numpy.zeros((100, 100, 3), dtype=numpy.uint8)
@@ -218,7 +225,9 @@ class MyAction(CustomAction):
         uuid = controller.uuid
         resolution = controller.resolution
         info = controller.info
-        print(f"  connected: {connected}, uuid: {uuid}, resolution: {resolution}, info type: {info.get('type')}")
+        print(
+            f"  connected: {connected}, uuid: {uuid}, resolution: {resolution}, info type: {info.get('type')}"
+        )
 
         global runned
         runned = True
@@ -398,7 +407,9 @@ def test_controller_api():
     print(f"  info: {info}")
     assert isinstance(info, dict), "info should be a dict"
     assert "type" in info, "info should contain 'type'"
-    assert info["type"].startswith("dbg_"), "dbg controller type should start with 'dbg_'"
+    assert info["type"].startswith(
+        "dbg_"
+    ), "dbg controller type should start with 'dbg_'"
 
     # 测试输入操作
     dbg_controller.post_click(100, 100).wait()
@@ -685,7 +696,9 @@ def test_custom_controller():
     print(f"  info: {info}")
     assert isinstance(info, dict), "info should be a dict"
     assert info.get("type") == "custom", "info type should be custom"
-    assert info.get("custom_key") == "custom_value", "custom info should contain custom_key"
+    assert (
+        info.get("custom_key") == "custom_value"
+    ), "custom info should contain custom_key"
     assert info.get("answer") == 42, "custom info should contain answer"
 
     ret &= controller.post_start_app("custom_aaa").wait().succeeded
