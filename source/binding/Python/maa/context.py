@@ -447,23 +447,34 @@ class Context:
             - time 和 wait_freezes_param.time 互斥，不能同时为非零或同时为零 / time and wait_freezes_param.time are mutually exclusive
         """
         rect_handle = None
-        if box:
-            rect_handle = MaaRectHandle()
-            Library.framework().MaaRectSet(rect_handle, box[0], box[1], box[2], box[3])
+        try:
+            if box:
+                rect_handle = Library.framework().MaaRectCreate()
+                if not rect_handle:
+                    return False
+                Library.framework().MaaRectSet(
+                    rect_handle, box[0], box[1], box[2], box[3]
+                )
 
-        # Convert JWaitFreezes to dict
-        from dataclasses import asdict
-        param_dict = asdict(wait_freezes_param) if wait_freezes_param is not None else {}
-        param_json = json.dumps(param_dict, ensure_ascii=False)
+            # Convert JWaitFreezes to dict
+            from dataclasses import asdict
 
-        return bool(
-            Library.framework().MaaContextWaitFreezes(
-                self._handle,
-                ctypes.c_uint64(time),
-                rect_handle,
-                param_json.encode(),
+            param_dict = (
+                asdict(wait_freezes_param) if wait_freezes_param is not None else {}
             )
-        )
+            param_json = json.dumps(param_dict, ensure_ascii=False)
+
+            return bool(
+                Library.framework().MaaContextWaitFreezes(
+                    self._handle,
+                    ctypes.c_uint64(time),
+                    rect_handle,
+                    param_json.encode(),
+                )
+            )
+        finally:
+            if rect_handle:
+                Library.framework().MaaRectDestroy(rect_handle)
 
     ### private ###
 
