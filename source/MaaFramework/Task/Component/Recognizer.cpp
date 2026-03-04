@@ -560,24 +560,8 @@ std::vector<cv::Rect> Recognizer::get_rois_from_pretask(const std::string& name,
 
 void Recognizer::save_draws(const std::string& node_name, const RecoResult& result) const
 {
-    const auto& option = MAA_GLOBAL_NS::OptionMgr::get_instance();
-
-    if (!option.save_draw()) {
-        return;
-    }
-
-    auto dir = option.log_dir() / "vision";
-
-    std::filesystem::create_directories(dir);
-
-    for (const auto& draw : result.draws) {
-        std::string filename = std::format("{}_{}_{}.jpg", format_now_for_filename(), node_name, result.reco_id);
-        auto filepath = dir / path(filename);
-
-        std::ofstream of(filepath, std::ios::out | std::ios::binary);
-        of.write(reinterpret_cast<const char*>(draw.data()), draw.size());
-        LogDebug << "save draw to" << filepath;
-    }
+    std::string name = std::format("{}_{}", node_name, result.reco_id);
+    MAA_VISION_NS::VisionBase::save_draws(name, result.draws);
 }
 
 bool Recognizer::debug_mode() const

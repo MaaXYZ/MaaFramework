@@ -62,7 +62,7 @@ private:
     ActionResult do_nothing(const std::string& name);
     ActionResult stop_task(const std::string& name);
 
-    void wait_freezes(const MAA_RES_NS::WaitFreezesParam& param, const cv::Rect& box);
+    void wait_freezes(const MAA_RES_NS::WaitFreezesParam& param, const cv::Rect& box, const std::string& name);
 
 private:
     MAA_CTRL_NS::ControllerAgent* controller();

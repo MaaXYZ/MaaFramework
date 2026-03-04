@@ -26,6 +26,8 @@ public:
 private:
     void analyze();
 
+    cv::Mat draw_result(const cv::Rect& roi, double score) const;
+
     void add_results(ResultsVec results, double threshold);
     void cherry_pick();
 
