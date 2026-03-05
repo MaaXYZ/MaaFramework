@@ -79,11 +79,14 @@ var searchData=
   ['maawin32inputmethod_5fsendmessage_76',['MaaWin32InputMethod_SendMessage',['../MaaDef_8h.html#a2fee933704cac46f8223159133aeb8db',1,'MaaDef.h']]],
   ['maawin32inputmethod_5fsendmessagewithcursorpos_77',['MaaWin32InputMethod_SendMessageWithCursorPos',['../MaaDef_8h.html#a56de1c099cca8d34e038b77a644b949f',1,'MaaDef.h']]],
   ['maawin32inputmethod_5fsendmessagewithwindowpos_78',['MaaWin32InputMethod_SendMessageWithWindowPos',['../MaaDef_8h.html#afa5aca8f812f6146ef66b2a8db0da7a2',1,'MaaDef.h']]],
-  ['maawin32screencapmethod_5fdxgi_5fdesktopdup_79',['MaaWin32ScreencapMethod_DXGI_DesktopDup',['../MaaDef_8h.html#a4d026e22eafc66cebdde713c465611c8',1,'MaaDef.h']]],
-  ['maawin32screencapmethod_5fdxgi_5fdesktopdup_5fwindow_80',['MaaWin32ScreencapMethod_DXGI_DesktopDup_Window',['../MaaDef_8h.html#a6969fc9b9c90c5bff9e560898e47e6bf',1,'MaaDef.h']]],
-  ['maawin32screencapmethod_5fframepool_81',['MaaWin32ScreencapMethod_FramePool',['../MaaDef_8h.html#ac28f7c7af8541a08033bd77772ebd082',1,'MaaDef.h']]],
-  ['maawin32screencapmethod_5fgdi_82',['MaaWin32ScreencapMethod_GDI',['../MaaDef_8h.html#a8ac9b0f247ee9b853034b35969adc050',1,'MaaDef.h']]],
-  ['maawin32screencapmethod_5fnone_83',['MaaWin32ScreencapMethod_None',['../MaaDef_8h.html#a614ef2e0ce06147b8077158da914292f',1,'MaaDef.h']]],
-  ['maawin32screencapmethod_5fprintwindow_84',['MaaWin32ScreencapMethod_PrintWindow',['../MaaDef_8h.html#afbfcb148e25ffa976ca826da7b6e6c8c',1,'MaaDef.h']]],
-  ['maawin32screencapmethod_5fscreendc_85',['MaaWin32ScreencapMethod_ScreenDC',['../MaaDef_8h.html#a28df53af4d4eb7411ec15d6e5ca4632b',1,'MaaDef.h']]]
+  ['maawin32screencapmethod_5fall_79',['MaaWin32ScreencapMethod_All',['../MaaDef_8h.html#a07f53725cc489fc512718fa39087e9f1',1,'MaaDef.h']]],
+  ['maawin32screencapmethod_5fbackground_80',['MaaWin32ScreencapMethod_Background',['../MaaDef_8h.html#a391529c4470c4c1dc19cd479de7191da',1,'MaaDef.h']]],
+  ['maawin32screencapmethod_5fdxgi_5fdesktopdup_81',['MaaWin32ScreencapMethod_DXGI_DesktopDup',['../MaaDef_8h.html#a4d026e22eafc66cebdde713c465611c8',1,'MaaDef.h']]],
+  ['maawin32screencapmethod_5fdxgi_5fdesktopdup_5fwindow_82',['MaaWin32ScreencapMethod_DXGI_DesktopDup_Window',['../MaaDef_8h.html#a6969fc9b9c90c5bff9e560898e47e6bf',1,'MaaDef.h']]],
+  ['maawin32screencapmethod_5fforeground_83',['MaaWin32ScreencapMethod_Foreground',['../MaaDef_8h.html#aa58ab888a82d1559dd65150e87057e1f',1,'MaaDef.h']]],
+  ['maawin32screencapmethod_5fframepool_84',['MaaWin32ScreencapMethod_FramePool',['../MaaDef_8h.html#ac28f7c7af8541a08033bd77772ebd082',1,'MaaDef.h']]],
+  ['maawin32screencapmethod_5fgdi_85',['MaaWin32ScreencapMethod_GDI',['../MaaDef_8h.html#a8ac9b0f247ee9b853034b35969adc050',1,'MaaDef.h']]],
+  ['maawin32screencapmethod_5fnone_86',['MaaWin32ScreencapMethod_None',['../MaaDef_8h.html#a614ef2e0ce06147b8077158da914292f',1,'MaaDef.h']]],
+  ['maawin32screencapmethod_5fprintwindow_87',['MaaWin32ScreencapMethod_PrintWindow',['../MaaDef_8h.html#afbfcb148e25ffa976ca826da7b6e6c8c',1,'MaaDef.h']]],
+  ['maawin32screencapmethod_5fscreendc_88',['MaaWin32ScreencapMethod_ScreenDC',['../MaaDef_8h.html#a28df53af4d4eb7411ec15d6e5ca4632b',1,'MaaDef.h']]]
 ];

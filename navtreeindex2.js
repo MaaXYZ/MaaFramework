@@ -1,5 +1,8 @@
 var NAVTREEINDEX2 =
 {
+"structMaaCustomControllerCallbacks.html#a318dbd580c96d8bf215a2df9d565d450":[2,0,0,3],
+"structMaaCustomControllerCallbacks.html#a46da9230073fb4ac1ccc7b8c28d87467":[2,0,0,14],
+"structMaaCustomControllerCallbacks.html#a5294cb3629297bc3449019222b445a79":[2,0,0,1],
 "structMaaCustomControllerCallbacks.html#a5a1d73d4f14d2d7b702a1cdafcf96efd":[2,0,0,5],
 "structMaaCustomControllerCallbacks.html#a6d16b04282a3cf8354e5e326464263b7":[2,0,0,18],
 "structMaaCustomControllerCallbacks.html#a74d6aa4b9e6fc074f4d97d6ebe3be6ad":[2,0,0,0],

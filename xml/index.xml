@@ -225,6 +225,9 @@
     <member refid="MaaDef_8h_1a6969fc9b9c90c5bff9e560898e47e6bf" kind="define"><name>MaaWin32ScreencapMethod_DXGI_DesktopDup_Window</name></member>
     <member refid="MaaDef_8h_1afbfcb148e25ffa976ca826da7b6e6c8c" kind="define"><name>MaaWin32ScreencapMethod_PrintWindow</name></member>
     <member refid="MaaDef_8h_1a28df53af4d4eb7411ec15d6e5ca4632b" kind="define"><name>MaaWin32ScreencapMethod_ScreenDC</name></member>
+    <member refid="MaaDef_8h_1a07f53725cc489fc512718fa39087e9f1" kind="define"><name>MaaWin32ScreencapMethod_All</name></member>
+    <member refid="MaaDef_8h_1aa58ab888a82d1559dd65150e87057e1f" kind="define"><name>MaaWin32ScreencapMethod_Foreground</name></member>
+    <member refid="MaaDef_8h_1a391529c4470c4c1dc19cd479de7191da" kind="define"><name>MaaWin32ScreencapMethod_Background</name></member>
     <member refid="MaaDef_8h_1a637a673d747aa47edfa545da69c936b1" kind="define"><name>MaaWin32InputMethod_None</name></member>
     <member refid="MaaDef_8h_1a28f884858b13895fa20adec0fede3aaf" kind="define"><name>MaaWin32InputMethod_Seize</name></member>
     <member refid="MaaDef_8h_1a2fee933704cac46f8223159133aeb8db" kind="define"><name>MaaWin32InputMethod_SendMessage</name></member>
