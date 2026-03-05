@@ -490,9 +490,9 @@ bool ResourceMgr::use_auto_ep()
 
 bool ResourceMgr::use_cpu()
 {
-    onnx_res_.use_cpu();
+    bool onnx_ok = onnx_res_.use_cpu();
     ocr_res_.use_cpu();
-    return true;
+    return onnx_ok;
 }
 
 bool ResourceMgr::use_directml()
@@ -524,7 +524,10 @@ bool ResourceMgr::use_directml()
         return false;
     }
 
-    onnx_res_.use_directml(device_id);
+    if (!onnx_res_.use_directml(device_id)) {
+        LogError << "Failed to setup DirectML execution provider in ONNX runtime";
+        return false;
+    }
     ocr_res_.use_directml(device_id);
     return true;
 }
@@ -555,7 +558,10 @@ bool ResourceMgr::use_coreml()
         return false;
     }
 
-    onnx_res_.use_coreml(coreml_flag);
+    if (!onnx_res_.use_coreml(coreml_flag)) {
+        LogError << "Failed to setup CoreML execution provider in ONNX runtime";
+        return false;
+    }
     ocr_res_.use_coreml(coreml_flag);
     return true;
 }
@@ -585,7 +591,10 @@ bool ResourceMgr::use_cuda()
         return false;
     }
 
-    onnx_res_.use_cuda(device_id);
+    if (!onnx_res_.use_cuda(device_id)) {
+        LogError << "Failed to setup CUDA execution provider in ONNX runtime";
+        return false;
+    }
     ocr_res_.use_cuda(device_id);
     return true;
 }

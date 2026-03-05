@@ -40,15 +40,16 @@ ONNXResMgr::ONNXResMgr()
 //     }
 // }
 
-void ONNXResMgr::use_cpu()
+bool ONNXResMgr::use_cpu()
 {
     LogInfo;
 
     options_ = {};
     memory_info_ = Ort::MemoryInfo::CreateCpu(OrtDeviceAllocator, OrtMemTypeDefault);
+    return true;
 }
 
-void ONNXResMgr::use_cuda(int device_id)
+bool ONNXResMgr::use_cuda(int device_id)
 {
     LogInfo << VAR(device_id);
 
@@ -62,9 +63,10 @@ void ONNXResMgr::use_cuda(int device_id)
     memory_info_ = Ort::MemoryInfo::CreateCpu(OrtDeviceAllocator, OrtMemTypeDefault);
 
     LogInfo << "Using CUDA execution provider with device_id" << device_id;
+    return true;
 }
 
-void ONNXResMgr::use_directml(int device_id)
+bool ONNXResMgr::use_directml(int device_id)
 {
     LogInfo << VAR(device_id);
 
@@ -74,7 +76,7 @@ void ONNXResMgr::use_directml(int device_id)
     auto status = OrtSessionOptionsAppendExecutionProvider_DML(options_, device_id);
     if (!Ort::Status(status).IsOK()) {
         LogError << "Failed to append DML execution provider with device_id" << device_id;
-        return;
+        return false;
     }
 
     // 不知道为什么 DML 会 crash，感觉是 onnxruntime 的 bug，之后 onnxruntime 更新了可以再试试
@@ -83,15 +85,17 @@ void ONNXResMgr::use_directml(int device_id)
     memory_info_ = Ort::MemoryInfo::CreateCpu(OrtDeviceAllocator, OrtMemTypeDefault);
 
     LogInfo << "Using DML execution provider with device_id" << device_id;
+    return true;
 
 #else
 
     LogError << "MaaFW built without DML";
+    return false;
 
 #endif
 }
 
-void ONNXResMgr::use_coreml(uint32_t coreml_flag)
+bool ONNXResMgr::use_coreml(uint32_t coreml_flag)
 {
     LogInfo << VAR(coreml_flag);
 
@@ -101,16 +105,19 @@ void ONNXResMgr::use_coreml(uint32_t coreml_flag)
     auto status = OrtSessionOptionsAppendExecutionProvider_CoreML((OrtSessionOptions*)options_, coreml_flag);
     if (!Ort::Status(status).IsOK()) {
         LogError << "Failed to append CoreML execution provider";
+        return false;
     }
 
     // 不知道 name 是啥，先糊一个
     memory_info_ = Ort::MemoryInfo("Cpu", OrtDeviceAllocator, 0, OrtMemTypeDefault);
 
     LogInfo << "Using CoreML execution provider";
+    return true;
 
 #else
 
     LogError << "MaaFW built without CoreML";
+    return false;
 
 #endif
 }

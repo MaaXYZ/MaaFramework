@@ -17,10 +17,10 @@ public:
     ONNXResMgr();
 
 public:
-    void use_cpu();
-    void use_cuda(int device_id);
-    void use_directml(int device_id);
-    void use_coreml(uint32_t coreml_flag);
+    bool use_cpu();
+    bool use_cuda(int device_id);
+    bool use_directml(int device_id);
+    bool use_coreml(uint32_t coreml_flag);
 
     bool lazy_load_classifier(const std::filesystem::path& path);
     bool lazy_load_detector(const std::filesystem::path& path);
