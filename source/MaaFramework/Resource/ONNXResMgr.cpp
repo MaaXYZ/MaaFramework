@@ -1,5 +1,6 @@
 #include "ONNXResMgr.h"
 
+#include <exception>
 #include <filesystem>
 #include <ranges>
 #include <unordered_set>
@@ -194,8 +195,16 @@ std::shared_ptr<Ort::Session> ONNXResMgr::load(const std::string& name, const st
         }
 
         LogDebug << VAR(path);
-        Ort::Session session(env_, path.c_str(), options_);
-        return std::make_shared<Ort::Session>(std::move(session));
+        try {
+            Ort::Session session(env_, path.c_str(), options_);
+            return std::make_shared<Ort::Session>(std::move(session));
+        }
+        catch (const Ort::Exception& e) {
+            LogError << "Failed to create ONNX session" << VAR(path) << VAR(e.what());
+        }
+        catch (const std::exception& e) {
+            LogError << "Unexpected error while creating ONNX session" << VAR(path) << VAR(e.what());
+        }
     }
 
     return nullptr;

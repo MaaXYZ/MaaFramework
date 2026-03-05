@@ -1,5 +1,6 @@
 #include "NeuralNetworkClassifier.h"
 
+#include <exception>
 #include <onnxruntime/onnxruntime_cxx_api.h>
 
 #include "MaaUtils/NoWarningCV.hpp"
@@ -51,50 +52,60 @@ NeuralNetworkClassifier::Result NeuralNetworkClassifier::classify() const
         LogError << "OrtSession not loaded";
         return {};
     }
-    // batch_size, channel, height, width
-    // for yolov8, input_shape is { 1, 3, 640, 640 }
-    const auto input_shape = session_->GetInputTypeInfo(0).GetTensorTypeAndShapeInfo().GetShape();
-    if (input_shape.size() != 4) {
-        LogError << "Input shape is not 4" << VAR(input_shape);
+    try {
+        // batch_size, channel, height, width
+        // for yolov8, input_shape is { 1, 3, 640, 640 }
+        const auto input_shape = session_->GetInputTypeInfo(0).GetTensorTypeAndShapeInfo().GetShape();
+        if (input_shape.size() != 4) {
+            LogError << "Input shape is not 4" << VAR(input_shape);
+            return {};
+        }
+
+        cv::Mat image = image_with_roi();
+        cv::Size raw_roi_size(image.cols, image.rows);
+        cv::Size input_image_size(static_cast<int>(input_shape[3]), static_cast<int>(input_shape[2]));
+        cv::resize(image, image, input_image_size, 0, 0, cv::INTER_AREA);
+        std::vector<float> input = image_to_tensor(image);
+
+        Ort::Value input_tensor =
+            Ort::Value::CreateTensor<float>(memory_info_, input.data(), input.size(), input_shape.data(), input_shape.size());
+
+        Ort::AllocatorWithDefaultOptions allocator;
+        const std::string in_0 = session_->GetInputNameAllocated(0, allocator).get();
+        const std::string out_0 = session_->GetOutputNameAllocated(0, allocator).get();
+        const std::vector input_names { in_0.c_str() };
+        const std::vector output_names { out_0.c_str() };
+
+        Ort::RunOptions run_options;
+        auto output_tensor =
+            session_->Run(run_options, input_names.data(), &input_tensor, input_names.size(), output_names.data(), output_names.size());
+
+        const float* raw_output = output_tensor[0].GetTensorData<float>();
+        std::vector<float> output(raw_output, raw_output + output_tensor[0].GetTensorTypeAndShapeInfo().GetElementCount());
+
+        Result res;
+        res.raw = std::move(output);
+        res.probs = softmax(res.raw);
+        res.cls_index = std::max_element(res.probs.begin(), res.probs.end()) - res.probs.begin();
+        res.score = res.probs[res.cls_index];
+        res.label = res.cls_index < param_.labels.size() ? param_.labels[res.cls_index] : std::format("Unknown_{}", res.cls_index);
+        res.box = roi_;
+
+        if (debug_draw_) {
+            auto draw = draw_result(res);
+            handle_draw(draw);
+        }
+
+        return res;
+    }
+    catch (const Ort::Exception& e) {
+        LogError << "ORT classify failed" << VAR(name_) << VAR(e.what());
         return {};
     }
-
-    cv::Mat image = image_with_roi();
-    cv::Size raw_roi_size(image.cols, image.rows);
-    cv::Size input_image_size(static_cast<int>(input_shape[3]), static_cast<int>(input_shape[2]));
-    cv::resize(image, image, input_image_size, 0, 0, cv::INTER_AREA);
-    std::vector<float> input = image_to_tensor(image);
-
-    Ort::Value input_tensor =
-        Ort::Value::CreateTensor<float>(memory_info_, input.data(), input.size(), input_shape.data(), input_shape.size());
-
-    Ort::AllocatorWithDefaultOptions allocator;
-    const std::string in_0 = session_->GetInputNameAllocated(0, allocator).get();
-    const std::string out_0 = session_->GetOutputNameAllocated(0, allocator).get();
-    const std::vector input_names { in_0.c_str() };
-    const std::vector output_names { out_0.c_str() };
-
-    Ort::RunOptions run_options;
-    auto output_tensor =
-        session_->Run(run_options, input_names.data(), &input_tensor, input_names.size(), output_names.data(), output_names.size());
-
-    const float* raw_output = output_tensor[0].GetTensorData<float>();
-    std::vector<float> output(raw_output, raw_output + output_tensor[0].GetTensorTypeAndShapeInfo().GetElementCount());
-
-    Result res;
-    res.raw = std::move(output);
-    res.probs = softmax(res.raw);
-    res.cls_index = std::max_element(res.probs.begin(), res.probs.end()) - res.probs.begin();
-    res.score = res.probs[res.cls_index];
-    res.label = res.cls_index < param_.labels.size() ? param_.labels[res.cls_index] : std::format("Unknown_{}", res.cls_index);
-    res.box = roi_;
-
-    if (debug_draw_) {
-        auto draw = draw_result(res);
-        handle_draw(draw);
+    catch (const std::exception& e) {
+        LogError << "Classify failed" << VAR(name_) << VAR(e.what());
+        return {};
     }
-
-    return res;
 }
 
 void NeuralNetworkClassifier::add_results(ResultsVec results, const std::vector<int>& expected)
