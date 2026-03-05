@@ -8,7 +8,6 @@
 
 #include "Input/LegacyEventInput.h"
 #include "Input/MessageInput.h"
-#include "Input/PostThreadMessageInput.h"
 #include "Input/SeizeInput.h"
 #include "Screencap/DesktopDupScreencap.h"
 #include "Screencap/DesktopDupWindowScreencap.h"
@@ -140,7 +139,8 @@ std::shared_ptr<InputBase> Win32ControlUnitMgr::make_input(MaaWin32InputMethod m
     case MaaWin32InputMethod_LegacyEvent:
         return std::make_shared<LegacyEventInput>(hwnd_, true);
     case MaaWin32InputMethod_PostThreadMessage:
-        return std::make_shared<PostThreadMessageInput>(hwnd_);
+        LogError << "MaaWin32InputMethod_PostThreadMessage is deprecated and no longer implemented";
+        return nullptr;
     case MaaWin32InputMethod_SendMessageWithCursorPos:
         return std::make_shared<MessageInput>(
             hwnd_,
