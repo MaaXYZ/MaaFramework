@@ -85,6 +85,10 @@ bool LegacyEventInput::touch_move(int contact, int x, int y, int pressure)
     // 需要将屏幕坐标转换为 0-65535 范围的归一化坐标
     int screen_width = GetSystemMetrics(SM_CXSCREEN);
     int screen_height = GetSystemMetrics(SM_CYSCREEN);
+    if (screen_width <= 0 || screen_height <= 0) {
+        LogError << "GetSystemMetrics returned invalid screen size" << VAR(screen_width) << VAR(screen_height);
+        return false;
+    }
 
     DWORD norm_x = static_cast<DWORD>((point.x * 65535) / screen_width);
     DWORD norm_y = static_cast<DWORD>((point.y * 65535) / screen_height);
