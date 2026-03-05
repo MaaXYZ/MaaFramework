@@ -1,5 +1,6 @@
 #pragma once
 
+#include <optional>
 #include <ostream>
 #include <vector>
 
@@ -41,7 +42,15 @@ public:
 private:
     void analyze();
 
-    Result classify() const;
+    struct ModelIOInfo
+    {
+        std::vector<int64_t> input_shape;
+        std::string input_name;
+        std::string output_name;
+    };
+
+    std::optional<ModelIOInfo> load_io_info() const;
+    Result classify(const ModelIOInfo& io_info) const;
 
     void add_results(ResultsVec results, const std::vector<int>& expected);
     void cherry_pick();

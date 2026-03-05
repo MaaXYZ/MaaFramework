@@ -43,8 +43,12 @@ void NeuralNetworkDetector::analyze()
     auto start_time = std::chrono::steady_clock::now();
 
     auto labels = param_.labels.empty() ? parse_labels_from_metadata() : param_.labels;
+    auto io_info_opt = load_io_info();
+    if (!io_info_opt) {
+        return;
+    }
     while (next_roi()) {
-        auto results = detect(labels);
+        auto results = detect(labels, *io_info_opt);
         add_results(std::move(results), param_.expected, param_.thresholds);
     }
 
@@ -55,35 +59,61 @@ void NeuralNetworkDetector::analyze()
              << VAR(param_.expected) << VAR(param_.thresholds);
 }
 
-NeuralNetworkDetector::ResultsVec NeuralNetworkDetector::detect(const std::vector<std::string>& labels) const
+std::optional<NeuralNetworkDetector::ModelIOInfo> NeuralNetworkDetector::load_io_info() const
+{
+    if (!session_) {
+        LogError << "OrtSession not loaded";
+        return std::nullopt;
+    }
+
+    try {
+        ModelIOInfo io_info;
+        // batch_size, channel, height, width
+        // for yolov8, input_shape is { 1, 3, 640, 640 }
+        io_info.input_shape = session_->GetInputTypeInfo(0).GetTensorTypeAndShapeInfo().GetShape();
+        if (io_info.input_shape.size() != 4) {
+            LogError << "Input shape is not 4" << VAR(io_info.input_shape);
+            return std::nullopt;
+        }
+
+        Ort::AllocatorWithDefaultOptions allocator;
+        io_info.input_name = session_->GetInputNameAllocated(0, allocator).get();
+        io_info.output_name = session_->GetOutputNameAllocated(0, allocator).get();
+        return io_info;
+    }
+    catch (const Ort::Exception& e) {
+        LogError << "ORT load io info failed" << VAR(name_) << VAR(e.what());
+        return std::nullopt;
+    }
+    catch (const std::exception& e) {
+        LogError << "Load io info failed" << VAR(name_) << VAR(e.what());
+        return std::nullopt;
+    }
+}
+
+NeuralNetworkDetector::ResultsVec NeuralNetworkDetector::detect(const std::vector<std::string>& labels, const ModelIOInfo& io_info) const
 {
     if (!session_) {
         LogError << "OrtSession not loaded";
         return {};
     }
     try {
-        // batch_size, channel, height, width
-        // for yolov8, input_shape is { 1, 3, 640, 640 }
-        const auto input_shape = session_->GetInputTypeInfo(0).GetTensorTypeAndShapeInfo().GetShape();
-        if (input_shape.size() != 4) {
-            LogError << "Input shape is not 4" << VAR(input_shape);
-            return {};
-        }
-
         cv::Mat image = image_with_roi();
         cv::Size raw_roi_size(image.cols, image.rows);
-        cv::Size input_image_size(static_cast<int>(input_shape[3]), static_cast<int>(input_shape[2]));
+        cv::Size input_image_size(static_cast<int>(io_info.input_shape[3]), static_cast<int>(io_info.input_shape[2]));
         cv::resize(image, image, input_image_size, 0, 0, cv::INTER_AREA);
         std::vector<float> input = image_to_tensor(image);
 
         Ort::Value input_tensor =
-            Ort::Value::CreateTensor<float>(memory_info_, input.data(), input.size(), input_shape.data(), input_shape.size());
+            Ort::Value::CreateTensor<float>(
+                memory_info_,
+                input.data(),
+                input.size(),
+                io_info.input_shape.data(),
+                io_info.input_shape.size());
 
-        Ort::AllocatorWithDefaultOptions allocator;
-        const std::string in_0 = session_->GetInputNameAllocated(0, allocator).get();
-        const std::string out_0 = session_->GetOutputNameAllocated(0, allocator).get();
-        const std::vector input_names { in_0.c_str() };
-        const std::vector output_names { out_0.c_str() };
+        const std::vector input_names { io_info.input_name.c_str() };
+        const std::vector output_names { io_info.output_name.c_str() };
 
         Ort::RunOptions run_options;
         auto output_tensor =
