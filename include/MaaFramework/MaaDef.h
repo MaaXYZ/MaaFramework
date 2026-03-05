@@ -294,11 +294,16 @@ typedef uint64_t MaaAdbInputMethod;
 
 // MaaWin32ScreencapMethod:
 /**
- * @brief Win32 screencap method
+ * @brief Win32 screencap method flags
  *
- * No bitwise OR, select ONE method only.
+ * Use bitwise OR to set the methods you need.
+ * MaaFramework will test all provided methods and use the fastest available one.
  *
  * No default value. Client should choose one as default.
+ *
+ * Predefined combinations:
+ * - Foreground: DXGI_DesktopDup_Window | ScreenDC
+ * - Background: FramePool | PrintWindow
  *
  * Different applications use different rendering methods, there is no universal solution.
  *
@@ -324,6 +329,11 @@ typedef uint64_t MaaWin32ScreencapMethod;
 #define MaaWin32ScreencapMethod_DXGI_DesktopDup_Window (1ULL << 3)
 #define MaaWin32ScreencapMethod_PrintWindow (1ULL << 4)
 #define MaaWin32ScreencapMethod_ScreenDC (1ULL << 5)
+
+#define MaaWin32ScreencapMethod_All (~MaaWin32ScreencapMethod_None)
+#define MaaWin32ScreencapMethod_Foreground                                                                \
+    (MaaWin32ScreencapMethod_DXGI_DesktopDup_Window | MaaWin32ScreencapMethod_ScreenDC)
+#define MaaWin32ScreencapMethod_Background (MaaWin32ScreencapMethod_FramePool | MaaWin32ScreencapMethod_PrintWindow)
 
 // MaaWin32InputMethod:
 /**

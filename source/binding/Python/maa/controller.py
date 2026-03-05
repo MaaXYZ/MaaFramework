@@ -789,7 +789,7 @@ class Win32Controller(Controller):
     def __init__(
         self,
         hWnd: Union[ctypes.c_void_p, int, None],
-        screencap_method: int = MaaWin32ScreencapMethodEnum.FramePool,
+        screencap_method: int = MaaWin32ScreencapMethodEnum.Background,
         mouse_method: int = MaaWin32InputMethodEnum.Seize,
         keyboard_method: int = MaaWin32InputMethodEnum.Seize,
     ):
