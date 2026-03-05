@@ -78,8 +78,7 @@ bool Win32ControlUnitMgr::connect()
     return true;
 }
 
-std::unordered_map<Win32ControlUnitMgr::ScreencapMethod, std::shared_ptr<ScreencapBase>>
-Win32ControlUnitMgr::build_screencap_units() const
+std::unordered_map<Win32ControlUnitMgr::ScreencapMethod, std::shared_ptr<ScreencapBase>> Win32ControlUnitMgr::build_screencap_units() const
 {
     std::unordered_map<ScreencapMethod, std::shared_ptr<ScreencapBase>> units;
 
@@ -89,9 +88,7 @@ Win32ControlUnitMgr::build_screencap_units() const
         }
     };
 
-    add(MaaWin32ScreencapMethod_GDI, ScreencapMethod::GDI, [this] {
-        return std::make_shared<GdiScreencap>(hwnd_);
-    });
+    add(MaaWin32ScreencapMethod_GDI, ScreencapMethod::GDI, [this] { return std::make_shared<GdiScreencap>(hwnd_); });
     add(MaaWin32ScreencapMethod_FramePool, ScreencapMethod::FramePool, [this] {
         return std::make_shared<FramePoolWithPseudoMinimizeScreencap>(hwnd_);
     });
@@ -104,9 +101,7 @@ Win32ControlUnitMgr::build_screencap_units() const
     add(MaaWin32ScreencapMethod_PrintWindow, ScreencapMethod::PrintWindow, [this] {
         return std::make_shared<PrintWindowWithPseudoMinimizeScreencap>(hwnd_);
     });
-    add(MaaWin32ScreencapMethod_ScreenDC, ScreencapMethod::ScreenDC, [this] {
-        return std::make_shared<ScreenDCScreencap>(hwnd_);
-    });
+    add(MaaWin32ScreencapMethod_ScreenDC, ScreencapMethod::ScreenDC, [this] { return std::make_shared<ScreenDCScreencap>(hwnd_); });
 
     return units;
 }
@@ -168,8 +163,8 @@ std::shared_ptr<InputBase> Win32ControlUnitMgr::make_input(MaaWin32InputMethod m
     }
 }
 
-std::shared_ptr<ScreencapBase> Win32ControlUnitMgr::speed_test(
-    std::unordered_map<ScreencapMethod, std::shared_ptr<ScreencapBase>>& units) const
+std::shared_ptr<ScreencapBase>
+    Win32ControlUnitMgr::speed_test(const std::unordered_map<ScreencapMethod, std::shared_ptr<ScreencapBase>>& units) const
 {
     LogFunc;
 
@@ -186,6 +181,11 @@ std::shared_ptr<ScreencapBase> Win32ControlUnitMgr::speed_test(
     };
 
     for (auto& [method, unit] : units) {
+        LogInfo << "Warming up" << method;
+        if (!unit->screencap()) {
+            LogWarn << "failed to warm up" << method;
+        }
+
         LogInfo << "Testing" << method;
         auto now = std::chrono::steady_clock::now();
         if (!unit->screencap()) {
