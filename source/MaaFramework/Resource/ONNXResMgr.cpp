@@ -57,7 +57,9 @@ void ONNXResMgr::use_cuda(int device_id)
     cuda_options.device_id = device_id;
     options_.AppendExecutionProvider_CUDA(cuda_options);
 
-    memory_info_ = Ort::MemoryInfo("Cuda", OrtDeviceAllocator, device_id, OrtMemTypeDefault);
+    // Input tensors are created from std::vector<float> (host memory).
+    // Keep CPU memory info here and let ORT move data to CUDA EP internally.
+    memory_info_ = Ort::MemoryInfo::CreateCpu(OrtDeviceAllocator, OrtMemTypeDefault);
 
     LogInfo << "Using CUDA execution provider with device_id" << device_id;
 }
