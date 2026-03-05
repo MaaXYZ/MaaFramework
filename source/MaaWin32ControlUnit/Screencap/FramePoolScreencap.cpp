@@ -187,7 +187,7 @@ bool FramePoolScreencap::init()
 
     HRESULT ret = S_OK;
 
-    DXGI_SWAP_CHAIN_DESC swap_chain_desc = {};
+    DXGI_SWAP_CHAIN_DESC swap_chain_desc = { };
     swap_chain_desc.BufferCount = 1;
     swap_chain_desc.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
     swap_chain_desc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
@@ -345,7 +345,7 @@ void FramePoolScreencap::uninit()
     readable_texture_ = nullptr;
     cap_item_ = nullptr;
     texture_desc_ = { 0 };
-    last_capture_size_ = {};
+    last_capture_size_ = { };
 }
 
 bool FramePoolScreencap::check_and_handle_size_changed()
@@ -359,7 +359,7 @@ bool FramePoolScreencap::check_and_handle_size_changed()
         return false;
     }
 
-    winrt::Windows::Graphics::SizeInt32 current_size {};
+    winrt::Windows::Graphics::SizeInt32 current_size { };
     try {
         current_size = cap_item_.Size();
     }
@@ -443,8 +443,7 @@ void FramePoolScreencap::try_disable_border()
         }
 
         auto access_result = op.GetResults();
-        if (access_result
-            != winrt::Windows::Security::Authorization::AppCapabilityAccess::AppCapabilityAccessStatus::Allowed) {
+        if (access_result != winrt::Windows::Security::Authorization::AppCapabilityAccess::AppCapabilityAccessStatus::Allowed) {
             LogWarn << "Borderless capture access not granted:" << static_cast<int>(access_result);
             return;
         }

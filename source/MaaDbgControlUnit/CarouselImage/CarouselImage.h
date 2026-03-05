@@ -55,7 +55,7 @@ private:
     std::filesystem::path path_;
     std::vector<cv::Mat> images_;
     size_t image_index_ = 0;
-    cv::Size resolution_ {};
+    cv::Size resolution_ { };
     bool connected_ = false;
 };
 

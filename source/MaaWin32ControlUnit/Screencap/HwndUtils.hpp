@@ -73,7 +73,7 @@ inline bool ensure_window_on_screen(HWND hwnd)
         return false;
     }
 
-    MONITORINFO mi = {};
+    MONITORINFO mi = { };
     mi.cbSize = sizeof(mi);
     if (!GetMonitorInfo(monitor, &mi)) {
         return false;
@@ -84,12 +84,12 @@ inline bool ensure_window_on_screen(HWND hwnd)
     int monitor_h = monitor_rect.bottom - monitor_rect.top;
 
     // Get window rect and client rect to calculate frame sizes
-    RECT window_rect = {};
+    RECT window_rect = { };
     if (!GetWindowRect(hwnd, &window_rect)) {
         return false;
     }
 
-    RECT client_rect = {};
+    RECT client_rect = { };
     if (!GetClientRect(hwnd, &client_rect)) {
         return false;
     }
@@ -174,7 +174,7 @@ inline bool ensure_window_on_screen(HWND hwnd)
 inline cv::Mat bgra_to_bgr(const cv::Mat& src)
 {
     if (src.empty()) {
-        return {};
+        return { };
     }
 
     cv::Mat dst;

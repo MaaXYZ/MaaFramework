@@ -52,7 +52,7 @@ TemplateMatcher::ResultsVec TemplateMatcher::template_match(const cv::Mat& templ
 
     if (templ.cols > image.cols || templ.rows > image.rows) {
         LogError << name_ << "templ size is too large" << VAR(image) << VAR(templ);
-        return {};
+        return { };
     }
 
     bool invert_score = false;

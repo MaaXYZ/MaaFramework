@@ -10,7 +10,7 @@ MAA_VISION_NS_BEGIN
 
 struct ColorMatcherResult
 {
-    cv::Rect box {};
+    cv::Rect box { };
     int count = 0;
 
     MEO_JSONIZATION(box, count);

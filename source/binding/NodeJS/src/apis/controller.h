@@ -22,9 +22,9 @@ struct ImageJobImpl : public JobImpl
 
 struct ControllerImpl : public maajs::NativeClassBase
 {
-    MaaController* controller {};
+    MaaController* controller { };
     bool own = false;
-    std::map<MaaSinkId, maajs::CallbackContext*> sinks {};
+    std::map<MaaSinkId, maajs::CallbackContext*> sinks { };
 
     ControllerImpl() = default;
     ControllerImpl(MaaController* ctrl, bool own);

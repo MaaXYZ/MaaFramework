@@ -110,8 +110,8 @@ private:
     bool is_bound_ = false;
 
     std::mutex socket_mutex_;
-    zmq::pollitem_t zmq_pollitem_send_ {};
-    zmq::pollitem_t zmq_pollitem_recv_ {};
+    zmq::pollitem_t zmq_pollitem_send_ { };
+    zmq::pollitem_t zmq_pollitem_recv_ { };
     std::chrono::milliseconds timeout_ = std::chrono::milliseconds::max();
 };
 

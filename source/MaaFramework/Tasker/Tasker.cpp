@@ -181,7 +181,7 @@ MaaTaskId Tasker::post_stop()
 
     static const std::string kStopEntry = "MaaTaskerPostStop";
     auto task_ptr = std::make_shared<MAA_TASK_NS::EmptyTask>(kStopEntry, this);
-    return post_task(std::move(task_ptr), json::object {});
+    return post_task(std::move(task_ptr), json::object { });
 }
 
 bool Tasker::stopping() const

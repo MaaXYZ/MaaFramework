@@ -20,7 +20,7 @@ ClientImpl::~ClientImpl()
 void ClientImpl::destroy()
 {
     MaaAgentClientDestroy(client);
-    client = {};
+    client = { };
 }
 
 std::string ClientImpl::get_identifier()

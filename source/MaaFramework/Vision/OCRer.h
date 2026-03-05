@@ -33,7 +33,7 @@ MAA_VISION_NS_BEGIN
 struct OCRerResult
 {
     std::wstring text;
-    cv::Rect box {};
+    cv::Rect box { };
     double score = 0.0;
 
     MEO_JSONIZATION(text, box, score);

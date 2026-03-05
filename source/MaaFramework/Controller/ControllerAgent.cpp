@@ -335,7 +335,7 @@ cv::Mat ControllerAgent::screencap()
 {
     auto id = post({ .type = Action::Type::screencap });
     if (wait(id) != MaaStatus_Succeeded) {
-        return {};
+        return { };
     }
     return cached_image();
 }
@@ -548,8 +548,8 @@ bool ControllerAgent::handle_multi_swipe(const MultiSwipeParam& param)
 
     struct SegmentOperating
     {
-        cv::Point begin {};
-        cv::Point end {};
+        cv::Point begin { };
+        cv::Point end { };
         double total_step = 0;
         double x_step_len = 0;
         double y_step_len = 0;
@@ -1003,7 +1003,7 @@ cv::Point ControllerAgent::preproc_touch_point(const cv::Point& p)
         LogWarn << "Invalid image target size" << VAR(image_target_width_) << VAR(image_target_height_);
 
         if (!init_scale_info()) {
-            return {};
+            return { };
         }
     }
 

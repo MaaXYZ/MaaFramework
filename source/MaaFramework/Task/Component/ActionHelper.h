@@ -16,7 +16,7 @@ public:
     bool wait_freezes(const MAA_RES_NS::WaitFreezesParam& param, const cv::Rect& box, const std::string& name = "");
 
     // 根据 target 计算 ROI 区域
-    cv::Rect get_target_rect(const MAA_RES_NS::Action::Target& target, const cv::Rect& box = {});
+    cv::Rect get_target_rect(const MAA_RES_NS::Action::Target& target, const cv::Rect& box = { });
 
 private:
     MAA_CTRL_NS::ControllerAgent* controller();

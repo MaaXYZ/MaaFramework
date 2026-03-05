@@ -18,8 +18,8 @@ using JTarget = std::variant<bool, std::string, JRect>;
 
 struct JDirectHit
 {
-    JTarget roi = JRect {};
-    JRect roi_offset {};
+    JTarget roi = JRect { };
+    JRect roi_offset { };
 
     MEO_TOJSON(roi, roi_offset);
 };
@@ -169,7 +169,7 @@ struct JDoNothing
 struct JClick
 {
     JTarget target;
-    JRect target_offset {};
+    JRect target_offset { };
     uint32_t contact = 0;
     int32_t pressure = 1;
 
@@ -179,7 +179,7 @@ struct JClick
 struct JLongPress
 {
     JTarget target;
-    JRect target_offset {};
+    JRect target_offset { };
     uint32_t duration = 0;
     uint32_t contact = 0;
     int32_t pressure = 1;
@@ -190,7 +190,7 @@ struct JSwipe
 {
     uint32_t starting = 0;
     JTarget begin;
-    JRect begin_offset {};
+    JRect begin_offset { };
     std::vector<JTarget> end;
     std::vector<JRect> end_offset;
     std::vector<uint32_t> end_hold;
@@ -212,7 +212,7 @@ struct JTouch
 {
     uint32_t contact = 0;
     JTarget target;
-    JRect target_offset {};
+    JRect target_offset { };
     int32_t pressure = 0;
 
     MEO_TOJSON(contact, target, target_offset, pressure);
@@ -276,7 +276,7 @@ struct JStopTask
 struct JScroll
 {
     JTarget target;
-    JRect target_offset {};
+    JRect target_offset { };
     int dx = 0;
     int dy = 0;
 
@@ -312,7 +312,7 @@ struct JScreencap
 struct JCustomAction
 {
     JTarget target;
-    JRect target_offset {};
+    JRect target_offset { };
     std::string custom_action;
     json::value custom_action_param;
 
@@ -352,7 +352,7 @@ struct JWaitFreezes
 {
     int64_t time = 0;
     JTarget target;
-    JRect target_offset {};
+    JRect target_offset { };
     double threshold = 0;
     int method = 0;
     int64_t rate_limit = 0;

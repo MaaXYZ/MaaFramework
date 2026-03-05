@@ -17,7 +17,7 @@ struct NeuralNetworkClassifierResult
 {
     size_t cls_index = SIZE_MAX;
     std::string label;
-    cv::Rect box {};
+    cv::Rect box { };
     double score = 0.0;
     std::vector<float> raw;
     std::vector<float> probs;

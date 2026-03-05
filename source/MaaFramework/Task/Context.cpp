@@ -19,7 +19,7 @@ std::shared_ptr<Context> Context::create(MaaTaskId id, Tasker* tasker)
 {
     LogDebug << VAR(id) << VAR_VOIDP(tasker);
 
-    return std::make_shared<Context>(id, tasker, PrivateArg {});
+    return std::make_shared<Context>(id, tasker, PrivateArg { });
 }
 
 std::shared_ptr<Context> Context::getptr()
@@ -365,12 +365,12 @@ std::vector<cv::Mat> Context::get_images(const std::vector<std::string>& names)
 {
     if (!tasker_) {
         LogError << "tasker is null";
-        return {};
+        return { };
     }
     auto* resource = tasker_->resource();
     if (!resource) {
         LogError << "resource not bound";
-        return {};
+        return { };
     }
 
     std::vector<cv::Mat> results;

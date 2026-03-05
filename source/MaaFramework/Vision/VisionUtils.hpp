@@ -37,17 +37,17 @@ template <typename ResultsVec>
 inline static void sort_by_score_(ResultsVec& results, bool reverse = false)
 {
     if (reverse) {
-        std::ranges::sort(results, std::less {}, std::mem_fn(&ResultsVec::value_type::score));
+        std::ranges::sort(results, std::less { }, std::mem_fn(&ResultsVec::value_type::score));
     }
     else {
-        std::ranges::sort(results, std::greater {}, std::mem_fn(&ResultsVec::value_type::score));
+        std::ranges::sort(results, std::greater { }, std::mem_fn(&ResultsVec::value_type::score));
     }
 }
 
 template <typename ResultsVec>
 inline static void sort_by_count_(ResultsVec& results)
 {
-    std::ranges::sort(results, std::greater {}, std::mem_fn(&ResultsVec::value_type::count));
+    std::ranges::sort(results, std::greater { }, std::mem_fn(&ResultsVec::value_type::count));
 }
 
 template <typename ResultsVec>
@@ -59,7 +59,7 @@ inline static void sort_by_area_(ResultsVec& results)
 template <typename ResultsVec>
 inline static void sort_by_random_(ResultsVec& results)
 {
-    static std::default_random_engine rand_engine(std::random_device {}());
+    static std::default_random_engine rand_engine(std::random_device { }());
     std::ranges::shuffle(results, rand_engine);
 }
 
@@ -381,7 +381,7 @@ inline std::vector<cv::Rect> correct_rois(std::vector<cv::Rect> rois, const cv::
 {
     if (rois.empty()) {
         if (image.empty()) {
-            return {};
+            return { };
         }
         return { cv::Rect(0, 0, image.cols, image.rows) };
     }

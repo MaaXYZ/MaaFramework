@@ -42,7 +42,7 @@ void XboxGamepadState::set_right_trigger(uint8_t value)
 
 void XboxGamepadState::reset()
 {
-    report_ = XusbReport {};
+    report_ = XusbReport { };
 }
 
 uint32_t XboxGamepadState::update(
@@ -96,7 +96,7 @@ void Ds4GamepadState::set_right_trigger(uint8_t value)
 
 void Ds4GamepadState::reset()
 {
-    report_ = Ds4Report {};
+    report_ = Ds4Report { };
     dpad_state_ = 0;
 }
 

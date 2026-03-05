@@ -110,7 +110,7 @@ MaaActId
         return MaaInvalidId;
     }
 
-    cv::Rect cvbox {};
+    cv::Rect cvbox { };
     if (box) {
         cvbox.x = box->x;
         cvbox.y = box->y;
@@ -217,7 +217,7 @@ MaaBool MaaContextWaitFreezes(MaaContext* context, MaaSize time, const MaaRect* 
         param_json = std::move(*param_opt);
     }
 
-    cv::Rect cv_box {};
+    cv::Rect cv_box { };
     if (box) {
         cv_box.x = box->x;
         cv_box.y = box->y;

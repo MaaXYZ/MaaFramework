@@ -88,12 +88,12 @@ cv::Rect ActionHelper::get_target_rect(const MAA_RES_NS::Action::Target& target,
 {
     if (!tasker_) {
         LogError << "Tasker is null";
-        return {};
+        return { };
     }
 
     using namespace MAA_RES_NS::Action;
 
-    cv::Rect raw {};
+    cv::Rect raw { };
     switch (target.type) {
     case Target::Type::Self:
         raw = box;
@@ -103,9 +103,9 @@ cv::Rect ActionHelper::get_target_rect(const MAA_RES_NS::Action::Target& target,
         auto& cache = tasker_->runtime_cache();
         std::string name = std::get<std::string>(target.param);
         MaaNodeId node_id = cache.get_latest_node(name).value_or(MaaInvalidId);
-        NodeDetail node_detail = cache.get_node_detail(node_id).value_or(NodeDetail {});
-        RecoResult reco_result = cache.get_reco_result(node_detail.reco_id).value_or(RecoResult {});
-        raw = reco_result.box.value_or(cv::Rect {});
+        NodeDetail node_detail = cache.get_node_detail(node_id).value_or(NodeDetail { });
+        RecoResult reco_result = cache.get_reco_result(node_detail.reco_id).value_or(RecoResult { });
+        raw = reco_result.box.value_or(cv::Rect { });
         LogDebug << "pre task" << VAR(name) << VAR(raw);
     } break;
 
@@ -115,7 +115,7 @@ cv::Rect ActionHelper::get_target_rect(const MAA_RES_NS::Action::Target& target,
 
     default:
         LogError << "Unknown target type" << VAR(static_cast<int>(target.type));
-        return {};
+        return { };
     }
 
     // 无 controller 时跳过边界检查，直接返回 raw + offset

@@ -46,13 +46,13 @@ public:
     std::vector<AdbDevice> find() const;
     std::vector<AdbDevice> find_specified(
         const std::filesystem::path& adb_path,
-        const std::unordered_set<std::string>& exclude_serials = {},
-        const Emulator& emulator = {}) const;
+        const std::unordered_set<std::string>& exclude_serials = { },
+        const Emulator& emulator = { }) const;
 
 protected:
     virtual const EmulatorConstDataMap& get_emulator_const_data() const { return kEmptyEmulatorConstDataMap; }
 
-    virtual std::vector<AdbDevice> find_by_emulator_tool(const Emulator&) const { return {}; }
+    virtual std::vector<AdbDevice> find_by_emulator_tool(const Emulator&) const { return { }; }
 
 protected:
     std::vector<std::string> find_serials_by_adb_command(const std::filesystem::path& adb_path) const;

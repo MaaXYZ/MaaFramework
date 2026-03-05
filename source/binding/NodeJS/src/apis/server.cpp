@@ -63,7 +63,7 @@ static maajs::PromiseType shut_down(maajs::EnvType env)
 {
     auto work = new maajs::AsyncWork<std::monostate>(env, []() {
         MaaAgentServerShutDown();
-        return std::monostate {};
+        return std::monostate { };
     });
     work->Queue();
     return work->Promise();
@@ -73,7 +73,7 @@ static maajs::PromiseType join(maajs::EnvType env)
 {
     auto work = new maajs::AsyncWork<std::monostate>(env, []() {
         MaaAgentServerJoin();
-        return std::monostate {};
+        return std::monostate { };
     });
     work->Queue();
     return work->Promise();

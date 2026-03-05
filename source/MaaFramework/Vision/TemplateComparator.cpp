@@ -89,7 +89,7 @@ double TemplateComparator::comp(const cv::Mat& lhs, const cv::Mat& rhs, int meth
     }
 
     double min_val = 0.0, max_val = 0.0;
-    cv::Point min_loc {}, max_loc {};
+    cv::Point min_loc { }, max_loc { };
     cv::minMaxLoc(matched, &min_val, &max_val, &min_loc, &max_loc);
 
     double val = low_score_better_ ? min_val : max_val;

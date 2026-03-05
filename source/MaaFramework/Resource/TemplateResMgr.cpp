@@ -49,7 +49,7 @@ std::vector<cv::Mat> TemplateResMgr::get_image(const std::string& name)
 
     auto imgs = load(name);
     if (imgs.empty()) {
-        return {};
+        return { };
     }
     image_cache_.emplace(name, imgs);
     return imgs;
@@ -67,7 +67,7 @@ std::vector<cv::Mat> TemplateResMgr::load(const std::string& name)
     auto load_regular_image = [&](const std::filesystem::path& path) -> cv::Mat {
         if (!std::filesystem::exists(path)) {
             LogError << "File does not exist:" << path;
-            return {};
+            return { };
         }
         LogDebug << VAR(path);
 
@@ -75,7 +75,7 @@ std::vector<cv::Mat> TemplateResMgr::load(const std::string& name)
 
         if (image.empty()) {
             LogError << "Failed to load image:" << path;
-            return {};
+            return { };
         }
         return image;
     };

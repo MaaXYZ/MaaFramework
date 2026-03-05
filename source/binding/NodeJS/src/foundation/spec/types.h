@@ -24,9 +24,9 @@ struct NativeClassBase
     NativeClassBase() = default;
     virtual ~NativeClassBase() = default;
 
-    virtual void init_bind([[maybe_unused]] ObjectType self) {}
+    virtual void init_bind([[maybe_unused]] ObjectType self) { }
 
-    virtual void gc_mark([[maybe_unused]] NativeMarkerFunc marker) {}
+    virtual void gc_mark([[maybe_unused]] NativeMarkerFunc marker) { }
 
     virtual std::string to_string() { return ""; }
 };

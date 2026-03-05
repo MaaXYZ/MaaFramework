@@ -64,7 +64,7 @@ protected:
     const cv::Mat image_;
     const std::string name_;
 
-    cv::Rect roi_ {};
+    cv::Rect roi_ { };
 
     bool debug_draw_ = false;
 

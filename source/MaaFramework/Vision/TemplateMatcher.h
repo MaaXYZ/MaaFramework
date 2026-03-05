@@ -13,7 +13,7 @@ MAA_VISION_NS_BEGIN
 
 struct TemplateMatcherResult
 {
-    cv::Rect box {};
+    cv::Rect box { };
     double score = 0.0;
 
     MEO_JSONIZATION(box, score);

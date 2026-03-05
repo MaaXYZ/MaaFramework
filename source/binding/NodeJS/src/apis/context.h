@@ -11,7 +11,7 @@
 
 struct ContextImpl : public maajs::NativeClassBase
 {
-    MaaContext* context {};
+    MaaContext* context { };
 
     ContextImpl() = default;
     ContextImpl(MaaContext* ctx);

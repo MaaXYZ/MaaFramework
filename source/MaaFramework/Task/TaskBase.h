@@ -25,7 +25,7 @@ public:
 public:
     virtual bool run() { return true; }
 
-    virtual void post_stop() {}
+    virtual void post_stop() { }
 
 public:
     bool override_pipeline(const json::value& pipeline_override);

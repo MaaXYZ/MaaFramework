@@ -44,7 +44,7 @@ void ONNXResMgr::use_cpu()
 {
     LogInfo;
 
-    options_ = {};
+    options_ = { };
     memory_info_ = Ort::MemoryInfo::CreateCpu(OrtDeviceAllocator, OrtMemTypeDefault);
 }
 
@@ -52,8 +52,8 @@ void ONNXResMgr::use_cuda(int device_id)
 {
     LogInfo << VAR(device_id);
 
-    options_ = {};
-    OrtCUDAProviderOptions cuda_options {};
+    options_ = { };
+    OrtCUDAProviderOptions cuda_options { };
     cuda_options.device_id = device_id;
     options_.AppendExecutionProvider_CUDA(cuda_options);
 
@@ -68,7 +68,7 @@ void ONNXResMgr::use_directml(int device_id)
 
 #ifdef MAA_WITH_DML
 
-    options_ = {};
+    options_ = { };
     auto status = OrtSessionOptionsAppendExecutionProvider_DML(options_, device_id);
     if (!Ort::Status(status).IsOK()) {
         LogError << "Failed to append DML execution provider with device_id" << device_id;
@@ -95,7 +95,7 @@ void ONNXResMgr::use_coreml(uint32_t coreml_flag)
 
 #ifdef MAA_WITH_COREML
 
-    options_ = {};
+    options_ = { };
     auto status = OrtSessionOptionsAppendExecutionProvider_CoreML((OrtSessionOptions*)options_, coreml_flag);
     if (!Ort::Status(status).IsOK()) {
         LogError << "Failed to append CoreML execution provider";

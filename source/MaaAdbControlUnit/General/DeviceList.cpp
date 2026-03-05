@@ -38,7 +38,7 @@ std::optional<std::vector<std::string>> DeviceList::request_devices()
     auto devices_str = std::move(output_opt).value();
     auto lines = string_split(devices_str, '\n');
     if (lines.empty()) {
-        return {};
+        return { };
     }
     lines.erase(lines.begin()); // remove "List of devices attached"
 

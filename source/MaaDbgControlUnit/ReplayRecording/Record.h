@@ -15,7 +15,7 @@ MAA_CTRL_UNIT_NS_BEGIN
 struct DeviceInfo
 {
     std::string uuid;
-    cv::Size resolution {};
+    cv::Size resolution { };
 };
 
 struct Record

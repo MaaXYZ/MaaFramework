@@ -17,7 +17,7 @@ MAA_VISION_NS_BEGIN
 
 struct FeatureMatcherResult
 {
-    cv::Rect box {};
+    cv::Rect box { };
     int count = 0;
 
     MEO_JSONIZATION(box, count);

@@ -32,7 +32,7 @@ public:
         std::string entry;
         std::string node;
         cv::Mat image;
-        cv::Rect box {};
+        cv::Rect box { };
     };
 
 public:

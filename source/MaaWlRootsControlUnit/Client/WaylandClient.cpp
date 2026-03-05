@@ -116,7 +116,7 @@ bool WaylandClient::prepare_device()
 {
     pointer_.reset(zwlr_virtual_pointer_manager_v1_create_virtual_pointer_with_output(pointer_manager_.get(), seat_.get(), output_.get()));
     keyboard_.reset(zwp_virtual_keyboard_manager_v1_create_virtual_keyboard(keyboard_manager_.get(), seat_.get()));
-    wl_output_listener output_listener = {};
+    wl_output_listener output_listener = { };
     output_listener.done = [](void* data, struct wl_output* wl_output) {
         std::ignore = wl_output;
         std::ignore = data;
@@ -181,7 +181,7 @@ bool WaylandClient::screencap(void** buffer, uint32_t& width, uint32_t& height, 
     std::unique_ptr<zwlr_screencopy_frame_v1> screencopy_frame;
     screencopy_frame.reset(zwlr_screencopy_manager_v1_capture_output(screencopy_manager_.get(), 0, output_.get()));
 
-    zwlr_screencopy_frame_v1_listener frame_listener = {};
+    zwlr_screencopy_frame_v1_listener frame_listener = { };
     frame_listener.buffer = [](void* data, zwlr_screencopy_frame_v1* frame, uint32_t format, uint32_t w, uint32_t h, uint32_t stride) {
         LogTrace << "Received new buffer: " << VAR(format) << VAR(w) << VAR(h) << VAR(stride);
         const auto self = static_cast<WaylandClient*>(data);

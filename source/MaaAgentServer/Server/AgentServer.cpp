@@ -213,7 +213,7 @@ bool AgentServer::handle_recognition_request(const json::value& j)
     ImageBuffer mat_buffer(mat);
     MaaRect rect { req.roi[0], req.roi[1], req.roi[2], req.roi[3] };
 
-    MaaRect out_box {};
+    MaaRect out_box { };
     StringBuffer out_detail;
 
     MaaBool ret = session.recognition(
@@ -320,7 +320,7 @@ bool AgentServer::handle_shut_down_request(const json::value& j)
 
     msg_loop_running_ = false;
 
-    send(ShutDownResponse {});
+    send(ShutDownResponse { });
 
     return true;
 }
@@ -337,7 +337,7 @@ bool AgentServer::handle_resource_event(const json::value& j)
     RemoteResource resource(*this, req.resource_id);
     res_notifier_.notify(&resource, req.message, req.details);
 
-    send(ResourceEventResponse {});
+    send(ResourceEventResponse { });
 
     return true;
 }
@@ -353,7 +353,7 @@ bool AgentServer::handle_controller_event(const json::value& j)
     RemoteController controller(*this, req.controller_id);
     ctrl_notifier_.notify(&controller, req.message, req.details);
 
-    send(ControllerEventResponse {});
+    send(ControllerEventResponse { });
 
     return true;
 }
@@ -369,7 +369,7 @@ bool AgentServer::handle_tasker_event(const json::value& j)
     RemoteTasker tasker(*this, req.tasker_id);
     tasker_notifier_.notify(&tasker, req.message, req.details);
 
-    send(TaskerEventResponse {});
+    send(TaskerEventResponse { });
 
     return true;
 }
@@ -385,7 +385,7 @@ bool AgentServer::handle_context_event(const json::value& j)
     RemoteContext context(*this, req.context_id);
     ctx_notifier_.notify(&context, req.message, req.details);
 
-    send(ContextEventResponse {});
+    send(ContextEventResponse { });
 
     return true;
 }

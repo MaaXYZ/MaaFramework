@@ -118,7 +118,7 @@ NodeDetail PipelineTask::run_next(const std::vector<MAA_RES_NS::NodeAttr>& next,
 {
     if (!context_) {
         LogError << "context is null";
-        return {};
+        return { };
     }
 
     bool valid = std::ranges::any_of(next, [&](const MAA_RES_NS::NodeAttr& node) {
@@ -127,7 +127,7 @@ NodeDetail PipelineTask::run_next(const std::vector<MAA_RES_NS::NodeAttr>& next,
     });
     if (!valid) {
         LogInfo << "no valid/enabled node in next" << VAR(next);
-        return {};
+        return { };
     }
 
     auto node_id = generate_node_id();
@@ -136,7 +136,7 @@ NodeDetail PipelineTask::run_next(const std::vector<MAA_RES_NS::NodeAttr>& next,
     auto cur_opt = context_->get_pipeline_data(cur_node_);
     if (!cur_opt) {
         LogError << "get_pipeline_data failed, node not exist" << VAR(cur_node_);
-        return {};
+        return { };
     }
 
     const auto& cur_node = *cur_opt;
@@ -181,7 +181,7 @@ NodeDetail PipelineTask::run_next(const std::vector<MAA_RES_NS::NodeAttr>& next,
 
             notify(MaaMsg_Node_PipelineNode_Failed, node_cb_detail);
 
-            return {};
+            return { };
         }
 
         // Resolve jump_back BEFORE action execution (anchors are still intact at this point)
@@ -238,13 +238,13 @@ RecoResult PipelineTask::recognize_list(const cv::Mat& image, const std::vector<
 
     if (!context_) {
         LogError << "context is null";
-        return {};
+        return { };
     }
 
     auto cur_opt = context_->get_pipeline_data(cur_node_);
     if (!cur_opt) {
         LogError << "get_pipeline_data failed, node not exist" << VAR(cur_node_);
-        return {};
+        return { };
     }
 
     const auto& cur_node = *cur_opt;
@@ -299,7 +299,7 @@ RecoResult PipelineTask::recognize_list(const cv::Mat& image, const std::vector<
 
     notify(MaaMsg_Node_NextList_Failed, reco_list_cb_detail);
 
-    return {};
+    return { };
 }
 
 std::optional<PipelineTask::BatchOCRPlan> PipelineTask::prepare_batch_ocr(const std::vector<MAA_RES_NS::NodeAttr>& list)

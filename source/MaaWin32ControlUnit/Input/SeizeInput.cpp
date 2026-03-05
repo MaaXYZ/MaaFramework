@@ -26,7 +26,7 @@ std::pair<int, int> SeizeInput::get_target_pos() const
     }
 
     // 未设置时返回窗口客户区中心
-    RECT rect = {};
+    RECT rect = { };
     if (hwnd_ && GetClientRect(hwnd_, &rect)) {
         return { (rect.right - rect.left) / 2, (rect.bottom - rect.top) / 2 };
     }
@@ -70,7 +70,7 @@ bool SeizeInput::touch_down(int contact, int x, int y, int pressure)
 
     SetCursorPos(point.x, point.y);
 
-    INPUT input = {};
+    INPUT input = { };
     input.type = INPUT_MOUSE;
 
     MouseEventFlags flags_info;
@@ -112,7 +112,7 @@ bool SeizeInput::touch_move(int contact, int x, int y, int pressure)
         return false;
     }
 
-    INPUT input = {};
+    INPUT input = { };
     input.type = INPUT_MOUSE;
     input.mi.dx = static_cast<LONG>((point.x * 65535) / screen_width);
     input.mi.dy = static_cast<LONG>((point.y * 65535) / screen_height);
@@ -135,7 +135,7 @@ bool SeizeInput::touch_up(int contact)
 
     OnScopeLeave([this]() { unblock_input(); });
 
-    INPUT input = {};
+    INPUT input = { };
     input.type = INPUT_MOUSE;
 
     MouseEventFlags flags_info;
@@ -178,7 +178,7 @@ bool SeizeInput::input_text(const std::string& text)
     std::vector<INPUT> input_vec;
 
     for (const auto ch : u16_text) {
-        INPUT input = {};
+        INPUT input = { };
         input.type = INPUT_KEYBOARD;
         input.ki.dwFlags = KEYEVENTF_UNICODE;
         input.ki.wScan = ch;
@@ -208,7 +208,7 @@ bool SeizeInput::key_down(int key)
 
     // check_and_block_input();
 
-    INPUT inputs[1] = {};
+    INPUT inputs[1] = { };
 
     inputs[0].type = INPUT_KEYBOARD;
     inputs[0].ki.wVk = static_cast<WORD>(key);
@@ -227,7 +227,7 @@ bool SeizeInput::key_up(int key)
 
     // OnScopeLeave([this]() { unblock_input(); });
 
-    INPUT inputs[1] = {};
+    INPUT inputs[1] = { };
 
     inputs[0].type = INPUT_KEYBOARD;
     inputs[0].ki.wVk = static_cast<WORD>(key);
@@ -258,7 +258,7 @@ bool SeizeInput::scroll(int dx, int dy)
     }
     SetCursorPos(point.x, point.y);
 
-    INPUT input = {};
+    INPUT input = { };
     input.type = INPUT_MOUSE;
 
     if (dy != 0) {
