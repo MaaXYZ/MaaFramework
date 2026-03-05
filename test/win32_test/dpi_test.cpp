@@ -195,6 +195,8 @@ int main()
         { MaaWin32ScreencapMethod_FramePool, "FramePool" },
         { MaaWin32ScreencapMethod_PrintWindow, "PrintWindow" },
         { MaaWin32ScreencapMethod_ScreenDC, "ScreenDC" },
+        { MaaWin32ScreencapMethod_AutoForeground, "AutoForeground" },
+        { MaaWin32ScreencapMethod_AutoBackground, "AutoBackground" },
     };
 
     for (const auto& m : methods) {

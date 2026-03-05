@@ -21,6 +21,8 @@ MaaWin32ScreencapMethod parse_win32_screencap_method(const std::string& method)
         { "DXGI_DesktopDup_Window", MaaWin32ScreencapMethod_DXGI_DesktopDup_Window },
         { "PrintWindow", MaaWin32ScreencapMethod_PrintWindow },
         { "ScreenDC", MaaWin32ScreencapMethod_ScreenDC },
+        { "AutoForeground", MaaWin32ScreencapMethod_AutoForeground },
+        { "AutoBackground", MaaWin32ScreencapMethod_AutoBackground },
     };
 
     if (auto it = mapping.find(method); it != mapping.end()) {

@@ -85,6 +85,8 @@ export constexpr auto _MaaWin32ScreencapMethod_DXGI_DesktopDup = MaaWin32Screenc
 export constexpr auto _MaaWin32ScreencapMethod_DXGI_DesktopDup_Window = MaaWin32ScreencapMethod_DXGI_DesktopDup_Window;
 export constexpr auto _MaaWin32ScreencapMethod_PrintWindow = MaaWin32ScreencapMethod_PrintWindow;
 export constexpr auto _MaaWin32ScreencapMethod_ScreenDC = MaaWin32ScreencapMethod_ScreenDC;
+export constexpr auto _MaaWin32ScreencapMethod_AutoForeground = MaaWin32ScreencapMethod_AutoForeground;
+export constexpr auto _MaaWin32ScreencapMethod_AutoBackground = MaaWin32ScreencapMethod_AutoBackground;
 
 export using ::MaaWin32InputMethod;
 export constexpr auto _MaaWin32InputMethod_None = MaaWin32InputMethod_None;

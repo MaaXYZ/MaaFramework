@@ -75,11 +75,14 @@ declare global {
          * | DXGI_DesktopDup_Window  | Very Fast | Low           | No            | No                 | Desktop duplication then crop    |
          * | PrintWindow             | Medium    | Medium        | No            | Yes                |                                  |
          * | ScreenDC                | Fast      | High          | No            | No                 |                                  |
+         * | AutoForeground          | N/A       | N/A           | No            | No                 | Try DXGI_DesktopDup_Window -> GDI -> ScreenDC |
+         * | AutoBackground          | N/A       | N/A           | No            | Yes                | Try FramePool -> PrintWindow |
          *
          * Note: FramePool and PrintWindow have built-in pseudo-minimize support —
          * when the target window is minimized, they make it transparent and click-through,
-         * then restore it without activation, allowing screencap to continue.
-         * Other screencap methods will fail when the target window is minimized.
+         * then restore it without activation, allowing screencap to continue. AutoBackground
+         * inherits this behavior because it tries FramePool and PrintWindow in order.
+         * Other screencap methods (including AutoForeground) will fail when the target window is minimized.
          */
         const Win32ScreencapMethod: Record<
             | 'GDI'
@@ -87,7 +90,9 @@ declare global {
             | 'DXGI_DesktopDup'
             | 'DXGI_DesktopDup_Window'
             | 'PrintWindow'
-            | 'ScreenDC',
+            | 'ScreenDC'
+            | 'AutoForeground'
+            | 'AutoBackground',
             ScreencapOrInputMethods
         >
 

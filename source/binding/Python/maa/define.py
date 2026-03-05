@@ -273,9 +273,11 @@ class MaaWin32ScreencapMethodEnum(IntEnum):
     | DXGI_DesktopDup_Window  | Very Fast | Low           | No            | No                 | Desktop duplication then crop    |
     | PrintWindow             | Medium    | Medium        | No            | Yes                |                                  |
     | ScreenDC                | Fast      | High          | No            | No                 |                                  |
+    | AutoForeground          | N/A       | N/A           | No            | No                 | Try DXGI_DesktopDup_Window -> GDI -> ScreenDC |
+    | AutoBackground          | N/A       | N/A           | No            | Yes                | Try FramePool -> PrintWindow |
 
-    Note: When a window is minimized on Windows, all screencap methods will fail.
-    Avoid minimizing the target window.
+    Note: FramePool and PrintWindow support pseudo-minimize. AutoBackground inherits
+    this behavior because it tries FramePool and PrintWindow in order.
     """
 
     Null = 0
@@ -286,6 +288,8 @@ class MaaWin32ScreencapMethodEnum(IntEnum):
     DXGI_DesktopDup_Window = 1 << 3
     PrintWindow = 1 << 4
     ScreenDC = 1 << 5
+    AutoForeground = 1 << 48
+    AutoBackground = 1 << 49
 
 
 MaaWin32InputMethod = ctypes.c_uint64

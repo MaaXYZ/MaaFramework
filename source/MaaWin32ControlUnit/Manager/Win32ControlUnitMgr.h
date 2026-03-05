@@ -1,6 +1,7 @@
 #pragma once
 
 #include <filesystem>
+#include <vector>
 
 #include "Base/UnitBase.h"
 #include "ControlUnit/ControlUnitAPI.h"
@@ -51,6 +52,10 @@ public: // from ControlUnitAPI
     virtual bool inactive() override;
 
     virtual json::object get_info() const override;
+
+private:
+    std::shared_ptr<ScreencapBase> make_screencap(MaaWin32ScreencapMethod method) const;
+    std::shared_ptr<ScreencapBase> try_screencap_methods(const std::vector<MaaWin32ScreencapMethod>& methods) const;
 
 private:
     HWND hwnd_ = nullptr;

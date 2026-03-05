@@ -31,6 +31,47 @@ Win32ControlUnitMgr::Win32ControlUnitMgr(
 {
 }
 
+std::shared_ptr<ScreencapBase> Win32ControlUnitMgr::make_screencap(MaaWin32ScreencapMethod method) const
+{
+    switch (method) {
+    case MaaWin32ScreencapMethod_GDI:
+        return std::make_shared<GdiScreencap>(hwnd_);
+    case MaaWin32ScreencapMethod_FramePool:
+        return std::make_shared<FramePoolWithPseudoMinimizeScreencap>(hwnd_);
+    case MaaWin32ScreencapMethod_DXGI_DesktopDup:
+        return std::make_shared<DesktopDupScreencap>(hwnd_);
+    case MaaWin32ScreencapMethod_DXGI_DesktopDup_Window:
+        return std::make_shared<DesktopDupWindowScreencap>(hwnd_);
+    case MaaWin32ScreencapMethod_PrintWindow:
+        return std::make_shared<PrintWindowWithPseudoMinimizeScreencap>(hwnd_);
+    case MaaWin32ScreencapMethod_ScreenDC:
+        return std::make_shared<ScreenDCScreencap>(hwnd_);
+    default:
+        return nullptr;
+    }
+}
+
+std::shared_ptr<ScreencapBase> Win32ControlUnitMgr::try_screencap_methods(
+    const std::vector<MaaWin32ScreencapMethod>& methods) const
+{
+    for (auto method : methods) {
+        auto unit = make_screencap(method);
+        if (!unit) {
+            LogWarn << "skip unsupported screencap method in auto mode" << VAR(method);
+            continue;
+        }
+
+        if (unit->screencap()) {
+            LogInfo << "auto screencap selected method" << VAR(method);
+            return unit;
+        }
+
+        LogWarn << "auto screencap failed, try next" << VAR(method);
+    }
+
+    return nullptr;
+}
+
 bool Win32ControlUnitMgr::connect()
 {
     connected_ = false;
@@ -54,8 +95,9 @@ bool Win32ControlUnitMgr::connect()
         }
 
         // FramePool 和 PrintWindow 内置伪最小化支持，允许最小化窗口
-        bool supports_minimized =
-            screencap_method_ == MaaWin32ScreencapMethod_FramePool || screencap_method_ == MaaWin32ScreencapMethod_PrintWindow;
+        bool supports_minimized = screencap_method_ == MaaWin32ScreencapMethod_FramePool
+            || screencap_method_ == MaaWin32ScreencapMethod_PrintWindow
+            || screencap_method_ == MaaWin32ScreencapMethod_AutoBackground;
         if (!supports_minimized && IsIconic(hwnd_)) {
             LogError << "hwnd_ is minimized";
             return false;
@@ -67,27 +109,28 @@ bool Win32ControlUnitMgr::connect()
 
     switch (screencap_method_) {
     case MaaWin32ScreencapMethod_GDI:
-        screencap_ = std::make_shared<GdiScreencap>(hwnd_);
-        break;
     case MaaWin32ScreencapMethod_FramePool:
-        screencap_ = std::make_shared<FramePoolWithPseudoMinimizeScreencap>(hwnd_);
-        break;
     case MaaWin32ScreencapMethod_DXGI_DesktopDup:
-        screencap_ = std::make_shared<DesktopDupScreencap>(hwnd_);
-        break;
     case MaaWin32ScreencapMethod_DXGI_DesktopDup_Window:
-        screencap_ = std::make_shared<DesktopDupWindowScreencap>(hwnd_);
-        break;
     case MaaWin32ScreencapMethod_PrintWindow:
-        screencap_ = std::make_shared<PrintWindowWithPseudoMinimizeScreencap>(hwnd_);
-        break;
     case MaaWin32ScreencapMethod_ScreenDC:
-        screencap_ = std::make_shared<ScreenDCScreencap>(hwnd_);
+        screencap_ = make_screencap(screencap_method_);
+        break;
+    case MaaWin32ScreencapMethod_AutoForeground:
+        screencap_ = try_screencap_methods(
+            { MaaWin32ScreencapMethod_DXGI_DesktopDup_Window, MaaWin32ScreencapMethod_GDI, MaaWin32ScreencapMethod_ScreenDC });
+        break;
+    case MaaWin32ScreencapMethod_AutoBackground:
+        screencap_ = try_screencap_methods({ MaaWin32ScreencapMethod_FramePool, MaaWin32ScreencapMethod_PrintWindow });
         break;
 
     default:
         LogError << "Unknown screencap method: " << static_cast<int>(screencap_method_);
         break;
+    }
+    if (!screencap_) {
+        LogError << "Failed to initialize screencap method:" << static_cast<int>(screencap_method_);
+        return false;
     }
 
     auto make_input = [&](MaaWin32InputMethod method) -> std::shared_ptr<InputBase> {

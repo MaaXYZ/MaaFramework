@@ -310,6 +310,8 @@ typedef uint64_t MaaAdbInputMethod;
  * | DXGI_DesktopDup_Window  | Very Fast | Low           | No            | No                 | Desktop duplication then crop    |
  * | PrintWindow             | Medium    | Medium        | No            | Yes                |                                  |
  * | ScreenDC                | Fast      | High          | No            | No                 |                                  |
+ * | AutoForeground          | N/A       | N/A           | No            | No                 | Try DXGI_DesktopDup_Window -> GDI -> ScreenDC |
+ * | AutoBackground          | N/A       | N/A           | No            | Yes                | Try FramePool -> PrintWindow |
  *
  * Note: FramePool and PrintWindow support pseudo-minimize — when the target window
  * is minimized, they make it transparent and click-through, then restore it without
@@ -324,6 +326,8 @@ typedef uint64_t MaaWin32ScreencapMethod;
 #define MaaWin32ScreencapMethod_DXGI_DesktopDup_Window (1ULL << 3)
 #define MaaWin32ScreencapMethod_PrintWindow (1ULL << 4)
 #define MaaWin32ScreencapMethod_ScreenDC (1ULL << 5)
+#define MaaWin32ScreencapMethod_AutoForeground (1ULL << 48)
+#define MaaWin32ScreencapMethod_AutoBackground (1ULL << 49)
 
 // MaaWin32InputMethod:
 /**
