@@ -37,7 +37,7 @@ private:
     std::vector<std::filesystem::path> classifier_roots_;
     std::vector<std::filesystem::path> detector_roots_;
 
-    Ort::Env env_;
+    Ort::Env env_ = Ort::Env(ORT_LOGGING_LEVEL_FATAL, "MaaFW");
     Ort::SessionOptions options_;
     Ort::MemoryInfo memory_info_;
 
