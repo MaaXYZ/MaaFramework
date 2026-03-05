@@ -4,6 +4,7 @@
 #include <cctype>
 #include <exception>
 #include <map>
+#include <numeric>
 #include <ranges>
 #include <sstream>
 
@@ -75,6 +76,14 @@ std::optional<NeuralNetworkDetector::ModelIOInfo> NeuralNetworkDetector::load_io
             LogError << "Input shape is not 4" << VAR(io_info.input_shape);
             return std::nullopt;
         }
+        if (io_info.input_shape[0] <= 0) {
+            LogWarn << "Dynamic or invalid batch size, fallback to batch=1" << VAR(io_info.input_shape[0]);
+            io_info.input_shape[0] = 1;
+        }
+        if (io_info.input_shape[1] <= 0 || io_info.input_shape[2] <= 0 || io_info.input_shape[3] <= 0) {
+            LogError << "Input shape contains dynamic or invalid CHW dimensions" << VAR(io_info.input_shape);
+            return std::nullopt;
+        }
 
         Ort::AllocatorWithDefaultOptions allocator;
         io_info.input_name = session_->GetInputNameAllocated(0, allocator).get();
@@ -104,6 +113,15 @@ NeuralNetworkDetector::ResultsVec NeuralNetworkDetector::detect(const std::vecto
         cv::resize(image, image, input_image_size, 0, 0, cv::INTER_AREA);
         std::vector<float> input = image_to_tensor(image);
 
+        size_t expected_input_size = 1;
+        for (int64_t dim : io_info.input_shape) {
+            expected_input_size *= static_cast<size_t>(dim);
+        }
+        if (input.size() != expected_input_size) {
+            LogError << "Input tensor size mismatch" << VAR(input.size()) << VAR(expected_input_size) << VAR(io_info.input_shape);
+            return {};
+        }
+
         Ort::Value input_tensor =
             Ort::Value::CreateTensor<float>(
                 memory_info_,
@@ -119,9 +137,29 @@ NeuralNetworkDetector::ResultsVec NeuralNetworkDetector::detect(const std::vecto
         auto output_tensor =
             session_->Run(run_options, input_names.data(), &input_tensor, input_names.size(), output_names.data(), output_names.size());
 
-        const float* raw_output = output_tensor[0].GetTensorData<float>();
+        if (output_tensor.empty()) {
+            LogError << "ORT output is empty";
+            return {};
+        }
+        if (!output_tensor[0].IsTensor()) {
+            LogError << "ORT output[0] is not a tensor";
+            return {};
+        }
+
+        const auto output_info = output_tensor[0].GetTensorTypeAndShapeInfo();
+        if (output_info.GetElementType() != ONNX_TENSOR_ELEMENT_DATA_TYPE_FLOAT) {
+            LogError << "Unsupported output tensor type" << static_cast<int>(output_info.GetElementType());
+            return {};
+        }
+
         // output_shape is { 1, 5, 8400 }
-        std::vector<int64_t> output_shape = output_tensor[0].GetTensorTypeAndShapeInfo().GetShape();
+        std::vector<int64_t> output_shape = output_info.GetShape();
+        if (output_shape.size() != 3 || output_shape[0] <= 0 || output_shape[1] <= 4 || output_shape[2] <= 0) {
+            LogError << "Unexpected output shape" << VAR(output_shape);
+            return {};
+        }
+
+        const float* raw_output = output_tensor[0].GetTensorData<float>();
 
         // yolov8 的 onnx 输出和前面的 v5, v7 等似乎不太一样，目前网上 yolov8 的 demo 较少，文档也没找到
         // 这里的输出解析是我跟着数据推测的：

@@ -1,6 +1,7 @@
 #include "NeuralNetworkClassifier.h"
 
 #include <exception>
+#include <numeric>
 #include <onnxruntime/onnxruntime_cxx_api.h>
 
 #include "MaaUtils/NoWarningCV.hpp"
@@ -63,6 +64,14 @@ std::optional<NeuralNetworkClassifier::ModelIOInfo> NeuralNetworkClassifier::loa
             LogError << "Input shape is not 4" << VAR(io_info.input_shape);
             return std::nullopt;
         }
+        if (io_info.input_shape[0] <= 0) {
+            LogWarn << "Dynamic or invalid batch size, fallback to batch=1" << VAR(io_info.input_shape[0]);
+            io_info.input_shape[0] = 1;
+        }
+        if (io_info.input_shape[1] <= 0 || io_info.input_shape[2] <= 0 || io_info.input_shape[3] <= 0) {
+            LogError << "Input shape contains dynamic or invalid CHW dimensions" << VAR(io_info.input_shape);
+            return std::nullopt;
+        }
 
         Ort::AllocatorWithDefaultOptions allocator;
         io_info.input_name = session_->GetInputNameAllocated(0, allocator).get();
@@ -91,6 +100,15 @@ NeuralNetworkClassifier::Result NeuralNetworkClassifier::classify(const ModelIOI
         cv::resize(image, image, input_image_size, 0, 0, cv::INTER_AREA);
         std::vector<float> input = image_to_tensor(image);
 
+        size_t expected_input_size = 1;
+        for (int64_t dim : io_info.input_shape) {
+            expected_input_size *= static_cast<size_t>(dim);
+        }
+        if (input.size() != expected_input_size) {
+            LogError << "Input tensor size mismatch" << VAR(input.size()) << VAR(expected_input_size) << VAR(io_info.input_shape);
+            return {};
+        }
+
         Ort::Value input_tensor =
             Ort::Value::CreateTensor<float>(
                 memory_info_,
@@ -106,8 +124,29 @@ NeuralNetworkClassifier::Result NeuralNetworkClassifier::classify(const ModelIOI
         auto output_tensor =
             session_->Run(run_options, input_names.data(), &input_tensor, input_names.size(), output_names.data(), output_names.size());
 
+        if (output_tensor.empty()) {
+            LogError << "ORT output is empty";
+            return {};
+        }
+        if (!output_tensor[0].IsTensor()) {
+            LogError << "ORT output[0] is not a tensor";
+            return {};
+        }
+
+        const auto output_info = output_tensor[0].GetTensorTypeAndShapeInfo();
+        if (output_info.GetElementType() != ONNX_TENSOR_ELEMENT_DATA_TYPE_FLOAT) {
+            LogError << "Unsupported output tensor type" << static_cast<int>(output_info.GetElementType());
+            return {};
+        }
+
+        size_t output_count = output_info.GetElementCount();
+        if (output_count == 0) {
+            LogError << "ORT output tensor has no elements";
+            return {};
+        }
+
         const float* raw_output = output_tensor[0].GetTensorData<float>();
-        std::vector<float> output(raw_output, raw_output + output_tensor[0].GetTensorTypeAndShapeInfo().GetElementCount());
+        std::vector<float> output(raw_output, raw_output + output_count);
 
         Result res;
         res.raw = std::move(output);
