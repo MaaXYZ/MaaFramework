@@ -19,8 +19,8 @@ public:
     inline static constexpr std::string_view kFilePrefix_Ignore = ".";
 
 public:
-    bool load(const std::filesystem::path& path, const DefaultPipelineMgr& default_mgr);
-    bool load_file(const std::filesystem::path& path, const DefaultPipelineMgr& default_mgr);
+    bool load(const std::filesystem::path& path, const DefaultPipelineMgr& default_mgr = {});
+    bool load_file(const std::filesystem::path& path, const DefaultPipelineMgr& default_mgr = {});
     void clear();
 
     const std::vector<std::filesystem::path>& get_paths() const { return paths_; }
@@ -32,7 +32,8 @@ public:
     std::vector<std::string> get_node_list() const;
 
 public:
-    bool parse_and_override(const json::value& input, std::set<std::string>& existing_keys, const DefaultPipelineMgr& default_mgr);
+    bool parse_and_override(const json::value& input, std::set<std::string>& existing_keys, const DefaultPipelineMgr& default_mgr = {});
+    bool parse_and_override(const json::value& input, const DefaultPipelineMgr& default_mgr = {});
 
 private:
     bool load_all_json(const std::filesystem::path& path, const DefaultPipelineMgr& default_mgr);

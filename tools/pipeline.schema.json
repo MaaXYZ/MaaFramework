@@ -1,6 +1,14 @@
 {
     "$schema": "https://json-schema.org/draft/2020-12/schema",
     "type": "object",
+    "properties": {
+        "$Default": {
+            "$ref": "#/$defs/Node",
+            "title": "File Default Node",
+            "description": "文件级默认属性 | 当前文件中新节点的默认配置，优先级高于 default_pipeline.json 中的 Bundle 级默认值。",
+            "markdownDescription": "*object*\n\n**文件级默认属性** | 当前文件中新节点的默认配置。\n\n仅对当前文件中**新增**的节点生效，已存在的节点不受影响。优先级高于 `default_pipeline.json` 中的 Bundle 级默认值。"
+        }
+    },
     "patternProperties": {
         "^(?!\\$).*": {
             "$ref": "#/$defs/Node"

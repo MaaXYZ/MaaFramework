@@ -7,7 +7,7 @@
     // 文档： https://github.com/MaaXYZ/MaaFramework/blob/main/docs/zh_cn/3.1-%E4%BB%BB%E5%8A%A1%E6%B5%81%E6%B0%B4%E7%BA%BF%E5%8D%8F%E8%AE%AE.md#%E9%BB%98%E8%AE%A4%E5%B1%9E%E6%80%A7
     // ====================
     // 所有节点的通用默认配置
-    "Default": {
+    "$Default": {
         "rate_limit": 1000, // 识别间隔（毫秒）
         "timeout": 20000, // 任务超时（毫秒）
         "pre_delay": 200, // 识别后到动作前的延迟
@@ -15,7 +15,7 @@
     },
     // ===== 识别算法默认配置 =====
     // 模板匹配（找图）
-    "TemplateMatch": {
+    "$TemplateMatch": {
         "recognition": "TemplateMatch",
         "threshold": 0.7, // 匹配阈值，越高越严格
         "method": 5 // 匹配算法：5=归一化相关系数（推荐）
@@ -29,7 +29,7 @@
         // }
     },
     // 文字识别（OCR）
-    "OCR": {
+    "$OCR": {
         "recognition": "OCR",
         "threshold": 0.3, // 置信度阈值
         "order_by": "Horizontal", // 排序方式：Horizontal | Vertical | Area | Length
@@ -37,19 +37,19 @@
     },
     // ===== 动作类型默认配置 =====
     // 点击
-    "Click": {
+    "$Click": {
         "action": "Click",
         "target": true // 点击识别到的目标位置
         // "target_offset": [0, 0, 100, 100]  // 在目标区域内随机偏移
     },
     // 长按
-    "LongPress": {
+    "$LongPress": {
         "action": "LongPress",
         "target": true,
         "duration": 1000 // 长按时长（毫秒）
     },
     // 滑动
-    "Swipe": {
+    "$Swipe": {
         "action": "Swipe",
         "duration": 200 // 滑动持续时间（毫秒）
         // "begin": [100, 100],  // 起点坐标（需具体指定）

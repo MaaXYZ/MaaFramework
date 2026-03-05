@@ -163,12 +163,9 @@ bool Context::wait_freezes(std::chrono::milliseconds time, const cv::Rect& box, 
         return false;
     }
 
-    // 从 DefaultPipelineMgr 获取默认值
-    const auto& default_param = resource->default_pipeline().get_pipeline().pre_wait_freezes;
-
     // 解析 wait_freezes_param
     MAA_RES_NS::WaitFreezesParam param;
-    if (!MAA_RES_NS::PipelineParser::parse_wait_freezes_value(wait_freezes_param, param, default_param)) {
+    if (!MAA_RES_NS::PipelineParser::parse_wait_freezes_value(wait_freezes_param, param)) {
         LogError << "failed to parse wait_freezes_param" << VAR(wait_freezes_param);
         return false;
     }
@@ -205,11 +202,9 @@ bool Context::override_pipeline(const json::value& pipeline_override)
         LogError << "resource not bound";
         return false;
     }
-    auto& default_mgr = resource->default_pipeline();
-
     bool ret = false;
     if (pipeline_override.is_object()) {
-        ret = override_pipeline_once(pipeline_override.as_object(), default_mgr);
+        ret = override_pipeline_once(pipeline_override.as_object());
     }
     else if (pipeline_override.is_array()) {
         ret = true;
@@ -218,7 +213,7 @@ bool Context::override_pipeline(const json::value& pipeline_override)
                 LogError << "input is not json array of object" << VAR(pipeline_override);
                 return false;
             }
-            ret &= override_pipeline_once(val.as_object(), default_mgr);
+            ret &= override_pipeline_once(val.as_object());
         }
     }
     else {
@@ -400,14 +395,14 @@ void Context::increment_hit_count(const std::string& node_name)
     task_state_->hit_count[node_name]++;
 }
 
-bool Context::override_pipeline_once(const json::object& pipeline_override, const MAA_RES_NS::DefaultPipelineMgr& default_mgr)
+bool Context::override_pipeline_once(const json::object& pipeline_override)
 {
     // LogTrace << VAR(getptr()) << VAR(pipeline_override);
 
     for (const auto& [key, value] : pipeline_override) {
         PipelineData result;
-        auto default_result = get_pipeline_data(key).value_or(default_mgr.get_pipeline());
-        bool ret = MAA_RES_NS::PipelineParser::parse_node(key, value, result, default_result, default_mgr);
+        auto default_result = get_pipeline_data(key).value_or(PipelineData {});
+        bool ret = MAA_RES_NS::PipelineParser::parse_node(key, value, result, default_result);
         if (!ret) {
             LogError << "parse_task failed" << VAR(key) << VAR(value);
             return false;

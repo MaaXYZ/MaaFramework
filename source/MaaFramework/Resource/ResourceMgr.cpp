@@ -248,8 +248,7 @@ bool ResourceMgr::override_pipeline(const json::value& pipeline_override)
 {
     LogInfo << VAR(pipeline_override);
 
-    std::set<std::string> existing_keys;
-    return pipeline_res_.parse_and_override(pipeline_override, existing_keys, default_pipeline_);
+    return pipeline_res_.parse_and_override(pipeline_override);
 }
 
 bool ResourceMgr::override_next(const std::string& node_name, const std::vector<std::string>& next)
@@ -648,18 +647,20 @@ bool ResourceMgr::load_bundle(const std::filesystem::path& path)
 
     bool to_load = false;
     bool ret = true;
+
+    DefaultPipelineMgr bundle_default;
     if (auto jc_path = path / "default_pipeline.jsonc"_path; std::filesystem::exists(jc_path)) {
         to_load = true;
-        ret &= default_pipeline_.load(jc_path);
+        ret &= bundle_default.load(jc_path);
     }
     else if (auto j_path = path / "default_pipeline.json"_path; std::filesystem::exists(j_path)) {
         to_load = true;
-        ret &= default_pipeline_.load(j_path);
+        ret &= bundle_default.load(j_path);
     }
 
     if (auto p = path / "pipeline"_path; std::filesystem::exists(p)) {
         to_load = true;
-        ret &= pipeline_res_.load(p, default_pipeline_);
+        ret &= pipeline_res_.load(p, bundle_default);
     }
     if (auto p = path / "model"_path / "ocr"_path; std::filesystem::exists(p)) {
         to_load = true;
@@ -709,10 +710,10 @@ bool ResourceMgr::load_pipeline(const std::filesystem::path& path)
     paths_.emplace_back(path);
 
     if (std::filesystem::is_directory(path)) {
-        return pipeline_res_.load(path, default_pipeline_);
+        return pipeline_res_.load(path);
     }
 
-    return pipeline_res_.load_file(path, default_pipeline_);
+    return pipeline_res_.load_file(path);
 }
 
 bool ResourceMgr::load_image(const std::filesystem::path& path)
@@ -763,34 +764,34 @@ std::optional<json::object> ResourceMgr::get_default_recognition_param(const std
 
     switch (type) {
     case Type::DirectHit:
-        param = default_pipeline_.get_recognition_param<MAA_VISION_NS::DirectHitParam>(type);
+        param = MAA_VISION_NS::DirectHitParam {};
         break;
     case Type::TemplateMatch:
-        param = default_pipeline_.get_recognition_param<MAA_VISION_NS::TemplateMatcherParam>(type);
+        param = MAA_VISION_NS::TemplateMatcherParam {};
         break;
     case Type::FeatureMatch:
-        param = default_pipeline_.get_recognition_param<MAA_VISION_NS::FeatureMatcherParam>(type);
+        param = MAA_VISION_NS::FeatureMatcherParam {};
         break;
     case Type::ColorMatch:
-        param = default_pipeline_.get_recognition_param<MAA_VISION_NS::ColorMatcherParam>(type);
+        param = MAA_VISION_NS::ColorMatcherParam {};
         break;
     case Type::OCR:
-        param = default_pipeline_.get_recognition_param<MAA_VISION_NS::OCRerParam>(type);
+        param = MAA_VISION_NS::OCRerParam {};
         break;
     case Type::NeuralNetworkClassify:
-        param = default_pipeline_.get_recognition_param<MAA_VISION_NS::NeuralNetworkClassifierParam>(type);
+        param = MAA_VISION_NS::NeuralNetworkClassifierParam {};
         break;
     case Type::NeuralNetworkDetect:
-        param = default_pipeline_.get_recognition_param<MAA_VISION_NS::NeuralNetworkDetectorParam>(type);
+        param = MAA_VISION_NS::NeuralNetworkDetectorParam {};
         break;
     case Type::And:
-        param = default_pipeline_.get_recognition_param<std::shared_ptr<AndParam>>(type);
+        param = std::make_shared<AndParam>();
         break;
     case Type::Or:
-        param = default_pipeline_.get_recognition_param<std::shared_ptr<OrParam>>(type);
+        param = std::make_shared<OrParam>();
         break;
     case Type::Custom:
-        param = default_pipeline_.get_recognition_param<MAA_VISION_NS::CustomRecognitionParam>(type);
+        param = MAA_VISION_NS::CustomRecognitionParam {};
         break;
     default:
         LogError << "invalid recognition type" << VAR(reco_type) << VAR(static_cast<int>(type));
@@ -819,58 +820,58 @@ std::optional<json::object> ResourceMgr::get_default_action_param(const std::str
         param = std::monostate {};
         break;
     case Type::Click:
-        param = default_pipeline_.get_action_param<ClickParam>(type);
+        param = ClickParam {};
         break;
     case Type::LongPress:
-        param = default_pipeline_.get_action_param<LongPressParam>(type);
+        param = LongPressParam {};
         break;
     case Type::Swipe:
-        param = default_pipeline_.get_action_param<SwipeParam>(type);
+        param = SwipeParam {};
         break;
     case Type::MultiSwipe:
-        param = default_pipeline_.get_action_param<MultiSwipeParam>(type);
+        param = MultiSwipeParam {};
         break;
     case Type::TouchDown:
     case Type::TouchMove:
-        param = default_pipeline_.get_action_param<TouchParam>(type);
+        param = TouchParam {};
         break;
     case Type::TouchUp:
-        param = default_pipeline_.get_action_param<TouchUpParam>(type);
+        param = TouchUpParam {};
         break;
     case Type::ClickKey:
-        param = default_pipeline_.get_action_param<ClickKeyParam>(type);
+        param = ClickKeyParam {};
         break;
     case Type::LongPressKey:
-        param = default_pipeline_.get_action_param<LongPressKeyParam>(type);
+        param = LongPressKeyParam {};
         break;
     case Type::KeyDown:
     case Type::KeyUp:
-        param = default_pipeline_.get_action_param<KeyParam>(type);
+        param = KeyParam {};
         break;
     case Type::InputText:
-        param = default_pipeline_.get_action_param<InputTextParam>(type);
+        param = InputTextParam {};
         break;
     case Type::StartApp:
     case Type::StopApp:
-        param = default_pipeline_.get_action_param<AppParam>(type);
+        param = AppParam {};
         break;
     case Type::Scroll:
-        param = default_pipeline_.get_action_param<ScrollParam>(type);
+        param = ScrollParam {};
         break;
     case Type::StopTask:
         param = std::monostate {};
         break;
     case Type::Command:
-        param = default_pipeline_.get_action_param<CommandParam>(type);
+        param = CommandParam {};
         break;
     case Type::Shell:
-        param = default_pipeline_.get_action_param<ShellParam>(type);
+        param = ShellParam {};
         break;
     case Type::Screencap:
-        param = default_pipeline_.get_action_param<ScreencapParam>(type);
+        param = ScreencapParam {};
         break;
     case Type::Custom:
-        param = default_pipeline_.get_action_param<CustomParam>(type);
+        param = CustomParam {};
         break;
     default:
         LogError << "invalid action type" << VAR(action_type) << VAR(static_cast<int>(type));
