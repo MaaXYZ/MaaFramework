@@ -69,6 +69,11 @@ std::optional<cv::Mat> GdiScreencap::screencap()
         return std::nullopt;
     }
 
+    if (mat.empty()) {
+        LogError << "mat is empty";
+        return std::nullopt;
+    }
+
     return bgra_to_bgr(mat);
 }
 
