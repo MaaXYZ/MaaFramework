@@ -17,7 +17,7 @@ std::mt19937 Actuator::rand_engine_(std::random_device { }());
 Actuator::Actuator(Tasker* tasker, Context& context)
     : tasker_(tasker)
     , context_(context)
-    , helper_(tasker)
+    , helper_(&context)
 {
 }
 
@@ -173,7 +173,12 @@ ActionResult Actuator::click(const MAA_RES_NS::Action::ClickParam& param, const 
         return { };
     }
 
-    cv::Point point = rand_point(helper_.get_target_rect(param.target, box));
+    auto target_rect = helper_.get_target_rect(param.target, box);
+    if (target_rect.empty()) {
+        LogError << "failed to get target rect" << VAR(name);
+        return { };
+    }
+    cv::Point point = rand_point(target_rect);
     MAA_CTRL_NS::ClickParam ctrl_param { .point = point, .contact = static_cast<int>(param.contact) };
     bool ret = controller()->click(ctrl_param);
 
@@ -194,7 +199,12 @@ ActionResult Actuator::long_press(const MAA_RES_NS::Action::LongPressParam& para
         return { };
     }
 
-    cv::Point point = rand_point(helper_.get_target_rect(param.target, box));
+    auto target_rect = helper_.get_target_rect(param.target, box);
+    if (target_rect.empty()) {
+        LogError << "failed to get target rect" << VAR(name);
+        return { };
+    }
+    cv::Point point = rand_point(target_rect);
     MAA_CTRL_NS::LongPressParam ctrl_param { .point = point, .duration = param.duration, .contact = static_cast<int>(param.contact) };
     bool ret = controller()->long_press(ctrl_param);
 
@@ -215,7 +225,12 @@ ActionResult Actuator::swipe(const MAA_RES_NS::Action::SwipeParam& param, const 
         return { };
     }
 
-    cv::Point begin = rand_point(helper_.get_target_rect(param.begin, box));
+    auto begin_rect = helper_.get_target_rect(param.begin, box);
+    if (begin_rect.empty()) {
+        LogError << "failed to get swipe begin rect" << VAR(name);
+        return { };
+    }
+    cv::Point begin = rand_point(begin_rect);
 
     std::vector<cv::Point> end;
     for (size_t i = 0; i < param.end.size(); ++i) {
@@ -224,8 +239,12 @@ ActionResult Actuator::swipe(const MAA_RES_NS::Action::SwipeParam& param, const 
                               : i < param.end_offset.size() ? param.end_offset.at(i)
                                                             : param.end_offset.back();
         MAA_RES_NS::Action::Target end_target { .type = e.type, .param = e.param, .offset = end_offset };
-        cv::Point p = rand_point(helper_.get_target_rect(end_target, box));
-        end.emplace_back(p);
+        auto end_rect = helper_.get_target_rect(end_target, box);
+        if (end_rect.empty()) {
+            LogError << "failed to get swipe end rect" << VAR(name) << VAR(i);
+            return { };
+        }
+        end.emplace_back(rand_point(end_rect));
     }
 
     MAA_CTRL_NS::SwipeParam ctrl_param { .begin = begin,
@@ -256,7 +275,12 @@ ActionResult Actuator::multi_swipe(const MAA_RES_NS::Action::MultiSwipeParam& pa
 
     std::vector<MAA_CTRL_NS::SwipeParam> swipes;
     for (const auto& swipe : param.swipes) {
-        cv::Point begin = rand_point(helper_.get_target_rect(swipe.begin, box));
+        auto swipe_begin_rect = helper_.get_target_rect(swipe.begin, box);
+        if (swipe_begin_rect.empty()) {
+            LogError << "failed to get multi_swipe begin rect" << VAR(name);
+            return { };
+        }
+        cv::Point begin = rand_point(swipe_begin_rect);
 
         std::vector<cv::Point> end;
         for (size_t i = 0; i < swipe.end.size(); ++i) {
@@ -265,8 +289,12 @@ ActionResult Actuator::multi_swipe(const MAA_RES_NS::Action::MultiSwipeParam& pa
                                   : i < swipe.end_offset.size() ? swipe.end_offset.at(i)
                                                                 : swipe.end_offset.back();
             MAA_RES_NS::Action::Target end_target { .type = e.type, .param = e.param, .offset = end_offset };
-            cv::Point p = rand_point(helper_.get_target_rect(end_target, box));
-            end.emplace_back(p);
+            auto swipe_end_rect = helper_.get_target_rect(end_target, box);
+            if (swipe_end_rect.empty()) {
+                LogError << "failed to get multi_swipe end rect" << VAR(name) << VAR(i);
+                return { };
+            }
+            end.emplace_back(rand_point(swipe_end_rect));
         }
         swipes.push_back(
             { .begin = begin,
@@ -298,7 +326,12 @@ ActionResult Actuator::touch_down(const MAA_RES_NS::Action::TouchParam& param, c
         return { };
     }
 
-    cv::Point point = rand_point(helper_.get_target_rect(param.target, box));
+    auto target_rect = helper_.get_target_rect(param.target, box);
+    if (target_rect.empty()) {
+        LogError << "failed to get target rect" << VAR(name);
+        return { };
+    }
+    cv::Point point = rand_point(target_rect);
     MAA_CTRL_NS::TouchParam ctrl_param { .contact = static_cast<int>(param.contact), .point = point, .pressure = param.pressure };
     bool ret = controller()->touch_down(ctrl_param);
 
@@ -319,7 +352,12 @@ ActionResult Actuator::touch_move(const MAA_RES_NS::Action::TouchParam& param, c
         return { };
     }
 
-    cv::Point point = rand_point(helper_.get_target_rect(param.target, box));
+    auto target_rect = helper_.get_target_rect(param.target, box);
+    if (target_rect.empty()) {
+        LogError << "failed to get target rect" << VAR(name);
+        return { };
+    }
+    cv::Point point = rand_point(target_rect);
     MAA_CTRL_NS::TouchParam ctrl_param { .contact = static_cast<int>(param.contact), .point = point, .pressure = param.pressure };
     bool ret = controller()->touch_move(ctrl_param);
 
@@ -460,7 +498,12 @@ ActionResult Actuator::scroll(const MAA_RES_NS::Action::ScrollParam& param, cons
         return { };
     }
 
-    cv::Point point = rand_point(helper_.get_target_rect(param.target, box));
+    auto target_rect = helper_.get_target_rect(param.target, box);
+    if (target_rect.empty()) {
+        LogError << "failed to get target rect" << VAR(name);
+        return { };
+    }
+    cv::Point point = rand_point(target_rect);
     MAA_CTRL_NS::ScrollParam ctrl_param { .point = point, .dx = param.dx, .dy = param.dy };
     bool ret = controller()->scroll(ctrl_param);
 
@@ -634,7 +677,11 @@ ActionResult
         return { };
     }
     auto session = tasker_->resource()->custom_action(param.name);
-    cv::Rect rect = helper_.get_target_rect(param.target, box);
+    auto rect = helper_.get_target_rect(param.target, box);
+    if (rect.empty()) {
+        LogError << "failed to get target rect" << VAR(name);
+        return { };
+    }
     bool ret = CustomAction::run(context_, name, session, param, reco_id, rect);
 
     return ActionResult {

@@ -1680,8 +1680,13 @@ bool PipelineParser::parse_target_variant(const json::value& input_target, Targe
         output.type = Target::Type::Self;
     }
     else if (input_target.is_string()) {
-        output.type = Target::Type::PreTask;
-        output.param = input_target.as_string();
+        NodeAttr parsed;
+        if (!parse_node_string_in_next(input_target.as_string(), parsed)) {
+            LogError << "failed to parse target string" << VAR(input_target);
+            return false;
+        }
+        output.type = parsed.anchor ? Target::Type::Anchor : Target::Type::PreTask;
+        output.param = parsed.name;
     }
     else if (input_target.is_array()) {
         output.type = Target::Type::Region;

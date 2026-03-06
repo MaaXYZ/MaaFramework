@@ -7,22 +7,24 @@
 
 MAA_TASK_NS_BEGIN
 
+class Context;
+
 class ActionHelper : public NonCopyable
 {
 public:
-    explicit ActionHelper(Tasker* tasker);
+    explicit ActionHelper(Context* context);
 
-    // 等待画面静止
     bool wait_freezes(const MAA_RES_NS::WaitFreezesParam& param, const cv::Rect& box, const std::string& name = "");
 
-    // 根据 target 计算 ROI 区域
     cv::Rect get_target_rect(const MAA_RES_NS::Action::Target& target, const cv::Rect& box = { });
 
 private:
+    cv::Rect get_rect_from_node(const std::string& node_name) const;
+    Tasker* tasker() const;
     MAA_CTRL_NS::ControllerAgent* controller();
 
 private:
-    Tasker* tasker_ = nullptr;
+    Context* context_ = nullptr;
 };
 
 MAA_TASK_NS_END
