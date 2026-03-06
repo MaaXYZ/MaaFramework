@@ -389,6 +389,9 @@ jobs:
               with:
                   ndk-version: r27d
 
+            - name: Export ANDROID_NDK_ROOT
+              run: echo "ANDROID_NDK_ROOT=${{ steps.setup-ndk.outputs.ndk-path }}" >> "$GITHUB_ENV"
+
             - name: Setup ccache
               uses: Chocobo1/setup-ccache-action@v1
               with:
@@ -401,20 +404,29 @@ jobs:
                   python3 tools/maadeps-download.py ${{ matrix.arch == 'x86_64' && 'x64' || 'arm64' }}-android
 
             - name: Build MAA
+              shell: bash
               run: |
-                  cmake --preset 'NinjaMulti' \
-                    -DCMAKE_TOOLCHAIN_FILE=${{ steps.setup-ndk.outputs.ndk-path}}/build/cmake/android.toolchain.cmake \
-                    -DANDROID_ABI=${{ matrix.arch == 'x86_64' && 'x86_64' || 'arm64-v8a' }} \
-                    -DANDROID_PLATFORM=android-23 \
-                    -DMAADEPS_TRIPLET='maa-${{ matrix.arch == 'x86_64' && 'x64' || 'arm64' }}-android' \
+                  if [[ "${{ matrix.arch }}" == "x86_64" ]]; then
+                      preset='NinjaMulti Android x64'
+                  else
+                      preset='NinjaMulti Android arm64'
+                  fi
+
+                  cmake --preset "$preset" \
                     -DMAA_HASH_VERSION='${{ needs.meta.outputs.tag }}'
 
-                  cmake --build build --preset 'NinjaMulti - ${{ needs.meta.outputs.build-config }}' -j 16
+                  cmake --build --preset "$preset - ${{ needs.meta.outputs.build-config }}" -j 16
 
             - name: Install
               shell: bash
               run: |
-                  cmake --install build --prefix install --config ${{ needs.meta.outputs.build-config }}
+                  if [[ "${{ matrix.arch }}" == "x86_64" ]]; then
+                      build_dir='build/android/x86_64'
+                  else
+                      build_dir='build/android/arm64-v8a'
+                  fi
+
+                  cmake --install "$build_dir" --prefix install --config ${{ needs.meta.outputs.build-config }}
 
                   cp -r docs install
                   cp README*.md install
