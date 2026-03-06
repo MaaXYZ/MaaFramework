@@ -36,33 +36,8 @@ ActionResult Actuator::run(const cv::Rect& reco_hit, MaaRecoId reco_id, const Pi
         return { };
     }
 
-    wait_freezes(pipeline_data.pre_wait_freezes, reco_hit, pipeline_data.name);
-    sleep(pipeline_data.pre_delay);
-
-    auto& rt_cache = tasker_->runtime_cache();
-    ActionResult result;
-
-    for (uint i = 0; i < pipeline_data.repeat; ++i) {
-        if (i > 0) {
-            wait_freezes(pipeline_data.repeat_wait_freezes, reco_hit, pipeline_data.name);
-            sleep(pipeline_data.repeat_delay);
-        }
-
-        if (context_.need_to_stop()) {
-            return { };
-        }
-
-        result = execute_action(reco_hit, reco_id, pipeline_data, entry);
-        LogInfo << "action" << VAR(i) << VAR(pipeline_data.repeat) << VAR(result);
-        rt_cache.set_action_detail(result.action_id, result);
-
-        if (context_.need_to_stop()) {
-            return { };
-        }
-    }
-
-    wait_freezes(pipeline_data.post_wait_freezes, reco_hit, pipeline_data.name);
-    sleep(pipeline_data.post_delay);
+    ActionResult result = execute_action(reco_hit, reco_id, pipeline_data, entry);
+    tasker_->runtime_cache().set_action_detail(result.action_id, result);
 
     return result;
 }
