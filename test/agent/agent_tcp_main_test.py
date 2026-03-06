@@ -9,6 +9,7 @@ AgentClient TCP 端测试
 
 import os
 from pathlib import Path
+import socket
 import sys
 import subprocess
 
@@ -33,11 +34,10 @@ from maa.tasker import Tasker
 from maa.agent_client import AgentClient
 from maa.toolkit import Toolkit
 
+NUMERIC_IDENTIFIER_FLAG = "--numeric-identifier-flow"
 
-def api_test():
-    # ============================================================
-    # 创建并初始化 Resource, Controller, Tasker
-    # ============================================================
+
+def prepare_runtime():
     resource = Resource()
     print(f"resource: {resource}")
 
@@ -63,20 +63,26 @@ def api_test():
         print("failed to init tasker")
         exit(1)
 
-    # ============================================================
-    # AgentClient TCP API 测试
-    # ============================================================
-    # 使用端口 0 让系统自动选择可用端口
-    agent = AgentClient.create_tcp(0)
-    print(f"agent (TCP): {agent}")
+    return resource, dbg_controller, tasker
 
-    # 测试 identifier (应该是自动分配的端口号字符串)
-    socket_id = agent.identifier
+
+def reserve_tcp_port():
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
+        sock.bind(("127.0.0.1", 0))
+        return sock.getsockname()[1]
+
+
+def run_tcp_flow(agent: AgentClient, socket_id: str, *, scenario: str):
+    resource, dbg_controller, tasker = prepare_runtime()
+
+    print(f"agent ({scenario}): {agent}")
+
+    # 测试 identifier（TCP 模式下应为端口号字符串）
     print(f"agent.identifier: {socket_id}")
     if not socket_id or not socket_id.isdigit():
         print(f"unexpected identifier: {socket_id}, expected a port number string")
         exit(1)
-    print(f"Auto-selected port: {socket_id}")
+    print(f"TCP port: {socket_id}")
 
     # 测试 bind
     if not agent.bind(resource):
@@ -115,7 +121,7 @@ def api_test():
     # ============================================================
     subprocess.Popen(
         [
-            "python",
+            sys.executable,
             str(Path(__file__).parent / "agent_tcp_child_test.py"),
             str(binding_dir),
             str(install_dir),
@@ -206,6 +212,53 @@ def api_test():
     print(f"agent.connected after disconnect: {agent.connected}")
 
     print("\n" + "=" * 50)
+    print(f"{scenario} passed!")
+    print("=" * 50)
+
+
+def run_numeric_identifier_flow():
+    port = reserve_tcp_port()
+    agent = AgentClient(str(port))
+    run_tcp_flow(agent, agent.identifier, scenario="numeric identifier flow")
+
+
+def run_numeric_identifier_flow_with_retry(max_attempts: int = 5):
+    script = Path(__file__).resolve()
+
+    for attempt in range(1, max_attempts + 1):
+        # AgentClient(identifier) 需要预先选择一个非零空闲端口。
+        # 这一步如果刚好与其他进程竞争失败，放到子进程里重试能避免整个测试进程直接失败。
+        result = subprocess.run(
+            [
+                sys.executable,
+                str(script),
+                str(binding_dir),
+                str(install_dir),
+                NUMERIC_IDENTIFIER_FLAG,
+            ],
+            check=False,
+        )
+        if result.returncode == 0:
+            return
+
+        print(f"numeric identifier flow attempt {attempt}/{max_attempts} failed with exit code {result.returncode}")
+
+    raise RuntimeError("numeric identifier flow failed after retries")
+
+
+def api_test():
+    # ============================================================
+    # AgentClient TCP API 测试: 显式 create_tcp
+    # ============================================================
+    agent = AgentClient.create_tcp(0)
+    run_tcp_flow(agent, agent.identifier, scenario="create_tcp flow")
+
+    # ============================================================
+    # AgentClient TCP API 测试: 纯数字 identifier 自动走 TCP
+    # ============================================================
+    run_numeric_identifier_flow_with_retry()
+
+    print("\n" + "=" * 50)
     print("All agent TCP tests passed!")
     print("=" * 50)
 
@@ -214,5 +267,9 @@ if __name__ == "__main__":
     print(f"AgentClient (TCP) MaaFw Version: {Library.version()}")
 
     Toolkit.init_option(install_dir / "bin")
+
+    if len(sys.argv) >= 4 and sys.argv[3] == NUMERIC_IDENTIFIER_FLAG:
+        run_numeric_identifier_flow()
+        sys.exit(0)
 
     api_test()

@@ -90,6 +90,9 @@ protected:
     // 返回实际绑定的端口号，如果传入 0 则自动选择可用端口
     uint16_t init_tcp_socket(uint16_t port, bool bind);
 
+    // 纯数字 identifier 视为 TCP 端口号，范围限制为 1-65535
+    static std::optional<uint16_t> parse_tcp_port(const std::string& identifier);
+
     // 检测 IPC 是否可能失败（Windows 下的路径问题等）
     static bool should_fallback_to_tcp();
 
