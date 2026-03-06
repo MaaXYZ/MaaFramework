@@ -14,7 +14,7 @@ MAA_VISION_NS_BEGIN
 VisionBase::VisionBase(cv::Mat image, std::vector<cv::Rect> rois, std::string name)
     : image_(std::move(image))
     , name_(std::move(name))
-    , rois_(correct_rois(std::move(rois), image_))
+    , rois_(std::move(rois))
 {
     init_draw();
 }
