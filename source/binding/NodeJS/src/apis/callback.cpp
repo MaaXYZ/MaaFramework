@@ -317,6 +317,19 @@ MaaBool CustomTouchUp(int32_t contact, void* trans_arg)
     });
 }
 
+MaaBool CustomMouseMoveRelative(int32_t dx, int32_t dy, void* trans_arg)
+{
+    auto customCtx = reinterpret_cast<CustomControllerContext*>(trans_arg);
+    auto ctx = customCtx->callbacks["mouse_move_relative"];
+    return ctx->Call<bool>([&](maajs::FunctionType func) {
+        return func.Call(
+            {
+                maajs::NumberType::New(func.Env(), dx),
+                maajs::NumberType::New(func.Env(), dy),
+            });
+    });
+}
+
 MaaBool CustomClickKey(int32_t keycode, void* trans_arg)
 {
     auto customCtx = reinterpret_cast<CustomControllerContext*>(trans_arg);
