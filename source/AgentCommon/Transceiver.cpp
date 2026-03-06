@@ -1,5 +1,8 @@
 #include "MaaAgent/Transceiver.h"
 
+#include <algorithm>
+#include <cctype>
+#include <cstdlib>
 #include <format>
 #include <fstream>
 #include <optional>
@@ -120,6 +123,26 @@ static uint16_t parse_port_from_endpoint(const std::string& endpoint)
     unsigned long port = std::strtoul(port_str.c_str(), &end, 10);
     if (end != port_str.c_str() + port_str.size() || port > 65535) {
         return 0;
+    }
+
+    return static_cast<uint16_t>(port);
+}
+
+std::optional<uint16_t> Transceiver::parse_tcp_port(const std::string& identifier)
+{
+    if (identifier.empty()) {
+        return std::nullopt;
+    }
+
+    bool all_digits = std::all_of(identifier.begin(), identifier.end(), [](unsigned char c) { return std::isdigit(c) != 0; });
+    if (!all_digits) {
+        return std::nullopt;
+    }
+
+    char* end = nullptr;
+    unsigned long port = std::strtoul(identifier.c_str(), &end, 10);
+    if (end != identifier.c_str() + identifier.size() || port == 0 || port > 65535) {
+        return std::nullopt;
     }
 
     return static_cast<uint16_t>(port);

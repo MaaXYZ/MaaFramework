@@ -19,8 +19,13 @@ AgentClient::AgentClient(const std::string& identifier)
 {
     LogFunc;
 
+    if (auto port_opt = parse_tcp_port(identifier)) {
+        LogInfo << "Using TCP mode" << VAR(*port_opt);
+        uint16_t port = init_tcp_socket(*port_opt, true);
+        identifier_ = std::to_string(port);
+    }
     // Windows 上检测 IPC 是否可能失败，如果失败则自动使用 TCP
-    if (should_fallback_to_tcp()) {
+    else if (should_fallback_to_tcp()) {
         LogInfo << "IPC may fail on this system, using TCP instead";
         uint16_t port = init_tcp_socket(0, true);
         identifier_ = std::to_string(port);
@@ -116,9 +121,18 @@ std::string AgentClient::create_socket(const std::string& identifier)
         return identifier_;
     }
 
+    if (auto port_opt = parse_tcp_port(identifier)) {
+        LogInfo << "Using TCP mode" << VAR(*port_opt);
+        return create_tcp_socket(*port_opt);
+    }
+
+    if (should_fallback_to_tcp()) {
+        LogInfo << "IPC may fail on this system, using TCP instead";
+        return create_tcp_socket(0);
+    }
+
     // Create a new socket with the provided identifier or generate a new one if empty.
     identifier_ = identifier.empty() ? make_uuid() : identifier;
-
     init_socket(identifier_, true);
 
     return identifier_;

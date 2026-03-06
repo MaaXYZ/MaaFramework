@@ -9,6 +9,7 @@ AgentClient TCP 端测试
 
 import os
 from pathlib import Path
+import socket
 import sys
 import subprocess
 
@@ -34,10 +35,7 @@ from maa.agent_client import AgentClient
 from maa.toolkit import Toolkit
 
 
-def api_test():
-    # ============================================================
-    # 创建并初始化 Resource, Controller, Tasker
-    # ============================================================
+def prepare_runtime():
     resource = Resource()
     print(f"resource: {resource}")
 
@@ -63,20 +61,26 @@ def api_test():
         print("failed to init tasker")
         exit(1)
 
-    # ============================================================
-    # AgentClient TCP API 测试
-    # ============================================================
-    # 使用端口 0 让系统自动选择可用端口
-    agent = AgentClient.create_tcp(0)
-    print(f"agent (TCP): {agent}")
+    return resource, dbg_controller, tasker
 
-    # 测试 identifier (应该是自动分配的端口号字符串)
-    socket_id = agent.identifier
+
+def reserve_tcp_port():
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
+        sock.bind(("127.0.0.1", 0))
+        return sock.getsockname()[1]
+
+
+def run_tcp_flow(agent: AgentClient, socket_id: str, *, scenario: str):
+    resource, dbg_controller, tasker = prepare_runtime()
+
+    print(f"agent ({scenario}): {agent}")
+
+    # 测试 identifier（TCP 模式下应为端口号字符串）
     print(f"agent.identifier: {socket_id}")
     if not socket_id or not socket_id.isdigit():
         print(f"unexpected identifier: {socket_id}, expected a port number string")
         exit(1)
-    print(f"Auto-selected port: {socket_id}")
+    print(f"TCP port: {socket_id}")
 
     # 测试 bind
     if not agent.bind(resource):
@@ -204,6 +208,25 @@ def api_test():
 
     # 验证断开连接后的状态
     print(f"agent.connected after disconnect: {agent.connected}")
+
+    print("\n" + "=" * 50)
+    print(f"{scenario} passed!")
+    print("=" * 50)
+
+
+def api_test():
+    # ============================================================
+    # AgentClient TCP API 测试: 显式 create_tcp
+    # ============================================================
+    agent = AgentClient.create_tcp(0)
+    run_tcp_flow(agent, agent.identifier, scenario="create_tcp flow")
+
+    # ============================================================
+    # AgentClient TCP API 测试: 纯数字 identifier 自动走 TCP
+    # ============================================================
+    port = reserve_tcp_port()
+    agent = AgentClient(str(port))
+    run_tcp_flow(agent, agent.identifier, scenario="numeric identifier flow")
 
     print("\n" + "=" * 50)
     print("All agent TCP tests passed!")
