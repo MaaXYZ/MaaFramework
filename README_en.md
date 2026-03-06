@@ -101,7 +101,7 @@ It offers low-code simplicity while maintaining high extensibility. The framewor
     MaaFramework log analysis tool that supports multi-project log parsing, visual task processes, and AI intelligent analysis.
 
 - [prettier-plugin-maafw-sort](https://www.npmjs.com/package/@nekosu/prettier-plugin-maafw-sort) ![TypeScript](https://img.shields.io/badge/Typescript-8A2BE2?logo=typescript)  
-    Prettier plugin. Sort pipeline keys according to the lifecycle.
+    Prettier plugin that sorts pipeline keys according to lifecycle order.
 
 ### Application
 
