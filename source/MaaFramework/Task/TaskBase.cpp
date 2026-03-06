@@ -1,5 +1,7 @@
 #include "TaskBase.h"
 
+#include <chrono>
+
 #include "Component/Actuator.h"
 #include "Component/Recognizer.h"
 #include "Controller/ControllerAgent.h"
@@ -115,6 +117,8 @@ ActionResult TaskBase::run_action(const RecoResult& reco, const PipelineData& da
         return { };
     }
 
+    auto t0 = std::chrono::steady_clock::now();
+
     Actuator actuator(tasker_, *context_);
     json::value cb_detail {
         { "task_id", task_id() },
@@ -122,12 +126,29 @@ ActionResult TaskBase::run_action(const RecoResult& reco, const PipelineData& da
         { "name", reco.name },
         { "focus", data.focus },
     };
+
+    auto t1 = std::chrono::steady_clock::now();
+
     notify(MaaMsg_Node_Action_Starting, cb_detail);
+
+    auto t2 = std::chrono::steady_clock::now();
 
     ActionResult result = actuator.run(*reco.box, reco.reco_id, data, entry_);
 
+    auto t3 = std::chrono::steady_clock::now();
+
     cb_detail["action_details"] = result;
     notify(result.success ? MaaMsg_Node_Action_Succeeded : MaaMsg_Node_Action_Failed, cb_detail);
+
+    auto t4 = std::chrono::steady_clock::now();
+
+    auto ms = [](auto a, auto b) { return std::chrono::duration_cast<std::chrono::microseconds>(b - a).count() / 1000.0; };
+    LogInfo << "[Timing] TaskBase::run_action" << VAR(data.name)
+            << "actuator_construct=" << ms(t0, t1) << "ms"
+            << "notify_starting=" << ms(t1, t2) << "ms"
+            << "actuator_run=" << ms(t2, t3) << "ms"
+            << "notify_result=" << ms(t3, t4) << "ms"
+            << "total=" << ms(t0, t4) << "ms";
 
     return result;
 }

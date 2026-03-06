@@ -1,5 +1,7 @@
 #include "Context.h"
 
+#include <chrono>
+
 #include <meojson/json.hpp>
 
 #include "ActionTask.h"
@@ -112,13 +114,32 @@ MaaActId
 {
     LogTrace << VAR(getptr()) << VAR(entry) << VAR(pipeline_override) << VAR(box) << VAR(reco_detail);
 
+    auto t0 = std::chrono::steady_clock::now();
+
     ActionTask subtask(box, reco_detail, entry, tasker_, make_clone());
+
+    auto t1 = std::chrono::steady_clock::now();
+
     bool ov = subtask.override_pipeline(pipeline_override);
     if (!ov) {
         LogError << "failed to override_pipeline" << VAR(entry) << VAR(pipeline_override);
         return MaaInvalidId;
     }
-    return subtask.run_impl();
+
+    auto t2 = std::chrono::steady_clock::now();
+
+    auto result = subtask.run_impl();
+
+    auto t3 = std::chrono::steady_clock::now();
+
+    auto ms = [](auto a, auto b) { return std::chrono::duration_cast<std::chrono::microseconds>(b - a).count() / 1000.0; };
+    LogInfo << "[Timing] Context::run_action" << VAR(entry)
+            << "construct=" << ms(t0, t1) << "ms"
+            << "override_pipeline=" << ms(t1, t2) << "ms"
+            << "run_impl=" << ms(t2, t3) << "ms"
+            << "total=" << ms(t0, t3) << "ms";
+
+    return result;
 }
 
 MaaRecoId Context::run_recognition_direct(const std::string& reco_type, const json::value& reco_param, const cv::Mat& image)
@@ -141,12 +162,26 @@ MaaActId Context::run_action_direct(
 {
     LogTrace << VAR(getptr()) << VAR(action_type) << VAR(action_param) << VAR(box) << VAR(reco_detail);
 
+    auto t0 = std::chrono::steady_clock::now();
+
     std::string entry = std::format("action/{}/{}", action_type, make_uuid());
 
     json::value pipeline_override;
     pipeline_override[entry]["action"] = { { "type", action_type }, { "param", action_param } };
 
-    return run_action(entry, pipeline_override, box, reco_detail);
+    auto t1 = std::chrono::steady_clock::now();
+
+    auto result = run_action(entry, pipeline_override, box, reco_detail);
+
+    auto t2 = std::chrono::steady_clock::now();
+
+    auto ms = [](auto a, auto b) { return std::chrono::duration_cast<std::chrono::microseconds>(b - a).count() / 1000.0; };
+    LogInfo << "[Timing] Context::run_action_direct" << VAR(action_type)
+            << "prepare=" << ms(t0, t1) << "ms"
+            << "run_action=" << ms(t1, t2) << "ms"
+            << "total=" << ms(t0, t2) << "ms";
+
+    return result;
 }
 
 bool Context::wait_freezes(std::chrono::milliseconds time, const cv::Rect& box, const json::value& wait_freezes_param)

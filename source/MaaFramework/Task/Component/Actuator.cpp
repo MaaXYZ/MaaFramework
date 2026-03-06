@@ -1,5 +1,7 @@
 #include "Actuator.h"
 
+#include <chrono>
+
 #include "CommandAction.h"
 #include "Controller/ControllerAgent.h"
 #include "CustomAction.h"
@@ -36,8 +38,12 @@ ActionResult Actuator::run(const cv::Rect& reco_hit, MaaRecoId reco_id, const Pi
         return { };
     }
 
+    auto t0 = std::chrono::steady_clock::now();
+
     wait_freezes(pipeline_data.pre_wait_freezes, reco_hit, pipeline_data.name);
     sleep(pipeline_data.pre_delay);
+
+    auto t1 = std::chrono::steady_clock::now();
 
     auto& rt_cache = tasker_->runtime_cache();
     ActionResult result;
@@ -61,8 +67,20 @@ ActionResult Actuator::run(const cv::Rect& reco_hit, MaaRecoId reco_id, const Pi
         }
     }
 
+    auto t2 = std::chrono::steady_clock::now();
+
     wait_freezes(pipeline_data.post_wait_freezes, reco_hit, pipeline_data.name);
     sleep(pipeline_data.post_delay);
+
+    auto t3 = std::chrono::steady_clock::now();
+
+    auto ms = [](auto a, auto b) { return std::chrono::duration_cast<std::chrono::microseconds>(b - a).count() / 1000.0; };
+    LogInfo << "[Timing] Actuator::run" << VAR(pipeline_data.name)
+            << "type=" << static_cast<int>(pipeline_data.action_type)
+            << "pre_wait+delay=" << ms(t0, t1) << "ms"
+            << "execute_action(x" << pipeline_data.repeat << ")=" << ms(t1, t2) << "ms"
+            << "post_wait+delay=" << ms(t2, t3) << "ms"
+            << "total=" << ms(t0, t3) << "ms";
 
     return result;
 }
