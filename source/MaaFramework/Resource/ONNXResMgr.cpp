@@ -77,9 +77,6 @@ void ONNXResMgr::use_directml(int device_id)
         return;
     }
 
-    // 不知道为什么 DML 会 crash，感觉是 onnxruntime 的 bug，之后 onnxruntime 更新了可以再试试
-    // 当前版本 onnxruntime v1.19.2 from MaaDeps. 设备 AMD RX 640
-    // memory_info_ = Ort::MemoryInfo("DML", OrtDeviceAllocator, device_id, OrtMemTypeDefault);
     memory_info_ = Ort::MemoryInfo::CreateCpu(OrtDeviceAllocator, OrtMemTypeDefault);
 
     LogInfo << "Using DML execution provider with device_id" << device_id;
@@ -103,8 +100,7 @@ void ONNXResMgr::use_coreml(uint32_t coreml_flag)
         LogError << "Failed to append CoreML execution provider";
     }
 
-    // 不知道 name 是啥，先糊一个
-    memory_info_ = Ort::MemoryInfo("Cpu", OrtDeviceAllocator, 0, OrtMemTypeDefault);
+    memory_info_ = Ort::MemoryInfo::CreateCpu(OrtDeviceAllocator, OrtMemTypeDefault);
 
     LogInfo << "Using CoreML execution provider";
 
