@@ -34,6 +34,8 @@ from maa.tasker import Tasker
 from maa.agent_client import AgentClient
 from maa.toolkit import Toolkit
 
+NUMERIC_IDENTIFIER_FLAG = "--numeric-identifier-flow"
+
 
 def prepare_runtime():
     resource = Resource()
@@ -119,7 +121,7 @@ def run_tcp_flow(agent: AgentClient, socket_id: str, *, scenario: str):
     # ============================================================
     subprocess.Popen(
         [
-            "python",
+            sys.executable,
             str(Path(__file__).parent / "agent_tcp_child_test.py"),
             str(binding_dir),
             str(install_dir),
@@ -214,6 +216,36 @@ def run_tcp_flow(agent: AgentClient, socket_id: str, *, scenario: str):
     print("=" * 50)
 
 
+def run_numeric_identifier_flow():
+    port = reserve_tcp_port()
+    agent = AgentClient(str(port))
+    run_tcp_flow(agent, agent.identifier, scenario="numeric identifier flow")
+
+
+def run_numeric_identifier_flow_with_retry(max_attempts: int = 5):
+    script = Path(__file__).resolve()
+
+    for attempt in range(1, max_attempts + 1):
+        # AgentClient(identifier) 需要预先选择一个非零空闲端口。
+        # 这一步如果刚好与其他进程竞争失败，放到子进程里重试能避免整个测试进程直接失败。
+        result = subprocess.run(
+            [
+                sys.executable,
+                str(script),
+                str(binding_dir),
+                str(install_dir),
+                NUMERIC_IDENTIFIER_FLAG,
+            ],
+            check=False,
+        )
+        if result.returncode == 0:
+            return
+
+        print(f"numeric identifier flow attempt {attempt}/{max_attempts} failed with exit code {result.returncode}")
+
+    raise RuntimeError("numeric identifier flow failed after retries")
+
+
 def api_test():
     # ============================================================
     # AgentClient TCP API 测试: 显式 create_tcp
@@ -224,9 +256,7 @@ def api_test():
     # ============================================================
     # AgentClient TCP API 测试: 纯数字 identifier 自动走 TCP
     # ============================================================
-    port = reserve_tcp_port()
-    agent = AgentClient(str(port))
-    run_tcp_flow(agent, agent.identifier, scenario="numeric identifier flow")
+    run_numeric_identifier_flow_with_retry()
 
     print("\n" + "=" * 50)
     print("All agent TCP tests passed!")
@@ -237,5 +267,9 @@ if __name__ == "__main__":
     print(f"AgentClient (TCP) MaaFw Version: {Library.version()}")
 
     Toolkit.init_option(install_dir / "bin")
+
+    if len(sys.argv) >= 4 and sys.argv[3] == NUMERIC_IDENTIFIER_FLAG:
+        run_numeric_identifier_flow()
+        sys.exit(0)
 
     api_test()
