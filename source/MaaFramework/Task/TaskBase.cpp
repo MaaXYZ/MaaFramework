@@ -208,13 +208,8 @@ void TaskBase::set_task_detail(TaskDetail detail)
 
 void TaskBase::wait_freezes(const MAA_RES_NS::WaitFreezesParam& param, const cv::Rect& box, const std::string& name)
 {
-    if (param.time <= std::chrono::milliseconds(0)) {
-        return;
-    }
-
-    ActionHelper helper(tasker_);
-    cv::Rect roi = helper.get_target_rect(param.target, box);
-    helper.wait_freezes(param, roi, name);
+    ActionHelper helper(context_.get());
+    helper.wait_freezes(param, box, name);
 }
 
 void TaskBase::sleep(std::chrono::milliseconds ms) const

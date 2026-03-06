@@ -14,10 +14,16 @@ ActionHelper::ActionHelper(Context* context)
 {
 }
 
-bool ActionHelper::wait_freezes(const MAA_RES_NS::WaitFreezesParam& param, const cv::Rect& box, const std::string& name)
+bool ActionHelper::wait_freezes(const MAA_RES_NS::WaitFreezesParam& param, const cv::Rect& ref_box, const std::string& name)
 {
     if (param.time <= std::chrono::milliseconds(0)) {
         return true;
+    }
+
+    auto roi = get_target_rect(param.target, ref_box);
+    if (roi.empty()) {
+        LogError << "failed to get target rect for wait_freezes" << VAR(name);
+        return false;
     }
 
     if (!controller()) {
@@ -35,9 +41,9 @@ bool ActionHelper::wait_freezes(const MAA_RES_NS::WaitFreezesParam& param, const
     auto screencap_clock = std::chrono::steady_clock::now();
     cv::Mat pre_image = controller()->screencap();
 
-    auto corrected_box = correct_roi(box, pre_image);
-    if (!corrected_box) {
-        LogError << "corrected box is empty" << VAR(box);
+    auto corrected_roi = correct_roi(roi, pre_image);
+    if (!corrected_roi) {
+        LogError << "corrected roi is empty" << VAR(roi);
         return false;
     }
 
@@ -68,7 +74,7 @@ bool ActionHelper::wait_freezes(const MAA_RES_NS::WaitFreezesParam& param, const
         }
 
         std::string draw_name = name.empty() ? "wait_freezes" : std::format("{}_wait_freezes", name);
-        TemplateComparator comparator(pre_image, cur_image, { *corrected_box }, comp_param, draw_name);
+        TemplateComparator comparator(pre_image, cur_image, { *corrected_roi }, comp_param, draw_name);
 
         VisionBase::save_draws(draw_name, comparator.draws());
 
