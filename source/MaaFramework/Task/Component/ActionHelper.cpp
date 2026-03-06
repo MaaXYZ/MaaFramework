@@ -8,9 +8,8 @@
 
 MAA_TASK_NS_BEGIN
 
-ActionHelper::ActionHelper(Tasker* tasker, MaaContext* context)
-    : tasker_(tasker)
-    , context_(context)
+ActionHelper::ActionHelper(MaaContext* context)
+    : context_(context)
 {
 }
 
@@ -87,7 +86,7 @@ bool ActionHelper::wait_freezes(const MAA_RES_NS::WaitFreezesParam& param, const
 
 cv::Rect ActionHelper::get_target_rect(const MAA_RES_NS::Action::Target& target, const cv::Rect& box)
 {
-    if (!tasker_) {
+    if (!tasker()) {
         LogError << "Tasker is null";
         return { };
     }
@@ -101,26 +100,20 @@ cv::Rect ActionHelper::get_target_rect(const MAA_RES_NS::Action::Target& target,
         break;
 
     case Target::Type::PreTask: {
-        auto& cache = tasker_->runtime_cache();
-        std::string name = std::get<std::string>(target.param);
-        MaaNodeId node_id = cache.get_latest_node(name).value_or(MaaInvalidId);
-        NodeDetail node_detail = cache.get_node_detail(node_id).value_or(NodeDetail { });
-        RecoResult reco_result = cache.get_reco_result(node_detail.reco_id).value_or(RecoResult { });
-        raw = reco_result.box.value_or(cv::Rect { });
+        const auto& name = std::get<std::string>(target.param);
+        raw = get_rect_from_node(name);
         LogDebug << "pre task" << VAR(name) << VAR(raw);
     } break;
 
     case Target::Type::Anchor: {
-        std::string name = resolve_anchor(std::get<std::string>(target.param));
-        if (name.empty()) {
-            break;
+        const auto& anchor_name = std::get<std::string>(target.param);
+        auto node_name = context_->get_anchor(anchor_name);
+        if (!node_name) {
+            LogWarn << "anchor not set" << VAR(anchor_name);
+            return { };
         }
-        auto& cache = tasker_->runtime_cache();
-        MaaNodeId node_id = cache.get_latest_node(name).value_or(MaaInvalidId);
-        NodeDetail node_detail = cache.get_node_detail(node_id).value_or(NodeDetail { });
-        RecoResult reco_result = cache.get_reco_result(node_detail.reco_id).value_or(RecoResult { });
-        raw = reco_result.box.value_or(cv::Rect { });
-        LogDebug << "anchor" << VAR(std::get<std::string>(target.param)) << VAR(name) << VAR(raw);
+        raw = get_rect_from_node(*node_name);
+        LogDebug << "anchor" << VAR(anchor_name) << VAR(*node_name) << VAR(raw);
     } break;
 
     case Target::Type::Region:
@@ -157,24 +150,33 @@ cv::Rect ActionHelper::get_target_rect(const MAA_RES_NS::Action::Target& target,
     return cv::Rect(x, y, width, height);
 }
 
-std::string ActionHelper::resolve_anchor(const std::string& anchor_name) const
+cv::Rect ActionHelper::get_rect_from_node(const std::string& node_name) const
 {
-    if (!context_) {
-        LogError << "Context is null, cannot resolve anchor" << VAR(anchor_name);
+    auto* t = tasker();
+    if (!t) {
         return { };
     }
 
-    auto node_name = context_->get_anchor(anchor_name);
-    if (!node_name) {
-        LogDebug << "anchor not set" << VAR(anchor_name);
+    auto& cache = t->runtime_cache();
+    auto node_id = cache.get_latest_node(node_name);
+    if (!node_id) {
+        LogWarn << "node not found or not executed" << VAR(node_name);
         return { };
     }
-    return *node_name;
+    NodeDetail node_detail = cache.get_node_detail(*node_id).value_or(NodeDetail { });
+    RecoResult reco_result = cache.get_reco_result(node_detail.reco_id).value_or(RecoResult { });
+    return reco_result.box.value_or(cv::Rect { });
+}
+
+Tasker* ActionHelper::tasker() const
+{
+    return context_ ? static_cast<Tasker*>(context_->tasker()) : nullptr;
 }
 
 MAA_CTRL_NS::ControllerAgent* ActionHelper::controller()
 {
-    return tasker_ ? tasker_->controller() : nullptr;
+    auto* t = tasker();
+    return t ? t->controller() : nullptr;
 }
 
 MAA_TASK_NS_END

@@ -4,25 +4,26 @@
 #include "Common/MaaTypes.h"
 #include "Controller/ControllerAgent.h"
 #include "Resource/PipelineTypes.h"
-#include "Tasker/Tasker.h"
 
 MAA_TASK_NS_BEGIN
+
+class Tasker;
 
 class ActionHelper : public NonCopyable
 {
 public:
-    ActionHelper(Tasker* tasker, MaaContext* context);
+    explicit ActionHelper(MaaContext* context);
 
     bool wait_freezes(const MAA_RES_NS::WaitFreezesParam& param, const cv::Rect& box, const std::string& name = "");
 
     cv::Rect get_target_rect(const MAA_RES_NS::Action::Target& target, const cv::Rect& box = { });
 
 private:
-    std::string resolve_anchor(const std::string& anchor_name) const;
+    cv::Rect get_rect_from_node(const std::string& node_name) const;
+    Tasker* tasker() const;
     MAA_CTRL_NS::ControllerAgent* controller();
 
 private:
-    Tasker* tasker_ = nullptr;
     MaaContext* context_ = nullptr;
 };
 
