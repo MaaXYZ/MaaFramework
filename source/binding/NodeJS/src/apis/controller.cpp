@@ -197,7 +197,7 @@ maajs::ValueType ControllerImpl::post_touch_up(maajs::ValueType self, maajs::Env
     return maajs::CallCtorHelper(ExtContext::get(env)->jobCtor, self, id);
 }
 
-maajs::ValueType ControllerImpl::post_mouse_move_relative(maajs::ValueType self, maajs::EnvType env, int32_t dx, int32_t dy)
+maajs::ValueType ControllerImpl::post_mouse_move_relative(maajs::ValueType self, maajs::EnvType, int32_t dx, int32_t dy)
 {
     auto id = MaaControllerPostMouseMoveRelative(controller, dx, dy);
     return maajs::CallCtorHelper(ExtContext::get(env)->jobCtor, self, id);
