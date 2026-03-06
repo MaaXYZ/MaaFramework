@@ -2,13 +2,14 @@
 
 #include "Common/TaskResultTypes.h"
 #include "MaaUtils/Logger.h"
+#include "Task/Context.h"
 #include "Tasker/Tasker.h"
 #include "Vision/TemplateComparator.h"
 #include "Vision/VisionUtils.hpp"
 
 MAA_TASK_NS_BEGIN
 
-ActionHelper::ActionHelper(MaaContext* context)
+ActionHelper::ActionHelper(Context* context)
     : context_(context)
 {
 }
@@ -171,7 +172,7 @@ cv::Rect ActionHelper::get_rect_from_node(const std::string& node_name) const
 
 Tasker* ActionHelper::tasker() const
 {
-    return context_ ? static_cast<Tasker*>(context_->tasker()) : nullptr;
+    return context_ ? context_->tasker() : nullptr;
 }
 
 MAA_CTRL_NS::ControllerAgent* ActionHelper::controller()

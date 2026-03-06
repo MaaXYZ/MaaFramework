@@ -1,17 +1,18 @@
 #pragma once
 
 #include "Common/Conf.h"
-#include "Common/MaaTypes.h"
 #include "Controller/ControllerAgent.h"
 #include "Resource/PipelineTypes.h"
 #include "Tasker/Tasker.h"
 
 MAA_TASK_NS_BEGIN
 
+class Context;
+
 class ActionHelper : public NonCopyable
 {
 public:
-    explicit ActionHelper(MaaContext* context);
+    explicit ActionHelper(Context* context);
 
     bool wait_freezes(const MAA_RES_NS::WaitFreezesParam& param, const cv::Rect& box, const std::string& name = "");
 
@@ -23,7 +24,7 @@ private:
     MAA_CTRL_NS::ControllerAgent* controller();
 
 private:
-    MaaContext* context_ = nullptr;
+    Context* context_ = nullptr;
 };
 
 MAA_TASK_NS_END
