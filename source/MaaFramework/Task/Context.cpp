@@ -4,6 +4,7 @@
 
 #include "ActionTask.h"
 #include "Component/ActionHelper.h"
+#include "MaaFramework/MaaMsg.h"
 #include "MaaUtils/Logger.h"
 #include "MaaUtils/Uuid.h"
 #include "PipelineTask.h"
@@ -189,7 +190,32 @@ bool Context::wait_freezes(std::chrono::milliseconds time, const cv::Rect& box, 
     ActionHelper helper(tasker_);
     cv::Rect roi = helper.get_target_rect(param.target, box);
 
-    return helper.wait_freezes(param, roi);
+    json::value cb_detail {
+        { "task_id", task_id() },
+        { "name", "" },
+        { "phase", "context" },
+        { "roi", roi },
+        { "param",
+          {
+              { "time", param.time.count() },
+              { "threshold", param.threshold },
+              { "method", param.method },
+              { "rate_limit", param.rate_limit.count() },
+              { "timeout", param.timeout.count() },
+          } },
+        { "focus", json::value(nullptr) },
+    };
+    tasker_->context_notify(this, MaaMsg_Node_WaitFreezes_Starting, cb_detail);
+
+    auto wait_result = helper.wait_freezes(param, roi);
+    cb_detail["reco_ids"] = json::array(wait_result.reco_ids);
+    cb_detail["elapsed"] = wait_result.elapsed.count();
+
+    tasker_->context_notify(
+        this,
+        wait_result.success ? MaaMsg_Node_WaitFreezes_Succeeded : MaaMsg_Node_WaitFreezes_Failed,
+        cb_detail);
+    return wait_result.success;
 }
 
 bool Context::override_pipeline(const json::value& pipeline_override)

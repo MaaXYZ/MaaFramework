@@ -613,6 +613,25 @@ class Context:
 
 class ContextEventSink(EventSink):
     @dataclass
+    class NodeWaitFreezesDetail:
+        task_id: int
+        name: str
+        phase: str
+        roi: Tuple[int, int, int, int]
+        param: JWaitFreezes
+        reco_ids: list[int]
+        elapsed: Optional[int]
+        focus: Any
+
+    def on_node_wait_freezes(
+        self,
+        context: Context,
+        noti_type: NotificationType,
+        detail: NodeWaitFreezesDetail,
+    ):
+        pass
+
+    @dataclass
     class NodeNextListDetail:
         task_id: int
         name: str
@@ -708,7 +727,20 @@ class ContextEventSink(EventSink):
         self.on_raw_notification(context, msg, details)
 
         noti_type = EventSink._notification_type(msg)
-        if msg.startswith("Node.NextList"):
+        if msg.startswith("Node.WaitFreezes"):
+            detail = self.NodeWaitFreezesDetail(
+                task_id=details["task_id"],
+                name=details["name"],
+                phase=details["phase"],
+                roi=tuple(details["roi"]),
+                param=JWaitFreezes(**details["param"]),
+                reco_ids=details.get("reco_ids", []),
+                elapsed=details.get("elapsed"),
+                focus=details["focus"],
+            )
+            self.on_node_wait_freezes(context, noti_type, detail)
+
+        elif msg.startswith("Node.NextList"):
             next_list = JPipelineParser._parse_node_attr_list(details["list"])
             detail = self.NodeNextListDetail(
                 task_id=details["task_id"],

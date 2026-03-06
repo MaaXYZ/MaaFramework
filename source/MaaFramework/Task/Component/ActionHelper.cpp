@@ -2,6 +2,7 @@
 
 #include "Common/TaskResultTypes.h"
 #include "MaaUtils/Logger.h"
+#include "Recognizer.h"
 #include "Tasker/Tasker.h"
 #include "Vision/TemplateComparator.h"
 #include "Vision/VisionUtils.hpp"
@@ -13,15 +14,19 @@ ActionHelper::ActionHelper(Tasker* tasker)
 {
 }
 
-bool ActionHelper::wait_freezes(const MAA_RES_NS::WaitFreezesParam& param, const cv::Rect& box, const std::string& name)
+ActionHelper::WaitFreezesResult
+    ActionHelper::wait_freezes(const MAA_RES_NS::WaitFreezesParam& param, const cv::Rect& box, const std::string& name)
 {
+    WaitFreezesResult result;
+
     if (param.time <= std::chrono::milliseconds(0)) {
-        return true;
+        result.success = true;
+        return result;
     }
 
     if (!controller()) {
         LogError << "Controller is null";
-        return false;
+        return result;
     }
 
     using namespace MAA_VISION_NS;
@@ -47,6 +52,17 @@ bool ActionHelper::wait_freezes(const MAA_RES_NS::WaitFreezesParam& param, const
     const auto start_clock = std::chrono::steady_clock::now();
     auto pre_image_clock = start_clock;
 
+    auto build_reco_detail = [&](const MAA_VISION_NS::TemplateComparator& comparator) {
+        const auto& all = comparator.all_results();
+        const auto& filtered = comparator.filtered_results();
+        const auto& best = comparator.best_result();
+        return json::value {
+            { "all", json::array(all) },
+            { "filtered", json::array(filtered) },
+            { "best", best ? json::value(*best) : json::value(nullptr) },
+        };
+    };
+
     while (true) {
         LogDebug << "sleep_until" << VAR(rate_limit);
         std::this_thread::sleep_until(screencap_clock + rate_limit);
@@ -54,7 +70,8 @@ bool ActionHelper::wait_freezes(const MAA_RES_NS::WaitFreezesParam& param, const
         // timeout < 0 表示无限等待
         if (param.timeout >= std::chrono::milliseconds(0) && duration_since(start_clock) > param.timeout) {
             LogWarn << "Wait freezes timeout" << VAR(duration_since(start_clock)) << VAR(param.timeout);
-            return false;
+            result.elapsed = duration_since(start_clock);
+            return result;
         }
 
         screencap_clock = std::chrono::steady_clock::now();
@@ -62,11 +79,24 @@ bool ActionHelper::wait_freezes(const MAA_RES_NS::WaitFreezesParam& param, const
 
         if (pre_image.empty() || cur_image.empty()) {
             LogError << "Image is empty" << VAR(pre_image.empty()) << VAR(cur_image.empty());
-            return false;
+            result.elapsed = duration_since(start_clock);
+            return result;
         }
 
         std::string draw_name = name.empty() ? "wait_freezes" : std::format("{}_wait_freezes", name);
         TemplateComparator comparator(pre_image, cur_image, { roi }, comp_param, draw_name);
+
+        const MaaRecoId reco_id = Recognizer::generate_reco_id();
+        RecoResult reco_result {
+            .reco_id = reco_id,
+            .name = draw_name,
+            .algorithm = "WaitFreezes",
+            .box = comparator.best_result() ? std::make_optional(comparator.best_result()->box) : std::nullopt,
+            .detail = build_reco_detail(comparator),
+            .draws = comparator.draws(),
+        };
+        tasker_->runtime_cache().set_reco_detail(reco_id, std::move(reco_result));
+        result.reco_ids.emplace_back(reco_id);
 
         VisionBase::save_draws(draw_name, comparator.draws());
 
@@ -81,7 +111,9 @@ bool ActionHelper::wait_freezes(const MAA_RES_NS::WaitFreezesParam& param, const
         }
     }
 
-    return true;
+    result.success = true;
+    result.elapsed = duration_since(start_clock);
+    return result;
 }
 
 cv::Rect ActionHelper::get_target_rect(const MAA_RES_NS::Action::Target& target, const cv::Rect& box)
