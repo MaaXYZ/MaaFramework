@@ -17,7 +17,7 @@ std::mt19937 Actuator::rand_engine_(std::random_device { }());
 Actuator::Actuator(Tasker* tasker, Context& context)
     : tasker_(tasker)
     , context_(context)
-    , helper_(tasker)
+    , helper_(tasker, &context)
 {
 }
 

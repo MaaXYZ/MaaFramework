@@ -19,6 +19,7 @@ enum class TargetType
     Self,
     PreTask,
     Region,
+    Anchor,
 };
 
 struct TargetObj

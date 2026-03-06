@@ -8,8 +8,9 @@
 
 MAA_TASK_NS_BEGIN
 
-ActionHelper::ActionHelper(Tasker* tasker)
+ActionHelper::ActionHelper(Tasker* tasker, MaaContext* context)
     : tasker_(tasker)
+    , context_(context)
 {
 }
 
@@ -109,6 +110,19 @@ cv::Rect ActionHelper::get_target_rect(const MAA_RES_NS::Action::Target& target,
         LogDebug << "pre task" << VAR(name) << VAR(raw);
     } break;
 
+    case Target::Type::Anchor: {
+        std::string name = resolve_anchor(std::get<std::string>(target.param));
+        if (name.empty()) {
+            break;
+        }
+        auto& cache = tasker_->runtime_cache();
+        MaaNodeId node_id = cache.get_latest_node(name).value_or(MaaInvalidId);
+        NodeDetail node_detail = cache.get_node_detail(node_id).value_or(NodeDetail { });
+        RecoResult reco_result = cache.get_reco_result(node_detail.reco_id).value_or(RecoResult { });
+        raw = reco_result.box.value_or(cv::Rect { });
+        LogDebug << "anchor" << VAR(std::get<std::string>(target.param)) << VAR(name) << VAR(raw);
+    } break;
+
     case Target::Type::Region:
         raw = std::get<cv::Rect>(target.param);
         break;
@@ -141,6 +155,21 @@ cv::Rect ActionHelper::get_target_rect(const MAA_RES_NS::Action::Target& target,
     int height = std::clamp(raw.height + target.offset.height, 0, image.rows - y);
 
     return cv::Rect(x, y, width, height);
+}
+
+std::string ActionHelper::resolve_anchor(const std::string& anchor_name) const
+{
+    if (!context_) {
+        LogError << "Context is null, cannot resolve anchor" << VAR(anchor_name);
+        return { };
+    }
+
+    auto node_name = context_->get_anchor(anchor_name);
+    if (!node_name) {
+        LogDebug << "anchor not set" << VAR(anchor_name);
+        return { };
+    }
+    return *node_name;
 }
 
 MAA_CTRL_NS::ControllerAgent* ActionHelper::controller()

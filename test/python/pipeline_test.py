@@ -203,10 +203,13 @@ class PipelineTestRecognition(CustomRecognition):
         # 9. 测试 anchor 对象格式
         self._test_anchor_object_format(context)
 
-        # 10. 测试 v2 格式
+        # 10. 测试 roi/target 的 anchor 引用
+        self._test_roi_target_anchor(context)
+
+        # 11. 测试 v2 格式
         self._test_v2_format(context)
 
-        # 11. 比较 Context 和 Resource 级别
+        # 12. 比较 Context 和 Resource 级别
         self._test_context_vs_resource(context)
 
     def _test_context_get_node_data(self, context: Context):
@@ -961,6 +964,77 @@ class PipelineTestRecognition(CustomRecognition):
 
         print("    PASS: anchor object format")
 
+    def _test_roi_target_anchor(self, context: Context):
+        print("  Testing roi/target anchor reference...")
+
+        new_ctx = context.clone()
+
+        new_ctx.override_pipeline(
+            {
+                "RoiAnchorTest": {
+                    "recognition": "TemplateMatch",
+                    "template": ["test.png"],
+                    "roi": "[Anchor]MyRoiAnchor",
+                    "roi_offset": [10, 20, 0, 0],
+                },
+                "TargetAnchorClick": {
+                    "action": "Click",
+                    "target": "[Anchor]MyTargetAnchor",
+                    "target_offset": [5, 5, 0, 0],
+                },
+                "TargetAnchorScroll": {
+                    "action": "Scroll",
+                    "target": "[Anchor]ScrollAnchor",
+                    "dx": 0,
+                    "dy": -100,
+                },
+                "TargetAnchorSwipeBegin": {
+                    "action": "Swipe",
+                    "begin": "[Anchor]SwipeBeginAnchor",
+                    "end": [300, 300],
+                },
+            }
+        )
+
+        # roi anchor
+        obj = new_ctx.get_node_object("RoiAnchorTest")
+        assert_eq(
+            obj.recognition.param.roi,
+            "[Anchor]MyRoiAnchor",
+            "roi anchor string",
+        )
+        assert_eq(
+            obj.recognition.param.roi_offset, [10, 20, 0, 0], "roi_offset with anchor"
+        )
+
+        # target anchor (Click)
+        obj = new_ctx.get_node_object("TargetAnchorClick")
+        assert_eq(
+            obj.action.param.target,
+            "[Anchor]MyTargetAnchor",
+            "target anchor string",
+        )
+        assert_eq(
+            obj.action.param.target_offset, [5, 5, 0, 0], "target_offset with anchor"
+        )
+
+        # target anchor (Scroll)
+        obj = new_ctx.get_node_object("TargetAnchorScroll")
+        assert_eq(
+            obj.action.param.target,
+            "[Anchor]ScrollAnchor",
+            "scroll target anchor string",
+        )
+
+        # begin anchor (Swipe)
+        obj = new_ctx.get_node_object("TargetAnchorSwipeBegin")
+        assert_eq(
+            obj.action.param.begin,
+            "[Anchor]SwipeBeginAnchor",
+            "swipe begin anchor string",
+        )
+
+        print("    PASS: roi/target anchor reference")
 
     def _test_v2_format(self, context: Context):
         print("  Testing v2 format parsing...")

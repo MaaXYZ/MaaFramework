@@ -515,6 +515,16 @@ std::vector<cv::Rect> Recognizer::get_rois(const MAA_VISION_NS::Target& roi, boo
         results = get_rois_from_pretask(std::get<std::string>(roi.param), use_best);
         break;
 
+    case Target::Type::Anchor: {
+        const auto& anchor_name = std::get<std::string>(roi.param);
+        auto node_name = context_.get_anchor(anchor_name);
+        if (!node_name) {
+            LogDebug << "anchor not set" << VAR(anchor_name);
+            return { };
+        }
+        results = get_rois_from_pretask(*node_name, use_best);
+    } break;
+
     case Target::Type::Region:
         results = { std::get<cv::Rect>(roi.param) };
         break;

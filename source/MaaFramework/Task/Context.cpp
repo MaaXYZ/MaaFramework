@@ -186,7 +186,7 @@ bool Context::wait_freezes(std::chrono::milliseconds time, const cv::Rect& box, 
         return false;
     }
 
-    ActionHelper helper(tasker_);
+    ActionHelper helper(tasker_, this);
     cv::Rect roi = helper.get_target_rect(param.target, box);
 
     return helper.wait_freezes(param, roi);
