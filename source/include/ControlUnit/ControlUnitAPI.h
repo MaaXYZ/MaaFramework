@@ -43,6 +43,8 @@ public:
 
     virtual bool scroll(int dx, int dy) = 0;
 
+    virtual bool mouse_move_relative(int dx, int dy) { std::ignore = dx; std::ignore = dy; return false; }
+
     virtual bool inactive() = 0;
 
     virtual json::object get_info() const = 0;

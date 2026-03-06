@@ -145,6 +145,8 @@ extern "C"
     // for win32 controller, contact means mouse button id (0 for left, 1 for right, 2 for middle)
     MAA_FRAMEWORK_API MaaCtrlId MaaControllerPostTouchUp(MaaController* ctrl, int32_t contact);
 
+    MAA_FRAMEWORK_API MaaCtrlId MaaControllerPostMouseMoveRelative(MaaController* ctrl, int32_t dx, int32_t dy);
+
     MAA_FRAMEWORK_API MaaCtrlId MaaControllerPostKeyDown(MaaController* ctrl, int32_t keycode);
 
     MAA_FRAMEWORK_API MaaCtrlId MaaControllerPostKeyUp(MaaController* ctrl, int32_t keycode);

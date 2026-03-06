@@ -213,6 +213,7 @@ class MyAction(CustomAction):
         controller.post_touch_down(1, 100, 100, 0).wait()
         controller.post_touch_move(1, 200, 200, 0).wait()
         controller.post_touch_up(1).wait()
+        controller.post_mouse_move_relative(10, 20).wait()
         controller.post_key_down(65).wait()
         controller.post_key_up(65).wait()
         controller.post_scroll(0, 120).wait()
@@ -421,6 +422,7 @@ def test_controller_api():
     dbg_controller.post_touch_down(0, 100, 100, 0).wait()
     dbg_controller.post_touch_move(0, 150, 150, 0).wait()
     dbg_controller.post_touch_up(0).wait()
+    dbg_controller.post_mouse_move_relative(10, 20).wait()
     dbg_controller.post_scroll(0, 120).wait()
     dbg_controller.post_start_app("com.test.app").wait()
     dbg_controller.post_stop_app("com.test.app").wait()
@@ -651,6 +653,11 @@ class MyController(CustomController):
         self.count += 1
         return True
 
+    def mouse_move_relative(self, dx: int, dy: int) -> bool:
+        print(f"  on MyController.mouse_move_relative: {dx}, {dy}")
+        self.count += 1
+        return True
+
     def click_key(self, keycode: int) -> bool:
         print(f"  on MyController.click_key: {keycode}")
         self.count += 1
@@ -713,6 +720,7 @@ def test_custom_controller():
     ret &= controller.post_touch_down(1, 100, 100, 0).wait().succeeded
     ret &= controller.post_touch_move(1, 200, 200, 0).wait().succeeded
     ret &= controller.post_touch_up(1).wait().succeeded
+    ret &= controller.post_mouse_move_relative(10, 20).wait().succeeded
     ret &= controller.post_click_key(32).wait().succeeded
     ret &= controller.post_input_text("Hello World!").wait().succeeded
     ret &= controller.post_key_down(65).wait().succeeded

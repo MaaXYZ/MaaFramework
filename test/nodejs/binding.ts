@@ -63,6 +63,7 @@ const myAct: maa.CustomActionCallback = async self => {
     await ctrl.post_touch_down(1, 100, 100, 0).wait()
     await ctrl.post_touch_move(1, 200, 200, 0).wait()
     await ctrl.post_touch_up(1).wait()
+    await ctrl.post_mouse_move_relative(10, 20).wait()
     await ctrl.post_start_app('aaa').wait()
     await ctrl.post_stop_app('bbb').wait()
     await ctrl.post_inactive().wait()
@@ -189,6 +190,7 @@ async function custom_ctrl_test() {
     ret &&= await ctrl.post_touch_down(1, 100, 100, 0).wait().succeeded
     ret &&= await ctrl.post_touch_move(1, 200, 200, 0).wait().succeeded
     ret &&= await ctrl.post_touch_up(1).wait().succeeded
+    ret &&= await ctrl.post_mouse_move_relative(10, 20).wait().succeeded
     ret &&= await ctrl.post_click_key(32).wait().succeeded
     ret &&= await ctrl.post_input_text('Hello World!').wait().succeeded
     ret &&= await ctrl.post_inactive().wait().succeeded
@@ -290,6 +292,11 @@ class MyController implements maa.CustomControllerActor {
     }
     touch_up(contact: number): maa.MaybePromise<boolean> {
         console.log('on MyController.touch_up, contact', contact)
+        this.count += 1
+        return true
+    }
+    mouse_move_relative(dx: number, dy: number): maa.MaybePromise<boolean> {
+        console.log('on MyController.mouse_move_relative, dx', dx, 'dy', dy)
         this.count += 1
         return true
     }

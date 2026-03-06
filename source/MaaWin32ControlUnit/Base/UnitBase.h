@@ -37,6 +37,8 @@ public:
     virtual bool touch_move(int contact, int x, int y, int pressure) = 0;
     virtual bool touch_up(int contact) = 0;
 
+    virtual bool mouse_move_relative(int dx, int dy) { std::ignore = dx; std::ignore = dy; return false; }
+
     virtual bool click_key(int key) = 0;
     virtual bool input_text(const std::string& text) = 0;
 

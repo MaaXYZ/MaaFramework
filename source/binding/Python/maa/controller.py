@@ -239,6 +239,21 @@ class Controller:
         ctrl_id = Library.framework().MaaControllerPostTouchUp(self._handle, contact)
         return self._gen_ctrl_job(ctrl_id)
 
+    def post_mouse_move_relative(self, dx: int, dy: int) -> Job:
+        """相对移动鼠标 (仅支持部分控制器) / Move mouse relatively (Only supported by some controllers)
+
+        Args:
+            dx: x 方向移动偏移 / x axis offset
+            dy: y 方向移动偏移 / y axis offset
+
+        Returns:
+            Job: 作业对象 / Job object
+        """
+        ctrl_id = Library.framework().MaaControllerPostMouseMoveRelative(
+            self._handle, dx, dy
+        )
+        return self._gen_ctrl_job(ctrl_id)
+
     def post_scroll(self, dx: int, dy: int) -> Job:
         """滚动 / Scroll
 
@@ -652,6 +667,13 @@ class Controller:
             c_int32,
         ]
 
+        Library.framework().MaaControllerPostMouseMoveRelative.restype = MaaCtrlId
+        Library.framework().MaaControllerPostMouseMoveRelative.argtypes = [
+            MaaControllerHandle,
+            c_int32,
+            c_int32,
+        ]
+
         Library.framework().MaaControllerPostScroll.restype = MaaCtrlId
         Library.framework().MaaControllerPostScroll.argtypes = [
             MaaControllerHandle,
@@ -1023,6 +1045,7 @@ class CustomController(Controller):
             CustomController._c_touch_down_agent,
             CustomController._c_touch_move_agent,
             CustomController._c_touch_up_agent,
+            CustomController._c_mouse_move_relative_agent,
             CustomController._c_click_key_agent,
             CustomController._c_input_text_agent,
             CustomController._c_key_down_agent,
@@ -1108,6 +1131,10 @@ class CustomController(Controller):
 
     @abstractmethod
     def touch_up(self, contact: int) -> bool:
+        raise NotImplementedError
+
+    @abstractmethod
+    def mouse_move_relative(self, dx: int, dy: int) -> bool:
         raise NotImplementedError
 
     @abstractmethod
@@ -1352,6 +1379,23 @@ class CustomController(Controller):
         ).value
 
         return int(self.touch_up(int(c_contact)))
+
+    @staticmethod
+    @MaaCustomControllerCallbacks.MouseMoveRelativeFunc
+    def _c_mouse_move_relative_agent(
+        c_dx: ctypes.c_int32,
+        c_dy: ctypes.c_int32,
+        trans_arg: ctypes.c_void_p,
+    ) -> int:
+        if not trans_arg:
+            return int(False)
+
+        self: CustomController = ctypes.cast(
+            trans_arg,
+            ctypes.py_object,
+        ).value
+
+        return int(self.mouse_move_relative(int(c_dx), int(c_dy)))
 
     @staticmethod
     @MaaCustomControllerCallbacks.ClickKeyFunc

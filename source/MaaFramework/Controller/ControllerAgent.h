@@ -69,6 +69,14 @@ struct TouchParam
     MEO_TOJSON(contact, point, pressure);
 };
 
+struct MouseMoveRelativeParam
+{
+    int dx = 0;
+    int dy = 0;
+
+    MEO_TOJSON(dx, dy);
+};
+
 struct ClickKeyParam
 {
     std::vector<int> keycode;
@@ -127,7 +135,8 @@ using Param = std::variant<
     InputTextParam,
     AppParam,
     ScrollParam,
-    ShellParam>;
+    ShellParam,
+    MouseMoveRelativeParam>;
 
 struct Action
 {
@@ -152,6 +161,7 @@ struct Action
         key_up,
         scroll,
         shell,
+        mouse_move_relative,
         inactive,
     } type = Type::invalid;
 
@@ -179,6 +189,8 @@ public: // MaaController
     virtual MaaCtrlId post_touch_down(int contact, int x, int y, int pressure) override;
     virtual MaaCtrlId post_touch_move(int contact, int x, int y, int pressure) override;
     virtual MaaCtrlId post_touch_up(int contact) override;
+
+    virtual MaaCtrlId post_mouse_move_relative(int dx, int dy) override;
 
     virtual MaaCtrlId post_key_down(int keycode) override;
     virtual MaaCtrlId post_key_up(int keycode) override;
@@ -219,6 +231,8 @@ public: // for Actuator
     bool touch_move(TouchParam p);
     bool touch_up(TouchParam p);
 
+    bool mouse_move_relative(MouseMoveRelativeParam p);
+
     bool click_key(ClickKeyParam p);
     bool long_press_key(LongPressKeyParam p);
     bool key_down(ClickKeyParam p);
@@ -242,6 +256,7 @@ private:
     bool handle_touch_down(const TouchParam& param);
     bool handle_touch_move(const TouchParam& param);
     bool handle_touch_up(const TouchParam& param);
+    bool handle_mouse_move_relative(const MouseMoveRelativeParam& param);
     bool handle_click_key(const ClickKeyParam& param);
     bool handle_long_press_key(const LongPressKeyParam& param);
     bool handle_input_text(const InputTextParam& param);

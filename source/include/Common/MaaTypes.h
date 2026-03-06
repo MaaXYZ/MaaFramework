@@ -89,6 +89,8 @@ public:
     virtual MaaCtrlId post_touch_move(int contact, int x, int y, int pressure) = 0;
     virtual MaaCtrlId post_touch_up(int contact) = 0;
 
+    virtual MaaCtrlId post_mouse_move_relative(int dx, int dy) = 0;
+
     virtual MaaCtrlId post_key_down(int keycode) = 0;
     virtual MaaCtrlId post_key_up(int keycode) = 0;
 
