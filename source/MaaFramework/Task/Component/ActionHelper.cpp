@@ -110,6 +110,10 @@ cv::Rect ActionHelper::get_target_rect(const MAA_RES_NS::Action::Target& target,
     case Target::Type::PreTask: {
         const auto& name = std::get<std::string>(target.param);
         raw = get_rect_from_node(name);
+        if (raw.empty()) {
+            LogWarn << "pre task has no rect" << VAR(name);
+            return { };
+        }
         LogDebug << "pre task" << VAR(name) << VAR(raw);
     } break;
 
@@ -121,6 +125,10 @@ cv::Rect ActionHelper::get_target_rect(const MAA_RES_NS::Action::Target& target,
             return { };
         }
         raw = get_rect_from_node(*node_name);
+        if (raw.empty()) {
+            LogWarn << "anchor node has no rect" << VAR(anchor_name) << VAR(*node_name);
+            return { };
+        }
         LogDebug << "anchor" << VAR(anchor_name) << VAR(*node_name) << VAR(raw);
     } break;
 

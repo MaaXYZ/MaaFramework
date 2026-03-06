@@ -603,9 +603,12 @@ std::vector<cv::Rect> Recognizer::get_rois_from_pretask(const std::string& name,
     }
     NodeDetail node_detail = cache.get_node_detail(*node_id).value_or(NodeDetail { });
     RecoResult reco_result = cache.get_reco_result(node_detail.reco_id).value_or(RecoResult { });
-    cv::Rect raw = reco_result.box.value_or(cv::Rect { });
-    LogDebug << "pre task from cache" << VAR(name) << VAR(raw);
-    return std::vector { raw };
+    if (!reco_result.box) {
+        LogWarn << "node has no recognition box" << VAR(name);
+        return { };
+    }
+    LogDebug << "pre task from cache" << VAR(name) << VAR(*reco_result.box);
+    return { *reco_result.box };
 }
 
 void Recognizer::save_draws(const std::string& node_name, const RecoResult& result) const
