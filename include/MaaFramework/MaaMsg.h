@@ -147,7 +147,7 @@
  *     reco_id: number,
  *     name: string,
  *     focus: any,
- *     anchor: string | null,
+ *     anchor?: string,
  * }
  */
 #define MaaMsg_Node_Recognition_Starting ("Node.Recognition.Starting")
