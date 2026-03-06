@@ -58,18 +58,18 @@ RecoResult TaskBase::run_recognition(const cv::Mat& image, const PipelineData& d
 
     if (!context_) {
         LogError << "context is null";
-        return {};
+        return { };
     }
 
     if (!data.enabled) {
         LogDebug << "node disabled" << data.name << VAR(data.enabled);
-        return {};
+        return { };
     }
 
     size_t current_hit = context_->get_hit_count(data.name);
     if (current_hit >= static_cast<size_t>(data.max_hit)) {
         LogDebug << "max_hit reached" << VAR(data.name) << VAR(current_hit) << VAR(data.max_hit);
-        return {};
+        return { };
     }
 
     Recognizer recognizer(tasker_, *context_, image, std::move(ocr_cache));
@@ -105,17 +105,17 @@ ActionResult TaskBase::run_action(const RecoResult& reco, const PipelineData& da
 {
     if (!context_) {
         LogError << "context is null";
-        return {};
+        return { };
     }
 
     if (!reco.box) {
         LogError << "reco box is nullopt";
-        return {};
+        return { };
     }
 
     if (!data.enabled) {
         LogDebug << "node disabled" << data.name << VAR(data.enabled);
-        return {};
+        return { };
     }
 
     wait_freezes(data.pre_wait_freezes, *reco.box, data.name);
@@ -139,14 +139,14 @@ ActionResult TaskBase::run_action(const RecoResult& reco, const PipelineData& da
         }
 
         if (context_->need_to_stop()) {
-            return {};
+            return { };
         }
 
         result = actuator.run(*reco.box, reco.reco_id, data, entry_);
         LogInfo << "action" << VAR(i) << VAR(data.repeat) << VAR(result);
 
         if (context_->need_to_stop()) {
-            return {};
+            return { };
         }
     }
 
@@ -163,7 +163,7 @@ cv::Mat TaskBase::screencap()
 {
     if (!controller()) {
         LogDebug << "controller not bound, skip screencap";
-        return {};
+        return { };
     }
 
     return controller()->screencap();

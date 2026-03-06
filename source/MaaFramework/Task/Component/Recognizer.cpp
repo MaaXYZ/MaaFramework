@@ -356,13 +356,7 @@ RecoResult Recognizer::custom_recognize(const MAA_VISION_NS::CustomRecognitionPa
     return build_result(
         name,
         "Custom",
-        CustomRecognition(
-            image_,
-            rois.front(),
-            param,
-            resource()->custom_recognition(param.name),
-            context_,
-            name));
+        CustomRecognition(image_, rois.front(), param, resource()->custom_recognition(param.name), context_, name));
 }
 
 RecoResult Recognizer::and_(const std::shared_ptr<MAA_RES_NS::Recognition::AndParam>& param, const std::string& name)
@@ -599,7 +593,7 @@ std::vector<cv::Rect> Recognizer::get_rois_from_pretask(const std::string& name,
     auto node_id = cache.get_latest_node(name);
     if (!node_id) {
         LogWarn << "node not found or not executed" << VAR(name);
-        return {};
+        return { };
     }
     NodeDetail node_detail = cache.get_node_detail(*node_id).value_or(NodeDetail { });
     RecoResult reco_result = cache.get_reco_result(node_detail.reco_id).value_or(RecoResult { });
