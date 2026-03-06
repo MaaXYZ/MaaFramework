@@ -572,7 +572,12 @@ std::vector<cv::Rect> Recognizer::get_rois(const MAA_VISION_NS::Target& roi, boo
         res.width += roi.offset.width;
         res.height += roi.offset.height;
     }
-    return results;
+
+    if (results.empty()) {
+        return { };
+    }
+
+    return MAA_VISION_NS::correct_rois(std::move(results), image_);
 }
 
 std::vector<cv::Rect> Recognizer::get_rois_from_pretask(const std::string& name, bool use_best)
@@ -643,13 +648,7 @@ void Recognizer::prefetch_batch_ocr(const std::vector<BatchOCREntry>& entries)
             LogWarn << "failed to get rois for batch OCR entry" << VAR(entry.name);
             continue;
         }
-        for (const cv::Rect& roi : entry_rois) {
-            auto opt_r = correct_roi(roi, image_);
-            if (!opt_r) {
-                LogWarn << "corrected roi is empty, skip" << VAR(roi);
-                continue;
-            }
-            cv::Rect r = *opt_r;
+        for (const cv::Rect& r : entry_rois) {
             image_(r).copyTo(masked_image(r));
 
             node_rois[entry.name].emplace_back(r);

@@ -34,9 +34,10 @@ bool ActionHelper::wait_freezes(const MAA_RES_NS::WaitFreezesParam& param, const
     auto screencap_clock = std::chrono::steady_clock::now();
     cv::Mat pre_image = controller()->screencap();
 
-    cv::Rect roi = box;
-    if (roi.empty() && !pre_image.empty()) {
-        roi = cv::Rect(0, 0, pre_image.cols, pre_image.rows);
+    auto corrected_box = correct_roi(box, pre_image);
+    if (!corrected_box) {
+        LogError << "corrected box is empty" << VAR(box);
+        return false;
     }
 
     TemplateComparatorParam comp_param {
@@ -66,7 +67,7 @@ bool ActionHelper::wait_freezes(const MAA_RES_NS::WaitFreezesParam& param, const
         }
 
         std::string draw_name = name.empty() ? "wait_freezes" : std::format("{}_wait_freezes", name);
-        TemplateComparator comparator(pre_image, cur_image, { roi }, comp_param, draw_name);
+        TemplateComparator comparator(pre_image, cur_image, { *corrected_box }, comp_param, draw_name);
 
         VisionBase::save_draws(draw_name, comparator.draws());
 
