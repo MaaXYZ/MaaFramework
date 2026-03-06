@@ -187,13 +187,7 @@ bool Context::wait_freezes(std::chrono::milliseconds time, const cv::Rect& box, 
     }
 
     ActionHelper helper(this);
-    auto roi = helper.get_target_rect(param.target, box);
-    if (roi.empty()) {
-        LogError << "failed to get target rect for wait_freezes";
-        return false;
-    }
-
-    return helper.wait_freezes(param, roi);
+    return helper.wait_freezes(param, box);
 }
 
 bool Context::override_pipeline(const json::value& pipeline_override)

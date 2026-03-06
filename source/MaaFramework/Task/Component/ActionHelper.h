@@ -14,7 +14,7 @@ class ActionHelper : public NonCopyable
 public:
     explicit ActionHelper(Context* context);
 
-    bool wait_freezes(const MAA_RES_NS::WaitFreezesParam& param, const cv::Rect& box, const std::string& name = "");
+    bool wait_freezes(const MAA_RES_NS::WaitFreezesParam& param, const cv::Rect& ref_box, const std::string& name = "");
 
     cv::Rect get_target_rect(const MAA_RES_NS::Action::Target& target, const cv::Rect& box = { });
 
