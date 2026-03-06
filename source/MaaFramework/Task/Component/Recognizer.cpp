@@ -599,7 +599,7 @@ std::vector<cv::Rect> Recognizer::get_rois_from_pretask(const std::string& name,
     auto node_id = cache.get_latest_node(name);
     if (!node_id) {
         LogWarn << "node not found or not executed" << VAR(name);
-        return std::nullopt;
+        return {};
     }
     NodeDetail node_detail = cache.get_node_detail(*node_id).value_or(NodeDetail { });
     RecoResult reco_result = cache.get_reco_result(node_detail.reco_id).value_or(RecoResult { });
