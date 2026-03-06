@@ -1,205 +1,284 @@
 {
-    "version": 5,
-    "cmakeMinimumRequired": {
-        "major": 3,
-        "minor": 21,
-        "patch": 0
+  "version": 5,
+  "cmakeMinimumRequired": {
+    "major": 3,
+    "minor": 21,
+    "patch": 0
+  },
+  "configurePresets": [
+    {
+      "name": "NinjaMulti",
+      "displayName": "Ninja MultiConfig",
+      "description": "Ninja MultiConfig",
+      "generator": "Ninja Multi-Config",
+      "binaryDir": "${sourceDir}/build"
     },
-    "configurePresets": [
-        {
-            "name": "NinjaMulti",
-            "displayName": "Ninja MultiConfig",
-            "description": "Ninja MultiConfig",
-            "generator": "Ninja Multi-Config",
-            "binaryDir": "${sourceDir}/build"
-        },
-        {
-            "name": "NinjaMulti Win32",
-            "displayName": "Ninja MultiConfig Win32",
-            "description": "Ninja MultiConfig Win32",
-            "generator": "Ninja Multi-Config",
-            "binaryDir": "${sourceDir}/build",
-            "toolset": {
-                "value": "host=x64",
-                "strategy": "external"
-            },
-            "architecture": {
-                "value": "x64",
-                "strategy": "external"
-            },
-            "cacheVariables": {
-                "CMAKE_CXX_COMPILER": "cl.exe"
-            }
-        },
-        {
-            "name": "NinjaMulti Linux x64",
-            "displayName": "Ninja MultiConfig Linux x64",
-            "description": "Ninja MultiConfig Linux x64",
-            "generator": "Ninja Multi-Config",
-            "binaryDir": "${sourceDir}/build",
-            "cacheVariables": {
-                "CMAKE_TOOLCHAIN_FILE": "${sourceDir}/source/MaaUtils/MaaDeps/cmake/maa-x64-linux-toolchain.cmake"
-            }
-        },
-        {
-            "name": "NinjaMulti Linux arm64",
-            "displayName": "Ninja MultiConfig Linux arm64",
-            "description": "Ninja MultiConfig Linux arm64",
-            "generator": "Ninja Multi-Config",
-            "binaryDir": "${sourceDir}/build",
-            "cacheVariables": {
-                "CMAKE_TOOLCHAIN_FILE": "${sourceDir}/source/MaaUtils/MaaDeps/cmake/maa-arm64-linux-toolchain.cmake"
-            }
-        },
-        {
-            "name": "MSVC 2022",
-            "displayName": "MSVC 2022",
-            "description": "MSVC 2022",
-            "generator": "Visual Studio 17 2022",
-            "binaryDir": "${sourceDir}/build",
-            "condition": {
-                "type": "equals",
-                "lhs": "${hostSystemName}",
-                "rhs": "Windows"
-            }
-        },
-        {
-            "name": "MSVC 2022 ARM",
-            "displayName": "MSVC 2022 ARM",
-            "description": "MSVC 2022 ARM",
-            "generator": "Visual Studio 17 2022",
-            "binaryDir": "${sourceDir}/build",
-            "condition": {
-                "type": "equals",
-                "lhs": "${hostSystemName}",
-                "rhs": "Windows"
-            },
-            "architecture": {
-                "strategy": "set",
-                "value": "ARM64"
-            }
-        }
-    ],
-    "buildPresets": [
-        {
-            "name": "NinjaMulti - Debug",
-            "displayName": "Ninja MultiConfig Debug",
-            "description": "Ninja MultiConfig Debug",
-            "configurePreset": "NinjaMulti",
-            "configuration": "Debug",
-            "jobs": 16
-        },
-        {
-            "name": "NinjaMulti - RelWithDebInfo",
-            "displayName": "Ninja MultiConfig RelWithDebInfo",
-            "description": "Ninja MultiConfig RelWithDebInfo",
-            "configurePreset": "NinjaMulti",
-            "configuration": "RelWithDebInfo",
-            "jobs": 16
-        },
-        {
-            "name": "NinjaMulti - Release",
-            "displayName": "Ninja MultiConfig Release",
-            "description": "Ninja MultiConfig Release",
-            "configurePreset": "NinjaMulti",
-            "configuration": "Release",
-            "jobs": 16
-        },
-        {
-            "name": "NinjaMulti Linux x64 - Debug",
-            "displayName": "Ninja MultiConfig Linux x64 Debug",
-            "description": "Ninja MultiConfig Linux x64 Debug",
-            "configurePreset": "NinjaMulti Linux x64",
-            "configuration": "Debug",
-            "jobs": 16
-        },
-        {
-            "name": "NinjaMulti Linux x64 - RelWithDebInfo",
-            "displayName": "Ninja MultiConfig Linux x64 RelWithDebInfo",
-            "description": "Ninja MultiConfig Linux x64 RelWithDebInfo",
-            "configurePreset": "NinjaMulti Linux x64",
-            "configuration": "RelWithDebInfo",
-            "jobs": 16
-        },
-        {
-            "name": "NinjaMulti Linux x64 - Release",
-            "displayName": "Ninja MultiConfig Linux x64 Release",
-            "description": "Ninja MultiConfig Linux x64 Release",
-            "configurePreset": "NinjaMulti Linux x64",
-            "configuration": "Release",
-            "jobs": 16
-        },
-        {
-            "name": "NinjaMulti Linux arm64 - Debug",
-            "displayName": "Ninja MultiConfig Linux arm64 Debug",
-            "description": "Ninja MultiConfig Linux arm64 Debug",
-            "configurePreset": "NinjaMulti Linux arm64",
-            "configuration": "Debug",
-            "jobs": 16
-        },
-        {
-            "name": "NinjaMulti Linux arm64 - RelWithDebInfo",
-            "displayName": "Ninja MultiConfig Linux arm64 RelWithDebInfo",
-            "description": "Ninja MultiConfig Linux arm64 RelWithDebInfo",
-            "configurePreset": "NinjaMulti Linux arm64",
-            "configuration": "RelWithDebInfo",
-            "jobs": 16
-        },
-        {
-            "name": "NinjaMulti Linux arm64 - Release",
-            "displayName": "Ninja MultiConfig Linux arm64 Release",
-            "description": "Ninja MultiConfig Linux arm64 Release",
-            "configurePreset": "NinjaMulti Linux arm64",
-            "configuration": "Release",
-            "jobs": 16
-        },
-        {
-            "name": "MSVC 2022 - Debug",
-            "displayName": "MSVC 2022 Debug",
-            "description": "MSVC 2022 Debug",
-            "configurePreset": "MSVC 2022",
-            "configuration": "Debug",
-            "jobs": 16
-        },
-        {
-            "name": "MSVC 2022 - RelWithDebInfo",
-            "displayName": "MSVC 2022 RelWithDebInfo",
-            "description": "MSVC 2022 RelWithDebInfo",
-            "configurePreset": "MSVC 2022",
-            "configuration": "RelWithDebInfo",
-            "jobs": 16
-        },
-        {
-            "name": "MSVC 2022 - Release",
-            "displayName": "MSVC 2022 Release",
-            "description": "MSVC 2022 Release",
-            "configurePreset": "MSVC 2022",
-            "configuration": "Release",
-            "jobs": 16
-        },
-        {
-            "name": "MSVC 2022 ARM - Debug",
-            "displayName": "MSVC 2022 ARM Debug",
-            "description": "MSVC 2022 ARM Debug",
-            "configurePreset": "MSVC 2022 ARM",
-            "configuration": "Debug",
-            "jobs": 16
-        },
-        {
-            "name": "MSVC 2022 ARM - RelWithDebInfo",
-            "displayName": "MSVC 2022 ARM RelWithDebInfo",
-            "description": "MSVC 2022 ARM RelWithDebInfo",
-            "configurePreset": "MSVC 2022 ARM",
-            "configuration": "RelWithDebInfo",
-            "jobs": 16
-        },
-        {
-            "name": "MSVC 2022 ARM - Release",
-            "displayName": "MSVC 2022 ARM Release",
-            "description": "MSVC 2022 ARM Release",
-            "configurePreset": "MSVC 2022 ARM",
-            "configuration": "Release",
-            "jobs": 16
-        }
-    ]
+    {
+      "name": "NinjaMulti Win32",
+      "displayName": "Ninja MultiConfig Win32",
+      "description": "Ninja MultiConfig Win32",
+      "generator": "Ninja Multi-Config",
+      "binaryDir": "${sourceDir}/build",
+      "toolset": {
+        "value": "host=x64",
+        "strategy": "external"
+      },
+      "architecture": {
+        "value": "x64",
+        "strategy": "external"
+      },
+      "cacheVariables": {
+        "CMAKE_CXX_COMPILER": "cl.exe"
+      }
+    },
+    {
+      "name": "NinjaMulti Linux x64",
+      "displayName": "Ninja MultiConfig Linux x64",
+      "description": "Ninja MultiConfig Linux x64",
+      "generator": "Ninja Multi-Config",
+      "binaryDir": "${sourceDir}/build",
+      "cacheVariables": {
+        "CMAKE_TOOLCHAIN_FILE": "${sourceDir}/source/MaaUtils/MaaDeps/cmake/maa-x64-linux-toolchain.cmake"
+      }
+    },
+    {
+      "name": "NinjaMulti Linux arm64",
+      "displayName": "Ninja MultiConfig Linux arm64",
+      "description": "Ninja MultiConfig Linux arm64",
+      "generator": "Ninja Multi-Config",
+      "binaryDir": "${sourceDir}/build",
+      "cacheVariables": {
+        "CMAKE_TOOLCHAIN_FILE": "${sourceDir}/source/MaaUtils/MaaDeps/cmake/maa-arm64-linux-toolchain.cmake"
+      }
+    },
+    {
+      "name": "NinjaMulti Android",
+      "hidden": true,
+      "inherits": "NinjaMulti",
+      "cacheVariables": {
+        "CMAKE_TOOLCHAIN_FILE": "$env{ANDROID_NDK_ROOT}/build/cmake/android.toolchain.cmake",
+        "ANDROID_PLATFORM": "android-23"
+      }
+    },
+    {
+      "name": "NinjaMulti Android x64",
+      "displayName": "Ninja MultiConfig Android x64",
+      "description": "Ninja MultiConfig Android x64, requires ANDROID_NDK_ROOT",
+      "inherits": "NinjaMulti Android",
+      "binaryDir": "${sourceDir}/build/android/x86_64",
+      "cacheVariables": {
+        "ANDROID_ABI": "x86_64",
+        "MAADEPS_TRIPLET": "maa-x64-android"
+      }
+    },
+    {
+      "name": "NinjaMulti Android arm64",
+      "displayName": "Ninja MultiConfig Android arm64",
+      "description": "Ninja MultiConfig Android arm64, requires ANDROID_NDK_ROOT",
+      "inherits": "NinjaMulti Android",
+      "binaryDir": "${sourceDir}/build/android/arm64-v8a",
+      "cacheVariables": {
+        "ANDROID_ABI": "arm64-v8a",
+        "MAADEPS_TRIPLET": "maa-arm64-android"
+      }
+    },
+    {
+      "name": "MSVC 2022",
+      "displayName": "MSVC 2022",
+      "description": "MSVC 2022",
+      "generator": "Visual Studio 17 2022",
+      "binaryDir": "${sourceDir}/build",
+      "condition": {
+        "type": "equals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Windows"
+      }
+    },
+    {
+      "name": "MSVC 2022 ARM",
+      "displayName": "MSVC 2022 ARM",
+      "description": "MSVC 2022 ARM",
+      "generator": "Visual Studio 17 2022",
+      "binaryDir": "${sourceDir}/build",
+      "condition": {
+        "type": "equals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Windows"
+      },
+      "architecture": {
+        "strategy": "set",
+        "value": "ARM64"
+      }
+    }
+  ],
+  "buildPresets": [
+    {
+      "name": "NinjaMulti - Debug",
+      "displayName": "Ninja MultiConfig Debug",
+      "description": "Ninja MultiConfig Debug",
+      "configurePreset": "NinjaMulti",
+      "configuration": "Debug",
+      "jobs": 16
+    },
+    {
+      "name": "NinjaMulti - RelWithDebInfo",
+      "displayName": "Ninja MultiConfig RelWithDebInfo",
+      "description": "Ninja MultiConfig RelWithDebInfo",
+      "configurePreset": "NinjaMulti",
+      "configuration": "RelWithDebInfo",
+      "jobs": 16
+    },
+    {
+      "name": "NinjaMulti - Release",
+      "displayName": "Ninja MultiConfig Release",
+      "description": "Ninja MultiConfig Release",
+      "configurePreset": "NinjaMulti",
+      "configuration": "Release",
+      "jobs": 16
+    },
+    {
+      "name": "NinjaMulti Linux x64 - Debug",
+      "displayName": "Ninja MultiConfig Linux x64 Debug",
+      "description": "Ninja MultiConfig Linux x64 Debug",
+      "configurePreset": "NinjaMulti Linux x64",
+      "configuration": "Debug",
+      "jobs": 16
+    },
+    {
+      "name": "NinjaMulti Linux x64 - RelWithDebInfo",
+      "displayName": "Ninja MultiConfig Linux x64 RelWithDebInfo",
+      "description": "Ninja MultiConfig Linux x64 RelWithDebInfo",
+      "configurePreset": "NinjaMulti Linux x64",
+      "configuration": "RelWithDebInfo",
+      "jobs": 16
+    },
+    {
+      "name": "NinjaMulti Linux x64 - Release",
+      "displayName": "Ninja MultiConfig Linux x64 Release",
+      "description": "Ninja MultiConfig Linux x64 Release",
+      "configurePreset": "NinjaMulti Linux x64",
+      "configuration": "Release",
+      "jobs": 16
+    },
+    {
+      "name": "NinjaMulti Linux arm64 - Debug",
+      "displayName": "Ninja MultiConfig Linux arm64 Debug",
+      "description": "Ninja MultiConfig Linux arm64 Debug",
+      "configurePreset": "NinjaMulti Linux arm64",
+      "configuration": "Debug",
+      "jobs": 16
+    },
+    {
+      "name": "NinjaMulti Linux arm64 - RelWithDebInfo",
+      "displayName": "Ninja MultiConfig Linux arm64 RelWithDebInfo",
+      "description": "Ninja MultiConfig Linux arm64 RelWithDebInfo",
+      "configurePreset": "NinjaMulti Linux arm64",
+      "configuration": "RelWithDebInfo",
+      "jobs": 16
+    },
+    {
+      "name": "NinjaMulti Linux arm64 - Release",
+      "displayName": "Ninja MultiConfig Linux arm64 Release",
+      "description": "Ninja MultiConfig Linux arm64 Release",
+      "configurePreset": "NinjaMulti Linux arm64",
+      "configuration": "Release",
+      "jobs": 16
+    },
+    {
+      "name": "NinjaMulti Android x64 - Debug",
+      "displayName": "Ninja MultiConfig Android x64 Debug",
+      "description": "Ninja MultiConfig Android x64 Debug",
+      "configurePreset": "NinjaMulti Android x64",
+      "configuration": "Debug",
+      "jobs": 16
+    },
+    {
+      "name": "NinjaMulti Android x64 - RelWithDebInfo",
+      "displayName": "Ninja MultiConfig Android x64 RelWithDebInfo",
+      "description": "Ninja MultiConfig Android x64 RelWithDebInfo",
+      "configurePreset": "NinjaMulti Android x64",
+      "configuration": "RelWithDebInfo",
+      "jobs": 16
+    },
+    {
+      "name": "NinjaMulti Android x64 - Release",
+      "displayName": "Ninja MultiConfig Android x64 Release",
+      "description": "Ninja MultiConfig Android x64 Release",
+      "configurePreset": "NinjaMulti Android x64",
+      "configuration": "Release",
+      "jobs": 16
+    },
+    {
+      "name": "NinjaMulti Android arm64 - Debug",
+      "displayName": "Ninja MultiConfig Android arm64 Debug",
+      "description": "Ninja MultiConfig Android arm64 Debug",
+      "configurePreset": "NinjaMulti Android arm64",
+      "configuration": "Debug",
+      "jobs": 16
+    },
+    {
+      "name": "NinjaMulti Android arm64 - RelWithDebInfo",
+      "displayName": "Ninja MultiConfig Android arm64 RelWithDebInfo",
+      "description": "Ninja MultiConfig Android arm64 RelWithDebInfo",
+      "configurePreset": "NinjaMulti Android arm64",
+      "configuration": "RelWithDebInfo",
+      "jobs": 16
+    },
+    {
+      "name": "NinjaMulti Android arm64 - Release",
+      "displayName": "Ninja MultiConfig Android arm64 Release",
+      "description": "Ninja MultiConfig Android arm64 Release",
+      "configurePreset": "NinjaMulti Android arm64",
+      "configuration": "Release",
+      "jobs": 16
+    },
+    {
+      "name": "MSVC 2022 - Debug",
+      "displayName": "MSVC 2022 Debug",
+      "description": "MSVC 2022 Debug",
+      "configurePreset": "MSVC 2022",
+      "configuration": "Debug",
+      "jobs": 16
+    },
+    {
+      "name": "MSVC 2022 - RelWithDebInfo",
+      "displayName": "MSVC 2022 RelWithDebInfo",
+      "description": "MSVC 2022 RelWithDebInfo",
+      "configurePreset": "MSVC 2022",
+      "configuration": "RelWithDebInfo",
+      "jobs": 16
+    },
+    {
+      "name": "MSVC 2022 - Release",
+      "displayName": "MSVC 2022 Release",
+      "description": "MSVC 2022 Release",
+      "configurePreset": "MSVC 2022",
+      "configuration": "Release",
+      "jobs": 16
+    },
+    {
+      "name": "MSVC 2022 ARM - Debug",
+      "displayName": "MSVC 2022 ARM Debug",
+      "description": "MSVC 2022 ARM Debug",
+      "configurePreset": "MSVC 2022 ARM",
+      "configuration": "Debug",
+      "jobs": 16
+    },
+    {
+      "name": "MSVC 2022 ARM - RelWithDebInfo",
+      "displayName": "MSVC 2022 ARM RelWithDebInfo",
+      "description": "MSVC 2022 ARM RelWithDebInfo",
+      "configurePreset": "MSVC 2022 ARM",
+      "configuration": "RelWithDebInfo",
+      "jobs": 16
+    },
+    {
+      "name": "MSVC 2022 ARM - Release",
+      "displayName": "MSVC 2022 ARM Release",
+      "description": "MSVC 2022 ARM Release",
+      "configurePreset": "MSVC 2022 ARM",
+      "configuration": "Release",
+      "jobs": 16
+    }
+  ]
 }
