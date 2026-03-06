@@ -100,6 +100,9 @@ It offers low-code simplicity while maintaining high extensibility. The framewor
 - [MaaLogs](https://github.com/amiliyaai/MaaLogs) ![TypeScript](https://img.shields.io/badge/Typescript-8A2BE2?logo=typescript) ![license](https://img.shields.io/github/license/amiliyaai/MaaLogs) ![activity](https://img.shields.io/github/commit-activity/m/amiliyaai/MaaLogs?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/amiliyaai/MaaLogs?style=social)  
     MaaFramework log analysis tool that supports multi-project log parsing, visual task processes, and AI intelligent analysis.
 
+- [prettier-plugin-maafw-sort](https://www.npmjs.com/package/@nekosu/prettier-plugin-maafw-sort) ![TypeScript](https://img.shields.io/badge/Typescript-8A2BE2?logo=typescript)  
+    Prettier plugin. Sort pipeline keys according to the lifecycle.
+
 ### Application
 
 - [M9A](https://github.com/MaaXYZ/M9A) ![Pipeline](https://img.shields.io/badge/Pipeline-%23876f69?logo=paddypower&logoColor=%23FFFFFF) ![python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white) ![license](https://img.shields.io/github/license/MaaXYZ/M9A) ![activity](https://img.shields.io/github/commit-activity/m/MaaXYZ/M9A?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/MaaXYZ/M9A?style=social) [![mirrorc](./docs/static/mirrorc-en.svg)](https://mirrorchyan.com/en/projects?source=maafw-badge) [![website](https://img.shields.io/badge/https://1999.fan-%234285F4)](https://1999.fan)  
