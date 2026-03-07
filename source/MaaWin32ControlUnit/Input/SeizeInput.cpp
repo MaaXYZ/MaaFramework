@@ -158,13 +158,11 @@ bool SeizeInput::relative_move(int dx, int dy)
         return true;
     }
 
-    if (!hwnd_) {
-        return false;
+    if (hwnd_) {
+        ensure_foreground();
     }
 
-    ensure_foreground();
-
-    LogInfo << "relative_move" << VAR(dx) << VAR(dy) << VAR_VOIDP(hwnd_);
+    LogInfo << VAR(dx) << VAR(dy) << VAR_VOIDP(hwnd_);
 
     check_and_block_input();
 
@@ -174,12 +172,9 @@ bool SeizeInput::relative_move(int dx, int dy)
     input.type = INPUT_MOUSE;
     input.mi.dx = dx;
     input.mi.dy = dy;
-    input.mi.mouseData = 0;
     input.mi.dwFlags = MOUSEEVENTF_MOVE;
-    input.mi.time = 0;
-    input.mi.dwExtraInfo = 0;
 
-    return ::SendInput(1, &input, sizeof(INPUT)) == 1;
+    return SendInput(1, &input, sizeof(INPUT)) == 1;
 }
 
 // get_features() 返回 MaaControllerFeature_UseKeyboardDownAndUpInsteadOfClick，
