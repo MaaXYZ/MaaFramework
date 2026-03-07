@@ -127,10 +127,10 @@ MaaCtrlId ControllerAgent::post_touch_up(int contact)
     return focus_id(id);
 }
 
-MaaCtrlId ControllerAgent::post_mouse_move_relative(int dx, int dy)
+MaaCtrlId ControllerAgent::post_relative_move(int dx, int dy)
 {
-    MouseMoveRelativeParam p { .dx = dx, .dy = dy };
-    auto id = post({ .type = Action::Type::mouse_move_relative, .param = std::move(p) });
+    RelativeMoveParam p { .dx = dx, .dy = dy };
+    auto id = post({ .type = Action::Type::relative_move, .param = std::move(p) });
     return focus_id(id);
 }
 
@@ -308,9 +308,9 @@ bool ControllerAgent::touch_up(TouchParam p)
     return wait(id) == MaaStatus_Succeeded;
 }
 
-bool ControllerAgent::mouse_move_relative(MouseMoveRelativeParam p)
+bool ControllerAgent::relative_move(RelativeMoveParam p)
 {
-    auto id = post({ .type = Action::Type::mouse_move_relative, .param = std::move(p) });
+    auto id = post({ .type = Action::Type::relative_move, .param = std::move(p) });
     return wait(id) == MaaStatus_Succeeded;
 }
 
@@ -703,16 +703,22 @@ bool ControllerAgent::handle_touch_up(const TouchParam& param)
     return ret;
 }
 
-bool ControllerAgent::handle_mouse_move_relative(const MouseMoveRelativeParam& param)
+bool ControllerAgent::handle_relative_move(const RelativeMoveParam& param)
 {
     if (!control_unit_) {
         LogError << "control_unit_ is nullptr";
         return false;
     }
 
-    LogTrace << "handle_mouse_move_relative" << VAR(param.dx) << VAR(param.dy);
+    auto win32_unit = std::dynamic_pointer_cast<MAA_CTRL_UNIT_NS::Win32ControlUnitAPI>(control_unit_);
+    if (!win32_unit) {
+        LogError << "Relative move is only supported for Win32 controllers. Current controller type does not support relative movement.";
+        return false;
+    }
 
-    bool ret = control_unit_->mouse_move_relative(param.dx, param.dy);
+    LogTrace << "handle_relative_move" << VAR(param.dx) << VAR(param.dy);
+
+    bool ret = control_unit_->relative_move(param.dx, param.dy);
 
     return ret;
 }
@@ -1001,8 +1007,8 @@ bool ControllerAgent::run_action(typename AsyncRunner<Action>::Id id, Action act
         ret = handle_shell(std::get<ShellParam>(action.param));
         break;
 
-    case Action::Type::mouse_move_relative:
-        ret = handle_mouse_move_relative(std::get<MouseMoveRelativeParam>(action.param));
+    case Action::Type::relative_move:
+        ret = handle_relative_move(std::get<RelativeMoveParam>(action.param));
         break;
 
     case Action::Type::inactive:

@@ -239,8 +239,8 @@ class Controller:
         ctrl_id = Library.framework().MaaControllerPostTouchUp(self._handle, contact)
         return self._gen_ctrl_job(ctrl_id)
 
-    def post_mouse_move_relative(self, dx: int, dy: int) -> Job:
-        """相对移动鼠标 (仅支持部分控制器) / Move mouse relatively (Only supported by some controllers)
+    def post_relative_move(self, dx: int, dy: int) -> Job:
+        """异步执行一次相对位移 (仅支持部分控制器) / Asynchronously execute a relative movement (Only supported by some controllers)
 
         Args:
             dx: x 方向移动偏移 / x axis offset
@@ -249,7 +249,7 @@ class Controller:
         Returns:
             Job: 作业对象 / Job object
         """
-        ctrl_id = Library.framework().MaaControllerPostMouseMoveRelative(
+        ctrl_id = Library.framework().MaaControllerPostRelativeMove(
             self._handle, dx, dy
         )
         return self._gen_ctrl_job(ctrl_id)
@@ -667,8 +667,8 @@ class Controller:
             c_int32,
         ]
 
-        Library.framework().MaaControllerPostMouseMoveRelative.restype = MaaCtrlId
-        Library.framework().MaaControllerPostMouseMoveRelative.argtypes = [
+        Library.framework().MaaControllerPostRelativeMove.restype = MaaCtrlId
+        Library.framework().MaaControllerPostRelativeMove.argtypes = [
             MaaControllerHandle,
             c_int32,
             c_int32,
@@ -1045,7 +1045,7 @@ class CustomController(Controller):
             CustomController._c_touch_down_agent,
             CustomController._c_touch_move_agent,
             CustomController._c_touch_up_agent,
-            CustomController._c_mouse_move_relative_agent,
+            CustomController._c_relative_move_agent,
             CustomController._c_click_key_agent,
             CustomController._c_input_text_agent,
             CustomController._c_key_down_agent,
@@ -1134,7 +1134,7 @@ class CustomController(Controller):
         raise NotImplementedError
 
     @abstractmethod
-    def mouse_move_relative(self, dx: int, dy: int) -> bool:
+    def relative_move(self, dx: int, dy: int) -> bool:
         raise NotImplementedError
 
     @abstractmethod
@@ -1381,8 +1381,8 @@ class CustomController(Controller):
         return int(self.touch_up(int(c_contact)))
 
     @staticmethod
-    @MaaCustomControllerCallbacks.MouseMoveRelativeFunc
-    def _c_mouse_move_relative_agent(
+    @MaaCustomControllerCallbacks.RelativeMoveFunc
+    def _c_relative_move_agent(
         c_dx: ctypes.c_int32,
         c_dy: ctypes.c_int32,
         trans_arg: ctypes.c_void_p,
@@ -1395,7 +1395,7 @@ class CustomController(Controller):
             ctypes.py_object,
         ).value
 
-        return int(self.mouse_move_relative(int(c_dx), int(c_dy)))
+        return int(self.relative_move(int(c_dx), int(c_dy)))
 
     @staticmethod
     @MaaCustomControllerCallbacks.ClickKeyFunc

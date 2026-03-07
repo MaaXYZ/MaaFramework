@@ -175,7 +175,7 @@ declare global {
                 pressure: number,
             ): Job<CtrlId, Controller>
             post_touch_up(contact: number): Job<CtrlId, Controller>
-            post_mouse_move_relative(dx: number, dy: number): Job<CtrlId, Controller>
+            post_relative_move(dx: number, dy: number): Job<CtrlId, Controller>
             post_key_down(keycode: number): Job<CtrlId, Controller>
             post_key_up(keycode: number): Job<CtrlId, Controller>
             /**
@@ -303,7 +303,7 @@ declare global {
                 pressure: number,
             ): maa.MaybePromise<boolean>
             touch_up?(contact: number): maa.MaybePromise<boolean>
-            mouse_move_relative?(dx: number, dy: number): maa.MaybePromise<boolean>
+            relative_move?(dx: number, dy: number): maa.MaybePromise<boolean>
             click_key?(keycode: number): maa.MaybePromise<boolean>
             input_text?(text: string): maa.MaybePromise<boolean>
             key_down?(keycode: number): maa.MaybePromise<boolean>

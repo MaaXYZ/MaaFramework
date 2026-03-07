@@ -317,10 +317,10 @@ MaaBool CustomTouchUp(int32_t contact, void* trans_arg)
     });
 }
 
-MaaBool CustomMouseMoveRelative(int32_t dx, int32_t dy, void* trans_arg)
+MaaBool CustomRelativeMove(int32_t dx, int32_t dy, void* trans_arg)
 {
     auto customCtx = reinterpret_cast<CustomControllerContext*>(trans_arg);
-    auto ctx = customCtx->callbacks["mouse_move_relative"];
+    auto ctx = customCtx->callbacks["relative_move"];
     return ctx->Call<bool>([&](maajs::FunctionType func) {
         return func.Call(
             {

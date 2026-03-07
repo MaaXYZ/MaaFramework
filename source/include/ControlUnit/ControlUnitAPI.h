@@ -43,7 +43,7 @@ public:
 
     virtual bool scroll(int dx, int dy) = 0;
 
-    virtual bool mouse_move_relative(int dx, int dy) { std::ignore = dx; std::ignore = dy; return false; }
+    virtual bool relative_move(int dx, int dy) { std::ignore = dx; std::ignore = dy; return false; }
 
     virtual bool inactive() = 0;
 

@@ -557,7 +557,7 @@ class MaaCustomControllerCallbacks(ctypes.Structure):
         ctypes.c_int32,
         ctypes.c_void_p,
     )
-    MouseMoveRelativeFunc = FUNCTYPE(
+    RelativeMoveFunc = FUNCTYPE(
         MaaBool,
         ctypes.c_int32,
         ctypes.c_int32,
@@ -611,7 +611,7 @@ class MaaCustomControllerCallbacks(ctypes.Structure):
         ("touch_down", TouchDownFunc),
         ("touch_move", TouchMoveFunc),
         ("touch_up", TouchUpFunc),
-        ("mouse_move_relative", MouseMoveRelativeFunc),
+        ("relative_move", RelativeMoveFunc),
         ("click_key", ClickKeyFunc),
         ("input_text", InputTextFunc),
         ("key_down", KeyDownFunc),

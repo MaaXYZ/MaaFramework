@@ -197,9 +197,9 @@ maajs::ValueType ControllerImpl::post_touch_up(maajs::ValueType self, maajs::Env
     return maajs::CallCtorHelper(ExtContext::get(env)->jobCtor, self, id);
 }
 
-maajs::ValueType ControllerImpl::post_mouse_move_relative(maajs::ValueType self, maajs::EnvType, int32_t dx, int32_t dy)
+maajs::ValueType ControllerImpl::post_relative_move(maajs::ValueType self, maajs::EnvType, int32_t dx, int32_t dy)
 {
-    auto id = MaaControllerPostMouseMoveRelative(controller, dx, dy);
+    auto id = MaaControllerPostRelativeMove(controller, dx, dy);
     return maajs::CallCtorHelper(ExtContext::get(env)->jobCtor, self, id);
 }
 
@@ -347,7 +347,7 @@ void ControllerImpl::init_proto(maajs::ObjectType proto, maajs::FunctionType)
     MAA_BIND_FUNC(proto, "post_touch_down", ControllerImpl::post_touch_down);
     MAA_BIND_FUNC(proto, "post_touch_move", ControllerImpl::post_touch_move);
     MAA_BIND_FUNC(proto, "post_touch_up", ControllerImpl::post_touch_up);
-    MAA_BIND_FUNC(proto, "post_mouse_move_relative", ControllerImpl::post_mouse_move_relative);
+    MAA_BIND_FUNC(proto, "post_relative_move", ControllerImpl::post_relative_move);
     MAA_BIND_FUNC(proto, "post_key_down", ControllerImpl::post_key_down);
     MAA_BIND_FUNC(proto, "post_key_up", ControllerImpl::post_key_up);
     MAA_BIND_FUNC(proto, "post_scroll", ControllerImpl::post_scroll);
@@ -709,7 +709,7 @@ CustomControllerImpl* CustomControllerImpl::ctor(const maajs::CallbackInfo& info
     context->add_bind(info.Env(), "touch_down", "CustomTouchDown", 4, actor, ret_false);
     context->add_bind(info.Env(), "touch_move", "CustomTouchMove", 4, actor, ret_false);
     context->add_bind(info.Env(), "touch_up", "CustomTouchUp", 1, actor, ret_false);
-    context->add_bind(info.Env(), "mouse_move_relative", "CustomMouseMoveRelative", 2, actor, ret_false);
+    context->add_bind(info.Env(), "relative_move", "CustomRelativeMove", 2, actor, ret_false);
     context->add_bind(info.Env(), "click_key", "CustomClickKey", 1, actor, ret_false);
     context->add_bind(info.Env(), "input_text", "CustomInputText", 1, actor, ret_false);
     context->add_bind(info.Env(), "key_down", "CustomKeyDown", 1, actor, ret_false);

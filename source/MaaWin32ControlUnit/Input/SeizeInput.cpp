@@ -152,16 +152,19 @@ bool SeizeInput::touch_up(int contact)
     return true;
 }
 
-bool SeizeInput::mouse_move_relative(int dx, int dy)
+bool SeizeInput::relative_move(int dx, int dy)
 {
     if (dx == 0 && dy == 0) {
         return true;
     }
 
-    if (hwnd_) {
-        ensure_foreground();
+    if (!hwnd_) {
+        return false;
     }
-    LogInfo << "mouse_move_relative" << VAR(dx) << VAR(dy) << VAR_VOIDP(hwnd_);
+
+    ensure_foreground();
+
+    LogInfo << "relative_move" << VAR(dx) << VAR(dy) << VAR_VOIDP(hwnd_);
 
     check_and_block_input();
 

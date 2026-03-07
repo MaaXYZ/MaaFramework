@@ -214,7 +214,7 @@ MaaCtrlId MaaControllerPostTouchUp(MaaController* ctrl, int32_t contact)
     return ctrl->post_touch_up(contact);
 }
 
-MaaCtrlId MaaControllerPostMouseMoveRelative(MaaController* ctrl, int32_t dx, int32_t dy)
+MaaCtrlId MaaControllerPostRelativeMove(MaaController* ctrl, int32_t dx, int32_t dy)
 {
     LogFunc << VAR_VOIDP(ctrl) << VAR(dx) << VAR(dy);
 
@@ -223,7 +223,7 @@ MaaCtrlId MaaControllerPostMouseMoveRelative(MaaController* ctrl, int32_t dx, in
         return MaaInvalidId;
     }
 
-    return ctrl->post_mouse_move_relative(dx, dy);
+    return ctrl->post_relative_move(dx, dy);
 }
 
 MaaCtrlId MaaControllerPostKeyDown(MaaController* ctrl, int32_t keycode)

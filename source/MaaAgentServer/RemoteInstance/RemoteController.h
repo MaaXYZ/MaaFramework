@@ -28,7 +28,7 @@ public:
     virtual MaaCtrlId post_touch_move(int contact, int x, int y, int pressure) override;
     virtual MaaCtrlId post_touch_up(int contact) override;
 
-    virtual MaaCtrlId post_mouse_move_relative(int dx, int dy) override;
+    virtual MaaCtrlId post_relative_move(int dx, int dy) override;
 
     virtual MaaCtrlId post_key_down(int keycode) override;
     virtual MaaCtrlId post_key_up(int keycode) override;

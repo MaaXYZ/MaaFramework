@@ -53,7 +53,7 @@ extern "C"
 
         MaaBool (*touch_up)(int32_t contact, void* trans_arg);
 
-        MaaBool (*mouse_move_relative)(int32_t dx, int32_t dy, void* trans_arg);
+        MaaBool (*relative_move)(int32_t dx, int32_t dy, void* trans_arg);
 
         MaaBool (*click_key)(int32_t keycode, void* trans_arg);
 
