@@ -53,6 +53,11 @@ declare global {
             dy: number
         }
 
+        type RelativeMoveParam = {
+            dx: number
+            dy: number
+        }
+
         type ActionParam =
             | {}
             | ClickParam
@@ -65,6 +70,7 @@ declare global {
             | InputTextParam
             | AppParam
             | ScrollParam
+            | RelativeMoveParam
 
         type ControllerNotify = {
             msg: NotifyMessage<'Action'>
@@ -95,6 +101,10 @@ declare global {
             | {
                   action: 'touch_down' | 'touch_move' | 'touch_up'
                   param: TouchParam
+              }
+            | {
+                  action: 'relative_move'
+                  param: RelativeMoveParam
               }
             | {
                   action: 'click_key' | 'key_down' | 'key_up'
@@ -175,6 +185,9 @@ declare global {
                 pressure: number,
             ): Job<CtrlId, Controller>
             post_touch_up(contact: number): Job<CtrlId, Controller>
+            /**
+             * Post a relative move action. Currently only supported by Win32 controller.
+             */
             post_relative_move(dx: number, dy: number): Job<CtrlId, Controller>
             post_key_down(keycode: number): Job<CtrlId, Controller>
             post_key_up(keycode: number): Job<CtrlId, Controller>
@@ -226,9 +239,9 @@ declare global {
         class Win32Controller extends Controller {
             constructor(
                 hwnd: DesktopHandle,
-                screencap_methods: ScreencapOrInputMethods,
+                screencap_method: ScreencapOrInputMethods,
                 mouse_method: ScreencapOrInputMethods,
-                keyboard_methods: ScreencapOrInputMethods,
+                keyboard_method: ScreencapOrInputMethods,
             )
 
             static find(): Promise<DesktopDevice[] | null>
@@ -303,7 +316,6 @@ declare global {
                 pressure: number,
             ): maa.MaybePromise<boolean>
             touch_up?(contact: number): maa.MaybePromise<boolean>
-            relative_move?(dx: number, dy: number): maa.MaybePromise<boolean>
             click_key?(keycode: number): maa.MaybePromise<boolean>
             input_text?(text: string): maa.MaybePromise<boolean>
             key_down?(keycode: number): maa.MaybePromise<boolean>
@@ -319,4 +331,4 @@ declare global {
     }
 }
 
-export { }
+export {}

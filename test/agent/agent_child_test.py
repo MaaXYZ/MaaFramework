@@ -289,7 +289,6 @@ class MyAction(CustomAction):
         controller.post_touch_down(1, 100, 100, 0).wait()
         controller.post_touch_move(1, 200, 200, 0).wait()
         controller.post_touch_up(1).wait()
-        controller.post_relative_move(10, 20).wait()
 
         # 测试按键操作
         controller.post_key_down(65).wait()

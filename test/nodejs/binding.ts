@@ -63,7 +63,6 @@ const myAct: maa.CustomActionCallback = async self => {
     await ctrl.post_touch_down(1, 100, 100, 0).wait()
     await ctrl.post_touch_move(1, 200, 200, 0).wait()
     await ctrl.post_touch_up(1).wait()
-    await ctrl.post_relative_move(10, 20).wait()
     await ctrl.post_start_app('aaa').wait()
     await ctrl.post_stop_app('bbb').wait()
     await ctrl.post_inactive().wait()
@@ -190,17 +189,58 @@ async function custom_ctrl_test() {
     ret &&= await ctrl.post_touch_down(1, 100, 100, 0).wait().succeeded
     ret &&= await ctrl.post_touch_move(1, 200, 200, 0).wait().succeeded
     ret &&= await ctrl.post_touch_up(1).wait().succeeded
-    ret &&= await ctrl.post_relative_move(10, 20).wait().succeeded
     ret &&= await ctrl.post_click_key(32).wait().succeeded
     ret &&= await ctrl.post_input_text('Hello World!').wait().succeeded
     ret &&= await ctrl.post_inactive().wait().succeeded
 
     console.log('controller count', myCtrl.count, 'ret', ret)
 
-    // if (myCtrl.count !== 11 || !ret) {
+    // if (!ret) {
     //     console.log('failed to run custom controller')
     //     process.exit(1)
     // }
+}
+
+async function win32_relative_move_test() {
+    console.log('test_win32_relative_move')
+
+    const desktop = await maa.Win32Controller.find()
+    if (!desktop?.length) {
+        console.log('skip: no desktop windows found')
+        return
+    }
+
+    let ctrl: maa.Win32Controller | null = null
+    let target: maa.DesktopDevice | null = null
+    for (const device of desktop) {
+        try {
+            ctrl = new maa.Win32Controller(
+                device[0],
+                maa.Win32ScreencapMethod.Background,
+                maa.Win32InputMethod.Seize,
+                maa.Win32InputMethod.Seize
+            )
+            target = device
+            break
+        }
+        catch {
+            continue
+        }
+    }
+
+    if (!ctrl || !target) {
+        console.log('skip: failed to create win32 controller')
+        return
+    }
+
+    let ret = await ctrl.post_connection().wait().succeeded
+    ret &&= await ctrl.post_relative_move(0, 0).wait().succeeded
+    console.log('target window', target[2] || '(no name)', 'ret', ret)
+
+    if (!ret) {
+        console.log('failed to run win32 relative_move')
+        process.exit(1)
+    }
 }
 
 class MyController implements maa.CustomControllerActor {
@@ -324,6 +364,7 @@ async function main() {
     maa.Global.config_init_option('../../install/bin')
 
     await api_test()
+    await win32_relative_move_test()
     await custom_ctrl_test()
 
     process.exit(0)

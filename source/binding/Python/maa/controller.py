@@ -240,7 +240,7 @@ class Controller:
         return self._gen_ctrl_job(ctrl_id)
 
     def post_relative_move(self, dx: int, dy: int) -> Job:
-        """异步执行一次相对位移 (仅支持部分控制器) / Asynchronously execute a relative movement (Only supported by some controllers)
+        """异步执行一次相对位移 (当前仅 Win32 controller 支持) / Asynchronously execute a relative movement (Currently only supported by Win32 controller)
 
         Args:
             dx: x 方向移动偏移 / x axis offset
@@ -1045,7 +1045,6 @@ class CustomController(Controller):
             CustomController._c_touch_down_agent,
             CustomController._c_touch_move_agent,
             CustomController._c_touch_up_agent,
-            CustomController._c_relative_move_agent,
             CustomController._c_click_key_agent,
             CustomController._c_input_text_agent,
             CustomController._c_key_down_agent,
