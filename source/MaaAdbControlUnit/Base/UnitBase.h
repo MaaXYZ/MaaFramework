@@ -98,7 +98,6 @@ public:
 
     virtual bool key_down(int key) = 0;
     virtual bool key_up(int key) = 0;
-
 };
 
 MAA_CTRL_UNIT_NS_END
