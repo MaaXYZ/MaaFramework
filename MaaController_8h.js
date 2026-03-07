@@ -25,6 +25,7 @@ var MaaController_8h =
     [ "MaaControllerPostTouchDown", "MaaController_8h.html#ad4b315ff1a1c5da834aa76b6651a9cb7", null ],
     [ "MaaControllerPostTouchMove", "MaaController_8h.html#aa6044d3df3b659994b845317d4e67ec7", null ],
     [ "MaaControllerPostTouchUp", "MaaController_8h.html#a1131966cc2abcf3bf11d317413d4a529", null ],
+    [ "MaaControllerPostRelativeMove", "MaaController_8h.html#a353affe8d15d6a2e192775250d6c75b0", null ],
     [ "MaaControllerPostKeyDown", "MaaController_8h.html#ab879179f0c655d61c684d20132cc7c98", null ],
     [ "MaaControllerPostKeyUp", "MaaController_8h.html#afb7c57e77010237effcfe2f638e0bd79", null ],
     [ "MaaControllerPostScreencap", "MaaController_8h.html#ad65392ee4028a2d8ba74d2fab960fb50", null ],

@@ -115,6 +115,7 @@
     <member refid="MaaController_8h_1ad4b315ff1a1c5da834aa76b6651a9cb7" kind="function"><name>MaaControllerPostTouchDown</name></member>
     <member refid="MaaController_8h_1aa6044d3df3b659994b845317d4e67ec7" kind="function"><name>MaaControllerPostTouchMove</name></member>
     <member refid="MaaController_8h_1a1131966cc2abcf3bf11d317413d4a529" kind="function"><name>MaaControllerPostTouchUp</name></member>
+    <member refid="MaaController_8h_1a353affe8d15d6a2e192775250d6c75b0" kind="function"><name>MaaControllerPostRelativeMove</name></member>
     <member refid="MaaController_8h_1ab879179f0c655d61c684d20132cc7c98" kind="function"><name>MaaControllerPostKeyDown</name></member>
     <member refid="MaaController_8h_1afb7c57e77010237effcfe2f638e0bd79" kind="function"><name>MaaControllerPostKeyUp</name></member>
     <member refid="MaaController_8h_1ad65392ee4028a2d8ba74d2fab960fb50" kind="function"><name>MaaControllerPostScreencap</name></member>
