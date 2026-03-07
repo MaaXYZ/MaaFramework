@@ -172,6 +172,8 @@ extern "C"
      * @return The control id of the scroll action.
      *
      * @note Scroll is supported by Win32 controllers and custom controllers that implement scroll.
+     * @note If the controller does not support scroll, the action will fail. Use MaaControllerStatus or
+     * MaaControllerWait to check the result.
      * @note The dx/dy values are sent directly as scroll increments. Using multiples of 120 (WHEEL_DELTA) is
      * recommended for best compatibility.
      */
