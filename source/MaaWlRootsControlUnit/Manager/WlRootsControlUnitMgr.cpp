@@ -229,16 +229,6 @@ bool WlRootsControlUnitMgr::key_up(int key)
     return client_->input_key(WaylandClient::EventPhase::Ended, key);
 }
 
-bool WlRootsControlUnitMgr::scroll(int dx, int dy)
-{
-    if (!client_) {
-        LogError << "client_ is nullptr";
-        return false;
-    }
-
-    return client_->scroll(dx, dy);
-}
-
 bool WlRootsControlUnitMgr::stop_app(const std::string& intent)
 {
     // TODO

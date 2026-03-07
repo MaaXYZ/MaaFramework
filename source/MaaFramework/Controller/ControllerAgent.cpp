@@ -866,14 +866,27 @@ bool ControllerAgent::handle_scroll(const ScrollParam& param)
         return false;
     }
 
-    // Move to target position before scrolling
     cv::Point point = preproc_touch_point(param.point);
-    if (!control_unit_->touch_move(0, point.x, point.y, 0)) {
-        LogWarn << "Failed to move to scroll position" << VAR(point);
+    auto move_to_scroll_position = [&]() {
+        if (!control_unit_->touch_move(0, point.x, point.y, 0)) {
+            LogWarn << "Failed to move to scroll position" << VAR(point);
+        }
+    };
+
+    auto win32_unit = std::dynamic_pointer_cast<MAA_CTRL_UNIT_NS::Win32ControlUnitAPI>(control_unit_);
+    if (win32_unit) {
+        move_to_scroll_position();
+        return win32_unit->scroll(param.dx, param.dy);
     }
 
-    bool ret = control_unit_->scroll(param.dx, param.dy);
-    return ret;
+    auto custom_unit = std::dynamic_pointer_cast<MAA_CTRL_UNIT_NS::CustomControlUnitAPI>(control_unit_);
+    if (custom_unit) {
+        move_to_scroll_position();
+        return custom_unit->scroll(param.dx, param.dy);
+    }
+
+    LogError << "Scroll is only supported for Win32 controllers and custom controllers that implement scroll.";
+    return false;
 }
 
 bool ControllerAgent::handle_shell(const ShellParam& param)

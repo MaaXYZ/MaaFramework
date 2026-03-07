@@ -215,7 +215,6 @@ class MyAction(CustomAction):
         controller.post_touch_up(1).wait()
         controller.post_key_down(65).wait()
         controller.post_key_up(65).wait()
-        controller.post_scroll(0, 120).wait()
         controller.post_start_app("aaa")
         controller.post_stop_app("bbb")
         controller.post_inactive().wait()
@@ -421,7 +420,9 @@ def test_controller_api():
     dbg_controller.post_touch_down(0, 100, 100, 0).wait()
     dbg_controller.post_touch_move(0, 150, 150, 0).wait()
     dbg_controller.post_touch_up(0).wait()
-    dbg_controller.post_scroll(0, 120).wait()
+    assert not dbg_controller.post_scroll(0, 120).wait().succeeded, (
+        "dbg controller scroll should fail"
+    )
     dbg_controller.post_start_app("com.test.app").wait()
     dbg_controller.post_stop_app("com.test.app").wait()
     dbg_controller.post_inactive().wait()

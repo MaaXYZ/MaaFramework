@@ -295,7 +295,7 @@ class MyAction(CustomAction):
         controller.post_key_up(65).wait()
 
         # 测试滚动操作
-        controller.post_scroll(0, 120).wait()
+        assert not controller.post_scroll(0, 120).wait().succeeded
 
         # 测试应用操作
         controller.post_start_app("aaa")

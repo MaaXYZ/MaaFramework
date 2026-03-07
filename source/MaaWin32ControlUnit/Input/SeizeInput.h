@@ -9,7 +9,7 @@
 
 MAA_CTRL_UNIT_NS_BEGIN
 
-class SeizeInput : public InputBase
+class SeizeInput : public RelativeMoveInput
 {
 public:
     SeizeInput(HWND hwnd, bool block_input = false)
@@ -20,7 +20,7 @@ public:
 
     virtual ~SeizeInput() override;
 
-public: // from InputBase
+public: // from RelativeMoveInput
     virtual MaaControllerFeature get_features() const override;
 
     virtual bool click(int x, int y) override;

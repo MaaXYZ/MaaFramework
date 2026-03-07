@@ -13,7 +13,7 @@ MAA_CTRL_UNIT_NS_BEGIN
 class ViGEmInput;
 class Win32ControlUnitLoader;
 
-class GamepadControlUnitMgr : public Win32ControlUnitAPI
+class GamepadControlUnitMgr : public GamepadControlUnitAPI
 {
 public:
     GamepadControlUnitMgr(HWND hWnd, MaaGamepadType gamepad_type, MaaWin32ScreencapMethod screencap_method);
@@ -43,16 +43,12 @@ public: // from ControlUnitAPI
     virtual bool touch_move(int contact, int x, int y, int pressure) override;
     virtual bool touch_up(int contact) override;
 
-    virtual bool relative_move(int dx, int dy) override;
-
     // key functions for gamepad buttons
     virtual bool click_key(int key) override;
     virtual bool input_text(const std::string& text) override;
 
     virtual bool key_down(int key) override;
     virtual bool key_up(int key) override;
-
-    virtual bool scroll(int dx, int dy) override;
 
     virtual bool inactive() override;
 

@@ -192,7 +192,8 @@ declare global {
             post_key_down(keycode: number): Job<CtrlId, Controller>
             post_key_up(keycode: number): Job<CtrlId, Controller>
             /**
-             * Post a scroll action. Using multiples of 120 (WHEEL_DELTA) is recommended for best compatibility.
+             * Post a scroll action. Supported by Win32 controller and custom controllers that implement scroll.
+             * Using multiples of 120 (WHEEL_DELTA) is recommended for best compatibility.
              */
             post_scroll(dx: number, dy: number): Job<CtrlId, Controller>
             post_inactive(): Job<CtrlId, Controller>

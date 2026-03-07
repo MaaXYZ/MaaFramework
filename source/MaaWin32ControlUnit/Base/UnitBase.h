@@ -37,8 +37,6 @@ public:
     virtual bool touch_move(int contact, int x, int y, int pressure) = 0;
     virtual bool touch_up(int contact) = 0;
 
-    virtual bool relative_move(int dx, int dy) = 0;
-
     virtual bool click_key(int key) = 0;
     virtual bool input_text(const std::string& text) = 0;
 
@@ -48,6 +46,14 @@ public:
     virtual bool scroll(int dx, int dy) = 0;
 
     virtual void inactive() { }
+};
+
+class RelativeMoveInput : public InputBase
+{
+public:
+    virtual ~RelativeMoveInput() = default;
+
+    virtual bool relative_move(int dx, int dy) = 0;
 };
 
 MAA_CTRL_UNIT_NS_END

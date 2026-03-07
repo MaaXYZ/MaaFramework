@@ -42,12 +42,6 @@ bool LegacyEventInput::swipe(int x1, int y1, int x2, int y2, int duration)
     return false;
 }
 
-bool LegacyEventInput::relative_move(int dx, int dy)
-{
-    LogError << "relative_move not supported" << VAR(dx) << VAR(dy);
-    return false;
-}
-
 bool LegacyEventInput::touch_down(int contact, int x, int y, int pressure)
 {
     POINT point = { x, y };

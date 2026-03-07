@@ -265,7 +265,7 @@ class Controller:
             Job: 作业对象 / Job object
 
         Note:
-            不是所有控制器都支持滚动操作 / Not all controllers support scroll operation
+            Win32 控制器和实现了 scroll 的自定义控制器支持滚动操作 / Win32 controllers and custom controllers that implement scroll support this operation
             建议使用 120 的整数倍（WHEEL_DELTA）以获得最佳兼容性 / Using multiples of 120 (WHEEL_DELTA) is recommended
         """
         ctrl_id = Library.framework().MaaControllerPostScroll(self._handle, dx, dy)

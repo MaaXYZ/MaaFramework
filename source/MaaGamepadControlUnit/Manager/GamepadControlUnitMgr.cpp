@@ -273,12 +273,6 @@ bool GamepadControlUnitMgr::touch_up(int contact)
     }
 }
 
-bool GamepadControlUnitMgr::relative_move(int dx, int dy)
-{
-    LogError << "relative_move not supported for gamepad controller" << VAR(dx) << VAR(dy);
-    return false;
-}
-
 // get_features() 返回 MaaControllerFeature_UseKeyboardDownAndUpInsteadOfClick，
 // 上层 ControllerAgent 会使用 key_down/key_up 替代 click_key
 bool GamepadControlUnitMgr::click_key(int key)
@@ -315,12 +309,6 @@ bool GamepadControlUnitMgr::key_up(int key)
     }
 
     return gamepad_input_->release_button(key);
-}
-
-bool GamepadControlUnitMgr::scroll(int dx, int dy)
-{
-    LogError << "scroll not supported for gamepad controller" << VAR(dx) << VAR(dy);
-    return false;
 }
 
 bool GamepadControlUnitMgr::inactive()

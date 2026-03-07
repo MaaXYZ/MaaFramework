@@ -135,7 +135,7 @@ std::shared_ptr<MAA_CTRL_UNIT_NS::ControlUnitAPI>
     return std::shared_ptr<MAA_CTRL_UNIT_NS::ControlUnitAPI>(control_unit_handle, destroy_control_unit_func);
 }
 
-std::shared_ptr<MAA_CTRL_UNIT_NS::ControlUnitAPI>
+std::shared_ptr<MAA_CTRL_UNIT_NS::CustomControlUnitAPI>
     CustomControlUnitLibraryHolder::create_control_unit(MaaCustomControllerCallbacks* controller, void* controller_arg)
 {
     if (!load_library(library_dir() / libname_)) {
@@ -164,7 +164,7 @@ std::shared_ptr<MAA_CTRL_UNIT_NS::ControlUnitAPI>
         return nullptr;
     }
 
-    return std::shared_ptr<MAA_CTRL_UNIT_NS::ControlUnitAPI>(control_unit_handle, destroy_control_unit_func);
+    return std::shared_ptr<MAA_CTRL_UNIT_NS::CustomControlUnitAPI>(control_unit_handle, destroy_control_unit_func);
 }
 
 std::shared_ptr<MAA_CTRL_UNIT_NS::ControlUnitAPI>
@@ -199,7 +199,7 @@ std::shared_ptr<MAA_CTRL_UNIT_NS::ControlUnitAPI>
     return std::shared_ptr<MAA_CTRL_UNIT_NS::ControlUnitAPI>(control_unit_handle, destroy_control_unit_func);
 }
 
-std::shared_ptr<MAA_CTRL_UNIT_NS::Win32ControlUnitAPI>
+std::shared_ptr<MAA_CTRL_UNIT_NS::GamepadControlUnitAPI>
     GamepadControlUnitLibraryHolder::create_control_unit(void* hWnd, MaaGamepadType gamepad_type, MaaWin32ScreencapMethod screencap_method)
 {
     if (!load_library(library_dir() / libname_)) {
@@ -228,7 +228,7 @@ std::shared_ptr<MAA_CTRL_UNIT_NS::Win32ControlUnitAPI>
         return nullptr;
     }
 
-    return std::shared_ptr<MAA_CTRL_UNIT_NS::Win32ControlUnitAPI>(control_unit_handle, destroy_control_unit_func);
+    return std::shared_ptr<MAA_CTRL_UNIT_NS::GamepadControlUnitAPI>(control_unit_handle, destroy_control_unit_func);
 }
 
 std::shared_ptr<MAA_CTRL_UNIT_NS::ControlUnitAPI> WlRootsControlUnitLibraryHolder::create_control_unit(const char* wlr_socket_path)
