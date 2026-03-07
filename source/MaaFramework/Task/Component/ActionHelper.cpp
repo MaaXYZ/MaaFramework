@@ -2,21 +2,28 @@
 
 #include "Common/TaskResultTypes.h"
 #include "MaaUtils/Logger.h"
+#include "Task/Context.h"
 #include "Tasker/Tasker.h"
 #include "Vision/TemplateComparator.h"
 #include "Vision/VisionUtils.hpp"
 
 MAA_TASK_NS_BEGIN
 
-ActionHelper::ActionHelper(Tasker* tasker)
-    : tasker_(tasker)
+ActionHelper::ActionHelper(Context* context)
+    : context_(context)
 {
 }
 
-bool ActionHelper::wait_freezes(const MAA_RES_NS::WaitFreezesParam& param, const cv::Rect& box, const std::string& name)
+bool ActionHelper::wait_freezes(const MAA_RES_NS::WaitFreezesParam& param, const cv::Rect& ref_box, const std::string& name)
 {
     if (param.time <= std::chrono::milliseconds(0)) {
         return true;
+    }
+
+    auto roi = get_target_rect(param.target, ref_box);
+    if (roi.empty()) {
+        LogError << "failed to get target rect for wait_freezes" << VAR(name);
+        return false;
     }
 
     if (!controller()) {
@@ -34,9 +41,10 @@ bool ActionHelper::wait_freezes(const MAA_RES_NS::WaitFreezesParam& param, const
     auto screencap_clock = std::chrono::steady_clock::now();
     cv::Mat pre_image = controller()->screencap();
 
-    cv::Rect roi = box;
-    if (roi.empty() && !pre_image.empty()) {
-        roi = cv::Rect(0, 0, pre_image.cols, pre_image.rows);
+    auto corrected_roi = correct_roi(roi, pre_image);
+    if (!corrected_roi) {
+        LogError << "corrected roi is empty" << VAR(roi);
+        return false;
     }
 
     TemplateComparatorParam comp_param {
@@ -66,7 +74,7 @@ bool ActionHelper::wait_freezes(const MAA_RES_NS::WaitFreezesParam& param, const
         }
 
         std::string draw_name = name.empty() ? "wait_freezes" : std::format("{}_wait_freezes", name);
-        TemplateComparator comparator(pre_image, cur_image, { roi }, comp_param, draw_name);
+        TemplateComparator comparator(pre_image, cur_image, { *corrected_roi }, comp_param, draw_name);
 
         VisionBase::save_draws(draw_name, comparator.draws());
 
@@ -86,7 +94,7 @@ bool ActionHelper::wait_freezes(const MAA_RES_NS::WaitFreezesParam& param, const
 
 cv::Rect ActionHelper::get_target_rect(const MAA_RES_NS::Action::Target& target, const cv::Rect& box)
 {
-    if (!tasker_) {
+    if (!tasker()) {
         LogError << "Tasker is null";
         return { };
     }
@@ -100,13 +108,28 @@ cv::Rect ActionHelper::get_target_rect(const MAA_RES_NS::Action::Target& target,
         break;
 
     case Target::Type::PreTask: {
-        auto& cache = tasker_->runtime_cache();
-        std::string name = std::get<std::string>(target.param);
-        MaaNodeId node_id = cache.get_latest_node(name).value_or(MaaInvalidId);
-        NodeDetail node_detail = cache.get_node_detail(node_id).value_or(NodeDetail { });
-        RecoResult reco_result = cache.get_reco_result(node_detail.reco_id).value_or(RecoResult { });
-        raw = reco_result.box.value_or(cv::Rect { });
+        const auto& name = std::get<std::string>(target.param);
+        raw = get_rect_from_node(name);
+        if (raw.empty()) {
+            LogWarn << "pre task has no rect" << VAR(name);
+            return { };
+        }
         LogDebug << "pre task" << VAR(name) << VAR(raw);
+    } break;
+
+    case Target::Type::Anchor: {
+        const auto& anchor_name = std::get<std::string>(target.param);
+        auto node_name = context_->get_anchor(anchor_name);
+        if (!node_name) {
+            LogWarn << "anchor not set" << VAR(anchor_name);
+            return { };
+        }
+        raw = get_rect_from_node(*node_name);
+        if (raw.empty()) {
+            LogWarn << "anchor node has no rect" << VAR(anchor_name) << VAR(*node_name);
+            return { };
+        }
+        LogDebug << "anchor" << VAR(anchor_name) << VAR(*node_name) << VAR(raw);
     } break;
 
     case Target::Type::Region:
@@ -143,9 +166,33 @@ cv::Rect ActionHelper::get_target_rect(const MAA_RES_NS::Action::Target& target,
     return cv::Rect(x, y, width, height);
 }
 
+cv::Rect ActionHelper::get_rect_from_node(const std::string& node_name) const
+{
+    auto* t = tasker();
+    if (!t) {
+        return { };
+    }
+
+    auto& cache = t->runtime_cache();
+    auto node_id = cache.get_latest_node(node_name);
+    if (!node_id) {
+        LogWarn << "node not found or not executed" << VAR(node_name);
+        return { };
+    }
+    NodeDetail node_detail = cache.get_node_detail(*node_id).value_or(NodeDetail { });
+    RecoResult reco_result = cache.get_reco_result(node_detail.reco_id).value_or(RecoResult { });
+    return reco_result.box.value_or(cv::Rect { });
+}
+
+Tasker* ActionHelper::tasker() const
+{
+    return context_ ? context_->tasker() : nullptr;
+}
+
 MAA_CTRL_NS::ControllerAgent* ActionHelper::controller()
 {
-    return tasker_ ? tasker_->controller() : nullptr;
+    auto* t = tasker();
+    return t ? t->controller() : nullptr;
 }
 
 MAA_TASK_NS_END

@@ -203,6 +203,9 @@ bool AgentClient::disconnect()
     LogFunc << VAR(ipc_addr_);
 
     clear_custom_registration();
+    clear_controller_sink();
+    clear_resource_sink();
+    clear_tasker_sink();
 
     if (!connected()) {
         return true;

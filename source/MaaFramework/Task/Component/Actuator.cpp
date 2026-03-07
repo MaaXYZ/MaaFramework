@@ -17,7 +17,7 @@ std::mt19937 Actuator::rand_engine_(std::random_device { }());
 Actuator::Actuator(Tasker* tasker, Context& context)
     : tasker_(tasker)
     , context_(context)
-    , helper_(tasker)
+    , helper_(&context)
 {
 }
 
@@ -36,110 +36,101 @@ ActionResult Actuator::run(const cv::Rect& reco_hit, MaaRecoId reco_id, const Pi
         return { };
     }
 
-    wait_freezes(pipeline_data.pre_wait_freezes, reco_hit, pipeline_data.name);
-    sleep(pipeline_data.pre_delay);
-
-    auto& rt_cache = tasker_->runtime_cache();
     ActionResult result;
-
-    for (uint i = 0; i < pipeline_data.repeat; ++i) {
-        if (i > 0) {
-            wait_freezes(pipeline_data.repeat_wait_freezes, reco_hit, pipeline_data.name);
-            sleep(pipeline_data.repeat_delay);
-        }
-
-        if (context_.need_to_stop()) {
-            return { };
-        }
-
-        result = execute_action(reco_hit, reco_id, pipeline_data, entry);
-        LogInfo << "action" << VAR(i) << VAR(pipeline_data.repeat) << VAR(result);
-        rt_cache.set_action_detail(result.action_id, result);
-
-        if (context_.need_to_stop()) {
-            return { };
-        }
-    }
-
-    wait_freezes(pipeline_data.post_wait_freezes, reco_hit, pipeline_data.name);
-    sleep(pipeline_data.post_delay);
-
-    return result;
-}
-
-ActionResult
-    Actuator::execute_action(const cv::Rect& reco_hit, MaaRecoId reco_id, const PipelineData& pipeline_data, const std::string& entry)
-{
-    using namespace MAA_RES_NS::Action;
 
     switch (pipeline_data.action_type) {
     case Type::DoNothing:
-        return do_nothing(pipeline_data.name);
+        result = do_nothing(pipeline_data.name);
+        break;
 
     case Type::Click:
-        return click(std::get<ClickParam>(pipeline_data.action_param), reco_hit, pipeline_data.name);
+        result = click(std::get<ClickParam>(pipeline_data.action_param), reco_hit, pipeline_data.name);
+        break;
 
     case Type::LongPress:
-        return long_press(std::get<LongPressParam>(pipeline_data.action_param), reco_hit, pipeline_data.name);
+        result = long_press(std::get<LongPressParam>(pipeline_data.action_param), reco_hit, pipeline_data.name);
+        break;
 
     case Type::Swipe:
-        return swipe(std::get<SwipeParam>(pipeline_data.action_param), reco_hit, pipeline_data.name);
+        result = swipe(std::get<SwipeParam>(pipeline_data.action_param), reco_hit, pipeline_data.name);
+        break;
 
     case Type::MultiSwipe:
-        return multi_swipe(std::get<MultiSwipeParam>(pipeline_data.action_param), reco_hit, pipeline_data.name);
+        result = multi_swipe(std::get<MultiSwipeParam>(pipeline_data.action_param), reco_hit, pipeline_data.name);
+        break;
 
     case Type::TouchDown:
-        return touch_down(std::get<TouchParam>(pipeline_data.action_param), reco_hit, pipeline_data.name);
+        result = touch_down(std::get<TouchParam>(pipeline_data.action_param), reco_hit, pipeline_data.name);
+        break;
 
     case Type::TouchMove:
-        return touch_move(std::get<TouchParam>(pipeline_data.action_param), reco_hit, pipeline_data.name);
+        result = touch_move(std::get<TouchParam>(pipeline_data.action_param), reco_hit, pipeline_data.name);
+        break;
 
     case Type::TouchUp:
-        return touch_up(std::get<TouchUpParam>(pipeline_data.action_param), pipeline_data.name);
+        result = touch_up(std::get<TouchUpParam>(pipeline_data.action_param), pipeline_data.name);
+        break;
 
     case Type::ClickKey:
-        return click_key(std::get<ClickKeyParam>(pipeline_data.action_param), pipeline_data.name);
+        result = click_key(std::get<ClickKeyParam>(pipeline_data.action_param), pipeline_data.name);
+        break;
 
     case Type::LongPressKey:
-        return long_press_key(std::get<LongPressKeyParam>(pipeline_data.action_param), pipeline_data.name);
+        result = long_press_key(std::get<LongPressKeyParam>(pipeline_data.action_param), pipeline_data.name);
+        break;
 
     case Type::KeyDown:
-        return key_down(std::get<KeyParam>(pipeline_data.action_param), pipeline_data.name);
+        result = key_down(std::get<KeyParam>(pipeline_data.action_param), pipeline_data.name);
+        break;
 
     case Type::KeyUp:
-        return key_up(std::get<KeyParam>(pipeline_data.action_param), pipeline_data.name);
+        result = key_up(std::get<KeyParam>(pipeline_data.action_param), pipeline_data.name);
+        break;
 
     case Type::InputText:
-        return input_text(std::get<InputTextParam>(pipeline_data.action_param), pipeline_data.name);
+        result = input_text(std::get<InputTextParam>(pipeline_data.action_param), pipeline_data.name);
+        break;
 
     case Type::StartApp:
-        return start_app(std::get<AppParam>(pipeline_data.action_param), pipeline_data.name);
+        result = start_app(std::get<AppParam>(pipeline_data.action_param), pipeline_data.name);
+        break;
 
     case Type::StopApp:
-        return stop_app(std::get<AppParam>(pipeline_data.action_param), pipeline_data.name);
+        result = stop_app(std::get<AppParam>(pipeline_data.action_param), pipeline_data.name);
+        break;
 
     case Type::Scroll:
-        return scroll(std::get<ScrollParam>(pipeline_data.action_param), reco_hit, pipeline_data.name);
+        result = scroll(std::get<ScrollParam>(pipeline_data.action_param), reco_hit, pipeline_data.name);
+        break;
 
     case Type::StopTask:
-        return stop_task(pipeline_data.name);
+        result = stop_task(pipeline_data.name);
+        break;
 
     case Type::Command:
-        return command(std::get<CommandParam>(pipeline_data.action_param), reco_hit, pipeline_data.name, entry);
+        result = command(std::get<CommandParam>(pipeline_data.action_param), reco_hit, pipeline_data.name, entry);
+        break;
 
     case Type::Shell:
-        return shell(std::get<ShellParam>(pipeline_data.action_param), pipeline_data.name);
+        result = shell(std::get<ShellParam>(pipeline_data.action_param), pipeline_data.name);
+        break;
 
     case Type::Screencap:
-        return screencap(std::get<ScreencapParam>(pipeline_data.action_param), pipeline_data.name);
+        result = screencap(std::get<ScreencapParam>(pipeline_data.action_param), pipeline_data.name);
+        break;
 
     case Type::Custom:
-        return custom_action(std::get<CustomParam>(pipeline_data.action_param), reco_hit, reco_id, pipeline_data.name);
+        result = custom_action(std::get<CustomParam>(pipeline_data.action_param), reco_hit, reco_id, pipeline_data.name);
+        break;
 
     default:
         LogError << "Unknown action" << VAR(static_cast<int>(pipeline_data.action_type));
         return { };
     }
+
+    tasker_->runtime_cache().set_action_detail(result.action_id, result);
+
+    return result;
 }
 
 cv::Point Actuator::rand_point(const cv::Rect& r)
@@ -182,7 +173,12 @@ ActionResult Actuator::click(const MAA_RES_NS::Action::ClickParam& param, const 
         return { };
     }
 
-    cv::Point point = rand_point(helper_.get_target_rect(param.target, box));
+    auto target_rect = helper_.get_target_rect(param.target, box);
+    if (target_rect.empty()) {
+        LogError << "failed to get target rect" << VAR(name);
+        return { };
+    }
+    cv::Point point = rand_point(target_rect);
     MAA_CTRL_NS::ClickParam ctrl_param { .point = point, .contact = static_cast<int>(param.contact) };
     bool ret = controller()->click(ctrl_param);
 
@@ -203,7 +199,12 @@ ActionResult Actuator::long_press(const MAA_RES_NS::Action::LongPressParam& para
         return { };
     }
 
-    cv::Point point = rand_point(helper_.get_target_rect(param.target, box));
+    auto target_rect = helper_.get_target_rect(param.target, box);
+    if (target_rect.empty()) {
+        LogError << "failed to get target rect" << VAR(name);
+        return { };
+    }
+    cv::Point point = rand_point(target_rect);
     MAA_CTRL_NS::LongPressParam ctrl_param { .point = point, .duration = param.duration, .contact = static_cast<int>(param.contact) };
     bool ret = controller()->long_press(ctrl_param);
 
@@ -224,7 +225,12 @@ ActionResult Actuator::swipe(const MAA_RES_NS::Action::SwipeParam& param, const 
         return { };
     }
 
-    cv::Point begin = rand_point(helper_.get_target_rect(param.begin, box));
+    auto begin_rect = helper_.get_target_rect(param.begin, box);
+    if (begin_rect.empty()) {
+        LogError << "failed to get swipe begin rect" << VAR(name);
+        return { };
+    }
+    cv::Point begin = rand_point(begin_rect);
 
     std::vector<cv::Point> end;
     for (size_t i = 0; i < param.end.size(); ++i) {
@@ -233,8 +239,12 @@ ActionResult Actuator::swipe(const MAA_RES_NS::Action::SwipeParam& param, const 
                               : i < param.end_offset.size() ? param.end_offset.at(i)
                                                             : param.end_offset.back();
         MAA_RES_NS::Action::Target end_target { .type = e.type, .param = e.param, .offset = end_offset };
-        cv::Point p = rand_point(helper_.get_target_rect(end_target, box));
-        end.emplace_back(p);
+        auto end_rect = helper_.get_target_rect(end_target, box);
+        if (end_rect.empty()) {
+            LogError << "failed to get swipe end rect" << VAR(name) << VAR(i);
+            return { };
+        }
+        end.emplace_back(rand_point(end_rect));
     }
 
     MAA_CTRL_NS::SwipeParam ctrl_param { .begin = begin,
@@ -265,7 +275,12 @@ ActionResult Actuator::multi_swipe(const MAA_RES_NS::Action::MultiSwipeParam& pa
 
     std::vector<MAA_CTRL_NS::SwipeParam> swipes;
     for (const auto& swipe : param.swipes) {
-        cv::Point begin = rand_point(helper_.get_target_rect(swipe.begin, box));
+        auto swipe_begin_rect = helper_.get_target_rect(swipe.begin, box);
+        if (swipe_begin_rect.empty()) {
+            LogError << "failed to get multi_swipe begin rect" << VAR(name);
+            return { };
+        }
+        cv::Point begin = rand_point(swipe_begin_rect);
 
         std::vector<cv::Point> end;
         for (size_t i = 0; i < swipe.end.size(); ++i) {
@@ -274,8 +289,12 @@ ActionResult Actuator::multi_swipe(const MAA_RES_NS::Action::MultiSwipeParam& pa
                                   : i < swipe.end_offset.size() ? swipe.end_offset.at(i)
                                                                 : swipe.end_offset.back();
             MAA_RES_NS::Action::Target end_target { .type = e.type, .param = e.param, .offset = end_offset };
-            cv::Point p = rand_point(helper_.get_target_rect(end_target, box));
-            end.emplace_back(p);
+            auto swipe_end_rect = helper_.get_target_rect(end_target, box);
+            if (swipe_end_rect.empty()) {
+                LogError << "failed to get multi_swipe end rect" << VAR(name) << VAR(i);
+                return { };
+            }
+            end.emplace_back(rand_point(swipe_end_rect));
         }
         swipes.push_back(
             { .begin = begin,
@@ -307,7 +326,12 @@ ActionResult Actuator::touch_down(const MAA_RES_NS::Action::TouchParam& param, c
         return { };
     }
 
-    cv::Point point = rand_point(helper_.get_target_rect(param.target, box));
+    auto target_rect = helper_.get_target_rect(param.target, box);
+    if (target_rect.empty()) {
+        LogError << "failed to get target rect" << VAR(name);
+        return { };
+    }
+    cv::Point point = rand_point(target_rect);
     MAA_CTRL_NS::TouchParam ctrl_param { .contact = static_cast<int>(param.contact), .point = point, .pressure = param.pressure };
     bool ret = controller()->touch_down(ctrl_param);
 
@@ -328,7 +352,12 @@ ActionResult Actuator::touch_move(const MAA_RES_NS::Action::TouchParam& param, c
         return { };
     }
 
-    cv::Point point = rand_point(helper_.get_target_rect(param.target, box));
+    auto target_rect = helper_.get_target_rect(param.target, box);
+    if (target_rect.empty()) {
+        LogError << "failed to get target rect" << VAR(name);
+        return { };
+    }
+    cv::Point point = rand_point(target_rect);
     MAA_CTRL_NS::TouchParam ctrl_param { .contact = static_cast<int>(param.contact), .point = point, .pressure = param.pressure };
     bool ret = controller()->touch_move(ctrl_param);
 
@@ -469,7 +498,12 @@ ActionResult Actuator::scroll(const MAA_RES_NS::Action::ScrollParam& param, cons
         return { };
     }
 
-    cv::Point point = rand_point(helper_.get_target_rect(param.target, box));
+    auto target_rect = helper_.get_target_rect(param.target, box);
+    if (target_rect.empty()) {
+        LogError << "failed to get target rect" << VAR(name);
+        return { };
+    }
+    cv::Point point = rand_point(target_rect);
     MAA_CTRL_NS::ScrollParam ctrl_param { .point = point, .dx = param.dx, .dy = param.dy };
     bool ret = controller()->scroll(ctrl_param);
 
@@ -559,16 +593,6 @@ ActionResult Actuator::screencap(const MAA_RES_NS::Action::ScreencapParam& param
     };
 }
 
-void Actuator::wait_freezes(const MAA_RES_NS::WaitFreezesParam& param, const cv::Rect& box, const std::string& name)
-{
-    if (param.time <= std::chrono::milliseconds(0)) {
-        return;
-    }
-
-    cv::Rect roi = helper_.get_target_rect(param.target, box);
-    helper_.wait_freezes(param, roi, name);
-}
-
 ActionResult Actuator::start_app(const MAA_RES_NS::Action::AppParam& param, const std::string& name)
 {
     if (!controller()) {
@@ -653,7 +677,11 @@ ActionResult
         return { };
     }
     auto session = tasker_->resource()->custom_action(param.name);
-    cv::Rect rect = helper_.get_target_rect(param.target, box);
+    auto rect = helper_.get_target_rect(param.target, box);
+    if (rect.empty()) {
+        LogError << "failed to get target rect" << VAR(name);
+        return { };
+    }
     bool ret = CustomAction::run(context_, name, session, param, reco_id, rect);
 
     return ActionResult {
@@ -696,18 +724,6 @@ ActionResult Actuator::stop_task(const std::string& name)
 MAA_CTRL_NS::ControllerAgent* Actuator::controller()
 {
     return tasker_ ? tasker_->controller() : nullptr;
-}
-
-void Actuator::sleep(unsigned ms) const
-{
-    sleep(std::chrono::milliseconds(ms));
-}
-
-void Actuator::sleep(std::chrono::milliseconds ms) const
-{
-    LogDebug << ms;
-
-    std::this_thread::sleep_for(ms);
 }
 
 MAA_TASK_NS_END
