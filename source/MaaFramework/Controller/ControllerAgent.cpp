@@ -718,7 +718,7 @@ bool ControllerAgent::handle_relative_move(const RelativeMoveParam& param)
 
     LogTrace << "handle_relative_move" << VAR(param.dx) << VAR(param.dy);
 
-    bool ret = control_unit_->relative_move(param.dx, param.dy);
+    bool ret = win32_unit->relative_move(param.dx, param.dy);
 
     return ret;
 }
