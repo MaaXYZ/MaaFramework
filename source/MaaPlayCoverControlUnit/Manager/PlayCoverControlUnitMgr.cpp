@@ -224,14 +224,6 @@ bool PlayCoverControlUnitMgr::key_up(int key)
     return false;
 }
 
-bool PlayCoverControlUnitMgr::scroll(int dx, int dy)
-{
-    LogWarn << "scroll is not supported on PlayCover" << VAR(dx) << VAR(dy);
-    std::ignore = dx;
-    std::ignore = dy;
-    return false;
-}
-
 bool PlayCoverControlUnitMgr::inactive()
 {
     return true;

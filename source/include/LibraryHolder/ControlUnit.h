@@ -12,6 +12,7 @@ MAA_CTRL_UNIT_NS_BEGIN
 class ControlUnitAPI;
 class AdbControlUnitAPI;
 class Win32ControlUnitAPI;
+class GamepadControlUnitAPI;
 class CustomControlUnitAPI;
 class WlRootsControlUnitAPI;
 MAA_CTRL_UNIT_NS_END
@@ -67,7 +68,7 @@ private:
 class CustomControlUnitLibraryHolder : public LibraryHolder<CustomControlUnitLibraryHolder>
 {
 public:
-    static std::shared_ptr<MAA_CTRL_UNIT_NS::ControlUnitAPI>
+    static std::shared_ptr<MAA_CTRL_UNIT_NS::CustomControlUnitAPI>
         create_control_unit(MaaCustomControllerCallbacks* controller, void* controller_arg);
 
 private:
@@ -92,7 +93,7 @@ private:
 class GamepadControlUnitLibraryHolder : public LibraryHolder<GamepadControlUnitLibraryHolder>
 {
 public:
-    static std::shared_ptr<MAA_CTRL_UNIT_NS::Win32ControlUnitAPI>
+    static std::shared_ptr<MAA_CTRL_UNIT_NS::GamepadControlUnitAPI>
         create_control_unit(void* hWnd, MaaGamepadType gamepad_type, MaaWin32ScreencapMethod screencap_method);
 
 private:

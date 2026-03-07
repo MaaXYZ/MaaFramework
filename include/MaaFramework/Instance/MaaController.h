@@ -171,7 +171,7 @@ extern "C"
      * @param dy The vertical scroll delta. Positive values scroll up, negative values scroll down.
      * @return The control id of the scroll action.
      *
-     * @note Not all controllers support scroll. If not supported, the action will fail.
+     * @note Scroll is supported by Win32 controllers and custom controllers that implement scroll.
      * @note The dx/dy values are sent directly as scroll increments. Using multiples of 120 (WHEEL_DELTA) is
      * recommended for best compatibility.
      */

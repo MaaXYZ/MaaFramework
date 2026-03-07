@@ -334,7 +334,13 @@ bool Win32ControlUnitMgr::relative_move(int dx, int dy)
         return false;
     }
 
-    return mouse_->relative_move(dx, dy);
+    auto relative_move_input = std::dynamic_pointer_cast<RelativeMoveInput>(mouse_);
+    if (!relative_move_input) {
+        LogError << "relative_move is not supported by the current Win32 input method";
+        return false;
+    }
+
+    return relative_move_input->relative_move(dx, dy);
 }
 
 bool Win32ControlUnitMgr::click_key(int key)

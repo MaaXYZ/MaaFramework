@@ -262,12 +262,6 @@ bool AdbControlUnitMgr::key_up(int key)
     return input_->key_up(key);
 }
 
-bool AdbControlUnitMgr::scroll(int dx, int dy)
-{
-    LogError << "Scroll is not supported on Adb controller" << VAR(dx) << VAR(dy);
-    return false;
-}
-
 bool AdbControlUnitMgr::inactive()
 {
     return true;
