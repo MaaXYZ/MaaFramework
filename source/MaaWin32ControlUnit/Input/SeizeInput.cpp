@@ -152,6 +152,31 @@ bool SeizeInput::touch_up(int contact)
     return true;
 }
 
+bool SeizeInput::relative_move(int dx, int dy)
+{
+    if (dx == 0 && dy == 0) {
+        return true;
+    }
+
+    if (hwnd_) {
+        ensure_foreground();
+    }
+
+    LogInfo << VAR(dx) << VAR(dy) << VAR_VOIDP(hwnd_);
+
+    check_and_block_input();
+
+    OnScopeLeave([this]() { unblock_input(); });
+
+    INPUT input = { };
+    input.type = INPUT_MOUSE;
+    input.mi.dx = dx;
+    input.mi.dy = dy;
+    input.mi.dwFlags = MOUSEEVENTF_MOVE;
+
+    return SendInput(1, &input, sizeof(INPUT)) == 1;
+}
+
 // get_features() 返回 MaaControllerFeature_UseKeyboardDownAndUpInsteadOfClick，
 // 上层 ControllerAgent 会使用 key_down/key_up 替代 click_key
 bool SeizeInput::click_key(int key)

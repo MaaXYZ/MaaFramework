@@ -327,6 +327,16 @@ bool Win32ControlUnitMgr::touch_up(int contact)
     return mouse_->touch_up(contact);
 }
 
+bool Win32ControlUnitMgr::relative_move(int dx, int dy)
+{
+    if (!mouse_) {
+        LogError << "mouse_ is null";
+        return false;
+    }
+
+    return mouse_->relative_move(dx, dy);
+}
+
 bool Win32ControlUnitMgr::click_key(int key)
 {
     if (!keyboard_) {

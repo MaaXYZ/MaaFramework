@@ -239,6 +239,21 @@ class Controller:
         ctrl_id = Library.framework().MaaControllerPostTouchUp(self._handle, contact)
         return self._gen_ctrl_job(ctrl_id)
 
+    def post_relative_move(self, dx: int, dy: int) -> Job:
+        """异步执行一次相对位移 (当前仅 Win32 controller 支持) / Asynchronously execute a relative movement (Currently only supported by Win32 controller)
+
+        Args:
+            dx: x 方向移动偏移 / x axis offset
+            dy: y 方向移动偏移 / y axis offset
+
+        Returns:
+            Job: 作业对象 / Job object
+        """
+        ctrl_id = Library.framework().MaaControllerPostRelativeMove(
+            self._handle, dx, dy
+        )
+        return self._gen_ctrl_job(ctrl_id)
+
     def post_scroll(self, dx: int, dy: int) -> Job:
         """滚动 / Scroll
 
@@ -649,6 +664,13 @@ class Controller:
         Library.framework().MaaControllerPostTouchUp.restype = MaaCtrlId
         Library.framework().MaaControllerPostTouchUp.argtypes = [
             MaaControllerHandle,
+            c_int32,
+        ]
+
+        Library.framework().MaaControllerPostRelativeMove.restype = MaaCtrlId
+        Library.framework().MaaControllerPostRelativeMove.argtypes = [
+            MaaControllerHandle,
+            c_int32,
             c_int32,
         ]
 

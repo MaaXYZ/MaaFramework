@@ -127,6 +127,13 @@ MaaCtrlId ControllerAgent::post_touch_up(int contact)
     return focus_id(id);
 }
 
+MaaCtrlId ControllerAgent::post_relative_move(int dx, int dy)
+{
+    RelativeMoveParam p { .dx = dx, .dy = dy };
+    auto id = post({ .type = Action::Type::relative_move, .param = std::move(p) });
+    return focus_id(id);
+}
+
 MaaCtrlId ControllerAgent::post_key_down(int keycode)
 {
     ClickKeyParam p { .keycode = { keycode } };
@@ -298,6 +305,12 @@ bool ControllerAgent::touch_move(TouchParam p)
 bool ControllerAgent::touch_up(TouchParam p)
 {
     auto id = post({ .type = Action::Type::touch_up, .param = std::move(p) });
+    return wait(id) == MaaStatus_Succeeded;
+}
+
+bool ControllerAgent::relative_move(RelativeMoveParam p)
+{
+    auto id = post({ .type = Action::Type::relative_move, .param = std::move(p) });
     return wait(id) == MaaStatus_Succeeded;
 }
 
@@ -690,6 +703,24 @@ bool ControllerAgent::handle_touch_up(const TouchParam& param)
     return ret;
 }
 
+bool ControllerAgent::handle_relative_move(const RelativeMoveParam& param)
+{
+    if (!control_unit_) {
+        LogError << "control_unit_ is nullptr";
+        return false;
+    }
+
+    auto win32_unit = std::dynamic_pointer_cast<MAA_CTRL_UNIT_NS::Win32ControlUnitAPI>(control_unit_);
+    if (!win32_unit) {
+        LogError << "Relative move is only supported for Win32 controllers. Current controller type does not support relative movement.";
+        return false;
+    }
+
+    bool ret = win32_unit->relative_move(param.dx, param.dy);
+
+    return ret;
+}
+
 bool ControllerAgent::handle_click_key(const ClickKeyParam& param)
 {
     if (!control_unit_) {
@@ -972,6 +1003,10 @@ bool ControllerAgent::run_action(typename AsyncRunner<Action>::Id id, Action act
 
     case Action::Type::shell:
         ret = handle_shell(std::get<ShellParam>(action.param));
+        break;
+
+    case Action::Type::relative_move:
+        ret = handle_relative_move(std::get<RelativeMoveParam>(action.param));
         break;
 
     case Action::Type::inactive:

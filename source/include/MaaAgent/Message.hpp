@@ -1384,6 +1384,24 @@ struct ControllerPostTouchMoveReverseResponse
     MEO_JSONIZATION(ctrl_id, _ControllerPostTouchMoveReverseResponse);
 };
 
+struct ControllerPostRelativeMoveReverseRequest
+{
+    std::string controller_id;
+    int32_t dx = 0;
+    int32_t dy = 0;
+
+    MessageTypePlaceholder _ControllerPostRelativeMoveReverseRequest = 1;
+    MEO_JSONIZATION(controller_id, dx, dy, _ControllerPostRelativeMoveReverseRequest);
+};
+
+struct ControllerPostRelativeMoveReverseResponse
+{
+    int64_t ctrl_id = 0;
+
+    MessageTypePlaceholder _ControllerPostRelativeMoveReverseResponse = 1;
+    MEO_JSONIZATION(ctrl_id, _ControllerPostRelativeMoveReverseResponse);
+};
+
 struct ControllerPostTouchUpReverseRequest
 {
     std::string controller_id;

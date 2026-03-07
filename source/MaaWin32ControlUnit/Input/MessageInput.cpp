@@ -487,6 +487,13 @@ bool MessageInput::swipe(int x1, int y1, int x2, int y2, int duration)
     return false;
 }
 
+bool MessageInput::relative_move(int dx, int dy)
+{
+    LogError << "relative_move not supported" << VAR(config_.mode) << VAR(config_.with_cursor_pos) << VAR(config_.with_window_pos)
+             << VAR(dx) << VAR(dy);
+    return false;
+}
+
 bool MessageInput::touch_down(int contact, int x, int y, int pressure)
 {
     LogInfo << VAR(config_.mode) << VAR(config_.with_cursor_pos) << VAR(config_.with_window_pos) << VAR(contact) << VAR(x) << VAR(y)

@@ -197,6 +197,12 @@ maajs::ValueType ControllerImpl::post_touch_up(maajs::ValueType self, maajs::Env
     return maajs::CallCtorHelper(ExtContext::get(env)->jobCtor, self, id);
 }
 
+maajs::ValueType ControllerImpl::post_relative_move(maajs::ValueType self, maajs::EnvType, int32_t dx, int32_t dy)
+{
+    auto id = MaaControllerPostRelativeMove(controller, dx, dy);
+    return maajs::CallCtorHelper(ExtContext::get(env)->jobCtor, self, id);
+}
+
 maajs::ValueType ControllerImpl::post_key_down(maajs::ValueType self, maajs::EnvType, int32_t keycode)
 {
     auto id = MaaControllerPostKeyDown(controller, keycode);
@@ -341,6 +347,7 @@ void ControllerImpl::init_proto(maajs::ObjectType proto, maajs::FunctionType)
     MAA_BIND_FUNC(proto, "post_touch_down", ControllerImpl::post_touch_down);
     MAA_BIND_FUNC(proto, "post_touch_move", ControllerImpl::post_touch_move);
     MAA_BIND_FUNC(proto, "post_touch_up", ControllerImpl::post_touch_up);
+    MAA_BIND_FUNC(proto, "post_relative_move", ControllerImpl::post_relative_move);
     MAA_BIND_FUNC(proto, "post_key_down", ControllerImpl::post_key_down);
     MAA_BIND_FUNC(proto, "post_key_up", ControllerImpl::post_key_up);
     MAA_BIND_FUNC(proto, "post_scroll", ControllerImpl::post_scroll);

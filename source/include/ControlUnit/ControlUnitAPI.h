@@ -62,6 +62,8 @@ class Win32ControlUnitAPI : public ControlUnitAPI
 {
 public:
     virtual ~Win32ControlUnitAPI() = default;
+
+    virtual bool relative_move(int dx, int dy) = 0;
 };
 
 MAA_CTRL_UNIT_NS_END

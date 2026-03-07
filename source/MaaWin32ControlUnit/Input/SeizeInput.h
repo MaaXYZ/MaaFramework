@@ -30,6 +30,8 @@ public: // from InputBase
     virtual bool touch_move(int contact, int x, int y, int pressure) override;
     virtual bool touch_up(int contact) override;
 
+    virtual bool relative_move(int dx, int dy) override;
+
     virtual bool click_key(int key) override;
     virtual bool input_text(const std::string& text) override;
 
