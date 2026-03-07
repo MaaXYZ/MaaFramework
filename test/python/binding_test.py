@@ -653,11 +653,6 @@ class MyController(CustomController):
         self.count += 1
         return True
 
-    def relative_move(self, dx: int, dy: int) -> bool:
-        print(f"  on MyController.relative_move: {dx}, {dy}")
-        self.count += 1
-        return True
-
     def click_key(self, keycode: int) -> bool:
         print(f"  on MyController.click_key: {keycode}")
         self.count += 1

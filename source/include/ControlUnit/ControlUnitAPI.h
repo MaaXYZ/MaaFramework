@@ -43,8 +43,6 @@ public:
 
     virtual bool scroll(int dx, int dy) = 0;
 
-    virtual bool relative_move(int dx, int dy) { std::ignore = dx; std::ignore = dy; return false; }
-
     virtual bool inactive() = 0;
 
     virtual json::object get_info() const = 0;
@@ -64,6 +62,8 @@ class Win32ControlUnitAPI : public ControlUnitAPI
 {
 public:
     virtual ~Win32ControlUnitAPI() = default;
+
+    virtual bool relative_move(int dx, int dy) = 0;
 };
 
 MAA_CTRL_UNIT_NS_END

@@ -1134,10 +1134,6 @@ class CustomController(Controller):
         raise NotImplementedError
 
     @abstractmethod
-    def relative_move(self, dx: int, dy: int) -> bool:
-        raise NotImplementedError
-
-    @abstractmethod
     def click_key(self, keycode: int) -> bool:
         raise NotImplementedError
 
@@ -1379,23 +1375,6 @@ class CustomController(Controller):
         ).value
 
         return int(self.touch_up(int(c_contact)))
-
-    @staticmethod
-    @MaaCustomControllerCallbacks.RelativeMoveFunc
-    def _c_relative_move_agent(
-        c_dx: ctypes.c_int32,
-        c_dy: ctypes.c_int32,
-        trans_arg: ctypes.c_void_p,
-    ) -> int:
-        if not trans_arg:
-            return int(False)
-
-        self: CustomController = ctypes.cast(
-            trans_arg,
-            ctypes.py_object,
-        ).value
-
-        return int(self.relative_move(int(c_dx), int(c_dy)))
 
     @staticmethod
     @MaaCustomControllerCallbacks.ClickKeyFunc

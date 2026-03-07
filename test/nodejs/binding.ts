@@ -295,11 +295,6 @@ class MyController implements maa.CustomControllerActor {
         this.count += 1
         return true
     }
-    relative_move(dx: number, dy: number): maa.MaybePromise<boolean> {
-        console.log('on MyController.relative_move, dx', dx, 'dy', dy)
-        this.count += 1
-        return true
-    }
     click_key(keycode: number): maa.MaybePromise<boolean> {
         console.log('on MyController.click_key, keycode', keycode)
         this.count += 1

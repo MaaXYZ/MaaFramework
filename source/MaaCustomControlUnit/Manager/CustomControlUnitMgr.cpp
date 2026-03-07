@@ -165,17 +165,6 @@ bool CustomControlUnitMgr::touch_up(int contact)
     return controller_->touch_up(contact, controller_arg_);
 }
 
-bool CustomControlUnitMgr::relative_move(int dx, int dy)
-{
-    if (!controller_ || !controller_->relative_move) {
-        LogError << "controller_ or controller_->relative_move is nullptr";
-        return false;
-    }
-
-    LogFunc << VAR_VOIDP(controller_) << VAR_VOIDP(controller_->relative_move) << VAR(dx) << VAR(dy);
-    return controller_->relative_move(dx, dy, controller_arg_);
-}
-
 bool CustomControlUnitMgr::click_key(int key)
 {
     if (!controller_ || !controller_->click_key) {

@@ -40,7 +40,6 @@ MaaBool CustomSwipe(int32_t x1, int32_t y1, int32_t x2, int32_t y2, int32_t dura
 MaaBool CustomTouchDown(int32_t contact, int32_t x, int32_t y, int32_t pressure, void* trans_arg);
 MaaBool CustomTouchMove(int32_t contact, int32_t x, int32_t y, int32_t pressure, void* trans_arg);
 MaaBool CustomTouchUp(int32_t contact, void* trans_arg);
-MaaBool CustomRelativeMove(int32_t dx, int32_t dy, void* trans_arg);
 MaaBool CustomClickKey(int32_t keycode, void* trans_arg);
 MaaBool CustomInputText(const char* text, void* trans_arg);
 MaaBool CustomKeyDown(int32_t keycode, void* trans_arg);
@@ -62,7 +61,6 @@ inline MaaCustomControllerCallbacks CustomCallbacks {
     .touch_down = CustomTouchDown,
     .touch_move = CustomTouchMove,
     .touch_up = CustomTouchUp,
-    .relative_move = CustomRelativeMove,
     .click_key = CustomClickKey,
     .input_text = CustomInputText,
     .key_down = CustomKeyDown,

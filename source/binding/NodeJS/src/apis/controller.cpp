@@ -709,7 +709,6 @@ CustomControllerImpl* CustomControllerImpl::ctor(const maajs::CallbackInfo& info
     context->add_bind(info.Env(), "touch_down", "CustomTouchDown", 4, actor, ret_false);
     context->add_bind(info.Env(), "touch_move", "CustomTouchMove", 4, actor, ret_false);
     context->add_bind(info.Env(), "touch_up", "CustomTouchUp", 1, actor, ret_false);
-    context->add_bind(info.Env(), "relative_move", "CustomRelativeMove", 2, actor, ret_false);
     context->add_bind(info.Env(), "click_key", "CustomClickKey", 1, actor, ret_false);
     context->add_bind(info.Env(), "input_text", "CustomInputText", 1, actor, ret_false);
     context->add_bind(info.Env(), "key_down", "CustomKeyDown", 1, actor, ret_false);
