@@ -100,7 +100,7 @@ It offers low-code simplicity while maintaining high extensibility. The framewor
 - [MaaLogs](https://github.com/amiliyaai/MaaLogs) ![TypeScript](https://img.shields.io/badge/Typescript-8A2BE2?logo=typescript) ![license](https://img.shields.io/github/license/amiliyaai/MaaLogs) ![activity](https://img.shields.io/github/commit-activity/m/amiliyaai/MaaLogs?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/amiliyaai/MaaLogs?style=social)  
     MaaFramework log analysis tool that supports multi-project log parsing, visual task processes, and AI intelligent analysis.
 
-- [prettier-plugin-maafw-sort](https://www.npmjs.com/package/@nekosu/prettier-plugin-maafw-sort) ![TypeScript](https://img.shields.io/badge/Typescript-8A2BE2?logo=typescript)  
+- [prettier-plugin-maafw-sort](https://github.com/neko-para/maa-support-extension) ![TypeScript](https://img.shields.io/badge/Typescript-8A2BE2?logo=typescript) ![license](https://img.shields.io/github/license/neko-para/maa-support-extension) ![activity](https://img.shields.io/github/commit-activity/m/neko-para/maa-support-extension?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/neko-para/maa-support-extension?style=social) [![npm](https://img.shields.io/badge/npm-CB3837?logo=npm)](https://www.npmjs.com/package/@nekosu/prettier-plugin-maafw-sort)  
     Prettier plugin that sorts pipeline keys according to lifecycle order.
 
 ### Application

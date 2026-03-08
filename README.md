@@ -98,7 +98,7 @@ _✨ 基于图像识别的自动化黑盒测试框架 ✨_
 - [MaaLogs](https://github.com/amiliyaai/MaaLogs) ![TypeScript](https://img.shields.io/badge/Typescript-8A2BE2?logo=typescript) ![license](https://img.shields.io/github/license/amiliyaai/MaaLogs) ![activity](https://img.shields.io/github/commit-activity/m/amiliyaai/MaaLogs?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/amiliyaai/MaaLogs?style=social)  
     MaaFramework 日志分析工具，支持多项目日志解析、可视化任务流程和 AI 智能分析
 
-- [prettier-plugin-maafw-sort](https://www.npmjs.com/package/@nekosu/prettier-plugin-maafw-sort) ![TypeScript](https://img.shields.io/badge/Typescript-8A2BE2?logo=typescript)  
+- [prettier-plugin-maafw-sort](https://github.com/neko-para/maa-support-extension) ![TypeScript](https://img.shields.io/badge/Typescript-8A2BE2?logo=typescript) ![license](https://img.shields.io/github/license/neko-para/maa-support-extension) ![activity](https://img.shields.io/github/commit-activity/m/neko-para/maa-support-extension?color=%23ff69b4) ![stars](https://img.shields.io/github/stars/neko-para/maa-support-extension?style=social) [![npm](https://img.shields.io/badge/npm-CB3837?logo=npm)](https://www.npmjs.com/package/@nekosu/prettier-plugin-maafw-sort)  
     Prettier 插件，按照生命周期顺序自动排序 pipeline 字段
 
 ### 应用程序
