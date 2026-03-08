@@ -515,7 +515,7 @@ void MuMuPlayerExtras::disconnect_mumu()
     LogFunc << VAR(mumu_handle_);
 
     if (!disconnect_func_) {
-        LogError << "disconnect_func_ is null";
+        LogWarn << "disconnect_func_ is null";
         return;
     }
 
