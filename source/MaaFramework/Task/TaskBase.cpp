@@ -61,17 +61,6 @@ RecoResult TaskBase::run_recognition(const cv::Mat& image, const PipelineData& d
         return { };
     }
 
-    if (!data.enabled) {
-        LogDebug << "node disabled" << data.name << VAR(data.enabled);
-        return { };
-    }
-
-    size_t current_hit = context_->get_hit_count(data.name);
-    if (current_hit >= static_cast<size_t>(data.max_hit)) {
-        LogDebug << "max_hit reached" << VAR(data.name) << VAR(current_hit) << VAR(data.max_hit);
-        return { };
-    }
-
     Recognizer recognizer(tasker_, *context_, image, std::move(ocr_cache));
 
     json::value cb_detail {
@@ -92,11 +81,6 @@ RecoResult TaskBase::run_recognition(const cv::Mat& image, const PipelineData& d
 
     cb_detail["reco_details"] = result;
     notify(result.box ? MaaMsg_Node_Recognition_Succeeded : MaaMsg_Node_Recognition_Failed, cb_detail);
-
-    if (result.box) {
-        LogInfo << "reco hit" << VAR(result.name) << VAR(result.box);
-        context_->increment_hit_count(data.name);
-    }
 
     return result;
 }
