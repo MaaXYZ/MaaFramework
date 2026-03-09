@@ -659,11 +659,6 @@
                     "title": "图标路径",
                     "description": "分组图标文件路径，相对于项目根目录"
                 },
-                "order": {
-                    "type": "number",
-                    "title": "显示顺序",
-                    "description": "💡 v2.4.0 可选。分组显示顺序，数值越小越靠前；不设置时按 group 数组中的定义顺序展示"
-                },
                 "default_expand": {
                     "type": "boolean",
                     "title": "默认展开",
