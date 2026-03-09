@@ -282,7 +282,18 @@ RecoResult PipelineTask::recognize_list(const cv::Mat& image, const std::vector<
             recognizer.prefetch_batch_ocr(batch_plan->entries);
         }
 
+        size_t current_hit = context_->get_hit_count(pipeline_data.name);
+        if (current_hit >= static_cast<size_t>(pipeline_data.max_hit)) {
+            LogDebug << "max_hit reached" << VAR(pipeline_data.name) << VAR(current_hit) << VAR(pipeline_data.max_hit);
+            continue;
+        }
+
         RecoResult result = run_recognition(image, pipeline_data, ocr_cache);
+
+        if (result.box) {
+            LogInfo << "reco hit" << VAR(result.name) << VAR(result.box);
+            context_->increment_hit_count(pipeline_data.name);
+        }
 
         if (context_->need_to_stop()) {
             LogWarn << "need_to_stop";
@@ -325,6 +336,7 @@ std::optional<PipelineTask::BatchOCRPlan> PipelineTask::prepare_batch_ocr(const 
 
         size_t current_hit = context_->get_hit_count(data.name);
         if (current_hit >= static_cast<size_t>(data.max_hit)) {
+            LogDebug << "max_hit reached" << VAR(data.name) << VAR(current_hit) << VAR(data.max_hit);
             continue;
         }
 
