@@ -61,11 +61,6 @@ RecoResult TaskBase::run_recognition(const cv::Mat& image, const PipelineData& d
         return { };
     }
 
-    if (!data.enabled) {
-        LogDebug << "node disabled" << data.name << VAR(data.enabled);
-        return { };
-    }
-
     Recognizer recognizer(tasker_, *context_, image, std::move(ocr_cache));
 
     json::value cb_detail {
