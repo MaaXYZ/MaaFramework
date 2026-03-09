@@ -633,6 +633,7 @@ class ContextEventSink(EventSink):
         reco_id: int
         name: str
         focus: Any
+        anchor: Optional[str] = None
 
     def on_node_recognition(
         self,

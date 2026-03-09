@@ -52,7 +52,11 @@ MAA_CTRL_NS::ControllerAgent* TaskBase::controller()
     return tasker_ ? tasker_->controller() : nullptr;
 }
 
-RecoResult TaskBase::run_recognition(const cv::Mat& image, const PipelineData& data, std::shared_ptr<MAA_VISION_NS::OCRCache> ocr_cache)
+RecoResult TaskBase::run_recognition(
+    const cv::Mat& image,
+    const PipelineData& data,
+    std::optional<std::string> anchor_name,
+    std::shared_ptr<MAA_VISION_NS::OCRCache> ocr_cache)
 {
     LogFunc << VAR(cur_node_) << VAR(data.name);
 
@@ -80,6 +84,9 @@ RecoResult TaskBase::run_recognition(const cv::Mat& image, const PipelineData& d
         { "name", data.name },
         { "focus", data.focus },
     };
+    if (anchor_name) {
+        cb_detail["anchor"] = *anchor_name;
+    }
 
     notify(MaaMsg_Node_Recognition_Starting, cb_detail);
 
