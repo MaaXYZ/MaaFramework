@@ -393,6 +393,16 @@ bool& Context::need_to_stop()
     return *need_to_stop_;
 }
 
+bool Context::check_hit_count(const PipelineData& data)
+{
+    size_t current_hit = get_hit_count(data.name);
+    if (current_hit >= static_cast<size_t>(data.max_hit)) {
+        LogDebug << "max_hit reached" << VAR(data.name) << VAR(current_hit) << VAR(data.max_hit);
+        return false;
+    }
+    return true;
+}
+
 void Context::increment_hit_count(const std::string& node_name)
 {
     task_state_->hit_count[node_name]++;
