@@ -69,7 +69,7 @@ public:
     std::vector<cv::Mat> get_images(const std::vector<std::string>& names);
 
     bool& need_to_stop();
-    bool check_hit_count(const PipelineData& data, size_t& current_hit);
+    bool check_hit_count(const PipelineData& data);
     void increment_hit_count(const std::string& node_name);
 
 private:

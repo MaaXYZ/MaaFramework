@@ -287,9 +287,7 @@ RecoResult PipelineTask::recognize_list(const cv::Mat& image, const std::vector<
             return { };
         }
 
-        size_t current_hit = 0;
-        if (!context_->check_hit_count(pipeline_data, current_hit)) {
-            LogDebug << "max_hit reached" << VAR(pipeline_data.name) << VAR(current_hit) << VAR(pipeline_data.max_hit);
+        if (!context_->check_hit_count(pipeline_data)) {
             continue;
         }
 
@@ -327,7 +325,6 @@ std::optional<PipelineTask::BatchOCRPlan> PipelineTask::prepare_batch_ocr(const 
     }
 
     OCRCollectContext ctx;
-    size_t current_hit;
 
     for (const auto& node : list) {
         auto data_opt = context_->get_pipeline_data(node);
@@ -340,7 +337,7 @@ std::optional<PipelineTask::BatchOCRPlan> PipelineTask::prepare_batch_ocr(const 
             continue;
         }
 
-        if (!context_->check_hit_count(data, current_hit)) {
+        if (!context_->check_hit_count(data)) {
             continue;
         }
 
