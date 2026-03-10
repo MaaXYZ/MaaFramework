@@ -284,7 +284,7 @@ RecoResult PipelineTask::recognize_list(const cv::Mat& image, const std::vector<
 
         if (!pipeline_data.enabled) {
             LogDebug << "node disabled" << pipeline_data.name << VAR(pipeline_data.enabled);
-            return { };
+            continue;
         }
 
         if (!context_->check_hit_count(pipeline_data)) {
