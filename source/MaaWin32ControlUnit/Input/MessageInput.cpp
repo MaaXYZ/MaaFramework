@@ -18,12 +18,6 @@ MessageInput::MessageInput(HWND hwnd, Config config)
     , config_(config)
 {
     if (config_.with_window_pos) {
-        save_window_pos();
-        auto [target_x, target_y] = get_target_pos();
-        tracking_x_ = target_x;
-        tracking_y_ = target_y;
-        s_active_instance_ = this;
-        tracking_active_ = true;
         tracking_thread_ = std::thread(&MessageInput::tracking_thread_func, this);
     }
 }
@@ -194,6 +188,9 @@ LPARAM MessageInput::prepare_mouse_position(int x, int y)
         std::this_thread::sleep_for(std::chrono::milliseconds(1));
     }
     else if (config_.with_window_pos) {
+        if (!tracking_active_) {
+            save_window_pos();
+        }
         tracking_x_ = x;
         tracking_y_ = y;
         s_active_instance_ = this;
