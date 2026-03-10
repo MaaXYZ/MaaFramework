@@ -30,8 +30,8 @@ int main([[maybe_unused]] int argc, char** argv)
     std::string user_path = "./";
     MaaToolkitConfigInitOption(user_path.c_str(), "{}");
 
-    auto controller_handle = create_adb_controller();
-    // auto controller_handle = create_win32_controller();
+    // auto controller_handle = create_adb_controller();
+    auto controller_handle = create_win32_controller();
     auto ctrl_id = MaaControllerPostConnection(controller_handle);
 
     auto resource_handle = MaaResourceCreate();
@@ -127,7 +127,7 @@ MaaController* create_win32_controller()
         std::string class_name = MaaToolkitDesktopWindowGetClassName(window_handle);
         std::string window_name = MaaToolkitDesktopWindowGetWindowName(window_handle);
 
-        if (window_name.find("二重螺旋") != std::string::npos) {
+        if (window_name.find("Endfiled") != std::string::npos) {
             hwnd = MaaToolkitDesktopWindowGetHandle(window_handle);
             break;
         }

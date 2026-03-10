@@ -18,6 +18,12 @@ MessageInput::MessageInput(HWND hwnd, Config config)
     , config_(config)
 {
     if (config_.with_window_pos) {
+        save_window_pos();
+        auto [target_x, target_y] = get_target_pos();
+        tracking_x_ = target_x;
+        tracking_y_ = target_y;
+        s_active_instance_ = this;
+        tracking_active_ = true;
         tracking_thread_ = std::thread(&MessageInput::tracking_thread_func, this);
     }
 }
@@ -517,13 +523,17 @@ bool MessageInput::touch_down(int contact, int x, int y, int pressure)
 
     check_and_block_input();
 
-    save_pos();
+    if (!config_.with_window_pos) {
+        save_pos();
+    }
 
     // 准备位置并发送 MOVE 消息
     LPARAM lParam = prepare_mouse_position(x, y);
 
     if (!send_or_post_w(move_info.message, move_info.w_param, lParam)) {
-        restore_pos();
+        if (!config_.with_window_pos) {
+            restore_pos();
+        }
         return false;
     }
 
@@ -531,7 +541,9 @@ bool MessageInput::touch_down(int contact, int x, int y, int pressure)
 
     // 发送 DOWN 消息
     if (!send_or_post_w(down_info.message, down_info.w_param, lParam)) {
-        restore_pos();
+        if (!config_.with_window_pos) {
+            restore_pos();
+        }
         return false;
     }
 
@@ -594,12 +606,16 @@ bool MessageInput::touch_up(int contact)
 
     auto target_pos = get_target_pos();
     if (!send_or_post_w(msg_info.message, msg_info.w_param, MAKELPARAM(target_pos.first, target_pos.second))) {
-        restore_pos();
+        if (!config_.with_window_pos) {
+            restore_pos();
+        }
         return false;
     }
 
     // touch_up 时恢复位置（与 touch_down 配对）
-    restore_pos();
+    if (!config_.with_window_pos) {
+        restore_pos();
+    }
 
     return true;
 }
@@ -681,7 +697,9 @@ bool MessageInput::scroll(int dx, int dy)
 
     auto target_pos = get_target_pos();
 
-    save_pos();
+    if (!config_.with_window_pos) {
+        save_pos();
+    }
 
     // prepare_mouse_position 用于移动光标/窗口（副作用），但 WM_MOUSEWHEEL 的 lParam 需要屏幕坐标
     prepare_mouse_position(target_pos.first, target_pos.second);
@@ -700,7 +718,9 @@ bool MessageInput::scroll(int dx, int dy)
         success &= send_or_post_w(WM_MOUSEHWHEEL, wParam, lParam);
     }
 
-    restore_pos();
+    if (!config_.with_window_pos) {
+        restore_pos();
+    }
 
     return success;
 }
