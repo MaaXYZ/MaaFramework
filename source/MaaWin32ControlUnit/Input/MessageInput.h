@@ -68,9 +68,11 @@ private:
     void restore_cursor_pos();
     void save_window_pos();
     void restore_window_pos();
+    void stop_window_tracking();
 
     // 保存/恢复当前模式对应的位置
     void save_pos();
+    void finish_pos();
     void restore_pos();
 
     void check_and_block_input();

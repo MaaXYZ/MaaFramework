@@ -91,6 +91,11 @@ void MessageInput::restore_cursor_pos()
 
 void MessageInput::save_window_pos()
 {
+    // 保留首次进入 WithWindowPos 会话前的位置，供 inactive/析构统一恢复。
+    if (window_pos_saved_) {
+        return;
+    }
+
     if (!hwnd_) {
         return;
     }
@@ -115,6 +120,15 @@ void MessageInput::restore_window_pos()
     window_pos_saved_ = false;
 }
 
+void MessageInput::stop_window_tracking()
+{
+    tracking_active_ = false;
+    s_active_instance_ = nullptr;
+    pending_mouse_x_ = 0;
+    pending_mouse_y_ = 0;
+    has_pending_mouse_ = false;
+}
+
 void MessageInput::save_pos()
 {
     if (config_.with_cursor_pos) {
@@ -125,14 +139,21 @@ void MessageInput::save_pos()
     }
 }
 
-void MessageInput::restore_pos()
+void MessageInput::finish_pos()
 {
     if (config_.with_cursor_pos) {
         restore_cursor_pos();
     }
     else if (config_.with_window_pos) {
-        tracking_active_ = false;
-        s_active_instance_ = nullptr;
+        stop_window_tracking();
+    }
+}
+
+void MessageInput::restore_pos()
+{
+    finish_pos();
+
+    if (config_.with_window_pos) {
         restore_window_pos();
     }
 }
@@ -523,7 +544,7 @@ bool MessageInput::touch_down(int contact, int x, int y, int pressure)
     LPARAM lParam = prepare_mouse_position(x, y);
 
     if (!send_or_post_w(move_info.message, move_info.w_param, lParam)) {
-        restore_pos();
+        finish_pos();
         return false;
     }
 
@@ -531,7 +552,7 @@ bool MessageInput::touch_down(int contact, int x, int y, int pressure)
 
     // 发送 DOWN 消息
     if (!send_or_post_w(down_info.message, down_info.w_param, lParam)) {
-        restore_pos();
+        finish_pos();
         return false;
     }
 
@@ -594,12 +615,12 @@ bool MessageInput::touch_up(int contact)
 
     auto target_pos = get_target_pos();
     if (!send_or_post_w(msg_info.message, msg_info.w_param, MAKELPARAM(target_pos.first, target_pos.second))) {
-        restore_pos();
+        finish_pos();
         return false;
     }
 
-    // touch_up 时恢复位置（与 touch_down 配对）
-    restore_pos();
+    // touch_up 结束当前操作；窗口位置只在 inactive/析构阶段恢复
+    finish_pos();
 
     return true;
 }
@@ -700,7 +721,7 @@ bool MessageInput::scroll(int dx, int dy)
         success &= send_or_post_w(WM_MOUSEHWHEEL, wParam, lParam);
     }
 
-    restore_pos();
+    finish_pos();
 
     return success;
 }
