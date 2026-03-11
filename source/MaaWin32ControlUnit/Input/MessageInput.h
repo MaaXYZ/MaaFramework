@@ -57,7 +57,7 @@ private:
     void send_activate();
     bool send_or_post_w(UINT message, WPARAM wParam, LPARAM lParam);
 
-    // 准备鼠标位置：with_cursor_pos_ 模式下移动真实光标，with_window_pos_ 模式下移动窗口，返回 lParam
+    // 在发鼠标消息前把系统状态调整到目标窗口愿意接受的位置。
     LPARAM prepare_mouse_position(int x, int y);
 
     // WithWindowPos 模式：移动窗口使客户区坐标 (x,y) 与当前鼠标位置重合
@@ -75,7 +75,7 @@ private:
     void stop_window_tracking();
     bool handle_hardware_mouse_move(const MSLLHOOKSTRUCT& mouse_info);
 
-    // 保存/恢复当前模式对应的位置
+    // 统一封装不同输入模式的收尾，避免调用点分散处理光标/窗口状态。
     void save_pos();
     void finish_pos();
     void restore_pos();
@@ -83,10 +83,10 @@ private:
     void check_and_block_input();
     void unblock_input();
 
-    // 获取 last_pos_，若未设置则返回窗口客户区中心坐标
+    // 某些消息没有显式坐标时仍需要一个稳定锚点，否则滚轮等消息会落到不可预期位置。
     std::pair<int, int> get_target_pos() const;
 
-    // WithWindowPos background tracking
+    // WithWindowPos 通过后台追踪把真实鼠标位移折算回窗口位置，避免会话期间目标点漂移。
     void tracking_thread_func();
     void process_pending_mouse_frame();
     std::thread tracking_thread_;
@@ -98,7 +98,7 @@ private:
     std::atomic_uint64_t tracking_stop_generation_ = 0;
     std::atomic<std::chrono::steady_clock::time_point> tracking_stop_deadline_ = std::chrono::steady_clock::time_point {};
 
-    // 钩子存储的待处理鼠标位置（由 60fps 批处理消费）
+    // 钩子先累积硬件鼠标位移，再由 tracking 线程按固定帧率统一释放，避免每次移动都同步挪窗。
     std::atomic_int pending_mouse_x_ = 0;
     std::atomic_int pending_mouse_y_ = 0;
     std::atomic_bool has_pending_mouse_ = false;
@@ -123,7 +123,7 @@ private:
     POINT saved_cursor_pos_ = { 0, 0 };
     bool cursor_pos_saved_ = false;
     RECT saved_window_rect_ = { 0, 0, 0, 0 };
-    // WithWindowPos 会话的原始窗口位置，仅在 inactive/析构恢复后清空。
+    // 保留首次进入 WithWindowPos 会话前的窗口位置，避免一连串触摸操作反复覆盖原始锚点。
     bool window_pos_saved_ = false;
 };
 
