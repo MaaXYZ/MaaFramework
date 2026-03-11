@@ -91,7 +91,7 @@ void MessageInput::restore_cursor_pos()
 
 void MessageInput::save_window_pos()
 {
-    // 保留首次进入 WithWindowPos 会话前的位置，供 inactive/析构统一恢复。
+    // 保留首次进入 WithWindowPos 会话前的位置，依赖 inactive/析构路径统一恢复并清空标记。
     if (window_pos_saved_) {
         return;
     }
@@ -118,6 +118,17 @@ void MessageInput::restore_window_pos()
         LogError << "SetWindowPos failed during restore" << VAR(hwnd_) << VAR(GetLastError());
     }
     window_pos_saved_ = false;
+}
+
+void MessageInput::start_window_tracking(int x, int y)
+{
+    tracking_x_ = x;
+    tracking_y_ = y;
+    pending_mouse_x_ = 0;
+    pending_mouse_y_ = 0;
+    has_pending_mouse_ = false;
+    s_active_instance_ = this;
+    tracking_active_ = true;
 }
 
 void MessageInput::stop_window_tracking()
@@ -209,11 +220,7 @@ LPARAM MessageInput::prepare_mouse_position(int x, int y)
         std::this_thread::sleep_for(std::chrono::milliseconds(1));
     }
     else if (config_.with_window_pos) {
-        tracking_x_ = x;
-        tracking_y_ = y;
-        s_active_instance_ = this;
-        tracking_active_ = true;
-
+        start_window_tracking(x, y);
         move_window_to_align_cursor(x, y);
     }
     return MAKELPARAM(x, y);

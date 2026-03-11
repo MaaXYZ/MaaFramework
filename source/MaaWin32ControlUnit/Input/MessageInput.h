@@ -68,6 +68,7 @@ private:
     void restore_cursor_pos();
     void save_window_pos();
     void restore_window_pos();
+    void start_window_tracking(int x, int y);
     void stop_window_tracking();
 
     // 保存/恢复当前模式对应的位置
@@ -115,6 +116,7 @@ private:
     POINT saved_cursor_pos_ = { 0, 0 };
     bool cursor_pos_saved_ = false;
     RECT saved_window_rect_ = { 0, 0, 0, 0 };
+    // WithWindowPos 会话的原始窗口位置，仅在 inactive/析构恢复后清空。
     bool window_pos_saved_ = false;
 };
 
