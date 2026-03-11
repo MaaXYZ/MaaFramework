@@ -91,6 +91,11 @@ void MessageInput::restore_cursor_pos()
 
 void MessageInput::save_window_pos()
 {
+    // 保留首次进入 WithWindowPos 会话前的位置，依赖 inactive/析构路径统一恢复并清空标记。
+    if (window_pos_saved_) {
+        return;
+    }
+
     if (!hwnd_) {
         return;
     }
@@ -115,6 +120,100 @@ void MessageInput::restore_window_pos()
     window_pos_saved_ = false;
 }
 
+void MessageInput::start_window_tracking(int x, int y)
+{
+    ++tracking_generation_;
+    tracking_stop_generation_ = 0;
+    tracking_stop_deadline_ticks_ = 0;
+    tracking_x_ = x;
+    tracking_y_ = y;
+    pending_mouse_x_ = 0;
+    pending_mouse_y_ = 0;
+    has_pending_mouse_ = false;
+    s_active_instance_ = this;
+    tracking_active_ = true;
+}
+
+void MessageInput::request_stop_window_tracking()
+{
+    if (!tracking_active_.load()) {
+        return;
+    }
+
+    // 记住当前 tracking 代次，避免旧的 stop 请求在后续 touch_move 重启 tracking 后误停新一轮会话。
+    tracking_stop_generation_ = tracking_generation_.load();
+    tracking_stop_deadline_ticks_ = (TrackingClock::now() + std::chrono::milliseconds(10)).time_since_epoch().count();
+}
+
+void MessageInput::maybe_stop_window_tracking()
+{
+    if (!tracking_active_.load()) {
+        return;
+    }
+
+    auto deadline_ticks = tracking_stop_deadline_ticks_.load();
+    auto now = TrackingClock::now();
+    if (deadline_ticks == 0 || now < TrackingClock::time_point(TrackingClock::duration(deadline_ticks))) {
+        return;
+    }
+
+    // grace period 结束后先把最后一批硬件位移吃完，避免刚好落在 tracking 帧间隔中间时丢最后一小段拖动。
+    if (has_pending_mouse_.load()) {
+        return;
+    }
+
+    auto expected_deadline_ticks = deadline_ticks;
+    // 只有清掉自己看到的 deadline 才能说明这次 stop 没有被更新的请求覆盖。
+    if (!tracking_stop_deadline_ticks_.compare_exchange_strong(expected_deadline_ticks, 0)) {
+        return;
+    }
+
+    auto stop_generation = tracking_stop_generation_.load();
+    auto current_generation = tracking_generation_.load();
+    if (stop_generation != 0 && stop_generation == current_generation) {
+        stop_window_tracking();
+    }
+}
+
+void MessageInput::stop_window_tracking()
+{
+    tracking_stop_generation_ = 0;
+    tracking_stop_deadline_ticks_ = 0;
+    tracking_active_ = false;
+    s_active_instance_ = nullptr;
+    pending_mouse_x_ = 0;
+    pending_mouse_y_ = 0;
+    has_pending_mouse_ = false;
+}
+
+bool MessageInput::handle_hardware_mouse_move(const MSLLHOOKSTRUCT& mouse_info)
+{
+    // injected 事件来自我们自己的 SetCursorPos；再参与累加会形成自我反馈，窗口会被越带越偏。
+    if (mouse_info.flags & LLMHF_INJECTED) {
+        return false;
+    }
+
+    if (!tracking_active_.load()) {
+        return false;
+    }
+
+    // pt 是系统根据 "当前光标位置 + 硬件原始delta" 计算出的目标位置
+    // 光标被我们冻住了，所以 delta = pt - 当前冻住的光标位置
+    POINT cursor;
+    if (!GetCursorPos(&cursor)) {
+        LogError << "GetCursorPos failed in mouse hook, fallback to hook point" << VAR(GetLastError());
+        cursor = mouse_info.pt;
+    }
+    int dx = mouse_info.pt.x - cursor.x;
+    int dy = mouse_info.pt.y - cursor.y;
+
+    // 使用原子 += 累加每次的增量，不丢失任何中间移动
+    pending_mouse_x_ += dx;
+    pending_mouse_y_ += dy;
+    has_pending_mouse_ = true;
+    return true;
+}
+
 void MessageInput::save_pos()
 {
     if (config_.with_cursor_pos) {
@@ -125,14 +224,21 @@ void MessageInput::save_pos()
     }
 }
 
-void MessageInput::restore_pos()
+void MessageInput::finish_pos()
 {
     if (config_.with_cursor_pos) {
         restore_cursor_pos();
     }
     else if (config_.with_window_pos) {
-        tracking_active_ = false;
-        s_active_instance_ = nullptr;
+        stop_window_tracking();
+    }
+}
+
+void MessageInput::restore_pos()
+{
+    finish_pos();
+
+    if (config_.with_window_pos) {
         restore_window_pos();
     }
 }
@@ -188,51 +294,32 @@ LPARAM MessageInput::prepare_mouse_position(int x, int y)
         std::this_thread::sleep_for(std::chrono::milliseconds(1));
     }
     else if (config_.with_window_pos) {
-        tracking_x_ = x;
-        tracking_y_ = y;
-        s_active_instance_ = this;
-        tracking_active_ = true;
-
+        start_window_tracking(x, y);
         move_window_to_align_cursor(x, y);
     }
     return MAKELPARAM(x, y);
 }
 
-// WH_MOUSE_LL 钩子回调：累加硬件鼠标位移 delta 并拦截，由追踪线程 60fps 批量释放
+// WH_MOUSE_LL 钩子回调：累加硬件鼠标位移 delta 并拦截，由追踪线程按固定帧率批量释放
 LRESULT CALLBACK MessageInput::MouseHookProc(int nCode, WPARAM wParam, LPARAM lParam)
 {
-    if (nCode == HC_ACTION && wParam == WM_MOUSEMOVE) {
-        // 在关键初始化窗口期间，直接吞掉所有鼠标移动
-        if (hook_block_mouse_) {
-            return 1;
-        }
-
-        MSLLHOOKSTRUCT* pMouse = (MSLLHOOKSTRUCT*)lParam;
-
-        // 跳过注入的合成事件（如我们自己的 SetCursorPos），只处理真实硬件输入
-        if (pMouse->flags & LLMHF_INJECTED) {
-            return CallNextHookEx(NULL, nCode, wParam, lParam);
-        }
-
-        MessageInput* inst = s_active_instance_;
-        if (inst && inst->tracking_active_) {
-            // pt 是系统根据 "当前光标位置 + 硬件原始delta" 计算出的目标位置
-            // 光标被我们冻住了，所以 delta = pt - 当前冻住的光标位置
-            POINT cursor;
-            GetCursorPos(&cursor);
-            int dx = pMouse->pt.x - cursor.x;
-            int dy = pMouse->pt.y - cursor.y;
-
-            // 使用 fetch_add 累加每次的增量，不丢失任何中间移动
-            inst->pending_mouse_x_ += dx;
-            inst->pending_mouse_y_ += dy;
-            inst->has_pending_mouse_ = true;
-
-            // 拦截原始硬件鼠标移动（稍后由追踪线程通过 SetCursorPos 一次性释放累积量）
-            return 1;
-        }
+    if (nCode != HC_ACTION || wParam != WM_MOUSEMOVE) {
+        return CallNextHookEx(NULL, nCode, wParam, lParam);
     }
-    return CallNextHookEx(NULL, nCode, wParam, lParam);
+
+    // 在关键初始化窗口期间，直接吞掉所有鼠标移动
+    if (hook_block_mouse_.load()) {
+        return 1;
+    }
+
+    auto* mouse_info = reinterpret_cast<MSLLHOOKSTRUCT*>(lParam);
+    auto* inst = s_active_instance_.load();
+    if (!inst || !inst->handle_hardware_mouse_move(*mouse_info)) {
+        return CallNextHookEx(NULL, nCode, wParam, lParam);
+    }
+
+    // 拦截原始硬件鼠标移动（稍后由追踪线程通过 SetCursorPos 一次性释放累积量）
+    return 1;
 }
 
 // ======================== 目标进程挂起/恢复 ========================
@@ -354,7 +441,7 @@ void MessageInput::process_pending_mouse_frame()
     int new_left = mx - tx - border_x;
     int new_top = my - ty - border_y;
 
-    // 1. 挂起目标进程，使其看不到中间态
+    // 1. 挂起目标进程，避免它在窗口和光标尚未重新对齐时观测到中间态
     suspend_target_process();
 
     // 2. 移动窗口（SWP_ASYNCWINDOWPOS 避免阻塞 + SWP_NOSENDCHANGING 跳过同步通知）
@@ -395,10 +482,10 @@ void MessageInput::tracking_thread_func()
     }
     OnScopeLeave([&]() { UnhookWindowsHookEx(hHook); });
 
-    // 60fps 节流：每帧间隔 ~16.67ms
+    // 60fps 节流：每帧间隔约 16.67ms
     using clock = std::chrono::steady_clock;
+    static constexpr auto frame_interval = std::chrono::nanoseconds(1'000'000'000 / 60);
     auto last_frame = clock::now();
-    const auto frame_interval = std::chrono::microseconds(16667);
 
     MSG msg;
     while (!tracking_exit_) {
@@ -418,10 +505,12 @@ void MessageInput::tracking_thread_func()
         auto now = clock::now();
         bool frame_ready = (now - last_frame) >= frame_interval;
 
-        if (tracking_active_ && has_pending_mouse_ && frame_ready) {
+        if (tracking_active_.load() && has_pending_mouse_.load() && frame_ready) {
             process_pending_mouse_frame();
             last_frame = now;
         }
+
+        maybe_stop_window_tracking();
     }
 }
 
@@ -523,7 +612,7 @@ bool MessageInput::touch_down(int contact, int x, int y, int pressure)
     LPARAM lParam = prepare_mouse_position(x, y);
 
     if (!send_or_post_w(move_info.message, move_info.w_param, lParam)) {
-        restore_pos();
+        finish_pos();
         return false;
     }
 
@@ -531,7 +620,7 @@ bool MessageInput::touch_down(int contact, int x, int y, int pressure)
 
     // 发送 DOWN 消息
     if (!send_or_post_w(down_info.message, down_info.w_param, lParam)) {
-        restore_pos();
+        finish_pos();
         return false;
     }
 
@@ -594,12 +683,17 @@ bool MessageInput::touch_up(int contact)
 
     auto target_pos = get_target_pos();
     if (!send_or_post_w(msg_info.message, msg_info.w_param, MAKELPARAM(target_pos.first, target_pos.second))) {
-        restore_pos();
+        finish_pos();
         return false;
     }
 
-    // touch_up 时恢复位置（与 touch_down 配对）
-    restore_pos();
+    // touch_up 后继续黏住窗口一小段时间，再由 tracking 线程自行结束。
+    if (config_.with_window_pos) {
+        request_stop_window_tracking();
+    }
+    else {
+        finish_pos();
+    }
 
     return true;
 }
@@ -700,7 +794,12 @@ bool MessageInput::scroll(int dx, int dy)
         success &= send_or_post_w(WM_MOUSEHWHEEL, wParam, lParam);
     }
 
-    restore_pos();
+    if (config_.with_window_pos) {
+        request_stop_window_tracking();
+    }
+    else {
+        finish_pos();
+    }
 
     return success;
 }
