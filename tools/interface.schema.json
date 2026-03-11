@@ -635,6 +635,42 @@
             ],
             "additionalProperties": false
         },
+        "groupItem": {
+            "type": "object",
+            "title": "任务分组配置",
+            "properties": {
+                "name": {
+                    "type": "string",
+                    "title": "分组唯一标识符",
+                    "description": "用作分组 ID，供 task.group 引用"
+                },
+                "label": {
+                    "$ref": "#/definitions/i18nString",
+                    "title": "显示名称",
+                    "description": "用于在用户界面中展示，支持国际化。如果未设置，则显示 name 字段的值"
+                },
+                "description": {
+                    "$ref": "#/definitions/i18nString",
+                    "title": "详细描述",
+                    "description": "帮助用户理解该分组的用途。支持文件路径、URL 或直接文本，内容支持 Markdown 格式"
+                },
+                "icon": {
+                    "$ref": "#/definitions/i18nString",
+                    "title": "图标路径",
+                    "description": "分组图标文件路径，相对于项目根目录"
+                },
+                "default_expand": {
+                    "type": "boolean",
+                    "title": "默认展开",
+                    "description": "💡 v2.4.0 可选。该分组在 Client 中是否默认展开",
+                    "default": true
+                }
+            },
+            "required": [
+                "name"
+            ],
+            "additionalProperties": false
+        },
         "taskItem": {
             "type": "object",
             "title": "任务配置",
@@ -699,6 +735,14 @@
                     "$ref": "#/definitions/i18nString",
                     "title": "图标路径",
                     "description": "任务图标文件路径，相对于项目根目录"
+                },
+                "group": {
+                    "type": "array",
+                    "title": "所属分组",
+                    "description": "💡 v2.4.0 可选。指定该任务所属的分组列表。数组元素应与顶层 group 配置中的 name 字段对应。若不指定，则表示该任务不属于任何显式分组",
+                    "items": {
+                        "type": "string"
+                    }
                 },
                 "resource": {
                     "type": "array",
@@ -864,6 +908,14 @@
                 "$ref": "#/definitions/resourceItem"
             }
         },
+        "group": {
+            "type": "array",
+            "title": "任务分组配置",
+            "description": "💡 v2.4.0 可选。为一个对象数组，用于声明任务分组及其展示属性",
+            "items": {
+                "$ref": "#/definitions/groupItem"
+            }
+        },
         "agent": {
             "oneOf": [
                 {
@@ -906,7 +958,7 @@
         "import": {
             "type": "array",
             "title": "导入其他 PI 文件",
-            "description": "可选。导入其他 PI 文件的路径数组。文件相对路径为 interface.json 同目录下的相对路径。支持导入这些文件中的 task、option 和 preset（💡 v2.3.0）字段",
+            "description": "可选。导入其他 PI 文件的路径数组。文件相对路径为 interface.json 同目录下的相对路径。支持导入这些文件中的 task、option、preset（💡 v2.3.0）字段",
             "items": {
                 "type": "string"
             }
