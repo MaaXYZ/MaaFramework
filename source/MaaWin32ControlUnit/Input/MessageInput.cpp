@@ -13,13 +13,6 @@
 
 MAA_CTRL_UNIT_NS_BEGIN
 
-namespace
-{
-
-constexpr auto kWindowTrackingStopDelay = std::chrono::milliseconds(10);
-
-} // namespace
-
 MessageInput::MessageInput(HWND hwnd, Config config)
     : hwnd_(hwnd)
     , config_(config)
@@ -148,7 +141,7 @@ void MessageInput::request_stop_window_tracking()
     }
 
     tracking_stop_generation_ = tracking_generation_;
-    tracking_stop_deadline_ = std::chrono::steady_clock::now() + kWindowTrackingStopDelay;
+    tracking_stop_deadline_ = std::chrono::steady_clock::now() + std::chrono::milliseconds(10);
 }
 
 void MessageInput::maybe_stop_window_tracking()
@@ -188,6 +181,30 @@ void MessageInput::stop_window_tracking()
     pending_mouse_x_ = 0;
     pending_mouse_y_ = 0;
     has_pending_mouse_ = false;
+}
+
+bool MessageInput::handle_hardware_mouse_move(const MSLLHOOKSTRUCT& mouse_info)
+{
+    if (mouse_info.flags & LLMHF_INJECTED) {
+        return false;
+    }
+
+    if (!tracking_active_) {
+        return false;
+    }
+
+    // pt 是系统根据 "当前光标位置 + 硬件原始delta" 计算出的目标位置
+    // 光标被我们冻住了，所以 delta = pt - 当前冻住的光标位置
+    POINT cursor;
+    GetCursorPos(&cursor);
+    int dx = mouse_info.pt.x - cursor.x;
+    int dy = mouse_info.pt.y - cursor.y;
+
+    // 使用原子 += 累加每次的增量，不丢失任何中间移动
+    pending_mouse_x_ += dx;
+    pending_mouse_y_ += dy;
+    has_pending_mouse_ = true;
+    return true;
 }
 
 void MessageInput::save_pos()
@@ -279,38 +296,23 @@ LPARAM MessageInput::prepare_mouse_position(int x, int y)
 // WH_MOUSE_LL 钩子回调：累加硬件鼠标位移 delta 并拦截，由追踪线程 60fps 批量释放
 LRESULT CALLBACK MessageInput::MouseHookProc(int nCode, WPARAM wParam, LPARAM lParam)
 {
-    if (nCode == HC_ACTION && wParam == WM_MOUSEMOVE) {
-        // 在关键初始化窗口期间，直接吞掉所有鼠标移动
-        if (hook_block_mouse_) {
-            return 1;
-        }
-
-        MSLLHOOKSTRUCT* pMouse = (MSLLHOOKSTRUCT*)lParam;
-
-        // 跳过注入的合成事件（如我们自己的 SetCursorPos），只处理真实硬件输入
-        if (pMouse->flags & LLMHF_INJECTED) {
-            return CallNextHookEx(NULL, nCode, wParam, lParam);
-        }
-
-        MessageInput* inst = s_active_instance_;
-        if (inst && inst->tracking_active_) {
-            // pt 是系统根据 "当前光标位置 + 硬件原始delta" 计算出的目标位置
-            // 光标被我们冻住了，所以 delta = pt - 当前冻住的光标位置
-            POINT cursor;
-            GetCursorPos(&cursor);
-            int dx = pMouse->pt.x - cursor.x;
-            int dy = pMouse->pt.y - cursor.y;
-
-            // 使用原子 += 累加每次的增量，不丢失任何中间移动
-            inst->pending_mouse_x_ += dx;
-            inst->pending_mouse_y_ += dy;
-            inst->has_pending_mouse_ = true;
-
-            // 拦截原始硬件鼠标移动（稍后由追踪线程通过 SetCursorPos 一次性释放累积量）
-            return 1;
-        }
+    if (nCode != HC_ACTION || wParam != WM_MOUSEMOVE) {
+        return CallNextHookEx(NULL, nCode, wParam, lParam);
     }
-    return CallNextHookEx(NULL, nCode, wParam, lParam);
+
+    // 在关键初始化窗口期间，直接吞掉所有鼠标移动
+    if (hook_block_mouse_) {
+        return 1;
+    }
+
+    auto* mouse_info = reinterpret_cast<MSLLHOOKSTRUCT*>(lParam);
+    auto* inst = s_active_instance_;
+    if (!inst || !inst->handle_hardware_mouse_move(*mouse_info)) {
+        return CallNextHookEx(NULL, nCode, wParam, lParam);
+    }
+
+    // 拦截原始硬件鼠标移动（稍后由追踪线程通过 SetCursorPos 一次性释放累积量）
+    return 1;
 }
 
 // ======================== 目标进程挂起/恢复 ========================

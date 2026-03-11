@@ -73,6 +73,7 @@ private:
     void request_stop_window_tracking();
     void maybe_stop_window_tracking();
     void stop_window_tracking();
+    bool handle_hardware_mouse_move(const MSLLHOOKSTRUCT& mouse_info);
 
     // 保存/恢复当前模式对应的位置
     void save_pos();
