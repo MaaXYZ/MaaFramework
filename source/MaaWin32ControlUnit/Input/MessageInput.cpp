@@ -13,6 +13,18 @@
 
 MAA_CTRL_UNIT_NS_BEGIN
 
+namespace
+{
+
+constexpr auto kWindowTrackingStopDelay = std::chrono::milliseconds(10);
+
+std::int64_t steady_clock_now_ns()
+{
+    return std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::steady_clock::now().time_since_epoch()).count();
+}
+
+} // namespace
+
 MessageInput::MessageInput(HWND hwnd, Config config)
     : hwnd_(hwnd)
     , config_(config)
@@ -122,6 +134,9 @@ void MessageInput::restore_window_pos()
 
 void MessageInput::start_window_tracking(int x, int y)
 {
+    ++tracking_generation_;
+    tracking_stop_generation_ = 0;
+    tracking_stop_deadline_ns_ = 0;
     tracking_x_ = x;
     tracking_y_ = y;
     pending_mouse_x_ = 0;
@@ -131,8 +146,48 @@ void MessageInput::start_window_tracking(int x, int y)
     tracking_active_ = true;
 }
 
+void MessageInput::request_stop_window_tracking()
+{
+    if (!tracking_active_) {
+        return;
+    }
+
+    tracking_stop_generation_ = tracking_generation_;
+    tracking_stop_deadline_ns_ =
+        steady_clock_now_ns() + std::chrono::duration_cast<std::chrono::nanoseconds>(kWindowTrackingStopDelay).count();
+}
+
+void MessageInput::maybe_stop_window_tracking()
+{
+    if (!tracking_active_) {
+        return;
+    }
+
+    auto deadline_ns = tracking_stop_deadline_ns_;
+    if (deadline_ns == 0 || steady_clock_now_ns() < deadline_ns) {
+        return;
+    }
+
+    if (has_pending_mouse_) {
+        return;
+    }
+
+    auto expected_deadline_ns = deadline_ns;
+    if (!tracking_stop_deadline_ns_.compare_exchange_strong(expected_deadline_ns, 0, std::memory_order_relaxed)) {
+        return;
+    }
+
+    auto stop_generation = tracking_stop_generation_;
+    auto current_generation = tracking_generation_;
+    if (stop_generation != 0 && stop_generation == current_generation) {
+        stop_window_tracking();
+    }
+}
+
 void MessageInput::stop_window_tracking()
 {
+    tracking_stop_generation_ = 0;
+    tracking_stop_deadline_ns_ = 0;
     tracking_active_ = false;
     s_active_instance_ = nullptr;
     pending_mouse_x_ = 0;
@@ -251,7 +306,7 @@ LRESULT CALLBACK MessageInput::MouseHookProc(int nCode, WPARAM wParam, LPARAM lP
             int dx = pMouse->pt.x - cursor.x;
             int dy = pMouse->pt.y - cursor.y;
 
-            // 使用 fetch_add 累加每次的增量，不丢失任何中间移动
+            // 使用原子 += 累加每次的增量，不丢失任何中间移动
             inst->pending_mouse_x_ += dx;
             inst->pending_mouse_y_ += dy;
             inst->has_pending_mouse_ = true;
@@ -450,6 +505,8 @@ void MessageInput::tracking_thread_func()
             process_pending_mouse_frame();
             last_frame = now;
         }
+
+        maybe_stop_window_tracking();
     }
 }
 
@@ -626,8 +683,13 @@ bool MessageInput::touch_up(int contact)
         return false;
     }
 
-    // touch_up 结束当前操作；窗口位置只在 inactive/析构阶段恢复
-    finish_pos();
+    // touch_up 后继续黏住窗口一小段时间，再由 tracking 线程自行结束。
+    if (config_.with_window_pos) {
+        request_stop_window_tracking();
+    }
+    else {
+        finish_pos();
+    }
 
     return true;
 }
@@ -728,7 +790,12 @@ bool MessageInput::scroll(int dx, int dy)
         success &= send_or_post_w(WM_MOUSEHWHEEL, wParam, lParam);
     }
 
-    finish_pos();
+    if (config_.with_window_pos) {
+        request_stop_window_tracking();
+    }
+    else {
+        finish_pos();
+    }
 
     return success;
 }

@@ -6,6 +6,7 @@
 #include "MaaUtils/SafeWindows.hpp"
 
 #include <atomic>
+#include <cstdint>
 #include <thread>
 
 MAA_CTRL_UNIT_NS_BEGIN
@@ -69,6 +70,8 @@ private:
     void save_window_pos();
     void restore_window_pos();
     void start_window_tracking(int x, int y);
+    void request_stop_window_tracking();
+    void maybe_stop_window_tracking();
     void stop_window_tracking();
 
     // 保存/恢复当前模式对应的位置
@@ -90,6 +93,9 @@ private:
     std::atomic_bool tracking_active_ { false };
     std::atomic_int tracking_x_ { 0 };
     std::atomic_int tracking_y_ { 0 };
+    std::atomic_uint64_t tracking_generation_ { 0 };
+    std::atomic_uint64_t tracking_stop_generation_ { 0 };
+    std::atomic_int64_t tracking_stop_deadline_ns_ { 0 };
 
     // 钩子存储的待处理鼠标位置（由 60fps 批处理消费）
     std::atomic_int pending_mouse_x_ { 0 };
