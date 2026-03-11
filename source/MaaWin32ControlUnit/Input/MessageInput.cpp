@@ -18,11 +18,6 @@ namespace
 
 constexpr auto kWindowTrackingStopDelay = std::chrono::milliseconds(10);
 
-std::int64_t steady_clock_now_ns()
-{
-    return std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::steady_clock::now().time_since_epoch()).count();
-}
-
 } // namespace
 
 MessageInput::MessageInput(HWND hwnd, Config config)
@@ -136,7 +131,7 @@ void MessageInput::start_window_tracking(int x, int y)
 {
     ++tracking_generation_;
     tracking_stop_generation_ = 0;
-    tracking_stop_deadline_ns_ = 0;
+    tracking_stop_deadline_ = std::chrono::steady_clock::time_point {};
     tracking_x_ = x;
     tracking_y_ = y;
     pending_mouse_x_ = 0;
@@ -153,8 +148,7 @@ void MessageInput::request_stop_window_tracking()
     }
 
     tracking_stop_generation_ = tracking_generation_;
-    tracking_stop_deadline_ns_ =
-        steady_clock_now_ns() + std::chrono::duration_cast<std::chrono::nanoseconds>(kWindowTrackingStopDelay).count();
+    tracking_stop_deadline_ = std::chrono::steady_clock::now() + kWindowTrackingStopDelay;
 }
 
 void MessageInput::maybe_stop_window_tracking()
@@ -163,8 +157,9 @@ void MessageInput::maybe_stop_window_tracking()
         return;
     }
 
-    auto deadline_ns = tracking_stop_deadline_ns_;
-    if (deadline_ns == 0 || steady_clock_now_ns() < deadline_ns) {
+    auto deadline = tracking_stop_deadline_;
+    auto now = std::chrono::steady_clock::now();
+    if (deadline == std::chrono::steady_clock::time_point {} || now < deadline) {
         return;
     }
 
@@ -172,8 +167,8 @@ void MessageInput::maybe_stop_window_tracking()
         return;
     }
 
-    auto expected_deadline_ns = deadline_ns;
-    if (!tracking_stop_deadline_ns_.compare_exchange_strong(expected_deadline_ns, 0, std::memory_order_relaxed)) {
+    auto expected_deadline = deadline;
+    if (!tracking_stop_deadline_.compare_exchange_strong(expected_deadline, std::chrono::steady_clock::time_point {})) {
         return;
     }
 
@@ -187,7 +182,7 @@ void MessageInput::maybe_stop_window_tracking()
 void MessageInput::stop_window_tracking()
 {
     tracking_stop_generation_ = 0;
-    tracking_stop_deadline_ns_ = 0;
+    tracking_stop_deadline_ = std::chrono::steady_clock::time_point {};
     tracking_active_ = false;
     s_active_instance_ = nullptr;
     pending_mouse_x_ = 0;
