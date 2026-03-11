@@ -140,6 +140,7 @@ void MessageInput::request_stop_window_tracking()
         return;
     }
 
+    // 记住当前 tracking 代次，避免旧的 stop 请求在后续 touch_move 重启 tracking 后误停新一轮会话。
     tracking_stop_generation_ = tracking_generation_;
     tracking_stop_deadline_ = std::chrono::steady_clock::now() + std::chrono::milliseconds(10);
 }
@@ -156,11 +157,13 @@ void MessageInput::maybe_stop_window_tracking()
         return;
     }
 
+    // grace period 结束后先把最后一批硬件位移吃完，避免刚好落在 tracking 帧间隔中间时丢最后一小段拖动。
     if (has_pending_mouse_) {
         return;
     }
 
     auto expected_deadline = deadline;
+    // 只有清掉自己看到的 deadline 才能说明这次 stop 没有被更新的请求覆盖。
     if (!tracking_stop_deadline_.compare_exchange_strong(expected_deadline, std::chrono::steady_clock::time_point {})) {
         return;
     }
@@ -185,6 +188,7 @@ void MessageInput::stop_window_tracking()
 
 bool MessageInput::handle_hardware_mouse_move(const MSLLHOOKSTRUCT& mouse_info)
 {
+    // injected 事件来自我们自己的 SetCursorPos；再参与累加会形成自我反馈，窗口会被越带越偏。
     if (mouse_info.flags & LLMHF_INJECTED) {
         return false;
     }
@@ -293,7 +297,7 @@ LPARAM MessageInput::prepare_mouse_position(int x, int y)
     return MAKELPARAM(x, y);
 }
 
-// WH_MOUSE_LL 钩子回调：累加硬件鼠标位移 delta 并拦截，由追踪线程 60fps 批量释放
+// WH_MOUSE_LL 钩子回调：累加硬件鼠标位移 delta 并拦截，由追踪线程按固定帧率批量释放
 LRESULT CALLBACK MessageInput::MouseHookProc(int nCode, WPARAM wParam, LPARAM lParam)
 {
     if (nCode != HC_ACTION || wParam != WM_MOUSEMOVE) {
@@ -434,7 +438,7 @@ void MessageInput::process_pending_mouse_frame()
     int new_left = mx - tx - border_x;
     int new_top = my - ty - border_y;
 
-    // 1. 挂起目标进程，使其看不到中间态
+    // 1. 挂起目标进程，避免它在窗口和光标尚未重新对齐时观测到中间态
     suspend_target_process();
 
     // 2. 移动窗口（SWP_ASYNCWINDOWPOS 避免阻塞 + SWP_NOSENDCHANGING 跳过同步通知）
@@ -475,10 +479,10 @@ void MessageInput::tracking_thread_func()
     }
     OnScopeLeave([&]() { UnhookWindowsHookEx(hHook); });
 
-    // 60fps 节流：每帧间隔 ~16.67ms
+    // 120fps 节流：每帧间隔约 8.33ms
     using clock = std::chrono::steady_clock;
+    static constexpr auto frame_interval = std::chrono::nanoseconds(1'000'000'000 / 120);
     auto last_frame = clock::now();
-    const auto frame_interval = std::chrono::microseconds(16667);
 
     MSG msg;
     while (!tracking_exit_) {
