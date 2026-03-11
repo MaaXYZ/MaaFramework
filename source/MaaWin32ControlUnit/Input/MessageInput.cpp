@@ -136,29 +136,29 @@ void MessageInput::start_window_tracking(int x, int y)
 
 void MessageInput::request_stop_window_tracking()
 {
-    if (!tracking_active_) {
+    if (!tracking_active_.load()) {
         return;
     }
 
     // 记住当前 tracking 代次，避免旧的 stop 请求在后续 touch_move 重启 tracking 后误停新一轮会话。
-    tracking_stop_generation_ = tracking_generation_;
+    tracking_stop_generation_ = tracking_generation_.load();
     tracking_stop_deadline_ = std::chrono::steady_clock::now() + std::chrono::milliseconds(10);
 }
 
 void MessageInput::maybe_stop_window_tracking()
 {
-    if (!tracking_active_) {
+    if (!tracking_active_.load()) {
         return;
     }
 
-    auto deadline = tracking_stop_deadline_;
+    auto deadline = tracking_stop_deadline_.load();
     auto now = std::chrono::steady_clock::now();
     if (deadline == std::chrono::steady_clock::time_point {} || now < deadline) {
         return;
     }
 
     // grace period 结束后先把最后一批硬件位移吃完，避免刚好落在 tracking 帧间隔中间时丢最后一小段拖动。
-    if (has_pending_mouse_) {
+    if (has_pending_mouse_.load()) {
         return;
     }
 
@@ -168,8 +168,8 @@ void MessageInput::maybe_stop_window_tracking()
         return;
     }
 
-    auto stop_generation = tracking_stop_generation_;
-    auto current_generation = tracking_generation_;
+    auto stop_generation = tracking_stop_generation_.load();
+    auto current_generation = tracking_generation_.load();
     if (stop_generation != 0 && stop_generation == current_generation) {
         stop_window_tracking();
     }
@@ -193,7 +193,7 @@ bool MessageInput::handle_hardware_mouse_move(const MSLLHOOKSTRUCT& mouse_info)
         return false;
     }
 
-    if (!tracking_active_) {
+    if (!tracking_active_.load()) {
         return false;
     }
 
@@ -305,12 +305,12 @@ LRESULT CALLBACK MessageInput::MouseHookProc(int nCode, WPARAM wParam, LPARAM lP
     }
 
     // 在关键初始化窗口期间，直接吞掉所有鼠标移动
-    if (hook_block_mouse_) {
+    if (hook_block_mouse_.load()) {
         return 1;
     }
 
     auto* mouse_info = reinterpret_cast<MSLLHOOKSTRUCT*>(lParam);
-    auto* inst = s_active_instance_;
+    auto* inst = s_active_instance_.load();
     if (!inst || !inst->handle_hardware_mouse_move(*mouse_info)) {
         return CallNextHookEx(NULL, nCode, wParam, lParam);
     }
@@ -502,7 +502,7 @@ void MessageInput::tracking_thread_func()
         auto now = clock::now();
         bool frame_ready = (now - last_frame) >= frame_interval;
 
-        if (tracking_active_ && has_pending_mouse_ && frame_ready) {
+        if (tracking_active_.load() && has_pending_mouse_.load() && frame_ready) {
             process_pending_mouse_frame();
             last_frame = now;
         }
