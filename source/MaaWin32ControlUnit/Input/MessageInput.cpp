@@ -124,7 +124,7 @@ void MessageInput::start_window_tracking(int x, int y)
 {
     ++tracking_generation_;
     tracking_stop_generation_ = 0;
-    tracking_stop_deadline_ = std::chrono::steady_clock::time_point {};
+    tracking_stop_deadline_ticks_ = 0;
     tracking_x_ = x;
     tracking_y_ = y;
     pending_mouse_x_ = 0;
@@ -142,7 +142,7 @@ void MessageInput::request_stop_window_tracking()
 
     // 记住当前 tracking 代次，避免旧的 stop 请求在后续 touch_move 重启 tracking 后误停新一轮会话。
     tracking_stop_generation_ = tracking_generation_.load();
-    tracking_stop_deadline_ = std::chrono::steady_clock::now() + std::chrono::milliseconds(10);
+    tracking_stop_deadline_ticks_ = (TrackingClock::now() + std::chrono::milliseconds(10)).time_since_epoch().count();
 }
 
 void MessageInput::maybe_stop_window_tracking()
@@ -151,9 +151,9 @@ void MessageInput::maybe_stop_window_tracking()
         return;
     }
 
-    auto deadline = tracking_stop_deadline_.load();
-    auto now = std::chrono::steady_clock::now();
-    if (deadline == std::chrono::steady_clock::time_point {} || now < deadline) {
+    auto deadline_ticks = tracking_stop_deadline_ticks_.load();
+    auto now = TrackingClock::now();
+    if (deadline_ticks == 0 || now < TrackingClock::time_point(TrackingClock::duration(deadline_ticks))) {
         return;
     }
 
@@ -162,9 +162,9 @@ void MessageInput::maybe_stop_window_tracking()
         return;
     }
 
-    auto expected_deadline = deadline;
+    auto expected_deadline_ticks = deadline_ticks;
     // 只有清掉自己看到的 deadline 才能说明这次 stop 没有被更新的请求覆盖。
-    if (!tracking_stop_deadline_.compare_exchange_strong(expected_deadline, std::chrono::steady_clock::time_point {})) {
+    if (!tracking_stop_deadline_ticks_.compare_exchange_strong(expected_deadline_ticks, 0)) {
         return;
     }
 
@@ -178,7 +178,7 @@ void MessageInput::maybe_stop_window_tracking()
 void MessageInput::stop_window_tracking()
 {
     tracking_stop_generation_ = 0;
-    tracking_stop_deadline_ = std::chrono::steady_clock::time_point {};
+    tracking_stop_deadline_ticks_ = 0;
     tracking_active_ = false;
     s_active_instance_ = nullptr;
     pending_mouse_x_ = 0;
@@ -200,7 +200,10 @@ bool MessageInput::handle_hardware_mouse_move(const MSLLHOOKSTRUCT& mouse_info)
     // pt 是系统根据 "当前光标位置 + 硬件原始delta" 计算出的目标位置
     // 光标被我们冻住了，所以 delta = pt - 当前冻住的光标位置
     POINT cursor;
-    GetCursorPos(&cursor);
+    if (!GetCursorPos(&cursor)) {
+        LogError << "GetCursorPos failed in mouse hook, fallback to hook point" << VAR(GetLastError());
+        cursor = mouse_info.pt;
+    }
     int dx = mouse_info.pt.x - cursor.x;
     int dy = mouse_info.pt.y - cursor.y;
 
@@ -479,9 +482,9 @@ void MessageInput::tracking_thread_func()
     }
     OnScopeLeave([&]() { UnhookWindowsHookEx(hHook); });
 
-    // 120fps 节流：每帧间隔约 8.33ms
+    // 60fps 节流：每帧间隔约 16.67ms
     using clock = std::chrono::steady_clock;
-    static constexpr auto frame_interval = std::chrono::nanoseconds(1'000'000'000 / 120);
+    static constexpr auto frame_interval = std::chrono::nanoseconds(1'000'000'000 / 60);
     auto last_frame = clock::now();
 
     MSG msg;

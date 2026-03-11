@@ -54,6 +54,9 @@ public: // from InputBase
     virtual void inactive() override;
 
 private:
+    using TrackingClock = std::chrono::steady_clock;
+    using TrackingDeadlineTicks = TrackingClock::duration::rep;
+
     void send_activate();
     bool send_or_post_w(UINT message, WPARAM wParam, LPARAM lParam);
 
@@ -96,7 +99,7 @@ private:
     std::atomic_int tracking_y_ = 0;
     std::atomic_uint64_t tracking_generation_ = 0;
     std::atomic_uint64_t tracking_stop_generation_ = 0;
-    std::atomic<std::chrono::steady_clock::time_point> tracking_stop_deadline_ = std::chrono::steady_clock::time_point {};
+    std::atomic<TrackingDeadlineTicks> tracking_stop_deadline_ticks_ = 0;
 
     // 钩子先累积硬件鼠标位移，再由 tracking 线程按固定帧率统一释放，避免每次移动都同步挪窗。
     std::atomic_int pending_mouse_x_ = 0;
