@@ -2,13 +2,25 @@
 #include "loader.h"
 
 #include <MaaFramework/MaaAPI.h>
+#ifdef MAA_JS_WITH_TOOLKIT
 #include <MaaToolkit/MaaToolkitAPI.h>
+#endif
 
 #include "../foundation/spec.h"
 #include "../utils/library.h"
 #include "buffer.h"
 #include "callback.h"
 #include "ext.h"
+
+namespace
+{
+
+[[maybe_unused]] [[noreturn]] void throw_toolkit_unavailable(const char* api)
+{
+    throw maajs::MaaError { std::format("{} is not available in AgentServer builds", api) };
+}
+
+} // namespace
 
 maajs::ValueType ImageJobImpl::get()
 {
@@ -380,6 +392,7 @@ std::string AdbControllerImpl::agent_path()
 
 maajs::PromiseType AdbControllerImpl::find(maajs::EnvType env, maajs::OptionalParam<std::string> adb)
 {
+#ifdef MAA_JS_WITH_TOOLKIT
     using Result = std::optional<std::vector<AdbDevice>>;
     auto worker = new maajs::AsyncWork<Result>(env, [adb]() -> Result {
         auto lst = MaaToolkitAdbDeviceListCreate();
@@ -415,6 +428,11 @@ maajs::PromiseType AdbControllerImpl::find(maajs::EnvType env, maajs::OptionalPa
     });
     worker->Queue();
     return worker->Promise();
+#else
+    std::ignore = env;
+    std::ignore = adb;
+    throw_toolkit_unavailable("AdbController.find");
+#endif
 }
 
 AdbControllerImpl* AdbControllerImpl::ctor(const maajs::CallbackInfo& info)
@@ -449,6 +467,7 @@ maajs::ValueType load_adb_controller(maajs::EnvType env)
 
 maajs::PromiseType Win32ControllerImpl::find(maajs::EnvType env)
 {
+#ifdef MAA_JS_WITH_TOOLKIT
     using Result = std::optional<std::vector<Win32Device>>;
     auto worker = new maajs::AsyncWork<Result>(env, []() -> Result {
         auto lst = MaaToolkitDesktopWindowListCreate();
@@ -474,6 +493,10 @@ maajs::PromiseType Win32ControllerImpl::find(maajs::EnvType env)
     });
     worker->Queue();
     return worker->Promise();
+#else
+    std::ignore = env;
+    throw_toolkit_unavailable("Win32Controller.find");
+#endif
 }
 
 Win32ControllerImpl* Win32ControllerImpl::ctor(const maajs::CallbackInfo& info)
@@ -577,6 +600,7 @@ WlRootsControllerImpl* WlRootsControllerImpl::ctor(const maajs::CallbackInfo& in
 
 maajs::PromiseType WlRootsControllerImpl::find(maajs::EnvType env)
 {
+#ifdef MAA_JS_WITH_TOOLKIT
     using Result = std::optional<std::vector<WlRootsCompositor>>;
     auto worker = new maajs::AsyncWork<Result>(env, []() -> Result {
         auto lst = MaaToolkitDesktopWindowListCreate();
@@ -602,6 +626,10 @@ maajs::PromiseType WlRootsControllerImpl::find(maajs::EnvType env)
     });
     worker->Queue();
     return worker->Promise();
+#else
+    std::ignore = env;
+    throw_toolkit_unavailable("WlRootsController.find");
+#endif
 }
 
 void WlRootsControllerImpl::init_proto(maajs::ObjectType, maajs::FunctionType ctor)

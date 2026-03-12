@@ -4,11 +4,11 @@ from maa.agent.agent_server import AgentServer
 from maa.custom_recognition import CustomRecognition
 from maa.custom_action import CustomAction
 from maa.context import Context
-from maa.toolkit import Toolkit
+from maa.tasker import Tasker
 
 
 def main():
-    Toolkit.init_option("./")
+    Tasker.set_log_dir("./debug")
 
     if len(sys.argv) < 2:
         print("Usage: python agent_main.py <socket_id>")

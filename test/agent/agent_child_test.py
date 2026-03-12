@@ -40,11 +40,10 @@ from maa.agent.agent_server import AgentServer
 
 from maa.resource import ResourceEventSink
 from maa.controller import ControllerEventSink
-from maa.tasker import TaskerEventSink
+from maa.tasker import Tasker, TaskerEventSink
 from maa.context import Context, ContextEventSink
 from maa.custom_action import CustomAction
 from maa.custom_recognition import CustomRecognition
-from maa.toolkit import Toolkit
 from maa.library import Library
 from maa.pipeline import JRecognitionType, JActionType, JOCR, JClick
 
@@ -381,6 +380,6 @@ class MyCtxSink(ContextEventSink):
 if __name__ == "__main__":
     print(f"AgentServer MaaFw Version: {Library.version()}")
 
-    Toolkit.init_option(install_dir / "bin")
+    Tasker.set_log_dir(install_dir / "bin" / "debug")
 
     main()

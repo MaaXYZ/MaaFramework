@@ -1,7 +1,12 @@
 #include "loader.h"
 
+#include <filesystem>
+#include <iostream>
+
 #include <MaaFramework/MaaAPI.h>
+#ifdef MAA_JS_WITH_TOOLKIT
 #include <MaaToolkit/MaaToolkitAPI.h>
+#endif
 
 #include "../foundation/spec.h"
 #include "buffer.h"
@@ -96,9 +101,16 @@ void set_reco_image_cache_limit(size_t value)
 
 void config_init_option(std::string user_path, maajs::OptionalParam<std::string> default_json)
 {
+#ifdef MAA_JS_WITH_TOOLKIT
     if (!MaaToolkitConfigInitOption(user_path.c_str(), default_json.value_or("{}").c_str())) {
         throw maajs::MaaError { "Global config_init_option failed" };
     }
+#else
+    std::ignore = default_json;
+    std::cout << "Warning: Global.config_init_option is deprecated in AgentServer; only set_log_dir is applied." << std::endl;
+    auto log_dir = (std::filesystem::path(user_path) / "debug").string();
+    set_log_dir(log_dir);
+#endif
 }
 
 maajs::ArrayBufferType resize_image(maajs::ArrayBufferType src, int32_t width, int32_t height)

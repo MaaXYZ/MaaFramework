@@ -62,12 +62,6 @@ class Library:
                 LINUX: "libMaaAgentServer.so",
             }
 
-        toolkit_library = {
-            WINDOWS: "MaaToolkit.dll",
-            MACOS: "libMaaToolkit.dylib",
-            LINUX: "libMaaToolkit.so",
-        }
-
         platform_type = platform.system().lower()
 
         if platform_type == WINDOWS:
@@ -79,12 +73,17 @@ class Library:
             raise
 
         if not cls.is_agent_server():
+            toolkit_library = {
+                WINDOWS: "MaaToolkit.dll",
+                MACOS: "libMaaToolkit.dylib",
+                LINUX: "libMaaToolkit.so",
+            }
+
             cls.framework_libpath = path / framework_library[platform_type]
             cls.agent_client_libpath = path / agent_client_library[platform_type]
+            cls.toolkit_libpath = path / toolkit_library[platform_type]
         else:
             cls.agent_server_libpath = path / agent_server_library[platform_type]
-
-        cls.toolkit_libpath = path / toolkit_library[platform_type]
 
     @classmethod
     def framework(cls) -> Union["ctypes.CDLL", "ctypes.WinDLL"]:
@@ -112,10 +111,16 @@ class Library:
         """获取 MaaToolkit 库 / Get MaaToolkit library
 
         Returns:
-            (ctypes.CDLL | ctypes.WinDLL): MaaFramework 动态库对象 / MaaFramework dynamic library object
+            (ctypes.CDLL | ctypes.WinDLL): MaaToolkit 动态库对象 / MaaToolkit dynamic library object
+
+        Raises:
+            ValueError: 如果在 AgentServer 模式下调用
         """
         if cls._lib_type is None:
             raise RuntimeError("Library._lib_type is None!")
+
+        if cls.is_agent_server():
+            raise ValueError("Toolkit is not available in AgentServer context.")
 
         if not cls._toolkit:
             cls._toolkit = cls._lib_type(str(cls.toolkit_libpath))
