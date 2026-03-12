@@ -1,8 +1,5 @@
 #pragma once
 
-#include <filesystem>
-#include <string_view>
-
 #include "Common/Conf.h"
 #include "MaaFramework/MaaDef.h"
 #include "MaaUtils/SingletonHolder.hpp"

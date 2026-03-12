@@ -111,7 +111,7 @@ class Library:
         """获取 MaaToolkit 库 / Get MaaToolkit library
 
         Returns:
-            (ctypes.CDLL | ctypes.WinDLL): MaaFramework 动态库对象 / MaaFramework dynamic library object
+            (ctypes.CDLL | ctypes.WinDLL): MaaToolkit 动态库对象 / MaaToolkit dynamic library object
 
         Raises:
             ValueError: 如果在 AgentServer 模式下调用
