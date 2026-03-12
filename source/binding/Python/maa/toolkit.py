@@ -70,6 +70,16 @@ class Toolkit:
         Returns:
             bool: 是否成功 / Whether successful
         """
+        if Library.is_agent_server():
+            from .tasker import Tasker
+
+            print(
+                "Warning: Toolkit.init_option is deprecated in AgentServer; only set_log_dir is applied."
+            )
+            config = default_config if isinstance(default_config, dict) else {}
+            log_dir = Path(user_path) / "debug" if config.get("logging", True) else ""
+            return Tasker.set_log_dir(log_dir)
+
         Toolkit._set_api_properties()
 
         return bool(

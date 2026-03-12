@@ -1,5 +1,8 @@
 #include "loader.h"
 
+#include <filesystem>
+#include <iostream>
+
 #include <MaaFramework/MaaAPI.h>
 #ifdef MAA_JS_WITH_TOOLKIT
 #include <MaaToolkit/MaaToolkitAPI.h>
@@ -7,15 +10,6 @@
 
 #include "../foundation/spec.h"
 #include "buffer.h"
-
-namespace {
-
-[[noreturn]] void throw_toolkit_unavailable(const char* api)
-{
-    throw maajs::MaaError { std::format("{} is not available in AgentServer builds", api) };
-}
-
-} // namespace
 
 std::string version_from_macro()
 {
@@ -112,9 +106,12 @@ void config_init_option(std::string user_path, maajs::OptionalParam<std::string>
         throw maajs::MaaError { "Global config_init_option failed" };
     }
 #else
-    (void) user_path;
     (void) default_json;
-    throw_toolkit_unavailable("Global config_init_option");
+    std::cout
+        << "Warning: Global.config_init_option is deprecated in AgentServer; only set_log_dir is applied."
+        << std::endl;
+    auto log_dir = (std::filesystem::path(user_path) / "debug").string();
+    set_log_dir(log_dir);
 #endif
 }
 
