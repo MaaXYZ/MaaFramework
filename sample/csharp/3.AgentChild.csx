@@ -20,7 +20,6 @@ var dllPath = commandLineArgs[^3];
 MaaAgentServer.Current
     .WithIdentifier(socketId)
     .WithNativeLibrary(dllPath)
-    .WithToolkitConfig_InitOption(userPath)
     .Register(new MyRec())
     .Register(new MyAct())
     .StartUp()

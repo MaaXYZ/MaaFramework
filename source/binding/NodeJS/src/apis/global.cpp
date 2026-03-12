@@ -1,10 +1,21 @@
 #include "loader.h"
 
 #include <MaaFramework/MaaAPI.h>
+#ifdef MAA_JS_WITH_TOOLKIT
 #include <MaaToolkit/MaaToolkitAPI.h>
+#endif
 
 #include "../foundation/spec.h"
 #include "buffer.h"
+
+namespace {
+
+[[noreturn]] void throw_toolkit_unavailable(const char* api)
+{
+    throw maajs::MaaError { std::format("{} is not available in AgentServer builds", api) };
+}
+
+} // namespace
 
 std::string version_from_macro()
 {
@@ -96,9 +107,15 @@ void set_reco_image_cache_limit(size_t value)
 
 void config_init_option(std::string user_path, maajs::OptionalParam<std::string> default_json)
 {
+#ifdef MAA_JS_WITH_TOOLKIT
     if (!MaaToolkitConfigInitOption(user_path.c_str(), default_json.value_or("{}").c_str())) {
         throw maajs::MaaError { "Global config_init_option failed" };
     }
+#else
+    (void) user_path;
+    (void) default_json;
+    throw_toolkit_unavailable("Global config_init_option");
+#endif
 }
 
 maajs::ArrayBufferType resize_image(maajs::ArrayBufferType src, int32_t width, int32_t height)
