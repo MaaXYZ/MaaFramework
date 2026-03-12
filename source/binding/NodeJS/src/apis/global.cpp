@@ -106,10 +106,8 @@ void config_init_option(std::string user_path, maajs::OptionalParam<std::string>
         throw maajs::MaaError { "Global config_init_option failed" };
     }
 #else
-    (void) default_json;
-    std::cout
-        << "Warning: Global.config_init_option is deprecated in AgentServer; only set_log_dir is applied."
-        << std::endl;
+    std::ignore = default_json;
+    std::cout << "Warning: Global.config_init_option is deprecated in AgentServer; only set_log_dir is applied." << std::endl;
     auto log_dir = (std::filesystem::path(user_path) / "debug").string();
     set_log_dir(log_dir);
 #endif

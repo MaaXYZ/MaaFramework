@@ -12,9 +12,10 @@
 #include "callback.h"
 #include "ext.h"
 
-namespace {
+namespace
+{
 
-[[noreturn]] void throw_toolkit_unavailable(const char* api)
+[[maybe_unused]] [[noreturn]] void throw_toolkit_unavailable(const char* api)
 {
     throw maajs::MaaError { std::format("{} is not available in AgentServer builds", api) };
 }
@@ -428,8 +429,8 @@ maajs::PromiseType AdbControllerImpl::find(maajs::EnvType env, maajs::OptionalPa
     worker->Queue();
     return worker->Promise();
 #else
-    (void) env;
-    (void) adb;
+    std::ignore = env;
+    std::ignore = adb;
     throw_toolkit_unavailable("AdbController.find");
 #endif
 }
@@ -493,7 +494,7 @@ maajs::PromiseType Win32ControllerImpl::find(maajs::EnvType env)
     worker->Queue();
     return worker->Promise();
 #else
-    (void) env;
+    std::ignore = env;
     throw_toolkit_unavailable("Win32Controller.find");
 #endif
 }
@@ -626,7 +627,7 @@ maajs::PromiseType WlRootsControllerImpl::find(maajs::EnvType env)
     worker->Queue();
     return worker->Promise();
 #else
-    (void) env;
+    std::ignore = env;
     throw_toolkit_unavailable("WlRootsController.find");
 #endif
 }
