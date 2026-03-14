@@ -86,7 +86,7 @@ bool PipelineTask::run()
             save_on_error(node.name);
         }
 
-        if (next.empty() && !jumpback_stack.empty()) {
+        if (next.empty() && !error_handling && !jumpback_stack.empty()) {
             auto top = std::move(jumpback_stack.top());
             LogInfo << "pop jumpback_stack:" << top;
             jumpback_stack.pop();
