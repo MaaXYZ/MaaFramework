@@ -679,8 +679,14 @@ ActionResult
     auto session = tasker_->resource()->custom_action(param.name);
     auto rect = helper_.get_target_rect(param.target, box);
     if (rect.empty()) {
-        LogError << "failed to get target rect" << VAR(name);
-        return { };
+        if (param.target.type != MAA_RES_NS::Action::Target::Type::Self) {
+            LogError << "failed to get target rect" << VAR(name);
+            return { };
+        }
+
+        // Non-visual custom actions may intentionally use the default self target
+        // even when the current recognition box is empty (e.g. after closing a window).
+        LogWarn << "custom action target rect is empty, continue with empty rect" << VAR(name) << VAR(param.name);
     }
     bool ret = CustomAction::run(context_, name, session, param, reco_id, rect);
 
