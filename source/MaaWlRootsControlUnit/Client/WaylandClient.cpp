@@ -401,6 +401,9 @@ bool WaylandClient::create_buffer(int format, int width, int height, int stride)
 bool WaylandClient::close_buffer()
 {
     if (!connected_) {
+        if (buffer_) {
+            buffer_.reset(); // Close memfd only
+        }
         return true;
     }
 
