@@ -191,7 +191,7 @@ bool PostToPidInput::post_mouse_event(CGEventType type, int x, int y)
 {
     // NSEvent 使用 AppKit 坐标系（原点在主屏左下角，Y 向上），
     // 而传入的坐标是 CGEvent 坐标系（原点在左上角，Y 向下），需要翻转 Y。
-    CGPoint appkitLocation = CGPointMake(x, window_h_ - y);
+    NSPoint appkitLocation = NSMakePoint(x, window_h_ - y);
 
     NSEvent* nsEvent = [NSEvent mouseEventWithType:(NSEventType)type
                                           location:appkitLocation
