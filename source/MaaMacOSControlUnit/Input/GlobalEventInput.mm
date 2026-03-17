@@ -269,7 +269,6 @@ bool GlobalEventInput::activate_window(pid_t target_pid)
     NSRunningApplication* app = [NSRunningApplication runningApplicationWithProcessIdentifier:target_pid];
     if (app) {
         [app activateWithOptions:NSApplicationActivateIgnoringOtherApps];
-        usleep(200000); // 等待窗口激活
         return true;
     }
 
