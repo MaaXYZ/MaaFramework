@@ -13,77 +13,25 @@ MAA_CTRL_UNIT_NS_BEGIN
 
 MaaControllerFeature GlobalEventInput::get_features() const
 {
-    return MaaControllerFeature_None;
+    return MaaControllerFeature_UseMouseDownAndUpInsteadOfClick | MaaControllerFeature_UseKeyboardDownAndUpInsteadOfClick;
 }
 
+// get_features() 返回 MaaControllerFeature_UseMouseDownAndUpInsteadOfClick，
+// 上层 ControllerAgent 会使用 touch_down/touch_up 替代 click/swipe
 bool GlobalEventInput::click(int x, int y)
 {
-    // 先激活窗口
-    if (!activate_window(pid_)) {
-        LogWarn << "Warning: Failed to activate window, click may not work";
-    }
-
-    // 计算点击位置的绝对坐标
-    CGPoint location = CGPointMake(x + offset_x_, y + offset_y_);
-
-    // 移动鼠标到目标位置
-    if (!post_mouse_event(kCGEventMouseMoved, location)) {
-        LogError << "Failed to post mouse move event";
-        return false;
-    }
-
-    usleep(10000);
-
-    // 鼠标按下
-    if (!post_mouse_event(kCGEventLeftMouseDown, location)) {
-        LogError << "Failed to post mouse down event";
-        return false;
-    }
-
-    usleep(10000);
-
-    // 鼠标释放
-    if (!post_mouse_event(kCGEventLeftMouseUp, location)) {
-        LogError << "Failed to post mouse up event";
-        return false;
-    }
-
-    return true;
+    LogError << "deprecated: get_features() returns MaaControllerFeature_UseMouseDownAndUpInsteadOfClick, "
+                "use touch_down/touch_up instead"
+             << VAR(x) << VAR(y);
+    return false;
 }
 
 bool GlobalEventInput::swipe(int x1, int y1, int x2, int y2, int duration)
 {
-    // 简单的滑动实现：从起点移动到终点
-
-    // 先激活窗口
-    if (!activate_window(pid_)) {
-        LogWarn << "Warning: Failed to activate window, swipe may not work";
-    }
-
-    CGPoint start_location = CGPointMake(x1 + offset_x_, y1 + offset_y_);
-    CGPoint end_location = CGPointMake(x2 + offset_x_, y2 + offset_y_);
-
-    // 按下
-    if (!post_mouse_event(kCGEventLeftMouseDown, start_location, kCGMouseButtonLeft)) {
-        LogError << "Failed to post mouse down event";
-        return false;
-    }
-    usleep(10000);
-
-    // 移动到终点
-    if (!post_mouse_event(kCGEventLeftMouseDragged, end_location, kCGMouseButtonLeft)) {
-        LogError << "Failed to post mouse dragged event";
-        return false;
-    }
-    usleep(duration * 1000); // 等待指定的持续时间
-
-    // 释放
-    if (!post_mouse_event(kCGEventLeftMouseUp, end_location, kCGMouseButtonLeft)) {
-        LogError << "Failed to post mouse up event";
-        return false;
-    }
-
-    return true;
+    LogError << "deprecated: get_features() returns MaaControllerFeature_UseMouseDownAndUpInsteadOfClick, "
+                "use touch_down/touch_move/touch_up instead"
+             << VAR(x1) << VAR(y1) << VAR(x2) << VAR(y2) << VAR(duration);
+    return false;
 }
 
 bool GlobalEventInput::touch_down(int contact, int x, int y, int pressure)
@@ -147,30 +95,14 @@ bool GlobalEventInput::touch_up(int contact)
     return true;
 }
 
+// get_features() 返回 MaaControllerFeature_UseKeyboardDownAndUpInsteadOfClick，
+// 上层 ControllerAgent 会使用 key_down/key_up 替代 click_key
 bool GlobalEventInput::click_key(int key)
 {
-    CGKeyCode key_code = (CGKeyCode)key;
-
-    // 先激活窗口
-    if (!activate_window(pid_)) {
-        LogWarn << "Warning: Failed to activate window, click_key may not work";
-    }
-
-    // 键盘按下
-    if (!post_keyboard_event(key_code, true)) {
-        LogError << "Failed to post keyboard down event";
-        return false;
-    }
-
-    usleep(10000);
-
-    // 键盘释放
-    if (!post_keyboard_event(key_code, false)) {
-        LogError << "Failed to post keyboard up event";
-        return false;
-    }
-
-    return true;
+    LogError << "deprecated: get_features() returns MaaControllerFeature_UseKeyboardDownAndUpInsteadOfClick, "
+                "use key_down/key_up instead"
+             << VAR(key);
+    return false;
 }
 
 bool GlobalEventInput::input_text(const std::string& text)

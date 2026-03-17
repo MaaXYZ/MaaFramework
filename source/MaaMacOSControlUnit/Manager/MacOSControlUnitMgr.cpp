@@ -67,7 +67,12 @@ bool MacOSControlUnitMgr::request_uuid(std::string& uuid)
 
 MaaControllerFeature MacOSControlUnitMgr::get_features() const
 {
-    return MaaControllerFeature_None;
+    MaaControllerFeature feat = MaaControllerFeature_None;
+    if (input_) {
+        feat |= input_->get_features()
+                & (MaaControllerFeature_UseMouseDownAndUpInsteadOfClick | MaaControllerFeature_UseKeyboardDownAndUpInsteadOfClick);
+    }
+    return feat;
 }
 
 bool MacOSControlUnitMgr::start_app(const std::string& intent)
