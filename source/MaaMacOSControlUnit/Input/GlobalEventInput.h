@@ -13,7 +13,7 @@ public:
     GlobalEventInput(uint32_t window_id)
         : window_id_(window_id)
     {
-        auto [pid, offset_x, offset_y] = get_window_info(window_id);
+        auto [pid, offset_x, offset_y] = get_window_info();
         pid_ = pid;
         offset_x_ = offset_x;
         offset_y_ = offset_y;
@@ -41,7 +41,7 @@ public: // from InputBase
 
 private:
     bool activate_window(pid_t target_pid);
-    std::tuple<pid_t, int, int> get_window_info(uint32_t window_id);
+    std::tuple<pid_t, int, int> get_window_info();
 
     // 工具函数：创建、发送并释放 CGEvent
     bool post_mouse_event(CGEventType type, CGPoint location, CGMouseButton button = kCGMouseButtonLeft);

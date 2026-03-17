@@ -254,6 +254,11 @@ bool GlobalEventInput::scroll(int dx, int dy)
 
 bool GlobalEventInput::activate_window(pid_t target_pid)
 {
+    // 全屏情况
+    if (window_id_ == 0) {
+        return true;
+    }
+
     if (target_pid <= 0) {
         LogError << "Invalid target PID: " << target_pid;
         return false;
@@ -271,14 +276,19 @@ bool GlobalEventInput::activate_window(pid_t target_pid)
     return false;
 }
 
-std::tuple<pid_t, int, int> GlobalEventInput::get_window_info(uint32_t window_id)
+std::tuple<pid_t, int, int> GlobalEventInput::get_window_info()
 {
     pid_t pid = -1;
     int offset_x = 0;
     int offset_y = 0;
 
+    // 全屏情况
+    if (window_id_ == 0) {
+        return { pid, offset_x, offset_y };
+    }
+
     // 获取窗口信息
-    CFArrayRef window_list = CGWindowListCopyWindowInfo(kCGWindowListOptionIncludingWindow, window_id);
+    CFArrayRef window_list = CGWindowListCopyWindowInfo(kCGWindowListOptionIncludingWindow, window_id_);
 
     if (!window_list || CFArrayGetCount(window_list) == 0) {
         if (window_list) {
