@@ -38,7 +38,7 @@ async function main() {
 
     const socket_id = process.argv[process.argv.length - 1]
 
-    maa.AgentServer.start_up(socket_id)
+    await maa.AgentServer.start_up(socket_id)
 
     maa.AgentServer.register_custom_recognizer('MyRecongition', my_reco)
 

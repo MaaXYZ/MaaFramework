@@ -22,7 +22,7 @@ MAA_CTRL_NS_BEGIN
 
 struct ClickParam
 {
-    cv::Point point {};
+    cv::Point point { };
     int contact = 0;
     int pressure = 1;
 
@@ -31,7 +31,7 @@ struct ClickParam
 
 struct LongPressParam
 {
-    cv::Point point {};
+    cv::Point point { };
     uint duration = 0;
     int contact = 0;
     int pressure = 1;
@@ -41,7 +41,7 @@ struct LongPressParam
 
 struct SwipeParam
 {
-    cv::Point begin {};
+    cv::Point begin { };
     std::vector<cv::Point> end;
     std::vector<uint> end_hold;
     std::vector<uint> duration;
@@ -63,10 +63,18 @@ struct MultiSwipeParam
 struct TouchParam
 {
     int contact = 0;
-    cv::Point point {};
+    cv::Point point { };
     int pressure = 0;
 
     MEO_TOJSON(contact, point, pressure);
+};
+
+struct RelativeMoveParam
+{
+    int dx = 0;
+    int dy = 0;
+
+    MEO_TOJSON(dx, dy);
 };
 
 struct ClickKeyParam
@@ -100,7 +108,7 @@ struct AppParam
 
 struct ScrollParam
 {
-    cv::Point point {};
+    cv::Point point { };
     int dx = 0;
     int dy = 0;
 
@@ -127,7 +135,8 @@ using Param = std::variant<
     InputTextParam,
     AppParam,
     ScrollParam,
-    ShellParam>;
+    ShellParam,
+    RelativeMoveParam>;
 
 struct Action
 {
@@ -152,6 +161,8 @@ struct Action
         key_up,
         scroll,
         shell,
+        relative_move,
+        inactive,
     } type = Type::invalid;
 
     Param param;
@@ -179,12 +190,16 @@ public: // MaaController
     virtual MaaCtrlId post_touch_move(int contact, int x, int y, int pressure) override;
     virtual MaaCtrlId post_touch_up(int contact) override;
 
+    virtual MaaCtrlId post_relative_move(int dx, int dy) override;
+
     virtual MaaCtrlId post_key_down(int keycode) override;
     virtual MaaCtrlId post_key_up(int keycode) override;
 
     virtual MaaCtrlId post_scroll(int dx, int dy) override;
 
     virtual MaaCtrlId post_shell(const std::string& cmd, int64_t timeout = 20000) override;
+
+    virtual MaaCtrlId post_inactive() override;
 
     virtual MaaStatus status(MaaCtrlId ctrl_id) const override;
     virtual MaaStatus wait(MaaCtrlId ctrl_id) const override;
@@ -196,6 +211,8 @@ public: // MaaController
     virtual std::string get_uuid() override;
 
     virtual bool get_resolution(int32_t& width, int32_t& height) const override;
+
+    virtual json::object get_info() const override;
 
     virtual MaaSinkId add_sink(MaaEventCallback callback, void* trans_arg) override;
     virtual void remove_sink(MaaSinkId sink_id) override;
@@ -213,6 +230,8 @@ public: // for Actuator
     bool touch_down(TouchParam p);
     bool touch_move(TouchParam p);
     bool touch_up(TouchParam p);
+
+    bool relative_move(RelativeMoveParam p);
 
     bool click_key(ClickKeyParam p);
     bool long_press_key(LongPressKeyParam p);
@@ -237,6 +256,7 @@ private:
     bool handle_touch_down(const TouchParam& param);
     bool handle_touch_move(const TouchParam& param);
     bool handle_touch_up(const TouchParam& param);
+    bool handle_relative_move(const RelativeMoveParam& param);
     bool handle_click_key(const ClickKeyParam& param);
     bool handle_long_press_key(const LongPressKeyParam& param);
     bool handle_input_text(const InputTextParam& param);
@@ -247,6 +267,7 @@ private:
     bool handle_key_up(const ClickKeyParam& param);
     bool handle_scroll(const ScrollParam& param);
     bool handle_shell(const ShellParam& param);
+    bool handle_inactive();
 
     MaaCtrlId post(Action action);
     MaaCtrlId focus_id(MaaCtrlId id);

@@ -17,10 +17,11 @@ var socketId = commandLineArgs[^1];
 var userPath = commandLineArgs[^2];
 var dllPath = commandLineArgs[^3];
 
+MaaUtility.Shared.SetOption_LogDir(System.IO.Path.Combine(userPath, "debug"));
+
 MaaAgentServer.Current
     .WithIdentifier(socketId)
     .WithNativeLibrary(dllPath)
-    .WithToolkitConfig_InitOption(userPath)
     .Register(new MyRec())
     .Register(new MyAct())
     .StartUp()

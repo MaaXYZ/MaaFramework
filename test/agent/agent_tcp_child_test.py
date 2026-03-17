@@ -11,6 +11,6 @@ from agent_child_test import *
 if __name__ == "__main__":
     print(f"AgentServer (TCP) MaaFw Version: {Library.version()}")
 
-    Toolkit.init_option(install_dir / "bin")
+    Tasker.set_log_dir(install_dir / "bin" / "debug")
 
     main()

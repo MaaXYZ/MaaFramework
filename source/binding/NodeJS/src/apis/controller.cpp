@@ -2,13 +2,25 @@
 #include "loader.h"
 
 #include <MaaFramework/MaaAPI.h>
+#ifdef MAA_JS_WITH_TOOLKIT
 #include <MaaToolkit/MaaToolkitAPI.h>
+#endif
 
 #include "../foundation/spec.h"
 #include "../utils/library.h"
 #include "buffer.h"
 #include "callback.h"
 #include "ext.h"
+
+namespace
+{
+
+[[maybe_unused]] [[noreturn]] void throw_toolkit_unavailable(const char* api)
+{
+    throw maajs::MaaError { std::format("{} is not available in AgentServer builds", api) };
+}
+
+} // namespace
 
 maajs::ValueType ImageJobImpl::get()
 {
@@ -197,6 +209,12 @@ maajs::ValueType ControllerImpl::post_touch_up(maajs::ValueType self, maajs::Env
     return maajs::CallCtorHelper(ExtContext::get(env)->jobCtor, self, id);
 }
 
+maajs::ValueType ControllerImpl::post_relative_move(maajs::ValueType self, maajs::EnvType, int32_t dx, int32_t dy)
+{
+    auto id = MaaControllerPostRelativeMove(controller, dx, dy);
+    return maajs::CallCtorHelper(ExtContext::get(env)->jobCtor, self, id);
+}
+
 maajs::ValueType ControllerImpl::post_key_down(maajs::ValueType self, maajs::EnvType, int32_t keycode)
 {
     auto id = MaaControllerPostKeyDown(controller, keycode);
@@ -212,6 +230,12 @@ maajs::ValueType ControllerImpl::post_key_up(maajs::ValueType self, maajs::EnvTy
 maajs::ValueType ControllerImpl::post_scroll(maajs::ValueType self, maajs::EnvType, int32_t dx, int32_t dy)
 {
     auto id = MaaControllerPostScroll(controller, dx, dy);
+    return maajs::CallCtorHelper(ExtContext::get(env)->jobCtor, self, id);
+}
+
+maajs::ValueType ControllerImpl::post_inactive(maajs::ValueType self, maajs::EnvType)
+{
+    auto id = MaaControllerPostInactive(controller);
     return maajs::CallCtorHelper(ExtContext::get(env)->jobCtor, self, id);
 }
 
@@ -264,6 +288,15 @@ std::optional<std::tuple<int32_t, int32_t>> ControllerImpl::get_resolution()
         return std::nullopt;
     }
     return std::make_tuple(width, height);
+}
+
+std::optional<std::string> ControllerImpl::get_info()
+{
+    StringBuffer buf;
+    if (!MaaControllerGetInfo(controller, buf)) {
+        return std::nullopt;
+    }
+    return buf.str();
 }
 
 std::string ControllerImpl::to_string()
@@ -326,9 +359,11 @@ void ControllerImpl::init_proto(maajs::ObjectType proto, maajs::FunctionType)
     MAA_BIND_FUNC(proto, "post_touch_down", ControllerImpl::post_touch_down);
     MAA_BIND_FUNC(proto, "post_touch_move", ControllerImpl::post_touch_move);
     MAA_BIND_FUNC(proto, "post_touch_up", ControllerImpl::post_touch_up);
+    MAA_BIND_FUNC(proto, "post_relative_move", ControllerImpl::post_relative_move);
     MAA_BIND_FUNC(proto, "post_key_down", ControllerImpl::post_key_down);
     MAA_BIND_FUNC(proto, "post_key_up", ControllerImpl::post_key_up);
     MAA_BIND_FUNC(proto, "post_scroll", ControllerImpl::post_scroll);
+    MAA_BIND_FUNC(proto, "post_inactive", ControllerImpl::post_inactive);
     MAA_BIND_FUNC(proto, "post_screencap", ControllerImpl::post_screencap);
     MAA_BIND_FUNC(proto, "status", ControllerImpl::status);
     MAA_BIND_FUNC(proto, "wait", ControllerImpl::wait);
@@ -336,6 +371,7 @@ void ControllerImpl::init_proto(maajs::ObjectType proto, maajs::FunctionType)
     MAA_BIND_GETTER(proto, "cached_image", ControllerImpl::get_cached_image);
     MAA_BIND_GETTER(proto, "uuid", ControllerImpl::get_uuid);
     MAA_BIND_GETTER(proto, "resolution", ControllerImpl::get_resolution);
+    MAA_BIND_GETTER(proto, "info", ControllerImpl::get_info);
 }
 
 maajs::ValueType load_controller(maajs::EnvType env)
@@ -356,6 +392,7 @@ std::string AdbControllerImpl::agent_path()
 
 maajs::PromiseType AdbControllerImpl::find(maajs::EnvType env, maajs::OptionalParam<std::string> adb)
 {
+#ifdef MAA_JS_WITH_TOOLKIT
     using Result = std::optional<std::vector<AdbDevice>>;
     auto worker = new maajs::AsyncWork<Result>(env, [adb]() -> Result {
         auto lst = MaaToolkitAdbDeviceListCreate();
@@ -391,6 +428,11 @@ maajs::PromiseType AdbControllerImpl::find(maajs::EnvType env, maajs::OptionalPa
     });
     worker->Queue();
     return worker->Promise();
+#else
+    std::ignore = env;
+    std::ignore = adb;
+    throw_toolkit_unavailable("AdbController.find");
+#endif
 }
 
 AdbControllerImpl* AdbControllerImpl::ctor(const maajs::CallbackInfo& info)
@@ -425,6 +467,7 @@ maajs::ValueType load_adb_controller(maajs::EnvType env)
 
 maajs::PromiseType Win32ControllerImpl::find(maajs::EnvType env)
 {
+#ifdef MAA_JS_WITH_TOOLKIT
     using Result = std::optional<std::vector<Win32Device>>;
     auto worker = new maajs::AsyncWork<Result>(env, []() -> Result {
         auto lst = MaaToolkitDesktopWindowListCreate();
@@ -450,6 +493,10 @@ maajs::PromiseType Win32ControllerImpl::find(maajs::EnvType env)
     });
     worker->Queue();
     return worker->Promise();
+#else
+    std::ignore = env;
+    throw_toolkit_unavailable("Win32Controller.find");
+#endif
 }
 
 Win32ControllerImpl* Win32ControllerImpl::ctor(const maajs::CallbackInfo& info)
@@ -593,6 +640,63 @@ maajs::ValueType load_gamepad_controller(maajs::EnvType env)
     return ctor;
 }
 
+WlRootsControllerImpl* WlRootsControllerImpl::ctor(const maajs::CallbackInfo& info)
+{
+    auto [wlr_socket_path] = maajs::UnWrapArgs<WlRootsControllerCtorParam, void>(info);
+    auto ctrl = MaaWlRootsControllerCreate(wlr_socket_path.c_str());
+    if (!ctrl) {
+        return nullptr;
+    }
+    return new WlRootsControllerImpl(ctrl, true);
+}
+
+maajs::PromiseType WlRootsControllerImpl::find(maajs::EnvType env)
+{
+#ifdef MAA_JS_WITH_TOOLKIT
+    using Result = std::optional<std::vector<WlRootsCompositor>>;
+    auto worker = new maajs::AsyncWork<Result>(env, []() -> Result {
+        auto lst = MaaToolkitDesktopWindowListCreate();
+        if (!MaaToolkitDesktopWindowFindAll(lst)) {
+            MaaToolkitDesktopWindowListDestroy(lst);
+            return std::nullopt;
+        }
+
+        std::vector<WlRootsCompositor> result;
+        auto size = MaaToolkitDesktopWindowListSize(lst);
+        result.reserve(size);
+        for (size_t i = 0; i < size; i++) {
+            auto dev = MaaToolkitDesktopWindowListAt(lst, i);
+            result.push_back(
+                std::make_tuple(
+                    reinterpret_cast<uint64_t>(MaaToolkitDesktopWindowGetHandle(dev)),
+                    std::string(MaaToolkitDesktopWindowGetClassName(dev)),
+                    std::string(MaaToolkitDesktopWindowGetWindowName(dev))));
+        }
+        MaaToolkitDesktopWindowListDestroy(lst);
+
+        return result;
+    });
+    worker->Queue();
+    return worker->Promise();
+#else
+    std::ignore = env;
+    throw_toolkit_unavailable("WlRootsController.find");
+#endif
+}
+
+void WlRootsControllerImpl::init_proto(maajs::ObjectType, maajs::FunctionType ctor)
+{
+    MAA_BIND_FUNC(ctor, "find", find);
+}
+
+maajs::ValueType load_wlroots_controller(maajs::EnvType env)
+{
+    maajs::FunctionType ctor;
+    maajs::NativeClass<WlRootsControllerImpl>::init<ControllerImpl>(env, ctor, &ExtContext::get(env)->controllerCtor);
+    ExtContext::get(env)->wlrootsControllerCtor = maajs::PersistentFunction(ctor);
+    return ctor;
+}
+
 CustomControllerContext::~CustomControllerContext()
 {
     for (const auto& [_, ctx] : callbacks) {
@@ -675,7 +779,6 @@ CustomControllerImpl* CustomControllerImpl::ctor(const maajs::CallbackInfo& info
 
     context->add_bind(info.Env(), "connect", "CustomConnect", 0, actor, ret_false);
     // context->add_bind(info.Env(), "connected", "CustomConnected", 0, actor, ret_true);
-    std::ignore = ret_true;
     context->add_bind(info.Env(), "request_uuid", "CustomRequestUuid", 0, actor, ret_null);
     context->add_bind(info.Env(), "get_features", "CustomGetFeatures", 0, actor, ret_null);
     context->add_bind(info.Env(), "start_app", "CustomStartApp", 1, actor, ret_false);
@@ -691,6 +794,8 @@ CustomControllerImpl* CustomControllerImpl::ctor(const maajs::CallbackInfo& info
     context->add_bind(info.Env(), "key_down", "CustomKeyDown", 1, actor, ret_false);
     context->add_bind(info.Env(), "key_up", "CustomKeyUp", 1, actor, ret_false);
     context->add_bind(info.Env(), "scroll", "CustomScroll", 2, actor, ret_false);
+    context->add_bind(info.Env(), "inactive", "CustomInactive", 0, actor, ret_true);
+    context->add_bind(info.Env(), "get_info", "CustomGetInfo", 0, actor, ret_null);
 
     auto impl = new CustomControllerImpl(ctrl, true);
     impl->actor = actor;

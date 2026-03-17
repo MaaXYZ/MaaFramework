@@ -18,6 +18,7 @@ __all__ = [
     "PlayCoverController",
     "Win32Controller",
     "GamepadController",
+    "WlRootsController",
     "CustomController",
 ]
 
@@ -238,6 +239,21 @@ class Controller:
         ctrl_id = Library.framework().MaaControllerPostTouchUp(self._handle, contact)
         return self._gen_ctrl_job(ctrl_id)
 
+    def post_relative_move(self, dx: int, dy: int) -> Job:
+        """异步执行一次相对位移 (当前仅 Win32 controller 支持) / Asynchronously execute a relative movement (Currently only supported by Win32 controller)
+
+        Args:
+            dx: x 方向移动偏移 / x axis offset
+            dy: y 方向移动偏移 / y axis offset
+
+        Returns:
+            Job: 作业对象 / Job object
+        """
+        ctrl_id = Library.framework().MaaControllerPostRelativeMove(
+            self._handle, dx, dy
+        )
+        return self._gen_ctrl_job(ctrl_id)
+
     def post_scroll(self, dx: int, dy: int) -> Job:
         """滚动 / Scroll
 
@@ -249,7 +265,7 @@ class Controller:
             Job: 作业对象 / Job object
 
         Note:
-            不是所有控制器都支持滚动操作 / Not all controllers support scroll operation
+            Win32 控制器和实现了 scroll 的自定义控制器支持滚动操作 / Win32 controllers and custom controllers that implement scroll support this operation
             建议使用 120 的整数倍（WHEEL_DELTA）以获得最佳兼容性 / Using multiples of 120 (WHEEL_DELTA) is recommended
         """
         ctrl_id = Library.framework().MaaControllerPostScroll(self._handle, dx, dy)
@@ -314,6 +330,21 @@ class Controller:
             self._get_shell_output,
         )
 
+    def post_inactive(self) -> Job:
+        """设置控制器为不活跃状态 / Set controller to inactive state
+
+        对于 Win32 控制器，这会恢复窗口位置（取消置顶）并解除输入阻断。
+        对于其他控制器，这是一个空操作，总是成功。
+
+        For Win32 controllers, this restores window position (removes topmost) and unblocks user input.
+        For other controllers, this is a no-op that always succeeds.
+
+        Returns:
+            Job: 作业对象，可通过 status/wait 查询状态 / Job object, can query status via status/wait
+        """
+        ctrl_id = Library.framework().MaaControllerPostInactive(self._handle)
+        return self._gen_ctrl_job(ctrl_id)
+
     @property
     def shell_output(self) -> str:
         """获取最近一次 shell 命令输出 / Get the latest shell command output
@@ -354,6 +385,23 @@ class Controller:
         if not Library.framework().MaaControllerGetUuid(self._handle, buffer._handle):
             raise RuntimeError("Failed to get UUID.")
         return buffer.get()
+
+    @property
+    def info(self) -> Dict[str, Any]:
+        """获取控制器信息 / Get controller information
+
+        Returns:
+            Dict[str, Any]: 控制器信息，包含类型、构造参数等 / Controller information including type, constructor parameters, etc.
+
+        Raises:
+            RuntimeError: 如果获取失败
+        """
+        buffer = StringBuffer()
+        if not Library.framework().MaaControllerGetInfo(
+            self._handle, buffer._handle
+        ):
+            raise RuntimeError("Failed to get controller info.")
+        return json.loads(buffer.get())
 
     @property
     def resolution(self) -> Tuple[int, int]:
@@ -619,11 +667,23 @@ class Controller:
             c_int32,
         ]
 
+        Library.framework().MaaControllerPostRelativeMove.restype = MaaCtrlId
+        Library.framework().MaaControllerPostRelativeMove.argtypes = [
+            MaaControllerHandle,
+            c_int32,
+            c_int32,
+        ]
+
         Library.framework().MaaControllerPostScroll.restype = MaaCtrlId
         Library.framework().MaaControllerPostScroll.argtypes = [
             MaaControllerHandle,
             c_int32,
             c_int32,
+        ]
+
+        Library.framework().MaaControllerPostInactive.restype = MaaCtrlId
+        Library.framework().MaaControllerPostInactive.argtypes = [
+            MaaControllerHandle,
         ]
 
         Library.framework().MaaControllerStatus.restype = MaaStatus
@@ -658,6 +718,12 @@ class Controller:
             MaaControllerHandle,
             ctypes.POINTER(ctypes.c_int32),
             ctypes.POINTER(ctypes.c_int32),
+        ]
+
+        Library.framework().MaaControllerGetInfo.restype = MaaBool
+        Library.framework().MaaControllerGetInfo.argtypes = [
+            MaaControllerHandle,
+            MaaStringBufferHandle,
         ]
 
         Library.framework().MaaControllerAddSink.restype = MaaSinkId
@@ -745,7 +811,7 @@ class Win32Controller(Controller):
     def __init__(
         self,
         hWnd: Union[ctypes.c_void_p, int, None],
-        screencap_method: int = MaaWin32ScreencapMethodEnum.FramePool,
+        screencap_method: int = MaaWin32ScreencapMethodEnum.Background,
         mouse_method: int = MaaWin32InputMethodEnum.Seize,
         keyboard_method: int = MaaWin32InputMethodEnum.Seize,
     ):
@@ -859,6 +925,42 @@ class PlayCoverController(Controller):
         Library.framework().MaaPlayCoverControllerCreate.restype = MaaControllerHandle
         Library.framework().MaaPlayCoverControllerCreate.argtypes = [
             ctypes.c_char_p,
+            ctypes.c_char_p,
+        ]
+
+
+class WlRootsController(Controller):
+    """WlRoots 控制器 / WlRoots controller
+
+    用于在 Linux 上控制在 wlroots 合成器中运行的应用
+    For controlling apps running in wlroots compositor on Linux
+    """
+
+    def __init__(
+            self,
+            wlr_socket_path: str,
+    ):
+        """创建 WlRoots 控制器 / Create WlRoots controller
+
+        Args:
+            wlr_socket_path: Wayland Socket 路径 / Wayland Socket Path
+
+        Raises:
+            RuntimeError: 如果创建失败
+        """
+        super().__init__()
+        self._set_wlroots_api_properties()
+
+        self._handle = Library.framework().MaaWlRootsControllerCreate(
+            wlr_socket_path.encode(),
+        )
+
+        if not self._handle:
+            raise RuntimeError("Failed to create WlRoots controller.")
+
+    def _set_wlroots_api_properties(self):
+        Library.framework().MaaWlRootsControllerCreate.restype = MaaControllerHandle
+        Library.framework().MaaWlRootsControllerCreate.argtypes = [
             ctypes.c_char_p,
         ]
 
@@ -988,6 +1090,8 @@ class CustomController(Controller):
             CustomController._c_key_down_agent,
             CustomController._c_key_up_agent,
             CustomController._c_scroll_agent,
+            CustomController._c_inactive_agent,
+            CustomController._c_get_info_agent,
         )
 
         self._handle = Library.framework().MaaCustomControllerCreate(
@@ -1087,6 +1191,20 @@ class CustomController(Controller):
     @abstractmethod
     def scroll(self, dx: int, dy: int) -> bool:
         raise NotImplementedError
+
+    def inactive(self) -> bool:
+        """设置控制器为不活跃状态（可选实现，默认返回 True）"""
+        return True
+
+    def get_custom_info(self) -> Dict[str, Any]:
+        """获取自定义控制器的额外信息（可选实现，默认返回空字典）
+
+        Get custom controller's extra info (optional, returns empty dict by default)
+
+        Returns:
+            Dict[str, Any]: 额外信息，将与基础信息合并 / Extra info, will be merged with base info
+        """
+        return {}
 
     @staticmethod
     @MaaCustomControllerCallbacks.ConnectFunc
@@ -1378,6 +1496,41 @@ class CustomController(Controller):
 
         return int(self.scroll(int(c_dx), int(c_dy)))
 
+    @staticmethod
+    @MaaCustomControllerCallbacks.InactiveFunc
+    def _c_inactive_agent(
+        trans_arg: ctypes.c_void_p,
+    ) -> int:
+        if not trans_arg:
+            return int(False)
+
+        self: CustomController = ctypes.cast(
+            trans_arg,
+            ctypes.py_object,
+        ).value
+
+        return int(self.inactive())
+
+    @staticmethod
+    @MaaCustomControllerCallbacks.GetInfoFunc
+    def _c_get_info_agent(
+        trans_arg: ctypes.c_void_p,
+        c_buffer: MaaStringBufferHandle,
+    ) -> int:
+        if not trans_arg:
+            return int(False)
+
+        self: CustomController = ctypes.cast(
+            trans_arg,
+            ctypes.py_object,
+        ).value
+
+        info = self.get_custom_info()
+
+        info_buffer = StringBuffer(c_buffer)
+        info_buffer.set(json.dumps(info, ensure_ascii=False))
+        return int(True)
+
     def _set_custom_api_properties(self):
         Library.framework().MaaCustomControllerCreate.restype = MaaControllerHandle
         Library.framework().MaaCustomControllerCreate.argtypes = [
@@ -1394,6 +1547,7 @@ class ControllerEventSink(EventSink):
         uuid: str
         action: str
         param: dict
+        info: dict
 
     def on_controller_action(
         self,
@@ -1418,6 +1572,7 @@ class ControllerEventSink(EventSink):
                 uuid=details["uuid"],
                 action=details["action"],
                 param=details["param"],
+                info=details["info"],
             )
             self.on_controller_action(controller, noti_type, detail)
 

@@ -32,10 +32,10 @@ extern "C"
      *         - contact 3: Right trigger (pressure: 0~255, x/y ignored)
      * @see MaaGamepadButton, MaaGamepadTouch, MaaGamepadType
      */
-    MAA_CONTROL_UNIT_API MaaWin32ControlUnitHandle
+    MAA_CONTROL_UNIT_API MaaGamepadControlUnitHandle
         MaaGamepadControlUnitCreate(void* hWnd, MaaGamepadType gamepad_type, MaaWin32ScreencapMethod screencap_method);
 
-    MAA_CONTROL_UNIT_API void MaaGamepadControlUnitDestroy(MaaWin32ControlUnitHandle handle);
+    MAA_CONTROL_UNIT_API void MaaGamepadControlUnitDestroy(MaaGamepadControlUnitHandle handle);
 
 #ifdef __cplusplus
 }

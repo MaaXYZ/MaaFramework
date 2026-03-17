@@ -70,7 +70,7 @@ std::vector<AdbDevice> AdbDeviceWin32Finder::find_by_emulator_tool(const Emulato
         return find_ld_devices(emulator);
     }
 
-    return {};
+    return { };
 }
 
 std::vector<AdbDevice> AdbDeviceWin32Finder::find_mumu_devices(const Emulator& emulator) const
@@ -79,13 +79,13 @@ std::vector<AdbDevice> AdbDeviceWin32Finder::find_mumu_devices(const Emulator& e
 
     if (emulator.adb_path.empty() || !std::filesystem::exists(emulator.adb_path)) {
         LogWarn << "adb_path is empty or does not exist" << VAR(emulator.adb_path);
-        return {};
+        return { };
     }
 
     std::filesystem::path mumu_mgr_path = emulator.adb_path.parent_path() / "MuMuManager.exe";
     if (!std::filesystem::exists(mumu_mgr_path)) {
         LogWarn << "MuMuManager not found" << VAR(mumu_mgr_path);
-        return {};
+        return { };
     }
 
     static const std::vector<std::string> mumu_mgr_args = { "info", "--vmindex", "all" };
@@ -96,7 +96,7 @@ std::vector<AdbDevice> AdbDeviceWin32Finder::find_mumu_devices(const Emulator& e
     auto jopt = json::parse(output);
     if (!jopt) {
         LogError << "Parse MuMuManager info failed" << VAR(output);
-        return {};
+        return { };
     }
 
     struct MumuInfo
@@ -128,7 +128,7 @@ std::vector<AdbDevice> AdbDeviceWin32Finder::find_mumu_devices(const Emulator& e
     }
     else {
         LogError << "Invalid MuMuManager info format" << VAR(output);
-        return {};
+        return { };
     }
 
     std::filesystem::path dir;
@@ -149,7 +149,7 @@ std::vector<AdbDevice> AdbDeviceWin32Finder::find_mumu_devices(const Emulator& e
         device.serial = std::format("{}:{}", i.adb_host_ip, i.adb_port);
 
         device.screencap_methods = MaaAdbScreencapMethod_EmulatorExtras;
-        device.input_methods = MaaAdbInputMethod_Default | MaaAdbInputMethod_EmulatorExtras;
+        device.input_methods = MaaAdbInputMethod_Default;
 
         int index = 0;
         if (std::ranges::all_of(i.index, [](unsigned char c) { return std::isdigit(c); })) {
@@ -179,7 +179,7 @@ std::vector<AdbDevice> AdbDeviceWin32Finder::find_ld_devices(const Emulator& emu
 
     if (emulator.adb_path.empty() || !std::filesystem::exists(emulator.adb_path)) {
         LogWarn << "adb_path is empty or does not exist" << VAR(emulator.adb_path);
-        return {};
+        return { };
     }
 
     // E:\Program Files\leidian\LDPlayer9\dnplayer.exe
@@ -188,7 +188,7 @@ std::vector<AdbDevice> AdbDeviceWin32Finder::find_ld_devices(const Emulator& emu
     std::filesystem::path ldconsole_path = dir / "ldconsole.exe";
     if (!std::filesystem::exists(ldconsole_path)) {
         LogWarn << "ldconsole.exe not found" << VAR(ldconsole_path);
-        return {};
+        return { };
     }
 
     static const std::vector<std::string> ldconsole_args = { "list2" };

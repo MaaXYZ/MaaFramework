@@ -208,7 +208,7 @@ bool TaskerImpl::get_stopping()
 
 void TaskerImpl::set_resource(std::optional<maajs::NativeObject<ResourceImpl>> res)
 {
-    bool succ {};
+    bool succ { };
     if (res) {
         succ = MaaTaskerBindResource(tasker, res->impl->resource);
     }
@@ -231,7 +231,7 @@ std::optional<maajs::ValueType> TaskerImpl::get_resource()
 
 void TaskerImpl::set_controller(std::optional<maajs::NativeObject<ControllerImpl>> ctrl)
 {
-    bool succ {};
+    bool succ { };
     if (ctrl) {
         succ = MaaTaskerBindController(tasker, ctrl->impl->controller);
     }
@@ -270,7 +270,7 @@ std::optional<maajs::ValueType> TaskerImpl::recognition_detail(MaaRecoId id)
     StringBuffer node_name;
     StringBuffer algorithm;
     MaaBool hit = false;
-    MaaRect box {};
+    MaaRect box { };
     StringBuffer detail;
     ImageBuffer raw;
     raw.data(env);
@@ -303,7 +303,7 @@ std::optional<maajs::ValueType> TaskerImpl::action_detail(MaaActId id)
 {
     StringBuffer node_name;
     StringBuffer action;
-    MaaRect box {};
+    MaaRect box { };
     MaaBool success = false;
     StringBuffer detail_json;
     if (MaaTaskerGetActionDetail(tasker, id, node_name, action, &box, &success, detail_json)) {

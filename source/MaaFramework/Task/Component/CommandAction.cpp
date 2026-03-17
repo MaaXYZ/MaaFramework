@@ -130,7 +130,7 @@ std::string CommandAction::get_resource_dir(const Runtime& runtime)
 {
     if (runtime.resource_paths.empty()) {
         LogWarn << "no resource";
-        return {};
+        return { };
     }
 
     const auto& p = runtime.resource_paths.back();

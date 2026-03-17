@@ -40,11 +40,10 @@ from maa.agent.agent_server import AgentServer
 
 from maa.resource import ResourceEventSink
 from maa.controller import ControllerEventSink
-from maa.tasker import TaskerEventSink
+from maa.tasker import Tasker, TaskerEventSink
 from maa.context import Context, ContextEventSink
 from maa.custom_action import CustomAction
 from maa.custom_recognition import CustomRecognition
-from maa.toolkit import Toolkit
 from maa.library import Library
 from maa.pipeline import JRecognitionType, JActionType, JOCR, JClick
 
@@ -268,6 +267,17 @@ class MyAction(CustomAction):
         assert isinstance(resolution, tuple), "resolution should be a tuple"
         assert len(resolution) == 2, "resolution should have 2 elements"
 
+        # 测试 info
+        info = controller.info
+        print(f"  info: {info}")
+        assert isinstance(info, dict), "info should be a dict"
+        assert "type" in info, "info should contain 'type'"
+        assert isinstance(info["type"], str), "info['type'] should be a str"
+        assert info["type"].startswith("dbg_"), "info['type'] should start with 'dbg_'"
+        assert (
+            "image_count" in info or "record_count" in info
+        ), "info should contain at least 'image_count' or 'record_count'"
+
         # 测试基本输入操作
         controller.post_click(191, 98).wait()
         controller.post_swipe(100, 200, 300, 400, 100).wait()
@@ -284,11 +294,14 @@ class MyAction(CustomAction):
         controller.post_key_up(65).wait()
 
         # 测试滚动操作
-        controller.post_scroll(0, 120).wait()
+        assert not controller.post_scroll(0, 120).wait().succeeded
 
         # 测试应用操作
         controller.post_start_app("aaa")
         controller.post_stop_app("bbb")
+
+        # 测试 inactive 操作
+        controller.post_inactive().wait()
 
         # ============================================================
         # Tasker API 补充测试 (详情获取)
@@ -367,6 +380,6 @@ class MyCtxSink(ContextEventSink):
 if __name__ == "__main__":
     print(f"AgentServer MaaFw Version: {Library.version()}")
 
-    Toolkit.init_option(install_dir / "bin")
+    Tasker.set_log_dir(install_dir / "bin" / "debug")
 
     main()

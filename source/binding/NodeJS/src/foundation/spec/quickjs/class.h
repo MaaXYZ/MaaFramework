@@ -12,9 +12,9 @@ namespace maajs
 
 struct NativeClassIDChain
 {
-    JSClassID classId {};
-    std::vector<JSClassID> possibleIds {};
-    NativeClassIDChain* superId {};
+    JSClassID classId { };
+    std::vector<JSClassID> possibleIds { };
+    NativeClassIDChain* superId { };
 };
 
 template <typename Inherit>

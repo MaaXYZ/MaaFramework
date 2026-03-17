@@ -58,7 +58,7 @@ NeuralNetworkDetector::ResultsVec NeuralNetworkDetector::detect(const std::vecto
 {
     if (!session_) {
         LogError << "OrtSession not loaded";
-        return {};
+        return { };
     }
 
     // batch_size, channel, height, width
@@ -66,7 +66,7 @@ NeuralNetworkDetector::ResultsVec NeuralNetworkDetector::detect(const std::vecto
     const auto input_shape = session_->GetInputTypeInfo(0).GetTensorTypeAndShapeInfo().GetShape();
     if (input_shape.size() != 4) {
         LogError << "Input shape is not 4" << VAR(input_shape);
-        return {};
+        return { };
     }
 
     cv::Mat image = image_with_roi();
@@ -253,7 +253,7 @@ void NeuralNetworkDetector::sort_(ResultsVec& results) const
 std::vector<std::string> NeuralNetworkDetector::parse_labels_from_metadata() const
 {
     if (!session_) {
-        return {};
+        return { };
     }
 
     Ort::AllocatorWithDefaultOptions allocator;
@@ -273,7 +273,7 @@ std::vector<std::string> NeuralNetworkDetector::parse_labels_from_metadata() con
 
     if (names_str.empty()) {
         LogDebug << name_ << "No metadata found with keys: names, name, labels, class_names";
-        return {};
+        return { };
     }
 
     LogDebug << name_ << "Found metadata" << VAR(names_str);
@@ -309,14 +309,14 @@ std::vector<std::string> NeuralNetworkDetector::parse_labels_from_metadata() con
 
     if (label_map.empty()) {
         LogWarn << name_ << "Failed to parse metadata as Python dict format" << VAR(names_str);
-        return {};
+        return { };
     }
 
     // 找到最大索引，创建对应大小的向量
     int max_index = label_map.rbegin()->first;
     if (max_index < 0 || max_index > 10000) {
         LogWarn << name_ << "Invalid max_index" << VAR(max_index);
-        return {};
+        return { };
     }
 
     labels.resize(static_cast<size_t>(max_index + 1));

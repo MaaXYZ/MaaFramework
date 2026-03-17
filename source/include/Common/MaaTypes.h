@@ -89,12 +89,16 @@ public:
     virtual MaaCtrlId post_touch_move(int contact, int x, int y, int pressure) = 0;
     virtual MaaCtrlId post_touch_up(int contact) = 0;
 
+    virtual MaaCtrlId post_relative_move(int dx, int dy) = 0;
+
     virtual MaaCtrlId post_key_down(int keycode) = 0;
     virtual MaaCtrlId post_key_up(int keycode) = 0;
 
     virtual MaaCtrlId post_scroll(int dx, int dy) = 0;
 
     virtual MaaCtrlId post_shell(const std::string& cmd, int64_t timeout = 20000) = 0;
+
+    virtual MaaCtrlId post_inactive() = 0;
 
     virtual MaaStatus status(MaaCtrlId ctrl_id) const = 0;
     virtual MaaStatus wait(MaaCtrlId ctrl_id) const = 0;
@@ -106,6 +110,8 @@ public:
     virtual std::string get_uuid() = 0;
 
     virtual bool get_resolution(int32_t& width, int32_t& height) const = 0;
+
+    virtual json::object get_info() const = 0;
 };
 
 struct MaaTasker : public IMaaEventDispatcher

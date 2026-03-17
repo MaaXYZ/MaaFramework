@@ -14,7 +14,7 @@ public:
 
     virtual bool run() override { return true; }
 
-    virtual void post_stop() override {}
+    virtual void post_stop() override { }
 };
 
 MAA_TASK_NS_END

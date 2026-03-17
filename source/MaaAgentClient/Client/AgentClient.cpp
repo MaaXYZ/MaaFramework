@@ -19,8 +19,13 @@ AgentClient::AgentClient(const std::string& identifier)
 {
     LogFunc;
 
+    if (auto port_opt = parse_tcp_port(identifier)) {
+        LogInfo << "Using TCP mode" << VAR(*port_opt);
+        uint16_t port = init_tcp_socket(*port_opt, true);
+        identifier_ = std::to_string(port);
+    }
     // Windows 上检测 IPC 是否可能失败，如果失败则自动使用 TCP
-    if (should_fallback_to_tcp()) {
+    else if (should_fallback_to_tcp()) {
         LogInfo << "IPC may fail on this system, using TCP instead";
         uint16_t port = init_tcp_socket(0, true);
         identifier_ = std::to_string(port);
@@ -116,9 +121,18 @@ std::string AgentClient::create_socket(const std::string& identifier)
         return identifier_;
     }
 
+    if (auto port_opt = parse_tcp_port(identifier)) {
+        LogInfo << "Using TCP mode" << VAR(*port_opt);
+        return create_tcp_socket(*port_opt);
+    }
+
+    if (should_fallback_to_tcp()) {
+        LogInfo << "IPC may fail on this system, using TCP instead";
+        return create_tcp_socket(0);
+    }
+
     // Create a new socket with the provided identifier or generate a new one if empty.
     identifier_ = identifier.empty() ? make_uuid() : identifier;
-
     init_socket(identifier_, true);
 
     return identifier_;
@@ -152,7 +166,7 @@ bool AgentClient::connect()
 
     clear_custom_registration();
 
-    auto resp_opt = send_and_recv<StartUpResponse>(StartUpRequest {});
+    auto resp_opt = send_and_recv<StartUpResponse>(StartUpRequest { });
 
     if (!resp_opt) {
         LogError << "failed to send_and_recv";
@@ -189,13 +203,16 @@ bool AgentClient::disconnect()
     LogFunc << VAR(ipc_addr_);
 
     clear_custom_registration();
+    clear_controller_sink();
+    clear_resource_sink();
+    clear_tasker_sink();
 
     if (!connected()) {
         return true;
     }
 
     if (alive()) {
-        send_and_recv<ShutDownResponse>(ShutDownRequest {});
+        send_and_recv<ShutDownResponse>(ShutDownRequest { });
     }
 
     connected_ = false;
@@ -436,6 +453,9 @@ bool AgentClient::handle_inserted_request(const json::value& j)
     else if (handle_controller_post_touch_move(j)) {
         return true;
     }
+    else if (handle_controller_post_relative_move(j)) {
+        return true;
+    }
     else if (handle_controller_post_touch_up(j)) {
         return true;
     }
@@ -446,6 +466,9 @@ bool AgentClient::handle_inserted_request(const json::value& j)
         return true;
     }
     else if (handle_controller_post_scroll(j)) {
+        return true;
+    }
+    else if (handle_controller_post_inactive(j)) {
         return true;
     }
     else if (handle_controller_status(j)) {
@@ -470,6 +493,9 @@ bool AgentClient::handle_inserted_request(const json::value& j)
         return true;
     }
     else if (handle_controller_get_resolution(j)) {
+        return true;
+    }
+    else if (handle_controller_get_info(j)) {
         return true;
     }
     else if (handle_event_response(j)) {
@@ -804,7 +830,7 @@ bool AgentClient::handle_context_set_anchor(const json::value& j)
 
     context->set_anchor(req.anchor_name, req.node_name);
 
-    ContextSetAnchorReverseResponse resp {};
+    ContextSetAnchorReverseResponse resp { };
     send(resp);
     return true;
 }
@@ -875,7 +901,7 @@ bool AgentClient::handle_context_clear_hit_count(const json::value& j)
 
     context->clear_hit_count(req.node_name);
 
-    ContextClearHitCountReverseResponse resp {};
+    ContextClearHitCountReverseResponse resp { };
     send(resp);
     return true;
 }
@@ -1155,7 +1181,7 @@ bool AgentClient::handle_tasker_clear_cache(const json::value& j)
         return false;
     }
     tasker->clear_cache();
-    TaskerClearCacheReverseResponse resp {};
+    TaskerClearCacheReverseResponse resp { };
     send(resp);
     return true;
 }
@@ -1196,7 +1222,7 @@ bool AgentClient::handle_tasker_get_task_detail(const json::value& j)
         return false;
     }
     auto detail_opt = tasker->get_task_detail(req.task_id);
-    const auto& detail = detail_opt.value_or(MAA_TASK_NS::TaskDetail {});
+    const auto& detail = detail_opt.value_or(MAA_TASK_NS::TaskDetail { });
 
     TaskerGetTaskDetailReverseResponse resp {
         .has_value = detail_opt.has_value(),
@@ -1223,7 +1249,7 @@ bool AgentClient::handle_tasker_get_node_detail(const json::value& j)
         return false;
     }
     auto detail_opt = tasker->get_node_detail(req.node_id);
-    const auto& detail = detail_opt.value_or(MAA_TASK_NS::NodeDetail {});
+    const auto& detail = detail_opt.value_or(MAA_TASK_NS::NodeDetail { });
 
     TaskerGetNodeDetailReverseResponse resp {
         .has_value = detail_opt.has_value(),
@@ -1251,7 +1277,7 @@ bool AgentClient::handle_tasker_get_reco_result(const json::value& j)
         return false;
     }
     auto detail_opt = tasker->get_reco_result(req.reco_id);
-    const auto& detail = detail_opt.value_or(MAA_TASK_NS::RecoResult {});
+    const auto& detail = detail_opt.value_or(MAA_TASK_NS::RecoResult { });
 
     std::vector<std::string> draws;
     for (const auto& draw : detail.draws) {
@@ -1268,7 +1294,7 @@ bool AgentClient::handle_tasker_get_reco_result(const json::value& j)
         .algorithm = detail.algorithm,
         .hit = detail.box.has_value(),
         .box = detail.box ? std::array<int32_t, 4> { detail.box->x, detail.box->y, detail.box->width, detail.box->height }
-                          : std::array<int32_t, 4> {},
+                          : std::array<int32_t, 4> { },
         .detail = detail.detail,
         .raw = detail.raw.empty() ? std::string() : send_image_encoded(detail.raw),
         .draws = std::move(draws),
@@ -1292,7 +1318,7 @@ bool AgentClient::handle_tasker_get_action_result(const json::value& j)
         return false;
     }
     auto detail_opt = tasker->get_action_result(req.action_id);
-    const auto& detail = detail_opt.value_or(MAA_TASK_NS::ActionResult {});
+    const auto& detail = detail_opt.value_or(MAA_TASK_NS::ActionResult { });
 
     TaskerGetActionResultReverseResponse resp {
         .has_value = detail_opt.has_value(),
@@ -1326,7 +1352,7 @@ bool AgentClient::handle_tasker_get_latest_node(const json::value& j)
 
     TaskerGetLatestNodeReverseResponse resp {
         .has_value = node_id_opt.has_value(),
-        .latest_id = node_id_opt.value_or(MaaNodeId {}),
+        .latest_id = node_id_opt.value_or(MaaNodeId { }),
     };
     send(resp);
 
@@ -1809,7 +1835,7 @@ bool AgentClient::handle_resource_get_default_recognition_param(const json::valu
     auto param_opt = resource->get_default_recognition_param(req.reco_type);
     ResourceGetDefaultRecognitionParamReverseResponse resp {
         .has_value = param_opt.has_value(),
-        .param = param_opt.value_or(json::object {}),
+        .param = param_opt.value_or(json::object { }),
     };
     send(resp);
 
@@ -1834,7 +1860,7 @@ bool AgentClient::handle_resource_get_default_action_param(const json::value& j)
     auto param_opt = resource->get_default_action_param(req.action_type);
     ResourceGetDefaultActionParamReverseResponse resp {
         .has_value = param_opt.has_value(),
-        .param = param_opt.value_or(json::object {}),
+        .param = param_opt.value_or(json::object { }),
     };
     send(resp);
 
@@ -2061,6 +2087,26 @@ bool AgentClient::handle_controller_post_touch_move(const json::value& j)
     return true;
 }
 
+bool AgentClient::handle_controller_post_relative_move(const json::value& j)
+{
+    if (!j.is<ControllerPostRelativeMoveReverseRequest>()) {
+        return false;
+    }
+    const ControllerPostRelativeMoveReverseRequest& req = j.as<ControllerPostRelativeMoveReverseRequest>();
+    LogFunc << VAR(req) << VAR(ipc_addr_);
+    MaaController* controller = query_controller(req.controller_id);
+    if (!controller) {
+        LogError << "controller not found" << VAR(req.controller_id);
+        return false;
+    }
+    MaaCtrlId ctrl_id = controller->post_relative_move(req.dx, req.dy);
+    ControllerPostRelativeMoveReverseResponse resp {
+        .ctrl_id = ctrl_id,
+    };
+    send(resp);
+    return true;
+}
+
 bool AgentClient::handle_controller_post_touch_up(const json::value& j)
 {
     if (!j.is<ControllerPostTouchUpReverseRequest>()) {
@@ -2135,6 +2181,26 @@ bool AgentClient::handle_controller_post_scroll(const json::value& j)
     }
     MaaCtrlId ctrl_id = controller->post_scroll(req.dx, req.dy);
     ControllerPostScrollReverseResponse resp {
+        .ctrl_id = ctrl_id,
+    };
+    send(resp);
+    return true;
+}
+
+bool AgentClient::handle_controller_post_inactive(const json::value& j)
+{
+    if (!j.is<ControllerPostInactiveReverseRequest>()) {
+        return false;
+    }
+    const ControllerPostInactiveReverseRequest& req = j.as<ControllerPostInactiveReverseRequest>();
+    LogFunc << VAR(req) << VAR(ipc_addr_);
+    MaaController* controller = query_controller(req.controller_id);
+    if (!controller) {
+        LogError << "controller not found" << VAR(req.controller_id);
+        return false;
+    }
+    MaaCtrlId ctrl_id = controller->post_inactive();
+    ControllerPostInactiveReverseResponse resp {
         .ctrl_id = ctrl_id,
     };
     send(resp);
@@ -2305,6 +2371,26 @@ bool AgentClient::handle_controller_get_resolution(const json::value& j)
     return true;
 }
 
+bool AgentClient::handle_controller_get_info(const json::value& j)
+{
+    if (!j.is<ControllerGetInfoReverseRequest>()) {
+        return false;
+    }
+    const ControllerGetInfoReverseRequest& req = j.as<ControllerGetInfoReverseRequest>();
+    LogFunc << VAR(req) << VAR(ipc_addr_);
+    MaaController* controller = query_controller(req.controller_id);
+    if (!controller) {
+        LogError << "controller not found" << VAR(req.controller_id);
+        return false;
+    }
+    json::object info = controller->get_info();
+    ControllerGetInfoReverseResponse resp {
+        .info = std::move(info),
+    };
+    send(resp);
+    return true;
+}
+
 // FIXME: 不应该存在这个函数
 // 等 send_and_recv 支持在子线程中使用后，应该删除这个函数
 bool AgentClient::handle_event_response(const json::value& j)
@@ -2360,7 +2446,7 @@ MaaBool AgentClient::reco_agent(
         .custom_recognition_name = custom_recognition_name,
         .custom_recognition_param = custom_recognition_param,
         .image = pthis->send_image(mat),
-        .roi = roi ? std::array<int32_t, 4> { roi->x, roi->y, roi->width, roi->height } : std::array<int32_t, 4> {},
+        .roi = roi ? std::array<int32_t, 4> { roi->x, roi->y, roi->width, roi->height } : std::array<int32_t, 4> { },
     };
 
     auto resp_opt = pthis->send_and_recv<CustomRecognitionResponse>(req);
@@ -2411,7 +2497,7 @@ MaaBool AgentClient::action_agent(
         .custom_action_name = custom_action_name,
         .custom_action_param = custom_action_param,
         .reco_id = reco_id,
-        .box = box ? std::array<int32_t, 4> { box->x, box->y, box->width, box->height } : std::array<int32_t, 4> {},
+        .box = box ? std::array<int32_t, 4> { box->x, box->y, box->width, box->height } : std::array<int32_t, 4> { },
     };
 
     auto resp_opt = pthis->send_and_recv<CustomActionResponse>(req);
@@ -2529,7 +2615,7 @@ void AgentClient::res_event_sink(void* handle, const char* message, const char* 
     ResourceEventRequest req {
         .resource_id = pthis->resource_id(reinterpret_cast<MaaResource*>(handle)),
         .message = message,
-        .details = json::parse(details_json).value_or(json::value {}),
+        .details = json::parse(details_json).value_or(json::value { }),
     };
 
     // FIXME: 应该用 send_and_recv 但是暂时用 send 代替
@@ -2562,7 +2648,7 @@ void AgentClient::ctrl_event_sink(void* handle, const char* message, const char*
     ControllerEventRequest req {
         .controller_id = pthis->controller_id(reinterpret_cast<MaaController*>(handle)),
         .message = message,
-        .details = json::parse(details_json).value_or(json::value {}),
+        .details = json::parse(details_json).value_or(json::value { }),
     };
 
     // FIXME: 应该用 send_and_recv 但是暂时用 send 代替
@@ -2595,7 +2681,7 @@ void AgentClient::tasker_event_sink(void* handle, const char* message, const cha
     TaskerEventRequest req {
         .tasker_id = pthis->tasker_id(reinterpret_cast<MaaTasker*>(handle)),
         .message = message,
-        .details = json::parse(details_json).value_or(json::value {}),
+        .details = json::parse(details_json).value_or(json::value { }),
     };
 
     // FIXME: 应该用 send_and_recv 但是暂时用 send 代替
@@ -2628,7 +2714,7 @@ void AgentClient::ctx_event_sink(void* handle, const char* message, const char* 
     ContextEventRequest req {
         .context_id = pthis->context_id(reinterpret_cast<MaaContext*>(handle)),
         .message = message,
-        .details = json::parse(details_json).value_or(json::value {}),
+        .details = json::parse(details_json).value_or(json::value { }),
     };
 
     std::ignore = pthis->send_and_recv<ContextEventResponse>(req);

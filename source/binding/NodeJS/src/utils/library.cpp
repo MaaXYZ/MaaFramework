@@ -48,7 +48,7 @@ std::filesystem::path get_library_path(void* addr)
     DWORD path_len = GetMappedFileNameW(GetCurrentProcess(), addr, path_buf, MAX_PATH);
 
     if (path_len == 0) {
-        return {};
+        return { };
     }
 
     return { NtPathToDosPath(path_buf) };
@@ -60,9 +60,9 @@ std::filesystem::path get_library_path(void* addr)
 
 std::filesystem::path get_library_path(void* addr)
 {
-    Dl_info dl_info {};
+    Dl_info dl_info { };
     if (dladdr(addr, &dl_info) == 0) {
-        return {};
+        return { };
     }
 
     return { dl_info.dli_fname };

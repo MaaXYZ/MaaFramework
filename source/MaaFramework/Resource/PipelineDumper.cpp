@@ -3,6 +3,7 @@
 #include "MaaUtils/Encoding.h"
 #include "MaaUtils/Logger.h"
 #include "PipelineParser.h"
+#include "PipelineTypes.h"
 
 MAA_RES_NS_BEGIN
 
@@ -27,10 +28,13 @@ PipelineV2::JTarget dump_target(const T& target)
     case Action::Target::Type::Region:
         return dump_rect(std::get<cv::Rect>(target.param));
 
+    case Action::Target::Type::Anchor:
+        return std::string(PipelineData::kNodeAttr_Anchor) + std::get<std::string>(target.param);
+
     case Action::Target::Type::Invalid:
     default:
         LogError << "Invalid target type" << VAR(target.type);
-        return {};
+        return { };
     }
 }
 
@@ -172,6 +176,7 @@ PipelineV2::JRecognition PipelineDumper::dump_reco(Recognition::Type type, const
             .index = p.result_index,
             .only_rec = p.only_rec,
             .model = p.model,
+            .color_filter = p.color_filter,
         };
     } break;
 
@@ -267,7 +272,7 @@ PipelineV2::JRecognition PipelineDumper::dump_reco(Recognition::Type type, const
 
     default:
         LogError << "Invalid recognition type" << VAR(type);
-        return {};
+        return { };
     }
 
     return reco;
@@ -280,7 +285,7 @@ PipelineV2::JAction PipelineDumper::dump_act(Action::Type type, const Action::Pa
 
     switch (type) {
     case Action::Type::DoNothing:
-        act.param = PipelineV2::JDoNothing {};
+        act.param = PipelineV2::JDoNothing { };
         break;
 
     case Action::Type::Click: {
@@ -414,7 +419,7 @@ PipelineV2::JAction PipelineDumper::dump_act(Action::Type type, const Action::Pa
     } break;
 
     case Action::Type::StopTask: {
-        act.param = PipelineV2::JStopTask {};
+        act.param = PipelineV2::JStopTask { };
         break;
     }
 
@@ -435,6 +440,15 @@ PipelineV2::JAction PipelineDumper::dump_act(Action::Type type, const Action::Pa
         };
     } break;
 
+    case Action::Type::Screencap: {
+        const auto& p = std::get<Action::ScreencapParam>(param);
+        act.param = PipelineV2::JScreencap {
+            .filename = p.filename,
+            .format = p.format,
+            .quality = p.quality,
+        };
+    } break;
+
     case Action::Type::Custom: {
         const auto& p = std::get<Action::CustomParam>(param);
         act.param = PipelineV2::JCustomAction {
@@ -447,7 +461,7 @@ PipelineV2::JAction PipelineDumper::dump_act(Action::Type type, const Action::Pa
 
     default:
         LogError << "Invalid action type" << VAR(type);
-        return {};
+        return { };
     }
 
     return act;

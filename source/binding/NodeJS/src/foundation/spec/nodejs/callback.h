@@ -75,7 +75,7 @@ struct CallbackContext
     Result Call(std::function<ValueType(FunctionType)> caller)
     {
         if constexpr (std::is_same_v<Result, void>) {
-            Call<void>(caller, [](maajs::ValueType) {});
+            Call<void>(caller, [](maajs::ValueType) { });
         }
         else {
             return Call<Result>(caller, [](maajs::ValueType result) -> Result {
@@ -84,7 +84,7 @@ struct CallbackContext
                 }
                 catch (const maajs::MaaError& err) {
                     std::cerr << err.what() << std::endl;
-                    return {};
+                    return { };
                 }
             });
         }

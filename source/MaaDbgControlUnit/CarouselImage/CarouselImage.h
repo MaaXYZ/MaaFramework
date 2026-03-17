@@ -45,13 +45,15 @@ public: // from ControlUnitAPI
     virtual bool key_down(int key) override;
     virtual bool key_up(int key) override;
 
-    virtual bool scroll(int dx, int dy) override;
+    virtual bool inactive() override;
+
+    virtual json::object get_info() const override;
 
 private:
     std::filesystem::path path_;
     std::vector<cv::Mat> images_;
     size_t image_index_ = 0;
-    cv::Size resolution_ {};
+    cv::Size resolution_ { };
     bool connected_ = false;
 };
 

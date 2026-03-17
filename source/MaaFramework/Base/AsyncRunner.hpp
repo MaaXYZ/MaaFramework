@@ -45,6 +45,7 @@ public:
 
     void clear();
     bool running() const;
+    bool pending() const;
 
 private:
     void working();
@@ -57,7 +58,7 @@ private:
     std::atomic_bool running_ = false;
 
     Id running_id_ = 0;
-    Item running_item_ {};
+    Item running_item_ { };
 
     mutable std::shared_mutex status_mutex_;
     std::map<Id, Status> status_map_;
@@ -148,7 +149,7 @@ inline void AsyncRunner<Item>::working()
         {
             std::unique_lock clear_lock(queue_mutex_);
             running_id_ = 0;
-            running_item_ = {};
+            running_item_ = { };
         }
 
         status_lock.lock();
@@ -271,7 +272,7 @@ inline void AsyncRunner<Item>::clear()
 
     {
         std::unique_lock queue_lock(queue_mutex_);
-        queue_ = {};
+        queue_ = { };
         queue_cond_.notify_all();
     }
 
@@ -291,6 +292,13 @@ template <typename Item>
 inline bool AsyncRunner<Item>::running() const
 {
     return running_;
+}
+
+template <typename Item>
+inline bool AsyncRunner<Item>::pending() const
+{
+    std::unique_lock queue_lock(queue_mutex_);
+    return !queue_.empty();
 }
 
 MAA_NS_END

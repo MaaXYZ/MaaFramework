@@ -7,7 +7,7 @@
 
 MAA_SUPPRESS_CV_WARNINGS_BEGIN
 #include "fastdeploy/vision/ocr/ppocr/dbdetector.h"
-#include "fastdeploy/vision/ocr/ppocr/ppocr_v3.h"
+#include "fastdeploy/vision/ocr/ppocr/ppocr_v4.h"
 #include "fastdeploy/vision/ocr/ppocr/recognizer.h"
 MAA_SUPPRESS_CV_WARNINGS_END
 
@@ -41,10 +41,12 @@ OCRer::OCRer(
     OCRerParam param,
     std::shared_ptr<fastdeploy::vision::ocr::DBDetector> deter,
     std::shared_ptr<fastdeploy::vision::ocr::Recognizer> recer,
-    std::shared_ptr<fastdeploy::pipeline::PPOCRv3> ocrer,
-    std::string name)
+    std::shared_ptr<fastdeploy::pipeline::PPOCRv4> ocrer,
+    std::string name,
+    std::optional<ColorFilterConfig> color_filter)
     : VisionBase(std::move(image), std::move(rois), std::move(name))
     , param_(std::move(param))
+    , color_filter_(std::move(color_filter))
     , deter_(std::move(deter))
     , recer_(std::move(recer))
     , ocrer_(std::move(ocrer))
@@ -89,11 +91,33 @@ void OCRer::analyze()
              << VAR(param_.only_rec) << VAR(param_.expected);
 }
 
+cv::Mat OCRer::apply_color_filter(const cv::Mat& image_roi) const
+{
+    const auto& cfg = *color_filter_;
+
+    cv::Mat color;
+    cv::cvtColor(image_roi, color, cfg.method);
+
+    cv::Mat bin = cv::Mat::zeros(image_roi.size(), CV_8UC1);
+    for (const auto& [lower, upper] : cfg.range) {
+        cv::Mat single;
+        cv::inRange(color, lower, upper, single);
+        cv::bitwise_or(bin, single, bin);
+    }
+
+    cv::Mat result;
+    cv::cvtColor(bin, result, cv::COLOR_GRAY2BGR);
+    return result;
+}
+
 OCRer::ResultsVec OCRer::predict() const
 {
     ResultsVec results;
 
     auto image_roi = image_with_roi();
+    if (color_filter_) {
+        image_roi = apply_color_filter(image_roi);
+    }
     results = param_.only_rec ? ResultsVec { predict_only_rec(image_roi) } : predict_det_and_rec(image_roi);
 
     std::ranges::for_each(results, [&](auto& res) {
@@ -108,12 +132,12 @@ OCRer::ResultsVec OCRer::handle_cached() const
 {
     if (!cache_) {
         LogError << "cache is null";
-        return {};
+        return { };
     }
 
     if (cache_->empty()) {
         LogWarn << "cache is empty";
-        return {};
+        return { };
     }
 
     auto contains = [](const cv::Rect& outer, const cv::Rect& inner) {
@@ -146,7 +170,7 @@ OCRer::ResultsVec OCRer::predict_det_and_rec(const cv::Mat& image_roi) const
 {
     if (!ocrer_) {
         LogError << "ocrer_ is null";
-        return {};
+        return { };
     }
 
     fastdeploy::vision::OCRResult ocr_result;
@@ -158,7 +182,7 @@ OCRer::ResultsVec OCRer::predict_det_and_rec(const cv::Mat& image_roi) const
     }
     if (!ret) {
         LogWarn << "predict return false" << VAR(ocrer_) << VAR(image_) << VAR(image_roi);
-        return {};
+        return { };
     }
 
     ResultsVec results;
@@ -202,7 +226,7 @@ OCRer::Result OCRer::predict_only_rec(const cv::Mat& image_roi) const
 {
     if (!recer_) {
         LogError << "recer_ is null";
-        return {};
+        return { };
     }
 
     std::string reco_text;
@@ -214,7 +238,7 @@ OCRer::Result OCRer::predict_only_rec(const cv::Mat& image_roi) const
     }
     if (!ret) {
         LogWarn << "recer_ return false" << VAR(recer_) << VAR(image_) << VAR(image_roi);
-        return {};
+        return { };
     }
 
     auto text = to_u16(reco_text);
@@ -229,11 +253,11 @@ OCRer::ResultsVec OCRer::predict_batch_rec(const std::vector<cv::Rect>& rois) co
 
     if (!recer_) {
         LogError << "recer_ is null";
-        return {};
+        return { };
     }
     if (rois.empty()) {
         LogError << "rois is empty";
-        return {};
+        return { };
     }
 
     std::vector<cv::Mat> imgs;
@@ -250,11 +274,11 @@ OCRer::ResultsVec OCRer::predict_batch_rec(const std::vector<cv::Rect>& rois) co
     }
     if (!ret) {
         LogWarn << "recer_ BatchPredict return false" << VAR(recer_) << VAR(rois) << VAR(imgs);
-        return {};
+        return { };
     }
     if (ocr_result.text.size() != rois.size() || ocr_result.rec_scores.size() != rois.size()) {
         LogError << "Bad ocr result size" << VAR(rois) << VAR(ocr_result.boxes) << VAR(ocr_result.text) << VAR(ocr_result.rec_scores);
-        return {};
+        return { };
     }
 
     ResultsVec results;
@@ -283,6 +307,14 @@ cv::Mat OCRer::draw_result(const ResultsVec& results) const
         cv::rectangle(image_draw, my_box, color, 1);
         std::string flag = std::format("{}: [{}, {}, {}, {}]", i, my_box.x, my_box.y, my_box.width, my_box.height);
         cv::putText(image_draw, flag, cv::Point(my_box.x, my_box.y - 5), cv::FONT_HERSHEY_PLAIN, 1.2, color, 1);
+    }
+
+    if (color_filter_) {
+        auto bin = apply_color_filter(image_);
+
+        int raw_width = image_draw.cols;
+        cv::copyMakeBorder(image_draw, image_draw, 0, 0, 0, bin.cols, cv::BORDER_CONSTANT, cv::Scalar(0, 0, 0));
+        bin.copyTo(image_draw(cv::Rect(raw_width, 0, bin.cols, bin.rows)));
     }
 
     return image_draw;

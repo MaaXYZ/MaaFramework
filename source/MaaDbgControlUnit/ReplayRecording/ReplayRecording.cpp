@@ -396,30 +396,24 @@ bool ReplayRecording::key_up(int key)
     return record.success;
 }
 
-bool ReplayRecording::scroll(int dx, int dy)
-{
-    LogInfo << VAR(dx) << VAR(dy);
-
-    if (record_index_ >= recording_.records.size()) {
-        LogError << "record index out of range" << VAR(record_index_) << VAR(recording_.records.size());
-        return false;
-    }
-
-    const Record& record = recording_.records.at(record_index_);
-    if (record.action.type != Record::Action::Type::scroll) {
-        LogError << "record type is not scroll" << VAR(record.action.type) << VAR(record.raw_data);
-        return false;
-    }
-
-    sleep(record.cost);
-    ++record_index_;
-    return record.success;
-}
-
 void ReplayRecording::sleep(int ms)
 {
     LogDebug << VAR(ms);
     std::this_thread::sleep_for(std::chrono::milliseconds(ms));
+}
+
+bool ReplayRecording::inactive()
+{
+    return true;
+}
+
+json::object ReplayRecording::get_info() const
+{
+    json::object info;
+    info["type"] = "dbg_replay_recording";
+    info["record_count"] = static_cast<int64_t>(recording_.records.size());
+    info["record_index"] = static_cast<int64_t>(record_index_);
+    return info;
 }
 
 MAA_CTRL_UNIT_NS_END

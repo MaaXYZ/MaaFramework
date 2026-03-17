@@ -84,7 +84,7 @@ std::optional<cv::Mat> PrintWindowScreencap::screencap()
     }
 
     // 使用 GetDIBits 将位图一致转换为 32bpp BGRA
-    BITMAPINFO bmi = {};
+    BITMAPINFO bmi = { };
     bmi.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
     bmi.bmiHeader.biWidth = width;
     bmi.bmiHeader.biHeight = -height; // top-down

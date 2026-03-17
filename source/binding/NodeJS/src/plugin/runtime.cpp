@@ -23,14 +23,14 @@ inline auto BindData(QuickJSRuntimeBridgeInterface::SinkFunc func, void* data)
 
 struct QuickJSRuntimeData : public QuickJSRuntimeBridgeInterface
 {
-    JSRuntime* rt {};
-    JSContext* ctx {};
-    bool quit {};
+    JSRuntime* rt { };
+    JSContext* ctx { };
+    bool quit { };
     std::string result;
 
     std::mutex running_task_count_mtx;
     std::condition_variable running_task_count_cv;
-    size_t running_task_count {};
+    size_t running_task_count { };
 
     std::mutex async_tasks_mtx;
     std::condition_variable async_tasks_cv;

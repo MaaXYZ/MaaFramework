@@ -150,7 +150,7 @@ MaaBool CustomConnect(void* trans_arg)
 {
     auto customCtx = reinterpret_cast<CustomControllerContext*>(trans_arg);
     auto ctx = customCtx->callbacks["connect"];
-    return ctx->Call<bool>([&](maajs::FunctionType func) { return func.Call({}); });
+    return ctx->Call<bool>([&](maajs::FunctionType func) { return func.Call({ }); });
 }
 
 MaaBool CustomConnected(void* trans_arg)
@@ -166,7 +166,7 @@ MaaBool CustomRequestUuid(void* trans_arg, MaaStringBuffer* buffer)
 {
     auto customCtx = reinterpret_cast<CustomControllerContext*>(trans_arg);
     auto ctx = customCtx->callbacks["request_uuid"];
-    auto result = ctx->Call<std::optional<std::string>>([&](maajs::FunctionType func) { return func.Call({}); });
+    auto result = ctx->Call<std::optional<std::string>>([&](maajs::FunctionType func) { return func.Call({ }); });
     if (result) {
         StringBuffer(buffer, false).set(*result);
         return true;
@@ -181,7 +181,7 @@ MaaControllerFeature CustomGetFeatures(void* trans_arg)
     using Ret = std::optional<std::vector<std::string>>;
     auto customCtx = reinterpret_cast<CustomControllerContext*>(trans_arg);
     auto ctx = customCtx->callbacks["get_features"];
-    auto result = ctx->Call<Ret>([&](maajs::FunctionType func) { return func.Call({}); });
+    auto result = ctx->Call<Ret>([&](maajs::FunctionType func) { return func.Call({ }); });
     if (!result) {
         return 0;
     }
@@ -227,7 +227,7 @@ MaaBool CustomScreencap(void* trans_arg, MaaImageBuffer* buffer)
     auto customCtx = reinterpret_cast<CustomControllerContext*>(trans_arg);
     auto ctx = customCtx->callbacks["screencap"];
     return ctx->Call<bool>(
-        [&](maajs::FunctionType func) { return func.Call({}); },
+        [&](maajs::FunctionType func) { return func.Call({ }); },
         [buffer](maajs::ValueType result) {
             try {
                 auto data = maajs::JSConvert<std::optional<maajs::ArrayBufferType>>::from_value(result);
@@ -363,4 +363,39 @@ MaaBool CustomKeyUp(int32_t keycode, void* trans_arg)
                 maajs::NumberType::New(func.Env(), keycode),
             });
     });
+}
+
+MaaBool CustomScroll(int32_t dx, int32_t dy, void* trans_arg)
+{
+    auto customCtx = reinterpret_cast<CustomControllerContext*>(trans_arg);
+    auto ctx = customCtx->callbacks["scroll"];
+    return ctx->Call<bool>([&](maajs::FunctionType func) {
+        return func.Call(
+            {
+                maajs::NumberType::New(func.Env(), dx),
+                maajs::NumberType::New(func.Env(), dy),
+            });
+    });
+}
+
+MaaBool CustomInactive(void* trans_arg)
+{
+    auto customCtx = reinterpret_cast<CustomControllerContext*>(trans_arg);
+    auto ctx = customCtx->callbacks["inactive"];
+    return ctx->Call<bool>([&](maajs::FunctionType func) { return func.Call({ }); });
+}
+
+MaaBool CustomGetInfo(void* trans_arg, MaaStringBuffer* buffer)
+{
+    auto customCtx = reinterpret_cast<CustomControllerContext*>(trans_arg);
+    auto ctx = customCtx->callbacks["get_info"];
+    auto result = ctx->Call<std::optional<std::string>>([&](maajs::FunctionType func) { return func.Call({ }); });
+    if (result) {
+        StringBuffer(buffer, false).set(*result);
+        return true;
+    }
+    else {
+        StringBuffer(buffer, false).set("{}");
+        return true;
+    }
 }

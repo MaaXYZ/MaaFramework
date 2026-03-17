@@ -710,6 +710,11 @@ bool PipelineParser::parse_ocrer_param(
         output.replace = default_value.replace;
     }
 
+    if (!get_and_check_value(input, "color_filter", output.color_filter, default_value.color_filter)) {
+        LogError << "failed to get_and_check_value color_filter" << VAR(input);
+        return false;
+    }
+
     return true;
 }
 
@@ -1151,7 +1156,7 @@ bool PipelineParser::parse_action(
     } break;
 
     case Type::StopTask:
-        out_param = {};
+        out_param = { };
         return true;
 
     case Type::Command: {
@@ -1167,6 +1172,15 @@ bool PipelineParser::parse_action(
         auto default_param = default_mgr.get_action_param<ShellParam>(Type::Shell);
         out_param = default_param;
         return parse_shell(param_input, std::get<ShellParam>(out_param), same_type ? std::get<ShellParam>(parent_param) : default_param);
+    } break;
+
+    case Type::Screencap: {
+        auto default_param = default_mgr.get_action_param<ScreencapParam>(Type::Screencap);
+        out_param = default_param;
+        return parse_screencap(
+            param_input,
+            std::get<ScreencapParam>(out_param),
+            same_type ? std::get<ScreencapParam>(parent_param) : default_param);
     } break;
 
     case Type::Custom: {
@@ -1464,6 +1478,37 @@ bool PipelineParser::parse_command_param(const json::value& input, Action::Comma
     return true;
 }
 
+bool PipelineParser::parse_screencap(const json::value& input, Action::ScreencapParam& output, const Action::ScreencapParam& default_value)
+{
+    if (!get_and_check_value(input, "filename", output.filename, default_value.filename)) {
+        LogError << "failed to get_and_check_value filename" << VAR(input);
+        return false;
+    }
+
+    if (!get_and_check_value(input, "format", output.format, default_value.format)) {
+        LogError << "failed to get_and_check_value format" << VAR(input);
+        return false;
+    }
+
+    static const std::unordered_set<std::string> kValidFormats = { "png", "jpg", "jpeg" };
+    if (kValidFormats.find(output.format) == kValidFormats.end()) {
+        LogError << "invalid screencap format, expected png|jpg|jpeg" << VAR(output.format) << VAR(input);
+        return false;
+    }
+
+    if (!get_and_check_value(input, "quality", output.quality, default_value.quality)) {
+        LogError << "failed to get_and_check_value quality" << VAR(input);
+        return false;
+    }
+
+    if (output.quality < 0 || output.quality > 100) {
+        LogWarn << "screencap quality out of range [0, 100], clamping" << VAR(output.quality);
+        output.quality = std::clamp(output.quality, 0, 100);
+    }
+
+    return true;
+}
+
 bool PipelineParser::parse_custom_action_param(
     const json::value& input,
     Action::CustomParam& output,
@@ -1635,12 +1680,17 @@ bool PipelineParser::parse_target_variant(const json::value& input_target, Targe
         output.type = Target::Type::Self;
     }
     else if (input_target.is_string()) {
-        output.type = Target::Type::PreTask;
-        output.param = input_target.as_string();
+        NodeAttr parsed;
+        if (!parse_node_string_in_next(input_target.as_string(), parsed)) {
+            LogError << "failed to parse target string" << VAR(input_target);
+            return false;
+        }
+        output.type = parsed.anchor ? Target::Type::Anchor : Target::Type::PreTask;
+        output.param = parsed.name;
     }
     else if (input_target.is_array()) {
         output.type = Target::Type::Region;
-        cv::Rect rect {};
+        cv::Rect rect { };
         if (!parse_rect(input_target, rect)) {
             LogError << "Target::Type::Region failed to parse_rect" << VAR(input_target);
             return false;
@@ -1917,13 +1967,13 @@ bool PipelineParser::parse_sub_recognition(
     InlineSubRecognition inline_reco;
 
     Type parent_type = Type::DirectHit;
-    Param parent_param = DirectHitParam {};
+    Param parent_param = DirectHitParam { };
 
     if (!parse_recognition(input, inline_reco.type, inline_reco.param, parent_type, parent_param, default_mgr)) {
         return false;
     }
 
-    if (!get_and_check_value(input, "sub_name", inline_reco.sub_name, std::string {})) {
+    if (!get_and_check_value(input, "sub_name", inline_reco.sub_name, std::string { })) {
         LogError << "failed to get_and_check_value sub_name" << VAR(input);
         return false;
     }
@@ -1947,7 +1997,7 @@ bool PipelineParser::parse_anchor(
         output = default_value;
         return true;
     }
-    output = {};
+    output = { };
     if (opt->is_string()) {
         output[opt->as_string()] = node_name;
     }

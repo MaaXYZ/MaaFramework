@@ -17,6 +17,8 @@ public:
 public:
     virtual std::optional<cv::Mat> screencap() = 0;
 
+    virtual void inactive() { }
+
 protected:
 };
 
@@ -42,6 +44,16 @@ public:
     virtual bool key_up(int key) = 0;
 
     virtual bool scroll(int dx, int dy) = 0;
+
+    virtual void inactive() { }
+};
+
+class RelativeMoveInput : public InputBase
+{
+public:
+    virtual ~RelativeMoveInput() = default;
+
+    virtual bool relative_move(int dx, int dy) = 0;
 };
 
 MAA_CTRL_UNIT_NS_END

@@ -9,7 +9,7 @@
 
 MAA_CTRL_UNIT_NS_BEGIN
 
-class CustomControlUnitMgr : public ControlUnitAPI
+class CustomControlUnitMgr : public CustomControlUnitAPI
 {
 public:
     CustomControlUnitMgr(MaaCustomControllerCallbacks* controller, void* controller_arg);
@@ -43,7 +43,13 @@ public: // from ControlUnitAPI
 
     virtual bool scroll(int dx, int dy) override;
 
+    virtual bool inactive() override;
+
+    virtual json::object get_info() const override;
+
 private:
+    std::optional<json::object> get_info_from_controller() const;
+
     MaaCustomControllerCallbacks* controller_ = nullptr;
     void* controller_arg_ = nullptr;
 };

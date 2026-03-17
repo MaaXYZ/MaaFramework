@@ -48,6 +48,8 @@ public:
 
     std::vector<ImageEncodedBuffer> draws() && { return std::move(draws_); }
 
+    static void save_draws(const std::string& name, const std::vector<ImageEncodedBuffer>& draws);
+
 protected:
     cv::Mat image_with_roi() const;
 
@@ -62,7 +64,7 @@ protected:
     const cv::Mat image_;
     const std::string name_;
 
-    cv::Rect roi_ {};
+    cv::Rect roi_ { };
 
     bool debug_draw_ = false;
 

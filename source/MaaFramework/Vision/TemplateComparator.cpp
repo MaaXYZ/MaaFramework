@@ -30,11 +30,16 @@ void TemplateComparator::analyze()
     auto start_time = std::chrono::steady_clock::now();
 
     while (next_roi()) {
-        cv::Mat lhs_roi = image_(correct_roi(roi_, image_));
-        cv::Mat rhs_roi = rhs_image_(correct_roi(roi_, rhs_image_));
+        cv::Mat lhs_roi = image_(roi_);
+        cv::Mat rhs_roi = rhs_image_(roi_);
         double score = comp(lhs_roi, rhs_roi, param_.method);
         Result res = Result { .box = roi_, .score = score };
         add_results({ std::move(res) }, param_.threshold);
+
+        if (debug_draw_) {
+            auto draw = draw_result(roi_, score);
+            handle_draw(draw);
+        }
     }
 
     cherry_pick();
@@ -77,7 +82,7 @@ double TemplateComparator::comp(const cv::Mat& lhs, const cv::Mat& rhs, int meth
     }
 
     double min_val = 0.0, max_val = 0.0;
-    cv::Point min_loc {}, max_loc {};
+    cv::Point min_loc { }, max_loc { };
     cv::minMaxLoc(matched, &min_val, &max_val, &min_loc, &max_loc);
 
     double val = low_score_better_ ? min_val : max_val;
@@ -92,6 +97,36 @@ double TemplateComparator::comp(const cv::Mat& lhs, const cv::Mat& rhs, int meth
 bool TemplateComparator::comp_score(double s1, double s2) const
 {
     return low_score_better_ ? s1 > s2 : s1 < s2;
+}
+
+cv::Mat TemplateComparator::draw_result(const cv::Rect& roi, double score) const
+{
+    int width = image_.cols + rhs_image_.cols;
+    int height = std::max(image_.rows, rhs_image_.rows);
+    cv::Mat draw = cv::Mat::zeros(height, width, image_.type());
+
+    image_.copyTo(draw(cv::Rect(0, 0, image_.cols, image_.rows)));
+    rhs_image_.copyTo(draw(cv::Rect(image_.cols, 0, rhs_image_.cols, rhs_image_.rows)));
+
+    const cv::Scalar roi_color(0, 255, 0);
+    const cv::Scalar score_color(0, 0, 255);
+
+    cv::putText(draw, name_, cv::Point(5, image_.rows - 5), cv::FONT_HERSHEY_SIMPLEX, 1, roi_color, 2);
+
+    cv::rectangle(draw, roi, roi_color, 1);
+    std::string roi_flag = std::format("ROI: [{}, {}, {}, {}]", roi.x, roi.y, roi.width, roi.height);
+    cv::putText(draw, roi_flag, cv::Point(roi.x, roi.y - 5), cv::FONT_HERSHEY_PLAIN, 1.2, roi_color, 1);
+
+    cv::Rect rhs_roi(roi.x + image_.cols, roi.y, roi.width, roi.height);
+    cv::rectangle(draw, rhs_roi, roi_color, 1);
+    cv::putText(draw, roi_flag, cv::Point(rhs_roi.x, rhs_roi.y - 5), cv::FONT_HERSHEY_PLAIN, 1.2, roi_color, 1);
+
+    cv::line(draw, roi.tl(), rhs_roi.tl(), roi_color, 1);
+
+    std::string score_flag = std::format("Score: {:.3f}", score);
+    cv::putText(draw, score_flag, cv::Point(roi.x, roi.y + roi.height + 30), cv::FONT_HERSHEY_SIMPLEX, 1, score_color, 2);
+
+    return draw;
 }
 
 MAA_VISION_NS_END

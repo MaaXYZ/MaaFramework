@@ -45,6 +45,10 @@ std::optional<cv::Mat> GdiScreencap::screencap()
     }
 
     auto [width, height] = window_size(hwnd_);
+    if (width <= 0 || height <= 0) {
+        LogError << "Invalid window size" << VAR(width) << VAR(height);
+        return std::nullopt;
+    }
 
     bitmap = CreateCompatibleBitmap(hdc, width, height);
     if (!bitmap) {

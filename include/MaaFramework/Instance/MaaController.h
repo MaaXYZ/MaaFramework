@@ -71,6 +71,16 @@ extern "C"
     MAA_FRAMEWORK_API MaaController* MaaPlayCoverControllerCreate(const char* address, const char* uuid);
 
     /**
+     * @brief Create a wlroots controller for Linux.
+     *
+     * @param wlr_socket_path The wayland socket path (e.g., "/run/user/1000/wayland-0").
+     * @return The controller handle, or nullptr on failure.
+     *
+     * @note This controller is designed for wlroots on Linux.
+     */
+    MAA_FRAMEWORK_API MaaController* MaaWlRootsControllerCreate(const char* wlr_socket_path);
+
+    /**
      * @brief Create a virtual gamepad controller for Windows.
      *
      * @param hWnd Window handle for screencap (optional, can be nullptr if screencap not needed).
@@ -152,6 +162,8 @@ extern "C"
     // for win32 controller, contact means mouse button id (0 for left, 1 for right, 2 for middle)
     MAA_FRAMEWORK_API MaaCtrlId MaaControllerPostTouchUp(MaaController* ctrl, int32_t contact);
 
+    MAA_FRAMEWORK_API MaaCtrlId MaaControllerPostRelativeMove(MaaController* ctrl, int32_t dx, int32_t dy);
+
     MAA_FRAMEWORK_API MaaCtrlId MaaControllerPostKeyDown(MaaController* ctrl, int32_t keycode);
 
     MAA_FRAMEWORK_API MaaCtrlId MaaControllerPostKeyUp(MaaController* ctrl, int32_t keycode);
@@ -176,11 +188,24 @@ extern "C"
      * @param dy The vertical scroll delta. Positive values scroll up, negative values scroll down.
      * @return The control id of the scroll action.
      *
-     * @note Not all controllers support scroll. If not supported, the action will fail.
+     * @note Scroll is supported by Win32 controllers and custom controllers that implement scroll.
+     * @note If the controller does not support scroll, the action will fail. Use MaaControllerStatus or
+     * MaaControllerWait to check the result.
      * @note The dx/dy values are sent directly as scroll increments. Using multiples of 120 (WHEEL_DELTA) is
      * recommended for best compatibility.
      */
     MAA_FRAMEWORK_API MaaCtrlId MaaControllerPostScroll(MaaController* ctrl, int32_t dx, int32_t dy);
+
+    /**
+     * @brief Post an inactive request to the controller.
+     *
+     * @param ctrl The controller handle.
+     * @return The control id of the inactive action.
+     *
+     * @note For Win32 controllers, this restores window position (removes topmost) and unblocks user input.
+     * @note For other controllers, this is a no-op that always succeeds.
+     */
+    MAA_FRAMEWORK_API MaaCtrlId MaaControllerPostInactive(MaaController* ctrl);
 
     /**
      * @brief Post a shell command to the controller.
@@ -242,6 +267,18 @@ extern "C"
      * @see MaaControllerCachedImage, MaaControllerPostScreencap
      */
     MAA_FRAMEWORK_API MaaBool MaaControllerGetResolution(const MaaController* ctrl, /* out */ int32_t* width, /* out */ int32_t* height);
+
+    /**
+     * @brief Get controller information as a JSON string.
+     *
+     * @param ctrl The controller handle.
+     * @param buffer The output buffer to store the JSON string.
+     * @return true if the info is available, false otherwise.
+     *
+     * @note Returns controller-specific information including type, constructor parameters and current state.
+     *       The returned JSON always contains a "type" field indicating the controller type.
+     */
+    MAA_FRAMEWORK_API MaaBool MaaControllerGetInfo(const MaaController* ctrl, /* out */ MaaStringBuffer* buffer);
 
     MAA_DEPRECATED MAA_FRAMEWORK_API MaaCtrlId MaaControllerPostPressKey(MaaController* ctrl, int32_t keycode);
 

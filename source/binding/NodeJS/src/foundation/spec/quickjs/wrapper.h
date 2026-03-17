@@ -22,7 +22,7 @@ struct QjsString;
 
 struct QjsEnv
 {
-    JSContext* context {};
+    JSContext* context { };
 
     operator JSContext*() const { return context; }
 
@@ -35,7 +35,7 @@ struct QjsEnv
 
 struct QjsValue
 {
-    JSContext* context {};
+    JSContext* context { };
     JSValue value;
 
     QjsValue()
@@ -236,7 +236,7 @@ struct QjsString : public QjsValue
 
     std::string Utf8Value() const
     {
-        size_t len {};
+        size_t len { };
         auto ptr = JS_ToCStringLen2(context, &len, value, false);
         auto ret = std::string(ptr, len);
         JS_FreeCString(context, ptr);
@@ -336,13 +336,13 @@ struct QjsArrayBuffer : public QjsObject
 
     void* Data() const
     {
-        size_t size {};
+        size_t size { };
         return JS_GetArrayBuffer(Env(), &size, peek());
     }
 
     size_t ByteLength() const
     {
-        size_t size {};
+        size_t size { };
         JS_GetArrayBuffer(Env(), &size, peek());
         return size;
     }
@@ -351,9 +351,9 @@ struct QjsArrayBuffer : public QjsObject
 struct QjsCallbackInfo
 
 {
-    JSContext* context {};
+    JSContext* context { };
     JSValueConst thisObject;
-    int argc {};
+    int argc { };
     JSValueConst* argv;
 
     QjsEnv Env() const { return { context }; }

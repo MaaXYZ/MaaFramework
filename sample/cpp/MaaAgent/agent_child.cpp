@@ -3,7 +3,6 @@
 #include "MaaAgentServer/MaaAgentServerAPI.h"
 #include "MaaFramework/MaaAPI.h"
 #include "MaaFramework/Utility/MaaBuffer.h"
-#include "MaaToolkit/MaaToolkitAPI.h"
 
 MaaBool ChildCustomRecognitionCallback(
     MaaContext* context,
@@ -39,8 +38,10 @@ MaaBool ChildCustomActionInnerCallback(
 
 int main(int argc, char** argv)
 {
-    std::string user_path = "./";
-    MaaToolkitConfigInitOption(user_path.c_str(), "{}");
+    std::string log_dir = "./debug";
+    if (!MaaGlobalSetOption(MaaGlobalOption_LogDir, static_cast<void*>(log_dir.data()), log_dir.size())) {
+        return 1;
+    }
 
     MaaAgentServerRegisterCustomRecognition("ChildCustomRecognition", ChildCustomRecognitionCallback, nullptr);
     MaaAgentServerRegisterCustomAction("ChildCustomAction", ChildCustomActionCallback, nullptr);

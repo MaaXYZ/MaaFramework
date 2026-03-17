@@ -224,12 +224,17 @@ bool PlayCoverControlUnitMgr::key_up(int key)
     return false;
 }
 
-bool PlayCoverControlUnitMgr::scroll(int dx, int dy)
+bool PlayCoverControlUnitMgr::inactive()
 {
-    LogWarn << "scroll is not supported on PlayCover" << VAR(dx) << VAR(dy);
-    std::ignore = dx;
-    std::ignore = dy;
-    return false;
+    return true;
+}
+
+json::object PlayCoverControlUnitMgr::get_info() const
+{
+    json::object info;
+    info["type"] = "playcover";
+    info["address"] = address_;
+    return info;
 }
 
 MAA_CTRL_UNIT_NS_END

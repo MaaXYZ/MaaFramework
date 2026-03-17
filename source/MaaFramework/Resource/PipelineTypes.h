@@ -139,6 +139,7 @@ enum class Type
     StopTask,
     Command,
     Shell,
+    Screencap,
     Custom,
 };
 
@@ -163,7 +164,7 @@ struct LongPressParam
 struct SwipeParam
 {
     Target begin;
-    std::vector<TargetObj> end = { {} };
+    std::vector<TargetObj> end = { { } };
     std::vector<cv::Rect> end_offset;
     std::vector<uint> end_hold;
     std::vector<uint> duration = { 200 };
@@ -238,6 +239,13 @@ struct CommandParam
     bool detach = false;
 };
 
+struct ScreencapParam
+{
+    std::string filename;
+    std::string format = "png";
+    int quality = 100;
+};
+
 struct CustomParam
 {
     std::string name;
@@ -261,6 +269,7 @@ using Param = std::variant<
     ScrollParam,
     ShellParam,
     CommandParam,
+    ScreencapParam,
     CustomParam>;
 
 inline static const std::unordered_map<std::string, Type> kTypeMap = {
@@ -300,6 +309,8 @@ inline static const std::unordered_map<std::string, Type> kTypeMap = {
     { "scroll", Type::Scroll },
     { "Shell", Type::Shell },
     { "shell", Type::Shell },
+    { "Screencap", Type::Screencap },
+    { "screencap", Type::Screencap },
     { "Command", Type::Command },
     { "command", Type::Command },
     { "Custom", Type::Custom },
@@ -320,7 +331,8 @@ inline static const std::unordered_map<Type, std::string> kTypeNameMap = {
     { Type::StopApp, "StopApp" },       { Type::KeyDown, "KeyDown" },
     { Type::KeyUp, "KeyUp" },           { Type::Scroll, "Scroll" },
     { Type::StopTask, "StopTask" },     { Type::Command, "Command" },
-    { Type::Shell, "Shell" },           { Type::Custom, "Custom" },
+    { Type::Shell, "Shell" },           { Type::Screencap, "Screencap" },
+    { Type::Custom, "Custom" },
 };
 } // namespace Action
 
@@ -355,7 +367,7 @@ struct PipelineData
     bool enabled = true;
 
     Recognition::Type reco_type = Recognition::Type::DirectHit;
-    Recognition::Param reco_param = MAA_VISION_NS::DirectHitParam {};
+    Recognition::Param reco_param = MAA_VISION_NS::DirectHitParam { };
     bool inverse = false;
 
     Action::Type action_type = Action::Type::DoNothing;

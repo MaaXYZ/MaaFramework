@@ -1,8 +1,12 @@
 #include "MaaAgent/Transceiver.h"
 
+#include <algorithm>
+#include <cctype>
+#include <cstdlib>
 #include <format>
 #include <fstream>
 #include <optional>
+#include <string_view>
 
 #ifdef _WIN32
 #include "MaaUtils/SafeWindows.hpp"
@@ -73,6 +77,26 @@ static std::string temp_directory()
     return path_to_utf8_string(path);
 }
 
+static std::optional<uint16_t> parse_port_string(std::string_view port_str)
+{
+    if (port_str.empty()) {
+        return std::nullopt;
+    }
+
+    bool all_digits = std::all_of(port_str.begin(), port_str.end(), [](unsigned char c) { return std::isdigit(c) != 0; });
+    if (!all_digits) {
+        return std::nullopt;
+    }
+
+    char* end = nullptr;
+    unsigned long port = std::strtoul(port_str.data(), &end, 10);
+    if (end != port_str.data() + port_str.size() || port == 0 || port > 65535) {
+        return std::nullopt;
+    }
+
+    return static_cast<uint16_t>(port);
+}
+
 void Transceiver::init_socket(const std::string& identifier, bool bind)
 {
     LogFunc << VAR(bind);
@@ -108,21 +132,13 @@ static uint16_t parse_port_from_endpoint(const std::string& endpoint)
     if (pos == std::string::npos || pos >= endpoint.size() - 1) {
         return 0;
     }
-    std::string port_str = endpoint.substr(pos + 1);
 
-    // 验证字符串是否为有效数字
-    if (port_str.empty() || !std::all_of(port_str.begin(), port_str.end(), [](unsigned char c) { return std::isdigit(c) != 0; })) {
-        return 0;
-    }
+    return parse_port_string(std::string_view(endpoint).substr(pos + 1)).value_or(0);
+}
 
-    // 使用 strtoul 替代 stoi，避免异常并处理溢出
-    char* end = nullptr;
-    unsigned long port = std::strtoul(port_str.c_str(), &end, 10);
-    if (end != port_str.c_str() + port_str.size() || port > 65535) {
-        return 0;
-    }
-
-    return static_cast<uint16_t>(port);
+std::optional<uint16_t> Transceiver::parse_tcp_port(const std::string& identifier)
+{
+    return parse_port_string(identifier);
 }
 
 uint16_t Transceiver::init_tcp_socket(uint16_t port, bool bind)
@@ -144,7 +160,7 @@ uint16_t Transceiver::init_tcp_socket(uint16_t port, bool bind)
         zmq_sock_.bind(bind_addr);
 
         // 获取实际绑定的端点
-        char endpoint[256] = {};
+        char endpoint[256] = { };
         size_t endpoint_len = sizeof(endpoint);
         zmq_getsockopt(zmq_sock_.handle(), ZMQ_LAST_ENDPOINT, endpoint, &endpoint_len);
         ipc_addr_ = endpoint;
@@ -319,7 +335,7 @@ std::string Transceiver::send_image(const cv::Mat& mat)
 {
     if (mat.empty()) {
         LogWarn << "empty image" << VAR(ipc_addr_);
-        return {};
+        return { };
     }
 
     std::unique_lock lock(socket_mutex_);
@@ -335,14 +351,14 @@ std::string Transceiver::send_image(const cv::Mat& mat)
     // send header
     if (!poll(zmq_pollitem_send_)) {
         LogError << "send header canceled";
-        return {};
+        return { };
     }
     std::string jstr = json::value(header).dumps();
     zmq::message_t header_msg(jstr.data(), jstr.size());
     bool sent = zmq_sock_.send(std::move(header_msg), zmq::send_flags::dontwait).has_value();
     if (!sent) {
         LogError << "failed to send header" << VAR(header) << VAR(ipc_addr_);
-        return {};
+        return { };
     }
 
     // send image data
@@ -350,7 +366,7 @@ std::string Transceiver::send_image(const cv::Mat& mat)
     sent = zmq_sock_.send(img_msg, zmq::send_flags::none).has_value();
     if (!sent) {
         LogError << "failed to send msg" << VAR(ipc_addr_);
-        return {};
+        return { };
     }
     return header.uuid;
 }
@@ -359,7 +375,7 @@ std::string Transceiver::send_image_encoded(const ImageEncodedBuffer& encoded_da
 {
     if (encoded_data.empty()) {
         LogWarn << "empty encoded data" << VAR(ipc_addr_);
-        return {};
+        return { };
     }
 
     std::unique_lock lock(socket_mutex_);
@@ -372,14 +388,14 @@ std::string Transceiver::send_image_encoded(const ImageEncodedBuffer& encoded_da
     // send header
     if (!poll(zmq_pollitem_send_)) {
         LogError << "send encoded header canceled";
-        return {};
+        return { };
     }
     std::string jstr = json::value(header).dumps();
     zmq::message_t header_msg(jstr.data(), jstr.size());
     bool sent = zmq_sock_.send(std::move(header_msg), zmq::send_flags::dontwait).has_value();
     if (!sent) {
         LogError << "failed to send encoded header" << VAR(header) << VAR(ipc_addr_);
-        return {};
+        return { };
     }
 
     // send encoded image data
@@ -387,7 +403,7 @@ std::string Transceiver::send_image_encoded(const ImageEncodedBuffer& encoded_da
     sent = zmq_sock_.send(img_msg, zmq::send_flags::none).has_value();
     if (!sent) {
         LogError << "failed to send encoded image data" << VAR(ipc_addr_);
-        return {};
+        return { };
     }
     return header.uuid;
 }
@@ -396,13 +412,13 @@ cv::Mat Transceiver::get_image_cache(const std::string& uuid)
 {
     if (uuid.empty()) {
         LogWarn << "empty uuid" << VAR(ipc_addr_);
-        return {};
+        return { };
     }
 
     auto it = recved_images_.find(uuid);
     if (it == recved_images_.end()) {
         LogError << "image not found" << VAR(uuid) << VAR(ipc_addr_);
-        return {};
+        return { };
     }
 
     cv::Mat image = std::move(it->second);
@@ -415,13 +431,13 @@ Transceiver::ImageEncodedBuffer Transceiver::get_image_encoded_cache(const std::
 {
     if (uuid.empty()) {
         // LogWarn << "empty uuid" << VAR(ipc_addr_);
-        return {};
+        return { };
     }
 
     auto it = recved_images_encoded_.find(uuid);
     if (it == recved_images_encoded_.end()) {
         LogError << "encoded image not found" << VAR(uuid) << VAR(ipc_addr_);
-        return {};
+        return { };
     }
 
     ImageEncodedBuffer encoded_data = std::move(it->second);

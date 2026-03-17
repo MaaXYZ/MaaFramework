@@ -1,5 +1,6 @@
 #include "MaaToolkit/DesktopWindow/MaaToolkitDesktopWindow.h"
 
+#include "DesktopWindow/DesktopWindowAndroidFinder.h"
 #include "DesktopWindow/DesktopWindowBuffer.hpp"
 #include "DesktopWindow/DesktopWindowLinuxFinder.h"
 #include "DesktopWindow/DesktopWindowMacOSFinder.h"
@@ -14,8 +15,10 @@ static MAA_TOOLKIT_NS::DesktopWindowFinder& finder()
     return DesktopWindowWin32Finder::get_instance();
 #elif defined(__APPLE__)
     return DesktopWindowMacOSFinder::get_instance();
-#elif defined(__linux__)
+#elif defined(__linux__) && !defined(ANDROID)
     return DesktopWindowLinuxFinder::get_instance();
+#elif defined(__linux__) && defined(ANDROID)
+    return DesktopWindowAndroidFinder::get_instance();
 #endif
 }
 

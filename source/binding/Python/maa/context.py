@@ -446,13 +446,14 @@ class Context:
         Note:
             - time 和 wait_freezes_param.time 互斥，不能同时为非零或同时为零 / time and wait_freezes_param.time are mutually exclusive
         """
-        rect_handle = None
+        rect_buffer = None
         if box:
-            rect_handle = MaaRectHandle()
-            Library.framework().MaaRectSet(rect_handle, box[0], box[1], box[2], box[3])
+            rect_buffer = RectBuffer()
+            rect_buffer.set(box)
 
         # Convert JWaitFreezes to dict
         from dataclasses import asdict
+
         param_dict = asdict(wait_freezes_param) if wait_freezes_param is not None else {}
         param_json = json.dumps(param_dict, ensure_ascii=False)
 
@@ -460,7 +461,7 @@ class Context:
             Library.framework().MaaContextWaitFreezes(
                 self._handle,
                 ctypes.c_uint64(time),
-                rect_handle,
+                rect_buffer._handle if rect_buffer else None,
                 param_json.encode(),
             )
         )

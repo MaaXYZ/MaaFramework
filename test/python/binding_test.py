@@ -40,7 +40,7 @@ if str(binding_dir) not in sys.path:
 
 from maa.library import Library
 from maa.resource import Resource, ResourceEventSink
-from maa.controller import DbgController, CustomController, ControllerEventSink
+from maa.controller import DbgController, CustomController, Win32Controller, ControllerEventSink
 from maa.tasker import Tasker, TaskerEventSink
 from maa.toolkit import Toolkit
 from maa.custom_action import CustomAction
@@ -154,13 +154,20 @@ class MyRecognition(CustomRecognition):
         # 测试 wait_freezes API（参数校验：time 和 wait_freezes_param.time 同时为零应返回 false）
         from maa.pipeline import JWaitFreezes
 
-        wait_result = new_ctx.wait_freezes(
-            time=0, wait_freezes_param=JWaitFreezes(time=0)
-        )
-        print(f"  wait_freezes (both zero): {wait_result}")
-        assert (
-            not wait_result
-        ), "wait_freezes should return false when both time are zero"
+        wait_cases = [
+            ("both zero", None),
+            ("both zero, with box", (10, 10, 100, 100)),
+        ]
+        for case_name, box in wait_cases:
+            wait_result = new_ctx.wait_freezes(
+                time=0,
+                box=box,
+                wait_freezes_param=JWaitFreezes(time=0),
+            )
+            print(f"  wait_freezes ({case_name}): {wait_result}")
+            assert (
+                not wait_result
+            ), "wait_freezes should return false when both time are zero"
 
         # 测试 override_image
         test_image = numpy.zeros((100, 100, 3), dtype=numpy.uint8)
@@ -208,15 +215,18 @@ class MyAction(CustomAction):
         controller.post_touch_up(1).wait()
         controller.post_key_down(65).wait()
         controller.post_key_up(65).wait()
-        controller.post_scroll(0, 120).wait()
         controller.post_start_app("aaa")
         controller.post_stop_app("bbb")
+        controller.post_inactive().wait()
 
         cached_image = controller.cached_image
         connected = controller.connected
         uuid = controller.uuid
         resolution = controller.resolution
-        print(f"  connected: {connected}, uuid: {uuid}, resolution: {resolution}")
+        info = controller.info
+        print(
+            f"  connected: {connected}, uuid: {uuid}, resolution: {resolution}, info type: {info.get('type')}"
+        )
 
         global runned
         runned = True
@@ -391,6 +401,15 @@ def test_controller_api():
     assert isinstance(resolution[0], int), "resolution width should be int"
     assert isinstance(resolution[1], int), "resolution height should be int"
 
+    # 测试 info
+    info = dbg_controller.info
+    print(f"  info: {info}")
+    assert isinstance(info, dict), "info should be a dict"
+    assert "type" in info, "info should contain 'type'"
+    assert info["type"].startswith(
+        "dbg_"
+    ), "dbg controller type should start with 'dbg_'"
+
     # 测试输入操作
     dbg_controller.post_click(100, 100).wait()
     dbg_controller.post_swipe(100, 100, 200, 200, 100).wait()
@@ -401,9 +420,12 @@ def test_controller_api():
     dbg_controller.post_touch_down(0, 100, 100, 0).wait()
     dbg_controller.post_touch_move(0, 150, 150, 0).wait()
     dbg_controller.post_touch_up(0).wait()
-    dbg_controller.post_scroll(0, 120).wait()
+    assert not dbg_controller.post_scroll(0, 120).wait().succeeded, (
+        "dbg controller scroll should fail"
+    )
     dbg_controller.post_start_app("com.test.app").wait()
     dbg_controller.post_stop_app("com.test.app").wait()
+    dbg_controller.post_inactive().wait()
 
     # 测试截图选项
     dbg_controller.set_screenshot_target_long_side(1920)
@@ -655,6 +677,12 @@ class MyController(CustomController):
         self.count += 1
         return True
 
+    def get_custom_info(self) -> dict:
+        return {
+            "custom_key": "custom_value",
+            "answer": 42,
+        }
+
 
 def test_custom_controller():
     print("\n=== test_custom_controller ===")
@@ -665,6 +693,14 @@ def test_custom_controller():
     ret = controller.post_connection().wait().succeeded
     uuid = controller.uuid
     print(f"  uuid: {uuid}")
+    info = controller.info
+    print(f"  info: {info}")
+    assert isinstance(info, dict), "info should be a dict"
+    assert info.get("type") == "custom", "info type should be custom"
+    assert (
+        info.get("custom_key") == "custom_value"
+    ), "custom info should contain custom_key"
+    assert info.get("answer") == 42, "custom info should contain answer"
 
     ret &= controller.post_start_app("custom_aaa").wait().succeeded
     ret &= controller.post_stop_app("custom_bbb").wait().succeeded
@@ -683,6 +719,7 @@ def test_custom_controller():
     ret &= controller.post_key_down(65).wait().succeeded
     ret &= controller.post_key_up(65).wait().succeeded
     ret &= controller.post_scroll(0, 120).wait().succeeded
+    ret &= controller.post_inactive().wait().succeeded
 
     print(f"  controller.count: {controller.count}, ret: {ret}")
     print("  PASS: custom controller")
@@ -707,6 +744,39 @@ def test_toolkit():
         print(f"    - {win.window_name[:30] if win.window_name else '(no name)'}")
 
     print("  PASS: toolkit")
+
+
+def test_win32_relative_move():
+    print("\n=== test_win32_relative_move ===")
+
+    desktop_windows = Toolkit.find_desktop_windows()
+    if not desktop_windows:
+        print("  SKIP: no desktop windows found")
+        return
+
+    controller = None
+    target_window = None
+    for window in desktop_windows:
+        try:
+            controller = Win32Controller(window.hwnd)
+            target_window = window
+            break
+        except RuntimeError:
+            continue
+
+    if controller is None or target_window is None:
+        print("  SKIP: failed to create Win32 controller")
+        return
+
+    ret = controller.post_connection().wait().succeeded
+    ret &= controller.post_relative_move(0, 0).wait().succeeded
+
+    print(
+        f"  target window: {target_window.window_name[:30] if target_window.window_name else '(no name)'}"
+    )
+    print(f"  ret: {ret}")
+    assert ret, "win32 relative_move should succeed"
+    print("  PASS: win32 relative_move")
 
 
 # ============================================================================
@@ -735,6 +805,9 @@ if __name__ == "__main__":
 
     # 测试 Toolkit
     test_toolkit()
+
+    # 测试 Win32 relative_move 正路径
+    test_win32_relative_move()
 
     print("\n" + "=" * 50)
     print("All binding tests passed!")

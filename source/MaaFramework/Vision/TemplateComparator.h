@@ -10,7 +10,7 @@ MAA_VISION_NS_BEGIN
 
 struct TemplateComparatorResult
 {
-    cv::Rect box {};
+    cv::Rect box { };
     double score = 0.0;
 
     MEO_JSONIZATION(box, score);
@@ -26,6 +26,8 @@ public:
 private:
     void analyze();
 
+    cv::Mat draw_result(const cv::Rect& roi, double score) const;
+
     void add_results(ResultsVec results, double threshold);
     void cherry_pick();
 
@@ -33,7 +35,7 @@ private:
     bool comp_score(double s1, double s2) const;
 
 private:
-    const cv::Mat rhs_image_ = {};
+    const cv::Mat rhs_image_ = { };
     const TemplateComparatorParam param_;
     const bool low_score_better_ = false;
 };

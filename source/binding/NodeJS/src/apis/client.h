@@ -16,7 +16,7 @@
 
 struct ClientImpl : public maajs::NativeClassBase
 {
-    MaaAgentClient* client {};
+    MaaAgentClient* client { };
 
     ClientImpl() = default;
     ClientImpl(std::string identifier);

@@ -96,7 +96,7 @@ std::vector<std::string> AdbDeviceFinder::find_serials_by_adb_command(const std:
 
     if (!control_unit) {
         LogError << "Failed to create control unit";
-        return {};
+        return { };
     }
 
     std::vector<std::string> devices;
@@ -106,7 +106,7 @@ std::vector<std::string> AdbDeviceFinder::find_serials_by_adb_command(const std:
 
     if (!found) {
         LogError << "Failed to find_device";
-        return {};
+        return { };
     }
 
     return devices;
@@ -194,7 +194,7 @@ std::optional<AdbDevice>
     device.serial = serial;
     device.screencap_methods = MaaAdbScreencapMethod_Default;
     device.input_methods = MaaAdbInputMethod_Default;
-    device.config = {};
+    device.config = { };
 
     if (request_waydroid_config(control_unit, device)) {
     }
@@ -261,7 +261,7 @@ std::filesystem::path AdbDeviceFinder::get_emulator_adb_path(const EmulatorConst
 {
     auto path_opt = get_process_path(pid);
     if (!path_opt) {
-        return {};
+        return { };
     }
     auto dir = path_opt->parent_path();
 
@@ -272,7 +272,7 @@ std::filesystem::path AdbDeviceFinder::get_emulator_adb_path(const EmulatorConst
         }
         return std::filesystem::canonical(adb_path);
     }
-    return {};
+    return { };
 }
 
 MAA_TOOLKIT_NS_END

@@ -294,11 +294,16 @@ typedef uint64_t MaaAdbInputMethod;
 
 // MaaWin32ScreencapMethod:
 /**
- * @brief Win32 screencap method
+ * @brief Win32 screencap method flags
  *
- * No bitwise OR, select ONE method only.
+ * Use bitwise OR to set the methods you need.
+ * MaaFramework will test all provided methods and use the fastest available one.
  *
  * No default value. Client should choose one as default.
+ *
+ * Predefined combinations:
+ * - Foreground: DXGI_DesktopDup_Window | ScreenDC
+ * - Background: FramePool | PrintWindow
  *
  * Different applications use different rendering methods, there is no universal solution.
  *
@@ -311,8 +316,10 @@ typedef uint64_t MaaAdbInputMethod;
  * | PrintWindow             | Medium    | Medium        | No            | Yes                |                                  |
  * | ScreenDC                | Fast      | High          | No            | No                 |                                  |
  *
- * Note: When a window is minimized on Windows, all screencap methods will fail.
- * Avoid minimizing the target window.
+ * Note: FramePool and PrintWindow support pseudo-minimize — when the target window
+ * is minimized, they make it transparent and click-through, then restore it without
+ * activation, allowing screencap to continue without disturbing the user.
+ * Other screencap methods will fail when the target window is minimized.
  */
 typedef uint64_t MaaWin32ScreencapMethod;
 #define MaaWin32ScreencapMethod_None 0ULL
@@ -322,6 +329,10 @@ typedef uint64_t MaaWin32ScreencapMethod;
 #define MaaWin32ScreencapMethod_DXGI_DesktopDup_Window (1ULL << 3)
 #define MaaWin32ScreencapMethod_PrintWindow (1ULL << 4)
 #define MaaWin32ScreencapMethod_ScreenDC (1ULL << 5)
+
+#define MaaWin32ScreencapMethod_All (~MaaWin32ScreencapMethod_None)
+#define MaaWin32ScreencapMethod_Foreground (MaaWin32ScreencapMethod_DXGI_DesktopDup_Window | MaaWin32ScreencapMethod_ScreenDC)
+#define MaaWin32ScreencapMethod_Background (MaaWin32ScreencapMethod_FramePool | MaaWin32ScreencapMethod_PrintWindow)
 
 // MaaWin32InputMethod:
 /**
@@ -360,7 +371,7 @@ typedef uint64_t MaaWin32InputMethod;
 #define MaaWin32InputMethod_SendMessage (1ULL << 1)
 #define MaaWin32InputMethod_PostMessage (1ULL << 2)
 #define MaaWin32InputMethod_LegacyEvent (1ULL << 3)
-#define MaaWin32InputMethod_PostThreadMessage (1ULL << 4)
+#define MaaWin32InputMethod_PostThreadMessage (1ULL << 4) // Deprecated
 #define MaaWin32InputMethod_SendMessageWithCursorPos (1ULL << 5)
 #define MaaWin32InputMethod_PostMessageWithCursorPos (1ULL << 6)
 #define MaaWin32InputMethod_SendMessageWithWindowPos (1ULL << 7)

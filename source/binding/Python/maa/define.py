@@ -257,11 +257,16 @@ MaaWin32ScreencapMethod = ctypes.c_uint64
 
 class MaaWin32ScreencapMethodEnum(IntEnum):
     """
-    Win32 screencap method.
+    Win32 screencap method flags.
 
-    No bitwise OR, select ONE method only.
+    Use bitwise OR to set the methods you need.
+    MaaFramework will test all provided methods and use the fastest available one.
 
     No default value. Client should choose one as default.
+
+    Predefined combinations:
+    - Foreground: DXGI_DesktopDup_Window | ScreenDC
+    - Background: FramePool | PrintWindow
 
     Different applications use different rendering methods, there is no universal solution.
 
@@ -274,8 +279,8 @@ class MaaWin32ScreencapMethodEnum(IntEnum):
     | PrintWindow             | Medium    | Medium        | No            | Yes                |                                  |
     | ScreenDC                | Fast      | High          | No            | No                 |                                  |
 
-    Note: When a window is minimized on Windows, all screencap methods will fail.
-    Avoid minimizing the target window.
+    Note: FramePool and PrintWindow support pseudo-minimize. Other methods still fail
+    when the target window is minimized.
     """
 
     Null = 0
@@ -286,6 +291,9 @@ class MaaWin32ScreencapMethodEnum(IntEnum):
     DXGI_DesktopDup_Window = 1 << 3
     PrintWindow = 1 << 4
     ScreenDC = 1 << 5
+    All = ~Null
+    Foreground = DXGI_DesktopDup_Window | ScreenDC
+    Background = FramePool | PrintWindow
 
 
 MaaWin32InputMethod = ctypes.c_uint64
@@ -617,6 +625,15 @@ class MaaCustomControllerCallbacks(ctypes.Structure):
         ctypes.c_int32,
         ctypes.c_void_p,
     )
+    InactiveFunc = FUNCTYPE(
+        MaaBool,
+        ctypes.c_void_p,
+    )
+    GetInfoFunc = FUNCTYPE(
+        MaaBool,
+        ctypes.c_void_p,
+        MaaStringBufferHandle,
+    )
     _fields_ = [
         ("connect", ConnectFunc),
         ("connected", ConnectedFunc),
@@ -635,6 +652,8 @@ class MaaCustomControllerCallbacks(ctypes.Structure):
         ("key_down", KeyDownFunc),
         ("key_up", KeyUpFunc),
         ("scroll", ScrollFunc),
+        ("inactive", InactiveFunc),
+        ("get_info", GetInfoFunc),
     ]
 
 
@@ -900,6 +919,7 @@ class RecognitionDetail:
 class ClickActionResult:
     point: Point
     contact: int
+    pressure: int
 
 
 @dataclass
@@ -907,6 +927,7 @@ class LongPressActionResult:
     point: Point
     duration: int
     contact: int
+    pressure: int
 
 
 @dataclass
@@ -918,6 +939,7 @@ class SwipeActionResult:
     only_hover: bool
     starting: int
     contact: int
+    pressure: int
 
 
 @dataclass
@@ -948,6 +970,7 @@ class AppActionResult:
 
 @dataclass
 class ScrollActionResult:
+    point: Point
     dx: int
     dy: int
 
@@ -962,7 +985,7 @@ class TouchActionResult:
 @dataclass
 class ShellActionResult:
     cmd: str
-    timeout: int
+    shell_timeout: int
     success: bool
     output: str
 

@@ -4,6 +4,8 @@
 #include <string>
 #include <utility>
 
+#include <meojson/json.hpp>
+
 #include "Common/Conf.h"
 #include "MaaFramework/MaaDef.h"
 #include "MaaUtils/NoWarningCVMat.hpp"
@@ -39,7 +41,9 @@ public:
     virtual bool key_down(int key) = 0;
     virtual bool key_up(int key) = 0;
 
-    virtual bool scroll(int dx, int dy) = 0;
+    virtual bool inactive() = 0;
+
+    virtual json::object get_info() const = 0;
 };
 
 class AdbControlUnitAPI : public ControlUnitAPI
@@ -56,6 +60,9 @@ class Win32ControlUnitAPI : public ControlUnitAPI
 {
 public:
     virtual ~Win32ControlUnitAPI() = default;
+
+    virtual bool relative_move(int dx, int dy) = 0;
+    virtual bool scroll(int dx, int dy) = 0;
 };
 
 class MacOSControlUnitAPI : public ControlUnitAPI
@@ -64,10 +71,25 @@ public:
     virtual ~MacOSControlUnitAPI() = default;
 };
 
+class CustomControlUnitAPI : public ControlUnitAPI
+{
+public:
+    virtual ~CustomControlUnitAPI() = default;
+
+    virtual bool scroll(int dx, int dy) = 0;
+};
+
+class GamepadControlUnitAPI : public ControlUnitAPI
+{
+public:
+    virtual ~GamepadControlUnitAPI() = default;
+};
+
 MAA_CTRL_UNIT_NS_END
 
 using MaaControlUnitHandle = MAA_CTRL_UNIT_NS::ControlUnitAPI*;
 using MaaAdbControlUnitHandle = MAA_CTRL_UNIT_NS::AdbControlUnitAPI*;
 using MaaWin32ControlUnitHandle = MAA_CTRL_UNIT_NS::Win32ControlUnitAPI*;
 using MaaMacOSControlUnitHandle = MAA_CTRL_UNIT_NS::MacOSControlUnitAPI*;
-using MaaCustomControlUnitHandle = MAA_CTRL_UNIT_NS::ControlUnitAPI*;
+using MaaGamepadControlUnitHandle = MAA_CTRL_UNIT_NS::GamepadControlUnitAPI*;
+using MaaCustomControlUnitHandle = MAA_CTRL_UNIT_NS::CustomControlUnitAPI*;

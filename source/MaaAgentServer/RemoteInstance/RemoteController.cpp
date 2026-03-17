@@ -174,6 +174,20 @@ MaaCtrlId RemoteController::post_touch_up(int contact)
     return resp_opt->ctrl_id;
 }
 
+MaaCtrlId RemoteController::post_relative_move(int dx, int dy)
+{
+    ControllerPostRelativeMoveReverseRequest req {
+        .controller_id = controller_id_,
+        .dx = dx,
+        .dy = dy,
+    };
+    auto resp_opt = server_.send_and_recv<ControllerPostRelativeMoveReverseResponse>(req);
+    if (!resp_opt) {
+        return MaaInvalidId;
+    }
+    return resp_opt->ctrl_id;
+}
+
 MaaCtrlId RemoteController::post_key_down(int keycode)
 {
     ControllerPostKeyDownReverseRequest req {
@@ -222,6 +236,18 @@ MaaCtrlId RemoteController::post_shell(const std::string& cmd, int64_t timeout)
         .timeout = timeout,
     };
     auto resp_opt = server_.send_and_recv<ControllerPostShellReverseResponse>(req);
+    if (!resp_opt) {
+        return MaaInvalidId;
+    }
+    return resp_opt->ctrl_id;
+}
+
+MaaCtrlId RemoteController::post_inactive()
+{
+    ControllerPostInactiveReverseRequest req {
+        .controller_id = controller_id_,
+    };
+    auto resp_opt = server_.send_and_recv<ControllerPostInactiveReverseResponse>(req);
     if (!resp_opt) {
         return MaaInvalidId;
     }
@@ -285,7 +311,7 @@ cv::Mat RemoteController::cached_image() const
     };
     auto resp_opt = server_.send_and_recv<ControllerCachedImageReverseResponse>(req);
     if (!resp_opt) {
-        return {};
+        return { };
     }
     return server_.get_image_cache(resp_opt->image);
 }
@@ -297,7 +323,7 @@ std::string RemoteController::cached_shell_output() const
     };
     auto resp_opt = server_.send_and_recv<ControllerGetShellOutputReverseResponse>(req);
     if (!resp_opt) {
-        return {};
+        return { };
     }
     return resp_opt->output;
 }
@@ -310,7 +336,7 @@ std::string RemoteController::get_uuid()
 
     auto resp_opt = server_.send_and_recv<ControllerGetUuidReverseResponse>(req);
     if (!resp_opt) {
-        return {};
+        return { };
     }
     return resp_opt->uuid;
 }
@@ -328,6 +354,19 @@ bool RemoteController::get_resolution(int32_t& width, int32_t& height) const
     width = resp_opt->width;
     height = resp_opt->height;
     return resp_opt->success;
+}
+
+json::object RemoteController::get_info() const
+{
+    ControllerGetInfoReverseRequest req {
+        .controller_id = controller_id_,
+    };
+
+    auto resp_opt = server_.send_and_recv<ControllerGetInfoReverseResponse>(req);
+    if (!resp_opt) {
+        return { };
+    }
+    return resp_opt->info;
 }
 
 MaaSinkId RemoteController::add_sink(MaaEventCallback callback, void* trans_arg)

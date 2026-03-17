@@ -30,7 +30,7 @@ struct ActionResult
     MaaActId action_id = MaaInvalidId;
     std::string name;
     std::string action;
-    cv::Rect box {};
+    cv::Rect box { };
     bool success = false;
     json::value detail;
 
@@ -44,6 +44,7 @@ struct NodeDetail
     MaaRecoId reco_id = MaaInvalidId;
     MaaActId action_id = MaaInvalidId;
     bool completed = false;
+    bool jump_back = false;
 
     MEO_TOJSON(node_id, name, reco_id, action_id, completed);
 };

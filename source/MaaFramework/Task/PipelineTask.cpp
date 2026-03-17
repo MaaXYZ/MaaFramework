@@ -59,11 +59,7 @@ bool PipelineTask::run()
             std::string pre_node_name = node.name;
             node = std::move(*hit_opt);
 
-            auto it = std::ranges::find_if(next, [&](const MAA_RES_NS::NodeAttr& n) {
-                auto data_opt = context_->get_pipeline_data(n);
-                return data_opt && data_opt->name == node_detail.name;
-            });
-            if (it != next.end() && it->jump_back) {
+            if (node_detail.jump_back) {
                 LogInfo << "push jumpback_stack:" << pre_node_name;
                 jumpback_stack.emplace(pre_node_name);
             }
@@ -90,7 +86,7 @@ bool PipelineTask::run()
             save_on_error(node.name);
         }
 
-        if (next.empty() && !jumpback_stack.empty()) {
+        if (next.empty() && !error_handling && !jumpback_stack.empty()) {
             auto top = std::move(jumpback_stack.top());
             LogInfo << "pop jumpback_stack:" << top;
             jumpback_stack.pop();
@@ -122,7 +118,7 @@ NodeDetail PipelineTask::run_next(const std::vector<MAA_RES_NS::NodeAttr>& next,
 {
     if (!context_) {
         LogError << "context is null";
-        return {};
+        return { };
     }
 
     bool valid = std::ranges::any_of(next, [&](const MAA_RES_NS::NodeAttr& node) {
@@ -131,7 +127,7 @@ NodeDetail PipelineTask::run_next(const std::vector<MAA_RES_NS::NodeAttr>& next,
     });
     if (!valid) {
         LogInfo << "no valid/enabled node in next" << VAR(next);
-        return {};
+        return { };
     }
 
     auto node_id = generate_node_id();
@@ -140,7 +136,7 @@ NodeDetail PipelineTask::run_next(const std::vector<MAA_RES_NS::NodeAttr>& next,
     auto cur_opt = context_->get_pipeline_data(cur_node_);
     if (!cur_opt) {
         LogError << "get_pipeline_data failed, node not exist" << VAR(cur_node_);
-        return {};
+        return { };
     }
 
     const auto& cur_node = *cur_opt;
@@ -185,12 +181,20 @@ NodeDetail PipelineTask::run_next(const std::vector<MAA_RES_NS::NodeAttr>& next,
 
             notify(MaaMsg_Node_PipelineNode_Failed, node_cb_detail);
 
-            return {};
+            return { };
         }
+
+        // Resolve jump_back BEFORE action execution (anchors are still intact at this point)
+        bool jump_back = std::ranges::any_of(next, [&](const MAA_RES_NS::NodeAttr& n) {
+            if (!n.jump_back) {
+                return false;
+            }
+            auto data_opt = context_->get_pipeline_data(n);
+            return data_opt && data_opt->name == hit_name;
+        });
 
         auto act = run_action(reco, *hit_opt);
 
-        // Process anchor settings: empty string means clear
         for (const auto& [anchor, target] : hit_opt->anchor) {
             context_->set_anchor(anchor, target);
         }
@@ -201,6 +205,7 @@ NodeDetail PipelineTask::run_next(const std::vector<MAA_RES_NS::NodeAttr>& next,
             .reco_id = reco.reco_id,
             .action_id = act.action_id,
             .completed = act.success,
+            .jump_back = jump_back,
         };
 
         LogInfo << "PipelineTask node done" << VAR(result) << VAR(task_id_);
@@ -233,13 +238,13 @@ RecoResult PipelineTask::recognize_list(const cv::Mat& image, const std::vector<
 
     if (!context_) {
         LogError << "context is null";
-        return {};
+        return { };
     }
 
     auto cur_opt = context_->get_pipeline_data(cur_node_);
     if (!cur_opt) {
         LogError << "get_pipeline_data failed, node not exist" << VAR(cur_node_);
-        return {};
+        return { };
     }
 
     const auto& cur_node = *cur_opt;
@@ -277,7 +282,21 @@ RecoResult PipelineTask::recognize_list(const cv::Mat& image, const std::vector<
             recognizer.prefetch_batch_ocr(batch_plan->entries);
         }
 
+        if (!pipeline_data.enabled) {
+            LogDebug << "node disabled" << pipeline_data.name << VAR(pipeline_data.enabled);
+            continue;
+        }
+
+        if (!context_->check_hit_count(pipeline_data)) {
+            continue;
+        }
+
         RecoResult result = run_recognition(image, pipeline_data, ocr_cache);
+
+        if (result.box) {
+            LogInfo << "reco hit" << VAR(result.name) << VAR(result.box);
+            context_->increment_hit_count(pipeline_data.name);
+        }
 
         if (context_->need_to_stop()) {
             LogWarn << "need_to_stop";
@@ -294,7 +313,7 @@ RecoResult PipelineTask::recognize_list(const cv::Mat& image, const std::vector<
 
     notify(MaaMsg_Node_NextList_Failed, reco_list_cb_detail);
 
-    return {};
+    return { };
 }
 
 std::optional<PipelineTask::BatchOCRPlan> PipelineTask::prepare_batch_ocr(const std::vector<MAA_RES_NS::NodeAttr>& list)
@@ -318,8 +337,7 @@ std::optional<PipelineTask::BatchOCRPlan> PipelineTask::prepare_batch_ocr(const 
             continue;
         }
 
-        size_t current_hit = context_->get_hit_count(data.name);
-        if (current_hit >= static_cast<size_t>(data.max_hit)) {
+        if (!context_->check_hit_count(data)) {
             continue;
         }
 
@@ -360,6 +378,11 @@ void PipelineTask::try_add_ocr_node(OCRCollectContext& ctx, const std::string& n
     if (param.only_rec) {
         // 这玩意 Batch 出来结果顺序可能是乱的，不知道哪个是哪个
         // 我猜的，没试过，后面有空再看看
+        return;
+    }
+
+    if (!param.color_filter.empty()) {
+        // color_filter 需要对每个 ROI 单独做颜色二值化，无法与其他节点共享 mask 图
         return;
     }
 

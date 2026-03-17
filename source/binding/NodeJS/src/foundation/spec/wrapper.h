@@ -84,7 +84,7 @@ inline ArgsTuple UnWrapArgs(const CallbackInfo& info, bool append_sig = true)
         if constexpr (arg_count > 0) {
             [&params, &info]<size_t... I>(std::index_sequence<I...>) {
                 (((I < info.Length() ? std::get<I>(params) = JSConvert<std::tuple_element_t<I, ArgsTuple>>::from_value(info[I])
-                                     : std::get<I>(params) = std::tuple_element_t<I, ArgsTuple> {})),
+                                     : std::get<I>(params) = std::tuple_element_t<I, ArgsTuple> { })),
                  ...);
             }(std::make_index_sequence<arg_count>());
         }

@@ -92,6 +92,7 @@ struct ExtContext : public maajs::NativeClassBase
     maajs::FunctionRefType playcoverControllerCtor;
     maajs::FunctionRefType dbgControllerCtor;
     maajs::FunctionRefType gamepadControllerCtor;
+    maajs::FunctionRefType wlrootsControllerCtor;
     maajs::FunctionRefType customControllerCtor;
     maajs::FunctionRefType taskJobCtor;
     maajs::FunctionRefType taskerCtor;
@@ -138,7 +139,7 @@ struct ExtContext : public maajs::NativeClassBase
 #ifdef MAA_JS_IMPL_IS_NODEJS
         auto ptr = env.GetInstanceData<ExtContext>();
         if (!ptr) {
-            ptr = new ExtContext {};
+            ptr = new ExtContext { };
             env.SetInstanceData(ptr);
         }
         return ptr;

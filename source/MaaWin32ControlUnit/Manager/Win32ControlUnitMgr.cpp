@@ -1,18 +1,22 @@
 #include "Win32ControlUnitMgr.h"
 
+#include <chrono>
+
 #include "MaaFramework/MaaMsg.h"
 #include "MaaUtils/Logger.h"
+#include "MaaUtils/Time.hpp"
 
 #include "Input/LegacyEventInput.h"
 #include "Input/MessageInput.h"
-#include "Input/PostThreadMessageInput.h"
 #include "Input/SeizeInput.h"
 #include "Screencap/DesktopDupScreencap.h"
 #include "Screencap/DesktopDupWindowScreencap.h"
 #include "Screencap/FramePoolScreencap.h"
+#include "Screencap/FramePoolWithPseudoMinimizeScreencap.h"
 #include "Screencap/GdiScreencap.h"
 #include "Screencap/HwndUtils.hpp"
 #include "Screencap/PrintWindowScreencap.h"
+#include "Screencap/PrintWindowWithPseudoMinimizeScreencap.h"
 #include "Screencap/ScreenDCScreencap.h"
 
 MAA_CTRL_UNIT_NS_BEGIN
@@ -32,6 +36,7 @@ Win32ControlUnitMgr::Win32ControlUnitMgr(
 bool Win32ControlUnitMgr::connect()
 {
     connected_ = false;
+    screencap_.reset();
 
 #ifndef MAA_WIN32_COMPATIBLE
     // 设置 Per-Monitor DPI Aware V2，确保 GetClientRect/GetWindowRect 等 API 返回物理像素。
@@ -50,74 +55,14 @@ bool Win32ControlUnitMgr::connect()
             LogError << "hwnd_ is invalid";
             return false;
         }
-
-        if (IsIconic(hwnd_)) {
-            LogError << "hwnd_ is minimized";
-            return false;
-        }
     }
     else {
         LogWarn << "hwnd_ is nullptr";
     }
 
-    switch (screencap_method_) {
-    case MaaWin32ScreencapMethod_GDI:
-        screencap_ = std::make_shared<GdiScreencap>(hwnd_);
-        break;
-    case MaaWin32ScreencapMethod_FramePool:
-        screencap_ = std::make_shared<FramePoolScreencap>(hwnd_);
-        break;
-    case MaaWin32ScreencapMethod_DXGI_DesktopDup:
-        screencap_ = std::make_shared<DesktopDupScreencap>(hwnd_);
-        break;
-    case MaaWin32ScreencapMethod_DXGI_DesktopDup_Window:
-        screencap_ = std::make_shared<DesktopDupWindowScreencap>(hwnd_);
-        break;
-    case MaaWin32ScreencapMethod_PrintWindow:
-        screencap_ = std::make_shared<PrintWindowScreencap>(hwnd_);
-        break;
-    case MaaWin32ScreencapMethod_ScreenDC:
-        screencap_ = std::make_shared<ScreenDCScreencap>(hwnd_);
-        break;
-
-    default:
-        LogError << "Unknown screencap method: " << static_cast<int>(screencap_method_);
-        break;
+    if (!init_screencap()) {
+        return false;
     }
-
-    auto make_input = [&](MaaWin32InputMethod method) -> std::shared_ptr<InputBase> {
-        switch (method) {
-        case MaaWin32InputMethod_Seize:
-            return std::make_shared<SeizeInput>(hwnd_, false);
-        case MaaWin32InputMethod_SendMessage:
-            return std::make_shared<MessageInput>(hwnd_, MessageInput::Config { .mode = MessageInput::Mode::SendMessage });
-        case MaaWin32InputMethod_PostMessage:
-            return std::make_shared<MessageInput>(hwnd_, MessageInput::Config { .mode = MessageInput::Mode::PostMessage });
-        case MaaWin32InputMethod_LegacyEvent:
-            return std::make_shared<LegacyEventInput>(hwnd_, true);
-        case MaaWin32InputMethod_PostThreadMessage:
-            return std::make_shared<PostThreadMessageInput>(hwnd_);
-        case MaaWin32InputMethod_SendMessageWithCursorPos:
-            return std::make_shared<MessageInput>(
-                hwnd_,
-                MessageInput::Config { .mode = MessageInput::Mode::SendMessage, .with_cursor_pos = true, .block_input = true });
-        case MaaWin32InputMethod_PostMessageWithCursorPos:
-            return std::make_shared<MessageInput>(
-                hwnd_,
-                MessageInput::Config { .mode = MessageInput::Mode::PostMessage, .with_cursor_pos = true, .block_input = true });
-        case MaaWin32InputMethod_SendMessageWithWindowPos:
-            return std::make_shared<MessageInput>(
-                hwnd_,
-                MessageInput::Config { .mode = MessageInput::Mode::SendMessage, .with_window_pos = true, .block_input = true });
-        case MaaWin32InputMethod_PostMessageWithWindowPos:
-            return std::make_shared<MessageInput>(
-                hwnd_,
-                MessageInput::Config { .mode = MessageInput::Mode::PostMessage, .with_window_pos = true, .block_input = true });
-        default:
-            LogError << "Unknown input method: " << static_cast<int>(method);
-            return nullptr;
-        }
-    };
 
     if (mouse_method_ == keyboard_method_) {
         mouse_ = make_input(mouse_method_);
@@ -130,6 +75,133 @@ bool Win32ControlUnitMgr::connect()
 
     connected_ = true;
     return true;
+}
+
+std::unordered_map<Win32ControlUnitMgr::ScreencapMethod, std::shared_ptr<ScreencapBase>> Win32ControlUnitMgr::build_screencap_units() const
+{
+    std::unordered_map<ScreencapMethod, std::shared_ptr<ScreencapBase>> units;
+
+    const auto add = [&](MaaWin32ScreencapMethod flag, ScreencapMethod method, auto factory) {
+        if (screencap_method_ & flag) {
+            units.emplace(method, factory());
+        }
+    };
+
+    add(MaaWin32ScreencapMethod_GDI, ScreencapMethod::GDI, [this] { return std::make_shared<GdiScreencap>(hwnd_); });
+    add(MaaWin32ScreencapMethod_FramePool, ScreencapMethod::FramePool, [this] {
+        return std::make_shared<FramePoolWithPseudoMinimizeScreencap>(hwnd_);
+    });
+    add(MaaWin32ScreencapMethod_DXGI_DesktopDup, ScreencapMethod::DXGI_DesktopDup, [this] {
+        return std::make_shared<DesktopDupScreencap>(hwnd_);
+    });
+    add(MaaWin32ScreencapMethod_DXGI_DesktopDup_Window, ScreencapMethod::DXGI_DesktopDup_Window, [this] {
+        return std::make_shared<DesktopDupWindowScreencap>(hwnd_);
+    });
+    add(MaaWin32ScreencapMethod_PrintWindow, ScreencapMethod::PrintWindow, [this] {
+        return std::make_shared<PrintWindowWithPseudoMinimizeScreencap>(hwnd_);
+    });
+    add(MaaWin32ScreencapMethod_ScreenDC, ScreencapMethod::ScreenDC, [this] { return std::make_shared<ScreenDCScreencap>(hwnd_); });
+
+    return units;
+}
+
+bool Win32ControlUnitMgr::init_screencap()
+{
+    if (screencap_method_ == MaaWin32ScreencapMethod_None) {
+        LogWarn << "No screencap method selected";
+        return true;
+    }
+
+    auto units = build_screencap_units();
+    if (units.empty()) {
+        LogError << "No available screencap method to test";
+        return false;
+    }
+
+    screencap_ = speed_test(units);
+    if (!screencap_) {
+        LogError << "failed to select screencap method";
+        return false;
+    }
+
+    return true;
+}
+
+std::shared_ptr<InputBase> Win32ControlUnitMgr::make_input(MaaWin32InputMethod method) const
+{
+    switch (method) {
+    case MaaWin32InputMethod_Seize:
+        return std::make_shared<SeizeInput>(hwnd_, false);
+    case MaaWin32InputMethod_SendMessage:
+        return std::make_shared<MessageInput>(hwnd_, MessageInput::Config { .mode = MessageInput::Mode::SendMessage });
+    case MaaWin32InputMethod_PostMessage:
+        return std::make_shared<MessageInput>(hwnd_, MessageInput::Config { .mode = MessageInput::Mode::PostMessage });
+    case MaaWin32InputMethod_LegacyEvent:
+        return std::make_shared<LegacyEventInput>(hwnd_, true);
+    case MaaWin32InputMethod_PostThreadMessage:
+        LogError << "MaaWin32InputMethod_PostThreadMessage is deprecated and no longer implemented";
+        return nullptr;
+    case MaaWin32InputMethod_SendMessageWithCursorPos:
+        return std::make_shared<MessageInput>(
+            hwnd_,
+            MessageInput::Config { .mode = MessageInput::Mode::SendMessage, .with_cursor_pos = true, .block_input = false });
+    case MaaWin32InputMethod_PostMessageWithCursorPos:
+        return std::make_shared<MessageInput>(
+            hwnd_,
+            MessageInput::Config { .mode = MessageInput::Mode::PostMessage, .with_cursor_pos = true, .block_input = false });
+    case MaaWin32InputMethod_SendMessageWithWindowPos:
+        return std::make_shared<MessageInput>(
+            hwnd_,
+            MessageInput::Config { .mode = MessageInput::Mode::SendMessage, .with_window_pos = true, .block_input = false });
+    case MaaWin32InputMethod_PostMessageWithWindowPos:
+        return std::make_shared<MessageInput>(
+            hwnd_,
+            MessageInput::Config { .mode = MessageInput::Mode::PostMessage, .with_window_pos = true, .block_input = false });
+    default:
+        LogError << "Unknown input method: " << static_cast<int>(method);
+        return nullptr;
+    }
+}
+
+std::shared_ptr<ScreencapBase>
+    Win32ControlUnitMgr::speed_test(const std::unordered_map<ScreencapMethod, std::shared_ptr<ScreencapBase>>& units) const
+{
+    LogFunc;
+
+    ScreencapMethod fastest = ScreencapMethod::UnknownYet;
+    auto cost = std::chrono::milliseconds::max();
+
+    auto check = [&fastest, &cost](ScreencapMethod method, std::chrono::steady_clock::time_point start) {
+        auto duration = duration_since(start);
+        if (duration < cost) {
+            fastest = method;
+            cost = duration;
+        }
+        LogInfo << VAR(method) << VAR(duration);
+    };
+
+    for (auto& [method, unit] : units) {
+        LogInfo << "Warming up" << method;
+        if (!unit->screencap()) {
+            LogWarn << "failed to warm up" << method;
+        }
+
+        LogInfo << "Testing" << method;
+        auto now = std::chrono::steady_clock::now();
+        if (!unit->screencap()) {
+            LogWarn << "failed to test" << method;
+            continue;
+        }
+        check(method, now);
+    }
+
+    if (fastest == ScreencapMethod::UnknownYet) {
+        LogError << "cannot find any method to screencap!";
+        return nullptr;
+    }
+
+    LogInfo << "The fastest method is" << fastest << VAR(cost);
+    return units.at(fastest);
 }
 
 bool Win32ControlUnitMgr::connected() const
@@ -255,6 +327,22 @@ bool Win32ControlUnitMgr::touch_up(int contact)
     return mouse_->touch_up(contact);
 }
 
+bool Win32ControlUnitMgr::relative_move(int dx, int dy)
+{
+    if (!mouse_) {
+        LogError << "mouse_ is null";
+        return false;
+    }
+
+    auto relative_move_input = std::dynamic_pointer_cast<RelativeMoveInput>(mouse_);
+    if (!relative_move_input) {
+        LogError << "relative_move is not supported by the current Win32 input method";
+        return false;
+    }
+
+    return relative_move_input->relative_move(dx, dy);
+}
+
 bool Win32ControlUnitMgr::click_key(int key)
 {
     if (!keyboard_) {
@@ -303,6 +391,34 @@ bool Win32ControlUnitMgr::scroll(int dx, int dy)
     }
 
     return mouse_->scroll(dx, dy);
+}
+
+bool Win32ControlUnitMgr::inactive()
+{
+    LogFunc;
+
+    if (screencap_) {
+        screencap_->inactive();
+    }
+    if (mouse_) {
+        mouse_->inactive();
+    }
+    if (keyboard_ && keyboard_ != mouse_) {
+        keyboard_->inactive();
+    }
+
+    return true;
+}
+
+json::object Win32ControlUnitMgr::get_info() const
+{
+    json::object info;
+    info["type"] = "win32";
+    info["hwnd"] = reinterpret_cast<uint64_t>(hwnd_);
+    info["screencap_method"] = static_cast<int64_t>(screencap_method_);
+    info["mouse_method"] = static_cast<int64_t>(mouse_method_);
+    info["keyboard_method"] = static_cast<int64_t>(keyboard_method_);
+    return info;
 }
 
 MAA_CTRL_UNIT_NS_END

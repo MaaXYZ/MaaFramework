@@ -1,6 +1,6 @@
 #pragma once
 
-#if defined(__linux__)
+#if defined(__linux__) && !defined(ANDROID)
 
 #include "DesktopWindowFinder.h"
 #include "MaaUtils/SingletonHolder.hpp"
@@ -21,4 +21,4 @@ public:
 
 MAA_TOOLKIT_NS_END
 
-#endif // __linux__
+#endif // __linux__ && !ANDROID

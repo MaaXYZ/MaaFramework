@@ -49,14 +49,14 @@ NeuralNetworkClassifier::Result NeuralNetworkClassifier::classify() const
 {
     if (!session_) {
         LogError << "OrtSession not loaded";
-        return {};
+        return { };
     }
     // batch_size, channel, height, width
     // for yolov8, input_shape is { 1, 3, 640, 640 }
     const auto input_shape = session_->GetInputTypeInfo(0).GetTensorTypeAndShapeInfo().GetShape();
     if (input_shape.size() != 4) {
         LogError << "Input shape is not 4" << VAR(input_shape);
-        return {};
+        return { };
     }
 
     cv::Mat image = image_with_roi();

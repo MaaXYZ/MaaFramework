@@ -229,7 +229,7 @@ std::string RemoteResource::get_hash() const
     };
     auto resp_opt = server_.send_and_recv<ResourceGetHashReverseResponse>(req);
     if (!resp_opt) {
-        return {};
+        return { };
     }
     return resp_opt->hash;
 }
@@ -241,7 +241,7 @@ std::vector<std::string> RemoteResource::get_node_list() const
     };
     auto resp_opt = server_.send_and_recv<ResourceGetNodeListReverseResponse>(req);
     if (!resp_opt) {
-        return {};
+        return { };
     }
     return resp_opt->node_list;
 }
@@ -253,7 +253,7 @@ std::vector<std::string> RemoteResource::get_custom_recognition_list() const
     };
     auto resp_opt = server_.send_and_recv<ResourceGetCustomRecognitionListReverseResponse>(req);
     if (!resp_opt) {
-        return {};
+        return { };
     }
     return resp_opt->custom_recognition_list;
 }
@@ -265,7 +265,7 @@ std::vector<std::string> RemoteResource::get_custom_action_list() const
     };
     auto resp_opt = server_.send_and_recv<ResourceGetCustomActionListReverseResponse>(req);
     if (!resp_opt) {
-        return {};
+        return { };
     }
     return resp_opt->custom_action_list;
 }

@@ -44,6 +44,12 @@ MaaController* MaaPlayCoverControllerCreate(const char*, const char*)
     return nullptr;
 }
 
+MaaController* MaaWlRootsControllerCreate(const char*)
+{
+    LogError << "MaaAgentServer Not implement this API, Please use MaaFramework";
+    return nullptr;
+}
+
 void MaaControllerDestroy(MaaController*)
 {
     LogError << "MaaAgentServer Not implement this API, Please use MaaFramework";
@@ -71,19 +77,7 @@ void MaaTaskerDestroy(MaaTasker*)
     LogError << "MaaAgentServer Not implement this API, Please use MaaFramework";
 }
 
-MaaBool MaaGlobalSetOption(MaaGlobalOption, MaaOptionValue, MaaOptionValueSize)
-{
-    LogError << "MaaAgentServer Not implement this API, Please use MaaFramework";
-    return false;
-}
-
 MaaBool MaaGlobalLoadPlugin(const char*)
-{
-    LogError << "MaaAgentServer Not implement this API, Please use MaaFramework";
-    return false;
-}
-
-MaaBool MaaSetGlobalOption(MaaGlobalOption, MaaOptionValue, MaaOptionValueSize)
 {
     LogError << "MaaAgentServer Not implement this API, Please use MaaFramework";
     return false;
