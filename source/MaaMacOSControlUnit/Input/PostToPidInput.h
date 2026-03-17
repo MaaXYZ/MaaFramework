@@ -7,19 +7,17 @@
 
 MAA_CTRL_UNIT_NS_BEGIN
 
-// 通过 CGEventPost(kCGHIDEventTap) 向全局 HID 事件流注入鼠标/键盘事件。
-// 事件不针对特定进程，由系统自动分发至当前前台窗口。
-// 会自动激活目标窗口。
-class GlobalEventInput : public InputBase
+// 通过 CGEventPostToPid 将鼠标/键盘事件直接发送至目标进程，无需目标窗口处于前台。
+class PostToPidInput : public InputBase
 {
 public:
-    GlobalEventInput(uint32_t window_id)
+    PostToPidInput(uint32_t window_id)
         : window_id_(window_id)
     {
         update_window_info();
     }
 
-    virtual ~GlobalEventInput() override = default;
+    virtual ~PostToPidInput() override = default;
 
 public: // from InputBase
     virtual MaaControllerFeature get_features() const override;
@@ -40,17 +38,18 @@ public: // from InputBase
     virtual bool scroll(int dx, int dy) override;
 
 private:
-    bool activate_window(pid_t target_pid);
     void update_window_info();
 
     // 工具函数：创建、发送并释放 CGEvent
-    bool post_mouse_event(CGEventType type, CGPoint location, CGMouseButton button = kCGMouseButtonLeft);
+    bool post_mouse_event(CGEventType type, int x, int y);
     bool post_keyboard_event(CGKeyCode key_code, bool key_down);
 
     uint32_t window_id_ = 0;
     pid_t pid_ = -1;
-    int offset_x_ = 0;
-    int offset_y_ = 0;
+    int window_w_ = 0;
+    int window_h_ = 0;
+    int latest_touch_x_ = 0;
+    int latest_touch_y_ = 0;
 };
 
 MAA_CTRL_UNIT_NS_END

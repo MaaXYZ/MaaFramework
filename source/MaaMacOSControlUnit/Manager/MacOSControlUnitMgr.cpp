@@ -4,6 +4,7 @@
 #include "MaaUtils/Logger.h"
 
 #include "Input/GlobalEventInput.h"
+#include "Input/PostToPidInput.h"
 #include "Screencap/ScreenCaptureKitScreencap.h"
 
 MAA_CTRL_UNIT_NS_BEGIN
@@ -41,6 +42,9 @@ bool MacOSControlUnitMgr::connect()
     switch (input_method_) {
     case MaaMacOSInputMethod_GlobalEvent:
         input_ = std::make_shared<GlobalEventInput>(window_id_);
+        break;
+    case MaaMacOSInputMethod_PostToPid:
+        input_ = std::make_shared<PostToPidInput>(window_id_);
         break;
     case MaaMacOSInputMethod_None:
         LogWarn << "No input method specified, input will not work";

@@ -90,7 +90,8 @@ void runMaaTest(const std::string& windowTitle)
     }
 
     // 创建控制器
-    auto controller = MaaMacOSControllerCreate(windowID, MaaMacOSScreencapMethod_ScreenCaptureKit, MaaMacOSInputMethod_GlobalEvent);
+    // auto controller = MaaMacOSControllerCreate(windowID, MaaMacOSScreencapMethod_ScreenCaptureKit, MaaMacOSInputMethod_GlobalEvent);
+    auto controller = MaaMacOSControllerCreate(windowID, MaaMacOSScreencapMethod_ScreenCaptureKit, MaaMacOSInputMethod_PostToPid);
     if (!controller) {
         std::cout << "创建 MaaController 失败。" << std::endl;
         exit(-1);

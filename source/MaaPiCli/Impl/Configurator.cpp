@@ -79,6 +79,7 @@ MaaMacOSInputMethod parse_macos_input_method(const std::string& method)
 {
     static const std::unordered_map<std::string, MaaMacOSInputMethod> mapping = {
         { "GlobalEvent", MaaMacOSInputMethod_GlobalEvent },
+        { "PostToPid", MaaMacOSInputMethod_PostToPid },
     };
 
     if (auto it = mapping.find(method); it != mapping.end()) {

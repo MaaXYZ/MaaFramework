@@ -1,4 +1,4 @@
-#include "GlobalEventInput.h"
+#include "PostToPidInput.h"
 
 #include "MaaUtils/Logger.h"
 
@@ -6,19 +6,19 @@
 #include <ApplicationServices/ApplicationServices.h>
 #include <CoreFoundation/CoreFoundation.h>
 #include <tuple>
-#include <vector>
 #include <unistd.h>
+#include <vector>
 
 MAA_CTRL_UNIT_NS_BEGIN
 
-MaaControllerFeature GlobalEventInput::get_features() const
+MaaControllerFeature PostToPidInput::get_features() const
 {
     return MaaControllerFeature_UseMouseDownAndUpInsteadOfClick | MaaControllerFeature_UseKeyboardDownAndUpInsteadOfClick;
 }
 
 // get_features() 返回 MaaControllerFeature_UseMouseDownAndUpInsteadOfClick，
 // 上层 ControllerAgent 会使用 touch_down/touch_up 替代 click/swipe
-bool GlobalEventInput::click(int x, int y)
+bool PostToPidInput::click(int x, int y)
 {
     LogError << "deprecated: get_features() returns MaaControllerFeature_UseMouseDownAndUpInsteadOfClick, "
                 "use touch_down/touch_up instead"
@@ -26,7 +26,7 @@ bool GlobalEventInput::click(int x, int y)
     return false;
 }
 
-bool GlobalEventInput::swipe(int x1, int y1, int x2, int y2, int duration)
+bool PostToPidInput::swipe(int x1, int y1, int x2, int y2, int duration)
 {
     LogError << "deprecated: get_features() returns MaaControllerFeature_UseMouseDownAndUpInsteadOfClick, "
                 "use touch_down/touch_move/touch_up instead"
@@ -34,7 +34,7 @@ bool GlobalEventInput::swipe(int x1, int y1, int x2, int y2, int duration)
     return false;
 }
 
-bool GlobalEventInput::touch_down(int contact, int x, int y, int pressure)
+bool PostToPidInput::touch_down(int contact, int x, int y, int pressure)
 {
     (void)pressure;
     if (contact != 0) {
@@ -42,12 +42,7 @@ bool GlobalEventInput::touch_down(int contact, int x, int y, int pressure)
         return false;
     }
 
-    // 先激活窗口
-    if (!activate_window(pid_)) {
-        LogWarn << "Warning: Failed to activate window, touch may not work";
-    }
-
-    if (!post_mouse_event(kCGEventLeftMouseDown, CGPointMake(x + offset_x_, y + offset_y_), kCGMouseButtonLeft)) {
+    if (!post_mouse_event(kCGEventLeftMouseDown, x, y)) {
         LogError << "Failed to post mouse down event";
         return false;
     }
@@ -55,7 +50,7 @@ bool GlobalEventInput::touch_down(int contact, int x, int y, int pressure)
     return true;
 }
 
-bool GlobalEventInput::touch_move(int contact, int x, int y, int pressure)
+bool PostToPidInput::touch_move(int contact, int x, int y, int pressure)
 {
     (void)pressure;
     if (contact != 0) {
@@ -63,27 +58,25 @@ bool GlobalEventInput::touch_move(int contact, int x, int y, int pressure)
         return false;
     }
 
-    if (!post_mouse_event(kCGEventLeftMouseDragged, CGPointMake(x + offset_x_, y + offset_y_), kCGMouseButtonLeft)) {
+    if (!post_mouse_event(kCGEventLeftMouseDragged, x, y)) {
         LogError << "Failed to post mouse dragged event";
         return false;
     }
 
+    latest_touch_x_ = x;
+    latest_touch_y_ = y;
+
     return true;
 }
 
-bool GlobalEventInput::touch_up(int contact)
+bool PostToPidInput::touch_up(int contact)
 {
     if (contact != 0) {
         LogWarn << "Only contact 0 is supported for macOS controller";
         return false;
     }
 
-    // 获取当前鼠标位置作为释放位置
-    CGEventRef current_event = CGEventCreate(nullptr);
-    CGPoint location = CGEventGetLocation(current_event);
-    CFRelease(current_event);
-
-    if (!post_mouse_event(kCGEventLeftMouseUp, location, kCGMouseButtonLeft)) {
+    if (!post_mouse_event(kCGEventLeftMouseUp, latest_touch_x_, latest_touch_y_)) {
         LogError << "Failed to post mouse up event";
         return false;
     }
@@ -93,7 +86,7 @@ bool GlobalEventInput::touch_up(int contact)
 
 // get_features() 返回 MaaControllerFeature_UseKeyboardDownAndUpInsteadOfClick，
 // 上层 ControllerAgent 会使用 key_down/key_up 替代 click_key
-bool GlobalEventInput::click_key(int key)
+bool PostToPidInput::click_key(int key)
 {
     LogError << "deprecated: get_features() returns MaaControllerFeature_UseKeyboardDownAndUpInsteadOfClick, "
                 "use key_down/key_up instead"
@@ -101,13 +94,8 @@ bool GlobalEventInput::click_key(int key)
     return false;
 }
 
-bool GlobalEventInput::input_text(const std::string& text)
+bool PostToPidInput::input_text(const std::string& text)
 {
-    // 先激活窗口
-    if (!activate_window(pid_)) {
-        LogWarn << "Warning: Failed to activate window, input_text may not work";
-    }
-
     // 将 UTF-8 转换为 UTF-16（UniChar），直接通过 CGEventKeyboardSetUnicodeString 注入，
     // 无需 keycode 映射，支持任意 Unicode 字符（含中文、emoji 等）
     NSString* ns_text = [NSString stringWithUTF8String:text.c_str()];
@@ -128,7 +116,7 @@ bool GlobalEventInput::input_text(const std::string& text)
             return false;
         }
         CGEventKeyboardSetUnicodeString(event, len, chars.data());
-        CGEventPost(kCGHIDEventTap, event);
+        CGEventPostToPid(pid_, event);
         CFRelease(event);
         usleep(10000);
     }
@@ -136,13 +124,8 @@ bool GlobalEventInput::input_text(const std::string& text)
     return true;
 }
 
-bool GlobalEventInput::key_down(int key)
+bool PostToPidInput::key_down(int key)
 {
-    // 先激活窗口
-    if (!activate_window(pid_)) {
-        LogWarn << "Warning: Failed to activate window, key_down may not work";
-    }
-
     // 键盘按下
     if (!post_keyboard_event((CGKeyCode)key, true)) {
         LogError << "Failed to post keyboard down event";
@@ -152,7 +135,7 @@ bool GlobalEventInput::key_down(int key)
     return true;
 }
 
-bool GlobalEventInput::key_up(int key)
+bool PostToPidInput::key_up(int key)
 {
     // 键盘释放
     if (!post_keyboard_event((CGKeyCode)key, false)) {
@@ -163,7 +146,7 @@ bool GlobalEventInput::key_up(int key)
     return true;
 }
 
-bool GlobalEventInput::scroll(int dx, int dy)
+bool PostToPidInput::scroll(int dx, int dy)
 {
     (void)dx;
     (void)dy;
@@ -171,39 +154,8 @@ bool GlobalEventInput::scroll(int dx, int dy)
     return false;
 }
 
-bool GlobalEventInput::activate_window(pid_t target_pid)
+void PostToPidInput::update_window_info()
 {
-    // 全屏情况
-    if (window_id_ == 0) {
-        return true;
-    }
-
-    if (target_pid <= 0) {
-        LogError << "Invalid target PID: " << target_pid;
-        return false;
-    }
-
-    // 使用NSRunningApplication激活应用
-    // 这会将整个应用带到前台
-    NSRunningApplication* app = [NSRunningApplication runningApplicationWithProcessIdentifier:target_pid];
-    if (app) {
-        [app activateWithOptions:NSApplicationActivateIgnoringOtherApps];
-        return true;
-    }
-
-    return false;
-}
-
-void GlobalEventInput::update_window_info()
-{
-    // 全屏情况
-    if (window_id_ == 0) {
-        pid_ = -1;
-        offset_x_ = 0;
-        offset_y_ = 0;
-        return;
-    }
-
     // 获取窗口信息
     CFArrayRef window_list = CGWindowListCopyWindowInfo(kCGWindowListOptionIncludingWindow, window_id_);
 
@@ -222,35 +174,50 @@ void GlobalEventInput::update_window_info()
         CFNumberGetValue(pid_ref, kCFNumberIntType, &pid_);
     }
 
-    // 获取窗口位置
+    // 获取窗口尺寸
     CFDictionaryRef bounds_ref = (CFDictionaryRef)CFDictionaryGetValue(window_info, kCGWindowBounds);
     if (bounds_ref) {
         CGRect bounds;
         if (CGRectMakeWithDictionaryRepresentation(bounds_ref, &bounds)) {
-            offset_x_ = static_cast<int>(bounds.origin.x);
-            offset_y_ = static_cast<int>(bounds.origin.y);
+            window_w_ = static_cast<int>(bounds.size.width);
+            window_h_ = static_cast<int>(bounds.size.height);
         }
     }
 
     CFRelease(window_list);
 }
 
-bool GlobalEventInput::post_mouse_event(CGEventType type, CGPoint location, CGMouseButton button)
+bool PostToPidInput::post_mouse_event(CGEventType type, int x, int y)
 {
-    CGEventRef event = CGEventCreateMouseEvent(nullptr, type, location, button);
-    if (event) {
-        CGEventPost(kCGHIDEventTap, event);
-        CFRelease(event);
-        return true;
+    // NSEvent 使用 AppKit 坐标系（原点在主屏左下角，Y 向上），
+    // 而传入的坐标是 CGEvent 坐标系（原点在左上角，Y 向下），需要翻转 Y。
+    CGPoint appkitLocation = CGPointMake(x, window_h_ - y);
+
+    NSEvent* nsEvent = [NSEvent mouseEventWithType:(NSEventType)type
+                                          location:appkitLocation
+                                     modifierFlags:0
+                                         timestamp:[NSDate timeIntervalSinceReferenceDate]
+                                      windowNumber:window_id_
+                                           context:nil
+                                       eventNumber:0
+                                        clickCount:1
+                                          pressure:0];
+    if (nsEvent) {
+        CGEventRef cgEvent = [nsEvent CGEvent];
+        if (cgEvent) {
+            CGEventPostToPid(pid_, cgEvent);
+            return true;
+        }
     }
+
     return false;
 }
 
-bool GlobalEventInput::post_keyboard_event(CGKeyCode key_code, bool key_down)
+bool PostToPidInput::post_keyboard_event(CGKeyCode key_code, bool key_down)
 {
     CGEventRef event = CGEventCreateKeyboardEvent(nullptr, key_code, key_down);
     if (event) {
-        CGEventPost(kCGHIDEventTap, event);
+        CGEventPostToPid(pid_, event);
         CFRelease(event);
         return true;
     }

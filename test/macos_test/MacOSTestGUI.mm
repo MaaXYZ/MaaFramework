@@ -135,7 +135,7 @@ MacOSTestGUI::MacOSTestGUI(const std::string& windowTitle)
     [window setTitle:[NSString stringWithUTF8String:windowTitle.c_str()]];
 
     // 设置窗口为顶层窗口
-    [window setLevel:NSFloatingWindowLevel];
+    // [window setLevel:NSFloatingWindowLevel];
 
     // 创建自定义容器视图（支持事件处理）
     EventHandlingView* containerView = [[EventHandlingView alloc] initWithFrame:NSMakeRect(0, 0, 400, 400) gui:this];

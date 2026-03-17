@@ -389,12 +389,13 @@ typedef uint64_t MaaMacOSScreencapMethod;
  *
  * | Method          | Description                                    |
  * |-----------------|------------------------------------------------|
- * | GlobalEvent     | Global event injection using CGEventPost       |
+ * | GlobalEvent     | Injects into the global HID event stream via CGEventPost(kCGHIDEventTap), dispatched by the OS to the front window |
+ * | PostToPid       | Directly send to target process using CGEventPostToPid |
  */
 typedef uint64_t MaaMacOSInputMethod;
 #define MaaMacOSInputMethod_None 0ULL
 #define MaaMacOSInputMethod_GlobalEvent 1ULL
-// TODO PostToPid method?
+#define MaaMacOSInputMethod_PostToPid (1ULL << 1)
 
 // MaaDbgControllerType:
 /**
