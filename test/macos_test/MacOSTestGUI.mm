@@ -9,6 +9,8 @@
     MacOSTestGUI* _guiInstance;
 }
 - (instancetype)initWithFrame:(NSRect)frameRect gui:(MacOSTestGUI*)gui;
+// Action for bottom input field
+- (void)inputFieldAction:(id)sender;
 @end
 
 @implementation EventHandlingView
@@ -95,6 +97,15 @@
         MacOSTestGUI::MouseUp, MacOSTestGUI::Other, location.x, location.y, (unsigned long long)[event modifierFlags]);
 }
 
+- (void)inputFieldAction:(id)sender
+{
+    NSString* s = [sender stringValue];
+    std::string str = s ? std::string([s UTF8String]) : std::string();
+    std::cout << "InputField: " << str << std::endl;
+    // 清空输入框
+    [sender setStringValue:@""];
+}
+
 @end
 
 MacOSTestGUI::MacOSTestGUI(const std::string& windowTitle)
@@ -148,6 +159,16 @@ MacOSTestGUI::MacOSTestGUI(const std::string& windowTitle)
     [emojiField setAlignment:NSTextAlignmentCenter];
     [emojiField setFont:[NSFont systemFontOfSize:100]];
     [containerView addSubview:emojiField];
+
+    // 底部可编辑文本输入框（按回车触发 action）
+    NSTextField* inputField = [[NSTextField alloc] initWithFrame:NSMakeRect(10, 10, 380, 24)];
+    [inputField setPlaceholderString:@"在此输入并按回车提交"];
+    [inputField setEditable:YES];
+    [inputField setBezeled:YES];
+    [inputField setBezelStyle:NSTextFieldRoundedBezel];
+    [inputField setTarget:containerView];
+    [inputField setAction:@selector(inputFieldAction:)];
+    [containerView addSubview:inputField];
 
     [window setContentView:containerView];
 

@@ -32,6 +32,14 @@
   "key_action": {
     "action": "ClickKey",
     "key": 7,
+    "next": "activate_inputfield"
+  },
+  "activate_inputfield": {
+    "action": "Click",
+    "target": [
+      300,
+      725
+    ],
     "next": "input_text_action"
   },
   "input_text_action": {

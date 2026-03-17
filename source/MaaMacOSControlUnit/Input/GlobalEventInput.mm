@@ -4,11 +4,9 @@
 
 #include <AppKit/AppKit.h>
 #include <ApplicationServices/ApplicationServices.h>
-#include <Carbon/Carbon.h>
 #include <CoreFoundation/CoreFoundation.h>
-#include <cctype>
-#include <map>
 #include <tuple>
+#include <vector>
 #include <unistd.h>
 
 MAA_CTRL_UNIT_NS_BEGIN
@@ -182,97 +180,29 @@ bool GlobalEventInput::input_text(const std::string& text)
         LogWarn << "Warning: Failed to activate window, input_text may not work";
     }
 
-    // CGKeyCode 映射表 (基于标准美式键盘布局，使用 Carbon 宏)
-    struct KeyInfo {
-        CGKeyCode code;
-        bool needs_shift;
-    };
-    static std::map<char, KeyInfo> key_map = {
-        // 小写字母 (不需要 shift)
-        {'a', {kVK_ANSI_A, false}}, {'b', {kVK_ANSI_B, false}}, {'c', {kVK_ANSI_C, false}}, {'d', {kVK_ANSI_D, false}}, {'e', {kVK_ANSI_E, false}},
-        {'f', {kVK_ANSI_F, false}}, {'g', {kVK_ANSI_G, false}}, {'h', {kVK_ANSI_H, false}}, {'i', {kVK_ANSI_I, false}}, {'j', {kVK_ANSI_J, false}},
-        {'k', {kVK_ANSI_K, false}}, {'l', {kVK_ANSI_L, false}}, {'m', {kVK_ANSI_M, false}}, {'n', {kVK_ANSI_N, false}}, {'o', {kVK_ANSI_O, false}},
-        {'p', {kVK_ANSI_P, false}}, {'q', {kVK_ANSI_Q, false}}, {'r', {kVK_ANSI_R, false}}, {'s', {kVK_ANSI_S, false}}, {'t', {kVK_ANSI_T, false}},
-        {'u', {kVK_ANSI_U, false}}, {'v', {kVK_ANSI_V, false}}, {'w', {kVK_ANSI_W, false}}, {'x', {kVK_ANSI_X, false}}, {'y', {kVK_ANSI_Y, false}},
-        {'z', {kVK_ANSI_Z, false}},
-        // 数字 (不需要 shift)
-        {'1', {kVK_ANSI_1, false}}, {'2', {kVK_ANSI_2, false}}, {'3', {kVK_ANSI_3, false}}, {'4', {kVK_ANSI_4, false}}, {'5', {kVK_ANSI_5, false}},
-        {'6', {kVK_ANSI_6, false}}, {'7', {kVK_ANSI_7, false}}, {'8', {kVK_ANSI_8, false}}, {'9', {kVK_ANSI_9, false}}, {'0', {kVK_ANSI_0, false}},
-        // 标点符号 (需要 shift)
-        {'!', {kVK_ANSI_1, true}}, {'@', {kVK_ANSI_2, true}}, {'#', {kVK_ANSI_3, true}}, {'$', {kVK_ANSI_4, true}}, {'%', {kVK_ANSI_5, true}},
-        {'^', {kVK_ANSI_6, true}}, {'&', {kVK_ANSI_7, true}}, {'*', {kVK_ANSI_8, true}}, {'(', {kVK_ANSI_9, true}}, {')', {kVK_ANSI_0, true}},
-        {'_', {kVK_ANSI_Minus, true}}, {'+', {kVK_ANSI_Equal, true}},
-        {'{', {kVK_ANSI_LeftBracket, true}}, {'}', {kVK_ANSI_RightBracket, true}},
-        {'|', {kVK_ANSI_Backslash, true}},
-        {':', {kVK_ANSI_Semicolon, true}},
-        {'"', {kVK_ANSI_Quote, true}},
-        {'<', {kVK_ANSI_Comma, true}},
-        {'>', {kVK_ANSI_Period, true}},
-        {'?', {kVK_ANSI_Slash, true}},
-        {'~', {kVK_ANSI_Grave, true}},
-        // 其他符号 (不需要 shift)
-        {'-', {kVK_ANSI_Minus, false}}, {'=', {kVK_ANSI_Equal, false}},
-        {'[', {kVK_ANSI_LeftBracket, false}}, {']', {kVK_ANSI_RightBracket, false}},
-        {'\\', {kVK_ANSI_Backslash, false}},
-        {';', {kVK_ANSI_Semicolon, false}},
-        {'\'', {kVK_ANSI_Quote, false}},
-        {',', {kVK_ANSI_Comma, false}},
-        {'.', {kVK_ANSI_Period, false}},
-        {'/', {kVK_ANSI_Slash, false}},
-        {'`', {kVK_ANSI_Grave, false}},
-        // 空格
-        {' ', {kVK_Space, false}}
-    };
+    // 将 UTF-8 转换为 UTF-16（UniChar），直接通过 CGEventKeyboardSetUnicodeString 注入，
+    // 无需 keycode 映射，支持任意 Unicode 字符（含中文、emoji 等）
+    NSString* ns_text = [NSString stringWithUTF8String:text.c_str()];
+    if (!ns_text) {
+        LogError << "Failed to convert text to NSString: " << text;
+        return false;
+    }
 
-    for (char c : text) {
-        char lookup_char = tolower(c);
-        auto it = key_map.find(lookup_char);
-        CGKeyCode key_code;
-        bool need_shift = false;
+    NSUInteger len = [ns_text length];
+    std::vector<UniChar> chars(len);
+    [ns_text getCharacters:chars.data() range:NSMakeRange(0, len)];
 
-        if (it != key_map.end()) {
-            key_code = it->second.code;
-            need_shift = it->second.needs_shift || isupper(c);
-        }
-        else {
-            LogWarn << "Unsupported character: " << std::string(1, c) << " (code: " << (int)(unsigned char)c << ")";
-            continue;
-        }
-
-        // 如果是大写字母，先按下Shift
-        if (need_shift) {
-            if (!post_keyboard_event(56, true)) {
-                LogError << "Failed to post shift down event";
-                return false;
-            }
-            usleep(10000);
-        }
-
-        // 按下键
-        if (!post_keyboard_event(key_code, true)) {
-            LogError << "Failed to post keyboard down event";
+    // key_down + key_up 各发一次，接收方通常只处理 key_down
+    for (bool is_down : { true, false }) {
+        CGEventRef event = CGEventCreateKeyboardEvent(nullptr, 0, is_down);
+        if (!event) {
+            LogError << "Failed to create keyboard event";
             return false;
         }
+        CGEventKeyboardSetUnicodeString(event, len, chars.data());
+        CGEventPost(kCGHIDEventTap, event);
+        CFRelease(event);
         usleep(10000);
-
-        // 释放键
-        if (!post_keyboard_event(key_code, false)) {
-            LogError << "Failed to post keyboard up event";
-            return false;
-        }
-        usleep(10000);
-
-        // 释放Shift
-        if (need_shift) {
-            if (!post_keyboard_event(56, false)) {
-                LogError << "Failed to post shift up event";
-                return false;
-            }
-            usleep(10000);
-        }
-
-        // 字符间延迟
-        usleep(50000);
     }
 
     return true;
