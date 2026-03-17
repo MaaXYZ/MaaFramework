@@ -524,6 +524,7 @@ maajs::ValueType load_win32_controller(maajs::EnvType env)
 
 maajs::PromiseType MacOSControllerImpl::find(maajs::EnvType env)
 {
+#ifdef MAA_JS_WITH_TOOLKIT
     using Result = std::optional<std::vector<MacOSDevice>>;
     auto worker = new maajs::AsyncWork<Result>(env, []() -> Result {
         auto lst = MaaToolkitDesktopWindowListCreate();
@@ -549,6 +550,10 @@ maajs::PromiseType MacOSControllerImpl::find(maajs::EnvType env)
     });
     worker->Queue();
     return worker->Promise();
+#else
+    std::ignore = env;
+    throw_toolkit_unavailable("MacOSController.find");
+#endif
 }
 
 MacOSControllerImpl* MacOSControllerImpl::ctor(const maajs::CallbackInfo& info)

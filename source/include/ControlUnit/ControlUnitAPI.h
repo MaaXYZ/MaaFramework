@@ -69,6 +69,9 @@ class MacOSControlUnitAPI : public ControlUnitAPI
 {
 public:
     virtual ~MacOSControlUnitAPI() = default;
+
+    virtual bool relative_move(int dx, int dy) = 0;
+    virtual bool scroll(int dx, int dy) = 0;
 };
 
 class CustomControlUnitAPI : public ControlUnitAPI

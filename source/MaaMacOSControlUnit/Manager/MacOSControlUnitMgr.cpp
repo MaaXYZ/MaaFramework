@@ -160,6 +160,14 @@ bool MacOSControlUnitMgr::touch_up(int contact)
     return input_->touch_up(contact);
 }
 
+bool MacOSControlUnitMgr::relative_move(int dx, int dy)
+{
+    (void)dx;
+    (void)dy;
+    LogWarn << "relative_move not supported on macOS controller";
+    return false;
+}
+
 bool MacOSControlUnitMgr::click_key(int key)
 {
     if (!input_) {
@@ -202,10 +210,27 @@ bool MacOSControlUnitMgr::key_up(int key)
 
 bool MacOSControlUnitMgr::scroll(int dx, int dy)
 {
-    (void)dx;
-    (void)dy;
-    LogWarn << "scroll not supported on macOS controller";
-    return false;
+    if (!input_) {
+        LogError << "input_ is nullptr";
+        return false;
+    }
+
+    return input_->scroll(dx, dy);
+}
+
+bool MacOSControlUnitMgr::inactive()
+{
+    return true;
+}
+
+json::object MacOSControlUnitMgr::get_info() const
+{
+    json::object info;
+    info["type"] = "macos";
+    info["window_id"] = window_id_;
+    info["screencap_method"] = static_cast<int64_t>(screencap_method_);
+    info["input_method"] = static_cast<int64_t>(input_method_);
+    return info;
 }
 
 MAA_CTRL_UNIT_NS_END
