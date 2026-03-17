@@ -1,8 +1,9 @@
 #pragma once
 
 #include "Base/UnitBase.h"
-
 #include "Common/Conf.h"
+
+#include <ApplicationServices/ApplicationServices.h>
 
 MAA_CTRL_UNIT_NS_BEGIN
 
@@ -41,6 +42,10 @@ public: // from InputBase
 private:
     bool activate_window(pid_t target_pid);
     std::tuple<pid_t, int, int> get_window_info(uint32_t window_id);
+
+    // 工具函数：创建、发送并释放 CGEvent
+    bool post_mouse_event(CGEventType type, CGPoint location, CGMouseButton button = kCGMouseButtonLeft);
+    bool post_keyboard_event(CGKeyCode key_code, bool key_down);
 
     uint32_t window_id_ = 0;
     pid_t pid_ = -1;

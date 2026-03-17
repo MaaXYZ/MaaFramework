@@ -20,62 +20,35 @@ MaaControllerFeature GlobalEventInput::get_features() const
 
 bool GlobalEventInput::click(int x, int y)
 {
-    CGPoint location = CGPointMake(x + offset_x_, y + offset_y_);
-
     // 先激活窗口
     if (!activate_window(pid_)) {
         LogWarn << "Warning: Failed to activate window, click may not work";
     }
 
-    // 首先移动鼠标到目标位置
-    CGEventRef mouse_move = CGEventCreateMouseEvent(
-        nullptr,            // 源事件
-        kCGEventMouseMoved, // 事件类型
-        location,           // 位置
-        kCGMouseButtonLeft  // 鼠标按钮
-    );
+    // 计算点击位置的绝对坐标
+    CGPoint location = CGPointMake(x + offset_x_, y + offset_y_);
 
-    if (mouse_move) {
-        CGEventPost(kCGHIDEventTap, mouse_move);
-        CFRelease(mouse_move);
-        usleep(50000); // 等待鼠标移动
-    }
-
-    // 创建鼠标按下事件
-    CGEventRef click_down = CGEventCreateMouseEvent(
-        nullptr,               // 源事件
-        kCGEventLeftMouseDown, // 事件类型
-        location,              // 位置
-        kCGMouseButtonLeft     // 鼠标按钮
-    );
-
-    if (!click_down) {
-        LogError << "Failed to create mouse down event";
+    // 移动鼠标到目标位置
+    if (!post_mouse_event(kCGEventMouseMoved, location)) {
+        LogError << "Failed to post mouse move event";
         return false;
     }
 
-    // 创建鼠标释放事件
-    CGEventRef click_up = CGEventCreateMouseEvent(
-        nullptr,             // 源事件
-        kCGEventLeftMouseUp, // 事件类型
-        location,            // 位置
-        kCGMouseButtonLeft   // 鼠标按钮
-    );
+    usleep(10000);
 
-    if (!click_up) {
-        LogError << "Failed to create mouse up event";
-        CFRelease(click_down);
+    // 鼠标按下
+    if (!post_mouse_event(kCGEventLeftMouseDown, location)) {
+        LogError << "Failed to post mouse down event";
         return false;
     }
 
-    // 使用全局事件注入
-    CGEventPost(kCGHIDEventTap, click_down);
-    usleep(10000); // 短暂延迟
-    CGEventPost(kCGHIDEventTap, click_up);
+    usleep(10000);
 
-    // 清理
-    CFRelease(click_down);
-    CFRelease(click_up);
+    // 鼠标释放
+    if (!post_mouse_event(kCGEventLeftMouseUp, location)) {
+        LogError << "Failed to post mouse up event";
+        return false;
+    }
 
     return true;
 }
@@ -93,28 +66,23 @@ bool GlobalEventInput::swipe(int x1, int y1, int x2, int y2, int duration)
     CGPoint end_location = CGPointMake(x2 + offset_x_, y2 + offset_y_);
 
     // 按下
-    CGEventRef touch_down = CGEventCreateMouseEvent(nullptr, kCGEventLeftMouseDown, start_location, kCGMouseButtonLeft);
-    if (touch_down) {
-        CGEventPost(kCGHIDEventTap, touch_down);
-        CFRelease(touch_down);
+    if (!post_mouse_event(kCGEventLeftMouseDown, start_location, kCGMouseButtonLeft)) {
+        LogError << "Failed to post mouse down event";
+        return false;
     }
-
-    usleep(50000); // 短暂延迟
+    usleep(10000);
 
     // 移动到终点
-    CGEventRef touch_move = CGEventCreateMouseEvent(nullptr, kCGEventLeftMouseDragged, end_location, kCGMouseButtonLeft);
-    if (touch_move) {
-        CGEventPost(kCGHIDEventTap, touch_move);
-        CFRelease(touch_move);
+    if (!post_mouse_event(kCGEventLeftMouseDragged, end_location, kCGMouseButtonLeft)) {
+        LogError << "Failed to post mouse dragged event";
+        return false;
     }
-
     usleep(duration * 1000); // 等待指定的持续时间
 
     // 释放
-    CGEventRef touch_up = CGEventCreateMouseEvent(nullptr, kCGEventLeftMouseUp, end_location, kCGMouseButtonLeft);
-    if (touch_up) {
-        CGEventPost(kCGHIDEventTap, touch_up);
-        CFRelease(touch_up);
+    if (!post_mouse_event(kCGEventLeftMouseUp, end_location, kCGMouseButtonLeft)) {
+        LogError << "Failed to post mouse up event";
+        return false;
     }
 
     return true;
@@ -135,14 +103,12 @@ bool GlobalEventInput::touch_down(int contact, int x, int y, int pressure)
 
     CGPoint location = CGPointMake(x + offset_x_, y + offset_y_);
 
-    CGEventRef touch_down = CGEventCreateMouseEvent(nullptr, kCGEventLeftMouseDown, location, kCGMouseButtonLeft);
-    if (touch_down) {
-        CGEventPost(kCGHIDEventTap, touch_down);
-        CFRelease(touch_down);
-        return true;
+    if (!post_mouse_event(kCGEventLeftMouseDown, location, kCGMouseButtonLeft)) {
+        LogError << "Failed to post mouse down event";
+        return false;
     }
 
-    return false;
+    return true;
 }
 
 bool GlobalEventInput::touch_move(int contact, int x, int y, int pressure)
@@ -155,14 +121,12 @@ bool GlobalEventInput::touch_move(int contact, int x, int y, int pressure)
 
     CGPoint location = CGPointMake(x + offset_x_, y + offset_y_);
 
-    CGEventRef touch_move = CGEventCreateMouseEvent(nullptr, kCGEventLeftMouseDragged, location, kCGMouseButtonLeft);
-    if (touch_move) {
-        CGEventPost(kCGHIDEventTap, touch_move);
-        CFRelease(touch_move);
-        return true;
+    if (!post_mouse_event(kCGEventLeftMouseDragged, location, kCGMouseButtonLeft)) {
+        LogError << "Failed to post mouse dragged event";
+        return false;
     }
 
-    return false;
+    return true;
 }
 
 bool GlobalEventInput::touch_up(int contact)
@@ -177,14 +141,12 @@ bool GlobalEventInput::touch_up(int contact)
     CGPoint location = CGEventGetLocation(current_event);
     CFRelease(current_event);
 
-    CGEventRef touch_up = CGEventCreateMouseEvent(nullptr, kCGEventLeftMouseUp, location, kCGMouseButtonLeft);
-    if (touch_up) {
-        CGEventPost(kCGHIDEventTap, touch_up);
-        CFRelease(touch_up);
-        return true;
+    if (!post_mouse_event(kCGEventLeftMouseUp, location, kCGMouseButtonLeft)) {
+        LogError << "Failed to post mouse up event";
+        return false;
     }
 
-    return false;
+    return true;
 }
 
 bool GlobalEventInput::click_key(int key)
@@ -196,20 +158,18 @@ bool GlobalEventInput::click_key(int key)
         LogWarn << "Warning: Failed to activate window, click_key may not work";
     }
 
-    // 创建键盘按下事件
-    CGEventRef key_down = CGEventCreateKeyboardEvent(nullptr, key_code, true);
-    if (key_down) {
-        CGEventPost(kCGHIDEventTap, key_down);
-        CFRelease(key_down);
+    // 键盘按下
+    if (!post_keyboard_event(key_code, true)) {
+        LogError << "Failed to post keyboard down event";
+        return false;
     }
 
-    usleep(10000); // 短暂延迟
+    usleep(10000);
 
-    // 创建键盘释放事件
-    CGEventRef key_up = CGEventCreateKeyboardEvent(nullptr, key_code, false);
-    if (key_up) {
-        CGEventPost(kCGHIDEventTap, key_up);
-        CFRelease(key_up);
+    // 键盘释放
+    if (!post_keyboard_event(key_code, false)) {
+        LogError << "Failed to post keyboard up event";
+        return false;
     }
 
     return true;
@@ -281,36 +241,32 @@ bool GlobalEventInput::input_text(const std::string& text)
 
         // 如果是大写字母，先按下Shift
         if (need_shift) {
-            CGEventRef shift_down = CGEventCreateKeyboardEvent(nullptr, 56, true); // 左Shift键
-            if (shift_down) {
-                CGEventPost(kCGHIDEventTap, shift_down);
-                CFRelease(shift_down);
+            if (!post_keyboard_event(56, true)) {
+                LogError << "Failed to post shift down event";
+                return false;
             }
             usleep(10000);
         }
 
         // 按下键
-        CGEventRef key_down = CGEventCreateKeyboardEvent(nullptr, key_code, true);
-        if (key_down) {
-            CGEventPost(kCGHIDEventTap, key_down);
-            CFRelease(key_down);
+        if (!post_keyboard_event(key_code, true)) {
+            LogError << "Failed to post keyboard down event";
+            return false;
         }
         usleep(10000);
 
         // 释放键
-        CGEventRef key_up = CGEventCreateKeyboardEvent(nullptr, key_code, false);
-        if (key_up) {
-            CGEventPost(kCGHIDEventTap, key_up);
-            CFRelease(key_up);
+        if (!post_keyboard_event(key_code, false)) {
+            LogError << "Failed to post keyboard up event";
+            return false;
         }
         usleep(10000);
 
         // 释放Shift
         if (need_shift) {
-            CGEventRef shift_up = CGEventCreateKeyboardEvent(nullptr, 56, false);
-            if (shift_up) {
-                CGEventPost(kCGHIDEventTap, shift_up);
-                CFRelease(shift_up);
+            if (!post_keyboard_event(56, false)) {
+                LogError << "Failed to post shift up event";
+                return false;
             }
             usleep(10000);
         }
@@ -332,14 +288,12 @@ bool GlobalEventInput::key_down(int key)
     }
 
     // 创建键盘按下事件
-    CGEventRef key_down = CGEventCreateKeyboardEvent(nullptr, key_code, true);
-    if (key_down) {
-        CGEventPost(kCGHIDEventTap, key_down);
-        CFRelease(key_down);
-        return true;
+    if (!post_keyboard_event(key_code, true)) {
+        LogError << "Failed to post keyboard down event";
+        return false;
     }
 
-    return false;
+    return true;
 }
 
 bool GlobalEventInput::key_up(int key)
@@ -352,14 +306,12 @@ bool GlobalEventInput::key_up(int key)
     }
 
     // 创建键盘释放事件
-    CGEventRef key_up = CGEventCreateKeyboardEvent(nullptr, key_code, false);
-    if (key_up) {
-        CGEventPost(kCGHIDEventTap, key_up);
-        CFRelease(key_up);
-        return true;
+    if (!post_keyboard_event(key_code, false)) {
+        LogError << "Failed to post keyboard up event";
+        return false;
     }
 
-    return false;
+    return true;
 }
 
 bool GlobalEventInput::scroll(int dx, int dy)
@@ -425,6 +377,28 @@ std::tuple<pid_t, int, int> GlobalEventInput::get_window_info(uint32_t window_id
 
     CFRelease(window_list);
     return { pid, offset_x, offset_y };
+}
+
+bool GlobalEventInput::post_mouse_event(CGEventType type, CGPoint location, CGMouseButton button)
+{
+    CGEventRef event = CGEventCreateMouseEvent(nullptr, type, location, button);
+    if (event) {
+        CGEventPost(kCGHIDEventTap, event);
+        CFRelease(event);
+        return true;
+    }
+    return false;
+}
+
+bool GlobalEventInput::post_keyboard_event(CGKeyCode key_code, bool key_down)
+{
+    CGEventRef event = CGEventCreateKeyboardEvent(nullptr, key_code, key_down);
+    if (event) {
+        CGEventPost(kCGHIDEventTap, event);
+        CFRelease(event);
+        return true;
+    }
+    return false;
 }
 
 MAA_CTRL_UNIT_NS_END
