@@ -20,6 +20,9 @@ public: // from ScreencapBase
     virtual std::optional<cv::Mat> screencap() override;
 
 private:
+    std::optional<cv::Mat> screencap_window(uint32_t wid);
+    std::optional<cv::Mat> screencap_display();
+
     uint32_t window_id_ = 0;
 };
 
