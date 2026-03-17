@@ -204,7 +204,34 @@ void MacOSTestGUI::handleKeyEvent(
 
     std::cout << " KeyCode: " << keyCode;
 
-    std::cout << " Characters: '" << characters << "'" << std::endl;
+    // 将单一的 '\r' 或 '\n' 规范化为 '\r\n'
+    auto normalize_newlines = [](const std::string& s) {
+        std::string out;
+        out.reserve(s.size());
+        for (size_t i = 0; i < s.size(); ++i) {
+            unsigned char c = s[i];
+            if (c == '\r') {
+                if (i + 1 < s.size() && s[i + 1] == '\n') {
+                    out += "\r\n";
+                    ++i;
+                }
+                else {
+                    out += "\r\n";
+                }
+            }
+            else if (c == '\n') {
+                out += "\r\n";
+            }
+            else {
+                out.push_back(static_cast<char>(c));
+            }
+        }
+        return out;
+    };
+
+    std::string display_chars = normalize_newlines(characters);
+
+    std::cout << " Characters: '" << display_chars << "'" << std::endl;
 }
 
 void MacOSTestGUI::handleMouseEvent(MouseEventType type, MouseButton button, double x, double y, unsigned long long modifiers)
@@ -242,6 +269,11 @@ std::string MacOSTestGUI::keyCodeToString(unsigned short keyCode)
 {
     if (!keyboardLayoutData) {
         return "";
+    }
+
+    // 特殊情况
+    if (keyCode == kVK_Return) {
+        return "⏎";
     }
 
     // 尝试获取按键名称
