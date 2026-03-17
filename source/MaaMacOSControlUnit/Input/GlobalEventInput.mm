@@ -142,15 +142,13 @@ bool GlobalEventInput::input_text(const std::string& text)
 
 bool GlobalEventInput::key_down(int key)
 {
-    CGKeyCode key_code = (CGKeyCode)key;
-
     // 先激活窗口
     if (!activate_window(pid_)) {
         LogWarn << "Warning: Failed to activate window, key_down may not work";
     }
 
-    // 创建键盘按下事件
-    if (!post_keyboard_event(key_code, true)) {
+    // 键盘按下
+    if (!post_keyboard_event((CGKeyCode)key, true)) {
         LogError << "Failed to post keyboard down event";
         return false;
     }
@@ -160,15 +158,8 @@ bool GlobalEventInput::key_down(int key)
 
 bool GlobalEventInput::key_up(int key)
 {
-    CGKeyCode key_code = (CGKeyCode)key;
-
-    // 先激活窗口
-    if (!activate_window(pid_)) {
-        LogWarn << "Warning: Failed to activate window, key_up may not work";
-    }
-
-    // 创建键盘释放事件
-    if (!post_keyboard_event(key_code, false)) {
+    // 键盘释放
+    if (!post_keyboard_event((CGKeyCode)key, false)) {
         LogError << "Failed to post keyboard up event";
         return false;
     }
