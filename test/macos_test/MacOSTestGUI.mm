@@ -174,10 +174,16 @@ void MacOSTestGUI::run()
 void MacOSTestGUI::handleKeyEvent(
     KbdEventType type, unsigned short keyCode, uint64_t modifiers, std::string characters, std::string charactersIgnoringModifiers)
 {
-    std::cout << std::endl;
-
-    // 打印按键
-    std::cout << "Key: ";
+    std::cout << "键盘";
+    switch (type) {
+    case KeyDown:
+        std::cout << "按下";
+        break;
+    case KeyUp:
+        std::cout << "释放";
+        break;
+    }
+    std::cout << " - ";
     if (modifiers & NSEventModifierFlagCommand) {
         std::cout << "⌘ ";
     }
@@ -194,11 +200,11 @@ void MacOSTestGUI::handleKeyEvent(
         std::cout << "⇪ ";
     }
     // 使用缓存的键盘布局获取按键名称
-    std::cout << keyCodeToString(keyCode) << std::endl;
+    std::cout << keyCodeToString(keyCode);
 
-    std::cout << "KeyCode: " << keyCode << std::endl;
+    std::cout << " KeyCode: " << keyCode;
 
-    std::cout << "Characters: '" << characters << "'" << std::endl;
+    std::cout << " Characters: '" << characters << "'" << std::endl;
 }
 
 void MacOSTestGUI::handleMouseEvent(MouseEventType type, MouseButton button, double x, double y, unsigned long long modifiers)

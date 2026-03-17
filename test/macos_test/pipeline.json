@@ -30,6 +30,11 @@
     "next": "key_action"
   },
   "key_action": {
+    "action": "ClickKey",
+    "key": 7,
+    "next": "input_text_action"
+  },
+  "input_text_action": {
     "action": "InputText",
     "input_text": "Hello, MaaFramework!"
   }
