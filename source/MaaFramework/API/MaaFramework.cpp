@@ -75,6 +75,29 @@ MaaController* MaaWin32ControllerCreate(
 #endif
 }
 
+MaaController*
+    MaaMacOSControllerCreate(uint32_t window_id, MaaMacOSScreencapMethod screencap_method, MaaMacOSInputMethod input_method)
+{
+    LogFunc << VAR(window_id) << VAR(screencap_method) << VAR(input_method);
+
+#ifndef __APPLE__
+
+    LogError << "This API " << __FUNCTION__ << " is only available on macOS";
+    return nullptr;
+
+#else
+
+    auto control_unit = MAA_NS::MacOSControlUnitLibraryHolder::create_control_unit(window_id, screencap_method, input_method);
+
+    if (!control_unit) {
+        LogError << "Failed to create control unit";
+        return nullptr;
+    }
+
+    return new MAA_CTRL_NS::ControllerAgent(std::move(control_unit));
+#endif
+}
+
 MaaController* MaaCustomControllerCreate(MaaCustomControllerCallbacks* controller, void* controller_arg)
 {
     LogFunc << VAR(controller) << VAR(controller_arg);
