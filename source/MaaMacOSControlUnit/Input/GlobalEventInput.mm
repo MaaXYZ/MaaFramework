@@ -165,8 +165,8 @@ bool GlobalEventInput::key_up(int key)
 
 bool GlobalEventInput::scroll(int dx, int dy)
 {
-    (void)dx;
-    (void)dy;
+    std::ignore = dx;
+    std::ignore = dy;
     LogWarn << "scroll not supported on macOS controller";
     return false;
 }
