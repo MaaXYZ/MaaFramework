@@ -245,15 +245,15 @@ std::optional<RuntimeParam> Configurator::generate_runtime() const
         macos.window_id = config_.macos.window_id;
 
         // v2: parse from config, use default if not specified or invalid
-        if (!controller.macos.screencap_method.empty()) {
-            macos.screencap = parse_macos_screencap_method(controller.macos.screencap_method);
+        if (!controller.macos.screencap.empty()) {
+            macos.screencap = parse_macos_screencap_method(controller.macos.screencap);
         }
         if (macos.screencap == MaaMacOSScreencapMethod_None) {
             macos.screencap = MaaMacOSScreencapMethod_ScreenCaptureKit;
         }
 
-        if (!controller.macos.input_method.empty()) {
-            macos.input = parse_macos_input_method(controller.macos.input_method);
+        if (!controller.macos.input.empty()) {
+            macos.input = parse_macos_input_method(controller.macos.input);
         }
         if (macos.input == MaaMacOSInputMethod_None) {
             macos.input = MaaMacOSInputMethod_GlobalEvent;
