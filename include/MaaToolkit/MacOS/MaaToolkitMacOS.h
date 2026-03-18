@@ -11,9 +11,9 @@ extern "C"
 {
 #endif
 
-    MaaBool MaaToolkitMacOSCheckPermission(MaaMacOSPermission perm);
-    MaaBool MaaToolkitMacOSRequestPermission(MaaMacOSPermission perm);
-    MaaBool MaaToolkitMacOSRevealPermissionSettings(MaaMacOSPermission perm);
+    MAA_TOOLKIT_API MaaBool MaaToolkitMacOSCheckPermission(MaaMacOSPermission perm);
+    MAA_TOOLKIT_API MaaBool MaaToolkitMacOSRequestPermission(MaaMacOSPermission perm);
+    MAA_TOOLKIT_API MaaBool MaaToolkitMacOSRevealPermissionSettings(MaaMacOSPermission perm);
 
 #ifdef __cplusplus
 }
