@@ -51,7 +51,6 @@ jobs:
         with:
             build-config: ${{ inputs.build-config || 'RelWithDebInfo' }}
 
-
     windows:
         needs: meta
         runs-on: windows-latest
@@ -161,6 +160,156 @@ jobs:
               if: always()
               with:
                   name: MAA-win-${{ matrix.arch }}
+                  path: "install"
+
+    windows-clang-cl:
+        needs: meta
+        runs-on: ubuntu-latest
+        strategy:
+            matrix:
+                arch: [x86_64]
+            fail-fast: false
+
+        env:
+            XWIN_CACHE_DIR: ${{ github.workspace }}/.xwin-cache
+
+        steps:
+            - uses: actions/checkout@v4
+              with:
+                  submodules: true
+
+            - name: Install LLVM and build tools
+              run: |
+                  sudo apt-get update
+                  sudo apt-get install -y clang lld llvm ninja-build ccache
+
+                  # Create symlinks for clang-cl and llvm tools if they don't exist in standard path
+                  sudo ln -sf $(which clang) /usr/bin/clang-cl
+                  
+                  if ! command -v llvm-rc &> /dev/null; then
+                      sudo ln -sf $(find /usr/bin -name "llvm-rc*" | head -n 1) /usr/bin/llvm-rc
+                  fi
+                  if ! command -v llvm-lib &> /dev/null; then
+                      sudo ln -sf $(find /usr/bin -name "llvm-ar*" | head -n 1) /usr/bin/llvm-lib
+                  fi
+                  if ! command -v llvm-mt &> /dev/null; then
+                      sudo ln -sf $(find /usr/bin -name "llvm-mt*" | head -n 1) /usr/bin/llvm-mt
+                  fi
+                  if ! command -v lld-link &> /dev/null; then
+                      sudo ln -sf $(find /usr/bin -name "lld-link*" | head -n 1) /usr/bin/lld-link
+                  fi
+
+                  clang-cl --version
+                  lld-link --version
+                  ccache --version
+
+            - name: Cache xwin SDK
+              id: cache-xwin
+              uses: actions/cache@v4
+              with:
+                  path: ${{ env.XWIN_CACHE_DIR }}
+                  key: xwin-${{ runner.os }}-${{ matrix.arch }}-sdk-${{ env.MSVC_SDK_VERSION }}
+
+            - name: Setup xwin (Download MSVC Headers/Libs)
+              if: steps.cache-xwin.outputs.cache-hit != 'true'
+              run: |
+                  mkdir -p tools/xwin
+                  curl -L https://github.com/Jake-Shadle/xwin/releases/download/0.6.5/xwin-0.6.5-x86_64-unknown-linux-musl.tar.gz | tar xz -C tools/xwin --strip-components=1
+                  
+                  # Download SDK/CRT
+                  ./tools/xwin/xwin --accept-license splat --output ${{ env.XWIN_CACHE_DIR }}
+
+            - name: Update MaaUtils
+              if: github.event_name == 'repository_dispatch' && github.event.action == 'MaaUtilsUpdated'
+              run: |
+                  git submodule update --remote source/MaaUtils
+
+            - name: Setup ccache
+              uses: Chocobo1/setup-ccache-action@v1
+              with:
+                  remove_stale_cache: false
+
+            - name: Cache MaaDeps
+              id: cache-maadeps
+              uses: actions/cache@v4
+              with:
+                  path: |
+                      ./source/MaaUtils/MaaDeps
+                  # Use 'windows' key to share cache logically
+                  key: maadeps-windows-${{ matrix.arch }}-${{ hashFiles('./tools/maadeps-download.py') }}
+
+            - name: Bootstrap MaaDeps (Force Windows)
+              if: steps.cache-maadeps.outputs.cache-hit != 'true'
+              env:
+                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+              run: |
+                  # Force download windows dependencies on Linux
+                  python3 tools/maadeps-download.py ${{ matrix.arch == 'x86_64' && 'x64' || 'arm64' }}-windows
+
+            - uses: pnpm/action-setup@v4
+              with:
+                  version: latest
+
+            - name: Use Node
+              uses: actions/setup-node@v4
+              with:
+                  node-version: 20
+
+            - name: Prepare node_modules
+              run: |
+                  cd source/binding/NodeJS
+                  pnpm i
+                  cd -
+
+            - name: Build MAA (Cross Compile)
+              env:
+                  CCACHE_COMPILERTYPE: clang-cl
+              run: |
+                  cmake -G "Ninja Multi-Config" -B build \
+                    -DCMAKE_TOOLCHAIN_FILE="${{ github.workspace }}/cmake/toolchain-linux-clang-cl.cmake" \
+                    -DMAADEPS_TRIPLET="maa-${{ matrix.arch == 'x86_64' && 'x64' || 'arm64' }}-windows" \
+                    -DMAA_HASH_VERSION='${{ needs.meta.outputs.tag }}' \
+                    -DWITH_NODEJS_BINDING=ON \
+                    -DWITH_QUICKJS_BINDING=ON \
+                    -DXWIN_CACHE_DIR="${{ env.XWIN_CACHE_DIR }}" \
+                    -DCMAKE_C_COMPILER_LAUNCHER=ccache \
+                    -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
+                    -DCMAKE_CXX_FLAGS_RELWITHDEBINFO="/O1 /Zi /DNDEBUG" \
+                    -DCMAKE_C_FLAGS_RELWITHDEBINFO="/O1 /Zi /DNDEBUG"
+
+                  cmake --build build --config ${{ needs.meta.outputs.build-config }} -j $(nproc)
+
+            - name: Install
+              shell: bash
+              run: |
+                  cmake --install build --prefix install --config ${{ needs.meta.outputs.build-config }}
+                  
+                  rm -rf install/bin/msvc-debug
+
+                  cp -r docs install
+                  cp README*.md install
+                  cp -r sample install
+                  cp -r LICENSE.md install
+
+            - name: Download Plugin
+              uses: robinraju/release-downloader@v1
+              with:
+                  repository: MaaXYZ/MaaPluginDemo
+                  tag: ${{ needs.meta.outputs.latest-plugin }}
+                  fileName: "*win-${{ matrix.arch }}*"
+                  out-file-path: "build/download_plugins"
+                  extract: true
+                  token: ${{ secrets.GITHUB_TOKEN }}
+
+            - name: Install Plugin
+              shell: bash
+              run: |
+                  cp -r build/download_plugins/bin install/bin/plugins
+
+            - uses: actions/upload-artifact@v4
+              if: always()
+              with:
+                  name: MAA-win-clangcl-${{ matrix.arch }}
                   path: "install"
 
     ubuntu:
