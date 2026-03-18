@@ -144,11 +144,11 @@ std::shared_ptr<InputBase> Win32ControlUnitMgr::make_input(MaaWin32InputMethod m
     case MaaWin32InputMethod_SendMessageWithCursorPos:
         return std::make_shared<MessageInput>(
             hwnd_,
-            MessageInput::Config { .mode = MessageInput::Mode::SendMessage, .with_cursor_pos = true, .block_input = false });
+            MessageInput::Config { .mode = MessageInput::Mode::SendMessage, .with_cursor_pos = true, .block_input = true });
     case MaaWin32InputMethod_PostMessageWithCursorPos:
         return std::make_shared<MessageInput>(
             hwnd_,
-            MessageInput::Config { .mode = MessageInput::Mode::PostMessage, .with_cursor_pos = true, .block_input = false });
+            MessageInput::Config { .mode = MessageInput::Mode::PostMessage, .with_cursor_pos = true, .block_input = true });
     case MaaWin32InputMethod_SendMessageWithWindowPos:
         return std::make_shared<MessageInput>(
             hwnd_,
