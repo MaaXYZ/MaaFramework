@@ -16,8 +16,7 @@ target_include_directories(
 
 target_compile_definitions(MaaToolkit PRIVATE MAA_TOOLKIT_EXPORTS)
 
-target_link_libraries(
-    MaaToolkit PRIVATE MaaUtils MaaFramework LibraryHolder Boost::system ${OpenCV_LIBS})
+target_link_libraries(MaaToolkit PRIVATE MaaUtils MaaFramework LibraryHolder Boost::system ${OpenCV_LIBS})
 
 if(LINUX)
     find_library(Wayland_LIBS wayland-client)
@@ -28,13 +27,8 @@ endif()
 if(APPLE)
     # macOS frameworks for ScreenCaptureKit
     find_library(SCREEN_CAPTURE_KIT ScreenCaptureKit REQUIRED)
-    find_library(CORE_FOUNDATION CoreFoundation REQUIRED)
-    find_library(FOUNDATION Foundation REQUIRED)
-    target_link_libraries(MaaToolkit PRIVATE
-        ${SCREEN_CAPTURE_KIT}
-        ${CORE_FOUNDATION}
-        ${FOUNDATION}
-    )
+    find_library(COCOA Cocoa REQUIRED)
+    target_link_libraries(MaaToolkit PRIVATE ${SCREEN_CAPTURE_KIT} ${COCOA})
 endif()
 
 add_dependencies(MaaToolkit MaaUtils MaaFramework LibraryHolder)
@@ -47,7 +41,10 @@ install(
     ARCHIVE DESTINATION lib)
 
 if(WIN32)
-    install(FILES $<TARGET_PDB_FILE:MaaToolkit> DESTINATION symbol OPTIONAL)
+    install(
+        FILES $<TARGET_PDB_FILE:MaaToolkit>
+        DESTINATION symbol
+        OPTIONAL)
 endif()
 
 install(DIRECTORY "${MAA_PUBLIC_INC}/MaaToolkit" DESTINATION "include")
