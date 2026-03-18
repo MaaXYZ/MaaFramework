@@ -1,17 +1,8 @@
-#include "MaaToolkit/MacOS/MaaToolkitMacOS.h"
+#include "MacOSPermission.h"
 
 #import <Cocoa/Cocoa.h>
 
-MaaBool MaaToolkitMacOSCheckPermission(MaaMacOSPermission perm)
-{
-    switch (perm) {
-    case MaaMacOSPermissionScreenCapture:
-        return CGPreflightScreenCaptureAccess();
-    case MaaMacOSPermissionAccessibility:
-        return AXIsProcessTrusted();
-    }
-    return false;
-}
+MAA_TOOLKIT_NS_BEGIN
 
 static bool requestAccessibility()
 {
@@ -26,17 +17,6 @@ static bool requestAccessibility()
     return trusted;
 }
 
-MaaBool MaaToolkitMacOSRequestPermission(MaaMacOSPermission perm)
-{
-    switch (perm) {
-    case MaaMacOSPermissionScreenCapture:
-        return CGRequestScreenCaptureAccess();
-    case MaaMacOSPermissionAccessibility:
-        return requestAccessibility();
-    }
-    return false;
-}
-
 static bool openUrl(NSString* urlString)
 {
     @autoreleasepool {
@@ -49,7 +29,29 @@ static bool openUrl(NSString* urlString)
     }
 }
 
-MaaBool MaaToolkitMacOSRevealPermissionSettings(MaaMacOSPermission perm)
+bool MacOSCheckPermission(MaaMacOSPermission perm)
+{
+    switch (perm) {
+    case MaaMacOSPermissionScreenCapture:
+        return CGPreflightScreenCaptureAccess();
+    case MaaMacOSPermissionAccessibility:
+        return AXIsProcessTrusted();
+    }
+    return false;
+}
+
+bool MacOSRequestPermission(MaaMacOSPermission perm)
+{
+    switch (perm) {
+    case MaaMacOSPermissionScreenCapture:
+        return CGRequestScreenCaptureAccess();
+    case MaaMacOSPermissionAccessibility:
+        return requestAccessibility();
+    }
+    return false;
+}
+
+bool MacOSRevealPermissionSettings(MaaMacOSPermission perm)
 {
     switch (perm) {
     case MaaMacOSPermissionScreenCapture:
@@ -59,3 +61,5 @@ MaaBool MaaToolkitMacOSRevealPermissionSettings(MaaMacOSPermission perm)
     }
     return false;
 }
+
+MAA_TOOLKIT_NS_END
