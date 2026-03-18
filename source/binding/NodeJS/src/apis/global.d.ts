@@ -1,6 +1,7 @@
 declare global {
     namespace maa {
         type StdoutLevel = 'Off' | 'Fatal' | 'Error' | 'Warn' | 'Info' | 'Debug' | 'Trace' | 'All'
+        type MacOSPermission = 'ScreenCapture' | 'Accessibility'
 
         const Global: {
             get version_from_macro(): string
@@ -15,6 +16,10 @@ declare global {
             config_init_option(user_path: string, default_json?: string): void
 
             resize_image(image: ArrayBuffer, width: number, height: number): ArrayBuffer
+
+            macos_check_permission(perm: MacOSPermission): boolean
+            macos_request_permission(perm: MacOSPermission): Promise<boolean>
+            macos_reveal_permission_settings(perm: MacOSPermission): boolean
         }
     }
 }
