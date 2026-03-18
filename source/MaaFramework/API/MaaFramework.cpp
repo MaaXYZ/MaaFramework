@@ -75,8 +75,7 @@ MaaController* MaaWin32ControllerCreate(
 #endif
 }
 
-MaaController*
-    MaaMacOSControllerCreate(uint32_t window_id, MaaMacOSScreencapMethod screencap_method, MaaMacOSInputMethod input_method)
+MaaController* MaaMacOSControllerCreate(uint32_t window_id, MaaMacOSScreencapMethod screencap_method, MaaMacOSInputMethod input_method)
 {
     LogFunc << VAR(window_id) << VAR(screencap_method) << VAR(input_method);
 
