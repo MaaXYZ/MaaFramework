@@ -59,7 +59,7 @@ std::vector<int> input_multi_impl(size_t size, std::string_view prompt)
 
         if (std::cin.eof()) {
             s_eof = true;
-            return {};
+            return { };
         }
 
         if (buffer.empty()) {
@@ -100,7 +100,7 @@ int input(size_t size, std::string_view prompt = "Please input")
     while (true) {
         auto values = input_multi_impl(size, prompt);
         if (s_eof) {
-            return {};
+            return { };
         }
         if (values.size() != 1) {
             fail();
@@ -147,7 +147,7 @@ bool is_running_as_admin()
     BOOL is_member = FALSE;
 
     // CheckTokenMembership(nullptr, ...) checks the current effective token (UAC-aware).
-    BYTE sid_buffer[SECURITY_MAX_SID_SIZE] = {};
+    BYTE sid_buffer[SECURITY_MAX_SID_SIZE] = { };
     DWORD sid_size = sizeof(sid_buffer);
     PSID admin_sid = sid_buffer;
 
@@ -341,12 +341,13 @@ void Interactor::print_config() const
         break;
     case InterfaceData::Controller::Type::MacOS: {
         const auto& macos = config_.configuration().macos;
-        std::cout << MAA_NS::utf8_to_crt(std::format(
-            "\t\tWindow ID: {}\n\t\tTitle: {}\n\t\tScreencap: {}\n\t\tInput: {}\n",
-            macos.window_id,
-            macos.title,
-            macos.screencap_method,
-            macos.input_method));
+        std::cout << MAA_NS::utf8_to_crt(
+            std::format(
+                "\t\tWindow ID: {}\n\t\tTitle: {}\n\t\tScreencap: {}\n\t\tInput: {}\n",
+                macos.window_id,
+                macos.title,
+                macos.screencap,
+                macos.input));
     } break;
     case InterfaceData::Controller::Type::PlayCover: {
         const auto& pc = config_.configuration().playcover;
@@ -859,12 +860,13 @@ void Interactor::select_gamepad(const MAA_PROJECT_INTERFACE_NS::InterfaceData::C
                 std::cout << "### Select HWND for screencap ###\n\n";
 
                 for (size_t i = 0; i < matched_size; ++i) {
-                    std::cout << MAA_NS::utf8_to_crt(std::format(
-                        "\t{}. {}\n\t\t{}\n\t\t{}\n",
-                        i + 1,
-                        matched_config.at(i).hwnd,
-                        MAA_NS::from_u16(matched_config.at(i).class_name),
-                        MAA_NS::from_u16(matched_config.at(i).window_name)));
+                    std::cout << MAA_NS::utf8_to_crt(
+                        std::format(
+                            "\t{}. {}\n\t\t{}\n\t\t{}\n",
+                            i + 1,
+                            matched_config.at(i).hwnd,
+                            MAA_NS::from_u16(matched_config.at(i).class_name),
+                            MAA_NS::from_u16(matched_config.at(i).window_name)));
                 }
                 std::cout << "\n";
 
@@ -968,18 +970,18 @@ void Interactor::select_macos(const MAA_PROJECT_INTERFACE_NS::InterfaceData::Con
     }
 
     // Use screencap_method from interface.json if available
-    if (!macos_config.screencap_method.empty() && mac.screencap_method.empty()) {
-        mac.screencap_method = macos_config.screencap_method;
+    if (!macos_config.screencap.empty() && mac.screencap.empty()) {
+        mac.screencap = macos_config.screencap;
     }
 
     // Use input_method from interface.json if available
-    if (!macos_config.input_method.empty() && mac.input_method.empty()) {
-        mac.input_method = macos_config.input_method;
+    if (!macos_config.input.empty() && mac.input.empty()) {
+        mac.input = macos_config.input;
     }
 
     // Default values
-    std::string default_screencap = mac.screencap_method.empty() ? "ScreenCaptureKit" : mac.screencap_method;
-    std::string default_input = mac.input_method.empty() ? "GlobalEvent" : mac.input_method;
+    std::string default_screencap = mac.screencap.empty() ? "ScreenCaptureKit" : mac.screencap;
+    std::string default_input = mac.input.empty() ? "GlobalEvent" : mac.input;
 
     // Ask for screencap_method
     std::cout << "Screencap method [" << default_screencap << "]: ";
@@ -992,7 +994,7 @@ void Interactor::select_macos(const MAA_PROJECT_INTERFACE_NS::InterfaceData::Con
         return;
     }
 
-    mac.screencap_method = buffer.empty() ? default_screencap : buffer;
+    mac.screencap = buffer.empty() ? default_screencap : buffer;
 
     // Ask for input_method
     std::cout << "Input method [" << default_input << "]: ";
@@ -1004,7 +1006,7 @@ void Interactor::select_macos(const MAA_PROJECT_INTERFACE_NS::InterfaceData::Con
         return;
     }
 
-    mac.input_method = buffer.empty() ? default_input : buffer;
+    mac.input = buffer.empty() ? default_input : buffer;
     std::cout << "\n";
 }
 
@@ -1591,7 +1593,7 @@ std::string Interactor::get_display_name(const std::string& name, const std::str
 std::string Interactor::read_text_content(const std::string& text) const
 {
     if (text.empty()) {
-        return {};
+        return { };
     }
 
     // 先翻译文本（如果以 $ 开头）

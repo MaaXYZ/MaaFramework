@@ -101,6 +101,15 @@ export constexpr auto _MaaWin32InputMethod_PostMessageWithCursorPos = MaaWin32In
 export constexpr auto _MaaWin32InputMethod_SendMessageWithWindowPos = MaaWin32InputMethod_SendMessageWithWindowPos;
 export constexpr auto _MaaWin32InputMethod_PostMessageWithWindowPos = MaaWin32InputMethod_PostMessageWithWindowPos;
 
+export using ::MaaMacOSScreencapMethod;
+export constexpr auto _MaaMacOSScreencapMethod_None = MaaMacOSScreencapMethod_None;
+export constexpr auto _MaaMacOSScreencapMethod_ScreenCaptureKit = MaaMacOSScreencapMethod_ScreenCaptureKit;
+
+export using ::MaaMacOSInputMethod;
+export constexpr auto _MaaMacOSInputMethod_None = MaaMacOSInputMethod_None;
+export constexpr auto _MaaMacOSInputMethod_GlobalEvent = MaaMacOSInputMethod_GlobalEvent;
+export constexpr auto _MaaMacOSInputMethod_PostToPid = MaaMacOSInputMethod_PostToPid;
+
 export using ::MaaDbgControllerType;
 export constexpr auto _MaaDbgControllerType_None = MaaDbgControllerType_None;
 export constexpr auto _MaaDbgControllerType_CarouselImage = MaaDbgControllerType_CarouselImage;
@@ -143,6 +152,7 @@ export using ::MaaContextWaitFreezes;
 export using ::MaaCustomControllerCallbacks;
 export using ::MaaAdbControllerCreate;
 export using ::MaaWin32ControllerCreate;
+export using ::MaaMacOSControllerCreate;
 export using ::MaaCustomControllerCreate;
 export using ::MaaDbgControllerCreate;
 export using ::MaaPlayCoverControllerCreate;

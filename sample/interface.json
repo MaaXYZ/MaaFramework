@@ -60,8 +60,8 @@
             "type": "MacOS",
             "macos": {
                 "title_regex": "关于本机", // 窗口名称正则表达式，用于匹配目标窗口
-                "screencap_method": "ScreenCaptureKit", // 截图方式
-                "input_method": "GlobalEvent" // 输入方式
+                "screencap": "ScreenCaptureKit", // 截图方式
+                "input": "GlobalEvent" // 输入方式
             }
         }
     ],

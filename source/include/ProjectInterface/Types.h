@@ -32,10 +32,10 @@ struct InterfaceData
         struct MacOSConfig
         {
             std::string title_regex;
-            std::string screencap_method;
-            std::string input_method;
+            std::string screencap;
+            std::string input;
 
-            MEO_JSONIZATION(MEO_OPT title_regex, MEO_OPT screencap_method, MEO_OPT input_method);
+            MEO_JSONIZATION(MEO_OPT title_regex, MEO_OPT screencap, MEO_OPT input);
         };
 
         struct PlayCoverConfig
@@ -286,10 +286,10 @@ struct Configuration
     {
         uint32_t window_id = 0;
         std::string title;
-        std::string screencap_method;
-        std::string input_method;
+        std::string screencap;
+        std::string input;
 
-        MEO_JSONIZATION(MEO_OPT window_id, MEO_OPT title, MEO_OPT screencap_method, MEO_OPT input_method);
+        MEO_JSONIZATION(MEO_OPT window_id, MEO_OPT title, MEO_OPT screencap, MEO_OPT input);
     };
 
     struct AdbConfig
