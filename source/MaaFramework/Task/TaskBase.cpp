@@ -130,6 +130,11 @@ ActionResult TaskBase::run_action(const RecoResult& reco, const PipelineData& da
         LogInfo << "action" << VAR(i) << VAR(data.repeat) << VAR(result);
 
         if (context_->need_to_stop()) {
+            if (data.action_type == MAA_RES_NS::Action::Type::StopTask) {
+                cb_detail["action_details"] = result;
+                notify(result.success ? MaaMsg_Node_Action_Succeeded : MaaMsg_Node_Action_Failed, cb_detail);
+                return result;
+            }
             return { };
         }
     }
