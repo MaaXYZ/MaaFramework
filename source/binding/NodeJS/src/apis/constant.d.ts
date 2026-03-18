@@ -138,7 +138,7 @@ declare global {
         >
 
         /**
-         * macOS screencap method.
+         * MacOS screencap method.
          *
          * No bitwise OR, select ONE method only.
          *
@@ -151,7 +151,7 @@ declare global {
         const MacOSScreencapMethod: Record<'ScreenCaptureKit', ScreencapOrInputMethods>
 
         /**
-         * macOS input method.
+         * MacOS input method.
          *
          * No bitwise OR, select ONE method only.
          *
@@ -159,10 +159,14 @@ declare global {
          *
          * | Method      | Compatibility | Require Permission | Background Support | Notes                            |
          * |-------------|---------------|--------------------|--------------------|----------------------------------|
-         * | GlobalEvent | High          | Accessibility      | Yes                |                                  |
+         * | GlobalEvent | High          | Accessibility      | No                 |                                  |
+         * | PostToPid   | Medium        | Accessibility      | Yes                |                                  |
          */
-        const MacOSInputMethod: Record<'GlobalEvent', ScreencapOrInputMethods>
-
+        const MacOSInputMethod: Record<
+            | 'GlobalEvent'
+            | 'PostToPid',
+            ScreencapOrInputMethods
+        >
         const DbgControllerType: Record<'CarouselImage' | 'ReplayRecording', Uint64>
         const GamepadType: Record<'Xbox360' | 'DualShock4', Uint64>
     }

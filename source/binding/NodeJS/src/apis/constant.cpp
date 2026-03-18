@@ -171,6 +171,7 @@ static maajs::ValueType load_macos_input_method(maajs::EnvType env)
     auto obj = maajs::ObjectType::New(env);
 
     DEM(MaaMacOSInputMethod, GlobalEvent);
+    DEM(MaaMacOSInputMethod, PostToPid);
 
     return obj;
 }

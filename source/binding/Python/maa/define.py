@@ -375,15 +375,16 @@ class MaaMacOSInputMethodEnum(IntEnum):
 
     No default value. Client should choose one as default.
 
-    | Method      | Compatibility | Background Support | Notes                  |
-    |-------------|---------------|--------------------|------------------------|
-    | GlobalEvent | High          | Yes                | Global event injection |
+    | Method      | Compatibility | Background Support | Notes                      |
+    |-------------|---------------|--------------------|----------------------------|
+    | GlobalEvent | High          | No                 | Global event injection     |
+    | PostToPid   | Medium        | Yes                | Post event to specific PID |
     """
 
     Null = 0
 
     GlobalEvent = 1
-
+    PostToPid = 1 << 1
 
 # No bitwise OR, just set it
 MaaDbgControllerType = ctypes.c_uint64
