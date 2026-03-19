@@ -4,8 +4,6 @@
 
 #include "../MaaToolkitDef.h"
 
-#pragma once
-
 #ifdef __cplusplus
 extern "C"
 {
