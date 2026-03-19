@@ -339,6 +339,16 @@ void Interactor::print_config() const
             std::cout << MAA_NS::utf8_to_crt(std::format("\t\t{}\n", format_win32_config(config_.configuration().win32)));
         }
         break;
+    case InterfaceData::Controller::Type::MacOS: {
+        const auto& macos = config_.configuration().macos;
+        std::cout << MAA_NS::utf8_to_crt(
+            std::format(
+                "\t\tWindow ID: {}\n\t\tTitle: {}\n\t\tScreencap: {}\n\t\tInput: {}\n",
+                macos.window_id,
+                macos.title,
+                macos.screencap,
+                macos.input));
+    } break;
     case InterfaceData::Controller::Type::PlayCover: {
         const auto& pc = config_.configuration().playcover;
         if (!pc.address.empty() && !pc.uuid.empty()) {
@@ -541,6 +551,10 @@ void Interactor::select_controller()
     case InterfaceData::Controller::Type::Win32:
         config_.configuration().controller.type = InterfaceData::Controller::Type::Win32;
         select_win32_hwnd(controller.win32);
+        break;
+    case InterfaceData::Controller::Type::MacOS:
+        config_.configuration().controller.type = InterfaceData::Controller::Type::MacOS;
+        select_macos(controller.macos);
         break;
     case InterfaceData::Controller::Type::PlayCover:
         if (!kPlayCoverSupported) {
@@ -873,6 +887,126 @@ void Interactor::select_gamepad(const MAA_PROJECT_INTERFACE_NS::InterfaceData::C
     int type_index = input(2);
     config_.configuration().gamepad.gamepad_type = (type_index == 1) ? "Xbox360" : "DualShock4";
 
+    std::cout << "\n";
+}
+
+void Interactor::select_macos(const MAA_PROJECT_INTERFACE_NS::InterfaceData::Controller::MacOSConfig& macos_config)
+{
+    using namespace MAA_PROJECT_INTERFACE_NS;
+
+    std::cout << "### Configure macOS Controller ###\n\n";
+
+    auto& mac = config_.configuration().macos;
+
+    // Select window using title_regex
+    std::string title_regex_str = macos_config.title_regex;
+    if (title_regex_str.empty()) {
+        std::cout << "Title regex: ";
+        std::cin.sync();
+        std::getline(std::cin, title_regex_str);
+
+        if (std::cin.eof()) {
+            s_eof = true;
+            return;
+        }
+    }
+
+    if (!title_regex_str.empty()) {
+        auto title_regex = MAA_NS::regex_valid(MAA_NS::to_u16(title_regex_str));
+        if (title_regex) {
+            auto list_handle = MaaToolkitDesktopWindowListCreate();
+            OnScopeLeave([&]() { MaaToolkitDesktopWindowListDestroy(list_handle); });
+
+            MaaToolkitDesktopWindowFindAll(list_handle);
+
+            size_t list_size = MaaToolkitDesktopWindowListSize(list_handle);
+
+            std::vector<std::pair<uint32_t, std::string>> matched_windows;
+            for (size_t i = 0; i < list_size; ++i) {
+                auto window_handle = MaaToolkitDesktopWindowListAt(list_handle, i);
+                std::string window_name = MaaToolkitDesktopWindowGetWindowName(window_handle);
+
+                if (boost::regex_search(MAA_NS::to_u16(window_name), *title_regex)) {
+                    void* hwnd = MaaToolkitDesktopWindowGetHandle(window_handle);
+                    // On macOS, hwnd is (void*)(uintptr_t)windowID, so extract uint32_t
+                    uint32_t window_id = static_cast<uint32_t>(reinterpret_cast<uintptr_t>(hwnd));
+                    matched_windows.emplace_back(window_id, window_name);
+                }
+            }
+
+            if (!matched_windows.empty()) {
+                if (matched_windows.size() == 1) {
+                    mac.window_id = matched_windows.front().first;
+                    mac.title = matched_windows.front().second;
+                    std::cout << "Auto-selected window ID: " << mac.window_id << "\n\n";
+                }
+                else {
+                    std::cout << "### Select Window ###\n\n";
+                    for (size_t i = 0; i < matched_windows.size(); ++i) {
+                        std::cout << MAA_NS::utf8_to_crt(
+                            std::format("\t{}. Window ID: {} - {}\n", i + 1, matched_windows[i].first, matched_windows[i].second));
+                    }
+                    std::cout << "\n";
+
+                    int index = input(matched_windows.size()) - 1;
+                    mac.window_id = matched_windows[index].first;
+                    mac.title = matched_windows[index].second;
+                }
+            }
+            else {
+                LogWarn << "No window matched regex" << VAR(title_regex_str);
+                std::cout << "No window found matching regex.\n\n";
+                return;
+            }
+        }
+        else {
+            LogError << "Invalid title regex" << VAR(title_regex_str);
+            return;
+        }
+    }
+    else {
+        std::cout << "Title regex is required.\n\n";
+        return;
+    }
+
+    // Use screencap_method from interface.json if available
+    if (!macos_config.screencap.empty() && mac.screencap.empty()) {
+        mac.screencap = macos_config.screencap;
+    }
+
+    // Use input_method from interface.json if available
+    if (!macos_config.input.empty() && mac.input.empty()) {
+        mac.input = macos_config.input;
+    }
+
+    // Default values
+    std::string default_screencap = mac.screencap.empty() ? "ScreenCaptureKit" : mac.screencap;
+    std::string default_input = mac.input.empty() ? "GlobalEvent" : mac.input;
+
+    // Ask for screencap_method
+    std::cout << "Screencap method [" << default_screencap << "]: ";
+    std::cin.sync();
+    std::string buffer;
+    std::getline(std::cin, buffer);
+
+    if (std::cin.eof()) {
+        s_eof = true;
+        return;
+    }
+
+    mac.screencap = buffer.empty() ? default_screencap : buffer;
+
+    // Ask for input_method
+    std::cout << "Input method [" << default_input << "]: ";
+    std::cin.sync();
+    std::getline(std::cin, buffer);
+
+    if (std::cin.eof()) {
+        s_eof = true;
+        return;
+    }
+
+    mac.input = buffer.empty() ? default_input : buffer;
     std::cout << "\n";
 }
 
@@ -1376,6 +1510,23 @@ bool Interactor::check_validity()
         }
 
         return select_win32_hwnd(controller_iter->win32);
+    }
+
+    if (config_.configuration().controller.type == InterfaceData::Controller::Type::MacOS) {
+        auto& mac = config_.configuration().macos;
+        if (mac.window_id == 0 || mac.title.empty()) {
+            auto& name = config_.configuration().controller.name;
+            auto controller_iter =
+                std::ranges::find(config_.interface_data().controller, name, std::mem_fn(&InterfaceData::Controller::name));
+
+            if (controller_iter == config_.interface_data().controller.end()) {
+                LogError << "Controller not found" << VAR(name);
+                return false;
+            }
+
+            select_macos(controller_iter->macos);
+            return mac.window_id != 0;
+        }
     }
 
     if (config_.configuration().controller.type == InterfaceData::Controller::Type::PlayCover) {

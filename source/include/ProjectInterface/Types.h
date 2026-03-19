@@ -29,6 +29,15 @@ struct InterfaceData
             MEO_JSONIZATION(MEO_OPT class_regex, MEO_OPT window_regex, MEO_OPT screencap, MEO_OPT mouse, MEO_OPT keyboard);
         };
 
+        struct MacOSConfig
+        {
+            std::string title_regex;
+            std::string screencap;
+            std::string input;
+
+            MEO_JSONIZATION(MEO_OPT title_regex, MEO_OPT screencap, MEO_OPT input);
+        };
+
         struct PlayCoverConfig
         {
             std::string address;
@@ -52,6 +61,7 @@ struct InterfaceData
             Invalid,
             Adb,
             Win32,
+            MacOS,
             PlayCover,
             Gamepad,
             WlRoots,
@@ -74,6 +84,7 @@ struct InterfaceData
         std::vector<std::string> attach_resource_path;
 
         Win32Config win32;
+        MacOSConfig macos;
         PlayCoverConfig playcover;
         GamepadConfig gamepad;
 
@@ -88,6 +99,7 @@ struct InterfaceData
             MEO_OPT display_raw,
             MEO_OPT attach_resource_path,
             MEO_OPT win32,
+            MEO_OPT macos,
             MEO_OPT playcover,
             MEO_OPT gamepad);
     };
@@ -270,6 +282,16 @@ struct Configuration
         MEO_JSONIZATION(MEO_OPT _placeholder);
     };
 
+    struct MacOSConfig
+    {
+        uint32_t window_id = 0;
+        std::string title;
+        std::string screencap;
+        std::string input;
+
+        MEO_JSONIZATION(MEO_OPT window_id, MEO_OPT title, MEO_OPT screencap, MEO_OPT input);
+    };
+
     struct AdbConfig
     {
         std::string name;
@@ -326,13 +348,23 @@ struct Configuration
     Controller controller;
     AdbConfig adb;
     Win32Config win32;
+    MacOSConfig macos;
     PlayCoverConfig playcover;
     GamepadConfig gamepad;
     WlRootsConfig wlroots;
     std::string resource;
     std::vector<Task> task;
 
-    MEO_JSONIZATION(controller, MEO_OPT adb, MEO_OPT win32, MEO_OPT playcover, MEO_OPT gamepad, MEO_OPT wlroots, resource, task);
+    MEO_JSONIZATION(
+        controller,
+        MEO_OPT adb,
+        MEO_OPT win32,
+        MEO_OPT macos,
+        MEO_OPT playcover,
+        MEO_OPT gamepad,
+        MEO_OPT wlroots,
+        resource,
+        task);
 };
 
 struct RuntimeParam
@@ -362,6 +394,13 @@ struct RuntimeParam
         MaaWin32ScreencapMethod screencap = MaaWin32ScreencapMethod_None;
         MaaWin32InputMethod mouse = MaaWin32InputMethod_None;
         MaaWin32InputMethod keyboard = MaaWin32InputMethod_None;
+    };
+
+    struct MacOSParam
+    {
+        uint32_t window_id = 0;
+        MaaMacOSScreencapMethod screencap = MaaMacOSScreencapMethod_None;
+        MaaMacOSInputMethod input = MaaMacOSInputMethod_None;
     };
 
     struct PlayCoverParam
@@ -397,7 +436,7 @@ struct RuntimeParam
         std::filesystem::path cwd;
     };
 
-    std::variant<std::monostate, AdbParam, Win32Param, PlayCoverParam, GamepadParam, WlRootsParam> controller_param;
+    std::variant<std::monostate, AdbParam, Win32Param, MacOSParam, PlayCoverParam, GamepadParam, WlRootsParam> controller_param;
     std::vector<std::filesystem::path> resource_path;
 
     std::vector<Task> task;

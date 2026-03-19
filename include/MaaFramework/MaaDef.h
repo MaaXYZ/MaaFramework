@@ -377,6 +377,37 @@ typedef uint64_t MaaWin32InputMethod;
 #define MaaWin32InputMethod_SendMessageWithWindowPos (1ULL << 7)
 #define MaaWin32InputMethod_PostMessageWithWindowPos (1ULL << 8)
 
+// MaaMacOSScreencapMethod:
+/**
+ * @brief macOS screencap method
+ *
+ * Select ONE method only.
+ *
+ * | Method          | Description                                    |
+ * |-----------------|------------------------------------------------|
+ * | ScreenCaptureKit| Modern macOS screencap using ScreenCaptureKit  |
+ */
+typedef uint64_t MaaMacOSScreencapMethod;
+#define MaaMacOSScreencapMethod_None 0ULL
+#define MaaMacOSScreencapMethod_ScreenCaptureKit 1ULL
+// TODO Core Graphics method?
+
+// MaaMacOSInputMethod:
+/**
+ * @brief macOS input method
+ *
+ * Select ONE method only.
+ *
+ * | Method          | Description                                    |
+ * |-----------------|------------------------------------------------|
+ * | GlobalEvent     | Injects into the global HID event stream via CGEventPost(kCGHIDEventTap), dispatched by the OS to the front window |
+ * | PostToPid       | Directly send to target process using CGEventPostToPid |
+ */
+typedef uint64_t MaaMacOSInputMethod;
+#define MaaMacOSInputMethod_None 0ULL
+#define MaaMacOSInputMethod_GlobalEvent 1ULL
+#define MaaMacOSInputMethod_PostToPid (1ULL << 1)
+
 // MaaDbgControllerType:
 /**
  * No bitwise OR, just set it

@@ -403,6 +403,7 @@
                     "enum": [
                         "Adb",
                         "Win32",
+                        "MacOS",
                         "PlayCover",
                         "Gamepad"
                     ]
@@ -510,6 +511,36 @@
                                 "ScreenDC",
                                 "Foreground",
                                 "Background"
+                            ]
+                        }
+                    },
+                    "additionalProperties": false
+                },
+                "macos": {
+                    "type": "object",
+                    "title": "MacOS 控制器配置",
+                    "description": "MacOS 控制器的具体配置",
+                    "properties": {
+                        "title_regex": {
+                            "type": "string",
+                            "title": "窗口标题正则",
+                            "description": "可选。MacOS 控制器搜索窗口标题使用的正则表达式"
+                        },
+                        "input": {
+                            "type": "string",
+                            "title": "输入控制方式",
+                            "description": "可选。MacOS 控制器的输入控制方式，不提供则使用默认",
+                            "enum": [
+                                "GlobalEvent",
+                                "PostToPid"
+                            ]
+                        },
+                        "screencap": {
+                            "type": "string",
+                            "title": "截图方式",
+                            "description": "可选。MacOS 控制器的截图方式，不提供则使用默认",
+                            "enum": [
+                                "ScreenCaptureKit"
                             ]
                         }
                     },

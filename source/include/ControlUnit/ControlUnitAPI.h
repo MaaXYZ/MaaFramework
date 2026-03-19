@@ -65,6 +65,15 @@ public:
     virtual bool scroll(int dx, int dy) = 0;
 };
 
+class MacOSControlUnitAPI : public ControlUnitAPI
+{
+public:
+    virtual ~MacOSControlUnitAPI() = default;
+
+    virtual bool relative_move(int dx, int dy) = 0;
+    virtual bool scroll(int dx, int dy) = 0;
+};
+
 class CustomControlUnitAPI : public ControlUnitAPI
 {
 public:
@@ -84,5 +93,6 @@ MAA_CTRL_UNIT_NS_END
 using MaaControlUnitHandle = MAA_CTRL_UNIT_NS::ControlUnitAPI*;
 using MaaAdbControlUnitHandle = MAA_CTRL_UNIT_NS::AdbControlUnitAPI*;
 using MaaWin32ControlUnitHandle = MAA_CTRL_UNIT_NS::Win32ControlUnitAPI*;
+using MaaMacOSControlUnitHandle = MAA_CTRL_UNIT_NS::MacOSControlUnitAPI*;
 using MaaGamepadControlUnitHandle = MAA_CTRL_UNIT_NS::GamepadControlUnitAPI*;
 using MaaCustomControlUnitHandle = MAA_CTRL_UNIT_NS::CustomControlUnitAPI*;
