@@ -165,6 +165,11 @@ bool GlobalEventInput::key_up(int key)
 
 bool GlobalEventInput::scroll(int dx, int dy)
 {
+    // 先激活窗口
+    if (!activate_window(pid_)) {
+        LogWarn << "Warning: Failed to activate window, scroll may not work";
+    }
+
     // 使用当前系统光标位置作为滚动目标点
     CGEventRef pos_event = CGEventCreate(nullptr);
     CGPoint location = CGEventGetLocation(pos_event);
