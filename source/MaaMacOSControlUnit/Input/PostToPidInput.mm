@@ -148,10 +148,39 @@ bool PostToPidInput::key_up(int key)
 
 bool PostToPidInput::scroll(int dx, int dy)
 {
-    std::ignore = dx;
-    std::ignore = dy;
-    LogWarn << "scroll not supported on macOS controller PostToPidInput method";
-    return false;
+    NSPoint location = NSMakePoint(latest_touch_x_, window_h_ - latest_touch_y_);
+    NSEvent* nsEvent0 = [NSEvent mouseEventWithType:NSEventTypeMouseMoved
+                                           location:location
+                                      modifierFlags:0
+                                          timestamp:[NSDate timeIntervalSinceReferenceDate]
+                                       windowNumber:window_id_
+                                            context:nil
+                                        eventNumber:0
+                                         clickCount:1
+                                           pressure:0];
+    if (!nsEvent0) {
+        LogError << "Failed to create scroll nsEvent0";
+        return false;
+    }
+    [nsEvent0 setValue:@(NSEventTypeScrollWheel) forKey:@"type"];
+    CGEventRef event0 = [nsEvent0 CGEvent];
+    if (!event0) {
+        LogError << "Failed to create scroll event0";
+        return false;
+    }
+
+    CGEventRef event1 = CGEventCreateScrollWheelEvent(nullptr, kCGScrollEventUnitPixel, 2, dy, dx);
+    if (!event1) {
+        LogError << "Failed to create scroll event1";
+        return false;
+    }
+
+    CGEventPostToPid(pid_, event0);
+    CGEventPostToPid(pid_, event1);
+
+    CFRelease(event1);
+
+    return true;
 }
 
 void PostToPidInput::update_window_info()
