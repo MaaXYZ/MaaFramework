@@ -167,7 +167,7 @@ MacOSTestGUI::MacOSTestGUI(const std::string& windowTitle)
     [scrollView setBorderType:NSLineBorder];
 
     // 子画布（翻转坐标，原点在左上角）
-    CanvasView* canvasView = [[CanvasView alloc] initWithFrame:NSMakeRect(0, 0, 720, 1360)];
+    CanvasView* canvasView = [[CanvasView alloc] initWithFrame:NSMakeRect(0, 0, 1440, 1360)];
     [canvasView setWantsLayer:YES];
     [canvasView.layer setBackgroundColor:[[NSColor colorWithWhite:0.95 alpha:1.0] CGColor]];
 
