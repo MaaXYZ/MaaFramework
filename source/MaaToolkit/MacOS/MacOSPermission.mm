@@ -2,6 +2,8 @@
 
 #import <Cocoa/Cocoa.h>
 
+#include "MaaUtils/Logger.h"
+
 MAA_TOOLKIT_NS_BEGIN
 
 static bool requestAccessibility()
@@ -37,6 +39,7 @@ bool MacOSCheckPermission(MaaMacOSPermission perm)
     case MaaMacOSPermissionAccessibility:
         return AXIsProcessTrusted();
     }
+    LogWarn << "Unknown permission" << VAR(perm);
     return false;
 }
 
@@ -48,6 +51,7 @@ bool MacOSRequestPermission(MaaMacOSPermission perm)
     case MaaMacOSPermissionAccessibility:
         return requestAccessibility();
     }
+    LogWarn << "Unknown permission" << VAR(perm);
     return false;
 }
 
@@ -59,6 +63,7 @@ bool MacOSRevealPermissionSettings(MaaMacOSPermission perm)
     case MaaMacOSPermissionAccessibility:
         return openUrl(@"x-apple.systempreferences:com.apple.preference.security?Privacy_Accessibility");
     }
+    LogWarn << "Unknown permission" << VAR(perm);
     return false;
 }
 
