@@ -1,5 +1,6 @@
 #include "PostToPidInput.h"
 
+#include "InputUtils.h"
 #include "MaaUtils/Logger.h"
 
 #include <AppKit/AppKit.h>
@@ -37,12 +38,14 @@ bool PostToPidInput::swipe(int x1, int y1, int x2, int y2, int duration)
 bool PostToPidInput::touch_down(int contact, int x, int y, int pressure)
 {
     (void)pressure;
-    if (contact != 0) {
-        LogWarn << "Only contact 0 is supported for macOS controller";
+
+    MouseEventInfo info;
+    if (!contact_to_mouse_down_info(contact, info)) {
+        LogError << "contact out of range" << VAR(contact);
         return false;
     }
 
-    if (!post_mouse_event(kCGEventLeftMouseDown, x, y)) {
+    if (!post_mouse_event(info.event_type, x, y)) {
         LogError << "Failed to post mouse down event";
         return false;
     }
@@ -53,12 +56,14 @@ bool PostToPidInput::touch_down(int contact, int x, int y, int pressure)
 bool PostToPidInput::touch_move(int contact, int x, int y, int pressure)
 {
     (void)pressure;
-    if (contact != 0) {
-        LogWarn << "Only contact 0 is supported for macOS controller";
+
+    MouseEventInfo info;
+    if (!contact_to_mouse_move_info(contact, info)) {
+        LogError << "contact out of range" << VAR(contact);
         return false;
     }
 
-    if (!post_mouse_event(kCGEventLeftMouseDragged, x, y)) {
+    if (!post_mouse_event(info.event_type, x, y)) {
         LogError << "Failed to post mouse dragged event";
         return false;
     }
@@ -71,12 +76,13 @@ bool PostToPidInput::touch_move(int contact, int x, int y, int pressure)
 
 bool PostToPidInput::touch_up(int contact)
 {
-    if (contact != 0) {
-        LogWarn << "Only contact 0 is supported for macOS controller";
+    MouseEventInfo info;
+    if (!contact_to_mouse_up_info(contact, info)) {
+        LogError << "contact out of range" << VAR(contact);
         return false;
     }
 
-    if (!post_mouse_event(kCGEventLeftMouseUp, latest_touch_x_, latest_touch_y_)) {
+    if (!post_mouse_event(info.event_type, latest_touch_x_, latest_touch_y_)) {
         LogError << "Failed to post mouse up event";
         return false;
     }
