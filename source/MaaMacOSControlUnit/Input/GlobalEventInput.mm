@@ -1,5 +1,6 @@
 #include "GlobalEventInput.h"
 
+#include "InputUtils.h"
 #include "MaaUtils/Logger.h"
 
 #include <AppKit/AppKit.h>
@@ -37,8 +38,10 @@ bool GlobalEventInput::swipe(int x1, int y1, int x2, int y2, int duration)
 bool GlobalEventInput::touch_down(int contact, int x, int y, int pressure)
 {
     (void)pressure;
-    if (contact != 0) {
-        LogWarn << "Only contact 0 is supported for macOS controller";
+
+    MouseEventInfo info;
+    if (!contact_to_mouse_down_info(contact, info)) {
+        LogError << "contact out of range" << VAR(contact);
         return false;
     }
 
@@ -47,7 +50,7 @@ bool GlobalEventInput::touch_down(int contact, int x, int y, int pressure)
         LogWarn << "Warning: Failed to activate window, touch may not work";
     }
 
-    if (!post_mouse_event(kCGEventLeftMouseDown, CGPointMake(x + offset_x_, y + offset_y_), kCGMouseButtonLeft)) {
+    if (!post_mouse_event(info.event_type, CGPointMake(x + offset_x_, y + offset_y_), info.mouse_button)) {
         LogError << "Failed to post mouse down event";
         return false;
     }
@@ -58,12 +61,14 @@ bool GlobalEventInput::touch_down(int contact, int x, int y, int pressure)
 bool GlobalEventInput::touch_move(int contact, int x, int y, int pressure)
 {
     (void)pressure;
-    if (contact != 0) {
-        LogWarn << "Only contact 0 is supported for macOS controller";
+
+    MouseEventInfo info;
+    if (!contact_to_mouse_move_info(contact, info)) {
+        LogError << "contact out of range" << VAR(contact);
         return false;
     }
 
-    if (!post_mouse_event(kCGEventLeftMouseDragged, CGPointMake(x + offset_x_, y + offset_y_), kCGMouseButtonLeft)) {
+    if (!post_mouse_event(info.event_type, CGPointMake(x + offset_x_, y + offset_y_), info.mouse_button)) {
         LogError << "Failed to post mouse dragged event";
         return false;
     }
@@ -73,8 +78,9 @@ bool GlobalEventInput::touch_move(int contact, int x, int y, int pressure)
 
 bool GlobalEventInput::touch_up(int contact)
 {
-    if (contact != 0) {
-        LogWarn << "Only contact 0 is supported for macOS controller";
+    MouseEventInfo info;
+    if (!contact_to_mouse_up_info(contact, info)) {
+        LogError << "contact out of range" << VAR(contact);
         return false;
     }
 
@@ -83,7 +89,7 @@ bool GlobalEventInput::touch_up(int contact)
     CGPoint location = CGEventGetLocation(current_event);
     CFRelease(current_event);
 
-    if (!post_mouse_event(kCGEventLeftMouseUp, location, kCGMouseButtonLeft)) {
+    if (!post_mouse_event(info.event_type, location, info.mouse_button)) {
         LogError << "Failed to post mouse up event";
         return false;
     }
