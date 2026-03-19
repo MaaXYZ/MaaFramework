@@ -165,10 +165,23 @@ bool GlobalEventInput::key_up(int key)
 
 bool GlobalEventInput::scroll(int dx, int dy)
 {
-    std::ignore = dx;
-    std::ignore = dy;
-    LogWarn << "scroll not supported on macOS controller";
-    return false;
+    // 使用当前系统光标位置作为滚动目标点
+    CGEventRef pos_event = CGEventCreate(nullptr);
+    CGPoint location = CGEventGetLocation(pos_event);
+    CFRelease(pos_event);
+
+    // wheel1: 垂直滚动（正值向上，负值向下），wheel2: 水平滚动（正值向左，负值向右）
+    CGEventRef event = CGEventCreateScrollWheelEvent(nullptr, kCGScrollEventUnitPixel, 2, dy, dx);
+    if (!event) {
+        LogError << "Failed to create scroll wheel event";
+        return false;
+    }
+
+    CGEventSetLocation(event, location);
+    CGEventPost(kCGHIDEventTap, event);
+    CFRelease(event);
+
+    return true;
 }
 
 bool GlobalEventInput::activate_window(pid_t target_pid)

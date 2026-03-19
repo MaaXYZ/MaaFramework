@@ -150,7 +150,7 @@ bool PostToPidInput::scroll(int dx, int dy)
 {
     std::ignore = dx;
     std::ignore = dy;
-    LogWarn << "scroll not supported on macOS controller";
+    LogWarn << "scroll not supported on macOS controller PostToPidInput method";
     return false;
 }
 

@@ -879,13 +879,19 @@ bool ControllerAgent::handle_scroll(const ScrollParam& param)
         return win32_unit->scroll(param.dx, param.dy);
     }
 
+    auto macos_unit = std::dynamic_pointer_cast<MAA_CTRL_UNIT_NS::MacOSControlUnitAPI>(control_unit_);
+    if (macos_unit) {
+        move_to_scroll_position();
+        return macos_unit->scroll(param.dx, param.dy);
+    }
+
     auto custom_unit = std::dynamic_pointer_cast<MAA_CTRL_UNIT_NS::CustomControlUnitAPI>(control_unit_);
     if (custom_unit) {
         move_to_scroll_position();
         return custom_unit->scroll(param.dx, param.dy);
     }
 
-    LogError << "Scroll is only supported for Win32 controllers and custom controllers that implement scroll.";
+    LogError << "Scroll is only supported for Win32/macOS controllers and custom controllers that implement scroll.";
     return false;
 }
 

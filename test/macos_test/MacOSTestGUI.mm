@@ -4,6 +4,19 @@
 
 #include "./MacOSTestGUI.h"
 
+// 可滚动子画布视图（使用翻转坐标，原点在左上角）
+@interface CanvasView : NSView
+@end
+
+@implementation CanvasView
+
+- (BOOL)isFlipped
+{
+    return YES;
+}
+
+@end
+
 // 自定义视图类，用于处理键盘和鼠标事件
 @interface EventHandlingView : NSView {
     MacOSTestGUI* _guiInstance;
@@ -27,6 +40,13 @@
 - (BOOL)acceptsFirstResponder
 {
     return YES;
+}
+
+- (void)scrollWheel:(NSEvent*)event
+{
+    _guiInstance->handleScrollEvent([event scrollingDeltaX], [event scrollingDeltaY]);
+    // 将滚动事件传递给父视图（NSScrollView），实现实际滚动
+    [super scrollWheel:event];
 }
 
 - (void)keyDown:(NSEvent*)event
@@ -124,8 +144,8 @@ MacOSTestGUI::MacOSTestGUI(const std::string& windowTitle)
     // 设置应用为普通前台应用，否则无法接收键盘事件
     [app setActivationPolicy:NSApplicationActivationPolicyRegular];
 
-    // 创建窗口
-    NSRect frame = NSMakeRect(100, 100, 400, 400);
+    // 创建窗口（稍微加高以容纳布局）
+    NSRect frame = NSMakeRect(100, 100, 720, 720);
     NSWindow* window = [[NSWindow alloc] initWithContentRect:frame
                                                    styleMask:(NSWindowStyleMaskTitled | NSWindowStyleMaskClosable
                                                               | NSWindowStyleMaskMiniaturizable | NSWindowStyleMaskResizable)
@@ -138,30 +158,46 @@ MacOSTestGUI::MacOSTestGUI(const std::string& windowTitle)
     // [window setLevel:NSFloatingWindowLevel];
 
     // 创建自定义容器视图（支持事件处理）
-    EventHandlingView* containerView = [[EventHandlingView alloc] initWithFrame:NSMakeRect(0, 0, 400, 400) gui:this];
+    EventHandlingView* containerView = [[EventHandlingView alloc] initWithFrame:NSMakeRect(0, 0, 720, 720) gui:this];
 
-    // 创建文本标签（上面）
-    NSTextField* textField = [[NSTextField alloc] initWithFrame:NSMakeRect(0, 320, 400, 60)];
-    [textField setStringValue:@"这是一个测试窗口，用于 MaaFW 识别。"];
-    [textField setEditable:NO];
-    [textField setBordered:NO];
-    [textField setBackgroundColor:[NSColor clearColor]];
-    [textField setAlignment:NSTextAlignmentCenter];
-    [textField setFont:[NSFont systemFontOfSize:14]];
-    [containerView addSubview:textField];
+    // 可滚动子画布
+    NSScrollView* scrollView = [[NSScrollView alloc] initWithFrame:NSMakeRect(0, 40, 720, 680)];
+    [scrollView setHasVerticalScroller:YES];
+    [scrollView setHasHorizontalScroller:NO];
+    [scrollView setBorderType:NSLineBorder];
 
-    // 创建 emoji 标签（下面居中）
-    NSTextField* emojiField = [[NSTextField alloc] initWithFrame:NSMakeRect(150, 150, 100, 100)];
-    [emojiField setStringValue:@"🐝"];
-    [emojiField setEditable:NO];
-    [emojiField setBordered:NO];
-    [emojiField setBackgroundColor:[NSColor clearColor]];
-    [emojiField setAlignment:NSTextAlignmentCenter];
-    [emojiField setFont:[NSFont systemFontOfSize:100]];
-    [containerView addSubview:emojiField];
+    // 子画布（翻转坐标，原点在左上角）
+    CanvasView* canvasView = [[CanvasView alloc] initWithFrame:NSMakeRect(0, 0, 720, 1360)];
+    [canvasView setWantsLayer:YES];
+    [canvasView.layer setBackgroundColor:[[NSColor colorWithWhite:0.95 alpha:1.0] CGColor]];
+
+    // 🐝：在画布顶部附近（canvas y=80），初始即可见
+    NSTextField* bee = [[NSTextField alloc] initWithFrame:NSMakeRect(310, 290, 100, 100)];
+    [bee setStringValue:@"🐝"];
+    [bee setEditable:NO];
+    [bee setBordered:NO];
+    [bee setBackgroundColor:[NSColor clearColor]];
+    [bee setAlignment:NSTextAlignmentCenter];
+    [bee setFont:[NSFont systemFontOfSize:80]];
+    [canvasView addSubview:bee];
+
+    // 🦊：在画布下半部分（canvas y=530），需要向下滚动后可见
+    NSTextField* fox = [[NSTextField alloc] initWithFrame:NSMakeRect(310, 970, 100, 100)];
+    [fox setStringValue:@"🦊"];
+    [fox setEditable:NO];
+    [fox setBordered:NO];
+    [fox setBackgroundColor:[NSColor clearColor]];
+    [fox setAlignment:NSTextAlignmentCenter];
+    [fox setFont:[NSFont systemFontOfSize:80]];
+    [canvasView addSubview:fox];
+
+    [scrollView setDocumentView:canvasView];
+    // 滚动到顶部（flipped 视图的 (0,0) 即为顶部）
+    [canvasView scrollPoint:NSMakePoint(0, 0)];
+    [containerView addSubview:scrollView];
 
     // 底部可编辑文本输入框（按回车触发 action）
-    NSTextField* inputField = [[NSTextField alloc] initWithFrame:NSMakeRect(10, 10, 380, 24)];
+    NSTextField* inputField = [[NSTextField alloc] initWithFrame:NSMakeRect(10, 10, 700, 24)];
     [inputField setPlaceholderString:@"在此输入并按回车提交"];
     [inputField setEditable:YES];
     [inputField setBezeled:YES];
@@ -284,6 +320,11 @@ void MacOSTestGUI::handleMouseEvent(MouseEventType type, MouseButton button, dou
     }
 
     std::cout << " 坐标: (" << x << ", " << y << ")" << std::endl;
+}
+
+void MacOSTestGUI::handleScrollEvent(double dx, double dy)
+{
+    std::cout << "滚轮事件 dx=" << dx << " dy=" << dy << std::endl;
 }
 
 std::string MacOSTestGUI::keyCodeToString(unsigned short keyCode)
