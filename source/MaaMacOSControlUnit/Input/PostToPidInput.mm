@@ -50,6 +50,9 @@ bool PostToPidInput::touch_down(int contact, int x, int y, int pressure)
         return false;
     }
 
+    latest_touch_x_ = x;
+    latest_touch_y_ = y;
+
     return true;
 }
 
