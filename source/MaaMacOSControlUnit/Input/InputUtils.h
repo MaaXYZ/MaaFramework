@@ -3,8 +3,58 @@
 #include "Common/Conf.h"
 
 #include <ApplicationServices/ApplicationServices.h>
+#include <Foundation/Foundation.h>
+#include <vector>
 
 MAA_CTRL_UNIT_NS_BEGIN
+
+struct WindowInfo
+{
+    pid_t pid = -1;
+    CGRect bounds = CGRectZero;
+};
+
+// 查询指定窗口的 PID 和边界矩形，返回 false 表示查询失败
+inline bool get_window_info(uint32_t window_id, WindowInfo& out)
+{
+    CFArrayRef window_list = CGWindowListCopyWindowInfo(kCGWindowListOptionIncludingWindow, window_id);
+
+    if (!window_list || CFArrayGetCount(window_list) == 0) {
+        if (window_list) {
+            CFRelease(window_list);
+        }
+        return false;
+    }
+
+    CFDictionaryRef info = (CFDictionaryRef)CFArrayGetValueAtIndex(window_list, 0);
+
+    CFNumberRef pid_ref = (CFNumberRef)CFDictionaryGetValue(info, kCGWindowOwnerPID);
+    if (pid_ref) {
+        CFNumberGetValue(pid_ref, kCFNumberIntType, &out.pid);
+    }
+
+    CFDictionaryRef bounds_ref = (CFDictionaryRef)CFDictionaryGetValue(info, kCGWindowBounds);
+    if (bounds_ref) {
+        CGRectMakeWithDictionaryRepresentation(bounds_ref, &out.bounds);
+    }
+
+    CFRelease(window_list);
+    return true;
+}
+
+// 将 UTF-8 文本转换为 UTF-16 UniChar 数组
+inline bool text_to_unichars(const std::string& text, std::vector<UniChar>& out)
+{
+    NSString* ns_text = [NSString stringWithUTF8String:text.c_str()];
+    if (!ns_text) {
+        return false;
+    }
+
+    NSUInteger len = [ns_text length];
+    out.resize(len);
+    [ns_text getCharacters:out.data() range:NSMakeRange(0, len)];
+    return true;
+}
 
 struct MouseEventInfo
 {
