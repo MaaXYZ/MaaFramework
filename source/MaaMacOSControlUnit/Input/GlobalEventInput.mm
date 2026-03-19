@@ -251,23 +251,25 @@ void GlobalEventInput::update_window_info()
 bool GlobalEventInput::post_mouse_event(CGEventType type, CGPoint location, CGMouseButton button)
 {
     CGEventRef event = CGEventCreateMouseEvent(nullptr, type, location, button);
-    if (event) {
-        CGEventPost(kCGHIDEventTap, event);
-        CFRelease(event);
-        return true;
+    if (!event) {
+        LogError << "Failed to create mouse event";
+        return false;
     }
-    return false;
+    CGEventPost(kCGHIDEventTap, event);
+    CFRelease(event);
+    return true;
 }
 
 bool GlobalEventInput::post_keyboard_event(CGKeyCode key_code, bool key_down)
 {
     CGEventRef event = CGEventCreateKeyboardEvent(nullptr, key_code, key_down);
-    if (event) {
-        CGEventPost(kCGHIDEventTap, event);
-        CFRelease(event);
-        return true;
+    if (!event) {
+        LogError << "Failed to create keyboard event";
+        return false;
     }
-    return false;
+    CGEventPost(kCGHIDEventTap, event);
+    CFRelease(event);
+    return true;
 }
 
 MAA_CTRL_UNIT_NS_END

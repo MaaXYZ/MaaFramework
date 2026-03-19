@@ -202,26 +202,29 @@ bool PostToPidInput::post_mouse_event(CGEventType type, int x, int y)
                                        eventNumber:0
                                         clickCount:1
                                           pressure:0];
-    if (nsEvent) {
-        CGEventRef cgEvent = [nsEvent CGEvent];
-        if (cgEvent) {
-            CGEventPostToPid(pid_, cgEvent);
-            return true;
-        }
+    if (!nsEvent) {
+        LogError << "Failed to create mouse nsEvent";
+        return false;
     }
-
-    return false;
+    CGEventRef cgEvent = [nsEvent CGEvent];
+    if (!cgEvent) {
+        LogError << "Failed to create mouse cgEvent";
+        return false;
+    }
+    CGEventPostToPid(pid_, cgEvent);
+    return true;
 }
 
 bool PostToPidInput::post_keyboard_event(CGKeyCode key_code, bool key_down)
 {
     CGEventRef event = CGEventCreateKeyboardEvent(nullptr, key_code, key_down);
-    if (event) {
-        CGEventPostToPid(pid_, event);
-        CFRelease(event);
-        return true;
+    if (!event) {
+        LogError << "Failed to create keyboard event";
+        return false;
     }
-    return false;
+    CGEventPostToPid(pid_, event);
+    CFRelease(event);
+    return true;
 }
 
 MAA_CTRL_UNIT_NS_END
