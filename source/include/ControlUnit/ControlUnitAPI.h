@@ -41,6 +41,9 @@ public:
     virtual bool key_down(int key) = 0;
     virtual bool key_up(int key) = 0;
 
+    virtual bool scroll(int /*dx*/, int /*dy*/) { return false; }
+    virtual bool relative_move(int /*dx*/, int /*dy*/) { return false; }
+
     virtual bool inactive() = 0;
 
     virtual json::object get_info() const = 0;

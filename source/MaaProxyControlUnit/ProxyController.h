@@ -47,6 +47,7 @@ public: // from ControlUnitAPI
     virtual bool key_up(int key) override;
 
     virtual bool scroll(int dx, int dy) override;
+    virtual bool relative_move(int dx, int dy) override;
 
     virtual bool inactive() override;
 

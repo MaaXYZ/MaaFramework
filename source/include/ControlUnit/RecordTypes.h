@@ -27,6 +27,7 @@ enum class RecordType
     key_down,
     key_up,
     scroll,
+    relative_move,
 };
 
 struct RecordLine
@@ -115,6 +116,14 @@ struct RecordScreencap
 };
 
 struct RecordScroll
+{
+    int dx = 0;
+    int dy = 0;
+
+    MEO_JSONIZATION(dx, dy);
+};
+
+struct RecordRelativeMove
 {
     int dx = 0;
     int dy = 0;

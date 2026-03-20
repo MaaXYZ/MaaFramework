@@ -163,6 +163,11 @@ bool ProxyController::scroll(int dx, int dy)
     return forward_and_record(RecordType::scroll, RecordScroll { dx, dy }, [&]() { return inner_->scroll(dx, dy); });
 }
 
+bool ProxyController::relative_move(int dx, int dy)
+{
+    return forward_and_record(RecordType::relative_move, RecordRelativeMove { dx, dy }, [&]() { return inner_->relative_move(dx, dy); });
+}
+
 bool ProxyController::inactive()
 {
     return inner_->inactive();

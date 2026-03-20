@@ -36,7 +36,8 @@ struct Record
         RecordInputText,
         RecordApp,
         RecordScreencapData,
-        RecordScroll>;
+        RecordScroll,
+        RecordRelativeMove>;
 
     struct Action
     {
