@@ -971,16 +971,13 @@ class ReplayController(Controller):
 
     def __init__(
         self,
-        read_path: Union[str, Path],
-        write_path: Union[str, Path],
-        config: Dict[str, Any] = {},
+        dump_dir: Union[str, Path],
     ):
         """创建回放控制器 / Create replay controller
 
         Args:
-            read_path: 输入路径, 包含通过 Recording 选项记录的操作 / Input path, includes operations recorded via Recording option
-            write_path: 输出路径, 包含执行结果 / Output path, includes execution results
-            config: 额外配置 / Extra config
+            dump_dir: 录制文件目录，由 RecordController 写入（包含 recording.jsonl 与截图）
+                      / Directory where recording files were written by RecordController (contains recording.jsonl and screenshots)
 
         Raises:
             RuntimeError: 如果创建失败
@@ -989,9 +986,7 @@ class ReplayController(Controller):
         self._set_replay_api_properties()
 
         self._handle = Library.framework().MaaReplayControllerCreate(
-            str(read_path).encode(),
-            str(write_path).encode(),
-            json.dumps(config, ensure_ascii=False).encode(),
+            str(dump_dir).encode(),
         )
 
         if not self._handle:
@@ -1000,8 +995,6 @@ class ReplayController(Controller):
     def _set_replay_api_properties(self):
         Library.framework().MaaReplayControllerCreate.restype = MaaControllerHandle
         Library.framework().MaaReplayControllerCreate.argtypes = [
-            ctypes.c_char_p,
-            ctypes.c_char_p,
             ctypes.c_char_p,
         ]
 

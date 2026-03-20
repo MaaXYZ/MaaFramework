@@ -6,6 +6,6 @@
 
 MAA_CTRL_UNIT_NS_BEGIN
 
-ReplayController* create_replay_controller(const std::filesystem::path& path);
+ReplayController* create_replay_controller(const std::filesystem::path& dump_dir);
 
 MAA_CTRL_UNIT_NS_END

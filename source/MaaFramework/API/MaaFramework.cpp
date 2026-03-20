@@ -116,19 +116,16 @@ MaaController* MaaCustomControllerCreate(MaaCustomControllerCallbacks* controlle
     return new MAA_CTRL_NS::ControllerAgent(std::move(control_unit));
 }
 
-MaaController* MaaReplayControllerCreate(const char* read_path, const char* write_path, const char* config)
+MaaController* MaaReplayControllerCreate(const char* dump_dir)
 {
-    LogFunc << VAR(read_path) << VAR(write_path);
+    LogFunc << VAR(dump_dir);
 
-    if (!read_path) {
-        LogError << "read_path is null";
+    if (!dump_dir) {
+        LogError << "dump_dir is null";
         return nullptr;
     }
 
-    std::ignore = write_path;
-    std::ignore = config;
-
-    auto control_unit = MAA_NS::ReplayControlUnitLibraryHolder::create_control_unit(read_path);
+    auto control_unit = MAA_NS::ReplayControlUnitLibraryHolder::create_control_unit(dump_dir);
 
     if (!control_unit) {
         LogError << "Failed to create control unit";

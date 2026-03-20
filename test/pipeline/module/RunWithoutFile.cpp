@@ -29,11 +29,9 @@ MaaBool my_action(
 
 bool run_without_file(const std::filesystem::path& testset_dir)
 {
-    auto testing_path = testset_dir / "PipelineSmoking" / "MaaRecording.txt";
-    auto result_path = testset_dir / "debug";
+    auto dump_dir = testset_dir / "PipelineSmoking";
 
-    auto controller_handle =
-        MaaReplayControllerCreate(testing_path.string().c_str(), result_path.string().c_str(), "{}");
+    auto controller_handle = MaaReplayControllerCreate(dump_dir.string().c_str());
 
     MaaControllerWait(controller_handle, MaaControllerPostConnection(controller_handle));
 

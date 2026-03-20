@@ -1387,8 +1387,7 @@ def main():
 
         # 创建 Controller 和 Tasker 进行 Context 级别测试
         replay_controller = ReplayController(
-            install_dir / "test" / "PipelineSmoking" / "MaaRecording.txt",
-            install_dir / "test" / "user",
+            install_dir / "test" / "PipelineSmoking",
         )
         replay_controller.post_connection().wait()
 

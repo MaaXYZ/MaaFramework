@@ -146,7 +146,7 @@ struct PlayCoverControllerImpl : public ControllerImpl
     static void init_proto(maajs::ObjectType proto, maajs::FunctionType ctor);
 };
 
-using ReplayControllerCtorParam = std::tuple<std::string, std::string, std::string>;
+using ReplayControllerCtorParam = std::tuple<std::string>;
 
 struct ReplayControllerImpl : public ControllerImpl
 {

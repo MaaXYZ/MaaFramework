@@ -263,11 +263,7 @@ declare global {
         }
 
         class ReplayController extends Controller {
-            constructor(
-                read_path: string,
-                write_path: string,
-                config: string,
-            )
+            constructor(dump_dir: string)
         }
 
         /**

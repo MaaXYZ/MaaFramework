@@ -71,7 +71,7 @@ private:
 class ReplayControlUnitLibraryHolder : public LibraryHolder<ReplayControlUnitLibraryHolder>
 {
 public:
-    static std::shared_ptr<MAA_CTRL_UNIT_NS::RecordableControlUnitAPI> create_control_unit(const char* read_path);
+    static std::shared_ptr<MAA_CTRL_UNIT_NS::RecordableControlUnitAPI> create_control_unit(const char* dump_dir);
 
 private:
     inline static const std::filesystem::path libname_ = MAA_NS::path("MaaReplayControlUnit");

@@ -603,8 +603,8 @@ maajs::ValueType load_playcover_controller(maajs::EnvType env)
 
 ReplayControllerImpl* ReplayControllerImpl::ctor(const maajs::CallbackInfo& info)
 {
-    auto [read_path, write_path, config] = maajs::UnWrapArgs<ReplayControllerCtorParam, void>(info);
-    auto ctrl = MaaReplayControllerCreate(read_path.c_str(), write_path.c_str(), config.c_str());
+    auto [dump_dir] = maajs::UnWrapArgs<ReplayControllerCtorParam, void>(info);
+    auto ctrl = MaaReplayControllerCreate(dump_dir.c_str());
     if (!ctrl) {
         return nullptr;
     }

@@ -54,7 +54,14 @@ extern "C"
 
     MAA_FRAMEWORK_API MaaController* MaaCustomControllerCreate(MaaCustomControllerCallbacks* controller, void* controller_arg);
 
-    MAA_FRAMEWORK_API MaaController* MaaReplayControllerCreate(const char* read_path, const char* write_path, const char* config);
+    /**
+     * @brief Create a replay controller that replays recorded operations.
+     *
+     * @param dump_dir Directory path where recording files were written by MaaRecordControllerCreate.
+     *                 Must contain a "recording.jsonl" file and associated screenshot images.
+     * @return The controller handle, or nullptr on failure.
+     */
+    MAA_FRAMEWORK_API MaaController* MaaReplayControllerCreate(const char* dump_dir);
 
     /**
      * @brief Create a record controller that wraps an existing controller and records all operations.
