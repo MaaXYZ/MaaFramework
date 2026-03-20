@@ -1,4 +1,4 @@
-#include "ProxyController.h"
+#include "RecordController.h"
 
 #include <format>
 
@@ -7,7 +7,7 @@
 
 MAA_CTRL_UNIT_NS_BEGIN
 
-ProxyController::ProxyController(std::shared_ptr<ControlUnitAPI> inner, std::filesystem::path dump_dir)
+RecordController::RecordController(std::shared_ptr<ControlUnitAPI> inner, std::filesystem::path dump_dir)
     : inner_(std::move(inner))
     , dump_dir_(std::move(dump_dir))
     , recording_start_(std::chrono::steady_clock::now())
@@ -27,7 +27,7 @@ ProxyController::ProxyController(std::shared_ptr<ControlUnitAPI> inner, std::fil
     }
 }
 
-ProxyController::~ProxyController()
+RecordController::~RecordController()
 {
     LogFunc;
 
@@ -37,7 +37,7 @@ ProxyController::~ProxyController()
     }
 }
 
-bool ProxyController::connect()
+bool RecordController::connect()
 {
     auto start = std::chrono::steady_clock::now();
     bool success = inner_->connect();
@@ -56,32 +56,32 @@ bool ProxyController::connect()
     return success;
 }
 
-bool ProxyController::connected() const
+bool RecordController::connected() const
 {
     return inner_->connected();
 }
 
-bool ProxyController::request_uuid(std::string& uuid)
+bool RecordController::request_uuid(std::string& uuid)
 {
     return inner_->request_uuid(uuid);
 }
 
-MaaControllerFeature ProxyController::get_features() const
+MaaControllerFeature RecordController::get_features() const
 {
     return inner_->get_features();
 }
 
-bool ProxyController::start_app(const std::string& intent)
+bool RecordController::start_app(const std::string& intent)
 {
     return forward_and_record(RecordType::start_app, RecordApp { intent }, [&]() { return inner_->start_app(intent); });
 }
 
-bool ProxyController::stop_app(const std::string& intent)
+bool RecordController::stop_app(const std::string& intent)
 {
     return forward_and_record(RecordType::stop_app, RecordApp { intent }, [&]() { return inner_->stop_app(intent); });
 }
 
-bool ProxyController::screencap(cv::Mat& image)
+bool RecordController::screencap(cv::Mat& image)
 {
     auto start = std::chrono::steady_clock::now();
     bool success = inner_->screencap(image);
@@ -104,12 +104,12 @@ bool ProxyController::screencap(cv::Mat& image)
     return success;
 }
 
-bool ProxyController::click(int x, int y)
+bool RecordController::click(int x, int y)
 {
     return forward_and_record(RecordType::click, RecordClick { x, y }, [&]() { return inner_->click(x, y); });
 }
 
-bool ProxyController::swipe(int x1, int y1, int x2, int y2, int duration)
+bool RecordController::swipe(int x1, int y1, int x2, int y2, int duration)
 {
     return forward_and_record(
         RecordType::swipe,
@@ -117,7 +117,7 @@ bool ProxyController::swipe(int x1, int y1, int x2, int y2, int duration)
         [&]() { return inner_->swipe(x1, y1, x2, y2, duration); });
 }
 
-bool ProxyController::touch_down(int contact, int x, int y, int pressure)
+bool RecordController::touch_down(int contact, int x, int y, int pressure)
 {
     return forward_and_record(
         RecordType::touch_down,
@@ -125,7 +125,7 @@ bool ProxyController::touch_down(int contact, int x, int y, int pressure)
         [&]() { return inner_->touch_down(contact, x, y, pressure); });
 }
 
-bool ProxyController::touch_move(int contact, int x, int y, int pressure)
+bool RecordController::touch_move(int contact, int x, int y, int pressure)
 {
     return forward_and_record(
         RecordType::touch_move,
@@ -133,78 +133,75 @@ bool ProxyController::touch_move(int contact, int x, int y, int pressure)
         [&]() { return inner_->touch_move(contact, x, y, pressure); });
 }
 
-bool ProxyController::touch_up(int contact)
+bool RecordController::touch_up(int contact)
 {
     return forward_and_record(RecordType::touch_up, RecordTouch { contact }, [&]() { return inner_->touch_up(contact); });
 }
 
-bool ProxyController::click_key(int key)
+bool RecordController::click_key(int key)
 {
     return forward_and_record(RecordType::click_key, RecordKey { key }, [&]() { return inner_->click_key(key); });
 }
 
-bool ProxyController::input_text(const std::string& text)
+bool RecordController::input_text(const std::string& text)
 {
     return forward_and_record(RecordType::input_text, RecordInputText { text }, [&]() { return inner_->input_text(text); });
 }
 
-bool ProxyController::key_down(int key)
+bool RecordController::key_down(int key)
 {
     return forward_and_record(RecordType::key_down, RecordKey { key }, [&]() { return inner_->key_down(key); });
 }
 
-bool ProxyController::key_up(int key)
+bool RecordController::key_up(int key)
 {
     return forward_and_record(RecordType::key_up, RecordKey { key }, [&]() { return inner_->key_up(key); });
 }
 
-bool ProxyController::scroll(int dx, int dy)
+bool RecordController::scroll(int dx, int dy)
 {
     auto action = [&]() -> bool {
         if (auto p = std::dynamic_pointer_cast<Win32ControlUnitAPI>(inner_)) return p->scroll(dx, dy);
         if (auto p = std::dynamic_pointer_cast<MacOSControlUnitAPI>(inner_)) return p->scroll(dx, dy);
         if (auto p = std::dynamic_pointer_cast<CustomControlUnitAPI>(inner_)) return p->scroll(dx, dy);
-        if (auto p = std::dynamic_pointer_cast<DbgControlUnitAPI>(inner_)) return p->scroll(dx, dy);
-        if (auto p = std::dynamic_pointer_cast<ProxyControlUnitAPI>(inner_)) return p->scroll(dx, dy);
+        if (auto p = std::dynamic_pointer_cast<RecordableControlUnitAPI>(inner_)) return p->scroll(dx, dy);
         LogError << "Inner controller does not support scroll";
         return false;
     };
     return forward_and_record(RecordType::scroll, RecordScroll { dx, dy }, action);
 }
 
-bool ProxyController::relative_move(int dx, int dy)
+bool RecordController::relative_move(int dx, int dy)
 {
     auto action = [&]() -> bool {
         if (auto p = std::dynamic_pointer_cast<Win32ControlUnitAPI>(inner_)) return p->relative_move(dx, dy);
         if (auto p = std::dynamic_pointer_cast<MacOSControlUnitAPI>(inner_)) return p->relative_move(dx, dy);
-        if (auto p = std::dynamic_pointer_cast<DbgControlUnitAPI>(inner_)) return p->relative_move(dx, dy);
-        if (auto p = std::dynamic_pointer_cast<ProxyControlUnitAPI>(inner_)) return p->relative_move(dx, dy);
+        if (auto p = std::dynamic_pointer_cast<RecordableControlUnitAPI>(inner_)) return p->relative_move(dx, dy);
         LogError << "Inner controller does not support relative_move";
         return false;
     };
     return forward_and_record(RecordType::relative_move, RecordRelativeMove { dx, dy }, action);
 }
 
-bool ProxyController::inactive()
+bool RecordController::inactive()
 {
     return inner_->inactive();
 }
 
-json::object ProxyController::get_info() const
+json::object RecordController::get_info() const
 {
     return inner_->get_info();
 }
 
-bool ProxyController::shell(const std::string& cmd, std::string& output, std::chrono::milliseconds timeout)
+bool RecordController::shell(const std::string& cmd, std::string& output, std::chrono::milliseconds timeout)
 {
     if (auto p = std::dynamic_pointer_cast<AdbControlUnitAPI>(inner_)) return p->shell(cmd, output, timeout);
-    if (auto p = std::dynamic_pointer_cast<DbgControlUnitAPI>(inner_)) return p->shell(cmd, output, timeout);
-    if (auto p = std::dynamic_pointer_cast<ProxyControlUnitAPI>(inner_)) return p->shell(cmd, output, timeout);
+    if (auto p = std::dynamic_pointer_cast<RecordableControlUnitAPI>(inner_)) return p->shell(cmd, output, timeout);
     LogError << "Inner controller does not support shell";
     return false;
 }
 
-void ProxyController::write_record(const json::value& record)
+void RecordController::write_record(const json::value& record)
 {
     std::unique_lock lock(recording_mutex_);
 
@@ -218,7 +215,7 @@ void ProxyController::write_record(const json::value& record)
 }
 
 template <typename ParamT>
-bool ProxyController::forward_and_record(RecordType type, const ParamT& param, std::function<bool()> action_fn)
+bool RecordController::forward_and_record(RecordType type, const ParamT& param, std::function<bool()> action_fn)
 {
     auto start = std::chrono::steady_clock::now();
     bool success = action_fn();
@@ -231,7 +228,7 @@ bool ProxyController::forward_and_record(RecordType type, const ParamT& param, s
     return success;
 }
 
-RecordLine ProxyController::make_line(RecordType type, bool success, int64_t timestamp, int cost)
+RecordLine RecordController::make_line(RecordType type, bool success, int64_t timestamp, int cost)
 {
     return RecordLine { .type = type, .timestamp = timestamp, .success = success, .cost = cost };
 }

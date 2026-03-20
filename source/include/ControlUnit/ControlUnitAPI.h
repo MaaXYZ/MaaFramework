@@ -88,21 +88,10 @@ public:
     virtual ~GamepadControlUnitAPI() = default;
 };
 
-class DbgControlUnitAPI : public ControlUnitAPI
+class RecordableControlUnitAPI : public ControlUnitAPI
 {
 public:
-    virtual ~DbgControlUnitAPI() = default;
-
-    virtual bool relative_move(int dx, int dy) = 0;
-    virtual bool scroll(int dx, int dy) = 0;
-    virtual bool
-        shell(const std::string& cmd, std::string& output, std::chrono::milliseconds timeout = std::chrono::milliseconds(20000)) = 0;
-};
-
-class ProxyControlUnitAPI : public ControlUnitAPI
-{
-public:
-    virtual ~ProxyControlUnitAPI() = default;
+    virtual ~RecordableControlUnitAPI() = default;
 
     virtual bool relative_move(int dx, int dy) = 0;
     virtual bool scroll(int dx, int dy) = 0;
@@ -118,5 +107,5 @@ using MaaWin32ControlUnitHandle = MAA_CTRL_UNIT_NS::Win32ControlUnitAPI*;
 using MaaMacOSControlUnitHandle = MAA_CTRL_UNIT_NS::MacOSControlUnitAPI*;
 using MaaGamepadControlUnitHandle = MAA_CTRL_UNIT_NS::GamepadControlUnitAPI*;
 using MaaCustomControlUnitHandle = MAA_CTRL_UNIT_NS::CustomControlUnitAPI*;
-using MaaDbgControlUnitHandle = MAA_CTRL_UNIT_NS::DbgControlUnitAPI*;
-using MaaProxyControlUnitHandle = MAA_CTRL_UNIT_NS::ProxyControlUnitAPI*;
+using MaaReplayControlUnitHandle = MAA_CTRL_UNIT_NS::RecordableControlUnitAPI*;
+using MaaRecordControlUnitHandle = MAA_CTRL_UNIT_NS::RecordableControlUnitAPI*;

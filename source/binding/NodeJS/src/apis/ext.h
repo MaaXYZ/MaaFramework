@@ -90,8 +90,8 @@ struct ExtContext : public maajs::NativeClassBase
     maajs::FunctionRefType win32ControllerCtor;
     maajs::FunctionRefType macosControllerCtor;
     maajs::FunctionRefType playcoverControllerCtor;
-    maajs::FunctionRefType dbgControllerCtor;
-    maajs::FunctionRefType proxyControllerCtor;
+    maajs::FunctionRefType replayControllerCtor;
+    maajs::FunctionRefType recordControllerCtor;
     maajs::FunctionRefType gamepadControllerCtor;
     maajs::FunctionRefType wlrootsControllerCtor;
     maajs::FunctionRefType customControllerCtor;
@@ -116,8 +116,8 @@ struct ExtContext : public maajs::NativeClassBase
         marker(win32ControllerCtor.Value());
         marker(macosControllerCtor.Value());
         marker(playcoverControllerCtor.Value());
-        marker(dbgControllerCtor.Value());
-        marker(proxyControllerCtor.Value());
+        marker(replayControllerCtor.Value());
+        marker(recordControllerCtor.Value());
         marker(gamepadControllerCtor.Value());
         marker(wlrootsControllerCtor.Value());
         marker(customControllerCtor.Value());

@@ -14,8 +14,8 @@ from .library import Library
 
 __all__ = [
     "AdbController",
-    "DbgController",
-    "ProxyController",
+    "ReplayController",
+    "RecordController",
     "PlayCoverController",
     "Win32Controller",
     "GamepadController",
@@ -966,8 +966,8 @@ class WlRootsController(Controller):
         ]
 
 
-class DbgController(Controller):
-    """调试控制器，用于回放录制文件 / Debug controller for replaying recorded operations"""
+class ReplayController(Controller):
+    """回放控制器，用于回放录制文件 / Replay controller for replaying recorded operations"""
 
     def __init__(
         self,
@@ -975,7 +975,7 @@ class DbgController(Controller):
         write_path: Union[str, Path],
         config: Dict[str, Any] = {},
     ):
-        """创建调试控制器 / Create debug controller
+        """创建回放控制器 / Create replay controller
 
         Args:
             read_path: 输入路径, 包含通过 Recording 选项记录的操作 / Input path, includes operations recorded via Recording option
@@ -986,35 +986,35 @@ class DbgController(Controller):
             RuntimeError: 如果创建失败
         """
         super().__init__()
-        self._set_dbg_api_properties()
+        self._set_replay_api_properties()
 
-        self._handle = Library.framework().MaaDbgControllerCreate(
+        self._handle = Library.framework().MaaReplayControllerCreate(
             str(read_path).encode(),
             str(write_path).encode(),
             json.dumps(config, ensure_ascii=False).encode(),
         )
 
         if not self._handle:
-            raise RuntimeError("Failed to create DBG controller.")
+            raise RuntimeError("Failed to create replay controller.")
 
-    def _set_dbg_api_properties(self):
-        Library.framework().MaaDbgControllerCreate.restype = MaaControllerHandle
-        Library.framework().MaaDbgControllerCreate.argtypes = [
+    def _set_replay_api_properties(self):
+        Library.framework().MaaReplayControllerCreate.restype = MaaControllerHandle
+        Library.framework().MaaReplayControllerCreate.argtypes = [
             ctypes.c_char_p,
             ctypes.c_char_p,
             ctypes.c_char_p,
         ]
 
 
-class ProxyController(Controller):
-    """代理控制器，包装现有控制器并记录所有操作 / Proxy controller that wraps an existing controller and records all operations"""
+class RecordController(Controller):
+    """录制控制器，包装现有控制器并记录所有操作 / Record controller that wraps an existing controller and records all operations"""
 
     def __init__(
         self,
         inner: Controller,
         dump_dir: Union[str, Path],
     ):
-        """创建代理控制器 / Create proxy controller
+        """创建录制控制器 / Create record controller
 
         Args:
             inner: 被包装的内部控制器 / The inner controller to wrap
@@ -1025,19 +1025,19 @@ class ProxyController(Controller):
         """
         super().__init__()
         self._inner = inner
-        self._set_proxy_api_properties()
+        self._set_record_api_properties()
 
-        self._handle = Library.framework().MaaProxyControllerCreate(
+        self._handle = Library.framework().MaaRecordControllerCreate(
             inner._handle,
             str(dump_dir).encode(),
         )
 
         if not self._handle:
-            raise RuntimeError("Failed to create proxy controller.")
+            raise RuntimeError("Failed to create record controller.")
 
-    def _set_proxy_api_properties(self):
-        Library.framework().MaaProxyControllerCreate.restype = MaaControllerHandle
-        Library.framework().MaaProxyControllerCreate.argtypes = [
+    def _set_record_api_properties(self):
+        Library.framework().MaaRecordControllerCreate.restype = MaaControllerHandle
+        Library.framework().MaaRecordControllerCreate.argtypes = [
             MaaControllerHandle,
             ctypes.c_char_p,
         ]

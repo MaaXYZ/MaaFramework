@@ -11,12 +11,12 @@
 
 MAA_CTRL_UNIT_NS_BEGIN
 
-class ReplayRecording : public DbgControlUnitAPI
+class ReplayController : public RecordableControlUnitAPI
 {
 public:
-    explicit ReplayRecording(Recording recording);
+    explicit ReplayController(Recording recording);
 
-    virtual ~ReplayRecording() override;
+    virtual ~ReplayController() override;
 
 public: // from ControlUnitAPI
     virtual bool connect() override;
@@ -45,7 +45,7 @@ public: // from ControlUnitAPI
 
     virtual bool inactive() override;
 
-public: // from DbgControlUnitAPI
+public: // from RecordableControlUnitAPI
     virtual bool relative_move(int dx, int dy) override;
     virtual bool scroll(int dx, int dy) override;
     virtual bool
@@ -54,7 +54,8 @@ public: // from DbgControlUnitAPI
     virtual json::object get_info() const override;
 
 private:
-    void sleep(int ms);
+    const Record* expect_record(RecordType expected_type);
+    bool consume_record(const Record& record);
 
 private:
     Recording recording_;

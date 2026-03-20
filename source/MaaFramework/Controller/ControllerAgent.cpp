@@ -716,10 +716,7 @@ bool ControllerAgent::handle_relative_move(const RelativeMoveParam& param)
     if (auto unit = std::dynamic_pointer_cast<MAA_CTRL_UNIT_NS::MacOSControlUnitAPI>(control_unit_)) {
         return unit->relative_move(param.dx, param.dy);
     }
-    if (auto unit = std::dynamic_pointer_cast<MAA_CTRL_UNIT_NS::DbgControlUnitAPI>(control_unit_)) {
-        return unit->relative_move(param.dx, param.dy);
-    }
-    if (auto unit = std::dynamic_pointer_cast<MAA_CTRL_UNIT_NS::ProxyControlUnitAPI>(control_unit_)) {
+    if (auto unit = std::dynamic_pointer_cast<MAA_CTRL_UNIT_NS::RecordableControlUnitAPI>(control_unit_)) {
         return unit->relative_move(param.dx, param.dy);
     }
 
@@ -886,10 +883,7 @@ bool ControllerAgent::handle_scroll(const ScrollParam& param)
     if (auto unit = std::dynamic_pointer_cast<MAA_CTRL_UNIT_NS::CustomControlUnitAPI>(control_unit_)) {
         return unit->scroll(param.dx, param.dy);
     }
-    if (auto unit = std::dynamic_pointer_cast<MAA_CTRL_UNIT_NS::DbgControlUnitAPI>(control_unit_)) {
-        return unit->scroll(param.dx, param.dy);
-    }
-    if (auto unit = std::dynamic_pointer_cast<MAA_CTRL_UNIT_NS::ProxyControlUnitAPI>(control_unit_)) {
+    if (auto unit = std::dynamic_pointer_cast<MAA_CTRL_UNIT_NS::RecordableControlUnitAPI>(control_unit_)) {
         return unit->scroll(param.dx, param.dy);
     }
 
@@ -911,10 +905,7 @@ bool ControllerAgent::handle_shell(const ShellParam& param)
     if (auto unit = std::dynamic_pointer_cast<MAA_CTRL_UNIT_NS::AdbControlUnitAPI>(control_unit_)) {
         ret = unit->shell(param.cmd, output, timeout);
     }
-    else if (auto unit = std::dynamic_pointer_cast<MAA_CTRL_UNIT_NS::DbgControlUnitAPI>(control_unit_)) {
-        ret = unit->shell(param.cmd, output, timeout);
-    }
-    else if (auto unit = std::dynamic_pointer_cast<MAA_CTRL_UNIT_NS::ProxyControlUnitAPI>(control_unit_)) {
+    else if (auto unit = std::dynamic_pointer_cast<MAA_CTRL_UNIT_NS::RecordableControlUnitAPI>(control_unit_)) {
         ret = unit->shell(param.cmd, output, timeout);
     }
     else {

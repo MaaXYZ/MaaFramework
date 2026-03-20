@@ -262,7 +262,7 @@ declare global {
             constructor(address: string, uuid: string)
         }
 
-        class DbgController extends Controller {
+        class ReplayController extends Controller {
             constructor(
                 read_path: string,
                 write_path: string,
@@ -272,9 +272,9 @@ declare global {
 
         /**
          * Proxy controller that wraps an existing controller and records all operations.
-         * The recorded files can be replayed using DbgController.
+         * The recorded files can be replayed using ReplayController.
          */
-        class ProxyController extends Controller {
+        class RecordController extends Controller {
             constructor(
                 inner: Controller,
                 dump_dir: string,

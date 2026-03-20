@@ -23,8 +23,8 @@ if(WITH_PLAYCOVER_CONTROLLER)
     add_dependencies(LibraryHolder MaaPlayCoverControlUnit)
 endif()
 
-if(WITH_DBG_CONTROLLER)
-    add_dependencies(LibraryHolder MaaDbgControlUnit)
+if(WITH_REPLAY_CONTROLLER)
+    add_dependencies(LibraryHolder MaaReplayControlUnit)
 endif()
 
 if(WITH_CUSTOM_CONTROLLER)
@@ -35,8 +35,8 @@ if(WITH_GAMEPAD_CONTROLLER)
     add_dependencies(LibraryHolder MaaGamepadControlUnit)
 endif()
 
-if(WITH_PROXY_CONTROLLER)
-    add_dependencies(LibraryHolder MaaProxyControlUnit)
+if(WITH_RECORD_CONTROLLER)
+    add_dependencies(LibraryHolder MaaRecordControlUnit)
 endif()
 
 if(WITH_WLROOTS_CONTROLLER)

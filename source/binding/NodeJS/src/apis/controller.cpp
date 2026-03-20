@@ -601,50 +601,50 @@ maajs::ValueType load_playcover_controller(maajs::EnvType env)
     return ctor;
 }
 
-DbgControllerImpl* DbgControllerImpl::ctor(const maajs::CallbackInfo& info)
+ReplayControllerImpl* ReplayControllerImpl::ctor(const maajs::CallbackInfo& info)
 {
-    auto [read_path, write_path, config] = maajs::UnWrapArgs<DbgControllerCtorParam, void>(info);
-    auto ctrl = MaaDbgControllerCreate(read_path.c_str(), write_path.c_str(), config.c_str());
+    auto [read_path, write_path, config] = maajs::UnWrapArgs<ReplayControllerCtorParam, void>(info);
+    auto ctrl = MaaReplayControllerCreate(read_path.c_str(), write_path.c_str(), config.c_str());
     if (!ctrl) {
         return nullptr;
     }
-    return new DbgControllerImpl(ctrl, true);
+    return new ReplayControllerImpl(ctrl, true);
 }
 
-void DbgControllerImpl::init_proto(maajs::ObjectType, maajs::FunctionType)
+void ReplayControllerImpl::init_proto(maajs::ObjectType, maajs::FunctionType)
 {
 }
 
-maajs::ValueType load_dbg_controller(maajs::EnvType env)
+maajs::ValueType load_replay_controller(maajs::EnvType env)
 {
     maajs::FunctionType ctor;
-    maajs::NativeClass<DbgControllerImpl>::init<ControllerImpl>(env, ctor, &ExtContext::get(env)->controllerCtor);
-    ExtContext::get(env)->dbgControllerCtor = maajs::PersistentFunction(ctor);
+    maajs::NativeClass<ReplayControllerImpl>::init<ControllerImpl>(env, ctor, &ExtContext::get(env)->controllerCtor);
+    ExtContext::get(env)->replayControllerCtor = maajs::PersistentFunction(ctor);
     return ctor;
 }
 
-ProxyControllerImpl* ProxyControllerImpl::ctor(const maajs::CallbackInfo& info)
+RecordControllerImpl* RecordControllerImpl::ctor(const maajs::CallbackInfo& info)
 {
-    auto [inner_ctrl, dump_dir] = maajs::UnWrapArgs<ProxyControllerCtorParam, void>(info);
+    auto [inner_ctrl, dump_dir] = maajs::UnWrapArgs<RecordControllerCtorParam, void>(info);
     if (!inner_ctrl || !inner_ctrl->controller) {
         return nullptr;
     }
-    auto ctrl = MaaProxyControllerCreate(inner_ctrl->controller, dump_dir.c_str());
+    auto ctrl = MaaRecordControllerCreate(inner_ctrl->controller, dump_dir.c_str());
     if (!ctrl) {
         return nullptr;
     }
-    return new ProxyControllerImpl(ctrl, true);
+    return new RecordControllerImpl(ctrl, true);
 }
 
-void ProxyControllerImpl::init_proto(maajs::ObjectType, maajs::FunctionType)
+void RecordControllerImpl::init_proto(maajs::ObjectType, maajs::FunctionType)
 {
 }
 
-maajs::ValueType load_proxy_controller(maajs::EnvType env)
+maajs::ValueType load_record_controller(maajs::EnvType env)
 {
     maajs::FunctionType ctor;
-    maajs::NativeClass<ProxyControllerImpl>::init<ControllerImpl>(env, ctor, &ExtContext::get(env)->controllerCtor);
-    ExtContext::get(env)->proxyControllerCtor = maajs::PersistentFunction(ctor);
+    maajs::NativeClass<RecordControllerImpl>::init<ControllerImpl>(env, ctor, &ExtContext::get(env)->controllerCtor);
+    ExtContext::get(env)->recordControllerCtor = maajs::PersistentFunction(ctor);
     return ctor;
 }
 

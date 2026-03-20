@@ -54,19 +54,19 @@ extern "C"
 
     MAA_FRAMEWORK_API MaaController* MaaCustomControllerCreate(MaaCustomControllerCallbacks* controller, void* controller_arg);
 
-    MAA_FRAMEWORK_API MaaController* MaaDbgControllerCreate(const char* read_path, const char* write_path, const char* config);
+    MAA_FRAMEWORK_API MaaController* MaaReplayControllerCreate(const char* read_path, const char* write_path, const char* config);
 
     /**
-     * @brief Create a proxy controller that wraps an existing controller and records all operations.
+     * @brief Create a record controller that wraps an existing controller and records all operations.
      *
      * @param inner The inner controller to forward all operations to. Must not be null.
-     *              The proxy does NOT take ownership of the inner controller.
+     *              The record controller does NOT take ownership of the inner controller.
      * @param dump_dir Directory path where recording files will be written.
      *                 A "recording.jsonl" file and screenshot images will be created here.
-     *                 The recorded files can be replayed using MaaDbgControllerCreate.
-     * @return The proxy controller handle, or nullptr on failure.
+     *                 The recorded files can be replayed using MaaReplayControllerCreate.
+     * @return The record controller handle, or nullptr on failure.
      */
-    MAA_FRAMEWORK_API MaaController* MaaProxyControllerCreate(MaaController* inner, const char* dump_dir);
+    MAA_FRAMEWORK_API MaaController* MaaRecordControllerCreate(MaaController* inner, const char* dump_dir);
 
     /**
      * @brief Create a PlayCover controller for macOS.

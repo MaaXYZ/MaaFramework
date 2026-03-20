@@ -33,7 +33,7 @@ bool run_without_file(const std::filesystem::path& testset_dir)
     auto result_path = testset_dir / "debug";
 
     auto controller_handle =
-        MaaDbgControllerCreate(testing_path.string().c_str(), result_path.string().c_str(), "{}");
+        MaaReplayControllerCreate(testing_path.string().c_str(), result_path.string().c_str(), "{}");
 
     MaaControllerWait(controller_handle, MaaControllerPostConnection(controller_handle));
 

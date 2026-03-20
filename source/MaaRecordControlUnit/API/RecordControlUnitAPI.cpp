@@ -1,17 +1,17 @@
-#include "ControlUnit/ProxyControlUnitAPI.h"
+#include "ControlUnit/RecordControlUnitAPI.h"
 
 #include "MaaUtils/Logger.h"
 #include "MaaUtils/Platform.h"
-#include "ProxyController.h"
+#include "RecordController.h"
 
-const char* MaaProxyControlUnitGetVersion()
+const char* MaaRecordControlUnitGetVersion()
 {
-#pragma message("MaaProxyControlUnit MAA_VERSION: " MAA_VERSION)
+#pragma message("MaaRecordControlUnit MAA_VERSION: " MAA_VERSION)
 
     return MAA_VERSION;
 }
 
-MaaProxyControlUnitHandle MaaProxyControlUnitCreate(void* shared_inner, const char* dump_dir)
+MaaRecordControlUnitHandle MaaRecordControlUnitCreate(void* shared_inner, const char* dump_dir)
 {
     LogFunc << VAR_VOIDP(shared_inner) << VAR(dump_dir);
 
@@ -26,10 +26,10 @@ MaaProxyControlUnitHandle MaaProxyControlUnitCreate(void* shared_inner, const ch
     }
 
     auto& inner = *static_cast<std::shared_ptr<MAA_CTRL_UNIT_NS::ControlUnitAPI>*>(shared_inner);
-    return new MAA_CTRL_UNIT_NS::ProxyController(inner, MAA_NS::path(dump_dir));
+    return new MAA_CTRL_UNIT_NS::RecordController(inner, MAA_NS::path(dump_dir));
 }
 
-void MaaProxyControlUnitDestroy(MaaProxyControlUnitHandle handle)
+void MaaRecordControlUnitDestroy(MaaRecordControlUnitHandle handle)
 {
     LogFunc << VAR_VOIDP(handle);
 

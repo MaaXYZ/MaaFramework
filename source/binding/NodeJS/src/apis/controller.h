@@ -146,27 +146,27 @@ struct PlayCoverControllerImpl : public ControllerImpl
     static void init_proto(maajs::ObjectType proto, maajs::FunctionType ctor);
 };
 
-using DbgControllerCtorParam = std::tuple<std::string, std::string, std::string>;
+using ReplayControllerCtorParam = std::tuple<std::string, std::string, std::string>;
 
-struct DbgControllerImpl : public ControllerImpl
+struct ReplayControllerImpl : public ControllerImpl
 {
     using ControllerImpl::ControllerImpl;
 
-    constexpr static char name[] = "DbgController";
+    constexpr static char name[] = "ReplayController";
 
-    static DbgControllerImpl* ctor(const maajs::CallbackInfo&);
+    static ReplayControllerImpl* ctor(const maajs::CallbackInfo&);
     static void init_proto(maajs::ObjectType proto, maajs::FunctionType ctor);
 };
 
-using ProxyControllerCtorParam = std::tuple<maajs::NativeObject<DbgControllerImpl>, std::string>;
+using RecordControllerCtorParam = std::tuple<maajs::NativeObject<ControllerImpl>, std::string>;
 
-struct ProxyControllerImpl : public ControllerImpl
+struct RecordControllerImpl : public ControllerImpl
 {
     using ControllerImpl::ControllerImpl;
 
-    constexpr static char name[] = "ProxyController";
+    constexpr static char name[] = "RecordController";
 
-    static ProxyControllerImpl* ctor(const maajs::CallbackInfo&);
+    static RecordControllerImpl* ctor(const maajs::CallbackInfo&);
     static void init_proto(maajs::ObjectType proto, maajs::FunctionType ctor);
 };
 

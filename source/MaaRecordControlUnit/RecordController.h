@@ -15,11 +15,11 @@
 
 MAA_CTRL_UNIT_NS_BEGIN
 
-class ProxyController : public ProxyControlUnitAPI
+class RecordController : public RecordableControlUnitAPI
 {
 public:
-    ProxyController(std::shared_ptr<ControlUnitAPI> inner, std::filesystem::path dump_dir);
-    virtual ~ProxyController() override;
+    RecordController(std::shared_ptr<ControlUnitAPI> inner, std::filesystem::path dump_dir);
+    virtual ~RecordController() override;
 
 public: // from ControlUnitAPI
     virtual bool connect() override;
@@ -50,7 +50,7 @@ public: // from ControlUnitAPI
 
     virtual json::object get_info() const override;
 
-public: // from ProxyControlUnitAPI
+public: // from RecordableControlUnitAPI
     virtual bool relative_move(int dx, int dy) override;
     virtual bool scroll(int dx, int dy) override;
     virtual bool

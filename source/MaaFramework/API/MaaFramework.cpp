@@ -116,7 +116,7 @@ MaaController* MaaCustomControllerCreate(MaaCustomControllerCallbacks* controlle
     return new MAA_CTRL_NS::ControllerAgent(std::move(control_unit));
 }
 
-MaaController* MaaDbgControllerCreate(const char* read_path, const char* write_path, const char* config)
+MaaController* MaaReplayControllerCreate(const char* read_path, const char* write_path, const char* config)
 {
     LogFunc << VAR(read_path) << VAR(write_path);
 
@@ -128,7 +128,7 @@ MaaController* MaaDbgControllerCreate(const char* read_path, const char* write_p
     std::ignore = write_path;
     std::ignore = config;
 
-    auto control_unit = MAA_NS::DbgControlUnitLibraryHolder::create_control_unit(read_path);
+    auto control_unit = MAA_NS::ReplayControlUnitLibraryHolder::create_control_unit(read_path);
 
     if (!control_unit) {
         LogError << "Failed to create control unit";
@@ -138,7 +138,7 @@ MaaController* MaaDbgControllerCreate(const char* read_path, const char* write_p
     return new MAA_CTRL_NS::ControllerAgent(std::move(control_unit));
 }
 
-MaaController* MaaProxyControllerCreate(MaaController* inner, const char* dump_dir)
+MaaController* MaaRecordControllerCreate(MaaController* inner, const char* dump_dir)
 {
     LogFunc << VAR_VOIDP(inner) << VAR(dump_dir);
 
@@ -164,9 +164,9 @@ MaaController* MaaProxyControllerCreate(MaaController* inner, const char* dump_d
         return nullptr;
     }
 
-    auto control_unit = MAA_NS::ProxyControlUnitLibraryHolder::create_control_unit(std::move(inner_unit), dump_dir);
+    auto control_unit = MAA_NS::RecordControlUnitLibraryHolder::create_control_unit(std::move(inner_unit), dump_dir);
     if (!control_unit) {
-        LogError << "Failed to create proxy control unit";
+        LogError << "Failed to create record control unit";
         return nullptr;
     }
 
