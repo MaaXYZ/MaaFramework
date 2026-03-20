@@ -22,9 +22,9 @@ struct ImageJobImpl : public JobImpl
 
 struct ControllerImpl : public maajs::NativeClassBase
 {
-    MaaController* controller {};
+    MaaController* controller { };
     bool own = false;
-    std::map<MaaSinkId, maajs::CallbackContext*> sinks {};
+    std::map<MaaSinkId, maajs::CallbackContext*> sinks { };
 
     ControllerImpl() = default;
     ControllerImpl(MaaController* ctrl, bool own);
@@ -61,6 +61,7 @@ struct ControllerImpl : public maajs::NativeClassBase
     maajs::ValueType post_touch_down(maajs::ValueType self, maajs::EnvType env, int32_t contact, int32_t x, int32_t y, int32_t pressure);
     maajs::ValueType post_touch_move(maajs::ValueType self, maajs::EnvType env, int32_t contact, int32_t x, int32_t y, int32_t pressure);
     maajs::ValueType post_touch_up(maajs::ValueType self, maajs::EnvType env, int32_t contact);
+    maajs::ValueType post_relative_move(maajs::ValueType self, maajs::EnvType env, int32_t dx, int32_t dy);
     maajs::ValueType post_key_down(maajs::ValueType self, maajs::EnvType env, int32_t keycode);
     maajs::ValueType post_key_up(maajs::ValueType self, maajs::EnvType env, int32_t keycode);
     maajs::ValueType post_scroll(maajs::ValueType self, maajs::EnvType env, int32_t dx, int32_t dy);
@@ -115,6 +116,21 @@ struct Win32ControllerImpl : public ControllerImpl
     constexpr static char name[] = "Win32Controller";
 
     static Win32ControllerImpl* ctor(const maajs::CallbackInfo&);
+    static void init_proto(maajs::ObjectType proto, maajs::FunctionType ctor);
+};
+
+using MacOSDevice = std::tuple<uintptr_t, std::string, std::string>;
+using MacOSControllerCtorParam = std::tuple<uint32_t, MaaMacOSScreencapMethod, MaaMacOSInputMethod>;
+
+struct MacOSControllerImpl : public ControllerImpl
+{
+    using ControllerImpl::ControllerImpl;
+
+    static maajs::PromiseType find(maajs::EnvType env);
+
+    constexpr static char name[] = "MacOSController";
+
+    static MacOSControllerImpl* ctor(const maajs::CallbackInfo&);
     static void init_proto(maajs::ObjectType proto, maajs::FunctionType ctor);
 };
 

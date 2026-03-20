@@ -198,12 +198,17 @@ bool DesktopDupScreencap::find_output_by_monitor(HMONITOR monitor)
             DXGI_OUTPUT_DESC output_desc;
             ret = output->GetDesc(&output_desc);
             if (SUCCEEDED(ret) && output_desc.Monitor == monitor) {
-                // 找到匹配的显示器
+                // 找到匹配的显示器，通过 QueryInterface 获取 IDXGIOutput1
+                IDXGIOutput1* output1 = nullptr;
+                ret = output->QueryInterface(__uuidof(IDXGIOutput1), reinterpret_cast<void**>(&output1));
+                if (FAILED(ret) || !output1) {
+                    LogError << "QueryInterface IDXGIOutput1 failed" << VAR(ret);
+                    return false;
+                }
                 dxgi_adapter_ = adapter;
-                dxgi_output_ = reinterpret_cast<IDXGIOutput1*>(output);
+                dxgi_output_ = output1;
                 adapter_used = true;
-                output_used = true;
-                LogInfo << "Found matching output for window monitor" << VAR(adapter_index) << VAR(output_index);
+                // output 的引用由 QueryInterface 返回的 output1 持有，释放原始 output
                 return true;
             }
         }
@@ -220,9 +225,21 @@ bool DesktopDupScreencap::init_primary_output()
         return false;
     }
 
-    ret = dxgi_adapter_->EnumOutputs(0, reinterpret_cast<IDXGIOutput**>(&dxgi_output_));
-    if (FAILED(ret)) {
+    IDXGIOutput* output = nullptr;
+    ret = dxgi_adapter_->EnumOutputs(0, &output);
+    if (FAILED(ret) || !output) {
         LogError << "EnumOutputs failed" << VAR(ret);
+        return false;
+    }
+    OnScopeLeave([&]() {
+        if (output) {
+            output->Release();
+        }
+    });
+
+    ret = output->QueryInterface(__uuidof(IDXGIOutput1), reinterpret_cast<void**>(&dxgi_output_));
+    if (FAILED(ret) || !dxgi_output_) {
+        LogError << "QueryInterface IDXGIOutput1 failed" << VAR(ret);
         return false;
     }
 
@@ -311,7 +328,20 @@ std::optional<cv::Mat> DesktopDupScreencap::screencap_impl()
 
     DXGI_OUTDUPL_FRAME_INFO frame_info { 0 };
     IDXGIResource* desktop_resource = nullptr;
-    ret = dxgi_dup_->AcquireNextFrame(INFINITE, &frame_info, &desktop_resource);
+    ret = dxgi_dup_->AcquireNextFrame(2000, &frame_info, &desktop_resource);
+    if (ret == DXGI_ERROR_ACCESS_LOST) {
+        LogWarn << "Desktop duplication access lost, reinitializing";
+        if (dxgi_dup_) {
+            dxgi_dup_->Release();
+            dxgi_dup_ = nullptr;
+        }
+        if (readable_texture_) {
+            readable_texture_->Release();
+            readable_texture_ = nullptr;
+        }
+        current_monitor_ = nullptr;
+        return std::nullopt;
+    }
     if (FAILED(ret)) {
         LogError << "AcquireNextFrame failed" << VAR(ret);
         return std::nullopt;

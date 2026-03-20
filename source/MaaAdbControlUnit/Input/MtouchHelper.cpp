@@ -171,10 +171,4 @@ bool MtouchHelper::parse(const json::value& config)
     return device_info_->parse(config);
 }
 
-bool MtouchHelper::scroll(int dx, int dy)
-{
-    LogError << "Scroll is not supported on Adb controller" << VAR(dx) << VAR(dy);
-    return false;
-}
-
 MAA_CTRL_UNIT_NS_END

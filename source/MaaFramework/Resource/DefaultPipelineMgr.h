@@ -41,7 +41,7 @@ public:
                 return std::make_shared<typename RecoParam::element_type>();
             }
             else {
-                return {};
+                return { };
             }
         }
         return std::get<RecoParam>(iter->second);
@@ -52,7 +52,7 @@ public:
     {
         auto iter = action_param_.find(type);
         if (iter == action_param_.end()) {
-            return {};
+            return { };
         }
         return std::get<ActParam>(iter->second);
     }

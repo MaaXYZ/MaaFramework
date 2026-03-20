@@ -59,11 +59,16 @@ declare global {
         >
 
         /**
-         * Win32 screencap method.
+         * Win32 screencap method flags.
          *
-         * No bitwise OR, select ONE method only.
+         * Use bitwise OR to set the methods you need.
+         * MaaFramework will test all provided methods and use the fastest available one.
          *
          * No default value. Client should choose one as default.
+         *
+         * Predefined combinations:
+         * - Foreground: DXGI_DesktopDup_Window | ScreenDC
+         * - Background: FramePool | PrintWindow
          *
          * Different applications use different rendering methods, there is no universal solution.
          *
@@ -87,7 +92,10 @@ declare global {
             | 'DXGI_DesktopDup'
             | 'DXGI_DesktopDup_Window'
             | 'PrintWindow'
-            | 'ScreenDC',
+            | 'ScreenDC'
+            | 'All'
+            | 'Foreground'
+            | 'Background',
             ScreencapOrInputMethods
         >
 
@@ -126,6 +134,37 @@ declare global {
             | 'PostMessageWithCursorPos'
             | 'SendMessageWithWindowPos'
             | 'PostMessageWithWindowPos',
+            ScreencapOrInputMethods
+        >
+
+        /**
+         * MacOS screencap method.
+         *
+         * No bitwise OR, select ONE method only.
+         *
+         * Default: ScreenCaptureKit
+         *
+         * | Method          | Speed     | Compatibility | Require Permission | Background Support | Notes                            |
+         * |-----------------|-----------|---------------|--------------------|--------------------|----------------------------------|
+         * | ScreenCaptureKit| Very Fast | High          | Screen Recording   | Yes                | Requires macOS 14.0+             |
+         */
+        const MacOSScreencapMethod: Record<'ScreenCaptureKit', ScreencapOrInputMethods>
+
+        /**
+         * MacOS input method.
+         *
+         * No bitwise OR, select ONE method only.
+         *
+         * Default: GlobalEvent
+         *
+         * | Method      | Compatibility | Require Permission | Background Support | Notes                            |
+         * |-------------|---------------|--------------------|--------------------|----------------------------------|
+         * | GlobalEvent | High          | Accessibility      | No                 |                                  |
+         * | PostToPid   | Medium        | Accessibility      | Yes                |                                  |
+         */
+        const MacOSInputMethod: Record<
+            | 'GlobalEvent'
+            | 'PostToPid',
             ScreencapOrInputMethods
         >
         const DbgControllerType: Record<'CarouselImage' | 'ReplayRecording', Uint64>

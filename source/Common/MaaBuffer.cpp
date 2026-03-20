@@ -408,7 +408,7 @@ MaaBool MaaImageListBufferClear(MaaImageListBuffer* handle)
 
 MaaRect* MaaRectCreate()
 {
-    return new MaaRect {};
+    return new MaaRect { };
 }
 
 void MaaRectDestroy(MaaRect* handle)

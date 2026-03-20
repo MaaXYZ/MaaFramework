@@ -14,7 +14,7 @@ MAA_TASK_NS_BEGIN
 
 struct CustomRecognitionResult
 {
-    cv::Rect box {};
+    cv::Rect box { };
     json::value detail;
 
     MEO_JSONIZATION(box, detail);

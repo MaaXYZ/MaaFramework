@@ -379,12 +379,6 @@ bool MuMuPlayerExtras::key_up(int key)
     return true;
 }
 
-bool MuMuPlayerExtras::scroll(int dx, int dy)
-{
-    LogError << "Scroll is not supported on MuMuPlayerExtras" << VAR(dx) << VAR(dy);
-    return false;
-}
-
 void MuMuPlayerExtras::on_app_started(const std::string& intent)
 {
     std::string package = string_split(intent, '/').front();
@@ -521,7 +515,7 @@ void MuMuPlayerExtras::disconnect_mumu()
     LogFunc << VAR(mumu_handle_);
 
     if (!disconnect_func_) {
-        LogError << "disconnect_func_ is null";
+        LogWarn << "disconnect_func_ is null";
         return;
     }
 

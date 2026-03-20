@@ -127,6 +127,13 @@ MaaCtrlId ControllerAgent::post_touch_up(int contact)
     return focus_id(id);
 }
 
+MaaCtrlId ControllerAgent::post_relative_move(int dx, int dy)
+{
+    RelativeMoveParam p { .dx = dx, .dy = dy };
+    auto id = post({ .type = Action::Type::relative_move, .param = std::move(p) });
+    return focus_id(id);
+}
+
 MaaCtrlId ControllerAgent::post_key_down(int keycode)
 {
     ClickKeyParam p { .keycode = { keycode } };
@@ -301,6 +308,12 @@ bool ControllerAgent::touch_up(TouchParam p)
     return wait(id) == MaaStatus_Succeeded;
 }
 
+bool ControllerAgent::relative_move(RelativeMoveParam p)
+{
+    auto id = post({ .type = Action::Type::relative_move, .param = std::move(p) });
+    return wait(id) == MaaStatus_Succeeded;
+}
+
 bool ControllerAgent::click_key(ClickKeyParam p)
 {
     auto id = post({ .type = Action::Type::click_key, .param = std::move(p) });
@@ -335,7 +348,7 @@ cv::Mat ControllerAgent::screencap()
 {
     auto id = post({ .type = Action::Type::screencap });
     if (wait(id) != MaaStatus_Succeeded) {
-        return {};
+        return { };
     }
     return cached_image();
 }
@@ -548,8 +561,8 @@ bool ControllerAgent::handle_multi_swipe(const MultiSwipeParam& param)
 
     struct SegmentOperating
     {
-        cv::Point begin {};
-        cv::Point end {};
+        cv::Point begin { };
+        cv::Point end { };
         double total_step = 0;
         double x_step_len = 0;
         double y_step_len = 0;
@@ -688,6 +701,27 @@ bool ControllerAgent::handle_touch_up(const TouchParam& param)
     bool ret = control_unit_->touch_up(param.contact);
 
     return ret;
+}
+
+bool ControllerAgent::handle_relative_move(const RelativeMoveParam& param)
+{
+    if (!control_unit_) {
+        LogError << "control_unit_ is nullptr";
+        return false;
+    }
+
+    auto win32_unit = std::dynamic_pointer_cast<MAA_CTRL_UNIT_NS::Win32ControlUnitAPI>(control_unit_);
+    if (win32_unit) {
+        return win32_unit->relative_move(param.dx, param.dy);
+    }
+
+    auto macos_unit = std::dynamic_pointer_cast<MAA_CTRL_UNIT_NS::MacOSControlUnitAPI>(control_unit_);
+    if (macos_unit) {
+        return macos_unit->relative_move(param.dx, param.dy);
+    }
+
+    LogError << "Relative move is only supported for Win32/macOS controllers.";
+    return false;
 }
 
 bool ControllerAgent::handle_click_key(const ClickKeyParam& param)
@@ -835,14 +869,33 @@ bool ControllerAgent::handle_scroll(const ScrollParam& param)
         return false;
     }
 
-    // Move to target position before scrolling
     cv::Point point = preproc_touch_point(param.point);
-    if (!control_unit_->touch_move(0, point.x, point.y, 0)) {
-        LogWarn << "Failed to move to scroll position" << VAR(point);
+    auto move_to_scroll_position = [&]() {
+        if (!control_unit_->touch_move(0, point.x, point.y, 0)) {
+            LogWarn << "Failed to move to scroll position" << VAR(point);
+        }
+    };
+
+    auto win32_unit = std::dynamic_pointer_cast<MAA_CTRL_UNIT_NS::Win32ControlUnitAPI>(control_unit_);
+    if (win32_unit) {
+        move_to_scroll_position();
+        return win32_unit->scroll(param.dx, param.dy);
     }
 
-    bool ret = control_unit_->scroll(param.dx, param.dy);
-    return ret;
+    auto macos_unit = std::dynamic_pointer_cast<MAA_CTRL_UNIT_NS::MacOSControlUnitAPI>(control_unit_);
+    if (macos_unit) {
+        move_to_scroll_position();
+        return macos_unit->scroll(param.dx, param.dy);
+    }
+
+    auto custom_unit = std::dynamic_pointer_cast<MAA_CTRL_UNIT_NS::CustomControlUnitAPI>(control_unit_);
+    if (custom_unit) {
+        move_to_scroll_position();
+        return custom_unit->scroll(param.dx, param.dy);
+    }
+
+    LogError << "Scroll is only supported for Win32/macOS/Custom controllers.";
+    return false;
 }
 
 bool ControllerAgent::handle_shell(const ShellParam& param)
@@ -974,6 +1027,10 @@ bool ControllerAgent::run_action(typename AsyncRunner<Action>::Id id, Action act
         ret = handle_shell(std::get<ShellParam>(action.param));
         break;
 
+    case Action::Type::relative_move:
+        ret = handle_relative_move(std::get<RelativeMoveParam>(action.param));
+        break;
+
     case Action::Type::inactive:
         ret = handle_inactive();
         break;
@@ -1003,7 +1060,7 @@ cv::Point ControllerAgent::preproc_touch_point(const cv::Point& p)
         LogWarn << "Invalid image target size" << VAR(image_target_width_) << VAR(image_target_height_);
 
         if (!init_scale_info()) {
-            return {};
+            return { };
         }
     }
 

@@ -181,7 +181,7 @@ MaaTaskId Tasker::post_stop()
 
     static const std::string kStopEntry = "MaaTaskerPostStop";
     auto task_ptr = std::make_shared<MAA_TASK_NS::EmptyTask>(kStopEntry, this);
-    return post_task(std::move(task_ptr), json::object {});
+    return post_task(std::move(task_ptr), json::object { });
 }
 
 bool Tasker::stopping() const
@@ -357,7 +357,7 @@ bool Tasker::run_task(RunnerId runner_id, TaskPtr task_ptr)
     notifier_.notify(this, ret ? MaaMsg_Tasker_Task_Succeeded : MaaMsg_Tasker_Task_Failed, cb_detail);
 
     if (controller_ && !task_runner_->pending()) {
-        controller_->post_inactive();
+        controller_->wait(controller_->post_inactive());
     }
 
     return ret;

@@ -14,6 +14,12 @@ MaaController* MaaWin32ControllerCreate(void*, MaaWin32ScreencapMethod, MaaWin32
     return nullptr;
 }
 
+MaaController* MaaMacOSControllerCreate(uint32_t, MaaMacOSScreencapMethod, MaaMacOSInputMethod)
+{
+    LogError << "MaaAgentServer Not implement this API, Please use MaaFramework";
+    return nullptr;
+}
+
 MaaController* MaaCustomControllerCreate(MaaCustomControllerCallbacks*, void*)
 {
     LogError << "MaaAgentServer Not implement this API, Please use MaaFramework";
@@ -77,19 +83,7 @@ void MaaTaskerDestroy(MaaTasker*)
     LogError << "MaaAgentServer Not implement this API, Please use MaaFramework";
 }
 
-MaaBool MaaGlobalSetOption(MaaGlobalOption, MaaOptionValue, MaaOptionValueSize)
-{
-    LogError << "MaaAgentServer Not implement this API, Please use MaaFramework";
-    return false;
-}
-
 MaaBool MaaGlobalLoadPlugin(const char*)
-{
-    LogError << "MaaAgentServer Not implement this API, Please use MaaFramework";
-    return false;
-}
-
-MaaBool MaaSetGlobalOption(MaaGlobalOption, MaaOptionValue, MaaOptionValueSize)
 {
     LogError << "MaaAgentServer Not implement this API, Please use MaaFramework";
     return false;

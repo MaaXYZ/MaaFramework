@@ -1,19 +1,23 @@
 #pragma once
 
-#include "ControlUnit/ControlUnitAPI.h"
-
 #include "Base/UnitBase.h"
-#include "MaaUtils/SafeWindows.hpp"
-
 #include "Common/Conf.h"
+
+#include <ApplicationServices/ApplicationServices.h>
 
 MAA_CTRL_UNIT_NS_BEGIN
 
-class PostThreadMessageInput : public InputBase
+// 通过 CGEventPostToPid 将鼠标/键盘事件直接发送至目标进程，无需目标窗口处于前台。
+class PostToPidInput : public InputBase
 {
 public:
-    PostThreadMessageInput(HWND hwnd);
-    virtual ~PostThreadMessageInput() override = default;
+    PostToPidInput(uint32_t window_id)
+        : window_id_(window_id)
+    {
+        update_window_info();
+    }
+
+    virtual ~PostToPidInput() override = default;
 
 public: // from InputBase
     virtual MaaControllerFeature get_features() const override;
@@ -26,7 +30,6 @@ public: // from InputBase
     virtual bool touch_up(int contact) override;
 
     virtual bool click_key(int key) override;
-
     virtual bool input_text(const std::string& text) override;
 
     virtual bool key_down(int key) override;
@@ -35,15 +38,18 @@ public: // from InputBase
     virtual bool scroll(int dx, int dy) override;
 
 private:
-    void send_activate();
-    // 获取 last_pos_，若未设置则返回窗口客户区中心坐标
-    std::pair<int, int> get_target_pos() const;
+    void update_window_info();
 
-    HWND hwnd_ = nullptr;
-    DWORD thread_id_ = 0;
-    std::pair<int, int> last_pos_;
-    bool last_pos_set_ = false;
+    // 工具函数：创建、发送并释放 CGEvent
+    bool post_mouse_event(CGEventType type, int x, int y);
+    bool post_keyboard_event(CGKeyCode key_code, bool key_down);
+
+    uint32_t window_id_ = 0;
+    pid_t pid_ = -1;
+    int window_w_ = 0;
+    int window_h_ = 0;
+    int latest_touch_x_ = 0;
+    int latest_touch_y_ = 0;
 };
 
 MAA_CTRL_UNIT_NS_END
-

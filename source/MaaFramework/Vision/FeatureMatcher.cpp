@@ -103,7 +103,7 @@ std::pair<std::vector<cv::KeyPoint>, cv::Mat> FeatureMatcher::detect(const cv::M
     auto detector = create_detector();
     if (!detector) {
         LogError << name_ << "detector is empty";
-        return {};
+        return { };
     }
 
     std::vector<cv::KeyPoint> keypoints;
@@ -135,13 +135,13 @@ std::vector<std::vector<cv::DMatch>> FeatureMatcher::match(const cv::Mat& descri
 {
     if (descriptors_1.empty() || descriptors_2.empty()) {
         LogWarn << name_ << "descriptors is empty";
-        return {};
+        return { };
     }
 
     auto matcher = create_matcher();
     if (!matcher) {
         LogError << name_ << "matcher is empty";
-        return {};
+        return { };
     }
 
     std::vector<cv::Mat> train_desc(1, descriptors_1);

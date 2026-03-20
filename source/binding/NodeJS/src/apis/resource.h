@@ -11,11 +11,11 @@
 
 struct ResourceImpl : public maajs::NativeClassBase
 {
-    MaaResource* resource {};
+    MaaResource* resource { };
     bool own = false;
-    std::map<MaaSinkId, maajs::CallbackContext*> sinks {};
-    std::map<std::string, maajs::CallbackContext*> recos {};
-    std::map<std::string, maajs::CallbackContext*> acts {};
+    std::map<MaaSinkId, maajs::CallbackContext*> sinks { };
+    std::map<std::string, maajs::CallbackContext*> recos { };
+    std::map<std::string, maajs::CallbackContext*> acts { };
 
     ResourceImpl() = default;
     ResourceImpl(MaaResource* res, bool own);

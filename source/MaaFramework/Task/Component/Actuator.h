@@ -34,8 +34,6 @@ private:
     inline static std::atomic<MaaActId> s_global_action_id = kActIdBase;
 
 private:
-    ActionResult execute_action(const cv::Rect& reco_hit, MaaRecoId reco_id, const PipelineData& pipeline_data, const std::string& entry);
-
     ActionResult click(const MAA_RES_NS::Action::ClickParam& param, const cv::Rect& box, const std::string& name);
     ActionResult long_press(const MAA_RES_NS::Action::LongPressParam& param, const cv::Rect& box, const std::string& name);
     ActionResult swipe(const MAA_RES_NS::Action::SwipeParam& param, const cv::Rect& box, const std::string& name);
@@ -62,13 +60,8 @@ private:
     ActionResult do_nothing(const std::string& name);
     ActionResult stop_task(const std::string& name);
 
-    void wait_freezes(const MAA_RES_NS::WaitFreezesParam& param, const cv::Rect& box);
-
 private:
     MAA_CTRL_NS::ControllerAgent* controller();
-
-    void sleep(unsigned ms) const;
-    void sleep(std::chrono::milliseconds ms) const;
 
 private:
     Tasker* tasker_ = nullptr;

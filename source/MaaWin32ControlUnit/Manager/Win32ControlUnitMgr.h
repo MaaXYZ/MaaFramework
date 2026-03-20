@@ -1,6 +1,8 @@
 #pragma once
 
 #include <filesystem>
+#include <ostream>
+#include <unordered_map>
 
 #include "Base/UnitBase.h"
 #include "ControlUnit/ControlUnitAPI.h"
@@ -40,6 +42,8 @@ public: // from ControlUnitAPI
     virtual bool touch_move(int contact, int x, int y, int pressure) override;
     virtual bool touch_up(int contact) override;
 
+    virtual bool relative_move(int dx, int dy) override;
+
     virtual bool click_key(int key) override;
     virtual bool input_text(const std::string& text) override;
 
@@ -51,6 +55,24 @@ public: // from ControlUnitAPI
     virtual bool inactive() override;
 
     virtual json::object get_info() const override;
+
+private:
+    enum class ScreencapMethod
+    {
+        UnknownYet,
+        GDI,
+        FramePool,
+        DXGI_DesktopDup,
+        DXGI_DesktopDup_Window,
+        PrintWindow,
+        ScreenDC,
+    };
+
+    std::unordered_map<ScreencapMethod, std::shared_ptr<ScreencapBase>> build_screencap_units() const;
+    bool init_screencap();
+    std::shared_ptr<InputBase> make_input(MaaWin32InputMethod method) const;
+
+    std::shared_ptr<ScreencapBase> speed_test(const std::unordered_map<ScreencapMethod, std::shared_ptr<ScreencapBase>>& units) const;
 
 private:
     HWND hwnd_ = nullptr;

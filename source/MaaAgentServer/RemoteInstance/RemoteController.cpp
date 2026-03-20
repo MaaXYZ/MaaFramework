@@ -174,6 +174,20 @@ MaaCtrlId RemoteController::post_touch_up(int contact)
     return resp_opt->ctrl_id;
 }
 
+MaaCtrlId RemoteController::post_relative_move(int dx, int dy)
+{
+    ControllerPostRelativeMoveReverseRequest req {
+        .controller_id = controller_id_,
+        .dx = dx,
+        .dy = dy,
+    };
+    auto resp_opt = server_.send_and_recv<ControllerPostRelativeMoveReverseResponse>(req);
+    if (!resp_opt) {
+        return MaaInvalidId;
+    }
+    return resp_opt->ctrl_id;
+}
+
 MaaCtrlId RemoteController::post_key_down(int keycode)
 {
     ControllerPostKeyDownReverseRequest req {
@@ -297,7 +311,7 @@ cv::Mat RemoteController::cached_image() const
     };
     auto resp_opt = server_.send_and_recv<ControllerCachedImageReverseResponse>(req);
     if (!resp_opt) {
-        return {};
+        return { };
     }
     return server_.get_image_cache(resp_opt->image);
 }
@@ -309,7 +323,7 @@ std::string RemoteController::cached_shell_output() const
     };
     auto resp_opt = server_.send_and_recv<ControllerGetShellOutputReverseResponse>(req);
     if (!resp_opt) {
-        return {};
+        return { };
     }
     return resp_opt->output;
 }
@@ -322,7 +336,7 @@ std::string RemoteController::get_uuid()
 
     auto resp_opt = server_.send_and_recv<ControllerGetUuidReverseResponse>(req);
     if (!resp_opt) {
-        return {};
+        return { };
     }
     return resp_opt->uuid;
 }
@@ -350,7 +364,7 @@ json::object RemoteController::get_info() const
 
     auto resp_opt = server_.send_and_recv<ControllerGetInfoReverseResponse>(req);
     if (!resp_opt) {
-        return {};
+        return { };
     }
     return resp_opt->info;
 }

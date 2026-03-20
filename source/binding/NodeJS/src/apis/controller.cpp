@@ -2,13 +2,25 @@
 #include "loader.h"
 
 #include <MaaFramework/MaaAPI.h>
+#ifdef MAA_JS_WITH_TOOLKIT
 #include <MaaToolkit/MaaToolkitAPI.h>
+#endif
 
 #include "../foundation/spec.h"
 #include "../utils/library.h"
 #include "buffer.h"
 #include "callback.h"
 #include "ext.h"
+
+namespace
+{
+
+[[maybe_unused]] [[noreturn]] void throw_toolkit_unavailable(const char* api)
+{
+    throw maajs::MaaError { std::format("{} is not available in AgentServer builds", api) };
+}
+
+} // namespace
 
 maajs::ValueType ImageJobImpl::get()
 {
@@ -197,6 +209,12 @@ maajs::ValueType ControllerImpl::post_touch_up(maajs::ValueType self, maajs::Env
     return maajs::CallCtorHelper(ExtContext::get(env)->jobCtor, self, id);
 }
 
+maajs::ValueType ControllerImpl::post_relative_move(maajs::ValueType self, maajs::EnvType, int32_t dx, int32_t dy)
+{
+    auto id = MaaControllerPostRelativeMove(controller, dx, dy);
+    return maajs::CallCtorHelper(ExtContext::get(env)->jobCtor, self, id);
+}
+
 maajs::ValueType ControllerImpl::post_key_down(maajs::ValueType self, maajs::EnvType, int32_t keycode)
 {
     auto id = MaaControllerPostKeyDown(controller, keycode);
@@ -341,6 +359,7 @@ void ControllerImpl::init_proto(maajs::ObjectType proto, maajs::FunctionType)
     MAA_BIND_FUNC(proto, "post_touch_down", ControllerImpl::post_touch_down);
     MAA_BIND_FUNC(proto, "post_touch_move", ControllerImpl::post_touch_move);
     MAA_BIND_FUNC(proto, "post_touch_up", ControllerImpl::post_touch_up);
+    MAA_BIND_FUNC(proto, "post_relative_move", ControllerImpl::post_relative_move);
     MAA_BIND_FUNC(proto, "post_key_down", ControllerImpl::post_key_down);
     MAA_BIND_FUNC(proto, "post_key_up", ControllerImpl::post_key_up);
     MAA_BIND_FUNC(proto, "post_scroll", ControllerImpl::post_scroll);
@@ -373,6 +392,7 @@ std::string AdbControllerImpl::agent_path()
 
 maajs::PromiseType AdbControllerImpl::find(maajs::EnvType env, maajs::OptionalParam<std::string> adb)
 {
+#ifdef MAA_JS_WITH_TOOLKIT
     using Result = std::optional<std::vector<AdbDevice>>;
     auto worker = new maajs::AsyncWork<Result>(env, [adb]() -> Result {
         auto lst = MaaToolkitAdbDeviceListCreate();
@@ -408,6 +428,11 @@ maajs::PromiseType AdbControllerImpl::find(maajs::EnvType env, maajs::OptionalPa
     });
     worker->Queue();
     return worker->Promise();
+#else
+    std::ignore = env;
+    std::ignore = adb;
+    throw_toolkit_unavailable("AdbController.find");
+#endif
 }
 
 AdbControllerImpl* AdbControllerImpl::ctor(const maajs::CallbackInfo& info)
@@ -442,6 +467,7 @@ maajs::ValueType load_adb_controller(maajs::EnvType env)
 
 maajs::PromiseType Win32ControllerImpl::find(maajs::EnvType env)
 {
+#ifdef MAA_JS_WITH_TOOLKIT
     using Result = std::optional<std::vector<Win32Device>>;
     auto worker = new maajs::AsyncWork<Result>(env, []() -> Result {
         auto lst = MaaToolkitDesktopWindowListCreate();
@@ -467,6 +493,10 @@ maajs::PromiseType Win32ControllerImpl::find(maajs::EnvType env)
     });
     worker->Queue();
     return worker->Promise();
+#else
+    std::ignore = env;
+    throw_toolkit_unavailable("Win32Controller.find");
+#endif
 }
 
 Win32ControllerImpl* Win32ControllerImpl::ctor(const maajs::CallbackInfo& info)
@@ -489,6 +519,63 @@ maajs::ValueType load_win32_controller(maajs::EnvType env)
     maajs::FunctionType ctor;
     maajs::NativeClass<Win32ControllerImpl>::init<ControllerImpl>(env, ctor, &ExtContext::get(env)->controllerCtor);
     ExtContext::get(env)->win32ControllerCtor = maajs::PersistentFunction(ctor);
+    return ctor;
+}
+
+maajs::PromiseType MacOSControllerImpl::find(maajs::EnvType env)
+{
+#ifdef MAA_JS_WITH_TOOLKIT
+    using Result = std::optional<std::vector<MacOSDevice>>;
+    auto worker = new maajs::AsyncWork<Result>(env, []() -> Result {
+        auto lst = MaaToolkitDesktopWindowListCreate();
+        if (!MaaToolkitDesktopWindowFindAll(lst)) {
+            MaaToolkitDesktopWindowListDestroy(lst);
+            return std::nullopt;
+        }
+
+        std::vector<MacOSDevice> result;
+        auto size = MaaToolkitDesktopWindowListSize(lst);
+        result.reserve(size);
+        for (size_t i = 0; i < size; i++) {
+            auto dev = MaaToolkitDesktopWindowListAt(lst, i);
+            result.push_back(
+                std::make_tuple(
+                    reinterpret_cast<uintptr_t>(MaaToolkitDesktopWindowGetHandle(dev)),
+                    std::string(MaaToolkitDesktopWindowGetClassName(dev)),
+                    std::string(MaaToolkitDesktopWindowGetWindowName(dev))));
+        }
+        MaaToolkitDesktopWindowListDestroy(lst);
+
+        return result;
+    });
+    worker->Queue();
+    return worker->Promise();
+#else
+    std::ignore = env;
+    throw_toolkit_unavailable("MacOSController.find");
+#endif
+}
+
+MacOSControllerImpl* MacOSControllerImpl::ctor(const maajs::CallbackInfo& info)
+{
+    auto [window_id, screencap_method, input_method] = maajs::UnWrapArgs<MacOSControllerCtorParam, void>(info);
+    auto ctrl = MaaMacOSControllerCreate(window_id, screencap_method, input_method);
+    if (!ctrl) {
+        return nullptr;
+    }
+    return new MacOSControllerImpl(ctrl, true);
+}
+
+void MacOSControllerImpl::init_proto(maajs::ObjectType, maajs::FunctionType ctor)
+{
+    MAA_BIND_FUNC(ctor, "find", find);
+}
+
+maajs::ValueType load_macos_controller(maajs::EnvType env)
+{
+    maajs::FunctionType ctor;
+    maajs::NativeClass<MacOSControllerImpl>::init<ControllerImpl>(env, ctor, &ExtContext::get(env)->controllerCtor);
+    ExtContext::get(env)->macosControllerCtor = maajs::PersistentFunction(ctor);
     return ctor;
 }
 
@@ -595,6 +682,7 @@ WlRootsControllerImpl* WlRootsControllerImpl::ctor(const maajs::CallbackInfo& in
 
 maajs::PromiseType WlRootsControllerImpl::find(maajs::EnvType env)
 {
+#ifdef MAA_JS_WITH_TOOLKIT
     using Result = std::optional<std::vector<WlRootsCompositor>>;
     auto worker = new maajs::AsyncWork<Result>(env, []() -> Result {
         auto lst = MaaToolkitDesktopWindowListCreate();
@@ -620,6 +708,10 @@ maajs::PromiseType WlRootsControllerImpl::find(maajs::EnvType env)
     });
     worker->Queue();
     return worker->Promise();
+#else
+    std::ignore = env;
+    throw_toolkit_unavailable("WlRootsController.find");
+#endif
 }
 
 void WlRootsControllerImpl::init_proto(maajs::ObjectType, maajs::FunctionType ctor)

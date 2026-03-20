@@ -311,12 +311,6 @@ bool GamepadControlUnitMgr::key_up(int key)
     return gamepad_input_->release_button(key);
 }
 
-bool GamepadControlUnitMgr::scroll(int dx, int dy)
-{
-    LogError << "scroll not supported for gamepad controller" << VAR(dx) << VAR(dy);
-    return false;
-}
-
 bool GamepadControlUnitMgr::inactive()
 {
     if (win32_unit_) {

@@ -21,7 +21,7 @@ const platforms: [maa: string, node: string][] = [
 async function main() {
     const corePackPath = path.join(releasePath, 'maa-node')
     cp.execSync(`npm --prefix ${corePackPath} pkg set version=${version}`)
-    for (const dir of ['minitouch', 'maatouch', 'minicap']) {
+    for (const dir of ['minitouch', 'maatouch']) {
         await fs.cp(
             path.join(assetsPath, 'MAA-win-x86_64', 'share', 'MaaAgentBinary', dir),
             path.join(corePackPath, 'agent', dir),

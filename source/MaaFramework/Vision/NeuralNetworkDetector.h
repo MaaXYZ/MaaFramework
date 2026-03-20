@@ -17,7 +17,7 @@ struct NeuralNetworkDetectorResult
 {
     size_t cls_index = SIZE_MAX;
     std::string label;
-    cv::Rect box {};
+    cv::Rect box { };
     double score = 0.0;
 
     MEO_JSONIZATION(cls_index, label, box, score);

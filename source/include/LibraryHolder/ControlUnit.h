@@ -12,6 +12,8 @@ MAA_CTRL_UNIT_NS_BEGIN
 class ControlUnitAPI;
 class AdbControlUnitAPI;
 class Win32ControlUnitAPI;
+class MacOSControlUnitAPI;
+class GamepadControlUnitAPI;
 class CustomControlUnitAPI;
 class WlRootsControlUnitAPI;
 MAA_CTRL_UNIT_NS_END
@@ -52,6 +54,19 @@ private:
     inline static const std::string destroy_func_name_ = "MaaWin32ControlUnitDestroy";
 };
 
+class MacOSControlUnitLibraryHolder : public LibraryHolder<MacOSControlUnitLibraryHolder>
+{
+public:
+    static std::shared_ptr<MAA_CTRL_UNIT_NS::MacOSControlUnitAPI>
+        create_control_unit(uint32_t window_id, MaaMacOSScreencapMethod screencap_method, MaaMacOSInputMethod input_method);
+
+private:
+    inline static const std::filesystem::path libname_ = MAA_NS::path("MaaMacOSControlUnit");
+    inline static const std::string version_func_name_ = "MaaMacOSControlUnitGetVersion";
+    inline static const std::string create_func_name_ = "MaaMacOSControlUnitCreate";
+    inline static const std::string destroy_func_name_ = "MaaMacOSControlUnitDestroy";
+};
+
 class DbgControlUnitLibraryHolder : public LibraryHolder<DbgControlUnitLibraryHolder>
 {
 public:
@@ -67,7 +82,7 @@ private:
 class CustomControlUnitLibraryHolder : public LibraryHolder<CustomControlUnitLibraryHolder>
 {
 public:
-    static std::shared_ptr<MAA_CTRL_UNIT_NS::ControlUnitAPI>
+    static std::shared_ptr<MAA_CTRL_UNIT_NS::CustomControlUnitAPI>
         create_control_unit(MaaCustomControllerCallbacks* controller, void* controller_arg);
 
 private:
@@ -92,7 +107,7 @@ private:
 class GamepadControlUnitLibraryHolder : public LibraryHolder<GamepadControlUnitLibraryHolder>
 {
 public:
-    static std::shared_ptr<MAA_CTRL_UNIT_NS::Win32ControlUnitAPI>
+    static std::shared_ptr<MAA_CTRL_UNIT_NS::GamepadControlUnitAPI>
         create_control_unit(void* hWnd, MaaGamepadType gamepad_type, MaaWin32ScreencapMethod screencap_method);
 
 private:

@@ -1,9 +1,12 @@
 #include "VisionBase.h"
 
+#include <fstream>
+
 #include "MaaUtils/NoWarningCV.hpp"
 
 #include "Global/OptionMgr.h"
 #include "MaaUtils/Logger.h"
+#include "MaaUtils/Time.hpp"
 #include "VisionUtils.hpp"
 
 MAA_VISION_NS_BEGIN
@@ -11,7 +14,7 @@ MAA_VISION_NS_BEGIN
 VisionBase::VisionBase(cv::Mat image, std::vector<cv::Rect> rois, std::string name)
     : image_(std::move(image))
     , name_(std::move(name))
-    , rois_(correct_rois(std::move(rois), image_))
+    , rois_(std::move(rois))
 {
     init_draw();
 }
@@ -71,6 +74,27 @@ void VisionBase::init_draw()
     const auto& option = MAA_GLOBAL_NS::OptionMgr::get_instance();
     debug_draw_ = option.save_draw() || option.debug_mode();
 #endif
+}
+
+void VisionBase::save_draws(const std::string& name, const std::vector<ImageEncodedBuffer>& draws)
+{
+    const auto& option = MAA_GLOBAL_NS::OptionMgr::get_instance();
+
+    if (!option.save_draw()) {
+        return;
+    }
+
+    auto dir = option.log_dir() / "vision";
+    std::filesystem::create_directories(dir);
+
+    for (const auto& draw : draws) {
+        std::string filename = std::format("{}_{}.jpg", format_now_for_filename(), name);
+        auto filepath = dir / path(filename);
+
+        std::ofstream of(filepath, std::ios::out | std::ios::binary);
+        of.write(reinterpret_cast<const char*>(draw.data()), draw.size());
+        LogDebug << "save draw to" << filepath;
+    }
 }
 
 MAA_VISION_NS_END

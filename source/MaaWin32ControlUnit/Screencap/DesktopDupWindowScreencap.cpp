@@ -2,6 +2,7 @@
 
 #include <algorithm>
 
+#include "HwndUtils.hpp"
 #include "MaaUtils/Logger.h"
 
 MAA_CTRL_UNIT_NS_BEGIN
@@ -11,6 +12,11 @@ std::optional<cv::Mat> DesktopDupWindowScreencap::screencap()
     if (!hwnd_) {
         LogError << "hwnd_ is nullptr";
         return std::nullopt;
+    }
+
+    // Ensure the window is fully visible on the monitor before screencap
+    if (!ensure_window_on_screen(hwnd_)) {
+        LogWarn << "Failed to ensure window on screen";
     }
 
     // 调用基类方法获取全屏截图（BGR格式）

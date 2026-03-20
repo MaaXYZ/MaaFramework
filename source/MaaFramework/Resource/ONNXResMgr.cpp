@@ -44,7 +44,7 @@ void ONNXResMgr::use_cpu()
 {
     LogInfo;
 
-    options_ = {};
+    options_ = { };
     memory_info_ = Ort::MemoryInfo::CreateCpu(OrtDeviceAllocator, OrtMemTypeDefault);
 }
 
@@ -52,12 +52,14 @@ void ONNXResMgr::use_cuda(int device_id)
 {
     LogInfo << VAR(device_id);
 
-    options_ = {};
-    OrtCUDAProviderOptions cuda_options {};
+    options_ = { };
+    OrtCUDAProviderOptions cuda_options { };
     cuda_options.device_id = device_id;
     options_.AppendExecutionProvider_CUDA(cuda_options);
 
-    memory_info_ = Ort::MemoryInfo("Cuda", OrtDeviceAllocator, device_id, OrtMemTypeDefault);
+    // Input tensors are created from std::vector<float> (host memory).
+    // Keep CPU memory info here and let ORT move data to CUDA EP internally.
+    memory_info_ = Ort::MemoryInfo::CreateCpu(OrtDeviceAllocator, OrtMemTypeDefault);
 
     LogInfo << "Using CUDA execution provider with device_id" << device_id;
 }
@@ -68,16 +70,13 @@ void ONNXResMgr::use_directml(int device_id)
 
 #ifdef MAA_WITH_DML
 
-    options_ = {};
+    options_ = { };
     auto status = OrtSessionOptionsAppendExecutionProvider_DML(options_, device_id);
     if (!Ort::Status(status).IsOK()) {
         LogError << "Failed to append DML execution provider with device_id" << device_id;
         return;
     }
 
-    // 不知道为什么 DML 会 crash，感觉是 onnxruntime 的 bug，之后 onnxruntime 更新了可以再试试
-    // 当前版本 onnxruntime v1.19.2 from MaaDeps. 设备 AMD RX 640
-    // memory_info_ = Ort::MemoryInfo("DML", OrtDeviceAllocator, device_id, OrtMemTypeDefault);
     memory_info_ = Ort::MemoryInfo::CreateCpu(OrtDeviceAllocator, OrtMemTypeDefault);
 
     LogInfo << "Using DML execution provider with device_id" << device_id;
@@ -95,14 +94,13 @@ void ONNXResMgr::use_coreml(uint32_t coreml_flag)
 
 #ifdef MAA_WITH_COREML
 
-    options_ = {};
+    options_ = { };
     auto status = OrtSessionOptionsAppendExecutionProvider_CoreML((OrtSessionOptions*)options_, coreml_flag);
     if (!Ort::Status(status).IsOK()) {
         LogError << "Failed to append CoreML execution provider";
     }
 
-    // 不知道 name 是啥，先糊一个
-    memory_info_ = Ort::MemoryInfo("Cpu", OrtDeviceAllocator, 0, OrtMemTypeDefault);
+    memory_info_ = Ort::MemoryInfo::CreateCpu(OrtDeviceAllocator, OrtMemTypeDefault);
 
     LogInfo << "Using CoreML execution provider";
 

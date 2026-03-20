@@ -35,6 +35,23 @@ extern "C"
         MaaWin32InputMethod mouse_method,
         MaaWin32InputMethod keyboard_method);
 
+    /**
+     * @brief Create a macOS controller for native macOS applications.
+     *
+     * @param window_id The CGWindowID of the target window (0 for desktop).
+     * @param screencap_method macOS screencap method to use.
+     * @param input_method macOS input method to use.
+     * @return The controller handle, or nullptr on failure.
+     *
+     * @note This controller is designed for native macOS applications.
+     * @note Requires Screen Recording permission for screencap.
+     * @note Input simulation requires Accessibility permission.
+     * @note Some features are not supported: start_app, stop_app, scroll.
+     * @note Only single touch is supported (contact must be 0).
+     */
+    MAA_FRAMEWORK_API MaaController*
+        MaaMacOSControllerCreate(uint32_t window_id, MaaMacOSScreencapMethod screencap_method, MaaMacOSInputMethod input_method);
+
     MAA_FRAMEWORK_API MaaController* MaaCustomControllerCreate(MaaCustomControllerCallbacks* controller, void* controller_arg);
 
     MAA_FRAMEWORK_API MaaController*
@@ -158,6 +175,8 @@ extern "C"
     // for win32 controller, contact means mouse button id (0 for left, 1 for right, 2 for middle)
     MAA_FRAMEWORK_API MaaCtrlId MaaControllerPostTouchUp(MaaController* ctrl, int32_t contact);
 
+    MAA_FRAMEWORK_API MaaCtrlId MaaControllerPostRelativeMove(MaaController* ctrl, int32_t dx, int32_t dy);
+
     MAA_FRAMEWORK_API MaaCtrlId MaaControllerPostKeyDown(MaaController* ctrl, int32_t keycode);
 
     MAA_FRAMEWORK_API MaaCtrlId MaaControllerPostKeyUp(MaaController* ctrl, int32_t keycode);
@@ -182,7 +201,9 @@ extern "C"
      * @param dy The vertical scroll delta. Positive values scroll up, negative values scroll down.
      * @return The control id of the scroll action.
      *
-     * @note Not all controllers support scroll. If not supported, the action will fail.
+     * @note Scroll is supported by Win32 controllers and custom controllers that implement scroll.
+     * @note If the controller does not support scroll, the action will fail. Use MaaControllerStatus or
+     * MaaControllerWait to check the result.
      * @note The dx/dy values are sent directly as scroll increments. Using multiples of 120 (WHEEL_DELTA) is
      * recommended for best compatibility.
      */

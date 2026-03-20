@@ -9,7 +9,7 @@
 
 MAA_CTRL_UNIT_NS_BEGIN
 
-class CustomControlUnitMgr : public ControlUnitAPI
+class CustomControlUnitMgr : public CustomControlUnitAPI
 {
 public:
     CustomControlUnitMgr(MaaCustomControllerCallbacks* controller, void* controller_arg);

@@ -23,12 +23,15 @@ class AgentClient:
     def __init__(self, identifier: Optional[str] = None, *, _handle: MaaAgentClientHandle = None):
         """创建 Agent 客户端 / Create Agent client
 
-        默认使用 IPC 模式。在不支持 AF_UNIX 的旧版 Windows（Build 17063 之前）上会自动回退到 TCP 模式。
-        Uses IPC mode by default. On older Windows versions that don't support AF_UNIX (before Build 17063),
-        it will automatically fall back to TCP mode.
+        默认使用 IPC 模式；如果 identifier 为纯数字字符串，则会将其视为 TCP 端口号并监听 127.0.0.1。
+        在不支持 AF_UNIX 的旧版 Windows（Build 17063 之前）上也会自动回退到 TCP 模式。
+        Uses IPC mode by default; if identifier is a numeric string, it is treated as a TCP port
+        and listens on 127.0.0.1. On older Windows versions that don't support AF_UNIX
+        (before Build 17063), it will also automatically fall back to TCP mode.
 
         Args:
-            identifier: 可选的连接标识符，用于匹配特定的 AgentServer / Optional connection identifier for matching specific AgentServer
+            identifier: 可选的连接标识符；纯数字字符串会被视为 TCP 端口号 /
+                Optional connection identifier; numeric strings are treated as TCP ports
             _handle: 内部使用，直接传入已创建的句柄 / Internal use, directly pass in an already created handle
 
         Raises:

@@ -19,6 +19,7 @@ enum class TargetType
     Self,
     PreTask,
     Region,
+    Anchor,
 };
 
 struct TargetObj
@@ -35,7 +36,7 @@ struct Target : public TargetObj
 
     Type type = Type::Self;
     std::variant<std::monostate, std::string, cv::Rect> param;
-    cv::Rect offset {};
+    cv::Rect offset { };
 };
 
 enum class ResultOrderBy

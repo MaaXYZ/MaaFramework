@@ -85,6 +85,9 @@ export constexpr auto _MaaWin32ScreencapMethod_DXGI_DesktopDup = MaaWin32Screenc
 export constexpr auto _MaaWin32ScreencapMethod_DXGI_DesktopDup_Window = MaaWin32ScreencapMethod_DXGI_DesktopDup_Window;
 export constexpr auto _MaaWin32ScreencapMethod_PrintWindow = MaaWin32ScreencapMethod_PrintWindow;
 export constexpr auto _MaaWin32ScreencapMethod_ScreenDC = MaaWin32ScreencapMethod_ScreenDC;
+export constexpr auto _MaaWin32ScreencapMethod_All = MaaWin32ScreencapMethod_All;
+export constexpr auto _MaaWin32ScreencapMethod_Foreground = MaaWin32ScreencapMethod_Foreground;
+export constexpr auto _MaaWin32ScreencapMethod_Background = MaaWin32ScreencapMethod_Background;
 
 export using ::MaaWin32InputMethod;
 export constexpr auto _MaaWin32InputMethod_None = MaaWin32InputMethod_None;
@@ -97,6 +100,15 @@ export constexpr auto _MaaWin32InputMethod_SendMessageWithCursorPos = MaaWin32In
 export constexpr auto _MaaWin32InputMethod_PostMessageWithCursorPos = MaaWin32InputMethod_PostMessageWithCursorPos;
 export constexpr auto _MaaWin32InputMethod_SendMessageWithWindowPos = MaaWin32InputMethod_SendMessageWithWindowPos;
 export constexpr auto _MaaWin32InputMethod_PostMessageWithWindowPos = MaaWin32InputMethod_PostMessageWithWindowPos;
+
+export using ::MaaMacOSScreencapMethod;
+export constexpr auto _MaaMacOSScreencapMethod_None = MaaMacOSScreencapMethod_None;
+export constexpr auto _MaaMacOSScreencapMethod_ScreenCaptureKit = MaaMacOSScreencapMethod_ScreenCaptureKit;
+
+export using ::MaaMacOSInputMethod;
+export constexpr auto _MaaMacOSInputMethod_None = MaaMacOSInputMethod_None;
+export constexpr auto _MaaMacOSInputMethod_GlobalEvent = MaaMacOSInputMethod_GlobalEvent;
+export constexpr auto _MaaMacOSInputMethod_PostToPid = MaaMacOSInputMethod_PostToPid;
 
 export using ::MaaDbgControllerType;
 export constexpr auto _MaaDbgControllerType_None = MaaDbgControllerType_None;
@@ -144,6 +156,7 @@ export using ::MaaContextWaitFreezes;
 export using ::MaaCustomControllerCallbacks;
 export using ::MaaAdbControllerCreate;
 export using ::MaaWin32ControllerCreate;
+export using ::MaaMacOSControllerCreate;
 export using ::MaaCustomControllerCreate;
 export using ::MaaDbgControllerCreate;
 export using ::MaaProxyControllerCreate;
@@ -167,6 +180,7 @@ export using ::MaaControllerPostStopApp;
 export using ::MaaControllerPostTouchDown;
 export using ::MaaControllerPostTouchMove;
 export using ::MaaControllerPostTouchUp;
+export using ::MaaControllerPostRelativeMove;
 export using ::MaaControllerPostScreencap;
 export using ::MaaControllerPostScroll;
 export using ::MaaControllerPostShell;

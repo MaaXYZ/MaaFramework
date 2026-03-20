@@ -294,11 +294,16 @@ typedef uint64_t MaaAdbInputMethod;
 
 // MaaWin32ScreencapMethod:
 /**
- * @brief Win32 screencap method
+ * @brief Win32 screencap method flags
  *
- * No bitwise OR, select ONE method only.
+ * Use bitwise OR to set the methods you need.
+ * MaaFramework will test all provided methods and use the fastest available one.
  *
  * No default value. Client should choose one as default.
+ *
+ * Predefined combinations:
+ * - Foreground: DXGI_DesktopDup_Window | ScreenDC
+ * - Background: FramePool | PrintWindow
  *
  * Different applications use different rendering methods, there is no universal solution.
  *
@@ -324,6 +329,10 @@ typedef uint64_t MaaWin32ScreencapMethod;
 #define MaaWin32ScreencapMethod_DXGI_DesktopDup_Window (1ULL << 3)
 #define MaaWin32ScreencapMethod_PrintWindow (1ULL << 4)
 #define MaaWin32ScreencapMethod_ScreenDC (1ULL << 5)
+
+#define MaaWin32ScreencapMethod_All (~MaaWin32ScreencapMethod_None)
+#define MaaWin32ScreencapMethod_Foreground (MaaWin32ScreencapMethod_DXGI_DesktopDup_Window | MaaWin32ScreencapMethod_ScreenDC)
+#define MaaWin32ScreencapMethod_Background (MaaWin32ScreencapMethod_FramePool | MaaWin32ScreencapMethod_PrintWindow)
 
 // MaaWin32InputMethod:
 /**
@@ -362,11 +371,42 @@ typedef uint64_t MaaWin32InputMethod;
 #define MaaWin32InputMethod_SendMessage (1ULL << 1)
 #define MaaWin32InputMethod_PostMessage (1ULL << 2)
 #define MaaWin32InputMethod_LegacyEvent (1ULL << 3)
-#define MaaWin32InputMethod_PostThreadMessage (1ULL << 4)
+#define MaaWin32InputMethod_PostThreadMessage (1ULL << 4) // Deprecated
 #define MaaWin32InputMethod_SendMessageWithCursorPos (1ULL << 5)
 #define MaaWin32InputMethod_PostMessageWithCursorPos (1ULL << 6)
 #define MaaWin32InputMethod_SendMessageWithWindowPos (1ULL << 7)
 #define MaaWin32InputMethod_PostMessageWithWindowPos (1ULL << 8)
+
+// MaaMacOSScreencapMethod:
+/**
+ * @brief macOS screencap method
+ *
+ * Select ONE method only.
+ *
+ * | Method          | Description                                    |
+ * |-----------------|------------------------------------------------|
+ * | ScreenCaptureKit| Modern macOS screencap using ScreenCaptureKit  |
+ */
+typedef uint64_t MaaMacOSScreencapMethod;
+#define MaaMacOSScreencapMethod_None 0ULL
+#define MaaMacOSScreencapMethod_ScreenCaptureKit 1ULL
+// TODO Core Graphics method?
+
+// MaaMacOSInputMethod:
+/**
+ * @brief macOS input method
+ *
+ * Select ONE method only.
+ *
+ * | Method          | Description                                    |
+ * |-----------------|------------------------------------------------|
+ * | GlobalEvent     | Injects into the global HID event stream via CGEventPost(kCGHIDEventTap), dispatched by the OS to the front window |
+ * | PostToPid       | Directly send to target process using CGEventPostToPid |
+ */
+typedef uint64_t MaaMacOSInputMethod;
+#define MaaMacOSInputMethod_None 0ULL
+#define MaaMacOSInputMethod_GlobalEvent 1ULL
+#define MaaMacOSInputMethod_PostToPid (1ULL << 1)
 
 // MaaDbgControllerType:
 /**

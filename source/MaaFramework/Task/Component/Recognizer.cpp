@@ -43,7 +43,7 @@ RecoResult Recognizer::recognize(MAA_RES_NS::Recognition::Type type, const MAA_R
 
     if (!tasker_) {
         LogError << "tasker is null";
-        return {};
+        return { };
     }
 
     RecoResult result;
@@ -135,10 +135,14 @@ RecoResult Recognizer::direct_hit(const MAA_VISION_NS::DirectHitParam& param, co
 {
     LogDebug << name;
 
-    std::vector<cv::Rect> rois = get_rois(param.roi_target);
+    auto rois = get_rois(param.roi_target);
+    if (rois.empty()) {
+        LogWarn << "failed to get rois" << VAR(name);
+        return { };
+    }
 
     // DirectHit: 使用第一个 ROI 作为 box
-    cv::Rect box = rois.empty() ? cv::Rect {} : rois.front();
+    cv::Rect box = rois.front();
 
     sub_filtered_boxes_->insert_or_assign(name, rois);
     sub_best_box_->insert_or_assign(name, box);
@@ -155,7 +159,7 @@ template <typename Analyzer>
 RecoResult Recognizer::build_result(const std::string& name, const std::string& algorithm, Analyzer&& analyzer)
 {
     sub_filtered_boxes_->insert_or_assign(name, get_boxes(analyzer.filtered_results()));
-    sub_best_box_->insert_or_assign(name, analyzer.best_result() ? analyzer.best_result()->box : cv::Rect {});
+    sub_best_box_->insert_or_assign(name, analyzer.best_result() ? analyzer.best_result()->box : cv::Rect { });
 
     return RecoResult {
         .reco_id = reco_id_,
@@ -173,10 +177,14 @@ RecoResult Recognizer::template_match(const MAA_VISION_NS::TemplateMatcherParam&
 
     if (image_.empty()) {
         LogError << "Image is empty";
-        return {};
+        return { };
     }
 
-    std::vector<cv::Rect> rois = get_rois(param.roi_target);
+    auto rois = get_rois(param.roi_target);
+    if (rois.empty()) {
+        LogWarn << "failed to get rois" << VAR(name);
+        return { };
+    }
     auto templs = context_.get_images(param.template_);
 
     return build_result(name, "TemplateMatch", TemplateMatcher(image_, rois, param, templs, name));
@@ -188,10 +196,14 @@ RecoResult Recognizer::feature_match(const MAA_VISION_NS::FeatureMatcherParam& p
 
     if (image_.empty()) {
         LogError << "Image is empty";
-        return {};
+        return { };
     }
 
-    std::vector<cv::Rect> rois = get_rois(param.roi_target);
+    auto rois = get_rois(param.roi_target);
+    if (rois.empty()) {
+        LogWarn << "failed to get rois" << VAR(name);
+        return { };
+    }
     auto templs = context_.get_images(param.template_);
 
     return build_result(name, "FeatureMatch", FeatureMatcher(image_, rois, param, templs, name));
@@ -203,10 +215,14 @@ RecoResult Recognizer::color_match(const MAA_VISION_NS::ColorMatcherParam& param
 
     if (image_.empty()) {
         LogError << "Image is empty";
-        return {};
+        return { };
     }
 
-    std::vector<cv::Rect> rois = get_rois(param.roi_target);
+    auto rois = get_rois(param.roi_target);
+    if (rois.empty()) {
+        LogWarn << "failed to get rois" << VAR(name);
+        return { };
+    }
 
     return build_result(name, "ColorMatch", ColorMatcher(image_, rois, param, name));
 }
@@ -217,12 +233,12 @@ RecoResult Recognizer::ocr(const MAA_VISION_NS::OCRerParam& param, const std::st
 
     if (image_.empty()) {
         LogError << "Image is empty";
-        return {};
+        return { };
     }
 
     if (!resource()) {
         LogError << "Resource not bound or status is null" << VAR(resource());
-        return {};
+        return { };
     }
 
     std::optional<ColorFilterConfig> color_filter;
@@ -230,17 +246,21 @@ RecoResult Recognizer::ocr(const MAA_VISION_NS::OCRerParam& param, const std::st
         auto filter_data = context_.get_pipeline_data(param.color_filter);
         if (!filter_data) {
             LogError << "color_filter node not found" << VAR(param.color_filter);
-            return {};
+            return { };
         }
         if (filter_data->reco_type != MAA_RES_NS::Recognition::Type::ColorMatch) {
             LogError << "color_filter node is not ColorMatch" << VAR(param.color_filter);
-            return {};
+            return { };
         }
         const auto& color_param = std::get<ColorMatcherParam>(filter_data->reco_param);
         color_filter = ColorFilterConfig { .method = color_param.method, .range = color_param.range };
     }
 
-    std::vector<cv::Rect> rois = get_rois(param.roi_target);
+    auto rois = get_rois(param.roi_target);
+    if (rois.empty()) {
+        LogWarn << "failed to get rois" << VAR(name);
+        return { };
+    }
 
     if (ocr_batch_cache_ && ocr_batch_cache_->contains(name)) {
         const auto& cached = ocr_batch_cache_->at(name);
@@ -268,15 +288,19 @@ RecoResult Recognizer::nn_classify(const MAA_VISION_NS::NeuralNetworkClassifierP
 
     if (image_.empty()) {
         LogError << "Image is empty";
-        return {};
+        return { };
     }
 
     if (!resource()) {
         LogError << "Resource not bound";
-        return {};
+        return { };
     }
 
-    std::vector<cv::Rect> rois = get_rois(param.roi_target);
+    auto rois = get_rois(param.roi_target);
+    if (rois.empty()) {
+        LogWarn << "failed to get rois" << VAR(name);
+        return { };
+    }
 
     auto& onnx_res = resource()->onnx_res();
 
@@ -292,15 +316,19 @@ RecoResult Recognizer::nn_detect(const MAA_VISION_NS::NeuralNetworkDetectorParam
 
     if (image_.empty()) {
         LogError << "Image is empty";
-        return {};
+        return { };
     }
 
     if (!resource()) {
         LogError << "Resource not bound";
-        return {};
+        return { };
     }
 
-    std::vector<cv::Rect> rois = get_rois(param.roi_target);
+    auto rois = get_rois(param.roi_target);
+    if (rois.empty()) {
+        LogWarn << "failed to get rois" << VAR(name);
+        return { };
+    }
 
     auto& onnx_res = resource()->onnx_res();
 
@@ -316,21 +344,19 @@ RecoResult Recognizer::custom_recognize(const MAA_VISION_NS::CustomRecognitionPa
 
     if (!resource()) {
         LogError << "resource is null";
-        return {};
+        return { };
     }
 
-    std::vector<cv::Rect> rois = get_rois(param.roi_target, true);
+    auto rois = get_rois(param.roi_target, true);
+    if (rois.empty()) {
+        LogWarn << "failed to get rois" << VAR(name);
+        return { };
+    }
 
     return build_result(
         name,
         "Custom",
-        CustomRecognition(
-            image_,
-            rois.empty() ? cv::Rect {} : rois.front(),
-            param,
-            resource()->custom_recognition(param.name),
-            context_,
-            name));
+        CustomRecognition(image_, rois.front(), param, resource()->custom_recognition(param.name), context_, name));
 }
 
 RecoResult Recognizer::and_(const std::shared_ptr<MAA_RES_NS::Recognition::AndParam>& param, const std::string& name)
@@ -339,7 +365,7 @@ RecoResult Recognizer::and_(const std::shared_ptr<MAA_RES_NS::Recognition::AndPa
 
     if (!param) {
         LogError << "AndParam is null";
-        return {};
+        return { };
     }
 
     LogDebug << "And recognition" << VAR(name) << VAR(param->all_of.size()) << VAR(param->box_index);
@@ -392,22 +418,22 @@ RecoResult Recognizer::and_(const std::shared_ptr<MAA_RES_NS::Recognition::AndPa
 
     if (!all_hit) {
         LogDebug << "And recognition failed" << VAR(name);
-        sub_filtered_boxes_->insert_or_assign(name, std::vector<cv::Rect> {});
-        sub_best_box_->insert_or_assign(name, cv::Rect {});
+        sub_filtered_boxes_->insert_or_assign(name, std::vector<cv::Rect> { });
+        sub_best_box_->insert_or_assign(name, cv::Rect { });
         return result;
     }
 
     if (static_cast<int>(sub_results.size()) <= param->box_index) {
         LogError << "all hit, but box_index is out of range" << VAR(name) << VAR(sub_results.size()) << VAR(param->box_index);
         result.box = std::nullopt;
-        sub_filtered_boxes_->insert_or_assign(name, std::vector<cv::Rect> {});
-        sub_best_box_->insert_or_assign(name, cv::Rect {});
+        sub_filtered_boxes_->insert_or_assign(name, std::vector<cv::Rect> { });
+        sub_best_box_->insert_or_assign(name, cv::Rect { });
         return result;
     }
 
     result.box = std::move(sub_results[param->box_index].box);
 
-    cv::Rect final_box = result.box.value_or(cv::Rect {});
+    cv::Rect final_box = result.box.value_or(cv::Rect { });
     // 按理说这里要从 sub 取的，但是太麻烦而且是 corner case，先不管了，后面有需要再加
     sub_filtered_boxes_->insert_or_assign(name, std::vector<cv::Rect> { final_box });
     sub_best_box_->insert_or_assign(name, final_box);
@@ -421,7 +447,7 @@ RecoResult Recognizer::or_(const std::shared_ptr<MAA_RES_NS::Recognition::OrPara
 
     if (!param) {
         LogError << "OrParam is null";
-        return {};
+        return { };
     }
 
     LogDebug << "Or recognition" << VAR(name) << VAR(param->any_of.size());
@@ -473,21 +499,21 @@ RecoResult Recognizer::or_(const std::shared_ptr<MAA_RES_NS::Recognition::OrPara
 
     if (!has_hit) {
         LogDebug << "Or recognition failed" << VAR(name);
-        sub_filtered_boxes_->insert_or_assign(name, std::vector<cv::Rect> {});
-        sub_best_box_->insert_or_assign(name, cv::Rect {});
+        sub_filtered_boxes_->insert_or_assign(name, std::vector<cv::Rect> { });
+        sub_best_box_->insert_or_assign(name, cv::Rect { });
         return result;
     }
 
     if (sub_results.empty()) {
         LogError << "has hit, but no sub results" << VAR(name);
-        sub_filtered_boxes_->insert_or_assign(name, std::vector<cv::Rect> {});
-        sub_best_box_->insert_or_assign(name, cv::Rect {});
-        return {};
+        sub_filtered_boxes_->insert_or_assign(name, std::vector<cv::Rect> { });
+        sub_best_box_->insert_or_assign(name, cv::Rect { });
+        return { };
     }
 
     result.box = std::move(sub_results.back().box);
 
-    cv::Rect final_box = result.box.value_or(cv::Rect {});
+    cv::Rect final_box = result.box.value_or(cv::Rect { });
     // 按理说这里要从 sub 取的，但是太麻烦而且是 corner case，先不管了，后面有需要再加
     sub_filtered_boxes_->insert_or_assign(name, std::vector<cv::Rect> { final_box });
     sub_best_box_->insert_or_assign(name, final_box);
@@ -499,7 +525,7 @@ std::vector<cv::Rect> Recognizer::get_rois(const MAA_VISION_NS::Target& roi, boo
 {
     if (!tasker_) {
         LogError << "tasker is null";
-        return {};
+        return { };
     }
 
     using namespace MAA_VISION_NS;
@@ -509,11 +535,21 @@ std::vector<cv::Rect> Recognizer::get_rois(const MAA_VISION_NS::Target& roi, boo
     switch (roi.type) {
     case Target::Type::Self:
         LogError << "ROI target not support self";
-        return {};
+        return { };
 
     case Target::Type::PreTask:
         results = get_rois_from_pretask(std::get<std::string>(roi.param), use_best);
         break;
+
+    case Target::Type::Anchor: {
+        const auto& anchor_name = std::get<std::string>(roi.param);
+        auto node_name = context_.get_anchor(anchor_name);
+        if (!node_name) {
+            LogWarn << "anchor not set" << VAR(anchor_name);
+            return { };
+        }
+        results = get_rois_from_pretask(*node_name, use_best);
+    } break;
 
     case Target::Type::Region:
         results = { std::get<cv::Rect>(roi.param) };
@@ -521,7 +557,7 @@ std::vector<cv::Rect> Recognizer::get_rois(const MAA_VISION_NS::Target& roi, boo
 
     default:
         LogError << "Unknown target" << VAR(static_cast<int>(roi.type));
-        return {};
+        return { };
     }
 
     for (cv::Rect& res : results) {
@@ -530,7 +566,12 @@ std::vector<cv::Rect> Recognizer::get_rois(const MAA_VISION_NS::Target& roi, boo
         res.width += roi.offset.width;
         res.height += roi.offset.height;
     }
-    return results;
+
+    if (results.empty()) {
+        return { };
+    }
+
+    return MAA_VISION_NS::correct_rois(std::move(results), image_);
 }
 
 std::vector<cv::Rect> Recognizer::get_rois_from_pretask(const std::string& name, bool use_best)
@@ -548,36 +589,26 @@ std::vector<cv::Rect> Recognizer::get_rois_from_pretask(const std::string& name,
         }
     }
 
-    // 回退到 runtime_cache
     auto& cache = tasker_->runtime_cache();
-    MaaNodeId node_id = cache.get_latest_node(name).value_or(MaaInvalidId);
-    NodeDetail node_detail = cache.get_node_detail(node_id).value_or(NodeDetail {});
-    RecoResult reco_result = cache.get_reco_result(node_detail.reco_id).value_or(RecoResult {});
-    cv::Rect raw = reco_result.box.value_or(cv::Rect {});
-    LogDebug << "pre task from cache" << VAR(name) << VAR(raw);
-    return { raw };
+    auto node_id = cache.get_latest_node(name);
+    if (!node_id) {
+        LogWarn << "node not found or not executed" << VAR(name);
+        return { };
+    }
+    NodeDetail node_detail = cache.get_node_detail(*node_id).value_or(NodeDetail { });
+    RecoResult reco_result = cache.get_reco_result(node_detail.reco_id).value_or(RecoResult { });
+    if (!reco_result.box) {
+        LogWarn << "node has no recognition box" << VAR(name);
+        return { };
+    }
+    LogDebug << "pre task from cache" << VAR(name) << VAR(*reco_result.box);
+    return { *reco_result.box };
 }
 
 void Recognizer::save_draws(const std::string& node_name, const RecoResult& result) const
 {
-    const auto& option = MAA_GLOBAL_NS::OptionMgr::get_instance();
-
-    if (!option.save_draw()) {
-        return;
-    }
-
-    auto dir = option.log_dir() / "vision";
-
-    std::filesystem::create_directories(dir);
-
-    for (const auto& draw : result.draws) {
-        std::string filename = std::format("{}_{}_{}.jpg", format_now_for_filename(), node_name, result.reco_id);
-        auto filepath = dir / path(filename);
-
-        std::ofstream of(filepath, std::ios::out | std::ios::binary);
-        of.write(reinterpret_cast<const char*>(draw.data()), draw.size());
-        LogDebug << "save draw to" << filepath;
-    }
+    std::string name = std::format("{}_{}", node_name, result.reco_id);
+    MAA_VISION_NS::VisionBase::save_draws(name, result.draws);
 }
 
 bool Recognizer::debug_mode() const
@@ -609,13 +640,12 @@ void Recognizer::prefetch_batch_ocr(const std::vector<BatchOCREntry>& entries)
 
     std::unordered_map<std::string, std::vector<cv::Rect>> node_rois;
     for (const auto& entry : entries) {
-        for (const cv::Rect& roi : get_rois(entry.param.roi_target)) {
-            auto opt_r = correct_roi(roi, image_);
-            if (!opt_r) {
-                LogWarn << "corrected roi is empty, skip" << VAR(roi);
-                continue;
-            }
-            cv::Rect r = *opt_r;
+        auto entry_rois = get_rois(entry.param.roi_target);
+        if (entry_rois.empty()) {
+            LogWarn << "failed to get rois for batch OCR entry" << VAR(entry.name);
+            continue;
+        }
+        for (const cv::Rect& r : entry_rois) {
             image_(r).copyTo(masked_image(r));
 
             node_rois[entry.name].emplace_back(r);

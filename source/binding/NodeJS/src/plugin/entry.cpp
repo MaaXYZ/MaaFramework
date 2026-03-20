@@ -7,7 +7,7 @@
 #include "../utils/library.h"
 #include "runtime.h"
 
-static QuickJSRuntime* runtime {};
+static QuickJSRuntime* runtime { };
 
 static QuickJSRuntime* getRuntime()
 {
@@ -18,7 +18,7 @@ static QuickJSRuntime* getRuntime()
         auto json_path = folder.append("MaaQjsConfig.json");
         auto config = json::open(json_path).value_or(
             json::object {
-                { "scripts", json::array {} },
+                { "scripts", json::array { } },
             });
         auto scripts = config["scripts"].as_array();
         std::vector<std::string> scriptPaths;

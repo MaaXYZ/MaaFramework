@@ -166,13 +166,6 @@ bool CarouselImage::key_up(int key)
     return true;
 }
 
-bool CarouselImage::scroll(int dx, int dy)
-{
-    std::ignore = dx;
-    std::ignore = dy;
-    return true;
-}
-
 bool CarouselImage::inactive()
 {
     return true;

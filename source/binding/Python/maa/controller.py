@@ -240,6 +240,21 @@ class Controller:
         ctrl_id = Library.framework().MaaControllerPostTouchUp(self._handle, contact)
         return self._gen_ctrl_job(ctrl_id)
 
+    def post_relative_move(self, dx: int, dy: int) -> Job:
+        """异步执行一次相对位移 (当前仅 Win32 controller 支持) / Asynchronously execute a relative movement (Currently only supported by Win32 controller)
+
+        Args:
+            dx: x 方向移动偏移 / x axis offset
+            dy: y 方向移动偏移 / y axis offset
+
+        Returns:
+            Job: 作业对象 / Job object
+        """
+        ctrl_id = Library.framework().MaaControllerPostRelativeMove(
+            self._handle, dx, dy
+        )
+        return self._gen_ctrl_job(ctrl_id)
+
     def post_scroll(self, dx: int, dy: int) -> Job:
         """滚动 / Scroll
 
@@ -251,7 +266,7 @@ class Controller:
             Job: 作业对象 / Job object
 
         Note:
-            不是所有控制器都支持滚动操作 / Not all controllers support scroll operation
+            Win32 控制器和实现了 scroll 的自定义控制器支持滚动操作 / Win32 controllers and custom controllers that implement scroll support this operation
             建议使用 120 的整数倍（WHEEL_DELTA）以获得最佳兼容性 / Using multiples of 120 (WHEEL_DELTA) is recommended
         """
         ctrl_id = Library.framework().MaaControllerPostScroll(self._handle, dx, dy)
@@ -653,6 +668,13 @@ class Controller:
             c_int32,
         ]
 
+        Library.framework().MaaControllerPostRelativeMove.restype = MaaCtrlId
+        Library.framework().MaaControllerPostRelativeMove.argtypes = [
+            MaaControllerHandle,
+            c_int32,
+            c_int32,
+        ]
+
         Library.framework().MaaControllerPostScroll.restype = MaaCtrlId
         Library.framework().MaaControllerPostScroll.argtypes = [
             MaaControllerHandle,
@@ -790,7 +812,7 @@ class Win32Controller(Controller):
     def __init__(
         self,
         hWnd: Union[ctypes.c_void_p, int, None],
-        screencap_method: int = MaaWin32ScreencapMethodEnum.FramePool,
+        screencap_method: int = MaaWin32ScreencapMethodEnum.Background,
         mouse_method: int = MaaWin32InputMethodEnum.Seize,
         keyboard_method: int = MaaWin32InputMethodEnum.Seize,
     ):
@@ -825,6 +847,46 @@ class Win32Controller(Controller):
             MaaWin32ScreencapMethod,
             MaaWin32InputMethod,
             MaaWin32InputMethod,
+        ]
+
+
+class MacOSController(Controller):
+    """MacOS 控制器 / MacOS controller"""
+
+    def __init__(
+        self,
+        window_id: int,
+        screencap_method: int = MaaMacOSScreencapMethodEnum.ScreenCaptureKit,
+        input_method: int = MaaMacOSInputMethodEnum.GlobalEvent,
+    ):
+        """创建 MacOS 控制器 / Create MacOS controller
+
+        Args:
+            window_id: 窗口 ID / window ID
+            screencap_method: 使用的截图方式 / screenshot method used
+            input_method: 使用的输入方式 / input method used
+
+        Raises:
+            RuntimeError: 如果创建失败
+        """
+        super().__init__()
+        self._set_macos_api_properties()
+
+        self._handle = Library.framework().MaaMacOSControllerCreate(
+            window_id,
+            MaaMacOSScreencapMethod(screencap_method),
+            MaaMacOSInputMethod(input_method),
+        )
+
+        if not self._handle:
+            raise RuntimeError("Failed to create MacOS controller.")
+
+    def _set_macos_api_properties(self):
+        Library.framework().MaaMacOSControllerCreate.restype = MaaControllerHandle
+        Library.framework().MaaMacOSControllerCreate.argtypes = [
+            ctypes.c_uint32,
+            MaaMacOSScreencapMethod,
+            MaaMacOSInputMethod,
         ]
 
 

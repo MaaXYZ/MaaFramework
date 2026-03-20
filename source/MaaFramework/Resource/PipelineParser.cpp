@@ -1156,7 +1156,7 @@ bool PipelineParser::parse_action(
     } break;
 
     case Type::StopTask:
-        out_param = {};
+        out_param = { };
         return true;
 
     case Type::Command: {
@@ -1478,10 +1478,7 @@ bool PipelineParser::parse_command_param(const json::value& input, Action::Comma
     return true;
 }
 
-bool PipelineParser::parse_screencap(
-    const json::value& input,
-    Action::ScreencapParam& output,
-    const Action::ScreencapParam& default_value)
+bool PipelineParser::parse_screencap(const json::value& input, Action::ScreencapParam& output, const Action::ScreencapParam& default_value)
 {
     if (!get_and_check_value(input, "filename", output.filename, default_value.filename)) {
         LogError << "failed to get_and_check_value filename" << VAR(input);
@@ -1683,12 +1680,17 @@ bool PipelineParser::parse_target_variant(const json::value& input_target, Targe
         output.type = Target::Type::Self;
     }
     else if (input_target.is_string()) {
-        output.type = Target::Type::PreTask;
-        output.param = input_target.as_string();
+        NodeAttr parsed;
+        if (!parse_node_string_in_next(input_target.as_string(), parsed)) {
+            LogError << "failed to parse target string" << VAR(input_target);
+            return false;
+        }
+        output.type = parsed.anchor ? Target::Type::Anchor : Target::Type::PreTask;
+        output.param = parsed.name;
     }
     else if (input_target.is_array()) {
         output.type = Target::Type::Region;
-        cv::Rect rect {};
+        cv::Rect rect { };
         if (!parse_rect(input_target, rect)) {
             LogError << "Target::Type::Region failed to parse_rect" << VAR(input_target);
             return false;
@@ -1965,13 +1967,13 @@ bool PipelineParser::parse_sub_recognition(
     InlineSubRecognition inline_reco;
 
     Type parent_type = Type::DirectHit;
-    Param parent_param = DirectHitParam {};
+    Param parent_param = DirectHitParam { };
 
     if (!parse_recognition(input, inline_reco.type, inline_reco.param, parent_type, parent_param, default_mgr)) {
         return false;
     }
 
-    if (!get_and_check_value(input, "sub_name", inline_reco.sub_name, std::string {})) {
+    if (!get_and_check_value(input, "sub_name", inline_reco.sub_name, std::string { })) {
         LogError << "failed to get_and_check_value sub_name" << VAR(input);
         return false;
     }
@@ -1995,7 +1997,7 @@ bool PipelineParser::parse_anchor(
         output = default_value;
         return true;
     }
-    output = {};
+    output = { };
     if (opt->is_string()) {
         output[opt->as_string()] = node_name;
     }
