@@ -1117,6 +1117,8 @@ class CustomController(Controller):
             CustomController._c_key_down_agent,
             CustomController._c_key_up_agent,
             CustomController._c_scroll_agent,
+            CustomController._c_relative_move_agent,
+            CustomController._c_shell_agent,
             CustomController._c_inactive_agent,
             CustomController._c_get_info_agent,
         )
@@ -1217,6 +1219,15 @@ class CustomController(Controller):
 
     @abstractmethod
     def scroll(self, dx: int, dy: int) -> bool:
+        raise NotImplementedError
+
+    @abstractmethod
+    def relative_move(self, dx: int, dy: int) -> bool:
+        raise NotImplementedError
+
+    @abstractmethod
+    def shell(self, cmd: str, timeout: int) -> Optional[str]:
+        """Execute shell command. Return output string on success, None on failure."""
         raise NotImplementedError
 
     def inactive(self) -> bool:
@@ -1522,6 +1533,47 @@ class CustomController(Controller):
         ).value
 
         return int(self.scroll(int(c_dx), int(c_dy)))
+
+    @staticmethod
+    @MaaCustomControllerCallbacks.RelativeMoveFunc
+    def _c_relative_move_agent(
+        c_dx: ctypes.c_int32,
+        c_dy: ctypes.c_int32,
+        trans_arg: ctypes.c_void_p,
+    ) -> int:
+        if not trans_arg:
+            return int(False)
+
+        self: CustomController = ctypes.cast(
+            trans_arg,
+            ctypes.py_object,
+        ).value
+
+        return int(self.relative_move(int(c_dx), int(c_dy)))
+
+    @staticmethod
+    @MaaCustomControllerCallbacks.ShellFunc
+    def _c_shell_agent(
+        c_cmd: ctypes.c_char_p,
+        c_timeout: ctypes.c_int64,
+        trans_arg: ctypes.c_void_p,
+        c_buffer: MaaStringBufferHandle,
+    ) -> int:
+        if not trans_arg:
+            return int(False)
+
+        self: CustomController = ctypes.cast(
+            trans_arg,
+            ctypes.py_object,
+        ).value
+
+        result = self.shell(c_cmd.decode(), int(c_timeout))
+        if result is None:
+            return int(False)
+
+        output_buffer = StringBuffer(c_buffer)
+        output_buffer.set(result)
+        return int(True)
 
     @staticmethod
     @MaaCustomControllerCallbacks.InactiveFunc

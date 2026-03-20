@@ -186,13 +186,13 @@ declare global {
             ): Job<CtrlId, Controller>
             post_touch_up(contact: number): Job<CtrlId, Controller>
             /**
-             * Post a relative move action. Currently only supported by Win32 controller.
+             * Post a relative move action. Supported by Win32, MacOS, and custom controllers that implement relative_move.
              */
             post_relative_move(dx: number, dy: number): Job<CtrlId, Controller>
             post_key_down(keycode: number): Job<CtrlId, Controller>
             post_key_up(keycode: number): Job<CtrlId, Controller>
             /**
-             * Post a scroll action. Supported by Win32 controller and custom controllers that implement scroll.
+             * Post a scroll action. Supported by Win32, MacOS, and custom controllers that implement scroll.
              * Using multiples of 120 (WHEEL_DELTA) is recommended for best compatibility.
              */
             post_scroll(dx: number, dy: number): Job<CtrlId, Controller>
@@ -338,6 +338,8 @@ declare global {
             key_down?(keycode: number): maa.MaybePromise<boolean>
             key_up?(keycode: number): maa.MaybePromise<boolean>
             scroll?(dx: number, dy: number): maa.MaybePromise<boolean>
+            relative_move?(dx: number, dy: number): maa.MaybePromise<boolean>
+            shell?(cmd: string, timeout: number): maa.MaybePromise<string | null>
             inactive?(): maa.MaybePromise<boolean>
             get_info?(): maa.MaybePromise<string | null>
         }

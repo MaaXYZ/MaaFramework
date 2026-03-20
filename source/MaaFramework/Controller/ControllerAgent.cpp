@@ -710,13 +710,7 @@ bool ControllerAgent::handle_relative_move(const RelativeMoveParam& param)
         return false;
     }
 
-    if (auto unit = std::dynamic_pointer_cast<MAA_CTRL_UNIT_NS::Win32ControlUnitAPI>(control_unit_)) {
-        return unit->relative_move(param.dx, param.dy);
-    }
-    if (auto unit = std::dynamic_pointer_cast<MAA_CTRL_UNIT_NS::MacOSControlUnitAPI>(control_unit_)) {
-        return unit->relative_move(param.dx, param.dy);
-    }
-    if (auto unit = std::dynamic_pointer_cast<MAA_CTRL_UNIT_NS::FullControlUnitAPI>(control_unit_)) {
+    if (auto unit = std::dynamic_pointer_cast<MAA_CTRL_UNIT_NS::RelativeMovableUnit>(control_unit_)) {
         return unit->relative_move(param.dx, param.dy);
     }
 
@@ -874,16 +868,7 @@ bool ControllerAgent::handle_scroll(const ScrollParam& param)
         LogWarn << "Failed to move to scroll position" << VAR(point);
     }
 
-    if (auto unit = std::dynamic_pointer_cast<MAA_CTRL_UNIT_NS::Win32ControlUnitAPI>(control_unit_)) {
-        return unit->scroll(param.dx, param.dy);
-    }
-    if (auto unit = std::dynamic_pointer_cast<MAA_CTRL_UNIT_NS::MacOSControlUnitAPI>(control_unit_)) {
-        return unit->scroll(param.dx, param.dy);
-    }
-    if (auto unit = std::dynamic_pointer_cast<MAA_CTRL_UNIT_NS::CustomControlUnitAPI>(control_unit_)) {
-        return unit->scroll(param.dx, param.dy);
-    }
-    if (auto unit = std::dynamic_pointer_cast<MAA_CTRL_UNIT_NS::FullControlUnitAPI>(control_unit_)) {
+    if (auto unit = std::dynamic_pointer_cast<MAA_CTRL_UNIT_NS::ScrollableUnit>(control_unit_)) {
         return unit->scroll(param.dx, param.dy);
     }
 
@@ -901,17 +886,13 @@ bool ControllerAgent::handle_shell(const ShellParam& param)
     std::string output;
     auto timeout = param.shell_timeout < 0 ? std::chrono::milliseconds::max() : std::chrono::milliseconds(param.shell_timeout);
 
-    bool ret = false;
-    if (auto unit = std::dynamic_pointer_cast<MAA_CTRL_UNIT_NS::AdbControlUnitAPI>(control_unit_)) {
-        ret = unit->shell(param.cmd, output, timeout);
-    }
-    else if (auto unit = std::dynamic_pointer_cast<MAA_CTRL_UNIT_NS::FullControlUnitAPI>(control_unit_)) {
-        ret = unit->shell(param.cmd, output, timeout);
-    }
-    else {
+    auto unit = std::dynamic_pointer_cast<MAA_CTRL_UNIT_NS::ShellableUnit>(control_unit_);
+    if (!unit) {
         LogError << "Shell is not supported for this controller type";
         return false;
     }
+
+    bool ret = unit->shell(param.cmd, output, timeout);
 
     if (ret) {
         std::unique_lock lock(shell_output_mutex_);

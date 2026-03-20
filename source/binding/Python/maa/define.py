@@ -617,6 +617,19 @@ class MaaCustomControllerCallbacks(ctypes.Structure):
         ctypes.c_int32,
         ctypes.c_void_p,
     )
+    RelativeMoveFunc = FUNCTYPE(
+        MaaBool,
+        ctypes.c_int32,
+        ctypes.c_int32,
+        ctypes.c_void_p,
+    )
+    ShellFunc = FUNCTYPE(
+        MaaBool,
+        ctypes.c_char_p,
+        ctypes.c_int64,
+        ctypes.c_void_p,
+        MaaStringBufferHandle,
+    )
     InactiveFunc = FUNCTYPE(
         MaaBool,
         ctypes.c_void_p,
@@ -644,6 +657,8 @@ class MaaCustomControllerCallbacks(ctypes.Structure):
         ("key_down", KeyDownFunc),
         ("key_up", KeyUpFunc),
         ("scroll", ScrollFunc),
+        ("relative_move", RelativeMoveFunc),
+        ("shell", ShellFunc),
         ("inactive", InactiveFunc),
         ("get_info", GetInfoFunc),
     ]

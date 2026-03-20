@@ -46,40 +46,59 @@ public:
     virtual json::object get_info() const = 0;
 };
 
-class AdbControlUnitAPI : public ControlUnitAPI
+// Capability mixins: optional interfaces that controllers may support
+
+class ScrollableUnit
+{
+public:
+    virtual ~ScrollableUnit() = default;
+
+    virtual bool scroll(int dx, int dy) = 0;
+};
+
+class RelativeMovableUnit
+{
+public:
+    virtual ~RelativeMovableUnit() = default;
+
+    virtual bool relative_move(int dx, int dy) = 0;
+};
+
+class ShellableUnit
+{
+public:
+    virtual ~ShellableUnit() = default;
+
+    virtual bool
+        shell(const std::string& cmd, std::string& output, std::chrono::milliseconds timeout = std::chrono::milliseconds(20000)) = 0;
+};
+
+// Platform-specific APIs, composed from base + capability mixins
+
+class AdbControlUnitAPI : public ControlUnitAPI, public ShellableUnit
 {
 public:
     virtual ~AdbControlUnitAPI() = default;
 
     virtual bool find_device(/*out*/ std::vector<std::string>& devices) = 0;
-    virtual bool
-        shell(const std::string& cmd, std::string& output, std::chrono::milliseconds timeout = std::chrono::milliseconds(20000)) = 0;
 };
 
-class Win32ControlUnitAPI : public ControlUnitAPI
+class Win32ControlUnitAPI : public ControlUnitAPI, public ScrollableUnit, public RelativeMovableUnit
 {
 public:
     virtual ~Win32ControlUnitAPI() = default;
-
-    virtual bool relative_move(int dx, int dy) = 0;
-    virtual bool scroll(int dx, int dy) = 0;
 };
 
-class MacOSControlUnitAPI : public ControlUnitAPI
+class MacOSControlUnitAPI : public ControlUnitAPI, public ScrollableUnit, public RelativeMovableUnit
 {
 public:
     virtual ~MacOSControlUnitAPI() = default;
-
-    virtual bool relative_move(int dx, int dy) = 0;
-    virtual bool scroll(int dx, int dy) = 0;
 };
 
-class CustomControlUnitAPI : public ControlUnitAPI
+class CustomControlUnitAPI : public ControlUnitAPI, public ScrollableUnit, public RelativeMovableUnit, public ShellableUnit
 {
 public:
     virtual ~CustomControlUnitAPI() = default;
-
-    virtual bool scroll(int dx, int dy) = 0;
 };
 
 class GamepadControlUnitAPI : public ControlUnitAPI
@@ -88,15 +107,10 @@ public:
     virtual ~GamepadControlUnitAPI() = default;
 };
 
-class FullControlUnitAPI : public ControlUnitAPI
+class FullControlUnitAPI : public ControlUnitAPI, public ScrollableUnit, public RelativeMovableUnit, public ShellableUnit
 {
 public:
     virtual ~FullControlUnitAPI() = default;
-
-    virtual bool relative_move(int dx, int dy) = 0;
-    virtual bool scroll(int dx, int dy) = 0;
-    virtual bool
-        shell(const std::string& cmd, std::string& output, std::chrono::milliseconds timeout = std::chrono::milliseconds(20000)) = 0;
 };
 
 MAA_CTRL_UNIT_NS_END
