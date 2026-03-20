@@ -164,7 +164,7 @@ bool RecordController::scroll(int dx, int dy)
         if (auto p = std::dynamic_pointer_cast<Win32ControlUnitAPI>(inner_)) return p->scroll(dx, dy);
         if (auto p = std::dynamic_pointer_cast<MacOSControlUnitAPI>(inner_)) return p->scroll(dx, dy);
         if (auto p = std::dynamic_pointer_cast<CustomControlUnitAPI>(inner_)) return p->scroll(dx, dy);
-        if (auto p = std::dynamic_pointer_cast<RecordableControlUnitAPI>(inner_)) return p->scroll(dx, dy);
+        if (auto p = std::dynamic_pointer_cast<FullControlUnitAPI>(inner_)) return p->scroll(dx, dy);
         LogError << "Inner controller does not support scroll";
         return false;
     };
@@ -176,7 +176,7 @@ bool RecordController::relative_move(int dx, int dy)
     auto action = [&]() -> bool {
         if (auto p = std::dynamic_pointer_cast<Win32ControlUnitAPI>(inner_)) return p->relative_move(dx, dy);
         if (auto p = std::dynamic_pointer_cast<MacOSControlUnitAPI>(inner_)) return p->relative_move(dx, dy);
-        if (auto p = std::dynamic_pointer_cast<RecordableControlUnitAPI>(inner_)) return p->relative_move(dx, dy);
+        if (auto p = std::dynamic_pointer_cast<FullControlUnitAPI>(inner_)) return p->relative_move(dx, dy);
         LogError << "Inner controller does not support relative_move";
         return false;
     };
@@ -196,7 +196,7 @@ json::object RecordController::get_info() const
 bool RecordController::shell(const std::string& cmd, std::string& output, std::chrono::milliseconds timeout)
 {
     if (auto p = std::dynamic_pointer_cast<AdbControlUnitAPI>(inner_)) return p->shell(cmd, output, timeout);
-    if (auto p = std::dynamic_pointer_cast<RecordableControlUnitAPI>(inner_)) return p->shell(cmd, output, timeout);
+    if (auto p = std::dynamic_pointer_cast<FullControlUnitAPI>(inner_)) return p->shell(cmd, output, timeout);
     LogError << "Inner controller does not support shell";
     return false;
 }

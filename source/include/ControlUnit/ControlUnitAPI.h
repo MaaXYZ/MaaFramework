@@ -88,10 +88,10 @@ public:
     virtual ~GamepadControlUnitAPI() = default;
 };
 
-class RecordableControlUnitAPI : public ControlUnitAPI
+class FullControlUnitAPI : public ControlUnitAPI
 {
 public:
-    virtual ~RecordableControlUnitAPI() = default;
+    virtual ~FullControlUnitAPI() = default;
 
     virtual bool relative_move(int dx, int dy) = 0;
     virtual bool scroll(int dx, int dy) = 0;
@@ -107,5 +107,5 @@ using MaaWin32ControlUnitHandle = MAA_CTRL_UNIT_NS::Win32ControlUnitAPI*;
 using MaaMacOSControlUnitHandle = MAA_CTRL_UNIT_NS::MacOSControlUnitAPI*;
 using MaaGamepadControlUnitHandle = MAA_CTRL_UNIT_NS::GamepadControlUnitAPI*;
 using MaaCustomControlUnitHandle = MAA_CTRL_UNIT_NS::CustomControlUnitAPI*;
-using MaaReplayControlUnitHandle = MAA_CTRL_UNIT_NS::RecordableControlUnitAPI*;
-using MaaRecordControlUnitHandle = MAA_CTRL_UNIT_NS::RecordableControlUnitAPI*;
+using MaaReplayControlUnitHandle = MAA_CTRL_UNIT_NS::FullControlUnitAPI*;
+using MaaRecordControlUnitHandle = MAA_CTRL_UNIT_NS::FullControlUnitAPI*;

@@ -105,7 +105,7 @@ std::shared_ptr<MAA_CTRL_UNIT_NS::Win32ControlUnitAPI> Win32ControlUnitLibraryHo
     return std::shared_ptr<MAA_CTRL_UNIT_NS::Win32ControlUnitAPI>(control_unit_handle, destroy_control_unit_func);
 }
 
-std::shared_ptr<MAA_CTRL_UNIT_NS::RecordableControlUnitAPI> ReplayControlUnitLibraryHolder::create_control_unit(const char* dump_dir)
+std::shared_ptr<MAA_CTRL_UNIT_NS::FullControlUnitAPI> ReplayControlUnitLibraryHolder::create_control_unit(const char* dump_dir)
 {
     if (!load_library(library_dir() / libname_)) {
         LogError << "Failed to load library" << VAR(library_dir()) << VAR(libname_);
@@ -133,7 +133,7 @@ std::shared_ptr<MAA_CTRL_UNIT_NS::RecordableControlUnitAPI> ReplayControlUnitLib
         return nullptr;
     }
 
-    return std::shared_ptr<MAA_CTRL_UNIT_NS::RecordableControlUnitAPI>(control_unit_handle, destroy_control_unit_func);
+    return std::shared_ptr<MAA_CTRL_UNIT_NS::FullControlUnitAPI>(control_unit_handle, destroy_control_unit_func);
 }
 
 std::shared_ptr<MAA_CTRL_UNIT_NS::CustomControlUnitAPI>
@@ -232,7 +232,7 @@ std::shared_ptr<MAA_CTRL_UNIT_NS::GamepadControlUnitAPI>
     return std::shared_ptr<MAA_CTRL_UNIT_NS::GamepadControlUnitAPI>(control_unit_handle, destroy_control_unit_func);
 }
 
-std::shared_ptr<MAA_CTRL_UNIT_NS::RecordableControlUnitAPI>
+std::shared_ptr<MAA_CTRL_UNIT_NS::FullControlUnitAPI>
     RecordControlUnitLibraryHolder::create_control_unit(std::shared_ptr<MAA_CTRL_UNIT_NS::ControlUnitAPI> inner, const char* dump_dir)
 {
     if (!load_library(library_dir() / libname_)) {
@@ -261,7 +261,7 @@ std::shared_ptr<MAA_CTRL_UNIT_NS::RecordableControlUnitAPI>
         return nullptr;
     }
 
-    return std::shared_ptr<MAA_CTRL_UNIT_NS::RecordableControlUnitAPI>(control_unit_handle, destroy_control_unit_func);
+    return std::shared_ptr<MAA_CTRL_UNIT_NS::FullControlUnitAPI>(control_unit_handle, destroy_control_unit_func);
 }
 
 std::shared_ptr<MAA_CTRL_UNIT_NS::ControlUnitAPI> WlRootsControlUnitLibraryHolder::create_control_unit(const char* wlr_socket_path)

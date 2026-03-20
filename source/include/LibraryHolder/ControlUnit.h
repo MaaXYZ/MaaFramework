@@ -16,7 +16,7 @@ class MacOSControlUnitAPI;
 class GamepadControlUnitAPI;
 class CustomControlUnitAPI;
 class WlRootsControlUnitAPI;
-class RecordableControlUnitAPI;
+class FullControlUnitAPI;
 MAA_CTRL_UNIT_NS_END
 
 MAA_NS_BEGIN
@@ -71,7 +71,7 @@ private:
 class ReplayControlUnitLibraryHolder : public LibraryHolder<ReplayControlUnitLibraryHolder>
 {
 public:
-    static std::shared_ptr<MAA_CTRL_UNIT_NS::RecordableControlUnitAPI> create_control_unit(const char* dump_dir);
+    static std::shared_ptr<MAA_CTRL_UNIT_NS::FullControlUnitAPI> create_control_unit(const char* dump_dir);
 
 private:
     inline static const std::filesystem::path libname_ = MAA_NS::path("MaaReplayControlUnit");
@@ -121,7 +121,7 @@ private:
 class RecordControlUnitLibraryHolder : public LibraryHolder<RecordControlUnitLibraryHolder>
 {
 public:
-    static std::shared_ptr<MAA_CTRL_UNIT_NS::RecordableControlUnitAPI>
+    static std::shared_ptr<MAA_CTRL_UNIT_NS::FullControlUnitAPI>
         create_control_unit(std::shared_ptr<MAA_CTRL_UNIT_NS::ControlUnitAPI> inner, const char* dump_dir);
 
 private:

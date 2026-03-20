@@ -11,7 +11,7 @@
 
 MAA_CTRL_UNIT_NS_BEGIN
 
-class ReplayController : public RecordableControlUnitAPI
+class ReplayController : public FullControlUnitAPI
 {
 public:
     explicit ReplayController(Recording recording);
@@ -45,7 +45,7 @@ public: // from ControlUnitAPI
 
     virtual bool inactive() override;
 
-public: // from RecordableControlUnitAPI
+public: // from FullControlUnitAPI
     virtual bool relative_move(int dx, int dy) override;
     virtual bool scroll(int dx, int dy) override;
     virtual bool
