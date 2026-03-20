@@ -116,9 +116,9 @@ MaaController* MaaCustomControllerCreate(MaaCustomControllerCallbacks* controlle
     return new MAA_CTRL_NS::ControllerAgent(std::move(control_unit));
 }
 
-MaaController* MaaDbgControllerCreate(const char* read_path, const char* write_path, MaaDbgControllerType type, const char* config)
+MaaController* MaaDbgControllerCreate(const char* read_path, const char* write_path, const char* config)
 {
-    LogFunc << VAR(read_path) << VAR(write_path) << VAR(type);
+    LogFunc << VAR(read_path) << VAR(write_path);
 
     if (!read_path) {
         LogError << "read_path is null";
@@ -128,7 +128,7 @@ MaaController* MaaDbgControllerCreate(const char* read_path, const char* write_p
     std::ignore = write_path;
     std::ignore = config;
 
-    auto control_unit = MAA_NS::DbgControlUnitLibraryHolder::create_control_unit(type, read_path);
+    auto control_unit = MAA_NS::DbgControlUnitLibraryHolder::create_control_unit(read_path);
 
     if (!control_unit) {
         LogError << "Failed to create control unit";

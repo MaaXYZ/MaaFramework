@@ -146,7 +146,7 @@ struct PlayCoverControllerImpl : public ControllerImpl
     static void init_proto(maajs::ObjectType proto, maajs::FunctionType ctor);
 };
 
-using DbgControllerCtorParam = std::tuple<std::string, std::string, MaaDbgControllerType, std::string>;
+using DbgControllerCtorParam = std::tuple<std::string, std::string, std::string>;
 
 struct DbgControllerImpl : public ControllerImpl
 {

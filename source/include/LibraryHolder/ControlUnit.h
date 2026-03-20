@@ -70,7 +70,7 @@ private:
 class DbgControlUnitLibraryHolder : public LibraryHolder<DbgControlUnitLibraryHolder>
 {
 public:
-    static std::shared_ptr<MAA_CTRL_UNIT_NS::ControlUnitAPI> create_control_unit(MaaDbgControllerType type, const char* read_path);
+    static std::shared_ptr<MAA_CTRL_UNIT_NS::ControlUnitAPI> create_control_unit(const char* read_path);
 
 private:
     inline static const std::filesystem::path libname_ = MAA_NS::path("MaaDbgControlUnit");

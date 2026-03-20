@@ -8,7 +8,7 @@ bool pipeline_smoking(const std::filesystem::path& testset_dir)
     auto result_path = testset_dir / "debug";
 
     auto controller_handle =
-        MaaDbgControllerCreate(testing_path.string().c_str(), result_path.string().c_str(), MaaDbgControllerType_ReplayRecording, "{}");
+        MaaDbgControllerCreate(testing_path.string().c_str(), result_path.string().c_str(), "{}");
 
     auto ctrl_id = MaaControllerPostConnection(controller_handle);
 

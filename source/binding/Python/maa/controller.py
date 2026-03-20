@@ -967,13 +967,12 @@ class WlRootsController(Controller):
 
 
 class DbgController(Controller):
-    """调试控制器 / Debug controller"""
+    """调试控制器，用于回放录制文件 / Debug controller for replaying recorded operations"""
 
     def __init__(
         self,
         read_path: Union[str, Path],
         write_path: Union[str, Path],
-        dbg_type: int,
         config: Dict[str, Any] = {},
     ):
         """创建调试控制器 / Create debug controller
@@ -981,7 +980,6 @@ class DbgController(Controller):
         Args:
             read_path: 输入路径, 包含通过 Recording 选项记录的操作 / Input path, includes operations recorded via Recording option
             write_path: 输出路径, 包含执行结果 / Output path, includes execution results
-            dbg_type: 控制器模式 / Controller mode
             config: 额外配置 / Extra config
 
         Raises:
@@ -993,7 +991,6 @@ class DbgController(Controller):
         self._handle = Library.framework().MaaDbgControllerCreate(
             str(read_path).encode(),
             str(write_path).encode(),
-            MaaDbgControllerType(dbg_type),
             json.dumps(config, ensure_ascii=False).encode(),
         )
 
@@ -1005,7 +1002,6 @@ class DbgController(Controller):
         Library.framework().MaaDbgControllerCreate.argtypes = [
             ctypes.c_char_p,
             ctypes.c_char_p,
-            MaaDbgControllerType,
             ctypes.c_char_p,
         ]
 

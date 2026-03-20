@@ -43,7 +43,7 @@ from maa.tasker import Tasker
 from maa.toolkit import Toolkit
 from maa.custom_action import CustomAction
 from maa.custom_recognition import CustomRecognition
-from maa.define import MaaDbgControllerTypeEnum, LoggingLevelEnum
+from maa.define import LoggingLevelEnum
 from maa.context import Context
 from maa.pipeline import (
     JPipelineData,
@@ -1387,9 +1387,8 @@ def main():
 
         # 创建 Controller 和 Tasker 进行 Context 级别测试
         dbg_controller = DbgController(
-            install_dir / "test" / "PipelineSmoking" / "Screenshot",
+            install_dir / "test" / "PipelineSmoking" / "MaaRecording.txt",
             install_dir / "test" / "user",
-            MaaDbgControllerTypeEnum.CarouselImage,
         )
         dbg_controller.post_connection().wait()
 

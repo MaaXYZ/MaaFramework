@@ -266,14 +266,13 @@ declare global {
             constructor(
                 read_path: string,
                 write_path: string,
-                type: Uint64, // DbgControllerType
                 config: string,
             )
         }
 
         /**
          * Proxy controller that wraps an existing controller and records all operations.
-         * The recorded files can be replayed using DbgController with ReplayRecording type.
+         * The recorded files can be replayed using DbgController.
          */
         class ProxyController extends Controller {
             constructor(

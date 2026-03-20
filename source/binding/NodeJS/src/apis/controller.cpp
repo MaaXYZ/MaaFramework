@@ -603,8 +603,8 @@ maajs::ValueType load_playcover_controller(maajs::EnvType env)
 
 DbgControllerImpl* DbgControllerImpl::ctor(const maajs::CallbackInfo& info)
 {
-    auto [read_path, write_path, type, config] = maajs::UnWrapArgs<DbgControllerCtorParam, void>(info);
-    auto ctrl = MaaDbgControllerCreate(read_path.c_str(), write_path.c_str(), type, config.c_str());
+    auto [read_path, write_path, config] = maajs::UnWrapArgs<DbgControllerCtorParam, void>(info);
+    auto ctrl = MaaDbgControllerCreate(read_path.c_str(), write_path.c_str(), config.c_str());
     if (!ctrl) {
         return nullptr;
     }

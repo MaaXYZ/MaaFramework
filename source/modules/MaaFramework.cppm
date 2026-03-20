@@ -110,11 +110,6 @@ export constexpr auto _MaaMacOSInputMethod_None = MaaMacOSInputMethod_None;
 export constexpr auto _MaaMacOSInputMethod_GlobalEvent = MaaMacOSInputMethod_GlobalEvent;
 export constexpr auto _MaaMacOSInputMethod_PostToPid = MaaMacOSInputMethod_PostToPid;
 
-export using ::MaaDbgControllerType;
-export constexpr auto _MaaDbgControllerType_None = MaaDbgControllerType_None;
-export constexpr auto _MaaDbgControllerType_CarouselImage = MaaDbgControllerType_CarouselImage;
-export constexpr auto _MaaDbgControllerType_ReplayRecording = MaaDbgControllerType_ReplayRecording;
-
 export using ::MaaGamepadType;
 export constexpr auto _MaaGamepadType_Xbox360 = MaaGamepadType_Xbox360;
 export constexpr auto _MaaGamepadType_DualShock4 = MaaGamepadType_DualShock4;

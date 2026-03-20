@@ -387,9 +387,6 @@ class MaaMacOSInputMethodEnum(IntEnum):
     PostToPid = 1 << 1
 
 # No bitwise OR, just set it
-MaaDbgControllerType = ctypes.c_uint64
-
-# No bitwise OR, just set it
 MaaGamepadType = ctypes.c_uint64
 
 
@@ -482,12 +479,6 @@ class MaaControllerFeatureEnum(IntEnum):
     UseMouseDownAndUpInsteadOfClick = 1
     UseKeyboardDownAndUpInsteadOfClick = 1 << 1
 
-
-class MaaDbgControllerTypeEnum(IntEnum):
-    Null = 0
-
-    CarouselImage = 1
-    ReplayRecording = 1 << 1
 
 
 FUNCTYPE = ctypes.WINFUNCTYPE if (platform.system() == "Windows") else ctypes.CFUNCTYPE

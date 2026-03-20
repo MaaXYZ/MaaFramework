@@ -50,7 +50,7 @@ int main()
 #ifdef WITH_DBG_CONTROLLER
 
     std::cout << "********** DbgControlUnitLibraryHolder::create_control_unit **********" << std::endl;
-    auto dbg_handle = MAA_NS::DbgControlUnitLibraryHolder::create_control_unit(MaaDbgControllerType_CarouselImage, "./");
+    auto dbg_handle = MAA_NS::DbgControlUnitLibraryHolder::create_control_unit("./");
     if (!dbg_handle) {
         std::cerr << "Failed to create dbg control unit" << std::endl;
         return -1;
