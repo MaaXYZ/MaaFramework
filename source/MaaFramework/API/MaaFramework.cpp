@@ -55,7 +55,7 @@ MaaController* MaaWin32ControllerCreate(
 
 #ifndef _WIN32
 
-    LogError << "This API" << __FUNCTION__ << "is only available on Windows";
+    LogError << "This API " << __FUNCTION__ << " is only available on Windows";
     return nullptr;
 
 #else
@@ -75,8 +75,7 @@ MaaController* MaaWin32ControllerCreate(
 #endif
 }
 
-MaaController*
-    MaaMacOSControllerCreate(uint32_t window_id, MaaMacOSScreencapMethod screencap_method, MaaMacOSInputMethod input_method)
+MaaController* MaaMacOSControllerCreate(uint32_t window_id, MaaMacOSScreencapMethod screencap_method, MaaMacOSInputMethod input_method)
 {
     LogFunc << VAR(window_id) << VAR(screencap_method) << VAR(input_method);
 
@@ -169,7 +168,7 @@ MaaController* MaaGamepadControllerCreate(void* hWnd, MaaGamepadType gamepad_typ
 
 #ifndef _WIN32
 
-    LogError << "This API" << __FUNCTION__ << "is only available on Windows";
+    LogError << "This API " << __FUNCTION__ << " is only available on Windows";
     return nullptr;
 
 #else
@@ -191,7 +190,7 @@ MaaController* MaaWlRootsControllerCreate(const char* wlr_socket_path)
 
 #ifndef __linux__
 
-    LogError << "This API" << __FUNCTION__ << "is only available on Linux";
+    LogError << "This API " << __FUNCTION__ << " is only available on Linux";
     return nullptr;
 
 #else
