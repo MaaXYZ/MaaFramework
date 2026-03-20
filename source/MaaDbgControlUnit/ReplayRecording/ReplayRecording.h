@@ -11,7 +11,7 @@
 
 MAA_CTRL_UNIT_NS_BEGIN
 
-class ReplayRecording : public ControlUnitAPI
+class ReplayRecording : public DbgControlUnitAPI
 {
 public:
     explicit ReplayRecording(Recording recording);
@@ -43,10 +43,13 @@ public: // from ControlUnitAPI
     virtual bool key_down(int key) override;
     virtual bool key_up(int key) override;
 
-    virtual bool scroll(int dx, int dy) override;
-    virtual bool relative_move(int dx, int dy) override;
-
     virtual bool inactive() override;
+
+public: // from DbgControlUnitAPI
+    virtual bool relative_move(int dx, int dy) override;
+    virtual bool scroll(int dx, int dy) override;
+    virtual bool
+        shell(const std::string& cmd, std::string& output, std::chrono::milliseconds timeout = std::chrono::milliseconds(20000)) override;
 
     virtual json::object get_info() const override;
 

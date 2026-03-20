@@ -710,7 +710,21 @@ bool ControllerAgent::handle_relative_move(const RelativeMoveParam& param)
         return false;
     }
 
-    return control_unit_->relative_move(param.dx, param.dy);
+    if (auto unit = std::dynamic_pointer_cast<MAA_CTRL_UNIT_NS::Win32ControlUnitAPI>(control_unit_)) {
+        return unit->relative_move(param.dx, param.dy);
+    }
+    if (auto unit = std::dynamic_pointer_cast<MAA_CTRL_UNIT_NS::MacOSControlUnitAPI>(control_unit_)) {
+        return unit->relative_move(param.dx, param.dy);
+    }
+    if (auto unit = std::dynamic_pointer_cast<MAA_CTRL_UNIT_NS::DbgControlUnitAPI>(control_unit_)) {
+        return unit->relative_move(param.dx, param.dy);
+    }
+    if (auto unit = std::dynamic_pointer_cast<MAA_CTRL_UNIT_NS::ProxyControlUnitAPI>(control_unit_)) {
+        return unit->relative_move(param.dx, param.dy);
+    }
+
+    LogError << "Relative move is not supported for this controller type";
+    return false;
 }
 
 bool ControllerAgent::handle_click_key(const ClickKeyParam& param)
@@ -863,7 +877,24 @@ bool ControllerAgent::handle_scroll(const ScrollParam& param)
         LogWarn << "Failed to move to scroll position" << VAR(point);
     }
 
-    return control_unit_->scroll(param.dx, param.dy);
+    if (auto unit = std::dynamic_pointer_cast<MAA_CTRL_UNIT_NS::Win32ControlUnitAPI>(control_unit_)) {
+        return unit->scroll(param.dx, param.dy);
+    }
+    if (auto unit = std::dynamic_pointer_cast<MAA_CTRL_UNIT_NS::MacOSControlUnitAPI>(control_unit_)) {
+        return unit->scroll(param.dx, param.dy);
+    }
+    if (auto unit = std::dynamic_pointer_cast<MAA_CTRL_UNIT_NS::CustomControlUnitAPI>(control_unit_)) {
+        return unit->scroll(param.dx, param.dy);
+    }
+    if (auto unit = std::dynamic_pointer_cast<MAA_CTRL_UNIT_NS::DbgControlUnitAPI>(control_unit_)) {
+        return unit->scroll(param.dx, param.dy);
+    }
+    if (auto unit = std::dynamic_pointer_cast<MAA_CTRL_UNIT_NS::ProxyControlUnitAPI>(control_unit_)) {
+        return unit->scroll(param.dx, param.dy);
+    }
+
+    LogError << "Scroll is not supported for this controller type";
+    return false;
 }
 
 bool ControllerAgent::handle_shell(const ShellParam& param)
@@ -873,16 +904,24 @@ bool ControllerAgent::handle_shell(const ShellParam& param)
         return false;
     }
 
-    auto adb_unit = std::dynamic_pointer_cast<MAA_CTRL_UNIT_NS::AdbControlUnitAPI>(control_unit_);
-    if (!adb_unit) {
-        LogError << "Shell commands are only supported for ADB controllers. Current controller type does not support shell execution.";
+    std::string output;
+    auto timeout = param.shell_timeout < 0 ? std::chrono::milliseconds::max() : std::chrono::milliseconds(param.shell_timeout);
+
+    bool ret = false;
+    if (auto unit = std::dynamic_pointer_cast<MAA_CTRL_UNIT_NS::AdbControlUnitAPI>(control_unit_)) {
+        ret = unit->shell(param.cmd, output, timeout);
+    }
+    else if (auto unit = std::dynamic_pointer_cast<MAA_CTRL_UNIT_NS::DbgControlUnitAPI>(control_unit_)) {
+        ret = unit->shell(param.cmd, output, timeout);
+    }
+    else if (auto unit = std::dynamic_pointer_cast<MAA_CTRL_UNIT_NS::ProxyControlUnitAPI>(control_unit_)) {
+        ret = unit->shell(param.cmd, output, timeout);
+    }
+    else {
+        LogError << "Shell is not supported for this controller type";
         return false;
     }
 
-    std::string output;
-    // shell_timeout < 0 表示无限等待
-    auto timeout = param.shell_timeout < 0 ? std::chrono::milliseconds::max() : std::chrono::milliseconds(param.shell_timeout);
-    bool ret = adb_unit->shell(param.cmd, output, timeout);
     if (ret) {
         std::unique_lock lock(shell_output_mutex_);
         shell_output_ = std::move(output);

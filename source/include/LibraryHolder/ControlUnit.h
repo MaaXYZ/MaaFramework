@@ -16,6 +16,8 @@ class MacOSControlUnitAPI;
 class GamepadControlUnitAPI;
 class CustomControlUnitAPI;
 class WlRootsControlUnitAPI;
+class DbgControlUnitAPI;
+class ProxyControlUnitAPI;
 MAA_CTRL_UNIT_NS_END
 
 MAA_NS_BEGIN
@@ -70,7 +72,7 @@ private:
 class DbgControlUnitLibraryHolder : public LibraryHolder<DbgControlUnitLibraryHolder>
 {
 public:
-    static std::shared_ptr<MAA_CTRL_UNIT_NS::ControlUnitAPI> create_control_unit(const char* read_path);
+    static std::shared_ptr<MAA_CTRL_UNIT_NS::DbgControlUnitAPI> create_control_unit(const char* read_path);
 
 private:
     inline static const std::filesystem::path libname_ = MAA_NS::path("MaaDbgControlUnit");
@@ -120,7 +122,7 @@ private:
 class ProxyControlUnitLibraryHolder : public LibraryHolder<ProxyControlUnitLibraryHolder>
 {
 public:
-    static std::shared_ptr<MAA_CTRL_UNIT_NS::ControlUnitAPI>
+    static std::shared_ptr<MAA_CTRL_UNIT_NS::ProxyControlUnitAPI>
         create_control_unit(std::shared_ptr<MAA_CTRL_UNIT_NS::ControlUnitAPI> inner, const char* dump_dir);
 
 private:

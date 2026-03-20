@@ -11,7 +11,7 @@ const char* MaaProxyControlUnitGetVersion()
     return MAA_VERSION;
 }
 
-MaaControlUnitHandle MaaProxyControlUnitCreate(void* shared_inner, const char* dump_dir)
+MaaProxyControlUnitHandle MaaProxyControlUnitCreate(void* shared_inner, const char* dump_dir)
 {
     LogFunc << VAR_VOIDP(shared_inner) << VAR(dump_dir);
 
@@ -29,7 +29,7 @@ MaaControlUnitHandle MaaProxyControlUnitCreate(void* shared_inner, const char* d
     return new MAA_CTRL_UNIT_NS::ProxyController(inner, MAA_NS::path(dump_dir));
 }
 
-void MaaProxyControlUnitDestroy(MaaControlUnitHandle handle)
+void MaaProxyControlUnitDestroy(MaaProxyControlUnitHandle handle)
 {
     LogFunc << VAR_VOIDP(handle);
 

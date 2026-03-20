@@ -436,6 +436,16 @@ bool ReplayRecording::relative_move(int dx, int dy)
     return record.success;
 }
 
+bool ReplayRecording::shell(const std::string& cmd, std::string& output, std::chrono::milliseconds timeout)
+{
+    std::ignore = cmd;
+    std::ignore = output;
+    std::ignore = timeout;
+
+    LogWarn << "Shell is not supported for debug replay recording";
+    return false;
+}
+
 void ReplayRecording::sleep(int ms)
 {
     LogDebug << VAR(ms);

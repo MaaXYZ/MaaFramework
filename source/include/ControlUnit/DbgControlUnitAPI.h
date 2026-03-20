@@ -9,9 +9,9 @@ extern "C"
 
     MAA_CONTROL_UNIT_API const char* MaaDbgControlUnitGetVersion();
 
-    MAA_CONTROL_UNIT_API MaaControlUnitHandle MaaDbgControlUnitCreate(const char* read_path);
+    MAA_CONTROL_UNIT_API MaaDbgControlUnitHandle MaaDbgControlUnitCreate(const char* read_path);
 
-    MAA_CONTROL_UNIT_API void MaaDbgControlUnitDestroy(MaaControlUnitHandle handle);
+    MAA_CONTROL_UNIT_API void MaaDbgControlUnitDestroy(MaaDbgControlUnitHandle handle);
 
 #ifdef __cplusplus
 }

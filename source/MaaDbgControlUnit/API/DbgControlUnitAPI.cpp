@@ -11,7 +11,7 @@ const char* MaaDbgControlUnitGetVersion()
     return MAA_VERSION;
 }
 
-MaaControlUnitHandle MaaDbgControlUnitCreate(const char* read_path)
+MaaDbgControlUnitHandle MaaDbgControlUnitCreate(const char* read_path)
 {
     LogFunc << VAR(read_path);
 
@@ -27,7 +27,7 @@ MaaControlUnitHandle MaaDbgControlUnitCreate(const char* read_path)
     return handle;
 }
 
-void MaaDbgControlUnitDestroy(MaaControlUnitHandle handle)
+void MaaDbgControlUnitDestroy(MaaDbgControlUnitHandle handle)
 {
     LogFunc << VAR_VOIDP(handle);
 

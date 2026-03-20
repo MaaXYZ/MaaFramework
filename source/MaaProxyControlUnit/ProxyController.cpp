@@ -160,12 +160,29 @@ bool ProxyController::key_up(int key)
 
 bool ProxyController::scroll(int dx, int dy)
 {
-    return forward_and_record(RecordType::scroll, RecordScroll { dx, dy }, [&]() { return inner_->scroll(dx, dy); });
+    auto action = [&]() -> bool {
+        if (auto p = std::dynamic_pointer_cast<Win32ControlUnitAPI>(inner_)) return p->scroll(dx, dy);
+        if (auto p = std::dynamic_pointer_cast<MacOSControlUnitAPI>(inner_)) return p->scroll(dx, dy);
+        if (auto p = std::dynamic_pointer_cast<CustomControlUnitAPI>(inner_)) return p->scroll(dx, dy);
+        if (auto p = std::dynamic_pointer_cast<DbgControlUnitAPI>(inner_)) return p->scroll(dx, dy);
+        if (auto p = std::dynamic_pointer_cast<ProxyControlUnitAPI>(inner_)) return p->scroll(dx, dy);
+        LogError << "Inner controller does not support scroll";
+        return false;
+    };
+    return forward_and_record(RecordType::scroll, RecordScroll { dx, dy }, action);
 }
 
 bool ProxyController::relative_move(int dx, int dy)
 {
-    return forward_and_record(RecordType::relative_move, RecordRelativeMove { dx, dy }, [&]() { return inner_->relative_move(dx, dy); });
+    auto action = [&]() -> bool {
+        if (auto p = std::dynamic_pointer_cast<Win32ControlUnitAPI>(inner_)) return p->relative_move(dx, dy);
+        if (auto p = std::dynamic_pointer_cast<MacOSControlUnitAPI>(inner_)) return p->relative_move(dx, dy);
+        if (auto p = std::dynamic_pointer_cast<DbgControlUnitAPI>(inner_)) return p->relative_move(dx, dy);
+        if (auto p = std::dynamic_pointer_cast<ProxyControlUnitAPI>(inner_)) return p->relative_move(dx, dy);
+        LogError << "Inner controller does not support relative_move";
+        return false;
+    };
+    return forward_and_record(RecordType::relative_move, RecordRelativeMove { dx, dy }, action);
 }
 
 bool ProxyController::inactive()
@@ -178,22 +195,13 @@ json::object ProxyController::get_info() const
     return inner_->get_info();
 }
 
-bool ProxyController::find_device(std::vector<std::string>& devices)
-{
-    auto adb = std::dynamic_pointer_cast<AdbControlUnitAPI>(inner_);
-    if (!adb) {
-        return false;
-    }
-    return adb->find_device(devices);
-}
-
 bool ProxyController::shell(const std::string& cmd, std::string& output, std::chrono::milliseconds timeout)
 {
-    auto adb = std::dynamic_pointer_cast<AdbControlUnitAPI>(inner_);
-    if (!adb) {
-        return false;
-    }
-    return adb->shell(cmd, output, timeout);
+    if (auto p = std::dynamic_pointer_cast<AdbControlUnitAPI>(inner_)) return p->shell(cmd, output, timeout);
+    if (auto p = std::dynamic_pointer_cast<DbgControlUnitAPI>(inner_)) return p->shell(cmd, output, timeout);
+    if (auto p = std::dynamic_pointer_cast<ProxyControlUnitAPI>(inner_)) return p->shell(cmd, output, timeout);
+    LogError << "Inner controller does not support shell";
+    return false;
 }
 
 void ProxyController::write_record(const json::value& record)
