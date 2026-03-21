@@ -40,13 +40,13 @@ if str(binding_dir) not in sys.path:
 
 from maa.library import Library
 from maa.resource import Resource, ResourceEventSink
-from maa.controller import DbgController, CustomController, Win32Controller, ControllerEventSink
+from maa.controller import ReplayController, CustomController, Win32Controller, ControllerEventSink
 from maa.tasker import Tasker, TaskerEventSink
 from maa.toolkit import Toolkit
 from maa.custom_action import CustomAction
 from maa.custom_recognition import CustomRecognition
 from maa.buffer import ImageBuffer
-from maa.define import MaaDbgControllerTypeEnum, LoggingLevelEnum
+from maa.define import LoggingLevelEnum
 from maa.context import Context, ContextEventSink
 from maa.event_sink import EventSink
 from maa.pipeline import JRecognitionType, JActionType, JOCR, JClick
@@ -366,35 +366,33 @@ def test_resource_api():
 def test_controller_api():
     print("\n=== test_controller_api ===")
 
-    dbg_controller = DbgController(
-        install_dir / "test" / "PipelineSmoking" / "Screenshot",
-        install_dir / "test" / "user",
-        MaaDbgControllerTypeEnum.CarouselImage,
+    replay_controller = ReplayController(
+        install_dir / "test" / "PipelineSmoking",
     )
-    print(f"  controller: {dbg_controller}")
+    print(f"  controller: {replay_controller}")
 
     # 测试事件监听器
     sink = MyControllerEventSink()
-    sink_id = dbg_controller.add_sink(sink)
+    sink_id = replay_controller.add_sink(sink)
     print(f"  sink_id: {sink_id}")
 
     # 连接
-    dbg_controller.post_connection().wait()
-    print(f"  connected: {dbg_controller.connected}")
-    print(f"  uuid: {dbg_controller.uuid}")
+    replay_controller.post_connection().wait()
+    print(f"  connected: {replay_controller.connected}")
+    print(f"  uuid: {replay_controller.uuid}")
 
     # 测试截图
-    screencap_job = dbg_controller.post_screencap().wait()
+    screencap_job = replay_controller.post_screencap().wait()
     assert screencap_job.succeeded, "screencap should succeed"
     image = screencap_job.get()
     print(f"  screencap shape: {image.shape}")
 
     # 测试 cached_image
-    cached = dbg_controller.cached_image
+    cached = replay_controller.cached_image
     print(f"  cached_image shape: {cached.shape}")
 
     # 测试 resolution (需要在首次截图后才能获取有效值)
-    resolution = dbg_controller.resolution
+    resolution = replay_controller.resolution
     print(f"  resolution: {resolution}")
     assert isinstance(resolution, tuple), "resolution should be a tuple"
     assert len(resolution) == 2, "resolution should have 2 elements"
@@ -402,44 +400,42 @@ def test_controller_api():
     assert isinstance(resolution[1], int), "resolution height should be int"
 
     # 测试 info
-    info = dbg_controller.info
+    info = replay_controller.info
     print(f"  info: {info}")
     assert isinstance(info, dict), "info should be a dict"
     assert "type" in info, "info should contain 'type'"
-    assert info["type"].startswith(
-        "dbg_"
-    ), "dbg controller type should start with 'dbg_'"
+    assert info["type"] == "replay", "replay controller type should be 'replay'"
 
     # 测试输入操作
-    dbg_controller.post_click(100, 100).wait()
-    dbg_controller.post_swipe(100, 100, 200, 200, 100).wait()
-    dbg_controller.post_click_key(32).wait()
-    dbg_controller.post_key_down(65).wait()
-    dbg_controller.post_key_up(65).wait()
-    dbg_controller.post_input_text("test").wait()
-    dbg_controller.post_touch_down(0, 100, 100, 0).wait()
-    dbg_controller.post_touch_move(0, 150, 150, 0).wait()
-    dbg_controller.post_touch_up(0).wait()
-    assert not dbg_controller.post_scroll(0, 120).wait().succeeded, (
-        "dbg controller scroll should fail"
+    replay_controller.post_click(100, 100).wait()
+    replay_controller.post_swipe(100, 100, 200, 200, 100).wait()
+    replay_controller.post_click_key(32).wait()
+    replay_controller.post_key_down(65).wait()
+    replay_controller.post_key_up(65).wait()
+    replay_controller.post_input_text("test").wait()
+    replay_controller.post_touch_down(0, 100, 100, 0).wait()
+    replay_controller.post_touch_move(0, 150, 150, 0).wait()
+    replay_controller.post_touch_up(0).wait()
+    assert not replay_controller.post_scroll(0, 120).wait().succeeded, (
+        "replay controller scroll should fail"
     )
-    dbg_controller.post_start_app("com.test.app").wait()
-    dbg_controller.post_stop_app("com.test.app").wait()
-    dbg_controller.post_inactive().wait()
+    replay_controller.post_start_app("com.test.app").wait()
+    replay_controller.post_stop_app("com.test.app").wait()
+    replay_controller.post_inactive().wait()
 
     # 测试截图选项
-    dbg_controller.set_screenshot_target_long_side(1920)
-    dbg_controller.set_screenshot_target_short_side(1080)
-    dbg_controller.set_screenshot_use_raw_size(False)
+    replay_controller.set_screenshot_target_long_side(1920)
+    replay_controller.set_screenshot_target_short_side(1080)
+    replay_controller.set_screenshot_use_raw_size(False)
 
     # 测试 remove_sink 和 clear_sinks
     assert sink_id is not None, "sink_id should not be None"
-    dbg_controller.remove_sink(sink_id)
-    dbg_controller.add_sink(MyControllerEventSink())
-    dbg_controller.clear_sinks()
+    replay_controller.remove_sink(sink_id)
+    replay_controller.add_sink(MyControllerEventSink())
+    replay_controller.clear_sinks()
 
     print("  PASS: controller API")
-    return dbg_controller
+    return replay_controller
 
 
 # ============================================================================
@@ -469,7 +465,7 @@ def test_buffer_api():
 # ============================================================================
 
 
-def test_tasker_api(resource: Resource, controller: DbgController):
+def test_tasker_api(resource: Resource, controller: ReplayController):
     print("\n=== test_tasker_api ===")
 
     # 测试全局选项 (静态方法)

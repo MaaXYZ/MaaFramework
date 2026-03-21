@@ -28,12 +28,16 @@ if(WITH_MACOS_CONTROLLER)
     add_dependencies(MaaFramework MaaMacOSControlUnit)
 endif()
 
-if(WITH_DBG_CONTROLLER)
-    add_dependencies(MaaFramework MaaDbgControlUnit)
+if(WITH_REPLAY_CONTROLLER)
+    add_dependencies(MaaFramework MaaReplayControlUnit)
 endif()
 
 if(WITH_CUSTOM_CONTROLLER)
     add_dependencies(LibraryHolder MaaCustomControlUnit)
+endif()
+
+if(WITH_RECORD_CONTROLLER)
+    add_dependencies(MaaFramework MaaRecordControlUnit)
 endif()
 
 # 提供一个仅包含include而不链接的target, 方便处理client/server通用代码

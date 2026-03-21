@@ -28,7 +28,7 @@ if str(binding_dir) not in sys.path:
 
 from maa.library import Library
 from maa.resource import Resource
-from maa.controller import DbgController, MaaDbgControllerTypeEnum
+from maa.controller import ReplayController
 from maa.tasker import Tasker
 from maa.agent_client import AgentClient
 from maa.toolkit import Toolkit
@@ -47,16 +47,14 @@ def api_test():
     ).wait()
     print(f"resource.loaded: {resource.loaded}")
 
-    dbg_controller = DbgController(
-        install_dir / "test" / "PipelineSmoking" / "Screenshot",
-        install_dir / "test" / "user",
-        MaaDbgControllerTypeEnum.CarouselImage,
+    replay_controller = ReplayController(
+        install_dir / "test" / "PipelineSmoking",
     )
-    print(f"controller: {dbg_controller}")
-    dbg_controller.post_connection().wait()
+    print(f"controller: {replay_controller}")
+    replay_controller.post_connection().wait()
 
     tasker = Tasker()
-    tasker.bind(resource, dbg_controller)
+    tasker.bind(resource, replay_controller)
     print(f"tasker: {tasker}")
 
     if not tasker.inited:
@@ -83,7 +81,7 @@ def api_test():
     print("agent.bind(resource) succeeded")
 
     # 测试 register_sink
-    if not agent.register_sink(resource, dbg_controller, tasker):
+    if not agent.register_sink(resource, replay_controller, tasker):
         print("failed to register sink")
         exit(1)
     print("agent.register_sink() succeeded")

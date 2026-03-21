@@ -408,15 +408,6 @@ typedef uint64_t MaaMacOSInputMethod;
 #define MaaMacOSInputMethod_GlobalEvent 1ULL
 #define MaaMacOSInputMethod_PostToPid (1ULL << 1)
 
-// MaaDbgControllerType:
-/**
- * No bitwise OR, just set it
- */
-typedef uint64_t MaaDbgControllerType;
-#define MaaDbgControllerType_None 0
-#define MaaDbgControllerType_CarouselImage 1ULL
-#define MaaDbgControllerType_ReplayRecording (1ULL << 1)
-
 // MaaGamepadType:
 /**
  * @brief Virtual gamepad type

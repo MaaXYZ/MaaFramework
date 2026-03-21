@@ -38,12 +38,12 @@ if str(binding_dir) not in sys.path:
 
 from maa.library import Library
 from maa.resource import Resource
-from maa.controller import DbgController
+from maa.controller import ReplayController
 from maa.tasker import Tasker
 from maa.toolkit import Toolkit
 from maa.custom_action import CustomAction
 from maa.custom_recognition import CustomRecognition
-from maa.define import MaaDbgControllerTypeEnum, LoggingLevelEnum
+from maa.define import LoggingLevelEnum
 from maa.context import Context
 from maa.pipeline import (
     JPipelineData,
@@ -1386,15 +1386,13 @@ def main():
         test_resource_node_list(resource)
 
         # 创建 Controller 和 Tasker 进行 Context 级别测试
-        dbg_controller = DbgController(
-            install_dir / "test" / "PipelineSmoking" / "Screenshot",
-            install_dir / "test" / "user",
-            MaaDbgControllerTypeEnum.CarouselImage,
+        replay_controller = ReplayController(
+            install_dir / "test" / "PipelineSmoking",
         )
-        dbg_controller.post_connection().wait()
+        replay_controller.post_connection().wait()
 
         tasker = Tasker()
-        tasker.bind(resource, dbg_controller)
+        tasker.bind(resource, replay_controller)
 
         if not tasker.inited:
             print("Failed to init tasker")

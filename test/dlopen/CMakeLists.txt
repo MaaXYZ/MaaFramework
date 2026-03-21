@@ -28,8 +28,8 @@ if(WITH_PLAYCOVER_CONTROLLER)
     target_compile_definitions(DlopenTesting PRIVATE WITH_PLAYCOVER_CONTROLLER)
 endif()
 
-if(WITH_DBG_CONTROLLER)
-    target_compile_definitions(DlopenTesting PRIVATE WITH_DBG_CONTROLLER)
+if(WITH_REPLAY_CONTROLLER)
+    target_compile_definitions(DlopenTesting PRIVATE WITH_REPLAY_CONTROLLER)
 endif()
 
 if(WITH_CUSTOM_CONTROLLER)
