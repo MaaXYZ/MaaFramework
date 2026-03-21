@@ -319,16 +319,16 @@ bool WaylandClient::input_key(EventPhase phase, int key)
     const int locked_modifier = WaylandHelper::locked_key_modifiers(key);
     if (depressed_modifier != 0 || locked_modifier != 0) {
         switch (phase) {
-            case EventPhase::Began:
-                current_depressed_modifiers_ |= depressed_modifier;
-                current_locked_modifiers_ ^= locked_modifier;
-                break;
-            case EventPhase::Moved:
-                break;
-            case EventPhase::Ended:
-                current_depressed_modifiers_ &= ~depressed_modifier;
-                break;
-            default:;
+        case EventPhase::Began:
+            current_depressed_modifiers_ |= depressed_modifier;
+            current_locked_modifiers_ ^= locked_modifier;
+            break;
+        case EventPhase::Moved:
+            break;
+        case EventPhase::Ended:
+            current_depressed_modifiers_ &= ~depressed_modifier;
+            break;
+        default:;
         }
         zwp_virtual_keyboard_v1_modifiers(keyboard_.get(), current_depressed_modifiers_, 0, current_locked_modifiers_, 0);
         return process_requests();

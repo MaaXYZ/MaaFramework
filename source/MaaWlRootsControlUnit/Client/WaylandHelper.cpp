@@ -42,37 +42,39 @@ void WaylandHelper::randname(std::string& name)
     }
 }
 
-int WaylandHelper::depressed_key_modifiers(int key) {
+int WaylandHelper::depressed_key_modifiers(int key)
+{
     switch (key) {
-        case KEY_LEFTSHIFT:
-        case KEY_RIGHTSHIFT:
-            return 1;
-        case KEY_CAPSLOCK:
-            return 2;
-        case KEY_LEFTCTRL:
-        case KEY_RIGHTCTRL:
-            return 4;
-        case KEY_LEFTALT:
-        case KEY_RIGHTALT:
-            return 8; // Mod1
-        case KEY_NUMLOCK:
-            return 16; // Mod2
-        case KEY_LEFTMETA:
-        case KEY_RIGHTMETA:
-            return 64; // Mod4
-        default:
-            return 0;
+    case KEY_LEFTSHIFT:
+    case KEY_RIGHTSHIFT:
+        return 1;
+    case KEY_CAPSLOCK:
+        return 2;
+    case KEY_LEFTCTRL:
+    case KEY_RIGHTCTRL:
+        return 4;
+    case KEY_LEFTALT:
+    case KEY_RIGHTALT:
+        return 8;  // Mod1
+    case KEY_NUMLOCK:
+        return 16; // Mod2
+    case KEY_LEFTMETA:
+    case KEY_RIGHTMETA:
+        return 64; // Mod4
+    default:
+        return 0;
     }
 }
 
-int WaylandHelper::locked_key_modifiers(int key) {
+int WaylandHelper::locked_key_modifiers(int key)
+{
     switch (key) {
-        case KEY_CAPSLOCK:
-            return 2;
-        case KEY_NUMLOCK:
-            return 16; // Mod2
-        default:
-            return 0;
+    case KEY_CAPSLOCK:
+        return 2;
+    case KEY_NUMLOCK:
+        return 16; // Mod2
+    default:
+        return 0;
     }
 }
 
