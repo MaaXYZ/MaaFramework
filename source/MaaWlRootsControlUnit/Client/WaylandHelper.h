@@ -41,6 +41,8 @@ public:
     }
 
     static void randname(std::string& name);
+    static int depressed_key_modifiers(int key);
+    static int locked_key_modifiers(int key);
 };
 
 MAA_CTRL_UNIT_NS_END
