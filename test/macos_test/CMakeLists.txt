@@ -1,5 +1,4 @@
 add_executable(macos_test
-    MacOSPermission.h MacOSPermission.mm
     MacOSTestGUI.h MacOSTestGUI.mm
     main.cpp
 )
