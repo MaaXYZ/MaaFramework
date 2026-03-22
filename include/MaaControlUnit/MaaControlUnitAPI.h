@@ -6,6 +6,7 @@
 #include "RecordTypes.h"
 
 #include "AdbControlUnitAPI.h"
+#include "AndroidNativeControlUnitAPI.h"
 #include "CustomControlUnitAPI.h"
 #include "DbgControlUnitAPI.h"
 #include "GamepadControlUnitAPI.h"
