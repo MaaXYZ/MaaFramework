@@ -122,8 +122,8 @@ bool AndroidNativeControlUnitMgr::screencap(cv::Mat& image)
         return false;
     }
 
-    cv::Mat rgba(static_cast<int>(info.height), static_cast<int>(info.width), CV_8UC4, info.data, info.stride);
-    cv::cvtColor(rgba, image, cv::COLOR_RGBA2BGR);
+    cv::Mat bgr(static_cast<int>(info.height), static_cast<int>(info.width), CV_8UC3, info.data, info.stride);
+    image = bgr.clone();
 
     frame_width_ = static_cast<int>(info.width);
     frame_height_ = static_cast<int>(info.height);
