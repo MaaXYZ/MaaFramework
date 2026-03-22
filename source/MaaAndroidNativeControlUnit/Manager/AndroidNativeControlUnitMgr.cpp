@@ -366,7 +366,7 @@ json::object AndroidNativeControlUnitMgr::get_info() const
     return info;
 }
 
-bool AndroidNativeControlUnitMgr::validate_contact(int contact) const
+bool AndroidNativeControlUnitMgr::validate_contact(int contact)
 {
     if (contact == 0) {
         return true;
@@ -425,6 +425,26 @@ int AndroidNativeControlUnitMgr::map_axis(int raw_value, int frame_size, int tou
 
     const auto mapped = static_cast<int>(std::lround(static_cast<double>(raw_value) * touch_size / frame_size));
     return std::clamp(mapped, 0, std::max(0, touch_size - 1));
+}
+
+void* AndroidNativeControlUnitMgr::attach_thread() const
+{
+    if (!connected()) {
+        LogError << "controller is not connected";
+        return nullptr;
+    }
+
+    return library_.AttachThread();
+}
+
+int AndroidNativeControlUnitMgr::detach_thread(void* env) const
+{
+    if (!connected()) {
+        LogError << "controller is not connected";
+        return -1;
+    }
+
+    return library_.DetachThread(env);
 }
 
 MAA_CTRL_UNIT_NS_END

@@ -58,8 +58,12 @@ public: // from ControlUnitAPI
 
     json::object get_info() const override;
 
+public: // JNI thread management (non-virtual, exposed via C API)
+    void* attach_thread() const;
+    int detach_thread(void* env) const;
+
 private:
-    bool validate_contact(int contact) const;
+    static bool validate_contact(int contact);
     bool dispatch_input_message(AndroidNativeNS::MethodParam param) const;
     bool map_touch_point(int raw_x, int raw_y, cv::Point& mapped) const;
     cv::Point get_touch_up_point(int contact) const;

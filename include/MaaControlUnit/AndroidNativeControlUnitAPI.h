@@ -14,6 +14,10 @@ extern "C"
 
     MAA_CONTROL_UNIT_API void MaaAndroidNativeControlUnitDestroy(MaaAndroidNativeControlUnitHandle handle);
 
+    MAA_CONTROL_UNIT_API void* MaaAndroidNativeControlUnitAttachThread(MaaAndroidNativeControlUnitHandle handle);
+
+    MAA_CONTROL_UNIT_API int MaaAndroidNativeControlUnitDetachThread(MaaAndroidNativeControlUnitHandle handle, void* env);
+
 #ifdef __cplusplus
 }
 #endif

@@ -111,8 +111,37 @@ MaaAndroidNativeControlUnitHandle MaaAndroidNativeControlUnitCreate(const char* 
 void MaaAndroidNativeControlUnitDestroy(MaaAndroidNativeControlUnitHandle handle)
 {
     LogFunc << VAR_VOIDP(handle);
+    delete handle;
+}
 
-    if (handle) {
-        delete handle;
+void* MaaAndroidNativeControlUnitAttachThread(MaaAndroidNativeControlUnitHandle handle)
+{
+    if (!handle) {
+        LogError << "handle is null";
+        return nullptr;
     }
+
+    auto* mgr = dynamic_cast<MAA_CTRL_UNIT_NS::AndroidNativeControlUnitMgr*>(handle);
+    if (!mgr) {
+        LogError << "handle is not AndroidNativeControlUnitMgr";
+        return nullptr;
+    }
+
+    return mgr->attach_thread();
+}
+
+int MaaAndroidNativeControlUnitDetachThread(MaaAndroidNativeControlUnitHandle handle, void* env)
+{
+    if (!handle) {
+        LogError << "handle is null";
+        return -1;
+    }
+
+    auto* mgr = dynamic_cast<MAA_CTRL_UNIT_NS::AndroidNativeControlUnitMgr*>(handle);
+    if (!mgr) {
+        LogError << "handle is not AndroidNativeControlUnitMgr";
+        return -1;
+    }
+
+    return mgr->detach_thread(env);
 }
