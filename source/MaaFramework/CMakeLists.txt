@@ -36,6 +36,10 @@ if(WITH_REPLAY_CONTROLLER)
     add_dependencies(MaaFramework MaaReplayControlUnit)
 endif()
 
+if(WITH_ANDROID_NATIVE_CONTROLLER)
+    add_dependencies(MaaFramework MaaAndroidNativeControlUnit)
+endif()
+
 if(WITH_CUSTOM_CONTROLLER)
     add_dependencies(LibraryHolder MaaCustomControlUnit)
 endif()

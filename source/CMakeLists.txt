@@ -10,6 +10,10 @@ if(WITH_MACOS_CONTROLLER)
     add_subdirectory(MaaMacOSControlUnit)
 endif()
 
+if(WITH_ANDROID_NATIVE_CONTROLLER)
+    add_subdirectory(MaaAndroidNativeControlUnit)
+endif()
+
 if(WITH_DBG_CONTROLLER)
     add_subdirectory(MaaDbgControlUnit)
 endif()
