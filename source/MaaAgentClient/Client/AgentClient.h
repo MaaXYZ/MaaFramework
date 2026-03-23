@@ -108,6 +108,7 @@ private:
     bool handle_controller_post_touch_down(const json::value& j);
     bool handle_controller_post_touch_move(const json::value& j);
     bool handle_controller_post_relative_move(const json::value& j);
+    bool handle_controller_post_mouse_lock_follow(const json::value& j);
     bool handle_controller_post_touch_up(const json::value& j);
     bool handle_controller_post_key_down(const json::value& j);
     bool handle_controller_post_key_up(const json::value& j);

@@ -30,6 +30,8 @@ public:
 
     virtual MaaCtrlId post_relative_move(int dx, int dy) override;
 
+    virtual MaaCtrlId post_mouse_lock_follow(bool enabled) override;
+
     virtual MaaCtrlId post_key_down(int keycode) override;
     virtual MaaCtrlId post_key_up(int keycode) override;
 

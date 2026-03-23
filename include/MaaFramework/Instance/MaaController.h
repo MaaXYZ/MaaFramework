@@ -193,6 +193,21 @@ extern "C"
 
     MAA_FRAMEWORK_API MaaCtrlId MaaControllerPostRelativeMove(MaaController* ctrl, int32_t dx, int32_t dy);
 
+    /**
+     * @brief Toggle mouse-lock-follow mode on Win32 controllers.
+     *
+     * @param ctrl The controller handle.
+     * @param enabled MaaTrue to enable, MaaFalse to disable.
+     * @return The control id of the action.
+     *
+     * @note This is designed for TPS/FPS games that lock the mouse to their window in the background.
+     *       When enabled, the window follows the real mouse cursor, a low-level hook intercepts hardware
+     *       mouse movement, and RawInput counter-moves prevent the game from sensing the physical delta.
+     *       Use MaaControllerPostRelativeMove to inject intentional camera rotation while this mode is active.
+     * @note Only valid for Win32 controllers using message-based input methods (SendMessage / PostMessage variants).
+     */
+    MAA_FRAMEWORK_API MaaCtrlId MaaControllerPostMouseLockFollow(MaaController* ctrl, MaaBool enabled);
+
     MAA_FRAMEWORK_API MaaCtrlId MaaControllerPostKeyDown(MaaController* ctrl, int32_t keycode);
 
     MAA_FRAMEWORK_API MaaCtrlId MaaControllerPostKeyUp(MaaController* ctrl, int32_t keycode);

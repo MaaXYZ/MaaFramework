@@ -189,6 +189,11 @@ declare global {
              * Post a relative move action. Supported by Win32, MacOS, and custom controllers that implement relative_move.
              */
             post_relative_move(dx: number, dy: number): Job<CtrlId, Controller>
+            /**
+             * Toggle mouse lock follow mode. For TPS/FPS games that lock the mouse in the background.
+             * Only supported by Win32 controllers using message-based input methods.
+             */
+            post_mouse_lock_follow(enabled: boolean): Job<CtrlId, Controller>
             post_key_down(keycode: number): Job<CtrlId, Controller>
             post_key_up(keycode: number): Job<CtrlId, Controller>
             /**

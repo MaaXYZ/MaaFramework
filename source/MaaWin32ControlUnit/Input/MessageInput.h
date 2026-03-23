@@ -11,7 +11,7 @@
 
 MAA_CTRL_UNIT_NS_BEGIN
 
-class MessageInput : public InputBase
+class MessageInput : public RelativeMoveInput
 {
 public:
     enum class Mode
@@ -52,6 +52,11 @@ public: // from InputBase
     virtual bool scroll(int dx, int dy) override;
 
     virtual void inactive() override;
+
+    virtual bool relative_move(int dx, int dy) override;
+
+public: // mouse lock follow
+    bool set_mouse_lock_follow(bool enabled);
 
 private:
     using TrackingClock = std::chrono::steady_clock;
@@ -128,6 +133,32 @@ private:
     RECT saved_window_rect_ = { 0, 0, 0, 0 };
     // 保留首次进入 WithWindowPos 会话前的窗口位置，避免一连串触摸操作反复覆盖原始锚点。
     bool window_pos_saved_ = false;
+
+    // ======================== MouseLockFollow ========================
+    // 用于 TPS/FPS 游戏后台锁鼠标场景：窗口始终跟随鼠标，RawInput 对冲阻止游戏感知硬件移动。
+
+    void activate_mouse_lock_follow();
+    void deactivate_mouse_lock_follow();
+    void ensure_tracking_thread();
+    void process_mouse_lock_follow_frame();
+
+    // RawInput 对冲
+    bool create_rawinput_window();
+    void destroy_rawinput_window();
+    void send_counter_move(int raw_dx, int raw_dy);
+    static LRESULT CALLBACK RawInputWndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
+    HWND rawinput_hwnd_ = nullptr;
+    std::atomic_int counter_pending_ = 0;
+
+    // 模式状态
+    bool mouse_lock_follow_active_ = false;
+    bool tracking_thread_started_for_lock_follow_ = false;
+
+    // 绝对定位锚点
+    POINT lock_anchor_cursor_ = {};
+    RECT lock_anchor_window_ = {};
+    int lock_offset_x_ = 0;
+    int lock_offset_y_ = 0;
 };
 
 MAA_CTRL_UNIT_NS_END

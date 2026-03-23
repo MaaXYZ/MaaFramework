@@ -177,6 +177,7 @@ export using ::MaaControllerPostTouchDown;
 export using ::MaaControllerPostTouchMove;
 export using ::MaaControllerPostTouchUp;
 export using ::MaaControllerPostRelativeMove;
+export using ::MaaControllerPostMouseLockFollow;
 export using ::MaaControllerPostScreencap;
 export using ::MaaControllerPostScroll;
 export using ::MaaControllerPostShell;

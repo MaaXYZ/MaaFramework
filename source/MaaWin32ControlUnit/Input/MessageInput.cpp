@@ -24,6 +24,9 @@ MessageInput::MessageInput(HWND hwnd, Config config)
 
 MessageInput::~MessageInput()
 {
+    if (mouse_lock_follow_active_) {
+        deactivate_mouse_lock_follow();
+    }
     restore_pos();
     unblock_input();
     tracking_exit_ = true;
@@ -211,6 +214,8 @@ bool MessageInput::handle_hardware_mouse_move(const MSLLHOOKSTRUCT& mouse_info)
     pending_mouse_x_ += dx;
     pending_mouse_y_ += dy;
     has_pending_mouse_ = true;
+
+    // mouse_lock_follow 模式始终拦截
     return true;
 }
 
@@ -469,6 +474,7 @@ void MessageInput::tracking_thread_func()
     timeBeginPeriod(1);
     OnScopeLeave([this]() {
         close_target_process();
+        destroy_rawinput_window();
         timeEndPeriod(1);
     });
 
@@ -489,7 +495,7 @@ void MessageInput::tracking_thread_func()
 
     MSG msg;
     while (!tracking_exit_) {
-        // 消息泵：WH_MOUSE_LL 钩子回调在此线程上被系统调度，必须保持消息循环活跃
+        // 消息泵：WH_MOUSE_LL 钩子回调和 WM_INPUT 消息在此线程上被系统调度
         DWORD res = MsgWaitForMultipleObjects(0, NULL, FALSE, 1, QS_ALLINPUT);
         if (res == WAIT_OBJECT_0) {
             while (PeekMessageW(&msg, NULL, 0, 0, PM_REMOVE)) {
@@ -505,12 +511,26 @@ void MessageInput::tracking_thread_func()
         auto now = clock::now();
         bool frame_ready = (now - last_frame) >= frame_interval;
 
-        if (tracking_active_.load() && has_pending_mouse_.load() && frame_ready) {
-            process_pending_mouse_frame();
-            last_frame = now;
+        if (tracking_active_.load() && frame_ready) {
+            if (mouse_lock_follow_active_) {
+                // 懒创建 RawInput 窗口（必须在追踪线程中创建，WM_INPUT 才会被分发到此线程）
+                if (!rawinput_hwnd_) {
+                    create_rawinput_window();
+                }
+                // MouseLockFollow 模式：始终处理帧（即使没有新输入也要覆盖游戏的 SetCursorPos）
+                process_mouse_lock_follow_frame();
+                last_frame = now;
+            }
+            else if (has_pending_mouse_.load()) {
+                // 普通 WithWindowPos 模式：仅在有新输入时处理
+                process_pending_mouse_frame();
+                last_frame = now;
+            }
         }
 
-        maybe_stop_window_tracking();
+        if (!mouse_lock_follow_active_) {
+            maybe_stop_window_tracking();
+        }
     }
 }
 
@@ -533,6 +553,10 @@ void MessageInput::unblock_input()
 void MessageInput::inactive()
 {
     LogFunc;
+
+    if (mouse_lock_follow_active_) {
+        deactivate_mouse_lock_follow();
+    }
 
     restore_pos();
     unblock_input();
@@ -802,6 +826,312 @@ bool MessageInput::scroll(int dx, int dy)
     }
 
     return success;
+}
+
+// ======================== MouseLockFollow ========================
+
+bool MessageInput::relative_move(int dx, int dy)
+{
+    if (!mouse_lock_follow_active_) {
+        LogError << "relative_move is only supported when mouse_lock_follow is active";
+        return false;
+    }
+
+    if (dx == 0 && dy == 0) {
+        return true;
+    }
+
+    // 标记：这次 SendInput 产生的 WM_INPUT 不要被 RawInput handler 对冲
+    counter_pending_++;
+
+    INPUT input = {};
+    input.type = INPUT_MOUSE;
+    input.mi.dx = dx;
+    input.mi.dy = dy;
+    input.mi.dwFlags = MOUSEEVENTF_MOVE;
+
+    if (SendInput(1, &input, sizeof(INPUT)) != 1) {
+        LogError << "SendInput failed for relative_move" << VAR(dx) << VAR(dy) << VAR(GetLastError());
+        return false;
+    }
+
+    return true;
+}
+
+bool MessageInput::set_mouse_lock_follow(bool enabled)
+{
+    LogInfo << VAR(enabled) << VAR(mouse_lock_follow_active_);
+
+    if (enabled && !mouse_lock_follow_active_) {
+        activate_mouse_lock_follow();
+        return true;
+    }
+    else if (!enabled && mouse_lock_follow_active_) {
+        deactivate_mouse_lock_follow();
+        return true;
+    }
+
+    return true; // 已经是目标状态
+}
+
+void MessageInput::ensure_tracking_thread()
+{
+    if (tracking_thread_.joinable()) {
+        return; // 已经在运行
+    }
+    tracking_thread_ = std::thread(&MessageInput::tracking_thread_func, this);
+    tracking_thread_started_for_lock_follow_ = true;
+}
+
+void MessageInput::activate_mouse_lock_follow()
+{
+    LogInfo << "Activating mouse lock follow mode";
+
+    // 确保追踪线程在运行
+    ensure_tracking_thread();
+
+    // 保存窗口位置以便恢复
+    save_window_pos();
+
+    POINT cursor;
+    if (!GetCursorPos(&cursor)) {
+        LogError << "GetCursorPos failed" << VAR(GetLastError());
+        return;
+    }
+
+    RECT client_rect;
+    if (!GetClientRect(hwnd_, &client_rect)) {
+        LogError << "GetClientRect failed" << VAR(GetLastError());
+        return;
+    }
+
+    int client_w = client_rect.right - client_rect.left;
+    int client_h = client_rect.bottom - client_rect.top;
+
+    POINT client_origin = { 0, 0 };
+    ClientToScreen(hwnd_, &client_origin);
+    RECT win_rect;
+    GetWindowRect(hwnd_, &win_rect);
+    int border_x = client_origin.x - win_rect.left;
+    int border_y = client_origin.y - win_rect.top;
+
+    // 将窗口中心对齐到当前光标位置
+    int new_left = cursor.x - client_w / 2 - border_x;
+    int new_top = cursor.y - client_h / 2 - border_y;
+
+    hook_block_mouse_ = true;
+    SetWindowPos(hwnd_, nullptr, new_left, new_top, 0, 0, SWP_NOSIZE | SWP_NOZORDER | SWP_NOACTIVATE);
+    std::this_thread::sleep_for(std::chrono::milliseconds(50));
+
+    // 记录锚点
+    lock_anchor_cursor_ = cursor;
+    GetWindowRect(hwnd_, &lock_anchor_window_);
+    lock_offset_x_ = 0;
+    lock_offset_y_ = 0;
+
+    hook_block_mouse_ = false;
+
+    // 发送激活消息
+    send_activate();
+
+    // 清空待处理的鼠标位移
+    pending_mouse_x_ = 0;
+    pending_mouse_y_ = 0;
+    has_pending_mouse_ = false;
+    counter_pending_ = 0;
+
+    // 注册 RawInput（在追踪线程上下文中创建窗口确保 WM_INPUT 在正确线程分发）
+    // 这里直接创建——因为追踪线程的消息泵会处理 WM_INPUT
+    // 注意：RawInput 窗口需要在追踪线程中创建，但 activate 可能在不同线程调用
+    // 我们通过设置标志让追踪线程来创建
+    mouse_lock_follow_active_ = true;
+
+    // 设置追踪活跃状态
+    s_active_instance_ = this;
+    tracking_active_ = true;
+
+    LogInfo << "Mouse lock follow activated, anchor cursor=" << lock_anchor_cursor_.x << "," << lock_anchor_cursor_.y
+            << " window=" << lock_anchor_window_.left << "," << lock_anchor_window_.top;
+}
+
+void MessageInput::deactivate_mouse_lock_follow()
+{
+    LogInfo << "Deactivating mouse lock follow mode";
+
+    mouse_lock_follow_active_ = false;
+
+    // 只有在非 WithWindowPos 模式下才停止追踪（WithWindowPos 需要追踪线程继续运行）
+    if (!config_.with_window_pos) {
+        tracking_active_ = false;
+        s_active_instance_ = nullptr;
+    }
+
+    pending_mouse_x_ = 0;
+    pending_mouse_y_ = 0;
+    has_pending_mouse_ = false;
+    counter_pending_ = 0;
+
+    // 销毁 RawInput 窗口
+    destroy_rawinput_window();
+
+    // 恢复窗口位置
+    restore_window_pos();
+
+    // 如果追踪线程是为 lock follow 单独启动的，停止它
+    if (tracking_thread_started_for_lock_follow_ && !config_.with_window_pos) {
+        tracking_exit_ = true;
+        if (tracking_thread_.joinable()) {
+            tracking_thread_.join();
+        }
+        tracking_exit_ = false;
+        tracking_thread_started_for_lock_follow_ = false;
+    }
+}
+
+void MessageInput::process_mouse_lock_follow_frame()
+{
+    has_pending_mouse_ = false;
+
+    int dx = pending_mouse_x_.exchange(0);
+    int dy = pending_mouse_y_.exchange(0);
+
+    lock_offset_x_ += dx;
+    lock_offset_y_ += dy;
+
+    // 目标鼠标位置（绝对锚点策略）
+    int mx = lock_anchor_cursor_.x + lock_offset_x_;
+    int my = lock_anchor_cursor_.y + lock_offset_y_;
+
+    // 屏幕边界钳制
+    int vsx = GetSystemMetrics(SM_XVIRTUALSCREEN);
+    int vsy = GetSystemMetrics(SM_YVIRTUALSCREEN);
+    int vsw = GetSystemMetrics(SM_CXVIRTUALSCREEN);
+    int vsh = GetSystemMetrics(SM_CYVIRTUALSCREEN);
+    mx = std::max(vsx, std::min(mx, vsx + vsw - 1));
+    my = std::max(vsy, std::min(my, vsy + vsh - 1));
+    lock_offset_x_ = mx - lock_anchor_cursor_.x;
+    lock_offset_y_ = my - lock_anchor_cursor_.y;
+
+    // 窗口目标位置
+    int new_left = lock_anchor_window_.left + lock_offset_x_;
+    int new_top = lock_anchor_window_.top + lock_offset_y_;
+
+    suspend_target_process();
+
+    SetWindowPos(
+        hwnd_,
+        nullptr,
+        new_left,
+        new_top,
+        0,
+        0,
+        SWP_NOSIZE | SWP_NOZORDER | SWP_NOACTIVATE | SWP_NOSENDCHANGING | SWP_ASYNCWINDOWPOS);
+
+    SetCursorPos(mx, my);
+
+    resume_target_process();
+}
+
+// ======================== RawInput 对冲 ========================
+
+bool MessageInput::create_rawinput_window()
+{
+    WNDCLASSEXW wc = {};
+    wc.cbSize = sizeof(wc);
+    wc.lpfnWndProc = RawInputWndProc;
+    wc.hInstance = GetModuleHandleW(NULL);
+    wc.lpszClassName = L"MaaMouseLockFollowRawInput";
+
+    // 注册可能失败（如果已经注册过），忽略错误
+    RegisterClassExW(&wc);
+
+    rawinput_hwnd_ = CreateWindowExW(0, wc.lpszClassName, L"", 0, 0, 0, 0, 0, HWND_MESSAGE, NULL, wc.hInstance, NULL);
+    if (!rawinput_hwnd_) {
+        LogError << "CreateWindowExW for RawInput failed" << VAR(GetLastError());
+        return false;
+    }
+
+    // 注册接收鼠标 RawInput（RIDEV_INPUTSINK 确保后台也能收到）
+    RAWINPUTDEVICE rid = {};
+    rid.usUsagePage = 0x01; // HID_USAGE_PAGE_GENERIC
+    rid.usUsage = 0x02;     // HID_USAGE_GENERIC_MOUSE
+    rid.dwFlags = RIDEV_INPUTSINK;
+    rid.hwndTarget = rawinput_hwnd_;
+    if (!RegisterRawInputDevices(&rid, 1, sizeof(rid))) {
+        LogError << "RegisterRawInputDevices failed" << VAR(GetLastError());
+        DestroyWindow(rawinput_hwnd_);
+        rawinput_hwnd_ = nullptr;
+        return false;
+    }
+
+    LogInfo << "RawInput window created for mouse lock follow";
+    return true;
+}
+
+void MessageInput::destroy_rawinput_window()
+{
+    if (!rawinput_hwnd_) {
+        return;
+    }
+
+    // 取消注册 RawInput
+    RAWINPUTDEVICE rid = {};
+    rid.usUsagePage = 0x01;
+    rid.usUsage = 0x02;
+    rid.dwFlags = RIDEV_REMOVE;
+    rid.hwndTarget = NULL;
+    RegisterRawInputDevices(&rid, 1, sizeof(rid));
+
+    DestroyWindow(rawinput_hwnd_);
+    rawinput_hwnd_ = nullptr;
+}
+
+void MessageInput::send_counter_move(int raw_dx, int raw_dy)
+{
+    if (raw_dx == 0 && raw_dy == 0) {
+        return;
+    }
+
+    counter_pending_++;
+
+    INPUT counter = {};
+    counter.type = INPUT_MOUSE;
+    counter.mi.dx = -raw_dx;
+    counter.mi.dy = -raw_dy;
+    counter.mi.dwFlags = MOUSEEVENTF_MOVE;
+    SendInput(1, &counter, sizeof(INPUT));
+}
+
+LRESULT CALLBACK MessageInput::RawInputWndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
+{
+    if (msg == WM_INPUT) {
+        auto* inst = s_active_instance_.load();
+        if (inst && inst->mouse_lock_follow_active_) {
+            UINT size = 0;
+            GetRawInputData(reinterpret_cast<HRAWINPUT>(lParam), RID_INPUT, NULL, &size, sizeof(RAWINPUTHEADER));
+            if (size <= sizeof(RAWINPUT)) {
+                RAWINPUT raw = {};
+                UINT copied = size;
+                if (GetRawInputData(reinterpret_cast<HRAWINPUT>(lParam), RID_INPUT, &raw, &copied, sizeof(RAWINPUTHEADER)) == size) {
+                    if (raw.header.dwType == RIM_TYPEMOUSE) {
+                        auto& mouse = raw.data.mouse;
+                        if ((mouse.usFlags & MOUSE_MOVE_ABSOLUTE) == 0 && (mouse.lLastX != 0 || mouse.lLastY != 0)) {
+                            // 检查是否是我们自己的对冲或 relative_move 事件
+                            int expected = inst->counter_pending_.load();
+                            if (expected > 0 && inst->counter_pending_.compare_exchange_strong(expected, expected - 1)) {
+                                // 这是我们自己的 SendInput 产生的 WM_INPUT，跳过
+                            }
+                            else {
+                                // 真实硬件事件，发送对冲
+                                inst->send_counter_move(mouse.lLastX, mouse.lLastY);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    return DefWindowProcW(hwnd, msg, wParam, lParam);
 }
 
 MAA_CTRL_UNIT_NS_END

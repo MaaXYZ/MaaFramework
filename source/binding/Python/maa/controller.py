@@ -256,6 +256,23 @@ class Controller:
         )
         return self._gen_ctrl_job(ctrl_id)
 
+    def post_mouse_lock_follow(self, enabled: bool) -> Job:
+        """切换鼠标锁定跟随模式 (Win32 controller) / Toggle mouse lock follow mode (Win32 controller)
+
+        Args:
+            enabled: 是否开启 / Whether to enable
+
+        Returns:
+            Job: 作业对象 / Job object
+
+        Note:
+            适用于 TPS/FPS 等在后台锁定鼠标的游戏 / For TPS/FPS games that lock the mouse in the background
+        """
+        ctrl_id = Library.framework().MaaControllerPostMouseLockFollow(
+            self._handle, enabled
+        )
+        return self._gen_ctrl_job(ctrl_id)
+
     def post_scroll(self, dx: int, dy: int) -> Job:
         """滚动 / Scroll
 
@@ -674,6 +691,12 @@ class Controller:
             MaaControllerHandle,
             c_int32,
             c_int32,
+        ]
+
+        Library.framework().MaaControllerPostMouseLockFollow.restype = MaaCtrlId
+        Library.framework().MaaControllerPostMouseLockFollow.argtypes = [
+            MaaControllerHandle,
+            MaaBool,
         ]
 
         Library.framework().MaaControllerPostScroll.restype = MaaCtrlId
