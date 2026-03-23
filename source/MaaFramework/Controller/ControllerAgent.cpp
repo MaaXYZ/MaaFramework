@@ -9,6 +9,16 @@
 
 MAA_CTRL_NS_BEGIN
 
+namespace
+{
+
+bool should_route_background_managed_key(const std::shared_ptr<MAA_CTRL_UNIT_NS::Win32ControlUnitAPI>& win32_unit, int keycode)
+{
+    return win32_unit && win32_unit->connected() && win32_unit->is_background_managed_key(keycode);
+}
+
+} // namespace
+
 ControllerAgent::ControllerAgent(std::shared_ptr<MAA_CTRL_UNIT_NS::ControlUnitAPI> control_unit)
     : control_unit_(std::move(control_unit))
 {
@@ -752,7 +762,7 @@ bool ControllerAgent::handle_click_key(const ClickKeyParam& param)
 
     if (win32_unit) {
         for (const auto& keycode : param.keycode) {
-            if (win32_unit->is_background_managed_key(keycode) && win32_unit->is_background_key_pressed(keycode)) {
+            if (should_route_background_managed_key(win32_unit, keycode) && win32_unit->is_background_key_pressed(keycode)) {
                 LogError << "Managed key is already held, ClickKey is rejected" << VAR(keycode);
                 return false;
             }
@@ -760,7 +770,7 @@ bool ControllerAgent::handle_click_key(const ClickKeyParam& param)
     }
 
     for (const auto& keycode : param.keycode) {
-        if (win32_unit && win32_unit->is_background_managed_key(keycode)) {
+        if (should_route_background_managed_key(win32_unit, keycode)) {
             ret &= handle_managed_click_key(win32_unit, keycode);
             continue;
         }
@@ -790,7 +800,7 @@ bool ControllerAgent::handle_long_press_key(const LongPressKeyParam& param)
 
     if (win32_unit) {
         for (const auto& keycode : param.keycode) {
-            if (win32_unit->is_background_managed_key(keycode) && win32_unit->is_background_key_pressed(keycode)) {
+            if (should_route_background_managed_key(win32_unit, keycode) && win32_unit->is_background_key_pressed(keycode)) {
                 LogError << "Managed key is already held, LongPressKey is rejected" << VAR(keycode);
                 return false;
             }
@@ -798,7 +808,7 @@ bool ControllerAgent::handle_long_press_key(const LongPressKeyParam& param)
     }
 
     for (const auto& keycode : param.keycode) {
-        if (win32_unit && win32_unit->is_background_managed_key(keycode)) {
+        if (should_route_background_managed_key(win32_unit, keycode)) {
             ret &= handle_managed_long_press_key(win32_unit, keycode, param.duration);
             continue;
         }
@@ -882,7 +892,7 @@ bool ControllerAgent::handle_key_down(const ClickKeyParam& param)
     auto win32_unit = as_win32_control_unit(control_unit_);
 
     for (const auto& keycode : param.keycode) {
-        if (win32_unit && win32_unit->is_background_managed_key(keycode)) {
+        if (should_route_background_managed_key(win32_unit, keycode)) {
             ret &= win32_unit->background_key_down(keycode);
             continue;
         }
@@ -903,7 +913,7 @@ bool ControllerAgent::handle_key_up(const ClickKeyParam& param)
     auto win32_unit = as_win32_control_unit(control_unit_);
 
     for (const auto& keycode : param.keycode) {
-        if (win32_unit && win32_unit->is_background_managed_key(keycode)) {
+        if (should_route_background_managed_key(win32_unit, keycode)) {
             ret &= win32_unit->background_key_up(keycode);
             continue;
         }

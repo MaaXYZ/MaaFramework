@@ -28,7 +28,13 @@ BackgroundManagedKeyInput::BackgroundManagedKeyInput(HWND hwnd)
 
 BackgroundManagedKeyInput::~BackgroundManagedKeyInput()
 {
-    inactive();
+    if (!inactive()) {
+        std::lock_guard lock(mutex_);
+        managed_keys_.clear();
+        desired_pressed_keys_.clear();
+        release_keys_.clear();
+        applied_generation_ = desired_generation_;
+    }
     {
         std::lock_guard lock(mutex_);
         stop_thread_ = true;
@@ -102,7 +108,6 @@ bool BackgroundManagedKeyInput::key_down(int keycode)
         generation = ++desired_generation_;
     }
 
-    send_activation_hint();
     guard_cv_.notify_all();
     return wait_until_applied(generation);
 }
@@ -132,7 +137,7 @@ bool BackgroundManagedKeyInput::key_up(int keycode)
     return wait_until_applied(generation);
 }
 
-void BackgroundManagedKeyInput::inactive()
+bool BackgroundManagedKeyInput::inactive()
 {
     uint64_t generation = 0;
     bool has_work = false;
@@ -140,7 +145,7 @@ void BackgroundManagedKeyInput::inactive()
         std::lock_guard lock(mutex_);
         has_work = !managed_keys_.empty() || !desired_pressed_keys_.empty() || !release_keys_.empty();
         if (!has_work) {
-            return;
+            return true;
         }
 
         for (const int keycode : managed_keys_) {
@@ -152,7 +157,7 @@ void BackgroundManagedKeyInput::inactive()
     }
 
     guard_cv_.notify_all();
-    std::ignore = wait_until_applied(generation);
+    return wait_until_applied(generation);
 }
 
 std::unordered_set<int> BackgroundManagedKeyInput::normalize_keycodes(const std::vector<int>& keycodes)
@@ -260,31 +265,36 @@ void BackgroundManagedKeyInput::guard_loop()
             snapshot = snapshot_locked();
         }
 
+        bool snapshot_applied = true;
         if (!snapshot.keys.empty()) {
-            correct_snapshot(snapshot);
+            snapshot_applied = correct_snapshot(snapshot);
         }
         else {
             pump_messages();
         }
 
-        {
-            std::lock_guard lock(mutex_);
-            applied_generation_ = std::max(applied_generation_, snapshot.generation);
-            for (const int keycode : snapshot.release_keys) {
-                release_keys_.erase(keycode);
+        if (snapshot_applied) {
+            {
+                std::lock_guard lock(mutex_);
+                applied_generation_ = std::max(applied_generation_, snapshot.generation);
+                for (const int keycode : snapshot.release_keys) {
+                    release_keys_.erase(keycode);
+                }
             }
+            applied_cv_.notify_all();
         }
-        applied_cv_.notify_all();
     }
 }
 
-void BackgroundManagedKeyInput::correct_snapshot(const Snapshot& snapshot)
+bool BackgroundManagedKeyInput::correct_snapshot(const Snapshot& snapshot)
 {
+    bool all_applied = true;
     for (const int keycode : snapshot.keys) {
         const bool desired_pressed = snapshot.desired_pressed_keys.contains(keycode);
-        ensure_key_state(keycode, desired_pressed);
+        all_applied &= ensure_key_state(keycode, desired_pressed);
     }
     pump_messages();
+    return all_applied;
 }
 
 bool BackgroundManagedKeyInput::ensure_key_state(int keycode, bool desired_pressed)
@@ -297,6 +307,8 @@ bool BackgroundManagedKeyInput::ensure_key_pressed(int keycode)
     if (is_pressed_now(keycode)) {
         return true;
     }
+
+    send_activation_hint();
 
     const int id = hotkey_id(keycode);
     const bool registered = RegisterHotKey(nullptr, id, 0, static_cast<UINT>(keycode)) != 0;

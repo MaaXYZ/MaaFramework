@@ -395,10 +395,29 @@ bool Win32ControlUnitMgr::scroll(int dx, int dy)
     return mouse_->scroll(dx, dy);
 }
 
-bool Win32ControlUnitMgr::set_background_managed_keys(const std::vector<int>& keycodes)
+bool Win32ControlUnitMgr::can_use_background_keyboard() const
 {
     if (!background_keyboard_) {
         LogError << "background_keyboard_ is null";
+        return false;
+    }
+
+    if (!connected_) {
+        LogError << "background managed keys require a connected Win32 controller";
+        return false;
+    }
+
+    if (!hwnd_ || !IsWindow(hwnd_)) {
+        LogError << "background managed keys require a valid target window" << VAR_VOIDP(hwnd_);
+        return false;
+    }
+
+    return true;
+}
+
+bool Win32ControlUnitMgr::set_background_managed_keys(const std::vector<int>& keycodes)
+{
+    if (!can_use_background_keyboard()) {
         return false;
     }
 
@@ -425,8 +444,7 @@ bool Win32ControlUnitMgr::is_background_key_pressed(int keycode) const
 
 bool Win32ControlUnitMgr::background_key_down(int keycode)
 {
-    if (!background_keyboard_) {
-        LogError << "background_keyboard_ is null";
+    if (!can_use_background_keyboard()) {
         return false;
     }
 
@@ -435,8 +453,7 @@ bool Win32ControlUnitMgr::background_key_down(int keycode)
 
 bool Win32ControlUnitMgr::background_key_up(int keycode)
 {
-    if (!background_keyboard_) {
-        LogError << "background_keyboard_ is null";
+    if (!can_use_background_keyboard()) {
         return false;
     }
 
@@ -462,6 +479,7 @@ bool Win32ControlUnitMgr::set_mouse_lock_follow(bool enabled)
 bool Win32ControlUnitMgr::inactive()
 {
     LogFunc;
+    bool ret = true;
 
     if (screencap_) {
         screencap_->inactive();
@@ -473,10 +491,10 @@ bool Win32ControlUnitMgr::inactive()
         keyboard_->inactive();
     }
     if (background_keyboard_) {
-        background_keyboard_->inactive();
+        ret &= background_keyboard_->inactive();
     }
 
-    return true;
+    return ret;
 }
 
 json::object Win32ControlUnitMgr::get_info() const

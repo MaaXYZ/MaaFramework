@@ -82,6 +82,7 @@ private:
     std::unordered_map<ScreencapMethod, std::shared_ptr<ScreencapBase>> build_screencap_units() const;
     bool init_screencap();
     std::shared_ptr<InputBase> make_input(MaaWin32InputMethod method) const;
+    bool can_use_background_keyboard() const;
 
     std::shared_ptr<ScreencapBase> speed_test(const std::unordered_map<ScreencapMethod, std::shared_ptr<ScreencapBase>>& units) const;
 

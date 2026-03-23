@@ -24,7 +24,7 @@ public:
     bool is_key_pressed(int keycode) const;
     bool key_down(int keycode);
     bool key_up(int keycode);
-    void inactive();
+    bool inactive();
 
 private:
     struct Snapshot
@@ -47,7 +47,7 @@ private:
     void send_activation_hint() const;
     Snapshot snapshot_locked() const;
     void guard_loop();
-    void correct_snapshot(const Snapshot& snapshot);
+    bool correct_snapshot(const Snapshot& snapshot);
     bool ensure_key_state(int keycode, bool desired_pressed);
     bool ensure_key_pressed(int keycode);
     bool ensure_key_released(int keycode);

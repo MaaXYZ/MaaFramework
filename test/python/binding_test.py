@@ -801,6 +801,11 @@ def test_background_managed_keys_api(dbg_controller: DbgController):
         print("  SKIP: failed to create Win32 controller")
         return
 
+    preconnect_ret = controller.post_set_background_managed_keys([0x57, 0x41]).wait()
+    assert (
+        not preconnect_ret.succeeded
+    ), "Win32 background managed keys should reject requests before connection"
+
     ret = controller.post_connection().wait().succeeded
     ret &= controller.post_set_background_managed_keys(
         [0x57, 0x41, 0x53, 0x44]
