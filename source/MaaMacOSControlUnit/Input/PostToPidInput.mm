@@ -1,5 +1,6 @@
 #include "PostToPidInput.h"
 
+#include "InputUtils.h"
 #include "MaaUtils/Logger.h"
 
 #include <AppKit/AppKit.h>
@@ -37,15 +38,20 @@ bool PostToPidInput::swipe(int x1, int y1, int x2, int y2, int duration)
 bool PostToPidInput::touch_down(int contact, int x, int y, int pressure)
 {
     (void)pressure;
-    if (contact != 0) {
-        LogWarn << "Only contact 0 is supported for macOS controller";
+
+    MouseEventInfo info;
+    if (!contact_to_mouse_down_info(contact, info)) {
+        LogError << "contact out of range" << VAR(contact);
         return false;
     }
 
-    if (!post_mouse_event(kCGEventLeftMouseDown, x, y)) {
+    if (!post_mouse_event(info.event_type, x, y)) {
         LogError << "Failed to post mouse down event";
         return false;
     }
+
+    latest_touch_x_ = x;
+    latest_touch_y_ = y;
 
     return true;
 }
@@ -53,12 +59,14 @@ bool PostToPidInput::touch_down(int contact, int x, int y, int pressure)
 bool PostToPidInput::touch_move(int contact, int x, int y, int pressure)
 {
     (void)pressure;
-    if (contact != 0) {
-        LogWarn << "Only contact 0 is supported for macOS controller";
+
+    MouseEventInfo info;
+    if (!contact_to_mouse_move_info(contact, info)) {
+        LogError << "contact out of range" << VAR(contact);
         return false;
     }
 
-    if (!post_mouse_event(kCGEventLeftMouseDragged, x, y)) {
+    if (!post_mouse_event(info.event_type, x, y)) {
         LogError << "Failed to post mouse dragged event";
         return false;
     }
@@ -71,12 +79,13 @@ bool PostToPidInput::touch_move(int contact, int x, int y, int pressure)
 
 bool PostToPidInput::touch_up(int contact)
 {
-    if (contact != 0) {
-        LogWarn << "Only contact 0 is supported for macOS controller";
+    MouseEventInfo info;
+    if (!contact_to_mouse_up_info(contact, info)) {
+        LogError << "contact out of range" << VAR(contact);
         return false;
     }
 
-    if (!post_mouse_event(kCGEventLeftMouseUp, latest_touch_x_, latest_touch_y_)) {
+    if (!post_mouse_event(info.event_type, latest_touch_x_, latest_touch_y_)) {
         LogError << "Failed to post mouse up event";
         return false;
     }
@@ -98,15 +107,11 @@ bool PostToPidInput::input_text(const std::string& text)
 {
     // 将 UTF-8 转换为 UTF-16（UniChar），直接通过 CGEventKeyboardSetUnicodeString 注入，
     // 无需 keycode 映射，支持任意 Unicode 字符（含中文、emoji 等）
-    NSString* ns_text = [NSString stringWithUTF8String:text.c_str()];
-    if (!ns_text) {
-        LogError << "Failed to convert text to NSString: " << text;
+    std::vector<UniChar> chars;
+    if (!text_to_unichars(text, chars)) {
+        LogError << "Failed to convert text to UniChar: " << text;
         return false;
     }
-
-    NSUInteger len = [ns_text length];
-    std::vector<UniChar> chars(len);
-    [ns_text getCharacters:chars.data() range:NSMakeRange(0, len)];
 
     // key_down + key_up 各发一次，接收方通常只处理 key_down
     for (bool is_down : { true, false }) {
@@ -115,7 +120,7 @@ bool PostToPidInput::input_text(const std::string& text)
             LogError << "Failed to create keyboard event";
             return false;
         }
-        CGEventKeyboardSetUnicodeString(event, len, chars.data());
+        CGEventKeyboardSetUnicodeString(event, chars.size(), chars.data());
         CGEventPostToPid(pid_, event);
         CFRelease(event);
         usleep(10000);
@@ -185,35 +190,12 @@ bool PostToPidInput::scroll(int dx, int dy)
 
 void PostToPidInput::update_window_info()
 {
-    // 获取窗口信息
-    CFArrayRef window_list = CGWindowListCopyWindowInfo(kCGWindowListOptionIncludingWindow, window_id_);
-
-    if (!window_list || CFArrayGetCount(window_list) == 0) {
-        if (window_list) {
-            CFRelease(window_list);
-        }
-        return;
+    WindowInfo info;
+    if (get_window_info(window_id_, info)) {
+        pid_ = info.pid;
+        window_w_ = static_cast<int>(info.bounds.size.width);
+        window_h_ = static_cast<int>(info.bounds.size.height);
     }
-
-    CFDictionaryRef window_info = (CFDictionaryRef)CFArrayGetValueAtIndex(window_list, 0);
-
-    // 获取进程PID
-    CFNumberRef pid_ref = (CFNumberRef)CFDictionaryGetValue(window_info, kCGWindowOwnerPID);
-    if (pid_ref) {
-        CFNumberGetValue(pid_ref, kCFNumberIntType, &pid_);
-    }
-
-    // 获取窗口尺寸
-    CFDictionaryRef bounds_ref = (CFDictionaryRef)CFDictionaryGetValue(window_info, kCGWindowBounds);
-    if (bounds_ref) {
-        CGRect bounds;
-        if (CGRectMakeWithDictionaryRepresentation(bounds_ref, &bounds)) {
-            window_w_ = static_cast<int>(bounds.size.width);
-            window_h_ = static_cast<int>(bounds.size.height);
-        }
-    }
-
-    CFRelease(window_list);
 }
 
 bool PostToPidInput::post_mouse_event(CGEventType type, int x, int y)

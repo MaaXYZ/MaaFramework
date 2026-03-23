@@ -1,5 +1,6 @@
 #include "GlobalEventInput.h"
 
+#include "InputUtils.h"
 #include "MaaUtils/Logger.h"
 
 #include <AppKit/AppKit.h>
@@ -37,8 +38,10 @@ bool GlobalEventInput::swipe(int x1, int y1, int x2, int y2, int duration)
 bool GlobalEventInput::touch_down(int contact, int x, int y, int pressure)
 {
     (void)pressure;
-    if (contact != 0) {
-        LogWarn << "Only contact 0 is supported for macOS controller";
+
+    MouseEventInfo info;
+    if (!contact_to_mouse_down_info(contact, info)) {
+        LogError << "contact out of range" << VAR(contact);
         return false;
     }
 
@@ -47,7 +50,7 @@ bool GlobalEventInput::touch_down(int contact, int x, int y, int pressure)
         LogWarn << "Warning: Failed to activate window, touch may not work";
     }
 
-    if (!post_mouse_event(kCGEventLeftMouseDown, CGPointMake(x + offset_x_, y + offset_y_), kCGMouseButtonLeft)) {
+    if (!post_mouse_event(info.event_type, CGPointMake(x + offset_x_, y + offset_y_), info.mouse_button)) {
         LogError << "Failed to post mouse down event";
         return false;
     }
@@ -58,12 +61,14 @@ bool GlobalEventInput::touch_down(int contact, int x, int y, int pressure)
 bool GlobalEventInput::touch_move(int contact, int x, int y, int pressure)
 {
     (void)pressure;
-    if (contact != 0) {
-        LogWarn << "Only contact 0 is supported for macOS controller";
+
+    MouseEventInfo info;
+    if (!contact_to_mouse_move_info(contact, info)) {
+        LogError << "contact out of range" << VAR(contact);
         return false;
     }
 
-    if (!post_mouse_event(kCGEventLeftMouseDragged, CGPointMake(x + offset_x_, y + offset_y_), kCGMouseButtonLeft)) {
+    if (!post_mouse_event(info.event_type, CGPointMake(x + offset_x_, y + offset_y_), info.mouse_button)) {
         LogError << "Failed to post mouse dragged event";
         return false;
     }
@@ -73,8 +78,9 @@ bool GlobalEventInput::touch_move(int contact, int x, int y, int pressure)
 
 bool GlobalEventInput::touch_up(int contact)
 {
-    if (contact != 0) {
-        LogWarn << "Only contact 0 is supported for macOS controller";
+    MouseEventInfo info;
+    if (!contact_to_mouse_up_info(contact, info)) {
+        LogError << "contact out of range" << VAR(contact);
         return false;
     }
 
@@ -83,7 +89,7 @@ bool GlobalEventInput::touch_up(int contact)
     CGPoint location = CGEventGetLocation(current_event);
     CFRelease(current_event);
 
-    if (!post_mouse_event(kCGEventLeftMouseUp, location, kCGMouseButtonLeft)) {
+    if (!post_mouse_event(info.event_type, location, info.mouse_button)) {
         LogError << "Failed to post mouse up event";
         return false;
     }
@@ -110,15 +116,11 @@ bool GlobalEventInput::input_text(const std::string& text)
 
     // 将 UTF-8 转换为 UTF-16（UniChar），直接通过 CGEventKeyboardSetUnicodeString 注入，
     // 无需 keycode 映射，支持任意 Unicode 字符（含中文、emoji 等）
-    NSString* ns_text = [NSString stringWithUTF8String:text.c_str()];
-    if (!ns_text) {
-        LogError << "Failed to convert text to NSString: " << text;
+    std::vector<UniChar> chars;
+    if (!text_to_unichars(text, chars)) {
+        LogError << "Failed to convert text to UniChar: " << text;
         return false;
     }
-
-    NSUInteger len = [ns_text length];
-    std::vector<UniChar> chars(len);
-    [ns_text getCharacters:chars.data() range:NSMakeRange(0, len)];
 
     // key_down + key_up 各发一次，接收方通常只处理 key_down
     for (bool is_down : { true, false }) {
@@ -127,7 +129,7 @@ bool GlobalEventInput::input_text(const std::string& text)
             LogError << "Failed to create keyboard event";
             return false;
         }
-        CGEventKeyboardSetUnicodeString(event, len, chars.data());
+        CGEventKeyboardSetUnicodeString(event, chars.size(), chars.data());
         CGEventPost(kCGHIDEventTap, event);
         CFRelease(event);
         usleep(10000);
@@ -222,35 +224,12 @@ void GlobalEventInput::update_window_info()
         return;
     }
 
-    // 获取窗口信息
-    CFArrayRef window_list = CGWindowListCopyWindowInfo(kCGWindowListOptionIncludingWindow, window_id_);
-
-    if (!window_list || CFArrayGetCount(window_list) == 0) {
-        if (window_list) {
-            CFRelease(window_list);
-        }
-        return;
+    WindowInfo info;
+    if (get_window_info(window_id_, info)) {
+        pid_ = info.pid;
+        offset_x_ = static_cast<int>(info.bounds.origin.x);
+        offset_y_ = static_cast<int>(info.bounds.origin.y);
     }
-
-    CFDictionaryRef window_info = (CFDictionaryRef)CFArrayGetValueAtIndex(window_list, 0);
-
-    // 获取进程PID
-    CFNumberRef pid_ref = (CFNumberRef)CFDictionaryGetValue(window_info, kCGWindowOwnerPID);
-    if (pid_ref) {
-        CFNumberGetValue(pid_ref, kCFNumberIntType, &pid_);
-    }
-
-    // 获取窗口位置
-    CFDictionaryRef bounds_ref = (CFDictionaryRef)CFDictionaryGetValue(window_info, kCGWindowBounds);
-    if (bounds_ref) {
-        CGRect bounds;
-        if (CGRectMakeWithDictionaryRepresentation(bounds_ref, &bounds)) {
-            offset_x_ = static_cast<int>(bounds.origin.x);
-            offset_y_ = static_cast<int>(bounds.origin.y);
-        }
-    }
-
-    CFRelease(window_list);
 }
 
 bool GlobalEventInput::post_mouse_event(CGEventType type, CGPoint location, CGMouseButton button)

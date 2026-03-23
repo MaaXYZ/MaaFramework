@@ -14,6 +14,12 @@
   "click_action": {
     "action": "Click",
     "target": "bee_recognition",
+    "next": "click_left_action"
+  },
+  "click_left_action": {
+    "action": "Click",
+    "contact": 1,
+    "target": "bee_recognition",
     "next": "swipe_action"
   },
   "swipe_action": {
