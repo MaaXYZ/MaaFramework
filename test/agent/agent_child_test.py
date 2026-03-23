@@ -292,6 +292,9 @@ class MyAction(CustomAction):
         # 测试按键操作
         controller.post_key_down(65).wait()
         controller.post_key_up(65).wait()
+        assert (
+            not controller.post_set_background_managed_keys([0x57, 0x41]).wait().succeeded
+        )
 
         # 测试滚动操作
         assert not controller.post_scroll(0, 120).wait().succeeded

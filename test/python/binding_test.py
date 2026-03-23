@@ -776,6 +776,47 @@ def test_win32_relative_move():
     print("  PASS: win32 relative_move")
 
 
+def test_background_managed_keys_api(dbg_controller: DbgController):
+    print("\n=== test_background_managed_keys_api ===")
+
+    dbg_ret = dbg_controller.post_set_background_managed_keys([0x57, 0x41]).wait()
+    assert not dbg_ret.succeeded, "non-Win32 controller should reject background managed keys"
+
+    desktop_windows = Toolkit.find_desktop_windows()
+    if not desktop_windows:
+        print("  SKIP: no desktop windows found")
+        return
+
+    controller = None
+    target_window = None
+    for window in desktop_windows:
+        try:
+            controller = Win32Controller(window.hwnd)
+            target_window = window
+            break
+        except RuntimeError:
+            continue
+
+    if controller is None or target_window is None:
+        print("  SKIP: failed to create Win32 controller")
+        return
+
+    ret = controller.post_connection().wait().succeeded
+    ret &= controller.post_set_background_managed_keys(
+        [0x57, 0x41, 0x53, 0x44]
+    ).wait().succeeded
+    ret &= controller.post_key_down(0x57).wait().succeeded
+    ret &= controller.post_key_up(0x57).wait().succeeded
+    ret &= controller.post_inactive().wait().succeeded
+
+    print(
+        f"  target window: {target_window.window_name[:30] if target_window.window_name else '(no name)'}"
+    )
+    print(f"  ret: {ret}")
+    assert ret, "Win32 background managed keys API should succeed"
+    print("  PASS: background managed keys API")
+
+
 # ============================================================================
 # 主入口
 # ============================================================================
@@ -805,6 +846,7 @@ if __name__ == "__main__":
 
     # 测试 Win32 relative_move 正路径
     test_win32_relative_move()
+    test_background_managed_keys_api(controller)
 
     print("\n" + "=" * 50)
     print("All binding tests passed!")

@@ -6,6 +6,7 @@
 #include "MaaUtils/Logger.h"
 #include "MaaUtils/Time.hpp"
 
+#include "Input/BackgroundManagedKeyInput.h"
 #include "Input/LegacyEventInput.h"
 #include "Input/MessageInput.h"
 #include "Input/SeizeInput.h"
@@ -30,6 +31,7 @@ Win32ControlUnitMgr::Win32ControlUnitMgr(
     , screencap_method_(screencap_method)
     , mouse_method_(mouse_method)
     , keyboard_method_(keyboard_method)
+    , background_keyboard_(std::make_shared<BackgroundManagedKeyInput>(hWnd))
 {
 }
 
@@ -393,6 +395,54 @@ bool Win32ControlUnitMgr::scroll(int dx, int dy)
     return mouse_->scroll(dx, dy);
 }
 
+bool Win32ControlUnitMgr::set_background_managed_keys(const std::vector<int>& keycodes)
+{
+    if (!background_keyboard_) {
+        LogError << "background_keyboard_ is null";
+        return false;
+    }
+
+    return background_keyboard_->set_managed_keys(keycodes);
+}
+
+bool Win32ControlUnitMgr::is_background_managed_key(int keycode) const
+{
+    if (!background_keyboard_) {
+        return false;
+    }
+
+    return background_keyboard_->is_managed_key(keycode);
+}
+
+bool Win32ControlUnitMgr::is_background_key_pressed(int keycode) const
+{
+    if (!background_keyboard_) {
+        return false;
+    }
+
+    return background_keyboard_->is_key_pressed(keycode);
+}
+
+bool Win32ControlUnitMgr::background_key_down(int keycode)
+{
+    if (!background_keyboard_) {
+        LogError << "background_keyboard_ is null";
+        return false;
+    }
+
+    return background_keyboard_->key_down(keycode);
+}
+
+bool Win32ControlUnitMgr::background_key_up(int keycode)
+{
+    if (!background_keyboard_) {
+        LogError << "background_keyboard_ is null";
+        return false;
+    }
+
+    return background_keyboard_->key_up(keycode);
+}
+
 bool Win32ControlUnitMgr::set_mouse_lock_follow(bool enabled)
 {
     if (!mouse_) {
@@ -421,6 +471,9 @@ bool Win32ControlUnitMgr::inactive()
     }
     if (keyboard_ && keyboard_ != mouse_) {
         keyboard_->inactive();
+    }
+    if (background_keyboard_) {
+        background_keyboard_->inactive();
     }
 
     return true;

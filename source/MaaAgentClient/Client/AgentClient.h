@@ -112,6 +112,7 @@ private:
     bool handle_controller_post_touch_up(const json::value& j);
     bool handle_controller_post_key_down(const json::value& j);
     bool handle_controller_post_key_up(const json::value& j);
+    bool handle_controller_post_set_background_managed_keys(const json::value& j);
     bool handle_controller_post_scroll(const json::value& j);
     bool handle_controller_post_inactive(const json::value& j);
     bool handle_controller_status(const json::value& j);

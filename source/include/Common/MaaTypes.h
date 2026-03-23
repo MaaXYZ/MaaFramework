@@ -93,6 +93,7 @@ public:
 
     virtual MaaCtrlId post_key_down(int keycode) = 0;
     virtual MaaCtrlId post_key_up(int keycode) = 0;
+    virtual MaaCtrlId post_set_background_managed_keys(const std::vector<int>& keycodes) = 0;
 
     virtual MaaCtrlId post_scroll(int dx, int dy) = 0;
 

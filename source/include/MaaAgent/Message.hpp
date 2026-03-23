@@ -1265,6 +1265,23 @@ struct ControllerPostKeyUpReverseResponse
     MEO_JSONIZATION(ctrl_id, _ControllerPostKeyUpReverseResponse);
 };
 
+struct ControllerPostSetBackgroundManagedKeysReverseRequest
+{
+    std::string controller_id;
+    std::vector<int32_t> keycodes;
+
+    MessageTypePlaceholder _ControllerPostSetBackgroundManagedKeysReverseRequest = 1;
+    MEO_JSONIZATION(controller_id, keycodes, _ControllerPostSetBackgroundManagedKeysReverseRequest);
+};
+
+struct ControllerPostSetBackgroundManagedKeysReverseResponse
+{
+    int64_t ctrl_id = 0;
+
+    MessageTypePlaceholder _ControllerPostSetBackgroundManagedKeysReverseResponse = 1;
+    MEO_JSONIZATION(ctrl_id, _ControllerPostSetBackgroundManagedKeysReverseResponse);
+};
+
 struct ControllerPostScrollReverseRequest
 {
     std::string controller_id;

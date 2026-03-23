@@ -4,7 +4,7 @@ import numpy
 from abc import abstractmethod
 from ctypes import c_int32
 from pathlib import Path
-from typing import Any, Dict, Optional, Tuple, Union
+from typing import Any, Dict, Optional, Sequence, Tuple, Union
 
 from .buffer import ImageBuffer, StringBuffer
 from .event_sink import EventSink, NotificationType
@@ -148,6 +148,29 @@ class Controller:
             Job: 作业对象 / Job object
         """
         ctrl_id = Library.framework().MaaControllerPostKeyUp(self._handle, key)
+        return self._gen_ctrl_job(ctrl_id)
+
+    def post_set_background_managed_keys(self, keys: Sequence[int]) -> Job:
+        """声明 Win32 后台受管键域 / Declare Win32 background managed key domain
+
+        Args:
+            keys: 需要交给 Win32 后台按键守护器接管的虚拟键码列表 / Virtual key codes managed by the Win32 background key guardian
+
+        Returns:
+            Job: 作业对象 / Job object
+
+        Note:
+            仅 Win32 控制器支持此操作，其他控制器会失败。
+            声明成功后，现有 post_key_down/post_key_up/post_click_key 以及 pipeline 中的 KeyDown/KeyUp/ClickKey/LongPressKey
+            会对命中的按键自动走后台守护路径。
+        """
+        if not keys:
+            raise ValueError("keys must not be empty")
+
+        key_array = (c_int32 * len(keys))(*keys)
+        ctrl_id = Library.framework().MaaControllerPostSetBackgroundManagedKeys(
+            self._handle, key_array, len(keys)
+        )
         return self._gen_ctrl_job(ctrl_id)
 
     def post_input_text(self, text: str) -> Job:
@@ -354,9 +377,11 @@ class Controller:
         """设置控制器为不活跃状态 / Set controller to inactive state
 
         对于 Win32 控制器，这会恢复窗口位置（取消置顶）并解除输入阻断。
+        若此前声明了后台受管键域，也会一并释放全部受管键。
         对于其他控制器，这是一个空操作，总是成功。
 
         For Win32 controllers, this restores window position (removes topmost) and unblocks user input.
+        If background managed keys were declared earlier, this also releases all managed keys.
         For other controllers, this is a no-op that always succeeds.
 
         Returns:
@@ -661,6 +686,14 @@ class Controller:
         Library.framework().MaaControllerPostKeyUp.argtypes = [
             MaaControllerHandle,
             c_int32,
+        ]
+        Library.framework().MaaControllerPostSetBackgroundManagedKeys.restype = (
+            MaaCtrlId
+        )
+        Library.framework().MaaControllerPostSetBackgroundManagedKeys.argtypes = [
+            MaaControllerHandle,
+            ctypes.POINTER(c_int32),
+            MaaSize,
         ]
         Library.framework().MaaControllerPostInputText.restype = MaaCtrlId
         Library.framework().MaaControllerPostInputText.argtypes = [

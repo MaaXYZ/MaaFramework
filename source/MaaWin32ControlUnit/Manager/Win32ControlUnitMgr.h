@@ -1,7 +1,9 @@
 #pragma once
 
 #include <filesystem>
+#include <memory>
 #include <ostream>
+#include <unordered_set>
 #include <unordered_map>
 
 #include "Base/UnitBase.h"
@@ -12,6 +14,8 @@
 #include "Common/Conf.h"
 
 MAA_CTRL_UNIT_NS_BEGIN
+
+class BackgroundManagedKeyInput;
 
 class Win32ControlUnitMgr : public Win32ControlUnitAPI
 {
@@ -51,6 +55,11 @@ public: // from ControlUnitAPI
     virtual bool key_up(int key) override;
 
     virtual bool scroll(int dx, int dy) override;
+    virtual bool set_background_managed_keys(const std::vector<int>& keycodes) override;
+    virtual bool is_background_managed_key(int keycode) const override;
+    virtual bool is_background_key_pressed(int keycode) const override;
+    virtual bool background_key_down(int keycode) override;
+    virtual bool background_key_up(int keycode) override;
 
     virtual bool set_mouse_lock_follow(bool enabled) override;
 
@@ -86,6 +95,7 @@ private:
     std::shared_ptr<InputBase> mouse_ = nullptr;
     std::shared_ptr<InputBase> keyboard_ = nullptr;
     std::shared_ptr<ScreencapBase> screencap_ = nullptr;
+    std::shared_ptr<BackgroundManagedKeyInput> background_keyboard_ = nullptr;
 };
 
 MAA_CTRL_UNIT_NS_END
