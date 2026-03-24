@@ -1055,7 +1055,16 @@ bool MessageInput::activate_mouse_lock_follow()
         return false;
     }
     window_moved = true;
-    std::this_thread::sleep_for(std::chrono::milliseconds(50));
+    // 等待 SetWindowPos 生效（最多 100ms）
+    for (int i = 0; i < 10; ++i) {
+        RECT cur;
+        if (GetWindowRect(hwnd_, &cur) &&
+            std::abs(cur.left - new_left) <= 1 &&
+            std::abs(cur.top - new_top) <= 1) {
+            break;
+        }
+        std::this_thread::sleep_for(std::chrono::milliseconds(10));
+    }
 
     // 记录锚点
     lock_anchor_cursor_ = cursor;
