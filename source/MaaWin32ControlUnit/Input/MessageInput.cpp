@@ -1121,7 +1121,6 @@ void MessageInput::deactivate_mouse_lock_follow()
         if (tracking_thread_.joinable()) {
             tracking_thread_.join();
         }
-        tracking_exit_ = false;
         tracking_thread_started_for_lock_follow_ = false;
     }
 }
