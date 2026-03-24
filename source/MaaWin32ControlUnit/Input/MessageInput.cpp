@@ -475,39 +475,8 @@ void MessageInput::tracking_thread_func()
     SetThreadPriority(GetCurrentThread(), THREAD_PRIORITY_HIGHEST);
 
     // DPI 感知：MSLLHOOKSTRUCT::pt 始终物理像素，GetCursorPos/SetCursorPos/SetWindowPos
-    // 必须在同一坐标系下。SetThreadDpiAwarenessContext 在某些宿主进程中不可靠，
-    // 改用进程级设置（与 PoC 一致），三级回退确保生效。
-    {
-        HMODULE user32 = GetModuleHandleW(L"user32.dll");
-        bool ok = false;
-        if (user32) {
-            // 1. SetProcessDpiAwarenessContext (Win10 1703+)
-            using FnCtx = BOOL(WINAPI*)(DPI_AWARENESS_CONTEXT);
-            auto fnCtx = reinterpret_cast<FnCtx>(GetProcAddress(user32, "SetProcessDpiAwarenessContext"));
-            if (fnCtx && fnCtx(DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2)) {
-                ok = true;
-            }
-        }
-        if (!ok) {
-            // 2. SetProcessDpiAwareness (Win8.1+)
-            HMODULE shcore = LoadLibraryW(L"shcore.dll");
-            if (shcore) {
-                using FnAware = HRESULT(WINAPI*)(int);
-                auto fnAware = reinterpret_cast<FnAware>(GetProcAddress(shcore, "SetProcessDpiAwareness"));
-                if (fnAware && SUCCEEDED(fnAware(2 /*PROCESS_PER_MONITOR_DPI_AWARE*/))) {
-                    ok = true;
-                }
-            }
-        }
-        if (!ok && user32) {
-            // 3. SetProcessDPIAware (Vista+)
-            using FnDPI = BOOL(WINAPI*)();
-            auto fnDPI = reinterpret_cast<FnDPI>(GetProcAddress(user32, "SetProcessDPIAware"));
-            if (fnDPI) fnDPI();
-        }
-        // 无论如何也设置线程级
-        SetThreadDpiAwarenessContext(DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2);
-    }
+    // 必须在同一坐标系下。使用线程级 DPI 感知避免影响宿主进程的全局 DPI 设置。
+    SetThreadDpiAwarenessContext(DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2);
 
     // 将系统定时器精度提升到 1ms，确保 Sleep/MsgWait 精度
     timeBeginPeriod(1);
