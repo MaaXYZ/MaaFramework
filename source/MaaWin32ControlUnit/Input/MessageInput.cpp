@@ -475,8 +475,32 @@ void MessageInput::tracking_thread_func()
     SetThreadPriority(GetCurrentThread(), THREAD_PRIORITY_HIGHEST);
 
     // DPI 感知：MSLLHOOKSTRUCT::pt 始终物理像素，GetCursorPos/SetCursorPos/SetWindowPos
-    // 必须在同一坐标系下。使用线程级 DPI 感知避免影响宿主进程的全局 DPI 设置。
-    SetThreadDpiAwarenessContext(DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2);
+    // 必须在同一坐标系下。SetThreadDpiAwarenessContext 在部分宿主进程中不可靠，
+    // 需要进程级设置作为兜底。三级回退：Per-Monitor V2 → Per-Monitor V1 → System Aware。
+    {
+        bool ok = false;
+        HMODULE user32 = GetModuleHandleW(L"user32.dll");
+        if (user32) {
+            using FnCtx = BOOL(WINAPI*)(DPI_AWARENESS_CONTEXT);
+            auto fnCtx = reinterpret_cast<FnCtx>(GetProcAddress(user32, "SetProcessDpiAwarenessContext"));
+            if (fnCtx) {
+                ok = fnCtx(DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2);
+                // 如果失败可能是已经设置过（E_ACCESSDENIED），这是可以接受的
+            }
+        }
+        if (!ok) {
+            HMODULE shcore = LoadLibraryW(L"shcore.dll");
+            if (shcore) {
+                using FnAware = HRESULT(WINAPI*)(int);
+                auto fnAware = reinterpret_cast<FnAware>(GetProcAddress(shcore, "SetProcessDpiAwareness"));
+                if (fnAware) {
+                    fnAware(2 /*PROCESS_PER_MONITOR_DPI_AWARE*/);
+                }
+            }
+        }
+        // 无论进程级是否成功，都设置线程级
+        SetThreadDpiAwarenessContext(DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2);
+    }
 
     // 将系统定时器精度提升到 1ms，确保 Sleep/MsgWait 精度
     timeBeginPeriod(1);
