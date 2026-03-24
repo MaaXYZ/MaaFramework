@@ -27,6 +27,8 @@ MessageInput::~MessageInput()
     if (mouse_lock_follow_active_) {
         deactivate_mouse_lock_follow();
     }
+    MessageInput* expected = this;
+    s_active_instance_.compare_exchange_strong(expected, nullptr);
     restore_pos();
     unblock_input();
     tracking_exit_ = true;
@@ -1127,6 +1129,8 @@ void MessageInput::deactivate_mouse_lock_follow()
     });
 
     mouse_lock_follow_active_ = false;
+    MessageInput* expected = this;
+    s_active_instance_.compare_exchange_strong(expected, nullptr);
     stop_window_tracking();
     counter_pending_ = 0;
 
