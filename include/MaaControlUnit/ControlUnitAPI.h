@@ -94,7 +94,7 @@ class Win32ControlUnitAPI
 public:
     virtual ~Win32ControlUnitAPI() = default;
 
-    virtual bool set_mouse_lock_follow(bool enabled) { return false; }
+    virtual bool set_mouse_lock_follow(bool /*enabled*/) { return false; }
 };
 
 class MacOSControlUnitAPI
