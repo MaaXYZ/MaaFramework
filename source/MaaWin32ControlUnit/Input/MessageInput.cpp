@@ -1280,11 +1280,15 @@ LRESULT CALLBACK MessageInput::RawInputWndProc(HWND hwnd, UINT msg, WPARAM wPara
                         auto& mouse = raw.data.mouse;
                         if ((mouse.usFlags & MOUSE_MOVE_ABSOLUTE) == 0 && (mouse.lLastX != 0 || mouse.lLastY != 0)) {
                             // 检查是否是我们自己的对冲或 relative_move 事件
-                            int expected = inst->counter_pending_.load();
-                            if (expected > 0 && inst->counter_pending_.compare_exchange_strong(expected, expected - 1)) {
-                                // 这是我们自己的 SendInput 产生的 WM_INPUT，跳过
+                            int prev = inst->counter_pending_.load();
+                            bool is_synthetic = false;
+                            while (prev > 0) {
+                                if (inst->counter_pending_.compare_exchange_weak(prev, prev - 1)) {
+                                    is_synthetic = true;
+                                    break;
+                                }
                             }
-                            else {
+                            if (!is_synthetic) {
                                 // 真实硬件事件，发送对冲
                                 inst->send_counter_move(mouse.lLastX, mouse.lLastY);
                             }
