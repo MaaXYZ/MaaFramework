@@ -200,11 +200,13 @@ bool MessageInput::handle_hardware_mouse_move(const MSLLHOOKSTRUCT& mouse_info)
         return false;
     }
 
-    // pt 是系统根据 "当前光标位置 + 硬件原始delta" 计算出的目标位置
-    // 光标被我们冻住了，所以 delta = pt - 当前冻住的光标位置
+    // pt 是系统根据 "当前光标位置 + 硬件原始delta" 计算出的目标位置（始终物理像素）。
+    // 光标被我们冻住了，所以 delta = pt - 当前冻住的光标位置。
+    // 使用 GetPhysicalCursorPos 代替 GetCursorPos：前者无条件返回物理像素，
+    // 不受线程 DPI 上下文影响，与 MSLLHOOKSTRUCT::pt 坐标系始终一致。
     POINT cursor;
-    if (!GetCursorPos(&cursor)) {
-        LogError << "GetCursorPos failed in mouse hook, fallback to hook point" << VAR(GetLastError());
+    if (!GetPhysicalCursorPos(&cursor)) {
+        LogError << "GetPhysicalCursorPos failed in mouse hook, fallback to hook point" << VAR(GetLastError());
         cursor = mouse_info.pt;
     }
     int dx = mouse_info.pt.x - cursor.x;
@@ -469,6 +471,41 @@ void MessageInput::process_pending_mouse_frame()
 void MessageInput::tracking_thread_func()
 {
     SetThreadPriority(GetCurrentThread(), THREAD_PRIORITY_HIGHEST);
+
+    // DPI 感知：MSLLHOOKSTRUCT::pt 始终物理像素，GetCursorPos/SetCursorPos/SetWindowPos
+    // 必须在同一坐标系下。SetThreadDpiAwarenessContext 在某些宿主进程中不可靠，
+    // 改用进程级设置（与 PoC 一致），三级回退确保生效。
+    {
+        HMODULE user32 = GetModuleHandleW(L"user32.dll");
+        bool ok = false;
+        if (user32) {
+            // 1. SetProcessDpiAwarenessContext (Win10 1703+)
+            using FnCtx = BOOL(WINAPI*)(DPI_AWARENESS_CONTEXT);
+            auto fnCtx = reinterpret_cast<FnCtx>(GetProcAddress(user32, "SetProcessDpiAwarenessContext"));
+            if (fnCtx && fnCtx(DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2)) {
+                ok = true;
+            }
+        }
+        if (!ok) {
+            // 2. SetProcessDpiAwareness (Win8.1+)
+            HMODULE shcore = LoadLibraryW(L"shcore.dll");
+            if (shcore) {
+                using FnAware = HRESULT(WINAPI*)(int);
+                auto fnAware = reinterpret_cast<FnAware>(GetProcAddress(shcore, "SetProcessDpiAwareness"));
+                if (fnAware && SUCCEEDED(fnAware(2 /*PROCESS_PER_MONITOR_DPI_AWARE*/))) {
+                    ok = true;
+                }
+            }
+        }
+        if (!ok && user32) {
+            // 3. SetProcessDPIAware (Vista+)
+            using FnDPI = BOOL(WINAPI*)();
+            auto fnDPI = reinterpret_cast<FnDPI>(GetProcAddress(user32, "SetProcessDPIAware"));
+            if (fnDPI) fnDPI();
+        }
+        // 无论如何也设置线程级
+        SetThreadDpiAwarenessContext(DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2);
+    }
 
     // 将系统定时器精度提升到 1ms，确保 Sleep/MsgWait 精度
     timeBeginPeriod(1);
@@ -887,6 +924,13 @@ void MessageInput::activate_mouse_lock_follow()
 {
     LogInfo << "Activating mouse lock follow mode";
 
+    // 此函数在 action runner 线程执行，必须临时切换到 Per-Monitor DPI Aware V2，
+    // 否则 GetCursorPos/GetWindowRect 返回虚拟像素，与追踪线程的物理像素不匹配。
+    auto prev_dpi_ctx = SetThreadDpiAwarenessContext(DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2);
+    OnScopeLeave([&]() {
+        if (prev_dpi_ctx) SetThreadDpiAwarenessContext(prev_dpi_ctx);
+    });
+
     // 确保追踪线程在运行
     ensure_tracking_thread();
 
@@ -894,8 +938,8 @@ void MessageInput::activate_mouse_lock_follow()
     save_window_pos();
 
     POINT cursor;
-    if (!GetCursorPos(&cursor)) {
-        LogError << "GetCursorPos failed" << VAR(GetLastError());
+    if (!GetPhysicalCursorPos(&cursor)) {
+        LogError << "GetPhysicalCursorPos failed" << VAR(GetLastError());
         return;
     }
 
@@ -957,6 +1001,12 @@ void MessageInput::activate_mouse_lock_follow()
 void MessageInput::deactivate_mouse_lock_follow()
 {
     LogInfo << "Deactivating mouse lock follow mode";
+
+    // 与 activate 同理，restore_window_pos 调用 SetWindowPos 需要物理像素坐标。
+    auto prev_dpi_ctx = SetThreadDpiAwarenessContext(DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2);
+    OnScopeLeave([&]() {
+        if (prev_dpi_ctx) SetThreadDpiAwarenessContext(prev_dpi_ctx);
+    });
 
     mouse_lock_follow_active_ = false;
 
