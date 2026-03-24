@@ -731,12 +731,6 @@ bool ControllerAgent::handle_relative_move(const RelativeMoveParam& param)
     return false;
 }
 
-std::shared_ptr<MAA_CTRL_UNIT_NS::Win32ControlUnitAPI>
-    ControllerAgent::as_win32_control_unit(const std::shared_ptr<MAA_CTRL_UNIT_NS::ControlUnitAPI>& control_unit)
-{
-    return std::dynamic_pointer_cast<MAA_CTRL_UNIT_NS::Win32ControlUnitAPI>(control_unit);
-}
-
 bool ControllerAgent::handle_mouse_lock_follow(const MouseLockFollowParam& param)
 {
     if (!control_unit_) {
