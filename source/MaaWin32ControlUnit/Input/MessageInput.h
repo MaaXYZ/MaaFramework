@@ -7,6 +7,8 @@
 
 #include <atomic>
 #include <chrono>
+#include <condition_variable>
+#include <mutex>
 #include <thread>
 
 MAA_CTRL_UNIT_NS_BEGIN
@@ -137,9 +139,10 @@ private:
     // ======================== MouseLockFollow ========================
     // 用于 TPS/FPS 游戏后台锁鼠标场景：窗口始终跟随鼠标，RawInput 对冲阻止游戏感知硬件移动。
 
-    void activate_mouse_lock_follow();
+    bool activate_mouse_lock_follow();
     void deactivate_mouse_lock_follow();
-    void ensure_tracking_thread();
+    bool ensure_tracking_thread();
+    bool ensure_rawinput_window();
     void process_mouse_lock_follow_frame();
 
     // RawInput 对冲
@@ -149,6 +152,13 @@ private:
     static LRESULT CALLBACK RawInputWndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
     HWND rawinput_hwnd_ = nullptr;
     std::atomic_int counter_pending_ = 0;
+    std::mutex tracking_state_mutex_;
+    std::condition_variable tracking_state_cv_;
+    bool tracking_thread_init_done_ = false;
+    bool tracking_thread_init_ok_ = false;
+    bool rawinput_ensure_requested_ = false;
+    bool rawinput_ensure_done_ = false;
+    bool rawinput_ensure_ok_ = false;
 
     // 模式状态
     bool mouse_lock_follow_active_ = false;
