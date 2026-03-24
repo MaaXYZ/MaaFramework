@@ -294,7 +294,7 @@ class MyAction(CustomAction):
         controller.post_key_up(65).wait()
         assert (
             not controller.post_set_background_managed_keys([0x57, 0x41]).wait().succeeded
-        )
+        ), "background managed keys should not be supported by non-Win32 controller"
 
         # 测试滚动操作
         assert not controller.post_scroll(0, 120).wait().succeeded

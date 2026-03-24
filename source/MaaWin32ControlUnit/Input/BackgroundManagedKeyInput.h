@@ -65,6 +65,7 @@ private:
     uint64_t desired_generation_ = 0;
     uint64_t applied_generation_ = 0;
     bool stop_thread_ = false;
+    bool thread_started_ = false;
     std::thread guard_thread_;
 };
 

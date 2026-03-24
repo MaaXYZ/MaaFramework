@@ -17,26 +17,25 @@ constexpr auto kGuardInterval = std::chrono::milliseconds(5);
 constexpr auto kApplyTimeout = std::chrono::milliseconds(500);
 constexpr auto kHotkeyWaitTimeout = std::chrono::milliseconds(200);
 constexpr int kManagedHotkeyBase = 2000;
+constexpr int kStopMaxRetries = 10;
 
 } // namespace
 
 BackgroundManagedKeyInput::BackgroundManagedKeyInput(HWND hwnd)
     : hwnd_(hwnd)
-    , guard_thread_(&BackgroundManagedKeyInput::guard_loop, this)
 {
 }
 
 BackgroundManagedKeyInput::~BackgroundManagedKeyInput()
 {
-    if (!inactive()) {
-        std::lock_guard lock(mutex_);
-        managed_keys_.clear();
-        desired_pressed_keys_.clear();
-        release_keys_.clear();
-        applied_generation_ = desired_generation_;
-    }
     {
         std::lock_guard lock(mutex_);
+        for (const int keycode : managed_keys_) {
+            release_keys_.emplace(keycode);
+        }
+        managed_keys_.clear();
+        desired_pressed_keys_.clear();
+        ++desired_generation_;
         stop_thread_ = true;
     }
     guard_cv_.notify_all();
@@ -56,6 +55,11 @@ bool BackgroundManagedKeyInput::set_managed_keys(const std::vector<int>& keycode
     uint64_t generation = 0;
     {
         std::lock_guard lock(mutex_);
+
+        if (!thread_started_) {
+            guard_thread_ = std::thread(&BackgroundManagedKeyInput::guard_loop, this);
+            thread_started_ = true;
+        }
 
         for (const int keycode : managed_keys_) {
             if (!normalized.contains(keycode)) {
@@ -247,6 +251,8 @@ void BackgroundManagedKeyInput::guard_loop()
     MSG msg;
     PeekMessageW(&msg, nullptr, 0, 0, PM_NOREMOVE);
 
+    int stop_retries = 0;
+
     while (true) {
         Snapshot snapshot;
         {
@@ -258,8 +264,17 @@ void BackgroundManagedKeyInput::guard_loop()
                 guard_cv_.wait_for(lock, kGuardInterval);
             }
 
-            if (stop_thread_ && managed_keys_.empty() && release_keys_.empty()) {
+            if (stop_thread_ && release_keys_.empty()) {
                 break;
+            }
+
+            if (stop_thread_) {
+                ++stop_retries;
+                if (stop_retries > kStopMaxRetries) {
+                    LogWarn << "Exceeded max retries releasing keys on stop, forcing exit" << VAR(release_keys_.size());
+                    release_keys_.clear();
+                    break;
+                }
             }
 
             snapshot = snapshot_locked();

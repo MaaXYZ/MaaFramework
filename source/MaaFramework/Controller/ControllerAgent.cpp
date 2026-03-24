@@ -280,10 +280,6 @@ void ControllerAgent::post_stop()
     if (action_runner_ && action_runner_->running()) {
         action_runner_->clear();
     }
-
-    if (control_unit_) {
-        control_unit_->inactive();
-    }
 }
 
 bool ControllerAgent::running() const
@@ -760,15 +756,6 @@ bool ControllerAgent::handle_click_key(const ClickKeyParam& param)
     auto win32_unit = as_win32_control_unit(control_unit_);
     bool use_key_down_up = control_unit_->get_features() & MaaControllerFeature_UseKeyboardDownAndUpInsteadOfClick;
 
-    if (win32_unit) {
-        for (const auto& keycode : param.keycode) {
-            if (should_route_background_managed_key(win32_unit, keycode) && win32_unit->is_background_key_pressed(keycode)) {
-                LogError << "Managed key is already held, ClickKey is rejected" << VAR(keycode);
-                return false;
-            }
-        }
-    }
-
     for (const auto& keycode : param.keycode) {
         if (should_route_background_managed_key(win32_unit, keycode)) {
             ret &= handle_managed_click_key(win32_unit, keycode);
@@ -797,15 +784,6 @@ bool ControllerAgent::handle_long_press_key(const LongPressKeyParam& param)
     bool ret = !param.keycode.empty();
     auto win32_unit = as_win32_control_unit(control_unit_);
     bool use_key_down_up = control_unit_->get_features() & MaaControllerFeature_UseKeyboardDownAndUpInsteadOfClick;
-
-    if (win32_unit) {
-        for (const auto& keycode : param.keycode) {
-            if (should_route_background_managed_key(win32_unit, keycode) && win32_unit->is_background_key_pressed(keycode)) {
-                LogError << "Managed key is already held, LongPressKey is rejected" << VAR(keycode);
-                return false;
-            }
-        }
-    }
 
     for (const auto& keycode : param.keycode) {
         if (should_route_background_managed_key(win32_unit, keycode)) {
@@ -938,6 +916,7 @@ bool ControllerAgent::handle_managed_click_key(
     const std::shared_ptr<MAA_CTRL_UNIT_NS::Win32ControlUnitAPI>& win32_unit,
     int keycode)
 {
+    win32_unit->background_key_up(keycode);
     bool ret = win32_unit->background_key_down(keycode);
     std::this_thread::sleep_for(std::chrono::milliseconds(50));
     ret &= win32_unit->background_key_up(keycode);
@@ -949,6 +928,7 @@ bool ControllerAgent::handle_managed_long_press_key(
     int keycode,
     uint duration)
 {
+    win32_unit->background_key_up(keycode);
     bool ret = win32_unit->background_key_down(keycode);
     std::this_thread::sleep_for(std::chrono::milliseconds(duration));
     ret &= win32_unit->background_key_up(keycode);

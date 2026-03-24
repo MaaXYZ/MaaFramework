@@ -164,9 +164,6 @@ class Controller:
             声明成功后，现有 post_key_down/post_key_up/post_click_key 以及 pipeline 中的 KeyDown/KeyUp/ClickKey/LongPressKey
             会对命中的按键自动走后台守护路径。
         """
-        if not keys:
-            raise ValueError("keys must not be empty")
-
         key_array = (c_int32 * len(keys))(*keys)
         ctrl_id = Library.framework().MaaControllerPostSetBackgroundManagedKeys(
             self._handle, key_array, len(keys)
