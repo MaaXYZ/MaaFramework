@@ -468,9 +468,7 @@ void FramePoolScreencap::try_disable_cursor()
 
     using namespace winrt::Windows::Foundation::Metadata;
 
-    if (!ApiInformation::IsPropertyPresent(
-            L"Windows.Graphics.Capture.GraphicsCaptureSession",
-            L"IsCursorCaptureEnabled")) {
+    if (!ApiInformation::IsPropertyPresent(L"Windows.Graphics.Capture.GraphicsCaptureSession", L"IsCursorCaptureEnabled")) {
         LogInfo << "IsCursorCaptureEnabled property not supported on this system";
         return;
     }
@@ -490,9 +488,7 @@ void FramePoolScreencap::try_include_secondary_windows()
 
     using namespace winrt::Windows::Foundation::Metadata;
 
-    if (!ApiInformation::IsPropertyPresent(
-            L"Windows.Graphics.Capture.GraphicsCaptureSession",
-            L"IncludeSecondaryWindows")) {
+    if (!ApiInformation::IsPropertyPresent(L"Windows.Graphics.Capture.GraphicsCaptureSession", L"IncludeSecondaryWindows")) {
         LogInfo << "IncludeSecondaryWindows property not supported on this system";
         return;
     }
