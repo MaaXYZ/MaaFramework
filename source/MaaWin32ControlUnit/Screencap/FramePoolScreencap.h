@@ -41,6 +41,7 @@ private:
     void uninit();
     bool check_and_handle_size_changed();
     void try_disable_border();
+    void try_disable_cursor();
 
 private:
     HWND hwnd_ = nullptr;
