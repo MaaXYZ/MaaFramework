@@ -171,13 +171,49 @@ bool Parser::check_configuration(const InterfaceData& data, Configuration& confi
 
     auto check_option_list = [&](std::vector<Configuration::Option>& opts) {
         for (auto it = opts.begin(); it != opts.end();) {
-            if (!data.option.contains(it->name)) {
-                LogWarn << "Option not found in config, removing" << VAR(it->name);
+            auto option_iter = data.option.find(it->name);
+            if (option_iter == data.option.end()) {
+                LogWarn << "Option not found in interface, removing from config" << VAR(it->name);
                 it = opts.erase(it);
                 erased = true;
+                continue;
+            }
+
+            const auto& data_option = option_iter->second;
+            bool valid = true;
+
+            switch (data_option.type) {
+            case InterfaceData::Option::Type::Select:
+            case InterfaceData::Option::Type::Switch: {
+                if (!it->value.empty()) {
+                    auto case_iter =
+                        std::ranges::find(data_option.cases, it->value, std::mem_fn(&InterfaceData::Option::Case::name));
+                    if (case_iter == data_option.cases.end()) {
+                        LogWarn << "Option case not found, removing from config" << VAR(it->name) << VAR(it->value);
+                        valid = false;
+                    }
+                }
+            } break;
+            case InterfaceData::Option::Type::Checkbox: {
+                for (const auto& val : it->values) {
+                    auto case_iter = std::ranges::find(data_option.cases, val, std::mem_fn(&InterfaceData::Option::Case::name));
+                    if (case_iter == data_option.cases.end()) {
+                        LogWarn << "Checkbox case not found, removing from config" << VAR(it->name) << VAR(val);
+                        valid = false;
+                        break;
+                    }
+                }
+            } break;
+            case InterfaceData::Option::Type::Input:
+                break;
+            }
+
+            if (valid) {
+                ++it;
             }
             else {
-                ++it;
+                it = opts.erase(it);
+                erased = true;
             }
         }
     };

@@ -1339,19 +1339,15 @@ bool Interactor::process_option(
 
     std::string opt_display_name = get_display_name(option_name, opt.label);
 
-    // Selected case for processing sub-options
-    const InterfaceData::Option::Case* selected_case = nullptr;
+    std::vector<const InterfaceData::Option::Case*> selected_cases;
 
     switch (opt.type) {
     case InterfaceData::Option::Type::Select: {
-        auto has_default = std::visit([](const auto& v) { return !v.empty(); }, opt.default_case);
-        if (has_default) {
-            if (auto* str = std::get_if<std::string>(&opt.default_case)) {
-                config_opt.value = *str;
-            }
-            auto case_iter = std::ranges::find(opt.cases, config_opt.value, std::mem_fn(&InterfaceData::Option::Case::name));
+        if (auto* str = std::get_if<std::string>(&opt.default_case); str && !str->empty()) {
+            config_opt.value = *str;
+            auto case_iter = std::ranges::find(opt.cases, *str, std::mem_fn(&InterfaceData::Option::Case::name));
             if (case_iter != opt.cases.end()) {
-                selected_case = &(*case_iter);
+                selected_cases.push_back(&(*case_iter));
             }
         }
         else {
@@ -1374,7 +1370,7 @@ bool Interactor::process_option(
 
             int case_index = input(opt.cases.size()) - 1;
             config_opt.value = opt.cases[case_index].name;
-            selected_case = &opt.cases[case_index];
+            selected_cases.push_back(&opt.cases[case_index]);
         }
     } break;
 
@@ -1435,17 +1431,15 @@ bool Interactor::process_option(
             return find_yes ? &opt.cases[0] : &opt.cases[1];
         };
 
-        selected_case = find_case(is_yes);
-        config_opt.value = selected_case->name;
+        const auto* matched_case = find_case(is_yes);
+        selected_cases.push_back(matched_case);
+        config_opt.value = matched_case->name;
         std::cout << "\n";
     } break;
 
     case InterfaceData::Option::Type::Checkbox: {
-        auto has_default = std::visit([](const auto& v) { return !v.empty(); }, opt.default_case);
-        if (has_default) {
-            if (auto* vec = std::get_if<std::vector<std::string>>(&opt.default_case)) {
-                config_opt.values = *vec;
-            }
+        if (auto* vec = std::get_if<std::vector<std::string>>(&opt.default_case); vec && !vec->empty()) {
+            config_opt.values = *vec;
         }
         else {
             std::cout << MAA_NS::utf8_to_crt(
@@ -1468,6 +1462,13 @@ bool Interactor::process_option(
             auto indexes = input_multi(opt.cases.size());
             for (int idx : indexes) {
                 config_opt.values.emplace_back(opt.cases[idx - 1].name);
+            }
+        }
+
+        for (const auto& val : config_opt.values) {
+            auto it = std::ranges::find(opt.cases, val, std::mem_fn(&InterfaceData::Option::Case::name));
+            if (it != opt.cases.end()) {
+                selected_cases.push_back(&(*it));
             }
         }
     } break;
@@ -1516,9 +1517,8 @@ bool Interactor::process_option(
 
     config_options.emplace_back(std::move(config_opt));
 
-    // Process nested sub-options if the selected case has any
-    if (selected_case && !selected_case->option.empty()) {
-        for (const auto& sub_option_name : selected_case->option) {
+    for (const auto* sc : selected_cases) {
+        for (const auto& sub_option_name : sc->option) {
             if (!process_option(sub_option_name, task_display_name, config_options)) {
                 return false;
             }
