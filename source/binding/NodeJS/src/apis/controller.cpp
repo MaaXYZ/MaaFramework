@@ -217,7 +217,7 @@ maajs::ValueType ControllerImpl::post_relative_move(maajs::ValueType self, maajs
 
 maajs::ValueType ControllerImpl::post_mouse_lock_follow(maajs::ValueType self, maajs::EnvType, bool enabled)
 {
-    auto id = MaaControllerPostMouseLockFollow(controller, enabled ? MaaTrue : MaaFalse);
+    auto id = MaaControllerPostMouseLockFollow(controller, static_cast<MaaBool>(enabled));
     return maajs::CallCtorHelper(ExtContext::get(env)->jobCtor, self, id);
 }
 
