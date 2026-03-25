@@ -17,6 +17,7 @@ from pathlib import Path
 import sys
 import numpy
 import io
+import threading
 
 # Fix encoding issues on Windows
 if sys.stdout.encoding != "utf-8":
@@ -595,6 +596,9 @@ class MyController(CustomController):
     def __init__(self):
         super().__init__()
         self.count = 0
+        self.inactive_count = 0
+        self.key_down_event = threading.Event()
+        self.inactive_event = threading.Event()
 
     def connect(self) -> bool:
         print("  on MyController.connect")
@@ -662,6 +666,7 @@ class MyController(CustomController):
     def key_down(self, keycode: int) -> bool:
         print(f"  on MyController.key_down: {keycode}")
         self.count += 1
+        self.key_down_event.set()
         return True
 
     def key_up(self, keycode: int) -> bool:
@@ -674,11 +679,42 @@ class MyController(CustomController):
         self.count += 1
         return True
 
+    def inactive(self) -> bool:
+        print("  on MyController.inactive")
+        self.count += 1
+        self.inactive_count += 1
+        self.inactive_event.set()
+        return True
+
     def get_custom_info(self) -> dict:
         return {
             "custom_key": "custom_value",
             "answer": 42,
         }
+
+
+class HoldKeyDownAction(CustomAction):
+
+    def __init__(self, release_event: threading.Event):
+        super().__init__()
+        self.release_event = release_event
+
+    def run(
+        self,
+        context: Context,
+        argv: CustomAction.RunArg,
+    ) -> CustomAction.RunResult:
+        del argv
+
+        controller = context.tasker.controller
+        key_down_job = controller.post_key_down(87).wait()
+        if not key_down_job.succeeded:
+            raise RuntimeError("key_down should succeed in HoldKeyDownAction")
+
+        if not self.release_event.wait(5):
+            raise RuntimeError("timeout waiting to release HoldKeyDownAction")
+
+        return CustomAction.RunResult(success=True)
 
 
 def test_custom_controller():
@@ -720,6 +756,48 @@ def test_custom_controller():
 
     print(f"  controller.count: {controller.count}, ret: {ret}")
     print("  PASS: custom controller")
+
+
+def test_tasker_post_stop_releases_custom_controller():
+    print("\n=== test_tasker_post_stop_releases_custom_controller ===")
+
+    resource = Resource()
+    release_event = threading.Event()
+    resource.register_custom_action("HoldKeyDownAction", HoldKeyDownAction(release_event))
+    resource.override_pipeline(
+        {
+            "StopEntry": {
+                "action": "Custom",
+                "custom_action": "HoldKeyDownAction",
+            }
+        }
+    )
+
+    controller = MyController()
+    assert controller.post_connection().wait().succeeded, "custom controller should connect"
+
+    tasker = Tasker()
+    tasker.bind(resource, controller)
+    assert tasker.inited, "tasker should init with custom controller"
+
+    task_job = tasker.post_task("StopEntry")
+    stop_job = None
+
+    try:
+        assert controller.key_down_event.wait(5), "key_down should happen before stop"
+
+        stop_job = tasker.post_stop()
+        assert controller.inactive_event.wait(5), (
+            "post_stop should trigger controller inactive before the task exits"
+        )
+    finally:
+        release_event.set()
+        if stop_job is not None:
+            stop_job.wait()
+        task_job.wait()
+
+    assert controller.inactive_count >= 1, "inactive should be called during stop"
+    print("  PASS: tasker post_stop releases custom controller state")
 
 
 # ============================================================================
@@ -845,6 +923,7 @@ if __name__ == "__main__":
 
     # 测试 CustomController
     test_custom_controller()
+    test_tasker_post_stop_releases_custom_controller()
 
     # 测试 Toolkit
     test_toolkit()

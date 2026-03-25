@@ -277,9 +277,15 @@ void ControllerAgent::post_stop()
 
     need_to_stop_ = true;
 
-    if (action_runner_ && action_runner_->running()) {
+    if (!action_runner_) {
+        return;
+    }
+
+    if (action_runner_->running()) {
         action_runner_->clear();
     }
+
+    action_runner_->post({ .type = Action::Type::inactive });
 }
 
 bool ControllerAgent::running() const
