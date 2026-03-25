@@ -190,8 +190,15 @@ bool Runner::run(const RuntimeParam& param)
         args.emplace_back(socket_id);
         auto os_args = conv_args(args);
 
+        // v2.5.0: set PI_* environment variables
+        auto env = boost::this_process::environment();
+        for (const auto& [key, val] : agent_param.env_vars) {
+            env[key] = val;
+        }
+
         LogInfo << "Start Agent" << VAR(agent_param.child_exec) << VAR(os_args) << VAR(agent_param.cwd);
-        auto& agent_child = agent_children.emplace_back(agent_param.child_exec, os_args, boost::process::start_dir = agent_param.cwd);
+        auto& agent_child =
+            agent_children.emplace_back(agent_param.child_exec, os_args, boost::process::start_dir = agent_param.cwd, env);
         if (!agent_child.valid()) {
             LogError << "Failed to start agent process" << VAR(agent_param.child_exec) << VAR(args) << VAR(agent_param.cwd);
             return false;

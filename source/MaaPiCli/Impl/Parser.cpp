@@ -40,6 +40,11 @@ std::optional<InterfaceData> Parser::parse_interface(const std::filesystem::path
             std::make_move_iterator(import_data->task.end()));
 
         data.option.insert(std::make_move_iterator(import_data->option.begin()), std::make_move_iterator(import_data->option.end()));
+
+        data.preset.insert(
+            data.preset.end(),
+            std::make_move_iterator(import_data->preset.begin()),
+            std::make_move_iterator(import_data->preset.end()));
     }
 
     return data;
@@ -164,6 +169,22 @@ bool Parser::check_configuration(const InterfaceData& data, Configuration& confi
     }
     config.controller.type = controller_iter->type;
 
+    auto check_option_list = [&](std::vector<Configuration::Option>& opts) {
+        for (auto it = opts.begin(); it != opts.end();) {
+            if (!data.option.contains(it->name)) {
+                LogWarn << "Option not found in config, removing" << VAR(it->name);
+                it = opts.erase(it);
+                erased = true;
+            }
+            else {
+                ++it;
+            }
+        }
+    };
+    check_option_list(config.global_option);
+    check_option_list(config.resource_option);
+    check_option_list(config.controller_option);
+
     return !erased;
 }
 
@@ -193,8 +214,16 @@ bool Parser::check_task(const InterfaceData& data, Configuration::Task& config_t
                 return false;
             }
         } break;
+        case InterfaceData::Option::Type::Checkbox: {
+            for (const auto& val : config_option.values) {
+                auto case_iter = std::ranges::find(data_option.cases, val, std::mem_fn(&InterfaceData::Option::Case::name));
+                if (case_iter == data_option.cases.end()) {
+                    LogWarn << "Checkbox case not found" << VAR(config_task.name) << VAR(config_option.name) << VAR(val);
+                    return false;
+                }
+            }
+        } break;
         case InterfaceData::Option::Type::Input:
-            // input type uses inputs map, no case validation needed
             break;
         }
     }
