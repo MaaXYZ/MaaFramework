@@ -36,6 +36,10 @@ std::vector<DesktopWindow> DesktopWindowMacOSFinder::find_all() const
                 if (!window.isOnScreen) {
                     continue;
                 }
+                // 跳过非顶级窗口
+                if (window.windowLayer != 0) {
+                    continue;
+                }
 
                 uint32_t window_id = window.windowID;
 
